@@ -1,0 +1,70 @@
+February 12, 1998
+
+This archive contains all of the level and title music from the
+LookingGlass / Origin game, System Shock.  Thanks to Markus Hein for XMI2MID
+and RIPXMI.
+
+All MIDIs have been mixed down to level out discrepancies and smooth out the
+overall performance of each piece.  Specific edits are noted below.
+
+Below is a description of each.
+
+dead.mid:  This little piece plays when the hacker dies.  Added reverb.
+
+elevator.mid:  The infamous elevator music.  Added a second bass channel
+               and panned the 2 of them at opposite ends.
+
+enda.mid:  Played during the ending sequence of the game.  Added a sawtooth
+           bass line and enhanced the hand-clap patterns.
+
+endremix.mid:  Had a little fun and remixed enda.mid.  Split the entire
+               pan flute track into left and right.  Changed the bass line
+               and just about doubled the overall length of the song with
+               cut-and-pastes and other effects.
+
+Intro.mid:  A midi version of the title music that plays during the opening
+            sequence.  Basic volume leveling and bass / percussion
+            enhancements.
+
+sshock00.mid:  Played all through level 3 (Maintenance) and sometimes on
+               level 5 (Flight Deck).  Not much but a couple of bars of 
+               weird repetative sounds.
+
+sshock01.mid:  Played all through level 1 (Healing Suites).  Makes you feel
+               like it's your first time.  Added chorus to the overdrive.
+
+sshock02.mid:  This one's from level 6 and had 2 seperate songs.  The
+               tempos matched perfectly so I mixed them together.  Added 
+               extra bass and clean guitar channels.
+
+sshock03.mid:  This one played on levels 2 (Science and Research) and 
+               6 (Executive and Living Quarters) for a short time.  Added
+               a clean guitar track along with some percussion enhancements
+               and volume leveling.
+
+sshock04.mid:  This one's on levels R (Energy Systems), 5 (Flight Deck), and
+               7 (Engineering).  Took the distortion and added modulation
+               and did some playing with the sawtooth arrangement.
+
+sshock05a.mid:  This is all of that weird stuff from all of the bays 
+                on the flight deck and the groves on level 6.  Rather creepy.
+
+sshock05b.mid:  Beta Grove.  Again, just percussion enhancements and an
+                extra bass channel.
+
+sshock06.mid:  Played on levels 8 (Security) and 9 (Bridge).  I had to add
+               another bass channel to this one, too.
+
+sshock10.mid:  These little bits and pieces played at various points
+               throughout the cyberspace sequences.  So I mixed them
+               together into one piece.  Holy Cow!  Whoever programmed the
+               percussion channel did one helluva frickin' fantastic job!
+               That track rocks!  I did do some individual sequence
+               cut-and-pastes and brought the volume way up on the snares
+               but it was all in the game.
+
+titloop.mid:  Loop that plays during game options after the opening sequence.
+
+Crank the volume and bass and enjoy!
+
+Joey "Chicajo" D
