@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 963a86c187724904594f6e4095ab7df2
-timeCreated: 1432575200
+guid: 7d98b569496d0b2438548ef17c9ac7fb
+timeCreated: 1434851850
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
@@ -9,7 +9,7 @@ ModelImporter:
     400000: //RootNode
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Cylinder01
+    4300000: Cube
     7400000: Default Take
     9500000: //RootNode
   materials:
@@ -21,6 +21,10 @@ ModelImporter:
     bakeSimulation: 0
     optimizeGameObjects: 0
     motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
     animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
