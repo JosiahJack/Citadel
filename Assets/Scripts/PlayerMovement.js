@@ -37,7 +37,7 @@ function Awake () {
 	currentCrouchRatio = 1;
 	originalLocalScaleY = transform.localScale.y;
 	crouchLocalScaleY = transform.localScale.y * crouchRatio;
-	GetComponent.<Rigidbody>().useGravity = false;
+	//GetComponent.<Rigidbody>().useGravity = false;
 }
 
 function Update () {
@@ -120,13 +120,15 @@ function Update () {
 	
 	// Gravity
 	if (ladderState) {
+		GetComponent.<Rigidbody>().useGravity = false;
 		GetComponent.<Rigidbody>().velocity.y = Mathf.SmoothDamp(GetComponent.<Rigidbody>().velocity.y, 0, walkDeaccelerationVolz, walkDeacceleration);  //Set vertical movement towards 0
 	} else {
-		GetComponent.<Rigidbody>().AddRelativeForce(0, (-1 * playerGravity * Time.deltaTime), 0); //Apply gravity force
+		GetComponent.<Rigidbody>().useGravity = true;
+		//GetComponent.<Rigidbody>().AddRelativeForce(0, (-1 * playerGravity * Time.deltaTime), 0); //Apply gravity force
 	}
 
 	if (Input.GetKeyDown(KeyCode.Space) && grounded)
-		GetComponent.<Rigidbody>().AddRelativeForce(0,jumpVelocity,0);
+		GetComponent.<Rigidbody>().AddForce(transform.up*jumpVelocity);	//GetComponent.<Rigidbody>().AddRelativeForce(0,jumpVelocity,0);
 }
 
 function OnCollisionStay (collision : Collision) {
