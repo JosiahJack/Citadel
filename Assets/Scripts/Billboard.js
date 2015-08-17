@@ -5,7 +5,6 @@ var lookPos : Vector3;
 var damping : float = 1;
 
 function Update () {
-	
 	lookPos = transform.position - cameraObject.transform.position;
 	
 	var rotationCorrection = Quaternion.LookRotation(lookPos);

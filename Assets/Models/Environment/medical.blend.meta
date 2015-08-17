@@ -71,6 +71,14 @@ ModelImporter:
     100126: 1_MedSecretWall1
     100128: 1_NonSolidLadderTrim1
     100130: //RootNode
+    100132: 1_MedicalLevel_med1_1
+    100134: 1_MedicalLevel_med1_7
+    100136: 1_MedicalLevel_med1_4
+    100138: 1_MedicalLevel_med1_6
+    100140: 1_MedicalLevel_med1_8
+    100142: 1_MedicalLevel_med1_9
+    100144: 1_MedicalLevel_med2_8
+    100146: 1_MedicalLevel_stor1_7
     400000: 1_MedBridge1
     400002: 1_MedBridge2
     400004: 1_MedButton1
@@ -137,6 +145,14 @@ ModelImporter:
     400126: 1_MedSecretWall1
     400128: 1_NonSolidLadderTrim1
     400130: //RootNode
+    400132: 1_MedicalLevel_med1_1
+    400134: 1_MedicalLevel_med1_7
+    400136: 1_MedicalLevel_med1_4
+    400138: 1_MedicalLevel_med1_6
+    400140: 1_MedicalLevel_med1_8
+    400142: 1_MedicalLevel_med1_9
+    400144: 1_MedicalLevel_med2_8
+    400146: 1_MedicalLevel_stor1_7
     2300000: 1_MedBridge1
     2300002: 1_MedBridge2
     2300004: 1_MedButton1
@@ -202,6 +218,14 @@ ModelImporter:
     2300124: 1_MedSecretMovableFloor3
     2300126: 1_MedSecretWall1
     2300128: 1_NonSolidLadderTrim1
+    2300130: 1_MedicalLevel_med1_1
+    2300132: 1_MedicalLevel_med1_7
+    2300134: 1_MedicalLevel_med1_4
+    2300136: 1_MedicalLevel_med1_6
+    2300138: 1_MedicalLevel_med1_8
+    2300140: 1_MedicalLevel_med1_9
+    2300142: 1_MedicalLevel_med2_8
+    2300144: 1_MedicalLevel_stor1_7
     3300000: 1_MedBridge1
     3300002: 1_MedBridge2
     3300004: 1_MedButton1
@@ -267,6 +291,14 @@ ModelImporter:
     3300124: 1_MedSecretMovableFloor3
     3300126: 1_MedSecretWall1
     3300128: 1_NonSolidLadderTrim1
+    3300130: 1_MedicalLevel_med1_1
+    3300132: 1_MedicalLevel_med1_7
+    3300134: 1_MedicalLevel_med1_4
+    3300136: 1_MedicalLevel_med1_6
+    3300138: 1_MedicalLevel_med1_8
+    3300140: 1_MedicalLevel_med1_9
+    3300142: 1_MedicalLevel_med2_8
+    3300144: 1_MedicalLevel_stor1_7
     4300000: 1_MedicalLevel_001
     4300002: 1_MedicalLevel_NEMaintShafts
     4300004: 1_MedicalLevel_MagpulseArea
@@ -332,6 +364,14 @@ ModelImporter:
     4300124: 1_MedButtonDestroyed1
     4300126: 1_MedButton2
     4300128: 1_MedButton1
+    4300130: 1_MedicalLevel_med1_1
+    4300132: 1_MedicalLevel_med1_7
+    4300134: 1_MedicalLevel_med1_8
+    4300136: 1_MedicalLevel_med1_9
+    4300138: 1_MedicalLevel_med1_4
+    4300140: 1_MedicalLevel_med2_8
+    4300142: 1_MedicalLevel_stor1_7
+    4300144: 1_MedicalLevel_med1_6
     6400000: 1_MedBridge1
     6400002: 1_MedBridge2
     6400004: 1_MedButton1
@@ -397,6 +437,14 @@ ModelImporter:
     6400124: 1_MedSecretMovableFloor3
     6400126: 1_MedSecretWall1
     6400128: 1_NonSolidLadderTrim1
+    6400130: 1_MedicalLevel_med1_1
+    6400132: 1_MedicalLevel_med1_7
+    6400134: 1_MedicalLevel_med1_4
+    6400136: 1_MedicalLevel_med1_6
+    6400138: 1_MedicalLevel_med1_8
+    6400140: 1_MedicalLevel_med1_9
+    6400142: 1_MedicalLevel_med2_8
+    6400144: 1_MedicalLevel_stor1_7
     7400000: Default Take
     9500000: //RootNode
   materials:
