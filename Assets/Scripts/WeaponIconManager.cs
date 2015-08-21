@@ -6,7 +6,7 @@ public class WeaponIconManager : MonoBehaviour {
 	[SerializeField] public Sprite[] wepIcons;
 
 	public void SetWepIcon (int index) {
-		if (index > -1)
+		if (index >= 0)
 			GetComponent<Image>().overrideSprite = wepIcons[index];
 	}
 }
