@@ -9,23 +9,28 @@ ModelImporter:
     100002: door2_frame
     100004: door2_lower
     100006: door2_upper
+    100008: Cylinder
     400000: //RootNode
     400002: door2_frame
     400004: door2_lower
     400006: door2_upper
+    400008: Cylinder
     2300000: door2_frame
     2300002: door2_lower
     2300004: door2_upper
+    2300006: Cylinder
     3300000: door2_frame
     3300002: door2_lower
     3300004: door2_upper
+    3300006: Cylinder
     4300000: door2_frame
     4300002: door2_lower
     4300004: door2_upper
-    7400000: IdleClosed
-    7400002: IdleOpen
-    7400004: DoorOpen
-    7400006: Default Take
+    4300006: Cylinder
+    7400000: IdleDoor1Close
+    7400002: IdleDoor1Open
+    7400004: Door1Open
+    7400006: Door1Close
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -36,6 +41,10 @@ ModelImporter:
     bakeSimulation: 0
     optimizeGameObjects: 0
     motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
     animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
@@ -44,7 +53,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     clipAnimations:
     - serializedVersion: 16
-      name: IdleClosed
+      name: IdleDoor1Close
       takeName: Default Take
       firstFrame: 0
       lastFrame: 1
@@ -78,7 +87,7 @@ ModelImporter:
       maskType: 0
       maskSource: {instanceID: 0}
     - serializedVersion: 16
-      name: IdleOpen
+      name: IdleDoor1Open
       takeName: Default Take
       firstFrame: 10
       lastFrame: 11
@@ -112,7 +121,7 @@ ModelImporter:
       maskType: 0
       maskSource: {instanceID: 0}
     - serializedVersion: 16
-      name: DoorOpen
+      name: Door1Open
       takeName: Default Take
       firstFrame: 0
       lastFrame: 11
@@ -146,7 +155,7 @@ ModelImporter:
       maskType: 0
       maskSource: {instanceID: 0}
     - serializedVersion: 16
-      name: Default Take
+      name: Door1Close
       takeName: Default Take
       firstFrame: 10
       lastFrame: 21
