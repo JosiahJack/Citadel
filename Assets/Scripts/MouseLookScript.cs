@@ -63,7 +63,7 @@ public class MouseLookScript : MonoBehaviour {
 		
 		if(Input.GetMouseButtonDown(1)) {
 			RaycastHit hit = new RaycastHit();
-			if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, 3)) {
+			if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, 4.5f)) {
 				// TIP: Use Camera.main.ViewportPointToRay for center of screen
 				if (hit.collider == null)
 					return;

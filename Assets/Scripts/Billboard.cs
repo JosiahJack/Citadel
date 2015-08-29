@@ -2,16 +2,9 @@
 using System.Collections;
 
 public class Billboard : MonoBehaviour {
-	public GameObject cameraObject;
-	public Vector3 lookPos;
-	public float damping = 1;
-	
 	void  Update (){
-		lookPos = transform.position - cameraObject.transform.position;
-		
-		Quaternion rotationCorrection = Quaternion.LookRotation(lookPos);
-		rotationCorrection *= Quaternion.Euler(0, -90, 90);
-		//transform.rotation = Quaternion.Slerp(transform.rotation, rotationCorrection, Time.deltaTime * damping);
-		transform.rotation = rotationCorrection;
+		Vector3 dir = Camera.main.transform.forward;
+		//dir.y = 0.0f;
+		transform.rotation = Quaternion.LookRotation(-dir);
 	}
 }
