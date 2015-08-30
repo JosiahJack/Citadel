@@ -9,6 +9,19 @@ public class WeaponButtonScript : MonoBehaviour {
 	[SerializeField] private AudioSource SFX = null; // assign in the editor
 	[SerializeField] private AudioClip SFXClip = null; // assign in the editor
 	private int invslot;
+	private float ix;
+	private float iy;
+	private Vector3 transMouse;
+	private Matrix4x4 m;
+	private Matrix4x4 inv;
+
+	public void PtrEnter () {
+		GUIState.isBlocking = true;
+	}
+
+	public void PtrExit () {
+		GUIState.isBlocking = false;
+	}
 
 	void WeaponInvClick () {
 		invslot = WeaponText.Instance.weaponInventoryIndices[WepButtonIndex];

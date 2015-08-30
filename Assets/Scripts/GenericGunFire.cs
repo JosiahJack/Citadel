@@ -2,13 +2,17 @@
 using System.Collections;
 
 public class GenericGunFire : MonoBehaviour {
-	public float fireSpeed = 8000;
+	public float fireSpeed = 1.5f;
 	[HideInInspector]
 	public float waitTilNextFire = 0;
 	public float muzzleDistance = 0.10f;
+	public bool isFullAuto = false;
 	public GameObject bullet;
 	public GameObject bulletSpawn;
 	public Camera playerCamera;
+	public Camera gunCamera;
+	[SerializeField] private AudioSource SFX = null; // assign in the editor
+	[SerializeField] private AudioClip SFXClip = null; // assign in the editor
 
 	void  Update() {
 		/*if (Input.GetButton("Fire1")) {
@@ -18,16 +22,35 @@ public class GenericGunFire : MonoBehaviour {
 				waitTilNextFire = 1;
 			}
 		}*/
-		if (Input.GetButton("Fire1")) {
-			if (waitTilNextFire <= 0) {
-				RaycastHit hit = new RaycastHit();
-				if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, 200f)) {
-					Object bulletparticle = Instantiate(Resources.Load("Prefabs/bullethit1"),hit.point,Quaternion.identity);
-					Destroy(bulletparticle,2);
-					waitTilNextFire = 1;
+
+		if (GUIState.isBlocking == false) {
+			if (isFullAuto) {
+				if (Input.GetButton("Fire1")) {
+					if (waitTilNextFire <= Time.time) {
+						SFX.PlayOneShot(SFXClip);
+						RaycastHit hit = new RaycastHit();
+						if (Physics.Raycast(gunCamera.ScreenPointToRay(Input.mousePosition), out hit, 200f)) {
+							Object bulletparticle = Instantiate(Resources.Load("Prefabs/bullethit1"),hit.point,Quaternion.identity);
+							Destroy(bulletparticle,1);
+							waitTilNextFire = Time.time + fireSpeed;
+						}
+					}
+				}
+			} else {
+				if (Input.GetButtonDown("Fire1")) {
+					if (waitTilNextFire <= Time.time) {
+						SFX.PlayOneShot(SFXClip);
+						RaycastHit hit = new RaycastHit();
+						if (Physics.Raycast(gunCamera.ScreenPointToRay(Input.mousePosition), out hit, 200f)) {
+							Object bulletparticle = Instantiate(Resources.Load("Prefabs/bullethit1"),hit.point,Quaternion.identity);
+							Destroy(bulletparticle,1);
+							waitTilNextFire = Time.time + fireSpeed;
+						}
+					}
 				}
 			}
+
 		}
-		waitTilNextFire -= Time.deltaTime * fireSpeed;
+		waitTilNextFire -= Time.deltaTime;
 	}
 }

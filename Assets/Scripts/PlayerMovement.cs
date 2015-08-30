@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour {
 	public float maxProneSpeed = 2;
 	public float maxSprintSpeed = 10;
 	public float maxSkateSpeed = 12;
+	public float maxVerticalSpeed = 5;
 	public bool isSprinting = false;
 	public bool  isSkating = false;
 
@@ -98,16 +99,20 @@ public class PlayerMovement : MonoBehaviour {
 			isCapsLockOn = !isCapsLockOn;
 		}
 		if (Input.GetKey(KeyCode.LeftShift)) {
-			if (isCapsLockOn) {
-				isSprinting = false;
-			} else {
-				isSprinting = true;
+			if (grounded) {
+				if (isCapsLockOn) {
+					isSprinting = false;
+				} else {
+					isSprinting = true;
+				}
 			}
 		} else {
-			if (isCapsLockOn) {
-				isSprinting = true;
-			} else {
-				isSprinting = false;
+			if (grounded) {
+				if (isCapsLockOn) {
+					isSprinting = true;
+				} else {
+					isSprinting = false;
+				}
 			}
 		}
 		
@@ -275,13 +280,17 @@ public class PlayerMovement : MonoBehaviour {
 				playerSpeed = maxSprintSpeed;
 			}
 			horizontalMovement *= playerSpeed;
-		}
-		//verticalMovement = rbody.velocity.y;	
+		}	
 		//rbody.velocity.x = horizontalMovement.x;
 		//rbody.velocity.z = horizontalMovement.y;
 		RigidbodySetVelocityX(rbody, horizontalMovement.x);
 		RigidbodySetVelocityZ(rbody, horizontalMovement.y);
 		//rbody.velocity.y = verticalMovement;
+		verticalMovement = rbody.velocity.y;
+		if (verticalMovement > maxVerticalSpeed) {
+			verticalMovement = maxVerticalSpeed;
+		}
+		RigidbodySetVelocityY(rbody, verticalMovement);
 		
 		// Ground friction ( Disable TIP   for Cyberspace)
 		if (grounded) {
@@ -303,7 +312,11 @@ public class PlayerMovement : MonoBehaviour {
 			if (ladderState) {
 				rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * Time.deltaTime, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
 			} else {
-				rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
+				if (isSprinting) {
+					rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
+				} else {
+					rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio *  Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
+				}
 			}
 		}
 		

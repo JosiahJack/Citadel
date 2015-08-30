@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class MouseLookScript : MonoBehaviour {
-	static bool inventoryMode;
+	public bool inventoryMode;
 	public Texture2D cursorTexture;
 	public Vector2 cursorHotspot;
 	public float lookSensitivity = 5;
