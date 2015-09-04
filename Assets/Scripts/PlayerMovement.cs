@@ -7,10 +7,6 @@ public class PlayerMovement : MonoBehaviour {
 	public float walkDeacceleration = 0.15f;
 	public float walkAccelAirRatio = 0.1f;
 	public float verticalAcceleration = 1200;
-
-	private float walkDeaccelerationVolx;
-	private float walkDeaccelerationVolz;
-
 	public GameObject cameraObject;
 	public float playerSpeed;
 	public float maxWalkSpeed = 5;
@@ -21,45 +17,42 @@ public class PlayerMovement : MonoBehaviour {
 	public float maxVerticalSpeed = 5;
 	public bool isSprinting = false;
 	public bool  isSkating = false;
-
-	private Vector2 horizontalMovement;
-	private float verticalMovement;
-	private float jumpTime;
-
 	public float jumpImpulseTime = 2.0f;
 	public float jumpVelocity = 1.1f;
-
-	private bool  grounded = false;
-
+	public bool  grounded = false;
 	public float maxSlope = 60;
 	public float crouchRatio = 0.55f;
 	public float proneRatio = 0.3f;
 	public float transitionToCrouchSec = 0.2f;
 	public float transitionToProneAdd = 0.1f;
-
-	private float crouchingVelocity = 1;
-
 	public float currentCrouchRatio = 1;
-
-	private float originalLocalScaleY;
-
 	public float crouchLocalScaleY;
-
-	private float lastCrouchRatio;
-
 	public float capsuleHeight;
 	public float capsuleRadius;
-
-	private int layerGeometry = 9;
-	private int layerMask;
-	//private float originalCapsuleHeight;
-
 	public int bodyState = 0;
 	//public float playerGravity = 500;
 	public bool ladderState = false;
-
+	public float damageSpeed = 11.72f;
+	public float fallDamage = 75f;
+	//[HideInInspector]
+	public bool CheatWallSticky;
+	private float walkDeaccelerationVolx;
+	private float walkDeaccelerationVolz;
+	private Vector2 horizontalMovement;
+	private float verticalMovement;
+	private float jumpTime;
+	private float crouchingVelocity = 1;
+	private float originalLocalScaleY;
+	private float lastCrouchRatio;
+	private int layerGeometry = 9;
+	private int layerMask;
+	//private float originalCapsuleHeight;
 	private Rigidbody rbody;
 	private MouseLookScript mlookScript;
+	private float fallDamageSpeed = 11.72f;
+	private Vector3 oldVelocity;
+
+
 	
 	void  Awake (){
 		isCapsLockOn = false;
@@ -68,6 +61,7 @@ public class PlayerMovement : MonoBehaviour {
 		originalLocalScaleY = transform.localScale.y;
 		crouchLocalScaleY = transform.localScale.y * crouchRatio;
 		rbody = GetComponent<Rigidbody>();
+		oldVelocity = rbody.velocity;
 		//rbody.useGravity = false;
 		mlookScript = cameraObject.GetComponent<MouseLookScript>();
 		capsuleHeight = GetComponent<CapsuleCollider>().height;
@@ -239,7 +233,7 @@ public class PlayerMovement : MonoBehaviour {
 	void  FixedUpdate (){
 		// Crouch
 		//transform.localScale.y = new Vector3(0,originalLocalScaleY * currentCrouchRatio,0);
-		LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio)); 
+		LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));
 		
 		if ((bodyState == 2) || (bodyState == 5))
 			currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
@@ -340,16 +334,44 @@ public class PlayerMovement : MonoBehaviour {
 			jumpTime -= Time.smoothDeltaTime;
 			rbody.AddForce( new Vector3(0,jumpVelocity*rbody.mass,0), ForceMode.Force);
 		}
-	}
-	
-	void  OnCollisionStay ( Collision collision  ){
-		foreach(ContactPoint contact in collision.contacts) {
-			if (Vector3.Angle(contact.normal,Vector3.up) < maxSlope)
-				grounded = true;
+
+		if (Mathf.Abs((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed) {
+			GetComponent<PlayerHealth>().TakeDamage(fallDamage);
+			print("Velocity difference for damage:" +(oldVelocity.y-rbody.velocity.y));
+		}
+
+		oldVelocity = rbody.velocity;
+
+		if (CheatWallSticky == false) {
+			grounded = false;
 		}
 	}
-	
-	void  OnCollisionExit (){
-		grounded = false;
+/*
+	void OnCollisionEnter (Collision collision) {
+		if (collision.gameObject.tag == "Geometry") {
+			Vector3 normal = collision.contacts[0].normal;
+			if (fallSpeed > damageSpeed) {
+				GetComponent<PlayerHealth>().TakeDamage(fallDamage);
+				//hasFallHurt = true;
+			}
+		}
+	}
+*/
+	void OnCollisionStay (Collision collision  ){
+		if (collision.gameObject.tag == "Geometry") {
+			foreach(ContactPoint contact in collision.contacts) {
+				if (Vector3.Angle(contact.normal,Vector3.up) < maxSlope) {
+					grounded = true;
+				}
+			}
+		}
+	}
+
+
+	void OnCollisionExit (){
+		if (CheatWallSticky == true) {
+			grounded = false;
+		}
+		//hasFallHurt = false;
 	}
 }

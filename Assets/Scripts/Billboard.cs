@@ -7,4 +7,8 @@ public class Billboard : MonoBehaviour {
 		//dir.y = 0.0f;
 		transform.rotation = Quaternion.LookRotation(-dir);
 	}
+
+	public void DestroySprite() {
+		Destroy(gameObject);
+	}
 }

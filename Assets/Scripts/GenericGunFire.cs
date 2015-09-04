@@ -4,11 +4,13 @@ using System.Collections;
 public class GenericGunFire : MonoBehaviour {
 	public float fireSpeed = 1.5f;
 	[HideInInspector]
-	public float waitTilNextFire = 0;
+	public float waitTilNextFire = 0f;
 	public float muzzleDistance = 0.10f;
+	public float hitOffset = 0.2f;
+	public float normalHitOffset = 0.2f;
 	public bool isFullAuto = false;
 	public GameObject bullet;
-	public GameObject bulletSpawn;
+	//public GameObject bulletSpawn;
 	public Camera playerCamera;
 	public Camera gunCamera;
 	[SerializeField] private AudioSource SFX = null; // assign in the editor
@@ -30,8 +32,10 @@ public class GenericGunFire : MonoBehaviour {
 						SFX.PlayOneShot(SFXClip);
 						RaycastHit hit = new RaycastHit();
 						if (Physics.Raycast(gunCamera.ScreenPointToRay(Input.mousePosition), out hit, 200f)) {
-							Object bulletparticle = Instantiate(Resources.Load("Prefabs/bullethit1"),hit.point,Quaternion.identity);
-							Destroy(bulletparticle,1);
+							Vector3 direction = gunCamera.transform.position - hit.point;
+							Instantiate(bullet,hit.point+(direction.normalized*hitOffset)+(hit.normal*normalHitOffset),Quaternion.identity);
+							//Animator anim = bulletparticle.GetComponent<Animator>();
+							//Destroy(bulletparticle,(anim.GetComponent<Animation>().clip.length));
 							waitTilNextFire = Time.time + fireSpeed;
 						}
 					}
@@ -42,8 +46,8 @@ public class GenericGunFire : MonoBehaviour {
 						SFX.PlayOneShot(SFXClip);
 						RaycastHit hit = new RaycastHit();
 						if (Physics.Raycast(gunCamera.ScreenPointToRay(Input.mousePosition), out hit, 200f)) {
-							Object bulletparticle = Instantiate(Resources.Load("Prefabs/bullethit1"),hit.point,Quaternion.identity);
-							Destroy(bulletparticle,1);
+							Vector3 direction = gunCamera.transform.position - hit.point;
+							Instantiate(bullet,hit.point+(direction.normalized*hitOffset)+(hit.normal*normalHitOffset),Quaternion.identity);
 							waitTilNextFire = Time.time + fireSpeed;
 						}
 					}
