@@ -34,6 +34,7 @@ public class PlayerMovement : MonoBehaviour {
 	public bool ladderState = false;
 	public float damageSpeed = 11.72f;
 	public float fallDamage = 75f;
+	public bool gravliftState = false;
 	//[HideInInspector]
 	public bool CheatWallSticky;
 	private float walkDeaccelerationVolx;
@@ -320,7 +321,11 @@ public class PlayerMovement : MonoBehaviour {
 			//rbody.velocity.y = Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVolz, walkDeacceleration);  //Set vertical movement towards 0
 			RigidbodySetVelocityY(rbody, (Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVolz, walkDeacceleration)));
 		} else {
-			rbody.useGravity = true;
+			if (gravliftState == true) {
+				rbody.useGravity = false;
+			} else {
+				rbody.useGravity = true;
+			}
 			//rbody.AddForce(0, (-1 * playerGravity * Time.deltaTime), 0); //Apply gravity force
 		}
 		

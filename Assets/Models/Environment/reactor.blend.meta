@@ -1,0 +1,181 @@
+fileFormatVersion: 2
+guid: 756cb33f8114edf4ab21a20dd6a91c3f
+timeCreated: 1441458996
+licenseType: Free
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: bsp_model_202
+    100002: bsp_model_203
+    100004: bsp_model_204
+    100006: bsp_model_205
+    100008: bsp_model_206
+    100010: bsp_model_208
+    100012: bsp_model_209
+    100014: bsp_model_210
+    100016: bsp_model_211
+    100018: bsp_model_212
+    100020: bsp_model_213
+    100022: bsp_model_214
+    100024: bsp_model_215
+    100026: bsp_model_216
+    100028: bsp_model_217
+    100030: Plane
+    100032: R_ReactorLevel
+    100034: R_ReactorLevel_chargingstation1
+    100036: //RootNode
+    400000: bsp_model_202
+    400002: bsp_model_203
+    400004: bsp_model_204
+    400006: bsp_model_205
+    400008: bsp_model_206
+    400010: bsp_model_208
+    400012: bsp_model_209
+    400014: bsp_model_210
+    400016: bsp_model_211
+    400018: bsp_model_212
+    400020: bsp_model_213
+    400022: bsp_model_214
+    400024: bsp_model_215
+    400026: bsp_model_216
+    400028: bsp_model_217
+    400030: Plane
+    400032: R_ReactorLevel
+    400034: R_ReactorLevel_chargingstation1
+    400036: //RootNode
+    2300000: bsp_model_202
+    2300002: bsp_model_203
+    2300004: bsp_model_204
+    2300006: bsp_model_205
+    2300008: bsp_model_206
+    2300010: bsp_model_208
+    2300012: bsp_model_209
+    2300014: bsp_model_210
+    2300016: bsp_model_211
+    2300018: bsp_model_212
+    2300020: bsp_model_213
+    2300022: bsp_model_214
+    2300024: bsp_model_215
+    2300026: bsp_model_216
+    2300028: bsp_model_217
+    2300030: Plane
+    2300032: R_ReactorLevel
+    2300034: R_ReactorLevel_chargingstation1
+    3300000: bsp_model_202
+    3300002: bsp_model_203
+    3300004: bsp_model_204
+    3300006: bsp_model_205
+    3300008: bsp_model_206
+    3300010: bsp_model_208
+    3300012: bsp_model_209
+    3300014: bsp_model_210
+    3300016: bsp_model_211
+    3300018: bsp_model_212
+    3300020: bsp_model_213
+    3300022: bsp_model_214
+    3300024: bsp_model_215
+    3300026: bsp_model_216
+    3300028: bsp_model_217
+    3300030: Plane
+    3300032: R_ReactorLevel
+    3300034: R_ReactorLevel_chargingstation1
+    4300000: Plane
+    4300002: R_ReactorLevel
+    4300004: bsp_model_217
+    4300006: bsp_model_216
+    4300008: bsp_model_215
+    4300010: bsp_model_214
+    4300012: bsp_model_213
+    4300014: bsp_model_212
+    4300016: bsp_model_211
+    4300018: bsp_model_210
+    4300020: bsp_model_209
+    4300022: bsp_model_208
+    4300024: R_ReactorLevel_chargingstation1
+    4300026: bsp_model_206
+    4300028: bsp_model_205
+    4300030: bsp_model_204
+    4300032: bsp_model_203
+    4300034: bsp_model_202
+    6400000: bsp_model_202
+    6400002: bsp_model_203
+    6400004: bsp_model_204
+    6400006: bsp_model_205
+    6400008: bsp_model_206
+    6400010: bsp_model_208
+    6400012: bsp_model_209
+    6400014: bsp_model_210
+    6400016: bsp_model_211
+    6400018: bsp_model_212
+    6400020: bsp_model_213
+    6400022: bsp_model_214
+    6400024: bsp_model_215
+    6400026: bsp_model_216
+    6400028: bsp_model_217
+    6400030: Plane
+    6400032: R_ReactorLevel
+    6400034: R_ReactorLevel_chargingstation1
+    7400000: Default Take
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 1
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

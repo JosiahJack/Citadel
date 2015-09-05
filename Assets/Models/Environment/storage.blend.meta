@@ -1,0 +1,193 @@
+fileFormatVersion: 2
+guid: 05aa29dbff1605e4a8c559d110c89afb
+timeCreated: 1441458986
+licenseType: Free
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: 4_StorageLevel
+    100002: bsp_model_249
+    100004: bsp_model_250
+    100006: bsp_model_251
+    100008: bsp_model_252
+    100010: bsp_model_253
+    100012: bsp_model_254
+    100014: bsp_model_255
+    100016: bsp_model_256
+    100018: bsp_model_257
+    100020: bsp_model_258
+    100022: bsp_model_259
+    100024: bsp_model_260
+    100026: bsp_model_261
+    100028: bsp_model_262
+    100030: bsp_model_263
+    100032: bsp_model_264
+    100034: bsp_model_265
+    100036: Cube
+    100038: med1_1_wall
+    100040: //RootNode
+    400000: 4_StorageLevel
+    400002: bsp_model_249
+    400004: bsp_model_250
+    400006: bsp_model_251
+    400008: bsp_model_252
+    400010: bsp_model_253
+    400012: bsp_model_254
+    400014: bsp_model_255
+    400016: bsp_model_256
+    400018: bsp_model_257
+    400020: bsp_model_258
+    400022: bsp_model_259
+    400024: bsp_model_260
+    400026: bsp_model_261
+    400028: bsp_model_262
+    400030: bsp_model_263
+    400032: bsp_model_264
+    400034: bsp_model_265
+    400036: Cube
+    400038: med1_1_wall
+    400040: //RootNode
+    2300000: 4_StorageLevel
+    2300002: bsp_model_249
+    2300004: bsp_model_250
+    2300006: bsp_model_251
+    2300008: bsp_model_252
+    2300010: bsp_model_253
+    2300012: bsp_model_254
+    2300014: bsp_model_255
+    2300016: bsp_model_256
+    2300018: bsp_model_257
+    2300020: bsp_model_258
+    2300022: bsp_model_259
+    2300024: bsp_model_260
+    2300026: bsp_model_261
+    2300028: bsp_model_262
+    2300030: bsp_model_263
+    2300032: bsp_model_264
+    2300034: bsp_model_265
+    2300036: Cube
+    2300038: med1_1_wall
+    3300000: 4_StorageLevel
+    3300002: bsp_model_249
+    3300004: bsp_model_250
+    3300006: bsp_model_251
+    3300008: bsp_model_252
+    3300010: bsp_model_253
+    3300012: bsp_model_254
+    3300014: bsp_model_255
+    3300016: bsp_model_256
+    3300018: bsp_model_257
+    3300020: bsp_model_258
+    3300022: bsp_model_259
+    3300024: bsp_model_260
+    3300026: bsp_model_261
+    3300028: bsp_model_262
+    3300030: bsp_model_263
+    3300032: bsp_model_264
+    3300034: bsp_model_265
+    3300036: Cube
+    3300038: med1_1_wall
+    4300000: Cube
+    4300002: 4_StorageLevel
+    4300004: bsp_model_265
+    4300006: bsp_model_264
+    4300008: bsp_model_263
+    4300010: bsp_model_262
+    4300012: bsp_model_261
+    4300014: bsp_model_260
+    4300016: bsp_model_259
+    4300018: bsp_model_258
+    4300020: bsp_model_257
+    4300022: bsp_model_256
+    4300024: bsp_model_255
+    4300026: bsp_model_254
+    4300028: bsp_model_253
+    4300030: bsp_model_252
+    4300032: bsp_model_251
+    4300034: bsp_model_250
+    4300036: bsp_model_249
+    4300038: med1_1_wall
+    6400000: 4_StorageLevel
+    6400002: bsp_model_249
+    6400004: bsp_model_250
+    6400006: bsp_model_251
+    6400008: bsp_model_252
+    6400010: bsp_model_253
+    6400012: bsp_model_254
+    6400014: bsp_model_255
+    6400016: bsp_model_256
+    6400018: bsp_model_257
+    6400020: bsp_model_258
+    6400022: bsp_model_259
+    6400024: bsp_model_260
+    6400026: bsp_model_261
+    6400028: bsp_model_262
+    6400030: bsp_model_263
+    6400032: bsp_model_264
+    6400034: bsp_model_265
+    6400036: Cube
+    6400038: med1_1_wall
+    7400000: Default Take
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 1
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
