@@ -38,6 +38,6 @@ public class PlayerHealth : MonoBehaviour {
 	public void TakeDamage ( float take  ){
 		health -= take;
 		PainSFX.PlayOneShot(PainSFXClip);
-		print("Player Health: " + health.ToString());
+		//print("Player Health: " + health.ToString());
 	}
 }

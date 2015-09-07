@@ -18,6 +18,7 @@ ModelImporter:
     100020: Bone_009
     100022: //RootNode
     100024: Plane
+    100026: inviso_mut_mesh
     400000: Armature
     400002: Bone
     400004: Bone_001
@@ -31,11 +32,18 @@ ModelImporter:
     400020: Bone_009
     400022: //RootNode
     400024: Plane
+    400026: inviso_mut_mesh
     4300000: Plane
+    4300002: inviso_mut_mesh
     7400000: Default Take
     7400002: ArmatureAction
+    7400004: Idle
+    7400006: Pain
+    7400008: Attack1
+    7400010: Die
     9500000: //RootNode
     13700000: Plane
+    13700002: inviso_mut_mesh
   materials:
     importMaterials: 1
     materialName: 0
@@ -45,17 +53,229 @@ ModelImporter:
     bakeSimulation: 0
     optimizeGameObjects: 0
     motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
     animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
     animationScaleError: .5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Idle
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 9
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/Bone
+        weight: 1
+      - path: Armature/Bone_001
+        weight: 1
+      - path: Armature/Bone_001/Bone_002
+        weight: 1
+      - path: Armature/Bone_001/Bone_002/Bone_003
+        weight: 1
+      - path: Armature/Bone_004
+        weight: 1
+      - path: Armature/Bone_004/Bone_005
+        weight: 1
+      - path: Armature/Bone_004/Bone_005/Bone_006
+        weight: 1
+      - path: Armature/Bone_007
+        weight: 1
+      - path: Armature/Bone_007/Bone_008
+        weight: 1
+      - path: Armature/Bone_009
+        weight: 1
+      - path: inviso_mut_mesh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Pain
+      takeName: Default Take
+      firstFrame: 10
+      lastFrame: 17
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/Bone
+        weight: 1
+      - path: Armature/Bone_001
+        weight: 1
+      - path: Armature/Bone_001/Bone_002
+        weight: 1
+      - path: Armature/Bone_001/Bone_002/Bone_003
+        weight: 1
+      - path: Armature/Bone_004
+        weight: 1
+      - path: Armature/Bone_004/Bone_005
+        weight: 1
+      - path: Armature/Bone_004/Bone_005/Bone_006
+        weight: 1
+      - path: Armature/Bone_007
+        weight: 1
+      - path: Armature/Bone_007/Bone_008
+        weight: 1
+      - path: Armature/Bone_009
+        weight: 1
+      - path: inviso_mut_mesh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Attack1
+      takeName: Default Take
+      firstFrame: 18
+      lastFrame: 25
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/Bone
+        weight: 1
+      - path: Armature/Bone_001
+        weight: 1
+      - path: Armature/Bone_001/Bone_002
+        weight: 1
+      - path: Armature/Bone_001/Bone_002/Bone_003
+        weight: 1
+      - path: Armature/Bone_004
+        weight: 1
+      - path: Armature/Bone_004/Bone_005
+        weight: 1
+      - path: Armature/Bone_004/Bone_005/Bone_006
+        weight: 1
+      - path: Armature/Bone_007
+        weight: 1
+      - path: Armature/Bone_007/Bone_008
+        weight: 1
+      - path: Armature/Bone_009
+        weight: 1
+      - path: inviso_mut_mesh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Die
+      takeName: Default Take
+      firstFrame: 26
+      lastFrame: 34
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/Bone
+        weight: 1
+      - path: Armature/Bone_001
+        weight: 1
+      - path: Armature/Bone_001/Bone_002
+        weight: 1
+      - path: Armature/Bone_001/Bone_002/Bone_003
+        weight: 1
+      - path: Armature/Bone_004
+        weight: 1
+      - path: Armature/Bone_004/Bone_005
+        weight: 1
+      - path: Armature/Bone_004/Bone_005/Bone_006
+        weight: 1
+      - path: Armature/Bone_007
+        weight: 1
+      - path: Armature/Bone_007/Bone_008
+        weight: 1
+      - path: Armature/Bone_009
+        weight: 1
+      - path: inviso_mut_mesh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 1.20000005
     meshCompression: 0
     addColliders: 0
     importBlendShapes: 1

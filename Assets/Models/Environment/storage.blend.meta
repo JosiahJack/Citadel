@@ -26,6 +26,7 @@ ModelImporter:
     100036: Cube
     100038: med1_1_wall
     100040: //RootNode
+    100042: 4_StorageScreen1
     400000: 4_StorageLevel
     400002: bsp_model_249
     400004: bsp_model_250
@@ -47,6 +48,7 @@ ModelImporter:
     400036: Cube
     400038: med1_1_wall
     400040: //RootNode
+    400042: 4_StorageScreen1
     2300000: 4_StorageLevel
     2300002: bsp_model_249
     2300004: bsp_model_250
@@ -67,6 +69,7 @@ ModelImporter:
     2300034: bsp_model_265
     2300036: Cube
     2300038: med1_1_wall
+    2300040: 4_StorageScreen1
     3300000: 4_StorageLevel
     3300002: bsp_model_249
     3300004: bsp_model_250
@@ -87,6 +90,7 @@ ModelImporter:
     3300034: bsp_model_265
     3300036: Cube
     3300038: med1_1_wall
+    3300040: 4_StorageScreen1
     4300000: Cube
     4300002: 4_StorageLevel
     4300004: bsp_model_265
@@ -107,6 +111,7 @@ ModelImporter:
     4300034: bsp_model_250
     4300036: bsp_model_249
     4300038: med1_1_wall
+    4300040: 4_StorageScreen1
     6400000: 4_StorageLevel
     6400002: bsp_model_249
     6400004: bsp_model_250
@@ -127,6 +132,7 @@ ModelImporter:
     6400034: bsp_model_265
     6400036: Cube
     6400038: med1_1_wall
+    6400040: 4_StorageScreen1
     7400000: Default Take
     9500000: //RootNode
   materials:

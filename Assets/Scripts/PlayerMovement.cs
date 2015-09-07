@@ -363,13 +363,13 @@ public class PlayerMovement : MonoBehaviour {
 	}
 */
 	void OnCollisionStay (Collision collision  ){
-		if (collision.gameObject.tag == "Geometry") {
+		//if (collision.gameObject.tag == "Geometry") {
 			foreach(ContactPoint contact in collision.contacts) {
 				if (Vector3.Angle(contact.normal,Vector3.up) < maxSlope) {
 					grounded = true;
 				}
 			}
-		}
+		//}
 	}
 
 

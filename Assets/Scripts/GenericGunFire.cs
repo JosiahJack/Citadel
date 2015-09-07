@@ -8,6 +8,8 @@ public class GenericGunFire : MonoBehaviour {
 	public float muzzleDistance = 0.10f;
 	public float hitOffset = 0.2f;
 	public float normalHitOffset = 0.2f;
+	public float fireDistance = 200f;
+	public float damage = 1f;
 	public bool isFullAuto = false;
 	public GameObject bullet;
 	//public GameObject bulletSpawn;
@@ -25,36 +27,37 @@ public class GenericGunFire : MonoBehaviour {
 			}
 		}*/
 
-		if (GUIState.isBlocking == false) {
+		if (!GUIState.isBlocking) {
 			if (isFullAuto) {
 				if (Input.GetButton("Fire1")) {
 					if (waitTilNextFire <= Time.time) {
-						SFX.PlayOneShot(SFXClip);
-						RaycastHit hit = new RaycastHit();
-						if (Physics.Raycast(gunCamera.ScreenPointToRay(Input.mousePosition), out hit, 200f)) {
-							Vector3 direction = gunCamera.transform.position - hit.point;
-							Instantiate(bullet,hit.point+(direction.normalized*hitOffset)+(hit.normal*normalHitOffset),Quaternion.identity);
-							//Animator anim = bulletparticle.GetComponent<Animator>();
-							//Destroy(bulletparticle,(anim.GetComponent<Animation>().clip.length));
-							waitTilNextFire = Time.time + fireSpeed;
-						}
+						FireRaycastBullet(fireDistance, false);
 					}
 				}
 			} else {
 				if (Input.GetButtonDown("Fire1")) {
 					if (waitTilNextFire <= Time.time) {
-						SFX.PlayOneShot(SFXClip);
-						RaycastHit hit = new RaycastHit();
-						if (Physics.Raycast(gunCamera.ScreenPointToRay(Input.mousePosition), out hit, 200f)) {
-							Vector3 direction = gunCamera.transform.position - hit.point;
-							Instantiate(bullet,hit.point+(direction.normalized*hitOffset)+(hit.normal*normalHitOffset),Quaternion.identity);
-							waitTilNextFire = Time.time + fireSpeed;
-						}
+						FireRaycastBullet(fireDistance, false);
 					}
 				}
 			}
 
 		}
 		waitTilNextFire -= Time.deltaTime;
+	}
+
+	void FireRaycastBullet (float dist, bool silent) {
+		if (!silent)
+			SFX.PlayOneShot(SFXClip);
+
+		RaycastHit hit = new RaycastHit();
+		if (Physics.Raycast(gunCamera.ScreenPointToRay(Input.mousePosition), out hit, dist)) {
+			Vector3 direction = gunCamera.transform.position - hit.point;
+			Instantiate(bullet,hit.point+(direction.normalized*hitOffset)+(hit.normal*normalHitOffset),Quaternion.identity);  //effect
+			if (hit.transform.gameObject.GetComponent<EnemyHealth>() != null) {
+				hit.transform.gameObject.GetComponent<EnemyHealth>().TakeDamage(damage);
+			}
+			waitTilNextFire = Time.time + fireSpeed;
+		}
 	}
 }
