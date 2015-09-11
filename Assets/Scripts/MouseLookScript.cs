@@ -6,7 +6,7 @@ public class MouseLookScript : MonoBehaviour {
 	public Texture2D cursorTexture;
 	public Vector2 cursorHotspot;
 	public float lookSensitivity = 5;
-	public GameObject searchHUD;
+	public GameObject tabControl;
 	public float lookSmoothDamp = 0.1f;
 	private float yRotationV;
 	private float xRotationV;
@@ -21,7 +21,6 @@ public class MouseLookScript : MonoBehaviour {
 	private string mlookstring3 = "";
 	private string mlookstring4 = "";
 	private GameObject currentSearchItem;
-	private GameObject tabControl;
 	private Camera playerCamera;
 	
 	//float headbobSpeed = 1;
@@ -155,7 +154,10 @@ public class MouseLookScript : MonoBehaviour {
 		//		}
 		//	}
 		//}
-		//tabControl.GetComponent<TabButtonsScript>().TabButtonClick(4,false);
+
+		if (tabControl.GetComponent<TabButtonsScript>().curTab != 4) {
+			tabControl.GetComponent<TabButtonsScript>().TabButtonClick(4);
+		}
 	}
 	
 	// Returns string for describing the walls/floors/etc. based on the material name

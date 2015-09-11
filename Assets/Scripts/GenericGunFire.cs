@@ -17,6 +17,7 @@ public class GenericGunFire : MonoBehaviour {
 	public Camera gunCamera;
 	[SerializeField] private AudioSource SFX = null; // assign in the editor
 	[SerializeField] private AudioClip SFXClip = null; // assign in the editor
+	private float clipEnd;
 
 	void  Update() {
 		/*if (Input.GetButton("Fire1")) {
@@ -47,8 +48,10 @@ public class GenericGunFire : MonoBehaviour {
 	}
 
 	void FireRaycastBullet (float dist, bool silent) {
-		if (!silent)
-			SFX.PlayOneShot(SFXClip);
+		if (!silent) {
+			SFX.clip = SFXClip;
+			SFX.Play();
+		}
 
 		RaycastHit hit = new RaycastHit();
 		if (Physics.Raycast(gunCamera.ScreenPointToRay(Input.mousePosition), out hit, dist)) {
@@ -60,4 +63,5 @@ public class GenericGunFire : MonoBehaviour {
 			waitTilNextFire = Time.time + fireSpeed;
 		}
 	}
+	
 }

@@ -53,8 +53,11 @@ public class EnemyHealth : MonoBehaviour {
 	}
 
 	void Dying() {
-		float lerp = Mathf.PingPong(Time.time, deathTime) / deathTime;
-		enemySkinRenderer.material.Lerp(mainMaterial, deathMaterial, lerp);
+		//float lerp = Mathf.PingPong(Time.time, deathTime) / deathTime;
+		//Color color = enemySkinRenderer.material.color;
+		//color.a += lerp;
+		//enemySkinRenderer.material.color = color;
+		enemySkinRenderer.material.mainTexture = deathMaterial.mainTexture;
 		if (deathTime < Time.time) {
 			Death();
 		}

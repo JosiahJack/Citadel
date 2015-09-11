@@ -13,7 +13,7 @@ public class TabButtonsScript : MonoBehaviour {
 	[SerializeField] private Sprite MFDSpriteSelected = null; // assign in the editor
 	[SerializeField] private AudioSource TabSFX = null; // assign in the editor
 	[SerializeField] private AudioClip TabSFXClip = null; // assign in the editor
-	private int curTab = 0;
+	public int curTab = 0;
 	
 	public void TabButtonClick (int tabNum) {
 		TabSFX.PlayOneShot(TabSFXClip);

@@ -3,8 +3,13 @@ using System.Collections;
 
 public class Billboard : MonoBehaviour {
 	void  Update (){
-		Vector3 dir = Camera.main.transform.forward;
-		transform.rotation = Quaternion.LookRotation(-dir);
+		if (Camera.main != null) {
+			Camera mainCamera = Camera.main;
+			if (mainCamera.enabled = true) {
+				Vector3 dir = mainCamera.transform.forward;
+				transform.rotation = Quaternion.LookRotation(-dir);
+			}
+		}
 	}
 
 	public void DestroySprite() {
