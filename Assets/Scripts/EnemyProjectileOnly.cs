@@ -18,7 +18,7 @@ public class EnemyProjectileOnly : MonoBehaviour {
 	public float timeBeforeAttack = 1f;
 	private bool sighted;
 	private int wayPointIndex;
-	private float waitTime;
+	private float waitTime = 0f;
 	private float waitTilNextFire = 0f;
 	private PlayerHealth playerHealth;
 	private NavMeshAgent nav;

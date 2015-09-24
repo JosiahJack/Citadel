@@ -330,7 +330,7 @@ public class PlayerMovement : MonoBehaviour {
 		}
 		
 		// Get input for Jump and set impulse time
-		if (Input.GetKey(KeyCode.Space) && grounded && (ladderState==false)) {
+		if (Input.GetKey(KeyCode.Space) && (grounded || gravliftState) && (ladderState==false)) {
 			jumpTime = jumpImpulseTime;
 		}
 		
@@ -342,12 +342,12 @@ public class PlayerMovement : MonoBehaviour {
 
 		if (Mathf.Abs((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed) {
 			GetComponent<PlayerHealth>().TakeDamage(fallDamage);
-			print("Velocity difference for damage:" +(oldVelocity.y-rbody.velocity.y));
+			//print("Velocity difference for damage:" +(oldVelocity.y-rbody.velocity.y));
 		}
 
 		oldVelocity = rbody.velocity;
 
-		if (CheatWallSticky == false) {
+		if (CheatWallSticky == false || gravliftState) {
 			grounded = false;
 		}
 	}

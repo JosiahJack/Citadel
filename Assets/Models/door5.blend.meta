@@ -1,0 +1,368 @@
+fileFormatVersion: 2
+guid: 7899c72200f9aec4eaebae1317af3498
+timeCreated: 1443067352
+licenseType: Free
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: door_iris_002
+    100004: door_iris_003
+    100006: door_iris_004
+    100008: door_iris_005
+    100010: door_iris_006
+    100012: door_iris_007_heightcheat_lower
+    100014: door_iris_cheatblockupper
+    100016: door_iris_cheatblockupper_001
+    100018: door_iris_frame
+    100020: door_iris_heightcheat_upper
+    100022: Empty
+    100024: Empty_001
+    100026: Empty_002
+    100028: Empty_003
+    100030: Empty_004
+    400000: //RootNode
+    400002: door_iris_002
+    400004: door_iris_003
+    400006: door_iris_004
+    400008: door_iris_005
+    400010: door_iris_006
+    400012: door_iris_007_heightcheat_lower
+    400014: door_iris_cheatblockupper
+    400016: door_iris_cheatblockupper_001
+    400018: door_iris_frame
+    400020: door_iris_heightcheat_upper
+    400022: Empty
+    400024: Empty_001
+    400026: Empty_002
+    400028: Empty_003
+    400030: Empty_004
+    2300000: door_iris_002
+    2300002: door_iris_003
+    2300004: door_iris_004
+    2300006: door_iris_005
+    2300008: door_iris_006
+    2300010: door_iris_007_heightcheat_lower
+    2300012: door_iris_cheatblockupper
+    2300014: door_iris_cheatblockupper_001
+    2300016: door_iris_frame
+    2300018: door_iris_heightcheat_upper
+    3300000: door_iris_002
+    3300002: door_iris_003
+    3300004: door_iris_004
+    3300006: door_iris_005
+    3300008: door_iris_006
+    3300010: door_iris_007_heightcheat_lower
+    3300012: door_iris_cheatblockupper
+    3300014: door_iris_cheatblockupper_001
+    3300016: door_iris_frame
+    3300018: door_iris_heightcheat_upper
+    4300000: door_iris_cheatblockupper_001
+    4300002: door_iris_cheatblockupper
+    4300004: door_iris_007_heightcheat_lower
+    4300006: door_iris_heightcheat_upper
+    4300008: door_iris_frame
+    4300010: door_iris_006
+    4300012: door_iris_002
+    4300014: door_iris_003
+    4300016: door_iris_004
+    4300018: door_iris_005
+    7400000: IdleDoor1Open
+    7400002: IdleDoor1Close
+    7400004: Door1Open
+    7400006: Door1Close
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: IdleDoor1Open
+      takeName: Default Take
+      firstFrame: 20
+      lastFrame: 21
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: door_iris_007_heightcheat_lower
+        weight: 1
+      - path: door_iris_cheatblockupper
+        weight: 1
+      - path: door_iris_cheatblockupper_001
+        weight: 1
+      - path: door_iris_frame
+        weight: 1
+      - path: door_iris_heightcheat_upper
+        weight: 1
+      - path: Empty
+        weight: 1
+      - path: Empty/door_iris_005
+        weight: 1
+      - path: Empty_001
+        weight: 1
+      - path: Empty_001/door_iris_004
+        weight: 1
+      - path: Empty_002
+        weight: 1
+      - path: Empty_002/door_iris_003
+        weight: 1
+      - path: Empty_003
+        weight: 1
+      - path: Empty_003/door_iris_002
+        weight: 1
+      - path: Empty_004
+        weight: 1
+      - path: Empty_004/door_iris_006
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: IdleDoor1Close
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: door_iris_007_heightcheat_lower
+        weight: 1
+      - path: door_iris_cheatblockupper
+        weight: 1
+      - path: door_iris_cheatblockupper_001
+        weight: 1
+      - path: door_iris_frame
+        weight: 1
+      - path: door_iris_heightcheat_upper
+        weight: 1
+      - path: Empty
+        weight: 1
+      - path: Empty/door_iris_005
+        weight: 1
+      - path: Empty_001
+        weight: 1
+      - path: Empty_001/door_iris_004
+        weight: 1
+      - path: Empty_002
+        weight: 1
+      - path: Empty_002/door_iris_003
+        weight: 1
+      - path: Empty_003
+        weight: 1
+      - path: Empty_003/door_iris_002
+        weight: 1
+      - path: Empty_004
+        weight: 1
+      - path: Empty_004/door_iris_006
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Door1Open
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 19
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: door_iris_007_heightcheat_lower
+        weight: 1
+      - path: door_iris_cheatblockupper
+        weight: 1
+      - path: door_iris_cheatblockupper_001
+        weight: 1
+      - path: door_iris_frame
+        weight: 1
+      - path: door_iris_heightcheat_upper
+        weight: 1
+      - path: Empty
+        weight: 1
+      - path: Empty/door_iris_005
+        weight: 1
+      - path: Empty_001
+        weight: 1
+      - path: Empty_001/door_iris_004
+        weight: 1
+      - path: Empty_002
+        weight: 1
+      - path: Empty_002/door_iris_003
+        weight: 1
+      - path: Empty_003
+        weight: 1
+      - path: Empty_003/door_iris_002
+        weight: 1
+      - path: Empty_004
+        weight: 1
+      - path: Empty_004/door_iris_006
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Door1Close
+      takeName: Default Take
+      firstFrame: 23
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: door_iris_007_heightcheat_lower
+        weight: 1
+      - path: door_iris_cheatblockupper
+        weight: 1
+      - path: door_iris_cheatblockupper_001
+        weight: 1
+      - path: door_iris_frame
+        weight: 1
+      - path: door_iris_heightcheat_upper
+        weight: 1
+      - path: Empty
+        weight: 1
+      - path: Empty/door_iris_005
+        weight: 1
+      - path: Empty_001
+        weight: 1
+      - path: Empty_001/door_iris_004
+        weight: 1
+      - path: Empty_002
+        weight: 1
+      - path: Empty_002/door_iris_003
+        weight: 1
+      - path: Empty_003
+        weight: 1
+      - path: Empty_003/door_iris_002
+        weight: 1
+      - path: Empty_004
+        weight: 1
+      - path: Empty_004/door_iris_006
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
