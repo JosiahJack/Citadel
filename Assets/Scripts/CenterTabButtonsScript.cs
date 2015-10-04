@@ -32,6 +32,8 @@ public class CenterTabButtonsScript : MonoBehaviour {
 			TabManager.HardwareTab.SetActive(false);
 			TabManager.GeneralTab.SetActive(false);
 			TabManager.SoftwareTab.SetActive(false);
+			TabManager.EmailTab.SetActive(false);
+			TabManager.DataReaderContentTab.SetActive(false);
 			HardwareTabButton.image.overrideSprite = MFDSprite;
 			GeneralTabButton.image.overrideSprite = MFDSprite;
 			SoftwareTabButton.image.overrideSprite = MFDSprite;
@@ -52,6 +54,8 @@ public class CenterTabButtonsScript : MonoBehaviour {
 			TabManager.HardwareTab.SetActive(true);
 			TabManager.GeneralTab.SetActive(false);
 			TabManager.SoftwareTab.SetActive(false);
+			TabManager.EmailTab.SetActive(false);
+			TabManager.DataReaderContentTab.SetActive(false);
 			MainTabButton.image.overrideSprite = MFDSprite;
 			GeneralTabButton.image.overrideSprite = MFDSprite;
 			SoftwareTabButton.image.overrideSprite = MFDSprite;
@@ -72,6 +76,8 @@ public class CenterTabButtonsScript : MonoBehaviour {
 			TabManager.HardwareTab.SetActive(false);
 			TabManager.GeneralTab.SetActive(true);
 			TabManager.SoftwareTab.SetActive(false);
+			TabManager.EmailTab.SetActive(false);
+			TabManager.DataReaderContentTab.SetActive(false);
 			MainTabButton.image.overrideSprite = MFDSprite;
 			HardwareTabButton.image.overrideSprite = MFDSprite;
 			SoftwareTabButton.image.overrideSprite = MFDSprite;
@@ -92,10 +98,56 @@ public class CenterTabButtonsScript : MonoBehaviour {
 			TabManager.HardwareTab.SetActive(false);
 			TabManager.GeneralTab.SetActive(false);
 			TabManager.SoftwareTab.SetActive(true);
+			TabManager.EmailTab.SetActive(false);
+			TabManager.DataReaderContentTab.SetActive(false);
 			MainTabButton.image.overrideSprite = MFDSprite;
 			HardwareTabButton.image.overrideSprite = MFDSprite;
 			GeneralTabButton.image.overrideSprite = MFDSprite;
 			curTab = 3;
+			break;
+		case 4:
+			if (curTab == 4) {
+				if (TabManager.EmailTab.activeSelf == true) {
+					TabManager.EmailTab.SetActive(false);
+					break;
+				} else {
+					TabManager.EmailTab.SetActive(true);
+					break;
+				}
+			}
+			SoftwareTabButton.image.overrideSprite = MFDSpriteSelected;
+			TabManager.MainTab.SetActive(false);
+			TabManager.HardwareTab.SetActive(false);
+			TabManager.GeneralTab.SetActive(false);
+			TabManager.SoftwareTab.SetActive(false);
+			TabManager.EmailTab.SetActive(true);
+			TabManager.DataReaderContentTab.SetActive(false);
+			MainTabButton.image.overrideSprite = MFDSprite;
+			HardwareTabButton.image.overrideSprite = MFDSprite;
+			GeneralTabButton.image.overrideSprite = MFDSprite;
+			curTab = 4;
+			break;
+		case 5:
+			if (curTab == 5) {
+				if (TabManager.DataReaderContentTab.activeSelf == true) {
+					TabManager.DataReaderContentTab.SetActive(false);
+					break;
+				} else {
+					TabManager.DataReaderContentTab.SetActive(true);
+					break;
+				}
+			}
+			SoftwareTabButton.image.overrideSprite = MFDSpriteSelected;
+			TabManager.MainTab.SetActive(false);
+			TabManager.HardwareTab.SetActive(false);
+			TabManager.GeneralTab.SetActive(false);
+			TabManager.SoftwareTab.SetActive(false);
+			TabManager.DataReaderContentTab.SetActive(true);
+			TabManager.EmailTab.SetActive(false);
+			MainTabButton.image.overrideSprite = MFDSprite;
+			HardwareTabButton.image.overrideSprite = MFDSprite;
+			GeneralTabButton.image.overrideSprite = MFDSprite;
+			curTab = 5;
 			break;
 		}
 	}
