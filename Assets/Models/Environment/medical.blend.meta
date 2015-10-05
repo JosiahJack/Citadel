@@ -79,6 +79,7 @@ ModelImporter:
     100142: 1_MedicalLevel_med1_9
     100144: 1_MedicalLevel_med2_8
     100146: 1_MedicalLevel_stor1_7
+    100148: 1_MedicalSecretDoor2Frame_001
     400000: 1_MedBridge1
     400002: 1_MedBridge2
     400004: 1_MedButton1
@@ -153,6 +154,7 @@ ModelImporter:
     400142: 1_MedicalLevel_med1_9
     400144: 1_MedicalLevel_med2_8
     400146: 1_MedicalLevel_stor1_7
+    400148: 1_MedicalSecretDoor2Frame_001
     2300000: 1_MedBridge1
     2300002: 1_MedBridge2
     2300004: 1_MedButton1
@@ -226,6 +228,7 @@ ModelImporter:
     2300140: 1_MedicalLevel_med1_9
     2300142: 1_MedicalLevel_med2_8
     2300144: 1_MedicalLevel_stor1_7
+    2300146: 1_MedicalSecretDoor2Frame_001
     3300000: 1_MedBridge1
     3300002: 1_MedBridge2
     3300004: 1_MedButton1
@@ -299,6 +302,7 @@ ModelImporter:
     3300140: 1_MedicalLevel_med1_9
     3300142: 1_MedicalLevel_med2_8
     3300144: 1_MedicalLevel_stor1_7
+    3300146: 1_MedicalSecretDoor2Frame_001
     4300000: 1_MedicalLevel_001
     4300002: 1_MedicalLevel_NEMaintShafts
     4300004: 1_MedicalLevel_MagpulseArea
@@ -372,6 +376,7 @@ ModelImporter:
     4300140: 1_MedicalLevel_med2_8
     4300142: 1_MedicalLevel_stor1_7
     4300144: 1_MedicalLevel_med1_6
+    4300146: 1_MedicalSecretDoor2Frame_001
     6400000: 1_MedBridge1
     6400002: 1_MedBridge2
     6400004: 1_MedButton1
@@ -445,6 +450,7 @@ ModelImporter:
     6400140: 1_MedicalLevel_med1_9
     6400142: 1_MedicalLevel_med2_8
     6400144: 1_MedicalLevel_stor1_7
+    6400146: 1_MedicalSecretDoor2Frame_001
     7400000: Default Take
     9500000: //RootNode
   materials:
