@@ -17,6 +17,10 @@ public class TabButtonsScript : MonoBehaviour {
 	
 	public void TabButtonClick (int tabNum) {
 		TabSFX.PlayOneShot(TabSFXClip);
+		TabButtonClickSilent(tabNum);
+	}
+
+	public void TabButtonClickSilent (int tabNum) {
 		switch (tabNum) {
 		case 0:
 			if (curTab == 0) {

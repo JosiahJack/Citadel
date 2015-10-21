@@ -4,6 +4,7 @@ using System.Collections;
 
 public class WeaponButtonScript : MonoBehaviour {
 	[SerializeField] private GameObject iconman;
+	[SerializeField] private GameObject ammoiconman;
 	[SerializeField] private GameObject weptextman;
 	[SerializeField] private int WepButtonIndex;
 	[SerializeField] private AudioSource SFX = null; // assign in the editor
@@ -14,6 +15,7 @@ public class WeaponButtonScript : MonoBehaviour {
 	private Vector3 transMouse;
 	private Matrix4x4 m;
 	private Matrix4x4 inv;
+	private bool alternateAmmo = false;
 
 	public void PtrEnter () {
 		GUIState.isBlocking = true;
@@ -29,6 +31,7 @@ public class WeaponButtonScript : MonoBehaviour {
 			return;
 
 		SFX.PlayOneShot(SFXClip);
+		ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, alternateAmmo);
 		iconman.GetComponent<WeaponIconManager>().SetWepIcon(invslot);    //Set weapon icon for MFD
 		weptextman.GetComponent<WeaponTextManager>().SetWepText(invslot); //Set weapon text for MFD
 		WeaponCurrent.Instance.weaponCurrent = WepButtonIndex;				//Set current weapon

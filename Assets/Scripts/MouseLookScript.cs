@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class MouseLookScript : MonoBehaviour {
@@ -7,7 +8,13 @@ public class MouseLookScript : MonoBehaviour {
 	public Vector2 cursorHotspot;
 	public float lookSensitivity = 5;
 	public GameObject tabControl;
+	public Text dataTabHeader;
+	public Text dataTabNoItemsText;
+	public GameObject searchFX;
 	public float lookSmoothDamp = 0.1f;
+	public AudioSource SFXSource;
+	public AudioClip SearchSFX;
+	public GameObject searchOriginContainer;
 	private float yRotationV;
 	private float xRotationV;
 	private float zRotationV;
@@ -59,73 +66,75 @@ public class MouseLookScript : MonoBehaviour {
 		
 		if(Input.GetKeyDown(KeyCode.Tab))
 			ToggleInventoryMode();
-		
-		if(Input.GetMouseButtonDown(1)) {
-			RaycastHit hit = new RaycastHit();
-			if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, 4.5f)) {
-				// TIP: Use Camera.main.ViewportPointToRay for center of screen
-				if (hit.collider == null)
-					return;
-				
-				// Check if object is usable and then use it
-				if (hit.collider.tag == "Usable") {
-					hit.transform.SendMessageUpwards("Use");
-					return;
-				}
-				
-				if (hit.collider.tag == "Searchable") {
-					currentSearchItem = hit.collider.gameObject;
-					SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
-					return;
-				}
-				
-				
-				Renderer rendererObj = hit.collider.GetComponent<MeshRenderer>();
-				if (rendererObj != null && rendererObj.material != null && rendererObj.material.mainTexture != null) {
-					MeshCollider meshCollider = hit.collider as MeshCollider;
-					if (meshCollider == null || meshCollider.sharedMesh == null)
+
+		if (!GUIState.isBlocking) {
+			if(Input.GetMouseButtonDown(1)) {
+				RaycastHit hit = new RaycastHit();
+				if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, 4.5f)) {
+					// TIP: Use Camera.main.ViewportPointToRay for center of screen
+					if (hit.collider == null)
 						return;
-					
-					Mesh mesh = hit.collider.gameObject.GetComponent<MeshFilter>().sharedMesh;
-					int[] submeshTris;
-					int[] hittedTriangle = new int[3];
-					int subMeshIndex = -1;
-					mlookstring1 = "hit.triangleIndex = " + hit.triangleIndex.ToString();
-					hittedTriangle[0] = mesh.triangles[hit.triangleIndex * 3];
-					hittedTriangle[1] = mesh.triangles[hit.triangleIndex * 3 + 1];
-					hittedTriangle[2] = mesh.triangles[hit.triangleIndex * 3 + 2];
-					for(int i=0;i<mesh.subMeshCount;i++) {
-						submeshTris = mesh.GetTriangles(i);
-						for (int j=0;j<submeshTris.Length;j += 3) {
-							if(submeshTris[j] == hittedTriangle[0] && submeshTris[j+1] == hittedTriangle[1] && submeshTris[j+2] == hittedTriangle[2]) {
-								subMeshIndex = i;
-								mlookstring2 = "Submesh Index = " + subMeshIndex.ToString() + "\n";
-								break;
-							}
-						}
-						if (subMeshIndex != -1)
-							break;
-					}
-					//Draw green lines on edges of hit tri
-					//Vector3 p0 = mesh.vertices[mesh.triangles[(hit.triangleIndex * 3) + 0]];
-					//Vector3 p1 = mesh.vertices[mesh.triangles[(hit.triangleIndex * 3) + 1]];
-					//Vector3 p2 = mesh.vertices[mesh.triangles[(hit.triangleIndex * 3) + 2]];
-					//Transform hitTransform = hit.collider.gameObject.transform;
-					//p0 = hitTransform.TransformPoint(p0);
-					//p1 = hitTransform.TransformPoint(p1);
-					//p2 = hitTransform.TransformPoint(p2);
-					//Debug.DrawLine(p0, p1, Color.green, 999, false);
-					//Debug.DrawLine(p1, p2, Color.green, 999, false);
-					//Debug.DrawLine(p2, p0, Color.green, 999, false);
-					
-					//Tell player that we can't use "suchnsuch" wall
-					mlookstring3 = "Can't use " + rendererObj.materials[subMeshIndex].name + "\n";
-				}
-				// Draws a line from the camera to the raycast hit.point
-				//Debug.DrawLine(transform.position, hit.point, Color.green, 999, false);
 				
-				//mlookstring4 = rendererObj.name;
-				print("MouseLookScript: " + mlookstring1 + " " + mlookstring2 + " " + mlookstring3 + " " + mlookstring4 + "\n"); //rendererObj.name + "\n");
+					// Check if object is usable and then use it
+					if (hit.collider.tag == "Usable") {
+						hit.transform.SendMessageUpwards("Use");
+						return;
+					}
+				
+					if (hit.collider.tag == "Searchable") {
+						currentSearchItem = hit.collider.gameObject;
+						SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
+						return;
+					}
+				
+				
+					Renderer rendererObj = hit.collider.GetComponent<MeshRenderer>();
+					if (rendererObj != null && rendererObj.material != null && rendererObj.material.mainTexture != null) {
+						MeshCollider meshCollider = hit.collider as MeshCollider;
+						if (meshCollider == null || meshCollider.sharedMesh == null)
+							return;
+					
+						Mesh mesh = hit.collider.gameObject.GetComponent<MeshFilter>().sharedMesh;
+						int[] submeshTris;
+						int[] hittedTriangle = new int[3];
+						int subMeshIndex = -1;
+						mlookstring1 = "hit.triangleIndex = " + hit.triangleIndex.ToString();
+						hittedTriangle[0] = mesh.triangles[hit.triangleIndex * 3];
+						hittedTriangle[1] = mesh.triangles[hit.triangleIndex * 3 + 1];
+						hittedTriangle[2] = mesh.triangles[hit.triangleIndex * 3 + 2];
+						for(int i=0;i<mesh.subMeshCount;i++) {
+							submeshTris = mesh.GetTriangles(i);
+							for (int j=0;j<submeshTris.Length;j += 3) {
+								if(submeshTris[j] == hittedTriangle[0] && submeshTris[j+1] == hittedTriangle[1] && submeshTris[j+2] == hittedTriangle[2]) {
+									subMeshIndex = i;
+									mlookstring2 = "Submesh Index = " + subMeshIndex.ToString() + "\n";
+									break;
+								}
+							}
+							if (subMeshIndex != -1)
+								break;
+						}
+						//Draw green lines on edges of hit tri
+						//Vector3 p0 = mesh.vertices[mesh.triangles[(hit.triangleIndex * 3) + 0]];
+						//Vector3 p1 = mesh.vertices[mesh.triangles[(hit.triangleIndex * 3) + 1]];
+						//Vector3 p2 = mesh.vertices[mesh.triangles[(hit.triangleIndex * 3) + 2]];
+						//Transform hitTransform = hit.collider.gameObject.transform;
+						//p0 = hitTransform.TransformPoint(p0);
+						//p1 = hitTransform.TransformPoint(p1);
+						//p2 = hitTransform.TransformPoint(p2);
+						//Debug.DrawLine(p0, p1, Color.green, 999, false);
+						//Debug.DrawLine(p1, p2, Color.green, 999, false);
+						//Debug.DrawLine(p2, p0, Color.green, 999, false);
+					
+						//Tell player that we can't use "suchnsuch" wall
+						mlookstring3 = "Can't use " + rendererObj.materials[subMeshIndex].name + "\n";
+					}
+					// Draws a line from the camera to the raycast hit.point
+					//Debug.DrawLine(transform.position, hit.point, Color.green, 999, false);
+				
+					//mlookstring4 = rendererObj.name;
+					print("MouseLookScript: " + mlookstring1 + " " + mlookstring2 + " " + mlookstring3 + " " + mlookstring4 + "\n"); //rendererObj.name + "\n");
+				}
 			}
 		}
 	}
@@ -155,8 +164,34 @@ public class MouseLookScript : MonoBehaviour {
 		//	}
 		//}
 
+		// Play search sound
+		SFXSource.PlayOneShot(SearchSFX);
+
+		// Enable search scaling box effect
+		searchOriginContainer.GetComponent<RectTransform>().position = Input.mousePosition;
+		searchFX.SetActive(true);
+		searchFX.GetComponent<Animation>().Play();
+
+		// Set header text on data tab
+		dataTabHeader.text = currentSearchItem.GetComponent<SearchableItem>().objectName;
+
+		// Turn off the text that displays "No Items" by default
+		dataTabNoItemsText.enabled = false;
+
+		int numberFoundContents = 0;
+
+		for (int i=currentSearchItem.GetComponent<SearchableItem>().numSlots - 1;i>=0;i--) {
+			if (currentSearchItem.GetComponent<SearchableItem>().contents[i] != null)
+				numberFoundContents++;
+		}
+
+		if (numberFoundContents <=0) {
+			dataTabNoItemsText.enabled = true;
+		}
+
+		// Change last active MFD tab (RH or LH depending on which was used last) to Data tab to show search contents
 		if (tabControl.GetComponent<TabButtonsScript>().curTab != 4) {
-			tabControl.GetComponent<TabButtonsScript>().TabButtonClick(4);
+			tabControl.GetComponent<TabButtonsScript>().TabButtonClickSilent(4);
 		}
 	}
 	

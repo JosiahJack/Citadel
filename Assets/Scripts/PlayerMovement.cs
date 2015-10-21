@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
@@ -35,6 +36,9 @@ public class PlayerMovement : MonoBehaviour {
 	public float damageSpeed = 11.72f;
 	public float fallDamage = 75f;
 	public bool gravliftState = false;
+	public GameObject automapContainer;
+	public Texture2D automapMaskTex;	
+	private Sprite automapMaskSprite;
 	//[HideInInspector]
 	public bool CheatWallSticky;
 	private float walkDeaccelerationVolx;
@@ -52,8 +56,6 @@ public class PlayerMovement : MonoBehaviour {
 	private MouseLookScript mlookScript;
 	private float fallDamageSpeed = 11.72f;
 	private Vector3 oldVelocity;
-
-
 	
 	void  Awake (){
 		isCapsLockOn = false;
@@ -281,6 +283,9 @@ public class PlayerMovement : MonoBehaviour {
 		RigidbodySetVelocityX(rbody, horizontalMovement.x);
 		RigidbodySetVelocityZ(rbody, horizontalMovement.y);
 		//rbody.velocity.y = verticalMovement;
+		if (horizontalMovement.x > 0 || horizontalMovement.y > 0) {
+			UpdateAutomapMask();
+		}
 		verticalMovement = rbody.velocity.y;
 		if (verticalMovement > maxVerticalSpeed) {
 			verticalMovement = maxVerticalSpeed;
@@ -350,6 +355,14 @@ public class PlayerMovement : MonoBehaviour {
 		if (CheatWallSticky == false || gravliftState) {
 			grounded = false;
 		}
+	}
+
+	public void UpdateAutomapMask () {
+		Texture2D tex = new Texture2D(722,658);
+		tex.SetPixels(automapMaskTex.GetPixels(0,0,722,658), 0);
+		tex.Apply();
+		automapMaskSprite = Sprite.Create(tex, new Rect(0, 0, 722, 658), new Vector2(50,50));
+		automapContainer.GetComponent<Image>().sprite = automapMaskSprite;
 	}
 /*
 	void OnCollisionEnter (Collision collision) {

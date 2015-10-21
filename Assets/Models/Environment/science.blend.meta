@@ -74,6 +74,9 @@ ModelImporter:
     100132: bsp_model_403
     100134: //RootNode
     100136: 2_ResearchLevel_001
+    100138: 2_ResearchLevel_002
+    100140: 2_ResearchLevel_movingplat1
+    100142: 2_ResearchLevel_003
     400000: 2_ResearchLevel
     400002: bsp_model_131
     400004: bsp_model_132
@@ -143,6 +146,9 @@ ModelImporter:
     400132: bsp_model_403
     400134: //RootNode
     400136: 2_ResearchLevel_001
+    400138: 2_ResearchLevel_002
+    400140: 2_ResearchLevel_movingplat1
+    400142: 2_ResearchLevel_003
     2300000: 2_ResearchLevel
     2300002: bsp_model_131
     2300004: bsp_model_132
@@ -211,6 +217,9 @@ ModelImporter:
     2300130: bsp_model_402
     2300132: bsp_model_403
     2300134: 2_ResearchLevel_001
+    2300136: 2_ResearchLevel_002
+    2300138: 2_ResearchLevel_movingplat1
+    2300140: 2_ResearchLevel_003
     3300000: 2_ResearchLevel
     3300002: bsp_model_131
     3300004: bsp_model_132
@@ -279,6 +288,9 @@ ModelImporter:
     3300130: bsp_model_402
     3300132: bsp_model_403
     3300134: 2_ResearchLevel_001
+    3300136: 2_ResearchLevel_002
+    3300138: 2_ResearchLevel_movingplat1
+    3300140: 2_ResearchLevel_003
     4300000: 2_ResearchLevel
     4300002: bsp_model_403
     4300004: bsp_model_402
@@ -347,6 +359,9 @@ ModelImporter:
     4300130: bsp_model_132
     4300132: bsp_model_131
     4300134: 2_ResearchLevel_001
+    4300136: 2_ResearchLevel_002
+    4300138: 2_ResearchLevel_movingplat1
+    4300140: 2_ResearchLevel_003
     6400000: 2_ResearchLevel
     6400002: bsp_model_131
     6400004: bsp_model_132
@@ -415,6 +430,9 @@ ModelImporter:
     6400130: bsp_model_402
     6400132: bsp_model_403
     6400134: 2_ResearchLevel_001
+    6400136: 2_ResearchLevel_002
+    6400138: 2_ResearchLevel_movingplat1
+    6400140: 2_ResearchLevel_003
     7400000: Default Take
     9500000: //RootNode
   materials:
