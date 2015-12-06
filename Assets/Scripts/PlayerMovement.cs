@@ -37,7 +37,8 @@ public class PlayerMovement : MonoBehaviour {
 	public float fallDamage = 75f;
 	public bool gravliftState = false;
 	public GameObject automapContainer;
-	public Texture2D automapMaskTex;	
+	public Texture2D automapMaskTex;
+	public float automapFactor = 0.02f;
 	private Sprite automapMaskSprite;
 	//[HideInInspector]
 	public bool CheatWallSticky;
@@ -283,8 +284,10 @@ public class PlayerMovement : MonoBehaviour {
 		RigidbodySetVelocityX(rbody, horizontalMovement.x);
 		RigidbodySetVelocityZ(rbody, horizontalMovement.y);
 		//rbody.velocity.y = verticalMovement;
-		if (horizontalMovement.x > 0 || horizontalMovement.y > 0) {
-			UpdateAutomapMask();
+		if (horizontalMovement.x != 0 || horizontalMovement.y != 0) {
+			automapContainer.GetComponent<ScrollRect>().verticalNormalizedPosition += horizontalMovement.y * automapFactor * (-1);
+			automapContainer.GetComponent<ScrollRect>().horizontalNormalizedPosition += horizontalMovement.x * automapFactor * (-1);
+			//UpdateAutomap();
 		}
 		verticalMovement = rbody.velocity.y;
 		if (verticalMovement > maxVerticalSpeed) {
@@ -357,12 +360,13 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	}
 
-	public void UpdateAutomapMask () {
-		Texture2D tex = new Texture2D(722,658);
-		tex.SetPixels(automapMaskTex.GetPixels(0,0,722,658), 0);
-		tex.Apply();
-		automapMaskSprite = Sprite.Create(tex, new Rect(0, 0, 722, 658), new Vector2(50,50));
-		automapContainer.GetComponent<Image>().sprite = automapMaskSprite;
+	public void UpdateAutomap () {
+		//Texture2D tex = new Texture2D(512,512);  // 722,658
+		//tex.SetPixels(automapMaskTex.GetPixels(0,0,512,512), 0);
+		//tex.Apply();
+		//automapMaskSprite = Sprite.Create(tex, new Rect(0, 0, 512, 512), new Vector2(50,50));
+		//automapContainer.GetComponent<Image>().sprite = automapMaskSprite;
+
 	}
 /*
 	void OnCollisionEnter (Collision collision) {

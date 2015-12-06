@@ -9,20 +9,38 @@ ModelImporter:
     100002: bsp_model_163
     100004: bsp_model_164
     100006: //RootNode
+    100008: door6_frame
+    100010: door6_lh
+    100012: door6_rh
     400000: 2_ResearchLevel_001
     400002: bsp_model_163
     400004: bsp_model_164
     400006: //RootNode
+    400008: door6_frame
+    400010: door6_lh
+    400012: door6_rh
     2300000: 2_ResearchLevel_001
     2300002: bsp_model_163
     2300004: bsp_model_164
+    2300006: door6_frame
+    2300008: door6_lh
+    2300010: door6_rh
     3300000: 2_ResearchLevel_001
     3300002: bsp_model_163
     3300004: bsp_model_164
+    3300006: door6_frame
+    3300008: door6_lh
+    3300010: door6_rh
     4300000: 2_ResearchLevel_001
     4300002: bsp_model_164
     4300004: bsp_model_163
-    7400000: Default Take
+    4300006: door6_frame
+    4300008: door6_lh
+    4300010: door6_rh
+    7400000: Door1Open
+    7400002: Door1Close
+    7400004: IdleOpen
+    7400006: IdleClosed
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -43,7 +61,143 @@ ModelImporter:
     animationScaleError: .5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Door1Open
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 24
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: door6_frame
+        weight: 1
+      - path: door6_lh
+        weight: 1
+      - path: door6_rh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Door1Close
+      takeName: Default Take
+      firstFrame: 25
+      lastFrame: 46
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: door6_frame
+        weight: 1
+      - path: door6_lh
+        weight: 1
+      - path: door6_rh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: IdleOpen
+      takeName: Default Take
+      firstFrame: 24
+      lastFrame: 25
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: door6_frame
+        weight: 1
+      - path: door6_lh
+        weight: 1
+      - path: door6_rh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: IdleClosed
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: door6_frame
+        weight: 1
+      - path: door6_lh
+        weight: 1
+      - path: door6_rh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
     isReadable: 1
   meshes:
     lODScreenPercentages: []

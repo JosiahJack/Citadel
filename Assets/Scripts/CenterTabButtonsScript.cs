@@ -8,6 +8,7 @@ public class CenterTabButtonsScript : MonoBehaviour {
 	[SerializeField] private Button HardwareTabButton = null; // assign in the editor
 	[SerializeField] private Button GeneralTabButton = null; // assign in the editor
 	[SerializeField] private Button SoftwareTabButton = null; // assign in the editor
+
 	[SerializeField] private Sprite MFDSprite = null; // assign in the editor
 	[SerializeField] private Sprite MFDSpriteSelected = null; // assign in the editor
 	[SerializeField] private AudioSource TabSFX = null; // assign in the editor
@@ -32,6 +33,8 @@ public class CenterTabButtonsScript : MonoBehaviour {
 			TabManager.HardwareTab.SetActive(false);
 			TabManager.GeneralTab.SetActive(false);
 			TabManager.SoftwareTab.SetActive(false);
+			//TabManager.EmailTab.SetActive(false);
+			//TabManager.DataReaderContentTab.SetActive(false);
 			HardwareTabButton.image.overrideSprite = MFDSprite;
 			GeneralTabButton.image.overrideSprite = MFDSprite;
 			SoftwareTabButton.image.overrideSprite = MFDSprite;
