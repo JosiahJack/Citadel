@@ -15,7 +15,7 @@ public class Door1 : MonoBehaviour {
 		SFX = GetComponent<AudioSource>();
 	}
 
-	void Use () {
+	void Use (GameObject owner) {
 		if (doorOpen == 1) {
 			doorOpen = 2; //Closing state
 			anim.Play("DoorClose");

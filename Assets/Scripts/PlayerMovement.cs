@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
@@ -92,7 +93,7 @@ public class PlayerMovement : MonoBehaviour {
 		// 4 = Prone
 		// 5 = Proning down in process
 		// 6 = Proning up to crouch in process
-		
+
 		if (Input.GetKeyDown(KeyCode.CapsLock)) {
 			isCapsLockOn = !isCapsLockOn;
 		}
@@ -235,6 +236,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void  FixedUpdate (){
+
 		// Crouch
 		//transform.localScale.y = new Vector3(0,originalLocalScaleY * currentCrouchRatio,0);
 		LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));
@@ -285,8 +287,8 @@ public class PlayerMovement : MonoBehaviour {
 		RigidbodySetVelocityZ(rbody, horizontalMovement.y);
 		//rbody.velocity.y = verticalMovement;
 		if (horizontalMovement.x != 0 || horizontalMovement.y != 0) {
-			automapContainer.GetComponent<ScrollRect>().verticalNormalizedPosition += horizontalMovement.y * automapFactor * (-1);
-			automapContainer.GetComponent<ScrollRect>().horizontalNormalizedPosition += horizontalMovement.x * automapFactor * (-1);
+			//automapContainer.GetComponent<ScrollRect>().verticalNormalizedPosition += horizontalMovement.y * automapFactor * (-1);
+			//automapContainer.GetComponent<ScrollRect>().horizontalNormalizedPosition += horizontalMovement.x * automapFactor * (-1);
 			//UpdateAutomap();
 		}
 		verticalMovement = rbody.velocity.y;

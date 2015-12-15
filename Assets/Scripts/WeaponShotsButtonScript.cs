@@ -26,7 +26,7 @@ public class WeaponShotsButtonScript : MonoBehaviour {
 	}
 
 	void WeaponInvClick () {
-		invslot = WeaponText.Instance.weaponInventoryIndices[WepButtonIndex];
+		invslot = WeaponText.WepTextInstance.weaponInventoryIndices[WepButtonIndex];
 		if (invslot < 0)
 			return;
 
@@ -34,7 +34,7 @@ public class WeaponShotsButtonScript : MonoBehaviour {
 		ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, alternateAmmo);
 		iconman.GetComponent<WeaponIconManager>().SetWepIcon(invslot);    //Set weapon icon for MFD
 		weptextman.GetComponent<WeaponTextManager>().SetWepText(invslot); //Set weapon text for MFD
-		WeaponCurrent.Instance.weaponCurrent = WepButtonIndex;				//Set current weapon
+		WeaponCurrent.WepInstance.weaponCurrent = WepButtonIndex;				//Set current weapon
 	}
 
 	[SerializeField] private Button WepButton = null; // assign in the editor

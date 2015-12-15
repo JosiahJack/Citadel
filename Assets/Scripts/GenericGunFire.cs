@@ -28,7 +28,7 @@ public class GenericGunFire : MonoBehaviour {
 			}
 		}*/
 
-		if (!GUIState.isBlocking) {
+		if (!GUIState.isBlocking && !playerCamera.GetComponent<MouseLookScript>().holdingObject) {
 			if (isFullAuto) {
 				if (Input.GetButton("Fire1")) {
 					if (waitTilNextFire <= Time.time) {

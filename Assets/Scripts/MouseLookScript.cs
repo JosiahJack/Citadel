@@ -1,27 +1,41 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 using System.Collections;
 
 public class MouseLookScript : MonoBehaviour {
+	[Tooltip("Shows current state of Inventory Mode (Don't set yourself!)")]
 	public bool inventoryMode;
+	[Tooltip("Shows current state of Holding an Object (Don't set yourself!)")]
+	public bool holdingObject;
+	[Tooltip("The current cursor texture (Developer sets default)")]
 	public Texture2D cursorTexture;
+	[HideInInspector]
 	public Vector2 cursorHotspot;
+	[Tooltip("Mouselook sensitivity (Developer sets default)")]
 	public float lookSensitivity = 5;
+	[Tooltip("Game object that houses the MFD tabs")]
 	public GameObject tabControl;
+	[Tooltip("Text at the top of the data tab in the MFD")]
 	public Text dataTabHeader;
+	[Tooltip("Text in the data tab in the MFD that displays when searching an object containing no items")]
 	public Text dataTabNoItemsText;
 	public GameObject searchFX;
-	public float lookSmoothDamp = 0.1f;
+	public float lookSmoothDamp = 0.10f;
 	public AudioSource SFXSource;
 	public AudioClip SearchSFX;
 	public GameObject searchOriginContainer;
-	private float yRotationV;
-	private float xRotationV;
-	private float zRotationV;
+	public float tossOffset = 0.10f;
+	public float tossForce = 200f;
+	[HideInInspector]
+	public int heldObjectIndex;
 	[HideInInspector]
 	public float yRotation;
 	private float xRotation;
 	private float zRotation;
+	private float yRotationV;
+	private float xRotationV;
+	private float zRotationV;
 	private float currentZRotation;
 	private string mlookstring1 = "";
 	private string mlookstring2 = "";
@@ -29,6 +43,7 @@ public class MouseLookScript : MonoBehaviour {
 	private string mlookstring4 = "";
 	private GameObject currentSearchItem;
 	private Camera playerCamera;
+	private GameObject heldObject;
 	
 	//float headbobSpeed = 1;
 	//float headbobStepCounter;
@@ -41,16 +56,16 @@ public class MouseLookScript : MonoBehaviour {
 	//parentLastPos = transform.parent.position;
 	//}
 	
-	void  Start (){
-		cursorHotspot = new Vector2 (cursorTexture.width/2, cursorTexture.height/2);
-		Cursor.SetCursor(cursorTexture, cursorHotspot, CursorMode.Auto);
-		Cursor.visible = true;
+	void Start (){
+		ResetCursor();
 		Cursor.lockState = CursorLockMode.None;
 		inventoryMode = true;  // Start with inventory mode turned on
 		playerCamera = GetComponent<Camera>();
+		holdingObject = false;
+		heldObjectIndex = -1;
 	}
 	
-	void  Update (){
+	void Update (){
 		//if (transform.parent.GetComponent<PlayerMovement>().grounded)
 		//headbobStepCounter += (Vector3.Distance(parentLastPos, transform.parent.position) * headbobSpeed);
 		
@@ -69,77 +84,161 @@ public class MouseLookScript : MonoBehaviour {
 
 		if (!GUIState.isBlocking) {
 			if(Input.GetMouseButtonDown(1)) {
-				RaycastHit hit = new RaycastHit();
-				if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, 4.5f)) {
-					// TIP: Use Camera.main.ViewportPointToRay for center of screen
-					if (hit.collider == null)
-						return;
-				
-					// Check if object is usable and then use it
-					if (hit.collider.tag == "Usable") {
-						hit.transform.SendMessageUpwards("Use");
-						return;
-					}
-				
-					if (hit.collider.tag == "Searchable") {
-						currentSearchItem = hit.collider.gameObject;
-						SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
-						return;
-					}
-				
-				
-					Renderer rendererObj = hit.collider.GetComponent<MeshRenderer>();
-					if (rendererObj != null && rendererObj.material != null && rendererObj.material.mainTexture != null) {
-						MeshCollider meshCollider = hit.collider as MeshCollider;
-						if (meshCollider == null || meshCollider.sharedMesh == null)
+				if (!holdingObject) {
+					RaycastHit hit = new RaycastHit();
+					if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, 4.5f)) {
+						// TIP: Use Camera.main.ViewportPointToRay for center of screen
+						if (hit.collider == null)
 							return;
 					
-						Mesh mesh = hit.collider.gameObject.GetComponent<MeshFilter>().sharedMesh;
-						int[] submeshTris;
-						int[] hittedTriangle = new int[3];
-						int subMeshIndex = -1;
-						mlookstring1 = "hit.triangleIndex = " + hit.triangleIndex.ToString();
-						hittedTriangle[0] = mesh.triangles[hit.triangleIndex * 3];
-						hittedTriangle[1] = mesh.triangles[hit.triangleIndex * 3 + 1];
-						hittedTriangle[2] = mesh.triangles[hit.triangleIndex * 3 + 2];
-						for(int i=0;i<mesh.subMeshCount;i++) {
-							submeshTris = mesh.GetTriangles(i);
-							for (int j=0;j<submeshTris.Length;j += 3) {
-								if(submeshTris[j] == hittedTriangle[0] && submeshTris[j+1] == hittedTriangle[1] && submeshTris[j+2] == hittedTriangle[2]) {
-									subMeshIndex = i;
-									mlookstring2 = "Submesh Index = " + subMeshIndex.ToString() + "\n";
-									break;
-								}
-							}
-							if (subMeshIndex != -1)
-								break;
+						// Check if object is usable and then use it
+						if (hit.collider.tag == "Usable") {
+							hit.transform.SendMessageUpwards("Use", gameObject);
+							return;
 						}
-						//Draw green lines on edges of hit tri
-						//Vector3 p0 = mesh.vertices[mesh.triangles[(hit.triangleIndex * 3) + 0]];
-						//Vector3 p1 = mesh.vertices[mesh.triangles[(hit.triangleIndex * 3) + 1]];
-						//Vector3 p2 = mesh.vertices[mesh.triangles[(hit.triangleIndex * 3) + 2]];
-						//Transform hitTransform = hit.collider.gameObject.transform;
-						//p0 = hitTransform.TransformPoint(p0);
-						//p1 = hitTransform.TransformPoint(p1);
-						//p2 = hitTransform.TransformPoint(p2);
-						//Debug.DrawLine(p0, p1, Color.green, 999, false);
-						//Debug.DrawLine(p1, p2, Color.green, 999, false);
-						//Debug.DrawLine(p2, p0, Color.green, 999, false);
-					
-						//Tell player that we can't use "suchnsuch" wall
-						mlookstring3 = "Can't use " + rendererObj.materials[subMeshIndex].name + "\n";
-					}
-					// Draws a line from the camera to the raycast hit.point
-					//Debug.DrawLine(transform.position, hit.point, Color.green, 999, false);
 				
-					//mlookstring4 = rendererObj.name;
-					print("MouseLookScript: " + mlookstring1 + " " + mlookstring2 + " " + mlookstring3 + " " + mlookstring4 + "\n"); //rendererObj.name + "\n");
+						if (hit.collider.tag == "Searchable") {
+							currentSearchItem = hit.collider.gameObject;
+							SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
+							return;
+						}
+				
+				
+						Renderer rendererObj = hit.collider.GetComponent<MeshRenderer>();
+						if (rendererObj != null && rendererObj.material != null && rendererObj.material.mainTexture != null) {
+							MeshCollider meshCollider = hit.collider as MeshCollider;
+							if (meshCollider == null || meshCollider.sharedMesh == null)
+								return;
+					
+							Mesh mesh = hit.collider.gameObject.GetComponent<MeshFilter>().sharedMesh;
+							int[] submeshTris;
+							int[] hittedTriangle = new int[3];
+							int subMeshIndex = -1;
+							mlookstring1 = "hit.triangleIndex = " + hit.triangleIndex.ToString();
+							hittedTriangle[0] = mesh.triangles[hit.triangleIndex * 3];
+							hittedTriangle[1] = mesh.triangles[hit.triangleIndex * 3 + 1];
+							hittedTriangle[2] = mesh.triangles[hit.triangleIndex * 3 + 2];
+							for(int i=0;i<mesh.subMeshCount;i++) {
+								submeshTris = mesh.GetTriangles(i);
+								for (int j=0;j<submeshTris.Length;j += 3) {
+									if(submeshTris[j] == hittedTriangle[0] && submeshTris[j+1] == hittedTriangle[1] && submeshTris[j+2] == hittedTriangle[2]) {
+										subMeshIndex = i;
+										mlookstring2 = "Submesh Index = " + subMeshIndex.ToString() + "\n";
+										break;
+									}
+								}
+								if (subMeshIndex != -1)
+									break;
+							}
+							//Draw green lines on edges of hit tri
+							//Vector3 p0 = mesh.vertices[mesh.triangles[(hit.triangleIndex * 3) + 0]];
+							//Vector3 p1 = mesh.vertices[mesh.triangles[(hit.triangleIndex * 3) + 1]];
+							//Vector3 p2 = mesh.vertices[mesh.triangles[(hit.triangleIndex * 3) + 2]];
+							//Transform hitTransform = hit.collider.gameObject.transform;
+							//p0 = hitTransform.TransformPoint(p0);
+							//p1 = hitTransform.TransformPoint(p1);
+							//p2 = hitTransform.TransformPoint(p2);
+							//Debug.DrawLine(p0, p1, Color.green, 999, false);
+							//Debug.DrawLine(p1, p2, Color.green, 999, false);
+							//Debug.DrawLine(p2, p0, Color.green, 999, false);
+					
+							//Tell player that we can't use "suchnsuch" wall
+							mlookstring3 = "Can't use " + rendererObj.materials[subMeshIndex].name + "\n";
+						}
+						// Draws a line from the camera to the raycast hit.point
+						//Debug.DrawLine(transform.position, hit.point, Color.green, 999, false);
+				
+						//mlookstring4 = rendererObj.name;
+						print("MouseLookScript: " + mlookstring1 + " " + mlookstring2 + " " + mlookstring3 + " " + mlookstring4 + "\n"); //rendererObj.name + "\n");
+					}
+				} else {
+					print("We are holding an object!\n");
+					print("heldObjectIndex: " + heldObjectIndex + "\n");
+					// Drop the object we are holding
+					if (heldObjectIndex != -1) {
+						DropHeldItem();
+						ResetHeldItem();
+						ResetCursor();
+					}
+				}
+			}
+		} else {
+			//We are holding cursor over the GUI
+			if(Input.GetMouseButtonDown(1)) {
+				if (holdingObject) {
+					AddItemToInventory(heldObjectIndex); //TODO Does not exist yet
+					ResetHeldItem();
+					ResetCursor();
 				}
 			}
 		}
 	}
-	
-	void  ToggleInventoryMode (){
+
+	void AddItemToInventory (int index) {
+		switch (index) {
+		case 7:
+			GrenadeInventory.GrenadeInvInstance.grenAmmo[0]++;
+			break;
+		case 8:
+			GrenadeInventory.GrenadeInvInstance.grenAmmo[3]++;
+			break;
+		case 9:
+			GrenadeInventory.GrenadeInvInstance.grenAmmo[1]++;
+			break;
+		case 10:
+			GrenadeInventory.GrenadeInvInstance.grenAmmo[6]++;
+			break;
+		case 11:
+			GrenadeInventory.GrenadeInvInstance.grenAmmo[4]++;
+			break;
+		case 12:
+			GrenadeInventory.GrenadeInvInstance.grenAmmo[5]++;
+			break;
+		case 13:
+			GrenadeInventory.GrenadeInvInstance.grenAmmo[2]++;
+			break;
+		case 14:
+			PatchInventory.PatchInvInstance.patchCounts[2]++;
+			break;
+		case 15:
+			PatchInventory.PatchInvInstance.patchCounts[6]++;
+			break;
+		case 16:
+			PatchInventory.PatchInvInstance.patchCounts[5]++;
+			break;
+		case 17:
+			PatchInventory.PatchInvInstance.patchCounts[3]++;
+			break;
+		case 18:
+			PatchInventory.PatchInvInstance.patchCounts[4]++;
+			break;
+		case 19:
+			PatchInventory.PatchInvInstance.patchCounts[1]++;
+			break;
+		case 20:
+			PatchInventory.PatchInvInstance.patchCounts[0]++;
+			break;
+		}
+	}
+
+	void DropHeldItem() {
+		heldObject = Const.a.useableItems[heldObjectIndex];
+		GameObject tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Quaternion.identity) as GameObject;  //effect
+		tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
+	}
+
+	void ResetHeldItem() {
+		heldObjectIndex = -1;
+		holdingObject = false;
+	}
+
+	void ResetCursor () {
+		cursorHotspot = new Vector2 (cursorTexture.width/2, cursorTexture.height/2);
+		Cursor.SetCursor(cursorTexture, cursorHotspot, CursorMode.Auto);
+		Cursor.visible = true;
+	}
+
+	void ToggleInventoryMode (){
 		if (inventoryMode) {
 			Cursor.lockState = CursorLockMode.Locked;
 			inventoryMode = false;

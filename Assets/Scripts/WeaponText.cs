@@ -5,11 +5,11 @@ public class WeaponText : MonoBehaviour {
 	public string[] weaponInventoryText;
 	public int[] weaponInventoryIndices;
 	[SerializeField] public string[] weaponInvTextSource;
-	public static WeaponText Instance;
+	public static WeaponText WepTextInstance;
 	
 	void Awake() {
-		Instance = this;
-		Instance.weaponInventoryText = new string[]{"MAGPULSE","DARTGUN","PISTOL","PIPE","STUNGUN","",""};;
-		Instance.weaponInventoryIndices = new int[]{8,2,9,6,15,-1,-1};
+		WepTextInstance = this;
+		WepTextInstance.weaponInventoryText = new string[]{"MAGPULSE","DARTGUN","PISTOL","PIPE","STUNGUN","",""};;
+		WepTextInstance.weaponInventoryIndices = new int[]{8,2,9,6,15,-1,-1};
 	}
 }

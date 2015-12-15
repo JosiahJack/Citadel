@@ -1,0 +1,36 @@
+Mono path[0] = 'C:/Users/Josiah/Documents/GitHub/Citadel/TestCitadel_Data/Managed'
+Mono path[1] = 'C:/Users/Josiah/Documents/GitHub/Citadel/TestCitadel_Data/Mono'
+Mono config path = 'C:/Users/Josiah/Documents/GitHub/Citadel/TestCitadel_Data/Mono/etc'
+PlayerConnection initialized from C:/Users/Josiah/Documents/GitHub/Citadel/TestCitadel_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55139
+Multi-casting "[IP] 192.168.254.37 [Port] 55139 [Flags] 3 [Guid] 662847241 [EditorId] 1709521526 [Version] 1048832 [Id] WindowsPlayer(SaranethII) [Debug] 0" to [225.0.0.222:54997]...
+Waiting for connection from host on [192.168.254.37:55139]...
+PlayerConnection accepted from [192.168.254.37] handle:0x1dc
+PlayerConnection already initialized - listening to [192.168.254.37:55139]
+Initialize engine version: 5.1.0f3 (ec70b008569d)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA GeForce GTX 550 Ti (ID=0x1244)
+    Vendor:   NVIDIA
+    VRAM:     977 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+- Completed reload, in  0.063 seconds
+desktop: 1680x1050 60Hz; virtual: 4240x1050 at -1280,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\System.dll (this message is harmless)
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:53627}
+Waiting for finish

@@ -12,8 +12,8 @@ public class WeaponInventory : MonoBehaviour {
 	}
 
 	void Update () {
-		text.text = WeaponText.Instance.weaponInventoryText[slotnum];
-		if (slotnum == WeaponCurrent.Instance.weaponCurrent) {
+		text.text = WeaponText.WepTextInstance.weaponInventoryText[slotnum];
+		if (slotnum == WeaponCurrent.WepInstance.weaponCurrent) {
 			text.color = new Color(0.8902f, 0.8745f, 0f); // Yellow
 		} else {
 			text.color = new Color(0.3725f, 0.6549f, 0.1686f); // Green
