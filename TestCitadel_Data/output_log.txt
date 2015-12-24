@@ -2,12 +2,10 @@ Mono path[0] = 'C:/Users/Josiah/Documents/GitHub/Citadel/TestCitadel_Data/Manage
 Mono path[1] = 'C:/Users/Josiah/Documents/GitHub/Citadel/TestCitadel_Data/Mono'
 Mono config path = 'C:/Users/Josiah/Documents/GitHub/Citadel/TestCitadel_Data/Mono/etc'
 PlayerConnection initialized from C:/Users/Josiah/Documents/GitHub/Citadel/TestCitadel_Data (debug = 0)
-PlayerConnection initialized network socket : 0.0.0.0 55139
-Multi-casting "[IP] 192.168.254.37 [Port] 55139 [Flags] 3 [Guid] 662847241 [EditorId] 1709521526 [Version] 1048832 [Id] WindowsPlayer(SaranethII) [Debug] 0" to [225.0.0.222:54997]...
-Waiting for connection from host on [192.168.254.37:55139]...
-PlayerConnection accepted from [192.168.254.37] handle:0x1dc
-PlayerConnection already initialized - listening to [192.168.254.37:55139]
-Initialize engine version: 5.1.0f3 (ec70b008569d)
+PlayerConnection initialized network socket : 0.0.0.0 55329
+Multi-casting "[IP] 192.168.254.37 [Port] 55329 [Flags] 2 [Guid] 2370511334 [EditorId] 2137084227 [Version] 1048832 [Id] WindowsPlayer(SaranethII) [Debug] 0" to [225.0.0.222:54997]...
+PlayerConnection already initialized - listening to [192.168.254.37:55329]
+Initialize engine version: 5.3.1f1 (cc9cbbcc37b4)
 GfxDevice: creating device client; threaded=1
 Direct3D:
     Version:  Direct3D 11.0 [level 11.0]
@@ -23,14 +21,62 @@ Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Man
 Loading C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
 Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
 Loading C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
-Loading C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
-- Completed reload, in  0.063 seconds
+- Completed reload, in  0.056 seconds
+Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\System.dll (this message is harmless)
 desktop: 1680x1050 60Hz; virtual: 4240x1050 at -1280,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\System.Core.dll (this message is harmless)
-Platform assembly: C:\Users\Josiah\Documents\GitHub\Citadel\TestCitadel_Data\Managed\System.dll (this message is harmless)
-Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:53627}
-Waiting for finish
+UnloadTime: 2.751414 ms
+MouseLookScript: hit.triangleIndex = 5 Submesh Index = 0
+ Can't use door1_2 (Instance)
+ 
+
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.MonoBehaviour:print(Object) (at C:\buildslave\unity\build\artifacts\generated\common\runtime\UnityEngineMonoBehaviourBindings.gen.cs:106)
+MouseLookScript:Update() (at C:\Users\Josiah\Documents\GitHub\Citadel\Assets\Scripts\MouseLookScript.cs:160)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineMonoBehaviourBindings.gen.cs Line: 106)
+
+We are holding an object!
+
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.MonoBehaviour:print(Object) (at C:\buildslave\unity\build\artifacts\generated\common\runtime\UnityEngineMonoBehaviourBindings.gen.cs:106)
+MouseLookScript:Update() (at C:\Users\Josiah\Documents\GitHub\Citadel\Assets\Scripts\MouseLookScript.cs:163)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineMonoBehaviourBindings.gen.cs Line: 106)
+
+heldObjectIndex: 20
+
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.MonoBehaviour:print(Object) (at C:\buildslave\unity\build\artifacts\generated\common\runtime\UnityEngineMonoBehaviourBindings.gen.cs:106)
+MouseLookScript:Update() (at C:\Users\Josiah\Documents\GitHub\Citadel\Assets\Scripts\MouseLookScript.cs:164)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineMonoBehaviourBindings.gen.cs Line: 106)
+
+MouseLookScript: hit.triangleIndex = 188 Submesh Index = 0
+ Can't use med1_9 (Instance)
+ 
+
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.MonoBehaviour:print(Object) (at C:\buildslave\unity\build\artifacts\generated\common\runtime\UnityEngineMonoBehaviourBindings.gen.cs:106)
+MouseLookScript:Update() (at C:\Users\Josiah\Documents\GitHub\Citadel\Assets\Scripts\MouseLookScript.cs:160)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineMonoBehaviourBindings.gen.cs Line: 106)
+
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: 21b8 -> priority: 1 
+  Thread -> id: 2250 -> priority: 1 

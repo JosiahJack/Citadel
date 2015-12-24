@@ -3,7 +3,9 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class WeaponButtonScript : MonoBehaviour {
-	[SerializeField] private GameObject iconman;
+    public GameObject playerCamera;
+    public int useableItemIndex;
+    [SerializeField] private GameObject iconman;
 	[SerializeField] private GameObject itemiconman;
 	[SerializeField] private GameObject itemtextman;
 	[SerializeField] private GameObject ammoiconman;
@@ -21,11 +23,16 @@ public class WeaponButtonScript : MonoBehaviour {
 
 	public void PtrEnter () {
 		GUIState.isBlocking = true;
-	}
+        playerCamera.GetComponent<MouseLookScript>().overButton = true;
+        playerCamera.GetComponent<MouseLookScript>().overButtonType = 0;
+        playerCamera.GetComponent<MouseLookScript>().currentButton = gameObject;
+    }
 
 	public void PtrExit () {
 		GUIState.isBlocking = false;
-	}
+        playerCamera.GetComponent<MouseLookScript>().overButton = false;
+        playerCamera.GetComponent<MouseLookScript>().overButtonType = -1;
+    }
 
 	void WeaponInvClick () {
 		invslot = WeaponText.WepTextInstance.weaponInventoryIndices[WepButtonIndex];

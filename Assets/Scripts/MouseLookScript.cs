@@ -10,6 +10,8 @@ public class MouseLookScript : MonoBehaviour {
 	public bool holdingObject;
 	[Tooltip("The current cursor texture (Developer sets default)")]
 	public Texture2D cursorTexture;
+	public Texture2D cursorDefaultTexture;
+    public GameObject mouseCursor;
 	[HideInInspector]
 	public Vector2 cursorHotspot;
 	[Tooltip("Mouselook sensitivity (Developer sets default)")]
@@ -24,9 +26,18 @@ public class MouseLookScript : MonoBehaviour {
 	public float lookSmoothDamp = 0.10f;
 	public AudioSource SFXSource;
 	public AudioClip SearchSFX;
+	public AudioClip PickupSFX;
+	public AudioClip hwPickupSFX;
 	public GameObject searchOriginContainer;
 	public float tossOffset = 0.10f;
 	public float tossForce = 200f;
+    //public Button[] grenbuttons;
+    //public Button[] patchbuttons;
+    public Button[] generalInvButtons;
+    public int overButtonType;
+    public bool overButton;
+	[HideInInspector]
+	public GameObject currentButton;
 	[HideInInspector]
 	public int heldObjectIndex;
 	[HideInInspector]
@@ -61,18 +72,22 @@ public class MouseLookScript : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.None;
 		inventoryMode = true;  // Start with inventory mode turned on
 		playerCamera = GetComponent<Camera>();
+        overButton = false;
+        overButtonType = -1;
 		holdingObject = false;
 		heldObjectIndex = -1;
 	}
 	
 	void Update (){
-		//if (transform.parent.GetComponent<PlayerMovement>().grounded)
-		//headbobStepCounter += (Vector3.Distance(parentLastPos, transform.parent.position) * headbobSpeed);
-		
-		//transform.localPosition.x = (Mathf.Sin(headbobStepCounter) * headbobAmountX);
-		//transform.localPosition.y = (Mathf.Cos(headbobStepCounter * 2) * headbobAmountY * -1) + (transform.localScale.y * eyeHeightRatio) - (transform.localScale.y / 2);
-		//parentLastPos = transform.parent.position;
-		if (inventoryMode == false) {
+        Cursor.visible = false; // Hides hardware cursor so we can show custom cursor textures
+
+        //if (transform.parent.GetComponent<PlayerMovement>().grounded)
+        //headbobStepCounter += (Vector3.Distance(parentLastPos, transform.parent.position) * headbobSpeed);
+
+        //transform.localPosition.x = (Mathf.Sin(headbobStepCounter) * headbobAmountX);
+        //transform.localPosition.y = (Mathf.Cos(headbobStepCounter * 2) * headbobAmountY * -1) + (transform.localScale.y * eyeHeightRatio) - (transform.localScale.y / 2);
+        //parentLastPos = transform.parent.position;
+        if (inventoryMode == false) {
 			yRotation += Input.GetAxis("Mouse X") * lookSensitivity;
 			xRotation -= Input.GetAxis("Mouse Y") * lookSensitivity;
 			xRotation = Mathf.Clamp(xRotation, -90, 90);  // Limit up and down angle. TIP:: Need to disable for Cyberspace!
@@ -152,8 +167,8 @@ public class MouseLookScript : MonoBehaviour {
 						print("MouseLookScript: " + mlookstring1 + " " + mlookstring2 + " " + mlookstring3 + " " + mlookstring4 + "\n"); //rendererObj.name + "\n");
 					}
 				} else {
-					print("We are holding an object!\n");
-					print("heldObjectIndex: " + heldObjectIndex + "\n");
+					//print("We are holding an object!\n");
+					//print("heldObjectIndex: " + heldObjectIndex + "\n");
 					// Drop the object we are holding
 					if (heldObjectIndex != -1) {
 						DropHeldItem();
@@ -166,59 +181,113 @@ public class MouseLookScript : MonoBehaviour {
 			//We are holding cursor over the GUI
 			if(Input.GetMouseButtonDown(1)) {
 				if (holdingObject) {
-					AddItemToInventory(heldObjectIndex); //TODO Does not exist yet
+					AddItemToInventory(heldObjectIndex);
 					ResetHeldItem();
 					ResetCursor();
+				} else {
+					if (overButton && overButtonType != -1) {
+                        // overButtonTypes:
+                        // -1   Not over a button
+                        // 0 WeaponButton
+                        // 1 GrenadeButton
+                        // 2 PatchButton
+                        // 3 GeneralInventoryButton
+
+                        switch(overButtonType) {
+                            case 0:
+                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<WeaponButtonScript>().useableItemIndex];
+                                heldObjectIndex = currentButton.GetComponent<WeaponButtonScript>().useableItemIndex;
+                                break;
+                            case 1:
+                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex];
+                                heldObjectIndex = currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex;
+                                //GrenadeInventory.GrenadeInvInstance.grenAmmo[GrenButtonIndex]--;
+                                break;
+                            case 2:
+                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<PatchButtonScript>().useableItemIndex];
+                                heldObjectIndex = currentButton.GetComponent<PatchButtonScript>().useableItemIndex;
+                                break;
+                            //case 3:
+                            // "GeneralInventoryButtonScript";
+                            // break;
+                            default:
+                                return;
+                        }
+                        //cursorHotspot = new Vector2 (cursorTexture.width/2, cursorTexture.height/2);
+                        //Cursor.SetCursor(cursorTexture, cursorHotspot, CursorMode.Auto);
+                        //Cursor.visible = true;
+                        mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture;
+                        Cursor.lockState = CursorLockMode.None;
+                        inventoryMode = true;  // inventory mode turned on
+                        holdingObject = true;
+
+					}
 				}
 			}
 		}
 	}
 
+    void AddObjectToInventory(int index) {
+       // generalInvButtons[index].GetComponent</*TODO script for general buttons*/>().useableItemIndex = heldObjectIndex;
+    }
+
+    void AddGrenadeToInventory (int index) {
+		GrenadeInventory.GrenadeInvInstance.grenAmmo[index]++;
+		//grenbuttons[index].GetComponent<GrenadeButtonScript>().useableItemIndex = heldObjectIndex;
+	}
+
+	void AddPatchToInventory (int index) {
+		PatchInventory.PatchInvInstance.patchCounts[index]++;
+	}
+
 	void AddItemToInventory (int index) {
+		AudioClip pickclip;
+		pickclip = PickupSFX;
 		switch (index) {
 		case 7:
-			GrenadeInventory.GrenadeInvInstance.grenAmmo[0]++;
+			AddGrenadeToInventory(0);
 			break;
 		case 8:
-			GrenadeInventory.GrenadeInvInstance.grenAmmo[3]++;
+			AddGrenadeToInventory(3);
 			break;
 		case 9:
-			GrenadeInventory.GrenadeInvInstance.grenAmmo[1]++;
+			AddGrenadeToInventory(1);
 			break;
 		case 10:
-			GrenadeInventory.GrenadeInvInstance.grenAmmo[6]++;
+			AddGrenadeToInventory(6);
 			break;
 		case 11:
-			GrenadeInventory.GrenadeInvInstance.grenAmmo[4]++;
+			AddGrenadeToInventory(4);
 			break;
 		case 12:
-			GrenadeInventory.GrenadeInvInstance.grenAmmo[5]++;
+			AddGrenadeToInventory(5);
 			break;
 		case 13:
-			GrenadeInventory.GrenadeInvInstance.grenAmmo[2]++;
+			AddGrenadeToInventory(2);
 			break;
 		case 14:
-			PatchInventory.PatchInvInstance.patchCounts[2]++;
+			AddPatchToInventory(2);
 			break;
 		case 15:
-			PatchInventory.PatchInvInstance.patchCounts[6]++;
+			AddPatchToInventory(6);
 			break;
 		case 16:
-			PatchInventory.PatchInvInstance.patchCounts[5]++;
+			AddPatchToInventory(5);
 			break;
 		case 17:
-			PatchInventory.PatchInvInstance.patchCounts[3]++;
+			AddPatchToInventory(3);
 			break;
 		case 18:
-			PatchInventory.PatchInvInstance.patchCounts[4]++;
+			AddPatchToInventory(4);
 			break;
 		case 19:
-			PatchInventory.PatchInvInstance.patchCounts[1]++;
+			AddPatchToInventory(1);
 			break;
 		case 20:
-			PatchInventory.PatchInvInstance.patchCounts[0]++;
+			AddPatchToInventory(0);
 			break;
 		}
+		SFXSource.PlayOneShot(pickclip);
 	}
 
 	void DropHeldItem() {
@@ -228,23 +297,28 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	void ResetHeldItem() {
+		//yield return new WaitForSeconds(0.05f);
 		heldObjectIndex = -1;
 		holdingObject = false;
 	}
 
 	void ResetCursor () {
-		cursorHotspot = new Vector2 (cursorTexture.width/2, cursorTexture.height/2);
-		Cursor.SetCursor(cursorTexture, cursorHotspot, CursorMode.Auto);
-		Cursor.visible = true;
+		cursorTexture = cursorDefaultTexture;
+        mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture;
+        //cursorHotspot = new Vector2 (cursorTexture.width/2, cursorTexture.height/2);
+		//Cursor.SetCursor(cursorTexture, cursorHotspot, CursorMode.Auto);
+		Cursor.visible = false;
 	}
 
 	void ToggleInventoryMode (){
 		if (inventoryMode) {
 			Cursor.lockState = CursorLockMode.Locked;
-			inventoryMode = false;
+            Cursor.visible = false;
+            inventoryMode = false;
 		} else {
 			Cursor.lockState = CursorLockMode.None;
-			inventoryMode = true;
+            Cursor.visible = false;
+            inventoryMode = true;
 		}
 	}
 	
