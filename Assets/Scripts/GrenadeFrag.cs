@@ -5,8 +5,8 @@ public class GrenadeFrag : MonoBehaviour {
 	public float nearforce;
 	public float nearradius;
 	public GameObject explosion;
-	private AudioSource SFXSource;
-	public AudioClip ExplosionSFX;
+	//private AudioSource SFXSource;
+	//public AudioClip ExplosionSFX;
 
 	/*void OnMouseDown () {
 		Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
@@ -22,9 +22,10 @@ public class GrenadeFrag : MonoBehaviour {
 	void OnMouseDown () {
 		GetComponent<ExplosionForce>().ExplodeNew(transform.position);
 		GetComponent<ExplosionForce>().ExplodeOld(transform.position, nearforce, nearradius);
-		GameObject expinst = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject;
-		SFXSource = expinst.GetComponent<AudioSource>();
-		SFXSource.PlayOneShot(ExplosionSFX);
+        Instantiate(explosion, transform.position, Quaternion.identity);
+        //GameObject expinst = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject;
+		//SFXSource = expinst.GetComponent<AudioSource>();
+		//SFXSource.PlayOneShot(ExplosionSFX);
 		Destroy(this.gameObject);
 	}
 }

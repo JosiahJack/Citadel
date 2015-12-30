@@ -4,79 +4,104 @@ using UnityEngine.Networking;
 using System.Collections;
 
 public class MouseLookScript : MonoBehaviour {
-	[Tooltip("Shows current state of Inventory Mode (Don't set yourself!)")]
+    // Internal to Prefab
+    // ------------------------------------------------------------------------
+    [Tooltip("Shows current state of Inventory Mode (Don't set yourself!)")]
 	public bool inventoryMode;
 	[Tooltip("Shows current state of Holding an Object (Don't set yourself!)")]
 	public bool holdingObject;
-	[Tooltip("The current cursor texture (Developer sets default)")]
+	[Tooltip("The current cursor texture (For Reference or Testing)")]
 	public Texture2D cursorTexture;
-	public Texture2D cursorDefaultTexture;
-    public GameObject mouseCursor;
-	[HideInInspector]
-	public Vector2 cursorHotspot;
-	[Tooltip("Mouselook sensitivity (Developer sets default)")]
-	public float lookSensitivity = 5;
-	[Tooltip("Game object that houses the MFD tabs")]
+    [Tooltip("The default cursor texture (Developer sets default)")]
+    public Texture2D cursorDefaultTexture;
+    [HideInInspector]
+    public Vector2 cursorHotspot;
+    [Tooltip("Mouselook sensitivity (Developer sets default)")]
+    public float lookSensitivity = 5;
+    [Tooltip("Sound effect to play when searching an object")]
+    public AudioClip SearchSFX;
+    [Tooltip("Sound effect to play when picking-up/frobbing an object")]
+    public AudioClip PickupSFX;
+    [Tooltip("Sound effect to play when picking-up/frobbing a hardware item")]
+    public AudioClip hwPickupSFX;
+    [Tooltip("Distance from player origin to spawn objects when tossing them")]
+    public float tossOffset = 0.10f;
+    [Tooltip("Force given to spawned objects when tossing them")]
+    public float tossForce = 200f;
+    [HideInInspector]
+    public int heldObjectIndex;
+    [HideInInspector]
+    public float yRotation;
+    public int overButtonType;
+    public bool overButton;
+    private float xRotation;
+    private float zRotation;
+    private float yRotationV;
+    private float xRotationV;
+    private float zRotationV;
+    private float currentZRotation;
+    private string mlookstring1;
+    private string mlookstring2;
+    private string mlookstring3;
+    private string mlookstring4;
+    private GameObject currentSearchItem;
+    private Camera playerCamera;
+    private GameObject heldObject;
+    private GameObject mouseCursor;
+    private bool itemAdded = false;
+
+    // External to Prefab
+    // ------------------------------------------------------------------------
+    [Tooltip("Game object that houses the MFD tabs")]
 	public GameObject tabControl;
 	[Tooltip("Text at the top of the data tab in the MFD")]
 	public Text dataTabHeader;
 	[Tooltip("Text in the data tab in the MFD that displays when searching an object containing no items")]
 	public Text dataTabNoItemsText;
 	public GameObject searchFX;
-	public float lookSmoothDamp = 0.10f;
 	public AudioSource SFXSource;
-	public AudioClip SearchSFX;
-	public AudioClip PickupSFX;
-	public AudioClip hwPickupSFX;
 	public GameObject searchOriginContainer;
-	public float tossOffset = 0.10f;
-	public float tossForce = 200f;
     //public Button[] grenbuttons;
     //public Button[] patchbuttons;
     public Button[] generalInvButtons;
-    public int overButtonType;
-    public bool overButton;
 	[HideInInspector]
 	public GameObject currentButton;
-	[HideInInspector]
-	public int heldObjectIndex;
-	[HideInInspector]
-	public float yRotation;
-	private float xRotation;
-	private float zRotation;
-	private float yRotationV;
-	private float xRotationV;
-	private float zRotationV;
-	private float currentZRotation;
-	private string mlookstring1 = "";
-	private string mlookstring2 = "";
-	private string mlookstring3 = "";
-	private string mlookstring4 = "";
-	private GameObject currentSearchItem;
-	private Camera playerCamera;
-	private GameObject heldObject;
-	
-	//float headbobSpeed = 1;
-	//float headbobStepCounter;
-	//float headbobAmountX = 1;
-	//float headbobAmountY = 1;
-	//Vector3 parentLastPos;
-	//float eyeHeightRatio = 0.9f;
-	
-	//void  Awake (){
-	//parentLastPos = transform.parent.position;
-	//}
-	
-	void Start (){
-		ResetCursor();
-		Cursor.lockState = CursorLockMode.None;
+
+
+
+
+    //float headbobSpeed = 1;
+    //float headbobStepCounter;
+    //float headbobAmountX = 1;
+    //float headbobAmountY = 1;
+    //Vector3 parentLastPos;
+    //float eyeHeightRatio = 0.9f;
+
+    //void  Awake (){
+    //parentLastPos = transform.parent.position;
+    //}
+
+
+    void Start (){
+        mouseCursor = GameObject.Find("MouseCursorHandler");
+        if (mouseCursor == null)
+        {
+            print("Warning: Could Not Find object 'MouseCursorHandler' in scene\n");
+        }
+        ResetCursor();
+        Cursor.lockState = CursorLockMode.None;
 		inventoryMode = true;  // Start with inventory mode turned on
 		playerCamera = GetComponent<Camera>();
         overButton = false;
         overButtonType = -1;
 		holdingObject = false;
 		heldObjectIndex = -1;
-	}
+
+        //mlookstring1 = ""; // For sending messages to console about what we are looking at
+        //mlookstring2 = "";
+        //mlookstring3 = "";
+        //mlookstring4 = "";
+    }
 	
 	void Update (){
         Cursor.visible = false; // Hides hardware cursor so we can show custom cursor textures
@@ -118,8 +143,8 @@ public class MouseLookScript : MonoBehaviour {
 							return;
 						}
 				
-				
-						Renderer rendererObj = hit.collider.GetComponent<MeshRenderer>();
+				        // Give info about what we are looking at (e.g. "Molybdenum panelling")
+						/*Renderer rendererObj = hit.collider.GetComponent<MeshRenderer>();
 						if (rendererObj != null && rendererObj.material != null && rendererObj.material.mainTexture != null) {
 							MeshCollider meshCollider = hit.collider as MeshCollider;
 							if (meshCollider == null || meshCollider.sharedMesh == null)
@@ -164,7 +189,7 @@ public class MouseLookScript : MonoBehaviour {
 						//Debug.DrawLine(transform.position, hit.point, Color.green, 999, false);
 				
 						//mlookstring4 = rendererObj.name;
-						print("MouseLookScript: " + mlookstring1 + " " + mlookstring2 + " " + mlookstring3 + " " + mlookstring4 + "\n"); //rendererObj.name + "\n");
+						print("MouseLookScript: " + mlookstring1 + " " + mlookstring2 + " " + mlookstring3 + " " + mlookstring4 + "\n"); //rendererObj.name + "\n");*/
 					}
 				} else {
 					//print("We are holding an object!\n");
@@ -207,9 +232,11 @@ public class MouseLookScript : MonoBehaviour {
                                 cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<PatchButtonScript>().useableItemIndex];
                                 heldObjectIndex = currentButton.GetComponent<PatchButtonScript>().useableItemIndex;
                                 break;
-                            //case 3:
-                            // "GeneralInventoryButtonScript";
-                            // break;
+                            case 3:
+                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<GeneralInvButtonScript>().useableItemIndex];
+                                heldObjectIndex = currentButton.GetComponent<GeneralInvButtonScript>().useableItemIndex;
+                                GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[currentButton.GetComponent<GeneralInvButtonScript>().GeneralInvButtonIndex] = -1;
+                                break;
                             default:
                                 return;
                         }
@@ -227,8 +254,21 @@ public class MouseLookScript : MonoBehaviour {
 		}
 	}
 
-    void AddObjectToInventory(int index) {
-       // generalInvButtons[index].GetComponent</*TODO script for general buttons*/>().useableItemIndex = heldObjectIndex;
+    void AddGenericObjectToInventory(int index) {
+        for (int i = 0; i < 14; i++) {
+            if (GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[i] == -1) {
+                GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[i] = index;
+                itemAdded = true;
+                break;
+            }
+        }
+
+        if (!itemAdded) {
+            DropHeldItem();
+            ResetHeldItem();
+            ResetCursor();
+            print("Inventory full, item dropped");
+        }
     }
 
     void AddGrenadeToInventory (int index) {
@@ -244,48 +284,60 @@ public class MouseLookScript : MonoBehaviour {
 		AudioClip pickclip;
 		pickclip = PickupSFX;
 		switch (index) {
-		case 7:
-			AddGrenadeToInventory(0);
-			break;
-		case 8:
-			AddGrenadeToInventory(3);
-			break;
-		case 9:
-			AddGrenadeToInventory(1);
-			break;
-		case 10:
-			AddGrenadeToInventory(6);
-			break;
-		case 11:
-			AddGrenadeToInventory(4);
-			break;
-		case 12:
-			AddGrenadeToInventory(5);
-			break;
-		case 13:
-			AddGrenadeToInventory(2);
-			break;
-		case 14:
-			AddPatchToInventory(2);
-			break;
-		case 15:
-			AddPatchToInventory(6);
-			break;
-		case 16:
-			AddPatchToInventory(5);
-			break;
-		case 17:
-			AddPatchToInventory(3);
-			break;
-		case 18:
-			AddPatchToInventory(4);
-			break;
-		case 19:
-			AddPatchToInventory(1);
-			break;
-		case 20:
-			AddPatchToInventory(0);
-			break;
+            case 0:
+                AddGenericObjectToInventory(0);
+                break;
+            case 1:
+                AddGenericObjectToInventory(1);
+                break;
+            case 2:
+                AddGenericObjectToInventory(2);
+                break;
+            case 3:
+                AddGenericObjectToInventory(3);
+                break;
+            case 7:
+			    AddGrenadeToInventory(0);
+			    break;
+		    case 8:
+			    AddGrenadeToInventory(3);
+			    break;
+		    case 9:
+			    AddGrenadeToInventory(1);
+			    break;
+		    case 10:
+			    AddGrenadeToInventory(6);
+			    break;
+		    case 11:
+			    AddGrenadeToInventory(4);
+			    break;
+		    case 12:
+			    AddGrenadeToInventory(5);
+			    break;
+		    case 13:
+			    AddGrenadeToInventory(2);
+			    break;
+		    case 14:
+			    AddPatchToInventory(2);
+			    break;
+		    case 15:
+			    AddPatchToInventory(6);
+			    break;
+		    case 16:
+			    AddPatchToInventory(5);
+			    break;
+		    case 17:
+			    AddPatchToInventory(3);
+			    break;
+		    case 18:
+			    AddPatchToInventory(4);
+			    break;
+		    case 19:
+			    AddPatchToInventory(1);
+			    break;
+		    case 20:
+			    AddPatchToInventory(0);
+			    break;
 		}
 		SFXSource.PlayOneShot(pickclip);
 	}
@@ -303,11 +355,15 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	void ResetCursor () {
-		cursorTexture = cursorDefaultTexture;
-        mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture;
+        if (mouseCursor != null) {
+            cursorTexture = cursorDefaultTexture;
+            mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture;
+        } else {
+            print("Warning: Could Not Find object 'MouseCursorHandler' in scene\n");
+        }
         //cursorHotspot = new Vector2 (cursorTexture.width/2, cursorTexture.height/2);
 		//Cursor.SetCursor(cursorTexture, cursorHotspot, CursorMode.Auto);
-		Cursor.visible = false;
+		//Cursor.visible = false;
 	}
 
 	void ToggleInventoryMode (){

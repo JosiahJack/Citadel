@@ -5,7 +5,6 @@ using System.Collections;
 public class GrenadeButtonsManager : MonoBehaviour {
 	[SerializeField] private GameObject[] grenButtons;
 	[SerializeField] private GameObject[] grenCountsText;
-	private int index;
 
 	void Update() {
 		for (int i=0; i<7; i++) {

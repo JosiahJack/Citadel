@@ -9,6 +9,10 @@ public class GrenadeUse : MonoBehaviour {
 
     void Awake () {
         mouseCursor = GameObject.Find("MouseCursorHandler");
+        if (mouseCursor == null)
+        {
+            print("Warning: Could Not Find object 'MouseCursorHandler' in scene\n");
+        }
     }
 
 	void Use (GameObject owner) {

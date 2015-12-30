@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
 
-public class PatchButtonScript : MonoBehaviour, IPointerClickHandler {
+public class PatchButtonScript : MonoBehaviour {
 	public int PatchButtonIndex;
 	public GameObject playerCamera;
 	public int useableItemIndex;
@@ -36,7 +36,11 @@ public class PatchButtonScript : MonoBehaviour, IPointerClickHandler {
 		PatchCurrent.PatchInstance.patchCurrent = PatchButtonIndex;			//Set current weapon
 	}
 
-	public void OnPointerClick(PointerEventData eventData) {
+    void Start() {
+        GetComponent<Button>().onClick.AddListener(() => { PatchInvClick(); });
+    }
+
+    /*public void OnPointerClick(PointerEventData eventData) {
 		if (eventData.button == PointerEventData.InputButton.Left) {
 			PatchInvClick();
 		} else {
@@ -57,6 +61,6 @@ public class PatchButtonScript : MonoBehaviour, IPointerClickHandler {
 				}
 			}
 		}
-	}
-	
+	}*/
+
 }

@@ -49,8 +49,7 @@ public class WeaponButtonScript : MonoBehaviour {
 		WeaponCurrent.WepInstance.weaponCurrent = WepButtonIndex;				//Set current weapon
 	}
 
-	[SerializeField] private Button WepButton = null; // assign in the editor
 	void Start() {
-		WepButton.onClick.AddListener(() => { WeaponInvClick();});
+		GetComponent<Button>().onClick.AddListener(() => { WeaponInvClick();});
 	}
 }
