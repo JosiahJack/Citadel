@@ -27,13 +27,13 @@ public class GrenadeButtonScript : MonoBehaviour {
     }
 
 	void GrenadeInvClick () {
-		itemLookup = GrenadeCurrent.GrenadeInstance.grenadeInventoryIndices[GrenButtonIndex];
-		if (itemLookup < 0)
-			return;
+        //itemLookup = GrenadeCurrent.GrenadeInstance.grenadeInventoryIndices[GrenButtonIndex];
+		//if (itemLookup < 0)
+		//	return;
 
-		iconman.GetComponent<ItemIconManager>().SetItemIcon(itemLookup);    //Set weapon icon for MFD
-		textman.GetComponent<ItemTextManager>().SetItemText(itemLookup); //Set weapon text for MFD
-		GrenadeCurrent.GrenadeInstance.grenadeCurrent = GrenButtonIndex;			//Set current weapon
+		iconman.GetComponent<ItemIconManager>().SetItemIcon(useableItemIndex);    //Set icon for MFD
+		textman.GetComponent<ItemTextManager>().SetItemText(useableItemIndex); //Set text for MFD
+		GrenadeCurrent.GrenadeInstance.grenadeCurrent = GrenButtonIndex;  //Set current
 	}
 	
 	void Start() {

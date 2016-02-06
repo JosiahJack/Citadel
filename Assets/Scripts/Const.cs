@@ -6,6 +6,7 @@ public class Const : MonoBehaviour {
 	[SerializeField] public string grenade1 = "FRAGMENTATION\nGRENADE";
 	[SerializeField] public GameObject[] useableItems;
 	[SerializeField] public Texture2D[] useableItemsFrobIcons;
+    [SerializeField] public Sprite[] useableItemsIcons;
     [SerializeField] public string[] useableItemsNameText;
     public static Const a;
 

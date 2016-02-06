@@ -11,7 +11,7 @@ public class GrenadeButtonsManager : MonoBehaviour {
 			if (GrenadeInventory.GrenadeInvInstance.grenAmmo[i] > 0) {
 				grenButtons[i].SetActive(true);
 				grenCountsText[i].SetActive(true);
-			} else {
+            } else {
 				grenButtons[i].SetActive(false);
 				grenCountsText[i].SetActive(false);
 			}

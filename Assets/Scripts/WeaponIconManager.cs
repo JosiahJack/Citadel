@@ -7,6 +7,6 @@ public class WeaponIconManager : MonoBehaviour {
 
 	public void SetWepIcon (int index) {
 		if (index >= 0)
-			GetComponent<Image>().overrideSprite = wepIcons[index];
+			GetComponent<Image>().overrideSprite = Const.a.useableItemsIcons[index];
 	}
 }

@@ -27,13 +27,13 @@ public class PatchButtonScript : MonoBehaviour {
     }
 
 	void PatchInvClick () {
-		itemLookup = PatchCurrent.PatchInstance.patchInventoryIndices[PatchButtonIndex];
-		if (itemLookup < 0)
-			return;
+		//itemLookup = PatchCurrent.PatchInstance.patchInventoryIndices[PatchButtonIndex];
+		//if (itemLookup < 0)
+			//return;
 
-		iconman.GetComponent<ItemIconManager>().SetItemIcon(itemLookup);    //Set weapon icon for MFD
-		textman.GetComponent<ItemTextManager>().SetItemText(itemLookup); //Set weapon text for MFD
-		PatchCurrent.PatchInstance.patchCurrent = PatchButtonIndex;			//Set current weapon
+		iconman.GetComponent<ItemIconManager>().SetItemIcon(useableItemIndex);    //Set icon for MFD
+		textman.GetComponent<ItemTextManager>().SetItemText(useableItemIndex); //Set text for MFD
+		PatchCurrent.PatchInstance.patchCurrent = PatchButtonIndex;			//Set current
 	}
 
     void Start() {

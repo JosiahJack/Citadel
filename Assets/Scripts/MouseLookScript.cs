@@ -66,7 +66,8 @@ public class MouseLookScript : MonoBehaviour {
     public Button[] generalInvButtons;
 	[HideInInspector]
 	public GameObject currentButton;
-
+    public GameObject weaponButtonsManager;
+    public GameObject mainInventory;
 
 
 
@@ -226,7 +227,14 @@ public class MouseLookScript : MonoBehaviour {
                             case 1:
                                 cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex];
                                 heldObjectIndex = currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex;
-                                //GrenadeInventory.GrenadeInvInstance.grenAmmo[GrenButtonIndex]--;
+                                GrenadeInventory.GrenadeInvInstance.grenAmmo[currentButton.GetComponent<GrenadeButtonScript>().GrenButtonIndex]--;
+                                if (GrenadeInventory.GrenadeInvInstance.grenAmmo[currentButton.GetComponent<GrenadeButtonScript>().GrenButtonIndex] == 0) {
+                                    for (int i = 0; i < 7; i++) {
+                                        if (GrenadeInventory.GrenadeInvInstance.grenAmmo[i] > 0) {
+                                            mainInventory.GetComponent<GrenadeCurrent>().grenadeCurrent = i;
+                                        }
+                                    }
+                                }
                                 break;
                             case 2:
                                 cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<PatchButtonScript>().useableItemIndex];
@@ -255,7 +263,7 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
     void AddGenericObjectToInventory(int index) {
-        for (int i = 0; i < 14; i++) {
+        for (int i=0;i<14;i++) {
             if (GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[i] == -1) {
                 GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[i] = index;
                 itemAdded = true;
@@ -269,16 +277,33 @@ public class MouseLookScript : MonoBehaviour {
             ResetCursor();
             print("Inventory full, item dropped");
         }
+        mainInventory.GetComponent<GeneralInvCurrent>().generalInvCurrent = index;
+    }
+
+    void AddWeaponToInventory(int index) {
+        for (int i=0;i<7;i++) {
+            if (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[i] < 0) {
+                WeaponInventory.WepInventoryInstance.weaponInventoryIndices[i] = index;
+                WeaponInventory.WepInventoryInstance.weaponInventoryText[i] = WeaponInventory.WepInventoryInstance.weaponInvTextSource[(index - 36)];
+                WeaponCurrent.WepInstance.weaponCurrent = i;
+                //weaponButtonsManager.GetComponent<WeaponButtonsManager>().wepButtons[i].GetComponent<WeaponButtonScript>().WeaponInvClick();
+                weaponButtonsManager.GetComponent<WeaponButtonsManager>().wepButtons[i].GetComponent<WeaponButtonScript>().useableItemIndex = index;
+                print("Weapon added\n");
+                break;
+            }
+        }
+        mainInventory.GetComponent<WeaponCurrent>().weaponCurrent = index;
     }
 
     void AddGrenadeToInventory (int index) {
 		GrenadeInventory.GrenadeInvInstance.grenAmmo[index]++;
-		//grenbuttons[index].GetComponent<GrenadeButtonScript>().useableItemIndex = heldObjectIndex;
-	}
+        mainInventory.GetComponent<GrenadeCurrent>().grenadeCurrent = index;
+    }
 
 	void AddPatchToInventory (int index) {
 		PatchInventory.PatchInvInstance.patchCounts[index]++;
-	}
+        mainInventory.GetComponent<PatchCurrent>().patchCurrent = index;
+    }
 
 	void AddItemToInventory (int index) {
 		AudioClip pickclip;
@@ -338,7 +363,13 @@ public class MouseLookScript : MonoBehaviour {
 		    case 20:
 			    AddPatchToInventory(0);
 			    break;
-		}
+            case 44:
+                AddWeaponToInventory(44);
+                break;
+            case 45:
+                AddWeaponToInventory(45);
+                break;
+        }
 		SFXSource.PlayOneShot(pickclip);
 	}
 

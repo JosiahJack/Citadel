@@ -34,18 +34,17 @@ public class WeaponButtonScript : MonoBehaviour {
         playerCamera.GetComponent<MouseLookScript>().overButtonType = -1;
     }
 
-	void WeaponInvClick () {
-		invslot = WeaponText.WepTextInstance.weaponInventoryIndices[WepButtonIndex];
-		if (invslot < 0)
-			return;
+	public void WeaponInvClick () {
+		invslot = WeaponInventory.WepInventoryInstance.weaponInventoryIndices[WepButtonIndex];
+		if (invslot > 0)
+            ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, alternateAmmo);
 
-		SFX.PlayOneShot(SFXClip);
-		ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, alternateAmmo);
-		iconman.GetComponent<WeaponIconManager>().SetWepIcon(invslot);    //Set weapon icon for MFD
-		weptextman.GetComponent<WeaponTextManager>().SetWepText(invslot); //Set weapon text for MFD
+        SFX.PlayOneShot(SFXClip);
+		iconman.GetComponent<WeaponIconManager>().SetWepIcon(useableItemIndex);    //Set weapon icon for MFD
+		weptextman.GetComponent<WeaponTextManager>().SetWepText(useableItemIndex); //Set weapon text for MFD
 
-		//itemiconman.GetComponent<ItemIconManager>().SetItemIcon(invslot+7);    //Set weapon icon for MFD
-		//itemtextman.GetComponent<ItemTextManager>().SetItemText(invslot+7); //Set weapon text for MFD
+		itemiconman.SetActive(false);    //Set weapon icon for MFD
+		itemtextman.GetComponent<ItemTextManager>().SetItemText(useableItemIndex); //Set weapon text for MFD
 		WeaponCurrent.WepInstance.weaponCurrent = WepButtonIndex;				//Set current weapon
 	}
 

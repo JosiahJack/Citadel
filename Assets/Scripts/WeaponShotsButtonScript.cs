@@ -26,7 +26,7 @@ public class WeaponShotsButtonScript : MonoBehaviour {
 	}
 
 	void WeaponInvClick () {
-		invslot = WeaponText.WepTextInstance.weaponInventoryIndices[WepButtonIndex];
+		invslot = WeaponInventory.WepInventoryInstance.weaponInventoryIndices[WepButtonIndex];
 		if (invslot < 0)
 			return;
 

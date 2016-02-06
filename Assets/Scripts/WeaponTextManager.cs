@@ -7,6 +7,6 @@ public class WeaponTextManager : MonoBehaviour {
 	
 	public void SetWepText (int index) {
 		if (index >= 0)
-			GetComponent<Text>().text = wepText[index];
+			GetComponent<Text>().text = Const.a.useableItemsNameText[index];
 	}
 }

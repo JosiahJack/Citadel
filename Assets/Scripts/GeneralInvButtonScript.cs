@@ -27,13 +27,13 @@ public class GeneralInvButtonScript : MonoBehaviour {
     }
 
     void GeneralInvClick() {
-        itemLookup = GeneralInvCurrent.GeneralInvInstance.generalInventoryIndices[GeneralInvButtonIndex];
-        if (itemLookup < 0)
-            return;
+        //itemLookup = GeneralInvCurrent.GeneralInvInstance.generalInventoryIndices[GeneralInvButtonIndex];
+        //if (itemLookup < 0)
+        //    return;
 
-        iconman.GetComponent<ItemIconManager>().SetItemIcon(itemLookup);    //Set weapon icon for MFD
-        textman.GetComponent<ItemTextManager>().SetItemText(itemLookup); //Set weapon text for MFD
-        GeneralInvCurrent.GeneralInvInstance.generalInvCurrent = GeneralInvButtonIndex;            //Set current weapon
+        iconman.GetComponent<ItemIconManager>().SetItemIcon(useableItemIndex);    //Set icon for MFD
+        textman.GetComponent<ItemTextManager>().SetItemText(useableItemIndex); //Set text for MFD
+        GeneralInvCurrent.GeneralInvInstance.generalInvCurrent = GeneralInvButtonIndex;  //Set current
     }
 
     void Start() {
