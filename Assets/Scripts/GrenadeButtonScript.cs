@@ -39,28 +39,4 @@ public class GrenadeButtonScript : MonoBehaviour {
 	void Start() {
 		GetComponent<Button>().onClick.AddListener(() => { GrenadeInvClick();});
 	}
-
-	/*public void OnPointerClick(PointerEventData eventData) {
-		if (eventData.button == PointerEventData.InputButton.Left) {
-			GrenadeInvClick();
-		} else {
-			if (eventData.button == PointerEventData.InputButton.Middle) {
-				//print("Middle Click!\n");
-			} else {
-				if (eventData.button == PointerEventData.InputButton.Right) {
-					if (!playerCamera.GetComponent<MouseLookScript>().holdingObject) {
-						cursorTexture = Const.a.useableItemsFrobIcons[useableItemIndex];
-						cursorHotspot = new Vector2 (cursorTexture.width/2, cursorTexture.height/2);
-						Cursor.SetCursor(cursorTexture, cursorHotspot, CursorMode.Auto);
-						Cursor.visible = true;
-						Cursor.lockState = CursorLockMode.None;
-						playerCamera.GetComponent<MouseLookScript>().inventoryMode = true;  // inventory mode turned on
-						playerCamera.GetComponent<MouseLookScript>().holdingObject = true;
-						playerCamera.GetComponent<MouseLookScript>().heldObjectIndex = useableItemIndex;
-						//GrenadeInventory.GrenadeInvInstance.grenAmmo[GrenButtonIndex]--;
-					}
-				}
-			}
-		}
-	}*/
 }

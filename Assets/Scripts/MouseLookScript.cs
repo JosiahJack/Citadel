@@ -28,12 +28,20 @@ public class MouseLookScript : MonoBehaviour {
     public float tossOffset = 0.10f;
     [Tooltip("Force given to spawned objects when tossing them")]
     public float tossForce = 200f;
-    [HideInInspector]
+    //[HideInInspector]
     public int heldObjectIndex;
     [HideInInspector]
     public float yRotation;
+	[Tooltip("Shows what button type cursor is over")]
     public int overButtonType;
+	[Tooltip("Shows whether mouse cursor is over a button (to block shooting through UI)")]
     public bool overButton;
+	[Tooltip("Initial camera x rotation")]
+	public float startxRotation = 0f;
+	[Tooltip("Initial camera y rotation")]
+	public float startyRotation = 0f;
+	[Tooltip("Indicates whether genius patch is active for reversing LH & RH")]
+	public bool geniusActive;
     private float xRotation;
     private float zRotation;
     private float yRotationV;
@@ -49,6 +57,7 @@ public class MouseLookScript : MonoBehaviour {
     private GameObject heldObject;
     private GameObject mouseCursor;
     private bool itemAdded = false;
+	private int indexAdjustment;
 
     // External to Prefab
     // ------------------------------------------------------------------------
@@ -61,10 +70,16 @@ public class MouseLookScript : MonoBehaviour {
 	public GameObject searchFX;
 	public AudioSource SFXSource;
 	public GameObject searchOriginContainer;
+	[SerializeField] private GameObject iconman;
+	[SerializeField] private GameObject itemiconman;
+	[SerializeField] private GameObject itemtextman;
+	[SerializeField] private GameObject ammoiconman;
+	[SerializeField] private GameObject weptextman;
     //public Button[] grenbuttons;
     //public Button[] patchbuttons;
-    public Button[] generalInvButtons;
-	[HideInInspector]
+    //public Button[] generalInvButtons;
+	//public Button[] weaponInvButtons;
+	//[HideInInspector]
 	public GameObject currentButton;
     public GameObject weaponButtonsManager;
     public GameObject mainInventory;
@@ -85,8 +100,7 @@ public class MouseLookScript : MonoBehaviour {
 
     void Start (){
         mouseCursor = GameObject.Find("MouseCursorHandler");
-        if (mouseCursor == null)
-        {
+        if (mouseCursor == null) {
             print("Warning: Could Not Find object 'MouseCursorHandler' in scene\n");
         }
         ResetCursor();
@@ -97,7 +111,8 @@ public class MouseLookScript : MonoBehaviour {
         overButtonType = -1;
 		holdingObject = false;
 		heldObjectIndex = -1;
-
+		yRotation = startyRotation;
+		xRotation = startxRotation;
         //mlookstring1 = ""; // For sending messages to console about what we are looking at
         //mlookstring2 = "";
         //mlookstring3 = "";
@@ -124,6 +139,7 @@ public class MouseLookScript : MonoBehaviour {
 			ToggleInventoryMode();
 
 		if (!GUIState.isBlocking) {
+			currentButton = null;
 			if(Input.GetMouseButtonDown(1)) {
 				if (!holdingObject) {
 					RaycastHit hit = new RaycastHit();
@@ -218,12 +234,20 @@ public class MouseLookScript : MonoBehaviour {
                         // 1 GrenadeButton
                         // 2 PatchButton
                         // 3 GeneralInventoryButton
+						// 77 Center tabs button
 
                         switch(overButtonType) {
                             case 0:
                                 cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<WeaponButtonScript>().useableItemIndex];
                                 heldObjectIndex = currentButton.GetComponent<WeaponButtonScript>().useableItemIndex;
-                                break;
+								indexAdjustment = currentButton.GetComponent<WeaponButtonScript>().WepButtonIndex;
+								WeaponInventory.WepInventoryInstance.weaponInventoryIndices[indexAdjustment] = -1;
+								WeaponInventory.WepInventoryInstance.weaponInventoryText[indexAdjustment] = "-";
+								indexAdjustment--;
+								if (indexAdjustment < 0)
+									indexAdjustment = 0;
+								WeaponCurrent.WepInstance.weaponCurrent = indexAdjustment;
+								break;
                             case 1:
                                 cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex];
                                 heldObjectIndex = currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex;
@@ -245,8 +269,6 @@ public class MouseLookScript : MonoBehaviour {
                                 heldObjectIndex = currentButton.GetComponent<GeneralInvButtonScript>().useableItemIndex;
                                 GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[currentButton.GetComponent<GeneralInvButtonScript>().GeneralInvButtonIndex] = -1;
                                 break;
-                            default:
-                                return;
                         }
                         //cursorHotspot = new Vector2 (cursorTexture.width/2, cursorTexture.height/2);
                         //Cursor.SetCursor(cursorTexture, cursorHotspot, CursorMode.Auto);
@@ -255,7 +277,6 @@ public class MouseLookScript : MonoBehaviour {
                         Cursor.lockState = CursorLockMode.None;
                         inventoryMode = true;  // inventory mode turned on
                         holdingObject = true;
-
 					}
 				}
 			}
@@ -263,6 +284,7 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
     void AddGenericObjectToInventory(int index) {
+		itemAdded = false; //prevent false positive
         for (int i=0;i<14;i++) {
             if (GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[i] == -1) {
                 GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[i] = index;
@@ -276,28 +298,43 @@ public class MouseLookScript : MonoBehaviour {
             ResetHeldItem();
             ResetCursor();
             print("Inventory full, item dropped");
+			return;
         }
         mainInventory.GetComponent<GeneralInvCurrent>().generalInvCurrent = index;
     }
 
     void AddWeaponToInventory(int index) {
+		itemAdded = false; //prevent false positive
         for (int i=0;i<7;i++) {
             if (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[i] < 0) {
                 WeaponInventory.WepInventoryInstance.weaponInventoryIndices[i] = index;
                 WeaponInventory.WepInventoryInstance.weaponInventoryText[i] = WeaponInventory.WepInventoryInstance.weaponInvTextSource[(index - 36)];
                 WeaponCurrent.WepInstance.weaponCurrent = i;
-                //weaponButtonsManager.GetComponent<WeaponButtonsManager>().wepButtons[i].GetComponent<WeaponButtonScript>().WeaponInvClick();
+				WeaponCurrent.WepInstance.weaponIndex = index;
                 weaponButtonsManager.GetComponent<WeaponButtonsManager>().wepButtons[i].GetComponent<WeaponButtonScript>().useableItemIndex = index;
-                print("Weapon added\n");
+				ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(index, false);
+				iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
+				weptextman.GetComponent<WeaponTextManager>().SetWepText(index); //Set weapon text for MFD
+				itemiconman.SetActive(false);    //Set weapon icon for MFD
+				itemtextman.GetComponent<ItemTextManager>().SetItemText(index); //Set weapon text for MFD
+                //print("Weapon added\n");
+				itemAdded = true;
                 break;
             }
         }
-        mainInventory.GetComponent<WeaponCurrent>().weaponCurrent = index;
+		if (!itemAdded) {
+			DropHeldItem();
+			ResetHeldItem();
+			ResetCursor();
+			print("Inventory full, item dropped");
+			return;
+		}
     }
 
     void AddGrenadeToInventory (int index) {
 		GrenadeInventory.GrenadeInvInstance.grenAmmo[index]++;
-        mainInventory.GetComponent<GrenadeCurrent>().grenadeCurrent = index;
+		GrenadeCurrent.GrenadeInstance.grenadeCurrent = index;
+        //mainInventory.GetComponent<GrenadeCurrent>().grenadeCurrent = index;
     }
 
 	void AddPatchToInventory (int index) {
@@ -363,6 +400,9 @@ public class MouseLookScript : MonoBehaviour {
 		    case 20:
 			    AddPatchToInventory(0);
 			    break;
+			case 38:
+				AddWeaponToInventory(38);
+				break;
             case 44:
                 AddWeaponToInventory(44);
                 break;

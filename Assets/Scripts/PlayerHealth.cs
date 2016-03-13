@@ -2,10 +2,12 @@
 using System.Collections;
 
 public class PlayerHealth : MonoBehaviour {
-	public float health = 255f;
+	public float health = 211f; //max is 255
 	public float resetAfterDeathTime = 1f;
 	public float timer;
-	public static bool  playerDead;
+	public static bool playerDead = false;
+	public bool mediPatchActive = false;
+	public bool detoxPatchActive = false;
 	public AudioSource PainSFX;
 	public AudioClip PainSFXClip;
 	public GameObject cameraObject;
@@ -18,6 +20,8 @@ public class PlayerHealth : MonoBehaviour {
 				PlayerDead();
 			}
 		}
+
+
 	}
 	
 	void PlayerDying (){

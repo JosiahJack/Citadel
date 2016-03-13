@@ -5,12 +5,12 @@ using System.Collections;
 public class WeaponButtonScript : MonoBehaviour {
     public GameObject playerCamera;
     public int useableItemIndex;
+	public int WepButtonIndex;
     [SerializeField] private GameObject iconman;
 	[SerializeField] private GameObject itemiconman;
 	[SerializeField] private GameObject itemtextman;
 	[SerializeField] private GameObject ammoiconman;
 	[SerializeField] private GameObject weptextman;
-	[SerializeField] private int WepButtonIndex;
 	[SerializeField] private AudioSource SFX = null; // assign in the editor
 	[SerializeField] private AudioClip SFXClip = null; // assign in the editor
 	private int invslot;
@@ -37,7 +37,7 @@ public class WeaponButtonScript : MonoBehaviour {
 	public void WeaponInvClick () {
 		invslot = WeaponInventory.WepInventoryInstance.weaponInventoryIndices[WepButtonIndex];
 		if (invslot > 0)
-            ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, alternateAmmo);
+			ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, alternateAmmo);
 
         SFX.PlayOneShot(SFXClip);
 		iconman.GetComponent<WeaponIconManager>().SetWepIcon(useableItemIndex);    //Set weapon icon for MFD

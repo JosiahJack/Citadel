@@ -3,7 +3,7 @@ using System.Collections;
 
 public class MouseCursor : MonoBehaviour {
     public GameObject playerCamera;
-    public float cursorSize = 32f;
+    public float cursorSize = 48f;
     public bool offsetCentering = true;
     public Texture2D cursorImage;
     private float offsetX;
