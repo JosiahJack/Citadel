@@ -7,21 +7,30 @@ public class ChargeStation : MonoBehaviour {
 	public float resetTime = 150; //150 seconds
 	public bool requireReset;
 	public float minSecurityLevel = 0;
+	public AudioClip SFX;
 	private float nextthink;
+	private float give;
+	private AudioSource SFXSource;
 	
 	void Awake () {
+		SFXSource = GetComponent<AudioSource>();
 		nextthink = Time.time;
 	}
 
 	void Use (GameObject owner) {
 		//if (security<minSecurityLevel) {
 			if (nextthink < Time.time) {
-				//owner.GetComponent<PlayerEnergy>().energy += amount;
+				give = owner.transform.parent.GetComponent<PlayerEnergy>().energy + amount;
+				if (give > 255f)
+					give = 255f;
+				owner.transform.parent.GetComponent<PlayerEnergy>().energy = give;
+				Const.sprint("Energy drawn from Power Station.");
+				SFXSource.PlayOneShot(SFX);
 				if (requireReset) {
 					nextthink = Time.time + resetTime;
 				}
 			} else {
-				print("Station is recharging\n");
+				Const.sprint("Power Station is recharging\n");
 			}
 		//}
 	}

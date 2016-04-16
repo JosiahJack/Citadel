@@ -1,0 +1,276 @@
+fileFormatVersion: 2
+guid: 3a2790ece0bea214e9173762e719613f
+timeCreated: 1460829205
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: elevdoor_frame
+    100004: elevdoor_frametrim
+    100006: elevdoor_lowercheater
+    100008: elevdoor_lowerLH
+    100010: elevdoor_lowerRH
+    100012: elevdoor_upper
+    400000: //RootNode
+    400002: elevdoor_frame
+    400004: elevdoor_frametrim
+    400006: elevdoor_lowercheater
+    400008: elevdoor_lowerLH
+    400010: elevdoor_lowerRH
+    400012: elevdoor_upper
+    2300000: elevdoor_frame
+    2300002: elevdoor_frametrim
+    2300004: elevdoor_lowercheater
+    2300006: elevdoor_lowerLH
+    2300008: elevdoor_lowerRH
+    2300010: elevdoor_upper
+    3300000: elevdoor_frame
+    3300002: elevdoor_frametrim
+    3300004: elevdoor_lowercheater
+    3300006: elevdoor_lowerLH
+    3300008: elevdoor_lowerRH
+    3300010: elevdoor_upper
+    4300000: elevdoor_frame
+    4300002: elevdoor_frametrim
+    4300004: elevdoor_lowercheater
+    4300006: elevdoor_upper
+    4300008: elevdoor_lowerRH
+    4300010: elevdoor_lowerLH
+    7400000: IdleDoor1Open
+    7400002: IdleDoor1Close
+    7400004: Door1Open
+    7400006: Door1Close
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: IdleDoor1Open
+      takeName: Default Take
+      firstFrame: 19
+      lastFrame: 20
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: elevdoor_frame
+        weight: 1
+      - path: elevdoor_frametrim
+        weight: 1
+      - path: elevdoor_lowercheater
+        weight: 1
+      - path: elevdoor_lowerLH
+        weight: 1
+      - path: elevdoor_lowerRH
+        weight: 1
+      - path: elevdoor_upper
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: IdleDoor1Close
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: elevdoor_frame
+        weight: 1
+      - path: elevdoor_frametrim
+        weight: 1
+      - path: elevdoor_lowercheater
+        weight: 1
+      - path: elevdoor_lowerLH
+        weight: 1
+      - path: elevdoor_lowerRH
+        weight: 1
+      - path: elevdoor_upper
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Door1Open
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 19
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: elevdoor_frame
+        weight: 1
+      - path: elevdoor_frametrim
+        weight: 1
+      - path: elevdoor_lowercheater
+        weight: 1
+      - path: elevdoor_lowerLH
+        weight: 1
+      - path: elevdoor_lowerRH
+        weight: 1
+      - path: elevdoor_upper
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Door1Close
+      takeName: Default Take
+      firstFrame: 20
+      lastFrame: 41
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: elevdoor_frame
+        weight: 1
+      - path: elevdoor_frametrim
+        weight: 1
+      - path: elevdoor_lowercheater
+        weight: 1
+      - path: elevdoor_lowerLH
+        weight: 1
+      - path: elevdoor_lowerRH
+        weight: 1
+      - path: elevdoor_upper
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

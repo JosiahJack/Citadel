@@ -18,7 +18,7 @@ public class PlayerPatchScript : MonoBehaviour {
 	private bool medipatchActive;
 	private bool timeSlowed = false;
 	private float staminupFinishedTime;
-	private bool sightSideEffect = false;
+	//private bool sightSideEffect = false;
 	private float sightFinishedTime;
 	private int PATCH_BERSERK = 1;
 	private int PATCH_DETOX = 2;

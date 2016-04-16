@@ -1,0 +1,14 @@
+medipatch effect: 35sec
+reflex patch effect: 2min 35sec (155sec)
+medipatch under reflex - turns red at: 2min 10sec (130sec) (10% of patch time remaining)
+medipatch under reflex: 2min 25sec (145sec)
+genius effect: 35sec
+detox effect: 60sec
+detox kill when already active: 2sec (allows patch to live this long)
+
+13.59
+51.46
+
+Time at 0.2413793103 speed
+Time at 0.2640886125 speed
+Time at 0.2933947772 speed

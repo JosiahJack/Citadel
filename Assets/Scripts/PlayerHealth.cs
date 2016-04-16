@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PlayerHealth : MonoBehaviour {
 	public float health = 211f; //max is 255
-	public float resetAfterDeathTime = 1f;
+	public float resetAfterDeathTime = 0.5f;
 	public float timer;
 	public static bool playerDead = false;
 	public bool mediPatchActive = false;
@@ -13,7 +13,7 @@ public class PlayerHealth : MonoBehaviour {
 	public GameObject cameraObject;
 	
 	void Update (){
-		if (health <= 0) {
+		if (health <= 0f) {
 			if (!playerDead) {
 				PlayerDying();
 			} else {
@@ -28,6 +28,7 @@ public class PlayerHealth : MonoBehaviour {
 		timer += Time.deltaTime;
 		
 		if (timer >= resetAfterDeathTime) {
+			health = 0f;
 			playerDead = true;
 		}
 	}
