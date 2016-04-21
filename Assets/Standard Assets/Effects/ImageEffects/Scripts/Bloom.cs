@@ -1,59 +1,26 @@
 using System;
 using UnityEngine;
 
-namespace UnityStandardAssets.ImageEffects
-{
+namespace UnityStandardAssets.ImageEffects {
     [ExecuteInEditMode]
     [RequireComponent (typeof(Camera))]
     [AddComponentMenu ("Image Effects/Bloom and Glow/Bloom")]
-    public class Bloom : PostEffectsBase
-    {
-        public enum LensFlareStyle
-        {
-            Ghosting = 0,
-            Anamorphic = 1,
-            Combined = 2,
-        }
-
-        public enum TweakMode
-        {
-            Basic = 0,
-            Complex = 1,
-        }
-
-        public enum HDRBloomMode
-        {
-            Auto = 0,
-            On = 1,
-            Off = 2,
-        }
-
-        public enum BloomScreenBlendMode
-        {
-            Screen = 0,
-            Add = 1,
-        }
-
-        public enum BloomQuality
-        {
-            Cheap = 0,
-            High = 1,
-        }
-
+    public class Bloom : PostEffectsBase {
+        public enum LensFlareStyle {Ghosting = 0, Anamorphic = 1, Combined = 2, }
+		public enum TweakMode {Basic = 0, Complex = 1,}
+        public enum HDRBloomMode {Auto = 0, On = 1, Off = 2,}
+        public enum BloomScreenBlendMode {Screen = 0, Add = 1,}
+        public enum BloomQuality {Cheap = 0, High = 1,}
         public TweakMode tweakMode = 0;
         public BloomScreenBlendMode screenBlendMode = BloomScreenBlendMode.Add;
-
         public HDRBloomMode hdr = HDRBloomMode.Auto;
         private bool doHdr = false;
         public float sepBlurSpread = 2.5f;
-
         public BloomQuality quality = BloomQuality.High;
-
         public float bloomIntensity = 0.5f;
         public float bloomThreshold = 0.5f;
         public Color bloomThresholdColor = Color.white;
         public int bloomBlurIterations = 2;
-
         public int hollywoodFlareBlurIterations = 2;
         public float flareRotation = 0.0f;
         public LensFlareStyle lensflareMode = (LensFlareStyle) 1;
@@ -66,24 +33,17 @@ namespace UnityStandardAssets.ImageEffects
         public Color flareColorC = new Color (0.8f, 0.4f, 0.8f, 0.75f);
         public Color flareColorD = new Color (0.8f, 0.4f, 0.0f, 0.75f);
         public Texture2D lensFlareVignetteMask;
-
         public Shader lensFlareShader;
         private Material lensFlareMaterial;
-
         public Shader screenBlendShader;
         private Material screenBlend;
-
         public Shader blurAndFlaresShader;
         private Material blurAndFlaresMaterial;
-
         public Shader brightPassFilterShader;
         private Material brightPassFilterMaterial;
 
-
-        public override bool CheckResources ()
-        {
+        public override bool CheckResources () {
             CheckSupport (false);
-
             screenBlend = CheckShaderAndCreateMaterial (screenBlendShader, screenBlend);
             lensFlareMaterial = CheckShaderAndCreateMaterial(lensFlareShader,lensFlareMaterial);
             blurAndFlaresMaterial = CheckShaderAndCreateMaterial (blurAndFlaresShader, blurAndFlaresMaterial);
@@ -94,35 +54,30 @@ namespace UnityStandardAssets.ImageEffects
             return isSupported;
         }
 
-        public void OnRenderImage (RenderTexture source, RenderTexture destination)
-        {
-            if (CheckResources()==false)
-            {
+        public void OnRenderImage (RenderTexture source, RenderTexture destination) {
+            if (CheckResources()==false) {
                 Graphics.Blit (source, destination);
                 return;
             }
 
             // screen blend is not supported when HDR is enabled (will cap values)
-
             doHdr = false;
-            if (hdr == HDRBloomMode.Auto)
+			if (hdr == HDRBloomMode.Auto) {
                 doHdr = source.format == RenderTextureFormat.ARGBHalf && GetComponent<Camera>().hdr;
-            else {
+			} else {
                 doHdr = hdr == HDRBloomMode.On;
             }
 
             doHdr = doHdr && supportHDRTextures;
-
             BloomScreenBlendMode realBlendMode = screenBlendMode;
             if (doHdr)
                 realBlendMode = BloomScreenBlendMode.Add;
 
-            var rtFormat= (doHdr) ? RenderTextureFormat.ARGBHalf : RenderTextureFormat.Default;
-            var rtW2= source.width/2;
-            var rtH2= source.height/2;
-            var rtW4= source.width/4;
-            var rtH4= source.height/4;
-
+            var rtFormat = (doHdr) ? RenderTextureFormat.ARGBHalf : RenderTextureFormat.Default;
+            var rtW2 = source.width/2;
+            var rtH2 = source.height/2;
+            var rtW4 = source.width/4;
+            var rtH4 = source.height/4;
             float widthOverHeight = (1.0f * source.width) / (1.0f * source.height);
             float oneOverBaseSize = 1.0f / 512.0f;
 

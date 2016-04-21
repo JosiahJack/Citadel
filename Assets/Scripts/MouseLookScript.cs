@@ -60,6 +60,7 @@ public class MouseLookScript : MonoBehaviour {
 
     // External to Prefab
     // ------------------------------------------------------------------------
+	public GameObject canvasContainer;
     [Tooltip("Game object that houses the MFD tabs")]
 	public GameObject tabControl;
 	[Tooltip("Text at the top of the data tab in the MFD")]
@@ -107,6 +108,11 @@ public class MouseLookScript : MonoBehaviour {
 		heldObjectIndex = -1;
 		yRotation = startyRotation;
 		xRotation = startxRotation;
+
+		if (canvasContainer == null)
+			Const.sprint("BUG: No canvas given for camera to display UI");
+
+		canvasContainer.SetActive(true); //enable UI
     }
 
 	void Update (){
