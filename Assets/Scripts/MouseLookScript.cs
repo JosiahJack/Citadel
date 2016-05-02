@@ -44,6 +44,8 @@ public class MouseLookScript : MonoBehaviour {
 	public bool geniusActive;
 	[Tooltip("How far player can reach to use, pickup, search, etc. objects")]
 	public float frobDistance = 4.5f;
+	[Tooltip("Speed multiplier for turning the view with the keyboard")]
+	public float keyboardTurnSpeed = 1.5f;
     private float xRotation;
     private float zRotation;
     private float yRotationV;
@@ -57,6 +59,8 @@ public class MouseLookScript : MonoBehaviour {
     private GameObject mouseCursor;
     private bool itemAdded = false;
 	private int indexAdjustment;
+	private Quaternion tempQuat;
+	private Vector3 tempVec;
 
     // External to Prefab
     // ------------------------------------------------------------------------
@@ -124,11 +128,37 @@ public class MouseLookScript : MonoBehaviour {
         //transform.localPosition.x = (Mathf.Sin(headbobStepCounter) * headbobAmountX);
         //transform.localPosition.y = (Mathf.Cos(headbobStepCounter * 2) * headbobAmountY * -1) + (transform.localScale.y * eyeHeightRatio) - (transform.localScale.y / 2);
         //parentLastPos = transform.parent.position;
+
         if (inventoryMode == false) {
-			yRotation += Input.GetAxis("Mouse X") * lookSensitivity;
-			xRotation -= Input.GetAxis("Mouse Y") * lookSensitivity;
-			xRotation = Mathf.Clamp(xRotation, -90, 90);  // Limit up and down angle. TIP:: Need to disable for Cyberspace!
+			yRotation += (Input.GetAxis("Mouse X") * lookSensitivity);
+			xRotation -= (Input.GetAxis("Mouse Y") * lookSensitivity);
+			//Const.sprint("Mouse X: " + Input.GetAxis("Mouse X"));
+			xRotation = Mathf.Clamp(xRotation, -90, 90);  // Limit up and down angle. TIP:: Need to disable clamp for Cyberspace!
 			transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+			//transform.Rotate(xRotation,yRotation,0,Space.World);
+		} else {
+			if (Input.GetButton("Yaw")) {
+				if  (Input.GetAxisRaw("Yaw") > 0) {
+					yRotation += keyboardTurnSpeed * lookSensitivity;
+					tempQuat = transform.rotation;
+					transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+					transform.rotation = tempQuat; // preserve x axis, hacky
+				} else {
+					yRotation -= keyboardTurnSpeed * lookSensitivity;
+					tempQuat = transform.rotation;
+					transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+					transform.rotation = tempQuat; // preserve x axis, hacky
+				}
+			}
+			if (Input.GetButton("Pitch")) {
+				if  (Input.GetAxisRaw("Pitch") > 0) {
+					xRotation += keyboardTurnSpeed * lookSensitivity;
+					transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+				} else {
+					xRotation -= keyboardTurnSpeed * lookSensitivity;
+					transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+				}
+			}
 		}
 
 		// Toggle inventory mode<->shoot mode

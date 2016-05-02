@@ -1249,6 +1249,7 @@ ModelImporter:
     102482: 7_EngineeringLevel_997
     102484: 7_EngineeringLevel_998
     102486: 7_EngineeringLevel_999
+    102488: 7_EngineeringLevel_000
     400000: 7_EngineeringLevel
     400002: bsp_model_101
     400004: bsp_model_102
@@ -2493,6 +2494,7 @@ ModelImporter:
     402482: 7_EngineeringLevel_997
     402484: 7_EngineeringLevel_998
     402486: 7_EngineeringLevel_999
+    402488: 7_EngineeringLevel_000
     2300000: 7_EngineeringLevel
     2300002: bsp_model_101
     2300004: bsp_model_102
@@ -3736,6 +3738,7 @@ ModelImporter:
     2302480: 7_EngineeringLevel_997
     2302482: 7_EngineeringLevel_998
     2302484: 7_EngineeringLevel_999
+    2302486: 7_EngineeringLevel_000
     3300000: 7_EngineeringLevel
     3300002: bsp_model_101
     3300004: bsp_model_102
@@ -4979,6 +4982,7 @@ ModelImporter:
     3302480: 7_EngineeringLevel_997
     3302482: 7_EngineeringLevel_998
     3302484: 7_EngineeringLevel_999
+    3302486: 7_EngineeringLevel_000
     4300000: bsp_model_248
     4300002: bsp_model_247
     4300004: bsp_model_246
@@ -6222,6 +6226,7 @@ ModelImporter:
     4302480: 7_EngineeringLevel_003
     4302482: 7_EngineeringLevel_002
     4302484: 7_EngineeringLevel_001
+    4302486: 7_EngineeringLevel_000
     6400000: 7_EngineeringLevel
     6400002: bsp_model_101
     6400004: bsp_model_102
@@ -7465,6 +7470,7 @@ ModelImporter:
     6402480: 7_EngineeringLevel_997
     6402482: 7_EngineeringLevel_998
     6402484: 7_EngineeringLevel_999
+    6402486: 7_EngineeringLevel_000
     7400000: Default Take
     9500000: //RootNode
   materials:

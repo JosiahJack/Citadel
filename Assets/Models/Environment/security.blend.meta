@@ -33,6 +33,8 @@ ModelImporter:
     100050: bsp_model_7
     100052: bsp_model_8
     100054: //RootNode
+    100056: 8_SecurityLevel_DiegoTrap
+    100058: 8_SecurityLevel_001
     400000: 8_SecurityLevel
     400002: 8_SecurityLevel_grate1
     400004: 8_SecurityLevel_grate2
@@ -61,6 +63,8 @@ ModelImporter:
     400050: bsp_model_7
     400052: bsp_model_8
     400054: //RootNode
+    400056: 8_SecurityLevel_DiegoTrap
+    400058: 8_SecurityLevel_001
     2300000: 8_SecurityLevel
     2300002: 8_SecurityLevel_grate1
     2300004: 8_SecurityLevel_grate2
@@ -88,6 +92,8 @@ ModelImporter:
     2300048: bsp_model_6
     2300050: bsp_model_7
     2300052: bsp_model_8
+    2300054: 8_SecurityLevel_DiegoTrap
+    2300056: 8_SecurityLevel_001
     3300000: 8_SecurityLevel
     3300002: 8_SecurityLevel_grate1
     3300004: 8_SecurityLevel_grate2
@@ -115,6 +121,8 @@ ModelImporter:
     3300048: bsp_model_6
     3300050: bsp_model_7
     3300052: bsp_model_8
+    3300054: 8_SecurityLevel_DiegoTrap
+    3300056: 8_SecurityLevel_001
     4300000: bsp_model_39
     4300002: bsp_model_25
     4300004: bsp_model_24
@@ -142,6 +150,8 @@ ModelImporter:
     4300048: bsp_model_2
     4300050: 8_SecurityLevel_grate1
     4300052: 8_SecurityLevel
+    4300054: 8_SecurityLevel_DiegoTrap
+    4300056: 8_SecurityLevel_001
     6400000: 8_SecurityLevel
     6400002: 8_SecurityLevel_grate1
     6400004: 8_SecurityLevel_grate2
@@ -168,6 +178,8 @@ ModelImporter:
     6400046: bsp_model_6
     6400048: bsp_model_7
     6400050: bsp_model_8
+    6400052: 8_SecurityLevel_DiegoTrap
+    6400054: 8_SecurityLevel_001
     7400000: Default Take
     9500000: //RootNode
   materials:

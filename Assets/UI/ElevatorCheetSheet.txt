@@ -9,5 +9,5 @@ Elevator cheat sheet for Citadel:
 6 to G3:- ,- ,- ,-  | - ,- ,- ,-   DONE
 6 to G4:6 ,G4,- ,-  | - ,- ,- ,-   DONE
 6 to 7: 1d,2d,3d,6  | 7 ,8d,- ,-   DONE
-7 to 8: 1d,2d,3d,6d | 7 ,8 ,- ,-   
-8 to 9: 1d,2d,3d,6d | 8 ,9 ,- ,-   
+7 to 8: 1d,2d,3d,6d | 7 ,8 ,- ,-   DONE
+8 to 9: 1d,2d,3d,6d | 8 ,9 ,- ,-   DONE

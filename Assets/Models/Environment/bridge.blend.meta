@@ -20,6 +20,13 @@ ModelImporter:
     100024: bsp_model_36
     100026: bsp_model_37
     100028: bsp_model_38
+    100030: 9_Bridge_001
+    100032: 9_Bridge_002
+    100034: 9_Bridge_003
+    100036: 9_Bridge_004
+    100038: 9_Bridge_005
+    100040: 9_Bridge_006
+    100042: 9_Bridge_007
     400000: 9_Bridge
     400002: //RootNode
     400004: bsp_model_26
@@ -35,6 +42,13 @@ ModelImporter:
     400024: bsp_model_36
     400026: bsp_model_37
     400028: bsp_model_38
+    400030: 9_Bridge_001
+    400032: 9_Bridge_002
+    400034: 9_Bridge_003
+    400036: 9_Bridge_004
+    400038: 9_Bridge_005
+    400040: 9_Bridge_006
+    400042: 9_Bridge_007
     2300000: 9_Bridge
     2300002: bsp_model_26
     2300004: bsp_model_27
@@ -49,6 +63,13 @@ ModelImporter:
     2300022: bsp_model_36
     2300024: bsp_model_37
     2300026: bsp_model_38
+    2300028: 9_Bridge_001
+    2300030: 9_Bridge_002
+    2300032: 9_Bridge_003
+    2300034: 9_Bridge_004
+    2300036: 9_Bridge_005
+    2300038: 9_Bridge_006
+    2300040: 9_Bridge_007
     3300000: 9_Bridge
     3300002: bsp_model_26
     3300004: bsp_model_27
@@ -63,6 +84,13 @@ ModelImporter:
     3300022: bsp_model_36
     3300024: bsp_model_37
     3300026: bsp_model_38
+    3300028: 9_Bridge_001
+    3300030: 9_Bridge_002
+    3300032: 9_Bridge_003
+    3300034: 9_Bridge_004
+    3300036: 9_Bridge_005
+    3300038: 9_Bridge_006
+    3300040: 9_Bridge_007
     4300000: 9_Bridge
     4300002: bsp_model_38
     4300004: bsp_model_37
@@ -77,6 +105,13 @@ ModelImporter:
     4300022: bsp_model_28
     4300024: bsp_model_27
     4300026: bsp_model_26
+    4300028: 9_Bridge_006
+    4300030: 9_Bridge_005
+    4300032: 9_Bridge_004
+    4300034: 9_Bridge_003
+    4300036: 9_Bridge_001
+    4300038: 9_Bridge_002
+    4300040: 9_Bridge_007
     6400000: 9_Bridge
     6400002: bsp_model_26
     6400004: bsp_model_27
@@ -91,6 +126,13 @@ ModelImporter:
     6400022: bsp_model_36
     6400024: bsp_model_37
     6400026: bsp_model_38
+    6400028: 9_Bridge_001
+    6400030: 9_Bridge_002
+    6400032: 9_Bridge_003
+    6400034: 9_Bridge_004
+    6400036: 9_Bridge_005
+    6400038: 9_Bridge_006
+    6400040: 9_Bridge_007
     7400000: Default Take
     9500000: //RootNode
   materials:
