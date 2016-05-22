@@ -34,6 +34,7 @@ public class PlayerMovement : MonoBehaviour {
 	public int bodyState = 0;
 	//public float playerGravity = 500;
 	public bool ladderState = false;
+	public float ladderSpeed = 0.25f;
 	public float damageSpeed = 11.72f;
 	public float fallDamage = 75f;
 	public bool gravliftState = false;
@@ -316,7 +317,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		} else {
 			if (ladderState) {
-				rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * Time.deltaTime, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
+				rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * Time.deltaTime, ladderSpeed * Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
 			} else {
 				if (isSprinting) {
 					rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
