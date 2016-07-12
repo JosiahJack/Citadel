@@ -8,15 +8,18 @@ public class Const : MonoBehaviour {
 	[SerializeField] public Texture2D[] useableItemsFrobIcons;
     [SerializeField] public Sprite[] useableItemsIcons;
     [SerializeField] public string[] useableItemsNameText;
+	[SerializeField] public Sprite[] searchItemIconSprites;
 	public float doubleClickTime = 0.500f;
 	public float frobDistance = 4.5f;
+	public enum PoolType{DartImpacts};
+	public GameObject Pool_DartImpacts;
 	public GameObject statusBar;
     public static Const a;
 
-	// Instantiate it so that it can be accessed globally
-	void Awake() {
-		a = this;
-	}
+	// Instantiate it so that it can be accessed globally. MOST IMPORTANT PART!!
+	// =========================================================================
+	void Awake() {a = this; }
+	// =========================================================================
 
 	// Check if particular bit is 1 (ON/TRUE) in binary format of given integer
 	public bool CheckFlags (int checkInt, int flag) {
@@ -33,5 +36,27 @@ public class Const : MonoBehaviour {
 			if (a.statusBar != null)
 				a.statusBar.GetComponent<StatusBarTextDecay>().SendText(input);
 		}
+	}
+
+	public GameObject GetObjectFromPool(PoolType pool) {
+		if (Pool_DartImpacts == null) {
+			sprint("Cannot find pool of type PoolType.DartImpacts");
+			return null;
+		}
+
+		switch (pool) {
+		case PoolType.DartImpacts: 
+			for (int i=0;i<Pool_DartImpacts.transform.childCount;i++) {
+				Transform child = Pool_DartImpacts.transform.GetChild(i);
+				if (child.gameObject.activeInHierarchy == false) {
+					//sprint("Found a DartImpact!");
+					return child.gameObject;
+				}
+			}
+			sprint("Warning: No free objects in DartImpacts pool");
+			return null;
+		}
+
+		return null;
 	}
 }

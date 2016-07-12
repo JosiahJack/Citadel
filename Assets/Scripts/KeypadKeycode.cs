@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class KeypadKeycode : MonoBehaviour {
+	public DataTab dataTabResetter;
 	public GameObject keypadControl;
 	public GameObject playerCapsule;
 	public int keycode; // the access code
@@ -24,13 +25,14 @@ public class KeypadKeycode : MonoBehaviour {
 	void Use (GameObject owner) {
 		padInUse = true;
 		SFXSource.PlayOneShot(SFX);
+		dataTabResetter.Reset();
 		keypadControl.SetActive(true);
 		keypadControl.GetComponent<KeypadKeycodeButtons>().keycode = keycode;
 		keypadControl.GetComponent<KeypadKeycodeButtons>().keypad = this;
 		playerCamera = owner;
 		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode == false)
 			playerCamera.GetComponent<MouseLookScript>().ToggleInventoryMode();
-		playerCamera.GetComponent<MouseLookScript>().SetActiveTab(4);
+		playerCamera.GetComponent<MouseLookScript>().SetActiveTab(4,true);
 	}
 
 	public void UseTargets () {

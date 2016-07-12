@@ -53,10 +53,8 @@ public class MouseLookScript : MonoBehaviour {
     private float zRotationV;
     private float currentZRotation;
     private string mlookstring1;
-    private GameObject currentSearchItem;
     private Camera playerCamera;
     private GameObject heldObject;
-    private GameObject mouseCursor;
     private bool itemAdded = false;
 	private int indexAdjustment;
 	private Quaternion tempQuat;
@@ -67,10 +65,9 @@ public class MouseLookScript : MonoBehaviour {
 	public GameObject canvasContainer;
     [Tooltip("Game object that houses the MFD tabs")]
 	public GameObject tabControl;
-	[Tooltip("Text at the top of the data tab in the MFD")]
-	public Text dataTabHeader;
 	[Tooltip("Text in the data tab in the MFD that displays when searching an object containing no items")]
 	public Text dataTabNoItemsText;
+	public DataTab dataTabControl;
 	public GameObject searchFX;
 	public AudioSource SFXSource;
 	public GameObject searchOriginContainer;
@@ -82,6 +79,10 @@ public class MouseLookScript : MonoBehaviour {
 	[SerializeField] private GameObject ammoClipBox;
 	[HideInInspector]
 	public GameObject currentButton;
+	[HideInInspector]
+	public GameObject currentSearchItem;
+	[HideInInspector]
+	public GameObject mouseCursor;
     public GameObject weaponButtonsManager;
     public GameObject mainInventory;
 
@@ -173,6 +174,7 @@ public class MouseLookScript : MonoBehaviour {
 					// Send out Frob raycast
 					RaycastHit hit = new RaycastHit();
 					if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, frobDistance)) {
+						//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
 						// TIP: Use Camera.main.ViewportPointToRay for center of screen
 						if (hit.collider == null)
 							return;
@@ -231,7 +233,7 @@ public class MouseLookScript : MonoBehaviour {
                         // 1 GrenadeButton
                         // 2 PatchButton
                         // 3 GeneralInventoryButton
-						// 77 Center tabs button
+						// 4 Search contents button
 
                         switch(overButtonType) {
                             case 0:
@@ -276,11 +278,24 @@ public class MouseLookScript : MonoBehaviour {
                                 heldObjectIndex = currentButton.GetComponent<GeneralInvButtonScript>().useableItemIndex;
                                 GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[currentButton.GetComponent<GeneralInvButtonScript>().GeneralInvButtonIndex] = -1;
                                 break;
+							case 4:
+								int tempButtonindex = currentButton.GetComponent<SearchContainerButtonScript>().refIndex;
+								cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex]];
+								heldObjectIndex = currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex];
+								currentSearchItem.GetComponent<SearchableItem>().contents[tempButtonindex] = -1;
+								currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex] = -1;
+								currentButton.GetComponentInParent<SearchButtonsScript>().GetComponentInParent<DataTab>().searchItemImages[tempButtonindex].SetActive(false);
+								currentButton.GetComponentInParent<SearchButtonsScript>().CheckForEmpty();
+								overButton = false;
+								overButtonType = -1;
+								break;
                         }
-                        mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture;
-                        Cursor.lockState = CursorLockMode.None;
-                        inventoryMode = true;  // inventory mode turned on
-                        holdingObject = true;
+						if (overButtonType != 77) {
+                       		mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture;
+	                        Cursor.lockState = CursorLockMode.None;
+	                        inventoryMode = true;  // inventory mode turned on
+	                        holdingObject = true;
+						}
 					}
 				}
 			}
@@ -479,34 +494,41 @@ public class MouseLookScript : MonoBehaviour {
 		searchFX.SetActive(true);
 		searchFX.GetComponent<Animation>().Play();
 
-		// Set header text on data tab
-		dataTabHeader.text = currentSearchItem.GetComponent<SearchableItem>().objectName;
+		// Reset data tab before adding data (clears out keypad or elevator UIs)
+		dataTabControl.Reset();
 
-		// Turn off the text that displays "No Items" by default
-		dataTabNoItemsText.enabled = false;
-
+		// Search through array to see if any items are in the container
 		int numberFoundContents = 0;
-
+		int[] resultContents = {-1,-1,-1,-1};  // create blanked container for search results
 		for (int i=currentSearchItem.GetComponent<SearchableItem>().numSlots - 1;i>=0;i--) {
-			if (currentSearchItem.GetComponent<SearchableItem>().contents[i] != null)
-				numberFoundContents++;
+			resultContents[i] = currentSearchItem.GetComponent<SearchableItem>().contents[i];
+			if (resultContents[i] > -1) {
+				numberFoundContents++; // if something was found, add 1 to count
+			}
 		}
 
-		if (numberFoundContents <=0)
-			dataTabNoItemsText.enabled = true;  // show that there was nothing found in search
+		// Send data to LH DataTab to show it
+		dataTabControl.Search(currentSearchItem.GetComponent<SearchableItem>().objectName, numberFoundContents, resultContents);
 
-		// Change last active MFD tab (RH or LH depending on which was used last) to Data tab to show search contents
-		SetActiveTab(4);
+		// Set LH DataTab to show search contents
+		SetActiveTab(4,true);
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = false;
+		inventoryMode = true;
 	}
 
-	public void SetActiveTab (int tabIndex) {
+	public void SetActiveTab (int tabIndex, bool rememberLast) {
 		if (tabIndex < 0 || tabIndex > 4) {
 			Const.sprint("BUG: tabIndex outside of bounds (0 to 4) sent to MouseLookScript.SetActiveTab()");
 			return;
 		}
 
-		if (tabControl.GetComponent<TabButtonsScript>().curTab != tabIndex)
+		if (tabControl.GetComponent<TabButtonsScript>().curTab != tabIndex) {
+			if (rememberLast)
+				tabControl.GetComponent<TabButtonsScript>().SetCurrentAsLast();
+			
 			tabControl.GetComponent<TabButtonsScript>().TabButtonClickSilent(tabIndex);
+		}
 	}
 
 	// Returns string for describing the walls/floors/etc. based on the material name
@@ -831,5 +853,23 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		}
 		return (Mesh)null;
+	}
+
+	void drawMyLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
+		StartCoroutine( drawLine(start, end, color, duration));
+	}
+
+	IEnumerator drawLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
+		GameObject myLine = new GameObject ();
+		myLine.transform.position = start;
+		myLine.AddComponent<LineRenderer> ();
+		LineRenderer lr = myLine.GetComponent<LineRenderer> ();
+		lr.material = new Material (Shader.Find ("Particles/Additive"));
+		lr.SetColors (color,color);
+		lr.SetWidth (0.1f,0.1f);
+		lr.SetPosition (0, start);
+		lr.SetPosition (1, end);
+		yield return new WaitForSeconds(duration);
+		GameObject.Destroy (myLine);
 	}
 }

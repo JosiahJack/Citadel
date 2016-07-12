@@ -14,7 +14,16 @@ public class TabButtonsScript : MonoBehaviour {
 	[SerializeField] private AudioSource TabSFX = null; // assign in the editor
 	[SerializeField] private AudioClip TabSFXClip = null; // assign in the editor
 	public int curTab = 0;
-	
+	public int lastTab = 0;
+
+	public void SetCurrentAsLast () {
+		lastTab = curTab;
+	}
+
+	public void ReturnToLastTab () {
+		TabButtonClickSilent(lastTab);
+	}
+
 	public void TabButtonClick (int tabNum) {
 		TabSFX.PlayOneShot(TabSFXClip);
 		TabButtonClickSilent(tabNum);

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class KeypadElevator : MonoBehaviour {
+	public DataTab dataTabResetter;
 	public GameObject elevatorControl;
 	public GameObject playerCapsule;
 	public GameObject playerCamera;
@@ -40,6 +41,7 @@ public class KeypadElevator : MonoBehaviour {
 	void Use (GameObject owner) {
 		padInUse = true;
 		SFXSource.PlayOneShot(SFX);
+		dataTabResetter.Reset();
 		elevatorControl.SetActive(true);
 		for (int i=0;i<8;i++) {
 			elevatorControl.GetComponent<ElevatorKeypad>().buttonsEnabled[i] = buttonsEnabled[i];
@@ -52,7 +54,7 @@ public class KeypadElevator : MonoBehaviour {
 		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode == false)
 			playerCamera.GetComponent<MouseLookScript>().ToggleInventoryMode();
 
-		playerCamera.GetComponent<MouseLookScript>().SetActiveTab(4);
+		playerCamera.GetComponent<MouseLookScript>().SetActiveTab(4,true);
 	}
 
 	void Update () {

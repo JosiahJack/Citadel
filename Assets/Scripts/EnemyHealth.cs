@@ -57,7 +57,10 @@ public class EnemyHealth : MonoBehaviour {
 		//Color color = enemySkinRenderer.material.color;
 		//color.a += lerp;
 		//enemySkinRenderer.material.color = color;
-		enemySkinRenderer.material.mainTexture = deathMaterial.mainTexture;
+		if (enemySkinRenderer != null && deathMaterial != null) {
+			enemySkinRenderer.material.mainTexture = deathMaterial.mainTexture;
+		}
+
 		if (deathTime < Time.time) {
 			Death();
 		}

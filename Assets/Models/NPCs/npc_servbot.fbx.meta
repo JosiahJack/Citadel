@@ -1,0 +1,157 @@
+fileFormatVersion: 2
+guid: ede08b95808220146b15101465ff4b7a
+timeCreated: 1467344188
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Armature
+    100002: BodyBone
+    100004: BodyBone_end
+    100006: Bone.001
+    100008: Bone.002
+    100010: Bone.002_end
+    100012: Bone.003
+    100014: Bone.004
+    100016: Bone.004_end
+    100018: leftarm
+    100020: leftforearm
+    100022: //RootNode
+    100024: rightarm
+    100026: rightforearm
+    100028: servbot
+    100030: servbot.001
+    400000: Armature
+    400002: BodyBone
+    400004: BodyBone_end
+    400006: Bone.001
+    400008: Bone.002
+    400010: Bone.002_end
+    400012: Bone.003
+    400014: Bone.004
+    400016: Bone.004_end
+    400018: leftarm
+    400020: leftforearm
+    400022: //RootNode
+    400024: rightarm
+    400026: rightforearm
+    400028: servbot
+    400030: servbot.001
+    2300000: leftarm
+    2300002: leftforearm
+    2300004: rightarm
+    2300006: rightforearm
+    2300008: servbot
+    3300000: leftarm
+    3300002: leftforearm
+    3300004: rightarm
+    3300006: rightforearm
+    3300008: servbot
+    4300000: servbot.001
+    4300002: leftforearm
+    4300004: rightforearm
+    4300006: rightarm
+    4300008: leftarm
+    4300010: servbot
+    7400000: Armature|ArmatureAction
+    7400002: Armature|leftarmAction
+    7400004: Armature|leftforearmAction
+    7400006: Armature|rightarmAction
+    7400008: Armature|rightforearmAction
+    7400010: Armature|servbotAction
+    7400012: servbot.001|leftarmAction
+    7400014: servbot.001|leftforearmAction
+    7400016: servbot.001|rightarmAction
+    7400018: servbot.001|rightforearmAction
+    7400020: servbot.001|servbotAction
+    7400022: leftforearm|leftarmAction
+    7400024: leftforearm|leftforearmAction
+    7400026: leftforearm|rightarmAction
+    7400028: leftforearm|rightforearmAction
+    7400030: leftforearm|servbotAction
+    7400032: rightforearm|leftarmAction
+    7400034: rightforearm|leftforearmAction
+    7400036: rightforearm|rightarmAction
+    7400038: rightforearm|rightforearmAction
+    7400040: rightforearm|servbotAction
+    7400042: rightarm|leftarmAction
+    7400044: rightarm|leftforearmAction
+    7400046: rightarm|rightarmAction
+    7400048: rightarm|rightforearmAction
+    7400050: rightarm|servbotAction
+    7400052: leftarm|leftarmAction
+    7400054: leftarm|leftforearmAction
+    7400056: leftarm|rightarmAction
+    7400058: leftarm|rightforearmAction
+    7400060: leftarm|servbotAction
+    7400062: servbot|leftarmAction
+    7400064: servbot|leftforearmAction
+    7400066: servbot|rightarmAction
+    7400068: servbot|rightforearmAction
+    7400070: servbot|servbotAction
+    9500000: //RootNode
+    13700000: servbot.001
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -4,7 +4,53 @@ timeCreated: 1463266955
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    100000: Armature
+    100002: BodyBone
+    100004: Bone_001
+    100006: Bone_002
+    100008: Bone_003
+    100010: Bone_004
+    100012: leftarm
+    100014: leftforearm
+    100016: //RootNode
+    100018: rightarm
+    100020: rightforearm
+    100022: servbot
+    100024: servbot_001
+    400000: Armature
+    400002: BodyBone
+    400004: Bone_001
+    400006: Bone_002
+    400008: Bone_003
+    400010: Bone_004
+    400012: leftarm
+    400014: leftforearm
+    400016: //RootNode
+    400018: rightarm
+    400020: rightforearm
+    400022: servbot
+    400024: servbot_001
+    2300000: leftarm
+    2300002: leftforearm
+    2300004: rightarm
+    2300006: rightforearm
+    2300008: servbot
+    3300000: leftarm
+    3300002: leftforearm
+    3300004: rightarm
+    3300006: rightforearm
+    3300008: servbot
+    4300000: servbot_001
+    4300002: leftforearm
+    4300004: rightforearm
+    4300006: rightarm
+    4300008: leftarm
+    4300010: servbot
+    7400000: Default Take
+    7400002: ArmatureAction
+    9500000: //RootNode
+    13700000: servbot_001
   materials:
     importMaterials: 1
     materialName: 0
@@ -12,14 +58,14 @@ ModelImporter:
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleRotations: 0
     optimizeGameObjects: 0
     motionNodeName: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
-    animationCompression: 1
+    animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
