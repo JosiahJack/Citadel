@@ -13,6 +13,7 @@ public class MouseCursor : MonoBehaviour {
     public Texture2D cursorImage;
     private float offsetX;
     private float offsetY;
+	public bool justDroppedItemInHelper = false;
 
 	void OnGUI () {
         if (offsetCentering) {
@@ -35,9 +36,17 @@ public class MouseCursor : MonoBehaviour {
 				inventoryAddHelper.SetActive(true);
 			} else {
 				inventoryAddHelper.SetActive(false);
+				if (justDroppedItemInHelper) {
+					justDroppedItemInHelper = false; // only disable blocking state once, not constantly
+					GUIState.a.isBlocking = false;
+				}
 			}
 		} else {
-			inventoryAddHelper.SetActive(false);
+			if (justDroppedItemInHelper) {
+				justDroppedItemInHelper = false; // only disable blocking state once, not constantly
+				inventoryAddHelper.SetActive(false);
+				GUIState.a.isBlocking = false;
+			}
 		}
 	}
 }

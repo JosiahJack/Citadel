@@ -5,13 +5,11 @@ using System.Collections;
 public class ElevatorButton : MonoBehaviour {
 	public bool floorAccessible = false;
 	public bool tooFarAway = false;
-	public GameObject playerCamera;
 	private GameObject levelManager;
 	[HideInInspector]
 	public GameObject targetDestination;
 	private Text childText;
 	private int levelIndex;
-
 
 	void Awake() {
 		levelManager = GameObject.Find("LevelManager");
@@ -22,18 +20,6 @@ public class ElevatorButton : MonoBehaviour {
 
 	void Start() {
 		GetComponent<Button>().onClick.AddListener(() => { ElevButtonClick(); });
-	}
-
-	public void PtrEnter () {
-		GUIState.isBlocking = true;
-		playerCamera.GetComponent<MouseLookScript>().overButton = true;
-		playerCamera.GetComponent<MouseLookScript>().overButtonType = 77;
-	}
-
-	public void PtrExit () {
-		GUIState.isBlocking = false;
-		playerCamera.GetComponent<MouseLookScript>().overButton = false;
-		playerCamera.GetComponent<MouseLookScript>().overButtonType = -1;
 	}
 
 	void ElevButtonClick () {

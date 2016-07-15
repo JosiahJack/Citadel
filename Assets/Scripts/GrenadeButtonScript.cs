@@ -14,14 +14,14 @@ public class GrenadeButtonScript : MonoBehaviour {
 	private Vector2 cursorHotspot;
 
 	public void PtrEnter () {
-		GUIState.isBlocking = true;
+		GUIState.a.isBlocking = true;
 		playerCamera.GetComponent<MouseLookScript>().overButton = true;
         playerCamera.GetComponent<MouseLookScript>().overButtonType = 1;
         playerCamera.GetComponent<MouseLookScript>().currentButton = gameObject;
 	}
 	
 	public void PtrExit () {
-		GUIState.isBlocking = false;
+		GUIState.a.isBlocking = false;
 		playerCamera.GetComponent<MouseLookScript>().overButton = false;
         playerCamera.GetComponent<MouseLookScript>().overButtonType = -1;
     }

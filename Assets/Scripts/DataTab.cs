@@ -26,7 +26,7 @@ public class DataTab : MonoBehaviour {
 		}
 	}
 
-	public void Search(string head, int numberFoundContents, int[] contents) {
+	public void Search(string head, int numberFoundContents, int[] contents, int[] customIndex) {
 		headerText.SetActive(true);
 		headerText_text.enabled = true;
 		headerText_text.text = head;
@@ -42,6 +42,7 @@ public class DataTab : MonoBehaviour {
 				searchItemImages[i].SetActive(true);
 				searchItemImages[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[contents[i]];
 				searchContainer.contents[i] = contents[i];
+				searchContainer.customIndex[i] = customIndex[i];
 			}
 		}
 	}

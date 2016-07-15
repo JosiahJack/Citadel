@@ -18,11 +18,11 @@ public class HardwareButtonScript : MonoBehaviour {
 	//private bool alternateAmmo = false;
 
 	public void PtrEnter () {
-		GUIState.isBlocking = true;
+		GUIState.a.isBlocking = true;
 	}
 
 	public void PtrExit () {
-		GUIState.isBlocking = false;
+		GUIState.a.isBlocking = false;
 	}
 
 	void HardwareClick () {

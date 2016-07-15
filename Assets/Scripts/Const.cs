@@ -3,12 +3,15 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class Const : MonoBehaviour {
-	[SerializeField] public string grenade1 = "FRAGMENTATION\nGRENADE";
 	[SerializeField] public GameObject[] useableItems;
 	[SerializeField] public Texture2D[] useableItemsFrobIcons;
     [SerializeField] public Sprite[] useableItemsIcons;
     [SerializeField] public string[] useableItemsNameText;
 	[SerializeField] public Sprite[] searchItemIconSprites;
+	[SerializeField] public string[] audiologNames;
+	[SerializeField] public AudioClip[] audioLogs;
+	[SerializeField] public bool[] audioLogHasAudio;
+	[SerializeField] public string[] audioLogSpeech2Text;
 	public float doubleClickTime = 0.500f;
 	public float frobDistance = 4.5f;
 	public enum PoolType{DartImpacts};

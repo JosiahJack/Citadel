@@ -30,6 +30,7 @@ public class MouseLookScript : MonoBehaviour {
     public float tossForce = 200f;
     //[HideInInspector]
     public int heldObjectIndex;
+	public int heldObjectCustomIndex;
     [HideInInspector]
     public float yRotation;
 	[Tooltip("Shows what button type cursor is over")]
@@ -85,6 +86,7 @@ public class MouseLookScript : MonoBehaviour {
 	public GameObject mouseCursor;
     public GameObject weaponButtonsManager;
     public GameObject mainInventory;
+	public LogInventory logInventory;
 
     //float headbobSpeed = 1;
     //float headbobStepCounter;
@@ -167,7 +169,7 @@ public class MouseLookScript : MonoBehaviour {
 			ToggleInventoryMode();
 
 		// Frob if the cursor is not on the UI
-		if (!GUIState.isBlocking) {
+		if (!GUIState.a.isBlocking) {
 			currentButton = null;
 			if(Input.GetMouseButtonDown(1)) {
 				if (!holdingObject) {
@@ -282,8 +284,11 @@ public class MouseLookScript : MonoBehaviour {
 								int tempButtonindex = currentButton.GetComponent<SearchContainerButtonScript>().refIndex;
 								cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex]];
 								heldObjectIndex = currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex];
+								heldObjectCustomIndex = currentButton.GetComponentInParent<SearchButtonsScript>().customIndex[tempButtonindex];
 								currentSearchItem.GetComponent<SearchableItem>().contents[tempButtonindex] = -1;
+								currentSearchItem.GetComponent<SearchableItem>().customIndex[tempButtonindex] = -1;
 								currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex] = -1;
+								currentButton.GetComponentInParent<SearchButtonsScript>().customIndex[tempButtonindex] = -1;
 								currentButton.GetComponentInParent<SearchButtonsScript>().GetComponentInParent<DataTab>().searchItemImages[tempButtonindex].SetActive(false);
 								currentButton.GetComponentInParent<SearchButtonsScript>().CheckForEmpty();
 								overButton = false;
@@ -366,6 +371,17 @@ public class MouseLookScript : MonoBehaviour {
 		Const.sprint("Patch added to inventory");
     }
 
+	void AddAudioLogToInventory () {
+		if ((heldObjectCustomIndex != -1) && (logInventory != null)) {
+			logInventory.hasLog[heldObjectCustomIndex] = true;
+			logInventory.lastAddedIndex = heldObjectCustomIndex;
+			string audName = Const.a.audiologNames[heldObjectCustomIndex];
+			Const.sprint("Audio log " + audName + " picked up.  Press inputCode.listenLog to playback.");
+		} else {
+			Const.sprint("Warning: Audio log picked up has no assigned index (-1)");
+		}
+	}
+
 	void AddItemToInventory (int index) {
 		AudioClip pickclip;
 		pickclip = PickupSFX;
@@ -382,6 +398,9 @@ public class MouseLookScript : MonoBehaviour {
             case 3:
                 AddGenericObjectToInventory(3);
                 break;
+			case 6:
+				AddAudioLogToInventory();
+				break;
             case 7:
 			    AddGrenadeToInventory(0);
 			    break;
@@ -427,6 +446,9 @@ public class MouseLookScript : MonoBehaviour {
 			case 38:
 				AddWeaponToInventory(38);
 				break;
+			case 42:
+				AddWeaponToInventory(42);
+				break;
             case 44:
                 AddWeaponToInventory(44);
                 break;
@@ -446,7 +468,9 @@ public class MouseLookScript : MonoBehaviour {
 	void ResetHeldItem() {
 		//yield return new WaitForSeconds(0.05f);
 		heldObjectIndex = -1;
+		heldObjectCustomIndex = -1;
 		holdingObject = false;
+		mouseCursor.GetComponent<MouseCursor>().justDroppedItemInHelper = true;
 	}
 
 	void ResetCursor () {
@@ -500,15 +524,17 @@ public class MouseLookScript : MonoBehaviour {
 		// Search through array to see if any items are in the container
 		int numberFoundContents = 0;
 		int[] resultContents = {-1,-1,-1,-1};  // create blanked container for search results
+		int[] resultCustomIndex = {-1,-1,-1,-1};  // create blanked container for search results custom indices
 		for (int i=currentSearchItem.GetComponent<SearchableItem>().numSlots - 1;i>=0;i--) {
 			resultContents[i] = currentSearchItem.GetComponent<SearchableItem>().contents[i];
+			resultCustomIndex[i] = currentSearchItem.GetComponent<SearchableItem>().customIndex[i];
 			if (resultContents[i] > -1) {
 				numberFoundContents++; // if something was found, add 1 to count
 			}
 		}
 
 		// Send data to LH DataTab to show it
-		dataTabControl.Search(currentSearchItem.GetComponent<SearchableItem>().objectName, numberFoundContents, resultContents);
+		dataTabControl.Search(currentSearchItem.GetComponent<SearchableItem>().objectName, numberFoundContents, resultContents, resultCustomIndex);
 
 		// Set LH DataTab to show search contents
 		SetActiveTab(4,true);

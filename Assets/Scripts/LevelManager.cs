@@ -34,7 +34,7 @@ public class LevelManager : MonoBehaviour {
 			
 		levels[levnum].SetActive(true); // Load new level
 		elevatorControl.SetActive(false);
-		GUIState.isBlocking = false;
+		GUIState.a.isBlocking = false;
 		currentPlayer.GetComponentInChildren<MouseLookScript>().overButton = false;
 		currentPlayer.GetComponentInChildren<MouseLookScript>().overButtonType = -1;
 		currentPlayer.transform.position = targetDestination.transform.position; // Put player in the new level

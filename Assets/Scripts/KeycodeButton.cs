@@ -8,13 +8,13 @@ public class KeycodeButton : MonoBehaviour {
 	public int index;
 
 	public void PtrEnter () {
-		GUIState.isBlocking = true;
+		GUIState.a.isBlocking = true;
 		playerCamera.GetComponent<MouseLookScript>().overButton = true;
 		playerCamera.GetComponent<MouseLookScript>().overButtonType = 77;
 	}
 
 	public void PtrExit () {
-		GUIState.isBlocking = false;
+		GUIState.a.isBlocking = false;
 		playerCamera.GetComponent<MouseLookScript>().overButton = false;
 		playerCamera.GetComponent<MouseLookScript>().overButtonType = -1;
 	}

@@ -7,11 +7,13 @@ public class SearchButtonsScript : MonoBehaviour {
 	public TabButtonsScript tabButtonController;
 	public MouseLookScript playerCamera;
 	public int[] contents;
+	public int[] customIndex;
 	public int j;
 
 	void Awake () {
 		for (int i=0;i<=3;i++) {
 			contents[i] = -1;
+			customIndex[i] = -1;
 		}
 	}
 
@@ -32,8 +34,10 @@ public class SearchButtonsScript : MonoBehaviour {
 			playerCamera.mouseCursor.GetComponent<MouseCursor>().cursorImage = Const.a.useableItemsFrobIcons[contents[0]];
 			playerCamera.heldObjectIndex = contents[0];
 			playerCamera.currentSearchItem.GetComponent<SearchableItem>().contents[0] = -1;
+			playerCamera.currentSearchItem.GetComponent<SearchableItem>().customIndex[0] = -1;
 			playerCamera.holdingObject = true;
 			contents[0] = -1;
+			customIndex[0] = -1;
 			dataTabController.searchItemImages[0].SetActive(false);
 			CheckForEmpty();
 			break;
@@ -41,8 +45,10 @@ public class SearchButtonsScript : MonoBehaviour {
 			playerCamera.mouseCursor.GetComponent<MouseCursor>().cursorImage = Const.a.useableItemsFrobIcons[contents[1]];
 			playerCamera.heldObjectIndex = contents[1];
 			playerCamera.currentSearchItem.GetComponent<SearchableItem>().contents[1] = -1;
+			playerCamera.currentSearchItem.GetComponent<SearchableItem>().customIndex[1] = -1;
 			playerCamera.holdingObject = true;
 			contents[1] = -1;
+			customIndex[1] = -1;
 			dataTabController.searchItemImages[1].SetActive(false);
 			CheckForEmpty();
 			break;
@@ -50,8 +56,10 @@ public class SearchButtonsScript : MonoBehaviour {
 			playerCamera.mouseCursor.GetComponent<MouseCursor>().cursorImage = Const.a.useableItemsFrobIcons[contents[2]];
 			playerCamera.heldObjectIndex = contents[2];
 			playerCamera.currentSearchItem.GetComponent<SearchableItem>().contents[2] = -1;
+			playerCamera.currentSearchItem.GetComponent<SearchableItem>().customIndex[2] = -1;
 			playerCamera.holdingObject = true;
 			contents[2] = -1;
+			customIndex[2] = -1;
 			dataTabController.searchItemImages[2].SetActive(false);
 			CheckForEmpty();
 			break;
@@ -59,13 +67,15 @@ public class SearchButtonsScript : MonoBehaviour {
 			playerCamera.mouseCursor.GetComponent<MouseCursor>().cursorImage = Const.a.useableItemsFrobIcons[contents[3]];
 			playerCamera.heldObjectIndex = contents[3];
 			playerCamera.currentSearchItem.GetComponent<SearchableItem>().contents[3] = -1;
+			playerCamera.currentSearchItem.GetComponent<SearchableItem>().customIndex[3] = -1;
 			playerCamera.holdingObject = true;
 			contents[3] = -1;
+			customIndex[3] = -1;
 			dataTabController.searchItemImages[3].SetActive(false);
 			CheckForEmpty();
 			break;
 		}
-		GUIState.isBlocking = false;
+		GUIState.a.isBlocking = false;
 		playerCamera.GetComponent<MouseLookScript>().overButton = false;
 		playerCamera.GetComponent<MouseLookScript>().overButtonType = -1;
 	}

@@ -2,5 +2,9 @@
 using System.Collections;
 
 public class GUIState : MonoBehaviour {
-	public static bool isBlocking = false;
+	[SerializeField]
+	public bool isBlocking = false;
+	public static GUIState a;
+
+	void Awake() {a = this; }
 }
