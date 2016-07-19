@@ -64,9 +64,7 @@ public class GenericGunFire : MonoBehaviour {
 				impact.transform.position = hit.point;
 				impact.SetActive(true);
 			}
-			if (hit.transform.gameObject.GetComponent<EnemyHealth>() != null) {
-				hit.transform.gameObject.GetComponent<EnemyHealth>().TakeDamage(damage);
-			}
+			hit.transform.gameObject.SendMessage("TakeDamage", damage,SendMessageOptions.DontRequireReceiver);
 			waitTilNextFire = Time.time + fireSpeed;
 		}
 	}

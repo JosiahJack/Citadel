@@ -47,7 +47,7 @@ public class MouseLookScript : MonoBehaviour {
 	public float frobDistance = 4.5f;
 	[Tooltip("Speed multiplier for turning the view with the keyboard")]
 	public float keyboardTurnSpeed = 1.5f;
-    private float xRotation;
+    public float xRotation;
     private float zRotation;
     private float yRotationV;
     private float xRotationV;

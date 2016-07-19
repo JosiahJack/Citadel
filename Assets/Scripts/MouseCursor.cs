@@ -8,7 +8,7 @@ public class MouseCursor : MonoBehaviour {
 	public MouseLookScript playerCameraScript;
 	public RectTransform centerMFDPanel;
 	public GameObject inventoryAddHelper;
-    public float cursorSize = 48f;
+    public float cursorSize = 24f;
     public bool offsetCentering = true;
     public Texture2D cursorImage;
     private float offsetX;
@@ -31,6 +31,7 @@ public class MouseCursor : MonoBehaviour {
 	}
 
 	void Update () {
+		cursorSize = (24f * (Screen.width/640f));
 		if (playerCameraScript.inventoryMode && playerCameraScript.holdingObject) {
 			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,mainCamera)) {
 				inventoryAddHelper.SetActive(true);

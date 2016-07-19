@@ -4,7 +4,7 @@ using System.Collections;
 public class EnemyHealth : MonoBehaviour {
 	public float startingHealth = 2f;
 	public float health;
-	public float deathTime;
+	public float deathTime = 0.1f;
 	public AudioClip SXFDeathClip;
 	public AudioClip SXFIdleClip;
 	public AudioClip SXFPainClip;
@@ -15,18 +15,23 @@ public class EnemyHealth : MonoBehaviour {
 	private bool isDead;
 	private bool isDying;
 	private float idleTime;
-	private MeshCollider meshCollider;
+	private Rigidbody rbody;
+	//private MeshCollider meshCollider;
 	public SkinnedMeshRenderer enemySkinRenderer;
 
 	void Awake () {
 		anim = GetComponent<Animator>();
 		SFX = GetComponent<AudioSource>();
+		rbody = GetComponent<Rigidbody>();
 		health = startingHealth;
-		meshCollider = GetComponent<MeshCollider>();
-		meshCollider.enabled = false;
+		//meshCollider = GetComponent<MeshCollider>();
+		//meshCollider.enabled = false;
 	}
 
 	public void TakeDamage (float take) {
+		if (health < 0)
+			return;
+		
 		print("Enemy health was: " + health);
 		health -= take;
 		print("and is now" + health);
@@ -60,10 +65,12 @@ public class EnemyHealth : MonoBehaviour {
 		if (enemySkinRenderer != null && deathMaterial != null) {
 			enemySkinRenderer.material.mainTexture = deathMaterial.mainTexture;
 		}
-
+			
 		if (deathTime < Time.time) {
 			Death();
+			return;
 		}
+		anim.SetBool("Dead",true);
 	}
 
 	void Death () {
@@ -71,6 +78,6 @@ public class EnemyHealth : MonoBehaviour {
 		isDying = false;
 		SFX.PlayOneShot(SXFDeathClip);
 		gameObject.tag = "Searchable";
-		anim.SetTrigger("Dead");
+		rbody.isKinematic = true;
 	}
 }
