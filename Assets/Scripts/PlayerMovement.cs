@@ -94,89 +94,91 @@ public class PlayerMovement : MonoBehaviour {
 		// 4 = Prone
 		// 5 = Proning down in process
 		// 6 = Proning up to crouch in process
-		rbody.WakeUp();
+		if (!PauseScript.a.paused) {
+			rbody.WakeUp();
 
-		if (Input.GetKeyDown(KeyCode.CapsLock)) {
-			isCapsLockOn = !isCapsLockOn;
-		}
-		if (Input.GetKey(KeyCode.LeftShift)) {
-			if (grounded) {
-				if (isCapsLockOn) {
-					isSprinting = false;
-				} else {
-					isSprinting = true;
-				}
+			if (Input.GetKeyDown(KeyCode.CapsLock)) {
+				isCapsLockOn = !isCapsLockOn;
 			}
-		} else {
-			if (grounded) {
-				if (isCapsLockOn) {
-					isSprinting = true;
-				} else {
-					isSprinting = false;
-				}
-			}
-		}
-		
-		if (Input.GetButtonDown("Crouch")) {
-			if ((bodyState == 1) || (bodyState == 2)) {
-				if (!(CantStand())) {
-					bodyState = 3; // Start standing up
-				} else {
-					print("Can't stand here.");
+			if (Input.GetKey(KeyCode.LeftShift)) {
+				if (grounded) {
+					if (isCapsLockOn) {
+						isSprinting = false;
+					} else {
+						isSprinting = true;
+					}
 				}
 			} else {
-				if ((bodyState == 0) || (bodyState == 3)) {
-					bodyState = 2; // Start crouching down
-				} else {
-					if ((bodyState == 4) || (bodyState == 5)) {
-						if (!(CantCrouch())) {
-							bodyState = 6; // Start getting up to crouch
-						} else {
-							print("Can't crouch here.");
-						}
+				if (grounded) {
+					if (isCapsLockOn) {
+						isSprinting = true;
+					} else {
+						isSprinting = false;
 					}
 				}
 			}
-		}
-		
-		if (Input.GetButtonDown("Prone")) {
-			if (bodyState == 0 || bodyState == 1 || bodyState == 2 || bodyState == 3 || bodyState == 6) {
-				bodyState = 5; // Start proning down
-			} else {
-				if (bodyState == 4 || bodyState == 5) {
-					if (!CantStand()) {
+			
+			if (Input.GetButtonDown("Crouch")) {
+				if ((bodyState == 1) || (bodyState == 2)) {
+					if (!(CantStand())) {
 						bodyState = 3; // Start standing up
 					} else {
 						print("Can't stand here.");
 					}
-				}
-			}
-		}
-		
-		if (currentCrouchRatio > 1) {
-			if (bodyState == 0 || bodyState == 3) {
-				currentCrouchRatio = 1; //Clamp it
-				bodyState = 0;
-			}
-		} else {	
-			if (currentCrouchRatio < crouchRatio) {
-				if (bodyState == 1 || bodyState == 2) {
-					currentCrouchRatio = crouchRatio; //Clamp it
-					bodyState = 1;
 				} else {
-					if (bodyState == 4 || bodyState == 5) {
-						if (currentCrouchRatio < proneRatio) {
-							currentCrouchRatio = proneRatio; //Clamp it
-							bodyState = 4;
-							
+					if ((bodyState == 0) || (bodyState == 3)) {
+						bodyState = 2; // Start crouching down
+					} else {
+						if ((bodyState == 4) || (bodyState == 5)) {
+							if (!(CantCrouch())) {
+								bodyState = 6; // Start getting up to crouch
+							} else {
+								print("Can't crouch here.");
+							}
 						}
 					}
 				}
-			} else {
-				if (bodyState == 6) {
-					if (currentCrouchRatio > crouchRatio) {
+			}
+			
+			if (Input.GetButtonDown("Prone")) {
+				if (bodyState == 0 || bodyState == 1 || bodyState == 2 || bodyState == 3 || bodyState == 6) {
+					bodyState = 5; // Start proning down
+				} else {
+					if (bodyState == 4 || bodyState == 5) {
+						if (!CantStand()) {
+							bodyState = 3; // Start standing up
+						} else {
+							print("Can't stand here.");
+						}
+					}
+				}
+			}
+			
+			if (currentCrouchRatio > 1) {
+				if (bodyState == 0 || bodyState == 3) {
+					currentCrouchRatio = 1; //Clamp it
+					bodyState = 0;
+				}
+			} else {	
+				if (currentCrouchRatio < crouchRatio) {
+					if (bodyState == 1 || bodyState == 2) {
 						currentCrouchRatio = crouchRatio; //Clamp it
 						bodyState = 1;
+					} else {
+						if (bodyState == 4 || bodyState == 5) {
+							if (currentCrouchRatio < proneRatio) {
+								currentCrouchRatio = proneRatio; //Clamp it
+								bodyState = 4;
+								
+							}
+						}
+					}
+				} else {
+					if (bodyState == 6) {
+						if (currentCrouchRatio > crouchRatio) {
+							currentCrouchRatio = crouchRatio; //Clamp it
+							bodyState = 1;
+						}
 					}
 				}
 			}
@@ -238,134 +240,136 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void  FixedUpdate (){
-		// Crouch
-		LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));
-		
-		if ((bodyState == 2) || (bodyState == 5))
-			currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
-		
-		if (bodyState == 3) {
-			lastCrouchRatio = currentCrouchRatio;
-			currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, 1.01f, ref crouchingVelocity, transitionToCrouchSec);
-			LocalPositionSetY(transform,(((currentCrouchRatio - lastCrouchRatio) * capsuleHeight)/2)+transform.position.y);
-		}
-		
-		if (bodyState == 6) {
-			lastCrouchRatio = currentCrouchRatio;
-			currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, 1.01f, ref crouchingVelocity, (transitionToCrouchSec+transitionToProneAdd));
-			LocalPositionSetY(transform,(((currentCrouchRatio - lastCrouchRatio) * capsuleHeight)/2)+transform.position.y);
-		}
-		
-		// Set speed	
-		switch (bodyState) {
-		case 0: playerSpeed = maxWalkSpeed; //TODO:: lerp from other speeds
-			break;
-		case 1: playerSpeed = maxCrouchSpeed; //TODO:: lerp from other speeds
-			break;
-		case 4: playerSpeed = maxProneSpeed; //TODO:: lerp from other speeds
-			break;
-		}
-
-		// Check if skates are active
-		if (isSkating)
-			playerSpeed = maxSkateSpeed;
-		
-		// Limit movement speed horizontally
-		horizontalMovement = new Vector2(rbody.velocity.x, rbody.velocity.z);
-		
-		if (horizontalMovement.magnitude > playerSpeed) {
-			horizontalMovement = horizontalMovement.normalized;
-			if (isSprinting)
-				playerSpeed = maxSprintSpeed;
-			horizontalMovement *= playerSpeed;
-		}	
-
-		// Set horizontal velocity
-		RigidbodySetVelocityX(rbody, horizontalMovement.x);
-		RigidbodySetVelocityZ(rbody, horizontalMovement.y);
-
-		// Update automap position
-		UpdateAutomap();
-		if (horizontalMovement.x != 0 || horizontalMovement.y != 0) {
-			//automapContainer.GetComponent<ScrollRect>().verticalNormalizedPosition += horizontalMovement.y * automapFactor * (-1);
-			//automapContainer.GetComponent<ScrollRect>().horizontalNormalizedPosition += horizontalMovement.x * automapFactor * (-1);
-			//UpdateAutomap();
-		}
-
-		// Set vertical velocity
-		verticalMovement = rbody.velocity.y;
-		if (verticalMovement > maxVerticalSpeed) {
-			verticalMovement = maxVerticalSpeed;
-		}
-		RigidbodySetVelocityY(rbody, verticalMovement);
-		
-		// Ground friction (TODO: disable for Cyberspace)
-		if (grounded) {
-			RigidbodySetVelocityX(rbody, (Mathf.SmoothDamp(rbody.velocity.x, 0, ref walkDeaccelerationVolx, walkDeacceleration)));
-			RigidbodySetVelocityZ(rbody, (Mathf.SmoothDamp(rbody.velocity.z, 0, ref walkDeaccelerationVolz, walkDeacceleration)));
-		}
-
-		// Set rotation of playercapsule from mouselook script TODO: Is this needed?
-		transform.rotation = Quaternion.Euler(0,mlookScript.yRotation,0); //Change 0 values for x and z for use in Cyberspace
-
-		// Handle ladder movement
-		if (grounded == true) {
-			if (ladderState) {
-				rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
-			} else {
-				rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime);
+		if (!PauseScript.a.paused) {
+			// Crouch
+			LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));
+			
+			if ((bodyState == 2) || (bodyState == 5))
+				currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
+			
+			if (bodyState == 3) {
+				lastCrouchRatio = currentCrouchRatio;
+				currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, 1.01f, ref crouchingVelocity, transitionToCrouchSec);
+				LocalPositionSetY(transform,(((currentCrouchRatio - lastCrouchRatio) * capsuleHeight)/2)+transform.position.y);
 			}
-		} else {
-			if (ladderState) {
-				rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * Time.deltaTime, ladderSpeed * Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
-			} else {
-				if (isSprinting) {
-					rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
+			
+			if (bodyState == 6) {
+				lastCrouchRatio = currentCrouchRatio;
+				currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, 1.01f, ref crouchingVelocity, (transitionToCrouchSec+transitionToProneAdd));
+				LocalPositionSetY(transform,(((currentCrouchRatio - lastCrouchRatio) * capsuleHeight)/2)+transform.position.y);
+			}
+			
+			// Set speed	
+			switch (bodyState) {
+			case 0: playerSpeed = maxWalkSpeed; //TODO:: lerp from other speeds
+				break;
+			case 1: playerSpeed = maxCrouchSpeed; //TODO:: lerp from other speeds
+				break;
+			case 4: playerSpeed = maxProneSpeed; //TODO:: lerp from other speeds
+				break;
+			}
+
+			// Check if skates are active
+			if (isSkating)
+				playerSpeed = maxSkateSpeed;
+			
+			// Limit movement speed horizontally
+			horizontalMovement = new Vector2(rbody.velocity.x, rbody.velocity.z);
+			
+			if (horizontalMovement.magnitude > playerSpeed) {
+				horizontalMovement = horizontalMovement.normalized;
+				if (isSprinting)
+					playerSpeed = maxSprintSpeed;
+				horizontalMovement *= playerSpeed;
+			}	
+
+			// Set horizontal velocity
+			RigidbodySetVelocityX(rbody, horizontalMovement.x);
+			RigidbodySetVelocityZ(rbody, horizontalMovement.y);
+
+			// Update automap position
+			UpdateAutomap();
+			if (horizontalMovement.x != 0 || horizontalMovement.y != 0) {
+				//automapContainer.GetComponent<ScrollRect>().verticalNormalizedPosition += horizontalMovement.y * automapFactor * (-1);
+				//automapContainer.GetComponent<ScrollRect>().horizontalNormalizedPosition += horizontalMovement.x * automapFactor * (-1);
+				//UpdateAutomap();
+			}
+
+			// Set vertical velocity
+			verticalMovement = rbody.velocity.y;
+			if (verticalMovement > maxVerticalSpeed) {
+				verticalMovement = maxVerticalSpeed;
+			}
+			RigidbodySetVelocityY(rbody, verticalMovement);
+			
+			// Ground friction (TODO: disable for Cyberspace)
+			if (grounded) {
+				RigidbodySetVelocityX(rbody, (Mathf.SmoothDamp(rbody.velocity.x, 0, ref walkDeaccelerationVolx, walkDeacceleration)));
+				RigidbodySetVelocityZ(rbody, (Mathf.SmoothDamp(rbody.velocity.z, 0, ref walkDeaccelerationVolz, walkDeacceleration)));
+			}
+
+			// Set rotation of playercapsule from mouselook script TODO: Is this needed?
+			transform.rotation = Quaternion.Euler(0,mlookScript.yRotation,0); //Change 0 values for x and z for use in Cyberspace
+
+			// Handle ladder movement
+			if (grounded == true) {
+				if (ladderState) {
+					rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
 				} else {
-					rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio *  Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
+					rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime);
+				}
+			} else {
+				if (ladderState) {
+					rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * Time.deltaTime, ladderSpeed * Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
+				} else {
+					if (isSprinting) {
+						rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
+					} else {
+						rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio *  Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
+					}
 				}
 			}
-		}
-		
-		// Handle gravity and ladders
-		if (ladderState) {
-			rbody.useGravity = false;
-			// Set vertical velocity towards 0 when climbing
-			RigidbodySetVelocityY(rbody, (Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVolz, walkDeacceleration)));
-		} else {
-			// Check if using a gravity lift
-			if (gravliftState == true) {
+			
+			// Handle gravity and ladders
+			if (ladderState) {
 				rbody.useGravity = false;
+				// Set vertical velocity towards 0 when climbing
+				RigidbodySetVelocityY(rbody, (Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVolz, walkDeacceleration)));
 			} else {
-				// Disables gravity when touching the ground to prevent player sliding down ramps
-				if (grounded == true) {
+				// Check if using a gravity lift
+				if (gravliftState == true) {
 					rbody.useGravity = false;
 				} else {
-					rbody.useGravity = true;
+					// Disables gravity when touching the ground to prevent player sliding down ramps
+					if (grounded == true) {
+						rbody.useGravity = false;
+					} else {
+						rbody.useGravity = true;
+					}
 				}
+				// Apply gravity - OBSOLETE: Now handled by gravity of the RigidBody physics system
+				//rbody.AddForce(0, (-1 * playerGravity * Time.deltaTime), 0); //Apply gravity force
 			}
-			// Apply gravity - OBSOLETE: Now handled by gravity of the RigidBody physics system
-			//rbody.AddForce(0, (-1 * playerGravity * Time.deltaTime), 0); //Apply gravity force
-		}
-		
-		// Get input for Jump and set impulse time
-		if (Input.GetKey(KeyCode.Space) && (grounded || gravliftState) && (ladderState==false))
-			jumpTime = jumpImpulseTime;
-		
-		// Perform Jump
-		while (jumpTime > 0) {
-			jumpTime -= Time.smoothDeltaTime;
-			rbody.AddForce( new Vector3(0,jumpVelocity*rbody.mass,0), ForceMode.Force);  // huhnh!
-		}
+			
+			// Get input for Jump and set impulse time
+			if (Input.GetKey(KeyCode.Space) && (grounded || gravliftState) && (ladderState==false))
+				jumpTime = jumpImpulseTime;
+			
+			// Perform Jump
+			while (jumpTime > 0) {
+				jumpTime -= Time.smoothDeltaTime;
+				rbody.AddForce( new Vector3(0,jumpVelocity*rbody.mass,0), ForceMode.Force);  // huhnh!
+			}
 
-		// Handle fall damage
-		if (Mathf.Abs((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed)
-			GetComponent<PlayerHealth>().TakeDamage(fallDamage);
-		oldVelocity = rbody.velocity;
+			// Handle fall damage
+			if (Mathf.Abs((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed)
+				GetComponent<PlayerHealth>().TakeDamage(fallDamage);
+			oldVelocity = rbody.velocity;
 
-		// Automatically set grounded to false to prevent ability to climb any wall
-		if (CheatWallSticky == false || gravliftState)
-			grounded = false;
+			// Automatically set grounded to false to prevent ability to climb any wall
+			if (CheatWallSticky == false || gravliftState)
+				grounded = false;	
+		}
 	}
 
 	// Update automap location
@@ -379,18 +383,22 @@ public class PlayerMovement : MonoBehaviour {
 
 	// Sets grounded based on normal angle of the impact point (NOTE: This is not the surface normal!)
 	void OnCollisionStay (Collision collision  ){
-		foreach(ContactPoint contact in collision.contacts) {
-			if (Vector3.Angle(contact.normal,Vector3.up) < maxSlope) {
-				grounded = true;
+		if (!PauseScript.a.paused) {
+			foreach(ContactPoint contact in collision.contacts) {
+				if (Vector3.Angle(contact.normal,Vector3.up) < maxSlope) {
+					grounded = true;
+				}
 			}
 		}
 	}
 
 	// Reset grounded to false when player is mid-air
 	void OnCollisionExit (){
-		// Automatically set grounded to false to prevent ability to climb any wall
-		if (CheatWallSticky == true) {
-			grounded = false;
+		if (!PauseScript.a.paused) {
+			// Automatically set grounded to false to prevent ability to climb any wall (Cheat!)
+			if (CheatWallSticky == true) {
+				grounded = false;
+			}
 		}
 	}
 }

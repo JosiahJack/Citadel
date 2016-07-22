@@ -105,10 +105,12 @@ public class Door1 : MonoBehaviour {
 			anim.speed = 0f;
 		}
 
-		if (blocked) {
+		if (blocked || PauseScript.a.paused) {
 			Blocked();
 		} else {
-			Unblocked();
+			if (!PauseScript.a.paused) {
+				Unblocked();
+			}
 		}
 
 		if (anim.GetCurrentAnimatorStateInfo(0).IsName("IdleClosed"))

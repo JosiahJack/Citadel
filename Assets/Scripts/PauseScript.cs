@@ -5,8 +5,18 @@ using System.Collections;
 public class PauseScript : MonoBehaviour {
 	public Text pauseText;
 	public bool paused = false;
-	
-	// Update is called once per frame
+	public static PauseScript a;
+	public MouseLookScript mouselookScript;
+	public MouseCursor mouseCursor;
+	public GameObject[] disableUIOnPause;
+	private bool previousInvMode = false;
+	private Texture2D previousCursorImage;
+	public GameObject saltTheFries;
+	public GameObject[] enableUIOnPause;
+	public GameObject quitButton;
+
+	void Awake() {a = this; }
+
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			PauseToggle();
@@ -23,10 +33,42 @@ public class PauseScript : MonoBehaviour {
 	void PauseEnable() {
 		paused = true;
 		pauseText.enabled = true;
+		previousInvMode = mouselookScript.inventoryMode;
+		previousCursorImage = mouseCursor.cursorImage;
+		mouseCursor.cursorImage = mouselookScript.cursorDefaultTexture;
+		mouselookScript.inventoryMode = true;
+		for (int i=0;i>disableUIOnPause.Length;i++) {
+			disableUIOnPause[i].SetActive(false);
+		}
+
+		for (int j=0;j>enableUIOnPause.Length;j++) {
+			enableUIOnPause[j].SetActive(true);
+		}
+		quitButton.SetActive(true);
 	}
 
 	void PauseDisable() {
 		paused = false;
 		pauseText.enabled = false;
+		mouselookScript.inventoryMode = previousInvMode;
+		mouseCursor.cursorImage = previousCursorImage;
+		for (int i=0;i>disableUIOnPause.Length;i++) {
+			disableUIOnPause[i].SetActive(true);
+		}
+
+		for (int j=0;j>enableUIOnPause.Length;j++) {
+			enableUIOnPause[j].SetActive(false);
+		}
+		quitButton.SetActive(false);
+	}
+
+	public void PauseQuit () {
+		StartCoroutine(quitFunction());
+	}
+
+	IEnumerator quitFunction () {
+		saltTheFries.SetActive(true);
+		yield return new WaitForSeconds(1f);
+		Application.Quit();
 	}
 }

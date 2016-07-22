@@ -122,7 +122,7 @@ public class MouseLookScript : MonoBehaviour {
 		canvasContainer.SetActive(true); //enable UI
     }
 
-	void Update (){
+	void Update () {
         Cursor.visible = false; // Hides hardware cursor so we can show custom cursor textures
 
         //if (transform.parent.GetComponent<PlayerMovement>().grounded)
@@ -133,97 +133,118 @@ public class MouseLookScript : MonoBehaviour {
         //parentLastPos = transform.parent.position;
 
         if (inventoryMode == false) {
-			yRotation += (Input.GetAxis("Mouse X") * lookSensitivity);
-			xRotation -= (Input.GetAxis("Mouse Y") * lookSensitivity);
-			//Const.sprint("Mouse X: " + Input.GetAxis("Mouse X"));
-			xRotation = Mathf.Clamp(xRotation, -90, 90);  // Limit up and down angle. TIP:: Need to disable clamp for Cyberspace!
-			transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-			//transform.Rotate(xRotation,yRotation,0,Space.World);
+			if (!PauseScript.a.paused) {
+				yRotation += (Input.GetAxis("Mouse X") * lookSensitivity);
+				xRotation -= (Input.GetAxis("Mouse Y") * lookSensitivity);
+				xRotation = Mathf.Clamp(xRotation, -90, 90);  // Limit up and down angle. TIP:: Need to disable clamp for Cyberspace!
+				transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+			}
 		} else {
 			if (Input.GetButton("Yaw")) {
-				if  (Input.GetAxisRaw("Yaw") > 0) {
-					yRotation += keyboardTurnSpeed * lookSensitivity;
-					tempQuat = transform.rotation;
-					transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-					transform.rotation = tempQuat; // preserve x axis, hacky
-				} else {
-					yRotation -= keyboardTurnSpeed * lookSensitivity;
-					tempQuat = transform.rotation;
-					transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-					transform.rotation = tempQuat; // preserve x axis, hacky
+				if (!PauseScript.a.paused) {
+					if  (Input.GetAxisRaw("Yaw") > 0) {
+						yRotation += keyboardTurnSpeed * lookSensitivity;
+						tempQuat = transform.rotation;
+						transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+						transform.rotation = tempQuat; // preserve x axis, hacky
+					} else {
+						if (Input.GetAxisRaw("Yaw") < 0) {
+							yRotation -= keyboardTurnSpeed * lookSensitivity;
+							tempQuat = transform.rotation;
+							transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+							transform.rotation = tempQuat; // preserve x axis, hacky
+						}
+					}
 				}
 			}
+			
 			if (Input.GetButton("Pitch")) {
-				if  (Input.GetAxisRaw("Pitch") > 0) {
-					xRotation += keyboardTurnSpeed * lookSensitivity;
-					transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-				} else {
-					xRotation -= keyboardTurnSpeed * lookSensitivity;
-					transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+				if (!PauseScript.a.paused) {
+					if  (Input.GetAxisRaw("Pitch") > 0) {
+						xRotation += keyboardTurnSpeed * lookSensitivity;
+						transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+					} else {
+						xRotation -= keyboardTurnSpeed * lookSensitivity;
+						transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+					}
 				}
 			}
 		}
 
 		// Toggle inventory mode<->shoot mode
-		if(Input.GetKeyDown(KeyCode.Tab))
+		if(Input.GetKeyDown(KeyCode.Tab) && !PauseScript.a.paused)
 			ToggleInventoryMode();
 
 		// Frob if the cursor is not on the UI
 		if (!GUIState.a.isBlocking) {
-			currentButton = null;
-			if(Input.GetMouseButtonDown(1)) {
-				if (!holdingObject) {
-					// Send out Frob raycast
-					RaycastHit hit = new RaycastHit();
-					if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, frobDistance)) {
-						//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
-						// TIP: Use Camera.main.ViewportPointToRay for center of screen
-						if (hit.collider == null)
-							return;
+			if (!PauseScript.a.paused) {
+				currentButton = null;
+				if(Input.GetMouseButtonDown(1)) {
+					if (!holdingObject) {
+						// Send out Frob raycast
+						RaycastHit hit = new RaycastHit();
+						if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, frobDistance)) {
+							//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
+							// TIP: Use Camera.main.ViewportPointToRay for center of screen
+							if (hit.collider == null)
+								return;
+						
+							// Check if object is usable then use it
+							if (hit.collider.tag == "Usable") {
+								hit.transform.SendMessageUpwards("Use", gameObject); // send Use with self as owner of message
+								return;
+							}
 					
-						// Check if object is usable then use it
-						if (hit.collider.tag == "Usable") {
-							hit.transform.SendMessageUpwards("Use", gameObject); // send Use with self as owner of message
-							return;
-						}
-				
-						// Check if object is searchable then search it
-						if (hit.collider.tag == "Searchable") {
-							currentSearchItem = hit.collider.gameObject;
-							SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
-							return;
-						}
-				
-				        // If we can't use it, Give info about what we are looking at (e.g. "Molybdenum panelling")
-						Mesh m = GetMesh(hit.collider.gameObject);
-						if (m) {
-							int[] hittedTriangle = new int[] {
-								m.triangles[hit.triangleIndex * 3], m.triangles[hit.triangleIndex * 3 + 1], m.triangles[hit.triangleIndex * 3 + 2]
-							};
-							for (int i=0;i<m.subMeshCount;i++) {
-								int[] submeshTris = m.GetTriangles(i);
-								for (int j=0;j<submeshTris.Length;j+=3) {
-									if ((submeshTris[j] == hittedTriangle[0]) && (submeshTris[j+1] == hittedTriangle[1]) && (submeshTris[j+2] == hittedTriangle[2])) {
-										mlookstring1 = "Can't use " + GetTextureDescription(hit.collider.gameObject.GetComponent<MeshRenderer>().materials[i].mainTexture.name);
+							// Check if object is searchable then search it
+							if (hit.collider.tag == "Searchable") {
+								currentSearchItem = hit.collider.gameObject;
+								SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
+								return;
+							}
+					
+					        // If we can't use it, Give info about what we are looking at (e.g. "Molybdenum panelling")
+							Mesh m = GetMesh(hit.collider.gameObject);
+							if (m) {
+								int[] hittedTriangle = new int[] {
+									m.triangles[hit.triangleIndex * 3], m.triangles[hit.triangleIndex * 3 + 1], m.triangles[hit.triangleIndex * 3 + 2]
+								};
+								for (int i=0;i<m.subMeshCount;i++) {
+									int[] submeshTris = m.GetTriangles(i);
+									for (int j=0;j<submeshTris.Length;j+=3) {
+										if ((submeshTris[j] == hittedTriangle[0]) && (submeshTris[j+1] == hittedTriangle[1]) && (submeshTris[j+2] == hittedTriangle[2])) {
+											mlookstring1 = "Can't use " + GetTextureDescription(hit.collider.gameObject.GetComponent<MeshRenderer>().materials[i].mainTexture.name);
+										}
 									}
 								}
+								Const.sprint(mlookstring1);
 							}
-							Const.sprint(mlookstring1);
 						}
-					}
-				} else {
-					// Drop the object we are holding
-					if (heldObjectIndex != -1) {
-						DropHeldItem();
-						ResetHeldItem();
-						ResetCursor();
+						if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, 50f)) {
+							//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
+							// TIP: Use Camera.main.ViewportPointToRay for center of screen
+							if (hit.collider == null)
+								return;
+
+							// Check if object is usable then use it
+							if (hit.collider.tag == "Usable" || hit.collider.tag == "Searchable") {
+								Const.sprint("You are too far away from that");
+								return;
+							}
+						}
+					} else {
+						// Drop the object we are holding
+						if (heldObjectIndex != -1) {
+							DropHeldItem();
+							ResetHeldItem();
+							ResetCursor();
+						}
 					}
 				}
 			}
 		} else {
 			//We are holding cursor over the GUI
 			if(Input.GetMouseButtonDown(1)) {
-				if (holdingObject) {
+				if (holdingObject && !PauseScript.a.paused) {
 					AddItemToInventory(heldObjectIndex);
 					ResetHeldItem();
 					ResetCursor();
@@ -239,63 +260,80 @@ public class MouseLookScript : MonoBehaviour {
 
                         switch(overButtonType) {
                             case 0:
-                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<WeaponButtonScript>().useableItemIndex];
-                                heldObjectIndex = currentButton.GetComponent<WeaponButtonScript>().useableItemIndex;
-								indexAdjustment = currentButton.GetComponent<WeaponButtonScript>().WepButtonIndex;
-								WeaponInventory.WepInventoryInstance.weaponInventoryIndices[indexAdjustment] = -1;
-								WeaponInventory.WepInventoryInstance.weaponInventoryText[indexAdjustment] = "-";
-								indexAdjustment--;
-								if (indexAdjustment < 0)
-									indexAdjustment = 0;
-								WeaponCurrent.WepInstance.weaponCurrent = indexAdjustment;
+								if (!PauseScript.a.paused) {
+	                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<WeaponButtonScript>().useableItemIndex];
+	                                heldObjectIndex = currentButton.GetComponent<WeaponButtonScript>().useableItemIndex;
+									indexAdjustment = currentButton.GetComponent<WeaponButtonScript>().WepButtonIndex;
+									WeaponInventory.WepInventoryInstance.weaponInventoryIndices[indexAdjustment] = -1;
+									WeaponInventory.WepInventoryInstance.weaponInventoryText[indexAdjustment] = "-";
+									indexAdjustment--;
+									if (indexAdjustment < 0)
+										indexAdjustment = 0;
+									WeaponCurrent.WepInstance.weaponCurrent = indexAdjustment;
+									overButton = false;
+									overButtonType = -1;
+									break;
+								}
 								break;
                             case 1:
-                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex];
-                                heldObjectIndex = currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex;
-                                GrenadeInventory.GrenadeInvInstance.grenAmmo[currentButton.GetComponent<GrenadeButtonScript>().GrenButtonIndex]--;
-                                if (GrenadeInventory.GrenadeInvInstance.grenAmmo[currentButton.GetComponent<GrenadeButtonScript>().GrenButtonIndex] <= 0) {
-									GrenadeInventory.GrenadeInvInstance.grenAmmo[currentButton.GetComponent<GrenadeButtonScript>().GrenButtonIndex] = 0; 
-									for (int i = 0; i < 7; i++) {
+								if (!PauseScript.a.paused) {
+	                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex];
+	                                heldObjectIndex = currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex;
+	                                GrenadeInventory.GrenadeInvInstance.grenAmmo[currentButton.GetComponent<GrenadeButtonScript>().GrenButtonIndex]--;
+	                                if (GrenadeInventory.GrenadeInvInstance.grenAmmo[currentButton.GetComponent<GrenadeButtonScript>().GrenButtonIndex] <= 0) {
+										GrenadeInventory.GrenadeInvInstance.grenAmmo[currentButton.GetComponent<GrenadeButtonScript>().GrenButtonIndex] = 0; 
+										for (int i = 0; i < 7; i++) {
 	                                        if (GrenadeInventory.GrenadeInvInstance.grenAmmo[i] > 0) {
 	                                            mainInventory.GetComponent<GrenadeCurrent>().grenadeCurrent = i;
 	                                        }
 	                                    }
 	                                }
-                                break;
+	                                break;
+								}
+								break;
                             case 2:
-                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<PatchButtonScript>().useableItemIndex];
-                                heldObjectIndex = currentButton.GetComponent<PatchButtonScript>().useableItemIndex;
-								PatchInventory.PatchInvInstance.patchCounts[currentButton.GetComponent<PatchButtonScript>().PatchButtonIndex]--;
-								if (PatchInventory.PatchInvInstance.patchCounts[currentButton.GetComponent<PatchButtonScript>().PatchButtonIndex] <= 0) {
-									PatchInventory.PatchInvInstance.patchCounts[currentButton.GetComponent<PatchButtonScript>().PatchButtonIndex] = 0;
-									for (int i = 0; i < 7; i++) {
-										if (PatchInventory.PatchInvInstance.patchCounts[i] > 0) {
-											mainInventory.GetComponent<PatchCurrent>().patchCurrent = i;
+								if (!PauseScript.a.paused) {
+	                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<PatchButtonScript>().useableItemIndex];
+	                                heldObjectIndex = currentButton.GetComponent<PatchButtonScript>().useableItemIndex;
+									PatchInventory.PatchInvInstance.patchCounts[currentButton.GetComponent<PatchButtonScript>().PatchButtonIndex]--;
+									if (PatchInventory.PatchInvInstance.patchCounts[currentButton.GetComponent<PatchButtonScript>().PatchButtonIndex] <= 0) {
+										PatchInventory.PatchInvInstance.patchCounts[currentButton.GetComponent<PatchButtonScript>().PatchButtonIndex] = 0;
+										for (int i = 0; i < 7; i++) {
+											if (PatchInventory.PatchInvInstance.patchCounts[i] > 0) {
+												mainInventory.GetComponent<PatchCurrent>().patchCurrent = i;
+											}
 										}
 									}
+	                                break;
 								}
-                                break;
+								break;
                             case 3:
-                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<GeneralInvButtonScript>().useableItemIndex];
-                                heldObjectIndex = currentButton.GetComponent<GeneralInvButtonScript>().useableItemIndex;
-                                GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[currentButton.GetComponent<GeneralInvButtonScript>().GeneralInvButtonIndex] = -1;
-                                break;
+								if (!PauseScript.a.paused) {
+	                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<GeneralInvButtonScript>().useableItemIndex];
+	                                heldObjectIndex = currentButton.GetComponent<GeneralInvButtonScript>().useableItemIndex;
+	                                GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[currentButton.GetComponent<GeneralInvButtonScript>().GeneralInvButtonIndex] = -1;
+	                                break;
+								}
+								break;
 							case 4:
-								int tempButtonindex = currentButton.GetComponent<SearchContainerButtonScript>().refIndex;
-								cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex]];
-								heldObjectIndex = currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex];
-								heldObjectCustomIndex = currentButton.GetComponentInParent<SearchButtonsScript>().customIndex[tempButtonindex];
-								currentSearchItem.GetComponent<SearchableItem>().contents[tempButtonindex] = -1;
-								currentSearchItem.GetComponent<SearchableItem>().customIndex[tempButtonindex] = -1;
-								currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex] = -1;
-								currentButton.GetComponentInParent<SearchButtonsScript>().customIndex[tempButtonindex] = -1;
-								currentButton.GetComponentInParent<SearchButtonsScript>().GetComponentInParent<DataTab>().searchItemImages[tempButtonindex].SetActive(false);
-								currentButton.GetComponentInParent<SearchButtonsScript>().CheckForEmpty();
-								overButton = false;
-								overButtonType = -1;
+								if (!PauseScript.a.paused) {
+									int tempButtonindex = currentButton.GetComponent<SearchContainerButtonScript>().refIndex;
+									cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex]];
+									heldObjectIndex = currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex];
+									heldObjectCustomIndex = currentButton.GetComponentInParent<SearchButtonsScript>().customIndex[tempButtonindex];
+									currentSearchItem.GetComponent<SearchableItem>().contents[tempButtonindex] = -1;
+									currentSearchItem.GetComponent<SearchableItem>().customIndex[tempButtonindex] = -1;
+									currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex] = -1;
+									currentButton.GetComponentInParent<SearchButtonsScript>().customIndex[tempButtonindex] = -1;
+									currentButton.GetComponentInParent<SearchButtonsScript>().GetComponentInParent<DataTab>().searchItemImages[tempButtonindex].SetActive(false);
+									currentButton.GetComponentInParent<SearchButtonsScript>().CheckForEmpty();
+									overButton = false;
+									overButtonType = -1;
+									break;
+								}
 								break;
                         }
-						if (overButtonType != 77) {
+						if (overButtonType != 77 && !PauseScript.a.paused) {
                        		mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture;
 	                        Cursor.lockState = CursorLockMode.None;
 	                        inventoryMode = true;  // inventory mode turned on
@@ -461,8 +499,12 @@ public class MouseLookScript : MonoBehaviour {
 
 	void DropHeldItem() {
 		heldObject = Const.a.useableItems[heldObjectIndex];
-		GameObject tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Quaternion.identity) as GameObject;  //effect
-		tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
+		if (heldObject != null) {
+			GameObject tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Quaternion.identity) as GameObject;  //effect
+			tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
+		} else {
+			Const.sprint("Warning: Object "+heldObjectIndex.ToString()+" not assigned, vaporized.");
+		}
 	}
 
 	void ResetHeldItem() {

@@ -50,7 +50,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 	private bool isDead;
 	private bool isDying;
 	private bool firstSighting = true;
-	private bool firstStateFrame = true;
+	//private bool firstStateFrame = true;
 	private PlayerHealth playerHealth;
 	private NavMeshAgent nav;
 	private Animator anim;
@@ -105,9 +105,19 @@ public class NPCHumanoidMutant : MonoBehaviour {
 
 	void Update () {
 		//AnimatorStateInfo nextState = anim.GetNextAnimatorStateInfo(0);
-		//if (nextState.nameHash != deadState) {
+		//if (nextState.fullPathHash != deadState) {
 		//	anim.SetBool("Dead",false);
 		//}
+		if (PauseScript.a.paused) {
+			anim.speed = 0f;
+			nav.Stop();
+			return;
+		} else {
+			anim.speed = 1f;
+			if (!idle && !inspecting)
+				nav.Resume();
+		}
+
 		chasing = false;
 		attacking = false;
 		searching = false;
@@ -397,11 +407,14 @@ public class NPCHumanoidMutant : MonoBehaviour {
 	}
 
 	bool CheckIfInRangeOfWaypoint (Transform waypoint) {
-		if (Vector3.Distance(transform.position,waypoint.position) < 1f) {
-			return true;
-		} else {
-			return false;
+		if (waypoint != null) {
+			if (Vector3.Distance(transform.position,waypoint.position) < 1f) {
+				return true;
+			} else {
+				return false;
+			}
 		}
+		return false;
 	}
 
 	void drawMyLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){

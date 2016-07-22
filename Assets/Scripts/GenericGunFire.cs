@@ -16,9 +16,13 @@ public class GenericGunFire : MonoBehaviour {
 	//public GameObject bulletSpawn;
 	public Camera playerCamera;
 	public Camera gunCamera;
+	public WeaponCurrent currentWeapon;
 	[SerializeField] private AudioSource SFX = null; // assign in the editor
 	[SerializeField] private AudioClip SFXClip = null; // assign in the editor
+	[SerializeField] private AudioClip PipeMissClip = null; // assign in the editor
+	[SerializeField] private AudioClip PipeHitClip = null; // assign in the editor
 	private float clipEnd;
+	public Animator anim;
 
 	void  Update() {
 		/*if (Input.GetButton("Fire1")) {
@@ -28,27 +32,38 @@ public class GenericGunFire : MonoBehaviour {
 				waitTilNextFire = 1;
 			}
 		}*/
+		if (!PauseScript.a.paused) {
+			if (!GUIState.a.isBlocking && !playerCamera.GetComponent<MouseLookScript>().holdingObject) {
+				switch(currentWeapon.weaponIndex) {
+					case 38:
+						if (isFullAuto) {
+							if (Input.GetButton("Fire1") && waitTilNextFire < Time.time) {
+								FireDart(fireDistance, false, damage);
+								break;
+							}
+						} else {
+							if (Input.GetButtonDown("Fire1")) {
+								if (waitTilNextFire < Time.time) {
+									FireRaycastBullet(fireDistance, false,damage);
+								}
+							}
+						}
+						break;
+					case 42:
+						if (Input.GetButton("Fire1") && waitTilNextFire < Time.time) {
+							FirePipe(2f,false,20f);
+						}
+					break;
+				}
 
-		if (!GUIState.a.isBlocking && !playerCamera.GetComponent<MouseLookScript>().holdingObject) {
-			if (isFullAuto) {
-				if (Input.GetButton("Fire1")) {
-					if (waitTilNextFire <= Time.time) {
-						FireRaycastBullet(fireDistance, false);
-					}
-				}
-			} else {
-				if (Input.GetButtonDown("Fire1")) {
-					if (waitTilNextFire <= Time.time) {
-						FireRaycastBullet(fireDistance, false);
-					}
-				}
 			}
-
 		}
-		waitTilNextFire -= Time.deltaTime;
 	}
 
-	void FireRaycastBullet (float dist, bool silent) {
+	void FireDart (float dist, bool silent, float dmg) {
+		FireRaycastBullet(dist,silent,dmg);
+	}
+	void FireRaycastBullet (float dist, bool silent, float specificdamage) {
 		if (!silent) {
 			SFX.clip = SFXClip;
 			SFX.Play();
@@ -64,9 +79,28 @@ public class GenericGunFire : MonoBehaviour {
 				impact.transform.position = hit.point;
 				impact.SetActive(true);
 			}
-			hit.transform.gameObject.SendMessage("TakeDamage", damage,SendMessageOptions.DontRequireReceiver);
+			hit.transform.gameObject.SendMessage("TakeDamage", specificdamage,SendMessageOptions.DontRequireReceiver);
 			waitTilNextFire = Time.time + fireSpeed;
 		}
+	}
+
+	void FirePipe (float dist, bool silent, float specificdamage) {
+		RaycastHit hit = new RaycastHit();
+		if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, dist)) {
+			anim.Play("Attack2");
+			if (!silent) {
+				SFX.clip = PipeHitClip;
+				SFX.Play();
+			}
+			hit.transform.gameObject.SendMessage("TakeDamage", specificdamage,SendMessageOptions.DontRequireReceiver);
+			waitTilNextFire = Time.time + fireSpeed;
+			return;
+		}
+		if (!silent) {
+			SFX.clip = PipeMissClip;
+			SFX.Play();
+		}
+		anim.Play("Attack1");
 	}
 
 	void drawMyLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){

@@ -40,7 +40,7 @@ public class EnemyMeleeOnly : MonoBehaviour {
 
 	void Update () {
 		AnimatorStateInfo nextState = anim.GetNextAnimatorStateInfo(0);
-		if (nextState.nameHash != deadState) {
+		if (nextState.fullPathHash != deadState) {
 			anim.SetBool("Dead",false);
 		}
 

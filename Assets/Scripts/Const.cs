@@ -13,7 +13,7 @@ public class Const : MonoBehaviour {
 	[SerializeField] public bool[] audioLogHasAudio;
 	[SerializeField] public string[] audioLogSpeech2Text;
 	public float doubleClickTime = 0.500f;
-	public float frobDistance = 4.5f;
+	public float frobDistance = 5f;
 	public enum PoolType{DartImpacts};
 	public GameObject Pool_DartImpacts;
 	public GameObject statusBar;

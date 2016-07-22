@@ -32,7 +32,7 @@ public class MouseCursor : MonoBehaviour {
 
 	void Update () {
 		cursorSize = (24f * (Screen.width/640f));
-		if (playerCameraScript.inventoryMode && playerCameraScript.holdingObject) {
+		if (playerCameraScript.inventoryMode && playerCameraScript.holdingObject && !PauseScript.a.paused) {
 			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,mainCamera)) {
 				inventoryAddHelper.SetActive(true);
 			} else {
