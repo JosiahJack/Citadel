@@ -6,7 +6,7 @@ public class RigidBodyKeepAwakeScript : MonoBehaviour {
 
 	void Awake () { rbody = GetComponent<Rigidbody>(); }
 	void Update () {
-		if (rbody != null)
+		if (rbody != null && !PauseScript.a.paused)
 			rbody.WakeUp();
 	}
 }

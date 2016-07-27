@@ -11,6 +11,8 @@ public class PlayerHealth : MonoBehaviour {
 	public AudioSource PainSFX;
 	public AudioClip PainSFXClip;
 	public GameObject cameraObject;
+	public GameObject hardwareShield;
+	private bool shieldOn = false;
 	
 	void Update (){
 		if (health <= 0f) {
@@ -41,6 +43,11 @@ public class PlayerHealth : MonoBehaviour {
 	}
 	
 	public void TakeDamage ( float take  ){
+		float shieldBlock = 0f;
+		if (shieldOn) {
+			//shieldBlock = hardwareShield.GetComponent<Shield>().GetShieldBlock();
+		}
+		take = Const.a.GetDamageTakeAmount(take,0,shieldBlock,Const.AttackType.None,false,0,0);
 		health -= take;
 		PainSFX.PlayOneShot(PainSFXClip);
 		//print("Player Health: " + health.ToString());
