@@ -5,13 +5,10 @@ using System.Collections;
 
 public class MultiMediaLogTableButtonScript : MonoBehaviour {
 	public int logTableButtonIndex;
-	[SerializeField] private GameObject iconman;
-	[SerializeField] private GameObject textman;
+	public GameObject multiMediaTab;
 
 	void LogTableButtonClick() {
-		//iconman.GetComponent<ItemIconManager>().SetItemIcon(useableItemIndex);    //Set icon for MFD
-		//textman.GetComponent<ItemTextManager>().SetItemText(useableItemIndex); //Set text for MFD
-		//GeneralInvCurrent.GeneralInvInstance.generalInvCurrent = logTableButtonIndex;  //Set current
+		multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogsLevelFolder(logTableButtonIndex);
 	}
 
 	void Start() {

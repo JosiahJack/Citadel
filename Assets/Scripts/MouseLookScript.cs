@@ -88,6 +88,8 @@ public class MouseLookScript : MonoBehaviour {
     public GameObject mainInventory;
 	public LogInventory logInventory;
 
+	public GameObject[] hardwareButtons;
+
     //float headbobSpeed = 1;
     //float headbobStepCounter;
     //float headbobAmountX = 1;
@@ -413,10 +415,153 @@ public class MouseLookScript : MonoBehaviour {
 		if ((heldObjectCustomIndex != -1) && (logInventory != null)) {
 			logInventory.hasLog[heldObjectCustomIndex] = true;
 			logInventory.lastAddedIndex = heldObjectCustomIndex;
+			int levelnum = Const.a.audioLogLevelFound[heldObjectCustomIndex];
+			logInventory.numLogsFromLevel[levelnum]++;
 			string audName = Const.a.audiologNames[heldObjectCustomIndex];
-			Const.sprint("Audio log " + audName + " picked up.  Press inputCode.listenLog to playback.");
+			string logPlaybackKey = "u"; // TODO add code for handling custom key
+			Const.sprint("Audio log " + audName + " picked up.  Press '" + logPlaybackKey + "' to playback.");
 		} else {
 			Const.sprint("Warning: Audio log picked up has no assigned index (-1)");
+		}
+	}
+
+	void AddHardwareToInventory (int index) {
+		int hwversion = heldObjectCustomIndex;
+		if (hwversion < 0) {
+			Const.sprint("Warning: Hardware picked up has no assigned versioning, defaulting to 1");
+			hwversion = 1;
+		}
+
+		switch(index) {
+			case 0:
+				// System Analyzer
+				if (hwversion <= HardwareInventory.a.hardwareVersion[0]) {
+					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.");
+					return;
+				}
+				HardwareInventory.a.hasHardware[0] = true;
+				HardwareInventory.a.hardwareVersion[0] = hwversion;
+				Const.sprint(Const.a.useableItemsNameText[21] + " v" + hwversion.ToString());
+				break;
+			case 1:
+				// Navigation Unit
+				if (hwversion <= HardwareInventory.a.hardwareVersion[1]) {
+					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.");
+					return;
+				}
+				HardwareInventory.a.hasHardware[1] = true;
+				HardwareInventory.a.hardwareVersion[1] = hwversion;
+				Const.sprint(Const.a.useableItemsNameText[22] + " v" + hwversion.ToString());
+				//TODO add HUD compass; // Turn on HUD compass
+				break;
+			case 2:
+				// Datareader
+				if (hwversion <= HardwareInventory.a.hardwareVersion[2]) {
+					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.");
+					return;
+				}
+				HardwareInventory.a.hasHardware[2] = true;
+				HardwareInventory.a.hardwareVersion[2] = hwversion;
+				Const.sprint(Const.a.useableItemsNameText[23] + " v" + hwversion.ToString());
+				hardwareButtons[5].SetActive(true);  // Enable HUD button
+				break;
+			case 3:
+				// Sensaround
+				if (hwversion <= HardwareInventory.a.hardwareVersion[3]) {
+					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.");
+					return;
+				}
+				HardwareInventory.a.hasHardware[3] = true;
+				HardwareInventory.a.hardwareVersion[3] = hwversion;
+				Const.sprint(Const.a.useableItemsNameText[24] + " v" + hwversion.ToString());
+				hardwareButtons[1].SetActive(true);  // Enable HUD button
+				break;
+			case 4:
+				// Target Identifier
+				if (hwversion <= HardwareInventory.a.hardwareVersion[4]) {
+					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.");
+					return;
+				}
+				HardwareInventory.a.hasHardware[4] = true;
+				HardwareInventory.a.hardwareVersion[4] = hwversion;
+				Const.sprint(Const.a.useableItemsNameText[25] + " v" + hwversion.ToString());
+				break;
+			case 5:
+				// Energy Shield
+				if (hwversion <= HardwareInventory.a.hardwareVersion[5]) {
+					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.");
+					return;
+				}
+				HardwareInventory.a.hasHardware[5] = true;
+				HardwareInventory.a.hardwareVersion[5] = hwversion;
+				Const.sprint(Const.a.useableItemsNameText[26] + " v" + hwversion.ToString());
+				hardwareButtons[3].SetActive(true);  // Enable HUD button
+				break;
+			case 6:
+				// Biomonitor
+				if (hwversion <= HardwareInventory.a.hardwareVersion[6]) {
+					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.");
+					return;
+				}
+				HardwareInventory.a.hasHardware[6] = true;
+				HardwareInventory.a.hardwareVersion[6] = hwversion;
+				Const.sprint(Const.a.useableItemsNameText[27] + " v" + hwversion.ToString());
+				hardwareButtons[0].SetActive(true);  // Enable HUD button
+				break;
+			case 7:
+				// Head Mounted Lantern
+				if (hwversion <= HardwareInventory.a.hardwareVersion[7]) {
+					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.");
+					return;
+				}
+				HardwareInventory.a.hasHardware[7] = true;
+				HardwareInventory.a.hardwareVersion[7] = hwversion;
+				Const.sprint(Const.a.useableItemsNameText[28] + " v" + hwversion.ToString());
+				hardwareButtons[2].SetActive(true);  // Enable HUD button
+				break;
+			case 8:
+				// Envirosuit
+				if (hwversion <= HardwareInventory.a.hardwareVersion[8]) {
+					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.");
+					return;
+				}
+				HardwareInventory.a.hasHardware[8] = true;
+				HardwareInventory.a.hardwareVersion[8] = hwversion;
+				Const.sprint(Const.a.useableItemsNameText[29] + " v" + hwversion.ToString());
+				break;
+			case 9:
+				// Turbo Motion Booster
+				if (hwversion <= HardwareInventory.a.hardwareVersion[9]) {
+					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.");
+					return;
+				}
+				HardwareInventory.a.hasHardware[9] = true;
+				HardwareInventory.a.hardwareVersion[9] = hwversion;
+				Const.sprint(Const.a.useableItemsNameText[30] + " v" + hwversion.ToString());
+				hardwareButtons[6].SetActive(true);  // Enable HUD button
+				break;
+			case 10:
+				// Jump Jet Boots
+				if (hwversion <= HardwareInventory.a.hardwareVersion[10]) {
+					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.");
+					return;
+				}
+				HardwareInventory.a.hasHardware[10] = true;
+				HardwareInventory.a.hardwareVersion[10] = hwversion;
+				Const.sprint(Const.a.useableItemsNameText[31] + " v" + hwversion.ToString());
+				hardwareButtons[7].SetActive(true);  // Enable HUD button
+				break;
+			case 11:
+				// Infrared Night Vision Enhancement
+				if (hwversion <= HardwareInventory.a.hardwareVersion[11]) {
+					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.");
+					return;
+				}
+				HardwareInventory.a.hasHardware[11] = true;
+				HardwareInventory.a.hardwareVersion[11] = hwversion;
+				Const.sprint(Const.a.useableItemsNameText[32] + " v" + hwversion.ToString());
+				hardwareButtons[4].SetActive(true);  // Enable HUD button
+				break;
 		}
 	}
 
@@ -481,6 +626,42 @@ public class MouseLookScript : MonoBehaviour {
 		    case 20:
 			    AddPatchToInventory(0);
 			    break;
+			case 21:
+				AddHardwareToInventory(0);
+				break;
+			case 22:
+				AddHardwareToInventory(1);
+				break;
+			case 23:
+				AddHardwareToInventory(2);
+				break;
+			case 24:
+				AddHardwareToInventory(3);
+			break;
+			case 25:
+				AddHardwareToInventory(4);
+			break;
+			case 26:
+				AddHardwareToInventory(5);
+			break;
+			case 27:
+				AddHardwareToInventory(6);
+			break;
+			case 28:
+				AddHardwareToInventory(7);
+			break;
+			case 29:
+				AddHardwareToInventory(8);
+			break;
+			case 30:
+				AddHardwareToInventory(9);
+			break;
+			case 31:
+				AddHardwareToInventory(10);
+			break;
+			case 32:
+				AddHardwareToInventory(11);
+			break;
 			case 38:
 				AddWeaponToInventory(38);
 				break;
@@ -568,6 +749,7 @@ public class MouseLookScript : MonoBehaviour {
 		int[] resultContents = {-1,-1,-1,-1};  // create blanked container for search results
 		int[] resultCustomIndex = {-1,-1,-1,-1};  // create blanked container for search results custom indices
 		for (int i=currentSearchItem.GetComponent<SearchableItem>().numSlots - 1;i>=0;i--) {
+			Const.sprint("Search index = " + i.ToString() + ", and SearchableItem.customIndex.Length = " + currentSearchItem.GetComponent<SearchableItem>().customIndex.Length.ToString());
 			resultContents[i] = currentSearchItem.GetComponent<SearchableItem>().contents[i];
 			resultCustomIndex[i] = currentSearchItem.GetComponent<SearchableItem>().customIndex[i];
 			if (resultContents[i] > -1) {
@@ -595,7 +777,7 @@ public class MouseLookScript : MonoBehaviour {
 			if (rememberLast)
 				tabControl.GetComponent<TabButtonsScript>().SetCurrentAsLast();
 			
-			tabControl.GetComponent<TabButtonsScript>().TabButtonClickSilent(tabIndex);
+			tabControl.GetComponent<TabButtonsScript>().TabButtonClickSilent(tabIndex,false);
 		}
 	}
 
@@ -933,8 +1115,10 @@ public class MouseLookScript : MonoBehaviour {
 		myLine.AddComponent<LineRenderer> ();
 		LineRenderer lr = myLine.GetComponent<LineRenderer> ();
 		lr.material = new Material (Shader.Find ("Particles/Additive"));
-		lr.SetColors (color,color);
-		lr.SetWidth (0.1f,0.1f);
+		lr.startColor = color;
+		lr.endColor = color;
+		lr.startWidth = 0.1f;
+		lr.endWidth = 0.1f;
 		lr.SetPosition (0, start);
 		lr.SetPosition (1, end);
 		yield return new WaitForSeconds(duration);

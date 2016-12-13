@@ -21,7 +21,7 @@ public class EnemyProjectileOnly : MonoBehaviour {
 	private float waitTime = 0f;
 	private float waitTilNextFire = 0f;
 	private PlayerHealth playerHealth;
-	private NavMeshAgent nav;
+	private UnityEngine.AI.NavMeshAgent nav;
 	private EnemyHealth enemyHealth;
 	private EnemySight enemySight;
 	private Animator anim;
@@ -30,7 +30,7 @@ public class EnemyProjectileOnly : MonoBehaviour {
 	void Awake () {
 		enemySight = GetComponent<EnemySight>();
 		playerHealth = player.GetComponent<PlayerHealth>();
-		nav = GetComponent<NavMeshAgent>();
+		nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		enemyHealth = GetComponent<EnemyHealth>();
 		waitTilNextFire = 0;
 		anim = GetComponent<Animator>();

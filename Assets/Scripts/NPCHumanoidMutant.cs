@@ -52,7 +52,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 	private bool firstSighting = true;
 	//private bool firstStateFrame = true;
 	private PlayerHealth playerHealth;
-	private NavMeshAgent nav;
+	private UnityEngine.AI.NavMeshAgent nav;
 	private Animator anim;
 	private AnimatorStateInfo currentBaseState;
 	private GameObject player;
@@ -63,7 +63,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 	private CapsuleCollider capCol;
 
 	void Awake () {
-		nav = GetComponent<NavMeshAgent>();
+		nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		waitTilNextFire = 0;
 		waitTime = Time.time;
 		anim = GetComponent<Animator>();
@@ -415,23 +415,5 @@ public class NPCHumanoidMutant : MonoBehaviour {
 			}
 		}
 		return false;
-	}
-
-	void drawMyLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
-		StartCoroutine( drawLine(start, end, color, duration));
-	}
-
-	IEnumerator drawLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
-		GameObject myLine = new GameObject ();
-		myLine.transform.position = start;
-		myLine.AddComponent<LineRenderer> ();
-		LineRenderer lr = myLine.GetComponent<LineRenderer> ();
-		lr.material = new Material (Shader.Find ("Particles/Additive"));
-		lr.SetColors (color,color);
-		lr.SetWidth (0.1f,0.1f);
-		lr.SetPosition (0, start);
-		lr.SetPosition (1, end);
-		yield return new WaitForSeconds(duration);
-		GameObject.Destroy (myLine);
 	}
 }

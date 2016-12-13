@@ -21,19 +21,19 @@ public class TabButtonsScript : MonoBehaviour {
 	}
 
 	public void ReturnToLastTab () {
-		TabButtonClickSilent(lastTab);
+		TabButtonClickSilent(lastTab,true);
 	}
 
 	public void TabButtonClick (int tabNum) {
 		TabSFX.PlayOneShot(TabSFXClip);
-		TabButtonClickSilent(tabNum);
+		TabButtonClickSilent(tabNum,false);
 	}
 
-	public void TabButtonClickSilent (int tabNum) {
+	public void TabButtonClickSilent (int tabNum,bool overrideToggling) {
 		switch (tabNum) {
 		case 0:
 			if (curTab == 0) {
-				if (TabManager.WeaponTab.activeSelf == true) {
+				if (TabManager.WeaponTab.activeSelf == true && !overrideToggling) {
 					TabManager.WeaponTab.SetActive(false);
 					break;
 				} else {
@@ -55,7 +55,7 @@ public class TabButtonsScript : MonoBehaviour {
 			break;
 		case 1:
 			if (curTab == 1) {
-				if (TabManager.ItemTab.activeSelf == true) {
+				if (TabManager.ItemTab.activeSelf == true && !overrideToggling) {
 					TabManager.ItemTab.SetActive(false);
 					break;
 				} else {
@@ -77,7 +77,7 @@ public class TabButtonsScript : MonoBehaviour {
 			break;
 		case 2:
 			if (curTab == 2) {
-				if (TabManager.AutomapTab.activeSelf == true) {
+				if (TabManager.AutomapTab.activeSelf == true && !overrideToggling) {
 					TabManager.AutomapTab.SetActive(false);
 					break;
 				} else {
@@ -99,7 +99,7 @@ public class TabButtonsScript : MonoBehaviour {
 			break;
 		case 3:
 			if (curTab == 3) {
-				if (TabManager.TargetTab.activeSelf == true) {
+				if (TabManager.TargetTab.activeSelf == true && !overrideToggling) {
 					TabManager.TargetTab.SetActive(false);
 					break;
 				} else {
@@ -121,7 +121,7 @@ public class TabButtonsScript : MonoBehaviour {
 			break;
 		case 4:
 			if (curTab == 4) {
-				if (TabManager.DataTab.activeSelf == true) {
+				if (TabManager.DataTab.activeSelf == true && !overrideToggling) {
 					TabManager.DataTab.SetActive(false);
 					break;
 				} else {

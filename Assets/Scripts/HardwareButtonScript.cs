@@ -4,11 +4,9 @@ using System.Collections;
 
 public class HardwareButtonScript : MonoBehaviour {
 	//[SerializeField] private GameObject iconman;
-	//[SerializeField] private GameObject ammoiconman;
-	//[SerializeField] private GameObject weptextman;
-	//[SerializeField] private int WepButtonIndex;
 	[SerializeField] private AudioSource SFX = null; // assign in the editor
 	[SerializeField] private AudioClip SFXClip = null; // assign in the editor
+	[SerializeField] public GameObject centerTabManager;
 	//private int invslot;
 	//private float ix;
 	//private float iy;
@@ -27,6 +25,7 @@ public class HardwareButtonScript : MonoBehaviour {
 
 	void HardwareClick () {
 		SFX.PlayOneShot(SFXClip);
+		centerTabManager.GetComponent<CenterTabButtonsScript>().TabButtonClickSilent(4);
 	}
 
 	[SerializeField] private Button HwButton = null; // assign in the editor

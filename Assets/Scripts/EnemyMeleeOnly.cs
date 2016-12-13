@@ -19,7 +19,7 @@ public class EnemyMeleeOnly : MonoBehaviour {
 	private float waitTime = 0f;
 	private float waitTilNextFire = 0f;
 	private PlayerHealth playerHealth;
-	private NavMeshAgent nav;
+	private UnityEngine.AI.NavMeshAgent nav;
 	private EnemyHealth enemyHealth;
 	private EnemySight enemySight;
 	private Animator anim;
@@ -30,7 +30,7 @@ public class EnemyMeleeOnly : MonoBehaviour {
 	void Awake () {
 		enemySight = GetComponent<EnemySight>();
 		playerHealth = player.GetComponent<PlayerHealth>();
-		nav = GetComponent<NavMeshAgent>();
+		nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		enemyHealth = GetComponent<EnemyHealth>();
 		waitTilNextFire = 0;
 		anim = GetComponent<Animator>();
@@ -104,22 +104,5 @@ public class EnemyMeleeOnly : MonoBehaviour {
 	float GetRange () {
 		float retval = Vector3.Distance(player.transform.position,transform.position);
 		return retval;
-	}
-	void drawMyLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
-		StartCoroutine( drawLine(start, end, color, duration));
-	}
-
-	IEnumerator drawLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
-		GameObject myLine = new GameObject ();
-		myLine.transform.position = start;
-		myLine.AddComponent<LineRenderer> ();
-		LineRenderer lr = myLine.GetComponent<LineRenderer> ();
-		lr.material = new Material (Shader.Find ("Particles/Additive"));
-		lr.SetColors (color,color);
-		lr.SetWidth (0.1f,0.1f);
-		lr.SetPosition (0, start);
-		lr.SetPosition (1, end);
-		yield return new WaitForSeconds(duration);
-		GameObject.Destroy (myLine);
 	}
 }

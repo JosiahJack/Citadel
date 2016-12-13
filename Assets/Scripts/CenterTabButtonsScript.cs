@@ -14,14 +14,18 @@ public class CenterTabButtonsScript : MonoBehaviour {
 	[SerializeField] private AudioSource TabSFX = null; // assign in the editor
 	[SerializeField] private AudioClip TabSFXClip = null; // assign in the editor
 	private int curTab = 0;
-	
+
 	public void TabButtonClick (int tabNum) {
 		TabSFX.PlayOneShot(TabSFXClip);
+		TabButtonClickSilent(tabNum);
+	}
+
+	public void TabButtonClickSilent (int tabNum) {
 		switch (tabNum) {
 		case 0:
+			TabManager.DisableAllTabs();
 			if (curTab == 0) {
 				if (TabManager.MainTab.activeSelf == true) {
-					TabManager.MainTab.SetActive(false);
 					break;
 				} else {
 					TabManager.MainTab.SetActive(true);
@@ -29,21 +33,17 @@ public class CenterTabButtonsScript : MonoBehaviour {
 				}
 			}
 			MainTabButton.image.overrideSprite = MFDSpriteSelected;
+			TabManager.DisableAllTabs();
 			TabManager.MainTab.SetActive(true);
-			TabManager.HardwareTab.SetActive(false);
-			TabManager.GeneralTab.SetActive(false);
-			TabManager.SoftwareTab.SetActive(false);
-			//TabManager.EmailTab.SetActive(false);
-			//TabManager.DataReaderContentTab.SetActive(false);
 			HardwareTabButton.image.overrideSprite = MFDSprite;
 			GeneralTabButton.image.overrideSprite = MFDSprite;
 			SoftwareTabButton.image.overrideSprite = MFDSprite;
 			curTab = 0;
 			break;
 		case 1:
+			TabManager.DisableAllTabs();
 			if (curTab == 1) {
 				if (TabManager.HardwareTab.activeSelf == true) {
-					TabManager.HardwareTab.SetActive(false);
 					break;
 				} else {
 					TabManager.HardwareTab.SetActive(true);
@@ -51,19 +51,17 @@ public class CenterTabButtonsScript : MonoBehaviour {
 				}
 			}
 			HardwareTabButton.image.overrideSprite = MFDSpriteSelected;
-			TabManager.MainTab.SetActive(false);
+			TabManager.DisableAllTabs();
 			TabManager.HardwareTab.SetActive(true);
-			TabManager.GeneralTab.SetActive(false);
-			TabManager.SoftwareTab.SetActive(false);
 			MainTabButton.image.overrideSprite = MFDSprite;
 			GeneralTabButton.image.overrideSprite = MFDSprite;
 			SoftwareTabButton.image.overrideSprite = MFDSprite;
 			curTab = 1;
 			break;
 		case 2:
+			TabManager.DisableAllTabs();
 			if (curTab == 2) {
 				if (TabManager.GeneralTab.activeSelf == true) {
-					TabManager.GeneralTab.SetActive(false);
 					break;
 				} else {
 					TabManager.GeneralTab.SetActive(true);
@@ -71,19 +69,17 @@ public class CenterTabButtonsScript : MonoBehaviour {
 				}
 			}
 			GeneralTabButton.image.overrideSprite = MFDSpriteSelected;
-			TabManager.MainTab.SetActive(false);
-			TabManager.HardwareTab.SetActive(false);
+			TabManager.DisableAllTabs();
 			TabManager.GeneralTab.SetActive(true);
-			TabManager.SoftwareTab.SetActive(false);
 			MainTabButton.image.overrideSprite = MFDSprite;
 			HardwareTabButton.image.overrideSprite = MFDSprite;
 			SoftwareTabButton.image.overrideSprite = MFDSprite;
 			curTab = 2;
 			break;
 		case 3:
+			TabManager.DisableAllTabs();
 			if (curTab == 3) {
 				if (TabManager.SoftwareTab.activeSelf == true) {
-					TabManager.SoftwareTab.SetActive(false);
 					break;
 				} else {
 					TabManager.SoftwareTab.SetActive(true);
@@ -91,14 +87,22 @@ public class CenterTabButtonsScript : MonoBehaviour {
 				}
 			}
 			SoftwareTabButton.image.overrideSprite = MFDSpriteSelected;
-			TabManager.MainTab.SetActive(false);
-			TabManager.HardwareTab.SetActive(false);
-			TabManager.GeneralTab.SetActive(false);
+			TabManager.DisableAllTabs();
 			TabManager.SoftwareTab.SetActive(true);
 			MainTabButton.image.overrideSprite = MFDSprite;
 			HardwareTabButton.image.overrideSprite = MFDSprite;
 			GeneralTabButton.image.overrideSprite = MFDSprite;
 			curTab = 3;
+			break;
+		case 4:
+			TabManager.DisableAllTabs();
+			TabManager.DataReaderContentTab.SetActive(true);
+			TabManager.DataReaderContentTab.GetComponent<MultiMediaTabManager>().OpenLogTableContents();
+			MainTabButton.image.overrideSprite = MFDSprite;
+			HardwareTabButton.image.overrideSprite = MFDSprite;
+			GeneralTabButton.image.overrideSprite = MFDSprite;
+			SoftwareTabButton.image.overrideSprite = MFDSprite;
+			curTab = 4;
 			break;
 		}
 	}
