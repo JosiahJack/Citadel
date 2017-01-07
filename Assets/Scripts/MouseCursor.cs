@@ -21,6 +21,7 @@ public class MouseCursor : MonoBehaviour {
             offsetY = offsetX;
         }
 
+		//Debug.Log("MouseCursor:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
         if (playerCamera.GetComponent<MouseLookScript>().inventoryMode) {
             // Inventory Mode Cursor
             GUI.DrawTexture(new Rect(Input.mousePosition.x - offsetX, Screen.height - Input.mousePosition.y - offsetY, cursorSize, cursorSize), cursorImage);
@@ -33,7 +34,7 @@ public class MouseCursor : MonoBehaviour {
 	void Update () {
 		cursorSize = (24f * (Screen.width/640f));
 		if (playerCameraScript.inventoryMode && playerCameraScript.holdingObject && !PauseScript.a.paused) {
-			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,mainCamera)) {
+			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,null)) {
 				inventoryAddHelper.SetActive(true);
 			} else {
 				inventoryAddHelper.SetActive(false);

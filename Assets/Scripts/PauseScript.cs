@@ -14,12 +14,23 @@ public class PauseScript : MonoBehaviour {
 	public GameObject saltTheFries;
 	public GameObject[] enableUIOnPause;
 	public GameObject quitButton;
+	public GameObject mainMenu;
 
 	void Awake() {a = this; }
 
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.Escape)) {
-			PauseToggle();
+		if (mainMenu.activeSelf == false) {
+			if (Input.GetKeyDown(KeyCode.Escape)) {
+				PauseToggle();
+			}
+
+			if (Input.GetKeyDown(KeyCode.Home)) {
+				PauseEnable();
+			}
+
+			if (Input.GetKeyDown(KeyCode.Menu)) {
+				PauseEnable();
+			}
 		}
 	}
 
@@ -68,7 +79,10 @@ public class PauseScript : MonoBehaviour {
 
 	IEnumerator quitFunction () {
 		saltTheFries.SetActive(true);
-		yield return new WaitForSeconds(1f);
+		yield return new WaitForSeconds(0.8f);
+		#if UNITY_EDITOR_WIN
+		UnityEditor.EditorApplication.isPlaying = false;
+		#endif
 		Application.Quit();
 	}
 }

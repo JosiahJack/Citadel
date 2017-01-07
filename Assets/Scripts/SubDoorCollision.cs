@@ -3,12 +3,12 @@ using System.Collections;
 
 public class SubDoorCollision : MonoBehaviour {
 	private GameObject parent;
-	private Door1 parentDoorScript;
+	private Door parentDoorScript;
 	enum doorState {Closed, Open, Closing, Opening};
 
 	void Awake () {
 		parent = transform.parent.gameObject;
-		parentDoorScript = parent.GetComponent<Door1>();
+		parentDoorScript = parent.GetComponent<Door>();
 	}
 
 	void OnCollisionEnter () {

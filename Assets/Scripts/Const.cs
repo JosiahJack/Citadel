@@ -18,22 +18,52 @@ public class Const : MonoBehaviour {
 	[SerializeField] public int[] audioLogType;  // 0 = text only, 1 = normal, 2 = email, 3 = vmail
 	[SerializeField] public string[] audioLogSpeech2Text;
 	[SerializeField] public int[] audioLogLevelFound;
+	[SerializeField] public bool[] isFullAutoForWeapon;
+	[SerializeField] public float[] delayBetweenShotsForWeapon;
+	[SerializeField] public float[] delayBetweenShotsForWeapon2;
+	[SerializeField] public float[] damagePerHitForWeapon;
+	[SerializeField] public float[] damagePerHitForWeapon2;
+	[SerializeField] public float[] damageOverloadForWeapon;
+	[SerializeField] public float[] energyDrainLowForWeapon;
+	[SerializeField] public float[] energyDrainHiForWeapon;
+	[SerializeField] public float[] energyDrainOverloadForWeapon;
+	[SerializeField] public float[] penetrationForWeapon;
+	[SerializeField] public float[] penetrationForWeapon2;
+	[SerializeField] public float[] offenseForWeapon;
+	[SerializeField] public float[] offenseForWeapon2;
+	[SerializeField] public float[] rangeForWeapon;
+	[SerializeField] public string[] genericText;
+	public enum AttackType{None,Melee,EnergyBeam,Magnetic,Projectile,ProjectileEnergyBeam};
+	[SerializeField] public AttackType[] attackTypeForWeapon;
 	public float doubleClickTime = 0.500f;
 	public float frobDistance = 5f;
-	public enum PoolType{DartImpacts};
-	public enum AttackType{None,Melee,EnergyBeam,Magnetic,Projectile,ProjectileEnergyBeam};
+	public enum PoolType{DartImpacts,SparqImpacts,CameraExplosions,ProjEnemShot2,Sec2BotRotMuzBursts,Sec2BotMuzBursts,LaserLines};
 	public GameObject Pool_DartImpacts;
+	public GameObject Pool_SparqImpacts;
+	public GameObject Pool_CameraExplosions;
+	public GameObject Pool_ProjectilesEnemShot2;
+	public GameObject Pool_Sec2BotRotaryMuzzleBursts;
+	public GameObject Pool_Sec2BotMuzzleBursts;
+	public GameObject Pool_LaserLines;
 	public GameObject statusBar;
     public static Const a;
-	public TextAsset logTextFile;
+	public int difficultyCombat;
+	public int difficultyMission;
+	public int difficultyPuzzle;
+	public int difficultyCyber;
+	public string playerName;
 
 	// Instantiate it so that it can be accessed globally. MOST IMPORTANT PART!!
 	// =========================================================================
-	void Awake() { a = this; }
+	void Awake() {
+		Application.targetFrameRate = 60;
+		a = this;
+	}
 	// =========================================================================
 	void Start() {
 		LoadAudioLogMetaData();
 		LoadItemNamesData();
+		LoadDamageTablesData();
 	}
 
 	// Check if particular bit is 1 (ON/TRUE) in binary format of given integer
@@ -66,7 +96,7 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/Scripts/logs_text.txt",Encoding.Default);
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/Resources/logs_text.txt",Encoding.Default);
 		using (dataReader) {
 			do {
 				// Read the next line
@@ -106,13 +136,112 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/Scripts/item_names.txt",Encoding.Default);
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/Resources/item_names.txt",Encoding.Default);
 		using (dataReader) {
 			do {
 				// Read the next line
 				readline = dataReader.ReadLine();
 				if (readline == null) break; // just in case
 				useableItemsNameText[currentline] = readline;
+				currentline++;
+			} while (!dataReader.EndOfStream);
+			dataReader.Close();
+			return;
+		}
+	}
+
+	private void LoadDamageTablesData () {
+		string readline; // variable to hold each string read in from the file
+		int currentline = 0;
+		bool readBool = false; // it gives you wings!
+		int readInt = 0;
+		float readFloat = 0f;
+		AttackType readAttType = AttackType.None;
+
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/Resources/damage_tables.txt",Encoding.Default);
+		using (dataReader) {
+			do {
+				// Read the next line
+				readline = dataReader.ReadLine();
+				//char[] delimiters = new char[] {','};
+				string[] entries = readline.Split(',');
+				bool parsed = Int32.TryParse(entries[0],out readInt);
+				if (parsed) {
+					if (readInt == 1) readBool = true; else readBool = false;
+					isFullAutoForWeapon[currentline] = readBool;
+				} else { sprint("BUG: Could not parse into bool isFullAutoForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Single.TryParse(entries[1],out readFloat);
+				if (parsed) { delayBetweenShotsForWeapon[currentline] = readFloat;
+				} else { sprint("BUG: Could not parse into float delayBetweenShotsForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Single.TryParse(entries[2],out readFloat);
+				if (parsed) { delayBetweenShotsForWeapon2[currentline] = readFloat;
+				} else { sprint("BUG: Could not parse into float delayBetweenShotsForWeapon2 from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Int32.TryParse(entries[3],out readInt);
+				if (parsed) { damagePerHitForWeapon[currentline] = (float)readInt;
+				} else { sprint("BUG: Could not parse into float damagePerHitForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Int32.TryParse(entries[4],out readInt);
+				if (parsed) { damagePerHitForWeapon2[currentline] = (float)readInt;
+				} else { sprint("BUG: Could not parse into float damagePerHitForWeapon2 from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Int32.TryParse(entries[5],out readInt);
+				if (parsed) { damageOverloadForWeapon[currentline] = (float)readInt;
+				} else { sprint("BUG: Could not parse into float damageOverloadForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Int32.TryParse(entries[6],out readInt);
+				if (parsed) { energyDrainLowForWeapon[currentline] = (float)readInt;
+				} else { sprint("BUG: Could not parse into float energyDrainLowForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Int32.TryParse(entries[7],out readInt);
+				if (parsed) { energyDrainHiForWeapon[currentline] = (float)readInt;
+				} else { sprint("BUG: Could not parse into float energyDrainHiForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Int32.TryParse(entries[8],out readInt);
+				if (parsed) { energyDrainOverloadForWeapon[currentline] = (float)readInt;
+				} else { sprint("BUG: Could not parse into float energyDrainOverloadForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Int32.TryParse(entries[9],out readInt);
+				if (parsed) { penetrationForWeapon[currentline] = (float)readInt;
+				} else { sprint("BUG: Could not parse into float penetrationForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Int32.TryParse(entries[10],out readInt);
+				if (parsed) { penetrationForWeapon2[currentline] = (float)readInt;
+				} else { sprint("BUG: Could not parse into float penetrationForWeapon2 from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Int32.TryParse(entries[11],out readInt);
+				if (parsed) { offenseForWeapon[currentline] = (float)readInt;
+				} else { sprint("BUG: Could not parse into float offenseForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Int32.TryParse(entries[12],out readInt);
+				if (parsed) { offenseForWeapon2[currentline] = (float)readInt;
+				} else { sprint("BUG: Could not parse into float offenseForWeapon2 from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Int32.TryParse(entries[13],out readInt);
+				if (parsed) { rangeForWeapon[currentline] = (float)readInt;
+				} else { sprint("BUG: Could not parse into float rangeForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+
+				parsed = Int32.TryParse(entries[14],out readInt);
+				if (parsed) {
+					switch (readInt) {
+					case 0: readAttType = AttackType.None;
+						break;
+					case 1: readAttType = AttackType.Melee;
+						break;
+					case 2: readAttType = AttackType.EnergyBeam;
+						break;
+					case 3: readAttType = AttackType.Magnetic;
+						break;
+					case 4: readAttType = AttackType.Projectile;
+						break;
+					case 5: readAttType = AttackType.ProjectileEnergyBeam;
+						break;
+					}
+					attackTypeForWeapon[currentline] = readAttType;
+				} else { sprint("BUG: Could not parse into AttackType(enum) attackTypeForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+
 				currentline++;
 			} while (!dataReader.EndOfStream);
 			dataReader.Close();
@@ -130,22 +259,51 @@ public class Const : MonoBehaviour {
 	}
 
 	public GameObject GetObjectFromPool(PoolType pool) {
-		if (Pool_DartImpacts == null) {
-			sprint("Cannot find pool of type PoolType.DartImpacts");
-			return null;
-		}
+		GameObject poolContainer = Pool_DartImpacts;
+		string poolName = " ";
 
 		switch (pool) {
 		case PoolType.DartImpacts: 
-			for (int i=0;i<Pool_DartImpacts.transform.childCount;i++) {
-				Transform child = Pool_DartImpacts.transform.GetChild(i);
-				if (child.gameObject.activeInHierarchy == false) {
-					//sprint("Found a DartImpact!");
-					return child.gameObject;
-				}
-			}
-			sprint("Warning: No free objects in DartImpacts pool");
+			poolContainer = Pool_DartImpacts;
+			poolName = "DartImpacts ";
+			break;
+		case PoolType.SparqImpacts:
+			poolContainer = Pool_SparqImpacts;
+			poolName = "SparqImpacts ";
+			break;
+		case PoolType.CameraExplosions:
+			poolContainer = Pool_CameraExplosions;
+			poolName = "CameraExplosions ";
+			break;
+		case PoolType.ProjEnemShot2:
+			poolContainer = Pool_ProjectilesEnemShot2;
+			poolName = "ProjectilesEnemShot2 ";
+			break;
+		case PoolType.Sec2BotRotMuzBursts:
+			poolContainer = Pool_Sec2BotRotaryMuzzleBursts;
+			poolName = "Sec2BotRotaryMuzzleBursts ";
+			break;
+		case PoolType.Sec2BotMuzBursts:
+			poolContainer = Pool_Sec2BotMuzzleBursts;
+			poolName = "Sec2BotMuzzleBursts ";
+			break;
+		case PoolType.LaserLines:
+			poolContainer = Pool_LaserLines;
+			poolName = "LaserLines ";
+			break;
+		}
+
+		if (poolContainer == null) {
+			sprint("Cannot find " + poolName + "pool");
 			return null;
+		}
+
+		for (int i=0;i<poolContainer.transform.childCount;i++) {
+			Transform child = poolContainer.transform.GetChild(i);
+			if (child.gameObject.activeInHierarchy == false) {
+				//sprint("Found a free object in pool: " + poolName.ToString());
+				return child.gameObject;
+			}
 		}
 
 		return null;
