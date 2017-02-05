@@ -136,6 +136,10 @@ public class MouseLookScript : MonoBehaviour {
         //parentLastPos = transform.parent.position;
 		if (mainMenu.activeSelf == true) return;  // ignore mouselook when main menu is still up
 
+		if (Input.GetKeyUp(KeyCode.F6)) {
+			Const.a.Save();
+		}
+
         if (inventoryMode == false) {
 			if (!PauseScript.a.paused) {
 				yRotation += (Input.GetAxis("Mouse X") * lookSensitivity);

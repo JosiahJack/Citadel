@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityStandardAssets.ImageEffects;
+using System.IO;
 using System.Collections;
 
 public class MainMenuHandler : MonoBehaviour {
@@ -43,17 +44,19 @@ public class MainMenuHandler : MonoBehaviour {
 
 		if ( (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P)) || (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P)) ) {
 			Debug.Log("Skipping main menu. Debug cheat");
-			StartGame();
+			StartGame(true);
 		}
 	}
 
-	public void StartGame () {
+	public void StartGame (bool isNew) {
 		StartSFX.PlayOneShot(StartGameSFX);
-		Const.a.playerName = newgamePage.GetComponentInChildren<InputField>().text;
-		Const.a.difficultyCombat = combat.difficultySetting;
-		Const.a.difficultyMission = mission.difficultySetting;
-		Const.a.difficultyPuzzle = puzzle.difficultySetting;
-		Const.a.difficultyCyber = cyber.difficultySetting;
+		if (isNew) {
+			Const.a.playerName = newgamePage.GetComponentInChildren<InputField>().text;
+			Const.a.difficultyCombat = combat.difficultySetting;
+			Const.a.difficultyMission = mission.difficultySetting;
+			Const.a.difficultyPuzzle = puzzle.difficultySetting;
+			Const.a.difficultyCyber = cyber.difficultySetting;
+		}
 		this.gameObject.SetActive(false);
 	}
 
@@ -101,6 +104,16 @@ public class MainMenuHandler : MonoBehaviour {
 		ResetPages();
 		loadPage.SetActive(true);
 		currentPage = Pages.lp;
+	}
+
+	public void LoadGame (int index) {
+		//StreamReader sf = Const.a.savedGames[index];
+
+		// Do awesome stuff {
+		// ...
+		// }
+
+		StartGame(false);
 	}
 
 	void GoBack () {

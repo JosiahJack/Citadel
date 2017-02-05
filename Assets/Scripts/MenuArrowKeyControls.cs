@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class MenuArrowKeyControls : MonoBehaviour {
-	private int currentIndex;
+	public int currentIndex;
 	public GameObject[] menuItems;
 	public GameObject[] menuSubItems;
 
@@ -24,25 +24,43 @@ public class MenuArrowKeyControls : MonoBehaviour {
 		}
 
 		if (Input.GetKeyUp(KeyCode.UpArrow)) {
-			if (menuItems[currentIndex] != null) menuItems[currentIndex].SendMessage("DeHighlight",SendMessageOptions.DontRequireReceiver);
-			if (menuSubItems[currentIndex] != null) menuSubItems[currentIndex].SendMessage("DeHighlight",SendMessageOptions.DontRequireReceiver);
-				
-			currentIndex--;
-			if (currentIndex < 0) currentIndex = (menuItems.Length - 1); // Wrap around :)
-
-			if (menuItems[currentIndex] != null) menuItems[currentIndex].SendMessage("Highlight",SendMessageOptions.DontRequireReceiver);
-			if (menuSubItems[currentIndex] != null) menuSubItems[currentIndex].SendMessage("Highlight",SendMessageOptions.DontRequireReceiver);
+			ShiftMenuItem(false);
 		}
 
-		if (Input.GetKey(KeyCode.DownArrow)) {
-			if (menuItems[currentIndex] != null) menuItems[currentIndex].SendMessage("DeHighlight",SendMessageOptions.DontRequireReceiver);
-			if (menuSubItems[currentIndex] != null) menuSubItems[currentIndex].SendMessage("DeHighlight",SendMessageOptions.DontRequireReceiver);
+		if (Input.GetKeyUp(KeyCode.DownArrow)) {
+			ShiftMenuItem(true);
+		}
+	}
 
+	void ShiftMenuItem (bool isDownKey) {
+		if (menuItems[currentIndex] != null) {
+			menuItems[currentIndex].SendMessage("DeHighlight",SendMessageOptions.DontRequireReceiver);
+			menuItems[currentIndex].SendMessage("InputFieldCancelFocus",SendMessageOptions.DontRequireReceiver);
+		}
+		if (menuSubItems[currentIndex] != null) menuSubItems[currentIndex].SendMessage("DeHighlight",SendMessageOptions.DontRequireReceiver);
+
+		if (isDownKey) {
 			currentIndex++;
 			if (currentIndex >= menuItems.Length) currentIndex = 0; // Wrap around :)
-
-			if (menuItems[currentIndex] != null) menuItems[currentIndex].SendMessage("Highlight",SendMessageOptions.DontRequireReceiver);
-			if (menuSubItems[currentIndex] != null) menuSubItems[currentIndex].SendMessage("Highlight",SendMessageOptions.DontRequireReceiver);
+		} else {
+			currentIndex--;
+			if (currentIndex < 0) currentIndex = (menuItems.Length - 1); // Wrap around :)
 		}
+
+		if (menuItems[currentIndex] != null) menuItems[currentIndex].SendMessage("Highlight",SendMessageOptions.DontRequireReceiver);
+		if (menuItems[currentIndex] != null) menuItems[currentIndex].SendMessage("InputFieldFocus",SendMessageOptions.DontRequireReceiver);
+		if (menuSubItems[currentIndex] != null) menuSubItems[currentIndex].SendMessage("Highlight",SendMessageOptions.DontRequireReceiver);
+	}
+
+	public void SetIndex(int index) {
+		currentIndex = index;
+		for (int i=0;i<menuItems.Length;i++) {
+			menuItems[i].SendMessage("DeHighlight",SendMessageOptions.DontRequireReceiver);
+			menuItems[i].SendMessage("InputFieldCancelFocus",SendMessageOptions.DontRequireReceiver);
+		}
+
+		if (menuItems[currentIndex] != null) menuItems[currentIndex].SendMessage("Highlight",SendMessageOptions.DontRequireReceiver);
+		if (menuItems[currentIndex] != null) menuItems[currentIndex].SendMessage("InputFieldFocus",SendMessageOptions.DontRequireReceiver);
+		if (menuSubItems[currentIndex] != null) menuSubItems[currentIndex].SendMessage("Highlight",SendMessageOptions.DontRequireReceiver);
 	}
 }

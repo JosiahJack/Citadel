@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class StartMenuButtonHighlight : MonoBehaviour {
+	public MenuArrowKeyControls pageController;
+	public int menuItemIndex;
 	public Text text;
 	public Shadow textshadow;
 	public Color lit;
@@ -18,5 +20,15 @@ public class StartMenuButtonHighlight : MonoBehaviour {
 	void Highlight () {
 		if (textshadow != null) textshadow.effectColor = litshadow;
 		if (text != null) text.color = lit;
+	}
+
+	public void CursorHighlight () {
+		Highlight();
+		pageController.SetIndex(menuItemIndex);
+	}
+
+	public void CursorDeHighlight () {
+		DeHighlight();
+		pageController.currentIndex = 0;
 	}
 }

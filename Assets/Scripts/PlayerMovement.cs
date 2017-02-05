@@ -59,6 +59,7 @@ public class PlayerMovement : MonoBehaviour {
 	private MouseLookScript mlookScript;
 	private float fallDamageSpeed = 11.72f;
 	private Vector3 oldVelocity;
+	public GameObject mainMenu;
 	
 	void  Awake (){
 		isCapsLockOn = false;
@@ -94,6 +95,7 @@ public class PlayerMovement : MonoBehaviour {
 		// 4 = Prone
 		// 5 = Proning down in process
 		// 6 = Proning up to crouch in process
+		if (mainMenu.activeSelf == true) return;  // ignore movement when main menu is still up
 		if (!PauseScript.a.paused) {
 			rbody.WakeUp();
 
@@ -240,6 +242,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void  FixedUpdate (){
+		if (mainMenu.activeSelf == true) return;  // ignore movement when main menu is still up
 		if (!PauseScript.a.paused) {
 			// Crouch
 			LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));

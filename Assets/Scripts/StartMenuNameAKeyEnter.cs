@@ -13,4 +13,14 @@ public class StartMenuNameAKeyEnter : MonoBehaviour {
 			ip.ActivateInputField();
 		}
 	}
+
+	void InputFieldFocus () {
+		ClickViaKeyboard();
+	}
+
+	void InputFieldCancelFocus () {
+		if (ip != null) {
+			ip.DeactivateInputField();
+		}
+	}
 }

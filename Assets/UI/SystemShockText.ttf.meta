@@ -3,16 +3,20 @@ guid: dafa2acff30592246b1b5bf02cedabf7
 timeCreated: 1439758216
 licenseType: Free
 TrueTypeFontImporter:
-  serializedVersion: 2
+  serializedVersion: 4
   fontSize: 16
   forceTextureCase: -2
-  characterSpacing: 1
-  characterPadding: 0
+  characterSpacing: 0
+  characterPadding: 1
   includeFontData: 1
-  use2xBehaviour: 0
-  fontNames: []
+  fontName: SystemShockText
+  fontNames:
+  - SystemShockText
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 887f23980a479594a8850ebd6dd00a2f, type: 3}
   customCharacters: 
-  fontRenderingMode: 0
+  fontRenderingMode: 2
+  ascentCalculationMode: 1
   userData: 
   assetBundleName: 
   assetBundleVariant: 

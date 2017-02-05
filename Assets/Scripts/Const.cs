@@ -52,6 +52,12 @@ public class Const : MonoBehaviour {
 	public int difficultyPuzzle;
 	public int difficultyCyber;
 	public string playerName;
+	public TextAsset[] savedGames;
+	public float volumeMaster = 100;
+	public float volumeMusic = 100;
+	public float volumeMessage = 100;
+	public float volumeAmbience = 100;
+	public AudioSource mainmenuMusic;
 
 	// Instantiate it so that it can be accessed globally. MOST IMPORTANT PART!!
 	// =========================================================================
@@ -396,4 +402,16 @@ public class Const : MonoBehaviour {
 		yield return new WaitForSeconds(duration);
 		GameObject.Destroy (myLine);
 	}*/
+
+	public void Save() {
+		sprint("Saving...");
+		GameObject[] saveableObjects = (GameObject[])FindObjectsOfType(typeof(GameObject));
+		sprint("SaveableObjects.Length = " + saveableObjects.Length.ToString());
+		sprint("Saving...Done!");
+	}
+
+	public void SetVolume() {
+		AudioListener.volume = (volumeMaster/100f);
+		mainmenuMusic.volume = (volumeMusic/100f);
+	}
 }
