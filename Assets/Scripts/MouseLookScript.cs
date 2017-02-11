@@ -136,7 +136,7 @@ public class MouseLookScript : MonoBehaviour {
         //parentLastPos = transform.parent.position;
 		if (mainMenu.activeSelf == true) return;  // ignore mouselook when main menu is still up
 
-		if (Input.GetKeyUp(KeyCode.F6)) {
+		if (Input.GetKeyUp("f6")) {
 			Const.a.Save();
 		}
 

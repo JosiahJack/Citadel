@@ -105,10 +105,10 @@ public class Door : MonoBehaviour {
 			anim.speed = 0f;
 		}
 
-		if (blocked || PauseScript.a.paused) {
+		if (blocked || (PauseScript.a != null && PauseScript.a.paused)) {
 			Blocked();
 		} else {
-			if (!PauseScript.a.paused) {
+			if (PauseScript.a != null && !PauseScript.a.paused) {
 				Unblocked();
 			}
 		}

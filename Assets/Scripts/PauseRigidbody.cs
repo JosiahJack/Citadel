@@ -13,7 +13,7 @@ public class PauseRigidbody : MonoBehaviour {
 	}
 
 	void Update () {
-		if (PauseScript.a.paused) {
+		if (PauseScript.a != null && PauseScript.a.paused) {
 			if (rbody != null) {
 				if (justPaused) {
 					justPaused = false;

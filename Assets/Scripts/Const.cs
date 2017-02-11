@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Collections;
 using System;
+using System.Runtime.Serialization;
 
 public class Const : MonoBehaviour {
 	[SerializeField] public GameObject[] useableItems;
@@ -53,11 +54,32 @@ public class Const : MonoBehaviour {
 	public int difficultyCyber;
 	public string playerName;
 	public TextAsset[] savedGames;
-	public float volumeMaster = 100;
-	public float volumeMusic = 100;
-	public float volumeMessage = 100;
-	public float volumeAmbience = 100;
 	public AudioSource mainmenuMusic;
+	public int GraphicsResWidth;
+	public int GraphicsResHeight;
+	public bool GraphicsFullscreen;
+	public bool GraphicsSSAO;
+	public bool GraphicsBloom;
+	public int GraphicsFOV;
+	public int GraphicsBrightness;
+	public int GraphicsGamma;
+	public int AudioSpeakerMode;
+	public bool AudioReverb;
+	public int AudioVolumeMaster;
+	public int AudioVolumeMusic;
+	public int AudioVolumeMessage;
+	public int AudioVolumeEffects;
+	public int AudioLanguage;
+	public bool AudioSubtitles;
+	public int[] InputCodeSettings;
+	public string[] InputCodes;
+	public string[] InputValues;
+	public string[] InputConfigNames;
+	public bool InputInvertLook;
+	public bool InputInvertCyberspaceLook;
+	public bool InputInvertInventoryCycling;
+	public bool InputQuickItemPickup;
+	public bool InputQuickReloadWeapons;
 
 	// Instantiate it so that it can be accessed globally. MOST IMPORTANT PART!!
 	// =========================================================================
@@ -67,9 +89,75 @@ public class Const : MonoBehaviour {
 	}
 	// =========================================================================
 	void Start() {
+		LoadConfig();
 		LoadAudioLogMetaData();
 		LoadItemNamesData();
 		LoadDamageTablesData();
+	}
+
+	private void LoadConfig() {
+		// Graphics Configurations
+		GraphicsResWidth = AssignConfigInt("Graphics","ResolutionWidth");
+		GraphicsResHeight = AssignConfigInt("Graphics","ResolutionHeight");
+		GraphicsFullscreen = AssignConfigBool("Graphics","Fullscreen");
+		GraphicsSSAO = AssignConfigBool("Graphics","SSAO");
+		GraphicsBloom = AssignConfigBool("Graphics","Bloom");
+		GraphicsFOV = AssignConfigInt("Graphics","FOV");
+		GraphicsBrightness = AssignConfigInt("Graphics","Brightness");
+		GraphicsGamma = AssignConfigInt("Graphics","Gamma");
+
+		// Audio Configurations
+		AudioSpeakerMode = AssignConfigInt("Audio","SpeakerMode");
+		AudioReverb = AssignConfigBool("Audio","Reverb");
+		AudioVolumeMaster = AssignConfigInt("Audio","VolumeMaster");
+		AudioVolumeMusic = AssignConfigInt("Audio","VolumeMusic");
+		AudioVolumeMessage = AssignConfigInt("Audio","VolumeMessage");
+		AudioVolumeEffects = AssignConfigInt("Audio","VolumeEffects");
+		AudioLanguage = AssignConfigInt("Audio","Language");  // defaults to 0 = english
+		AudioSubtitles = AssignConfigBool("Audio","Subtitles");
+
+		// Input Configurations
+		for (int i=0;i<40;i++) {
+			string inputCapture = INIWorker.IniReadValue("Input",InputCodes[i]);
+			for (int j=0;j<159;j++) {
+				if (InputValues[j] == inputCapture) {
+					InputCodeSettings[i] = j;
+				}
+			}
+		}
+		InputInvertLook = AssignConfigBool("Input","InvertLook");
+		InputInvertCyberspaceLook = AssignConfigBool("Input","InvertCyberspaceLook");
+		InputInvertInventoryCycling = AssignConfigBool("Input","InvertInventoryCycling");
+		InputQuickItemPickup = AssignConfigBool("Input","QuickItemPickup");
+		InputQuickReloadWeapons = AssignConfigBool("Input","QuickReloadWeapons");
+		SetVolume();
+	}
+
+	public void WriteConfig() {
+		INIWorker.IniWriteValue("Graphics","ResolutionWidth",GraphicsResWidth.ToString());
+		INIWorker.IniWriteValue("Graphics","ResolutionHeight",GraphicsResHeight.ToString());
+		INIWorker.IniWriteValue("Graphics","Fullscreen",GetBoolAsString(GraphicsFullscreen));
+		INIWorker.IniWriteValue("Graphics","SSAO",GetBoolAsString(GraphicsSSAO));
+		INIWorker.IniWriteValue("Graphics","Bloom",GetBoolAsString(GraphicsBloom));
+		INIWorker.IniWriteValue("Graphics","FOV",GraphicsFOV.ToString());
+		INIWorker.IniWriteValue("Graphics","Brightness",GraphicsBrightness.ToString());
+		INIWorker.IniWriteValue("Graphics","Gamma",GraphicsGamma.ToString());
+		INIWorker.IniWriteValue("Audio","SpeakerMode",AudioSpeakerMode.ToString());
+		INIWorker.IniWriteValue("Audio","Reverb",GetBoolAsString(AudioReverb));
+		INIWorker.IniWriteValue("Audio","VolumeMaster",AudioVolumeMaster.ToString());
+		INIWorker.IniWriteValue("Audio","VolumeMusic",AudioVolumeMusic.ToString());
+		INIWorker.IniWriteValue("Audio","VolumeMessage",AudioVolumeMessage.ToString());
+		INIWorker.IniWriteValue("Audio","VolumeEffects",AudioVolumeEffects.ToString());
+		INIWorker.IniWriteValue("Audio","Language",AudioLanguage.ToString());
+		INIWorker.IniWriteValue("Audio","Subtitles",GetBoolAsString(AudioSubtitles));
+		for (int i=0;i<40;i++) {
+			INIWorker.IniWriteValue("Input",InputCodes[i],InputValues[InputCodeSettings[i]]);
+		}
+		INIWorker.IniWriteValue("Input","InvertLook",GetBoolAsString(InputInvertLook));
+		INIWorker.IniWriteValue("Input","InvertCyberspaceLook",GetBoolAsString(InputInvertCyberspaceLook));
+		INIWorker.IniWriteValue("Input","InvertInventoryCycling",GetBoolAsString(InputInvertInventoryCycling));
+		INIWorker.IniWriteValue("Input","QuickItemPickup",GetBoolAsString(InputQuickItemPickup));
+		INIWorker.IniWriteValue("Input","QuickReloadWeapons",GetBoolAsString(InputQuickReloadWeapons));
 	}
 
 	// Check if particular bit is 1 (ON/TRUE) in binary format of given integer
@@ -410,8 +498,43 @@ public class Const : MonoBehaviour {
 		sprint("Saving...Done!");
 	}
 
+	public void SetFOV() {
+
+	}
+
+	public void SetBrightness() {
+
+	}
+
 	public void SetVolume() {
-		AudioListener.volume = (volumeMaster/100f);
-		mainmenuMusic.volume = (volumeMusic/100f);
+		AudioListener.volume = (AudioVolumeMaster/100f);
+		mainmenuMusic.volume = (AudioVolumeMusic/100f);
+	}
+
+	private int AssignConfigInt(string section, string keyname) {
+		int inputInt = -1;
+		string inputCapture = "";
+		inputCapture = INIWorker.IniReadValue(section,keyname);
+		if (inputCapture == null) inputCapture = "NULL";
+		bool parsed = Int32.TryParse(inputCapture, out inputInt);
+		if (parsed) return inputInt; else sprint("Warning: Could not parse config key " + keyname + " as integer: " + inputCapture);
+		return 0;
+	}
+
+	private bool AssignConfigBool(string section, string keyname) {
+		int inputInt = -1;
+		string inputCapture = "";
+		inputCapture = INIWorker.IniReadValue(section,keyname);
+		if (inputCapture == null) inputCapture = "NULL";
+		bool parsed = Int32.TryParse(inputCapture, out inputInt);
+		if (parsed) {
+			if (inputInt > 0) return true; else return false;
+		} else sprint("Warning: Could not parse config key " + keyname + " as bool: " + inputCapture);
+		return false;
+	}
+
+	public string GetBoolAsString(bool inputValue) {
+		if (inputValue) return "1";
+		return "0";
 	}
 }
