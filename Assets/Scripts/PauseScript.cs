@@ -13,7 +13,6 @@ public class PauseScript : MonoBehaviour {
 	private Texture2D previousCursorImage;
 	public GameObject saltTheFries;
 	public GameObject[] enableUIOnPause;
-	public GameObject quitButton;
 	public GameObject mainMenu;
 
 	void Awake() {a = this; }
@@ -42,35 +41,37 @@ public class PauseScript : MonoBehaviour {
 	}
 
 	void PauseEnable() {
+		previousInvMode = mouselookScript.inventoryMode;
+		if (mouselookScript.inventoryMode == false) {
+			mouselookScript.ToggleInventoryMode();
+		}
 		paused = true;
 		pauseText.enabled = true;
-		previousInvMode = mouselookScript.inventoryMode;
 		previousCursorImage = mouseCursor.cursorImage;
 		mouseCursor.cursorImage = mouselookScript.cursorDefaultTexture;
-		mouselookScript.inventoryMode = true;
-		for (int i=0;i>disableUIOnPause.Length;i++) {
+		for (int i=0;i<disableUIOnPause.Length;i++) {
 			disableUIOnPause[i].SetActive(false);
 		}
 
-		for (int j=0;j>enableUIOnPause.Length;j++) {
+		for (int j=0;j<enableUIOnPause.Length;j++) {
 			enableUIOnPause[j].SetActive(true);
 		}
-		quitButton.SetActive(true);
 	}
 
 	void PauseDisable() {
 		paused = false;
 		pauseText.enabled = false;
-		mouselookScript.inventoryMode = previousInvMode;
+		if (previousInvMode != mouselookScript.inventoryMode) {
+			mouselookScript.ToggleInventoryMode();
+		}
 		mouseCursor.cursorImage = previousCursorImage;
-		for (int i=0;i>disableUIOnPause.Length;i++) {
+		for (int i=0;i<disableUIOnPause.Length;i++) {
 			disableUIOnPause[i].SetActive(true);
 		}
 
-		for (int j=0;j>enableUIOnPause.Length;j++) {
+		for (int j=0;j<enableUIOnPause.Length;j++) {
 			enableUIOnPause[j].SetActive(false);
 		}
-		quitButton.SetActive(false);
 	}
 
 	public void PauseQuit () {

@@ -86,6 +86,9 @@ public class Const : MonoBehaviour {
 	void Awake() {
 		Application.targetFrameRate = 60;
 		a = this;
+		//for (int i=0;i<Display.displays.Length;i++) {
+		//	Display.displays[i].Activate();
+		//}
 	}
 	// =========================================================================
 	void Start() {
@@ -131,6 +134,8 @@ public class Const : MonoBehaviour {
 		InputQuickItemPickup = AssignConfigBool("Input","QuickItemPickup");
 		InputQuickReloadWeapons = AssignConfigBool("Input","QuickReloadWeapons");
 		SetVolume();
+		Screen.SetResolution(GraphicsResWidth,GraphicsResHeight,true);
+		Screen.fullScreen = Const.a.GraphicsFullscreen;
 	}
 
 	public void WriteConfig() {

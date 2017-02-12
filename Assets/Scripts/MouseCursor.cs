@@ -21,14 +21,16 @@ public class MouseCursor : MonoBehaviour {
             offsetY = offsetX;
         }
 
-		//Debug.Log("MouseCursor:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
-        if (playerCamera.GetComponent<MouseLookScript>().inventoryMode) {
+		/*//Debug.Log("MouseCursor:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
+		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode || PauseScript.a.paused) {
             // Inventory Mode Cursor
             GUI.DrawTexture(new Rect(Input.mousePosition.x - offsetX, Screen.height - Input.mousePosition.y - offsetY, cursorSize, cursorSize), cursorImage);
         } else {
             // Shoot Mode Cursor
             GUI.DrawTexture(new Rect((Screen.width/2) - offsetX, (Screen.height/2) - cursorSize, cursorSize, cursorSize), cursorImage);
-        }
+        }*/
+
+		GUI.DrawTexture(new Rect(Input.mousePosition.x - offsetX, Screen.height - Input.mousePosition.y - offsetY, cursorSize, cursorSize), cursorImage);
 	}
 
 	void Update () {

@@ -146,6 +146,8 @@ public class MouseLookScript : MonoBehaviour {
 				xRotation -= (Input.GetAxis("Mouse Y") * lookSensitivity);
 				xRotation = Mathf.Clamp(xRotation, -90, 90);  // Limit up and down angle. TIP:: Need to disable clamp for Cyberspace!
 				transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+			} else {
+				Const.sprint("ERROR: Paused is true and inventoryMode is false");
 			}
 		} else {
 			if (Input.GetButton("Yaw")) {
@@ -741,7 +743,7 @@ public class MouseLookScript : MonoBehaviour {
 		int[] resultContents = {-1,-1,-1,-1};  // create blanked container for search results
 		int[] resultCustomIndex = {-1,-1,-1,-1};  // create blanked container for search results custom indices
 		for (int i=currentSearchItem.GetComponent<SearchableItem>().numSlots - 1;i>=0;i--) {
-			Const.sprint("Search index = " + i.ToString() + ", and SearchableItem.customIndex.Length = " + currentSearchItem.GetComponent<SearchableItem>().customIndex.Length.ToString());
+			//Const.sprint("Search index = " + i.ToString() + ", and SearchableItem.customIndex.Length = " + currentSearchItem.GetComponent<SearchableItem>().customIndex.Length.ToString());
 			resultContents[i] = currentSearchItem.GetComponent<SearchableItem>().contents[i];
 			resultCustomIndex[i] = currentSearchItem.GetComponent<SearchableItem>().customIndex[i];
 			if (resultContents[i] > -1) {
