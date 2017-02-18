@@ -23,6 +23,7 @@ public class UseableObjectUse : MonoBehaviour {
 		owner.GetComponent<MouseLookScript>().holdingObject = true;
 		owner.GetComponent<MouseLookScript>().heldObjectIndex = useableItemIndex;
 		owner.GetComponent<MouseLookScript>().heldObjectCustomIndex = customIndex;
-		Destroy(this.gameObject);
+		//Destroy(this.gameObject);
+		this.gameObject.SetActive(false);
 	}
 }

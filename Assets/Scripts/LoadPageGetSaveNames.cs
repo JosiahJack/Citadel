@@ -9,11 +9,8 @@ public class LoadPageGetSaveNames : MonoBehaviour {
 
 	void Awake () {
 		string readline; // variable to hold each string read in from the file
-
 		for (int i=0;i<8;i++) {
-			byte[] byteArray = Const.a.savedGames[i].bytes;
-			Stream stm = new MemoryStream(byteArray);
-			StreamReader sf = new StreamReader(stm);
+			StreamReader sf = new StreamReader(Application.streamingAssetsPath + "/sav"+i.ToString()+".txt");
 			if (sf != null) {
 				using (sf) {
 					readline = sf.ReadLine();

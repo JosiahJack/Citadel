@@ -137,7 +137,11 @@ public class MouseLookScript : MonoBehaviour {
 		if (mainMenu.activeSelf == true) return;  // ignore mouselook when main menu is still up
 
 		if (Input.GetKeyUp("f6")) {
-			Const.a.Save();
+			Const.a.Save(7);
+		}
+
+		if (Input.GetKeyUp("f9")) {
+			Const.a.Load(7);
 		}
 
         if (inventoryMode == false) {
@@ -736,6 +740,7 @@ public class MouseLookScript : MonoBehaviour {
 		searchFX.GetComponent<Animation>().Play();
 
 		// Reset data tab before adding data (clears out keypad or elevator UIs)
+		tabControl.GetComponent<TabButtonsScript>().TabButtonClickSilent(4,true); //enable Data Tab
 		dataTabControl.Reset();
 
 		// Search through array to see if any items are in the container

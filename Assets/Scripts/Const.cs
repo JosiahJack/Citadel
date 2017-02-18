@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Text;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 using System.Runtime.Serialization;
 
@@ -53,7 +54,6 @@ public class Const : MonoBehaviour {
 	public int difficultyPuzzle;
 	public int difficultyCyber;
 	public string playerName;
-	public TextAsset[] savedGames;
 	public AudioSource mainmenuMusic;
 	public int GraphicsResWidth;
 	public int GraphicsResHeight;
@@ -496,11 +496,159 @@ public class Const : MonoBehaviour {
 		GameObject.Destroy (myLine);
 	}*/
 
-	public void Save() {
+	public void Save(int saveFileIndex) {
+		string[] saveData = new string[4096];
+		int index = 0;
+		List<GameObject> saveableGameObjects = new List<GameObject>();
+
 		sprint("Saving...");
-		GameObject[] saveableObjects = (GameObject[])FindObjectsOfType(typeof(GameObject));
-		sprint("SaveableObjects.Length = " + saveableObjects.Length.ToString());
+
+		// Write header with all information about the save game
+		saveData[index] = "TODO: SAVEGAME NAME ENTRY";
+		index++;
+
+		// Find all gameobjects with SaveObject script attached
+		GameObject[] getAllGameObjects = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
+		foreach (GameObject gob in getAllGameObjects) {
+			if (gob.GetComponent<SaveObject>() != null) {
+				saveableGameObjects.Add(gob);
+			}
+
+			// TODO: Do I need to save anything else in any other gameobject outside of Const?
+		}
+		//sprint("SaveableObjects.Length = " + saveableGameObjects.Count.ToString());
+
+		//
+		for (int i=0;i<saveableGameObjects.Count;i++) {
+			string line = saveableGameObjects[i].GetComponent<SaveObject>().SaveID.ToString();
+			line += "|" + saveableGameObjects[i].activeInHierarchy.ToString();
+			Transform tr = saveableGameObjects[i].GetComponent<Transform>();
+			line += "|" + (tr.localPosition.x.ToString("0000.00000") + "|" + tr.localPosition.y.ToString("0000.00000") + "|" + tr.localPosition.z.ToString("0000.00000"));
+			line += "|" + (tr.localRotation.x.ToString("0000.00000") + "|" + tr.localRotation.y.ToString("0000.00000") + "|" + tr.localRotation.z.ToString("0000.00000") + "|" + tr.localRotation.w.ToString("0000.00000"));
+			line += "|" + (tr.localScale.x.ToString("0000.00000") + "|" + tr.localScale.y.ToString("0000.00000") + "|" + tr.localScale.z.ToString("0000.00000"));
+			saveData[index] = line;
+			index++;
+		}
+			
+		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt");
+		if (sw != null) {
+			using (sw) {
+				for (int j=0;j<saveData.Length;j++) {
+					sw.WriteLine(saveData[j]);
+				}
+				sw.Close();
+			}
+		}
 		sprint("Saving...Done!");
+	}
+
+	public void Load(int saveFileIndex) {
+		sprint("Loading...");
+		List<GameObject> saveableGameObjects = new List<GameObject>();
+		// Find all gameobjects with SaveObject script attached
+		GameObject[] getAllGameObjects = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
+		foreach (GameObject gob in getAllGameObjects) {
+			if (gob.GetComponent<SaveObject>() != null) {
+				saveableGameObjects.Add(gob);
+			}
+		}
+
+		string readline;
+		float readFloatx;
+		float readFloaty;
+		float readFloatz;
+		float readFloatw;
+		int currentline = 0;
+		bool parsed = false;
+		Vector3 tempvec;
+		StreamReader sr = new StreamReader(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt");
+		if (sr != null) {
+			using (sr) {
+				do {
+					readline = sr.ReadLine();
+					if (readline == null) continue; // skip blank lines
+					string[] entries = readline.Split('|');  // delimited by | character, aka the vertical bar, pipe, obelisk, etc.
+					if (entries.Length <= 1) continue;
+					GameObject currentGameObject = new GameObject();
+					foreach (GameObject ob in saveableGameObjects) {
+						if (entries[0] == ob.GetComponent<SaveObject>().SaveID.ToString()) {
+							currentGameObject = ob;
+							//sprint("Found a matching object!");
+							break;
+						}
+					}
+
+					// Set active state of GameObject in Hierarchy
+					bool tempb = false;
+					if (entries[1].ToLower() == "true") tempb = true; else tempb = false;
+					currentGameObject.SetActive(tempb);
+
+					// Get transform
+					parsed = Single.TryParse(entries[2],out readFloatx);
+					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+					parsed = Single.TryParse(entries[3],out readFloaty);
+					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+					parsed = Single.TryParse(entries[4],out readFloatz);
+					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+					tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
+					currentGameObject.transform.localPosition = tempvec;
+
+					readFloatx = 0;
+					readFloaty = 0;
+					readFloatz = 0;
+					readFloatw = 0;
+					tempvec = Vector3.zero;
+
+					// Get rotation
+					parsed = Single.TryParse(entries[5],out readFloatx);
+					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+					parsed = Single.TryParse(entries[6],out readFloaty);
+					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+					parsed = Single.TryParse(entries[7],out readFloatz);
+					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+					parsed = Single.TryParse(entries[8],out readFloatw);
+					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+					Quaternion tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
+					currentGameObject.transform.localRotation = tempquat;
+
+					readFloatx = 0;
+					readFloaty = 0;
+					readFloatz = 0;
+					readFloatw = 0;
+					tempvec = Vector3.zero;
+
+					// Get scale
+					parsed = Single.TryParse(entries[9],out readFloatx);
+					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+					parsed = Single.TryParse(entries[10],out readFloaty);
+					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+					parsed = Single.TryParse(entries[11],out readFloatz);
+					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+					tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
+					currentGameObject.transform.localScale = tempvec;
+
+					readFloatx = 0;
+					readFloaty = 0;
+					readFloatz = 0;
+					readFloatw = 0;
+					tempvec = Vector3.zero;
+
+					currentline++;
+				} while (!sr.EndOfStream);
+				sr.Close();
+			}
+		}
+		sprint("Loading...Done!");
 	}
 
 	public void SetFOV() {

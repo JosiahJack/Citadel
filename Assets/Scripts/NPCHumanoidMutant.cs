@@ -19,6 +19,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 	public float health;
 	public float deathTime = 0.1f;
 	public float delayBeforeHit = 0.2f;
+	public float distToSeeWhenBehind = 2.5f;
 	public bool inRange = false;
 	public bool playerInSight = false;
 	public bool playerInSightOnLastFrame = false;
@@ -81,6 +82,12 @@ public class NPCHumanoidMutant : MonoBehaviour {
 		rbody = GetComponent<Rigidbody>();
 		health = startingHealth;
 		dyingTime = Time.time;
+		chasing = false;
+		attacking = false;
+		searching = false;
+		roaming = false;
+		idle = false;
+		inspecting = false;
 	}
 
 	public void TakeDamage (float take) {
@@ -118,7 +125,6 @@ public class NPCHumanoidMutant : MonoBehaviour {
 				nav.Resume();
 		}
 
-		chasing = false;
 		attacking = false;
 		searching = false;
 		roaming = false;
@@ -140,7 +146,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 
 		CheckIfPlayerInSight();
 
-		if (playerInSight) {
+		if (chasing) {
 			Chasing();
 			return;
 		}
@@ -301,7 +307,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 			inRange = false;
 		}
 
-		if (inRange) {
+		if (inRange && playerInSight) {
 			MeleeAttack();
 			return;
 		}
@@ -382,17 +388,21 @@ public class NPCHumanoidMutant : MonoBehaviour {
 					return;
 				}
 			}
-
-			if (dist < 3f) {
+			if (dist < distToSeeWhenBehind) {
 				playerInSight = true;
 				lastKnownPosition = player.transform.position;
 				return;
 			}
-			if (playerSound.isPlaying && dist < 8f)
-				lastKnownPosition = player.transform.position;
-			
 			return;
 		}
+
+
+
+		if (playerSound.isPlaying && dist < 8f) {
+			lastKnownPosition = player.transform.position;
+			return;
+		}
+
 		playerInSight = false;
 	}
 
