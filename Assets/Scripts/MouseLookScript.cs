@@ -186,14 +186,14 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
 		// Toggle inventory mode<->shoot mode
-		if(Input.GetKeyDown(KeyCode.Tab) && !PauseScript.a.paused)
+		if(GetInput.a.ToggleMode() && !PauseScript.a.paused)
 			ToggleInventoryMode();
 
 		// Frob if the cursor is not on the UI
 		if (!GUIState.a.isBlocking) {
 			if (!PauseScript.a.paused) {
 				currentButton = null;
-				if(Input.GetMouseButtonDown(1)) {
+				if(GetInput.a.Use()) {
 					if (!holdingObject) {
 						// Send out Frob raycast
 						RaycastHit hit = new RaycastHit();
@@ -257,7 +257,7 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		} else {
 			//We are holding cursor over the GUI
-			if(Input.GetMouseButtonDown(1)) {
+			if(GetInput.a.Use()) {
 				if (holdingObject && !PauseScript.a.paused) {
 					AddItemToInventory(heldObjectIndex);
 					ResetHeldItem();

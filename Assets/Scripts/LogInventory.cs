@@ -21,7 +21,7 @@ public class LogInventory : MonoBehaviour {
 	}
 
 	void Update () {
-		if(Input.GetButtonDown("PlayRecentLog")) {
+		if(GetInput.a.RecentLog()) {
 			if (lastAddedIndex != -1)
 				PlayLastAddedLog(lastAddedIndex);
 		}

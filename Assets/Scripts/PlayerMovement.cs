@@ -4,7 +4,6 @@ using UnityEngine.Networking;
 using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
-	public bool isCapsLockOn = false;
 	public float walkAcceleration = 2000;
 	public float walkDeacceleration = 0.15f;
 	public float walkAccelAirRatio = 0.1f;
@@ -62,7 +61,6 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject mainMenu;
 	
 	void  Awake (){
-		isCapsLockOn = false;
 		currentCrouchRatio = 1;
 		bodyState = 0;
 		originalLocalScaleY = transform.localScale.y;
@@ -99,12 +97,9 @@ public class PlayerMovement : MonoBehaviour {
 		if (!PauseScript.a.paused) {
 			rbody.WakeUp();
 
-			if (Input.GetKeyDown(KeyCode.CapsLock)) {
-				isCapsLockOn = !isCapsLockOn;
-			}
-			if (Input.GetKey(KeyCode.LeftShift)) {
+			if (GetInput.a.Sprint()) {
 				if (grounded) {
-					if (isCapsLockOn) {
+					if (GetInput.a.CapsLockOn()) {
 						isSprinting = false;
 					} else {
 						isSprinting = true;
@@ -112,7 +107,7 @@ public class PlayerMovement : MonoBehaviour {
 				}
 			} else {
 				if (grounded) {
-					if (isCapsLockOn) {
+					if (GetInput.a.CapsLockOn()) {
 						isSprinting = true;
 					} else {
 						isSprinting = false;
@@ -120,7 +115,7 @@ public class PlayerMovement : MonoBehaviour {
 				}
 			}
 			
-			if (Input.GetButtonDown("Crouch")) {
+			if (GetInput.a.Crouch()) {
 				if ((bodyState == 1) || (bodyState == 2)) {
 					if (!(CantStand())) {
 						bodyState = 3; // Start standing up
@@ -142,7 +137,7 @@ public class PlayerMovement : MonoBehaviour {
 				}
 			}
 			
-			if (Input.GetButtonDown("Prone")) {
+			if (GetInput.a.Prone()) {
 				if (bodyState == 0 || bodyState == 1 || bodyState == 2 || bodyState == 3 || bodyState == 6) {
 					bodyState = 5; // Start proning down
 				} else {
@@ -314,21 +309,40 @@ public class PlayerMovement : MonoBehaviour {
 			// Set rotation of playercapsule from mouselook script TODO: Is this needed?
 			transform.rotation = Quaternion.Euler(0,mlookScript.yRotation,0); //Change 0 values for x and z for use in Cyberspace
 
+			float relForward = 0f;
+			float relSideways = 0f;
+			if (GetInput.a.Forward())
+				relForward = 1f;
+
+			if (GetInput.a.Backpedal())
+				relForward = -1f;
+
+			if (GetInput.a.StrafeLeft())
+				relSideways = -1f;
+
+			if (GetInput.a.StrafeRight())
+				relSideways = 1f;
+
 			// Handle ladder movement
 			if (grounded == true) {
 				if (ladderState) {
-					rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
+					//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
+					rbody.AddRelativeForce(relSideways * walkAcceleration * Time.deltaTime, relForward * walkAcceleration * Time.deltaTime, 0);
 				} else {
-					rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime);
+					//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime);
+					rbody.AddRelativeForce(relSideways * walkAcceleration * Time.deltaTime, 0, relForward * walkAcceleration * Time.deltaTime);
 				}
 			} else {
 				if (ladderState) {
-					rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * Time.deltaTime, ladderSpeed * Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
+					//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * Time.deltaTime, ladderSpeed * Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
+					rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime, ladderSpeed * relForward * walkAcceleration * Time.deltaTime, 0);
 				} else {
 					if (isSprinting) {
-						rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
+						//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
+						rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
 					} else {
-						rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio *  Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
+						//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio *  Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
+						rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio *  Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
 					}
 				}
 			}
@@ -355,7 +369,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 			
 			// Get input for Jump and set impulse time
-			if (Input.GetKey(KeyCode.Space) && (grounded || gravliftState) && (ladderState==false))
+			if (GetInput.a.Jump() && (grounded || gravliftState) && (ladderState==false))
 				jumpTime = jumpImpulseTime;
 			
 			// Perform Jump

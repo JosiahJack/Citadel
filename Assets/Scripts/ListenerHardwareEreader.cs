@@ -7,7 +7,7 @@ public class ListenerHardwareEreader : MonoBehaviour {
 	[SerializeField] public GameObject centerTabContainer;
 
 	void  Update (){
-		if (HardwareInventory.a.hasHardware[2] && Input.GetButtonDown("EReader")) {
+		if (HardwareInventory.a.hasHardware[2] && GetInput.a.Email()) {
 			SFX.PlayOneShot(SFXClip);
 			centerTabContainer.GetComponent<CenterMFDTabs>().DisableAllTabs();
 			centerTabContainer.GetComponent<CenterMFDTabs>().DataReaderContentTab.SetActive(true);

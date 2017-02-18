@@ -163,6 +163,8 @@ public class Const : MonoBehaviour {
 		INIWorker.IniWriteValue("Input","InvertInventoryCycling",GetBoolAsString(InputInvertInventoryCycling));
 		INIWorker.IniWriteValue("Input","QuickItemPickup",GetBoolAsString(InputQuickItemPickup));
 		INIWorker.IniWriteValue("Input","QuickReloadWeapons",GetBoolAsString(InputQuickReloadWeapons));
+		SetBloom();
+		SetSSAO();
 	}
 		
 	// Check if particular bit is 1 (ON/TRUE) in binary format of given integer
@@ -652,7 +654,7 @@ public class Const : MonoBehaviour {
 	}
 
 	public void SetFOV() {
-
+		playerCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
 	}
 
 	public void SetBloom() {

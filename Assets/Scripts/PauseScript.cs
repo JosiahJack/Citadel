@@ -19,7 +19,7 @@ public class PauseScript : MonoBehaviour {
 
 	void Update () {
 		if (mainMenu.activeSelf == false) {
-			if (Input.GetKeyDown(KeyCode.Escape)) {
+			if (GetInput.a.Menu()) {
 				PauseToggle();
 			}
 
