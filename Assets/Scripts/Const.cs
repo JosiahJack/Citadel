@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Runtime.Serialization;
+using UnityStandardAssets.ImageEffects;
 
 public class Const : MonoBehaviour {
 	[SerializeField] public GameObject[] useableItems;
@@ -61,7 +62,6 @@ public class Const : MonoBehaviour {
 	public bool GraphicsSSAO;
 	public bool GraphicsBloom;
 	public int GraphicsFOV;
-	public int GraphicsBrightness;
 	public int GraphicsGamma;
 	public int AudioSpeakerMode;
 	public bool AudioReverb;
@@ -80,6 +80,7 @@ public class Const : MonoBehaviour {
 	public bool InputInvertInventoryCycling;
 	public bool InputQuickItemPickup;
 	public bool InputQuickReloadWeapons;
+	public GameObject playerCamera;
 
 	// Instantiate it so that it can be accessed globally. MOST IMPORTANT PART!!
 	// =========================================================================
@@ -106,7 +107,6 @@ public class Const : MonoBehaviour {
 		GraphicsSSAO = AssignConfigBool("Graphics","SSAO");
 		GraphicsBloom = AssignConfigBool("Graphics","Bloom");
 		GraphicsFOV = AssignConfigInt("Graphics","FOV");
-		GraphicsBrightness = AssignConfigInt("Graphics","Brightness");
 		GraphicsGamma = AssignConfigInt("Graphics","Gamma");
 
 		// Audio Configurations
@@ -133,6 +133,7 @@ public class Const : MonoBehaviour {
 		InputInvertInventoryCycling = AssignConfigBool("Input","InvertInventoryCycling");
 		InputQuickItemPickup = AssignConfigBool("Input","QuickItemPickup");
 		InputQuickReloadWeapons = AssignConfigBool("Input","QuickReloadWeapons");
+
 		SetVolume();
 		Screen.SetResolution(GraphicsResWidth,GraphicsResHeight,true);
 		Screen.fullScreen = Const.a.GraphicsFullscreen;
@@ -145,7 +146,6 @@ public class Const : MonoBehaviour {
 		INIWorker.IniWriteValue("Graphics","SSAO",GetBoolAsString(GraphicsSSAO));
 		INIWorker.IniWriteValue("Graphics","Bloom",GetBoolAsString(GraphicsBloom));
 		INIWorker.IniWriteValue("Graphics","FOV",GraphicsFOV.ToString());
-		INIWorker.IniWriteValue("Graphics","Brightness",GraphicsBrightness.ToString());
 		INIWorker.IniWriteValue("Graphics","Gamma",GraphicsGamma.ToString());
 		INIWorker.IniWriteValue("Audio","SpeakerMode",AudioSpeakerMode.ToString());
 		INIWorker.IniWriteValue("Audio","Reverb",GetBoolAsString(AudioReverb));
@@ -164,7 +164,7 @@ public class Const : MonoBehaviour {
 		INIWorker.IniWriteValue("Input","QuickItemPickup",GetBoolAsString(InputQuickItemPickup));
 		INIWorker.IniWriteValue("Input","QuickReloadWeapons",GetBoolAsString(InputQuickReloadWeapons));
 	}
-
+		
 	// Check if particular bit is 1 (ON/TRUE) in binary format of given integer
 	public bool CheckFlags (int checkInt, int flag) {
 		if ((checkInt & flag) != 0)
@@ -655,8 +655,19 @@ public class Const : MonoBehaviour {
 
 	}
 
-	public void SetBrightness() {
+	public void SetBloom() {
+		playerCamera.GetComponent<Bloom>().enabled = GraphicsBloom;
+	}
 
+	public void SetSSAO() {
+		playerCamera.GetComponent<ScreenSpaceAmbientObscurance>().enabled = GraphicsSSAO;
+	}
+
+	public void SetBrightness() {
+		float tempf = Const.a.GraphicsGamma;
+		if (tempf < 1) tempf = 0;
+		else tempf = tempf/100;
+		playerCamera.GetComponent<ColorCurvesManager>().Factor = tempf;
 	}
 
 	public void SetVolume() {

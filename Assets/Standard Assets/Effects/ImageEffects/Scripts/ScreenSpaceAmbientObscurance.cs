@@ -6,7 +6,7 @@ namespace UnityStandardAssets.ImageEffects
     [ ExecuteInEditMode]
     [RequireComponent (typeof(Camera))]
     [AddComponentMenu ("Image Effects/Rendering/Screen Space Ambient Obscurance")]
-    class ScreenSpaceAmbientObscurance : PostEffectsBase {
+    public class ScreenSpaceAmbientObscurance : PostEffectsBase {
         [Range (0,3)]
         public float intensity = 0.5f;
         [Range (0.1f,3)]
