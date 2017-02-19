@@ -17,9 +17,10 @@ public class PlayerPatchScript : MonoBehaviour {
 	private PlayerHealth playerHealthScript;
 	private bool medipatchActive;
 	private bool timeSlowed = false;
-	private float staminupFinishedTime;
+	public float staminupFinishedTime;
 	//private bool sightSideEffect = false;
-	private float sightFinishedTime;
+	public float sightFinishedTime;
+	public int berserkIncrement;
 	private int PATCH_BERSERK = 1;
 	private int PATCH_DETOX = 2;
 	private int PATCH_GENIUS = 4;
@@ -44,11 +45,11 @@ public class PlayerPatchScript : MonoBehaviour {
 		if (Const.a.CheckFlags(patchActive, PATCH_BERSERK)) {
 			// TODO change melee damage modifier
 			// TODO enable screen color scrambler effect
-			// TODO step screen color scrambler effect intensity through ever worsening
+			// TODO step screen color scrambler effect intensity through ever worsening using berserkIncrement
 		} else {
 			// TODO reset melee damage modifier
 			// TODO disable screen color scrambler effect
-			// TODO reset screen color scrambler effect intensity
+			// TODO reset screen color scrambler effect intensity and reset berserkIncrement
 		}
 
 		if (Const.a.CheckFlags(patchActive, PATCH_DETOX)) {

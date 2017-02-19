@@ -35,6 +35,8 @@ public class Const : MonoBehaviour {
 	[SerializeField] public float[] offenseForWeapon;
 	[SerializeField] public float[] offenseForWeapon2;
 	[SerializeField] public float[] rangeForWeapon;
+	[SerializeField] public int[] magazinePitchCountForWeapon;
+	[SerializeField] public int[] magazinePitchCountForWeapon2;
 	[SerializeField] public string[] genericText;
 	public enum AttackType{None,Melee,EnergyBeam,Magnetic,Projectile,ProjectileEnergyBeam};
 	[SerializeField] public AttackType[] attackTypeForWeapon;
@@ -498,71 +500,346 @@ public class Const : MonoBehaviour {
 		GameObject.Destroy (myLine);
 	}*/
 
+
+	// Save the Game
+	// ============================================================================
 	public void Save(int saveFileIndex) {
 		string[] saveData = new string[4096];
+		string line;
+		int i,j;
 		int index = 0;
+		Transform tr;
+		List<GameObject> playerGameObjects = new List<GameObject>();
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 
+		// Indicate we are saving
 		sprint("Saving...");
 
-		// Write header with all information about the save game
+		// Header
+		// -----------------------------------------------------
+		// Save Name
 		saveData[index] = "TODO: SAVEGAME NAME ENTRY";
+		index++;
+
+		// temp string to hold global states TODO: actually pull in the global states to this string
+		string states = "00000000|00000000|";
+
+		// Global states and Difficulties
+		saveData[index] = (states + difficultyCombat.ToString() + "|" + difficultyMission.ToString() + "|" + difficultyPuzzle.ToString() + "|" + difficultyCyber.ToString());
 		index++;
 
 		// Find all gameobjects with SaveObject script attached
 		GameObject[] getAllGameObjects = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
 		foreach (GameObject gob in getAllGameObjects) {
+			if (gob.GetComponentInChildren<PlayerMovement>() != null) {
+				playerGameObjects.Add(gob);
+			}
+
 			if (gob.GetComponent<SaveObject>() != null) {
 				saveableGameObjects.Add(gob);
 			}
-
+				
 			// TODO: Do I need to save anything else in any other gameobject outside of Const?
 		}
-		//sprint("SaveableObjects.Length = " + saveableGameObjects.Count.ToString());
 
-		//
-		for (int i=0;i<saveableGameObjects.Count;i++) {
-			string line = saveableGameObjects[i].GetComponent<SaveObject>().SaveID.ToString();
+		// Save all the players' data
+		for (i=0;i<playerGameObjects.Count;i++) {
+			line = playerGameObjects[i].GetInstanceID().ToString();
+			line += "|" + Const.a.playerName;
+			line += "|" + playerGameObjects[i].GetComponentInChildren<PlayerHealth>().health.ToString("0000.00000");
+			line += "|" + playerGameObjects[i].GetComponentInChildren<PlayerEnergy>().energy.ToString("0000.00000");
+			line += "|" + playerGameObjects[i].GetComponentInChildren<PlayerMovement>().currentCrouchRatio.ToString("0000.00000");
+			line += "|" + playerGameObjects[i].GetComponentInChildren<PlayerMovement>().bodyState.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<PlayerMovement>().ladderState.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<PlayerMovement>().gravliftState.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<PlayerPatchScript>().patchActive.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<PlayerPatchScript>().berserkIncrement.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<PlayerPatchScript>().sightFinishedTime.ToString("0000.00000");
+			line += "|" + playerGameObjects[i].GetComponentInChildren<PlayerPatchScript>().staminupFinishedTime.ToString("0000.00000");
+			tr = playerGameObjects[i].GetComponentInChildren<PlayerMovement>().gameObject.transform;
+			line += "|" + (tr.localPosition.x.ToString("0000.00000") + "|" + tr.localPosition.y.ToString("0000.00000") + "|" + tr.localPosition.z.ToString("0000.00000"));
+			line += "|" + (tr.localRotation.x.ToString("0000.00000") + "|" + tr.localRotation.y.ToString("0000.00000") + "|" + tr.localRotation.z.ToString("0000.00000") + "|" + tr.localRotation.w.ToString("0000.00000"));
+			line += "|" + (tr.localScale.x.ToString("0000.00000") + "|" + tr.localScale.y.ToString("0000.00000") + "|" + tr.localScale.z.ToString("0000.00000"));
+			line += "|" + playerGameObjects[i].GetComponentInChildren<MouseLookScript>().inventoryMode.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<MouseLookScript>().holdingObject.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<MouseLookScript>().heldObjectIndex.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<MouseLookScript>().heldObjectCustomIndex.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<MouseLookScript>().overButtonType.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<MouseLookScript>().overButton.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<MouseLookScript>().geniusActive.ToString();
+			for (j=0;j<7;j++) {
+				line += "|" + playerGameObjects[i].GetComponentInChildren<WeaponInventory>().weaponInventoryIndices[j].ToString();
+			}
+			for (j=0;j<7;j++) {
+				line += "|" + playerGameObjects[i].GetComponentInChildren<WeaponInventory>().weaponInventoryAmmoIndices[j].ToString();
+			}
+			for (j=0;j<16;j++) {
+				line += "|" + playerGameObjects[i].GetComponentInChildren<WeaponInventory>().hasWeapon[j].ToString();
+			}
+			for (j=0;j<16;j++) {
+				line += "|" + playerGameObjects[i].GetComponentInChildren<WeaponAmmo>().wepAmmo[j].ToString();
+			}
+			line += "|" + playerGameObjects[i].GetComponentInChildren<WeaponCurrent>().weaponCurrent.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<WeaponCurrent>().weaponIndex.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<GrenadeCurrent>().grenadeCurrent.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<GrenadeCurrent>().grenadeIndex.ToString();
+			for (j=0;j<7;j++) {
+				line += "|" + playerGameObjects[i].GetComponentInChildren<GrenadeInventory>().grenAmmo[j].ToString();
+			}
+			line += "|" + playerGameObjects[i].GetComponentInChildren<PatchCurrent>().patchCurrent.ToString();
+			line += "|" + playerGameObjects[i].GetComponentInChildren<PatchCurrent>().patchIndex.ToString();
+			for (j=0;j<7;j++) {
+				line += "|" + playerGameObjects[i].GetComponentInChildren<PatchInventory>().patchCounts[j].ToString();
+			}
+			for (j=0;j<128;j++) {
+				line += "|" + playerGameObjects[i].GetComponentInChildren<LogInventory>().hasLog[j].ToString();
+			}
+			for (j=0;j<128;j++) {
+				line += "|" + playerGameObjects[i].GetComponentInChildren<LogInventory>().readLog[j].ToString();
+			}
+			for (j=0;j<10;j++) {
+				line += "|" + playerGameObjects[i].GetComponentInChildren<LogInventory>().numLogsFromLevel[j].ToString();
+			}
+			line += "|" + playerGameObjects[i].GetComponentInChildren<LogInventory>().lastAddedIndex.ToString();
+			for (j=0;j<12;j++) {
+				line += "|" + playerGameObjects[i].GetComponentInChildren<HardwareInventory>().hasHardware[j].ToString();
+			}
+			for (j=0;j<12;j++) {
+				line += "|" + playerGameObjects[i].GetComponentInChildren<HardwareInventory>().hardwareVersion[j].ToString();
+			}
+			saveData[index] = line;
+			index++;
+		}
+
+		// Save all the objects data
+		for (i=0;i<saveableGameObjects.Count;i++) {
+			line = saveableGameObjects[i].GetComponent<SaveObject>().SaveID.ToString();
 			line += "|" + saveableGameObjects[i].activeInHierarchy.ToString();
-			Transform tr = saveableGameObjects[i].GetComponent<Transform>();
+			tr = saveableGameObjects[i].GetComponent<Transform>();
 			line += "|" + (tr.localPosition.x.ToString("0000.00000") + "|" + tr.localPosition.y.ToString("0000.00000") + "|" + tr.localPosition.z.ToString("0000.00000"));
 			line += "|" + (tr.localRotation.x.ToString("0000.00000") + "|" + tr.localRotation.y.ToString("0000.00000") + "|" + tr.localRotation.z.ToString("0000.00000") + "|" + tr.localRotation.w.ToString("0000.00000"));
 			line += "|" + (tr.localScale.x.ToString("0000.00000") + "|" + tr.localScale.y.ToString("0000.00000") + "|" + tr.localScale.z.ToString("0000.00000"));
 			saveData[index] = line;
 			index++;
 		}
-			
+
+		// Write to file
 		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt");
 		if (sw != null) {
 			using (sw) {
-				for (int j=0;j<saveData.Length;j++) {
+				for (j=0;j<saveData.Length;j++) {
 					sw.WriteLine(saveData[j]);
 				}
 				sw.Close();
 			}
 		}
+
+		// Make "Done!" appear at the end of the line after "Saving..." is finished, stole this from Halo
 		sprint("Saving...Done!");
+	}
+
+	public bool GetBoolFromString(string val) {
+		if (val.ToLower() == "true") return true; else return false;
+	}
+
+	public int GetIntFromString(string val, int currentline) {
+		bool parsed;
+		int readInt;
+		parsed = Int32.TryParse(val,out readInt);
+		if (!parsed) {
+			sprint("BUG: Could not parse int from save file on line " + currentline.ToString());
+			return 0;
+		}
+		return readInt;
+	}
+
+	public float GetFloatFromString(string val, int currentline) {
+		bool parsed;
+		float readFloat;
+		parsed = Single.TryParse(val,out readFloat);
+		if (!parsed) {
+			sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+			return 0.0f;
+		}
+		return readFloat;
+	}
+
+	void LoadPlayerDataToPlayer(GameObject currentPlayer, string[] entries, int currentline) {
+		int index = 1;
+		int j;
+		float readFloatx;
+		float readFloaty;
+		float readFloatz;
+		float readFloatw;
+
+		Const.a.playerName = entries[index]; index++;
+		currentPlayer.GetComponentInChildren<PlayerHealth>().health = GetFloatFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<PlayerEnergy>().energy = GetFloatFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<PlayerMovement>().currentCrouchRatio = GetFloatFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<PlayerMovement>().bodyState = GetIntFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<PlayerMovement>().ladderState = GetBoolFromString(entries[index]); index++;
+		currentPlayer.GetComponentInChildren<PlayerMovement>().gravliftState = GetBoolFromString(entries[index]); index++;
+		currentPlayer.GetComponentInChildren<PlayerPatchScript>().patchActive = GetIntFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<PlayerPatchScript>().berserkIncrement = GetIntFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<PlayerPatchScript>().sightFinishedTime = GetFloatFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<PlayerPatchScript>().staminupFinishedTime = GetFloatFromString(entries[index],currentline); index++;
+		readFloatx = GetFloatFromString(entries[index],currentline); index++;
+		readFloaty = GetFloatFromString(entries[index],currentline); index++;
+		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<PlayerMovement>().gameObject.transform.localPosition = new Vector3(readFloatx,readFloaty,readFloatz);
+		readFloatx = GetFloatFromString(entries[index],currentline); index++;
+		readFloaty = GetFloatFromString(entries[index],currentline); index++;
+		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		readFloatw = GetFloatFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<PlayerMovement>().gameObject.transform.localRotation = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
+		readFloatx = GetFloatFromString(entries[index],currentline); index++;
+		readFloaty = GetFloatFromString(entries[index],currentline); index++;
+		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<PlayerMovement>().gameObject.transform.localScale = new Vector3(readFloatx,readFloaty,readFloatz);
+		currentPlayer.GetComponentInChildren<MouseLookScript>().inventoryMode = GetBoolFromString(entries[index]); index++;
+		currentPlayer.GetComponentInChildren<MouseLookScript>().holdingObject = GetBoolFromString(entries[index]); index++;
+		currentPlayer.GetComponentInChildren<MouseLookScript>().heldObjectIndex = GetIntFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<MouseLookScript>().heldObjectCustomIndex = GetIntFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<MouseLookScript>().overButtonType = GetIntFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<MouseLookScript>().overButton = GetBoolFromString(entries[index]); index++;
+		currentPlayer.GetComponentInChildren<MouseLookScript>().geniusActive = GetBoolFromString(entries[index]); index++;
+		for (j=0;j<7;j++) {
+			currentPlayer.GetComponentInChildren<WeaponInventory>().weaponInventoryIndices[j] = GetIntFromString(entries[index],currentline); index++;
+		}
+		for (j=0;j<7;j++) {
+			currentPlayer.GetComponentInChildren<WeaponInventory>().weaponInventoryAmmoIndices[j] = GetIntFromString(entries[index],currentline); index++;
+		}
+		for (j=0;j<16;j++) {
+			currentPlayer.GetComponentInChildren<WeaponInventory>().hasWeapon[j] = GetBoolFromString(entries[index]); index++;
+		}
+		for (j=0;j<16;j++) {
+			currentPlayer.GetComponentInChildren<WeaponAmmo>().wepAmmo[j] = GetIntFromString(entries[index],currentline); index++;
+		}
+		currentPlayer.GetComponentInChildren<WeaponCurrent>().weaponCurrent = GetIntFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<WeaponCurrent>().weaponIndex = GetIntFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<GrenadeCurrent>().grenadeCurrent = GetIntFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<GrenadeCurrent>().grenadeIndex = GetIntFromString(entries[index],currentline); index++;
+		for (j=0;j<7;j++) {
+			currentPlayer.GetComponentInChildren<GrenadeInventory>().grenAmmo[j] = GetIntFromString(entries[index],currentline); index++;
+		}
+		currentPlayer.GetComponentInChildren<PatchCurrent>().patchCurrent = GetIntFromString(entries[index],currentline); index++;
+		currentPlayer.GetComponentInChildren<PatchCurrent>().patchIndex = GetIntFromString(entries[index],currentline); index++;
+		for (j=0;j<7;j++) {
+			currentPlayer.GetComponentInChildren<PatchInventory>().patchCounts[j] = GetIntFromString(entries[index],currentline); index++;
+		}
+		for (j=0;j<128;j++) {
+			currentPlayer.GetComponentInChildren<LogInventory>().hasLog[j] = GetBoolFromString(entries[index]); index++;
+		}
+		for (j=0;j<128;j++) {
+			currentPlayer.GetComponentInChildren<LogInventory>().readLog[j] = GetBoolFromString(entries[index]); index++;
+		}
+		for (j=0;j<10;j++) {
+			currentPlayer.GetComponentInChildren<LogInventory>().numLogsFromLevel[j] = GetIntFromString(entries[index],currentline); index++;
+		}
+		currentPlayer.GetComponentInChildren<LogInventory>().lastAddedIndex = GetIntFromString(entries[index],currentline); index++;
+		for (j=0;j<12;j++) {
+			currentPlayer.GetComponentInChildren<HardwareInventory>().hasHardware[j] = GetBoolFromString(entries[index]); index++;
+		}
+		for (j=0;j<12;j++) {
+			currentPlayer.GetComponentInChildren<HardwareInventory>().hardwareVersion[j] = GetIntFromString(entries[index],currentline); index++;
+		}
+	}
+
+	void LoadObjectDataToObject(GameObject currentGameObject, string[] entries, int currentline) {
+		int index = 1;
+		float readFloatx;
+		float readFloaty;
+		float readFloatz;
+		float readFloatw;
+		bool tempb = false;
+		bool parsed = false;
+		Vector3 tempvec;
+
+		// Set active state of GameObject in Hierarchy
+		if (entries[index].ToLower() == "true") tempb = true; else tempb = false; index++;
+		currentGameObject.SetActive(tempb);
+
+		// Get transform
+		parsed = Single.TryParse(entries[2],out readFloatx);
+		if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+		parsed = Single.TryParse(entries[3],out readFloaty);
+		if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+		parsed = Single.TryParse(entries[4],out readFloatz);
+		if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
+		currentGameObject.transform.localPosition = tempvec;
+
+		readFloatx = 0;
+		readFloaty = 0;
+		readFloatz = 0;
+		readFloatw = 0;
+		tempvec = Vector3.zero;
+
+		// Get rotation
+		parsed = Single.TryParse(entries[5],out readFloatx);
+		if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+		parsed = Single.TryParse(entries[6],out readFloaty);
+		if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+		parsed = Single.TryParse(entries[7],out readFloatz);
+		if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+		parsed = Single.TryParse(entries[8],out readFloatw);
+		if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+		Quaternion tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
+		currentGameObject.transform.localRotation = tempquat;
+
+		readFloatx = 0;
+		readFloaty = 0;
+		readFloatz = 0;
+		readFloatw = 0;
+		tempvec = Vector3.zero;
+
+		// Get scale
+		parsed = Single.TryParse(entries[9],out readFloatx);
+		if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+		parsed = Single.TryParse(entries[10],out readFloaty);
+		if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+		parsed = Single.TryParse(entries[11],out readFloatz);
+		if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+
+		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
+		currentGameObject.transform.localScale = tempvec;
+
+		readFloatx = 0;
+		readFloaty = 0;
+		readFloatz = 0;
+		readFloatw = 0;
+		tempvec = Vector3.zero;
 	}
 
 	public void Load(int saveFileIndex) {
 		sprint("Loading...");
+		List<GameObject> playerGameObjects = new List<GameObject>();
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 		// Find all gameobjects with SaveObject script attached
 		GameObject[] getAllGameObjects = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
 		foreach (GameObject gob in getAllGameObjects) {
+			if (gob.GetComponentInChildren<PlayerMovement>() != null) {
+				playerGameObjects.Add(gob);
+			}
+
 			if (gob.GetComponent<SaveObject>() != null) {
 				saveableGameObjects.Add(gob);
 			}
 		}
 
 		string readline;
-		float readFloatx;
-		float readFloaty;
-		float readFloatz;
-		float readFloatw;
+
 		int currentline = 0;
-		bool parsed = false;
-		Vector3 tempvec;
+
 		StreamReader sr = new StreamReader(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt");
 		if (sr != null) {
 			using (sr) {
@@ -570,81 +847,21 @@ public class Const : MonoBehaviour {
 					readline = sr.ReadLine();
 					if (readline == null) continue; // skip blank lines
 					string[] entries = readline.Split('|');  // delimited by | character, aka the vertical bar, pipe, obelisk, etc.
-					if (entries.Length <= 1) continue;
-					GameObject currentGameObject = new GameObject();
-					foreach (GameObject ob in saveableGameObjects) {
-						if (entries[0] == ob.GetComponent<SaveObject>().SaveID.ToString()) {
-							currentGameObject = ob;
-							//sprint("Found a matching object!");
+					if (entries.Length <= 1) continue; // Skip save name
+
+					foreach (GameObject pl in playerGameObjects) {
+						if (entries[0] == playerGameObjects[0].GetInstanceID().ToString()) {
+							LoadPlayerDataToPlayer(pl,entries,currentline);
 							break;
 						}
 					}
 
-					// Set active state of GameObject in Hierarchy
-					bool tempb = false;
-					if (entries[1].ToLower() == "true") tempb = true; else tempb = false;
-					currentGameObject.SetActive(tempb);
-
-					// Get transform
-					parsed = Single.TryParse(entries[2],out readFloatx);
-					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
-
-					parsed = Single.TryParse(entries[3],out readFloaty);
-					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
-
-					parsed = Single.TryParse(entries[4],out readFloatz);
-					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
-
-					tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
-					currentGameObject.transform.localPosition = tempvec;
-
-					readFloatx = 0;
-					readFloaty = 0;
-					readFloatz = 0;
-					readFloatw = 0;
-					tempvec = Vector3.zero;
-
-					// Get rotation
-					parsed = Single.TryParse(entries[5],out readFloatx);
-					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
-
-					parsed = Single.TryParse(entries[6],out readFloaty);
-					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
-
-					parsed = Single.TryParse(entries[7],out readFloatz);
-					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
-
-					parsed = Single.TryParse(entries[8],out readFloatw);
-					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
-
-					Quaternion tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
-					currentGameObject.transform.localRotation = tempquat;
-
-					readFloatx = 0;
-					readFloaty = 0;
-					readFloatz = 0;
-					readFloatw = 0;
-					tempvec = Vector3.zero;
-
-					// Get scale
-					parsed = Single.TryParse(entries[9],out readFloatx);
-					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
-
-					parsed = Single.TryParse(entries[10],out readFloaty);
-					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
-
-					parsed = Single.TryParse(entries[11],out readFloatz);
-					if (!parsed) sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
-
-					tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
-					currentGameObject.transform.localScale = tempvec;
-
-					readFloatx = 0;
-					readFloaty = 0;
-					readFloatz = 0;
-					readFloatw = 0;
-					tempvec = Vector3.zero;
-
+					foreach (GameObject ob in saveableGameObjects) {
+						if (entries[0] == ob.GetComponent<SaveObject>().SaveID.ToString()) {
+							LoadObjectDataToObject(ob,entries,currentline);
+							break;
+						}
+					}
 					currentline++;
 				} while (!sr.EndOfStream);
 				sr.Close();

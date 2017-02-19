@@ -36,7 +36,7 @@ public class WeaponFire : MonoBehaviour {
 		}*/
 		if (!PauseScript.a.paused) {
 			if (!GUIState.a.isBlocking && !playerCamera.GetComponent<MouseLookScript>().holdingObject) {
-				if (Input.GetButton("Fire1") && waitTilNextFire < Time.time) {
+				if (GetInput.a.Attack() && waitTilNextFire < Time.time) {
 				switch(currentWeapon.weaponIndex) {
 					case 36:
 						
