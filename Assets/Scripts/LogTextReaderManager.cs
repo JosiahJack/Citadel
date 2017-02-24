@@ -7,7 +7,7 @@ public class LogTextReaderManager : MonoBehaviour {
 	public GameObject moreButton;
 	public GameObject logTextOutput;
 	public Text moreButtonText;
-	public GameObject mfdManager;
+	public MFDManager mfdManager;
 	public GameObject dataTabAudioLogContainer;
 	public GameObject dataTabManager;
 	
@@ -22,9 +22,9 @@ public class LogTextReaderManager : MonoBehaviour {
 
 	public void SendTextToReader(int referenceIndex) {
 		logTextOutput.GetComponent<Text>().text = Const.a.audioLogSpeech2Text[referenceIndex];
-		mfdManager.GetComponent<TabButtonsScript>().TabButtonClickSilent(4,true);
-		dataTabManager.GetComponent<DataTab>().Reset();
-		dataTabAudioLogContainer.SetActive(true);
-		dataTabAudioLogContainer.GetComponent<LogDataTabContainerManager>().SendLogData(referenceIndex);
+		mfdManager.OpenTab(4,true,MFDManager.TabMSG.AudioLog,referenceIndex);
+		//dataTabManager.GetComponent<DataTab>().Reset();
+		//dataTabAudioLogContainer.SetActive(true);
+		//dataTabAudioLogContainer.GetComponent<LogDataTabContainerManager>().SendLogData(referenceIndex);
 	}
 }

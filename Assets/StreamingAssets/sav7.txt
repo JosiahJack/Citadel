@@ -1,13 +1,13 @@
 TODO: SAVEGAME NAME ENTRY
--66238|True|-0035.67567|0003.12019|0035.22520|0000.27522|0000.65134|0000.65135|-0000.27522|0001.00000|0001.00000|0001.00000
--64358|True|0004.78562|0003.12020|-0050.35852|-0000.54135|0000.45491|0000.45491|0000.54134|0001.00000|0001.00000|0001.00000
--43946|True|0015.12448|0003.50032|0039.79116|0000.67482|0000.20804|0000.49207|-0000.50912|0001.00000|0001.00000|0001.00000
--43128|True|-0033.00338|0005.66742|-0029.34052|-0000.18745|0000.68180|0000.68182|0000.18744|0001.00000|0001.00000|0001.00000
--35774|True|-0036.97238|0003.12019|0019.54348|0000.04634|0000.70558|0000.70560|-0000.04635|0001.00000|0001.00000|0001.00000
--5518|True|-0010.02500|0004.39381|0021.47800|-0000.53566|-0000.46159|-0000.46161|0000.53565|0001.00000|0001.00000|0001.00000
+00000000|00000000|3|3|2|2
+60964||0211.00000|0054.00000|0001.00000|0|False|False|0|0|0000.00000|0000.00000|-0064.24612|-0045.75766|0066.03042|0000.00000|0000.43837|0000.00000|0000.89879|0001.00000|0001.00000|0001.00000|False|False|-1|0|-1|False|False|-1|-1|-1|-1|-1|-1|-1|-1|-1|-1|-1|-1|-1|-1|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|False|0|0|0|0|0|0|0|0|0|0|-1|False|False|False|False|False|False|False|False|False|False|False|False|0|0|0|0|0|0|0|0|0|0|0|0
+-66238|True|-0035.67567|0003.12019|0035.22520|-0000.68880|-0000.15988|-0000.15989|0000.68879|0001.00000|0001.00000|0001.00000
+-64358|True|0004.78562|0003.12021|-0050.35851|0000.11236|0000.69812|0000.69812|-0000.11237|0001.00000|0001.00000|0001.00000
+-43946|True|0015.12484|0003.50024|0039.77737|-0000.15900|0000.68823|0000.54327|0000.45377|0001.00000|0001.00000|0001.00000
+-43128|True|-0033.00338|0005.66743|-0029.34052|0000.70630|0000.03401|0000.03402|-0000.70628|0001.00000|0001.00000|0001.00000
+-35774|True|-0036.97238|0003.12019|0019.54348|0000.06118|-0000.70445|-0000.70446|-0000.06117|0001.00000|0001.00000|0001.00000
+-5518|True|-0010.02500|0004.39381|0021.47800|0000.64169|-0000.29707|-0000.29706|-0000.64167|0001.00000|0001.00000|0001.00000
 0|False|0010.49275|0003.77498|0028.92446|-0000.50000|0000.50000|0000.50000|0000.50000|0001.00000|0001.00000|0001.00000
-
-
 
 
 

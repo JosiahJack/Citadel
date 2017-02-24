@@ -7,7 +7,6 @@ public class LogInventory : MonoBehaviour {
 	public bool[] readLog;
 	//public int[] logCountFromLevel;
 	public int[] numLogsFromLevel;
-	public KeyCode uKey;
 	public static LogInventory a;
 	public int lastAddedIndex = -1;
 	public GameObject logReaderContainer;
@@ -17,6 +16,9 @@ public class LogInventory : MonoBehaviour {
 
 	void Awake() {
 		SFXSource = GetComponent<AudioSource>();
+		if (SFXSource == null)
+			SFXSource = gameObject.AddComponent<AudioSource>();
+		
 		a = this;
 	}
 

@@ -8,6 +8,7 @@ public class DataTab : MonoBehaviour {
 	public GameObject elevatorUIControl;
 	public GameObject keycodeUIControl;
 	public GameObject[] searchItemImages;
+	public GameObject audioLogContainer;
 	public Text headerText_text;
 	public SearchButtonsScript searchContainer;
 
