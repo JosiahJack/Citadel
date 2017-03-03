@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 using System.Collections;
 
 public class NPCHumanoidMutant : MonoBehaviour {
@@ -115,7 +116,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 		//if (nextState.fullPathHash != deadState) {
 		//	anim.SetBool("Dead",false);
 		//}
-		if (PauseScript.a.paused) {
+		if (PauseScript.a != null && PauseScript.a.paused) {
 			anim.speed = 0f;
 			nav.Stop();
 			return;
@@ -277,10 +278,24 @@ public class NPCHumanoidMutant : MonoBehaviour {
 		
 		if (waitTime < Time.time) {
 			if (!(CheckIfInRangeOfWaypoint(roamingWaypoints[wayPointIndex]))) {
-				nav.SetDestination(roamingWaypoints[wayPointIndex].position);
-				nav.Resume();
-				anim.Play("Walk");
-				roaming = true;
+				float dist = 2f;
+				Vector3 randomDirection = Random.insideUnitSphere * dist;
+				randomDirection += transform.position;
+
+				NavMeshHit navHit;
+				if (NavMesh.SamplePosition (randomDirection,out navHit, dist,NavMesh.AllAreas)) {
+					//nav.SetDestination(roamingWaypoints[wayPointIndex].position);
+					nav.SetDestination(navHit.position);
+					nav.Resume();
+					anim.Play("Walk");
+					roaming = true;
+				} else {
+					nav.Stop();
+					anim.Play("Idle");
+					waitTime = Time.time + stopAtPointTime + Random.Range(0f, 1f);
+					wayPointIndex++;
+					roaming = false;
+				}
 			} else {
 				nav.Stop();
 				anim.Play("Idle");

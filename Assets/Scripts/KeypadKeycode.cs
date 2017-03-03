@@ -32,7 +32,7 @@ public class KeypadKeycode : MonoBehaviour {
 		playerCamera = owner;
 		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode == false)
 			playerCamera.GetComponent<MouseLookScript>().ToggleInventoryMode();
-		playerCamera.GetComponent<MouseLookScript>().SetActiveTab(4,true);
+		MFDManager.a.OpenTab(4,true,MFDManager.TabMSG.Keypad,0);
 	}
 
 	public void UseTargets () {

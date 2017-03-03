@@ -508,7 +508,7 @@ public class Const : MonoBehaviour {
 		string line;
 		int i,j;
 		int index = 0;
-		Transform tr;
+		Transform tr, trml;
 		List<GameObject> playerGameObjects = new List<GameObject>();
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 
@@ -550,6 +550,7 @@ public class Const : MonoBehaviour {
 			PlayerPatchScript pp = pCap.GetComponent<PlayerPatchScript>();
 			tr = pCap.transform;
 			MouseLookScript ml = playerMainCamera.GetComponent<MouseLookScript>();
+			trml = playerMainCamera.transform;
 			WeaponInventory wi = playerInventory.GetComponent<WeaponInventory>();
 			WeaponAmmo wa = playerInventory.GetComponent<WeaponAmmo>();
 			WeaponCurrent wc = playerInventory.GetComponent<WeaponCurrent>();
@@ -575,6 +576,9 @@ public class Const : MonoBehaviour {
 			line += "|" + (tr.localPosition.x.ToString("0000.00000") + "|" + tr.localPosition.y.ToString("0000.00000") + "|" + tr.localPosition.z.ToString("0000.00000"));
 			line += "|" + (tr.localRotation.x.ToString("0000.00000") + "|" + tr.localRotation.y.ToString("0000.00000") + "|" + tr.localRotation.z.ToString("0000.00000") + "|" + tr.localRotation.w.ToString("0000.00000"));
 			line += "|" + (tr.localScale.x.ToString("0000.00000") + "|" + tr.localScale.y.ToString("0000.00000") + "|" + tr.localScale.z.ToString("0000.00000"));
+			line += "|" + (trml.localPosition.x.ToString("0000.00000") + "|" + trml.localPosition.y.ToString("0000.00000") + "|" + trml.localPosition.z.ToString("0000.00000"));
+			line += "|" + (trml.localRotation.x.ToString("0000.00000") + "|" + trml.localRotation.y.ToString("0000.00000") + "|" + trml.localRotation.z.ToString("0000.00000") + "|" + trml.localRotation.w.ToString("0000.00000"));
+			line += "|" + (trml.localScale.x.ToString("0000.00000") + "|" + trml.localScale.y.ToString("0000.00000") + "|" + trml.localScale.z.ToString("0000.00000"));
 			line += "|" + ml.inventoryMode.ToString();
 			line += "|" + ml.holdingObject.ToString();
 			line += "|" + ml.heldObjectIndex.ToString();
@@ -675,6 +679,7 @@ public class Const : MonoBehaviour {
 		PlayerPatchScript pp = pCap.GetComponent<PlayerPatchScript>();
 		Transform tr = pCap.transform;
 		MouseLookScript ml = playerMainCamera.GetComponent<MouseLookScript>();
+		Transform trml = playerMainCamera.transform;
 		WeaponInventory wi = playerInventory.GetComponent<WeaponInventory>();
 		WeaponAmmo wa = playerInventory.GetComponent<WeaponAmmo>();
 		WeaponCurrent wc = playerInventory.GetComponent<WeaponCurrent>();
@@ -709,6 +714,19 @@ public class Const : MonoBehaviour {
 		readFloaty = GetFloatFromString(entries[index],currentline); index++;
 		readFloatz = GetFloatFromString(entries[index],currentline); index++;
 		tr.localScale = new Vector3(readFloatx,readFloaty,readFloatz);
+		readFloatx = GetFloatFromString(entries[index],currentline); index++;
+		readFloaty = GetFloatFromString(entries[index],currentline); index++;
+		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		trml.localPosition = new Vector3(readFloatx,readFloaty,readFloatz);
+		readFloatx = GetFloatFromString(entries[index],currentline); index++;
+		readFloaty = GetFloatFromString(entries[index],currentline); index++;
+		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		readFloatw = GetFloatFromString(entries[index],currentline); index++;
+		trml.localRotation = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
+		readFloatx = GetFloatFromString(entries[index],currentline); index++;
+		readFloaty = GetFloatFromString(entries[index],currentline); index++;
+		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		trml.localScale = new Vector3(readFloatx,readFloaty,readFloatz);
 		ml.inventoryMode = !GetBoolFromString(entries[index]); index++; // take opposite because we are about to opposite again
 		ml.ToggleInventoryMode(); // correctly set cursor lock state, and opposite again, now it is what was saved
 		ml.holdingObject = GetBoolFromString(entries[index]); index++;

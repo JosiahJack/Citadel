@@ -10,7 +10,7 @@ public class HeadMountedLantern : MonoBehaviour {
 	public float lanternVersion3Brightness = 5;
 	
 	void  Update (){
-		if (GetInput.a.Lantern()) {
+		if (GetInput.a != null && GetInput.a.Lantern()) {
 			switch(lanternState) {
 			case 0:
 				GetComponent<Light>().intensity = lanternVersion1Brightness;

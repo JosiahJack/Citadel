@@ -54,7 +54,7 @@ public class KeypadElevator : MonoBehaviour {
 		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode == false)
 			playerCamera.GetComponent<MouseLookScript>().ToggleInventoryMode();
 
-		playerCamera.GetComponent<MouseLookScript>().SetActiveTab(4,true);
+		MFDManager.a.OpenTab(4,true,MFDManager.TabMSG.Elevator,0);
 	}
 
 	void Update () {

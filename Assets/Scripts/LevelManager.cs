@@ -54,4 +54,10 @@ public class LevelManager : MonoBehaviour {
 			oldLevel = currentLevel; // only perform pass to disable levels without players once per change in currentLevel
 		}
 	}
+
+	public GameObject GetCurrentLevelDynamicContainer() {
+		GameObject retval = levels[currentLevel].GetComponent<Level>().dynamicObjectsContainer;
+		if (retval != null) return retval;
+		return null;
+	}
 }

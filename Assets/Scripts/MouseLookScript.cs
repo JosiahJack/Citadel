@@ -69,9 +69,7 @@ public class MouseLookScript : MonoBehaviour {
 	[Tooltip("Text in the data tab in the MFD that displays when searching an object containing no items")]
 	public Text dataTabNoItemsText;
 	public DataTab dataTabControl;
-	public GameObject searchFX;
 	public AudioSource SFXSource;
-	public GameObject searchOriginContainer;
 	[SerializeField] private GameObject iconman;
 	[SerializeField] private GameObject itemiconman;
 	[SerializeField] private GameObject itemtextman;
@@ -145,7 +143,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
         if (inventoryMode == false) {
-			if (!PauseScript.a.paused) {
+			if (PauseScript.a != null && !PauseScript.a.paused) {
 				yRotation += (Input.GetAxis("Mouse X") * lookSensitivity);
 				xRotation -= (Input.GetAxis("Mouse Y") * lookSensitivity);
 				xRotation = Mathf.Clamp(xRotation, -90, 90);  // Limit up and down angle. TIP:: Need to disable clamp for Cyberspace!
@@ -334,8 +332,7 @@ public class MouseLookScript : MonoBehaviour {
 	                        }
 							if (overButtonType != 77) {
 	                       		mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture;
-		                        Cursor.lockState = CursorLockMode.None;
-		                        inventoryMode = true;  // inventory mode turned on
+								ForceInventoryMode();
 		                        holdingObject = true;
 							}
 						}
@@ -679,7 +676,40 @@ public class MouseLookScript : MonoBehaviour {
 	void DropHeldItem() {
 		heldObject = Const.a.useableItems[heldObjectIndex];
 		if (heldObject != null) {
-			GameObject tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Quaternion.identity) as GameObject;  //effect
+			GameObject tossObject = null;
+			bool freeObjectInPoolFound = false;
+			GameObject levelDynamicContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
+			if (levelDynamicContainer == null) {
+				Const.sprint("BUG: Failed to find dynamicObjectContainer for level: " + LevelManager.a.currentLevel.ToString());
+				return;
+			}
+			for (int i=0;i<levelDynamicContainer.transform.childCount;i++) {
+				Transform tr = levelDynamicContainer.transform.GetChild(i);
+				GameObject go = tr.gameObject;
+				UseableObjectUse reference = go.GetComponent<UseableObjectUse>();
+				if (reference != null) {
+					if (reference.useableItemIndex == heldObjectIndex && go.activeSelf == false) {
+						reference.customIndex = heldObjectCustomIndex;
+						tossObject = go;
+						freeObjectInPoolFound = true;
+						break;
+					}
+				}
+			}
+
+			if (freeObjectInPoolFound) {
+				tossObject.transform.position = (transform.position + (transform.forward * tossOffset));
+			} else {
+				tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Quaternion.identity) as GameObject;  //effect
+				if (tossObject == null) {
+					Const.sprint("BUG: Failed to instantiate object being dropped!");
+					return;
+				}
+			}
+			if (tossObject.activeSelf != true) {
+				tossObject.SetActive(true);
+			}
+			tossObject.transform.SetParent(levelDynamicContainer.transform,true);
 			tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
 		} else {
 			Const.sprint("Warning: Object "+heldObjectIndex.ToString()+" not assigned, vaporized.");
@@ -705,14 +735,22 @@ public class MouseLookScript : MonoBehaviour {
 		
 	public void ToggleInventoryMode (){
 		if (inventoryMode) {
-			Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-            inventoryMode = false;
+			ForceShootMode();
 		} else {
-			Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = false;
-            inventoryMode = true;
+			ForceInventoryMode();
 		}
+	}
+
+	public void ForceShootMode() {
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
+		inventoryMode = false;
+	}
+
+	public void ForceInventoryMode() {
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = false;
+		inventoryMode = true;
 	}
 	
 	void  SearchObject ( int index  ){
@@ -734,15 +772,6 @@ public class MouseLookScript : MonoBehaviour {
 		// Play search sound
 		SFXSource.PlayOneShot(SearchSFX);
 
-		// Enable search scaling box effect
-		searchOriginContainer.GetComponent<RectTransform>().position = Input.mousePosition;
-		searchFX.SetActive(true);
-		searchFX.GetComponent<Animation>().Play();
-
-		// Reset data tab before adding data (clears out keypad or elevator UIs)
-		tabControl.GetComponent<TabButtonsScript>().TabButtonClickSilent(4,true); //enable Data Tab
-		dataTabControl.Reset();
-
 		// Search through array to see if any items are in the container
 		int numberFoundContents = 0;
 		int[] resultContents = {-1,-1,-1,-1};  // create blanked container for search results
@@ -756,28 +785,8 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		}
 
-		// Send data to LH DataTab to show it
-		dataTabControl.Search(currentSearchItem.GetComponent<SearchableItem>().objectName, numberFoundContents, resultContents, resultCustomIndex);
-
-		// Set LH DataTab to show search contents
-		SetActiveTab(4,true);
-		Cursor.lockState = CursorLockMode.None;
-		Cursor.visible = false;
-		inventoryMode = true;
-	}
-
-	public void SetActiveTab (int tabIndex, bool rememberLast) {
-		if (tabIndex < 0 || tabIndex > 4) {
-			Const.sprint("BUG: tabIndex outside of bounds (0 to 4) sent to MouseLookScript.SetActiveTab()");
-			return;
-		}
-
-		if (tabControl.GetComponent<TabButtonsScript>().curTab != tabIndex) {
-			if (rememberLast)
-				tabControl.GetComponent<TabButtonsScript>().SetCurrentAsLast();
-			
-			tabControl.GetComponent<TabButtonsScript>().TabButtonClickSilent(tabIndex,false);
-		}
+		MFDManager.a.SendSearchToDataTab(currentSearchItem.GetComponent<SearchableItem>().objectName, numberFoundContents, resultContents, resultCustomIndex);
+		ForceInventoryMode();
 	}
 
 	// Returns string for describing the walls/floors/etc. based on the material name

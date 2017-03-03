@@ -9,6 +9,8 @@ public class DataTab : MonoBehaviour {
 	public GameObject keycodeUIControl;
 	public GameObject[] searchItemImages;
 	public GameObject audioLogContainer;
+	public GameObject puzzleGrid;
+	public GameObject puzzleWire;
 	public Text headerText_text;
 	public SearchButtonsScript searchContainer;
 
@@ -22,6 +24,8 @@ public class DataTab : MonoBehaviour {
 		noItemsText.SetActive(false);
 		elevatorUIControl.SetActive(false);
 		keycodeUIControl.SetActive(false);
+		puzzleGrid.SetActive(false);
+		puzzleWire.SetActive(false);
 		for (int i=0; i<=3;i++) {
 			searchItemImages[i].SetActive(false);
 		}
@@ -46,5 +50,9 @@ public class DataTab : MonoBehaviour {
 				searchContainer.customIndex[i] = customIndex[i];
 			}
 		}
+	}
+
+	public void GridPuzzle(bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors) {
+		puzzleGrid.GetComponent<PuzzleGrid>().SendGrid(states,types,gtype,start,end, width, height,colors);
 	}
 }
