@@ -7,12 +7,15 @@ public class LevelManager : MonoBehaviour {
 	public GameObject[] levels;
 	public GameObject currentPlayer;
 	public GameObject elevatorControl;
+	public GameObject sky;
 	private int oldLevel;
 
 	void Awake () {
 		a = this;
-		print("LevelManager Awake(): Current level: " + currentLevel);
+		//print("LevelManager Awake(): Current level: " + currentLevel);
 		oldLevel = (currentLevel - 1); // set initially to a value not equal to currentLevel so Update can set correctly active levels
+		if (sky != null)
+			sky.SetActive(true);
 	}
 
 	public void LoadLevel (int levnum, GameObject targetDestination) {
@@ -39,6 +42,17 @@ public class LevelManager : MonoBehaviour {
 		currentPlayer.GetComponentInChildren<MouseLookScript>().overButtonType = -1;
 		currentPlayer.transform.position = targetDestination.transform.position; // Put player in the new level
 		// TODO: Check if any other player is in the level before deactivating
+		levels[currentLevel].SetActive(false); // Unload current level
+		currentLevel = levnum; // Set current level to be the new level
+	}
+
+	public void LoadLevelFromSave (int levnum) {
+		// NOTE: Check this first since the button for the current level has a null destination
+		if (currentLevel == levnum) {
+			return;
+		}
+			
+		levels[levnum].SetActive(true); // Load new level
 		levels[currentLevel].SetActive(false); // Unload current level
 		currentLevel = levnum; // Set current level to be the new level
 	}

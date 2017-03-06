@@ -525,7 +525,7 @@ public class Const : MonoBehaviour {
 		string states = "00000000|00000000|";
 
 		// Global states and Difficulties
-		saveData[index] = (states + difficultyCombat.ToString() + "|" + difficultyMission.ToString() + "|" + difficultyPuzzle.ToString() + "|" + difficultyCyber.ToString());
+		saveData[index] = (LevelManager.a.currentLevel.ToString() + "|" + states + difficultyCombat.ToString() + "|" + difficultyMission.ToString() + "|" + difficultyPuzzle.ToString() + "|" + difficultyCyber.ToString());
 		index++;
 
 		// Find all gameobjects with SaveObject script attached
@@ -825,6 +825,8 @@ public class Const : MonoBehaviour {
 					if (currentline == 1) {
 						// Read in global states
 
+						int levelNum = GetIntFromString(entries[0],currentline,"savegame",0);
+						LevelManager.a.LoadLevelFromSave(levelNum);
 						currentline++;
 						continue;
 					}
