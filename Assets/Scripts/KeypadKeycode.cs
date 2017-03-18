@@ -2,9 +2,9 @@
 using System.Collections;
 
 public class KeypadKeycode : MonoBehaviour {
+	public int securityThreshhold = 100; // if security level is not below this level, this is unusable
 	public DataTab dataTabResetter;
 	public GameObject keypadControl;
-	public GameObject playerCapsule;
 	public int keycode; // the access code
 	public GameObject target;
 	public GameObject target1;
@@ -15,6 +15,7 @@ public class KeypadKeycode : MonoBehaviour {
 	private AudioSource SFXSource;
 	private bool padInUse = false;
 	private GameObject playerCamera;
+	private GameObject playerCapsule;
 
 	void Start () {
 		padInUse = false;
@@ -23,13 +24,20 @@ public class KeypadKeycode : MonoBehaviour {
 	}
 
 	void Use (GameObject owner) {
+		if (LevelManager.a.levelSecurity[LevelManager.a.currentLevel] > securityThreshhold) {
+			Const.sprint("Blocked by SHODAN level Security.",owner);
+			MFDManager.a.BlockedBySecurity();
+			return;
+		}
+
 		padInUse = true;
 		SFXSource.PlayOneShot(SFX);
 		dataTabResetter.Reset();
 		keypadControl.SetActive(true);
 		keypadControl.GetComponent<KeypadKeycodeButtons>().keycode = keycode;
 		keypadControl.GetComponent<KeypadKeycodeButtons>().keypad = this;
-		playerCamera = owner;
+		playerCamera = owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
+		playerCapsule = owner.GetComponent<PlayerReferenceManager>().playerCapsule; // Get player capsule of player using this pad
 		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode == false)
 			playerCamera.GetComponent<MouseLookScript>().ToggleInventoryMode();
 		MFDManager.a.OpenTab(4,true,MFDManager.TabMSG.Keypad,0);
@@ -54,7 +62,8 @@ public class KeypadKeycode : MonoBehaviour {
 		if (padInUse) {
 			if (Vector3.Distance(playerCapsule.transform.position, gameObject.transform.position) > disconnectDist) {
 				padInUse = false;
-				keypadControl.SetActive(false);
+				MFDManager.a.TurnOffKeypad();
+				//keypadControl.SetActive(false);
 			}
 		}
 	}

@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class ButtonSwitch : MonoBehaviour {
+	public int securityThreshhold = 100; // if security level is not below this level, this is unusable
 	public GameObject target;
 	public GameObject target1;
 	public GameObject target2;
@@ -17,6 +18,11 @@ public class ButtonSwitch : MonoBehaviour {
 	}
 
 	public void Use (GameObject owner) {
+		if (LevelManager.a.levelSecurity[LevelManager.a.currentLevel] > securityThreshhold) {
+			MFDManager.a.BlockedBySecurity();
+			return;
+		}
+
 		playerCamera = owner;  // set playerCamera to owner of the input (always should be the player camera)
 		SFXSource.PlayOneShot(SFX);
 		if (delay > 0) {

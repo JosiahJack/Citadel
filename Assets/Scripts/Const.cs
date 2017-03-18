@@ -82,7 +82,11 @@ public class Const : MonoBehaviour {
 	public bool InputInvertInventoryCycling;
 	public bool InputQuickItemPickup;
 	public bool InputQuickReloadWeapons;
-	public GameObject playerCamera;
+	public GameObject player1;
+	public GameObject player2;
+	public GameObject player3;
+	public GameObject player4;
+	public GameObject allPlayers;
 
 	// Instantiate it so that it can be accessed globally. MOST IMPORTANT PART!!
 	// =========================================================================
@@ -92,6 +96,7 @@ public class Const : MonoBehaviour {
 		//for (int i=0;i<Display.displays.Length;i++) {
 		//	Display.displays[i].Activate();
 		//}
+		FindPlayers();
 	}
 	// =========================================================================
 	void Start() {
@@ -99,6 +104,23 @@ public class Const : MonoBehaviour {
 		LoadAudioLogMetaData();
 		LoadItemNamesData();
 		LoadDamageTablesData();
+	}
+
+	private void FindPlayers() {
+		List<GameObject> playerGameObjects = new List<GameObject>();
+
+		// Find all gameobjects with SaveObject script attached
+		GameObject[] getAllGameObjects = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
+		foreach (GameObject gob in getAllGameObjects) {
+			if (gob.GetComponentInChildren<PlayerReferenceManager>() != null && gob.GetComponent<RuntimeObject>().isRuntimeObject == true) playerGameObjects.Add(gob);
+		}
+
+		if (playerGameObjects.Count > 0) player1 = playerGameObjects[0];
+		if (playerGameObjects.Count > 1) player2 = playerGameObjects[1];
+		if (playerGameObjects.Count > 2) player3 = playerGameObjects[2];
+		if (playerGameObjects.Count > 3) player4 = playerGameObjects[3];
+		allPlayers = new GameObject();
+		allPlayers.name = "All Players";
 	}
 
 	private void LoadConfig() {
@@ -209,14 +231,14 @@ public class Const : MonoBehaviour {
 				//char[] delimiters = new char[] {','};
 				string[] entries = readline.Split(',');
 				bool parsed = Int32.TryParse(entries[0],out readIndexOfLog);
-				if (!parsed) sprint("BUG: Could not parse into integer readIndexOfLog from log_text.txt file on line " + currentline.ToString());
+				if (!parsed) sprint("BUG: Could not parse into integer readIndexOfLog from log_text.txt file on line " + currentline.ToString(),allPlayers);
 				readNameOfLog = entries[1];
 				readSenderOfLog = entries[2];
 				readSubjectOfLog = entries[3];
 				parsed = Int32.TryParse(entries[4],out readLogType);
-				if (!parsed) sprint("BUG: Could not parse into integer readLogType from log_text.txt file on line " + currentline.ToString());
+				if (!parsed) sprint("BUG: Could not parse into integer readLogType from log_text.txt file on line " + currentline.ToString(),allPlayers);
 				parsed = Int32.TryParse(entries[5],out readLevelFoundOn);
-				if (!parsed) sprint("BUG: Could not parse into integer readLevelFoundOn from log_text.txt file on line " + currentline.ToString());
+				if (!parsed) sprint("BUG: Could not parse into integer readLevelFoundOn from log_text.txt file on line " + currentline.ToString(),allPlayers);
 				readLogText = entries[6];
 
 				// handle extra commas within the body text and append remaining portions of the line
@@ -272,59 +294,59 @@ public class Const : MonoBehaviour {
 				if (parsed) {
 					if (readInt == 1) readBool = true; else readBool = false;
 					isFullAutoForWeapon[currentline] = readBool;
-				} else { sprint("BUG: Could not parse into bool isFullAutoForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into bool isFullAutoForWeapon from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Single.TryParse(entries[1],out readFloat);
 				if (parsed) { delayBetweenShotsForWeapon[currentline] = readFloat;
-				} else { sprint("BUG: Could not parse into float delayBetweenShotsForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float delayBetweenShotsForWeapon from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Single.TryParse(entries[2],out readFloat);
 				if (parsed) { delayBetweenShotsForWeapon2[currentline] = readFloat;
-				} else { sprint("BUG: Could not parse into float delayBetweenShotsForWeapon2 from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float delayBetweenShotsForWeapon2 from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Int32.TryParse(entries[3],out readInt);
 				if (parsed) { damagePerHitForWeapon[currentline] = (float)readInt;
-				} else { sprint("BUG: Could not parse into float damagePerHitForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float damagePerHitForWeapon from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Int32.TryParse(entries[4],out readInt);
 				if (parsed) { damagePerHitForWeapon2[currentline] = (float)readInt;
-				} else { sprint("BUG: Could not parse into float damagePerHitForWeapon2 from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float damagePerHitForWeapon2 from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Int32.TryParse(entries[5],out readInt);
 				if (parsed) { damageOverloadForWeapon[currentline] = (float)readInt;
-				} else { sprint("BUG: Could not parse into float damageOverloadForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float damageOverloadForWeapon from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Int32.TryParse(entries[6],out readInt);
 				if (parsed) { energyDrainLowForWeapon[currentline] = (float)readInt;
-				} else { sprint("BUG: Could not parse into float energyDrainLowForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float energyDrainLowForWeapon from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Int32.TryParse(entries[7],out readInt);
 				if (parsed) { energyDrainHiForWeapon[currentline] = (float)readInt;
-				} else { sprint("BUG: Could not parse into float energyDrainHiForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float energyDrainHiForWeapon from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Int32.TryParse(entries[8],out readInt);
 				if (parsed) { energyDrainOverloadForWeapon[currentline] = (float)readInt;
-				} else { sprint("BUG: Could not parse into float energyDrainOverloadForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float energyDrainOverloadForWeapon from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Int32.TryParse(entries[9],out readInt);
 				if (parsed) { penetrationForWeapon[currentline] = (float)readInt;
-				} else { sprint("BUG: Could not parse into float penetrationForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float penetrationForWeapon from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Int32.TryParse(entries[10],out readInt);
 				if (parsed) { penetrationForWeapon2[currentline] = (float)readInt;
-				} else { sprint("BUG: Could not parse into float penetrationForWeapon2 from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float penetrationForWeapon2 from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Int32.TryParse(entries[11],out readInt);
 				if (parsed) { offenseForWeapon[currentline] = (float)readInt;
-				} else { sprint("BUG: Could not parse into float offenseForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float offenseForWeapon from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Int32.TryParse(entries[12],out readInt);
 				if (parsed) { offenseForWeapon2[currentline] = (float)readInt;
-				} else { sprint("BUG: Could not parse into float offenseForWeapon2 from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float offenseForWeapon2 from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Int32.TryParse(entries[13],out readInt);
 				if (parsed) { rangeForWeapon[currentline] = (float)readInt;
-				} else { sprint("BUG: Could not parse into float rangeForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into float rangeForWeapon from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				parsed = Int32.TryParse(entries[14],out readInt);
 				if (parsed) {
@@ -343,7 +365,7 @@ public class Const : MonoBehaviour {
 						break;
 					}
 					attackTypeForWeapon[currentline] = readAttType;
-				} else { sprint("BUG: Could not parse into AttackType(enum) attackTypeForWeapon from damage_tables.txt file on line " + currentline.ToString()); }
+				} else { sprint("BUG: Could not parse into AttackType(enum) attackTypeForWeapon from damage_tables.txt file on line " + currentline.ToString(),allPlayers); }
 
 				currentline++;
 			} while (!dataReader.EndOfStream);
@@ -353,11 +375,18 @@ public class Const : MonoBehaviour {
 	}
 
 	// StatusBar Print
-	public static void sprint (string input) {
+	public static void sprint (string input, GameObject player) {
 		print(input);  // print to console
+		if (player == null) return;
 		if (a != null) {
-			if (a.statusBar != null)
-				a.statusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+			if (player.name == "All Players") {
+				if (a.player1 != null) a.player1.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+				if (a.player2 != null) a.player2.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+				if (a.player3 != null) a.player3.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+				if (a.player4 != null) a.player4.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+			} else {
+				player.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+			}
 		}
 	}
 
@@ -397,14 +426,13 @@ public class Const : MonoBehaviour {
 		}
 
 		if (poolContainer == null) {
-			sprint("Cannot find " + poolName + "pool");
+			sprint("Cannot find " + poolName + "pool",allPlayers);
 			return null;
 		}
 
 		for (int i=0;i<poolContainer.transform.childCount;i++) {
 			Transform child = poolContainer.transform.GetChild(i);
 			if (child.gameObject.activeInHierarchy == false) {
-				//sprint("Found a free object in pool: " + poolName.ToString());
 				return child.gameObject;
 			}
 		}
@@ -513,7 +541,7 @@ public class Const : MonoBehaviour {
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 
 		// Indicate we are saving
-		sprint("Saving...");
+		sprint("Saving...",allPlayers);
 
 		// Header
 		// -----------------------------------------------------
@@ -531,11 +559,11 @@ public class Const : MonoBehaviour {
 		// Find all gameobjects with SaveObject script attached
 		GameObject[] getAllGameObjects = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
 		foreach (GameObject gob in getAllGameObjects) {
-			if (gob.GetComponentInChildren<PlayerReferenceManager>() != null) playerGameObjects.Add(gob);
-			if (gob.GetComponent<SaveObject>() != null) saveableGameObjects.Add(gob);
+			if (gob.GetComponentInChildren<PlayerReferenceManager>() != null && gob.GetComponent<RuntimeObject>().isRuntimeObject == true) playerGameObjects.Add(gob);
+			if (gob.GetComponent<SaveObject>() != null && gob.GetComponent<RuntimeObject>().isRuntimeObject == true) saveableGameObjects.Add(gob);
 		}
 
-		sprint("Num players: " + playerGameObjects.Count.ToString());
+		sprint("Num players: " + playerGameObjects.Count.ToString(),allPlayers);
 
 		// Save all the players' data
 		for (i=0;i<playerGameObjects.Count;i++) {
@@ -632,7 +660,7 @@ public class Const : MonoBehaviour {
 		}
 
 		// Make "Done!" appear at the end of the line after "Saving..." is finished, stole this from Halo
-		sprint("Saving...Done!");
+		sprint("Saving...Done!",allPlayers);
 	}
 
 	public bool GetBoolFromString(string val) {
@@ -644,7 +672,7 @@ public class Const : MonoBehaviour {
 		int readInt;
 		parsed = Int32.TryParse(val,out readInt);
 		if (!parsed) {
-			sprint("BUG: Could not parse int from " + source + " file on line " + currentline.ToString() + ", from index: " + index.ToString());
+			sprint("BUG: Could not parse int from " + source + " file on line " + currentline.ToString() + ", from index: " + index.ToString(),allPlayers);
 			return 0;
 		}
 		return readInt;
@@ -655,7 +683,7 @@ public class Const : MonoBehaviour {
 		float readFloat;
 		parsed = Single.TryParse(val,out readFloat);
 		if (!parsed) {
-			sprint("BUG: Could not parse float from save file on line " + currentline.ToString());
+			sprint("BUG: Could not parse float from save file on line " + currentline.ToString(),allPlayers);
 			return 0.0f;
 		}
 		return readFloat;
@@ -793,17 +821,17 @@ public class Const : MonoBehaviour {
 		string readline;
 		int currentline = 0;
 
-		sprint("Loading...");
+		sprint("Loading...",allPlayers);
 		List<GameObject> playerGameObjects = new List<GameObject>();
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 		// Find all gameobjects with SaveObject script attached
 		GameObject[] getAllGameObjects = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
 		foreach (GameObject gob in getAllGameObjects) {
-			if (gob.GetComponentInChildren<PlayerReferenceManager>() != null) {
+			if (gob.GetComponentInChildren<PlayerReferenceManager>() != null && gob.GetComponent<RuntimeObject>().isRuntimeObject == true) {
 				playerGameObjects.Add(gob);
 			}
 
-			if (gob.GetComponent<SaveObject>() != null) {
+			if (gob.GetComponent<SaveObject>() != null && gob.GetComponent<RuntimeObject>().isRuntimeObject == true) {
 				saveableGameObjects.Add(gob);
 			}
 		}
@@ -849,26 +877,38 @@ public class Const : MonoBehaviour {
 				sr.Close();
 			}
 		}
-		sprint("Loading...Done!");
+		sprint("Loading...Done!",allPlayers);
 	}
 
 	public void SetFOV() {
-		playerCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
+		if (player1 != null) player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
+		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
+		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
+		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
 	}
 
 	public void SetBloom() {
-		playerCamera.GetComponent<Bloom>().enabled = GraphicsBloom;
+		if (player1 != null) player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<Bloom>().enabled = GraphicsBloom;
+		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<Bloom>().enabled = GraphicsBloom;
+		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<Bloom>().enabled = GraphicsBloom;
+		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<Bloom>().enabled = GraphicsBloom;
 	}
 
 	public void SetSSAO() {
-		playerCamera.GetComponent<ScreenSpaceAmbientObscurance>().enabled = GraphicsSSAO;
+		if (player1 != null) player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<ScreenSpaceAmbientObscurance>().enabled = GraphicsSSAO;
+		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<ScreenSpaceAmbientObscurance>().enabled = GraphicsSSAO;
+		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<ScreenSpaceAmbientObscurance>().enabled = GraphicsSSAO;
+		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<ScreenSpaceAmbientObscurance>().enabled = GraphicsSSAO;
 	}
 
 	public void SetBrightness() {
 		float tempf = Const.a.GraphicsGamma;
 		if (tempf < 1) tempf = 0;
 		else tempf = tempf/100;
-		playerCamera.GetComponent<ColorCurvesManager>().Factor = tempf;
+		if (player1 != null) player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<ColorCurvesManager>().Factor = tempf;
+		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<ColorCurvesManager>().Factor = tempf;
+		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<ColorCurvesManager>().Factor = tempf;
+		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<ColorCurvesManager>().Factor = tempf;
 	}
 
 	public void SetVolume() {
@@ -882,7 +922,7 @@ public class Const : MonoBehaviour {
 		inputCapture = INIWorker.IniReadValue(section,keyname);
 		if (inputCapture == null) inputCapture = "NULL";
 		bool parsed = Int32.TryParse(inputCapture, out inputInt);
-		if (parsed) return inputInt; else sprint("Warning: Could not parse config key " + keyname + " as integer: " + inputCapture);
+		if (parsed) return inputInt; else sprint("Warning: Could not parse config key " + keyname + " as integer: " + inputCapture,allPlayers);
 		return 0;
 	}
 
@@ -894,7 +934,7 @@ public class Const : MonoBehaviour {
 		bool parsed = Int32.TryParse(inputCapture, out inputInt);
 		if (parsed) {
 			if (inputInt > 0) return true; else return false;
-		} else sprint("Warning: Could not parse config key " + keyname + " as bool: " + inputCapture);
+		} else sprint("Warning: Could not parse config key " + keyname + " as bool: " + inputCapture,allPlayers);
 		return false;
 	}
 

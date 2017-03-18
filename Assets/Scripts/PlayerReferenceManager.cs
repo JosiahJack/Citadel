@@ -10,4 +10,7 @@ public class PlayerReferenceManager : MonoBehaviour {
 	public GameObject playerCapsuleMainCameraWeaponController;
 	public GameObject playerCapsuleMainCameraGunCamera;
 	public GameObject playerInventory;
+	public GameObject playerCanvas;
+	public GameObject playerStatusBar;
+	public int playerCurrentLevel;
 }

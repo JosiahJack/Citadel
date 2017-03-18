@@ -5,6 +5,7 @@ using System.Collections;
 public class DataTab : MonoBehaviour {
 	public GameObject headerText;
 	public GameObject noItemsText;
+	public GameObject blockedBySecurity;
 	public GameObject elevatorUIControl;
 	public GameObject keycodeUIControl;
 	public GameObject[] searchItemImages;
@@ -13,15 +14,28 @@ public class DataTab : MonoBehaviour {
 	public GameObject puzzleWire;
 	public Text headerText_text;
 	public SearchButtonsScript searchContainer;
+	public Vector3 objectInUsePos;
+	public bool usingObject;
+	public Transform playerCapsuleTransform;
 
 	void Awake () {
 		Reset();
 	}
 
+	void Update () {
+		if (usingObject) {
+			if (Vector3.Distance(playerCapsuleTransform.position, objectInUsePos) > Const.a.frobDistance) {
+				Reset();
+			}
+		}
+	}
+
 	public void Reset() {
+		usingObject = false;
 		headerText.SetActive(false);
 		headerText_text.text = "";
 		noItemsText.SetActive(false);
+		blockedBySecurity.SetActive(false);
 		elevatorUIControl.SetActive(false);
 		keycodeUIControl.SetActive(false);
 		puzzleGrid.SetActive(false);

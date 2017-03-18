@@ -43,14 +43,26 @@ public class GetInput : MonoBehaviour {
 	public bool Reload() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[28]])) return true; else return false; }
 	public bool WeaponCycUp() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[29]])) return true; else return false; }
 	public bool WeaponCycDown() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[30]])) return true; else return false; }
-	public bool Grenade() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
-	public bool GrenadeCycUp() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
-	public bool GrenadeCycDown() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
-	public bool HardwareCycUp() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
-	public bool HardwareCycDown() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
-	public bool Patch() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
-	public bool PatchCycUp() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
-	public bool PatchCycDown() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
-	public bool Map() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
+	public bool Grenade() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[31]])) return true; else return false; }
+	public bool GrenadeCycUp() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[32]])) return true; else return false; }
+	public bool GrenadeCycDown() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[33]])) return true; else return false; }
+	public bool HardwareCycUp() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[34]])) return true; else return false; }
+	public bool HardwareCycDown() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[35]])) return true; else return false; }
+	public bool Patch() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[36]])) return true; else return false; }
+	public bool PatchCycUp() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[37]])) return true; else return false; }
+	public bool PatchCycDown() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[38]])) return true; else return false; }
+	public bool Map() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[39]])) return true; else return false; }
 	public bool CapsLockOn() { if (Input.GetKeyDown(KeyCode.CapsLock)) isCapsLockOn = !isCapsLockOn; return isCapsLockOn; }
+	public bool Numpad0() { if (Input.GetKeyDown(KeyCode.Keypad0)) return true; else return false; }
+	public bool Numpad1() { if (Input.GetKeyDown(KeyCode.Keypad1)) return true; else return false; }
+	public bool Numpad2() { if (Input.GetKeyDown(KeyCode.Keypad2)) return true; else return false; }
+	public bool Numpad3() { if (Input.GetKeyDown(KeyCode.Keypad3)) return true; else return false; }
+	public bool Numpad4() { if (Input.GetKeyDown(KeyCode.Keypad4)) return true; else return false; }
+	public bool Numpad5() { if (Input.GetKeyDown(KeyCode.Keypad5)) return true; else return false; }
+	public bool Numpad6() { if (Input.GetKeyDown(KeyCode.Keypad6)) return true; else return false; }
+	public bool Numpad7() { if (Input.GetKeyDown(KeyCode.Keypad7)) return true; else return false; }
+	public bool Numpad8() { if (Input.GetKeyDown(KeyCode.Keypad8)) return true; else return false; }
+	public bool Numpad9() { if (Input.GetKeyDown(KeyCode.Keypad9)) return true; else return false; }
+	public bool NumpadPeriod() { if (Input.GetKeyDown(KeyCode.KeypadPeriod)) return true; else return false; }
+	public bool NumpadMinus() { if (Input.GetKeyDown(KeyCode.KeypadMinus)) return true; else return false; }
 }

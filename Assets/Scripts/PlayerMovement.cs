@@ -238,6 +238,11 @@ public class PlayerMovement : MonoBehaviour {
 
 	void  FixedUpdate (){
 		if (mainMenu.activeSelf == true) return;  // ignore movement when main menu is still up
+		if (PauseScript.a == null) {
+			Const.sprint("ERROR->PlayerMovement: PauseScript is null",transform.parent.gameObject);
+			return;
+		}
+
 		if (!PauseScript.a.paused) {
 			// Crouch
 			LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));

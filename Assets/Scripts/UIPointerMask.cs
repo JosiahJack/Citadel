@@ -9,7 +9,7 @@ public class UIPointerMask : MonoBehaviour {
 		if (pointerTrigger == null) {
 			pointerTrigger = gameObject.AddComponent<EventTrigger>();
 			if (pointerTrigger == null) {
-				Const.sprint("Warning: Could not create Event Trigger for UIPointerMask");
+				Const.sprint("Warning: Could not create Event Trigger for UIPointerMask",Const.a.allPlayers);
 				return;
 			}
 		}

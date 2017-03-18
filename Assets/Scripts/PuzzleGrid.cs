@@ -142,6 +142,7 @@ public class PuzzleGrid : MonoBehaviour {
 		}
 
 		// Set power for starting node
+		if (grid.Length < 1) return;
 		powered[sourceIndex] = grid[sourceIndex];  // Turn on power for cell adjacent to source node if it is a plus
 		movingIndex = sourceIndex;
 		if (!powered[movingIndex]) return; // Source is off
@@ -149,11 +150,12 @@ public class PuzzleGrid : MonoBehaviour {
 		// Flow power to all nodes, adding any nodes to check to the queue
 		queue.Add(sourceIndex); // Initialize queue
 		while(queue.Count > 0) {
-			movingIndex = queue[queue.Count-1]; // Get next item in the queue
+			movingIndex = queue[0]; // Get next item in the queue
 			if (checkedCells[movingIndex]) {
 				queue.Remove(movingIndex);
 				continue;
 			}
+			Const.sprint(("movingIndex = " + movingIndex.ToString()),Const.a.allPlayers);
 			cellAbove = ReturnCellAbove(movingIndex);
 			cellBelow = ReturnCellBelow(movingIndex);
 			cellLeft = ReturnCellToLeft(movingIndex);
@@ -172,70 +174,11 @@ public class PuzzleGrid : MonoBehaviour {
 			} else {
 				if (cellType[movingIndex] == CellType.Standard || cellType[movingIndex] == CellType.Bypass) {
 					if (grid[movingIndex] && poweredCount>0) powered[movingIndex] = true;
+					Const.sprint(("movingIndex = " + movingIndex.ToString() + ", powered = "+powered[movingIndex].ToString()),Const.a.allPlayers);
 				}
 			}
 			checkedCells[movingIndex] = true;
 		}
-		//SetPowered(cellAbove);
-		//SetPowered(cellBelow);
-		//SetPowered(cellLeft);
-		//SetPowered(cellRight);
-
-		/*
-		for (int i=0;i<(width*height);i++) {
-			cellAbove = ReturnCellAbove(i);
-			cellBelow = ReturnCellBelow(i);
-			cellLeft = ReturnCellToLeft(i);
-			cellRight = ReturnCellToRight(i);
-
-			if (powered[i]) {
-				SetPowered(cellAbove);
-				SetPowered(cellBelow);
-				SetPowered(cellLeft);
-				SetPowered(cellRight);
-			} else {
-				if (cellType[i] == CellType.And) {
-					cellAbove = ReturnCellAbove(i);
-					cellBelow = ReturnCellBelow(i);
-					cellLeft = ReturnCellToLeft(i);
-					cellRight = ReturnCellToRight(i);
-					if ((cellAbove != -1) && powered[cellAbove]) poweredCount++;
-					if ((cellBelow != -1) && powered[cellBelow]) poweredCount++;
-					if ((cellLeft != -1) && powered[cellLeft]) poweredCount++;
-					if ((cellRight != -1) && powered[cellRight]) poweredCount++;
-					if (poweredCount > 1) powered[i] = true; else powered[i] = false; // if we have two adjacent powered cells, power this AND cell
-				}
-			}
-		}*/
-
-		// Set power on cells adjacent to powered ones
-		/*
-		for (i=0;i<(width*height);i++) {
-			if (cellType[i] != CellType.Off && (i != sourceIndex)) {
-				powered[i] = false;
-				if (!powered[sourceIndex]) continue;
-
-				poweredCount = 0;
-				cellAbove = ReturnCellAbove(i);
-				cellBelow = ReturnCellBelow(i);
-				cellLeft = ReturnCellToLeft(i);
-				cellRight = ReturnCellToRight(i);
-				Const.sprint("cellAbove:"+cellAbove.ToString() + ",cellBelow:"+cellBelow.ToString()+",cellLeft:"+cellLeft.ToString()+",cellRight:"+cellRight.ToString());
-
-				if (cellAbove != -1) { if (powered[cellAbove] && (grid[cellAbove] || cellType[cellAbove] == CellType.And)) { powered[i] = true; poweredCount++;}}
-				if (cellBelow != -1) { if (powered[cellBelow] && (grid[cellBelow] || cellType[cellAbove] == CellType.And)) { powered[i] = true; poweredCount++;}}
-				if (cellLeft != -1) { if (powered[cellLeft] && (grid[cellLeft] || cellType[cellAbove] == CellType.And)) { powered[i] = true; poweredCount++;}}
-				if (cellRight != -1) { if (powered[cellRight] && (grid[cellRight] || cellType[cellAbove] == CellType.And)) { powered[i] = true; poweredCount++;}}
-
-				if (cellType[i] == CellType.And) {
-					if (poweredCount < 2) {
-						powered[i] = false;
-					} else {
-						powered[i] = true;
-					}
-				}
-			}
-		}*/
 
 		if (powered[outputIndex])
 			puzzleSolved = true; // Latched solved state, no else statement to switch solved state back

@@ -71,7 +71,7 @@ public class Door : MonoBehaviour {
 					return;
 				}
 			} else {
-				Const.sprint(lockedMessage);
+				Const.sprint(lockedMessage,owner);
 			}
 		}
 	}

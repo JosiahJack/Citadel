@@ -18,6 +18,11 @@ public class PauseScript : MonoBehaviour {
 	void Awake() {a = this; }
 
 	void Update () {
+		if (mainMenu == null) {
+			Const.sprint("ERROR->PauseScript: mainMenu is null!",Const.a.allPlayers);
+			return;
+		}
+
 		if (mainMenu.activeSelf == false) {
 			if (GetInput.a.Menu()) {
 				PauseToggle();

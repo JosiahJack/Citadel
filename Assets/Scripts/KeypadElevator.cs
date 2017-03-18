@@ -3,10 +3,9 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class KeypadElevator : MonoBehaviour {
+	public int securityThreshhold = 100; // if security level is not below this level, this is unusable
 	public DataTab dataTabResetter;
 	public GameObject elevatorControl;
-	public GameObject playerCapsule;
-	public GameObject playerCamera;
 	public GameObject[] elevatorButtonHandlers;
 	public GameObject[] targetDestination;
 	public bool[] buttonsEnabled;
@@ -19,14 +18,16 @@ public class KeypadElevator : MonoBehaviour {
 	private AudioSource SFXSource;
 	private bool padInUse;
 	private GameObject levelManager;
+	private GameObject playerCapsule;
+	private GameObject playerCamera;
 
-	void Awake() {
+	void Awake () {
 		levelManager = GameObject.Find("LevelManager");
 		if (levelManager == null)
-			Const.sprint("Warning: Could not find object 'LevelManager' in scene");
+			Const.sprint("Warning: Could not find object 'LevelManager' in scene",playerCapsule.transform.parent.gameObject);
 
 		if (targetDestination == null)
-			Const.sprint("Warning: Could not find target destination for elevator keypad" + gameObject.name);
+			Const.sprint("Warning: Could not find target destination for elevator keypad" + gameObject.name,playerCapsule.transform.parent.gameObject);
 	}
 
 	void Start () {
@@ -39,10 +40,18 @@ public class KeypadElevator : MonoBehaviour {
 	}
 
 	void Use (GameObject owner) {
+		if (LevelManager.a.levelSecurity[LevelManager.a.currentLevel] > securityThreshhold) {
+			Const.sprint("Blocked by SHODAN level Security.",owner);
+			MFDManager.a.BlockedBySecurity();
+			return;
+		}
+
 		padInUse = true;
 		SFXSource.PlayOneShot(SFX);
 		dataTabResetter.Reset();
 		elevatorControl.SetActive(true);
+		playerCapsule = owner.GetComponent<PlayerReferenceManager>().playerCapsule; // Get player capsule of player using this pad
+		playerCamera = owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
 		for (int i=0;i<8;i++) {
 			elevatorControl.GetComponent<ElevatorKeypad>().buttonsEnabled[i] = buttonsEnabled[i];
 			elevatorControl.GetComponent<ElevatorKeypad>().buttonsDarkened[i] = buttonsDarkened[i];
@@ -61,18 +70,20 @@ public class KeypadElevator : MonoBehaviour {
 		if (padInUse) {
 			if (Vector3.Distance(playerCapsule.transform.position, gameObject.transform.position) > disconnectDist) {
 				padInUse = false;
-				elevatorControl.SetActive(false);
+				MFDManager.a.TurnOffElevatorPad();
+				//elevatorControl.SetActive(false);
 			} else {
 				if (Vector3.Distance(playerCapsule.transform.position, gameObject.transform.position) < useDist) {
 					// Elevator keypad functions normally
 					for(int i=0;i<8;i++) {
-						if (elevatorControl.activeInHierarchy)
+						if (MFDManager.a.GetElevatorControlActiveState() /*elevatorControl.activeInHierarchy*/)
+							
 							elevatorButtonHandlers[i].GetComponent<ElevatorButton>().SetTooFarFalse();
 					}
 				} else {
 					// Elevator keypad tells you that you are too far away
 					for(int i=0;i<8;i++) {
-						if (elevatorControl.activeInHierarchy)
+						if (MFDManager.a.GetElevatorControlActiveState()/*elevatorControl.activeInHierarchy*/)
 							elevatorButtonHandlers[i].GetComponent<ElevatorButton>().SetTooFarTrue();
 					}
 				}

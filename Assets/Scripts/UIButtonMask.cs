@@ -13,13 +13,13 @@ public class UIButtonMask : MonoBehaviour {
 
 	void Start () {
 		if (playerCamera == null) {
-			Const.sprint("Warning: UIButtonMask script could not find playerCamera");
+			Const.sprint("Warning: UIButtonMask script could not find playerCamera",Const.a.allPlayers);
 		}
 		EventTrigger pointerTrigger = GetComponent<EventTrigger>();
 		if (pointerTrigger == null) {
 			pointerTrigger = gameObject.AddComponent<EventTrigger>();
 			if (pointerTrigger == null) {
-				Const.sprint("Warning: Could not create Event Trigger for UIButtonMask");
+				Const.sprint("Warning: Could not create Event Trigger for UIButtonMask",Const.a.allPlayers);
 				return;
 			}
 		}

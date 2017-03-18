@@ -13,7 +13,7 @@ public class CenterTabButtonsScript : MonoBehaviour {
 	[SerializeField] private Sprite MFDSpriteSelected = null; // assign in the editor
 	[SerializeField] private AudioSource TabSFX = null; // assign in the editor
 	[SerializeField] private AudioClip TabSFXClip = null; // assign in the editor
-	private int curTab = 0;
+	[SerializeField] private int curTab = 0;
 
 	public void TabButtonClick (int tabNum) {
 		TabSFX.PlayOneShot(TabSFXClip);
@@ -21,11 +21,14 @@ public class CenterTabButtonsScript : MonoBehaviour {
 	}
 
 	public void TabButtonClickSilent (int tabNum) {
+		bool wasActive = false;
+
 		switch (tabNum) {
 		case 0:
+			wasActive = TabManager.MainTab.activeInHierarchy;
 			TabManager.DisableAllTabs();
 			if (curTab == 0) {
-				if (TabManager.MainTab.activeSelf == true) {
+				if (wasActive) {
 					break;
 				} else {
 					TabManager.MainTab.SetActive(true);
@@ -41,9 +44,10 @@ public class CenterTabButtonsScript : MonoBehaviour {
 			curTab = 0;
 			break;
 		case 1:
+			wasActive = TabManager.HardwareTab.activeInHierarchy;
 			TabManager.DisableAllTabs();
 			if (curTab == 1) {
-				if (TabManager.HardwareTab.activeSelf == true) {
+				if (wasActive) {
 					break;
 				} else {
 					TabManager.HardwareTab.SetActive(true);
@@ -59,9 +63,10 @@ public class CenterTabButtonsScript : MonoBehaviour {
 			curTab = 1;
 			break;
 		case 2:
+			wasActive = TabManager.GeneralTab.activeInHierarchy;
 			TabManager.DisableAllTabs();
 			if (curTab == 2) {
-				if (TabManager.GeneralTab.activeSelf == true) {
+				if (wasActive) {
 					break;
 				} else {
 					TabManager.GeneralTab.SetActive(true);
@@ -77,9 +82,10 @@ public class CenterTabButtonsScript : MonoBehaviour {
 			curTab = 2;
 			break;
 		case 3:
+			wasActive = TabManager.SoftwareTab.activeInHierarchy;
 			TabManager.DisableAllTabs();
 			if (curTab == 3) {
-				if (TabManager.SoftwareTab.activeSelf == true) {
+				if (wasActive) {
 					break;
 				} else {
 					TabManager.SoftwareTab.SetActive(true);

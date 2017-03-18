@@ -96,10 +96,12 @@ public class MFDManager : MonoBehaviour  {
 		searchFX.SetActive(true);
 
 		if (lastSearchSideRH) {
+			dataTabRH.Reset();
 			dataTabRH.Search(name,contentCount,resultContents,resultsIndices);
 			searchFX.GetComponent<Animation>().Play();  // TODO: change search FX to move to correct positions
 			OpenTab(4,true,TabMSG.Search,0);
 		} else {
+			dataTabLH.Reset();
 			dataTabLH.Search(name,contentCount,resultContents,resultsIndices);
 			searchFX.GetComponent<Animation>().Play();
 			OpenTab(4,true,TabMSG.Search,0);
@@ -109,12 +111,62 @@ public class MFDManager : MonoBehaviour  {
 	public void SendGridPuzzleToDataTab (bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors) {
 		if (lastDataSideRH) {
 			// Send to RH tab
+			dataTabRH.Reset();
 			dataTabRH.GridPuzzle(states,types,gtype,start,end, width, height,colors);
 			OpenTab(4,true,TabMSG.GridPuzzle,0);
 		} else {
 			// Send to LH tab
+			dataTabLH.Reset();
 			dataTabLH.GridPuzzle(states,types,gtype,start,end, width, height,colors);
 			OpenTab(4,true,TabMSG.GridPuzzle,0);
+		}
+	}
+
+	public void ClearDataTab() {
+		if (lastDataSideRH) {
+			dataTabRH.Reset();
+		} else {
+			dataTabLH.Reset();
+		}
+	}
+
+	public void TurnOffKeypad() {
+		if (lastDataSideRH) {
+			dataTabRH.keycodeUIControl.SetActive(false);
+		} else {
+			dataTabLH.keycodeUIControl.SetActive(false);
+		}
+	}
+
+	public void TurnOffElevatorPad() {
+		if (lastDataSideRH) {
+			dataTabRH.elevatorUIControl.SetActive(false);
+		} else {
+			dataTabLH.elevatorUIControl.SetActive(false);
+		}
+	}
+
+	public bool GetElevatorControlActiveState() {
+		if (lastDataSideRH) {
+			return dataTabRH.elevatorUIControl.activeInHierarchy;
+		} else {
+			return dataTabLH.elevatorUIControl.activeInHierarchy;
+		}
+	}
+
+	public void BlockedBySecurity() {
+		if (lastDataSideRH) {
+			dataTabRH.blockedBySecurity.SetActive(true);
+		} else {
+			dataTabLH.blockedBySecurity.SetActive(true);
+		}
+	}
+
+	public void OpenDataReader() {
+		if (lastDataSideRH) {
+			
+		} else {
+			
 		}
 	}
 }

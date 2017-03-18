@@ -12,18 +12,18 @@ public class UseableObjectUse : MonoBehaviour {
 		mouseCursor = GameObject.Find("MouseCursorHandler");
 		if (mouseCursor == null)
 		{
-			print("Warning: Could Not Find object 'MouseCursorHandler' in scene\n");
+			Const.sprint("Warning: Could Not Find object 'MouseCursorHandler' in scene\n",Const.a.allPlayers);
 		}
 	}
 
 	void Use (GameObject owner) {
 		mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture;
 		Cursor.lockState = CursorLockMode.None;
-		owner.GetComponent<MouseLookScript>().inventoryMode = true;  // inventory mode is turned on when picking something up
-		owner.GetComponent<MouseLookScript>().holdingObject = true;
-		owner.GetComponent<MouseLookScript>().heldObjectIndex = useableItemIndex;
-		owner.GetComponent<MouseLookScript>().heldObjectCustomIndex = customIndex;
-		//Destroy(this.gameObject);
+		MouseLookScript mlook = owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<MouseLookScript>();
+		mlook.ForceInventoryMode();  // inventory mode is turned on when picking something up
+		mlook.holdingObject = true;
+		mlook.heldObjectIndex = useableItemIndex;
+		mlook.heldObjectCustomIndex = customIndex;
 		this.gameObject.SetActive(false);
 	}
 }

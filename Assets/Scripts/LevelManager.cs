@@ -5,45 +5,48 @@ public class LevelManager : MonoBehaviour {
 	public int currentLevel;
 	public static LevelManager a;
 	public GameObject[] levels;
-	public GameObject currentPlayer;
-	public GameObject elevatorControl;
+	public int[] levelSecurity;
+	//public GameObject currentPlayer;
+	//public GameObject elevatorControl;
 	public GameObject sky;
-	private int oldLevel;
 
 	void Awake () {
 		a = this;
 		//print("LevelManager Awake(): Current level: " + currentLevel);
-		oldLevel = (currentLevel - 1); // set initially to a value not equal to currentLevel so Update can set correctly active levels
+		SetAllPlayersLevelsToCurrent();
+		DisableAllNonOccupiedLevels();
 		if (sky != null)
 			sky.SetActive(true);
 	}
 
-	public void LoadLevel (int levnum, GameObject targetDestination) {
+	public void LoadLevel (int levnum, GameObject targetDestination, GameObject currentPlayer) {
 		// NOTE: Check this first since the button for the current level has a null destination
 		if (currentLevel == levnum) {
-			Const.sprint("Already there"); // Do nothing
+			Const.sprint("Already there",currentPlayer); // Do nothing
 			return;
 		}
 			
 		if (currentPlayer == null) {
-			Const.sprint("BUG: LevelManager cannot find current player.");
+			Const.sprint("BUG: LevelManager cannot find current player.",Const.a.allPlayers);
 			return; // prevent possible error if keypad does not have player to move
 		}
 
 		if (targetDestination == null) {
-			Const.sprint("BUG: LevelManager cannot find destination.");
+			Const.sprint("BUG: LevelManager cannot find destination.",Const.a.allPlayers);
 			return; // prevent possible error if keypad does not have destination set
 		}
 			
-		levels[levnum].SetActive(true); // Load new level
-		elevatorControl.SetActive(false);
+		MFDManager.a.TurnOffElevatorPad();
 		GUIState.a.isBlocking = false;
-		currentPlayer.GetComponentInChildren<MouseLookScript>().overButton = false;
-		currentPlayer.GetComponentInChildren<MouseLookScript>().overButtonType = -1;
-		currentPlayer.transform.position = targetDestination.transform.position; // Put player in the new level
-		// TODO: Check if any other player is in the level before deactivating
-		levels[currentLevel].SetActive(false); // Unload current level
+		currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<MouseLookScript>().overButton = false;
+		currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<MouseLookScript>().overButtonType = -1;
+		currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
+
+
+		levels[levnum].SetActive(true); // enable new level
+		currentPlayer.GetComponent<PlayerReferenceManager>().playerCurrentLevel = levnum;
 		currentLevel = levnum; // Set current level to be the new level
+		DisableAllNonOccupiedLevels();
 	}
 
 	public void LoadLevelFromSave (int levnum) {
@@ -57,15 +60,36 @@ public class LevelManager : MonoBehaviour {
 		currentLevel = levnum; // Set current level to be the new level
 	}
 
-	void Update () {
-		if (currentLevel != oldLevel) {
-			for (int i=0;i<levels.Length;i++) {
-				if (i != currentLevel)
-					levels[i].SetActive(false);
-				else
-					levels[i].SetActive(true);
-			}
-			oldLevel = currentLevel; // only perform pass to disable levels without players once per change in currentLevel
+	void SetAllPlayersLevelsToCurrent () {
+		if (Const.a.player1 != null) {
+			Const.a.player1.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
+		}
+		if (Const.a.player2 != null) {
+			Const.a.player2.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
+		}
+		if (Const.a.player3 != null) {
+			Const.a.player3.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
+		}
+		if (Const.a.player4 != null) {
+			Const.a.player4.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
+		}
+	}
+
+	void DisableAllNonOccupiedLevels() {
+		int p1level = -1;
+		int p2level = -1;
+		int p3level = -1;
+		int p4level = -1;;
+		if (Const.a.player1 != null) p1level = Const.a.player1.GetComponent<PlayerReferenceManager>().playerCurrentLevel;
+		if (Const.a.player2 != null) p2level = Const.a.player2.GetComponent<PlayerReferenceManager>().playerCurrentLevel;
+		if (Const.a.player3 != null) p3level = Const.a.player3.GetComponent<PlayerReferenceManager>().playerCurrentLevel;
+		if (Const.a.player4 != null) p4level = Const.a.player4.GetComponent<PlayerReferenceManager>().playerCurrentLevel;
+
+		for (int i=0;i<levels.Length;i++) {
+			if (p1level != i && p2level != i && p3level != i && p4level != i)
+				levels[i].SetActive(false);
+			else
+				levels[i].SetActive(true);
 		}
 	}
 

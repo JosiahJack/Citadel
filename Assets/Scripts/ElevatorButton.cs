@@ -10,11 +10,12 @@ public class ElevatorButton : MonoBehaviour {
 	public GameObject targetDestination;
 	private Text childText;
 	private int levelIndex;
+	public GameObject currentPlayer;
 
 	void Awake() {
 		levelManager = GameObject.Find("LevelManager");
 		if (levelManager == null)
-			Const.sprint("Warning: Could Not Find object 'LevelManager' in scene\n");
+			Const.sprint("Warning: Could Not Find object 'LevelManager' in scene\n",Const.a.allPlayers);
 		childText = GetComponentInChildren<Text>();
 	}
 
@@ -24,12 +25,12 @@ public class ElevatorButton : MonoBehaviour {
 
 	void ElevButtonClick () {
 		if (tooFarAway) {
-			Const.sprint("You are too far away from that");
+			Const.sprint("You are too far away from that",currentPlayer);
 		} else {
 			if (floorAccessible && levelManager != null) {
-				levelManager.GetComponent<LevelManager>().LoadLevel(levelIndex,targetDestination);
+				levelManager.GetComponent<LevelManager>().LoadLevel(levelIndex,targetDestination,currentPlayer);
 			} else {
-				Const.sprint("Shaft Damage -- Unable to go there.");
+				Const.sprint("Shaft Damage -- Unable to go there.",currentPlayer);
 			}
 		}
 	}

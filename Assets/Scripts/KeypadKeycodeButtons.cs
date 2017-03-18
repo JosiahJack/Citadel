@@ -71,7 +71,7 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 
 	void SetDigit(int value) {
 		if ((value > 9) || (value < 0)) {
-			Const.sprint("BUG: incorrect value sent to keypad controller");
+			Const.sprint("BUG: incorrect value sent to keypad controller",Const.a.allPlayers);
 			return;
 		}
 
@@ -102,7 +102,20 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 		digit100s.digitIndex = entryHuns;
 		if (done)
 			return;
-		
+
+		if (GetInput.a.Numpad0()) { Keypress(0); }
+		if (GetInput.a.Numpad1()) { Keypress(1); }
+		if (GetInput.a.Numpad2()) { Keypress(2); }
+		if (GetInput.a.Numpad3()) { Keypress(3); }
+		if (GetInput.a.Numpad4()) { Keypress(4); }
+		if (GetInput.a.Numpad5()) { Keypress(5); }
+		if (GetInput.a.Numpad6()) { Keypress(6); }
+		if (GetInput.a.Numpad7()) { Keypress(7); }
+		if (GetInput.a.Numpad8()) { Keypress(8); }
+		if (GetInput.a.Numpad9()) { Keypress(9); }
+		if (GetInput.a.NumpadMinus()) { Keypress(10); }
+		if (GetInput.a.NumpadPeriod()) { Keypress(11); }
+
 		if (currentEntry == keycode) {
 			if ((entryHuns != -1) && sfxPlayed == false) {
 				SFXSource.PlayOneShot(SFX_Success);

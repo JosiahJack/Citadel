@@ -20,17 +20,17 @@ public class ChargeStation : MonoBehaviour {
 	void Use (GameObject owner) {
 		//if (security<minSecurityLevel) {
 			if (nextthink < Time.time) {
-				give = owner.transform.parent.GetComponent<PlayerEnergy>().energy + amount;
+				give = owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerEnergy>().energy + amount;
 				if (give > 255f)
 					give = 255f;
-				owner.transform.parent.GetComponent<PlayerEnergy>().energy = give;
-				Const.sprint("Energy drawn from Power Station.");
+				owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerEnergy>().energy = give;
+				Const.sprint("Energy drawn from Power Station.", owner);
 				SFXSource.PlayOneShot(SFX);
 				if (requireReset) {
 					nextthink = Time.time + resetTime;
 				}
 			} else {
-				Const.sprint("Power Station is recharging\n");
+				Const.sprint("Power Station is recharging\n", owner);
 			}
 		//}
 	}

@@ -38,8 +38,9 @@ public class LogInventory : MonoBehaviour {
 			SFXSource.PlayOneShot(SFXClip);
 		}
 
-		multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogTextReader();
-		logReaderContainer.GetComponent<LogTextReaderManager>().SendTextToReader(logIndex);
+		MFDManager.a.OpenDataReader();
+		//multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogTextReader();
+		//logReaderContainer.GetComponent<LogTextReaderManager>().SendTextToReader(logIndex);
 	}
 
 	void PlayLastAddedLog (int logIndex) {

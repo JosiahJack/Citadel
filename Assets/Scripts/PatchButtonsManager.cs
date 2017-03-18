@@ -8,6 +8,11 @@ public class PatchButtonsManager : MonoBehaviour {
 	private int index;
 
 	void LateUpdate() {
+		if (PatchInventory.PatchInvInstance == null) {
+			Const.sprint("ERROR->PatchButtonsManager: PatchInventory is null",Const.a.allPlayers);
+			return;
+		}
+
 		for (int i=0; i<7; i++) {
 			if (PatchInventory.PatchInvInstance.patchCounts[i] > 0) {
 				patchButtons[i].SetActive(true);
