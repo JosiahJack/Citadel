@@ -55,7 +55,6 @@ public class PlayerMovement : MonoBehaviour {
 	private int layerMask;
 	//private float originalCapsuleHeight;
 	private Rigidbody rbody;
-	private MouseLookScript mlookScript;
 	private float fallDamageSpeed = 11.72f;
 	private Vector3 oldVelocity;
 	public GameObject mainMenu;
@@ -68,7 +67,6 @@ public class PlayerMovement : MonoBehaviour {
 		rbody = GetComponent<Rigidbody>();
 		oldVelocity = rbody.velocity;
 		//rbody.useGravity = false;
-		mlookScript = cameraObject.GetComponent<MouseLookScript>();
 		capsuleHeight = GetComponent<CapsuleCollider>().height;
 		//originalCapsuleHeight = capsuleHeight;
 		capsuleRadius = GetComponent<CapsuleCollider>().radius;
@@ -312,7 +310,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 
 			// Set rotation of playercapsule from mouselook script TODO: Is this needed?
-			transform.rotation = Quaternion.Euler(0,mlookScript.yRotation,0); //Change 0 values for x and z for use in Cyberspace
+			//transform.rotation = Quaternion.Euler(0,mlookScript.yRotation,0); //Change 0 values for x and z for use in Cyberspace
 
 			float relForward = 0f;
 			float relSideways = 0f;

@@ -370,6 +370,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 			isDying = false;
 			SFX.PlayOneShot(SFXDeathClip);
 			gameObject.tag = "Searchable";
+			gameObject.layer = 13;
 			rbody.isKinematic = true;
 			capCol.enabled = false;
 			col.enabled = true;

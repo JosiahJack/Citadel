@@ -7,7 +7,7 @@ public class ExplosionForce : MonoBehaviour {
 	
 	// Unity builtin
 	// pos: center of sphere
-	public void ExplodeOld(Vector3 pos, float oldforce, float oldradius) {
+	public void ExplodeInner(Vector3 pos, float oldforce, float oldradius) {
 		Collider[] colliders = Physics.OverlapSphere(pos, oldradius);
 		foreach (Collider c in colliders) {
 			if (c != null && c.GetComponent<Rigidbody>() != null) {
@@ -18,7 +18,7 @@ public class ExplosionForce : MonoBehaviour {
 	
 	// Occlusion support
 	// pos: center of sphere
-	public void ExplodeNew(Vector3 pos) {
+	public void ExplodeOuter(Vector3 pos) {
 		Collider[] colliders = Physics.OverlapSphere(pos, radius);
 		foreach (Collider c in colliders) {
 			if (c.GetComponent<Rigidbody>() == null) {

@@ -21,22 +21,23 @@ public class MouseCursor : MonoBehaviour {
             offsetY = offsetX;
         }
 
-		/*//Debug.Log("MouseCursor:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
+		//Debug.Log("MouseCursor:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
 		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode || PauseScript.a.paused) {
             // Inventory Mode Cursor
             GUI.DrawTexture(new Rect(Input.mousePosition.x - offsetX, Screen.height - Input.mousePosition.y - offsetY, cursorSize, cursorSize), cursorImage);
         } else {
             // Shoot Mode Cursor
             GUI.DrawTexture(new Rect((Screen.width/2) - offsetX, (Screen.height/2) - cursorSize, cursorSize, cursorSize), cursorImage);
-        }*/
+        }
 
-		GUI.DrawTexture(new Rect(Input.mousePosition.x - offsetX, Screen.height - Input.mousePosition.y - offsetY, cursorSize, cursorSize), cursorImage);
+		//GUI.DrawTexture(new Rect(Input.mousePosition.x - offsetX, Screen.height - Input.mousePosition.y - offsetY, cursorSize, cursorSize), cursorImage);
 	}
 
 	void Update () {
 		cursorSize = (24f * (Screen.width/640f));
 		if (playerCameraScript.inventoryMode && playerCameraScript.holdingObject && !PauseScript.a.paused) {
-			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,null)) {
+			// Be sure to pass the camera to the 3rd parameter if using "Screen Space - Camer" on the Canvas, otherwise use "null"
+			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,playerCamera.GetComponent<Camera>())) {
 				inventoryAddHelper.SetActive(true);
 			} else {
 				inventoryAddHelper.SetActive(false);

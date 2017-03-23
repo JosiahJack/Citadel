@@ -26,6 +26,10 @@ public class GrenadeButtonScript : MonoBehaviour {
         playerCamera.GetComponent<MouseLookScript>().overButtonType = -1;
     }
 
+	void DoubleClick() {
+		print("Double click!");
+	}
+
 	void GrenadeInvClick () {
         //itemLookup = GrenadeCurrent.GrenadeInstance.grenadeInventoryIndices[GrenButtonIndex];
 		//if (itemLookup < 0)

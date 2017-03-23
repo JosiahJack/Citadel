@@ -150,7 +150,8 @@ public class MouseLookScript : MonoBehaviour {
 				yRotation += (Input.GetAxis("Mouse X") * lookSensitivity);
 				xRotation -= (Input.GetAxis("Mouse Y") * lookSensitivity);
 				xRotation = Mathf.Clamp(xRotation, -90, 90);  // Limit up and down angle. TIP:: Need to disable clamp for Cyberspace!
-				transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+				transform.parent.transform.rotation = Quaternion.Euler(0, yRotation, 0); // left right component applied to capsule
+				transform.rotation = Quaternion.Euler(xRotation,yRotation,0); // Up down component only applied to camera
 			} else {
 				Const.sprint("ERROR: Paused is true and inventoryMode is false",player);
 			}
@@ -160,14 +161,14 @@ public class MouseLookScript : MonoBehaviour {
 					if  (Input.GetAxisRaw("Yaw") > 0) {
 						yRotation += keyboardTurnSpeed * lookSensitivity;
 						tempQuat = transform.rotation;
-						transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-						transform.rotation = tempQuat; // preserve x axis, hacky
+						transform.parent.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+						transform.parent.transform.rotation = tempQuat; // preserve x axis, hacky
 					} else {
 						if (Input.GetAxisRaw("Yaw") < 0) {
 							yRotation -= keyboardTurnSpeed * lookSensitivity;
 							tempQuat = transform.rotation;
-							transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-							transform.rotation = tempQuat; // preserve x axis, hacky
+							transform.parent.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+							transform.parent.transform.rotation = tempQuat; // preserve x axis, hacky
 						}
 					}
 				}
@@ -202,7 +203,7 @@ public class MouseLookScript : MonoBehaviour {
 						// Send out Frob raycast
 						RaycastHit hit = new RaycastHit();
 						if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, frobDistance)) {
-							//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
+							drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
 							// TIP: Use Camera.main.ViewportPointToRay for center of screen
 							if (hit.collider == null)
 								return;
@@ -238,7 +239,7 @@ public class MouseLookScript : MonoBehaviour {
 							}
 						}
 						if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, 50f)) {
-							//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
+							drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
 							// TIP: Use Camera.main.ViewportPointToRay for center of screen
 							if (hit.collider == null)
 								return;

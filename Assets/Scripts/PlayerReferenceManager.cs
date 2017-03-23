@@ -12,5 +12,6 @@ public class PlayerReferenceManager : MonoBehaviour {
 	public GameObject playerInventory;
 	public GameObject playerCanvas;
 	public GameObject playerStatusBar;
+	public GameObject playerTextWarningManager;
 	public int playerCurrentLevel;
 }
