@@ -15,12 +15,13 @@ public class PlayerPatchScript : MonoBehaviour {
 	public float sightSideEffectTime = 1f;
 	private MouseLookScript playerMouseLookScript;
 	private PlayerHealth playerHealthScript;
-	private bool medipatchActive;
+	//private bool medipatchActive;
 	private bool timeSlowed = false;
 	public float staminupFinishedTime;
 	//private bool sightSideEffect = false;
 	public float sightFinishedTime;
 	public int berserkIncrement;
+	public float mediFinishedTime = -1;
 	private int PATCH_BERSERK = 1;
 	private int PATCH_DETOX = 2;
 	private int PATCH_GENIUS = 4;
@@ -28,6 +29,8 @@ public class PlayerPatchScript : MonoBehaviour {
 	private int PATCH_REFLEX = 16;
 	private int PATCH_SIGHT = 32;
 	private int PATCH_STAMINUP = 64;
+	public AudioClip patchUseSFX;
+	private AudioSource SFX;
 
 	// patchActive is a bitflag carrier for active patches
 	// Patches stack so multiple can be used at once
@@ -39,9 +42,34 @@ public class PlayerPatchScript : MonoBehaviour {
 	void Awake () {
 		playerHealthScript = gameObject.GetComponent<PlayerHealth>();
 		playerMouseLookScript = playerCamera.GetComponent<MouseLookScript>();
+		SFX = GetComponent<AudioSource>();
+		mediFinishedTime = -1;
+	}
+
+	public void ActivatePatch(int index) {
+		switch (index) {
+		case 14: break;
+		case 15: break;
+		case 16: break;
+		case 17: 
+			if (!(Const.a.CheckFlags(patchActive, PATCH_MEDI))) patchActive += PATCH_MEDI;
+			mediFinishedTime = Time.time + mediTime;
+			playerHealthScript.mediPatchPulseCount = 0;
+			break;
+		case 18: break;
+		case 19: break;
+		case 20: break;
+		}
+
+		SFX.PlayOneShot(patchUseSFX);
 	}
 
 	void Update () {
+		if (mediFinishedTime < Time.time && mediFinishedTime != -1) {
+			patchActive -= PATCH_MEDI;
+			mediFinishedTime = -1;
+		}
+
 		if (Const.a.CheckFlags(patchActive, PATCH_BERSERK)) {
 			// TODO change melee damage modifier
 			// TODO enable screen color scrambler effect

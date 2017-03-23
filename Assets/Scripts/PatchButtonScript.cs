@@ -8,9 +8,11 @@ public class PatchButtonScript : MonoBehaviour {
 	public int useableItemIndex;
 	[SerializeField] private GameObject iconman;
 	[SerializeField] private GameObject textman;
+	public PlayerPatchScript pps;
 
 	public void DoubleClick() {
-		print("Double click!");
+		//print("Double click!");
+		pps.ActivatePatch(useableItemIndex);
 	}
 
 	public void PatchInvClick () {

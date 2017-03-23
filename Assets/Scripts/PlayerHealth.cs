@@ -8,6 +8,8 @@ public class PlayerHealth : MonoBehaviour {
 	public float timer;
 	public static bool playerDead = false;
 	public bool mediPatchActive = false;
+	public float mediPatchPulseTime = 1f;
+	public float mediPatchHealAmount = 10f;
 	public bool detoxPatchActive = false;
 	public AudioSource PainSFX;
 	public AudioClip PainSFXClip;
@@ -22,6 +24,8 @@ public class PlayerHealth : MonoBehaviour {
 	public GameObject mainPlayerParent;
 	public int radiationAmountWarningID = 323;
 	public int radiationAreaWarningID = 322;
+	public float mediPatchPulseFinished = 0f;
+	public int mediPatchPulseCount = 0;
 	
 	void Update (){
 		if (health <= 0f) {
@@ -30,6 +34,21 @@ public class PlayerHealth : MonoBehaviour {
 			} else {
 				PlayerDead();
 			}
+		}
+
+		if (mediPatchActive) {
+			if (mediPatchPulseFinished == 0) mediPatchPulseCount = 0;
+			if (mediPatchPulseFinished < Time.time) {
+				float timePulse = mediPatchPulseTime;
+				health += mediPatchHealAmount;
+				if (health > 255f) health = 255f;
+				timePulse += (mediPatchPulseCount*0.5f);
+				mediPatchPulseFinished = Time.time + timePulse;
+				mediPatchPulseCount++;
+			}
+		} else {
+			mediPatchPulseFinished = 0;
+			mediPatchPulseCount = 0;
 		}
 
 		if (radiated > 0) {
