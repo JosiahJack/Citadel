@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class PatchButtonsManager : MonoBehaviour {
-	[SerializeField] private GameObject[] patchButtons;
+	public GameObject[] patchButtons;
 	[SerializeField] private GameObject[] patchCountsText;
 	private int index;
 

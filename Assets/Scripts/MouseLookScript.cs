@@ -203,7 +203,7 @@ public class MouseLookScript : MonoBehaviour {
 						// Send out Frob raycast
 						RaycastHit hit = new RaycastHit();
 						if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, frobDistance)) {
-							drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
+							//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
 							// TIP: Use Camera.main.ViewportPointToRay for center of screen
 							if (hit.collider == null)
 								return;
@@ -239,7 +239,7 @@ public class MouseLookScript : MonoBehaviour {
 							}
 						}
 						if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, 50f)) {
-							drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
+							//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
 							// TIP: Use Camera.main.ViewportPointToRay for center of screen
 							if (hit.collider == null)
 								return;
@@ -401,6 +401,10 @@ public class MouseLookScript : MonoBehaviour {
 		}
     }
 
+	void AddAmmoToInventory (int index) {
+
+	}
+
     void AddGrenadeToInventory (int index) {
 		GrenadeInventory.GrenadeInvInstance.grenAmmo[index]++;
 		GrenadeCurrent.GrenadeInstance.grenadeCurrent = index;
@@ -429,6 +433,10 @@ public class MouseLookScript : MonoBehaviour {
 				Const.sprint("Warning: Audio log picked up has no assigned index (-1)",player);
 			}
 		}
+	}
+
+	void AddAccessCardToInventory (int index) {
+
 	}
 
 	void AddHardwareToInventory (int index) {
@@ -587,6 +595,12 @@ public class MouseLookScript : MonoBehaviour {
             case 3:
                 AddGenericObjectToInventory(3);
                 break;
+			case 4:
+				AddGenericObjectToInventory(4);
+				break;
+			case 5:
+				AddGenericObjectToInventory(5);
+				break;
 			case 6:
 				AddAudioLogToInventory();
 				break;
@@ -643,10 +657,10 @@ public class MouseLookScript : MonoBehaviour {
 				break;
 			case 24:
 				AddHardwareToInventory(3);
-			break;
+				break;
 			case 25:
 				AddHardwareToInventory(4);
-			break;
+				break;
 			case 26:
 				AddHardwareToInventory(5);
 			break;
@@ -655,19 +669,34 @@ public class MouseLookScript : MonoBehaviour {
 			break;
 			case 28:
 				AddHardwareToInventory(7);
-			break;
+				break;
 			case 29:
 				AddHardwareToInventory(8);
-			break;
+				break;
 			case 30:
 				AddHardwareToInventory(9);
-			break;
+				break;
 			case 31:
 				AddHardwareToInventory(10);
-			break;
+				break;
 			case 32:
 				AddHardwareToInventory(11);
-			break;
+				break;
+			case 33:
+				AddGenericObjectToInventory(33);
+				break;
+			case 34:
+				AddGenericObjectToInventory(34);
+				break;
+			case 35:
+				AddGenericObjectToInventory(35);
+				break;
+			case 36:
+				AddWeaponToInventory(36);
+				break;
+			case 37:
+				AddWeaponToInventory(37);
+				break;
 			case 38:
 				AddWeaponToInventory(38);
 				break;
@@ -680,6 +709,142 @@ public class MouseLookScript : MonoBehaviour {
             case 45:
                 AddWeaponToInventory(45);
                 break;
+			case 46:
+				AddWeaponToInventory(46);
+				break;
+			case 47:
+				AddWeaponToInventory(47);
+				break;
+			case 48:
+				AddWeaponToInventory(48);
+				break;
+			case 49:
+				AddWeaponToInventory(49);
+				break;
+			case 50:
+				AddWeaponToInventory(50);
+				break;
+			case 51:
+				AddWeaponToInventory(51);
+				break;
+			case 52:
+				AddGenericObjectToInventory(52);
+				break;
+			case 53:
+				AddGenericObjectToInventory(53);
+				break;
+			case 54:
+				AddGenericObjectToInventory(54);
+				break;
+			case 55:
+				AddGenericObjectToInventory(55);
+				break;
+			case 56:
+				AddGenericObjectToInventory(56);
+				break;
+			case 57:
+				AddGenericObjectToInventory(57);
+				break;
+			case 58:
+				AddGenericObjectToInventory(58);
+				break;
+
+			case 61:
+				AddGenericObjectToInventory(61);
+				break;
+			case 62:
+				AddGenericObjectToInventory(62);
+				break;
+			case 63:
+				AddGenericObjectToInventory(63);
+				break;
+			case 64:
+				AddGenericObjectToInventory(64);
+				break;
+			case 65:
+				AddAmmoToInventory(65);
+				break;
+			case 66:
+				AddAmmoToInventory(66);
+				break;
+			case 67:
+				AddAmmoToInventory(67);
+				break;
+			case 68:
+				AddAmmoToInventory(68);
+				break;
+			case 69:
+				AddAmmoToInventory(69);
+				break;
+			case 70:
+				AddAmmoToInventory(70);
+				break;
+			case 71:
+				AddAmmoToInventory(71);
+				break;
+			case 72:
+				AddAmmoToInventory(72);
+				break;
+			case 73:
+				AddAmmoToInventory(73);
+				break;
+			case 74:
+				AddAmmoToInventory(74);
+				break;
+			case 75:
+				AddAmmoToInventory(75);
+				break;
+			case 76:
+				AddAmmoToInventory(76);
+				break;
+			case 77:
+				AddAmmoToInventory(77);
+				break;
+			case 78:
+				AddAmmoToInventory(78);
+				break;
+			case 79:
+				AddAmmoToInventory(79);
+				break;
+			case 80:
+				AddAmmoToInventory(80);
+				break;
+			case 81:
+				AddAccessCardToInventory(81);
+				break;
+			case 82:
+				AddAccessCardToInventory(82);
+				break;
+			case 83:
+				AddAccessCardToInventory(83);
+				break;
+			case 84:
+				AddAccessCardToInventory(84);
+				break;
+			case 85:
+				AddAccessCardToInventory(85);
+				break;
+			case 86:
+				AddAccessCardToInventory(86);
+				break;
+			case 87:
+				AddAccessCardToInventory(87);
+				break;
+			case 88:
+				AddAccessCardToInventory(88);
+				break;
+			case 89:
+				AddAccessCardToInventory(89);
+				break;
+			case 90:
+				AddAccessCardToInventory(90);
+				break;
+			case 91:
+				AddAccessCardToInventory(91);
+				break;
+			case 113:
+				AddAmmoToInventory(113);
+				break;
         }
 		SFXSource.PlayOneShot(pickclip);
 	}

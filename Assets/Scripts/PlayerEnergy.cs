@@ -12,4 +12,11 @@ public class PlayerEnergy : MonoBehaviour {
 			energy = 0f;
 		//print("Player Energy: " + energy.ToString());
 	}
+
+	public void GiveEnergy (float give) {
+		energy += give;
+		if (energy > 255f) {
+			energy = 255f;
+		}
+	}
 }

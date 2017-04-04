@@ -12,6 +12,8 @@ public class GrenadeButtonScript : MonoBehaviour {
 	private int itemLookup;
 	private Texture2D cursorTexture;
 	private Vector2 cursorHotspot;
+	public GrenadeInventory playerGrenInv;
+	public GrenadeCurrent playerGrenCurrent;
 
 	public void PtrEnter () {
 		GUIState.a.isBlocking = true;

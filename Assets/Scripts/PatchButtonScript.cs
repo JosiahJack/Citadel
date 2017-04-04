@@ -6,12 +6,12 @@ using System.Collections;
 public class PatchButtonScript : MonoBehaviour {
 	public int PatchButtonIndex;
 	public int useableItemIndex;
+	public ItemTabManager itabManager;
 	[SerializeField] private GameObject iconman;
 	[SerializeField] private GameObject textman;
 	public PlayerPatchScript pps;
 
 	public void DoubleClick() {
-		//print("Double click!");
 		pps.ActivatePatch(useableItemIndex);
 	}
 
@@ -19,6 +19,7 @@ public class PatchButtonScript : MonoBehaviour {
 		iconman.GetComponent<ItemIconManager>().SetItemIcon(useableItemIndex);    //Set icon for MFD
 		textman.GetComponent<ItemTextManager>().SetItemText(useableItemIndex); //Set text for MFD
 		PatchCurrent.PatchInstance.patchCurrent = PatchButtonIndex;			//Set current
+		itabManager.lastCurrent = 1;
 	}
 
     void Start() {
