@@ -17,6 +17,8 @@ public class LevelManager : MonoBehaviour {
 		DisableAllNonOccupiedLevels();
 		if (sky != null)
 			sky.SetActive(true);
+
+		Time.timeScale = Const.a.defaultTimeScale;
 	}
 
 	public void LoadLevel (int levnum, GameObject targetDestination, GameObject currentPlayer) {
@@ -37,11 +39,8 @@ public class LevelManager : MonoBehaviour {
 		}
 			
 		MFDManager.a.TurnOffElevatorPad();
-		GUIState.a.isBlocking = false;
-		currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<MouseLookScript>().overButton = false;
-		currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<MouseLookScript>().overButtonType = -1;
+		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 		currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
-
 
 		levels[levnum].SetActive(true); // enable new level
 		currentPlayer.GetComponent<PlayerReferenceManager>().playerCurrentLevel = levnum;

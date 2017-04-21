@@ -16,16 +16,12 @@ public class GrenadeButtonScript : MonoBehaviour {
 	public GrenadeCurrent playerGrenCurrent;
 
 	public void PtrEnter () {
-		GUIState.a.isBlocking = true;
-		playerCamera.GetComponent<MouseLookScript>().overButton = true;
-        playerCamera.GetComponent<MouseLookScript>().overButtonType = 1;
-        playerCamera.GetComponent<MouseLookScript>().currentButton = gameObject;
+		GUIState.a.PtrHandler(true,true,GUIState.ButtonType.Grenade,gameObject);
+		playerCamera.GetComponent<MouseLookScript>().currentButton = gameObject;
 	}
 	
 	public void PtrExit () {
-		GUIState.a.isBlocking = false;
-		playerCamera.GetComponent<MouseLookScript>().overButton = false;
-        playerCamera.GetComponent<MouseLookScript>().overButtonType = -1;
+		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
     }
 
 	void DoubleClick() {

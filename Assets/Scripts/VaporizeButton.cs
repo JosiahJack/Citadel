@@ -11,16 +11,12 @@ public class VaporizeButton : MonoBehaviour {
 	public Text ict;
 
 	public void PtrEnter () {
-		GUIState.a.isBlocking = true;
-		playerCamera.GetComponent<MouseLookScript>().overButton = true;
-		playerCamera.GetComponent<MouseLookScript>().overButtonType = 77;
+		GUIState.a.PtrHandler(true,true,GUIState.ButtonType.Generic,gameObject);
 		playerCamera.GetComponent<MouseLookScript>().currentButton = gameObject;
 	}
 
 	public void PtrExit () {
-		GUIState.a.isBlocking = false;
-		playerCamera.GetComponent<MouseLookScript>().overButton = false;
-		playerCamera.GetComponent<MouseLookScript>().overButtonType = -1;
+		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 	}
 
 	public void OnVaporizeClick() {

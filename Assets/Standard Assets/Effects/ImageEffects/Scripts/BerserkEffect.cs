@@ -6,9 +6,25 @@ namespace UnityStandardAssets.ImageEffects {
     [AddComponentMenu("Image Effects/Color Adjustments/Berserk Effect")]
     public class BerserkEffect : ImageEffectBase {
 		public Texture2D swapTexture;
-		public float effectStrength = 0.3f;
+		public float effectStrength = 3f;
 		public float lothreshold = 0.0f;
-		public float hithreshold = 1.0f;
+		public float hithreshold = 0.25f;
+
+		private float oldeffectStrength;
+		private float oldlothreshold;
+		private float oldhithreshold;
+
+		void Awake () {
+			oldeffectStrength = effectStrength;
+			oldlothreshold = lothreshold;
+			oldhithreshold = hithreshold;
+		}
+
+		public void Reset() {
+			effectStrength = oldeffectStrength;
+			lothreshold = oldlothreshold;
+			hithreshold = oldhithreshold;
+		}
 
         void OnRenderImage (RenderTexture source, RenderTexture destination) {
 			material.SetTexture("_SwapTex", swapTexture);

@@ -75,8 +75,6 @@ public class SearchButtonsScript : MonoBehaviour {
 			CheckForEmpty();
 			break;
 		}
-		GUIState.a.isBlocking = false;
-		playerCamera.GetComponent<MouseLookScript>().overButton = false;
-		playerCamera.GetComponent<MouseLookScript>().overButtonType = -1;
+		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 	}
 }

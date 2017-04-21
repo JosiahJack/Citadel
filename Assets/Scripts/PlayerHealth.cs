@@ -51,6 +51,10 @@ public class PlayerHealth : MonoBehaviour {
 			mediPatchPulseCount = 0;
 		}
 
+		if (detoxPatchActive) {
+			radiated = 0f;
+		}
+
 		if (radiated > 0) {
 			TextWarningsManager twm = mainPlayerParent.GetComponent<PlayerReferenceManager>().playerTextWarningManager.GetComponent<TextWarningsManager>();
 			if (radiationArea) twm.SendWarning(("Radiation Area"),0.1f,-2,TextWarningsManager.warningTextColor.white,radiationAreaWarningID);

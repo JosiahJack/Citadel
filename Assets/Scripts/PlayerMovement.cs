@@ -43,6 +43,7 @@ public class PlayerMovement : MonoBehaviour {
 	private Sprite automapMaskSprite;
 	//[HideInInspector]
 	public bool CheatWallSticky;
+	public bool staminupActive = false;
 	private float walkDeaccelerationVolx;
 	private float walkDeaccelerationVolz;
 	private Vector2 horizontalMovement;
@@ -58,6 +59,8 @@ public class PlayerMovement : MonoBehaviour {
 	private float fallDamageSpeed = 11.72f;
 	private Vector3 oldVelocity;
 	public GameObject mainMenu;
+	public float fatigue;
+	public float maxFatigueSpeed = 3f;
 	
 	void  Awake (){
 		currentCrouchRatio = 1;
@@ -71,6 +74,7 @@ public class PlayerMovement : MonoBehaviour {
 		//originalCapsuleHeight = capsuleHeight;
 		capsuleRadius = GetComponent<CapsuleCollider>().radius;
 		layerMask = 1 << layerGeometry;
+		staminupActive = false;
 	}
 	
 	bool CantStand (){
@@ -245,34 +249,34 @@ public class PlayerMovement : MonoBehaviour {
 			// Crouch
 			LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));
 			
-			if ((bodyState == 2) || (bodyState == 5))
-				currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
-			
-			if (bodyState == 3) {
-				lastCrouchRatio = currentCrouchRatio;
-				currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, 1.01f, ref crouchingVelocity, transitionToCrouchSec);
-				LocalPositionSetY(transform,(((currentCrouchRatio - lastCrouchRatio) * capsuleHeight)/2)+transform.position.y);
-			}
-			
-			if (bodyState == 6) {
-				lastCrouchRatio = currentCrouchRatio;
-				currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, 1.01f, ref crouchingVelocity, (transitionToCrouchSec+transitionToProneAdd));
-				LocalPositionSetY(transform,(((currentCrouchRatio - lastCrouchRatio) * capsuleHeight)/2)+transform.position.y);
-			}
-			
-			// Set speed	
+			// Handle body state speeds and body position lerping for smooth transitions
 			switch (bodyState) {
-			case 0: playerSpeed = maxWalkSpeed; //TODO:: lerp from other speeds
-				break;
-			case 1: playerSpeed = maxCrouchSpeed; //TODO:: lerp from other speeds
-				break;
-			case 4: playerSpeed = maxProneSpeed; //TODO:: lerp from other speeds
-				break;
+				case 0: 
+					playerSpeed = maxWalkSpeed; //TODO:: lerp from other speeds
+					break;
+				case 1:
+					playerSpeed = maxCrouchSpeed; //TODO:: lerp from other speeds
+					break;
+				case 2: 
+					currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
+					break;
+				case 3: 
+					lastCrouchRatio = currentCrouchRatio;
+					currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, 1.01f, ref crouchingVelocity, transitionToCrouchSec);
+					LocalPositionSetY(transform,(((currentCrouchRatio - lastCrouchRatio) * capsuleHeight)/2)+transform.position.y);
+					break;
+				case 4: 
+					playerSpeed = maxProneSpeed; //TODO:: lerp from other speeds
+					break;
+				case 5: 
+					currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
+					break;
+				case 6:
+					lastCrouchRatio = currentCrouchRatio;
+					currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio, 1.01f, ref crouchingVelocity, (transitionToCrouchSec+transitionToProneAdd));
+					LocalPositionSetY(transform,(((currentCrouchRatio - lastCrouchRatio) * capsuleHeight)/2)+transform.position.y);
+					break;
 			}
-
-			// Check if skates are active
-			if (isSkating)
-				playerSpeed = maxSkateSpeed;
 			
 			// Limit movement speed horizontally
 			horizontalMovement = new Vector2(rbody.velocity.x, rbody.velocity.z);
@@ -281,7 +285,7 @@ public class PlayerMovement : MonoBehaviour {
 				horizontalMovement = horizontalMovement.normalized;
 				if (isSprinting)
 					playerSpeed = maxSprintSpeed;
-				horizontalMovement *= playerSpeed;
+				horizontalMovement *= playerSpeed;  // set back down to max speed this frame
 			}	
 
 			// Set horizontal velocity
@@ -303,7 +307,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 			RigidbodySetVelocityY(rbody, verticalMovement);
 			
-			// Ground friction (TODO: disable for Cyberspace)
+			// Ground friction (TODO: disable grounded for Cyberspace)
 			if (grounded) {
 				RigidbodySetVelocityX(rbody, (Mathf.SmoothDamp(rbody.velocity.x, 0, ref walkDeaccelerationVolx, walkDeacceleration)));
 				RigidbodySetVelocityZ(rbody, (Mathf.SmoothDamp(rbody.velocity.z, 0, ref walkDeaccelerationVolz, walkDeacceleration)));

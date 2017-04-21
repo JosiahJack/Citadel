@@ -1224,6 +1224,15 @@ ModelImporter:
     102432: 1_MedicalLevel_stor1_7_1141
     102434: 1_MedicalLevel_stor1_7_1142
     102436: 1_MedicalLevel_stor1_7_1143
+    102438: 1_MedicalLevel_window01
+    102440: 1_MedicalLevel_window02
+    102442: 1_MedicalLevel_window03
+    102444: 1_MedicalLevel_window04
+    102446: 1_MedicalLevel_window05
+    102448: 1_MedicalLevel_window06
+    102450: 1_MedicalLevel_window07
+    102452: 1_MedicalLevel_window08
+    102454: 1_MedicalLevel_window09
     400000: 1_MedBridge1
     400002: 1_MedBridge2
     400004: 1_MedButton1
@@ -2443,6 +2452,15 @@ ModelImporter:
     402432: 1_MedicalLevel_stor1_7_1141
     402434: 1_MedicalLevel_stor1_7_1142
     402436: 1_MedicalLevel_stor1_7_1143
+    402438: 1_MedicalLevel_window01
+    402440: 1_MedicalLevel_window02
+    402442: 1_MedicalLevel_window03
+    402444: 1_MedicalLevel_window04
+    402446: 1_MedicalLevel_window05
+    402448: 1_MedicalLevel_window06
+    402450: 1_MedicalLevel_window07
+    402452: 1_MedicalLevel_window08
+    402454: 1_MedicalLevel_window09
     2300000: 1_MedBridge1
     2300002: 1_MedBridge2
     2300004: 1_MedButton1
@@ -3661,6 +3679,15 @@ ModelImporter:
     2302430: 1_MedicalLevel_stor1_7_1141
     2302432: 1_MedicalLevel_stor1_7_1142
     2302434: 1_MedicalLevel_stor1_7_1143
+    2302436: 1_MedicalLevel_window01
+    2302438: 1_MedicalLevel_window02
+    2302440: 1_MedicalLevel_window03
+    2302442: 1_MedicalLevel_window04
+    2302444: 1_MedicalLevel_window05
+    2302446: 1_MedicalLevel_window06
+    2302448: 1_MedicalLevel_window07
+    2302450: 1_MedicalLevel_window08
+    2302452: 1_MedicalLevel_window09
     3300000: 1_MedBridge1
     3300002: 1_MedBridge2
     3300004: 1_MedButton1
@@ -4879,6 +4906,15 @@ ModelImporter:
     3302430: 1_MedicalLevel_stor1_7_1141
     3302432: 1_MedicalLevel_stor1_7_1142
     3302434: 1_MedicalLevel_stor1_7_1143
+    3302436: 1_MedicalLevel_window01
+    3302438: 1_MedicalLevel_window02
+    3302440: 1_MedicalLevel_window03
+    3302442: 1_MedicalLevel_window04
+    3302444: 1_MedicalLevel_window05
+    3302446: 1_MedicalLevel_window06
+    3302448: 1_MedicalLevel_window07
+    3302450: 1_MedicalLevel_window08
+    3302452: 1_MedicalLevel_window09
     4300000: 1_MedicalLevel_001
     4300002: 1_MedicalLevel_NEMaintShafts
     4300004: 1_MedicalLevel_MagpulseArea
@@ -6097,6 +6133,15 @@ ModelImporter:
     4302430: 1_MedicalLevel_stor1_7_1134
     4302432: 1_MedicalLevel_stor1_7_1133
     4302434: 1_MedicalLevel_stor1_7_1132
+    4302436: 1_MedicalLevel_window09
+    4302438: 1_MedicalLevel_window08
+    4302440: 1_MedicalLevel_window07
+    4302442: 1_MedicalLevel_window06
+    4302444: 1_MedicalLevel_window05
+    4302446: 1_MedicalLevel_window04
+    4302448: 1_MedicalLevel_window03
+    4302450: 1_MedicalLevel_window02
+    4302452: 1_MedicalLevel_window01
     6400000: 1_MedBridge1
     6400002: 1_MedBridge2
     6400004: 1_MedButton1
@@ -7315,6 +7360,15 @@ ModelImporter:
     6402430: 1_MedicalLevel_stor1_7_1141
     6402432: 1_MedicalLevel_stor1_7_1142
     6402434: 1_MedicalLevel_stor1_7_1143
+    6402436: 1_MedicalLevel_window01
+    6402438: 1_MedicalLevel_window02
+    6402440: 1_MedicalLevel_window03
+    6402442: 1_MedicalLevel_window04
+    6402444: 1_MedicalLevel_window05
+    6402446: 1_MedicalLevel_window06
+    6402448: 1_MedicalLevel_window07
+    6402450: 1_MedicalLevel_window08
+    6402452: 1_MedicalLevel_window09
     7400000: Default Take
     9500000: //RootNode
   materials:
@@ -7324,7 +7378,7 @@ ModelImporter:
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
     animationImportErrors: 
@@ -7363,6 +7417,7 @@ ModelImporter:
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 2
     human: []
     skeleton: []
     armTwist: 0.5
@@ -7373,7 +7428,10 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
   humanoidOversampling: 1

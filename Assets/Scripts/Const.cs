@@ -87,6 +87,17 @@ public class Const : MonoBehaviour {
 	public GameObject player3;
 	public GameObject player4;
 	public GameObject allPlayers;
+	public float berserkTime = 15.5f;
+	public float detoxTime = 60f;
+	public float geniusTime = 35f;
+	public float mediTime = 35f;
+	public float reflexTime = 155f;
+	public float sightTime= 35f;
+	public float sightSideEffectTime = 10f;
+	public float staminupTime = 60f;
+	public float reflexTimeScale = 0.25f;
+	public float defaultTimeScale = 1.0f;
+	public float berserkDamageMultiplier = 4.0f;
 
 	// Instantiate it so that it can be accessed globally. MOST IMPORTANT PART!!
 	// =========================================================================
@@ -611,8 +622,8 @@ public class Const : MonoBehaviour {
 			line += "|" + ml.holdingObject.ToString();
 			line += "|" + ml.heldObjectIndex.ToString();
 			line += "|" + ml.heldObjectCustomIndex.ToString();
-			line += "|" + ml.overButtonType.ToString();
-			line += "|" + ml.overButton.ToString();
+			line += "|" + GUIState.a.overButtonType.ToString();
+			line += "|" + GUIState.a.overButton.ToString();
 			line += "|" + ml.geniusActive.ToString();
 			for (j=0;j<7;j++) { line += "|" + wi.weaponInventoryIndices[j].ToString(); }
 			for (j=0;j<7;j++) { line += "|" + wi.weaponInventoryAmmoIndices[j].ToString(); }
@@ -760,8 +771,11 @@ public class Const : MonoBehaviour {
 		ml.holdingObject = GetBoolFromString(entries[index]); index++;
 		ml.heldObjectIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
 		ml.heldObjectCustomIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		ml.overButtonType = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		ml.overButton = GetBoolFromString(entries[index]); index++;
+		GUIState.ButtonType bt = (GUIState.ButtonType) Enum.Parse(typeof(GUIState.ButtonType), entries[index]);
+		if (Enum.IsDefined(typeof(GUIState.ButtonType),bt)) {
+			GUIState.a.overButtonType = bt;
+		} index++;
+		GUIState.a.overButton = GetBoolFromString(entries[index]); index++;
 		ml.geniusActive = GetBoolFromString(entries[index]); index++;
 		for (j=0;j<7;j++) { wi.weaponInventoryIndices[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
 		for (j=0;j<7;j++) { wi.weaponInventoryAmmoIndices[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }

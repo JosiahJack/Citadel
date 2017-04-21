@@ -12,6 +12,7 @@ public class WeaponFire : MonoBehaviour {
 	public float fireDistance = 200f;
 	public float damage = 1f;
 	public bool isFullAuto = false;
+	public bool berserkActive = false;
 	public GameObject bullet;
 	public GameObject impactEffect;
 	//public GameObject bulletSpawn;
@@ -154,6 +155,8 @@ public class WeaponFire : MonoBehaviour {
 				SFX.clip = PipeHitClip;
 				SFX.Play();
 			}
+
+			if (berserkActive) specificdamage *= Const.a.berserkDamageMultiplier;
 			hit.transform.gameObject.SendMessage("TakeDamage", specificdamage,SendMessageOptions.DontRequireReceiver);
 			waitTilNextFire = Time.time + fireSpeed;
 			return;

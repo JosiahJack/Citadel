@@ -5,7 +5,7 @@ using System.Collections;
 
 public class UIButtonMask : MonoBehaviour {
     public GameObject playerCamera;
-	public int overButtonType = 77;  // default to generic button
+	public GUIState.ButtonType overButtonType = GUIState.ButtonType.Generic;  // default to generic button
 	private float doubleClickTime;
 	private float dbclickFinished;
 	public int doubleClickTicks;  // takes 2 to activate double click function
@@ -54,17 +54,13 @@ public class UIButtonMask : MonoBehaviour {
 	}
 
 	public void PtrEnter () {
-		GUIState.a.isBlocking = true;
-        playerCamera.GetComponent<MouseLookScript>().overButton = true;
-		playerCamera.GetComponent<MouseLookScript>().overButtonType = overButtonType; //generic button code
+		GUIState.a.PtrHandler(true,true,overButtonType,gameObject);
         playerCamera.GetComponent<MouseLookScript>().currentButton = gameObject;
 		doubleClickTicks = 0;
     }
 
 	public void PtrExit () {
-		GUIState.a.isBlocking = false;
-        playerCamera.GetComponent<MouseLookScript>().overButton = false;
-        playerCamera.GetComponent<MouseLookScript>().overButtonType = -1;
+		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 		doubleClickTicks = 0;
     }
 

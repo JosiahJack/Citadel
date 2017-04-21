@@ -42,15 +42,15 @@ public class MouseCursor : MonoBehaviour {
 			} else {
 				inventoryAddHelper.SetActive(false);
 				if (justDroppedItemInHelper) {
+					GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 					justDroppedItemInHelper = false; // only disable blocking state once, not constantly
-					GUIState.a.isBlocking = false;
 				}
 			}
 		} else {
 			if (justDroppedItemInHelper) {
 				justDroppedItemInHelper = false; // only disable blocking state once, not constantly
 				inventoryAddHelper.SetActive(false);
-				GUIState.a.isBlocking = false;
+				GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 			}
 		}
 	}

@@ -34,10 +34,6 @@ public class MouseLookScript : MonoBehaviour {
 	public int heldObjectCustomIndex;
     [HideInInspector]
     public float yRotation;
-	[Tooltip("Shows what button type cursor is over")]
-    public int overButtonType;
-	[Tooltip("Shows whether mouse cursor is over a button (to block shooting through UI)")]
-    public bool overButton;
 	[Tooltip("Initial camera x rotation")]
 	public float startxRotation = 0f;
 	[Tooltip("Initial camera y rotation")]
@@ -110,8 +106,6 @@ public class MouseLookScript : MonoBehaviour {
         Cursor.lockState = CursorLockMode.None;
 		inventoryMode = true;  // Start with inventory mode turned on
 		playerCamera = GetComponent<Camera>();
-        overButton = false;
-        overButtonType = -1;
 		frobDistance = Const.a.frobDistance;
 		holdingObject = false;
 		heldObjectIndex = -1;
@@ -268,7 +262,7 @@ public class MouseLookScript : MonoBehaviour {
 					ResetHeldItem();
 					ResetCursor();
 				} else {
-					if (overButton && overButtonType != -1) {
+					if (GUIState.a.overButton && GUIState.a.overButtonType != GUIState.ButtonType.None) {
                         // overButtonTypes:
                         // -1   Not over a button
                         // 0 WeaponButton
@@ -277,8 +271,8 @@ public class MouseLookScript : MonoBehaviour {
                         // 3 GeneralInventoryButton
 						// 4 Search contents button
 						if (!PauseScript.a.paused) {
-	                        switch(overButtonType) {
-	                            case 0:
+							switch(GUIState.a.overButtonType) {
+							case GUIState.ButtonType.Weapon:
 	                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<WeaponButtonScript>().useableItemIndex];
 	                                heldObjectIndex = currentButton.GetComponent<WeaponButtonScript>().useableItemIndex;
 									indexAdjustment = currentButton.GetComponent<WeaponButtonScript>().WepButtonIndex;
@@ -288,10 +282,9 @@ public class MouseLookScript : MonoBehaviour {
 									if (indexAdjustment < 0)
 										indexAdjustment = 0;
 									WeaponCurrent.WepInstance.weaponCurrent = indexAdjustment;
-									overButton = false;
-									overButtonType = -1;
+									GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 									break;
-	                            case 1:
+							case GUIState.ButtonType.Grenade:
 	                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex];
 	                                heldObjectIndex = currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex;
 	                                GrenadeInventory.GrenadeInvInstance.grenAmmo[currentButton.GetComponent<GrenadeButtonScript>().GrenButtonIndex]--;
@@ -304,12 +297,13 @@ public class MouseLookScript : MonoBehaviour {
 	                                    }
 	                                }
 									break;
-	                            case 2:
+							case GUIState.ButtonType.Patch:
 	                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<PatchButtonScript>().useableItemIndex];
 	                                heldObjectIndex = currentButton.GetComponent<PatchButtonScript>().useableItemIndex;
 									PatchInventory.PatchInvInstance.patchCounts[currentButton.GetComponent<PatchButtonScript>().PatchButtonIndex]--;
 									if (PatchInventory.PatchInvInstance.patchCounts[currentButton.GetComponent<PatchButtonScript>().PatchButtonIndex] <= 0) {
 										PatchInventory.PatchInvInstance.patchCounts[currentButton.GetComponent<PatchButtonScript>().PatchButtonIndex] = 0;
+										GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 										for (int i = 0; i < 7; i++) {
 											if (PatchInventory.PatchInvInstance.patchCounts[i] > 0) {
 												mainInventory.GetComponent<PatchCurrent>().patchCurrent = i;
@@ -317,12 +311,12 @@ public class MouseLookScript : MonoBehaviour {
 										}
 									}
 									break;
-	                            case 3:
+							case GUIState.ButtonType.GeneralInv:
 	                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<GeneralInvButtonScript>().useableItemIndex];
 	                                heldObjectIndex = currentButton.GetComponent<GeneralInvButtonScript>().useableItemIndex;
 	                                GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[currentButton.GetComponent<GeneralInvButtonScript>().GeneralInvButtonIndex] = -1;
 	                                break;
-								case 4:
+							case GUIState.ButtonType.Search:
 									int tempButtonindex = currentButton.GetComponent<SearchContainerButtonScript>().refIndex;
 									cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex]];
 									heldObjectIndex = currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex];
@@ -333,11 +327,10 @@ public class MouseLookScript : MonoBehaviour {
 									currentButton.GetComponentInParent<SearchButtonsScript>().customIndex[tempButtonindex] = -1;
 									currentButton.GetComponentInParent<SearchButtonsScript>().GetComponentInParent<DataTab>().searchItemImages[tempButtonindex].SetActive(false);
 									currentButton.GetComponentInParent<SearchButtonsScript>().CheckForEmpty();
-									overButton = false;
-									overButtonType = -1;
+									GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 									break;
 	                        }
-							if (overButtonType != 77) {
+							if (GUIState.a.overButtonType != GUIState.ButtonType.Generic) {
 	                       		mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture;
 								ForceInventoryMode();
 		                        holdingObject = true;
