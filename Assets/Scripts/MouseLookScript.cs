@@ -129,6 +129,12 @@ public class MouseLookScript : MonoBehaviour {
         //transform.localPosition.x = (Mathf.Sin(headbobStepCounter) * headbobAmountX);
         //transform.localPosition.y = (Mathf.Cos(headbobStepCounter * 2) * headbobAmountY * -1) + (transform.localScale.y * eyeHeightRatio) - (transform.localScale.y / 2);
         //parentLastPos = transform.parent.position;
+
+		// Spring Back to Rest from Recoil
+		float camz = Mathf.Lerp(transform.localPosition.z,0f,0.1f);
+		Vector3 camPos = new Vector3(0f,Const.a.playerCameraOffsetY,camz);
+		transform.localPosition = camPos;
+
 		if (mainMenu.activeSelf == true) return;  // ignore mouselook when main menu is still up
 
 		if (Input.GetKeyUp("f6")) {

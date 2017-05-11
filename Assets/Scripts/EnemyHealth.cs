@@ -44,6 +44,10 @@ public class EnemyHealth : MonoBehaviour {
 		}
 	}
 
+	public void TakeDamage (int index) {
+
+	}
+
 	void Update () {
 		if (isDying) {
 			Dying();

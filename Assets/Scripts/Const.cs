@@ -98,6 +98,7 @@ public class Const : MonoBehaviour {
 	public float reflexTimeScale = 0.25f;
 	public float defaultTimeScale = 1.0f;
 	public float berserkDamageMultiplier = 4.0f;
+	public float playerCameraOffsetY = 0.84f;
 
 	// Instantiate it so that it can be accessed globally. MOST IMPORTANT PART!!
 	// =========================================================================

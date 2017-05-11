@@ -36,7 +36,13 @@ public class GetInput : MonoBehaviour {
 	public bool Email() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[21]])) return true; else return false; }
 	public bool Booster() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[22]])) return true; else return false; }
 	public bool Jumpjets() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[23]])) return true; else return false; }
-	public bool Attack() { if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[24]])) return true; else return false; }
+	public bool Attack(bool isFullAuto) {
+		if (isFullAuto) {
+			if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[24]])) return true; else return false;
+		} else {
+			if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[24]])) return true; else return false;
+		}
+	}
 	public bool Use() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[25]])) return true; else return false; }
 	public bool Menu() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[26]])) return true; else return false; }
 	public bool ToggleMode() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[27]])) return true; else return false; }
