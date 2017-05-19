@@ -6,7 +6,12 @@ public class TouchHurt : MonoBehaviour {
 	
 	void  OnCollisionEnter ( Collision col  ){
 		if (col.gameObject.tag == "Player") {
-			col.gameObject.GetComponent<PlayerHealth>().TakeDamage(damage);
+			DamageData dd = new DamageData();
+			dd.damage = damage;
+			dd.owner = gameObject;
+			dd.attackType = Const.AttackType.Melee;
+			dd.isOtherNPC = false;
+			col.gameObject.GetComponent<PlayerHealth>().TakeDamage(dd);
 		}
 	}
 }

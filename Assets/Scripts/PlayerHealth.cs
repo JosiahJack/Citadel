@@ -90,15 +90,17 @@ public class PlayerHealth : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.None;
 	}
 	
-	public void TakeDamage ( float take  ){
+	public void TakeDamage (DamageData dd){
 		float shieldBlock = 0f;
 		if (shieldOn) {
 			//shieldBlock = hardwareShield.GetComponent<Shield>().GetShieldBlock();
 		}
-		take = Const.a.GetDamageTakeAmount(take,0,shieldBlock,Const.AttackType.None,false,0,0);
+		dd.armorvalue = shieldBlock;
+		dd.defense = 0f;
+		float take = Const.a.GetDamageTakeAmount(dd);
 		health -= take;
 		PainSFX.PlayOneShot(PainSFXClip);
-		//print("Player Health: " + health.ToString());
+		//Debug.Log("Player Health: " + health.ToString());
 	}
 
 	public void GiveRadiation (float rad) {

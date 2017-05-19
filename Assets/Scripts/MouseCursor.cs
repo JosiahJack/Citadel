@@ -14,6 +14,15 @@ public class MouseCursor : MonoBehaviour {
     private float offsetX;
     private float offsetY;
 	public bool justDroppedItemInHelper = false;
+	public static Rect drawTexture;
+	public static float cursorXmin;
+	public static float cursorYmin;
+	public static float cursorX;
+	public static float cursorY;
+	public float x;
+	public float y;
+	public static float cursorXmax;
+	public static float cursorYmax;
 
 	void OnGUI () {
         if (offsetCentering) {
@@ -24,10 +33,28 @@ public class MouseCursor : MonoBehaviour {
 		//Debug.Log("MouseCursor:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
 		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode || PauseScript.a.paused) {
             // Inventory Mode Cursor
-            GUI.DrawTexture(new Rect(Input.mousePosition.x - offsetX, Screen.height - Input.mousePosition.y - offsetY, cursorSize, cursorSize), cursorImage);
+			drawTexture = new Rect(Input.mousePosition.x - offsetX, Screen.height - Input.mousePosition.y - offsetY, cursorSize, cursorSize);
+			cursorXmin = drawTexture.xMin;
+			cursorYmin = drawTexture.yMin;
+			cursorX = drawTexture.center.x;
+			cursorY = drawTexture.center.y;
+			x = cursorX;
+			y = cursorY;
+			cursorXmax = drawTexture.xMax;
+			cursorYmax = drawTexture.yMax;
+			GUI.DrawTexture(drawTexture, cursorImage);
         } else {
             // Shoot Mode Cursor
-            GUI.DrawTexture(new Rect((Screen.width/2) - offsetX, (Screen.height/2) - cursorSize, cursorSize, cursorSize), cursorImage);
+			drawTexture = new Rect((Screen.width/2) - offsetX, (Screen.height/2) - cursorSize, cursorSize, cursorSize);
+			cursorXmin = drawTexture.xMin;
+			cursorYmin = drawTexture.yMin;
+			cursorX = drawTexture.center.x;
+			cursorY = drawTexture.center.y;
+			x = cursorX;
+			y = cursorY;
+			cursorXmax = drawTexture.xMax;
+			cursorYmax = drawTexture.yMax;
+			GUI.DrawTexture(drawTexture, cursorImage);
         }
 
 		//GUI.DrawTexture(new Rect(Input.mousePosition.x - offsetX, Screen.height - Input.mousePosition.y - offsetY, cursorSize, cursorSize), cursorImage);

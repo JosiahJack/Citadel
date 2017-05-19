@@ -386,8 +386,14 @@ public class PlayerMovement : MonoBehaviour {
 			}
 
 			// Handle fall damage
-			if (Mathf.Abs((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed)
-				GetComponent<PlayerHealth>().TakeDamage(fallDamage);
+			if (Mathf.Abs((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed) {
+				DamageData dd = new DamageData();
+				dd.damage = fallDamage;
+				dd.attackType = Const.AttackType.None;
+				dd.offense = 0f;
+				dd.isOtherNPC = false;
+				GetComponent<PlayerHealth>().TakeDamage(dd);
+			}
 			oldVelocity = rbody.velocity;
 
 			// Automatically set grounded to false to prevent ability to climb any wall

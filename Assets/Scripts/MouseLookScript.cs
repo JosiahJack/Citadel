@@ -57,6 +57,10 @@ public class MouseLookScript : MonoBehaviour {
 	private int indexAdjustment;
 	private Quaternion tempQuat;
 	private Vector3 tempVec;
+	private Vector3 cameraDefaultLocalPos;
+	//private Quaternion cameraDefaultLocalRot;
+	private Vector3 cameraRecoilLerpPos;
+	[SerializeField] private bool recoiling;
 
     // External to Prefab
     // ------------------------------------------------------------------------
@@ -117,10 +121,35 @@ public class MouseLookScript : MonoBehaviour {
 			Const.sprint("BUG: No canvas given for camera to display UI",player);
 
 		canvasContainer.SetActive(true); //enable UI
+		cameraDefaultLocalPos = transform.localPosition;
+		//cameraDefaultLocalRot = transform.localRotation;
+		recoiling = false;
     }
+
+	public void Recoil (int i) {
+		float strength = Const.a.recoilForWeapon[i];
+		//Debug.Log("Recoil from gun index: "+i.ToString()+" with strength of " +strength.ToString());
+		if (strength <= 0f) return;
+		Vector3 cameraJoltPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, (transform.localPosition.z - strength));
+		transform.localPosition = cameraJoltPosition;
+		recoiling = true;
+	}
 
 	void Update () {
         Cursor.visible = false; // Hides hardware cursor so we can show custom cursor textures
+
+		if (recoiling) {
+			float x = transform.localPosition.x; // side to side
+			float y = transform.localPosition.y; // up and down
+			float z = transform.localPosition.z; // forward and back
+			z = Mathf.Lerp(z,cameraDefaultLocalPos.z,Time.deltaTime);
+			tempVec = new Vector3(x,y,z);
+			transform.localPosition = tempVec;
+			//if (Mathf.Abs(transform.localPosition.z - z) < 0.01f) {
+			//	transform.localPosition = cameraDefaultLocalPos;
+			//	recoiling = false;
+			//}
+		}
 		//Debug.Log("MouseLookScript:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
 
         //if (transform.parent.GetComponent<PlayerMovement>().grounded)
@@ -202,7 +231,7 @@ public class MouseLookScript : MonoBehaviour {
 					if (!holdingObject) {
 						// Send out Frob raycast
 						RaycastHit hit = new RaycastHit();
-						if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, frobDistance)) {
+						if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out hit, frobDistance)) {
 							//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
 							// TIP: Use Camera.main.ViewportPointToRay for center of screen
 							if (hit.collider == null)
@@ -238,7 +267,7 @@ public class MouseLookScript : MonoBehaviour {
 								Const.sprint(mlookstring1,player);
 							}
 						}
-						if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, 50f)) {
+						if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out hit, 50f)) {
 							//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
 							// TIP: Use Camera.main.ViewportPointToRay for center of screen
 							if (hit.collider == null)

@@ -30,6 +30,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 	public bool roaming = false;
 	public bool idle = false;
 	public bool inspecting = false;
+	public int index = 0;
 	public enum AIActBusyType {AB_Idle,AB_Roaming,AB_Patrolling,AB_Monitoring,AB_Inspecting};
 	public AIActBusyType currentActBusy = AIActBusyType.AB_Idle;
 	public Vector3 lastKnownPosition;
@@ -91,13 +92,15 @@ public class NPCHumanoidMutant : MonoBehaviour {
 		inspecting = false;
 	}
 
-	public void TakeDamage (float take) {
+	public void TakeDamage (DamageData dd) {
 		if (health <= 0f)
 			return;
 
-		print("Enemy health was: " + health);
+		dd.defense = Const.a.defenseForNPC[index];
+		dd.armorvalue = Const.a.armorvalueForNPC[index];
+		dd.other = gameObject;
+		float take = Const.a.GetDamageTakeAmount(dd);
 		health -= take;
-		print("and is now" + health);
 		if (health <= 0f) {
 			health = 0f;
 			deathTime = Time.time + deathTime;
@@ -340,9 +343,37 @@ public class NPCHumanoidMutant : MonoBehaviour {
 
 	}
 
+	DamageData SetDamageData (int attackIndex) {
+		if (index < 0 || index > 23) {
+			Debug.Log("BUG: index set incorrectly on NPC EnemyMelee.  Not 0 to 23. Disabled.");
+			gameObject.SetActive(false);
+		}
+		DamageData dd = new DamageData(); 
+		// Attacker (self [a]) data
+		dd.owner = gameObject;
+		switch (attackIndex) {
+		case 0:
+			dd.damage = Const.a.damageForNPC[index];
+			break;
+		case 1:
+			dd.damage = Const.a.damageForNPC2[index];
+			break;
+		case 2:
+			dd.damage = Const.a.damageForNPC3[index];
+			break;
+		}
+		dd.penetration = 0;
+		dd.offense = 0;
+		return dd;
+	}
+
 	void MeleeAttack() {
 		if (waitTilNextFire <= Time.time) {
-			playerHealth.TakeDamage(meleeDamageAmount * (Random.Range(0.7f,1.0f)));  // 10.5 to 15 damage
+			DamageData dd = new DamageData();
+			dd = SetDamageData(0); // set damage data for primary attack
+			dd.attackType = Const.AttackType.Melee;
+			dd.damage *= Random.Range(Const.a.randomMinimumDamageModifierForNPC[index],1.0f); // Add randomization for damage of minimum% to 100%
+			playerHealth.TakeDamage(dd);
 			waitTilNextFire = Time.time + fireSpeed;
 		}
 		//anim.SetBool("PlayerInRange",true);

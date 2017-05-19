@@ -26,4 +26,9 @@ public class UseableObjectUse : MonoBehaviour {
 		mlook.heldObjectCustomIndex = customIndex;
 		this.gameObject.SetActive(false);
 	}
+
+	void TakeDamage (DamageData dd) {
+		Rigidbody rbody = GetComponent<Rigidbody>();
+		rbody.AddForceAtPosition((dd.attacknormal*dd.damage),dd.hit.point);
+	}
 }

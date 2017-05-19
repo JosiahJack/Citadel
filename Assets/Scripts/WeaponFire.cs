@@ -2,18 +2,6 @@
 using System.Collections;
 
 public class WeaponFire : MonoBehaviour {
-	public bool isFullAuto = false;
-	public float delayBetweenShots = 1f;
-	public float damage = 1f;
-	public float damageOverload = 1f;
-	public float energyDrainLow = 1f;
-	public float energyDrainHi = 2f;
-	public float energyDrainOver = 3f;
-	public float penetration = 1f;
-	public float offense = 1f;
-	public float range = 200f;
-	public Const.AttackType attType = Const.AttackType.None;
-
 	[HideInInspector]
 	public float waitTilNextFire = 0f;
 	public float muzzleDistance = 0.10f;
@@ -58,26 +46,35 @@ public class WeaponFire : MonoBehaviour {
 	[SerializeField] private AudioClip SFXRicochet; // assign in the editor
 	private float clipEnd;
 	public Animator anim; // assign in the editor
+	public DamageData damageData;
+	private RaycastHit tempHit;
+	private Vector3 tempVec;
+
+	void Awake () {
+		damageData = new DamageData();
+	}
 
 	void GetWeaponData (int index) {
 		if (index == -1) return;
-		isFullAuto = Const.a.isFullAutoForWeapon[index];
+		damageData.isFullAuto = Const.a.isFullAutoForWeapon[index];
 		if (currentWeapon.weaponIsAlternateAmmo) {
-			damage = Const.a.damagePerHitForWeapon2[index];
-			delayBetweenShots = Const.a.delayBetweenShotsForWeapon2[index];
-			penetration = Const.a.penetrationForWeapon2[index];
-			offense = Const.a.offenseForWeapon2[index];
+			damageData.damage = Const.a.damagePerHitForWeapon2[index];
+			damageData.delayBetweenShots = Const.a.delayBetweenShotsForWeapon2[index];
+			damageData.penetration = Const.a.penetrationForWeapon2[index];
+			damageData.offense = Const.a.offenseForWeapon2[index];
 		} else {
-			damage = Const.a.damagePerHitForWeapon[index];
-			delayBetweenShots = Const.a.delayBetweenShotsForWeapon[index];
-			penetration = Const.a.penetrationForWeapon[index];
-			offense = Const.a.offenseForWeapon[index];
+			damageData.damage = Const.a.damagePerHitForWeapon[index];
+			damageData.delayBetweenShots = Const.a.delayBetweenShotsForWeapon[index];
+			damageData.penetration = Const.a.penetrationForWeapon[index];
+			damageData.offense = Const.a.offenseForWeapon[index];
 		}
-		damageOverload = Const.a.damageOverloadForWeapon[index];
-		energyDrainLow = Const.a.energyDrainLowForWeapon[index];
-		energyDrainHi = Const.a.energyDrainHiForWeapon[index];
-		energyDrainOver = Const.a.energyDrainOverloadForWeapon[index];
-		range = Const.a.rangeForWeapon[index];
+		damageData.damageOverload = Const.a.damageOverloadForWeapon[index];
+		damageData.energyDrainLow = Const.a.energyDrainLowForWeapon[index];
+		damageData.energyDrainHi = Const.a.energyDrainHiForWeapon[index];
+		damageData.energyDrainOver = Const.a.energyDrainOverloadForWeapon[index];
+		damageData.range = Const.a.rangeForWeapon[index];
+		damageData.attackType = Const.a.attackTypeForWeapon[index];
+		damageData.berserkActive = berserkActive;
 	}
 
 	void  Update() {
@@ -145,6 +142,7 @@ public class WeaponFire : MonoBehaviour {
 	}
 
 	void FireWeapon (int index) {
+		damageData.ResetDamageData(damageData);
 		switch(currentWeapon.weaponIndex) {
 		case 36:
 			//Mark3 Assault Rifle
@@ -211,7 +209,34 @@ public class WeaponFire : MonoBehaviour {
 			FireStungun(false);
 			break;
 		}
-		waitTilNextFire = Time.time + delayBetweenShots;
+		playerCamera.GetComponent<MouseLookScript>().Recoil(index);
+		if (currentWeapon.weaponIsAlternateAmmo) {
+			waitTilNextFire = Time.time + Const.a.delayBetweenShotsForWeapon2[index];
+		} else {
+			waitTilNextFire = Time.time + Const.a.delayBetweenShotsForWeapon[index];
+		}
+	}
+
+	//float centerx = (Screen.width/2);
+	//float centery = (Screen.height/2);
+	//float x,y;
+	//if (MouseCursor.cursorX > centerx) {x = MouseCursor.cursorX-centerx;} else {x = centerx-MouseCursor.cursorX;}
+	//if (MouseCursor.cursorY > centery) {y = MouseCursor.cursorY-centery;} else {y = centery-MouseCursor.cursorY;}
+	//float angx = (Mathf.Atan2(-damageData.range,-x)/Mathf.PI*180f) + 180f;
+	//float angy = (Mathf.Atan2(-damageData.range,-y)/Mathf.PI*180f) + 180f;
+	//Vector3 aimdir = new Vector3(angx,angy,0f);
+	//if (Physics.Raycast(playerCamera.ScreenPointToRay(new Vector3(MouseCursor.cursorX,Screen.height - MouseCursor.cursorY,playerCamera.nearClipPlane)), out hit, fireDistance)) {
+
+	bool DidRayHit () {
+		tempVec = new Vector3 (playerCamera.transform.position.x, playerCamera.transform.position.y + verticalOffset, playerCamera.transform.position.z);
+
+		Ray tempray = playerCamera.ScreenPointToRay(new Vector3(MouseCursor.cursorX,Screen.height - MouseCursor.cursorY,playerCamera.nearClipPlane));
+		if (Physics.Raycast(tempVec, tempray.direction, out tempHit, fireDistance)) {
+			return true;
+		}
+		return false;
+		//if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out tempHit, fireDistance)) {
+		//}
 	}
 
 	void FireAssault (bool silent) {
@@ -238,15 +263,22 @@ public class WeaponFire : MonoBehaviour {
 		if (!silent) { SFX.clip = SFXDartFire; SFX.Play(); }
 
 		RaycastHit hit = new RaycastHit();
-		if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, fireDistance)) {
+		if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out hit, fireDistance)) {
 			//drawDebugLine(playerCamera.transform.position,hit.point,Color.cyan,10f);
 			GameObject impact = Const.a.GetObjectFromPool(Const.PoolType.DartImpacts);
 			if (impact != null) {
 				impact.transform.position = hit.point;
 				impact.SetActive(true);
 			}
-			hit.transform.gameObject.SendMessage("TakeDamage", damage,SendMessageOptions.DontRequireReceiver);
-
+			if (hit.transform.gameObject.tag == "NPC") {
+				damageData.isOtherNPC = true;
+			} else {
+				damageData.isOtherNPC = false;
+			}
+			damageData.hit = hit;
+			damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
+			damageData.damage = Const.a.damagePerHitForWeapon[2];
+			hit.transform.gameObject.SendMessage("TakeDamage", damageData,SendMessageOptions.DontRequireReceiver);
 		}
 	}
 
@@ -256,17 +288,13 @@ public class WeaponFire : MonoBehaviour {
 		
 	void FirePipe (bool silent) {
 		RaycastHit hit = new RaycastHit();
-		if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, fireDistance)) {
+		if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out hit, fireDistance)) {
 			anim.Play("Attack2");
 			if (!silent) {
 				SFX.clip = SFXPipeHit;
 				SFX.Play();
 			}
-
-			float adjusteddamage = damage;
-			if (berserkActive) adjusteddamage *= Const.a.berserkDamageMultiplier;
-			hit.transform.gameObject.SendMessage("TakeDamage", adjusteddamage,SendMessageOptions.DontRequireReceiver);
-			waitTilNextFire = Time.time + delayBetweenShots;
+			hit.transform.gameObject.SendMessage("TakeDamage", damageData,SendMessageOptions.DontRequireReceiver);
 			return;
 		}
 		if (!silent) {
@@ -274,7 +302,6 @@ public class WeaponFire : MonoBehaviour {
 			SFX.Play();
 		}
 		anim.Play("Attack1");
-		waitTilNextFire = Time.time + delayBetweenShots;
 	}
 
 	void FireMagnum (bool silent) {
@@ -317,26 +344,24 @@ public class WeaponFire : MonoBehaviour {
 			SFX.clip = SFXSparqBeamFire;
 			SFX.Play();
 		}
-		RaycastHit hit = new RaycastHit();
-		if (Physics.Raycast(playerCamera.ScreenPointToRay(Input.mousePosition), out hit, fireDistance)) {
+
+		if (DidRayHit()) {
 			GameObject impact = Const.a.GetObjectFromPool(Const.PoolType.SparqImpacts);
 			if (impact != null) {
-				impact.transform.position = hit.point;
-				Debug.Log("Setting Sparq Impact to x: " + hit.point.x.ToString() + ",y: " + hit.point.y.ToString() + ",z: " + hit.point.z.ToString());
+				impact.transform.position = tempHit.point;
 				impact.SetActive(true);
 			}
-			hit.transform.gameObject.SendMessage("TakeDamage",damage,SendMessageOptions.DontRequireReceiver);
+			damageData.hit = tempHit;
+			damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
+			damageData.damage = Const.a.damagePerHitForWeapon[14];
+			tempHit.transform.gameObject.SendMessage("TakeDamage",damageData,SendMessageOptions.DontRequireReceiver);
 			GameObject lasertracer = Const.a.GetObjectFromPool(Const.PoolType.LaserLines);
 			if (lasertracer != null) {
 				lasertracer.SetActive(true);
-				Vector3 tempent = new Vector3 (playerCamera.transform.position.x, (playerCamera.transform.position.y + verticalOffset), playerCamera.transform.position.z);
-				lasertracer.GetComponent<LaserDrawing>().startPoint = tempent;
-				//Debug.Log("Setting Sparq laser endpoint to x: " + hit.point.x.ToString() + ",y: " + hit.point.y.ToString() + ",z: " + hit.point.z.ToString());
-				lasertracer.GetComponent<LaserDrawing>().endPoint = hit.point;
-				//lasertracer.GetComponent<LaserDrawing>().followStarter = playerCamera.gameObject;
+				lasertracer.GetComponent<LaserDrawing>().startPoint = tempVec;
+				lasertracer.GetComponent<LaserDrawing>().endPoint = tempHit.point;
 			}
 		}
-		waitTilNextFire = Time.time + delayBetweenShots;
 	}
 
 	void FireStungun (bool silent) {

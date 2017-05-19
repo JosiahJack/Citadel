@@ -6,8 +6,22 @@ public class WeaponCurrent : MonoBehaviour {
 	[SerializeField] public int weaponIndex = new int();
 	[SerializeField] public bool weaponIsAlternateAmmo = new bool();
 	public static WeaponCurrent WepInstance;
-	public GameObject pipeViewModel;
-	public GameObject rapierViewModel;
+	public GameObject ViewModelAssault;
+	public GameObject ViewModelBlaster;
+	public GameObject ViewModelDartgun;
+	public GameObject ViewModelFlechette;
+	public GameObject ViewModelIon;
+	public GameObject ViewModelRapier;
+	public GameObject ViewModelPipe;
+	public GameObject ViewModelMagnum;
+	public GameObject ViewModelMagpulse;
+	public GameObject ViewModelPistol;
+	public GameObject ViewModelPlasma;
+	public GameObject ViewModelRailgun;
+	public GameObject ViewModelRiotgun;
+	public GameObject ViewModelSkorpion;
+	public GameObject ViewModelSparq;
+	public GameObject ViewModelStungun;
 	private bool justChangedWeap = true;
 	private int lastIndex = 0;
 
@@ -21,8 +35,8 @@ public class WeaponCurrent : MonoBehaviour {
 	void Update() {
 		if (justChangedWeap) {
 			justChangedWeap = false;
-			if (pipeViewModel != null) pipeViewModel.SetActive(false);
-			if (rapierViewModel != null) rapierViewModel.SetActive(false);
+			if (ViewModelPipe != null) ViewModelPipe.SetActive(false);
+			if (ViewModelRapier != null) ViewModelRapier.SetActive(false);
 		}
 
 		if (lastIndex != weaponIndex) {
@@ -32,10 +46,10 @@ public class WeaponCurrent : MonoBehaviour {
 		
 		switch (weaponIndex) {
 		case 41:
-			rapierViewModel.SetActive(true);
+			ViewModelRapier.SetActive(true);
 			break;
 		case 42:
-			pipeViewModel.SetActive(true);
+			ViewModelPipe.SetActive(true);
 			break;
 		}
 	}

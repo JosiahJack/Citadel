@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class EnemyMeleeOnly : MonoBehaviour {
+	public int index; // enemy reference index (0 through 23)
 	public float fireSpeed = 1.5f;
 	public float meleeDamageAmount = 15f;
 	public float range = 2f;
@@ -61,8 +62,36 @@ public class EnemyMeleeOnly : MonoBehaviour {
 		}
 	}
 
+	DamageData SetDamageData (int attackIndex) {
+		if (index < 0 || index > 23) {
+			Debug.Log("BUG: index set incorrectly on NPC EnemyMelee.  Not 0 to 23. Disabled.");
+			gameObject.SetActive(false);
+		}
+		DamageData dd = new DamageData(); 
+		// Attacker (self [a]) data
+		dd.owner = gameObject;
+		switch (attackIndex) {
+		case 0:
+			dd.damage = Const.a.damageForNPC[index];
+			break;
+		case 1:
+			dd.damage = Const.a.damageForNPC2[index];
+			break;
+		case 2:
+			dd.damage = Const.a.damageForNPC3[index];
+			break;
+		}
+		dd.penetration = 0;
+		dd.offense = 0;
+		return dd;
+	}
+
 	void MeleeAttack() {
-		playerHealth.TakeDamage(meleeDamageAmount * (Random.Range(0.7f,1.0f)));  // 10.5 to 15 damage
+		DamageData dd = new DamageData();
+		dd = SetDamageData(0); // set damage data for primary attack
+		dd.attackType = Const.AttackType.Melee;
+		dd.damage *= Random.Range(Const.a.randomMinimumDamageModifierForNPC[index],1.0f); // Add randomization for damage of minimum% to 100%
+		playerHealth.TakeDamage(dd);
 		anim.SetBool("PlayerInRange",true);
 		waitTilNextFire = Time.time + fireSpeed + Random.Range(0f,2f);
 	}
