@@ -1,4 +1,3 @@
-Name,AttackType,AttackType2,AttackType3,DamagePerHit,DamagePerHit2,DamagePerHit3,Range,Range2,Range3,Health,PerceptionLevel,Disruptability,Armor,Defense,Rnd Min Dmg Modifier
 AUTOBOMB,0,0,0,200,0,0,2.56,0,0,50,1,0.5,40,1,0.7
 CYBORG ASSASSIN,4,4,1,30,50,35,23.04,10.24,2.56,65,2,0.6,5,4,0.7
 AVIAN MUTANT,1,0,0,40,0,0,5.12,0,0,125,1,0.25,0,2,0.7
@@ -23,7 +22,7 @@ ZERO-G MUTANT,4,0,0,20,0,0,7.68,0,0,90,1,0.5,0,2,0.7
 GORILLA TIGER MUTANT,1,0,0,60,0,0,2.56,0,0,200,1,0.1,0,3,0.7
 REPAIR BOT,1,0,0,12,0,0,2.56,0,0,65,1,0.4,25,3,0.7
 PLANT MUTANT,1,4,0,35,25,0,1.28,20.48,0,115,1,0.3,0,1,0.7
-
+//Name,AttackType,AttackType2,AttackType3,DamagePerHit,DamagePerHit2,DamagePerHit3,Range,Range2,Range3,Health,PerceptionLevel,Disruptability,Armor,Defense,Rnd Min Dmg Modifier
 TARGET ID: Type-LevelNum(0#)EnemyNum(###)
 Example: Mutant-06003
 EXCEPTIONS: Cyborg-00001 is Edward Diego

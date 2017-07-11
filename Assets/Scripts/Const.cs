@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System;
 using System.Runtime.Serialization;
 using UnityStandardAssets.ImageEffects;
@@ -266,7 +267,8 @@ public class Const : MonoBehaviour {
 				readLogText = entries[i]; i++;
 				// handle extra commas within the body text and append remaining portions of the line
 				if (entries.Length > 7) {
-					for (int j=7;i<entries.Length;j++) {
+					for (int j=7;j<entries.Length;j++) {
+						//Debug.Log("Combining remaining comma'ed sections of log text: " + j.ToString());
 						readLogText = (readLogText +"," + entries[j]);  // combine remaining portions of text after other commas and add comma back
 					}
 				}
@@ -353,6 +355,11 @@ public class Const : MonoBehaviour {
 				// Read the next line
 				readline = dataReader.ReadLine();
 				string[] entries = readline.Split(',');
+				char[] commentCheck = entries[i].ToCharArray();
+				if (commentCheck[0] == '/' && commentCheck[1] == '/') {
+					currentline++;
+					continue; // Skip lines that start with '//'
+				}
 				nameForNPC[currentline] = entries[i]; i++;
 				readInt = GetIntFromString(entries[i],currentline,"enemy_tables",i); i++; attackTypeForNPC[currentline] = GetAttackTypeFromInt(readInt);
 				readInt = GetIntFromString(entries[i],currentline,"enemy_tables",i); i++; attackTypeForNPC2[currentline] = GetAttackTypeFromInt(readInt);
@@ -942,6 +949,7 @@ public class Const : MonoBehaviour {
 	public int GetIntFromString(string val, int currentline, string source, int index) {
 		bool parsed;
 		int readInt;
+		if (val == "0") return 0;
 		parsed = Int32.TryParse(val,out readInt);
 		if (!parsed) {
 			sprint("BUG: Could not parse int from " + source + " file on line " + currentline.ToString() + ", from index: " + index.ToString(),allPlayers);

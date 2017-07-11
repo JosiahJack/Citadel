@@ -121,12 +121,12 @@ public class NPCHumanoidMutant : MonoBehaviour {
 		//}
 		if (PauseScript.a != null && PauseScript.a.paused) {
 			anim.speed = 0f;
-			nav.Stop();
+			nav.isStopped = true;
 			return;
 		} else {
 			anim.speed = 1f;
 			if (!idle && !inspecting)
-				nav.Resume();
+				nav.isStopped = false;
 		}
 
 		attacking = false;
@@ -191,7 +191,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 	void Idle () {
 		// hands are of the devil, or SHODAN
 		// NPC is standing around
-		nav.Stop();
+		nav.isStopped = true;
 		anim.Play("Idle");
 		idle = true;
 		//if (firstStateFrame) {
@@ -209,9 +209,9 @@ public class NPCHumanoidMutant : MonoBehaviour {
 
 			if (!(CheckIfInRangeOfWaypoint(inspectionPoints[inspectionIndex]))) {
 				nav.SetDestination(inspectionPoints[inspectionIndex].position);
-				nav.Resume();
+				nav.isStopped = false;
 			} else {
-				nav.Stop(); // Time to look at the inspection point
+				nav.isStopped = true; // Time to look at the inspection point
 				// TODO rotate to look at item of interest
 				anim.Play("Inspecting");
 				inspecting = true;
@@ -253,7 +253,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 			// walk to roamingWaypoint[0]
 			if (!(CheckIfInRangeOfWaypoint(roamingWaypoints[0]))) {
 				nav.SetDestination(roamingWaypoints[0].position);
-				nav.Resume();
+				nav.isStopped = false;
 				anim.Play("Walk");
 				roaming = true;
 			} else {
@@ -269,7 +269,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 
 			if (!(CheckIfInRangeOfWaypoint(roamingWaypoints[wayPointIndex]))) {
 				nav.SetDestination(roamingWaypoints[wayPointIndex].position);
-				nav.Resume();
+				nav.isStopped = false;
 			}
 		}
 	}
@@ -289,18 +289,18 @@ public class NPCHumanoidMutant : MonoBehaviour {
 				if (NavMesh.SamplePosition (randomDirection,out navHit, dist,NavMesh.AllAreas)) {
 					//nav.SetDestination(roamingWaypoints[wayPointIndex].position);
 					nav.SetDestination(navHit.position);
-					nav.Resume();
+					nav.isStopped = false;
 					anim.Play("Walk");
 					roaming = true;
 				} else {
-					nav.Stop();
+					nav.isStopped = true;
 					anim.Play("Idle");
 					waitTime = Time.time + stopAtPointTime + Random.Range(0f, 1f);
 					wayPointIndex++;
 					roaming = false;
 				}
 			} else {
-				nav.Stop();
+				nav.isStopped = true;
 				anim.Play("Idle");
 				waitTime = Time.time + stopAtPointTime + Random.Range(0f, 1f);
 				wayPointIndex++;
@@ -332,7 +332,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 		
 		nav.speed = chaseSpeed;
 		nav.SetDestination(player.transform.position);
-		nav.Resume();
+		nav.isStopped = false;
 		anim.Play("Run");
 		chasing = true;
 		if (firstSighting) {
@@ -379,7 +379,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 		//anim.SetBool("PlayerInRange",true);
 		attacking = true;
 		anim.Play("Attack");
-		nav.Resume();
+		nav.isStopped = false;
 		nav.speed = attackSpeed;
 		nav.SetDestination(player.transform.position);
 	}
@@ -388,7 +388,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 		nav.speed = searchSpeed;
 		nav.SetDestination(lastKnownPosition);
 		anim.Play("Run");
-		nav.Resume();
+		nav.isStopped = false;
 		if (CheckIfInRangeOfPoint(lastKnownPosition)) {
 			lastKnownPosition = resetPosition;
 			currentActBusy = AIActBusyType.AB_Roaming;
@@ -418,7 +418,7 @@ public class NPCHumanoidMutant : MonoBehaviour {
 		// NPC is dead
 		isDead = true;
 		isDying = false;
-		nav.Stop();
+		nav.isStopped = true;
 		gameObject.tag = "Searchable";
 	}
 

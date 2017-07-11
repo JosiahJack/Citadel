@@ -52,7 +52,7 @@ public class EnemyProjectileOnly : MonoBehaviour {
 				}
 			}
 		} else {
-			nav.Stop();
+			nav.isStopped = true;
 		}
 	}
 

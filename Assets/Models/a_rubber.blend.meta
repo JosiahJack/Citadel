@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b0c7dc373e045034fa63851a4948bb96
+guid: 69cd241cc3bede54d992f3437ab0ed9a
 timeCreated: 1435109496
 licenseType: Free
 ModelImporter:
@@ -16,9 +16,11 @@ ModelImporter:
     2300000: AmmoClipSquare
     2300002: Cube
     2300004: Cylinder
+    2300006: //RootNode
     3300000: AmmoClipSquare
     3300002: Cube
     3300004: Cylinder
+    3300006: //RootNode
     4300000: Cube
     4300002: AmmoClipSquare
     4300004: Cylinder
