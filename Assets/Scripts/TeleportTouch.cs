@@ -14,7 +14,7 @@ public class TeleportTouch : MonoBehaviour {
 	}
 
 	void  OnTriggerEnter ( Collider col  ) {
-		if ((col.gameObject.tag == "Player") && (col.gameObject.GetComponent<PlayerHealth>().health > 0f) && (justUsed < Time.time)) {
+		if ((col.gameObject.tag == "Player") && (col.gameObject.GetComponent<PlayerHealth>().hm.health > 0f) && (justUsed < Time.time)) {
 			teleportFX.SetActive(true);
 			col.transform.position = targetDestination.position;
 			targetDestination.transform.gameObject.GetComponent<TeleportTouch>().justUsed = Time.time + 1.0f;

@@ -67,6 +67,8 @@ public class Const : MonoBehaviour {
 	[SerializeField] public float[] defenseForNPC;
 	[SerializeField] public float[] randomMinimumDamageModifierForNPC; // minimum value that NPC damage can be
 
+	[SerializeField] public HealthManager[] healthObjectsRegistration; // List of objects with health, used for fast application of damage in explosions
+
 	//System constants
 	public float doubleClickTime = 0.500f;
 	public float frobDistance = 5f;
@@ -136,10 +138,14 @@ public class Const : MonoBehaviour {
 	//Instance container variable
 	public static Const a;
 
+	// Private CONSTANTS
+	private int MAX_HEALTHOBJECTS = 1024;
+	private int TARGET_FPS = 60;
+
 	// Instantiate it so that it can be accessed globally. MOST IMPORTANT PART!!
 	// =========================================================================
 	void Awake() {
-		Application.targetFrameRate = 60;
+		Application.targetFrameRate = TARGET_FPS;
 		a = this;
 		//for (int i=0;i<Display.displays.Length;i++) {
 		//	Display.displays[i].Activate();
@@ -602,7 +608,7 @@ public class Const : MonoBehaviour {
 			PlayerHealth ph = pCap.GetComponent<PlayerHealth>();
 			PlayerEnergy pe = pCap.GetComponent<PlayerEnergy>();
 			PlayerMovement pm = pCap.GetComponent<PlayerMovement>();
-			PlayerPatchScript pp = pCap.GetComponent<PlayerPatchScript>();
+			PlayerPatch pp = pCap.GetComponent<PlayerPatch>();
 			tr = pCap.transform;
 			MouseLookScript ml = playerMainCamera.GetComponent<MouseLookScript>();
 			trml = playerMainCamera.transform;
@@ -618,7 +624,7 @@ public class Const : MonoBehaviour {
 
 			line = playerGameObjects[i].GetInstanceID().ToString();
 			line += "|" + Const.a.playerName;
-			line += "|" + ph.health.ToString("0000.00000");
+			line += "|" + ph.hm.health.ToString("0000.00000");
 			line += "|" + pe.energy.ToString("0000.00000");
 			line += "|" + pm.currentCrouchRatio.ToString("0000.00000");
 			line += "|" + pm.bodyState.ToString();
@@ -705,7 +711,7 @@ public class Const : MonoBehaviour {
 		PlayerHealth ph = pCap.GetComponent<PlayerHealth>();
 		PlayerEnergy pe = pCap.GetComponent<PlayerEnergy>();
 		PlayerMovement pm = pCap.GetComponent<PlayerMovement>();
-		PlayerPatchScript pp = pCap.GetComponent<PlayerPatchScript>();
+		PlayerPatch pp = pCap.GetComponent<PlayerPatch>();
 		Transform tr = pCap.transform;
 		MouseLookScript ml = playerMainCamera.GetComponent<MouseLookScript>();
 		Transform trml = playerMainCamera.transform;
@@ -720,7 +726,7 @@ public class Const : MonoBehaviour {
 		HardwareInventory hi = playerInventory.GetComponent<HardwareInventory>();
 
 		Const.a.playerName = entries[index]; index++;
-		ph.health = GetFloatFromString(entries[index],currentline); index++;
+		ph.hm.health = GetFloatFromString(entries[index],currentline); index++;
 		pe.energy = GetFloatFromString(entries[index],currentline); index++;
 		pm.currentCrouchRatio = GetFloatFromString(entries[index],currentline); index++;
 		pm.bodyState = GetIntFromString(entries[index],currentline,"savegame",index); index++;
@@ -920,9 +926,19 @@ public class Const : MonoBehaviour {
 		mainmenuMusic.volume = (AudioVolumeMusic/100f);
 	}
 
+	public void RegisterObjectWithHealth(HealthManager hm) {
+		for (int i=0;i<MAX_HEALTHOBJECTS;i++) {
+			if (healthObjectsRegistration[i] == null) {
+				healthObjectsRegistration[i] = hm;
+				return;
+			}
+			if (i == (MAX_HEALTHOBJECTS - 1)) Debug.Log("WARNING: Could not register object with health.  Hit limit of " + MAX_HEALTHOBJECTS.ToString() + ".");
+		}
+	}
+
 	private int AssignConfigInt(string section, string keyname) {
 		int inputInt = -1;
-		string inputCapture = "";
+		string inputCapture = System.String.Empty;
 		inputCapture = INIWorker.IniReadValue(section,keyname);
 		if (inputCapture == null) inputCapture = "NULL";
 		bool parsed = Int32.TryParse(inputCapture, out inputInt);
@@ -932,7 +948,7 @@ public class Const : MonoBehaviour {
 
 	private bool AssignConfigBool(string section, string keyname) {
 		int inputInt = -1;
-		string inputCapture = "";
+		string inputCapture = System.String.Empty;
 		inputCapture = INIWorker.IniReadValue(section,keyname);
 		if (inputCapture == null) inputCapture = "NULL";
 		bool parsed = Int32.TryParse(inputCapture, out inputInt);
@@ -1001,4 +1017,6 @@ public class Const : MonoBehaviour {
 
 		return false;
 	}
+
+	public static float AngleInDeg(Vector3 vec1, Vector3 vec2) { return ((Mathf.Atan2(vec2.y - vec1.y, vec2.x - vec1.x)) * (180 / Mathf.PI)); }
 }

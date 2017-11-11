@@ -9,7 +9,7 @@ public class Radiation : MonoBehaviour {
 	public int numPlayers = 0;
 
 	void OnTriggerEnter (Collider col) {
-		if ((col.gameObject.tag == "Player") && (col.gameObject.GetComponent<PlayerHealth>().health > 0f)) {
+		if ((col.gameObject.tag == "Player") && (col.gameObject.GetComponent<PlayerHealth>().hm.health > 0f)) {
 			numPlayers++;
 			col.gameObject.GetComponent<PlayerHealth>().radiationArea = true;
 			col.gameObject.SendMessage("GiveRadiation",radiationAmount,SendMessageOptions.DontRequireReceiver);
@@ -18,7 +18,7 @@ public class Radiation : MonoBehaviour {
 	}
 
 	void  OnTriggerStay (Collider col) {
-		if ((col.gameObject.tag == "Player") && (col.gameObject.GetComponent<PlayerHealth>().health > 0f) && (radFinished < Time.time)) {
+		if ((col.gameObject.tag == "Player") && (col.gameObject.GetComponent<PlayerHealth>().hm.health > 0f) && (radFinished < Time.time)) {
 			col.gameObject.GetComponent<PlayerHealth>().radiationArea = true;
 			col.gameObject.SendMessage("GiveRadiation",radiationAmount,SendMessageOptions.DontRequireReceiver);
 			radFinished = Time.time + (intervalTime);
@@ -26,7 +26,7 @@ public class Radiation : MonoBehaviour {
 	}
 
 	void OnTriggerExit (Collider col) {
-		if ((col.gameObject.tag == "Player") && (col.gameObject.GetComponent<PlayerHealth>().health > 0f)) {
+		if ((col.gameObject.tag == "Player") && (col.gameObject.GetComponent<PlayerHealth>().hm.health > 0f)) {
 			col.gameObject.GetComponent<PlayerHealth>().radiationArea = false;
 			numPlayers--;
 			if (numPlayers == 0) radFinished = Time.time;  // reset so re-triggering is instant

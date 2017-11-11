@@ -223,19 +223,20 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		}
 
-		// Frob if the cursor is not on the UI
+		// Frob/use if the cursor is not on the UI
 		if (!GUIState.a.isBlocking) {
 			if (!PauseScript.a.paused) {
 				currentButton = null;
 				if(GetInput.a.Use()) {
 					if (!holdingObject) {
-						// Send out Frob raycast
+						// Send out Frob/use raycast to use whatever is under the cursor, if in reach
 						RaycastHit hit = new RaycastHit();
-						if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out hit, frobDistance)) {
+						Vector3 cursorPoint = new Vector3(MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2),MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2),0); 
+						cursorPoint.y = Screen.height - cursorPoint.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+						if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out hit, frobDistance)) {
+							//Debug.Log("Screen.width = " + Screen.width.ToString() + ", Screen.height = " + Screen.height.ToString() +", Camera.pixelWidth = " + playerCamera.pixelWidth.ToString() + ", Camera.pixelHeight = " + playerCamera.pixelHeight.ToString() + ", drawTexture.x = " +MouseCursor.drawTexture.x.ToString() + ", drawTexture.y = " + MouseCursor.drawTexture.y.ToString());
 							//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
-							// TIP: Use Camera.main.ViewportPointToRay for center of screen
-							if (hit.collider == null)
-								return;
+							if (hit.collider == null) return;
 						
 							// Check if object is usable then use it
 							if (hit.collider.tag == "Usable") {
@@ -307,10 +308,11 @@ public class MouseLookScript : MonoBehaviour {
 						// 4 Search contents button
 						if (!PauseScript.a.paused) {
 							switch(GUIState.a.overButtonType) {
-							case GUIState.ButtonType.Weapon:
-	                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<WeaponButtonScript>().useableItemIndex];
-	                                heldObjectIndex = currentButton.GetComponent<WeaponButtonScript>().useableItemIndex;
-									indexAdjustment = currentButton.GetComponent<WeaponButtonScript>().WepButtonIndex;
+								case GUIState.ButtonType.Weapon:
+									WeaponButton wepbut = currentButton.GetComponent<WeaponButton>();
+									cursorTexture = Const.a.useableItemsFrobIcons[wepbut.useableItemIndex];
+									heldObjectIndex = wepbut.useableItemIndex;
+									indexAdjustment = wepbut.WepButtonIndex;
 									WeaponInventory.WepInventoryInstance.weaponInventoryIndices[indexAdjustment] = -1;
 									WeaponInventory.WepInventoryInstance.weaponInventoryText[indexAdjustment] = "-";
 									indexAdjustment--;
@@ -319,12 +321,13 @@ public class MouseLookScript : MonoBehaviour {
 									WeaponCurrent.WepInstance.weaponCurrent = indexAdjustment;
 									GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 									break;
-							case GUIState.ButtonType.Grenade:
-	                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex];
-	                                heldObjectIndex = currentButton.GetComponent<GrenadeButtonScript>().useableItemIndex;
-	                                GrenadeInventory.GrenadeInvInstance.grenAmmo[currentButton.GetComponent<GrenadeButtonScript>().GrenButtonIndex]--;
-	                                if (GrenadeInventory.GrenadeInvInstance.grenAmmo[currentButton.GetComponent<GrenadeButtonScript>().GrenButtonIndex] <= 0) {
-										GrenadeInventory.GrenadeInvInstance.grenAmmo[currentButton.GetComponent<GrenadeButtonScript>().GrenButtonIndex] = 0; 
+								case GUIState.ButtonType.Grenade:
+									GrenadeButton grenbut = currentButton.GetComponent<GrenadeButton>();
+									cursorTexture = Const.a.useableItemsFrobIcons[grenbut.useableItemIndex];
+									heldObjectIndex = grenbut.useableItemIndex;
+									GrenadeInventory.GrenadeInvInstance.grenAmmo[grenbut.GrenButtonIndex]--;
+									if (GrenadeInventory.GrenadeInvInstance.grenAmmo[grenbut.GrenButtonIndex] <= 0) {
+										GrenadeInventory.GrenadeInvInstance.grenAmmo[grenbut.GrenButtonIndex] = 0; 
 										for (int i = 0; i < 7; i++) {
 	                                        if (GrenadeInventory.GrenadeInvInstance.grenAmmo[i] > 0) {
 	                                            mainInventory.GetComponent<GrenadeCurrent>().grenadeCurrent = i;
@@ -332,12 +335,13 @@ public class MouseLookScript : MonoBehaviour {
 	                                    }
 	                                }
 									break;
-							case GUIState.ButtonType.Patch:
-	                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<PatchButtonScript>().useableItemIndex];
-	                                heldObjectIndex = currentButton.GetComponent<PatchButtonScript>().useableItemIndex;
-									PatchInventory.PatchInvInstance.patchCounts[currentButton.GetComponent<PatchButtonScript>().PatchButtonIndex]--;
-									if (PatchInventory.PatchInvInstance.patchCounts[currentButton.GetComponent<PatchButtonScript>().PatchButtonIndex] <= 0) {
-										PatchInventory.PatchInvInstance.patchCounts[currentButton.GetComponent<PatchButtonScript>().PatchButtonIndex] = 0;
+								case GUIState.ButtonType.Patch:
+									PatchButton patbut = currentButton.GetComponent<PatchButton>();
+									cursorTexture = Const.a.useableItemsFrobIcons[patbut.useableItemIndex];
+									heldObjectIndex = patbut.useableItemIndex;
+									PatchInventory.PatchInvInstance.patchCounts[patbut.PatchButtonIndex]--;
+									if (PatchInventory.PatchInvInstance.patchCounts[patbut.PatchButtonIndex] <= 0) {
+										PatchInventory.PatchInvInstance.patchCounts[patbut.PatchButtonIndex] = 0;
 										GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 										for (int i = 0; i < 7; i++) {
 											if (PatchInventory.PatchInvInstance.patchCounts[i] > 0) {
@@ -346,22 +350,24 @@ public class MouseLookScript : MonoBehaviour {
 										}
 									}
 									break;
-							case GUIState.ButtonType.GeneralInv:
-	                                cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponent<GeneralInvButtonScript>().useableItemIndex];
-	                                heldObjectIndex = currentButton.GetComponent<GeneralInvButtonScript>().useableItemIndex;
-	                                GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[currentButton.GetComponent<GeneralInvButtonScript>().GeneralInvButtonIndex] = -1;
+								case GUIState.ButtonType.GeneralInv:
+									GeneralInvButton genbut = currentButton.GetComponent<GeneralInvButton>();
+									cursorTexture = Const.a.useableItemsFrobIcons[genbut.useableItemIndex];
+									heldObjectIndex = genbut.useableItemIndex;
+									GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[genbut.GeneralInvButtonIndex] = -1;
 	                                break;
-							case GUIState.ButtonType.Search:
-									int tempButtonindex = currentButton.GetComponent<SearchContainerButtonScript>().refIndex;
-									cursorTexture = Const.a.useableItemsFrobIcons[currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex]];
-									heldObjectIndex = currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex];
-									heldObjectCustomIndex = currentButton.GetComponentInParent<SearchButtonsScript>().customIndex[tempButtonindex];
+								case GUIState.ButtonType.Search:
+									SearchButton sebut = currentButton.GetComponentInParent<SearchButton>();
+									int tempButtonindex = currentButton.GetComponent<SearchContainerButton>().refIndex;
+									cursorTexture = Const.a.useableItemsFrobIcons[sebut.contents[tempButtonindex]];
+									heldObjectIndex = sebut.contents[tempButtonindex];
+									heldObjectCustomIndex = sebut.customIndex[tempButtonindex];
 									currentSearchItem.GetComponent<SearchableItem>().contents[tempButtonindex] = -1;
 									currentSearchItem.GetComponent<SearchableItem>().customIndex[tempButtonindex] = -1;
-									currentButton.GetComponentInParent<SearchButtonsScript>().contents[tempButtonindex] = -1;
-									currentButton.GetComponentInParent<SearchButtonsScript>().customIndex[tempButtonindex] = -1;
-									currentButton.GetComponentInParent<SearchButtonsScript>().GetComponentInParent<DataTab>().searchItemImages[tempButtonindex].SetActive(false);
-									currentButton.GetComponentInParent<SearchButtonsScript>().CheckForEmpty();
+									sebut.contents[tempButtonindex] = -1;
+									sebut.customIndex[tempButtonindex] = -1;
+									sebut.GetComponentInParent<DataTab>().searchItemImages[tempButtonindex].SetActive(false);
+									sebut.CheckForEmpty();
 									GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 									break;
 	                        }
@@ -406,7 +412,7 @@ public class MouseLookScript : MonoBehaviour {
                 WeaponInventory.WepInventoryInstance.weaponInventoryText[i] = WeaponInventory.WepInventoryInstance.weaponInvTextSource[(index - 36)];
                 WeaponCurrent.WepInstance.weaponCurrent = i;
 				WeaponCurrent.WepInstance.weaponIndex = index;
-                weaponButtonsManager.GetComponent<WeaponButtonsManager>().wepButtons[i].GetComponent<WeaponButtonScript>().useableItemIndex = index;
+                weaponButtonsManager.GetComponent<WeaponButtonsManager>().wepButtons[i].GetComponent<WeaponButton>().useableItemIndex = index;
 				if (!ammoClipBox.activeInHierarchy)
 					ammoClipBox.SetActive(true);
 				
@@ -962,7 +968,6 @@ public class MouseLookScript : MonoBehaviour {
 		curSearchScript.searchableInUse = true;
 		curSearchScript.currentPlayerCapsule = transform.parent.gameObject;  // Get playerCapsule of player this is attached to
 
-
 		// Fill container with random items, overrides manually entered data
 		if (curSearchScript.generateContents) {
 			if (curSearchScript.lookUpIndex >= 0) {
@@ -1006,7 +1011,7 @@ public class MouseLookScript : MonoBehaviour {
 
 	// Returns string for describing the walls/floors/etc. based on the material name
 	string GetTextureDescription (string material_name){
-		string retval = ""; // temporary string to hold the return value
+		string retval = System.String.Empty; // temporary string to hold the return value
 
 		if (material_name.StartsWith("+"))
 			retval = "normal screens";
@@ -1308,7 +1313,7 @@ public class MouseLookScript : MonoBehaviour {
 		case "stor1_6": retval = "structural pillar"; break;
 		case "stor1_7": retval = "industrial tiles"; break;
 		case "stor1_7d": retval = "industrial tiles"; break;
-		default: retval = ""; break;
+		default: retval = System.String.Empty; break;
 		}
 		return retval;
 	}

@@ -61,6 +61,11 @@ public class PauseScript : MonoBehaviour {
 		for (int j=0;j<enableUIOnPause.Length;j++) {
 			enableUIOnPause[j].SetActive(true);
 		}
+
+		PauseRigidbody[] prb = FindObjectsOfType<PauseRigidbody>();
+		for (int k=0;k<prb.Length;k++) {
+			prb[k].Pause();
+		}
 	}
 
 	void PauseDisable() {
@@ -76,6 +81,11 @@ public class PauseScript : MonoBehaviour {
 
 		for (int j=0;j<enableUIOnPause.Length;j++) {
 			enableUIOnPause[j].SetActive(false);
+		}
+
+		PauseRigidbody[] prb = FindObjectsOfType<PauseRigidbody>();
+		for (int k=0;k<prb.Length;k++) {
+			prb[k].UnPause();
 		}
 	}
 

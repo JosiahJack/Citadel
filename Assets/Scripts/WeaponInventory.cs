@@ -31,7 +31,7 @@ public class WeaponInventory : MonoBehaviour {
 				return "8n";
 			case 42:
 				// Pipe
-				return "";
+				return System.String.Empty;
 			case 44:
 				// Magpulse
 				return "RELOAD";

@@ -6,7 +6,7 @@ using System.Collections;
 public class GeneralInvText : MonoBehaviour {
 	Text text;
 	public int slotnum = 0;
-    public string blankText = "";
+    //public string blankText = System.String.Empty;
     private int referenceIndex = -1;
 	
 	void Start () {
@@ -14,11 +14,11 @@ public class GeneralInvText : MonoBehaviour {
 	}
 
 	void Update () {
-        referenceIndex = gameObject.transform.GetComponentInParent<GeneralInvButtonScript>().useableItemIndex;
+        referenceIndex = gameObject.transform.GetComponentInParent<GeneralInvButton>().useableItemIndex;
         if (referenceIndex > -1) {
             text.text = Const.a.useableItemsNameText[referenceIndex];
         } else {
-            text.text = blankText;
+            text.text = System.String.Empty;
         }
 
 		if (slotnum == GeneralInvCurrent.GeneralInvInstance.generalInvCurrent) {

@@ -18,7 +18,7 @@ public class RightNeuroButtonsScript : MonoBehaviour {
 	[SerializeField] private GameObject itemtextman;
 	[SerializeField] private LeftMFDTabs LeftTabManager; // assign in the editor
 	[SerializeField] private CenterMFDTabs CenterTabManager; // assign in the editor
-	[SerializeField] private TabButtonsScript LeftTabButtonsManager; // assign in the editor
+	[SerializeField] private TabButtons LeftTabButtonsManager; // assign in the editor
 	#endregion
 	
 	//private TabButtonsScript LeftMFDTabsScript = TabManager.GetComponent <TabButtonsScript> ();

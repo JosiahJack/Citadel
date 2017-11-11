@@ -18,62 +18,62 @@ public class TickIndicatorAnimation : MonoBehaviour {
 	}
 
 	void Update () {
-		if (healthIndicator) {
-			if (playerHealth.health > 176) {
-				indicator.overrideSprite = indicatorImages[0];
-			} else {
-				if (playerHealth.health > 88) {
-					indicator.overrideSprite = indicatorImages[1];
-				} else {
-					switch (tick) {
-					case 1: 
-						indicator.overrideSprite = indicatorImages[2];
-						break;
-					case 2: 
-						indicator.overrideSprite = indicatorImages[3];
-						break;
-					case 3: 
-						indicator.overrideSprite = indicatorImages[4];
-						break;
-					case 4: 
-						indicator.overrideSprite = indicatorImages[5];
-						break;
-					case 5: 
-						indicator.overrideSprite = indicatorImages[6];
-						break;
-					}
-				}
-			}
-		} else {
-			if (playerEnergy.energy > 176) {
-				indicator.overrideSprite = indicatorImages[0];
-			} else {
-				if (playerEnergy.energy > 88) {
-					indicator.overrideSprite = indicatorImages[1];
-				} else {
-					switch (tick) {
-					case 1: 
-						indicator.overrideSprite = indicatorImages[2];
-						break;
-					case 2: 
-						indicator.overrideSprite = indicatorImages[3];
-						break;
-					case 3: 
-						indicator.overrideSprite = indicatorImages[4];
-						break;
-					case 4: 
-						indicator.overrideSprite = indicatorImages[5];
-						break;
-					case 5: 
-						indicator.overrideSprite = indicatorImages[2]; // 1 less frame than the health indicator, hold the dark one twice as long
-						break;
-					}
-				}
-			}
-
-		}
-
 		if (nextthink < Time.time) {
+			if (healthIndicator) {
+				if (playerHealth.hm.health > 176) {
+					indicator.overrideSprite = indicatorImages[0];
+					//indicator.sprite = indicatorImages[0];
+				} else {
+					if (playerHealth.hm.health > 88) {
+						indicator.overrideSprite = indicatorImages[1];
+					} else {
+						switch (tick) {
+						case 1: 
+							indicator.overrideSprite = indicatorImages[2];
+							break;
+						case 2: 
+							indicator.overrideSprite = indicatorImages[3];
+							break;
+						case 3: 
+							indicator.overrideSprite = indicatorImages[4];
+							break;
+						case 4: 
+							indicator.overrideSprite = indicatorImages[5];
+							break;
+						case 5: 
+							indicator.overrideSprite = indicatorImages[6];
+							break;
+						}
+					}
+				}
+			} else {
+				if (playerEnergy.energy > 176) {
+					indicator.overrideSprite = indicatorImages[0];
+				} else {
+					if (playerEnergy.energy > 88) {
+						indicator.overrideSprite = indicatorImages[1];
+					} else {
+						switch (tick) {
+						case 1: 
+							indicator.overrideSprite = indicatorImages[2];
+							break;
+						case 2: 
+							indicator.overrideSprite = indicatorImages[3];
+							break;
+						case 3: 
+							indicator.overrideSprite = indicatorImages[4];
+							break;
+						case 4: 
+							indicator.overrideSprite = indicatorImages[5];
+							break;
+						case 5: 
+							indicator.overrideSprite = indicatorImages[2]; // 1 less frame than the health indicator, hold the dark one twice as long
+							break;
+						}
+					}
+				}
+
+			}
 			tick++;
 			if (tick > 5)
 				tick = 0;

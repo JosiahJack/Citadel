@@ -8,6 +8,8 @@ public class Door : MonoBehaviour {
 	public bool locked;
 	[Tooltip("If yes, door never closes automatically")]
 	public bool stayOpen;
+	[Tooltip("Should door start open (you should set stayOpen too!)")]
+	public bool startOpen;
 	[Tooltip("Should door start partially open")]
 	public bool ajar = false;
 	[Tooltip("If partially open, by what percentage")]
@@ -16,7 +18,6 @@ public class Door : MonoBehaviour {
 	public float useTimeDelay = 0.15f;
 	[Tooltip("Message to display when door is locked, e.g.'door is broken beyond repair'")]
 	public string lockedMessage = "Door is locked";
-	public int doorOpen;
 	[HideInInspector]
 	public bool blocked = false;
 	private float useFinished;
@@ -25,12 +26,21 @@ public class Door : MonoBehaviour {
 	private AudioSource SFX = null; // assign in the editor
 	[Tooltip("Door sound when opening or closing")]
 	public AudioClip SFXClip = null; // assign in the editor
-	enum doorState {Closed, Open, Closing, Opening};
+	public enum doorState {Closed, Open, Closing, Opening};
+	public doorState doorOpen;
 
 	void Start () {
-		doorOpen = (int) doorState.Closed;
 		anim = GetComponent<Animator>();
+		if (startOpen) {
+			doorOpen = doorState.Open;
+			anim.Play("IdleOpen");
+		} else {
+			doorOpen = doorState.Closed;
+			anim.Play("IdleClosed");
+		}
+		
 		SFX = GetComponent<AudioSource>();
+		useFinished = Time.time;
 	}
 
 	void Use (GameObject owner) {
@@ -38,32 +48,32 @@ public class Door : MonoBehaviour {
 		if (useFinished < Time.time) {
 			useFinished = Time.time + useTimeDelay;
 			if (!locked) {
-				if (doorOpen == (int) doorState.Open) {
+				if (doorOpen == doorState.Open) {
 					CloseDoor();
 					return;
 				}
 
-				if (doorOpen == (int) doorState.Closed){
+				if (doorOpen == doorState.Closed){
 					OpenDoor();
 					return;
 				}
 
-				if (doorOpen == (int) doorState.Opening) {
+				if (doorOpen == doorState.Opening) {
 					AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(0);
 					float playbackTime = asi.normalizedTime;
 					if (playbackTime > 0.15f && playbackTime < 0.85f) {
-						doorOpen = (int) doorState.Closing;
+						doorOpen = doorState.Closing;
 						anim.Play("DoorClose",0, 1f-playbackTime);
 						SFX.PlayOneShot(SFXClip);
 					}
 					return;
 				}
 
-				if (doorOpen == (int) doorState.Closing) {
+				if (doorOpen == doorState.Closing) {
 					AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(0);
 					float playbackTime = asi.normalizedTime;
 					if (playbackTime > 0.15f && playbackTime < 0.85f) {
-						doorOpen = (int) doorState.Opening;
+						doorOpen = doorState.Opening;
 						waitBeforeClose = Time.time + delay;
 						anim.Play("DoorOpen",0, 1f-playbackTime);
 						SFX.PlayOneShot(SFXClip);
@@ -71,7 +81,7 @@ public class Door : MonoBehaviour {
 					return;
 				}
 			} else {
-				Const.sprint(lockedMessage,owner);
+				Const.sprint(lockedMessage,owner); // tell the owner of the Use command that we are locked
 			}
 		}
 	}
@@ -85,7 +95,7 @@ public class Door : MonoBehaviour {
 
 	void OpenDoor() {
 		anim.speed = 1f;
-		doorOpen = (int) doorState.Opening;
+		doorOpen = doorState.Opening;
 		waitBeforeClose = Time.time + delay;
 		anim.Play("DoorOpen");
 		SFX.PlayOneShot(SFXClip);
@@ -93,18 +103,18 @@ public class Door : MonoBehaviour {
 
 	void CloseDoor() {
 		anim.speed = 1f;
-		doorOpen = (int) doorState.Closing;
+		doorOpen = doorState.Closing;
 		anim.Play("DoorClose");
 		SFX.PlayOneShot(SFXClip);
 	}
 
 	void Update () {
 		if (ajar) {
-			doorOpen = (int) doorState.Opening;
+			doorOpen = doorState.Opening;
 			anim.Play("DoorOpen",0, ajarPercentage);
 			anim.speed = 0f;
 		}
-
+			
 		if (blocked || (PauseScript.a != null && PauseScript.a.paused)) {
 			Blocked();
 		} else {
@@ -114,13 +124,13 @@ public class Door : MonoBehaviour {
 		}
 
 		if (anim.GetCurrentAnimatorStateInfo(0).IsName("IdleClosed"))
-			doorOpen = (int) doorState.Closed;  // Door is closed
+			doorOpen = doorState.Closed;  // Door is closed
 
 		if (anim.GetCurrentAnimatorStateInfo(0).IsName("IdleOpen"))
-			doorOpen = (int) doorState.Open; // Door is open
+			doorOpen = doorState.Open; // Door is open
 
 		if (Time.time > waitBeforeClose) {
-			if ((doorOpen == (int) doorState.Open) && (!stayOpen))
+			if ((doorOpen == doorState.Open) && (!stayOpen))
 				CloseDoor();
 		}
 	}

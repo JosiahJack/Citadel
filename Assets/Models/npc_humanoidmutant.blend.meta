@@ -3,7 +3,7 @@ guid: db9e30638e655d24394e3ba80f0d5dba
 timeCreated: 1468703241
 licenseType: Free
 ModelImporter:
-  serializedVersion: 19
+  serializedVersion: 22
   fileIDToRecycleName:
     100000: Armature
     100002: Bone
@@ -96,28 +96,48 @@ ModelImporter:
     7400008: Idle
     7400010: Mutant
     7400012: walk
+    7400014: Attack1
+    7400016: Pain
+    7400018: Walk
+    7400020: Run
     9500000: //RootNode
     13700000: Cube
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material
+    second: {fileID: 2100000, guid: ea290c7646ae53f43b646bf75e2142e8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material__npc_mutant_2__png
+    second: {fileID: 2100000, guid: 1672a59308b0da0498f0fa06ca9b07cf, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: Default Take
@@ -228,8 +248,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: attack
-      takeName: attack
+      name: Attack1
+      takeName: Attack
       firstFrame: -1
       lastFrame: 29
       wrapMode: 0
@@ -444,8 +464,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Hit
-      takeName: Hit
+      name: Pain
+      takeName: Pain
       firstFrame: -1
       lastFrame: 9
       wrapMode: 0
@@ -768,8 +788,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: walk
-      takeName: walk
+      name: Walk
+      takeName: Walk
       firstFrame: -1
       lastFrame: 39
       wrapMode: 0
@@ -875,13 +895,124 @@ ModelImporter:
       maskType: 0
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Run
+      takeName: Walk
+      firstFrame: -1
+      lastFrame: 39
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/Bone
+        weight: 1
+      - path: Armature/Bone/Bone_001
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_003
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_003/Bone_004
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_003/Bone_004/Bone_032
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_003/Bone_004/Bone_032/Bone_033
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_003/Bone_004/Bone_034
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_003/Bone_004/Bone_034/Bone_035
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_005
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_005/Bone_006
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_005/Bone_006/Bone_007
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_005/Bone_006/Bone_007/Bone_008
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_005/Bone_006/Bone_007/Bone_008/Bone_009
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_005/Bone_006/Bone_007/Bone_008/Bone_009/Bone_010
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_005/Bone_006/Bone_007/Bone_008/Bone_009/Bone_010/Bone_011
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_005/Bone_006/Bone_007/Bone_008/Bone_012
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_005/Bone_006/Bone_007/Bone_008/Bone_012/Bone_013
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_005/Bone_006/Bone_007/Bone_008/Bone_012/Bone_013/Bone_014
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_015
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_015/Bone_016
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_015/Bone_016/Bone_017
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_015/Bone_016/Bone_017/Bone_018
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_015/Bone_016/Bone_017/Bone_018/Bone_019
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_015/Bone_016/Bone_017/Bone_018/Bone_019/Bone_020
+        weight: 1
+      - path: Armature/Bone/Bone_001/Bone_002/Bone_015/Bone_016/Bone_017/Bone_018/Bone_019/Bone_020/Bone_021
+        weight: 1
+      - path: Armature/Bone_022
+        weight: 1
+      - path: Armature/Bone_022/Bone_023
+        weight: 1
+      - path: Armature/Bone_022/Bone_023/Bone_024
+        weight: 1
+      - path: Armature/Bone_022/Bone_023/Bone_024/Bone_025
+        weight: 1
+      - path: Armature/Bone_022/Bone_023/Bone_024/Bone_025/Bone_026
+        weight: 1
+      - path: Armature/Bone_027
+        weight: 1
+      - path: Armature/Bone_027/Bone_028
+        weight: 1
+      - path: Armature/Bone_027/Bone_028/Bone_029
+        weight: 1
+      - path: Armature/Bone_027/Bone_028/Bone_029/Bone_030
+        weight: 1
+      - path: Armature/Bone_027/Bone_028/Bone_029/Bone_030/Bone_031
+        weight: 1
+      - path: Cube
+        weight: 1
+      - path: Plane
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1.5
     meshCompression: 0
     addColliders: 0
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
@@ -897,9 +1028,11 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
+    normalCalculationMode: 0
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 2
     human: []
     skeleton: []
     armTwist: 0.5
@@ -910,7 +1043,10 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
   humanoidOversampling: 1

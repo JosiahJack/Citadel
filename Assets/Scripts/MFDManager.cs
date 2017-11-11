@@ -4,8 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class MFDManager : MonoBehaviour  {
-	public TabButtonsScript leftTC;
-	public TabButtonsScript rightTC;
+	public TabButtons leftTC;
+	public TabButtons rightTC;
 	public ItemTabManager itemTabLH;
 	public ItemTabManager itemTabRH;
 	public DataTab dataTabLH;

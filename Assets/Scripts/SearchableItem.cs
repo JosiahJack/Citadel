@@ -23,8 +23,6 @@ public class SearchableItem : MonoBehaviour {
 	[HideInInspector]
 	public GameObject currentPlayerCapsule;
 	private float disconnectDist;
-	[HideInInspector]
-	public GameObject playerCapsule;
 
 	void Start () {
 		disconnectDist = Const.a.frobDistance;
@@ -32,23 +30,7 @@ public class SearchableItem : MonoBehaviour {
 
 	void Update () {
 		if (searchableInUse) {
-			if (playerCapsule == null) {
-				playerCapsule = Const.a.player1.GetComponent<PlayerReferenceManager>().playerCapsule;
-				if (playerCapsule == null) {
-					playerCapsule = Const.a.player2.GetComponent<PlayerReferenceManager>().playerCapsule;
-					if (playerCapsule == null) {
-						playerCapsule = Const.a.player3.GetComponent<PlayerReferenceManager>().playerCapsule;
-						if (playerCapsule == null) {
-							playerCapsule = Const.a.player4.GetComponent<PlayerReferenceManager>().playerCapsule;
-							if (playerCapsule == null) {
-								return;
-							}
-						}
-					}
-				}
-			}
-
-			if (Vector3.Distance(playerCapsule.transform.position, gameObject.transform.position) > disconnectDist) {
+			if (Vector3.Distance(currentPlayerCapsule.transform.position, gameObject.transform.position) > disconnectDist) {
 				searchableInUse = false;
 				MFDManager.a.ClearDataTab();
 			}

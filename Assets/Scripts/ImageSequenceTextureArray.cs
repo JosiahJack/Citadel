@@ -16,6 +16,9 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	public string glowResourceFolder;
 	public float frameDelay = 0.35f;
 	public bool animateGlow = false;
+
+	private float tick;
+	private float tickFinished;
 	
 	void Awake() {
 		//Get a reference to the Material of the game object this script is attached to.
@@ -37,39 +40,24 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		for(int i=0; i < glowobjects.Length;i++) {
 			this.glowtextures[i] = (Texture)this.glowobjects[i];
 		}
+		tick = frameDelay;
+		tickFinished = Time.time + tick;
 	}
-	
+
 	void Update () {
-		//Call the 'PlayLoop' method as a coroutine with a float delay
-		StartCoroutine("PlayLoop", frameDelay);
+		if (tickFinished < Time.time) {
+			Think();
+			tickFinished = Time.time + tick;
+		}
+	}
+
+	void Think () {
+		frameCounter = (++frameCounter)%textures.Length;
+
 		//Set the material's texture to the current value of the frameCounter variable
 		goMaterial.mainTexture = textures[frameCounter];
 		if (animateGlow) {
 			goMaterial.SetTexture("_EmissionMap", glowtextures[frameCounter]);
 		}
 	}
-	
-	//The following methods return a IEnumerator so they can be yielded:
-	//A method to play the animation in a loop
-	IEnumerator PlayLoop(float delay) {
-		//Wait for the time defined at the delay parameter
-		yield return new WaitForSeconds(delay);  
-		//Advance one frame
-		frameCounter = (++frameCounter)%textures.Length;
-		//Stop this coroutine
-		StopCoroutine("PlayLoop");
-	}  
-	//A method to play the animation just once
-	IEnumerator Play(float delay) {
-		//Wait for the time defined at the delay parameter
-		yield return new WaitForSeconds(delay);  
-		
-		//If the frame counter isn't at the last frame
-		if(frameCounter < textures.Length-1) {
-			//Advance one frame
-			++frameCounter;
-		}
-		//Stop this coroutine
-		StopCoroutine("PlayLoop");
-	} 
 }

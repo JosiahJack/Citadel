@@ -8,16 +8,20 @@ public class LogContentsButtonsManager : MonoBehaviour {
 	public int currentLevelFolder;
 	public string[] logNames;
 	public int[] retrievedIndices;
+	public MultiMediaLogButton[] logRefButtons;
 
 	void Start() {
 		retrievedIndices = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 		logNames = GetLogNamesFromLevel(currentLevelFolder);
+		for (int i=0; i<15; i++) {
+			logRefButtons[i] = LogButtons[i].GetComponent<MultiMediaLogButton>();
+		}
 	}
 
 	void Update() {
 		for (int i=0; i<15; i++) {
 			LogButtonsText[i].text = logNames[i];
-			LogButtons[i].GetComponent<MultiMediaLogButtonScript>().logReferenceIndex = retrievedIndices[i];
+			logRefButtons[i].logReferenceIndex = retrievedIndices[i];
 			if (LogInventory.a.hasLog[retrievedIndices[i]]) {
 				LogButtons[i].SetActive(true);
 			} else {

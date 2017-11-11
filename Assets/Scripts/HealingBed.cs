@@ -21,10 +21,10 @@ public class HealingBed : MonoBehaviour {
 	void Use (GameObject owner) {
 		//if (security<minSecurityLevel) {
 			if (!broken) {
-				give = owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerHealth>().health + amount;
+				give = owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerHealth>().hm.health + amount;
 				if (give > 255f)
 					give = 255f;
-				owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerHealth>().health = give;
+				owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerHealth>().hm.health = give;
 				Const.sprint("Automatic healing process activated.",owner);
 				if (healingFXFlash != null) {
 					healingFXFlash.SetActive(true);

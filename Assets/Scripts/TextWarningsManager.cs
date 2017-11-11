@@ -24,7 +24,7 @@ public class TextWarningsManager : MonoBehaviour {
 		uniqueID = new int[warningTextGObjects.Length];
 		for (int i=0;i<warningTextGObjects.Length;i++) {
 			warningTexts[i] = warningTextGObjects[i].GetComponent<Text>();
-			if (warningTexts[i] != null) warningTexts[i].text = "";
+			if (warningTexts[i] != null) warningTexts[i].text = System.String.Empty;
 			initialized[i] = false;
 			finishedTime[i] = Time.time;
 			uniqueID[i] = -1;
@@ -49,9 +49,9 @@ public class TextWarningsManager : MonoBehaviour {
 		if (col == warningTextColor.yellow) warningTexts[setIndex].color = colyellow;
 
 		if (lifetime > -1)
-			warningLifeTimes[setIndex] = lifetime;
+			warningLifeTimes[setIndex] += lifetime;
 		else
-			warningLifeTimes[setIndex] = warningDefaultLifeTime;
+			warningLifeTimes[setIndex] += warningDefaultLifeTime;
 
 		finishedTime[setIndex] = Time.time + warningLifeTimes[setIndex];
 	}
@@ -60,7 +60,7 @@ public class TextWarningsManager : MonoBehaviour {
 		for (int i=0;i<warningTextGObjects.Length;i++) {
 			if (warningTexts[i].text != "" || warningTexts[i].text != " ") {
 				if (finishedTime[i] < Time.time) {
-					warningTexts[i].text = "";
+					warningTexts[i].text = System.String.Empty;
 					warningTextGObjects[i].SetActive(false);
 					continue;
 				}

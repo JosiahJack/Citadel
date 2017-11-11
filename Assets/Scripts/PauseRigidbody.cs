@@ -4,33 +4,25 @@ using System.Collections;
 public class PauseRigidbody : MonoBehaviour {
 	private Rigidbody rbody;
 	private Vector3 previousVelocity;
-	private bool justUnPaused = false;
-	private bool justPaused = false;
+	//public bool justUnPaused = false;
+	//public bool justPaused = false;
 
 	void Awake () {
 		rbody = GetComponent<Rigidbody>();
-		justPaused = true;
+		//justPaused = true;
+	}
+		
+	public void Pause () {
+		if (rbody != null) {
+			previousVelocity = rbody.velocity;
+			rbody.isKinematic = true;
+		}
 	}
 
-	void Update () {
-		if (PauseScript.a != null && PauseScript.a.paused) {
-			if (rbody != null) {
-				if (justPaused) {
-					justPaused = false;
-					justUnPaused = true;
-					previousVelocity = rbody.velocity;
-					rbody.isKinematic = true;
-				}
-			}
-		} else {
-			if (rbody != null) {
-				if (justUnPaused) {
-					justUnPaused = false;
-					justPaused = true;
-					rbody.isKinematic = false;
-					rbody.velocity = previousVelocity;
-				}
-			}
+	public void UnPause () {
+		if (rbody != null) {
+			rbody.isKinematic = false;
+			rbody.velocity = previousVelocity;
 		}
 	}
 }

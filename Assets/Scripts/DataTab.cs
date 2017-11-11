@@ -13,7 +13,7 @@ public class DataTab : MonoBehaviour {
 	public GameObject puzzleGrid;
 	public GameObject puzzleWire;
 	public Text headerText_text;
-	public SearchButtonsScript searchContainer;
+	public SearchButton searchContainer;
 	public Vector3 objectInUsePos;
 	public bool usingObject;
 	public Transform playerCapsuleTransform;
@@ -33,7 +33,7 @@ public class DataTab : MonoBehaviour {
 	public void Reset() {
 		usingObject = false;
 		headerText.SetActive(false);
-		headerText_text.text = "";
+		headerText_text.text = System.String.Empty;
 		noItemsText.SetActive(false);
 		blockedBySecurity.SetActive(false);
 		elevatorUIControl.SetActive(false);

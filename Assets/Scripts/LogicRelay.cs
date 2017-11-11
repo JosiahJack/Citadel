@@ -10,6 +10,10 @@ public class LogicRelay : MonoBehaviour {
 	private float delayFinished;
 	private GameObject playerCamera;
 
+	void Awake () {
+		delayFinished = 0f;
+	}
+
 	public void Targetted (GameObject owner) {
 		playerCamera = owner;  // set playerCamera to owner of the input (always should be the player camera)
 		if (delay > 0) {
@@ -24,13 +28,13 @@ public class LogicRelay : MonoBehaviour {
 			target.SendMessageUpwards("Targetted", playerCamera);
 		}
 		if (target1 != null) {
-			target.SendMessageUpwards("Targetted", playerCamera);
+			target1.SendMessageUpwards("Targetted", playerCamera);
 		}
 		if (target2 != null) {
-			target.SendMessageUpwards("Targetted", playerCamera);
+			target2.SendMessageUpwards("Targetted", playerCamera);
 		}
 		if (target3 != null) {
-			target.SendMessageUpwards("Targetted", playerCamera);
+			target3.SendMessageUpwards("Targetted", playerCamera);
 		}
 	}
 

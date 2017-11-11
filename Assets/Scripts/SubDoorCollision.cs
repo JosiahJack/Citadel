@@ -4,7 +4,6 @@ using System.Collections;
 public class SubDoorCollision : MonoBehaviour {
 	private GameObject parent;
 	private Door parentDoorScript;
-	enum doorState {Closed, Open, Closing, Opening};
 
 	void Awake () {
 		parent = transform.parent.gameObject;
@@ -12,7 +11,7 @@ public class SubDoorCollision : MonoBehaviour {
 	}
 
 	void OnCollisionEnter () {
-		if (parentDoorScript.doorOpen == (int) doorState.Closing)
+		if (parentDoorScript.doorOpen == Door.doorState.Closing)
 			parentDoorScript.blocked = true; //only block the door while closing
 	}
 

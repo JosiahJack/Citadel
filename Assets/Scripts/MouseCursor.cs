@@ -15,6 +15,7 @@ public class MouseCursor : MonoBehaviour {
     private float offsetY;
 	public bool justDroppedItemInHelper = false;
 	public static Rect drawTexture;
+	public Rect drawTextureInspector;
 	public static float cursorXmin;
 	public static float cursorYmin;
 	public static float cursorX;
@@ -29,11 +30,12 @@ public class MouseCursor : MonoBehaviour {
             offsetX = cursorSize / 2;
             offsetY = offsetX;
         }
-
+			
 		//Debug.Log("MouseCursor:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
 		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode || PauseScript.a.paused) {
             // Inventory Mode Cursor
 			drawTexture = new Rect(Input.mousePosition.x - offsetX, Screen.height - Input.mousePosition.y - offsetY, cursorSize, cursorSize);
+			drawTextureInspector = drawTexture;
 			cursorXmin = drawTexture.xMin;
 			cursorYmin = drawTexture.yMin;
 			cursorX = drawTexture.center.x;
@@ -46,6 +48,7 @@ public class MouseCursor : MonoBehaviour {
         } else {
             // Shoot Mode Cursor
 			drawTexture = new Rect((Screen.width/2) - offsetX, (Screen.height/2) - cursorSize, cursorSize, cursorSize);
+			drawTextureInspector = drawTexture;
 			cursorXmin = drawTexture.xMin;
 			cursorYmin = drawTexture.yMin;
 			cursorX = drawTexture.center.x;

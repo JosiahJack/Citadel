@@ -27,9 +27,9 @@ public class INIWorker {
         if (File.Exists(path)) {
             using (StreamReader sr = new StreamReader(path)) {
                 string line;
-                string theSection = "";
-                string theKey = "";
-                string theValue = "";
+                string theSection = System.String.Empty;
+                string theKey = System.String.Empty;
+                string theValue = System.String.Empty;
 				//while (!string.IsNullOrEmpty(line = sr.ReadLine())) {
 				while (!((line = sr.ReadLine()) == null)) {
                     line.Trim();
@@ -41,7 +41,7 @@ public class INIWorker {
                         theKey = ln[0].Trim();
                         theValue = ln[1].Trim();
                     }
-                    if (theSection == "" || theKey == "" || theValue == "")
+                    if (theSection == System.String.Empty || theKey == System.String.Empty || theValue == System.String.Empty)
                         continue;
                     PopulateIni(theSection, theKey, theValue); // Load the data from the ini into the dictionary
                 }
@@ -90,7 +90,7 @@ public class INIWorker {
 			bool init = true;
 			sw.WriteLine("// Citadel Configuration File");
             foreach (KeyValuePair<string, Dictionary<string, string>> sezioni in IniDictionary) {
-				if (!init) sw.WriteLine("");
+				if (!init) sw.WriteLine(System.String.Empty);
                 sw.WriteLine("[" + sezioni.Key.ToString() + "]");
 				init = false;
                 foreach (KeyValuePair<string, string> chiave in sezioni.Value) {

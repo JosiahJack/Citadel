@@ -13,7 +13,7 @@ public class MultiMediaTabManager : MonoBehaviour {
 		startingSubTab.SetActive(false);
 		secondaryTab1.SetActive(false);
 		secondaryTab2.SetActive(false);
-		headerLabel.GetComponent<Text>().text = "";
+		headerLabel.GetComponent<Text>().text = System.String.Empty;
 	}
 
 	public void OpenLogTableContents() {

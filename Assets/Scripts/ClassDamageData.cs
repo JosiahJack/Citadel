@@ -28,6 +28,7 @@ public class DamageData {
 	public int indexNPC;
 	public RaycastHit hit;
 	public Vector3 attacknormal;
+	public float impactVelocity;
 
 	public void ResetDamageData (DamageData damageData) {
 		damageData.owner = null;
@@ -52,5 +53,6 @@ public class DamageData {
 		damageData.other = null;
 		damageData.indexNPC = -1;
 		damageData.attacknormal = Vector3.zero;
+		damageData.impactVelocity = 0f;
 	}
 }
