@@ -21,7 +21,7 @@ public class GrenadeFrag : MonoBehaviour {
 
 	void OnMouseDown () {
 		GetComponent<ExplosionForce>().ExplodeOuter(transform.position);
-		GetComponent<ExplosionForce>().ExplodeInner(transform.position, nearforce, nearradius);
+		GetComponent<ExplosionForce>().ExplodeInner(transform.position, nearforce, nearradius, null);
         Instantiate(explosion, transform.position, Quaternion.identity);
         //GameObject expinst = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject;
 		//SFXSource = expinst.GetComponent<AudioSource>();

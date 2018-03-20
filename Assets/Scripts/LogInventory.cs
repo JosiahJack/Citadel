@@ -9,8 +9,7 @@ public class LogInventory : MonoBehaviour {
 	public int[] numLogsFromLevel;
 	public static LogInventory a;
 	public int lastAddedIndex = -1;
-	public GameObject logReaderContainer;
-	public GameObject multiMediaTab;
+	public CenterTabButtons centerTabButtonsControl;
 	private AudioSource SFXSource;
 	private AudioClip SFXClip;
 
@@ -29,7 +28,7 @@ public class LogInventory : MonoBehaviour {
 		}
 	}
 
-	void PlayLog (int logIndex) {
+	public void PlayLog (int logIndex) {
 		if (logIndex == -1) return;
 
 		// Play the log audio
@@ -37,10 +36,9 @@ public class LogInventory : MonoBehaviour {
 			SFXClip = Const.a.audioLogs[lastAddedIndex];
 			SFXSource.PlayOneShot(SFXClip);
 		}
-
-		MFDManager.a.OpenDataReader();
-		//multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogTextReader();
-		//logReaderContainer.GetComponent<LogTextReaderManager>().SendTextToReader(logIndex);
+			
+		MFDManager.a.SendAudioLogToDataTab(logIndex);
+		centerTabButtonsControl.TabButtonClickSilent(4);
 	}
 
 	void PlayLastAddedLog (int logIndex) {

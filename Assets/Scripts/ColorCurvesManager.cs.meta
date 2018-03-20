@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: ee2600b750fce1a45ac9050aed4f761c
+labels:
+- Image
+- Effect
+- Color
+- Correction
+- Curves
+- Editor
+timeCreated: 1443714588
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

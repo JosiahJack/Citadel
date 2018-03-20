@@ -3,7 +3,7 @@ guid: e8d10e3691e93a240ae72e6a667a56ff
 timeCreated: 1432575391
 licenseType: Free
 ModelImporter:
-  serializedVersion: 19
+  serializedVersion: 22
   fileIDToRecycleName:
     100000: Armature
     100002: Bone
@@ -13,6 +13,13 @@ ModelImporter:
     100010: Bone_004
     100012: Cylinder
     100014: //RootNode
+    100016: Base
+    100018: EndAffector
+    100020: LowerBodyJoint
+    100022: npc_hopper
+    100024: UpperBodyJoint
+    100026: WeldingNozzle
+    100028: Cube
     400000: Armature
     400002: Bone
     400004: Bone_001
@@ -21,7 +28,20 @@ ModelImporter:
     400010: Bone_004
     400012: Cylinder
     400014: //RootNode
+    400016: Base
+    400018: EndAffector
+    400020: LowerBodyJoint
+    400022: npc_hopper
+    400024: UpperBodyJoint
+    400026: WeldingNozzle
+    400028: Cube
+    2300000: npc_hopper
+    2300002: Cube
+    3300000: npc_hopper
+    3300002: Cube
     4300000: Cylinder
+    4300002: npc_hopper
+    4300004: Cube
     7400000: Default Take
     7400002: ArmatureAction
     7400004: Idle
@@ -31,27 +51,50 @@ ModelImporter:
     7400012: Pain3
     7400014: Shoot
     9500000: //RootNode
+    11100000: //RootNode
     13700000: Cylinder
+    13700002: npc_hopper
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: npc_hopper_material
+    second: {fileID: 2100000, guid: a2767314983f1ab449720a28cd7c0265, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: npc_hopper_material__hopper_png
+    second: {fileID: 2100000, guid: 987ddb09350b4d045a4b0758970e1c6e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: unnamed
+    second: {fileID: 2100000, guid: 4dd6e580ecc8a944c96f445075fabc97, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: Default Take
@@ -82,15 +125,17 @@ ModelImporter:
         weight: 1
       - path: Armature
         weight: 1
-      - path: Armature/Bone
+      - path: Armature/Base
         weight: 1
-      - path: Armature/Bone/Bone_001
+      - path: Armature/LowerBodyJoint
         weight: 1
-      - path: Armature/Bone/Bone_001/Bone_002
+      - path: Armature/LowerBodyJoint/UpperBodyJoint
         weight: 1
-      - path: Armature/Bone_003
+      - path: Armature/LowerBodyJoint/UpperBodyJoint/EndAffector
         weight: 1
-      - path: Cylinder
+      - path: Armature/LowerBodyJoint/UpperBodyJoint/EndAffector/WeldingNozzle
+        weight: 1
+      - path: npc_hopper
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
@@ -395,7 +440,10 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
@@ -411,9 +459,11 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 4
+    normalCalculationMode: 0
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 2
     human: []
     skeleton: []
     armTwist: 0.5
@@ -423,10 +473,13 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    rootMotionBoneName: 
+    rootMotionBoneName: Armature
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 1
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

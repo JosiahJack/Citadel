@@ -1,0 +1,201 @@
+fileFormatVersion: 2
+guid: b9611a0d909d64a42bdb744855690ed7
+timeCreated: 1510622635
+licenseType: Free
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: AssassinArmature
+    100002: AssassinCyborg
+    100004: Head
+    100006: HeadFace
+    100008: LeftArmElbow
+    100010: LeftArmFore
+    100012: LeftArmUpper
+    100014: LeftCollarBone
+    100016: LeftFoot
+    100018: LeftHand
+    100020: LeftHandThumb
+    100022: LeftHandWrist
+    100024: LeftHip
+    100026: LeftLegCalf
+    100028: LeftLegFemur
+    100030: LeftLegKnee
+    100032: Neck
+    100034: //RootNode
+    100036: Plane
+    100038: RightArmElbow
+    100040: RightArmFore
+    100042: RightArmUpper
+    100044: RightCollarBone
+    100046: RightFoot
+    100048: RightHand
+    100050: RightHandThumb
+    100052: RightHandWrist
+    100054: RightHip
+    100056: RightLegCalf
+    100058: RightLegFemur
+    100060: RightLegKnee
+    100062: SpineBelly
+    100064: SpineChest
+    100066: SpineLower
+    100068: SpineUpper
+    400000: AssassinArmature
+    400002: AssassinCyborg
+    400004: Head
+    400006: HeadFace
+    400008: LeftArmElbow
+    400010: LeftArmFore
+    400012: LeftArmUpper
+    400014: LeftCollarBone
+    400016: LeftFoot
+    400018: LeftHand
+    400020: LeftHandThumb
+    400022: LeftHandWrist
+    400024: LeftHip
+    400026: LeftLegCalf
+    400028: LeftLegFemur
+    400030: LeftLegKnee
+    400032: Neck
+    400034: //RootNode
+    400036: Plane
+    400038: RightArmElbow
+    400040: RightArmFore
+    400042: RightArmUpper
+    400044: RightCollarBone
+    400046: RightFoot
+    400048: RightHand
+    400050: RightHandThumb
+    400052: RightHandWrist
+    400054: RightHip
+    400056: RightLegCalf
+    400058: RightLegFemur
+    400060: RightLegKnee
+    400062: SpineBelly
+    400064: SpineChest
+    400066: SpineLower
+    400068: SpineUpper
+    2300000: Plane
+    3300000: Plane
+    4300000: Plane
+    4300002: AssassinCyborg
+    7400000: Default Take
+    7400002: ArmatureAction
+    9500000: //RootNode
+    13700000: AssassinCyborg
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_001__npc_cyborgassassin_png
+    second: {fileID: 2100000, guid: 33c1acfa6d4abb1409ba65ba0494ce13, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: None__npc_cyborgassassin_png
+    second: {fileID: 2100000, guid: 33c1acfa6d4abb1409ba65ba0494ce13, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 0
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Default Take
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 277
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

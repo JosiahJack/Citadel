@@ -93,14 +93,22 @@ public class Const : MonoBehaviour {
 	public float berserkDamageMultiplier = 4.0f;
 
 	//Pool references
-	public enum PoolType{DartImpacts,SparqImpacts,CameraExplosions,ProjEnemShot2,Sec2BotRotMuzBursts,Sec2BotMuzBursts,LaserLines};
-	public GameObject Pool_DartImpacts;
+	public enum PoolType {SparqImpacts,CameraExplosions,ProjEnemShot2,Sec2BotRotMuzBursts,Sec2BotMuzBursts,
+						LaserLines,SparksSmall,BloodSpurtSmall,BloodSpurtSmallYellow,BloodSpurtSmallGreen,
+						SparksSmallBlue,LaserLinesHopper,HopperImpact};
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
 	public GameObject Pool_ProjectilesEnemShot2;
 	public GameObject Pool_Sec2BotRotaryMuzzleBursts;
 	public GameObject Pool_Sec2BotMuzzleBursts;
 	public GameObject Pool_LaserLines;
+	public GameObject Pool_BloodSpurtSmall;
+	public GameObject Pool_SparksSmall;
+	public GameObject Pool_SparksSmallBlue;
+	public GameObject Pool_BloodSpurtSmallYellow;
+	public GameObject Pool_BloodSpurtSmallGreen;
+	public GameObject Pool_LaserLinesHopper;
+	public GameObject Pool_HopperImpact;
 	public GameObject statusBar;
    
 	//Config constants
@@ -134,6 +142,7 @@ public class Const : MonoBehaviour {
 	public bool InputInvertInventoryCycling;
 	public bool InputQuickItemPickup;
 	public bool InputQuickReloadWeapons;
+	public enum aiState{Idle,Walk,Run,Attack1,Attack2,Attack3,Pain,Dying,Dead,Inspect,Interacting};
 
 	//Instance container variable
 	public static Const a;
@@ -408,13 +417,13 @@ public class Const : MonoBehaviour {
 	}
 
 	public GameObject GetObjectFromPool(PoolType pool) {
-		GameObject poolContainer = Pool_DartImpacts;
+		GameObject poolContainer = Pool_SparksSmall;
 		string poolName = " ";
 
 		switch (pool) {
-		case PoolType.DartImpacts: 
-			poolContainer = Pool_DartImpacts;
-			poolName = "DartImpacts ";
+		case PoolType.SparksSmall: 
+			poolContainer = Pool_SparksSmall;
+			poolName = "SparksSmall ";
 			break;
 		case PoolType.SparqImpacts:
 			poolContainer = Pool_SparqImpacts;
@@ -439,6 +448,30 @@ public class Const : MonoBehaviour {
 		case PoolType.LaserLines:
 			poolContainer = Pool_LaserLines;
 			poolName = "LaserLines ";
+			break;
+		case PoolType.BloodSpurtSmall: 
+			poolContainer = Pool_BloodSpurtSmall;
+			poolName = "BloodSpurtSmall ";
+			break;
+		case PoolType.BloodSpurtSmallYellow: 
+			poolContainer = Pool_BloodSpurtSmallYellow;
+			poolName = "BloodSpurtSmallYellow ";
+			break;
+		case PoolType.BloodSpurtSmallGreen: 
+			poolContainer = Pool_BloodSpurtSmallGreen;
+			poolName = "BloodSpurtSmallGreen ";
+			break;
+		case PoolType.SparksSmallBlue: 
+			poolContainer = Pool_SparksSmallBlue;
+			poolName = "BloodSpurtSmall ";
+			break;
+		case PoolType.LaserLinesHopper: 
+			poolContainer = Pool_LaserLinesHopper;
+			poolName = "LaserLinesHopper ";
+			break;
+		case PoolType.HopperImpact: 
+			poolContainer = Pool_HopperImpact;
+			poolName = "HopperImpact ";
 			break;
 		}
 
@@ -540,12 +573,7 @@ public class Const : MonoBehaviour {
 		return take;
 	}
 
-	/*
 	public static void drawDebugLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
-		StartCoroutine( drawLine(start, end, color, duration));
-	}
-
-	IEnumerator drawLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
 		GameObject myLine = new GameObject ();
 		myLine.transform.position = start;
 		myLine.AddComponent<LineRenderer> ();
@@ -557,9 +585,8 @@ public class Const : MonoBehaviour {
 		lr.endWidth = 0.1f;
 		lr.SetPosition (0, start);
 		lr.SetPosition (1, end);
-		yield return new WaitForSeconds(duration);
-		GameObject.Destroy (myLine);
-	}*/
+		Destroy(myLine,duration);
+	}
 
 
 	// Save the Game
@@ -1008,6 +1035,31 @@ public class Const : MonoBehaviour {
 		case 3: return PerceptionLevel.Omniscient;
 		}
 		return PerceptionLevel.Low;
+	}
+
+	public static DamageData SetNPCDamageData (int NPCindex, aiState attackIndex, GameObject ownedBy) {
+		if (NPCindex < 0 || NPCindex > 23) {
+			Debug.Log("BUG: NPCindex set incorrectly on NPC.  Not 0 to 23 on NPC at: " + ownedBy.transform.position.x.ToString() + ", " + ownedBy.transform.position.y.ToString() + ", " + ownedBy.transform.position.z + ".");
+			return null;
+		}
+		DamageData dd = new DamageData(); 
+		// Attacker (self [a]) data
+		dd.owner = ownedBy;
+		switch (attackIndex) {
+		case aiState.Attack1:
+			dd.damage = Const.a.damageForNPC[NPCindex];
+			break;
+		case aiState.Attack2:
+			dd.damage = Const.a.damageForNPC2[NPCindex];
+			break;
+		case aiState.Attack3:
+			dd.damage = Const.a.damageForNPC3[NPCindex];
+			break;
+		default: Debug.Log("BUG: attackIndex not 0,1, or 2 on NPC! Damage set to 1."); dd.damage = 1f; break;
+		}
+		dd.penetration = 0;
+		dd.offense = 0;
+		return dd;
 	}
 
 	// Check if particular bit is 1 (ON/TRUE) in binary format of given integer

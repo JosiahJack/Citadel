@@ -8,6 +8,7 @@ public class MFDManager : MonoBehaviour  {
 	public TabButtons rightTC;
 	public ItemTabManager itemTabLH;
 	public ItemTabManager itemTabRH;
+	public enum handedness {LeftHand,RightHand};
 	public DataTab dataTabLH;
 	public DataTab dataTabRH;
 	public bool lastWeaponSideRH;
@@ -22,16 +23,26 @@ public class MFDManager : MonoBehaviour  {
 	public enum TabMSG {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,WirePuzzle};
 	public static MFDManager a;
 
+	private bool isRH;
+
 	// External to gameObject, assigned in Inspector
 	public GameObject searchFX;
 	public GameObject searchOriginContainer;
+	public WeaponMagazineCounter wepmagCounterLH;
+	public WeaponMagazineCounter wepmagCounterRH;
+	public GameObject logReaderContainer;
+	public GameObject multiMediaTab;
 
 	public void Awake () {
 		a = this;
 	}
 
-	public void OpenTab(int index, bool overrideToggling,TabMSG type,int intdata1) {
-		bool isRH = false;
+	public void OpenTab(int index, bool overrideToggling,TabMSG type,int intdata1, handedness side) {
+		if (side == handedness.LeftHand) {
+			isRH = false;
+		} else {
+			isRH = true;
+		}
 		switch (index) {
 			case 0: isRH = lastWeaponSideRH; break;
 			case 1: isRH = lastItemSideRH; break;
@@ -99,12 +110,12 @@ public class MFDManager : MonoBehaviour  {
 			dataTabRH.Reset();
 			dataTabRH.Search(name,contentCount,resultContents,resultsIndices);
 			searchFX.GetComponent<Animation>().Play();  // TODO: change search FX to move to correct positions
-			OpenTab(4,true,TabMSG.Search,0);
+			OpenTab(4,true,TabMSG.Search,0,handedness.LeftHand);
 		} else {
 			dataTabLH.Reset();
 			dataTabLH.Search(name,contentCount,resultContents,resultsIndices);
 			searchFX.GetComponent<Animation>().Play();
-			OpenTab(4,true,TabMSG.Search,0);
+			OpenTab(4,true,TabMSG.Search,0,handedness.LeftHand);
 		}
 	}
 
@@ -113,13 +124,41 @@ public class MFDManager : MonoBehaviour  {
 			// Send to RH tab
 			dataTabRH.Reset();
 			dataTabRH.GridPuzzle(states,types,gtype,start,end, width, height,colors);
-			OpenTab(4,true,TabMSG.GridPuzzle,0);
+			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.LeftHand);
 		} else {
 			// Send to LH tab
 			dataTabLH.Reset();
 			dataTabLH.GridPuzzle(states,types,gtype,start,end, width, height,colors);
-			OpenTab(4,true,TabMSG.GridPuzzle,0);
+			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.LeftHand);
 		}
+	}
+
+	public void SendPaperLogToDataTab(int index) {
+		if (lastDataSideRH) {
+			// Send to RH tab
+			dataTabRH.Reset();
+			OpenTab(4,true,TabMSG.AudioLog,index,handedness.LeftHand);
+		} else {
+			// Send to LH tab
+			dataTabLH.Reset();
+			OpenTab(4,true,TabMSG.AudioLog,index,handedness.LeftHand);
+		}
+		multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogTextReader();
+		logReaderContainer.GetComponent<LogTextReaderManager>().SendTextToReader(index);
+	}
+
+	public void SendAudioLogToDataTab(int index) {
+		if (lastDataSideRH) {
+			// Send to RH tab
+			dataTabRH.Reset();
+			OpenTab(4,true,TabMSG.AudioLog,index,handedness.LeftHand);
+		} else {
+			// Send to LH tab
+			dataTabLH.Reset();
+			OpenTab(4,true,TabMSG.AudioLog,index,handedness.LeftHand);
+		}
+		multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogTextReader();
+		logReaderContainer.GetComponent<LogTextReaderManager>().SendTextToReader(index);
 	}
 
 	public void ClearDataTab() {
@@ -162,11 +201,8 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
-	public void OpenDataReader() {
-		if (lastDataSideRH) {
-			
-		} else {
-			
-		}
+	public void UpdateHUDAmmoCounts(int amount) {
+		if (wepmagCounterLH != null) wepmagCounterLH.UpdateDigits(amount);
+		if (wepmagCounterRH != null) wepmagCounterRH.UpdateDigits(amount);
 	}
 }

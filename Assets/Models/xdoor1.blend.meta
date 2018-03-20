@@ -1,0 +1,359 @@
+fileFormatVersion: 2
+guid: a2e266ad303450d48a87bc4d34e1f8a3
+timeCreated: 1521312883
+licenseType: Free
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: xdoor1_frame
+    100004: xdoor1_frame_001
+    100006: xdoor1_frame_002
+    100008: xdoor1_frame_003
+    100010: xdoor1_frame_004
+    100012: xdoor1_frame_005
+    100014: xdoor1_frame_006
+    100016: xdoor1_frame_007
+    100018: xdoor1_frame_008
+    100020: xdoor1_v1
+    100022: xdoor1_v1_001
+    100024: xdoor1_v1_002
+    100026: xdoor1_v1_003
+    100028: xdoor1_v1_004
+    100030: xdoor1_v1_005
+    100032: xdoor1_v1_006
+    100034: xdoor1_v1_007
+    100036: xdoor1_v1_008
+    100038: xdoor1_v1_009
+    100040: xdoor1_v1_010
+    100042: xdoor1_v1_011
+    100044: xdoor1_v1_012
+    100046: xdoor1_v1_013
+    100048: xdoor1_v1_014
+    100050: xdoor1_v1_015
+    100052: xdoor1_v1_016
+    100054: xdoor1_v1_017
+    100056: xdoor1_v1_018
+    100058: xdoor1_v1_019
+    400000: //RootNode
+    400002: xdoor1_frame
+    400004: xdoor1_frame_001
+    400006: xdoor1_frame_002
+    400008: xdoor1_frame_003
+    400010: xdoor1_frame_004
+    400012: xdoor1_frame_005
+    400014: xdoor1_frame_006
+    400016: xdoor1_frame_007
+    400018: xdoor1_frame_008
+    400020: xdoor1_v1
+    400022: xdoor1_v1_001
+    400024: xdoor1_v1_002
+    400026: xdoor1_v1_003
+    400028: xdoor1_v1_004
+    400030: xdoor1_v1_005
+    400032: xdoor1_v1_006
+    400034: xdoor1_v1_007
+    400036: xdoor1_v1_008
+    400038: xdoor1_v1_009
+    400040: xdoor1_v1_010
+    400042: xdoor1_v1_011
+    400044: xdoor1_v1_012
+    400046: xdoor1_v1_013
+    400048: xdoor1_v1_014
+    400050: xdoor1_v1_015
+    400052: xdoor1_v1_016
+    400054: xdoor1_v1_017
+    400056: xdoor1_v1_018
+    400058: xdoor1_v1_019
+    2300000: xdoor1_frame
+    2300002: xdoor1_frame_001
+    2300004: xdoor1_frame_002
+    2300006: xdoor1_frame_003
+    2300008: xdoor1_frame_004
+    2300010: xdoor1_frame_005
+    2300012: xdoor1_frame_006
+    2300014: xdoor1_frame_007
+    2300016: xdoor1_frame_008
+    2300018: xdoor1_v1
+    2300020: xdoor1_v1_001
+    2300022: xdoor1_v1_002
+    2300024: xdoor1_v1_003
+    2300026: xdoor1_v1_004
+    2300028: xdoor1_v1_005
+    2300030: xdoor1_v1_006
+    2300032: xdoor1_v1_007
+    2300034: xdoor1_v1_008
+    2300036: xdoor1_v1_009
+    2300038: xdoor1_v1_010
+    2300040: xdoor1_v1_011
+    2300042: xdoor1_v1_012
+    2300044: xdoor1_v1_013
+    2300046: xdoor1_v1_014
+    2300048: xdoor1_v1_015
+    2300050: xdoor1_v1_016
+    2300052: xdoor1_v1_017
+    2300054: xdoor1_v1_018
+    2300056: xdoor1_v1_019
+    3300000: xdoor1_frame
+    3300002: xdoor1_frame_001
+    3300004: xdoor1_frame_002
+    3300006: xdoor1_frame_003
+    3300008: xdoor1_frame_004
+    3300010: xdoor1_frame_005
+    3300012: xdoor1_frame_006
+    3300014: xdoor1_frame_007
+    3300016: xdoor1_frame_008
+    3300018: xdoor1_v1
+    3300020: xdoor1_v1_001
+    3300022: xdoor1_v1_002
+    3300024: xdoor1_v1_003
+    3300026: xdoor1_v1_004
+    3300028: xdoor1_v1_005
+    3300030: xdoor1_v1_006
+    3300032: xdoor1_v1_007
+    3300034: xdoor1_v1_008
+    3300036: xdoor1_v1_009
+    3300038: xdoor1_v1_010
+    3300040: xdoor1_v1_011
+    3300042: xdoor1_v1_012
+    3300044: xdoor1_v1_013
+    3300046: xdoor1_v1_014
+    3300048: xdoor1_v1_015
+    3300050: xdoor1_v1_016
+    3300052: xdoor1_v1_017
+    3300054: xdoor1_v1_018
+    3300056: xdoor1_v1_019
+    4300000: xdoor1_v1_019
+    4300002: xdoor1_frame_008
+    4300004: xdoor1_frame_007
+    4300006: xdoor1_v1_018
+    4300008: xdoor1_v1_017
+    4300010: xdoor1_v1_016
+    4300012: xdoor1_v1_015
+    4300014: xdoor1_v1_014
+    4300016: xdoor1_v1_013
+    4300018: xdoor1_v1_012
+    4300020: xdoor1_v1_011
+    4300022: xdoor1_frame_006
+    4300024: xdoor1_frame_005
+    4300026: xdoor1_v1_010
+    4300028: xdoor1_v1_009
+    4300030: xdoor1_frame_004
+    4300032: xdoor1_frame_003
+    4300034: xdoor1_v1_008
+    4300036: xdoor1_v1_007
+    4300038: xdoor1_v1_006
+    4300040: xdoor1_v1_005
+    4300042: xdoor1_v1_004
+    4300044: xdoor1_v1_003
+    4300046: xdoor1_v1_002
+    4300048: xdoor1_v1_001
+    4300050: xdoor1_frame_002
+    4300052: xdoor1_frame_001
+    4300054: xdoor1_v1
+    4300056: xdoor1_frame
+    7400000: IdleOpen
+    7400002: IdleClosed
+    7400004: Open
+    7400006: Close
+    9500000: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material__door_x1_png
+    second: {fileID: 2100000, guid: f25b6de6d7bf294418846b41374a6f5a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: None__door_x1_png
+    second: {fileID: 2100000, guid: f25b6de6d7bf294418846b41374a6f5a, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 0
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: IdleOpen
+      takeName: Default Take
+      firstFrame: 29
+      lastFrame: 30
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: IdleClosed
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Open
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 29
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Close
+      takeName: Default Take
+      firstFrame: 30
+      lastFrame: 65
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -15,8 +15,11 @@ public class WeaponFire : MonoBehaviour {
 	public float[] args;
 	public GameObject bullet;
 	public GameObject impactEffect;
+	public WeaponMagazineCounter wepmagCounter;
 	public Camera playerCamera; // assign in the editor
 	public Camera gunCamera; // assign in the editor
+	public PlayerEnergy curEnergy;
+	public GameObject playerCapsule;
 	public WeaponCurrent currentWeapon; // assign in the editor
 	[SerializeField] private AudioSource SFX = null; // assign in the editor
 	[SerializeField] private AudioClip SFXMark3Fire; // assign in the editor
@@ -42,16 +45,19 @@ public class WeaponFire : MonoBehaviour {
 	//[SerializeField] private AudioClip SFXSparqBeamOverFire; // assign in the editor
 	[SerializeField] private AudioClip SFXStungunFire; // assign in the editor
 	[SerializeField] private AudioClip SFXEmpty; // assign in the editor
-	[SerializeField] private AudioClip SFXEmptyEnergy; // assign in the editor
 	[SerializeField] private AudioClip SFXRicochet; // assign in the editor
 	private float clipEnd;
 	public Animator anim; // assign in the editor
 	public DamageData damageData;
 	private RaycastHit tempHit;
 	private Vector3 tempVec;
+	private bool useBlood;
+	private HealthManager tempHM;
 
 	void Awake () {
 		damageData = new DamageData();
+		tempHit = new RaycastHit();
+		tempVec = new Vector3(0f, 0f, 0f);
 	}
 
 	void GetWeaponData (int index) {
@@ -77,138 +83,201 @@ public class WeaponFire : MonoBehaviour {
 		damageData.berserkActive = berserkActive;
 	}
 
+	public static int Get16WeaponIndexFromConstIndex (int index) {
+		int i = -1;
+		switch(index) {
+		case 36:
+			//Mark3 Assault Rifle
+			i = 0; break;
+		case 37:
+			//ER-90 Blaster
+			i = 1; break;
+		case 38:
+			//SV-23 Dartgun
+			i = 2; break;
+		case 39:
+			//AM-27 Flechette
+			i = 3; break;
+		case 40:
+			//RW-45 Ion Beam
+			i = 4; break;
+		case 41:
+			//TS-04 Laser Rapier
+			i = 5; break;
+		case 42:
+			//Lead Pipe
+			i = 6; break;
+		case 43:
+			//Magnum 2100
+			i = 7; break;
+		case 44:
+			//SB-20 Magpulse
+			i = 8; break;
+		case 45:
+			//ML-41 Pistol
+			i = 9; break;
+		case 46:
+			//LG-XX Plasma Rifle
+			i = 10; break;
+		case 47:
+			//MM-76 Railgun
+			i = 11; break;
+		case 48:
+			//DC-05 Riotgun
+			i = 12; break;
+		case 49:
+			//RF-07 Skorpion
+			i = 13; break;
+		case 50:
+			//Sparq Beam
+			i = 14; break;
+		case 51:
+			//DH-07 Stungun
+			i = 15; break;
+		}
+		return i;
+	}
+
 	void  Update() {
 		if (!PauseScript.a.paused) {
 			if (!GUIState.a.isBlocking && !playerCamera.GetComponent<MouseLookScript>().holdingObject) {
-				int i = -1;
-				switch(currentWeapon.weaponIndex) {
-				case 36:
-					//Mark3 Assault Rifle
-					i = 0; break;
-				case 37:
-					//ER-90 Blaster
-					i = 1; break;
-				case 38:
-					//SV-23 Dartgun
-					i = 2; break;
-				case 39:
-					//AM-27 Flechette
-					i = 3; break;
-				case 40:
-					//RW-45 Ion Beam
-					i = 4; break;
-				case 41:
-					//TS-04 Laser Rapier
-					i = 5; break;
-				case 42:
-					//Lead Pipe
-					i = 6; break;
-				case 43:
-					//Magnum 2100
-					i = 7; break;
-				case 44:
-					//SB-20 Magpulse
-					i = 8; break;
-				case 45:
-					//ML-41 Pistol
-					i = 9; break;
-				case 46:
-					//LG-XX Plasma Rifle
-					i = 10; break;
-				case 47:
-					//MM-76 Railgun
-					i = 11; break;
-				case 48:
-					//DC-05 Riotgun
-					i = 12; break;
-				case 49:
-					//RF-07 Skorpion
-					i = 13; break;
-				case 50:
-					//Sparq Beam
-					i = 14; break;
-				case 51:
-					//DH-07 Stungun
-					i = 15; break;
-				}
-
+				int i = Get16WeaponIndexFromConstIndex (currentWeapon.weaponIndex);
 				if (i == -1) return;
+
 				GetWeaponData(i);
 				if (GetInput.a.Attack(Const.a.isFullAutoForWeapon[i]) && waitTilNextFire < Time.time) {
-					FireWeapon(i);
+					// Check weapon type and check ammo before firing
+					if (i == 5 || i == 6) {
+						// Pipe or Laser Rapier, attack without prejudice
+						FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
+					} else {
+						// Energy weapons so check energy level
+						if (i == 1 || i == 4 || i == 10 || i == 14 || i == 15) {
+							// Even if we have only 1 energy, we still fire with all we've got up to the energy level setting of course
+							if (curEnergy.energy > 0) FireWeapon (i, false); // weapon index, isSilent == false so play normal SFX
+						} else {
+							// Uses normal ammo, check versus alternate or normal to see if we have ammo then fire
+							if (currentWeapon.weaponIsAlternateAmmo) {
+								if (WeaponCurrent.WepInstance.currentMagazineAmount2[i] > 0) {
+									FireWeapon (i, false); // weapon index, isSilent == false so play normal SFX
+								} else {
+									SFX.PlayOneShot (SFXEmpty);
+								}
+							} else {
+								if (WeaponCurrent.WepInstance.currentMagazineAmount[i] > 0) {
+									FireWeapon (i, false); // weapon index, isSilent == false so play normal SFX
+								}else {
+									SFX.PlayOneShot (SFXEmpty);
+								}
+							}
+						}
+					}
+				}
+
+				if (GetInput.a.Reload ()) {
+					WeaponCurrent.WepInstance.Reload();
 				}
 			}
 		}
 	}
 
-	void FireWeapon (int index) {
+	// index is used to get recoil down at the bottom, otherwise the cases use currentWeapon.weaponIndex
+	void FireWeapon (int index, bool isSilent) {
 		damageData.ResetDamageData(damageData);
 		switch(currentWeapon.weaponIndex) {
 		case 36:
 			//Mark3 Assault Rifle
-			FireAssault(false);
+			FireAssault(isSilent);
 			break;
 		case 37:
 			//ER-90 Blaster
-			FireBlaster(false);
+			FireBlaster(isSilent);
 			break;
 		case 38:
 			//SV-23 Dartgun
-			FireDart(false);
+			FireDart(isSilent);
 			break;
 		case 39:
 			//AM-27 Flechette
-			FireFlechette(false);
+			FireFlechette(isSilent);
 			break;
 		case 40:
 			//RW-45 Ion Beam
-			FireIon(false);
+			FireIon(isSilent);
 			break;
 		case 41:
 			//TS-04 Laser Rapier
-			FireRapier(false);
+			FireRapier(isSilent);
 			break;
 		case 42:
 			//Lead Pipe
-			FirePipe(false);
+			FirePipe(isSilent);
 			break;
 		case 43:
 			//Magnum 2100
-			FireMagnum(false);
+			FireMagnum(isSilent);
 			break;
 		case 44:
 			//SB-20 Magpulse
-			FireMagpulse(false);
+			FireMagpulse(isSilent);
 			break;
 		case 45:
 			//ML-41 Pistol
-			FirePistol(false);
+			FirePistol(isSilent);
 			break;
 		case 46:
 			//LG-XX Plasma Rifle
-			FirePlasma(false);
+			FirePlasma(isSilent);
 			break;
 		case 47:
 			//MM-76 Railgun
-			FireRailgun(false);
+			FireRailgun(isSilent);
 			break;
 		case 48:
 			//DC-05 Riotgun
-			FireRiotgun(false);
+			FireRiotgun(isSilent);
 			break;
 		case 49:
 			//RF-07 Skorpion
-			FireSkorpion(false);
+			FireSkorpion(isSilent);
 			break;
 		case 50:
 			//Sparq Beam
-			FireSparq(false);
+			FireSparq(isSilent);
 			break;
 		case 51:
 			//DH-07 Stungun
-			FireStungun(false);
+			FireStungun(isSilent);
 			break;
 		}
+
+		// TAKE AMMO
+		// no weapons subtract more than 1 at a time in a shot, subtracting 1
+		// Check weapon type before subtracting ammo or energy
+		if (index == 5 || index == 6) {
+			// Pipe or Laser Rapier
+			// ammo is already 0, do nothing.  This is here to prevent subtracting ammo on the first slot of .wepAmmo[index] on the last else clause below
+		} else {
+			// Energy weapons so check energy level
+			if (index == 1 || index == 4 || index == 10 || index == 14 || index == 15) {
+				curEnergy.TakeEnergy (currentWeapon.weaponEnergySetting [index]);
+			} else {
+				if (currentWeapon.weaponIsAlternateAmmo) {
+					WeaponCurrent.WepInstance.currentMagazineAmount2[index]--;
+
+					// Update the counter
+					MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount2[index]);
+				} else {
+					WeaponCurrent.WepInstance.currentMagazineAmount[index]--;
+
+					// Update the counter
+					MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount[index]);
+				}
+			}
+		}
+
+
+
 		playerCamera.GetComponent<MouseLookScript>().Recoil(index);
 		if (currentWeapon.weaponIsAlternateAmmo) {
 			waitTilNextFire = Time.time + Const.a.delayBetweenShotsForWeapon2[index];
@@ -217,26 +286,55 @@ public class WeaponFire : MonoBehaviour {
 		}
 	}
 
-	//float centerx = (Screen.width/2);
-	//float centery = (Screen.height/2);
-	//float x,y;
-	//if (MouseCursor.cursorX > centerx) {x = MouseCursor.cursorX-centerx;} else {x = centerx-MouseCursor.cursorX;}
-	//if (MouseCursor.cursorY > centery) {y = MouseCursor.cursorY-centery;} else {y = centery-MouseCursor.cursorY;}
-	//float angx = (Mathf.Atan2(-damageData.range,-x)/Mathf.PI*180f) + 180f;
-	//float angy = (Mathf.Atan2(-damageData.range,-y)/Mathf.PI*180f) + 180f;
-	//Vector3 aimdir = new Vector3(angx,angy,0f);
-	//if (Physics.Raycast(playerCamera.ScreenPointToRay(new Vector3(MouseCursor.cursorX,Screen.height - MouseCursor.cursorY,playerCamera.nearClipPlane)), out hit, fireDistance)) {
-
 	bool DidRayHit () {
-		tempVec = new Vector3 (playerCamera.transform.position.x, playerCamera.transform.position.y + verticalOffset, playerCamera.transform.position.z);
-
-		Ray tempray = playerCamera.ScreenPointToRay(new Vector3(MouseCursor.cursorX,Screen.height - MouseCursor.cursorY,playerCamera.nearClipPlane));
-		if (Physics.Raycast(tempVec, tempray.direction, out tempHit, fireDistance)) {
+		tempHit = new RaycastHit();
+		tempVec = new Vector3(MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2),MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2)+verticalOffset,0); 
+		tempVec.y = Screen.height - tempVec.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+		if (Physics.Raycast(playerCamera.ScreenPointToRay(tempVec), out tempHit, fireDistance)) {
+			tempHM = tempHit.transform.gameObject.GetComponent<HealthManager>();
+			if (tempHit.transform.gameObject.GetComponent<HealthManager>() != null) {
+				useBlood = true;
+			}
 			return true;
 		}
 		return false;
-		//if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out tempHit, fireDistance)) {
-		//}
+	}
+
+	GameObject GetImpactType (HealthManager hm) {
+		if (hm == null) return Const.a.GetObjectFromPool(Const.PoolType.SparksSmall);
+		switch (hm.bloodType) {
+		case HealthManager.BloodType.None: return Const.a.GetObjectFromPool(Const.PoolType.SparksSmall);
+		case HealthManager.BloodType.Red: return Const.a.GetObjectFromPool(Const.PoolType.BloodSpurtSmall);
+		case HealthManager.BloodType.Yellow: return Const.a.GetObjectFromPool(Const.PoolType.BloodSpurtSmallYellow);
+		case HealthManager.BloodType.Green: return Const.a.GetObjectFromPool(Const.PoolType.BloodSpurtSmallGreen);
+		case HealthManager.BloodType.Robot: return Const.a.GetObjectFromPool(Const.PoolType.SparksSmallBlue);
+		}
+
+		return Const.a.GetObjectFromPool(Const.PoolType.SparksSmall);
+	}
+
+	void CreateStandardImpactEffects (bool onlyBloodIfHitHasHM) {
+		// Determine blood type of hit target and spawn corresponding blood particle effect from the Const.Pool
+		if (useBlood) {
+			GameObject impact = GetImpactType(tempHM);
+			if (impact != null) {
+				tempVec = tempHit.normal * hitOffset;
+				impact.transform.position = tempHit.point + tempVec;
+				impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
+				impact.SetActive(true);
+			}
+		} else {
+			// Allow for skipping adding sparks after special override impact effects per attack functions below
+			if (!onlyBloodIfHitHasHM) {
+				GameObject impact = Const.a.GetObjectFromPool(Const.PoolType.SparksSmall); //Didn't hit an object with a HealthManager script, use sparks
+				if (impact != null) {
+					tempVec = tempHit.normal * hitOffset;
+					impact.transform.position = tempHit.point + tempVec;
+					impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
+					impact.SetActive(true);
+				}
+			}
+		}
 	}
 
 	void FireAssault (bool silent) {
@@ -261,28 +359,23 @@ public class WeaponFire : MonoBehaviour {
 
 	void FireDart (bool silent) {
 		if (!silent) { SFX.clip = SFXDartFire; SFX.Play(); }
-
-		RaycastHit hit = new RaycastHit();
-		if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out hit, fireDistance)) {
-			//drawDebugLine(playerCamera.transform.position,hit.point,Color.cyan,10f);
-			GameObject impact = Const.a.GetObjectFromPool(Const.PoolType.DartImpacts);
-			if (impact != null) {
-				impact.transform.position = hit.point;
-				impact.SetActive(true);
-			}
-			if (hit.transform.gameObject.tag == "NPC") {
+		if (DidRayHit()) {
+			CreateStandardImpactEffects(false);
+			damageData.other = tempHit.transform.gameObject;
+			if (tempHit.transform.gameObject.tag == "NPC") {
 				damageData.isOtherNPC = true;
 			} else {
 				damageData.isOtherNPC = false;
 			}
-			damageData.hit = hit;
+			damageData.hit = tempHit;
 			damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
 			damageData.damage = Const.a.damagePerHitForWeapon[2];
-			//hit.transform.gameObject.SendMessage("TakeDamage", damageData,SendMessageOptions.DontRequireReceiver);
-			HealthManager hm = hit.transform.gameObject.GetComponent<HealthManager>();
+			damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+			damageData.owner = playerCapsule;
+			damageData.attackType = Const.AttackType.Projectile;
+			HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
 			if (hm == null) return;
-			float take = Const.a.GetDamageTakeAmount(damageData);
-			hm.health = hm.health - take;
+			hm.TakeDamage(damageData);
 		}
 	}
 
@@ -291,14 +384,28 @@ public class WeaponFire : MonoBehaviour {
 	}
 		
 	void FirePipe (bool silent) {
-		RaycastHit hit = new RaycastHit();
-		if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out hit, fireDistance)) {
+		if (DidRayHit()) {
 			anim.Play("Attack2");
 			if (!silent) {
 				SFX.clip = SFXPipeHit;
 				SFX.Play();
 			}
-			hit.transform.gameObject.SendMessage("TakeDamage", damageData,SendMessageOptions.DontRequireReceiver);
+			CreateStandardImpactEffects(true);
+			damageData.other = tempHit.transform.gameObject;
+			if (tempHit.transform.gameObject.tag == "NPC") {
+				damageData.isOtherNPC = true;
+			} else {
+				damageData.isOtherNPC = false;
+			}
+			damageData.hit = tempHit;
+			damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
+			damageData.damage = Const.a.damagePerHitForWeapon[6];
+			damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+			damageData.owner = playerCapsule;
+			damageData.attackType = Const.AttackType.Projectile;
+			HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
+			if (hm == null) return;
+			hm.TakeDamage(damageData);
 			return;
 		}
 		if (!silent) {
@@ -320,7 +427,22 @@ public class WeaponFire : MonoBehaviour {
 
 	void FirePistol (bool silent) {
 		if (!silent) { SFX.clip = SFXPistolFire; SFX.Play(); }
-
+		if (DidRayHit()) {
+			CreateStandardImpactEffects(false);
+			if (tempHit.transform.gameObject.tag == "NPC") {
+				damageData.isOtherNPC = true;
+			} else {
+				damageData.isOtherNPC = false;
+			}
+			damageData.hit = tempHit;
+			damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
+			damageData.damage = Const.a.damagePerHitForWeapon[9];
+			//hit.transform.gameObject.SendMessage("TakeDamage", damageData,SendMessageOptions.DontRequireReceiver);
+			HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
+			if (hm == null) return;
+			float take = Const.a.GetDamageTakeAmount(damageData);
+			hm.health = hm.health - take;
+		}
 	}
 
 	void FirePlasma (bool silent) {
@@ -353,8 +475,10 @@ public class WeaponFire : MonoBehaviour {
 			GameObject impact = Const.a.GetObjectFromPool(Const.PoolType.SparqImpacts);
 			if (impact != null) {
 				impact.transform.position = tempHit.point;
+				impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
 				impact.SetActive(true);
 			}
+			if (useBlood) CreateStandardImpactEffects(true);
 			damageData.hit = tempHit;
 			damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
 			damageData.damage = Const.a.damagePerHitForWeapon[14];
@@ -362,6 +486,8 @@ public class WeaponFire : MonoBehaviour {
 			GameObject lasertracer = Const.a.GetObjectFromPool(Const.PoolType.LaserLines);
 			if (lasertracer != null) {
 				lasertracer.SetActive(true);
+				tempVec = transform.position;
+				tempVec.y += verticalOffset;
 				lasertracer.GetComponent<LaserDrawing>().startPoint = tempVec;
 				lasertracer.GetComponent<LaserDrawing>().endPoint = tempHit.point;
 			}

@@ -5,8 +5,11 @@ using UnityEngine.AI;
 
 public class AIController : MonoBehaviour {
 	public int index = 0; // NPC reference index for looking up constants in tables in Const.cs
-	public enum aiState{Idle,Walk,Run,Attack1,Attack2,Attack3,Pain,Dying,Dead,Inspect,Interacting};
-	public aiState currentState;
+
+	public enum collisionType{None,Box,Capsule,Sphere,Mesh};
+	public collisionType normalCollider;
+	public collisionType corpseCollider;
+	public Const.aiState currentState;
 	public GameObject enemy;
 	public float yawspeed = 180f;
 	public float fieldOfViewAngle = 180f;
@@ -21,6 +24,8 @@ public class AIController : MonoBehaviour {
 	public float meleeRange = 2f;
 	public float proj1Range = 10f;
 	public float proj2Range = 20f;
+	public float attack3Force = 15f;
+	public float attack3Radius = 10f;
 	public float timeToPain = 2f; // time between going into pain animation
 	public float timeBetweenPain = 5f;
 	public float timeTillDead = 1.5f;
@@ -32,6 +37,7 @@ public class AIController : MonoBehaviour {
 	public float changeEnemyTime = 3f; // Time before enemy will switch to different attacker
 	public float impactMelee = 10f;
 	public float impactMelee2 = 10f;
+	public Vector3 explosionOffset;
 	public AudioClip SFXIdle;
 	public AudioClip SFXFootstep;
 	public AudioClip SFXSightSound;
@@ -53,42 +59,49 @@ public class AIController : MonoBehaviour {
 	public bool inSight = false;
 	public bool backTurned = false;
 	public bool goIntoPain = false;
+	public bool explodeOnAttack3 = false;
 	public float rangeToEnemy = 0f;
-	public GameObject idleIndicator;
-	public GameObject attackIndicator;
-	public GameObject huntIndicator;
-	public GameObject painIndicator;
+	public GameObject[] meleeDamageColliders;
 	[HideInInspector]
 	public GameObject attacker;
 
 	private bool hasSFX;
 	private bool firstSighting;
-	private bool attackDamageDone;
-	private bool attackDamage2Done;
 	private bool dyingSetup;
 	private bool ai_dying;
 	private bool ai_dead;
 	private int currentWaypoint;
 	private float idleTime;
-	private float timeTillMeleeDamageFinished;
-	private float timeTillMeleeDamage2Finished;
+	private float attack1SoundTime;
+	private float attack2SoundTime;
+	private float attack3SoundTime;
 	private float timeBetweenMeleeFinished;
-	//private float timeBetweenProj1Finished;
-	//private float timeBetweenProj2Finished;
 	private float timeTillEnemyChangeFinished;
 	private float timeTillDeadFinished;
 	private float timeTillPainFinished;
-	//private Vector3 resetPosition;
 	private AudioSource SFX;
 	private NavMeshAgent nav;
-	//private Animator anim;
 	private Rigidbody rbody;
 	private HealthManager healthManager;
-	private BoxCollider searchableCollider;
-	private CapsuleCollider collisionCapsule;
-
+	private BoxCollider boxCollider;
+	private CapsuleCollider capsuleCollider;
+	private SphereCollider sphereCollider;
+	private MeshCollider meshCollider;
 	private float tick;
 	private float tickFinished;
+	private bool hadEnemy;
+
+	// QUAKE based variables
+	public enum enemyRangeType {Melee,Near,Mid,Far};
+	public enum enemyMoveType {None,Walk,Fly,Swim,Noclip};
+	public enemyMoveType selfMoveType;
+	public GameObject goalEntity;
+	public GameObject sightEntity;
+	public Vector3 idealTransformForward;
+	public float attackFinished;
+	public float showHostileTime;
+	public float sightEntityTime;
+	public bool infront;
 
 	// Initialization and find components
 	void Awake () {
@@ -100,25 +113,40 @@ public class AIController : MonoBehaviour {
 		rbody = GetComponent<Rigidbody>();
 		rbody.isKinematic = false;
 		healthManager = GetComponent<HealthManager>();
-		searchableCollider = GetComponent<BoxCollider>();
-		searchableCollider.enabled = false;
-		collisionCapsule = GetComponent<CapsuleCollider>();
-		collisionCapsule.enabled = true;
-		currentState = aiState.Idle;
+
+		//Setup colliders for NPC and its corpse
+		if (normalCollider == corpseCollider) {
+			Debug.Log("ERROR: normalCollider and corpseCollider cannot be the same on NPC!");
+			return;
+		}
+		switch(normalCollider) {
+		case collisionType.Box: boxCollider = GetComponent<BoxCollider>(); boxCollider.enabled = true; break;
+		case collisionType.Sphere: sphereCollider = GetComponent<SphereCollider>(); sphereCollider.enabled = true; break;
+		case collisionType.Mesh: meshCollider = GetComponent<MeshCollider>(); meshCollider.enabled = true; break;
+		case collisionType.Capsule: capsuleCollider = GetComponent<CapsuleCollider>(); capsuleCollider.enabled = true; break;
+		}
+		switch(corpseCollider) {
+		case collisionType.Box: boxCollider = GetComponent<BoxCollider>(); boxCollider.enabled = false; break;
+		case collisionType.Sphere: sphereCollider = GetComponent<SphereCollider>(); sphereCollider.enabled = false; break;
+		case collisionType.Mesh: meshCollider = GetComponent<MeshCollider>(); meshCollider.enabled = false; break;
+		case collisionType.Capsule: capsuleCollider = GetComponent<CapsuleCollider>(); capsuleCollider.enabled = false; break;
+		}
+
+		currentState = Const.aiState.Idle;
 		currentWaypoint = 0;
 		enemy = null;
 		firstSighting = true;
 		inSight = false;
 		hasSFX = false;
-		attackDamageDone = false;
 		goIntoPain = false;
 		dyingSetup = false;
 		ai_dead = false;
 		ai_dying = false;
 		attacker = null;
 		idleTime = Time.time + Random.Range(3f,10f);
-		timeTillMeleeDamageFinished = Time.time;
-		timeTillMeleeDamage2Finished = Time.time;
+		attack1SoundTime = Time.time;
+		attack2SoundTime = Time.time;
+		attack3SoundTime = Time.time;
 		timeBetweenMeleeFinished = Time.time;
 		timeTillEnemyChangeFinished = Time.time;
 		//timeBetweenProj1Finished = Time.time;
@@ -132,9 +160,9 @@ public class AIController : MonoBehaviour {
 			hasSFX = true;
 
 		if (walkWaypoints.Length == 0 || walkWaypoints[0] == null) {
-			currentState = aiState.Idle; // No waypoints, stay put
+			currentState = Const.aiState.Idle; // No waypoints, stay put
 		} else {
-			currentState = aiState.Walk; // If waypoints are set, start walking them from the get go
+			currentState = Const.aiState.Walk; // If waypoints are set, start walking them from the get go
 		}
 			
 		//RuntimeAnimatorController ac = anim.runtimeAnimatorController;
@@ -146,6 +174,12 @@ public class AIController : MonoBehaviour {
 		//}
 		tick = 0.05f;
 		tickFinished = Time.time + tick;
+
+		//QUAKE based AI
+		attackFinished = Time.time + 1f;
+		showHostileTime = Time.time;
+		sightEntityTime = Time.time;
+		idealTransformForward = transform.forward;
 	}
 
 	void Update () {
@@ -158,6 +192,7 @@ public class AIController : MonoBehaviour {
 			nav.isStopped = false;
 		}
 
+		// Only think every tick seconds to save on CPU and prevent race conditions
 		if (tickFinished < Time.time) {
 			Think();
 			tickFinished = Time.time + tick;
@@ -165,41 +200,42 @@ public class AIController : MonoBehaviour {
 	}
 
 	void Think () {
-		if (healthManager.health <= 0 || healthManager.dead) {
+		if (healthManager.health <= 0) {
 			// If we haven't gone into dying and we aren't dead, going into dying
 			if (!ai_dying && !ai_dead) {
 				ai_dying = true; //no going back
-				currentState = aiState.Dying; //start to collapse in a heap, melt, explode, etc.
+				currentState = Const.aiState.Dying; //start to collapse in a heap, melt, explode, etc.
 			}
 		}
 
 		//check enemy health here
 
 		switch (currentState) {
-			case aiState.Idle: 			Idle(); 		break;
-			case aiState.Walk:	 		Walk(); 		break;
-			case aiState.Run: 			Run(); 			break;
-			case aiState.Attack1: 		Attack1(); 		break;
-			case aiState.Attack2: 		Attack2(); 		break;
-			case aiState.Attack3: 		Attack3(); 		break;
-			case aiState.Pain: 			Pain();			break;
-			case aiState.Dying: 		Dying(); 		break;
-			case aiState.Dead: 			Dead(); 		break;
-			case aiState.Inspect: 		Inspect(); 		break;
-			case aiState.Interacting: 	Interacting();	break;
+			case Const.aiState.Idle: 			Idle(); 		break;
+			case Const.aiState.Walk:	 		Walk(); 		break;
+			case Const.aiState.Run: 			Run(); 			break;
+			case Const.aiState.Attack1: 		Attack1(); 		break;
+			case Const.aiState.Attack2: 		Attack2(); 		break;
+			case Const.aiState.Attack3: 		Attack3(); 		break;
+			case Const.aiState.Pain: 			Pain();			break;
+			case Const.aiState.Dying: 		Dying(); 		break;
+			case Const.aiState.Dead: 			Dead(); 		break;
+			case Const.aiState.Inspect: 		Inspect(); 		break;
+			case Const.aiState.Interacting: 	Interacting();	break;
 			default: 					Idle(); 		break;
 		}
 
-		if (currentState == aiState.Dead || currentState == aiState.Dying) return; // Don't do any checks, we're dead
+		if (currentState == Const.aiState.Dead || currentState == Const.aiState.Dying) return; // Don't do any checks, we're dead
 
 		inSight = CheckIfPlayerInSight();
-		if (inSight) backTurned = CheckIfBackIsTurned();
+		//if (inSight) backTurned = CheckIfBackIsTurned();
+		if (inSight) infront = enemyInFront(enemy);
 		if (enemy != null) rangeToEnemy = Vector3.Distance(enemy.transform.position,transform.position);
 	}
 
 	bool CheckPain() {
 		if (goIntoPain) {
-			currentState = aiState.Pain;
+			currentState = Const.aiState.Pain;
 			if (attacker != null) {
 				if (timeTillEnemyChangeFinished < Time.time) {
 					timeTillEnemyChangeFinished = Time.time + changeEnemyTime;
@@ -215,23 +251,19 @@ public class AIController : MonoBehaviour {
 
 	void Idle() {
 		if (enemy != null) {
-			currentState = aiState.Run;
+			currentState = Const.aiState.Run;
 			return;
 		}
 		nav.isStopped = true;
 		//anim.SetBool("Walk",false);
 		//anim.SetBool("Pain",false);
-		if (idleTime < Time.time) {
+		if (idleTime < Time.time && SFXIdle) {
 			SFX.PlayOneShot(SFXIdle);
 			idleTime = Time.time + Random.Range(3f,10f);
 		}
 			
 		if (CheckPain()) return; // Go into pain if we just got hurt, data is sent by the HealthManager
 		CheckIfPlayerInSight();
-		huntIndicator.SetActive(false);
-		attackIndicator.SetActive(false);
-		idleIndicator.SetActive(true);
-		painIndicator.SetActive(false);
 	}
 
 	void Walk() {
@@ -240,16 +272,12 @@ public class AIController : MonoBehaviour {
 		int nextPointIndex = currentWaypoint++;
 		if ((nextPointIndex == walkWaypoints.Length) || (walkWaypoints[nextPointIndex] == null)) nextPointIndex = 0; // Wrap around
 		if (nextPointIndex == currentWaypoint) {
-			currentState = aiState.Idle;
+			currentState = Const.aiState.Idle;
 			return;  // Out of waypoints
 		}
 		if (CheckPain()) return; // Go into pain if we just got hurt, data is sent by the HealthManager
 		//anim.SetBool("Walk",true);
 		nav.SetDestination(walkWaypoints[nextPointIndex].transform.position);
-		huntIndicator.SetActive(false);
-		attackIndicator.SetActive(false);
-		idleIndicator.SetActive(false);
-		painIndicator.SetActive(false);
 	}
 
 	void Run() {
@@ -260,26 +288,22 @@ public class AIController : MonoBehaviour {
 			if (rangeToEnemy < meleeRange) {
 				if (hasMelee && !backTurned) {
 					nav.speed = meleeSpeed; 
-					attackDamageDone = false;
-					attackDamage2Done = false;
-					timeTillMeleeDamageFinished = Time.time + timeTillMeleeDamage;
-					timeTillMeleeDamage2Finished = Time.time + timeTillMeleeDamage2;
 					timeBetweenMeleeFinished = Time.time + timeBetweenMelee;
-					currentState = aiState.Attack1;
+					currentState = Const.aiState.Attack1;
 					return;
 				}
 			} else {
 				if (rangeToEnemy < proj1Range) {
 					if (hasProj1 && !backTurned) {
 						nav.speed = proj1Speed;
-						currentState = aiState.Attack2;
+						currentState = Const.aiState.Attack2;
 						return;
 					}
 				} else {
 					if (rangeToEnemy < proj2Range) {
 						if (hasProj2 && !backTurned) {
 							nav.speed = proj2Speed;
-							currentState = aiState.Attack3;
+							currentState = Const.aiState.Attack3;
 							return;
 						}
 					}
@@ -288,27 +312,30 @@ public class AIController : MonoBehaviour {
 			nav.isStopped = false;
 			nav.speed = runSpeed;
 			nav.SetDestination(enemy.transform.position);
-			huntIndicator.SetActive(true);
-			attackIndicator.SetActive(false);
-			idleIndicator.SetActive(false);
-			painIndicator.SetActive(false);
 		} else {
-			currentState = aiState.Idle;
+			currentState = Const.aiState.Idle;
 			return;
 		}
 	}
 
 	void Attack1() {
 		// Typically used for melee
-		huntIndicator.SetActive(false);
-		attackIndicator.SetActive(true);
-		idleIndicator.SetActive(false);
-		painIndicator.SetActive(false);
+		if (attack1SoundTime < Time.time && SFXAttack1) {
+			SFX.PlayOneShot(SFXAttack1);
+			attack1SoundTime = Time.time + timeBetweenMelee;
+		}
 
-		if (inSight) {
+		if (inSight && infront) {
+			for (int i=0;i<meleeDamageColliders.Length;i++) {
+				meleeDamageColliders[i].SetActive(true);
+				meleeDamageColliders[i].GetComponent<AIMeleeDamageCollider>().MeleeColliderSetup(index,meleeDamageColliders.Length,impactMelee,gameObject);
+			}
+		}
+
+		/*if (inSight) {
 			if ((timeTillMeleeDamageFinished < Time.time) && !attackDamageDone) {
 				if (rangeToEnemy < meleeRange) {
-					DamageData ddNPC = SetNPCDamageData(index, aiState.Attack1);
+					DamageData ddNPC = Const.SetNPCDamageData(index, Const.aiState.Attack1);
 					ddNPC.other = gameObject;
 					ddNPC.attacknormal = Vector3.Normalize(enemy.transform.position - transform.position);
 					ddNPC.impactVelocity = impactMelee;
@@ -321,7 +348,7 @@ public class AIController : MonoBehaviour {
 			}
 			if (twoMeleeHits && (timeTillMeleeDamage2Finished < Time.time) && !attackDamage2Done) {
 				if (rangeToEnemy < meleeRange) {
-					DamageData ddNPC = SetNPCDamageData(index, aiState.Attack1);
+					DamageData ddNPC = Const.SetNPCDamageData(index, Const.aiState.Attack1);
 					float take = Const.a.GetDamageTakeAmount(ddNPC);
 					ddNPC.other = gameObject;
 					ddNPC.attacknormal = Vector3.Normalize(enemy.transform.position - transform.position);
@@ -332,40 +359,46 @@ public class AIController : MonoBehaviour {
 					attackDamage2Done = true;
 				}
 			}
-		}
+		}*/
 
 		if (timeBetweenMeleeFinished < Time.time) {
 			goIntoPain = false; //prevent going into pain after attack
-			currentState = aiState.Run;
+			currentState = Const.aiState.Run;
 			return; // Done with attack
 		}
 	}
 
 	void Attack2() {
 		// Typically used for normal projectile attack
-		huntIndicator.SetActive(false);
-		attackIndicator.SetActive(true);
-		idleIndicator.SetActive(false);
-		painIndicator.SetActive(false);
-
+		if (attack2SoundTime < Time.time && SFXAttack2) {
+			SFX.PlayOneShot(SFXAttack2);
+			attack2SoundTime = Time.time + timeBetweenProj1;
+		}
 	}
 
 	void Attack3() {
 		// Typically used for secondary projectile or grenade attack
-		huntIndicator.SetActive(false);
-		attackIndicator.SetActive(true);
-		idleIndicator.SetActive(false);
-		painIndicator.SetActive(false);
+		if (attack3SoundTime < Time.time && SFXAttack3) {
+			SFX.PlayOneShot(SFXAttack3);
+			attack3SoundTime = Time.time + timeBetweenProj2;
+		}
 
+		if (explodeOnAttack3) {
+			ExplosionForce ef = GetComponent<ExplosionForce>();
+			DamageData ddNPC = Const.SetNPCDamageData(index, Const.aiState.Attack3,gameObject);
+			float take = Const.a.GetDamageTakeAmount(ddNPC);
+			ddNPC.other = gameObject;
+			ddNPC.damage = take;
+			//enemy.GetComponent<HealthManager>().TakeDamage(ddNPC); Handled by ExplodeInner
+			if (ef != null) ef.ExplodeInner(transform.position+explosionOffset, attack3Force, attack3Radius, ddNPC);
+			healthManager.ObjectDeath(SFXDeathClip);
+			return;
+		}
 	}
 
 	void Pain() {
-		huntIndicator.SetActive(false);
-		attackIndicator.SetActive(false);
-		idleIndicator.SetActive(false);
-		painIndicator.SetActive(true);
 		if (timeTillPainFinished < Time.time) {
-			currentState = aiState.Run; // go into run after we get hurt
+			currentState = Const.aiState.Run; // go into run after we get hurt
 			goIntoPain = false;
 			timeTillPainFinished = Time.time + timeBetweenPain;
 			return;
@@ -376,39 +409,51 @@ public class AIController : MonoBehaviour {
 		if (!dyingSetup) {
 			dyingSetup = true;
 			SFX.PlayOneShot(SFXDeathClip);
-			//anim.SetBool("Dying", true); // Set death animation going
-			collisionCapsule.enabled = false; // Disable normal collision
+
+			// Turn off normal NPC collider and enable corpse collider for searching
+			switch(normalCollider) {
+			case collisionType.Box: boxCollider = GetComponent<BoxCollider>(); boxCollider.enabled = false; break;
+			case collisionType.Sphere: sphereCollider = GetComponent<SphereCollider>(); sphereCollider.enabled = false; break;
+			case collisionType.Mesh: meshCollider = GetComponent<MeshCollider>(); meshCollider.enabled = false; break;
+			case collisionType.Capsule: capsuleCollider = GetComponent<CapsuleCollider>(); capsuleCollider.enabled = false; break;
+			}
+			switch(corpseCollider) {
+			case collisionType.Box: boxCollider = GetComponent<BoxCollider>(); boxCollider.enabled = true; boxCollider.isTrigger = false; break;
+			case collisionType.Sphere: sphereCollider = GetComponent<SphereCollider>(); sphereCollider.enabled = true; sphereCollider.isTrigger = false; break;
+			case collisionType.Mesh: meshCollider = GetComponent<MeshCollider>(); meshCollider.enabled = true; meshCollider.isTrigger = false; break;
+			case collisionType.Capsule: capsuleCollider = GetComponent<CapsuleCollider>(); capsuleCollider.enabled = true; capsuleCollider.isTrigger = false; break;
+			}
 			gameObject.tag = "Searchable"; // Enable searching
-			searchableCollider.enabled = true; // Enable search collision box
-			searchableCollider.isTrigger = false;
+
 			nav.speed = nav.speed * 0.5f; // half the speed while collapsing or whatever
 			timeTillDeadFinished = Time.time + timeTillDead; // wait for death animation to finish before going into Dead()
 		}
-
-		huntIndicator.SetActive(false);
-		attackIndicator.SetActive(false);
-		idleIndicator.SetActive(false);
-		painIndicator.SetActive(false);
-
+			
 		if (timeTillDeadFinished < Time.time) {
 			ai_dead = true;
 			ai_dying = false;
-			currentState = aiState.Dead;
+			currentState = Const.aiState.Dead;
 		}
 	}
 
 	void Dead() {
-		huntIndicator.SetActive(false);
-		attackIndicator.SetActive(false);
-		idleIndicator.SetActive(false);
-		painIndicator.SetActive(false);
 		nav.isStopped = true; // Stop moving
 		//anim.speed = 0f; // Stop animation
 		ai_dead = true;
 		ai_dying = false;
 		rbody.isKinematic = true;
-		currentState = aiState.Dead;
+		currentState = Const.aiState.Dead;
 		firstSighting = false;
+		if (healthManager.gibOnDeath) {
+			ExplosionForce ef = GetComponent<ExplosionForce>();
+			DamageData ddNPC = Const.SetNPCDamageData(index, Const.aiState.Attack3,gameObject);
+			float take = Const.a.GetDamageTakeAmount(ddNPC);
+			ddNPC.other = gameObject;
+			ddNPC.damage = take;
+			//enemy.GetComponent<HealthManager>().TakeDamage(ddNPC); Handled by ExplodeInner
+			if (ef != null) ef.ExplodeInner(transform.position+explosionOffset, attack3Force, attack3Radius, ddNPC);
+			healthManager.ObjectDeath(SFXDeathClip);
+		}
 	}
 
 	void Inspect() {
@@ -445,7 +490,7 @@ public class AIController : MonoBehaviour {
 	}
 	*/
 
-	bool CheckIfBackIsTurned() {
+	/*bool CheckIfBackIsTurned() {
 		if (enemy == null) return true;
 
 		//Vector3 checkline = enemy.transform.position - transform.position; // Get vector line made from enemy to found player
@@ -457,7 +502,7 @@ public class AIController : MonoBehaviour {
 		float angle = Vector2.Angle(checkline,forwardXZ);
 		if (angle < (fieldOfViewAttack * 0.5f)) return false;
 		return true;
-	}
+	}*/
 
 	bool CheckIfEnemyInSight() {
 		Vector3 checkline = enemy.transform.position - transform.position; // Get vector line made from enemy to found player
@@ -466,6 +511,7 @@ public class AIController : MonoBehaviour {
 			if (hit.collider.gameObject == enemy)
 				return true;
 		}
+		enemy = null;
 		return false;
 	}
 
@@ -538,29 +584,57 @@ public class AIController : MonoBehaviour {
 		//if (lastKnownPosition == resetPosition) chasing = false;
 		return false;
 	}
+	
+    // QUAKE based AI functions
+    // =============================================================================================================
+    
+    // Return range type based on distance to the target
+    // Melee = Use melee attack
+    // Near = Use close range projectile attack (if applicable)
+    // Mid = Use projectile attack or grenades (if applicable)
+    // Far = Can't see, too far away
+    enemyRangeType enemyRange (GameObject target) {
+        float r = Vector3.Distance(transform.position, target.transform.position);
+        if (r < 3.6) return enemyRangeType.Melee;
+        if(r < 15) return enemyRangeType.Near;
+        if(r < 30) return enemyRangeType.Mid;
+        return enemyRangeType.Far;
+    }
 
-	DamageData SetNPCDamageData (int NPCindex, aiState attackIndex) {
-		if (NPCindex < 0 || NPCindex > 23) {
-			Debug.Log("BUG: NPCindex set incorrectly on NPC.  Not 0 to 23. Disabled.");
-			gameObject.SetActive(false);
+    bool enemyVisible (GameObject target) {
+        Vector3 checkline = target.transform.position - transform.position; // Get vector line made from enemy to found player
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + transform.up, checkline.normalized, out hit, sightRange)) {
+            if (hit.collider.gameObject == target) {
+                return true;
+            }
+                
+        }
+        return false;
+    }
+
+    bool enemyInFront (GameObject target) {
+        Vector3 vec = Vector3.Normalize(target.transform.position - transform.position);
+        float dot = Vector3.Dot(vec,transform.forward);
+        if (dot > 0.300) return true; // enemy is within 27 degrees of forward facing vector
+        return false;
+    }
+
+	void HuntTarget () {
+		goalEntity = enemy;
+		currentState = Const.aiState.Run;
+		idealTransformForward = Vector3.Normalize(enemy.transform.position - transform.position);
+		attackFinished = Time.time + 1.0f;
+	}
+
+	void SightSound () { SFX.PlayOneShot(SFXSightSound,1.0f); }
+	void FoundTarget () {
+		if (enemy.tag == "Player") {
+			sightEntity = gameObject;
+			sightEntityTime = Time.time;
 		}
-		DamageData dd = new DamageData(); 
-		// Attacker (self [a]) data
-		dd.owner = gameObject;
-		switch (attackIndex) {
-		case aiState.Attack1:
-			dd.damage = Const.a.damageForNPC[NPCindex];
-			break;
-		case aiState.Attack2:
-			dd.damage = Const.a.damageForNPC2[NPCindex];
-			break;
-		case aiState.Attack3:
-			dd.damage = Const.a.damageForNPC3[NPCindex];
-			break;
-		default: Debug.Log("BUG: attackIndex not 0,1, or 2 on NPC! Damage set to 1."); dd.damage = 1f; break;
-		}
-		dd.penetration = 0;
-		dd.offense = 0;
-		return dd;
+		showHostileTime = Time.time + 1.0f;
+		SightSound();
+		HuntTarget();
 	}
 }

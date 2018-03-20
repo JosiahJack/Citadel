@@ -4,6 +4,7 @@ using System.Collections;
 
 public class MouseCursor : MonoBehaviour {
     public GameObject playerCamera;
+	public GameObject uiCamera;
 	public Camera mainCamera;
 	public MouseLookScript playerCameraScript;
 	public RectTransform centerMFDPanel;
@@ -32,7 +33,7 @@ public class MouseCursor : MonoBehaviour {
         }
 			
 		//Debug.Log("MouseCursor:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
-		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode || PauseScript.a.paused) {
+		if (playerCameraScript.inventoryMode || PauseScript.a.paused) {
             // Inventory Mode Cursor
 			drawTexture = new Rect(Input.mousePosition.x - offsetX, Screen.height - Input.mousePosition.y - offsetY, cursorSize, cursorSize);
 			drawTextureInspector = drawTexture;
@@ -67,7 +68,7 @@ public class MouseCursor : MonoBehaviour {
 		cursorSize = (24f * (Screen.width/640f));
 		if (playerCameraScript.inventoryMode && playerCameraScript.holdingObject && !PauseScript.a.paused) {
 			// Be sure to pass the camera to the 3rd parameter if using "Screen Space - Camer" on the Canvas, otherwise use "null"
-			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,playerCamera.GetComponent<Camera>())) {
+			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,uiCamera.GetComponent<Camera>())) {
 				inventoryAddHelper.SetActive(true);
 			} else {
 				inventoryAddHelper.SetActive(false);

@@ -6,7 +6,6 @@ public class HealthManager : MonoBehaviour {
 	public float health = -1f; // current health
 	public float maxhealth; // maximum health
 	public float gibhealth; // point at which we splatter
-	public bool dead = false;
 	public bool gibOnDeath = false; // used for things like crates to "gib" and shatter
 	public bool gibCorpse = true;
 	public bool isNPC = false;
@@ -17,6 +16,8 @@ public class HealthManager : MonoBehaviour {
 	public int index;
 	public GameObject attacker;
 	public Const.PoolType deathFX;
+	public enum BloodType {None,Red,Yellow,Green,Robot};
+	public BloodType bloodType;
 
 	private bool initialized = false;
 	private bool deathDone = false;
@@ -37,17 +38,17 @@ public class HealthManager : MonoBehaviour {
 		sphereCol = GetComponent<SphereCollider>();
 		capCol = GetComponent<CapsuleCollider>();
 		if (maxhealth < 1) maxhealth = health;
-		if (isNPC) {
-			aic = GetComponent<AIController>();
-			if (aic == null) Debug.Log("BUG: No AIController script on NPC!");
-		}
+		//if (isNPC) {
+		//	aic = GetComponent<AIController>();
+		//	if (aic == null) Debug.Log("BUG: No AIController script on NPC!");
+		//}
 		attacker = null;
 		//searchItems = GetComponent<SearchableItem>();
 	}
 
 	void Update () {
-		if (dead) {
-			if (!deathDone && isObject) ObjectDeath();
+		if (health <= 0) {
+			if (!deathDone && isObject) ObjectDeath(null);
 			return;
 		}
 
@@ -66,25 +67,19 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	public void TakeDamage(DamageData dd) {
-		if (dead) return;
-
+		if (health <= 0) return;
 		health -= dd.damage;
-		if (isNPC && (aic != null) && damagingGetsAttention) {
-			aic.goIntoPain = true;
-			if (dd.other != null)
-				aic.attacker = dd.other;
-		}
+		attacker = dd.owner;
 		if (applyImpact && rbody != null) {
 			rbody.AddForce(dd.impactVelocity*dd.attacknormal,ForceMode.Impulse);
 		}
 
 		if (health <= 0f) {
-			dead = true;
-			if (isObject) ObjectDeath();
+			if (isObject) ObjectDeath(null);
 		}
 	}
 
-	void ObjectDeath() {
+	public void ObjectDeath(AudioClip deathSound) {
 		deathDone = true;
 
 		// Disable collision
@@ -96,9 +91,18 @@ public class HealthManager : MonoBehaviour {
 		// Enabel death effects (e.g. explosion particle effect)
 		if (deathFX != Const.PoolType.LaserLines) {
 			GameObject explosionEffect = Const.a.GetObjectFromPool(deathFX);
-			explosionEffect.SetActive(true);
-			explosionEffect.transform.position = transform.position;
-			gameObject.SetActive(false);
+			if (explosionEffect != null) {
+				explosionEffect.SetActive(true);
+				explosionEffect.transform.position = transform.position;
+				// TODO: Do I need more than one temporary audio entity for this sort of thing?
+				if (deathSound != null) {
+					GameObject tempAud = GameObject.Find("TemporaryAudio");
+					tempAud.transform.position = transform.position;
+					AudioSource aS = tempAud.GetComponent<AudioSource>();
+					aS.PlayOneShot(deathSound);
+				}
+				gameObject.SetActive(false);
+			}
 		}
 	}
 }

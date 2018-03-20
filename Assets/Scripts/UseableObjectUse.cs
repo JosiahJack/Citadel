@@ -5,6 +5,8 @@ public class UseableObjectUse : MonoBehaviour {
 	public Texture2D cursorTexture;
 	public int useableItemIndex;
 	public int customIndex = -1;
+	public int ammo = 0;
+	public bool ammoIsSecondary = false;
 	private Vector2 cursorHotspot;
 	private GameObject mouseCursor;
 
@@ -24,6 +26,8 @@ public class UseableObjectUse : MonoBehaviour {
 		mlook.holdingObject = true;
 		mlook.heldObjectIndex = useableItemIndex;
 		mlook.heldObjectCustomIndex = customIndex;
+		mlook.heldObjectAmmo = ammo;
+		mlook.heldObjectAmmoIsSecondary = ammoIsSecondary;
 		this.gameObject.SetActive(false);
 	}
 

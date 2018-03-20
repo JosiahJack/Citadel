@@ -28,6 +28,7 @@ public class WeaponButton : MonoBehaviour {
 		itemiconman.SetActive(false);    //Set weapon icon for MFD
 		itemtextman.GetComponent<ItemTextManager>().SetItemText(useableItemIndex); //Set weapon text for MFD
 		WeaponCurrent.WepInstance.weaponCurrent = WepButtonIndex;				//Set current weapon
+		WeaponCurrent.WepInstance.weaponIndex = useableItemIndex;				//Set current weapon
 	}
 
 	void Start() {

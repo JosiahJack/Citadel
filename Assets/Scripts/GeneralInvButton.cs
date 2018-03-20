@@ -25,7 +25,7 @@ public class GeneralInvButton : MonoBehaviour {
 
 		iconman.GetComponent<ItemIconManager>().SetItemIcon(useableItemIndex);    //Set icon for MFD
 		textman.GetComponent<ItemTextManager>().SetItemText(useableItemIndex); //Set text for MFD
-		MFDManager.a.OpenTab(1,true,MFDManager.TabMSG.None,useableItemIndex);
+		MFDManager.a.OpenTab(1,true,MFDManager.TabMSG.None,useableItemIndex,MFDManager.handedness.LeftHand);
 		GeneralInvCurrent.GeneralInvInstance.generalInvCurrent = GeneralInvButtonIndex;  //Set current
 		switch (useableItemIndex) {
 			case 52:

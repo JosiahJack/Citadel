@@ -22,5 +22,47 @@ public class WeaponButtonsManager : MonoBehaviour {
                 wepCountsText[i].SetActive(false);
 			}
 		}
+
+		if (GetInput.a.WeaponCycUp ()) {
+			int i = WeaponCurrent.WepInstance.weaponCurrent;
+			i++;
+
+			int numberOfWeapons = 0;
+			for (int j=0;j<7;j++) {
+				if (WeaponInventory.WepInventoryInstance.weaponInventoryIndices [j] != -1)
+					numberOfWeapons++;
+			}
+
+			if (numberOfWeapons == 0) return;
+
+			if (i == numberOfWeapons)	i = 0;
+
+			// Check that the index we are going to is different than what we are on
+			if (i != WeaponCurrent.WepInstance.weaponCurrent) {
+				//WeaponCurrent.WepInstance.weaponCurrent = i;
+				wepButtons [i].GetComponent<WeaponButton> ().WeaponInvClick ();
+			}
+		}
+
+		if (GetInput.a.WeaponCycDown ()) {
+			int i = WeaponCurrent.WepInstance.weaponCurrent;
+			i--;
+
+			int numberOfWeapons = 0;
+			for (int j=0;j<7;j++) {
+				if (WeaponInventory.WepInventoryInstance.weaponInventoryIndices [j] != -1)
+					numberOfWeapons++;
+			}
+
+			if (numberOfWeapons == 0) return;
+
+			if (i < 0)	i = (numberOfWeapons - 1);
+
+			// Check that the index we are going to is different than what we are on
+			if (i != WeaponCurrent.WepInstance.weaponCurrent) {
+				//WeaponCurrent.WepInstance.weaponCurrent = i;
+				wepButtons [i].GetComponent<WeaponButton> ().WeaponInvClick ();
+			}
+		}
 	}
 }

@@ -7,10 +7,11 @@ public class ButtonSwitch : MonoBehaviour {
 	public GameObject target1;
 	public GameObject target2;
 	public GameObject target3;
+	public string message;
 	public float delay = 0f;
 	public AudioClip SFX;
 	private float delayFinished;
-	private GameObject playerCamera;
+	private GameObject player;
 	private AudioSource SFXSource;
 
 	void Awake () {
@@ -23,8 +24,9 @@ public class ButtonSwitch : MonoBehaviour {
 			return;
 		}
 
-		playerCamera = owner;  // set playerCamera to owner of the input (always should be the player camera)
+		player = owner;  // set playerCamera to owner of the input (always should be the player camera)
 		SFXSource.PlayOneShot(SFX);
+		if (message != null && message != "") Const.sprint(message,owner);
 		if (delay > 0) {
 			delayFinished = Time.time + delay;
 		} else {
@@ -34,16 +36,16 @@ public class ButtonSwitch : MonoBehaviour {
 
 	public void UseTargets () {
 		if (target != null) {
-			target.SendMessageUpwards("Targetted", playerCamera);
+			target.SendMessageUpwards("Targetted", player);
 		}
 		if (target1 != null) {
-			target.SendMessageUpwards("Targetted", playerCamera);
+			target.SendMessageUpwards("Targetted", player);
 		}
 		if (target2 != null) {
-			target.SendMessageUpwards("Targetted", playerCamera);
+			target.SendMessageUpwards("Targetted", player);
 		}
 		if (target3 != null) {
-			target.SendMessageUpwards("Targetted", playerCamera);
+			target.SendMessageUpwards("Targetted", player);
 		}
 	}
 

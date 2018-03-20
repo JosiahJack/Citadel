@@ -3,7 +3,7 @@ guid: 756cb33f8114edf4ab21a20dd6a91c3f
 timeCreated: 1441458996
 licenseType: Free
 ModelImporter:
-  serializedVersion: 19
+  serializedVersion: 22
   fileIDToRecycleName:
     100000: bsp_model_202
     100002: bsp_model_203
@@ -24,6 +24,72 @@ ModelImporter:
     100032: R_ReactorLevel
     100034: R_ReactorLevel_chargingstation1
     100036: //RootNode
+    100038: R_ReactorLevel_Screen001
+    100040: R_ReactorLevel_Screen002
+    100042: R_ReactorLevel_Screen003
+    100044: R_ReactorLevel_Screen004
+    100046: R_ReactorLevel_Screen005
+    100048: R_ReactorLevel_Screen006
+    100050: R_ReactorLevel_Screen007
+    100052: R_ReactorLevel_Screen008
+    100054: R_ReactorLevel_001
+    100056: R_ReactorLevel_002
+    100058: R_ReactorLevel_003
+    100060: R_ReactorLevel_004
+    100062: R_ReactorLevel_005
+    100064: R_ReactorLevel_006
+    100066: R_ReactorLevel_007
+    100068: R_ReactorLevel_008
+    100070: R_ReactorLevel_009
+    100072: R_ReactorLevel_010
+    100074: R_ReactorLevel_011
+    100076: R_ReactorLevel_012
+    100078: R_ReactorLevel_013
+    100080: R_ReactorLevel_014
+    100082: R_ReactorLevel_015
+    100084: R_ReactorLevel_016
+    100086: R_ReactorLevel_017
+    100088: R_ReactorLevel_018
+    100090: R_ReactorLevel_019
+    100092: R_ReactorLevel_020
+    100094: R_ReactorLevel_021
+    100096: R_ReactorLevel_022
+    100098: R_ReactorLevel_023
+    100100: R_ReactorLevel_024
+    100102: R_ReactorLevel_025
+    100104: R_ReactorLevel_026
+    100106: R_ReactorLevel_027
+    100108: R_ReactorLevel_028
+    100110: R_ReactorLevel_029
+    100112: R_ReactorLevel_030
+    100114: R_ReactorLevel_031
+    100116: R_ReactorLevel_032
+    100118: R_ReactorLevel_033
+    100120: R_ReactorLevel_034
+    100122: R_ReactorLevel_035
+    100124: R_ReactorLevel_036
+    100126: R_ReactorLevel_037
+    100128: R_ReactorLevel_038
+    100130: R_ReactorLevel_039
+    100132: R_ReactorLevel_040
+    100134: R_ReactorLevel_041
+    100136: R_ReactorLevel_042
+    100138: R_ReactorLevel_043
+    100140: R_ReactorLevel_044
+    100142: R_ReactorLevel_045
+    100144: R_ReactorLevel_046
+    100146: R_ReactorLevel_047
+    100148: R_ReactorLevel_048
+    100150: R_ReactorLevel_049
+    100152: R_ReactorLevel_050
+    100154: R_ReactorLevel_051
+    100156: R_ReactorLevel_052
+    100158: R_ReactorLevel_053
+    100160: R_ReactorLevel_054
+    100162: R_ReactorLevel_055
+    100164: R_ReactorLevel_056
+    100166: R_ReactorLevel_057
+    100168: R_ReactorLevel_058
     400000: bsp_model_202
     400002: bsp_model_203
     400004: bsp_model_204
@@ -43,6 +109,72 @@ ModelImporter:
     400032: R_ReactorLevel
     400034: R_ReactorLevel_chargingstation1
     400036: //RootNode
+    400038: R_ReactorLevel_Screen001
+    400040: R_ReactorLevel_Screen002
+    400042: R_ReactorLevel_Screen003
+    400044: R_ReactorLevel_Screen004
+    400046: R_ReactorLevel_Screen005
+    400048: R_ReactorLevel_Screen006
+    400050: R_ReactorLevel_Screen007
+    400052: R_ReactorLevel_Screen008
+    400054: R_ReactorLevel_001
+    400056: R_ReactorLevel_002
+    400058: R_ReactorLevel_003
+    400060: R_ReactorLevel_004
+    400062: R_ReactorLevel_005
+    400064: R_ReactorLevel_006
+    400066: R_ReactorLevel_007
+    400068: R_ReactorLevel_008
+    400070: R_ReactorLevel_009
+    400072: R_ReactorLevel_010
+    400074: R_ReactorLevel_011
+    400076: R_ReactorLevel_012
+    400078: R_ReactorLevel_013
+    400080: R_ReactorLevel_014
+    400082: R_ReactorLevel_015
+    400084: R_ReactorLevel_016
+    400086: R_ReactorLevel_017
+    400088: R_ReactorLevel_018
+    400090: R_ReactorLevel_019
+    400092: R_ReactorLevel_020
+    400094: R_ReactorLevel_021
+    400096: R_ReactorLevel_022
+    400098: R_ReactorLevel_023
+    400100: R_ReactorLevel_024
+    400102: R_ReactorLevel_025
+    400104: R_ReactorLevel_026
+    400106: R_ReactorLevel_027
+    400108: R_ReactorLevel_028
+    400110: R_ReactorLevel_029
+    400112: R_ReactorLevel_030
+    400114: R_ReactorLevel_031
+    400116: R_ReactorLevel_032
+    400118: R_ReactorLevel_033
+    400120: R_ReactorLevel_034
+    400122: R_ReactorLevel_035
+    400124: R_ReactorLevel_036
+    400126: R_ReactorLevel_037
+    400128: R_ReactorLevel_038
+    400130: R_ReactorLevel_039
+    400132: R_ReactorLevel_040
+    400134: R_ReactorLevel_041
+    400136: R_ReactorLevel_042
+    400138: R_ReactorLevel_043
+    400140: R_ReactorLevel_044
+    400142: R_ReactorLevel_045
+    400144: R_ReactorLevel_046
+    400146: R_ReactorLevel_047
+    400148: R_ReactorLevel_048
+    400150: R_ReactorLevel_049
+    400152: R_ReactorLevel_050
+    400154: R_ReactorLevel_051
+    400156: R_ReactorLevel_052
+    400158: R_ReactorLevel_053
+    400160: R_ReactorLevel_054
+    400162: R_ReactorLevel_055
+    400164: R_ReactorLevel_056
+    400166: R_ReactorLevel_057
+    400168: R_ReactorLevel_058
     2300000: bsp_model_202
     2300002: bsp_model_203
     2300004: bsp_model_204
@@ -61,6 +193,72 @@ ModelImporter:
     2300030: Plane
     2300032: R_ReactorLevel
     2300034: R_ReactorLevel_chargingstation1
+    2300036: R_ReactorLevel_Screen001
+    2300038: R_ReactorLevel_Screen002
+    2300040: R_ReactorLevel_Screen003
+    2300042: R_ReactorLevel_Screen004
+    2300044: R_ReactorLevel_Screen005
+    2300046: R_ReactorLevel_Screen006
+    2300048: R_ReactorLevel_Screen007
+    2300050: R_ReactorLevel_Screen008
+    2300052: R_ReactorLevel_001
+    2300054: R_ReactorLevel_002
+    2300056: R_ReactorLevel_003
+    2300058: R_ReactorLevel_004
+    2300060: R_ReactorLevel_005
+    2300062: R_ReactorLevel_006
+    2300064: R_ReactorLevel_007
+    2300066: R_ReactorLevel_008
+    2300068: R_ReactorLevel_009
+    2300070: R_ReactorLevel_010
+    2300072: R_ReactorLevel_011
+    2300074: R_ReactorLevel_012
+    2300076: R_ReactorLevel_013
+    2300078: R_ReactorLevel_014
+    2300080: R_ReactorLevel_015
+    2300082: R_ReactorLevel_016
+    2300084: R_ReactorLevel_017
+    2300086: R_ReactorLevel_018
+    2300088: R_ReactorLevel_019
+    2300090: R_ReactorLevel_020
+    2300092: R_ReactorLevel_021
+    2300094: R_ReactorLevel_022
+    2300096: R_ReactorLevel_023
+    2300098: R_ReactorLevel_024
+    2300100: R_ReactorLevel_025
+    2300102: R_ReactorLevel_026
+    2300104: R_ReactorLevel_027
+    2300106: R_ReactorLevel_028
+    2300108: R_ReactorLevel_029
+    2300110: R_ReactorLevel_030
+    2300112: R_ReactorLevel_031
+    2300114: R_ReactorLevel_032
+    2300116: R_ReactorLevel_033
+    2300118: R_ReactorLevel_034
+    2300120: R_ReactorLevel_035
+    2300122: R_ReactorLevel_036
+    2300124: R_ReactorLevel_037
+    2300126: R_ReactorLevel_038
+    2300128: R_ReactorLevel_039
+    2300130: R_ReactorLevel_040
+    2300132: R_ReactorLevel_041
+    2300134: R_ReactorLevel_042
+    2300136: R_ReactorLevel_043
+    2300138: R_ReactorLevel_044
+    2300140: R_ReactorLevel_045
+    2300142: R_ReactorLevel_046
+    2300144: R_ReactorLevel_047
+    2300146: R_ReactorLevel_048
+    2300148: R_ReactorLevel_049
+    2300150: R_ReactorLevel_050
+    2300152: R_ReactorLevel_051
+    2300154: R_ReactorLevel_052
+    2300156: R_ReactorLevel_053
+    2300158: R_ReactorLevel_054
+    2300160: R_ReactorLevel_055
+    2300162: R_ReactorLevel_056
+    2300164: R_ReactorLevel_057
+    2300166: R_ReactorLevel_058
     3300000: bsp_model_202
     3300002: bsp_model_203
     3300004: bsp_model_204
@@ -79,6 +277,72 @@ ModelImporter:
     3300030: Plane
     3300032: R_ReactorLevel
     3300034: R_ReactorLevel_chargingstation1
+    3300036: R_ReactorLevel_Screen001
+    3300038: R_ReactorLevel_Screen002
+    3300040: R_ReactorLevel_Screen003
+    3300042: R_ReactorLevel_Screen004
+    3300044: R_ReactorLevel_Screen005
+    3300046: R_ReactorLevel_Screen006
+    3300048: R_ReactorLevel_Screen007
+    3300050: R_ReactorLevel_Screen008
+    3300052: R_ReactorLevel_001
+    3300054: R_ReactorLevel_002
+    3300056: R_ReactorLevel_003
+    3300058: R_ReactorLevel_004
+    3300060: R_ReactorLevel_005
+    3300062: R_ReactorLevel_006
+    3300064: R_ReactorLevel_007
+    3300066: R_ReactorLevel_008
+    3300068: R_ReactorLevel_009
+    3300070: R_ReactorLevel_010
+    3300072: R_ReactorLevel_011
+    3300074: R_ReactorLevel_012
+    3300076: R_ReactorLevel_013
+    3300078: R_ReactorLevel_014
+    3300080: R_ReactorLevel_015
+    3300082: R_ReactorLevel_016
+    3300084: R_ReactorLevel_017
+    3300086: R_ReactorLevel_018
+    3300088: R_ReactorLevel_019
+    3300090: R_ReactorLevel_020
+    3300092: R_ReactorLevel_021
+    3300094: R_ReactorLevel_022
+    3300096: R_ReactorLevel_023
+    3300098: R_ReactorLevel_024
+    3300100: R_ReactorLevel_025
+    3300102: R_ReactorLevel_026
+    3300104: R_ReactorLevel_027
+    3300106: R_ReactorLevel_028
+    3300108: R_ReactorLevel_029
+    3300110: R_ReactorLevel_030
+    3300112: R_ReactorLevel_031
+    3300114: R_ReactorLevel_032
+    3300116: R_ReactorLevel_033
+    3300118: R_ReactorLevel_034
+    3300120: R_ReactorLevel_035
+    3300122: R_ReactorLevel_036
+    3300124: R_ReactorLevel_037
+    3300126: R_ReactorLevel_038
+    3300128: R_ReactorLevel_039
+    3300130: R_ReactorLevel_040
+    3300132: R_ReactorLevel_041
+    3300134: R_ReactorLevel_042
+    3300136: R_ReactorLevel_043
+    3300138: R_ReactorLevel_044
+    3300140: R_ReactorLevel_045
+    3300142: R_ReactorLevel_046
+    3300144: R_ReactorLevel_047
+    3300146: R_ReactorLevel_048
+    3300148: R_ReactorLevel_049
+    3300150: R_ReactorLevel_050
+    3300152: R_ReactorLevel_051
+    3300154: R_ReactorLevel_052
+    3300156: R_ReactorLevel_053
+    3300158: R_ReactorLevel_054
+    3300160: R_ReactorLevel_055
+    3300162: R_ReactorLevel_056
+    3300164: R_ReactorLevel_057
+    3300166: R_ReactorLevel_058
     4300000: Plane
     4300002: R_ReactorLevel
     4300004: bsp_model_217
@@ -97,6 +361,72 @@ ModelImporter:
     4300030: bsp_model_204
     4300032: bsp_model_203
     4300034: bsp_model_202
+    4300036: R_ReactorLevel_Screen008
+    4300038: R_ReactorLevel_Screen007
+    4300040: R_ReactorLevel_Screen006
+    4300042: R_ReactorLevel_Screen005
+    4300044: R_ReactorLevel_Screen004
+    4300046: R_ReactorLevel_Screen001
+    4300048: R_ReactorLevel_Screen002
+    4300050: R_ReactorLevel_Screen003
+    4300052: R_ReactorLevel_001
+    4300054: R_ReactorLevel_002
+    4300056: R_ReactorLevel_004
+    4300058: R_ReactorLevel_003
+    4300060: R_ReactorLevel_005
+    4300062: R_ReactorLevel_006
+    4300064: R_ReactorLevel_007
+    4300066: R_ReactorLevel_008
+    4300068: R_ReactorLevel_009
+    4300070: R_ReactorLevel_011
+    4300072: R_ReactorLevel_010
+    4300074: R_ReactorLevel_012
+    4300076: R_ReactorLevel_013
+    4300078: R_ReactorLevel_014
+    4300080: R_ReactorLevel_015
+    4300082: R_ReactorLevel_027
+    4300084: R_ReactorLevel_026
+    4300086: R_ReactorLevel_025
+    4300088: R_ReactorLevel_024
+    4300090: R_ReactorLevel_023
+    4300092: R_ReactorLevel_022
+    4300094: R_ReactorLevel_021
+    4300096: R_ReactorLevel_020
+    4300098: R_ReactorLevel_019
+    4300100: R_ReactorLevel_018
+    4300102: R_ReactorLevel_017
+    4300104: R_ReactorLevel_016
+    4300106: R_ReactorLevel_034
+    4300108: R_ReactorLevel_033
+    4300110: R_ReactorLevel_032
+    4300112: R_ReactorLevel_031
+    4300114: R_ReactorLevel_030
+    4300116: R_ReactorLevel_029
+    4300118: R_ReactorLevel_028
+    4300120: R_ReactorLevel_055
+    4300122: R_ReactorLevel_054
+    4300124: R_ReactorLevel_053
+    4300126: R_ReactorLevel_052
+    4300128: R_ReactorLevel_051
+    4300130: R_ReactorLevel_050
+    4300132: R_ReactorLevel_049
+    4300134: R_ReactorLevel_048
+    4300136: R_ReactorLevel_047
+    4300138: R_ReactorLevel_046
+    4300140: R_ReactorLevel_045
+    4300142: R_ReactorLevel_044
+    4300144: R_ReactorLevel_043
+    4300146: R_ReactorLevel_042
+    4300148: R_ReactorLevel_041
+    4300150: R_ReactorLevel_040
+    4300152: R_ReactorLevel_039
+    4300154: R_ReactorLevel_038
+    4300156: R_ReactorLevel_037
+    4300158: R_ReactorLevel_036
+    4300160: R_ReactorLevel_035
+    4300162: R_ReactorLevel_058
+    4300164: R_ReactorLevel_057
+    4300166: R_ReactorLevel_056
     6400000: bsp_model_202
     6400002: bsp_model_203
     6400004: bsp_model_204
@@ -115,28 +445,420 @@ ModelImporter:
     6400030: Plane
     6400032: R_ReactorLevel
     6400034: R_ReactorLevel_chargingstation1
+    6400036: R_ReactorLevel_Screen001
+    6400038: R_ReactorLevel_Screen002
+    6400040: R_ReactorLevel_Screen003
+    6400042: R_ReactorLevel_Screen004
+    6400044: R_ReactorLevel_Screen005
+    6400046: R_ReactorLevel_Screen006
+    6400048: R_ReactorLevel_Screen007
+    6400050: R_ReactorLevel_Screen008
+    6400052: R_ReactorLevel_001
+    6400054: R_ReactorLevel_002
+    6400056: R_ReactorLevel_003
+    6400058: R_ReactorLevel_004
+    6400060: R_ReactorLevel_005
+    6400062: R_ReactorLevel_006
+    6400064: R_ReactorLevel_007
+    6400066: R_ReactorLevel_008
+    6400068: R_ReactorLevel_009
+    6400070: R_ReactorLevel_010
+    6400072: R_ReactorLevel_011
+    6400074: R_ReactorLevel_012
+    6400076: R_ReactorLevel_013
+    6400078: R_ReactorLevel_014
+    6400080: R_ReactorLevel_015
+    6400082: R_ReactorLevel_016
+    6400084: R_ReactorLevel_017
+    6400086: R_ReactorLevel_018
+    6400088: R_ReactorLevel_019
+    6400090: R_ReactorLevel_020
+    6400092: R_ReactorLevel_021
+    6400094: R_ReactorLevel_022
+    6400096: R_ReactorLevel_023
+    6400098: R_ReactorLevel_024
+    6400100: R_ReactorLevel_025
+    6400102: R_ReactorLevel_026
+    6400104: R_ReactorLevel_027
+    6400106: R_ReactorLevel_028
+    6400108: R_ReactorLevel_029
+    6400110: R_ReactorLevel_030
+    6400112: R_ReactorLevel_031
+    6400114: R_ReactorLevel_032
+    6400116: R_ReactorLevel_033
+    6400118: R_ReactorLevel_034
+    6400120: R_ReactorLevel_035
+    6400122: R_ReactorLevel_036
+    6400124: R_ReactorLevel_037
+    6400126: R_ReactorLevel_038
+    6400128: R_ReactorLevel_039
+    6400130: R_ReactorLevel_040
+    6400132: R_ReactorLevel_041
+    6400134: R_ReactorLevel_042
+    6400136: R_ReactorLevel_043
+    6400138: R_ReactorLevel_044
+    6400140: R_ReactorLevel_045
+    6400142: R_ReactorLevel_046
+    6400144: R_ReactorLevel_047
+    6400146: R_ReactorLevel_048
+    6400148: R_ReactorLevel_049
+    6400150: R_ReactorLevel_050
+    6400152: R_ReactorLevel_051
+    6400154: R_ReactorLevel_052
+    6400156: R_ReactorLevel_053
+    6400158: R_ReactorLevel_054
+    6400160: R_ReactorLevel_055
+    6400162: R_ReactorLevel_056
+    6400164: R_ReactorLevel_057
+    6400166: R_ReactorLevel_058
     7400000: Default Take
     9500000: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _0lift1
+    second: {fileID: 2100000, guid: 7e3c3fce5fd01b548aca667446529342, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _0scr_shodan1
+    second: {fileID: 2100000, guid: e96ded84be2bc414ab0a6ea9c3e9a2c4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _0screen1
+    second: {fileID: 2100000, guid: 151275eb32b9e5742b18c5febdbf9258, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _0screen3
+    second: {fileID: 2100000, guid: 28170d4102737e6419f5858578ae83c0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _0screen5
+    second: {fileID: 2100000, guid: 2aff0de3c5bfc24488247ada9e083e35, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _alift1
+    second: {fileID: 2100000, guid: b7d9e176b4fe4c9428ef0c12f212a429, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: black32
+    second: {fileID: 2100000, guid: 50f5ce71754430147980850ff4b43059, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: door_x2
+    second: {fileID: 2100000, guid: f25b6de6d7bf294418846b41374a6f5a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: exec2_4
+    second: {fileID: 2100000, guid: 432c1ac8fe2d0104491da3dcd22f4740, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: exec2_6
+    second: {fileID: 2100000, guid: dcd40754a682cce4d8720abfa1645748, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: exec2_7
+    second: {fileID: 2100000, guid: 7b03a18ac9bc04943a83251a2cfa04eb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: exec4_2
+    second: {fileID: 2100000, guid: 6e6b54130e737f343bf80eb5e1713dd0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: exec4_3
+    second: {fileID: 2100000, guid: 9d9f074be30c49841930ce1287729b24, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: flight2_2
+    second: {fileID: 2100000, guid: 2c27efd9e9793ab4b9b882405cdc8a0f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: grate1_1
+    second: {fileID: 2100000, guid: 0422c23d597dcf74abb940226d4d5da5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: grate1_2
+    second: {fileID: 2100000, guid: 05ff1a216e3320a4189de38930724621, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: maint2_1b
+    second: {fileID: 2100000, guid: 675390f5963415648b0fafdebc7963b4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: maint2_6
+    second: {fileID: 2100000, guid: 62eea8c50f5887740a54b05715436aeb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: maint2_8
+    second: {fileID: 2100000, guid: 44b73adc7f5487245b95f835dc449f60, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: maint2_9
+    second: {fileID: 2100000, guid: bf1a622f39ba17e4d9f18899cb71f210, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: maint3_1
+    second: {fileID: 2100000, guid: 56a5716c3e95b164ba01ce2e783206f1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: maint3_1d
+    second: {fileID: 2100000, guid: ab7801b81f9c51e4eaaa22a0e04be285, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: med1_9
+    second: {fileID: 2100000, guid: dd09c983cc9d64a4ba452caab8783b78, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: med2_1
+    second: {fileID: 2100000, guid: f40c1927d7e9b9e4d9f8207932a430e5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: med2_2
+    second: {fileID: 2100000, guid: bdd0d8865b4452848993973fa0a7d630, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: med2_3
+    second: {fileID: 2100000, guid: 487079c0e817bcf4fae2d85cbdd92c68, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: med2_4
+    second: {fileID: 2100000, guid: 574da22a2c7403744a5e62b734ebbe85, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: med2_7
+    second: {fileID: 2100000, guid: c83f9424912f6ae4d8f3fe75e569af68, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: med2_8
+    second: {fileID: 2100000, guid: e4c7deaf4ee22c64f97b6013132d353c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: med2_9
+    second: {fileID: 2100000, guid: 80554c01c62e1b24481d6273207a23df, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac1_1
+    second: {fileID: 2100000, guid: 7101de413eec78a4d95d0a339d65e280, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac1_2
+    second: {fileID: 2100000, guid: 8a092ec1c15cfe246a45aa2e8c1c0fe3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac1_3
+    second: {fileID: 2100000, guid: 72a9c0ab6f1dc4a41af74c9e632178b8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac1_4
+    second: {fileID: 2100000, guid: 134c88348f1956e4da01bc7912f8d29b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac1_5
+    second: {fileID: 2100000, guid: 9245338ff062ce1458a19a13e927612b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac1_6
+    second: {fileID: 2100000, guid: bb304debd70fbfc4784e6b82588a114e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac1_7
+    second: {fileID: 2100000, guid: 6fb224cc9f7001241a95882bf60c085e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac1_8
+    second: {fileID: 2100000, guid: cfcfbf639ad4c4448b3491ad0d8d6685, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac1_9
+    second: {fileID: 2100000, guid: 6edfd823f487954478944b9aa280f82b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac2_1
+    second: {fileID: 2100000, guid: 67e6f26b20e85724faacd5b6d975fa85, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac2_1b
+    second: {fileID: 2100000, guid: e19b6eba8a45e0c478e51e844a020515, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac2_2
+    second: {fileID: 2100000, guid: f30ed3891c70e6642a8b670b12d0b159, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac2_4
+    second: {fileID: 2100000, guid: c2363a7ff735a21439cbdd7480568000, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac2_5
+    second: {fileID: 2100000, guid: 27f0a6cc1b9898944b9ae3469e4cac27, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac2_6
+    second: {fileID: 2100000, guid: c016150004c3b2d40ba087ef7b113d7c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac2_7
+    second: {fileID: 2100000, guid: 99ab0f48ab57c8a44801e8e621e38ee2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac2_8
+    second: {fileID: 2100000, guid: c5517cce7c3afe948ab7de33a0a147a7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac2_9
+    second: {fileID: 2100000, guid: 3bc09297fb89ee949bd259881b61425f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac3_1
+    second: {fileID: 2100000, guid: 40b24f62008939d409921c3cd828a62b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac3_2
+    second: {fileID: 2100000, guid: 9aa4cbed4300bee4cbfc7aea676e98b8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac3_3
+    second: {fileID: 2100000, guid: 04bbef53c0cd30340b2cca2283b79c4e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac3_5
+    second: {fileID: 2100000, guid: da085641c572d6641b6ebe43dbfed18f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac3_6
+    second: {fileID: 2100000, guid: 5d136dd310ee40d40b2b9659266fd149, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac3_7
+    second: {fileID: 2100000, guid: 839dbae89c10614469e1b4884461e44f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac4_2
+    second: {fileID: 2100000, guid: 122b44bc48620044c82806e2d14da1dc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac5_3
+    second: {fileID: 2100000, guid: 528bb528e4755204196b596806b33951, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac6_1
+    second: {fileID: 2100000, guid: a5dd8a7be556b364a8906a320c1fd363, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac6_2
+    second: {fileID: 2100000, guid: a346fb70ae5c8244cb552369716fe289, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: reac6_3
+    second: {fileID: 2100000, guid: e009c5161585f2240bdae044890e8dd1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: sci2_5d
+    second: {fileID: 2100000, guid: 31b3feb0ed3a58b4597add3f7fef709a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: seat1_7
+    second: {fileID: 2100000, guid: 3195c3e6d92b62c478ce0735ad52d559, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: stor1_7
+    second: {fileID: 2100000, guid: 9ebd511acebb4e64ab4a1e8a04e53dfa, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: stor1_7d
+    second: {fileID: 2100000, guid: ebf0fc5bc47be83418ef22de8268d84e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: sw6_up
+    second: {fileID: 2100000, guid: 82841edee60815d46ab045bb6fc63fd8, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations: []
     isReadable: 1
   meshes:
@@ -144,7 +866,10 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 1
     useFileUnits: 1
@@ -160,9 +885,11 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 4
+    normalCalculationMode: 0
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 2
     human: []
     skeleton: []
     armTwist: 0.5
@@ -173,7 +900,10 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
   humanoidOversampling: 1

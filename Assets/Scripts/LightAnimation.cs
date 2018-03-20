@@ -86,6 +86,9 @@ public class LightAnimation : MonoBehaviour {
 							lerpTime = 0.1f;
 					} else {
 						if (lerpOn) {
+							if (currentStep == intervalSteps.Length)
+								currentStep = 0;
+							
 							if (intervalStepisLerping[currentStep]) {
 								lerpValue = (Time.time - lerpStartTime)/(lerpTime - lerpStartTime); // percent towards goal time
 								animLight.intensity = minIntensity + (differenceInIntensity * (1-lerpValue));

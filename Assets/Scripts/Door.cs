@@ -29,6 +29,11 @@ public class Door : MonoBehaviour {
 	public enum doorState {Closed, Open, Closing, Opening};
 	public doorState doorOpen;
 
+	public float timeBeforeLasersOn;
+	public float lasersFinished;
+	public GameObject[] laserLines;
+	public bool toggleLasers = false;
+
 	void Start () {
 		anim = GetComponent<Animator>();
 		if (startOpen) {
@@ -47,6 +52,10 @@ public class Door : MonoBehaviour {
 		ajar = false;
 		if (useFinished < Time.time) {
 			useFinished = Time.time + useTimeDelay;
+			AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(0);
+			float playbackTime = asi.normalizedTime;
+			//AnimatorClipInfo[] aci = anim.GetCurrentAnimatorClipInfo(0);
+
 			if (!locked) {
 				if (doorOpen == doorState.Open) {
 					CloseDoor();
@@ -59,8 +68,6 @@ public class Door : MonoBehaviour {
 				}
 
 				if (doorOpen == doorState.Opening) {
-					AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(0);
-					float playbackTime = asi.normalizedTime;
 					if (playbackTime > 0.15f && playbackTime < 0.85f) {
 						doorOpen = doorState.Closing;
 						anim.Play("DoorClose",0, 1f-playbackTime);
@@ -70,8 +77,6 @@ public class Door : MonoBehaviour {
 				}
 
 				if (doorOpen == doorState.Closing) {
-					AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(0);
-					float playbackTime = asi.normalizedTime;
 					if (playbackTime > 0.15f && playbackTime < 0.85f) {
 						doorOpen = doorState.Opening;
 						waitBeforeClose = Time.time + delay;
@@ -99,6 +104,14 @@ public class Door : MonoBehaviour {
 		waitBeforeClose = Time.time + delay;
 		anim.Play("DoorOpen");
 		SFX.PlayOneShot(SFXClip);
+		//lightsFinished1 = Time.time + timeBeforeLightsOut1;
+		if (toggleLasers) {
+			for (int i=0;i<laserLines.Length;i++) {
+				laserLines[i].SetActive(false);
+			}
+			lasersFinished = Mathf.Infinity;
+		}
+
 	}
 
 	void CloseDoor() {
@@ -106,6 +119,7 @@ public class Door : MonoBehaviour {
 		doorOpen = doorState.Closing;
 		anim.Play("DoorClose");
 		SFX.PlayOneShot(SFXClip);
+		lasersFinished = Time.time + timeBeforeLasersOn;
 	}
 
 	void Update () {
@@ -132,6 +146,12 @@ public class Door : MonoBehaviour {
 		if (Time.time > waitBeforeClose) {
 			if ((doorOpen == doorState.Open) && (!stayOpen))
 				CloseDoor();
+		}
+
+		if (lasersFinished < Time.time) {
+			for (int i=0;i<laserLines.Length;i++) {
+				laserLines[i].SetActive(true);
+			}
 		}
 	}
 

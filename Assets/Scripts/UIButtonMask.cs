@@ -34,11 +34,10 @@ public class UIButtonMask : MonoBehaviour {
 		entry2.callback.AddListener((eventData) => { PtrExit(); } );
 		pointerTrigger.triggers.Add(entry2);
 
-		doubleClickTime = Const.a.doubleClickTime;
-		dbclickFinished = Time.time;
-		doubleClickTicks = 0;
-
 		if (doubleClickEnabled) {
+			doubleClickTime = Const.a.doubleClickTime;
+			dbclickFinished = Time.time;
+			doubleClickTicks = 0;
 			GetComponent<Button>().onClick.AddListener(() => { UiButtonMaskClick(); });
 		}
 	}

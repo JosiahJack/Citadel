@@ -16,7 +16,7 @@ public class LogMoreButton : MonoBehaviour {
 			remainder = remainder.Remove(0,568);
 			logTextOutput.GetComponent<Text>().text = remainder;
 		} else {
-			dataTabAudLogContainer.SetActive(false);
+			//dataTabAudLogContainer.SetActive(false);
 			multiMediaTab.GetComponent<MultiMediaTabManager>().ResetTabs();
 		}
 	}

@@ -40,7 +40,7 @@ public class KeypadKeycode : MonoBehaviour {
 		playerCapsule = owner.GetComponent<PlayerReferenceManager>().playerCapsule; // Get player capsule of player using this pad
 		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode == false)
 			playerCamera.GetComponent<MouseLookScript>().ToggleInventoryMode();
-		MFDManager.a.OpenTab(4,true,MFDManager.TabMSG.Keypad,0);
+		MFDManager.a.OpenTab(4,true,MFDManager.TabMSG.Keypad,0,MFDManager.handedness.LeftHand);
 	}
 
 	public void UseTargets () {

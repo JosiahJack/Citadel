@@ -15,6 +15,7 @@ public class TabButtons : MonoBehaviour {
 	[SerializeField] private AudioClip TabSFXClip = null; // assign in the editor
 	public int curTab = 0;
 	public int lastTab = 0;
+	public bool isRH;
 
 	public void SetCurrentAsLast () {
 		lastTab = curTab;
@@ -52,6 +53,7 @@ public class TabButtons : MonoBehaviour {
 			TargetTabButton.image.overrideSprite = MFDSprite;
 			DataTabButton.image.overrideSprite = MFDSprite;
 			curTab = 0;
+			MFDManager.a.lastWeaponSideRH = isRH;
 			break;
 		case 1:
 			if (curTab == 1) {
@@ -74,6 +76,7 @@ public class TabButtons : MonoBehaviour {
 			TargetTabButton.image.overrideSprite = MFDSprite;
 			DataTabButton.image.overrideSprite = MFDSprite;
 			curTab = 1;
+			MFDManager.a.lastItemSideRH = isRH;
 			break;
 		case 2:
 			if (curTab == 2) {
@@ -96,6 +99,7 @@ public class TabButtons : MonoBehaviour {
 			TargetTabButton.image.overrideSprite = MFDSprite;
 			DataTabButton.image.overrideSprite = MFDSprite;
 			curTab = 2;
+			MFDManager.a.lastAutomapSideRH = isRH;
 			break;
 		case 3:
 			if (curTab == 3) {
@@ -118,6 +122,7 @@ public class TabButtons : MonoBehaviour {
 			AutomapTabButton.image.overrideSprite = MFDSprite;
 			DataTabButton.image.overrideSprite = MFDSprite;
 			curTab = 3;
+			MFDManager.a.lastTargetSideRH = isRH;
 			break;
 		case 4:
 			if (curTab == 4) {
@@ -140,6 +145,7 @@ public class TabButtons : MonoBehaviour {
 			AutomapTabButton.image.overrideSprite = MFDSprite;
 			TargetTabButton.image.overrideSprite = MFDSprite;
 			curTab = 4;
+			MFDManager.a.lastDataSideRH = isRH;
 			break;
 		}
 	}

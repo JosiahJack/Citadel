@@ -7,11 +7,15 @@ public class ExplosionForce : MonoBehaviour {
 	
 	// Unity builtin
 	// pos: center of sphere
-	public void ExplodeInner(Vector3 pos, float oldforce, float oldradius) {
+	public void ExplodeInner(Vector3 pos, float oldforce, float oldradius, DamageData dd) {
 		Collider[] colliders = Physics.OverlapSphere(pos, oldradius);
 		foreach (Collider c in colliders) {
 			if (c != null && c.GetComponent<Rigidbody>() != null) {
 				c.GetComponent<Rigidbody>().AddExplosionForce(oldforce, pos, oldradius, 1.0f);
+				if (dd != null) {
+					HealthManager hm = c.gameObject.GetComponent<HealthManager>();
+					if (hm != null) hm.TakeDamage(dd);
+				}
 			}
 		}
 	}
