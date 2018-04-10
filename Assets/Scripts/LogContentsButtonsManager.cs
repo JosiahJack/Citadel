@@ -11,6 +11,10 @@ public class LogContentsButtonsManager : MonoBehaviour {
 	public MultiMediaLogButton[] logRefButtons;
 
 	void Start() {
+		InitializeLogsFromLevelIntoFolder();
+	}
+
+	public void InitializeLogsFromLevelIntoFolder() {
 		retrievedIndices = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 		logNames = GetLogNamesFromLevel(currentLevelFolder);
 		for (int i=0; i<15; i++) {

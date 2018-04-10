@@ -264,7 +264,7 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/Resources/logs_text.txt",Encoding.Default);
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/logs_text.txt",Encoding.Default);
 		using (dataReader) {
 			do {
 				int i = 0;
@@ -299,7 +299,7 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/Resources/item_names.txt",Encoding.Default);
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/item_names.txt",Encoding.Default);
 		using (dataReader) {
 			do {
 				// Read the next line
@@ -318,7 +318,7 @@ public class Const : MonoBehaviour {
 		int currentline = 0;
 		int readInt = 0;
 
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/Resources/damage_tables.txt",Encoding.Default);
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/damage_tables.txt",Encoding.Default);
 		using (dataReader) {
 			do {
 				int i = 0;
@@ -363,7 +363,7 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 		int readInt = 0;
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/Resources/enemy_tables.txt",Encoding.Default);
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/enemy_tables.txt",Encoding.Default);
 		using (dataReader) {
 			do {
 				int i = 0;

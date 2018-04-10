@@ -2,7 +2,14 @@
 using System.Collections;
 
 public class SearchFXReset : MonoBehaviour {
-	public void FXReset () {
+	public float itemLifeTime = 3.00f;
+
+	void OnEnable () {
+		StartCoroutine(DisableMe());
+	}
+
+	IEnumerator DisableMe () {
+		yield return new WaitForSeconds(itemLifeTime);
 		gameObject.SetActive(false);
 	}
 }

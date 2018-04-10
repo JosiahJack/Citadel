@@ -34,6 +34,7 @@ public class WeaponCurrent : MonoBehaviour {
 	private int lastIndex = 0;
 	private AudioSource SFX;
 	public AudioClip ReloadSFX;
+	public AudioClip ReloadInStyleSFX;
 
 	void Awake() {
 		WepInstance = this;
@@ -113,7 +114,13 @@ public class WeaponCurrent : MonoBehaviour {
 		// Take bullets out of the ammo stockpile
 		WeaponAmmo.a.wepAmmo[wep16index] -= currentMagazineAmount[wep16index];
 
-		if (!isSilent) SFX.PlayOneShot (ReloadSFX);
+		if (!isSilent) {
+			if (wep16index == 0 || wep16index == 3) {
+				SFX.PlayOneShot (ReloadInStyleSFX);
+			} else {
+				SFX.PlayOneShot (ReloadSFX);
+			}
+		}
 
 		// Update the counter on the HUD
 		MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount[wep16index]);
@@ -132,7 +139,13 @@ public class WeaponCurrent : MonoBehaviour {
 		// Take bullets out of the ammo stockpile
 		WeaponAmmo.a.wepAmmoSecondary[wep16index] -= currentMagazineAmount2[wep16index];
 
-		if (!isSilent) SFX.PlayOneShot (ReloadSFX);
+		if (!isSilent) {
+			if (wep16index == 0 || wep16index == 3) {
+				SFX.PlayOneShot (ReloadInStyleSFX);
+			} else {
+				SFX.PlayOneShot (ReloadSFX);
+			}
+		}
 
 		// Update the counter on the HUD
 		MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount[wep16index]);

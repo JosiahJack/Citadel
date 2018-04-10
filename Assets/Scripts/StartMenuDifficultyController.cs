@@ -9,9 +9,12 @@ public class StartMenuDifficultyController : MonoBehaviour {
 	public GameObject button2;
 	public GameObject button3;
 	public int difficultySetting;
+	public string[] highlightString;
+	public Text externalTextObject;
 
 	public void SetDifficulty (int value) {
 		difficultySetting = value;
+		externalTextObject.text = highlightString[difficultySetting];
 	}
 
 	void ResetHighlights () {
@@ -19,12 +22,15 @@ public class StartMenuDifficultyController : MonoBehaviour {
 		button1.GetComponent<StartMenuButtonHighlight>().SendMessage("DeHighlight",SendMessageOptions.DontRequireReceiver);
 		button2.GetComponent<StartMenuButtonHighlight>().SendMessage("DeHighlight",SendMessageOptions.DontRequireReceiver);
 		button3.GetComponent<StartMenuButtonHighlight>().SendMessage("DeHighlight",SendMessageOptions.DontRequireReceiver);
+		externalTextObject.text = highlightString[difficultySetting];
 	}
 
 	void ClickViaKeyboard () {
 		difficultySetting++;
 		if (difficultySetting >= 4)
 			difficultySetting = 0;
+
+		externalTextObject.text = highlightString[difficultySetting];
 	}
 
 	void Update () {

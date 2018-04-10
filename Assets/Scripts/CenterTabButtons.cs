@@ -11,9 +11,67 @@ public class CenterTabButtons : MonoBehaviour {
 
 	[SerializeField] private Sprite MFDSprite = null; // assign in the editor
 	[SerializeField] private Sprite MFDSpriteSelected = null; // assign in the editor
+	[SerializeField] private Sprite MFDSpriteNotification = null; // assign in the editor
 	[SerializeField] private AudioSource TabSFX = null; // assign in the editor
 	[SerializeField] private AudioClip TabSFXClip = null; // assign in the editor
 	[SerializeField] private int curTab = 0;
+	[SerializeField] private float tickTime = 0.5f;
+	[SerializeField] private int numTicks = 14;
+	private bool[] tabNotified;
+	private float tickFinished;
+	private bool[] highlightStatus;
+	private int[] highlightTickCount;
+
+	void Awake () {
+		tabNotified = new bool[] {false, false, false, false};
+		tickFinished = Time.time;
+		tabNotified = new bool[] {false, false, false, false};
+		highlightStatus = new bool[] {false, false, false, false};
+		highlightTickCount = new int[] {0,0,0,0};
+	}
+
+	void Update () {
+		if (tickFinished < Time.time) {
+			for (int i=0;i<4;i++) {
+				if (tabNotified[i]) {
+					ToggleHighlightOnButton(i);
+				}
+			}
+			tickFinished = Time.time + tickTime;
+		}
+	}
+
+	void ToggleHighlightOnButton (int buttonIndex) {
+		Image buttonImage = null;
+		switch (buttonIndex) {
+			case 0: buttonImage = MainTabButton.image; break;
+			case 1: buttonImage = HardwareTabButton.image; break;
+			case 2: buttonImage = GeneralTabButton.image; break;
+			case 3: buttonImage = SoftwareTabButton.image; break;
+		}
+
+		if (buttonImage == null) return;
+		if (highlightStatus[buttonIndex]) {
+			buttonImage.overrideSprite = MFDSpriteNotification;
+		} else {
+			buttonImage.overrideSprite = MFDSprite;
+		}
+
+		highlightTickCount[buttonIndex]++;
+		highlightStatus[buttonIndex] = (!highlightStatus[buttonIndex]);
+
+		if (highlightTickCount[buttonIndex] >= numTicks) {
+			highlightStatus[buttonIndex] = false;
+			highlightTickCount[buttonIndex] = 0;
+			tabNotified[buttonIndex] = false; // stop blinking
+			buttonImage.overrideSprite = MFDSprite; // Return to normal
+		}
+	}
+
+	public void NotifyToCenterTab(int tabNum) {
+		if (curTab != tabNum) tabNotified[tabNum] = true;
+		ToggleHighlightOnButton (tabNum);
+	}
 
 	public void TabButtonClick (int tabNum) {
 		TabSFX.PlayOneShot(TabSFXClip);

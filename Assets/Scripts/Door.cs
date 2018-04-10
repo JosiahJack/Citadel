@@ -124,7 +124,7 @@ public class Door : MonoBehaviour {
 
 	void Update () {
 		if (ajar) {
-			doorOpen = doorState.Opening;
+			doorOpen = doorState.Closing;
 			anim.Play("DoorOpen",0, ajarPercentage);
 			anim.speed = 0f;
 		}

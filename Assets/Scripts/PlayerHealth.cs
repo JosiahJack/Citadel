@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
-using UnityEditor;
+#if UNITY_EDITOR 
+	using UnityEditor;
+#endif
 using System.Collections;
 
 public class PlayerHealth : MonoBehaviour {
@@ -133,10 +135,12 @@ public class PlayerHealth : MonoBehaviour {
 		//gameObject.GetComponent<PlayerMovement>().enabled = false;
 		//cameraObject.SetActive(false);
 		Cursor.lockState = CursorLockMode.None;
+		#if UNITY_EDITOR
 		if (Application.isEditor) {
 			EditorApplication.isPlaying = false;
 			return;
 		}
+		#endif
 		cameraObject.GetComponent<Camera>().enabled = false;
 	}
 	

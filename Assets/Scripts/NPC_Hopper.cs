@@ -44,7 +44,7 @@ public class NPC_Hopper : MonoBehaviour {
 	public GameObject collisionAid2;
 	public GameObject deathBody;
 	public GameObject targetEndHelper;
-	public GameObject[] gibs;
+	//public GameObject[] gibs;
 	public Transform[] walkWaypoints; // point(s) for NPC to walk to when roaming or patrolling
 	public AudioClip SFXIdle;
 	public AudioClip SFXFootstep;
@@ -444,11 +444,11 @@ public class NPC_Hopper : MonoBehaviour {
 			collisionAid1.SetActive(false);
 			collisionAid2.SetActive(false);
 			normalBody.SetActive(false);
-			//deathBody.SetActive(true);
-			for (int i=0;i<gibs.Length;i++) {
-				gibs[i].SetActive(true);
-				gibs[i].GetComponent<Rigidbody>().WakeUp();
-			}
+			deathBody.SetActive(true);
+			//for (int i=0;i<gibs.Length;i++) {
+			//	gibs[i].SetActive(true);
+			//	gibs[i].GetComponent<Rigidbody>().WakeUp();
+			//}
 			gameObject.tag = "Searchable"; // Enable searching
 
 			//nav.speed = nav.speed * 0.5f; // half the speed while collapsing or whatever

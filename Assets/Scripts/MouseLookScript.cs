@@ -35,6 +35,7 @@ public class MouseLookScript : MonoBehaviour {
 	public int heldObjectAmmo;
 	public bool heldObjectAmmoIsSecondary;
 	public bool firstTimePickup;
+	public bool firstTimeSearch;
     [HideInInspector]
     public float yRotation;
 	[Tooltip("Initial camera x rotation")]
@@ -73,6 +74,7 @@ public class MouseLookScript : MonoBehaviour {
 	[Tooltip("Text in the data tab in the MFD that displays when searching an object containing no items")]
 	public Text dataTabNoItemsText;
 	public DataTab dataTabControl;
+	public LogContentsButtonsManager logContentsManager;
 	public AudioSource SFXSource;
 	[SerializeField] private CenterTabButtons centerTabButtonsControl;
 	[SerializeField] private MFDManager mfdManager;
@@ -113,7 +115,7 @@ public class MouseLookScript : MonoBehaviour {
             Const.sprint("BUG: Could Not Find object 'MouseCursorHandler' in scene",player);
 		
         ResetCursor();
-        Cursor.lockState = CursorLockMode.None;
+		Cursor.lockState = CursorLockMode.None;
 		inventoryMode = true;  // Start with inventory mode turned on
 		playerCamera = GetComponent<Camera>();
 		frobDistance = Const.a.frobDistance;
@@ -133,6 +135,7 @@ public class MouseLookScript : MonoBehaviour {
 		//cameraDefaultLocalRot = transform.localRotation;
 		recoiling = false;
 		firstTimePickup = true;
+		firstTimeSearch = true;
     }
 
 	public void Recoil (int i) {
@@ -402,6 +405,8 @@ public class MouseLookScript : MonoBehaviour {
 			return;
         }
         mainInventory.GetComponent<GeneralInvCurrent>().generalInvCurrent = index;
+
+		centerTabButtonsControl.NotifyToCenterTab(2);
     }
 
     void AddWeaponToInventory(int index) {
@@ -430,6 +435,7 @@ public class MouseLookScript : MonoBehaviour {
 				Const.sprint("Weapon added to inventory",player);
 				itemAdded = true;
 
+				centerTabButtonsControl.NotifyToCenterTab(0);
 				int tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(index);
 				if (heldObjectAmmo > 0) {
 					int extra = 0;
@@ -488,15 +494,24 @@ public class MouseLookScript : MonoBehaviour {
 		} else {
 			WeaponAmmo.a.wepAmmo [index] += amount;
 		}
+		centerTabButtonsControl.NotifyToCenterTab(0);
 	}
 
     void AddGrenadeToInventory (int index) {
 		GrenadeInventory.GrenadeInvInstance.grenAmmo[index]++;
 		GrenadeCurrent.GrenadeInstance.grenadeCurrent = index;
 		Const.sprint("Grenade added to inventory",player);
+		centerTabButtonsControl.NotifyToCenterTab(0);
     }
 
 	void AddPatchToInventory (int index) {
+		if (firstTimePickup) {
+			firstTimePickup = false;
+			centerTabButtonsControl.TabButtonClickSilent (0);
+			centerTabButtonsControl.NotifyToCenterTab(0);
+			//mfdManager.OpenTab (0, true, MFDManager.TabMSG.None, 0,MFDManager.handedness.LeftHand);
+		}
+
 		PatchInventory.PatchInvInstance.patchCounts[index]++;
 		PatchCurrent.PatchInstance.patchCurrent = index;
 		Const.sprint("Patch added to inventory",player);
@@ -508,6 +523,7 @@ public class MouseLookScript : MonoBehaviour {
 			logInventory.lastAddedIndex = heldObjectCustomIndex;
 			int levelnum = Const.a.audioLogLevelFound[heldObjectCustomIndex];
 			logInventory.numLogsFromLevel[levelnum]++;
+			logContentsManager.InitializeLogsFromLevelIntoFolder();
 			string audName = Const.a.audiologNames[heldObjectCustomIndex];
 			string logPlaybackKey = "u"; // TODO add code for handling custom key
 			Const.sprint("Audio log " + audName + " picked up.  Press '" + logPlaybackKey + "' to playback.",player);
@@ -521,7 +537,7 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	void AddAccessCardToInventory (int index) {
-
+		centerTabButtonsControl.NotifyToCenterTab(2);
 	}
 
 	void AddHardwareToInventory (int index) {
@@ -662,6 +678,7 @@ public class MouseLookScript : MonoBehaviour {
 				hardwareButtons[4].SetActive(true);  // Enable HUD button
 				break;
 		}
+		centerTabButtonsControl.NotifyToCenterTab(1);
 	}
 
 	void AddItemToInventory (int index) {
@@ -1060,6 +1077,10 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		}
 
+		if (firstTimeSearch) {
+			firstTimeSearch = false;
+			mfdManager.OpenTab (4, true, MFDManager.TabMSG.Search, -1,MFDManager.handedness.LeftHand);
+		}
 		MFDManager.a.SendSearchToDataTab(curSearchScript.objectName, numberFoundContents, resultContents, resultCustomIndex);
 		ForceInventoryMode();
 	}

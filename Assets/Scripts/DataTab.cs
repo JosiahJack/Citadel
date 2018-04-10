@@ -40,6 +40,7 @@ public class DataTab : MonoBehaviour {
 		keycodeUIControl.SetActive(false);
 		puzzleGrid.SetActive(false);
 		puzzleWire.SetActive(false);
+		audioLogContainer.SetActive(false);
 		for (int i=0; i<=3;i++) {
 			searchItemImages[i].SetActive(false);
 		}

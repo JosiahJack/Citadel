@@ -38,8 +38,7 @@ public class KeypadKeycode : MonoBehaviour {
 		keypadControl.GetComponent<KeypadKeycodeButtons>().keypad = this;
 		playerCamera = owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
 		playerCapsule = owner.GetComponent<PlayerReferenceManager>().playerCapsule; // Get player capsule of player using this pad
-		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode == false)
-			playerCamera.GetComponent<MouseLookScript>().ToggleInventoryMode();
+		playerCamera.GetComponent<MouseLookScript>().ForceInventoryMode();
 		MFDManager.a.OpenTab(4,true,MFDManager.TabMSG.Keypad,0,MFDManager.handedness.LeftHand);
 	}
 

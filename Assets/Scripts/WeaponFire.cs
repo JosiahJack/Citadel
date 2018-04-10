@@ -437,11 +437,12 @@ public class WeaponFire : MonoBehaviour {
 			damageData.hit = tempHit;
 			damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
 			damageData.damage = Const.a.damagePerHitForWeapon[9];
-			//hit.transform.gameObject.SendMessage("TakeDamage", damageData,SendMessageOptions.DontRequireReceiver);
+			damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+			damageData.owner = playerCapsule;
+			damageData.attackType = Const.AttackType.Projectile;
 			HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
 			if (hm == null) return;
-			float take = Const.a.GetDamageTakeAmount(damageData);
-			hm.health = hm.health - take;
+			hm.TakeDamage(damageData);
 		}
 	}
 

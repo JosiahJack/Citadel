@@ -20,14 +20,14 @@ public class MFDManager : MonoBehaviour  {
 	public bool lastLogSideRH;
 	public bool lastLogSecondarySideRH;
 	public bool lastMinigameSideRH;
-	public enum TabMSG {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,WirePuzzle};
+	public GameObject SearchFXRH;
+	public GameObject SearchFXLH;
+	public enum TabMSG {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,WirePuzzle,EReader};
 	public static MFDManager a;
 
 	private bool isRH;
 
 	// External to gameObject, assigned in Inspector
-	public GameObject searchFX;
-	public GameObject searchOriginContainer;
 	public WeaponMagazineCounter wepmagCounterLH;
 	public WeaponMagazineCounter wepmagCounterRH;
 	public GameObject logReaderContainer;
@@ -74,6 +74,11 @@ public class MFDManager : MonoBehaviour  {
 				dataTabLH.Reset();
 				dataTabLH.puzzleGrid.SetActive(true);
 			}
+
+			if (type == TabMSG.EReader) {
+				//itemTabLH.Reset();
+				itemTabLH.EReaderSectionSContainerOpen();
+			}
 		} else {
 			// LH MFD
 			rightTC.TabButtonClickSilent(index,overrideToggling);
@@ -98,24 +103,26 @@ public class MFDManager : MonoBehaviour  {
 				dataTabLH.Reset();
 				dataTabLH.puzzleGrid.SetActive(true);
 			}
+
+			if (type == TabMSG.EReader) {
+				//itemTabRH.Reset();
+				itemTabRH.EReaderSectionSContainerOpen();
+			}
 		}
 	}
 
 	public void SendSearchToDataTab (string name, int contentCount, int[] resultContents, int[] resultsIndices) {
 		// Enable search box scaling effect
-		searchOriginContainer.GetComponent<RectTransform>().position = Input.mousePosition;
-		searchFX.SetActive(true);
-
 		if (lastSearchSideRH) {
 			dataTabRH.Reset();
 			dataTabRH.Search(name,contentCount,resultContents,resultsIndices);
-			searchFX.GetComponent<Animation>().Play();  // TODO: change search FX to move to correct positions
-			OpenTab(4,true,TabMSG.Search,0,handedness.LeftHand);
+			OpenTab(4,true,TabMSG.Search,0,handedness.RightHand);
+			SearchFXRH.SetActive(true);
 		} else {
 			dataTabLH.Reset();
 			dataTabLH.Search(name,contentCount,resultContents,resultsIndices);
-			searchFX.GetComponent<Animation>().Play();
 			OpenTab(4,true,TabMSG.Search,0,handedness.LeftHand);
+			SearchFXLH.SetActive(true);
 		}
 	}
 
@@ -124,7 +131,7 @@ public class MFDManager : MonoBehaviour  {
 			// Send to RH tab
 			dataTabRH.Reset();
 			dataTabRH.GridPuzzle(states,types,gtype,start,end, width, height,colors);
-			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.LeftHand);
+			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.RightHand);
 		} else {
 			// Send to LH tab
 			dataTabLH.Reset();
@@ -137,7 +144,7 @@ public class MFDManager : MonoBehaviour  {
 		if (lastDataSideRH) {
 			// Send to RH tab
 			dataTabRH.Reset();
-			OpenTab(4,true,TabMSG.AudioLog,index,handedness.LeftHand);
+			OpenTab(4,true,TabMSG.AudioLog,index,handedness.RightHand);
 		} else {
 			// Send to LH tab
 			dataTabLH.Reset();
@@ -151,7 +158,7 @@ public class MFDManager : MonoBehaviour  {
 		if (lastDataSideRH) {
 			// Send to RH tab
 			dataTabRH.Reset();
-			OpenTab(4,true,TabMSG.AudioLog,index,handedness.LeftHand);
+			OpenTab(4,true,TabMSG.AudioLog,index,handedness.RightHand);
 		} else {
 			// Send to LH tab
 			dataTabLH.Reset();
@@ -159,6 +166,14 @@ public class MFDManager : MonoBehaviour  {
 		}
 		multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogTextReader();
 		logReaderContainer.GetComponent<LogTextReaderManager>().SendTextToReader(index);
+	}
+
+	public void OpenEReaderInItemsTab() {
+		if (lastItemSideRH) {
+			OpenTab(1,true,TabMSG.EReader,-1,handedness.RightHand);
+		} else {
+			OpenTab(1,true,TabMSG.EReader,-1,handedness.LeftHand);
+		}
 	}
 
 	public void ClearDataTab() {

@@ -49,7 +49,9 @@ ModelImporter:
     7400000: Default Take
     7400002: ArmatureAction
     9500000: //RootNode
+    11100000: //RootNode
     13700000: npc_hopper
+    13700002: //RootNode
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -94,7 +96,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
-    animationCompression: 1
+    animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5

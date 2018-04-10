@@ -60,8 +60,6 @@ public class MouseCursor : MonoBehaviour {
 			cursorYmax = drawTexture.yMax;
 			GUI.DrawTexture(drawTexture, cursorImage);
         }
-
-		//GUI.DrawTexture(new Rect(Input.mousePosition.x - offsetX, Screen.height - Input.mousePosition.y - offsetY, cursorSize, cursorSize), cursorImage);
 	}
 
 	void Update () {
