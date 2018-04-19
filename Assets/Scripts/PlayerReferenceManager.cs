@@ -11,6 +11,7 @@ public class PlayerReferenceManager : MonoBehaviour {
 	public GameObject playerCapsuleMainCameraGunCamera;
 	public GameObject playerInventory;
 	public GameObject playerCanvas;
+	public GameObject playerCursor;
 	public GameObject playerStatusBar;
 	public GameObject playerTextWarningManager;
 	public CenterTabButtons playerCenterTabButtonsControl;

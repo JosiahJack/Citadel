@@ -7,8 +7,7 @@ public class GrenadeButton : MonoBehaviour {
 	public int GrenButtonIndex;
 	public GameObject playerCamera;
 	public int useableItemIndex;
-	[SerializeField] private GameObject iconman;
-	[SerializeField] private GameObject textman;
+	public MFDManager mfdManager;
 	private int itemLookup;
 	private Texture2D cursorTexture;
 	private Vector2 cursorHotspot;
@@ -25,16 +24,23 @@ public class GrenadeButton : MonoBehaviour {
     }
 
 	void DoubleClick() {
-		print("Double click!");
+		// Subtract one from grenade inventory
+		switch(useableItemIndex) {
+		case 7: playerGrenInv.grenAmmo[0]--; break; // Frag
+		case 8: playerGrenInv.grenAmmo[3]--; break; // Concussion
+		case 9: playerGrenInv.grenAmmo[1]--; break; // EMP
+		case 10: playerGrenInv.grenAmmo[6]--; break; // Earth Shaker
+		case 11: playerGrenInv.grenAmmo[4]--; break; // Land Mine
+		case 12: playerGrenInv.grenAmmo[5]--; break; // Nitropak
+		case 13: playerGrenInv.grenAmmo[2]--; break; // Gas
+		}
+
+		// Put grenade in the player's hand (cursor)
+		playerCamera.GetComponent<MouseLookScript>().UseGrenade(useableItemIndex);
 	}
 
 	void GrenadeInvClick () {
-        //itemLookup = GrenadeCurrent.GrenadeInstance.grenadeInventoryIndices[GrenButtonIndex];
-		//if (itemLookup < 0)
-		//	return;
-
-		iconman.GetComponent<ItemIconManager>().SetItemIcon(useableItemIndex);    //Set icon for MFD
-		textman.GetComponent<ItemTextManager>().SetItemText(useableItemIndex); //Set text for MFD
+		mfdManager.SendInfoToItemTab(useableItemIndex);
 		GrenadeCurrent.GrenadeInstance.grenadeCurrent = GrenButtonIndex;  //Set current
 	}
 	

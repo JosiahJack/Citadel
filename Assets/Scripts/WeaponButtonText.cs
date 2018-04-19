@@ -14,9 +14,9 @@ public class WeaponButtonText : MonoBehaviour {
 	void Update () {
 		text.text = WeaponInventory.WepInventoryInstance.weaponInventoryText[slotnum];
 		if (slotnum == WeaponCurrent.WepInstance.weaponCurrent) {
-			text.color = new Color(0.8902f, 0.8745f, 0f); // Yellow
+			text.color = Const.a.ssYellowText; // Yellow
 		} else {
-			text.color = new Color(0.3725f, 0.6549f, 0.1686f); // Green
+			text.color = Const.a.ssGreenText; // Green
 		}
 	}
 }

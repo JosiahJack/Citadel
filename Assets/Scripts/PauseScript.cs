@@ -14,6 +14,8 @@ public class PauseScript : MonoBehaviour {
 	public GameObject saltTheFries;
 	public GameObject[] enableUIOnPause;
 	public GameObject mainMenu;
+	public GameObject saveDialog;
+	public bool onSaveDialog;
 
 	void Awake() {a = this; }
 
@@ -25,7 +27,11 @@ public class PauseScript : MonoBehaviour {
 
 		if (mainMenu.activeSelf == false) {
 			if (GetInput.a.Menu()) {
-				PauseToggle();
+				if (onSaveDialog) {
+					ExitSaveDialog();
+				} else {
+					PauseToggle();
+				}
 			}
 
 			if (Input.GetKeyDown(KeyCode.Home)) {
@@ -58,9 +64,7 @@ public class PauseScript : MonoBehaviour {
 			disableUIOnPause[i].SetActive(false);
 		}
 
-		for (int j=0;j<enableUIOnPause.Length;j++) {
-			enableUIOnPause[j].SetActive(true);
-		}
+		EnablePauseUI();
 
 		PauseRigidbody[] prb = FindObjectsOfType<PauseRigidbody>();
 		for (int k=0;k<prb.Length;k++) {
@@ -89,16 +93,46 @@ public class PauseScript : MonoBehaviour {
 		}
 	}
 
-	public void PauseQuit () {
-		StartCoroutine(quitFunction());
+	public void OpenSaveDialog() {
+		onSaveDialog = true;
+		saveDialog.SetActive(true);
+	}
+		
+	public void ExitSaveDialog() {
+		saveDialog.SetActive(false);
+		onSaveDialog = false;
 	}
 
-	IEnumerator quitFunction () {
-		saltTheFries.SetActive(true);
-		yield return new WaitForSeconds(0.8f);
-		#if UNITY_EDITOR_WIN
-		UnityEditor.EditorApplication.isPlaying = false;
-		#endif
-		Application.Quit();
+	public void SavePauseQuit() {
+		for (int i=0;i<enableUIOnPause.Length;i++) {
+			enableUIOnPause[i].SetActive(false);
+		}
+		saveDialog.SetActive(false); // turn off dialog
+		mainMenu.SetActive(true);
+		mainMenu.GetComponent<MainMenuHandler>().GoToSaveGameSubmenu(true);
+	}
+
+	public void NoSavePauseQuit () {
+		//StartCoroutine(quitFunction());
+		for (int i=0;i<enableUIOnPause.Length;i++) {
+			enableUIOnPause[i].SetActive(false);
+		}
+		saveDialog.SetActive(false); // turn off dialog
+		mainMenu.SetActive(true);
+		mainMenu.GetComponent<MainMenuHandler>().GoToFrontPage();
+	}
+
+	public void EnablePauseUI () {
+		for (int i=0;i<enableUIOnPause.Length;i++) {
+			enableUIOnPause[i].SetActive(true);
+		}
+	}
+
+	public void PauseOptions () {
+		for (int i=0;i<enableUIOnPause.Length;i++) {
+			enableUIOnPause[i].SetActive(false);
+		}
+		mainMenu.SetActive(true);
+		mainMenu.GetComponent<MainMenuHandler>().GoToOptionsSubmenu(true);
 	}
 }

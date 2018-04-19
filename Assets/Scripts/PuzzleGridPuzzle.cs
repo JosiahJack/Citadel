@@ -13,6 +13,7 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 	public int width;
 	public int height;
 	public PuzzleGrid.GridColorTheme theme;
+	public GameObject target;
 
 	void Use (GameObject owner) {
 		if (dead) {
@@ -27,6 +28,6 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 
 		Const.sprint("Puzzle activated",owner);
 		//(bool[] states, CellType[] types, GridType gtype, int start, int end, GridColorTheme colors)
-		MFDManager.a.SendGridPuzzleToDataTab(grid,cellType,gridType,sourceIndex,outputIndex,width,height,theme);
+		MFDManager.a.SendGridPuzzleToDataTab(grid,cellType,gridType,sourceIndex,outputIndex,width,height,theme,target);
 	}
 }

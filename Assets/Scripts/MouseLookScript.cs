@@ -36,6 +36,7 @@ public class MouseLookScript : MonoBehaviour {
 	public bool heldObjectAmmoIsSecondary;
 	public bool firstTimePickup;
 	public bool firstTimeSearch;
+	public bool grenadeActive;
     [HideInInspector]
     public float yRotation;
 	[Tooltip("Initial camera x rotation")]
@@ -68,7 +69,12 @@ public class MouseLookScript : MonoBehaviour {
 
     // External to Prefab
     // ------------------------------------------------------------------------
+	public MouseCursor mouseCursor;
 	public GameObject canvasContainer;
+	public GameObject compassContainer;
+	public GameObject compassMidpoints;
+	public GameObject compassLargeTicks;
+	public GameObject compassSmallTicks;
     [Tooltip("Game object that houses the MFD tabs")]
 	public GameObject tabControl;
 	[Tooltip("Text in the data tab in the MFD that displays when searching an object containing no items")]
@@ -84,12 +90,13 @@ public class MouseLookScript : MonoBehaviour {
 	[SerializeField] private GameObject ammoiconman;
 	[SerializeField] private GameObject weptextman;
 	[SerializeField] private GameObject ammoClipBox;
+	[SerializeField] private GrenadeCurrent grenadeCurrent;
 	[HideInInspector]
 	public GameObject currentButton;
 	[HideInInspector]
 	public GameObject currentSearchItem;
 	[HideInInspector]
-	public GameObject mouseCursor;
+	//public GameObject mouseCursor;
     public GameObject weaponButtonsManager;
     public GameObject mainInventory;
 	[HideInInspector]
@@ -110,9 +117,9 @@ public class MouseLookScript : MonoBehaviour {
     //}
 
     void Start (){
-        mouseCursor = GameObject.Find("MouseCursorHandler");
-        if (mouseCursor == null)
-            Const.sprint("BUG: Could Not Find object 'MouseCursorHandler' in scene",player);
+        //mouseCursor = GameObject.Find("MouseCursorHandler");
+        // if (mouseCursor == null)
+        //    Const.sprint("BUG: Could Not Find object 'MouseCursorHandler' in scene",player);
 		
         ResetCursor();
 		Cursor.lockState = CursorLockMode.None;
@@ -123,6 +130,7 @@ public class MouseLookScript : MonoBehaviour {
 		heldObjectIndex = -1;
 		heldObjectAmmo = 0;
 		heldObjectAmmoIsSecondary = false;
+		grenadeActive = false;
 		yRotation = startyRotation;
 		xRotation = startxRotation;
 		logInventory = mainInventory.GetComponent<LogInventory>();
@@ -195,6 +203,10 @@ public class MouseLookScript : MonoBehaviour {
 				xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle. TIP:: Need to disable clamp for Cyberspace!
 				transform.parent.transform.rotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
 				transform.rotation = Quaternion.Euler(xRotation,yRotation,0f); // Up down component only applied to camera
+
+				if (compassContainer.activeInHierarchy) {
+					compassContainer.transform.rotation = Quaternion.Euler(0f, -yRotation + 180f, 0f);
+				}
 			} else {
 				Const.sprint("ERROR: Paused is true and inventoryMode is false",player);
 			}
@@ -375,7 +387,7 @@ public class MouseLookScript : MonoBehaviour {
 									break;
 	                        }
 							if (GUIState.a.overButtonType != GUIState.ButtonType.Generic) {
-	                       		mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture;
+	                       		mouseCursor.cursorImage = cursorTexture;
 								ForceInventoryMode();
 		                        holdingObject = true;
 							}
@@ -385,8 +397,18 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		}
 	}
+		
+	// Add usable items to inventory:
+	// ==============================================
+
 
     void AddGenericObjectToInventory(int index) {
+		if (firstTimePickup) {
+			firstTimePickup = false;
+			centerTabButtonsControl.TabButtonClickSilent (2);
+			centerTabButtonsControl.NotifyToCenterTab(2);
+		}
+
 		itemAdded = false; //prevent false positive
         for (int i=0;i<14;i++) {
             if (GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[i] == -1) {
@@ -405,7 +427,7 @@ public class MouseLookScript : MonoBehaviour {
 			return;
         }
         mainInventory.GetComponent<GeneralInvCurrent>().generalInvCurrent = index;
-
+		mfdManager.SendInfoToItemTab(index);
 		centerTabButtonsControl.NotifyToCenterTab(2);
     }
 
@@ -414,6 +436,7 @@ public class MouseLookScript : MonoBehaviour {
 			firstTimePickup = false;
 			centerTabButtonsControl.TabButtonClickSilent (0);
 			mfdManager.OpenTab (0, true, MFDManager.TabMSG.None, 0,MFDManager.handedness.LeftHand);
+			centerTabButtonsControl.NotifyToCenterTab(0);
 		}
 
 		itemAdded = false; //prevent false positive
@@ -484,10 +507,16 @@ public class MouseLookScript : MonoBehaviour {
 			Const.sprint("Inventory full, item dropped",player);
 			return;
 		}
+		mfdManager.SendInfoToItemTab(index);
     }
 
 	void AddAmmoToInventory (int index, int amount, bool isSecondary) {
 		if (index == -1)	return;
+		if (firstTimePickup) {
+			firstTimePickup = false;
+			centerTabButtonsControl.TabButtonClickSilent (0);
+			centerTabButtonsControl.NotifyToCenterTab(0);
+		}
 
 		if (isSecondary) {
 			WeaponAmmo.a.wepAmmoSecondary [index] += amount;
@@ -495,13 +524,20 @@ public class MouseLookScript : MonoBehaviour {
 			WeaponAmmo.a.wepAmmo [index] += amount;
 		}
 		centerTabButtonsControl.NotifyToCenterTab(0);
+		mfdManager.SendInfoToItemTab(index);
 	}
 
     void AddGrenadeToInventory (int index) {
+		if (firstTimePickup) {
+			firstTimePickup = false;
+			centerTabButtonsControl.TabButtonClickSilent (0);
+			centerTabButtonsControl.NotifyToCenterTab(0);
+		}
 		GrenadeInventory.GrenadeInvInstance.grenAmmo[index]++;
-		GrenadeCurrent.GrenadeInstance.grenadeCurrent = index;
+		grenadeCurrent.grenadeCurrent = index;
 		Const.sprint("Grenade added to inventory",player);
 		centerTabButtonsControl.NotifyToCenterTab(0);
+		mfdManager.SendInfoToItemTab(index);
     }
 
 	void AddPatchToInventory (int index) {
@@ -509,11 +545,11 @@ public class MouseLookScript : MonoBehaviour {
 			firstTimePickup = false;
 			centerTabButtonsControl.TabButtonClickSilent (0);
 			centerTabButtonsControl.NotifyToCenterTab(0);
-			//mfdManager.OpenTab (0, true, MFDManager.TabMSG.None, 0,MFDManager.handedness.LeftHand);
 		}
 
 		PatchInventory.PatchInvInstance.patchCounts[index]++;
 		PatchCurrent.PatchInstance.patchCurrent = index;
+		mfdManager.SendInfoToItemTab(index);
 		Const.sprint("Patch added to inventory",player);
     }
 
@@ -525,7 +561,7 @@ public class MouseLookScript : MonoBehaviour {
 			logInventory.numLogsFromLevel[levelnum]++;
 			logContentsManager.InitializeLogsFromLevelIntoFolder();
 			string audName = Const.a.audiologNames[heldObjectCustomIndex];
-			string logPlaybackKey = "u"; // TODO add code for handling custom key
+			string logPlaybackKey = Const.a.InputConfigNames[20];
 			Const.sprint("Audio log " + audName + " picked up.  Press '" + logPlaybackKey + "' to playback.",player);
 		} else {
 			if (logInventory == null) {
@@ -537,7 +573,12 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	void AddAccessCardToInventory (int index) {
+		if (firstTimePickup) {
+			firstTimePickup = false;
+			centerTabButtonsControl.TabButtonClickSilent (2);
+		}
 		centerTabButtonsControl.NotifyToCenterTab(2);
+		mfdManager.SendInfoToItemTab(index);
 	}
 
 	void AddHardwareToInventory (int index) {
@@ -556,6 +597,7 @@ public class MouseLookScript : MonoBehaviour {
 				}
 				HardwareInventory.a.hasHardware[0] = true;
 				HardwareInventory.a.hardwareVersion[0] = hwversion;
+			//HardwareInvCurrent.a.hardwareInvIndex
 				Const.sprint(Const.a.useableItemsNameText[21] + " v" + hwversion.ToString(),player);
 				break;
 			case 1:
@@ -567,7 +609,14 @@ public class MouseLookScript : MonoBehaviour {
 				HardwareInventory.a.hasHardware[1] = true;
 				HardwareInventory.a.hardwareVersion[1] = hwversion;
 				Const.sprint(Const.a.useableItemsNameText[22] + " v" + hwversion.ToString(),player);
-				//TODO add HUD compass; // Turn on HUD compass
+				compassContainer.SetActive(true); // Turn on HUD compass
+				if (hwversion == 2) {
+					compassMidpoints.SetActive(true);
+				}
+				if (hwversion > 2) {
+					compassSmallTicks.SetActive(true);
+					compassLargeTicks.SetActive(true);
+				}
 				break;
 			case 2:
 				// Datareader
@@ -678,6 +727,13 @@ public class MouseLookScript : MonoBehaviour {
 				hardwareButtons[4].SetActive(true);  // Enable HUD button
 				break;
 		}
+		if (firstTimePickup) {
+			firstTimePickup = false;
+			centerTabButtonsControl.TabButtonClickSilent (1);
+		}
+
+		HardwareInventory.a.hwButtonsManager.ActivateHardwareButton(index);
+		mfdManager.SendInfoToItemTab(index);
 		centerTabButtonsControl.NotifyToCenterTab(1);
 	}
 
@@ -707,25 +763,25 @@ public class MouseLookScript : MonoBehaviour {
 				AddAudioLogToInventory();
 				break;
             case 7:
-			    AddGrenadeToInventory(0);
+			    AddGrenadeToInventory(0); // Frag
 			    break;
 		    case 8:
-			    AddGrenadeToInventory(3);
+			    AddGrenadeToInventory(3); // Concussion
 			    break;
 		    case 9:
-			    AddGrenadeToInventory(1);
+			    AddGrenadeToInventory(1); // EMP
 			    break;
 		    case 10:
-			    AddGrenadeToInventory(6);
+			    AddGrenadeToInventory(6); // Earth Shaker
 			    break;
 		    case 11:
-			    AddGrenadeToInventory(4);
+			    AddGrenadeToInventory(4); // Land Mine
 			    break;
 		    case 12:
-			    AddGrenadeToInventory(5);
+			    AddGrenadeToInventory(5); // Nitropak
 			    break;
 		    case 13:
-			    AddGrenadeToInventory(2);
+			    AddGrenadeToInventory(2); // Gas
 			    break;
 		    case 14:
 			    AddPatchToInventory(2);
@@ -949,6 +1005,7 @@ public class MouseLookScript : MonoBehaviour {
 				break;
         }
 		SFXSource.PlayOneShot(pickclip);
+		firstTimePickup = false;
 	}
 
 	void DropHeldItem() {
@@ -991,6 +1048,14 @@ public class MouseLookScript : MonoBehaviour {
 			tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
 			tossObject.GetComponent<UseableObjectUse>().customIndex = heldObjectCustomIndex;
 			tossObject.GetComponent<UseableObjectUse>().ammo = heldObjectAmmo;
+			if (grenadeActive) {
+				grenadeActive = false;
+				GrenadeActivate ga = tossObject.GetComponent<GrenadeActivate>();
+				if (ga != null) {
+					ga.Activate(grenadeCurrent); // time to boom
+				}
+				mouseCursor.liveGrenade = false;
+			}
 		} else {
 			Const.sprint("Warning: Object "+heldObjectIndex.ToString()+" not assigned, vaporized.",player);
 		}
@@ -1003,13 +1068,14 @@ public class MouseLookScript : MonoBehaviour {
 		heldObjectAmmo = 0;
 		heldObjectAmmoIsSecondary = false;
 		holdingObject = false;
-		mouseCursor.GetComponent<MouseCursor>().justDroppedItemInHelper = true;
+		mouseCursor.justDroppedItemInHelper = true;
 	}
 
 	void ResetCursor () {
         if (mouseCursor != null) {
             cursorTexture = cursorDefaultTexture;
-            mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture;
+            mouseCursor.cursorImage = cursorTexture;
+			mouseCursor.liveGrenade = false;
         } else {
 			Const.sprint("Warning: Could Not Find object 'MouseCursorHandler' in scene\n",Const.a.allPlayers);
         }
@@ -1407,6 +1473,17 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		}
 		return (Mesh)null;
+	}
+
+	public void UseGrenade (int index) {
+		if (heldObject) return;
+		ForceInventoryMode();  // inventory mode is turned on when picking something up
+		ResetHeldItem();
+		holdingObject = true;
+		heldObjectIndex = index;
+		mouseCursor.cursorImage = Const.a.useableItemsFrobIcons[index];
+		mouseCursor.liveGrenade = true;
+		grenadeActive = true;
 	}
 
 	void drawMyLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){

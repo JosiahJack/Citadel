@@ -14,9 +14,9 @@ public class EmailInventory : MonoBehaviour {
 	void Update () {
 		title.text = EmailTitle.Instance.emailInventoryTitle[slotnum];
 		if (slotnum == EmailCurrent.Instance.emailCurrent) {
-			title.color = new Color(0.8902f, 0.8745f, 0f); // Yellow
+			title.color = Const.a.ssYellowText; // Yellow
 		} else {
-			title.color = new Color(0.3725f, 0.6549f, 0.1686f); // Green
+			title.color = Const.a.ssGreenText; // Green
 		}
 	}
 }

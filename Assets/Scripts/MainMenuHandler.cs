@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityStandardAssets.ImageEffects;
+//using UnityStandardAssets.ImageEffects;
 using System.IO;
 using System.Collections;
 
@@ -19,16 +19,19 @@ public class MainMenuHandler : MonoBehaviour {
 	public GameObject newgamePage;
 	public GameObject frontPage;
 	public GameObject loadPage;
+	public GameObject savePage;
 	public GameObject optionsPage;
 	public InputField newgameInputText;
 	public StartMenuDifficultyController combat;
 	public StartMenuDifficultyController mission;
 	public StartMenuDifficultyController puzzle;
 	public StartMenuDifficultyController cyber;
-	private enum Pages {fp,sp,mp,np,lp,op};
+	public PauseScript pauseHandler;
+	private enum Pages {fp,sp,mp,np,lp,op,sv};
 	private Pages currentPage;
 	private AudioSource StartSFX;
 	private AudioSource BackGroundMusic;
+	private bool returnToPause = false;
 
 	void Awake () {
 		StartSFX = startFXObject.GetComponent<AudioSource>();
@@ -66,6 +69,7 @@ public class MainMenuHandler : MonoBehaviour {
 		newgamePage.SetActive(false);
 		frontPage.SetActive(false);
 		loadPage.SetActive(false);
+		savePage.SetActive(false);
 		optionsPage.SetActive(false);
 	}
 
@@ -87,10 +91,11 @@ public class MainMenuHandler : MonoBehaviour {
 		currentPage = Pages.mp;
 	}
 
-	public void GoToOptionsSubmenu () {
+	public void GoToOptionsSubmenu (bool accessedFromPause) {
 		ResetPages();
 		optionsPage.SetActive(true);
 		currentPage = Pages.op;
+		returnToPause = accessedFromPause;
 	}
 
 	public void GoToNewGameSubmenu () {
@@ -106,6 +111,19 @@ public class MainMenuHandler : MonoBehaviour {
 		currentPage = Pages.lp;
 	}
 
+	public void GoToSaveGameSubmenu (bool fromPause) {
+		ResetPages();
+		savePage.SetActive(true);
+		currentPage = Pages.sv;
+		returnToPause = fromPause;
+	}
+
+	public void SaveGame (int index) {
+		Const.sprint("Saved game to slot " + index.ToString() + "! (TODO:Actually save)",Const.a.player1);
+		pauseHandler.EnablePauseUI();
+		this.gameObject.SetActive(false);
+	}
+
 	public void LoadGame (int index) {
 		//StreamReader sf = Const.a.savedGames[index];
 
@@ -117,6 +135,17 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	void GoBack () {
+		if (returnToPause) {
+			pauseHandler.EnablePauseUI();
+			this.gameObject.SetActive(false);
+			return;
+		}
+
+		if (currentPage == Pages.sv) {
+			GoToFrontPage();
+			return;
+		}
+
 		// Go Back to front page
 		if (currentPage == Pages.sp || currentPage == Pages.mp || currentPage == Pages.op) {
 			GoToFrontPage();

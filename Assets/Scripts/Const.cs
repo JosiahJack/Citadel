@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.PostProcessing;
 using System.Text;
 using System.IO;
 using System.Collections;
@@ -8,6 +9,9 @@ using System.Globalization;
 using System;
 using System.Runtime.Serialization;
 using UnityStandardAssets.ImageEffects;
+
+// Global types
+public enum Handedness {Center,LH,RH};
 
 public class Const : MonoBehaviour {
 	//Item constants
@@ -78,6 +82,9 @@ public class Const : MonoBehaviour {
 	public GameObject player4;
 	public GameObject allPlayers;
 	public float playerCameraOffsetY = 0.84f; //Vertical camera offset from player 0,0,0 position (mid-body)
+	public Color ssYellowText = new Color(0.8902f, 0.8745f, 0f); // Yellow, e.g. for current inventory text
+	public Color ssGreenText = new Color(0.3725f, 0.6549f, 0.1686f); // Green, e.g. for inventory text
+
 
 	//Patch constants
 	public float berserkTime = 15.5f;
@@ -92,10 +99,18 @@ public class Const : MonoBehaviour {
 	public float defaultTimeScale = 1.0f;
 	public float berserkDamageMultiplier = 4.0f;
 
+	//Grenade constants
+	public float nitroMinTime = 1.0f;
+	public float nitroMaxTime = 60.0f;
+	public float nitroDefaultTime = 7.0f;
+	public float earthShMinTime = 4.0f;
+	public float earthShMaxTime = 60.0f;
+	public float earthShDefaultTime = 10.0f;
+
 	//Pool references
 	public enum PoolType {SparqImpacts,CameraExplosions,ProjEnemShot2,Sec2BotRotMuzBursts,Sec2BotMuzBursts,
 						LaserLines,SparksSmall,BloodSpurtSmall,BloodSpurtSmallYellow,BloodSpurtSmallGreen,
-						SparksSmallBlue,LaserLinesHopper,HopperImpact};
+						SparksSmallBlue,LaserLinesHopper,HopperImpact,GrenadeFragExplosions};
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
 	public GameObject Pool_ProjectilesEnemShot2;
@@ -109,6 +124,9 @@ public class Const : MonoBehaviour {
 	public GameObject Pool_BloodSpurtSmallGreen;
 	public GameObject Pool_LaserLinesHopper;
 	public GameObject Pool_HopperImpact;
+	public GameObject Pool_GrenadeFragExplosions;
+
+	//Global object references
 	public GameObject statusBar;
    
 	//Config constants
@@ -472,6 +490,10 @@ public class Const : MonoBehaviour {
 		case PoolType.HopperImpact: 
 			poolContainer = Pool_HopperImpact;
 			poolName = "HopperImpact ";
+			break;
+		case PoolType.GrenadeFragExplosions: 
+			poolContainer = Pool_GrenadeFragExplosions;
+			poolName = "GrenadeFragExplosions ";
 			break;
 		}
 
@@ -925,17 +947,17 @@ public class Const : MonoBehaviour {
 	}
 
 	public void SetBloom() {
-		if (player1 != null) player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<Bloom>().enabled = GraphicsBloom;
-		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<Bloom>().enabled = GraphicsBloom;
-		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<Bloom>().enabled = GraphicsBloom;
-		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<Bloom>().enabled = GraphicsBloom;
+		if (player1 != null) player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
+		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
+		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
+		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
 	}
 
 	public void SetSSAO() {
-		if (player1 != null) player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<ScreenSpaceAmbientObscurance>().enabled = GraphicsSSAO;
-		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<ScreenSpaceAmbientObscurance>().enabled = GraphicsSSAO;
-		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<ScreenSpaceAmbientObscurance>().enabled = GraphicsSSAO;
-		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<ScreenSpaceAmbientObscurance>().enabled = GraphicsSSAO;
+		if (player1 != null) player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
+		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
+		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
+		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
 	}
 
 	public void SetBrightness() {

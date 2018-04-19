@@ -8,9 +8,9 @@ public class GeneralInventoryButtonsManager : MonoBehaviour {
 	void Update() {
 		for (int i=0; i<14; i++) {
 			if (GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[i] > -1) {
-				genButtons[i].SetActive(true);
+				if (!genButtons[i].activeInHierarchy) genButtons[i].SetActive(true);
 			} else {
-				genButtons[i].SetActive(false);
+				if (genButtons[i].activeInHierarchy) genButtons[i].SetActive(false);
 			}
 		}
 	}

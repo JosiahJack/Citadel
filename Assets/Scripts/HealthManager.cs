@@ -13,6 +13,7 @@ public class HealthManager : MonoBehaviour {
 	public bool applyImpact = false;
 	public bool damagingGetsAttention = true;
 	public int[] gibIndices;
+	public GameObject[] gibObjects;
 	public int index;
 	public GameObject attacker;
 	public Const.PoolType deathFX;
@@ -101,8 +102,19 @@ public class HealthManager : MonoBehaviour {
 					AudioSource aS = tempAud.GetComponent<AudioSource>();
 					aS.PlayOneShot(deathSound);
 				}
-				gameObject.SetActive(false);
+
 			}
 		}
+
+		if (gibOnDeath) {
+			if (gibObjects[0] != null) {
+				for (int i=0;i<gibObjects.Length;i++) {
+					gibObjects[i].SetActive(true); // turn on all the gibs to fall apart
+					//TODO: add force to gibs?
+				}
+			}
+		}
+		//gameObject.SetActive(false); // turn off the main object
+		GetComponent<MeshRenderer>().enabled = false;
 	}
 }

@@ -6,7 +6,6 @@ using System.Collections;
 public class GeneralInvText : MonoBehaviour {
 	Text text;
 	public int slotnum = 0;
-    //public string blankText = System.String.Empty;
     private int referenceIndex = -1;
 	
 	void Start () {
@@ -18,13 +17,13 @@ public class GeneralInvText : MonoBehaviour {
         if (referenceIndex > -1) {
             text.text = Const.a.useableItemsNameText[referenceIndex];
         } else {
-            text.text = System.String.Empty;
+            text.text = string.Empty;
         }
 
 		if (slotnum == GeneralInvCurrent.GeneralInvInstance.generalInvCurrent) {
-			text.color = new Color(0.8902f, 0.8745f, 0f); // Yellow
+			text.color = Const.a.ssYellowText; // Yellow
 		} else {
-			text.color = new Color(0.3725f, 0.6549f, 0.1686f); // Green
+			text.color = Const.a.ssGreenText; // Green
 		}
 	}
 }

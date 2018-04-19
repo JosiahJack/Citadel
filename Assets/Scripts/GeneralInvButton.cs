@@ -6,26 +6,21 @@ using System.Collections;
 public class GeneralInvButton : MonoBehaviour {
     public int GeneralInvButtonIndex;
     public int useableItemIndex;
-	public ItemTabManager itabManager;
-    [SerializeField] private GameObject iconman;
-    [SerializeField] private GameObject textman;
 	public PlayerEnergy playerEnergy;
 	public PlayerHealth playerHealth;
 	public GeneralInventory playerGenInv;
+	public MFDManager mfdManager;
+	private bool reduce = false;
 
     void GeneralInvClick() {
-        iconman.GetComponent<ItemIconManager>().SetItemIcon(useableItemIndex);    //Set icon for MFD
-        textman.GetComponent<ItemTextManager>().SetItemText(useableItemIndex); //Set text for MFD
         GeneralInvCurrent.GeneralInvInstance.generalInvCurrent = GeneralInvButtonIndex;  //Set current
-		itabManager.lastCurrent = 0;
+		mfdManager.SendInfoToItemTab(useableItemIndex);
     }
 
 	public void DoubleClick() {
-		bool reduce = false;
-
-		iconman.GetComponent<ItemIconManager>().SetItemIcon(useableItemIndex);    //Set icon for MFD
-		textman.GetComponent<ItemTextManager>().SetItemText(useableItemIndex); //Set text for MFD
-		MFDManager.a.OpenTab(1,true,MFDManager.TabMSG.None,useableItemIndex,MFDManager.handedness.LeftHand);
+		reduce = false;
+		mfdManager.SendInfoToItemTab(useableItemIndex);
+		mfdManager.OpenTab(1,true,MFDManager.TabMSG.None,useableItemIndex,MFDManager.handedness.LeftHand);
 		GeneralInvCurrent.GeneralInvInstance.generalInvCurrent = GeneralInvButtonIndex;  //Set current
 		switch (useableItemIndex) {
 			case 52:

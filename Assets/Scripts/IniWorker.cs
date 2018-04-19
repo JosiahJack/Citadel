@@ -46,7 +46,7 @@ public class INIWorker {
                     PopulateIni(theSection, theKey, theValue); // Load the data from the ini into the dictionary
                 }
             }
-        }
+		}
         return true;
     }
  

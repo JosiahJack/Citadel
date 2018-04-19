@@ -54,7 +54,11 @@ public class CenterTabButtons : MonoBehaviour {
 		if (highlightStatus[buttonIndex]) {
 			buttonImage.overrideSprite = MFDSpriteNotification;
 		} else {
-			buttonImage.overrideSprite = MFDSprite;
+			if (curTab == buttonIndex) {
+				buttonImage.overrideSprite = MFDSpriteSelected;
+			} else {
+				buttonImage.overrideSprite = MFDSprite;
+			}
 		}
 
 		highlightTickCount[buttonIndex]++;
@@ -64,12 +68,18 @@ public class CenterTabButtons : MonoBehaviour {
 			highlightStatus[buttonIndex] = false;
 			highlightTickCount[buttonIndex] = 0;
 			tabNotified[buttonIndex] = false; // stop blinking
-			buttonImage.overrideSprite = MFDSprite; // Return to normal
+			if (curTab == buttonIndex) {
+				buttonImage.overrideSprite = MFDSpriteSelected; // If we are on this tab, return to selected
+			} else {
+				buttonImage.overrideSprite = MFDSprite; // Return to normal
+			}
 		}
 	}
 
 	public void NotifyToCenterTab(int tabNum) {
-		if (curTab != tabNum) tabNotified[tabNum] = true;
+		//if (curTab == tabNum) return;
+		tabNotified[tabNum] = true;
+		tickFinished = Time.time + tickTime;
 		ToggleHighlightOnButton (tabNum);
 	}
 

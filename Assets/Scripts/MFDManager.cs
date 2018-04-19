@@ -24,6 +24,7 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject SearchFXLH;
 	public enum TabMSG {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,WirePuzzle,EReader};
 	public static MFDManager a;
+	public MouseLookScript playerMLook;
 
 	private bool isRH;
 
@@ -63,21 +64,25 @@ public class MFDManager : MonoBehaviour  {
 			if (type == TabMSG.Keypad) {
 				dataTabLH.Reset();
 				dataTabLH.keycodeUIControl.SetActive(true);
+				playerMLook.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.Elevator) {
 				dataTabLH.Reset();
 				dataTabLH.elevatorUIControl.SetActive(true);
+				playerMLook.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.GridPuzzle) {
 				dataTabLH.Reset();
 				dataTabLH.puzzleGrid.SetActive(true);
+				playerMLook.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.EReader) {
 				//itemTabLH.Reset();
 				itemTabLH.EReaderSectionSContainerOpen();
+				playerMLook.ForceInventoryMode();
 			}
 		} else {
 			// LH MFD
@@ -111,6 +116,11 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
+	public void SendInfoToItemTab(int index) {
+		if (itemTabRH != null) itemTabRH.SendItemDataToItemTab(index);
+		if (itemTabLH != null) itemTabLH.SendItemDataToItemTab(index);
+	}
+
 	public void SendSearchToDataTab (string name, int contentCount, int[] resultContents, int[] resultsIndices) {
 		// Enable search box scaling effect
 		if (lastSearchSideRH) {
@@ -126,17 +136,19 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
-	public void SendGridPuzzleToDataTab (bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors) {
+	public void SendGridPuzzleToDataTab (bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors, GameObject target) {
 		if (lastDataSideRH) {
 			// Send to RH tab
 			dataTabRH.Reset();
-			dataTabRH.GridPuzzle(states,types,gtype,start,end, width, height,colors);
+			dataTabRH.GridPuzzle(states,types,gtype,start,end, width, height,colors,target);
 			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.RightHand);
+			SearchFXRH.SetActive(true);
 		} else {
 			// Send to LH tab
 			dataTabLH.Reset();
-			dataTabLH.GridPuzzle(states,types,gtype,start,end, width, height,colors);
+			dataTabLH.GridPuzzle(states,types,gtype,start,end, width, height,colors,target);
 			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.LeftHand);
+			SearchFXLH.SetActive(true);
 		}
 	}
 
@@ -145,10 +157,12 @@ public class MFDManager : MonoBehaviour  {
 			// Send to RH tab
 			dataTabRH.Reset();
 			OpenTab(4,true,TabMSG.AudioLog,index,handedness.RightHand);
+			SearchFXRH.SetActive(true);
 		} else {
 			// Send to LH tab
 			dataTabLH.Reset();
 			OpenTab(4,true,TabMSG.AudioLog,index,handedness.LeftHand);
+			SearchFXLH.SetActive(true);
 		}
 		multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogTextReader();
 		logReaderContainer.GetComponent<LogTextReaderManager>().SendTextToReader(index);
@@ -170,8 +184,10 @@ public class MFDManager : MonoBehaviour  {
 
 	public void OpenEReaderInItemsTab() {
 		if (lastItemSideRH) {
+			itemTabRH.Reset();
 			OpenTab(1,true,TabMSG.EReader,-1,handedness.RightHand);
 		} else {
+			itemTabLH.Reset();
 			OpenTab(1,true,TabMSG.EReader,-1,handedness.LeftHand);
 		}
 	}

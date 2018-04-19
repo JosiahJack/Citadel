@@ -13,13 +13,20 @@ ModelImporter:
     400004: //RootNode
     2300000: Cube
     2300002: Cube_001
+    2300004: //RootNode
     3300000: Cube
     3300002: Cube_001
+    3300004: //RootNode
     4300000: Cube_001
     4300002: Cube
     7400000: Default Take
     9500000: //RootNode
   externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: None__weapon_pistol_png
+    second: {fileID: 2100000, guid: 98631a0bb36e3ec43929a0c4447834c6, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule

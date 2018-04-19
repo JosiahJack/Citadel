@@ -33,16 +33,19 @@ public class PuzzleGrid : MonoBehaviour {
 	public Image outputNode;
 	public enum GridColorTheme {Gray,Green,Blue};
 	public GridColorTheme theme;
-
+	public GameObject targetGameObject;
+	public AudioClip solvedSFX;
 	public bool puzzleSolved;
+	private AudioSource audsource;
 
 	void Awake () {
 		puzzleSolved = false;
+		audsource = GetComponent<AudioSource>();
 		EvaluatePuzzle();
 		UpdateCellImages();
 	}
 
-	public void SendGrid(bool[] states, CellType[] types, GridType gtype, int start, int end, int w, int h, GridColorTheme colors) {
+	public void SendGrid(bool[] states, CellType[] types, GridType gtype, int start, int end, int w, int h, GridColorTheme colors, GameObject target) {
 		grid = states;
 		cellType = types;
 		gridType = gtype;
@@ -51,17 +54,19 @@ public class PuzzleGrid : MonoBehaviour {
 		width = w;
 		height = h;
 		theme = colors;
+		targetGameObject = target;
 		EvaluatePuzzle();
 		UpdateCellImages();
 	}
 
 	void Update () {
-		//EvaluatePuzzle();
+		//EvaluatePuzzle(); not needed, useless activity
 		UpdateCellImages();
 	}
 
 	public void OnGridCellClick (int index) {
-		if (!puzzleSolved && cellType[index] == CellType.Standard) {
+		if (puzzleSolved) return;
+		if (cellType[index] == CellType.Standard) {
 			switch (gridType) {
 				case GridType.King: King(index); break;
 				case GridType.Queen: Queen(index); break;
@@ -76,7 +81,7 @@ public class PuzzleGrid : MonoBehaviour {
 	}
 
 	public void UpdateCellImages() {
-		if (puzzleSolved) outputNode.overrideSprite = nodeOn;
+		//if (puzzleSolved) outputNode.overrideSprite = nodeOn;
 
 		for (int i=0;i<(width*height);i++) {
 			if (cellType[i] != CellType.Off) {
@@ -155,7 +160,7 @@ public class PuzzleGrid : MonoBehaviour {
 				queue.Remove(movingIndex);
 				continue;
 			}
-			Const.sprint(("movingIndex = " + movingIndex.ToString()),Const.a.allPlayers);
+			//Const.sprint(("movingIndex = " + movingIndex.ToString()),Const.a.allPlayers);
 			cellAbove = ReturnCellAbove(movingIndex);
 			cellBelow = ReturnCellBelow(movingIndex);
 			cellLeft = ReturnCellToLeft(movingIndex);
@@ -181,7 +186,13 @@ public class PuzzleGrid : MonoBehaviour {
 		}
 
 		if (powered[outputIndex])
-			puzzleSolved = true; // Latched solved state, no else statement to switch solved state back
+			PuzzleSolved(); // Latched solved state, no else statement to switch solved state back
+	}
+
+	void PuzzleSolved() {
+		puzzleSolved = true;
+		outputNode.overrideSprite = nodeOn;
+		audsource.PlayOneShot(solvedSFX);
 	}
 
 	int ReturnCellAbove(int index) {

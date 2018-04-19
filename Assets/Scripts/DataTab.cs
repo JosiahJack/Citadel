@@ -67,7 +67,7 @@ public class DataTab : MonoBehaviour {
 		}
 	}
 
-	public void GridPuzzle(bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors) {
-		puzzleGrid.GetComponent<PuzzleGrid>().SendGrid(states,types,gtype,start,end, width, height,colors);
+	public void GridPuzzle(bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors, GameObject target) {
+		puzzleGrid.GetComponent<PuzzleGrid>().SendGrid(states,types,gtype,start,end, width, height,colors,target);
 	}
 }

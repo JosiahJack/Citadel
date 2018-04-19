@@ -6,7 +6,6 @@ public class CenterMFDTabs : MonoBehaviour {
 	[SerializeField] public GameObject HardwareTab = null; // assign in the editor
 	[SerializeField] public GameObject GeneralTab = null; // assign in the editor
 	[SerializeField] public GameObject SoftwareTab = null; // assign in the editor
-	//[SerializeField] public GameObject EmailTab = null; // assign in the editor
 	[SerializeField] public GameObject DataReaderContentTab = null; // assign in the editor
 
 	public void DisableAllTabs () {
@@ -14,7 +13,6 @@ public class CenterMFDTabs : MonoBehaviour {
 		HardwareTab.SetActive(false);
 		GeneralTab.SetActive(false);
 		SoftwareTab.SetActive(false);
-		//EmailTab.Setactive(false);
 		DataReaderContentTab.SetActive(false);
 	}
 }

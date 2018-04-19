@@ -9,13 +9,22 @@ public class ButtonSwitch : MonoBehaviour {
 	public GameObject target3;
 	public string message;
 	public float delay = 0f;
+	public Material mainSwitchMaterial;
+	public Material alternateSwitchMaterial;
 	public AudioClip SFX;
+	public float tickTime = 1.5f;
+	public bool active;
+	public bool blinkWhenActive;
 	private float delayFinished;
+	private float tickFinished;
 	private GameObject player;
 	private AudioSource SFXSource;
+	private bool alternateOn;
+	private MeshRenderer mRenderer;
 
 	void Awake () {
 		SFXSource = GetComponent<AudioSource>();
+		mRenderer = GetComponent<MeshRenderer>();
 	}
 
 	public void Use (GameObject owner) {
@@ -47,12 +56,35 @@ public class ButtonSwitch : MonoBehaviour {
 		if (target3 != null) {
 			target.SendMessageUpwards("Targetted", player);
 		}
+			
+		active = !active;
+		alternateOn = active;
+		if (blinkWhenActive) {
+			if (alternateOn) mRenderer.material = alternateSwitchMaterial;
+			else mRenderer.material = mainSwitchMaterial;
+			if (active) tickFinished = Time.time + tickTime;
+		}
 	}
 
 	void Update () {
 		if ((delayFinished < Time.time) && delayFinished != 0) {
 			delayFinished = 0;
 			UseTargets();
+		}
+
+		// blink the switch when active
+		if (blinkWhenActive) {
+			if (active) {
+				if (tickFinished < Time.time) {
+					if (alternateOn) {
+						mRenderer.material = mainSwitchMaterial;
+					} else {
+						mRenderer.material = alternateSwitchMaterial;
+					}
+					alternateOn = !alternateOn;
+					tickFinished = Time.time + tickTime;
+				}
+			}
 		}
 	}
 }

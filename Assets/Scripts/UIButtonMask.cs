@@ -10,6 +10,9 @@ public class UIButtonMask : MonoBehaviour {
 	private float dbclickFinished;
 	public int doubleClickTicks;  // takes 2 to activate double click function
 	public bool doubleClickEnabled = false;
+	public string toolTipText;
+	public Handedness toolTipType;
+	public Texture2D cursorOnHover;
 
 	void Start () {
 		if (playerCamera == null) {
@@ -56,11 +59,19 @@ public class UIButtonMask : MonoBehaviour {
 		GUIState.a.PtrHandler(true,true,overButtonType,gameObject);
         playerCamera.GetComponent<MouseLookScript>().currentButton = gameObject;
 		doubleClickTicks = 0;
+
+		if (toolTipText != null && toolTipText != string.Empty) {
+			playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>().toolTip = toolTipText;
+			playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>().toolTipType = toolTipType;
+		}
     }
 
 	public void PtrExit () {
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 		doubleClickTicks = 0;
+		if (toolTipText != null && toolTipText != string.Empty) {
+			playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>().toolTip = string.Empty;
+		}
     }
 
 	void UiButtonMaskClick () {
