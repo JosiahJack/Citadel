@@ -3,19 +3,20 @@ using System.Collections;
 
 public class HeadMountedLantern : MonoBehaviour {
 	public int lanternState = 0;
-	public int lanternVersion = 1;	//TODO: Set to 0
+	//public int lanternVersion = 1;	//TODO: Set to 0
 	//public float lanternSetting = 1;
 	public float lanternVersion1Brightness = 2.5f;
 	public float lanternVersion2Brightness = 4;
 	public float lanternVersion3Brightness = 5;
 
-	private Light headlight;
+	[HideInInspector]
+	public Light headlight;
 
 	void Awake () {
 		headlight = GetComponent<Light>();
 	}
 	
-	void  Update (){
+	/*void  Update (){
 		if (GetInput.a != null && GetInput.a.Lantern()) {
 			float brightness = 0f;
 			switch(lanternVersion) {
@@ -36,5 +37,5 @@ public class HeadMountedLantern : MonoBehaviour {
 				break;
 			}
 		}
-	}
+	}*/
 }

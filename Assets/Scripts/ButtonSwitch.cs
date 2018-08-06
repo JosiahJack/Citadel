@@ -25,17 +25,18 @@ public class ButtonSwitch : MonoBehaviour {
 	void Awake () {
 		SFXSource = GetComponent<AudioSource>();
 		mRenderer = GetComponent<MeshRenderer>();
+		delayFinished = 0; // prevent using targets on awake
 	}
 
-	public void Use (GameObject owner) {
+	public void Use (UseData ud) {
 		if (LevelManager.a.levelSecurity[LevelManager.a.currentLevel] > securityThreshhold) {
 			MFDManager.a.BlockedBySecurity();
 			return;
 		}
 
-		player = owner;  // set playerCamera to owner of the input (always should be the player camera)
+		player = ud.owner;  // set playerCamera to owner of the input (always should be the player camera)
 		SFXSource.PlayOneShot(SFX);
-		if (message != null && message != "") Const.sprint(message,owner);
+		if (message != null && message != "") Const.sprint(message,ud.owner);
 		if (delay > 0) {
 			delayFinished = Time.time + delay;
 		} else {

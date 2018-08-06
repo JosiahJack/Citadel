@@ -2,11 +2,12 @@
 using System.Collections;
 
 public class ListenerHardwareEreader : MonoBehaviour {
-	[SerializeField] private AudioSource SFX = null; // assign in the editor
-	[SerializeField] private AudioClip SFXClip = null; // assign in the editor
+	//[SerializeField] private AudioSource SFX = null; // assign in the editor
+	//[SerializeField] private AudioClip SFXClip = null; // assign in the editor
 	//[SerializeField] public GameObject centerTabContainer;
-	public CenterTabButtons ctb;
+	//public CenterTabButtons ctb;
 
+	/*
 	void  Update (){
 		if (HardwareInventory.a.hasHardware[2] && GetInput.a.Email()) {
 			SFX.PlayOneShot(SFXClip);
@@ -15,5 +16,5 @@ public class ListenerHardwareEreader : MonoBehaviour {
 			ctb.TabButtonClickSilent(4);
 			MFDManager.a.OpenEReaderInItemsTab();
 		}
-	}
+	}*/
 }

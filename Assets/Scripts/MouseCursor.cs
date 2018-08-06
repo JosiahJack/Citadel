@@ -92,9 +92,9 @@ public class MouseCursor : MonoBehaviour {
 		if (playerCameraScript.inventoryMode && playerCameraScript.holdingObject && !PauseScript.a.paused) {
 			// Be sure to pass the camera to the 3rd parameter if using "Screen Space - Camer" on the Canvas, otherwise use "null"
 			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,uiCamera.GetComponent<Camera>())) {
-				inventoryAddHelper.SetActive(true);
+				if (!inventoryAddHelper.activeInHierarchy) inventoryAddHelper.SetActive(true);
 			} else {
-				inventoryAddHelper.SetActive(false);
+				if (inventoryAddHelper.activeInHierarchy) inventoryAddHelper.SetActive(false);
 				if (justDroppedItemInHelper) {
 					GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 					justDroppedItemInHelper = false; // only disable blocking state once, not constantly

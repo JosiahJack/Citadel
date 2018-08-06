@@ -6,13 +6,73 @@ ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
     100000: //RootNode
+    100002: bodyshell_lh
+    100004: bodyshell_rh
+    100006: leg
+    100008: leg_001
+    100010: leg_002
+    100012: leg_003
+    100014: npc_maintenancebot_base
+    100016: npc_maintenancebot_pincers_lh
+    100018: npc_maintenancebot_pincers_rh
+    100020: npc_maintenancebot_pincers_stalk1
+    100022: npc_maintenancebot_pincers_stalk2
     400000: //RootNode
+    400002: bodyshell_lh
+    400004: bodyshell_rh
+    400006: leg
+    400008: leg_001
+    400010: leg_002
+    400012: leg_003
+    400014: npc_maintenancebot_base
+    400016: npc_maintenancebot_pincers_lh
+    400018: npc_maintenancebot_pincers_rh
+    400020: npc_maintenancebot_pincers_stalk1
+    400022: npc_maintenancebot_pincers_stalk2
     2300000: //RootNode
+    2300002: bodyshell_lh
+    2300004: bodyshell_rh
+    2300006: leg
+    2300008: leg_001
+    2300010: leg_002
+    2300012: leg_003
+    2300014: npc_maintenancebot_base
+    2300016: npc_maintenancebot_pincers_lh
+    2300018: npc_maintenancebot_pincers_rh
+    2300020: npc_maintenancebot_pincers_stalk1
+    2300022: npc_maintenancebot_pincers_stalk2
     3300000: //RootNode
+    3300002: bodyshell_lh
+    3300004: bodyshell_rh
+    3300006: leg
+    3300008: leg_001
+    3300010: leg_002
+    3300012: leg_003
+    3300014: npc_maintenancebot_base
+    3300016: npc_maintenancebot_pincers_lh
+    3300018: npc_maintenancebot_pincers_rh
+    3300020: npc_maintenancebot_pincers_stalk1
+    3300022: npc_maintenancebot_pincers_stalk2
     4300000: Cube
+    4300002: npc_maintenancebot_pincers_lh
+    4300004: npc_maintenancebot_pincers_stalk1
+    4300006: npc_maintenancebot_pincers_stalk2
+    4300008: leg_003
+    4300010: leg_002
+    4300012: leg_001
+    4300014: npc_maintenancebot_pincers_rh
+    4300016: leg
+    4300018: npc_maintenancebot_base
+    4300020: bodyshell_lh
+    4300022: bodyshell_rh
     7400000: Default Take
     9500000: //RootNode
   externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: None__npc_maintenancebot_png
+    second: {fileID: 2100000, guid: 9f6c0d6d6b30b0b498a4450ed3668d50, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule

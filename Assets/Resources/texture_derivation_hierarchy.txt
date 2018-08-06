@@ -1,0 +1,232 @@
+Base Texture
+	Supported Texture 1
+	Supported Texture 2
+	... n
+
+bridge1_2
+bridge1_3
+	bridge1_3b
+bridge1_4
+brdige1_5
+bridge2_2
+bridge2_3
+	bridge2_1
+bridge2_6	
+	bridge2_4
+	bridge2_5
+	bridge2_7
+	exec6_1
+bridge2_8
+bridge2_9
+eng1_5
+	eng1_1
+		eng1_1d
+	eng1_2
+		eng1_2d
+	eng1_3
+		eng1_3d
+	eng1_4
+	eng1_5d
+	eng1_6
+		eng1_6d
+		eng1_7
+			eng1_7d
+		eng2_3
+			eng2_3d
+	eng1_8
+	eng1_9
+		eng1_9d
+	maint1_9
+		maint1_9d
+	stor1_7
+		stor1_7d
+DONEeng2_1
+	eng2_1d
+DONEeng2_2 [FLAT CARD, 2 TRIS]
+	DONEeng2_2d
+DONEexec3_4
+	DONEexec4_5
+	DONEflight2_2
+	DONEflight2_3
+	DONEmaint2_1
+		DONEmaint2_1d
+	DONEmed1_8
+		DONEmed1_8d
+	DONEreac1_1
+	DONEsec1_1
+	DONEsec1_1b
+	DONEsec1_1c
+eng2_4
+eng2_5
+exec1_1
+	exec1_1d
+exec1_2
+	exec1_2d
+exec2_1
+	exec3_1
+		exec3_1d
+exec2_2
+	exec2_2d
+	exec3_2
+exec2_3
+exec2_4
+exec2_5
+	exec2_7
+exec2_6
+exec4_1
+exec4_2
+exec4_3
+exec4_4
+exec4_6
+flight1_1
+	flight1_1b
+flight1_2
+	flight1_3
+	flight1_4
+	flight1_5
+	flight1_6
+flight2_1
+grate1_1
+grate1_2
+grate1_3
+grove1_1
+grove1_2
+	grove1_3
+	grove1_4
+	grove1_5
+	grove1_6
+	grove1_7
+grove2_3
+	grove2_1
+		grove2_2
+	grove2_4
+	grove2_5
+		grove2_6
+	grove2_7
+	grove2_8
+	grove2_9
+		grove2_9c
+	grove2_9b
+maint1_1
+maint1_2
+	maint1_2d
+maint1_3
+	maint1_3b
+maint1_4
+	maint1_4b
+maint1_5
+maint1_6
+maint1_7
+maint2_2
+maint2_3
+maint2_4
+	maint2_3d
+	maint2_5
+		maint24_d
+maint2_6
+	maint2_5d
+maint2_7
+	maint2_6d
+maint2_8
+	maint2_7d
+maint2_9
+med1_1
+	med1_1d
+	med1_2
+		med1_2d
+	med1_3
+		med1_3d
+	med1_4
+med1_6
+	med1_5
+med1_7
+	med1_7d
+med1_9
+	med1_9d
+DONEmed2_1
+	DONEmed2_1d
+	DONEmed2_2
+		med2_2d
+	DONEmed2_3
+		med2_3d
+	med2_9
+		med2_9d
+	med2_4
+	DONEmed2_6
+med2_5
+med2_7
+med2_8
+med3_1
+rad1_1
+	rad1_2
+reac1_2
+	reac1_3
+	reac3_5
+	reac3_6
+reac1_4
+reac1_5
+	reac1_6
+	reac1_7
+	reac3_4
+	reac3_7
+reac1_8
+reac1_9
+reac2_1
+	reac2_1b
+		reac2_2
+		reac2_4
+reac2_5
+	reac2_7
+	reac2_8
+reac2_6
+reac2_9
+reac3_1
+reac3_2
+reac3_3
+reac4_1
+reac4_2
+reac5_2
+	reac5_1
+reac5_3
+reac6_1
+reac6_2
+	reac6_3
+sci1_1
+	sci1_1d
+	sci1_2
+		sci1_2d
+		sci1_3
+		sci1_4
+		sci1_5
+		sci1_7
+			sci1_7d
+		sci1_8
+		sci1_8d
+		sci2_2
+			sci2_2d
+		sci2_3
+sci1_6
+	sci2_4
+sci1_9
+	sci1_9d
+sci2_1
+	sci2_1d
+sci2_5
+	sci2_5d
+sci3_1
+	sci3_1d
+	sci3_2
+	sci3_3
+	sci3_4
+	sci3_5
+	sci3_6
+sec1_2
+	sec1_2b
+	sec1_3
+stor1_4
+	stor1_1
+stor1_5
+	stor1_3
+		stor1_2
+stor1_6
+DONE 20 of 226

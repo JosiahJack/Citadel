@@ -3,28 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraLayers : MonoBehaviour {
-	public float defaultDistance = 50f;
-	public float skyDistance = 1100f;
-
 	void Awake () {
 		Camera cam = GetComponent<Camera>();
 		cam.layerCullSpherical = true;
 		float[] distPerLayer = new float[32];
 
+		for (int i = 0; i < distPerLayer.Length; i++) {
+			distPerLayer [i] = 0; // default to far plane distance
+		}
 
-
-
-
-
-
-		distPerLayer[8] = defaultDistance;
-		distPerLayer[9] = defaultDistance;
-		distPerLayer[10] = defaultDistance;
-		distPerLayer[11] = defaultDistance;
-		distPerLayer[12] = defaultDistance;
-		distPerLayer[13] = defaultDistance;
-
-		distPerLayer[15] = skyDistance;
+		// Tweaked layer settings
+		distPerLayer[15] = 1350f;
 		cam.layerCullDistances = distPerLayer;
 	}
 }

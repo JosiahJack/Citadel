@@ -2,13 +2,19 @@
 using System.Collections;
 
 public class Billboard : MonoBehaviour {
+	public Camera mainCamera;
+	private Vector3 tempDir;
+
+	void Awake () {
+		mainCamera = GetComponent<Camera> ();
+		if (mainCamera == null)
+			transform.gameObject.SetActive (false);
+	}
+
 	void  Update (){
-		if (Camera.main != null) {
-			Camera mainCamera = Camera.main;
-			if (mainCamera.enabled == true) {
-				Vector3 dir = mainCamera.transform.forward;
-				transform.rotation = Quaternion.LookRotation(-dir);
-			}
+		if (mainCamera.enabled == true) {
+			tempDir = mainCamera.transform.forward;
+			transform.rotation = Quaternion.LookRotation(-tempDir);
 		}
 	}
 

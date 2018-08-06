@@ -72,6 +72,7 @@ public class Const : MonoBehaviour {
 	[SerializeField] public float[] randomMinimumDamageModifierForNPC; // minimum value that NPC damage can be
 
 	[SerializeField] public HealthManager[] healthObjectsRegistration; // List of objects with health, used for fast application of damage in explosions
+	public GameObject[] levelChunks;
 
 	//System constants
 	public float doubleClickTime = 0.500f;
@@ -84,7 +85,6 @@ public class Const : MonoBehaviour {
 	public float playerCameraOffsetY = 0.84f; //Vertical camera offset from player 0,0,0 position (mid-body)
 	public Color ssYellowText = new Color(0.8902f, 0.8745f, 0f); // Yellow, e.g. for current inventory text
 	public Color ssGreenText = new Color(0.3725f, 0.6549f, 0.1686f); // Green, e.g. for inventory text
-
 
 	//Patch constants
 	public float berserkTime = 15.5f;
@@ -162,6 +162,7 @@ public class Const : MonoBehaviour {
 	public bool InputQuickReloadWeapons;
 	public enum aiState{Idle,Walk,Run,Attack1,Attack2,Attack3,Pain,Dying,Dead,Inspect,Interacting};
 
+
 	//Instance container variable
 	public static Const a;
 
@@ -195,7 +196,7 @@ public class Const : MonoBehaviour {
 		if (playerGameObjects.Count > 2) player3 = playerGameObjects[2];
 		if (playerGameObjects.Count > 3) player4 = playerGameObjects[3];
 		allPlayers = new GameObject();
-		allPlayers.name = "All Players";
+		allPlayers.name = "All Players"; // for use in self printing Sprint() function for sending messages to HUD on all players
 	}
 
 	void Start() {
@@ -1093,4 +1094,31 @@ public class Const : MonoBehaviour {
 	}
 
 	public static float AngleInDeg(Vector3 vec1, Vector3 vec2) { return ((Mathf.Atan2(vec2.y - vec1.y, vec2.x - vec1.x)) * (180 / Mathf.PI)); }
+}
+
+public class QuestBits {
+	public bool Level1SecNodesDestroyed;
+	public bool Level2SecNodesDestroyed;
+	public bool Level3SecNodesDestroyed;
+	public bool Level4SecNodesDestroyed;
+	public bool Level5SecNodesDestroyed;
+	public bool Level6SecNodesDestroyed;
+	public bool ShieldActivated;
+	public bool LaserSafetyOverriden;
+	public bool LaserDestroyed;
+	public bool BetaGroveCyberUnlocked;
+	public bool GroveAlphaJettisonEnabled;
+	public bool GroveBetaJettisonEnabled;
+	public bool GroveDeltaJettisonEnabled;
+	public bool MasterJettisonBroken;
+	public bool Relay428Fixed;
+	public bool MasterJettisonEnabled;
+	public bool BetaGroveJettisoned;
+	public bool AntennaNorthDestroyed;
+	public bool AntennaSouthDestroyed;
+	public bool AntennaEastDestroyed;
+	public bool AntennaWestDestroyed;
+	public bool SelfDestructActivated;
+	public bool BridgeSeparated;
+	public bool IsolinearChipsetInstalled;
 }

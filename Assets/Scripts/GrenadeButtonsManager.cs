@@ -9,11 +9,11 @@ public class GrenadeButtonsManager : MonoBehaviour {
 	void Update() {
 		for (int i=0; i<7; i++) {
 			if (GrenadeInventory.GrenadeInvInstance.grenAmmo[i] > 0) {
-				grenButtons[i].SetActive(true);
-				grenCountsText[i].SetActive(true);
+				if (!grenButtons[i].activeInHierarchy) grenButtons[i].SetActive(true);
+				if (!grenCountsText[i].activeInHierarchy) grenCountsText[i].SetActive(true);
             } else {
-				grenButtons[i].SetActive(false);
-				grenCountsText[i].SetActive(false);
+				if (grenButtons[i].activeInHierarchy) grenButtons[i].SetActive(false);
+				if (grenCountsText[i].activeInHierarchy) grenCountsText[i].SetActive(false);
 			}
 		}
 	}

@@ -7,12 +7,4 @@ public class AmmoControl : MonoBehaviour {
 	public GameObject curcntDigitTens;
 	public GameObject curcntDigitHuns;
 	public float currentAmmo;
-
-	void Awake () {
-	
-	}
-
-	void Update () {
-		
-	}
 }

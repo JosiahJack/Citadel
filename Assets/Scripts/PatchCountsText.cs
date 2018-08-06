@@ -4,13 +4,14 @@ using System.Collections;
 
 [System.Serializable]
 public class PatchCountsText : MonoBehaviour {
-	Text text;
+	public Text text;
 	public int countsSlotnum = 0;
 	
 	void Start () {
 		text = GetComponent<Text>();
 	}
 
+	/*
 	void Update () {
 		text.text = PatchInventory.PatchInvInstance.patchCounts[countsSlotnum].ToString();
 		if (countsSlotnum == PatchCurrent.PatchInstance.patchCurrent) {
@@ -19,4 +20,5 @@ public class PatchCountsText : MonoBehaviour {
 			text.color = Const.a.ssGreenText; // Green
 		}
 	}
+	*/
 }

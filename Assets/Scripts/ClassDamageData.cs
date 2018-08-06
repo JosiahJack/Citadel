@@ -52,6 +52,7 @@ public class DamageData {
 		damageData.defense = 0f;
 		damageData.other = null;
 		damageData.indexNPC = -1;
+		damageData.hit = new RaycastHit();
 		damageData.attacknormal = Vector3.zero;
 		damageData.impactVelocity = 0f;
 	}

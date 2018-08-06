@@ -15,6 +15,7 @@ public class HealthManager : MonoBehaviour {
 	public int[] gibIndices;
 	public GameObject[] gibObjects;
 	public int index;
+	public int securityAmount;
 	public GameObject attacker;
 	public Const.PoolType deathFX;
 	public enum BloodType {None,Red,Yellow,Green,Robot};
@@ -88,6 +89,9 @@ public class HealthManager : MonoBehaviour {
 		if (meshCol != null) meshCol.enabled = false;
 		if (sphereCol != null) sphereCol.enabled = false;
 		if (capCol != null) capCol.enabled = false;
+
+		if (securityAmount > 0)
+			LevelManager.a.ReduceCurrentLevelSecurity (securityAmount);
 
 		// Enabel death effects (e.g. explosion particle effect)
 		if (deathFX != Const.PoolType.LaserLines) {

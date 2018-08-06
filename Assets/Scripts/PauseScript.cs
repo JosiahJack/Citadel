@@ -17,7 +17,7 @@ public class PauseScript : MonoBehaviour {
 	public GameObject saveDialog;
 	public bool onSaveDialog;
 
-	void Awake() {a = this; }
+	void Awake() {a = this;}
 
 	void Update () {
 		if (mainMenu == null) {

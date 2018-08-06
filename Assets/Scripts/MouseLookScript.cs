@@ -7,6 +7,7 @@ public class MouseLookScript : MonoBehaviour {
     // Internal to Prefab
     // ------------------------------------------------------------------------
 	public GameObject player;
+	public float recompile;
     [Tooltip("Shows current state of Inventory Mode (Don't set yourself!)")]
 	public bool inventoryMode;
 	[Tooltip("Shows current state of Holding an Object (Don't set yourself!)")]
@@ -37,6 +38,7 @@ public class MouseLookScript : MonoBehaviour {
 	public bool firstTimePickup;
 	public bool firstTimeSearch;
 	public bool grenadeActive;
+	public bool inCyberSpace;
     [HideInInspector]
     public float yRotation;
 	[Tooltip("Initial camera x rotation")]
@@ -50,6 +52,9 @@ public class MouseLookScript : MonoBehaviour {
 	[Tooltip("Speed multiplier for turning the view with the keyboard")]
 	public float keyboardTurnSpeed = 1.5f;
     public float xRotation;
+	[HideInInspector]
+	public Vector3 cyberLookDir;
+	private int tempindex;
     private float zRotation;
     private float yRotationV;
     private float xRotationV;
@@ -66,6 +71,7 @@ public class MouseLookScript : MonoBehaviour {
 	//private Quaternion cameraDefaultLocalRot;
 	private Vector3 cameraRecoilLerpPos;
 	[SerializeField] private bool recoiling;
+	private Door.accessCardType doorAccessTypeAcquired;
 
     // External to Prefab
     // ------------------------------------------------------------------------
@@ -101,9 +107,11 @@ public class MouseLookScript : MonoBehaviour {
     public GameObject mainInventory;
 	[HideInInspector]
 	public LogInventory logInventory;
+	public AccessCardInventory accessCardInventory;
 	public GameObject[] hardwareButtons;
 	public GameObject mainMenu;
 	public WeaponMagazineCounter wepmagCounter;
+	public PlayerMovement playerMovement;
 
     //float headbobSpeed = 1;
     //float headbobStepCounter;
@@ -133,6 +141,7 @@ public class MouseLookScript : MonoBehaviour {
 		grenadeActive = false;
 		yRotation = startyRotation;
 		xRotation = startxRotation;
+		cyberLookDir = Vector3.zero;
 		logInventory = mainInventory.GetComponent<LogInventory>();
 
 		if (canvasContainer == null)
@@ -150,6 +159,7 @@ public class MouseLookScript : MonoBehaviour {
 		float strength = Const.a.recoilForWeapon[i];
 		//Debug.Log("Recoil from gun index: "+i.ToString()+" with strength of " +strength.ToString());
 		if (strength <= 0f) return;
+		if (playerMovement.fatigue > 80) strength = strength * 2f;
 		Vector3 cameraJoltPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, (transform.localPosition.z - strength));
 		transform.localPosition = cameraJoltPosition;
 		recoiling = true;
@@ -158,7 +168,7 @@ public class MouseLookScript : MonoBehaviour {
 	void Update () {
         Cursor.visible = false; // Hides hardware cursor so we can show custom cursor textures
 
-		if (recoiling) {
+		if (recoiling && !inCyberSpace) {
 			float x = transform.localPosition.x; // side to side
 			float y = transform.localPosition.y; // up and down
 			float z = transform.localPosition.z; // forward and back
@@ -179,7 +189,7 @@ public class MouseLookScript : MonoBehaviour {
         //transform.localPosition.y = (Mathf.Cos(headbobStepCounter * 2) * headbobAmountY * -1) + (transform.localScale.y * eyeHeightRatio) - (transform.localScale.y / 2);
         //parentLastPos = transform.parent.position;
 
-		// Spring Back to Rest from Recoil
+		// Spring Back to Rest from Recoil TODO only do this when necessary and add some private variables to prevent GarbageCollector
 		float camz = Mathf.Lerp(transform.localPosition.z,0f,0.1f);
 		Vector3 camPos = new Vector3(0f,Const.a.playerCameraOffsetY,camz);
 		transform.localPosition = camPos;
@@ -200,9 +210,11 @@ public class MouseLookScript : MonoBehaviour {
 				float dy = Input.GetAxisRaw("Mouse Y");
 				yRotation += (dx * lookSensitivity);
 				xRotation -= (dy * lookSensitivity);
-				xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle. TIP:: Need to disable clamp for Cyberspace!
+				if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle
 				transform.parent.transform.rotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
 				transform.rotation = Quaternion.Euler(xRotation,yRotation,0f); // Up down component only applied to camera
+
+				if (inCyberSpace) cyberLookDir = Vector3.Normalize (transform.forward);
 
 				if (compassContainer.activeInHierarchy) {
 					compassContainer.transform.rotation = Quaternion.Euler(0f, -yRotation + 180f, 0f);
@@ -266,7 +278,9 @@ public class MouseLookScript : MonoBehaviour {
 						
 							// Check if object is usable then use it
 							if (hit.collider.tag == "Usable") {
-								hit.transform.SendMessageUpwards("Use", player); // send Use with self as owner of message
+								UseData ud = new UseData ();
+								ud.owner = player;
+								hit.transform.SendMessageUpwards("Use", ud); // send Use with self as owner of message
 								return;
 							}
 					
@@ -296,11 +310,34 @@ public class MouseLookScript : MonoBehaviour {
 							}
 						}
 					} else {
-						// Drop the object we are holding
+						// First check and see if we can apply held object in a use, or else Drop the object we are holding
 						if (heldObjectIndex != -1) {
-							DropHeldItem();
-							ResetHeldItem();
-							ResetCursor();
+							if (heldObjectIndex == 54 || heldObjectIndex == 56 || heldObjectIndex == 57 || heldObjectIndex == 61 || heldObjectIndex == 64) {
+								RaycastHit hit = new RaycastHit();
+								Vector3 cursorPoint = new Vector3(MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2),MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2),0); 
+								cursorPoint.y = Screen.height - cursorPoint.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+								if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out hit, frobDistance)) {
+									//Debug.Log("Screen.width = " + Screen.width.ToString() + ", Screen.height = " + Screen.height.ToString() +", Camera.pixelWidth = " + playerCamera.pixelWidth.ToString() + ", Camera.pixelHeight = " + playerCamera.pixelHeight.ToString() + ", drawTexture.x = " +MouseCursor.drawTexture.x.ToString() + ", drawTexture.y = " + MouseCursor.drawTexture.y.ToString());
+									//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
+
+									// Check if object is usable then use it
+									if (hit.collider.tag == "Usable") {
+										UseData ud = new UseData ();
+										ud.owner = player;
+										ud.mainIndex = heldObjectIndex;
+										ud.customIndex = heldObjectCustomIndex;
+										hit.transform.SendMessageUpwards("Use", ud); // send Use with self as owner of message
+										return;
+									}
+								}
+								ResetHeldItem();
+								ResetCursor ();
+							} else {
+								// Drop it
+								DropHeldItem ();
+								ResetHeldItem ();
+								ResetCursor ();
+							}
 						}
 					}
 				}
@@ -459,7 +496,7 @@ public class MouseLookScript : MonoBehaviour {
 				itemAdded = true;
 
 				centerTabButtonsControl.NotifyToCenterTab(0);
-				int tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(index);
+				tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(index);
 				if (heldObjectAmmo > 0) {
 					int extra = 0;
 					if (heldObjectAmmoIsSecondary) {
@@ -546,8 +583,8 @@ public class MouseLookScript : MonoBehaviour {
 			centerTabButtonsControl.TabButtonClickSilent (0);
 			centerTabButtonsControl.NotifyToCenterTab(0);
 		}
-
-		PatchInventory.PatchInvInstance.patchCounts[index]++;
+		PatchInventory.PatchInvInstance.AddPatchToInventory(index);
+		//PatchInventory.PatchInvInstance.patchCounts[index]++;
 		PatchCurrent.PatchInstance.patchCurrent = index;
 		mfdManager.SendInfoToItemTab(index);
 		Const.sprint("Patch added to inventory",player);
@@ -577,6 +614,47 @@ public class MouseLookScript : MonoBehaviour {
 			firstTimePickup = false;
 			centerTabButtonsControl.TabButtonClickSilent (2);
 		}
+			
+		bool alreadyHave = false;
+		bool accessAdded = false;
+
+		switch (index) {
+		case 81: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
+		case 82: doorAccessTypeAcquired = Door.accessCardType.Group1; break;
+		case 83: doorAccessTypeAcquired = Door.accessCardType.Science; break;
+		case 84: doorAccessTypeAcquired = Door.accessCardType.Group3; break;
+		case 85: doorAccessTypeAcquired = Door.accessCardType.Engineering; break;
+		case 86: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
+		case 87: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
+		case 88: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
+		case 89: doorAccessTypeAcquired = Door.accessCardType.Medical; break;
+		case 90: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
+		case 91: doorAccessTypeAcquired = Door.accessCardType.Per1; break;
+		}
+
+		for (int j = 0; j < accessCardInventory.accessCardsOwned.Length; j++) {
+			if (accessCardInventory.accessCardsOwned [j] == doorAccessTypeAcquired) alreadyHave = true; // check if we already have this card
+		}
+
+		for (int i = 0; i < accessCardInventory.accessCardsOwned.Length; i++) {
+			if (accessCardInventory.accessCardsOwned [i] == Door.accessCardType.None) {
+				if (!alreadyHave) {
+					accessCardInventory.accessCardsOwned [i] = doorAccessTypeAcquired;
+					accessAdded = true;
+					break;
+				}
+			}
+		}
+
+		if (alreadyHave) {
+			Const.sprint ("Already have that access.", player);
+			return;
+		}
+
+		if (accessAdded && !alreadyHave) {
+			Const.sprint ("New accesses gained: " + doorAccessTypeAcquired.ToString(), player);
+		}
+
 		centerTabButtonsControl.NotifyToCenterTab(2);
 		mfdManager.SendInfoToItemTab(index);
 	}

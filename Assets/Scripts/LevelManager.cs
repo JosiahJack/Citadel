@@ -44,6 +44,7 @@ public class LevelManager : MonoBehaviour {
 
 		levels[levnum].SetActive(true); // enable new level
 		currentPlayer.GetComponent<PlayerReferenceManager>().playerCurrentLevel = levnum;
+		if (levnum == 13) currentPlayer.GetComponent<PlayerReferenceManager> ().playerCapsule.GetComponent<PlayerMovement> ().inCyberSpace = true;
 		currentLevel = levnum; // Set current level to be the new level
 		DisableAllNonOccupiedLevels();
 	}
@@ -96,5 +97,15 @@ public class LevelManager : MonoBehaviour {
 		GameObject retval = levels[currentLevel].GetComponent<Level>().dynamicObjectsContainer;
 		if (retval != null) return retval;
 		return null;
+	}
+
+	public int GetCurrentLevelSecurity() {
+		return levelSecurity [currentLevel];
+	}
+
+	public void ReduceCurrentLevelSecurity(int secDrop) {
+		levelSecurity [currentLevel] -= secDrop;
+		if (levelSecurity [currentLevel] < 0)
+			levelSecurity [currentLevel] = 0; // limit reduction in case of setup errors.  Calculate your sec levels carefully!!
 	}
 }

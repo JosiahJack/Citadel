@@ -13,13 +13,13 @@ public class WeaponButtonsManager : MonoBehaviour {
 		}
 		for (int i=0; i<7; i++) {
 			if (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[i] > 0) {
-				wepButtons[i].SetActive(true);
+				if (!wepButtons[i].activeInHierarchy) wepButtons[i].SetActive(true);
                 wepButtons[i].GetComponent<WeaponButton>().useableItemIndex = WeaponInventory.WepInventoryInstance.weaponInventoryIndices[i];
-                wepCountsText[i].SetActive(true);
+				if (!wepCountsText[i].activeInHierarchy) wepCountsText[i].SetActive(true);
 			} else {
-				wepButtons[i].SetActive(false);
+				if (wepButtons[i].activeInHierarchy) wepButtons[i].SetActive(false);
                 wepButtons[i].GetComponent<WeaponButton>().useableItemIndex = -1;
-                wepCountsText[i].SetActive(false);
+				if (wepCountsText[i].activeInHierarchy) wepCountsText[i].SetActive(false);
 			}
 		}
 

@@ -37,6 +37,7 @@ public class PuzzleGrid : MonoBehaviour {
 	public AudioClip solvedSFX;
 	public bool puzzleSolved;
 	private AudioSource audsource;
+	private UseData udSender;
 
 	void Awake () {
 		puzzleSolved = false;
@@ -45,7 +46,7 @@ public class PuzzleGrid : MonoBehaviour {
 		UpdateCellImages();
 	}
 
-	public void SendGrid(bool[] states, CellType[] types, GridType gtype, int start, int end, int w, int h, GridColorTheme colors, GameObject target) {
+	public void SendGrid(bool[] states, CellType[] types, GridType gtype, int start, int end, int w, int h, GridColorTheme colors, GameObject target, UseData ud) {
 		grid = states;
 		cellType = types;
 		gridType = gtype;
@@ -55,7 +56,13 @@ public class PuzzleGrid : MonoBehaviour {
 		height = h;
 		theme = colors;
 		targetGameObject = target;
+		udSender = ud;
 		EvaluatePuzzle();
+
+		if (udSender.mainIndex == 54) {
+			PuzzleSolved ();
+		}
+
 		UpdateCellImages();
 	}
 
@@ -193,6 +200,7 @@ public class PuzzleGrid : MonoBehaviour {
 		puzzleSolved = true;
 		outputNode.overrideSprite = nodeOn;
 		audsource.PlayOneShot(solvedSFX);
+		targetGameObject.SendMessageUpwards("Use", udSender); // send Use with self as owner of message
 	}
 
 	int ReturnCellAbove(int index) {

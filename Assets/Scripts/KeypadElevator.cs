@@ -8,6 +8,7 @@ public class KeypadElevator : MonoBehaviour {
 	public GameObject elevatorControl;
 	public GameObject[] elevatorButtonHandlers;
 	public GameObject[] targetDestination;
+	public Door linkedDoor;
 	public bool[] buttonsEnabled;
 	public bool[] buttonsDarkened;
 	public string[] buttonText;
@@ -20,6 +21,13 @@ public class KeypadElevator : MonoBehaviour {
 	private GameObject levelManager;
 	private GameObject playerCapsule;
 	private GameObject playerCamera;
+	private float distanceCheck;
+	private int defIndex = 0;
+	private int maxIndex = 8;
+	private int four = 4;
+	private float tickFinished;
+	public float tickSecs = 0.1f;
+	public string blockedBySecurityText = "Blocked by SHODAN level Security.";
 
 	void Awake () {
 		levelManager = GameObject.Find("LevelManager");
@@ -34,14 +42,16 @@ public class KeypadElevator : MonoBehaviour {
 		padInUse = false;
 		disconnectDist = Const.a.frobDistance;
 		SFXSource = GetComponent<AudioSource>();
-		for (int i=0;i<8;i++) {
+		for (int i=defIndex;i<maxIndex;i++) {
 			elevatorButtonHandlers[i].GetComponent<ElevatorButton>().SetTooFarFalse();
 		}
+
+		tickFinished = Time.time + tickSecs + Random.Range(0.1f,0.5f); // Random start to prevent tick calculations from bunching up in one frame
 	}
 
-	void Use (GameObject owner) {
+	void Use (UseData ud) {
 		if (LevelManager.a.levelSecurity[LevelManager.a.currentLevel] > securityThreshhold) {
-			Const.sprint("Blocked by SHODAN level Security.",owner);
+			Const.sprint(blockedBySecurityText,ud.owner);
 			MFDManager.a.BlockedBySecurity();
 			return;
 		}
@@ -50,9 +60,9 @@ public class KeypadElevator : MonoBehaviour {
 		SFXSource.PlayOneShot(SFX);
 		dataTabResetter.Reset();
 		elevatorControl.SetActive(true);
-		playerCapsule = owner.GetComponent<PlayerReferenceManager>().playerCapsule; // Get player capsule of player using this pad
-		playerCamera = owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
-		for (int i=0;i<8;i++) {
+		playerCapsule = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule; // Get player capsule of player using this pad
+		playerCamera = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
+		for (int i=defIndex;i<maxIndex;i++) {
 			elevatorControl.GetComponent<ElevatorKeypad>().buttonsEnabled[i] = buttonsEnabled[i];
 			elevatorControl.GetComponent<ElevatorKeypad>().buttonsDarkened[i] = buttonsDarkened[i];
 			elevatorControl.GetComponent<ElevatorKeypad>().buttonText[i] = buttonText[i];
@@ -63,28 +73,34 @@ public class KeypadElevator : MonoBehaviour {
 		if (playerCamera.GetComponent<MouseLookScript>().inventoryMode == false)
 			playerCamera.GetComponent<MouseLookScript>().ToggleInventoryMode();
 
-		MFDManager.a.OpenTab(4,true,MFDManager.TabMSG.Elevator,0,MFDManager.handedness.LeftHand);
+		MFDManager.a.OpenTab(four,true,MFDManager.TabMSG.Elevator,defIndex,MFDManager.handedness.LeftHand);
 	}
 
 	void Update () {
-		if (padInUse) {
-			if (Vector3.Distance(playerCapsule.transform.position, gameObject.transform.position) > disconnectDist) {
-				padInUse = false;
-				MFDManager.a.TurnOffElevatorPad();
-				//elevatorControl.SetActive(false);
-			} else {
-				if (Vector3.Distance(playerCapsule.transform.position, gameObject.transform.position) < useDist) {
-					// Elevator keypad functions normally
-					for(int i=0;i<8;i++) {
-						if (MFDManager.a.GetElevatorControlActiveState() /*elevatorControl.activeInHierarchy*/)
-							
-							elevatorButtonHandlers[i].GetComponent<ElevatorButton>().SetTooFarFalse();
-					}
+		// limit checks to only once every tickSecs to prevent CPU overload
+		if (tickFinished < Time.time) {
+			if (padInUse) {
+				distanceCheck = Vector3.Distance (playerCapsule.transform.position, gameObject.transform.position);
+				if (distanceCheck > disconnectDist) {
+					padInUse = false;
+					MFDManager.a.TurnOffElevatorPad ();
 				} else {
-					// Elevator keypad tells you that you are too far away
-					for(int i=0;i<8;i++) {
-						if (MFDManager.a.GetElevatorControlActiveState()/*elevatorControl.activeInHierarchy*/)
-							elevatorButtonHandlers[i].GetComponent<ElevatorButton>().SetTooFarTrue();
+					for (int i = defIndex; i < maxIndex; i++) {
+						if (distanceCheck < useDist) {
+							if (MFDManager.a.GetElevatorControlActiveState ())
+								elevatorButtonHandlers [i].GetComponent<ElevatorButton> ().SetTooFarFalse ();
+						} else {
+							if (MFDManager.a.GetElevatorControlActiveState ())
+								elevatorButtonHandlers [i].GetComponent<ElevatorButton> ().SetTooFarTrue ();
+						}
+
+						if (linkedDoor.doorOpen == Door.doorState.Closed) {
+							if (MFDManager.a.GetElevatorControlActiveState ())
+								elevatorButtonHandlers [i].GetComponent<ElevatorButton> ().doorOpen = false;
+						} else {
+							if (MFDManager.a.GetElevatorControlActiveState ())
+								elevatorButtonHandlers [i].GetComponent<ElevatorButton> ().doorOpen = true;
+						}
 					}
 				}
 			}

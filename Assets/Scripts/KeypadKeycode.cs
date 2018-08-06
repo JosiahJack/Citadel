@@ -23,9 +23,9 @@ public class KeypadKeycode : MonoBehaviour {
 		SFXSource = GetComponent<AudioSource>();
 	}
 
-	void Use (GameObject owner) {
+	void Use (UseData ud) {
 		if (LevelManager.a.levelSecurity[LevelManager.a.currentLevel] > securityThreshhold) {
-			Const.sprint("Blocked by SHODAN level Security.",owner);
+			Const.sprint("Blocked by SHODAN level Security.",ud.owner);
 			MFDManager.a.BlockedBySecurity();
 			return;
 		}
@@ -36,8 +36,8 @@ public class KeypadKeycode : MonoBehaviour {
 		keypadControl.SetActive(true);
 		keypadControl.GetComponent<KeypadKeycodeButtons>().keycode = keycode;
 		keypadControl.GetComponent<KeypadKeycodeButtons>().keypad = this;
-		playerCamera = owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
-		playerCapsule = owner.GetComponent<PlayerReferenceManager>().playerCapsule; // Get player capsule of player using this pad
+		playerCamera = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
+		playerCapsule = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule; // Get player capsule of player using this pad
 		playerCamera.GetComponent<MouseLookScript>().ForceInventoryMode();
 		MFDManager.a.OpenTab(4,true,MFDManager.TabMSG.Keypad,0,MFDManager.handedness.LeftHand);
 	}

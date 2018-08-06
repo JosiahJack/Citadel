@@ -8,6 +8,7 @@ public class GravityLift : MonoBehaviour {
 
 	void OnTriggerStay (Collider other) {
 		otherRbody = other.gameObject.GetComponent<Rigidbody>();
+		// TODO check if flier bot, avian mutant, or projectile and return without affecting it
 		if (otherRbody != null) {
 			if (otherRbody.velocity.y < strength)
 				otherRbody.AddForce(new Vector3(0f, (strength-otherRbody.velocity.y), 0f));

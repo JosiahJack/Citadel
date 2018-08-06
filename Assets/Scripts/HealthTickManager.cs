@@ -1,19 +1,40 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class HealthTickManager : MonoBehaviour {
 	public GameObject playerObject;
 	public PlayerHealth playerHealth;
 	public GameObject[] healthTicks;
-
+	public Sprite[] tickImages;
+	private Image tickImage;
+	private int tempSpriteIndex;
 	private float lasthealth;
-	
-	void  Update (){
-		if (lasthealth != playerHealth.hm.health) DrawTicks();
-		lasthealth = playerHealth.hm.health;
+
+	void Awake () {
+		tickImage = GetComponent<Image>();
 	}
 
+	void  Update (){
+		if (lasthealth != playerHealth.hm.health) DrawTicks();
+		lasthealth = playerHealth.hm.health;  // reason why this script can't be combined with energy ticks script
+	}
+		
 	void DrawTicks() {
+		tempSpriteIndex = -1;
+		int step = 0;
+
+		while (step < 256) {
+			if (playerHealth.hm.health < (256 - step)) {
+				tempSpriteIndex++;
+			}
+			step += 11;
+		}
+		//Debug.Log(tempSpriteIndex.ToString());
+		if (tempSpriteIndex >= 0 && tempSpriteIndex < 24) {
+			tickImage.overrideSprite = tickImages[tempSpriteIndex];
+		}
+		/*
 		int h = 0;
 		int tickcnt = 0;
 
@@ -28,5 +49,6 @@ public class HealthTickManager : MonoBehaviour {
 			tickcnt++;
 			h = h + 11;		
 		}
+		*/
 	}
 }

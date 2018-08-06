@@ -15,9 +15,9 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 	public PuzzleGrid.GridColorTheme theme;
 	public GameObject target;
 
-	void Use (GameObject owner) {
+	void Use (UseData ud) {
 		if (dead) {
-			Const.sprint("Can't use broken panel",owner);
+			Const.sprint("Can't use broken panel",ud.owner);
 			return;
 		}
 
@@ -26,8 +26,8 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 			return;
 		}
 
-		Const.sprint("Puzzle activated",owner);
-		//(bool[] states, CellType[] types, GridType gtype, int start, int end, GridColorTheme colors)
-		MFDManager.a.SendGridPuzzleToDataTab(grid,cellType,gridType,sourceIndex,outputIndex,width,height,theme,target);
+		Const.sprint("Puzzle interface accessed",ud.owner);
+		//(bool[] states, CellType[] types, GridType gtype, int start, int end, GridColorTheme colors, UseData ud)
+		MFDManager.a.SendGridPuzzleToDataTab(grid,cellType,gridType,sourceIndex,outputIndex,width,height,theme,target,ud);
 	}
 }

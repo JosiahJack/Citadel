@@ -15,11 +15,11 @@ public class PatchButtonsManager : MonoBehaviour {
 
 		for (int i=0; i<7; i++) {
 			if (PatchInventory.PatchInvInstance.patchCounts[i] > 0) {
-				patchButtons[i].SetActive(true);
-				patchCountsText[i].SetActive(true);
+				if (!patchButtons[i].activeInHierarchy) patchButtons[i].SetActive(true);
+				if (!patchCountsText[i].activeInHierarchy) patchCountsText[i].SetActive(true);
 			} else {
-				patchButtons[i].SetActive(false);
-				patchCountsText[i].SetActive(false);
+				if (patchButtons[i].activeInHierarchy) patchButtons[i].SetActive(false);
+				if (patchCountsText[i].activeInHierarchy) patchCountsText[i].SetActive(false);
 			}
 		}
 	}
