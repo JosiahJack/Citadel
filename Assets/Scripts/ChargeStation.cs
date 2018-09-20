@@ -17,24 +17,24 @@ public class ChargeStation : MonoBehaviour {
 		nextthink = Time.time;
 	}
 
-	void Use (GameObject owner) {
+	void Use (UseData ud) {
 		if (LevelManager.a.GetCurrentLevelSecurity () > minSecurityLevel) {
 			MFDManager.a.BlockedBySecurity ();
 			return;
 		}
 		
 		if (nextthink < Time.time) {
-			give = owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerEnergy>().energy + amount;
+			give = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerEnergy>().energy + amount;
 			if (give > 255f)
 				give = 255f;
-			owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerEnergy>().energy = give;
-			Const.sprint("Energy drawn from Power Station.", owner);
+			ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerEnergy>().energy = give;
+			Const.sprint("Energy drawn from Power Station.", ud.owner);
 			SFXSource.PlayOneShot(SFX);
 			if (requireReset) {
 				nextthink = Time.time + resetTime;
 			}
 		} else {
-			Const.sprint("Power Station is recharging\n", owner);
+			Const.sprint("Power Station is recharging\n", ud.owner);
 		}
 	}
 }

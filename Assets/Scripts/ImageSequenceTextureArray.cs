@@ -16,6 +16,8 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	public string glowResourceFolder;
 	public float frameDelay = 0.35f;
 	public bool animateGlow = false;
+	public bool randomFrame = false; // randomly pick a frame instead of sequential
+	public bool reverseSequence = false;
 
 	private float tick;
 	private float tickFinished;
@@ -40,6 +42,13 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		for(int i=0; i < glowobjects.Length;i++) {
 			this.glowtextures[i] = (Texture)this.glowobjects[i];
 		}
+
+
+		if (reverseSequence) {
+			frameCounter = (textures.Length - 1);
+		} else {
+			frameCounter = 0;
+		}
 		tick = frameDelay;
 		tickFinished = Time.time + tick;
 	}
@@ -52,7 +61,15 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	}
 
 	void Think () {
-		frameCounter = (++frameCounter)%textures.Length;
+		if (reverseSequence) {
+			frameCounter = (--frameCounter) % textures.Length;
+		} else {
+			frameCounter = (++frameCounter) % textures.Length;
+		}
+
+		if (randomFrame) {
+			frameCounter = Random.Range (0, textures.Length);
+		}
 
 		//Set the material's texture to the current value of the frameCounter variable
 		goMaterial.mainTexture = textures[frameCounter];

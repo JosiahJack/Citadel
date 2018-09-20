@@ -1,8 +1,9 @@
 fileFormatVersion: 2
-guid: 887f23980a479594a8850ebd6dd00a2f
-timeCreated: 1463113890
+guid: dafa2acff30592246b1b5bf02cedabf7
+timeCreated: 1439758216
 licenseType: Free
 TrueTypeFontImporter:
+  externalObjects: {}
   serializedVersion: 4
   fontSize: 16
   forceTextureCase: -2
@@ -12,9 +13,10 @@ TrueTypeFontImporter:
   fontName: SystemShockText
   fontNames:
   - SystemShockText
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 887f23980a479594a8850ebd6dd00a2f, type: 3}
   customCharacters: 
-  fontRenderingMode: 2
+  fontRenderingMode: 3
   ascentCalculationMode: 1
   userData: 
   assetBundleName: 

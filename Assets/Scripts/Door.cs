@@ -40,6 +40,7 @@ public class Door : MonoBehaviour {
 	public float lasersFinished;
 	public GameObject[] laserLines;
 	public bool toggleLasers = false;
+	public bool targettingOnlyUnlocks = false;
 
 	private int defIndex = 0;
 	private float minTime = 0.15f;
@@ -124,10 +125,10 @@ public class Door : MonoBehaviour {
 	}
 
 	void Targetted (UseData ud) {
-		if (locked)
+		if (locked) 
 			locked = false;
 	
-		Use(ud);
+		if (!targettingOnlyUnlocks) Use(ud);
 	}
 
 	void OpenDoor() {

@@ -43,17 +43,20 @@ public class KeypadKeycode : MonoBehaviour {
 	}
 
 	public void UseTargets () {
+		UseData ud = new UseData();
+		ud.owner = playerCamera;
+
 		if (target != null) {
-			target.SendMessageUpwards("Targetted", playerCamera);
+			target.SendMessageUpwards("Targetted", ud);
 		}
 		if (target1 != null) {
-			target.SendMessageUpwards("Targetted", playerCamera);
+			target1.SendMessageUpwards("Targetted", ud);
 		}
 		if (target2 != null) {
-			target.SendMessageUpwards("Targetted", playerCamera);
+			target2.SendMessageUpwards("Targetted", ud);
 		}
 		if (target3 != null) {
-			target.SendMessageUpwards("Targetted", playerCamera);
+			target3.SendMessageUpwards("Targetted", ud);
 		}
 	}
 

@@ -10,6 +10,7 @@ ModelImporter:
     2300000: //RootNode
     3300000: //RootNode
     4300000: genericLOD3card
+    4300002: genericLOD3card_mesh
     7400000: Default Take
     9500000: //RootNode
   externalObjects:

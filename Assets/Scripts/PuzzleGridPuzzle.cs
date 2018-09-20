@@ -14,6 +14,9 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 	public int height;
 	public PuzzleGrid.GridColorTheme theme;
 	public GameObject target;
+	public GameObject target1;
+	public GameObject target2;
+	public GameObject target3;
 
 	void Use (UseData ud) {
 		if (dead) {
@@ -28,6 +31,6 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 
 		Const.sprint("Puzzle interface accessed",ud.owner);
 		//(bool[] states, CellType[] types, GridType gtype, int start, int end, GridColorTheme colors, UseData ud)
-		MFDManager.a.SendGridPuzzleToDataTab(grid,cellType,gridType,sourceIndex,outputIndex,width,height,theme,target,ud);
+		MFDManager.a.SendGridPuzzleToDataTab(grid,cellType,gridType,sourceIndex,outputIndex,width,height,theme,target,target1,target2,target3,ud);
 	}
 }

@@ -20,6 +20,8 @@ public class HealthManager : MonoBehaviour {
 	public Const.PoolType deathFX;
 	public enum BloodType {None,Red,Yellow,Green,Robot};
 	public BloodType bloodType;
+	public GameObject[] targetOnDeath;
+	public AudioClip backupDeathSound;
 
 	private bool initialized = false;
 	private bool deathDone = false;
@@ -40,6 +42,10 @@ public class HealthManager : MonoBehaviour {
 		sphereCol = GetComponent<SphereCollider>();
 		capCol = GetComponent<CapsuleCollider>();
 		if (maxhealth < 1) maxhealth = health;
+		//if (Const.a.difficultyCombat == 0) {
+		//	maxhealth = 1;
+		//	health = maxhealth;
+		//}
 		//if (isNPC) {
 		//	aic = GetComponent<AIController>();
 		//	if (aic == null) Debug.Log("BUG: No AIController script on NPC!");
@@ -78,6 +84,54 @@ public class HealthManager : MonoBehaviour {
 
 		if (health <= 0f) {
 			if (isObject) ObjectDeath(null);
+
+			if (isNPC) NPCDeath (null);
+
+			if (targetOnDeath != null) {
+				if (targetOnDeath.Length > 0) {
+					UseData ud = new UseData ();
+					ud.owner = Const.a.allPlayers;
+					for (int i = 0; i < targetOnDeath.Length; i++) {
+						targetOnDeath [i].SendMessageUpwards ("Targetted", ud);
+					}
+				}
+			}
+		}
+	}
+
+	public void NPCDeath (AudioClip deathSound) {
+		// Disable collision
+		if (boxCol != null) boxCol.enabled = false;
+		if (meshCol != null) meshCol.enabled = false;
+		if (sphereCol != null) sphereCol.enabled = false;
+		if (capCol != null) capCol.enabled = false;
+
+		switch (index) {
+		case 0:
+			GetComponent<MeshRenderer> ().enabled = false;
+			break;
+		}
+
+
+		// Enabel death effects (e.g. explosion particle effect)
+		if (deathFX != Const.PoolType.LaserLines) {
+			GameObject explosionEffect = Const.a.GetObjectFromPool(deathFX);
+			if (explosionEffect != null) {
+				explosionEffect.SetActive(true);
+				explosionEffect.transform.position = transform.position;
+				// TODO: Do I need more than one temporary audio entity for this sort of thing?
+				if (deathSound != null) {
+					GameObject tempAud = GameObject.Find ("TemporaryAudio");
+					tempAud.transform.position = transform.position;
+					AudioSource aS = tempAud.GetComponent<AudioSource> ();
+					aS.PlayOneShot (deathSound);
+				} else {
+					GameObject tempAud = GameObject.Find ("TemporaryAudio");
+					tempAud.transform.position = transform.position;
+					AudioSource aS = tempAud.GetComponent<AudioSource> ();
+					aS.PlayOneShot (backupDeathSound);
+				}
+			}
 		}
 	}
 

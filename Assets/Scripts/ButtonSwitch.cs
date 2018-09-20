@@ -15,6 +15,7 @@ public class ButtonSwitch : MonoBehaviour {
 	public float tickTime = 1.5f;
 	public bool active;
 	public bool blinkWhenActive;
+	public bool changeMatOnActive = true;
 	private float delayFinished;
 	private float tickFinished;
 	private GameObject player;
@@ -45,26 +46,40 @@ public class ButtonSwitch : MonoBehaviour {
 	}
 
 	public void UseTargets () {
+		UseData ud = new UseData();
+		ud.owner = player;
+
 		if (target != null) {
-			target.SendMessageUpwards("Targetted", player);
+			target.SendMessageUpwards("Targetted", ud);
 		}
 		if (target1 != null) {
-			target.SendMessageUpwards("Targetted", player);
+			target1.SendMessageUpwards("Targetted", ud);
 		}
 		if (target2 != null) {
-			target.SendMessageUpwards("Targetted", player);
+			target2.SendMessageUpwards("Targetted", ud);
 		}
 		if (target3 != null) {
-			target.SendMessageUpwards("Targetted", player);
+			target3.SendMessageUpwards("Targetted", ud);
 		}
 			
 		active = !active;
 		alternateOn = active;
-		if (blinkWhenActive) {
-			if (alternateOn) mRenderer.material = alternateSwitchMaterial;
-			else mRenderer.material = mainSwitchMaterial;
-			if (active) tickFinished = Time.time + tickTime;
+		if (changeMatOnActive) {
+			if (blinkWhenActive) {
+				ToggleMaterial ();
+				if (active)
+					tickFinished = Time.time + tickTime;
+			} else {
+				ToggleMaterial ();
+			}
 		}
+	}
+
+	void ToggleMaterial() {
+		if (alternateOn)
+			mRenderer.material = alternateSwitchMaterial;
+		else
+			mRenderer.material = mainSwitchMaterial;
 	}
 
 	void Update () {

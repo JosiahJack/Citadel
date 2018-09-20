@@ -448,8 +448,12 @@ public class PlayerMovement : MonoBehaviour {
 							fatigueFinished2 = Time.time + fatigueWaneTickSecs;
 							if (isSprinting) {
 								fatigue += fatiguePerSprintTick;
+								if (staminupActive)
+									fatigue = 0;
 							} else {
 								fatigue += fatiguePerWalkTick;
+								if (staminupActive)
+									fatigue = 0;
 							}
 						}
 					}
@@ -525,6 +529,8 @@ public class PlayerMovement : MonoBehaviour {
 				if (justJumped && !(hwc.hardwareIsActive[10])) {
 					justJumped = false;
 					fatigue += jumpFatigue;
+					if (staminupActive)
+						fatigue = 0;
 				}
 
 				// Handle fall damage (no impact damage in cyber space 5/5/18, JJ)

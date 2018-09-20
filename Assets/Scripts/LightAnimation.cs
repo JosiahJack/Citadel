@@ -31,7 +31,7 @@ public class LightAnimation : MonoBehaviour {
 		animLight = GetComponent<Light>();
 		animLight.intensity = minIntensity;
 		currentStep = 0;
-		lightOn = true;
+		//lightOn = true;
 		lerpUp = true;
 		differenceInIntensity = (maxIntensity - minIntensity);
 		if (intervalSteps.Length != 0) {
@@ -40,9 +40,15 @@ public class LightAnimation : MonoBehaviour {
 			lerpStartTime = Time.time;
 		} else {
 			noSteps = true;
-			setIntensity = GetComponent<Light>().intensity;
-			animLight.intensity = setIntensity;
+			//setIntensity = GetComponent<Light>().intensity;
+			animLight.intensity = maxIntensity;
 		}
+	}
+
+	public void Targetted (UseData ud) {
+		lightOn = true;
+		animLight.intensity = maxIntensity;
+		animLight.enabled = true;
 	}
 
 	void Update () {
@@ -103,7 +109,7 @@ public class LightAnimation : MonoBehaviour {
 
 			} else {
 				// Light is on but no steps so set to editor setting
-				animLight.intensity = setIntensity;
+				animLight.intensity = maxIntensity;
 			}
 		} else {
 			// Light is turned off.

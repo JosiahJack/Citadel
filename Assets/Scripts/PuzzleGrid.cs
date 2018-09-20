@@ -4,40 +4,50 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PuzzleGrid : MonoBehaviour {
-	public bool[] grid;
 	public bool[] powered;
 	public CellType[] cellType;
-	public enum CellType {Off,Standard,And,Bypass}; // off is blank, standard is X or +, And takes two power sources, Bypass is always +
+	public enum CellType {Off,Standard,And,Bypass}; // off is blank, standard is X or +, AND takes two power sources, Bypass is always +
 	public enum GridType {King,Queen,Knight,Rook,Bishop,Pawn};
 	public GridType gridType;
-
 	public int sourceIndex;
 	public int outputIndex;
 	public int width;
 	public int height;
 	public Button[] gridCells;
-
 	public Sprite nodeOn;
 	public Sprite gridPlus;
+	public Sprite gridPlusgreen;
+	public Sprite gridPluspurple;
 	public Sprite gridX;
+	public Sprite gridXgreen;
+	public Sprite gridXpurple;
 	public Sprite gridNull;
 	public Sprite gridSpecial;
+	public Sprite gridSpecialgreen;
+	public Sprite gridSpecialpurple;
 	public Sprite gridSpecialOn0;
+	public Sprite gridSpecialOn0green;
+	public Sprite gridSpecialOn0purple;
 	public Sprite gridSpecialOn1;
 	public Sprite gridPlusOn0;
 	public Sprite gridPlusOn1;
 	public Sprite gridXOn0;
 	public Sprite gridXOn1;
 	public Sprite gridAlwaysOn0;
+	public Sprite gridAlwaysOn0green;
+	public Sprite gridAlwaysOn0purple;
 	public Sprite gridAlwaysOn1;
 	public Image outputNode;
-	public enum GridColorTheme {Gray,Green,Blue};
+	public enum GridColorTheme {Gray,Green,Purple};
 	public GridColorTheme theme;
-	public GameObject targetGameObject;
 	public AudioClip solvedSFX;
 	public bool puzzleSolved;
+	public Slider progressBar;
+
+	private bool[] grid;
 	private AudioSource audsource;
 	private UseData udSender;
+	private GameObject[] targets;
 
 	void Awake () {
 		puzzleSolved = false;
@@ -46,7 +56,7 @@ public class PuzzleGrid : MonoBehaviour {
 		UpdateCellImages();
 	}
 
-	public void SendGrid(bool[] states, CellType[] types, GridType gtype, int start, int end, int w, int h, GridColorTheme colors, GameObject target, UseData ud) {
+	public void SendGrid(bool[] states, CellType[] types, GridType gtype, int start, int end, int w, int h, GridColorTheme colors, GameObject senttarget, GameObject senttarget1, GameObject senttarget2, GameObject senttarget3, UseData ud) {
 		grid = states;
 		cellType = types;
 		gridType = gtype;
@@ -55,7 +65,10 @@ public class PuzzleGrid : MonoBehaviour {
 		width = w;
 		height = h;
 		theme = colors;
-		targetGameObject = target;
+		targets[0] = senttarget;
+		targets[1] = senttarget1;
+		targets[2] = senttarget2;
+		targets[3] = senttarget3;
 		udSender = ud;
 		EvaluatePuzzle();
 
@@ -88,33 +101,87 @@ public class PuzzleGrid : MonoBehaviour {
 	}
 
 	public void UpdateCellImages() {
-		//if (puzzleSolved) outputNode.overrideSprite = nodeOn;
-
 		for (int i=0;i<(width*height);i++) {
 			if (cellType[i] != CellType.Off) {
 				if (cellType[i] == CellType.Standard) {
 					if (!grid[i]) {
-						gridCells[i].image.overrideSprite = gridX;
+						// Theme dependent
+						switch (theme) {
+						case GridColorTheme.Gray:
+							gridCells [i].image.overrideSprite = gridX;
+							break;
+						case GridColorTheme.Green:
+							gridCells [i].image.overrideSprite = gridXgreen;
+							break;
+						case GridColorTheme.Purple:
+							gridCells [i].image.overrideSprite = gridXpurple;
+							break;
+						}
 					} else {
-						if (powered[i])
-							gridCells[i].image.overrideSprite = gridPlusOn0; // powered node
+						if (powered [i]) {
+							gridCells [i].image.overrideSprite = gridPlusOn0; // powered node
 							// TODO: handle different power images for lines between neighbors
-						else
-							gridCells[i].image.overrideSprite = gridPlus; // no power to node
+						} else {
+							// Theme dependent
+							switch (theme) {
+							case GridColorTheme.Gray:
+								gridCells [i].image.overrideSprite = gridPlus;
+								break;
+							case GridColorTheme.Green:
+								gridCells [i].image.overrideSprite = gridPlusgreen;
+								break;
+							case GridColorTheme.Purple:
+								gridCells [i].image.overrideSprite = gridPluspurple;
+								break;
+							}
+						}
 					}
 				}
 				if (cellType[i] == CellType.And) {
 					if (powered[i]) {
-						gridCells[i].image.overrideSprite = gridSpecialOn0; // And node powered
+						// Theme dependent
+						switch (theme) {
+						case GridColorTheme.Gray:
+							gridCells [i].image.overrideSprite = gridSpecialOn0;
+							break;
+						case GridColorTheme.Green:
+							gridCells [i].image.overrideSprite = gridSpecialOn0green;
+							break;
+						case GridColorTheme.Purple:
+							gridCells [i].image.overrideSprite = gridSpecialOn0purple;
+							break;
+						}
 					} else {
-						gridCells[i].image.overrideSprite = gridSpecial; // And node no power
+						// Theme dependent
+						switch (theme) {
+						case GridColorTheme.Gray:
+							gridCells [i].image.overrideSprite = gridSpecial;
+							break;
+						case GridColorTheme.Green:
+							gridCells [i].image.overrideSprite = gridSpecialgreen;
+							break;
+						case GridColorTheme.Purple:
+							gridCells [i].image.overrideSprite = gridSpecialpurple;
+							break;
+						}
 					}
 				}
 				if (cellType[i] == CellType.Bypass) {
 					if (powered[i]) {
 						gridCells[i].image.overrideSprite = gridAlwaysOn1; // And node powered
 					} else {
-						gridCells[i].image.overrideSprite = gridAlwaysOn0; // And node no power
+						// Theme dependent
+						switch (theme) {
+						case GridColorTheme.Gray:
+							gridCells [i].image.overrideSprite = gridAlwaysOn0;
+							break;
+						case GridColorTheme.Green:
+							gridCells [i].image.overrideSprite = gridAlwaysOn0green;
+							break;
+						case GridColorTheme.Purple:
+							gridCells [i].image.overrideSprite = gridAlwaysOn0purple;
+							break;
+						}
 					}
 				}
 			} else {
@@ -122,26 +189,10 @@ public class PuzzleGrid : MonoBehaviour {
 			}
 		}
 	}
-	/*
-	void SetPowered(int index) {
-		if (index != -1) {
-			if (cellType[index] == CellType.Standard) {
-				if (grid[index]) {
-					powered[index] = true;
-				} else {
-					powered[index] = false;
-				}
-			}
-
-			if (cellType[index] == CellType.Bypass) {
-				powered[index] = true;
-			}
-		}
-	}*/
 
 	public void EvaluatePuzzle() {
-		List<int> queue = new List<int>();
-		bool[] checkedCells = new bool[width*height];
+		List<int> queue = new List<int> ();
+		bool[] checkedCells = new bool[width * height];
 		int cellAbove;
 		int cellBelow;
 		int cellLeft;
@@ -149,47 +200,84 @@ public class PuzzleGrid : MonoBehaviour {
 		int movingIndex;
 
 		// Reset the power
-		for (int i=0;i<(width*height);i++) {
-			powered[i] = false;
+		for (int i = 0; i < (width * height); i++) {
+			powered [i] = false;
 		}
 
 		// Set power for starting node
-		if (grid.Length < 1) return;
-		powered[sourceIndex] = grid[sourceIndex];  // Turn on power for cell adjacent to source node if it is a plus
+		if (grid.Length < 1)
+			return;
+		powered [sourceIndex] = grid [sourceIndex];  // Turn on power for cell adjacent to source node if it is a plus
 		movingIndex = sourceIndex;
-		if (!powered[movingIndex]) return; // Source is off
+		if (!powered [movingIndex])
+			return; // Source is off
 
 		// Flow power to all nodes, adding any nodes to check to the queue
-		queue.Add(sourceIndex); // Initialize queue
-		while(queue.Count > 0) {
-			movingIndex = queue[0]; // Get next item in the queue
-			if (checkedCells[movingIndex]) {
-				queue.Remove(movingIndex);
+		queue.Add (sourceIndex); // Initialize queue
+		while (queue.Count > 0) {
+			movingIndex = queue [0]; // Get next item in the queue
+			if (checkedCells [movingIndex]) {
+				queue.Remove (movingIndex);
 				continue;
 			}
 			//Const.sprint(("movingIndex = " + movingIndex.ToString()),Const.a.allPlayers);
-			cellAbove = ReturnCellAbove(movingIndex);
-			cellBelow = ReturnCellBelow(movingIndex);
-			cellLeft = ReturnCellToLeft(movingIndex);
-			cellRight = ReturnCellToRight(movingIndex);
-			if (cellAbove != -1 && !checkedCells[cellAbove] && grid[cellAbove]) queue.Add(cellAbove);
-			if (cellBelow != -1 && !checkedCells[cellBelow] && grid[cellBelow]) queue.Add(cellBelow);
-			if (cellLeft != -1 && !checkedCells[cellLeft] && grid[cellLeft]) queue.Add(cellLeft);
-			if (cellRight != -1 && !checkedCells[cellRight] && grid[cellRight]) queue.Add(cellRight);
+			cellAbove = ReturnCellAbove (movingIndex);
+			cellBelow = ReturnCellBelow (movingIndex);
+			cellLeft = ReturnCellToLeft (movingIndex);
+			cellRight = ReturnCellToRight (movingIndex);
+			if (cellAbove != -1 && !checkedCells [cellAbove] && grid [cellAbove])
+				queue.Add (cellAbove);
+			if (cellBelow != -1 && !checkedCells [cellBelow] && grid [cellBelow])
+				queue.Add (cellBelow);
+			if (cellLeft != -1 && !checkedCells [cellLeft] && grid [cellLeft])
+				queue.Add (cellLeft);
+			if (cellRight != -1 && !checkedCells [cellRight] && grid [cellRight])
+				queue.Add (cellRight);
 			int poweredCount = 0;
-			if (cellAbove != -1) { if (powered[cellAbove]) poweredCount++; }
-			if (cellBelow != -1) { if (powered[cellBelow]) poweredCount++; }
-			if (cellLeft != -1) { if (powered[cellLeft]) poweredCount++; }
-			if (cellRight != -1) { if (powered[cellRight]) poweredCount++; }
-			if (cellType[movingIndex] == CellType.And) {
-				if (poweredCount > 1) powered[movingIndex] = true;
+			if (cellAbove != -1) {
+				if (powered [cellAbove])
+					poweredCount++;
+			}
+			if (cellBelow != -1) {
+				if (powered [cellBelow])
+					poweredCount++;
+			}
+			if (cellLeft != -1) {
+				if (powered [cellLeft])
+					poweredCount++;
+			}
+			if (cellRight != -1) {
+				if (powered [cellRight])
+					poweredCount++;
+			}
+			if (cellType [movingIndex] == CellType.And) {
+				if (poweredCount > 1)
+					powered [movingIndex] = true;
 			} else {
-				if (cellType[movingIndex] == CellType.Standard || cellType[movingIndex] == CellType.Bypass) {
-					if (grid[movingIndex] && poweredCount>0) powered[movingIndex] = true;
-					Const.sprint(("movingIndex = " + movingIndex.ToString() + ", powered = "+powered[movingIndex].ToString()),Const.a.allPlayers);
+				if (cellType [movingIndex] == CellType.Standard || cellType [movingIndex] == CellType.Bypass) {
+					if (grid [movingIndex] && poweredCount > 0)
+						powered [movingIndex] = true;
+					Const.sprint (("movingIndex = " + movingIndex.ToString () + ", powered = " + powered [movingIndex].ToString ()), Const.a.allPlayers);
 				}
 			}
-			checkedCells[movingIndex] = true;
+			checkedCells [movingIndex] = true;
+
+			if (poweredCount > 1) {
+				float percentProgress = 0f;
+				int stepLeft = 0;
+				int iteration = 0;
+				for (int i = 0; i < grid.Length; i++) {
+					if ((i == stepLeft || i == (stepLeft + width) || i == stepLeft + (width * 2)|| i == stepLeft + (width * 3)) && percentProgress < (iteration/7f)) {
+						if (powered [i]) {
+							percentProgress += (1f / 7f);
+							iteration++;
+							continue;
+						}
+						stepLeft++;
+					}
+				}
+				progressBar.value = percentProgress;
+			}
 		}
 
 		if (powered[outputIndex])
@@ -200,7 +288,7 @@ public class PuzzleGrid : MonoBehaviour {
 		puzzleSolved = true;
 		outputNode.overrideSprite = nodeOn;
 		audsource.PlayOneShot(solvedSFX);
-		targetGameObject.SendMessageUpwards("Use", udSender); // send Use with self as owner of message
+		Const.a.UseTargets(udSender,targets);
 	}
 
 	int ReturnCellAbove(int index) {

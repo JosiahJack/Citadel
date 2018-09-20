@@ -48,6 +48,7 @@ public class PlayerPatch : MonoBehaviour {
 	public PatchInventory playerPI;
 	private UnityStandardAssets.ImageEffects.BerserkEffect berserk;
 	public int patchActive;  // bitflag carrier for active patches
+	public PuzzleWire wirePuzzle;
 
 	// Patches stack so multiple can be used at once
 	// For instance, berserk + staminup + medi = 1 + 64 + 8 = 73
@@ -204,9 +205,11 @@ public class PlayerPatch : MonoBehaviour {
 			if (geniusFinishedTime < Time.time) {
 				playerMouseLookScript.geniusActive = false;
 				patchActive -= PATCH_GENIUS;
+				wirePuzzle.geniusActive = false;
 			} else {
 				// ***Patch Effect***
 				playerMouseLookScript.geniusActive = true;  // so that LH/RH are swapped for mouse look
+				wirePuzzle.geniusActive = true;
 			}
 		}
 

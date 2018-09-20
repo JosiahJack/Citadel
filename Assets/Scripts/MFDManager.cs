@@ -136,17 +136,17 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
-	public void SendGridPuzzleToDataTab (bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors, GameObject target, UseData ud) {
+	public void SendGridPuzzleToDataTab (bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors, GameObject t1, GameObject t2, GameObject t3, GameObject t4, UseData ud) {
 		if (lastDataSideRH) {
 			// Send to RH tab
 			dataTabRH.Reset();
-			dataTabRH.GridPuzzle(states,types,gtype,start,end, width, height,colors,target,ud);
+			dataTabRH.GridPuzzle(states,types,gtype,start,end, width, height,colors,t1,t2,t3,t4,ud);
 			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.RightHand);
 			SearchFXRH.SetActive(true);
 		} else {
 			// Send to LH tab
 			dataTabLH.Reset();
-			dataTabLH.GridPuzzle(states,types,gtype,start,end, width, height,colors,target,ud);
+			dataTabLH.GridPuzzle(states,types,gtype,start,end, width, height,colors,t1,t2,t3,t4,ud);
 			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.LeftHand);
 			SearchFXLH.SetActive(true);
 		}

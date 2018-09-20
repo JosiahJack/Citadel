@@ -15,6 +15,7 @@ public enum Handedness {Center,LH,RH};
 
 public class Const : MonoBehaviour {
 	//Item constants
+	[SerializeField] public QuestBits questData;
 	[SerializeField] public GameObject[] useableItems;
 	[SerializeField] public Texture2D[] useableItemsFrobIcons;
     [SerializeField] public Sprite[] useableItemsIcons;
@@ -161,7 +162,9 @@ public class Const : MonoBehaviour {
 	public bool InputQuickItemPickup;
 	public bool InputQuickReloadWeapons;
 	public enum aiState{Idle,Walk,Run,Attack1,Attack2,Attack3,Pain,Dying,Dead,Inspect,Interacting};
-
+	public Font mainFont1;
+	public Font mainFont2;
+	public Font mainFont3;
 
 	//Instance container variable
 	public static Const a;
@@ -205,6 +208,10 @@ public class Const : MonoBehaviour {
 		LoadItemNamesData();
 		LoadDamageTablesData();
 		LoadEnemyTablesData();
+		questData = new QuestBits ();
+		if (mainFont1 != null) mainFont1.material.mainTexture.filterMode = FilterMode.Point;
+		if (mainFont2 != null) mainFont2.material.mainTexture.filterMode = FilterMode.Point;
+		if (mainFont3 != null) mainFont3.material.mainTexture.filterMode = FilterMode.Point;
 	}
 
 	private void LoadConfig() {
@@ -1094,6 +1101,16 @@ public class Const : MonoBehaviour {
 	}
 
 	public static float AngleInDeg(Vector3 vec1, Vector3 vec2) { return ((Mathf.Atan2(vec2.y - vec1.y, vec2.x - vec1.x)) * (180 / Mathf.PI)); }
+
+	public void UseTargets (UseData ud, GameObject[] targets) {
+		for (int i = 0; i < targets.Length; i++) {
+			if (targets [i] != null) targets [i].SendMessageUpwards ("Targetted", ud);
+		}
+	}
+
+	public void UseTargets (UseData ud, GameObject target) {
+		if (target != null) target.SendMessageUpwards ("Targetted", ud);
+	}
 }
 
 public class QuestBits {
@@ -1103,6 +1120,12 @@ public class QuestBits {
 	public bool Level4SecNodesDestroyed;
 	public bool Level5SecNodesDestroyed;
 	public bool Level6SecNodesDestroyed;
+	public int lev1SecCode;
+	public int lev2SecCode;
+	public int lev3SecCode;
+	public int lev4SecCode;
+	public int lev5SecCode;
+	public int lev6SecCode;
 	public bool ShieldActivated;
 	public bool LaserSafetyOverriden;
 	public bool LaserDestroyed;

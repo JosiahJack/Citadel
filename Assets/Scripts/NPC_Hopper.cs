@@ -5,7 +5,6 @@ using UnityEngine.AI;
 
 public class NPC_Hopper : MonoBehaviour {
 	public bool visitWaypointsRandomly = false;
-	public bool inSight = false;
 	public bool inFront = false;
 	public bool goIntoPain = false;
 	public int index = 14; // NPC reference index for looking up constants in tables in Const.cs
@@ -117,7 +116,6 @@ public class NPC_Hopper : MonoBehaviour {
 		attacker = null;
 
 		firstSighting = true;
-		inSight = false;
 		goIntoPain = false;
 		dyingSetup = false;
 		hopDone = false;
@@ -165,6 +163,8 @@ public class NPC_Hopper : MonoBehaviour {
 	}
 
 	void Think () {
+		CheckAndUpdateState ();
+
 		switch (currentState) {
 		case Const.aiState.Idle: 			Idle(); 		break;
 		//case Const.aiState.Walk:	 		Walk(); 		break;
@@ -173,6 +173,70 @@ public class NPC_Hopper : MonoBehaviour {
 		case Const.aiState.Pain: 			Pain();			break;
 		case Const.aiState.Dying: 			Dying(); 		break;
 		default: 							break;
+		}
+	}
+
+	// All state changes go in here.  Check for stuff.  See what we need to be doing.  Need to change?
+	void CheckAndUpdateState() {
+		if (currentState == Const.aiState.Dead)	return;
+
+		// Check to see if we got hurt
+		if (healthManager.health < lastHealth) {
+			if (healthManager.health <= 0) {
+				currentState = Const.aiState.Dying;
+				return;
+			}
+
+			lastHealth = healthManager.health;
+			// Make initial sight sound if we aren't running, attacking, or already in pain
+			if (currentState != Const.aiState.Run || currentState != Const.aiState.Attack1 || currentState != Const.aiState.Attack2 || currentState != Const.aiState.Attack3 || currentState != Const.aiState.Pain)
+				SightSound ();
+			
+			enemy = healthManager.attacker;
+			currentState = Const.aiState.Run;
+			return;
+		} else {
+			lastHealth = healthManager.health;
+		}
+
+		// Take a look around for enemies
+		if (enemy == null) {
+			// we don't have an enemy yet so let's look to see if we can see one
+			if (CheckIfPlayerInSight ()) {
+				currentState = Const.aiState.Run; // quit standing around and start fighting
+				return;
+			}
+		} else {
+			// We have an enemy now what...
+			// Oh can we still see it?
+			// Can I shoot it?
+			// please??
+			// Can I melee it?
+			// cherry on top?
+			if (anim.IsPlaying ("Hop")) {
+				if (anim ["Hop"].time > (0.69f * 1.55f) || anim ["Hop"].time < (0.09f)) {
+					if (CheckIfEnemyInSight ()) {
+						float dist = Vector3.Distance (transform.position, enemy.transform.position);
+						// See if we are close enough to attack
+						if (dist < proj1Range) {
+							if (attackFinished < Time.time) {
+								if (CheckIfEnemyInFront (enemy)) {
+									inFront = true;
+									firingFinished = Time.time + timeBetweenProj1;
+									fireDelayFinished = Time.time + delayBeforeFire;
+									fireEndPoint = enemy.transform.position;
+									currentState = Const.aiState.Attack1;
+									return;
+								} else {
+									inFront = false;
+								}
+							}
+						}
+					}
+				} else {
+					inFront = false;
+				}
+			}
 		}
 	}
 
@@ -185,29 +249,6 @@ public class NPC_Hopper : MonoBehaviour {
 		if ((idleTime < Time.time) && (SFXIdle != null)) {
 			SFX.PlayOneShot(SFXIdle); // play idle sound
 			idleTime = Time.time + Random.Range(3f,10f); // reset the timer to keep idle sounds from playing repetitively
-		}
-
-		// Check to see if we got hurt
-		if (healthManager.health < lastHealth) {
-			if (healthManager.health <= 0) {
-				currentState = Const.aiState.Dying;
-				return;
-			}
-
-			SightSound();
-			enemy = healthManager.attacker;
-			currentState = Const.aiState.Run;
-			return;
-		}
-		lastHealth = healthManager.health;
-
-		// Take a look around for enemies
-		if (CheckIfPlayerInSight ()) {
-			inSight = true;
-			currentState = Const.aiState.Run; // quit standing around and start fighting
-			return;
-		} else {
-			inSight = false;
 		}
 	}
 
@@ -257,72 +298,54 @@ public class NPC_Hopper : MonoBehaviour {
 		// I'm walkin', and waitin'...on the edge of my seat anticipating.
 	}*/
 
-	void AI_Face() {
-		Vector3 dir = (enemy.transform.position - transform.position).normalized;
+	void AI_Face(GameObject goalLocation) {
+		Vector3 dir = (goalLocation.transform.position - transform.position).normalized;
 		dir.y = 0f;
 		Quaternion lookRot = Quaternion.LookRotation(dir,Vector3.up);
-		transform.rotation = Quaternion.Slerp (transform.rotation, lookRot, tick * yawSpeed);
+		transform.rotation = Quaternion.Slerp (transform.rotation, lookRot, tick * yawSpeed); // rotate as fast as we can towards goal position
 	}
 
 	void Run() {
-		AI_Face ();
-
+		// Set animation state
+		anim["Hop"].wrapMode = WrapMode.Loop;
 		anim.Play ("Hop");
 
+		AI_Face (enemy); // turn and face your executioner
+
+		// move it move it
 		if (anim ["Hop"].time > (0.09f*1.55f)) {
 			if (!hopDone) {
 				hopDone = true;
-				rbody.AddForce (transform.forward * hopForce);
+				rbody.AddForce (transform.forward * hopForce); // moving forward!
 			}
 		} else {
 			hopDone = false;
 		}
-			
-		// Check to see if we got hurt
-		if (healthManager.health < lastHealth) {
-			if (healthManager.health <= 0) {
-				currentState = Const.aiState.Dying;
-				return;
-			}
-
-			enemy = healthManager.attacker;
-			currentState = Const.aiState.Run;
-			return;
-		}
-		lastHealth = healthManager.health;
-
-		// Take a look around for enemies
-		//returnedEnemy = null; // reset temporary GameObject to hold any returned enemy we find
-		//Debug.Log("animHop.time = " + anim["Hop"].time.ToString());
-		if (anim["Hop"].time > (0.69f*1.55f) || anim["Hop"].time < (0.09f)) {
-			if (CheckIfEnemyInSight ()) {
-				//enemy = returnedEnemy;
-				inSight = true;
-				//nav.SetDestination (enemy.transform.position); // Run to the enemy position
-
-				float dist = Vector3.Distance (transform.position, enemy.transform.position);
-				// See if we are close enough to attack
-				if (dist < proj1Range) {
-					if (attackFinished < Time.time) {
-						if (CheckIfEnemyInFront (enemy)) {
-							inFront = true;
-							firingFinished = Time.time + timeBetweenProj1;
-							fireDelayFinished = Time.time + delayBeforeFire;
-							fireEndPoint = enemy.transform.position;
-							currentState = Const.aiState.Attack1;
-							return;
-						} else {
-							inFront = false;
+		/*	
+		if (anim.IsPlaying ("Hop")) {
+			if (anim ["Hop"].time > (0.69f * 1.55f) || anim ["Hop"].time < (0.09f)) {
+				if (CheckIfEnemyInSight ()) {
+					float dist = Vector3.Distance (transform.position, enemy.transform.position);
+					// See if we are close enough to attack
+					if (dist < proj1Range) {
+						if (attackFinished < Time.time) {
+							if (CheckIfEnemyInFront (enemy)) {
+								inFront = true;
+								firingFinished = Time.time + timeBetweenProj1;
+								fireDelayFinished = Time.time + delayBeforeFire;
+								fireEndPoint = enemy.transform.position;
+								currentState = Const.aiState.Attack1;
+								return;
+							} else {
+								inFront = false;
+							}
 						}
 					}
 				}
+			} else {
+				inFront = false;
 			}
-		} else {
-			inSight = false;
-			inFront = false;
-		}
-		//nav.SetDestination(enemy.transform.position); // Run to the enemy position
-		//navigationTargetPosition = nav.destination;
+		}*/
 	}
 
 
@@ -336,7 +359,7 @@ public class NPC_Hopper : MonoBehaviour {
 		if (fireDelayFinished < Time.time) {
 			anim.Play ("Shoot");
 
-			AI_Face ();
+			AI_Face (enemy);
 
 			if (firingFinished < Time.time) {
 				currentState = Const.aiState.Run;

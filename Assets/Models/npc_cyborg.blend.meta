@@ -50,7 +50,9 @@ ModelImporter:
     400040: //RootNode
     400042: ogre
     2300000: cyborg_drone
+    2300002: //RootNode
     3300000: cyborg_drone
+    3300002: //RootNode
     4300000: ogre
     4300002: cyborg_drone
     7400000: Default Take
@@ -67,7 +69,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: skin0__npc_cyborg_png
-    second: {fileID: 2100000, guid: c094996fed1c4914f8590d136cded218, type: 2}
+    second: {fileID: 2100000, guid: bc0f3359fdd14ef49a7acf0974833330, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
