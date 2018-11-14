@@ -154,6 +154,7 @@ public class Door : MonoBehaviour {
 		SFX.PlayOneShot(SFXClip);
 		lasersFinished = Time.time + timeBeforeLasersOn;
 		dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
+        if (dynamicObjectsContainer == null) return; //didn't find current level, go ahead and ghost through objects
 		// horrible hack to keep objects that have their physics sleeping ghosting through the door as it closes
 		for (i=defIndex;i<dynamicObjectsContainer.transform.childCount;i++) {
 			if (Vector3.Distance(transform.position,dynamicObjectsContainer.transform.GetChild(i).transform.position) < 5) {

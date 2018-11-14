@@ -54,6 +54,7 @@ public class PuzzleGrid : MonoBehaviour {
 		audsource = GetComponent<AudioSource>();
 		EvaluatePuzzle();
 		UpdateCellImages();
+		targets = new GameObject[4];
 	}
 
 	public void SendGrid(bool[] states, CellType[] types, GridType gtype, int start, int end, int w, int h, GridColorTheme colors, GameObject senttarget, GameObject senttarget1, GameObject senttarget2, GameObject senttarget3, UseData ud) {

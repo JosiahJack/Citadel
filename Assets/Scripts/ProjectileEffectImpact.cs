@@ -2,33 +2,40 @@
 using System.Collections;
 
 public class ProjectileEffectImpact : MonoBehaviour {
-	private bool impact = false;
-	public float impactFadeTime;
-	public Material impactMaterial;
+    public Const.PoolType impactType;
 	public GameObject host;
-	//private SphereCollider sphere;
-	private bool setOnce = true;
+    [HideInInspector]
+    public DamageData dd;
+    [SerializeField] public int hitCountBeforeRemoval = 1;
+    private Vector3 tempVec;
+    private int numHits;
+    private Rigidbody rbody;
 
-	//void Awake () {
-	//	sphere = GetComponent<SphereCollider>();
-	//}
+    private void OnEnable() {
+        numHits = 0; // reset when pulled from pool
+        rbody = GetComponent<Rigidbody>();
+    }
 
-	void Update () {
-		if (impact) {
-			if (impactFadeTime < Time.time) {
-				GetComponent<Billboard>().DestroySprite();
-			}
-		}
-	}
+    void OnCollisionEnter (Collision other) {
+        if (other.gameObject != host) {
+            numHits++;
+            if (numHits >= hitCountBeforeRemoval) {
+                // get an impact effect
+                GameObject impact = Const.a.GetObjectFromPool(impactType);
+                // enable the impact effect
+                if (impact != null) {
+                    impact.transform.position = other.contacts[0].point;
+                    impact.SetActive(true);
+                }
 
-	void OnCollisionEnter (Collision other) {
-		if (other.gameObject != host) {
-			if (setOnce) {
-				impact = true;
-				GetComponent<MeshRenderer>().material = impactMaterial;
-				impactFadeTime = Time.time + impactFadeTime;
-				setOnce = false;
-			}
-		}
+                HealthManager hm = other.contacts[0].otherCollider.gameObject.GetComponent<HealthManager>();
+                if (hm != null)
+                    hm.TakeDamage(dd);
+                gameObject.SetActive(false); // disable the projectile
+            } else {
+                Vector3 dir = other.contacts[0].normal;
+                rbody.AddForce(dir * rbody.velocity.magnitude * 0.75f, ForceMode.Impulse);
+            }
+        }
 	}
 }

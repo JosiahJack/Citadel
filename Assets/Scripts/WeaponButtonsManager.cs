@@ -5,6 +5,7 @@ using System.Collections;
 public class WeaponButtonsManager : MonoBehaviour {
 	[SerializeField] public GameObject[] wepButtons;
 	[SerializeField] private GameObject[] wepCountsText;
+    public GameObject ammoiconman;
 
 	void Update() {
 		if (WeaponInventory.WepInventoryInstance == null) {
@@ -27,7 +28,7 @@ public class WeaponButtonsManager : MonoBehaviour {
 			int i = WeaponCurrent.WepInstance.weaponCurrent;
 			i++;
 
-			int numberOfWeapons = 0;
+            int numberOfWeapons = 0;
 			for (int j=0;j<7;j++) {
 				if (WeaponInventory.WepInventoryInstance.weaponInventoryIndices [j] != -1)
 					numberOfWeapons++;
@@ -42,7 +43,11 @@ public class WeaponButtonsManager : MonoBehaviour {
 				//WeaponCurrent.WepInstance.weaponCurrent = i;
 				wepButtons [i].GetComponent<WeaponButton> ().WeaponInvClick ();
 			}
-		}
+
+            int invslot = WeaponInventory.WepInventoryInstance.weaponInventoryIndices[i];
+            if (invslot >= 0)
+                ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, WeaponCurrent.WepInstance.weaponIsAlternateAmmo);
+        }
 
 		if (GetInput.a.WeaponCycDown ()) {
 			int i = WeaponCurrent.WepInstance.weaponCurrent;

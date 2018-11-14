@@ -101,18 +101,19 @@ ModelImporter:
     7400018: Walk
     7400020: Run
     9500000: //RootNode
+    11100000: //RootNode
     13700000: Cube
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Material
-    second: {fileID: 2100000, guid: ea290c7646ae53f43b646bf75e2142e8, type: 2}
+    second: {fileID: 2100000, guid: 4a79f3776cd6a9b4488296480c0a19c8, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Material__npc_mutant_2__png
-    second: {fileID: 2100000, guid: 1672a59308b0da0498f0fa06ca9b07cf, type: 2}
+    second: {fileID: 2100000, guid: d5931fd1877284b4d9e28e39577969f5, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
@@ -1045,10 +1046,10 @@ ModelImporter:
     rootMotionBoneName: 
     rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
-    hasExtraRoot: 0
+    hasExtraRoot: 1
     skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 1
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

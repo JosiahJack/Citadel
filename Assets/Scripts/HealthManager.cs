@@ -7,11 +7,11 @@ public class HealthManager : MonoBehaviour {
 	public float maxhealth; // maximum health
 	public float gibhealth; // point at which we splatter
 	public bool gibOnDeath = false; // used for things like crates to "gib" and shatter
-	public bool gibCorpse = true;
+	public bool gibCorpse = false;
+    public bool vaporizeCorpse = true;
 	public bool isNPC = false;
 	public bool isObject = false;
 	public bool applyImpact = false;
-	public bool damagingGetsAttention = true;
 	public int[] gibIndices;
 	public GameObject[] gibObjects;
 	public int index;
@@ -22,6 +22,7 @@ public class HealthManager : MonoBehaviour {
 	public BloodType bloodType;
 	public GameObject[] targetOnDeath;
 	public AudioClip backupDeathSound;
+    public bool debugMessages = false;
 
 	private bool initialized = false;
 	private bool deathDone = false;
@@ -31,7 +32,8 @@ public class HealthManager : MonoBehaviour {
 	private BoxCollider boxCol;
 	private SphereCollider sphereCol;
 	private CapsuleCollider capCol;
-	//private SearchableItem searchItems;
+    private Vector3 tempVec;
+    private float tempFloat;
 
 	void Awake () {
 		initialized = false;
@@ -42,24 +44,23 @@ public class HealthManager : MonoBehaviour {
 		sphereCol = GetComponent<SphereCollider>();
 		capCol = GetComponent<CapsuleCollider>();
 		if (maxhealth < 1) maxhealth = health;
-		//if (Const.a.difficultyCombat == 0) {
-		//	maxhealth = 1;
-		//	health = maxhealth;
-		//}
-		//if (isNPC) {
-		//	aic = GetComponent<AIController>();
-		//	if (aic == null) Debug.Log("BUG: No AIController script on NPC!");
-		//}
-		attacker = null;
+
+		if (isNPC) {
+			aic = GetComponent<AIController>();
+			if (aic == null) Debug.Log("BUG: No AIController script on NPC!");
+            index = aic.index;
+
+            // TODO: Uncomment this for final game
+            //if (Const.a.difficultyCombat == 0) {
+            //	maxhealth = 1;
+            //	health = maxhealth;
+            //}
+        }
+        attacker = null;
 		//searchItems = GetComponent<SearchableItem>();
 	}
 
 	void Update () {
-		if (health <= 0) {
-			if (!deathDone && isObject) ObjectDeath(null);
-			return;
-		}
-
 		if (!initialized) {
 			initialized = true;
 			Const.a.RegisterObjectWithHealth(this);
@@ -68,52 +69,56 @@ public class HealthManager : MonoBehaviour {
 		if (health > maxhealth) health = maxhealth; // Don't go past max.  Ever.
 	}
 
-	void Gib() {
-		//for (int i=0;i<gibIndices.Length;i++) {
-		//	if (gibIndices[i] 
-		//}
-	}
-
 	public void TakeDamage(DamageData dd) {
 		if (health <= 0) return;
+        tempFloat = health;
 		health -= dd.damage;
+        if (debugMessages) Const.sprint("Health before: " + tempFloat.ToString() + "| Health after: " + health.ToString(), Const.a.allPlayers);
+
+        if (aic != null) aic.goIntoPain = true;
 		attacker = dd.owner;
 		if (applyImpact && rbody != null) {
 			rbody.AddForce(dd.impactVelocity*dd.attacknormal,ForceMode.Impulse);
 		}
 
-		if (health <= 0f) {
-			if (isObject) ObjectDeath(null);
+        if (health <= 0f) {
+            if (!deathDone) {
+                if (isObject) ObjectDeath(null);
 
-			if (isNPC) NPCDeath (null);
+                if (isNPC) NPCDeath(null);
 
-			if (targetOnDeath != null) {
-				if (targetOnDeath.Length > 0) {
-					UseData ud = new UseData ();
-					ud.owner = Const.a.allPlayers;
-					for (int i = 0; i < targetOnDeath.Length; i++) {
-						targetOnDeath [i].SendMessageUpwards ("Targetted", ud);
-					}
-				}
-			}
+                if (targetOnDeath != null) {
+                    if (targetOnDeath.Length > 0) {
+                        UseData ud = new UseData();
+                        ud.owner = Const.a.allPlayers;
+                        for (int i = 0; i < targetOnDeath.Length; i++) {
+                            targetOnDeath[i].SendMessageUpwards("Targetted", ud);
+                        }
+                    }
+                }
+            } else {
+                if (vaporizeCorpse && health < (0 - (maxhealth / 2))) {
+                    GetComponent<MeshRenderer>().enabled = false;
+                    GameObject explosionEffect = Const.a.GetObjectFromPool(Const.PoolType.Vaporize);
+                    if (explosionEffect != null) {
+                        explosionEffect.SetActive(true);
+                        tempVec = transform.position;
+                        tempVec.y += aic.verticalViewOffset;
+                        explosionEffect.transform.position = tempVec; // put vaporization effect at raycast center
+                    }
+                }
+            }
 		}
 	}
 
 	public void NPCDeath (AudioClip deathSound) {
-		// Disable collision
-		if (boxCol != null) boxCol.enabled = false;
-		if (meshCol != null) meshCol.enabled = false;
-		if (sphereCol != null) sphereCol.enabled = false;
-		if (capCol != null) capCol.enabled = false;
-
 		switch (index) {
 		case 0:
 			GetComponent<MeshRenderer> ().enabled = false;
 			break;
 		}
 
-
-		// Enabel death effects (e.g. explosion particle effect)
+		// Enable death effects (e.g. explosion particle effect)
 		if (deathFX != Const.PoolType.LaserLines) {
 			GameObject explosionEffect = Const.a.GetObjectFromPool(deathFX);
 			if (explosionEffect != null) {
@@ -133,7 +138,18 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 		}
+
+        if (gibOnDeath) Gib();
 	}
+
+    void Gib() {
+        if (gibObjects[0] != null) {
+            for (int i = 0; i < gibObjects.Length; i++) {
+                gibObjects[i].SetActive(true); // turn on all the gibs to fall apart
+                //TODO: add force to gibs?
+            }
+        }
+    }
 
 	public void ObjectDeath(AudioClip deathSound) {
 		deathDone = true;
@@ -164,14 +180,8 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 
-		if (gibOnDeath) {
-			if (gibObjects[0] != null) {
-				for (int i=0;i<gibObjects.Length;i++) {
-					gibObjects[i].SetActive(true); // turn on all the gibs to fall apart
-					//TODO: add force to gibs?
-				}
-			}
-		}
+		if (gibOnDeath) Gib();
+
 		//gameObject.SetActive(false); // turn off the main object
 		GetComponent<MeshRenderer>().enabled = false;
 	}

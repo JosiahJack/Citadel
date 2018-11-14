@@ -10,6 +10,6 @@ public class PooledItemDestroy : MonoBehaviour {
 
 	IEnumerator DestroyBackToPool () {
 		yield return new WaitForSeconds(itemLifeTime);
-		gameObject.SetActive(false);
+        gameObject.SetActive(false);
 	}
 }

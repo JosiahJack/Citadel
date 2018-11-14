@@ -94,9 +94,11 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public GameObject GetCurrentLevelDynamicContainer() {
-		GameObject retval = levels[currentLevel].GetComponent<Level>().dynamicObjectsContainer;
-		if (retval != null) return retval;
-		return null;
+        GameObject retval = null;
+        if (currentLevel < levels.Length)
+            retval = levels[currentLevel].GetComponent<Level>().dynamicObjectsContainer;
+
+        return retval;
 	}
 
 	public int GetCurrentLevelSecurity() {

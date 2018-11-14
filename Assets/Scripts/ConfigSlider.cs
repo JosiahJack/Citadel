@@ -10,7 +10,7 @@ public class ConfigSlider : MonoBehaviour {
 	void Start () {
 		slideControl = GetComponent<Slider>();
 		if (slideControl == null) {
-			Debug.Log("ERROR: No slider for object with ConfigVolumeSlider script");
+			Debug.Log("ERROR: No slider for object with ConfigSlider script");
 		}
 		switch(index) {
 		case 0: slideControl.value = Const.a.GraphicsFOV; break;

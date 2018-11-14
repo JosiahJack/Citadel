@@ -17,7 +17,7 @@ public class WeaponButton : MonoBehaviour {
 
 	public void WeaponInvClick () {
 		invslot = WeaponInventory.WepInventoryInstance.weaponInventoryIndices[WepButtonIndex];
-		if (invslot > 0)
+		if (invslot >= 0)
 			ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, alternateAmmo);
 
         SFX.PlayOneShot(SFXClip);

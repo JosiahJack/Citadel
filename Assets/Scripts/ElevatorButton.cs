@@ -41,7 +41,7 @@ public class ElevatorButton : MonoBehaviour {
 	private int twelve = 12;
 	private int thirteen = 13;
 	public string tooFarAwayText = "You are too far away from that";
-	public string doorStillOpenText = "Elevator door is still open.";
+	public string doorStillOpenText = "Elevator door is still open";
 	public string shaftDamageText = "Shaft Damage -- Unable to go there.";
 
 	void Awake() {

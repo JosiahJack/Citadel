@@ -1,0 +1,193 @@
+Energy drawn from power station
+Power station is recharging
+access card required
+Door is locked
+STD access granted
+ but door is locked.
+You are too far away from that
+Elevator door is still open
+Shaft Damage -- Unable to go there
+Already there
+RELOAD
+Weapon is too hot to fire
+Weapon too hot for overload
+Weapon normal setting
+OVERHEATED
+READY
+ENERGY SETTING
+Weapon overload enabled
+OVERLOAD ENABLED
+OVERLOAD
+LOW
+HIGH
+HEAT
+Automatic healing process activated
+Healing bed is broken beyond repair
+Blocked by SHODAN level Security.
+[MORE]
+[CLOSE]
+Saved game to slot 
+Can't use 
+You are too far away from that
+Item added to general inventory
+Inventory full, item dropped
+Weapon added to inventory
+Grenade added to inventory
+Patch added to inventory
+Audio log 
+ picked up.  Press '
+' to playback.
+LOGS
+Level 
+ Logs
+EMAIL
+DATA
+Already have that access.
+New accesses gained: 
+THAT WARE IS OBSOLETE. DISCARDED.
+normal screens
+field generation rotor
+power exchanger
+repulsor lift
+warning indicator
+jump disk
+storage crate
+biological infestation
+data transfer schematic
+monitoring port
+stone mosaic tiling
+monitoring post
+video observation screen
+cyber station
+burnished platinum panelling
+SHODAN neural bud
+computer
+cabinet
+energy charge station
+CPU node
+chair
+catwalk
+surface
+cabinet
+table top
+cart
+console
+console panel
+desk
+computer panel
+console controls
+cyber space port
+keyboard
+x-ray machine
+repulsor lights
+environmental regulator
+atmospheric regulator
+fluid transport pipes
+engineering panelling
+ladder
+panelling
+system function gauges
+instruments
+engineering instruments
+electric cable access
+data circuit access port
+data access ports
+hi-grip surface
+halogen light fixture
+damaged light fixture
+observation station
+thick rug
+modular panelling
+soft panelling
+burnt panelling
+tech-rack
+corridor wall
+oak panelling
+titanium panelling
+molybdenum panelling
+light fixture
+carpet
+automatic teller machine
+elevator panelling
+duct
+marble slab
+display screen
+energ-light
+non-dent steel panelling
+grating
+observation ceiling
+grass
+wet grass
+virus infestation
+environment pod wall
+overgrowth
+overgrown panel
+environment regulator
+sprinkler system
+industrial tiles
+storage area
+chemical storage
+chemical dispensory
+repair station
+robot diagnostic system
+quartz light fixture
+incandescent light
+access station
+power conduits
+durallow panelling
+soft panelling
+comm port
+sof-impac panelling
+fluorescent light
+tile panelling
+clinical panelling
+rubberized panelling
+medical diagnostic tools
+healing incubator
+restoration bay
+flood light
+cracked radiation tile
+power coupling
+halogen lighting
+circuit relay
+relay access port
+power monitor
+data transfer array
+diagnostic module
+comm panel
+energy conduits
+equipment storage
+energy monitoring station
+rad observation console
+high energy transformer
+cable access port
+relay network
+sensor grid
+halogen lamp
+magnetic containment system
+aluminum panelling
+damaged panelling
+matter converter
+molecular analyzer
+instrument panel
+damaged regulator
+high-power light
+diagnostic panel
+instrument panel
+composite panelling
+data conduit
+atmospheric regulator
+trioptimum logo
+obsidian slab
+silver panelling
+no-scrape storeroom wall
+structural pillar
+Radiation Area
+Radiation poisoning 
+ LBP
+Can't stand here.
+Can't crouch here.
+Can't use broken panel
+Puzzle interface accessed
+Current weapon magazine already full.
+No more of current ammo type to load.

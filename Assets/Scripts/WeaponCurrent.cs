@@ -49,6 +49,7 @@ public class WeaponCurrent : MonoBehaviour {
 			WepInstance.currentMagazineAmount2[i] = 0;
 		}
 
+        //Default power settings
 		WepInstance.weaponEnergySetting [1] = 3f; // Blaster
 		WepInstance.weaponEnergySetting [4] = 5f; // Ion Beam
 		WepInstance.weaponEnergySetting [10] = 13f; // Plasma rifle

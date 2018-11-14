@@ -111,7 +111,9 @@ public class Const : MonoBehaviour {
 	//Pool references
 	public enum PoolType {SparqImpacts,CameraExplosions,ProjEnemShot2,Sec2BotRotMuzBursts,Sec2BotMuzBursts,
 						LaserLines,SparksSmall,BloodSpurtSmall,BloodSpurtSmallYellow,BloodSpurtSmallGreen,
-						SparksSmallBlue,LaserLinesHopper,HopperImpact,GrenadeFragExplosions};
+						SparksSmallBlue,LaserLinesHopper,HopperImpact,GrenadeFragExplosions,Vaporize,
+                        LaserLinesBlaster, LaserLinesIon, BlasterImpacts, IonImpacts, MagpulseShots, MagpulseImpacts,
+                        StungunShots, StungunImpacts, RailgunShots, RailgunImpacts,PlasmaShots, PlasmaImpacts};
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
 	public GameObject Pool_ProjectilesEnemShot2;
@@ -126,6 +128,19 @@ public class Const : MonoBehaviour {
 	public GameObject Pool_LaserLinesHopper;
 	public GameObject Pool_HopperImpact;
 	public GameObject Pool_GrenadeFragExplosions;
+    public GameObject Pool_Vaporize;
+    public GameObject Pool_LaserLinesBlaster;
+    public GameObject Pool_LaserLinesIon;
+    public GameObject Pool_BlasterImpacts;
+    public GameObject Pool_IonImpacts;
+    public GameObject Pool_MagpulseShots;
+    public GameObject Pool_MagpulseImpacts;
+    public GameObject Pool_StungunShots;
+    public GameObject Pool_StungunImpacts;
+    public GameObject Pool_RailgunShots;
+    public GameObject Pool_RailgunImpacts;
+    public GameObject Pool_PlasmaShots;
+    public GameObject Pool_PlasmaImpacts;
 
 	//Global object references
 	public GameObject statusBar;
@@ -162,7 +177,8 @@ public class Const : MonoBehaviour {
 	public bool InputQuickItemPickup;
 	public bool InputQuickReloadWeapons;
 	public enum aiState{Idle,Walk,Run,Attack1,Attack2,Attack3,Pain,Dying,Dead,Inspect,Interacting};
-	public Font mainFont1;
+    public enum aiMoveType {Walk,Fly,Swim,Cyber,None};
+    public Font mainFont1;
 	public Font mainFont2;
 	public Font mainFont3;
 
@@ -352,7 +368,8 @@ public class Const : MonoBehaviour {
 				readline = dataReader.ReadLine();
 				//char[] delimiters = new char[] {','};
 				string[] entries = readline.Split(',');
-				isFullAutoForWeapon[currentline] = GetBoolFromString(entries[i]); i++;
+                //isFullAutoForWeapon[currentline] = GetBoolFromString(entries[i]); i++;
+                isFullAutoForWeapon[currentline] = true; i++;
 				delayBetweenShotsForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
 				delayBetweenShotsForWeapon2[currentline] = GetFloatFromString(entries[i],currentline); i++;
 				damagePerHitForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
@@ -503,7 +520,59 @@ public class Const : MonoBehaviour {
 			poolContainer = Pool_GrenadeFragExplosions;
 			poolName = "GrenadeFragExplosions ";
 			break;
-		}
+        case PoolType.Vaporize:
+            poolContainer = Pool_Vaporize;
+            poolName = "Vaporize ";
+            break;
+        case PoolType.LaserLinesBlaster:
+            poolContainer = Pool_LaserLinesBlaster;
+            poolName = "LaserLinesBlaster ";
+            break;
+        case PoolType.LaserLinesIon:
+            poolContainer = Pool_LaserLinesIon;
+            poolName = "LaserLinesIon ";
+            break;
+        case PoolType.BlasterImpacts:
+            poolContainer = Pool_BlasterImpacts;
+            poolName = "BlasterImpacts ";
+            break;
+        case PoolType.IonImpacts:
+            poolContainer = Pool_IonImpacts;
+            poolName = "IonImpacts ";
+            break;
+        case PoolType.MagpulseShots:
+            poolContainer = Pool_MagpulseShots;
+            poolName = "MagpulseShots ";
+            break;
+        case PoolType.MagpulseImpacts:
+            poolContainer = Pool_MagpulseImpacts;
+            poolName = "MagpulseImpacts ";
+            break;
+        case PoolType.StungunShots:
+            poolContainer = Pool_StungunShots;
+            poolName = "StungunShots ";
+            break;
+        case PoolType.StungunImpacts:
+            poolContainer = Pool_StungunImpacts;
+            poolName = "StungunImpacts ";
+            break;
+        case PoolType.RailgunShots:
+            poolContainer = Pool_RailgunShots;
+            poolName = "RailgunShots ";
+            break;
+        case PoolType.RailgunImpacts:
+            poolContainer = Pool_RailgunImpacts;
+            poolName = "RailgunImpacts ";
+            break;
+        case PoolType.PlasmaShots:
+            poolContainer = Pool_PlasmaShots;
+            poolName = "PlasmaShots ";
+            break;
+        case PoolType.PlasmaImpacts:
+            poolContainer = Pool_PlasmaImpacts;
+            poolName = "PlasmaImpacts ";
+            break;
+        }
 
 		if (poolContainer == null) {
 			sprint("Cannot find " + poolName + "pool",allPlayers);

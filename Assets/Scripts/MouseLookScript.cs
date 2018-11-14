@@ -54,6 +54,7 @@ public class MouseLookScript : MonoBehaviour {
     public float xRotation;
 	[HideInInspector]
 	public Vector3 cyberLookDir;
+    public Vector3 cameraFocusPoint;
 	private int tempindex;
     private float zRotation;
     private float yRotationV;
@@ -194,7 +195,16 @@ public class MouseLookScript : MonoBehaviour {
 		Vector3 camPos = new Vector3(0f,Const.a.playerCameraOffsetY,camz);
 		transform.localPosition = camPos;
 
-		if (mainMenu.activeSelf == true) return;  // ignore mouselook when main menu is still up
+        // Draw line from cursor - used for projectile firing, e.g. magpulse/stugngun/railgun/plasma
+        RaycastHit rayhit = new RaycastHit();
+        Vector3 cursorPoint0 = new Vector3(MouseCursor.drawTexture.x + (MouseCursor.drawTexture.width / 2), MouseCursor.drawTexture.y + (MouseCursor.drawTexture.height / 2), 0);
+        cursorPoint0.y = Screen.height - cursorPoint0.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+        if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint0), out rayhit, Mathf.Infinity)) {
+            cameraFocusPoint = rayhit.point;
+            //drawMyLine(playerCamera.transform.position, rayhit.point, Color.red, .1f);
+        }
+
+        if (mainMenu.activeSelf == true) return;  // ignore mouselook when main menu is still up
 
 		if (Input.GetKeyUp("f6")) {
 			Const.a.Save(7);
@@ -899,10 +909,10 @@ public class MouseLookScript : MonoBehaviour {
 				break;
 			case 26:
 				AddHardwareToInventory(5);
-			break;
+			    break;
 			case 27:
 				AddHardwareToInventory(6);
-			break;
+			    break;
 			case 28:
 				AddHardwareToInventory(7);
 				break;
@@ -936,9 +946,21 @@ public class MouseLookScript : MonoBehaviour {
 			case 38:
 				AddWeaponToInventory(38);
 				break;
-			case 42:
+            case 39:
+                AddWeaponToInventory(39);
+                break;
+            case 40:
+                AddWeaponToInventory(40);
+                break;
+            case 41:
+                AddWeaponToInventory(41);
+                break;
+            case 42:
 				AddWeaponToInventory(42);
 				break;
+            case 43:
+                AddWeaponToInventory(43);
+                break;
             case 44:
                 AddWeaponToInventory(44);
                 break;
@@ -1333,7 +1355,7 @@ public class MouseLookScript : MonoBehaviour {
 		case "eng1_7d": retval = "instruments"; break;
 		case "eng1_8": retval = "electric cable access"; break;
 		case "eng1_9": retval = "data circuit access port"; break;
-		case "eng1_9d": retval = "data access porta"; break;
+		case "eng1_9d": retval = "data access ports"; break;
 		case "eng2_1": retval = "hi-grip surface"; break;
 		case "eng2_1d": retval = "hi-grip surface"; break;
 		case "eng2_2": retval = "halogen light fixture"; break;

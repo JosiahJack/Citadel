@@ -93,8 +93,9 @@ public class PlayerMovement : MonoBehaviour {
 	private SphereCollider cyberCollider;
 	private CapsuleCollider capsuleCollider;
 	private int oldBodyState;
+	private float bonus;
 	
-	void  Awake (){
+	void Awake (){
 		currentCrouchRatio = def1;
 		bodyState = defIndex;
 		cyberDesetup = false;
@@ -299,6 +300,12 @@ public class PlayerMovement : MonoBehaviour {
 		t.position = v;
 	}
 
+	public void RigidbodySetVelocity(Rigidbody t, float s ) {
+		Vector3 v = t.velocity;
+		v = v.normalized * s;
+		t.velocity = v;
+	}
+
 	public void RigidbodySetVelocityX(Rigidbody t, float s ) {
 		Vector3 v = t.velocity;
 		v.x  = s;
@@ -329,90 +336,96 @@ public class PlayerMovement : MonoBehaviour {
 			LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));
 			
 			// Handle body state speeds and body position lerping for smooth transitions
-			//if (!inCyberSpace) {
-			float bonus = 0f;
-			if (hwc.hardwareIsActive [9]) bonus = boosterSpeedBoost;
+			if (!inCyberSpace) {
+				bonus = 0f;
+				if (hwc.hardwareIsActive [9]) bonus = boosterSpeedBoost;
 
-			switch (bodyState) {
-				case 0:
-					playerSpeed = maxWalkSpeed + bonus; //TODO:: lerp from other speeds
-					break;
-				case 1:
-					Debug.Log("Crouched");
-					playerSpeed = maxCrouchSpeed + bonus; //TODO:: lerp from other speeds
-					break;
-				case 2: 
-					Debug.Log("Crouching down lerp from standing...");
-					currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
-					break;
-				case 3:
-					Debug.Log("Standing up lerp from crouch or prone...");
-					lastCrouchRatio = currentCrouchRatio;
-					currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, 1.01f, ref crouchingVelocity, transitionToCrouchSec);
-					LocalPositionSetY (transform, (((currentCrouchRatio - lastCrouchRatio) * capsuleHeight) / 2) + transform.position.y);
-					break;
-				case 4: 
-					playerSpeed = maxProneSpeed + bonus; //TODO:: lerp from other speeds
-					break;
-				case 5: 
-					currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
-					break;
-				case 6:
-					lastCrouchRatio = currentCrouchRatio;
-					currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, 1.01f, ref crouchingVelocity, (transitionToCrouchSec + transitionToProneAdd));
-					LocalPositionSetY (transform, (((currentCrouchRatio - lastCrouchRatio) * capsuleHeight) / 2) + transform.position.y);
-					break;
+				switch (bodyState) {
+					case 0:
+						playerSpeed = maxWalkSpeed + bonus; //TODO:: lerp from other speeds
+						break;
+					case 1:
+						Debug.Log("Crouched");
+						playerSpeed = maxCrouchSpeed + bonus; //TODO:: lerp from other speeds
+						break;
+					case 2: 
+						Debug.Log("Crouching down lerp from standing...");
+						currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
+						break;
+					case 3:
+						Debug.Log("Standing up lerp from crouch or prone...");
+						lastCrouchRatio = currentCrouchRatio;
+						currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, 1.01f, ref crouchingVelocity, transitionToCrouchSec);
+						LocalPositionSetY (transform, (((currentCrouchRatio - lastCrouchRatio) * capsuleHeight) / 2) + transform.position.y);
+						break;
+					case 4: 
+						playerSpeed = maxProneSpeed + bonus; //TODO:: lerp from other speeds
+						break;
+					case 5: 
+						currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
+						break;
+					case 6:
+						lastCrouchRatio = currentCrouchRatio;
+						currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, 1.01f, ref crouchingVelocity, (transitionToCrouchSec + transitionToProneAdd));
+						LocalPositionSetY (transform, (((currentCrouchRatio - lastCrouchRatio) * capsuleHeight) / 2) + transform.position.y);
+						break;
 				}
-			//} else {
+			} else {
 				//Cyber space state
-				//playerSpeed = maxCyberSpeed;
-			//}
+				playerSpeed = maxCyberSpeed;
+			}
 		
-			// Limit movement speed horizontally
-			horizontalMovement = new Vector2(rbody.velocity.x, rbody.velocity.z);
-			
-			if (horizontalMovement.magnitude > playerSpeed) {
-				horizontalMovement = horizontalMovement.normalized;
-				if (isSprinting && running) {
-					if (fatigue > 80f) {
-						playerSpeed = maxSprintSpeedFatigued + bonus;
-					} else {
-						playerSpeed = maxSprintSpeed + bonus;
+			if (inCyberSpace) {
+				// Limit movement speed in all axes x,y,z in cyberspace
+				if (rbody.velocity.magnitude > playerSpeed) {
+					RigidbodySetVelocity(rbody, playerSpeed);
+				}
+			} else {
+				// Limit movement speed horizontally for normal movement
+				horizontalMovement = new Vector2(rbody.velocity.x, rbody.velocity.z);
+				
+				if (horizontalMovement.magnitude > playerSpeed) {
+					horizontalMovement = horizontalMovement.normalized;
+					if (isSprinting && running && !inCyberSpace) {
+						if (fatigue > 80f) {
+							playerSpeed = maxSprintSpeedFatigued + bonus;
+						} else {
+							playerSpeed = maxSprintSpeed + bonus;
+						}
 					}
+					horizontalMovement *= playerSpeed;  // cap velocity to max speed
 				}
-				horizontalMovement *= playerSpeed;  // set back down to max speed this frame...later: what?  Not sure what I mean
-			}
 
-			// Set horizontal velocity
-			RigidbodySetVelocityX(rbody, horizontalMovement.x);
-			RigidbodySetVelocityZ(rbody, horizontalMovement.y);
+				// Set horizontal velocity
+				RigidbodySetVelocityX(rbody, horizontalMovement.x);
+				RigidbodySetVelocityZ(rbody, horizontalMovement.y);
 
-			// Update automap position
-			UpdateAutomap();
-			if (horizontalMovement.x != 0 || horizontalMovement.y != 0) {
-				//automapContainer.GetComponent<ScrollRect>().verticalNormalizedPosition += horizontalMovement.y * automapFactor * (-1);
-				//automapContainer.GetComponent<ScrollRect>().horizontalNormalizedPosition += horizontalMovement.x * automapFactor * (-1);
-				//UpdateAutomap();
-			}
-
-			// Set vertical velocity
-			verticalMovement = rbody.velocity.y;
-			if (verticalMovement > maxVerticalSpeed) {
-				verticalMovement = maxVerticalSpeed;
-			}
-			RigidbodySetVelocityY(rbody, verticalMovement);
-			
-			// Ground friction (TODO: disable grounded for Cyberspace)
-			if (grounded) {
-				if (hwc.hardwareIsActive [9]) {
-					deceleration = walkDeaccelerationBooster;
-				} else {
-					deceleration = walkDeacceleration;
+				UpdateAutomap();
+				if (horizontalMovement.x != 0 || horizontalMovement.y != 0) {
+					//automapContainer.GetComponent<ScrollRect>().verticalNormalizedPosition += horizontalMovement.y * automapFactor * (-1);
+					//automapContainer.GetComponent<ScrollRect>().horizontalNormalizedPosition += horizontalMovement.x * automapFactor * (-1);
+					//UpdateAutomap();
 				}
-				RigidbodySetVelocityX(rbody, (Mathf.SmoothDamp(rbody.velocity.x, 0, ref walkDeaccelerationVolx, deceleration)));
-				RigidbodySetVelocityZ(rbody, (Mathf.SmoothDamp(rbody.velocity.z, 0, ref walkDeaccelerationVolz, deceleration)));
-			}
 
+				// Set vertical velocity
+				verticalMovement = rbody.velocity.y;
+				if (verticalMovement > maxVerticalSpeed) {
+					verticalMovement = maxVerticalSpeed;
+				}
+				RigidbodySetVelocityY(rbody, verticalMovement);
+
+				// Ground friction (TODO: disable grounded for Cyberspace)
+				if (grounded) {
+					if (hwc.hardwareIsActive [9]) {
+						deceleration = walkDeaccelerationBooster;
+					} else {
+						deceleration = walkDeacceleration;
+					}
+					RigidbodySetVelocityX(rbody, (Mathf.SmoothDamp(rbody.velocity.x, 0, ref walkDeaccelerationVolx, deceleration)));
+					RigidbodySetVelocityZ(rbody, (Mathf.SmoothDamp(rbody.velocity.z, 0, ref walkDeaccelerationVolz, deceleration)));
+				}
+			}
+				
 			// Set rotation of playercapsule from mouselook script TODO: Is this needed?
 			//transform.rotation = Quaternion.Euler(0,mlookScript.yRotation,0); //Change 0 values for x and z for use in Cyberspace
 
@@ -468,7 +481,7 @@ public class PlayerMovement : MonoBehaviour {
 							//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
 							rbody.AddRelativeForce (relSideways * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
 						} else {
-							// Walking in the air
+							// Walking in the air, we're floating in the moonlit sky, the people far below are sleeping as we fly
 							//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio *  Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
 							rbody.AddRelativeForce (relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
 						}
@@ -569,7 +582,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	// Sets grounded based on normal angle of the impact point (NOTE: This is not the surface normal!)
 	void OnCollisionStay (Collision collision  ){
-		if (!PauseScript.a.paused) {
+		if (!PauseScript.a.paused && !inCyberSpace) {
 			foreach(ContactPoint contact in collision.contacts) {
 				if (Vector3.Angle(contact.normal,Vector3.up) < maxSlope) {
 					grounded = true;

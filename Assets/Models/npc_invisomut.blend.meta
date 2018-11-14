@@ -3,7 +3,7 @@ guid: 6d7a47ae4074949498c3f88a177030ed
 timeCreated: 1426473874
 licenseType: Free
 ModelImporter:
-  serializedVersion: 18
+  serializedVersion: 22
   fileIDToRecycleName:
     100000: Armature
     100002: Bone
@@ -19,6 +19,7 @@ ModelImporter:
     100022: //RootNode
     100024: Plane
     100026: inviso_mut_mesh
+    100028: npc_inviso_mut_mesh
     400000: Armature
     400002: Bone
     400004: Bone_001
@@ -33,47 +34,67 @@ ModelImporter:
     400022: //RootNode
     400024: Plane
     400026: inviso_mut_mesh
+    400028: npc_inviso_mut_mesh
     4300000: Plane
     4300002: inviso_mut_mesh
+    4300004: npc_inviso_mut_mesh
     7400000: Default Take
     7400002: ArmatureAction
     7400004: Idle
     7400006: Pain
     7400008: Attack1
     7400010: Die
+    7400012: Hover
+    7400014: Attack
+    7400016: Death
     9500000: //RootNode
+    11100000: //RootNode
     13700000: Plane
     13700002: inviso_mut_mesh
+    13700004: npc_inviso_mut_mesh
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: None__invisomut_png
+    second: {fileID: 2100000, guid: 573bbf0ae3fbbbe48a69aca952bae92e, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
     animationCompression: 1
-    animationRotationError: .5
-    animationPositionError: .5
-    animationScaleError: .5
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Idle
-      takeName: Default Take
+      name: Hover
+      takeName: Hover
       firstFrame: 0
-      lastFrame: 9
+      lastFrame: 30
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 1
       loopBlend: 1
       loopBlendOrientation: 0
@@ -116,16 +137,18 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Pain
-      takeName: Default Take
-      firstFrame: 10
-      lastFrame: 17
+      takeName: Pain
+      firstFrame: 30
+      lastFrame: 51
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -168,16 +191,18 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Attack1
-      takeName: Default Take
-      firstFrame: 18
-      lastFrame: 25
+      name: Attack
+      takeName: Attack
+      firstFrame: 54
+      lastFrame: 75
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -220,16 +245,18 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Die
-      takeName: Default Take
-      firstFrame: 26
-      lastFrame: 34
+      name: Death
+      takeName: Death
+      firstFrame: 75
+      lastFrame: 102
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -272,13 +299,17 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 1.20000005
+    globalScale: 1.2
     meshCompression: 0
     addColliders: 0
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
@@ -292,24 +323,30 @@ ModelImporter:
     useFileScale: 1
   tangentSpace:
     normalSmoothAngle: 60
-    splitTangentsAcrossUV: 1
     normalImportMode: 0
-    tangentImportMode: 1
+    tangentImportMode: 4
+    normalCalculationMode: 0
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 2
     human: []
     skeleton: []
-    armTwist: .5
-    foreArmTwist: .5
-    upperLegTwist: .5
-    legTwist: .5
-    armStretch: .0500000007
-    legStretch: .0500000007
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
     feetSpacing: 0
     rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 1
+  humanoidOversampling: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

@@ -31,7 +31,7 @@ public class HealingBed : MonoBehaviour {
 				}
 				SFXSource.PlayOneShot(SFX);
 			} else {
-				Const.sprint("Healing bed is broken beyond repair\n",ud.owner);
+				Const.sprint("Healing bed is broken beyond repair",ud.owner);
 			}
 		}
 	}

@@ -17,25 +17,29 @@ public class GeneralInvButton : MonoBehaviour {
 		mfdManager.SendInfoToItemTab(useableItemIndex);
     }
 
-	public void DoubleClick() {
-		reduce = false;
-		mfdManager.SendInfoToItemTab(useableItemIndex);
-		mfdManager.OpenTab(1,true,MFDManager.TabMSG.None,useableItemIndex,MFDManager.handedness.LeftHand);
-		GeneralInvCurrent.GeneralInvInstance.generalInvCurrent = GeneralInvButtonIndex;  //Set current
-		switch (useableItemIndex) {
-			case 52:
-				playerEnergy.GiveEnergy(83f);
-				reduce = true;
-				break;
-			case 53:
-				playerEnergy.GiveEnergy(255f);
-				reduce = true;
-				break;
-			case 55:
-				playerHealth.hm.health = playerHealth.hm.maxhealth;
-				reduce = true;
-				break;
-		}
+    public void DoubleClick() {
+        reduce = false;
+
+        if (useableItemIndex == 52 || useableItemIndex == 53 || useableItemIndex == 55) {
+            switch (useableItemIndex) {
+                case 52:
+                    playerEnergy.GiveEnergy(83f,0);
+                    reduce = true;
+                    break;
+                case 53:
+                    playerEnergy.GiveEnergy(255f,0);
+                    reduce = true;
+                    break;
+                case 55:
+                    playerHealth.hm.health = playerHealth.hm.maxhealth;
+                    reduce = true;
+                    break;
+            }
+        } else {
+            mfdManager.SendInfoToItemTab(useableItemIndex);
+            mfdManager.OpenTab(1, true, MFDManager.TabMSG.None, useableItemIndex, MFDManager.handedness.LeftHand);
+            GeneralInvCurrent.GeneralInvInstance.generalInvCurrent = GeneralInvButtonIndex;  //Set current
+        }
 
 		if (reduce) playerGenInv.generalInventoryIndexRef[GeneralInvButtonIndex] = -1;
 	}

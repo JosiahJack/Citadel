@@ -71,6 +71,7 @@ public class NPC_Hopper_Death : MonoBehaviour {
 			if (redTint < 0) redTint = 0; //floor
 			if (redTint > 10) redTint = 10; // ceil
 			smr.material.SetColor("_HSVAAdjust",new Color(redTint,0,0,0));
+			tickFinished = Time.time + blendShapeTickSecs;
 		}
 	}
 }
