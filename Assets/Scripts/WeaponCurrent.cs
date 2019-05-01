@@ -60,8 +60,22 @@ public class WeaponCurrent : MonoBehaviour {
 	void Update() {
 		if (justChangedWeap) {
 			justChangedWeap = false;
-			if (ViewModelPipe != null) ViewModelPipe.SetActive(false);
+			if (ViewModelAssault != null) ViewModelAssault.SetActive(false);
+			if (ViewModelBlaster != null) ViewModelBlaster.SetActive(false);
+			if (ViewModelDartgun != null) ViewModelDartgun.SetActive(false);
+			if (ViewModelFlechette != null) ViewModelFlechette.SetActive(false);
+			if (ViewModelIon != null) ViewModelIon.SetActive(false);
 			if (ViewModelRapier != null) ViewModelRapier.SetActive(false);
+			if (ViewModelPipe != null) ViewModelPipe.SetActive(false);
+			if (ViewModelMagnum != null) ViewModelMagnum.SetActive(false);
+			if (ViewModelMagpulse != null) ViewModelMagpulse.SetActive(false);
+			if (ViewModelPistol != null) ViewModelPistol.SetActive(false);
+			if (ViewModelPlasma != null) ViewModelPlasma.SetActive(false);
+			if (ViewModelRailgun != null) ViewModelRailgun.SetActive(false);
+			if (ViewModelRiotgun != null) ViewModelRiotgun.SetActive(false);
+			if (ViewModelSkorpion != null) ViewModelSkorpion.SetActive(false);
+			if (ViewModelSparq != null) ViewModelSparq.SetActive(false);
+			if (ViewModelStungun != null) ViewModelStungun.SetActive(false);
 		}
 
 		if (lastIndex != weaponIndex) {
@@ -69,7 +83,26 @@ public class WeaponCurrent : MonoBehaviour {
 			lastIndex = weaponIndex;
 		}
 		
+		ammoIndicatorHuns.SetActive(true);
+		ammoIndicatorTens.SetActive(true);
+		ammoIndicatorOnes.SetActive(true);
+
 		switch (weaponIndex) {
+		case 36:
+			ViewModelAssault.SetActive(true);
+			break;
+		case 37:
+			ViewModelBlaster.SetActive(true);
+			break;
+		case 38:
+			ViewModelDartgun.SetActive(true);
+			break;
+		case 39:
+			ViewModelFlechette.SetActive(true);
+			break;
+		case 40:
+			ViewModelIon.SetActive(true);
+			break;
 		case 41:
 			ViewModelRapier.SetActive(true);
 			ammoIndicatorHuns.SetActive(false);
@@ -82,10 +115,32 @@ public class WeaponCurrent : MonoBehaviour {
 			ammoIndicatorTens.SetActive(false);
 			ammoIndicatorOnes.SetActive(false);
 			break;
-		default:
-			ammoIndicatorHuns.SetActive(true);
-			ammoIndicatorTens.SetActive(true);
-			ammoIndicatorOnes.SetActive(true);
+		case 43:
+			ViewModelMagnum.SetActive(true);
+			break;
+		case 44:
+			ViewModelMagpulse.SetActive(true);
+			break;
+		case 45:
+			ViewModelPistol.SetActive(true);
+			break;
+		case 46:
+			ViewModelPlasma.SetActive(true);
+			break;
+		case 47:
+			ViewModelRailgun.SetActive(true);
+			break;
+		case 48:
+			ViewModelRiotgun.SetActive(true);
+			break;
+		case 49:
+			ViewModelSkorpion.SetActive(true);
+			break;
+		case 50:
+			ViewModelSparq.SetActive(true);
+			break;
+		case 51:
+			ViewModelStungun.SetActive(true);
 			break;
 		}
 	}

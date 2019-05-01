@@ -34,6 +34,7 @@ public class PlayerHealth : MonoBehaviour {
 	public bool makingNoise = false;
 	[HideInInspector]
 	public HealthManager hm;
+	public GameObject healingFXFlash;
 
 	private float lastHealth;
 	private float painSoundFinished;
@@ -162,5 +163,12 @@ public class PlayerHealth : MonoBehaviour {
 			radiated = rad;
 
 		//radiated -= suitReduction;
+	}
+
+	public void HealingBed(float amount) {
+		hm.HealingBed(amount);
+		if (healingFXFlash != null) {
+			healingFXFlash.SetActive(true);
+		}
 	}
 }

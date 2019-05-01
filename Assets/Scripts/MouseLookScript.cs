@@ -161,8 +161,8 @@ public class MouseLookScript : MonoBehaviour {
 		//Debug.Log("Recoil from gun index: "+i.ToString()+" with strength of " +strength.ToString());
 		if (strength <= 0f) return;
 		if (playerMovement.fatigue > 80) strength = strength * 2f;
-		Vector3 cameraJoltPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, (transform.localPosition.z - strength));
-		transform.localPosition = cameraJoltPosition;
+		//Vector3 cameraJoltPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, (transform.localPosition.z - strength));
+		//transform.localPosition = cameraJoltPosition;
 		recoiling = true;
 	}
 
@@ -170,16 +170,12 @@ public class MouseLookScript : MonoBehaviour {
         Cursor.visible = false; // Hides hardware cursor so we can show custom cursor textures
 
 		if (recoiling && !inCyberSpace) {
-			float x = transform.localPosition.x; // side to side
-			float y = transform.localPosition.y; // up and down
-			float z = transform.localPosition.z; // forward and back
-			z = Mathf.Lerp(z,cameraDefaultLocalPos.z,Time.deltaTime);
-			tempVec = new Vector3(x,y,z);
-			transform.localPosition = tempVec;
-			//if (Mathf.Abs(transform.localPosition.z - z) < 0.01f) {
-			//	transform.localPosition = cameraDefaultLocalPos;
-			//	recoiling = false;
-			//}
+			//float x = transform.localPosition.x; // side to side
+			//float y = transform.localPosition.y; // up and down
+			//float z = transform.localPosition.z; // forward and back
+			//z = Mathf.Lerp(z,cameraDefaultLocalPos.z,Time.deltaTime);
+			//tempVec = new Vector3(x,y,z);
+			//transform.localPosition = tempVec;
 		}
 		//Debug.Log("MouseLookScript:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
 
@@ -221,8 +217,8 @@ public class MouseLookScript : MonoBehaviour {
 				yRotation += (dx * lookSensitivity);
 				xRotation -= (dy * lookSensitivity);
 				if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle
-				transform.parent.transform.rotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
-				transform.rotation = Quaternion.Euler(xRotation,yRotation,0f); // Up down component only applied to camera
+				transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
+				transform.localRotation = Quaternion.Euler(xRotation,0f,0f); // Up down component only applied to camera
 
 				if (inCyberSpace) cyberLookDir = Vector3.Normalize (transform.forward);
 
@@ -238,14 +234,14 @@ public class MouseLookScript : MonoBehaviour {
 					if  (Input.GetAxisRaw("Yaw") > 0) {
 						yRotation += keyboardTurnSpeed * lookSensitivity;
 						tempQuat = transform.rotation;
-						transform.parent.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-						transform.parent.transform.rotation = tempQuat; // preserve x axis, hacky
+						transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
+						transform.parent.transform.parent.transform.localRotation = tempQuat; // preserve x axis, hacky
 					} else {
 						if (Input.GetAxisRaw("Yaw") < 0) {
 							yRotation -= keyboardTurnSpeed * lookSensitivity;
 							tempQuat = transform.rotation;
-							transform.parent.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-							transform.parent.transform.rotation = tempQuat; // preserve x axis, hacky
+							transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
+							transform.parent.transform.parent.transform.localRotation = tempQuat; // preserve x axis, hacky
 						}
 					}
 				}
@@ -255,10 +251,10 @@ public class MouseLookScript : MonoBehaviour {
 				if (!PauseScript.a.paused) {
 					if  (Input.GetAxisRaw("Pitch") > 0) {
 						xRotation += keyboardTurnSpeed * lookSensitivity;
-						transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+						transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
 					} else {
 						xRotation -= keyboardTurnSpeed * lookSensitivity;
-						transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+						transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
 					}
 				}
 			}
@@ -288,9 +284,22 @@ public class MouseLookScript : MonoBehaviour {
 						
 							// Check if object is usable then use it
 							if (hit.collider.tag == "Usable") {
+								//Debug.Log("Raycast hit a usable!");
 								UseData ud = new UseData ();
 								ud.owner = player;
-								hit.transform.SendMessageUpwards("Use", ud); // send Use with self as owner of message
+								//hit.transform.SendMessageUpwards("Use", ud); // send Use with self as owner of message DIE SendMessage DIE!!!
+								if (hit.transform.GetComponent<UseHandler>() != null) {
+									//Debug.Log("Found a UseHandler!");
+									hit.transform.GetComponent<UseHandler>().Use(ud); // Just plain use it, handler checks for and has any and all scripts run their Use(UseData ud) function, passing along ud
+								} else {
+									//Debug.Log("Couldn't find a UseHandler");
+									if (hit.transform.GetComponent<UseHandlerRelay>() != null) {
+										hit.transform.GetComponent<UseHandlerRelay>().referenceUseHandler.Use(ud);
+										//Debug.Log("Found a UseHandlerRelay!");
+									} else {
+										//Debug.Log("Warning: could not find UseHandler or UseHandlerRelay on hit.transform");
+									}
+								}
 								return;
 							}
 					
@@ -497,11 +506,12 @@ public class MouseLookScript : MonoBehaviour {
 				if (!ammoClipBox.activeInHierarchy)
 					ammoClipBox.SetActive(true);
 				
-				ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(index, false);
-				iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
-				weptextman.GetComponent<WeaponTextManager>().SetWepText(index); //Set weapon text for MFD
-				itemiconman.SetActive(false);    //Set weapon icon for MFD
-				itemtextman.GetComponent<ItemTextManager>().SetItemText(index); //Set weapon text for MFD
+
+				if (ammoiconman.activeInHierarchy) ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(index, false);
+				if (iconman.activeInHierarchy) iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
+				if (weptextman.activeInHierarchy) weptextman.GetComponent<WeaponTextManager>().SetWepText(index); //Set weapon text for MFD
+				if (itemiconman.activeInHierarchy) itemiconman.SetActive(false);    //Set weapon icon for MFD
+				if (itemtextman.activeInHierarchy) itemtextman.GetComponent<ItemTextManager>().SetItemText(index); //Set weapon text for MFD
 				Const.sprint("Weapon added to inventory",player);
 				itemAdded = true;
 
@@ -1595,7 +1605,7 @@ public class MouseLookScript : MonoBehaviour {
 		myLine.transform.position = start;
 		myLine.AddComponent<LineRenderer> ();
 		LineRenderer lr = myLine.GetComponent<LineRenderer> ();
-		lr.material = new Material (Shader.Find ("Particles/Additive"));
+		lr.material = new Material (Shader.Find ("Legacy Shaders/Particles/Additive"));
 		lr.startColor = color;
 		lr.endColor = color;
 		lr.startWidth = 0.1f;

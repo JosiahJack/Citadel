@@ -23,7 +23,7 @@ public class KeypadKeycode : MonoBehaviour {
 		SFXSource = GetComponent<AudioSource>();
 	}
 
-	void Use (UseData ud) {
+	public void Use (UseData ud) {
 		if (LevelManager.a.levelSecurity[LevelManager.a.currentLevel] > securityThreshhold) {
 			Const.sprint("Blocked by SHODAN level Security.",ud.owner);
 			MFDManager.a.BlockedBySecurity();

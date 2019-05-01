@@ -18,7 +18,7 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 	public GameObject target2;
 	public GameObject target3;
 
-	void Use (UseData ud) {
+	public void Use (UseData ud) {
 		if (dead) {
 			Const.sprint("Can't use broken panel",ud.owner);
 			return;

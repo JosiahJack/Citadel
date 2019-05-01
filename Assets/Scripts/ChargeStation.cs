@@ -12,8 +12,8 @@ public class ChargeStation : MonoBehaviour {
 		nextthink = Time.time;
 	}
 
-	void Use (UseData ud) {
-		if (LevelManager.a.GetCurrentLevelSecurity () > minSecurityLevel) {
+	public void Use (UseData ud) {
+		if (LevelManager.a.GetCurrentLevelSecurity () >= minSecurityLevel) {
 			MFDManager.a.BlockedBySecurity ();
 			return;
 		}

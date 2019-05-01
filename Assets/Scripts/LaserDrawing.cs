@@ -19,7 +19,7 @@ public class LaserDrawing : MonoBehaviour {
 	void Update () {
 		//if (followStarter != null) {
 		//	endPoint = followStarter.transform.position;
-
+//
 		//}
 		line.SetPosition(0,startPoint);
 		line.SetPosition(1,endPoint);

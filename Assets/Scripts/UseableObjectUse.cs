@@ -10,7 +10,7 @@ public class UseableObjectUse : MonoBehaviour {
 	private MouseLookScript mlook;
 
 	// was GameObject owner as arguments, now UseData to hold more info
-	void Use (UseData ud) {
+	public void Use (UseData ud) {
 		tex = Const.a.useableItemsFrobIcons[useableItemIndex];
 		if (tex != null) ud.owner.GetComponent<PlayerReferenceManager>().playerCursor.GetComponent<MouseCursor>().cursorImage = tex;  // set cursor to this object
 		mlook = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<MouseLookScript>();
@@ -28,7 +28,7 @@ public class UseableObjectUse : MonoBehaviour {
 	}
 
 	// ouch!
-	void TakeDamage (DamageData dd) {
+	public void TakeDamage (DamageData dd) {
 		Rigidbody rbody = GetComponent<Rigidbody>();
 		rbody.AddForceAtPosition((dd.attacknormal*dd.damage),dd.hit.point); // knock me around will you
 	}

@@ -7,7 +7,6 @@ public class BeverageSpawn : MonoBehaviour {
 	[SerializeField] private Texture skin3;
 	[SerializeField] private Texture skin4;
 
-	// Use this for initialization
 	void Awake () {
 		float i;
 		i = Random.Range(0.0f,1.0f);

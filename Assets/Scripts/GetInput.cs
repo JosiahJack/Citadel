@@ -58,7 +58,11 @@ public class GetInput : MonoBehaviour {
 	public bool PatchCycUp() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[37]])) return true; else return false; }
 	public bool PatchCycDown() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[38]])) return true; else return false; }
 	public bool Map() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[39]])) return true; else return false; }
-	public bool CapsLockOn() { if (Input.GetKeyDown(KeyCode.CapsLock)) isCapsLockOn = !isCapsLockOn; return isCapsLockOn; }
+    public bool SwimUp() { if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[40]])) return true; else return false; }
+    public bool SwimDn() { if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[41]])) return true; else return false; }
+    public bool SwapAmmoType() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[42]])) return true; else return false; }
+    public bool Console() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[43]])) return true; else return false; }
+    public bool CapsLockOn() { if (Input.GetKeyDown(KeyCode.CapsLock)) isCapsLockOn = !isCapsLockOn; return isCapsLockOn; }
 	public bool Numpad0() { if (Input.GetKeyDown(KeyCode.Keypad0)) return true; else return false; }
 	public bool Numpad1() { if (Input.GetKeyDown(KeyCode.Keypad1)) return true; else return false; }
 	public bool Numpad2() { if (Input.GetKeyDown(KeyCode.Keypad2)) return true; else return false; }

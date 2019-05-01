@@ -41,10 +41,9 @@ public class Door : MonoBehaviour {
 	public GameObject[] laserLines;
 	public bool toggleLasers = false;
 	public bool targettingOnlyUnlocks = false;
+	public bool debugging = false;
 
 	private int defIndex = 0;
-	private float minTime = 0.15f;
-	private float maxTime = 0.85f;
 	private float topTime = 1.00f;
 	private float defaultSpeed = 1.00f;
 	private float speedZero = 0.00f;
@@ -69,7 +68,7 @@ public class Door : MonoBehaviour {
 		useFinished = Time.time;
 	}
 
-	void Use (UseData ud) {
+	public void Use (UseData ud) {
 		ajar = false;
 		if (useFinished < Time.time) {
 			if (requiredAccessCard == accessCardType.None || ud.owner.GetComponent<PlayerReferenceManager>().playerInventory.GetComponent<AccessCardInventory>().HasAccessCard(requiredAccessCard)) {
@@ -83,32 +82,34 @@ public class Door : MonoBehaviour {
 						Const.sprint(requiredAccessCard.ToString() + cardUsedMessage,ud.owner); // tell the owner of the Use command that we are locked
 					}
 
-					if (doorOpen == doorState.Open) {
+					if (doorOpen == doorState.Open && playbackTime > 0.95f) {
+						//Debug.Log("Was Open, Now Closing");
+						doorOpen = doorState.Closing;
 						CloseDoor();
 						return;
 					}
 
-					if (doorOpen == doorState.Closed){
+					if (doorOpen == doorState.Closed  && playbackTime > 0.95f){
+						//Debug.Log("Was Close, Now Opening");
+						doorOpen = doorState.Opening;
 						OpenDoor();
 						return;
 					}
 
 					if (doorOpen == doorState.Opening) {
-						if (playbackTime > minTime && playbackTime < maxTime) {
-							doorOpen = doorState.Closing;
-							anim.Play(closeClipName,defIndex, topTime-playbackTime);
-							SFX.PlayOneShot(SFXClip);
-						}
+						doorOpen = doorState.Closing;
+						anim.Play(closeClipName,defIndex, topTime-playbackTime);
+						//Debug.Log("Reversing from Opening to Closing.  playbackTime = " + playbackTime.ToString() + ", topTime-playbackTime = " + (topTime-playbackTime).ToString());
+						SFX.PlayOneShot(SFXClip);
 						return;
 					}
 
 					if (doorOpen == doorState.Closing) {
-						if (playbackTime > minTime && playbackTime < maxTime) {
-							doorOpen = doorState.Opening;
-							waitBeforeClose = Time.time + delay;
-							anim.Play(openClipName,defIndex, topTime-playbackTime);
-							SFX.PlayOneShot(SFXClip);
-						}
+						doorOpen = doorState.Opening;
+						waitBeforeClose = Time.time + delay;
+						anim.Play(openClipName,defIndex, topTime-playbackTime);
+						//Debug.Log("Reversing from Closing to Opening.  playbackTime = " + playbackTime.ToString() + ", topTime-playbackTime = " + (topTime-playbackTime).ToString());
+						SFX.PlayOneShot(SFXClip);
 						return;
 					}
 				} else {
@@ -152,7 +153,9 @@ public class Door : MonoBehaviour {
 		doorOpen = doorState.Closing;
 		anim.Play(closeClipName);
 		SFX.PlayOneShot(SFXClip);
-		lasersFinished = Time.time + timeBeforeLasersOn;
+		if (toggleLasers) {
+			lasersFinished = Time.time + timeBeforeLasersOn;
+		}
 		dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
         if (dynamicObjectsContainer == null) return; //didn't find current level, go ahead and ghost through objects
 		// horrible hack to keep objects that have their physics sleeping ghosting through the door as it closes
@@ -179,10 +182,16 @@ public class Door : MonoBehaviour {
 			}
 		}
 
-		if (anim.GetCurrentAnimatorStateInfo(defIndex).IsName(idleClosedClipName))
+		if (debugging) Debug.Log("doorOpen state = " + doorOpen.ToString());
+
+		AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
+		float playbackTime = asi.normalizedTime;
+		//if (anim.GetCurrentAnimatorStateInfo(defIndex).IsName(idleClosedClipName))
+		if (doorOpen == doorState.Closing && playbackTime > 0.95f)
 			doorOpen = doorState.Closed;  // Door is closed
 
-		if (anim.GetCurrentAnimatorStateInfo(defIndex).IsName(idleOpenClipName))
+		//if (anim.GetCurrentAnimatorStateInfo(defIndex).IsName(idleOpenClipName))
+		if (doorOpen == doorState.Opening && playbackTime > 0.95f)
 			doorOpen = doorState.Open; // Door is open
 
 		if (Time.time > waitBeforeClose) {

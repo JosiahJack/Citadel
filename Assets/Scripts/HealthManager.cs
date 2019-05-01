@@ -185,4 +185,8 @@ public class HealthManager : MonoBehaviour {
 		//gameObject.SetActive(false); // turn off the main object
 		GetComponent<MeshRenderer>().enabled = false;
 	}
+
+	public void HealingBed(float amount) {
+		health += amount;
+	}
 }

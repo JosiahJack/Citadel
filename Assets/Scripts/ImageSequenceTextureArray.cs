@@ -30,6 +30,9 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	
 	void Start () {
 		//Load all textures found on the Sequence folder, that is placed inside the resources folder
+		if (resourceFolder == "") {
+			return;
+		}
 		this.objects = Resources.LoadAll(resourceFolder, typeof(Texture));
 		this.glowobjects = Resources.LoadAll(glowResourceFolder, typeof(Texture));
 		//Initialize the array of textures with the same size as the objects array
@@ -54,6 +57,9 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	}
 
 	void Update () {
+		if (resourceFolder == "") {
+			return;
+		}
 		if (tickFinished < Time.time) {
 			Think();
 			tickFinished = Time.time + tick;

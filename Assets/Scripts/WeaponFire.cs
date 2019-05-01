@@ -24,12 +24,19 @@ public class WeaponFire : MonoBehaviour {
     public GameObject impactEffect;
     public WeaponMagazineCounter wepmagCounter;
     public Camera playerCamera; // assign in the editor
+	public PlayerMovement playerMovement; // assign in editor
     public Camera gunCamera; // assign in the editor
     public PlayerEnergy curEnergy;
     public GameObject playerCapsule;
     public WeaponCurrent currentWeapon; // assign in the editor
     public EnergyOverloadButton energoverButton;
     public EnergyHeatTickManager energheatMgr;
+	public GameObject bulletHoleTiny;
+	public GameObject bulletHoleSmall;
+	public GameObject bulletHoleSpread;
+	public GameObject bulletHoleLarge;
+	public GameObject bulletHoleScorchSmall;
+	public GameObject bulletHoleScorchLarge;
     [SerializeField] private AudioSource SFX = null; // assign in the editor
     [SerializeField] private AudioClip SFXMark3Fire; // assign in the editor
     [SerializeField] private AudioClip SFXBlasterFire; // assign in the editor
@@ -79,12 +86,32 @@ public class WeaponFire : MonoBehaviour {
     private float heatTickTime = 0.50f;
 
 
+	public GameObject muzFlashMK3;
+	public GameObject muzFlashBlaster;
+	public GameObject muzFlashDartgun;
+	public GameObject muzFlashFlechette;
+	public GameObject muzFlashIonBeam;
+	public GameObject muzFlashMagnum;
+	public GameObject muzFlashPistol;
+	public GameObject muzFlashMagpulse;
+	public GameObject muzFlashPlasma;
+	public GameObject muzFlashRailgun;
+	public GameObject muzFlashRiotgun;
+	public GameObject muzFlashSkorpion;
+	public GameObject muzFlashSparq;
+	public GameObject muzFlashStungun;
+
+	// Recoil the weapon view models
+	public GameObject wepView;
+	private Vector3 wepViewDefaultLocalPos;
+	[SerializeField] private bool recoiling;
 
     void Awake() {
         damageData = new DamageData();
         tempHit = new RaycastHit();
         tempVec = new Vector3(0f, 0f, 0f);
         heatTickFinished = Time.time + heatTickTime;
+		wepViewDefaultLocalPos = wepView.transform.localPosition;
     }
 
     void GetWeaponData(int index) {
@@ -195,9 +222,28 @@ public class WeaponFire : MonoBehaviour {
         }
     }
 
+	public void Recoil (int i) {
+		float strength = Const.a.recoilForWeapon[i];
+		//Debug.Log("Recoil from gun index: "+i.ToString()+" with strength of " +strength.ToString());
+		if (strength <= 0f) return;
+		if (playerMovement.fatigue > 80) strength = strength * 2f;
+		strength = strength * 0.25f;
+		Vector3 wepJoltPosition = new Vector3(wepView.transform.localPosition.x, wepView.transform.localPosition.y, (wepViewDefaultLocalPos.z - strength));
+		wepView.transform.localPosition = wepJoltPosition;
+		recoiling = true;
+	}
+
     void Update() {
         if (!PauseScript.a.paused) {
             if (WeaponsHaveAnyHeat()) HeatBleedOff(); // Slowly cool off any weapons that have been heated from firing
+
+			if (recoiling) {
+				float x = wepView.transform.localPosition.x; // side to side
+				float y = wepView.transform.localPosition.y; // up and down
+				float z = wepView.transform.localPosition.z; // forward and back
+				z = Mathf.Lerp(z,wepViewDefaultLocalPos.z,Time.deltaTime);
+				wepView.transform.localPosition = new Vector3(x,y,z);
+			}
 
             if (!GUIState.a.isBlocking && !playerCamera.GetComponent<MouseLookScript>().holdingObject) {
                 int i = Get16WeaponIndexFromConstIndex(currentWeapon.weaponIndex);
@@ -259,11 +305,13 @@ public class WeaponFire : MonoBehaviour {
                 //Mark3 Assault Rifle
                 if (!isSilent) { SFX.clip = SFXMark3Fire; SFX.Play(); }
                 if (DidRayHit()) HitScanFire(index);
+				muzFlashMK3.SetActive(true);
                 break;
             case 37:
                 //ER-90 Blaster
 				if (!isSilent) { SFX.clip = SFXBlasterFire; SFX.Play(); }
 				if (DidRayHit()) HitScanFire(index);
+				muzFlashBlaster.SetActive(true);
                 if (overloadEnabled) {
                     blasterHeat = 100f;
                 } else {
@@ -275,16 +323,19 @@ public class WeaponFire : MonoBehaviour {
                 //SV-23 Dartgun
                 if (!isSilent) { SFX.clip = SFXDartFire; SFX.Play(); }
                 if (DidRayHit()) HitScanFire(index);
+				muzFlashDartgun.SetActive(true);
                 break;
             case 39:
                 //AM-27 Flechette
                 if (!isSilent) { SFX.clip = SFXFlechetteFire; SFX.Play(); }
                 if (DidRayHit()) HitScanFire(index);
+				muzFlashFlechette.SetActive(true);
                 break;
             case 40:
                 //RW-45 Ion Beam
                 if (!isSilent) { SFX.clip = SFXIonFire; SFX.Play(); }
                 if (DidRayHit()) HitScanFire(index);
+				muzFlashIonBeam.SetActive(true);
                 if (overloadEnabled) {
                     ionHeat = 100f;
                 } else {
@@ -304,21 +355,25 @@ public class WeaponFire : MonoBehaviour {
                 //Magnum 2100
                 if (!isSilent) { SFX.clip = SFXMagnumFire; SFX.Play(); }
                 if (DidRayHit()) HitScanFire(index);
+				muzFlashMagnum.SetActive(true);
                 break;
             case 44:
                 //SB-20 Magpulse
                 if (!isSilent) { SFX.clip = SFXMagpulseFire; SFX.Play(); }
                 FireMagpulse(index);
+				muzFlashMagpulse.SetActive(true);
                 break;
             case 45:
                 //ML-41 Pistol
                 if (!isSilent) { SFX.clip = SFXPistolFire; SFX.Play(); }
                 if (DidRayHit()) HitScanFire(index);
+				muzFlashPistol.SetActive(true);
                 break;
             case 46:
                 //LG-XX Plasma Rifle
                 if (!isSilent) { SFX.clip = SFXPlasmaFire; SFX.Play(); }
                 FirePlasma(index);
+				muzFlashPlasma.SetActive(true);
                 plasmaHeat += plasmaSetting;
                 if (plasmaHeat > 100f) plasmaHeat = 100f;
                 break;
@@ -326,21 +381,25 @@ public class WeaponFire : MonoBehaviour {
                 //MM-76 Railgun
                 if (!isSilent) { SFX.clip = SFXRailgunFire; SFX.Play(); }
                 FireRailgun(index);
+				muzFlashRailgun.SetActive(true);
                 break;
             case 48:
                 //DC-05 Riotgun
                 if (!isSilent) { SFX.clip = SFXRiotgunFire; SFX.Play(); }
                 if (DidRayHit()) HitScanFire(index);
+				muzFlashRiotgun.SetActive(true);
                 break;
             case 49:
                 //RF-07 Skorpion
                 if (!isSilent) { SFX.clip = SFXSkorpionFire; SFX.Play(); }
                 if (DidRayHit()) HitScanFire(index);
+				muzFlashSkorpion.SetActive(true);
                 break;
             case 50:
                 //Sparq Beam
                 if (!isSilent) { SFX.clip = SFXSparqBeamFire; SFX.Play(); }
                 if (DidRayHit()) HitScanFire(index);
+				muzFlashSparq.SetActive(true);
                 if (overloadEnabled) {
                     sparqHeat = 100f;
                 } else {
@@ -352,6 +411,7 @@ public class WeaponFire : MonoBehaviour {
                 //DH-07 Stungun
                 if (!isSilent) { SFX.clip = SFXStungunFire; SFX.Play(); }
                 FireStungun(index);
+				muzFlashStungun.SetActive(true);
                 stungunHeat += stungunSetting;
                 if (stungunHeat > 100f) stungunHeat = 100f;
                 break;
@@ -391,6 +451,7 @@ public class WeaponFire : MonoBehaviour {
 
 
         playerCamera.GetComponent<MouseLookScript>().Recoil(index);
+		Recoil(index);
         if (currentWeapon.weaponIsAlternateAmmo || overloadEnabled) {
             overloadEnabled = false;
             waitTilNextFire = Time.time + Const.a.delayBetweenShotsForWeapon2[index];
@@ -426,6 +487,51 @@ public class WeaponFire : MonoBehaviour {
 
         return Const.a.GetObjectFromPool(Const.PoolType.SparksSmall);
     }
+
+	void CreateStandardImpactMarks(int wep16index) {
+		// Add bullethole
+		tempVec = tempHit.normal * 0.16f;
+		GameObject holetype = bulletHoleSmall;
+		switch(wep16index) {
+			case 0: holetype = bulletHoleLarge;
+					break;
+			case 1: holetype = bulletHoleScorchSmall;
+					break;
+			case 2: holetype = bulletHoleTiny;
+					break;
+			case 3: holetype = bulletHoleSmall;
+					break;
+			case 4: holetype = bulletHoleScorchLarge;
+					break;
+			case 5: holetype = bulletHoleScorchSmall;
+					break;
+			case 6: return; // no impact marks for lead pipe...actually doesn't even call this function
+			case 7: holetype = bulletHoleLarge;
+					break;
+			case 8: holetype = bulletHoleScorchLarge;
+					break;
+			case 9: holetype = bulletHoleSmall;
+					break;
+			case 10: holetype = bulletHoleScorchLarge;
+					break;
+			case 11: holetype = bulletHoleScorchLarge;
+					break;
+			case 12: holetype = bulletHoleSpread;
+					break;
+			case 13: holetype = bulletHoleLarge;
+					break;
+			case 14: holetype = bulletHoleScorchSmall;
+					break;
+			case 15: holetype = bulletHoleScorchSmall;
+					break;
+		}
+
+		GameObject impactMark = (GameObject) Instantiate(holetype, (tempHit.point + tempVec),  Quaternion.LookRotation(tempHit.normal*-1,Vector3.up), tempHit.transform.gameObject.transform);
+		int rint = Random.Range(0,3);
+		Quaternion roll = impactMark.transform.localRotation;
+		roll *= Quaternion.Euler(0f,0f,rint * 90f);
+		impactMark.transform.localRotation = roll;
+	}
 
     void CreateStandardImpactEffects(bool onlyBloodIfHitHasHM) {
         // Determine blood type of hit target and spawn corresponding blood particle effect from the Const.Pool
@@ -516,9 +622,11 @@ public class WeaponFire : MonoBehaviour {
     void HitScanFire(int wep16Index) {
         if (wep16Index == 1 || wep16Index == 4 || wep16Index == 14) {
             CreateBeamImpactEffects(wep16Index); // laser burst effect overrides standard blood spurts/robot sparks
+			CreateStandardImpactMarks(wep16Index);
             damageData.attackType = Const.AttackType.EnergyBeam;
         } else {
             CreateStandardImpactEffects(false); // standard blood spurts/robot sparks
+			CreateStandardImpactMarks(wep16Index);
             damageData.attackType = Const.AttackType.Projectile;
         }
         // Fill the damageData container
@@ -562,6 +670,7 @@ public class WeaponFire : MonoBehaviour {
                 SFX.Play();
             }
             CreateStandardImpactEffects(true);
+			CreateStandardImpactMarks(index16);
             damageData.other = tempHit.transform.gameObject;
             if (tempHit.transform.gameObject.tag == "NPC") {
                 damageData.isOtherNPC = true;

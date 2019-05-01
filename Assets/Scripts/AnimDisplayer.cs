@@ -7,7 +7,7 @@ public class AnimDisplayer : MonoBehaviour {
 	private Animation anim;
 	public int currentIndex = 0;
 	public float timeStamp;
-	// Use this for initialization
+
 	void Start () {
 		anim = GetComponent<Animation>();
 		Debug.Log(anim.name);

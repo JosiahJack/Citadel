@@ -445,7 +445,7 @@ public class Const : MonoBehaviour {
 
 	// StatusBar Print
 	public static void sprint (string input, GameObject player) {
-		print(input);  // print to console
+		Debug.Log(input);  // print to console
 		if (player == null) return;
 		if (a != null) {
 			if (player.name == "All Players") {

@@ -12,7 +12,6 @@ public class ObjectImpact : MonoBehaviour {
 	public AudioSource SFXSource;
 	public AudioClip SFX;
 
-	// Use this for initialization
 	void Awake () {
 		rbody = GetComponent<Rigidbody> ();
 		if (rbody == null) {
@@ -23,7 +22,6 @@ public class ObjectImpact : MonoBehaviour {
 		SFXSource = GetComponent<AudioSource> ();
 	}
 	
-	// Update is called once per frame
 	void FixedUpdate () {
 		// Handle impact sound
 		if (Mathf.Abs ((oldVelocity.y - rbody.velocity.y)) > impactSoundSpeed) {

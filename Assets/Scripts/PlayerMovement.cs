@@ -9,7 +9,6 @@ public class PlayerMovement : MonoBehaviour {
 	private float walkDeaccelerationBooster = 2f;
 	private float deceleration;
 	private float walkAccelAirRatio = 0.15f;
-	//private float verticalAcceleration = 1200f;
 	public GameObject cameraObject;
 	public MouseLookScript mlookScript;
 	public float playerSpeed;
@@ -38,10 +37,8 @@ public class PlayerMovement : MonoBehaviour {
 	public float capsuleHeight;
 	public float capsuleRadius;
 	public int bodyState = 0;
-	//public float playerGravity = 500;
 	public bool ladderState = false;
 	private float ladderSpeed = 0.25f;
-	//private float damageSpeed = 11.72f;
 	private float fallDamage = 75f;
 	public bool gravliftState = false;
 	public bool inCyberSpace = false;
@@ -51,9 +48,9 @@ public class PlayerMovement : MonoBehaviour {
 	private Sprite automapMaskSprite;
 	//[HideInInspector]
 	public bool CheatWallSticky;
-	public bool staminupActive = false;
-	private float walkDeaccelerationVolx;
-	private float walkDeaccelerationVolz;
+    //[HideInInspector]
+    public bool CheatNoclip;
+    public bool staminupActive = false;
 	private Vector2 horizontalMovement;
 	private float verticalMovement;
 	private float jumpTime;
@@ -62,14 +59,12 @@ public class PlayerMovement : MonoBehaviour {
 	private float lastCrouchRatio;
 	private int layerGeometry = 9;
 	private int layerMask;
-	//private float originalCapsuleHeight;
 	private Rigidbody rbody;
 	private float fallDamageSpeed = 11.72f;
 	private Vector3 oldVelocity;
 	public GameObject mainMenu;
 	public HardwareInvCurrent hwc;
 	public float fatigue;
-	//private float maxFatigueSpeed = 3f;
 	private float jumpFatigue = 8f;
 	private float fatigueWanePerTick = 1f;
 	private float fatigueWanePerTickCrouched = 2f;
@@ -85,7 +80,6 @@ public class PlayerMovement : MonoBehaviour {
 
 	private int defIndex = 0;
 	private int def1 = 1;
-	//private int def1neg = -1;
 	private int onehundred = 100;
 	public bool running = false;
 	public bool cyberSetup = false;
@@ -94,8 +88,23 @@ public class PlayerMovement : MonoBehaviour {
 	private CapsuleCollider capsuleCollider;
 	private int oldBodyState;
 	private float bonus;
-	
-	void Awake (){
+    private float walkDeaccelerationVolx;
+    private float walkDeaccelerationVoly;
+    private float walkDeaccelerationVolz;
+
+	public Image consolebg;
+    public InputField consoleinpFd;
+    public Text consoleplaceholderText;
+	public Text consoleentryText;
+	public bool consoleActivated;
+
+	public Transform leanTransform;
+
+	private float leanLeftDoubleFinished;
+	private float keyboardButtonDoubleTapTime = 0.25f; // max time before a double tap of a keyboard button is registered
+	private float leanTarget = 0f;
+
+    void Awake (){
 		currentCrouchRatio = def1;
 		bodyState = defIndex;
 		cyberDesetup = false;
@@ -106,15 +115,15 @@ public class PlayerMovement : MonoBehaviour {
 		crouchLocalScaleY = transform.localScale.y * crouchRatio;
 		rbody = GetComponent<Rigidbody>();
 		oldVelocity = rbody.velocity;
-		//rbody.useGravity = false;
 		capsuleHeight = GetComponent<CapsuleCollider>().height;
-		//originalCapsuleHeight = capsuleHeight;
 		capsuleRadius = GetComponent<CapsuleCollider>().radius;
 		layerMask = def1 << layerGeometry;
 		staminupActive = false;
 		cyberCollider = GetComponent<SphereCollider>();
 		capsuleCollider = GetComponent<CapsuleCollider>();
-	}
+		consoleActivated = false;
+		leanLeftDoubleFinished = Time.time;
+    }
 	
 	bool CantStand (){
 		return Physics.CheckCapsule(cameraObject.transform.position, cameraObject.transform.position + new Vector3(0f,(1.6f-0.84f),0f), capsuleRadius, layerMask);
@@ -134,6 +143,16 @@ public class PlayerMovement : MonoBehaviour {
 		// 4 = Prone
 		// 5 = Proning down in process
 		// 6 = Proning up to crouch in process
+
+		// Always allow console, even when paused
+        if (GetInput.a.Console()) {
+            ToggleConsole();
+        }
+
+		if (Input.GetKeyDown(KeyCode.Return)) {
+			ConsoleEntry();
+		}
+
 		if (mainMenu.activeSelf == true) return;  // ignore movement when main menu is still up
 		if (!PauseScript.a.paused) {
 			rbody.WakeUp();
@@ -150,19 +169,34 @@ public class PlayerMovement : MonoBehaviour {
 				cyberDesetup = true;
 			}
 				
-			if (!inCyberSpace && cyberDesetup) {
-				cyberCollider.enabled = false;
-				capsuleCollider.enabled = true;
-				rbody.useGravity = true;
-				Mathf.Clamp(mlookScript.xRotation, -90f, 90f); // pre-clamp camera rotation
-				mlookScript.inCyberSpace = false; // disable full camera rotation up/down by enabling auto clamp
-				bodyState = oldBodyState; // return to what we were doing in the "real world" (real lol)
-				// TODO disable dummy player for coop games
-				cyberSetup = false;
-				cyberDesetup = false;
+			if (!inCyberSpace && cyberDesetup || CheatNoclip) {
+                if (CheatNoclip) {
+                    // Flying cheat...also map editing mode!
+                    cyberCollider.enabled = false; // can't touch dis
+                    capsuleCollider.enabled = false; //na nana na
+                    rbody.useGravity = false; // look ma! no legs
+
+                    Mathf.Clamp(mlookScript.xRotation, -90f, 90f); // pre-clamp camera rotation - still useful
+                    mlookScript.inCyberSpace = false; // disable full camera rotation up/down by enabling auto clamp
+                    bodyState = oldBodyState; // return to what we were doing in the "real world" (real lol)
+                                              // TODO disable dummy player for coop games  dummyPlayerModel.SetActive(false); dummyPlayerCapsule.enabled = false;
+                    cyberSetup = false;
+                    cyberDesetup = false;
+                } else {
+                    cyberCollider.enabled = false;
+                    capsuleCollider.enabled = true;
+                    rbody.useGravity = true;
+
+                    Mathf.Clamp(mlookScript.xRotation, -90f, 90f); // pre-clamp camera rotation
+                    mlookScript.inCyberSpace = false; // disable full camera rotation up/down by enabling auto clamp
+                    bodyState = oldBodyState; // return to what we were doing in the "real world" (real lol)
+                                              // TODO disable dummy player for coop games
+                    cyberSetup = false;
+                    cyberDesetup = false;
+                }
 			}
 
-			if (GetInput.a.Sprint()) {
+			if (GetInput.a.Sprint() && !consoleActivated) {
 				if (grounded) {
 					if (GetInput.a.CapsLockOn()) {
 						isSprinting = false;
@@ -180,22 +214,22 @@ public class PlayerMovement : MonoBehaviour {
 				}
 			}
 			
-			if (GetInput.a.Crouch()) {
+			if (GetInput.a.Crouch() && !CheatNoclip && !consoleActivated) {
 				if ((bodyState == 1) || (bodyState == 2)) {
 					if (!(CantStand())) {
 						bodyState = 3; // Start standing up
-						Debug.Log ("Standing up from crouch...");
+						//Debug.Log ("Standing up from crouch...");
 					} else {
 						Const.sprint(cantStandText,Const.a.player1);
 					}
 				} else {
 					if ((bodyState == 0) || (bodyState == 3)) {
-						Debug.Log ("Crouching down...");
+						//Debug.Log ("Crouching down...");
 						bodyState = 2; // Start crouching down
 					} else {
 						if ((bodyState == 4) || (bodyState == 5)) {
 							if (!(CantCrouch())) {
-								Debug.Log ("Getting up from prone to crouch...");
+								//Debug.Log ("Getting up from prone to crouch...");
 								bodyState = 6; // Start getting up to crouch
 							} else {
 								Const.sprint(cantCrouchText,Const.a.player1);
@@ -205,14 +239,14 @@ public class PlayerMovement : MonoBehaviour {
 				}
 			}
 			
-			if (GetInput.a.Prone()) {
+			if (GetInput.a.Prone() && !CheatNoclip && !consoleActivated) {
 				if (bodyState == 0 || bodyState == 1 || bodyState == 2 || bodyState == 3 || bodyState == 6) {
-					Debug.Log ("Proning down...");
+					//Debug.Log ("Proning down...");
 					bodyState = 5; // Start proning down
 				} else {
 					if (bodyState == 4 || bodyState == 5) {
 						if (!CantStand()) {
-							Debug.Log ("Getting up from prone to standing...");
+							//Debug.Log ("Getting up from prone to standing...");
 							bodyState = 3; // Start standing up
 						} else {
 							Const.sprint(cantStandText,Const.a.player1);
@@ -250,7 +284,7 @@ public class PlayerMovement : MonoBehaviour {
 				}
 			}
 			// here fatigue me out, except in cyberspace
-			if (fatigueFinished < Time.time && !inCyberSpace) {
+			if (fatigueFinished < Time.time && !inCyberSpace && !CheatNoclip) {
 				fatigueFinished = Time.time + fatigueWaneTickSecs;
 				switch (bodyState) {
 				case 0: fatigue -= fatigueWanePerTick; break;
@@ -332,11 +366,12 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		if (!PauseScript.a.paused) {
+            if (CheatNoclip) grounded = true;
 			// Crouch
 			LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));
 			
 			// Handle body state speeds and body position lerping for smooth transitions
-			if (!inCyberSpace) {
+			if (!inCyberSpace && !CheatNoclip) {
 				bonus = 0f;
 				if (hwc.hardwareIsActive [9]) bonus = boosterSpeedBoost;
 
@@ -345,15 +380,15 @@ public class PlayerMovement : MonoBehaviour {
 						playerSpeed = maxWalkSpeed + bonus; //TODO:: lerp from other speeds
 						break;
 					case 1:
-						Debug.Log("Crouched");
+						//Debug.Log("Crouched");
 						playerSpeed = maxCrouchSpeed + bonus; //TODO:: lerp from other speeds
 						break;
 					case 2: 
-						Debug.Log("Crouching down lerp from standing...");
+						//Debug.Log("Crouching down lerp from standing...");
 						currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
 						break;
 					case 3:
-						Debug.Log("Standing up lerp from crouch or prone...");
+						//Debug.Log("Standing up lerp from crouch or prone...");
 						lastCrouchRatio = currentCrouchRatio;
 						currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, 1.01f, ref crouchingVelocity, transitionToCrouchSec);
 						LocalPositionSetY (transform, (((currentCrouchRatio - lastCrouchRatio) * capsuleHeight) / 2) + transform.position.y);
@@ -371,11 +406,13 @@ public class PlayerMovement : MonoBehaviour {
 						break;
 				}
 			} else {
-				//Cyber space state
-				playerSpeed = maxCyberSpeed;
+                if (!CheatNoclip) {
+                    //Cyber space state
+                    playerSpeed = maxCyberSpeed;
+                }
 			}
 		
-			if (inCyberSpace) {
+			if (inCyberSpace && !CheatNoclip) {
 				// Limit movement speed in all axes x,y,z in cyberspace
 				if (rbody.velocity.magnitude > playerSpeed) {
 					RigidbodySetVelocity(rbody, playerSpeed);
@@ -386,7 +423,7 @@ public class PlayerMovement : MonoBehaviour {
 				
 				if (horizontalMovement.magnitude > playerSpeed) {
 					horizontalMovement = horizontalMovement.normalized;
-					if (isSprinting && running && !inCyberSpace) {
+					if (isSprinting && running && !inCyberSpace && !CheatNoclip) {
 						if (fatigue > 80f) {
 							playerSpeed = maxSprintSpeedFatigued + bonus;
 						} else {
@@ -398,7 +435,7 @@ public class PlayerMovement : MonoBehaviour {
 
 				// Set horizontal velocity
 				RigidbodySetVelocityX(rbody, horizontalMovement.x);
-				RigidbodySetVelocityZ(rbody, horizontalMovement.y);
+				RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG - already passed rbody.velocity.z into the .y of this Vector2
 
 				UpdateAutomap();
 				if (horizontalMovement.x != 0 || horizontalMovement.y != 0) {
@@ -412,17 +449,20 @@ public class PlayerMovement : MonoBehaviour {
 				if (verticalMovement > maxVerticalSpeed) {
 					verticalMovement = maxVerticalSpeed;
 				}
-				RigidbodySetVelocityY(rbody, verticalMovement);
+				if (!CheatNoclip) RigidbodySetVelocityY(rbody, verticalMovement);
 
 				// Ground friction (TODO: disable grounded for Cyberspace)
-				if (grounded) {
+				if (grounded || CheatNoclip) {
 					if (hwc.hardwareIsActive [9]) {
 						deceleration = walkDeaccelerationBooster;
 					} else {
 						deceleration = walkDeacceleration;
 					}
-					RigidbodySetVelocityX(rbody, (Mathf.SmoothDamp(rbody.velocity.x, 0, ref walkDeaccelerationVolx, deceleration)));
-					RigidbodySetVelocityZ(rbody, (Mathf.SmoothDamp(rbody.velocity.z, 0, ref walkDeaccelerationVolz, deceleration)));
+                    if (CheatNoclip) deceleration = 0.05f;
+                    RigidbodySetVelocityX(rbody, (Mathf.SmoothDamp(rbody.velocity.x, 0, ref walkDeaccelerationVolx, deceleration)));
+                    if (CheatNoclip) RigidbodySetVelocityY(rbody, (Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVoly, deceleration)));
+                    RigidbodySetVelocityZ(rbody, (Mathf.SmoothDamp(rbody.velocity.z, 0, ref walkDeaccelerationVolz, deceleration)));
+
 				}
 			}
 				
@@ -432,32 +472,52 @@ public class PlayerMovement : MonoBehaviour {
 			float relForward = 0f;
 			float relSideways = 0f;
 			running = false;
-			if (GetInput.a.Forward())
+			if (GetInput.a.Forward() && !consoleActivated)
 				relForward = 1f;
 
-			if (GetInput.a.Backpedal())
+			if (GetInput.a.Backpedal() && !consoleActivated)
 				relForward = -1f;
 
-			if (GetInput.a.StrafeLeft())
+			if (GetInput.a.StrafeLeft() && !consoleActivated)
 				relSideways = -1f;
 
-			if (GetInput.a.StrafeRight())
+			if (GetInput.a.StrafeRight() && !consoleActivated)
 				relSideways = 1f;
 
-			if (relForward != 0 || relSideways != 0) running = true; // we are mashing the run button down
+            if (relForward != 0 || relSideways != 0) running = true; // we are mashing a run button down
 
 			// Handle movement
 			if (!inCyberSpace) {
-				if (grounded == true) {
-					if (ladderState) {
+				if (grounded == true || CheatNoclip) {
+					if (ladderState && !CheatNoclip) {
 						// CLimbing when touching the ground
 						//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
 						rbody.AddRelativeForce (relSideways * walkAcceleration * Time.deltaTime, relForward * walkAcceleration * Time.deltaTime, 0);
 					} else {
-						//Walking on the ground
-						//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime);
-						rbody.AddRelativeForce (relSideways * walkAcceleration * Time.deltaTime, 0, relForward * walkAcceleration * Time.deltaTime);
-						if (fatigueFinished2 < Time.time && relForward != defIndex) {
+                        //Walking on the ground
+                        //rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime);
+                        if (CheatNoclip) {
+                            rbody.AddRelativeForce(relSideways * 2f * walkAcceleration * Time.deltaTime, 0, relForward * 2f * walkAcceleration * Time.deltaTime);
+                        } else {
+                            rbody.AddRelativeForce(relSideways * walkAcceleration * Time.deltaTime, 0, relForward * walkAcceleration * Time.deltaTime);
+                        }
+
+                        // Noclip up and down
+                        if (GetInput.a.SwimUp() && !consoleActivated) {
+                            if (CheatNoclip) {
+                                //Debug.Log("Floating Up!");
+                                rbody.AddRelativeForce(0, 4 * walkAcceleration * Time.deltaTime, 0);
+                            }
+                        }
+
+                        if (GetInput.a.SwimDn() && !consoleActivated) {
+                            if (CheatNoclip) {
+                                //Debug.Log("Floating Dn!");
+                                rbody.AddRelativeForce(0, 4 * walkAcceleration * Time.deltaTime * -1, 0);
+                            }
+                        }
+
+                        if (fatigueFinished2 < Time.time && relForward != defIndex && !CheatNoclip) {
 							fatigueFinished2 = Time.time + fatigueWaneTickSecs;
 							if (isSprinting) {
 								fatigue += fatiguePerSprintTick;
@@ -477,19 +537,49 @@ public class PlayerMovement : MonoBehaviour {
 						rbody.AddRelativeForce (relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime, ladderSpeed * relForward * walkAcceleration * Time.deltaTime, 0);
 					} else {
 						// Sprinting in the air
-						if (isSprinting && running && !inCyberSpace) {
+						if (isSprinting && running && !inCyberSpace && !CheatNoclip) {
 							//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
 							rbody.AddRelativeForce (relSideways * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
 						} else {
-							// Walking in the air, we're floating in the moonlit sky, the people far below are sleeping as we fly
-							//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio *  Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
-							rbody.AddRelativeForce (relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
-						}
+                            // Walking in the air, we're floating in the moonlit sky, the people far below are sleeping as we fly
+                            //rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio *  Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
+                            if (CheatNoclip) {
+                                //rbody.AddRelativeForce(relSideways * walkAcceleration * 1.5f * Time.deltaTime, 0, relForward * walkAcceleration * 1.5f * Time.deltaTime);
+                            } else {
+                                rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
+                            }
+                        }
 					}
 				}
-			
-				// Handle gravity and ladders
-				if (ladderState) {
+
+
+				//	private float leanLeftDoubleFinished;
+				//private float keyboardButtonDoubleTapTime = 0.25f; // max time before a double tap of a keyboard button is registered
+
+				// Handle leaning
+				if (GetInput.a.LeanLeft()) {
+					// Check for double tap of lean and reset lean target
+					//if (leanLeftDoubleFinished < Time.time) {
+					//	leanTarget = 0;
+					//	leanLeftDoubleFinished = Mathf.Infinity;
+					///	return;
+					//}
+
+					leanTarget -= (1f * Time.deltaTime);
+					if (leanTarget < 22.5f) leanTarget = -22.5f;
+					leanLeftDoubleFinished = Time.time + keyboardButtonDoubleTapTime;
+				}
+
+				if (GetInput.a.LeanRight()) {
+
+				}
+
+				//move lean transform.localRotation.z to leanTarget;
+				float leanz = Mathf.Lerp(leanTransform.localRotation.z,leanTarget,0.1f);
+				leanTransform.localRotation = Quaternion.Euler(0, 0, leanz);
+
+                // Handle gravity and ladders
+                if (ladderState) {
 					rbody.useGravity = false;
 					// Set vertical velocity towards 0 when climbing
 					if (hwc.hardwareIsActive [9]) {
@@ -497,10 +587,10 @@ public class PlayerMovement : MonoBehaviour {
 					} else {
 						deceleration = walkDeacceleration;
 					}
-					RigidbodySetVelocityY (rbody, (Mathf.SmoothDamp (rbody.velocity.y, 0, ref walkDeaccelerationVolz, deceleration)));
+                    RigidbodySetVelocityY(rbody, (Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVoly, deceleration)));
 				} else {
 					// Check if using a gravity lift
-					if (gravliftState == true) {
+					if (gravliftState == true || CheatNoclip) {
 						rbody.useGravity = false;
 					} else {
 						// Disables gravity when touching the ground to prevent player sliding down ramps...hacky?
@@ -516,7 +606,7 @@ public class PlayerMovement : MonoBehaviour {
 				}
 
 				// Get input for Jump and set impulse time
-				if ((!inCyberSpace) && (GetInput.a.Jump()) && (ladderState == false)) {
+				if (!inCyberSpace && (GetInput.a.Jump() && !consoleActivated) && (ladderState == false) && !CheatNoclip) {
 					if (grounded || gravliftState || (hwc.hardwareIsActive[10])) {
 						jumpTime = jumpImpulseTime;
 					}
@@ -547,7 +637,7 @@ public class PlayerMovement : MonoBehaviour {
 				}
 
 				// Handle fall damage (no impact damage in cyber space 5/5/18, JJ)
-				if (Mathf.Abs ((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed && !inCyberSpace) {
+				if (Mathf.Abs ((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed && !inCyberSpace && !CheatNoclip) {
 					DamageData dd = new DamageData ();
 					dd.damage = fallDamage;
 					dd.attackType = Const.AttackType.None;
@@ -562,7 +652,7 @@ public class PlayerMovement : MonoBehaviour {
 					grounded = false;
 			} else {
 				// Handle cyberspace movement
-				if (GetInput.a.Forward()) {
+				if (GetInput.a.Forward() && !consoleActivated) {
 					//Vector3 tempvec = mlookScript.cyberLookDir;
 					rbody.AddForce (cameraObject.transform.forward * walkAcceleration * Time.deltaTime);
 					//rbody.AddRelativeForce (relSideways * walkAcceleration * Time.deltaTime, 0, relForward * walkAcceleration * Time.deltaTime);
@@ -600,4 +690,50 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 	}
+
+    private void ToggleConsole() {
+		if (consoleActivated) {
+			consoleActivated = false;
+			consoleplaceholderText.enabled = false;
+			consoleinpFd.DeactivateInputField();
+			consoleinpFd.enabled = false;
+			consolebg.enabled = false;
+			consoleentryText.enabled = false;
+		} else {
+			consoleActivated = true;
+			consoleplaceholderText.enabled = true;
+			consoleinpFd.enabled = true;
+			consoleinpFd.ActivateInputField();
+			consolebg.enabled = true;
+			consoleentryText.enabled = true;
+		}
+    }
+
+    public void ConsoleEntry() {
+        if (consoleinpFd.text == "noclip") {
+			if (CheatNoclip) {
+				CheatNoclip = false;
+				Const.sprint("Noclip disabled", Const.a.allPlayers);
+			} else {
+				CheatNoclip = true;
+				Const.sprint("Noclip activated!", Const.a.allPlayers);
+			}
+        } else if (consoleinpFd.text == "wallsticky") {
+			if (CheatNoclip) {
+				CheatWallSticky = false;
+				Const.sprint("Wallsticky disabled", Const.a.allPlayers);
+			} else {
+				CheatWallSticky = true;
+				Const.sprint("Wallsticky activated!", Const.a.allPlayers);
+			}
+        } else if (consoleinpFd.text == "god") {
+            Const.sprint("God mode activated!", Const.a.allPlayers);
+        } else {
+            Const.sprint("Uknown command or function: " + consoleinpFd.text, Const.a.allPlayers);
+        }
+
+        // Reset console and hide it, command was entered
+        consoleinpFd.text = "";
+        ToggleConsole();
+    }
 }

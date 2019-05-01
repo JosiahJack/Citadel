@@ -21,7 +21,7 @@ public class UseableAttachment : MonoBehaviour {
 	}
 
 	// Use this to attach an item such as isotope-x22, isolinear chipset, interface demodulator, or a plastique
-	void Use (UseData ud) {
+	public void Use (UseData ud) {
 		if (ud.mainIndex != 56 || ud.mainIndex != 57 || ud.mainIndex != 61 || ud.mainIndex != 64) return;
 
 		switch (ud.mainIndex) {

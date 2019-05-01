@@ -49,7 +49,7 @@ public class KeypadElevator : MonoBehaviour {
 		tickFinished = Time.time + tickSecs + Random.Range(0.1f,0.5f); // Random start to prevent tick calculations from bunching up in one frame
 	}
 
-	void Use (UseData ud) {
+	public void Use (UseData ud) {
 		if (LevelManager.a.levelSecurity[LevelManager.a.currentLevel] > securityThreshhold) {
 			Const.sprint(blockedBySecurityText,ud.owner);
 			MFDManager.a.BlockedBySecurity();
