@@ -4,21 +4,21 @@ using System.Collections;
 
 public class RightNeuroButtonsScript : MonoBehaviour {
 	
-	[SerializeField] private Button UnknownTabButton; // assign in the editor
-	[SerializeField] private Button CompassTabButton; // assign in the editor
-	[SerializeField] private Button DataReaderTabButton; // assign in the editor
-	[SerializeField] private Button Unknown2TabButton; // assign in the editor
-	[SerializeField] private Button Unknown3TabButton; // assign in the editor
-	[SerializeField] private Sprite EmptyNeuroTabSprite; // assign in the editor
-	[SerializeField] private AudioSource TabSFX; // assign in the editor
-	[SerializeField] private AudioClip TabSFXClip; // assign in the editor
+	public Button UnknownTabButton; // assign in the editor
+	public Button CompassTabButton; // assign in the editor
+	public Button DataReaderTabButton; // assign in the editor
+	public Button Unknown2TabButton; // assign in the editor
+	public Button Unknown3TabButton; // assign in the editor
+	public Sprite EmptyNeuroTabSprite; // assign in the editor
+	public AudioSource TabSFX; // assign in the editor
+	public AudioClip TabSFXClip; // assign in the editor
 	
 	#region For DataReader
-	[SerializeField] private GameObject iconman;
-	[SerializeField] private GameObject itemtextman;
-	[SerializeField] private LeftMFDTabs LeftTabManager; // assign in the editor
-	[SerializeField] private CenterMFDTabs CenterTabManager; // assign in the editor
-	[SerializeField] private TabButtons LeftTabButtonsManager; // assign in the editor
+	public GameObject iconman;
+	public GameObject itemtextman;
+	public LeftMFDTabs LeftTabManager; // assign in the editor
+	public CenterMFDTabs CenterTabManager; // assign in the editor
+	public TabButtons LeftTabButtonsManager; // assign in the editor
 	#endregion
 	
 	//private TabButtonsScript LeftMFDTabsScript = TabManager.GetComponent <TabButtonsScript> ();

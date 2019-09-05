@@ -3,8 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class GrenadeButtonsManager : MonoBehaviour {
-	[SerializeField] private GameObject[] grenButtons;
-	[SerializeField] private GameObject[] grenCountsText;
+	public GameObject[] grenButtons;
+	public GameObject[] grenCountsText;
 
 	void Update() {
 		for (int i=0; i<7; i++) {

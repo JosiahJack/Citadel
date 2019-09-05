@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class LogTableContentsButtonsManager : MonoBehaviour {
-	[SerializeField] private GameObject[] LogButtons;
+	public GameObject[] LogButtons;
 
 	void Update() {
 		for (int i=0; i<10; i++) {

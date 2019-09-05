@@ -6,7 +6,7 @@ STD access granted
  but door is locked.
 You are too far away from that
 Elevator door is still open
-Shaft Damage -- Unable to go there
+Shaft Damage — Unable to go there
 Already there
 RELOAD
 Weapon is too hot to fire

@@ -8,18 +8,25 @@ public class AIAnimationController : MonoBehaviour {
 
 	private Animator anim;
 	private AnimatorStateInfo anstinfo;
-	private AIController aic;
+	public AIController aic;
 	private bool dying;
 	private bool dead;
 
 	void Awake () {
 		anim = GetComponent<Animator>();
-		aic = GetComponent<AIController>();
-		currentClipPercentage = 0f;
+		//aic = GetComponent<AIController>();
+		currentClipPercentage = 0;
 		dead = false;
 	}
 
 	void Update () {
+		if (PauseScript.a != null && PauseScript.a.paused) {
+			anim.speed = 0;
+			return;
+		} else {
+			anim.speed = 1f;
+		}
+
 		if (dying) {
 			Dying();
 		} else {

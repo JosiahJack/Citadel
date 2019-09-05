@@ -3,8 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class LogContentsButtonsManager : MonoBehaviour {
-	[SerializeField] private GameObject[] LogButtons;
-	[SerializeField] private Text[] LogButtonsText;
+	public GameObject[] LogButtons;
+	public Text[] LogButtonsText;
 	public int currentLevelFolder;
 	public string[] logNames;
 	public int[] retrievedIndices;

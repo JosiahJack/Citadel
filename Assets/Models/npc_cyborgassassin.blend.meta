@@ -1,89 +1,266 @@
 fileFormatVersion: 2
 guid: b9611a0d909d64a42bdb744855690ed7
-timeCreated: 1510622635
-licenseType: Free
 ModelImporter:
-  serializedVersion: 22
-  fileIDToRecycleName:
-    100000: AssassinArmature
-    100002: AssassinCyborg
-    100004: Head
-    100006: HeadFace
-    100008: LeftArmElbow
-    100010: LeftArmFore
-    100012: LeftArmUpper
-    100014: LeftCollarBone
-    100016: LeftFoot
-    100018: LeftHand
-    100020: LeftHandThumb
-    100022: LeftHandWrist
-    100024: LeftHip
-    100026: LeftLegCalf
-    100028: LeftLegFemur
-    100030: LeftLegKnee
-    100032: Neck
-    100034: //RootNode
-    100036: Plane
-    100038: RightArmElbow
-    100040: RightArmFore
-    100042: RightArmUpper
-    100044: RightCollarBone
-    100046: RightFoot
-    100048: RightHand
-    100050: RightHandThumb
-    100052: RightHandWrist
-    100054: RightHip
-    100056: RightLegCalf
-    100058: RightLegFemur
-    100060: RightLegKnee
-    100062: SpineBelly
-    100064: SpineChest
-    100066: SpineLower
-    100068: SpineUpper
-    400000: AssassinArmature
-    400002: AssassinCyborg
-    400004: Head
-    400006: HeadFace
-    400008: LeftArmElbow
-    400010: LeftArmFore
-    400012: LeftArmUpper
-    400014: LeftCollarBone
-    400016: LeftFoot
-    400018: LeftHand
-    400020: LeftHandThumb
-    400022: LeftHandWrist
-    400024: LeftHip
-    400026: LeftLegCalf
-    400028: LeftLegFemur
-    400030: LeftLegKnee
-    400032: Neck
-    400034: //RootNode
-    400036: Plane
-    400038: RightArmElbow
-    400040: RightArmFore
-    400042: RightArmUpper
-    400044: RightCollarBone
-    400046: RightFoot
-    400048: RightHand
-    400050: RightHandThumb
-    400052: RightHandWrist
-    400054: RightHip
-    400056: RightLegCalf
-    400058: RightLegFemur
-    400060: RightLegKnee
-    400062: SpineBelly
-    400064: SpineChest
-    400066: SpineLower
-    400068: SpineUpper
-    2300000: Plane
-    3300000: Plane
-    4300000: Plane
-    4300002: AssassinCyborg
-    7400000: Default Take
-    7400002: ArmatureAction
-    9500000: //RootNode
-    11100000: //RootNode
-    13700000: AssassinCyborg
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: AssassinArmature
+  - first:
+      1: 100002
+    second: AssassinCyborg
+  - first:
+      1: 100004
+    second: Head
+  - first:
+      1: 100006
+    second: HeadFace
+  - first:
+      1: 100008
+    second: LeftArmElbow
+  - first:
+      1: 100010
+    second: LeftArmFore
+  - first:
+      1: 100012
+    second: LeftArmUpper
+  - first:
+      1: 100014
+    second: LeftCollarBone
+  - first:
+      1: 100016
+    second: LeftFoot
+  - first:
+      1: 100018
+    second: LeftHand
+  - first:
+      1: 100020
+    second: LeftHandThumb
+  - first:
+      1: 100022
+    second: LeftHandWrist
+  - first:
+      1: 100024
+    second: LeftHip
+  - first:
+      1: 100026
+    second: LeftLegCalf
+  - first:
+      1: 100028
+    second: LeftLegFemur
+  - first:
+      1: 100030
+    second: LeftLegKnee
+  - first:
+      1: 100032
+    second: Neck
+  - first:
+      1: 100034
+    second: //RootNode
+  - first:
+      1: 100036
+    second: Plane
+  - first:
+      1: 100038
+    second: RightArmElbow
+  - first:
+      1: 100040
+    second: RightArmFore
+  - first:
+      1: 100042
+    second: RightArmUpper
+  - first:
+      1: 100044
+    second: RightCollarBone
+  - first:
+      1: 100046
+    second: RightFoot
+  - first:
+      1: 100048
+    second: RightHand
+  - first:
+      1: 100050
+    second: RightHandThumb
+  - first:
+      1: 100052
+    second: RightHandWrist
+  - first:
+      1: 100054
+    second: RightHip
+  - first:
+      1: 100056
+    second: RightLegCalf
+  - first:
+      1: 100058
+    second: RightLegFemur
+  - first:
+      1: 100060
+    second: RightLegKnee
+  - first:
+      1: 100062
+    second: SpineBelly
+  - first:
+      1: 100064
+    second: SpineChest
+  - first:
+      1: 100066
+    second: SpineLower
+  - first:
+      1: 100068
+    second: SpineUpper
+  - first:
+      4: 400000
+    second: AssassinArmature
+  - first:
+      4: 400002
+    second: AssassinCyborg
+  - first:
+      4: 400004
+    second: Head
+  - first:
+      4: 400006
+    second: HeadFace
+  - first:
+      4: 400008
+    second: LeftArmElbow
+  - first:
+      4: 400010
+    second: LeftArmFore
+  - first:
+      4: 400012
+    second: LeftArmUpper
+  - first:
+      4: 400014
+    second: LeftCollarBone
+  - first:
+      4: 400016
+    second: LeftFoot
+  - first:
+      4: 400018
+    second: LeftHand
+  - first:
+      4: 400020
+    second: LeftHandThumb
+  - first:
+      4: 400022
+    second: LeftHandWrist
+  - first:
+      4: 400024
+    second: LeftHip
+  - first:
+      4: 400026
+    second: LeftLegCalf
+  - first:
+      4: 400028
+    second: LeftLegFemur
+  - first:
+      4: 400030
+    second: LeftLegKnee
+  - first:
+      4: 400032
+    second: Neck
+  - first:
+      4: 400034
+    second: //RootNode
+  - first:
+      4: 400036
+    second: Plane
+  - first:
+      4: 400038
+    second: RightArmElbow
+  - first:
+      4: 400040
+    second: RightArmFore
+  - first:
+      4: 400042
+    second: RightArmUpper
+  - first:
+      4: 400044
+    second: RightCollarBone
+  - first:
+      4: 400046
+    second: RightFoot
+  - first:
+      4: 400048
+    second: RightHand
+  - first:
+      4: 400050
+    second: RightHandThumb
+  - first:
+      4: 400052
+    second: RightHandWrist
+  - first:
+      4: 400054
+    second: RightHip
+  - first:
+      4: 400056
+    second: RightLegCalf
+  - first:
+      4: 400058
+    second: RightLegFemur
+  - first:
+      4: 400060
+    second: RightLegKnee
+  - first:
+      4: 400062
+    second: SpineBelly
+  - first:
+      4: 400064
+    second: SpineChest
+  - first:
+      4: 400066
+    second: SpineLower
+  - first:
+      4: 400068
+    second: SpineUpper
+  - first:
+      23: 2300000
+    second: Plane
+  - first:
+      33: 3300000
+    second: Plane
+  - first:
+      43: 4300000
+    second: Plane
+  - first:
+      43: 4300002
+    second: AssassinCyborg
+  - first:
+      74: 7400000
+    second: Idle
+  - first:
+      74: 7400002
+    second: ArmatureAction
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      111: 11100000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: AssassinCyborg
+  - first:
+      74: 2667949614841947897
+    second: Walk
+  - first:
+      74: 3228367138793729562
+    second: Pain
+  - first:
+      74: 3398419097829266914
+    second: Pain2
+  - first:
+      74: 5929451692839754012
+    second: AttackShoot
+  - first:
+      74: 4116835601937222572
+    second: AttackStar
+  - first:
+      74: 4348485665485846014
+    second: Death
+  - first:
+      74: -4630339522487117836
+    second: Die
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -113,7 +290,8 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
-    animationCompression: 1
+    importConstraints: 0
+    animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -122,10 +300,185 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Default Take
+      name: Idle
       takeName: Default Take
+      internalID: 7400000
       firstFrame: 0
-      lastFrame: 277
+      lastFrame: 61
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Walk
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 142
+      lastFrame: 182
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Pain
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 203
+      lastFrame: 214
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Pain2
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 215
+      lastFrame: 227
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: AttackShoot
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 61
+      lastFrame: 83
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: AttackStar
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 84
+      lastFrame: 122
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Die
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 228
+      lastFrame: 278
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -155,6 +508,8 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -162,9 +517,14 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 1
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -175,10 +535,14 @@ ModelImporter:
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -188,13 +552,13 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 1
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

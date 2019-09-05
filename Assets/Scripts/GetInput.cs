@@ -19,7 +19,9 @@ public class GetInput : MonoBehaviour {
 	public bool Jump() { if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
 	public bool Crouch() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[5]])) return true; else return false; }
 	public bool Prone() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[6]])) return true; else return false; }
+	public bool LeanLeftStart() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[7]])) return true; else return false; }
 	public bool LeanLeft() { if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[7]])) return true; else return false; }
+	public bool LeanRightStart() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[8]])) return true; else return false; }
 	public bool LeanRight() { if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[8]])) return true; else return false; }
 	public bool Sprint() { if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[9]])) return true; else return false; }
 	public bool ToggleSprint() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[10]])) return true; else return false; }

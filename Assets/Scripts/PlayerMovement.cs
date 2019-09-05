@@ -101,8 +101,20 @@ public class PlayerMovement : MonoBehaviour {
 	public Transform leanTransform;
 
 	private float leanLeftDoubleFinished;
+	private float leanRightDoubleFinished;
 	private float keyboardButtonDoubleTapTime = 0.25f; // max time before a double tap of a keyboard button is registered
 	private float leanTarget = 0f;
+
+	public AudioSource PlayerNoise;
+	public AudioClip SFXJump;
+	public AudioClip SFXJumpLand;
+	public float jumpLandSoundFinished;
+	private Vector3 tempVec;
+	public float leanSpeed = 5f;
+	public bool leanLHFirstPressed = false;
+	public bool leanRHFirstPressed = false;
+	public bool leanLHReset = false;
+	public bool leanRHReset = false;
 
     void Awake (){
 		currentCrouchRatio = def1;
@@ -123,6 +135,12 @@ public class PlayerMovement : MonoBehaviour {
 		capsuleCollider = GetComponent<CapsuleCollider>();
 		consoleActivated = false;
 		leanLeftDoubleFinished = Time.time;
+		leanRightDoubleFinished = Time.time;
+		jumpLandSoundFinished = Time.time;
+		leanLHFirstPressed = false;
+		leanRHFirstPressed = false;
+		leanLHReset = false;
+		leanRHReset = false;
     }
 	
 	bool CantStand (){
@@ -294,7 +312,54 @@ public class PlayerMovement : MonoBehaviour {
 				}
 				if (fatigue < defIndex) fatigue = defIndex; // clamp at 0
 			}
-			if (fatigue > onehundred) fatigue = onehundred; // clamp at 100 using dummy variables to hang onto the value and not get collected by garbage collector
+			if (fatigue > onehundred) fatigue = onehundred; // clamp at 100 using dummy variables to hang onto the value and not get collected by garbage collector (really?  hey it was back in the old days when we didn't have incremental garbage collector, pre Unity 2019.2 versions
+
+			// Handle Right Leaning start
+			if (GetInput.a.LeanRightStart()) {
+				leanLHFirstPressed = false;	
+				leanLHReset = false;	
+				if (!leanRHFirstPressed) {
+					leanRHFirstPressed = true;
+				} else {
+					if ((Time.time - leanRightDoubleFinished) < keyboardButtonDoubleTapTime) {
+						//if (leanTransform.eulerAngles.z < 15f && leanTransform.eulerAngles.z > -15f) { // Wasn't working, maybe too sensitive?
+						//	Debug.Log("Leaning all the way Right!");
+						//	leanTarget = -22.5f;
+						//} else {
+						//	Debug.Log("Leaning reset from right");
+						//	leanTarget = 0;
+						//}
+						leanTarget = 0;
+						leanRHReset = true;
+						leanRHFirstPressed = false;
+					} else {
+						leanRHReset = false;
+					}
+				}
+			}
+			// Handle Left Leaning start
+			if (GetInput.a.LeanLeftStart()) {
+				leanRHFirstPressed = false;
+				leanRHReset = false;
+				if (!leanLHFirstPressed) {
+					leanLHFirstPressed = true;
+				} else {
+					if ((Time.time - leanLeftDoubleFinished) < keyboardButtonDoubleTapTime) {
+						//if (leanTransform.eulerAngles.z < 15f && leanTransform.eulerAngles.z > -15f) {
+						//	Debug.Log("Leaning all the way Left!");
+						//	leanTarget = 22.5f;
+						//} else {
+						//	Debug.Log("Leaning reset from left");
+						//	leanTarget = 0;
+						//}
+						leanTarget = 0;
+						leanLHReset = true;
+						leanLHFirstPressed = false;
+					} else {
+						leanLHReset = false;
+					}
+				}
+			}
 		}
 	}
 
@@ -552,31 +617,30 @@ public class PlayerMovement : MonoBehaviour {
 					}
 				}
 
-
-				//	private float leanLeftDoubleFinished;
-				//private float keyboardButtonDoubleTapTime = 0.25f; // max time before a double tap of a keyboard button is registered
-
-				// Handle leaning
-				if (GetInput.a.LeanLeft()) {
-					// Check for double tap of lean and reset lean target
-					//if (leanLeftDoubleFinished < Time.time) {
-					//	leanTarget = 0;
-					//	leanLeftDoubleFinished = Mathf.Infinity;
-					///	return;
-					//}
-
-					leanTarget -= (1f * Time.deltaTime);
-					if (leanTarget < 22.5f) leanTarget = -22.5f;
-					leanLeftDoubleFinished = Time.time + keyboardButtonDoubleTapTime;
+				// Handle leaning, double tap to reset is handled in Update to prevent repeat calls within the same frame
+				if (GetInput.a.LeanRight() && !leanRHReset) {
+					leanTarget -= (leanSpeed * Time.deltaTime);
+					if (leanTarget < -22.5f) leanTarget = -22.5f;
+					leanRightDoubleFinished = Time.time;
+				} else {
+					if ((Time.time - leanRightDoubleFinished) > keyboardButtonDoubleTapTime) {
+						leanRHReset = false;
+						leanRHFirstPressed = false;
+					}
 				}
 
-				if (GetInput.a.LeanRight()) {
-
+				if (GetInput.a.LeanLeft() && !leanLHReset) {
+					leanTarget += (leanSpeed * Time.deltaTime);
+					if (leanTarget > 22.5f) leanTarget = 22.5f;
+					leanLeftDoubleFinished = Time.time;
+				} else {
+					if ((Time.time - leanLeftDoubleFinished) > keyboardButtonDoubleTapTime) {
+						leanLHReset = false;
+						leanLHFirstPressed = false;
+					}
 				}
 
-				//move lean transform.localRotation.z to leanTarget;
-				float leanz = Mathf.Lerp(leanTransform.localRotation.z,leanTarget,0.1f);
-				leanTransform.localRotation = Quaternion.Euler(0, 0, leanz);
+				leanTransform.localRotation = Quaternion.Euler(0, 0, leanTarget);
 
                 // Handle gravity and ladders
                 if (ladderState) {
@@ -605,10 +669,11 @@ public class PlayerMovement : MonoBehaviour {
 					//rbody.AddForce(0, (-1 * playerGravity * Time.deltaTime), 0); //Apply gravity force
 				}
 
-				// Get input for Jump and set impulse time
-				if (!inCyberSpace && (GetInput.a.Jump() && !consoleActivated) && (ladderState == false) && !CheatNoclip) {
+				// Get input for Jump and set impulse time, removed "&& (ladderState == false)" since I want to be able to jump off a ladder
+				if (!inCyberSpace && (GetInput.a.Jump() && !consoleActivated) && !CheatNoclip) {
 					if (grounded || gravliftState || (hwc.hardwareIsActive[10])) {
 						jumpTime = jumpImpulseTime;
+						justJumped = true;
 					}
 				}
 			
@@ -624,12 +689,11 @@ public class PlayerMovement : MonoBehaviour {
 							rbody.AddForce (new Vector3 (0, jumpVelocity * rbody.mass, 0), ForceMode.Force);  // huhnh!
 						}
 					}
-
-					//if (
-					justJumped = true;
 				}
 
 				if (justJumped && !(hwc.hardwareIsActive[10])) {
+					// Play jump sound
+					PlayerNoise.PlayOneShot(SFXJump);
 					justJumped = false;
 					fatigue += jumpFatigue;
 					if (staminupActive)

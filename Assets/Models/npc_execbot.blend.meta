@@ -1,74 +1,215 @@
 fileFormatVersion: 2
 guid: 6b3a548c42b2f224a9ae71814635da51
-timeCreated: 1534378108
-licenseType: Free
 ModelImporter:
-  serializedVersion: 22
-  fileIDToRecycleName:
-    100000: npc_botexec_arm_mesh
-    100002: npc_botexec_arm_mesh_001
-    100004: npc_botexec_armlwr_mesh
-    100006: npc_botexec_armlwr_mesh_001
-    100008: npc_botexec_head_mesh
-    100010: npc_botexec_mesh
-    100012: //RootNode
-    100014: Cube
-    100016: Cube_001
-    100018: npc_botexec_arm_mesh_002
-    100020: npc_botexec_arm_mesh_003
-    100022: npc_botexec_arm_mesh_004
-    100024: npc_botexec_arm_mesh_005
-    400000: npc_botexec_arm_mesh
-    400002: npc_botexec_arm_mesh_001
-    400004: npc_botexec_armlwr_mesh
-    400006: npc_botexec_armlwr_mesh_001
-    400008: npc_botexec_head_mesh
-    400010: npc_botexec_mesh
-    400012: //RootNode
-    400014: Cube
-    400016: Cube_001
-    400018: npc_botexec_arm_mesh_002
-    400020: npc_botexec_arm_mesh_003
-    400022: npc_botexec_arm_mesh_004
-    400024: npc_botexec_arm_mesh_005
-    2300000: npc_botexec_arm_mesh
-    2300002: npc_botexec_arm_mesh_001
-    2300004: npc_botexec_armlwr_mesh
-    2300006: npc_botexec_armlwr_mesh_001
-    2300008: npc_botexec_head_mesh
-    2300010: npc_botexec_mesh
-    2300012: Cube
-    2300014: Cube_001
-    2300016: npc_botexec_arm_mesh_002
-    2300018: npc_botexec_arm_mesh_003
-    2300020: npc_botexec_arm_mesh_004
-    2300022: npc_botexec_arm_mesh_005
-    3300000: npc_botexec_arm_mesh
-    3300002: npc_botexec_arm_mesh_001
-    3300004: npc_botexec_armlwr_mesh
-    3300006: npc_botexec_armlwr_mesh_001
-    3300008: npc_botexec_head_mesh
-    3300010: npc_botexec_mesh
-    3300012: Cube
-    3300014: Cube_001
-    3300016: npc_botexec_arm_mesh_002
-    3300018: npc_botexec_arm_mesh_003
-    3300020: npc_botexec_arm_mesh_004
-    3300022: npc_botexec_arm_mesh_005
-    4300000: npc_botexec_arm_mesh_001
-    4300002: npc_botexec_armlwr_mesh_001
-    4300004: npc_botexec_armlwr_mesh
-    4300006: npc_botexec_arm_mesh
-    4300008: npc_botexec_head_mesh
-    4300010: npc_botexec_mesh
-    4300012: npc_botexec_arm_mesh_005
-    4300014: Cube_001
-    4300016: npc_botexec_arm_mesh_004
-    4300018: Cube
-    4300020: npc_botexec_arm_mesh_003
-    4300022: npc_botexec_arm_mesh_002
-    7400000: Default Take
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: npc_botexec_arm_mesh
+  - first:
+      1: 100002
+    second: npc_botexec_arm_mesh_001
+  - first:
+      1: 100004
+    second: npc_botexec_armlwr_mesh
+  - first:
+      1: 100006
+    second: npc_botexec_armlwr_mesh_001
+  - first:
+      1: 100008
+    second: npc_botexec_head_mesh
+  - first:
+      1: 100010
+    second: npc_botexec_mesh
+  - first:
+      1: 100012
+    second: //RootNode
+  - first:
+      1: 100014
+    second: Cube
+  - first:
+      1: 100016
+    second: Cube_001
+  - first:
+      1: 100018
+    second: npc_botexec_arm_mesh_002
+  - first:
+      1: 100020
+    second: npc_botexec_arm_mesh_003
+  - first:
+      1: 100022
+    second: npc_botexec_arm_mesh_004
+  - first:
+      1: 100024
+    second: npc_botexec_arm_mesh_005
+  - first:
+      4: 400000
+    second: npc_botexec_arm_mesh
+  - first:
+      4: 400002
+    second: npc_botexec_arm_mesh_001
+  - first:
+      4: 400004
+    second: npc_botexec_armlwr_mesh
+  - first:
+      4: 400006
+    second: npc_botexec_armlwr_mesh_001
+  - first:
+      4: 400008
+    second: npc_botexec_head_mesh
+  - first:
+      4: 400010
+    second: npc_botexec_mesh
+  - first:
+      4: 400012
+    second: //RootNode
+  - first:
+      4: 400014
+    second: Cube
+  - first:
+      4: 400016
+    second: Cube_001
+  - first:
+      4: 400018
+    second: npc_botexec_arm_mesh_002
+  - first:
+      4: 400020
+    second: npc_botexec_arm_mesh_003
+  - first:
+      4: 400022
+    second: npc_botexec_arm_mesh_004
+  - first:
+      4: 400024
+    second: npc_botexec_arm_mesh_005
+  - first:
+      23: 2300000
+    second: npc_botexec_arm_mesh
+  - first:
+      23: 2300002
+    second: npc_botexec_arm_mesh_001
+  - first:
+      23: 2300004
+    second: npc_botexec_armlwr_mesh
+  - first:
+      23: 2300006
+    second: npc_botexec_armlwr_mesh_001
+  - first:
+      23: 2300008
+    second: npc_botexec_head_mesh
+  - first:
+      23: 2300010
+    second: npc_botexec_mesh
+  - first:
+      23: 2300012
+    second: Cube
+  - first:
+      23: 2300014
+    second: Cube_001
+  - first:
+      23: 2300016
+    second: npc_botexec_arm_mesh_002
+  - first:
+      23: 2300018
+    second: npc_botexec_arm_mesh_003
+  - first:
+      23: 2300020
+    second: npc_botexec_arm_mesh_004
+  - first:
+      23: 2300022
+    second: npc_botexec_arm_mesh_005
+  - first:
+      33: 3300000
+    second: npc_botexec_arm_mesh
+  - first:
+      33: 3300002
+    second: npc_botexec_arm_mesh_001
+  - first:
+      33: 3300004
+    second: npc_botexec_armlwr_mesh
+  - first:
+      33: 3300006
+    second: npc_botexec_armlwr_mesh_001
+  - first:
+      33: 3300008
+    second: npc_botexec_head_mesh
+  - first:
+      33: 3300010
+    second: npc_botexec_mesh
+  - first:
+      33: 3300012
+    second: Cube
+  - first:
+      33: 3300014
+    second: Cube_001
+  - first:
+      33: 3300016
+    second: npc_botexec_arm_mesh_002
+  - first:
+      33: 3300018
+    second: npc_botexec_arm_mesh_003
+  - first:
+      33: 3300020
+    second: npc_botexec_arm_mesh_004
+  - first:
+      33: 3300022
+    second: npc_botexec_arm_mesh_005
+  - first:
+      43: 4300000
+    second: npc_botexec_arm_mesh_001
+  - first:
+      43: 4300002
+    second: npc_botexec_armlwr_mesh_001
+  - first:
+      43: 4300004
+    second: npc_botexec_armlwr_mesh
+  - first:
+      43: 4300006
+    second: npc_botexec_arm_mesh
+  - first:
+      43: 4300008
+    second: npc_botexec_head_mesh
+  - first:
+      43: 4300010
+    second: npc_botexec_mesh
+  - first:
+      43: 4300012
+    second: npc_botexec_arm_mesh_005
+  - first:
+      43: 4300014
+    second: Cube_001
+  - first:
+      43: 4300016
+    second: npc_botexec_arm_mesh_004
+  - first:
+      43: 4300018
+    second: Cube
+  - first:
+      43: 4300020
+    second: npc_botexec_arm_mesh_003
+  - first:
+      43: 4300022
+    second: npc_botexec_arm_mesh_002
+  - first:
+      74: 7400000
+    second: Idle
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      74: -3880581976594992817
+    second: ArmatureAction
+  - first:
+      74: 2667949614841947897
+    second: Walk
+  - first:
+      74: 3228367138793729562
+    second: Pain
+  - first:
+      74: 6720303635017113406
+    second: Attack
+  - first:
+      74: -4630339522487117836
+    second: Die
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -98,20 +239,168 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
-    animationCompression: 1
+    importConstraints: 0
+    animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Idle
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Walk
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 14
+      lastFrame: 67
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Pain
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 81
+      lastFrame: 92
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Attack
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 93
+      lastFrame: 116
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Die
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 118
+      lastFrame: 130
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -119,9 +408,14 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 1
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -132,10 +426,14 @@ ModelImporter:
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -145,10 +443,10 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
-    hasExtraRoot: 0
+    hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2

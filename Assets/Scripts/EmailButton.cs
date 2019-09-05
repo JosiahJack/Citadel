@@ -4,13 +4,13 @@ using System.Collections;
 
 public class EmailButton : MonoBehaviour {
 	
-	[SerializeField] private GameObject iconman;
-	[SerializeField] private GameObject mailtitleman;
-	[SerializeField] private int mailButtonIndex;
+	public GameObject iconman;
+	public GameObject mailtitleman;
+	public int mailButtonIndex;
 	
-	[SerializeField] private AudioSource SFX; // assign in the editor
-	[SerializeField] private AudioClip SFXClip; // assign in the editor
-	[SerializeField] private CenterTabButtons CenterTabButtonsManager; // assign in the editor
+	public AudioSource SFX; // assign in the editor
+	public AudioClip SFXClip; // assign in the editor
+	public CenterTabButtons CenterTabButtonsManager; // assign in the editor
 	
 	private int invslot;
 	

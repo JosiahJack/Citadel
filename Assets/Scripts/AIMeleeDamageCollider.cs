@@ -31,9 +31,11 @@ public class AIMeleeDamageCollider : MonoBehaviour {
     }
 
 	void OnTriggerEnter (Collider other) {
+		if (other == null) return;
+
         if (other.tag == "Player" || other.tag == "NPC") {
             if (ownerAIC.meleeDamageFinished < Time.time) {
-                ownerAIC.meleeDamageFinished = Time.time + ownerAIC.timeTillMeleeDamage;
+                ownerAIC.meleeDamageFinished = Time.time + ownerAIC.timeTillActualAttack1;
                 //Debug.Log("aimelee collider collided!");
                 DamageData ddNPC = Const.SetNPCDamageData(index, Const.aiState.Attack1, ownedBy);
                 ddNPC.other = gameObject;

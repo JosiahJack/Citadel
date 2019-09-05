@@ -2,10 +2,10 @@
 using System.Collections;
 
 public class BeverageSpawn : MonoBehaviour {
-	[SerializeField] private Texture skin1;
-	[SerializeField] private Texture skin2;
-	[SerializeField] private Texture skin3;
-	[SerializeField] private Texture skin4;
+	public Texture skin1;
+	public Texture skin2;
+	public Texture skin3;
+	public Texture skin4;
 
 	void Awake () {
 		float i;

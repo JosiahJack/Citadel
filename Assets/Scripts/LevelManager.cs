@@ -6,6 +6,8 @@ public class LevelManager : MonoBehaviour {
 	public static LevelManager a;
 	public GameObject[] levels;
 	public int[] levelSecurity;
+	public Transform[] ressurectionLocation;
+	public bool[] ressurectionActive;
 	//public GameObject currentPlayer;
 	//public GameObject elevatorControl;
 	public GameObject sky;
@@ -19,6 +21,20 @@ public class LevelManager : MonoBehaviour {
 			sky.SetActive(true);
 
 		Time.timeScale = Const.a.defaultTimeScale;
+	}
+
+	public bool RessurectPlayer (GameObject currentPlayer) {
+		if (currentPlayer == null) {
+			Const.sprint("BUG: LevelManager cannot find current player for RessurectPlayer.",Const.a.allPlayers);
+			return false; // prevent possible error if wrong player is passed
+		}
+
+		if (ressurectionActive[currentLevel]) {
+			currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = ressurectionLocation[currentLevel].position; //teleport to ressurection chamber
+			return true;
+		}
+
+		return false;
 	}
 
 	public void LoadLevel (int levnum, GameObject targetDestination, GameObject currentPlayer) {

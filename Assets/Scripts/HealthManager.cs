@@ -47,7 +47,10 @@ public class HealthManager : MonoBehaviour {
 
 		if (isNPC) {
 			aic = GetComponent<AIController>();
-			if (aic == null) Debug.Log("BUG: No AIController script on NPC!");
+			if (aic == null) {
+				Debug.Log("BUG: No AIController script on NPC!");
+				return;
+			}
             index = aic.index;
 
             // TODO: Uncomment this for final game
@@ -112,6 +115,7 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	public void NPCDeath (AudioClip deathSound) {
+		deathDone = true;
 		switch (index) {
 		case 0:
 			GetComponent<MeshRenderer> ().enabled = false;
@@ -138,17 +142,19 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 		}
-
-        if (gibOnDeath) Gib();
+		
+        //if (gibOnDeath) Gib();
 	}
 
-    void Gib() {
-        if (gibObjects[0] != null) {
-            for (int i = 0; i < gibObjects.Length; i++) {
-                gibObjects[i].SetActive(true); // turn on all the gibs to fall apart
-                //TODO: add force to gibs?
-            }
-        }
+    public void Gib() {
+		if (gibObjects.Length > 0 ) {
+			if (gibObjects[0] != null) {
+				for (int i = 0; i < gibObjects.Length; i++) {
+					gibObjects[i].SetActive(true); // turn on all the gibs to fall apart
+					//TODO: add force to gibs?
+				}
+			}
+		}
     }
 
 	public void ObjectDeath(AudioClip deathSound) {

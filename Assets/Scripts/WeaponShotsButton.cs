@@ -3,12 +3,12 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class WeaponShotsButton : MonoBehaviour {
-	[SerializeField] private GameObject iconman;
-	[SerializeField] private GameObject ammoiconman;
-	[SerializeField] private GameObject weptextman;
-	[SerializeField] private int WepButtonIndex;
-	[SerializeField] private AudioSource SFX = null; // assign in the editor
-	[SerializeField] private AudioClip SFXClip = null; // assign in the editor
+	public GameObject iconman;
+	public GameObject ammoiconman;
+	public GameObject weptextman;
+	public int WepButtonIndex;
+	public AudioSource SFX = null; // assign in the editor
+	public AudioClip SFXClip = null; // assign in the editor
 	private int invslot;
 	private float ix;
 	private float iy;
@@ -31,9 +31,9 @@ public class WeaponShotsButton : MonoBehaviour {
 			return;
 
 		SFX.PlayOneShot(SFXClip);
-		ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, alternateAmmo);
-		iconman.GetComponent<WeaponIconManager>().SetWepIcon(invslot);    //Set weapon icon for MFD
-		weptextman.GetComponent<WeaponTextManager>().SetWepText(invslot); //Set weapon text for MFD
+		if (ammoiconman.activeInHierarchy) ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, alternateAmmo);
+		if (iconman.activeInHierarchy) iconman.GetComponent<WeaponIconManager>().SetWepIcon(invslot);    //Set weapon icon for MFD
+		if (weptextman.activeInHierarchy) weptextman.GetComponent<WeaponTextManager>().SetWepText(invslot); //Set weapon text for MFD
 		WeaponCurrent.WepInstance.weaponCurrent = WepButtonIndex;				//Set current weapon
 	}
 

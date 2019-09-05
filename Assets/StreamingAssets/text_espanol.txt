@@ -1,2 +1,27 @@
 Energía recibida de la central eléctrica
 La central eléctrica se esta cargando
+tarjeta deacceso requerida
+La puerta está cerrada
+accesso STD otorgado
+ pero la puerta está cerrada.
+Estas muy lejos de eso
+Ascensor todavía está abierta
+Hueco Del ascensor dañado —  inaccesible
+Ya ahí
+RECARGAR
+Arma es demasiado caliente para disparar
+Arma demasiado caliente para la sobrecarga
+Arma ajuste normal
+SOBRECALENTADO
+LISTO
+AJUSTE DE ENERGIÁ
+Arma puesta en sobrecarga
+SOBRECARGA HABILITADA
+SOBRECARGA
+BAJO
+ALTO
+CALOR
+
+
+
+//@1s1n-AAgt!

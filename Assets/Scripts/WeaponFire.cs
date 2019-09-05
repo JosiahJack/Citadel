@@ -37,31 +37,31 @@ public class WeaponFire : MonoBehaviour {
 	public GameObject bulletHoleLarge;
 	public GameObject bulletHoleScorchSmall;
 	public GameObject bulletHoleScorchLarge;
-    [SerializeField] private AudioSource SFX = null; // assign in the editor
-    [SerializeField] private AudioClip SFXMark3Fire; // assign in the editor
-    [SerializeField] private AudioClip SFXBlasterFire; // assign in the editor
-                                                       //[SerializeField] private AudioClip SFXBlasterOverFire; // assign in the editor
-    [SerializeField] private AudioClip SFXDartFire; // assign in the editor
-    [SerializeField] private AudioClip SFXFlechetteFire; // assign in the editor
-    [SerializeField] private AudioClip SFXIonFire; // assign in the editor
-                                                   //[SerializeField] private AudioClip SFXIonOverFire; // assign in the editor
-    [SerializeField] private AudioClip SFXRapierMiss; // assign in the editor
-    [SerializeField] private AudioClip SFXRapierHit; // assign in the editor
-    [SerializeField] private AudioClip SFXPipeMiss; // assign in the editor
-    [SerializeField] private AudioClip SFXPipeHit; // assign in the editor
-    [SerializeField] private AudioClip SFXPipeHitFlesh; // assign in the editor
-    [SerializeField] private AudioClip SFXMagnumFire; // assign in the editor
-    [SerializeField] private AudioClip SFXMagpulseFire; // assign in the editor
-    [SerializeField] private AudioClip SFXPistolFire; // assign in the editor
-    [SerializeField] private AudioClip SFXPlasmaFire; // assign in the editor
-    [SerializeField] private AudioClip SFXRailgunFire; // assign in the editor
-    [SerializeField] private AudioClip SFXRiotgunFire; // assign in the editor
-    [SerializeField] private AudioClip SFXSkorpionFire; // assign in the editor
-    [SerializeField] private AudioClip SFXSparqBeamFire; // assign in the editor
+    public AudioSource SFX = null; // assign in the editor
+    public AudioClip SFXMark3Fire; // assign in the editor
+    public AudioClip SFXBlasterFire; // assign in the editor
+    //public AudioClip SFXBlasterOverFire; // assign in the editor
+    public AudioClip SFXDartFire; // assign in the editor
+    public AudioClip SFXFlechetteFire; // assign in the editor
+    public AudioClip SFXIonFire; // assign in the editor
+    //public AudioClip SFXIonOverFire; // assign in the editor
+    public AudioClip SFXRapierMiss; // assign in the editor
+    public AudioClip SFXRapierHit; // assign in the editor
+    public AudioClip SFXPipeMiss; // assign in the editor
+    public AudioClip SFXPipeHit; // assign in the editor
+    public AudioClip SFXPipeHitFlesh; // assign in the editor
+    public AudioClip SFXMagnumFire; // assign in the editor
+    public AudioClip SFXMagpulseFire; // assign in the editor
+    public AudioClip SFXPistolFire; // assign in the editor
+    public AudioClip SFXPlasmaFire; // assign in the editor
+    public AudioClip SFXRailgunFire; // assign in the editor
+    public AudioClip SFXRiotgunFire; // assign in the editor
+    public AudioClip SFXSkorpionFire; // assign in the editor
+    public AudioClip SFXSparqBeamFire; // assign in the editor
                                                          //[SerializeField] private AudioClip SFXSparqBeamOverFire; // assign in the editor
-    [SerializeField] private AudioClip SFXStungunFire; // assign in the editor
-    [SerializeField] private AudioClip SFXEmpty; // assign in the editor
-    [SerializeField] private AudioClip SFXRicochet; // assign in the editor
+    public AudioClip SFXStungunFire; // assign in the editor
+    public AudioClip SFXEmpty; // assign in the editor
+    public AudioClip SFXRicochet; // assign in the editor
 
     public bool overloadEnabled;
     public float sparqHeat;
@@ -489,6 +489,9 @@ public class WeaponFire : MonoBehaviour {
     }
 
 	void CreateStandardImpactMarks(int wep16index) {
+		// Don't create bullet holes on objects that move
+		if (tempHit.transform.GetComponent<Rigidbody>() != null) return;
+
 		// Add bullethole
 		tempVec = tempHit.normal * 0.16f;
 		GameObject holetype = bulletHoleSmall;
@@ -505,7 +508,7 @@ public class WeaponFire : MonoBehaviour {
 					break;
 			case 5: holetype = bulletHoleScorchSmall;
 					break;
-			case 6: return; // no impact marks for lead pipe...actually doesn't even call this function
+			case 6: return; // no impact marks for lead pipe
 			case 7: holetype = bulletHoleLarge;
 					break;
 			case 8: holetype = bulletHoleScorchLarge;
@@ -622,11 +625,9 @@ public class WeaponFire : MonoBehaviour {
     void HitScanFire(int wep16Index) {
         if (wep16Index == 1 || wep16Index == 4 || wep16Index == 14) {
             CreateBeamImpactEffects(wep16Index); // laser burst effect overrides standard blood spurts/robot sparks
-			CreateStandardImpactMarks(wep16Index);
             damageData.attackType = Const.AttackType.EnergyBeam;
         } else {
             CreateStandardImpactEffects(false); // standard blood spurts/robot sparks
-			CreateStandardImpactMarks(wep16Index);
             damageData.attackType = Const.AttackType.Projectile;
         }
         // Fill the damageData container
@@ -635,6 +636,7 @@ public class WeaponFire : MonoBehaviour {
             damageData.isOtherNPC = true;
         } else {
             damageData.isOtherNPC = false;
+			CreateStandardImpactMarks(wep16Index);
         }
         damageData.hit = tempHit;
         damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
@@ -665,17 +667,13 @@ public class WeaponFire : MonoBehaviour {
         fireDistance = meleescanDistance;
         if (DidRayHit()) {
             anim.Play("Attack2");
-            if (!silent) {
-                SFX.clip = SFXPipeHit;
-                SFX.Play();
-            }
             CreateStandardImpactEffects(true);
-			CreateStandardImpactMarks(index16);
             damageData.other = tempHit.transform.gameObject;
             if (tempHit.transform.gameObject.tag == "NPC") {
                 damageData.isOtherNPC = true;
             } else {
                 damageData.isOtherNPC = false;
+				CreateStandardImpactMarks(index16);
             }
             damageData.hit = tempHit;
             damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
@@ -684,8 +682,20 @@ public class WeaponFire : MonoBehaviour {
             damageData.owner = playerCapsule;
             damageData.attackType = Const.AttackType.Melee;
             HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
-            if (hm == null) return;
+            if (hm == null) {
+				SFX.clip = SFXRapierHit;
+				SFX.Play();
+				return;
+			}
             hm.TakeDamage(damageData);
+			if (!silent) {
+				if ((hm.bloodType == HealthManager.BloodType.Red) || (hm.bloodType == HealthManager.BloodType.Yellow) || (hm.bloodType == HealthManager.BloodType.Green)) {
+					SFX.clip = SFXRapierHit; // TODO: make flesh hit sound for rapier?
+				} else {
+					SFX.clip = SFXRapierHit;	
+				}
+				SFX.Play();
+			}
             return;
         }
         fireDistance = hitscanDistance;
@@ -711,6 +721,7 @@ public class WeaponFire : MonoBehaviour {
                 damageData.isOtherNPC = true;
             } else {
                 damageData.isOtherNPC = false;
+				CreateStandardImpactMarks(index16);
             }
             damageData.hit = tempHit;
             damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
@@ -719,8 +730,20 @@ public class WeaponFire : MonoBehaviour {
             damageData.owner = playerCapsule;
             damageData.attackType = Const.AttackType.Melee;
             HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
-            if (hm == null) return;
+            if (hm == null) {
+				SFX.clip = SFXPipeHit;
+				SFX.Play();
+				return;
+			}
             hm.TakeDamage(damageData);
+			if (!silent) {
+				if ((hm.bloodType == HealthManager.BloodType.Red) || (hm.bloodType == HealthManager.BloodType.Yellow) || (hm.bloodType == HealthManager.BloodType.Green)) {
+					SFX.clip = SFXPipeHitFlesh;
+				} else {
+					SFX.clip = SFXPipeHit;
+				}
+				SFX.Play();
+			}
             return;
         }
         fireDistance = hitscanDistance;

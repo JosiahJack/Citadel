@@ -4,7 +4,7 @@ using System.Collections;
 
 public class PatchButtonsManager : MonoBehaviour {
 	public GameObject[] patchButtons;
-	[SerializeField] private GameObject[] patchCountsText;
+	public GameObject[] patchCountsText;
 	private int index;
 
 	void LateUpdate() {

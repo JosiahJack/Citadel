@@ -3,8 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class WeaponButtonsManager : MonoBehaviour {
-	[SerializeField] public GameObject[] wepButtons;
-	[SerializeField] private GameObject[] wepCountsText;
+	public GameObject[] wepButtons;
+	public GameObject[] wepCountsText;
     public GameObject ammoiconman;
 
 	void Update() {
@@ -46,7 +46,7 @@ public class WeaponButtonsManager : MonoBehaviour {
 
             int invslot = WeaponInventory.WepInventoryInstance.weaponInventoryIndices[i];
             if (invslot >= 0)
-                ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, WeaponCurrent.WepInstance.weaponIsAlternateAmmo);
+                if (ammoiconman.activeInHierarchy) ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, WeaponCurrent.WepInstance.weaponIsAlternateAmmo);
         }
 
 		if (GetInput.a.WeaponCycDown ()) {

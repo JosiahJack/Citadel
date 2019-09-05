@@ -4,13 +4,14 @@ Base Texture
 	Supported Texture 2
 	... n
 
+DONEblack
 bridge1_2
 bridge1_3
 	bridge1_3b
 bridge1_4
 brdige1_5
-bridge2_2
-bridge2_3
+DONEbridge2_2
+DONEbridge2_3
 	bridge2_1
 bridge2_6	
 	bridge2_4
@@ -18,62 +19,62 @@ bridge2_6
 	bridge2_7
 	exec6_1
 bridge2_8
-bridge2_9
-eng1_5 (866)
-	eng1_1
-		eng1_1d
-	eng1_2
-		eng1_2d
-	eng1_3 (158)
-		eng1_3d
-	eng1_4 (4)
-	eng1_5d
-	eng1_6
-		eng1_6d
-		eng1_7
-			eng1_7d
-		eng2_3
-			eng2_3d
-	eng1_8
-	eng1_9 (83)
-		eng1_9d
-	maint1_9
-		maint1_9d
-	stor1_7 (2150)
-		stor1_7d
+DONEbridge2_9
+DONEstor1_7 (2150)
+	stor1_7d
+	DONEeng1_5 (866)
+		eng1_1
+			eng1_1d
+		eng1_2
+			eng1_2d
+		eng1_3 (158)
+			eng1_3d
+		eng1_4 (4)
+		eng1_5d
+		eng1_6
+			eng1_6d
+			eng1_7
+				eng1_7d
+			eng2_3
+				eng2_3d
+		eng1_8
+		eng1_9 (83)
+			eng1_9d
+		maint1_9
+			maint1_9d
 DONEeng2_1 (1631)
 	eng2_1d
 DONEeng2_2 [FLAT CARD, 2 TRIS] (422)
-	DONEeng2_2d
+DONEeng2_2d
 DONEexec3_4
-	DONEexec4_5
-	DONEflight2_2
-	DONEflight2_3
-	DONEmaint2_1
-		DONEmaint2_1d
-	DONEmed1_8
-		DONEmed1_8d
-	DONEreac1_1
-	DONEsec1_1
-	DONEsec1_1b
-	DONEsec1_1c
+DONEexec4_5
+DONEflight2_2
+DONEflight2_3
+DONEmaint2_1
+DONEmaint2_1d
+DONEmed1_8
+DONEmed1_8d
+DONEreac1_1
+DONEsec1_1
+DONEsec1_1b
+DONEsec1_1c
 eng2_4
 eng2_5
 exec1_1
 	exec1_1d
 exec1_2
 	exec1_2d
-exec2_1
-	exec3_1
-		exec3_1d
-exec2_2
-	exec2_2d
-	exec3_2
+DONEexec2_1
+DONEexec3_1
+DONEexec3_1d
+DONEexec2_2
+DONEexec2_2d
+DONEexec3_2
 exec2_3
 exec2_4 (784)
-exec2_5
-	exec2_7
-exec2_6
+DONEexec2_5
+DONEexec2_7
+DONEexec2_6
 exec4_1
 exec4_2
 exec4_3
@@ -122,9 +123,9 @@ maint2_2 (1368)
 maint2_3 (506)
 maint2_4 (649)
 	maint2_3d
-	maint2_5 (207)
+	DONEmaint2_5 (207)
 		maint24_d
-maint2_6 (683)
+DONEmaint2_6 (683)
 	maint2_5d
 maint2_7
 	maint2_6d
@@ -132,32 +133,32 @@ maint2_8
 	maint2_7d
 maint2_9 (1529)
 maint3_1 (2405)
-med1_1 (1964)
-	med1_1d
-	med1_2
-		med1_2d
-	med1_3
-		med1_3d
-	med1_4
-med1_6 (1083)
-	med1_5
-med1_7 (2402)
-	med1_7d
-med1_9
-	med1_9d
+DONEmed1_1 (1964)
+DONEmed1_1d
+DONEmed1_2
+DONEmed1_2d
+DONEmed1_3
+DONEmed1_3d
+DONEmed1_4
+DONEmed1_6 (1083)
+DONEmed1_5
+DONEmed1_7 (2402)
+DONEmed1_7d
+DONEmed1_9
+DONEmed1_9d
 DONEmed2_1
-	DONEmed2_1d
-	DONEmed2_2
-		med2_2d
-	DONEmed2_3
-		med2_3d
-	med2_9
-		med2_9d
-	med2_4
-	DONEmed2_6
-med2_5
-med2_7
-med2_8
+DONEmed2_1d
+DONEmed2_2
+DONEmed2_2d
+DONEmed2_3
+DONEmed2_3d
+DONEmed2_9
+DONEmed2_9d
+DONEmed2_4
+DONEmed2_6
+DONEmed2_5
+DONEmed2_7
+DONEmed2_8
 med3_1
 rad1_1
 	rad1_2
@@ -173,12 +174,12 @@ reac1_5
 	reac3_7
 reac1_8
 reac1_9
-reac2_1
-	reac2_1b
+DONEreac2_1
+	DONEreac2_1b
 		reac2_2
 		reac2_4
-reac2_5
-	reac2_7
+DONEreac2_5
+	DONEreac2_7
 	reac2_8
 reac2_6
 reac2_9
@@ -186,27 +187,27 @@ reac3_1
 reac3_2
 reac3_3
 reac4_1
-reac4_2
+DONEreac4_2
 reac5_2
 	reac5_1
 reac5_3
-reac6_1
-reac6_2
-	reac6_3
-sci1_1 (285)
-	sci1_1d
-	sci1_2
-		sci1_2d
-		sci1_3
-		sci1_4
-		sci1_5
-		sci1_7
-			sci1_7d
-		sci1_8
-		sci1_8d
-		sci2_2
-			sci2_2d
-		sci2_3
+DONEreac6_1
+DONEreac6_2
+DONEreac6_3
+DONEsci1_1 (285)
+DONEsci1_1d
+DONEsci1_2
+	sci1_2d
+	sci1_3
+	sci1_4
+	sci1_5
+	sci1_7
+		sci1_7d
+	sci1_8
+	sci1_8d
+	DONEsci2_2
+		sci2_2d
+	sci2_3
 sci1_6 (482)
 	sci2_4
 sci1_9 (316)
@@ -231,4 +232,6 @@ stor1_5
 	stor1_3
 		stor1_2
 stor1_6
+DONEstor1_7
+	stor1_7d
 DONE 20 of 226

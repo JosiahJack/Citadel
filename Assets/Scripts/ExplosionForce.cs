@@ -42,7 +42,8 @@ public class ExplosionForce : MonoBehaviour {
 			// - Yes: apply force
 			// - No: ignore explosion force
 			// TODO(by YOU): IMPORTANT Change this to match your problem!!
-			if (!hit.collider.Equals(c) || !hit.transform.tag.Equals(c.tag)) {
+			//if (hit.collider != c || hit.transform.tag != c.tag) {
+			if (hit.collider != c) {
 				continue;
 			}
 			

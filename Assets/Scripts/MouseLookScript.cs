@@ -68,7 +68,6 @@ public class MouseLookScript : MonoBehaviour {
 	private int indexAdjustment;
 	private Quaternion tempQuat;
 	private Vector3 tempVec;
-	private Vector3 cameraDefaultLocalPos;
 	//private Quaternion cameraDefaultLocalRot;
 	private Vector3 cameraRecoilLerpPos;
 	[SerializeField] private bool recoiling;
@@ -89,15 +88,15 @@ public class MouseLookScript : MonoBehaviour {
 	public DataTab dataTabControl;
 	public LogContentsButtonsManager logContentsManager;
 	public AudioSource SFXSource;
-	[SerializeField] private CenterTabButtons centerTabButtonsControl;
-	[SerializeField] private MFDManager mfdManager;
-	[SerializeField] private GameObject iconman;
-	[SerializeField] private GameObject itemiconman;
-	[SerializeField] private GameObject itemtextman;
-	[SerializeField] private GameObject ammoiconman;
-	[SerializeField] private GameObject weptextman;
-	[SerializeField] private GameObject ammoClipBox;
-	[SerializeField] private GrenadeCurrent grenadeCurrent;
+	public CenterTabButtons centerTabButtonsControl;
+	public MFDManager mfdManager;
+	public GameObject iconman;
+	public GameObject itemiconman;
+	public GameObject itemtextman;
+	public GameObject ammoiconman;
+	public GameObject weptextman;
+	public GameObject ammoClipBox;
+	public GrenadeCurrent grenadeCurrent;
 	[HideInInspector]
 	public GameObject currentButton;
 	[HideInInspector]
@@ -149,7 +148,7 @@ public class MouseLookScript : MonoBehaviour {
 			Const.sprint("BUG: No canvas given for camera to display UI",player);
 
 		canvasContainer.SetActive(true); //enable UI
-		cameraDefaultLocalPos = transform.localPosition;
+		//cameraDefaultLocalPos = transform.localPosition;
 		//cameraDefaultLocalRot = transform.localRotation;
 		recoiling = false;
 		firstTimePickup = true;

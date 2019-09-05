@@ -1,57 +1,149 @@
 fileFormatVersion: 2
 guid: 6d7a47ae4074949498c3f88a177030ed
-timeCreated: 1426473874
-licenseType: Free
 ModelImporter:
-  serializedVersion: 22
-  fileIDToRecycleName:
-    100000: Armature
-    100002: Bone
-    100004: Bone_001
-    100006: Bone_002
-    100008: Bone_003
-    100010: Bone_004
-    100012: Bone_005
-    100014: Bone_006
-    100016: Bone_007
-    100018: Bone_008
-    100020: Bone_009
-    100022: //RootNode
-    100024: Plane
-    100026: inviso_mut_mesh
-    100028: npc_inviso_mut_mesh
-    400000: Armature
-    400002: Bone
-    400004: Bone_001
-    400006: Bone_002
-    400008: Bone_003
-    400010: Bone_004
-    400012: Bone_005
-    400014: Bone_006
-    400016: Bone_007
-    400018: Bone_008
-    400020: Bone_009
-    400022: //RootNode
-    400024: Plane
-    400026: inviso_mut_mesh
-    400028: npc_inviso_mut_mesh
-    4300000: Plane
-    4300002: inviso_mut_mesh
-    4300004: npc_inviso_mut_mesh
-    7400000: Default Take
-    7400002: ArmatureAction
-    7400004: Idle
-    7400006: Pain
-    7400008: Attack1
-    7400010: Die
-    7400012: Hover
-    7400014: Attack
-    7400016: Death
-    9500000: //RootNode
-    11100000: //RootNode
-    13700000: Plane
-    13700002: inviso_mut_mesh
-    13700004: npc_inviso_mut_mesh
+  serializedVersion: 25
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Armature
+  - first:
+      1: 100002
+    second: Bone
+  - first:
+      1: 100004
+    second: Bone_001
+  - first:
+      1: 100006
+    second: Bone_002
+  - first:
+      1: 100008
+    second: Bone_003
+  - first:
+      1: 100010
+    second: Bone_004
+  - first:
+      1: 100012
+    second: Bone_005
+  - first:
+      1: 100014
+    second: Bone_006
+  - first:
+      1: 100016
+    second: Bone_007
+  - first:
+      1: 100018
+    second: Bone_008
+  - first:
+      1: 100020
+    second: Bone_009
+  - first:
+      1: 100022
+    second: //RootNode
+  - first:
+      1: 100024
+    second: Plane
+  - first:
+      1: 100026
+    second: inviso_mut_mesh
+  - first:
+      1: 100028
+    second: npc_inviso_mut_mesh
+  - first:
+      4: 400000
+    second: Armature
+  - first:
+      4: 400002
+    second: Bone
+  - first:
+      4: 400004
+    second: Bone_001
+  - first:
+      4: 400006
+    second: Bone_002
+  - first:
+      4: 400008
+    second: Bone_003
+  - first:
+      4: 400010
+    second: Bone_004
+  - first:
+      4: 400012
+    second: Bone_005
+  - first:
+      4: 400014
+    second: Bone_006
+  - first:
+      4: 400016
+    second: Bone_007
+  - first:
+      4: 400018
+    second: Bone_008
+  - first:
+      4: 400020
+    second: Bone_009
+  - first:
+      4: 400022
+    second: //RootNode
+  - first:
+      4: 400024
+    second: Plane
+  - first:
+      4: 400026
+    second: inviso_mut_mesh
+  - first:
+      4: 400028
+    second: npc_inviso_mut_mesh
+  - first:
+      43: 4300000
+    second: Plane
+  - first:
+      43: 4300002
+    second: inviso_mut_mesh
+  - first:
+      43: 4300004
+    second: npc_inviso_mut_mesh
+  - first:
+      74: 7400000
+    second: Default Take
+  - first:
+      74: 7400002
+    second: ArmatureAction
+  - first:
+      74: 7400004
+    second: Idle
+  - first:
+      74: 7400006
+    second: Pain
+  - first:
+      74: 7400008
+    second: Attack1
+  - first:
+      74: 7400010
+    second: Die
+  - first:
+      74: 7400012
+    second: Hover
+  - first:
+      74: 7400014
+    second: Attack
+  - first:
+      74: 7400016
+    second: Death
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      111: 11100000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: Plane
+  - first:
+      137: 13700002
+    second: inviso_mut_mesh
+  - first:
+      137: 13700004
+    second: npc_inviso_mut_mesh
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -76,6 +168,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -87,6 +180,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Hover
       takeName: Hover
+      internalID: 7400012
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -141,6 +235,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Pain
       takeName: Pain
+      internalID: 7400006
       firstFrame: 30
       lastFrame: 51
       wrapMode: 0
@@ -195,6 +290,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Attack
       takeName: Attack
+      internalID: 7400014
       firstFrame: 54
       lastFrame: 75
       wrapMode: 0
@@ -249,6 +345,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Death
       takeName: Death
+      internalID: 7400016
       firstFrame: 75
       lastFrame: 102
       wrapMode: 0
@@ -306,6 +403,7 @@ ModelImporter:
     globalScale: 1.2
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
     importVisibility: 0
     importBlendShapes: 1
     importCameras: 0
@@ -313,9 +411,14 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -326,10 +429,14 @@ ModelImporter:
     normalImportMode: 0
     tangentImportMode: 4
     normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -339,8 +446,8 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1.2
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 0
