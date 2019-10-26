@@ -27,11 +27,12 @@ public class UseableObjectUse : MonoBehaviour {
 		this.gameObject.SetActive(false); //we've been picked up, quick hide like you are actually in the player's hand
 	}
 
+	// Handled by HealthManager.cs now, JJ 9/5/19
 	// ouch!
-	public void TakeDamage (DamageData dd) {
-		Rigidbody rbody = GetComponent<Rigidbody>();
-		rbody.AddForceAtPosition((dd.attacknormal*dd.damage),dd.hit.point); // knock me around will you
-	}
+	//public void TakeDamage (DamageData dd) {
+	//	Rigidbody rbody = GetComponent<Rigidbody>();
+	//	rbody.AddForceAtPosition((dd.attacknormal*dd.damage),dd.hit.point); // knock me around will you
+	//}
 }
 
 public class UseData {

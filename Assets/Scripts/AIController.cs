@@ -7,7 +7,6 @@ public class AIController : MonoBehaviour {
 	public int index = 0; // NPC reference index for looking up constants in tables in Const.cs
 	public Const.aiState currentState;
     public Const.aiMoveType moveType;
-	public Vector3 viewOffset;
 	public GameObject enemy;
     public GameObject searchColliderGO;
 	public float yawspeed = 180f;
@@ -50,10 +49,15 @@ public class AIController : MonoBehaviour {
 	public float impactMelee = 10f;
 	public float impactMelee2 = 10f;
 	public float impactMelee3 = 10f;
-    public float verticalViewOffset = 0f;
     public Const.AttackType attack1Type = Const.AttackType.Melee;
     public Const.AttackType attack2Type = Const.AttackType.Projectile;
     public Const.AttackType attack3Type = Const.AttackType.Projectile;
+	public Const.PoolType attack1ProjectileLaunchedType = Const.PoolType.None;
+	public Const.PoolType attack2ProjectileLaunchedType = Const.PoolType.None;
+	public Const.PoolType attack3ProjectileLaunchedType = Const.PoolType.None;
+	public float attack1projectilespeed = 2f;
+	public float attack2projectilespeed = 2f;
+	public float attack3projectilespeed = 2f;
     public Vector3 explosionOffset;
 	public AudioClip SFXIdle;
 	public AudioClip SFXFootstep;
@@ -83,6 +87,7 @@ public class AIController : MonoBehaviour {
 	public float rangeToEnemy = 0f;
 	public GameObject[] meleeDamageColliders;
     public GameObject muzzleBurst;
+    public GameObject muzzleBurst2;
     public GameObject rrCheckPoint;
 	[HideInInspector]
 	public GameObject attacker;
@@ -140,17 +145,27 @@ public class AIController : MonoBehaviour {
     public Vector3 targettingPosition;
 	public GameObject explosionObject;
 	private ExplosionForce explosion;
+	public Material deathMaterial;
+	public bool switchMaterialOnDeath;
+	public SkinnedMeshRenderer actualSMR;
+	public BoxCollider flyerCollider;
+	public CapsuleCollider flyerColliderAlternate1;
+	public bool specialCaseGibContainered;
+	public GameObject visibleMeshSubObject;
+	public GameObject deathBurst;
+	public float deathBurstTimer = 0.1f;
+	private float deathBurstFinished;
+	private bool deathBurstDone;
+	public GameObject sightPoint;
 
 	// Initialization and find components
 	void Awake () {
-		//resetPosition = new Vector3(0f,-100000f,0f); // Null position below playable area
 		nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		nav.updatePosition = true;
 		nav.angularSpeed = yawspeed;
         nav.speed = 0;
         nav.SetDestination(transform.position);
         nav.updateRotation = false;
-        //anim = GetComponent<Animator>();
         rbody = GetComponent<Rigidbody>();
 		rbody.isKinematic = true;
 		healthManager = GetComponent<HealthManager>();
@@ -196,20 +211,14 @@ public class AIController : MonoBehaviour {
         randomWaitForNextAttack2Finished = Time.time;
         randomWaitForNextAttack3Finished = Time.time;
         breadFinished = Time.time;
+		deathBurstFinished = Time.time;
         enemyBreadcrumbs = new List<Vector3>();
         damageData = new DamageData();
         tempHit = new RaycastHit();
         tempVec = new Vector3(0f, 0f, 0f);
         SFX = GetComponent<AudioSource>();
-		if (explosionObject != null) {
-			explosion = explosionObject.GetComponent<ExplosionForce>();
-		}
-
-		if (SFX == null)
-			Debug.Log("WARNING: No audio source for npc at: " + transform.position.x.ToString() + ", " + transform.position.y.ToString() + ", " + transform.position.z + ".");
-		//else
-		//	hasSFX = true;
-
+		if (explosionObject != null) explosion = explosionObject.GetComponent<ExplosionForce>();
+		if (SFX == null) Debug.Log("WARNING: No audio source for npc at: " + transform.position.x.ToString() + ", " + transform.position.y.ToString() + ", " + transform.position.z + ".");
 		if (walkWaypoints.Length > 0 && walkWaypoints[currentWaypoint] != null && walkPathOnStart) {
             nav.SetDestination(walkWaypoints[currentWaypoint].transform.position);
             currentState = Const.aiState.Walk; // If waypoints are set, start walking them from the get go
@@ -217,23 +226,17 @@ public class AIController : MonoBehaviour {
             currentState = Const.aiState.Idle; // No waypoints, stay put
         }
 			
-		//RuntimeAnimatorController ac = anim.runtimeAnimatorController;
-		//for (int i=0;i<ac.animationClips.Length;i++) {
-		//	if (ac.animationClips[i].name == "Death") {
-		//		timeTillDead = ac.animationClips[i].length;
-		//		break;
-		//	}
-		//}
 		tick = 0.05f;
 		tickFinished = Time.time + tick;
 
 		//QUAKE based AI
 		attackFinished = Time.time + 1f;
 		idealTransformForward = transform.forward;
+		deathBurstDone = false;
 	}
 
 	void FixedUpdate () {
-		if (PauseScript.a != null && PauseScript.a.paused) {
+		if (PauseScript.a != null && PauseScript.a.Paused()) {
 			//anim.speed = 0f; // don't animate, we're paused
 			nav.isStopped = true;  // don't move, we're paused
 			return; // don't do any checks or anything else...we're paused!
@@ -253,7 +256,7 @@ public class AIController : MonoBehaviour {
         // Rotation and Special movement that must be done every FixedUpdate
         if (currentState != Const.aiState.Dead) {
             if (currentState != Const.aiState.Idle) {
-                idealTransformForward = nav.destination - transform.position;
+                idealTransformForward = nav.destination - transform.position; //TODO: double check that all enemies work with their sightPoint's transform.forward and that this is fine as is without changing transform.position to sightPoint.transform.position
                 idealTransformForward.y = 0;
 				if (idealTransformForward.magnitude > Mathf.Epsilon) {
 					Quaternion rot = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(idealTransformForward), yawspeed * Time.deltaTime);
@@ -264,20 +267,19 @@ public class AIController : MonoBehaviour {
             if (moveType == Const.aiMoveType.Fly) {
                 float distUp = 0;
                 float distDn = 0;
-                tempVec = transform.position;
-                tempVec.y += verticalViewOffset;
+                tempVec = sightPoint.transform.position;
                 Vector3 floorPoint = new Vector3();
                 floorPoint = Vector3.zero;
                 int layMask = 1 << 9;
                 //layMask = -layMask;
 
-                if (Physics.Raycast(tempVec, transform.up * -1, out tempHit, sightRange)) {
+                if (Physics.Raycast(tempVec, sightPoint.transform.up * -1, out tempHit, sightRange)) {
                     //drawMyLine(tempVec, tempHit.point, Color.green, 2f);
                     distDn = Vector3.Distance(tempVec, tempHit.point);
                     floorPoint = tempHit.point;
                 }
 
-                if (Physics.Raycast(tempVec, transform.up, out tempHit, sightRange, layMask)) {
+                if (Physics.Raycast(tempVec, sightPoint.transform.up, out tempHit, sightRange, layMask)) {
                     //drawMyLine(tempVec, tempHit.point, Color.green, 2f);
                     distUp = Vector3.Distance(tempVec, tempHit.point);
                 }
@@ -286,6 +288,7 @@ public class AIController : MonoBehaviour {
                 //Debug.Log("(" + distUp.ToString() + " + " + distDn.ToString() + ") * 0.25f = " + distT.ToString());
                 idealPos = floorPoint + new Vector3(0,distT, 0);
 
+				if (enemy != null) idealPos.y = enemy.transform.position.y + 0.24f; //TODO set to player camera position.y
                 visibleMeshEntity.transform.position = Vector3.MoveTowards(visibleMeshEntity.transform.position, idealPos, runSpeed * Time.deltaTime);
             }
         }
@@ -322,7 +325,7 @@ public class AIController : MonoBehaviour {
         if (enemy != null) {
             infront = enemyInFront(enemy);
             inProjFOV = enemyInProjFOV(enemy);
-            rangeToEnemy = Vector3.Distance(enemy.transform.position, (transform.position + viewOffset));
+            rangeToEnemy = Vector3.Distance(enemy.transform.position, sightPoint.transform.position);
         } else {
             infront = false;
             rangeToEnemy = sightRange;
@@ -444,7 +447,7 @@ public class AIController : MonoBehaviour {
 
             nav.speed = runSpeed;
             nav.SetDestination(enemy.transform.position);
-			if (Vector3.Distance(transform.position + viewOffset, enemy.transform.position) < 1.28) {
+			if (Vector3.Distance(sightPoint.transform.position, enemy.transform.position) < 1.28) {
 				nav.isStopped = true;
 			} else {
 				nav.isStopped = false;
@@ -475,6 +478,7 @@ public class AIController : MonoBehaviour {
         }
         nav.speed = runSpeed;
 
+		// using transform.position instead of sightPoint.transform.position for the distance because it deals with the overall enemy's transform rather than view
         if (!randSpin && Vector3.Distance(transform.position, lastKnownEnemyPos) < nav.stoppingDistance) {
             randSpin = true; // only set destination point once so we aren't chasing our tail spinning in circles
             nav.SetDestination(rrCheckPoint.transform.position);
@@ -524,7 +528,7 @@ public class AIController : MonoBehaviour {
 
     bool DidRayHit(Vector3 targPos, float dist, bool useGunPoint2) {
         tempVec = targPos;
-        tempVec.y += verticalViewOffset;
+        tempVec.y += 0.24f;  //TODO get actual player camera position.y
 		if (useGunPoint2 && gunPoint2 != null) {
 			tempVec = tempVec - gunPoint2.transform.position;
 		} else {
@@ -602,7 +606,7 @@ public class AIController : MonoBehaviour {
                 }
 
                 if (attack2Type == Const.AttackType.Projectile) {
-                    muzzleBurst.SetActive(true);
+                    if (muzzleBurst != null) muzzleBurst.SetActive(true);
                     if (DidRayHit(targettingPosition, proj1Range,false)) {
                         CreateStandardImpactEffects(false);
                         damageData.other = tempHit.transform.gameObject;
@@ -612,8 +616,7 @@ public class AIController : MonoBehaviour {
                             damageData.isOtherNPC = false;
                         }
                         damageData.hit = tempHit;
-                        tempVec = transform.position;
-                        tempVec.y += verticalViewOffset;
+                        tempVec = gunPoint.transform.position;
                         tempVec = (enemy.transform.position - tempVec);
                         damageData.attacknormal = tempVec;
                         damageData.damage = 15f;
@@ -624,7 +627,31 @@ public class AIController : MonoBehaviour {
                         if (hm == null) return;
                         hm.TakeDamage(damageData);
                     }
-                }
+                } else {
+					if (attack2Type == Const.AttackType.ProjectileLaunched) {
+                        tempVec = gunPoint.transform.position;
+                        tempVec = (enemy.transform.position - tempVec);
+                        damageData.attacknormal = tempVec;
+                        damageData.damage = 30f;
+                        damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+                        damageData.owner = gameObject;
+                        damageData.attackType = Const.AttackType.ProjectileLaunched;
+						// Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
+						// like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
+						GameObject beachball = Const.a.GetObjectFromPool(attack2ProjectileLaunchedType);
+						if (beachball != null) {
+							beachball.GetComponent<ProjectileEffectImpact>().dd = damageData;
+							beachball.GetComponent<ProjectileEffectImpact>().host = gameObject;
+							beachball.GetComponent<ProjectileEffectImpact>().impactType = Const.a.GetPoolImpactFromPoolProjectileType(attack2ProjectileLaunchedType);
+							beachball.transform.position = gunPoint.transform.position;
+							beachball.transform.forward = tempVec.normalized;
+							beachball.SetActive(true);
+							Vector3 shove = beachball.transform.forward * attack2projectilespeed;
+							beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
+							beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
+						}
+					}
+				}
             }
         }
 
@@ -634,7 +661,7 @@ public class AIController : MonoBehaviour {
             } else {
                 randomWaitForNextAttack2Finished = Time.time;
             }
-            muzzleBurst.SetActive(false);
+            if (muzzleBurst != null) muzzleBurst.SetActive(false);
             goIntoPain = false; //prevent going into pain after attack
             currentState = Const.aiState.Run;
             return;
@@ -665,7 +692,7 @@ public class AIController : MonoBehaviour {
                 shotFired = true;
                 // Typically used for normal projectile attack
                 if (attack3Type == Const.AttackType.Projectile) {
-                    muzzleBurst.SetActive(true);
+                    if (muzzleBurst2 != null) muzzleBurst2.SetActive(true);
                     if (DidRayHit(targettingPosition, proj1Range,true)) {
                         CreateStandardImpactEffects(false);
                         damageData.other = tempHit.transform.gameObject;
@@ -675,8 +702,7 @@ public class AIController : MonoBehaviour {
                             damageData.isOtherNPC = false;
                         }
                         damageData.hit = tempHit;
-                        tempVec = transform.position;
-                        tempVec.y += verticalViewOffset;
+                        tempVec = gunPoint2.transform.position;
                         tempVec = (enemy.transform.position - tempVec);
                         damageData.attacknormal = tempVec;
                         damageData.damage = 15f;
@@ -687,7 +713,31 @@ public class AIController : MonoBehaviour {
                         if (hm == null) return;
                         hm.TakeDamage(damageData);
                     }
-                }
+                } else {
+					if (attack3Type == Const.AttackType.ProjectileLaunched) {
+                        tempVec = gunPoint2.transform.position;
+                        tempVec = (enemy.transform.position - tempVec);
+                        damageData.attacknormal = tempVec;
+                        damageData.damage = 30f;
+                        damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+                        damageData.owner = gameObject;
+                        damageData.attackType = Const.AttackType.ProjectileLaunched;
+						// Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
+						// like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
+						GameObject beachball = Const.a.GetObjectFromPool(attack3ProjectileLaunchedType);
+						if (beachball != null) {
+							beachball.GetComponent<ProjectileEffectImpact>().dd = damageData;
+							beachball.GetComponent<ProjectileEffectImpact>().host = gameObject;
+							beachball.GetComponent<ProjectileEffectImpact>().impactType = Const.a.GetPoolImpactFromPoolProjectileType(attack3ProjectileLaunchedType);
+							beachball.transform.position = gunPoint2.transform.position;
+							beachball.transform.forward = tempVec.normalized;
+							beachball.SetActive(true);
+							Vector3 shove = beachball.transform.forward * attack3projectilespeed;
+							beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
+							beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
+						}
+					}
+				}
             }
         }
 
@@ -697,7 +747,7 @@ public class AIController : MonoBehaviour {
             } else {
                 randomWaitForNextAttack3Finished = Time.time;
             }
-            muzzleBurst.SetActive(false);
+            if (muzzleBurst2 != null) muzzleBurst2.SetActive(false);
             goIntoPain = false; //prevent going into pain after attack
             currentState = Const.aiState.Run;
             return;
@@ -705,6 +755,10 @@ public class AIController : MonoBehaviour {
 	}
 
 	void Pain() {
+		//if (enemy == null) {
+		//	
+		//}
+		
 		if (timeTillPainFinished < Time.time) {
 			currentState = Const.aiState.Run; // go into run after we get hurt
 			goIntoPain = false;
@@ -724,10 +778,29 @@ public class AIController : MonoBehaviour {
             if (meshCollider != null) meshCollider.enabled = false;
             if (capsuleCollider != null) capsuleCollider.enabled = false;
             if (searchColliderGO != null) searchColliderGO.SetActive(true);
+			if (moveType == Const.aiMoveType.Fly) {
+				if (flyerCollider != null) flyerCollider.enabled = false;
+				if (flyerColliderAlternate1 != null) flyerColliderAlternate1.enabled = false;
+				rbody.useGravity = true;
+				rbody.isKinematic = false;
+				nav.enabled = false;
+			} else {
+				nav.speed = nav.speed * 0.5f; // half the speed while collapsing or whatever
+			}
             gameObject.tag = "Searchable"; // Enable searching
 			firstSighting = true;
-			nav.speed = nav.speed * 0.5f; // half the speed while collapsing or whatever
 			timeTillDeadFinished = Time.time + timeTillDead; // wait for death animation to finish before going into Dead()
+			if (switchMaterialOnDeath) actualSMR.material = deathMaterial;
+			if (deathBurstTimer > 0) {
+				deathBurstFinished = Time.time + deathBurstTimer;
+			} else {
+				if (deathBurst != null) deathBurst.SetActive(true); // activate any death effects
+			}
+		}
+
+		if (deathBurstFinished < Time.time && !deathBurstDone) {
+			if (deathBurst != null) deathBurst.SetActive(true); // activate any death effects
+			deathBurstDone = true;
 		}
 			
 		if (timeTillDeadFinished < Time.time) {
@@ -738,17 +811,77 @@ public class AIController : MonoBehaviour {
 	}
 
 	void Dead() {
-		nav.isStopped = true; // Stop moving
-		//anim.speed = 0f; // Stop animation
 		ai_dead = true;
 		ai_dying = false;
-		rbody.isKinematic = true;
+		if (moveType == Const.aiMoveType.Fly) {
+			rbody.isKinematic = false;
+			nav.enabled = false;
+		} else {
+			rbody.isKinematic = true;
+			nav.isStopped = true; // Stop moving
+		}
 		currentState = Const.aiState.Dead;
 		if (healthManager.gibOnDeath) {
-			visibleMeshEntity.SetActive(false);
-			healthManager.Gib();
-			if (explosion != null) explosion.ExplodeOuter(explosionObject.transform.position);
+			// Special case for gibing on death for the avian mutant to allow it's corpse to rain from the sky, otherwise it would get disabled along with
+			// the container that held the visibleMesh.  Needed because we want the corpse to fall from the exact same place as the model and model is in
+			// the air within the visibleMeshContainer.  Hence, the special case gib containered flag.  Bit silly ya.
+			if (specialCaseGibContainered) {
+				rbody.useGravity = false; // prevent the invisible part of the enemy from falling indefinitely
+				visibleMeshSubObject.SetActive(false); // turn off the visual model in case of Avian Mutant
+			} else {
+				visibleMeshEntity.SetActive(false); // normally just turn off the main model, then...
+			}
+			healthManager.Gib(); // ... turn on the lovely gibs
+			if (explosion != null) explosion.ExplodeOuter(explosionObject.transform.position); // blast the gibs away from the center TODO this isn't working on the repair bot??
 			//if (explosion != null) explosion.ExplodeInner(explodeObject.transform.position, nearforce, nearradius, null);
+		}
+	}
+	
+	public void SendEnemy (GameObject enemCandidate) {
+		if (ignoreEnemy) return;
+		if (enemy != null) return; //already have enemy TODO: use time to switch to switch to alternate attacker
+
+		GameObject playr1 = Const.a.player1;
+		GameObject playr2 = Const.a.player2;
+		GameObject playr3 = Const.a.player3;
+		GameObject playr4 = Const.a.player4;
+
+		if (playr1 == null) { Debug.Log("WARNING: NPC sight check - no host player 1."); return; }  // No host player
+		if (playr1 != null) {playr1 = playr1.GetComponent<PlayerReferenceManager>().playerCapsule;}
+		if (playr2 != null) {playr2 = playr2.GetComponent<PlayerReferenceManager>().playerCapsule;}
+		if (playr3 != null) {playr3 = playr3.GetComponent<PlayerReferenceManager>().playerCapsule;}
+		if (playr4 != null) {playr4 = playr4.GetComponent<PlayerReferenceManager>().playerCapsule;}
+		
+		if (enemCandidate == playr1) {
+		enemy = playr1;
+			if (firstSighting) {
+				firstSighting = false;
+				if (SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
+			}
+		} else {
+			if (enemCandidate == playr2) {
+				enemy = playr1;
+				if (firstSighting) {
+					firstSighting = false;
+					if (SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
+				}
+			} else {
+				if (enemCandidate == playr3) {
+					enemy = playr1;
+					if (firstSighting) {
+						firstSighting = false;
+						if (SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
+					}
+				} else {
+					if (enemCandidate == playr4) {
+						enemy = playr1;
+						if (firstSighting) {
+							firstSighting = false;
+							if (SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -761,12 +894,12 @@ public class AIController : MonoBehaviour {
 	}
 
 	bool CheckIfEnemyInSight() {
-		Vector3 checkline = enemy.transform.position - transform.position; // Get vector line made from enemy to found player
+		Vector3 checkline = enemy.transform.position - sightPoint.transform.position; // Get vector line made from enemy to found player
         int layMask = 10;
         layMask = -layMask;
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.position + transform.up, checkline.normalized, out hit, sightRange, layMask)) {
+        if (Physics.Raycast(sightPoint.transform.position + transform.up, checkline.normalized, out hit, sightRange, layMask)) {
             LOSpossible = true;
             if (hit.collider.gameObject == enemy)
                 return true;
@@ -774,7 +907,7 @@ public class AIController : MonoBehaviour {
         LOSpossible = false;
 
 		// Testing to see that dist check still works
-		float dist = Vector3.Distance(enemy.transform.position,transform.position);  // Get distance between enemy and found player	
+		float dist = Vector3.Distance(enemy.transform.position,sightPoint.transform.position);  // Get distance between enemy and found player	
 		if (dist < distToSeeWhenBehind) {
 			return true;
 		}
@@ -813,14 +946,13 @@ public class AIController : MonoBehaviour {
 			// found player
 			//Debug.Log("Found a player with sight check");
             tempVec = tempent.transform.position;
-            tempVec.y += verticalViewOffset;
-			Vector3 checkline = tempVec - (transform.position + viewOffset); // Get vector line made from enemy to found player
+			Vector3 checkline = tempVec - sightPoint.transform.position; // Get vector line made from enemy to found player
             int layMask = 10;
             layMask = -layMask;
 
 			// Check for line of sight
 			RaycastHit hit;
-            if (Physics.Raycast((transform.position + viewOffset), checkline.normalized, out hit, sightRange,layMask)) {
+            if (Physics.Raycast(sightPoint.transform.position, checkline.normalized, out hit, sightRange,layMask)) {
 				//Debug.Log("Sight raycast successful");
 				//Debug.DrawRay((transform.position + viewOffset),checkline.normalized, Color.green, 0.1f,false);
 				//Debug.Log(hit.collider.gameObject.name);
@@ -830,8 +962,8 @@ public class AIController : MonoBehaviour {
 				}
 			}
 
-			float dist = Vector3.Distance(tempent.transform.position,(transform.position + viewOffset));  // Get distance between enemy and found player
-			float angle = Vector3.Angle(checkline,transform.forward);
+			float dist = Vector3.Distance(tempent.transform.position,sightPoint.transform.position);  // Get distance between enemy and found player
+			float angle = Vector3.Angle(checkline,sightPoint.transform.forward);
 			
 			// If clear path to found player, and either within view angle or right behind the enemy
 			if (LOSpossible) {
@@ -868,14 +1000,14 @@ public class AIController : MonoBehaviour {
 	}
 	
     bool enemyInFront (GameObject target) {
-        Vector3 vec = Vector3.Normalize(target.transform.position - (transform.position + viewOffset));
+        Vector3 vec = Vector3.Normalize(target.transform.position - sightPoint.transform.position);
         float dot = Vector3.Dot(vec,transform.forward);
         if (dot > 0.300) return true; // enemy is within 27 degrees of forward facing vector
         return false;
     }
 
     bool enemyInProjFOV(GameObject target) {
-        Vector3 vec = Vector3.Normalize(target.transform.position - (transform.position + viewOffset));
+        Vector3 vec = Vector3.Normalize(target.transform.position - sightPoint.transform.position);
         float dot = Vector3.Dot(vec, transform.forward);
         if (dot > 0.800) return true; // enemy is within 27 degrees of forward facing vector
         return false;

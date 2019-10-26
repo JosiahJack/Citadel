@@ -20,7 +20,6 @@ public class PlayerHealth : MonoBehaviour {
 	public GameObject cameraObject;
 	public GameObject hardwareShield;
 	public GameObject radiationEffect;
-	private bool shieldOn = false;
 	public bool radiationArea = false;
 	private float radiationBleedOffFinished = 0f;
 	public float radiationBleedOffTime = 1f;
@@ -70,8 +69,8 @@ public class PlayerHealth : MonoBehaviour {
 			if (mediPatchPulseFinished == 0) mediPatchPulseCount = 0;
 			if (mediPatchPulseFinished < Time.time) {
 				float timePulse = mediPatchPulseTime;
-				hm.health += mediPatchHealAmount; // give health
-				//if (hm.health > hm.maxhealth) hm.health = hm.maxhealth; // handled by HealthManager.cs
+				hm.HealingBed(mediPatchHealAmount);
+				//hm.health += mediPatchHealAmount;
 				timePulse += (mediPatchPulseCount*0.5f);
 				mediPatchPulseFinished = Time.time + timePulse;
 				mediPatchPulseCount++;
@@ -133,29 +132,31 @@ public class PlayerHealth : MonoBehaviour {
 	}
 	
 	void PlayerDead (){
-		//gameObject.GetComponent<PlayerMovement>().enabled = false;
-		//cameraObject.SetActive(false);
+		MouseLookScript mls = cameraObject.GetComponent<MouseLookScript>();
+		mls.DropHeldItem();
+		mls.ResetHeldItem ();
+		mls.ResetCursor ();
 		Cursor.lockState = CursorLockMode.None;
-		#if UNITY_EDITOR
-		if (Application.isEditor) {
-			EditorApplication.isPlaying = false;
-			return;
+		if (LevelManager.a.ressurectionActive[LevelManager.a.currentLevel]) {
+			// Ressurection
+			bool ressurected = LevelManager.a.RessurectPlayer(mainPlayerParent);
+			if (!ressurected) Debug.Log("ERROR: failed to ressurect player!");
+		} else {
+			// Death to Main Menu
+			//gameObject.GetComponent<PlayerMovement>().enabled = false;
+			//cameraObject.SetActive(false);
+			//cameraObject.GetComponent<Camera>().enabled = false;
+			//PauseScript.a.PauseEnable();
+			mls.mainMenu.SetActive(true);
+			/*
+			#if UNITY_EDITOR
+			if (Application.isEditor) {
+				EditorApplication.isPlaying = false;
+				return;
+			}
+			#endif
+			*/
 		}
-		#endif
-		cameraObject.GetComponent<Camera>().enabled = false;
-	}
-	
-	public void TakeDamage (DamageData dd){
-		float shieldBlock = 0f;
-		if (shieldOn) {
-			//shieldBlock = hardwareShield.GetComponent<Shield>().GetShieldBlock();
-		}
-		dd.armorvalue = shieldBlock;
-		dd.defense = 0f;
-		float take = Const.a.GetDamageTakeAmount(dd);
-		hm.health -= take;
-		PlayerNoise.PlayOneShot(PainSFXClip);
-		//Debug.Log("Player Health: " + health.ToString());
 	}
 
 	public void GiveRadiation (float rad) {

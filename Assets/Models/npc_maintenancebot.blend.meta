@@ -1,73 +1,206 @@
 fileFormatVersion: 2
 guid: fa955b4c86cbb4e42841709f4c46598b
-timeCreated: 1523282295
-licenseType: Free
 ModelImporter:
-  serializedVersion: 22
-  fileIDToRecycleName:
-    100000: //RootNode
-    100002: bodyshell_lh
-    100004: bodyshell_rh
-    100006: leg
-    100008: leg_001
-    100010: leg_002
-    100012: leg_003
-    100014: npc_maintenancebot_base
-    100016: npc_maintenancebot_pincers_lh
-    100018: npc_maintenancebot_pincers_rh
-    100020: npc_maintenancebot_pincers_stalk1
-    100022: npc_maintenancebot_pincers_stalk2
-    400000: //RootNode
-    400002: bodyshell_lh
-    400004: bodyshell_rh
-    400006: leg
-    400008: leg_001
-    400010: leg_002
-    400012: leg_003
-    400014: npc_maintenancebot_base
-    400016: npc_maintenancebot_pincers_lh
-    400018: npc_maintenancebot_pincers_rh
-    400020: npc_maintenancebot_pincers_stalk1
-    400022: npc_maintenancebot_pincers_stalk2
-    2300000: //RootNode
-    2300002: bodyshell_lh
-    2300004: bodyshell_rh
-    2300006: leg
-    2300008: leg_001
-    2300010: leg_002
-    2300012: leg_003
-    2300014: npc_maintenancebot_base
-    2300016: npc_maintenancebot_pincers_lh
-    2300018: npc_maintenancebot_pincers_rh
-    2300020: npc_maintenancebot_pincers_stalk1
-    2300022: npc_maintenancebot_pincers_stalk2
-    3300000: //RootNode
-    3300002: bodyshell_lh
-    3300004: bodyshell_rh
-    3300006: leg
-    3300008: leg_001
-    3300010: leg_002
-    3300012: leg_003
-    3300014: npc_maintenancebot_base
-    3300016: npc_maintenancebot_pincers_lh
-    3300018: npc_maintenancebot_pincers_rh
-    3300020: npc_maintenancebot_pincers_stalk1
-    3300022: npc_maintenancebot_pincers_stalk2
-    4300000: Cube
-    4300002: npc_maintenancebot_pincers_lh
-    4300004: npc_maintenancebot_pincers_stalk1
-    4300006: npc_maintenancebot_pincers_stalk2
-    4300008: leg_003
-    4300010: leg_002
-    4300012: leg_001
-    4300014: npc_maintenancebot_pincers_rh
-    4300016: leg
-    4300018: npc_maintenancebot_base
-    4300020: bodyshell_lh
-    4300022: bodyshell_rh
-    7400000: Default Take
-    9500000: //RootNode
-    11100000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: bodyshell_lh
+  - first:
+      1: 100004
+    second: bodyshell_rh
+  - first:
+      1: 100006
+    second: leg
+  - first:
+      1: 100008
+    second: leg_001
+  - first:
+      1: 100010
+    second: leg_002
+  - first:
+      1: 100012
+    second: leg_003
+  - first:
+      1: 100014
+    second: npc_maintenancebot_base
+  - first:
+      1: 100016
+    second: npc_maintenancebot_pincers_lh
+  - first:
+      1: 100018
+    second: npc_maintenancebot_pincers_rh
+  - first:
+      1: 100020
+    second: npc_maintenancebot_pincers_stalk1
+  - first:
+      1: 100022
+    second: npc_maintenancebot_pincers_stalk2
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: bodyshell_lh
+  - first:
+      4: 400004
+    second: bodyshell_rh
+  - first:
+      4: 400006
+    second: leg
+  - first:
+      4: 400008
+    second: leg_001
+  - first:
+      4: 400010
+    second: leg_002
+  - first:
+      4: 400012
+    second: leg_003
+  - first:
+      4: 400014
+    second: npc_maintenancebot_base
+  - first:
+      4: 400016
+    second: npc_maintenancebot_pincers_lh
+  - first:
+      4: 400018
+    second: npc_maintenancebot_pincers_rh
+  - first:
+      4: 400020
+    second: npc_maintenancebot_pincers_stalk1
+  - first:
+      4: 400022
+    second: npc_maintenancebot_pincers_stalk2
+  - first:
+      23: 2300000
+    second: //RootNode
+  - first:
+      23: 2300002
+    second: bodyshell_lh
+  - first:
+      23: 2300004
+    second: bodyshell_rh
+  - first:
+      23: 2300006
+    second: leg
+  - first:
+      23: 2300008
+    second: leg_001
+  - first:
+      23: 2300010
+    second: leg_002
+  - first:
+      23: 2300012
+    second: leg_003
+  - first:
+      23: 2300014
+    second: npc_maintenancebot_base
+  - first:
+      23: 2300016
+    second: npc_maintenancebot_pincers_lh
+  - first:
+      23: 2300018
+    second: npc_maintenancebot_pincers_rh
+  - first:
+      23: 2300020
+    second: npc_maintenancebot_pincers_stalk1
+  - first:
+      23: 2300022
+    second: npc_maintenancebot_pincers_stalk2
+  - first:
+      33: 3300000
+    second: //RootNode
+  - first:
+      33: 3300002
+    second: bodyshell_lh
+  - first:
+      33: 3300004
+    second: bodyshell_rh
+  - first:
+      33: 3300006
+    second: leg
+  - first:
+      33: 3300008
+    second: leg_001
+  - first:
+      33: 3300010
+    second: leg_002
+  - first:
+      33: 3300012
+    second: leg_003
+  - first:
+      33: 3300014
+    second: npc_maintenancebot_base
+  - first:
+      33: 3300016
+    second: npc_maintenancebot_pincers_lh
+  - first:
+      33: 3300018
+    second: npc_maintenancebot_pincers_rh
+  - first:
+      33: 3300020
+    second: npc_maintenancebot_pincers_stalk1
+  - first:
+      33: 3300022
+    second: npc_maintenancebot_pincers_stalk2
+  - first:
+      43: 4300000
+    second: Cube
+  - first:
+      43: 4300002
+    second: npc_maintenancebot_pincers_lh
+  - first:
+      43: 4300004
+    second: npc_maintenancebot_pincers_stalk1
+  - first:
+      43: 4300006
+    second: npc_maintenancebot_pincers_stalk2
+  - first:
+      43: 4300008
+    second: leg_003
+  - first:
+      43: 4300010
+    second: leg_002
+  - first:
+      43: 4300012
+    second: leg_001
+  - first:
+      43: 4300014
+    second: npc_maintenancebot_pincers_rh
+  - first:
+      43: 4300016
+    second: leg
+  - first:
+      43: 4300018
+    second: npc_maintenancebot_base
+  - first:
+      43: 4300020
+    second: bodyshell_lh
+  - first:
+      43: 4300022
+    second: bodyshell_rh
+  - first:
+      74: 7400000
+    second: Idle
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      111: 11100000
+    second: //RootNode
+  - first:
+      74: 7572344613039948371
+    second: Attack1
+  - first:
+      74: 2667949614841947897
+    second: Walk
+  - first:
+      74: 4348485665485846014
+    second: Death
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -97,20 +230,139 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
-    animationCompression: 1
+    importConstraints: 0
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Idle
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 71
+      lastFrame: 71
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Attack1
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 72
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Walk
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 80
+      lastFrame: 107
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Death
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 108
+      lastFrame: 149
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -118,9 +370,14 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -131,10 +388,14 @@ ModelImporter:
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -144,13 +405,13 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 1
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

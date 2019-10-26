@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class LaserDrawing : MonoBehaviour {
-	public GameObject followStarter;
+	[HideInInspector] public GameObject followStarter;
 	public Vector3 startPoint;
 	public Vector3 endPoint;
     public float lineLife = 0.15f;
-	public LineRenderer line;
+	[DTValidator.Optional] public LineRenderer line;
 
 	void Awake () {
 		line = GetComponent<LineRenderer>();

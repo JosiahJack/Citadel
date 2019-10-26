@@ -17,6 +17,7 @@ public class DataTab : MonoBehaviour {
 	public Vector3 objectInUsePos;
 	public bool usingObject;
 	public Transform playerCapsuleTransform;
+	public bool isRH = false;
 
 	void Awake () {
 		Reset();
@@ -26,6 +27,7 @@ public class DataTab : MonoBehaviour {
 		if (usingObject) {
 			if (Vector3.Distance(playerCapsuleTransform.position, objectInUsePos) > Const.a.frobDistance) {
 				Reset();
+				MFDManager.a.ReturnToLastTab(isRH);
 			}
 		}
 	}
@@ -46,7 +48,7 @@ public class DataTab : MonoBehaviour {
 		}
 	}
 
-	public void Search(string head, int numberFoundContents, int[] contents, int[] customIndex) {
+	public void Search(string head, int numberFoundContents, int[] contents, int[] customIndex, Vector3 searchPosition) {
 		headerText.SetActive(true);
 		headerText_text.enabled = true;
 		headerText_text.text = head;
@@ -65,6 +67,9 @@ public class DataTab : MonoBehaviour {
 				searchContainer.customIndex[i] = customIndex[i];
 			}
 		}
+
+		usingObject = true;
+		objectInUsePos = searchPosition;
 	}
 
 	public void GridPuzzle(bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors, GameObject t1, GameObject t2, GameObject t3, GameObject t4, UseData ud) {

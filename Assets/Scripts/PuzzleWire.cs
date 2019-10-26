@@ -61,10 +61,10 @@ public class PuzzleWire : MonoBehaviour {
 	private int numberOfWires;
 	private AudioSource SFXSource;
 	public AudioClip SFX;
-	public GameObject target;
-	public GameObject target1;
-	public GameObject target2;
-	public GameObject target3;
+	[DTValidator.Optional] public GameObject target;
+	[DTValidator.Optional] public GameObject target1;
+	[DTValidator.Optional] public GameObject target2;
+	[DTValidator.Optional] public GameObject target3;
 	private UseData udSender;
 	public bool geniusActive;
 	public Image[] geniusHintsLH;

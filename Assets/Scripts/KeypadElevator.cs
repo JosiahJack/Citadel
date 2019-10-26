@@ -7,7 +7,7 @@ public class KeypadElevator : MonoBehaviour {
 	public DataTab dataTabResetter;
 	public GameObject elevatorControl;
 	public GameObject[] elevatorButtonHandlers;
-	public GameObject[] targetDestination;
+	[DTValidator.Optional] public GameObject[] targetDestination; // set by ElevatorKeypad.cs in Use(), which actually gets it from ElevatorButton.cs
 	public Door linkedDoor;
 	public bool[] buttonsEnabled;
 	public bool[] buttonsDarkened;

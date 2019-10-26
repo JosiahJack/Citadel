@@ -3,11 +3,11 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class KeypadKeycodeButtons : MonoBehaviour {
-	public KeypadKeycode keypad;
+	[HideInInspector] public KeypadKeycode keypad; // set externally by KeypadKeycode.cs's Use()
 	public KeycodeDigitImage digit1s;
 	public KeycodeDigitImage digit10s;
 	public KeycodeDigitImage digit100s;
-	public int keycode;
+	public int keycode; // set externally by KeypadKeycode.cs's Use()
 	public AudioClip SFX;
 	public AudioClip SFX_Incorrect;
 	public AudioClip SFX_Success;

@@ -8,7 +8,7 @@ public class GUIState : MonoBehaviour {
 	public enum ButtonType {Generic,GeneralInv,Patch,Grenade,Weapon,Search,None};
 	public ButtonType overButtonType = ButtonType.None;
 	public bool overButton;
-	public GameObject currentButton;
+	[HideInInspector] public GameObject currentButton;
 
 	void Awake() {
 		a = this;

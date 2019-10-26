@@ -210,7 +210,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
         if (inventoryMode == false) {
-			if (PauseScript.a != null && !PauseScript.a.paused) {
+			if (PauseScript.a != null && !PauseScript.a.Paused()) {
 				float dx = Input.GetAxisRaw("Mouse X");
 				float dy = Input.GetAxisRaw("Mouse Y");
 				yRotation += (dx * lookSensitivity);
@@ -229,7 +229,7 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		} else {
 			if (Input.GetButton("Yaw")) {
-				if (!PauseScript.a.paused) {
+				if (!PauseScript.a.Paused()) {
 					if  (Input.GetAxisRaw("Yaw") > 0) {
 						yRotation += keyboardTurnSpeed * lookSensitivity;
 						tempQuat = transform.rotation;
@@ -247,7 +247,7 @@ public class MouseLookScript : MonoBehaviour {
 			}
 			
 			if (Input.GetButton("Pitch")) {
-				if (!PauseScript.a.paused) {
+				if (!PauseScript.a.Paused()) {
 					if  (Input.GetAxisRaw("Pitch") > 0) {
 						xRotation += keyboardTurnSpeed * lookSensitivity;
 						transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
@@ -261,14 +261,14 @@ public class MouseLookScript : MonoBehaviour {
 
 		// Toggle inventory mode<->shoot mode
 		if (GetInput.a != null && PauseScript.a != null) {
-			if(GetInput.a.ToggleMode() && !PauseScript.a.paused) {
+			if(GetInput.a.ToggleMode() && !PauseScript.a.Paused()) {
 				ToggleInventoryMode();
 			}
 		}
 
 		// Frob/use if the cursor is not on the UI
 		if (!GUIState.a.isBlocking) {
-			if (!PauseScript.a.paused) {
+			if (!PauseScript.a.Paused()) {
 				currentButton = null;
 				if(GetInput.a.Use()) {
 					if (!holdingObject) {
@@ -363,7 +363,7 @@ public class MouseLookScript : MonoBehaviour {
 		} else {
 			//We are holding cursor over the GUI
 			if(GetInput.a.Use()) {
-				if (holdingObject && !PauseScript.a.paused) {
+				if (holdingObject && !PauseScript.a.Paused()) {
 					AddItemToInventory(heldObjectIndex);
 					ResetHeldItem();
 					ResetCursor();
@@ -376,7 +376,7 @@ public class MouseLookScript : MonoBehaviour {
                         // 2 PatchButton
                         // 3 GeneralInventoryButton
 						// 4 Search contents button
-						if (!PauseScript.a.paused) {
+						if (!PauseScript.a.Paused()) {
 							switch(GUIState.a.overButtonType) {
 								case GUIState.ButtonType.Weapon:
 									WeaponButton wepbut = currentButton.GetComponent<WeaponButton>();
@@ -1117,8 +1117,8 @@ public class MouseLookScript : MonoBehaviour {
 		firstTimePickup = false;
 	}
 
-	void DropHeldItem() {
-		heldObject = Const.a.useableItems[heldObjectIndex];
+	public void DropHeldItem() {
+		if (!grenadeActive) heldObject = Const.a.useableItems[heldObjectIndex]; // set by UseGrenade()
 		if (heldObject != null) {
 			GameObject tossObject = null;
 			bool freeObjectInPoolFound = false;
@@ -1127,41 +1127,54 @@ public class MouseLookScript : MonoBehaviour {
 				Const.sprint("BUG: Failed to find dynamicObjectContainer for level: " + LevelManager.a.currentLevel.ToString(),player);
 				return;
 			}
-			for (int i=0;i<levelDynamicContainer.transform.childCount;i++) {
-				Transform tr = levelDynamicContainer.transform.GetChild(i);
-				GameObject go = tr.gameObject;
-				UseableObjectUse reference = go.GetComponent<UseableObjectUse>();
-				if (reference != null) {
-					if (reference.useableItemIndex == heldObjectIndex && go.activeSelf == false) {
-						reference.customIndex = heldObjectCustomIndex;
-						tossObject = go;
-						freeObjectInPoolFound = true;
-						break;
+			// Fnd any free inactive objects within the level's Levelnumber.Dynamic container and activate those before instantiating
+			if (!grenadeActive) {
+				for (int i=0;i<levelDynamicContainer.transform.childCount;i++) {
+					Transform tr = levelDynamicContainer.transform.GetChild(i);
+					GameObject go = tr.gameObject;
+					UseableObjectUse reference = go.GetComponent<UseableObjectUse>();
+					if (reference != null) {
+						if (reference.useableItemIndex == heldObjectIndex && go.activeSelf == false) {
+							reference.customIndex = heldObjectCustomIndex;
+							tossObject = go;
+							freeObjectInPoolFound = true;
+							break;
+						}
 					}
 				}
-			}
 
-			if (freeObjectInPoolFound) {
-				tossObject.transform.position = (transform.position + (transform.forward * tossOffset));
+				if (freeObjectInPoolFound) {
+					tossObject.transform.position = (transform.position + (transform.forward * tossOffset));
+					if (tossObject == null) {
+						Const.sprint("BUG: Failed to get freeObjectInPool for object being dropped!",player);
+						return;
+					}
+				} else {
+					tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Quaternion.identity) as GameObject;  //effect
+					if (tossObject == null) {
+						Const.sprint("BUG: Failed to instantiate object being dropped!",player);
+						return;
+					}
+				}
+				if (tossObject.activeSelf != true) {
+					tossObject.SetActive(true);
+				}
+				tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+				tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce; // TODO modify velocity direction and tossForce when tossing in InventoryMode to use 2D cursor movement vector to 3D yaw and pitch and speed of cursor movement to force
+				tossObject.GetComponent<UseableObjectUse>().customIndex = heldObjectCustomIndex;
+				tossObject.GetComponent<UseableObjectUse>().ammo = heldObjectAmmo;
 			} else {
+				// Throw an active grenade
+				grenadeActive = false;
 				tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Quaternion.identity) as GameObject;  //effect
 				if (tossObject == null) {
 					Const.sprint("BUG: Failed to instantiate object being dropped!",player);
 					return;
 				}
-			}
-			if (tossObject.activeSelf != true) {
-				tossObject.SetActive(true);
-			}
-			tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-			tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
-			tossObject.GetComponent<UseableObjectUse>().customIndex = heldObjectCustomIndex;
-			tossObject.GetComponent<UseableObjectUse>().ammo = heldObjectAmmo;
-			if (grenadeActive) {
-				grenadeActive = false;
+				tossObject.transform.SetParent(levelDynamicContainer.transform,true);
 				GrenadeActivate ga = tossObject.GetComponent<GrenadeActivate>();
 				if (ga != null) {
-					ga.Activate(grenadeCurrent); // time to boom
+					ga.Activate(heldObjectIndex, grenadeCurrent); // time to boom
 				}
 				mouseCursor.liveGrenade = false;
 			}
@@ -1170,7 +1183,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 	}
 
-	void ResetHeldItem() {
+	public void ResetHeldItem() {
 		//yield return new WaitForSeconds(0.05f);
 		heldObjectIndex = -1;
 		heldObjectCustomIndex = -1;
@@ -1180,7 +1193,7 @@ public class MouseLookScript : MonoBehaviour {
 		mouseCursor.justDroppedItemInHelper = true;
 	}
 
-	void ResetCursor () {
+	public void ResetCursor () {
         if (mouseCursor != null) {
             cursorTexture = cursorDefaultTexture;
             mouseCursor.cursorImage = cursorTexture;
@@ -1256,7 +1269,7 @@ public class MouseLookScript : MonoBehaviour {
 			firstTimeSearch = false;
 			mfdManager.OpenTab (4, true, MFDManager.TabMSG.Search, -1,MFDManager.handedness.LeftHand);
 		}
-		MFDManager.a.SendSearchToDataTab(curSearchScript.objectName, numberFoundContents, resultContents, resultCustomIndex);
+		MFDManager.a.SendSearchToDataTab(curSearchScript.objectName, numberFoundContents, resultContents, resultCustomIndex,currentSearchItem.transform.position);
 		ForceInventoryMode();
 	}
 
@@ -1593,6 +1606,16 @@ public class MouseLookScript : MonoBehaviour {
 		mouseCursor.cursorImage = Const.a.useableItemsFrobIcons[index];
 		mouseCursor.liveGrenade = true;
 		grenadeActive = true;
+		
+		switch(index) {
+			case 7: heldObject = Const.a.useableItems[154]; break; // Frag
+			case 8: heldObject = Const.a.useableItems[150]; break; // Concussion
+			case 9: heldObject = Const.a.useableItems[152]; break; // EMP
+			case 10: heldObject = Const.a.useableItems[151]; break; // Earth Shaker
+			case 11: heldObject = Const.a.useableItems[156]; break; // Land Mine
+			case 12: heldObject = Const.a.useableItems[157]; break; // Nitropak
+			case 13: heldObject = Const.a.useableItems[155]; break; // Gas
+		}
 	}
 
 	void drawMyLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){

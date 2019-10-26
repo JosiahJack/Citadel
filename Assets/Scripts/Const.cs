@@ -15,19 +15,19 @@ public enum Handedness {Center,LH,RH};
 
 public class Const : MonoBehaviour {
 	//Item constants
-	[SerializeField] public QuestBits questData;
-	[SerializeField] public GameObject[] useableItems;
-	[SerializeField] public Texture2D[] useableItemsFrobIcons;
-    [SerializeField] public Sprite[] useableItemsIcons;
+	[SerializeField, DTValidator.Optional] public QuestBits questData;
+	[SerializeField, DTValidator.Optional] public GameObject[] useableItems;
+	[SerializeField, DTValidator.Optional] public Texture2D[] useableItemsFrobIcons;
+    [SerializeField, DTValidator.Optional] public Sprite[] useableItemsIcons;
     [SerializeField] public string[] useableItemsNameText;
-	[SerializeField] public Sprite[] searchItemIconSprites;
+	[SerializeField, DTValidator.Optional] public Sprite[] searchItemIconSprites;
 	[SerializeField] public string[] genericText;
 
 	//Audiolog constants
 	[SerializeField] public string[] audiologNames;
 	[SerializeField] public string[] audiologSenders;
 	[SerializeField] public string[] audiologSubjects;
-	[SerializeField] public AudioClip[] audioLogs;
+	[SerializeField, DTValidator.Optional] public AudioClip[] audioLogs;
 	[SerializeField] public int[] audioLogType;  // 0 = text only, 1 = normal, 2 = email, 3 = vmail
 	[SerializeField] public string[] audioLogSpeech2Text;
 	[SerializeField] public int[] audioLogLevelFound;
@@ -50,7 +50,7 @@ public class Const : MonoBehaviour {
 	[SerializeField] public int[] magazinePitchCountForWeapon;
 	[SerializeField] public int[] magazinePitchCountForWeapon2;
 	[SerializeField] public float[] recoilForWeapon;
-	public enum AttackType{None,Melee,EnergyBeam,Magnetic,Projectile,ProjectileEnergyBeam};
+	public enum AttackType{None,Melee,EnergyBeam,Magnetic,Projectile,ProjectileEnergyBeam,ProjectileLaunched};
 	[SerializeField] public AttackType[] attackTypeForWeapon;
 
 	//NPC constants
@@ -72,17 +72,17 @@ public class Const : MonoBehaviour {
 	[SerializeField] public float[] defenseForNPC;
 	[SerializeField] public float[] randomMinimumDamageModifierForNPC; // minimum value that NPC damage can be
 
-	[SerializeField] public HealthManager[] healthObjectsRegistration; // List of objects with health, used for fast application of damage in explosions
-	public GameObject[] levelChunks;
+	[SerializeField, DTValidator.Optional] public HealthManager[] healthObjectsRegistration; // List of objects with health, used for fast application of damage in explosions
+	[DTValidator.Optional] public GameObject[] levelChunks;
 
 	//System constants
 	public float doubleClickTime = 0.500f;
 	public float frobDistance = 5f;
-	public GameObject player1;
-	public GameObject player2;
-	public GameObject player3;
-	public GameObject player4;
-	public GameObject allPlayers;
+	[DTValidator.Optional] public GameObject player1;
+	[DTValidator.Optional] public GameObject player2;
+	[DTValidator.Optional] public GameObject player3;
+	[DTValidator.Optional] public GameObject player4;
+	[DTValidator.Optional] public GameObject allPlayers;
 	public float playerCameraOffsetY = 0.84f; //Vertical camera offset from player 0,0,0 position (mid-body)
 	public Color ssYellowText = new Color(0.8902f, 0.8745f, 0f); // Yellow, e.g. for current inventory text
 	public Color ssGreenText = new Color(0.3725f, 0.6549f, 0.1686f); // Green, e.g. for inventory text
@@ -109,16 +109,15 @@ public class Const : MonoBehaviour {
 	public float earthShDefaultTime = 10.0f;
 
 	//Pool references
-	public enum PoolType {SparqImpacts,CameraExplosions,ProjEnemShot2,Sec2BotRotMuzBursts,Sec2BotMuzBursts,
-						LaserLines,SparksSmall,BloodSpurtSmall,BloodSpurtSmallYellow,BloodSpurtSmallGreen,
-						SparksSmallBlue,LaserLinesHopper,HopperImpact,GrenadeFragExplosions,Vaporize,
-                        LaserLinesBlaster, LaserLinesIon, BlasterImpacts, IonImpacts, MagpulseShots, MagpulseImpacts,
-                        StungunShots, StungunImpacts, RailgunShots, RailgunImpacts,PlasmaShots, PlasmaImpacts};
+	public enum PoolType {None,SparqImpacts,CameraExplosions,ProjEnemShot2,LaserLines,SparksSmall,BloodSpurtSmall,
+						BloodSpurtSmallYellow,BloodSpurtSmallGreen,SparksSmallBlue,LaserLinesHopper,HopperImpact,
+						GrenadeFragExplosions,Vaporize,LaserLinesBlaster, LaserLinesIon, BlasterImpacts, IonImpacts,
+						MagpulseShots, MagpulseImpacts,StungunShots, StungunImpacts, RailgunShots, RailgunImpacts,
+						PlasmaShots, PlasmaImpacts, ProjEnemShot6,ProjEnemShot6Impacts, ProjEnemShot2Impacts,
+						ProjSeedPods, ProjSeedPodsImpacts, TempAudioSources,GrenadeEMPExplosions};
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
 	public GameObject Pool_ProjectilesEnemShot2;
-	public GameObject Pool_Sec2BotRotaryMuzzleBursts;
-	public GameObject Pool_Sec2BotMuzzleBursts;
 	public GameObject Pool_LaserLines;
 	public GameObject Pool_BloodSpurtSmall;
 	public GameObject Pool_SparksSmall;
@@ -141,6 +140,13 @@ public class Const : MonoBehaviour {
     public GameObject Pool_RailgunImpacts;
     public GameObject Pool_PlasmaShots;
     public GameObject Pool_PlasmaImpacts;
+	public GameObject Pool_ProjEnemShot6;
+	public GameObject Pool_ProjEnemShot6Impacts;
+	public GameObject Pool_ProjEnemShot2Impacts;
+	public GameObject Pool_ProjSeedPods;
+	public GameObject Pool_ProjSeedPodsImpacts;
+	public GameObject Pool_TempAudioSources;
+	public GameObject Pool_GrenadeEMPExplosions;
 
 	//Global object references
 	public GameObject statusBar;
@@ -180,7 +186,6 @@ public class Const : MonoBehaviour {
     public enum aiMoveType {Walk,Fly,Swim,Cyber,None};
     public Font mainFont1;
 	public Font mainFont2;
-	public Font mainFont3;
 
 	//Instance container variable
 	public static Const a;
@@ -227,7 +232,6 @@ public class Const : MonoBehaviour {
 		questData = new QuestBits ();
 		if (mainFont1 != null) mainFont1.material.mainTexture.filterMode = FilterMode.Point;
 		if (mainFont2 != null) mainFont2.material.mainTexture.filterMode = FilterMode.Point;
-		if (mainFont3 != null) mainFont3.material.mainTexture.filterMode = FilterMode.Point;
 	}
 
 	private void LoadConfig() {
@@ -460,6 +464,8 @@ public class Const : MonoBehaviour {
 	}
 
 	public GameObject GetObjectFromPool(PoolType pool) {
+		if (pool == PoolType.None) return null; //do nothing, no pool requested
+
 		GameObject poolContainer = Pool_SparksSmall;
 		string poolName = " ";
 
@@ -479,14 +485,6 @@ public class Const : MonoBehaviour {
 		case PoolType.ProjEnemShot2:
 			poolContainer = Pool_ProjectilesEnemShot2;
 			poolName = "ProjectilesEnemShot2 ";
-			break;
-		case PoolType.Sec2BotRotMuzBursts:
-			poolContainer = Pool_Sec2BotRotaryMuzzleBursts;
-			poolName = "Sec2BotRotaryMuzzleBursts ";
-			break;
-		case PoolType.Sec2BotMuzBursts:
-			poolContainer = Pool_Sec2BotMuzzleBursts;
-			poolName = "Sec2BotMuzzleBursts ";
 			break;
 		case PoolType.LaserLines:
 			poolContainer = Pool_LaserLines;
@@ -572,6 +570,34 @@ public class Const : MonoBehaviour {
             poolContainer = Pool_PlasmaImpacts;
             poolName = "PlasmaImpacts ";
             break;
+        case PoolType.ProjEnemShot6:
+            poolContainer = Pool_ProjEnemShot6;
+            poolName = "ProjEnemShot6 ";
+            break;
+		case PoolType.ProjEnemShot6Impacts:
+            poolContainer = Pool_ProjEnemShot6Impacts;
+            poolName = "ProjEnemShot6Impacts ";
+            break;
+		case PoolType.ProjEnemShot2Impacts:
+            poolContainer = Pool_ProjEnemShot2Impacts;
+            poolName = "ProjEnemShot2Impacts ";
+            break;
+		case PoolType.ProjSeedPods:
+            poolContainer = Pool_ProjSeedPods;
+            poolName = "ProjSeedPods ";
+            break;
+		case PoolType.ProjSeedPodsImpacts:
+            poolContainer = Pool_ProjSeedPodsImpacts;
+            poolName = "ProjSeedPodsImpacts ";
+            break;
+		case PoolType.TempAudioSources:
+            poolContainer = Pool_TempAudioSources;
+            poolName = "TempAudioSources ";
+            break;
+		case PoolType.GrenadeEMPExplosions:
+            poolContainer = Pool_GrenadeEMPExplosions;
+            poolName = "GrenadeEMPExplosions ";
+            break;
         }
 
 		if (poolContainer == null) {
@@ -587,6 +613,27 @@ public class Const : MonoBehaviour {
 		}
 
 		return null;
+	}
+
+	// Give it a pool for a projectile, get the impact effect pool
+	public PoolType GetPoolImpactFromPoolProjectileType(PoolType pool) {
+		if (pool == PoolType.None) return PoolType.None; //do nothing, no impact effect for no object
+
+		switch (pool) {
+		case PoolType.ProjEnemShot2: return PoolType.ProjEnemShot2Impacts;
+		case PoolType.LaserLines: return PoolType.SparqImpacts;
+		case PoolType.LaserLinesHopper: return PoolType.HopperImpact;
+        case PoolType.LaserLinesBlaster: return PoolType.BlasterImpacts;
+        case PoolType.LaserLinesIon: return PoolType.IonImpacts;
+        case PoolType.MagpulseShots: return PoolType.MagpulseImpacts;
+        case PoolType.StungunShots: return PoolType.StungunImpacts;
+        case PoolType.RailgunShots: return PoolType.RailgunImpacts;
+        case PoolType.PlasmaShots: return PoolType.PlasmaImpacts;
+        case PoolType.ProjEnemShot6: return PoolType.ProjEnemShot6Impacts;
+		case PoolType.ProjSeedPods: return PoolType.ProjSeedPodsImpacts;
+        }
+
+		return PoolType.None;
 	}
 
 	// ========================DAMAGE SYSTEM===========================

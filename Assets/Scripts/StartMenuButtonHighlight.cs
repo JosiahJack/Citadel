@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class StartMenuButtonHighlight : MonoBehaviour {
-	public MenuArrowKeyControls pageController;
+	[DTValidator.Optional] public MenuArrowKeyControls pageController; //not used on sub-buttons within the start menu page for new game difficulty settings
 	public int menuItemIndex;
 	public Text text;
 	public Shadow textshadow;
@@ -24,11 +24,11 @@ public class StartMenuButtonHighlight : MonoBehaviour {
 
 	public void CursorHighlight () {
 		Highlight();
-		pageController.SetIndex(menuItemIndex);
+		if (pageController != null) pageController.SetIndex(menuItemIndex);
 	}
 
 	public void CursorDeHighlight () {
 		DeHighlight();
-		pageController.currentIndex = 0;
+		if (pageController != null) pageController.currentIndex = 0;
 	}
 }

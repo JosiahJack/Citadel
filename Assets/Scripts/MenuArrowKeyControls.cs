@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class MenuArrowKeyControls : MonoBehaviour {
 	public int currentIndex;
 	public GameObject[] menuItems;
-	public GameObject[] menuSubItems;
+	[DTValidator.Optional] public GameObject[] menuSubItems;
 
 	void Awake () {
 		currentIndex = 0;

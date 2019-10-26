@@ -151,7 +151,7 @@ public class NPC_Hopper : MonoBehaviour {
 	}
 
 	void Update () {
-		if (PauseScript.a != null && PauseScript.a.paused) {
+		if (PauseScript.a != null && PauseScript.a.Paused()) {
 			return; // don't do any checks or anything else...we're paused!
 		}
 
@@ -402,6 +402,7 @@ public class NPC_Hopper : MonoBehaviour {
 					damageData.hit = tempHit;
 					damageData.attacknormal = Vector3.Normalize (firePoint.transform.position - fireEndPoint);
 					damageData.damage = Const.a.damagePerHitForWeapon [14];
+					damageData.damage = Const.a.GetDamageTakeAmount(damageData); //Added this line since the damage amount wasn't getting parsed by GetDamageTakeAmount to account for damages properly
 					tempHit.transform.gameObject.SendMessage ("TakeDamage", damageData, SendMessageOptions.DontRequireReceiver);
 					GameObject lasertracer = Const.a.GetObjectFromPool (Const.PoolType.LaserLinesHopper);
 					targetEndHelper.transform.position = tempHit.point;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class HealthManager : MonoBehaviour {
+	public bool isPlayer = false;
 	public float health = -1f; // current health
 	public float maxhealth; // maximum health
 	public float gibhealth; // point at which we splatter
@@ -16,13 +17,16 @@ public class HealthManager : MonoBehaviour {
 	public GameObject[] gibObjects;
 	public int index;
 	public int securityAmount;
-	public GameObject attacker;
+	[HideInInspector] public GameObject attacker;
 	public Const.PoolType deathFX;
 	public enum BloodType {None,Red,Yellow,Green,Robot};
 	public BloodType bloodType;
 	public GameObject[] targetOnDeath;
-	public AudioClip backupDeathSound;
+	[DTValidator.Optional] public AudioClip backupDeathSound;
     public bool debugMessages = false;
+	public HardwareInvCurrent hic;
+	public HardwareInventory hinv;
+	public PlayerHealth ph;
 
 	private bool initialized = false;
 	private bool deathDone = false;
@@ -34,6 +38,7 @@ public class HealthManager : MonoBehaviour {
 	private CapsuleCollider capCol;
     private Vector3 tempVec;
     private float tempFloat;
+	private float take;
 
 	void Awake () {
 		initialized = false;
@@ -43,8 +48,19 @@ public class HealthManager : MonoBehaviour {
 		boxCol = GetComponent<BoxCollider>();
 		sphereCol = GetComponent<SphereCollider>();
 		capCol = GetComponent<CapsuleCollider>();
-		if (maxhealth < 1) maxhealth = health;
+        attacker = null;
+		//searchItems = GetComponent<SearchableItem>();
 
+		if (isPlayer) {
+			if (hic == null) Debug.Log("BUG: No HardwareInvCurrent script referenced by a Player's HealthManager");
+			if (hinv == null) Debug.Log("BUG: No HardwareInventory script referenced by a Player's HealthManager");
+			if (ph == null) Debug.Log("BUG: No PlayerHealth script referenced by a Player's HealthManager");
+		}
+		take = 0;
+	}
+
+	// Put into Start instead of Awake to give Const time to populate from enemy_tables.txt
+	void Start () {
 		if (isNPC) {
 			aic = GetComponent<AIController>();
 			if (aic == null) {
@@ -52,15 +68,15 @@ public class HealthManager : MonoBehaviour {
 				return;
 			}
             index = aic.index;
-
+			if (health <= 0) health = Const.a.healthForNPC[index]; //leaves possibility of setting health lower than normal, for instance the cortex reaver on level 5
+			if (maxhealth <= 0) maxhealth = Const.a.healthForNPC[index]; // set maxhealth to default healthForNPC, possible to set higher, e.g. for cyborg assassins on level 9 whose health is 3 times normal
             // TODO: Uncomment this for final game
             //if (Const.a.difficultyCombat == 0) {
             //	maxhealth = 1;
             //	health = maxhealth;
             //}
         }
-        attacker = null;
-		//searchItems = GetComponent<SearchableItem>();
+		if (maxhealth < 1) maxhealth = health;
 	}
 
 	void Update () {
@@ -72,16 +88,69 @@ public class HealthManager : MonoBehaviour {
 		if (health > maxhealth) health = maxhealth; // Don't go past max.  Ever.
 	}
 
+
 	public void TakeDamage(DamageData dd) {
 		if (health <= 0) return;
-        tempFloat = health;
-		health -= dd.damage;
-        if (debugMessages) Const.sprint("Health before: " + tempFloat.ToString() + "| Health after: " + health.ToString(), Const.a.allPlayers);
+		if (dd.damage <= 0) return;
 
-        if (aic != null) aic.goIntoPain = true;
+		take = dd.damage;
+        tempFloat = health;
+		if (isPlayer) {
+			// Check if player shield is active
+
+			if (hic.hardwareIsActive[5] && hinv.hasHardware[5]) {
+				// Versions of shield protect against 20, 40, 75, 75%'s
+				// Versions of shield thressholds are 0, 10, 15, 30...ooh what's this hang on now...Huh, turns out it absorbs all damage below the thresshold!  Cool!
+				// TODO put this in Const and reference it to a table text file in StreamingAssets you dope
+				float absorb = 0;
+				float thresh = 0;
+				switch(hinv.hardwareVersion[5]) {
+					case 0: absorb = 0.2f;
+							thresh = 0;
+							break;
+					case 1: absorb = 0.4f;
+							thresh = 10f;
+							break;
+					case 2: absorb = 0.75f;
+							thresh = 15f;
+							break;
+					case 3: absorb = 0.75f;
+							thresh = 30f;
+							break;
+				}
+				if (take < thresh) {
+					absorb = 1f; // ah yeah! absorb. it. all.
+				}
+				if (absorb > 0) {
+					if (absorb < 1f) absorb = absorb + UnityEngine.Random.Range(-0.08f,0.08f); // +/- 8% variation - this was in the original I swear!  You could theoretically have 83% shielding max.
+					take *= (1f-absorb); // shield doing it's thing
+					//TODO // Activate shield screen effect to indicate damage was absorbed, effect intensity determined by absorb amount
+					//TODO // Play shield absorb sound
+					Const.sprint("Shield absorbs " + absorb.ToString() + "% damage.",dd.other);
+				}
+			}
+			if (take > 0) {
+				ph.PlayerNoise.PlayOneShot(ph.PainSFXClip); // Play player pain noise
+			}
+		}
+
+		// Do the damage, that's right do. your. worst!
+		health -= take; //was directly dd.damage but changed since we are check for extra things in case GetDamageTakeAmount wasn't called on dd.damage beforehand (e.g. player fall damage, internal to player only, need to protect against shield, etc, JJ 9/5/19)
+        if (debugMessages) Const.sprint("Health before: " + tempFloat.ToString() + "| Health after: " + health.ToString(), Const.a.allPlayers);
 		attacker = dd.owner;
+		
+        if (aic != null && isNPC) {
+			aic.goIntoPain = true;
+			aic.SendEnemy(attacker);
+		}
+
 		if (applyImpact && rbody != null) {
-			rbody.AddForce(dd.impactVelocity*dd.attacknormal,ForceMode.Impulse);
+			if (dd.impactVelocity <= 0) {
+				rbody.AddForceAtPosition((dd.attacknormal*dd.damage),dd.hit.point);
+			} else {
+				//rbody.AddForce(dd.impactVelocity*dd.attacknormal,ForceMode.Impulse); // Old, JJ changed 9/5/19 to AddForceAtPosition since it's more accurate when shooting objects
+				rbody.AddForceAtPosition((dd.attacknormal*dd.impactVelocity),dd.hit.point);
+			}
 		}
 
         if (health <= 0f) {
@@ -105,16 +174,22 @@ public class HealthManager : MonoBehaviour {
                     GameObject explosionEffect = Const.a.GetObjectFromPool(Const.PoolType.Vaporize);
                     if (explosionEffect != null) {
                         explosionEffect.SetActive(true);
-                        tempVec = transform.position;
-                        tempVec.y += aic.verticalViewOffset;
+						if (aic != null) {
+							tempVec = aic.sightPoint.transform.position;
+						} else {
+							tempVec = transform.position;
+						}
                         explosionEffect.transform.position = tempVec; // put vaporization effect at raycast center
                     }
                 }
             }
 		}
+
 	}
 
 	public void NPCDeath (AudioClip deathSound) {
+		if (deathDone) return;
+
 		deathDone = true;
 		switch (index) {
 		case 0:
@@ -128,22 +203,25 @@ public class HealthManager : MonoBehaviour {
 			if (explosionEffect != null) {
 				explosionEffect.SetActive(true);
 				explosionEffect.transform.position = transform.position;
-				// TODO: Do I need more than one temporary audio entity for this sort of thing?
 				if (deathSound != null) {
-					GameObject tempAud = GameObject.Find ("TemporaryAudio");
-					tempAud.transform.position = transform.position;
-					AudioSource aS = tempAud.GetComponent<AudioSource> ();
-					aS.PlayOneShot (deathSound);
+					//GameObject tempAud = GameObject.Find ("TemporaryAudio");
+					GameObject tempAud = Const.a.GetObjectFromPool(Const.PoolType.TempAudioSources);
+					if (tempAud != null && deathSound != null) {
+						tempAud.transform.position = transform.position;
+						AudioSource aS = tempAud.GetComponent<AudioSource> ();
+						if (aS != null && deathSound != null) aS.PlayOneShot (deathSound);
+					}
 				} else {
-					GameObject tempAud = GameObject.Find ("TemporaryAudio");
-					tempAud.transform.position = transform.position;
-					AudioSource aS = tempAud.GetComponent<AudioSource> ();
-					aS.PlayOneShot (backupDeathSound);
+					//GameObject tempAud = GameObject.Find ("TemporaryAudio");
+					GameObject tempAud = Const.a.GetObjectFromPool(Const.PoolType.TempAudioSources);
+					if (tempAud != null && deathSound != null) {
+						tempAud.transform.position = transform.position;
+						AudioSource aS = tempAud.GetComponent<AudioSource> ();
+						if (aS != null && deathSound != null) aS.PlayOneShot (backupDeathSound);
+					}
 				}
 			}
 		}
-		
-        //if (gibOnDeath) Gib();
 	}
 
     public void Gib() {
@@ -151,13 +229,14 @@ public class HealthManager : MonoBehaviour {
 			if (gibObjects[0] != null) {
 				for (int i = 0; i < gibObjects.Length; i++) {
 					gibObjects[i].SetActive(true); // turn on all the gibs to fall apart
-					//TODO: add force to gibs?
 				}
 			}
 		}
     }
 
 	public void ObjectDeath(AudioClip deathSound) {
+		if (deathDone) return;
+
 		deathDone = true;
 
 		// Disable collision
@@ -175,12 +254,14 @@ public class HealthManager : MonoBehaviour {
 			if (explosionEffect != null) {
 				explosionEffect.SetActive(true);
 				explosionEffect.transform.position = transform.position;
-				// TODO: Do I need more than one temporary audio entity for this sort of thing?
 				if (deathSound != null) {
-					GameObject tempAud = GameObject.Find("TemporaryAudio");
-					tempAud.transform.position = transform.position;
-					AudioSource aS = tempAud.GetComponent<AudioSource>();
-					aS.PlayOneShot(deathSound);
+					//GameObject tempAud = GameObject.Find("TemporaryAudio");
+					GameObject tempAud = Const.a.GetObjectFromPool(Const.PoolType.TempAudioSources);
+					if (tempAud != null) {
+						tempAud.transform.position = transform.position;
+						AudioSource aS = tempAud.GetComponent<AudioSource>();
+						if (aS != null) aS.PlayOneShot(deathSound);
+					}
 				}
 
 			}

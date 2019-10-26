@@ -7,6 +7,7 @@ public class ChargeStation : MonoBehaviour {
 	public bool requireReset;
 	public float minSecurityLevel = 0;
 	private float nextthink;
+	// private float maxResetTime = 10f;
 	
 	void Awake () {
 		nextthink = Time.time;

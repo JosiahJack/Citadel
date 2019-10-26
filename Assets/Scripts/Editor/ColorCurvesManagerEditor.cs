@@ -77,6 +77,7 @@ class ColorCurvesManagerEditor : Editor
 		EditorGUILayout.PropertyField (animationCurve, new GUIContent (name));
 	}
 
+/* Giving EndLayoutGroup, BeginLayoutGroup must be called first error?
 	public override void OnInspectorGUI ()
 	{
 		serObj.Update ();
@@ -143,4 +144,5 @@ class ColorCurvesManagerEditor : Editor
 		else
 			serObj.ApplyModifiedProperties ();
 	}
+*/
 }

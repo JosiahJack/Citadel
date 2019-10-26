@@ -81,9 +81,10 @@ public class ColorCurvesManager : MonoBehaviour
 		PairCurvesKeyframes();
 	}
 
+
 	void Update()
 	{ 
-		UpdateScript();
+		//UpdateScript();
 	}
 
 	

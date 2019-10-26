@@ -137,6 +137,7 @@ public class PlayerMovement : MonoBehaviour {
 		leanLeftDoubleFinished = Time.time;
 		leanRightDoubleFinished = Time.time;
 		jumpLandSoundFinished = Time.time;
+		justJumped = false;
 		leanLHFirstPressed = false;
 		leanRHFirstPressed = false;
 		leanLHReset = false;
@@ -172,7 +173,7 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		if (mainMenu.activeSelf == true) return;  // ignore movement when main menu is still up
-		if (!PauseScript.a.paused) {
+		if (!PauseScript.a.Paused()) {
 			rbody.WakeUp();
 
 			if (inCyberSpace && !cyberSetup) {
@@ -430,7 +431,7 @@ public class PlayerMovement : MonoBehaviour {
 			return;
 		}
 
-		if (!PauseScript.a.paused) {
+		if (!PauseScript.a.Paused()) {
             if (CheatNoclip) grounded = true;
 			// Crouch
 			LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));
@@ -670,7 +671,7 @@ public class PlayerMovement : MonoBehaviour {
 				}
 
 				// Get input for Jump and set impulse time, removed "&& (ladderState == false)" since I want to be able to jump off a ladder
-				if (!inCyberSpace && (GetInput.a.Jump() && !consoleActivated) && !CheatNoclip) {
+				if (!inCyberSpace && (GetInput.a.Jump() && !consoleActivated) && !CheatNoclip && !justJumped) {
 					if (grounded || gravliftState || (hwc.hardwareIsActive[10])) {
 						jumpTime = jumpImpulseTime;
 						justJumped = true;
@@ -691,9 +692,16 @@ public class PlayerMovement : MonoBehaviour {
 					}
 				}
 
+				//if (jumpTime < 0) justJumped = false; // just in case 
+
 				if (justJumped && !(hwc.hardwareIsActive[10])) {
 					// Play jump sound
-					PlayerNoise.PlayOneShot(SFXJump);
+					if (fatigue > 80) {
+						// quiet, we are tired
+						PlayerNoise.PlayOneShot(SFXJump,0.5f);
+					} else {
+						PlayerNoise.PlayOneShot(SFXJump);
+					}
 					justJumped = false;
 					fatigue += jumpFatigue;
 					if (staminupActive)
@@ -703,11 +711,11 @@ public class PlayerMovement : MonoBehaviour {
 				// Handle fall damage (no impact damage in cyber space 5/5/18, JJ)
 				if (Mathf.Abs ((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed && !inCyberSpace && !CheatNoclip) {
 					DamageData dd = new DamageData ();
-					dd.damage = fallDamage;
+					dd.damage = fallDamage; // No neead for GetDamageTakeAmount since this is strictly internal to Player
 					dd.attackType = Const.AttackType.None;
 					dd.offense = 0f;
 					dd.isOtherNPC = false;
-					GetComponent<PlayerHealth> ().TakeDamage (dd);
+					GetComponent<HealthManager>().TakeDamage (dd);  // was previously referring to the no longer used TakeDamage within PlayerHealth.cs
 				}
 				oldVelocity = rbody.velocity;
 
@@ -736,7 +744,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	// Sets grounded based on normal angle of the impact point (NOTE: This is not the surface normal!)
 	void OnCollisionStay (Collision collision  ){
-		if (!PauseScript.a.paused && !inCyberSpace) {
+		if (!PauseScript.a.Paused() && !inCyberSpace) {
 			foreach(ContactPoint contact in collision.contacts) {
 				if (Vector3.Angle(contact.normal,Vector3.up) < maxSlope) {
 					grounded = true;
@@ -747,7 +755,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	// Reset grounded to false when player is mid-air
 	void OnCollisionExit (){
-		if (!PauseScript.a.paused) {
+		if (!PauseScript.a.Paused()) {
 			// Automatically set grounded to false to prevent ability to climb any wall (Cheat!)
 			if (CheatWallSticky == true) {
 				grounded = false;

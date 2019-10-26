@@ -51,7 +51,7 @@ public class PauseScript : MonoBehaviour {
 			PauseEnable();
 	}
 
-	void PauseEnable() {
+	public void PauseEnable() {
 		previousInvMode = mouselookScript.inventoryMode;
 		if (mouselookScript.inventoryMode == false) {
 			mouselookScript.ToggleInventoryMode();
@@ -134,5 +134,13 @@ public class PauseScript : MonoBehaviour {
 		}
 		mainMenu.SetActive(true);
 		mainMenu.GetComponent<MainMenuHandler>().GoToOptionsSubmenu(true);
+	}
+
+	public bool Paused() {
+		if (paused || mainMenu.activeSelf == true) {
+			return true;
+		}
+
+		return false;
 	}
 }

@@ -1,12 +1,11 @@
 using System;
 using UnityEngine;
 
-namespace UnityStandardAssets.ImageEffects
-{
+namespace UnityStandardAssets.ImageEffects {
     [ExecuteInEditMode]
     [AddComponentMenu("Image Effects/Color Adjustments/Grayscale")]
     public class Grayscale : ImageEffectBase {
-        public Texture  textureRamp;
+        [DTValidator.Optional] public Texture  textureRamp;
         public float    rampOffset;
 
         // Called by camera to apply image effect

@@ -25,7 +25,6 @@ public class MFDManager : MonoBehaviour  {
 	public enum TabMSG {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,WirePuzzle,EReader};
 	public static MFDManager a;
 	public MouseLookScript playerMLook;
-
 	private bool isRH;
 
 	// External to gameObject, assigned in Inspector
@@ -121,16 +120,16 @@ public class MFDManager : MonoBehaviour  {
 		if (itemTabLH != null) itemTabLH.SendItemDataToItemTab(index);
 	}
 
-	public void SendSearchToDataTab (string name, int contentCount, int[] resultContents, int[] resultsIndices) {
+	public void SendSearchToDataTab (string name, int contentCount, int[] resultContents, int[] resultsIndices, Vector3 searchPosition) {
 		// Enable search box scaling effect
 		if (lastSearchSideRH) {
 			dataTabRH.Reset();
-			dataTabRH.Search(name,contentCount,resultContents,resultsIndices);
+			dataTabRH.Search(name,contentCount,resultContents,resultsIndices,searchPosition);
 			OpenTab(4,true,TabMSG.Search,0,handedness.RightHand);
 			SearchFXRH.SetActive(true);
 		} else {
 			dataTabLH.Reset();
-			dataTabLH.Search(name,contentCount,resultContents,resultsIndices);
+			dataTabLH.Search(name,contentCount,resultContents,resultsIndices,searchPosition);
 			OpenTab(4,true,TabMSG.Search,0,handedness.LeftHand);
 			SearchFXLH.SetActive(true);
 		}
@@ -235,5 +234,13 @@ public class MFDManager : MonoBehaviour  {
 	public void UpdateHUDAmmoCounts(int amount) {
 		if (wepmagCounterLH != null) wepmagCounterLH.UpdateDigits(amount);
 		if (wepmagCounterRH != null) wepmagCounterRH.UpdateDigits(amount);
+	}
+
+	public void ReturnToLastTab(bool isRightHand) {
+		if (isRightHand) {
+			rightTC.ReturnToLastTab();
+		} else {
+			leftTC.ReturnToLastTab();
+		}
 	}
 }

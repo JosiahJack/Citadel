@@ -8,7 +8,6 @@ public class DamageData {
 	public GameObject ownersCamera;
 	public WeaponFire ownersWeaponFireScript;
 	public Const.AttackType attackType;
-	public bool isOtherNPC;
 	public bool isFullAuto;
 	public float damage;
 	public float delayBetweenShots;
@@ -29,6 +28,7 @@ public class DamageData {
 	public RaycastHit hit;
 	public Vector3 attacknormal;
 	public float impactVelocity;
+	public bool isOtherNPC;
 
 	public void ResetDamageData (DamageData damageData) {
 		damageData.owner = null;

@@ -34,6 +34,10 @@ public class AIMeleeDamageCollider : MonoBehaviour {
 		if (other == null) return;
 
         if (other.tag == "Player" || other.tag == "NPC") {
+			if (ownerAIC == null) {
+				Debug.Log("BUG: AIMeleeDamageCollider is on but doesn't have an AIC assigned!");
+				return;
+			}
             if (ownerAIC.meleeDamageFinished < Time.time) {
                 ownerAIC.meleeDamageFinished = Time.time + ownerAIC.timeTillActualAttack1;
                 //Debug.Log("aimelee collider collided!");

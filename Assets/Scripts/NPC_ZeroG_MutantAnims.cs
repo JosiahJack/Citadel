@@ -1,0 +1,59 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class NPC_ZeroG_MutantAnims : MonoBehaviour {
+	public GameObject[] frames;
+	public int startFrame = 0;
+	private int currentFrame;
+	private float tickFinished;
+	public float tickTime = 0.04166f; // 24fps default
+	public bool endOnLastFrame = false;
+
+	void Awake() {
+		tickFinished = Time.time;
+		ResetFrames(); // turn off all frames just in case I left one on in the editor
+		if (endOnLastFrame && startFrame == (frames.Length-1)) {
+			frames[startFrame].SetActive(true);
+		}
+		currentFrame = startFrame;
+		if (currentFrame > frames.Length) {
+			currentFrame = frames.Length;
+		}
+	}
+
+	void ResetFrames() {
+		for (int i=0;i<frames.Length;i++) {
+			frames[i].SetActive(false);
+		}
+	}
+
+    void Update() {
+		// only update model frames every tick seconds and only if we aren't on the last frame if we need to stop there
+		if (endOnLastFrame && currentFrame == (frames.Length-1)) return;
+
+        if (tickFinished < Time.time) {
+			if (frames.Length < 1) return;
+
+			if (currentFrame > (frames.Length-1)) {
+				currentFrame = 0; // wrap around
+			}
+			if (currentFrame < 0) currentFrame = 0;
+
+			if (frames[currentFrame] != null) frames[currentFrame].SetActive(false); //disable this frame
+
+			// Increment frame more than 1 if it's been more time elapsed than 2 frames worth
+			if ((tickFinished - Time.time) > (tickTime * 2f)) {
+				currentFrame += (int) (Mathf.Ceil((tickFinished - Time.time)/tickTime)); // increment by however many frames we skipped, e.g. slower than 24fps
+			} else {
+				currentFrame++; // only been one frame time, increment by 1
+			}
+
+			if (currentFrame > (frames.Length-1)) {
+				currentFrame = 0; // wrap around
+			}
+			if (frames[currentFrame] != null) frames[currentFrame].SetActive(true); //enable next frame
+			tickFinished = Time.time + tickTime;
+		}
+    }
+}

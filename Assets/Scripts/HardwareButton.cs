@@ -22,15 +22,15 @@ public class HardwareButton : MonoBehaviour {
 	private Button butn;
 	private float defaultZero = 0f;
 	private float brightness = 0f;
-	public GameObject sensaroundCenter;
-	public GameObject sensaroundLH;
-	public GameObject sensaroundRH;
-	public GameObject sensaroundCenterCamera;
-	public GameObject sensaroundLHCamera;
-	public GameObject sensaroundRHCamera;
-	public Light infraredLight;
-	public GameObject playerCamera;
-	public HeadMountedLantern hml;
+	[DTValidator.Optional] public GameObject sensaroundCenter; // Added DTValidator.Optional on these since this common script is used on all hardware buttons and only the sensaround button needs these for example
+	[DTValidator.Optional] public GameObject sensaroundLH;
+	[DTValidator.Optional] public GameObject sensaroundRH;
+	[DTValidator.Optional] public GameObject sensaroundCenterCamera;
+	[DTValidator.Optional] public GameObject sensaroundLHCamera;
+	[DTValidator.Optional] public GameObject sensaroundRHCamera;
+	[DTValidator.Optional] public Light infraredLight;
+	[DTValidator.Optional] public GameObject playerCamera; // Added DTValidator.Optional since this is only needed for Infrared button to toggle Grayscale
+	[DTValidator.Optional] public HeadMountedLantern hml;
 
 	void Awake () {
 		butn = GetComponent<Button>();

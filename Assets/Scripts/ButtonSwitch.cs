@@ -8,6 +8,7 @@ public class ButtonSwitch : MonoBehaviour {
 	public GameObject target2;
 	public GameObject target3;
 	public string message;
+	public int messageIndex;
 	public float delay = 0f;
 	public Material mainSwitchMaterial;
 	public Material alternateSwitchMaterial;

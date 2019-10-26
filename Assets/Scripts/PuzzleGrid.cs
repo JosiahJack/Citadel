@@ -47,7 +47,7 @@ public class PuzzleGrid : MonoBehaviour {
 	private bool[] grid;
 	private AudioSource audsource;
 	private UseData udSender;
-	private GameObject[] targets;
+	[DTValidator.Optional] private GameObject[] targets;
 
 	void Awake () {
 		puzzleSolved = false;

@@ -53,6 +53,7 @@ public class Door : MonoBehaviour {
 	private string closeClipName = "DoorClose";
 	private GameObject dynamicObjectsContainer;
 	private int i = 0;
+	private UnityEngine.AI.NavMeshObstacle nmo;
 
 	void Start () {
 		anim = GetComponent<Animator>();
@@ -66,6 +67,9 @@ public class Door : MonoBehaviour {
 		
 		SFX = GetComponent<AudioSource>();
 		useFinished = Time.time;
+		nmo = GetComponent<UnityEngine.AI.NavMeshObstacle>();
+		if (nmo == null) Const.sprint("BUG: Missing NavMeshObstacle on Door at " + transform.position.ToString(),Const.a.allPlayers);
+		if (nmo != null) nmo.carving = true; // creates a "hole" in the NavMesh forcing enemies to find an alternate route
 	}
 
 	public void Use (UseData ud) {
@@ -174,10 +178,10 @@ public class Door : MonoBehaviour {
 			anim.speed = speedZero;
 		}
 			
-		if (blocked || (PauseScript.a != null && PauseScript.a.paused)) {
+		if (blocked || (PauseScript.a != null && PauseScript.a.Paused())) {
 			Blocked();
 		} else {
-			if (PauseScript.a != null && !PauseScript.a.paused) {
+			if (PauseScript.a != null && !PauseScript.a.Paused()) {
 				Unblocked();
 			}
 		}
@@ -203,6 +207,12 @@ public class Door : MonoBehaviour {
 			for (int i=defIndex;i<laserLines.Length;i++) {
 				laserLines[i].SetActive(true);
 			}
+		}
+
+		if (doorOpen == doorState.Open) {
+			nmo.enabled = false; // clear path, door is open
+		} else {
+			nmo.enabled = true; // door is not opened fully, treat as a closed path
 		}
 	}
 

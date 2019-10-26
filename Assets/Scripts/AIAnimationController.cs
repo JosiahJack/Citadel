@@ -11,6 +11,7 @@ public class AIAnimationController : MonoBehaviour {
 	public AIController aic;
 	private bool dying;
 	private bool dead;
+	public bool useDeadAnimForDeath = false;
 
 	void Awake () {
 		anim = GetComponent<Animator>();
@@ -20,7 +21,7 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Update () {
-		if (PauseScript.a != null && PauseScript.a.paused) {
+		if (PauseScript.a != null && PauseScript.a.Paused()) {
 			anim.speed = 0;
 			return;
 		} else {
@@ -91,7 +92,11 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Dead () {
-		anim.Play("Death");
+		if (useDeadAnimForDeath) {
+			anim.Play("Dead");
+		} else {
+			anim.Play("Death");
+		}
 		anim.speed = 0f;
 	}
 

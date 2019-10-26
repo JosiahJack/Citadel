@@ -76,6 +76,7 @@ public class WeaponFire : MonoBehaviour {
     public float stungunSetting;
     private float clipEnd;
     public Animator anim; // assign in the editor
+	public Animator rapieranim; // assign in the editor
     public DamageData damageData;
     private RaycastHit tempHit;
     private Vector3 tempVec;
@@ -228,13 +229,13 @@ public class WeaponFire : MonoBehaviour {
 		if (strength <= 0f) return;
 		if (playerMovement.fatigue > 80) strength = strength * 2f;
 		strength = strength * 0.25f;
-		Vector3 wepJoltPosition = new Vector3(wepView.transform.localPosition.x, wepView.transform.localPosition.y, (wepViewDefaultLocalPos.z - strength));
+		Vector3 wepJoltPosition = new Vector3(wepView.transform.localPosition.x - (strength * 0.5f * Random.Range(-1f,1f)), wepView.transform.localPosition.y, (wepViewDefaultLocalPos.z - strength));
 		wepView.transform.localPosition = wepJoltPosition;
 		recoiling = true;
 	}
 
     void Update() {
-        if (!PauseScript.a.paused) {
+        if (!PauseScript.a.Paused()) {
             if (WeaponsHaveAnyHeat()) HeatBleedOff(); // Slowly cool off any weapons that have been heated from firing
 
 			if (recoiling) {
@@ -242,6 +243,7 @@ public class WeaponFire : MonoBehaviour {
 				float y = wepView.transform.localPosition.y; // up and down
 				float z = wepView.transform.localPosition.z; // forward and back
 				z = Mathf.Lerp(z,wepViewDefaultLocalPos.z,Time.deltaTime);
+				x = Mathf.Lerp(x,wepViewDefaultLocalPos.x,Time.deltaTime);
 				wepView.transform.localPosition = new Vector3(x,y,z);
 			}
 
@@ -261,7 +263,7 @@ public class WeaponFire : MonoBehaviour {
                             // Even if we have only 1 energy, we still fire with all we've got up to the energy level setting of course
                             if (curEnergy.energy > 0) {
 								if (GetHeatForCurrentWeapon() > overheatedPercent) {
-									SFX.PlayOneShot(SFXEmpty);
+									if (SFXEmpty != null) SFX.PlayOneShot(SFXEmpty);
                                     waitTilNextFire = Time.time + 0.8f;
                                     Const.sprint("Weapon is too hot to fire",Const.a.allPlayers);
 								} else {
@@ -274,14 +276,14 @@ public class WeaponFire : MonoBehaviour {
                                 if (WeaponCurrent.WepInstance.currentMagazineAmount2[i] > 0) {
                                     FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
                                 } else {
-                                    SFX.PlayOneShot(SFXEmpty);
+                                    if (SFXEmpty != null) SFX.PlayOneShot(SFXEmpty);
                                     waitTilNextFire = Time.time + 0.8f;
                                 }
                             } else {
                                 if (WeaponCurrent.WepInstance.currentMagazineAmount[i] > 0) {
                                     FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
                                 } else {
-                                    SFX.PlayOneShot(SFXEmpty);
+                                    if (SFXEmpty != null) SFX.PlayOneShot(SFXEmpty);
                                     waitTilNextFire = Time.time + 0.8f;
                                 }
                             }
@@ -666,7 +668,8 @@ public class WeaponFire : MonoBehaviour {
     void FireRapier(int index16, bool silent) {
         fireDistance = meleescanDistance;
         if (DidRayHit()) {
-            anim.Play("Attack2");
+			fireDistance = hitscanDistance; // reset before any returns
+            rapieranim.Play("Attack2");
             CreateStandardImpactEffects(true);
             damageData.other = tempHit.transform.gameObject;
             if (tempHit.transform.gameObject.tag == "NPC") {
@@ -698,18 +701,19 @@ public class WeaponFire : MonoBehaviour {
 			}
             return;
         }
-        fireDistance = hitscanDistance;
+        fireDistance = hitscanDistance; //reset in case raycast failed
 
         if (!silent) {
             SFX.clip = SFXRapierMiss;
             SFX.Play();
         }
-        anim.Play("Attack1");
+        rapieranim.Play("Attack2");
     }
 
     void FirePipe(int index16, bool silent) {
         fireDistance = meleescanDistance;
         if (DidRayHit()) {
+			fireDistance = hitscanDistance; // reset before any returns
             anim.Play("Attack2");
             if (!silent) {
                 SFX.clip = SFXPipeHit;
@@ -759,7 +763,8 @@ public class WeaponFire : MonoBehaviour {
     //----------------------------------------------------------------------------------------------------------
     void FirePlasma(int index16) {
         // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
-        GameObject beachball = Const.a.GetObjectFromPool(Const.PoolType.PlasmaShots); //TODO: Create correct projectils
+        // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
+        GameObject beachball = Const.a.GetObjectFromPool(Const.PoolType.PlasmaShots);
         if (beachball != null) {
             damageData.damage = Const.a.damagePerHitForWeapon[index16];
             damageData.owner = playerCapsule;
@@ -780,7 +785,8 @@ public class WeaponFire : MonoBehaviour {
 
     void FireRailgun(int index16) {
         // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
-        GameObject beachball = Const.a.GetObjectFromPool(Const.PoolType.RailgunShots); //TODO: Create correct projectils
+        // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
+        GameObject beachball = Const.a.GetObjectFromPool(Const.PoolType.RailgunShots);
         if (beachball != null) {
             damageData.damage = Const.a.damagePerHitForWeapon[index16];
             damageData.owner = playerCapsule;
@@ -801,7 +807,8 @@ public class WeaponFire : MonoBehaviour {
 
     void FireStungun(int index16) {
         // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
-        GameObject beachball = Const.a.GetObjectFromPool(Const.PoolType.StungunShots); //TODO: Create correct projectils
+        // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
+        GameObject beachball = Const.a.GetObjectFromPool(Const.PoolType.StungunShots);
         if (beachball != null) {
             damageData.damage = Const.a.damagePerHitForWeapon[index16];
             damageData.owner = playerCapsule;
@@ -830,7 +837,7 @@ public class WeaponFire : MonoBehaviour {
     void FireMagpulse(int index16) {
         // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
         // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
-        GameObject beachball = Const.a.GetObjectFromPool(Const.PoolType.MagpulseShots); //TODO: Create correct projectils
+        GameObject beachball = Const.a.GetObjectFromPool(Const.PoolType.MagpulseShots);
         if (beachball != null) {
             damageData.damage = Const.a.damagePerHitForWeapon[index16];
             damageData.owner = playerCapsule;

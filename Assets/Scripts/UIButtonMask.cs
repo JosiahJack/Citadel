@@ -12,7 +12,6 @@ public class UIButtonMask : MonoBehaviour {
 	public bool doubleClickEnabled = false;
 	public string toolTipText;
 	public Handedness toolTipType;
-	public Texture2D cursorOnHover;
 
 	void Start () {
 		if (playerCamera == null) {

@@ -6,7 +6,7 @@ public class LevelManager : MonoBehaviour {
 	public static LevelManager a;
 	public GameObject[] levels;
 	public int[] levelSecurity;
-	public Transform[] ressurectionLocation;
+	[DTValidator.Optional]  public Transform[] ressurectionLocation;
 	public bool[] ressurectionActive;
 	//public GameObject currentPlayer;
 	//public GameObject elevatorControl;
@@ -24,6 +24,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public bool RessurectPlayer (GameObject currentPlayer) {
+		// Note: currentPlayer is the main Player gameObject that contains PlayerReferenceManager
 		if (currentPlayer == null) {
 			Const.sprint("BUG: LevelManager cannot find current player for RessurectPlayer.",Const.a.allPlayers);
 			return false; // prevent possible error if wrong player is passed
@@ -31,6 +32,7 @@ public class LevelManager : MonoBehaviour {
 
 		if (ressurectionActive[currentLevel]) {
 			currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = ressurectionLocation[currentLevel].position; //teleport to ressurection chamber
+			//currentPlayer.GetComponent<PlayerReferenceManager>().playerDeathEffect.SetActive(true); //TODO activate death screen and readouts for "NORMAL BRAIN ACTIVITY RESTORED..."            ya debatable right
 			return true;
 		}
 
