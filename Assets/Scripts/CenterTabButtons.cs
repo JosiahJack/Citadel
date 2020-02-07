@@ -85,10 +85,10 @@ public class CenterTabButtons : MonoBehaviour {
 
 	public void TabButtonClick (int tabNum) {
 		TabSFX.PlayOneShot(TabSFXClip);
-		TabButtonClickSilent(tabNum);
+		TabButtonClickSilent(tabNum,false);
 	}
 
-	public void TabButtonClickSilent (int tabNum) {
+	public void TabButtonClickSilent (int tabNum, bool forceOn) {
 		bool wasActive = false;
 
 		switch (tabNum) {
@@ -96,7 +96,7 @@ public class CenterTabButtons : MonoBehaviour {
 			wasActive = TabManager.MainTab.activeInHierarchy;
 			TabManager.DisableAllTabs();
 			if (curTab == 0) {
-				if (wasActive) {
+				if (wasActive && !forceOn) {
 					break;
 				} else {
 					TabManager.MainTab.SetActive(true);
@@ -115,7 +115,7 @@ public class CenterTabButtons : MonoBehaviour {
 			wasActive = TabManager.HardwareTab.activeInHierarchy;
 			TabManager.DisableAllTabs();
 			if (curTab == 1) {
-				if (wasActive) {
+				if (wasActive && !forceOn) {
 					break;
 				} else {
 					TabManager.HardwareTab.SetActive(true);
@@ -134,7 +134,7 @@ public class CenterTabButtons : MonoBehaviour {
 			wasActive = TabManager.GeneralTab.activeInHierarchy;
 			TabManager.DisableAllTabs();
 			if (curTab == 2) {
-				if (wasActive) {
+				if (wasActive && !forceOn) {
 					break;
 				} else {
 					TabManager.GeneralTab.SetActive(true);
@@ -153,7 +153,7 @@ public class CenterTabButtons : MonoBehaviour {
 			wasActive = TabManager.SoftwareTab.activeInHierarchy;
 			TabManager.DisableAllTabs();
 			if (curTab == 3) {
-				if (wasActive) {
+				if (wasActive && !forceOn) {
 					break;
 				} else {
 					TabManager.SoftwareTab.SetActive(true);

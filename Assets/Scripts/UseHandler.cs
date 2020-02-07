@@ -28,11 +28,17 @@ public class UseHandler : MonoBehaviour {
 	private PuzzleGridPuzzle pgp;
 	public bool usePuzzleGridPuzzle = true;
 
+	private PuzzleWirePuzzle pwp;
+	public bool usePuzzleWirePuzzle = true;
+
 	private UseableObjectUse uou;
 	public bool useUseableObjectUse = true;
 
 	private UseableAttachment ua;
 	public bool useUseableAttachment = true;
+
+	private CyberAccess ca;
+	public bool useCyberAccess = true;
 
 	// Check all active and existing scripts on this gameObject that can be used and use them
 	// Called by MouseLookScript.cs from a Use() raycast
@@ -62,10 +68,16 @@ public class UseHandler : MonoBehaviour {
 		pgp = GetComponent<PuzzleGridPuzzle>();
 		if (usePuzzleGridPuzzle && pgp != null) pgp.Use(ud);
 
+		pwp = GetComponent<PuzzleWirePuzzle>();
+		if (usePuzzleWirePuzzle && pwp != null) pwp.Use(ud);
+
 		uou = GetComponent<UseableObjectUse>();
 		if (useUseableObjectUse && uou != null) uou.Use(ud);
 
 		ua = GetComponent<UseableAttachment>();
 		if (useUseableAttachment && ua != null) ua.Use(ud);
+
+		ca = GetComponent<CyberAccess>();
+		if (useCyberAccess && ca != null) ca.Use(ud);
 	}
 }

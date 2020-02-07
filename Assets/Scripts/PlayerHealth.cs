@@ -33,7 +33,6 @@ public class PlayerHealth : MonoBehaviour {
 	public bool makingNoise = false;
 	[HideInInspector]
 	public HealthManager hm;
-	public GameObject healingFXFlash;
 
 	private float lastHealth;
 	private float painSoundFinished;
@@ -60,8 +59,10 @@ public class PlayerHealth : MonoBehaviour {
 		if (hm.health <= 0f) {
 			if (!playerDead) {
 				PlayerDying();
+				return;
 			} else {
 				PlayerDead();
+				return;
 			}
 		}
 
@@ -69,7 +70,7 @@ public class PlayerHealth : MonoBehaviour {
 			if (mediPatchPulseFinished == 0) mediPatchPulseCount = 0;
 			if (mediPatchPulseFinished < Time.time) {
 				float timePulse = mediPatchPulseTime;
-				hm.HealingBed(mediPatchHealAmount);
+				hm.HealingBed(mediPatchHealAmount,false);
 				//hm.health += mediPatchHealAmount;
 				timePulse += (mediPatchPulseCount*0.5f);
 				mediPatchPulseFinished = Time.time + timePulse;
@@ -115,7 +116,7 @@ public class PlayerHealth : MonoBehaviour {
 		// Did we lose health?
 		if (lastHealth > hm.health) {
 			if (painSoundFinished < Time.time && !(radSoundFinished < Time.time)) {
-				painSoundFinished = Time.time + Random.Range(0.5f,1.5f); // Don't spam pain sounds
+				painSoundFinished = Time.time + Random.Range(0.5f,3f); // Don't spam pain sounds
 				PlayerNoise.PlayOneShot(PainSFXClip);
 			}
 		}
@@ -160,16 +161,10 @@ public class PlayerHealth : MonoBehaviour {
 	}
 
 	public void GiveRadiation (float rad) {
+		if (playerDead) return;
 		if (radiated < rad)
 			radiated = rad;
 
 		//radiated -= suitReduction;
-	}
-
-	public void HealingBed(float amount) {
-		hm.HealingBed(amount);
-		if (healingFXFlash != null) {
-			healingFXFlash.SetActive(true);
-		}
 	}
 }

@@ -1,100 +1,251 @@
 fileFormatVersion: 2
 guid: 7899c72200f9aec4eaebae1317af3498
-timeCreated: 1443067352
-licenseType: Free
 ModelImporter:
-  serializedVersion: 18
-  fileIDToRecycleName:
-    100000: //RootNode
-    100002: door_iris_002
-    100004: door_iris_003
-    100006: door_iris_004
-    100008: door_iris_005
-    100010: door_iris_006
-    100012: door_iris_007_heightcheat_lower
-    100014: door_iris_cheatblockupper
-    100016: door_iris_cheatblockupper_001
-    100018: door_iris_frame
-    100020: door_iris_heightcheat_upper
-    100022: Empty
-    100024: Empty_001
-    100026: Empty_002
-    100028: Empty_003
-    100030: Empty_004
-    400000: //RootNode
-    400002: door_iris_002
-    400004: door_iris_003
-    400006: door_iris_004
-    400008: door_iris_005
-    400010: door_iris_006
-    400012: door_iris_007_heightcheat_lower
-    400014: door_iris_cheatblockupper
-    400016: door_iris_cheatblockupper_001
-    400018: door_iris_frame
-    400020: door_iris_heightcheat_upper
-    400022: Empty
-    400024: Empty_001
-    400026: Empty_002
-    400028: Empty_003
-    400030: Empty_004
-    2300000: door_iris_002
-    2300002: door_iris_003
-    2300004: door_iris_004
-    2300006: door_iris_005
-    2300008: door_iris_006
-    2300010: door_iris_007_heightcheat_lower
-    2300012: door_iris_cheatblockupper
-    2300014: door_iris_cheatblockupper_001
-    2300016: door_iris_frame
-    2300018: door_iris_heightcheat_upper
-    3300000: door_iris_002
-    3300002: door_iris_003
-    3300004: door_iris_004
-    3300006: door_iris_005
-    3300008: door_iris_006
-    3300010: door_iris_007_heightcheat_lower
-    3300012: door_iris_cheatblockupper
-    3300014: door_iris_cheatblockupper_001
-    3300016: door_iris_frame
-    3300018: door_iris_heightcheat_upper
-    4300000: door_iris_cheatblockupper_001
-    4300002: door_iris_cheatblockupper
-    4300004: door_iris_007_heightcheat_lower
-    4300006: door_iris_heightcheat_upper
-    4300008: door_iris_frame
-    4300010: door_iris_006
-    4300012: door_iris_002
-    4300014: door_iris_003
-    4300016: door_iris_004
-    4300018: door_iris_005
-    7400000: IdleDoor1Open
-    7400002: IdleDoor1Close
-    7400004: Door1Open
-    7400006: Door1Close
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: door_iris_002
+  - first:
+      1: 100004
+    second: door_iris_003
+  - first:
+      1: 100006
+    second: door_iris_004
+  - first:
+      1: 100008
+    second: door_iris_005
+  - first:
+      1: 100010
+    second: door_iris_006
+  - first:
+      1: 100012
+    second: door_iris_007_heightcheat_lower
+  - first:
+      1: 100014
+    second: door_iris_cheatblockupper
+  - first:
+      1: 100016
+    second: door_iris_cheatblockupper_001
+  - first:
+      1: 100018
+    second: door_iris_frame
+  - first:
+      1: 100020
+    second: door_iris_heightcheat_upper
+  - first:
+      1: 100022
+    second: Empty
+  - first:
+      1: 100024
+    second: Empty_001
+  - first:
+      1: 100026
+    second: Empty_002
+  - first:
+      1: 100028
+    second: Empty_003
+  - first:
+      1: 100030
+    second: Empty_004
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: door_iris_002
+  - first:
+      4: 400004
+    second: door_iris_003
+  - first:
+      4: 400006
+    second: door_iris_004
+  - first:
+      4: 400008
+    second: door_iris_005
+  - first:
+      4: 400010
+    second: door_iris_006
+  - first:
+      4: 400012
+    second: door_iris_007_heightcheat_lower
+  - first:
+      4: 400014
+    second: door_iris_cheatblockupper
+  - first:
+      4: 400016
+    second: door_iris_cheatblockupper_001
+  - first:
+      4: 400018
+    second: door_iris_frame
+  - first:
+      4: 400020
+    second: door_iris_heightcheat_upper
+  - first:
+      4: 400022
+    second: Empty
+  - first:
+      4: 400024
+    second: Empty_001
+  - first:
+      4: 400026
+    second: Empty_002
+  - first:
+      4: 400028
+    second: Empty_003
+  - first:
+      4: 400030
+    second: Empty_004
+  - first:
+      23: 2300000
+    second: door_iris_002
+  - first:
+      23: 2300002
+    second: door_iris_003
+  - first:
+      23: 2300004
+    second: door_iris_004
+  - first:
+      23: 2300006
+    second: door_iris_005
+  - first:
+      23: 2300008
+    second: door_iris_006
+  - first:
+      23: 2300010
+    second: door_iris_007_heightcheat_lower
+  - first:
+      23: 2300012
+    second: door_iris_cheatblockupper
+  - first:
+      23: 2300014
+    second: door_iris_cheatblockupper_001
+  - first:
+      23: 2300016
+    second: door_iris_frame
+  - first:
+      23: 2300018
+    second: door_iris_heightcheat_upper
+  - first:
+      33: 3300000
+    second: door_iris_002
+  - first:
+      33: 3300002
+    second: door_iris_003
+  - first:
+      33: 3300004
+    second: door_iris_004
+  - first:
+      33: 3300006
+    second: door_iris_005
+  - first:
+      33: 3300008
+    second: door_iris_006
+  - first:
+      33: 3300010
+    second: door_iris_007_heightcheat_lower
+  - first:
+      33: 3300012
+    second: door_iris_cheatblockupper
+  - first:
+      33: 3300014
+    second: door_iris_cheatblockupper_001
+  - first:
+      33: 3300016
+    second: door_iris_frame
+  - first:
+      33: 3300018
+    second: door_iris_heightcheat_upper
+  - first:
+      43: 4300000
+    second: door_iris_cheatblockupper_001
+  - first:
+      43: 4300002
+    second: door_iris_cheatblockupper
+  - first:
+      43: 4300004
+    second: door_iris_007_heightcheat_lower
+  - first:
+      43: 4300006
+    second: door_iris_heightcheat_upper
+  - first:
+      43: 4300008
+    second: door_iris_frame
+  - first:
+      43: 4300010
+    second: door_iris_006
+  - first:
+      43: 4300012
+    second: door_iris_002
+  - first:
+      43: 4300014
+    second: door_iris_003
+  - first:
+      43: 4300016
+    second: door_iris_004
+  - first:
+      43: 4300018
+    second: door_iris_005
+  - first:
+      74: 7400000
+    second: IdleDoor1Open
+  - first:
+      74: 7400002
+    second: IdleDoor1Close
+  - first:
+      74: 7400004
+    second: Door1Open
+  - first:
+      74: 7400006
+    second: Door1Close
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: None__door_iris_tga
+    second: {fileID: 2100000, guid: 50b29a89d89221445b5b327c17136f1c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: door_iris__door_iris_tga
+    second: {fileID: 2100000, guid: 50b29a89d89221445b5b327c17136f1c, type: 2}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
-    animationRotationError: .5
-    animationPositionError: .5
-    animationScaleError: .5
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: IdleDoor1Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 20
       lastFrame: 21
       wrapMode: 0
@@ -102,6 +253,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -150,9 +302,11 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: IdleDoor1Close
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 1
       wrapMode: 0
@@ -160,6 +314,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -208,9 +363,11 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Door1Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 19
       wrapMode: 0
@@ -218,6 +375,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -266,9 +424,11 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Door1Close
       takeName: Default Take
+      internalID: 0
       firstFrame: 23
       lastFrame: 40
       wrapMode: 0
@@ -276,6 +436,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -324,19 +485,30 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -344,24 +516,34 @@ ModelImporter:
     useFileScale: 1
   tangentSpace:
     normalSmoothAngle: 60
-    splitTangentsAcrossUV: 1
     normalImportMode: 0
-    tangentImportMode: 1
+    tangentImportMode: 4
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 3
     human: []
     skeleton: []
-    armTwist: .5
-    foreArmTwist: .5
-    upperLegTwist: .5
-    legTwist: .5
-    armStretch: .0500000007
-    legStretch: .0500000007
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
+  humanoidOversampling: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

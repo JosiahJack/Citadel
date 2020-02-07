@@ -8,7 +8,7 @@ public class HardwareButton : MonoBehaviour {
 	[SerializeField] private AudioSource SFX = null; // assign in the editor
 	[SerializeField] private AudioClip SFXClip = null; // assign in the editor
 	[SerializeField] private AudioClip SFXClipDeactivate = null; // assign in the editor
-	public CenterTabButtons ctb;
+	//public CenterTabButtons ctb;
 	public Sprite buttonDeactive;
 	public Sprite buttonActive1;
 	public Sprite buttonActive2;
@@ -293,7 +293,7 @@ public class HardwareButton : MonoBehaviour {
 		} else {
 			butn.image.overrideSprite = buttonDeactive;
 		}
-		if (ctb != null) ctb.TabButtonClickSilent(4);
+		//if (ctb != null) ctb.TabButtonClickSilent(4,false);  Moved to MFDManager
 		MFDManager.a.OpenEReaderInItemsTab();
 	}
 

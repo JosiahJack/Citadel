@@ -3,16 +3,15 @@ using System.Collections;
 
 public class ButtonSwitch : MonoBehaviour {
 	public int securityThreshhold = 100; // if security level is not below this level, this is unusable
-	public GameObject target;
-	public GameObject target1;
-	public GameObject target2;
-	public GameObject target3;
+	public string target;
+	public string argvalue;
 	public string message;
 	public int messageIndex;
 	public float delay = 0f;
 	public Material mainSwitchMaterial;
 	public Material alternateSwitchMaterial;
 	public AudioClip SFX;
+	public AudioClip SFXLocked;
 	public float tickTime = 1.5f;
 	public bool active;
 	public bool blinkWhenActive;
@@ -23,16 +22,33 @@ public class ButtonSwitch : MonoBehaviour {
 	private AudioSource SFXSource;
 	private bool alternateOn;
 	private MeshRenderer mRenderer;
+	public bool animateModel = false;
+	private Animator anim;
+	public bool locked = false;
+	public string lockedMessage = "Switch deactivated.";
 
 	void Awake () {
 		SFXSource = GetComponent<AudioSource>();
 		mRenderer = GetComponent<MeshRenderer>();
 		delayFinished = 0; // prevent using targets on awake
+		if (animateModel) anim = GetComponent<Animator>();
 	}
 
 	public void Use (UseData ud) {
-		if (LevelManager.a.levelSecurity[LevelManager.a.currentLevel] > securityThreshhold) {
-			MFDManager.a.BlockedBySecurity();
+		//Debug.Log("Using a ButtonSwitch.cs!");
+		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
+			MFDManager.a.BlockedBySecurity(transform.position);
+			return;
+		}
+
+		if (LevelManager.a.superoverride) {
+			// SHODAN can go anywhere!  Full security override!
+			locked = false;
+		}
+
+		if (locked) {
+			Const.sprint(lockedMessage,ud.owner);
+			if (SFXLocked != null && SFXSource != null) SFXSource.PlayOneShot(SFXLocked);
 			return;
 		}
 
@@ -46,23 +62,29 @@ public class ButtonSwitch : MonoBehaviour {
 		}
 	}
 
+	public void Targetted (UseData ud) {
+		// prevent runaway circular targetting of self
+		if (ud.owner != player) {
+			Use(ud); 
+		}
+	}
+
+	public void ToggleLocked() {
+		locked = !locked;
+	}
+
 	public void UseTargets () {
 		UseData ud = new UseData();
 		ud.owner = player;
+		ud.argvalue = argvalue;
+		TargetIO tio = GetComponent<TargetIO>();
+		if (tio != null) {
+			ud.SetBits(tio);
+		} else {
+			Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
+		}
+		Const.a.UseTargets(ud,target);
 
-		if (target != null) {
-			target.SendMessageUpwards("Targetted", ud);
-		}
-		if (target1 != null) {
-			target1.SendMessageUpwards("Targetted", ud);
-		}
-		if (target2 != null) {
-			target2.SendMessageUpwards("Targetted", ud);
-		}
-		if (target3 != null) {
-			target3.SendMessageUpwards("Targetted", ud);
-		}
-			
 		active = !active;
 		alternateOn = active;
 		if (changeMatOnActive) {
@@ -72,6 +94,13 @@ public class ButtonSwitch : MonoBehaviour {
 					tickFinished = Time.time + tickTime;
 			} else {
 				ToggleMaterial ();
+			}
+		}
+		if (animateModel) {
+			if (active) {
+				anim.Play("Activating");
+			} else {
+				anim.Play("Deactivating");
 			}
 		}
 	}

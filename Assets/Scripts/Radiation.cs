@@ -7,29 +7,48 @@ public class Radiation : MonoBehaviour {
 	public float radiationAmount = 11f;
 	public float radFinished = 0f;
 	public int numPlayers = 0;
+	public bool isEnabled = true;
 
 	void OnTriggerEnter (Collider col) {
-		if ((col.gameObject.tag == "Player") && (col.gameObject.GetComponent<PlayerHealth>().hm.health > 0f)) {
-			numPlayers++;
-			col.gameObject.GetComponent<PlayerHealth>().radiationArea = true;
-			col.gameObject.SendMessage("GiveRadiation",radiationAmount,SendMessageOptions.DontRequireReceiver);
-			radFinished = Time.time + (intervalTime);
+		if (!isEnabled) return;
+		if (col.gameObject.tag == "Player") {
+			PlayerHealth ph = col.gameObject.GetComponent<PlayerHealth>();
+			if (ph != null) {
+				if (ph.hm.health > 0f) {
+					numPlayers++;
+					ph.radiationArea = true;
+					ph.GiveRadiation(radiationAmount);
+					radFinished = Time.time + (intervalTime*Random.Range(1f,1.5f));
+				}
+			}
 		}
 	}
 
 	void  OnTriggerStay (Collider col) {
-		if ((col.gameObject.tag == "Player") && (col.gameObject.GetComponent<PlayerHealth>().hm.health > 0f) && (radFinished < Time.time)) {
-			col.gameObject.GetComponent<PlayerHealth>().radiationArea = true;
-			col.gameObject.SendMessage("GiveRadiation",radiationAmount,SendMessageOptions.DontRequireReceiver);
-			radFinished = Time.time + (intervalTime);
+		if (!isEnabled) return;
+		if (col.gameObject.tag == "Player") {
+			PlayerHealth ph = col.gameObject.GetComponent<PlayerHealth>();
+			if (ph != null) {
+				if (ph.hm.health > 0f && (radFinished < Time.time)) {
+					ph.radiationArea = true;
+					ph.GiveRadiation(radiationAmount);
+					radFinished = Time.time + (intervalTime*Random.Range(1f,1.5f));
+				}
+			}
 		}
 	}
 
 	void OnTriggerExit (Collider col) {
-		if ((col.gameObject.tag == "Player") && (col.gameObject.GetComponent<PlayerHealth>().hm.health > 0f)) {
-			col.gameObject.GetComponent<PlayerHealth>().radiationArea = false;
-			numPlayers--;
-			if (numPlayers == 0) radFinished = Time.time;  // reset so re-triggering is instant
+		if (!isEnabled) return;
+		if (col.gameObject.tag == "Player") { 
+			PlayerHealth ph = col.gameObject.GetComponent<PlayerHealth>();
+			if (ph != null) {
+				if (ph.hm.health > 0f) {
+					ph.radiationArea = false;
+					numPlayers--;
+					if (numPlayers == 0) radFinished = Time.time;  // reset so re-triggering is instant
+				}
+			}
 		}
 	}
 }

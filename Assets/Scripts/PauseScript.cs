@@ -72,7 +72,7 @@ public class PauseScript : MonoBehaviour {
 		}
 	}
 
-	void PauseDisable() {
+	public void PauseDisable() {
 		paused = false;
 		pauseText.enabled = false;
 		if (previousInvMode != mouselookScript.inventoryMode) {

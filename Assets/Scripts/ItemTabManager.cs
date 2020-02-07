@@ -15,10 +15,11 @@ public class ItemTabManager : MonoBehaviour {
 
 	void Start () {
 		nullstr = "";
-		Reset();
+		//Reset();
 	}
 
 	public void Reset () {
+		//Debug.Log("Resetted ItemTabManager");
 		eReaderSectionsContainer.SetActive(false);
 		iconManager.GetComponent<Image>().overrideSprite = Const.a.useableItemsIcons[0]; //nullsprite
 		textManager.GetComponent<Text>().text = nullstr;
@@ -28,6 +29,9 @@ public class ItemTabManager : MonoBehaviour {
 	}
 
 	public void EReaderSectionSContainerOpen () {
+		applyButton.SetActive(false);
+		vaporizeButton.SetActive(false);
+		useButton.SetActive(false);
 		//Const.sprint("openingEreaderSectioninMFDLH",Const.a.player1);
 		eReaderSectionsContainer.SetActive(true);
 		iconManager.GetComponent<Image>().overrideSprite = Const.a.useableItemsIcons[23]; //datareader

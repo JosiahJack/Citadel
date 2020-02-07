@@ -1,71 +1,161 @@
 fileFormatVersion: 2
 guid: 3a2790ece0bea214e9173762e719613f
-timeCreated: 1460829205
-licenseType: Free
 ModelImporter:
-  serializedVersion: 19
-  fileIDToRecycleName:
-    100000: //RootNode
-    100002: elevdoor_frame
-    100004: elevdoor_frametrim
-    100006: elevdoor_lowercheater
-    100008: elevdoor_lowerLH
-    100010: elevdoor_lowerRH
-    100012: elevdoor_upper
-    400000: //RootNode
-    400002: elevdoor_frame
-    400004: elevdoor_frametrim
-    400006: elevdoor_lowercheater
-    400008: elevdoor_lowerLH
-    400010: elevdoor_lowerRH
-    400012: elevdoor_upper
-    2300000: elevdoor_frame
-    2300002: elevdoor_frametrim
-    2300004: elevdoor_lowercheater
-    2300006: elevdoor_lowerLH
-    2300008: elevdoor_lowerRH
-    2300010: elevdoor_upper
-    3300000: elevdoor_frame
-    3300002: elevdoor_frametrim
-    3300004: elevdoor_lowercheater
-    3300006: elevdoor_lowerLH
-    3300008: elevdoor_lowerRH
-    3300010: elevdoor_upper
-    4300000: elevdoor_frame
-    4300002: elevdoor_frametrim
-    4300004: elevdoor_lowercheater
-    4300006: elevdoor_upper
-    4300008: elevdoor_lowerRH
-    4300010: elevdoor_lowerLH
-    7400000: IdleDoor1Open
-    7400002: IdleDoor1Close
-    7400004: Door1Open
-    7400006: Door1Close
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: elevdoor_frame
+  - first:
+      1: 100004
+    second: elevdoor_frametrim
+  - first:
+      1: 100006
+    second: elevdoor_lowercheater
+  - first:
+      1: 100008
+    second: elevdoor_lowerLH
+  - first:
+      1: 100010
+    second: elevdoor_lowerRH
+  - first:
+      1: 100012
+    second: elevdoor_upper
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: elevdoor_frame
+  - first:
+      4: 400004
+    second: elevdoor_frametrim
+  - first:
+      4: 400006
+    second: elevdoor_lowercheater
+  - first:
+      4: 400008
+    second: elevdoor_lowerLH
+  - first:
+      4: 400010
+    second: elevdoor_lowerRH
+  - first:
+      4: 400012
+    second: elevdoor_upper
+  - first:
+      23: 2300000
+    second: elevdoor_frame
+  - first:
+      23: 2300002
+    second: elevdoor_frametrim
+  - first:
+      23: 2300004
+    second: elevdoor_lowercheater
+  - first:
+      23: 2300006
+    second: elevdoor_lowerLH
+  - first:
+      23: 2300008
+    second: elevdoor_lowerRH
+  - first:
+      23: 2300010
+    second: elevdoor_upper
+  - first:
+      33: 3300000
+    second: elevdoor_frame
+  - first:
+      33: 3300002
+    second: elevdoor_frametrim
+  - first:
+      33: 3300004
+    second: elevdoor_lowercheater
+  - first:
+      33: 3300006
+    second: elevdoor_lowerLH
+  - first:
+      33: 3300008
+    second: elevdoor_lowerRH
+  - first:
+      33: 3300010
+    second: elevdoor_upper
+  - first:
+      43: 4300000
+    second: elevdoor_frame
+  - first:
+      43: 4300002
+    second: elevdoor_frametrim
+  - first:
+      43: 4300004
+    second: elevdoor_lowercheater
+  - first:
+      43: 4300006
+    second: elevdoor_upper
+  - first:
+      43: 4300008
+    second: elevdoor_lowerRH
+  - first:
+      43: 4300010
+    second: elevdoor_lowerLH
+  - first:
+      74: 7400000
+    second: IdleDoor1Open
+  - first:
+      74: 7400002
+    second: IdleDoor1Close
+  - first:
+      74: 7400004
+    second: Door1Open
+  - first:
+      74: 7400006
+    second: Door1Close
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _0door_elev1
+    second: {fileID: 2100000, guid: 8aa3a28f24b0b4c41b5ff0b3ac192137, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: exec2_3
+    second: {fileID: 2100000, guid: f070e72d7e48bb140a367d3d02abb4da, type: 2}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: IdleDoor1Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 19
       lastFrame: 20
       wrapMode: 0
@@ -108,6 +198,7 @@ ModelImporter:
     - serializedVersion: 16
       name: IdleDoor1Close
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 1
       wrapMode: 0
@@ -150,6 +241,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Door1Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 19
       wrapMode: 0
@@ -192,6 +284,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Door1Close
       takeName: Default Take
+      internalID: 0
       firstFrame: 20
       lastFrame: 41
       wrapMode: 0
@@ -237,13 +330,23 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -253,9 +356,15 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -265,8 +374,11 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
   humanoidOversampling: 1

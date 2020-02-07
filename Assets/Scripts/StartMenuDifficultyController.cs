@@ -25,7 +25,7 @@ public class StartMenuDifficultyController : MonoBehaviour {
 		externalTextObject.text = highlightString[difficultySetting];
 	}
 
-	void ClickViaKeyboard () {
+	public void ClickViaKeyboard () {
 		difficultySetting++;
 		if (difficultySetting >= 4)
 			difficultySetting = 0;

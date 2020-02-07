@@ -45,10 +45,24 @@ public class LightAnimation : MonoBehaviour {
 		}
 	}
 
-	public void Targetted (UseData ud) {
+	public void TurnOn() {
 		lightOn = true;
 		animLight.intensity = maxIntensity;
 		animLight.enabled = true;
+	}
+
+	public void TurnOff() {
+		lightOn = false;
+		animLight.intensity = minIntensity;
+		animLight.enabled = false;
+	}
+
+	public void Toggle() {
+		if (lightOn) {
+			TurnOff();
+		} else {
+			TurnOn();
+		}
 	}
 
 	void Update () {
@@ -113,7 +127,7 @@ public class LightAnimation : MonoBehaviour {
 			}
 		} else {
 			// Light is turned off.
-			animLight.intensity = 0f;
+			animLight.intensity = minIntensity;
 		}
 	}
 }

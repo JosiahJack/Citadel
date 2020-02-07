@@ -1,48 +1,129 @@
 fileFormatVersion: 2
 guid: b3bc814d3959d804486641f7d7772e1c
-timeCreated: 1432695876
-licenseType: Free
 ModelImporter:
-  serializedVersion: 19
-  fileIDToRecycleName:
-    100000: //RootNode
-    100002: 1_MedicalLevel_console_mesh
-    100004: 1_MedicalLevel_console_mesh_001
-    400000: //RootNode
-    400002: 1_MedicalLevel_console_mesh
-    400004: 1_MedicalLevel_console_mesh_001
-    2300000: //RootNode
-    2300002: 1_MedicalLevel_console_mesh
-    2300004: 1_MedicalLevel_console_mesh_001
-    3300000: //RootNode
-    3300002: 1_MedicalLevel_console_mesh
-    3300004: 1_MedicalLevel_console_mesh_001
-    4300000: 1_MedicalLevel_console_mesh
-    4300002: 1_MedicalLevel_console_mesh_001
-    6400000: 1_MedicalLevel_console_mesh
-    6400002: 1_MedicalLevel_console_mesh_001
-    7400000: Default Take
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: 1_MedicalLevel_console_mesh
+  - first:
+      1: 100004
+    second: 1_MedicalLevel_console_mesh_001
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: 1_MedicalLevel_console_mesh
+  - first:
+      4: 400004
+    second: 1_MedicalLevel_console_mesh_001
+  - first:
+      23: 2300000
+    second: //RootNode
+  - first:
+      23: 2300002
+    second: 1_MedicalLevel_console_mesh
+  - first:
+      23: 2300004
+    second: 1_MedicalLevel_console_mesh_001
+  - first:
+      33: 3300000
+    second: //RootNode
+  - first:
+      33: 3300002
+    second: 1_MedicalLevel_console_mesh
+  - first:
+      33: 3300004
+    second: 1_MedicalLevel_console_mesh_001
+  - first:
+      43: 4300000
+    second: 1_MedicalLevel_console_mesh
+  - first:
+      43: 4300002
+    second: 1_MedicalLevel_console_mesh_001
+  - first:
+      64: 6400000
+    second: 1_MedicalLevel_console_mesh
+  - first:
+      64: 6400002
+    second: 1_MedicalLevel_console_mesh_001
+  - first:
+      74: 7400000
+    second: Default Take
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: col1__col1
+    second: {fileID: 2100000, guid: 9efc3463d6d4e6a4bb9d1cdfedf92163, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: console1_5__console1_5
+    second: {fileID: 2100000, guid: 6cab03d62a90c0c44814b65be3d10f2f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: console2_1__console2_1
+    second: {fileID: 2100000, guid: ef0f1220010625b41b863781cee4a52d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: console2_3__console2_3
+    second: {fileID: 2100000, guid: b9ed60bf75d353a42ad482ed8afd6ff2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: console2_4__console2_4
+    second: {fileID: 2100000, guid: 4e85cb0b882855a4f877056d54b105d5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: console2_5__console2_5
+    second: {fileID: 2100000, guid: 14e36666c2b30e748a3e7be51a1ebcb9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: console2_7__console2_7
+    second: {fileID: 2100000, guid: 81209d33842b71847b9bcf369753b9b8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: console2_8__console2_4
+    second: {fileID: 2100000, guid: 4e85cb0b882855a4f877056d54b105d5, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations: []
     isReadable: 1
   meshes:
@@ -50,13 +131,23 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 1
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -66,9 +157,15 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 4
-  importAnimation: 1
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 0
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -78,8 +175,11 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
   humanoidOversampling: 1

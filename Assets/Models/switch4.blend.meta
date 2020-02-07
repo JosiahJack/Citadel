@@ -1,31 +1,70 @@
 fileFormatVersion: 2
 guid: 4916f2b99b37b7f48be733e6385ab500
-timeCreated: 1433021566
-licenseType: Free
 ModelImporter:
-  serializedVersion: 19
-  fileIDToRecycleName:
-    100000: //RootNode
-    100002: switch4_base
-    100004: switch4_lever
-    400000: //RootNode
-    400002: switch4_base
-    400004: switch4_lever
-    2300000: switch4_base
-    2300002: switch4_lever
-    3300000: switch4_base
-    3300002: switch4_lever
-    4300000: switch4_lever
-    4300002: switch4_base
-    7400000: UpIdle
-    7400002: DownIdle
-    7400004: FlipDown
-    7400006: FlipUp
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: switch4_base
+  - first:
+      1: 100004
+    second: switch4_lever
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: switch4_base
+  - first:
+      4: 400004
+    second: switch4_lever
+  - first:
+      23: 2300000
+    second: switch4_base
+  - first:
+      23: 2300002
+    second: switch4_lever
+  - first:
+      33: 3300000
+    second: switch4_base
+  - first:
+      33: 3300002
+    second: switch4_lever
+  - first:
+      43: 4300000
+    second: switch4_lever
+  - first:
+      43: 4300002
+    second: switch4_base
+  - first:
+      74: 7400000
+    second: UpIdle
+  - first:
+      74: 7400002
+    second: DownIdle
+  - first:
+      74: 7400004
+    second: FlipDown
+  - first:
+      74: 7400006
+    second: FlipUp
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: sw4_up__sw4_up
+    second: {fileID: 2100000, guid: 6f8cd2cc966c2df4c90a7b768edd38e5, type: 2}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -38,16 +77,20 @@ ModelImporter:
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
-    animationCompression: 1
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: UpIdle
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 1
       wrapMode: 0
@@ -56,7 +99,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -82,6 +125,7 @@ ModelImporter:
     - serializedVersion: 16
       name: DownIdle
       takeName: Default Take
+      internalID: 0
       firstFrame: 3
       lastFrame: 4
       wrapMode: 0
@@ -90,7 +134,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -116,6 +160,7 @@ ModelImporter:
     - serializedVersion: 16
       name: FlipDown
       takeName: Default Take
+      internalID: 0
       firstFrame: 1
       lastFrame: 3
       wrapMode: 0
@@ -150,6 +195,7 @@ ModelImporter:
     - serializedVersion: 16
       name: FlipUp
       takeName: Default Take
+      internalID: 0
       firstFrame: 4
       lastFrame: 6
       wrapMode: 0
@@ -187,13 +233,23 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -203,10 +259,15 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 4
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -216,8 +277,8 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 0

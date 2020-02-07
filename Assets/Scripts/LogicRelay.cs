@@ -2,46 +2,49 @@
 using System.Collections;
 
 public class LogicRelay : MonoBehaviour {
-	public GameObject target;
-	public GameObject target1;
-	public GameObject target2;
-	public GameObject target3;
+	public string target;
+	public string argvalue;
+	public bool thisTioOverridesSender = true;
 	public float delay = 0f;
+	public bool relayEnabled = true;
 	private float delayFinished;
-	private GameObject playerCamera;
+	private UseData tempUd;
 
-	void Awake () {
-		delayFinished = 0f;
+	void Awake() {
+		delayFinished = -1f;
 	}
 
-	public void Targetted (GameObject owner) {
-		playerCamera = owner;  // set playerCamera to owner of the input (always should be the player camera)
-		if (delay > 0) {
-			delayFinished = Time.time + delay;
+	void Update() {
+		if (!relayEnabled) return;
+		if (delay <=0) return;
+
+		if (delayFinished != -1f && delayFinished < Time.time) {
+			RunTargets(tempUd);
+			delayFinished = -1f;
+		}
+	}
+
+	public void Targetted (UseData ud) {
+		if (!relayEnabled) return;
+
+		if (delay <=0) {
+			RunTargets(ud);
 		} else {
-			UseTargets();
+			delayFinished = Time.time + delay;
+			tempUd = ud;
 		}
 	}
 
-	public void UseTargets () {
-		if (target != null) {
-			target.SendMessageUpwards("Targetted", playerCamera);
+	void RunTargets(UseData ud) {
+		ud.argvalue = argvalue;
+		if (thisTioOverridesSender) {
+			TargetIO tio = GetComponent<TargetIO>();
+			if (tio != null) {
+				ud.SetBits(tio);
+			} else {
+				Debug.Log("BUG: no TargetIO.cs found on an object with a LogicRelay.cs script!  Trying to call UseTargets without parameters!");
+			}
 		}
-		if (target1 != null) {
-			target1.SendMessageUpwards("Targetted", playerCamera);
-		}
-		if (target2 != null) {
-			target2.SendMessageUpwards("Targetted", playerCamera);
-		}
-		if (target3 != null) {
-			target3.SendMessageUpwards("Targetted", playerCamera);
-		}
-	}
-
-	void Update () {
-		if ((delayFinished < Time.time) && delayFinished != 0) {
-			delayFinished = 0;
-			UseTargets();
-		}
+		Const.a.UseTargets(ud,target);
 	}
 }

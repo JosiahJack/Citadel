@@ -2,10 +2,12 @@
 using System.Collections;
 
 public class Door : MonoBehaviour {
+	public string target;
 	[Tooltip("Delay after full open before door closes")]
 	public float delay;
 	[Tooltip("Whether door is locked, unuseable until unlocked")]
 	public bool locked;
+	public int securityThreshhold = 100; // if security level is not below this level, this is unusable
 	[Tooltip("If yes, door never closes automatically")]
 	public bool stayOpen;
 	[Tooltip("Should door start open (you should set stayOpen too!)")]
@@ -19,9 +21,9 @@ public class Door : MonoBehaviour {
 	[Tooltip("Message to display when door is locked, e.g.'door is broken beyond repair'")]
 	public string lockedMessage = "Door is locked";
 	[Tooltip("Message to display when door requires a keycard, e.g.'Standard Access card required'")]
-	public string cardMessage = "access card required";
+	public string cardMessage = " access card required";
 	[Tooltip("Message to display when door is opened using a keycard, e.g.'Standard Access card used'")]
-	public string cardUsedMessage = "STD access granted";
+	public string cardUsedMessage = " access granted";
 	public string butdoorStillLockedMessage = " but door is locked.";
 	[HideInInspector]
 	public bool blocked = false;
@@ -34,6 +36,7 @@ public class Door : MonoBehaviour {
 	public enum doorState {Closed, Open, Closing, Opening};
 	public enum accessCardType {None,Standard,Medical,Science,Admin,Group1,Group2,Group3,Group4,GroupA,GroupB,Storage,Engineering,Maintenance,Security,Per1,Per2,Per3,Per4,Per5};
 	public accessCardType requiredAccessCard = accessCardType.None;
+	public bool accessCardUsedByPlayer = false;
 	public doorState doorOpen;
 
 	public float timeBeforeLasersOn;
@@ -47,7 +50,7 @@ public class Door : MonoBehaviour {
 	private float topTime = 1.00f;
 	private float defaultSpeed = 1.00f;
 	private float speedZero = 0.00f;
-	private string idleOpenClipName = "IdleOpen";
+	//private string idleOpenClipName = "IdleOpen";
 	private string idleClosedClipName = "IdleClosed";
 	private string openClipName = "DoorOpen";
 	private string closeClipName = "DoorClose";
@@ -57,25 +60,41 @@ public class Door : MonoBehaviour {
 
 	void Start () {
 		anim = GetComponent<Animator>();
-		if (startOpen) {
-			doorOpen = doorState.Open;
-			anim.Play(idleOpenClipName);
-		} else {
-			doorOpen = doorState.Closed;
-			anim.Play(idleClosedClipName);
-		}
+
+		if (requiredAccessCard == accessCardType.None)
+			accessCardUsedByPlayer = true;
 		
 		SFX = GetComponent<AudioSource>();
 		useFinished = Time.time;
 		nmo = GetComponent<UnityEngine.AI.NavMeshObstacle>();
 		if (nmo == null) Const.sprint("BUG: Missing NavMeshObstacle on Door at " + transform.position.ToString(),Const.a.allPlayers);
 		if (nmo != null) nmo.carving = true; // creates a "hole" in the NavMesh forcing enemies to find an alternate route
+
+		if (startOpen) {
+			stayOpen = true;
+			OpenDoor();
+		} else {
+			doorOpen = doorState.Closed;
+			anim.Play(idleClosedClipName);
+		}
 	}
 
 	public void Use (UseData ud) {
+		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
+			MFDManager.a.BlockedBySecurity(transform.position);
+			return;
+		}
+
+		if (LevelManager.a.superoverride) {
+			// SHODAN can go anywhere!  Full security override!
+			locked = false;
+			requiredAccessCard = accessCardType.None;
+			accessCardUsedByPlayer = true;
+		}
+
 		ajar = false;
 		if (useFinished < Time.time) {
-			if (requiredAccessCard == accessCardType.None || ud.owner.GetComponent<PlayerReferenceManager>().playerInventory.GetComponent<AccessCardInventory>().HasAccessCard(requiredAccessCard)) {
+			if (requiredAccessCard == accessCardType.None || ud.owner.GetComponent<PlayerReferenceManager>().playerInventory.GetComponent<AccessCardInventory>().HasAccessCard(requiredAccessCard) || accessCardUsedByPlayer) {
 				useFinished = Time.time + useTimeDelay;
 				AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
 				float playbackTime = asi.normalizedTime;
@@ -84,6 +103,7 @@ public class Door : MonoBehaviour {
 				if (!locked) {
 					if (requiredAccessCard != accessCardType.None) {
 						Const.sprint(requiredAccessCard.ToString() + cardUsedMessage,ud.owner); // tell the owner of the Use command that we are locked
+						accessCardUsedByPlayer = true;
 					}
 
 					if (doorOpen == doorState.Open && playbackTime > 0.95f) {
@@ -119,6 +139,7 @@ public class Door : MonoBehaviour {
 				} else {
 					if (requiredAccessCard != accessCardType.None) {
 						Const.sprint (requiredAccessCard.ToString() + cardUsedMessage + butdoorStillLockedMessage,ud.owner);
+						accessCardUsedByPlayer = true;
 					} else {
 						Const.sprint(lockedMessage,ud.owner); // tell the owner of the Use command that we are locked
 					}
@@ -134,6 +155,34 @@ public class Door : MonoBehaviour {
 			locked = false;
 	
 		if (!targettingOnlyUnlocks) Use(ud);
+	}
+
+	public void ForceOpen() {
+		if (doorOpen == doorState.Open) return;
+		OpenDoor();
+	}
+
+	public void ForceClose() {
+		if (doorOpen == doorState.Closed) return;
+		CloseDoor();
+	}
+
+	public void Lock(string arg) {
+		locked = true;
+		if (arg == "" || arg == " " || arg == "  ") arg = "Door is locked"; // default
+		lockedMessage = arg;
+	}
+
+	public void Unlock() {
+		locked = false;
+	}
+
+	public void ToggleLocked(string arg) {
+		if (locked) {
+			Unlock();
+		} else {
+			Lock(arg);
+		}
 	}
 
 	void OpenDoor() {
@@ -199,7 +248,7 @@ public class Door : MonoBehaviour {
 			doorOpen = doorState.Open; // Door is open
 
 		if (Time.time > waitBeforeClose) {
-			if ((doorOpen == doorState.Open) && (!stayOpen))
+			if ((doorOpen == doorState.Open) && (!stayOpen) && (!startOpen))
 				CloseDoor();
 		}
 

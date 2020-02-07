@@ -11,7 +11,6 @@ public class LogTextReaderManager : MonoBehaviour {
 	//public GameObject dataTabAudioLogContainer;
 	//public GameObject dataTabManager;
 	
-	// Update is called once per frame
 	void Update () {
 		if (logTextOutput.GetComponent<Text>().text.Length > 568) {
 			moreButtonText.text = "[MORE]";
@@ -21,6 +20,7 @@ public class LogTextReaderManager : MonoBehaviour {
 	}
 
 	public void SendTextToReader(int referenceIndex) {
+		//Debug.Log("SendTextToReader received referenceIndex of " + referenceIndex.ToString());
 		logTextOutput.GetComponent<Text>().text = Const.a.audioLogSpeech2Text[referenceIndex];
 		//mfdManager.OpenTab(4,true,MFDManager.TabMSG.AudioLog,referenceIndex);
 		//dataTabManager.GetComponent<DataTab>().Reset();

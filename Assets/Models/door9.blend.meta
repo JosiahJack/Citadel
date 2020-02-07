@@ -1,51 +1,96 @@
 fileFormatVersion: 2
 guid: f3e313ee2e6892d4fab615b9ca54a0fd
-timeCreated: 1463839850
-licenseType: Free
 ModelImporter:
-  serializedVersion: 19
-  fileIDToRecycleName:
-    100000: //RootNode
-    100002: door_bulk3_door
-    100004: door_bulk3_stub
-    400000: //RootNode
-    400002: door_bulk3_door
-    400004: door_bulk3_stub
-    2300000: door_bulk3_door
-    2300002: door_bulk3_stub
-    3300000: door_bulk3_door
-    3300002: door_bulk3_stub
-    4300000: door_bulk3_stub
-    4300002: door_bulk3_door
-    7400000: IdleDoor9Closed
-    7400002: IdleDoor9Open
-    7400004: Door9Open
-    7400006: Door9Close
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: door_bulk3_door
+  - first:
+      1: 100004
+    second: door_bulk3_stub
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: door_bulk3_door
+  - first:
+      4: 400004
+    second: door_bulk3_stub
+  - first:
+      23: 2300000
+    second: door_bulk3_door
+  - first:
+      23: 2300002
+    second: door_bulk3_stub
+  - first:
+      33: 3300000
+    second: door_bulk3_door
+  - first:
+      33: 3300002
+    second: door_bulk3_stub
+  - first:
+      43: 4300000
+    second: door_bulk3_stub
+  - first:
+      43: 4300002
+    second: door_bulk3_door
+  - first:
+      74: 7400000
+    second: IdleDoor9Closed
+  - first:
+      74: 7400002
+    second: IdleDoor9Open
+  - first:
+      74: 7400004
+    second: Door9Open
+  - first:
+      74: 7400006
+    second: Door9Close
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: door_bulk3__door_bulk3_tga
+    second: {fileID: 2100000, guid: dfc5cba94998dcf4d840853356eabea5, type: 2}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: IdleDoor9Closed
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 1
       wrapMode: 0
@@ -80,6 +125,7 @@ ModelImporter:
     - serializedVersion: 16
       name: IdleDoor9Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 23
       lastFrame: 24
       wrapMode: 0
@@ -114,6 +160,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Door9Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 23
       wrapMode: 0
@@ -148,6 +195,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Door9Close
       takeName: Default Take
+      internalID: 0
       firstFrame: 23
       lastFrame: 52
       wrapMode: 0
@@ -185,13 +233,23 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -201,9 +259,15 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -213,8 +277,11 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
   humanoidOversampling: 1

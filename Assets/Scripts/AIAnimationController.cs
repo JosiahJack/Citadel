@@ -12,17 +12,20 @@ public class AIAnimationController : MonoBehaviour {
 	private bool dying;
 	private bool dead;
 	public bool useDeadAnimForDeath = false;
+	private bool alreadySetAnimation = false;
 
 	void Awake () {
 		anim = GetComponent<Animator>();
 		//aic = GetComponent<AIController>();
 		currentClipPercentage = 0;
 		dead = false;
+		alreadySetAnimation = false;
 	}
 
 	void Update () {
 		if (PauseScript.a != null && PauseScript.a.Paused()) {
 			anim.speed = 0;
+			alreadySetAnimation = false;
 			return;
 		} else {
 			anim.speed = 1f;
@@ -59,6 +62,7 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Run () {
+		alreadySetAnimation = false;
 		anim.Play("Run");
 	}
 
@@ -71,7 +75,10 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Attack2 () {
-		anim.Play("Attack2");
+		if (!alreadySetAnimation) {
+			alreadySetAnimation = true;
+			anim.Play("Attack2");
+		}
 	}
 
 	void Attack3 () {

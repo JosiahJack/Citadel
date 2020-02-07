@@ -8,10 +8,13 @@ public class HealthManager : MonoBehaviour {
 	public float maxhealth; // maximum health
 	public float gibhealth; // point at which we splatter
 	public bool gibOnDeath = false; // used for things like crates to "gib" and shatter
+	public bool dropItemsOnGib = false;
+	[DTValidator.Optional] public SearchableItem searchableItem; // not used universally
 	public bool gibCorpse = false;
     public bool vaporizeCorpse = true;
 	public bool isNPC = false;
 	public bool isObject = false;
+	public bool isScreen = false;
 	public bool applyImpact = false;
 	public int[] gibIndices;
 	public GameObject[] gibObjects;
@@ -21,12 +24,15 @@ public class HealthManager : MonoBehaviour {
 	public Const.PoolType deathFX;
 	public enum BloodType {None,Red,Yellow,Green,Robot};
 	public BloodType bloodType;
-	public GameObject[] targetOnDeath;
 	[DTValidator.Optional] public AudioClip backupDeathSound;
     public bool debugMessages = false;
 	public HardwareInvCurrent hic;
 	public HardwareInventory hinv;
 	public PlayerHealth ph;
+	public float justHurtByEnemy;
+	public PainStaticFX pstatic;
+	public bool teleportOnDeath = false;
+	public bool actAsCorpseOnly = false;
 
 	private bool initialized = false;
 	private bool deathDone = false;
@@ -39,6 +45,11 @@ public class HealthManager : MonoBehaviour {
     private Vector3 tempVec;
     private float tempFloat;
 	private float take;
+	public string targetOnDeath;
+	public string argvalue;
+	[DTValidator.Optional] public SpawnManager spawnMother;  // not used universally
+	public GameObject healingFXFlash;
+	public bool god = false; // is this entity invincible? used for player cheat
 
 	void Awake () {
 		initialized = false;
@@ -57,6 +68,7 @@ public class HealthManager : MonoBehaviour {
 			if (ph == null) Debug.Log("BUG: No PlayerHealth script referenced by a Player's HealthManager");
 		}
 		take = 0;
+		justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
 	}
 
 	// Put into Start instead of Awake to give Const time to populate from enemy_tables.txt
@@ -82,14 +94,32 @@ public class HealthManager : MonoBehaviour {
 	void Update () {
 		if (!initialized) {
 			initialized = true;
-			Const.a.RegisterObjectWithHealth(this);
+			if (health > 0) Const.a.RegisterObjectWithHealth(this);
 		}
 			
 		if (health > maxhealth) health = maxhealth; // Don't go past max.  Ever.
+		if (actAsCorpseOnly && isNPC) {
+			DamageData dd = new DamageData();
+			dd.damage = maxhealth * 2f;
+			TakeDamage(dd); // harrycarry time, we's dead
+			//aic. nevermind we already check health in AIController's Think() function and take care of anims
+			actAsCorpseOnly = false;
+		}
 	}
 
 
 	public void TakeDamage(DamageData dd) {
+		if (applyImpact && rbody != null) {
+			if (dd.impactVelocity <= 0) {
+				rbody.AddForceAtPosition((dd.attacknormal*dd.damage*2f),dd.hit.point);
+			} else {
+				//rbody.AddForce(dd.impactVelocity*dd.attacknormal,ForceMode.Impulse); // Old, JJ changed 9/5/19 to AddForceAtPosition since it's more accurate when shooting objects
+				rbody.AddForceAtPosition((dd.attacknormal*dd.impactVelocity*2f),dd.hit.point);
+			}
+		}
+
+		if (god) return; // untouchable!
+
 		if (health <= 0) return;
 		if (dd.damage <= 0) return;
 
@@ -131,6 +161,19 @@ public class HealthManager : MonoBehaviour {
 			}
 			if (take > 0) {
 				ph.PlayerNoise.PlayOneShot(ph.PainSFXClip); // Play player pain noise
+				// 0 = light, 1 = med, 2 = heavy
+				int intensityOfPainFlash = 0;
+				if (take > 15f) {
+					intensityOfPainFlash = 2;
+				}
+				if (take > 10f) {
+					intensityOfPainFlash = 1;
+				}
+				pstatic.Flash(intensityOfPainFlash);
+			}
+
+			if (dd.ownerIsNPC) {
+				justHurtByEnemy = Time.time;
 			}
 		}
 
@@ -139,35 +182,32 @@ public class HealthManager : MonoBehaviour {
         if (debugMessages) Const.sprint("Health before: " + tempFloat.ToString() + "| Health after: " + health.ToString(), Const.a.allPlayers);
 		attacker = dd.owner;
 		
-        if (aic != null && isNPC) {
+        if (aic != null && isNPC && (health > 0f)) {
 			aic.goIntoPain = true;
 			aic.SendEnemy(attacker);
 		}
 
-		if (applyImpact && rbody != null) {
-			if (dd.impactVelocity <= 0) {
-				rbody.AddForceAtPosition((dd.attacknormal*dd.damage),dd.hit.point);
-			} else {
-				//rbody.AddForce(dd.impactVelocity*dd.attacknormal,ForceMode.Impulse); // Old, JJ changed 9/5/19 to AddForceAtPosition since it's more accurate when shooting objects
-				rbody.AddForceAtPosition((dd.attacknormal*dd.impactVelocity),dd.hit.point);
-			}
-		}
-
         if (health <= 0f) {
             if (!deathDone) {
+				// use targets
+				if (targetOnDeath != null && targetOnDeath != "" && targetOnDeath != " " && targetOnDeath != "  ") {
+					UseData ud = new UseData();
+					ud.owner = dd.owner;
+					ud.argvalue = argvalue;
+					TargetIO tio = GetComponent<TargetIO>();
+					if (tio != null) {
+						ud.SetBits(tio);
+					} else {
+						Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
+					}
+					Const.a.UseTargets(ud,targetOnDeath);
+				}
+
                 if (isObject) ObjectDeath(null);
 
-                if (isNPC) NPCDeath(null);
+				if (isScreen) ScreenDeath(backupDeathSound);
 
-                if (targetOnDeath != null) {
-                    if (targetOnDeath.Length > 0) {
-                        UseData ud = new UseData();
-                        ud.owner = Const.a.allPlayers;
-                        for (int i = 0; i < targetOnDeath.Length; i++) {
-                            targetOnDeath[i].SendMessageUpwards("Targetted", ud);
-                        }
-                    }
-                }
+                if (isNPC) NPCDeath(null);
             } else {
                 if (vaporizeCorpse && health < (0 - (maxhealth / 2))) {
                     GetComponent<MeshRenderer>().enabled = false;
@@ -222,6 +262,8 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 		}
+
+		if (spawnMother != null) spawnMother.SpawneeJustDied();
 	}
 
     public void Gib() {
@@ -232,7 +274,64 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 		}
+
+		if (dropItemsOnGib) {
+			if (searchableItem != null) {
+				GameObject levelDynamicContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
+				for (int i=0;i<4;i++) {
+					if (searchableItem.contents[i] >= 0) {
+						GameObject tossObject = Instantiate(Const.a.useableItems[searchableItem.contents[i]],transform.position,Quaternion.identity) as GameObject;
+						if (tossObject == null) {
+							Const.sprint("BUG: Failed to instantiate object being dropped on gib.",Const.a.allPlayers);
+							return;
+						}
+
+						if (tossObject.activeSelf != true) {
+							tossObject.SetActive(true);
+						}
+						tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+						//tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
+						tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
+					}
+				}
+			}
+		}
     }
+
+	public void ScreenDeath(AudioClip deathSound) {
+		if (deathDone) return;
+
+		deathDone = true;
+
+		// Screens maintain collisions
+
+		// Make some noise
+		if (deathSound != null) {
+			//GameObject tempAud = GameObject.Find ("TemporaryAudio");
+			GameObject tempAud = Const.a.GetObjectFromPool(Const.PoolType.TempAudioSources);
+			if (tempAud != null && deathSound != null) {
+				tempAud.transform.position = transform.position;
+				AudioSource aS = tempAud.GetComponent<AudioSource> ();
+				if (aS != null && deathSound != null) aS.PlayOneShot (deathSound);
+			}
+		} else {
+			//GameObject tempAud = GameObject.Find ("TemporaryAudio");
+			GameObject tempAud = Const.a.GetObjectFromPool(Const.PoolType.TempAudioSources);
+			if (tempAud != null && deathSound != null) {
+				tempAud.transform.position = transform.position;
+				AudioSource aS = tempAud.GetComponent<AudioSource> ();
+				if (aS != null && deathSound != null) aS.PlayOneShot (backupDeathSound);
+			}
+		}
+
+		ImageSequenceTextureArray ista = GetComponent<ImageSequenceTextureArray>();
+		if (ista != null) ista.Destroy();
+
+		// Throw some glass
+		if (gibOnDeath) Gib();
+
+		// Screens maintain visible mesh, don't turn it off
+	}
 
 	public void ObjectDeath(AudioClip deathSound) {
 		if (deathDone) return;
@@ -267,13 +366,20 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 
+		if (spawnMother != null) spawnMother.SpawneeJustDied();
+
 		if (gibOnDeath) Gib();
 
 		//gameObject.SetActive(false); // turn off the main object
 		GetComponent<MeshRenderer>().enabled = false;
 	}
 
-	public void HealingBed(float amount) {
+	public void HealingBed(float amount,bool flashBed) {
 		health += amount;
+		if (flashBed) {
+			if (healingFXFlash != null) {
+				healingFXFlash.SetActive(true);
+			}
+		}
 	}
 }

@@ -11,16 +11,24 @@ public class LevelManager : MonoBehaviour {
 	//public GameObject currentPlayer;
 	//public GameObject elevatorControl;
 	public GameObject sky;
+	public bool superoverride = false;
 
 	void Awake () {
 		a = this;
-		//print("LevelManager Awake(): Current level: " + currentLevel);
 		SetAllPlayersLevelsToCurrent();
 		DisableAllNonOccupiedLevels();
 		if (sky != null)
 			sky.SetActive(true);
 
 		Time.timeScale = Const.a.defaultTimeScale;
+	}
+
+	public void CyborgConversionToggleForCurrentLevel() {
+		ressurectionActive[currentLevel] = !ressurectionActive[currentLevel]; // toggle current level
+	}
+
+	public bool IsCurrentLevelCyborgConversionEnabled() {
+		return ressurectionActive[currentLevel];
 	}
 
 	public bool RessurectPlayer (GameObject currentPlayer) {
@@ -120,12 +128,14 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public int GetCurrentLevelSecurity() {
+		if (superoverride) return 0; // tee hee we are SHODAN, no security blocks in place
 		return levelSecurity [currentLevel];
 	}
 
 	public void ReduceCurrentLevelSecurity(int secDrop) {
 		levelSecurity [currentLevel] -= secDrop;
-		if (levelSecurity [currentLevel] < 0)
+		Const.sprint("Level security now " + levelSecurity[currentLevel].ToString() + "%",Const.a.allPlayers);
+		if (levelSecurity [currentLevel] < 1)
 			levelSecurity [currentLevel] = 0; // limit reduction in case of setup errors.  Calculate your sec levels carefully!!
 	}
 }

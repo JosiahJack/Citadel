@@ -76,7 +76,7 @@ ModelImporter:
       name: door_elev2__door_elev2_png
     second: {fileID: 2100000, guid: 663761c522010c24595f4d4d1f0799b4, type: 2}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0

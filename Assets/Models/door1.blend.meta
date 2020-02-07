@@ -1,55 +1,121 @@
 fileFormatVersion: 2
 guid: 3036f1db87ddd064593654ec07dc99eb
-timeCreated: 1432577928
-licenseType: Free
 ModelImporter:
-  serializedVersion: 18
-  fileIDToRecycleName:
-    100000: //RootNode
-    100002: door1_frame
-    100004: door1_lower
-    100006: door1_upper
-    400000: //RootNode
-    400002: door1_frame
-    400004: door1_lower
-    400006: door1_upper
-    2300000: door1_frame
-    2300002: door1_lower
-    2300004: door1_upper
-    3300000: door1_frame
-    3300002: door1_lower
-    3300004: door1_upper
-    4300000: door1_frame
-    4300002: door1_lower
-    4300004: door1_upper
-    7400000: Door1Open
-    7400002: Door1Close
-    7400004: IdleDoor1Open
-    7400006: IdleDoor1Close
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: door1_frame
+  - first:
+      1: 100004
+    second: door1_lower
+  - first:
+      1: 100006
+    second: door1_upper
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: door1_frame
+  - first:
+      4: 400004
+    second: door1_lower
+  - first:
+      4: 400006
+    second: door1_upper
+  - first:
+      23: 2300000
+    second: door1_frame
+  - first:
+      23: 2300002
+    second: door1_lower
+  - first:
+      23: 2300004
+    second: door1_upper
+  - first:
+      33: 3300000
+    second: door1_frame
+  - first:
+      33: 3300002
+    second: door1_lower
+  - first:
+      33: 3300004
+    second: door1_upper
+  - first:
+      43: 4300000
+    second: door1_frame
+  - first:
+      43: 4300002
+    second: door1_lower
+  - first:
+      43: 4300004
+    second: door1_upper
+  - first:
+      74: 7400000
+    second: Door1Open
+  - first:
+      74: 7400002
+    second: Door1Close
+  - first:
+      74: 7400004
+    second: IdleDoor1Open
+  - first:
+      74: 7400006
+    second: IdleDoor1Close
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: door1_2__door1_2
+    second: {fileID: 2100000, guid: 2beec7621928d4743ab338a94424bdb4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: flight1_4__door1_2
+    second: {fileID: 2100000, guid: 2beec7621928d4743ab338a94424bdb4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: flight1_4__maint2_2
+    second: {fileID: 2100000, guid: 8a36ec2a35be22a4183e6fc2ee7229e7, type: 2}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
-    animationRotationError: .5
-    animationPositionError: .5
-    animationScaleError: .5
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: Door1Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 12
       wrapMode: 0
@@ -57,6 +123,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -81,9 +148,11 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Door1Close
       takeName: Default Take
+      internalID: 0
       firstFrame: 13
       lastFrame: 23
       wrapMode: 0
@@ -91,6 +160,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -115,9 +185,11 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: IdleDoor1Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 12
       lastFrame: 13
       wrapMode: 0
@@ -125,6 +197,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -149,9 +222,11 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: IdleDoor1Close
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 1
       wrapMode: 0
@@ -159,6 +234,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -183,19 +259,30 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -203,24 +290,34 @@ ModelImporter:
     useFileScale: 1
   tangentSpace:
     normalSmoothAngle: 60
-    splitTangentsAcrossUV: 1
     normalImportMode: 0
-    tangentImportMode: 1
+    tangentImportMode: 4
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 3
     human: []
     skeleton: []
-    armTwist: .5
-    foreArmTwist: .5
-    upperLegTwist: .5
-    legTwist: .5
-    armStretch: .0500000007
-    legStretch: .0500000007
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
+  humanoidOversampling: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

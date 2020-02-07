@@ -1,0 +1,20 @@
+FIXED Fatigue warning message not displaying
+Weapon ammo count isn't updated when switching between weapons with different ammo types normal instead of alternate or vice versa
+Reduce collider size on blue oval storage door
+Security guard corpse shoulder is too high, able to ghost camera through it while player is crawling, maybe lower 0.06
+Blood splats for humanoid mutant take too long to appear
+Humanoid mutant jerks when changing to corpse
+Humanoid mutant falls through floor on occasion when changing to corpse
+Grenades fail to activate
+Energy slider is not clickable, remove UIPointerEnter Event Trigger and add extra check in Weapon Fire for Slider.isActive or whatever it's called
+Incorrect frobicon on keycard from briefcase in Medical cafe, also says already have - Group-1?
+Picking up keycard that you already have should say "already have <name>", missing name
+env_sparks in medical cafe are not working anymore
+Door collides with corpses
+Sparq hit lasts too long for light
+Cyborg assassin corpse fell through floor
+After log playback is complete, need to return to last tab
+After log playback is complete, need to return center tab to last tab
+Changing weapons with T or B in inventory mode causes screen to pop 90deg leftward.  T and B should NOT be mapped to look up and look down.
+Look up/Look down forces view to rotate 90deg out of sync.
+Jump+Prone/Crouch to climb up higher works!!!!

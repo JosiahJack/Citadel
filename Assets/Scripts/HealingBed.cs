@@ -21,7 +21,7 @@ public class HealingBed : MonoBehaviour {
 	public void Use (UseData ud) {
 		if (LevelManager.a.GetCurrentLevelSecurity() <= minSecurityLevel) {
 			if (!broken) {
-				ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerHealth>().HealingBed(amount);
+				ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<HealthManager>().HealingBed(amount,true);
 				Const.sprint("Automatic healing process activated.",ud.owner);
 				SFXSource.PlayOneShot(SFX);
 			} else {

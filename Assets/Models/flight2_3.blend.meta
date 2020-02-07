@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 4def11ad58f881844aec2675ed695b00
 ModelImporter:
-  serializedVersion: 25
+  serializedVersion: 26
   internalIDToNameTable:
   - first:
       74: 1989289236423521904
@@ -13,7 +13,7 @@ ModelImporter:
       name: flight2_3__flight2_3_png
     second: {fileID: 2100000, guid: f8a39b6b1f2a6d24582ddb8a1b53b3f1, type: 2}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -75,6 +75,7 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -104,7 +105,7 @@ ModelImporter:
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
-  importAnimation: 1
+  importAnimation: 0
   copyAvatar: 0
   humanDescription:
     serializedVersion: 3

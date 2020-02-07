@@ -16,6 +16,7 @@ public class GeneralInvCurrent : MonoBehaviour {
         GeneralInvInstance.generalInvIndex = 0; // Current index to the item look-up table
 	}
 
+	/*
 	void Update() {
 		bool setVaporizeButtonOn = false;
 		bool setActivateButtonOn = false;
@@ -56,5 +57,5 @@ public class GeneralInvCurrent : MonoBehaviour {
 
 		if (setApplyButtonOn) applyButton.SetActive(true);
 		else applyButton.SetActive(false);
-	}
+	}*/
 }

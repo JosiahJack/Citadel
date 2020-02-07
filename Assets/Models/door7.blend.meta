@@ -1,56 +1,116 @@
 fileFormatVersion: 2
 guid: 1c4642b5f89062c49b716cdd90ce6c66
-timeCreated: 1462417810
-licenseType: Free
 ModelImporter:
-  serializedVersion: 19
-  fileIDToRecycleName:
-    100000: door1_7
-    100002: door1_7_001
-    100004: door1_7_002
-    100006: //RootNode
-    400000: door1_7
-    400002: door1_7_001
-    400004: door1_7_002
-    400006: //RootNode
-    2300000: door1_7
-    2300002: door1_7_001
-    2300004: door1_7_002
-    3300000: door1_7
-    3300002: door1_7_001
-    3300004: door1_7_002
-    4300000: door1_7_002
-    4300002: door1_7_001
-    4300004: door1_7
-    7400000: IdleClosed
-    7400002: IdleOpen
-    7400004: Door7Open
-    7400006: Door7Close
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: door1_7
+  - first:
+      1: 100002
+    second: door1_7_001
+  - first:
+      1: 100004
+    second: door1_7_002
+  - first:
+      1: 100006
+    second: //RootNode
+  - first:
+      4: 400000
+    second: door1_7
+  - first:
+      4: 400002
+    second: door1_7_001
+  - first:
+      4: 400004
+    second: door1_7_002
+  - first:
+      4: 400006
+    second: //RootNode
+  - first:
+      23: 2300000
+    second: door1_7
+  - first:
+      23: 2300002
+    second: door1_7_001
+  - first:
+      23: 2300004
+    second: door1_7_002
+  - first:
+      33: 3300000
+    second: door1_7
+  - first:
+      33: 3300002
+    second: door1_7_001
+  - first:
+      33: 3300004
+    second: door1_7_002
+  - first:
+      43: 4300000
+    second: door1_7_002
+  - first:
+      43: 4300002
+    second: door1_7_001
+  - first:
+      43: 4300004
+    second: door1_7
+  - first:
+      74: 7400000
+    second: IdleClosed
+  - first:
+      74: 7400002
+    second: IdleOpen
+  - first:
+      74: 7400004
+    second: Door7Open
+  - first:
+      74: 7400006
+    second: Door7Close
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: door1_7__door1_7_tga
+    second: {fileID: 2100000, guid: 7432239d4c071b94bb9a1f638e19d121, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: door7_lamp__door7_lamp_bmp
+    second: {fileID: 2100000, guid: 2fbdf457232cfb64c956460df5eca482, type: 2}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: IdleClosed
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 1
       wrapMode: 0
@@ -87,6 +147,7 @@ ModelImporter:
     - serializedVersion: 16
       name: IdleOpen
       takeName: Default Take
+      internalID: 0
       firstFrame: 21
       lastFrame: 22
       wrapMode: 0
@@ -123,6 +184,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Door7Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 2
       lastFrame: 21
       wrapMode: 0
@@ -159,6 +221,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Door7Close
       takeName: Default Take
+      internalID: 0
       firstFrame: 22
       lastFrame: 42
       wrapMode: 0
@@ -198,13 +261,23 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -214,9 +287,15 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -226,8 +305,11 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
   humanoidOversampling: 1

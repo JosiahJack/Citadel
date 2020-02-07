@@ -8,12 +8,17 @@ public class PlayerEnergy : MonoBehaviour {
     private AudioSource SFX;
     public AudioClip SFXBatteryUse;
     public AudioClip SFXChargeStationUse;
+	public WeaponCurrent wepCur;
 
     public void Awake() {
         SFX = GetComponent<AudioSource>();
     }
 
     public void TakeEnergy ( float take  ){
+		if (wepCur != null) {
+			if (wepCur.redbull) return; // no energy drain!
+		}
+
 		energy -= take;
 		if (energy <= 0f)
 			energy = 0f;

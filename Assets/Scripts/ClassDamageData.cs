@@ -5,6 +5,7 @@ using UnityEngine;
 public class DamageData {
 	// Attacker (self [a]) data
 	public GameObject owner;
+	public bool ownerIsNPC;
 	public GameObject ownersCamera;
 	public WeaponFire ownersWeaponFireScript;
 	public Const.AttackType attackType;
@@ -36,6 +37,7 @@ public class DamageData {
 		damageData.ownersWeaponFireScript = null;
 		damageData.other = null;
 		damageData.attackType = Const.AttackType.None;
+		damageData.ownerIsNPC = false;
 		damageData.isOtherNPC = false;
 		damageData.isFullAuto = false;
 		damageData.damage = 0f;

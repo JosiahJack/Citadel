@@ -13,7 +13,7 @@ public class ListenerHardwareEreader : MonoBehaviour {
 			SFX.PlayOneShot(SFXClip);
 			//centerTabContainer.GetComponent<CenterMFDTabs>().DisableAllTabs();
 			//centerTabContainer.GetComponent<CenterMFDTabs>().DataReaderContentTab.SetActive(true);
-			ctb.TabButtonClickSilent(4);
+			ctb.TabButtonClickSilent(4,false);
 			MFDManager.a.OpenEReaderInItemsTab();
 		}
 	}*/

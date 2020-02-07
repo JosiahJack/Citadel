@@ -1,53 +1,127 @@
 fileFormatVersion: 2
 guid: bfb1d52168deb744aa15215aad97588a
-timeCreated: 1432597069
-licenseType: Free
 ModelImporter:
-  serializedVersion: 18
-  fileIDToRecycleName:
-    100000: //RootNode
-    100002: puzzlepanel_mesh
-    100004: puzzlepanel_mesh_cover
-    100006: puzzlepanel_mesh_001
-    400000: //RootNode
-    400002: puzzlepanel_mesh
-    400004: puzzlepanel_mesh_cover
-    400006: puzzlepanel_mesh_001
-    2300000: //RootNode
-    2300002: puzzlepanel_mesh
-    2300004: puzzlepanel_mesh_cover
-    2300006: puzzlepanel_mesh_001
-    3300000: //RootNode
-    3300002: puzzlepanel_mesh
-    3300004: puzzlepanel_mesh_cover
-    3300006: puzzlepanel_mesh_001
-    4300000: puzzlepanel_mesh
-    4300002: puzzlepanel_mesh_cover
-    4300004: puzzlepanel_mesh_001
-    7400000: PanelOpen
-    7400002: OpenIdle
-    7400004: CloseIdle
-    7400006: PanelClose
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: //RootNode
+  - first:
+      1: 100002
+    second: puzzlepanel_mesh
+  - first:
+      1: 100004
+    second: puzzlepanel_mesh_cover
+  - first:
+      1: 100006
+    second: puzzlepanel_mesh_001
+  - first:
+      4: 400000
+    second: //RootNode
+  - first:
+      4: 400002
+    second: puzzlepanel_mesh
+  - first:
+      4: 400004
+    second: puzzlepanel_mesh_cover
+  - first:
+      4: 400006
+    second: puzzlepanel_mesh_001
+  - first:
+      23: 2300000
+    second: //RootNode
+  - first:
+      23: 2300002
+    second: puzzlepanel_mesh
+  - first:
+      23: 2300004
+    second: puzzlepanel_mesh_cover
+  - first:
+      23: 2300006
+    second: puzzlepanel_mesh_001
+  - first:
+      33: 3300000
+    second: //RootNode
+  - first:
+      33: 3300002
+    second: puzzlepanel_mesh
+  - first:
+      33: 3300004
+    second: puzzlepanel_mesh_cover
+  - first:
+      33: 3300006
+    second: puzzlepanel_mesh_001
+  - first:
+      43: 4300000
+    second: puzzlepanel_mesh
+  - first:
+      43: 4300002
+    second: puzzlepanel_mesh_cover
+  - first:
+      43: 4300004
+    second: puzzlepanel_mesh_001
+  - first:
+      74: 7400000
+    second: PanelOpen
+  - first:
+      74: 7400002
+    second: OpenIdle
+  - first:
+      74: 7400004
+    second: CloseIdle
+  - first:
+      74: 7400006
+    second: PanelClose
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pnl13_cl
+    second: {fileID: 2100000, guid: 7b2891e123908994b8966a60384b6b96, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pnl13_cl__pnl13_cl
+    second: {fileID: 2100000, guid: 7b2891e123908994b8966a60384b6b96, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pnl13_off__pnl13_cl
+    second: {fileID: 2100000, guid: 7b2891e123908994b8966a60384b6b96, type: 2}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
-    animationCompression: 1
-    animationRotationError: .5
-    animationPositionError: .5
-    animationScaleError: .5
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 0
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: PanelOpen
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 20
       wrapMode: 0
@@ -55,6 +129,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -79,17 +154,20 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: OpenIdle
       takeName: Default Take
+      internalID: 0
       firstFrame: 20
-      lastFrame: 20
+      lastFrame: 21
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
-      loopTime: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -113,9 +191,11 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: CloseIdle
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 0
       wrapMode: 0
@@ -123,7 +203,8 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
-      loopTime: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -147,9 +228,11 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: PanelClose
       takeName: Default Take
+      internalID: 0
       firstFrame: 20
       lastFrame: 41
       wrapMode: 0
@@ -157,6 +240,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -181,19 +265,30 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -201,24 +296,34 @@ ModelImporter:
     useFileScale: 1
   tangentSpace:
     normalSmoothAngle: 60
-    splitTangentsAcrossUV: 1
     normalImportMode: 0
-    tangentImportMode: 1
+    tangentImportMode: 4
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 3
     human: []
     skeleton: []
-    armTwist: .5
-    foreArmTwist: .5
-    upperLegTwist: .5
-    legTwist: .5
-    armStretch: .0500000007
-    legStretch: .0500000007
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
+  humanoidOversampling: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

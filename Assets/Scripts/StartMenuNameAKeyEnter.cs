@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class StartMenuNameAKeyEnter : MonoBehaviour {
 	public InputField ip;
 
-	void ClickViaKeyboard () {
+	public void ClickViaKeyboard () {
 		if (ip != null) {
 			EventSystem.current.SetSelectedGameObject(ip.gameObject,null);
 			ip.ActivateInputField();

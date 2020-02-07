@@ -54,6 +54,7 @@ public class Const : MonoBehaviour {
 	[SerializeField] public AttackType[] attackTypeForWeapon;
 
 	//NPC constants
+	[SerializeField] public GameObject[] npcPrefabs;
 	[SerializeField] public string[] nameForNPC;
 	[SerializeField] public AttackType[] attackTypeForNPC;
 	[SerializeField] public AttackType[] attackTypeForNPC2;
@@ -114,7 +115,8 @@ public class Const : MonoBehaviour {
 						GrenadeFragExplosions,Vaporize,LaserLinesBlaster, LaserLinesIon, BlasterImpacts, IonImpacts,
 						MagpulseShots, MagpulseImpacts,StungunShots, StungunImpacts, RailgunShots, RailgunImpacts,
 						PlasmaShots, PlasmaImpacts, ProjEnemShot6,ProjEnemShot6Impacts, ProjEnemShot2Impacts,
-						ProjSeedPods, ProjSeedPodsImpacts, TempAudioSources,GrenadeEMPExplosions};
+						ProjSeedPods, ProjSeedPodsImpacts, TempAudioSources,GrenadeEMPExplosions, ProjEnemShot4,
+						ProjEnemShot4Impacts};
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
 	public GameObject Pool_ProjectilesEnemShot2;
@@ -147,6 +149,8 @@ public class Const : MonoBehaviour {
 	public GameObject Pool_ProjSeedPodsImpacts;
 	public GameObject Pool_TempAudioSources;
 	public GameObject Pool_GrenadeEMPExplosions;
+	public GameObject Pool_ProjEnemShot4;
+	public GameObject Pool_ProjEnemShot4Impacts;
 
 	//Global object references
 	public GameObject statusBar;
@@ -186,6 +190,8 @@ public class Const : MonoBehaviour {
     public enum aiMoveType {Walk,Fly,Swim,Cyber,None};
     public Font mainFont1;
 	public Font mainFont2;
+	[DTValidator.Optional] public GameObject[] TargetRegister; // doesn't need to be full, available space for maps and mods made by the community to use tons of objects
+	public string[] TargetnameRegister;
 
 	//Instance container variable
 	public static Const a;
@@ -458,7 +464,23 @@ public class Const : MonoBehaviour {
 				if (a.player3 != null) a.player3.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
 				if (a.player4 != null) a.player4.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
 			} else {
-				player.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+				PlayerReferenceManager prm = player.GetComponent<PlayerReferenceManager>();
+				if (prm != null) {
+					prm.playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+				} else {
+					if (a.player1 != null) {
+						if (player.transform.IsChildOf(a.player1.transform)) a.player1.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+					}
+					if (a.player2 != null) {
+						if (player.transform.IsChildOf(a.player1.transform)) a.player2.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+					}
+					if (a.player3 != null) {
+						if (player.transform.IsChildOf(a.player1.transform)) a.player3.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+					}
+					if (a.player4 != null) {
+						if (player.transform.IsChildOf(a.player1.transform)) a.player4.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+					}
+				}
 			}
 		}
 	}
@@ -597,6 +619,14 @@ public class Const : MonoBehaviour {
 		case PoolType.GrenadeEMPExplosions:
             poolContainer = Pool_GrenadeEMPExplosions;
             poolName = "GrenadeEMPExplosions ";
+            break;
+		case PoolType.ProjEnemShot4:
+            poolContainer = Pool_ProjEnemShot4;
+            poolName = "ProjEnemShot4 ";
+            break;
+		case PoolType.ProjEnemShot4Impacts:
+            poolContainer = Pool_ProjEnemShot4Impacts;
+            poolName = "ProjEnemShot4Impacts ";
             break;
         }
 
@@ -1218,30 +1248,90 @@ public class Const : MonoBehaviour {
 
 	public static float AngleInDeg(Vector3 vec1, Vector3 vec2) { return ((Mathf.Atan2(vec2.y - vec1.y, vec2.x - vec1.x)) * (180 / Mathf.PI)); }
 
+	/*
 	public void UseTargets (UseData ud, GameObject[] targets) {
 		for (int i = 0; i < targets.Length; i++) {
 			if (targets [i] != null) targets [i].SendMessageUpwards ("Targetted", ud);
 		}
+	}*/
+
+	public void UseTargets (UseData ud, string targetname) {
+		// Old method used SendMessage but this is horribly slow and does not give as much control
+		//if (target != null) target.SendMessageUpwards ("Targetted", ud);
+
+		// New method allows for targetting multiple objects, not just one gameobject
+
+		// First check if targetname is valid
+		if (targetname == null || targetname == "" || targetname == " " || targetname == "  ") {
+			Debug.Log("WARNING: invalid target name is either empty string or space or space space!  Ignoring and returning from Const.UseTargets()");
+			return;
+		}
+
+		if (ud.bitsSet == false) Debug.Log("BUG: calling UseTargets without first setting bits on the UseData struct.  Owner:  " + ud.owner.ToString());
+
+		// Find each gameobject with matching targetname in the register, then call Use for each
+		for (int i=0;i<TargetRegister.Length;i++) {
+			if (TargetnameRegister[i] == targetname) {
+				if (TargetRegister[i] != null) {
+					if (ud.GOSetActive) TargetRegister[i].SetActive(true);
+					if (ud.GOSetDeactive) TargetRegister[i].SetActive(false);
+					if (ud.GOToggleActive) TargetRegister[i].SetActive(!TargetRegister[i].activeSelf);
+					TargetIO tio = TargetRegister[i].GetComponent<TargetIO>();
+					tio.Targetted(ud);
+				}
+			}
+		}
 	}
 
-	public void UseTargets (UseData ud, GameObject target) {
-		if (target != null) target.SendMessageUpwards ("Targetted", ud);
+	public void AddToTargetRegister (GameObject go, string tn) {
+		for (int i=0;i<TargetRegister.Length;i++) {
+			if (TargetRegister[i] == null) {
+				TargetRegister[i] = go;
+				TargetnameRegister[i] = tn;
+				return; // Ok, game object added to the register, end loop and return
+			}
+		}
+	}
+	
+	public void DebugQuestBitShoutOut () {
+		Debug.Log("Level 1 Security Code: " + questData.lev1SecCode.ToString());
+		Debug.Log("Level 2 Security Code: " + questData.lev2SecCode.ToString());
+		Debug.Log("Level 3 Security Code: " + questData.lev3SecCode.ToString());
+		Debug.Log("Level 4 Security Code: " + questData.lev4SecCode.ToString());
+		Debug.Log("Level 5 Security Code: " + questData.lev5SecCode.ToString());
+		Debug.Log("Level 6 Security Code: " + questData.lev6SecCode.ToString());
+		Debug.Log("Level R Robot Spawning Deactivated: " + questData.RobotSpawnDeactivated.ToString());
+		Debug.Log("Isotope Installed: " + questData.IsotopeInstalled.ToString());
+		Debug.Log("Shield Activated: " + questData.ShieldActivated.ToString());
+		Debug.Log("Laser Safety Override On: " + questData.LaserSafetyOverriden.ToString());
+		Debug.Log("Laser Destroyed: " + questData.LaserDestroyed.ToString());
+		Debug.Log("Beta Grove Cyber Unlocked: " + questData.BetaGroveCyberUnlocked.ToString());
+		Debug.Log("Grove Alpha Jettison Enabled: " + questData.GroveAlphaJettisonEnabled.ToString());
+		Debug.Log("Grove Beta Jettison Enabled: " + questData.GroveBetaJettisonEnabled.ToString());
+		Debug.Log("Grove Delta Jettison Enabled: " + questData.GroveDeltaJettisonEnabled.ToString());
+		Debug.Log("Master Jettison Broken: " + questData.MasterJettisonBroken.ToString());
+		Debug.Log("Relay 428 Fixed: " + questData.Relay428Fixed.ToString());
+		Debug.Log("Master Jettison Enabled: " + questData.MasterJettisonEnabled.ToString());
+		Debug.Log("Beta Grove Jettisoned: " + questData.BetaGroveJettisoned.ToString());
+		Debug.Log("Antenna North Destroyed: " + questData.AntennaNorthDestroyed.ToString());
+		Debug.Log("Antenna Soutb Destroyed: " + questData.AntennaSouthDestroyed.ToString());
+		Debug.Log("Antenna East Destroyed: " + questData.AntennaEastDestroyed.ToString());
+		Debug.Log("Antenna West Destroyed: " + questData.AntennaWestDestroyed.ToString());
+		Debug.Log("Self Destruct Activated!: " + questData.SelfDestructActivated.ToString());
+		Debug.Log("Bridge Separation Complete: " + questData.BridgeSeparated.ToString());
+		Debug.Log("Isolinear Chipset Installed: " + questData.IsolinearChipsetInstalled.ToString());
 	}
 }
 
 public class QuestBits {
-	public bool Level1SecNodesDestroyed;
-	public bool Level2SecNodesDestroyed;
-	public bool Level3SecNodesDestroyed;
-	public bool Level4SecNodesDestroyed;
-	public bool Level5SecNodesDestroyed;
-	public bool Level6SecNodesDestroyed;
 	public int lev1SecCode;
 	public int lev2SecCode;
 	public int lev3SecCode;
 	public int lev4SecCode;
 	public int lev5SecCode;
 	public int lev6SecCode;
+	public bool RobotSpawnDeactivated;
+	public bool IsotopeInstalled;
 	public bool ShieldActivated;
 	public bool LaserSafetyOverriden;
 	public bool LaserDestroyed;
@@ -1260,4 +1350,20 @@ public class QuestBits {
 	public bool SelfDestructActivated;
 	public bool BridgeSeparated;
 	public bool IsolinearChipsetInstalled;
+
+	public void TargetOnGatePassed(bool bitToCheck, bool passIfTrue, UseData ud, TargetIO tio, string targ, string arg, string targOnFalse, string argOnFalse) {
+		if (passIfTrue) {
+			if (!bitToCheck) { RunTargets(ud,tio,targOnFalse,argOnFalse); return; }
+		} else {
+			if (bitToCheck) { RunTargets(ud,tio,targOnFalse,argOnFalse); return; }
+		}
+
+		RunTargets(ud,tio,targ,arg);
+	}
+
+	private void RunTargets(UseData ud, TargetIO tio, string target, string argvalue) {
+		ud.argvalue = argvalue; // grr, arg! (Mutant Enemy reference alert)
+		ud.SetBits(tio);
+		Const.a.UseTargets(ud,target);
+	}
 }

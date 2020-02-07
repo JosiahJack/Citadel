@@ -28,6 +28,7 @@ public class EnergyOverloadButton : MonoBehaviour {
             return;
         }
 
+		//Debug.Log("OverloadEnergyClick()ed");
         if (wf.overloadEnabled) {
             Const.sprint("Weapon normal setting", Const.a.allPlayers);
             wf.overloadEnabled = false;
@@ -46,11 +47,12 @@ public class EnergyOverloadButton : MonoBehaviour {
     }
 
     public void OverloadFired() {
+		//Const.sprint("Overload fired!",Const.a.allPlayers);
         buttonSprite.overrideSprite = normalButtonSprite;
         buttonText.color = textDisabledColor;
     }
 
-    void Start() {
-        GetComponent<Button>().onClick.AddListener(() => { OverloadEnergyClick(); });
-    }
+    //void Start() {
+    //    GetComponent<Button>().onClick.AddListener(() => { OverloadEnergyClick(); });
+    //}
 }

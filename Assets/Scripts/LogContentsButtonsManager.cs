@@ -8,7 +8,7 @@ public class LogContentsButtonsManager : MonoBehaviour {
 	public int currentLevelFolder;
 	public string[] logNames;
 	public int[] retrievedIndices;
-	public MultiMediaLogButton[] logRefButtons;
+	[DTValidator.Optional] public MultiMediaLogButton[] logRefButtons; //DT optional because it's empty until initialized below during Start
 
 	void Start() {
 		InitializeLogsFromLevelIntoFolder();

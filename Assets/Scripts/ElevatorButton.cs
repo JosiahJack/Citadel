@@ -6,7 +6,6 @@ public class ElevatorButton : MonoBehaviour {
 	public bool floorAccessible = false;
 	public bool tooFarAway = false;
 	public bool doorOpen = false;
-	private GameObject levelManager;
 	[HideInInspector]
 	public GameObject targetDestination;
 	private Text childText;
@@ -45,9 +44,6 @@ public class ElevatorButton : MonoBehaviour {
 	public string shaftDamageText = "Shaft Damage -- Unable to go there.";
 
 	void Awake() {
-		levelManager = GameObject.Find("LevelManager");
-		if (levelManager == null)
-			Const.sprint("Warning: Could Not Find object 'LevelManager' in scene\n",Const.a.allPlayers);
 		childText = GetComponentInChildren<Text>();
 		doorOpen = false;
 	}
@@ -63,8 +59,8 @@ public class ElevatorButton : MonoBehaviour {
 			if (doorOpen) {
 				Const.sprint(doorStillOpenText,currentPlayer);
 			} else {
-				if (floorAccessible && levelManager != null) {
-					levelManager.GetComponent<LevelManager>().LoadLevel(levelIndex,targetDestination,currentPlayer);
+				if (floorAccessible) {
+					LevelManager.a.LoadLevel(levelIndex,targetDestination,currentPlayer);
 				} else {
 					Const.sprint(shaftDamageText,currentPlayer);
 				}

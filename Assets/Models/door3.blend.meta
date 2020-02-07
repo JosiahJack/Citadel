@@ -1,51 +1,99 @@
 fileFormatVersion: 2
 guid: 3e1aef4b40f26da43b06f54d5729fd9c
-timeCreated: 1441757896
-licenseType: Free
 ModelImporter:
-  serializedVersion: 18
-  fileIDToRecycleName:
-    100000: door1_1
-    100002: door1_1_001
-    100004: //RootNode
-    400000: door1_1
-    400002: door1_1_001
-    400004: //RootNode
-    2300000: door1_1
-    2300002: door1_1_001
-    3300000: door1_1
-    3300002: door1_1_001
-    4300000: door1_1_001
-    4300002: door1_1
-    7400000: Default Take
-    7400002: IdleDoor1Open
-    7400004: IdleDoor1Close
-    7400006: Door1Open
-    7400008: Door1Close
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: door1_1
+  - first:
+      1: 100002
+    second: door1_1_001
+  - first:
+      1: 100004
+    second: //RootNode
+  - first:
+      4: 400000
+    second: door1_1
+  - first:
+      4: 400002
+    second: door1_1_001
+  - first:
+      4: 400004
+    second: //RootNode
+  - first:
+      23: 2300000
+    second: door1_1
+  - first:
+      23: 2300002
+    second: door1_1_001
+  - first:
+      33: 3300000
+    second: door1_1
+  - first:
+      33: 3300002
+    second: door1_1_001
+  - first:
+      43: 4300000
+    second: door1_1_001
+  - first:
+      43: 4300002
+    second: door1_1
+  - first:
+      74: 7400000
+    second: Default Take
+  - first:
+      74: 7400002
+    second: IdleDoor1Open
+  - first:
+      74: 7400004
+    second: IdleDoor1Close
+  - first:
+      74: 7400006
+    second: Door1Open
+  - first:
+      74: 7400008
+    second: Door1Close
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: door1_1__door1_1_tga
+    second: {fileID: 2100000, guid: 5383d702a99fb604e9edebca8b90165b, type: 2}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
-    animationRotationError: .5
-    animationPositionError: .5
-    animationScaleError: .5
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: IdleDoor1Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 24
       lastFrame: 25
       wrapMode: 0
@@ -53,6 +101,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -75,9 +124,11 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: IdleDoor1Close
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 1
       wrapMode: 0
@@ -85,6 +136,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -107,9 +159,11 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Door1Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 24
       wrapMode: 0
@@ -117,6 +171,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -139,9 +194,11 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Door1Close
       takeName: Default Take
+      internalID: 0
       firstFrame: 25
       lastFrame: 45
       wrapMode: 0
@@ -149,6 +206,7 @@ ModelImporter:
       level: 0
       cycleOffset: 0
       loop: 0
+      hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
@@ -171,19 +229,30 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -191,24 +260,34 @@ ModelImporter:
     useFileScale: 1
   tangentSpace:
     normalSmoothAngle: 60
-    splitTangentsAcrossUV: 1
     normalImportMode: 0
-    tangentImportMode: 1
+    tangentImportMode: 4
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 3
     human: []
     skeleton: []
-    armTwist: .5
-    foreArmTwist: .5
-    upperLegTwist: .5
-    legTwist: .5
-    armStretch: .0500000007
-    legStretch: .0500000007
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
+  humanoidOversampling: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

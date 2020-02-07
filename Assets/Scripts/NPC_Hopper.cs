@@ -53,6 +53,7 @@ public class NPC_Hopper : MonoBehaviour {
 	public AudioClip SFXDeathClip;
 	public AudioClip SFXInspect;
 	public AudioClip SFXInteracting;
+	public GameObject muzzleBurst;
 
 	private bool hasSFX;
 	private bool firstSighting;
@@ -83,6 +84,7 @@ public class NPC_Hopper : MonoBehaviour {
 	private CapsuleCollider capsuleCollider;
 	private SphereCollider sphereCollider;
 	private MeshCollider meshCollider;
+	private bool justpaused = false;
 
 	void Start () {
 		healthManager = GetComponent<HealthManager>();
@@ -152,7 +154,20 @@ public class NPC_Hopper : MonoBehaviour {
 
 	void Update () {
 		if (PauseScript.a != null && PauseScript.a.Paused()) {
+			if (justpaused == false) {
+				foreach (AnimationState state in anim) {
+					state.speed = 0f;
+				}
+				justpaused = true;
+			}
 			return; // don't do any checks or anything else...we're paused!
+		} else {
+			if (justpaused) {
+				foreach (AnimationState state in anim) {
+					state.speed = 1f;
+				}
+				justpaused = false;
+			}
 		}
 
 		// Only think every tick seconds to save on CPU and prevent race conditions
@@ -370,9 +385,11 @@ public class NPC_Hopper : MonoBehaviour {
 				if (SFXAttack1 != null)
 					SFX.PlayOneShot (SFXAttack1);
 
+				if (muzzleBurst != null) muzzleBurst.SetActive(true);
 				attackFinished = Time.time + timeBetweenProj1;
 				bool useBlood = false;
 				DamageData damageData = new DamageData ();
+				damageData.ownerIsNPC = true;
 				RaycastHit tempHit = new RaycastHit ();
 				Vector3 tempvec = Vector3.Normalize (fireEndPoint - firePoint.transform.position);
 				Ray tempRay = new Ray (firePoint.transform.position, tempvec);
@@ -399,11 +416,12 @@ public class NPC_Hopper : MonoBehaviour {
 						impact2.SetActive (true);
 					}
 
+					damageData.ownerIsNPC = true;
 					damageData.hit = tempHit;
 					damageData.attacknormal = Vector3.Normalize (firePoint.transform.position - fireEndPoint);
 					damageData.damage = Const.a.damagePerHitForWeapon [14];
 					damageData.damage = Const.a.GetDamageTakeAmount(damageData); //Added this line since the damage amount wasn't getting parsed by GetDamageTakeAmount to account for damages properly
-					tempHit.transform.gameObject.SendMessage ("TakeDamage", damageData, SendMessageOptions.DontRequireReceiver);
+					if (tempHit.transform.gameObject.GetComponent<HealthManager>() != null) tempHit.transform.gameObject.GetComponent<HealthManager>().TakeDamage(damageData);
 					GameObject lasertracer = Const.a.GetObjectFromPool (Const.PoolType.LaserLinesHopper);
 					targetEndHelper.transform.position = tempHit.point;
 					if (lasertracer != null) {
@@ -474,6 +492,7 @@ public class NPC_Hopper : MonoBehaviour {
 			//	gibs[i].GetComponent<Rigidbody>().WakeUp();
 			//}
 			gameObject.tag = "Searchable"; // Enable searching
+			gameObject.layer = 13; // set to Corpse layer for physics
 
 			//nav.speed = nav.speed * 0.5f; // half the speed while collapsing or whatever
 			timeTillDeadFinished = Time.time + timeTillDead; // wait for death animation to finish before going into Dead()
@@ -577,5 +596,30 @@ public class NPC_Hopper : MonoBehaviour {
 		}
 
 		return Const.a.GetObjectFromPool(Const.PoolType.SparksSmall);
+	}
+
+	public void Alert(UseData ud) {
+		GameObject playr1 = Const.a.player1;
+		GameObject playr2 = Const.a.player2;
+		GameObject playr3 = Const.a.player3;
+		GameObject playr4 = Const.a.player4;
+
+		if (playr1 == null) { Debug.Log("WARNING: NPC Alert() check - no host player 1."); return; }  // No host player
+		if (playr1 != null) {playr1 = playr1.GetComponent<PlayerReferenceManager>().playerCapsule;}
+		if (playr2 != null) {playr2 = playr2.GetComponent<PlayerReferenceManager>().playerCapsule;}
+		if (playr3 != null) {playr3 = playr3.GetComponent<PlayerReferenceManager>().playerCapsule;}
+		if (playr4 != null) {playr4 = playr4.GetComponent<PlayerReferenceManager>().playerCapsule;}
+
+		GameObject tempent = null;
+
+		for (int i=0;i<4;i++) {
+			tempent = null;
+			// Cycle through all the players to see if we can see anybody.  Defaults to earlier joined players. TODO: Add randomization if multiple players are visible.
+			if (playr1 != null && i == 0) tempent = playr1;
+			if (playr2 != null && i == 1) tempent = playr2;
+			if (playr3 != null && i == 2) tempent = playr3;
+			if (playr4 != null && i == 4) tempent = playr4;
+			if (ud.owner == tempent) { enemy = tempent; } else { if (tempent != enemy) enemy = tempent;}
+		}
 	}
 }

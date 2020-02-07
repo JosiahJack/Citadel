@@ -18,7 +18,8 @@ public class MenuArrowKeyControls : MonoBehaviour {
 			if (menuItems[currentIndex].GetComponent<Button>() != null) {
 				menuItems[currentIndex].GetComponent<Button>().onClick.Invoke();
 			} else {
-				menuItems[currentIndex].SendMessage("ClickViaKeyboard",SendMessageOptions.DontRequireReceiver);
+				if (menuItems[currentIndex].GetComponent<StartMenuNameAKeyEnter>() != null) menuItems[currentIndex].GetComponent<StartMenuNameAKeyEnter>().ClickViaKeyboard();
+				if (menuItems[currentIndex].GetComponent<StartMenuDifficultyController>() != null) menuItems[currentIndex].GetComponent<StartMenuDifficultyController>().ClickViaKeyboard();
 			}
 			return;
 		}

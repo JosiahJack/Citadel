@@ -7,6 +7,7 @@ public class WeaponAmmo : MonoBehaviour {
 	public int[] wepAmmoSecondary;
 	public enum energyWeaponStates {Ready,Overheated};
 	public energyWeaponStates[] currentEnergyWeaponState;
+	public bool[] wepLoadedWithAlternate;
 	public static WeaponAmmo a;
 
 	void Awake () {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class MFDManager : MonoBehaviour  {
 	public TabButtons leftTC;
 	public TabButtons rightTC;
+	public CenterTabButtons ctb;
 	public ItemTabManager itemTabLH;
 	public ItemTabManager itemTabRH;
 	public enum handedness {LeftHand,RightHand};
@@ -22,7 +23,7 @@ public class MFDManager : MonoBehaviour  {
 	public bool lastMinigameSideRH;
 	public GameObject SearchFXRH;
 	public GameObject SearchFXLH;
-	public enum TabMSG {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,WirePuzzle,EReader};
+	public enum TabMSG {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,WirePuzzle,EReader,Weapon};
 	public static MFDManager a;
 	public MouseLookScript playerMLook;
 	private bool isRH;
@@ -51,9 +52,14 @@ public class MFDManager : MonoBehaviour  {
 			case 4: isRH = lastDataSideRH; break;
 		}
 		if(!isRH) {
-			// RH MFD
-			leftTC.TabButtonClickSilent(index,overrideToggling);
+			// LH LEFT HAND MFD
 			leftTC.SetCurrentAsLast();
+			leftTC.TabButtonClickSilent(index,overrideToggling);
+			if (type == TabMSG.Weapon) {
+				dataTabLH.Reset();
+				
+			}
+
 			if (type == TabMSG.AudioLog) {
 				dataTabLH.Reset();
 				dataTabLH.audioLogContainer.SetActive(true);
@@ -78,15 +84,21 @@ public class MFDManager : MonoBehaviour  {
 				playerMLook.ForceInventoryMode();
 			}
 
+			if (type == TabMSG.WirePuzzle) {
+				dataTabLH.Reset();
+				dataTabLH.puzzleWire.SetActive(true);
+				playerMLook.ForceInventoryMode();
+			}
+
 			if (type == TabMSG.EReader) {
 				//itemTabLH.Reset();
 				itemTabLH.EReaderSectionSContainerOpen();
 				playerMLook.ForceInventoryMode();
 			}
 		} else {
-			// LH MFD
-			rightTC.TabButtonClickSilent(index,overrideToggling);
+			// RH RIGHT HAND MFD
 			rightTC.SetCurrentAsLast();
+			rightTC.TabButtonClickSilent(index,overrideToggling);
 			if (type == TabMSG.AudioLog) {
 				dataTabRH.Reset();
 				dataTabRH.audioLogContainer.SetActive(true);
@@ -104,13 +116,20 @@ public class MFDManager : MonoBehaviour  {
 			}
 
 			if (type == TabMSG.GridPuzzle) {
-				dataTabLH.Reset();
-				dataTabLH.puzzleGrid.SetActive(true);
+				dataTabRH.Reset();
+				dataTabRH.puzzleGrid.SetActive(true);
+			}
+
+			if (type == TabMSG.WirePuzzle) {
+				dataTabRH.Reset();
+				dataTabRH.puzzleWire.SetActive(true);
+				playerMLook.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.EReader) {
 				//itemTabRH.Reset();
 				itemTabRH.EReaderSectionSContainerOpen();
+				playerMLook.ForceInventoryMode();
 			}
 		}
 	}
@@ -135,18 +154,42 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
-	public void SendGridPuzzleToDataTab (bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors, GameObject t1, GameObject t2, GameObject t3, GameObject t4, UseData ud) {
+	public void SendGridPuzzleToDataTab (bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors, string t1, UseData ud, Vector3 tetherPoint) {
 		if (lastDataSideRH) {
 			// Send to RH tab
 			dataTabRH.Reset();
-			dataTabRH.GridPuzzle(states,types,gtype,start,end, width, height,colors,t1,t2,t3,t4,ud);
+			dataTabRH.GridPuzzle(states,types,gtype,start,end, width, height,colors,t1,ud);
+			dataTabRH.objectInUsePos = tetherPoint;
+			dataTabRH.usingObject = true;
 			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.RightHand);
 			SearchFXRH.SetActive(true);
 		} else {
 			// Send to LH tab
 			dataTabLH.Reset();
-			dataTabLH.GridPuzzle(states,types,gtype,start,end, width, height,colors,t1,t2,t3,t4,ud);
+			dataTabLH.GridPuzzle(states,types,gtype,start,end, width, height,colors,t1,ud);
+			dataTabLH.objectInUsePos = tetherPoint;
+			dataTabLH.usingObject = true;
 			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.LeftHand);
+			SearchFXLH.SetActive(true);
+		}
+	}
+
+	public void SendWirePuzzleToDataTab(bool[] sentWiresOn, bool[] sentNodeRowsActive, int[] sentCurrentPositionsLeft, int[] sentCurrentPositionsRight, int[] sentTargetsLeft, int[] sentTargetsRight, PuzzleWire.WireColorTheme theme, PuzzleWire.WireColor[] wireColors, string t1, string a1, UseData udSent,Vector3 tetherPoint) {
+		if (lastDataSideRH) {
+			// Send to RH tab
+			dataTabRH.Reset();
+			dataTabRH.WirePuzzle(sentWiresOn,sentNodeRowsActive,sentCurrentPositionsLeft,sentCurrentPositionsRight,sentTargetsLeft,sentTargetsRight,theme,wireColors,t1,a1,udSent);
+			dataTabRH.objectInUsePos = tetherPoint;
+			dataTabRH.usingObject = true;
+			OpenTab(4,true,TabMSG.WirePuzzle,0,handedness.RightHand);
+			SearchFXRH.SetActive(true);
+		} else {
+			// Send to LH tab
+			dataTabLH.Reset();
+			dataTabLH.WirePuzzle(sentWiresOn,sentNodeRowsActive,sentCurrentPositionsLeft,sentCurrentPositionsRight,sentTargetsLeft,sentTargetsRight,theme,wireColors,t1,a1,udSent);
+			dataTabLH.objectInUsePos = tetherPoint;
+			dataTabLH.usingObject = true;
+			OpenTab(4,true,TabMSG.WirePuzzle,0,handedness.LeftHand);
 			SearchFXLH.SetActive(true);
 		}
 	}
@@ -183,12 +226,13 @@ public class MFDManager : MonoBehaviour  {
 
 	public void OpenEReaderInItemsTab() {
 		if (lastItemSideRH) {
-			itemTabRH.Reset();
+			//itemTabRH.Reset();  done later in OpenTab
 			OpenTab(1,true,TabMSG.EReader,-1,handedness.RightHand);
 		} else {
-			itemTabLH.Reset();
+			//itemTabLH.Reset();  done later in OpenTab
 			OpenTab(1,true,TabMSG.EReader,-1,handedness.LeftHand);
 		}
+		if (ctb != null) ctb.TabButtonClickSilent(4,false);
 	}
 
 	public void ClearDataTab() {
@@ -223,11 +267,41 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
-	public void BlockedBySecurity() {
+	public void BlockedBySecurity(Vector3 tetherPoint) {
 		if (lastDataSideRH) {
+			dataTabRH.Reset();
+			OpenTab(4,true,MFDManager.TabMSG.None,0,MFDManager.handedness.RightHand);
 			dataTabRH.blockedBySecurity.SetActive(true);
+			dataTabRH.objectInUsePos = tetherPoint;
+			dataTabRH.usingObject = true;
 		} else {
+			dataTabLH.Reset();
+			OpenTab(4,true,MFDManager.TabMSG.None,0,MFDManager.handedness.LeftHand);
 			dataTabLH.blockedBySecurity.SetActive(true);
+			dataTabLH.objectInUsePos = tetherPoint;
+			dataTabLH.usingObject = true;
+		}
+	}
+
+	public void SendKeypadKeycodeToDataTab(int keycode, Vector3 tetherPoint, KeypadKeycode keypad, bool alreadySolved) {
+		if (lastDataSideRH) {
+			dataTabRH.Reset();
+			OpenTab(4,true,MFDManager.TabMSG.Keypad,0,MFDManager.handedness.RightHand);
+			dataTabRH.keycodeUIControl.SetActive(true);
+			dataTabRH.keycodeUIControl.GetComponent<KeypadKeycodeButtons>().keycode = keycode;
+			dataTabRH.keycodeUIControl.GetComponent<KeypadKeycodeButtons>().keypad = keypad;
+			dataTabRH.keycodeUIControl.GetComponent<KeypadKeycodeButtons>().done = alreadySolved;
+			dataTabRH.objectInUsePos = tetherPoint;
+			dataTabRH.usingObject = true;
+		} else {
+			dataTabLH.Reset();
+			OpenTab(4,true,MFDManager.TabMSG.Keypad,0,MFDManager.handedness.LeftHand);
+			dataTabLH.keycodeUIControl.SetActive(true);
+			dataTabLH.keycodeUIControl.GetComponent<KeypadKeycodeButtons>().keycode = keycode;
+			dataTabLH.keycodeUIControl.GetComponent<KeypadKeycodeButtons>().keypad = keypad;
+			dataTabLH.keycodeUIControl.GetComponent<KeypadKeycodeButtons>().done = alreadySolved;
+			dataTabLH.objectInUsePos = tetherPoint;
+			dataTabLH.usingObject = true;
 		}
 	}
 

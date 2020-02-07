@@ -187,7 +187,7 @@ public class MouseLookScript : MonoBehaviour {
 
 		// Spring Back to Rest from Recoil TODO only do this when necessary and add some private variables to prevent GarbageCollector
 		float camz = Mathf.Lerp(transform.localPosition.z,0f,0.1f);
-		Vector3 camPos = new Vector3(0f,Const.a.playerCameraOffsetY,camz);
+		Vector3 camPos = new Vector3(0f,Const.a.playerCameraOffsetY*playerMovement.currentCrouchRatio,camz);
 		transform.localPosition = camPos;
 
         // Draw line from cursor - used for projectile firing, e.g. magpulse/stugngun/railgun/plasma
@@ -286,6 +286,7 @@ public class MouseLookScript : MonoBehaviour {
 								//Debug.Log("Raycast hit a usable!");
 								UseData ud = new UseData ();
 								ud.owner = player;
+								/*
 								//hit.transform.SendMessageUpwards("Use", ud); // send Use with self as owner of message DIE SendMessage DIE!!!
 								if (hit.transform.GetComponent<UseHandler>() != null) {
 									//Debug.Log("Found a UseHandler!");
@@ -296,7 +297,19 @@ public class MouseLookScript : MonoBehaviour {
 										hit.transform.GetComponent<UseHandlerRelay>().referenceUseHandler.Use(ud);
 										//Debug.Log("Found a UseHandlerRelay!");
 									} else {
-										//Debug.Log("Warning: could not find UseHandler or UseHandlerRelay on hit.transform");
+										Debug.Log("Warning: could not find UseHandler or UseHandlerRelay on hit.transform");
+									}
+								}*/
+								//Debug.Log("Attempting to use a useable...");
+								UseHandler uh = hit.collider.gameObject.GetComponent<UseHandler>();
+								if (uh != null) {
+									uh.Use(ud);
+								} else {
+									UseHandlerRelay uhr = hit.collider.gameObject.GetComponent<UseHandlerRelay>();
+									if (uhr != null) {
+										uhr.referenceUseHandler.Use(ud);
+									} else {
+										Debug.Log("BUG: Attempting to use a useable without a UseHandler or UseHandlerRelay!");
 									}
 								}
 								return;
@@ -312,7 +325,7 @@ public class MouseLookScript : MonoBehaviour {
 					        // If we can't use it, Give info about what we are looking at (e.g. "Molybdenum panelling")
 							UseName un = hit.collider.gameObject.GetComponent<UseName> ();
 							if (un != null) {
-								Const.sprint("Can't use " + un.name,player);
+								Const.sprint("Can't use " + un.targetname,player);
 							}
 						}
 						if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out hit, 50f)) {
@@ -344,7 +357,19 @@ public class MouseLookScript : MonoBehaviour {
 										ud.owner = player;
 										ud.mainIndex = heldObjectIndex;
 										ud.customIndex = heldObjectCustomIndex;
-										hit.transform.SendMessageUpwards("Use", ud); // send Use with self as owner of message
+										//hit.transform.SendMessageUpwards("Use", ud); // send Use with self as owner of message
+										//Debug.Log("Attempting to use a useable...");
+										UseHandler uh = hit.collider.gameObject.GetComponent<UseHandler>();
+										if (uh != null) {
+											uh.Use(ud);
+										} else {
+											UseHandlerRelay uhr = hit.collider.gameObject.GetComponent<UseHandlerRelay>();
+											if (uhr != null) {
+												uhr.referenceUseHandler.Use(ud);
+											} else {
+												Debug.Log("BUG: Attempting to use a useable without a UseHandler or UseHandlerRelay!");
+											}
+										}
 										return;
 									}
 								}
@@ -389,6 +414,10 @@ public class MouseLookScript : MonoBehaviour {
 									if (indexAdjustment < 0)
 										indexAdjustment = 0;
 									WeaponCurrent.WepInstance.weaponCurrent = indexAdjustment;
+									WeaponCurrent.WepInstance.justChangedWeap = true;
+									//wepbut.ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(indexAdjustment,WeaponCurrent.WepInstance.weaponIsAlternateAmmo);
+									//wepbut.iconman.GetComponent<WeaponIconManager>().SetWepIcon(indexAdjustment
+									mfdManager.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,MFDManager.handedness.LeftHand);
 									GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 									break;
 								case GUIState.ButtonType.Grenade:
@@ -460,7 +489,7 @@ public class MouseLookScript : MonoBehaviour {
     void AddGenericObjectToInventory(int index) {
 		if (firstTimePickup) {
 			firstTimePickup = false;
-			centerTabButtonsControl.TabButtonClickSilent (2);
+			centerTabButtonsControl.TabButtonClickSilent (2,true);
 			centerTabButtonsControl.NotifyToCenterTab(2);
 		}
 
@@ -487,12 +516,20 @@ public class MouseLookScript : MonoBehaviour {
     }
 
     void AddWeaponToInventory(int index) {
-		if (firstTimePickup) {
-			firstTimePickup = false;
-			centerTabButtonsControl.TabButtonClickSilent (0);
-			mfdManager.OpenTab (0, true, MFDManager.TabMSG.None, 0,MFDManager.handedness.LeftHand);
-			centerTabButtonsControl.NotifyToCenterTab(0);
-		}
+		//if (firstTimePickup) {
+		//	firstTimePickup = false;
+		//	centerTabButtonsControl.TabButtonClickSilent (0,true);
+		//	mfdManager.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,MFDManager.handedness.LeftHand);
+		//	centerTabButtonsControl.NotifyToCenterTab(0);
+		//	iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
+		//	weptextman.GetComponent<WeaponTextManager>().SetWepText(index); //Set weapon text for MFD
+		//}
+
+		centerTabButtonsControl.TabButtonClickSilent (0,true);
+		mfdManager.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,MFDManager.handedness.LeftHand);
+		centerTabButtonsControl.NotifyToCenterTab(0);
+		iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
+		weptextman.GetComponent<WeaponTextManager>().SetWepText(index); //Set weapon text for MFD
 
 		itemAdded = false; //prevent false positive
         for (int i=0;i<7;i++) {
@@ -507,10 +544,12 @@ public class MouseLookScript : MonoBehaviour {
 				
 
 				if (ammoiconman.activeInHierarchy) ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(index, false);
-				if (iconman.activeInHierarchy) iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
+				//if (iconman.activeInHierarchy) iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
+				iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
 				if (weptextman.activeInHierarchy) weptextman.GetComponent<WeaponTextManager>().SetWepText(index); //Set weapon text for MFD
 				if (itemiconman.activeInHierarchy) itemiconman.SetActive(false);    //Set weapon icon for MFD
 				if (itemtextman.activeInHierarchy) itemtextman.GetComponent<ItemTextManager>().SetItemText(index); //Set weapon text for MFD
+				mfdManager.SendInfoToItemTab(index); // notify item tab we clicked on a weapon
 				Const.sprint("Weapon added to inventory",player);
 				itemAdded = true;
 
@@ -529,7 +568,7 @@ public class MouseLookScript : MonoBehaviour {
 							heldObjectAmmo = Const.a.magazinePitchCountForWeapon[tempindex];
 						}
 					}
-						
+					WeaponCurrent.WepInstance.weaponIsAlternateAmmo = WeaponAmmo.a.wepLoadedWithAlternate[tempindex];	
 					if (WeaponCurrent.WepInstance.weaponIsAlternateAmmo) {
 						if (WeaponCurrent.WepInstance.currentMagazineAmount2[tempindex] <=0) {
 							WeaponCurrent.WepInstance.currentMagazineAmount2[tempindex] = heldObjectAmmo;
@@ -570,7 +609,7 @@ public class MouseLookScript : MonoBehaviour {
 		if (index == -1)	return;
 		if (firstTimePickup) {
 			firstTimePickup = false;
-			centerTabButtonsControl.TabButtonClickSilent (0);
+			centerTabButtonsControl.TabButtonClickSilent (0,true);
 			centerTabButtonsControl.NotifyToCenterTab(0);
 		}
 
@@ -586,7 +625,7 @@ public class MouseLookScript : MonoBehaviour {
     void AddGrenadeToInventory (int index) {
 		if (firstTimePickup) {
 			firstTimePickup = false;
-			centerTabButtonsControl.TabButtonClickSilent (0);
+			centerTabButtonsControl.TabButtonClickSilent (0,true);
 			centerTabButtonsControl.NotifyToCenterTab(0);
 		}
 		GrenadeInventory.GrenadeInvInstance.grenAmmo[index]++;
@@ -599,7 +638,7 @@ public class MouseLookScript : MonoBehaviour {
 	void AddPatchToInventory (int index) {
 		if (firstTimePickup) {
 			firstTimePickup = false;
-			centerTabButtonsControl.TabButtonClickSilent (0);
+			centerTabButtonsControl.TabButtonClickSilent (0,true);
 			centerTabButtonsControl.NotifyToCenterTab(0);
 		}
 		PatchInventory.PatchInvInstance.AddPatchToInventory(index);
@@ -611,6 +650,12 @@ public class MouseLookScript : MonoBehaviour {
 
 	void AddAudioLogToInventory () {
 		if ((heldObjectCustomIndex != -1) && (logInventory != null)) {
+			if (heldObjectCustomIndex == 114) {
+				// Trioptimum Funpack Module discovered!
+				// TODO: Create minigames
+				Const.sprint("Trioptimum Funpack Module, don't play on company time!",player);
+				return;
+			}
 			logInventory.hasLog[heldObjectCustomIndex] = true;
 			logInventory.lastAddedIndex = heldObjectCustomIndex;
 			int levelnum = Const.a.audioLogLevelFound[heldObjectCustomIndex];
@@ -631,18 +676,18 @@ public class MouseLookScript : MonoBehaviour {
 	void AddAccessCardToInventory (int index) {
 		if (firstTimePickup) {
 			firstTimePickup = false;
-			centerTabButtonsControl.TabButtonClickSilent (2);
+			centerTabButtonsControl.TabButtonClickSilent (2,true);
 		}
 			
 		bool alreadyHave = false;
 		bool accessAdded = false;
 
 		switch (index) {
-		case 81: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
-		case 82: doorAccessTypeAcquired = Door.accessCardType.Group1; break;
-		case 83: doorAccessTypeAcquired = Door.accessCardType.Science; break;
-		case 84: doorAccessTypeAcquired = Door.accessCardType.Group3; break;
-		case 85: doorAccessTypeAcquired = Door.accessCardType.Engineering; break;
+		case 81: doorAccessTypeAcquired = Door.accessCardType.Standard; break; //CHECKED! Good here
+		case 82: doorAccessTypeAcquired = Door.accessCardType.Per1; break; //CHECKED! Good here
+		case 83: doorAccessTypeAcquired = Door.accessCardType.Group1; break; //CHECKED! Good here
+		case 84: doorAccessTypeAcquired = Door.accessCardType.Science; break; //CHECKED! Good here
+		case 85: doorAccessTypeAcquired = Door.accessCardType.Engineering; break;  //CHECKED! Good here
 		case 86: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
 		case 87: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
 		case 88: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
@@ -826,7 +871,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 		if (firstTimePickup) {
 			firstTimePickup = false;
-			centerTabButtonsControl.TabButtonClickSilent (1);
+			centerTabButtonsControl.TabButtonClickSilent (1,true);
 		}
 
 		HardwareInventory.a.hwButtonsManager.ActivateHardwareButton(index);
@@ -1118,6 +1163,11 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	public void DropHeldItem() {
+		if (heldObjectIndex < 0 || heldObjectIndex > 254) {
+			Const.sprint("BUG: Attempted to DropHeldItem with index out of bounds (<0 or >255) and heldObjectIndex = " + heldObjectIndex.ToString(),player);
+			return;
+		}
+
 		if (!grenadeActive) heldObject = Const.a.useableItems[heldObjectIndex]; // set by UseGrenade()
 		if (heldObject != null) {
 			GameObject tossObject = null;
@@ -1229,7 +1279,8 @@ public class MouseLookScript : MonoBehaviour {
 		curSearchScript.currentPlayerCapsule = transform.parent.gameObject;  // Get playerCapsule of player this is attached to
 
 		// Fill container with random items, overrides manually entered data
-		if (curSearchScript.generateContents) {
+		// UPDATE: Handled on SearchableItem's awake to prevent save, search, load, search, repeat cheat/hack to get whatever you want
+		/*if (curSearchScript.generateContents) {
 			if (curSearchScript.lookUpIndex >= 0) {
 				// Refer to lookUp tables
 				// TODO: create lookUp tables for generic randomized search items such as NPCs
@@ -1247,7 +1298,7 @@ public class MouseLookScript : MonoBehaviour {
 					}
 				}
 			}
-		}
+		}*/
 
 		// Play search sound
 		SFXSource.PlayOneShot(SearchSFX);
@@ -1274,41 +1325,11 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	// Returns string for describing the walls/floors/etc. based on the material name
+	/*
 	string GetTextureDescription (string material_name){
 		string retval = System.String.Empty; // temporary string to hold the return value
 
-		if (material_name.StartsWith("+"))
-			retval = "normal screens";
-		
-		if (material_name.Contains("fan"))
-			retval = "field generation rotor";
-
-		// handle wierd case of animated texture having same name as plain one, oops.
-		if ((material_name.StartsWith("+")) &&(material_name.Contains("eng2_5"))) {
-			retval = "power exchanger";  
-			return retval;
-		}
-		
-		if (material_name.Contains("lift"))
-			retval = "repulsor lift";
-		
-		if (material_name.Contains("alert"))
-			retval = "warning indicator";
-		
-		if (material_name.Contains("telepad"))
-			retval = "jump disk";
-		
-		if (material_name.Contains("crate"))
-			retval = "storage crate";
-		
 		switch(material_name) {
-		case "bridg1_2": retval = "biological infestation"; break;
-		case "bridg1_3": retval = "biological infestation"; break;
-		case "bridg1_3b": retval = "biological infestation"; break;
-		case "bridg1_4": retval = "biological infestation"; break;
-		case "bridg1_5": retval = "data transfer schematic"; break;
-		case "bridg2_1": retval = "monitoring port"; break;
-		case "bridg2_2": retval = "stone mosaic tiling"; break;
 		case "bridg2_3": retval = "monitoring post"; break;
 		case "bridg2_4": retval = "video observation screen"; break;
 		case "bridg2_5": retval = "cyber station"; break;
@@ -1581,7 +1602,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 		return retval;
 	}
-
+*/
 	static Mesh GetMesh(GameObject go) {
 		if (go) {
 			MeshFilter mf = go.GetComponent<MeshFilter>();

@@ -23,8 +23,10 @@ public class LogInventory : MonoBehaviour {
 
 	void Update () {
 		if(GetInput.a.RecentLog()) {
-			if (lastAddedIndex != -1)
-				PlayLastAddedLog(lastAddedIndex);
+			if (lastAddedIndex != -1) {
+				PlayLog(lastAddedIndex);
+				lastAddedIndex = -1;
+			}
 		}
 	}
 
@@ -32,16 +34,16 @@ public class LogInventory : MonoBehaviour {
 		if (logIndex == -1) return;
 
 		// Play the log audio
-		if (Const.a.audioLogType[lastAddedIndex] == 1) {
-			SFXClip = Const.a.audioLogs[lastAddedIndex];
+		if (Const.a.audioLogType[logIndex] == 1) {
+			SFXClip = Const.a.audioLogs[logIndex];
 			SFXSource.PlayOneShot(SFXClip);
 		}
 			
 		MFDManager.a.SendAudioLogToDataTab(logIndex);
-		centerTabButtonsControl.TabButtonClickSilent(4);
+		centerTabButtonsControl.TabButtonClickSilent(4,true);
 	}
 
-	void PlayLastAddedLog (int logIndex) {
+	public void PlayLastAddedLog (int logIndex) {
 		if (logIndex == -1) return;
 		PlayLog(logIndex);
 		lastAddedIndex = -1;

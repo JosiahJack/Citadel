@@ -7,7 +7,7 @@ public class PuzzleGrid : MonoBehaviour {
 	public bool[] powered;
 	public CellType[] cellType;
 	public enum CellType {Off,Standard,And,Bypass}; // off is blank, standard is X or +, AND takes two power sources, Bypass is always +
-	public enum GridType {King,Queen,Knight,Rook,Bishop,Pawn};
+	public enum GridType {King,Queen,Knight,Rook,Bishop,Pawn,Minesweep};
 	public GridType gridType;
 	public int sourceIndex;
 	public int outputIndex;
@@ -38,26 +38,25 @@ public class PuzzleGrid : MonoBehaviour {
 	public Sprite gridAlwaysOn0purple;
 	public Sprite gridAlwaysOn1;
 	public Image outputNode;
-	public enum GridColorTheme {Gray,Green,Purple};
+	public enum GridColorTheme {Gray,Green,Purple,Blue};
 	public GridColorTheme theme;
 	public AudioClip solvedSFX;
 	public bool puzzleSolved;
 	public Slider progressBar;
 
-	private bool[] grid;
+	public bool[] grid;
 	private AudioSource audsource;
 	private UseData udSender;
-	[DTValidator.Optional] private GameObject[] targets;
+	[DTValidator.Optional] private string target;
 
 	void Awake () {
 		puzzleSolved = false;
 		audsource = GetComponent<AudioSource>();
 		EvaluatePuzzle();
 		UpdateCellImages();
-		targets = new GameObject[4];
 	}
 
-	public void SendGrid(bool[] states, CellType[] types, GridType gtype, int start, int end, int w, int h, GridColorTheme colors, GameObject senttarget, GameObject senttarget1, GameObject senttarget2, GameObject senttarget3, UseData ud) {
+	public void SendGrid(bool[] states, CellType[] types, GridType gtype, int start, int end, int w, int h, GridColorTheme colors, string senttarget, UseData ud) {
 		grid = states;
 		cellType = types;
 		gridType = gtype;
@@ -66,10 +65,7 @@ public class PuzzleGrid : MonoBehaviour {
 		width = w;
 		height = h;
 		theme = colors;
-		targets[0] = senttarget;
-		targets[1] = senttarget1;
-		targets[2] = senttarget2;
-		targets[3] = senttarget3;
+		target = senttarget;
 		udSender = ud;
 		EvaluatePuzzle();
 
@@ -95,6 +91,7 @@ public class PuzzleGrid : MonoBehaviour {
 				case GridType.Rook: Rook(index); break;
 				case GridType.Bishop: Bishop(index); break;
 				case GridType.Pawn: Pawn(index); break;
+				case GridType.Minesweep: Minesweep(index); break;
 			}
 		}
 		EvaluatePuzzle();
@@ -258,7 +255,7 @@ public class PuzzleGrid : MonoBehaviour {
 				if (cellType [movingIndex] == CellType.Standard || cellType [movingIndex] == CellType.Bypass) {
 					if (grid [movingIndex] && poweredCount > 0)
 						powered [movingIndex] = true;
-					Const.sprint (("movingIndex = " + movingIndex.ToString () + ", powered = " + powered [movingIndex].ToString ()), Const.a.allPlayers);
+					//Const.sprint (("movingIndex = " + movingIndex.ToString () + ", powered = " + powered [movingIndex].ToString ()), Const.a.allPlayers);
 				}
 			}
 			checkedCells [movingIndex] = true;
@@ -289,7 +286,7 @@ public class PuzzleGrid : MonoBehaviour {
 		puzzleSolved = true;
 		outputNode.overrideSprite = nodeOn;
 		audsource.PlayOneShot(solvedSFX);
-		Const.a.UseTargets(udSender,targets);
+		Const.a.UseTargets(udSender,target);
 	}
 
 	int ReturnCellAbove(int index) {
@@ -346,14 +343,23 @@ public class PuzzleGrid : MonoBehaviour {
 		int cellBelow = ReturnCellBelow(index);
 		int cellLeft = ReturnCellToLeft(index);
 		int cellRight = ReturnCellToRight(index);
+		int cellDiagUpRt = ReturnCellToRight(cellAbove);
+		int cellDiagUpLf = ReturnCellToLeft(cellAbove);
+		int cellDiagDnRt = ReturnCellToRight(cellBelow);
+		int cellDiagDnLf = ReturnCellToLeft(cellBelow);
 		if (cellAbove != -1 && cellType[cellAbove] == CellType.Standard) grid[cellAbove] = !grid[cellAbove];
 		if (cellBelow != -1 && cellType[cellBelow] == CellType.Standard) grid[cellBelow] = !grid[cellBelow];
 		if (cellLeft != -1 && cellType[cellLeft] == CellType.Standard) grid[cellLeft] = !grid[cellLeft];
 		if (cellRight != -1 && cellType[cellRight] == CellType.Standard) grid[cellRight] = !grid[cellRight];
+		if (cellDiagUpRt != -1 && cellType[cellDiagUpRt] == CellType.Standard) grid[cellDiagUpRt] = !grid[cellDiagUpRt];
+		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == CellType.Standard) grid[cellDiagUpLf] = !grid[cellDiagUpLf];
+		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == CellType.Standard) grid[cellDiagDnRt] = !grid[cellDiagDnRt];
+		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == CellType.Standard) grid[cellDiagDnLf] = !grid[cellDiagDnLf];
 	}
 
 	// Flip vertically, horizontally, and diagonally adjacent cells across entire puzzle along with center
 	void Queen(int index) {
+		//TODO fill in this with actual algorithm for Queen, Knight, and Bishop
 
 	}
 
@@ -418,6 +424,11 @@ public class PuzzleGrid : MonoBehaviour {
 
 	// Flip diagonally adjacent cells across entire puzzle along with center
 	void Bishop(int index) {
+
+	}
+
+	// Flip all adjacent cells and center
+	void Minesweep(int index) {
 
 	}
 }

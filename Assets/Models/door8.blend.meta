@@ -1,61 +1,126 @@
 fileFormatVersion: 2
 guid: 0a71099d76b38fc488fa40217294a2ca
-timeCreated: 1463533569
-licenseType: Free
 ModelImporter:
-  serializedVersion: 19
-  fileIDToRecycleName:
-    100000: door1_5
-    100002: door1_5_001
-    100004: door1_5_002
-    100006: //RootNode
-    100008: door1_5_frame1
-    400000: door1_5
-    400002: door1_5_001
-    400004: door1_5_002
-    400006: //RootNode
-    400008: door1_5_frame1
-    2300000: door1_5
-    2300002: door1_5_001
-    2300004: door1_5_002
-    2300006: door1_5_frame1
-    3300000: door1_5
-    3300002: door1_5_001
-    3300004: door1_5_002
-    3300006: door1_5_frame1
-    4300000: door1_5_002
-    4300002: door1_5_001
-    4300004: door1_5
-    4300006: door1_5_frame1
-    7400000: IdleDoor8Open
-    7400002: IdleDoor8Closed
-    7400004: Door8Open
-    7400006: Door8Close
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: door1_5
+  - first:
+      1: 100002
+    second: door1_5_001
+  - first:
+      1: 100004
+    second: door1_5_002
+  - first:
+      1: 100006
+    second: //RootNode
+  - first:
+      1: 100008
+    second: door1_5_frame1
+  - first:
+      4: 400000
+    second: door1_5
+  - first:
+      4: 400002
+    second: door1_5_001
+  - first:
+      4: 400004
+    second: door1_5_002
+  - first:
+      4: 400006
+    second: //RootNode
+  - first:
+      4: 400008
+    second: door1_5_frame1
+  - first:
+      23: 2300000
+    second: door1_5
+  - first:
+      23: 2300002
+    second: door1_5_001
+  - first:
+      23: 2300004
+    second: door1_5_002
+  - first:
+      23: 2300006
+    second: door1_5_frame1
+  - first:
+      33: 3300000
+    second: door1_5
+  - first:
+      33: 3300002
+    second: door1_5_001
+  - first:
+      33: 3300004
+    second: door1_5_002
+  - first:
+      33: 3300006
+    second: door1_5_frame1
+  - first:
+      43: 4300000
+    second: door1_5_002
+  - first:
+      43: 4300002
+    second: door1_5_001
+  - first:
+      43: 4300004
+    second: door1_5
+  - first:
+      43: 4300006
+    second: door1_5_frame1
+  - first:
+      74: 7400000
+    second: IdleDoor8Open
+  - first:
+      74: 7400002
+    second: IdleDoor8Closed
+  - first:
+      74: 7400004
+    second: Door8Open
+  - first:
+      74: 7400006
+    second: Door8Close
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: door1_5__door1_5_tga
+    second: {fileID: 2100000, guid: 4bd91f46271e7b647b156f68fefb2c6d, type: 2}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: IdleDoor8Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 24
       lastFrame: 25
       wrapMode: 0
@@ -92,6 +157,7 @@ ModelImporter:
     - serializedVersion: 16
       name: IdleDoor8Closed
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 1
       wrapMode: 0
@@ -128,6 +194,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Door8Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 24
       wrapMode: 0
@@ -164,6 +231,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Door8Close
       takeName: Default Take
+      internalID: 0
       firstFrame: 25
       lastFrame: 49
       wrapMode: 0
@@ -203,13 +271,23 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -219,9 +297,15 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -231,8 +315,11 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
   humanoidOversampling: 1

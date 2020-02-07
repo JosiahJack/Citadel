@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class WeaponCurrent : MonoBehaviour {
@@ -30,11 +31,23 @@ public class WeaponCurrent : MonoBehaviour {
 	public GameObject ViewModelSparq;
 	public GameObject ViewModelStungun;
 	public GameObject owner;
-	private bool justChangedWeap = true;
+	public GameObject energySlider;
+	public GameObject energyHeatTicks;
+	public GameObject overloadButton;
+	public GameObject unloadButton;
+	public GameObject loadNormalAmmoButton;
+	public Text loadNormalAmmoButtonText;
+	public GameObject loadAlternateAmmoButton;
+	public Sprite ammoButtonHighlighted;
+	public Sprite ammoButtonDeHighlighted;
+	public Text loadAlternateAmmoButtonText;
+	public bool justChangedWeap = true;
 	private int lastIndex = 0;
 	private AudioSource SFX;
 	public AudioClip ReloadSFX;
 	public AudioClip ReloadInStyleSFX;
+	public bool bottomless = false; // don't use any ammo (and energy weapons no energy)
+	public bool redbull = false; // don't use any energy
 
 	void Awake() {
 		WepInstance = this;
@@ -76,6 +89,15 @@ public class WeaponCurrent : MonoBehaviour {
 			if (ViewModelSkorpion != null) ViewModelSkorpion.SetActive(false);
 			if (ViewModelSparq != null) ViewModelSparq.SetActive(false);
 			if (ViewModelStungun != null) ViewModelStungun.SetActive(false);
+			if (energySlider != null) energySlider.SetActive(false);
+			if (energyHeatTicks != null) energyHeatTicks.SetActive(false);
+			if (overloadButton != null) overloadButton.SetActive(false);
+			if (unloadButton != null) unloadButton.SetActive(false);
+			if (loadNormalAmmoButton != null) loadNormalAmmoButton.SetActive(false);
+			if (loadAlternateAmmoButton != null) loadAlternateAmmoButton.SetActive(false);
+			//ammoIndicatorHuns.SetActive(false);
+			//ammoIndicatorTens.SetActive(false);
+			//ammoIndicatorOnes.SetActive(false);
 		}
 
 		if (lastIndex != weaponIndex) {
@@ -83,25 +105,69 @@ public class WeaponCurrent : MonoBehaviour {
 			lastIndex = weaponIndex;
 		}
 		
-		ammoIndicatorHuns.SetActive(true);
-		ammoIndicatorTens.SetActive(true);
-		ammoIndicatorOnes.SetActive(true);
-
 		switch (weaponIndex) {
 		case 36:
 			ViewModelAssault.SetActive(true);
+			ammoIndicatorHuns.SetActive(true);
+			ammoIndicatorTens.SetActive(true);
+			ammoIndicatorOnes.SetActive(true);
+			if (unloadButton != null) unloadButton.SetActive(true);
+			if (loadNormalAmmoButton != null) {
+				loadNormalAmmoButton.SetActive(true);
+				loadNormalAmmoButtonText.text = "LOAD MAGNESIUM";
+			}
+			if (loadAlternateAmmoButton != null) {
+				loadAlternateAmmoButton.SetActive(true);
+				loadAlternateAmmoButtonText.text = "LOAD PENETRATOR";
+			}
 			break;
 		case 37:
 			ViewModelBlaster.SetActive(true);
+			ammoIndicatorHuns.SetActive(false);
+			ammoIndicatorTens.SetActive(false);
+			ammoIndicatorOnes.SetActive(false);
+			if (energySlider != null) energySlider.SetActive(true);
+			if (energyHeatTicks != null) energyHeatTicks.SetActive(true);
+			if (overloadButton != null) overloadButton.SetActive(true);
 			break;
 		case 38:
 			ViewModelDartgun.SetActive(true);
+			ammoIndicatorHuns.SetActive(true);
+			ammoIndicatorTens.SetActive(true);
+			ammoIndicatorOnes.SetActive(true);
+			if (unloadButton != null) unloadButton.SetActive(true);
+			if (loadNormalAmmoButton != null) {
+				loadNormalAmmoButton.SetActive(true);
+				loadNormalAmmoButtonText.text = "LOAD NEEDLE";
+			}
+			if (loadAlternateAmmoButton != null) {
+				loadAlternateAmmoButton.SetActive(true);
+				loadAlternateAmmoButtonText.text = "LOAD TRANQ";
+			}
 			break;
 		case 39:
 			ViewModelFlechette.SetActive(true);
+			ammoIndicatorHuns.SetActive(true);
+			ammoIndicatorTens.SetActive(true);
+			ammoIndicatorOnes.SetActive(true);
+			if (unloadButton != null) unloadButton.SetActive(true);
+			if (loadNormalAmmoButton != null) {
+				loadNormalAmmoButton.SetActive(true);
+				loadNormalAmmoButtonText.text = "LOAD HORNET";
+			}
+			if (loadAlternateAmmoButton != null) {
+				loadAlternateAmmoButton.SetActive(true);
+				loadAlternateAmmoButtonText.text = "LOAD SPLINTER";
+			}
 			break;
 		case 40:
 			ViewModelIon.SetActive(true);
+			ammoIndicatorHuns.SetActive(false);
+			ammoIndicatorTens.SetActive(false);
+			ammoIndicatorOnes.SetActive(false);
+			if (energySlider != null) energySlider.SetActive(true);
+			if (energyHeatTicks != null) energyHeatTicks.SetActive(true);
+			if (overloadButton != null) overloadButton.SetActive(true);
 			break;
 		case 41:
 			ViewModelRapier.SetActive(true);
@@ -117,48 +183,138 @@ public class WeaponCurrent : MonoBehaviour {
 			break;
 		case 43:
 			ViewModelMagnum.SetActive(true);
+			ammoIndicatorHuns.SetActive(true);
+			ammoIndicatorTens.SetActive(true);
+			ammoIndicatorOnes.SetActive(true);
+			if (unloadButton != null) unloadButton.SetActive(true);
+			if (loadNormalAmmoButton != null) {
+				loadNormalAmmoButton.SetActive(true);
+				loadNormalAmmoButtonText.text = "LOAD HOLLOW TIP";
+			}
+			if (loadAlternateAmmoButton != null) {
+				loadAlternateAmmoButton.SetActive(true);
+				loadAlternateAmmoButtonText.text = "LOAD HEAVY SLUG";
+			}
 			break;
 		case 44:
 			ViewModelMagpulse.SetActive(true);
+			ammoIndicatorHuns.SetActive(true);
+			ammoIndicatorTens.SetActive(true);
+			ammoIndicatorOnes.SetActive(true);
+			if (unloadButton != null) unloadButton.SetActive(true);
+			if (loadNormalAmmoButton != null) {
+				loadNormalAmmoButton.SetActive(true);
+				loadNormalAmmoButtonText.text = "LOAD CARTRIDGE";
+			}
 			break;
 		case 45:
 			ViewModelPistol.SetActive(true);
+			ammoIndicatorHuns.SetActive(true);
+			ammoIndicatorTens.SetActive(true);
+			ammoIndicatorOnes.SetActive(true);
+			if (unloadButton != null) unloadButton.SetActive(true);
+			if (loadNormalAmmoButton != null) {
+				loadNormalAmmoButton.SetActive(true);
+				loadNormalAmmoButtonText.text = "LOAD STANDARD";
+			}
+			if (loadAlternateAmmoButton != null) {
+				loadAlternateAmmoButton.SetActive(true);
+				loadAlternateAmmoButtonText.text = "LOAD TEFLON";
+			}
 			break;
 		case 46:
 			ViewModelPlasma.SetActive(true);
+			ammoIndicatorHuns.SetActive(false);
+			ammoIndicatorTens.SetActive(false);
+			ammoIndicatorOnes.SetActive(false);
+			if (energySlider != null) energySlider.SetActive(true);
+			if (energyHeatTicks != null) energyHeatTicks.SetActive(true);
+			if (overloadButton != null) overloadButton.SetActive(true);
 			break;
 		case 47:
 			ViewModelRailgun.SetActive(true);
+			ammoIndicatorHuns.SetActive(true);
+			ammoIndicatorTens.SetActive(true);
+			ammoIndicatorOnes.SetActive(true);
+			if (unloadButton != null) unloadButton.SetActive(true);
+			if (loadNormalAmmoButton != null) {
+				loadNormalAmmoButton.SetActive(true);
+				loadNormalAmmoButtonText.text = "LOAD RAIL CLIP";
+			}
 			break;
 		case 48:
 			ViewModelRiotgun.SetActive(true);
+			ammoIndicatorHuns.SetActive(true);
+			ammoIndicatorTens.SetActive(true);
+			ammoIndicatorOnes.SetActive(true);
+			if (unloadButton != null) unloadButton.SetActive(true);
+			if (loadNormalAmmoButton != null) {
+				loadNormalAmmoButton.SetActive(true);
+				loadNormalAmmoButtonText.text = "LOAD RUBBER SLUG";
+			}
 			break;
 		case 49:
 			ViewModelSkorpion.SetActive(true);
+			ammoIndicatorHuns.SetActive(true);
+			ammoIndicatorTens.SetActive(true);
+			ammoIndicatorOnes.SetActive(true);
+			if (unloadButton != null) unloadButton.SetActive(true);
+			if (loadNormalAmmoButton != null) {
+				loadNormalAmmoButton.SetActive(true);
+				loadNormalAmmoButtonText.text = "LOAD SLAG";
+			}
+			if (loadAlternateAmmoButton != null) {
+				loadAlternateAmmoButton.SetActive(true);
+				loadAlternateAmmoButtonText.text = "LOAD LARGE SLAG";
+			}
 			break;
 		case 50:
 			ViewModelSparq.SetActive(true);
+			ammoIndicatorHuns.SetActive(false);
+			ammoIndicatorTens.SetActive(false);
+			ammoIndicatorOnes.SetActive(false);
+			if (energySlider != null) energySlider.SetActive(true);
+			if (energyHeatTicks != null) energyHeatTicks.SetActive(true);
+			if (overloadButton != null) overloadButton.SetActive(true);
 			break;
 		case 51:
 			ViewModelStungun.SetActive(true);
+			ammoIndicatorHuns.SetActive(false);
+			ammoIndicatorTens.SetActive(false);
+			ammoIndicatorOnes.SetActive(false);
+			if (energySlider != null) energySlider.SetActive(true);
+			if (energyHeatTicks != null) energyHeatTicks.SetActive(true);
+			if (overloadButton != null) overloadButton.SetActive(true);
 			break;
+		}
+
+		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndex);
+		if (wep16index == -1) return; // we don't have a weapon at all right now :)
+		weaponIsAlternateAmmo = WeaponAmmo.a.wepLoadedWithAlternate[wep16index];
+
+		if (weaponIsAlternateAmmo) {
+			if (loadNormalAmmoButton != null) loadNormalAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonDeHighlighted;
+			if (loadAlternateAmmoButton != null) loadAlternateAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonHighlighted;
+		} else {
+			if (loadNormalAmmoButton != null) loadNormalAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonHighlighted;
+			if (loadAlternateAmmoButton != null) loadAlternateAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonDeHighlighted;
 		}
 	}
 
 	public void ChangeAmmoType() {
 		if (weaponIsAlternateAmmo) {
 			weaponIsAlternateAmmo = false;
-			Unload(true);
 			LoadPrimaryAmmoType(false);
 		} else {
 			weaponIsAlternateAmmo = true;
-			Unload(true);
 			LoadSecondaryAmmoType(false);
 		}
 	}
 
 	public void LoadPrimaryAmmoType(bool isSilent) {
+		Unload(true);
 		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (weaponIndex);
+		WeaponAmmo.a.wepLoadedWithAlternate[wep16index] = false;
 
 		// Put bullets into the magazine
 		if (WeaponAmmo.a.wepAmmo[wep16index] >= Const.a.magazinePitchCountForWeapon[wep16index]) {
@@ -183,7 +339,9 @@ public class WeaponCurrent : MonoBehaviour {
 	}
 
 	public void LoadSecondaryAmmoType(bool isSilent) {
+		Unload(true);
 		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (weaponIndex);
+		WeaponAmmo.a.wepLoadedWithAlternate[wep16index] = true;
 
 		// Put bullets into the magazine
 		if (WeaponAmmo.a.wepAmmoSecondary[wep16index] >= Const.a.magazinePitchCountForWeapon2[wep16index]) {
@@ -204,24 +362,41 @@ public class WeaponCurrent : MonoBehaviour {
 		}
 
 		// Update the counter on the HUD
-		MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount[wep16index]);
+		MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount2[wep16index]);
+	}
+
+	public void UpdateHUDAmmoCountsEither() {
+		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (weaponIndex);
+		if (weaponIsAlternateAmmo) {
+			MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount2[wep16index]);
+		} else {
+			MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount[wep16index]);
+		}
 	}
 
 	public void Unload(bool isSilent) {
 		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (weaponIndex);
 
+		if (wep16index == -1) return; // we don't have a weapon at all right now :)
+		weaponIsAlternateAmmo = WeaponAmmo.a.wepLoadedWithAlternate[wep16index];
+
 		// Take bullets out of the clip, put them back into the ammo stockpile, then zero out the clip amount, did I say clip?  I mean magazine but whatever
 		if (weaponIsAlternateAmmo) {
 			WeaponAmmo.a.wepAmmoSecondary[wep16index] += currentMagazineAmount2[wep16index];
 			currentMagazineAmount2[wep16index] = 0;
+
+			// Update the counter on the HUD
+			MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount2[wep16index]);
 		} else {
 			WeaponAmmo.a.wepAmmo[wep16index] += currentMagazineAmount[wep16index];
 			currentMagazineAmount[wep16index] = 0;
+
+			// Update the counter on the HUD
+			MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount[wep16index]);
 		}
 		if (!isSilent) SFX.PlayOneShot (ReloadSFX);
 
-		// Update the counter on the HUD
-		MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount[wep16index]);
+
 	}
 
 	public void Reload() {
@@ -237,7 +412,6 @@ public class WeaponCurrent : MonoBehaviour {
 				Const.sprint("No more of current ammo type to load.",owner);
 				return;
 			}
-			Unload(true);
 			LoadSecondaryAmmoType(false);
 		} else {
 			if (currentMagazineAmount[wep16index] == Const.a.magazinePitchCountForWeapon[wep16index]) {
@@ -249,8 +423,6 @@ public class WeaponCurrent : MonoBehaviour {
 				Const.sprint("No more of current ammo type to load.",owner);
 				return;
 			}
-
-			Unload(true);
 			LoadPrimaryAmmoType(false);
 		}
 

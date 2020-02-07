@@ -5,75 +5,54 @@ using UnityEngine;
 public class TriggerCounter : MonoBehaviour {
 	public int countToTrigger;
 	public int counter;
-	public GameObject[] target;
-	public float[] delay;
+	public string target;
+	public string argvalue;
+	public float delay;
 	public bool dontReset;
-	private float[] delayFinished;
-	private bool[] delayStarted;
+	private float delayFinished;
+	private bool delayStarted;
+	private UseData delayedUd;
 
 	void Awake() {
-		// Check and set delays array to equal the target array
-		if (delay.Length < target.Length) {
-			float[] tempDelays = delay; // temporarily store the delays
-			delay = new float[target.Length]; // wipe out array with new larger array same size as the targets
-			for (int j = 0; j < target.Length; j++) {
-				if (j >= tempDelays.Length) {
-					delay [j] = 0;
-					continue;
-				}
-				delay [j] = tempDelays [j]; // put values back
-			}
-		}
-
 		// Set delayFinished and delayStarted array to equal the target array length before zeroing out
-		delayFinished = new float[target.Length];
-		delayStarted = new bool[target.Length];
-
-		// zero out the private arrays for the delay time keepers
-		for (int i = 0; i < target.Length; i++) {
-			delayStarted [i] = false;
-			delayFinished [i] = Time.time;
-		}
+		delayFinished = Time.time;
+		delayStarted = false;
 	}
 
 	public void Targetted (UseData ud) {
 		counter++;
+		//owner = ud.owner;  Nope, last targetter becomes the owner
 
 		if (counter == countToTrigger) {
-			Target ();
+			if (delay > 0) {
+				delayFinished = Time.time + delay;
+				delayStarted = true;
+				delayedUd = ud;
+			} else {
+				Target (ud);
+			}
+
+			if (!dontReset) {
+				counter = 0; //reset, bleh double negatives why'd I do that
+			}
 		}
 	}
 
-	void Target() {
-		if (!dontReset) counter = 0;
-
-		UseData ud = new UseData();
-		ud.owner = Const.a.allPlayers;  // TODO: should we have a different Const.a.nullPlayer?
-		for (int i = 0; i < target.Length; i++) {
-			if (delay [i] > 0) {
-				delayStarted [i] = true; // tell Update() to check the timekeeper to see if we are past the delay
-				delayFinished[i] = Time.time + delay [i]; // set delay timekeeper
-			} else {
-				if (target [i] != null) {
-					target [i].SendMessageUpwards ("Targetted", ud);
-				}
-			}
+	void Target(UseData ud) {
+		ud.argvalue = argvalue;
+		TargetIO tio = GetComponent<TargetIO>();
+		if (tio != null) {
+			ud.SetBits(tio);
+		} else {
+			Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
 		}
+		Const.a.UseTargets(ud,target);
 	}
 
 	void Update () {
-		for (int i = 0; i < target.Length; i++) {
-			if (delayStarted [i]) {
-				if (delayFinished[i] < Time.time) {
-					UseData ud = new UseData();
-					ud.owner = Const.a.allPlayers; // TODO: should we have a different Const.a.nullPlayer?
-
-					delayStarted [i] = false; // reset bit so we don't keep triggering every frame
-					if (target[i] != null) {
-						target[i].SendMessageUpwards ("Targetted", ud); // fire in the hole
-					}
-				}
-			}
+		if (delayStarted && delayFinished < Time.time) {
+			delayStarted = false; // reset bit so we don't keep triggering every frame
+			Target (delayedUd);
 		}
 	}
 }

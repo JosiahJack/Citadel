@@ -61,14 +61,17 @@ public class PuzzleWire : MonoBehaviour {
 	private int numberOfWires;
 	private AudioSource SFXSource;
 	public AudioClip SFX;
-	[DTValidator.Optional] public GameObject target;
-	[DTValidator.Optional] public GameObject target1;
-	[DTValidator.Optional] public GameObject target2;
-	[DTValidator.Optional] public GameObject target3;
+	public string target;
+	public string argvalue;
 	private UseData udSender;
 	public bool geniusActive;
 	public Image[] geniusHintsLH;
 	public Image[] geniusHintsRH;
+
+	public enum WireColorTheme {Red,Yellow,Green};
+	public WireColorTheme theme;
+	public enum WireColor {Red,Orange,Yellow,Green,Blue,Purple};
+	public WireColor[] wireColors; //TODO actually set the wire colors
 
 	void Awake () {
 		selectedWire = -1;
@@ -217,7 +220,7 @@ public class PuzzleWire : MonoBehaviour {
 		}
 	}
 
-	public void SendPuzzleData(bool[] sentWiresOn, bool[] sentNodeRowsActive, int[] sentCurrentPositionsLeft, int[] sentCurrentPositionsRight, int[] sentTargetsLeft, int[] sentTargetsRight, UseData udSent) {
+	public void SendWirePuzzleData(bool[] sentWiresOn, bool[] sentNodeRowsActive, int[] sentCurrentPositionsLeft, int[] sentCurrentPositionsRight, int[] sentTargetsLeft, int[] sentTargetsRight,WireColorTheme sentTheme, WireColor[] sentWireColors, string t1, string a1, UseData udSent) {
 		wireIsActive = sentWiresOn;
 		nodeRowIsActive = sentNodeRowsActive;
 		wire1LHPosition = sentCurrentPositionsLeft[0];
@@ -249,6 +252,10 @@ public class PuzzleWire : MonoBehaviour {
 		wire6RHTarget = sentTargetsRight[5];
 		wire7RHTarget = sentTargetsRight[6];
 		udSender = udSent;
+		theme = sentTheme;
+		wireColors = sentWireColors;
+		target = t1;
+		argvalue = a1;
 		CheckEnabledNodes();
 		ChangeAppearance();
 	}
@@ -554,29 +561,38 @@ public class PuzzleWire : MonoBehaviour {
 		if (wire7RHPosition == wire7RHTarget) tempF += (1 / numberOfWires)/2;
 		*/
 
-		if (wire1LHPosition == wire1LHTarget) tempF += 0.19f;
-		if (wire2LHPosition == wire2LHTarget) tempF += 0.19f;
-		if (wire3LHPosition == wire3LHTarget) tempF += 0.19f;
-		if (wire4LHPosition == wire4LHTarget) tempF += 0.19f;
-		if (wire5LHPosition == wire5LHTarget) tempF += 0.19f;
-		if (wire6LHPosition == wire6LHTarget) tempF += 0.19f;
-		if (wire7LHPosition == wire7LHTarget) tempF += 0.19f;
-		if (wire1RHPosition == wire1RHTarget) tempF += 0.19f;
-		if (wire2RHPosition == wire2RHTarget) tempF += 0.19f;
-		if (wire3RHPosition == wire3RHTarget) tempF += 0.19f;
-		if (wire4RHPosition == wire4RHTarget) tempF += 0.19f;
-		if (wire5RHPosition == wire5RHTarget) tempF += 0.19f;
-		if (wire6RHPosition == wire6RHTarget) tempF += 0.19f;
-		if (wire7RHPosition == wire7RHTarget) tempF += 0.19f;
-
-		//Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
-		if (tempF > 0.95f) {
-			tempF = 1f;
-		}
+		if (wire1LHPosition == wire1LHTarget && wireIsActive[0]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire2LHPosition == wire2LHTarget && wireIsActive[1]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire3LHPosition == wire3LHTarget && wireIsActive[2]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire4LHPosition == wire4LHTarget && wireIsActive[3]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire5LHPosition == wire5LHTarget && wireIsActive[4]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire6LHPosition == wire6LHTarget && wireIsActive[5]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire7LHPosition == wire7LHTarget && wireIsActive[6]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire1RHPosition == wire1RHTarget && wireIsActive[0]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire2RHPosition == wire2RHTarget && wireIsActive[1]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire3RHPosition == wire3RHTarget && wireIsActive[2]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire4RHPosition == wire4RHTarget && wireIsActive[3]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire5RHPosition == wire5RHTarget && wireIsActive[4]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire6RHPosition == wire6RHTarget && wireIsActive[5]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
+		if (wire7RHPosition == wire7RHTarget && wireIsActive[6]) tempF += 0.19f;
+		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 
 		actualValue = tempF;
 
-		if (actualValue > 0.92f) {
+		if (tempF > 0.92f) {
 			PuzzleSolved();
 		}
 	}
@@ -586,21 +602,6 @@ public class PuzzleWire : MonoBehaviour {
 		slider.value = actualValue;
 		Solved = true;
 		SFXSource.PlayOneShot(SFX,1.0f);
-		UseTargets (udSender);
-	}
-
-	public void UseTargets (UseData ud) {
-		if (target != null) {
-			target.SendMessageUpwards("Targetted", ud);
-		}
-		if (target1 != null) {
-			target1.SendMessageUpwards("Targetted", ud);
-		}
-		if (target2 != null) {
-			target2.SendMessageUpwards("Targetted", ud);
-		}
-		if (target3 != null) {
-			target3.SendMessageUpwards("Targetted", ud);
-		}
+		Const.a.UseTargets(udSender,target);
 	}
 }

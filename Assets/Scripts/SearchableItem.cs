@@ -25,20 +25,27 @@ public class SearchableItem : MonoBehaviour {
 	public GameObject currentPlayerCapsule;
 	private float disconnectDist;
 	private bool generationDone = false;
-	private float tempFloat = 0f;
+	private int tempInt = 100;
+	public int maxRandomItems = 2;
+	private int numRandomGeneratedItems;
 
 	void Start () {
 		disconnectDist = Const.a.frobDistance;
+		numRandomGeneratedItems = 0;
 		if (generateContents && !generationDone) {
+			//Debug.Log("Generating Random Contents...");
 			// Generate random contents once
-			tempFloat = 0f;
+			tempInt = 100;
 			for(int i=0;i<randomItem.Length;i++) {
-				tempFloat = Random.Range(0f,1f); // generate even distribution random value from 0f to 1f, e.g. 0.35
-				// if 30% chance of dropping, then if tempFloat is 0.3 or greater there will be a 
-				if (tempFloat <= randomItemDropChance[i]) {
-					contents[i] = randomItem[i]; // ok item is now present
+				tempInt = Random.Range(0,100); // generate even distribution random value from 0 to 100, e.g. 35
+				if (randomItemDropChance[i] <= 0) continue; // next!
+				if (tempInt <= randomItemDropChance[i]) {
+					contents[numRandomGeneratedItems] = randomItem[i]; // ok item is now present
+					numRandomGeneratedItems++;
+					if (numRandomGeneratedItems>maxRandomItems) break; // all done we have all our contents
 				}
 			}
+			//Debug.Log("...done!  Generated indices " + contents[0].ToString() + " and " + contents[1].ToString() + ".");
 			generationDone = true;
 		}
 	}

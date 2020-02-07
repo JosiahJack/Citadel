@@ -5,7 +5,8 @@ public class ChargeStation : MonoBehaviour {
 	public float amount = 170;  //default to 2/3 of 255, the total energy player can have
 	public float resetTime = 150; //150 seconds
 	public bool requireReset;
-	public float minSecurityLevel = 0;
+	public float minSecurityLevel = 100;
+	public float damageOnUse = 0f; 
 	private float nextthink;
 	// private float maxResetTime = 10f;
 	
@@ -14,13 +15,21 @@ public class ChargeStation : MonoBehaviour {
 	}
 
 	public void Use (UseData ud) {
-		if (LevelManager.a.GetCurrentLevelSecurity () >= minSecurityLevel) {
-			MFDManager.a.BlockedBySecurity ();
+		if (LevelManager.a.GetCurrentLevelSecurity() > minSecurityLevel) {
+			MFDManager.a.BlockedBySecurity (transform.position);
+			Debug.Log("Failed to use charge station, minSecurityLevel was " + minSecurityLevel.ToString() + ", while level security is " + LevelManager.a.GetCurrentLevelSecurity().ToString());
 			return;
 		}
 		
 		if (nextthink < Time.time) {
             ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerEnergy>().GiveEnergy(amount, 1);
+			if (damageOnUse > 0f) {
+				DamageData dd = new DamageData();
+				dd.damage = damageOnUse;
+				HealthManager hm = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<HealthManager>();
+				if (hm.health <= dd.damage) dd.damage = hm.health - 1; // don't ever kill the player from this, way too cheap
+				if (dd.damage > 0) hm.TakeDamage(dd);  // ouch it zapped me...that really hurt Charlie, that hurt my finger, owhow, OW! ow, hahahow ow! OWW!  Charlie zapped my finger (it helps if you use a British accent)
+			}
 			Const.sprint("Energy drawn from Power Station.", ud.owner);
 			if (requireReset) {
 				nextthink = Time.time + resetTime;
@@ -28,5 +37,9 @@ public class ChargeStation : MonoBehaviour {
 		} else {
 			Const.sprint("Power Station is recharging\n", ud.owner);
 		}
+	}
+
+	public void ForceRecharge() {
+		nextthink = 0;
 	}
 }

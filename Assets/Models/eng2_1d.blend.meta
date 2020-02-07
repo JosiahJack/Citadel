@@ -36,7 +36,7 @@ ModelImporter:
       name: eng2_1d__eng2_1d_png
     second: {fileID: 2100000, guid: 771fc59e60be4094cb8e0d63c24cddba, type: 2}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -99,7 +99,7 @@ ModelImporter:
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
-  importAnimation: 1
+  importAnimation: 0
   copyAvatar: 0
   humanDescription:
     serializedVersion: 3

@@ -18,7 +18,6 @@ public class KeypadElevator : MonoBehaviour {
 	public float useDist = 2f;
 	private AudioSource SFXSource;
 	private bool padInUse;
-	private GameObject levelManager;
 	private GameObject playerCapsule;
 	private GameObject playerCamera;
 	private float distanceCheck;
@@ -27,13 +26,13 @@ public class KeypadElevator : MonoBehaviour {
 	private int four = 4;
 	private float tickFinished;
 	public float tickSecs = 0.1f;
+	public bool locked = false;
+	public string lockedTarget;
+	public string argvalue;
+	public string lockedMessage;
 	public string blockedBySecurityText = "Blocked by SHODAN level Security.";
 
 	void Awake () {
-		levelManager = GameObject.Find("LevelManager");
-		if (levelManager == null)
-			Const.sprint("Warning: Could not find object 'LevelManager' in scene",playerCapsule.transform.parent.gameObject);
-
 		if (targetDestination == null)
 			Const.sprint("Warning: Could not find target destination for elevator keypad" + gameObject.name,playerCapsule.transform.parent.gameObject);
 	}
@@ -50,9 +49,29 @@ public class KeypadElevator : MonoBehaviour {
 	}
 
 	public void Use (UseData ud) {
-		if (LevelManager.a.levelSecurity[LevelManager.a.currentLevel] > securityThreshhold) {
+		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
 			Const.sprint(blockedBySecurityText,ud.owner);
-			MFDManager.a.BlockedBySecurity();
+			MFDManager.a.BlockedBySecurity(transform.position);
+			return;
+		}
+
+		if (LevelManager.a.superoverride) {
+			// SHODAN can go anywhere!  Full security override!
+			locked = false;
+		}
+
+		if (locked) {
+			Const.sprint(lockedMessage,ud.owner);
+			if (lockedTarget != null && lockedTarget != "" && lockedTarget != " ") {
+				ud.argvalue = argvalue;
+				TargetIO tio = GetComponent<TargetIO>();
+				if (tio != null) {
+					ud.SetBits(tio);
+				} else {
+					Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
+				}
+				Const.a.UseTargets(ud,lockedTarget); //target something because we are locked like a Vox message to say hey we are locked, e.g. "Non emergency life pods disabled."
+			}
 			return;
 		}
 

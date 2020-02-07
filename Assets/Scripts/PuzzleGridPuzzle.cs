@@ -13,24 +13,62 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 	public int width;
 	public int height;
 	public PuzzleGrid.GridColorTheme theme;
-	public GameObject target;
-	public GameObject target1;
-	public GameObject target2;
-	public GameObject target3;
+	public string target;
+	public string argvalue;
+	public bool locked = false;
+	public string messageOnLocked = "Access Panel is Locked";
+	public string messageOnBroken = "Can't use broken panel";
+
+	private Animator anim;
+	public bool animate = true;
+	public bool inUse = false;
+	private bool alreadyOpen = false;
+
+	void Awake() {
+		if (animate) {
+			anim = GetComponent<Animator>();
+			if (anim == null) Debug.Log("BUG: Puzzle panel has no animator on PuzzleGridPuzzle.cs");
+			alreadyOpen = false;
+		}
+	}
+
+	public void SendDataBackToPanel(PuzzleGrid pg) {
+		grid = pg.grid;
+	}
 
 	public void Use (UseData ud) {
 		if (dead) {
-			Const.sprint("Can't use broken panel",ud.owner);
+			Const.sprint(messageOnBroken,ud.owner);
 			return;
 		}
 
-		if (LevelManager.a.levelSecurity[LevelManager.a.currentLevel] > securityThreshhold) {
-			MFDManager.a.BlockedBySecurity();
+		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
+			MFDManager.a.BlockedBySecurity(transform.position);
 			return;
+		}
+
+		if (LevelManager.a.superoverride) {
+			// SHODAN can go anywhere!  Full security override!
+			locked = false;
+		}
+
+		if (locked) {
+			Const.sprint(messageOnLocked,ud.owner);
+			return;
+		}
+
+		ud.argvalue = argvalue;
+		TargetIO tio = GetComponent<TargetIO>();
+		if (tio != null) {
+			ud.SetBits(tio);
+		} else {
+			Debug.Log("BUG: no TargetIO.cs found on an object with a PuzzleGridPuzzle.cs script!  Trying to call Use without parameters!");
 		}
 
 		Const.sprint("Puzzle interface accessed",ud.owner);
 		//(bool[] states, CellType[] types, GridType gtype, int start, int end, GridColorTheme colors, UseData ud)
-		MFDManager.a.SendGridPuzzleToDataTab(grid,cellType,gridType,sourceIndex,outputIndex,width,height,theme,target,target1,target2,target3,ud);
+		inUse = true;
+		if (animate && anim != null && !alreadyOpen) { anim.Play("Open"); alreadyOpen = true; }
+		MFDManager.a.SendGridPuzzleToDataTab(grid,cellType,gridType,sourceIndex,outputIndex,width,height,theme,target,ud,transform.position);
 	}
 }

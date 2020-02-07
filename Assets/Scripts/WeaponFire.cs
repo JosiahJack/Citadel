@@ -86,7 +86,6 @@ public class WeaponFire : MonoBehaviour {
     private float heatTickFinished;
     private float heatTickTime = 0.50f;
 
-
 	public GameObject muzFlashMK3;
 	public GameObject muzFlashBlaster;
 	public GameObject muzFlashDartgun;
@@ -106,6 +105,8 @@ public class WeaponFire : MonoBehaviour {
 	public GameObject wepView;
 	private Vector3 wepViewDefaultLocalPos;
 	[SerializeField] private bool recoiling;
+	[HideInInspector]
+	public float justFired;
 
     void Awake() {
         damageData = new DamageData();
@@ -113,6 +114,7 @@ public class WeaponFire : MonoBehaviour {
         tempVec = new Vector3(0f, 0f, 0f);
         heatTickFinished = Time.time + heatTickTime;
 		wepViewDefaultLocalPos = wepView.transform.localPosition;
+		justFired = (Time.time - 31f); // set less than 30s before Time.time to guarantee we don't immediately play action music
     }
 
     void GetWeaponData(int index) {
@@ -201,6 +203,7 @@ public class WeaponFire : MonoBehaviour {
     }
 
     bool WeaponsHaveAnyHeat() {
+		if (currentWeapon.redbull) return false;
         if (ionHeat > 0) return true;
         if (plasmaHeat > 0) return true;
         if (sparqHeat > 0) return true;
@@ -253,6 +256,7 @@ public class WeaponFire : MonoBehaviour {
 
                 GetWeaponData(i);
                 if (GetInput.a.Attack(Const.a.isFullAutoForWeapon[i]) && waitTilNextFire < Time.time) {
+					justFired = Time.time; // set justFired so that Music.cs can see it and play corresponding music in a little bit from now or keep playing action music
                     // Check weapon type and check ammo before firing
                     if (i == 5 || i == 6) {
                         // Pipe or Laser Rapier, attack without prejudice
@@ -261,8 +265,8 @@ public class WeaponFire : MonoBehaviour {
                         // Energy weapons so check energy level
                         if (i == 1 || i == 4 || i == 10 || i == 14 || i == 15) {
                             // Even if we have only 1 energy, we still fire with all we've got up to the energy level setting of course
-                            if (curEnergy.energy > 0) {
-								if (GetHeatForCurrentWeapon() > overheatedPercent) {
+                            if (curEnergy.energy > 0 || currentWeapon.bottomless || currentWeapon.redbull) {
+								if (GetHeatForCurrentWeapon() > overheatedPercent && !currentWeapon.bottomless && !currentWeapon.redbull) {
 									if (SFXEmpty != null) SFX.PlayOneShot(SFXEmpty);
                                     waitTilNextFire = Time.time + 0.8f;
                                     Const.sprint("Weapon is too hot to fire",Const.a.allPlayers);
@@ -273,14 +277,14 @@ public class WeaponFire : MonoBehaviour {
                         } else {
                             // Uses normal ammo, check versus alternate or normal to see if we have ammo then fire
                             if (currentWeapon.weaponIsAlternateAmmo) {
-                                if (WeaponCurrent.WepInstance.currentMagazineAmount2[i] > 0) {
+                                if (WeaponCurrent.WepInstance.currentMagazineAmount2[i] > 0 || currentWeapon.bottomless) {
                                     FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
                                 } else {
                                     if (SFXEmpty != null) SFX.PlayOneShot(SFXEmpty);
                                     waitTilNextFire = Time.time + 0.8f;
                                 }
                             } else {
-                                if (WeaponCurrent.WepInstance.currentMagazineAmount[i] > 0) {
+                                if (WeaponCurrent.WepInstance.currentMagazineAmount[i] > 0 || currentWeapon.bottomless) {
                                     FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
                                 } else {
                                     if (SFXEmpty != null) SFX.PlayOneShot(SFXEmpty);
@@ -430,19 +434,19 @@ public class WeaponFire : MonoBehaviour {
             if (index == 1 || index == 4 || index == 10 || index == 14 || index == 15) {
                 if (overloadEnabled) {
                     energoverButton.OverloadFired();
-                    curEnergy.TakeEnergy(Const.a.energyDrainOverloadForWeapon[index]); //take large amount
+                    if (!currentWeapon.bottomless && !currentWeapon.redbull) curEnergy.TakeEnergy(Const.a.energyDrainOverloadForWeapon[index]); //take large amount
                 } else {
                     float takeEnerg = (currentWeapon.weaponEnergySetting[index] / 100f) * (Const.a.energyDrainHiForWeapon[index] - Const.a.energyDrainLowForWeapon[index]);
-                    curEnergy.TakeEnergy(takeEnerg);
+                    if (!currentWeapon.bottomless && !currentWeapon.redbull) curEnergy.TakeEnergy(takeEnerg);
                 }
             } else {
                 if (currentWeapon.weaponIsAlternateAmmo) {
-                    WeaponCurrent.WepInstance.currentMagazineAmount2[index]--;
+                    if (!currentWeapon.bottomless) WeaponCurrent.WepInstance.currentMagazineAmount2[index]--;
 
                     // Update the counter
                     MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount2[index]);
                 } else {
-                    WeaponCurrent.WepInstance.currentMagazineAmount[index]--;
+                    if (!currentWeapon.bottomless) WeaponCurrent.WepInstance.currentMagazineAmount[index]--;
 
                     // Update the counter
                     MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount[index]);
@@ -493,6 +497,10 @@ public class WeaponFire : MonoBehaviour {
 	void CreateStandardImpactMarks(int wep16index) {
 		// Don't create bullet holes on objects that move
 		if (tempHit.transform.GetComponent<Rigidbody>() != null) return;
+		if (tempHit.transform.GetComponent<HealthManager>() != null) return; // don't create bullet holes on objects that die
+		if (tempHit.transform.GetComponent<Animator>() != null) return; // don't create bullet holes on objects that animate
+		if (tempHit.transform.GetComponent<Animation>() != null) return; // don't create bullet holes on objects that animate
+		if (tempHit.transform.GetComponent<Door>() != null) return; // don't create bullet holes on doors, makes them ghost and flicker through walls
 
 		// Add bullethole
 		tempVec = tempHit.normal * 0.16f;
@@ -655,6 +663,8 @@ public class WeaponFire : MonoBehaviour {
         damageData.owner = playerCapsule;
         HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
         if (hm != null) hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
+		UseableObjectUse uou = tempHit.transform.gameObject.GetComponent<UseableObjectUse>();
+		if (uou != null) uou.HitForce(damageData); // knock objects around
 
         // Draw a laser beam for beam weapons
         if (wep16Index == 1 || wep16Index == 4 || wep16Index == 14) {
@@ -665,41 +675,60 @@ public class WeaponFire : MonoBehaviour {
     // Melee weapons
     //----------------------------------------------------------------------------------------------------------
     // Rapier and pipe.  Need extra code to handle anims for view model and sound for swing-and-a-miss! vs. hit
+	void ApplyMeleeHit(int index16, GameObject targ, RaycastHit tHit, int numTargets, bool isRapier,bool silent) {
+		damageData.other = targ;
+		if (targ.tag == "NPC") {
+			damageData.isOtherNPC = true;
+		} else {
+			damageData.isOtherNPC = false;
+			CreateStandardImpactMarks(index16);
+		}
+		damageData.hit = tHit;
+		damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
+		damageData.damage = Const.a.damagePerHitForWeapon[index16]/numTargets; // divide across multiple targets
+		damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+		damageData.owner = playerCapsule;
+		damageData.attackType = Const.AttackType.Melee;
+		UseableObjectUse uou = targ.GetComponent<UseableObjectUse>();
+		if (uou != null) uou.HitForce(damageData); // knock objects around
+		HealthManager hm = targ.GetComponent<HealthManager>();
+		if (hm == null) {
+			if (isRapier) {
+				SFX.clip = SFXRapierHit;
+			}else {
+				SFX.clip = SFXPipeHit;
+			}
+			SFX.Play();
+			return;
+		}
+		if (hm!= null) hm.TakeDamage(damageData);
+		if (!silent) {
+			if ((hm.bloodType == HealthManager.BloodType.Red) || (hm.bloodType == HealthManager.BloodType.Yellow) || (hm.bloodType == HealthManager.BloodType.Green)) {
+				if (isRapier) {
+					SFX.clip = SFXRapierHit; // TODO: make flesh hit sound for rapier?
+				} else {
+					SFX.clip = SFXPipeHitFlesh;
+				}
+			} else {
+				if (isRapier) {
+					SFX.clip = SFXRapierHit;
+				} else {
+					SFX.clip = SFXPipeHit;
+				}	
+			}
+			SFX.Play();
+		}
+		return;
+	}
+
     void FireRapier(int index16, bool silent) {
         fireDistance = meleescanDistance;
         if (DidRayHit()) {
 			fireDistance = hitscanDistance; // reset before any returns
             rapieranim.Play("Attack2");
             CreateStandardImpactEffects(true);
-            damageData.other = tempHit.transform.gameObject;
-            if (tempHit.transform.gameObject.tag == "NPC") {
-                damageData.isOtherNPC = true;
-            } else {
-                damageData.isOtherNPC = false;
-				CreateStandardImpactMarks(index16);
-            }
-            damageData.hit = tempHit;
-            damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
-            damageData.damage = Const.a.damagePerHitForWeapon[index16];
-            damageData.damage = Const.a.GetDamageTakeAmount(damageData);
-            damageData.owner = playerCapsule;
-            damageData.attackType = Const.AttackType.Melee;
-            HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
-            if (hm == null) {
-				SFX.clip = SFXRapierHit;
-				SFX.Play();
-				return;
-			}
-            hm.TakeDamage(damageData);
-			if (!silent) {
-				if ((hm.bloodType == HealthManager.BloodType.Red) || (hm.bloodType == HealthManager.BloodType.Yellow) || (hm.bloodType == HealthManager.BloodType.Green)) {
-					SFX.clip = SFXRapierHit; // TODO: make flesh hit sound for rapier?
-				} else {
-					SFX.clip = SFXRapierHit;	
-				}
-				SFX.Play();
-			}
-            return;
+			ApplyMeleeHit(index16,tempHit.transform.gameObject,tempHit,1,true,silent);
+			return;
         }
         fireDistance = hitscanDistance; //reset in case raycast failed
 
@@ -716,38 +745,11 @@ public class WeaponFire : MonoBehaviour {
 			fireDistance = hitscanDistance; // reset before any returns
             anim.Play("Attack2");
             if (!silent) {
-                SFX.clip = SFXPipeHit;
+                
                 SFX.Play();
             }
             CreateStandardImpactEffects(true);
-            damageData.other = tempHit.transform.gameObject;
-            if (tempHit.transform.gameObject.tag == "NPC") {
-                damageData.isOtherNPC = true;
-            } else {
-                damageData.isOtherNPC = false;
-				CreateStandardImpactMarks(index16);
-            }
-            damageData.hit = tempHit;
-            damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
-            damageData.damage = Const.a.damagePerHitForWeapon[index16];
-            damageData.damage = Const.a.GetDamageTakeAmount(damageData);
-            damageData.owner = playerCapsule;
-            damageData.attackType = Const.AttackType.Melee;
-            HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
-            if (hm == null) {
-				SFX.clip = SFXPipeHit;
-				SFX.Play();
-				return;
-			}
-            hm.TakeDamage(damageData);
-			if (!silent) {
-				if ((hm.bloodType == HealthManager.BloodType.Red) || (hm.bloodType == HealthManager.BloodType.Yellow) || (hm.bloodType == HealthManager.BloodType.Green)) {
-					SFX.clip = SFXPipeHitFlesh;
-				} else {
-					SFX.clip = SFXPipeHit;
-				}
-				SFX.Play();
-			}
+			ApplyMeleeHit(index16,tempHit.transform.gameObject,tempHit,1,false,silent);
             return;
         }
         fireDistance = hitscanDistance;

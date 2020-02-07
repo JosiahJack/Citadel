@@ -27,23 +27,8 @@ public class UseableObjectUse : MonoBehaviour {
 		this.gameObject.SetActive(false); //we've been picked up, quick hide like you are actually in the player's hand
 	}
 
-	// Handled by HealthManager.cs now, JJ 9/5/19
-	// ouch!
-	//public void TakeDamage (DamageData dd) {
-	//	Rigidbody rbody = GetComponent<Rigidbody>();
-	//	rbody.AddForceAtPosition((dd.attacknormal*dd.damage),dd.hit.point); // knock me around will you
-	//}
-}
-
-public class UseData {
-	public GameObject owner = null; // pass main GameObject that contains the script PlayerReferenceManager
-	public int mainIndex = -1; // master index value for lookup in the Const tables
-	public int customIndex = -1;
-
-	// function for reseting all data if needed
-	public void Reset (UseData ud) {
-		ud.owner = null;
-		ud.mainIndex = -1;
-		ud.customIndex = -1;
+	public void HitForce (DamageData dd) {
+		Rigidbody rbody = GetComponent<Rigidbody>();
+		if (rbody != null) rbody.AddForceAtPosition((dd.attacknormal*dd.damage),dd.hit.point); // knock me around will you
 	}
 }

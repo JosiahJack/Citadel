@@ -17,7 +17,7 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 	private int entryHuns;
 	private AudioSource SFXSource;
 	private bool sfxPlayed;
-	private bool done;
+	public bool done;
 
 	void Awake () {
 		currentEntry = -1;
@@ -122,6 +122,7 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 				sfxPlayed = true;  // prevent play sfx every frame once 3 digits have been entered
 			}
 			keypad.UseTargets();
+			keypad.solved = true;
 			done = true;
 		} else {
 			if ((entryHuns != -1) && sfxPlayed == false) {

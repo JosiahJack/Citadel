@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Collections;
+using System;
 
 public class PlayerMovement : MonoBehaviour {
 	private float walkAcceleration = 2000f;
@@ -70,13 +71,14 @@ public class PlayerMovement : MonoBehaviour {
 	private float fatigueWanePerTickCrouched = 2f;
 	private float fatigueWanePerTickProne = 3.5f;
 	private float fatigueWaneTickSecs = 0.3f;
-	private float fatiguePerWalkTick = 2.5f;
-	private float fatiguePerSprintTick = 3.5f;
+	private float fatiguePerWalkTick = 0.9f;
+	private float fatiguePerSprintTick = 2.5f;
 	public string cantStandText = "Can't stand here.";
 	public string cantCrouchText = "Can't crouch here.";
 	private bool justJumped = false;
 	private float fatigueFinished;
 	private float fatigueFinished2;
+	public TextWarningsManager twm;
 
 	private int defIndex = 0;
 	private int def1 = 1;
@@ -86,6 +88,7 @@ public class PlayerMovement : MonoBehaviour {
 	public bool cyberDesetup = false;
 	private SphereCollider cyberCollider;
 	private CapsuleCollider capsuleCollider;
+	public CapsuleCollider leanCapsuleCollider;
 	private int oldBodyState;
 	private float bonus;
     private float walkDeaccelerationVolx;
@@ -94,7 +97,8 @@ public class PlayerMovement : MonoBehaviour {
 
 	public Image consolebg;
     public InputField consoleinpFd;
-    public Text consoleplaceholderText;
+    public GameObject consoleplaceholderText;
+	public GameObject consoleTitle;
 	public Text consoleentryText;
 	public bool consoleActivated;
 
@@ -108,6 +112,8 @@ public class PlayerMovement : MonoBehaviour {
 	public AudioSource PlayerNoise;
 	public AudioClip SFXJump;
 	public AudioClip SFXJumpLand;
+	public float jumpSFXFinished;
+	public float jumpSFXIntervalTime = 1f;
 	public float jumpLandSoundFinished;
 	private Vector3 tempVec;
 	public float leanSpeed = 5f;
@@ -115,6 +121,10 @@ public class PlayerMovement : MonoBehaviour {
 	public bool leanRHFirstPressed = false;
 	public bool leanLHReset = false;
 	public bool leanRHReset = false;
+	public bool Notarget = false; // for cheat to disable enemy sight checks against this player
+	public GameObject fpsCounter;
+	public WeaponCurrent wepCur;
+	private bool fatigueWarned;
 
     void Awake (){
 		currentCrouchRatio = def1;
@@ -127,12 +137,12 @@ public class PlayerMovement : MonoBehaviour {
 		crouchLocalScaleY = transform.localScale.y * crouchRatio;
 		rbody = GetComponent<Rigidbody>();
 		oldVelocity = rbody.velocity;
-		capsuleHeight = GetComponent<CapsuleCollider>().height;
-		capsuleRadius = GetComponent<CapsuleCollider>().radius;
+		capsuleCollider = GetComponent<CapsuleCollider>();
+		capsuleHeight = capsuleCollider.height;
+		capsuleRadius = capsuleCollider.radius;
 		layerMask = def1 << layerGeometry;
 		staminupActive = false;
 		cyberCollider = GetComponent<SphereCollider>();
-		capsuleCollider = GetComponent<CapsuleCollider>();
 		consoleActivated = false;
 		leanLeftDoubleFinished = Time.time;
 		leanRightDoubleFinished = Time.time;
@@ -142,6 +152,8 @@ public class PlayerMovement : MonoBehaviour {
 		leanRHFirstPressed = false;
 		leanLHReset = false;
 		leanRHReset = false;
+		jumpSFXFinished = Time.time;
+		fatigueWarned = false;
     }
 	
 	bool CantStand (){
@@ -172,6 +184,16 @@ public class PlayerMovement : MonoBehaviour {
 			ConsoleEntry();
 		}
 
+		if (consoleActivated) {
+			if (!String.IsNullOrEmpty(consoleentryText.text)) {
+				consoleplaceholderText.SetActive(false);
+			} else {
+				consoleplaceholderText.SetActive(true);
+			}
+		} else {
+			consoleplaceholderText.SetActive(false);
+		}
+
 		if (mainMenu.activeSelf == true) return;  // ignore movement when main menu is still up
 		if (!PauseScript.a.Paused()) {
 			rbody.WakeUp();
@@ -192,7 +214,8 @@ public class PlayerMovement : MonoBehaviour {
                 if (CheatNoclip) {
                     // Flying cheat...also map editing mode!
                     cyberCollider.enabled = false; // can't touch dis
-                    capsuleCollider.enabled = false; //na nana na
+                    capsuleCollider.enabled = false; //na nana na, na na, can't touch dis
+					leanCapsuleCollider.enabled = false;
                     rbody.useGravity = false; // look ma! no legs
 
                     Mathf.Clamp(mlookScript.xRotation, -90f, 90f); // pre-clamp camera rotation - still useful
@@ -204,6 +227,7 @@ public class PlayerMovement : MonoBehaviour {
                 } else {
                     cyberCollider.enabled = false;
                     capsuleCollider.enabled = true;
+					leanCapsuleCollider.enabled = true;
                     rbody.useGravity = true;
 
                     Mathf.Clamp(mlookScript.xRotation, -90f, 90f); // pre-clamp camera rotation
@@ -216,7 +240,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 
 			if (GetInput.a.Sprint() && !consoleActivated) {
-				if (grounded) {
+				if (grounded || CheatNoclip) {
 					if (GetInput.a.CapsLockOn()) {
 						isSprinting = false;
 					} else {
@@ -224,7 +248,7 @@ public class PlayerMovement : MonoBehaviour {
 					}
 				}
 			} else {
-				if (grounded) {
+				if (grounded || CheatNoclip) {
 					if (GetInput.a.CapsLockOn()) {
 						isSprinting = true;
 					} else {
@@ -314,6 +338,12 @@ public class PlayerMovement : MonoBehaviour {
 				if (fatigue < defIndex) fatigue = defIndex; // clamp at 0
 			}
 			if (fatigue > onehundred) fatigue = onehundred; // clamp at 100 using dummy variables to hang onto the value and not get collected by garbage collector (really?  hey it was back in the old days when we didn't have incremental garbage collector, pre Unity 2019.2 versions
+			if (fatigue > 80 && !fatigueWarned) {
+				twm.SendWarning(("Fatigue high"),0.1f,0,TextWarningsManager.warningTextColor.white,324);
+				fatigueWarned = true;
+			} else {
+				fatigueWarned = false;
+			}
 
 			// Handle Right Leaning start
 			if (GetInput.a.LeanRightStart()) {
@@ -434,7 +464,9 @@ public class PlayerMovement : MonoBehaviour {
 		if (!PauseScript.a.Paused()) {
             if (CheatNoclip) grounded = true;
 			// Crouch
-			LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));
+			//LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));
+			capsuleCollider.height = currentCrouchRatio * 2f;
+			leanCapsuleCollider.height = currentCrouchRatio * 2f;
 			
 			// Handle body state speeds and body position lerping for smooth transitions
 			if (!inCyberSpace && !CheatNoclip) {
@@ -477,6 +509,8 @@ public class PlayerMovement : MonoBehaviour {
                     playerSpeed = maxCyberSpeed;
                 }
 			}
+
+			if (CheatNoclip) playerSpeed = maxCyberSpeed*2f;
 		
 			if (inCyberSpace && !CheatNoclip) {
 				// Limit movement speed in all axes x,y,z in cyberspace
@@ -489,12 +523,13 @@ public class PlayerMovement : MonoBehaviour {
 				
 				if (horizontalMovement.magnitude > playerSpeed) {
 					horizontalMovement = horizontalMovement.normalized;
-					if (isSprinting && running && !inCyberSpace && !CheatNoclip) {
+					if (isSprinting && running && !inCyberSpace) {
 						if (fatigue > 80f) {
 							playerSpeed = maxSprintSpeedFatigued + bonus;
 						} else {
 							playerSpeed = maxSprintSpeed + bonus;
 						}
+						if (CheatNoclip) playerSpeed = maxSprintSpeed + (bonus*1.5f);
 					}
 					horizontalMovement *= playerSpeed;  // cap velocity to max speed
 				}
@@ -698,9 +733,15 @@ public class PlayerMovement : MonoBehaviour {
 					// Play jump sound
 					if (fatigue > 80) {
 						// quiet, we are tired
-						PlayerNoise.PlayOneShot(SFXJump,0.5f);
+						if (jumpSFXFinished < Time.time) {
+							jumpSFXFinished = Time.time + jumpSFXIntervalTime;
+							PlayerNoise.PlayOneShot(SFXJump,0.5f);
+						}
 					} else {
-						PlayerNoise.PlayOneShot(SFXJump);
+						if (jumpSFXFinished < Time.time) {
+							jumpSFXFinished = Time.time + jumpSFXIntervalTime;
+							PlayerNoise.PlayOneShot(SFXJump);
+						}
 					}
 					justJumped = false;
 					fatigue += jumpFatigue;
@@ -766,18 +807,23 @@ public class PlayerMovement : MonoBehaviour {
     private void ToggleConsole() {
 		if (consoleActivated) {
 			consoleActivated = false;
-			consoleplaceholderText.enabled = false;
+			consoleplaceholderText.SetActive(false);
+			consoleTitle.SetActive(false);
 			consoleinpFd.DeactivateInputField();
 			consoleinpFd.enabled = false;
 			consolebg.enabled = false;
+			consoleentryText.text = null;
 			consoleentryText.enabled = false;
+			PauseScript.a.PauseDisable();
 		} else {
 			consoleActivated = true;
-			consoleplaceholderText.enabled = true;
+			consoleplaceholderText.SetActive(true);
+			consoleTitle.SetActive(true);
 			consoleinpFd.enabled = true;
 			consoleinpFd.ActivateInputField();
 			consolebg.enabled = true;
 			consoleentryText.enabled = true;
+			PauseScript.a.PauseEnable();
 		}
     }
 
@@ -785,22 +831,62 @@ public class PlayerMovement : MonoBehaviour {
         if (consoleinpFd.text == "noclip") {
 			if (CheatNoclip) {
 				CheatNoclip = false;
+				rbody.useGravity = true;
+				capsuleCollider.enabled = true;
+				leanCapsuleCollider.enabled = true;
 				Const.sprint("Noclip disabled", Const.a.allPlayers);
 			} else {
 				CheatNoclip = true;
+				rbody.useGravity = false;
+				capsuleCollider.enabled = false;
+				leanCapsuleCollider.enabled = false;
 				Const.sprint("Noclip activated!", Const.a.allPlayers);
 			}
-        } else if (consoleinpFd.text == "wallsticky") {
-			if (CheatNoclip) {
-				CheatWallSticky = false;
-				Const.sprint("Wallsticky disabled", Const.a.allPlayers);
+        } else if (consoleinpFd.text == "notarget") {
+			if (Notarget) {
+				Notarget = false;
+				Const.sprint("Notarget disabled", Const.a.allPlayers);
 			} else {
-				CheatWallSticky = true;
-				Const.sprint("Wallsticky activated!", Const.a.allPlayers);
+				Notarget = true;
+				Const.sprint("Notarget activated!", Const.a.allPlayers);
 			}
         } else if (consoleinpFd.text == "god") {
-            Const.sprint("God mode activated!", Const.a.allPlayers);
-        } else {
+			if (GetComponent<HealthManager>().god) {
+				Const.sprint("God mode disabled", Const.a.allPlayers);
+				GetComponent<HealthManager>().god = false;
+			} else {
+				Const.sprint("God mode activated!", Const.a.allPlayers);
+				GetComponent<HealthManager>().god = true;
+			}
+        } else if (consoleinpFd.text == "bottomlessclip") {
+			if (wepCur.bottomless) {
+				Const.sprint("Hose disconnected, normal ammo operation restored", Const.a.allPlayers);
+				wepCur.bottomless = false;
+			} else {
+				Const.sprint("Bottomless clip!  Bring it!", Const.a.allPlayers);
+				wepCur.bottomless = true;
+			}
+        } else if (consoleinpFd.text == "ifeelthepower") {
+			if (wepCur.redbull) {
+				Const.sprint("Energy usage normal", Const.a.allPlayers);
+				wepCur.redbull = false;
+			} else {
+				Const.sprint("I feel the power! 0 energy consumption!", Const.a.allPlayers);
+				wepCur.redbull = true;
+			}
+        } else if (consoleinpFd.text == "showfps") {
+			Const.sprint("Toggling FPS counter for framerate (bottom right corner)...", Const.a.allPlayers);
+			fpsCounter.SetActive(!fpsCounter.activeInHierarchy);
+		} else if (consoleinpFd.text == "iamshodan") {
+			if (LevelManager.a.superoverride) {
+				Const.sprint("SHODAN has regained control of security", Const.a.allPlayers);
+				LevelManager.a.superoverride = false;
+			} else {
+				Const.sprint("Full security override enabled!", Const.a.allPlayers);
+				LevelManager.a.superoverride = true;
+			}
+			Const.sprint("Full security override enabled!", Const.a.allPlayers);
+		} else {
             Const.sprint("Uknown command or function: " + consoleinpFd.text, Const.a.allPlayers);
         }
 
