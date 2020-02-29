@@ -306,6 +306,18 @@ public class WeaponFire : MonoBehaviour {
     // otherwise the cases use currentWeapon.weaponIndex
     void FireWeapon(int index, bool isSilent) {
         damageData.ResetDamageData(damageData);
+		if (currentWeapon.weaponIndex != 41 && currentWeapon.weaponIndex != 42) {
+			for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
+				if (Const.a.healthObjectsRegistration[ij] != null) {
+					if (Const.a.healthObjectsRegistration[ij].isNPC) {
+						if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,playerCapsule.transform.position) < Const.a.healthObjectsRegistration[ij].aic.rangeToHear) {
+							Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(playerCapsule);
+						}
+					}
+				}
+			}
+		}
+
         switch (currentWeapon.weaponIndex) {
             case 36:
                 //Mark3 Assault Rifle
@@ -727,6 +739,15 @@ public class WeaponFire : MonoBehaviour {
 			fireDistance = hitscanDistance; // reset before any returns
             rapieranim.Play("Attack2");
             CreateStandardImpactEffects(true);
+			for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
+				if (Const.a.healthObjectsRegistration[ij] != null) {
+					if (Const.a.healthObjectsRegistration[ij].isNPC) {
+						if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,playerCapsule.transform.position) < Const.a.healthObjectsRegistration[ij].aic.rangeToHear) {
+							Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(playerCapsule);
+						}
+					}
+				}
+			}
 			ApplyMeleeHit(index16,tempHit.transform.gameObject,tempHit,1,true,silent);
 			return;
         }
@@ -745,9 +766,18 @@ public class WeaponFire : MonoBehaviour {
 			fireDistance = hitscanDistance; // reset before any returns
             anim.Play("Attack2");
             if (!silent) {
-                
+				SFX.clip = SFXPipeHit;
                 SFX.Play();
             }
+			for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
+				if (Const.a.healthObjectsRegistration[ij] != null) {
+					if (Const.a.healthObjectsRegistration[ij].isNPC) {
+						if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,playerCapsule.transform.position) < Const.a.healthObjectsRegistration[ij].aic.rangeToHear) {
+							Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(playerCapsule);
+						}
+					}
+				}
+			}
             CreateStandardImpactEffects(true);
 			ApplyMeleeHit(index16,tempHit.transform.gameObject,tempHit,1,false,silent);
             return;

@@ -22,7 +22,7 @@ public class LogInventory : MonoBehaviour {
 	}
 
 	void Update () {
-		if(GetInput.a.RecentLog()) {
+		if(GetInput.a.RecentLog() && (HardwareInventory.a.hasHardware[2] == true)) {
 			if (lastAddedIndex != -1) {
 				PlayLog(lastAddedIndex);
 				lastAddedIndex = -1;

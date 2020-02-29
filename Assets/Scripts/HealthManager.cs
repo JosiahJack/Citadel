@@ -36,7 +36,8 @@ public class HealthManager : MonoBehaviour {
 
 	private bool initialized = false;
 	private bool deathDone = false;
-	private AIController aic;
+	[HideInInspector,DTValidator.Optional]
+	public AIController aic;
 	private Rigidbody rbody;
 	private MeshCollider meshCol;
 	private BoxCollider boxCol;
@@ -107,6 +108,11 @@ public class HealthManager : MonoBehaviour {
 		}
 	}
 
+	public void NotifyEnemyNearby(GameObject enemSent) {
+		if (aic != null && isNPC && (health > 0f)) {
+			aic.SendEnemy(enemSent);
+		}
+	}
 
 	public void TakeDamage(DamageData dd) {
 		if (applyImpact && rbody != null) {
@@ -185,6 +191,16 @@ public class HealthManager : MonoBehaviour {
         if (aic != null && isNPC && (health > 0f)) {
 			aic.goIntoPain = true;
 			aic.SendEnemy(attacker);
+			for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
+				if (Const.a.healthObjectsRegistration[ij] != null) {
+					if (Const.a.healthObjectsRegistration[ij].isNPC) {
+						if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,gameObject.transform.position) < Const.a.healthObjectsRegistration[ij].aic.rangeToHear) {
+							Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(attacker);
+							Debug.Log("Enemy took pain and then notified a nearby enemy to join the fray!");
+						}
+					}
+				}
+			}
 		}
 
         if (health <= 0f) {

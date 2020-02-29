@@ -34,25 +34,4 @@ public class Email : MonoBehaviour {
 		linv.lastAddedIndex = index;
 		if (autoPlayEmail) linv.PlayLastAddedLog(index);
 	}
-
-/* From MouseLookScript.cs for reference
-	void AddAudioLogToInventory () {
-		if ((heldObjectCustomIndex != -1) && (logInventory != null)) {
-			logInventory.hasLog[heldObjectCustomIndex] = true;
-			logInventory.lastAddedIndex = heldObjectCustomIndex;
-			int levelnum = Const.a.audioLogLevelFound[heldObjectCustomIndex];
-			logInventory.numLogsFromLevel[levelnum]++;
-			logContentsManager.InitializeLogsFromLevelIntoFolder();
-			string audName = Const.a.audiologNames[heldObjectCustomIndex];
-			string logPlaybackKey = Const.a.InputConfigNames[20];
-			Const.sprint("Audio log " + audName + " picked up.  Press '" + logPlaybackKey + "' to playback.",player);
-		} else {
-			if (logInventory == null) {
-				Const.sprint("Warning: logInventory is null",player);
-			} else {
-				Const.sprint("Warning: Audio log picked up has no assigned index (-1)",player);
-			}
-		}
-	}
-*/
 }

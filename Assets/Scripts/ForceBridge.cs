@@ -27,8 +27,8 @@ public class ForceBridge : MonoBehaviour {
 		SFX = GetComponent<AudioSource>();
 		lerping = false;
 		tickFinished = Time.time + tickTime;
-		if (activated) Activate();
-		else Deactivate();
+		if (activated) Activate(true);
+		else Deactivate(true);
 	}
 
     void Update() {
@@ -69,7 +69,9 @@ public class ForceBridge : MonoBehaviour {
 		}
     }
 
-	public void Activate() {
+	public void Activate(bool forceIt) {
+		if (activated && !forceIt) return; // already there
+
 		if (SFX != null && SFXBridgeChange != null) SFX.PlayOneShot(SFXBridgeChange);
 		activated = true;
 		lerping = true;
@@ -82,7 +84,9 @@ public class ForceBridge : MonoBehaviour {
 		transform.localScale = new Vector3(sx,sy,sz);
 	}
 
-	public void Deactivate() {
+	public void Deactivate(bool forceIt) {
+		if (!activated && !forceIt) return; // already there
+
 		if (SFX != null && SFXBridgeChange != null) SFX.PlayOneShot(SFXBridgeChange);
 		activated = false;
 		lerping = true;
@@ -90,9 +94,9 @@ public class ForceBridge : MonoBehaviour {
 
 	public void Toggle() {
 		if (activated) {
-			Deactivate();
+			Deactivate(false);
 		} else {
-			Activate();
+			Activate(false);
 		}
 	}
 }

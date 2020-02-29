@@ -36,6 +36,10 @@ public class LogicRelay : MonoBehaviour {
 	}
 
 	void RunTargets(UseData ud) {
+		if (target == null || target == "" || target == " " || target == "  ") {
+			Debug.Log("WARNING: logic relay attempting to target nothing");
+			return; // no target, do nothing
+		}
 		ud.argvalue = argvalue;
 		if (thisTioOverridesSender) {
 			TargetIO tio = GetComponent<TargetIO>();

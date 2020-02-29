@@ -52,6 +52,7 @@ public class TargetIO : MonoBehaviour {
 	public bool stopFlashingMaterials; // disable flashing
 	public bool unlockElevatorPad; // unlock elevator keypad
 	public bool unlockKeycodePad; // unlock elevator keypad
+	public bool unlockPuzzlePad; // unlock puzzle pad, grid or wire
 
 	void Start() {
 		if (targetname != "" && targetname != " " & targetname != "  ") {
@@ -73,6 +74,10 @@ public class TargetIO : MonoBehaviour {
 		// Whatever else happens, try to access a LogicRelay and keep the messages going
 		LogicRelay lr = GetComponent<LogicRelay>();
 		if (lr != null && lr.relayEnabled) lr.Targetted(ud);
+
+		// or a LogicBranch since it also carries logic along
+		LogicBranch lb = GetComponent<LogicBranch>();
+		if (lb != null && lb.relayEnabled) lb.Targetted(ud);
 
 		if (ud.tripTrigger) {
 			Trigger trig = GetComponent<Trigger>();
@@ -132,12 +137,12 @@ public class TargetIO : MonoBehaviour {
 
 		if (ud.forceBridgeActivate) {
 			ForceBridge fb = GetComponent<ForceBridge>();
-			if (fb != null) fb.Activate();
+			if (fb != null) fb.Activate(false);
 		}
 
 		if (ud.forceBridgeDeactivate) {
 			ForceBridge fb = GetComponent<ForceBridge>();
-			if (fb != null) fb.Deactivate();
+			if (fb != null) fb.Deactivate(false);
 		}
 
 		if (ud.forceBridgeToggle) {
@@ -292,6 +297,14 @@ public class TargetIO : MonoBehaviour {
 			KeypadKeycode keyk = GetComponent<KeypadKeycode>();
 			if (keyk != null) keyk.locked = false;
 		}
+
+		if (ud.unlockPuzzlePad) {
+			PuzzleGridPuzzle pgp = GetComponent<PuzzleGridPuzzle>();
+			if (pgp != null) pgp.locked = false;
+
+			PuzzleWirePuzzle pwp = GetComponent<PuzzleWirePuzzle>();
+			if (pwp != null) pwp.locked = false;
+		}
 	}
 }
 
@@ -348,6 +361,7 @@ public class UseData {
 	public bool stopFlashingMaterials; // disable flashing
 	public bool unlockElevatorPad; // unlock elevator pad
 	public bool unlockKeycodePad; // unlock elevator keypad
+	public bool unlockPuzzlePad; // unlock puzzle pad, grid or wire
 
 	// function for reseting all data if needed
 	public void Reset (UseData ud) {
@@ -401,6 +415,7 @@ public class UseData {
 		stopFlashingMaterials = tio.stopFlashingMaterials;
 		unlockElevatorPad = tio.unlockElevatorPad;
 		unlockKeycodePad = tio.unlockKeycodePad;
+		unlockPuzzlePad = tio.unlockPuzzlePad;
 		bitsSet = true;
 	}
 }

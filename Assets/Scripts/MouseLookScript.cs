@@ -228,18 +228,46 @@ public class MouseLookScript : MonoBehaviour {
 				Const.sprint("ERROR: Paused is true and inventoryMode is false",player);
 			}
 		} else {
+			if (!PauseScript.a.Paused()) {
+				if (GetInput.a.TurnLeft()) {
+					yRotation -= keyboardTurnSpeed * lookSensitivity;
+					//tempQuat = transform.rotation;
+					transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+					//transform.parent.transform.parent.transform.localRotation = tempQuat; // preserve x axis, hacky
+				}
+
+				if (GetInput.a.TurnRight()) {
+					yRotation += keyboardTurnSpeed * lookSensitivity;
+					//tempQuat = transform.rotation;
+					transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+					//transform.parent.transform.parent.transform.localRotation = tempQuat; // preserve x axis, hacky
+				}
+
+				if (GetInput.a.LookDown()) {
+					xRotation += keyboardTurnSpeed * lookSensitivity;
+					if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle
+					transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+				}
+
+				if (GetInput.a.LookUp()) {
+					xRotation -= keyboardTurnSpeed * lookSensitivity;
+					if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle
+					transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+				}
+			}
+			/*
 			if (Input.GetButton("Yaw")) {
 				if (!PauseScript.a.Paused()) {
 					if  (Input.GetAxisRaw("Yaw") > 0) {
 						yRotation += keyboardTurnSpeed * lookSensitivity;
 						tempQuat = transform.rotation;
-						transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
+						transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
 						transform.parent.transform.parent.transform.localRotation = tempQuat; // preserve x axis, hacky
 					} else {
 						if (Input.GetAxisRaw("Yaw") < 0) {
 							yRotation -= keyboardTurnSpeed * lookSensitivity;
 							tempQuat = transform.rotation;
-							transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
+							transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
 							transform.parent.transform.parent.transform.localRotation = tempQuat; // preserve x axis, hacky
 						}
 					}
@@ -250,13 +278,15 @@ public class MouseLookScript : MonoBehaviour {
 				if (!PauseScript.a.Paused()) {
 					if  (Input.GetAxisRaw("Pitch") > 0) {
 						xRotation += keyboardTurnSpeed * lookSensitivity;
-						transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
+						transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 					} else {
-						xRotation -= keyboardTurnSpeed * lookSensitivity;
-						transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
+						if (Input.GetAxisRaw("Pitch") < 0) {
+							xRotation -= keyboardTurnSpeed * lookSensitivity;
+							transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+						}
 					}
 				}
-			}
+			}*/
 		}
 
 		// Toggle inventory mode<->shoot mode
@@ -286,21 +316,6 @@ public class MouseLookScript : MonoBehaviour {
 								//Debug.Log("Raycast hit a usable!");
 								UseData ud = new UseData ();
 								ud.owner = player;
-								/*
-								//hit.transform.SendMessageUpwards("Use", ud); // send Use with self as owner of message DIE SendMessage DIE!!!
-								if (hit.transform.GetComponent<UseHandler>() != null) {
-									//Debug.Log("Found a UseHandler!");
-									hit.transform.GetComponent<UseHandler>().Use(ud); // Just plain use it, handler checks for and has any and all scripts run their Use(UseData ud) function, passing along ud
-								} else {
-									//Debug.Log("Couldn't find a UseHandler");
-									if (hit.transform.GetComponent<UseHandlerRelay>() != null) {
-										hit.transform.GetComponent<UseHandlerRelay>().referenceUseHandler.Use(ud);
-										//Debug.Log("Found a UseHandlerRelay!");
-									} else {
-										Debug.Log("Warning: could not find UseHandler or UseHandlerRelay on hit.transform");
-									}
-								}*/
-								//Debug.Log("Attempting to use a useable...");
 								UseHandler uh = hit.collider.gameObject.GetComponent<UseHandler>();
 								if (uh != null) {
 									uh.Use(ud);
@@ -663,7 +678,11 @@ public class MouseLookScript : MonoBehaviour {
 			logContentsManager.InitializeLogsFromLevelIntoFolder();
 			string audName = Const.a.audiologNames[heldObjectCustomIndex];
 			string logPlaybackKey = Const.a.InputConfigNames[20];
-			Const.sprint("Audio log " + audName + " picked up.  Press '" + logPlaybackKey + "' to playback.",player);
+			if (HardwareInventory.a.hasHardware[2] == true) {
+				Const.sprint("Audio log " + audName + " picked up.  Press '" + logPlaybackKey + "' to playback.",player);
+			} else {
+				Const.sprint("Audio log " + audName + " picked up.  Proper hardware not detected to play.",player);
+			}
 		} else {
 			if (logInventory == null) {
 				Const.sprint("Warning: logInventory is null",player);
@@ -711,7 +730,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
 		if (alreadyHave) {
-			Const.sprint ("Already have that access.", player);
+			Const.sprint ("Already have access " + doorAccessTypeAcquired.ToString(), player);
 			return;
 		}
 

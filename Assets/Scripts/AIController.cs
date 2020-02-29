@@ -160,6 +160,7 @@ public class AIController : MonoBehaviour {
 	private bool deathBurstDone;
 	public GameObject sightPoint;
 	private NavMeshPath searchPath;
+	public float rangeToHear = 10f;
 
 	// Initialization and find components
 	void Awake () {
@@ -482,7 +483,7 @@ public class AIController : MonoBehaviour {
 			//Debug.Log("Did...did we do it?  Did the melee colliders activate?");
         }
 
-		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1.28) {
+		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1f) {
 			if (WithinAngleToTarget()) rbody.AddForce(transform.forward * meleeSpeed);
 		}
         currentDestination = enemy.transform.position;
@@ -793,6 +794,7 @@ public class AIController : MonoBehaviour {
 				if (flyerCollider != null) flyerCollider.enabled = false;
 				if (flyerColliderAlternate1 != null) flyerColliderAlternate1.enabled = false;
 				if (!healthManager.gibOnDeath) {
+					transform.position = new Vector3(transform.position.x,transform.position.y+0.02f,transform.position.z); //bump the corpse up a hair to prevent it ghosting through the floor
 					rbody.useGravity = true;
 					//rbody.isKinematic = false;
 				}
@@ -860,32 +862,32 @@ public class AIController : MonoBehaviour {
 		if (playr4 != null) {playr4 = playr4.GetComponent<PlayerReferenceManager>().playerCapsule;}
 		
 		if (enemCandidate == playr1) {
-		enemy = playr1;
-			if (firstSighting) {
-				firstSighting = false;
-				if (SFX != null && SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
-			}
+			SetEnemy(playr1);
+			PlaySightSound();
 		} else {
 			if (enemCandidate == playr2) {
-				enemy = playr1;
-				if (firstSighting) {
-					firstSighting = false;
-					if (SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
-				}
+				SetEnemy(playr2);
+				PlaySightSound();
 			} else {
 				if (enemCandidate == playr3) {
-					enemy = playr1;
-					if (firstSighting) {
-						firstSighting = false;
-						if (SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
-					}
+					SetEnemy(playr3);
+					PlaySightSound();
 				} else {
 					if (enemCandidate == playr4) {
-						enemy = playr1;
-						if (firstSighting) {
-							firstSighting = false;
-							if (SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
-						}
+						SetEnemy(playr4);
+						PlaySightSound();
+					}
+				}
+			}
+		}
+
+		if (enemy == null) return;
+		for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
+			if (Const.a.healthObjectsRegistration[ij] != null) {
+				if (Const.a.healthObjectsRegistration[ij].isNPC) {
+					if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,gameObject.transform.position) < Const.a.healthObjectsRegistration[ij].aic.rangeToHear) {
+						Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(enemy);
+						//Debug.Log("Enemy found player to attack and then notified a nearby enemy to join the fray!");
 					}
 				}
 			}
@@ -982,34 +984,36 @@ public class AIController : MonoBehaviour {
 			if (LOSpossible) {
 				//Debug.Log("LOS was possible");
 				if (angle < (fieldOfViewAngle * 0.5f)) {
-					enemy = tempent;
-					if (firstSighting) {
-						firstSighting = false;
-						if (SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
-					}
+					SetEnemy(tempent);
+					PlaySightSound();
 					return true;
 				} else {
 					if (dist < distToSeeWhenBehind) {
-						enemy = tempent;
-						if (firstSighting) {
-							firstSighting = false;
-							if (SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
-						}
+						SetEnemy(tempent);
+						PlaySightSound();
 						return true;
 					}
 				}
 			} else {
 				if (dist < distToSeeWhenBehind) {
-					enemy = tempent;
-					if (firstSighting) {
-						firstSighting = false;
-						if (SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
-					}
+					SetEnemy(tempent);
+					PlaySightSound();
 					return true;
 				}
 			}
 		}
 		return false;
+	}
+
+	void SetEnemy(GameObject enemSent) {
+		enemy = enemSent;
+	}
+
+	void PlaySightSound() {
+		if (firstSighting) {
+			firstSighting = false;
+			if (SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
+		}
 	}
 	
     bool enemyInFront (GameObject target) {
