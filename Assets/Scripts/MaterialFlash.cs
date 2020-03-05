@@ -31,6 +31,8 @@ public class MaterialFlash : MonoBehaviour {
 	}
 
     void Update() {
+		if (Const.a.questData.SelfDestructActivated) isFlashing = true;
+
         if (isFlashing) {
 			if (flashFinished < Time.time) {
 				flashFinished = Time.time + timeBetweenFlashes;

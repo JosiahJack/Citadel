@@ -192,6 +192,8 @@ public class Const : MonoBehaviour {
 	public Font mainFont2;
 	[DTValidator.Optional] public GameObject[] TargetRegister; // doesn't need to be full, available space for maps and mods made by the community to use tons of objects
 	public string[] TargetnameRegister;
+	public float globalShakeDistance;
+	public float globalShakeForce;
 
 	//Instance container variable
 	public static Const a;
@@ -1258,7 +1260,7 @@ public class Const : MonoBehaviour {
 	public void UseTargets (UseData ud, string targetname) {
 		// Old method used SendMessage but this is horribly slow and does not give as much control
 		//if (target != null) target.SendMessageUpwards ("Targetted", ud);
-
+		//Debug.Log("Running UseTargets() for targetname of " + targetname);
 		// New method allows for targetting multiple objects, not just one gameobject
 
 		// First check if targetname is valid
@@ -1268,16 +1270,20 @@ public class Const : MonoBehaviour {
 		}
 
 		if (ud.bitsSet == false) Debug.Log("BUG: calling UseTargets without first setting bits on the UseData struct.  Owner:  " + ud.owner.ToString());
-
+		float numtargetsfound = 0;
 		// Find each gameobject with matching targetname in the register, then call Use for each
 		for (int i=0;i<TargetRegister.Length;i++) {
 			if (TargetnameRegister[i] == targetname) {
 				if (TargetRegister[i] != null) {
-					if (ud.GOSetActive) TargetRegister[i].SetActive(true);
-					if (ud.GOSetDeactive) TargetRegister[i].SetActive(false);
-					if (ud.GOToggleActive) TargetRegister[i].SetActive(!TargetRegister[i].activeSelf);
+					numtargetsfound++;
+					if (ud.GOSetActive && !TargetRegister[i].activeSelf) TargetRegister[i].SetActive(true); //added activeSelf bit to keep from spamming SetActive when running targets through a trigger_multiple
+					if (ud.GOSetDeactive && TargetRegister[i].activeSelf) TargetRegister[i].SetActive(false); // diddo for activeSelf to prevent spamming SetActive
+					if (ud.GOToggleActive) TargetRegister[i].SetActive(!TargetRegister[i].activeSelf); // if I abuse this with a trigger_multiple someone should shoot me
 					TargetIO tio = TargetRegister[i].GetComponent<TargetIO>();
+					Debug.Log("Ran Targetted() on " + numtargetsfound.ToString() + " GameObject(s) with targetname of " + targetname);
 					tio.Targetted(ud);
+				} else {
+					Debug.Log("WARNING: null TargetRegister GameObject linked to targetname of " + targetname + ". Could not run Targetted.");
 				}
 			}
 		}
@@ -1321,15 +1327,43 @@ public class Const : MonoBehaviour {
 		Debug.Log("Bridge Separation Complete: " + questData.BridgeSeparated.ToString());
 		Debug.Log("Isolinear Chipset Installed: " + questData.IsolinearChipsetInstalled.ToString());
 	}
+
+	public void Shake(bool effectIsWorldwide, float distance, float force) {
+		if (distance == -1) distance = globalShakeDistance;
+		if (force == -1) force = globalShakeForce;
+		if (player1 == null) { Debug.Log("WARNING: Shake() check - no host player1."); return; }  // No host player
+
+		if (effectIsWorldwide) {
+			// the whole station is a shakin' and a movin'!
+			if (player1 != null) { if (player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			if (player2 != null) { if (player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			if (player3 != null) { if (player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+		} else {
+			// check if player is close enough and shake em' up!
+			if (Vector3.Distance(transform.position, player1.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
+				if (player1 != null) { if (player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			}
+			if (Vector3.Distance(transform.position, player2.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
+				if (player2 != null) { if (player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			}
+			if (Vector3.Distance(transform.position, player3.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
+				if (player3 != null) { if (player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			}
+			if (Vector3.Distance(transform.position, player4.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
+				if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			}
+		}
+	}
 }
 
 public class QuestBits {
-	public int lev1SecCode;
-	public int lev2SecCode;
-	public int lev3SecCode;
-	public int lev4SecCode;
-	public int lev5SecCode;
-	public int lev6SecCode;
+	public int lev1SecCode = -1;
+	public int lev2SecCode = -1;
+	public int lev3SecCode = -1;
+	public int lev4SecCode = -1;
+	public int lev5SecCode = -1;
+	public int lev6SecCode = -1;
 	public bool RobotSpawnDeactivated;
 	public bool IsotopeInstalled;
 	public bool ShieldActivated;

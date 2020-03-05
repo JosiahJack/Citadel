@@ -161,6 +161,7 @@ public class AIController : MonoBehaviour {
 	public GameObject sightPoint;
 	private NavMeshPath searchPath;
 	public float rangeToHear = 10f;
+	public bool asleep = false; // check if enemy starts out asleep, e.g. sleeping sec-2 bots on level 8 in the maintenance chargers
 
 	// Initialization and find components
 	void Awake () {
@@ -215,7 +216,7 @@ public class AIController : MonoBehaviour {
         SFX = GetComponent<AudioSource>();
 		if (explosionObject != null) explosion = explosionObject.GetComponent<ExplosionForce>();
 		if (SFX == null) Debug.Log("WARNING: No audio source for npc at: " + transform.position.x.ToString() + ", " + transform.position.y.ToString() + ", " + transform.position.z + ".");
-		if (walkWaypoints.Length > 0 && walkWaypoints[currentWaypoint] != null && walkPathOnStart) {
+		if (walkWaypoints.Length > 0 && walkWaypoints[currentWaypoint] != null && walkPathOnStart && !asleep) {
             currentDestination = walkWaypoints[currentWaypoint].transform.position;
             currentState = Const.aiState.Walk; // If waypoints are set, start walking them from the get go
 		} else {
@@ -311,6 +312,8 @@ public class AIController : MonoBehaviour {
 		}
 
 		if (currentState == Const.aiState.Dead || currentState == Const.aiState.Dying) return; // Don't do any checks, we're dead
+
+		if (asleep) return; // don't check for an enemy, we are sleeping! shh!!
 
 		inSight = CheckIfPlayerInSight();
         //if (inSight) backTurned = CheckIfBackIsTurned();
@@ -830,7 +833,7 @@ public class AIController : MonoBehaviour {
 			}
 		}
 		currentState = Const.aiState.Dead;
-		if (healthManager.gibOnDeath) {
+		if (healthManager.gibOnDeath || healthManager.teleportOnDeath) {
 			// Special case for gibing on death for the avian mutant to allow it's corpse to rain from the sky, otherwise it would get disabled along with
 			// the container that held the visibleMesh.  Needed because we want the corpse to fall from the exact same place as the model and model is in
 			// the air within the visibleMeshContainer.  Hence, the special case gib containered flag.  Bit silly ya.
@@ -840,9 +843,12 @@ public class AIController : MonoBehaviour {
 			} else {
 				visibleMeshEntity.SetActive(false); // normally just turn off the main model, then...
 			}
-			healthManager.Gib(); // ... turn on the lovely gibs
-			if (explosion != null) explosion.ExplodeOuter(explosionObject.transform.position); // blast the gibs away from the center TODO this isn't working on the repair bot??
-			//if (explosion != null) explosion.ExplodeInner(explodeObject.transform.position, nearforce, nearradius, null);
+			if (!healthManager.teleportOnDeath && healthManager.gibOnDeath) {
+				healthManager.Gib(); // ... turn on the lovely gibs
+				if (explosion != null) explosion.ExplodeOuter(explosionObject.transform.position); // blast the gibs away from the center TODO this isn't working on the repair bot??
+				//if (explosion != null) explosion.ExplodeInner(explodeObject.transform.position, nearforce, nearradius, null);
+			}
+			if (healthManager.teleportOnDeath) healthManager.TeleportAway();
 		}
 	}
 	
@@ -861,19 +867,19 @@ public class AIController : MonoBehaviour {
 		if (playr3 != null) {playr3 = playr3.GetComponent<PlayerReferenceManager>().playerCapsule;}
 		if (playr4 != null) {playr4 = playr4.GetComponent<PlayerReferenceManager>().playerCapsule;}
 		
-		if (enemCandidate == playr1) {
+		if (enemCandidate == playr1 && enemCandidate.GetComponent<PlayerMovement>() != null && !enemCandidate.GetComponent<PlayerMovement>().Notarget) {
 			SetEnemy(playr1);
 			PlaySightSound();
 		} else {
-			if (enemCandidate == playr2) {
+			if (enemCandidate == playr2 && enemCandidate.GetComponent<PlayerMovement>() != null && !enemCandidate.GetComponent<PlayerMovement>().Notarget) {
 				SetEnemy(playr2);
 				PlaySightSound();
 			} else {
-				if (enemCandidate == playr3) {
+				if (enemCandidate == playr3 && enemCandidate.GetComponent<PlayerMovement>() != null && !enemCandidate.GetComponent<PlayerMovement>().Notarget) {
 					SetEnemy(playr3);
 					PlaySightSound();
 				} else {
-					if (enemCandidate == playr4) {
+					if (enemCandidate == playr4 && enemCandidate.GetComponent<PlayerMovement>() != null && !enemCandidate.GetComponent<PlayerMovement>().Notarget) {
 						SetEnemy(playr4);
 						PlaySightSound();
 					}
@@ -1053,5 +1059,10 @@ public class AIController : MonoBehaviour {
 			if (playr4 != null && i == 4) tempent = playr4;
 			if (ud.owner == tempent) { enemy = tempent; } else { if (tempent != enemy) enemy = tempent;}
 		}
+	}
+
+	public void AwakeFromSleep(UseData ud) {
+		asleep = false;
+		Alert(ud);
 	}
 }

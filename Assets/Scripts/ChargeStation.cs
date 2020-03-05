@@ -8,6 +8,8 @@ public class ChargeStation : MonoBehaviour {
 	public float minSecurityLevel = 100;
 	public float damageOnUse = 0f; 
 	private float nextthink;
+	public string target;
+	public string argvalue;
 	// private float maxResetTime = 10f;
 	
 	void Awake () {
@@ -33,6 +35,17 @@ public class ChargeStation : MonoBehaviour {
 			Const.sprint("Energy drawn from Power Station.", ud.owner);
 			if (requireReset) {
 				nextthink = Time.time + resetTime;
+			}
+
+			if (target != "" && target != " " && target != "  ") {
+				ud.argvalue = argvalue;
+				TargetIO tio = GetComponent<TargetIO>();
+				if (tio != null) {
+					ud.SetBits(tio);
+				} else {
+					Debug.Log("BUG: no TargetIO.cs found on an object with a ChargeStation.cs script!  Trying to call UseTargets without parameters!");
+				}
+				Const.a.UseTargets(ud,target);
 			}
 		} else {
 			Const.sprint("Power Station is recharging\n", ud.owner);

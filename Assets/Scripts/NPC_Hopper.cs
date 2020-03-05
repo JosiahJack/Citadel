@@ -54,6 +54,7 @@ public class NPC_Hopper : MonoBehaviour {
 	public AudioClip SFXInspect;
 	public AudioClip SFXInteracting;
 	public GameObject muzzleBurst;
+	public bool asleep;
 
 	private bool hasSFX;
 	private bool firstSighting;
@@ -214,6 +215,8 @@ public class NPC_Hopper : MonoBehaviour {
 			lastHealth = healthManager.health;
 		}
 
+		if (asleep) return; // don't check for an enemy, we are sleeping! shh!!
+
 		// Take a look around for enemies
 		if (enemy == null) {
 			// we don't have an enemy yet so let's look to see if we can see one
@@ -259,6 +262,12 @@ public class NPC_Hopper : MonoBehaviour {
 		// Set animation state
 		anim["Idle"].wrapMode = WrapMode.Loop;
 		anim.Play("Idle");
+
+		if (asleep) {
+			anim["Idle"].speed = 0f;
+		} else {
+			anim["Idle"].speed = 1f;
+		}
 
 		// Play an idle sound if the idle sound timer has timed out
 		if ((idleTime < Time.time) && (SFXIdle != null)) {
@@ -621,5 +630,10 @@ public class NPC_Hopper : MonoBehaviour {
 			if (playr4 != null && i == 4) tempent = playr4;
 			if (ud.owner == tempent) { enemy = tempent; } else { if (tempent != enemy) enemy = tempent;}
 		}
+	}
+
+	public void AwakeFromSleep(UseData ud) {
+		asleep = false;
+		Alert(ud);
 	}
 }

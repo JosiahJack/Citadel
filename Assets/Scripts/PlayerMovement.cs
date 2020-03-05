@@ -573,8 +573,14 @@ public class PlayerMovement : MonoBehaviour {
 			float relForward = 0f;
 			float relSideways = 0f;
 			running = false;
-			if (GetInput.a.Forward() && !consoleActivated)
+			if (GetInput.a.Forward() && !consoleActivated) {
 				relForward = 1f;
+				leanTarget = 0;
+				leanRHReset = true;
+				leanLHReset = true;
+				leanRHFirstPressed = false;
+				leanLHFirstPressed = false;
+			}
 
 			if (GetInput.a.Backpedal() && !consoleActivated)
 				relForward = -1f;
@@ -842,7 +848,7 @@ public class PlayerMovement : MonoBehaviour {
 				leanCapsuleCollider.enabled = false;
 				Const.sprint("Noclip activated!", Const.a.allPlayers);
 			}
-        } else if (consoleinpFd.text == "notarget") {
+        } else if (consoleinpFd.text == "notarget" || consoleinpFd.text == "NOTARGET" || consoleinpFd.text == "Notarget") {
 			if (Notarget) {
 				Notarget = false;
 				Const.sprint("Notarget disabled", Const.a.allPlayers);

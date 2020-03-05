@@ -1,42 +1,18 @@
-FIXED Fatigue warning message not displaying
-FIXED Picking up keycard that you already have should say "already have <name>", missing name
-FIXED Increase size of humanoid mutant meleeColliders
-FIXED Move camera by maint hallway's radiation closet, it's embedded in the wall
-FIXED Shooting corpses does not make blood come out
-FIXED Move audio log near grating further away so player can't reach it
-FIXED Increase repair bot movement speed
-FIXED Increase range to start attacking for serv-bot
-FIXED Increase serv-bot movement speed
-FIXED Picking up a log without having the e-Reader still displays message to press "u" to play back, remove this note if you don't have an e-Reader
-FIXED Changing weapons with T or B in inventory mode causes screen to pop 90deg leftward.  T and B should NOT be mapped to look up and look down.
-FIXED Look up/Look down forces view to rotate 90deg out of sync.
-FIXED Pressing 'U' to playback log works without having the e-Reader app.
-FIXED Look up keys were hardmapped, failed to use config
-FIXED Look down keys were hardmapped, failed to use config
-FIXED Sparq hit lasts too long for light
-FIXED Door collides with corpses
-FIXED Blood splats for humanoid mutant take too long to appear
-FIXED Humanoid mutant jerks when changing to corpse
-FIXED Humanoid mutant falls through floor on occasion when changing to corpse and Cyborg assassin corpse fell through floor
-FIXED Reduce collider size on blue oval storage door
-ADDED Enemies now alert other nearby enemies when they've seen the player
-ADDED Enemies nearby can now hear the player attack and are alerted
-FIXED env_sparks in medical cafe are not working anymore
-FIXED Incorrect frobicon on keycard from briefcase in Medical cafe
-FIXED Security guard corpse shoulder is too high, able to ghost camera through it while player is crawling, maybe lower 0.06
 
 Weapon ammo count isn't updated when switching between weapons with different ammo types normal instead of alternate or vice versa
-Grenades fail to activate
-Energy slider is not clickable, remove UIPointerEnter Event Trigger and add extra check in Weapon Fire for Slider.isActive or whatever it's called
-After log playback is complete, need to return to last tab
-After log playback is complete, need to return center tab to last tab
 
-Add sec-1 bots to area next to master jettison lever after 428 fixed
-Add exec bot to end of quarters hallway after 428 fixed
-Add exec bot to central atrium near delta door up on upper level after 428 fixed
-Add email to master jettison that is triggered when you walk up "no! stop it!"
-Add email to approach of door to Beta lobby "if I have to release my children so be it!"
-Add screen shake to grove jettison
-Add email trigger after jettison to give Rebecca-3
-Add exec bot to 3/6 elevator room after jettison
-Add sec-1 bot next to master jettison lever after jettison
+Grenades fail to activate
+
+Energy slider is not clickable, remove UIPointerEnter Event Trigger and add extra check in Weapon Fire for Slider.isActive or whatever it's called
+Check to send email SHODAN-08 after self-destruct
+After log playback is complete, need to return to last tab
+
+After log playback is complete, need to return center tab to last tab
+Give level 7 first cyborg mutant by elevator to 8 a hardware target identifier v4
+Add 4 sec-2 bots next to Level R elevator after self-destruct
+Add 1 mutant-cyborg in Level R elevator after self-destruct
+Add 5 sec-2 bots in halls of Level 3 after self-destruct
+Add 2 sec-2 bots in room by 4/5 elevator on Level 3 after self-destruct
+Add 4 sec-2 bots to flight bay 3 on Level 5 after self-destruct
+Add 4 sec-2 bots to flight bay 2 on Level 5 after self-destruct
+Add Edward Diego at base of ramp to escape pods on Level 5 after self-destruct

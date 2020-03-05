@@ -32,6 +32,7 @@ public class HealthManager : MonoBehaviour {
 	public float justHurtByEnemy;
 	public PainStaticFX pstatic;
 	public bool teleportOnDeath = false;
+	public GameObject teleportEffect;
 	public bool actAsCorpseOnly = false;
 
 	private bool initialized = false;
@@ -220,8 +221,10 @@ public class HealthManager : MonoBehaviour {
 				}
 
                 if (isObject) ObjectDeath(null);
-
 				if (isScreen) ScreenDeath(backupDeathSound);
+				if (teleportOnDeath) {
+					TeleportAway();
+				}
 
                 if (isNPC) NPCDeath(null);
             } else {
@@ -241,6 +244,12 @@ public class HealthManager : MonoBehaviour {
             }
 		}
 
+	}
+
+	public void TeleportAway() {
+		if (teleportEffect != null) {
+			teleportEffect.SetActive(true);
+		}
 	}
 
 	public void NPCDeath (AudioClip deathSound) {

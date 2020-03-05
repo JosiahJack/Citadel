@@ -707,9 +707,9 @@ public class MouseLookScript : MonoBehaviour {
 		case 83: doorAccessTypeAcquired = Door.accessCardType.Group1; break; //CHECKED! Good here
 		case 84: doorAccessTypeAcquired = Door.accessCardType.Science; break; //CHECKED! Good here
 		case 85: doorAccessTypeAcquired = Door.accessCardType.Engineering; break;  //CHECKED! Good here
-		case 86: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
-		case 87: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
-		case 88: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
+		case 86: doorAccessTypeAcquired = Door.accessCardType.GroupB; break; //CHECKED! Good here
+		case 87: doorAccessTypeAcquired = Door.accessCardType.Security; break; //CHECKED! Good here
+		case 88: doorAccessTypeAcquired = Door.accessCardType.Per5; break;
 		case 89: doorAccessTypeAcquired = Door.accessCardType.Medical; break;
 		case 90: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
 		case 91: doorAccessTypeAcquired = Door.accessCardType.Per1; break;
@@ -1676,5 +1676,9 @@ public class MouseLookScript : MonoBehaviour {
 		lr.SetPosition (1, end);
 		yield return new WaitForSeconds(duration);
 		GameObject.Destroy (myLine);
+	}
+
+	public void ScreenShake (float force) {
+		Debug.Log("Screen shake signal received by MouseLookScript!");
 	}
 }

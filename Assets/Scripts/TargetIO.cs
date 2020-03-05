@@ -53,6 +53,9 @@ public class TargetIO : MonoBehaviour {
 	public bool unlockElevatorPad; // unlock elevator keypad
 	public bool unlockKeycodePad; // unlock elevator keypad
 	public bool unlockPuzzlePad; // unlock puzzle pad, grid or wire
+	public bool screenShake; // shake the screen/earthquake
+	public bool linkCodeToScreenMaterialChanger; // send linked digit to shared screen after CPU destroyed
+	public bool awakeSleepingEnemy; // awaken a sleeping enemy, e.g. the sec-2 bots that are in repair sleep on level 8
 
 	void Start() {
 		if (targetname != "" && targetname != " " & targetname != "  ") {
@@ -69,7 +72,7 @@ public class TargetIO : MonoBehaviour {
 
 	// comes from Const.a.UseTargets - already checked that target matched targetname of this interaction
 	public void Targetted(UseData ud) {
-		//Debug.Log("Entering Targetted() on a TargetIO.cs script!, called by Const.a.UseTargets! We made it!");
+		//Debug.Log("Entering Targetted() on a TargetIO.cs script, this targetname: " + targetname + " and lockCodeToScreenMaterialChanger = " + ud.lockCodeToScreenMaterialChanger.ToString());
 
 		// Whatever else happens, try to access a LogicRelay and keep the messages going
 		LogicRelay lr = GetComponent<LogicRelay>();
@@ -205,11 +208,17 @@ public class TargetIO : MonoBehaviour {
 			ButtonSwitch btsw = GetComponent<ButtonSwitch>();
 			if (btsw != null) btsw.ToggleLocked();
 		}
-
+		//if (ud.lockCodeToScreenMaterialChanger) Debug.Log("What the heck people, this should work!!");
+		//if (targetname == "lev1ihatebugs") Debug.Log("targetname = lev1ihatebugs"); 
+		//if (ud.lockCodeToScreenMaterialChanger && targetname == "lev1ihatebugs") Debug.Log("and both!"); else Debug.Log("but not both, oh poo");
 		if (ud.lockCodeToScreenMaterialChanger) {
+			//Debug.Log("Entering lockCodeToScreenMaterialChanger section within Targetted()");
 			MaterialChanger matchg = GetComponent<MaterialChanger>();
 			if (matchg != null) matchg.Targetted(ud);
-		}
+			//else Debug.Log("Failed to acquire non-null MaterialChanger script on targetname: " + targetname);
+		}// else {
+			//Debug.Log("ud.lockCodeToScreenMaterialChanger was false on targetname of " + targetname);
+		//}
 
 		if (ud.spawnerActivate) {
 			SpawnManager spwnmgr = GetComponent<SpawnManager>();
@@ -305,6 +314,23 @@ public class TargetIO : MonoBehaviour {
 			PuzzleWirePuzzle pwp = GetComponent<PuzzleWirePuzzle>();
 			if (pwp != null) pwp.locked = false;
 		}
+
+		if (ud.screenShake) {
+			EffectScreenShake efsh = GetComponent<EffectScreenShake>();
+			if (efsh != null) efsh.Shake();
+		}
+
+		if (ud.linkCodeToScreenMaterialChanger) {
+			MaterialChanger matchg = GetComponent<MaterialChanger>();
+			if (matchg != null) matchg.LinkTargetted(ud);	
+		}
+
+		if (ud.awakeSleepingEnemy) {
+			AIController aic = GetComponent<AIController>();
+			NPC_Hopper nph = GetComponent<NPC_Hopper>();
+			if (aic != null) aic.AwakeFromSleep(ud);
+			if (nph != null) nph.AwakeFromSleep(ud);
+		}
 	}
 }
 
@@ -314,6 +340,7 @@ public class UseData {
 	public int customIndex = -1;
 	public string argvalue = "";
 	public bool bitsSet = false;
+	public Texture2D texture;
 
 	// Action bits.  What do we want our target to do, e.g. turn on a light or close a door or activate force bridge
 	// Using multiple bools to allow for multiple actions to be attempted on all the targets
@@ -362,6 +389,9 @@ public class UseData {
 	public bool unlockElevatorPad; // unlock elevator pad
 	public bool unlockKeycodePad; // unlock elevator keypad
 	public bool unlockPuzzlePad; // unlock puzzle pad, grid or wire
+	public bool screenShake; // shake the screen/earthquake
+	public bool linkCodeToScreenMaterialChanger; // send linked digit to shared screen after CPU destroyed
+	public bool awakeSleepingEnemy; // awaken a sleeping enemy, e.g. the sec-2 bots that are in repair sleep on level 8
 
 	// function for reseting all data if needed
 	public void Reset (UseData ud) {
@@ -416,6 +446,9 @@ public class UseData {
 		unlockElevatorPad = tio.unlockElevatorPad;
 		unlockKeycodePad = tio.unlockKeycodePad;
 		unlockPuzzlePad = tio.unlockPuzzlePad;
+		screenShake = tio.screenShake;
+		linkCodeToScreenMaterialChanger = tio.linkCodeToScreenMaterialChanger;
+		awakeSleepingEnemy = tio.awakeSleepingEnemy;
 		bitsSet = true;
 	}
 }

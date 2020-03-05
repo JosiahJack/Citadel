@@ -3,6 +3,9 @@ using System.Collections;
 
 public class Door : MonoBehaviour {
 	public string target;
+	public string argvalue;
+	public bool onlyTargetOnce;
+	private bool targetAlreadyDone = false;
 	[Tooltip("Delay after full open before door closes")]
 	public float delay;
 	[Tooltip("Whether door is locked, unuseable until unlocked")]
@@ -34,7 +37,7 @@ public class Door : MonoBehaviour {
 	[Tooltip("Door sound when opening or closing")]
 	public AudioClip SFXClip = null; // assign in the editor
 	public enum doorState {Closed, Open, Closing, Opening};
-	public enum accessCardType {None,Standard,Medical,Science,Admin,Group1,Group2,Group3,Group4,GroupA,GroupB,Storage,Engineering,Maintenance,Security,Per1,Per2,Per3,Per4,Per5};
+	public enum accessCardType {None,Standard,Medical,Science,Admin,Group1,Group2,Group3,Group4,GroupA,GroupB,Storage,Engineering,Maintenance,Security,Per1,Per2,Per3,Per4,Per5,Command};
 	public accessCardType requiredAccessCard = accessCardType.None;
 	public bool accessCardUsedByPlayer = false;
 	public doorState doorOpen;
@@ -102,8 +105,32 @@ public class Door : MonoBehaviour {
 
 				if (!locked) {
 					if (requiredAccessCard != accessCardType.None) {
-						Const.sprint(requiredAccessCard.ToString() + cardUsedMessage,ud.owner); // tell the owner of the Use command that we are locked
+						Const.sprint(requiredAccessCard.ToString() + cardUsedMessage,ud.owner); // state that we just used a keycard and access was granted
 						accessCardUsedByPlayer = true;
+					}
+
+					if (target != "" && target != " " && target != "  ") {
+						if (onlyTargetOnce && !targetAlreadyDone) {
+							targetAlreadyDone = true;
+							ud.argvalue = argvalue;
+							TargetIO tio = GetComponent<TargetIO>();
+							if (tio != null) {
+								ud.SetBits(tio);
+							} else {
+								Debug.Log("BUG: no TargetIO.cs found on an object with a Door.cs script!  Trying to call UseTargets without parameters!");
+							}
+							Const.a.UseTargets(ud,target);
+						} else {
+							targetAlreadyDone = true;
+							ud.argvalue = argvalue;
+							TargetIO tio = GetComponent<TargetIO>();
+							if (tio != null) {
+								ud.SetBits(tio);
+							} else {
+								Debug.Log("BUG: no TargetIO.cs found on an object with a Door.cs script!  Trying to call UseTargets without parameters!");
+							}
+							Const.a.UseTargets(ud,target);
+						}
 					}
 
 					if (doorOpen == doorState.Open && playbackTime > 0.95f) {
