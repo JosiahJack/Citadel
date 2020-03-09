@@ -137,7 +137,7 @@ public class ColorCurvesManager : MonoBehaviour
 			return SimplePairKeyframes(curveA, curveB);
 
 		//Else, we have to pair closest points and create new points.
-		var pairList = new List<Keyframe[]>();//TODO
+		var pairList = new List<Keyframe[]>();
 
 		//Make two temporal list with all the points in both curves.
 		List<Keyframe> tempA = new List<Keyframe>();
@@ -184,10 +184,8 @@ public class ColorCurvesManager : MonoBehaviour
 		return pairList;
 	}
 
-	private static List<Keyframe[]> SimplePairKeyframes(AnimationCurve curveA, AnimationCurve curveB)
-	{
-		
-		var pairList = new List<Keyframe[]>();//TODO
+	private static List<Keyframe[]> SimplePairKeyframes(AnimationCurve curveA, AnimationCurve curveB) {
+		var pairList = new List<Keyframe[]>();
 		
 		if (curveA.length != curveB.length)
 		{

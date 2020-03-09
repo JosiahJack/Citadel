@@ -71,7 +71,13 @@ public class PuzzleWire : MonoBehaviour {
 	public enum WireColorTheme {Red,Yellow,Green};
 	public WireColorTheme theme;
 	public enum WireColor {Red,Orange,Yellow,Green,Blue,Purple};
-	public WireColor[] wireColors; //TODO actually set the wire colors
+	public Color actualColorRed;
+	public Color actualColorOrange;
+	public Color actualColorYellow;
+	public Color actualColorGreen;
+	public Color actualColorBlue;
+	public Color actualColorPurple;
+	public WireColor[] wireColors;
 
 	void Awake () {
 		selectedWire = -1;
@@ -82,6 +88,16 @@ public class PuzzleWire : MonoBehaviour {
 		DisableGeniusHints();
 		SFXSource = GetComponent<AudioSource>();
 		EvaluatePuzzle();
+	}
+
+	Color GetColor(WireColor index) {
+		if (index == WireColor.Red) return actualColorRed;
+		if (index == WireColor.Orange) return actualColorOrange;
+		if (index == WireColor.Yellow) return actualColorYellow;
+		if (index == WireColor.Green) return actualColorGreen;
+		if (index == WireColor.Blue) return actualColorBlue;
+		if (index == WireColor.Purple) return actualColorPurple;
+		return actualColorRed;
 	}
 
 	void DisableGeniusHints () {
@@ -296,6 +312,8 @@ public class PuzzleWire : MonoBehaviour {
 		for (tempInt = 0; tempInt < 7; tempInt++) {
 			if (wireIsActive[tempInt]) {
 				wires[tempInt].enabled = true;
+				wires[tempInt].startColor = GetColor(wireColors[tempInt]);
+				wires[tempInt].endColor = GetColor(wireColors[tempInt]);
 			} else {
 				wires[tempInt].enabled = false;
 			}

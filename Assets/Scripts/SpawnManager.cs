@@ -80,8 +80,12 @@ public class SpawnManager : MonoBehaviour {
 	}
 
 	bool AreaClear(Vector3 spot) {
-		// TODO check if enemy will fit here
-		return true; // uh did we check first???
-		//return false;
+		int layMask = LayerMask.GetMask("Default","Water","Geometry","NPC","Corpse","Door","InterDebris","Player");
+		RaycastHit hit = new RaycastHit();
+		if (Physics.CapsuleCast(spot + new Vector3(0,0.52f,0),spot + new Vector3(0,-0.52f,0),0.48f,Vector3.zero,out hit,0.02f,layMask)) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }

@@ -50,8 +50,6 @@ public class TeleportFXStatic : MonoBehaviour {
 	}
 
 	void Deactivate () {
-		// TODO tell mouselookscript that teleportFX is active and prevent dropping or picking up items
-		// so that the mouse cursor texture doesn't change while FX are active and also to prevent actions
 		mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture; //return to previous cursor
 		gameObject.SetActive(false);
 	}

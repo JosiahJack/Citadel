@@ -110,9 +110,9 @@ public class Const : MonoBehaviour {
 	public float earthShDefaultTime = 10.0f;
 
 	//Pool references
-	public enum PoolType {None,SparqImpacts,CameraExplosions,ProjEnemShot2,LaserLines,SparksSmall,BloodSpurtSmall,
-						BloodSpurtSmallYellow,BloodSpurtSmallGreen,SparksSmallBlue,LaserLinesHopper,HopperImpact,
-						GrenadeFragExplosions,Vaporize,LaserLinesBlaster, LaserLinesIon, BlasterImpacts, IonImpacts,
+	public enum PoolType {None,SparqImpacts,CameraExplosions,ProjEnemShot2,SparksSmall,BloodSpurtSmall,
+						BloodSpurtSmallYellow,BloodSpurtSmallGreen,SparksSmallBlue,HopperImpact,
+						GrenadeFragExplosions,Vaporize, BlasterImpacts, IonImpacts,
 						MagpulseShots, MagpulseImpacts,StungunShots, StungunImpacts, RailgunShots, RailgunImpacts,
 						PlasmaShots, PlasmaImpacts, ProjEnemShot6,ProjEnemShot6Impacts, ProjEnemShot2Impacts,
 						ProjSeedPods, ProjSeedPodsImpacts, TempAudioSources,GrenadeEMPExplosions, ProjEnemShot4,
@@ -120,18 +120,14 @@ public class Const : MonoBehaviour {
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
 	public GameObject Pool_ProjectilesEnemShot2;
-	public GameObject Pool_LaserLines;
 	public GameObject Pool_BloodSpurtSmall;
 	public GameObject Pool_SparksSmall;
 	public GameObject Pool_SparksSmallBlue;
 	public GameObject Pool_BloodSpurtSmallYellow;
 	public GameObject Pool_BloodSpurtSmallGreen;
-	public GameObject Pool_LaserLinesHopper;
 	public GameObject Pool_HopperImpact;
 	public GameObject Pool_GrenadeFragExplosions;
     public GameObject Pool_Vaporize;
-    public GameObject Pool_LaserLinesBlaster;
-    public GameObject Pool_LaserLinesIon;
     public GameObject Pool_BlasterImpacts;
     public GameObject Pool_IonImpacts;
     public GameObject Pool_MagpulseShots;
@@ -194,6 +190,8 @@ public class Const : MonoBehaviour {
 	public string[] TargetnameRegister;
 	public float globalShakeDistance;
 	public float globalShakeForce;
+    [DTValidator.Optional] public string[] stringTable;
+	public float[] reloadTime;
 
 	//Instance container variable
 	public static Const a;
@@ -211,6 +209,7 @@ public class Const : MonoBehaviour {
 		//	Display.displays[i].Activate();
 		//}
 		FindPlayers();
+		LoadTextForLanguage(0); //initialize with US English (index 0)
 	}
 	// =========================================================================
 
@@ -230,6 +229,45 @@ public class Const : MonoBehaviour {
 		allPlayers = new GameObject();
 		allPlayers.name = "All Players"; // for use in self printing Sprint() function for sending messages to HUD on all players
 	}
+
+    public void LoadTextForLanguage(int lang) {
+        string readline; // variable to hold each string read in from the file
+        int currentline = 0;
+        string sourceFile = "/StreamingAssets/text_english.txt";
+
+        // UPKEEP: support other languages
+        switch (lang) {
+            case 0:
+                sourceFile = "/StreamingAssets/text_english.txt";
+                break;
+            case 1:
+                sourceFile = "/StreamingAssets/text_espanol.txt";
+                break;
+            //case 2:
+                //sourceFile = "/StreamingAssets/text_francois.txt";
+                //break;
+            default:
+                sourceFile = "/StreamingAssets/text_english.txt";
+                break;
+        }
+        StreamReader dataReader = new StreamReader(Application.dataPath + sourceFile, Encoding.Default);
+        using (dataReader) {
+            do {
+                // Read the next line
+                readline = dataReader.ReadLine();
+                if (currentline < stringTable.Length) {
+                    stringTable[currentline] = readline;
+				} else {
+					Debug.Log("WARNING: Ran out of slots in stringTable, didn't finish reading all text from text_<language>.txt");
+					dataReader.Close();
+					return;
+				}
+                currentline++;
+            } while (!dataReader.EndOfStream);
+            dataReader.Close();
+            return;
+        }
+    }
 
 	void Start() {
 		LoadConfig();
@@ -353,6 +391,7 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 
+		// Default to English
 		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/item_names.txt",Encoding.Default);
 		using (dataReader) {
 			do {
@@ -510,10 +549,6 @@ public class Const : MonoBehaviour {
 			poolContainer = Pool_ProjectilesEnemShot2;
 			poolName = "ProjectilesEnemShot2 ";
 			break;
-		case PoolType.LaserLines:
-			poolContainer = Pool_LaserLines;
-			poolName = "LaserLines ";
-			break;
 		case PoolType.BloodSpurtSmall: 
 			poolContainer = Pool_BloodSpurtSmall;
 			poolName = "BloodSpurtSmall ";
@@ -530,10 +565,6 @@ public class Const : MonoBehaviour {
 			poolContainer = Pool_SparksSmallBlue;
 			poolName = "BloodSpurtSmall ";
 			break;
-		case PoolType.LaserLinesHopper: 
-			poolContainer = Pool_LaserLinesHopper;
-			poolName = "LaserLinesHopper ";
-			break;
 		case PoolType.HopperImpact: 
 			poolContainer = Pool_HopperImpact;
 			poolName = "HopperImpact ";
@@ -545,14 +576,6 @@ public class Const : MonoBehaviour {
         case PoolType.Vaporize:
             poolContainer = Pool_Vaporize;
             poolName = "Vaporize ";
-            break;
-        case PoolType.LaserLinesBlaster:
-            poolContainer = Pool_LaserLinesBlaster;
-            poolName = "LaserLinesBlaster ";
-            break;
-        case PoolType.LaserLinesIon:
-            poolContainer = Pool_LaserLinesIon;
-            poolName = "LaserLinesIon ";
             break;
         case PoolType.BlasterImpacts:
             poolContainer = Pool_BlasterImpacts;
@@ -633,7 +656,7 @@ public class Const : MonoBehaviour {
         }
 
 		if (poolContainer == null) {
-			sprint("Cannot find " + poolName + "pool",allPlayers);
+			Debug.Log("Cannot find " + poolName + "pool",allPlayers);
 			return null;
 		}
 
@@ -653,10 +676,6 @@ public class Const : MonoBehaviour {
 
 		switch (pool) {
 		case PoolType.ProjEnemShot2: return PoolType.ProjEnemShot2Impacts;
-		case PoolType.LaserLines: return PoolType.SparqImpacts;
-		case PoolType.LaserLinesHopper: return PoolType.HopperImpact;
-        case PoolType.LaserLinesBlaster: return PoolType.BlasterImpacts;
-        case PoolType.LaserLinesIon: return PoolType.IonImpacts;
         case PoolType.MagpulseShots: return PoolType.MagpulseImpacts;
         case PoolType.StungunShots: return PoolType.StungunImpacts;
         case PoolType.RailgunShots: return PoolType.RailgunImpacts;
@@ -769,7 +788,7 @@ public class Const : MonoBehaviour {
 
 	// Save the Game
 	// ============================================================================
-	public void Save(int saveFileIndex) {
+	public void Save(int saveFileIndex,string savename) {
 		string[] saveData = new string[4096];
 		string line;
 		int i,j;
@@ -778,17 +797,28 @@ public class Const : MonoBehaviour {
 		List<GameObject> playerGameObjects = new List<GameObject>();
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 
-		// Indicate we are saving
-		sprint("Saving...",allPlayers);
+		// Indicate we are saving "Saving..."
+		sprint(stringTable[194],allPlayers);
 
 		// Header
 		// -----------------------------------------------------
 		// Save Name
-		saveData[index] = "TODO: SAVEGAME NAME ENTRY";
+		if (string.IsNullOrWhiteSpace(savename)) savename = "Unnamed " + saveFileIndex.ToString();
+		saveData[index] = savename;
 		index++;
 
-		// temp string to hold global states TODO: actually pull in the global states to this string
-		string states = "00000000|00000000|";
+		// temp string to hold global states
+		//string states = "00000000|00000000|";
+		string states = (questData.lev1SecCode.ToString() + questData.lev2SecCode.ToString() + questData.lev3SecCode.ToString() +
+						questData.lev4SecCode.ToString() + questData.lev5SecCode.ToString() + questData.lev6SecCode.ToString() +
+						questData.RobotSpawnDeactivated.ToString() + questData.IsotopeInstalled.ToString() + questData.ShieldActivated.ToString() +
+						questData.LaserSafetyOverriden.ToString() + questData.LaserDestroyed.ToString() + questData.BetaGroveCyberUnlocked.ToString() +
+						questData.GroveAlphaJettisonEnabled.ToString() + questData.GroveBetaJettisonEnabled.ToString() +
+						questData.GroveDeltaJettisonEnabled.ToString() + questData.MasterJettisonBroken.ToString() + 
+						questData.Relay428Fixed.ToString() + questData.MasterJettisonEnabled.ToString() + questData.BetaGroveJettisoned.ToString() +
+						questData.AntennaNorthDestroyed.ToString() + questData.AntennaSouthDestroyed.ToString() + 
+						questData.AntennaEastDestroyed.ToString() + questData.AntennaWestDestroyed.ToString() + questData.SelfDestructActivated.ToString() +
+						questData.BridgeSeparated.ToString() + questData.IsolinearChipsetInstalled.ToString() + "|");
 
 		// Global states and Difficulties
 		saveData[index] = (LevelManager.a.currentLevel.ToString() + "|" + states + difficultyCombat.ToString() + "|" + difficultyMission.ToString() + "|" + difficultyPuzzle.ToString() + "|" + difficultyCyber.ToString());
@@ -801,7 +831,7 @@ public class Const : MonoBehaviour {
 			if (gob.GetComponent<SaveObject>() != null && gob.GetComponent<RuntimeObject>().isRuntimeObject == true) saveableGameObjects.Add(gob);
 		}
 
-		sprint("Num players: " + playerGameObjects.Count.ToString(),allPlayers);
+		Debug.Log("Num players: " + playerGameObjects.Count.ToString(),allPlayers);
 
 		// Save all the players' data
 		for (i=0;i<playerGameObjects.Count;i++) {
@@ -897,8 +927,8 @@ public class Const : MonoBehaviour {
 			}
 		}
 
-		// Make "Done!" appear at the end of the line after "Saving..." is finished, stole this from Halo
-		sprint("Saving...Done!",allPlayers);
+		// Make "Done!" appear at the end of the line after "Saving..." is finished, stole this from Halo's "Checkpoint...Done!"
+		sprint(stringTable[195],allPlayers);
 	}
 
 	void LoadPlayerDataToPlayer(GameObject currentPlayer, string[] entries, int currentline) {
@@ -1036,7 +1066,7 @@ public class Const : MonoBehaviour {
 		string readline;
 		int currentline = 0;
 
-		sprint("Loading...",allPlayers);
+		sprint(stringTable[196],allPlayers); // Loading...
 		List<GameObject> playerGameObjects = new List<GameObject>();
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 		// Find all gameobjects with SaveObject script attached
@@ -1067,9 +1097,43 @@ public class Const : MonoBehaviour {
 					}
 					if (currentline == 1) {
 						// Read in global states
-
-						int levelNum = GetIntFromString(entries[0],currentline,"savegame",0);
+						int index = 0;
+						int levelNum = GetIntFromString(entries[index],currentline,"savegame",index); index++;
 						LevelManager.a.LoadLevelFromSave(levelNum);
+
+						// Set mission bits in questData
+						questData.lev1SecCode = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+						questData.lev2SecCode = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+						questData.lev3SecCode = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+						questData.lev4SecCode = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+						questData.lev5SecCode = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+						questData.lev6SecCode = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+						questData.RobotSpawnDeactivated = GetBoolFromString(entries[index]); index++;
+						questData.IsotopeInstalled = GetBoolFromString(entries[index]); index++;
+						questData.ShieldActivated = GetBoolFromString(entries[index]); index++;
+						questData.LaserSafetyOverriden = GetBoolFromString(entries[index]); index++;
+						questData.LaserDestroyed = GetBoolFromString(entries[index]); index++;
+						questData.BetaGroveCyberUnlocked = GetBoolFromString(entries[index]); index++;
+						questData.GroveAlphaJettisonEnabled = GetBoolFromString(entries[index]); index++;
+						questData.GroveBetaJettisonEnabled = GetBoolFromString(entries[index]); index++;
+						questData.GroveDeltaJettisonEnabled = GetBoolFromString(entries[index]); index++;
+						questData.MasterJettisonBroken = GetBoolFromString(entries[index]); index++;
+						questData.Relay428Fixed = GetBoolFromString(entries[index]); index++;
+						questData.MasterJettisonEnabled = GetBoolFromString(entries[index]); index++;
+						questData.BetaGroveJettisoned = GetBoolFromString(entries[index]); index++;
+						questData.AntennaNorthDestroyed = GetBoolFromString(entries[index]); index++;
+						questData.AntennaSouthDestroyed = GetBoolFromString(entries[index]); index++;
+						questData.AntennaEastDestroyed = GetBoolFromString(entries[index]); index++;
+						questData.AntennaWestDestroyed = GetBoolFromString(entries[index]); index++;
+						questData.SelfDestructActivated = GetBoolFromString(entries[index]); index++;
+						questData.BridgeSeparated = GetBoolFromString(entries[index]); index++;
+						questData.IsolinearChipsetInstalled = GetBoolFromString(entries[index]); index++;
+
+						// Set difficulties
+						difficultyCombat = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+						difficultyMission = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+						difficultyPuzzle = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+						difficultyCyber = GetIntFromString(entries[index],currentline,"savegame",index); index++;
 						currentline++;
 						continue;
 					}
@@ -1092,7 +1156,7 @@ public class Const : MonoBehaviour {
 				sr.Close();
 			}
 		}
-		sprint("Loading...Done!",allPlayers);
+		sprint(stringTable[197],allPlayers); // Loading...Done!
 	}
 
 	public void SetFOV() {
@@ -1298,7 +1362,7 @@ public class Const : MonoBehaviour {
 			}
 		}
 	}
-	
+
 	public void DebugQuestBitShoutOut () {
 		Debug.Log("Level 1 Security Code: " + questData.lev1SecCode.ToString());
 		Debug.Log("Level 2 Security Code: " + questData.lev2SecCode.ToString());
@@ -1336,23 +1400,23 @@ public class Const : MonoBehaviour {
 		if (effectIsWorldwide) {
 			// the whole station is a shakin' and a movin'!
 			if (player1 != null) { if (player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			if (player2 != null) { if (player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			if (player3 != null) { if (player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			//if (player2 != null) { if (player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			//if (player3 != null) { if (player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			//if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
 		} else {
 			// check if player is close enough and shake em' up!
 			if (Vector3.Distance(transform.position, player1.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
 				if (player1 != null) { if (player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
 			}
-			if (Vector3.Distance(transform.position, player2.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
-				if (player2 != null) { if (player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			}
-			if (Vector3.Distance(transform.position, player3.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
-				if (player3 != null) { if (player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			}
-			if (Vector3.Distance(transform.position, player4.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
-				if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			}
+			//if (Vector3.Distance(transform.position, player2.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
+			//	if (player2 != null) { if (player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			//}
+			//if (Vector3.Distance(transform.position, player3.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
+			//	if (player3 != null) { if (player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			//}
+			//if (Vector3.Distance(transform.position, player4.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
+			//	if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			//}
 		}
 	}
 }

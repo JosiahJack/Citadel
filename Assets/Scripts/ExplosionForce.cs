@@ -41,7 +41,7 @@ public class ExplosionForce : MonoBehaviour {
 			// Raycast got direct hit with "c"?
 			// - Yes: apply force
 			// - No: ignore explosion force
-			// TODO(by YOU): IMPORTANT Change this to match your problem!!
+			// YOU: IMPORTANT Change this to match your problem!!
 			//if (hit.collider != c || hit.transform.tag != c.tag) {
 			if (hit.collider != c) {
 				continue;

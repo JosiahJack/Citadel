@@ -1,8 +1,8 @@
 Energy drawn from power station
-Power station is recharging
-access card required
-Door is locked
-STD access granted
+Power station is recharging.
+ access card required
+The door is locked.
+ access granted
  but door is locked.
 You are too far away from that
 Elevator door is still open
@@ -21,7 +21,7 @@ OVERLOAD
 LOW
 HIGH
 HEAT
-Automatic healing process activated
+Automatic healing processes activated
 Healing bed is broken beyond repair
 Blocked by SHODAN level Security.
 [MORE]
@@ -191,3 +191,73 @@ Can't use broken panel
 Puzzle interface accessed
 Current weapon magazine already full.
 No more of current ammo type to load.
+Switch deactivated.
+Saving...
+Saving...Done!
+Loading...
+Loading...Done!
+Medical computer cyberspace lock.
+Military computer cyberspace lock.
+Keypad unlocks door.
+The panel does not move.
+Executive computer cyberspace lock.
+Door locked - no maintenance required.
+Door locked due to bridge separation.
+The door is broken beyond repair.
+Open door with nearby lever, wear protective suit.
+Not enough energy to fire weapon.
+Shield absorbs 
+% damage.
+Does not fit the slot, isolinear chipset required.
+Circuit breaker program installed.
+Program already installed.
+plasma flux monitor
+temporal distortion monitor
+secondary temporal distortion monitor
+tertiary life support monitor
+primary gravity regulator
+auxiliary power monitor gamma
+auxiliary power monitor alpha
+planetary research databank
+secondary gravity regulator
+relay 183
+auxiliary power monitor beta
+xenobiological detection grid control
+routing controller 47-C
+local forcefield monitor
+relay 371
+secondary airlock safety grid
+E-bypass 77
+E-bypass 79
+primary airlock safety grid
+routing controller 47-A
+routing controller 47-B
+relay 73
+E-bypass 78
+relay 998
+relay 44
+relay 2
+iridium transfer control
+relay 333
+relay 516
+relay 101
+soylant green filtration control
+air purification backup control
+food replication backup control
+energy conduit C-7
+primary life support monitor
+secondary coolant regulator
+energy conduit C-4
+energy conduit C-2
+general redundant databank
+energy conduit C-3
+waste disposal backup control
+secondary life support monitor
+energy conduit C-1
+auxiliary engine report generator
+tertiary coolant regulator
+primary coolant regulator
+improper chipset, demodulator required
+interface demodulator installed!
+relay 428 functioning correctly
+relay 428

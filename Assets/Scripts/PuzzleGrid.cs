@@ -86,12 +86,11 @@ public class PuzzleGrid : MonoBehaviour {
 		if (cellType[index] == CellType.Standard) {
 			switch (gridType) {
 				case GridType.King: King(index); break;
-				case GridType.Queen: Queen(index); break;
+				//case GridType.Queen: Queen(index); break;
 				case GridType.Knight: Knight(index); break;
 				case GridType.Rook: Rook(index); break;
-				case GridType.Bishop: Bishop(index); break;
+				//case GridType.Bishop: Bishop(index); break;
 				case GridType.Pawn: Pawn(index); break;
-				case GridType.Minesweep: Minesweep(index); break;
 			}
 		}
 		EvaluatePuzzle();
@@ -118,7 +117,7 @@ public class PuzzleGrid : MonoBehaviour {
 					} else {
 						if (powered [i]) {
 							gridCells [i].image.overrideSprite = gridPlusOn0; // powered node
-							// TODO: handle different power images for lines between neighbors
+							// UPDATE? handle different power images for lines between neighbors
 						} else {
 							// Theme dependent
 							switch (theme) {
@@ -338,7 +337,7 @@ public class PuzzleGrid : MonoBehaviour {
 
 	// Flip vertically and horizontally adjacent standard cells along with center
 	void King(int index) {
-		grid[index] = !grid[index]; // Flip clicked cell
+		if (cellType[index] == CellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
 		int cellAbove = ReturnCellAbove(index);
 		int cellBelow = ReturnCellBelow(index);
 		int cellLeft = ReturnCellToLeft(index);
@@ -357,19 +356,24 @@ public class PuzzleGrid : MonoBehaviour {
 		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == CellType.Standard) grid[cellDiagDnLf] = !grid[cellDiagDnLf];
 	}
 
-	// Flip vertically, horizontally, and diagonally adjacent cells across entire puzzle along with center
-	void Queen(int index) {
-		//TODO fill in this with actual algorithm for Queen, Knight, and Bishop
-
-	}
-
 	// Flip corners along with center
 	void Knight(int index) {
+		if (cellType[index] == CellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
+		int cellAbove = ReturnCellAbove(index);
+		int cellBelow = ReturnCellBelow(index);
+		int cellDiagUpRt = ReturnCellToRight(cellAbove);
+		int cellDiagUpLf = ReturnCellToLeft(cellAbove);
+		int cellDiagDnRt = ReturnCellToRight(cellBelow);
+		int cellDiagDnLf = ReturnCellToLeft(cellBelow);
+		if (cellDiagUpRt != -1 && cellType[cellDiagUpRt] == CellType.Standard) grid[cellDiagUpRt] = !grid[cellDiagUpRt];
+		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == CellType.Standard) grid[cellDiagUpLf] = !grid[cellDiagUpLf];
+		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == CellType.Standard) grid[cellDiagDnRt] = !grid[cellDiagDnRt];
+		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == CellType.Standard) grid[cellDiagDnLf] = !grid[cellDiagDnLf];
 	}
 
 	// Flip vertically and horizontally adjacent cells across entire puzzle along with center
 	void Rook(int index) {
-		grid[index] = !grid[index]; // Flip clicked cell
+		if (cellType[index] == CellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
 
 		int tempIndex = index;
 		for (int i=0;i<width;i++) {
@@ -424,11 +428,6 @@ public class PuzzleGrid : MonoBehaviour {
 
 	// Flip diagonally adjacent cells across entire puzzle along with center
 	void Bishop(int index) {
-
-	}
-
-	// Flip all adjacent cells and center
-	void Minesweep(int index) {
 
 	}
 }

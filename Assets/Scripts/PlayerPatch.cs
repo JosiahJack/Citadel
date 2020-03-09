@@ -71,7 +71,8 @@ public class PlayerPatch : MonoBehaviour {
 		switch (index) {
 		case 14:
 			// Berserk Patch
-			playerPI.patchCounts[2]--;
+			//playerPI.patchCounts[2]--;
+			PatchInventory.PatchInvInstance.patchCounts[2]--;
 			playerWeapon.berserkActive = true;
 			if (!(Const.a.CheckFlags(patchActive, PATCH_BERSERK))) patchActive += PATCH_BERSERK;
 			berserkFinishedTime = Time.time + Const.a.berserkTime;
@@ -80,34 +81,39 @@ public class PlayerPatch : MonoBehaviour {
 			break;
 		case 15: 
 			// Detox Patch
-			playerPI.patchCounts[6]--;
+			//playerPI.patchCounts[6]--;
+			PatchInventory.PatchInvInstance.patchCounts[6]--;
 			patchActive = PATCH_DETOX; // overwrite all other active patches
 			playerHealthScript.detoxPatchActive = true;
 			detoxFinishedTime = Time.time + Const.a.detoxTime;
 			break;
 		case 16: 
 			// Genius Patch
-			playerPI.patchCounts[5]--;
+			//playerPI.patchCounts[5]--;
+			PatchInventory.PatchInvInstance.patchCounts[5]--;
 			if (!(Const.a.CheckFlags(patchActive, PATCH_GENIUS))) patchActive += PATCH_GENIUS;
 			geniusFinishedTime = Time.time + Const.a.geniusTime;
 			break;
 		case 17: 
 			// Medi Patch
-			playerPI.patchCounts[3]--;
+			//playerPI.patchCounts[3]--;
+			PatchInventory.PatchInvInstance.patchCounts[3]--;
 			if (!(Const.a.CheckFlags(patchActive, PATCH_MEDI))) patchActive += PATCH_MEDI;
 			playerHealthScript.mediPatchPulseCount = 0;
 			mediFinishedTime = Time.time + Const.a.mediTime;
 			break;
 		case 18: 
 			// Reflex Patch
-			playerPI.patchCounts[4]--;
+			//playerPI.patchCounts[4]--;
+			PatchInventory.PatchInvInstance.patchCounts[4]--;
 			Time.timeScale = Const.a.reflexTimeScale;
 			if (!(Const.a.CheckFlags(patchActive, PATCH_REFLEX))) patchActive += PATCH_REFLEX;
 			reflexFinishedTime = Time.realtimeSinceStartup + Const.a.reflexTime;
 			break;
 		case 19: 
 			// Sight Patch
-			playerPI.patchCounts[1]--;
+			//playerPI.patchCounts[1]--;
+			PatchInventory.PatchInvInstance.patchCounts[1]--;
 			sightLight.enabled = true; // enable vision enhancement
 			sightSideEffectFinishedTime = -1f;  // reset side effect timer from previous patch
 			sightDimming.enabled = false; // deactivate side effect from previous patch
@@ -116,7 +122,8 @@ public class PlayerPatch : MonoBehaviour {
 			break;
 		case 20: 
 			// Staminup Patch
-			playerPI.patchCounts[0]--;
+			//playerPI.patchCounts[0]--;
+			PatchInventory.PatchInvInstance.patchCounts[0]--;
 			playerMovementScript.staminupActive = true;
 			if (!(Const.a.CheckFlags(patchActive, PATCH_STAMINUP))) patchActive += PATCH_STAMINUP;
 			staminupFinishedTime = Time.time + Const.a.staminupTime;

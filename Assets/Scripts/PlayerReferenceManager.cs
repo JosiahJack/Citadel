@@ -14,6 +14,8 @@ public class PlayerReferenceManager : MonoBehaviour {
 	public GameObject playerCursor;
 	public GameObject playerStatusBar;
 	public GameObject playerTextWarningManager;
+	public GameObject playerDeathRessurectEffect;
+	public GameObject playerDeathEffect;
 	public CenterTabButtons playerCenterTabButtonsControl;
 	public GameObject playerRadiationTreatmentFlash;
 	public int playerCurrentLevel;

@@ -119,18 +119,14 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	public void SaveGame (int index) {
-		Const.sprint("Saved game to slot " + index.ToString() + "! (TODO:Actually save)",Const.a.player1);
+		Const.a.Save(index,"Saved slot " + index.ToString());
+		Const.sprint("Saved game to slot " + index.ToString() + "!",Const.a.player1);
 		pauseHandler.EnablePauseUI();
 		this.gameObject.SetActive(false);
 	}
 
 	public void LoadGame (int index) {
-		//StreamReader sf = Const.a.savedGames[index];
-
-		// Do awesome stuff {
-		// ...
-		// }
-
+		Const.a.Load(index);
 		StartGame(false);
 	}
 

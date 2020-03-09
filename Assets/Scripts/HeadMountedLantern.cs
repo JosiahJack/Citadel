@@ -3,7 +3,7 @@ using System.Collections;
 
 public class HeadMountedLantern : MonoBehaviour {
 	public int lanternState = 0;
-	//public int lanternVersion = 1;	//TODO: Set to 0
+	//public int lanternVersion = 0;
 	//public float lanternSetting = 1;
 	public float lanternVersion1Brightness = 2.5f;
 	public float lanternVersion2Brightness = 4;

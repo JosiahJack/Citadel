@@ -56,7 +56,6 @@ public class UseableAttachment : MonoBehaviour {
 		if (activated) {
 
 			// Plastique delayed effect (to give player time to escape of course)
-			// TODO: add beeping effect?
 			if (timerFinished != -1f) {
 				if (timerFinished < Time.time) {
 					explosion.SetActive (true);

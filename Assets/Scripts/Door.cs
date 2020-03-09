@@ -22,12 +22,11 @@ public class Door : MonoBehaviour {
 	[Tooltip("Delay after use before door can be re-used")]
 	public float useTimeDelay = 0.15f;
 	[Tooltip("Message to display when door is locked, e.g.'door is broken beyond repair'")]
-	public string lockedMessage = "Door is locked";
-	[Tooltip("Message to display when door requires a keycard, e.g.'Standard Access card required'")]
-	public string cardMessage = " access card required";
-	[Tooltip("Message to display when door is opened using a keycard, e.g.'Standard Access card used'")]
-	public string cardUsedMessage = " access granted";
-	public string butdoorStillLockedMessage = " but door is locked.";
+	public string lockedMessage;
+	public int lockedMessageLingdex = 3;
+	private string cardMessage;
+	private string cardUsedMessage;
+	private string butdoorStillLockedMessage;
 	[HideInInspector]
 	public bool blocked = false;
 	private float useFinished;
@@ -80,6 +79,14 @@ public class Door : MonoBehaviour {
 			doorOpen = doorState.Closed;
 			anim.Play(idleClosedClipName);
 		}
+
+		cardMessage = Const.a.stringTable[2];
+		if (string.IsNullOrEmpty(lockedMessage)) {
+			if (lockedMessageLingdex < Const.a.stringTable.Length)
+			lockedMessage = Const.a.stringTable[lockedMessageLingdex];
+		}
+		cardUsedMessage = Const.a.stringTable[4];
+		butdoorStillLockedMessage = Const.a.stringTable[5];
 	}
 
 	public void Use (UseData ud) {

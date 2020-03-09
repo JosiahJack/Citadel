@@ -61,7 +61,6 @@ public class AIController : MonoBehaviour {
 	public float attack1projectilespeed = 2f;
 	public float attack2projectilespeed = 2f;
 	public float attack3projectilespeed = 2f;
-    public Vector3 explosionOffset;
 	public AudioClip SFXIdle;
 	public AudioClip SFXFootstep;
 	public AudioClip SFXSightSound;
@@ -145,8 +144,6 @@ public class AIController : MonoBehaviour {
 	[HideInInspector]
     public float attack3Finished;
     public Vector3 targettingPosition; // used to give the player a chance to dodge attacks by moving after start of an attack, enemy attacks along same starting line
-	public GameObject explosionObject;
-	private ExplosionForce explosion;
 	public Material deathMaterial;
 	public bool switchMaterialOnDeath;
 	public SkinnedMeshRenderer actualSMR;
@@ -214,7 +211,6 @@ public class AIController : MonoBehaviour {
         tempHit = new RaycastHit();
         tempVec = new Vector3(0f, 0f, 0f);
         SFX = GetComponent<AudioSource>();
-		if (explosionObject != null) explosion = explosionObject.GetComponent<ExplosionForce>();
 		if (SFX == null) Debug.Log("WARNING: No audio source for npc at: " + transform.position.x.ToString() + ", " + transform.position.y.ToString() + ", " + transform.position.z + ".");
 		if (walkWaypoints.Length > 0 && walkWaypoints[currentWaypoint] != null && walkPathOnStart && !asleep) {
             currentDestination = walkWaypoints[currentWaypoint].transform.position;
@@ -411,7 +407,7 @@ public class AIController : MonoBehaviour {
                         shotFired = false;
                         attackFinished = Time.time + timeBetweenAttack2 + timeTillActualAttack2;
                         gracePeriodFinished = Time.time + timeTillActualAttack2;
-                        targettingPosition = enemy.transform.position;
+                        //targettingPosition = enemy.transform.position;
                         currentState = Const.aiState.Attack2;
                         return;
                     }
@@ -422,7 +418,7 @@ public class AIController : MonoBehaviour {
 							shotFired = false;
 							attackFinished = Time.time + timeBetweenAttack3 + timeTillActualAttack3;
 							gracePeriodFinished = Time.time + timeTillActualAttack3;
-							targettingPosition = enemy.transform.position;
+							//targettingPosition = enemy.transform.position;
 							currentState = Const.aiState.Attack3;
                             return;
                         }
@@ -478,11 +474,35 @@ public class AIController : MonoBehaviour {
 		if (attack1SoundTime < Time.time) {
 			if (SFX != null && SFXAttack1 != null) SFX.PlayOneShot(SFXAttack1);
 			attack1SoundTime = Time.time + timeBetweenAttack1;
-            for (int i = 0; i < meleeDamageColliders.Length; i++) {
+			int layMask = 10;
+			layMask = -layMask;
+			if (Physics.Raycast(sightPoint.transform.position,sightPoint.transform.forward,out tempHit, meleeRange, layMask)) {
+				tempHM = tempHit.transform.gameObject.GetComponent<HealthManager>();
+				if (tempHit.transform.gameObject.GetComponent<HealthManager>() != null) {
+					useBlood = true;
+					CreateStandardImpactEffects(false);
+					damageData.other = tempHit.transform.gameObject;
+					if (tempHit.transform.gameObject.tag == "NPC") {
+						damageData.isOtherNPC = true;
+					} else {
+						damageData.isOtherNPC = false;
+					}
+					damageData.hit = tempHit;
+					damageData.attacknormal = transform.forward;
+					damageData.damage = Const.a.damageForNPC[index];
+					damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+					damageData.owner = gameObject;
+					damageData.attackType = Const.AttackType.Projectile;
+					HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
+					if (hm == null) return;
+					hm.TakeDamage(damageData);
+				}
+			}
+            //for (int i = 0; i < meleeDamageColliders.Length; i++) {
 				//Debug.Log("Melee colliders...activate!");
-                meleeDamageColliders[i].SetActive(true);
-                meleeDamageColliders[i].GetComponent<AIMeleeDamageCollider>().MeleeColliderSetup(index, meleeDamageColliders.Length, impactMelee, gameObject);
-            }
+                //meleeDamageColliders[i].SetActive(true);
+                //meleeDamageColliders[i].GetComponent<AIMeleeDamageCollider>().MeleeColliderSetup(index, meleeDamageColliders.Length, impactMelee, gameObject);
+            //}
 			//Debug.Log("Did...did we do it?  Did the melee colliders activate?");
         }
 
@@ -492,9 +512,9 @@ public class AIController : MonoBehaviour {
         currentDestination = enemy.transform.position;
 
         if (attackFinished < Time.time) {
-            for (int i = 0; i < meleeDamageColliders.Length; i++) {
-                meleeDamageColliders[i].SetActive(false); // turn off melee colliders
-            }
+            //for (int i = 0; i < meleeDamageColliders.Length; i++) {
+                //meleeDamageColliders[i].SetActive(false); // turn off melee colliders
+            //}
 
             if (Random.Range(0f,1f) < attack1RandomWaitChance) {
                 randomWaitForNextAttack1Finished = Time.time + Random.Range(attack1MinRandomWait, attack1MaxRandomWait);
@@ -518,7 +538,6 @@ public class AIController : MonoBehaviour {
 
     bool DidRayHit(Vector3 targPos, float dist, bool useGunPoint2) {
         tempVec = targPos;
-        tempVec.y += 0.24f;  //TODO get actual player camera position.y
 		if (useGunPoint2 && gunPoint2 != null) {
 			tempVec = tempVec - gunPoint2.transform.position;
 		} else {
@@ -678,13 +697,10 @@ public class AIController : MonoBehaviour {
         currentDestination = targettingPosition;
 
 		if (explodeOnAttack3) {
-			//ExplosionForce ef = GetComponent<ExplosionForce>();
 			DamageData ddNPC = Const.SetNPCDamageData(index, Const.aiState.Attack3,gameObject);
 			float take = Const.a.GetDamageTakeAmount(ddNPC);
 			ddNPC.other = gameObject;
 			ddNPC.damage = take;
-			if (explosion != null) explosion.ExplodeInner(explosionObject.transform.position+explosionOffset, attack3Force, attack3Radius, ddNPC);
-			//healthManager.health = 0;
 			healthManager.TakeDamage(ddNPC);
 			return;
 		}
@@ -801,6 +817,8 @@ public class AIController : MonoBehaviour {
 					rbody.useGravity = true;
 					//rbody.isKinematic = false;
 				}
+			} else {
+				rbody.useGravity = false;
 			}
 			firstSighting = true;
 			timeTillDeadFinished = Time.time + timeTillDead; // wait for death animation to finish before going into Dead()
@@ -827,7 +845,7 @@ public class AIController : MonoBehaviour {
 		} else {
 			//rbody.isKinematic = true;
 			if (searchColliderGO != null) {
-				rbody.useGravity = true;
+				//srbody.useGravity = true;
 				//rbody.isKinematic = false;
 				rbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ; // prevent corpse from flipping over but let it get moved around by func_walls and grenades and such...if it doesn't get gibbed first
 			}
@@ -845,8 +863,6 @@ public class AIController : MonoBehaviour {
 			}
 			if (!healthManager.teleportOnDeath && healthManager.gibOnDeath) {
 				healthManager.Gib(); // ... turn on the lovely gibs
-				if (explosion != null) explosion.ExplodeOuter(explosionObject.transform.position); // blast the gibs away from the center TODO this isn't working on the repair bot??
-				//if (explosion != null) explosion.ExplodeInner(explodeObject.transform.position, nearforce, nearradius, null);
 			}
 			if (healthManager.teleportOnDeath) healthManager.TeleportAway();
 		}
@@ -854,33 +870,45 @@ public class AIController : MonoBehaviour {
 	
 	public void SendEnemy (GameObject enemCandidate) {
 		if (ignoreEnemy) return;
-		if (enemy != null) return; //already have enemy TODO: use time to switch to switch to alternate attacker
+		if (enemy != null) return; //already have enemy
 
 		GameObject playr1 = Const.a.player1;
 		GameObject playr2 = Const.a.player2;
 		GameObject playr3 = Const.a.player3;
 		GameObject playr4 = Const.a.player4;
+		Transform playr1TargettingPos = transform;
+		Transform playr2TargettingPos = transform;
+		Transform playr3TargettingPos = transform;
+		Transform playr4TargettingPos = transform;
 
 		if (playr1 == null) { Debug.Log("WARNING: NPC sight check - no host player 1."); return; }  // No host player
+
+		if (playr1 != null) {playr1TargettingPos = playr1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
 		if (playr1 != null) {playr1 = playr1.GetComponent<PlayerReferenceManager>().playerCapsule;}
+
+		if (playr2 != null) {playr2TargettingPos = playr2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
 		if (playr2 != null) {playr2 = playr2.GetComponent<PlayerReferenceManager>().playerCapsule;}
+
+		if (playr3 != null) {playr3TargettingPos = playr3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
 		if (playr3 != null) {playr3 = playr3.GetComponent<PlayerReferenceManager>().playerCapsule;}
+
+		if (playr4 != null) {playr4TargettingPos = playr4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
 		if (playr4 != null) {playr4 = playr4.GetComponent<PlayerReferenceManager>().playerCapsule;}
 		
 		if (enemCandidate == playr1 && enemCandidate.GetComponent<PlayerMovement>() != null && !enemCandidate.GetComponent<PlayerMovement>().Notarget) {
-			SetEnemy(playr1);
+			SetEnemy(playr1,playr1TargettingPos);
 			PlaySightSound();
 		} else {
 			if (enemCandidate == playr2 && enemCandidate.GetComponent<PlayerMovement>() != null && !enemCandidate.GetComponent<PlayerMovement>().Notarget) {
-				SetEnemy(playr2);
+				SetEnemy(playr2,playr2TargettingPos);
 				PlaySightSound();
 			} else {
 				if (enemCandidate == playr3 && enemCandidate.GetComponent<PlayerMovement>() != null && !enemCandidate.GetComponent<PlayerMovement>().Notarget) {
-					SetEnemy(playr3);
+					SetEnemy(playr3,playr3TargettingPos);
 					PlaySightSound();
 				} else {
 					if (enemCandidate == playr4 && enemCandidate.GetComponent<PlayerMovement>() != null && !enemCandidate.GetComponent<PlayerMovement>().Notarget) {
-						SetEnemy(playr4);
+						SetEnemy(playr4,playr4TargettingPos);
 						PlaySightSound();
 					}
 				}
@@ -943,11 +971,24 @@ public class AIController : MonoBehaviour {
 		GameObject playr2 = Const.a.player2;
 		GameObject playr3 = Const.a.player3;
 		GameObject playr4 = Const.a.player4;
+		Transform playr1TargettingPos = transform;
+		Transform playr2TargettingPos = transform;
+		Transform playr3TargettingPos = transform;
+		Transform playr4TargettingPos = transform;
+		Transform tempTrans = transform;
 
 		if (playr1 == null) { Debug.Log("WARNING: NPC sight check - no host player 1."); return false; }  // No host player
+
+		if (playr1 != null) {playr1TargettingPos = playr1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
 		if (playr1 != null) {playr1 = playr1.GetComponent<PlayerReferenceManager>().playerCapsule;}
+
+		if (playr2 != null) {playr2TargettingPos = playr2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
 		if (playr2 != null) {playr2 = playr2.GetComponent<PlayerReferenceManager>().playerCapsule;}
+
+		if (playr3 != null) {playr3TargettingPos = playr3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
 		if (playr3 != null) {playr3 = playr3.GetComponent<PlayerReferenceManager>().playerCapsule;}
+
+		if (playr4 != null) {playr4TargettingPos = playr4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
 		if (playr4 != null) {playr4 = playr4.GetComponent<PlayerReferenceManager>().playerCapsule;}
 
 		GameObject tempent = null;
@@ -955,11 +996,11 @@ public class AIController : MonoBehaviour {
 
 		for (int i=0;i<4;i++) {
 			tempent = null;
-			// Cycle through all the players to see if we can see anybody.  Defaults to earlier joined players. TODO: Add randomization if multiple players are visible.
-			if (playr1 != null && i == 0) tempent = playr1;
-			if (playr2 != null && i == 1) tempent = playr2;
-			if (playr3 != null && i == 2) tempent = playr3;
-			if (playr4 != null && i == 4) tempent = playr4;
+			// Cycle through all the players to see if we can see anybody.  Defaults to earlier joined players.
+			if (playr1 != null && i == 0) {tempent = playr1;tempTrans = playr1TargettingPos;}
+			if (playr2 != null && i == 1) {tempent = playr2;tempTrans = playr2TargettingPos;}
+			if (playr3 != null && i == 2) {tempent = playr3;tempTrans = playr3TargettingPos;}
+			if (playr4 != null && i == 4) {tempent = playr4;tempTrans = playr4TargettingPos;}
 			if (tempent == null) continue; // no found player
 			// found player
 
@@ -990,19 +1031,19 @@ public class AIController : MonoBehaviour {
 			if (LOSpossible) {
 				//Debug.Log("LOS was possible");
 				if (angle < (fieldOfViewAngle * 0.5f)) {
-					SetEnemy(tempent);
+					SetEnemy(tempent,tempTrans);
 					PlaySightSound();
 					return true;
 				} else {
 					if (dist < distToSeeWhenBehind) {
-						SetEnemy(tempent);
+						SetEnemy(tempent,tempTrans);
 						PlaySightSound();
 						return true;
 					}
 				}
 			} else {
 				if (dist < distToSeeWhenBehind) {
-					SetEnemy(tempent);
+					SetEnemy(tempent,tempTrans);
 					PlaySightSound();
 					return true;
 				}
@@ -1011,8 +1052,9 @@ public class AIController : MonoBehaviour {
 		return false;
 	}
 
-	void SetEnemy(GameObject enemSent) {
+	void SetEnemy(GameObject enemSent,Transform targettingPosSent) {
 		enemy = enemSent;
+		targettingPosition = targettingPosSent.position;
 	}
 
 	void PlaySightSound() {
@@ -1052,7 +1094,7 @@ public class AIController : MonoBehaviour {
 
 		for (int i=0;i<4;i++) {
 			tempent = null;
-			// Cycle through all the players to see if we can see anybody.  Defaults to earlier joined players. TODO: Add randomization if multiple players are visible.
+			// Cycle through all the players to see if we can see anybody.  Defaults to earlier joined players.
 			if (playr1 != null && i == 0) tempent = playr1;
 			if (playr2 != null && i == 1) tempent = playr2;
 			if (playr3 != null && i == 2) tempent = playr3;

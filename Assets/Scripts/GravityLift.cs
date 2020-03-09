@@ -11,15 +11,13 @@ public class GravityLift : MonoBehaviour {
 	void OnTriggerStay (Collider other) {
 		if (active) {
 			otherRbody = other.gameObject.GetComponent<Rigidbody>();
-			// TODO check if flier bot, avian mutant, or projectile and return without affecting it
 			if (otherRbody != null) {
 				if (otherRbody.velocity.y < strength)
 					otherRbody.AddForce(new Vector3(0f, (strength-otherRbody.velocity.y), 0f));
 			}
 		} else {
-			// apply weak force for falling, 1/10th of normal
+			// apply weak force for inactive state - applies some force for gentle descent
 			otherRbody = other.gameObject.GetComponent<Rigidbody>();
-			// TODO check if flier bot, avian mutant, or projectile and return without affecting it
 			if (otherRbody != null) {
 				if (otherRbody.velocity.y < (strength*offStrengthFactor))
 					otherRbody.AddForce(new Vector3(0f, ((offStrengthFactor*strength)-otherRbody.velocity.y), 0f));
@@ -28,7 +26,6 @@ public class GravityLift : MonoBehaviour {
 	}
 
 	public void Toggle() {
-		// Debug.Log("Toggled gravity lift!");
 		active = !active;
 	}
 }

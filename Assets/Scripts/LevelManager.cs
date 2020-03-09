@@ -15,6 +15,7 @@ public class LevelManager : MonoBehaviour {
 
 	void Awake () {
 		a = this;
+		if (currentLevel == -1) return;
 		SetAllPlayersLevelsToCurrent();
 		DisableAllNonOccupiedLevels();
 		if (sky != null)
@@ -40,7 +41,8 @@ public class LevelManager : MonoBehaviour {
 
 		if (ressurectionActive[currentLevel]) {
 			currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = ressurectionLocation[currentLevel].position; //teleport to ressurection chamber
-			//currentPlayer.GetComponent<PlayerReferenceManager>().playerDeathEffect.SetActive(true); //TODO activate death screen and readouts for "NORMAL BRAIN ACTIVITY RESTORED..."            ya debatable right
+			currentPlayer.GetComponent<PlayerReferenceManager>().playerDeathRessurectEffect.SetActive(true); // activate death screen and readouts for "BRAIN ACTIVITY SATISFACTORY"            ya debatable right
+			currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerMovement>().ressurectingFinished = Time.time + 3f;
 			return true;
 		}
 
@@ -121,6 +123,7 @@ public class LevelManager : MonoBehaviour {
 
 	public GameObject GetCurrentLevelDynamicContainer() {
         GameObject retval = null;
+		if (currentLevel == -1) return retval;
         if (currentLevel < levels.Length)
             retval = levels[currentLevel].GetComponent<Level>().dynamicObjectsContainer;
 
@@ -128,11 +131,13 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public int GetCurrentLevelSecurity() {
+		if (currentLevel == -1) return 0;
 		if (superoverride) return 0; // tee hee we are SHODAN, no security blocks in place
 		return levelSecurity [currentLevel];
 	}
 
 	public void ReduceCurrentLevelSecurity(int secDrop) {
+		if (currentLevel == -1) return;
 		levelSecurity [currentLevel] -= secDrop;
 		Const.sprint("Level security now " + levelSecurity[currentLevel].ToString() + "%",Const.a.allPlayers);
 		if (levelSecurity [currentLevel] < 1)

@@ -65,6 +65,7 @@ public class HealthManager : MonoBehaviour {
 		//searchItems = GetComponent<SearchableItem>();
 
 		if (isPlayer) {
+			//Const.a.player1 = transform.parent.gameObject;
 			if (hic == null) Debug.Log("BUG: No HardwareInvCurrent script referenced by a Player's HealthManager");
 			if (hinv == null) Debug.Log("BUG: No HardwareInventory script referenced by a Player's HealthManager");
 			if (ph == null) Debug.Log("BUG: No PlayerHealth script referenced by a Player's HealthManager");
@@ -84,11 +85,11 @@ public class HealthManager : MonoBehaviour {
             index = aic.index;
 			if (health <= 0) health = Const.a.healthForNPC[index]; //leaves possibility of setting health lower than normal, for instance the cortex reaver on level 5
 			if (maxhealth <= 0) maxhealth = Const.a.healthForNPC[index]; // set maxhealth to default healthForNPC, possible to set higher, e.g. for cyborg assassins on level 9 whose health is 3 times normal
-            // TODO: Uncomment this for final game
-            //if (Const.a.difficultyCombat == 0) {
-            //	maxhealth = 1;
-            //	health = maxhealth;
-            //}
+
+            if (Const.a.difficultyCombat == 0) {
+            	maxhealth = 1;
+            	health = maxhealth;
+            }
         }
 		if (maxhealth < 1) maxhealth = health;
 	}
@@ -125,10 +126,20 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 
-		if (god) return; // untouchable!
+		if (god) {
+			Debug.Log("God mode detected. Dmg = " + dd.damage.ToString() + ", Taken = 0");
+			return; // untouchable!
+		}
 
-		if (health <= 0) return;
-		if (dd.damage <= 0) return;
+		if (health <= 0) {
+			Debug.Log("GameObject was dead. Dmg = " + dd.damage.ToString() + ", Taken = 0");
+			return;
+		}
+
+		if (dd.damage <= 0) {
+			Debug.Log("Dmg = " + dd.damage.ToString() + ", Taken = 0");
+			return;
+		}
 
 		take = dd.damage;
         tempFloat = health;
@@ -138,7 +149,6 @@ public class HealthManager : MonoBehaviour {
 			if (hic.hardwareIsActive[5] && hinv.hasHardware[5]) {
 				// Versions of shield protect against 20, 40, 75, 75%'s
 				// Versions of shield thressholds are 0, 10, 15, 30...ooh what's this hang on now...Huh, turns out it absorbs all damage below the thresshold!  Cool!
-				// TODO put this in Const and reference it to a table text file in StreamingAssets you dope
 				float absorb = 0;
 				float thresh = 0;
 				switch(hinv.hardwareVersion[5]) {
@@ -161,9 +171,9 @@ public class HealthManager : MonoBehaviour {
 				if (absorb > 0) {
 					if (absorb < 1f) absorb = absorb + UnityEngine.Random.Range(-0.08f,0.08f); // +/- 8% variation - this was in the original I swear!  You could theoretically have 83% shielding max.
 					take *= (1f-absorb); // shield doing it's thing
-					//TODO // Activate shield screen effect to indicate damage was absorbed, effect intensity determined by absorb amount
-					//TODO // Play shield absorb sound
-					Const.sprint("Shield absorbs " + absorb.ToString() + "% damage.",dd.other);
+					ph.shieldEffect.SetActive(true); // Activate shield screen effect to indicate damage was absorbed, effect intensity determined by absorb amount
+					ph.PlayerNoise.PlayOneShot(ph.ShieldClip); // Play shield absorb sound
+					Const.sprint(Const.a.stringTable[208] + absorb.ToString() + Const.a.stringTable[209],dd.other);  // Shield absorbs x% damage
 				}
 			}
 			if (take > 0) {
@@ -186,7 +196,6 @@ public class HealthManager : MonoBehaviour {
 
 		// Do the damage, that's right do. your. worst!
 		health -= take; //was directly dd.damage but changed since we are check for extra things in case GetDamageTakeAmount wasn't called on dd.damage beforehand (e.g. player fall damage, internal to player only, need to protect against shield, etc, JJ 9/5/19)
-        if (debugMessages) Const.sprint("Health before: " + tempFloat.ToString() + "| Health after: " + health.ToString(), Const.a.allPlayers);
 		attacker = dd.owner;
 		
         if (aic != null && isNPC && (health > 0f)) {
@@ -197,7 +206,7 @@ public class HealthManager : MonoBehaviour {
 					if (Const.a.healthObjectsRegistration[ij].isNPC) {
 						if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,gameObject.transform.position) < Const.a.healthObjectsRegistration[ij].aic.rangeToHear) {
 							Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(attacker);
-							Debug.Log("Enemy took pain and then notified a nearby enemy to join the fray!");
+							//Debug.Log("Enemy took pain and then notified a nearby enemy to join the fray!");
 						}
 					}
 				}
@@ -244,6 +253,7 @@ public class HealthManager : MonoBehaviour {
             }
 		}
 
+		Debug.Log("Dmg = " + dd.damage.ToString() + ", Taken = " + take.ToString() + ", Health:" + health.ToString() + " at " + transform.position.x.ToString() + " " + transform.position.y.ToString() + " " + transform.position.z.ToString());
 	}
 
 	public void TeleportAway() {
@@ -256,14 +266,9 @@ public class HealthManager : MonoBehaviour {
 		if (deathDone) return;
 
 		deathDone = true;
-		switch (index) {
-		case 0:
-			GetComponent<MeshRenderer> ().enabled = false;
-			break;
-		}
 
 		// Enable death effects (e.g. explosion particle effect)
-		if (deathFX != Const.PoolType.LaserLines) {
+		if (deathFX != Const.PoolType.None) {
 			GameObject explosionEffect = Const.a.GetObjectFromPool(deathFX);
 			if (explosionEffect != null) {
 				explosionEffect.SetActive(true);
@@ -303,6 +308,7 @@ public class HealthManager : MonoBehaviour {
 		if (dropItemsOnGib) {
 			if (searchableItem != null) {
 				GameObject levelDynamicContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
+				if (levelDynamicContainer == null) levelDynamicContainer = gameObject;
 				for (int i=0;i<4;i++) {
 					if (searchableItem.contents[i] >= 0) {
 						GameObject tossObject = Instantiate(Const.a.useableItems[searchableItem.contents[i]],transform.position,Quaternion.identity) as GameObject;
@@ -373,7 +379,7 @@ public class HealthManager : MonoBehaviour {
 			LevelManager.a.ReduceCurrentLevelSecurity (securityAmount);
 
 		// Enabel death effects (e.g. explosion particle effect)
-		if (deathFX != Const.PoolType.LaserLines) {
+		if (deathFX != Const.PoolType.None) {
 			GameObject explosionEffect = Const.a.GetObjectFromPool(deathFX);
 			if (explosionEffect != null) {
 				explosionEffect.SetActive(true);

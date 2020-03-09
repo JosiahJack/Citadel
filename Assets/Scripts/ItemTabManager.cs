@@ -9,7 +9,6 @@ public class ItemTabManager : MonoBehaviour {
 	public GameObject applyButton;
 	public GameObject useButton;
 	public GameObject eReaderSectionsContainer;
-    public int itemTabType; //TODO: what's this?
 
 	private string nullstr;
 

@@ -28,7 +28,6 @@ public class PlayerMovement : MonoBehaviour {
 	private float jumpVelocity = 1.1f;
 	private  float jumpVelocityFatigued = 0.6f;
 	public bool  grounded = false;
-	private float maxSlope = 90f;
 	private float crouchRatio = 0.6f;
 	private float proneRatio = 0.2f;
 	private float transitionToCrouchSec = 0.2f;
@@ -65,6 +64,8 @@ public class PlayerMovement : MonoBehaviour {
 	private Vector3 oldVelocity;
 	public GameObject mainMenu;
 	public HardwareInvCurrent hwc;
+	public HardwareInventory hwi;
+	public HardwareButton hwbJumpJets;
 	public float fatigue;
 	private float jumpFatigue = 8f;
 	private float fatigueWanePerTick = 1f;
@@ -115,6 +116,8 @@ public class PlayerMovement : MonoBehaviour {
 	public float jumpSFXFinished;
 	public float jumpSFXIntervalTime = 1f;
 	public float jumpLandSoundFinished;
+	private float jumpJetEnergySuckTickFinished;
+	public float jumpJetEnergySuckTick = 1f;
 	private Vector3 tempVec;
 	public float leanSpeed = 5f;
 	public bool leanLHFirstPressed = false;
@@ -125,6 +128,9 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject fpsCounter;
 	public WeaponCurrent wepCur;
 	private bool fatigueWarned;
+	private PlayerEnergy pe;
+	[HideInInspector]
+	public float ressurectingFinished;
 
     void Awake (){
 		currentCrouchRatio = def1;
@@ -154,6 +160,9 @@ public class PlayerMovement : MonoBehaviour {
 		leanRHReset = false;
 		jumpSFXFinished = Time.time;
 		fatigueWarned = false;
+		pe = GetComponent<PlayerEnergy>();	
+		jumpJetEnergySuckTickFinished = Time.time;
+		ressurectingFinished = Time.time;
     }
 	
 	bool CantStand (){
@@ -195,7 +204,7 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		if (mainMenu.activeSelf == true) return;  // ignore movement when main menu is still up
-		if (!PauseScript.a.Paused()) {
+		if (!PauseScript.a.Paused() && (ressurectingFinished < Time.time)) {
 			rbody.WakeUp();
 
 			if (inCyberSpace && !cyberSetup) {
@@ -205,7 +214,7 @@ public class PlayerMovement : MonoBehaviour {
 				mlookScript.inCyberSpace = true; // enable full camera rotation up/down by disabling clamp
 				oldBodyState = bodyState;
 				bodyState = defIndex; // reset to "standing" to prevent speed anomolies
-				// TODO enable dummy player for coop games
+				// UPDATE enable dummy player for coop games
 				cyberSetup = true;
 				cyberDesetup = true;
 			}
@@ -221,7 +230,7 @@ public class PlayerMovement : MonoBehaviour {
                     Mathf.Clamp(mlookScript.xRotation, -90f, 90f); // pre-clamp camera rotation - still useful
                     mlookScript.inCyberSpace = false; // disable full camera rotation up/down by enabling auto clamp
                     bodyState = oldBodyState; // return to what we were doing in the "real world" (real lol)
-                                              // TODO disable dummy player for coop games  dummyPlayerModel.SetActive(false); dummyPlayerCapsule.enabled = false;
+                                              // UPDATE disable dummy player for coop games  dummyPlayerModel.SetActive(false); dummyPlayerCapsule.enabled = false;
                     cyberSetup = false;
                     cyberDesetup = false;
                 } else {
@@ -233,7 +242,7 @@ public class PlayerMovement : MonoBehaviour {
                     Mathf.Clamp(mlookScript.xRotation, -90f, 90f); // pre-clamp camera rotation
                     mlookScript.inCyberSpace = false; // disable full camera rotation up/down by enabling auto clamp
                     bodyState = oldBodyState; // return to what we were doing in the "real world" (real lol)
-                                              // TODO disable dummy player for coop games
+                                              // UPDATE disable dummy player for coop games
                     cyberSetup = false;
                     cyberDesetup = false;
                 }
@@ -461,7 +470,7 @@ public class PlayerMovement : MonoBehaviour {
 			return;
 		}
 
-		if (!PauseScript.a.Paused()) {
+		if (!PauseScript.a.Paused() && ressurectingFinished < Time.time) {
             if (CheatNoclip) grounded = true;
 			// Crouch
 			//LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));
@@ -475,11 +484,11 @@ public class PlayerMovement : MonoBehaviour {
 
 				switch (bodyState) {
 					case 0:
-						playerSpeed = maxWalkSpeed + bonus; //TODO:: lerp from other speeds
+						playerSpeed = maxWalkSpeed + bonus;
 						break;
 					case 1:
 						//Debug.Log("Crouched");
-						playerSpeed = maxCrouchSpeed + bonus; //TODO:: lerp from other speeds
+						playerSpeed = maxCrouchSpeed + bonus;
 						break;
 					case 2: 
 						//Debug.Log("Crouching down lerp from standing...");
@@ -492,7 +501,7 @@ public class PlayerMovement : MonoBehaviour {
 						LocalPositionSetY (transform, (((currentCrouchRatio - lastCrouchRatio) * capsuleHeight) / 2) + transform.position.y);
 						break;
 					case 4: 
-						playerSpeed = maxProneSpeed + bonus; //TODO:: lerp from other speeds
+						playerSpeed = maxProneSpeed + bonus;
 						break;
 					case 5: 
 						currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
@@ -552,7 +561,7 @@ public class PlayerMovement : MonoBehaviour {
 				}
 				if (!CheatNoclip) RigidbodySetVelocityY(rbody, verticalMovement);
 
-				// Ground friction (TODO: disable grounded for Cyberspace)
+				// Ground friction
 				if (grounded || CheatNoclip) {
 					if (hwc.hardwareIsActive [9]) {
 						deceleration = walkDeaccelerationBooster;
@@ -567,7 +576,7 @@ public class PlayerMovement : MonoBehaviour {
 				}
 			}
 				
-			// Set rotation of playercapsule from mouselook script TODO: Is this needed?
+			// Set rotation of playercapsule from mouselook script
 			//transform.rotation = Quaternion.Euler(0,mlookScript.yRotation,0); //Change 0 values for x and z for use in Cyberspace
 
 			float relForward = 0f;
@@ -595,7 +604,7 @@ public class PlayerMovement : MonoBehaviour {
 
 			// Handle movement
 			if (!inCyberSpace) {
-				if (grounded == true || CheatNoclip) {
+				if (grounded == true || CheatNoclip ||  (hwc.hardwareIsActive[10])) {
 					if (ladderState && !CheatNoclip) {
 						// CLimbing when touching the ground
 						//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
@@ -726,14 +735,28 @@ public class PlayerMovement : MonoBehaviour {
 						rbody.AddForce (new Vector3 (0, jumpVelocityFatigued * rbody.mass, 0), ForceMode.Force);  // huhnh!
 					} else {
 						if (hwc.hardwareIsActive [10]) {
-							rbody.AddForce (new Vector3 (0, jumpVelocityBoots * rbody.mass, 0), ForceMode.Force);  // huhnh!
+							if (pe.energy > 11f) {
+								rbody.AddForce (new Vector3 (0, jumpVelocityBoots * rbody.mass, 0), ForceMode.Force);  // huhnh!
+								float energysuck = 25f;
+								switch (hwi.hardwareVersion[10]) {
+									case 0: energysuck = 25f; break;
+									case 1: energysuck = 30f; break;
+									case 2: energysuck = 35f; break;
+								}
+								if (jumpJetEnergySuckTickFinished < Time.time) {
+									jumpJetEnergySuckTickFinished = Time.time + jumpJetEnergySuckTick;
+									pe.TakeEnergy(energysuck);
+								}
+							} else {
+								hwbJumpJets.JumpJetsClick();
+							}
 						} else {
 							rbody.AddForce (new Vector3 (0, jumpVelocity * rbody.mass, 0), ForceMode.Force);  // huhnh!
 						}
 					}
 				}
 
-				//if (jumpTime < 0) justJumped = false; // just in case 
+				if (jumpTime < 0) justJumped = false; // for jump jets to work 
 
 				if (justJumped && !(hwc.hardwareIsActive[10])) {
 					// Play jump sound
@@ -793,7 +816,10 @@ public class PlayerMovement : MonoBehaviour {
 	void OnCollisionStay (Collision collision  ){
 		if (!PauseScript.a.Paused() && !inCyberSpace) {
 			foreach(ContactPoint contact in collision.contacts) {
-				if (Vector3.Angle(contact.normal,Vector3.up) < maxSlope) {
+				//if (Vector3.Angle(contact.normal,Vector3.up) < maxSlope) {
+				float ang = Vector3.Dot(contact.normal,Vector3.up);
+				//Debug.Log("Contact.normal for player OnCollisionStay is " + ang.ToString());
+				if (ang <= 1 && ang >= 0.35) {
 					grounded = true;
 				}
 			}

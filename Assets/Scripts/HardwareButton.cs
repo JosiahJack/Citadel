@@ -184,41 +184,41 @@ public class HardwareButton : MonoBehaviour {
 		if (toggleState) {
 			switch (hwi.hardwareVersion [ref14Index]) {
 			case 1:
-				sensaroundCenterCamera.SetActive (true);
-				sensaroundCenter.SetActive (true);
+				if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (true);
+				if (sensaroundCenter != null) sensaroundCenter.SetActive (true);
 				break;
 			case 2:
-				sensaroundCenterCamera.SetActive (true);
-				sensaroundCenter.SetActive (true);
-				sensaroundLHCamera.SetActive (true);
-				sensaroundLH.SetActive (true);
-				sensaroundRHCamera.SetActive (true);
-				sensaroundRH.SetActive (true);
+				if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (true);
+				if (sensaroundCenter != null) sensaroundCenter.SetActive (true);
+				if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (true);
+				if (sensaroundLH != null) sensaroundLH.SetActive (true);
+				if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (true);
+				if (sensaroundRH != null) sensaroundRH.SetActive (true);
 				break;
 			case 3:
-				sensaroundCenterCamera.SetActive (true);
-				sensaroundCenter.SetActive (true);
-				sensaroundLHCamera.SetActive (true);
-				sensaroundLH.SetActive (true);
-				sensaroundRHCamera.SetActive (true);
-				sensaroundRH.SetActive (true);
+				if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (true);
+				if (sensaroundCenter != null) sensaroundCenter.SetActive (true);
+				if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (true);
+				if (sensaroundLH != null) sensaroundLH.SetActive (true);
+				if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (true);
+				if (sensaroundRH != null) sensaroundRH.SetActive (true);
 				break;
 			case 4:
-				sensaroundCenterCamera.SetActive (true);
-				sensaroundCenter.SetActive (true);
-				sensaroundLHCamera.SetActive (true);
-				sensaroundLH.SetActive (true);
-				sensaroundRHCamera.SetActive (true);
-				sensaroundRH.SetActive (true);
+				if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (true);
+				if (sensaroundCenter != null) sensaroundCenter.SetActive (true);
+				if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (true);
+				if (sensaroundLH != null) sensaroundLH.SetActive (true);
+				if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (true);
+				if (sensaroundRH != null) sensaroundRH.SetActive (true);
 				break;
 			}
 		} else {
-			sensaroundCenterCamera.SetActive (false);
-			sensaroundCenter.SetActive (false);
-			sensaroundLHCamera.SetActive (false);
-			sensaroundLH.SetActive (false);
-			sensaroundRHCamera.SetActive (false);
-			sensaroundRH.SetActive (false);
+			if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (false);
+			if (sensaroundCenter != null) sensaroundCenter.SetActive (false);
+			if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (false);
+			if (sensaroundLH != null) sensaroundLH.SetActive (false);
+			if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (false);
+			if (sensaroundRH != null) sensaroundRH.SetActive (false);
 		}
 	}
 

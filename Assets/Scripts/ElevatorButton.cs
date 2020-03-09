@@ -25,7 +25,7 @@ public class ElevatorButton : MonoBehaviour {
 	private string levG2 = "G2";
 	private string levG4 = "G4";
 	private string levC = "C";
-	private int zero = 0;
+	private int zero = 0; // because it's in an update and I don't want to generate garbage to collect in random spikes
 	private int one = 1;
 	private int two = 2;
 	private int three = 3;
@@ -39,9 +39,6 @@ public class ElevatorButton : MonoBehaviour {
 	private int eleven = 11;
 	private int twelve = 12;
 	private int thirteen = 13;
-	public string tooFarAwayText = "You are too far away from that";
-	public string doorStillOpenText = "Elevator door is still open";
-	public string shaftDamageText = "Shaft Damage -- Unable to go there.";
 
 	void Awake() {
 		childText = GetComponentInChildren<Text>();
@@ -54,15 +51,15 @@ public class ElevatorButton : MonoBehaviour {
 
 	void ElevButtonClick () {
 		if (tooFarAway) {
-			Const.sprint(tooFarAwayText,currentPlayer);
+			Const.sprint(Const.a.stringTable[6],currentPlayer);
 		} else {
 			if (doorOpen) {
-				Const.sprint(doorStillOpenText,currentPlayer);
+				Const.sprint(Const.a.stringTable[7],currentPlayer);
 			} else {
 				if (floorAccessible) {
 					LevelManager.a.LoadLevel(levelIndex,targetDestination,currentPlayer);
 				} else {
-					Const.sprint(shaftDamageText,currentPlayer);
+					Const.sprint(Const.a.stringTable[8],currentPlayer);
 				}
 			}
 		}

@@ -42,7 +42,6 @@ public class NPC_Hopper : MonoBehaviour {
 	public GameObject collisionAid1;
 	public GameObject collisionAid2;
 	public GameObject deathBody;
-	public GameObject targetEndHelper;
 	//public GameObject[] gibs;
 	public Transform[] walkWaypoints; // point(s) for NPC to walk to when roaming or patrolling
 	public AudioClip SFXIdle;
@@ -431,13 +430,14 @@ public class NPC_Hopper : MonoBehaviour {
 					damageData.damage = Const.a.damagePerHitForWeapon [14];
 					damageData.damage = Const.a.GetDamageTakeAmount(damageData); //Added this line since the damage amount wasn't getting parsed by GetDamageTakeAmount to account for damages properly
 					if (tempHit.transform.gameObject.GetComponent<HealthManager>() != null) tempHit.transform.gameObject.GetComponent<HealthManager>().TakeDamage(damageData);
-					GameObject lasertracer = Const.a.GetObjectFromPool (Const.PoolType.LaserLinesHopper);
-					targetEndHelper.transform.position = tempHit.point;
-					if (lasertracer != null) {
-						lasertracer.SetActive (true);
-						lasertracer.GetComponent<LaserDrawing> ().startPoint = firePoint.transform.position;
-						lasertracer.GetComponent<LaserDrawing> ().endPoint = targetEndHelper.transform.position;
-					}
+					
+					GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
+					if (dynamicObjectsContainer == null) return; //didn't find current level
+					GameObject lasertracer = Instantiate(Const.a.useableItems[105],transform.position,Quaternion.identity) as GameObject;
+					lasertracer.transform.SetParent(dynamicObjectsContainer.transform,true);
+					lasertracer.GetComponent<LaserDrawing> ().startPoint = firePoint.transform.position;
+					lasertracer.GetComponent<LaserDrawing> ().endPoint = tempHit.point;
+					lasertracer.SetActive(true);
 				}
 			}
 		}
@@ -537,33 +537,6 @@ public class NPC_Hopper : MonoBehaviour {
 		return false;
 	}
 
-	/*
-	bool CheckIfPlayerInSight (GameObject returnContainerForFoundEnemy) {
-		if (enemy != null) return CheckIfEnemyInSight();
-
-		GameObject playr1 = Const.a.player1;
-		GameObject playr2 = Const.a.player2;
-		GameObject playr3 = Const.a.player3;
-		GameObject playr4 = Const.a.player4;
-
-		if (playr1 == null) { Debug.Log("WARNING: NPC sight check - no host player 1."); return false; }  // No host player
-		if (playr1 != null) {playr1 = playr1.GetComponent<PlayerReferenceManager>().playerCapsule;}
-		if (playr2 != null) {playr2 = playr2.GetComponent<PlayerReferenceManager>().playerCapsule;}
-		if (playr3 != null) {playr3 = playr3.GetComponent<PlayerReferenceManager>().playerCapsule;}
-		if (playr4 != null) {playr4 = playr4.GetComponent<PlayerReferenceManager>().playerCapsule;}
-
-		GameObject tempent = null;
-		bool LOSpossible = false;
-
-		for (int i=0;i<4;i++) {
-			tempent = null;
-			// Cycle through all the players to see if we can see anybody.  Defaults to earlier joined players. TODO: Add randomization if multiple players are visible.
-			if (playr1 != null && i == 0) tempent = playr1;
-			if (playr2 != null && i == 1) tempent = playr2;
-			if (playr3 != null && i == 2) tempent = playr3;
-			if (playr4 != null && i == 4) tempent = playr4;
-			if (tempent == null) continue;
-*/
 	bool CheckIfPlayerInSight() {
 		GameObject tempent = Const.a.player1.GetComponent<PlayerReferenceManager>().playerCapsule;
 		Vector3 checkline = Vector3.Normalize(tempent.transform.position - transform.position); // Get vector line made from enemy to found player
@@ -623,7 +596,7 @@ public class NPC_Hopper : MonoBehaviour {
 
 		for (int i=0;i<4;i++) {
 			tempent = null;
-			// Cycle through all the players to see if we can see anybody.  Defaults to earlier joined players. TODO: Add randomization if multiple players are visible.
+			// Cycle through all the players to see if we can see anybody.  Defaults to earlier joined players.
 			if (playr1 != null && i == 0) tempent = playr1;
 			if (playr2 != null && i == 1) tempent = playr2;
 			if (playr3 != null && i == 2) tempent = playr3;

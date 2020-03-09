@@ -25,13 +25,21 @@ public class ButtonSwitch : MonoBehaviour {
 	public bool animateModel = false;
 	private Animator anim;
 	public bool locked = false;
-	public string lockedMessage = "Switch deactivated.";
+	public string lockedMessage;
+	public int lockedMessageLingdex = 193;
 
 	void Awake () {
 		SFXSource = GetComponent<AudioSource>();
 		mRenderer = GetComponent<MeshRenderer>();
 		delayFinished = 0; // prevent using targets on awake
 		if (animateModel) anim = GetComponent<Animator>();
+	}
+
+	void Start () {
+		if (string.IsNullOrWhiteSpace(lockedMessage)) {
+			if (lockedMessageLingdex < Const.a.stringTable.Length)
+				lockedMessage = Const.a.stringTable[lockedMessageLingdex];
+		}
 	}
 
 	public void Use (UseData ud) {
@@ -41,10 +49,8 @@ public class ButtonSwitch : MonoBehaviour {
 			return;
 		}
 
-		if (LevelManager.a.superoverride) {
-			// SHODAN can go anywhere!  Full security override!
-			locked = false;
-		}
+		if (LevelManager.a.superoverride)
+			locked = false; // SHODAN can go anywhere!  Full security override!
 
 		if (locked) {
 			Const.sprint(lockedMessage,ud.owner);

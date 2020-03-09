@@ -48,6 +48,18 @@ public class WeaponCurrent : MonoBehaviour {
 	public AudioClip ReloadInStyleSFX;
 	public bool bottomless = false; // don't use any ammo (and energy weapons no energy)
 	public bool redbull = false; // don't use any energy
+	[HideInInspector]
+	public float reloadFinished;
+	public GameObject reloadContainer;
+	public Vector3 reloadContainerOrigin;
+	[HideInInspector]
+	public float reloadContainerDropAmount = 0.64f;
+	[HideInInspector]
+	public float reloadLerpValue;
+	[HideInInspector]
+	public float lerpStartTime;
+	[HideInInspector]
+	public float targetY;
 
 	void Awake() {
 		WepInstance = this;
@@ -68,9 +80,14 @@ public class WeaponCurrent : MonoBehaviour {
 		WepInstance.weaponEnergySetting [10] = 13f; // Plasma rifle
 		WepInstance.weaponEnergySetting [14] = 2f; // Sparq Beam
 		WepInstance.weaponEnergySetting [15] = 3f; // Stungun
+		reloadFinished = Time.time;
+		reloadContainerOrigin = reloadContainer.transform.localPosition;
+		reloadLerpValue = 0;
 	}
 
 	void Update() {
+		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndex);
+
 		if (justChangedWeap) {
 			justChangedWeap = false;
 			if (ViewModelAssault != null) ViewModelAssault.SetActive(false);
@@ -288,7 +305,7 @@ public class WeaponCurrent : MonoBehaviour {
 			break;
 		}
 
-		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndex);
+
 		if (wep16index == -1) return; // we don't have a weapon at all right now :)
 		weaponIsAlternateAmmo = WeaponAmmo.a.wepLoadedWithAlternate[wep16index];
 
@@ -299,6 +316,8 @@ public class WeaponCurrent : MonoBehaviour {
 			if (loadNormalAmmoButton != null) loadNormalAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonHighlighted;
 			if (loadAlternateAmmoButton != null) loadAlternateAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonDeHighlighted;
 		}
+
+		UpdateHUDAmmoCountsEither();
 	}
 
 	public void ChangeAmmoType() {
@@ -401,6 +420,9 @@ public class WeaponCurrent : MonoBehaviour {
 
 	public void Reload() {
 		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (weaponIndex);
+		reloadFinished = Time.time + Const.a.reloadTime[wep16index];
+		lerpStartTime = Time.time;
+		reloadContainer.transform.localPosition = reloadContainerOrigin; // pop it back to start to be sure
 
 		if (weaponIsAlternateAmmo) {
 			if (currentMagazineAmount2[wep16index] == Const.a.magazinePitchCountForWeapon2[wep16index]) {

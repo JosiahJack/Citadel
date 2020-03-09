@@ -66,7 +66,7 @@ public class Music : MonoBehaviour {
 		// Normal = usual low-key gentle music
 		// Suspense = critter nearby, play some faster paced bits, play creepy overtones, and other bonus bits n bobs
 		// Action = fast paced full out, we are fighting or being attacked!
-		// Distorted = for those damaged and rearranged areas of the station TODO: Add distortion triggers for these areas and check for justDistorted
+		// Distorted = for those damaged and rearranged areas of the station UPDATE: Add distortion triggers for these areas and check for justDistorted
 		actionState = 0; // normal
 
 		// Did we fire a weapon sometime in the past 30s or less
@@ -81,7 +81,7 @@ public class Music : MonoBehaviour {
 			return;
 		}
 
-		// Is an enemy close by? TODO: should I loop through all enemies and check there distance or is this kind of a cheat?
+		// Is an enemy close by? I loop through all enemies and check there distance
 		// for(int i=0;i<????.Length;i++) {if (Vector3.Distance(????[i].position,playerCapsuleTransform.position) < 10.24f) actionState = 1; // critter nearby, freak out!}
 	}
 

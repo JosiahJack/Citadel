@@ -9,7 +9,7 @@ public class ExplosionLife : MonoBehaviour {
 	private Light lite;
 
 	void Awake () {
-		StartCoroutine(LifeTime(GetComponent<Light>(), 0f, brightness, lightLife));
+		if (lightLife > 0f) StartCoroutine(LifeTime(GetComponent<Light>(), 0f, brightness, lightLife));
 		StartCoroutine(DelayedDestroy());
 	}
 
@@ -19,10 +19,10 @@ public class ExplosionLife : MonoBehaviour {
 		while (t < fadeTime) {
 			t += Time.deltaTime;
 			
-			l.intensity = Mathf.Lerp(fadeStart, fadeEnd, t / fadeTime);
+			if (l != null) l.intensity = Mathf.Lerp(fadeStart, fadeEnd, t / fadeTime);
 			yield return new WaitForSeconds(thinkInterval);
 		}
-		l.intensity = 0f;
+		if (l != null) l.intensity = 0f;
 	}
 
 	IEnumerator DelayedDestroy () {

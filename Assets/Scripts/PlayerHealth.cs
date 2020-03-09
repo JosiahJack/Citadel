@@ -17,9 +17,11 @@ public class PlayerHealth : MonoBehaviour {
 	public AudioSource PlayerNoise;
 	public AudioClip PainSFXClip;
 	public AudioClip RadiationClip;
+	public AudioClip ShieldClip;
 	public GameObject cameraObject;
 	public GameObject hardwareShield;
 	public GameObject radiationEffect;
+	public GameObject shieldEffect;
 	public bool radiationArea = false;
 	private float radiationBleedOffFinished = 0f;
 	public float radiationBleedOffTime = 1f;

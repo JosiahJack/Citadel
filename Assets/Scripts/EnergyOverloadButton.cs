@@ -24,20 +24,19 @@ public class EnergyOverloadButton : MonoBehaviour {
 
     public void OverloadEnergyClick() {
         if (wf.GetHeatForCurrentWeapon() > 25f) {
-            Const.sprint("Weapon too hot for overload", Const.a.allPlayers);
+            Const.sprint(Const.a.stringTable[12], Const.a.allPlayers);
             return;
         }
 
-		//Debug.Log("OverloadEnergyClick()ed");
         if (wf.overloadEnabled) {
-            Const.sprint("Weapon normal setting", Const.a.allPlayers);
+            Const.sprint(Const.a.stringTable[13], Const.a.allPlayers);
             wf.overloadEnabled = false;
             buttonSprite.overrideSprite = normalButtonSprite;
             buttonText.color = textClickableColor;
             energySettingText.color = textEnergySetting;
             energySettingText.text = "ENERGY SETTING";
         } else { 
-            Const.sprint("Weapon overload enabled", Const.a.allPlayers);
+            Const.sprint(Const.a.stringTable[17], Const.a.allPlayers);
             wf.overloadEnabled = true;
             buttonSprite.overrideSprite = overloadButtonSprite;
             buttonText.color = textOverloadColor;
@@ -47,12 +46,7 @@ public class EnergyOverloadButton : MonoBehaviour {
     }
 
     public void OverloadFired() {
-		//Const.sprint("Overload fired!",Const.a.allPlayers);
         buttonSprite.overrideSprite = normalButtonSprite;
         buttonText.color = textDisabledColor;
     }
-
-    //void Start() {
-    //    GetComponent<Button>().onClick.AddListener(() => { OverloadEnergyClick(); });
-    //}
 }

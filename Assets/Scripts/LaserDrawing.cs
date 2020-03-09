@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class LaserDrawing : MonoBehaviour {
 	[HideInInspector] public GameObject followStarter;
-	public Vector3 startPoint;
-	public Vector3 endPoint;
+	[HideInInspector] public Vector3 startPoint;
+	[HideInInspector] public Vector3 endPoint;
     public float lineLife = 0.15f;
-	[DTValidator.Optional] public LineRenderer line;
+	[DTValidator.Optional,HideInInspector] public LineRenderer line;
 
 	void Awake () {
 		line = GetComponent<LineRenderer>();
@@ -26,16 +26,21 @@ public class LaserDrawing : MonoBehaviour {
 	}
 
     void OnEnable() {
-        StartCoroutine(DisableLine());
+        StartCoroutine(DelayedDestroy());
         line.enabled = true;
     }
 
-    IEnumerator DisableLine() {
-        yield return new WaitForSeconds(lineLife);
-        Vector3 sp = new Vector3(5000f, 5000f, 5000f);
-        Vector3 ep = sp;
-        line.SetPosition(0, sp);
-        line.SetPosition(1, ep);
-        line.enabled = false;
-    }
+    //IEnumerator DisableLine() {
+    //    yield return new WaitForSeconds(lineLife);
+    //    Vector3 sp = new Vector3(5000f, 5000f, 5000f);
+    //    Vector3 ep = sp;
+    //    line.SetPosition(0, sp);
+    //    line.SetPosition(1, ep);
+    //    line.enabled = false;
+    //}
+
+	IEnumerator DelayedDestroy () {
+		yield return new WaitForSeconds (lineLife);
+		Destroy(this.gameObject);
+	}
 }

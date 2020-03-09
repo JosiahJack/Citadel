@@ -22,10 +22,10 @@ public class HealingBed : MonoBehaviour {
 		if (LevelManager.a.GetCurrentLevelSecurity() <= minSecurityLevel) {
 			if (!broken) {
 				ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<HealthManager>().HealingBed(amount,true);
-				Const.sprint("Automatic healing process activated.",ud.owner);
+				Const.sprint(Const.a.stringTable[23],ud.owner);
 				SFXSource.PlayOneShot(SFX);
 			} else {
-				Const.sprint("Healing bed is broken beyond repair",ud.owner);
+				Const.sprint(Const.a.stringTable[24],ud.owner);
 			}
 		}
 	}

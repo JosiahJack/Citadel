@@ -97,6 +97,7 @@ public class MouseLookScript : MonoBehaviour {
 	public GameObject weptextman;
 	public GameObject ammoClipBox;
 	public GrenadeCurrent grenadeCurrent;
+	public GrenadeInventory playerGrenInv;
 	[HideInInspector]
 	public GameObject currentButton;
 	[HideInInspector]
@@ -185,7 +186,7 @@ public class MouseLookScript : MonoBehaviour {
         //transform.localPosition.y = (Mathf.Cos(headbobStepCounter * 2) * headbobAmountY * -1) + (transform.localScale.y * eyeHeightRatio) - (transform.localScale.y / 2);
         //parentLastPos = transform.parent.position;
 
-		// Spring Back to Rest from Recoil TODO only do this when necessary and add some private variables to prevent GarbageCollector
+		// Spring Back to Rest from Recoil
 		float camz = Mathf.Lerp(transform.localPosition.z,0f,0.1f);
 		Vector3 camPos = new Vector3(0f,Const.a.playerCameraOffsetY*playerMovement.currentCrouchRatio,camz);
 		transform.localPosition = camPos;
@@ -202,7 +203,7 @@ public class MouseLookScript : MonoBehaviour {
         if (mainMenu.activeSelf == true) return;  // ignore mouselook when main menu is still up
 
 		if (Input.GetKeyUp("f6")) {
-			Const.a.Save(7);
+			Const.a.Save(7,"quicksave");
 		}
 
 		if (Input.GetKeyUp("f9")) {
@@ -210,7 +211,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
         if (inventoryMode == false) {
-			if (PauseScript.a != null && !PauseScript.a.Paused()) {
+			if (PauseScript.a != null && !PauseScript.a.Paused() && playerMovement.ressurectingFinished < Time.time) {
 				float dx = Input.GetAxisRaw("Mouse X");
 				float dy = Input.GetAxisRaw("Mouse Y");
 				yRotation += (dx * lookSensitivity);
@@ -228,7 +229,7 @@ public class MouseLookScript : MonoBehaviour {
 				Const.sprint("ERROR: Paused is true and inventoryMode is false",player);
 			}
 		} else {
-			if (!PauseScript.a.Paused()) {
+			if (!PauseScript.a.Paused() && playerMovement.ressurectingFinished < Time.time) {
 				if (GetInput.a.TurnLeft()) {
 					yRotation -= keyboardTurnSpeed * lookSensitivity;
 					//tempQuat = transform.rotation;
@@ -667,7 +668,7 @@ public class MouseLookScript : MonoBehaviour {
 		if ((heldObjectCustomIndex != -1) && (logInventory != null)) {
 			if (heldObjectCustomIndex == 114) {
 				// Trioptimum Funpack Module discovered!
-				// TODO: Create minigames
+				// UPDATE: Create minigames
 				Const.sprint("Trioptimum Funpack Module, don't play on company time!",player);
 				return;
 			}
@@ -1229,7 +1230,7 @@ public class MouseLookScript : MonoBehaviour {
 					tossObject.SetActive(true);
 				}
 				tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-				tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce; // TODO modify velocity direction and tossForce when tossing in InventoryMode to use 2D cursor movement vector to 3D yaw and pitch and speed of cursor movement to force
+				tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
 				tossObject.GetComponent<UseableObjectUse>().customIndex = heldObjectCustomIndex;
 				tossObject.GetComponent<UseableObjectUse>().ammo = heldObjectAmmo;
 			} else {
@@ -1241,6 +1242,7 @@ public class MouseLookScript : MonoBehaviour {
 					return;
 				}
 				tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+				tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
 				GrenadeActivate ga = tossObject.GetComponent<GrenadeActivate>();
 				if (ga != null) {
 					ga.Activate(heldObjectIndex, grenadeCurrent); // time to boom
@@ -1297,28 +1299,6 @@ public class MouseLookScript : MonoBehaviour {
 		curSearchScript.searchableInUse = true;
 		curSearchScript.currentPlayerCapsule = transform.parent.gameObject;  // Get playerCapsule of player this is attached to
 
-		// Fill container with random items, overrides manually entered data
-		// UPDATE: Handled on SearchableItem's awake to prevent save, search, load, search, repeat cheat/hack to get whatever you want
-		/*if (curSearchScript.generateContents) {
-			if (curSearchScript.lookUpIndex >= 0) {
-				// Refer to lookUp tables
-				// TODO: create lookUp tables for generic randomized search items such as NPCs
-			} else {
-				// Use random items chosen
-				for (int movingIndex=0;movingIndex<curSearchScript.numSlots;movingIndex++) {
-					if (Random.Range(0f,1f) < 0.5f) {
-						curSearchScript.contents[movingIndex] = curSearchScript.randomItem[movingIndex];
-						curSearchScript.customIndex[movingIndex] = curSearchScript.randomItemCustomIndex[movingIndex];
-						movingIndex++;
-					} else {
-						curSearchScript.contents[movingIndex] = -1;
-						curSearchScript.customIndex[movingIndex] = -1;
-						movingIndex++;
-					}
-				}
-			}
-		}*/
-
 		// Play search sound
 		SFXSource.PlayOneShot(SearchSFX);
 
@@ -1343,302 +1323,9 @@ public class MouseLookScript : MonoBehaviour {
 		ForceInventoryMode();
 	}
 
-	// Returns string for describing the walls/floors/etc. based on the material name
-	/*
-	string GetTextureDescription (string material_name){
-		string retval = System.String.Empty; // temporary string to hold the return value
-
-		switch(material_name) {
-		case "bridg2_3": retval = "monitoring post"; break;
-		case "bridg2_4": retval = "video observation screen"; break;
-		case "bridg2_5": retval = "cyber station"; break;
-		case "bridg2_6": retval = "burnished platinum panelling"; break;
-		case "bridg2_7": retval = "burnished platinum panelling"; break;
-		case "bridg2_8": retval = "SHODAN neural bud"; break;
-		case "bridg2_9": retval = "computer"; break;
-		case "cabinet": retval = "cabinet"; break;
-		case "charge_stat": retval = "energy charge station"; break;
-		case "citmat1_1": retval = "CPU node"; break;
-		case "citmat1_2": retval = "chair"; break;
-		case "citmat1_3": retval = "catwalk"; break;
-		case "citmat1_4": retval = "catwalk"; break;
-		case "citmat1_5": retval = "surface"; break;
-		case "citmat1_6": retval = "cabinet"; break;
-		case "citmat1_7": retval = "catwalk"; break;
-		case "citmat1_8": retval = "table top"; break;
-		case "citmat1_9": retval = "catwalk"; break;
-		case "citmat2_1": retval = "catwalk"; break;
-		case "citmat2_2": retval = "cabinet"; break;
-		case "citmat2_3": retval = "cabinet"; break;
-		case "citmat2_4": retval = "cabinet"; break;
-		case "console1_1": retval = "computer"; break;
-		case "console1_2": retval = "computer"; break;
-		case "console1_3": retval = "cart"; break;
-		case "console1_4": retval = "computer"; break;
-		case "console1_5": retval = "computer"; break;
-		case "console1_6": retval = "console"; break;
-		case "console1_7": retval = "console"; break;
-		case "console1_8": retval = "console"; break;
-		case "console1_9": retval = "console"; break;
-		case "console2_1": retval = "console panel"; break;
-		case "console2_2": retval = "desk"; break;
-		case "console2_3": retval = "computer panel"; break;
-		case "console2_4": retval = "computer panel"; break;
-		case "console2_5": retval = "computer console"; break;
-		case "console2_6": retval = "console controls"; break;
-		case "console2_7": retval = "console"; break;
-		case "console2_8": retval = "console controls"; break;
-		case "console2_9": retval = "console"; break;
-		case "console3_1": retval = "cyber space port"; break;
-		case "console3_2": retval = "computer"; break;
-		case "console3_3": retval = "computer"; break;
-		case "console3_4": retval = "keyboard"; break;
-		case "console3_5": retval = "computer panelling"; break;
-		case "console3_6": retval = "normal screens"; break;
-		case "console3_7": retval = "destroyed screen"; break;
-		case "console3_8": retval = "desk"; break;
-		case "console3_9": retval = "desk"; break;
-		case "console4_1": retval = "console controls"; break;
-		case "cyber": retval = "x-ray machine"; break;
-		case "d_arrow1": retval = "repulsor lights"; break;
-		case "d_arrow2": retval = "repulsor lights"; break;
-		case "eng1_1": retval = "environmental regulator"; break;
-		case "eng1_1d": retval = "atmospheric regulator"; break;
-		case "eng1_2": retval = "fluid transport pipes"; break;
-		case "eng1_2d": retval = "fluid transport pipes"; break;
-		case "eng1_3": retval = "engineering panelling"; break;
-		case "eng1_3d": retval = "fluid transport pipes"; break;
-		case "eng1_4": retval = "ladder"; break;
-		case "eng1_5": retval = "engineering panelling"; break;
-		case "eng1_5d": retval = "panelling"; break;
-		case "eng1_6": retval = "system function gauges"; break;
-		case "eng1_6d": retval = "instruments"; break;
-		case "eng1_7": retval = "engineering instruments"; break;
-		case "eng1_7d": retval = "instruments"; break;
-		case "eng1_8": retval = "electric cable access"; break;
-		case "eng1_9": retval = "data circuit access port"; break;
-		case "eng1_9d": retval = "data access ports"; break;
-		case "eng2_1": retval = "hi-grip surface"; break;
-		case "eng2_1d": retval = "hi-grip surface"; break;
-		case "eng2_2": retval = "halogen light fixture"; break;
-		case "eng2_2d": retval = "damaged light fixture"; break;
-		case "eng2_3": retval = "observation station"; break;
-		case "eng2_3d": retval = "instruments"; break;
-		case "eng2_4": retval = "thick rug"; break;
-		case "eng2_5": retval = "modular panelling"; break;
-		case "exec1_1": retval = "soft panelling"; break;
-		case "exec1_1d": retval = "burnt panelling"; break;
-		case "exec1_2": retval = "tech-rack"; break;	
-		case "exec1_2d": retval = "tech-rack"; break;
-		case "exec2_1": retval = "corridor wall"; break;
-		case "exec2_2": retval = "corridor wall"; break;
-		case "exec2_2d": retval = "corridor wall"; break;
-		case "exec2_3": retval = "oak panelling"; break;
-		case "exec2_4": retval = "titanium panelling"; break;
-		case "exec2_5": retval = "molybdenum panelling"; break;
-		case "exec2_6": retval = "molybdenum panelling"; break;
-		case "exec2_7": retval = "light fixture"; break;
-		case "exec3_1": retval = "corridor wall"; break;
-		case "exec3_1d": retval = "corridor wall"; break;
-		case "exec3_2": retval = "corridor wall"; break;
-		case "exec3_4": retval = "carpet"; break;
-		case "exec4_1": retval = "automatic teller machine"; break;
-		case "exec4_2": retval = "elevator panelling"; break;
-		case "exec4_3": retval = "elevator panelling"; break;
-		case "exec4_4": retval = "duct"; break;
-		case "exec4_5": retval = "carpet"; break;
-		case "exec4_6": retval = "marble slab"; break;
-		case "exec6_1": retval = "display screen"; break;
-		case "flight1_1": retval = "energ-light"; break;
-		case "flight1_1b": retval = "energ-light"; break;
-		case "flight1_2": retval = "non-dent steel panelling"; break;
-		case "flight1_3": retval = "non-dent steel panelling"; break;
-		case "flight1_4": retval = "non-dent steel panelling"; break;
-		case "flight1_5": retval = "non-dent steel panelling"; break;
-		case "flight1_6": retval = "environmental regulator"; break;
-		case "flight2_1": retval = "grip surface"; break;
-		case "flight2_2": retval = "energ-light"; break;
-		case "flight2_3": retval = "energ-light"; break;
-		case "grate1_1": retval = "grating"; break;
-		case "grate1_2": retval = "grating"; break;
-		case "grate1_3": retval = "grating"; break;
-		case "grove1_1": retval = "observation ceiling"; break;
-		case "grove1_2": retval = "grass"; break;
-		case "grove1_3": retval = "grass"; break;
-		case "grove1_4": retval = "wet grass"; break;
-		case "grove1_5": retval = "virus infestation"; break;
-		case "grove1_6": retval = "virus infestation"; break;
-		case "grove1_7": retval = "virus infestation"; break;
-		case "grove2_1": retval = "environment pod wall"; break;
-		case "grove2_2": retval = "overgrowth"; break;
-		case "grove2_3": retval = "environment pod wall"; break;
-		case "grove2_4": retval = "overgrown panel"; break;
-		case "grove2_5": retval = "environment regulator"; break;
-		case "grove2_6": retval = "overgrowth"; break;
-		case "grove2_7": retval = "sprinkler system"; break;
-		case "grove2_8": retval = "overgrowth"; break;
-		case "grove2_9": retval = "virus infestation"; break;
-		case "grove2_9b": retval = "virus infestation"; break;
-		case "grove2_9c": retval = "virus infestation"; break;
-		case "maint1_1": retval = "industrial tiles"; break;
-		case "maint1_2": retval = "storage area"; break;
-		case "maint1_2d": retval = "storage area"; break;
-		case "maint1_3": retval = "chemical storage"; break;
-		case "maint1_3b": retval = "chemical dispensory"; break;
-		case "maint1_4": retval = "repair station"; break;
-		case "maint1_4b": retval = "repair station"; break;
-		case "maint1_5": retval = "chemical dispensory"; break;
-		case "maint1_6": retval = "robot diagnostic system"; break;
-		case "maint1_7": retval = "repair station"; break;
-		case "maint1_9": retval = "industrial tiles"; break;
-		case "maint1_9d": retval = "industrial tiles"; break;
-		case "maint2_1": retval = "quartz light fixture"; break;
-		case "maint2_1b": retval = "ladder"; break;
-		case "maint2_1d": retval = "quartz light fixture"; break;
-		case "maint2_2": retval = "incandescent light"; break;
-		case "maint2_3": retval = "grating"; break;
-		case "maint2_3d": retval = "access station"; break;
-		case "maint2_4": retval = "access station"; break;
-		case "maint2_5": retval = "access station"; break;
-		case "maint2_5d": retval = "fluid transport pipes"; break;
-		case "maint2_6": retval = "fluid transport pipes"; break;
-		case "maint2_6d": retval = "access station"; break;
-		case "maint2_7": retval = "access station"; break;
-		case "maint2_7d": retval = "fluid transport pipes"; break;
-		case "maint2_8": retval = "fluid transport pipes"; break;
-		case "maint2_9": retval = "power conduits"; break;
-		case "maint3_1": retval = "duralloy panelling"; break;
-		case "maint3_1d": retval = "duralloy panelling"; break;
-		case "maint24_d": retval = "access station"; break;
-		case "med1_1": retval = "soft panelling"; break;
-		case "med1_1d": retval = "soft panelling"; break;
-		case "med1_2": retval = "comm port"; break;
-		case "med1_2d": retval = "comm port"; break;
-		case "med1_3": retval = "environmental regulator"; break;
-		case "med1_3d": retval = "environmental regulator"; break;
-		case "med1_4": retval = "sof-impac panelling"; break;
-		case "med1_5": retval = "flourescent light"; break;
-		case "med1_6": retval = "flourescent light"; break;
-		case "med1_7": retval = "tile panelling"; break;
-		case "med1_7d": retval = "tile panelling"; break;
-		case "med1_8": retval = "flourescent lighting"; break;
-		case "med1_8d": retval = "flourescent lighting"; break;
-		case "med1_9": retval = "flourescent lighting"; break;
-		case "med1_9d": retval = "rubberized panelling"; break;
-		case "med2_1": retval = "medical diagnostic tools"; break;
-		case "med2_1d": retval = "clinical panelling"; break;
-		case "med2_2": retval = "clinical panelling"; break;
-		case "med2_2d": retval = "clinical panelling"; break;
-		case "med2_3": retval = "clinical panelling"; break;
-		case "med2_3d": retval = "clinical panelling"; break;
-		case "med2_4": retval = "medical computer"; break;
-		case "med2_5": retval = "healing incubator"; break;
-		case "med2_6": retval = "clinical panelling"; break;
-		case "med2_7": retval = "restoration bay"; break;
-		case "med2_8": retval = "clinical panelling"; break;
-		case "med2_9": retval = "environmental regulator"; break;
-		case "med2_9d": retval = "environmental regulator"; break;
-		case "med3_1": retval = "flood light"; break;
-		case "rad1_1": retval = "cracked radiation tile"; break;
-		case "rad1_2": retval = "cracked radiation tile"; break;
-		case "reac1_1": retval = "molybdenum panelling"; break;
-		case "reac1_2": retval = "power coupling"; break;
-		case "reac1_3": retval = "halogen lighting"; break;
-		case "reac1_4": retval = "circuit relay"; break;
-		case "reac1_5": retval = "relay access port"; break;
-		case "reac1_6": retval = "power monitor"; break;
-		case "reac1_7": retval = "data transfer array"; break;
-		case "reac1_8": retval = "diagnostic module"; break;
-		case "reac1_9": retval = "comm panel"; break;
-		case "reac2_1": retval = "energy conduits"; break;
-		case "reac2_1b": retval = "energy conduits"; break;
-		case "reac2_2": retval = "energy conduits"; break;
-		case "reac2_4": retval = "energy conduits"; break;
-		case "reac2_5": retval = "equipment storage"; break;
-		case "reac2_6": retval = "energy conduits"; break;
-		case "reac2_7": retval = "energy monitoring station"; break;
-		case "reac2_8": retval = "rad observation console"; break;
-		case "reac2_9": retval = "high energy transformer"; break;
-		case "reac3_1": retval = "molybdenum panelling"; break;
-		case "reac3_2": retval = "molybdenum panelling"; break;
-		case "reac3_3": retval = "cable access port"; break;
-		case "reac3_4": retval = "duct"; break;
-		case "reac3_5": retval = "molybdenum panelling"; break;
-		case "reac3_6": retval = "molybdenum panelling"; break;
-		case "reac3_7": retval = "relay network"; break;
-		case "reac4_1": retval = "sensor grid"; break;
-		case "reac4_2": retval = "halogen lamp"; break;
-		case "reac5_1": retval = "magnetic containment system"; break;
-		case "reac5_2": retval = "magnetic containment system"; break;
-		case "reac5_3": retval = "magnetic containment system"; break;
-		case "reac6_1": retval = "hi-grip surface"; break;
-		case "reac6_2": retval = "quartz light fixture"; break;
-		case "reac6_3": retval = "duct"; break;
-		case "sci1_1": retval = "aluminum panelling"; break;
-		case "sci1_1d": retval = "aluminum panelling"; break;
-		case "sci1_2": retval = "aluminum panelling"; break;
-		case "sci1_2d": retval = "damaged panelling"; break;
-		case "sci1_3": retval = "matter converter"; break;
-		case "sci1_4": retval = "matter converter"; break;
-		case "sci1_5": retval = "aluminum panelling"; break;
-		case "sci1_6": retval = "aluminum panelling"; break;
-		case "sci1_7": retval = "environmental regulator"; break;
-		case "sci1_7d": retval = "instruments"; break;
-		case "sci1_8": retval = "molecular analyzer"; break;
-		case "sci1_8d": retval = "instrument panel"; break;
-		case "sci1_9": retval = "flourescent lighting"; break;
-		case "sci1_9d": retval = "flourescent lighting"; break;
-		case "sci2_1": retval = "duct"; break;
-		case "sci2_1d": retval = "duct"; break;
-		case "sci2_2": retval = "environmental regulator"; break;
-		case "sci2_2d": retval = "damaged regulator"; break;
-		case "sci2_3": retval = "aluminum panelling"; break;
-		case "sci2_4": retval = "aluminum panelling"; break;
-		case "sci2_5": retval = "high-power light"; break;
-		case "sci2_5d": retval = "high-power light"; break;
-		case "sci3_1": retval = "diagnostic panel"; break;
-		case "sci3_1d": retval = "instrument panel"; break;
-		case "sci3_2": retval = "composite panelling"; break;
-		case "sci3_3": retval = "diagnostic panel"; break;
-		case "sci3_4": retval = "data conduit"; break;
-		case "sci3_5": retval = "atmospheric regulator"; break;
-		case "sci3_6": retval = "comm port"; break;
-		case "sec1_1": retval = "trioptimum logo"; break;
-		case "sec1_1b": retval = "trioptimum logo"; break;
-		case "sec1_1c": retval = "obsidian slab"; break;
-		case "sec1_2": retval = "silver panelling"; break;
-		case "sec1_2b": retval = "silver panelling"; break;
-		case "sec1_3": retval = "light fixture"; break;
-		case "stor1_1": retval = "no-scrape storeroom wall"; break;
-		case "stor1_2": retval = "no-scrape storeroom wall"; break;
-		case "stor1_3": retval = "no-scrape storeroom wall"; break;
-		case "stor1_4": retval = "no-scrape storeroom wall"; break;
-		case "stor1_5": retval = "no-scrape storeroom wall"; break;
-		case "stor1_6": retval = "structural pillar"; break;
-		case "stor1_7": retval = "industrial tiles"; break;
-		case "stor1_7d": retval = "industrial tiles"; break;
-		default: retval = System.String.Empty; break;
-		}
-		return retval;
-	}
-*/
-	static Mesh GetMesh(GameObject go) {
-		if (go) {
-			MeshFilter mf = go.GetComponent<MeshFilter>();
-			if (mf) {
-				Mesh m = mf.sharedMesh;
-				if (!m)
-					m = mf.mesh;
-
-				if (m)
-					return m;
-			}
-		}
-		return (Mesh)null;
-	}
-
 	public void UseGrenade (int index) {
-		if (heldObject) return;
+		if (holdingObject) { Const.sprint("Can't use grenade, hands full",player); return; }
+		if (index < 7 || index > 13) { Debug.Log("WARNING: index outside of 7 to 13 passed to UseGrenade() in MouseLookScript.cs"); return; }
 		ForceInventoryMode();  // inventory mode is turned on when picking something up
 		ResetHeldItem();
 		holdingObject = true;
@@ -1646,18 +1333,20 @@ public class MouseLookScript : MonoBehaviour {
 		mouseCursor.cursorImage = Const.a.useableItemsFrobIcons[index];
 		mouseCursor.liveGrenade = true;
 		grenadeActive = true;
-		
+
+		// Subtract one from grenade inventory
 		switch(index) {
-			case 7: heldObject = Const.a.useableItems[154]; break; // Frag
-			case 8: heldObject = Const.a.useableItems[150]; break; // Concussion
-			case 9: heldObject = Const.a.useableItems[152]; break; // EMP
-			case 10: heldObject = Const.a.useableItems[151]; break; // Earth Shaker
-			case 11: heldObject = Const.a.useableItems[156]; break; // Land Mine
-			case 12: heldObject = Const.a.useableItems[157]; break; // Nitropak
-			case 13: heldObject = Const.a.useableItems[155]; break; // Gas
+		case 7: heldObject = Const.a.useableItems[154]; playerGrenInv.grenAmmo[0]--; Debug.Log("Frag grenade double clicked"); break; // Frag
+		case 8: heldObject = Const.a.useableItems[150]; playerGrenInv.grenAmmo[3]--; Debug.Log("Concussion grenade double clicked"); break; // Concussion
+		case 9: heldObject = Const.a.useableItems[152]; playerGrenInv.grenAmmo[1]--; Debug.Log("EMP grenade double clicked"); break; // EMP
+		case 10: heldObject = Const.a.useableItems[151]; playerGrenInv.grenAmmo[6]--;Debug.Log("Earth Shaker grenade double clicked"); break; // Earth Shaker
+		case 11: heldObject = Const.a.useableItems[156]; playerGrenInv.grenAmmo[4]--; Debug.Log("Land Mine grenade double clicked"); break; // Land Mine
+		case 12: heldObject = Const.a.useableItems[157]; playerGrenInv.grenAmmo[5]--; Debug.Log("Nitropak grenade double clicked"); break; // Nitropak
+		case 13: heldObject = Const.a.useableItems[155]; playerGrenInv.grenAmmo[2]--; Debug.Log("Gas grenade double clicked"); break; // Gas
 		}
 	}
 
+	/*
 	void drawMyLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
 		StartCoroutine( drawLine(start, end, color, duration));
 	}
@@ -1676,7 +1365,7 @@ public class MouseLookScript : MonoBehaviour {
 		lr.SetPosition (1, end);
 		yield return new WaitForSeconds(duration);
 		GameObject.Destroy (myLine);
-	}
+	}*/
 
 	public void ScreenShake (float force) {
 		Debug.Log("Screen shake signal received by MouseLookScript!");

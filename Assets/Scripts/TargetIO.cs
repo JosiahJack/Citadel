@@ -12,7 +12,7 @@ public class TargetIO : MonoBehaviour {
 	public bool doorOpen; // force opens the door
 	public bool doorOpenIfUnlocked; // open a door only if it isn't locked
 	public bool doorClose; // force closes the door
-	public bool doorLock; // locks door, argvalue sets the locked message TODO: set the lock message in Door.cs
+	public bool doorLock; // locks door, argvalue sets the locked message
 	public bool doorUnlock; // unlocks door
 	public bool switchTrigger; // force use a switch
 	public bool chargeStationRecharge; // force recharge a charging station
@@ -348,7 +348,7 @@ public class UseData {
 	public bool doorOpen; // force opens the door
 	public bool doorOpenIfUnlocked; // open a door only if it isn't locked
 	public bool doorClose; // force closes the door
-	public bool doorLock; // locks door, argvalue sets the locked message TODO: set the lock message in Door.cs
+	public bool doorLock; // locks door, argvalue sets the locked message
 	public bool doorUnlock; // unlocks door
 	public bool switchTrigger; // force use a switch
 	public bool chargeStationRecharge; // force recharge a charging station

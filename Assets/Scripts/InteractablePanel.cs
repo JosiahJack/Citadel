@@ -13,17 +13,44 @@ public class InteractablePanel : MonoBehaviour {
 	public AudioClip SFXOpen;
 	public AudioClip SFXFail;
 	private Animator anim;
+	[HideInInspector]
 	public string wrongItemMessage;
+	public int wrongItemMessageLingdex;
+	[HideInInspector]
 	public string installedMessage;
+	public int installedMessageLingdex;
+	[HideInInspector]
 	public string alreadyInstalledMessage;
+	public int alreadyInstalledMessageLingdex;
 	public AudioClip SFXAlreadyInstalled;
+	[HideInInspector]
 	public string openMessage;
+	public int openMessageLingdex;
 	public string target;
 	public string argvalue;
 
 	void Start() {
 		anim = GetComponent<Animator>();
 		SFX = GetComponent<AudioSource>();
+		if (string.IsNullOrWhiteSpace(wrongItemMessage)) {
+			if (wrongItemMessageLingdex < Const.a.stringTable.Length)
+				wrongItemMessage = Const.a.stringTable[wrongItemMessageLingdex];
+		}
+
+		if (string.IsNullOrWhiteSpace(installedMessage)) {
+			if (installedMessageLingdex < Const.a.stringTable.Length)
+				installedMessage = Const.a.stringTable[installedMessageLingdex];
+		}
+
+		if (string.IsNullOrWhiteSpace(alreadyInstalledMessage)) {
+			if (alreadyInstalledMessageLingdex < Const.a.stringTable.Length)
+				alreadyInstalledMessage = Const.a.stringTable[alreadyInstalledMessageLingdex];
+		}
+
+		if (string.IsNullOrWhiteSpace(openMessage)) {
+			if (openMessageLingdex < Const.a.stringTable.Length)
+				openMessage = Const.a.stringTable[openMessageLingdex];
+		}
 	}
 
 	public void Use(UseData ud) {

@@ -10,16 +10,32 @@ public class ChargeStation : MonoBehaviour {
 	private float nextthink;
 	public string target;
 	public string argvalue;
+	public string rechargeMsg;
+	public int rechargeMsgLingdex = 1;
+	public string usedMsg;
+	public int usedMsgLingdex = 0;
 	// private float maxResetTime = 10f;
 	
 	void Awake () {
 		nextthink = Time.time;
 	}
 
+	void Start () {
+		if (string.IsNullOrWhiteSpace(rechargeMsg)) {
+			if (rechargeMsgLingdex < Const.a.stringTable.Length)
+				rechargeMsg = Const.a.stringTable[rechargeMsgLingdex];
+		}
+
+		if (string.IsNullOrWhiteSpace(usedMsg)) {
+			if (usedMsgLingdex < Const.a.stringTable.Length)
+				usedMsg = Const.a.stringTable[usedMsgLingdex];
+		}
+	}
+
 	public void Use (UseData ud) {
 		if (LevelManager.a.GetCurrentLevelSecurity() > minSecurityLevel) {
 			MFDManager.a.BlockedBySecurity (transform.position);
-			Debug.Log("Failed to use charge station, minSecurityLevel was " + minSecurityLevel.ToString() + ", while level security is " + LevelManager.a.GetCurrentLevelSecurity().ToString());
+			//Debug.Log("Failed to use charge station, minSecurityLevel was " + minSecurityLevel.ToString() + ", while level security is " + LevelManager.a.GetCurrentLevelSecurity().ToString());
 			return;
 		}
 		
@@ -32,7 +48,7 @@ public class ChargeStation : MonoBehaviour {
 				if (hm.health <= dd.damage) dd.damage = hm.health - 1; // don't ever kill the player from this, way too cheap
 				if (dd.damage > 0) hm.TakeDamage(dd);  // ouch it zapped me...that really hurt Charlie, that hurt my finger, owhow, OW! ow, hahahow ow! OWW!  Charlie zapped my finger (it helps if you use a British accent)
 			}
-			Const.sprint("Energy drawn from Power Station.", ud.owner);
+			Const.sprint(usedMsg, ud.owner);
 			if (requireReset) {
 				nextthink = Time.time + resetTime;
 			}
@@ -48,7 +64,7 @@ public class ChargeStation : MonoBehaviour {
 				Const.a.UseTargets(ud,target);
 			}
 		} else {
-			Const.sprint("Power Station is recharging\n", ud.owner);
+			Const.sprint(rechargeMsg, ud.owner);
 		}
 	}
 
