@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ProjectileEffectImpact : MonoBehaviour {
     public Const.PoolType impactType;
-	[HideInInspector, DTValidator.Optional] public GameObject host;
+	[HideInInspector] public GameObject host;
     [HideInInspector] public DamageData dd;
     [SerializeField] public int hitCountBeforeRemoval = 1;
     private Vector3 tempVec;

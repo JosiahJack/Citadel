@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class LightAnimation : MonoBehaviour {
+public class LightAnimation : MonoBehaviour, IBatchUpdate {
 	[Tooltip("Set minimum intensity of light animations")]
 	public float minIntensity = 0f;
 	[Tooltip("Set maximum intensity of light animations (overrides Light settings)")]
@@ -27,7 +27,7 @@ public class LightAnimation : MonoBehaviour {
 	private float setIntensity;
 	private float lerpValue;
 
-	void Awake () {
+	void Start () {
 		animLight = GetComponent<Light>();
 		animLight.intensity = minIntensity;
 		currentStep = 0;
@@ -43,6 +43,7 @@ public class LightAnimation : MonoBehaviour {
 			//setIntensity = GetComponent<Light>().intensity;
 			animLight.intensity = maxIntensity;
 		}
+		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketB);
 	}
 
 	public void TurnOn() {
@@ -65,7 +66,7 @@ public class LightAnimation : MonoBehaviour {
 		}
 	}
 
-	void Update () {
+	public void BatchUpdate () {
 		if (lightOn) {
 			if (!noSteps) {
 				if (lerpUp) {

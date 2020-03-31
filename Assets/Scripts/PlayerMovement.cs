@@ -6,7 +6,7 @@ using System;
 
 public class PlayerMovement : MonoBehaviour {
 	private float walkAcceleration = 2000f;
-	private float walkDeacceleration = 0.15f;
+	private float walkDeacceleration = 0.30f;
 	private float walkDeaccelerationBooster = 2f;
 	private float deceleration;
 	private float walkAccelAirRatio = 0.15f;
@@ -119,6 +119,8 @@ public class PlayerMovement : MonoBehaviour {
 	private float jumpJetEnergySuckTickFinished;
 	public float jumpJetEnergySuckTick = 1f;
 	private Vector3 tempVec;
+	private float tempFloat;
+	private int tempInt;
 	public float leanSpeed = 5f;
 	public bool leanLHFirstPressed = false;
 	public bool leanRHFirstPressed = false;
@@ -163,6 +165,8 @@ public class PlayerMovement : MonoBehaviour {
 		pe = GetComponent<PlayerEnergy>();	
 		jumpJetEnergySuckTickFinished = Time.time;
 		ressurectingFinished = Time.time;
+		tempInt = -1;
+		tempFloat = 0;
     }
 	
 	bool CantStand (){
@@ -535,8 +539,20 @@ public class PlayerMovement : MonoBehaviour {
 					if (isSprinting && running && !inCyberSpace) {
 						if (fatigue > 80f) {
 							playerSpeed = maxSprintSpeedFatigued + bonus;
+							if (bodyState == 1 || bodyState == 2 || bodyState == 3) {
+								playerSpeed -= (maxWalkSpeed - maxCrouchSpeed);  // subtract off the difference in speed between walking and crouching from the sprint speed
+							}
+							if (bodyState == 4 || bodyState == 5 || bodyState == 6) {
+								playerSpeed -= (maxWalkSpeed - maxProneSpeed);  // subtract off the difference in speed between walking and proning from the sprint speed
+							}
 						} else {
 							playerSpeed = maxSprintSpeed + bonus;
+							if (bodyState == 1 || bodyState == 2 || bodyState == 3) {
+								playerSpeed -= (maxWalkSpeed - maxCrouchSpeed);  // subtract off the difference in speed between walking and crouching from the sprint speed
+							}
+							if (bodyState == 4 || bodyState == 5 || bodyState == 6) {
+								playerSpeed -= (maxWalkSpeed - maxProneSpeed);  // subtract off the difference in speed between walking and proning from the sprint speed
+							}
 						}
 						if (CheatNoclip) playerSpeed = maxSprintSpeed + (bonus*1.5f);
 					}
@@ -722,10 +738,17 @@ public class PlayerMovement : MonoBehaviour {
 
 				// Get input for Jump and set impulse time, removed "&& (ladderState == false)" since I want to be able to jump off a ladder
 				if (!inCyberSpace && (GetInput.a.Jump() && !consoleActivated) && !CheatNoclip && !justJumped) {
-					if (grounded || gravliftState || (hwc.hardwareIsActive[10])) {
-						jumpTime = jumpImpulseTime;
-						justJumped = true;
-					}
+					//if (gravliftState || (hwc.hardwareIsActive[10])) {
+						if (grounded || gravliftState || hwc.hardwareIsActive[10]) {
+							jumpTime = jumpImpulseTime;
+							justJumped = true;
+						} else {
+							if (ladderState) {
+								jumpTime = jumpImpulseTime;
+								justJumped = true;
+							}
+						}
+					//}
 				}
 			
 				// Perform Jump
@@ -751,7 +774,12 @@ public class PlayerMovement : MonoBehaviour {
 								hwbJumpJets.JumpJetsClick();
 							}
 						} else {
-							rbody.AddForce (new Vector3 (0, jumpVelocity * rbody.mass, 0), ForceMode.Force);  // huhnh!
+							if (ladderState) {
+								Vector3 jumpDir = transform.forward * jumpVelocity * rbody.mass;
+								rbody.AddForce (jumpDir, ForceMode.Force);  // jump off ladder in direction of player facing
+							} else {
+								rbody.AddForce (new Vector3 (0, jumpVelocity * rbody.mass, 0), ForceMode.Force);  // huhnh!
+							}
 						}
 					}
 				}
@@ -815,11 +843,13 @@ public class PlayerMovement : MonoBehaviour {
 	// Sets grounded based on normal angle of the impact point (NOTE: This is not the surface normal!)
 	void OnCollisionStay (Collision collision  ){
 		if (!PauseScript.a.Paused() && !inCyberSpace) {
-			foreach(ContactPoint contact in collision.contacts) {
+			tempFloat = 0;
+			//foreach(ContactPoint contact in collision.contacts) {
+			for(tempInt=0;tempInt<collision.contacts.Length;tempInt++) {
 				//if (Vector3.Angle(contact.normal,Vector3.up) < maxSlope) {
-				float ang = Vector3.Dot(contact.normal,Vector3.up);
+				tempFloat = Vector3.Dot(collision.contacts[tempInt].normal,Vector3.up);
 				//Debug.Log("Contact.normal for player OnCollisionStay is " + ang.ToString());
-				if (ang <= 1 && ang >= 0.35) {
+				if (tempFloat <= 1 && tempFloat >= 0.35) {
 					grounded = true;
 				}
 			}
@@ -859,46 +889,47 @@ public class PlayerMovement : MonoBehaviour {
 		}
     }
 
+	// CHEAT CODES you cheaty cheatface you
     public void ConsoleEntry() {
-        if (consoleinpFd.text == "noclip") {
+        if (consoleinpFd.text == "noclip" || consoleinpFd.text == "NOCLIP" || consoleinpFd.text == "Noclip" || consoleinpFd.text == "nOCLIP" || consoleinpFd.text == "idclip" || consoleinpFd.text == "IDCLIP") {
 			if (CheatNoclip) {
 				CheatNoclip = false;
 				rbody.useGravity = true;
 				capsuleCollider.enabled = true;
 				leanCapsuleCollider.enabled = true;
-				Const.sprint("Noclip disabled", Const.a.allPlayers);
+				Const.sprint("noclip disabled", Const.a.allPlayers);
 			} else {
 				CheatNoclip = true;
 				rbody.useGravity = false;
 				capsuleCollider.enabled = false;
 				leanCapsuleCollider.enabled = false;
-				Const.sprint("Noclip activated!", Const.a.allPlayers);
+				Const.sprint("noclip activated!", Const.a.allPlayers);
 			}
-        } else if (consoleinpFd.text == "notarget" || consoleinpFd.text == "NOTARGET" || consoleinpFd.text == "Notarget") {
+        } else if (consoleinpFd.text == "notarget" || consoleinpFd.text == "NOTARGET" || consoleinpFd.text == "Notarget" || consoleinpFd.text == "nOTARGET" || consoleinpFd.text == "no target") {
 			if (Notarget) {
 				Notarget = false;
-				Const.sprint("Notarget disabled", Const.a.allPlayers);
+				Const.sprint("notarget disabled", Const.a.allPlayers);
 			} else {
 				Notarget = true;
-				Const.sprint("Notarget activated!", Const.a.allPlayers);
+				Const.sprint("notarget activated!", Const.a.allPlayers);
 			}
-        } else if (consoleinpFd.text == "god") {
+        } else if (consoleinpFd.text == "god" || consoleinpFd.text == "GOD" || consoleinpFd.text == "God"  || consoleinpFd.text == "gOD" || consoleinpFd.text == "power overwhelming" || consoleinpFd.text == "POWER OVERWHELMING" || consoleinpFd.text == "poweroverwhelming" || consoleinpFd.text == "POWEROVERWHELMING" || consoleinpFd.text == "WhosYourDaddy" || consoleinpFd.text == "WHOSYOURDADDY" || consoleinpFd.text == "wHOSyOURdADDY" || consoleinpFd.text == "iddqd") {
 			if (GetComponent<HealthManager>().god) {
-				Const.sprint("God mode disabled", Const.a.allPlayers);
+				Const.sprint("god mode disabled", Const.a.allPlayers);
 				GetComponent<HealthManager>().god = false;
 			} else {
-				Const.sprint("God mode activated!", Const.a.allPlayers);
+				Const.sprint("god mode activated!", Const.a.allPlayers);
 				GetComponent<HealthManager>().god = true;
 			}
-        } else if (consoleinpFd.text == "bottomlessclip") {
+        } else if (consoleinpFd.text == "bottomlessclip" || consoleinpFd.text == "BOTTOMLESSCLIP"  || consoleinpFd.text == "Bottomlessclip" || consoleinpFd.text == "bOTTOMLESSCLIP" || consoleinpFd.text == "bottomless clip" || consoleinpFd.text == "BOTTOMLESS CLIP") {
 			if (wepCur.bottomless) {
 				Const.sprint("Hose disconnected, normal ammo operation restored", Const.a.allPlayers);
 				wepCur.bottomless = false;
 			} else {
-				Const.sprint("Bottomless clip!  Bring it!", Const.a.allPlayers);
+				Const.sprint("bottomlessclip!  Bring it!", Const.a.allPlayers);
 				wepCur.bottomless = true;
 			}
-        } else if (consoleinpFd.text == "ifeelthepower") {
+        } else if (consoleinpFd.text == "ifeelthepower" || consoleinpFd.text == "IFEELTHEPOWER" || consoleinpFd.text == "Ifeelthepower" || consoleinpFd.text == "iFEELTHEPOWER") {
 			if (wepCur.redbull) {
 				Const.sprint("Energy usage normal", Const.a.allPlayers);
 				wepCur.redbull = false;
@@ -906,18 +937,65 @@ public class PlayerMovement : MonoBehaviour {
 				Const.sprint("I feel the power! 0 energy consumption!", Const.a.allPlayers);
 				wepCur.redbull = true;
 			}
-        } else if (consoleinpFd.text == "showfps") {
+        } else if (consoleinpFd.text == "showfps" || consoleinpFd.text == "SHOWFPS" || consoleinpFd.text == "show fps" || consoleinpFd.text == "cl_showfps 1" || consoleinpFd.text == "r_showfps 1"  || consoleinpFd.text == "Showfps" || consoleinpFd.text == "sHOWFPS" || consoleinpFd.text == "show_fps 1") {
 			Const.sprint("Toggling FPS counter for framerate (bottom right corner)...", Const.a.allPlayers);
 			fpsCounter.SetActive(!fpsCounter.activeInHierarchy);
-		} else if (consoleinpFd.text == "iamshodan") {
+		} else if (consoleinpFd.text == "iamshodan" || consoleinpFd.text == "IAMSHODAN" || consoleinpFd.text == "Iamshodan" || consoleinpFd.text == "iAMSHODAN" || consoleinpFd.text == "I AM SHODAN" || consoleinpFd.text == "i am shodan" || consoleinpFd.text == "I am shodan" || consoleinpFd.text == "I am SHODAN"  || consoleinpFd.text == "I am Shodan") {
 			if (LevelManager.a.superoverride) {
-				Const.sprint("SHODAN has regained control of security", Const.a.allPlayers);
+				Const.sprint("SHODAN has regained control of security from you", Const.a.allPlayers);
 				LevelManager.a.superoverride = false;
 			} else {
 				Const.sprint("Full security override enabled!", Const.a.allPlayers);
 				LevelManager.a.superoverride = true;
 			}
-			Const.sprint("Full security override enabled!", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "Mr. Bean") {
+				Const.sprint("Nice try, there are no go carts to slow down here", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "Simon Foster") {
+				Const.sprint("Nice try, nothing to paint here", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "Motherlode" || consoleinpFd.text == "Rosebud" || consoleinpFd.text == "Kaching" || consoleinpFd.text == "money") {
+				Const.sprint("Nice try, there's no money here.", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "Richard Branson") {
+				Const.sprint("Nice try, there's no money here.  You do realize this isn't Rollercoaster Tycoon right?", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "John Wardley") {
+				Const.sprint("WOW!", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "John Mace") {
+				Const.sprint("Nice try, there's nothing to pay double for here", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "Melanie Warn") {
+				Const.sprint("I feel happy!!!", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "Damon Hill") {
+				Const.sprint("Nice try, there are no go carts to speed up here", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "Michael Schumacher") {
+				Const.sprint("Nice try, there are no go carts to give ludicrous speed here", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "Tony Day") {
+				Const.sprint("Ok, now I want a hamburger", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "Katie Brayshaw") {
+				Const.sprint("Hi there! Hello! Hey! Howdy!", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "sudo" || consoleinpFd.text == "sudo app" || consoleinpFd.text == "sudo app get" || consoleinpFd.text == "sudo update") {
+				Const.sprint("Super user access granted...ERROR: access restricted by SHODAN", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "restart") {
+				Const.sprint("Yeah...better not", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "kill") {
+				Const.sprint("Ok, give me a minute and I'll send a Cortex Reaver to help with that", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "kill me") {
+				Const.sprint("Ok, give me a minute and I'll send a Cortex Reaver to help with that", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "justinbailey" || consoleinpFd.text == "JUSTINBAILEY") {
+				Const.sprint("Well, you don't have a suit already so...", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "woodstock" || consoleinpFd.text == "WOODSTOCK") {
+				Const.sprint("How much wood could a woodchuck chuck...there's no wood in SPACE!", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "quarry" || consoleinpFd.text == "QUARRY") {
+				Const.sprint("There's obsidian on levels 6 and 8 if want to feel decadant, otherwise we are lacking in the stone department.", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "help" || consoleinpFd.text == "HELP") {
+				Const.sprint("There's no one to save you now Hacker!", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "zelda" || consoleinpFd.text == "ZELDA") {
+				Const.sprint("Too late, already been to level 1", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "allyourbasearebelongtous" || consoleinpFd.text == "ALLYOURBASEAREBELONGTOUS") {
+				Const.sprint("ERROR: SHODAN has overriden your command, remove SHODAN first.", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "IAmIronMan" || consoleinpFd.text == "iamironman" || consoleinpFd.text == "iaMiRONmAN") {
+				Const.sprint("That's nice dear.", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "impulse 9" || consoleinpFd.text == "idkfa" || consoleinpFd.text == "IDKFA" || consoleinpFd.text == "IMPULSE 9") {
+				Const.sprint("I can only hold 7 weapons!! Nice try dearies!", Const.a.allPlayers);
+		} else if (consoleinpFd.text == "summon_obj" || consoleinpFd.text == "SUMMON_OBJ") {
+				Const.sprint("What do I look like have that kind of developer time to copy System Shock 2??", Const.a.allPlayers); // hmm...had time for all that junk up there didn't I
 		} else {
             Const.sprint("Uknown command or function: " + consoleinpFd.text, Const.a.allPlayers);
         }

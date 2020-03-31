@@ -63,8 +63,7 @@ public class MouseCursor : MonoBehaviour {
 		cursorXmax = drawTexture.xMax;
 		cursorYmax = drawTexture.yMax;
 
-
-		if (toolTip != null && toolTip != "" && toolTip != "-1" && !PauseScript.a.Paused()) {
+		if (!string.IsNullOrWhiteSpace(toolTip) && toolTip != "-1" && !PauseScript.a.Paused()) {
 			switch(toolTipType) {
 			case Handedness.LH: GUI.Label(drawTexture,toolTip,toolTipStyleLH); tempTexture = cursorLHTexture; break;
 			case Handedness.RH: GUI.Label(drawTexture,toolTip,toolTipStyleRH); tempTexture = cursorRHTexture; break;

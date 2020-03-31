@@ -53,7 +53,7 @@ public class ChargeStation : MonoBehaviour {
 				nextthink = Time.time + resetTime;
 			}
 
-			if (target != "" && target != " " && target != "  ") {
+			if (!string.IsNullOrWhiteSpace(target)) {
 				ud.argvalue = argvalue;
 				TargetIO tio = GetComponent<TargetIO>();
 				if (tio != null) {

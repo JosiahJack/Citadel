@@ -7,7 +7,7 @@ public class ObjectImpact : MonoBehaviour {
 	public Rigidbody rbody;
 	[HideInInspector]
 	public Vector3 oldVelocity;
-	public float impactSoundSpeed = 11.72f;
+	private float impactSoundSpeed = 3f;
 	[HideInInspector]
 	public AudioSource SFXSource;
 	public AudioClip SFX;
@@ -24,6 +24,7 @@ public class ObjectImpact : MonoBehaviour {
 	
 	void FixedUpdate () {
 		// Handle impact sound
+		if (SFX == null) return;
 		if (Mathf.Abs ((oldVelocity.y - rbody.velocity.y)) > impactSoundSpeed) {
 			if (SFXSource != null) {
 				SFXSource.PlayOneShot (SFX); // Play sound when object changes velocity significantly enough that it must have hit something

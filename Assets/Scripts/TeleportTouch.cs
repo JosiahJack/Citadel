@@ -14,11 +14,12 @@ public class TeleportTouch : MonoBehaviour {
 	}
 
 	void  OnTriggerEnter ( Collider col  ) {
+		if (col == null) return;
 		if ((col.gameObject.tag == "Player") && (col.gameObject.GetComponent<PlayerHealth>().hm.health > 0f) && (justUsed < Time.time)) {
-			teleportFX.SetActive(true);
+			if (teleportFX != null) teleportFX.SetActive(true);
 			col.transform.position = targetDestination.position;
-			targetDestination.transform.gameObject.GetComponent<TeleportTouch>().justUsed = Time.time + 1.0f;
-			if (playSound)
+			if (targetDestination != null) targetDestination.transform.gameObject.GetComponent<TeleportTouch>().justUsed = Time.time + 1.0f;
+			if (playSound && SoundFXSource != null && SoundFX != null)
 				SoundFXSource.PlayOneShot(SoundFX);
 		}
 	}

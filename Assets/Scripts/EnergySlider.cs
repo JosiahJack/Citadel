@@ -33,6 +33,10 @@ public class EnergySlider : MonoBehaviour {
         val = slideS.value / 100f;
         val = (val*(ener_max - ener_min)) + ener_min;
         currentWeapon.weaponEnergySetting[index] = val;
-		wf.energySliderClickedTime = Time.time + 0.1f;
+		NotifyWeaponFireSliderClicked();
     }
+
+	public void NotifyWeaponFireSliderClicked() {
+		wf.energySliderClickedTime = Time.time + 0.1f;
+	}
 }

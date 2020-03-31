@@ -83,12 +83,13 @@ public class Trigger : MonoBehaviour {
 	}
 
 	void TriggerTripped (Collider col, bool initialEntry) {
+		if (col == null) Debug.Log("TriggerTripped was fed a null col!");
 		if (npcOnly) {
-			//Debug.Log("NPC Touching trigger!");
+			Debug.Log("NPC Touching trigger!");
+			Debug.Log("Checking if the col was an NPC");
 			if (col.gameObject.tag != "NPC") return; 
-
+			Debug.Log("It was an NPC.");
 			recentMostActivator = col.gameObject;
-			if (recentMostActivator == null) { Debug.Log("BUG: TriggerTripped had a null col.gameObject!"); return;}
 			if (recentMostActivator.tag == "NPC" && recentMostActivator.GetComponent<HealthManager>().health > 0f) {
 				numNPCs++;
 				delayFireFinished = Time.time + delayBeforeFire;
@@ -101,7 +102,7 @@ public class Trigger : MonoBehaviour {
 
 		if (col.gameObject.tag == "Player" && col.gameObject.tag != "NPC") {
 			if (col.gameObject.GetComponent<HealthManager>().health > 0f) {
-				//Debug.Log("triggered a player!");
+				Debug.Log("triggered a player!");
 				if (delayResetFinished > -1 && delayResetFinished < Time.time) {
 					if (recentMostActivator != null) {
 						if (ignoreSecondaryTriggers)

@@ -22,8 +22,10 @@ public class WeaponFire : MonoBehaviour {
     public float[] args;
     public GameObject bullet;
     public GameObject impactEffect;
+	public GameObject noDamageIndicator;
     public WeaponMagazineCounter wepmagCounter;
     public Camera playerCamera; // assign in the editor
+	private MouseLookScript mls;
 	public PlayerMovement playerMovement; // assign in editor
     public Camera gunCamera; // assign in the editor
     public PlayerEnergy curEnergy;
@@ -117,6 +119,7 @@ public class WeaponFire : MonoBehaviour {
 		wepViewDefaultLocalPos = wepView.transform.localPosition;
 		justFired = (Time.time - 31f); // set less than 30s before Time.time to guarantee we don't immediately play action music
 		energySliderClickedTime = Time.time;
+		mls = playerCamera.GetComponent<MouseLookScript>();
     }
 
     void GetWeaponData(int index) {
@@ -246,7 +249,7 @@ public class WeaponFire : MonoBehaviour {
 
 			if (currentWeapon.reloadFinished > Time.time) {
 				currentWeapon.reloadLerpValue = ((Time.time - currentWeapon.lerpStartTime)/Const.a.reloadTime[i]); // percent towards goal time total (both halves of the action)
-				Debug.Log("reloadLerpValue initial: " + currentWeapon.reloadLerpValue.ToString());
+				//Debug.Log("reloadLerpValue initial: " + currentWeapon.reloadLerpValue.ToString());
 				if (currentWeapon.reloadLerpValue >= 0.5) {
 					//currentWeapon.targetY = (currentWeapon.reloadContainerDropAmount - currentWeapon.reloadContainerOrigin.y);
 					currentWeapon.reloadLerpValue = (0.5f- (1 - currentWeapon.reloadLerpValue))/0.5f; // percentage of this half of the trip
@@ -256,8 +259,8 @@ public class WeaponFire : MonoBehaviour {
 					currentWeapon.reloadLerpValue = currentWeapon.reloadLerpValue/0.5f; // percentage of this half of the trip
 					currentWeapon.targetY = (currentWeapon.targetY * currentWeapon.reloadLerpValue);
 				}
-				Debug.Log("reloadLerpValue splithalf: " + currentWeapon.reloadLerpValue.ToString());
-				Debug.Log("Setting Y to: " + (currentWeapon.targetY * currentWeapon.reloadLerpValue).ToString());
+				//Debug.Log("reloadLerpValue splithalf: " + currentWeapon.reloadLerpValue.ToString());
+				//Debug.Log("Setting Y to: " + (currentWeapon.targetY * currentWeapon.reloadLerpValue).ToString());
 				wepView.transform.localPosition = new Vector3(wepView.transform.localPosition.x,currentWeapon.targetY,wepView.transform.localPosition.z);
 			}
 
@@ -461,7 +464,7 @@ public class WeaponFire : MonoBehaviour {
         }
 
         // TAKE AMMO
-        // no weapons subtract more than 1 at a time in a shot, subtracting 1
+        // no weapons subtract more than 1 at a time in a shot except for energy weapons, subtracting 1
         // Check weapon type before subtracting ammo or energy
         if (index == 5 || index == 6) {
             // Pipe or Laser Rapier
@@ -479,19 +482,15 @@ public class WeaponFire : MonoBehaviour {
             } else {
                 if (currentWeapon.weaponIsAlternateAmmo) {
                     if (!currentWeapon.bottomless) WeaponCurrent.WepInstance.currentMagazineAmount2[index]--;
-
                     // Update the counter
-                    MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount2[index]);
+                    //MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount2[index]);
                 } else {
                     if (!currentWeapon.bottomless) WeaponCurrent.WepInstance.currentMagazineAmount[index]--;
-
                     // Update the counter
-                    MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount[index]);
+                    //MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount[index]);
                 }
             }
         }
-
-
 
         playerCamera.GetComponent<MouseLookScript>().Recoil(index);
 		Recoil(index);
@@ -659,7 +658,7 @@ public class WeaponFire : MonoBehaviour {
 		dmg_max = Const.a.damagePerHitForWeapon2[wep16Index];
         ener_min = Const.a.energyDrainLowForWeapon[wep16Index];
         ener_max = Const.a.energyDrainHiForWeapon[wep16Index];
-		// Calculates damage based on min and max values and applies a curve of the slopes based on the linear plotting of the slope from min at min to max at max
+		// Calculates damage based on min and max values and applies a curve of the slopes based on the linear plotting of the slope from min at min to max at max...that makes sense right?
 		// Right then, the beautifully ugly formula:
 		retval = ((currentWeapon.weaponEnergySetting[wep16Index]/100f)*((dmg_max/ener_max)-(dmg_min/ener_min)) + 3f) * (((currentWeapon.weaponEnergySetting[wep16Index])/100f)*(ener_max-ener_min) + ener_min);
 		//Debug.Log("returning DamageForPower of " + retval.ToString() + ", for wep16Index of " + wep16Index.ToString());
@@ -673,12 +672,19 @@ public class WeaponFire : MonoBehaviour {
     //----------------------------------------------------------------------------------------------------------
     // Guns and laser beams, used by most weapons
     void HitScanFire(int wep16Index) {
+		damageData.ResetDamageData(damageData);
         if (wep16Index == 1 || wep16Index == 4 || wep16Index == 14) {
             CreateBeamImpactEffects(wep16Index); // laser burst effect overrides standard blood spurts/robot sparks
             damageData.attackType = Const.AttackType.EnergyBeam;
         } else {
             CreateStandardImpactEffects(false); // standard blood spurts/robot sparks
-            damageData.attackType = Const.AttackType.Projectile;
+			switch (wep16Index) {
+				case 2: damageData.attackType = Const.AttackType.ProjectileNeedle; break;
+				case 3: damageData.attackType = Const.AttackType.ProjectileNeedle; break;
+				case 8: damageData.attackType = Const.AttackType.Magnetic; break;
+				default: damageData.attackType = Const.AttackType.Projectile; break; // pew pew pew
+			}
+			if (wep16Index == 2 && currentWeapon.weaponIsAlternateAmmo) damageData.attackType = Const.AttackType.Tranq; // tranquilize the untranquil....yes
         }
         // Fill the damageData container
         damageData.other = tempHit.transform.gameObject;
@@ -692,17 +698,30 @@ public class WeaponFire : MonoBehaviour {
         damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
         if (currentWeapon.weaponIsAlternateAmmo) {
             damageData.damage = Const.a.damagePerHitForWeapon2[wep16Index];
+			damageData.offense = Const.a.offenseForWeapon2[wep16Index];
+			damageData.penetration = Const.a.penetrationForWeapon2[wep16Index];
         } else {
 			if (CurrentWeaponUsesEnergy()) {
                 damageData.damage = DamageForPower(wep16Index);
 			} else {
 				damageData.damage = Const.a.damagePerHitForWeapon[wep16Index];
 			}
+			damageData.offense = Const.a.offenseForWeapon[wep16Index];
+			damageData.penetration = Const.a.penetrationForWeapon[wep16Index];
         }
         damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+		damageData.attackType = Const.a.attackTypeForWeapon[wep16Index];
         damageData.owner = playerCapsule;
         HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
-        if (hm != null) hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
+        if (hm != null && hm.health > 0) {
+			float dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
+			if (dmgFinal <= 0) {
+				noDamageIndicator.transform.position = tempHit.transform.position; // center on what we just shot
+				noDamageIndicator.SetActive(true); // do this regardless of target identifier version to show player that hey, it no workie
+			} else {
+				noDamageIndicator.SetActive(false); // I'm assuming that this will auto deactivate after 1sec, but in case the player is snappy about weapon switching, added this
+			}
+		}
 		UseableObjectUse uou = tempHit.transform.gameObject.GetComponent<UseableObjectUse>();
 		if (uou != null) uou.HitForce(damageData); // knock objects around
 
@@ -715,7 +734,8 @@ public class WeaponFire : MonoBehaviour {
     // Melee weapons
     //----------------------------------------------------------------------------------------------------------
     // Rapier and pipe.  Need extra code to handle anims for view model and sound for swing-and-a-miss! vs. hit
-	void ApplyMeleeHit(int index16, GameObject targ, RaycastHit tHit, int numTargets, bool isRapier,bool silent) {
+	//void ApplyMeleeHit(int index16, GameObject targ, RaycastHit tHit, int numTargets, bool isRapier,bool silent) {
+	void ApplyMeleeHit(int index16, GameObject targ, int numTargets,bool isRapier, bool silent,AudioClip hit, AudioClip miss,AudioClip hitflesh) {
 		damageData.other = targ;
 		if (targ.tag == "NPC") {
 			damageData.isOtherNPC = true;
@@ -723,50 +743,121 @@ public class WeaponFire : MonoBehaviour {
 			damageData.isOtherNPC = false;
 			CreateStandardImpactMarks(index16);
 		}
-		damageData.hit = tHit;
+		//damageData.hit = tHit;
 		damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
 		damageData.damage = Const.a.damagePerHitForWeapon[index16]/numTargets; // divide across multiple targets
 		damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+		damageData.offense = Const.a.offenseForWeapon[index16];
+		damageData.penetration = Const.a.penetrationForWeapon[index16];
 		damageData.owner = playerCapsule;
-		damageData.attackType = Const.AttackType.Melee;
+		if (isRapier) {
+			damageData.attackType = Const.AttackType.MeleeEnergy;
+		} else {
+			damageData.attackType = Const.AttackType.Melee;
+		}
 		UseableObjectUse uou = targ.GetComponent<UseableObjectUse>();
 		if (uou != null) uou.HitForce(damageData); // knock objects around
 		HealthManager hm = targ.GetComponent<HealthManager>();
 		if (hm == null) {
-			if (isRapier) {
-				SFX.clip = SFXRapierHit;
-			}else {
-				SFX.clip = SFXPipeHit;
-			}
+			SFX.clip = hit;
 			SFX.Play();
 			return;
 		}
-		if (hm!= null) hm.TakeDamage(damageData);
+		if (hm!= null) hm.TakeDamage(damageData); //no need to check if damage was done and if we need noDamageIndicator since melee weapons always do damage against all types
 		if (!silent) {
 			if ((hm.bloodType == HealthManager.BloodType.Red) || (hm.bloodType == HealthManager.BloodType.Yellow) || (hm.bloodType == HealthManager.BloodType.Green)) {
-				if (isRapier) {
-					SFX.clip = SFXRapierHit;
-				} else {
-					SFX.clip = SFXPipeHitFlesh;
-				}
+				SFX.clip = hitflesh;
 			} else {
-				if (isRapier) {
-					SFX.clip = SFXRapierHit;
-				} else {
-					SFX.clip = SFXPipeHit;
-				}	
+				SFX.clip = hit;
 			}
 			SFX.Play();
 		}
 		return;
 	}
 
-    void FireRapier(int index16, bool silent) {
-        fireDistance = meleescanDistance;
-        if (DidRayHit()) {
-			fireDistance = hitscanDistance; // reset before any returns
-            rapieranim.Play("Attack2");
-            CreateStandardImpactEffects(true);
+    void FireRapier(int index16, bool silent) { FireMelee(index16, true, silent, SFXRapierHit, SFXRapierMiss, SFXRapierHit, true); }
+    void FirePipe(int index16, bool silent) { FireMelee(index16, false, silent, SFXPipeHit, SFXPipeMiss, SFXPipeHitFlesh, false); }
+
+	void FireMelee(int index16, bool isRapier, bool silent, AudioClip hit, AudioClip miss,AudioClip hitflesh, bool rapier) {
+		bool foundSomeHMs = false;
+		bool swunghit = false;
+		int numtargets = 0;
+		// check all objects we can hurt have HealthManager, that they are in meleescanDistance range, that they are within player facing angle by 60° (±30°)
+		for (int i=0;i<Const.a.healthObjectsRegistration.Length;i++) {
+			if (Const.a.healthObjectsRegistration[i] != null) {
+				HealthManager hm = Const.a.healthObjectsRegistration[i].gameObject.GetComponent<HealthManager>();
+				GameObject ho = Const.a.healthObjectsRegistration[i].gameObject;
+				if (hm != null && Vector3.Distance(ho.transform.position,playerCapsule.transform.position) < meleescanDistance) {
+					mls.SetCameraFocusPoint();
+					tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
+					tempVec = tempVec.normalized;
+					Vector3 ang = playerCamera.transform.position - ho.transform.position;
+					ang = ang.normalized;
+					float dot = Vector3.Dot(tempVec,ang);
+					if (dot > 0.666f) {
+						anim.Play("Attack2");
+						if (!silent) {
+							SFX.clip = hit;
+							SFX.Play();
+						}
+
+						CreateStandardImpactEffects(true);
+						numtargets++;
+						if (numtargets <= 0) numtargets = 1; //don't divide by 0
+						ApplyMeleeHit(index16,ho,numtargets,isRapier,silent,hit,miss,hitflesh);
+						swunghit = true;
+						foundSomeHMs = true;
+						
+					}
+				}
+			}
+			i++;
+		}
+
+		// if we didn't find any objects with HealthManagers above, let's just do normal straightline raytrace at center like old method
+		if (!foundSomeHMs) {
+			fireDistance = meleescanDistance;
+			if (DidRayHit()) {
+				fireDistance = hitscanDistance; // reset before any returns
+				if (rapier) {
+					rapieranim.Play("Attack2");
+				} else {
+					anim.Play("Attack2");
+				}
+				if (!silent) {
+					SFX.clip = hit;
+					SFX.Play();
+				}
+				CreateStandardImpactEffects(true);
+				for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
+					if (Const.a.healthObjectsRegistration[ij] != null) {
+						if (Const.a.healthObjectsRegistration[ij].isNPC) {
+							if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,playerCapsule.transform.position) < Const.a.healthObjectsRegistration[ij].aic.rangeToHear) {
+								Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(playerCapsule);
+							}
+						}
+					}
+				}
+				if (numtargets <= 0) numtargets = 1; //don't divide by 0
+				ApplyMeleeHit(index16,tempHit.transform.gameObject,numtargets,isRapier,silent,hit,miss,hitflesh);
+				swunghit = true; // we hit something at least
+			} else {
+				fireDistance = hitscanDistance; //reset in case raycast failed
+				
+				if (!silent) {
+					SFX.clip = miss;
+					SFX.Play();
+				}
+				if (rapier) {
+					rapieranim.Play("Attack2");
+				} else {
+					anim.Play("Attack1");
+				}
+			}
+		}
+
+		if (swunghit) {
+			// notify other HM objects nearby of player attack
 			for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
 				if (Const.a.healthObjectsRegistration[ij] != null) {
 					if (Const.a.healthObjectsRegistration[ij].isNPC) {
@@ -776,48 +867,8 @@ public class WeaponFire : MonoBehaviour {
 					}
 				}
 			}
-			ApplyMeleeHit(index16,tempHit.transform.gameObject,tempHit,1,true,silent);
-			return;
-        }
-        fireDistance = hitscanDistance; //reset in case raycast failed
-
-        if (!silent) {
-            SFX.clip = SFXRapierMiss;
-            SFX.Play();
-        }
-        rapieranim.Play("Attack2");
-    }
-
-    void FirePipe(int index16, bool silent) {
-        fireDistance = meleescanDistance;
-        if (DidRayHit()) {
-			fireDistance = hitscanDistance; // reset before any returns
-            anim.Play("Attack2");
-            if (!silent) {
-				SFX.clip = SFXPipeHit;
-                SFX.Play();
-            }
-			for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
-				if (Const.a.healthObjectsRegistration[ij] != null) {
-					if (Const.a.healthObjectsRegistration[ij].isNPC) {
-						if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,playerCapsule.transform.position) < Const.a.healthObjectsRegistration[ij].aic.rangeToHear) {
-							Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(playerCapsule);
-						}
-					}
-				}
-			}
-            CreateStandardImpactEffects(true);
-			ApplyMeleeHit(index16,tempHit.transform.gameObject,tempHit,1,false,silent);
-            return;
-        }
-        fireDistance = hitscanDistance;
-
-        if (!silent) {
-            SFX.clip = SFXPipeMiss;
-            SFX.Play();
-        }
-        anim.Play("Attack1");
-    }
+		}
+	}
 
     // Projectile weapons
     //----------------------------------------------------------------------------------------------------------
@@ -828,14 +879,17 @@ public class WeaponFire : MonoBehaviour {
         if (beachball != null) {
             damageData.damage = Const.a.damagePerHitForWeapon[index16];
             damageData.owner = playerCapsule;
-            damageData.attackType = Const.AttackType.Projectile;
+            damageData.attackType = Const.a.attackTypeForWeapon[index16];
+			damageData.offense = Const.a.offenseForWeapon[index16];
+			damageData.penetration = Const.a.penetrationForWeapon[index16];
             beachball.GetComponent<ProjectileEffectImpact>().dd = damageData;
             beachball.GetComponent<ProjectileEffectImpact>().host = playerCapsule;
-
+			beachball.layer = playerCapsule.gameObject.layer; // don't touch the player who shot us
             beachball.transform.position = playerCamera.transform.position;
-            tempVec = playerCamera.GetComponent<MouseLookScript>().cameraFocusPoint - playerCamera.transform.position;
+			mls.SetCameraFocusPoint();
+            tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
             beachball.transform.forward = tempVec.normalized;
-            //drawMyLine(beachball.transform.position, playerCamera.GetComponent<MouseLookScript>().cameraFocusPoint, Color.green, 2f);
+            //drawMyLine(beachball.transform.position, mls.cameraFocusPoint, Color.green, 2f);
             beachball.SetActive(true);
             Vector3 shove = beachball.transform.forward * plasmaShotForce;
             beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
@@ -850,14 +904,17 @@ public class WeaponFire : MonoBehaviour {
         if (beachball != null) {
             damageData.damage = Const.a.damagePerHitForWeapon[index16];
             damageData.owner = playerCapsule;
-            damageData.attackType = Const.AttackType.Projectile;
+            damageData.attackType = Const.a.attackTypeForWeapon[index16];
+			damageData.offense = Const.a.offenseForWeapon[index16];
+			damageData.penetration = Const.a.penetrationForWeapon[index16];
             beachball.GetComponent<ProjectileEffectImpact>().dd = damageData;
             beachball.GetComponent<ProjectileEffectImpact>().host = playerCapsule;
-
+			beachball.layer = playerCapsule.gameObject.layer; // don't touch the player who shot us
             beachball.transform.position = playerCamera.transform.position;
-            tempVec = playerCamera.GetComponent<MouseLookScript>().cameraFocusPoint - playerCamera.transform.position;
+			mls.SetCameraFocusPoint();
+            tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
             beachball.transform.forward = tempVec.normalized;
-            //drawMyLine(beachball.transform.position, playerCamera.GetComponent<MouseLookScript>().cameraFocusPoint, Color.green, 2f);
+            //drawMyLine(beachball.transform.position,mls.cameraFocusPoint, Color.green, 2f);
             beachball.SetActive(true);
             Vector3 shove = beachball.transform.forward * railgunShotForce;
             beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
@@ -872,14 +929,17 @@ public class WeaponFire : MonoBehaviour {
         if (beachball != null) {
             damageData.damage = Const.a.damagePerHitForWeapon[index16];
             damageData.owner = playerCapsule;
-            damageData.attackType = Const.AttackType.Projectile;
+            damageData.attackType = Const.a.attackTypeForWeapon[index16];
+			damageData.offense = Const.a.offenseForWeapon[index16];
+			damageData.penetration = Const.a.penetrationForWeapon[index16];
             beachball.GetComponent<ProjectileEffectImpact>().dd = damageData;
             beachball.GetComponent<ProjectileEffectImpact>().host = playerCapsule;
-
+			beachball.layer = playerCapsule.gameObject.layer; // don't touch the player who shot us
             beachball.transform.position = playerCamera.transform.position;
-            tempVec = playerCamera.GetComponent<MouseLookScript>().cameraFocusPoint - playerCamera.transform.position;
+			mls.SetCameraFocusPoint();
+            tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
             beachball.transform.forward = tempVec.normalized;
-            //drawMyLine(beachball.transform.position, playerCamera.GetComponent<MouseLookScript>().cameraFocusPoint, Color.green, 2f);
+            //drawMyLine(beachball.transform.position, mls.cameraFocusPoint, Color.green, 2f);
             beachball.SetActive(true);
             Vector3 shove = beachball.transform.forward * stungunShotForce;
             beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
@@ -901,14 +961,17 @@ public class WeaponFire : MonoBehaviour {
         if (beachball != null) {
             damageData.damage = Const.a.damagePerHitForWeapon[index16];
             damageData.owner = playerCapsule;
-            damageData.attackType = Const.AttackType.Magnetic;
+            damageData.attackType = Const.a.attackTypeForWeapon[index16];
+			damageData.offense = Const.a.offenseForWeapon[index16];
+			damageData.penetration = Const.a.penetrationForWeapon[index16];
             beachball.GetComponent<ProjectileEffectImpact>().dd = damageData;
             beachball.GetComponent<ProjectileEffectImpact>().host = playerCapsule;
-
+			beachball.layer = playerCapsule.gameObject.layer; // don't touch the player who shot us
             beachball.transform.position = playerCamera.transform.position;
-            tempVec = playerCamera.GetComponent<MouseLookScript>().cameraFocusPoint - playerCamera.transform.position;
+			mls.SetCameraFocusPoint();
+            tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
             beachball.transform.forward = tempVec.normalized;
-            //drawMyLine(beachball.transform.position, playerCamera.GetComponent<MouseLookScript>().cameraFocusPoint, Color.green, 2f);
+            //drawMyLine(beachball.transform.position, mls.cameraFocusPoint, Color.green, 2f);
             beachball.SetActive(true);
             Vector3 shove = beachball.transform.forward * magpulseShotForce;
             beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity

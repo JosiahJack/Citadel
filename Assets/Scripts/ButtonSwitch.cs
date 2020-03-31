@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ButtonSwitch : MonoBehaviour {
+public class ButtonSwitch : MonoBehaviour, IBatchUpdate {
 	public int securityThreshhold = 100; // if security level is not below this level, this is unusable
 	public string target;
 	public string argvalue;
@@ -33,6 +33,7 @@ public class ButtonSwitch : MonoBehaviour {
 		mRenderer = GetComponent<MeshRenderer>();
 		delayFinished = 0; // prevent using targets on awake
 		if (animateModel) anim = GetComponent<Animator>();
+		if (active) tickFinished = Time.time + tickTime + Random.value;
 	}
 
 	void Start () {
@@ -40,6 +41,7 @@ public class ButtonSwitch : MonoBehaviour {
 			if (lockedMessageLingdex < Const.a.stringTable.Length)
 				lockedMessage = Const.a.stringTable[lockedMessageLingdex];
 		}
+		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketB);
 	}
 
 	public void Use (UseData ud) {
@@ -60,7 +62,7 @@ public class ButtonSwitch : MonoBehaviour {
 
 		player = ud.owner;  // set playerCamera to owner of the input (always should be the player camera)
 		SFXSource.PlayOneShot(SFX);
-		if (message != null && message != "") Const.sprint(message,ud.owner);
+		if (!string.IsNullOrWhiteSpace(message)) Const.sprint(message,ud.owner);
 		if (delay > 0) {
 			delayFinished = Time.time + delay;
 		} else {
@@ -118,7 +120,7 @@ public class ButtonSwitch : MonoBehaviour {
 			mRenderer.material = mainSwitchMaterial;
 	}
 
-	void Update () {
+	public void BatchUpdate () {
 		if ((delayFinished < Time.time) && delayFinished != 0) {
 			delayFinished = 0;
 			UseTargets();
@@ -129,9 +131,9 @@ public class ButtonSwitch : MonoBehaviour {
 			if (active) {
 				if (tickFinished < Time.time) {
 					if (alternateOn) {
-						mRenderer.material = mainSwitchMaterial;
+						if (mRenderer.material != mainSwitchMaterial) mRenderer.material = mainSwitchMaterial;
 					} else {
-						mRenderer.material = alternateSwitchMaterial;
+						if (mRenderer.material != alternateSwitchMaterial) mRenderer.material = alternateSwitchMaterial;
 					}
 					alternateOn = !alternateOn;
 					tickFinished = Time.time + tickTime;

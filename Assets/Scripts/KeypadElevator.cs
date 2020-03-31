@@ -7,7 +7,7 @@ public class KeypadElevator : MonoBehaviour {
 	public DataTab dataTabResetter;
 	public GameObject elevatorControl;
 	public GameObject[] elevatorButtonHandlers;
-	[DTValidator.Optional] public GameObject[] targetDestination; // set by ElevatorKeypad.cs in Use(), which actually gets it from ElevatorButton.cs
+	public GameObject[] targetDestination; // set by ElevatorKeypad.cs in Use(), which actually gets it from ElevatorButton.cs
 	public Door linkedDoor;
 	public bool[] buttonsEnabled;
 	public bool[] buttonsDarkened;
@@ -45,7 +45,7 @@ public class KeypadElevator : MonoBehaviour {
 			elevatorButtonHandlers[i].GetComponent<ElevatorButton>().SetTooFarFalse();
 		}
 
-		tickFinished = Time.time + tickSecs + Random.Range(0.1f,0.5f); // Random start to prevent tick calculations from bunching up in one frame
+		tickFinished = Time.time + tickSecs + Random.value; // Random start to prevent tick calculations from bunching up in one frame
 	}
 
 	public void Use (UseData ud) {
@@ -62,7 +62,7 @@ public class KeypadElevator : MonoBehaviour {
 
 		if (locked) {
 			Const.sprint(lockedMessage,ud.owner);
-			if (lockedTarget != null && lockedTarget != "" && lockedTarget != " ") {
+			if (!string.IsNullOrWhiteSpace(lockedTarget)) {
 				ud.argvalue = argvalue;
 				TargetIO tio = GetComponent<TargetIO>();
 				if (tio != null) {

@@ -14,7 +14,7 @@ public class ElevatorKeypad : MonoBehaviour {
 	public Text[] buttonTextHolders;
 	public Image currentFloorIndicator;
 	public int currentFloor;
-	[DTValidator.Optional] public GameObject[] targetDestination; // set by ElevatorButton.cs within the buttonHandlers[]
+	public GameObject[] targetDestination; // set by ElevatorButton.cs within the buttonHandlers[]
 	public Sprite[] indicatorSprites;
 	[HideInInspector]
 	public GameObject activeKeypad;

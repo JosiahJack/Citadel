@@ -15,7 +15,7 @@
 
         CGPROGRAM
 
-        #pragma multi_compile _ LOD_FADE_CROSSFADE
+        //#pragma multi_compile _ LOD_FADE_CROSSFADE
 
         #pragma surface surf Lambert noforwardadd
         #pragma target 3.0
@@ -36,10 +36,10 @@
 
         void surf(Input IN, inout SurfaceOutput o)
         {
-            #ifdef LOD_FADE_CROSSFADE
-            float2 vpos = IN.screenPos.xy / IN.screenPos.w * _ScreenParams.xy;
-            UnityApplyDitherCrossFade(vpos);
-            #endif
+            //#ifdef LOD_FADE_CROSSFADE
+            //float2 vpos = IN.screenPos.xy / IN.screenPos.w * _ScreenParams.xy;
+            //UnityApplyDitherCrossFade(vpos);
+            //#endif
 
             // Albedo comes from a texture tinted by color
             fixed4 c = tex2D (_MainTex, IN.uv_MainTex);// * _Color;

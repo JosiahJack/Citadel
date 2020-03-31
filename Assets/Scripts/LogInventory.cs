@@ -35,8 +35,9 @@ public class LogInventory : MonoBehaviour {
 
 		// Play the log audio
 		if (Const.a.audioLogType[logIndex] == 1) {
-			SFXClip = Const.a.audioLogs[logIndex];
-			SFXSource.PlayOneShot(SFXClip);
+			SFXClip = null;
+			if (Const.a.audioLogs != null) SFXClip = Const.a.audioLogs[logIndex];
+			if (SFXClip != null) SFXSource.PlayOneShot(SFXClip);
 		}
 			
 		MFDManager.a.SendAudioLogToDataTab(logIndex);

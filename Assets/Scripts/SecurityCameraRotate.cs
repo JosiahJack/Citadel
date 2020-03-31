@@ -2,21 +2,22 @@
 using System.Collections;
 
 // For security cameras
-public class SecurityCameraRotate : MonoBehaviour {
+public class SecurityCameraRotate : MonoBehaviour, IBatchUpdate {
 	public float startYAngle = 0f;
 	public float endYAngle = 180f;
-	public float degreesYPerSecond = 5f;
+	private float degreesYPerSecond = 4f;
 	public float waitTime = 0.8f;
 	private float waitingTime = 0f;
 	private bool rotatePositive;
 	private float tickTime = 0.1f;
 
-	void Awake () {
+	void Start () {
 		waitingTime = Time.time;
 		rotatePositive = true;
+		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketB);
 	}
 
-	void Update () {
+	public void BatchUpdate () {
 		if (waitingTime < Time.time) {
 			if (rotatePositive) {
 				RotatePositive();

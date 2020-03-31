@@ -1,89 +1,246 @@
 fileFormatVersion: 2
 guid: 2a348fe6fd6ddd248a0d52d59c36f6d1
-timeCreated: 1537318505
-licenseType: Free
 ModelImporter:
-  serializedVersion: 22
-  fileIDToRecycleName:
-    100000: Armature
-    100002: Armature_001
-    100004: Bone
-    100006: Bone_001
-    100008: Bone_002
-    100010: Bone_003
-    100012: Bone_004
-    100014: Bone_005
-    100016: Bone_006
-    100018: Bone_007
-    100020: Bone_008
-    100022: Bone_009
-    100024: Bone_010
-    100026: Bone_011
-    100028: Bone_012
-    100030: Bone_013
-    100032: Bone_014
-    100034: Bone_015
-    100036: Bone_016
-    100038: Bone_017
-    100040: Bone_018
-    100042: Bone_019
-    100044: Bone_020
-    100046: Bone_021
-    100048: Bone_022
-    100050: Bone_023
-    100052: Bone_024
-    100054: Bone_025
-    100056: Bone_026
-    100058: Bone_027
-    100060: //RootNode
-    100062: npc_gortiger_mesh
-    400000: Armature
-    400002: Armature_001
-    400004: Bone
-    400006: Bone_001
-    400008: Bone_002
-    400010: Bone_003
-    400012: Bone_004
-    400014: Bone_005
-    400016: Bone_006
-    400018: Bone_007
-    400020: Bone_008
-    400022: Bone_009
-    400024: Bone_010
-    400026: Bone_011
-    400028: Bone_012
-    400030: Bone_013
-    400032: Bone_014
-    400034: Bone_015
-    400036: Bone_016
-    400038: Bone_017
-    400040: Bone_018
-    400042: Bone_019
-    400044: Bone_020
-    400046: Bone_021
-    400048: Bone_022
-    400050: Bone_023
-    400052: Bone_024
-    400054: Bone_025
-    400056: Bone_026
-    400058: Bone_027
-    400060: //RootNode
-    400062: npc_gortiger_mesh
-    4300000: npc_gortiger_mesh
-    7400000: Default Take
-    7400002: PoseLib
-    7400004: PoseLib_001
-    7400006: Idle
-    9500000: //RootNode
-    13700000: npc_gortiger_mesh
+  serializedVersion: 19300
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Armature
+  - first:
+      1: 100002
+    second: Armature_001
+  - first:
+      1: 100004
+    second: Bone
+  - first:
+      1: 100006
+    second: Bone_001
+  - first:
+      1: 100008
+    second: Bone_002
+  - first:
+      1: 100010
+    second: Bone_003
+  - first:
+      1: 100012
+    second: Bone_004
+  - first:
+      1: 100014
+    second: Bone_005
+  - first:
+      1: 100016
+    second: Bone_006
+  - first:
+      1: 100018
+    second: Bone_007
+  - first:
+      1: 100020
+    second: Bone_008
+  - first:
+      1: 100022
+    second: Bone_009
+  - first:
+      1: 100024
+    second: Bone_010
+  - first:
+      1: 100026
+    second: Bone_011
+  - first:
+      1: 100028
+    second: Bone_012
+  - first:
+      1: 100030
+    second: Bone_013
+  - first:
+      1: 100032
+    second: Bone_014
+  - first:
+      1: 100034
+    second: Bone_015
+  - first:
+      1: 100036
+    second: Bone_016
+  - first:
+      1: 100038
+    second: Bone_017
+  - first:
+      1: 100040
+    second: Bone_018
+  - first:
+      1: 100042
+    second: Bone_019
+  - first:
+      1: 100044
+    second: Bone_020
+  - first:
+      1: 100046
+    second: Bone_021
+  - first:
+      1: 100048
+    second: Bone_022
+  - first:
+      1: 100050
+    second: Bone_023
+  - first:
+      1: 100052
+    second: Bone_024
+  - first:
+      1: 100054
+    second: Bone_025
+  - first:
+      1: 100056
+    second: Bone_026
+  - first:
+      1: 100058
+    second: Bone_027
+  - first:
+      1: 100060
+    second: //RootNode
+  - first:
+      1: 100062
+    second: npc_gortiger_mesh
+  - first:
+      4: 400000
+    second: Armature
+  - first:
+      4: 400002
+    second: Armature_001
+  - first:
+      4: 400004
+    second: Bone
+  - first:
+      4: 400006
+    second: Bone_001
+  - first:
+      4: 400008
+    second: Bone_002
+  - first:
+      4: 400010
+    second: Bone_003
+  - first:
+      4: 400012
+    second: Bone_004
+  - first:
+      4: 400014
+    second: Bone_005
+  - first:
+      4: 400016
+    second: Bone_006
+  - first:
+      4: 400018
+    second: Bone_007
+  - first:
+      4: 400020
+    second: Bone_008
+  - first:
+      4: 400022
+    second: Bone_009
+  - first:
+      4: 400024
+    second: Bone_010
+  - first:
+      4: 400026
+    second: Bone_011
+  - first:
+      4: 400028
+    second: Bone_012
+  - first:
+      4: 400030
+    second: Bone_013
+  - first:
+      4: 400032
+    second: Bone_014
+  - first:
+      4: 400034
+    second: Bone_015
+  - first:
+      4: 400036
+    second: Bone_016
+  - first:
+      4: 400038
+    second: Bone_017
+  - first:
+      4: 400040
+    second: Bone_018
+  - first:
+      4: 400042
+    second: Bone_019
+  - first:
+      4: 400044
+    second: Bone_020
+  - first:
+      4: 400046
+    second: Bone_021
+  - first:
+      4: 400048
+    second: Bone_022
+  - first:
+      4: 400050
+    second: Bone_023
+  - first:
+      4: 400052
+    second: Bone_024
+  - first:
+      4: 400054
+    second: Bone_025
+  - first:
+      4: 400056
+    second: Bone_026
+  - first:
+      4: 400058
+    second: Bone_027
+  - first:
+      4: 400060
+    second: //RootNode
+  - first:
+      4: 400062
+    second: npc_gortiger_mesh
+  - first:
+      43: 4300000
+    second: npc_gortiger_mesh
+  - first:
+      74: 7400000
+    second: Walk
+  - first:
+      74: 7400002
+    second: PoseLib
+  - first:
+      74: 7400004
+    second: PoseLib_001
+  - first:
+      74: 7400006
+    second: Idle
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: npc_gortiger_mesh
+  - first:
+      74: 3228367138793729562
+    second: Pain
+  - first:
+      74: 7572344613039948371
+    second: Attack1
+  - first:
+      74: 8114531597553069840
+    second: Attack2
+  - first:
+      74: -4630339522487117836
+    second: Die
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Material_001__GORILLA_TIGER_png_001
-    second: {fileID: 2100000, guid: ba6c79ab4708f8f48a930580a0290bea, type: 2}
+    second: {fileID: 2100000, guid: 4638e5354e771204d9fd49e13e5fdc18, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_001__npc_gortiger_png
+    second: {fileID: 2100000, guid: 7b8f4a5704b139845aa1051831c10130, type: 2}
   materials:
-    importMaterials: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -100,6 +257,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -110,9 +268,155 @@ ModelImporter:
     clipAnimations:
     - serializedVersion: 16
       name: Idle
-      takeName: Idle
+      takeName: Armature_001Action_001
+      internalID: 0
       firstFrame: 0
-      lastFrame: 18
+      lastFrame: 73
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Walk
+      takeName: Armature_001Action_001
+      internalID: 0
+      firstFrame: 87
+      lastFrame: 130
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Pain
+      takeName: Armature_001Action_001
+      internalID: 0
+      firstFrame: 143
+      lastFrame: 159
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Attack1
+      takeName: Armature_001Action_001
+      internalID: 0
+      firstFrame: 160
+      lastFrame: 183
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Attack2
+      takeName: Armature_001Action_001
+      internalID: 0
+      firstFrame: 184
+      lastFrame: 209
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Die
+      takeName: Armature_001Action_001
+      internalID: 0
+      firstFrame: 210
+      lastFrame: 249
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -142,6 +446,8 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -149,9 +455,14 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -162,10 +473,13 @@ ModelImporter:
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -175,14 +489,16 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
+  avatarSetup: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

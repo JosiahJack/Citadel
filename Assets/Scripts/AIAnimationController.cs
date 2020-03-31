@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AIAnimationController : MonoBehaviour {
+public class AIAnimationController : MonoBehaviour, IBatchUpdate {
 	public float currentClipPercentage;
 	public float clipEndThreshold = 0.99f;
 
@@ -13,16 +13,19 @@ public class AIAnimationController : MonoBehaviour {
 	private bool dead;
 	public bool useDeadAnimForDeath = false;
 	private bool alreadySetAnimation = false;
+	public bool playDeathAnim = true;
+	public bool playDyingAnim = true;
 
-	void Awake () {
+	void Start () {
 		anim = GetComponent<Animator>();
 		//aic = GetComponent<AIController>();
 		currentClipPercentage = 0;
 		dead = false;
 		alreadySetAnimation = false;
+		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.Always);
 	}
 
-	void Update () {
+	public void BatchUpdate () {
 		if (PauseScript.a != null && PauseScript.a.Paused()) {
 			anim.speed = 0;
 			alreadySetAnimation = false;
@@ -58,40 +61,40 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Idle () {
-		anim.Play("Idle");
+		if (gameObject.activeInHierarchy) anim.Play("Idle");
 	}
 
 	void Run () {
 		alreadySetAnimation = false;
-		anim.Play("Run");
+		if (gameObject.activeInHierarchy) anim.Play("Run");
 	}
 
 	void Walk () {
-		anim.Play("Walk");
+		if (gameObject.activeInHierarchy) anim.Play("Walk");
 	}
 
 	void Attack1 () {
-		anim.Play("Attack1");
+		if (gameObject.activeInHierarchy) anim.Play("Attack1");
 	}
 
 	void Attack2 () {
 		if (!alreadySetAnimation) {
 			alreadySetAnimation = true;
-			anim.Play("Attack2");
+			if (gameObject.activeInHierarchy) anim.Play("Attack2");
 		}
 	}
 
 	void Attack3 () {
-		anim.Play("Attack3");
+		if (gameObject.activeInHierarchy) anim.Play("Attack3");
 	}
 
 	void Pain () {
-		anim.Play("Pain");
+		if (gameObject.activeInHierarchy) anim.Play("Pain");
 	}
 
 	void Dying () {
 		dying = true;
-		anim.Play("Death");
+		if (playDyingAnim && gameObject.activeInHierarchy) anim.Play("Death");
 		if (currentClipPercentage > clipEndThreshold) {
 			dying = false;
 			dead = true;
@@ -100,18 +103,18 @@ public class AIAnimationController : MonoBehaviour {
 
 	void Dead () {
 		if (useDeadAnimForDeath) {
-			anim.Play("Dead");
+			if (playDeathAnim && gameObject.activeInHierarchy) anim.Play("Dead");
 		} else {
-			anim.Play("Death");
+			if (playDeathAnim && gameObject.activeInHierarchy) anim.Play("Death");
 		}
 		anim.speed = 0f;
 	}
 
 	void Inspect () {
-		anim.Play("Inspect");
+		if (gameObject.activeInHierarchy) anim.Play("Inspect");
 	}
 
 	void Interacting () {
-		anim.Play("Interact");
+		if (gameObject.activeInHierarchy) anim.Play("Interact");
 	}
 }

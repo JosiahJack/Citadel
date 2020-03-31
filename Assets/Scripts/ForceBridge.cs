@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ForceBridge : MonoBehaviour {
+public class ForceBridge : MonoBehaviour, IBatchUpdate {
     public bool x;
 	public bool y;
 	public bool z;
@@ -18,7 +18,7 @@ public class ForceBridge : MonoBehaviour {
 	private float tickFinished;
 	public float tickTime = 0.05f;
 
-	void Awake() {
+	void Start() {
 		activatedScaleX = transform.localScale.x;
 		activatedScaleY = transform.localScale.y;
 		activatedScaleZ = transform.localScale.z;
@@ -26,16 +26,17 @@ public class ForceBridge : MonoBehaviour {
 		bCol = GetComponent<BoxCollider>();
 		SFX = GetComponent<AudioSource>();
 		lerping = false;
-		tickFinished = Time.time + tickTime;
+		tickFinished = Time.time + tickTime + Random.value;
 		if (activated) Activate(true);
 		else Deactivate(true);
+		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketA);
 	}
 
-    void Update() {
+    public void BatchUpdate() {
 		if (tickFinished < Time.time) {
         if (activated) {
-			mr.enabled = true;
-			bCol.enabled = true;
+			if (mr.enabled == false) mr.enabled = true;
+			if (bCol.enabled == false) bCol.enabled = true;
 			if (lerping) {
 				float sx = transform.localScale.x;
 				float sy = transform.localScale.y;
@@ -60,7 +61,8 @@ public class ForceBridge : MonoBehaviour {
 				if (z) sz = Mathf.Lerp(transform.localScale.z,0f,tickTime*2);
 				transform.localScale = new Vector3(sx,sy,sz);
 				if (transform.localScale.x < 0.05f || transform.localScale.y < 0.05f || transform.localScale.z < 0.05f) {
-					mr.enabled = false; bCol.enabled = false;
+					if (mr.enabled) mr.enabled = false;
+					if (bCol.enabled) bCol.enabled = false;
 					lerping = false;
 				}
 			}

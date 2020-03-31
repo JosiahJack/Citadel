@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using DigitalRuby.LightningBolt;
 
 public class AIController : MonoBehaviour {
 	public int index = 0; // NPC reference index for looking up constants in tables in Const.cs
 	public Const.aiState currentState;
     public Const.aiMoveType moveType;
+	public Const.npcType npcType;
 	public GameObject enemy;
     public GameObject searchColliderGO;
 	public float yawspeed = 180f;
@@ -78,6 +80,8 @@ public class AIController : MonoBehaviour {
 	public bool hasMelee = true;
 	public bool hasProj1 = false;
 	public bool hasProj2 = false;
+	public bool hasLaserForProj2 = false;
+	public LightningBoltScript laserLightning;
 	public Transform[] walkWaypoints; // point(s) for NPC to walk to when roaming or patrolling
 	public bool inSight = false;
     public bool infront;
@@ -88,6 +92,7 @@ public class AIController : MonoBehaviour {
     public bool ignoreEnemy = false;
 	public float rangeToEnemy = 0f;
 	public GameObject[] meleeDamageColliders;
+	public bool preActivateMeleeColliders = false;
     public GameObject muzzleBurst;
     public GameObject muzzleBurst2;
     public GameObject rrCheckPoint;
@@ -159,12 +164,18 @@ public class AIController : MonoBehaviour {
 	private NavMeshPath searchPath;
 	public float rangeToHear = 10f;
 	public bool asleep = false; // check if enemy starts out asleep, e.g. sleeping sec-2 bots on level 8 in the maintenance chargers
+	public bool useGravityOnDeath = true;
+	public bool useGravityOnDying = true;
 
 	// Initialization and find components
 	void Awake () {
         rbody = GetComponent<Rigidbody>();
 		//rbody.isKinematic = true;
-		if (moveType != Const.aiMoveType.Fly) rbody.isKinematic = false;
+		
+		if (moveType != Const.aiMoveType.Fly) {
+			rbody.isKinematic = false;
+			//rbody.useGravity = true;
+		}
 		healthManager = GetComponent<HealthManager>();
 	    boxCollider = GetComponent<BoxCollider>();
 		sphereCollider = GetComponent<SphereCollider>();
@@ -219,12 +230,19 @@ public class AIController : MonoBehaviour {
             currentState = Const.aiState.Idle; // No waypoints, stay put
         }
 		//randSpin = true;
-		tick = 0.05f;
-		tickFinished = Time.time + tick;
+		tick = 0.1f;
+		tickFinished = Time.time + tick + Random.value;
 		attackFinished = Time.time + 1f;
 		idealTransformForward = sightPoint.transform.forward;
 		deathBurstDone = false;
 		searchPath = new NavMeshPath();
+	}
+
+	void AI_Face(Vector3 goalLocation) {
+		Vector3 dir = (goalLocation - transform.position).normalized;
+		dir.y = 0f;
+		Quaternion lookRot = Quaternion.LookRotation(dir,Vector3.up);
+		transform.rotation = Quaternion.Slerp (transform.rotation, lookRot, tick * yawspeed); // rotate as fast as we can towards goal position
 	}
 
 	void FixedUpdate () {
@@ -245,35 +263,8 @@ public class AIController : MonoBehaviour {
                 idealTransformForward.y = 0;
 				idealTransformForward = Vector3.Normalize(idealTransformForward);
 				if (idealTransformForward.magnitude > Mathf.Epsilon) {
-					Quaternion rot = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(idealTransformForward), yawspeed * Time.deltaTime);
-					transform.rotation = rot;
+					AI_Face(currentDestination);
 				}
-            }
-
-            if (moveType == Const.aiMoveType.Fly) {
-                float distUp = 0;
-                float distDn = 0;
-                Vector3 floorPoint = new Vector3();
-                floorPoint = Vector3.zero;
-
-                if (Physics.Raycast(sightPoint.transform.position, visibleMeshEntity.transform.up * -1, out tempHit, sightRange)) {
-                    //drawMyLine(sightPoint.transform.position, tempHit.point, Color.green, 2f);
-                    distDn = Vector3.Distance(sightPoint.transform.position, tempHit.point);
-                    floorPoint = tempHit.point;
-                }
-                if (Physics.Raycast(sightPoint.transform.position, visibleMeshEntity.transform.up, out tempHit, sightRange)) {
-                    //drawMyLine(sightPoint.transform.position, tempHit.point, Color.green, 2f);
-                    distUp = Vector3.Distance(sightPoint.transform.position, tempHit.point);
-                }
-                float distT = (distUp + distDn);
-                if (flightHeightIsPercentage) {
-					idealPos = floorPoint + new Vector3(0,distT * flightDesiredHeight,0);
-				} else {
-					idealPos = floorPoint + new Vector3(0,flightDesiredHeight, 0);
-				}
-
-				if (enemy != null && flightHeightIsPercentage) idealPos.y = enemy.transform.position.y + 0.24f;
-                visibleMeshEntity.transform.position = Vector3.MoveTowards(visibleMeshEntity.transform.position, idealPos, runSpeed * Time.deltaTime);
             }
         }
 	}
@@ -292,6 +283,9 @@ public class AIController : MonoBehaviour {
 			}
 		}
 
+		Debug.DrawRay(sightPoint.transform.position,idealTransformForward,Color.red,0.1f); // RED where we are trying to turn to
+		Debug.DrawRay(sightPoint.transform.position,sightPoint.transform.forward,Color.magenta,0.1f); // MAGENTA where we are currently turned facing
+		if (gunPoint != null && enemy != null) Debug.DrawRay(gunPoint.transform.position,(enemy.transform.position-sightPoint.transform.position),Color.green,0.1f); // Where the gun to enemy ray goes
 		switch (currentState) {
 			case Const.aiState.Idle: 			Idle(); 		break;
 			case Const.aiState.Walk:	 		Walk(); 		break;
@@ -310,6 +304,32 @@ public class AIController : MonoBehaviour {
 		if (currentState == Const.aiState.Dead || currentState == Const.aiState.Dying) return; // Don't do any checks, we're dead
 
 		if (asleep) return; // don't check for an enemy, we are sleeping! shh!!
+
+		if (moveType == Const.aiMoveType.Fly) {
+			float distUp = 0;
+			float distDn = 0;
+			Vector3 floorPoint = new Vector3();
+			floorPoint = Vector3.zero;
+
+			if (Physics.Raycast(sightPoint.transform.position, visibleMeshEntity.transform.up * -1, out tempHit, sightRange)) {
+				//drawMyLine(sightPoint.transform.position, tempHit.point, Color.green, 2f);
+				distDn = Vector3.Distance(sightPoint.transform.position, tempHit.point);
+				floorPoint = tempHit.point;
+			}
+			if (Physics.Raycast(sightPoint.transform.position, visibleMeshEntity.transform.up, out tempHit, sightRange)) {
+				//drawMyLine(sightPoint.transform.position, tempHit.point, Color.green, 2f);
+				distUp = Vector3.Distance(sightPoint.transform.position, tempHit.point);
+			}
+			float distT = (distUp + distDn);
+			if (flightHeightIsPercentage) {
+				idealPos = floorPoint + new Vector3(0,distT * flightDesiredHeight,0);
+			} else {
+				idealPos = floorPoint + new Vector3(0,flightDesiredHeight, 0);
+			}
+
+			if (enemy != null && flightHeightIsPercentage) idealPos.y = enemy.transform.position.y + 0.24f;
+			if (visibleMeshEntity != null) visibleMeshEntity.transform.position = Vector3.MoveTowards(visibleMeshEntity.transform.position, idealPos, runSpeed * Time.deltaTime);
+		}
 
 		inSight = CheckIfPlayerInSight();
         //if (inSight) backTurned = CheckIfBackIsTurned();
@@ -330,6 +350,7 @@ public class AIController : MonoBehaviour {
 				if (timeTillEnemyChangeFinished < Time.time) {
 					timeTillEnemyChangeFinished = Time.time + changeEnemyTime;
 					enemy = attacker; // Switch to whoever just attacked us
+					lastKnownEnemyPos = enemy.transform.position;
 				}
 			}
 			goIntoPain = false;
@@ -392,12 +413,24 @@ public class AIController : MonoBehaviour {
 	void Run() {
 		if (CheckPain()) return; // Go into pain if we just got hurt, data is sent by the HealthManager
         if (inSight) {
+			targettingPosition = enemy.transform.position;
+			currentDestination = enemy.transform.position;
             huntFinished = Time.time + huntTime;
             if (rangeToEnemy < meleeRange) {
                 if (hasMelee && infront && (randomWaitForNextAttack1Finished < Time.time)) {
                     //nav.speed = meleeSpeed;
                     attackFinished = Time.time + timeBetweenAttack1 + timeTillActualAttack1;
                     currentState = Const.aiState.Attack1;
+					if (preActivateMeleeColliders) {
+						for (int i = 0; i < meleeDamageColliders.Length; i++) {
+							//Debug.Log("Melee colliders...activate!");
+							if (meleeDamageColliders[i] != null) meleeDamageColliders[i].SetActive(true);
+							if (meleeDamageColliders[i] != null) {
+								AIMeleeDamageCollider mcs = meleeDamageColliders[i].GetComponent<AIMeleeDamageCollider>();
+								if (mcs != null) mcs.MeleeColliderSetup(index, meleeDamageColliders.Length, impactMelee, gameObject);
+							}
+						}
+					}
                     return;
                 }
             } else {
@@ -407,7 +440,6 @@ public class AIController : MonoBehaviour {
                         shotFired = false;
                         attackFinished = Time.time + timeBetweenAttack2 + timeTillActualAttack2;
                         gracePeriodFinished = Time.time + timeTillActualAttack2;
-                        //targettingPosition = enemy.transform.position;
                         currentState = Const.aiState.Attack2;
                         return;
                     }
@@ -418,7 +450,6 @@ public class AIController : MonoBehaviour {
 							shotFired = false;
 							attackFinished = Time.time + timeBetweenAttack3 + timeTillActualAttack3;
 							gracePeriodFinished = Time.time + timeTillActualAttack3;
-							//targettingPosition = enemy.transform.position;
 							currentState = Const.aiState.Attack3;
                             return;
                         }
@@ -426,7 +457,6 @@ public class AIController : MonoBehaviour {
                 }
             }
 
-            currentDestination = enemy.transform.position;
 			// enemy still far away and turned to within angle to move, then move
 			if ((moveType != Const.aiMoveType.None) && (Vector3.Distance(sightPoint.transform.position, enemy.transform.position) > 1.28)) {
 				//if (WithinAngleToTarget()) rbody.AddForce(transform.forward * runSpeed);
@@ -489,10 +519,11 @@ public class AIController : MonoBehaviour {
 					}
 					damageData.hit = tempHit;
 					damageData.attacknormal = transform.forward;
-					damageData.damage = Const.a.damageForNPC[index];
-					damageData.damage = Const.a.GetDamageTakeAmount(damageData);
 					damageData.owner = gameObject;
 					damageData.attackType = Const.AttackType.Projectile;
+					damageData.damage = Const.a.damageForNPC[index];
+					damageData.armorvalue = Const.a.armorvalueForNPC[index];
+					damageData.damage = Const.a.GetDamageTakeAmount(damageData); // run it through the system and perform all checks
 					HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
 					if (hm == null) return;
 					hm.TakeDamage(damageData);
@@ -537,29 +568,31 @@ public class AIController : MonoBehaviour {
     }
 
     bool DidRayHit(Vector3 targPos, float dist, bool useGunPoint2) {
-        tempVec = targPos;
 		if (useGunPoint2 && gunPoint2 != null) {
-			tempVec = tempVec - gunPoint2.transform.position;
+			tempVec = targPos - gunPoint2.transform.position;
 		} else {
-			tempVec = tempVec - gunPoint.transform.position;
+			tempVec = targPos - gunPoint.transform.position;
 		}
+		tempVec = tempVec.normalized;
         int layMask = 10;
         layMask = -layMask;
 
 		if (useGunPoint2 && gunPoint2 != null) {
-			if (Physics.Raycast(gunPoint2.transform.position, tempVec.normalized, out tempHit, sightRange, layMask)) {
+			if (Physics.Raycast(gunPoint2.transform.position, tempVec, out tempHit, sightRange, layMask)) {
 				tempHM = tempHit.transform.gameObject.GetComponent<HealthManager>();
 				if (tempHit.transform.gameObject.GetComponent<HealthManager>() != null) {
 					useBlood = true;
 				}
+				//drawMyLine(gunPoint2.transform.position, tempHit.point, Color.green, 2f);
 				return true;
 			}
 		} else {
-			if (Physics.Raycast(gunPoint.transform.position, tempVec.normalized, out tempHit, sightRange, layMask)) {
+			if (Physics.Raycast(gunPoint.transform.position, tempVec, out tempHit, sightRange, layMask)) {
 				tempHM = tempHit.transform.gameObject.GetComponent<HealthManager>();
 				if (tempHit.transform.gameObject.GetComponent<HealthManager>() != null) {
 					useBlood = true;
 				}
+				//drawMyLine(gunPoint.transform.position, tempHit.point, Color.green, 2f);
 				return true;
 			}
 		}
@@ -711,6 +744,12 @@ public class AIController : MonoBehaviour {
                 // Typically used for normal projectile attack
                 if (attack3Type == Const.AttackType.Projectile) {
                     if (muzzleBurst2 != null) muzzleBurst2.SetActive(true);
+					if (hasLaserForProj2) {
+						if (laserLightning != null) {
+							laserLightning.EndObject = null; // force lightning to use world space
+							laserLightning.EndPosition = targettingPosition;
+						}
+					}
                     if (DidRayHit(targettingPosition, proj1Range,true)) {
                         CreateStandardImpactEffects(false);
                         damageData.other = tempHit.transform.gameObject;
@@ -803,23 +842,22 @@ public class AIController : MonoBehaviour {
             }
 
 			if (!healthManager.actAsCorpseOnly && SFX != null && SFXDeathClip != null) SFX.PlayOneShot(SFXDeathClip);
-
-            // Turn off normal NPC collider and enable corpse collider for searching
-            //if (boxCollider != null) boxCollider.enabled = false;
-            //if (sphereCollider != null) sphereCollider.enabled = false;
-            //if (meshCollider != null) meshCollider.enabled = false;
-            //if (capsuleCollider != null) capsuleCollider.enabled = false;
+			if (useGravityOnDying) {
+				rbody.useGravity = true;
+			} else {
+				rbody.useGravity = false;
+			}
+			
+			gameObject.layer = 13;
 			if (moveType == Const.aiMoveType.Fly) {
 				if (flyerCollider != null) flyerCollider.enabled = false;
 				if (flyerColliderAlternate1 != null) flyerColliderAlternate1.enabled = false;
 				if (!healthManager.gibOnDeath) {
 					transform.position = new Vector3(transform.position.x,transform.position.y+0.02f,transform.position.z); //bump the corpse up a hair to prevent it ghosting through the floor
-					rbody.useGravity = true;
-					//rbody.isKinematic = false;
+					rbody.freezeRotation = true;
 				}
-			} else {
-				rbody.useGravity = false;
 			}
+			transform.position = new Vector3(transform.position.x, transform.position.y + 0.01f, transform.position.z); // bump it up a hair to prevent corpse falling through the floor
 			firstSighting = true;
 			timeTillDeadFinished = Time.time + timeTillDead; // wait for death animation to finish before going into Dead()
 			if (switchMaterialOnDeath) actualSMR.material = deathMaterial;
@@ -845,11 +883,17 @@ public class AIController : MonoBehaviour {
 		} else {
 			//rbody.isKinematic = true;
 			if (searchColliderGO != null) {
-				//srbody.useGravity = true;
+				if (useGravityOnDeath) {
+					rbody.useGravity = true;
+				} else {
+					rbody.useGravity = false;
+				}
 				//rbody.isKinematic = false;
-				rbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ; // prevent corpse from flipping over but let it get moved around by func_walls and grenades and such...if it doesn't get gibbed first
+				rbody.freezeRotation = true;  // prevent corpse from flipping over but let it get moved around by func_walls and grenades and such...if it doesn't get gibbed first
+				rbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
 			}
 		}
+		
 		currentState = Const.aiState.Dead;
 		if (healthManager.gibOnDeath || healthManager.teleportOnDeath) {
 			// Special case for gibing on death for the avian mutant to allow it's corpse to rain from the sky, otherwise it would get disabled along with
@@ -857,9 +901,9 @@ public class AIController : MonoBehaviour {
 			// the air within the visibleMeshContainer.  Hence, the special case gib containered flag.  Bit silly ya.
 			if (specialCaseGibContainered) {
 				rbody.useGravity = false; // prevent the invisible part of the enemy from falling indefinitely
-				visibleMeshSubObject.SetActive(false); // turn off the visual model in case of Avian Mutant
+				if (visibleMeshSubObject != null) visibleMeshSubObject.SetActive(false); // turn off the visual model in case of Avian Mutant
 			} else {
-				visibleMeshEntity.SetActive(false); // normally just turn off the main model, then...
+				if (visibleMeshEntity != null) visibleMeshEntity.SetActive(false); // normally just turn off the main model, then...
 			}
 			if (!healthManager.teleportOnDeath && healthManager.gibOnDeath) {
 				healthManager.Gib(); // ... turn on the lovely gibs
@@ -943,7 +987,7 @@ public class AIController : MonoBehaviour {
 
         RaycastHit hit;
         //if (Physics.Raycast(sightPoint.transform.position + transform.up, checkline.normalized, out hit, sightRange, layMask)) {
-        if (Physics.Raycast(sightPoint.transform.position                 , checkline.normalized, out hit, sightRange, layMask)) {
+        if (Physics.Raycast(sightPoint.transform.position, checkline.normalized, out hit, sightRange, layMask)) {
             LOSpossible = true;
 			//Debug.DrawRay(sightPoint.transform.position + transform.up,checkline.normalized, Color.green, 0.1f,false);
 			//Debug.DrawLine(sightPoint.transform.position,hit.point,Color.green,0.1f,false);
@@ -1011,29 +1055,27 @@ public class AIController : MonoBehaviour {
             int layMask = 10;
             layMask = -layMask;
 
-			// Check for line of sight
-			RaycastHit hit;
-            if (Physics.Raycast(sightPoint.transform.position, checkline.normalized, out hit, sightRange,layMask)) {
-				//Debug.Log("Sight raycast successful");
-				//Debug.DrawRay(sightPoint.transform.position,checkline.normalized, Color.green, 0.1f,false);
-				//Debug.DrawLine(sightPoint.transform.position,hit.point,Color.green,0.1f,false);
-				//Debug.Log(hit.collider.gameObject.name);
-                if (hit.collider.gameObject == tempent) {
-					//Debug.Log("Hit collider was same as playr#");
-					LOSpossible = true;  // Clear path from enemy to found player
-				}
-			}
-
 			float dist = Vector3.Distance(tempent.transform.position,sightPoint.transform.position);  // Get distance between enemy and found player
+			if (dist > sightRange) continue; // don't waste time doing raycasts if we won't be able to see them anyway
+			dist = dist + 0.1f;  // just in case player is a hair over the distance for some reason
+
 			float angle = Vector3.Angle(checkline,sightPoint.transform.forward);
-			
-			// If clear path to found player, and either within view angle or right behind the enemy
-			if (LOSpossible) {
-				//Debug.Log("LOS was possible");
-				if (angle < (fieldOfViewAngle * 0.5f)) {
-					SetEnemy(tempent,tempTrans);
-					PlaySightSound();
-					return true;
+			if (angle < (fieldOfViewAngle * 0.5f)) {
+				// Check for line of sight
+				RaycastHit hit;
+				// changed from using sightRange to dist to minimize checkdistance
+				if (Physics.Raycast(sightPoint.transform.position, checkline.normalized, out hit, dist,layMask)) {
+					//Debug.Log("Sight raycast successful");
+					//Debug.DrawRay(sightPoint.transform.position,checkline.normalized, Color.green, 0.1f,false);
+					//Debug.DrawLine(sightPoint.transform.position,hit.point,Color.green,0.1f,false);
+					//Debug.Log(hit.collider.gameObject.name);
+					if (hit.collider.gameObject == tempent) {
+						//Debug.Log("Hit collider was same as playr#");
+						LOSpossible = true;  // Clear path from enemy to found player
+						SetEnemy(tempent,tempTrans);
+						PlaySightSound();
+						return true;
+					}
 				} else {
 					if (dist < distToSeeWhenBehind) {
 						SetEnemy(tempent,tempTrans);
@@ -1054,6 +1096,7 @@ public class AIController : MonoBehaviour {
 
 	void SetEnemy(GameObject enemSent,Transform targettingPosSent) {
 		enemy = enemSent;
+		lastKnownEnemyPos = enemy.transform.position;
 		targettingPosition = targettingPosSent.position;
 	}
 
@@ -1066,15 +1109,15 @@ public class AIController : MonoBehaviour {
 	
     bool enemyInFront (GameObject target) {
         Vector3 vec = Vector3.Normalize(target.transform.position - sightPoint.transform.position);
-        float dot = Vector3.Dot(vec,transform.forward);
-        if (dot > 0.300) return true; // enemy is within 27 degrees of forward facing vector
+        float dot = Vector3.Dot(vec,sightPoint.transform.forward);
+        if (dot > 0.300) return true; // enemy is within ±63° of forward facing vector
         return false;
     }
 
     bool enemyInProjFOV(GameObject target) {
         Vector3 vec = Vector3.Normalize(target.transform.position - sightPoint.transform.position);
         float dot = Vector3.Dot(vec, transform.forward);
-        if (dot > 0.800) return true; // enemy is within 27 degrees of forward facing vector
+        if (dot > 0.800) return true; // enemy is within ±18° of forward facing vector
         return false;
     }
 
@@ -1106,5 +1149,26 @@ public class AIController : MonoBehaviour {
 	public void AwakeFromSleep(UseData ud) {
 		asleep = false;
 		Alert(ud);
+	}
+
+	
+	void drawMyLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
+		StartCoroutine( drawLine(start, end, color, duration));
+	}
+
+	IEnumerator drawLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
+		GameObject myLine = new GameObject ();
+		myLine.transform.position = start;
+		myLine.AddComponent<LineRenderer> ();
+		LineRenderer lr = myLine.GetComponent<LineRenderer> ();
+		lr.material = new Material (Shader.Find ("Legacy Shaders/Particles/Additive"));
+		lr.startColor = color;
+		lr.endColor = color;
+		lr.startWidth = 0.1f;
+		lr.endWidth = 0.1f;
+		lr.SetPosition (0, start);
+		lr.SetPosition (1, end);
+		yield return new WaitForSeconds(duration);
+		GameObject.Destroy (myLine);
 	}
 }

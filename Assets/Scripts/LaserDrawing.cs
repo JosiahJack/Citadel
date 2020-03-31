@@ -7,7 +7,7 @@ public class LaserDrawing : MonoBehaviour {
 	[HideInInspector] public Vector3 startPoint;
 	[HideInInspector] public Vector3 endPoint;
     public float lineLife = 0.15f;
-	[DTValidator.Optional,HideInInspector] public LineRenderer line;
+	[HideInInspector] public LineRenderer line;
 
 	void Awake () {
 		line = GetComponent<LineRenderer>();

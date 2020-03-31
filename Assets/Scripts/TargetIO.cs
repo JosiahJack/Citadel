@@ -58,7 +58,7 @@ public class TargetIO : MonoBehaviour {
 	public bool awakeSleepingEnemy; // awaken a sleeping enemy, e.g. the sec-2 bots that are in repair sleep on level 8
 
 	void Start() {
-		if (targetname != "" && targetname != " " & targetname != "  ") {
+		if (!string.IsNullOrWhiteSpace(targetname)) {
 			RegisterToConst();
 			if (disableThisGOOnAwake) this.gameObject.SetActive(false);
 		} else {

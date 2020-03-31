@@ -58,15 +58,15 @@ public class TextWarningsManager : MonoBehaviour {
 
 	void Update () {
 		for (int i=0;i<warningTextGObjects.Length;i++) {
-			if (warningTexts[i].text != "" || warningTexts[i].text != " ") {
+			if (!string.IsNullOrWhiteSpace(warningTexts[i].text)) {
 				if (finishedTime[i] < Time.time) {
-					warningTexts[i].text = System.String.Empty;
-					warningTextGObjects[i].SetActive(false);
+					if (warningTexts[i].text != System.String.Empty) warningTexts[i].text = System.String.Empty;
+					if (warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(false);
 					continue;
 				}
-				warningTextGObjects[i].SetActive(true);
+				if (!warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(true);
 			} else {
-				warningTextGObjects[i].SetActive(false);
+				if (warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(false);
 			}
 		}
 	}

@@ -15,19 +15,19 @@ public enum Handedness {Center,LH,RH};
 
 public class Const : MonoBehaviour {
 	//Item constants
-	[SerializeField, DTValidator.Optional] public QuestBits questData;
-	[SerializeField, DTValidator.Optional] public GameObject[] useableItems;
-	[SerializeField, DTValidator.Optional] public Texture2D[] useableItemsFrobIcons;
-    [SerializeField, DTValidator.Optional] public Sprite[] useableItemsIcons;
+	[SerializeField] public QuestBits questData;
+	[SerializeField] public GameObject[] useableItems;
+	[SerializeField] public Texture2D[] useableItemsFrobIcons;
+    [SerializeField] public Sprite[] useableItemsIcons;
     [SerializeField] public string[] useableItemsNameText;
-	[SerializeField, DTValidator.Optional] public Sprite[] searchItemIconSprites;
+	[SerializeField] public Sprite[] searchItemIconSprites;
 	[SerializeField] public string[] genericText;
 
 	//Audiolog constants
 	[SerializeField] public string[] audiologNames;
 	[SerializeField] public string[] audiologSenders;
 	[SerializeField] public string[] audiologSubjects;
-	[SerializeField, DTValidator.Optional] public AudioClip[] audioLogs;
+	[SerializeField] public AudioClip[] audioLogs;
 	[SerializeField] public int[] audioLogType;  // 0 = text only, 1 = normal, 2 = email, 3 = vmail
 	[SerializeField] public string[] audioLogSpeech2Text;
 	[SerializeField] public int[] audioLogLevelFound;
@@ -50,8 +50,10 @@ public class Const : MonoBehaviour {
 	[SerializeField] public int[] magazinePitchCountForWeapon;
 	[SerializeField] public int[] magazinePitchCountForWeapon2;
 	[SerializeField] public float[] recoilForWeapon;
-	public enum AttackType{None,Melee,EnergyBeam,Magnetic,Projectile,ProjectileEnergyBeam,ProjectileLaunched};
+	public enum AttackType{None,Melee,MeleeEnergy,EnergyBeam,Magnetic,Projectile,ProjectileNeedle,ProjectileEnergyBeam,ProjectileLaunched,Gas,Tranq};
 	[SerializeField] public AttackType[] attackTypeForWeapon;
+	public enum npcType{Mutant,Supermutant,Robot,Cyborg,Supercyborg,Cyber,MutantCyborg};
+	[SerializeField] public npcType[] npcTypes;
 
 	//NPC constants
 	[SerializeField] public GameObject[] npcPrefabs;
@@ -73,17 +75,17 @@ public class Const : MonoBehaviour {
 	[SerializeField] public float[] defenseForNPC;
 	[SerializeField] public float[] randomMinimumDamageModifierForNPC; // minimum value that NPC damage can be
 
-	[SerializeField, DTValidator.Optional] public HealthManager[] healthObjectsRegistration; // List of objects with health, used for fast application of damage in explosions
-	[DTValidator.Optional] public GameObject[] levelChunks;
+	[SerializeField] public HealthManager[] healthObjectsRegistration; // List of objects with health, used for fast application of damage in explosions
+	public GameObject[] levelChunks;
 
 	//System constants
 	public float doubleClickTime = 0.500f;
 	public float frobDistance = 5f;
-	[DTValidator.Optional] public GameObject player1;
-	[DTValidator.Optional] public GameObject player2;
-	[DTValidator.Optional] public GameObject player3;
-	[DTValidator.Optional] public GameObject player4;
-	[DTValidator.Optional] public GameObject allPlayers;
+	public GameObject player1;
+	public GameObject player2;
+	public GameObject player3;
+	public GameObject player4;
+	public GameObject allPlayers;
 	public float playerCameraOffsetY = 0.84f; //Vertical camera offset from player 0,0,0 position (mid-body)
 	public Color ssYellowText = new Color(0.8902f, 0.8745f, 0f); // Yellow, e.g. for current inventory text
 	public Color ssGreenText = new Color(0.3725f, 0.6549f, 0.1686f); // Green, e.g. for inventory text
@@ -116,7 +118,8 @@ public class Const : MonoBehaviour {
 						MagpulseShots, MagpulseImpacts,StungunShots, StungunImpacts, RailgunShots, RailgunImpacts,
 						PlasmaShots, PlasmaImpacts, ProjEnemShot6,ProjEnemShot6Impacts, ProjEnemShot2Impacts,
 						ProjSeedPods, ProjSeedPodsImpacts, TempAudioSources,GrenadeEMPExplosions, ProjEnemShot4,
-						ProjEnemShot4Impacts};
+						ProjEnemShot4Impacts,CrateExplosions,GrenadeFragLive,CyborgAssassinThrowingStars,
+						ConcussionLive,EMPLive,GasLive,GasExplosions,CorpseHit,NPCMagpulseShots,NPCRailgunShots};
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
 	public GameObject Pool_ProjectilesEnemShot2;
@@ -147,6 +150,16 @@ public class Const : MonoBehaviour {
 	public GameObject Pool_GrenadeEMPExplosions;
 	public GameObject Pool_ProjEnemShot4;
 	public GameObject Pool_ProjEnemShot4Impacts;
+	public GameObject Pool_CrateExplosions;
+	public GameObject Pool_GrenadeFragLive;
+	public GameObject Pool_CyborgAssassinThrowingStars;
+	public GameObject Pool_ConcussionLive;
+	public GameObject Pool_EMPLive;
+	public GameObject Pool_GasLive;
+	public GameObject Pool_GasExplosions;
+	public GameObject Pool_CorpseHit;
+	public GameObject Pool_NPCMagpulseShots;
+	public GameObject Pool_NPCRailgunShots;
 
 	//Global object references
 	public GameObject statusBar;
@@ -186,18 +199,18 @@ public class Const : MonoBehaviour {
     public enum aiMoveType {Walk,Fly,Swim,Cyber,None};
     public Font mainFont1;
 	public Font mainFont2;
-	[DTValidator.Optional] public GameObject[] TargetRegister; // doesn't need to be full, available space for maps and mods made by the community to use tons of objects
+	public GameObject[] TargetRegister; // doesn't need to be full, available space for maps and mods made by the community to use tons of objects
 	public string[] TargetnameRegister;
 	public float globalShakeDistance;
 	public float globalShakeForce;
-    [DTValidator.Optional] public string[] stringTable;
+    public string[] stringTable;
 	public float[] reloadTime;
+	public CyberWall[] cyberpanelsRegistry;
 
 	//Instance container variable
 	public static Const a;
 
 	// Private CONSTANTS
-	private int MAX_HEALTHOBJECTS = 1024;
 	private int TARGET_FPS = 60;
 
 	// Instantiate it so that it can be accessed globally. MOST IMPORTANT PART!!
@@ -420,7 +433,7 @@ public class Const : MonoBehaviour {
 				//char[] delimiters = new char[] {','};
 				string[] entries = readline.Split(',');
                 //isFullAutoForWeapon[currentline] = GetBoolFromString(entries[i]); i++;
-                isFullAutoForWeapon[currentline] = true; i++;
+                isFullAutoForWeapon[currentline] = true; i++; // better this way
 				delayBetweenShotsForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
 				delayBetweenShotsForWeapon2[currentline] = GetFloatFromString(entries[i],currentline); i++;
 				damagePerHitForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
@@ -653,6 +666,46 @@ public class Const : MonoBehaviour {
             poolContainer = Pool_ProjEnemShot4Impacts;
             poolName = "ProjEnemShot4Impacts ";
             break;
+		case PoolType.CrateExplosions:
+            poolContainer = Pool_CrateExplosions;
+            poolName = "CrateExplosions ";
+            break;
+		case PoolType.GrenadeFragLive:
+            poolContainer = Pool_GrenadeFragLive;
+            poolName = "GrenadeFragLive ";
+            break;
+		case PoolType.CyborgAssassinThrowingStars:
+            poolContainer = Pool_CyborgAssassinThrowingStars;
+            poolName = "CyborgAssassinThrowingStars ";
+            break;
+		case PoolType.ConcussionLive:
+            poolContainer = Pool_ConcussionLive;
+            poolName = "ConcussionLive ";
+            break;
+		case PoolType.EMPLive:
+            poolContainer = Pool_EMPLive;
+            poolName = "EMPLive ";
+            break;
+		case PoolType.GasLive:
+            poolContainer = Pool_GasLive;
+            poolName = "GasLive ";
+            break;
+		case PoolType.GasExplosions:
+            poolContainer = Pool_GasExplosions;
+            poolName = "GasExplosions ";
+            break;
+		case PoolType.CorpseHit:
+            poolContainer = Pool_CorpseHit;
+            poolName = "CorpseHit ";
+            break;
+		case PoolType.NPCMagpulseShots:
+			poolContainer = Pool_NPCMagpulseShots;
+			poolName = "NPCMagpulseShots ";
+			break;
+		case PoolType.NPCRailgunShots:
+			poolContainer = Pool_NPCRailgunShots;
+			poolName = "NPCRailgunShots ";
+			break;
         }
 
 		if (poolContainer == null) {
@@ -761,7 +814,7 @@ public class Const : MonoBehaviour {
 			return take;
 
 		// 5. Apply Velocity for Damage Amount
-
+		// Done in HealthManager TakeDamage()
 
 		// 6. Specialties
 		if (a_berserk) take *= Const.a.berserkDamageMultiplier;
@@ -1196,12 +1249,12 @@ public class Const : MonoBehaviour {
 	}
 
 	public void RegisterObjectWithHealth(HealthManager hm) {
-		for (int i=0;i<MAX_HEALTHOBJECTS;i++) {
+		for (int i=0;i<healthObjectsRegistration.Length;i++) {
 			if (healthObjectsRegistration[i] == null) {
 				healthObjectsRegistration[i] = hm;
 				return;
 			}
-			if (i == (MAX_HEALTHOBJECTS - 1)) Debug.Log("WARNING: Could not register object with health.  Hit limit of " + MAX_HEALTHOBJECTS.ToString() + ".");
+			if (i == (healthObjectsRegistration.Length - 1)) Debug.Log("WARNING: Could not register object with health.  Hit limit of " + healthObjectsRegistration.Length.ToString() + ".");
 		}
 	}
 
@@ -1313,7 +1366,6 @@ public class Const : MonoBehaviour {
 	}
 
 	public static float AngleInDeg(Vector3 vec1, Vector3 vec2) { return ((Mathf.Atan2(vec2.y - vec1.y, vec2.x - vec1.x)) * (180 / Mathf.PI)); }
-
 	/*
 	public void UseTargets (UseData ud, GameObject[] targets) {
 		for (int i = 0; i < targets.Length; i++) {
@@ -1418,6 +1470,21 @@ public class Const : MonoBehaviour {
 			//	if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
 			//}
 		}
+	}
+
+	public void AddCyberPanelToRegistry(CyberWall cw) {
+		for (int i=0;i<cyberpanelsRegistry.Length;i++) {
+			if (cyberpanelsRegistry[i] == null) {
+				cyberpanelsRegistry[i] = cw;
+				return;
+			}
+		}
+		Debug.Log("ERROR: Cyberpanels list ran out of room to add into registry in Const.AddCyberPanelToRegistry()");
+	}
+
+	public void ConwayGameEntry(CyberWall cw,Vector3 pos) {
+		// UPDATE add Conway's game of life effect to cyber panels when hit, only propagate across same orientation panels that are touching
+		Debug.Log("Registered a Conway's Game of Life hit");
 	}
 }
 

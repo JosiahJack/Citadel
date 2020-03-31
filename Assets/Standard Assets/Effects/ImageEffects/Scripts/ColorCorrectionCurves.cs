@@ -7,6 +7,7 @@ namespace UnityStandardAssets.ImageEffects
     [AddComponentMenu ("Image Effects/Color Adjustments/Color Correction (Curves, Saturation)")]
     public class ColorCorrectionCurves : PostEffectsBase
 	{
+		private RenderTexture renderTarget2Use;
         public enum ColorCorrectionMode
 		{
             Simple = 0,
@@ -144,7 +145,7 @@ namespace UnityStandardAssets.ImageEffects
             if (useDepthCorrection)
                 GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
 
-            RenderTexture renderTarget2Use = destination;
+            renderTarget2Use = destination;
 
             if (selectiveCc)
 			{

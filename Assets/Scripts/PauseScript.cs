@@ -55,6 +55,7 @@ public class PauseScript : MonoBehaviour {
 		previousInvMode = mouselookScript.inventoryMode;
 		if (mouselookScript.inventoryMode == false) {
 			mouselookScript.ToggleInventoryMode();
+			mouselookScript.ToggleAudioPause();
 		}
 		paused = true;
 		pauseText.enabled = true;
@@ -65,7 +66,7 @@ public class PauseScript : MonoBehaviour {
 		}
 
 		EnablePauseUI();
-
+		//System.GC.Collect();
 		PauseRigidbody[] prb = FindObjectsOfType<PauseRigidbody>();
 		for (int k=0;k<prb.Length;k++) {
 			prb[k].Pause();

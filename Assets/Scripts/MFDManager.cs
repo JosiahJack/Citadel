@@ -33,9 +33,24 @@ public class MFDManager : MonoBehaviour  {
 	public WeaponMagazineCounter wepmagCounterRH;
 	public GameObject logReaderContainer;
 	public GameObject multiMediaTab;
+	private float logFinished;
+	private bool logActive;
 
 	public void Awake () {
 		a = this;
+		a.logFinished = Time.time;
+		a.logActive = false;
+	}
+
+	void Update () {
+		if (logActive) {
+			if (logFinished < Time.time) {
+				logActive = false;
+				ReturnToLastTab(lastLogSideRH);
+				//ReturnToLastTab(lastLogSideSecondaryRH);  UPDATE add back in when LH MFD is done
+				if (ctb != null) ctb.TabButtonClickSilent(0,false);  // UPDATE add memory for last center tab as well at some point
+			}
+		}
 	}
 
 	public void OpenTab(int index, bool overrideToggling,TabMSG type,int intdata1, handedness side) {
@@ -222,6 +237,8 @@ public class MFDManager : MonoBehaviour  {
 		}
 		multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogTextReader();
 		logReaderContainer.GetComponent<LogTextReaderManager>().SendTextToReader(index);
+		if (Const.a.audioLogs[index] != null) logFinished = Time.time + Const.a.audioLogs[index].length + 0.1f; //add slight delay after log is finished playing to make sure we don't cut off audio in case there's a frame delay for audio start
+		logActive = true;
 	}
 
 	public void OpenEReaderInItemsTab() {

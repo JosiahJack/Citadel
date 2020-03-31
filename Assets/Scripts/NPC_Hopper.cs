@@ -124,7 +124,7 @@ public class NPC_Hopper : MonoBehaviour {
 
 		idleTime = Time.time + Random.Range(3f,10f);
 		attackFinished = Time.time + 1f;
-		tickFinished = Time.time + tick;
+		tickFinished = Time.time + tick + Random.value;
 		timeTillDeadFinished = Time.time;
 		firingFinished = Time.time;
 		painFinished = Time.time;
@@ -282,44 +282,6 @@ public class NPC_Hopper : MonoBehaviour {
 		}
 	}
 
-	/*
-	void Walk() {
-		nav.isStopped = false;
-		nav.speed = walkSpeed;
-
-		// Set animation state
-		//anim.Play("Walk");
-
-		// Set waypoint to next waypoint when we get close enough to the current waypoint
-		if (nav.remainingDistance < distanceTillClose) {
-			currentWaypoint = nextPointIndex;
-			if ((currentWaypoint == walkWaypoints.Length) || (walkWaypoints[currentWaypoint] == null)) {currentWaypoint = 0; nextPointIndex = 0;} // Wrap around
-		}
-
-		// Check to see if we got hurt
-		if (healthManager.health < lastHealth) {
-			if (healthManager.health <= 0) {
-				currentState = Const.aiState.Dying;
-				return;
-			}
-
-			currentState = Const.aiState.Run;
-			return;
-		}
-		lastHealth = healthManager.health;
-
-		nav.SetDestination(walkWaypoints[currentWaypoint].transform.position); // Walk
-		nextPointIndex++;
-
-		// Take a look around for enemies
-		returnedEnemy = null; // reset temporary GameObject to hold any returned enemy we find
-		if (CheckIfPlayerInSight(returnedEnemy)) {
-			enemy = Const.a.player1.GetComponent<PlayerReferenceManager>().playerCapsule;;
-			currentState = Const.aiState.Run; // quit standing around and start fighting
-			return;
-		}
-		// I'm walkin', and waitin'...on the edge of my seat anticipating.
-	}*/
 
 	void AI_Face(GameObject goalLocation) {
 		Vector3 dir = (goalLocation.transform.position - transform.position).normalized;
@@ -344,31 +306,6 @@ public class NPC_Hopper : MonoBehaviour {
 		} else {
 			hopDone = false;
 		}
-		/*	
-		if (anim.IsPlaying ("Hop")) {
-			if (anim ["Hop"].time > (0.69f * 1.55f) || anim ["Hop"].time < (0.09f)) {
-				if (CheckIfEnemyInSight ()) {
-					float dist = Vector3.Distance (transform.position, enemy.transform.position);
-					// See if we are close enough to attack
-					if (dist < proj1Range) {
-						if (attackFinished < Time.time) {
-							if (CheckIfEnemyInFront (enemy)) {
-								inFront = true;
-								firingFinished = Time.time + timeBetweenProj1;
-								fireDelayFinished = Time.time + delayBeforeFire;
-								fireEndPoint = enemy.transform.position;
-								currentState = Const.aiState.Attack1;
-								return;
-							} else {
-								inFront = false;
-							}
-						}
-					}
-				}
-			} else {
-				inFront = false;
-			}
-		}*/
 	}
 
 
@@ -520,7 +457,7 @@ public class NPC_Hopper : MonoBehaviour {
 	bool CheckIfEnemyInFront (GameObject target) {
 		Vector3 vec = Vector3.Normalize(target.transform.position - transform.position);
 		float dot = Vector3.Dot(vec,transform.forward);
-		if (dot > 0.800) return true; // enemy is within 18 degrees of forward facing vector
+		if (dot > 0.800) return true; // enemy is within ±18° of forward facing vector
 		return false;
 	}
 
@@ -540,27 +477,27 @@ public class NPC_Hopper : MonoBehaviour {
 	bool CheckIfPlayerInSight() {
 		GameObject tempent = Const.a.player1.GetComponent<PlayerReferenceManager>().playerCapsule;
 		Vector3 checkline = Vector3.Normalize(tempent.transform.position - transform.position); // Get vector line made from enemy to found player
+		float dist = Vector3.Distance(tempent.transform.position,transform.position);  // Get distance between enemy and found player
+		if (dist > sightRange) return false; // don't waste time doing raycasts if we won't be able to see them anyway
+		dist = dist + 0.1f;  // just in case player is a hair over the distance for some reason
+		if (dist < distToSeeWhenBehind) {
+			SightSound();
+			enemy = tempent;
+			return true; // time to turn around and face your executioner!
+		}
 
-		RaycastHit hit;
-		if(Physics.Raycast(transform.position, checkline, out hit, sightRange)) {
-			if (hit.collider.gameObject == tempent) {
-				
-				float dist = Vector3.Distance(tempent.transform.position,transform.position);  // Get distance between enemy and found player
-				float dot = Vector3.Dot(checkline,transform.forward.normalized);
-				if (dot > 0.10f) {
-					// enemy is within 81 degrees of forward facing vector
+		float dot = Vector3.Dot(checkline,transform.forward.normalized);
+		// enemy is within ±81° of forward facing vector
+		if (dot > 0.10f) {
+			RaycastHit hit;
+			if(Physics.Raycast(transform.position, checkline, out hit, sightRange)) {
+				if (hit.collider.gameObject == tempent) {
 					if (firstSighting) {
 						firstSighting = false;
-						if (hasSFX) SFX.PlayOneShot(SFXSightSound);
+						SightSound();
 					}
 					enemy = tempent;
 					return true; // time to fight!
-				} else {
-					if (dist < distToSeeWhenBehind) {
-						SightSound();
-						enemy = tempent;
-						return true; // time to turn around and face your executioner!
-					}
 				}
 			}
 		}

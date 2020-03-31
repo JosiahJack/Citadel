@@ -33,22 +33,22 @@ public class InteractablePanel : MonoBehaviour {
 		anim = GetComponent<Animator>();
 		SFX = GetComponent<AudioSource>();
 		if (string.IsNullOrWhiteSpace(wrongItemMessage)) {
-			if (wrongItemMessageLingdex < Const.a.stringTable.Length)
+			if (wrongItemMessageLingdex < Const.a.stringTable.Length && wrongItemMessageLingdex != -1)
 				wrongItemMessage = Const.a.stringTable[wrongItemMessageLingdex];
 		}
 
 		if (string.IsNullOrWhiteSpace(installedMessage)) {
-			if (installedMessageLingdex < Const.a.stringTable.Length)
+			if (installedMessageLingdex < Const.a.stringTable.Length && installedMessageLingdex != -1)
 				installedMessage = Const.a.stringTable[installedMessageLingdex];
 		}
 
 		if (string.IsNullOrWhiteSpace(alreadyInstalledMessage)) {
-			if (alreadyInstalledMessageLingdex < Const.a.stringTable.Length)
+			if (alreadyInstalledMessageLingdex < Const.a.stringTable.Length && alreadyInstalledMessageLingdex != -1)
 				alreadyInstalledMessage = Const.a.stringTable[alreadyInstalledMessageLingdex];
 		}
 
 		if (string.IsNullOrWhiteSpace(openMessage)) {
-			if (openMessageLingdex < Const.a.stringTable.Length)
+			if (openMessageLingdex < Const.a.stringTable.Length && openMessageLingdex != -1)
 				openMessage = Const.a.stringTable[openMessageLingdex];
 		}
 	}
@@ -56,7 +56,7 @@ public class InteractablePanel : MonoBehaviour {
 	public void Use(UseData ud) {
 		if (open) {
 			if (installed && ud.mainIndex == -1) {
-				Const.sprint(alreadyInstalledMessage,ud.owner);
+				if (alreadyInstalledMessageLingdex != -1) Const.sprint(alreadyInstalledMessage,ud.owner);
 				return; // do nothing already done here
 			}
 
@@ -69,7 +69,7 @@ public class InteractablePanel : MonoBehaviour {
 				installed = true;
 				installationItem.SetActive(true);
 				if (SFXInstallation != null) SFX.PlayOneShot(SFXInstallation);
-				Const.sprint(installedMessage,ud.owner);
+				if (installedMessageLingdex != -1) Const.sprint(installedMessage,ud.owner);
 
 				// use the target now that we are active
 				ud.argvalue = argvalue;
@@ -89,13 +89,13 @@ public class InteractablePanel : MonoBehaviour {
 				}
 			} else {
 				if (SFXFail != null) SFX.PlayOneShot(SFXFail); // aaaahhh!! Try again
-				Const.sprint(wrongItemMessage,ud.owner);
+				if (wrongItemMessageLingdex != -1) Const.sprint(wrongItemMessage,ud.owner);
 			}
 		} else {
 			open = true;
 			anim.Play("Open");
 			if (SFXOpen != null) SFX.PlayOneShot(SFXOpen);
-			Const.sprint(openMessage,ud.owner);
+			if (openMessageLingdex != -1) Const.sprint(openMessage,ud.owner);
 		}
 	}
 }

@@ -1,67 +1,179 @@
 fileFormatVersion: 2
 guid: 9b735421604708a46b8b1d4c038e74bb
-timeCreated: 1521332996
-licenseType: Free
 ModelImporter:
-  serializedVersion: 22
-  fileIDToRecycleName:
-    100000: door_x1_diagne
-    100002: door_x1_diagnw
-    100004: door_x1_diagse
-    100006: door_x1_diagsw
-    100008: door_x1_frame
-    100010: door_x1_straightdn
-    100012: door_x1_straightleft
-    100014: door_x1_straightright
-    100016: door_x1_straightright_001
-    100018: door_x1_straightup
-    100020: //RootNode
-    400000: door_x1_diagne
-    400002: door_x1_diagnw
-    400004: door_x1_diagse
-    400006: door_x1_diagsw
-    400008: door_x1_frame
-    400010: door_x1_straightdn
-    400012: door_x1_straightleft
-    400014: door_x1_straightright
-    400016: door_x1_straightright_001
-    400018: door_x1_straightup
-    400020: //RootNode
-    2300000: door_x1_diagne
-    2300002: door_x1_diagnw
-    2300004: door_x1_diagse
-    2300006: door_x1_diagsw
-    2300008: door_x1_frame
-    2300010: door_x1_straightdn
-    2300012: door_x1_straightleft
-    2300014: door_x1_straightright
-    2300016: door_x1_straightright_001
-    2300018: door_x1_straightup
-    3300000: door_x1_diagne
-    3300002: door_x1_diagnw
-    3300004: door_x1_diagse
-    3300006: door_x1_diagsw
-    3300008: door_x1_frame
-    3300010: door_x1_straightdn
-    3300012: door_x1_straightleft
-    3300014: door_x1_straightright
-    3300016: door_x1_straightright_001
-    3300018: door_x1_straightup
-    4300000: door_x1_straightright_001
-    4300002: door_x1_diagse
-    4300004: door_x1_straightleft
-    4300006: door_x1_straightup
-    4300008: door_x1_straightdn
-    4300010: door_x1_diagsw
-    4300012: door_x1_diagnw
-    4300014: door_x1_diagne
-    4300016: door_x1_straightright
-    4300018: door_x1_frame
-    7400000: IdleOpen
-    7400002: IdleClosed
-    7400004: Open
-    7400006: Close
-    9500000: //RootNode
+  serializedVersion: 19300
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: door_x1_diagne
+  - first:
+      1: 100002
+    second: door_x1_diagnw
+  - first:
+      1: 100004
+    second: door_x1_diagse
+  - first:
+      1: 100006
+    second: door_x1_diagsw
+  - first:
+      1: 100008
+    second: door_x1_frame
+  - first:
+      1: 100010
+    second: door_x1_straightdn
+  - first:
+      1: 100012
+    second: door_x1_straightleft
+  - first:
+      1: 100014
+    second: door_x1_straightright
+  - first:
+      1: 100016
+    second: door_x1_straightright_001
+  - first:
+      1: 100018
+    second: door_x1_straightup
+  - first:
+      1: 100020
+    second: //RootNode
+  - first:
+      4: 400000
+    second: door_x1_diagne
+  - first:
+      4: 400002
+    second: door_x1_diagnw
+  - first:
+      4: 400004
+    second: door_x1_diagse
+  - first:
+      4: 400006
+    second: door_x1_diagsw
+  - first:
+      4: 400008
+    second: door_x1_frame
+  - first:
+      4: 400010
+    second: door_x1_straightdn
+  - first:
+      4: 400012
+    second: door_x1_straightleft
+  - first:
+      4: 400014
+    second: door_x1_straightright
+  - first:
+      4: 400016
+    second: door_x1_straightright_001
+  - first:
+      4: 400018
+    second: door_x1_straightup
+  - first:
+      4: 400020
+    second: //RootNode
+  - first:
+      23: 2300000
+    second: door_x1_diagne
+  - first:
+      23: 2300002
+    second: door_x1_diagnw
+  - first:
+      23: 2300004
+    second: door_x1_diagse
+  - first:
+      23: 2300006
+    second: door_x1_diagsw
+  - first:
+      23: 2300008
+    second: door_x1_frame
+  - first:
+      23: 2300010
+    second: door_x1_straightdn
+  - first:
+      23: 2300012
+    second: door_x1_straightleft
+  - first:
+      23: 2300014
+    second: door_x1_straightright
+  - first:
+      23: 2300016
+    second: door_x1_straightright_001
+  - first:
+      23: 2300018
+    second: door_x1_straightup
+  - first:
+      33: 3300000
+    second: door_x1_diagne
+  - first:
+      33: 3300002
+    second: door_x1_diagnw
+  - first:
+      33: 3300004
+    second: door_x1_diagse
+  - first:
+      33: 3300006
+    second: door_x1_diagsw
+  - first:
+      33: 3300008
+    second: door_x1_frame
+  - first:
+      33: 3300010
+    second: door_x1_straightdn
+  - first:
+      33: 3300012
+    second: door_x1_straightleft
+  - first:
+      33: 3300014
+    second: door_x1_straightright
+  - first:
+      33: 3300016
+    second: door_x1_straightright_001
+  - first:
+      33: 3300018
+    second: door_x1_straightup
+  - first:
+      43: 4300000
+    second: door_x1_straightright_001
+  - first:
+      43: 4300002
+    second: door_x1_diagse
+  - first:
+      43: 4300004
+    second: door_x1_straightleft
+  - first:
+      43: 4300006
+    second: door_x1_straightup
+  - first:
+      43: 4300008
+    second: door_x1_straightdn
+  - first:
+      43: 4300010
+    second: door_x1_diagsw
+  - first:
+      43: 4300012
+    second: door_x1_diagnw
+  - first:
+      43: 4300014
+    second: door_x1_diagne
+  - first:
+      43: 4300016
+    second: door_x1_straightright
+  - first:
+      43: 4300018
+    second: door_x1_frame
+  - first:
+      74: 7400000
+    second: IdleOpen
+  - first:
+      74: 7400002
+    second: IdleClosed
+  - first:
+      74: 7400004
+    second: Open
+  - first:
+      74: 7400006
+    second: Close
+  - first:
+      95: 9500000
+    second: //RootNode
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -69,7 +181,7 @@ ModelImporter:
       name: door_x1__door_x1_png
     second: {fileID: 2100000, guid: a760ffcea06f48e4fb834fd63b09ed49, type: 2}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -86,6 +198,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -97,6 +210,7 @@ ModelImporter:
     - serializedVersion: 16
       name: IdleOpen
       takeName: Default Take
+      internalID: 0
       firstFrame: 23
       lastFrame: 25
       wrapMode: 0
@@ -125,6 +239,7 @@ ModelImporter:
     - serializedVersion: 16
       name: IdleClosed
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 1
       wrapMode: 0
@@ -153,6 +268,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Open
       takeName: Default Take
+      internalID: 0
       firstFrame: 0
       lastFrame: 23
       wrapMode: 0
@@ -181,6 +297,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Close
       takeName: Default Take
+      internalID: 0
       firstFrame: 24
       lastFrame: 49
       wrapMode: 0
@@ -212,6 +329,8 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -219,9 +338,14 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -232,10 +356,13 @@ ModelImporter:
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -245,14 +372,16 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
+  avatarSetup: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

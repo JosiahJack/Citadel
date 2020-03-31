@@ -261,3 +261,20 @@ improper chipset, demodulator required
 interface demodulator installed!
 relay 428 functioning correctly
 relay 428
+Door to CPU room open.
+ASSLT RIFLE
+BLASTER
+DARTGUN
+FLECHETTE
+ION BEAM
+LASER RAPIER
+PIPE
+MAGNUM
+MAGPULSE
+PISTOL
+PLASMA RFL
+RAIL GUN
+RIOT GUN
+SKORPION
+SPARQ
+STUNGUN

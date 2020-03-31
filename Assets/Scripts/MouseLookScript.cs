@@ -113,6 +113,7 @@ public class MouseLookScript : MonoBehaviour {
 	public GameObject mainMenu;
 	public WeaponMagazineCounter wepmagCounter;
 	public PlayerMovement playerMovement;
+	//private AudioListener audListener;
 
     //float headbobSpeed = 1;
     //float headbobStepCounter;
@@ -134,6 +135,13 @@ public class MouseLookScript : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.None;
 		inventoryMode = true;  // Start with inventory mode turned on
 		playerCamera = GetComponent<Camera>();
+		float[] distances = new float[32];
+		for (int i=0;i<32;i++) {
+			distances[i] = 79f; //can't see further than this please.  31 * 2.56 - player radius 0.48 = 78.88f rounded up to be careful..longest line of sight is the crawlway on level 6
+		}
+		distances[15] = 1200f; // sky is visible
+		playerCamera.layerCullDistances = distances; // cull anything beyond 50f except for sky layer
+		//audListener = GetComponent<AudioListener>();
 		frobDistance = Const.a.frobDistance;
 		holdingObject = false;
 		heldObjectIndex = -1;
@@ -166,6 +174,17 @@ public class MouseLookScript : MonoBehaviour {
 		recoiling = true;
 	}
 
+	public void SetCameraFocusPoint() {
+        // Draw line from cursor - used for projectile firing, e.g. magpulse/stugngun/railgun/plasma
+        RaycastHit rayhit = new RaycastHit();
+        Vector3 cursorPoint0 = new Vector3(MouseCursor.drawTexture.x + (MouseCursor.drawTexture.width / 2), MouseCursor.drawTexture.y + (MouseCursor.drawTexture.height / 2), 0);
+        cursorPoint0.y = Screen.height - cursorPoint0.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+        if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint0), out rayhit, Mathf.Infinity)) {
+            cameraFocusPoint = rayhit.point;
+            //drawMyLine(playerCamera.transform.position, rayhit.point, Color.red, .1f);
+        }
+	}
+
 	void Update () {
         Cursor.visible = false; // Hides hardware cursor so we can show custom cursor textures
 
@@ -191,16 +210,12 @@ public class MouseLookScript : MonoBehaviour {
 		Vector3 camPos = new Vector3(0f,Const.a.playerCameraOffsetY*playerMovement.currentCrouchRatio,camz);
 		transform.localPosition = camPos;
 
-        // Draw line from cursor - used for projectile firing, e.g. magpulse/stugngun/railgun/plasma
-        RaycastHit rayhit = new RaycastHit();
-        Vector3 cursorPoint0 = new Vector3(MouseCursor.drawTexture.x + (MouseCursor.drawTexture.width / 2), MouseCursor.drawTexture.y + (MouseCursor.drawTexture.height / 2), 0);
-        cursorPoint0.y = Screen.height - cursorPoint0.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
-        if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint0), out rayhit, Mathf.Infinity)) {
-            cameraFocusPoint = rayhit.point;
-            //drawMyLine(playerCamera.transform.position, rayhit.point, Color.red, .1f);
-        }
-
-        if (mainMenu.activeSelf == true) return;  // ignore mouselook when main menu is still up
+        if (mainMenu.activeSelf == true) {
+			playerCamera.farClipPlane = 1f;
+			return;  // ignore mouselook when main menu is still up
+		} else {
+			playerCamera.farClipPlane = 1200f;
+		}
 
 		if (Input.GetKeyUp("f6")) {
 			Const.a.Save(7,"quicksave");
@@ -1193,22 +1208,21 @@ public class MouseLookScript : MonoBehaviour {
 			GameObject tossObject = null;
 			bool freeObjectInPoolFound = false;
 			GameObject levelDynamicContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
-			if (levelDynamicContainer == null) {
-				Const.sprint("BUG: Failed to find dynamicObjectContainer for level: " + LevelManager.a.currentLevel.ToString(),player);
-				return;
-			}
+
 			// Fnd any free inactive objects within the level's Levelnumber.Dynamic container and activate those before instantiating
 			if (!grenadeActive) {
-				for (int i=0;i<levelDynamicContainer.transform.childCount;i++) {
-					Transform tr = levelDynamicContainer.transform.GetChild(i);
-					GameObject go = tr.gameObject;
-					UseableObjectUse reference = go.GetComponent<UseableObjectUse>();
-					if (reference != null) {
-						if (reference.useableItemIndex == heldObjectIndex && go.activeSelf == false) {
-							reference.customIndex = heldObjectCustomIndex;
-							tossObject = go;
-							freeObjectInPoolFound = true;
-							break;
+				if (levelDynamicContainer != null) {
+					for (int i=0;i<levelDynamicContainer.transform.childCount;i++) {
+						Transform tr = levelDynamicContainer.transform.GetChild(i);
+						GameObject go = tr.gameObject;
+						UseableObjectUse reference = go.GetComponent<UseableObjectUse>();
+						if (reference != null) {
+							if (reference.useableItemIndex == heldObjectIndex && go.activeSelf == false) {
+								reference.customIndex = heldObjectCustomIndex;
+								tossObject = go;
+								freeObjectInPoolFound = true;
+								break;
+							}
 						}
 					}
 				}
@@ -1229,7 +1243,7 @@ public class MouseLookScript : MonoBehaviour {
 				if (tossObject.activeSelf != true) {
 					tossObject.SetActive(true);
 				}
-				tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+				if (levelDynamicContainer != null) tossObject.transform.SetParent(levelDynamicContainer.transform,true);
 				tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
 				tossObject.GetComponent<UseableObjectUse>().customIndex = heldObjectCustomIndex;
 				tossObject.GetComponent<UseableObjectUse>().ammo = heldObjectAmmo;
@@ -1241,8 +1255,9 @@ public class MouseLookScript : MonoBehaviour {
 					Const.sprint("BUG: Failed to instantiate object being dropped!",player);
 					return;
 				}
-				tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+				if (levelDynamicContainer != null) tossObject.transform.SetParent(levelDynamicContainer.transform,true);
 				tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
+				tossObject.layer = playerMovement.gameObject.layer; // can't touch player who threw us...na nana na, na na
 				GrenadeActivate ga = tossObject.GetComponent<GrenadeActivate>();
 				if (ga != null) {
 					ga.Activate(heldObjectIndex, grenadeCurrent); // time to boom
@@ -1369,5 +1384,13 @@ public class MouseLookScript : MonoBehaviour {
 
 	public void ScreenShake (float force) {
 		Debug.Log("Screen shake signal received by MouseLookScript!");
+	}
+
+	public void ToggleAudioPause() {
+		if (PauseScript.a.Paused()) {
+			AudioListener.pause = true;
+		} else {
+			AudioListener.pause = false;
+		}
 	}
 }

@@ -11,6 +11,7 @@ public class WeaponMagazineCounter : MonoBehaviour {
 	private int tempi;
 	private int checkcount;
 	private int[] tempis = new int[] {0,0,0};
+	public WeaponCurrent currentWeapon;
 
 	public void UpdateDigits (int newamount) {
 		tempi = newamount;
@@ -32,5 +33,15 @@ public class WeaponMagazineCounter : MonoBehaviour {
 		onesIndicator.overrideSprite = indicatorSprites[tempis[2]];
 		tensIndicator.overrideSprite = indicatorSprites[tempis[1]];
 		hunsIndicator.overrideSprite = indicatorSprites[tempis[0]];
+	}
+
+	void Update() {
+		int index = WeaponFire.Get16WeaponIndexFromConstIndex(currentWeapon.weaponIndex);
+		if (index == -1) return;
+		if (currentWeapon.weaponIsAlternateAmmo) {
+			UpdateDigits(WeaponCurrent.WepInstance.currentMagazineAmount2[index]);
+        } else {
+			UpdateDigits(WeaponCurrent.WepInstance.currentMagazineAmount[index]);
+		}
 	}
 }

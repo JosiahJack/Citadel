@@ -9,6 +9,7 @@ public class NPC_ZeroG_MutantAnims : MonoBehaviour {
 	private float tickFinished;
 	public float tickTime = 0.04166f; // 24fps default
 	public bool endOnLastFrame = false;
+	public AIController aic;
 
 	void Awake() {
 		tickFinished = Time.time;
@@ -29,6 +30,7 @@ public class NPC_ZeroG_MutantAnims : MonoBehaviour {
 	}
 
     void Update() {
+		if (aic.rangeToEnemy >= aic.sightRange) return;
 		// only update model frames every tick seconds and only if we aren't on the last frame if we need to stop there
 		if (endOnLastFrame && currentFrame == (frames.Length-1)) return;
 

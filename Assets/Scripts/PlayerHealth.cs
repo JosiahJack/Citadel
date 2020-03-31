@@ -96,7 +96,7 @@ public class PlayerHealth : MonoBehaviour {
 			}
 		}
 
-		if (radiated < 1) {
+		if (radiated <= 2) {
 			radiationArea = false;
 		}
 
@@ -136,11 +136,20 @@ public class PlayerHealth : MonoBehaviour {
 	
 	void PlayerDead (){
 		MouseLookScript mls = cameraObject.GetComponent<MouseLookScript>();
-		mls.DropHeldItem();
-		mls.ResetHeldItem ();
-		mls.ResetCursor ();
-		Cursor.lockState = CursorLockMode.None;
-		if (LevelManager.a.ressurectionActive[LevelManager.a.currentLevel]) {
+		if (mls.heldObjectIndex != -1) {
+			mls.DropHeldItem();
+			mls.ResetHeldItem ();
+			mls.ResetCursor ();
+			Cursor.lockState = CursorLockMode.None;
+		}	
+		int lindex = 0;
+		if (LevelManager.a.currentLevel != -1) {
+			lindex = LevelManager.a.currentLevel;
+		} else {
+			lindex = 0;
+			//LevelManager.a.ressurectionActive[lindex] = true; // oopsies, debug time!
+		}
+		if (LevelManager.a.ressurectionActive[lindex]) {
 			// Ressurection
 			bool ressurected = LevelManager.a.RessurectPlayer(mainPlayerParent);
 			if (!ressurected) Debug.Log("ERROR: failed to ressurect player!");

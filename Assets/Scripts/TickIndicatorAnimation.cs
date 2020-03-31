@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class TickIndicatorAnimation : MonoBehaviour {
+public class TickIndicatorAnimation : MonoBehaviour, IBatchUpdate {
 	public PlayerHealth playerHealth;
 	public PlayerEnergy playerEnergy;
 	public Sprite[] indicatorImages;
@@ -12,62 +12,63 @@ public class TickIndicatorAnimation : MonoBehaviour {
 	private Image indicator;
 	private int tick;
 
-	void Awake () {
+	void Start () {
 		tick = 0;
 		indicator = GetComponent<Image>();
+		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketB);
 	}
 
-	void Update () {
+	public void BatchUpdate () {
 		if (nextthink < Time.time) {
 			if (healthIndicator) {
 				if (playerHealth.hm.health > 176) {
-					indicator.overrideSprite = indicatorImages[0];
+					if (indicator.overrideSprite != indicatorImages[0]) indicator.overrideSprite = indicatorImages[0];
 					//indicator.sprite = indicatorImages[0];
 				} else {
 					if (playerHealth.hm.health > 88) {
-						indicator.overrideSprite = indicatorImages[1];
+						if (indicator.overrideSprite != indicatorImages[1]) indicator.overrideSprite = indicatorImages[1];
 					} else {
 						switch (tick) {
 						case 1: 
-							indicator.overrideSprite = indicatorImages[2];
+							if (indicator.overrideSprite != indicatorImages[2]) indicator.overrideSprite = indicatorImages[2];
 							break;
 						case 2: 
-							indicator.overrideSprite = indicatorImages[3];
+							if (indicator.overrideSprite != indicatorImages[3]) indicator.overrideSprite = indicatorImages[3];
 							break;
 						case 3: 
-							indicator.overrideSprite = indicatorImages[4];
+							if (indicator.overrideSprite != indicatorImages[4]) indicator.overrideSprite = indicatorImages[4];
 							break;
 						case 4: 
-							indicator.overrideSprite = indicatorImages[5];
+							if (indicator.overrideSprite != indicatorImages[5]) indicator.overrideSprite = indicatorImages[5];
 							break;
 						case 5: 
-							indicator.overrideSprite = indicatorImages[6];
+							if (indicator.overrideSprite != indicatorImages[6]) indicator.overrideSprite = indicatorImages[6];
 							break;
 						}
 					}
 				}
 			} else {
 				if (playerEnergy.energy > 176) {
-					indicator.overrideSprite = indicatorImages[0];
+					if (indicator.overrideSprite != indicatorImages[0]) indicator.overrideSprite = indicatorImages[0];
 				} else {
 					if (playerEnergy.energy > 88) {
-						indicator.overrideSprite = indicatorImages[1];
+						if (indicator.overrideSprite != indicatorImages[1]) indicator.overrideSprite = indicatorImages[1];
 					} else {
 						switch (tick) {
 						case 1: 
-							indicator.overrideSprite = indicatorImages[2];
+							if (indicator.overrideSprite != indicatorImages[2]) indicator.overrideSprite = indicatorImages[2];
 							break;
 						case 2: 
-							indicator.overrideSprite = indicatorImages[3];
+							if (indicator.overrideSprite != indicatorImages[3]) indicator.overrideSprite = indicatorImages[3];
 							break;
 						case 3: 
-							indicator.overrideSprite = indicatorImages[4];
+							if (indicator.overrideSprite != indicatorImages[4]) indicator.overrideSprite = indicatorImages[4];
 							break;
 						case 4: 
-							indicator.overrideSprite = indicatorImages[5];
+							if (indicator.overrideSprite != indicatorImages[5]) indicator.overrideSprite = indicatorImages[5];
 							break;
 						case 5: 
-							indicator.overrideSprite = indicatorImages[2]; // 1 less frame than the health indicator, hold the dark one twice as long
+							if (indicator.overrideSprite != indicatorImages[2]) indicator.overrideSprite = indicatorImages[2]; // 1 less frame than the health indicator, hold the dark one twice as long
 							break;
 						}
 					}

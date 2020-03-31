@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Door : MonoBehaviour {
+public class Door : MonoBehaviour, IBatchUpdate {
 	public string target;
 	public string argvalue;
 	public bool onlyTargetOnce;
@@ -87,6 +87,7 @@ public class Door : MonoBehaviour {
 		}
 		cardUsedMessage = Const.a.stringTable[4];
 		butdoorStillLockedMessage = Const.a.stringTable[5];
+		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketA);
 	}
 
 	public void Use (UseData ud) {
@@ -116,7 +117,7 @@ public class Door : MonoBehaviour {
 						accessCardUsedByPlayer = true;
 					}
 
-					if (target != "" && target != " " && target != "  ") {
+					if (!string.IsNullOrWhiteSpace(target)) {
 						if (onlyTargetOnce && !targetAlreadyDone) {
 							targetAlreadyDone = true;
 							ud.argvalue = argvalue;
@@ -254,7 +255,7 @@ public class Door : MonoBehaviour {
 		}
 	}
 
-	void Update () {
+	public void BatchUpdate () {
 		if (ajar) {
 			doorOpen = doorState.Closing;
 			anim.Play(openClipName,defIndex, ajarPercentage);

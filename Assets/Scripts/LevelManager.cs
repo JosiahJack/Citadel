@@ -6,12 +6,20 @@ public class LevelManager : MonoBehaviour {
 	public static LevelManager a;
 	public GameObject[] levels;
 	public int[] levelSecurity;
-	[DTValidator.Optional]  public Transform[] ressurectionLocation;
+	public int[] levelCameraCount;
+	public int[] levelSmallNodeCount;
+	public int[] levelLargeNodeCount;	
+	public Transform[] ressurectionLocation;
 	public bool[] ressurectionActive;
 	//public GameObject currentPlayer;
 	//public GameObject elevatorControl;
 	public GameObject sky;
 	public bool superoverride = false;
+	public GameObject saturn;
+	public MeshRenderer skyMR;
+	public bool[] showSkyForLevel;
+	public bool[] showSaturnForLevel;
+	public enum SecurityType{None,Camera,NodeSmall,NodeLarge};
 
 	void Awake () {
 		a = this;
@@ -21,6 +29,10 @@ public class LevelManager : MonoBehaviour {
 		if (sky != null)
 			sky.SetActive(true);
 
+		skyMR.enabled = false;
+		saturn.SetActive(false); //using GO because of ring children
+		if (showSkyForLevel[currentLevel]) skyMR.enabled = true;
+		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true);
 		Time.timeScale = Const.a.defaultTimeScale;
 	}
 
@@ -75,6 +87,8 @@ public class LevelManager : MonoBehaviour {
 		if (levnum == 13) currentPlayer.GetComponent<PlayerReferenceManager> ().playerCapsule.GetComponent<PlayerMovement> ().inCyberSpace = true;
 		currentLevel = levnum; // Set current level to be the new level
 		DisableAllNonOccupiedLevels();
+		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
+		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 	}
 
 	public void LoadLevelFromSave (int levnum) {
@@ -114,10 +128,11 @@ public class LevelManager : MonoBehaviour {
 		if (Const.a.player4 != null) p4level = Const.a.player4.GetComponent<PlayerReferenceManager>().playerCurrentLevel;
 
 		for (int i=0;i<levels.Length;i++) {
-			if (p1level != i && p2level != i && p3level != i && p4level != i)
-				levels[i].SetActive(false);
-			else
-				levels[i].SetActive(true);
+			if (p1level != i && p2level != i && p3level != i && p4level != i) {
+				if (levels[i] != null) levels[i].SetActive(false);
+			} else {
+				if (levels[i] != null) levels[i].SetActive(true);
+			}
 		}
 	}
 
@@ -136,11 +151,38 @@ public class LevelManager : MonoBehaviour {
 		return levelSecurity [currentLevel];
 	}
 
-	public void ReduceCurrentLevelSecurity(int secDrop) {
+	public void RegisterSecurityObject(int lev,SecurityType stype) {
+		if (lev > 14 || lev < 0) return;
+		switch (stype) {
+			case SecurityType.None: return;
+			case SecurityType.Camera: levelCameraCount[lev]++; break;
+			case SecurityType.NodeSmall: levelSmallNodeCount[lev]++; break;
+			case SecurityType.NodeLarge: levelLargeNodeCount[lev]++; break;
+		}
+	}
+
+	// Typical level
+	// 4 CPU nodes
+	// 20 cameras
+	// 100% = 4x + 20y
+	// Assuming that a good camera percentage is 2-3%, CPU % would be about 10-15 each
+	public void ReduceCurrentLevelSecurity(SecurityType stype) {
 		if (currentLevel == -1) return;
+
+		int camScore = 2;
+		int nodeSmallScore = 8;
+		int nodeLargeScore = 15;
+		int secscoreTotal = (levelCameraCount[currentLevel] * camScore) + (levelSmallNodeCount[currentLevel] * nodeSmallScore) + (levelLargeNodeCount[currentLevel] * nodeLargeScore);
+		int secDrop = camScore; // default to camScore
+		switch (stype) {
+			case SecurityType.None: return;
+			case SecurityType.Camera: secDrop = (int)Mathf.Ceil((camScore/secscoreTotal) * 100); break; // 1 camera divided by the total, so 2/ say (40+60) = 2/100 = 0.02, or 2% using the example numbers above
+			case SecurityType.NodeSmall: secDrop = (int)Mathf.Ceil((nodeSmallScore/secscoreTotal) * 100); break;
+			case SecurityType.NodeLarge: secDrop = (int)Mathf.Ceil((nodeLargeScore/secscoreTotal) * 100); break;
+		}
+
 		levelSecurity [currentLevel] -= secDrop;
+		if (levelSecurity [currentLevel] < 0) levelSecurity [currentLevel] = 0;
 		Const.sprint("Level security now " + levelSecurity[currentLevel].ToString() + "%",Const.a.allPlayers);
-		if (levelSecurity [currentLevel] < 1)
-			levelSecurity [currentLevel] = 0; // limit reduction in case of setup errors.  Calculate your sec levels carefully!!
 	}
 }

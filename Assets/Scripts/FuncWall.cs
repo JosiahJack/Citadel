@@ -10,9 +10,6 @@ public class FuncWall : MonoBehaviour {
 	public float percentAjar = 0;
 	public AudioClip SFXMoving;
 	public AudioClip SFXStop;
-	public GameObject trigger;
-	public bool useTrigger;
-	public bool useOnlyActivatesTrigger;
 	private Vector3 startPosition;
 	private Vector3 goalPosition;
 	private Vector3 tempVec;
@@ -29,25 +26,17 @@ public class FuncWall : MonoBehaviour {
 		if (currentState == FuncStates.AjarMovingStart || currentState == FuncStates.AjarMovingTarget) {
 			tempVec = ((transform.position - targetPosition.transform.position).normalized * (Vector3.Distance(transform.position,targetPosition.transform.position) * percentAjar * -1)) + transform.position;
 			transform.position = tempVec;
-			if (useTrigger) trigger.SetActive (false);
 		}
 		rbody = GetComponent<Rigidbody>();
 		rbody.isKinematic = true;
+		rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 		SFXSource = GetComponent<AudioSource>();
 		stopSoundPlayed = false;
 		movedToLocation = false;
 		dist = 0;
-		if (useOnlyActivatesTrigger)
-			trigger.SetActive (false);
 	}
 		
 	public void Targetted (UseData ud) {
-		if (useOnlyActivatesTrigger) {
-			trigger.SetActive (true);
-			useOnlyActivatesTrigger = false;
-			return;
-		}
-
 		switch (currentState) {
 			case FuncStates.Start:
 				MoveTarget();
@@ -77,16 +66,10 @@ public class FuncWall : MonoBehaviour {
 
 	void MoveStart() {
 		currentState = FuncStates.MovingStart;
-		if (useTrigger) {
-			trigger.SetActive (false);
-		}
 	}
 
 	void MoveTarget() {
 		currentState = FuncStates.MovingTarget;
-		if (useTrigger) {
-			trigger.SetActive (false);
-		}
 	}
 
 	void FixedUpdate () {
@@ -107,9 +90,7 @@ public class FuncWall : MonoBehaviour {
 				break;
 			case FuncStates.MovingStart:
 				goalPosition = startPosition;
-				//transform.position = Vector3.MoveTowards (transform.position, goalPosition, (speed * Time.deltaTime));
 				rbody.WakeUp();
-				//rbody.velocity = ((goalPosition - transform.position) * speed);
 				dist = speed * Time.deltaTime;
 				tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
 				rbody.MovePosition(tempVec);
@@ -126,17 +107,11 @@ public class FuncWall : MonoBehaviour {
 						SFXSource.PlayOneShot (SFXStop);
 						stopSoundPlayed = true;
 					}
-					if (useTrigger) trigger.SetActive (true);
 				}
 				break;
 			case FuncStates.MovingTarget:
 				goalPosition = targetPosition.transform.position;
-				//transform.position = Vector3.MoveTowards (transform.position, goalPosition, (speed * Time.deltaTime));
 				rbody.WakeUp();
-				//rbody.velocity = ((goalPosition - transform.position) * speed);
-				//rbody.velocity = new Vector3(0,-1f,0);
-				//rbody.velocity = (goalPosition - transform.position) * speed;
-				//rbody.MovePosition(goalPosition);
 				dist = speed * Time.deltaTime;
 				tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
 				rbody.MovePosition(tempVec);
@@ -152,10 +127,6 @@ public class FuncWall : MonoBehaviour {
 						SFXSource.loop = false;
 						SFXSource.PlayOneShot (SFXStop);
 						stopSoundPlayed = true;
-					}
-
-					if (useTrigger) {
-						trigger.SetActive (true);
 					}
 				}
 				

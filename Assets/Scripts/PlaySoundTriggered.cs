@@ -11,9 +11,14 @@ public class PlaySoundTriggered : MonoBehaviour {
 	private bool justPaused;
 	[HideInInspector]
 	public bool currentlyPlaying = false;
+	public bool playSoundOnParticleEmit = false;
+	private ParticleSystem psys;
+	public int numparticles;
+	public int burstemittcnt1 = 15;
+	public int burstemittcnt2 = 30;
 
     void Start() {
-		SFX = GetComponent<AudioSource>();
+		if (SFX == null) SFX = GetComponent<AudioSource>();
 		SFX.loop = false;
 		SFX.clip = SFXClipToPlay;
 		if (playEverywhere) {
@@ -22,37 +27,52 @@ public class PlaySoundTriggered : MonoBehaviour {
 			SFX.spatialBlend = 1.0f;
 		}
 		if (loopingAmbient) {
-			SFX.loop = true;
+			if (SFX != null) SFX.loop = true;
 			currentlyPlaying = true;
-			SFX.Play();
+			if (SFX != null) SFX.Play();
+		}
+
+		if (playSoundOnParticleEmit) {
+			psys = GetComponent<ParticleSystem>();
+			if (psys == null) Debug.Log("ERROR: missing ParticleSystem for PlaySoundTriggered");
+			loopingAmbient = false; //only play when triggered by the psys emission
+			numparticles = 0;
 		}
     }
 
 	// For ambient noises
 	void OnEnable() {
+		if (SFX == null) SFX = GetComponent<AudioSource>(); 
 		if (loopingAmbient) {
-			SFX.loop = true;
-			SFX.clip = SFXClipToPlay;
-			SFX.Play();
+			if (SFX != null) SFX.loop = true;
+			if (SFX != null) SFX.clip = SFXClipToPlay;
+			if (SFX != null) SFX.Play();
 		}
 	}
 
 	void Update() {
 		if (currentlyPlaying) {
 			if (PauseScript.a != null && PauseScript.a.Paused()) {
-				SFX.Pause();
+				if (SFX != null) SFX.Pause();
 				justPaused = true;
 			} else {
 				if (justPaused) {
-					SFX.UnPause();
+					if (SFX != null) SFX.UnPause();
 					justPaused = false;
 				}
 			}
 		}
+		if (playSoundOnParticleEmit){
+			int count = psys.particleCount;
+			if (count > numparticles && (count == burstemittcnt1 || count == burstemittcnt2)) {
+				if (SFX != null) SFX.PlayOneShot(SFXClipToPlay);
+			}
+			numparticles = count;
+		}
 	}
 
     public void PlaySoundEffect() {
-		SFX.loop = false;
-		SFX.PlayOneShot(SFXClipToPlay);
+		if (SFX != null) SFX.loop = false;
+		if (SFX != null) SFX.PlayOneShot(SFXClipToPlay);
 	}
 }

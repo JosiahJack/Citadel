@@ -44,20 +44,20 @@ public class CenterTabButtons : MonoBehaviour {
 	void ToggleHighlightOnButton (int buttonIndex) {
 		Image buttonImage = null;
 		switch (buttonIndex) {
-			case 0: buttonImage = MainTabButton.image; break;
-			case 1: buttonImage = HardwareTabButton.image; break;
-			case 2: buttonImage = GeneralTabButton.image; break;
-			case 3: buttonImage = SoftwareTabButton.image; break;
+			case 0: if (buttonImage != MainTabButton.image) buttonImage = MainTabButton.image; break;
+			case 1: if (buttonImage != HardwareTabButton.image) buttonImage = HardwareTabButton.image; break;
+			case 2: if (buttonImage != GeneralTabButton.image) buttonImage = GeneralTabButton.image; break;
+			case 3: if (buttonImage != SoftwareTabButton.image) buttonImage = SoftwareTabButton.image; break;
 		}
 
 		if (buttonImage == null) return;
 		if (highlightStatus[buttonIndex]) {
-			buttonImage.overrideSprite = MFDSpriteNotification;
+			if (buttonImage.overrideSprite != MFDSpriteNotification) buttonImage.overrideSprite = MFDSpriteNotification;
 		} else {
 			if (curTab == buttonIndex) {
-				buttonImage.overrideSprite = MFDSpriteSelected;
+				if (buttonImage.overrideSprite != MFDSpriteSelected) buttonImage.overrideSprite = MFDSpriteSelected;
 			} else {
-				buttonImage.overrideSprite = MFDSprite;
+				if (buttonImage.overrideSprite != MFDSprite) buttonImage.overrideSprite = MFDSprite;
 			}
 		}
 
@@ -69,9 +69,9 @@ public class CenterTabButtons : MonoBehaviour {
 			highlightTickCount[buttonIndex] = 0;
 			tabNotified[buttonIndex] = false; // stop blinking
 			if (curTab == buttonIndex) {
-				buttonImage.overrideSprite = MFDSpriteSelected; // If we are on this tab, return to selected
+				if (buttonImage.overrideSprite != MFDSpriteSelected) buttonImage.overrideSprite = MFDSpriteSelected; // If we are on this tab, return to selected
 			} else {
-				buttonImage.overrideSprite = MFDSprite; // Return to normal
+				if (buttonImage.overrideSprite != MFDSprite) buttonImage.overrideSprite = MFDSprite; // Return to normal
 			}
 		}
 	}

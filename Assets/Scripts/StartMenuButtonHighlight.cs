@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class StartMenuButtonHighlight : MonoBehaviour {
-	[DTValidator.Optional] public MenuArrowKeyControls pageController; //not used on sub-buttons within the start menu page for new game difficulty settings
+	public MenuArrowKeyControls pageController; //not used on sub-buttons within the start menu page for new game difficulty settings
 	public int menuItemIndex;
 	public Text text;
 	public Shadow textshadow;

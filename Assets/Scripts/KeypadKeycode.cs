@@ -42,7 +42,7 @@ public class KeypadKeycode : MonoBehaviour {
 
 		if (locked) {
 			Const.sprint(lockedMessage,ud.owner);
-			if (lockedTarget != null && lockedTarget != "" && lockedTarget != " ") {
+			if (!string.IsNullOrWhiteSpace(lockedTarget)) {
 				ud.argvalue = argvalue;
 				TargetIO tio = GetComponent<TargetIO>();
 				if (tio != null) {
@@ -111,7 +111,7 @@ public class KeypadKeycode : MonoBehaviour {
 			Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
 		}
 		Const.a.UseTargets(ud,target);
-		if (successMessage != "" && successMessage != " " && successMessage != "  ") Const.sprint(successMessage,ud.owner);
+		if (!string.IsNullOrWhiteSpace(successMessage)) Const.sprint(successMessage,ud.owner);
 	}
 
 	void Update () {

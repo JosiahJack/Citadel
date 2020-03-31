@@ -1,0 +1,69 @@
+Biological systems monitor does nothing
+Sometimes weapon cycle up/down stops working until after you've clicked on a weapon on the hud
+Dropping last weapon doesn't remove it from the player's hand
+flyers using raycasts in fixed update! replace with grid height check instead
+
+Full Prefab sweep:
+chunk_eng2_1 is done
+
+
+PERFORMANCE TESTS:
+============================================================================
+
+============================================================================
+
+Const.a.stringTable[rechargeMsgLingdex]
+
+	public string lockedMessage;
+	public int lockedMessageLingdex = 193;
+
+	void Start () {
+		if (string.IsNullOrWhiteSpace(lockedMessage)) {
+			if (lockedMessageLingdex < Const.a.stringTable.Length)
+				lockedMessage = Const.a.stringTable[lockedMessageLingdex];
+		}
+	}
+
+
+Prefab sweep checklists:
+	Level chunks:
+		Tag Geometry
+		Layer Geometry
+		Has UseName script with targetname description
+		Has simple box collider aligned to simple plane with layer Geometry
+			Center    0  1.31     0
+			Size   2.56  0.06  2.56
+		Has an added colliders on layer InterDebris if needed
+		Has LOD Group setup with simple plan as LOD1 and 100% | 15% | 2% for levels unless already just simple plane
+		Checked static
+
+	Hardware Items:
+
+	Patch Items:
+
+	Grenade Items:
+
+	Generic Items:
+
+	Objects:
+
+	NPCs:
+
+Model cleanup down to:
+foliage_grass5 is done
+
+Pre-model clean-up sweep Library filesize: 4.11GB (4,416,727,724)
+After deleting the borked Occlusion bake: 1.59GB (1,712,584,527)
+
+Import warnings:
+npc_botexec_gib self-intersecting
+med2_2_mesh self-intersecting
+npc_flierbot_gibwinglh_mesh self-intersecting
+npc_cyborg_drone self-intersecting
+stor1_4 self-intersecting
+bridg2_4 self-intersecting
+maint1_1_mesh self-intersecting
+reac1_4 self-intersecting
+puzzlepanel2 IdleClosed animation length 0
+stor1_6_mesh self-intersecting
+npc_cyborg_elite_mesh self-intersecting

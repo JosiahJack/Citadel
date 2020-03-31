@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HealthManager : MonoBehaviour {
+public class HealthManager : MonoBehaviour, IBatchUpdate {
 	public bool isPlayer = false;
+	public bool isGrenade = false;
 	public float health = -1f; // current health
 	public float maxhealth; // maximum health
 	public float gibhealth; // point at which we splatter
 	public bool gibOnDeath = false; // used for things like crates to "gib" and shatter
 	public bool dropItemsOnGib = false;
-	[DTValidator.Optional] public SearchableItem searchableItem; // not used universally
+	public SearchableItem searchableItem; // not used universally
 	public bool gibCorpse = false;
     public bool vaporizeCorpse = true;
 	public bool isNPC = false;
@@ -19,12 +20,13 @@ public class HealthManager : MonoBehaviour {
 	public int[] gibIndices;
 	public GameObject[] gibObjects;
 	public int index;
-	public int securityAmount;
+	public int levelIndex;
+	public LevelManager.SecurityType securityAffected;
 	[HideInInspector] public GameObject attacker;
 	public Const.PoolType deathFX;
 	public enum BloodType {None,Red,Yellow,Green,Robot};
 	public BloodType bloodType;
-	[DTValidator.Optional] public AudioClip backupDeathSound;
+	public AudioClip backupDeathSound;
     public bool debugMessages = false;
 	public HardwareInvCurrent hic;
 	public HardwareInventory hinv;
@@ -37,8 +39,9 @@ public class HealthManager : MonoBehaviour {
 
 	private bool initialized = false;
 	private bool deathDone = false;
-	[HideInInspector,DTValidator.Optional]
+	[HideInInspector]
 	public AIController aic;
+	public NPC_Hopper hopc;
 	private Rigidbody rbody;
 	private MeshCollider meshCol;
 	private BoxCollider boxCol;
@@ -49,9 +52,10 @@ public class HealthManager : MonoBehaviour {
 	private float take;
 	public string targetOnDeath;
 	public string argvalue;
-	[DTValidator.Optional] public SpawnManager spawnMother;  // not used universally
+	public SpawnManager spawnMother;  // not used universally
 	public GameObject healingFXFlash;
 	public bool god = false; // is this entity invincible? used for player cheat
+	private DamageData tempdd;
 
 	void Awake () {
 		initialized = false;
@@ -63,6 +67,7 @@ public class HealthManager : MonoBehaviour {
 		capCol = GetComponent<CapsuleCollider>();
         attacker = null;
 		//searchItems = GetComponent<SearchableItem>();
+		tempdd = new DamageData();
 
 		if (isPlayer) {
 			//Const.a.player1 = transform.parent.gameObject;
@@ -72,17 +77,26 @@ public class HealthManager : MonoBehaviour {
 		}
 		take = 0;
 		justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
+		if (securityAffected != LevelManager.SecurityType.None) LevelManager.a.RegisterSecurityObject(levelIndex, securityAffected);
+		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketA);
 	}
 
 	// Put into Start instead of Awake to give Const time to populate from enemy_tables.txt
 	void Start () {
 		if (isNPC) {
 			aic = GetComponent<AIController>();
+			hopc = GetComponent<NPC_Hopper>();
 			if (aic == null) {
-				Debug.Log("BUG: No AIController script on NPC!");
-				return;
+				if (hopc == null) {
+					Debug.Log("BUG: No AIController or NPC_Hopper script on NPC!");
+					return;
+				}
 			}
-            index = aic.index;
+            if (aic != null) {
+				index = aic.index;
+			} else {
+				index = hopc.index;
+			}
 			if (health <= 0) health = Const.a.healthForNPC[index]; //leaves possibility of setting health lower than normal, for instance the cortex reaver on level 5
 			if (maxhealth <= 0) maxhealth = Const.a.healthForNPC[index]; // set maxhealth to default healthForNPC, possible to set higher, e.g. for cyborg assassins on level 9 whose health is 3 times normal
 
@@ -94,7 +108,7 @@ public class HealthManager : MonoBehaviour {
 		if (maxhealth < 1) maxhealth = health;
 	}
 
-	void Update () {
+	public void BatchUpdate () {
 		if (!initialized) {
 			initialized = true;
 			if (health > 0) Const.a.RegisterObjectWithHealth(this);
@@ -102,50 +116,53 @@ public class HealthManager : MonoBehaviour {
 			
 		if (health > maxhealth) health = maxhealth; // Don't go past max.  Ever.
 		if (actAsCorpseOnly && isNPC) {
-			DamageData dd = new DamageData();
-			dd.damage = maxhealth * 2f;
-			TakeDamage(dd); // harrycarry time, we's dead
-			//aic. nevermind we already check health in AIController's Think() function and take care of anims
+			tempdd.ResetDamageData(tempdd);
+			tempdd.damage = maxhealth * 2f;
+			TakeDamage(tempdd); // harrycarry time, we's dead
 			actAsCorpseOnly = false;
 		}
 	}
 
 	public void NotifyEnemyNearby(GameObject enemSent) {
+		if (enemSent == null) return;
 		if (aic != null && isNPC && (health > 0f)) {
 			aic.SendEnemy(enemSent);
 		}
 	}
 
-	public void TakeDamage(DamageData dd) {
+	public float TakeDamage(DamageData dd) {
+		// 5. Apply Velocity for Damage Amount
 		if (applyImpact && rbody != null) {
 			if (dd.impactVelocity <= 0) {
 				rbody.AddForceAtPosition((dd.attacknormal*dd.damage*2f),dd.hit.point);
 			} else {
-				//rbody.AddForce(dd.impactVelocity*dd.attacknormal,ForceMode.Impulse); // Old, JJ changed 9/5/19 to AddForceAtPosition since it's more accurate when shooting objects
 				rbody.AddForceAtPosition((dd.attacknormal*dd.impactVelocity*2f),dd.hit.point);
 			}
 		}
 
 		if (god) {
 			Debug.Log("God mode detected. Dmg = " + dd.damage.ToString() + ", Taken = 0");
-			return; // untouchable!
+			return 0; // untouchable!
 		}
 
 		if (health <= 0) {
 			Debug.Log("GameObject was dead. Dmg = " + dd.damage.ToString() + ", Taken = 0");
-			return;
+			return 0;
 		}
 
 		if (dd.damage <= 0) {
 			Debug.Log("Dmg = " + dd.damage.ToString() + ", Taken = 0");
-			return;
+			return 0;
 		}
 
 		take = dd.damage;
         tempFloat = health;
 		if (isPlayer) {
 			// Check if player shield is active
-
+			if (dd.attackType == Const.AttackType.Magnetic) {
+				take = 0f; // don't get hurt by magnetic interactions
+				ph.gameObject.GetComponent<PlayerEnergy>().TakeEnergy(11f);
+			}
 			if (hic.hardwareIsActive[5] && hinv.hasHardware[5]) {
 				// Versions of shield protect against 20, 40, 75, 75%'s
 				// Versions of shield thressholds are 0, 10, 15, 30...ooh what's this hang on now...Huh, turns out it absorbs all damage below the thresshold!  Cool!
@@ -194,6 +211,121 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 
+		// Apply critical based on AttackType
+		if (aic != null && isNPC && (health > 0f)) {
+			switch(aic.npcType) {
+				case Const.npcType.Mutant:
+					switch(dd.attackType) {
+						case Const.AttackType.None: take *= 1f; break; // same
+						case Const.AttackType.Melee: take *= 1f; break; // same
+						case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
+						case Const.AttackType.EnergyBeam: take *= 1f; break; // same
+						case Const.AttackType.Magnetic: take *= 0; break;
+						case Const.AttackType.Projectile: take *= 1f; break; // same
+						case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+						case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
+						case Const.AttackType.Gas: take *= 2f; break;
+						case Const.AttackType.ProjectileNeedle: take *= 2f; break; // same
+						case Const.AttackType.Tranq: take *= 1f; break; // same
+					}
+					break;
+				case Const.npcType.Supermutant:
+					switch(dd.attackType) {
+						case Const.AttackType.None: take *= 1f; break; // same
+						case Const.AttackType.Melee: take *= 1f; break; // same
+						case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
+						case Const.AttackType.EnergyBeam: take *= 1f; break; // same
+						case Const.AttackType.Magnetic: take *= 0; break; // no damage
+						case Const.AttackType.Projectile: take *= 1f; break; // same
+						case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+						case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
+						case Const.AttackType.Gas: take *= 1.5f; break;
+						case Const.AttackType.ProjectileNeedle: take *= 1f; break; // same
+						case Const.AttackType.Tranq: take *= 1f; break; // same
+					}
+					break;
+				case Const.npcType.Robot:
+					switch(dd.attackType) {
+						case Const.AttackType.None: take *= 1f; break; // same
+						case Const.AttackType.Melee: take *= 1f; break; // same
+						case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
+						case Const.AttackType.EnergyBeam: take *= 1f; break; // same
+						case Const.AttackType.Magnetic: take *= 4f; break; // same
+						case Const.AttackType.Projectile: take *= 1f; break; // same
+						case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+						case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
+						case Const.AttackType.Gas: take *= 0; break; // no damage
+						case Const.AttackType.ProjectileNeedle: take *= 0; break; // no damage
+						case Const.AttackType.Tranq: take *= 0; break; // no damage
+					}
+					break;
+				case Const.npcType.Cyborg:
+					switch(dd.attackType) {
+						case Const.AttackType.None: take *= 1f; break; // same
+						case Const.AttackType.Melee: take *= 1f; break; // same
+						case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
+						case Const.AttackType.EnergyBeam: take *= 1f; break; // same
+						case Const.AttackType.Magnetic: take *= 2f; break; // same
+						case Const.AttackType.Projectile: take *= 1f; break; // same
+						case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+						case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
+						case Const.AttackType.Gas: take *= 1f; break; // same
+						case Const.AttackType.ProjectileNeedle: take *= 1f; break; // same
+						case Const.AttackType.Tranq: take *= 1f; break; // same
+					}
+					break;
+				case Const.npcType.Supercyborg:
+					switch(dd.attackType) {
+						case Const.AttackType.None: take *= 1f; break; // same
+						case Const.AttackType.Melee: take *= 1f; break; // same
+						case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
+						case Const.AttackType.EnergyBeam: take *= 1f; break; // same
+						case Const.AttackType.Magnetic: take *= 2f; break; // same
+						case Const.AttackType.Projectile: take *= 1f; break; // same
+						case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+						case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
+						case Const.AttackType.Gas: take *= 0; break;
+						case Const.AttackType.ProjectileNeedle: take *= 0; break;
+						case Const.AttackType.Tranq: take *= 0; break;
+					}
+					break;
+				case Const.npcType.MutantCyborg:
+					switch(dd.attackType) {
+						case Const.AttackType.None: take *= 1f; break; // same
+						case Const.AttackType.Melee: take *= 1f; break; // same
+						case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
+						case Const.AttackType.EnergyBeam: take *= 1f; break; // same
+						case Const.AttackType.Magnetic: take *= 0.5f; break; // same
+						case Const.AttackType.Projectile: take *= 1f; break; // same
+						case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+						case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
+						case Const.AttackType.Gas: take *= 2f; break; // same
+						case Const.AttackType.ProjectileNeedle: take *= 2f; break; // same
+						case Const.AttackType.Tranq: take *= 1.5f; break; // same
+					}
+					break;
+				//case Const.npcType.Cyber:    assumed to be AttackType.None
+			}
+		} else {
+			if (hopc != null && isNPC && health > 0f) {
+				// check against hopper (same as robot)
+				switch(dd.attackType) {
+					case Const.AttackType.None: take *= 1f; break; // same
+					case Const.AttackType.Melee: take *= 1f; break; // same
+					case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
+					case Const.AttackType.EnergyBeam: take *= 1f; break; // same
+					case Const.AttackType.Magnetic: take *= 4f; break; // same
+					case Const.AttackType.Projectile: take *= 1f; break; // same
+					case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+					case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
+					case Const.AttackType.Gas: take *= 0; break; // no damage
+					case Const.AttackType.ProjectileNeedle: take *= 0; break; // no damage
+					case Const.AttackType.Tranq: take *= 0; break; // no damage
+				}
+			}
+		}
+		
+
 		// Do the damage, that's right do. your. worst!
 		health -= take; //was directly dd.damage but changed since we are check for extra things in case GetDamageTakeAmount wasn't called on dd.damage beforehand (e.g. player fall damage, internal to player only, need to protect against shield, etc, JJ 9/5/19)
 		attacker = dd.owner;
@@ -211,12 +343,27 @@ public class HealthManager : MonoBehaviour {
 					}
 				}
 			}
+		} else {
+			if (hopc != null && isNPC && health > 0f) {
+				//hopc.goIntoPain = true;
+				//hopc.SendEnemy(attacker);  // UPDATE does this need to be here?
+				for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
+					if (Const.a.healthObjectsRegistration[ij] != null) {
+						if (Const.a.healthObjectsRegistration[ij].isNPC) {
+							if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,gameObject.transform.position) < 10f) {
+								Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(attacker);
+								//Debug.Log("Hopper took pain and then notified a nearby enemy to join the fray!");
+							}
+						}
+					}
+				}
+			}
 		}
 
         if (health <= 0f) {
             if (!deathDone) {
-				// use targets
-				if (targetOnDeath != null && targetOnDeath != "" && targetOnDeath != " " && targetOnDeath != "  ") {
+				// use targets targetOnDeath
+				if (!string.IsNullOrWhiteSpace(targetOnDeath)) {
 					UseData ud = new UseData();
 					ud.owner = dd.owner;
 					ud.argvalue = argvalue;
@@ -236,6 +383,7 @@ public class HealthManager : MonoBehaviour {
 				}
 
                 if (isNPC) NPCDeath(null);
+				if (isGrenade) GrenadeDeath();
             } else {
                 if (vaporizeCorpse && health < (0 - (maxhealth / 2))) {
                     GetComponent<MeshRenderer>().enabled = false;
@@ -254,6 +402,7 @@ public class HealthManager : MonoBehaviour {
 		}
 
 		Debug.Log("Dmg = " + dd.damage.ToString() + ", Taken = " + take.ToString() + ", Health:" + health.ToString() + " at " + transform.position.x.ToString() + " " + transform.position.y.ToString() + " " + transform.position.z.ToString());
+		return take;
 	}
 
 	public void TeleportAway() {
@@ -278,6 +427,7 @@ public class HealthManager : MonoBehaviour {
 					GameObject tempAud = Const.a.GetObjectFromPool(Const.PoolType.TempAudioSources);
 					if (tempAud != null && deathSound != null) {
 						tempAud.transform.position = transform.position;
+						tempAud.SetActive(true);
 						AudioSource aS = tempAud.GetComponent<AudioSource> ();
 						if (aS != null && deathSound != null) aS.PlayOneShot (deathSound);
 					}
@@ -286,6 +436,7 @@ public class HealthManager : MonoBehaviour {
 					GameObject tempAud = Const.a.GetObjectFromPool(Const.PoolType.TempAudioSources);
 					if (tempAud != null && deathSound != null) {
 						tempAud.transform.position = transform.position;
+						tempAud.SetActive(true);
 						AudioSource aS = tempAud.GetComponent<AudioSource> ();
 						if (aS != null && deathSound != null) aS.PlayOneShot (backupDeathSound);
 					}
@@ -305,10 +456,13 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 
+		if (rbody != null) rbody.useGravity = false;
+		
 		if (dropItemsOnGib) {
 			if (searchableItem != null) {
 				GameObject levelDynamicContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
-				if (levelDynamicContainer == null) levelDynamicContainer = gameObject;
+				//if (levelDynamicContainer == null) levelDynamicContainer = gameObject;
+				
 				for (int i=0;i<4;i++) {
 					if (searchableItem.contents[i] >= 0) {
 						GameObject tossObject = Instantiate(Const.a.useableItems[searchableItem.contents[i]],transform.position,Quaternion.identity) as GameObject;
@@ -320,7 +474,7 @@ public class HealthManager : MonoBehaviour {
 						if (tossObject.activeSelf != true) {
 							tossObject.SetActive(true);
 						}
-						tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+						if (levelDynamicContainer != null) tossObject.transform.SetParent(levelDynamicContainer.transform,true);
 						//tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
 						tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
 					}
@@ -328,6 +482,14 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
     }
+
+	public void GrenadeDeath() {
+		GrenadeActivate ga = GetComponent<GrenadeActivate>();
+		if (ga == null) {
+			Debug.Log("BUG: no GrenadeActivate script on a grenade while dying from HealthManager.GrenadeDeath()");
+		}
+		ga.Explode();
+	}
 
 	public void ScreenDeath(AudioClip deathSound) {
 		if (deathDone) return;
@@ -342,6 +504,7 @@ public class HealthManager : MonoBehaviour {
 			GameObject tempAud = Const.a.GetObjectFromPool(Const.PoolType.TempAudioSources);
 			if (tempAud != null && deathSound != null) {
 				tempAud.transform.position = transform.position;
+				tempAud.SetActive(true);
 				AudioSource aS = tempAud.GetComponent<AudioSource> ();
 				if (aS != null && deathSound != null) aS.PlayOneShot (deathSound);
 			}
@@ -350,6 +513,7 @@ public class HealthManager : MonoBehaviour {
 			GameObject tempAud = Const.a.GetObjectFromPool(Const.PoolType.TempAudioSources);
 			if (tempAud != null && deathSound != null) {
 				tempAud.transform.position = transform.position;
+				tempAud.SetActive(true);
 				AudioSource aS = tempAud.GetComponent<AudioSource> ();
 				if (aS != null && deathSound != null) aS.PlayOneShot (backupDeathSound);
 			}
@@ -375,8 +539,8 @@ public class HealthManager : MonoBehaviour {
 		if (sphereCol != null) sphereCol.enabled = false;
 		if (capCol != null) capCol.enabled = false;
 
-		if (securityAmount > 0)
-			LevelManager.a.ReduceCurrentLevelSecurity (securityAmount);
+		if (securityAffected != LevelManager.SecurityType.None)
+			LevelManager.a.ReduceCurrentLevelSecurity(securityAffected);
 
 		// Enabel death effects (e.g. explosion particle effect)
 		if (deathFX != Const.PoolType.None) {
@@ -389,6 +553,7 @@ public class HealthManager : MonoBehaviour {
 					GameObject tempAud = Const.a.GetObjectFromPool(Const.PoolType.TempAudioSources);
 					if (tempAud != null) {
 						tempAud.transform.position = transform.position;
+						tempAud.SetActive(true);
 						AudioSource aS = tempAud.GetComponent<AudioSource>();
 						if (aS != null) aS.PlayOneShot(deathSound);
 					}

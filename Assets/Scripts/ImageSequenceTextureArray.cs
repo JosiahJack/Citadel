@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ImageSequenceTextureArray : MonoBehaviour {
+public class ImageSequenceTextureArray : MonoBehaviour, IBatchUpdate {
 	//An array of Objects that stores the results of the Resources.LoadAll() method
 	private Object[] objects;
 	private Object[] glowobjects;
@@ -75,7 +75,7 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 
 
 		// Load in screen textures for when this screen gets destroyed
-		if (destroyedScreenFolder != "") {
+		if (!string.IsNullOrWhiteSpace(destroyedScreenFolder)) {
 			this.destroyedobjects = Resources.LoadAll(destroyedScreenFolder, typeof(Texture));
 			this.destroyedTextures = new Texture[destroyedobjects.Length];
 
@@ -86,6 +86,8 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		}
 
 		if (initialIndexOffset < objects.Length && initialIndexOffset > 0) frameCounter = initialIndexOffset;
+
+		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketA);
 	}
 
 	// called by HealthManager.cs's ScreenDeath
@@ -93,7 +95,7 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		screenDestroyed = true; // if not already dead, say so
 	}
 
-	void Update () {
+	public void BatchUpdate () {
 		if (resourceFolder == "" && !glowOnly) {
 			return;
 		}
@@ -150,6 +152,6 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		}
 
 		//Set the material's texture to the current value of the frameCounter variable
-		goMaterial.mainTexture = textures[frameCounter];
+		if (goMaterial.mainTexture !=  textures[frameCounter]) goMaterial.mainTexture = textures[frameCounter];
 	}
 }

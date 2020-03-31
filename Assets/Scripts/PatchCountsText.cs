@@ -4,7 +4,7 @@ using System.Collections;
 
 [System.Serializable]
 public class PatchCountsText : MonoBehaviour {
-	[DTValidator.Optional] public Text text;
+	public Text text;
 	public int countsSlotnum = 0;
 	
 	void Start () {

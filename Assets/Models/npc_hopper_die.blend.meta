@@ -1,57 +1,149 @@
 fileFormatVersion: 2
 guid: 1ede8529713397242b714614cb054cc9
-timeCreated: 1518913362
-licenseType: Free
 ModelImporter:
-  serializedVersion: 22
-  fileIDToRecycleName:
-    100000: Armature
-    100002: Bone
-    100004: Bone_001
-    100006: Bone_002
-    100008: Bone_003
-    100010: Cube
-    100012: Cylinder
-    100014: //RootNode
-    100016: Sphere
-    100018: npc_hopper
-    100020: npc_hopper_die_cloth_collision_helper
-    100022: hookPoint1
-    400000: Armature
-    400002: Bone
-    400004: Bone_001
-    400006: Bone_002
-    400008: Bone_003
-    400010: Cube
-    400012: Cylinder
-    400014: //RootNode
-    400016: Sphere
-    400018: npc_hopper
-    400020: npc_hopper_die_cloth_collision_helper
-    400022: hookPoint1
-    2300000: Cube
-    2300002: Cylinder
-    2300004: Sphere
-    2300006: //RootNode
-    2300008: npc_hopper
-    2300010: npc_hopper_die_cloth_collision_helper
-    3300000: Cube
-    3300002: Cylinder
-    3300004: Sphere
-    3300006: //RootNode
-    3300008: npc_hopper
-    3300010: npc_hopper_die_cloth_collision_helper
-    4300000: Sphere
-    4300002: Cube
-    4300004: Cylinder
-    4300006: npc_hopper
-    4300008: npc_hopper_die_cloth_collision_helper
-    7400000: Default Take
-    7400002: ArmatureAction
-    9500000: //RootNode
-    11100000: //RootNode
-    13700000: npc_hopper
-    13700002: //RootNode
+  serializedVersion: 19300
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Armature
+  - first:
+      1: 100002
+    second: Bone
+  - first:
+      1: 100004
+    second: Bone_001
+  - first:
+      1: 100006
+    second: Bone_002
+  - first:
+      1: 100008
+    second: Bone_003
+  - first:
+      1: 100010
+    second: Cube
+  - first:
+      1: 100012
+    second: Cylinder
+  - first:
+      1: 100014
+    second: //RootNode
+  - first:
+      1: 100016
+    second: Sphere
+  - first:
+      1: 100018
+    second: npc_hopper
+  - first:
+      1: 100020
+    second: npc_hopper_die_cloth_collision_helper
+  - first:
+      1: 100022
+    second: hookPoint1
+  - first:
+      4: 400000
+    second: Armature
+  - first:
+      4: 400002
+    second: Bone
+  - first:
+      4: 400004
+    second: Bone_001
+  - first:
+      4: 400006
+    second: Bone_002
+  - first:
+      4: 400008
+    second: Bone_003
+  - first:
+      4: 400010
+    second: Cube
+  - first:
+      4: 400012
+    second: Cylinder
+  - first:
+      4: 400014
+    second: //RootNode
+  - first:
+      4: 400016
+    second: Sphere
+  - first:
+      4: 400018
+    second: npc_hopper
+  - first:
+      4: 400020
+    second: npc_hopper_die_cloth_collision_helper
+  - first:
+      4: 400022
+    second: hookPoint1
+  - first:
+      23: 2300000
+    second: Cube
+  - first:
+      23: 2300002
+    second: Cylinder
+  - first:
+      23: 2300004
+    second: Sphere
+  - first:
+      23: 2300006
+    second: //RootNode
+  - first:
+      23: 2300008
+    second: npc_hopper
+  - first:
+      23: 2300010
+    second: npc_hopper_die_cloth_collision_helper
+  - first:
+      33: 3300000
+    second: Cube
+  - first:
+      33: 3300002
+    second: Cylinder
+  - first:
+      33: 3300004
+    second: Sphere
+  - first:
+      33: 3300006
+    second: //RootNode
+  - first:
+      33: 3300008
+    second: npc_hopper
+  - first:
+      33: 3300010
+    second: npc_hopper_die_cloth_collision_helper
+  - first:
+      43: 4300000
+    second: Sphere
+  - first:
+      43: 4300002
+    second: Cube
+  - first:
+      43: 4300004
+    second: Cylinder
+  - first:
+      43: 4300006
+    second: npc_hopper
+  - first:
+      43: 4300008
+    second: npc_hopper_die_cloth_collision_helper
+  - first:
+      74: 7400000
+    second: Default Take
+  - first:
+      74: 7400002
+    second: ArmatureAction
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      111: 11100000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: npc_hopper
+  - first:
+      137: 13700002
+    second: //RootNode
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -72,14 +164,14 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: npc_hopper_material__hopper_png
-    second: {fileID: 2100000, guid: 987ddb09350b4d045a4b0758970e1c6e, type: 2}
+    second: {fileID: 2100000, guid: fbe7830ca773d574ba1ef454023dbd23, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: unnamed
     second: {fileID: 2100000, guid: 4dd6e580ecc8a944c96f445075fabc97, type: 2}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -96,6 +188,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -110,6 +203,8 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 0
     importBlendShapes: 1
     importCameras: 0
@@ -117,9 +212,14 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -130,10 +230,13 @@ ModelImporter:
     normalImportMode: 0
     tangentImportMode: 4
     normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -143,14 +246,16 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
+  avatarSetup: 1
   additionalBone: 0
   userData: 
   assetBundleName: 
