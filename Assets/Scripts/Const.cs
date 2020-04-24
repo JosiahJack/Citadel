@@ -28,7 +28,7 @@ public class Const : MonoBehaviour {
 	[SerializeField] public string[] audiologSenders;
 	[SerializeField] public string[] audiologSubjects;
 	[SerializeField] public AudioClip[] audioLogs;
-	[SerializeField] public int[] audioLogType;  // 0 = text only, 1 = normal, 2 = email, 3 = vmail
+	[SerializeField] public int[] audioLogType;  // 0 = text only, 1 = normal, 2 = email, 3 = papers, 4 = vmail
 	[SerializeField] public string[] audioLogSpeech2Text;
 	[SerializeField] public int[] audioLogLevelFound;
 
@@ -74,6 +74,9 @@ public class Const : MonoBehaviour {
 	[SerializeField] public float[] armorvalueForNPC;
 	[SerializeField] public float[] defenseForNPC;
 	[SerializeField] public float[] randomMinimumDamageModifierForNPC; // minimum value that NPC damage can be
+	[SerializeField] public string[] creditsText;
+	[HideInInspector]
+	public int creditsLength;
 
 	[SerializeField] public HealthManager[] healthObjectsRegistration; // List of objects with health, used for fast application of damage in explosions
 	public GameObject[] levelChunks;
@@ -119,7 +122,8 @@ public class Const : MonoBehaviour {
 						PlasmaShots, PlasmaImpacts, ProjEnemShot6,ProjEnemShot6Impacts, ProjEnemShot2Impacts,
 						ProjSeedPods, ProjSeedPodsImpacts, TempAudioSources,GrenadeEMPExplosions, ProjEnemShot4,
 						ProjEnemShot4Impacts,CrateExplosions,GrenadeFragLive,CyborgAssassinThrowingStars,
-						ConcussionLive,EMPLive,GasLive,GasExplosions,CorpseHit,NPCMagpulseShots,NPCRailgunShots};
+						ConcussionLive,EMPLive,GasLive,GasExplosions,CorpseHit,NPCMagpulseShots,NPCRailgunShots,
+						LeafBurst,MutationBurst,GraytationBurst,BarrelExplosions};
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
 	public GameObject Pool_ProjectilesEnemShot2;
@@ -160,6 +164,10 @@ public class Const : MonoBehaviour {
 	public GameObject Pool_CorpseHit;
 	public GameObject Pool_NPCMagpulseShots;
 	public GameObject Pool_NPCRailgunShots;
+	public GameObject Pool_LeafBurst;
+	public GameObject Pool_MutationBurst;
+	public GameObject Pool_GraytationBurst;
+	public GameObject Pool_BarrelExplosions;
 
 	//Global object references
 	public GameObject statusBar;
@@ -206,6 +214,10 @@ public class Const : MonoBehaviour {
     public string[] stringTable;
 	public float[] reloadTime;
 	public CyberWall[] cyberpanelsRegistry;
+	public Material[] screenCodes;
+	public int[] npcCount;
+
+	public bool gameFinished = false;
 
 	//Instance container variable
 	public static Const a;
@@ -232,13 +244,17 @@ public class Const : MonoBehaviour {
 		// Find all gameobjects with SaveObject script attached
 		GameObject[] getAllGameObjects = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
 		foreach (GameObject gob in getAllGameObjects) {
-			if (gob.GetComponentInChildren<PlayerReferenceManager>() != null && gob.GetComponent<RuntimeObject>().isRuntimeObject == true) playerGameObjects.Add(gob);
+			if (gob.GetComponent<PlayerReferenceManager>() != null) {
+				if (gob.GetComponent<SaveObject>().isRuntimeObject) {
+					playerGameObjects.Add(gob);
+				}
+			}
 		}
 
-		if (playerGameObjects.Count > 0) player1 = playerGameObjects[0];
-		if (playerGameObjects.Count > 1) player2 = playerGameObjects[1];
-		if (playerGameObjects.Count > 2) player3 = playerGameObjects[2];
-		if (playerGameObjects.Count > 3) player4 = playerGameObjects[3];
+		//if (playerGameObjects.Count > 0) player1 = playerGameObjects[0];
+		//if (playerGameObjects.Count > 1) player2 = playerGameObjects[1];
+		//if (playerGameObjects.Count > 2) player3 = playerGameObjects[2];
+		//if (playerGameObjects.Count > 3) player4 = playerGameObjects[3];
 		allPlayers = new GameObject();
 		allPlayers.name = "All Players"; // for use in self printing Sprint() function for sending messages to HUD on all players
 	}
@@ -288,7 +304,14 @@ public class Const : MonoBehaviour {
 		LoadItemNamesData();
 		LoadDamageTablesData();
 		LoadEnemyTablesData();
+		LoadCreditsData();
 		questData = new QuestBits ();
+		questData.lev1SecCode = UnityEngine.Random.Range(0,10);
+		questData.lev2SecCode = UnityEngine.Random.Range(0,10);
+		questData.lev3SecCode = UnityEngine.Random.Range(0,10);
+		questData.lev4SecCode = UnityEngine.Random.Range(0,10);
+		questData.lev5SecCode = UnityEngine.Random.Range(0,10);
+		questData.lev6SecCode = UnityEngine.Random.Range(0,10);
 		if (mainFont1 != null) mainFont1.material.mainTexture.filterMode = FilterMode.Point;
 		if (mainFont2 != null) mainFont2.material.mainTexture.filterMode = FilterMode.Point;
 	}
@@ -456,6 +479,35 @@ public class Const : MonoBehaviour {
 		}
 	}
 
+	private void LoadCreditsData () {
+		string readline; // variable to hold each string read in from the file
+		int currentline = 0;
+		int pagenum = 0;
+		creditsLength = 1;
+
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/credits.txt",Encoding.Default);
+		using (dataReader) {
+			do {
+				// Read the next line
+				readline = dataReader.ReadLine();
+				char[] checkCharacter = readline.ToCharArray();
+				if (checkCharacter.Length > 0) {
+					if (checkCharacter[0] == '#') {
+						pagenum++;
+						creditsLength++;
+						continue;
+					}
+				}
+				if (pagenum >= creditsText.Length) { Debug.Log("pagenum was too large at " + pagenum.ToString()); return; }
+                creditsText[pagenum] += readline + System.Environment.NewLine;
+				currentline++;
+			} while (!dataReader.EndOfStream);
+			dataReader.Close();
+			Debug.Log("Credits pages length is " + creditsLength.ToString());
+			return;
+		}
+	}
+
 	private void LoadEnemyTablesData() {
 		//case 1: return AttackType.Melee;
 		//case 2: return AttackType.EnergyBeam;
@@ -507,9 +559,37 @@ public class Const : MonoBehaviour {
 		}
 	}
 
+	public static string GetTargetID(int npc23Index) {
+		Const.a.npcCount[npc23Index]++;
+		return Const.a.nameForNPC[npc23Index] + Const.a.npcCount[npc23Index];
+	}
+
+	public static void sprintByIndexOrOverride (int index, string overrideString, GameObject playerPassed) {
+		bool useAllPlayers = false;
+		if (playerPassed == null) useAllPlayers = true;
+
+		if (string.IsNullOrWhiteSpace(overrideString)) {
+			if (index >= 0) {
+				if (useAllPlayers) {
+					sprint(Const.a.stringTable[index],Const.a.allPlayers);
+				} else {
+					sprint(Const.a.stringTable[index],playerPassed);
+				}
+			} else {
+				//Debug.Log("Attempting to sprintByIndexOrOverride with a -1 index and a nullorwhitespace overrideString");
+			}
+		} else {
+			if (useAllPlayers) {
+				sprint(overrideString,Const.a.allPlayers);
+			} else {
+				sprint(overrideString,playerPassed);
+			}
+		}
+	}
+
 	// StatusBar Print
 	public static void sprint (string input, GameObject player) {
-		Debug.Log(input);  // print to console
+		//Debug.Log(input);  // print to console
 		if (player == null) return;
 		if (a != null) {
 			if (player.name == "All Players") {
@@ -706,6 +786,22 @@ public class Const : MonoBehaviour {
 			poolContainer = Pool_NPCRailgunShots;
 			poolName = "NPCRailgunShots ";
 			break;
+		case PoolType.LeafBurst:
+			poolContainer = Pool_LeafBurst;
+			poolName = "LeafBurst ";
+			break;
+		case PoolType.MutationBurst:
+			poolContainer = Pool_MutationBurst;
+			poolName = "MutationBurst ";
+			break;
+		case PoolType.GraytationBurst:
+			poolContainer = Pool_GraytationBurst;
+			poolName = "GraytationBurst ";
+			break;
+		case PoolType.BarrelExplosions:
+			poolContainer = Pool_BarrelExplosions;
+			poolName = "BarrelExplosions ";
+			break;
         }
 
 		if (poolContainer == null) {
@@ -838,15 +934,380 @@ public class Const : MonoBehaviour {
 		Destroy(myLine,duration);
 	}
 
+	string SavePlayerData(GameObject plyr) {
+		string line = System.String.Empty;
+		Transform tr, trml;
+		int j = 0;
+		// First get all references to relevant componenets on all relevant gameobjects in the player gameobject
+		PlayerReferenceManager PRman = plyr.GetComponent<PlayerReferenceManager>();
+		GameObject pCap = PRman.playerCapsule;
+		GameObject playerMainCamera = PRman.playerCapsuleMainCamera;
+		GameObject playerInventory = PRman.playerInventory;
+		PlayerHealth ph = pCap.GetComponent<PlayerHealth>();
+		PlayerEnergy pe = pCap.GetComponent<PlayerEnergy>();
+		PlayerMovement pm = pCap.GetComponent<PlayerMovement>();
+		PlayerPatch pp = pCap.GetComponent<PlayerPatch>();
+		tr = pCap.transform;
+		MouseLookScript ml = playerMainCamera.GetComponent<MouseLookScript>();
+		trml = playerMainCamera.transform;
+		WeaponInventory wi = playerInventory.GetComponent<WeaponInventory>();
+		WeaponAmmo wa = playerInventory.GetComponent<WeaponAmmo>();
+		WeaponCurrent wc = playerInventory.GetComponent<WeaponCurrent>();
+		GrenadeCurrent gc = playerInventory.GetComponent<GrenadeCurrent>();
+		GrenadeInventory gi = playerInventory.GetComponent<GrenadeInventory>();
+		PatchCurrent pc = playerInventory.GetComponent<PatchCurrent>();
+		PatchInventory pi = playerInventory.GetComponent<PatchInventory>();
+		LogInventory li = playerInventory.GetComponent<LogInventory>();
+		HardwareInventory hi = playerInventory.GetComponent<HardwareInventory>();
+		SaveObject sav = plyr.GetComponent<SaveObject>();
+
+		line = sav.saveableType;
+		line += "|" + sav.SaveID.ToString();
+		line += "|" + Const.a.playerName;
+		line += "|" + ph.hm.health.ToString("0000.00000");
+		line += "|" + pe.energy.ToString("0000.00000");
+		line += "|" + pm.currentCrouchRatio.ToString("0000.00000");
+		line += "|" + pm.bodyState.ToString();
+		line += "|" + pm.ladderState.ToString();
+		line += "|" + pm.gravliftState.ToString();
+		line += "|" + pp.patchActive.ToString();
+		line += "|" + pp.berserkIncrement.ToString();
+		line += "|" + pp.sightFinishedTime.ToString("0000.00000");
+		line += "|" + pp.staminupFinishedTime.ToString("0000.00000");
+		line += "|" + (tr.localPosition.x.ToString("0000.00000") + "|" + tr.localPosition.y.ToString("0000.00000") + "|" + tr.localPosition.z.ToString("0000.00000"));
+		line += "|" + (tr.localRotation.x.ToString("0000.00000") + "|" + tr.localRotation.y.ToString("0000.00000") + "|" + tr.localRotation.z.ToString("0000.00000") + "|" + tr.localRotation.w.ToString("0000.00000"));
+		line += "|" + (tr.localScale.x.ToString("0000.00000") + "|" + tr.localScale.y.ToString("0000.00000") + "|" + tr.localScale.z.ToString("0000.00000"));
+		line += "|" + (trml.localPosition.x.ToString("0000.00000") + "|" + trml.localPosition.y.ToString("0000.00000") + "|" + trml.localPosition.z.ToString("0000.00000"));
+		line += "|" + (trml.localRotation.x.ToString("0000.00000") + "|" + trml.localRotation.y.ToString("0000.00000") + "|" + trml.localRotation.z.ToString("0000.00000") + "|" + trml.localRotation.w.ToString("0000.00000"));
+		line += "|" + (trml.localScale.x.ToString("0000.00000") + "|" + trml.localScale.y.ToString("0000.00000") + "|" + trml.localScale.z.ToString("0000.00000"));
+		line += "|" + ml.inventoryMode.ToString();
+		line += "|" + ml.holdingObject.ToString();
+		line += "|" + ml.heldObjectIndex.ToString();
+		line += "|" + ml.heldObjectCustomIndex.ToString();
+		line += "|" + GUIState.a.overButtonType.ToString();
+		line += "|" + GUIState.a.overButton.ToString();
+		line += "|" + ml.geniusActive.ToString();
+		for (j=0;j<7;j++) { line += "|" + wi.weaponInventoryIndices[j].ToString(); }
+		for (j=0;j<7;j++) { line += "|" + wi.weaponInventoryAmmoIndices[j].ToString(); }
+		for (j=0;j<16;j++) { line += "|" + wi.hasWeapon[j].ToString(); }
+		for (j=0;j<16;j++) { line += "|" + wa.wepAmmo[j].ToString(); }
+		line += "|" + wc.weaponCurrent.ToString();
+		line += "|" + wc.weaponIndex.ToString();
+		line += "|" + gc.grenadeCurrent.ToString();
+		line += "|" + gc.grenadeIndex.ToString();
+		for (j=0;j<7;j++) { line += "|" + gi.grenAmmo[j].ToString(); }
+		line += "|" + pc.patchCurrent.ToString();
+		line += "|" + pc.patchIndex.ToString();
+		for (j=0;j<7;j++) { line += "|" + pi.patchCounts[j].ToString(); }
+		for (j=0;j<128;j++) { line += "|" + li.hasLog[j].ToString(); }
+		for (j=0;j<128;j++) { line += "|" + li.readLog[j].ToString(); }
+		for (j=0;j<10;j++) { line += "|" + li.numLogsFromLevel[j].ToString(); }
+		line += "|" + li.lastAddedIndex.ToString();
+		for (j=0;j<12;j++) { line += "|" + hi.hasHardware[j].ToString(); }
+		for (j=0;j<12;j++) { line += "|" + hi.hardwareVersion[j].ToString(); }
+		return line;
+	}
+
+	// For ammo on the weapons
+	string SaveUseableData(GameObject go) {
+		string line = System.String.Empty;
+		UseableObjectUse uou = go.GetComponent<UseableObjectUse>();
+		if (uou != null) {
+			line = uou.useableItemIndex.ToString(); // int - the main lookup index, needed for intanciating on load if doesn't match original SaveID
+			line += "|" + uou.customIndex.ToString(); // int - special reference like audiolog message
+			line += "|" + uou.ammo.ToString(); // int - how much ammo is on the weapon
+			line += "|" + uou.ammoIsSecondary.ToString(); //bool - is it the alternate ammo type? e.g. Penetrator or Teflon
+		}
+		return line;
+	}
+
+	// Live grenades - These should only be up in the air or active running timer, but still...or it's a landmine
+	string SaveGrenadeData(GameObject go) {
+		string line = System.String.Empty;
+		GrenadeActivate ga = go.GetComponent<GrenadeActivate>();
+		if (ga != null) {
+			line = ga.useTimer.ToString(); // do we have a timer going? MAKE SURE YOU CHECK THIS BIT IN LOAD!
+			if (ga.useTimer) line += "|" + ga.timeFinished.ToString("0000.00000"); // float - how much time left before the fun part?
+			line += "|" + ga.explodeOnContact.ToString(); // bool - or not a landmine
+			line += "|" + ga.useProx.ToString(); // bool - is this a landmine?
+		}
+		return line;
+	}
+
+	// Generic health info string
+	string GetHealthManagerSaveData(HealthManager hm) {
+		string line = System.String.Empty;
+		if (hm != null) {
+			line = hm.health.ToString("0000.00000"); // how much health we have
+			line += "|" + hm.deathDone.ToString(); // bool - are we dead yet?
+			line += "|" + hm.god.ToString(); // are we invincible? - we can save cheats?? OH WOW!
+			line += "|" + hm.teleportDone.ToString(); // did we already teleport?
+		}
+		return line;
+	}
+
+	// Save destructable items like cameras, barrels, etc.
+	string SaveDestructableData(GameObject go) {
+		string line = System.String.Empty;
+		line = GetHealthManagerSaveData(go.GetComponent<HealthManager>()); // get the health info
+		return line;
+	}	
+
+	// Info about the enemy's current state
+	string SaveNPCData(GameObject go) {
+		if (go == null) { Debug.Log("BUG: attempting to SaveNPCData for null GameObject go"); }
+		string line = System.String.Empty;
+		AIController aic = go.GetComponent<AIController>();
+		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>();
+		if (aic != null) {
+			switch (aic.currentState) {
+				case Const.aiState.Idle: line = "0"; break;
+				case Const.aiState.Walk: line = "1"; break;
+				case Const.aiState.Run: line = "2"; break;
+				case Const.aiState.Attack1: line = "3"; break;
+				case Const.aiState.Attack2: line = "4"; break;
+				case Const.aiState.Attack3: line = "5"; break;
+				case Const.aiState.Pain: line = "6"; break;
+				case Const.aiState.Dying: line = "7"; break;
+				case Const.aiState.Inspect: line = "8"; break;
+				case Const.aiState.Interacting: line = "9"; break;
+			}
+			line += "|" + aic.enemy.GetComponent<SaveObject>().SaveID.ToString(); // saveID of playerCapsule
+		}
+		line += "|" + GetHealthManagerSaveData(go.GetComponent<HealthManager>());
+		return line;
+	}
+
+	// Save searchable data
+	string SaveSearchableStaticData(GameObject go) {
+		string line = System.String.Empty;
+		SearchableItem se = go.GetComponent<SearchableItem>();
+		if (se != null) {
+			line = se.contents[0].ToString(); // int main lookup index
+			line += "|" + se.contents[1].ToString(); // int main lookup index
+			line += "|" + se.contents[2].ToString(); // int main lookup index
+			line += "|" + se.contents[3].ToString(); // int main lookup index
+			line += "|" + se.customIndex[0].ToString(); // int custom index
+			line += "|" + se.customIndex[1].ToString(); // int custom index
+			line += "|" + se.customIndex[2].ToString(); // int custom index
+			line += "|" + se.customIndex[3].ToString(); // int custom index
+		}
+		return line;
+	}	
+
+	string SaveSearchableDestructsData(GameObject go) {
+		string line = System.String.Empty;
+		line = SaveSearchableStaticData(go); // get the searchable data
+		line += GetHealthManagerSaveData(go.GetComponent<HealthManager>()); // get health info
+		return line;
+	}
+
+	string SaveDoorData(GameObject go) {
+		string line = System.String.Empty;
+		Door dr = go.GetComponent<Door>();
+		if (dr != null) {
+			line = dr.targetAlreadyDone.ToString(); // bool - have we already ran targets
+			line += "|" + dr.locked.ToString(); // bool - is this locked?
+			line += "|" + dr.blocked.ToString(); // bool - is the door blocked currently?
+			switch (dr.doorOpen) {
+				case Door.doorState.Closed: line += "|0"; break;
+				case Door.doorState.Open: line += "|1"; break;
+				case Door.doorState.Closing: line += "|2"; break;
+				case Door.doorState.Opening: line += "|3"; break;
+			}
+		}
+		return line;
+	}	
+
+	string SaveForceBridgeData(GameObject go) {
+		string line = System.String.Empty;
+		ForceBridge fb = go.GetComponent<ForceBridge>();
+		if (fb != null) {
+			line = fb.activated.ToString(); // bool - is the bridge on?
+			line += "|" + fb.lerping.ToString(); // bool - are we currently lerping one way or tother
+		}
+		return line;
+	}
+
+	string SaveSwitchData(GameObject go) {
+		string line = System.String.Empty;
+		ButtonSwitch bs = go.GetComponent<ButtonSwitch>();
+		if (bs != null) {
+			// bs?  null?  that's bs
+			line = bs.locked.ToString(); // bool - is this switch locked
+			line += "|" + bs.active.ToString(); // bool - is the switch flashing?
+			line += "|" + bs.alternateOn.ToString(); // bool - is the flashing material on?
+			line += "|" + bs.delayFinished.ToString("0000.00000"); // float - time before firing targets
+		}
+		return line;
+	}	
+
+	string SaveFuncWallData(GameObject go) {
+		string line = System.String.Empty;
+		FuncWall fw = go.GetComponent<FuncWall>();
+		if (fw != null) {
+			switch (fw.currentState) {
+				case FuncWall.FuncStates.Start: line = "0"; break;
+				case FuncWall.FuncStates.Target: line = "1"; break;
+				case FuncWall.FuncStates.MovingStart: line = "2"; break;
+				case FuncWall.FuncStates.MovingTarget: line = "3"; break;
+				case FuncWall.FuncStates.AjarMovingStart: line = "4"; break;
+				case FuncWall.FuncStates.AjarMovingTarget: line = "5"; break;
+			}
+		}
+		return line;
+	}	
+
+	string SaveTeleDestData(GameObject go) {
+		string line = System.String.Empty;
+		TeleportTouch tt = go.GetComponent<TeleportTouch>();
+		if (tt != null) {
+			line = tt.justUsed.ToString("0000.00000"); // float - is the player still touching it?
+		}
+		return line;
+	}	
+
+	string SaveLogicBranchData(GameObject go) {
+		string line = System.String.Empty;
+		LogicBranch lb = go.GetComponent<LogicBranch>();
+		if (lb != null) {
+			line = lb.relayEnabled.ToString(); // bool - is this enabled
+			line += "|" + lb.onSecond.ToString(); // bool - which one are we on?
+		}
+		return line;
+	}	
+
+	string SaveLogicRelayData(GameObject go) {
+		string line = System.String.Empty;
+		LogicRelay lr = go.GetComponent<LogicRelay>();
+		if (lr != null) {
+			line = lr.relayEnabled.ToString(); // bool - is this enabled
+		}
+		return line;
+	}
+
+	string SaveSpawnerData(GameObject go) {
+		string line = System.String.Empty;
+		SpawnManager sm = go.GetComponent<SpawnManager>();
+		if (sm != null) {
+			line = sm.active.ToString(); // bool - is this enabled
+			line += "|" + sm.numberActive.ToString(); // int - number spawned
+			line += "|" + sm.delayFinished.ToString("0000.00000"); // float - time that we need to spawn next
+		}
+		return line;
+	}	
+
+	string SaveInteractablePanelData(GameObject go) {
+		string line = System.String.Empty;
+		InteractablePanel ip = go.GetComponent<InteractablePanel>();
+		if (ip != null) {
+			line = ip.open.ToString(); // bool - is the panel opened
+			line += "|" + ip.installed.ToString(); // bool - is the item installed, MAKE SURE YOU ENABLE THE INSTALL ITEM GameObject IN LOAD
+		}
+		return line;
+	}		
+
+	string SaveElevatorPanelData(GameObject go) {
+		string line = System.String.Empty;
+		KeypadElevator ke = go.GetComponent<KeypadElevator>();
+		if (ke != null) {
+			line = ke.padInUse.ToString(); // bool - is the pad being used by a player
+			line += "|" + ke.locked.ToString(); // bool - locked?
+		}
+		return line;
+	}	
+
+	string SaveKeypadData(GameObject go) {
+		string line = System.String.Empty;
+		KeypadKeycode kk = go.GetComponent<KeypadKeycode>();
+		if (kk != null) {
+			line = kk.padInUse.ToString(); // bool - is the pad being used by a player
+			line += "|" + kk.locked.ToString(); // bool - locked?
+			line += "|" + kk.solved.ToString(); // bool - already entered correct keycode?
+		}
+		return line;
+	}	
+
+	string SavePuzzleGridData(GameObject go) {
+		string line = System.String.Empty;
+		PuzzleGridPuzzle pgp = go.GetComponent<PuzzleGridPuzzle>();
+		if (pgp != null) {
+			line = pgp.puzzleSolved.ToString(); // bool - is this puzzle already solved?
+			for (int i=0;i<pgp.grid.Length;i++) { line += "|" + pgp.grid[i].ToString(); } // bool - get the current grid states + or X
+			line += "|" + pgp.fired.ToString(); // bool - have we already fired yet?
+			line += "|" + pgp.locked.ToString(); // bool - is this locked?
+		}
+		return line;
+	}	
+
+	string SavePuzzleWireData(GameObject go) {
+		string line = System.String.Empty;
+		PuzzleWirePuzzle pwp = go.GetComponent<PuzzleWirePuzzle>();
+		if (pwp != null) {
+			line = pwp.puzzleSolved.ToString(); // bool - is this puzzle already solved?
+			for (int i=0;i<pwp.currentPositionsLeft.Length;i++) { line += "|" + pwp.currentPositionsLeft[i].ToString(); } // int - get the current wire positions
+			for (int i=0;i<pwp.currentPositionsRight.Length;i++) { line += "|" + pwp.currentPositionsRight[i].ToString(); } // int - get the current wire positions
+			line += "|" + pwp.locked.ToString(); // bool - is this locked?
+		}
+		return line;
+	}
+
+	string SaveTCounterData(GameObject go) {
+		string line = System.String.Empty;
+		TriggerCounter tc = go.GetComponent<TriggerCounter>();
+		if (tc != null) {
+			line = tc.counter.ToString(); // int - how many counts we have
+		}
+		return line;	
+	}
+
+	string SaveTGravityData(GameObject go) {
+		string line = System.String.Empty;
+		GravityLift gl = go.GetComponent<GravityLift>();
+		if (gl != null) {
+			line = gl.active.ToString(); // bool - is this gravlift on?
+		}
+		return line;
+	}
+
+	string SaveMChangerData(GameObject go) {
+		string line = System.String.Empty;
+		MaterialChanger mch = go.GetComponent<MaterialChanger>();
+		if (mch != null) {
+			line = mch.alreadyDone.ToString(); // bool - is this gravlift on?
+		}
+		return line;
+	}
+
+	string SaveTRadiationData(GameObject go) {
+		string line = System.String.Empty;
+		Radiation rad = go.GetComponent<Radiation>();
+		if (rad != null) {
+			line = rad.isEnabled.ToString(); // bool - hey is this on? hello?
+			line += "|" + rad.numPlayers.ToString(); // int - how many players we are affecting
+		}
+		return line;
+	}
+
+	string SaveGravLiftPadTextureData(GameObject go) {
+		string line = System.String.Empty;
+		TextureChanger tex = go.GetComponent<TextureChanger>();
+		if (tex != null) {
+			line = tex.currentTexture.ToString(); // bool - is this gravlift on?
+		}
+		return line;
+	}
+
+
 
 	// Save the Game
 	// ============================================================================
 	public void Save(int saveFileIndex,string savename) {
-		string[] saveData = new string[4096];
+		string[] saveData = new string[4096]; // Found 2987 saveable objects on main level - should be enough for any instantiated dropped items...maybe
 		string line;
 		int i,j;
 		int index = 0;
-		Transform tr, trml;
+		Transform tr;
 		List<GameObject> playerGameObjects = new List<GameObject>();
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 
@@ -877,97 +1338,140 @@ public class Const : MonoBehaviour {
 		saveData[index] = (LevelManager.a.currentLevel.ToString() + "|" + states + difficultyCombat.ToString() + "|" + difficultyMission.ToString() + "|" + difficultyPuzzle.ToString() + "|" + difficultyCyber.ToString());
 		index++;
 
+		if (player1 != null) playerGameObjects.Add(player1);
+		if (player2 != null) playerGameObjects.Add(player2);
+		if (player3 != null) playerGameObjects.Add(player3);
+		if (player4 != null) playerGameObjects.Add(player4);
 		// Find all gameobjects with SaveObject script attached
 		GameObject[] getAllGameObjects = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
 		foreach (GameObject gob in getAllGameObjects) {
-			if (gob.GetComponentInChildren<PlayerReferenceManager>() != null && gob.GetComponent<RuntimeObject>().isRuntimeObject == true) playerGameObjects.Add(gob);
-			if (gob.GetComponent<SaveObject>() != null && gob.GetComponent<RuntimeObject>().isRuntimeObject == true) saveableGameObjects.Add(gob);
+			if (gob.GetComponent<SaveObject>() != null) {
+				if (gob.GetComponent<SaveObject>().isRuntimeObject == true) {
+					saveableGameObjects.Add(gob);
+				}
+			}
 		}
 
 		Debug.Log("Num players: " + playerGameObjects.Count.ToString(),allPlayers);
+		Debug.Log("Num saveables: " + saveableGameObjects.Count.ToString(),allPlayers);
+
+		int numTransforms = 0;
+		int numUseables = 0;
+		int numGrenades = 0;
+		int numNPCs = 0;
+		int numDestructables = 0;
+		int numSearchableStatics = 0;
+		int numSearchableDestructs = 0;
+		int numDoors = 0;
+		int numForceBs = 0;
+		int numSwitches = 0;
+		int numFuncWalls = 0;
+		int numTeleDests = 0;
+		int numBranches = 0;
+		int numRelays = 0;
+		int numSpawners = 0;
+		int numIntPanels = 0;
+		int numElevPanels = 0;
+		int numKeypads = 0;
+		int numPuzGrids = 0;
+		int numPuzWires = 0;
+		int numTrigCounters = 0;
+		int numTrigGravity = 0;
+		int numMChangers = 0;
+		int numRadTrigs = 0;
+		int numGravPads = 0;
 
 		// Save all the players' data
-		for (i=0;i<playerGameObjects.Count;i++) {
-			// First get all references to relevant componenets on all relevant gameobjects in the player gameobject
-			PlayerReferenceManager PRman = playerGameObjects[i].GetComponent<PlayerReferenceManager>();
-			GameObject pCap = PRman.playerCapsule;
-			GameObject playerMainCamera = PRman.playerCapsuleMainCamera;
-			GameObject playerInventory = PRman.playerInventory;
-			PlayerHealth ph = pCap.GetComponent<PlayerHealth>();
-			PlayerEnergy pe = pCap.GetComponent<PlayerEnergy>();
-			PlayerMovement pm = pCap.GetComponent<PlayerMovement>();
-			PlayerPatch pp = pCap.GetComponent<PlayerPatch>();
-			tr = pCap.transform;
-			MouseLookScript ml = playerMainCamera.GetComponent<MouseLookScript>();
-			trml = playerMainCamera.transform;
-			WeaponInventory wi = playerInventory.GetComponent<WeaponInventory>();
-			WeaponAmmo wa = playerInventory.GetComponent<WeaponAmmo>();
-			WeaponCurrent wc = playerInventory.GetComponent<WeaponCurrent>();
-			GrenadeCurrent gc = playerInventory.GetComponent<GrenadeCurrent>();
-			GrenadeInventory gi = playerInventory.GetComponent<GrenadeInventory>();
-			PatchCurrent pc = playerInventory.GetComponent<PatchCurrent>();
-			PatchInventory pi = playerInventory.GetComponent<PatchInventory>();
-			LogInventory li = playerInventory.GetComponent<LogInventory>();
-			HardwareInventory hi = playerInventory.GetComponent<HardwareInventory>();
-
-			line = playerGameObjects[i].GetInstanceID().ToString();
-			line += "|" + Const.a.playerName;
-			line += "|" + ph.hm.health.ToString("0000.00000");
-			line += "|" + pe.energy.ToString("0000.00000");
-			line += "|" + pm.currentCrouchRatio.ToString("0000.00000");
-			line += "|" + pm.bodyState.ToString();
-			line += "|" + pm.ladderState.ToString();
-			line += "|" + pm.gravliftState.ToString();
-			line += "|" + pp.patchActive.ToString();
-			line += "|" + pp.berserkIncrement.ToString();
-			line += "|" + pp.sightFinishedTime.ToString("0000.00000");
-			line += "|" + pp.staminupFinishedTime.ToString("0000.00000");
-			line += "|" + (tr.localPosition.x.ToString("0000.00000") + "|" + tr.localPosition.y.ToString("0000.00000") + "|" + tr.localPosition.z.ToString("0000.00000"));
-			line += "|" + (tr.localRotation.x.ToString("0000.00000") + "|" + tr.localRotation.y.ToString("0000.00000") + "|" + tr.localRotation.z.ToString("0000.00000") + "|" + tr.localRotation.w.ToString("0000.00000"));
-			line += "|" + (tr.localScale.x.ToString("0000.00000") + "|" + tr.localScale.y.ToString("0000.00000") + "|" + tr.localScale.z.ToString("0000.00000"));
-			line += "|" + (trml.localPosition.x.ToString("0000.00000") + "|" + trml.localPosition.y.ToString("0000.00000") + "|" + trml.localPosition.z.ToString("0000.00000"));
-			line += "|" + (trml.localRotation.x.ToString("0000.00000") + "|" + trml.localRotation.y.ToString("0000.00000") + "|" + trml.localRotation.z.ToString("0000.00000") + "|" + trml.localRotation.w.ToString("0000.00000"));
-			line += "|" + (trml.localScale.x.ToString("0000.00000") + "|" + trml.localScale.y.ToString("0000.00000") + "|" + trml.localScale.z.ToString("0000.00000"));
-			line += "|" + ml.inventoryMode.ToString();
-			line += "|" + ml.holdingObject.ToString();
-			line += "|" + ml.heldObjectIndex.ToString();
-			line += "|" + ml.heldObjectCustomIndex.ToString();
-			line += "|" + GUIState.a.overButtonType.ToString();
-			line += "|" + GUIState.a.overButton.ToString();
-			line += "|" + ml.geniusActive.ToString();
-			for (j=0;j<7;j++) { line += "|" + wi.weaponInventoryIndices[j].ToString(); }
-			for (j=0;j<7;j++) { line += "|" + wi.weaponInventoryAmmoIndices[j].ToString(); }
-			for (j=0;j<16;j++) { line += "|" + wi.hasWeapon[j].ToString(); }
-			for (j=0;j<16;j++) { line += "|" + wa.wepAmmo[j].ToString(); }
-			line += "|" + wc.weaponCurrent.ToString();
-			line += "|" + wc.weaponIndex.ToString();
-			line += "|" + gc.grenadeCurrent.ToString();
-			line += "|" + gc.grenadeIndex.ToString();
-			for (j=0;j<7;j++) { line += "|" + gi.grenAmmo[j].ToString(); }
-			line += "|" + pc.patchCurrent.ToString();
-			line += "|" + pc.patchIndex.ToString();
-			for (j=0;j<7;j++) { line += "|" + pi.patchCounts[j].ToString(); }
-			for (j=0;j<128;j++) { line += "|" + li.hasLog[j].ToString(); }
-			for (j=0;j<128;j++) { line += "|" + li.readLog[j].ToString(); }
-			for (j=0;j<10;j++) { line += "|" + li.numLogsFromLevel[j].ToString(); }
-			line += "|" + li.lastAddedIndex.ToString();
-			for (j=0;j<12;j++) { line += "|" + hi.hasHardware[j].ToString(); }
-			for (j=0;j<12;j++) { line += "|" + hi.hardwareVersion[j].ToString(); }
-			saveData[index] = line;
+		if (player1 != null) {
+			saveData[index] = SavePlayerData(player1);
+			index++;
+		}
+		if (player2 != null) {
+			saveData[index] = SavePlayerData(player2);
+			index++;
+		}
+		if (player3 != null) {
+			saveData[index] = SavePlayerData(player3);
+			index++;
+		}
+		if (player4 != null) {
+			saveData[index] = SavePlayerData(player4);
 			index++;
 		}
 
 		// Save all the objects data
 		for (i=0;i<saveableGameObjects.Count;i++) {
 			line = saveableGameObjects[i].GetComponent<SaveObject>().SaveID.ToString();
-			line += "|" + saveableGameObjects[i].activeInHierarchy.ToString();
+			line += "|" + saveableGameObjects[i].activeSelf.ToString();
 			tr = saveableGameObjects[i].GetComponent<Transform>();
 			line += "|" + (tr.localPosition.x.ToString("0000.00000") + "|" + tr.localPosition.y.ToString("0000.00000") + "|" + tr.localPosition.z.ToString("0000.00000"));
 			line += "|" + (tr.localRotation.x.ToString("0000.00000") + "|" + tr.localRotation.y.ToString("0000.00000") + "|" + tr.localRotation.z.ToString("0000.00000") + "|" + tr.localRotation.w.ToString("0000.00000"));
 			line += "|" + (tr.localScale.x.ToString("0000.00000") + "|" + tr.localScale.y.ToString("0000.00000") + "|" + tr.localScale.z.ToString("0000.00000"));
-			saveData[index] = line;
-			index++;
+			Rigidbody rbody = saveableGameObjects[i].GetComponent<Rigidbody>();
+			if (rbody != null) {
+				line += "|" + rbody.velocity.x.ToString("0000.00000") + "|" + rbody.velocity.y.ToString("0000.00000") + "|" + rbody.velocity.z.ToString("0000.00000");
+			} else {
+				line += "|0000.00000|0000.00000|0000.00000";
+			}
+			string stype = saveableGameObjects[i].GetComponent<SaveObject>().saveableType;
+			line += "|" + stype;
+			line += "|" + saveableGameObjects[i].GetComponent<SaveObject>().levelParentID.ToString(); // int level dynamic object index
+			switch (saveableGameObjects[i].GetComponent<SaveObject>().saveType) {
+				case SaveObject.SaveableType.Useable: numUseables++; line += "|" + SaveUseableData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.Grenade: numGrenades++; line += "|" + SaveGrenadeData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.NPC: numNPCs++; line += "|" + SaveNPCData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.Destructable: numDestructables++;  line += "|" + SaveDestructableData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.SearchableStatic: numSearchableStatics++;  line += "|" + SaveSearchableStaticData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.SearchableDestructable: numSearchableDestructs++;  line += "|" + SaveSearchableDestructsData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.Door: numDoors++;  line += "|" + SaveDoorData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.ForceBridge: numForceBs++;  line += "|" + SaveForceBridgeData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.Switch: numSwitches++;  line += "|" + SaveSwitchData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.FuncWall: numFuncWalls++;  line += "|" + SaveFuncWallData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.TeleDest: numTeleDests++;  line += "|" + SaveTeleDestData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.LBranch: numBranches++;  line += "|" + SaveLogicBranchData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.LRelay: numRelays++;  line += "|" + SaveLogicRelayData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.LSpawner: numSpawners++;  line += "|" + SaveSpawnerData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.InteractablePanel: numIntPanels++;  line += "|" + SaveInteractablePanelData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.ElevatorPanel: numElevPanels++;  line += "|" + SaveElevatorPanelData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.Keypad: numKeypads++;  line += "|" + SaveKeypadData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.PuzzleGrid: numPuzGrids++;  line += "|" + SavePuzzleGridData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.PuzzleWire: numPuzWires++;  line += "|" + SavePuzzleWireData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.TCounter: numTrigCounters++;  line += "|" + SaveTCounterData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.TGravity: numTrigGravity++;  line += "|" + SaveTGravityData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.MChanger: numMChangers++;  line += "|" + SaveMChangerData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.RadTrig: numRadTrigs++;  line += "|" + SaveTRadiationData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.GravPad: numGravPads++;  line += "|" + SaveGravLiftPadTextureData(saveableGameObjects[i]); break;
+				default: numTransforms++; break; // we already did the plain ol transform data first up above
+			}
+			saveData[index] = line; // take this objects data and add it to the array
+			index++; // move to the next line
 		}
+
+		Debug.Log("Number of Transforms: " + numTransforms.ToString());
+		Debug.Log("Number of Useable: " + numUseables.ToString());
+		Debug.Log("Number of Grenades: " + numGrenades.ToString());
+		Debug.Log("Number of NPCs: " + numNPCs.ToString());
+		Debug.Log("Number of Destructables: " + numDestructables.ToString());
+		Debug.Log("Number of SearchableStatics: " + numSearchableStatics.ToString());
+		Debug.Log("Number of SearchableDestructables: " + numSearchableDestructs.ToString());
+		Debug.Log("Number of Doors: " + numDoors.ToString());
+		Debug.Log("Number of ForceBridges: " + numForceBs.ToString());
+		Debug.Log("Number of Switches: " + numSwitches.ToString());
+		Debug.Log("Number of FuncWalls: " + numFuncWalls.ToString());
+		Debug.Log("Number of TeleDests: " + numTeleDests.ToString());
+		Debug.Log("Number of Branches: " + numBranches.ToString());
+		Debug.Log("Number of Relays: " + numRelays.ToString());
+		Debug.Log("Number of Spawners: " + numSpawners.ToString());
+		Debug.Log("Number of InteractablePanels: " + numIntPanels.ToString());
+		Debug.Log("Number of ElevatorPanels: " + numElevPanels.ToString());
+		Debug.Log("Number of Keypad: " + numKeypads.ToString());
+		Debug.Log("Number of PuzzleGrid: " + numPuzGrids.ToString());
+		Debug.Log("Number of PuzzleWire: " + numPuzWires.ToString());
+		Debug.Log("Number of TriggerCounters: " + numTrigCounters.ToString());
+		Debug.Log("Number of TriggerGravities: " + numTrigGravity.ToString());
+		Debug.Log("Number of MaterialChangers: " + numMChangers.ToString());
+		Debug.Log("Number of RadiationTriggers: " + numRadTrigs.ToString());
+		Debug.Log("Number of GravityPads: " + numGravPads.ToString());
 
 		// Write to file
 		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt");
@@ -984,8 +1488,74 @@ public class Const : MonoBehaviour {
 		sprint(stringTable[195],allPlayers);
 	}
 
-	void LoadPlayerDataToPlayer(GameObject currentPlayer, string[] entries, int currentline) {
-		int index = 1;  // Already parsed ID number in main Load() function, skip index 0
+	void LoadNewGamePlayerDataToPlayer(GameObject currentPlayer) {
+		int j=0;
+		PlayerReferenceManager PRman = currentPlayer.GetComponent<PlayerReferenceManager>();
+		GameObject pCap = PRman.playerCapsule;
+		GameObject playerMainCamera = PRman.playerCapsuleMainCamera;
+		GameObject playerInventory = PRman.playerInventory;
+		PlayerHealth ph = pCap.GetComponent<PlayerHealth>();
+		PlayerEnergy pe = pCap.GetComponent<PlayerEnergy>();
+		PlayerMovement pm = pCap.GetComponent<PlayerMovement>();
+		PlayerPatch pp = pCap.GetComponent<PlayerPatch>();
+		Transform tr = pCap.transform;
+		MouseLookScript ml = playerMainCamera.GetComponent<MouseLookScript>();
+		Transform trml = playerMainCamera.transform;
+		WeaponInventory wi = playerInventory.GetComponent<WeaponInventory>();
+		WeaponAmmo wa = playerInventory.GetComponent<WeaponAmmo>();
+		WeaponCurrent wc = playerInventory.GetComponent<WeaponCurrent>();
+		GrenadeCurrent gc = playerInventory.GetComponent<GrenadeCurrent>();
+		GrenadeInventory gi = playerInventory.GetComponent<GrenadeInventory>();
+		PatchCurrent pc = playerInventory.GetComponent<PatchCurrent>();
+		PatchInventory pi = playerInventory.GetComponent<PatchInventory>();
+		LogInventory li = playerInventory.GetComponent<LogInventory>();
+		HardwareInventory hi = playerInventory.GetComponent<HardwareInventory>();
+
+		ph.hm.health = 211f;
+		pe.energy = 54f;
+		pm.currentCrouchRatio = 1f;
+		pm.bodyState = 0;
+		pm.ladderState = false;
+		pm.gravliftState = false;
+		pp.patchActive = 0;
+		pp.berserkIncrement = 0;
+		pp.sightFinishedTime = Time.time;
+		pp.staminupFinishedTime = Time.time;
+		ml.yRotation = ml.startyRotation;
+		ml.xRotation = ml.startxRotation;
+		tr.localRotation = Quaternion.Euler(0f, ml.yRotation, 0f); // left right component applied to capsule	
+		ml.transform.localRotation = Quaternion.Euler(ml.xRotation,0f,0f); // Up down component only applied to camera
+		tr.localScale = new Vector3(1f,1f,1f);
+		ml.inventoryMode = false;
+		ml.ToggleInventoryMode();
+		ml.holdingObject = false;
+		ml.heldObjectIndex = -1;
+		ml.heldObjectCustomIndex = -1;
+		GUIState.a.overButtonType = GUIState.ButtonType.None;
+		GUIState.a.overButton = false;
+		ml.geniusActive = false;
+		for (j=0;j<7;j++) { wi.weaponInventoryIndices[j] = -1; }
+		for (j=0;j<7;j++) { wi.weaponInventoryAmmoIndices[j] = j;}
+		for (j=0;j<16;j++) { wi.hasWeapon[j] = false; }
+		for (j=0;j<16;j++) { wa.wepAmmo[j] = 0; }
+		wc.weaponCurrent = 0;
+		wc.weaponIndex = -1;
+		gc.grenadeCurrent = 0;
+		gc.grenadeIndex = -1;
+		for (j=0;j<7;j++) { gi.grenAmmo[j] = 0; }
+		pc.patchCurrent = 0;
+		pc.patchIndex = -1;
+		for (j=0;j<7;j++) { pi.patchCounts[j] = 0; }
+		for (j=0;j<128;j++) { li.hasLog[j] = false; }
+		for (j=0;j<128;j++) { li.readLog[j] = false; }
+		for (j=0;j<10;j++) { li.numLogsFromLevel[j] = 0; }
+		li.lastAddedIndex = -1;
+		for (j=0;j<12;j++) { hi.hasHardware[j] = false; }
+		for (j=0;j<12;j++) { hi.hardwareVersion[j] = -1; }
+	}
+
+	void LoadPlayerDataToPlayer(GameObject currentPlayer, string[] entries, int currentline,int index) {
+		//int index = 1;  // Already parsed ID number in main Load() function, skip index 0
 		int j;
 		float readFloatx;
 		float readFloaty;
@@ -1081,14 +1651,13 @@ public class Const : MonoBehaviour {
 		for (j=0;j<12;j++) { hi.hardwareVersion[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
 	}
 
-	void LoadObjectDataToObject(GameObject currentGameObject, string[] entries, int currentline) {
-		int index = 1;  // Already parsed ID number in main Load() function, skip index 0
+	void LoadObjectDataToObject(GameObject currentGameObject, string[] entries, int currentline, int index) {
 		float readFloatx;
 		float readFloaty;
 		float readFloatz;
 		float readFloatw;
 		Vector3 tempvec;
-
+		
 		// Set active state of GameObject in Hierarchy
 		currentGameObject.SetActive(GetBoolFromString(entries[index])); index++;
 
@@ -1113,26 +1682,376 @@ public class Const : MonoBehaviour {
 		readFloatz = GetFloatFromString(entries[index],currentline); index++;
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		currentGameObject.transform.localScale = tempvec;
+
+		// Get rigidbody velocity
+		Rigidbody rbody = currentGameObject.GetComponent<Rigidbody>();
+		if (rbody != null) {
+			readFloatx = GetFloatFromString(entries[index],currentline); index++;
+			readFloaty = GetFloatFromString(entries[index],currentline); index++;
+			readFloatz = GetFloatFromString(entries[index],currentline); index++;
+			tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
+			rbody.velocity = tempvec;
+		} else {
+			index = index + 3; // moving along and ignoring the zeros
+		}
+
+		HealthManager hm = currentGameObject.GetComponent<HealthManager>(); // used multiple times below
+		SearchableItem se = currentGameObject.GetComponent<SearchableItem>(); // used multiple times below
+		switch (currentGameObject.GetComponent<SaveObject>().saveType) {
+			case SaveObject.SaveableType.Useable:
+				UseableObjectUse uou = currentGameObject.GetComponent<UseableObjectUse>();
+				if (uou != null) {
+					uou.useableItemIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					uou.customIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					uou.ammo = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					uou.ammoIsSecondary = GetBoolFromString(entries[index]); index++;
+				}
+				break;
+			case SaveObject.SaveableType.Grenade:
+				GrenadeActivate ga = currentGameObject.GetComponent<GrenadeActivate>();
+				if (ga != null) {
+					ga.useTimer = GetBoolFromString(entries[index]); index++; // do we have a timer going?
+					if (ga.useTimer) ga.timeFinished = GetFloatFromString(entries[index],currentline); index++; // float - how much time left before the fun part?
+					ga.explodeOnContact = GetBoolFromString(entries[index]); index++; // bool - or not a landmine
+					ga.useProx = GetBoolFromString(entries[index]); index++; // bool - is this a landmine?
+				}
+				break;
+			case SaveObject.SaveableType.NPC:
+				AIController aic = currentGameObject.GetComponent<AIController>();
+				AIAnimationController aiac = currentGameObject.GetComponentInChildren<AIAnimationController>();
+				if (aic != null) {
+					int state = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					switch (state) {
+						case 0: aic.currentState = Const.aiState.Idle; break;
+						case 1: aic.currentState = Const.aiState.Walk; break;
+						case 2: aic.currentState = Const.aiState.Run; break;
+						case 3: aic.currentState = Const.aiState.Attack1; break;
+						case 4: aic.currentState = Const.aiState.Attack2; break;
+						case 5: aic.currentState = Const.aiState.Attack3; break;
+						case 6: aic.currentState = Const.aiState.Pain; break;
+						case 7: aic.currentState = Const.aiState.Dying; break;
+						case 8: aic.currentState = Const.aiState.Inspect; break;
+						case 9: aic.currentState = Const.aiState.Interacting; break;
+					}
+					int enemIDRead = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					if (player1 != null) {
+						if (player1.GetComponent<SaveObject>().SaveID == enemIDRead) {
+							aic.enemy = player1;
+						}
+					}
+					if (player2 != null) {
+						if (player2.GetComponent<SaveObject>().SaveID == enemIDRead) {
+							aic.enemy = player2;
+						}
+					}
+					if (player3 != null) {
+						if (player3.GetComponent<SaveObject>().SaveID == enemIDRead) {
+							aic.enemy = player3;
+						}
+					}
+					if (player4 != null) {
+						if (player4.GetComponent<SaveObject>().SaveID == enemIDRead) {
+							aic.enemy = player4;
+						}
+					}
+				} else {
+					index = index + 2;
+				}
+				if (hm != null) {
+					hm.health = GetFloatFromString(entries[index],currentline); index++; // how much health we have
+					hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
+					hm.god = GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
+					hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport?
+				} else {
+					index = index + 4;
+				}
+				break;
+			case SaveObject.SaveableType.Destructable:
+				if (hm != null) {
+					hm.health = GetFloatFromString(entries[index],currentline); index++; // how much health we have
+					hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
+					hm.god = GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
+					hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport?
+				} else {
+					index = index + 4;
+				}
+				break;
+			case SaveObject.SaveableType.SearchableStatic:
+				if (se != null) {
+					se.contents[0] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
+					se.contents[1] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
+					se.contents[2] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
+					se.contents[3] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
+					se.customIndex[0] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
+					se.customIndex[1] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
+					se.customIndex[2] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
+					se.customIndex[3] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
+				} else {
+					index += 8;
+				}
+				break;
+			case SaveObject.SaveableType.SearchableDestructable:
+				if (se != null) {
+					se.contents[0] = GetIntFromString(entries[index],currentline,"savegame",index); index++;; // int main lookup index
+					se.contents[1] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
+					se.contents[2] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
+					se.contents[3] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
+					se.customIndex[0] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
+					se.customIndex[1] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
+					se.customIndex[2] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
+					se.customIndex[3] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
+				} else {
+					index += 8;
+				}
+				if (hm != null) {
+					hm.health = GetFloatFromString(entries[index],currentline); index++; // how much health we have
+					hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
+					hm.god = GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
+					hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport?
+				} else {
+					index = index + 4;
+				}
+				break;
+			case SaveObject.SaveableType.Door:
+				Door dr = currentGameObject.GetComponent<Door>();
+				if (dr != null) {
+					dr.targetAlreadyDone = GetBoolFromString(entries[index]); index++; // bool - have we already ran targets
+					dr.locked = GetBoolFromString(entries[index]); index++; // bool - is this locked?
+					dr.blocked = GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
+					int state = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					switch (state) {
+						case 0: dr.doorOpen = Door.doorState.Closed; break;
+						case 1: dr.doorOpen = Door.doorState.Open; break;
+						case 2: dr.doorOpen = Door.doorState.Closing; break;
+						case 3: dr.doorOpen = Door.doorState.Opening; break;
+					}
+				} else {
+					index += 4;
+				}
+				break;
+			case SaveObject.SaveableType.ForceBridge:
+				ForceBridge fb = currentGameObject.GetComponent<ForceBridge>();
+				if (fb != null) {
+					fb.activated = GetBoolFromString(entries[index]); index++; // bool - is the bridge on?
+					fb.lerping = GetBoolFromString(entries[index]); index++; // bool - are we currently lerping one way or tother
+				} else {
+					index += 2;
+				}
+				break;
+			case SaveObject.SaveableType.Switch:
+				ButtonSwitch bs = currentGameObject.GetComponent<ButtonSwitch>();
+				if (bs != null) {
+					// bs?  null?  that's bs
+					bs.locked = GetBoolFromString(entries[index]); index++; // bool - is this switch locked
+					bs.active = GetBoolFromString(entries[index]); index++; // bool - is the switch flashing?
+					bs.alternateOn = GetBoolFromString(entries[index]); index++; // bool - is the flashing material on?
+					bs.delayFinished = GetFloatFromString(entries[index],currentline); index++; // float - time before firing targets
+				} else {
+					index += 4;
+				}
+				break;
+			case SaveObject.SaveableType.FuncWall:
+				FuncWall fw = currentGameObject.GetComponent<FuncWall>(); // actually this is on movertarget gameObjects
+				if (fw != null) {
+					int state = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					switch (state) {
+						case 0: fw.currentState = FuncWall.FuncStates.Start; break;
+						case 1: fw.currentState = FuncWall.FuncStates.Target; break;
+						case 2: fw.currentState = FuncWall.FuncStates.MovingStart; break;
+						case 3: fw.currentState = FuncWall.FuncStates.MovingTarget; break;
+						case 4: fw.currentState = FuncWall.FuncStates.AjarMovingStart; break;
+						case 5: fw.currentState = FuncWall.FuncStates.AjarMovingTarget; break;
+					}
+				} else {
+					index++;
+				}
+				break;
+			case SaveObject.SaveableType.TeleDest:
+				TeleportTouch tt = currentGameObject.GetComponent<TeleportTouch>();
+				if (tt != null) {
+					tt.justUsed = GetFloatFromString(entries[index],currentline); index++; // bool - is the player still touching it?
+				} else {
+					index++;
+				}
+				break;
+			case SaveObject.SaveableType.LBranch:
+				LogicBranch lb = currentGameObject.GetComponent<LogicBranch>();
+				if (lb != null) {
+					lb.relayEnabled = GetBoolFromString(entries[index]); index++; // bool - is this enabled
+					lb.onSecond = GetBoolFromString(entries[index]); index++; // bool - which one are we on?
+				} else {
+					index += 2;
+				}
+				break;
+			case SaveObject.SaveableType.LRelay:
+				LogicRelay lr = currentGameObject.GetComponent<LogicRelay>();
+				if (lr != null) {
+					lr.relayEnabled = GetBoolFromString(entries[index]); index++; // bool - is this enabled
+				} else {
+					index++;
+				}
+				break;
+			case SaveObject.SaveableType.LSpawner:
+				SpawnManager sm = currentGameObject.GetComponent<SpawnManager>();
+				if (sm != null) {
+					sm.active = GetBoolFromString(entries[index]); index++; // bool - is this enabled
+					sm.numberActive = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int - number spawned
+					sm.delayFinished = GetFloatFromString(entries[index],currentline); index++; // float - time that we need to spawn next
+				} else {
+					index += 3;
+				}
+				break;
+			case SaveObject.SaveableType.InteractablePanel:
+				InteractablePanel ip = currentGameObject.GetComponent<InteractablePanel>();
+				if (ip != null) {
+					ip.open = GetBoolFromString(entries[index]); index++; // bool - is the panel opened
+					ip.installed = GetBoolFromString(entries[index]); index++; // bool - is the item installed, MAKE SURE YOU ENABLE THE INSTALL ITEM GameObject IN LOAD
+				} else {
+					index += 2;
+				}
+				break;
+			case SaveObject.SaveableType.ElevatorPanel:
+				KeypadElevator ke = currentGameObject.GetComponent<KeypadElevator>();
+				if (ke != null) {
+					ke.padInUse = GetBoolFromString(entries[index]); index++; // bool - is the pad being used by a player
+					ke.locked = GetBoolFromString(entries[index]); index++; // bool - locked?
+				} else {
+					index += 2;
+				}
+				break;
+			case SaveObject.SaveableType.Keypad:
+				KeypadKeycode kk = currentGameObject.GetComponent<KeypadKeycode>();
+				if (kk != null) {
+					kk.padInUse = GetBoolFromString(entries[index]); index++; // bool - is the pad being used by a player
+					kk.locked = GetBoolFromString(entries[index]); index++; // bool - locked?
+					kk.solved = GetBoolFromString(entries[index]); index++; // bool - already entered correct keycode?
+				} else {
+					index += 3;
+				}
+				break;
+			case SaveObject.SaveableType.PuzzleGrid:
+				PuzzleGridPuzzle pgp = currentGameObject.GetComponent<PuzzleGridPuzzle>();
+				if (pgp != null) {
+					pgp.puzzleSolved = GetBoolFromString(entries[index]); index++; // bool - is this puzzle already solved?
+					for (int i=0;i<pgp.grid.Length;i++) {
+						pgp.grid[i] = GetBoolFromString(entries[index]); index++;  // bool - get the current grid states + or X
+					}
+					pgp.fired = GetBoolFromString(entries[index]); index++; // bool - have we already fired yet?
+					pgp.locked = GetBoolFromString(entries[index]); index++; // bool - is this locked?
+				} else {
+					index += 38; // grid length is always 35
+				}
+				break;
+			case SaveObject.SaveableType.PuzzleWire:
+				PuzzleWirePuzzle pwp = currentGameObject.GetComponent<PuzzleWirePuzzle>();
+				if (pwp != null) {
+					pwp.puzzleSolved = GetBoolFromString(entries[index]); index++; // bool - is this puzzle already solved?
+					for (int i=0;i<pwp.currentPositionsLeft.Length;i++) {
+						pwp.currentPositionsLeft[i] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int - get the current wire positions
+					}
+					for (int i=0;i<pwp.currentPositionsRight.Length;i++) {
+						pwp.currentPositionsRight[i] = GetIntFromString(entries[index],currentline,"savegame",index); index++;  // int - get the current wire positions
+					}
+					pwp.locked = GetBoolFromString(entries[index]); index++; // bool - is this locked?
+				} else {
+					index += 16; // number of wire positions is always 7 for each side
+				}
+				break;
+			case SaveObject.SaveableType.TCounter:
+				TriggerCounter tc = currentGameObject.GetComponent<TriggerCounter>();
+				if (tc != null) {
+					tc.counter = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int - how many counts we have
+				} else {
+					index++;
+				}
+				break;
+			case SaveObject.SaveableType.TGravity:
+				GravityLift gl = currentGameObject.GetComponent<GravityLift>();
+				if (gl != null) {
+					gl.active = GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
+				} else {
+					index++;
+				}
+				break;
+			case SaveObject.SaveableType.MChanger:
+				MaterialChanger mch = currentGameObject.GetComponent<MaterialChanger>();
+				if (mch != null) {
+					mch.alreadyDone = GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
+					// if (mch.alreadyDone) {
+						// mch.SetMaterialFromCode(); // do it agains
+					// }
+				} else {
+					index++;
+				}
+				break;
+			case SaveObject.SaveableType.RadTrig:
+				Radiation rad = currentGameObject.GetComponent<Radiation>();
+				if (rad != null) {
+					rad.isEnabled = GetBoolFromString(entries[index]); index++; // bool - hey is this on? hello?
+					rad.numPlayers = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int - how many players we are affecting
+				} else {
+					index += 2;
+				}
+				break;
+			case SaveObject.SaveableType.GravPad:
+				TextureChanger tex = currentGameObject.GetComponent<TextureChanger>();
+				if (tex != null) {
+					tex.currentTexture = GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
+					tex.currentTexture = !tex.currentTexture; // gets done again in Toggle()
+					tex.Toggle(); // set it again to be sure
+				}
+				break;
+		}
 	}
 
 	public void Load(int saveFileIndex) {
+		if (saveFileIndex < 0) {
+			if (player1 != null) {
+				Transform pCapT = player1.GetComponent<PlayerReferenceManager>().playerCapsule.transform;
+				pCapT.localPosition = new Vector3(-17.894f,-43.769f,17.898f);
+				LoadNewGamePlayerDataToPlayer(player1);
+			}
+			if (player2 != null) {
+				Transform pCapT = player1.GetComponent<PlayerReferenceManager>().playerCapsule.transform;
+				pCapT.localPosition = new Vector3(-16.819f,-43.769f,17.898f);
+				LoadNewGamePlayerDataToPlayer(player1);
+			}
+			if (player3 != null) {
+				Transform pCapT = player1.GetComponent<PlayerReferenceManager>().playerCapsule.transform;
+				pCapT.localPosition = new Vector3(-15.782f,-43.769f,17.898f);
+				LoadNewGamePlayerDataToPlayer(player1);
+			}
+			if (player4 != null) {
+				Transform pCapT = player1.GetComponent<PlayerReferenceManager>().playerCapsule.transform;
+				pCapT.localPosition = new Vector3(-14.944f,-43.769f,19.086f);
+				LoadNewGamePlayerDataToPlayer(player1);
+			}
+			questData.ResetQuestData(questData);
+			return; // TODO add default scene save data
+		}
 		string readline;
 		int currentline = 0;
+		int numPlayers = 0;
+		List<GameObject> saveableGameObjects = new List<GameObject>();
+		GameObject currentGameObject = null;
 
 		sprint(stringTable[196],allPlayers); // Loading...
-		List<GameObject> playerGameObjects = new List<GameObject>();
-		List<GameObject> saveableGameObjects = new List<GameObject>();
+		if (player1 != null) numPlayers++;
+		if (player2 != null) numPlayers++;
+		if (player3 != null) numPlayers++;
+		if (player4 != null) numPlayers++;
 		// Find all gameobjects with SaveObject script attached
 		GameObject[] getAllGameObjects = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
 		foreach (GameObject gob in getAllGameObjects) {
-			if (gob.GetComponentInChildren<PlayerReferenceManager>() != null && gob.GetComponent<RuntimeObject>().isRuntimeObject == true) {
-				playerGameObjects.Add(gob);
-			}
-
-			if (gob.GetComponent<SaveObject>() != null && gob.GetComponent<RuntimeObject>().isRuntimeObject == true) {
-				saveableGameObjects.Add(gob);
+			if (gob.GetComponent<SaveObject>() != null) {
+				if (gob.GetComponent<SaveObject>().isRuntimeObject == true) {
+					saveableGameObjects.Add(gob);
+				}
 			}
 		}
+
+		Debug.Log("Num players: " + numPlayers.ToString(),allPlayers);
+		Debug.Log("Num saveables: " + saveableGameObjects.Count.ToString(),allPlayers);
 
 		StreamReader sr = new StreamReader(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt");
 		if (sr != null) {
@@ -1148,9 +2067,9 @@ public class Const : MonoBehaviour {
 						currentline++;
 						continue; // Skip save name
 					}
+					int index = 0;
 					if (currentline == 1) {
 						// Read in global states
-						int index = 0;
 						int levelNum = GetIntFromString(entries[index],currentline,"savegame",index); index++;
 						LevelManager.a.LoadLevelFromSave(levelNum);
 
@@ -1191,17 +2110,46 @@ public class Const : MonoBehaviour {
 						continue;
 					}
 
-					foreach (GameObject pl in playerGameObjects) {
-						if (entries[0] == playerGameObjects[0].GetInstanceID().ToString()) {
-							LoadPlayerDataToPlayer(pl,entries,currentline);
-							break;
+					// And now to load object specific data per the saveableType
+					string stype = entries[index]; index++;
+					int readID = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					if (stype == "Player") {
+						currentGameObject = null;
+						if (player1 != null) {
+							if (player1.GetComponent<SaveObject>().SaveID == readID) {
+								currentGameObject = player1;
+							}
 						}
-					}
-
-					foreach (GameObject ob in saveableGameObjects) {
-						if (entries[0] == ob.GetComponent<SaveObject>().SaveID.ToString()) {
-							LoadObjectDataToObject(ob,entries,currentline);
-							break;
+						if (player2 != null) {
+							if (player2.GetComponent<SaveObject>().SaveID == readID) {
+								currentGameObject = player2;
+							}
+						}
+						if (player3 != null) {
+							if (player3.GetComponent<SaveObject>().SaveID == readID) {
+								currentGameObject = player3;
+							}
+						}
+						if (player4 != null) {
+							if (player4.GetComponent<SaveObject>().SaveID == readID) {
+								currentGameObject = player4;
+							}
+						}
+						if (currentGameObject != null) LoadPlayerDataToPlayer(currentGameObject,entries,currentline,index);
+					} else {
+						int levIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+						bool foundMatch = false;
+						for (int i=0;i<saveableGameObjects.Count;i++) {
+							if (saveableGameObjects[i].GetComponent<SaveObject>().SaveID == readID) {
+								currentGameObject = saveableGameObjects[i];
+								foundMatch = true;
+								break;
+							}
+						}
+						if (!foundMatch) currentGameObject = new GameObject(); // create a new one
+						if (currentGameObject != null) {
+							if (levIndex > -1) currentGameObject.transform.parent = LevelManager.a.GetRequestedLevelDynamicContainer(levIndex).transform;
+							LoadObjectDataToObject(currentGameObject,entries,currentline,index); // last parameter is 1, start on index 1 for loading the transform data
 						}
 					}
 					currentline++;
@@ -1209,6 +2157,7 @@ public class Const : MonoBehaviour {
 				sr.Close();
 			}
 		}
+		PauseScript.a.mainMenu.SetActive(false);
 		sprint(stringTable[197],allPlayers); // Loading...Done!
 	}
 
@@ -1249,6 +2198,14 @@ public class Const : MonoBehaviour {
 	}
 
 	public void RegisterObjectWithHealth(HealthManager hm) {
+		for (int i=0;i<healthObjectsRegistration.Length;i++) {
+			if (healthObjectsRegistration[i] != null) {
+				if (healthObjectsRegistration[i] == hm) {
+					return; // already in the list
+				}
+			}
+		}
+
 		for (int i=0;i<healthObjectsRegistration.Length;i++) {
 			if (healthObjectsRegistration[i] == null) {
 				healthObjectsRegistration[i] = hm;
@@ -1314,11 +2271,17 @@ public class Const : MonoBehaviour {
 
 	public AttackType GetAttackTypeFromInt(int att_type_i) {
 		switch(att_type_i) {
-		case 1: return AttackType.Melee;
-		case 2: return AttackType.EnergyBeam;
-		case 3: return AttackType.Magnetic;
-		case 4: return AttackType.Projectile;
-		case 5: return AttackType.ProjectileEnergyBeam;
+			case 0: return AttackType.None;
+			case 1: return AttackType.Melee;
+			case 6: return AttackType.MeleeEnergy;
+			case 2: return AttackType.EnergyBeam;
+			case 3: return AttackType.Magnetic;
+			case 4: return AttackType.Projectile;
+			case 5: return AttackType.ProjectileEnergyBeam;
+			case 7: return AttackType.ProjectileLaunched;
+			case 8: return AttackType.Gas;
+			case 9: return AttackType.ProjectileNeedle;
+			case 10:return AttackType.Tranq;
 		}
 		return AttackType.None;
 	}
@@ -1380,8 +2343,8 @@ public class Const : MonoBehaviour {
 		// New method allows for targetting multiple objects, not just one gameobject
 
 		// First check if targetname is valid
-		if (targetname == null || targetname == "" || targetname == " " || targetname == "  ") {
-			Debug.Log("WARNING: invalid target name is either empty string or space or space space!  Ignoring and returning from Const.UseTargets()");
+		if (string.IsNullOrWhiteSpace(targetname)) {
+			Debug.Log("WARNING: invalid targetname is null or white space!  Ignoring and returning from Const.UseTargets()");
 			return;
 		}
 
@@ -1396,13 +2359,13 @@ public class Const : MonoBehaviour {
 					if (ud.GOSetDeactive && TargetRegister[i].activeSelf) TargetRegister[i].SetActive(false); // diddo for activeSelf to prevent spamming SetActive
 					if (ud.GOToggleActive) TargetRegister[i].SetActive(!TargetRegister[i].activeSelf); // if I abuse this with a trigger_multiple someone should shoot me
 					TargetIO tio = TargetRegister[i].GetComponent<TargetIO>();
-					Debug.Log("Ran Targetted() on " + numtargetsfound.ToString() + " GameObject(s) with targetname of " + targetname);
 					tio.Targetted(ud);
 				} else {
 					Debug.Log("WARNING: null TargetRegister GameObject linked to targetname of " + targetname + ". Could not run Targetted.");
 				}
 			}
 		}
+		Debug.Log("Ran Targetted() on " + numtargetsfound.ToString() + " GameObject(s) with targetname of " + targetname);
 	}
 
 	public void AddToTargetRegister (GameObject go, string tn) {
@@ -1515,6 +2478,35 @@ public class QuestBits {
 	public bool SelfDestructActivated;
 	public bool BridgeSeparated;
 	public bool IsolinearChipsetInstalled;
+
+	public void ResetQuestData(QuestBits qD) {
+		qD.lev1SecCode = UnityEngine.Random.Range(0,10);
+		qD.lev2SecCode = UnityEngine.Random.Range(0,10);
+		qD.lev3SecCode = UnityEngine.Random.Range(0,10);
+		qD.lev4SecCode = UnityEngine.Random.Range(0,10);
+		qD.lev5SecCode = UnityEngine.Random.Range(0,10);
+		qD.lev6SecCode = UnityEngine.Random.Range(0,10);
+		qD.RobotSpawnDeactivated = false;
+		qD.IsotopeInstalled = false;
+		qD.ShieldActivated = false;
+		qD.LaserSafetyOverriden = false;
+		qD.LaserDestroyed = false;
+		qD.BetaGroveCyberUnlocked = false;
+		qD.GroveAlphaJettisonEnabled = false;
+		qD.GroveBetaJettisonEnabled = false;
+		qD.GroveDeltaJettisonEnabled = false;
+		qD.MasterJettisonBroken = false;
+		qD.Relay428Fixed = false;
+		qD.MasterJettisonEnabled = false;
+		qD.BetaGroveJettisoned = false;
+		qD.AntennaNorthDestroyed = false;
+		qD.AntennaSouthDestroyed = false;
+		qD.AntennaEastDestroyed = false;
+		qD.AntennaWestDestroyed = false;
+		qD.SelfDestructActivated = false;
+		qD.BridgeSeparated = false;
+		qD.IsolinearChipsetInstalled = false;
+	}
 
 	public void TargetOnGatePassed(bool bitToCheck, bool passIfTrue, UseData ud, TargetIO tio, string targ, string arg, string targOnFalse, string argOnFalse) {
 		if (passIfTrue) {

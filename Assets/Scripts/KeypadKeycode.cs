@@ -6,19 +6,22 @@ public class KeypadKeycode : MonoBehaviour {
 	//public DataTab dataTabResetter;
 	//public GameObject keypadControl;
 	public int keycode; // the access code
-	public bool locked = false;
+	public bool locked = false; // save
 	public string target;
 	public string argvalue;
 	public string lockedTarget;
+	public int successMessageLingdex = -1;
 	public string successMessage = "";
+	public int lockedMessageLingdex = -1;
 	public string lockedMessage = "";
 	public AudioClip SFX;
 	private float disconnectDist;
 	private AudioSource SFXSource;
-	private bool padInUse = false;
+	[HideInInspector]
+	public bool padInUse = false; // save
 	private GameObject playerCamera;
 	private GameObject playerCapsule;
-	public bool solved = false;
+	public bool solved = false; // save
 	public bool useQuestKeycode1 = false;
 	public bool useQuestKeycode2 = false;
 
@@ -30,8 +33,7 @@ public class KeypadKeycode : MonoBehaviour {
 
 	public void Use (UseData ud) {
 		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
-			Const.sprint("Blocked by SHODAN level Security.",ud.owner);
-			MFDManager.a.BlockedBySecurity(transform.position);
+			MFDManager.a.BlockedBySecurity(transform.position,ud);
 			return;
 		}
 
@@ -41,7 +43,8 @@ public class KeypadKeycode : MonoBehaviour {
 		}
 
 		if (locked) {
-			Const.sprint(lockedMessage,ud.owner);
+			Const.sprintByIndexOrOverride (lockedMessageLingdex, lockedMessage,ud.owner);
+			
 			if (!string.IsNullOrWhiteSpace(lockedTarget)) {
 				ud.argvalue = argvalue;
 				TargetIO tio = GetComponent<TargetIO>();
@@ -66,7 +69,7 @@ public class KeypadKeycode : MonoBehaviour {
 					}
 				}
 			} else {
-				Const.sprint("Blocked by extant CPU nodes on one of levels 1, 2, or 3.",ud.owner);
+				Const.sprint(Const.a.stringTable[289],ud.owner);
 				return;
 			}
 		}
@@ -82,7 +85,7 @@ public class KeypadKeycode : MonoBehaviour {
 					}
 				}
 			} else {
-				Const.sprint("Blocked by extant CPU nodes on one of levels 4, 5, or 6.",ud.owner);
+				Const.sprint(Const.a.stringTable[290],ud.owner);
 				return;
 			}
 		}
@@ -111,7 +114,7 @@ public class KeypadKeycode : MonoBehaviour {
 			Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
 		}
 		Const.a.UseTargets(ud,target);
-		if (!string.IsNullOrWhiteSpace(successMessage)) Const.sprint(successMessage,ud.owner);
+		Const.sprintByIndexOrOverride (successMessageLingdex, successMessage,ud.owner);
 	}
 
 	void Update () {

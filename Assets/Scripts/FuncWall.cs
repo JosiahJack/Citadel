@@ -14,10 +14,10 @@ public class FuncWall : MonoBehaviour {
 	private Vector3 goalPosition;
 	private Vector3 tempVec;
 	private AudioSource SFXSource;
-	private FuncStates currentState;
+	public FuncStates currentState; // save
 	private Rigidbody rbody;
 	private bool stopSoundPlayed;
-	private bool movedToLocation;
+	//private bool movedToLocation;
 	private float dist;
 
 	void Awake () {
@@ -29,14 +29,16 @@ public class FuncWall : MonoBehaviour {
 		}
 		rbody = GetComponent<Rigidbody>();
 		rbody.isKinematic = true;
+		rbody.useGravity = false;
 		rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 		SFXSource = GetComponent<AudioSource>();
 		stopSoundPlayed = false;
-		movedToLocation = false;
+		//movedToLocation = false;
 		dist = 0;
 	}
 		
 	public void Targetted (UseData ud) {
+		//Debug.Log("Made it to Targetted on FuncWall!");
 		switch (currentState) {
 			case FuncStates.Start:
 				MoveTarget();
@@ -61,7 +63,7 @@ public class FuncWall : MonoBehaviour {
 		SFXSource.loop = true;
 		SFXSource.Play();
 		stopSoundPlayed = false;
-		movedToLocation = false;
+		//movedToLocation = false;
 	}
 
 	void MoveStart() {
@@ -74,19 +76,19 @@ public class FuncWall : MonoBehaviour {
 
 	void FixedUpdate () {
 		switch (currentState) {
-		case FuncStates.Start:
-				if (!movedToLocation) {
+			case FuncStates.Start:
+				//if (!movedToLocation) {
 					transform.position = startPosition;
 					rbody.velocity = Vector3.zero;
-					movedToLocation = true;
-				}
+					//movedToLocation = true;
+				//}
 				break;
 			case FuncStates.Target:
-				if (!movedToLocation) {
+				//if (!movedToLocation) {
 					transform.position = targetPosition.transform.position;
 					rbody.velocity = Vector3.zero;
-					movedToLocation = true;
-				}
+					//movedToLocation = true;
+				//}
 				break;
 			case FuncStates.MovingStart:
 				goalPosition = startPosition;
@@ -94,12 +96,8 @@ public class FuncWall : MonoBehaviour {
 				dist = speed * Time.deltaTime;
 				tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
 				rbody.MovePosition(tempVec);
-				if ((Vector3.Distance(transform.position,goalPosition)) <= 0.02f) {
-					if (currentState == FuncStates.MovingStart) {
-						currentState = FuncStates.Start;
-					} else {
-						currentState = FuncStates.Target;
-					}
+				if ((Vector3.Distance(transform.position,goalPosition)) <= 0.04f) {
+					currentState = FuncStates.Start;
 
 					if (!stopSoundPlayed) {
 						SFXSource.Stop ();
@@ -115,12 +113,8 @@ public class FuncWall : MonoBehaviour {
 				dist = speed * Time.deltaTime;
 				tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
 				rbody.MovePosition(tempVec);
-				if ((Vector3.Distance(transform.position,goalPosition)) <= 0.01f) {
-					if (currentState == FuncStates.MovingStart) {
-						currentState = FuncStates.Start;
-					} else {
-						currentState = FuncStates.Target;
-					}
+				if ((Vector3.Distance(transform.position,goalPosition)) <= 0.04f) {
+					currentState = FuncStates.Target;
 
 					if (!stopSoundPlayed) {
 						SFXSource.Stop ();

@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Door : MonoBehaviour, IBatchUpdate {
+public class Door : MonoBehaviour {
 	public string target;
 	public string argvalue;
 	public bool onlyTargetOnce;
-	private bool targetAlreadyDone = false;
+	[HideInInspector]
+	public bool targetAlreadyDone = false;
 	[Tooltip("Delay after full open before door closes")]
 	public float delay;
 	[Tooltip("Whether door is locked, unuseable until unlocked")]
-	public bool locked;
+	public bool locked; // saved
 	public int securityThreshhold = 100; // if security level is not below this level, this is unusable
 	[Tooltip("If yes, door never closes automatically")]
 	public bool stayOpen;
@@ -24,22 +25,22 @@ public class Door : MonoBehaviour, IBatchUpdate {
 	[Tooltip("Message to display when door is locked, e.g.'door is broken beyond repair'")]
 	public string lockedMessage;
 	public int lockedMessageLingdex = 3;
-	private string cardMessage;
-	private string cardUsedMessage;
-	private string butdoorStillLockedMessage;
+	private string cardMessage; // set in start to hardcoded lingdex 2
+	private string cardUsedMessage; // diddo with lingdex 4
+	private string butdoorStillLockedMessage;  // lingdex 5
 	[HideInInspector]
-	public bool blocked = false;
+	public bool blocked = false; // saved
 	private float useFinished;
 	float waitBeforeClose;
 	private Animator anim;
-	private AudioSource SFX = null; // assign in the editor
+	private AudioSource SFX = null;
 	[Tooltip("Door sound when opening or closing")]
-	public AudioClip SFXClip = null; // assign in the editor
+	public AudioClip SFXClip; // assign in the editor
 	public enum doorState {Closed, Open, Closing, Opening};
 	public enum accessCardType {None,Standard,Medical,Science,Admin,Group1,Group2,Group3,Group4,GroupA,GroupB,Storage,Engineering,Maintenance,Security,Per1,Per2,Per3,Per4,Per5,Command};
 	public accessCardType requiredAccessCard = accessCardType.None;
 	public bool accessCardUsedByPlayer = false;
-	public doorState doorOpen;
+	public doorState doorOpen; // saved
 
 	public float timeBeforeLasersOn;
 	public float lasersFinished;
@@ -47,6 +48,8 @@ public class Door : MonoBehaviour, IBatchUpdate {
 	public bool toggleLasers = false;
 	public bool targettingOnlyUnlocks = false;
 	public bool debugging = false;
+	public LevelLeafData leaf1;
+	public LevelLeafData leaf2;
 
 	private int defIndex = 0;
 	private float topTime = 1.00f;
@@ -67,6 +70,9 @@ public class Door : MonoBehaviour, IBatchUpdate {
 			accessCardUsedByPlayer = true;
 		
 		SFX = GetComponent<AudioSource>();
+		if (SFX == null) Debug.Log("BUG: No AudioSource on Door!");
+		if (SFXClip == null) Debug.Log("BUG: No audio clip SFXClip on Door!");
+		
 		useFinished = Time.time;
 		nmo = GetComponent<UnityEngine.AI.NavMeshObstacle>();
 		if (nmo == null) Const.sprint("BUG: Missing NavMeshObstacle on Door at " + transform.position.ToString(),Const.a.allPlayers);
@@ -82,17 +88,18 @@ public class Door : MonoBehaviour, IBatchUpdate {
 
 		cardMessage = Const.a.stringTable[2];
 		if (string.IsNullOrEmpty(lockedMessage)) {
-			if (lockedMessageLingdex < Const.a.stringTable.Length)
-			lockedMessage = Const.a.stringTable[lockedMessageLingdex];
+			if (lockedMessageLingdex >= 0) {
+				if (lockedMessageLingdex < Const.a.stringTable.Length)
+				lockedMessage = Const.a.stringTable[lockedMessageLingdex];
+			}
 		}
 		cardUsedMessage = Const.a.stringTable[4];
 		butdoorStillLockedMessage = Const.a.stringTable[5];
-		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketA);
 	}
 
 	public void Use (UseData ud) {
 		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
-			MFDManager.a.BlockedBySecurity(transform.position);
+			MFDManager.a.BlockedBySecurity(transform.position,ud);
 			return;
 		}
 
@@ -103,12 +110,16 @@ public class Door : MonoBehaviour, IBatchUpdate {
 			accessCardUsedByPlayer = true;
 		}
 
-		ajar = false;
+		AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
+		float playbackTime = asi.normalizedTime;
+		if (ajar) {
+			ajar = false;
+			playbackTime = topTime * ajarPercentage;
+		}
+
 		if (useFinished < Time.time) {
 			if (requiredAccessCard == accessCardType.None || ud.owner.GetComponent<PlayerReferenceManager>().playerInventory.GetComponent<AccessCardInventory>().HasAccessCard(requiredAccessCard) || accessCardUsedByPlayer) {
-				useFinished = Time.time + useTimeDelay;
-				AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
-				float playbackTime = asi.normalizedTime;
+				useFinished = Time.time + useTimeDelay;	
 				//AnimatorClipInfo[] aci = anim.GetCurrentAnimatorClipInfo(defIndex);
 
 				if (!locked) {
@@ -159,7 +170,7 @@ public class Door : MonoBehaviour, IBatchUpdate {
 						doorOpen = doorState.Closing;
 						anim.Play(closeClipName,defIndex, topTime-playbackTime);
 						//Debug.Log("Reversing from Opening to Closing.  playbackTime = " + playbackTime.ToString() + ", topTime-playbackTime = " + (topTime-playbackTime).ToString());
-						SFX.PlayOneShot(SFXClip);
+						if (SFXClip != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXClip);
 						return;
 					}
 
@@ -168,7 +179,7 @@ public class Door : MonoBehaviour, IBatchUpdate {
 						waitBeforeClose = Time.time + delay;
 						anim.Play(openClipName,defIndex, topTime-playbackTime);
 						//Debug.Log("Reversing from Closing to Opening.  playbackTime = " + playbackTime.ToString() + ", topTime-playbackTime = " + (topTime-playbackTime).ToString());
-						SFX.PlayOneShot(SFXClip);
+						if (SFXClip != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXClip);
 						return;
 					}
 				} else {
@@ -226,14 +237,12 @@ public class Door : MonoBehaviour, IBatchUpdate {
 		waitBeforeClose = Time.time + delay;
 		anim.Play(openClipName);
 		SFX.PlayOneShot(SFXClip);
-		//lightsFinished1 = Time.time + timeBeforeLightsOut1;
 		if (toggleLasers) {
 			for (int i=defIndex;i<laserLines.Length;i++) {
-				laserLines[i].SetActive(false);
+				if (laserLines[i].activeSelf) laserLines[i].SetActive(false);
 			}
 			lasersFinished = Mathf.Infinity;
 		}
-
 	}
 
 	void CloseDoor() {
@@ -255,9 +264,20 @@ public class Door : MonoBehaviour, IBatchUpdate {
 		}
 	}
 
-	public void BatchUpdate () {
+	void Update () {
+		// Open and close areaportal
+		if (leaf1 != null && leaf2 != null) {
+			if (doorOpen == doorState.Closed) {
+				leaf1.visibleLeaves[leaf2.leafIndex] = false;
+				leaf2.visibleLeaves[leaf1.leafIndex] = false;
+			} else {
+				leaf1.visibleLeaves[leaf2.leafIndex] = true;
+				leaf2.visibleLeaves[leaf1.leafIndex] = true;
+			}
+		}
+
 		if (ajar) {
-			doorOpen = doorState.Closing;
+			doorOpen = doorState.Opening;
 			anim.Play(openClipName,defIndex, ajarPercentage);
 			anim.speed = speedZero;
 		}
@@ -275,8 +295,9 @@ public class Door : MonoBehaviour, IBatchUpdate {
 		AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
 		float playbackTime = asi.normalizedTime;
 		//if (anim.GetCurrentAnimatorStateInfo(defIndex).IsName(idleClosedClipName))
-		if (doorOpen == doorState.Closing && playbackTime > 0.95f)
+		if (doorOpen == doorState.Closing && playbackTime > 0.95f) {
 			doorOpen = doorState.Closed;  // Door is closed
+		}
 
 		//if (anim.GetCurrentAnimatorStateInfo(defIndex).IsName(idleOpenClipName))
 		if (doorOpen == doorState.Opening && playbackTime > 0.95f)
@@ -287,9 +308,11 @@ public class Door : MonoBehaviour, IBatchUpdate {
 				CloseDoor();
 		}
 
-		if (lasersFinished < Time.time) {
-			for (int i=defIndex;i<laserLines.Length;i++) {
-				laserLines[i].SetActive(true);
+		if (toggleLasers) {
+			if (lasersFinished < Time.time) {
+				for (int i=defIndex;i<laserLines.Length;i++) {
+					if (!laserLines[i].activeSelf) laserLines[i].SetActive(true);
+				}
 			}
 		}
 

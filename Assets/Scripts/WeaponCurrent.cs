@@ -321,12 +321,22 @@ public class WeaponCurrent : MonoBehaviour {
 	}
 
 	public void ChangeAmmoType() {
-		if (weaponIsAlternateAmmo) {
-			weaponIsAlternateAmmo = false;
-			LoadPrimaryAmmoType(false);
+		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndex);
+		if (wep16index == 5 || wep16index == 6) {
+			Const.sprint(Const.a.stringTable[315],owner);
+			return; // do nothing for pipe or rapier
+		}
+
+		if (wep16index == 1 || wep16index == 4 || wep16index == 10 || wep16index == 14 || wep16index == 15) {
+			if (overloadButton.activeInHierarchy) overloadButton.GetComponent<EnergyOverloadButton>().OverloadEnergyClick();
 		} else {
-			weaponIsAlternateAmmo = true;
-			LoadSecondaryAmmoType(false);
+			if (weaponIsAlternateAmmo) {
+				weaponIsAlternateAmmo = false;
+				LoadPrimaryAmmoType(false);
+			} else {
+				weaponIsAlternateAmmo = true;
+				LoadSecondaryAmmoType(false);
+			}
 		}
 	}
 
@@ -355,6 +365,10 @@ public class WeaponCurrent : MonoBehaviour {
 
 		// Update the counter on the HUD
 		MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount[wep16index]);
+
+		reloadFinished = Time.time + Const.a.reloadTime[wep16index];
+		lerpStartTime = Time.time;
+		reloadContainer.transform.localPosition = reloadContainerOrigin; // pop it back to start to be sure
 	}
 
 	public void LoadSecondaryAmmoType(bool isSilent) {
@@ -382,6 +396,10 @@ public class WeaponCurrent : MonoBehaviour {
 
 		// Update the counter on the HUD
 		MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount2[wep16index]);
+
+		reloadFinished = Time.time + Const.a.reloadTime[wep16index];
+		lerpStartTime = Time.time;
+		reloadContainer.transform.localPosition = reloadContainerOrigin; // pop it back to start to be sure
 	}
 
 	public void UpdateHUDAmmoCountsEither() {
@@ -395,6 +413,9 @@ public class WeaponCurrent : MonoBehaviour {
 
 	public void Unload(bool isSilent) {
 		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (weaponIndex);
+		if (wep16index == 5 || wep16index == 6) {
+			return; // do nothing for pipe or rapier
+		}
 
 		if (wep16index == -1) return; // we don't have a weapon at all right now :)
 		weaponIsAlternateAmmo = WeaponAmmo.a.wepLoadedWithAlternate[wep16index];
@@ -414,39 +435,53 @@ public class WeaponCurrent : MonoBehaviour {
 			MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount[wep16index]);
 		}
 		if (!isSilent) SFX.PlayOneShot (ReloadSFX);
-
-
 	}
 
 	public void Reload() {
 		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (weaponIndex);
-		reloadFinished = Time.time + Const.a.reloadTime[wep16index];
-		lerpStartTime = Time.time;
-		reloadContainer.transform.localPosition = reloadContainerOrigin; // pop it back to start to be sure
+		if (wep16index == 5 || wep16index == 6) {
+			Const.sprint(Const.a.stringTable[315],owner);
+			return; // do nothing for pipe or rapier
+		}
+
+		if (wep16index == 1 || wep16index == 4 || wep16index == 10 || wep16index == 14 || wep16index == 15) {
+			return; // do nothing for energy weapons
+		}
 
 		if (weaponIsAlternateAmmo) {
 			if (currentMagazineAmount2[wep16index] == Const.a.magazinePitchCountForWeapon2[wep16index]) {
-				Const.sprint("Current weapon magazine already full.",owner);
+				Const.sprint(Const.a.stringTable[191],owner); //Current weapon magazine already full.
 				return;
 			}
 
 			if (WeaponAmmo.a.wepAmmoSecondary[wep16index] <= 0) {
-				Const.sprint("No more of current ammo type to load.",owner);
-				return;
+				if (WeaponAmmo.a.wepAmmo[wep16index] <= 0) {
+					Const.sprint(Const.a.stringTable[305],owner); //No more of any ammo type to load.
+					return;
+				} else {
+					Const.sprint(Const.a.stringTable[192],owner); //No more of current ammo type to load, loading with alternate.
+					LoadPrimaryAmmoType(false);
+					return;
+				}
 			}
 			LoadSecondaryAmmoType(false);
 		} else {
 			if (currentMagazineAmount[wep16index] == Const.a.magazinePitchCountForWeapon[wep16index]) {
-				Const.sprint("Current weapon magazine already full.",owner);
+				Const.sprint(Const.a.stringTable[191],owner); //Current weapon magazine already full.
 				return;
 			}
 
 			if (WeaponAmmo.a.wepAmmo[wep16index] <= 0) {
-				Const.sprint("No more of current ammo type to load.",owner);
-				return;
+				if (WeaponAmmo.a.wepAmmoSecondary[wep16index] <= 0) {
+					Const.sprint(Const.a.stringTable[305],owner); //No more of any ammo type to load.
+					return;
+				} else {
+					Const.sprint(Const.a.stringTable[192],owner); //No more of current ammo type to load, loading with alternate.
+					LoadSecondaryAmmoType(false);
+					return;
+				}
 			}
 			LoadPrimaryAmmoType(false);
 		}
-
 	}
 }

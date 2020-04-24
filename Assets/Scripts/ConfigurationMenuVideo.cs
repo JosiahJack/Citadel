@@ -13,11 +13,13 @@ public class ConfigurationMenuVideo : MonoBehaviour {
 		resolutions = Screen.resolutions;
 		resSelector = GetComponent<Dropdown>();
 		List<string> resList = new List<string>();
+		int refindex = 0;
 		for (int i=0;i<resolutions.Length;i++) {
-			//widths.Add(resolutions[i].width);
 			resList.Add(resolutions[i].width.ToString() + "x" + resolutions[i].height);
+			if (resolutions[i].width == 1366) refindex = i;
 		}
 		resSelector.ClearOptions();
 		resSelector.AddOptions(resList);
+		resSelector.value = refindex;
 	}
 }

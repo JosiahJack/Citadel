@@ -9,32 +9,21 @@ public class TriggerCounter : MonoBehaviour {
 	public string argvalue;
 	public float delay;
 	public bool dontReset;
-	private float delayFinished;
-	private bool delayStarted;
-	private UseData delayedUd;
-
-	void Awake() {
-		// Set delayFinished and delayStarted array to equal the target array length before zeroing out
-		delayFinished = Time.time;
-		delayStarted = false;
-	}
 
 	public void Targetted (UseData ud) {
 		counter++;
 		//owner = ud.owner;  Nope, last targetter becomes the owner
-		Debug.Log("Trigger_counter count at " + counter.ToString() + ".");
+		//Debug.Log("Trigger_counter count at " + counter.ToString() + ".");
 		if (counter == countToTrigger) {
-			if (delay > 0 && !delayStarted) {
-				// Added !delayStarted bit so we can force fire by targetting again and skip the delay
-				delayFinished = Time.time + delay;
-				delayStarted = true;
-				delayedUd = ud;
-			} else {
+			if (delay <=0) {
 				Target (ud);
+			} else {
+				StartCoroutine(DelayedTarget(ud));
 			}
 
+			//!dontReset == reset, bleh double negatives why'd I do that
 			if (!dontReset) {
-				counter = 0; //reset, bleh double negatives why'd I do that
+				counter = 0; 
 			}
 		}
 	}
@@ -44,20 +33,18 @@ public class TriggerCounter : MonoBehaviour {
 		TargetIO tio = GetComponent<TargetIO>();
 		if (tio != null) {
 			ud.SetBits(tio);
-			Debug.Log("Set tio bits in Target on TriggerCounter.cs");
+			//Debug.Log("Set tio bits in Target on TriggerCounter.cs");
 			if (tio.targetname == "lev1count1") Debug.Log("tio.lockCodeToScreenMaterialChanger = " + ud.lockCodeToScreenMaterialChanger.ToString());
 		} else {
 			Debug.Log("BUG: no TargetIO.cs found on an object with a TriggerCounter.cs script!  Trying to call UseTargets without parameters!");
 		}
 		Const.a.UseTargets(ud,target);
-		Debug.Log("Trigger_counter fired normally");
+		//Debug.Log("Trigger_counter fired normally");
 	}
 
-	void Update () {
-		if (delayStarted && delayFinished < Time.time) {
-			delayStarted = false; // reset bit so we don't keep triggering every frame
-			Target (delayedUd);
-			Debug.Log("Trigger_counter fired after delay");
-		}
-	}
+    IEnumerator DelayedTarget(UseData ud) {
+        yield return new WaitForSeconds(delay);
+        Target(ud);
+    }
+
 }

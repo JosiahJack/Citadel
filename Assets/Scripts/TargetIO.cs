@@ -5,7 +5,7 @@ using System.Collections;
 // Add this script to anything that should be able to be targetted
 public class TargetIO : MonoBehaviour {
 	public string targetname;
-	//public string[] target;
+
 	// Action bits.  What do we want our target to do, e.g. turn on a light or close a door or activate force bridge
 	// Using multiple bools to allow for multiple actions to be attempted on all the targets
 	public bool tripTrigger; // force activate a trigger
@@ -54,13 +54,28 @@ public class TargetIO : MonoBehaviour {
 	public bool unlockKeycodePad; // unlock elevator keypad
 	public bool unlockPuzzlePad; // unlock puzzle pad, grid or wire
 	public bool screenShake; // shake the screen/earthquake
-	public bool linkCodeToScreenMaterialChanger; // send linked digit to shared screen after CPU destroyed
 	public bool awakeSleepingEnemy; // awaken a sleeping enemy, e.g. the sec-2 bots that are in repair sleep on level 8
+	public bool branchFlip; // flip logic_branchs
+	public bool branchFlipOnly; // only flip the branch, not flip and fire
+	private UseData tempUD;
 
 	void Start() {
 		if (!string.IsNullOrWhiteSpace(targetname)) {
 			RegisterToConst();
-			if (disableThisGOOnAwake) this.gameObject.SetActive(false);
+			if (disableThisGOOnAwake) {
+				SaveObject so = GetComponent<SaveObject>();
+				if (so == null) {
+					gameObject.AddComponent(typeof(SaveObject));
+					so = GetComponent<SaveObject>();
+					if (so != null) {
+						so.saveType = SaveObject.SaveableType.Transform;
+						so.saveableType = "Transform";
+					} else {
+						Debug.Log("BUG: failed to add SaveObject to a disabled on awake gameobject with TargetIO.cs");
+					}
+				}
+				this.gameObject.SetActive(false);
+			}
 		} else {
 			if (disableThisGOOnAwake) Debug.Log("BUG: Trying to disable a gameObject with a TargetIO.cs attached but no valid targetname!");
 		}
@@ -72,48 +87,59 @@ public class TargetIO : MonoBehaviour {
 
 	// comes from Const.a.UseTargets - already checked that target matched targetname of this interaction
 	public void Targetted(UseData ud) {
-		//Debug.Log("Entering Targetted() on a TargetIO.cs script, this targetname: " + targetname + " and lockCodeToScreenMaterialChanger = " + ud.lockCodeToScreenMaterialChanger.ToString());
-
+		tempUD = ud; // prevent overwrites in the stack
+		//Debug.Log("Entering Targetted() on a TargetIO.cs script, this targetname: " + targetname + " and forceBridgeActivate is " + tempUD.forceBridgeActivate.ToString());
+		
 		// Whatever else happens, try to access a LogicRelay and keep the messages going
 		LogicRelay lr = GetComponent<LogicRelay>();
-		if (lr != null && lr.relayEnabled) lr.Targetted(ud);
+		if (lr != null && lr.relayEnabled) lr.Targetted(tempUD);
+
+		GameEnd gend = GetComponent<GameEnd>();
+		if (gend != null) gend.Targetted(tempUD);
 
 		// or a LogicBranch since it also carries logic along
-		LogicBranch lb = GetComponent<LogicBranch>();
-		if (lb != null && lb.relayEnabled) lb.Targetted(ud);
-
-		if (ud.tripTrigger) {
-			Trigger trig = GetComponent<Trigger>();
-			if (trig != null) trig.Targetted(ud);
-
-			TriggerCounter trigcnt = GetComponent<TriggerCounter>();
-			if (trigcnt != null) trigcnt.Targetted(ud);
+		if (!tempUD.branchFlipOnly) {
+			LogicBranch lb = GetComponent<LogicBranch>();
+			if (lb != null && lb.relayEnabled) lb.Targetted(tempUD);
+		}
+		if (tempUD.branchFlip || tempUD.branchFlipOnly) {
+			// or a LogicBranch since it also carries logic along
+			LogicBranch lbr = GetComponent<LogicBranch>();
+			if (lbr != null) lbr.FlipTrackSwitch();
 		}
 
-		if (ud.doorOpen) {
+		if (tempUD.tripTrigger) {
+			Trigger trig = GetComponent<Trigger>();
+			if (trig != null) trig.Targetted(tempUD);
+
+			TriggerCounter trigcnt = GetComponent<TriggerCounter>();
+			if (trigcnt != null) trigcnt.Targetted(tempUD);
+		}
+
+		if (tempUD.doorOpen) {
 			Door dr = GetComponent<Door>();
 			if (dr != null) dr.ForceOpen();
 			Debug.Log("opening door!");
 		}
 
-		if (ud.doorOpenIfUnlocked) {
+		if (tempUD.doorOpenIfUnlocked) {
 			Door dr = GetComponent<Door>();
 			if (dr != null) {
 				if (dr.locked == false && dr.accessCardUsedByPlayer) dr.ForceOpen();
 			}
 		}
 
-		if (ud.doorClose) {
+		if (tempUD.doorClose) {
 			Door dr = GetComponent<Door>();
 			if (dr != null) dr.ForceClose();
 		}
 
-		if (ud.doorLock) {
+		if (tempUD.doorLock) {
 			Door dr = GetComponent<Door>();
-			if (dr != null) dr.Lock(ud.argvalue);
+			if (dr != null) dr.Lock(tempUD.argvalue);
 		}
 
-		if (ud.doorUnlock) {
+		if (tempUD.doorUnlock) {
 			Door dr = GetComponent<Door>();
 			if (dr != null) {
 				dr.Unlock();
@@ -121,132 +147,130 @@ public class TargetIO : MonoBehaviour {
 			}
 		}
 
-		if (ud.switchTrigger) {
+		if (tempUD.switchTrigger) {
 			ButtonSwitch bs = GetComponent<ButtonSwitch>();
-			if (bs != null) bs.Targetted(ud);
+			if (bs != null) bs.Targetted(tempUD);
 		}
 
-		if (ud.chargeStationRecharge) {
+		if (tempUD.chargeStationRecharge) {
 			ChargeStation chst = GetComponent<ChargeStation>();
 			if (chst != null) chst.ForceRecharge();
 		}
 
-		if (ud.enemyAlert) {
+		if (tempUD.enemyAlert) {
 			AIController aic = GetComponent<AIController>();
-			NPC_Hopper nph = GetComponent<NPC_Hopper>();
-			if (aic != null) aic.Alert(ud);
-			if (nph != null) nph.Alert(ud);
+			if (aic != null) aic.Alert(tempUD);
 		}
 
-		if (ud.forceBridgeActivate) {
+		if (tempUD.forceBridgeActivate) {
 			ForceBridge fb = GetComponent<ForceBridge>();
+			Debug.Log("Activating force bridge");
 			if (fb != null) fb.Activate(false);
 		}
 
-		if (ud.forceBridgeDeactivate) {
+		if (tempUD.forceBridgeDeactivate) {
 			ForceBridge fb = GetComponent<ForceBridge>();
+			Debug.Log("Deactivating force bridge");
 			if (fb != null) fb.Deactivate(false);
 		}
 
-		if (ud.forceBridgeToggle) {
+		if (tempUD.forceBridgeToggle) {
+			Debug.Log("Toggling force bridge");
 			ForceBridge fb = GetComponent<ForceBridge>();
 			if (fb != null) fb.Toggle();
 		}
 
-		if (ud.gravityLiftToggle) {
+		if (tempUD.gravityLiftToggle) {
 			GravityLift gl = GetComponent<GravityLift>();
 			if (gl != null) gl.Toggle();
 		}
 
-		if (ud.textureChangeToggle) {
+		if (tempUD.textureChangeToggle) {
 			TextureChanger tch = GetComponent<TextureChanger>();
 			if (tch != null) tch.Toggle();
 		}
 
-		if (ud.lightOn) {
+		if (tempUD.lightOn) {
 			LightAnimation lam = GetComponent<LightAnimation>();
 			if (lam != null) lam.TurnOn();
 		}
 
-		if (ud.lightOff) {
+		if (tempUD.lightOff) {
 			LightAnimation lam = GetComponent<LightAnimation>();
 			if (lam != null) lam.TurnOff();
 		}
 
-		if (ud.lightToggle) {
+		if (tempUD.lightToggle) {
 			LightAnimation lam = GetComponent<LightAnimation>();
 			if (lam != null) lam.Toggle();
 		}
 
-		if (ud.funcwallMove) {
+		if (tempUD.funcwallMove) {
+			Debug.Log("FuncWall move activated!");
 			FuncWall fw = GetComponent<FuncWall>();
-			if (fw != null) fw.Targetted(ud);
+			if (fw != null) fw.Targetted(tempUD);
 		}
 
-		if (ud.missionBitOn) {
+		if (tempUD.missionBitOn) {
 			QuestBitRelay qbr = GetComponent<QuestBitRelay>();
-			Debug.Log("EnablingBits on QBR!");
+			Const.a.DebugQuestBitShoutOut();
 			if (qbr != null) qbr.EnableBits();
 		}
 
-		if (ud.missionBitOff) {
+		if (tempUD.missionBitOff) {
 			QuestBitRelay qbr = GetComponent<QuestBitRelay>();
+			Const.a.DebugQuestBitShoutOut();
 			if (qbr != null) qbr.DisableBits();
 		}
 
-		if (ud.missionBitToggle) {
+		if (tempUD.missionBitToggle) {
 			QuestBitRelay qbr = GetComponent<QuestBitRelay>();
+			Const.a.DebugQuestBitShoutOut();
 			if (qbr != null) qbr.ToggleBits();
 		}
 
-		if (ud.sendEmail) {
+		if (tempUD.sendEmail) {
 			Email msg = GetComponent<Email>();
 			if (msg != null) msg.Targetted();
 		}
 
-		if (ud.switchLockToggle) {
+		if (tempUD.switchLockToggle) {
 			ButtonSwitch btsw = GetComponent<ButtonSwitch>();
 			if (btsw != null) btsw.ToggleLocked();
 		}
-		//if (ud.lockCodeToScreenMaterialChanger) Debug.Log("What the heck people, this should work!!");
-		//if (targetname == "lev1ihatebugs") Debug.Log("targetname = lev1ihatebugs"); 
-		//if (ud.lockCodeToScreenMaterialChanger && targetname == "lev1ihatebugs") Debug.Log("and both!"); else Debug.Log("but not both, oh poo");
-		if (ud.lockCodeToScreenMaterialChanger) {
-			//Debug.Log("Entering lockCodeToScreenMaterialChanger section within Targetted()");
-			MaterialChanger matchg = GetComponent<MaterialChanger>();
-			if (matchg != null) matchg.Targetted(ud);
-			//else Debug.Log("Failed to acquire non-null MaterialChanger script on targetname: " + targetname);
-		}// else {
-			//Debug.Log("ud.lockCodeToScreenMaterialChanger was false on targetname of " + targetname);
-		//}
 
-		if (ud.spawnerActivate) {
+		if (tempUD.lockCodeToScreenMaterialChanger) {
+			MaterialChanger matchg = GetComponent<MaterialChanger>();
+			if (matchg != null) matchg.Targetted(tempUD);
+		}
+
+		if (tempUD.spawnerActivate) {
 			SpawnManager spwnmgr = GetComponent<SpawnManager>();
 			if (spwnmgr != null) spwnmgr.Activate(false);
 		}
 
-		if (ud.spawnerActivateAlerted) {
+		if (tempUD.spawnerActivateAlerted) {
 			SpawnManager spwnmgr = GetComponent<SpawnManager>();
 			if (spwnmgr != null) spwnmgr.Activate(true);
 		}
 
-		if (ud.cyborgConversionToggle) {
+		if (tempUD.cyborgConversionToggle) {
 			LevelManager.a.CyborgConversionToggleForCurrentLevel();
 			CyborgConversionToggle cctog = GetComponent<CyborgConversionToggle>();
 			if (cctog != null) cctog.PlayVoxMessage();
 		}
 
-		if (ud.toggleRadiationTrigger) {
+		if (tempUD.toggleRadiationTrigger) {
 			Radiation rad = GetComponent<Radiation>();
 			if (rad != null) rad.isEnabled = !rad.isEnabled;
 		}
 
-		if (ud.toggleRelayEnabled) {
+		if (tempUD.toggleRelayEnabled) {
 			LogicRelay logrel = GetComponent<LogicRelay>();
 			if (logrel != null) logrel.relayEnabled = !logrel.relayEnabled;
 		}
 
-		if (ud.togglePuzzlePanelLocked) {
+		if (tempUD.togglePuzzlePanelLocked) {
 			PuzzleGridPuzzle pgp = GetComponent<PuzzleGridPuzzle>();
 			if (pgp != null) pgp.locked = !pgp.locked;
 
@@ -254,22 +278,22 @@ public class TargetIO : MonoBehaviour {
 			if (pwp != null) pwp.locked = !pwp.locked;
 		}
 
-		if (ud.testQuestBitIsOn) {
+		if (tempUD.testQuestBitIsOn) {
 			QuestBitRelay qbr = GetComponent<QuestBitRelay>();
-			if (qbr != null) qbr.TestBits(true,ud,this);
+			if (qbr != null) qbr.TestBits(true,tempUD,this);
 		}
 
-		if (ud.testQuestBitIsOff) {
+		if (tempUD.testQuestBitIsOff) {
 			QuestBitRelay qbr = GetComponent<QuestBitRelay>();
-			if (qbr != null) qbr.TestBits(false,ud,this);
+			if (qbr != null) qbr.TestBits(false,tempUD,this);
 		}
 
-		if (ud.playSoundOnce) {
+		if (tempUD.playSoundOnce) {
 			PlaySoundTriggered pst = GetComponent<PlaySoundTriggered>();
 			if (pst != null) pst.PlaySoundEffect();
 		}
 
-		if (ud.stopSound) {
+		if (tempUD.stopSound) {
 			PlaySoundTriggered pst = GetComponent<PlaySoundTriggered>();
 			if (pst != null) {
 				pst.SFX.Stop();
@@ -277,37 +301,37 @@ public class TargetIO : MonoBehaviour {
 			}
 		}
 
-		if (ud.sendSprintMessage) {
+		if (tempUD.sendSprintMessage) {
 			TriggeredSprintMessage tsm = GetComponent<TriggeredSprintMessage>();
-			if (tsm != null) Const.sprint(tsm.messageToDisplay,ud.owner);
+			if (tsm != null) Const.sprint(tsm.messageToDisplay,tempUD.owner);
 		}
 
-		if (ud.radiationTreatment) {
-			PlayerReferenceManager prefman = ud.owner.GetComponent<PlayerReferenceManager>();
+		if (tempUD.radiationTreatment) {
+			PlayerReferenceManager prefman = tempUD.owner.GetComponent<PlayerReferenceManager>();
 			if (prefman != null) prefman.playerRadiationTreatmentFlash.SetActive(true);
 		}
 
-		if (ud.startFlashingMaterials) {
+		if (tempUD.startFlashingMaterials) {
 			MaterialFlash mflash = GetComponent<MaterialFlash>();
 			if (mflash != null) mflash.StartFlashing();
 		}
 
-		if (ud.stopFlashingMaterials) {
+		if (tempUD.stopFlashingMaterials) {
 			MaterialFlash mflash = GetComponent<MaterialFlash>();
 			if (mflash != null) mflash.StopFlashing();
 		}
 
-		if (ud.unlockElevatorPad) {
+		if (tempUD.unlockElevatorPad) {
 			KeypadElevator kelv = GetComponent<KeypadElevator>();
 			if (kelv != null) kelv.locked = false;
 		}
 
-		if (ud.unlockKeycodePad) {
+		if (tempUD.unlockKeycodePad) {
 			KeypadKeycode keyk = GetComponent<KeypadKeycode>();
 			if (keyk != null) keyk.locked = false;
 		}
 
-		if (ud.unlockPuzzlePad) {
+		if (tempUD.unlockPuzzlePad) {
 			PuzzleGridPuzzle pgp = GetComponent<PuzzleGridPuzzle>();
 			if (pgp != null) pgp.locked = false;
 
@@ -315,21 +339,14 @@ public class TargetIO : MonoBehaviour {
 			if (pwp != null) pwp.locked = false;
 		}
 
-		if (ud.screenShake) {
+		if (tempUD.screenShake) {
 			EffectScreenShake efsh = GetComponent<EffectScreenShake>();
 			if (efsh != null) efsh.Shake();
 		}
 
-		if (ud.linkCodeToScreenMaterialChanger) {
-			MaterialChanger matchg = GetComponent<MaterialChanger>();
-			if (matchg != null) matchg.LinkTargetted(ud);	
-		}
-
-		if (ud.awakeSleepingEnemy) {
+		if (tempUD.awakeSleepingEnemy) {
 			AIController aic = GetComponent<AIController>();
-			NPC_Hopper nph = GetComponent<NPC_Hopper>();
-			if (aic != null) aic.AwakeFromSleep(ud);
-			if (nph != null) nph.AwakeFromSleep(ud);
+			if (aic != null) aic.AwakeFromSleep(tempUD);
 		}
 	}
 }
@@ -390,8 +407,9 @@ public class UseData {
 	public bool unlockKeycodePad; // unlock elevator keypad
 	public bool unlockPuzzlePad; // unlock puzzle pad, grid or wire
 	public bool screenShake; // shake the screen/earthquake
-	public bool linkCodeToScreenMaterialChanger; // send linked digit to shared screen after CPU destroyed
 	public bool awakeSleepingEnemy; // awaken a sleeping enemy, e.g. the sec-2 bots that are in repair sleep on level 8
+	public bool branchFlip; // flip logic_branchs
+	public bool branchFlipOnly; // only flip the branch, not flip and fire
 
 	// function for reseting all data if needed
 	public void Reset (UseData ud) {
@@ -447,8 +465,9 @@ public class UseData {
 		unlockKeycodePad = tio.unlockKeycodePad;
 		unlockPuzzlePad = tio.unlockPuzzlePad;
 		screenShake = tio.screenShake;
-		linkCodeToScreenMaterialChanger = tio.linkCodeToScreenMaterialChanger;
 		awakeSleepingEnemy = tio.awakeSleepingEnemy;
+		branchFlip = tio.branchFlip;
+		branchFlipOnly = tio.branchFlipOnly;
 		bitsSet = true;
 	}
 }

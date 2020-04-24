@@ -20,7 +20,7 @@ public class GravityLift : MonoBehaviour {
 			otherRbody = other.gameObject.GetComponent<Rigidbody>();
 			if (otherRbody != null) {
 				if (otherRbody.velocity.y < (strength*offStrengthFactor))
-					otherRbody.AddForce(new Vector3(0f, ((offStrengthFactor*strength)-otherRbody.velocity.y), 0f));
+					otherRbody.AddForce(new Vector3(0f, ((offStrengthFactor)-otherRbody.velocity.y), 0f));
 			}
 		}
 	}

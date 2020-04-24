@@ -8,30 +8,16 @@ public class Email : MonoBehaviour {
 	private LogInventory pinv;
 
     public void Targetted() {
-		if (Const.a.player1 != null) {
-			LogInventory pinv = Const.a.player1.GetComponent<PlayerReferenceManager>().playerInventory.GetComponent<LogInventory>();
-			SendEmailToPlayer(pinv, emailIndex); // give the email
-		}
-
-		if (Const.a.player2 != null) {
-			LogInventory pinv = Const.a.player2.GetComponent<PlayerReferenceManager>().playerInventory.GetComponent<LogInventory>();
-			SendEmailToPlayer(pinv, emailIndex); // give the email
-		}
-
-		if (Const.a.player3 != null) {
-			LogInventory pinv = Const.a.player3.GetComponent<PlayerReferenceManager>().playerInventory.GetComponent<LogInventory>();
-			SendEmailToPlayer(pinv, emailIndex); // give the email
-		}
-
-		if (Const.a.player4 != null) {
-			LogInventory pinv = Const.a.player4.GetComponent<PlayerReferenceManager>().playerInventory.GetComponent<LogInventory>();
-			SendEmailToPlayer(pinv, emailIndex); // give the email
-		}
+		SendEmailToPlayer(LogInventory.a, emailIndex); // give the email
 	}
 
 	void SendEmailToPlayer(LogInventory linv, int index) {
+		if (linv.hasLog[index]) return; // already have it
 		linv.hasLog[index] = true;
 		linv.lastAddedIndex = index;
+		if (Const.a.audioLogType[index] == 2) {
+			LogInventory.a.beepDone = true;
+		}
 		if (autoPlayEmail) linv.PlayLastAddedLog(index);
 	}
 }

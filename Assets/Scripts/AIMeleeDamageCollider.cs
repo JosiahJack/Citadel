@@ -47,7 +47,7 @@ public class AIMeleeDamageCollider : MonoBehaviour {
 					DamageData ddNPC = Const.SetNPCDamageData(index, Const.aiState.Attack1, ownedBy);
 					ddNPC.other = gameObject;
 					ddNPC.attacknormal = Vector3.Normalize(other.transform.position - transform.position);
-					ddNPC.impactVelocity = impactMelee;
+					//ddNPC.impactVelocity = impactMelee;
 					ddNPC.damage = 11f;
 					float take = Const.a.GetDamageTakeAmount(ddNPC);
 					take = (take / meleeColliderCounter); //split it for multiple tap melee attacks, e.g. double paw swipe

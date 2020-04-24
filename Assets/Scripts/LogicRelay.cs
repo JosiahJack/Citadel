@@ -6,23 +6,8 @@ public class LogicRelay : MonoBehaviour {
 	public string argvalue;
 	public bool thisTioOverridesSender = true;
 	public float delay = 0f;
-	public bool relayEnabled = true;
-	private float delayFinished;
+	public bool relayEnabled = true; // save
 	private UseData tempUd;
-
-	void Awake() {
-		delayFinished = -1f;
-	}
-
-	void Update() {
-		if (!relayEnabled) return;
-		if (delay <=0) return;
-
-		if (delayFinished != -1f && delayFinished < Time.time) {
-			RunTargets(tempUd);
-			delayFinished = -1f;
-		}
-	}
 
 	public void Targetted (UseData ud) {
 		if (!relayEnabled) return;
@@ -30,10 +15,14 @@ public class LogicRelay : MonoBehaviour {
 		if (delay <=0) {
 			RunTargets(ud);
 		} else {
-			delayFinished = Time.time + delay;
-			tempUd = ud;
+			StartCoroutine(DelayedTarget(ud));
 		}
 	}
+
+    IEnumerator DelayedTarget(UseData ud) {
+        yield return new WaitForSeconds(delay);
+        if (relayEnabled) RunTargets(ud);
+    }
 
 	void RunTargets(UseData ud) {
 		if (target == null || target == "" || target == " " || target == "  ") {
@@ -41,6 +30,7 @@ public class LogicRelay : MonoBehaviour {
 			return; // no target, do nothing
 		}
 		ud.argvalue = argvalue;
+		delay = -1f;
 		if (thisTioOverridesSender) {
 			TargetIO tio = GetComponent<TargetIO>();
 			if (tio != null) {

@@ -54,8 +54,8 @@ public class GetInput : MonoBehaviour {
 	public bool Grenade() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[31]])) return true; else return false; }
 	public bool GrenadeCycUp() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[32]])) return true; else return false; }
 	public bool GrenadeCycDown() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[33]])) return true; else return false; }
-	public bool HardwareCycUp() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[34]])) return true; else return false; }
-	public bool HardwareCycDown() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[35]])) return true; else return false; }
+	public bool ChangeAmmoType() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[34]])) return true; else return false; }
+	//public bool HardwareCycDown() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[35]])) return true; else return false; }
 	public bool Patch() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[36]])) return true; else return false; }
 	public bool PatchCycUp() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[37]])) return true; else return false; }
 	public bool PatchCycDown() { if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[38]])) return true; else return false; }

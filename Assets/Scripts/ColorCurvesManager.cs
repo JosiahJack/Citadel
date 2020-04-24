@@ -10,9 +10,7 @@ using UnityStandardAssets.ImageEffects;
 * Color Curves Manager. A script to manage the Unity 5 Color Correction Curves script, found among the standard assets.
 * Color Curves Manager allows to set two set of curves / configurations and dynamically interpolate between each set.
 */
-public class ColorCurvesManager : MonoBehaviour
-{
-
+public class ColorCurvesManager : MonoBehaviour, IBatchUpdate {
 	public float Factor = 0;
 
 	// A configuration
@@ -70,46 +68,31 @@ public class ColorCurvesManager : MonoBehaviour
 	public void SetSaturationA(float saturationA) {SaturationA = saturationA;}
 	public void SetSaturationB(float saturationB) {SaturationB = saturationB;}
 
-	void Start()
-	{
+	void Start() {
 		LastFactor = Factor;
 		LastSaturationA = SaturationA;
 		LastSaturationB = SaturationB;
-
 		CurvesScript = GetComponent<ColorCorrectionCurves>();
-
 		PairCurvesKeyframes();
+		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketA);
 	}
-
-
-	void Update()
-	{ 
-		//UpdateScript();
-	}
-
 	
-	private void UpdateScript()
-	{
-
+	public void BatchUpdate() {
 		if (!PairedListsInitiated())
 			PairCurvesKeyframes();
 
 		//If parameters has changed from the editor
-		if(ChangesInEditor)
-		{
+		if(ChangesInEditor) {
 			PairCurvesKeyframes();//The curves could have been changed in the editor.
 			UpdateScriptParameters();
 			
 			CurvesScript.UpdateParameters();
 			
 			ChangesInEditor = false;
-		}
-		//If parameters has changed from another script
-		else if (Factor != LastFactor || SaturationA != LastSaturationA || SaturationB != LastSaturationB)
-		{
+		} else if (Factor != LastFactor || SaturationA != LastSaturationA || SaturationB != LastSaturationB) {
+			//If parameters has changed from another script
 			UpdateScriptParameters();
 			CurvesScript.UpdateParameters();
-
 			LastFactor = Factor;
 			LastSaturationA = SaturationA;
 			LastSaturationB = SaturationB;
@@ -117,10 +100,9 @@ public class ColorCurvesManager : MonoBehaviour
 
 	}
 
-	void EditorHasChanged ()
-	{
+	void EditorHasChanged () {
 		ChangesInEditor = true;
-		UpdateScript();
+		BatchUpdate();
 	}
 
 	/*
@@ -130,8 +112,7 @@ public class ColorCurvesManager : MonoBehaviour
 	 *in one curve does not have a pair in the other curve, a new keyframe is created. To calculate the tangents of this new
 	 *keyframe, TANGENT_DISTANCE is used.
 	 */
-	public static List<Keyframe[]> PairKeyframes(AnimationCurve curveA, AnimationCurve curveB)
-	{
+	public static List<Keyframe[]> PairKeyframes(AnimationCurve curveA, AnimationCurve curveB) {
 		//If both curves has the same ammounts of keyframes, pairing is pretty straitfordward.
 		if (curveA.length == curveB.length)
 			return SimplePairKeyframes(curveA, curveB);

@@ -38,6 +38,7 @@ public class ItemTabManager : MonoBehaviour {
 	}
 
 	public void SendItemDataToItemTab(int constIndex) {
+		if (constIndex < 0) return;
 		eReaderSectionsContainer.SetActive(false);
 		if (Const.a.useableItemsIcons[constIndex] != null) iconManager.GetComponent<Image>().overrideSprite = Const.a.useableItemsIcons[constIndex]; //datareader
 		textManager.GetComponent<Text>().text = Const.a.useableItemsNameText[constIndex];

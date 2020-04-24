@@ -3,5 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TriggeredSprintMessage : MonoBehaviour {
-	public string messageToDisplay = "SHODAN says hello insect!  Vox says message was sent to activator.";
+	public int messageLingdex = -1;
+	public string messageToDisplay;
+	void Start () {
+		if (string.IsNullOrWhiteSpace(messageToDisplay)) {
+			if (messageLingdex >= 0) {
+				messageToDisplay = Const.a.stringTable[messageLingdex];
+			} else {
+				Debug.Log("Attempting to set TriggeredSprintMessage with a -1 index and a nullorwhitespace overrideString");
+			}
+		}
+	}
 }

@@ -6,8 +6,8 @@ public class SpawnManager : MonoBehaviour {
 	public int index;
 	public int numberToSpawn = 1;
 	public GameObject[] activeSpawned;
-	public int numberActive;
-	public bool active = false;
+	public int numberActive; // save
+	public bool active = false; // save
 	public Transform[] spawnLocations;
 	private GameObject dynamicObjectsContainer;
 	public bool NPCSpawner = true;
@@ -15,7 +15,8 @@ public class SpawnManager : MonoBehaviour {
 	public bool spawnAllAtOnce = false;
 	public float minDelayBetweenSpawns = 15f; // default values for generic level spawners for repopulating hallways
 	public float maxDelayBetweenSpawns = 45f;
-	private float delayFinished;
+	[HideInInspector]
+	public float delayFinished; // save
 
 	void Awake() {
 		if (activeSpawned.Length > 0) {
@@ -61,6 +62,9 @@ public class SpawnManager : MonoBehaviour {
 					if (aic != null) aic.enemy = Const.a.player1;
 				}
 				numberActive++;
+
+				SaveObject so = spawnee.GetComponent<SaveObject>();
+				if (so != null) so.levelParentID = LevelManager.a.currentLevel;
 			}
 		}
 

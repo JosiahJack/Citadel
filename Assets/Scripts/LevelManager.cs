@@ -8,7 +8,7 @@ public class LevelManager : MonoBehaviour {
 	public int[] levelSecurity;
 	public int[] levelCameraCount;
 	public int[] levelSmallNodeCount;
-	public int[] levelLargeNodeCount;	
+	public int[] levelLargeNodeCount;
 	public Transform[] ressurectionLocation;
 	public bool[] ressurectionActive;
 	//public GameObject currentPlayer;
@@ -20,6 +20,8 @@ public class LevelManager : MonoBehaviour {
 	public bool[] showSkyForLevel;
 	public bool[] showSaturnForLevel;
 	public enum SecurityType{None,Camera,NodeSmall,NodeLarge};
+	public Level[] levelScripts;
+	public int currentLeaf;
 
 	void Awake () {
 		a = this;
@@ -34,10 +36,25 @@ public class LevelManager : MonoBehaviour {
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true;
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true);
 		Time.timeScale = Const.a.defaultTimeScale;
+		currentLeaf = -1;
 	}
 
 	public void CyborgConversionToggleForCurrentLevel() {
-		ressurectionActive[currentLevel] = !ressurectionActive[currentLevel]; // toggle current level
+		if (currentLevel == 6) {
+			if (ressurectionActive[currentLevel]) {
+				ressurectionActive[currentLevel] = false;
+				ressurectionActive[10] = false;
+				ressurectionActive[11] = false;
+				ressurectionActive[12] = false;
+			} else {
+				ressurectionActive[currentLevel] = true;
+				ressurectionActive[10] = true;
+				ressurectionActive[11] = true;
+				ressurectionActive[12] = true;
+			}
+		} else {
+			ressurectionActive[currentLevel] = !ressurectionActive[currentLevel]; // toggle current level
+		}
 	}
 
 	public bool IsCurrentLevelCyborgConversionEnabled() {
@@ -52,7 +69,11 @@ public class LevelManager : MonoBehaviour {
 		}
 
 		if (ressurectionActive[currentLevel]) {
-			currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = ressurectionLocation[currentLevel].position; //teleport to ressurection chamber
+			if (currentLevel == 10 ||currentLevel == 11 ||currentLevel == 12) {
+				LoadLevel(6,ressurectionLocation[currentLevel].gameObject,currentPlayer);
+			} else {
+				currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = ressurectionLocation[currentLevel].position; //teleport to ressurection chamber
+			}
 			currentPlayer.GetComponent<PlayerReferenceManager>().playerDeathRessurectEffect.SetActive(true); // activate death screen and readouts for "BRAIN ACTIVITY SATISFACTORY"            ya debatable right
 			currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerMovement>().ressurectingFinished = Time.time + 3f;
 			return true;
@@ -64,7 +85,7 @@ public class LevelManager : MonoBehaviour {
 	public void LoadLevel (int levnum, GameObject targetDestination, GameObject currentPlayer) {
 		// NOTE: Check this first since the button for the current level has a null destination
 		if (currentLevel == levnum) {
-			Const.sprint("Already there",currentPlayer); // Do nothing
+			Const.sprint(Const.a.stringTable[9],currentPlayer); //Already there
 			return;
 		}
 			
@@ -140,7 +161,16 @@ public class LevelManager : MonoBehaviour {
         GameObject retval = null;
 		if (currentLevel == -1) return retval;
         if (currentLevel < levels.Length)
-            retval = levels[currentLevel].GetComponent<Level>().dynamicObjectsContainer;
+            retval = levelScripts[currentLevel].dynamicObjectsContainer;
+
+        return retval;
+	}
+
+	public GameObject GetRequestedLevelDynamicContainer(int index) {
+        GameObject retval = null;
+		if (index == -1) return retval;
+        if (currentLevel < levels.Length)
+            retval = levelScripts[index].dynamicObjectsContainer;
 
         return retval;
 	}
@@ -153,6 +183,7 @@ public class LevelManager : MonoBehaviour {
 
 	public void RegisterSecurityObject(int lev,SecurityType stype) {
 		if (lev > 14 || lev < 0) return;
+		if (currentLevel > 14 || currentLevel < 0) return;
 		switch (stype) {
 			case SecurityType.None: return;
 			case SecurityType.Camera: levelCameraCount[lev]++; break;
@@ -169,20 +200,55 @@ public class LevelManager : MonoBehaviour {
 	public void ReduceCurrentLevelSecurity(SecurityType stype) {
 		if (currentLevel == -1) return;
 
-		int camScore = 2;
-		int nodeSmallScore = 8;
-		int nodeLargeScore = 15;
-		int secscoreTotal = (levelCameraCount[currentLevel] * camScore) + (levelSmallNodeCount[currentLevel] * nodeSmallScore) + (levelLargeNodeCount[currentLevel] * nodeLargeScore);
-		int secDrop = camScore; // default to camScore
+		float camScore = 4;
+		float nodeSmallScore = 10;
+		float nodeLargeScore = 27;
+		float secscoreTotal = (levelCameraCount[currentLevel] * camScore) + (levelSmallNodeCount[currentLevel] * nodeSmallScore) + (levelLargeNodeCount[currentLevel] * nodeLargeScore);
+		//secscoreTotal = 106 for medical level
+		float secDrop = camScore; // default to camScore
 		switch (stype) {
 			case SecurityType.None: return;
-			case SecurityType.Camera: secDrop = (int)Mathf.Ceil((camScore/secscoreTotal) * 100); break; // 1 camera divided by the total, so 2/ say (40+60) = 2/100 = 0.02, or 2% using the example numbers above
-			case SecurityType.NodeSmall: secDrop = (int)Mathf.Ceil((nodeSmallScore/secscoreTotal) * 100); break;
-			case SecurityType.NodeLarge: secDrop = (int)Mathf.Ceil((nodeLargeScore/secscoreTotal) * 100); break;
+			case SecurityType.Camera: secDrop = ((camScore/secscoreTotal) * 100); break; // 1 camera divided by the total, so 2/ say (40+60) = 2/100 = 0.02, or 2% using the example numbers above
+			case SecurityType.NodeSmall: secDrop = ((nodeSmallScore/secscoreTotal) * 100); break;
+			case SecurityType.NodeLarge: secDrop = ((nodeLargeScore/secscoreTotal) * 100); break;
 		}
-
-		levelSecurity [currentLevel] -= secDrop;
+		//Debug.Log("secDrop: " + secDrop.ToString());
+		//Debug.Log("Camera calc: " + (((camScore/secscoreTotal) * 100)).ToString());
+		//Debug.Log("Node small calc: " + (((nodeSmallScore/secscoreTotal) * 100)).ToString());
+		//Debug.Log("Node large calc: " + (((nodeLargeScore/secscoreTotal) * 100)).ToString());
+		levelSecurity [currentLevel] -= (int)secDrop;
 		if (levelSecurity [currentLevel] < 0) levelSecurity [currentLevel] = 0;
-		Const.sprint("Level security now " + levelSecurity[currentLevel].ToString() + "%",Const.a.allPlayers);
+		Const.sprint(Const.a.stringTable[306] + levelSecurity[currentLevel].ToString() + Const.a.stringTable[307],Const.a.allPlayers);
+	}
+
+	bool PosWithinLeafBounds(Vector3 pos, BoxCollider b) {
+		if (b == null) { Debug.Log("BUG: null BoxCollider passed to PosWithinLeafBounds!"); return false; }
+
+		float xMax = b.bounds.max.x;
+		float xMin = b.bounds.min.x;
+		float yMax = b.bounds.max.z; // Yes Unity you stupid engine...z is y people!  
+		float yMin = b.bounds.min.z; // NO I'm not making a 2D game....it's y and I'm sticking to it
+		if (pos.x < xMax && pos.x > xMin) {
+			if (pos.z < yMax && pos.z > yMin) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void SetLeaf(Vector3 playerPos) {
+		Level lev = levelScripts[currentLevel];
+		if (lev != null) {
+			for (int i=0;i<levelScripts[currentLevel].leaves.Length;i++) {
+				LevelLeafData leafData = lev.leaves[i];
+				if (leafData != null) {
+					if (PosWithinLeafBounds(playerPos, leafData.leafBox)) {
+						currentLeaf = i;
+						return;
+					}
+				}
+			}
+		}
+		currentLeaf = -1;
 	}
 }

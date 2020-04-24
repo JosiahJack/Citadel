@@ -16,12 +16,13 @@ public class PauseScript : MonoBehaviour {
 	public GameObject mainMenu;
 	public GameObject saveDialog;
 	public bool onSaveDialog;
+	public PlayerMovement pm;
 
 	void Awake() {a = this;}
 
 	void Update () {
 		if (mainMenu == null) {
-			Const.sprint("ERROR->PauseScript: mainMenu is null!",Const.a.allPlayers);
+			Const.sprint("BUG: PauseScript: mainMenu is null!",Const.a.allPlayers);
 			return;
 		}
 
@@ -92,6 +93,8 @@ public class PauseScript : MonoBehaviour {
 		for (int k=0;k<prb.Length;k++) {
 			prb[k].UnPause();
 		}
+
+		pm.ConsoleDisable();
 	}
 
 	public void OpenSaveDialog() {

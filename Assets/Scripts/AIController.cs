@@ -6,6 +6,8 @@ using DigitalRuby.LightningBolt;
 
 public class AIController : MonoBehaviour {
 	public int index = 0; // NPC reference index for looking up constants in tables in Const.cs
+	[HideInInspector]
+	public string targetID;
 	public Const.aiState currentState;
     public Const.aiMoveType moveType;
 	public Const.npcType npcType;
@@ -112,9 +114,12 @@ public class AIController : MonoBehaviour {
 	private float timeTillEnemyChangeFinished;
 	private float timeTillDeadFinished;
 	private float timeTillPainFinished;
-	private AudioSource SFX;
-	private Rigidbody rbody;
-	private HealthManager healthManager;
+	[HideInInspector]
+	public AudioSource SFX;
+	[HideInInspector]
+	public Rigidbody rbody;
+	[HideInInspector]
+	public HealthManager healthManager;
 	private BoxCollider boxCollider;
 	private CapsuleCollider capsuleCollider;
 	private SphereCollider sphereCollider;
@@ -152,10 +157,8 @@ public class AIController : MonoBehaviour {
 	public Material deathMaterial;
 	public bool switchMaterialOnDeath;
 	public SkinnedMeshRenderer actualSMR;
-	public BoxCollider flyerCollider;
-	public CapsuleCollider flyerColliderAlternate1;
-	public bool specialCaseGibContainered;
-	public GameObject visibleMeshSubObject;
+	//public BoxCollider flyerCollider;
+	//public CapsuleCollider flyerColliderAlternate1;
 	public GameObject deathBurst;
 	public float deathBurstTimer = 0.1f;
 	private float deathBurstFinished;
@@ -166,15 +169,32 @@ public class AIController : MonoBehaviour {
 	public bool asleep = false; // check if enemy starts out asleep, e.g. sleeping sec-2 bots on level 8 in the maintenance chargers
 	public bool useGravityOnDeath = true;
 	public bool useGravityOnDying = true;
+	public float tranquilizeTime = 3f;
+	public float tranquilizeFinished;
+	public bool attack1UsesLaser = false;
+	public bool hopOnRun = false;
+	public float hopForce = 500f;
+	public Animator hopAnimator;
+	private bool hopDone;
+	public bool wandering;
+	private float wanderFinished;
+	private float stuckFinished;
+	private Vector3 lastPos;
+
+	public void Tranquilize() {
+		// Check against percent chance (disruptability) of getting tranq'ed
+		//if (UnityEngine.Random.Range(0,1f) < Const.a.disruptabilityForNPC[index])
+			tranquilizeFinished = Time.time + tranquilizeTime;
+	}
 
 	// Initialization and find components
-	void Awake () {
+	void Start () {
         rbody = GetComponent<Rigidbody>();
-		//rbody.isKinematic = true;
-		
-		if (moveType != Const.aiMoveType.Fly) {
-			rbody.isKinematic = false;
-			//rbody.useGravity = true;
+		rbody.isKinematic = false;
+
+		if (moveType == Const.aiMoveType.Fly) {
+			//rbody.isKinematic = true;
+			rbody.useGravity = false;
 		}
 		healthManager = GetComponent<HealthManager>();
 	    boxCollider = GetComponent<BoxCollider>();
@@ -185,7 +205,7 @@ public class AIController : MonoBehaviour {
 		currentDestination = sightPoint.transform.position;
 		if (meleeDamageColliders.Length > 0) {
 			for (int i = 0; i < meleeDamageColliders.Length; i++) {
-				meleeDamageColliders[i].SetActive(false); // turn off melee colliders
+				if (meleeDamageColliders[i] != null) meleeDamageColliders[i].SetActive(false); // turn off melee colliders
 			}
 		}
 
@@ -200,6 +220,7 @@ public class AIController : MonoBehaviour {
 		ai_dying = false;
 		attacker = null;
         shotFired = false;
+		hopDone = false;
 		idleTime = Time.time + Random.Range(idleSFXTimeMin,idleSFXTimeMax);
 		attack1SoundTime = Time.time;
 		attack2SoundTime = Time.time;
@@ -216,19 +237,27 @@ public class AIController : MonoBehaviour {
         randomWaitForNextAttack1Finished = Time.time;
         randomWaitForNextAttack2Finished = Time.time;
         randomWaitForNextAttack3Finished = Time.time;
+		tranquilizeFinished = Time.time;
 		deathBurstFinished = Time.time;
+		wanderFinished = Time.time;
+		stuckFinished = Time.time;
         damageData = new DamageData();
 		damageData.ownerIsNPC = true;
         tempHit = new RaycastHit();
         tempVec = new Vector3(0f, 0f, 0f);
         SFX = GetComponent<AudioSource>();
-		if (SFX == null) Debug.Log("WARNING: No audio source for npc at: " + transform.position.x.ToString() + ", " + transform.position.y.ToString() + ", " + transform.position.z + ".");
+		if (SFX == null) Debug.Log("WARNING: No audio source for npc at: " + transform.position.ToString());
+		if (SFX != null) SFX.playOnAwake = false;
 		if (walkWaypoints.Length > 0 && walkWaypoints[currentWaypoint] != null && walkPathOnStart && !asleep) {
             currentDestination = walkWaypoints[currentWaypoint].transform.position;
             currentState = Const.aiState.Walk; // If waypoints are set, start walking them from the get go
 		} else {
             currentState = Const.aiState.Idle; // No waypoints, stay put
         }
+
+		if (wandering) {
+			currentState = Const.aiState.Walk;
+		}
 		//randSpin = true;
 		tick = 0.1f;
 		tickFinished = Time.time + tick + Random.value;
@@ -236,13 +265,24 @@ public class AIController : MonoBehaviour {
 		idealTransformForward = sightPoint.transform.forward;
 		deathBurstDone = false;
 		searchPath = new NavMeshPath();
+		targetID = Const.GetTargetID(index);
 	}
 
 	void AI_Face(Vector3 goalLocation) {
-		Vector3 dir = (goalLocation - transform.position).normalized;
+		Vector3 dir;
+		if (goalLocation == transform.position) {
+			dir = transform.forward.normalized;
+		} else {
+			dir = (goalLocation - transform.position).normalized;
+		}
+
 		dir.y = 0f;
 		Quaternion lookRot = Quaternion.LookRotation(dir,Vector3.up);
-		transform.rotation = Quaternion.Slerp (transform.rotation, lookRot, tick * yawspeed); // rotate as fast as we can towards goal position
+		transform.rotation = Quaternion.Slerp (transform.rotation, lookRot, tick * yawspeed * Time.deltaTime); // rotate as fast as we can towards goal position
+	}
+
+	void OnEnable() {
+		idleTime = Time.time + Random.Range(idleSFXTimeMin,idleSFXTimeMax);
 	}
 
 	void FixedUpdate () {
@@ -265,7 +305,9 @@ public class AIController : MonoBehaviour {
 				if (idealTransformForward.magnitude > Mathf.Epsilon) {
 					AI_Face(currentDestination);
 				}
-            }
+            } else {
+				AI_Face(transform.position);
+			}
         }
 	}
 
@@ -283,8 +325,8 @@ public class AIController : MonoBehaviour {
 			}
 		}
 
-		Debug.DrawRay(sightPoint.transform.position,idealTransformForward,Color.red,0.1f); // RED where we are trying to turn to
-		Debug.DrawRay(sightPoint.transform.position,sightPoint.transform.forward,Color.magenta,0.1f); // MAGENTA where we are currently turned facing
+		//Debug.DrawRay(sightPoint.transform.position,idealTransformForward,Color.red,0.1f); // RED where we are trying to turn to
+		//Debug.DrawRay(sightPoint.transform.position,sightPoint.transform.forward,Color.magenta,0.1f); // MAGENTA where we are currently turned facing
 		if (gunPoint != null && enemy != null) Debug.DrawRay(gunPoint.transform.position,(enemy.transform.position-sightPoint.transform.position),Color.green,0.1f); // Where the gun to enemy ray goes
 		switch (currentState) {
 			case Const.aiState.Idle: 			Idle(); 		break;
@@ -305,18 +347,20 @@ public class AIController : MonoBehaviour {
 
 		if (asleep) return; // don't check for an enemy, we are sleeping! shh!!
 
-		if (moveType == Const.aiMoveType.Fly) {
+		if (moveType == Const.aiMoveType.Fly && tranquilizeFinished < Time.time) {
 			float distUp = 0;
 			float distDn = 0;
 			Vector3 floorPoint = new Vector3();
 			floorPoint = Vector3.zero;
 
-			if (Physics.Raycast(sightPoint.transform.position, visibleMeshEntity.transform.up * -1, out tempHit, sightRange)) {
+			//if (Physics.Raycast(sightPoint.transform.position, visibleMeshEntity.transform.up * -1, out tempHit, sightRange)) {
+			if (Physics.Raycast(sightPoint.transform.position, sightPoint.transform.up * -1, out tempHit, sightRange)) {
 				//drawMyLine(sightPoint.transform.position, tempHit.point, Color.green, 2f);
 				distDn = Vector3.Distance(sightPoint.transform.position, tempHit.point);
 				floorPoint = tempHit.point;
 			}
-			if (Physics.Raycast(sightPoint.transform.position, visibleMeshEntity.transform.up, out tempHit, sightRange)) {
+			//if (Physics.Raycast(sightPoint.transform.position, visibleMeshEntity.transform.up, out tempHit, sightRange)) {
+			if (Physics.Raycast(sightPoint.transform.position, sightPoint.transform.up, out tempHit, sightRange)) {
 				//drawMyLine(sightPoint.transform.position, tempHit.point, Color.green, 2f);
 				distUp = Vector3.Distance(sightPoint.transform.position, tempHit.point);
 			}
@@ -327,8 +371,9 @@ public class AIController : MonoBehaviour {
 				idealPos = floorPoint + new Vector3(0,flightDesiredHeight, 0);
 			}
 
-			if (enemy != null && flightHeightIsPercentage) idealPos.y = enemy.transform.position.y + 0.24f;
-			if (visibleMeshEntity != null) visibleMeshEntity.transform.position = Vector3.MoveTowards(visibleMeshEntity.transform.position, idealPos, runSpeed * Time.deltaTime);
+			if (enemy != null) idealPos.y = enemy.transform.position.y + 0.24f;
+			//if (visibleMeshEntity != null) visibleMeshEntity.transform.position = Vector3.MoveTowards(visibleMeshEntity.transform.position, idealPos, runSpeed * Time.deltaTime);
+			transform.position = Vector3.MoveTowards(transform.position, idealPos, runSpeed * Time.deltaTime);
 		}
 
 		inSight = CheckIfPlayerInSight();
@@ -366,8 +411,12 @@ public class AIController : MonoBehaviour {
 			return;
 		}
 
+
 		if (idleTime < Time.time && SFXIdle) {
-			if (SFX != null && SFXIdle != null) SFX.PlayOneShot(SFXIdle);
+			float rand = UnityEngine.Random.Range(0,1f); // for calculating 50% chance of idle
+			if (rand < 0.5f) {
+				if (SFX != null && SFXIdle != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXIdle);
+			}
 			idleTime = Time.time + Random.Range(idleSFXTimeMin, idleSFXTimeMax);
 		}
 			
@@ -384,10 +433,35 @@ public class AIController : MonoBehaviour {
 
         if (moveType == Const.aiMoveType.None) return;
 
+		if (wandering) {
+			if (wanderFinished < Time.time || (Vector3.Distance(transform.position,currentDestination) < 0.64f)) {
+				wanderFinished = Time.time + UnityEngine.Random.Range(3f,8f);
+				currentDestination = new Vector3(UnityEngine.Random.Range(-79f,79f),0,UnityEngine.Random.Range(-79f,79f));
+			}
+		}
+
 		// destination still far away and turned to within angle to move, then move
-		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1.28) {
+		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1.28 && tranquilizeFinished < Time.time) {
 			//if (WithinAngleToTarget()) rbody.AddForce(sightPoint.transform.forward.x * walkSpeed,(sightPoint.transform.forward.y * walkSpeed)+0.5f,sightPoint.transform.forward.z * walkSpeed);
-			if (WithinAngleToTarget()) rbody.velocity = (sightPoint.transform.forward * runSpeed);
+			if (WithinAngleToTarget()) {
+				if (hopOnRun) {
+					// move it move it
+					AnimatorStateInfo asi = hopAnimator.GetCurrentAnimatorStateInfo(0);
+					float playbackTime = asi.normalizedTime;
+					if (playbackTime > 0.1395f) {
+						if (!hopDone) {
+							hopDone = true;
+							rbody.AddForce(sightPoint.transform.forward * hopForce);
+						}
+					} else {
+						hopDone = false;
+					}
+				} else {
+					tempVec = (sightPoint.transform.forward * runSpeed);
+					tempVec.y = rbody.velocity.y; // carry across gravity
+					rbody.velocity = tempVec;
+				}
+			}
 		} else {
             if (visitWaypointsRandomly) {
                 currentWaypoint = Random.Range(0, walkWaypoints.Length);
@@ -457,10 +531,39 @@ public class AIController : MonoBehaviour {
                 }
             }
 
+			if (stuckFinished < Time.time) {
+				stuckFinished = Time.time + 2f;
+				if (Vector3.Distance(transform.position,lastPos) < 0.64f) {
+					// We are stuck in a hole, hop up a bit!
+					tempVec = Vector3.up * 20f;
+					rbody.AddForce(tempVec + (sightPoint.transform.forward * 50f));
+				}
+			}
+			lastPos = transform.position;
+
 			// enemy still far away and turned to within angle to move, then move
-			if ((moveType != Const.aiMoveType.None) && (Vector3.Distance(sightPoint.transform.position, enemy.transform.position) > 1.28)) {
+			if ((moveType != Const.aiMoveType.None) && (Vector3.Distance(sightPoint.transform.position, enemy.transform.position) > 1.28) && tranquilizeFinished < Time.time) {
 				//if (WithinAngleToTarget()) rbody.AddForce(transform.forward * runSpeed);
-				if (WithinAngleToTarget()) rbody.velocity = (sightPoint.transform.forward * runSpeed);
+				if (WithinAngleToTarget()) {
+					if (hopOnRun) {
+						// move it move it
+						AnimatorStateInfo asi = hopAnimator.GetCurrentAnimatorStateInfo(0);
+						float playbackTime = asi.normalizedTime;
+						if (playbackTime > 0.1395f) {
+							if (!hopDone) {
+								hopDone = true;
+								rbody.AddForce(sightPoint.transform.forward * hopForce);
+							}
+						} else {
+							hopDone = false;
+						}
+					} else {
+						tempVec = (sightPoint.transform.forward * runSpeed);
+						tempVec.y = rbody.velocity.y; // carry across gravity
+						rbody.velocity = tempVec;
+					}
+				}
+				
 			}
 
             lastKnownEnemyPos = enemy.transform.position;
@@ -502,7 +605,7 @@ public class AIController : MonoBehaviour {
 	void Attack1() {
 		// Used for melee
 		if (attack1SoundTime < Time.time) {
-			if (SFX != null && SFXAttack1 != null) SFX.PlayOneShot(SFXAttack1);
+			if (SFX != null && SFXAttack1 != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXAttack1);
 			attack1SoundTime = Time.time + timeBetweenAttack1;
 			int layMask = 10;
 			layMask = -layMask;
@@ -537,7 +640,7 @@ public class AIController : MonoBehaviour {
 			//Debug.Log("Did...did we do it?  Did the melee colliders activate?");
         }
 
-		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1f) {
+		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1f && tranquilizeFinished < Time.time) {
 			if (WithinAngleToTarget()) rbody.AddForce(transform.forward * meleeSpeed);
 		}
         currentDestination = enemy.transform.position;
@@ -574,8 +677,9 @@ public class AIController : MonoBehaviour {
 			tempVec = targPos - gunPoint.transform.position;
 		}
 		tempVec = tempVec.normalized;
-        int layMask = 10;
-        layMask = -layMask;
+        //int layMask = 10;
+        //layMask = -layMask;
+		int layMask = LayerMask.GetMask("Default","Geometry","Bullets","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
 
 		if (useGunPoint2 && gunPoint2 != null) {
 			if (Physics.Raycast(gunPoint2.transform.position, tempVec, out tempHit, sightRange, layMask)) {
@@ -607,6 +711,9 @@ public class AIController : MonoBehaviour {
             case HealthManager.BloodType.Yellow: return Const.a.GetObjectFromPool(Const.PoolType.BloodSpurtSmallYellow);
             case HealthManager.BloodType.Green: return Const.a.GetObjectFromPool(Const.PoolType.BloodSpurtSmallGreen);
             case HealthManager.BloodType.Robot: return Const.a.GetObjectFromPool(Const.PoolType.SparksSmallBlue);
+			case HealthManager.BloodType.Leaf: return Const.a.GetObjectFromPool(Const.PoolType.LeafBurst);
+			case HealthManager.BloodType.Mutation: return Const.a.GetObjectFromPool(Const.PoolType.MutationBurst);
+			case HealthManager.BloodType.GrayMutation: return Const.a.GetObjectFromPool(Const.PoolType.GraytationBurst);
         }
 
         return Const.a.GetObjectFromPool(Const.PoolType.SparksSmall);
@@ -647,7 +754,7 @@ public class AIController : MonoBehaviour {
                 shotFired = true;
                 // Typically used for normal projectile attack
                 if (attack2SoundTime < Time.time && SFXAttack2) {
-					if (SFX != null && SFXAttack2 != null) SFX.PlayOneShot(SFXAttack2);
+					if (SFX != null && SFXAttack2 != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXAttack2);
                     attack2SoundTime = Time.time + timeBetweenAttack2;
                 }
 
@@ -669,6 +776,15 @@ public class AIController : MonoBehaviour {
                         damageData.damage = Const.a.GetDamageTakeAmount(damageData);
                         damageData.owner = gameObject;
                         damageData.attackType = Const.AttackType.Projectile;
+						if (attack1UsesLaser) {
+							GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
+							if (dynamicObjectsContainer == null) return; //didn't find current level
+							GameObject lasertracer = Instantiate(Const.a.useableItems[105],transform.position,Quaternion.identity) as GameObject;
+							lasertracer.transform.SetParent(dynamicObjectsContainer.transform,true);
+							lasertracer.GetComponent<LaserDrawing>().startPoint = sightPoint.transform.position;
+							lasertracer.GetComponent<LaserDrawing>().endPoint = tempHit.point;
+							lasertracer.SetActive(true);
+						}
                         HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
                         if (hm == null) return;
                         hm.TakeDamage(damageData);
@@ -693,7 +809,8 @@ public class AIController : MonoBehaviour {
 							beachball.transform.position = gunPoint.transform.position;
 							beachball.transform.forward = tempVec.normalized;
 							beachball.SetActive(true);
-							Vector3 shove = beachball.transform.forward * attack2projectilespeed;
+							Vector3 shove = (beachball.transform.forward * attack2projectilespeed);
+							shove += rbody.velocity; // add in the enemy's velocity to the projectile (in case they are riding on a moving platform or something - wait I don't have those!
 							beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
 							beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
 						}
@@ -719,8 +836,7 @@ public class AIController : MonoBehaviour {
 	void Attack3() {
 		// Typically used for secondary projectile or grenade attack
 		if (attack3SoundTime < Time.time && SFXAttack3 || explodeOnAttack3) {
-			if (SFXAttack3 != null)
-				SFX.PlayOneShot(SFXAttack3);
+			if (SFX != null && SFXAttack3 != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXAttack3);
 			attack3SoundTime = Time.time + timeBetweenAttack3;
 		}
 
@@ -730,11 +846,31 @@ public class AIController : MonoBehaviour {
         currentDestination = targettingPosition;
 
 		if (explodeOnAttack3) {
-			DamageData ddNPC = Const.SetNPCDamageData(index, Const.aiState.Attack3,gameObject);
-			float take = Const.a.GetDamageTakeAmount(ddNPC);
-			ddNPC.other = gameObject;
-			ddNPC.damage = take;
-			healthManager.TakeDamage(ddNPC);
+			DamageData dd = Const.SetNPCDamageData(index, Const.aiState.Attack3,gameObject);
+			float take = Const.a.GetDamageTakeAmount(dd);
+			dd.other = gameObject;
+			dd.damage = take;
+			HealthManager hm = new HealthManager();
+			if (dd == null) return;
+			float damageOriginal = dd.damage;
+			Collider[] colliders = Physics.OverlapSphere(sightPoint.transform.position, attack3Radius);
+			int i = 0;
+			while (i < colliders.Length) {
+				if (colliders[i] != null) {
+					if (colliders[i].GetComponent<Rigidbody>() != null) {
+						colliders[i].GetComponent<Rigidbody>().AddExplosionForce(attack3Force, sightPoint.transform.position, attack3Radius, 1.0f);
+					}
+					hm = colliders[i].GetComponent<HealthManager>();
+					if (hm != null) {
+						DamageData dnew = dd;
+						dnew.damage = dd.damage;// * ((Vector3.Distance(colliders[i].gameObject.transform.position,sightPoint.transform.position))/attack3Radius);
+						hm.TakeDamage(dd);
+					}
+				}
+				
+				i++;
+			}
+			healthManager.TakeDamage(dd);
 			return;
 		}
 
@@ -783,13 +919,17 @@ public class AIController : MonoBehaviour {
 						// like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
 						GameObject beachball = Const.a.GetObjectFromPool(attack3ProjectileLaunchedType);
 						if (beachball != null) {
-							beachball.GetComponent<ProjectileEffectImpact>().dd = damageData;
-							beachball.GetComponent<ProjectileEffectImpact>().host = gameObject;
-							beachball.GetComponent<ProjectileEffectImpact>().impactType = Const.a.GetPoolImpactFromPoolProjectileType(attack3ProjectileLaunchedType);
+							ProjectileEffectImpact pei = beachball.GetComponent<ProjectileEffectImpact>();
+							if (pei != null) {
+								pei.dd = damageData;
+								pei.host = gameObject;
+								pei.impactType = Const.a.GetPoolImpactFromPoolProjectileType(attack3ProjectileLaunchedType);
+							}
 							beachball.transform.position = gunPoint2.transform.position;
 							beachball.transform.forward = tempVec.normalized;
 							beachball.SetActive(true);
 							Vector3 shove = beachball.transform.forward * attack3projectilespeed;
+							shove += rbody.velocity; // add in the enemy's velocity to the projectile (in case they are riding on a moving platform or something - wait I don't have those!
 							beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
 							beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
 						}
@@ -838,25 +978,27 @@ public class AIController : MonoBehaviour {
 
 			for (int i = 0; i < meleeDamageColliders.Length; i++) {
 				//Debug.Log("Melee colliders deactivated");
-                meleeDamageColliders[i].SetActive(false);
+                if (meleeDamageColliders[i] != null) meleeDamageColliders[i].SetActive(false);
             }
 
 			if (!healthManager.actAsCorpseOnly && SFX != null && SFXDeathClip != null) SFX.PlayOneShot(SFXDeathClip);
-			if (useGravityOnDying) {
-				rbody.useGravity = true;
+			//if (useGravityOnDying) {
+			if (moveType == Const.aiMoveType.Fly && !healthManager.gibOnDeath) {
+				rbody.useGravity = true; // for avian mutant and zero-g mutant
 			} else {
 				rbody.useGravity = false;
-			}
-			
-			gameObject.layer = 13;
-			if (moveType == Const.aiMoveType.Fly) {
-				if (flyerCollider != null) flyerCollider.enabled = false;
-				if (flyerColliderAlternate1 != null) flyerColliderAlternate1.enabled = false;
-				if (!healthManager.gibOnDeath) {
-					transform.position = new Vector3(transform.position.x,transform.position.y+0.02f,transform.position.z); //bump the corpse up a hair to prevent it ghosting through the floor
-					rbody.freezeRotation = true;
+				rbody.isKinematic = true;
+				RaycastHit hit;
+				if (Physics.Raycast(sightPoint.transform.position, Vector3.down, out hit, sightRange)) {
+					if (hit.collider.gameObject.tag == "Geometry")
+						transform.parent = hit.collider.gameObject.transform;
 				}
+				rbody.velocity = new Vector3(rbody.velocity.x,0,rbody.velocity.z);
+				rbody.Sleep();
 			}
+			rbody.freezeRotation = true;
+			
+			gameObject.layer = 13; // Change to Corpse layer
 			transform.position = new Vector3(transform.position.x, transform.position.y + 0.01f, transform.position.z); // bump it up a hair to prevent corpse falling through the floor
 			firstSighting = true;
 			timeTillDeadFinished = Time.time + timeTillDead; // wait for death animation to finish before going into Dead()
@@ -877,98 +1019,23 @@ public class AIController : MonoBehaviour {
         if (sphereCollider != null) sphereCollider.enabled = false;
         if (meshCollider != null) meshCollider.enabled = false;
 		if (capsuleCollider != null) capsuleCollider.enabled = false;
-		if (searchColliderGO != null) searchColliderGO.SetActive(true);
-		if (moveType == Const.aiMoveType.Fly) {
-			rbody.isKinematic = false;
+
+		if (useGravityOnDeath) {
+			rbody.useGravity = true;
 		} else {
-			//rbody.isKinematic = true;
-			if (searchColliderGO != null) {
-				if (useGravityOnDeath) {
-					rbody.useGravity = true;
-				} else {
-					rbody.useGravity = false;
-				}
-				//rbody.isKinematic = false;
-				rbody.freezeRotation = true;  // prevent corpse from flipping over but let it get moved around by func_walls and grenades and such...if it doesn't get gibbed first
-				rbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
-			}
+			rbody.useGravity = false;
 		}
-		
+
+		if (searchColliderGO != null) {
+			searchColliderGO.SetActive(true);
+			rbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+		}
+		rbody.freezeRotation = true;
 		currentState = Const.aiState.Dead;
 		if (healthManager.gibOnDeath || healthManager.teleportOnDeath) {
-			// Special case for gibing on death for the avian mutant to allow it's corpse to rain from the sky, otherwise it would get disabled along with
-			// the container that held the visibleMesh.  Needed because we want the corpse to fall from the exact same place as the model and model is in
-			// the air within the visibleMeshContainer.  Hence, the special case gib containered flag.  Bit silly ya.
-			if (specialCaseGibContainered) {
-				rbody.useGravity = false; // prevent the invisible part of the enemy from falling indefinitely
-				if (visibleMeshSubObject != null) visibleMeshSubObject.SetActive(false); // turn off the visual model in case of Avian Mutant
-			} else {
-				if (visibleMeshEntity != null) visibleMeshEntity.SetActive(false); // normally just turn off the main model, then...
-			}
-			if (!healthManager.teleportOnDeath && healthManager.gibOnDeath) {
-				healthManager.Gib(); // ... turn on the lovely gibs
-			}
-			if (healthManager.teleportOnDeath) healthManager.TeleportAway();
-		}
-	}
-	
-	public void SendEnemy (GameObject enemCandidate) {
-		if (ignoreEnemy) return;
-		if (enemy != null) return; //already have enemy
-
-		GameObject playr1 = Const.a.player1;
-		GameObject playr2 = Const.a.player2;
-		GameObject playr3 = Const.a.player3;
-		GameObject playr4 = Const.a.player4;
-		Transform playr1TargettingPos = transform;
-		Transform playr2TargettingPos = transform;
-		Transform playr3TargettingPos = transform;
-		Transform playr4TargettingPos = transform;
-
-		if (playr1 == null) { Debug.Log("WARNING: NPC sight check - no host player 1."); return; }  // No host player
-
-		if (playr1 != null) {playr1TargettingPos = playr1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
-		if (playr1 != null) {playr1 = playr1.GetComponent<PlayerReferenceManager>().playerCapsule;}
-
-		if (playr2 != null) {playr2TargettingPos = playr2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
-		if (playr2 != null) {playr2 = playr2.GetComponent<PlayerReferenceManager>().playerCapsule;}
-
-		if (playr3 != null) {playr3TargettingPos = playr3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
-		if (playr3 != null) {playr3 = playr3.GetComponent<PlayerReferenceManager>().playerCapsule;}
-
-		if (playr4 != null) {playr4TargettingPos = playr4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
-		if (playr4 != null) {playr4 = playr4.GetComponent<PlayerReferenceManager>().playerCapsule;}
-		
-		if (enemCandidate == playr1 && enemCandidate.GetComponent<PlayerMovement>() != null && !enemCandidate.GetComponent<PlayerMovement>().Notarget) {
-			SetEnemy(playr1,playr1TargettingPos);
-			PlaySightSound();
-		} else {
-			if (enemCandidate == playr2 && enemCandidate.GetComponent<PlayerMovement>() != null && !enemCandidate.GetComponent<PlayerMovement>().Notarget) {
-				SetEnemy(playr2,playr2TargettingPos);
-				PlaySightSound();
-			} else {
-				if (enemCandidate == playr3 && enemCandidate.GetComponent<PlayerMovement>() != null && !enemCandidate.GetComponent<PlayerMovement>().Notarget) {
-					SetEnemy(playr3,playr3TargettingPos);
-					PlaySightSound();
-				} else {
-					if (enemCandidate == playr4 && enemCandidate.GetComponent<PlayerMovement>() != null && !enemCandidate.GetComponent<PlayerMovement>().Notarget) {
-						SetEnemy(playr4,playr4TargettingPos);
-						PlaySightSound();
-					}
-				}
-			}
-		}
-
-		if (enemy == null) return;
-		for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
-			if (Const.a.healthObjectsRegistration[ij] != null) {
-				if (Const.a.healthObjectsRegistration[ij].isNPC) {
-					if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,gameObject.transform.position) < Const.a.healthObjectsRegistration[ij].aic.rangeToHear) {
-						Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(enemy);
-						//Debug.Log("Enemy found player to attack and then notified a nearby enemy to join the fray!");
-					}
-				}
-			}
+			if (visibleMeshEntity != null && visibleMeshEntity.activeInHierarchy) visibleMeshEntity.SetActive(false); // normally just turn off the main model, then...
+			if (healthManager.gibOnDeath) healthManager.Gib(); // ... turn on the lovely gibs
+			if (healthManager.teleportOnDeath && !healthManager.teleportDone) healthManager.TeleportAway();
 		}
 	}
 
@@ -982,9 +1049,9 @@ public class AIController : MonoBehaviour {
 
 	bool CheckIfEnemyInSight() {
 		Vector3 checkline = enemy.transform.position - sightPoint.transform.position; // Get vector line made from enemy to found player
-        int layMask = 10;
-        layMask = -layMask;
-
+        //int layMask = 10;
+        //layMask = -layMask;
+		int layMask = LayerMask.GetMask("Default","Geometry","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
         RaycastHit hit;
         //if (Physics.Raycast(sightPoint.transform.position + transform.up, checkline.normalized, out hit, sightRange, layMask)) {
         if (Physics.Raycast(sightPoint.transform.position, checkline.normalized, out hit, sightRange, layMask)) {
@@ -1052,8 +1119,8 @@ public class AIController : MonoBehaviour {
 			//Debug.Log("Found a player with sight check");
             tempVec = tempent.transform.position;
 			Vector3 checkline = tempVec - sightPoint.transform.position; // Get vector line made from enemy to found player
-            int layMask = 10;
-            layMask = -layMask;
+            //int layMask = 10;
+            //layMask = -layMask;
 
 			float dist = Vector3.Distance(tempent.transform.position,sightPoint.transform.position);  // Get distance between enemy and found player
 			if (dist > sightRange) continue; // don't waste time doing raycasts if we won't be able to see them anyway
@@ -1063,6 +1130,7 @@ public class AIController : MonoBehaviour {
 			if (angle < (fieldOfViewAngle * 0.5f)) {
 				// Check for line of sight
 				RaycastHit hit;
+				int layMask = LayerMask.GetMask("Default","Geometry","Bullets","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
 				// changed from using sightRange to dist to minimize checkdistance
 				if (Physics.Raycast(sightPoint.transform.position, checkline.normalized, out hit, dist,layMask)) {
 					//Debug.Log("Sight raycast successful");
@@ -1077,10 +1145,21 @@ public class AIController : MonoBehaviour {
 						return true;
 					}
 				} else {
+					dist = dist - 0.1f; // take the 0.1f back off now that we've done the raycast
 					if (dist < distToSeeWhenBehind) {
 						SetEnemy(tempent,tempTrans);
 						PlaySightSound();
 						return true;
+					}
+					PlayerHealth ph = tempent.GetComponent<PlayerHealth>();
+					if (ph != null) {
+						if (ph.makingNoise) {
+							if (dist < rangeToHear) {
+								SetEnemy(tempent,tempTrans);
+								PlaySightSound();
+								return true;
+							}
+						}
 					}
 				}
 			} else {
@@ -1088,6 +1167,17 @@ public class AIController : MonoBehaviour {
 					SetEnemy(tempent,tempTrans);
 					PlaySightSound();
 					return true;
+				}
+
+				PlayerHealth ph = tempent.GetComponent<PlayerHealth>();
+				if (ph != null) {
+					if (ph.makingNoise) {
+						if (dist < rangeToHear) {
+							SetEnemy(tempent,tempTrans);
+							PlaySightSound();
+							return true;
+						}
+					}
 				}
 			}
 		}
@@ -1103,7 +1193,7 @@ public class AIController : MonoBehaviour {
 	void PlaySightSound() {
 		if (firstSighting) {
 			firstSighting = false;
-			if (SFXSightSound != null) SFX.PlayOneShot(SFXSightSound);
+			if (!healthManager.actAsCorpseOnly && SFXSightSound != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXSightSound);
 		}
 	}
 	

@@ -49,9 +49,9 @@ public class TextWarningsManager : MonoBehaviour {
 		if (col == warningTextColor.yellow) warningTexts[setIndex].color = colyellow;
 
 		if (lifetime > -1)
-			warningLifeTimes[setIndex] += lifetime;
+			if (warningLifeTimes[setIndex] < lifetime) warningLifeTimes[setIndex] = lifetime;
 		else
-			warningLifeTimes[setIndex] += warningDefaultLifeTime;
+			if (warningLifeTimes[setIndex] < warningDefaultLifeTime) warningLifeTimes[setIndex] = warningDefaultLifeTime;
 
 		finishedTime[setIndex] = Time.time + warningLifeTimes[setIndex];
 	}
@@ -60,7 +60,7 @@ public class TextWarningsManager : MonoBehaviour {
 		for (int i=0;i<warningTextGObjects.Length;i++) {
 			if (!string.IsNullOrWhiteSpace(warningTexts[i].text)) {
 				if (finishedTime[i] < Time.time) {
-					if (warningTexts[i].text != System.String.Empty) warningTexts[i].text = System.String.Empty;
+					warningTexts[i].text = System.String.Empty;
 					if (warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(false);
 					continue;
 				}

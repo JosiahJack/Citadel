@@ -32,45 +32,47 @@ public class InteractablePanel : MonoBehaviour {
 	void Start() {
 		anim = GetComponent<Animator>();
 		SFX = GetComponent<AudioSource>();
-		if (string.IsNullOrWhiteSpace(wrongItemMessage)) {
-			if (wrongItemMessageLingdex < Const.a.stringTable.Length && wrongItemMessageLingdex != -1)
-				wrongItemMessage = Const.a.stringTable[wrongItemMessageLingdex];
-		}
-
-		if (string.IsNullOrWhiteSpace(installedMessage)) {
-			if (installedMessageLingdex < Const.a.stringTable.Length && installedMessageLingdex != -1)
-				installedMessage = Const.a.stringTable[installedMessageLingdex];
-		}
-
-		if (string.IsNullOrWhiteSpace(alreadyInstalledMessage)) {
-			if (alreadyInstalledMessageLingdex < Const.a.stringTable.Length && alreadyInstalledMessageLingdex != -1)
-				alreadyInstalledMessage = Const.a.stringTable[alreadyInstalledMessageLingdex];
-		}
-
+		if (SFX == null) Debug.Log("BUG: Missing AudioSource on Interactable Panel");
 		if (string.IsNullOrWhiteSpace(openMessage)) {
-			if (openMessageLingdex < Const.a.stringTable.Length && openMessageLingdex != -1)
-				openMessage = Const.a.stringTable[openMessageLingdex];
+			if (openMessageLingdex >= 0) {
+				if (openMessageLingdex < Const.a.stringTable.Length && openMessageLingdex != -1)
+					openMessage = Const.a.stringTable[openMessageLingdex];
+			}
 		}
 	}
 
 	public void Use(UseData ud) {
+		Debug.Log("Used InteractablePanel");
 		if (open) {
 			if (installed && ud.mainIndex == -1) {
-				if (alreadyInstalledMessageLingdex != -1) Const.sprint(alreadyInstalledMessage,ud.owner);
+				Const.sprintByIndexOrOverride (alreadyInstalledMessageLingdex, alreadyInstalledMessage,ud.owner);
 				return; // do nothing already done here
 			}
 
 			// was player holding correct item in their hand when they used us?
 			if (ud.mainIndex == requiredIndex) {
 				if (installed) {
-					if (SFXAlreadyInstalled != null) SFX.PlayOneShot(SFXAlreadyInstalled);
+					if (SFXAlreadyInstalled != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXAlreadyInstalled);
 					return; // do nothing already done here
 				}
 				installed = true;
 				installationItem.SetActive(true);
-				if (SFXInstallation != null) SFX.PlayOneShot(SFXInstallation);
-				if (installedMessageLingdex != -1) Const.sprint(installedMessage,ud.owner);
-
+				if (SFXInstallation != null && SFX != null) SFX.PlayOneShot(SFXInstallation);
+				Const.sprintByIndexOrOverride (installedMessageLingdex, installedMessage,ud.owner);
+				// any extra effect objects?  activate them here...good for sparks or turning on any extra bits and bobs
+				if (effects.Length > 0) {
+					for(int i=0;i<effects.Length;i++) {
+						if (effects[i] != null) effects[i].SetActive(true);
+					}
+				}
+				PlayerReferenceManager prm = ud.owner.GetComponent<PlayerReferenceManager>();
+				if (prm != null) {
+					MouseLookScript mls = prm.playerCapsuleMainCamera.GetComponent<MouseLookScript>();
+					if (mls != null) {
+						mls.ResetHeldItem();
+						mls.ResetCursor();
+					}
+				}
 				// use the target now that we are active
 				ud.argvalue = argvalue;
 				TargetIO tio = GetComponent<TargetIO>();
@@ -80,22 +82,15 @@ public class InteractablePanel : MonoBehaviour {
 					Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
 				}
 				Const.a.UseTargets(ud,target);
-
-				// any extra effect objects?  activate them here...good for sparks or turning on any extra bits and bobs
-				if (effects.Length > 0) {
-					for(int i=0;i<effects.Length;i++) {
-						if (effects[i] != null) effects[i].SetActive(true);
-					}
-				}
 			} else {
-				if (SFXFail != null) SFX.PlayOneShot(SFXFail); // aaaahhh!! Try again
-				if (wrongItemMessageLingdex != -1) Const.sprint(wrongItemMessage,ud.owner);
+				if (SFXFail != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXFail); // aaaahhh!! Try again
+				Const.sprintByIndexOrOverride (wrongItemMessageLingdex, wrongItemMessage,ud.owner);
 			}
 		} else {
 			open = true;
 			anim.Play("Open");
-			if (SFXOpen != null) SFX.PlayOneShot(SFXOpen);
-			if (openMessageLingdex != -1) Const.sprint(openMessage,ud.owner);
+			if (SFXOpen != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXOpen);
+			Const.sprintByIndexOrOverride (openMessageLingdex, openMessage,ud.owner);
 		}
 	}
 }

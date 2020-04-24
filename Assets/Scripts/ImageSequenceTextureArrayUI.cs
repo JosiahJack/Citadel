@@ -13,6 +13,9 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 	private int frameCounter = 0;
 	public string resourceFolder;
 	public float frameDelay = 0.35f;
+	public bool stopAtEnd = false;
+	private bool playDone = false;
+	public bool replayOnEnable = false;
 	
 	void Awake() {
 		//Get a reference to the Material of the game object this script is attached to.
@@ -30,10 +33,22 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 			this.sprites[i] = (Sprite)this.objects[i];
 		}
 	}
+
+	void OnEnable() {
+		if (replayOnEnable) {
+			playDone = false;
+			frameCounter = 0;
+		}
+	}
 	
 	void Update () {
 		//Call the 'PlayLoop' method as a coroutine with a float delay
-		StartCoroutine("PlayLoop", frameDelay);
+		if (stopAtEnd && playDone) return;
+		if (stopAtEnd && !playDone) {
+			StartCoroutine("Play", frameDelay);
+		} else {
+			StartCoroutine("PlayLoop", frameDelay);
+		}
 		//Set the material's texture to the current value of the frameCounter variable
 		goImage.overrideSprite = sprites[frameCounter];
 	}
@@ -48,6 +63,7 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 		//Stop this coroutine
 		StopCoroutine("PlayLoop");
 	}  
+
 	//A method to play the animation just once
 	IEnumerator Play(float delay) {
 		//Wait for the time defined at the delay parameter
@@ -57,8 +73,11 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 		if(frameCounter < sprites.Length-1) {
 			//Advance one frame
 			++frameCounter;
+			if (frameCounter >= sprites.Length) playDone = true;
+		} else {
+			playDone = true;
 		}
 		//Stop this coroutine
-		StopCoroutine("PlayLoop");
+		StopCoroutine("Play");
 	} 
 }

@@ -18,6 +18,8 @@ public class ElevatorKeypad : MonoBehaviour {
 	public Sprite[] indicatorSprites;
 	[HideInInspector]
 	public GameObject activeKeypad;
+	public Color textEnabledColor;
+	public Color textDarkenedColor;
 
 	void Update () {
 		for (int i=0; i<8; i++) {
@@ -26,9 +28,11 @@ public class ElevatorKeypad : MonoBehaviour {
 				buttonTextHolders[i].text = buttonText[i];
 				if (buttonsDarkened[i]) {
 					buttonSprites[i].overrideSprite = buttonDarkened;
+					buttonTextHolders[i].color = textDarkenedColor;
 					buttonHandlers[i].GetComponent<ElevatorButton>().floorAccessible = false;
 				} else {
 					buttonSprites[i].overrideSprite = buttonNormal;
+					buttonTextHolders[i].color = textEnabledColor;
 					buttonHandlers[i].GetComponent<ElevatorButton>().floorAccessible = true;
 					buttonHandlers[i].GetComponent<ElevatorButton>().targetDestination = targetDestination[i];
 				}

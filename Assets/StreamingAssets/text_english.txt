@@ -6,7 +6,7 @@ The door is locked.
  but door is locked.
 You are too far away from that
 Elevator door is still open
-Shaft Damage — Unable to go there
+Shaft Damage. Unable to go there.
 Already there
 RELOAD
 Weapon is too hot to fire
@@ -36,13 +36,13 @@ Grenade added to inventory
 Patch added to inventory
 Audio log 
  picked up.  Press '
-' to playback.
+' to play back.
 LOGS
 Level 
  Logs
 EMAIL
 DATA
-Already have that access.
+Already have access: 
 New accesses gained: 
 THAT WARE IS OBSOLETE. DISCARDED.
 normal screens
@@ -190,7 +190,7 @@ Can't crouch here.
 Can't use broken panel
 Puzzle interface accessed
 Current weapon magazine already full.
-No more of current ammo type to load.
+No more of current ammo type to load, loading with alternate.
 Switch deactivated.
 Saving...
 Saving...Done!
@@ -278,3 +278,39 @@ RIOT GUN
 SKORPION
 SPARQ
 STUNGUN
+Envirosuit absorbed 
+, 
+improper item, isotope required.
+isotope installed!
+isotope already installed.
+panel is now open.
+The laser is destroyed.
+Unable to fire.  Charging.  Override preventing fire until fully charged.
+Safety override.  Beam not fired.
+Blocked by extant CPU nodes on one of levels 1, 2, or 3.
+Blocked by extant CPU nodes on one of levels 4, 5, or 6.
+Weapon
+Item
+Automap
+Target ID
+Data
+Main
+Hardware
+General
+Software
+Safety override already enabled.
+Access not granted.
+Access panel is locked.
+Energy already full.
+Health already at max.
+No more of any ammo type to load.
+Level security now 
+%
+Saved slot 
+"Trioptimum Funpack Module, don't play on company time!"
+ picked up.  Proper hardware not detected to play.
+Can't use grenade, hands full
+Already activated.
+WARNING: Bridge Separation Process Initiated. All unnecessary personnel clear the level.
+Power supply exhausted.
+Weapon does not use ammo.

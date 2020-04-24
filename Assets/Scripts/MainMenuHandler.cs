@@ -21,17 +21,27 @@ public class MainMenuHandler : MonoBehaviour {
 	public GameObject loadPage;
 	public GameObject savePage;
 	public GameObject optionsPage;
+	public GameObject creditsPage;
 	public InputField newgameInputText;
 	public StartMenuDifficultyController combat;
 	public StartMenuDifficultyController mission;
 	public StartMenuDifficultyController puzzle;
 	public StartMenuDifficultyController cyber;
 	public PauseScript pauseHandler;
-	private enum Pages {fp,sp,mp,np,lp,op,sv};
+	public InputField[] saveNameInputField;
+	public GameObject[] saveNameInput;
+	public GameObject[] saveNamePlaceholder;
+	public Text[] saveButtonText;
+	public Text[] loadButtonText;
+	public int currentSaveSlot = -1;
+	private enum Pages {fp,sp,mp,np,lp,op,sv,cd};
 	private Pages currentPage;
 	private AudioSource StartSFX;
 	private AudioSource BackGroundMusic;
+	public AudioClip titleMusic;
+	public AudioClip creditsMusic;
 	private bool returnToPause = false;
+	public CreditsScroll credScrollManager;
 
 	void Awake () {
 		StartSFX = startFXObject.GetComponent<AudioSource>();
@@ -45,9 +55,31 @@ public class MainMenuHandler : MonoBehaviour {
 			GoBack();
 		}
 
+		//if (creditsPage.activeSelf) {
+			//if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1)){ //|| Input.anyKey) {
+				//if (credScrollManager.stopped) {
+				//	credScrollManager.Continue();
+				//} else {
+					//GoBack();
+				//}
+			//}
+		//}
+
 		if ( (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P)) || (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P)) ) {
 			Debug.Log("Skipping main menu. Debug cheat");
 			StartGame(true);
+		}
+
+		if (Input.GetKeyUp(KeyCode.Return) && savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
+			string sname = saveNameInputField[currentSaveSlot].GetComponentInChildren<InputField>().text;
+			if (currentSaveSlot != -1 && !string.IsNullOrEmpty(sname)) {
+				//Debug.Log("Calling savegame with name of: " + sname);
+				SaveGame(currentSaveSlot,sname);
+				saveNameInput[currentSaveSlot].SetActive(false);
+				saveNamePlaceholder[currentSaveSlot].SetActive(false);
+				saveButtonText[currentSaveSlot].text = sname;
+				currentSaveSlot = -1;
+			}
 		}
 	}
 
@@ -59,6 +91,7 @@ public class MainMenuHandler : MonoBehaviour {
 			Const.a.difficultyMission = mission.difficultySetting;
 			Const.a.difficultyPuzzle = puzzle.difficultySetting;
 			Const.a.difficultyCyber = cyber.difficultySetting;
+			Const.a.Load(-1); // load default scene
 		}
 		this.gameObject.SetActive(false);
 	}
@@ -71,6 +104,7 @@ public class MainMenuHandler : MonoBehaviour {
 		loadPage.SetActive(false);
 		savePage.SetActive(false);
 		optionsPage.SetActive(false);
+		creditsPage.SetActive(false);
 	}
 
 	public void GoToFrontPage () {
@@ -109,6 +143,19 @@ public class MainMenuHandler : MonoBehaviour {
 		ResetPages();
 		loadPage.SetActive(true);
 		currentPage = Pages.lp;
+
+		string readline; // variable to hold each string read in from the file
+		for (int i=0;i<8;i++) {
+			StreamReader sf = new StreamReader(Application.streamingAssetsPath + "/sav"+i.ToString()+".txt");
+			if (sf != null) {
+				using (sf) {
+					readline = sf.ReadLine();
+					if (readline == null) break; // just in case
+					loadButtonText[i].text = readline;
+					sf.Close();
+				}
+			}
+		}	
 	}
 
 	public void GoToSaveGameSubmenu (bool fromPause) {
@@ -116,11 +163,33 @@ public class MainMenuHandler : MonoBehaviour {
 		savePage.SetActive(true);
 		currentPage = Pages.sv;
 		returnToPause = fromPause;
+
+		string readline; // variable to hold each string read in from the file
+		for (int i=0;i<8;i++) {
+			StreamReader sf = new StreamReader(Application.streamingAssetsPath + "/sav"+i.ToString()+".txt");
+			if (sf != null) {
+				using (sf) {
+					readline = sf.ReadLine();
+					if (readline == null) break; // just in case
+					saveButtonText[i].text = readline;
+					sf.Close();
+				}
+			}
+		}	
 	}
 
-	public void SaveGame (int index) {
-		Const.a.Save(index,"Saved slot " + index.ToString());
-		Const.sprint("Saved game to slot " + index.ToString() + "!",Const.a.player1);
+	public void SaveGameEntry (int index) {
+		saveNameInput[index].SetActive(true);
+		saveNamePlaceholder[index].SetActive(true);
+		saveButtonText[index].text = System.String.Empty;
+		saveNameInputField[index].ActivateInputField();
+		currentSaveSlot = index;
+	}
+
+	public void SaveGame (int index,string savename) {
+		//Const.a.Save(index,Const.a.stringTable[308] + index.ToString());
+		Const.a.Save(index,savename);
+		Const.sprint(Const.a.stringTable[28] + index.ToString() + "!",Const.a.player1);
 		pauseHandler.EnablePauseUI();
 		this.gameObject.SetActive(false);
 	}
@@ -130,7 +199,7 @@ public class MainMenuHandler : MonoBehaviour {
 		StartGame(false);
 	}
 
-	void GoBack () {
+	public void GoBack () {
 		if (returnToPause) {
 			pauseHandler.EnablePauseUI();
 			this.gameObject.SetActive(false);
@@ -149,7 +218,11 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 
 		// Go Back to singlepayer page
-		if (currentPage == Pages.np || currentPage == Pages.lp) {
+		if (currentPage == Pages.np || currentPage == Pages.lp || currentPage == Pages.cd) {
+			if (currentPage == Pages.cd) {
+				BackGroundMusic.clip = titleMusic;
+				BackGroundMusic.Play();
+			}
 			GoToSingleplayerSubmenu();
 			return;
 		}
@@ -161,6 +234,11 @@ public class MainMenuHandler : MonoBehaviour {
 
 	public void PlayCredits () {
 		Debug.Log("Playing credits");
+		ResetPages();
+		creditsPage.SetActive(true);
+		currentPage = Pages.cd;
+		BackGroundMusic.clip = creditsMusic;
+		BackGroundMusic.Play();
 	}
 
 	public void Quit () {

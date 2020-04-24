@@ -9,7 +9,7 @@ public class PatchButtonsManager : MonoBehaviour {
 
 	void LateUpdate() {
 		if (PatchInventory.PatchInvInstance == null) {
-			Const.sprint("ERROR->PatchButtonsManager: PatchInventory is null",Const.a.allPlayers);
+			Const.sprint("BUG: PatchButtonsManager: PatchInventory is null",Const.a.allPlayers);
 			return;
 		}
 

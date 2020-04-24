@@ -19,6 +19,7 @@ public class PlaySoundTriggered : MonoBehaviour {
 
     void Start() {
 		if (SFX == null) SFX = GetComponent<AudioSource>();
+		SFX.playOnAwake = false;
 		SFX.loop = false;
 		SFX.clip = SFXClipToPlay;
 		if (playEverywhere) {

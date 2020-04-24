@@ -116,10 +116,10 @@ ModelImporter:
     second: Cube
   - first:
       74: 7400000
-    second: Default Take
+    second: Idle1
   - first:
       74: 7400002
-    second: ArmatureAction
+    second: Idle
   - first:
       74: 7400004
     second: Idle
@@ -150,6 +150,9 @@ ModelImporter:
   - first:
       137: 13700002
     second: npc_hopper
+  - first:
+      74: -3880581976594992817
+    second: ArmatureAction
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -160,14 +163,14 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: npc_hopper_material__hopper_png
-    second: {fileID: 2100000, guid: fbe7830ca773d574ba1ef454023dbd23, type: 2}
+    second: {fileID: 2100000, guid: 8b9369079f86ba446b0ebb196cfeb175, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: unnamed
     second: {fileID: 2100000, guid: 4dd6e580ecc8a944c96f445075fabc97, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -185,7 +188,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 1
+    animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -194,11 +197,56 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Default Take
+      name: Hop
       takeName: Default Take
       internalID: 0
-      firstFrame: 0
-      lastFrame: 199
+      firstFrame: 46
+      lastFrame: 86
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/Base
+        weight: 1
+      - path: Armature/LowerBodyJoint
+        weight: 1
+      - path: Armature/LowerBodyJoint/UpperBodyJoint
+        weight: 1
+      - path: Armature/LowerBodyJoint/UpperBodyJoint/EndAffector
+        weight: 1
+      - path: Armature/LowerBodyJoint/UpperBodyJoint/EndAffector/WeldingNozzle
+        weight: 1
+      - path: npc_hopper
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Pain1
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 87
+      lastFrame: 107
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -239,178 +287,6 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: ArmatureAction
-      takeName: ArmatureAction
-      internalID: 0
-      firstFrame: 0
-      lastFrame: 179
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask:
-      - path: 
-        weight: 1
-      - path: Armature
-        weight: 1
-      - path: Armature/Bone
-        weight: 1
-      - path: Armature/Bone/Bone_001
-        weight: 1
-      - path: Armature/Bone/Bone_001/Bone_002
-        weight: 1
-      - path: Armature/Bone_003
-        weight: 1
-      - path: Cylinder
-        weight: 1
-      maskType: 0
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: Idle
-      takeName: Default Take
-      internalID: 0
-      firstFrame: 0
-      lastFrame: 45
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask:
-      - path: 
-        weight: 1
-      - path: Armature
-        weight: 1
-      - path: Armature/Bone
-        weight: 1
-      - path: Armature/Bone/Bone_001
-        weight: 1
-      - path: Armature/Bone/Bone_001/Bone_002
-        weight: 1
-      - path: Armature/Bone_003
-        weight: 1
-      - path: Cylinder
-        weight: 1
-      maskType: 0
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: Hop
-      takeName: Default Take
-      internalID: 0
-      firstFrame: 46
-      lastFrame: 86
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask:
-      - path: 
-        weight: 1
-      - path: Armature
-        weight: 1
-      - path: Armature/Bone
-        weight: 1
-      - path: Armature/Bone/Bone_001
-        weight: 1
-      - path: Armature/Bone/Bone_001/Bone_002
-        weight: 1
-      - path: Armature/Bone_003
-        weight: 1
-      - path: Cylinder
-        weight: 1
-      maskType: 0
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: Pain1
-      takeName: Default Take
-      internalID: 0
-      firstFrame: 87
-      lastFrame: 107
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask:
-      - path: 
-        weight: 1
-      - path: Armature
-        weight: 1
-      - path: Armature/Bone
-        weight: 1
-      - path: Armature/Bone/Bone_001
-        weight: 1
-      - path: Armature/Bone/Bone_001/Bone_002
-        weight: 1
-      - path: Armature/Bone_003
-        weight: 1
-      - path: Cylinder
-        weight: 1
-      maskType: 0
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
       name: Pain2
       takeName: Default Take
       internalID: 0
@@ -440,15 +316,17 @@ ModelImporter:
         weight: 1
       - path: Armature
         weight: 1
-      - path: Armature/Bone
+      - path: Armature/Base
         weight: 1
-      - path: Armature/Bone/Bone_001
+      - path: Armature/LowerBodyJoint
         weight: 1
-      - path: Armature/Bone/Bone_001/Bone_002
+      - path: Armature/LowerBodyJoint/UpperBodyJoint
         weight: 1
-      - path: Armature/Bone_003
+      - path: Armature/LowerBodyJoint/UpperBodyJoint/EndAffector
         weight: 1
-      - path: Cylinder
+      - path: Armature/LowerBodyJoint/UpperBodyJoint/EndAffector/WeldingNozzle
+        weight: 1
+      - path: npc_hopper
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
@@ -483,15 +361,17 @@ ModelImporter:
         weight: 1
       - path: Armature
         weight: 1
-      - path: Armature/Bone
+      - path: Armature/Base
         weight: 1
-      - path: Armature/Bone/Bone_001
+      - path: Armature/LowerBodyJoint
         weight: 1
-      - path: Armature/Bone/Bone_001/Bone_002
+      - path: Armature/LowerBodyJoint/UpperBodyJoint
         weight: 1
-      - path: Armature/Bone_003
+      - path: Armature/LowerBodyJoint/UpperBodyJoint/EndAffector
         weight: 1
-      - path: Cylinder
+      - path: Armature/LowerBodyJoint/UpperBodyJoint/EndAffector/WeldingNozzle
+        weight: 1
+      - path: npc_hopper
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
@@ -526,17 +406,64 @@ ModelImporter:
         weight: 1
       - path: Armature
         weight: 1
-      - path: Armature/Bone
+      - path: Armature/Base
         weight: 1
-      - path: Armature/Bone/Bone_001
+      - path: Armature/LowerBodyJoint
         weight: 1
-      - path: Armature/Bone/Bone_001/Bone_002
+      - path: Armature/LowerBodyJoint/UpperBodyJoint
         weight: 1
-      - path: Armature/Bone_003
+      - path: Armature/LowerBodyJoint/UpperBodyJoint/EndAffector
         weight: 1
-      - path: Cylinder
+      - path: Armature/LowerBodyJoint/UpperBodyJoint/EndAffector/WeldingNozzle
+        weight: 1
+      - path: npc_hopper
         weight: 1
       maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Idle1
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 45
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/Base
+        weight: 1
+      - path: Armature/LowerBodyJoint
+        weight: 1
+      - path: Armature/LowerBodyJoint/UpperBodyJoint
+        weight: 1
+      - path: Armature/LowerBodyJoint/UpperBodyJoint/EndAffector
+        weight: 1
+      - path: Armature/LowerBodyJoint/UpperBodyJoint/EndAffector/WeldingNozzle
+        weight: 1
+      - path: npc_hopper
+        weight: 1
+      maskType: 3
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     isReadable: 1
@@ -547,10 +474,10 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
-    importVisibility: 0
+    importVisibility: 1
     importBlendShapes: 1
-    importCameras: 0
-    importLights: 0
+    importCameras: 1
+    importLights: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
@@ -571,8 +498,8 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 4
-    normalCalculationMode: 0
-    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
@@ -589,15 +516,15 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     globalScale: 1
-    rootMotionBoneName: Armature
+    rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
-  animationType: 1
+  animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 0
+  avatarSetup: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

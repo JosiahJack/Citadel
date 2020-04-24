@@ -20,6 +20,12 @@ public class UseableObjectUse : MonoBehaviour {
 		mlook.heldObjectCustomIndex = customIndex;
 		mlook.heldObjectAmmo = ammo;
 		mlook.heldObjectAmmoIsSecondary = ammoIsSecondary;
+
+		if (Const.a.InputQuickItemPickup) {
+			mlook.AddItemToInventory(useableItemIndex);
+			mlook.ResetHeldItem();
+			mlook.ResetCursor();
+		}
 		// should I assign mlook to null at this point so that I don't accidentally have a bug in multiplayer where the wrong player reference gets an object picked up
 		// nah, I trust GetComponent to work for the owner who sent the Use command
 		// well ok sure...

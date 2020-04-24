@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour {
 	private float walkDeacceleration = 0.30f;
 	private float walkDeaccelerationBooster = 2f;
 	private float deceleration;
-	private float walkAccelAirRatio = 0.15f;
+	private float walkAccelAirRatio = 0.6f;
 	public GameObject cameraObject;
 	public MouseLookScript mlookScript;
 	public float playerSpeed;
@@ -133,6 +133,8 @@ public class PlayerMovement : MonoBehaviour {
 	private PlayerEnergy pe;
 	[HideInInspector]
 	public float ressurectingFinished;
+	public float burstForce = 50f;
+	private float doubleJumpFinished;
 
     void Awake (){
 		currentCrouchRatio = def1;
@@ -167,6 +169,7 @@ public class PlayerMovement : MonoBehaviour {
 		ressurectingFinished = Time.time;
 		tempInt = -1;
 		tempFloat = 0;
+		doubleJumpFinished = Time.time;
     }
 	
 	bool CantStand (){
@@ -193,7 +196,7 @@ public class PlayerMovement : MonoBehaviour {
             ToggleConsole();
         }
 
-		if (Input.GetKeyDown(KeyCode.Return)) {
+		if (Input.GetKeyDown(KeyCode.Return) && !mainMenu.activeSelf && consoleActivated) {
 			ConsoleEntry();
 		}
 
@@ -210,6 +213,8 @@ public class PlayerMovement : MonoBehaviour {
 		if (mainMenu.activeSelf == true) return;  // ignore movement when main menu is still up
 		if (!PauseScript.a.Paused() && (ressurectingFinished < Time.time)) {
 			rbody.WakeUp();
+
+			//LevelManager.a.SetLeaf(transform.position); // hey we are here, see if and set we are in a leaf for this level
 
 			if (inCyberSpace && !cyberSetup) {
 				cyberCollider.enabled = true;
@@ -470,7 +475,7 @@ public class PlayerMovement : MonoBehaviour {
 	void  FixedUpdate (){
 		if (mainMenu.activeSelf == true) return;  // ignore movement when main menu is still up
 		if (PauseScript.a == null) {
-			Const.sprint("ERROR->PlayerMovement: PauseScript is null",transform.parent.gameObject);
+			Const.sprint("BUG: PlayerMovement: PauseScript is null",transform.parent.gameObject);
 			return;
 		}
 
@@ -625,6 +630,7 @@ public class PlayerMovement : MonoBehaviour {
 						// CLimbing when touching the ground
 						//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
 						rbody.AddRelativeForce (relSideways * walkAcceleration * Time.deltaTime, relForward * walkAcceleration * Time.deltaTime, 0);
+						
 					} else {
                         //Walking on the ground
                         //rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * Time.deltaTime, 0, Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime);
@@ -638,14 +644,14 @@ public class PlayerMovement : MonoBehaviour {
                         if (GetInput.a.SwimUp() && !consoleActivated) {
                             if (CheatNoclip) {
                                 //Debug.Log("Floating Up!");
-                                rbody.AddRelativeForce(0, 4 * walkAcceleration * Time.deltaTime, 0);
+                                rbody.AddRelativeForce(0, 4f * walkAcceleration * Time.deltaTime, 0);
                             }
                         }
 
                         if (GetInput.a.SwimDn() && !consoleActivated) {
                             if (CheatNoclip) {
                                 //Debug.Log("Floating Dn!");
-                                rbody.AddRelativeForce(0, 4 * walkAcceleration * Time.deltaTime * -1, 0);
+                                rbody.AddRelativeForce(0, 4f * walkAcceleration * Time.deltaTime * -1, 0);
                             }
                         }
 
@@ -713,7 +719,7 @@ public class PlayerMovement : MonoBehaviour {
                 if (ladderState) {
 					rbody.useGravity = false;
 					// Set vertical velocity towards 0 when climbing
-					if (hwc.hardwareIsActive [9]) {
+					if (hwc.hardwareIsActive [9] && hwi.hardwareVersionSetting[9] == 0) {
 						deceleration = walkDeaccelerationBooster;
 					} else {
 						deceleration = walkDeacceleration;
@@ -737,18 +743,31 @@ public class PlayerMovement : MonoBehaviour {
 				}
 
 				// Get input for Jump and set impulse time, removed "&& (ladderState == false)" since I want to be able to jump off a ladder
-				if (!inCyberSpace && (GetInput.a.Jump() && !consoleActivated) && !CheatNoclip && !justJumped) {
-					//if (gravliftState || (hwc.hardwareIsActive[10])) {
-						if (grounded || gravliftState || hwc.hardwareIsActive[10]) {
-							jumpTime = jumpImpulseTime;
-							justJumped = true;
-						} else {
-							if (ladderState) {
-								jumpTime = jumpImpulseTime;
-								justJumped = true;
+				 
+				if (!inCyberSpace && !consoleActivated && !CheatNoclip) {
+					if (GetInput.a.Jump()) {
+						if (!justJumped) {
+							//if (gravliftState || (hwc.hardwareIsActive[10])) {
+								if (grounded || gravliftState || hwc.hardwareIsActive[10]) {
+									jumpTime = jumpImpulseTime;
+									doubleJumpFinished = Time.time + Const.a.doubleClickTime;
+									justJumped = true;
+								} else {
+									if (ladderState) {
+										jumpTime = jumpImpulseTime;
+										justJumped = true;
+									}
+								}
+							//}
+						}
+
+						if (hwc.hardwareIsActive [9] && hwi.hardwareVersionSetting[9] == 1) {
+							if (doubleJumpFinished < Time.time){
+								rbody.AddForce(new Vector3(transform.forward.x * burstForce,transform.forward.y * burstForce,transform.forward.z * burstForce),ForceMode.Impulse);
+								pe.TakeEnergy(40f);
 							}
 						}
-					//}
+					} 
 				}
 			
 				// Perform Jump
@@ -771,7 +790,7 @@ public class PlayerMovement : MonoBehaviour {
 									pe.TakeEnergy(energysuck);
 								}
 							} else {
-								hwbJumpJets.JumpJetsClick();
+								hwbJumpJets.JumpJetsOff();
 							}
 						} else {
 							if (ladderState) {
@@ -866,25 +885,33 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	}
 
-    private void ToggleConsole() {
+	public void ConsoleDisable() {
+		consoleActivated = false;
+		consoleplaceholderText.SetActive(false);
+		consoleTitle.SetActive(false);
+		consoleinpFd.DeactivateInputField();
+		consoleinpFd.enabled = false;
+		consolebg.enabled = false;
+		consoleentryText.text = null;
+		consoleentryText.enabled = false;
+	}
+
+	void ConsoleEnable() {
+		consoleActivated = true;
+		consoleplaceholderText.SetActive(true);
+		consoleTitle.SetActive(true);
+		consoleinpFd.enabled = true;
+		consoleinpFd.ActivateInputField();
+		consolebg.enabled = true;
+		consoleentryText.enabled = true;
+	}
+
+    void ToggleConsole() {
 		if (consoleActivated) {
-			consoleActivated = false;
-			consoleplaceholderText.SetActive(false);
-			consoleTitle.SetActive(false);
-			consoleinpFd.DeactivateInputField();
-			consoleinpFd.enabled = false;
-			consolebg.enabled = false;
-			consoleentryText.text = null;
-			consoleentryText.enabled = false;
+			ConsoleDisable();
 			PauseScript.a.PauseDisable();
 		} else {
-			consoleActivated = true;
-			consoleplaceholderText.SetActive(true);
-			consoleTitle.SetActive(true);
-			consoleinpFd.enabled = true;
-			consoleinpFd.ActivateInputField();
-			consolebg.enabled = true;
-			consoleentryText.enabled = true;
+			ConsoleEnable();
 			PauseScript.a.PauseEnable();
 		}
     }
@@ -921,6 +948,22 @@ public class PlayerMovement : MonoBehaviour {
 				Const.sprint("god mode activated!", Const.a.allPlayers);
 				GetComponent<HealthManager>().god = true;
 			}
+        } else if (consoleinpFd.text == "load0" || consoleinpFd.text == "LOAD0" || consoleinpFd.text == "Load0") {
+			LevelManager.a.LoadLevel(0,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+        } else if (consoleinpFd.text == "load1" || consoleinpFd.text == "LOAD1" || consoleinpFd.text == "Load1") {
+			LevelManager.a.LoadLevel(1,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+        } else if (consoleinpFd.text == "load2" || consoleinpFd.text == "LOAD2" || consoleinpFd.text == "Load2") {
+			LevelManager.a.LoadLevel(2,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+        } else if (consoleinpFd.text == "load3" || consoleinpFd.text == "LOAD3" || consoleinpFd.text == "Load3") {
+			LevelManager.a.LoadLevel(3,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+        } else if (consoleinpFd.text == "load4" || consoleinpFd.text == "LOAD4" || consoleinpFd.text == "Load4") {
+			LevelManager.a.LoadLevel(4,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+        } else if (consoleinpFd.text == "load5" || consoleinpFd.text == "LOAD5" || consoleinpFd.text == "Load5") {
+			LevelManager.a.LoadLevel(5,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+        } else if (consoleinpFd.text == "load6" || consoleinpFd.text == "LOAD6" || consoleinpFd.text == "Load6") {
+			LevelManager.a.LoadLevel(6,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+        } else if (consoleinpFd.text == "load7" || consoleinpFd.text == "LOAD7" || consoleinpFd.text == "Load7") {
+			LevelManager.a.LoadLevel(7,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
         } else if (consoleinpFd.text == "bottomlessclip" || consoleinpFd.text == "BOTTOMLESSCLIP"  || consoleinpFd.text == "Bottomlessclip" || consoleinpFd.text == "bOTTOMLESSCLIP" || consoleinpFd.text == "bottomless clip" || consoleinpFd.text == "BOTTOMLESS CLIP") {
 			if (wepCur.bottomless) {
 				Const.sprint("Hose disconnected, normal ammo operation restored", Const.a.allPlayers);

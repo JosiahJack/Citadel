@@ -10,6 +10,7 @@ public class WeaponButton : MonoBehaviour {
 	//public MFDManager mfdManager;
 	public GameObject ammoiconman;
 	public GameObject weptextman;
+	public WeaponButtonsManager wbm;
 	public AudioSource SFX = null; // assign in the editor
 	public AudioClip SFXClip = null; // assign in the editor
 	private int invslot;
@@ -21,9 +22,9 @@ public class WeaponButton : MonoBehaviour {
 
         SFX.PlayOneShot(SFXClip);
 		//if (iconman.activeInHierarchy) iconman.GetComponent<WeaponIconManager>().SetWepIcon(useableItemIndex);    //Set weapon icon for MFD
-		iconman.GetComponent<WeaponIconManager>().SetWepIcon(useableItemIndex);    //Set weapon icon for MFD
-		if (weptextman.activeInHierarchy) weptextman.GetComponent<WeaponTextManager>().SetWepText(useableItemIndex); //Set weapon text for MFD
-		MFDManager.a.SendInfoToItemTab(useableItemIndex);
+		if (useableItemIndex != -1) iconman.GetComponent<WeaponIconManager>().SetWepIcon(useableItemIndex);    //Set weapon icon for MFD
+		if (weptextman.activeInHierarchy && useableItemIndex != -1) weptextman.GetComponent<WeaponTextManager>().SetWepText(useableItemIndex); //Set weapon text for MFD
+		if (useableItemIndex != -1) MFDManager.a.SendInfoToItemTab(useableItemIndex);
 		WeaponCurrent.WepInstance.weaponCurrent = WepButtonIndex;				//Set current weapon
 		WeaponCurrent.WepInstance.weaponIndex = useableItemIndex;				//Set current weapon
 		WeaponCurrent.WepInstance.UpdateHUDAmmoCountsEither();

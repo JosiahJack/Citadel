@@ -10,6 +10,17 @@ public class MultiMediaTabManager : MonoBehaviour {
 	public GameObject emailTab;
 	public GameObject dataTab;
 	public GameObject headerLabel;
+	[HideInInspector]
+	public int lastOpened = 1; // default to logs.  0 = email table, 1 = log table, 2 = data table
+
+	public void OpenLastTab() {
+		Debug.Log("Last opened tab index: " + lastOpened.ToString());
+		switch (lastOpened) {
+			case 0: OpenEmailTableContents(); break;
+			case 1: OpenLogTableContents(); break;
+			case 2: OpenDataTableContents(); break;
+		}
+	}
 
 	public void ResetTabs() {
 		startingSubTab.SetActive(false);
@@ -24,6 +35,7 @@ public class MultiMediaTabManager : MonoBehaviour {
 		ResetTabs();
 		startingSubTab.SetActive(true);
 		headerLabel.GetComponent<Text>().text = "LOGS";
+		lastOpened = 1;
 	}
 
 	public void OpenLogsLevelFolder(int curlevel) {
@@ -43,11 +55,13 @@ public class MultiMediaTabManager : MonoBehaviour {
 		ResetTabs();
 		emailTab.SetActive(true);
 		headerLabel.GetComponent<Text>().text = "EMAIL";
+		lastOpened = 0;
 	}
 
 	public void OpenDataTableContents() {
 		ResetTabs();
 		dataTab.SetActive(true);
 		headerLabel.GetComponent<Text>().text = "DATA";
+		lastOpened = 2;
 	}
 }

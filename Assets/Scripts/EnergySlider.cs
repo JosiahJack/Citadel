@@ -9,16 +9,16 @@ public class EnergySlider : MonoBehaviour {
 
     Slider slideS;
     private int index;
-    private float ener_min;
-    private float ener_max;
-    private float val;
+    //private float ener_min;
+    //private float ener_max;
+    //private float val;
 
 	void Awake () {
         slideS = GetComponent<Slider>();
         index = -1;
-        ener_min = 2f;
-        ener_max = 130f;
-        val = 0;
+        //ener_min = 2f;
+        //ener_max = 130f;
+        //val = 0;
 	}
 
 	void OnEnable () {
@@ -26,13 +26,21 @@ public class EnergySlider : MonoBehaviour {
 		slideS.value = currentWeapon.weaponEnergySetting[index];
 	}
 
+	void OnInitializePotentialDrag () {
+		NotifyWeaponFireSliderClicked();
+	}
+
+	void OnDrag () {
+		//NotifyWeaponFireSliderClicked();
+	}
+
     public void SetValue() {
         index = WeaponFire.Get16WeaponIndexFromConstIndex(currentWeapon.weaponIndex);
-        ener_min = Const.a.energyDrainLowForWeapon[index];
-        ener_max = Const.a.energyDrainHiForWeapon[index];
-        val = slideS.value / 100f;
-        val = (val*(ener_max - ener_min)) + ener_min;
-        currentWeapon.weaponEnergySetting[index] = val;
+        //ener_min = Const.a.energyDrainLowForWeapon[index];
+        //ener_max = Const.a.energyDrainHiForWeapon[index];
+        //val = slideS.value / 100f;
+        //val = (val*(ener_max - ener_min)) + ener_min;
+        currentWeapon.weaponEnergySetting[index] = slideS.value;
 		NotifyWeaponFireSliderClicked();
     }
 

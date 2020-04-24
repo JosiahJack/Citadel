@@ -11,10 +11,11 @@ public class ForceBridge : MonoBehaviour, IBatchUpdate {
 	private float activatedScaleZ;
 	private MeshRenderer mr;
 	private BoxCollider bCol;
-	public bool activated;
+	public bool activated; // save
 	public AudioClip SFXBridgeChange;
 	private AudioSource SFX;
-	private bool lerping;
+	[HideInInspector]
+	public bool lerping; // save
 	private float tickFinished;
 	public float tickTime = 0.05f;
 

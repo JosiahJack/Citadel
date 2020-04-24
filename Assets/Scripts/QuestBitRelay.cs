@@ -47,6 +47,7 @@ public class QuestBitRelay : MonoBehaviour {
 		if (GroveDeltaJettisonEnabled) Const.a.questData.GroveDeltaJettisonEnabled = true;
 		if (MasterJettisonBroken) Const.a.questData.MasterJettisonBroken = true;
 		if (Relay428Fixed) Const.a.questData.Relay428Fixed = true;
+		if (MasterJettisonEnabled) Const.a.questData.MasterJettisonEnabled = true;
 		if (BetaGroveJettisoned) Const.a.questData.BetaGroveJettisoned = true;
 		if (AntennaNorthDestroyed) Const.a.questData.AntennaNorthDestroyed = true;
 		if (AntennaSouthDestroyed) Const.a.questData.AntennaSouthDestroyed = true;
@@ -71,6 +72,7 @@ public class QuestBitRelay : MonoBehaviour {
 		if (GroveDeltaJettisonEnabled) Const.a.questData.GroveDeltaJettisonEnabled = false;
 		if (MasterJettisonBroken) Const.a.questData.MasterJettisonBroken = false;
 		if (Relay428Fixed) Const.a.questData.Relay428Fixed = false;
+		if (MasterJettisonEnabled) Const.a.questData.MasterJettisonEnabled = false;
 		if (BetaGroveJettisoned) Const.a.questData.BetaGroveJettisoned = false;
 		if (AntennaNorthDestroyed) Const.a.questData.AntennaNorthDestroyed = false;
 		if (AntennaSouthDestroyed) Const.a.questData.AntennaSouthDestroyed = false;
@@ -94,6 +96,7 @@ public class QuestBitRelay : MonoBehaviour {
 		if (GroveDeltaJettisonEnabled) Const.a.questData.GroveDeltaJettisonEnabled = !Const.a.questData.GroveDeltaJettisonEnabled;
 		if (MasterJettisonBroken) Const.a.questData.MasterJettisonBroken = !Const.a.questData.MasterJettisonBroken;
 		if (Relay428Fixed) Const.a.questData.Relay428Fixed = !Const.a.questData.Relay428Fixed;
+		if (MasterJettisonEnabled) Const.a.questData.MasterJettisonEnabled = !Const.a.questData.MasterJettisonEnabled;
 		if (BetaGroveJettisoned) Const.a.questData.BetaGroveJettisoned = !Const.a.questData.BetaGroveJettisoned;
 		if (AntennaNorthDestroyed) Const.a.questData.AntennaNorthDestroyed = !Const.a.questData.AntennaNorthDestroyed;
 		if (AntennaSouthDestroyed) Const.a.questData.AntennaSouthDestroyed = !Const.a.questData.AntennaSouthDestroyed;
@@ -118,6 +121,7 @@ public class QuestBitRelay : MonoBehaviour {
 		if (GroveDeltaJettisonEnabled && (!string.IsNullOrWhiteSpace(target) || !string.IsNullOrWhiteSpace(targetIfFalse))) Const.a.questData.TargetOnGatePassed(Const.a.questData.GroveDeltaJettisonEnabled, testIfTrue, ud, tio, target, argvalue, targetIfFalse, argvalueIfFalse);
 		if (MasterJettisonBroken && (!string.IsNullOrWhiteSpace(target) || !string.IsNullOrWhiteSpace(targetIfFalse))) Const.a.questData.TargetOnGatePassed(Const.a.questData.MasterJettisonBroken, testIfTrue, ud, tio, target, argvalue, targetIfFalse, argvalueIfFalse);
 		if (Relay428Fixed && (!string.IsNullOrWhiteSpace(target) || !string.IsNullOrWhiteSpace(targetIfFalse))) Const.a.questData.TargetOnGatePassed(Const.a.questData.Relay428Fixed, testIfTrue, ud, tio, target, argvalue, targetIfFalse, argvalueIfFalse);
+		if (MasterJettisonEnabled && (!string.IsNullOrWhiteSpace(target) || !string.IsNullOrWhiteSpace(targetIfFalse))) Const.a.questData.TargetOnGatePassed(Const.a.questData.MasterJettisonEnabled, testIfTrue, ud, tio, target, argvalue, targetIfFalse, argvalueIfFalse);
 		if (BetaGroveJettisoned && (!string.IsNullOrWhiteSpace(target) || !string.IsNullOrWhiteSpace(targetIfFalse))) Const.a.questData.TargetOnGatePassed(Const.a.questData.BetaGroveJettisoned, testIfTrue, ud, tio, target, argvalue, targetIfFalse, argvalueIfFalse);
 		if (AntennaNorthDestroyed && (!string.IsNullOrWhiteSpace(target) || !string.IsNullOrWhiteSpace(targetIfFalse))) Const.a.questData.TargetOnGatePassed(Const.a.questData.AntennaNorthDestroyed, testIfTrue, ud, tio, target, argvalue, targetIfFalse, argvalueIfFalse);
 		if (AntennaSouthDestroyed && (!string.IsNullOrWhiteSpace(target) || !string.IsNullOrWhiteSpace(targetIfFalse))) Const.a.questData.TargetOnGatePassed(Const.a.questData.AntennaSouthDestroyed, testIfTrue, ud, tio, target, argvalue, targetIfFalse, argvalueIfFalse);

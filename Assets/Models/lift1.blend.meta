@@ -50,14 +50,14 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: _0lift1
-    second: {fileID: 2100000, guid: 837c4d22fbca3b14c87f4b73a4d226a1, type: 2}
+    second: {fileID: 2100000, guid: 81aa88e03ebdf4a45a1cd1266717814a, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: _0lift1___0lift1_bmp
-    second: {fileID: 2100000, guid: 837c4d22fbca3b14c87f4b73a4d226a1, type: 2}
+    second: {fileID: 2100000, guid: 81aa88e03ebdf4a45a1cd1266717814a, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0

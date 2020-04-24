@@ -30,6 +30,11 @@ public class ProjectileEffectImpact : MonoBehaviour {
                 HealthManager hm = other.contacts[0].otherCollider.gameObject.GetComponent<HealthManager>();
                 if (hm != null)
                     hm.TakeDamage(dd);
+
+				if (dd.attackType == Const.AttackType.Tranq) {
+					AIController aic = other.contacts[0].otherCollider.gameObject.GetComponent<AIController>();
+					if (aic !=null) aic.Tranquilize();
+				}
                 gameObject.SetActive(false); // disable the projectile
             }// else {
                // Vector3 dir = other.contacts[0].normal;

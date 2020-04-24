@@ -6,6 +6,7 @@ public class ExplosionLife : MonoBehaviour {
 	public float brightness = 8f;
 	public float delayBeforeDestroy = 0.8f;
 	public float thinkInterval = 0.05f;
+	public bool dontDestroy = false;
 	private Light lite;
 
 	void Awake () {
@@ -27,6 +28,10 @@ public class ExplosionLife : MonoBehaviour {
 
 	IEnumerator DelayedDestroy () {
 		yield return new WaitForSeconds (delayBeforeDestroy);
-		Destroy(this.gameObject);
+		if (dontDestroy) {
+			gameObject.SetActive(false);
+		} else {
+			Destroy(this.gameObject);
+		}
 	}
 }

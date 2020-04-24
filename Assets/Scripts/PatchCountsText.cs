@@ -11,7 +11,6 @@ public class PatchCountsText : MonoBehaviour {
 		text = GetComponent<Text>();
 	}
 
-	/*
 	void Update () {
 		text.text = PatchInventory.PatchInvInstance.patchCounts[countsSlotnum].ToString();
 		if (countsSlotnum == PatchCurrent.PatchInstance.patchCurrent) {
@@ -20,5 +19,4 @@ public class PatchCountsText : MonoBehaviour {
 			text.color = Const.a.ssGreenText; // Green
 		}
 	}
-	*/
 }

@@ -25,10 +25,11 @@ public class WeaponFire : MonoBehaviour {
 	public GameObject noDamageIndicator;
     public WeaponMagazineCounter wepmagCounter;
     public Camera playerCamera; // assign in the editor
-	private MouseLookScript mls;
+	public MouseLookScript mls;
 	public PlayerMovement playerMovement; // assign in editor
     public Camera gunCamera; // assign in the editor
     public PlayerEnergy curEnergy;
+    public PlayerHealth pH;
     public GameObject playerCapsule;
     public WeaponCurrent currentWeapon; // assign in the editor
     public EnergyOverloadButton energoverButton;
@@ -102,6 +103,7 @@ public class WeaponFire : MonoBehaviour {
 	public GameObject muzFlashSkorpion;
 	public GameObject muzFlashSparq;
 	public GameObject muzFlashStungun;
+	public float[] driftForWeapon;
 
 	// Recoil the weapon view models
 	public GameObject wepView;
@@ -110,6 +112,7 @@ public class WeaponFire : MonoBehaviour {
 	[HideInInspector]
 	public float justFired;
 	public float energySliderClickedTime;
+	private Rigidbody playercapRbody;
 
     void Awake() {
         damageData = new DamageData();
@@ -119,7 +122,7 @@ public class WeaponFire : MonoBehaviour {
 		wepViewDefaultLocalPos = wepView.transform.localPosition;
 		justFired = (Time.time - 31f); // set less than 30s before Time.time to guarantee we don't immediately play action music
 		energySliderClickedTime = Time.time;
-		mls = playerCamera.GetComponent<MouseLookScript>();
+		playercapRbody = playerCapsule.GetComponent<Rigidbody>();
     }
 
     void GetWeaponData(int index) {
@@ -272,7 +275,15 @@ public class WeaponFire : MonoBehaviour {
 				wepView.transform.localPosition = new Vector3(x,wepView.transform.localPosition.y,z);
 			}
 
-            if (!GUIState.a.isBlocking && !playerCamera.GetComponent<MouseLookScript>().holdingObject) {
+			if (GetInput.a.Attack(true)) {
+				if (mls.vmailActive) {
+					mls.logInventory.DeactivateVMail();
+					mls.vmailActive = false;
+					return;
+				}
+			}
+
+            if (!GUIState.a.isBlocking && !mls.holdingObject) {
                 if (i == -1) return;
 
                 GetWeaponData(i);
@@ -295,7 +306,7 @@ public class WeaponFire : MonoBehaviour {
 									FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
 								}
 							} else {
-									Const.sprint(Const.a.stringTable[207],Const.a.allPlayers);
+									Const.sprint(Const.a.stringTable[207],Const.a.allPlayers); // Not enough energy to fire weapon.
 							}
                         } else {
                             // Uses normal ammo, check versus alternate or normal to see if we have ammo then fire
@@ -319,8 +330,50 @@ public class WeaponFire : MonoBehaviour {
                 }
 
                 if (GetInput.a.Reload() && currentWeapon.reloadFinished < Time.time) {
-                    WeaponCurrent.WepInstance.Reload();
+					if (Const.a.InputQuickReloadWeapons) {
+						// Press reload once, to do both unload then reload
+						WeaponCurrent.WepInstance.Reload();
+					} else {
+						// First press reload to unload, then press again to load
+						int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (WeaponCurrent.WepInstance.weaponIndex);
+						if (currentWeapon.weaponIsAlternateAmmo) {
+							if (WeaponAmmo.a.wepAmmoSecondary[wep16index] <= 0) {
+								WeaponCurrent.WepInstance.Reload();
+							} else {
+								WeaponCurrent.WepInstance.Unload(false);
+							}
+						} else {
+							if (WeaponAmmo.a.wepAmmo[wep16index] <= 0) {
+								WeaponCurrent.WepInstance.Reload();
+							} else {
+								WeaponCurrent.WepInstance.Unload(false);
+							}
+						}
+					}
                 }
+
+				if (GetInput.a.ChangeAmmoType() && currentWeapon.reloadFinished < Time.time) {
+					if (Const.a.InputQuickReloadWeapons) {
+						// Press change ammo type button once, to do both unload then reload
+						WeaponCurrent.WepInstance.ChangeAmmoType();
+					} else {
+						// First press change ammo type button to unload, then press again to load
+						int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (WeaponCurrent.WepInstance.weaponIndex);
+						if (currentWeapon.weaponIsAlternateAmmo) {
+							if (WeaponAmmo.a.wepAmmoSecondary[wep16index] <= 0) {
+								WeaponCurrent.WepInstance.ChangeAmmoType();
+							} else {
+								WeaponCurrent.WepInstance.Unload(false);
+							}
+						} else {
+							if (WeaponAmmo.a.wepAmmo[wep16index] <= 0) {
+								WeaponCurrent.WepInstance.ChangeAmmoType();
+							} else {
+								WeaponCurrent.WepInstance.Unload(false);
+							}
+						}
+					}
+				}
             }
         }
     }
@@ -328,31 +381,25 @@ public class WeaponFire : MonoBehaviour {
     // index is used to get recoil down at the bottom and pass along ref for damageData,
     // otherwise the cases use currentWeapon.weaponIndex
     void FireWeapon(int index, bool isSilent) {
-        damageData.ResetDamageData(damageData);
+        //damageData.ResetDamageData(damageData);
 		if (currentWeapon.weaponIndex != 41 && currentWeapon.weaponIndex != 42) {
-			for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
-				if (Const.a.healthObjectsRegistration[ij] != null) {
-					if (Const.a.healthObjectsRegistration[ij].isNPC) {
-						if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,playerCapsule.transform.position) < Const.a.healthObjectsRegistration[ij].aic.rangeToHear) {
-							Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(playerCapsule);
-						}
-					}
-				}
-			}
+			pH.makingNoise = true;
+			pH.noiseFinished = Time.time + 0.5f;
 		}
 
         switch (currentWeapon.weaponIndex) {
             case 36:
                 //Mark3 Assault Rifle
                 if (!isSilent) { SFX.clip = SFXMark3Fire; SFX.Play(); }
-                if (DidRayHit()) HitScanFire(index);
+                if (DidRayHit(index)) HitScanFire(index);
 				muzFlashMK3.SetActive(true);
                 break;
             case 37:
                 //ER-90 Blaster
 				blasterSetting = currentWeapon.weaponEnergySetting[1];
+				Debug.Log("Blaster fired with energy setting of " + blasterSetting.ToString());
 				if (!isSilent) { SFX.clip = SFXBlasterFire; SFX.Play(); }
-				if (DidRayHit()) HitScanFire(index);
+				if (DidRayHit(index)) HitScanFire(index);
 				muzFlashBlaster.SetActive(true);
                 if (overloadEnabled) {
                     blasterHeat = 100f;
@@ -364,20 +411,21 @@ public class WeaponFire : MonoBehaviour {
             case 38:
                 //SV-23 Dartgun
                 if (!isSilent) { SFX.clip = SFXDartFire; SFX.Play(); }
-                if (DidRayHit()) HitScanFire(index);
+                if (DidRayHit(index)) HitScanFire(index);
 				muzFlashDartgun.SetActive(true);
                 break;
             case 39:
                 //AM-27 Flechette
                 if (!isSilent) { SFX.clip = SFXFlechetteFire; SFX.Play(); }
-                if (DidRayHit()) HitScanFire(index);
+                if (DidRayHit(index)) HitScanFire(index);
 				muzFlashFlechette.SetActive(true);
                 break;
             case 40:
                 //RW-45 Ion Beam
 				ionSetting = currentWeapon.weaponEnergySetting[4];
+				Debug.Log("Ion rifle fired with energy setting of " + ionSetting.ToString());
                 if (!isSilent) { SFX.clip = SFXIonFire; SFX.Play(); }
-                if (DidRayHit()) HitScanFire(index);
+                if (DidRayHit(index)) HitScanFire(index);
 				muzFlashIonBeam.SetActive(true);
                 if (overloadEnabled) {
                     ionHeat = 100f;
@@ -397,7 +445,7 @@ public class WeaponFire : MonoBehaviour {
             case 43:
                 //Magnum 2100
                 if (!isSilent) { SFX.clip = SFXMagnumFire; SFX.Play(); }
-                if (DidRayHit()) HitScanFire(index);
+                if (DidRayHit(index)) HitScanFire(index);
 				muzFlashMagnum.SetActive(true);
                 break;
             case 44:
@@ -409,12 +457,13 @@ public class WeaponFire : MonoBehaviour {
             case 45:
                 //ML-41 Pistol
                 if (!isSilent) { SFX.clip = SFXPistolFire; SFX.Play(); }
-                if (DidRayHit()) HitScanFire(index);
+                if (DidRayHit(index)) HitScanFire(index);
 				muzFlashPistol.SetActive(true);
                 break;
             case 46:
                 //LG-XX Plasma Rifle
 				plasmaSetting = currentWeapon.weaponEnergySetting[10];
+				Debug.Log("Plasma rifle fired with energy setting of " + plasmaSetting.ToString());
                 if (!isSilent) { SFX.clip = SFXPlasmaFire; SFX.Play(); }
                 FirePlasma(index);
 				muzFlashPlasma.SetActive(true);
@@ -430,20 +479,21 @@ public class WeaponFire : MonoBehaviour {
             case 48:
                 //DC-05 Riotgun
                 if (!isSilent) { SFX.clip = SFXRiotgunFire; SFX.Play(); }
-                if (DidRayHit()) HitScanFire(index);
+                if (DidRayHit(index)) HitScanFire(index);
 				muzFlashRiotgun.SetActive(true);
                 break;
             case 49:
                 //RF-07 Skorpion
                 if (!isSilent) { SFX.clip = SFXSkorpionFire; SFX.Play(); }
-                if (DidRayHit()) HitScanFire(index);
+                if (DidRayHit(index)) HitScanFire(index);
 				muzFlashSkorpion.SetActive(true);
                 break;
             case 50:
                 //Sparq Beam
 				sparqSetting = currentWeapon.weaponEnergySetting[14];
+				Debug.Log("Sparq beam fired with energy setting of " + sparqSetting.ToString());
                 if (!isSilent) { SFX.clip = SFXSparqBeamFire; SFX.Play(); }
-                if (DidRayHit()) HitScanFire(index);
+                if (DidRayHit(index)) HitScanFire(index);
 				muzFlashSparq.SetActive(true);
                 if (overloadEnabled) {
                     sparqHeat = 100f;
@@ -455,6 +505,7 @@ public class WeaponFire : MonoBehaviour {
             case 51:
                 //DH-07 Stungun
 				stungunSetting = currentWeapon.weaponEnergySetting[15];
+				Debug.Log("Stungun fired with energy setting of " + stungunSetting.ToString());
                 if (!isSilent) { SFX.clip = SFXStungunFire; SFX.Play(); }
                 FireStungun(index);
 				muzFlashStungun.SetActive(true);
@@ -476,7 +527,7 @@ public class WeaponFire : MonoBehaviour {
                     energoverButton.OverloadFired();
                     if (!currentWeapon.bottomless && !currentWeapon.redbull) curEnergy.TakeEnergy(Const.a.energyDrainOverloadForWeapon[index]); //take large amount
                 } else {
-                    float takeEnerg = 256*(currentWeapon.weaponEnergySetting[index] / 100f) * (Const.a.energyDrainHiForWeapon[index] - Const.a.energyDrainLowForWeapon[index]);
+                    float takeEnerg = (currentWeapon.weaponEnergySetting[index] / 100f) * (Const.a.energyDrainHiForWeapon[index] - Const.a.energyDrainLowForWeapon[index]);
                     if (!currentWeapon.bottomless && !currentWeapon.redbull) curEnergy.TakeEnergy(takeEnerg);
                 }
             } else {
@@ -502,14 +553,17 @@ public class WeaponFire : MonoBehaviour {
         }
     }
 
-    bool DidRayHit() {
+    bool DidRayHit(int wep16Index) {
         tempHit = new RaycastHit();
         tempVec = new Vector3(MouseCursor.drawTexture.x + (MouseCursor.drawTexture.width / 2), MouseCursor.drawTexture.y + (MouseCursor.drawTexture.height / 2) + verticalOffset, 0);
         tempVec.y = Screen.height - tempVec.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
-        int layMask = LayerMask.GetMask("Default","Water","Geometry","NPC","Corpse","Door","InterDebris"); //UPDATE: Can't shoot players, but we can't shoot the back of our eyeballs now
+		tempVec.x += UnityEngine.Random.Range(-driftForWeapon[wep16Index],driftForWeapon[wep16Index]);
+		tempVec.y += UnityEngine.Random.Range(-driftForWeapon[wep16Index],driftForWeapon[wep16Index]);
+        int layMask = LayerMask.GetMask("Default","Geometry","NPC","Bullets","Corpse","Door","InterDebris","PhysObjects","Player2","Player3","Player4"); //UPDATE: Can't shoot players, but we can't shoot the back of our eyeballs now
         if (Physics.Raycast(playerCamera.ScreenPointToRay(tempVec), out tempHit, fireDistance,layMask)) {
             tempHM = tempHit.transform.gameObject.GetComponent<HealthManager>();
-            if (tempHit.transform.gameObject.GetComponent<HealthManager>() != null) {
+			
+            if (tempHM != null) {
                 useBlood = true;
             }
             return true;
@@ -525,6 +579,9 @@ public class WeaponFire : MonoBehaviour {
             case HealthManager.BloodType.Yellow: return Const.a.GetObjectFromPool(Const.PoolType.BloodSpurtSmallYellow);
             case HealthManager.BloodType.Green: return Const.a.GetObjectFromPool(Const.PoolType.BloodSpurtSmallGreen);
             case HealthManager.BloodType.Robot: return Const.a.GetObjectFromPool(Const.PoolType.SparksSmallBlue);
+			case HealthManager.BloodType.Leaf: return Const.a.GetObjectFromPool(Const.PoolType.LeafBurst);
+			case HealthManager.BloodType.Mutation: return Const.a.GetObjectFromPool(Const.PoolType.MutationBurst);
+			case HealthManager.BloodType.GrayMutation: return Const.a.GetObjectFromPool(Const.PoolType.GraytationBurst);
         }
 
         return Const.a.GetObjectFromPool(Const.PoolType.SparksSmall);
@@ -532,12 +589,13 @@ public class WeaponFire : MonoBehaviour {
 
 	void CreateStandardImpactMarks(int wep16index) {
 		// Don't create bullet holes on objects that move
+		if (tempHit.transform.gameObject == null) return;
 		if (tempHit.transform.GetComponent<Rigidbody>() != null) return;
 		if (tempHit.transform.GetComponent<HealthManager>() != null) return; // don't create bullet holes on objects that die
 		if (tempHit.transform.GetComponent<Animator>() != null) return; // don't create bullet holes on objects that animate
 		if (tempHit.transform.GetComponent<Animation>() != null) return; // don't create bullet holes on objects that animate
 		if (tempHit.transform.GetComponent<Door>() != null) return; // don't create bullet holes on doors, makes them ghost and flicker through walls
-
+		//Debug.Log("Generating standard impact marks");
 		// Add bullethole
 		tempVec = tempHit.normal * 0.16f;
 		GameObject holetype = bulletHoleSmall;
@@ -575,11 +633,19 @@ public class WeaponFire : MonoBehaviour {
 					break;
 		}
 
-		GameObject impactMark = (GameObject) Instantiate(holetype, (tempHit.point + tempVec),  Quaternion.LookRotation(tempHit.normal*-1,Vector3.up), tempHit.transform.gameObject.transform);
-		int rint = Random.Range(0,3);
-		Quaternion roll = impactMark.transform.localRotation;
-		roll *= Quaternion.Euler(0f,0f,rint * 90f);
-		impactMark.transform.localRotation = roll;
+		if (holetype != null) {
+			GameObject impactMark = (GameObject) Instantiate(holetype, (tempHit.point + tempVec),  Quaternion.LookRotation(tempHit.normal*-1,Vector3.up), tempHit.transform.gameObject.transform);
+			if (impactMark == null) {
+				Debug.Log("BUG: Couldn't instantiate holetype for CreateStandardImpactMarks");
+				return;
+			}
+			int rint = Random.Range(0,3);
+			Quaternion roll = impactMark.transform.localRotation;
+			roll *= Quaternion.Euler(0f,0f,rint * 90f);
+			impactMark.transform.localRotation = roll;
+			GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
+			if (dynamicObjectsContainer != null) impactMark.transform.parent = dynamicObjectsContainer.transform;
+		}
 	}
 
     void CreateStandardImpactEffects(bool onlyBloodIfHitHasHM) {
@@ -672,27 +738,34 @@ public class WeaponFire : MonoBehaviour {
     //----------------------------------------------------------------------------------------------------------
     // Guns and laser beams, used by most weapons
     void HitScanFire(int wep16Index) {
-		damageData.ResetDamageData(damageData);
+		//damageData.ResetDamageData(damageData);
         if (wep16Index == 1 || wep16Index == 4 || wep16Index == 14) {
             CreateBeamImpactEffects(wep16Index); // laser burst effect overrides standard blood spurts/robot sparks
-            damageData.attackType = Const.AttackType.EnergyBeam;
+            //damageData.attackType = Const.AttackType.EnergyBeam;
         } else {
             CreateStandardImpactEffects(false); // standard blood spurts/robot sparks
-			switch (wep16Index) {
-				case 2: damageData.attackType = Const.AttackType.ProjectileNeedle; break;
-				case 3: damageData.attackType = Const.AttackType.ProjectileNeedle; break;
-				case 8: damageData.attackType = Const.AttackType.Magnetic; break;
-				default: damageData.attackType = Const.AttackType.Projectile; break; // pew pew pew
-			}
+			//switch (wep16Index) {
+			//	case 2: damageData.attackType = Const.AttackType.ProjectileNeedle; break;
+			//	case 3: damageData.attackType = Const.AttackType.ProjectileNeedle; break;
+			//	case 8: damageData.attackType = Const.AttackType.Magnetic; break;
+			//	default: damageData.attackType = Const.AttackType.Projectile; break; // pew pew pew
+			//}
+
+			// the only exception
 			if (wep16Index == 2 && currentWeapon.weaponIsAlternateAmmo) damageData.attackType = Const.AttackType.Tranq; // tranquilize the untranquil....yes
         }
         // Fill the damageData container
         damageData.other = tempHit.transform.gameObject;
         if (tempHit.transform.gameObject.tag == "NPC") {
             damageData.isOtherNPC = true;
+			if (damageData.attackType == Const.AttackType.Tranq) {
+				AIController taic = tempHit.transform.gameObject.GetComponent<AIController>();
+				if (taic !=null) taic.Tranquilize();
+			}
         } else {
             damageData.isOtherNPC = false;
-			CreateStandardImpactMarks(wep16Index);
+			if (tempHit.transform.gameObject.tag == "Geometry")
+				CreateStandardImpactMarks(wep16Index);
         }
         damageData.hit = tempHit;
         damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
@@ -712,7 +785,13 @@ public class WeaponFire : MonoBehaviour {
         damageData.damage = Const.a.GetDamageTakeAmount(damageData);
 		damageData.attackType = Const.a.attackTypeForWeapon[wep16Index];
         damageData.owner = playerCapsule;
-        HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
+		HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
+		if (wep16Index == 12) {
+			damageData.impactVelocity = 150f;
+			if (hm != null) {
+				if (hm.isObject) damageData.damage *= 10f; // babamm boxes be like, u ded
+			}
+		}
         if (hm != null && hm.health > 0) {
 			float dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
 			if (dmgFinal <= 0) {
@@ -736,12 +815,13 @@ public class WeaponFire : MonoBehaviour {
     // Rapier and pipe.  Need extra code to handle anims for view model and sound for swing-and-a-miss! vs. hit
 	//void ApplyMeleeHit(int index16, GameObject targ, RaycastHit tHit, int numTargets, bool isRapier,bool silent) {
 	void ApplyMeleeHit(int index16, GameObject targ, int numTargets,bool isRapier, bool silent,AudioClip hit, AudioClip miss,AudioClip hitflesh) {
+		if (targ.layer == gameObject.layer) return;
 		damageData.other = targ;
 		if (targ.tag == "NPC") {
 			damageData.isOtherNPC = true;
 		} else {
 			damageData.isOtherNPC = false;
-			CreateStandardImpactMarks(index16);
+			//CreateStandardImpactMarks(index16);
 		}
 		//damageData.hit = tHit;
 		damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
@@ -779,74 +859,78 @@ public class WeaponFire : MonoBehaviour {
     void FirePipe(int index16, bool silent) { FireMelee(index16, false, silent, SFXPipeHit, SFXPipeMiss, SFXPipeHitFlesh, false); }
 
 	void FireMelee(int index16, bool isRapier, bool silent, AudioClip hit, AudioClip miss,AudioClip hitflesh, bool rapier) {
-		bool foundSomeHMs = false;
-		bool swunghit = false;
+		bool foundTarg = false;
 		int numtargets = 0;
-		// check all objects we can hurt have HealthManager, that they are in meleescanDistance range, that they are within player facing angle by 60° (±30°)
-		for (int i=0;i<Const.a.healthObjectsRegistration.Length;i++) {
-			if (Const.a.healthObjectsRegistration[i] != null) {
-				HealthManager hm = Const.a.healthObjectsRegistration[i].gameObject.GetComponent<HealthManager>();
-				GameObject ho = Const.a.healthObjectsRegistration[i].gameObject;
-				if (hm != null && Vector3.Distance(ho.transform.position,playerCapsule.transform.position) < meleescanDistance) {
-					mls.SetCameraFocusPoint();
-					tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
-					tempVec = tempVec.normalized;
-					Vector3 ang = playerCamera.transform.position - ho.transform.position;
-					ang = ang.normalized;
-					float dot = Vector3.Dot(tempVec,ang);
-					if (dot > 0.666f) {
-						anim.Play("Attack2");
-						if (!silent) {
-							SFX.clip = hit;
-							SFX.Play();
-						}
 
-						CreateStandardImpactEffects(true);
-						numtargets++;
-						if (numtargets <= 0) numtargets = 1; //don't divide by 0
-						ApplyMeleeHit(index16,ho,numtargets,isRapier,silent,hit,miss,hitflesh);
-						swunghit = true;
-						foundSomeHMs = true;
-						
-					}
-				}
+		// do normal straightline raytrace at center first
+		fireDistance = meleescanDistance;
+		if (DidRayHit(index16)) {
+			fireDistance = hitscanDistance; // reset before any returns
+			if (rapier) {
+				rapieranim.Play("Attack2");
+			} else {
+				anim.Play("Attack2");
 			}
-			i++;
+			if (!silent) {
+				SFX.clip = hit;
+				if (SFX != null && SFX.clip != null) SFX.Play();
+			}
+
+			CreateStandardImpactEffects(true);
+			pH.makingNoise = true;
+			pH.noiseFinished = Time.time + 0.5f;
+			foundTarg = true;
+
+			if (numtargets <= 0) numtargets = 1; //don't divide by 0
+			ApplyMeleeHit(index16,tempHit.transform.gameObject,numtargets,isRapier,silent,hit,miss,hitflesh);
 		}
 
-		// if we didn't find any objects with HealthManagers above, let's just do normal straightline raytrace at center like old method
-		if (!foundSomeHMs) {
-			fireDistance = meleescanDistance;
-			if (DidRayHit()) {
-				fireDistance = hitscanDistance; // reset before any returns
-				if (rapier) {
-					rapieranim.Play("Attack2");
-				} else {
-					anim.Play("Attack2");
-				}
-				if (!silent) {
-					SFX.clip = hit;
-					SFX.Play();
-				}
-				CreateStandardImpactEffects(true);
-				for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
-					if (Const.a.healthObjectsRegistration[ij] != null) {
-						if (Const.a.healthObjectsRegistration[ij].isNPC) {
-							if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,playerCapsule.transform.position) < Const.a.healthObjectsRegistration[ij].aic.rangeToHear) {
-								Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(playerCapsule);
+		fireDistance = hitscanDistance; //reset in case raycast failed
+
+		// check all objects we can hurt have HealthManager, that they are in meleescanDistance range, that they are within player facing angle by 60° (±30°)
+		if (!foundTarg) {		
+			for (int i=0;i<Const.a.healthObjectsRegistration.Length;i++) {
+				if (Const.a.healthObjectsRegistration[i] != null) {
+					HealthManager hm = Const.a.healthObjectsRegistration[i].gameObject.GetComponent<HealthManager>();
+					GameObject ho = Const.a.healthObjectsRegistration[i].gameObject;
+					if (hm != null && ho != null) {
+						if (Vector3.Distance(ho.transform.position,playerCapsule.transform.position) < meleescanDistance) {
+							if (mls != null) {
+								mls.SetCameraFocusPoint();
+								tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
+								tempVec = tempVec.normalized;
+								Vector3 ang = ho.transform.position - playerCamera.transform.position;
+								ang = ang.normalized;
+								float dot = Vector3.Dot(tempVec,ang);
+								if (dot > 0.666f) {
+									if (rapier) {
+										if (rapieranim != null) rapieranim.Play("Attack2");
+									} else {
+										if (anim != null) anim.Play("Attack2");
+									}
+									if (!silent) {
+										SFX.clip = hit;
+										if (SFX != null && SFX.clip != null) SFX.Play();
+									}
+									CreateStandardImpactEffects(true);
+									numtargets++;
+									if (numtargets <= 0) numtargets = 1; //don't divide by 0
+									ApplyMeleeHit(index16,ho,numtargets,isRapier,silent,hit,miss,hitflesh);
+									pH.makingNoise = true;
+									pH.noiseFinished = Time.time + 0.5f;
+									foundTarg = true;
+									break;
+								}
 							}
 						}
 					}
 				}
-				if (numtargets <= 0) numtargets = 1; //don't divide by 0
-				ApplyMeleeHit(index16,tempHit.transform.gameObject,numtargets,isRapier,silent,hit,miss,hitflesh);
-				swunghit = true; // we hit something at least
-			} else {
-				fireDistance = hitscanDistance; //reset in case raycast failed
-				
+				i++;
+			}
+			if (!foundTarg) {
 				if (!silent) {
 					SFX.clip = miss;
-					SFX.Play();
+					if (SFX != null && SFX.clip != null) SFX.Play();
 				}
 				if (rapier) {
 					rapieranim.Play("Attack2");
@@ -855,27 +939,19 @@ public class WeaponFire : MonoBehaviour {
 				}
 			}
 		}
-
-		if (swunghit) {
-			// notify other HM objects nearby of player attack
-			for (int ij=0;ij<Const.a.healthObjectsRegistration.Length;ij++) {
-				if (Const.a.healthObjectsRegistration[ij] != null) {
-					if (Const.a.healthObjectsRegistration[ij].isNPC) {
-						if (Vector3.Distance(Const.a.healthObjectsRegistration[ij].gameObject.transform.position,playerCapsule.transform.position) < Const.a.healthObjectsRegistration[ij].aic.rangeToHear) {
-							Const.a.healthObjectsRegistration[ij].NotifyEnemyNearby(playerCapsule);
-						}
-					}
-				}
-			}
-		}
 	}
 
     // Projectile weapons
     //----------------------------------------------------------------------------------------------------------
-    void FirePlasma(int index16) {
+    void FirePlasma(int index16) { FireBeachball(index16,plasmaShotForce,Const.PoolType.PlasmaShots); }
+    void FireRailgun(int index16) { FireBeachball(index16,railgunShotForce,Const.PoolType.RailgunShots); }
+    void FireMagpulse(int index16) { FireBeachball(index16,magpulseShotForce,Const.PoolType.MagpulseShots); }
+    void FireStungun(int index16) { FireBeachball(index16,stungunShotForce,Const.PoolType.StungunShots); }
+
+	void FireBeachball(int index16, float shoveForce, Const.PoolType shotPool) {
         // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
         // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
-        GameObject beachball = Const.a.GetObjectFromPool(Const.PoolType.PlasmaShots);
+        GameObject beachball = Const.a.GetObjectFromPool(shotPool);
         if (beachball != null) {
             damageData.damage = Const.a.damagePerHitForWeapon[index16];
             damageData.owner = playerCapsule;
@@ -891,92 +967,18 @@ public class WeaponFire : MonoBehaviour {
             beachball.transform.forward = tempVec.normalized;
             //drawMyLine(beachball.transform.position, mls.cameraFocusPoint, Color.green, 2f);
             beachball.SetActive(true);
-            Vector3 shove = beachball.transform.forward * plasmaShotForce;
+            Vector3 shove = beachball.transform.forward * shoveForce;
+			//shove += playercapRbody.velocity; // add in the player's velocity
             beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
             beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
         }
-    }
-
-    void FireRailgun(int index16) {
-        // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
-        // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
-        GameObject beachball = Const.a.GetObjectFromPool(Const.PoolType.RailgunShots);
-        if (beachball != null) {
-            damageData.damage = Const.a.damagePerHitForWeapon[index16];
-            damageData.owner = playerCapsule;
-            damageData.attackType = Const.a.attackTypeForWeapon[index16];
-			damageData.offense = Const.a.offenseForWeapon[index16];
-			damageData.penetration = Const.a.penetrationForWeapon[index16];
-            beachball.GetComponent<ProjectileEffectImpact>().dd = damageData;
-            beachball.GetComponent<ProjectileEffectImpact>().host = playerCapsule;
-			beachball.layer = playerCapsule.gameObject.layer; // don't touch the player who shot us
-            beachball.transform.position = playerCamera.transform.position;
-			mls.SetCameraFocusPoint();
-            tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
-            beachball.transform.forward = tempVec.normalized;
-            //drawMyLine(beachball.transform.position,mls.cameraFocusPoint, Color.green, 2f);
-            beachball.SetActive(true);
-            Vector3 shove = beachball.transform.forward * railgunShotForce;
-            beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
-            beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
-        }
-    }
-
-    void FireStungun(int index16) {
-        // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
-        // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
-        GameObject beachball = Const.a.GetObjectFromPool(Const.PoolType.StungunShots);
-        if (beachball != null) {
-            damageData.damage = Const.a.damagePerHitForWeapon[index16];
-            damageData.owner = playerCapsule;
-            damageData.attackType = Const.a.attackTypeForWeapon[index16];
-			damageData.offense = Const.a.offenseForWeapon[index16];
-			damageData.penetration = Const.a.penetrationForWeapon[index16];
-            beachball.GetComponent<ProjectileEffectImpact>().dd = damageData;
-            beachball.GetComponent<ProjectileEffectImpact>().host = playerCapsule;
-			beachball.layer = playerCapsule.gameObject.layer; // don't touch the player who shot us
-            beachball.transform.position = playerCamera.transform.position;
-			mls.SetCameraFocusPoint();
-            tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
-            beachball.transform.forward = tempVec.normalized;
-            //drawMyLine(beachball.transform.position, mls.cameraFocusPoint, Color.green, 2f);
-            beachball.SetActive(true);
-            Vector3 shove = beachball.transform.forward * stungunShotForce;
-            beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
-            beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
-        }
-    }
+	}
 
     public Vector3 ScreenPointToDirectionVector() {
         Vector3 retval = Vector3.zero;
         retval = playerCamera.transform.forward;
         
         return retval;
-    }
-
-    void FireMagpulse(int index16) {
-        // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
-        // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
-        GameObject beachball = Const.a.GetObjectFromPool(Const.PoolType.MagpulseShots);
-        if (beachball != null) {
-            damageData.damage = Const.a.damagePerHitForWeapon[index16];
-            damageData.owner = playerCapsule;
-            damageData.attackType = Const.a.attackTypeForWeapon[index16];
-			damageData.offense = Const.a.offenseForWeapon[index16];
-			damageData.penetration = Const.a.penetrationForWeapon[index16];
-            beachball.GetComponent<ProjectileEffectImpact>().dd = damageData;
-            beachball.GetComponent<ProjectileEffectImpact>().host = playerCapsule;
-			beachball.layer = playerCapsule.gameObject.layer; // don't touch the player who shot us
-            beachball.transform.position = playerCamera.transform.position;
-			mls.SetCameraFocusPoint();
-            tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
-            beachball.transform.forward = tempVec.normalized;
-            //drawMyLine(beachball.transform.position, mls.cameraFocusPoint, Color.green, 2f);
-            beachball.SetActive(true);
-            Vector3 shove = beachball.transform.forward * magpulseShotForce;
-            beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
-            beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
-        }
     }
 
     public float GetHeatForCurrentWeapon() {
@@ -1006,13 +1008,9 @@ public class WeaponFire : MonoBehaviour {
         return retval;
     }
 
-    void drawMyLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f)
-    {
-        StartCoroutine(drawLine(start, end, color, duration));
-    }
+    void drawMyLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f) { StartCoroutine(drawLine(start, end, color, duration)); }
 
-    IEnumerator drawLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f)
-    {
+    IEnumerator drawLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f) {
         GameObject myLine = new GameObject();
         myLine.transform.position = start;
         myLine.AddComponent<LineRenderer>();

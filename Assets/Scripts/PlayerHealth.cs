@@ -41,22 +41,34 @@ public class PlayerHealth : MonoBehaviour {
 	private float radSoundFinished;
 	private float radFXFinished;
 	private TextWarningsManager twm;
+	private PlayerEnergy pe;
+	private float radAdjust;
+	private float initialRadiation;
+	[HideInInspector]
+	public float noiseFinished;
 
 	void Awake () {
 		twm = mainPlayerParent.GetComponent<PlayerReferenceManager>().playerTextWarningManager.GetComponent<TextWarningsManager>();
+		if (twm == null) Debug.Log("BUG: No TextWarningManager script found on player (sent from PlayerHealth.Awake)");
 		hm = GetComponent<HealthManager>();
-		if (hm == null) Debug.Log("BUG: No HealthManager script found on player!!");
+		if (hm == null) Debug.Log("BUG: No HealthManager script found on player (sent from PlayerHealth.Awake)");
+		pe = GetComponent<PlayerEnergy>();
+		if (pe == null) Debug.Log("BUG: No PlayerEnergy script found on player (sent from PlayerHealth.Awake)");
 		painSoundFinished = Time.time;
 		radSoundFinished = Time.time;
 		radFXFinished = Time.time;
+		noiseFinished = Time.time;
 		lastHealth = hm.health;
+		radAdjust = 0f;
+		initialRadiation = 0f;
 	}
 
 	void Update (){
-		if (PlayerNoise.isPlaying)
-			makingNoise = true;
-		else
-			makingNoise = false;
+		//if (PlayerNoise.isPlaying)
+			//makingNoise = true;
+		//else
+			//makingNoise = false;
+		if (noiseFinished < Time.time) makingNoise = false;
 
 		if (hm.health <= 0f) {
 			if (!playerDead) {
@@ -87,38 +99,45 @@ public class PlayerHealth : MonoBehaviour {
 			radiated = 0f;
 		}
 
-		if (radiated > 0) {
-			if (radiationArea) twm.SendWarning(("Radiation Area"),0.1f,-2,TextWarningsManager.warningTextColor.white,radiationAreaWarningID);
-			twm.SendWarning(("Radiation poisoning "+radiated.ToString()+" LBP"),0.1f,-2,TextWarningsManager.warningTextColor.red,radiationAmountWarningID);
+		//Debug.Log("Radiation level is " + radiated.ToString());
+		if (radiated > 1) {
+			if (radiationArea) twm.SendWarning((Const.a.stringTable[184]),0.1f,-2,TextWarningsManager.warningTextColor.white,radiationAreaWarningID); // Radiation area
+			if (HardwareInventory.a.hasHardware[8]) {
+				// Suit absorbs some radiation, say it.  Envirosuit absorbed ##, Radiation poisoning ## LBP
+				twm.SendWarning((Const.a.stringTable[280]+radAdjust.ToString()+Const.a.stringTable[281] + Const.a.stringTable[185] + radiated.ToString()+Const.a.stringTable[186]),0.1f,-2,TextWarningsManager.warningTextColor.red,radiationAmountWarningID); // Envirosuit absorbed ##LBP, Radiation poisoning ##LBP
+			} else {
+				// Radiation poisoning ## LBP
+				twm.SendWarning((Const.a.stringTable[185]+radiated.ToString()+Const.a.stringTable[186]),0.1f,-2,TextWarningsManager.warningTextColor.red,radiationAmountWarningID); // Radiation poisoning ##LBP
+			}
 			if (radFXFinished < Time.time) {
 				radiationEffect.SetActive(true);
-				radFXFinished = Time.time + Random.Range(0.4f,1f);
+				float minT = 0.5f;
+				if (radiated > 50) minT = 0.25f;
+				radFXFinished = Time.time + Random.Range(minT,1f);
 			}
-		}
-
-		if (radiated <= 2) {
+		} else {
 			radiationArea = false;
+			radiated = 0;
 		}
 
 		if (radiationBleedOffFinished < Time.time) {
+			if (!radiationArea) radiated -= radiationReductionAmount;  // bleed off the radiation over time
+			if (radiated < 0) radiated = 0;
+			radiationBleedOffFinished = Time.time + radiationBleedOffTime;
+
 			if (radiated > 0) {
-				hm.health -= radiated*radiationHealthDamageRatio*radiationBleedOffTime; // apply health at rate of bleedoff time
-				if (!radiationArea) {
-					radiated -= radiationReductionAmount;  // bleed off the radiation over time
-				} else {
-					if (radSoundFinished < Time.time) {
-						radSoundFinished = Time.time + Random.Range(0.5f,1.5f);
-						PlayerNoise.PlayOneShot(RadiationClip);
-					}
+				if (!hm.god) hm.health -= radiated*radiationHealthDamageRatio*radiationBleedOffTime; // apply health at rate of bleedoff time
+				if (radSoundFinished < Time.time) {
+					radSoundFinished = Time.time + Random.Range(1f,3f);
+					PlayerNoise.PlayOneShot(RadiationClip);
 				}
-				radiationBleedOffFinished = Time.time + radiationBleedOffTime;
 			}
 		}
 
 		// Did we lose health?
 		if (lastHealth > hm.health) {
 			if (painSoundFinished < Time.time && !(radSoundFinished < Time.time)) {
-				painSoundFinished = Time.time + Random.Range(0.5f,3f); // Don't spam pain sounds
+				painSoundFinished = Time.time + Random.Range(0.25f,3f); // Don't spam pain sounds
 				PlayerNoise.PlayOneShot(PainSFXClip);
 			}
 		}
@@ -127,7 +146,7 @@ public class PlayerHealth : MonoBehaviour {
 	
 	void PlayerDying (){
 		timer += Time.deltaTime;
-		
+		makingNoise = false;
 		if (timer >= resetAfterDeathTime) {
 			hm.health = 0f;
 			playerDead = true;
@@ -136,6 +155,8 @@ public class PlayerHealth : MonoBehaviour {
 	
 	void PlayerDead (){
 		MouseLookScript mls = cameraObject.GetComponent<MouseLookScript>();
+		if (mls == null) { Debug.Log("BUG: No mouselookscript for PlayerDead"); return; }
+
 		if (mls.heldObjectIndex != -1) {
 			mls.DropHeldItem();
 			mls.ResetHeldItem ();
@@ -153,12 +174,14 @@ public class PlayerHealth : MonoBehaviour {
 			// Ressurection
 			bool ressurected = LevelManager.a.RessurectPlayer(mainPlayerParent);
 			if (!ressurected) Debug.Log("ERROR: failed to ressurect player!");
+			hm.health = 211f;
+			playerDead = false;
 		} else {
 			// Death to Main Menu
-			//gameObject.GetComponent<PlayerMovement>().enabled = false;
-			//cameraObject.SetActive(false);
-			//cameraObject.GetComponent<Camera>().enabled = false;
-			//PauseScript.a.PauseEnable();
+			if (mls.inventoryMode == false) {
+				mls.ToggleInventoryMode();
+				mls.ToggleAudioPause();
+			}
 			mls.mainMenu.SetActive(true);
 			/*
 			#if UNITY_EDITOR
@@ -176,6 +199,22 @@ public class PlayerHealth : MonoBehaviour {
 		if (radiated < rad)
 			radiated = rad;
 
+		// Check for envirosuit and apply reduction based on version
+		if (HardwareInventory.a.hasHardware[8] && pe.energy > 0) {
+			radAdjust = radiated;
+			float enerTake = 0.25f;
+			switch (HardwareInventory.a.hardwareVersion[8]) {
+				case 1: radAdjust *= 0.17f; enerTake = 0.25f*(radiated - radAdjust); break;
+				case 2: radAdjust *= 0.15f; enerTake = 0.16f*(radiated - radAdjust); break;
+				case 3: radAdjust *= 0.12f; enerTake = 0.11f*(radiated - radAdjust); break;
+			}
+			radiated *= radAdjust;
+			radAdjust = initialRadiation - radiated;
+			pe.TakeEnergy(enerTake);
+		} else {
+			radAdjust = 0f;
+		}
+		initialRadiation = radiated;
 		//radiated -= suitReduction;
 	}
 }

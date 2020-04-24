@@ -10,15 +10,15 @@ public class LogicBranch : MonoBehaviour {
 	public bool startOnSecond = false;
 	public bool thisTioOverridesSender = true;
 	public float delay = 0f;
-	public bool relayEnabled = true;
-	private float delayFinished;
+	public bool relayEnabled = true; // save
 	private UseData tempUd;
 	private string currenttarget;
 	private string currentargvalue;
-	private bool onSecond = false;
+	[HideInInspector]
+	public bool onSecond = false; // save
+	public bool autoFlipOnTarget = true;
 
 	void Awake() {
-		delayFinished = -1f;
 		if (startOnSecond) {
 			currenttarget = target2;
 			currentargvalue = argvalue2;
@@ -31,7 +31,7 @@ public class LogicBranch : MonoBehaviour {
 	}
 	
 	// swap targets
-	void FlipTrackSwitch() {
+	public void FlipTrackSwitch() {
 		if (onSecond) {
 			currenttarget = target;
 			currentargvalue = argvalue;
@@ -43,15 +43,10 @@ public class LogicBranch : MonoBehaviour {
 		}
 	}
 
-	void Update() {
-		if (!relayEnabled) return;
-		if (delay <=0) return;
-
-		if (delayFinished != -1f && delayFinished < Time.time) {
-			RunTargets(tempUd);
-			delayFinished = -1f;
-		}
-	}
+    IEnumerator DelayedTarget(UseData ud) {
+        yield return new WaitForSeconds(delay);
+        if (relayEnabled) RunTargets(ud);
+    }
 
 	public void Targetted (UseData ud) {
 		if (!relayEnabled) return;
@@ -59,8 +54,7 @@ public class LogicBranch : MonoBehaviour {
 		if (delay <=0) {
 			RunTargets(ud);
 		} else {
-			delayFinished = Time.time + delay;
-			tempUd = ud;
+			StartCoroutine(DelayedTarget(ud));
 		}
 	}
 
@@ -76,6 +70,6 @@ public class LogicBranch : MonoBehaviour {
 			}
 		}
 		Const.a.UseTargets(ud,currenttarget);
-		FlipTrackSwitch(); // Swap targets
+		if (autoFlipOnTarget) FlipTrackSwitch();
 	}
 }

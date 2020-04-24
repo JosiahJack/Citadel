@@ -40,6 +40,9 @@ public class UseHandler : MonoBehaviour {
 	private CyberAccess ca;
 	public bool useCyberAccess = true;
 
+	private InteractablePanel ip;
+	public bool useInteractablePanel = true;
+
 	// Check all active and existing scripts on this gameObject that can be used and use them
 	// Called by MouseLookScript.cs from a Use() raycast
 	public void Use (UseData ud) {
@@ -79,5 +82,8 @@ public class UseHandler : MonoBehaviour {
 
 		ca = GetComponent<CyberAccess>();
 		if (useCyberAccess && ca != null) ca.Use(ud);
+
+		ip = GetComponent<InteractablePanel>();
+		if (useInteractablePanel && ip != null) ip.Use(ud);
 	}
 }

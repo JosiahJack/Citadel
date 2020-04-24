@@ -23,15 +23,29 @@ public class GeneralInvButton : MonoBehaviour {
         if (useableItemIndex == 52 || useableItemIndex == 53 || useableItemIndex == 55) {
             switch (useableItemIndex) {
                 case 52:
-                    playerEnergy.GiveEnergy(83f,0);
-                    reduce = true;
+					if (playerEnergy.energy >= 255f) {
+						Const.sprint(Const.a.stringTable[303],playerHealth.mainPlayerParent.GetComponent<PlayerReferenceManager>().playerCapsule);
+						reduce = false;
+					} else {
+						playerEnergy.GiveEnergy(83f,0);
+						reduce = true;
+					}
                     break;
                 case 53:
-                    playerEnergy.GiveEnergy(255f,0);
-                    reduce = true;
+					if (playerEnergy.energy >= 255f) {
+						Const.sprint(Const.a.stringTable[303],playerHealth.mainPlayerParent.GetComponent<PlayerReferenceManager>().playerCapsule);
+						reduce = false;
+					} else {
+						playerEnergy.GiveEnergy(255f,0);
+						reduce = true;
+					}
                     break;
                 case 55:
-                    playerHealth.hm.health = playerHealth.hm.maxhealth;
+					if (playerHealth.hm.health >= playerHealth.hm.maxhealth) {
+						Const.sprint(Const.a.stringTable[304],playerHealth.mainPlayerParent.GetComponent<PlayerReferenceManager>().playerCapsule);
+					} else {
+						playerHealth.hm.health = playerHealth.hm.maxhealth;
+					}
                     reduce = true;
                     break;
             }

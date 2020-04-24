@@ -11,16 +11,16 @@ public class ConfigToggles : MonoBehaviour {
 	void Start () {
 		self = GetComponent<Toggle>();
 		switch (ToggleType) {
-		case ConfigToggleType.Fullscreen: self.isOn = Const.a.GraphicsFullscreen; break;
-		case ConfigToggleType.SSAO: self.isOn = Const.a.GraphicsSSAO; break;
-		case ConfigToggleType.Bloom: self.isOn = Const.a.GraphicsBloom; break;
-		case ConfigToggleType.Reverb: self.isOn = Const.a.AudioReverb; break;
-		case ConfigToggleType.Subtitles: self.isOn = Const.a.AudioReverb; break;
-		case ConfigToggleType.InvertLook: self.isOn = Const.a.InputInvertLook; break;
-		case ConfigToggleType.InvertCyber: self.isOn = Const.a.InputInvertCyberspaceLook; break;
-		case ConfigToggleType.InvertInventoryCycling: self.isOn = Const.a.InputInvertInventoryCycling; break;
-		case ConfigToggleType.QuickPickup: self.isOn = Const.a.InputQuickItemPickup; break;
-		case ConfigToggleType.QuickReload: self.isOn = Const.a.InputQuickReloadWeapons; break;
+			case ConfigToggleType.Fullscreen: self.isOn = Const.a.GraphicsFullscreen; break;
+			case ConfigToggleType.SSAO: self.isOn = Const.a.GraphicsSSAO; break;
+			case ConfigToggleType.Bloom: self.isOn = Const.a.GraphicsBloom; break;
+			case ConfigToggleType.Reverb: self.isOn = Const.a.AudioReverb; Const.sprint("This doesn't do anything at the moment.",Const.a.allPlayers); break;
+			case ConfigToggleType.Subtitles: self.isOn = Const.a.AudioSubtitles; Const.sprint("This doesn't do anything at the moment.",Const.a.allPlayers); break;
+			case ConfigToggleType.InvertLook: self.isOn = Const.a.InputInvertLook; break;
+			case ConfigToggleType.InvertCyber: self.isOn = Const.a.InputInvertCyberspaceLook; break;
+			case ConfigToggleType.InvertInventoryCycling: self.isOn = Const.a.InputInvertInventoryCycling; break;
+			case ConfigToggleType.QuickPickup: self.isOn = Const.a.InputQuickItemPickup; break;
+			case ConfigToggleType.QuickReload: self.isOn = Const.a.InputQuickReloadWeapons; break;
 		}
 	}
 

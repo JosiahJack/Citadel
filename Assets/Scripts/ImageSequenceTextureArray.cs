@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ImageSequenceTextureArray : MonoBehaviour, IBatchUpdate {
+public class ImageSequenceTextureArray : MonoBehaviour {
 	//An array of Objects that stores the results of the Resources.LoadAll() method
 	private Object[] objects;
 	private Object[] glowobjects;
@@ -33,7 +33,6 @@ public class ImageSequenceTextureArray : MonoBehaviour, IBatchUpdate {
 	void Awake() {
 		//Get a reference to the Material of the game object this script is attached to.
 		this.goMaterial = this.GetComponent<Renderer>().material;
-		//gameObject.SetActive (false);
 	}
 	
 	void Start () {
@@ -86,8 +85,6 @@ public class ImageSequenceTextureArray : MonoBehaviour, IBatchUpdate {
 		}
 
 		if (initialIndexOffset < objects.Length && initialIndexOffset > 0) frameCounter = initialIndexOffset;
-
-		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketA);
 	}
 
 	// called by HealthManager.cs's ScreenDeath
@@ -95,7 +92,7 @@ public class ImageSequenceTextureArray : MonoBehaviour, IBatchUpdate {
 		screenDestroyed = true; // if not already dead, say so
 	}
 
-	public void BatchUpdate () {
+	void Update () {
 		if (resourceFolder == "" && !glowOnly) {
 			return;
 		}

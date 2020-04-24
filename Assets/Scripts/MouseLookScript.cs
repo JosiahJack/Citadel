@@ -113,6 +113,9 @@ public class MouseLookScript : MonoBehaviour {
 	public GameObject mainMenu;
 	public WeaponMagazineCounter wepmagCounter;
 	public PlayerMovement playerMovement;
+	private float[] cameraDistances;
+	[HideInInspector]
+	public bool vmailActive = false;
 	//private AudioListener audListener;
 
     //float headbobSpeed = 1;
@@ -135,12 +138,12 @@ public class MouseLookScript : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.None;
 		inventoryMode = true;  // Start with inventory mode turned on
 		playerCamera = GetComponent<Camera>();
-		float[] distances = new float[32];
+		cameraDistances = new float[32];
 		for (int i=0;i<32;i++) {
-			distances[i] = 79f; //can't see further than this please.  31 * 2.56 - player radius 0.48 = 78.88f rounded up to be careful..longest line of sight is the crawlway on level 6
+			cameraDistances[i] = 79f; //can't see further than this please.  31 * 2.56 - player radius 0.48 = 78.88f rounded up to be careful..longest line of sight is the crawlway on level 6
 		}
-		distances[15] = 1200f; // sky is visible
-		playerCamera.layerCullDistances = distances; // cull anything beyond 50f except for sky layer
+		cameraDistances[15] = 2400f; // sky is visible
+		playerCamera.layerCullDistances = cameraDistances; // cull anything beyond 50f except for sky layer
 		//audListener = GetComponent<AudioListener>();
 		frobDistance = Const.a.frobDistance;
 		holdingObject = false;
@@ -171,6 +174,7 @@ public class MouseLookScript : MonoBehaviour {
 		if (playerMovement.fatigue > 80) strength = strength * 2f;
 		//Vector3 cameraJoltPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, (transform.localPosition.z - strength));
 		//transform.localPosition = cameraJoltPosition;
+		//transform.rotation = Quaternion.Euler(transform.rotation.x - strength,0,0);
 		recoiling = true;
 	}
 
@@ -211,10 +215,18 @@ public class MouseLookScript : MonoBehaviour {
 		transform.localPosition = camPos;
 
         if (mainMenu.activeSelf == true) {
-			playerCamera.farClipPlane = 1f;
+			for (int i=0;i<32;i++) {
+				cameraDistances[i] = 2f;
+			}
+			playerCamera.layerCullDistances = cameraDistances; // cull anything beyond 50f except for sky layer
+			//cameraDistances[15] = 2400f; // sky is visible
 			return;  // ignore mouselook when main menu is still up
 		} else {
-			playerCamera.farClipPlane = 1200f;
+			for (int i=0;i<32;i++) {
+				cameraDistances[i] = 79f;
+			}
+			cameraDistances[15] = 2400f; // sky is visible
+			playerCamera.layerCullDistances = cameraDistances; // cull anything beyond 50f except for sky layer
 		}
 
 		if (Input.GetKeyUp("f6")) {
@@ -230,7 +242,19 @@ public class MouseLookScript : MonoBehaviour {
 				float dx = Input.GetAxisRaw("Mouse X");
 				float dy = Input.GetAxisRaw("Mouse Y");
 				yRotation += (dx * lookSensitivity);
-				xRotation -= (dy * lookSensitivity);
+				if (inCyberSpace) {
+					if (Const.a.InputInvertCyberspaceLook) {
+						xRotation += (dy * lookSensitivity);
+					} else {
+						xRotation -= (dy * lookSensitivity);
+					}
+				} else {
+					if (Const.a.InputInvertLook) {
+						xRotation += (dy * lookSensitivity);
+					} else {
+						xRotation -= (dy * lookSensitivity);
+					}
+				}
 				if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle
 				transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
 				transform.localRotation = Quaternion.Euler(xRotation,0f,0f); // Up down component only applied to camera
@@ -240,11 +264,7 @@ public class MouseLookScript : MonoBehaviour {
 				if (compassContainer.activeInHierarchy) {
 					compassContainer.transform.rotation = Quaternion.Euler(0f, -yRotation + 180f, 0f);
 				}
-			} else {
-				Const.sprint("ERROR: Paused is true and inventoryMode is false",player);
-			}
-		} else {
-			if (!PauseScript.a.Paused() && playerMovement.ressurectingFinished < Time.time) {
+
 				if (GetInput.a.TurnLeft()) {
 					yRotation -= keyboardTurnSpeed * lookSensitivity;
 					//tempQuat = transform.rotation;
@@ -267,6 +287,62 @@ public class MouseLookScript : MonoBehaviour {
 
 				if (GetInput.a.LookUp()) {
 					xRotation -= keyboardTurnSpeed * lookSensitivity;
+					if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle
+					transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+				}
+			}
+		} else {
+			if (!PauseScript.a.Paused() && playerMovement.ressurectingFinished < Time.time) {
+				if (GetInput.a.TurnLeft()) {
+					yRotation -= keyboardTurnSpeed * lookSensitivity;
+					//tempQuat = transform.rotation;
+					transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+					//transform.parent.transform.parent.transform.localRotation = tempQuat; // preserve x axis, hacky
+				}
+
+				if (GetInput.a.TurnRight()) {
+					yRotation += keyboardTurnSpeed * lookSensitivity;
+					//tempQuat = transform.rotation;
+					transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+					//transform.parent.transform.parent.transform.localRotation = tempQuat; // preserve x axis, hacky
+				}
+
+				if (GetInput.a.LookDown()) {
+					if (inCyberSpace) {
+						// Cyberspace...more like a plane so give the option to invert it separately
+						if (Const.a.InputInvertCyberspaceLook) {
+							xRotation -= keyboardTurnSpeed * lookSensitivity;
+						} else {
+							xRotation += keyboardTurnSpeed * lookSensitivity;
+						}
+					} else {
+						// Normal
+						if (Const.a.InputInvertLook) {
+							xRotation -= keyboardTurnSpeed * lookSensitivity;
+						} else {
+							xRotation += keyboardTurnSpeed * lookSensitivity;
+						}
+					}
+					if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle
+					transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+				}
+
+				if (GetInput.a.LookUp()) {
+					if (inCyberSpace) {
+						// Cyberspace...more like a plane so give the option to invert it separately
+						if (Const.a.InputInvertCyberspaceLook) {
+							xRotation += keyboardTurnSpeed * lookSensitivity;
+						} else {
+							xRotation -= keyboardTurnSpeed * lookSensitivity;
+						}
+					} else {
+						// Normal
+						if (Const.a.InputInvertLook) {
+							xRotation += keyboardTurnSpeed * lookSensitivity;
+						} else {
+							xRotation -= keyboardTurnSpeed * lookSensitivity;
+						}
+					}
 					if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle
 					transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 				}
@@ -317,6 +393,11 @@ public class MouseLookScript : MonoBehaviour {
 			if (!PauseScript.a.Paused()) {
 				currentButton = null;
 				if(GetInput.a.Use()) {
+					if (vmailActive) {
+						logInventory.DeactivateVMail();
+						vmailActive = false;
+						return;
+					}
 					if (!holdingObject) {
 						// Send out Frob/use raycast to use whatever is under the cursor, if in reach
 						RaycastHit hit = new RaycastHit();
@@ -356,10 +437,11 @@ public class MouseLookScript : MonoBehaviour {
 					        // If we can't use it, Give info about what we are looking at (e.g. "Molybdenum panelling")
 							UseName un = hit.collider.gameObject.GetComponent<UseName> ();
 							if (un != null) {
-								Const.sprint("Can't use " + un.targetname,player);
+								Const.sprint(Const.a.stringTable[29] + un.targetname,player); // Can't use
 							}
 						}
-						if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out hit, 50f)) {
+						//if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out hit, 50f)) {
+						if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out hit, 50f)) {
 							//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
 							// TIP: Use Camera.main.ViewportPointToRay for center of screen
 							if (hit.collider == null)
@@ -367,7 +449,7 @@ public class MouseLookScript : MonoBehaviour {
 
 							// Check if object is usable then use it
 							if (hit.collider.tag == "Usable" || hit.collider.tag == "Searchable") {
-								Const.sprint("You are too far away from that",player);
+								Const.sprint(Const.a.stringTable[30],player); // You are too far away from that
 								return;
 							}
 						}
@@ -392,10 +474,12 @@ public class MouseLookScript : MonoBehaviour {
 										//Debug.Log("Attempting to use a useable...");
 										UseHandler uh = hit.collider.gameObject.GetComponent<UseHandler>();
 										if (uh != null) {
+											SFXSource.PlayOneShot(SearchSFX);
 											uh.Use(ud);
 										} else {
 											UseHandlerRelay uhr = hit.collider.gameObject.GetComponent<UseHandlerRelay>();
 											if (uhr != null) {
+												SFXSource.PlayOneShot(SearchSFX);
 												uhr.referenceUseHandler.Use(ud);
 											} else {
 												Debug.Log("BUG: Attempting to use a useable without a UseHandler or UseHandlerRelay!");
@@ -404,6 +488,8 @@ public class MouseLookScript : MonoBehaviour {
 										return;
 									}
 								}
+								// Drop it
+								DropHeldItem ();
 								ResetHeldItem();
 								ResetCursor ();
 							} else {
@@ -424,6 +510,11 @@ public class MouseLookScript : MonoBehaviour {
 					ResetHeldItem();
 					ResetCursor();
 				} else {
+					if (vmailActive) {
+						logInventory.DeactivateVMail();
+						vmailActive = false;
+						return;
+					}
 					if (GUIState.a.overButton && GUIState.a.overButtonType != GUIState.ButtonType.None) {
                         // overButtonTypes:
                         // -1   Not over a button
@@ -438,16 +529,17 @@ public class MouseLookScript : MonoBehaviour {
 									WeaponButton wepbut = currentButton.GetComponent<WeaponButton>();
 									cursorTexture = Const.a.useableItemsFrobIcons[wepbut.useableItemIndex];
 									heldObjectIndex = wepbut.useableItemIndex;
+									wepbut.wbm.WeaponCycleDown();
 									indexAdjustment = wepbut.WepButtonIndex;
 									WeaponInventory.WepInventoryInstance.weaponInventoryIndices[indexAdjustment] = -1;
 									WeaponInventory.WepInventoryInstance.weaponInventoryText[indexAdjustment] = "-";
 									indexAdjustment--;
 									if (indexAdjustment < 0)
 										indexAdjustment = 0;
-									WeaponCurrent.WepInstance.weaponCurrent = indexAdjustment;
-									WeaponCurrent.WepInstance.justChangedWeap = true;
-									//wepbut.ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(indexAdjustment,WeaponCurrent.WepInstance.weaponIsAlternateAmmo);
-									//wepbut.iconman.GetComponent<WeaponIconManager>().SetWepIcon(indexAdjustment
+										//WeaponCurrent.WepInstance.weaponCurrent = indexAdjustment;
+										//WeaponCurrent.WepInstance.justChangedWeap = true;
+									// OLD //wepbut.ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(indexAdjustment,WeaponCurrent.WepInstance.weaponIsAlternateAmmo);
+									// OLD //wepbut.iconman.GetComponent<WeaponIconManager>().SetWepIcon(indexAdjustment
 									mfdManager.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,MFDManager.handedness.LeftHand);
 									GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 									break;
@@ -528,7 +620,7 @@ public class MouseLookScript : MonoBehaviour {
         for (int i=0;i<14;i++) {
             if (GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[i] == -1) {
                 GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[i] = index;
-				Const.sprint("Item added to general inventory",player);
+				Const.sprint(Const.a.stringTable[31],player); // Item added to general inventory
                 itemAdded = true;
                 break;
             }
@@ -538,7 +630,7 @@ public class MouseLookScript : MonoBehaviour {
             DropHeldItem();
             ResetHeldItem();
             ResetCursor();
-            Const.sprint("Inventory full, item dropped",player);
+            Const.sprint(Const.a.stringTable[32],player);
 			return;
         }
         mainInventory.GetComponent<GeneralInvCurrent>().generalInvCurrent = index;
@@ -581,7 +673,7 @@ public class MouseLookScript : MonoBehaviour {
 				if (itemiconman.activeInHierarchy) itemiconman.SetActive(false);    //Set weapon icon for MFD
 				if (itemtextman.activeInHierarchy) itemtextman.GetComponent<ItemTextManager>().SetItemText(index); //Set weapon text for MFD
 				mfdManager.SendInfoToItemTab(index); // notify item tab we clicked on a weapon
-				Const.sprint("Weapon added to inventory",player);
+				Const.sprint(Const.a.stringTable[33],player);
 				itemAdded = true;
 
 				centerTabButtonsControl.NotifyToCenterTab(0);
@@ -630,7 +722,7 @@ public class MouseLookScript : MonoBehaviour {
 			DropHeldItem();
 			ResetHeldItem();
 			ResetCursor();
-			Const.sprint("Inventory full, item dropped",player);
+			Const.sprint(Const.a.stringTable[32],player);
 			return;
 		}
 		mfdManager.SendInfoToItemTab(index);
@@ -661,7 +753,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 		GrenadeInventory.GrenadeInvInstance.grenAmmo[index]++;
 		grenadeCurrent.grenadeCurrent = index;
-		Const.sprint("Grenade added to inventory",player);
+		Const.sprint(Const.a.stringTable[34],player);
 		centerTabButtonsControl.NotifyToCenterTab(0);
 		mfdManager.SendInfoToItemTab(index);
     }
@@ -676,15 +768,15 @@ public class MouseLookScript : MonoBehaviour {
 		//PatchInventory.PatchInvInstance.patchCounts[index]++;
 		PatchCurrent.PatchInstance.patchCurrent = index;
 		mfdManager.SendInfoToItemTab(index);
-		Const.sprint("Patch added to inventory",player);
+		Const.sprint(Const.a.stringTable[35],player);
     }
 
 	void AddAudioLogToInventory () {
 		if ((heldObjectCustomIndex != -1) && (logInventory != null)) {
-			if (heldObjectCustomIndex == 114) {
+			if (heldObjectCustomIndex == 128) {
 				// Trioptimum Funpack Module discovered!
 				// UPDATE: Create minigames
-				Const.sprint("Trioptimum Funpack Module, don't play on company time!",player);
+				Const.sprint(Const.a.stringTable[309],player);
 				return;
 			}
 			logInventory.hasLog[heldObjectCustomIndex] = true;
@@ -695,15 +787,15 @@ public class MouseLookScript : MonoBehaviour {
 			string audName = Const.a.audiologNames[heldObjectCustomIndex];
 			string logPlaybackKey = Const.a.InputConfigNames[20];
 			if (HardwareInventory.a.hasHardware[2] == true) {
-				Const.sprint("Audio log " + audName + " picked up.  Press '" + logPlaybackKey + "' to playback.",player);
+				Const.sprint(Const.a.stringTable[36] + audName + Const.a.stringTable[37] + logPlaybackKey + Const.a.stringTable[38],player); // Audio log ## picked up.  Press '##' to play back.
 			} else {
-				Const.sprint("Audio log " + audName + " picked up.  Proper hardware not detected to play.",player);
+				Const.sprint(Const.a.stringTable[36] + audName + Const.a.stringTable[310],player); // Audio log ## picked up.  Proper hardware not detected to play.
 			}
 		} else {
 			if (logInventory == null) {
-				Const.sprint("Warning: logInventory is null",player);
+				Const.sprint("BUG: logInventory is null",player);
 			} else {
-				Const.sprint("Warning: Audio log picked up has no assigned index (-1)",player);
+				Const.sprint("BUG: Audio log picked up has no assigned index (-1)",player);
 			}
 		}
 	}
@@ -729,6 +821,7 @@ public class MouseLookScript : MonoBehaviour {
 		case 89: doorAccessTypeAcquired = Door.accessCardType.Medical; break;
 		case 90: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
 		case 91: doorAccessTypeAcquired = Door.accessCardType.Per1; break;
+		case 114: doorAccessTypeAcquired = Door.accessCardType.Admin; break;
 		}
 
 		for (int j = 0; j < accessCardInventory.accessCardsOwned.Length; j++) {
@@ -746,12 +839,12 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
 		if (alreadyHave) {
-			Const.sprint ("Already have access " + doorAccessTypeAcquired.ToString(), player);
+			Const.sprint (Const.a.stringTable[44] + doorAccessTypeAcquired.ToString(), player); // Already have access: ##
 			return;
 		}
 
 		if (accessAdded && !alreadyHave) {
-			Const.sprint ("New accesses gained: " + doorAccessTypeAcquired.ToString(), player);
+			Const.sprint (Const.a.stringTable[45] + doorAccessTypeAcquired.ToString(), player); // New accesses gained ##
 		}
 
 		centerTabButtonsControl.NotifyToCenterTab(2);
@@ -761,7 +854,7 @@ public class MouseLookScript : MonoBehaviour {
 	void AddHardwareToInventory (int index) {
 		int hwversion = heldObjectCustomIndex;
 		if (hwversion < 0) {
-			Const.sprint("Warning: Hardware picked up has no assigned versioning, defaulting to 1",player);
+			Const.sprint("BUG: Hardware picked up has no assigned versioning, defaulting to 1",player);
 			hwversion = 1;
 		}
 
@@ -769,22 +862,23 @@ public class MouseLookScript : MonoBehaviour {
 			case 0:
 				// System Analyzer
 				if (hwversion <= HardwareInventory.a.hardwareVersion[0]) {
-					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.",player);
+					Const.sprint(Const.a.stringTable[46],player); // THAT WARE IS OBSOLETE. DISCARDED.
 					return;
 				}
 				HardwareInventory.a.hasHardware[0] = true;
 				HardwareInventory.a.hardwareVersion[0] = hwversion;
-			//HardwareInvCurrent.a.hardwareInvIndex
+				HardwareInventory.a.hardwareVersionSetting[0] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[21] + " v" + hwversion.ToString(),player);
 				break;
 			case 1:
 				// Navigation Unit
 				if (hwversion <= HardwareInventory.a.hardwareVersion[1]) {
-					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.",player);
+					Const.sprint(Const.a.stringTable[46],player);
 					return;
 				}
 				HardwareInventory.a.hasHardware[1] = true;
 				HardwareInventory.a.hardwareVersion[1] = hwversion;
+				HardwareInventory.a.hardwareVersionSetting[1] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[22] + " v" + hwversion.ToString(),player);
 				compassContainer.SetActive(true); // Turn on HUD compass
 				if (hwversion == 2) {
@@ -798,110 +892,127 @@ public class MouseLookScript : MonoBehaviour {
 			case 2:
 				// Datareader
 				if (hwversion <= HardwareInventory.a.hardwareVersion[2]) {
-					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.",player);
+					Const.sprint(Const.a.stringTable[46],player);
 					return;
 				}
 				HardwareInventory.a.hasHardware[2] = true;
 				HardwareInventory.a.hardwareVersion[2] = hwversion;
+				HardwareInventory.a.hardwareVersionSetting[2] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[23] + " v" + hwversion.ToString(),player);
 				hardwareButtons[5].SetActive(true);  // Enable HUD button
 				break;
 			case 3:
 				// Sensaround
 				if (hwversion <= HardwareInventory.a.hardwareVersion[3]) {
-					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.",player);
+					Const.sprint(Const.a.stringTable[46],player);
 					return;
 				}
 				HardwareInventory.a.hasHardware[3] = true;
 				HardwareInventory.a.hardwareVersion[3] = hwversion;
+				HardwareInventory.a.hardwareVersionSetting[3] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[24] + " v" + hwversion.ToString(),player);
 				hardwareButtons[1].SetActive(true);  // Enable HUD button
+				HardwareInvCurrent.a.hardwareButtons[1].UpdateIconForVersionUpgrade();
 				break;
 			case 4:
 				// Target Identifier
 				if (hwversion <= HardwareInventory.a.hardwareVersion[4]) {
-					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.",player);
+					Const.sprint(Const.a.stringTable[46],player);
 					return;
 				}
 				HardwareInventory.a.hasHardware[4] = true;
 				HardwareInventory.a.hardwareVersion[4] = hwversion;
+				HardwareInventory.a.hardwareVersionSetting[4] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[25] + " v" + hwversion.ToString(),player);
 				break;
 			case 5:
 				// Energy Shield
 				if (hwversion <= HardwareInventory.a.hardwareVersion[5]) {
-					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.",player);
+					Const.sprint(Const.a.stringTable[46],player);
 					return;
 				}
 				HardwareInventory.a.hasHardware[5] = true;
 				HardwareInventory.a.hardwareVersion[5] = hwversion;
+				HardwareInventory.a.hardwareVersionSetting[5] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[26] + " v" + hwversion.ToString(),player);
 				hardwareButtons[3].SetActive(true);  // Enable HUD button
+				HardwareInvCurrent.a.hardwareButtons[3].UpdateIconForVersionUpgrade();
 				break;
 			case 6:
 				// Biomonitor
 				if (hwversion <= HardwareInventory.a.hardwareVersion[6]) {
-					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.",player);
+					Const.sprint(Const.a.stringTable[46],player);
 					return;
 				}
 				HardwareInventory.a.hasHardware[6] = true;
 				HardwareInventory.a.hardwareVersion[6] = hwversion;
+				HardwareInventory.a.hardwareVersionSetting[6] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[27] + " v" + hwversion.ToString(),player);
 				hardwareButtons[0].SetActive(true);  // Enable HUD button
+				HardwareInvCurrent.a.hardwareButtons[0].UpdateIconForVersionUpgrade();
 				break;
 			case 7:
 				// Head Mounted Lantern
 				if (hwversion <= HardwareInventory.a.hardwareVersion[7]) {
-					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.",player);
+					Const.sprint(Const.a.stringTable[46],player);
 					return;
 				}
 				HardwareInventory.a.hasHardware[7] = true;
 				HardwareInventory.a.hardwareVersion[7] = hwversion;
+				HardwareInventory.a.hardwareVersionSetting[7] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[28] + " v" + hwversion.ToString(),player);
 				hardwareButtons[2].SetActive(true);  // Enable HUD button
+				HardwareInvCurrent.a.hardwareButtons[2].UpdateIconForVersionUpgrade();
 				break;
 			case 8:
 				// Envirosuit
 				if (hwversion <= HardwareInventory.a.hardwareVersion[8]) {
-					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.",player);
+					Const.sprint(Const.a.stringTable[46],player);
 					return;
 				}
 				HardwareInventory.a.hasHardware[8] = true;
 				HardwareInventory.a.hardwareVersion[8] = hwversion;
+				HardwareInventory.a.hardwareVersionSetting[8] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[29] + " v" + hwversion.ToString(),player);
 				break;
 			case 9:
 				// Turbo Motion Booster
 				if (hwversion <= HardwareInventory.a.hardwareVersion[9]) {
-					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.",player);
+					Const.sprint(Const.a.stringTable[46],player);
 					return;
 				}
 				HardwareInventory.a.hasHardware[9] = true;
 				HardwareInventory.a.hardwareVersion[9] = hwversion;
+				HardwareInventory.a.hardwareVersionSetting[9] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[30] + " v" + hwversion.ToString(),player);
 				hardwareButtons[6].SetActive(true);  // Enable HUD button
+				HardwareInvCurrent.a.hardwareButtons[6].UpdateIconForVersionUpgrade();
 				break;
 			case 10:
 				// Jump Jet Boots
 				if (hwversion <= HardwareInventory.a.hardwareVersion[10]) {
-					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.",player);
+					Const.sprint(Const.a.stringTable[46],player);
 					return;
 				}
 				HardwareInventory.a.hasHardware[10] = true;
 				HardwareInventory.a.hardwareVersion[10] = hwversion;
+				HardwareInventory.a.hardwareVersionSetting[10] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[31] + " v" + hwversion.ToString(),player);
 				hardwareButtons[7].SetActive(true);  // Enable HUD button
+				HardwareInvCurrent.a.hardwareButtons[7].UpdateIconForVersionUpgrade();
 				break;
 			case 11:
 				// Infrared Night Vision Enhancement
 				if (hwversion <= HardwareInventory.a.hardwareVersion[11]) {
-					Const.sprint("THAT WARE IS OBSOLETE. DISCARDED.",player);
+					Const.sprint(Const.a.stringTable[46],player);
 					return;
 				}
 				HardwareInventory.a.hasHardware[11] = true;
 				HardwareInventory.a.hardwareVersion[11] = hwversion;
+				HardwareInventory.a.hardwareVersionSetting[11] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[32] + " v" + hwversion.ToString(),player);
 				hardwareButtons[4].SetActive(true);  // Enable HUD button
+				HardwareInvCurrent.a.hardwareButtons[4].UpdateIconForVersionUpgrade();
 				break;
 		}
 		if (firstTimePickup) {
@@ -914,7 +1025,7 @@ public class MouseLookScript : MonoBehaviour {
 		centerTabButtonsControl.NotifyToCenterTab(1);
 	}
 
-	void AddItemToInventory (int index) {
+	public void AddItemToInventory (int index) {
 		AudioClip pickclip;
 		pickclip = PickupSFX;
 		switch (index) {
@@ -1192,13 +1303,16 @@ public class MouseLookScript : MonoBehaviour {
 			case 113:
 				AddAmmoToInventory(12, Const.a.magazinePitchCountForWeapon[12], false); // rubber slugs
 				break;
+			case 114:
+				AddAccessCardToInventory(114);
+				break;
         }
 		SFXSource.PlayOneShot(pickclip);
 		firstTimePickup = false;
 	}
 
 	public void DropHeldItem() {
-		if (heldObjectIndex < 0 || heldObjectIndex > 254) {
+		if (heldObjectIndex < 0 || heldObjectIndex > 255) {
 			Const.sprint("BUG: Attempted to DropHeldItem with index out of bounds (<0 or >255) and heldObjectIndex = " + heldObjectIndex.ToString(),player);
 			return;
 		}
@@ -1243,8 +1357,16 @@ public class MouseLookScript : MonoBehaviour {
 				if (tossObject.activeSelf != true) {
 					tossObject.SetActive(true);
 				}
-				if (levelDynamicContainer != null) tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-				tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
+				if (levelDynamicContainer != null) {
+					tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+					SaveObject so = tossObject.GetComponent<SaveObject>();
+					if (so != null) so.levelParentID = LevelManager.a.currentLevel;
+				}
+				
+				Vector3 tossDir = new Vector3(MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2),MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2),0);
+				tossDir.y = Screen.height - tossDir.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
+				tossObject.GetComponent<Rigidbody>().velocity = tossDir * tossForce;
 				tossObject.GetComponent<UseableObjectUse>().customIndex = heldObjectCustomIndex;
 				tossObject.GetComponent<UseableObjectUse>().ammo = heldObjectAmmo;
 			} else {
@@ -1255,8 +1377,16 @@ public class MouseLookScript : MonoBehaviour {
 					Const.sprint("BUG: Failed to instantiate object being dropped!",player);
 					return;
 				}
-				if (levelDynamicContainer != null) tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-				tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
+				if (levelDynamicContainer != null){
+					tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+					SaveObject so = tossObject.GetComponent<SaveObject>();
+					if (so != null) so.levelParentID = LevelManager.a.currentLevel;
+				}
+
+				Vector3 tossDir = new Vector3(MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2),MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2),0);
+				tossDir.y = Screen.height - tossDir.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
+				tossObject.GetComponent<Rigidbody>().velocity = tossDir * tossForce;
 				tossObject.layer = playerMovement.gameObject.layer; // can't touch player who threw us...na nana na, na na
 				GrenadeActivate ga = tossObject.GetComponent<GrenadeActivate>();
 				if (ga != null) {
@@ -1265,7 +1395,7 @@ public class MouseLookScript : MonoBehaviour {
 				mouseCursor.liveGrenade = false;
 			}
 		} else {
-			Const.sprint("Warning: Object "+heldObjectIndex.ToString()+" not assigned, vaporized.",player);
+			Const.sprint("BUG: Object "+heldObjectIndex.ToString()+" not assigned, vaporized.",player);
 		}
 	}
 
@@ -1285,7 +1415,7 @@ public class MouseLookScript : MonoBehaviour {
             mouseCursor.cursorImage = cursorTexture;
 			mouseCursor.liveGrenade = false;
         } else {
-			Const.sprint("Warning: Could Not Find object 'MouseCursorHandler' in scene\n",Const.a.allPlayers);
+			Const.sprint("BUG: Could Not Find object 'MouseCursorHandler' in scene\n",Const.a.allPlayers);
         }
 	}
 		
@@ -1301,6 +1431,10 @@ public class MouseLookScript : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
 		inventoryMode = false;
+		if (vmailActive) {
+			logInventory.DeactivateVMail();
+			vmailActive = false;
+		}
 	}
 
 	public void ForceInventoryMode() {
@@ -1339,8 +1473,8 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	public void UseGrenade (int index) {
-		if (holdingObject) { Const.sprint("Can't use grenade, hands full",player); return; }
-		if (index < 7 || index > 13) { Debug.Log("WARNING: index outside of 7 to 13 passed to UseGrenade() in MouseLookScript.cs"); return; }
+		if (holdingObject) { Const.sprint(Const.a.stringTable[311],player); return; } // Can't use grenade, hands full
+		if (index < 7 || index > 13) { Debug.Log("BUG: index outside of 7 to 13 passed to UseGrenade() in MouseLookScript.cs"); return; }
 		ForceInventoryMode();  // inventory mode is turned on when picking something up
 		ResetHeldItem();
 		holdingObject = true;

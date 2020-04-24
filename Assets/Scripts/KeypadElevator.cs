@@ -15,9 +15,10 @@ public class KeypadElevator : MonoBehaviour {
 	public int currentFloor;
 	public AudioClip SFX;
 	private float disconnectDist;
-	public float useDist = 2f;
+	private float useDist = 2f;
 	private AudioSource SFXSource;
-	private bool padInUse;
+	[HideInInspector]
+	public bool padInUse; // save
 	private GameObject playerCapsule;
 	private GameObject playerCamera;
 	private float distanceCheck;
@@ -30,11 +31,10 @@ public class KeypadElevator : MonoBehaviour {
 	public string lockedTarget;
 	public string argvalue;
 	public string lockedMessage;
-	public string blockedBySecurityText = "Blocked by SHODAN level Security.";
 
 	void Awake () {
 		if (targetDestination == null)
-			Const.sprint("Warning: Could not find target destination for elevator keypad" + gameObject.name,playerCapsule.transform.parent.gameObject);
+			Const.sprint(("BUG: Could not find target destination for elevator keypad" + gameObject.name + " at " + transform.position.ToString()),playerCapsule.transform.parent.gameObject);
 	}
 
 	void Start () {
@@ -50,8 +50,7 @@ public class KeypadElevator : MonoBehaviour {
 
 	public void Use (UseData ud) {
 		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
-			Const.sprint(blockedBySecurityText,ud.owner);
-			MFDManager.a.BlockedBySecurity(transform.position);
+			MFDManager.a.BlockedBySecurity(transform.position,ud);
 			return;
 		}
 

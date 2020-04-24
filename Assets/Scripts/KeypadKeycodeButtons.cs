@@ -20,13 +20,17 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 	public bool done;
 
 	void Awake () {
+		ResetEntry();
+		SFXSource = GetComponent<AudioSource>();
+		sfxPlayed = false;
+		done = false;
+	}
+
+	public void ResetEntry() {
 		currentEntry = -1;
 		entryOnes = -1;
 		entryTens = -1;
 		entryHuns = -1;
-		SFXSource = GetComponent<AudioSource>();
-		sfxPlayed = false;
-		done = false;
 	}
 	
 	public void Keypress (int button) {

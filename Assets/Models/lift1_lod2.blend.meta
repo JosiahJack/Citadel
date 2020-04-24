@@ -56,14 +56,14 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: _0lift1
-    second: {fileID: 2100000, guid: 837c4d22fbca3b14c87f4b73a4d226a1, type: 2}
+    second: {fileID: 2100000, guid: 81aa88e03ebdf4a45a1cd1266717814a, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: _0lift1___0lift1_bmp
-    second: {fileID: 2100000, guid: 0b5762f20d8f31d4ea2236ca362b94e0, type: 2}
+    second: {fileID: 2100000, guid: 1278c479ce9a74e4eae321d8dc31ee1b, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -126,7 +126,7 @@ ModelImporter:
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
-  importAnimation: 1
+  importAnimation: 0
   humanDescription:
     serializedVersion: 3
     human: []
@@ -145,9 +145,9 @@ ModelImporter:
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 0
   additionalBone: 0
   userData: 
   assetBundleName: 

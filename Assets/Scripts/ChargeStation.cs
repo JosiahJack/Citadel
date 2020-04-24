@@ -20,35 +20,33 @@ public class ChargeStation : MonoBehaviour {
 		nextthink = Time.time;
 	}
 
-	void Start () {
-		if (string.IsNullOrWhiteSpace(rechargeMsg)) {
-			if (rechargeMsgLingdex < Const.a.stringTable.Length)
-				rechargeMsg = Const.a.stringTable[rechargeMsgLingdex];
-		}
-
-		if (string.IsNullOrWhiteSpace(usedMsg)) {
-			if (usedMsgLingdex < Const.a.stringTable.Length)
-				usedMsg = Const.a.stringTable[usedMsgLingdex];
-		}
-	}
-
 	public void Use (UseData ud) {
 		if (LevelManager.a.GetCurrentLevelSecurity() > minSecurityLevel) {
-			MFDManager.a.BlockedBySecurity (transform.position);
-			//Debug.Log("Failed to use charge station, minSecurityLevel was " + minSecurityLevel.ToString() + ", while level security is " + LevelManager.a.GetCurrentLevelSecurity().ToString());
+			MFDManager.a.BlockedBySecurity (transform.position,ud);
 			return;
 		}
 		
 		if (nextthink < Time.time) {
-            ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerEnergy>().GiveEnergy(amount, 1);
+			PlayerEnergy pe = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerEnergy>();
+            if (pe != null) {
+				if (pe.energy >= pe.maxenergy) {
+					Const.sprint(Const.a.stringTable[303],ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule);
+					return;
+				} else {
+					pe.GiveEnergy(amount, 1);
+				}
+			}
 			if (damageOnUse > 0f) {
 				DamageData dd = new DamageData();
 				dd.damage = damageOnUse;
 				HealthManager hm = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<HealthManager>();
-				if (hm.health <= dd.damage) dd.damage = hm.health - 1; // don't ever kill the player from this, way too cheap
-				if (dd.damage > 0) hm.TakeDamage(dd);  // ouch it zapped me...that really hurt Charlie, that hurt my finger, owhow, OW! ow, hahahow ow! OWW!  Charlie zapped my finger (it helps if you use a British accent)
+				if (hm != null) {
+					if (hm.health <= dd.damage) dd.damage = hm.health - 1; // don't ever kill the player from this, way too cheap
+					if (hm.god) dd.damage = 0;
+					if (dd.damage > 0) hm.TakeDamage(dd);  // ouch it zapped me...that really hurt Charlie, that hurt my finger, owhow, OW! ow, hahahow ow! OWW!  Charlie zapped my finger (it helps if you use a British accent)
+				}
 			}
-			Const.sprint(usedMsg, ud.owner);
+			Const.sprintByIndexOrOverride (usedMsgLingdex, usedMsg,ud.owner);
 			if (requireReset) {
 				nextthink = Time.time + resetTime;
 			}
@@ -64,7 +62,7 @@ public class ChargeStation : MonoBehaviour {
 				Const.a.UseTargets(ud,target);
 			}
 		} else {
-			Const.sprint(rechargeMsg, ud.owner);
+			Const.sprintByIndexOrOverride (rechargeMsgLingdex, rechargeMsg,ud.owner);
 		}
 	}
 

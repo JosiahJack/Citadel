@@ -34,7 +34,11 @@ public class TabButtons : MonoBehaviour {
 	}
 
 	public void ReturnToLastTab () {
-		TabButtonClickSilent(lastTab,true);
+		if (isRH) {
+			TabButtonClickSilent(2,true); // force automap for right
+		} else {
+			TabButtonClickSilent(0,true); // force weapon for left
+		}
 	}
 
 	public void TabButtonClick (int tabNum) {

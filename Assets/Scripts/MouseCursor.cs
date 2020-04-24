@@ -38,6 +38,7 @@ public class MouseCursor : MonoBehaviour {
 	public Texture2D cursorOverButtonTexture;
 	private Texture2D tempTexture;
 	public WeaponCurrent wepCurrent;
+	public RectTransform energySliderRect;
 
 	void OnGUI () {
         if (offsetCentering) {
@@ -74,62 +75,66 @@ public class MouseCursor : MonoBehaviour {
 				cursorImage = tempTexture;
 			}
 		} else {
-			if (playerCameraScript.holdingObject) {
-				cursorImage = Const.a.useableItemsFrobIcons[playerCameraScript.heldObjectIndex];
+			if (playerCameraScript.vmailActive) {
+				cursorImage = Const.a.useableItemsFrobIcons[120];	// vmail
 			} else {
-				//cursorImage = Const.a.useableItemsFrobIcons[115];
-				switch(wepCurrent.weaponIndex) {
-					case 36:
-						cursorImage = Const.a.useableItemsFrobIcons[116];	// red
-						break;
-					case 37:
-						cursorImage = Const.a.useableItemsFrobIcons[125];	// blue
-						break;
-					case 38:
-						cursorImage = Const.a.useableItemsFrobIcons[116];	// red
-						break;
-					case 39:
-						cursorImage = Const.a.useableItemsFrobIcons[115];	// green
-						break;
-					case 40:
-						cursorImage = Const.a.useableItemsFrobIcons[125];	// blue
-						break;
-					case 41:
-						cursorImage = Const.a.useableItemsFrobIcons[126];	// orange
-						break;
-					case 42:
-						cursorImage = Const.a.useableItemsFrobIcons[126];	// orange
-						break;
-					case 43:
-						cursorImage = Const.a.useableItemsFrobIcons[116];	// red
-						break;
-					case 44:
-						cursorImage = Const.a.useableItemsFrobIcons[123];	// yellow
-						break;
-					case 45:
-						cursorImage = Const.a.useableItemsFrobIcons[116];	// red
-						break;
-					case 46:
-						cursorImage = Const.a.useableItemsFrobIcons[127];	// teal
-						break;
-					case 47:
-						cursorImage = Const.a.useableItemsFrobIcons[123];	// yellow
-						break;
-					case 48:
-						cursorImage = Const.a.useableItemsFrobIcons[116];	// red
-						break;
-					case 49:
-						cursorImage = Const.a.useableItemsFrobIcons[115];	// green
-						break;
-					case 50:
-						cursorImage = Const.a.useableItemsFrobIcons[125];	// blue
-						break;
-					case 51:
-						cursorImage = Const.a.useableItemsFrobIcons[127];	// teal
-						break;
-					default:
-						cursorImage = Const.a.useableItemsFrobIcons[115];	// green
-						break;
+				if (playerCameraScript.holdingObject) {
+					cursorImage = Const.a.useableItemsFrobIcons[playerCameraScript.heldObjectIndex];
+				} else {
+					//cursorImage = Const.a.useableItemsFrobIcons[115];
+					switch(wepCurrent.weaponIndex) {
+						case 36:
+							cursorImage = Const.a.useableItemsFrobIcons[116];	// red
+							break;
+						case 37:
+							cursorImage = Const.a.useableItemsFrobIcons[125];	// blue
+							break;
+						case 38:
+							cursorImage = Const.a.useableItemsFrobIcons[116];	// red
+							break;
+						case 39:
+							cursorImage = Const.a.useableItemsFrobIcons[115];	// green
+							break;
+						case 40:
+							cursorImage = Const.a.useableItemsFrobIcons[125];	// blue
+							break;
+						case 41:
+							cursorImage = Const.a.useableItemsFrobIcons[126];	// orange
+							break;
+						case 42:
+							cursorImage = Const.a.useableItemsFrobIcons[126];	// orange
+							break;
+						case 43:
+							cursorImage = Const.a.useableItemsFrobIcons[116];	// red
+							break;
+						case 44:
+							cursorImage = Const.a.useableItemsFrobIcons[123];	// yellow
+							break;
+						case 45:
+							cursorImage = Const.a.useableItemsFrobIcons[116];	// red
+							break;
+						case 46:
+							cursorImage = Const.a.useableItemsFrobIcons[127];	// teal
+							break;
+						case 47:
+							cursorImage = Const.a.useableItemsFrobIcons[123];	// yellow
+							break;
+						case 48:
+							cursorImage = Const.a.useableItemsFrobIcons[116];	// red
+							break;
+						case 49:
+							cursorImage = Const.a.useableItemsFrobIcons[115];	// green
+							break;
+						case 50:
+							cursorImage = Const.a.useableItemsFrobIcons[125];	// blue
+							break;
+						case 51:
+							cursorImage = Const.a.useableItemsFrobIcons[127];	// teal
+							break;
+						default:
+							cursorImage = Const.a.useableItemsFrobIcons[115];	// green
+							break;
+					}
 				}
 			}
 		}
@@ -159,6 +164,10 @@ public class MouseCursor : MonoBehaviour {
 				inventoryAddHelper.SetActive(false);
 				GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 			}
+		}
+
+		if (RectTransformUtility.RectangleContainsScreenPoint(energySliderRect,Input.mousePosition,uiCamera.GetComponent<Camera>())) {
+			GUIState.a.isBlocking = true;
 		}
 	}
 }

@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PuzzleWire : MonoBehaviour {
+	[HideInInspector]
+	public PuzzleWirePuzzle puzzleWP;
 	public bool[] wireIsActive;
 	public bool[] nodeRowIsActive;
 	public GameObject[] leftNodes;
@@ -87,7 +89,20 @@ public class PuzzleWire : MonoBehaviour {
 		DisableAllSelectedIndicators();
 		DisableGeniusHints();
 		SFXSource = GetComponent<AudioSource>();
-		EvaluatePuzzle();
+		//EvaluatePuzzle();
+	}
+
+	public void Reset() {
+		// No longer in use, reset reset!
+		Solved = false;
+		slider.value = 0;
+		selectedWire = -1;
+		blinkState = false;
+		CheckEnabledNodes();
+		ChangeAppearance();
+		DisableAllSelectedIndicators();
+		DisableGeniusHints();
+		gameObject.SetActive(false);
 	}
 
 	Color GetColor(WireColor index) {
@@ -236,7 +251,7 @@ public class PuzzleWire : MonoBehaviour {
 		}
 	}
 
-	public void SendWirePuzzleData(bool[] sentWiresOn, bool[] sentNodeRowsActive, int[] sentCurrentPositionsLeft, int[] sentCurrentPositionsRight, int[] sentTargetsLeft, int[] sentTargetsRight,WireColorTheme sentTheme, WireColor[] sentWireColors, string t1, string a1, UseData udSent) {
+	public void SendWirePuzzleData(bool[] sentWiresOn, bool[] sentNodeRowsActive, int[] sentCurrentPositionsLeft, int[] sentCurrentPositionsRight, int[] sentTargetsLeft, int[] sentTargetsRight,WireColorTheme sentTheme, WireColor[] sentWireColors, string t1, string a1, UseData udSent,PuzzleWirePuzzle pwp) {
 		wireIsActive = sentWiresOn;
 		nodeRowIsActive = sentNodeRowsActive;
 		wire1LHPosition = sentCurrentPositionsLeft[0];
@@ -272,8 +287,15 @@ public class PuzzleWire : MonoBehaviour {
 		wireColors = sentWireColors;
 		target = t1;
 		argvalue = a1;
+		puzzleWP = pwp;
+		Solved = pwp.puzzleSolved;
 		CheckEnabledNodes();
+		EvaluatePuzzle();
 		ChangeAppearance();
+
+		if (udSent.mainIndex == 54) {
+			PuzzleSolved(true);
+		}
 	}
 
 	private Vector3 GetPositionOfLHNode(int index) {
@@ -375,7 +397,7 @@ public class PuzzleWire : MonoBehaviour {
 		blinkTimeFinished = Time.time + blinkTime;
 		BlinkSelectedIndicator();
 		ChangeAppearance();
-		EvaluatePuzzle();
+		//EvaluatePuzzle();
 	}
 
 	public void SelectWireRH(int spot) {
@@ -397,7 +419,7 @@ public class PuzzleWire : MonoBehaviour {
 		blinkTimeFinished = Time.time + blinkTime;
 		BlinkSelectedIndicator();
 		ChangeAppearance();
-		EvaluatePuzzle();
+		//EvaluatePuzzle();
 	}
 
 	public void MoveEndpointLeft(int newSpot) {
@@ -611,15 +633,24 @@ public class PuzzleWire : MonoBehaviour {
 		actualValue = tempF;
 
 		if (tempF > 0.92f) {
-			PuzzleSolved();
+			PuzzleSolved(false);
 		}
 	}
 
-	void PuzzleSolved() {
+	void PuzzleSolved(bool usedLogicProbe) {
 		actualValue = 1f;
 		slider.value = actualValue;
 		Solved = true;
-		SFXSource.PlayOneShot(SFX,1.0f);
-		Const.a.UseTargets(udSender,target);
+		if (SFXSource != null && SFX != null) SFXSource.PlayOneShot(SFX,1.0f);
+		puzzleWP.puzzleSolved = true;
+		puzzleWP.UseTargets(udSender.owner);
+		//Const.a.UseTargets(udSender,target);
+		if (usedLogicProbe) {
+			MouseLookScript mls = udSender.owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<MouseLookScript>();
+			if (mls != null) {
+				mls.ResetHeldItem();
+				mls.ResetCursor();
+			}
+		}
 	}
 }

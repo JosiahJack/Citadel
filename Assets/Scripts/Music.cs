@@ -52,6 +52,8 @@ public class Music : MonoBehaviour {
 	public AudioClip cyber1Music;
 	public AudioClip cyber2Music;
 	private AudioSource SFX;
+	private float clipFinished;
+	private float clipLength;
 	private int actionState = 0;
 	public GameObject mainMenu;
 	public WeaponFire wf;
@@ -59,6 +61,7 @@ public class Music : MonoBehaviour {
 
 	void Awake() {
 		SFX = GetComponent<AudioSource>();
+		clipFinished = Time.time;
 	}
 
 	void CheckActionState() {
@@ -85,12 +88,10 @@ public class Music : MonoBehaviour {
 		// for(int i=0;i<????.Length;i++) {if (Vector3.Distance(????[i].position,playerCapsuleTransform.position) < 10.24f) actionState = 1; // critter nearby, freak out!}
 	}
 
-// BUGS!!  Apparently it keeps start start start start start start start starting the same clip over and over
-/*
     void Update() {
 		// Check if main menu is active and disable playing background music
 		if (mainMenu.activeSelf == true) {
-			SFX.Stop();
+			if (SFX != null) SFX.Stop();
 			return;
 		}
 
@@ -127,7 +128,6 @@ public class Music : MonoBehaviour {
 					break;
 		}
     }
-*/
 
 	void SetClip (AudioClip acNormal, AudioClip acSuspense, AudioClip acAction, AudioClip acDistorted, float vol) {
 		switch(actionState) {
@@ -137,11 +137,18 @@ public class Music : MonoBehaviour {
 			case 3: SFX.clip = acDistorted; break;
 			default: SFX.clip = acNormal; break;
 		}
+		if (SFX.clip != null) {
+			clipLength = SFX.clip.length;
+		} else {
+			clipLength = 0;
+		}
 		SFX.loop = true;
 		SFX.volume = vol;
-		if (SFX.clip != null)
-			SFX.Play();
-		else
-			SFX.Stop();
+		if (SFX.clip != null && SFX != null && clipFinished < Time.time) {
+			clipFinished = Time.time + clipLength;
+			if (SFX != null) SFX.PlayOneShot(SFX.clip);
+		} else {
+			if (SFX != null) SFX.Stop();
+		}
 	}
 }

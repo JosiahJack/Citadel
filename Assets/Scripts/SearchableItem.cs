@@ -53,9 +53,15 @@ public class SearchableItem : MonoBehaviour, IBatchUpdate {
 
 	public void BatchUpdate () {
 		if (searchableInUse) {
+			gameObject.tag = "Untagged";
 			if (Vector3.Distance(currentPlayerCapsule.transform.position, gameObject.transform.position) > disconnectDist) {
 				searchableInUse = false;
+				gameObject.tag = "Searchable";
 				//MFDManager.a.ClearDataTab();
+			}
+			if (!MFDManager.a.usingObject) {
+				searchableInUse = false;
+				gameObject.tag = "Searchable";
 			}
 		}
 	}

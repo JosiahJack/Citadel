@@ -10,18 +10,18 @@ public class UIButtonMask : MonoBehaviour {
 	private float dbclickFinished;
 	public int doubleClickTicks;  // takes 2 to activate double click function
 	public bool doubleClickEnabled = false;
-	public string toolTipText;
+	public int toolTipLingdex = -1;
 	public Handedness toolTipType;
 
 	void Start () {
 		if (playerCamera == null) {
-			Const.sprint("Warning: UIButtonMask script could not find playerCamera",Const.a.allPlayers);
+			Const.sprint("BUG: UIButtonMask script could not find playerCamera",Const.a.allPlayers);
 		}
 		EventTrigger pointerTrigger = GetComponent<EventTrigger>();
 		if (pointerTrigger == null) {
 			pointerTrigger = gameObject.AddComponent<EventTrigger>();
 			if (pointerTrigger == null) {
-				Const.sprint("Warning: Could not create Event Trigger for UIButtonMask",Const.a.allPlayers);
+				Const.sprint("BUG: Could not create EventTrigger for UIButtonMask",Const.a.allPlayers);
 				return;
 			}
 		}
@@ -59,8 +59,8 @@ public class UIButtonMask : MonoBehaviour {
         playerCamera.GetComponent<MouseLookScript>().currentButton = gameObject;
 		doubleClickTicks = 0;
 
-		if (toolTipText != null && toolTipText != string.Empty) {
-			playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>().toolTip = toolTipText;
+		if (toolTipLingdex >= 0) {
+			playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>().toolTip = Const.a.stringTable[toolTipLingdex];
 			playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>().toolTipType = toolTipType;
 		}
     }
@@ -68,7 +68,7 @@ public class UIButtonMask : MonoBehaviour {
 	public void PtrExit () {
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 		doubleClickTicks = 0;
-		if (toolTipText != null && toolTipText != string.Empty) {
+		if (toolTipLingdex >= 0) {
 			playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>().toolTip = string.Empty;
 		}
     }

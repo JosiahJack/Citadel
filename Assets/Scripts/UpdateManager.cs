@@ -48,8 +48,8 @@ public interface IBatchUpdate {
 // A:
 	// Door
 	// Force Bridge
-	// ImageSequenceTextureArray
 	// HealthManager
+	// ColorCurvesManager
 // B:
 	// ButtonSwitch
 	// LightAnimation
