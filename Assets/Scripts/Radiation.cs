@@ -11,14 +11,14 @@ public class Radiation : MonoBehaviour {
 
 	void OnTriggerEnter (Collider col) {
 		if (!isEnabled) return;
-		if (col.gameObject.tag == "Player") {
+		if (col.gameObject.CompareTag("Player")) {
 			PlayerHealth ph = col.gameObject.GetComponent<PlayerHealth>();
 			if (ph != null) {
 				if (ph.hm.health > 0f) {
 					numPlayers++;
 					ph.radiationArea = true;
 					ph.GiveRadiation(radiationAmount);
-					radFinished = Time.time + (intervalTime*Random.Range(1f,1.5f));
+					radFinished = PauseScript.a.relativeTime + (intervalTime*Random.Range(1f,1.5f));
 				}
 			}
 		}
@@ -26,13 +26,13 @@ public class Radiation : MonoBehaviour {
 
 	void  OnTriggerStay (Collider col) {
 		if (!isEnabled) return;
-		if (col.gameObject.tag == "Player") {
+		if (col.gameObject.CompareTag("Player")) {
 			PlayerHealth ph = col.gameObject.GetComponent<PlayerHealth>();
 			if (ph != null) {
-				if (ph.hm.health > 0f && (radFinished < Time.time)) {
+				if (ph.hm.health > 0f && (radFinished < PauseScript.a.relativeTime)) {
 					ph.radiationArea = true;
 					ph.GiveRadiation(radiationAmount);
-					radFinished = Time.time + (intervalTime*Random.Range(1f,1.5f));
+					radFinished = PauseScript.a.relativeTime + (intervalTime*Random.Range(1f,1.5f));
 				}
 			}
 		}
@@ -40,13 +40,13 @@ public class Radiation : MonoBehaviour {
 
 	void OnTriggerExit (Collider col) {
 		if (!isEnabled) return;
-		if (col.gameObject.tag == "Player") { 
+		if (col.gameObject.CompareTag("Player")) { 
 			PlayerHealth ph = col.gameObject.GetComponent<PlayerHealth>();
 			if (ph != null) {
 				if (ph.hm.health > 0f) {
 					ph.radiationArea = false;
 					numPlayers--;
-					if (numPlayers == 0) radFinished = Time.time;  // reset so re-triggering is instant
+					if (numPlayers == 0) radFinished = PauseScript.a.relativeTime;  // reset so re-triggering is instant
 				}
 			}
 		}

@@ -16,8 +16,8 @@ public class ChargeStation : MonoBehaviour {
 	public int usedMsgLingdex = 0;
 	// private float maxResetTime = 10f;
 	
-	void Awake () {
-		nextthink = Time.time;
+	void Start () {
+		nextthink = PauseScript.a.relativeTime;
 	}
 
 	public void Use (UseData ud) {
@@ -26,7 +26,7 @@ public class ChargeStation : MonoBehaviour {
 			return;
 		}
 		
-		if (nextthink < Time.time) {
+		if (nextthink < PauseScript.a.relativeTime) {
 			PlayerEnergy pe = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerEnergy>();
             if (pe != null) {
 				if (pe.energy >= pe.maxenergy) {
@@ -48,7 +48,7 @@ public class ChargeStation : MonoBehaviour {
 			}
 			Const.sprintByIndexOrOverride (usedMsgLingdex, usedMsg,ud.owner);
 			if (requireReset) {
-				nextthink = Time.time + resetTime;
+				nextthink = PauseScript.a.relativeTime + resetTime;
 			}
 
 			if (!string.IsNullOrWhiteSpace(target)) {

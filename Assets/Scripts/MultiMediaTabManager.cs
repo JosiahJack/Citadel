@@ -10,6 +10,7 @@ public class MultiMediaTabManager : MonoBehaviour {
 	public GameObject emailTab;
 	public GameObject dataTab;
 	public GameObject headerLabel;
+	public EReaderSectionsButtons ersb;
 	[HideInInspector]
 	public int lastOpened = 1; // default to logs.  0 = email table, 1 = log table, 2 = data table
 
@@ -27,6 +28,7 @@ public class MultiMediaTabManager : MonoBehaviour {
 		secondaryTab1.SetActive(false);
 		secondaryTab2.SetActive(false);
 		emailTab.SetActive(false);
+		ersb.SetEReaderSectionsButtonsHighlights(lastOpened);
 		dataTab.SetActive(false);
 		headerLabel.GetComponent<Text>().text = System.String.Empty;
 	}
@@ -36,6 +38,7 @@ public class MultiMediaTabManager : MonoBehaviour {
 		startingSubTab.SetActive(true);
 		headerLabel.GetComponent<Text>().text = "LOGS";
 		lastOpened = 1;
+		ersb.SetEReaderSectionsButtonsHighlights(1);
 	}
 
 	public void OpenLogsLevelFolder(int curlevel) {
@@ -56,6 +59,7 @@ public class MultiMediaTabManager : MonoBehaviour {
 		emailTab.SetActive(true);
 		headerLabel.GetComponent<Text>().text = "EMAIL";
 		lastOpened = 0;
+		ersb.SetEReaderSectionsButtonsHighlights(0);
 	}
 
 	public void OpenDataTableContents() {
@@ -63,5 +67,6 @@ public class MultiMediaTabManager : MonoBehaviour {
 		dataTab.SetActive(true);
 		headerLabel.GetComponent<Text>().text = "DATA";
 		lastOpened = 2;
+		ersb.SetEReaderSectionsButtonsHighlights(2);
 	}
 }

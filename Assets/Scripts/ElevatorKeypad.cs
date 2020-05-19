@@ -22,47 +22,49 @@ public class ElevatorKeypad : MonoBehaviour {
 	public Color textDarkenedColor;
 
 	void Update () {
-		for (int i=0; i<8; i++) {
-			if (buttonsEnabled[i]) {
-				buttons[i].SetActive(true);
-				buttonTextHolders[i].text = buttonText[i];
-				if (buttonsDarkened[i]) {
-					buttonSprites[i].overrideSprite = buttonDarkened;
-					buttonTextHolders[i].color = textDarkenedColor;
-					buttonHandlers[i].GetComponent<ElevatorButton>().floorAccessible = false;
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			for (int i=0; i<8; i++) {
+				if (buttonsEnabled[i]) {
+					buttons[i].SetActive(true);
+					buttonTextHolders[i].text = buttonText[i];
+					if (buttonsDarkened[i]) {
+						buttonSprites[i].overrideSprite = buttonDarkened;
+						buttonTextHolders[i].color = textDarkenedColor;
+						buttonHandlers[i].GetComponent<ElevatorButton>().floorAccessible = false;
+					} else {
+						buttonSprites[i].overrideSprite = buttonNormal;
+						buttonTextHolders[i].color = textEnabledColor;
+						buttonHandlers[i].GetComponent<ElevatorButton>().floorAccessible = true;
+						buttonHandlers[i].GetComponent<ElevatorButton>().targetDestination = targetDestination[i];
+					}
 				} else {
-					buttonSprites[i].overrideSprite = buttonNormal;
-					buttonTextHolders[i].color = textEnabledColor;
-					buttonHandlers[i].GetComponent<ElevatorButton>().floorAccessible = true;
-					buttonHandlers[i].GetComponent<ElevatorButton>().targetDestination = targetDestination[i];
+					buttons[i].SetActive(false);
 				}
-			} else {
-				buttons[i].SetActive(false);
 			}
-		}
-		switch (currentFloor) {
-		case 0: currentFloorIndicator.overrideSprite = indicatorSprites[0];
-			break;
-		case 1: currentFloorIndicator.overrideSprite = indicatorSprites[1];
-			break;
-		case 2: currentFloorIndicator.overrideSprite = indicatorSprites[2];
-			break;
-		case 3: currentFloorIndicator.overrideSprite = indicatorSprites[3];
-			break;
-		case 4: currentFloorIndicator.overrideSprite = indicatorSprites[4];
-			break;
-		case 5: currentFloorIndicator.overrideSprite = indicatorSprites[5];
-			break;
-		case 6: currentFloorIndicator.overrideSprite = indicatorSprites[6];
-			break;
-		case 7: currentFloorIndicator.overrideSprite = indicatorSprites[7];
-			break;
-		case 8: currentFloorIndicator.overrideSprite = indicatorSprites[8];
-			break;
-		case 9: currentFloorIndicator.overrideSprite = indicatorSprites[9];
-			break;
-		case 10: currentFloorIndicator.overrideSprite = indicatorSprites[10];
-			break;
+			switch (currentFloor) {
+			case 0: currentFloorIndicator.overrideSprite = indicatorSprites[0];
+				break;
+			case 1: currentFloorIndicator.overrideSprite = indicatorSprites[1];
+				break;
+			case 2: currentFloorIndicator.overrideSprite = indicatorSprites[2];
+				break;
+			case 3: currentFloorIndicator.overrideSprite = indicatorSprites[3];
+				break;
+			case 4: currentFloorIndicator.overrideSprite = indicatorSprites[4];
+				break;
+			case 5: currentFloorIndicator.overrideSprite = indicatorSprites[5];
+				break;
+			case 6: currentFloorIndicator.overrideSprite = indicatorSprites[6];
+				break;
+			case 7: currentFloorIndicator.overrideSprite = indicatorSprites[7];
+				break;
+			case 8: currentFloorIndicator.overrideSprite = indicatorSprites[8];
+				break;
+			case 9: currentFloorIndicator.overrideSprite = indicatorSprites[9];
+				break;
+			case 10: currentFloorIndicator.overrideSprite = indicatorSprites[10];
+				break;
+			}
 		}
 	}
 }

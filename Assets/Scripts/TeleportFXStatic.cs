@@ -24,9 +24,9 @@ public class TeleportFXStatic : MonoBehaviour {
 		}
 		cursorTexture = mouseCursor.GetComponent<MouseCursor>().cursorImage; //store correct cursor
 		mouseCursor.GetComponent<MouseCursor>().cursorImage = tempCursorTexture; //give dummy cursor to hide it
-		effectFinished = Time.time + activeTime;
+		effectFinished = PauseScript.a.relativeTime + activeTime;
 		rect = GetComponent<RectTransform>();
-		flipTime = Time.time + intervalTime;
+		flipTime = PauseScript.a.relativeTime + intervalTime;
 	}
 
 	void FlipX () {
@@ -55,16 +55,18 @@ public class TeleportFXStatic : MonoBehaviour {
 	}
 
 	void Update () {
-		if (effectFinished < Time.time) {
-			Deactivate();
-		}
-		if (flipTime < Time.time) {
-			flipTime = Time.time + intervalTime;
-			randHolder = Random.Range(0f,1f);
-			if (randHolder < 0.5) {
-				FlipX();
-			} else {
-				FlipY();
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (effectFinished < PauseScript.a.relativeTime) {
+				Deactivate();
+			}
+			if (flipTime < PauseScript.a.relativeTime) {
+				flipTime = PauseScript.a.relativeTime + intervalTime;
+				randHolder = Random.Range(0f,1f);
+				if (randHolder < 0.5) {
+					FlipX();
+				} else {
+					FlipY();
+				}
 			}
 		}
 	}

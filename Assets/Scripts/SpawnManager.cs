@@ -18,30 +18,32 @@ public class SpawnManager : MonoBehaviour {
 	[HideInInspector]
 	public float delayFinished; // save
 
-	void Awake() {
+	void Start() {
 		if (activeSpawned.Length > 0) {
 			for (int i=0;i<activeSpawned.Length;i++) {
 				numberActive++;
 			}
 		}
-		delayFinished = Time.time;
+		delayFinished = PauseScript.a.relativeTime;
 	}
 
 	public void Activate(bool alertEnemies) {
 		alertEnemiesOnAwake = alertEnemies;
 		active = true;
-		if (!spawnAllAtOnce) delayFinished = Time.time + Random.Range(minDelayBetweenSpawns,maxDelayBetweenSpawns);
+		if (!spawnAllAtOnce) delayFinished = PauseScript.a.relativeTime + Random.Range(minDelayBetweenSpawns,maxDelayBetweenSpawns);
 	}
 
 	void Update() {
-		if (active) {
-			if (numberActive < numberToSpawn) {
-				if (spawnAllAtOnce) {
-					Spawn(index); //spawn don't wait
-				} else {
-					if (delayFinished < Time.time) {
-						delayFinished = Time.time + Random.Range(minDelayBetweenSpawns,maxDelayBetweenSpawns);
-						Spawn(index); // spawn then wait randomized amount of time
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (active) {
+				if (numberActive < numberToSpawn) {
+					if (spawnAllAtOnce) {
+						Spawn(index); //spawn don't wait
+					} else {
+						if (delayFinished < PauseScript.a.relativeTime) {
+							delayFinished = PauseScript.a.relativeTime + Random.Range(minDelayBetweenSpawns,maxDelayBetweenSpawns);
+							Spawn(index); // spawn then wait randomized amount of time
+						}
 					}
 				}
 			}
@@ -62,7 +64,6 @@ public class SpawnManager : MonoBehaviour {
 					if (aic != null) aic.enemy = Const.a.player1;
 				}
 				numberActive++;
-
 				SaveObject so = spawnee.GetComponent<SaveObject>();
 				if (so != null) so.levelParentID = LevelManager.a.currentLevel;
 			}
@@ -72,6 +73,17 @@ public class SpawnManager : MonoBehaviour {
 
 	public void SpawneeJustDied() {
 		numberActive--;
+		if (numberActive < 0) numberActive = 0;
+	}
+
+	public void AwakeFromLoad(float health) {
+		if (health > 0) {
+			numberActive++;
+		} else {
+			numberActive--;
+		}
+		if (numberActive < 0) numberActive = 0;
+		//if (numberActive > numberToSpawn) numberActive = numberToSpawn;
 	}
 
 	Vector3 GetRandomLocation() {

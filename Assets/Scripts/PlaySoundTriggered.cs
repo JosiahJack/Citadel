@@ -53,7 +53,7 @@ public class PlaySoundTriggered : MonoBehaviour {
 
 	void Update() {
 		if (currentlyPlaying) {
-			if (PauseScript.a != null && PauseScript.a.Paused()) {
+			if (PauseScript.a.Paused() || PauseScript.a.mainMenu.activeInHierarchy) {
 				if (SFX != null) SFX.Pause();
 				justPaused = true;
 			} else {
@@ -63,12 +63,15 @@ public class PlaySoundTriggered : MonoBehaviour {
 				}
 			}
 		}
-		if (playSoundOnParticleEmit){
-			int count = psys.particleCount;
-			if (count > numparticles && (count == burstemittcnt1 || count == burstemittcnt2)) {
-				if (SFX != null) SFX.PlayOneShot(SFXClipToPlay);
+
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (playSoundOnParticleEmit){
+				int count = psys.particleCount;
+				if (count > numparticles && (count == burstemittcnt1 || count == burstemittcnt2)) {
+					if (SFX != null) SFX.PlayOneShot(SFXClipToPlay);
+				}
+				numparticles = count;
 			}
-			numparticles = count;
 		}
 	}
 

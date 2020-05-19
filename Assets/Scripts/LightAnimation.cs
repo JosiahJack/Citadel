@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class LightAnimation : MonoBehaviour, IBatchUpdate {
+public class LightAnimation : MonoBehaviour {
 	[Tooltip("Set minimum intensity of light animations")]
 	public float minIntensity = 0f;
 	[Tooltip("Set maximum intensity of light animations (overrides Light settings)")]
@@ -36,14 +36,13 @@ public class LightAnimation : MonoBehaviour, IBatchUpdate {
 		differenceInIntensity = (maxIntensity - minIntensity);
 		if (intervalSteps.Length != 0) {
 			stepTime = intervalSteps[currentStep];
-			lerpTime = Time.time + stepTime;
-			lerpStartTime = Time.time;
+			lerpTime = PauseScript.a.relativeTime + stepTime;
+			lerpStartTime = PauseScript.a.relativeTime;
 		} else {
 			noSteps = true;
 			//setIntensity = GetComponent<Light>().intensity;
 			animLight.intensity = maxIntensity;
 		}
-		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketB);
 	}
 
 	public void TurnOn() {
@@ -66,69 +65,73 @@ public class LightAnimation : MonoBehaviour, IBatchUpdate {
 		}
 	}
 
-	public void BatchUpdate () {
-		if (lightOn) {
-			if (!noSteps) {
-				if (lerpUp) {
-					// Going from minIntensity to maxIntensity
-					if (lerpTime < Time.time) {
-						animLight.intensity = maxIntensity;
-						lerpUp = false;
-						currentStep++;
-						if (currentStep == intervalSteps.Length)
-							currentStep = 0;
-
-						stepTime = intervalSteps[currentStep];
-						lerpTime = Time.time + stepTime;
-						lerpStartTime = Time.time;
-						if (lerpTime == 0f)
-							lerpTime = 0.1f;
-					} else {
-						if (lerpOn) {
-							if (currentStep < intervalStepisLerping.Length) {
-								if (intervalStepisLerping[currentStep]) {
-									lerpValue = (Time.time - lerpStartTime)/(lerpTime - lerpStartTime); // percent towards goal time
-									animLight.intensity = minIntensity + (differenceInIntensity * (lerpValue));
-								}
-							}
-						}
-					}
-				} else {
-					// Going from maxIntensity to minIntensity
-					if (lerpTime < Time.time) {
-						animLight.intensity = minIntensity;
-						lerpUp = true;
-						currentStep++;
-						if (currentStep == intervalSteps.Length)
-							currentStep = 0;
-						
-						stepTime = intervalSteps[currentStep];
-						lerpTime = Time.time + stepTime;
-						lerpStartTime = Time.time;
-						if (lerpTime == 0f)
-							lerpTime = 0.1f;
-					} else {
-						if (lerpOn) {
+	void Update() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (lightOn) {
+				if (!noSteps) {
+					if (lerpUp) {
+						// Going from minIntensity to maxIntensity
+						if (lerpTime < PauseScript.a.relativeTime) {
+							animLight.intensity = maxIntensity;
+							lerpUp = false;
+							currentStep++;
 							if (currentStep == intervalSteps.Length)
 								currentStep = 0;
 
-							if (currentStep < intervalStepisLerping.Length) {
-								if (intervalStepisLerping[currentStep]) {
-									lerpValue = (Time.time - lerpStartTime)/(lerpTime - lerpStartTime); // percent towards goal time
-									animLight.intensity = minIntensity + (differenceInIntensity * (1-lerpValue));
+							stepTime = intervalSteps[currentStep];
+							lerpTime = PauseScript.a.relativeTime + stepTime;
+							lerpStartTime = PauseScript.a.relativeTime;
+							if (lerpTime == 0f)
+								lerpTime = 0.1f;
+						} else {
+							if (lerpOn) {
+								if (currentStep < intervalStepisLerping.Length) {
+									if (intervalStepisLerping[currentStep]) {
+										lerpValue = (PauseScript.a.relativeTime - lerpStartTime)/(lerpTime - lerpStartTime); // percent towards goal time
+										lerpValue = minIntensity + (differenceInIntensity * (lerpValue));
+										if (animLight.intensity != lerpValue) animLight.intensity = lerpValue;
+									}
+								}
+							}
+						}
+					} else {
+						// Going from maxIntensity to minIntensity
+						if (lerpTime < PauseScript.a.relativeTime) {
+							animLight.intensity = minIntensity;
+							lerpUp = true;
+							currentStep++;
+							if (currentStep == intervalSteps.Length)
+								currentStep = 0;
+							
+							stepTime = intervalSteps[currentStep];
+							lerpTime = PauseScript.a.relativeTime + stepTime;
+							lerpStartTime = PauseScript.a.relativeTime;
+							if (lerpTime == 0f)
+								lerpTime = 0.1f;
+						} else {
+							if (lerpOn) {
+								if (currentStep == intervalSteps.Length)
+									currentStep = 0;
+
+								if (currentStep < intervalStepisLerping.Length) {
+									if (intervalStepisLerping[currentStep]) {
+										lerpValue = (PauseScript.a.relativeTime - lerpStartTime)/(lerpTime - lerpStartTime); // percent towards goal time
+										lerpValue = minIntensity + (differenceInIntensity * (1-lerpValue));
+										if (animLight.intensity != lerpValue) animLight.intensity = lerpValue;
+									}
 								}
 							}
 						}
 					}
-				}
 
+				} else {
+					// Light is on but no steps so set to editor setting
+					animLight.intensity = maxIntensity;
+				}
 			} else {
-				// Light is on but no steps so set to editor setting
-				animLight.intensity = maxIntensity;
+				// Light is turned off.
+				animLight.intensity = minIntensity;
 			}
-		} else {
-			// Light is turned off.
-			animLight.intensity = minIntensity;
 		}
 	}
 }

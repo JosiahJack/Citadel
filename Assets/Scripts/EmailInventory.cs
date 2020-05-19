@@ -12,11 +12,13 @@ public class EmailInventory : MonoBehaviour {
 	}
 	
 	void Update () {
-		title.text = EmailTitle.Instance.emailInventoryTitle[slotnum];
-		if (slotnum == EmailCurrent.Instance.emailCurrent) {
-			title.color = Const.a.ssYellowText; // Yellow
-		} else {
-			title.color = Const.a.ssGreenText; // Green
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			title.text = EmailTitle.Instance.emailInventoryTitle[slotnum];
+			if (slotnum == EmailCurrent.Instance.emailCurrent) {
+				title.color = Const.a.ssYellowText; // Yellow
+			} else {
+				title.color = Const.a.ssGreenText; // Green
+			}
 		}
 	}
 }

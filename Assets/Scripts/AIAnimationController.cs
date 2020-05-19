@@ -2,47 +2,53 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AIAnimationController : MonoBehaviour, IBatchUpdate {
+public class AIAnimationController : MonoBehaviour {
 	public float currentClipPercentage;
 	public float clipEndThreshold = 0.99f;
-
+	private SkinnedMeshRenderer smR;
 	private Animator anim;
 	private AnimatorStateInfo anstinfo;
 	public AIController aic;
 	private bool dying;
 	private bool dead;
 	public bool useDeadAnimForDeath = false;
-	//private bool alreadySetAnimation = false;
 	public bool playDeathAnim = true;
 	public bool playDyingAnim = true;
 	public float minWalkSpeedToAnimate = 0.32f;
+	private bool checkVisWithSMR = false;
 
 	void Start () {
 		anim = GetComponent<Animator>();
-		//aic = GetComponent<AIController>();
 		currentClipPercentage = 0;
 		dead = false;
-		//alreadySetAnimation = false;
-		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.Always);
+		checkVisWithSMR = false;
+		smR = GetComponentInChildren<SkinnedMeshRenderer>();
+		if (smR != null) checkVisWithSMR = true;
 	}
 
-	public void BatchUpdate () {
-		if (!gameObject.activeSelf) return;
-
-		if (PauseScript.a != null && PauseScript.a.Paused()) {
-			anim.speed = 0;
-			//alreadySetAnimation = false;
+	void Update() {
+		if (PauseScript.a.Paused() || PauseScript.a.mainMenu.activeInHierarchy) {
+			if (anim.speed != 0) anim.speed = 0;
 			return;
 		} else {
-			anim.speed = 1f;
+			if (anim.speed != 1f) anim.speed = 1f;
 		}
 
+		if (checkVisWithSMR) {
+			if (!smR.isVisible) return;
+		}
 		if (dying) {
+			anstinfo = anim.GetCurrentAnimatorStateInfo(0);
+			currentClipPercentage = anstinfo.normalizedTime % 1;
 			Dying();
 		} else {
 			if (dead) {
 				Dead();
 			} else {
+				if (aic.asleep) { 
+					Idle();
+					return;
+				}
 				switch (aic.currentState) {
 				case Const.aiState.Idle: 		Idle(); 		break;
 				case Const.aiState.Walk:	 	Walk(); 		break;
@@ -58,27 +64,37 @@ public class AIAnimationController : MonoBehaviour, IBatchUpdate {
 				}
 			}
 		}
-
-		anstinfo = anim.GetCurrentAnimatorStateInfo(0);
-		currentClipPercentage = anstinfo.normalizedTime % 1;
 	}
 
 	void Idle () {
-		if (gameObject.activeInHierarchy) anim.Play("Idle");
+		if (aic.asleep) {
+			if (anim.speed > 0) anim.speed = 0;
+		} else {
+			if (anim.speed != 1f) anim.speed = 1f;
+			if (UnityEngine.Random.Range(0,1f) < 0.5f) anim.Play("Idle");
+		}
 	}
 
 	void Run () {
 		//alreadySetAnimation = false;
-		if (gameObject.activeInHierarchy) anim.Play("Run");
+		if (gameObject.activeInHierarchy) {
+			if (aic.actAsTurret) {
+				anim.Play("Idle");
+			} else {
+				anim.Play("Run");
+			}
+		}
 	}
 
 	void Walk () {
-		if (gameObject.activeInHierarchy) {
-			if (aic.rbody.velocity.magnitude > minWalkSpeedToAnimate) {
-				anim.Play("Walk");
-			} else {
+		if (aic.rbody.velocity.magnitude > minWalkSpeedToAnimate) {
+			if (aic.actAsTurret) {
 				anim.Play("Idle");
+			} else {
+				anim.Play("Walk");
 			}
+		} else {
+			anim.Play("Idle");
 		}
 	}
 

@@ -97,6 +97,7 @@ public class Music : MonoBehaviour {
 
 		CheckActionState();
 
+		/*
         switch(LevelManager.a.currentLevel) {
 			case 0: SetClip(levelRMusicNormal,levelRMusicSuspense,levelRMusicAction,levelRMusicDistorted,1f);
 					break;
@@ -127,24 +128,26 @@ public class Music : MonoBehaviour {
 			case 13: SetClip(cyber1Music,cyber1Music,cyber2Music,cyber2Music,1f);
 					break;
 		}
+		*/
     }
 
 	void SetClip (AudioClip acNormal, AudioClip acSuspense, AudioClip acAction, AudioClip acDistorted, float vol) {
 		switch(actionState) {
-			case 0: SFX.clip = acNormal; break;
-			case 1: SFX.clip = acSuspense; break;
-			case 2: SFX.clip = acAction; break;
-			case 3: SFX.clip = acDistorted; break;
-			default: SFX.clip = acNormal; break;
+			case 0: if (SFX.clip != acNormal) SFX.clip = acNormal; break;
+			case 1: if (SFX.clip != acSuspense) SFX.clip = acSuspense; break;
+			case 2: if (SFX.clip != acAction) SFX.clip = acAction; break;
+			case 3: if (SFX.clip != acDistorted) SFX.clip = acDistorted; break;
+			default: if (SFX.clip != acNormal) SFX.clip = acNormal; break;
 		}
-		if (SFX.clip != null) {
-			clipLength = SFX.clip.length;
-		} else {
-			clipLength = 0;
-		}
-		SFX.loop = true;
-		SFX.volume = vol;
+
 		if (SFX.clip != null && SFX != null && clipFinished < Time.time) {
+			if (SFX.clip != null) {
+				clipLength = SFX.clip.length;
+			} else {
+				clipLength = 0;
+			}
+			SFX.loop = true;
+			SFX.volume = vol;
 			clipFinished = Time.time + clipLength;
 			if (SFX != null) SFX.PlayOneShot(SFX.clip);
 		} else {

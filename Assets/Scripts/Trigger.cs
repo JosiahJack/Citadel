@@ -48,7 +48,7 @@ public class Trigger : MonoBehaviour {
 	void TriggerTripped (Collider col, bool initialEntry) {
 		if (col == null) Debug.Log("TriggerTripped was fed a null col!");
 
-		if (col.gameObject.tag == "Player") {
+		if (col.gameObject.CompareTag("Player")) {
 			HealthManager hm = col.gameObject.GetComponent<HealthManager>();
 			if (hm != null) {
 				if (hm.health > 0f && hm.isPlayer) {
@@ -57,7 +57,7 @@ public class Trigger : MonoBehaviour {
 					}
 					recentMostActivator = col.gameObject;
 
-					if (initialEntry && recentMostActivator.tag == "Player") numPlayers++;
+					if (initialEntry && recentMostActivator.CompareTag("Player")) numPlayers++;
 					if (onlyOnce) allDone = true;
 					
 					if (delay <=0) {
@@ -74,7 +74,7 @@ public class Trigger : MonoBehaviour {
 		if (allDone) return;
 		if (col == null) return;
 		if (col.gameObject == null) return;
-		if (col.gameObject.tag == "Player")
+		if (col.gameObject.CompareTag("Player"))
 			TriggerTripped(col,true);
 	}
 
@@ -82,13 +82,13 @@ public class Trigger : MonoBehaviour {
 		if (allDone) return;
 		if (col == null) return;
 		if (col.gameObject == null) return;
-		if (col.gameObject.tag == "Player")
+		if (col.gameObject.CompareTag("Player"))
 			TriggerTripped (col, false);
 	}
 
 	void OnTriggerExit (Collider col) {
 		if (allDone) return;
-		if (col.gameObject.tag == "Player") numPlayers--;
+		if (col.gameObject.CompareTag("Player")) numPlayers--;
 	}
 
 	public void Targetted (UseData ud) {

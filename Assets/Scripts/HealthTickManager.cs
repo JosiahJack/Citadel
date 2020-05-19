@@ -15,17 +15,18 @@ public class HealthTickManager : MonoBehaviour {
 		tickImage = GetComponent<Image>();
 	}
 
-	void  Update (){
-		if (lasthealth != playerHealth.hm.health) DrawTicks();
-		lasthealth = playerHealth.hm.health;  // reason why this script can't be combined with energy ticks script
-	}
+	// void  Update (){
+		// if (lasthealth != playerHealth.hm.health) DrawTicks();
+		// lasthealth = playerHealth.hm.health;  // reason why this script can't be combined with energy ticks script
+	// }
 		
-	void DrawTicks() {
+	public void DrawTicks() {
 		tempSpriteIndex = -1;
 		int step = 0;
-
+		float h = playerHealth.hm.health;
+		if (h > 255f) h = 255f; // always display ticks properly no matter what crazy health we've been hacked to have
 		while (step < 256) {
-			if (playerHealth.hm.health < (256 - step)) {
+			if (h < (256 - step)) {
 				tempSpriteIndex++;
 			}
 			step += 11;

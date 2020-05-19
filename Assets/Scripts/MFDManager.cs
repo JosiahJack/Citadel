@@ -10,8 +10,6 @@ public class MFDManager : MonoBehaviour  {
 	public ItemTabManager itemTabLH;
 	public ItemTabManager itemTabRH;
 	public enum handedness {LeftHand,RightHand};
-	public DataTab dataTabLH;
-	public DataTab dataTabRH;
 	public bool lastWeaponSideRH;
 	public bool lastItemSideRH;
 	public bool lastAutomapSideRH;
@@ -27,11 +25,18 @@ public class MFDManager : MonoBehaviour  {
 	public static MFDManager a;
 	public MouseLookScript playerMLook;
 	private bool isRH;
-	private Vector3 objectInUsePos;
+	[HideInInspector]
+	public Vector3 objectInUsePos;
 	[HideInInspector]
 	public PuzzleGridPuzzle tetheredPGP = null;
 	[HideInInspector]
 	public PuzzleWirePuzzle tetheredPWP = null;
+	[HideInInspector]
+	public SearchableItem tetheredSearchable = null;
+	[HideInInspector]
+	public KeypadElevator tetheredKeypadElevator = null;
+	[HideInInspector]
+	public KeypadKeycode tetheredKeypadKeycode = null;
 	[HideInInspector]
 	public bool paperLogInUse = false;
 	[HideInInspector]
@@ -45,66 +50,174 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject multiMediaTab;
 	public GameObject logTable;
 	public GameObject logLevelsFolder;
-	private float logFinished;
-	private bool logActive;
+	public WeaponButtonsManager wepbutMan;
+	[HideInInspector]
+	public float logFinished;
+	[HideInInspector]
+	public bool logActive;
+	[HideInInspector]
+	public int logType = 0;
 
-	public void Awake () {
+	//Handedness inspector assignments
+	//	SearchButton.isRH found on SearchContentsContainer under DataTab
+
+	public GameObject headerTextLH;
+	public GameObject headerTextRH;
+	public Text headerText_textLH;
+	public Text headerText_textRH;
+	public GameObject noItemsTextLH;
+	public GameObject noItemsTextRH;
+	public GameObject blockedBySecurityLH;
+	public GameObject blockedBySecurityRH;
+	public GameObject elevatorUIControlLH;
+	public GameObject elevatorUIControlRH;
+	[HideInInspector]
+	public Door linkedElevatorDoor;
+	public GameObject keycodeUIControlLH;
+	public GameObject keycodeUIControlRH;
+	public GameObject[] searchItemImagesLH;
+	public GameObject[] searchItemImagesRH;
+	public GameObject audioLogContainerLH;
+	public GameObject audioLogContainerRH;
+	public GameObject puzzleGridLH;
+	public GameObject puzzleGridRH;
+	public GameObject puzzleWireLH;
+	public GameObject puzzleWireRH;
+	public SearchButton searchContainerLH;
+	public SearchButton searchContainerRH;
+
+	public void Start () {
 		a = this;
-		a.logFinished = Time.time;
+		a.logFinished = PauseScript.a.relativeTime;
 		a.logActive = false;
+		//a.TabReset(true);
+		a.TabReset(false);
+	}
+
+
+	public void TabReset(bool isRH) {
+		if (isRH) {
+			headerTextRH.SetActive(false);
+			headerText_textRH.text = System.String.Empty;
+			noItemsTextRH.SetActive(false);
+			blockedBySecurityRH.SetActive(false);
+			elevatorUIControlRH.SetActive(false);
+			keycodeUIControlRH.SetActive(false);
+			puzzleGridRH.SetActive(false);
+			puzzleWireRH.SetActive(false);
+			audioLogContainerRH.SetActive(false);
+			for (int i=0; i<=3;i++) {
+				searchItemImagesRH[i].SetActive(false);
+			}
+		} else {
+			headerTextLH.SetActive(false);
+			headerText_textLH.text = System.String.Empty;
+			noItemsTextLH.SetActive(false);
+			blockedBySecurityLH.SetActive(false);
+			elevatorUIControlLH.SetActive(false);
+			keycodeUIControlLH.SetActive(false);
+			puzzleGridLH.SetActive(false);
+			puzzleWireLH.SetActive(false);
+			audioLogContainerLH.SetActive(false);
+			for (int i=0; i<=3;i++) {
+				searchItemImagesLH[i].SetActive(false);
+			}
+		}
 	}
 
 	void Update () {
-		if (logActive) {
-			if (logFinished < Time.time) {
-				logActive = false;
-				ReturnToLastTab(lastLogSideRH);
-				//ReturnToLastTab(lastLogSideSecondaryRH);  UPDATE add back in when LH MFD is done
-				if (ctb != null) ctb.TabButtonClickSilent(0,false);  // UPDATE add memory for last center tab as well at some point
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (logActive) {
+				if (logFinished < PauseScript.a.relativeTime && logType != 3 && logType != 0) {
+					logActive = false;
+					ReturnToLastTab(lastLogSideRH);
+					//ReturnToLastTab(lastLogSideSecondaryRH);  UPDATE add back in when LH MFD is done
+					if (ctb != null) ctb.TabButtonClickSilent(0,true);  // UPDATE add memory for last center tab as well at some point
+				}
+			}
+
+			WeaponButtonsManagerUpdate();
+
+			if (GetInput.a.WeaponCycUp ()) {
+				if (Const.a.InputInvertInventoryCycling) {
+					wepbutMan.WeaponCycleDown();
+				} else {
+					wepbutMan.WeaponCycleUp();
+				}
+			}
+
+			if (GetInput.a.WeaponCycDown ()) {
+				if (Const.a.InputInvertInventoryCycling) {
+					wepbutMan.WeaponCycleUp();
+				} else {
+					wepbutMan.WeaponCycleDown();
+				}
+			}
+
+			if (usingObject) {
+				if (Vector3.Distance(playerCapsuleTransform.position, objectInUsePos) > (Const.a.frobDistance + 0.16f)) {
+					if (tetheredPGP != null) {
+						if (lastDataSideRH) {
+							PuzzleGrid pg = puzzleGridRH.GetComponent<PuzzleGrid>();
+							tetheredPGP.SendDataBackToPanel(pg);
+							pg.Reset();
+						} else {
+							PuzzleGrid pg = puzzleGridLH.GetComponent<PuzzleGrid>();
+							tetheredPGP.SendDataBackToPanel(pg);
+							pg.Reset();
+						}
+						tetheredPGP = null;
+					}
+
+					if (tetheredPWP != null) {
+						if (lastDataSideRH) {
+							PuzzleWire pw = puzzleWireRH.GetComponent<PuzzleWire>();
+							tetheredPWP.SendDataBackToPanel(pw);
+							pw.Reset();
+						} else {
+							PuzzleWire pw = puzzleWireLH.GetComponent<PuzzleWire>();
+							tetheredPWP.SendDataBackToPanel(pw);
+							pw.Reset();
+						}
+						tetheredPWP = null;
+					}
+
+					if (tetheredKeypadElevator != null) {
+						tetheredKeypadElevator.SendDataBackToPanel();
+						TurnOffElevatorPad();
+						tetheredKeypadElevator = null;
+						linkedElevatorDoor = null;
+					}
+
+					if (tetheredSearchable != null) {
+						tetheredSearchable.ResetSearchable(false);
+						tetheredSearchable = null;
+					}
+					if (paperLogInUse && ctb != null) {
+						ctb.TabButtonClickSilent(0,false);  // UPDATE add memory for last center tab as well at some point
+					}
+
+					TabReset(lastDataSideRH);
+					usingObject = false;
+					logTable.SetActive(false);
+					logLevelsFolder.SetActive(false);
+					logReaderContainer.SetActive(false);
+					ReturnToLastTab(lastDataSideRH);
+				}
 			}
 		}
+	}
 
-		if (usingObject) {
-			if (Vector3.Distance(playerCapsuleTransform.position, objectInUsePos) > (Const.a.frobDistance + 0.16f)) {
-				if (tetheredPGP != null) {
-					if (lastDataSideRH) {
-						PuzzleGrid pg = dataTabRH.puzzleGrid.GetComponent<PuzzleGrid>();
-						tetheredPGP.SendDataBackToPanel(pg);
-						pg.Reset();
-					} else {
-						PuzzleGrid pg = dataTabLH.puzzleGrid.GetComponent<PuzzleGrid>();
-						tetheredPGP.SendDataBackToPanel(pg);
-						pg.Reset();
-					}
-					tetheredPGP = null;
-				}
-
-				if (tetheredPWP != null) {
-					if (lastDataSideRH) {
-						PuzzleWire pw = dataTabRH.puzzleWire.GetComponent<PuzzleWire>();
-						tetheredPWP.SendDataBackToPanel(pw);
-						pw.Reset();
-					} else {
-						PuzzleWire pw = dataTabLH.puzzleWire.GetComponent<PuzzleWire>();
-						tetheredPWP.SendDataBackToPanel(pw);
-						pw.Reset();
-					}
-					tetheredPWP = null;
-				}
-				if (paperLogInUse && ctb != null) {
-					ctb.TabButtonClickSilent(0,false);  // UPDATE add memory for last center tab as well at some point
-				}
-				if (lastDataSideRH) {
-					dataTabRH.Reset();
-				} else {
-					dataTabLH.Reset();
-				}
-
-				usingObject = false;
-				logTable.SetActive(false);
-				logLevelsFolder.SetActive(false);
-				logReaderContainer.SetActive(false);
-				ReturnToLastTab(lastDataSideRH);
+	void WeaponButtonsManagerUpdate() {
+		for (int i=0; i<7; i++) {
+			if (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[i] > 0) {
+				if (!wepbutMan.wepButtons[i].activeInHierarchy) wepbutMan.wepButtons[i].SetActive(true);
+				wepbutMan.wepButtonsScripts[i].useableItemIndex = WeaponInventory.WepInventoryInstance.weaponInventoryIndices[i];
+				if (!wepbutMan.wepCountsText[i].activeInHierarchy) wepbutMan.wepCountsText[i].SetActive(true);
+			} else {
+				if (wepbutMan.wepButtons[i].activeInHierarchy) wepbutMan.wepButtons[i].SetActive(false);
+				wepbutMan.wepButtonsScripts[i].useableItemIndex = -1;
+				if (wepbutMan.wepCountsText[i].activeInHierarchy) wepbutMan.wepCountsText[i].SetActive(false);
 			}
 		}
 	}
@@ -127,42 +240,41 @@ public class MFDManager : MonoBehaviour  {
 			leftTC.SetCurrentAsLast();
 			leftTC.TabButtonClickSilent(index,overrideToggling);
 			if (type == TabMSG.Weapon) {
-				dataTabLH.Reset();
-				
+				TabReset(false);
 			}
 
 			if (type == TabMSG.AudioLog) {
-				dataTabLH.Reset();
-				dataTabLH.audioLogContainer.SetActive(true);
-				dataTabLH.audioLogContainer.GetComponent<LogDataTabContainerManager>().SendLogData(intdata1);
+				TabReset(false);
+				audioLogContainerLH.SetActive(true);
+				audioLogContainerLH.GetComponent<LogDataTabContainerManager>().SendLogData(intdata1);
 			}
 
 			if (type == TabMSG.Keypad) {
-				dataTabLH.Reset();
-				dataTabLH.keycodeUIControl.SetActive(true);
+				TabReset(false);
+				keycodeUIControlLH.SetActive(true);
 				playerMLook.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.Elevator) {
-				dataTabLH.Reset();
-				dataTabLH.elevatorUIControl.SetActive(true);
+				TabReset(false);
+				elevatorUIControlLH.SetActive(true);
 				playerMLook.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.GridPuzzle) {
-				dataTabLH.Reset();
-				dataTabLH.puzzleGrid.SetActive(true);
+				TabReset(false);
+				puzzleGridLH.SetActive(true);
 				playerMLook.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.WirePuzzle) {
-				dataTabLH.Reset();
-				dataTabLH.puzzleWire.SetActive(true);
+				TabReset(false);
+				puzzleWireLH.SetActive(true);
 				playerMLook.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.EReader) {
-				//itemTabLH.Reset();
+				//TabReset(false);
 				itemTabLH.EReaderSectionSContainerOpen();
 				playerMLook.ForceInventoryMode();
 			}
@@ -171,34 +283,34 @@ public class MFDManager : MonoBehaviour  {
 			rightTC.SetCurrentAsLast();
 			rightTC.TabButtonClickSilent(index,overrideToggling);
 			if (type == TabMSG.AudioLog) {
-				dataTabRH.Reset();
-				dataTabRH.audioLogContainer.SetActive(true);
-				dataTabRH.audioLogContainer.GetComponent<LogDataTabContainerManager>().SendLogData(intdata1);
+				TabReset(true);
+				audioLogContainerRH.SetActive(true);
+				audioLogContainerRH.GetComponent<LogDataTabContainerManager>().SendLogData(intdata1);
 			}
 
 			if (type == TabMSG.Keypad) {
-				dataTabRH.Reset();
-				dataTabRH.keycodeUIControl.SetActive(true);
+				TabReset(true);
+				keycodeUIControlRH.SetActive(true);
 			}
 
 			if (type == TabMSG.Elevator) {
-				dataTabRH.Reset();
-				dataTabRH.elevatorUIControl.SetActive(true);
+				TabReset(true);
+				elevatorUIControlRH.SetActive(true);
 			}
 
 			if (type == TabMSG.GridPuzzle) {
-				dataTabRH.Reset();
-				dataTabRH.puzzleGrid.SetActive(true);
+				TabReset(true);
+				puzzleGridRH.SetActive(true);
 			}
 
 			if (type == TabMSG.WirePuzzle) {
-				dataTabRH.Reset();
-				dataTabRH.puzzleWire.SetActive(true);
+				TabReset(true);
+				puzzleWireRH.SetActive(true);
 				playerMLook.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.EReader) {
-				//itemTabRH.Reset();
+				//TabReset(true);
 				itemTabRH.EReaderSectionSContainerOpen();
 				playerMLook.ForceInventoryMode();
 			}
@@ -210,19 +322,63 @@ public class MFDManager : MonoBehaviour  {
 		if (itemTabLH != null) itemTabLH.SendItemDataToItemTab(index);
 	}
 
-	public void SendSearchToDataTab (string name, int contentCount, int[] resultContents, int[] resultsIndices, Vector3 searchPosition) {
+	public void Search(bool isRH, string head, int numberFoundContents, int[] contents, int[] customIndex) {
+		if (isRH) {
+			headerTextRH.SetActive(true);
+			headerText_textRH.enabled = true;
+			headerText_textRH.text = head;
+
+			if (numberFoundContents <= 0) {
+				noItemsTextRH.SetActive(true);
+				noItemsTextRH.GetComponent<Text>().enabled = true;
+				return;
+			}
+
+			for (int i=0;i<4;i++) {
+				if (contents[i] > -1) {
+					searchItemImagesRH[i].SetActive(true);
+					searchItemImagesRH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[contents[i]];
+					searchContainerRH.contents[i] = contents[i];
+					searchContainerRH.customIndex[i] = customIndex[i];
+				}
+			}
+		} else {
+			headerTextLH.SetActive(true);
+			headerText_textLH.enabled = true;
+			headerText_textLH.text = head;
+
+			if (numberFoundContents <= 0) {
+				noItemsTextLH.SetActive(true);
+				noItemsTextLH.GetComponent<Text>().enabled = true;
+				return;
+			}
+
+			for (int i=0;i<4;i++) {
+				if (contents[i] > -1) {
+					searchItemImagesLH[i].SetActive(true);
+					searchItemImagesLH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[contents[i]];
+					searchContainerLH.contents[i] = contents[i];
+					searchContainerLH.customIndex[i] = customIndex[i];
+				}
+			}
+		}
+	}
+
+	public void SendSearchToDataTab (string name, int contentCount, int[] resultContents, int[] resultsIndices, Vector3 searchPosition, SearchableItem si) {
 		// Enable search box scaling effect
 		if (lastSearchSideRH) {
-			dataTabRH.Reset();
-			dataTabRH.Search(name,contentCount,resultContents,resultsIndices);
+			TabReset(true);
+			Search(true,name,contentCount,resultContents,resultsIndices);
 			OpenTab(4,true,TabMSG.Search,0,handedness.RightHand);
 			SearchFXRH.SetActive(true);
 		} else {
-			dataTabLH.Reset();
-			dataTabLH.Search(name,contentCount,resultContents,resultsIndices);
+			TabReset(false);
+			Search(false,name,contentCount,resultContents,resultsIndices);
 			OpenTab(4,true,TabMSG.Search,0,handedness.LeftHand);
 			SearchFXLH.SetActive(true);
 		}
+		if (tetheredSearchable != null) tetheredSearchable.ResetSearchable(false);
+		tetheredSearchable = si;
 		objectInUsePos = searchPosition;
 		usingObject = true;
 	}
@@ -230,14 +386,14 @@ public class MFDManager : MonoBehaviour  {
 	public void SendGridPuzzleToDataTab (bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors, string t1, UseData ud, Vector3 tetherPoint, PuzzleGridPuzzle pgp) {
 		if (lastDataSideRH) {
 			// Send to RH tab
-			dataTabRH.Reset();
-			dataTabRH.GridPuzzle(states,types,gtype,start,end, width, height,colors,t1,ud,pgp);
+			TabReset(true);
+			puzzleGridRH.GetComponent<PuzzleGrid>().SendGrid(states,types,gtype,start,end, width, height,colors,t1,ud,pgp);
 			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.RightHand);
 			SearchFXRH.SetActive(true);
 		} else {
 			// Send to LH tab
-			dataTabLH.Reset();
-			dataTabLH.GridPuzzle(states,types,gtype,start,end, width, height,colors,t1,ud,pgp);
+			TabReset(false);
+			puzzleGridLH.GetComponent<PuzzleGrid>().SendGrid(states,types,gtype,start,end, width, height,colors,t1,ud,pgp);
 			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.LeftHand);
 			SearchFXLH.SetActive(true);
 		}
@@ -247,16 +403,15 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void SendWirePuzzleToDataTab(bool[] sentWiresOn, bool[] sentNodeRowsActive, int[] sentCurrentPositionsLeft, int[] sentCurrentPositionsRight, int[] sentTargetsLeft, int[] sentTargetsRight, PuzzleWire.WireColorTheme theme, PuzzleWire.WireColor[] wireColors, string t1, string a1, UseData udSent,Vector3 tetherPoint, PuzzleWirePuzzle pwp) {
+		TabReset(lastDataSideRH);
 		if (lastDataSideRH) {
 			// Send to RH tab
-			dataTabRH.Reset();
-			dataTabRH.WirePuzzle(sentWiresOn,sentNodeRowsActive,sentCurrentPositionsLeft,sentCurrentPositionsRight,sentTargetsLeft,sentTargetsRight,theme,wireColors,t1,a1,udSent,pwp);
+			puzzleWireRH.GetComponent<PuzzleWire>().SendWirePuzzleData(sentWiresOn,sentNodeRowsActive,sentCurrentPositionsLeft,sentCurrentPositionsRight,sentTargetsLeft,sentTargetsRight,theme,wireColors,t1,a1,udSent,pwp);
 			OpenTab(4,true,TabMSG.WirePuzzle,0,handedness.RightHand);
 			SearchFXRH.SetActive(true);
 		} else {
 			// Send to LH tab
-			dataTabLH.Reset();
-			dataTabLH.WirePuzzle(sentWiresOn,sentNodeRowsActive,sentCurrentPositionsLeft,sentCurrentPositionsRight,sentTargetsLeft,sentTargetsRight,theme,wireColors,t1,a1,udSent,pwp);
+			puzzleWireLH.GetComponent<PuzzleWire>().SendWirePuzzleData(sentWiresOn,sentNodeRowsActive,sentCurrentPositionsLeft,sentCurrentPositionsRight,sentTargetsLeft,sentTargetsRight,theme,wireColors,t1,a1,udSent,pwp);
 			OpenTab(4,true,TabMSG.WirePuzzle,0,handedness.LeftHand);
 			SearchFXLH.SetActive(true);
 		}
@@ -266,14 +421,13 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void SendPaperLogToDataTab(int index,Vector3 tetherPoint) {
+		TabReset(lastDataSideRH);
 		if (lastDataSideRH) {
 			// Send to RH tab
-			dataTabRH.Reset();
 			OpenTab(4,true,TabMSG.AudioLog,index,handedness.RightHand);
 			SearchFXRH.SetActive(true);
 		} else {
 			// Send to LH tab
-			dataTabLH.Reset();
 			OpenTab(4,true,TabMSG.AudioLog,index,handedness.LeftHand);
 			SearchFXLH.SetActive(true);
 		}
@@ -288,24 +442,27 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void SendAudioLogToDataTab(int index) {
+		TabReset(lastDataSideRH);
 		if (lastDataSideRH) {
 			// Send to RH tab
-			dataTabRH.Reset();
 			OpenTab(4,true,TabMSG.AudioLog,index,handedness.RightHand);
 		} else {
 			// Send to LH tab
-			dataTabLH.Reset();
 			OpenTab(4,true,TabMSG.AudioLog,index,handedness.LeftHand);
 		}
 		ctb.TabButtonClickSilent(4,true);	
+		if (tetheredSearchable != null) {
+			tetheredSearchable.searchableInUse = false;
+		}
 		multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogTextReader();
 		multiMediaTab.SetActive(true);
 		logReaderContainer.SetActive(true);
 		logReaderContainer.GetComponent<LogTextReaderManager>().SendTextToReader(index);
 		logTable.SetActive(false);
 		logLevelsFolder.SetActive(false);
-		if (Const.a.audioLogs[index] != null) logFinished = Time.time + Const.a.audioLogs[index].length + 0.1f; //add slight delay after log is finished playing to make sure we don't cut off audio in case there's a frame delay for audio start
+		if (Const.a.audioLogs[index] != null) logFinished = PauseScript.a.relativeTime + Const.a.audioLogs[index].length + 0.1f; //add slight delay after log is finished playing to make sure we don't cut off audio in case there's a frame delay for audio start
 		logActive = true;
+		logType = Const.a.audioLogType[index];
 	}
 
 	public void OpenEReaderInItemsTab() {
@@ -317,6 +474,9 @@ public class MFDManager : MonoBehaviour  {
 			OpenTab(1,true,TabMSG.EReader,-1,handedness.LeftHand);
 		}
 		if (ctb != null) ctb.TabButtonClickSilent(4,false);
+		if (tetheredSearchable != null) {
+			tetheredSearchable.searchableInUse = false;
+		}
 		logTable.SetActive(false);
 		logLevelsFolder.SetActive(false);
 		logReaderContainer.SetActive(false);
@@ -324,46 +484,41 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void ClearDataTab() {
-		if (lastDataSideRH) {
-			dataTabRH.Reset();
-		} else {
-			dataTabLH.Reset();
-		}
+		TabReset(lastDataSideRH);
 	}
 
 	public void TurnOffKeypad() {
 		if (lastDataSideRH) {
-			dataTabRH.keycodeUIControl.SetActive(false);
+			keycodeUIControlRH.SetActive(false);
 		} else {
-			dataTabLH.keycodeUIControl.SetActive(false);
+			keycodeUIControlLH.SetActive(false);
 		}
 	}
 
 	public void TurnOffElevatorPad() {
 		if (lastDataSideRH) {
-			dataTabRH.elevatorUIControl.SetActive(false);
+			elevatorUIControlRH.SetActive(false);
 		} else {
-			dataTabLH.elevatorUIControl.SetActive(false);
+			elevatorUIControlLH.SetActive(false);
 		}
 	}
 
 	public bool GetElevatorControlActiveState() {
 		if (lastDataSideRH) {
-			return dataTabRH.elevatorUIControl.activeInHierarchy;
+			return elevatorUIControlRH.activeInHierarchy;
 		} else {
-			return dataTabLH.elevatorUIControl.activeInHierarchy;
+			return elevatorUIControlLH.activeInHierarchy;
 		}
 	}
 
 	public void BlockedBySecurity(Vector3 tetherPoint, UseData ud) {
+		TabReset(lastDataSideRH);
 		if (lastDataSideRH) {
-			dataTabRH.Reset();
 			OpenTab(4,true,MFDManager.TabMSG.None,0,MFDManager.handedness.RightHand);
-			dataTabRH.blockedBySecurity.SetActive(true);
+			blockedBySecurityRH.SetActive(true);
 		} else {
-			dataTabLH.Reset();
 			OpenTab(4,true,MFDManager.TabMSG.None,0,MFDManager.handedness.LeftHand);
-			dataTabLH.blockedBySecurity.SetActive(true);
+			blockedBySecurityLH.SetActive(true);
 		}
 		Const.sprint(Const.a.stringTable[25],ud.owner);
 		objectInUsePos = tetherPoint;
@@ -371,20 +526,19 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void SendKeypadKeycodeToDataTab(int keycode, Vector3 tetherPoint, KeypadKeycode keypad, bool alreadySolved) {
+		TabReset(lastDataSideRH);
 		if (lastDataSideRH) {
-			dataTabRH.Reset();
 			OpenTab(4,true,MFDManager.TabMSG.Keypad,0,MFDManager.handedness.RightHand);
-			dataTabRH.keycodeUIControl.SetActive(true);
-			KeypadKeycodeButtons kkb = dataTabRH.keycodeUIControl.GetComponent<KeypadKeycodeButtons>();
+			keycodeUIControlRH.SetActive(true);
+			KeypadKeycodeButtons kkb = keycodeUIControlRH.GetComponent<KeypadKeycodeButtons>();
 			kkb.keycode = keycode;
 			kkb.keypad = keypad;
 			kkb.ResetEntry();
 			kkb.done = alreadySolved;
 		} else {
-			dataTabLH.Reset();
 			OpenTab(4,true,MFDManager.TabMSG.Keypad,0,MFDManager.handedness.LeftHand);
-			dataTabLH.keycodeUIControl.SetActive(true);
-			KeypadKeycodeButtons kkb = dataTabLH.keycodeUIControl.GetComponent<KeypadKeycodeButtons>();
+			keycodeUIControlLH.SetActive(true);
+			KeypadKeycodeButtons kkb = keycodeUIControlLH.GetComponent<KeypadKeycodeButtons>();
 			kkb.keycode = keycode;
 			kkb.keypad = keypad;
 			kkb.ResetEntry();
@@ -394,12 +548,88 @@ public class MFDManager : MonoBehaviour  {
 		usingObject = true;
 	}
 
+	public void SendElevatorKeypadToDataTab(KeypadElevator ke, bool[] buttonsEnabled, bool[] buttonsDarkened, string[] buttonText,GameObject[] targetDestination,Vector3 tetherPoint,Door linkedDoor,int currentFloor) {
+		TabReset(lastDataSideRH);
+		if (lastDataSideRH) {
+			ElevatorKeypad elevatorKeypadRH = elevatorUIControlRH.GetComponent<ElevatorKeypad>();
+			for (int i=0;i<8;i++) {
+				elevatorKeypadRH.buttonsEnabled[i] = buttonsEnabled[i];
+				elevatorKeypadRH.buttonsDarkened[i] = buttonsDarkened[i];
+				elevatorKeypadRH.buttonText[i] = buttonText[i];
+				elevatorKeypadRH.targetDestination[i] = targetDestination[i];
+			}
+			elevatorKeypadRH.currentFloor = currentFloor;
+			elevatorKeypadRH.activeKeypad = gameObject;
+			MFDManager.a.OpenTab(4,true,TabMSG.Elevator,0,handedness.RightHand);
+		} else {
+			ElevatorKeypad elevatorKeypadLH = elevatorUIControlLH.GetComponent<ElevatorKeypad>();
+			for (int i=0;i<8;i++) {
+				elevatorKeypadLH.buttonsEnabled[i] = buttonsEnabled[i];
+				elevatorKeypadLH.buttonsDarkened[i] = buttonsDarkened[i];
+				elevatorKeypadLH.buttonText[i] = buttonText[i];
+				elevatorKeypadLH.targetDestination[i] = targetDestination[i];
+			}
+			elevatorKeypadLH.currentFloor = currentFloor;
+			elevatorKeypadLH.activeKeypad = gameObject;
+			MFDManager.a.OpenTab(4,true,TabMSG.Elevator,0,handedness.LeftHand);
+		}
+		linkedElevatorDoor = linkedDoor;
+		objectInUsePos = tetherPoint;
+		tetheredKeypadElevator = ke;
+		usingObject = true;
+	}
+
+	public void OpenFullMap() {
+
+	}
+
 	public void UpdateHUDAmmoCounts(int amount) {
 		if (wepmagCounterLH != null) wepmagCounterLH.UpdateDigits(amount);
 		if (wepmagCounterRH != null) wepmagCounterRH.UpdateDigits(amount);
 	}
 
+	public void DisableSearchItemImage(int index) {
+		MFDManager.a.searchItemImagesLH[index].SetActive(false);
+		//MFDManager.a.searchItemImagesRH[index].SetActive(false);
+	}
+
+	public void NotifySearchThatSearableWasDestroyed() {
+		if (tetheredSearchable != null) {
+			tetheredSearchable.ResetSearchable(true); // reset the actual object
+			// reset the HUD contents
+			// if (headerTextRH.activeSelf) {
+				// headerTextRH.SetActive(false);
+				// headerText_textRH.enabled = false;
+				// headerText_textRH.text = System.String.Empty;
+				// noItemsTextRH.SetActive(false);
+				// noItemsTextRH.GetComponent<Text>().enabled = false;
+				// for (int i=0;i<4;i++) {
+					// searchItemImagesRH[i].SetActive(false);
+					// searchItemImagesRH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[200];
+					// searchContainerRH.contents[i] = -1;
+					// searchContainerRH.customIndex[i] = -1;
+				// }
+			// }
+			if (headerTextLH.activeSelf) {
+				headerTextLH.SetActive(false);
+				headerText_textLH.enabled = false;
+				headerText_textLH.text = System.String.Empty;
+				noItemsTextLH.SetActive(false);
+				noItemsTextLH.GetComponent<Text>().enabled = false;
+				for (int i=0;i<4;i++) {
+					searchItemImagesLH[i].SetActive(false);
+					searchItemImagesLH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[200];
+					searchContainerLH.contents[i] = -1;
+					searchContainerLH.customIndex[i] = -1;
+				}
+			}
+			tetheredSearchable = null;
+		}
+	}
+
 	public void ReturnToLastTab(bool isRightHand) {
+		usingObject = false;
+		objectInUsePos = new Vector3(999f,999f,999f); // out of bounds
 		if (isRightHand) {
 			rightTC.ReturnToLastTab();
 		} else {

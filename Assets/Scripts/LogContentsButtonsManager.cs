@@ -23,13 +23,15 @@ public class LogContentsButtonsManager : MonoBehaviour {
 	}
 
 	void Update() {
-		for (int i=0; i<15; i++) {
-			LogButtonsText[i].text = logNames[i];
-			logRefButtons[i].logReferenceIndex = retrievedIndices[i];
-			if (LogInventory.a.hasLog[retrievedIndices[i]]) {
-				LogButtons[i].SetActive(true);
-			} else {
-				LogButtons[i].SetActive(false);
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			for (int i=0; i<15; i++) {
+				LogButtonsText[i].text = logNames[i];
+				logRefButtons[i].logReferenceIndex = retrievedIndices[i];
+				if (LogInventory.a.hasLog[retrievedIndices[i]]) {
+					LogButtons[i].SetActive(true);
+				} else {
+					LogButtons[i].SetActive(false);
+				}
 			}
 		}
 	}

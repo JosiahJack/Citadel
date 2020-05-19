@@ -12,11 +12,13 @@ public class WeaponShotsInventory : MonoBehaviour {
 	}
 
 	void Update () {
-		text.text = WeaponShotsText.weaponShotsInventoryText[shotSlotnum];
-		if (shotSlotnum == WeaponCurrent.WepInstance.weaponCurrent) {
-			text.color = Const.a.ssYellowText; // Yellow
-		} else {
-			text.color = Const.a.ssGreenText; // Green
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			text.text = WeaponShotsText.weaponShotsInventoryText[shotSlotnum];
+			if (shotSlotnum == WeaponCurrent.WepInstance.weaponCurrent) {
+				text.color = Const.a.ssYellowText; // Yellow
+			} else {
+				text.color = Const.a.ssGreenText; // Green
+			}
 		}
 	}
 }

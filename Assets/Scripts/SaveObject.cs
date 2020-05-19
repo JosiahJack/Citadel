@@ -9,20 +9,17 @@ public class SaveObject : MonoBehaviour {
 	public enum SaveableType {Transform,Player,Useable,Grenade,NPC,Destructable,SearchableStatic,
 							SearchableDestructable,Door,ForceBridge,Switch,FuncWall,TeleDest,
 							LBranch,LRelay,LSpawner,InteractablePanel,ElevatorPanel,Keypad,PuzzleGrid,
-							PuzzleWire,TCounter,TGravity,MChanger,RadTrig,GravPad};
+							PuzzleWire,TCounter,TGravity,MChanger,RadTrig,GravPad,TransformParentless};
 	public SaveableType saveType = SaveableType.Transform;
 	[HideInInspector]
 	public string saveableType;
 	public int levelParentID = -1;
+	[HideInInspector]
+	public bool initialized = false;
 
-	void Start () {
-		//string x,y,z;
-		//x = transform.localPosition.x.ToString("0000.00000");
-		//y = transform.localPosition.y.ToString("0000.00000");
-		//z = transform.localPosition.z.ToString("0000.00000");
-		//SaveID = (x + y + z);
+	public void Start () {
+		if (initialized) return;
 		SaveID = gameObject.GetInstanceID();
-		//Const.sprint("Saveable Object has ID# of: " + SaveID.ToString());
 		isRuntimeObject = true;  // Lets us know if this object is indeed not the prefab but rather an instance of a prefab
 		switch (saveType) {
 			case SaveableType.Player: saveableType = "Player"; break;
@@ -50,7 +47,9 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.MChanger: saveableType = "MChanger"; break;
 			case SaveableType.RadTrig: saveableType = "RadTrig"; break;
 			case SaveableType.GravPad: saveableType = "GravPad"; break;
+			case SaveableType.TransformParentless: saveableType = "TransformParentless"; break;
 			default: saveableType = "Transform"; break;
 		}
+		initialized = true;
 	}
 }

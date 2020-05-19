@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ButtonSwitch : MonoBehaviour, IBatchUpdate {
+public class ButtonSwitch : MonoBehaviour {
 	public int securityThreshhold = 100; // if security level is not below this level, this is unusable
 	public string target;
 	public string argvalue;
@@ -36,11 +36,7 @@ public class ButtonSwitch : MonoBehaviour, IBatchUpdate {
 		mRenderer = GetComponent<MeshRenderer>();
 		delayFinished = 0; // prevent using targets on awake
 		if (animateModel) anim = GetComponent<Animator>();
-		if (active) tickFinished = Time.time + tickTime + Random.value;
-	}
-
-	void Start () {
-		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketB);
+		if (active) tickFinished = PauseScript.a.relativeTime + tickTime + Random.value;
 	}
 
 	public void Use (UseData ud) {
@@ -63,7 +59,7 @@ public class ButtonSwitch : MonoBehaviour, IBatchUpdate {
 		if (SFX != null && SFXSource != null) SFXSource.PlayOneShot(SFX);
 		Const.sprintByIndexOrOverride (messageIndex, message,ud.owner);
 		if (delay > 0) {
-			delayFinished = Time.time + delay;
+			delayFinished = PauseScript.a.relativeTime + delay;
 		} else {
 			UseTargets();
 		}
@@ -98,7 +94,7 @@ public class ButtonSwitch : MonoBehaviour, IBatchUpdate {
 			if (blinkWhenActive) {
 				ToggleMaterial ();
 				if (active)
-					tickFinished = Time.time + tickTime;
+					tickFinished = PauseScript.a.relativeTime + tickTime;
 			} else {
 				ToggleMaterial ();
 			}
@@ -119,23 +115,28 @@ public class ButtonSwitch : MonoBehaviour, IBatchUpdate {
 			mRenderer.material = mainSwitchMaterial;
 	}
 
-	public void BatchUpdate () {
-		if ((delayFinished < Time.time) && delayFinished != 0) {
-			delayFinished = 0;
-			UseTargets();
-		}
+	void Update() {
+		if (!gameObject.activeSelf) return;
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if ((delayFinished < PauseScript.a.relativeTime) && delayFinished != 0) {
+				delayFinished = 0;
+				UseTargets();
+			}
 
-		// blink the switch when active
-		if (blinkWhenActive) {
-			if (active) {
-				if (tickFinished < Time.time) {
-					if (alternateOn) {
-						if (mRenderer.material != mainSwitchMaterial) mRenderer.material = mainSwitchMaterial;
-					} else {
-						if (mRenderer.material != alternateSwitchMaterial) mRenderer.material = alternateSwitchMaterial;
+			// blink the switch when active
+			if (blinkWhenActive) {
+				if (active) {
+					if (tickFinished < PauseScript.a.relativeTime) {
+						if (mRenderer.isVisible) {
+							if (alternateOn) {
+								if (mRenderer.material != mainSwitchMaterial) mRenderer.material = mainSwitchMaterial;
+							} else {
+								if (mRenderer.material != alternateSwitchMaterial) mRenderer.material = alternateSwitchMaterial;
+							}
+						}
+						alternateOn = !alternateOn;
+						tickFinished = PauseScript.a.relativeTime + tickTime;
 					}
-					alternateOn = !alternateOn;
-					tickFinished = Time.time + tickTime;
 				}
 			}
 		}

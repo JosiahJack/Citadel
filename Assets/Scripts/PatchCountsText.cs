@@ -12,11 +12,13 @@ public class PatchCountsText : MonoBehaviour {
 	}
 
 	void Update () {
-		text.text = PatchInventory.PatchInvInstance.patchCounts[countsSlotnum].ToString();
-		if (countsSlotnum == PatchCurrent.PatchInstance.patchCurrent) {
-			text.color = Const.a.ssYellowText; // Yellow
-		} else {
-			text.color = Const.a.ssGreenText; // Green
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			text.text = PatchInventory.PatchInvInstance.patchCounts[countsSlotnum].ToString();
+			if (countsSlotnum == PatchCurrent.PatchInstance.patchCurrent) {
+				text.color = Const.a.ssYellowText; // Yellow
+			} else {
+				text.color = Const.a.ssGreenText; // Green
+			}
 		}
 	}
 }

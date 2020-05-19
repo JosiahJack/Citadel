@@ -42,15 +42,17 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 	}
 	
 	void Update () {
-		//Call the 'PlayLoop' method as a coroutine with a float delay
-		if (stopAtEnd && playDone) return;
-		if (stopAtEnd && !playDone) {
-			StartCoroutine("Play", frameDelay);
-		} else {
-			StartCoroutine("PlayLoop", frameDelay);
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			//Call the 'PlayLoop' method as a coroutine with a float delay
+			if (stopAtEnd && playDone) return;
+			if (stopAtEnd && !playDone) {
+				StartCoroutine("Play", frameDelay);
+			} else {
+				StartCoroutine("PlayLoop", frameDelay);
+			}
+			//Set the material's texture to the current value of the frameCounter variable
+			goImage.overrideSprite = sprites[frameCounter];
 		}
-		//Set the material's texture to the current value of the frameCounter variable
-		goImage.overrideSprite = sprites[frameCounter];
 	}
 	
 	//The following methods return a IEnumerator so they can be yielded:

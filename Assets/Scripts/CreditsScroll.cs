@@ -20,6 +20,11 @@ public class CreditsScroll : MonoBehaviour {
     }
 
 	void Update () {
+		// Escape/back button listener
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			mainMenuHandler.GoBack();
+		}
+
 		if (Input.GetMouseButtonUp(0)) {
 			if (!bottom) {
 				pagenum++;

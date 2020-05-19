@@ -10,19 +10,26 @@ public class AmmoIconManager : MonoBehaviour {
     [SerializeField] public GameObject energyOverloadButton;
     private Image border;
     private Image icon;
+	private int checkIndex = -1;
 
     public void Awake() {
         icon = GetComponent<Image>();
         border = clipBox.GetComponent<Image>();
     }
 
+	void Update() {
+		checkIndex = WeaponCurrent.WepInstance.weaponCurrent;
+		if (checkIndex >= 0)
+			SetAmmoIcon(WeaponCurrent.WepInstance.weaponIndex,WeaponAmmo.a.wepLoadedWithAlternate[checkIndex]);
+	}
+
     public void SetAmmoIcon (int index, bool alternateAmmo) {
-		if (index >= 0) {
-			icon.enabled = true;
-			border.enabled = true;
-            energySlider.SetActive(false);
-            energyHeatTicks.SetActive(false);
-            energyOverloadButton.SetActive(false);
+		if (index >= 36) {
+			//if (!icon.enabled) icon.enabled = true;
+			//if (!border.enabled) border.enabled = true;
+            //if (energySlider.activeSelf) energySlider.SetActive(false);
+            //if (energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+            //if (energyOverloadButton.activeSelf) energyOverloadButton.SetActive(false);
             switch (index) {
 			case 36:
                 if (alternateAmmo) {
@@ -32,11 +39,11 @@ public class AmmoIconManager : MonoBehaviour {
 				}
 				break;
 			case 37:
-                icon.enabled = false;  // Uses energy, blaster
-                border.enabled = false;
-                energySlider.SetActive(true);
-                energyHeatTicks.SetActive(true);
-                energyOverloadButton.SetActive(true);
+				if (icon.enabled) icon.enabled = false;  // Uses energy, blaster
+				if (border.enabled) border.enabled = false;
+                if (!energySlider.activeSelf) energySlider.SetActive(true);
+                if (!energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
+                if (!energyOverloadButton.activeSelf) energyOverloadButton.SetActive(true);
                 break;
 			case 38:
                 if (alternateAmmo) {
@@ -53,11 +60,11 @@ public class AmmoIconManager : MonoBehaviour {
 				}
 				break;
 			case 40:
-                icon.enabled = false;  // Uses energy, ion beam
-				border.enabled = false;
-                energySlider.SetActive(true);
-                energyHeatTicks.SetActive(true);
-                energyOverloadButton.SetActive(true);
+				if (icon.enabled) icon.enabled = false;  // Uses energy, ion beam
+				if (border.enabled) border.enabled = false;
+                if (!energySlider.activeSelf) energySlider.SetActive(true);
+                if (!energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
+                if (!energyOverloadButton.activeSelf) energyOverloadButton.SetActive(true);
                 break;
                 case 41:
                 icon.enabled = false;  // Rapier, no ammo used
@@ -85,17 +92,17 @@ public class AmmoIconManager : MonoBehaviour {
 				}
 				break;
 			case 46:
-                icon.enabled = false;  // Uses energy, plasma rifle
-				border.enabled = false;
-                energySlider.SetActive(true);
-                energyHeatTicks.SetActive(true);
-                energyOverloadButton.SetActive(true);
+                if (icon.enabled) icon.enabled = false;  // Uses energy, plasma rifle
+				if (border.enabled) border.enabled = false;
+                if (!energySlider.activeSelf) energySlider.SetActive(true);
+                if (!energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
+                if (!energyOverloadButton.activeSelf) energyOverloadButton.SetActive(true);
                 break;
-                case 47:
-                icon.overrideSprite = ammIcons[14]; // rail round, railgun
+            case 47:
+				icon.overrideSprite = ammIcons[14]; // rail round, railgun
 				break;
 			case 48:
-                icon.overrideSprite = ammIcons[4]; // rubber, riotgun
+				icon.overrideSprite = ammIcons[4]; // rubber, riotgun
 				break;
 			case 49:
                 if (alternateAmmo) {
@@ -105,20 +112,26 @@ public class AmmoIconManager : MonoBehaviour {
 				}
 				break;
 			case 50:
-                icon.enabled = false;  // Uses energy, sparq beam
-				border.enabled = false;
-                energySlider.SetActive(true);
-                energyHeatTicks.SetActive(true);
-                energyOverloadButton.SetActive(true);
+                if (icon.enabled) icon.enabled = false;  // Uses energy, sparq beam
+				if (border.enabled) border.enabled = false;
+                if (!energySlider.activeSelf) energySlider.SetActive(true);
+                if (!energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
+                if (!energyOverloadButton.activeSelf) energyOverloadButton.SetActive(true);
                 break;
-                case 51:
-                icon.enabled = false;  // Uses energy, stungun
-				border.enabled = false;
-                energySlider.SetActive(true);
-                energyHeatTicks.SetActive(true);
-                energyOverloadButton.SetActive(true);
+            case 51:
+                if (icon.enabled) icon.enabled = false;  // Uses energy, stungun
+				if (border.enabled) border.enabled = false;
+                if (!energySlider.activeSelf) energySlider.SetActive(true);
+                if (!energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
+                if (!energyOverloadButton.activeSelf) energyOverloadButton.SetActive(true);
                 break;
             }
+		} else {
+			if (icon.enabled) icon.enabled = false;
+			if (border.enabled) border.enabled = false;
+            if (energySlider.activeSelf) energySlider.SetActive(false);
+            if (energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+            if (energyOverloadButton.activeSelf) energyOverloadButton.SetActive(false);
 		}
 	}
 }

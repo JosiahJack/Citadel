@@ -29,7 +29,7 @@ public class BodyState : MonoBehaviour {
 	
 	void  OnCollisionStay ( Collision collisionInfo  ){
 		collisionDebugAll = true;
-		if (collisionInfo.gameObject.tag == "Geometry") {
+		if (collisionInfo.gameObject.CompareTag("Geometry")) {
 			collisionDetected = true;
 		}
 	}

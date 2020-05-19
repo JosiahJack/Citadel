@@ -4,39 +4,33 @@ using UnityEngine;
 
 public class CameraView : MonoBehaviour {
 	private Camera cam;
-	private float tick;
+	private float tick = 0.1f;
 	private float tickFinished;
-	//private bool frameOn;
+	public Transform screenPoint;
+	private float maxDistVisible = 5.8f;
+	private Transform playerT;
+	private bool renderedOnce = false;
 
-	void Awake () {
+	void Start () {
 		cam = GetComponent<Camera>();
 		cam.enabled = false;
-		cam.Render();
-		//tick = 10f;
-		//tickFinished = Time.time + tick + (Random.value * tick);
-		//frameOn = false;
+		renderedOnce = false;
+		tickFinished = PauseScript.a.relativeTime + tick;
+		playerT = Const.a.player1.GetComponent<PlayerReferenceManager>().playerCapsule.transform;
 	}
 
-	// Update is called once per frame
-	//void Update () {
-		//if (PauseScript.a.paused || PauseScript.a.mainMenu.activeSelf == true) {
-		//	cam.enabled = false;
-		//} else {
-		//	cam.enabled = true;
-		//}
-    //    if (PauseScript.a.mainMenu.activeSelf == true) {
-	//		return; // don't render, the menu is up
-	//	}
-
-	//	if (tickFinished < Time.time) {
-			//cam.enabled = true;
-			//frameOn = true;
-	//		tickFinished = Time.time + tick;
-	//		cam.Render();
-	//	}
-	//}
-
-	//void LateUpdate() {
-	//	if (frameOn) cam.enabled = false; // Render to texture for 1 frame only!
-	//}
+	void Update () {
+		if (!PauseScript.a.paused && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (screenPoint != null) {
+				if (Vector3.Distance(playerT.position,screenPoint.position) > maxDistVisible) {
+					if (!renderedOnce) return;
+				}
+			}
+			if (tickFinished < PauseScript.a.relativeTime) {
+				tickFinished = PauseScript.a.relativeTime + tick;
+				cam.Render();
+				if (!renderedOnce) renderedOnce = true; // rendering once in Update to reduce load at start, should happen 0.1f seconds after game start
+			}
+		}
+	}
 }

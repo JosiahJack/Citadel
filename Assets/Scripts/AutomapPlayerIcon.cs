@@ -2,15 +2,11 @@
 using System.Collections;
 
 public class AutomapPlayerIcon : MonoBehaviour {	
-	public GameObject cameraObject;
-	[HideInInspector]
-	public MouseLookScript mlookScript;
+	public Transform pCapTransform;
+	private float threshang = 0.5f;
 	
-	void  Start (){
-		mlookScript = cameraObject.GetComponent<MouseLookScript>(); // Get the mouselookscript to reference rotation
-	}
-	
-	void  FixedUpdate (){
-		transform.rotation = Quaternion.Euler(0,0,(mlookScript.yRotation*(-1) + 180));  // Rotation adjusted for player view and direction vs UI space
+	void  Update() {
+		float zAdjusted = (pCapTransform.eulerAngles.y * (-1) + 90);
+		if (Mathf.Abs(transform.localRotation.z-zAdjusted) > threshang) transform.localRotation = Quaternion.Euler(0,0,zAdjusted);  // Rotation adjusted for player view and direction vs UI space
 	}
 }

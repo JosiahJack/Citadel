@@ -43,8 +43,8 @@ public class HardwareButton : MonoBehaviour {
 
 	void Awake () {
 		butn = GetComponent<Button>();
-		blinkFinished = blinkTick + Time.time;
-		beepFinished = beepTick + Time.time;
+		blinkFinished = blinkTick + PauseScript.a.relativeTime;
+		beepFinished = beepTick + PauseScript.a.relativeTime;
 	}
 
 	public void PtrEnter () {
@@ -56,36 +56,38 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	void Update () {
-		ListenForHardwareHotkeys();
-		if (ref14Index == 2) {
-			if (ecbm != null) {
-				bool foundsome = false;
-				for (int i=0;i<ecbm.mmLBs.Length;i++) {
-					if (LogInventory.a.hasLog[ecbm.mmLBs[i].logReferenceIndex] && !LogInventory.a.readLog[ecbm.mmLBs[i].logReferenceIndex])
-						foundsome = true;
-				}
-				if (foundsome) {
-					// You've got mail!
-					if (blinkFinished < Time.time) {
-						blinkFinished = blinkTick + Time.time;
-						toggleState = !toggleState;
-						if (toggleState) {
-							butn.image.overrideSprite = buttonActive1;
-						} else {
-							butn.image.overrideSprite = buttonDeactive;
-						}
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			ListenForHardwareHotkeys();
+			if (ref14Index == 2) {
+				if (ecbm != null) {
+					bool foundsome = false;
+					for (int i=0;i<ecbm.mmLBs.Length;i++) {
+						if (LogInventory.a.hasLog[ecbm.mmLBs[i].logReferenceIndex] && !LogInventory.a.readLog[ecbm.mmLBs[i].logReferenceIndex])
+							foundsome = true;
 					}
-					if (beepFinished < Time.time && LogInventory.a.beepDone) {
-						beepFinished = beepTick + Time.time;
-						beepCount++;
-						if (beepCount >= 3) {
-							LogInventory.a.beepDone = false;
-							beepCount = 0;
+					if (foundsome) {
+						// You've got mail!
+						if (blinkFinished < PauseScript.a.relativeTime) {
+							blinkFinished = blinkTick + PauseScript.a.relativeTime;
+							toggleState = !toggleState;
+							if (toggleState) {
+								butn.image.overrideSprite = buttonActive1;
+							} else {
+								butn.image.overrideSprite = buttonDeactive;
+							}
 						}
-						if (SFX != null && beepSFX != null) SFX.PlayOneShot(beepSFX);
+						if (beepFinished < PauseScript.a.relativeTime && LogInventory.a.beepDone) {
+							beepFinished = beepTick + PauseScript.a.relativeTime;
+							beepCount++;
+							if (beepCount >= 3) {
+								LogInventory.a.beepDone = false;
+								beepCount = 0;
+							}
+							if (SFX != null && beepSFX != null) SFX.PlayOneShot(beepSFX);
+						}
+					} else {
+						butn.image.overrideSprite = buttonDeactive;
 					}
-				} else {
-					butn.image.overrideSprite = buttonDeactive;
 				}
 			}
 		}

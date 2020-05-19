@@ -130,71 +130,73 @@ public class PuzzleWire : MonoBehaviour {
 	}
 
 	void Update () {
-		if (Solved) return;
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (Solved) return;
 
-		if (selectedWire != -1) {
-			if (blinkTimeFinished < Time.time) {
-				BlinkSelectedIndicator();
-				blinkState = !blinkState;
-				blinkTimeFinished = Time.time + blinkTime;
-			}
-		} else {
-			DisableAllSelectedIndicators();
-		}
-
-		if (geniusActive) {
-			numberOfWires = 0;
-			for (int tempInt = 0; tempInt < 7; tempInt++) {
-				if (wireIsActive[tempInt])
-					numberOfWires++;
+			if (selectedWire != -1) {
+				if (blinkTimeFinished < PauseScript.a.relativeTime) {
+					BlinkSelectedIndicator();
+					blinkState = !blinkState;
+					blinkTimeFinished = PauseScript.a.relativeTime + blinkTime;
+				}
+			} else {
+				DisableAllSelectedIndicators();
 			}
 
-			for (tempInt = 0; tempInt < 7; tempInt++) {
-				if (wireIsActive[tempInt]) {
-					switch (tempInt) {
-						case 0:
-							geniusHintsLH[wire1LHTarget].enabled = true;
-							geniusHintsRH[wire1RHTarget].enabled = true;
-							break;
-						case 1:
-							geniusHintsLH[wire2LHTarget].enabled = true;
-							geniusHintsRH[wire2RHTarget].enabled = true;
-							break;
-						case 2:
-							geniusHintsLH[wire3LHTarget].enabled = true;
-							geniusHintsRH[wire3RHTarget].enabled = true;
-							break;
-						case 3:
-							geniusHintsLH[wire4LHTarget].enabled = true;
-							geniusHintsRH[wire4RHTarget].enabled = true;
-							break;
-						case 4:
-							geniusHintsLH[wire5LHTarget].enabled = true;
-							geniusHintsRH[wire5RHTarget].enabled = true;
-							break;
-						case 5:
-							geniusHintsLH[wire6LHTarget].enabled = true;
-							geniusHintsRH[wire6RHTarget].enabled = true;
-							break;
-						case 6:
-							geniusHintsLH[wire7LHTarget].enabled = true;
-							geniusHintsRH[wire7RHTarget].enabled = true;
-							break;
+			if (geniusActive) {
+				numberOfWires = 0;
+				for (int tempInt = 0; tempInt < 7; tempInt++) {
+					if (wireIsActive[tempInt])
+						numberOfWires++;
+				}
+
+				for (tempInt = 0; tempInt < 7; tempInt++) {
+					if (wireIsActive[tempInt]) {
+						switch (tempInt) {
+							case 0:
+								geniusHintsLH[wire1LHTarget].enabled = true;
+								geniusHintsRH[wire1RHTarget].enabled = true;
+								break;
+							case 1:
+								geniusHintsLH[wire2LHTarget].enabled = true;
+								geniusHintsRH[wire2RHTarget].enabled = true;
+								break;
+							case 2:
+								geniusHintsLH[wire3LHTarget].enabled = true;
+								geniusHintsRH[wire3RHTarget].enabled = true;
+								break;
+							case 3:
+								geniusHintsLH[wire4LHTarget].enabled = true;
+								geniusHintsRH[wire4RHTarget].enabled = true;
+								break;
+							case 4:
+								geniusHintsLH[wire5LHTarget].enabled = true;
+								geniusHintsRH[wire5RHTarget].enabled = true;
+								break;
+							case 5:
+								geniusHintsLH[wire6LHTarget].enabled = true;
+								geniusHintsRH[wire6RHTarget].enabled = true;
+								break;
+							case 6:
+								geniusHintsLH[wire7LHTarget].enabled = true;
+								geniusHintsRH[wire7RHTarget].enabled = true;
+								break;
+						}
 					}
 				}
-			}
-		} else {
-			DisableGeniusHints();
-		}
-
-		if (!Solved) {
-			slider.value = actualValue + Random.Range(0f,shakeMultiplier);
-			if (slider.value > 100f) {
-				slider.value = 100f;
+			} else {
+				DisableGeniusHints();
 			}
 
-			if (slider.value < 0) {
-				slider.value = 0;
+			if (!Solved) {
+				slider.value = actualValue + Random.Range(0f,shakeMultiplier);
+				if (slider.value > 100f) {
+					slider.value = 100f;
+				}
+
+				if (slider.value < 0) {
+					slider.value = 0;
+				}
 			}
 		}
 	}
@@ -394,7 +396,7 @@ public class PuzzleWire : MonoBehaviour {
 		DisableAllSelectedIndicators();
 		selectedWireLH = true;
 		blinkState = true;
-		blinkTimeFinished = Time.time + blinkTime;
+		blinkTimeFinished = PauseScript.a.relativeTime + blinkTime;
 		BlinkSelectedIndicator();
 		ChangeAppearance();
 		//EvaluatePuzzle();
@@ -416,7 +418,7 @@ public class PuzzleWire : MonoBehaviour {
 		DisableAllSelectedIndicators();
 		selectedWireLH = false;
 		blinkState = true;
-		blinkTimeFinished = Time.time + blinkTime;
+		blinkTimeFinished = PauseScript.a.relativeTime + blinkTime;
 		BlinkSelectedIndicator();
 		ChangeAppearance();
 		//EvaluatePuzzle();

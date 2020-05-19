@@ -13,7 +13,7 @@ public class FuncWall : MonoBehaviour {
 	private Vector3 startPosition;
 	private Vector3 goalPosition;
 	private Vector3 tempVec;
-	private AudioSource SFXSource;
+	public AudioSource SFXSource;
 	public FuncStates currentState; // save
 	private Rigidbody rbody;
 	private bool stopSoundPlayed;
@@ -31,7 +31,7 @@ public class FuncWall : MonoBehaviour {
 		rbody.isKinematic = true;
 		rbody.useGravity = false;
 		rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-		SFXSource = GetComponent<AudioSource>();
+		if (SFXSource == null) SFXSource = GetComponent<AudioSource>();
 		stopSoundPlayed = false;
 		//movedToLocation = false;
 		dist = 0;
@@ -59,9 +59,9 @@ public class FuncWall : MonoBehaviour {
 				MoveTarget();
 				break;
 		}
-		SFXSource.clip = SFXMoving;
-		SFXSource.loop = true;
-		SFXSource.Play();
+		if (SFXSource != null) SFXSource.clip = SFXMoving;
+		if (SFXSource != null) SFXSource.loop = true;
+		if (SFXSource != null) SFXSource.Play();
 		stopSoundPlayed = false;
 		//movedToLocation = false;
 	}
@@ -79,14 +79,14 @@ public class FuncWall : MonoBehaviour {
 			case FuncStates.Start:
 				//if (!movedToLocation) {
 					transform.position = startPosition;
-					rbody.velocity = Vector3.zero;
+					if (rbody.velocity.magnitude > 0) rbody.velocity = Vector3.zero;
 					//movedToLocation = true;
 				//}
 				break;
 			case FuncStates.Target:
 				//if (!movedToLocation) {
 					transform.position = targetPosition.transform.position;
-					rbody.velocity = Vector3.zero;
+					if (rbody.velocity.magnitude > 0) rbody.velocity = Vector3.zero;
 					//movedToLocation = true;
 				//}
 				break;
@@ -96,14 +96,15 @@ public class FuncWall : MonoBehaviour {
 				dist = speed * Time.deltaTime;
 				tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
 				rbody.MovePosition(tempVec);
-				if ((Vector3.Distance(transform.position,goalPosition)) <= 0.04f) {
+				if (Vector3.Distance(transform.position,goalPosition) <= 0.04f) {
 					currentState = FuncStates.Start;
-
 					if (!stopSoundPlayed) {
-						SFXSource.Stop ();
-						SFXSource.loop = false;
-						SFXSource.PlayOneShot (SFXStop);
-						stopSoundPlayed = true;
+						if (SFXSource != null && SFXStop != null && gameObject.activeInHierarchy)  {
+							SFXSource.Stop ();
+							SFXSource.loop = false;
+							SFXSource.PlayOneShot (SFXStop);
+							stopSoundPlayed = true;
+						}
 					}
 				}
 				break;
@@ -113,10 +114,10 @@ public class FuncWall : MonoBehaviour {
 				dist = speed * Time.deltaTime;
 				tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
 				rbody.MovePosition(tempVec);
-				if ((Vector3.Distance(transform.position,goalPosition)) <= 0.04f) {
+				if (Vector3.Distance(transform.position,goalPosition) <= 0.04f) {
 					currentState = FuncStates.Target;
 
-					if (!stopSoundPlayed) {
+					if (!stopSoundPlayed && SFXSource != null) {
 						SFXSource.Stop ();
 						SFXSource.loop = false;
 						SFXSource.PlayOneShot (SFXStop);

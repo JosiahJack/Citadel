@@ -40,7 +40,10 @@ public class MainMenuHandler : MonoBehaviour {
 	private AudioSource BackGroundMusic;
 	public AudioClip titleMusic;
 	public AudioClip creditsMusic;
-	private bool returnToPause = false;
+	[HideInInspector]
+	public bool returnToPause = false;
+	private bool typingSaveGame = false;
+	private string tempSaveNameHolder;
 	public CreditsScroll credScrollManager;
 
 	void Awake () {
@@ -78,7 +81,10 @@ public class MainMenuHandler : MonoBehaviour {
 				saveNameInput[currentSaveSlot].SetActive(false);
 				saveNamePlaceholder[currentSaveSlot].SetActive(false);
 				saveButtonText[currentSaveSlot].text = sname;
+				typingSaveGame = false;
 				currentSaveSlot = -1;
+			} else {
+				GoBack();
 			}
 		}
 	}
@@ -86,7 +92,9 @@ public class MainMenuHandler : MonoBehaviour {
 	public void StartGame (bool isNew) {
 		StartSFX.PlayOneShot(StartGameSFX);
 		if (isNew) {
-			Const.a.playerName = newgamePage.GetComponentInChildren<InputField>().text;
+			string pname = newgamePage.GetComponentInChildren<InputField>().text;
+			if (string.IsNullOrWhiteSpace(pname)) pname = "Hacker";
+			Const.a.playerName = pname;
 			Const.a.difficultyCombat = combat.difficultySetting;
 			Const.a.difficultyMission = mission.difficultySetting;
 			Const.a.difficultyPuzzle = puzzle.difficultySetting;
@@ -139,10 +147,11 @@ public class MainMenuHandler : MonoBehaviour {
 		currentPage = Pages.np;
 	}
 
-	public void GoToLoadGameSubmenu () {
+	public void GoToLoadGameSubmenu (bool accessedFromPause) {
 		ResetPages();
 		loadPage.SetActive(true);
 		currentPage = Pages.lp;
+		returnToPause = accessedFromPause;
 
 		string readline; // variable to hold each string read in from the file
 		for (int i=0;i<8;i++) {
@@ -179,29 +188,57 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	public void SaveGameEntry (int index) {
+		typingSaveGame = true;
 		saveNameInput[index].SetActive(true);
 		saveNamePlaceholder[index].SetActive(true);
 		saveButtonText[index].text = System.String.Empty;
+		tempSaveNameHolder = savePage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text;
+		savePage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text = System.String.Empty;
 		saveNameInputField[index].ActivateInputField();
 		currentSaveSlot = index;
 	}
 
+	public void SaveQuickSaveButton () {
+		SaveGame (7,"quicksave");
+	}
+
 	public void SaveGame (int index,string savename) {
-		//Const.a.Save(index,Const.a.stringTable[308] + index.ToString());
-		Const.a.Save(index,savename);
+		Const.a.StartSave(index,savename);
 		Const.sprint(Const.a.stringTable[28] + index.ToString() + "!",Const.a.player1);
 		pauseHandler.EnablePauseUI();
 		this.gameObject.SetActive(false);
 	}
 
 	public void LoadGame (int index) {
-		Const.a.Load(index);
-		StartGame(false);
+		if (loadPage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text == "- unused -") {
+			Const.sprint("No data to load",Const.a.allPlayers);
+		} else {
+			if (Const.a.freshRun) {
+				StartGame(false);
+				Const.a.WriteDatForNewGame(false,false);
+			} else {
+				Const.a.Load(index);
+				StartGame(false);
+			}
+		}
 	}
 
 	public void GoBack () {
+		if (typingSaveGame) {
+			saveNameInput[currentSaveSlot].SetActive(false);
+			saveNamePlaceholder[currentSaveSlot].SetActive(false);
+			typingSaveGame = false;
+			savePage.GetComponent<LoadPageGetSaveNames>().loadButtonText[currentSaveSlot].text = tempSaveNameHolder;
+			currentSaveSlot = -1;
+			return;
+		}
+
 		if (returnToPause) {
+			if (Const.a.justSavedTimeStamp < Time.time) {
+				pauseHandler.hardSaveQuit = false;
+			}
 			pauseHandler.EnablePauseUI();
+			ResetPages();
 			this.gameObject.SetActive(false);
 			return;
 		}
@@ -247,11 +284,13 @@ public class MainMenuHandler : MonoBehaviour {
 
 	IEnumerator quitFunction () {
 		BackGroundMusic.Stop();
+		Const.a.WriteDatForNewGame(false,true);
 		saltTheFries.SetActive(true);
 		yield return new WaitForSeconds(0.8f);
 		#if UNITY_EDITOR_WIN
 			UnityEditor.EditorApplication.isPlaying = false;
 		#endif
+
 		Application.Quit();
 	}
 }

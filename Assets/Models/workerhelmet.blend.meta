@@ -151,7 +151,7 @@ ModelImporter:
       name: None__workerhelmet_png
     second: {fileID: 2100000, guid: 747157bda7dac7647b23db481e5ef276, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -214,7 +214,7 @@ ModelImporter:
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
-  importAnimation: 1
+  importAnimation: 0
   humanDescription:
     serializedVersion: 3
     human: []

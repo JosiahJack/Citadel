@@ -13,17 +13,19 @@ public class GeneralInvText : MonoBehaviour {
 	}
 
 	void Update () {
-        referenceIndex = gameObject.transform.GetComponentInParent<GeneralInvButton>().useableItemIndex;
-        if (referenceIndex > -1) {
-            text.text = Const.a.useableItemsNameText[referenceIndex];
-        } else {
-            text.text = string.Empty;
-        }
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			referenceIndex = gameObject.transform.GetComponentInParent<GeneralInvButton>().useableItemIndex;
+			if (referenceIndex > -1) {
+				text.text = Const.a.useableItemsNameText[referenceIndex];
+			} else {
+				text.text = string.Empty;
+			}
 
-		if (slotnum == GeneralInvCurrent.GeneralInvInstance.generalInvCurrent) {
-			text.color = Const.a.ssYellowText; // Yellow
-		} else {
-			text.color = Const.a.ssGreenText; // Green
+			if (slotnum == GeneralInvCurrent.GeneralInvInstance.generalInvCurrent) {
+				text.color = Const.a.ssYellowText; // Yellow
+			} else {
+				text.color = Const.a.ssGreenText; // Green
+			}
 		}
 	}
 }

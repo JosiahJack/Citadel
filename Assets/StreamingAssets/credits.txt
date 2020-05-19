@@ -47,6 +47,7 @@ Gigaquad for higher res object textures
 #
 -Sound and Music-
 Denhonator for remixed menu music
+Nameless Voice for fluid midi
 
 -Playtesters-
 Rachel Jack
@@ -55,6 +56,10 @@ Rebecca Jack
 William Van De Kieft
 Trae Van Maanen
 RocketMan
+Denhonator
+Kolya
+Dertseha
+JML
 #
 ----------------------------------------------------------------------
 Indirect involvment list found...
@@ -255,6 +260,9 @@ by ToxicFrog
 The invaluable resources at SystemShock.org
 ran by Kolya
 #
+XMI2MID and RIPXMI
+by Markus Hein
+
 Quake BSP to VRML Converter: bsp2wrl V1.3
 by Patrick McCormick 
 and Anthony Accardi

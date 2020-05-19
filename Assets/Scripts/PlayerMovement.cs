@@ -2,95 +2,122 @@
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
 public class PlayerMovement : MonoBehaviour {
 	private float walkAcceleration = 2000f;
-	private float walkDeacceleration = 0.30f;
-	private float walkDeaccelerationBooster = 2f;
+	private float walkDeacceleration = 0.1f; // was 0.30f
+	private float walkDeaccelerationBooster = 1f; // was 2f, adjusted player physics material to reduce friction for moving up stairs
 	private float deceleration;
 	private float walkAccelAirRatio = 0.6f;
 	public GameObject cameraObject;
 	public MouseLookScript mlookScript;
-	public float playerSpeed;
+	public float playerSpeed; // save
 	private float maxWalkSpeed = 3f;
 	private float maxCyberSpeed = 4f;
-	private float maxCrouchSpeed = 1.75f;
-	private float maxProneSpeed = 1f;
+	private float maxCrouchSpeed = 1.25f; //1.75f
+	private float maxProneSpeed = .5f; //1f
 	private float maxSprintSpeed = 9f;
 	private float maxSprintSpeedFatigued = 5.5f;
 	private float maxVerticalSpeed = 5f;
 	private float boosterSpeedBoost = 0.5f; // ammount to boost by when booster is active
 	public bool isSprinting = false;
-	public bool  isSkating = false;
 	private float jumpImpulseTime = 2.0f;
 	public float jumpVelocityBoots = 0.5f;
 	private float jumpVelocity = 1.1f;
 	private  float jumpVelocityFatigued = 0.6f;
-	public bool  grounded = false;
+	public bool  grounded = false; // save
 	private float crouchRatio = 0.6f;
 	private float proneRatio = 0.2f;
 	private float transitionToCrouchSec = 0.2f;
 	private float transitionToProneAdd = 0.1f;
-	public float currentCrouchRatio = 1f;
-	public float crouchLocalScaleY;
+	public float currentCrouchRatio = 1f; // save
 	public float capsuleHeight;
 	public float capsuleRadius;
-	public int bodyState = 0;
-	public bool ladderState = false;
-	private float ladderSpeed = 0.25f;
+	public int bodyState = 0; // save
+	public bool ladderState = false; // save
+	private float ladderSpeed = 0.4f;
 	private float fallDamage = 75f;
-	public bool gravliftState = false;
-	public bool inCyberSpace = false;
+	public bool gravliftState = false; // save
+	public bool inCyberSpace = false; // save
 	public GameObject automapContainer;
-	public Texture2D automapMaskTex;
-	public float automapFactor = 0.000285f;
-	private Sprite automapMaskSprite;
+	public RectTransform automapRectTransform;
+	public Texture2D[] automapMaskTex;
+	public float automapZoom0 = 1.2f;
+	public float automapZoom1 = 0.75f;
+	public float automapZoom2 = 0.55f;
+	private int currentAutomapZoomLevel = 0;
+	public float circleInnerRangev1 = (2.5f * 2.56f) + 1.28f;
+	public float circleOuterRangev1 = (4f * 2.56f) + 1.28f;
+	public float circleInnerRangev2 = (3f * 2.56f) + 1.28f;
+	public float circleOuterRangev2 = (4.5f * 2.56f) + 1.28f;
+	public float circleInnerRangev3 = (5f * 2.56f) + 1.28f;
+	public float circleOuterRangev3 = (7.5f * 2.56f) + 1.28f;
+	public Vector2[] automapLevelHomePositions; // R= 43.97, 85.66 | 1= -8.53, 85.99 | 2= 10.2, 44.8 | 3= 9.4, 63.83 | 4= -55.65, 116.8 | 5= -9.4, 71.8 | 6= 29.7, 85.5 | 7= 5, 76.55 | 8= 25.1, 84.4 | 9= 39.8, 72.6
+	public Image automapBaseImage;
+	public Image hazardsOverlayImage;
+	public Image automapInnerCircle;
+	public Image automapOuterCircle;
+	public Sprite[] automapsBaseImages;	
+	public Sprite[] automapsHazardOverlays;
+	public Sprite automapBotOverlay;
+	public Sprite automapCyborgOverlay;
+	public Sprite automapMutantOverlay;
+	public GameObject[] automapsIndividualOverlaysContainer;
+	public float automapFactorx = 0.000285f;
+	public float automapFactory = 0.000285f;
+	public Transform cheatG1Spawn;
+	public Transform cheatG2Spawn;
+	public Transform cheatG4Spawn;
 	//[HideInInspector]
-	public bool CheatWallSticky;
+	public bool CheatWallSticky; // save
     //[HideInInspector]
-    public bool CheatNoclip;
+    public bool CheatNoclip; // save
     public bool staminupActive = false;
 	private Vector2 horizontalMovement;
 	private float verticalMovement;
-	private float jumpTime;
+	[HideInInspector]
+	public float jumpTime; // save
 	private float crouchingVelocity = 1f;
-	private float originalLocalScaleY;
 	private float lastCrouchRatio;
 	private int layerGeometry = 9;
 	private int layerMask;
 	private Rigidbody rbody;
 	private float fallDamageSpeed = 11.72f;
-	private Vector3 oldVelocity;
+	[HideInInspector]
+	public Vector3 oldVelocity; // save
 	public GameObject mainMenu;
 	public HardwareInvCurrent hwc;
 	public HardwareInventory hwi;
 	public HardwareButton hwbJumpJets;
-	public float fatigue;
-	private float jumpFatigue = 8f;
+	public float fatigue; // save
+	private float jumpFatigue = 8.25f;
 	private float fatigueWanePerTick = 1f;
 	private float fatigueWanePerTickCrouched = 2f;
 	private float fatigueWanePerTickProne = 3.5f;
 	private float fatigueWaneTickSecs = 0.3f;
 	private float fatiguePerWalkTick = 0.9f;
-	private float fatiguePerSprintTick = 2.5f;
-	public string cantStandText = "Can't stand here.";
-	public string cantCrouchText = "Can't crouch here.";
-	private bool justJumped = false;
-	private float fatigueFinished;
-	private float fatigueFinished2;
+	private float fatiguePerSprintTick = 3.0f;
+	[HideInInspector]
+	public bool justJumped = false; // save
+	[HideInInspector]
+	public float fatigueFinished; // save
+	[HideInInspector]
+	public float fatigueFinished2; // save
 	public TextWarningsManager twm;
 
 	private int defIndex = 0;
 	private int def1 = 1;
 	private int onehundred = 100;
-	public bool running = false;
-	public bool cyberSetup = false;
-	public bool cyberDesetup = false;
+	public bool running = false; // save
+	public bool cyberSetup = false; // save
+	public bool cyberDesetup = false; // save
 	private SphereCollider cyberCollider;
 	private CapsuleCollider capsuleCollider;
 	public CapsuleCollider leanCapsuleCollider;
-	private int oldBodyState;
+	[HideInInspector]
+	public int oldBodyState; // save
 	private float bonus;
     private float walkDeaccelerationVolx;
     private float walkDeaccelerationVoly;
@@ -101,50 +128,61 @@ public class PlayerMovement : MonoBehaviour {
     public GameObject consoleplaceholderText;
 	public GameObject consoleTitle;
 	public Text consoleentryText;
-	public bool consoleActivated;
+	public bool consoleActivated; // save
 
 	public Transform leanTransform;
 
-	private float leanLeftDoubleFinished;
-	private float leanRightDoubleFinished;
+	[HideInInspector]
+	public float leanLeftDoubleFinished; // save
+	[HideInInspector]
+	public float leanRightDoubleFinished; // save
 	private float keyboardButtonDoubleTapTime = 0.25f; // max time before a double tap of a keyboard button is registered
-	private float leanTarget = 0f;
+	[HideInInspector]
+	public float leanTarget = 0f; // save
+	[HideInInspector]
+	public float leanShift = 0f; // save
+	public float leanMaxAngle = 35f;
+	public float leanMaxShift = 0.48f;
 
 	public AudioSource PlayerNoise;
 	public AudioClip SFXJump;
 	public AudioClip SFXJumpLand;
-	public float jumpSFXFinished;
+	public float jumpSFXFinished; // save
 	public float jumpSFXIntervalTime = 1f;
-	public float jumpLandSoundFinished;
-	private float jumpJetEnergySuckTickFinished;
+	public float jumpLandSoundFinished; // save
+	[HideInInspector]
+	public float jumpJetEnergySuckTickFinished; // save
 	public float jumpJetEnergySuckTick = 1f;
 	private Vector3 tempVec;
 	private float tempFloat;
 	private int tempInt;
 	public float leanSpeed = 5f;
-	public bool leanLHFirstPressed = false;
-	public bool leanRHFirstPressed = false;
-	public bool leanLHReset = false;
-	public bool leanRHReset = false;
+	public bool leanLHFirstPressed = false; // save
+	public bool leanRHFirstPressed = false; // save
+	public bool leanLHReset = false; // save
+	public bool leanRHReset = false; // save
 	public bool Notarget = false; // for cheat to disable enemy sight checks against this player
 	public GameObject fpsCounter;
+	public GameObject locationIndicator;
+	public Text locationText;
 	public WeaponCurrent wepCur;
-	private bool fatigueWarned;
+	[HideInInspector]
+	public bool fatigueWarned; // save
 	private PlayerEnergy pe;
 	[HideInInspector]
-	public float ressurectingFinished;
+	public float ressurectingFinished; // save
 	public float burstForce = 50f;
-	private float doubleJumpFinished;
+	[HideInInspector]
+	public float doubleJumpFinished; // save
+	private Vector3 playerHome;
 
-    void Awake (){
+    void Start (){
 		currentCrouchRatio = def1;
 		bodyState = defIndex;
 		cyberDesetup = false;
 		oldBodyState = bodyState;
-		fatigueFinished = Time.time;
-		fatigueFinished2 = Time.time;
-		originalLocalScaleY = transform.localScale.y;
-		crouchLocalScaleY = transform.localScale.y * crouchRatio;
+		fatigueFinished = PauseScript.a.relativeTime;
+		fatigueFinished2 = PauseScript.a.relativeTime;
 		rbody = GetComponent<Rigidbody>();
 		oldVelocity = rbody.velocity;
 		capsuleCollider = GetComponent<CapsuleCollider>();
@@ -154,22 +192,23 @@ public class PlayerMovement : MonoBehaviour {
 		staminupActive = false;
 		cyberCollider = GetComponent<SphereCollider>();
 		consoleActivated = false;
-		leanLeftDoubleFinished = Time.time;
-		leanRightDoubleFinished = Time.time;
-		jumpLandSoundFinished = Time.time;
+		leanLeftDoubleFinished = PauseScript.a.relativeTime;
+		leanRightDoubleFinished = PauseScript.a.relativeTime;
+		jumpLandSoundFinished = PauseScript.a.relativeTime;
 		justJumped = false;
 		leanLHFirstPressed = false;
 		leanRHFirstPressed = false;
 		leanLHReset = false;
 		leanRHReset = false;
-		jumpSFXFinished = Time.time;
+		jumpSFXFinished = PauseScript.a.relativeTime;
 		fatigueWarned = false;
 		pe = GetComponent<PlayerEnergy>();	
-		jumpJetEnergySuckTickFinished = Time.time;
-		ressurectingFinished = Time.time;
+		jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime;
+		ressurectingFinished = PauseScript.a.relativeTime;
 		tempInt = -1;
 		tempFloat = 0;
-		doubleJumpFinished = Time.time;
+		doubleJumpFinished = PauseScript.a.relativeTime;
+		playerHome = transform.localPosition;
     }
 	
 	bool CantStand (){
@@ -200,18 +239,29 @@ public class PlayerMovement : MonoBehaviour {
 			ConsoleEntry();
 		}
 
-		if (consoleActivated) {
-			if (!String.IsNullOrEmpty(consoleentryText.text)) {
-				consoleplaceholderText.SetActive(false);
-			} else {
-				consoleplaceholderText.SetActive(true);
-			}
-		} else {
-			consoleplaceholderText.SetActive(false);
+		if (locationIndicator.activeInHierarchy) {
+			locationText.text = "location: " +(transform.position.x.ToString("00.00")+" "+transform.position.y.ToString("00.00")+" "+transform.position.z.ToString("00.00"));
 		}
 
-		if (mainMenu.activeSelf == true) return;  // ignore movement when main menu is still up
-		if (!PauseScript.a.Paused() && (ressurectingFinished < Time.time)) {
+		if (consoleActivated) {
+			if (!String.IsNullOrEmpty(consoleentryText.text)) {
+				if (consoleplaceholderText.activeSelf) consoleplaceholderText.SetActive(false);
+			} else {
+				if (!consoleplaceholderText.activeSelf) consoleplaceholderText.SetActive(true);
+			}
+		} else {
+			if (consoleplaceholderText.activeSelf) consoleplaceholderText.SetActive(false);
+		}
+
+		if (mainMenu.activeSelf == true) {
+			rbody.useGravity = false;
+			return;  // ignore movement when main menu is still up
+		} else {
+			if (!inCyberSpace)
+				rbody.useGravity = true;
+		}
+
+		if (!PauseScript.a.Paused() && (ressurectingFinished < PauseScript.a.relativeTime)) {
 			rbody.WakeUp();
 
 			//LevelManager.a.SetLeaf(transform.position); // hey we are here, see if and set we are in a leaf for this level
@@ -281,7 +331,7 @@ public class PlayerMovement : MonoBehaviour {
 						bodyState = 3; // Start standing up
 						//Debug.Log ("Standing up from crouch...");
 					} else {
-						Const.sprint(cantStandText,Const.a.player1);
+						Const.sprint(Const.a.stringTable[187],Const.a.player1);
 					}
 				} else {
 					if ((bodyState == 0) || (bodyState == 3)) {
@@ -293,7 +343,7 @@ public class PlayerMovement : MonoBehaviour {
 								//Debug.Log ("Getting up from prone to crouch...");
 								bodyState = 6; // Start getting up to crouch
 							} else {
-								Const.sprint(cantCrouchText,Const.a.player1);
+								Const.sprint(Const.a.stringTable[188],Const.a.player1);
 							}
 						}
 					}
@@ -310,7 +360,7 @@ public class PlayerMovement : MonoBehaviour {
 							//Debug.Log ("Getting up from prone to standing...");
 							bodyState = 3; // Start standing up
 						} else {
-							Const.sprint(cantStandText,Const.a.player1);
+							Const.sprint(Const.a.stringTable[187],Const.a.player1);
 						}
 					}
 				}
@@ -345,8 +395,8 @@ public class PlayerMovement : MonoBehaviour {
 				}
 			}
 			// here fatigue me out, except in cyberspace
-			if (fatigueFinished < Time.time && !inCyberSpace && !CheatNoclip) {
-				fatigueFinished = Time.time + fatigueWaneTickSecs;
+			if (fatigueFinished < PauseScript.a.relativeTime && !inCyberSpace && !CheatNoclip) {
+				fatigueFinished = PauseScript.a.relativeTime + fatigueWaneTickSecs;
 				switch (bodyState) {
 				case 0: fatigue -= fatigueWanePerTick; break;
 				case 1: fatigue -= fatigueWanePerTickCrouched; break;
@@ -370,7 +420,7 @@ public class PlayerMovement : MonoBehaviour {
 				if (!leanRHFirstPressed) {
 					leanRHFirstPressed = true;
 				} else {
-					if ((Time.time - leanRightDoubleFinished) < keyboardButtonDoubleTapTime) {
+					if ((PauseScript.a.relativeTime - leanRightDoubleFinished) < keyboardButtonDoubleTapTime) {
 						//if (leanTransform.eulerAngles.z < 15f && leanTransform.eulerAngles.z > -15f) { // Wasn't working, maybe too sensitive?
 						//	Debug.Log("Leaning all the way Right!");
 						//	leanTarget = -22.5f;
@@ -379,6 +429,7 @@ public class PlayerMovement : MonoBehaviour {
 						//	leanTarget = 0;
 						//}
 						leanTarget = 0;
+						leanShift = 0;
 						leanRHReset = true;
 						leanRHFirstPressed = false;
 					} else {
@@ -393,7 +444,7 @@ public class PlayerMovement : MonoBehaviour {
 				if (!leanLHFirstPressed) {
 					leanLHFirstPressed = true;
 				} else {
-					if ((Time.time - leanLeftDoubleFinished) < keyboardButtonDoubleTapTime) {
+					if ((PauseScript.a.relativeTime - leanLeftDoubleFinished) < keyboardButtonDoubleTapTime) {
 						//if (leanTransform.eulerAngles.z < 15f && leanTransform.eulerAngles.z > -15f) {
 						//	Debug.Log("Leaning all the way Left!");
 						//	leanTarget = 22.5f;
@@ -402,6 +453,7 @@ public class PlayerMovement : MonoBehaviour {
 						//	leanTarget = 0;
 						//}
 						leanTarget = 0;
+						leanShift = 0;
 						leanLHReset = true;
 						leanLHFirstPressed = false;
 					} else {
@@ -479,10 +531,9 @@ public class PlayerMovement : MonoBehaviour {
 			return;
 		}
 
-		if (!PauseScript.a.Paused() && ressurectingFinished < Time.time) {
+		if (!PauseScript.a.Paused() && ressurectingFinished < PauseScript.a.relativeTime) {
             if (CheatNoclip) grounded = true;
 			// Crouch
-			//LocalScaleSetY(transform,(originalLocalScaleY * currentCrouchRatio));
 			capsuleCollider.height = currentCrouchRatio * 2f;
 			leanCapsuleCollider.height = currentCrouchRatio * 2f;
 			
@@ -545,7 +596,7 @@ public class PlayerMovement : MonoBehaviour {
 						if (fatigue > 80f) {
 							playerSpeed = maxSprintSpeedFatigued + bonus;
 							if (bodyState == 1 || bodyState == 2 || bodyState == 3) {
-								playerSpeed -= (maxWalkSpeed - maxCrouchSpeed);  // subtract off the difference in speed between walking and crouching from the sprint speed
+								playerSpeed -= ((maxWalkSpeed - maxCrouchSpeed)*1.5f);  // subtract off the difference in speed between walking and crouching from the sprint speed
 							}
 							if (bodyState == 4 || bodyState == 5 || bodyState == 6) {
 								playerSpeed -= (maxWalkSpeed - maxProneSpeed);  // subtract off the difference in speed between walking and proning from the sprint speed
@@ -553,10 +604,10 @@ public class PlayerMovement : MonoBehaviour {
 						} else {
 							playerSpeed = maxSprintSpeed + bonus;
 							if (bodyState == 1 || bodyState == 2 || bodyState == 3) {
-								playerSpeed -= (maxWalkSpeed - maxCrouchSpeed);  // subtract off the difference in speed between walking and crouching from the sprint speed
+								playerSpeed -= ((maxWalkSpeed - maxCrouchSpeed)*1.5f);  // subtract off the difference in speed between walking and crouching from the sprint speed
 							}
 							if (bodyState == 4 || bodyState == 5 || bodyState == 6) {
-								playerSpeed -= (maxWalkSpeed - maxProneSpeed);  // subtract off the difference in speed between walking and proning from the sprint speed
+								playerSpeed -= ((maxWalkSpeed - maxProneSpeed)*2f);  // subtract off the difference in speed between walking and proning from the sprint speed
 							}
 						}
 						if (CheatNoclip) playerSpeed = maxSprintSpeed + (bonus*1.5f);
@@ -569,11 +620,6 @@ public class PlayerMovement : MonoBehaviour {
 				RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG - already passed rbody.velocity.z into the .y of this Vector2
 
 				UpdateAutomap();
-				if (horizontalMovement.x != 0 || horizontalMovement.y != 0) {
-					//automapContainer.GetComponent<ScrollRect>().verticalNormalizedPosition += horizontalMovement.y * automapFactor * (-1);
-					//automapContainer.GetComponent<ScrollRect>().horizontalNormalizedPosition += horizontalMovement.x * automapFactor * (-1);
-					//UpdateAutomap();
-				}
 
 				// Set vertical velocity
 				verticalMovement = rbody.velocity.y;
@@ -606,6 +652,7 @@ public class PlayerMovement : MonoBehaviour {
 			if (GetInput.a.Forward() && !consoleActivated) {
 				relForward = 1f;
 				leanTarget = 0;
+				leanShift = 0;
 				leanRHReset = true;
 				leanLHReset = true;
 				leanRHFirstPressed = false;
@@ -655,8 +702,8 @@ public class PlayerMovement : MonoBehaviour {
                             }
                         }
 
-                        if (fatigueFinished2 < Time.time && relForward != defIndex && !CheatNoclip) {
-							fatigueFinished2 = Time.time + fatigueWaneTickSecs;
+                        if (fatigueFinished2 < PauseScript.a.relativeTime && relForward != defIndex && !CheatNoclip) {
+							fatigueFinished2 = PauseScript.a.relativeTime + fatigueWaneTickSecs;
 							if (isSprinting) {
 								fatigue += fatiguePerSprintTick;
 								if (staminupActive)
@@ -693,10 +740,11 @@ public class PlayerMovement : MonoBehaviour {
 				// Handle leaning, double tap to reset is handled in Update to prevent repeat calls within the same frame
 				if (GetInput.a.LeanRight() && !leanRHReset) {
 					leanTarget -= (leanSpeed * Time.deltaTime);
-					if (leanTarget < -22.5f) leanTarget = -22.5f;
-					leanRightDoubleFinished = Time.time;
+					if (leanTarget < (leanMaxAngle * -1)) leanTarget = (leanMaxAngle * -1);
+					leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle));
+					leanRightDoubleFinished = PauseScript.a.relativeTime;
 				} else {
-					if ((Time.time - leanRightDoubleFinished) > keyboardButtonDoubleTapTime) {
+					if ((PauseScript.a.relativeTime - leanRightDoubleFinished) > keyboardButtonDoubleTapTime) {
 						leanRHReset = false;
 						leanRHFirstPressed = false;
 					}
@@ -704,16 +752,20 @@ public class PlayerMovement : MonoBehaviour {
 
 				if (GetInput.a.LeanLeft() && !leanLHReset) {
 					leanTarget += (leanSpeed * Time.deltaTime);
-					if (leanTarget > 22.5f) leanTarget = 22.5f;
-					leanLeftDoubleFinished = Time.time;
+					if (leanTarget > leanMaxAngle) leanTarget = leanMaxAngle;
+
+					leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1));
+					leanLeftDoubleFinished = PauseScript.a.relativeTime;
 				} else {
-					if ((Time.time - leanLeftDoubleFinished) > keyboardButtonDoubleTapTime) {
+					if ((PauseScript.a.relativeTime - leanLeftDoubleFinished) > keyboardButtonDoubleTapTime) {
 						leanLHReset = false;
 						leanLHFirstPressed = false;
 					}
 				}
 
+				//leanMaxShift
 				leanTransform.localRotation = Quaternion.Euler(0, 0, leanTarget);
+				leanTransform.localPosition = new Vector3(leanShift,0,0);
 
                 // Handle gravity and ladders
                 if (ladderState) {
@@ -750,7 +802,7 @@ public class PlayerMovement : MonoBehaviour {
 							//if (gravliftState || (hwc.hardwareIsActive[10])) {
 								if (grounded || gravliftState || hwc.hardwareIsActive[10]) {
 									jumpTime = jumpImpulseTime;
-									doubleJumpFinished = Time.time + Const.a.doubleClickTime;
+									doubleJumpFinished = PauseScript.a.relativeTime + Const.a.doubleClickTime;
 									justJumped = true;
 								} else {
 									if (ladderState) {
@@ -762,7 +814,7 @@ public class PlayerMovement : MonoBehaviour {
 						}
 
 						if (hwc.hardwareIsActive [9] && hwi.hardwareVersionSetting[9] == 1) {
-							if (doubleJumpFinished < Time.time){
+							if (doubleJumpFinished < PauseScript.a.relativeTime){
 								rbody.AddForce(new Vector3(transform.forward.x * burstForce,transform.forward.y * burstForce,transform.forward.z * burstForce),ForceMode.Impulse);
 								pe.TakeEnergy(40f);
 							}
@@ -785,8 +837,8 @@ public class PlayerMovement : MonoBehaviour {
 									case 1: energysuck = 30f; break;
 									case 2: energysuck = 35f; break;
 								}
-								if (jumpJetEnergySuckTickFinished < Time.time) {
-									jumpJetEnergySuckTickFinished = Time.time + jumpJetEnergySuckTick;
+								if (jumpJetEnergySuckTickFinished < PauseScript.a.relativeTime) {
+									jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime + jumpJetEnergySuckTick;
 									pe.TakeEnergy(energysuck);
 								}
 							} else {
@@ -809,13 +861,13 @@ public class PlayerMovement : MonoBehaviour {
 					// Play jump sound
 					if (fatigue > 80) {
 						// quiet, we are tired
-						if (jumpSFXFinished < Time.time) {
-							jumpSFXFinished = Time.time + jumpSFXIntervalTime;
+						if (jumpSFXFinished < PauseScript.a.relativeTime) {
+							jumpSFXFinished = PauseScript.a.relativeTime + jumpSFXIntervalTime;
 							PlayerNoise.PlayOneShot(SFXJump,0.5f);
 						}
 					} else {
-						if (jumpSFXFinished < Time.time) {
-							jumpSFXFinished = Time.time + jumpSFXIntervalTime;
+						if (jumpSFXFinished < PauseScript.a.relativeTime) {
+							jumpSFXFinished = PauseScript.a.relativeTime + jumpSFXIntervalTime;
 							PlayerNoise.PlayOneShot(SFXJump);
 						}
 					}
@@ -850,13 +902,133 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	}
 
+	void SetActiveCurrentLevelOverlayContainer() {
+		if (LevelManager.a.currentLevel < 0) return;
+		for (int i=0;i<14;i++) {
+			if (i == LevelManager.a.currentLevel) {
+				if (!automapsIndividualOverlaysContainer[i].activeSelf) automapsIndividualOverlaysContainer[i].SetActive(true);
+			} else {
+				if (automapsIndividualOverlaysContainer[i].activeSelf) automapsIndividualOverlaysContainer[i].SetActive(false);
+			}
+		}
+	}
+
+	void PaintAwayAlphaInAlphaMask(Texture2D alphaSource,Vector3 paintBrushPosition) {
+		
+	}
+
+	float GetMappedAlphaFromSmallerAlphaMask(int srcx, int srcy, Texture2D alphaSource) {
+		Color c = alphaSource.GetPixel((srcx/16),(srcy/16));
+		return c.a;
+	}
+
+	Texture2D spriteWithAppliedAlphaMask(Texture2D tex) {
+		Texture2D retTex = tex;
+		if (LevelManager.a.currentLevel >= 0 && LevelManager.a.currentLevel < 14) {
+
+			for (int y=0;y<tex.height;y++) {
+				for (int x=0;x<tex.width;x++) {
+					Color oldC = tex.GetPixel(x,y);
+					float a = oldC.a;
+					if (a > 0) a = GetMappedAlphaFromSmallerAlphaMask(x,y,automapMaskTex[LevelManager.a.currentLevel]);
+					Color newC = new Color(oldC.r,oldC.g,oldC.b, a ); // alpha is kinda the whole point
+					retTex.SetPixel(x,y,newC);
+				}
+			}
+		}
+		return retTex;
+	}
+
 	// Update automap location
 	public void UpdateAutomap () {
-		//Texture2D tex = new Texture2D(512,512);  // 722,658
-		//tex.SetPixels(automapMaskTex.GetPixels(0,0,512,512), 0);
-		//tex.Apply();
-		//automapMaskSprite = Sprite.Create(tex, new Rect(0, 0, 512, 512), new Vector2(50,50));
-		//automapContainer.GetComponent<Image>().sprite = automapMaskSprite;
+		Vector3 newpos;
+		if (hwi.hasHardware[1]) {
+			if (LevelManager.a.currentLevel >= 0 && LevelManager.a.currentLevel < 14) {
+				//Sprite fogOfWarSprite = Sprite.Create(spriteWithAppliedAlphaMask(automapsBaseImages[LevelManager.a.currentLevel].texture),automapBaseImage.sprite.rect,new Vector2(0f,0f));
+				//automapBaseImage.overrideSprite = fogOfWarSprite;
+				automapBaseImage.overrideSprite = automapsBaseImages[LevelManager.a.currentLevel];
+				//SetActiveCurrentLevelOverlayContainer();
+				newpos = new Vector3(automapLevelHomePositions[LevelManager.a.currentLevel].x,automapLevelHomePositions[LevelManager.a.currentLevel].y,0f);
+			} else {
+				newpos = new Vector3(-9.9f,112.9f,0f);
+			}
+			float deltay = (transform.localPosition.x - playerHome.x)/2.56f * 8f * automapFactorx;
+			float deltax = (transform.localPosition.z - playerHome.z)/2.56f * 8f * automapFactory;
+			newpos.y -= deltay; // needs to be flipped for some reason
+			newpos.x += deltax;
+			automapRectTransform.localPosition = newpos;
+			//if (LevelManager.a.currentLevel >= 0 && LevelManager.a.currentLevel < 14) PaintAwayAlphaInAlphaMask(automapMaskTex[LevelManager.a.currentLevel],newpos);
+			/*
+			switch (hwi.hardwareVersion[1]) {
+				case 0:
+					hazardsOverlayImage.enabled = false;
+					break;
+				case 1:
+					hazardsOverlayImage.enabled = false;
+					//AutomapDisplayBots();
+					break;
+				case 2:
+					hazardsOverlayImage.enabled = true;
+					if (LevelManager.a.currentLevel >= 0 && LevelManager.a.currentLevel < 14) {
+						if (automapsHazardOverlays[LevelManager.a.currentLevel] != null) {
+							hazardsOverlayImage.overrideSprite = automapsHazardOverlays[LevelManager.a.currentLevel];
+						}
+					}
+					//AutomapDisplayBots();
+					//AutomapDisplayCyborgs();
+					//AutomapDisplayMutants();
+					break;
+			}*/
+		}
+	}
+
+	public void AutomapZoomOut() {
+		currentAutomapZoomLevel++;
+		if (currentAutomapZoomLevel > 2) {
+			currentAutomapZoomLevel = 2;
+			Const.sprint(Const.a.stringTable[316],Const.a.player1); // zoom at max
+			return;
+		}
+		AutomapZoomAdjust();
+	}
+
+	public void AutomapZoomIn() {
+		currentAutomapZoomLevel--;
+		if (currentAutomapZoomLevel < 0) {
+			currentAutomapZoomLevel = 0;
+			Const.sprint(Const.a.stringTable[317],Const.a.player1); // zoom at min
+			return;
+		}
+		AutomapZoomAdjust();
+	}
+
+	void AutomapZoomAdjust() {
+		Vector3 scaleVec = new Vector3(0f,0f,0f);
+		switch (currentAutomapZoomLevel) {
+			case 0: scaleVec = new Vector3(automapZoom0, automapZoom0, automapZoom0); break;
+			case 1: scaleVec = new Vector3(automapZoom1, automapZoom1, automapZoom1); break;
+			case 2: scaleVec = new Vector3(automapZoom2, automapZoom2, automapZoom2); break;
+		}
+		automapContainer.transform.localScale = scaleVec;
+	}
+
+	public void AutomapGoSide() {
+		Const.sprint("Unable to connect to side map, try updating to version 1.00",Const.a.player1); // zoom at max
+	}
+
+	public void AutomapGoFull() {
+		Const.sprint("Unable to connect full map, try updating to version 1.00",Const.a.player1); // zoom at max
+	}
+
+
+	// Reset grounded to false when player is mid-air
+	void OnCollisionExit (){
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			// Automatically set grounded to false to prevent ability to climb any wall (Cheat!)
+			if (CheatWallSticky == true) {
+				grounded = false;
+			}
+		}
 	}
 
 	// Sets grounded based on normal angle of the impact point (NOTE: This is not the surface normal!)
@@ -870,20 +1042,12 @@ public class PlayerMovement : MonoBehaviour {
 				//Debug.Log("Contact.normal for player OnCollisionStay is " + ang.ToString());
 				if (tempFloat <= 1 && tempFloat >= 0.35) {
 					grounded = true;
+					return;
 				}
 			}
 		}
 	}
 
-	// Reset grounded to false when player is mid-air
-	void OnCollisionExit (){
-		if (!PauseScript.a.Paused()) {
-			// Automatically set grounded to false to prevent ability to climb any wall (Cheat!)
-			if (CheatWallSticky == true) {
-				grounded = false;
-			}
-		}
-	}
 
 	public void ConsoleDisable() {
 		consoleActivated = false;
@@ -949,21 +1113,31 @@ public class PlayerMovement : MonoBehaviour {
 				GetComponent<HealthManager>().god = true;
 			}
         } else if (consoleinpFd.text == "load0" || consoleinpFd.text == "LOAD0" || consoleinpFd.text == "Load0") {
-			LevelManager.a.LoadLevel(0,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(0,LevelManager.a.ressurectionLocation[0].gameObject,Const.a.player1);
         } else if (consoleinpFd.text == "load1" || consoleinpFd.text == "LOAD1" || consoleinpFd.text == "Load1") {
-			LevelManager.a.LoadLevel(1,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(1,LevelManager.a.ressurectionLocation[1].gameObject,Const.a.player1);
         } else if (consoleinpFd.text == "load2" || consoleinpFd.text == "LOAD2" || consoleinpFd.text == "Load2") {
-			LevelManager.a.LoadLevel(2,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(2,LevelManager.a.ressurectionLocation[2].gameObject,Const.a.player1);
         } else if (consoleinpFd.text == "load3" || consoleinpFd.text == "LOAD3" || consoleinpFd.text == "Load3") {
-			LevelManager.a.LoadLevel(3,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(3,LevelManager.a.ressurectionLocation[3].gameObject,Const.a.player1);
         } else if (consoleinpFd.text == "load4" || consoleinpFd.text == "LOAD4" || consoleinpFd.text == "Load4") {
-			LevelManager.a.LoadLevel(4,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(4,LevelManager.a.ressurectionLocation[4].gameObject,Const.a.player1);
         } else if (consoleinpFd.text == "load5" || consoleinpFd.text == "LOAD5" || consoleinpFd.text == "Load5") {
-			LevelManager.a.LoadLevel(5,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(5,LevelManager.a.ressurectionLocation[5].gameObject,Const.a.player1);
         } else if (consoleinpFd.text == "load6" || consoleinpFd.text == "LOAD6" || consoleinpFd.text == "Load6") {
-			LevelManager.a.LoadLevel(6,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(6,LevelManager.a.ressurectionLocation[6].gameObject,Const.a.player1);
         } else if (consoleinpFd.text == "load7" || consoleinpFd.text == "LOAD7" || consoleinpFd.text == "Load7") {
-			LevelManager.a.LoadLevel(7,LevelManager.a.ressurectionLocation[LevelManager.a.currentLevel].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(7,LevelManager.a.ressurectionLocation[7].gameObject,Const.a.player1);
+        } else if (consoleinpFd.text == "load8" || consoleinpFd.text == "LOAD8" || consoleinpFd.text == "Load8") {
+			LevelManager.a.LoadLevel(8,LevelManager.a.ressurectionLocation[8].gameObject,Const.a.player1);
+        } else if (consoleinpFd.text == "load9" || consoleinpFd.text == "LOAD9" || consoleinpFd.text == "Load9") {
+			LevelManager.a.LoadLevel(9,LevelManager.a.ressurectionLocation[9].gameObject,Const.a.player1);
+        } else if (consoleinpFd.text == "loadg1" || consoleinpFd.text == "LOADG1" || consoleinpFd.text == "Loadg1") {
+			LevelManager.a.LoadLevel(10,cheatG1Spawn.gameObject,Const.a.player1);
+        } else if (consoleinpFd.text == "loadg2" || consoleinpFd.text == "LOADG2" || consoleinpFd.text == "Loadg2") {
+			LevelManager.a.LoadLevel(11,cheatG2Spawn.gameObject,Const.a.player1);
+        } else if (consoleinpFd.text == "loadg4" || consoleinpFd.text == "LOADG4" || consoleinpFd.text == "Loadg4") {
+			LevelManager.a.LoadLevel(12,cheatG4Spawn.gameObject,Const.a.player1);
         } else if (consoleinpFd.text == "bottomlessclip" || consoleinpFd.text == "BOTTOMLESSCLIP"  || consoleinpFd.text == "Bottomlessclip" || consoleinpFd.text == "bOTTOMLESSCLIP" || consoleinpFd.text == "bottomless clip" || consoleinpFd.text == "BOTTOMLESS CLIP") {
 			if (wepCur.bottomless) {
 				Const.sprint("Hose disconnected, normal ammo operation restored", Const.a.allPlayers);
@@ -983,6 +1157,9 @@ public class PlayerMovement : MonoBehaviour {
         } else if (consoleinpFd.text == "showfps" || consoleinpFd.text == "SHOWFPS" || consoleinpFd.text == "show fps" || consoleinpFd.text == "cl_showfps 1" || consoleinpFd.text == "r_showfps 1"  || consoleinpFd.text == "Showfps" || consoleinpFd.text == "sHOWFPS" || consoleinpFd.text == "show_fps 1") {
 			Const.sprint("Toggling FPS counter for framerate (bottom right corner)...", Const.a.allPlayers);
 			fpsCounter.SetActive(!fpsCounter.activeInHierarchy);
+        } else if (consoleinpFd.text == "showlocation" || consoleinpFd.text == "SHOWLOCATION" || consoleinpFd.text == "show location") {
+			Const.sprint("Toggling locationIndicator (bottom left corner)...", Const.a.allPlayers);
+			locationIndicator.SetActive(!locationIndicator.activeInHierarchy);
 		} else if (consoleinpFd.text == "iamshodan" || consoleinpFd.text == "IAMSHODAN" || consoleinpFd.text == "Iamshodan" || consoleinpFd.text == "iAMSHODAN" || consoleinpFd.text == "I AM SHODAN" || consoleinpFd.text == "i am shodan" || consoleinpFd.text == "I am shodan" || consoleinpFd.text == "I am SHODAN"  || consoleinpFd.text == "I am Shodan") {
 			if (LevelManager.a.superoverride) {
 				Const.sprint("SHODAN has regained control of security from you", Const.a.allPlayers);

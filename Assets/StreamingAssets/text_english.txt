@@ -29,11 +29,11 @@ Blocked by SHODAN level Security.
 Saved game to slot 
 Can't use 
 You are too far away from that
-Item added to general inventory
-Inventory full, item dropped
-Weapon added to inventory
-Grenade added to inventory
-Patch added to inventory
+ added to general inventory
+Inventory full, 
+ added to weapon inventory
+ added to grenade inventory
+ added to patch inventory
 Audio log 
  picked up.  Press '
 ' to play back.
@@ -272,11 +272,11 @@ PIPE
 MAGNUM
 MAGPULSE
 PISTOL
-PLASMA RFL
+PLASMA RIFLE
 RAIL GUN
 RIOT GUN
 SKORPION
-SPARQ
+SPARQ BEAM
 STUNGUN
 Envirosuit absorbed 
 , 
@@ -314,3 +314,13 @@ Already activated.
 WARNING: Bridge Separation Process Initiated. All unnecessary personnel clear the level.
 Power supply exhausted.
 Weapon does not use ammo.
+Map zoom at maximum.
+Map zoom at minimum.
+ dropped
+ picked up.
+ activated, grenade is LIVE!
+Cyberspace lock
+Out of grenades.
+Breaker is now on.
+Out of patches.
+Camera preventing switch use.

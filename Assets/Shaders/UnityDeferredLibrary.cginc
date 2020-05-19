@@ -154,7 +154,8 @@ void UnityGGXDeferredCalculateLightParams (
     // read depth and reconstruct world position
     float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv);
     depth = Linear01Depth (depth);
-    float4 vpos = float4(i.ray * depth,1);
+    //float4 vpos = float4(i.ray * depth,1);
+    half4 vpos = float4(i.ray * depth,1);
     float3 wpos = mul (unity_CameraToWorld, vpos).xyz;
 
     float fadeDist = UnityComputeShadowFadeDistance(wpos, vpos.z);

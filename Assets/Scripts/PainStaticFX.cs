@@ -18,7 +18,7 @@ public class PainStaticFX : MonoBehaviour {
 	}
 
 	public void Flash(int intensity) {
-		effectFinished = Time.time + lifetime;
+		effectFinished = PauseScript.a.relativeTime + lifetime;
 		img.overrideSprite = painLight;
 
 		switch(intensity) {
@@ -40,11 +40,13 @@ public class PainStaticFX : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (img.enabled == false) return; // only care if flash is on
-		if (effectFinished < Time.time) Deactivate();
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (img.enabled == false) return; // only care if flash is on
+			if (effectFinished < PauseScript.a.relativeTime) Deactivate();
+		}
 	}
 
-	void Deactivate () {
+	public void Deactivate () {
 		img.enabled = false;;
 	}
 }

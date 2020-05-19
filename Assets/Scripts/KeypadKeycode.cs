@@ -118,11 +118,13 @@ public class KeypadKeycode : MonoBehaviour {
 	}
 
 	void Update () {
-		if (padInUse) {
-			if (Vector3.Distance(playerCapsule.transform.position, gameObject.transform.position) > disconnectDist) {
-				padInUse = false;
-				MFDManager.a.TurnOffKeypad();
-				//keypadControl.SetActive(false);
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (padInUse) {
+				if (Vector3.Distance(playerCapsule.transform.position, gameObject.transform.position) > disconnectDist) {
+					padInUse = false;
+					MFDManager.a.TurnOffKeypad();
+					//keypadControl.SetActive(false);
+				}
 			}
 		}
 	}

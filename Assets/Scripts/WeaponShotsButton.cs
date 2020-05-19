@@ -15,7 +15,7 @@ public class WeaponShotsButton : MonoBehaviour {
 	private Vector3 transMouse;
 	private Matrix4x4 m;
 	private Matrix4x4 inv;
-	private bool alternateAmmo = false;
+	[SerializeField] private Button WepButton = null; // assign in the editor
 
 	public void PtrEnter () {
 		GUIState.a.isBlocking = true;
@@ -26,18 +26,23 @@ public class WeaponShotsButton : MonoBehaviour {
 	}
 
 	void WeaponInvClick () {
+		WepButton.GetComponent<WeaponButton>().WeaponInvClick();
+		/*
 		invslot = WeaponInventory.WepInventoryInstance.weaponInventoryIndices[WepButtonIndex];
 		if (invslot < 0)
 			return;
 
 		SFX.PlayOneShot(SFXClip);
-		if (ammoiconman.activeInHierarchy) ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot, alternateAmmo);
+		WeaponCurrent.WepInstance.weaponCurrent = WepButtonIndex;				//Set current weapon
+		WeaponCurrent.WepInstance.weaponIndex = useableItemIndex;				//Set current weapon
+		WeaponCurrent.WepInstance.UpdateHUDAmmoCountsEither();
+		if (ammoiconman.activeInHierarchy) ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot,WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]);
 		if (iconman.activeInHierarchy) iconman.GetComponent<WeaponIconManager>().SetWepIcon(invslot);    //Set weapon icon for MFD
 		if (weptextman.activeInHierarchy) weptextman.GetComponent<WeaponTextManager>().SetWepText(invslot); //Set weapon text for MFD
-		WeaponCurrent.WepInstance.weaponCurrent = WepButtonIndex;				//Set current weapon
+		*/
 	}
 
-	[SerializeField] private Button WepButton = null; // assign in the editor
+
 	void Start() {
 		WepButton.onClick.AddListener(() => { WeaponInvClick();});
 	}

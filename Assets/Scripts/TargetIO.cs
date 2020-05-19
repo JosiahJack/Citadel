@@ -119,7 +119,7 @@ public class TargetIO : MonoBehaviour {
 		if (tempUD.doorOpen) {
 			Door dr = GetComponent<Door>();
 			if (dr != null) dr.ForceOpen();
-			Debug.Log("opening door!");
+			//Debug.Log("opening door!");
 		}
 
 		if (tempUD.doorOpenIfUnlocked) {
@@ -165,7 +165,7 @@ public class TargetIO : MonoBehaviour {
 		if (tempUD.forceBridgeActivate) {
 			ForceBridge fb = GetComponent<ForceBridge>();
 			Debug.Log("Activating force bridge");
-			if (fb != null) fb.Activate(false);
+			if (fb != null) fb.Activate(false,false);
 		}
 
 		if (tempUD.forceBridgeDeactivate) {

@@ -17,7 +17,7 @@ public class TextWarningsManager : MonoBehaviour {
 	public Color colgreen;
 	public Color colyellow;
 
-	void Awake () {
+	void Start () {
 		warningTexts = new Text[warningTextGObjects.Length];
 		initialized = new bool[warningTextGObjects.Length];
 		finishedTime = new float[warningTextGObjects.Length];
@@ -26,7 +26,7 @@ public class TextWarningsManager : MonoBehaviour {
 			warningTexts[i] = warningTextGObjects[i].GetComponent<Text>();
 			if (warningTexts[i] != null) warningTexts[i].text = System.String.Empty;
 			initialized[i] = false;
-			finishedTime[i] = Time.time;
+			finishedTime[i] = PauseScript.a.relativeTime;
 			uniqueID[i] = -1;
 		}
 	}
@@ -36,7 +36,7 @@ public class TextWarningsManager : MonoBehaviour {
 
 		for (int i=setIndex;i>=0;i--) {
 			if (uniqueID[i] == id) { setIndex = i; break;}
-			if (finishedTime[i] < Time.time) { setIndex = i; break;}
+			if (finishedTime[i] < PauseScript.a.relativeTime) { setIndex = i; break;}
 		}
 
 		if (id == 322) forcedReference = 0;
@@ -53,20 +53,22 @@ public class TextWarningsManager : MonoBehaviour {
 		else
 			if (warningLifeTimes[setIndex] < warningDefaultLifeTime) warningLifeTimes[setIndex] = warningDefaultLifeTime;
 
-		finishedTime[setIndex] = Time.time + warningLifeTimes[setIndex];
+		finishedTime[setIndex] = PauseScript.a.relativeTime + warningLifeTimes[setIndex];
 	}
 
 	void Update () {
-		for (int i=0;i<warningTextGObjects.Length;i++) {
-			if (!string.IsNullOrWhiteSpace(warningTexts[i].text)) {
-				if (finishedTime[i] < Time.time) {
-					warningTexts[i].text = System.String.Empty;
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			for (int i=0;i<warningTextGObjects.Length;i++) {
+				if (!string.IsNullOrWhiteSpace(warningTexts[i].text)) {
+					if (finishedTime[i] < PauseScript.a.relativeTime) {
+						warningTexts[i].text = System.String.Empty;
+						if (warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(false);
+						continue;
+					}
+					if (!warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(true);
+				} else {
 					if (warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(false);
-					continue;
 				}
-				if (!warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(true);
-			} else {
-				if (warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(false);
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SearchableItem : MonoBehaviour, IBatchUpdate {
+public class SearchableItem : MonoBehaviour {
 	[Tooltip("Use lookUp table instead of randomItem#'s for default random item generation, for example for NPCs")]
 	public int lookUpIndex = 0; // For randomly generating items
 	[Tooltip("The indices referring to the prefab in Const table to have inside this searchable")]
@@ -48,21 +48,12 @@ public class SearchableItem : MonoBehaviour, IBatchUpdate {
 			//Debug.Log("...done!  Generated indices " + contents[0].ToString() + " and " + contents[1].ToString() + ".");
 			generationDone = true;
 		}
-		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketB);
 	}
 
-	public void BatchUpdate () {
-		if (searchableInUse) {
-			gameObject.tag = "Untagged";
-			if (Vector3.Distance(currentPlayerCapsule.transform.position, gameObject.transform.position) > disconnectDist) {
-				searchableInUse = false;
-				gameObject.tag = "Searchable";
-				//MFDManager.a.ClearDataTab();
-			}
-			if (!MFDManager.a.usingObject) {
-				searchableInUse = false;
-				gameObject.tag = "Searchable";
-			}
+	public void ResetSearchable(bool wipeContents) {
+		searchableInUse = false;
+		if (wipeContents) {
+			
 		}
 	}
 }

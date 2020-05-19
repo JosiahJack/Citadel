@@ -27,15 +27,17 @@ public class UpdateManager : MonoBehaviour {
     
     void Awake() {
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
+	/*
     void Update() {
         var targetUpdateFunctions = _isCurrentBucketA ? _slicedUpdateBehavioursBucketA : _slicedUpdateBehavioursBucketB;
+		//for (i=0;i<targetUpdateFunctions.Count;i++) {  CANNOT APPLY [] TO HASHSETS???
         foreach (var slicedUpdateBehaviour in targetUpdateFunctions) {
-            slicedUpdateBehaviour.BatchUpdate();
+			slicedUpdateBehaviour.BatchUpdate();
         }
         _isCurrentBucketA = !_isCurrentBucketA;
-    }
+    }*/
 }
 
 public interface IBatchUpdate {
@@ -48,13 +50,11 @@ public interface IBatchUpdate {
 // A:
 	// Door
 	// Force Bridge
-	// HealthManager
 	// ColorCurvesManager
 // B:
 	// ButtonSwitch
 	// LightAnimation
 	// TickIndicatorAnimation
-	// SecurityCameraRotate
 	// SearchableItem
 
 

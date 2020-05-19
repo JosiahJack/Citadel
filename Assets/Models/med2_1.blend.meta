@@ -30,6 +30,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: med2_1__med2_1_png
     second: {fileID: 2100000, guid: f40c1927d7e9b9e4d9f8207932a430e5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: med2_1__med_png
+    second: {fileID: 2100000, guid: ad02ff9e8e65dcf4791ef545e23c1209, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -83,7 +88,7 @@ ModelImporter:
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15
     secondaryUVHardAngle: 88
-    secondaryUVPackMargin: 8
+    secondaryUVPackMargin: 16
     useFileScale: 1
   tangentSpace:
     normalSmoothAngle: 60

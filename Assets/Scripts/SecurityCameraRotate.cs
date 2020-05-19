@@ -2,7 +2,7 @@
 using System.Collections;
 
 // For security cameras
-public class SecurityCameraRotate : MonoBehaviour, IBatchUpdate {
+public class SecurityCameraRotate : MonoBehaviour {
 	public float startYAngle = 0f;
 	public float endYAngle = 180f;
 	private float degreesYPerSecond = 4f;
@@ -10,19 +10,25 @@ public class SecurityCameraRotate : MonoBehaviour, IBatchUpdate {
 	private float waitingTime = 0f;
 	private bool rotatePositive;
 	private float tickTime = 0.1f;
+	[HideInInspector]
+	public bool active;
+	public MeshRenderer mR;
 
 	void Start () {
-		waitingTime = Time.time;
+		waitingTime = PauseScript.a.relativeTime;
 		rotatePositive = true;
-		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketB);
+		if (this.enabled) active = true; else active = false;
 	}
 
-	public void BatchUpdate () {
-		if (waitingTime < Time.time) {
-			if (rotatePositive) {
-				RotatePositive();
-			} else {
-				RotateNegative();
+	void Update() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (!mR.isVisible) return;
+			if (waitingTime < PauseScript.a.relativeTime) {
+				if (rotatePositive) {
+					RotatePositive();
+				} else {
+					RotateNegative();
+				}
 			}
 		}
 	}
@@ -30,7 +36,7 @@ public class SecurityCameraRotate : MonoBehaviour, IBatchUpdate {
 	void RotatePositive () {
 		if (((transform.rotation.eulerAngles.y + 1f) >= endYAngle) && ((transform.rotation.eulerAngles.y - 1f) <= endYAngle)) {
 			rotatePositive = false;
-			waitingTime = Time.time + waitTime;
+			waitingTime = PauseScript.a.relativeTime + waitTime;
 			return;
 		}
 		transform.Rotate(new Vector3(0,degreesYPerSecond * tickTime,0),Space.World);
@@ -39,7 +45,7 @@ public class SecurityCameraRotate : MonoBehaviour, IBatchUpdate {
 	void RotateNegative () {
 		if (((transform.rotation.eulerAngles.y + 1f) >= startYAngle) && ((transform.rotation.eulerAngles.y - 1f) <= startYAngle)) {
 			rotatePositive = true;
-			waitingTime = Time.time + waitTime;
+			waitingTime = PauseScript.a.relativeTime + waitTime;
 			return;
 		}
 		transform.Rotate(new Vector3(0,degreesYPerSecond * tickTime * -1,0),Space.World);

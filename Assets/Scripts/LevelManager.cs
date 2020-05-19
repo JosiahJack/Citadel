@@ -9,8 +9,12 @@ public class LevelManager : MonoBehaviour {
 	public int[] levelCameraCount;
 	public int[] levelSmallNodeCount;
 	public int[] levelLargeNodeCount;
+	public int[] levelCameraDestroyedCount;
+	public int[] levelSmallNodeDestroyedCount;
+	public int[] levelLargeNodeDestroyedCount;
 	public Transform[] ressurectionLocation;
 	public bool[] ressurectionActive;
+	public Door[] ressurectionBayDoor;
 	//public GameObject currentPlayer;
 	//public GameObject elevatorControl;
 	public GameObject sky;
@@ -19,6 +23,7 @@ public class LevelManager : MonoBehaviour {
 	public MeshRenderer skyMR;
 	public bool[] showSkyForLevel;
 	public bool[] showSaturnForLevel;
+	public NPCSubManager[] npcsm;
 	public enum SecurityType{None,Camera,NodeSmall,NodeLarge};
 	public Level[] levelScripts;
 	public int currentLeaf;
@@ -26,18 +31,36 @@ public class LevelManager : MonoBehaviour {
 	void Awake () {
 		a = this;
 		if (currentLevel == -1) return;
+		//StartCoroutine(InitializeAllLevels());
 		SetAllPlayersLevelsToCurrent();
-		DisableAllNonOccupiedLevels();
-		if (sky != null)
-			sky.SetActive(true);
-
-		skyMR.enabled = false;
-		saturn.SetActive(false); //using GO because of ring children
-		if (showSkyForLevel[currentLevel]) skyMR.enabled = true;
-		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true);
+		if (sky != null) sky.SetActive(true);
+		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
+		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 		Time.timeScale = Const.a.defaultTimeScale;
 		currentLeaf = -1;
 	}
+
+	public void Start() {
+		PullOutCurrentLevelNPCs();
+	}
+
+	public void PullOutCurrentLevelNPCs() {
+		if (npcsm[currentLevel] != null) npcsm[currentLevel].PullOutNPCs();
+	}
+
+	public void PutBackCurrentLevelNPCs() {
+		if (npcsm[currentLevel] != null) npcsm[currentLevel].PutBackNPCs();
+	}
+	/*public void InitializeAllLevels() {
+		PauseScript.a.paused = true;
+		for (int i=0;i<levels.Length;i++) {
+			if (levels[i] != null) levels[i].SetActive(true);
+			//yield return null); // should be 0.14s total
+		}
+		yield return new WaitForSeconds(0.5f); // 0.14+0.5 = 0.6s total for level initialization
+		DisableAllNonOccupiedLevels(); // sure, this probably takes another second at least :)
+		PauseScript.a.paused = false;
+	}*/
 
 	public void CyborgConversionToggleForCurrentLevel() {
 		if (currentLevel == 6) {
@@ -71,11 +94,14 @@ public class LevelManager : MonoBehaviour {
 		if (ressurectionActive[currentLevel]) {
 			if (currentLevel == 10 ||currentLevel == 11 ||currentLevel == 12) {
 				LoadLevel(6,ressurectionLocation[currentLevel].gameObject,currentPlayer);
+				ressurectionBayDoor[6].ForceClose();
 			} else {
+				ressurectionBayDoor[currentLevel].ForceClose();
 				currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = ressurectionLocation[currentLevel].position; //teleport to ressurection chamber
 			}
 			currentPlayer.GetComponent<PlayerReferenceManager>().playerDeathRessurectEffect.SetActive(true); // activate death screen and readouts for "BRAIN ACTIVITY SATISFACTORY"            ya debatable right
-			currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerMovement>().ressurectingFinished = Time.time + 3f;
+			currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerMovement>().ressurectingFinished = PauseScript.a.relativeTime + 3f;
+
 			return true;
 		}
 
@@ -106,10 +132,13 @@ public class LevelManager : MonoBehaviour {
 		levels[levnum].SetActive(true); // enable new level
 		currentPlayer.GetComponent<PlayerReferenceManager>().playerCurrentLevel = levnum;
 		if (levnum == 13) currentPlayer.GetComponent<PlayerReferenceManager> ().playerCapsule.GetComponent<PlayerMovement> ().inCyberSpace = true;
+		PutBackCurrentLevelNPCs();
 		currentLevel = levnum; // Set current level to be the new level
 		DisableAllNonOccupiedLevels();
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
+		PullOutCurrentLevelNPCs(); // unparent from level transforms to reduce physics work
+		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) AutoSplitterData.missionSplitID++; // 1 - Medical split - we are now on level 2
 	}
 
 	public void LoadLevelFromSave (int levnum) {
@@ -117,9 +146,9 @@ public class LevelManager : MonoBehaviour {
 		if (currentLevel == levnum) {
 			return;
 		}
-			
+		
+		levels[currentLevel].SetActive(false); // Unload current level	
 		levels[levnum].SetActive(true); // Load new level
-		levels[currentLevel].SetActive(false); // Unload current level
 		currentLevel = levnum; // Set current level to be the new level
 	}
 
@@ -138,7 +167,7 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 
-	void DisableAllNonOccupiedLevels() {
+	public void DisableAllNonOccupiedLevels() {
 		int p1level = -1;
 		int p2level = -1;
 		int p3level = -1;
@@ -154,6 +183,12 @@ public class LevelManager : MonoBehaviour {
 			} else {
 				if (levels[i] != null) levels[i].SetActive(true);
 			}
+		}
+	}
+
+	public void EnableAllLevels() {
+		for (int i=0;i<levels.Length;i++) {
+			if (levels[i] != null) levels[i].SetActive(true);
 		}
 	}
 
@@ -208,9 +243,9 @@ public class LevelManager : MonoBehaviour {
 		float secDrop = camScore; // default to camScore
 		switch (stype) {
 			case SecurityType.None: return;
-			case SecurityType.Camera: secDrop = ((camScore/secscoreTotal) * 100); break; // 1 camera divided by the total, so 2/ say (40+60) = 2/100 = 0.02, or 2% using the example numbers above
-			case SecurityType.NodeSmall: secDrop = ((nodeSmallScore/secscoreTotal) * 100); break;
-			case SecurityType.NodeLarge: secDrop = ((nodeLargeScore/secscoreTotal) * 100); break;
+			case SecurityType.Camera: secDrop = ((camScore/secscoreTotal) * 100); levelCameraDestroyedCount[currentLevel]++; break; // 1 camera divided by the total, so 2/ say (40+60) = 2/100 = 0.02, or 2% using the example numbers above
+			case SecurityType.NodeSmall: secDrop = ((nodeSmallScore/secscoreTotal) * 100); levelSmallNodeDestroyedCount[currentLevel]++; break;
+			case SecurityType.NodeLarge: secDrop = ((nodeLargeScore/secscoreTotal) * 100); levelLargeNodeDestroyedCount[currentLevel]++; break;
 		}
 		//Debug.Log("secDrop: " + secDrop.ToString());
 		//Debug.Log("Camera calc: " + (((camScore/secscoreTotal) * 100)).ToString());
@@ -218,6 +253,9 @@ public class LevelManager : MonoBehaviour {
 		//Debug.Log("Node large calc: " + (((nodeLargeScore/secscoreTotal) * 100)).ToString());
 		levelSecurity [currentLevel] -= (int)secDrop;
 		if (levelSecurity [currentLevel] < 0) levelSecurity [currentLevel] = 0;
+		if ((levelLargeNodeDestroyedCount[currentLevel] == levelLargeNodeCount[currentLevel]) && (levelSmallNodeDestroyedCount[currentLevel] == levelSmallNodeCount[currentLevel]) && (levelCameraDestroyedCount[currentLevel] == levelCameraCount[currentLevel])) {
+			levelSecurity[currentLevel] = 0;
+		}
 		Const.sprint(Const.a.stringTable[306] + levelSecurity[currentLevel].ToString() + Const.a.stringTable[307],Const.a.allPlayers);
 	}
 

@@ -12,11 +12,13 @@ public class GrenadeCountsText : MonoBehaviour {
 	}
 
 	void Update () {
-		text.text = GrenadeInventory.GrenadeInvInstance.grenAmmo[countsSlotnum].ToString();
-		if (countsSlotnum == GrenadeCurrent.GrenadeInstance.grenadeCurrent) {
-			text.color = Const.a.ssYellowText; // Yellow
-		} else {
-			text.color = Const.a.ssGreenText; // Green
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			text.text = GrenadeInventory.GrenadeInvInstance.grenAmmo[countsSlotnum].ToString();
+			if (countsSlotnum == GrenadeCurrent.GrenadeInstance.grenadeCurrent) {
+				text.color = Const.a.ssYellowText; // Yellow
+			} else {
+				text.color = Const.a.ssGreenText; // Green
+			}
 		}
 	}
 }

@@ -22,22 +22,24 @@ public class CenterTabButtons : MonoBehaviour {
 	private bool[] highlightStatus;
 	private int[] highlightTickCount;
 
-	void Awake () {
+	void Start () {
 		tabNotified = new bool[] {false, false, false, false};
-		tickFinished = Time.time;
+		tickFinished = PauseScript.a.relativeTime;
 		tabNotified = new bool[] {false, false, false, false};
 		highlightStatus = new bool[] {false, false, false, false};
 		highlightTickCount = new int[] {0,0,0,0};
 	}
 
 	void Update () {
-		if (tickFinished < Time.time) {
-			for (int i=0;i<4;i++) {
-				if (tabNotified[i]) {
-					ToggleHighlightOnButton(i);
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (tickFinished < PauseScript.a.relativeTime) {
+				for (int i=0;i<4;i++) {
+					if (tabNotified[i]) {
+						ToggleHighlightOnButton(i);
+					}
 				}
+				tickFinished = PauseScript.a.relativeTime + tickTime;
 			}
-			tickFinished = Time.time + tickTime;
 		}
 	}
 
@@ -79,7 +81,7 @@ public class CenterTabButtons : MonoBehaviour {
 	public void NotifyToCenterTab(int tabNum) {
 		//if (curTab == tabNum) return;
 		tabNotified[tabNum] = true;
-		tickFinished = Time.time + tickTime;
+		tickFinished = PauseScript.a.relativeTime + tickTime;
 		ToggleHighlightOnButton (tabNum);
 	}
 

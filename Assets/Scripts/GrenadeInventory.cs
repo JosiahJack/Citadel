@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class GrenadeInventory : MonoBehaviour {
-	public int[] grenAmmo;
+	public int[] grenAmmo; // save
 	public static GrenadeInventory GrenadeInvInstance;
 
 	void Awake () {

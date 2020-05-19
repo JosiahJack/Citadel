@@ -3,12 +3,11 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class LogInventory : MonoBehaviour {
-	public bool[] hasLog;
-	public bool[] readLog;
-	//public int[] logCountFromLevel;
-	public int[] numLogsFromLevel;
+	public bool[] hasLog; // save
+	public bool[] readLog; // save
+	public int[] numLogsFromLevel; // save
 	public static LogInventory a;
-	public int lastAddedIndex = -1;
+	public int lastAddedIndex = -1; // save
 	public CenterTabButtons centerTabButtonsControl;
 	private AudioSource SFXSource;
 	private AudioClip SFXClip;
@@ -19,7 +18,7 @@ public class LogInventory : MonoBehaviour {
 	public GameObject vmaillaserdest;
 	public GameObject vmailshieldsup;
 	public MouseLookScript mls;
-	public bool beepDone = false;
+	public bool beepDone = false; // save
 	private int tempRefIndex = -1;
 
 	void Awake() {
@@ -31,15 +30,17 @@ public class LogInventory : MonoBehaviour {
 	}
 
 	void Update () {
-		if(GetInput.a.RecentLog() && (HardwareInventory.a.hasHardware[2] == true)) {
-			if (lastAddedIndex != -1) {
-				PlayLog(lastAddedIndex);
-				tempRefIndex = lastAddedIndex;
-				lastAddedIndex = -1;
-			} else {
-				SFXSource.Stop();
-				if (tempRefIndex != -1) lastAddedIndex = tempRefIndex;
-				tempRefIndex = -1;
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if(GetInput.a.RecentLog() && (HardwareInventory.a.hasHardware[2] == true)) {
+				if (lastAddedIndex != -1) {
+					PlayLog(lastAddedIndex);
+					tempRefIndex = lastAddedIndex;
+					lastAddedIndex = -1;
+				} else {
+					SFXSource.Stop();
+					if (tempRefIndex != -1) lastAddedIndex = tempRefIndex;
+					tempRefIndex = -1;
+				}
 			}
 		}
 	}

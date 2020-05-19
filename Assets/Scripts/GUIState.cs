@@ -6,7 +6,7 @@ public class GUIState : MonoBehaviour {
 	[SerializeField]
 	public bool isBlocking = false;
 	public static GUIState a;
-	public enum ButtonType {Generic,GeneralInv,Patch,Grenade,Weapon,Search,None};
+	public enum ButtonType {Generic,GeneralInv,Patch,Grenade,Weapon,Search,None,PGrid,PWire};
 	public ButtonType overButtonType = ButtonType.None;
 	public bool overButton;
 	[HideInInspector] public GameObject currentButton;

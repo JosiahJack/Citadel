@@ -6,45 +6,19 @@ using UnityEngine.UI;
 public class EnergySlider : MonoBehaviour {
     public WeaponCurrent currentWeapon;
 	public WeaponFire wf;
-
+	public MouseCursor mc;
     Slider slideS;
-    private int index;
-    //private float ener_min;
-    //private float ener_max;
-    //private float val;
 
 	void Awake () {
         slideS = GetComponent<Slider>();
-        index = -1;
-        //ener_min = 2f;
-        //ener_max = 130f;
-        //val = 0;
 	}
 
 	void OnEnable () {
-		index = WeaponFire.Get16WeaponIndexFromConstIndex(currentWeapon.weaponIndex);
-		slideS.value = currentWeapon.weaponEnergySetting[index];
+		slideS.value = currentWeapon.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent];
 	}
 
-	void OnInitializePotentialDrag () {
-		NotifyWeaponFireSliderClicked();
-	}
-
-	void OnDrag () {
-		//NotifyWeaponFireSliderClicked();
-	}
-
-    public void SetValue() {
-        index = WeaponFire.Get16WeaponIndexFromConstIndex(currentWeapon.weaponIndex);
-        //ener_min = Const.a.energyDrainLowForWeapon[index];
-        //ener_max = Const.a.energyDrainHiForWeapon[index];
-        //val = slideS.value / 100f;
-        //val = (val*(ener_max - ener_min)) + ener_min;
-        currentWeapon.weaponEnergySetting[index] = slideS.value;
-		NotifyWeaponFireSliderClicked();
+    public void SetValue(float val) {
+		slideS.value = val*100f;
+        currentWeapon.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent] = slideS.value;
     }
-
-	public void NotifyWeaponFireSliderClicked() {
-		wf.energySliderClickedTime = Time.time + 0.1f;
-	}
 }

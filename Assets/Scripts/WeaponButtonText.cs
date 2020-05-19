@@ -12,11 +12,13 @@ public class WeaponButtonText : MonoBehaviour {
 	}
 
 	void Update () {
-		text.text = WeaponInventory.WepInventoryInstance.weaponInventoryText[slotnum];
-		if (slotnum == WeaponCurrent.WepInstance.weaponCurrent) {
-			text.color = Const.a.ssYellowText; // Yellow
-		} else {
-			text.color = Const.a.ssGreenText; // Green
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			text.text = WeaponInventory.WepInventoryInstance.weaponInventoryText[slotnum];
+			if (slotnum == WeaponCurrent.WepInstance.weaponCurrent) {
+				text.color = Const.a.ssYellowText; // Yellow
+			} else {
+				text.color = Const.a.ssGreenText; // Green
+			}
 		}
 	}
 }

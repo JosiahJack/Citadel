@@ -6,14 +6,14 @@ public class Ladder : MonoBehaviour {
 	GameObject other;
 	
 	void  OnTriggerEnter (Collider other){
-		if (other.tag == "Player") {
+		if (other.CompareTag("Player")) {
 			pmov = other.GetComponent<PlayerMovement>();
 			if (pmov != null) {	pmov.ladderState = true; }
 		}
 	}
 	
 	void  OnTriggerExit (Collider other){
-		if (other.tag == "Player") {
+		if (other.CompareTag("Player")) {
 			pmov = other.GetComponent<PlayerMovement>();
 			if (pmov != null) {	pmov.ladderState = false; }
 		}

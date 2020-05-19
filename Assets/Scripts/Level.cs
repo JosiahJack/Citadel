@@ -9,16 +9,16 @@ public class Level : MonoBehaviour {
 	//private float tick = 0.1f;
 	private float tickFinished;
 	
-	void Awake() {
-		tickFinished = Time.time + UnityEngine.Random.Range(0.5f, 2f);
+	void Start() {
+		tickFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(0.5f, 2f);
 	}
 
-	//void Update() {
-	//	if (tickFinished < Time.time) {
+	//void pdate() {
+	//	if (tickFinished < PauseScript.a.relativeTime) {
 	//		if (LevelManager.a.currentLeaf < 0) { UnCullAll(); return; }
 
 	//		DisplaySeenLeafsFrom(LevelManager.a.currentLeaf);
-	//		tickFinished = Time.time + tick;
+	//		tickFinished = PauseScript.a.relativeTime + tick;
 	//	}
 	//}
 

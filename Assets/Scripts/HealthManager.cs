@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class HealthManager : MonoBehaviour, IBatchUpdate {
+public class HealthManager : MonoBehaviour {
 	public bool isPlayer = false;
 	public bool isGrenade = false;
 	public float health = -1f; // current health
@@ -17,6 +18,7 @@ public class HealthManager : MonoBehaviour, IBatchUpdate {
 	public bool isScreen = false;
 	public bool applyImpact = false;
 	public bool isSecCamera = false;
+	public Image linkedCameraOverlay;
 	public SecurityCameraRotate scr;
 	public int[] gibIndices;
 	public GameObject[] gibObjects;
@@ -40,8 +42,6 @@ public class HealthManager : MonoBehaviour, IBatchUpdate {
 	public bool teleportOnDeath = false;
 	public GameObject teleportEffect;
 	public bool actAsCorpseOnly = false;
-
-	private bool initialized = false;
 	[HideInInspector]
 	public bool deathDone = false;
 	[HideInInspector]
@@ -67,7 +67,6 @@ public class HealthManager : MonoBehaviour, IBatchUpdate {
 	public bool teleportDone;
 
 	void Awake () {
-		initialized = false;
 		deathDone = false;
 		teleportDone = false;
 		rbody = GetComponent<Rigidbody>();
@@ -88,9 +87,15 @@ public class HealthManager : MonoBehaviour, IBatchUpdate {
 			if (pe == null) Debug.Log("BUG: No PlayerEnergy script referenced by a Player's HealthManager");
 		}
 		take = 0;
-		justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
+		justHurtByEnemy = (PauseScript.a.relativeTime - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
 		if (securityAffected != LevelManager.SecurityType.None) LevelManager.a.RegisterSecurityObject(levelIndex, securityAffected);
-		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketA);
+		Const.a.RegisterObjectWithHealth(this);
+		if (gibOnDeath) {
+			for (int i=0;i<gibObjects.Length;i++) {
+				SaveObject so = gibObjects[i].GetComponent<SaveObject>();
+				if (so != null) so.Start();
+			}
+		}
 	}
 
 	// Put into Start instead of Awake to give Const time to populate from enemy_tables.txt
@@ -112,22 +117,15 @@ public class HealthManager : MonoBehaviour, IBatchUpdate {
             }
         }
 		if (maxhealth < 1) maxhealth = health;
+		if (actAsCorpseOnly && isNPC && health > 0) StartCoroutine(InitializeCorpseOnly());
 	}
 
-	public void BatchUpdate () {
-		if (!initialized) {
-			initialized = true;
-			if (health > 0) Const.a.RegisterObjectWithHealth(this);
-		}
-			
-		if (health > maxhealth) health = maxhealth; // Don't go past max.  Ever.
-		if (actAsCorpseOnly && isNPC && health > 0) {
-			tempdd.ResetDamageData(tempdd);
-			tempdd.damage = maxhealth * 2f;
-			if (aic != null) aic.SFX.enabled = false;
-			TakeDamage(tempdd); // harrycarry time, we's dead
-			//actAsCorpseOnly = false;
-		}
+	public IEnumerator InitializeCorpseOnly() {
+		yield return new WaitForSeconds(0.5f);		
+		tempdd.ResetDamageData(tempdd);
+		tempdd.damage = maxhealth * 2f;
+		if (aic != null) aic.SFX.enabled = false;
+		TakeDamage(tempdd); // harrycarry time, we's dead
 	}
 
 	float ApplyAttackTypeAdjustments(float take,DamageData dd) {
@@ -319,17 +317,24 @@ public class HealthManager : MonoBehaviour, IBatchUpdate {
 			}
 
 			if (dd.ownerIsNPC) {
-				justHurtByEnemy = Time.time;
+				justHurtByEnemy = PauseScript.a.relativeTime;
 			}
+			ph.playerHealthTicks.DrawTicks();
 		}
 
 		// Apply critical based on AttackType
 		take = ApplyAttackTypeAdjustments(take,dd);
-		
 
 		// Do the damage, that's right do. your. worst!
 		health -= take; //was directly dd.damage but changed since we are check for extra things in case GetDamageTakeAmount wasn't called on dd.damage beforehand (e.g. player fall damage, internal to player only, need to protect against shield, etc, JJ 9/5/19)
 		attacker = dd.owner;
+		if (isNPC && health > 0) {
+			AIController aic = GetComponent<AIController>();
+			if (aic != null) {
+				aic.goIntoPain = true;
+				aic.attacker = attacker;
+			}
+		}
 
         if (health <= 0f) {
             if (!deathDone) {
@@ -351,6 +356,8 @@ public class HealthManager : MonoBehaviour, IBatchUpdate {
 					if (vaporizeCorpse && dd.attackType == Const.AttackType.EnergyBeam && !isSecCamera)
 						deathFX = Const.PoolType.Vaporize;
 					ObjectDeath(null);
+
+					if (searchableItem != null) MFDManager.a.NotifySearchThatSearableWasDestroyed();
 				}
 
 				if (isScreen) ScreenDeath(backupDeathSound);
@@ -375,6 +382,7 @@ public class HealthManager : MonoBehaviour, IBatchUpdate {
                     }
 
 					if (searchableItem != null) {
+						MFDManager.a.NotifySearchThatSearableWasDestroyed();
 						GameObject levelDynamicContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
 						//if (levelDynamicContainer == null) levelDynamicContainer = gameObject;
 						
@@ -471,6 +479,7 @@ public class HealthManager : MonoBehaviour, IBatchUpdate {
 		
 		if (dropItemsOnGib) {
 			if (searchableItem != null) {
+				MFDManager.a.NotifySearchThatSearableWasDestroyed();
 				GameObject levelDynamicContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
 				//if (levelDynamicContainer == null) levelDynamicContainer = gameObject;
 				
@@ -492,6 +501,8 @@ public class HealthManager : MonoBehaviour, IBatchUpdate {
 						}
 						//tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
 						tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
+						searchableItem.contents[i] = -1;
+						searchableItem.customIndex[i] = -1;
 					}
 				}
 			}
@@ -555,7 +566,8 @@ public class HealthManager : MonoBehaviour, IBatchUpdate {
 		if (capCol != null) capCol.enabled = false;
 
 		if (isSecCamera) {
-			if (scr != null) scr.enabled = false;
+			//if (scr != null) scr.enabled = false;
+			if (linkedCameraOverlay != null) linkedCameraOverlay.enabled = false; // disable on automap
 		}
 		if (securityAffected != LevelManager.SecurityType.None)
 			LevelManager.a.ReduceCurrentLevelSecurity(securityAffected);
@@ -610,10 +622,107 @@ public class HealthManager : MonoBehaviour, IBatchUpdate {
 
 	public void HealingBed(float amount,bool flashBed) {
 		health += amount;
+		if (health > 255) health = 255;
+		ph.playerHealthTicks.DrawTicks();
 		if (flashBed) {
 			if (healingFXFlash != null) {
 				healingFXFlash.SetActive(true);
 			}
 		}
+	}
+
+	public void AwakeFromLoad() {
+		// Already done this in Load:
+		// hm.health = GetFloatFromString(entries[index],currentline); index++; // how much health we have
+		// hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
+		// hm.god = GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
+		// hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport?
+
+		// Handle objects
+		if (isObject) {
+			int gibcnt = gibObjects.Length;
+			if (gibcnt > 0) {
+				if (gibObjects[0] != null) {
+					for (int i=0;i<gibcnt;i++) {
+						if (health > 0) {
+							if (gibObjects[i].activeSelf) gibObjects[i].SetActive(false);
+						} else {
+							if (!gibObjects[i].activeSelf) gibObjects[i].SetActive(true);
+						}
+					}
+				}
+			}
+			if (health > 0) {
+				if (boxCol != null) boxCol.enabled = true;
+				if (meshCol != null) meshCol.enabled = true;
+				if (sphereCol != null) sphereCol.enabled = true;
+				if (capCol != null) capCol.enabled = true;
+				if (isSecCamera) {
+					if (linkedCameraOverlay != null) linkedCameraOverlay.enabled = true; // disable on automap
+				}
+				MeshRenderer mr = GetComponent<MeshRenderer>();
+				if (mr != null) {
+					mr.enabled = true;
+				} else {
+					AIController aicP = GetComponentInParent<AIController>();
+					if (aicP != null) {
+						if (aicP.healthManager != null) {
+							if (!aicP.healthManager.gibOnDeath) {
+								aicP.visibleMeshEntity.SetActive(true);
+							}
+						}
+					}
+				}
+			} else {
+				// Disable collision
+				if (boxCol != null) boxCol.enabled = false;
+				if (meshCol != null) meshCol.enabled = false;
+				if (sphereCol != null) sphereCol.enabled = false;
+				if (capCol != null) capCol.enabled = false;
+
+				if (isSecCamera) {
+					if (linkedCameraOverlay != null) linkedCameraOverlay.enabled = false; // disable on automap
+				}
+
+				MeshRenderer mr = GetComponent<MeshRenderer>();
+				if (mr != null) {
+					mr.enabled = false;
+				} else {
+					AIController aicP = GetComponentInParent<AIController>();
+					if (aicP != null) {
+						if (aicP.healthManager != null) {
+							if (!aicP.healthManager.gibOnDeath) {
+								aicP.visibleMeshEntity.SetActive(false);
+							}
+						}
+					}
+				}
+			}
+		}
+		// end Handle objects
+
+		// Handle screens
+		if (isScreen) {
+			if (health > 0) {
+				ImageSequenceTextureArray ista = GetComponent<ImageSequenceTextureArray>();
+				if (ista != null) {
+					ista.AwakeFromLoad(health);
+				}
+			}
+		}
+		// end Handle screens
+
+		// Handle NPCs
+		if (isNPC) {
+			if (spawnMother != null) spawnMother.AwakeFromLoad(health);
+		}
+		// end Handle NPCs
+
+		// Handle grenades
+		if (isGrenade) {
+			GrenadeActivate ga = GetComponent<GrenadeActivate>();
+			if (ga != null) ga.AwakeFromLoad(health);
+		}
+		// end Handle grenades
 	}
 }

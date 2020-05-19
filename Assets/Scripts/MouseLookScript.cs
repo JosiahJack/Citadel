@@ -7,7 +7,6 @@ public class MouseLookScript : MonoBehaviour {
     // Internal to Prefab
     // ------------------------------------------------------------------------
 	public GameObject player;
-	public float recompile;
     [Tooltip("Shows current state of Inventory Mode (Don't set yourself!)")]
 	public bool inventoryMode;
 	[Tooltip("Shows current state of Holding an Object (Don't set yourself!)")]
@@ -31,10 +30,10 @@ public class MouseLookScript : MonoBehaviour {
     [Tooltip("Force given to spawned objects when tossing them")]
     public float tossForce = 200f;
     //[HideInInspector]
-    public int heldObjectIndex;
-	public int heldObjectCustomIndex;
-	public int heldObjectAmmo;
-	public bool heldObjectAmmoIsSecondary;
+    public int heldObjectIndex; // save
+	public int heldObjectCustomIndex; // save
+	public int heldObjectAmmo; // save
+	public int heldObjectAmmo2; // save
 	public bool firstTimePickup;
 	public bool firstTimeSearch;
 	public bool grenadeActive;
@@ -63,9 +62,9 @@ public class MouseLookScript : MonoBehaviour {
     private float currentZRotation;
     private string mlookstring1;
     private Camera playerCamera;
+	public Camera gunCamera;
     private GameObject heldObject;
     private bool itemAdded = false;
-	private int indexAdjustment;
 	private Quaternion tempQuat;
 	private Vector3 tempVec;
 	//private Quaternion cameraDefaultLocalRot;
@@ -78,6 +77,7 @@ public class MouseLookScript : MonoBehaviour {
 	public MouseCursor mouseCursor;
 	public GameObject canvasContainer;
 	public GameObject compassContainer;
+	public GameObject automapContainer;
 	public GameObject compassMidpoints;
 	public GameObject compassLargeTicks;
 	public GameObject compassSmallTicks;
@@ -85,11 +85,9 @@ public class MouseLookScript : MonoBehaviour {
 	public GameObject tabControl;
 	[Tooltip("Text in the data tab in the MFD that displays when searching an object containing no items")]
 	public Text dataTabNoItemsText;
-	public DataTab dataTabControl;
 	public LogContentsButtonsManager logContentsManager;
 	public AudioSource SFXSource;
 	public CenterTabButtons centerTabButtonsControl;
-	public MFDManager mfdManager;
 	public GameObject iconman;
 	public GameObject itemiconman;
 	public GameObject itemtextman;
@@ -110,12 +108,13 @@ public class MouseLookScript : MonoBehaviour {
 	public LogInventory logInventory;
 	public AccessCardInventory accessCardInventory;
 	public GameObject[] hardwareButtons;
-	public GameObject mainMenu;
 	public WeaponMagazineCounter wepmagCounter;
 	public PlayerMovement playerMovement;
 	private float[] cameraDistances;
 	[HideInInspector]
 	public bool vmailActive = false;
+	public PuzzleWire puzzleWire;
+	public PuzzleGrid puzzleGrid;
 	//private AudioListener audListener;
 
     //float headbobSpeed = 1;
@@ -130,10 +129,6 @@ public class MouseLookScript : MonoBehaviour {
     //}
 
     void Start (){
-        //mouseCursor = GameObject.Find("MouseCursorHandler");
-        // if (mouseCursor == null)
-        //    Const.sprint("BUG: Could Not Find object 'MouseCursorHandler' in scene",player);
-		
         ResetCursor();
 		Cursor.lockState = CursorLockMode.None;
 		inventoryMode = true;  // Start with inventory mode turned on
@@ -143,13 +138,13 @@ public class MouseLookScript : MonoBehaviour {
 			cameraDistances[i] = 79f; //can't see further than this please.  31 * 2.56 - player radius 0.48 = 78.88f rounded up to be careful..longest line of sight is the crawlway on level 6
 		}
 		cameraDistances[15] = 2400f; // sky is visible
-		playerCamera.layerCullDistances = cameraDistances; // cull anything beyond 50f except for sky layer
+		playerCamera.layerCullDistances = cameraDistances; // cull anything beyond 79f except for sky layer
 		//audListener = GetComponent<AudioListener>();
 		frobDistance = Const.a.frobDistance;
 		holdingObject = false;
 		heldObjectIndex = -1;
 		heldObjectAmmo = 0;
-		heldObjectAmmoIsSecondary = false;
+		heldObjectAmmo2 = 0;
 		grenadeActive = false;
 		yRotation = startyRotation;
 		xRotation = startxRotation;
@@ -214,14 +209,18 @@ public class MouseLookScript : MonoBehaviour {
 		Vector3 camPos = new Vector3(0f,Const.a.playerCameraOffsetY*playerMovement.currentCrouchRatio,camz);
 		transform.localPosition = camPos;
 
-        if (mainMenu.activeSelf == true) {
-			for (int i=0;i<32;i++) {
-				cameraDistances[i] = 2f;
-			}
-			playerCamera.layerCullDistances = cameraDistances; // cull anything beyond 50f except for sky layer
+        if (PauseScript.a.mainMenu.activeSelf == true) {
+			if (playerCamera.enabled) playerCamera.enabled = false;
+			if (gunCamera.enabled) gunCamera.enabled = false;
+			// for (int i=0;i<32;i++) {
+				// cameraDistances[i] = 2f;
+			// }
+			// playerCamera.layerCullDistances = cameraDistances; // cull anything beyond 50f except for sky layer
 			//cameraDistances[15] = 2400f; // sky is visible
 			return;  // ignore mouselook when main menu is still up
 		} else {
+			if (!playerCamera.enabled) playerCamera.enabled = true;
+			if (!gunCamera.enabled) gunCamera.enabled = true;
 			for (int i=0;i<32;i++) {
 				cameraDistances[i] = 79f;
 			}
@@ -230,7 +229,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
 		if (Input.GetKeyUp("f6")) {
-			Const.a.Save(7,"quicksave");
+			Const.a.StartSave(7,"quicksave");
 		}
 
 		if (Input.GetKeyUp("f9")) {
@@ -238,7 +237,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
         if (inventoryMode == false) {
-			if (PauseScript.a != null && !PauseScript.a.Paused() && playerMovement.ressurectingFinished < Time.time) {
+			if (!PauseScript.a.Paused() && playerMovement.ressurectingFinished < PauseScript.a.relativeTime) {
 				float dx = Input.GetAxisRaw("Mouse X");
 				float dy = Input.GetAxisRaw("Mouse Y");
 				yRotation += (dx * lookSensitivity);
@@ -292,7 +291,7 @@ public class MouseLookScript : MonoBehaviour {
 				}
 			}
 		} else {
-			if (!PauseScript.a.Paused() && playerMovement.ressurectingFinished < Time.time) {
+			if (!PauseScript.a.Paused() && playerMovement.ressurectingFinished < PauseScript.a.relativeTime) {
 				if (GetInput.a.TurnLeft()) {
 					yRotation -= keyboardTurnSpeed * lookSensitivity;
 					//tempQuat = transform.rotation;
@@ -401,15 +400,16 @@ public class MouseLookScript : MonoBehaviour {
 					if (!holdingObject) {
 						// Send out Frob/use raycast to use whatever is under the cursor, if in reach
 						RaycastHit hit = new RaycastHit();
+						int layMask = LayerMask.GetMask("Default","Geometry","Water","Corpse","Door","InterDebris","PhysObjects","Player2","Player3","Player4","NPC");
 						Vector3 cursorPoint = new Vector3(MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2),MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2),0); 
 						cursorPoint.y = Screen.height - cursorPoint.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
-						if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out hit, frobDistance)) {
+						if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out hit, frobDistance,layMask)) {
 							//Debug.Log("Screen.width = " + Screen.width.ToString() + ", Screen.height = " + Screen.height.ToString() +", Camera.pixelWidth = " + playerCamera.pixelWidth.ToString() + ", Camera.pixelHeight = " + playerCamera.pixelHeight.ToString() + ", drawTexture.x = " +MouseCursor.drawTexture.x.ToString() + ", drawTexture.y = " + MouseCursor.drawTexture.y.ToString());
 							//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
 							if (hit.collider == null) return;
 						
 							// Check if object is usable then use it
-							if (hit.collider.tag == "Usable") {
+							if (hit.collider.CompareTag("Usable")) {
 								//Debug.Log("Raycast hit a usable!");
 								UseData ud = new UseData ();
 								ud.owner = player;
@@ -428,7 +428,7 @@ public class MouseLookScript : MonoBehaviour {
 							}
 					
 							// Check if object is searchable then search it
-							if (hit.collider.tag == "Searchable") {
+							if (hit.collider.CompareTag("Searchable")) {
 								currentSearchItem = hit.collider.gameObject;
 								SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
 								return;
@@ -448,10 +448,10 @@ public class MouseLookScript : MonoBehaviour {
 								return;
 
 							// Check if object is usable then use it
-							if (hit.collider.tag == "Usable" || hit.collider.tag == "Searchable") {
+							//if (hit.collider.CompareTag("Usable") || hit.collider.CompareTag("Searchable")) {
 								Const.sprint(Const.a.stringTable[30],player); // You are too far away from that
 								return;
-							}
+							//}
 						}
 					} else {
 						// First check and see if we can apply held object in a use, or else Drop the object we are holding
@@ -465,7 +465,7 @@ public class MouseLookScript : MonoBehaviour {
 									//drawMyLine(playerCamera.transform.position,hit.point,Color.green,10f);
 
 									// Check if object is usable then use it
-									if (hit.collider.tag == "Usable") {
+									if (hit.collider.CompareTag("Usable")) {
 										UseData ud = new UseData ();
 										ud.owner = player;
 										ud.mainIndex = heldObjectIndex;
@@ -526,21 +526,24 @@ public class MouseLookScript : MonoBehaviour {
 						if (!PauseScript.a.Paused()) {
 							switch(GUIState.a.overButtonType) {
 								case GUIState.ButtonType.Weapon:
+									// Take weapon out of inventory, removing weapon, remove weapon and any other strings I need to CTRL+F my way to this buggy code!
 									WeaponButton wepbut = currentButton.GetComponent<WeaponButton>();
 									cursorTexture = Const.a.useableItemsFrobIcons[wepbut.useableItemIndex];
 									heldObjectIndex = wepbut.useableItemIndex;
+									heldObjectCustomIndex = -1;
+									heldObjectAmmo = WeaponCurrent.WepInstance.currentMagazineAmount[wepbut.WepButtonIndex];
+									heldObjectAmmo2 = WeaponCurrent.WepInstance.currentMagazineAmount2[wepbut.WepButtonIndex];
+									//WeaponInventory.WepInventoryInstance.weaponInventoryIndices[wepbut.WepButtonIndex] = -1;
+									//WeaponInventory.WepInventoryInstance.weaponInventoryText[wepbut.WepButtonIndex] = "-";
+									WeaponCurrent.WepInstance.currentMagazineAmount[wepbut.WepButtonIndex] = 0; // zero out the current ammo
+									WeaponCurrent.WepInstance.currentMagazineAmount2[wepbut.WepButtonIndex] = 0; // zero out the current ammo
+									WeaponInventory.WepInventoryInstance.RemoveWeapon(wepbut.WepButtonIndex);
+									WeaponCurrent.WepInstance.SetAllViewModelsDeactive();
+									WeaponCurrent.WepInstance.weaponCurrent = -1;
+									WeaponCurrent.WepInstance.weaponIndex = 0;
+									wepbut.useableItemIndex = -1;
 									wepbut.wbm.WeaponCycleDown();
-									indexAdjustment = wepbut.WepButtonIndex;
-									WeaponInventory.WepInventoryInstance.weaponInventoryIndices[indexAdjustment] = -1;
-									WeaponInventory.WepInventoryInstance.weaponInventoryText[indexAdjustment] = "-";
-									indexAdjustment--;
-									if (indexAdjustment < 0)
-										indexAdjustment = 0;
-										//WeaponCurrent.WepInstance.weaponCurrent = indexAdjustment;
-										//WeaponCurrent.WepInstance.justChangedWeap = true;
-									// OLD //wepbut.ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(indexAdjustment,WeaponCurrent.WepInstance.weaponIsAlternateAmmo);
-									// OLD //wepbut.iconman.GetComponent<WeaponIconManager>().SetWepIcon(indexAdjustment
-									mfdManager.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,MFDManager.handedness.LeftHand);
+									MFDManager.a.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,MFDManager.handedness.LeftHand);
 									GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 									break;
 								case GUIState.ButtonType.Grenade:
@@ -548,6 +551,7 @@ public class MouseLookScript : MonoBehaviour {
 									cursorTexture = Const.a.useableItemsFrobIcons[grenbut.useableItemIndex];
 									heldObjectIndex = grenbut.useableItemIndex;
 									GrenadeInventory.GrenadeInvInstance.grenAmmo[grenbut.GrenButtonIndex]--;
+									GrenadeCurrent.GrenadeInstance.GrenadeCycleDown();
 									if (GrenadeInventory.GrenadeInvInstance.grenAmmo[grenbut.GrenButtonIndex] <= 0) {
 										GrenadeInventory.GrenadeInvInstance.grenAmmo[grenbut.GrenButtonIndex] = 0; 
 										for (int i = 0; i < 7; i++) {
@@ -573,10 +577,14 @@ public class MouseLookScript : MonoBehaviour {
 									}
 									break;
 								case GUIState.ButtonType.GeneralInv:
-									GeneralInvButton genbut = currentButton.GetComponent<GeneralInvButton>();
-									cursorTexture = Const.a.useableItemsFrobIcons[genbut.useableItemIndex];
-									heldObjectIndex = genbut.useableItemIndex;
-									GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[genbut.GeneralInvButtonIndex] = -1;
+									if (currentButton == null) {
+										Debug.Log("MouseLookScript: currentButton null when trying to right click and over ButtonType.GeneralInv");
+									} else {
+										GeneralInvButton genbut = currentButton.GetComponent<GeneralInvButton>();
+										cursorTexture = Const.a.useableItemsFrobIcons[genbut.useableItemIndex];
+										heldObjectIndex = genbut.useableItemIndex;
+										GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[genbut.GeneralInvButtonIndex] = -1;
+									}
 	                                break;
 								case GUIState.ButtonType.Search:
 									SearchButton sebut = currentButton.GetComponentInParent<SearchButton>();
@@ -588,12 +596,33 @@ public class MouseLookScript : MonoBehaviour {
 									currentSearchItem.GetComponent<SearchableItem>().customIndex[tempButtonindex] = -1;
 									sebut.contents[tempButtonindex] = -1;
 									sebut.customIndex[tempButtonindex] = -1;
-									sebut.GetComponentInParent<DataTab>().searchItemImages[tempButtonindex].SetActive(false);
+									MFDManager.a.DisableSearchItemImage(tempButtonindex);
 									sebut.CheckForEmpty();
 									GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+									if (Const.a.InputQuickItemPickup) {
+										AddItemToInventory(heldObjectIndex);
+										ResetHeldItem();
+										ResetCursor();
+									} else {
+										Const.sprint(Const.a.useableItemsNameText[heldObjectIndex] + Const.a.stringTable[319],player);
+									}
+									break;
+								case GUIState.ButtonType.PGrid:
+									PuzzleUIButton puib = currentButton.GetComponent<PuzzleUIButton>();
+									if (puib != null) puzzleGrid.OnGridCellClick(puib.buttonIndex);
+									break;
+								case GUIState.ButtonType.PWire:
+									PuzzleUIButton wpuib = currentButton.GetComponent<PuzzleUIButton>();
+									if (wpuib != null) {
+										if (wpuib.isRH) {
+											puzzleWire.ClickRHNode(wpuib.buttonIndex);
+										} else {
+											puzzleWire.ClickLHNode(wpuib.buttonIndex);
+										}
+									}
 									break;
 	                        }
-							if (GUIState.a.overButtonType != GUIState.ButtonType.Generic) {
+							if (GUIState.a.overButtonType != GUIState.ButtonType.Generic && GUIState.a.overButtonType != GUIState.ButtonType.PGrid && GUIState.a.overButtonType != GUIState.ButtonType.PWire) {
 	                       		mouseCursor.cursorImage = cursorTexture;
 								ForceInventoryMode();
 		                        holdingObject = true;
@@ -604,11 +633,10 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		}
 	}
-		
+
+	// ==============================================		
 	// Add usable items to inventory:
 	// ==============================================
-
-
     void AddGenericObjectToInventory(int index) {
 		if (firstTimePickup) {
 			firstTimePickup = false;
@@ -620,7 +648,7 @@ public class MouseLookScript : MonoBehaviour {
         for (int i=0;i<14;i++) {
             if (GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[i] == -1) {
                 GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[i] = index;
-				Const.sprint(Const.a.stringTable[31],player); // Item added to general inventory
+				Const.sprint(Const.a.useableItemsNameText[heldObjectIndex] + Const.a.stringTable[31],player); // Item added to general inventory
                 itemAdded = true;
                 break;
             }
@@ -630,11 +658,11 @@ public class MouseLookScript : MonoBehaviour {
             DropHeldItem();
             ResetHeldItem();
             ResetCursor();
-            Const.sprint(Const.a.stringTable[32],player);
+            Const.sprint(Const.a.stringTable[32] + Const.a.useableItemsNameText[index] + Const.a.stringTable[318],player);
 			return;
         }
         mainInventory.GetComponent<GeneralInvCurrent>().generalInvCurrent = index;
-		mfdManager.SendInfoToItemTab(index);
+		MFDManager.a.SendInfoToItemTab(index);
 		centerTabButtonsControl.NotifyToCenterTab(2);
     }
 
@@ -642,14 +670,14 @@ public class MouseLookScript : MonoBehaviour {
 		//if (firstTimePickup) {
 		//	firstTimePickup = false;
 		//	centerTabButtonsControl.TabButtonClickSilent (0,true);
-		//	mfdManager.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,MFDManager.handedness.LeftHand);
+		//	MFDManager.a.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,MFDManager.handedness.LeftHand);
 		//	centerTabButtonsControl.NotifyToCenterTab(0);
 		//	iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
 		//	weptextman.GetComponent<WeaponTextManager>().SetWepText(index); //Set weapon text for MFD
 		//}
 
 		centerTabButtonsControl.TabButtonClickSilent (0,true);
-		mfdManager.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,MFDManager.handedness.LeftHand);
+		MFDManager.a.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,MFDManager.handedness.LeftHand);
 		centerTabButtonsControl.NotifyToCenterTab(0);
 		iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
 		weptextman.GetComponent<WeaponTextManager>().SetWepText(index); //Set weapon text for MFD
@@ -661,60 +689,32 @@ public class MouseLookScript : MonoBehaviour {
                 WeaponInventory.WepInventoryInstance.weaponInventoryText[i] = WeaponInventory.WepInventoryInstance.weaponInvTextSource[(index - 36)];
                 WeaponCurrent.WepInstance.weaponCurrent = i;
 				WeaponCurrent.WepInstance.weaponIndex = index;
-                weaponButtonsManager.GetComponent<WeaponButtonsManager>().wepButtons[i].GetComponent<WeaponButton>().useableItemIndex = index;
-				if (!ammoClipBox.activeInHierarchy)
-					ammoClipBox.SetActive(true);
-				
-
-				if (ammoiconman.activeInHierarchy) ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(index, false);
-				//if (iconman.activeInHierarchy) iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
-				iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
-				if (weptextman.activeInHierarchy) weptextman.GetComponent<WeaponTextManager>().SetWepText(index); //Set weapon text for MFD
-				if (itemiconman.activeInHierarchy) itemiconman.SetActive(false);    //Set weapon icon for MFD
-				if (itemtextman.activeInHierarchy) itemtextman.GetComponent<ItemTextManager>().SetItemText(index); //Set weapon text for MFD
-				mfdManager.SendInfoToItemTab(index); // notify item tab we clicked on a weapon
-				Const.sprint(Const.a.stringTable[33],player);
-				itemAdded = true;
-
-				centerTabButtonsControl.NotifyToCenterTab(0);
+				WeaponAmmo.a.wepAmmo[tempindex] += heldObjectAmmo;
+				WeaponAmmo.a.wepAmmoSecondary[tempindex] += heldObjectAmmo2;
+				WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent] = false;
+				if (heldObjectAmmo2 > 0) WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent] = true;
 				tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(index);
-				if (heldObjectAmmo > 0) {
-					int extra = 0;
-					if (heldObjectAmmoIsSecondary) {
-						if (heldObjectAmmo > Const.a.magazinePitchCountForWeapon2[tempindex]) {
-							extra = (heldObjectAmmo - Const.a.magazinePitchCountForWeapon2[tempindex]);
-							heldObjectAmmo = Const.a.magazinePitchCountForWeapon2[tempindex];
-						}
-					} else {
-						if (heldObjectAmmo > Const.a.magazinePitchCountForWeapon[tempindex]) {
-							extra = (heldObjectAmmo - Const.a.magazinePitchCountForWeapon[tempindex]);
-							heldObjectAmmo = Const.a.magazinePitchCountForWeapon[tempindex];
-						}
-					}
-					WeaponCurrent.WepInstance.weaponIsAlternateAmmo = WeaponAmmo.a.wepLoadedWithAlternate[tempindex];	
-					if (WeaponCurrent.WepInstance.weaponIsAlternateAmmo) {
-						if (WeaponCurrent.WepInstance.currentMagazineAmount2[tempindex] <=0) {
-							WeaponCurrent.WepInstance.currentMagazineAmount2[tempindex] = heldObjectAmmo;
 
-							// Update the counter
-							MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount2[tempindex]);
-						}
-					} else {
-						if (WeaponCurrent.WepInstance.currentMagazineAmount[tempindex] <=0) {
-							WeaponCurrent.WepInstance.currentMagazineAmount[tempindex] = heldObjectAmmo;
-
-							// Update the counter
-							MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount[tempindex]);
-						}
-					}
-
-					if (heldObjectAmmoIsSecondary && extra > 0) {
-						WeaponAmmo.a.wepAmmoSecondary[tempindex] += extra;
-					} else {
-						WeaponAmmo.a.wepAmmo[tempindex] += extra;
-					}
-				}
-				if (!WeaponInventory.WepInventoryInstance.weaponFound [tempindex])	WeaponInventory.WepInventoryInstance.weaponFound [tempindex] = true;
+                weaponButtonsManager.GetComponent<WeaponButtonsManager>().wepButtons[i].GetComponent<WeaponButton>().useableItemIndex = index;
+				weaponButtonsManager.GetComponent<WeaponButtonsManager>().wepButtons[i].GetComponent<WeaponButton>().WeaponInvClick();
+				//if (!ammoClipBox.activeInHierarchy)
+				//	ammoClipBox.SetActive(true);
+				
+				//if (ammoiconman.activeInHierarchy) ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(index, false);
+				//if (iconman.activeInHierarchy) iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
+				//iconman.GetComponent<WeaponIconManager>().SetWepIcon(index);    //Set weapon icon for MFD
+				if (weptextman.activeInHierarchy) weptextman.GetComponent<WeaponTextManager>().SetWepText(index); //Set weapon text for MFD
+				//if (itemiconman.activeInHierarchy) itemiconman.SetActive(false);    //Set weapon icon for MFD
+				//if (itemtextman.activeInHierarchy) itemtextman.GetComponent<ItemTextManager>().SetItemText(index); //Set weapon text for MFD
+				MFDManager.a.SendInfoToItemTab(index); // notify item tab we clicked on a weapon
+				Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[33],player);
+				itemAdded = true;
+				
+				WeaponCurrent.WepInstance.ReloadSecret(true);
+				WeaponCurrent.WepInstance.weaponEnergySetting[i] = WeaponCurrent.WepInstance.GetDefaultEnergySettingForWeaponFrom16Index(tempindex);
+				//WeaponCurrent.WepInstance.UpdateHUDAmmoCountsEither();
+				centerTabButtonsControl.NotifyToCenterTab(0);
+				//if (!WeaponInventory.WepInventoryInstance.weaponFound [tempindex])	WeaponInventory.WepInventoryInstance.weaponFound [tempindex] = true;
                 break;
             }
         }
@@ -722,10 +722,10 @@ public class MouseLookScript : MonoBehaviour {
 			DropHeldItem();
 			ResetHeldItem();
 			ResetCursor();
-			Const.sprint(Const.a.stringTable[32],player);
+            Const.sprint(Const.a.stringTable[32] + Const.a.useableItemsNameText[index] + Const.a.stringTable[318],player);
 			return;
 		}
-		mfdManager.SendInfoToItemTab(index);
+		MFDManager.a.SendInfoToItemTab(index);
     }
 
 	void AddAmmoToInventory (int index, int amount, bool isSecondary) {
@@ -741,11 +741,13 @@ public class MouseLookScript : MonoBehaviour {
 		} else {
 			WeaponAmmo.a.wepAmmo [index] += amount;
 		}
+
+		Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[33],player); // Item added to weapon inventory
 		centerTabButtonsControl.NotifyToCenterTab(0);
-		mfdManager.SendInfoToItemTab(index);
+		MFDManager.a.SendInfoToItemTab(index);
 	}
 
-    void AddGrenadeToInventory (int index) {
+    void AddGrenadeToInventory (int index, int useableIndex) {
 		if (firstTimePickup) {
 			firstTimePickup = false;
 			centerTabButtonsControl.TabButtonClickSilent (0,true);
@@ -753,12 +755,13 @@ public class MouseLookScript : MonoBehaviour {
 		}
 		GrenadeInventory.GrenadeInvInstance.grenAmmo[index]++;
 		grenadeCurrent.grenadeCurrent = index;
-		Const.sprint(Const.a.stringTable[34],player);
+		grenadeCurrent.grenadeIndex = useableIndex;
+		Const.sprint(Const.a.useableItemsNameText[heldObjectIndex] + Const.a.stringTable[34],player);
 		centerTabButtonsControl.NotifyToCenterTab(0);
-		mfdManager.SendInfoToItemTab(index);
+		MFDManager.a.SendInfoToItemTab(index);
     }
 
-	void AddPatchToInventory (int index) {
+	void AddPatchToInventory (int index,int constIndex) {
 		if (firstTimePickup) {
 			firstTimePickup = false;
 			centerTabButtonsControl.TabButtonClickSilent (0,true);
@@ -767,8 +770,8 @@ public class MouseLookScript : MonoBehaviour {
 		PatchInventory.PatchInvInstance.AddPatchToInventory(index);
 		//PatchInventory.PatchInvInstance.patchCounts[index]++;
 		PatchCurrent.PatchInstance.patchCurrent = index;
-		mfdManager.SendInfoToItemTab(index);
-		Const.sprint(Const.a.stringTable[35],player);
+		MFDManager.a.SendInfoToItemTab(index);
+		Const.sprint(Const.a.useableItemsNameText[constIndex] + Const.a.stringTable[35],player);
     }
 
 	void AddAudioLogToInventory () {
@@ -848,7 +851,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
 		centerTabButtonsControl.NotifyToCenterTab(2);
-		mfdManager.SendInfoToItemTab(index);
+		MFDManager.a.SendInfoToItemTab(index);
 	}
 
 	void AddHardwareToInventory (int index) {
@@ -881,6 +884,7 @@ public class MouseLookScript : MonoBehaviour {
 				HardwareInventory.a.hardwareVersionSetting[1] = hwversion - 1;
 				Const.sprint(Const.a.useableItemsNameText[22] + " v" + hwversion.ToString(),player);
 				compassContainer.SetActive(true); // Turn on HUD compass
+				automapContainer.SetActive(true);
 				if (hwversion == 2) {
 					compassMidpoints.SetActive(true);
 				}
@@ -1021,7 +1025,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
 		HardwareInventory.a.hwButtonsManager.ActivateHardwareButton(index);
-		mfdManager.SendInfoToItemTab(index);
+		MFDManager.a.SendInfoToItemTab(index);
 		centerTabButtonsControl.NotifyToCenterTab(1);
 	}
 
@@ -1051,46 +1055,46 @@ public class MouseLookScript : MonoBehaviour {
 				AddAudioLogToInventory();
 				break;
             case 7:
-			    AddGrenadeToInventory(0); // Frag
+			    AddGrenadeToInventory(0,7); // Frag
 			    break;
 		    case 8:
-			    AddGrenadeToInventory(3); // Concussion
+			    AddGrenadeToInventory(3,8); // Concussion
 			    break;
 		    case 9:
-			    AddGrenadeToInventory(1); // EMP
+			    AddGrenadeToInventory(1,9); // EMP
 			    break;
 		    case 10:
-			    AddGrenadeToInventory(6); // Earth Shaker
+			    AddGrenadeToInventory(6,10); // Earth Shaker
 			    break;
 		    case 11:
-			    AddGrenadeToInventory(4); // Land Mine
+			    AddGrenadeToInventory(4,11); // Land Mine
 			    break;
 		    case 12:
-			    AddGrenadeToInventory(5); // Nitropak
+			    AddGrenadeToInventory(5,12); // Nitropak
 			    break;
 		    case 13:
-			    AddGrenadeToInventory(2); // Gas
+			    AddGrenadeToInventory(2,13); // Gas
 			    break;
 		    case 14:
-			    AddPatchToInventory(2);
+			    AddPatchToInventory(2,14);
 			    break;
 		    case 15:
-			    AddPatchToInventory(6);
+			    AddPatchToInventory(6,15);
 			    break;
 		    case 16:
-			    AddPatchToInventory(5);
+			    AddPatchToInventory(5,16);
 			    break;
 		    case 17:
-			    AddPatchToInventory(3);
+			    AddPatchToInventory(3,17);
 			    break;
 		    case 18:
-			    AddPatchToInventory(4);
+			    AddPatchToInventory(4,18);
 			    break;
 		    case 19:
-			    AddPatchToInventory(1);
+			    AddPatchToInventory(1,19);
 			    break;
 		    case 20:
-			    AddPatchToInventory(0);
+			    AddPatchToInventory(0,20);
 			    break;
 			case 21:
 				AddHardwareToInventory(0);
@@ -1206,7 +1210,9 @@ public class MouseLookScript : MonoBehaviour {
 			case 58:
 				AddGenericObjectToInventory(58);
 				break;
-
+			case 59:
+				AddGenericObjectToInventory(59);
+				break;
 			case 61:
 				AddGenericObjectToInventory(61);
 				break;
@@ -1300,6 +1306,36 @@ public class MouseLookScript : MonoBehaviour {
 			case 91:
 				AddAccessCardToInventory(91);
 				break;
+			case 92:
+				AddGenericObjectToInventory(92);
+				break;
+			case 93:
+				AddGenericObjectToInventory(93);
+				break;
+			case 94:
+				AddGenericObjectToInventory(94);
+				break;
+			case 95:
+				AddGenericObjectToInventory(95);
+				break;
+			case 96:
+				AddGenericObjectToInventory(96);
+				break;
+			case 97:
+				AddGenericObjectToInventory(97);
+				break;
+			case 98:
+				AddGenericObjectToInventory(98);
+				break;
+			case 99:
+				AddGenericObjectToInventory(99);
+				break;
+			case 100:
+				AddGenericObjectToInventory(100);
+				break;
+			case 101:
+				AddGenericObjectToInventory(101);
+				break;
 			case 113:
 				AddAmmoToInventory(12, Const.a.magazinePitchCountForWeapon[12], false); // rubber slugs
 				break;
@@ -1369,6 +1405,7 @@ public class MouseLookScript : MonoBehaviour {
 				tossObject.GetComponent<Rigidbody>().velocity = tossDir * tossForce;
 				tossObject.GetComponent<UseableObjectUse>().customIndex = heldObjectCustomIndex;
 				tossObject.GetComponent<UseableObjectUse>().ammo = heldObjectAmmo;
+				tossObject.GetComponent<UseableObjectUse>().ammo2 = heldObjectAmmo2;
 			} else {
 				// Throw an active grenade
 				grenadeActive = false;
@@ -1387,7 +1424,6 @@ public class MouseLookScript : MonoBehaviour {
 				tossDir.y = Screen.height - tossDir.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
 				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
 				tossObject.GetComponent<Rigidbody>().velocity = tossDir * tossForce;
-				tossObject.layer = playerMovement.gameObject.layer; // can't touch player who threw us...na nana na, na na
 				GrenadeActivate ga = tossObject.GetComponent<GrenadeActivate>();
 				if (ga != null) {
 					ga.Activate(heldObjectIndex, grenadeCurrent); // time to boom
@@ -1400,11 +1436,10 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	public void ResetHeldItem() {
-		//yield return new WaitForSeconds(0.05f);
 		heldObjectIndex = -1;
 		heldObjectCustomIndex = -1;
 		heldObjectAmmo = 0;
-		heldObjectAmmoIsSecondary = false;
+		heldObjectAmmo2 = 0;
 		holdingObject = false;
 		mouseCursor.justDroppedItemInHelper = true;
 	}
@@ -1466,9 +1501,9 @@ public class MouseLookScript : MonoBehaviour {
 
 		if (firstTimeSearch) {
 			firstTimeSearch = false;
-			mfdManager.OpenTab (4, true, MFDManager.TabMSG.Search, -1,MFDManager.handedness.LeftHand);
+			MFDManager.a.OpenTab (4, true, MFDManager.TabMSG.Search, -1,MFDManager.handedness.LeftHand);
 		}
-		MFDManager.a.SendSearchToDataTab(curSearchScript.objectName, numberFoundContents, resultContents, resultCustomIndex,currentSearchItem.transform.position);
+		MFDManager.a.SendSearchToDataTab(curSearchScript.objectName, numberFoundContents, resultContents, resultCustomIndex,currentSearchItem.transform.position,curSearchScript);
 		ForceInventoryMode();
 	}
 
@@ -1482,6 +1517,7 @@ public class MouseLookScript : MonoBehaviour {
 		mouseCursor.cursorImage = Const.a.useableItemsFrobIcons[index];
 		mouseCursor.liveGrenade = true;
 		grenadeActive = true;
+		Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[320],player);
 
 		// Subtract one from grenade inventory
 		switch(index) {

@@ -18,32 +18,33 @@ public class FPSCounter : MonoBehaviour {
 	private float thousand = 1000f;
 	private int zero = 0;
 	private int one = 1;
-	private string formatToDisplay;
+	private string formatToDisplayMS;
+	private string formatToDisplayFPS;
+	public Text msText;
+	public Text fpsText;
+	public Text versionText;
 
 	void Start() {
 		text = GetComponent<Text> ();
 		deltaTime = Time.time;
 		count = 0;
 		tickFinished = Time.time + tickSecs + UnityEngine.Random.value;
-		formatToDisplay = "{0:0.0} ms ({1:0.0} fps) v0.90"; // CITADEL PROJECT VERSION
+		formatToDisplayMS = "{0:0.0}";
+		formatToDisplayFPS = "{0:0.0}";
+		versionText.text = Const.a.versionString; // CITADEL PROJECT VERSION
 	}
 
 	// Costs 0.06ms to run this!  FYI
 	void Update() {
-		//deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
 		count++;
 		deltaTime += Time.unscaledDeltaTime;
 		if (tickFinished < Time.time) {
-			//msecs = (Time.time - timeStart);
 			msecs = deltaTime/count*thousand;
-			//msecsGPU = deltaTime/countGUI*1000f;
 			deltaTime = zero;
 			fps = count * (one / tickSecs);
 			count = zero;
-			//msecs = deltaTime * 1000.0f;
-			//fps = 1.0f / deltaTime;
-			textString = string.Format (formatToDisplay, msecs, fps);
-			text.text = textString;
+			msText.text = string.Format (formatToDisplayMS, msecs);
+			fpsText.text = string.Format (formatToDisplayFPS, fps);
 			tickFinished = Time.time + tickSecs;
 		}
 	}

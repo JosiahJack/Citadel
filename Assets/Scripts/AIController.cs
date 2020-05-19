@@ -5,13 +5,13 @@ using UnityEngine.AI;
 using DigitalRuby.LightningBolt;
 
 public class AIController : MonoBehaviour {
-	public int index = 0; // NPC reference index for looking up constants in tables in Const.cs
+	public int index = 0; // NPC reference index for looking up constants in tables in Const.cs // save
 	[HideInInspector]
 	public string targetID;
-	public Const.aiState currentState;
+	public Const.aiState currentState; // save
     public Const.aiMoveType moveType;
 	public Const.npcType npcType;
-	public GameObject enemy;
+	public GameObject enemy; // save (referenced by integer index enemIDRead)
     public GameObject searchColliderGO;
 	public float yawspeed = 180f;
 	public float fieldOfViewAngle = 180f;
@@ -35,9 +35,10 @@ public class AIController : MonoBehaviour {
 	public float timeTillActualAttack1 = 0.5f;
     public float timeTillActualAttack2 = 0.5f;
 	public float timeTillActualAttack3 = 0.2f;
-    public float gracePeriodFinished;
     [HideInInspector]
-    public float meleeDamageFinished;
+    public float gracePeriodFinished; // save
+    [HideInInspector]
+    public float meleeDamageFinished; // save
 	public float timeBetweenAttack1 = 1.2f;
 	public float timeBetweenAttack2 = 1.5f;
 	public float timeBetweenAttack3 = 3f;
@@ -92,7 +93,8 @@ public class AIController : MonoBehaviour {
     public bool goIntoPain = false;
 	public bool explodeOnAttack3 = false;
     public bool ignoreEnemy = false;
-	public float rangeToEnemy = 0f;
+	[HideInInspector]
+	public float rangeToEnemy = 999f;
 	public GameObject[] meleeDamageColliders;
 	public bool preActivateMeleeColliders = false;
     public GameObject muzzleBurst;
@@ -102,9 +104,12 @@ public class AIController : MonoBehaviour {
 	public GameObject attacker;
 	//private bool hasSFX;
 	public bool firstSighting;
-	private bool dyingSetup;
-	private bool ai_dying;
-	private bool ai_dead;
+	[HideInInspector]
+	public bool dyingSetup;
+	[HideInInspector]
+	public bool ai_dying;
+	[HideInInspector]
+	public bool ai_dead;
 	private int currentWaypoint;
 	private Vector3 currentDestination;
 	private float idleTime;
@@ -118,20 +123,20 @@ public class AIController : MonoBehaviour {
 	public AudioSource SFX;
 	[HideInInspector]
 	public Rigidbody rbody;
-	[HideInInspector]
 	public HealthManager healthManager;
 	private BoxCollider boxCollider;
 	private CapsuleCollider capsuleCollider;
 	private SphereCollider sphereCollider;
 	private MeshCollider meshCollider;
 	private float tick;
+	private float raycastingTick;
 	private float tickFinished;
+	private float raycastingTickFinished;
     public float huntTime = 5f;
     public float huntFinished;
 	private bool hadEnemy;
     private Vector3 lastKnownEnemyPos;
     private Vector3 tempVec;
-    //private bool randSpin = false;
     private bool shotFired = false;
     private DamageData damageData;
     private RaycastHit tempHit;
@@ -162,7 +167,8 @@ public class AIController : MonoBehaviour {
 	public GameObject deathBurst;
 	public float deathBurstTimer = 0.1f;
 	private float deathBurstFinished;
-	private bool deathBurstDone;
+	[HideInInspector]
+	public bool deathBurstDone;
 	public GameObject sightPoint;
 	private NavMeshPath searchPath;
 	public float rangeToHear = 10f;
@@ -180,34 +186,35 @@ public class AIController : MonoBehaviour {
 	private float wanderFinished;
 	private float stuckFinished;
 	private Vector3 lastPos;
+	public float dotProjResult = -1f;
+	public float dotResult = -1f;
+	public bool actAsTurret = false;
+	public GameObject sleepingCables;
 
 	public void Tranquilize() {
 		// Check against percent chance (disruptability) of getting tranq'ed
 		//if (UnityEngine.Random.Range(0,1f) < Const.a.disruptabilityForNPC[index])
-			tranquilizeFinished = Time.time + tranquilizeTime;
+			tranquilizeFinished = PauseScript.a.relativeTime + tranquilizeTime;
 	}
 
 	// Initialization and find components
 	void Start () {
         rbody = GetComponent<Rigidbody>();
-		rbody.isKinematic = false;
+		if (rbody.isKinematic) rbody.isKinematic = false;
 
 		if (moveType == Const.aiMoveType.Fly) {
 			//rbody.isKinematic = true;
 			rbody.useGravity = false;
 		}
 		healthManager = GetComponent<HealthManager>();
+		if (healthManager == null) Debug.Log("Null health manager on npc with index " + index.ToString());
 	    boxCollider = GetComponent<BoxCollider>();
 		sphereCollider = GetComponent<SphereCollider>();
 		meshCollider = GetComponent<MeshCollider>();
 		capsuleCollider = GetComponent<CapsuleCollider>();
         if (searchColliderGO != null) searchColliderGO.SetActive(false);
 		currentDestination = sightPoint.transform.position;
-		if (meleeDamageColliders.Length > 0) {
-			for (int i = 0; i < meleeDamageColliders.Length; i++) {
-				if (meleeDamageColliders[i] != null) meleeDamageColliders[i].SetActive(false); // turn off melee colliders
-			}
-		}
+		StartCoroutine(DisableMeleeColliders());
 
         currentState = Const.aiState.Idle;
 		currentWaypoint = 0;
@@ -221,26 +228,26 @@ public class AIController : MonoBehaviour {
 		attacker = null;
         shotFired = false;
 		hopDone = false;
-		idleTime = Time.time + Random.Range(idleSFXTimeMin,idleSFXTimeMax);
-		attack1SoundTime = Time.time;
-		attack2SoundTime = Time.time;
-		attack3SoundTime = Time.time;
-		timeTillEnemyChangeFinished = Time.time;
-        huntFinished = Time.time;
-		attackFinished = Time.time;
-		attack2Finished = Time.time;
-        attack3Finished = Time.time;
-        timeTillPainFinished = Time.time;
-		timeTillDeadFinished = Time.time;
-        meleeDamageFinished = Time.time;
-        gracePeriodFinished = Time.time;
-        randomWaitForNextAttack1Finished = Time.time;
-        randomWaitForNextAttack2Finished = Time.time;
-        randomWaitForNextAttack3Finished = Time.time;
-		tranquilizeFinished = Time.time;
-		deathBurstFinished = Time.time;
-		wanderFinished = Time.time;
-		stuckFinished = Time.time;
+		idleTime = PauseScript.a.relativeTime + Random.Range(idleSFXTimeMin,idleSFXTimeMax);
+		attack1SoundTime = PauseScript.a.relativeTime;
+		attack2SoundTime = PauseScript.a.relativeTime;
+		attack3SoundTime = PauseScript.a.relativeTime;
+		timeTillEnemyChangeFinished = PauseScript.a.relativeTime;
+        huntFinished = PauseScript.a.relativeTime;
+		attackFinished = PauseScript.a.relativeTime;
+		attack2Finished = PauseScript.a.relativeTime;
+        attack3Finished = PauseScript.a.relativeTime;
+        timeTillPainFinished = PauseScript.a.relativeTime;
+		timeTillDeadFinished = PauseScript.a.relativeTime;
+        meleeDamageFinished = PauseScript.a.relativeTime;
+        gracePeriodFinished = PauseScript.a.relativeTime;
+        randomWaitForNextAttack1Finished = PauseScript.a.relativeTime;
+        randomWaitForNextAttack2Finished = PauseScript.a.relativeTime;
+        randomWaitForNextAttack3Finished = PauseScript.a.relativeTime;
+		tranquilizeFinished = PauseScript.a.relativeTime;
+		deathBurstFinished = PauseScript.a.relativeTime;
+		wanderFinished = PauseScript.a.relativeTime;
+		stuckFinished = PauseScript.a.relativeTime;
         damageData = new DamageData();
 		damageData.ownerIsNPC = true;
         tempHit = new RaycastHit();
@@ -257,43 +264,70 @@ public class AIController : MonoBehaviour {
 
 		if (wandering) {
 			currentState = Const.aiState.Walk;
+			if (asleep) currentState = Const.aiState.Idle;
 		}
-		//randSpin = true;
 		tick = 0.1f;
-		tickFinished = Time.time + tick + Random.value;
-		attackFinished = Time.time + 1f;
+		raycastingTick = 0.2f;
+		tickFinished = PauseScript.a.relativeTime + tick + Random.value;
+		raycastingTickFinished = PauseScript.a.relativeTime + tick + Random.value;
+		attackFinished = PauseScript.a.relativeTime + 1f;
 		idealTransformForward = sightPoint.transform.forward;
 		deathBurstDone = false;
 		searchPath = new NavMeshPath();
 		targetID = Const.GetTargetID(index);
 	}
 
-	void AI_Face(Vector3 goalLocation) {
-		Vector3 dir;
-		if (goalLocation == transform.position) {
-			dir = transform.forward.normalized;
-		} else {
-			dir = (goalLocation - transform.position).normalized;
+	public IEnumerator DisableMeleeColliders() {
+		yield return new WaitForSeconds(0.2f);
+		if (meleeDamageColliders.Length > 0) {
+			for (int i = 0; i < meleeDamageColliders.Length; i++) {
+				if (meleeDamageColliders[i] != null) {
+					if (meleeDamageColliders[i].activeSelf) {
+						meleeDamageColliders[i].SetActive(false); // turn off melee colliders, give a little time to register SaveObject
+					}
+				}
+			}
 		}
+	}
 
+	void AI_Face(Vector3 goalLocation) {
+		if (asleep) return;
+		Vector3 dir = (goalLocation - transform.position).normalized;
 		dir.y = 0f;
-		Quaternion lookRot = Quaternion.LookRotation(dir,Vector3.up);
-		transform.rotation = Quaternion.Slerp (transform.rotation, lookRot, tick * yawspeed * Time.deltaTime); // rotate as fast as we can towards goal position
+		if (dir.magnitude > 0 && Vector3.up.magnitude > 0) {
+			Quaternion lookRot = Quaternion.LookRotation(dir,Vector3.up);
+			transform.rotation = Quaternion.Slerp (transform.rotation, lookRot, tick * yawspeed * Time.deltaTime); // rotate as fast as we can towards goal position
+		}
 	}
 
 	void OnEnable() {
-		idleTime = Time.time + Random.Range(idleSFXTimeMin,idleSFXTimeMax);
+		if (PauseScript.a != null) {
+			idleTime = PauseScript.a.relativeTime + Random.Range(idleSFXTimeMin,idleSFXTimeMax);
+		}
 	}
 
-	void FixedUpdate () {
-		if (PauseScript.a != null && PauseScript.a.Paused()) {
+	void FixedUpdate() {
+		if (PauseScript.a.Paused() || PauseScript.a.mainMenu.activeInHierarchy) {
 			return; // don't do any checks or anything else...we're paused!
 		}
 
         // Only think every tick seconds to save on CPU and prevent race conditions
-        if (tickFinished < Time.time) {
+        if (tickFinished < PauseScript.a.relativeTime) {
+			tickFinished = PauseScript.a.relativeTime + tick;
 			Think();
-			tickFinished = Time.time + tick;
+		}
+
+		if (raycastingTickFinished < PauseScript.a.relativeTime) {
+			raycastingTickFinished = PauseScript.a.relativeTime + raycastingTick;
+			inSight = CheckIfPlayerInSight();
+			if (enemy != null) {
+				enemyInFrontChecks(enemy);
+				rangeToEnemy = Vector3.Distance(enemy.transform.position, sightPoint.transform.position);
+			} else {
+				infront = false;
+				inProjFOV = false;
+				rangeToEnemy = sightRange;
+			}
 		}
 
         // Rotation and Special movement that must be done every FixedUpdate
@@ -305,14 +339,12 @@ public class AIController : MonoBehaviour {
 				if (idealTransformForward.magnitude > Mathf.Epsilon) {
 					AI_Face(currentDestination);
 				}
-            } else {
-				AI_Face(transform.position);
-			}
+            }
         }
 	}
 
 	void Think () {
-		if (dyingSetup && deathBurstFinished < Time.time && !deathBurstDone) {
+		if (dyingSetup && deathBurstFinished < PauseScript.a.relativeTime && !deathBurstDone) {
 			if (deathBurst != null) deathBurst.SetActive(true); // activate any death effects
 			deathBurstDone = true;
 		}
@@ -327,7 +359,7 @@ public class AIController : MonoBehaviour {
 
 		//Debug.DrawRay(sightPoint.transform.position,idealTransformForward,Color.red,0.1f); // RED where we are trying to turn to
 		//Debug.DrawRay(sightPoint.transform.position,sightPoint.transform.forward,Color.magenta,0.1f); // MAGENTA where we are currently turned facing
-		if (gunPoint != null && enemy != null) Debug.DrawRay(gunPoint.transform.position,(enemy.transform.position-sightPoint.transform.position),Color.green,0.1f); // Where the gun to enemy ray goes
+		//if (gunPoint != null && enemy != null) Debug.DrawRay(gunPoint.transform.position,(enemy.transform.position-sightPoint.transform.position),Color.green,0.1f); // Where the gun to enemy ray goes
 		switch (currentState) {
 			case Const.aiState.Idle: 			Idle(); 		break;
 			case Const.aiState.Walk:	 		Walk(); 		break;
@@ -347,20 +379,19 @@ public class AIController : MonoBehaviour {
 
 		if (asleep) return; // don't check for an enemy, we are sleeping! shh!!
 
-		if (moveType == Const.aiMoveType.Fly && tranquilizeFinished < Time.time) {
+		if (moveType == Const.aiMoveType.Fly && tranquilizeFinished < PauseScript.a.relativeTime) {
 			float distUp = 0;
 			float distDn = 0;
 			Vector3 floorPoint = new Vector3();
 			floorPoint = Vector3.zero;
-
-			//if (Physics.Raycast(sightPoint.transform.position, visibleMeshEntity.transform.up * -1, out tempHit, sightRange)) {
-			if (Physics.Raycast(sightPoint.transform.position, sightPoint.transform.up * -1, out tempHit, sightRange)) {
+			int layMask = LayerMask.GetMask("Default","Geometry","Bullets","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
+			if (Physics.Raycast(sightPoint.transform.position, sightPoint.transform.up * -1, out tempHit, sightRange,layMask)) {
 				//drawMyLine(sightPoint.transform.position, tempHit.point, Color.green, 2f);
 				distDn = Vector3.Distance(sightPoint.transform.position, tempHit.point);
 				floorPoint = tempHit.point;
 			}
-			//if (Physics.Raycast(sightPoint.transform.position, visibleMeshEntity.transform.up, out tempHit, sightRange)) {
-			if (Physics.Raycast(sightPoint.transform.position, sightPoint.transform.up, out tempHit, sightRange)) {
+
+			if (Physics.Raycast(sightPoint.transform.position, sightPoint.transform.up, out tempHit, sightRange,layMask)) {
 				//drawMyLine(sightPoint.transform.position, tempHit.point, Color.green, 2f);
 				distUp = Vector3.Distance(sightPoint.transform.position, tempHit.point);
 			}
@@ -375,31 +406,22 @@ public class AIController : MonoBehaviour {
 			//if (visibleMeshEntity != null) visibleMeshEntity.transform.position = Vector3.MoveTowards(visibleMeshEntity.transform.position, idealPos, runSpeed * Time.deltaTime);
 			transform.position = Vector3.MoveTowards(transform.position, idealPos, runSpeed * Time.deltaTime);
 		}
-
-		inSight = CheckIfPlayerInSight();
-        //if (inSight) backTurned = CheckIfBackIsTurned();
-        if (enemy != null) {
-            infront = enemyInFront(enemy);
-            inProjFOV = enemyInProjFOV(enemy);
-            rangeToEnemy = Vector3.Distance(enemy.transform.position, sightPoint.transform.position);
-        } else {
-            infront = false;
-            rangeToEnemy = sightRange;
-        }
 	}
 
 	bool CheckPain() {
+		if (asleep) return false;
+
 		if (goIntoPain) {
 			currentState = Const.aiState.Pain;
 			if (attacker != null) {
-				if (timeTillEnemyChangeFinished < Time.time) {
-					timeTillEnemyChangeFinished = Time.time + changeEnemyTime;
+				if (timeTillEnemyChangeFinished < PauseScript.a.relativeTime) {
+					timeTillEnemyChangeFinished = PauseScript.a.relativeTime + changeEnemyTime;
 					enemy = attacker; // Switch to whoever just attacked us
 					lastKnownEnemyPos = enemy.transform.position;
 				}
 			}
 			goIntoPain = false;
-			timeTillPainFinished = Time.time + timeToPain;
+			timeTillPainFinished = PauseScript.a.relativeTime + timeToPain;
 			return true;
 		}
 		return false;
@@ -411,21 +433,25 @@ public class AIController : MonoBehaviour {
 			return;
 		}
 
-
-		if (idleTime < Time.time && SFXIdle) {
+		if (idleTime < PauseScript.a.relativeTime && SFXIdle) {
 			float rand = UnityEngine.Random.Range(0,1f); // for calculating 50% chance of idle
 			if (rand < 0.5f) {
 				if (SFX != null && SFXIdle != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXIdle);
 			}
-			idleTime = Time.time + Random.Range(idleSFXTimeMin, idleSFXTimeMax);
+			idleTime = PauseScript.a.relativeTime + Random.Range(idleSFXTimeMin, idleSFXTimeMax);
+		}
+
+		if (asleep) {
+			rbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 		}
 			
 		if (CheckPain()) return; // Go into pain if we just got hurt, data is sent by the HealthManager
-		CheckIfPlayerInSight();
+		if (!asleep) CheckIfPlayerInSight();
 	}
 
 	void Walk() {
         if (CheckPain()) return; // Go into pain if we just got hurt, data is sent by the HealthManager
+		if (asleep) return;
         if (inSight || enemy != null) {
             currentState = Const.aiState.Run;
             return;
@@ -434,15 +460,15 @@ public class AIController : MonoBehaviour {
         if (moveType == Const.aiMoveType.None) return;
 
 		if (wandering) {
-			if (wanderFinished < Time.time || (Vector3.Distance(transform.position,currentDestination) < 0.64f)) {
-				wanderFinished = Time.time + UnityEngine.Random.Range(3f,8f);
+			if (wanderFinished < PauseScript.a.relativeTime || (Vector3.Distance(transform.position,currentDestination) < 0.64f)) {
+				wanderFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(3f,8f);
 				currentDestination = new Vector3(UnityEngine.Random.Range(-79f,79f),0,UnityEngine.Random.Range(-79f,79f));
 			}
 		}
 
 		// destination still far away and turned to within angle to move, then move
-		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1.28 && tranquilizeFinished < Time.time) {
-			//if (WithinAngleToTarget()) rbody.AddForce(sightPoint.transform.forward.x * walkSpeed,(sightPoint.transform.forward.y * walkSpeed)+0.5f,sightPoint.transform.forward.z * walkSpeed);
+		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1.28 && tranquilizeFinished < PauseScript.a.relativeTime) {
+			//if (WithinAngleToTarget() && !actAsTurret) rbody.AddForce(sightPoint.transform.forward.x * walkSpeed,(sightPoint.transform.forward.y * walkSpeed)+0.5f,sightPoint.transform.forward.z * walkSpeed);
 			if (WithinAngleToTarget()) {
 				if (hopOnRun) {
 					// move it move it
@@ -451,7 +477,7 @@ public class AIController : MonoBehaviour {
 					if (playbackTime > 0.1395f) {
 						if (!hopDone) {
 							hopDone = true;
-							rbody.AddForce(sightPoint.transform.forward * hopForce);
+							if (!actAsTurret) rbody.AddForce(sightPoint.transform.forward * hopForce);
 						}
 					} else {
 						hopDone = false;
@@ -486,14 +512,15 @@ public class AIController : MonoBehaviour {
 
 	void Run() {
 		if (CheckPain()) return; // Go into pain if we just got hurt, data is sent by the HealthManager
+		if (asleep) return;
         if (inSight) {
 			targettingPosition = enemy.transform.position;
 			currentDestination = enemy.transform.position;
-            huntFinished = Time.time + huntTime;
+            huntFinished = PauseScript.a.relativeTime + huntTime;
             if (rangeToEnemy < meleeRange) {
-                if (hasMelee && infront && (randomWaitForNextAttack1Finished < Time.time)) {
+                if (hasMelee && infront && (randomWaitForNextAttack1Finished < PauseScript.a.relativeTime)) {
                     //nav.speed = meleeSpeed;
-                    attackFinished = Time.time + timeBetweenAttack1 + timeTillActualAttack1;
+                    attackFinished = PauseScript.a.relativeTime + timeBetweenAttack1 + timeTillActualAttack1;
                     currentState = Const.aiState.Attack1;
 					if (preActivateMeleeColliders) {
 						for (int i = 0; i < meleeDamageColliders.Length; i++) {
@@ -507,42 +534,40 @@ public class AIController : MonoBehaviour {
 					}
                     return;
                 }
-            } else {
-                if (rangeToEnemy < proj1Range) {
-                    if (hasProj1 && infront && inProjFOV && (randomWaitForNextAttack2Finished < Time.time)) {
-                        //nav.speed = proj1Speed;
-                        shotFired = false;
-                        attackFinished = Time.time + timeBetweenAttack2 + timeTillActualAttack2;
-                        gracePeriodFinished = Time.time + timeTillActualAttack2;
-                        currentState = Const.aiState.Attack2;
-                        return;
-                    }
-                } else {
-                    if (rangeToEnemy < proj2Range) {
-                        if (hasProj2 && infront && inProjFOV && (randomWaitForNextAttack3Finished < Time.time)) {
-                            //nav.speed = proj2Speed;
-							shotFired = false;
-							attackFinished = Time.time + timeBetweenAttack3 + timeTillActualAttack3;
-							gracePeriodFinished = Time.time + timeTillActualAttack3;
-							currentState = Const.aiState.Attack3;
-                            return;
-                        }
-                    }
-                }
             }
+			if (rangeToEnemy < proj1Range) {
+				if (hasProj1 && infront && inProjFOV && (randomWaitForNextAttack2Finished < PauseScript.a.relativeTime)) {
+					//nav.speed = proj1Speed;
+					shotFired = false;
+					attackFinished = PauseScript.a.relativeTime + timeBetweenAttack2 + timeTillActualAttack2;
+					gracePeriodFinished = PauseScript.a.relativeTime + timeTillActualAttack2;
+					currentState = Const.aiState.Attack2;
+					return;
+				}
+			}
+			if (rangeToEnemy < proj2Range) {
+				if (hasProj2 && infront && inProjFOV && (randomWaitForNextAttack3Finished < PauseScript.a.relativeTime)) {
+					//nav.speed = proj2Speed;
+					shotFired = false;
+					attackFinished = PauseScript.a.relativeTime + timeBetweenAttack3 + timeTillActualAttack3;
+					gracePeriodFinished = PauseScript.a.relativeTime + timeTillActualAttack3;
+					currentState = Const.aiState.Attack3;
+					return;
+				}
+			}
 
-			if (stuckFinished < Time.time) {
-				stuckFinished = Time.time + 2f;
+			if (stuckFinished < PauseScript.a.relativeTime) {
+				stuckFinished = PauseScript.a.relativeTime + 2f;
 				if (Vector3.Distance(transform.position,lastPos) < 0.64f) {
 					// We are stuck in a hole, hop up a bit!
 					tempVec = Vector3.up * 20f;
-					rbody.AddForce(tempVec + (sightPoint.transform.forward * 50f));
+					if (!actAsTurret) rbody.AddForce(tempVec + (sightPoint.transform.forward * 50f));
 				}
 			}
 			lastPos = transform.position;
 
 			// enemy still far away and turned to within angle to move, then move
-			if ((moveType != Const.aiMoveType.None) && (Vector3.Distance(sightPoint.transform.position, enemy.transform.position) > 1.28) && tranquilizeFinished < Time.time) {
+			if ((moveType != Const.aiMoveType.None) && (Vector3.Distance(sightPoint.transform.position, enemy.transform.position) > 1.28) && tranquilizeFinished < PauseScript.a.relativeTime) {
 				//if (WithinAngleToTarget()) rbody.AddForce(transform.forward * runSpeed);
 				if (WithinAngleToTarget()) {
 					if (hopOnRun) {
@@ -552,7 +577,7 @@ public class AIController : MonoBehaviour {
 						if (playbackTime > 0.1395f) {
 							if (!hopDone) {
 								hopDone = true;
-								rbody.AddForce(sightPoint.transform.forward * hopForce);
+								if (!actAsTurret) rbody.AddForce(sightPoint.transform.forward * hopForce);
 							}
 						} else {
 							hopDone = false;
@@ -567,13 +592,14 @@ public class AIController : MonoBehaviour {
 			}
 
             lastKnownEnemyPos = enemy.transform.position;
-            //randSpin = false;
         } else {
-            if (huntFinished > Time.time) {
+            if (huntFinished > PauseScript.a.relativeTime) {
                 Hunt();
             } else {
                 enemy = null;
-                currentState = Const.aiState.Idle;
+				wandering = true; // magically look like we are still searching maybe?  Sometimes!
+				wanderFinished = PauseScript.a.relativeTime - 1f;
+                currentState = Const.aiState.Walk;
                 return;
             }
 		}
@@ -588,25 +614,15 @@ public class AIController : MonoBehaviour {
 
 		// dest still far away and turned to within angle to move, then move
 		if ((moveType != Const.aiMoveType.None) && (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1.28)) {
-			//if (WithinAngleToTarget()) rbody.AddForce(transform.forward * runSpeed);
-			if (WithinAngleToTarget()) rbody.velocity = (sightPoint.transform.forward * runSpeed);
+			if (WithinAngleToTarget() && !actAsTurret) rbody.velocity = (sightPoint.transform.forward * runSpeed);
 		}
-
-
-		// using transform.position instead of sightPoint.transform.position for the distance because it deals with the overall enemy's transform rather than view
-        //if (!randSpin && Vector3.Distance(transform.position, lastKnownEnemyPos) < nav.stoppingDistance) {
-        //    randSpin = true; // only set destination point once so we aren't chasing our tail spinning in circles
-        //    if (nav.enabled == true) nav.SetDestination(rrCheckPoint.transform.position);
-        //} else {
-        //    if (nav.enabled == true) nav.SetDestination(lastKnownEnemyPos);
-        //}
     }
 
 	void Attack1() {
 		// Used for melee
-		if (attack1SoundTime < Time.time) {
+		if (attack1SoundTime < PauseScript.a.relativeTime) {
 			if (SFX != null && SFXAttack1 != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXAttack1);
-			attack1SoundTime = Time.time + timeBetweenAttack1;
+			attack1SoundTime = PauseScript.a.relativeTime + timeBetweenAttack1;
 			int layMask = 10;
 			layMask = -layMask;
 			if (Physics.Raycast(sightPoint.transform.position,sightPoint.transform.forward,out tempHit, meleeRange, layMask)) {
@@ -615,7 +631,7 @@ public class AIController : MonoBehaviour {
 					useBlood = true;
 					CreateStandardImpactEffects(false);
 					damageData.other = tempHit.transform.gameObject;
-					if (tempHit.transform.gameObject.tag == "NPC") {
+					if (tempHit.transform.gameObject.CompareTag("NPC")) {
 						damageData.isOtherNPC = true;
 					} else {
 						damageData.isOtherNPC = false;
@@ -640,20 +656,20 @@ public class AIController : MonoBehaviour {
 			//Debug.Log("Did...did we do it?  Did the melee colliders activate?");
         }
 
-		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1f && tranquilizeFinished < Time.time) {
-			if (WithinAngleToTarget()) rbody.AddForce(transform.forward * meleeSpeed);
+		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1f && tranquilizeFinished < PauseScript.a.relativeTime) {
+			if (WithinAngleToTarget() && !actAsTurret) rbody.AddForce(transform.forward * meleeSpeed);
 		}
         currentDestination = enemy.transform.position;
 
-        if (attackFinished < Time.time) {
+        if (attackFinished < PauseScript.a.relativeTime) {
             //for (int i = 0; i < meleeDamageColliders.Length; i++) {
                 //meleeDamageColliders[i].SetActive(false); // turn off melee colliders
             //}
 
             if (Random.Range(0f,1f) < attack1RandomWaitChance) {
-                randomWaitForNextAttack1Finished = Time.time + Random.Range(attack1MinRandomWait, attack1MaxRandomWait);
+                randomWaitForNextAttack1Finished = PauseScript.a.relativeTime + Random.Range(attack1MinRandomWait, attack1MaxRandomWait);
             } else {
-                randomWaitForNextAttack1Finished = Time.time;
+                randomWaitForNextAttack1Finished = PauseScript.a.relativeTime;
             }
             goIntoPain = false; //prevent going into pain after attack
 			currentState = Const.aiState.Run;
@@ -677,8 +693,6 @@ public class AIController : MonoBehaviour {
 			tempVec = targPos - gunPoint.transform.position;
 		}
 		tempVec = tempVec.normalized;
-        //int layMask = 10;
-        //layMask = -layMask;
 		int layMask = LayerMask.GetMask("Default","Geometry","Bullets","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
 
 		if (useGunPoint2 && gunPoint2 != null) {
@@ -745,17 +759,17 @@ public class AIController : MonoBehaviour {
 
     void Attack2() {
 		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1.28) {
-			if (WithinAngleToTarget()) rbody.AddForce(transform.forward * proj1Speed);
+			if (WithinAngleToTarget() && !actAsTurret) rbody.AddForce(transform.forward * proj1Speed);
 		}
         currentDestination = targettingPosition;
 
-        if (gracePeriodFinished < Time.time) {
+        if (gracePeriodFinished < PauseScript.a.relativeTime) {
             if (!shotFired) {
                 shotFired = true;
                 // Typically used for normal projectile attack
-                if (attack2SoundTime < Time.time && SFXAttack2) {
+                if (attack2SoundTime < PauseScript.a.relativeTime && SFXAttack2) {
 					if (SFX != null && SFXAttack2 != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXAttack2);
-                    attack2SoundTime = Time.time + timeBetweenAttack2;
+                    attack2SoundTime = PauseScript.a.relativeTime + timeBetweenAttack2;
                 }
 
                 if (attack2Type == Const.AttackType.Projectile) {
@@ -763,7 +777,7 @@ public class AIController : MonoBehaviour {
                     if (DidRayHit(targettingPosition, proj1Range,false)) {
                         CreateStandardImpactEffects(false);
                         damageData.other = tempHit.transform.gameObject;
-                        if (tempHit.transform.gameObject.tag == "NPC") {
+                        if (tempHit.transform.gameObject.CompareTag("NPC")) {
                             damageData.isOtherNPC = true;
                         } else {
                             damageData.isOtherNPC = false;
@@ -819,11 +833,11 @@ public class AIController : MonoBehaviour {
             }
         }
 
-        if (attackFinished < Time.time) {
+        if (attackFinished < PauseScript.a.relativeTime) {
             if (Random.Range(0f,1f) < attack2RandomWaitChance) {
-                randomWaitForNextAttack2Finished = Time.time + Random.Range(attack2MinRandomWait, attack2MaxRandomWait);
+                randomWaitForNextAttack2Finished = PauseScript.a.relativeTime + Random.Range(attack2MinRandomWait, attack2MaxRandomWait);
             } else {
-                randomWaitForNextAttack2Finished = Time.time;
+                randomWaitForNextAttack2Finished = PauseScript.a.relativeTime;
             }
             if (muzzleBurst != null) muzzleBurst.SetActive(false);
             goIntoPain = false; //prevent going into pain after attack
@@ -835,13 +849,13 @@ public class AIController : MonoBehaviour {
 
 	void Attack3() {
 		// Typically used for secondary projectile or grenade attack
-		if (attack3SoundTime < Time.time && SFXAttack3 || explodeOnAttack3) {
+		if (attack3SoundTime < PauseScript.a.relativeTime && SFXAttack3 || explodeOnAttack3) {
 			if (SFX != null && SFXAttack3 != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXAttack3);
-			attack3SoundTime = Time.time + timeBetweenAttack3;
+			attack3SoundTime = PauseScript.a.relativeTime + timeBetweenAttack3;
 		}
 
 		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > 1.28) {
-			if (WithinAngleToTarget()) rbody.AddForce(transform.forward * proj2Speed);
+			if (WithinAngleToTarget() && !actAsTurret) rbody.AddForce(transform.forward * proj2Speed);
 		}
         currentDestination = targettingPosition;
 
@@ -874,7 +888,7 @@ public class AIController : MonoBehaviour {
 			return;
 		}
 
-        if (gracePeriodFinished < Time.time) {
+        if (gracePeriodFinished < PauseScript.a.relativeTime) {
             if (!shotFired) {
                 shotFired = true;
                 // Typically used for normal projectile attack
@@ -889,7 +903,7 @@ public class AIController : MonoBehaviour {
                     if (DidRayHit(targettingPosition, proj1Range,true)) {
                         CreateStandardImpactEffects(false);
                         damageData.other = tempHit.transform.gameObject;
-                        if (tempHit.transform.gameObject.tag == "NPC") {
+                        if (tempHit.transform.gameObject.CompareTag("NPC")) {
                             damageData.isOtherNPC = true;
                         } else {
                             damageData.isOtherNPC = false;
@@ -938,11 +952,11 @@ public class AIController : MonoBehaviour {
             }
         }
 
-        if (attackFinished < Time.time) {
+        if (attackFinished < PauseScript.a.relativeTime) {
             if (Random.Range(0f,1f) < attack3RandomWaitChance) {
-                randomWaitForNextAttack3Finished = Time.time + Random.Range(attack3MinRandomWait, attack3MaxRandomWait);
+                randomWaitForNextAttack3Finished = PauseScript.a.relativeTime + Random.Range(attack3MinRandomWait, attack3MaxRandomWait);
             } else {
-                randomWaitForNextAttack3Finished = Time.time;
+                randomWaitForNextAttack3Finished = PauseScript.a.relativeTime;
             }
             if (muzzleBurst2 != null) muzzleBurst2.SetActive(false);
             goIntoPain = false; //prevent going into pain after attack
@@ -952,28 +966,24 @@ public class AIController : MonoBehaviour {
 	}
 
 	void Pain() {
-		//if (enemy == null) {
-		//	
-		//}
-		
-		if (timeTillPainFinished < Time.time) {
+		if (timeTillPainFinished < PauseScript.a.relativeTime) {
 			currentState = Const.aiState.Run; // go into run after we get hurt
 			goIntoPain = false;
-			timeTillPainFinished = Time.time + timeBetweenPain;
+			timeTillPainFinished = PauseScript.a.relativeTime + timeBetweenPain;
 		}
 	}
 
 	void Dying() {
 		if (!dyingSetup) {
+			if (sleepingCables != null) sleepingCables.SetActive(false);
 			dyingSetup = true;
 			if (deathBurstTimer > 0) {
-				deathBurstFinished = Time.time + deathBurstTimer;
+				deathBurstFinished = PauseScript.a.relativeTime + deathBurstTimer;
 			} else {
 				if (!deathBurstDone) {
 					if (deathBurst != null) deathBurst.SetActive(true); // activate any death effects
 					deathBurstDone = true;
 				}
-				
 			}
 
 			for (int i = 0; i < meleeDamageColliders.Length; i++) {
@@ -988,24 +998,25 @@ public class AIController : MonoBehaviour {
 			} else {
 				rbody.useGravity = false;
 				rbody.isKinematic = true;
-				RaycastHit hit;
-				if (Physics.Raycast(sightPoint.transform.position, Vector3.down, out hit, sightRange)) {
-					if (hit.collider.gameObject.tag == "Geometry")
-						transform.parent = hit.collider.gameObject.transform;
-				}
+				//RaycastHit hit;
+				//if (Physics.Raycast(sightPoint.transform.position, Vector3.down, out hit, sightRange)) {
+					//if (hit.collider.gameObject.CompareTag("Geometry"))
+						//transform.parent = hit.collider.gameObject.transform;
+				//}
 				rbody.velocity = new Vector3(rbody.velocity.x,0,rbody.velocity.z);
 				rbody.Sleep();
 			}
-			rbody.freezeRotation = true;
-			
+			asleep = false;
+			rbody.constraints = RigidbodyConstraints.None;
+			if (!rbody.freezeRotation) rbody.freezeRotation = true;
 			gameObject.layer = 13; // Change to Corpse layer
 			transform.position = new Vector3(transform.position.x, transform.position.y + 0.01f, transform.position.z); // bump it up a hair to prevent corpse falling through the floor
 			firstSighting = true;
-			timeTillDeadFinished = Time.time + timeTillDead; // wait for death animation to finish before going into Dead()
+			timeTillDeadFinished = PauseScript.a.relativeTime + timeTillDead; // wait for death animation to finish before going into Dead()
 			if (switchMaterialOnDeath) actualSMR.material = deathMaterial;
 		}
 			
-		if (timeTillDeadFinished < Time.time) {
+		if (timeTillDeadFinished < PauseScript.a.relativeTime) {
 			ai_dead = true;
 			ai_dying = false;
 			currentState = Const.aiState.Dead;
@@ -1013,12 +1024,13 @@ public class AIController : MonoBehaviour {
 	}
 
 	void Dead() {
+		asleep = false;
 		ai_dead = true;
 		ai_dying = false;
-        if (boxCollider != null) boxCollider.enabled = false;
-        if (sphereCollider != null) sphereCollider.enabled = false;
-        if (meshCollider != null) meshCollider.enabled = false;
-		if (capsuleCollider != null) capsuleCollider.enabled = false;
+        if (boxCollider != null) { if (boxCollider.enabled) boxCollider.enabled = false; }
+        if (sphereCollider != null) { if (sphereCollider.enabled) sphereCollider.enabled = false; }
+        if (meshCollider != null) { if (meshCollider.enabled) meshCollider.enabled = false; }
+		if (capsuleCollider != null) { if (capsuleCollider.enabled) capsuleCollider.enabled = false; }
 
 		if (useGravityOnDeath) {
 			rbody.useGravity = true;
@@ -1030,7 +1042,7 @@ public class AIController : MonoBehaviour {
 			searchColliderGO.SetActive(true);
 			rbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
 		}
-		rbody.freezeRotation = true;
+		if (!rbody.freezeRotation) rbody.freezeRotation = true;
 		currentState = Const.aiState.Dead;
 		if (healthManager.gibOnDeath || healthManager.teleportOnDeath) {
 			if (visibleMeshEntity != null && visibleMeshEntity.activeInHierarchy) visibleMeshEntity.SetActive(false); // normally just turn off the main model, then...
@@ -1048,139 +1060,93 @@ public class AIController : MonoBehaviour {
 	}
 
 	bool CheckIfEnemyInSight() {
-		Vector3 checkline = enemy.transform.position - sightPoint.transform.position; // Get vector line made from enemy to found player
-        //int layMask = 10;
-        //layMask = -layMask;
-		int layMask = LayerMask.GetMask("Default","Geometry","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
-        RaycastHit hit;
-        //if (Physics.Raycast(sightPoint.transform.position + transform.up, checkline.normalized, out hit, sightRange, layMask)) {
-        if (Physics.Raycast(sightPoint.transform.position, checkline.normalized, out hit, sightRange, layMask)) {
-            LOSpossible = true;
-			//Debug.DrawRay(sightPoint.transform.position + transform.up,checkline.normalized, Color.green, 0.1f,false);
-			//Debug.DrawLine(sightPoint.transform.position,hit.point,Color.green,0.1f,false);
-            if (hit.collider.gameObject == enemy)
-                return true;
-        }
-        LOSpossible = false;
-
-		// Testing to see that dist check still works
 		float dist = Vector3.Distance(enemy.transform.position,sightPoint.transform.position);  // Get distance between enemy and found player	
-		if (dist < distToSeeWhenBehind) {
+		if (dist < distToSeeWhenBehind && !enemy.GetComponent<PlayerMovement>().Notarget) {
+            LOSpossible = true;
 			return true;
 		}
-		// works!  what??
-		// end test block
 
+		if (dist > sightRange) return false;
+
+		Vector3 checkline = enemy.transform.position - sightPoint.transform.position; // Get vector line made from enemy to found player
+		int layMask = LayerMask.GetMask("Default","Geometry","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
+        RaycastHit hit;
+        if (Physics.Raycast(sightPoint.transform.position, checkline.normalized, out hit, sightRange, layMask)) {
+			//Debug.DrawRay(sightPoint.transform.position + transform.up,checkline.normalized, Color.green, 0.1f,false);
+			//Debug.DrawLine(sightPoint.transform.position,hit.point,Color.green,0.1f,false);
+            if (hit.collider.gameObject == enemy) {
+				LOSpossible = true;
+                return true;
+			}
+        }
+        LOSpossible = false;
         return false;
 	}
 
 	bool CheckIfPlayerInSight () {
         if (ignoreEnemy) return false;
 		if (enemy != null) return CheckIfEnemyInSight();
-
-		GameObject playr1 = Const.a.player1;
-		GameObject playr2 = Const.a.player2;
-		GameObject playr3 = Const.a.player3;
-		GameObject playr4 = Const.a.player4;
-		Transform playr1TargettingPos = transform;
-		Transform playr2TargettingPos = transform;
-		Transform playr3TargettingPos = transform;
-		Transform playr4TargettingPos = transform;
-		Transform tempTrans = transform;
-
-		if (playr1 == null) { Debug.Log("WARNING: NPC sight check - no host player 1."); return false; }  // No host player
-
-		if (playr1 != null) {playr1TargettingPos = playr1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
-		if (playr1 != null) {playr1 = playr1.GetComponent<PlayerReferenceManager>().playerCapsule;}
-
-		if (playr2 != null) {playr2TargettingPos = playr2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
-		if (playr2 != null) {playr2 = playr2.GetComponent<PlayerReferenceManager>().playerCapsule;}
-
-		if (playr3 != null) {playr3TargettingPos = playr3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
-		if (playr3 != null) {playr3 = playr3.GetComponent<PlayerReferenceManager>().playerCapsule;}
-
-		if (playr4 != null) {playr4TargettingPos = playr4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;}
-		if (playr4 != null) {playr4 = playr4.GetComponent<PlayerReferenceManager>().playerCapsule;}
-
-		GameObject tempent = null;
 		LOSpossible = false;
 
-		for (int i=0;i<4;i++) {
-			tempent = null;
-			// Cycle through all the players to see if we can see anybody.  Defaults to earlier joined players.
-			if (playr1 != null && i == 0) {tempent = playr1;tempTrans = playr1TargettingPos;}
-			if (playr2 != null && i == 1) {tempent = playr2;tempTrans = playr2TargettingPos;}
-			if (playr3 != null && i == 2) {tempent = playr3;tempTrans = playr3TargettingPos;}
-			if (playr4 != null && i == 4) {tempent = playr4;tempTrans = playr4TargettingPos;}
-			if (tempent == null) continue; // no found player
-			// found player
+		if (Const.a.player1Capsule == null) return false; // no found player
+		// found player
+		if (Const.a.player1PlayerMovementScript.Notarget) return false; // can't see him, he's on notarget. skip to next available player to check against
+		tempVec = Const.a.player1Capsule.transform.position;
+		Vector3 checkline = tempVec - sightPoint.transform.position; // Get vector line made from enemy to found player
+		float dist = Vector3.Distance(tempVec,sightPoint.transform.position);  // Get distance between enemy and found player
+		if (dist > sightRange) return false; // don't waste time doing raycasts if we won't be able to see them anyway
 
-			if (tempent.GetComponent<PlayerMovement>().Notarget) continue; // can't see him, he's on notarget. skip to next available player to check against
-			//Debug.Log("Found a player with sight check");
-            tempVec = tempent.transform.position;
-			Vector3 checkline = tempVec - sightPoint.transform.position; // Get vector line made from enemy to found player
-            //int layMask = 10;
-            //layMask = -layMask;
-
-			float dist = Vector3.Distance(tempent.transform.position,sightPoint.transform.position);  // Get distance between enemy and found player
-			if (dist > sightRange) continue; // don't waste time doing raycasts if we won't be able to see them anyway
-			dist = dist + 0.1f;  // just in case player is a hair over the distance for some reason
-
-			float angle = Vector3.Angle(checkline,sightPoint.transform.forward);
-			if (angle < (fieldOfViewAngle * 0.5f)) {
-				// Check for line of sight
-				RaycastHit hit;
-				int layMask = LayerMask.GetMask("Default","Geometry","Bullets","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
-				// changed from using sightRange to dist to minimize checkdistance
-				if (Physics.Raycast(sightPoint.transform.position, checkline.normalized, out hit, dist,layMask)) {
-					//Debug.Log("Sight raycast successful");
-					//Debug.DrawRay(sightPoint.transform.position,checkline.normalized, Color.green, 0.1f,false);
-					//Debug.DrawLine(sightPoint.transform.position,hit.point,Color.green,0.1f,false);
-					//Debug.Log(hit.collider.gameObject.name);
-					if (hit.collider.gameObject == tempent) {
-						//Debug.Log("Hit collider was same as playr#");
-						LOSpossible = true;  // Clear path from enemy to found player
-						SetEnemy(tempent,tempTrans);
-						PlaySightSound();
-						return true;
-					}
-				} else {
-					dist = dist - 0.1f; // take the 0.1f back off now that we've done the raycast
-					if (dist < distToSeeWhenBehind) {
-						SetEnemy(tempent,tempTrans);
-						PlaySightSound();
-						return true;
-					}
-					PlayerHealth ph = tempent.GetComponent<PlayerHealth>();
-					if (ph != null) {
-						if (ph.makingNoise) {
-							if (dist < rangeToHear) {
-								SetEnemy(tempent,tempTrans);
-								PlaySightSound();
-								return true;
-							}
-						}
-					}
-				}
-			} else {
-				if (dist < distToSeeWhenBehind) {
-					SetEnemy(tempent,tempTrans);
+		float angle = Vector3.Angle(checkline,sightPoint.transform.forward);
+		if (angle < (fieldOfViewAngle * 0.5f)) {
+			// Check for line of sight
+			RaycastHit hit;
+			int layMask = LayerMask.GetMask("Default","Geometry","Bullets","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
+			// changed from using sightRange to dist to minimize checkdistance
+			if (Physics.Raycast(sightPoint.transform.position, checkline.normalized, out hit, (dist + 0.1f),layMask)) {
+				//Debug.Log("Sight raycast successful");
+				//Debug.DrawRay(sightPoint.transform.position,checkline.normalized, Color.green, 0.1f,false);
+				//Debug.DrawLine(sightPoint.transform.position,hit.point,Color.green,0.1f,false);
+				//Debug.Log(hit.collider.gameObject.name);
+				if (hit.collider.gameObject == Const.a.player1Capsule) {
+					//Debug.Log("Hit collider was player");
+					LOSpossible = true;  // Clear path from enemy to found player
+					SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
 					PlaySightSound();
 					return true;
 				}
-
-				PlayerHealth ph = tempent.GetComponent<PlayerHealth>();
-				if (ph != null) {
-					if (ph.makingNoise) {
+			} else {
+				if (dist < distToSeeWhenBehind) {
+					SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
+					PlaySightSound();
+					return true;
+				}
+				if (Const.a.player1PlayerHealthScript != null) {
+					if (Const.a.player1PlayerHealthScript.makingNoise) {
 						if (dist < rangeToHear) {
-							SetEnemy(tempent,tempTrans);
+							SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
 							PlaySightSound();
 							return true;
 						}
 					}
 				}
 			}
+		} else {
+			if (dist < distToSeeWhenBehind) {
+				SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
+				PlaySightSound();
+				return true;
+			}
+			if (Const.a.player1PlayerHealthScript != null) {
+				if (Const.a.player1PlayerHealthScript.makingNoise) {
+					if (dist < rangeToHear) {
+						SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
+						PlaySightSound();
+						return true;
+					}
+				}
+			}
 		}
+
 		return false;
 	}
 
@@ -1197,18 +1163,16 @@ public class AIController : MonoBehaviour {
 		}
 	}
 	
-    bool enemyInFront (GameObject target) {
-        Vector3 vec = Vector3.Normalize(target.transform.position - sightPoint.transform.position);
-        float dot = Vector3.Dot(vec,sightPoint.transform.forward);
-        if (dot > 0.300) return true; // enemy is within ±63° of forward facing vector
-        return false;
-    }
-
-    bool enemyInProjFOV(GameObject target) {
-        Vector3 vec = Vector3.Normalize(target.transform.position - sightPoint.transform.position);
-        float dot = Vector3.Dot(vec, transform.forward);
-        if (dot > 0.800) return true; // enemy is within ±18° of forward facing vector
-        return false;
+	void enemyInFrontChecks(GameObject target) {
+        Vector3 vec = target.transform.position;
+		vec.y = sightPoint.transform.position.y; // ignore height difference
+		vec = Vector3.Normalize(vec - sightPoint.transform.position);
+		inProjFOV = false;
+		infront = false;
+        dotResult = Vector3.Dot(vec,sightPoint.transform.forward);
+		dotProjResult = dotResult;
+        if (dotProjResult > 0.800) inProjFOV = true; // enemy is within ±18° of forward facing vector
+        if (dotResult > 0.300) infront = true; // enemy is within ±63° of forward facing vector
     }
 
 	public void Alert(UseData ud) {
@@ -1237,11 +1201,11 @@ public class AIController : MonoBehaviour {
 	}
 
 	public void AwakeFromSleep(UseData ud) {
+		if (sleepingCables != null) sleepingCables.SetActive(false);
 		asleep = false;
 		Alert(ud);
 	}
 
-	
 	void drawMyLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
 		StartCoroutine( drawLine(start, end, color, duration));
 	}

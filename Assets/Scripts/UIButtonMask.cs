@@ -5,6 +5,7 @@ using System.Collections;
 
 public class UIButtonMask : MonoBehaviour {
     public GameObject playerCamera;
+	private MouseCursor mCursor;
 	public GUIState.ButtonType overButtonType = GUIState.ButtonType.Generic;  // default to generic button
 	private float doubleClickTime;
 	private float dbclickFinished;
@@ -14,6 +15,8 @@ public class UIButtonMask : MonoBehaviour {
 	public Handedness toolTipType;
 
 	void Start () {
+		mCursor = playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>();
+		mCursor.RegisterRaycastRect(gameObject,GetComponent<RectTransform>());
 		if (playerCamera == null) {
 			Const.sprint("BUG: UIButtonMask script could not find playerCamera",Const.a.allPlayers);
 		}
@@ -38,18 +41,20 @@ public class UIButtonMask : MonoBehaviour {
 
 		if (doubleClickEnabled) {
 			doubleClickTime = Const.a.doubleClickTime;
-			dbclickFinished = Time.time;
+			dbclickFinished = PauseScript.a.relativeTime;
 			doubleClickTicks = 0;
 			GetComponent<Button>().onClick.AddListener(() => { UiButtonMaskClick(); });
 		}
 	}
 
 	void Update () {
-		if (doubleClickEnabled) {
-			if (dbclickFinished < Time.time) {
-				doubleClickTicks--;
-				if (doubleClickTicks < 0)
-					doubleClickTicks = 0;
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (doubleClickEnabled) {
+				if (dbclickFinished < PauseScript.a.relativeTime) {
+					doubleClickTicks--;
+					if (doubleClickTicks < 0)
+						doubleClickTicks = 0;
+				}
 			}
 		}
 	}
@@ -60,8 +65,8 @@ public class UIButtonMask : MonoBehaviour {
 		doubleClickTicks = 0;
 
 		if (toolTipLingdex >= 0) {
-			playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>().toolTip = Const.a.stringTable[toolTipLingdex];
-			playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>().toolTipType = toolTipType;
+			mCursor.toolTip = Const.a.stringTable[toolTipLingdex];
+			mCursor.toolTipType = toolTipType;
 		}
     }
 
@@ -69,7 +74,7 @@ public class UIButtonMask : MonoBehaviour {
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 		doubleClickTicks = 0;
 		if (toolTipLingdex >= 0) {
-			playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>().toolTip = string.Empty;
+			mCursor.toolTip = string.Empty;
 		}
     }
 
@@ -78,9 +83,9 @@ public class UIButtonMask : MonoBehaviour {
 		if (doubleClickTicks == 2) {
 			gameObject.SendMessage("DoubleClick");
 			doubleClickTicks = 0;
-			dbclickFinished = Time.time + doubleClickTime;
+			dbclickFinished = PauseScript.a.relativeTime + doubleClickTime;
 			return;
 		}
-		dbclickFinished = Time.time + doubleClickTime;
+		dbclickFinished = PauseScript.a.relativeTime + doubleClickTime;
 	}
 }

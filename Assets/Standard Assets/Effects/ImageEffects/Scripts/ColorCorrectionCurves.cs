@@ -123,58 +123,39 @@ namespace UnityStandardAssets.ImageEffects
             }
         }
 
-        void UpdateTextures ()
-		{
-            UpdateParameters ();
-        }
+        void UpdateTextures () {  UpdateParameters (); }
 
-        void OnRenderImage (RenderTexture source, RenderTexture destination)
-		{
-            if (CheckResources()==false)
-			{
+        void OnRenderImage (RenderTexture source, RenderTexture destination) {
+            if (CheckResources()==false) {
                 Graphics.Blit (source, destination);
                 return;
             }
 
-            if (updateTexturesOnStartup)
-			{
+            if (updateTexturesOnStartup) {
                 UpdateParameters ();
                 updateTexturesOnStartup = false;
             }
 
-            if (useDepthCorrection)
-                GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
-
+            if (useDepthCorrection) GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
             renderTarget2Use = destination;
+            if (selectiveCc) renderTarget2Use = RenderTexture.GetTemporary (source.width, source.height);
 
-            if (selectiveCc)
-			{
-                renderTarget2Use = RenderTexture.GetTemporary (source.width, source.height);
-            }
-
-            if (useDepthCorrection)
-			{
+            if (useDepthCorrection) {
                 ccDepthMaterial.SetTexture ("_RgbTex", rgbChannelTex);
                 ccDepthMaterial.SetTexture ("_ZCurve", zCurveTex);
                 ccDepthMaterial.SetTexture ("_RgbDepthTex", rgbDepthChannelTex);
                 ccDepthMaterial.SetFloat ("_Saturation", saturation);
-
                 Graphics.Blit (source, renderTarget2Use, ccDepthMaterial);
-            }
-            else
-			{
+            } else {
                 ccMaterial.SetTexture ("_RgbTex", rgbChannelTex);
                 ccMaterial.SetFloat ("_Saturation", saturation);
-
                 Graphics.Blit (source, renderTarget2Use, ccMaterial);
             }
 
-            if (selectiveCc)
-			{
+            if (selectiveCc) {
                 selectiveCcMaterial.SetColor ("selColor", selectiveFromColor);
                 selectiveCcMaterial.SetColor ("targetColor", selectiveToColor);
                 Graphics.Blit (renderTarget2Use, destination, selectiveCcMaterial);
-
                 RenderTexture.ReleaseTemporary (renderTarget2Use);
             }
         }

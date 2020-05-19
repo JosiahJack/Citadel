@@ -2,9 +2,8 @@
 using System.Collections;
 
 public class GeneralInventory : MonoBehaviour {
-    public int[] generalInventoryIndexRef;
+    public int[] generalInventoryIndexRef; // save
     public static GeneralInventory GeneralInventoryInstance;
-
 
     void Awake() {
         GeneralInventoryInstance = this;

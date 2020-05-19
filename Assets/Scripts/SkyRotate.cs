@@ -8,13 +8,15 @@ public class SkyRotate : MonoBehaviour {
 	private float nextThink;
 
 	void Awake() {
-		nextThink = Time.time + timeIncrement;
+		nextThink = PauseScript.a.relativeTime + timeIncrement;
 	}
 
 	void Update () {
-		if (nextThink < Time.time) {
-			Vector3 rot = new Vector3(0,rotateSpeed,0);
-			transform.Rotate(rot);
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (nextThink < PauseScript.a.relativeTime) {
+				Vector3 rot = new Vector3(0,rotateSpeed,0);
+				transform.Rotate(rot);
+			}
 		}
 	}
 }

@@ -11,7 +11,9 @@ public class ButtonListenFKey1 : MonoBehaviour {
 	}
 	
 	void Update () {
-		if(Input.GetKeyDown(Fkey))
-			button.onClick.Invoke();
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if(Input.GetKeyDown(Fkey))
+				button.onClick.Invoke();
+		}
 	}
 }

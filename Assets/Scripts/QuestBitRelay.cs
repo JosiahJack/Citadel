@@ -40,15 +40,15 @@ public class QuestBitRelay : MonoBehaviour {
 		if (IsotopeInstalled) Const.a.questData.IsotopeInstalled = true;
 		if (ShieldActivated) Const.a.questData.ShieldActivated = true;
 		if (LaserSafetyOverriden) Const.a.questData.LaserSafetyOverriden = true;
-		if (LaserDestroyed) Const.a.questData.LaserDestroyed = true;
+		if (LaserDestroyed) { Const.a.questData.LaserDestroyed = true; if (AutoSplitterData.missionSplitID == 1) { AutoSplitterData.missionSplitID++; } }
 		if (BetaGroveCyberUnlocked) Const.a.questData.BetaGroveCyberUnlocked = true;
 		if (GroveAlphaJettisonEnabled) Const.a.questData.GroveAlphaJettisonEnabled = true;
 		if (GroveBetaJettisonEnabled) Const.a.questData.GroveBetaJettisonEnabled = true;
 		if (GroveDeltaJettisonEnabled) Const.a.questData.GroveDeltaJettisonEnabled = true;
-		if (MasterJettisonBroken) Const.a.questData.MasterJettisonBroken = true;
+		if (MasterJettisonBroken) { Const.a.questData.MasterJettisonBroken = true; if (AutoSplitterData.missionSplitID == 2) { AutoSplitterData.missionSplitID++; } }
 		if (Relay428Fixed) Const.a.questData.Relay428Fixed = true;
-		if (MasterJettisonEnabled) Const.a.questData.MasterJettisonEnabled = true;
-		if (BetaGroveJettisoned) Const.a.questData.BetaGroveJettisoned = true;
+		if (MasterJettisonEnabled) { Const.a.questData.MasterJettisonEnabled = true; if (AutoSplitterData.missionSplitID == 3) { AutoSplitterData.missionSplitID++; } }
+		if (BetaGroveJettisoned) { Const.a.questData.BetaGroveJettisoned = true; if (AutoSplitterData.missionSplitID == 4) { AutoSplitterData.missionSplitID++; } }
 		if (AntennaNorthDestroyed) Const.a.questData.AntennaNorthDestroyed = true;
 		if (AntennaSouthDestroyed) Const.a.questData.AntennaSouthDestroyed = true;
 		if (AntennaEastDestroyed) Const.a.questData.AntennaEastDestroyed = true;
@@ -89,7 +89,7 @@ public class QuestBitRelay : MonoBehaviour {
 		if (IsotopeInstalled) Const.a.questData.IsotopeInstalled = !Const.a.questData.IsotopeInstalled;
 		if (ShieldActivated) Const.a.questData.ShieldActivated = !Const.a.questData.ShieldActivated;
 		if (LaserSafetyOverriden) Const.a.questData.LaserSafetyOverriden = !Const.a.questData.LaserSafetyOverriden;
-		if (LaserDestroyed) Const.a.questData.LaserDestroyed = !Const.a.questData.LaserDestroyed;
+		if (LaserDestroyed) { Const.a.questData.LaserDestroyed = !Const.a.questData.LaserDestroyed; if (AutoSplitterData.missionSplitID == 1) { AutoSplitterData.missionSplitID++; } }
 		if (BetaGroveCyberUnlocked) Const.a.questData.BetaGroveCyberUnlocked = !Const.a.questData.BetaGroveCyberUnlocked;
 		if (GroveAlphaJettisonEnabled) Const.a.questData.GroveAlphaJettisonEnabled = !Const.a.questData.GroveAlphaJettisonEnabled;
 		if (GroveBetaJettisonEnabled) Const.a.questData.GroveBetaJettisonEnabled = !Const.a.questData.GroveBetaJettisonEnabled;

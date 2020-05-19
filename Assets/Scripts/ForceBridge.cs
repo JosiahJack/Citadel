@@ -27,55 +27,59 @@ public class ForceBridge : MonoBehaviour, IBatchUpdate {
 		bCol = GetComponent<BoxCollider>();
 		SFX = GetComponent<AudioSource>();
 		lerping = false;
-		tickFinished = Time.time + tickTime + Random.value;
-		if (activated) Activate(true);
+		tickFinished = PauseScript.a.relativeTime + tickTime + Random.value;
+		if (activated) Activate(true,true);
 		else Deactivate(true);
 		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketA);
 	}
 
-    public void BatchUpdate() {
-		if (tickFinished < Time.time) {
-        if (activated) {
-			if (mr.enabled == false) mr.enabled = true;
-			if (bCol.enabled == false) bCol.enabled = true;
-			if (lerping) {
-				float sx = transform.localScale.x;
-				float sy = transform.localScale.y;
-				float sz = transform.localScale.z;
-				if (x) sx = Mathf.Lerp(transform.localScale.x,activatedScaleX,tickTime*2);
-				if (y) sy = Mathf.Lerp(transform.localScale.y,activatedScaleY,tickTime*2);
-				if (z) sz = Mathf.Lerp(transform.localScale.z,activatedScaleZ,tickTime*2);
-				transform.localScale = new Vector3(sx,sy,sz);
-				if ((activatedScaleX-transform.localScale.x) < 0.05f && (activatedScaleY-transform.localScale.y) < 0.05f && (activatedScaleZ-transform.localScale.z) < 0.05f) {
-					transform.localScale = new Vector3(activatedScaleX,activatedScaleY,activatedScaleZ);
-					lerping = false;
+	public void BatchUpdate () {
+	}void Update() {
+		if (!gameObject.activeSelf) return;
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (tickFinished < PauseScript.a.relativeTime) {
+			if (activated) {
+				if (mr.enabled == false) mr.enabled = true;
+				if (bCol.enabled == false) bCol.enabled = true;
+				if (lerping) {
+					float sx = transform.localScale.x;
+					float sy = transform.localScale.y;
+					float sz = transform.localScale.z;
+					if (x) sx = Mathf.Lerp(transform.localScale.x,activatedScaleX,tickTime*2);
+					if (y) sy = Mathf.Lerp(transform.localScale.y,activatedScaleY,tickTime*2);
+					if (z) sz = Mathf.Lerp(transform.localScale.z,activatedScaleZ,tickTime*2);
+					transform.localScale = new Vector3(sx,sy,sz);
+					if ((activatedScaleX-transform.localScale.x) < 0.08f && (activatedScaleY-transform.localScale.y) < 0.08f && (activatedScaleZ-transform.localScale.z) < 0.08f) {
+						transform.localScale = new Vector3(activatedScaleX,activatedScaleY,activatedScaleZ);
+						lerping = false;
+					}
+				}
+			} else {
+				if (lerping) {
+					// lerp scale down on deactivate
+					float sx = transform.localScale.x;
+					float sy = transform.localScale.y;
+					float sz = transform.localScale.z;
+					if (x) sx = Mathf.Lerp(transform.localScale.x,0f,tickTime*2);
+					if (y) sy = Mathf.Lerp(transform.localScale.y,0f,tickTime*2);
+					if (z) sz = Mathf.Lerp(transform.localScale.z,0f,tickTime*2);
+					transform.localScale = new Vector3(sx,sy,sz);
+					if (transform.localScale.x < 0.08f || transform.localScale.y < 0.08f || transform.localScale.z < 0.08f) {
+						if (mr.enabled) mr.enabled = false;
+						if (bCol.enabled) bCol.enabled = false;
+						lerping = false;
+					}
 				}
 			}
-		} else {
-			if (lerping) {
-				// lerp scale down on deactivate
-				float sx = transform.localScale.x;
-				float sy = transform.localScale.y;
-				float sz = transform.localScale.z;
-				if (x) sx = Mathf.Lerp(transform.localScale.x,0f,tickTime*2);
-				if (y) sy = Mathf.Lerp(transform.localScale.y,0f,tickTime*2);
-				if (z) sz = Mathf.Lerp(transform.localScale.z,0f,tickTime*2);
-				transform.localScale = new Vector3(sx,sy,sz);
-				if (transform.localScale.x < 0.05f || transform.localScale.y < 0.05f || transform.localScale.z < 0.05f) {
-					if (mr.enabled) mr.enabled = false;
-					if (bCol.enabled) bCol.enabled = false;
-					lerping = false;
-				}
+				tickFinished = PauseScript.a.relativeTime + tickTime;
 			}
-		}
-			tickFinished = Time.time + tickTime;
 		}
     }
 
-	public void Activate(bool forceIt) {
+	public void Activate(bool forceIt, bool isSilent) {
 		if (activated && !forceIt) return; // already there
 
-		if (SFX != null && SFXBridgeChange != null) SFX.PlayOneShot(SFXBridgeChange);
+		if (SFX != null && SFXBridgeChange != null && !isSilent) SFX.PlayOneShot(SFXBridgeChange);
 		activated = true;
 		lerping = true;
 		float sx = activatedScaleX;
@@ -99,7 +103,7 @@ public class ForceBridge : MonoBehaviour, IBatchUpdate {
 		if (activated) {
 			Deactivate(false);
 		} else {
-			Activate(false);
+			Activate(false,false);
 		}
 	}
 }

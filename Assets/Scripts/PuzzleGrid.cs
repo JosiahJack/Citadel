@@ -97,8 +97,10 @@ public class PuzzleGrid : MonoBehaviour {
 	}
 
 	void Update () {
-		//EvaluatePuzzle(); not needed, useless activity
-		UpdateCellImages();
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			//EvaluatePuzzle(); not needed, useless activity
+			UpdateCellImages();
+		}
 	}
 
 	public void OnGridCellClick (int index) {

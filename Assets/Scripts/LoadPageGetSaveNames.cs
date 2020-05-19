@@ -16,6 +16,7 @@ public class LoadPageGetSaveNames : MonoBehaviour {
 					readline = sf.ReadLine();
 					if (readline == null) break; // just in case
 					loadButtonText[i].text = readline;
+					if (i == 7) loadButtonText[i].text = "quicksave"; // override because we still want to keep it "- unused -" at first so we don't try quickloading a null save
 					sf.Close();
 				}
 			}

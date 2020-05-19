@@ -7,16 +7,16 @@ public class TouchEnergyDrain : MonoBehaviour {
 	private float tickFinished;
 
 	void Awake() {
-		tickFinished = Time.time + UnityEngine.Random.Range(1f,2f);
+		tickFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(1f,2f);
 	}
 
 	void  OnCollisionEnter (Collision col) {
-		if (tickFinished < Time.time) {
-			if (col.gameObject.tag == "Player") {
+		if (tickFinished < PauseScript.a.relativeTime) {
+			if (col.gameObject.CompareTag("Player")) {
 				PlayerEnergy pe = col.gameObject.GetComponent<PlayerEnergy>();
 				if (pe != null) pe.TakeEnergy(drainage);
 			}
-			tickFinished = Time.time + tick;
+			tickFinished = PauseScript.a.relativeTime + tick;
 		}
 	}
 

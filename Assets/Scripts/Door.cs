@@ -6,7 +6,7 @@ public class Door : MonoBehaviour {
 	public string argvalue;
 	public bool onlyTargetOnce;
 	[HideInInspector]
-	public bool targetAlreadyDone = false;
+	public bool targetAlreadyDone = false; // save
 	[Tooltip("Delay after full open before door closes")]
 	public float delay;
 	[Tooltip("Whether door is locked, unuseable until unlocked")]
@@ -17,7 +17,7 @@ public class Door : MonoBehaviour {
 	[Tooltip("Should door start open (you should set stayOpen too!)")]
 	public bool startOpen;
 	[Tooltip("Should door start partially open")]
-	public bool ajar = false;
+	public bool ajar = false; // save
 	[Tooltip("If partially open, by what percentage")]
 	public float ajarPercentage = 0.5f;
 	[Tooltip("Delay after use before door can be re-used")]
@@ -28,28 +28,31 @@ public class Door : MonoBehaviour {
 	private string cardMessage; // set in start to hardcoded lingdex 2
 	private string cardUsedMessage; // diddo with lingdex 4
 	private string butdoorStillLockedMessage;  // lingdex 5
+	public bool blocked = false; // save
 	[HideInInspector]
-	public bool blocked = false; // saved
-	private float useFinished;
-	float waitBeforeClose;
-	private Animator anim;
+	public float useFinished; // save
+	[HideInInspector]
+	public float waitBeforeClose; // save
+	[HideInInspector]
+	public Animator anim;
 	private AudioSource SFX = null;
 	[Tooltip("Door sound when opening or closing")]
 	public AudioClip SFXClip; // assign in the editor
 	public enum doorState {Closed, Open, Closing, Opening};
 	public enum accessCardType {None,Standard,Medical,Science,Admin,Group1,Group2,Group3,Group4,GroupA,GroupB,Storage,Engineering,Maintenance,Security,Per1,Per2,Per3,Per4,Per5,Command};
 	public accessCardType requiredAccessCard = accessCardType.None;
-	public bool accessCardUsedByPlayer = false;
-	public doorState doorOpen; // saved
+	public bool accessCardUsedByPlayer = false; // save
+	public doorState doorOpen; // save
 
 	public float timeBeforeLasersOn;
-	public float lasersFinished;
+	[HideInInspector]
+	public float lasersFinished; // save
 	public GameObject[] laserLines;
+	public GameObject[] collidersList;
 	public bool toggleLasers = false;
 	public bool targettingOnlyUnlocks = false;
-	public bool debugging = false;
-	public LevelLeafData leaf1;
-	public LevelLeafData leaf2;
+	public float animatorPlaybackTime; // save
+	public bool changeLayerOnOpenClose = false;
 
 	private int defIndex = 0;
 	private float topTime = 1.00f;
@@ -62,10 +65,14 @@ public class Door : MonoBehaviour {
 	private GameObject dynamicObjectsContainer;
 	private int i = 0;
 	private UnityEngine.AI.NavMeshObstacle nmo;
+	private bool firstUpdateAfterLoad = false;
+	private string loadedClipName;
+	private int loadedClipIndex;
+	private float loadedAnimatorPlaybackTime;
 
 	void Start () {
 		anim = GetComponent<Animator>();
-
+		animatorPlaybackTime = 0;
 		if (requiredAccessCard == accessCardType.None)
 			accessCardUsedByPlayer = true;
 		
@@ -73,7 +80,7 @@ public class Door : MonoBehaviour {
 		if (SFX == null) Debug.Log("BUG: No AudioSource on Door!");
 		if (SFXClip == null) Debug.Log("BUG: No audio clip SFXClip on Door!");
 		
-		useFinished = Time.time;
+		useFinished = PauseScript.a.relativeTime;
 		nmo = GetComponent<UnityEngine.AI.NavMeshObstacle>();
 		if (nmo == null) Const.sprint("BUG: Missing NavMeshObstacle on Door at " + transform.position.ToString(),Const.a.allPlayers);
 		if (nmo != null) nmo.carving = true; // creates a "hole" in the NavMesh forcing enemies to find an alternate route
@@ -111,15 +118,15 @@ public class Door : MonoBehaviour {
 		}
 
 		AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
-		float playbackTime = asi.normalizedTime;
+		animatorPlaybackTime = asi.normalizedTime;
 		if (ajar) {
 			ajar = false;
-			playbackTime = topTime * ajarPercentage;
+			animatorPlaybackTime = topTime * ajarPercentage;
 		}
 
-		if (useFinished < Time.time) {
+		if (useFinished < PauseScript.a.relativeTime) {
 			if (requiredAccessCard == accessCardType.None || ud.owner.GetComponent<PlayerReferenceManager>().playerInventory.GetComponent<AccessCardInventory>().HasAccessCard(requiredAccessCard) || accessCardUsedByPlayer) {
-				useFinished = Time.time + useTimeDelay;	
+				useFinished = PauseScript.a.relativeTime + useTimeDelay;	
 				//AnimatorClipInfo[] aci = anim.GetCurrentAnimatorClipInfo(defIndex);
 
 				if (!locked) {
@@ -152,14 +159,14 @@ public class Door : MonoBehaviour {
 						}
 					}
 
-					if (doorOpen == doorState.Open && playbackTime > 0.95f) {
+					if (doorOpen == doorState.Open && animatorPlaybackTime > 0.95f) {
 						//Debug.Log("Was Open, Now Closing");
 						doorOpen = doorState.Closing;
 						CloseDoor();
 						return;
 					}
 
-					if (doorOpen == doorState.Closed  && playbackTime > 0.95f){
+					if (doorOpen == doorState.Closed  && animatorPlaybackTime > 0.95f){
 						//Debug.Log("Was Close, Now Opening");
 						doorOpen = doorState.Opening;
 						OpenDoor();
@@ -168,17 +175,17 @@ public class Door : MonoBehaviour {
 
 					if (doorOpen == doorState.Opening) {
 						doorOpen = doorState.Closing;
-						anim.Play(closeClipName,defIndex, topTime-playbackTime);
-						//Debug.Log("Reversing from Opening to Closing.  playbackTime = " + playbackTime.ToString() + ", topTime-playbackTime = " + (topTime-playbackTime).ToString());
+						anim.Play(closeClipName,defIndex, topTime-animatorPlaybackTime);
+						//Debug.Log("Reversing from Opening to Closing. animatorPlaybackTime = " +animatorPlaybackTime.ToString() + ", topTime-playbackTime = " + (topTime-playbackTime).ToString());
 						if (SFXClip != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXClip);
 						return;
 					}
 
 					if (doorOpen == doorState.Closing) {
 						doorOpen = doorState.Opening;
-						waitBeforeClose = Time.time + delay;
-						anim.Play(openClipName,defIndex, topTime-playbackTime);
-						//Debug.Log("Reversing from Closing to Opening.  playbackTime = " + playbackTime.ToString() + ", topTime-playbackTime = " + (topTime-playbackTime).ToString());
+						waitBeforeClose = PauseScript.a.relativeTime + delay;
+						anim.Play(openClipName,defIndex, topTime-animatorPlaybackTime);
+						//Debug.Log("Reversing from Closing to Opening. animatorPlaybackTime = " +animatorPlaybackTime.ToString() + ", topTime-playbackTime = " + (topTime-playbackTime).ToString());
 						if (SFXClip != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXClip);
 						return;
 					}
@@ -234,14 +241,18 @@ public class Door : MonoBehaviour {
 	void OpenDoor() {
 		anim.speed = defaultSpeed;
 		doorOpen = doorState.Opening;
-		waitBeforeClose = Time.time + delay;
+		waitBeforeClose = PauseScript.a.relativeTime + delay;
 		anim.Play(openClipName);
-		SFX.PlayOneShot(SFXClip);
+		if (SFX != null && SFXClip != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXClip);
 		if (toggleLasers) {
 			for (int i=defIndex;i<laserLines.Length;i++) {
 				if (laserLines[i].activeSelf) laserLines[i].SetActive(false);
 			}
 			lasersFinished = Mathf.Infinity;
+		}
+
+		if (changeLayerOnOpenClose) {
+			SetCollisionLayerOpen();
 		}
 	}
 
@@ -249,9 +260,9 @@ public class Door : MonoBehaviour {
 		anim.speed = defaultSpeed;
 		doorOpen = doorState.Closing;
 		anim.Play(closeClipName);
-		SFX.PlayOneShot(SFXClip);
+		if (SFX != null && SFXClip != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXClip);
 		if (toggleLasers) {
-			lasersFinished = Time.time + timeBeforeLasersOn;
+			lasersFinished = PauseScript.a.relativeTime + timeBeforeLasersOn;
 		}
 		dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
         if (dynamicObjectsContainer == null) return; //didn't find current level, go ahead and ghost through objects
@@ -262,67 +273,98 @@ public class Door : MonoBehaviour {
 				if (changeThis != null) changeThis.WakeUp();
 			}
 		}
+
+		if (changeLayerOnOpenClose) {
+			SetCollisionLayerClosed();
+		}
+	}
+
+	public void SetAnimFromLoad(string n, int i, float t) {
+		firstUpdateAfterLoad = true;
+		loadedClipName = n;
+		loadedClipIndex = i;
+		loadedAnimatorPlaybackTime = t;
 	}
 
 	void Update () {
-		// Open and close areaportal
-		if (leaf1 != null && leaf2 != null) {
-			if (doorOpen == doorState.Closed) {
-				leaf1.visibleLeaves[leaf2.leafIndex] = false;
-				leaf2.visibleLeaves[leaf1.leafIndex] = false;
-			} else {
-				leaf1.visibleLeaves[leaf2.leafIndex] = true;
-				leaf2.visibleLeaves[leaf1.leafIndex] = true;
-			}
-		}
-
-		if (ajar) {
-			doorOpen = doorState.Opening;
-			anim.Play(openClipName,defIndex, ajarPercentage);
-			anim.speed = speedZero;
-		}
-			
-		if (blocked || (PauseScript.a != null && PauseScript.a.Paused())) {
-			Blocked();
-		} else {
-			if (PauseScript.a != null && !PauseScript.a.Paused()) {
-				Unblocked();
-			}
-		}
-
-		if (debugging) Debug.Log("doorOpen state = " + doorOpen.ToString());
-
-		AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
-		float playbackTime = asi.normalizedTime;
-		//if (anim.GetCurrentAnimatorStateInfo(defIndex).IsName(idleClosedClipName))
-		if (doorOpen == doorState.Closing && playbackTime > 0.95f) {
-			doorOpen = doorState.Closed;  // Door is closed
-		}
-
-		//if (anim.GetCurrentAnimatorStateInfo(defIndex).IsName(idleOpenClipName))
-		if (doorOpen == doorState.Opening && playbackTime > 0.95f)
-			doorOpen = doorState.Open; // Door is open
-
-		if (Time.time > waitBeforeClose) {
-			if ((doorOpen == doorState.Open) && (!stayOpen) && (!startOpen))
-				CloseDoor();
-		}
-
-		if (toggleLasers) {
-			if (lasersFinished < Time.time) {
-				for (int i=defIndex;i<laserLines.Length;i++) {
-					if (!laserLines[i].activeSelf) laserLines[i].SetActive(true);
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (firstUpdateAfterLoad) {
+				firstUpdateAfterLoad = false;
+				anim.Play(loadedClipName,loadedClipIndex,loadedAnimatorPlaybackTime);
+				switch(loadedClipName) {
+					case "IdleOpen": doorOpen = doorState.Open; break;
+					case "IdleClosed": doorOpen = doorState.Closed; break;
+					case "DoorOpen": doorOpen = doorState.Opening; break;
+					case "DoorClose": doorOpen = doorState.Closing; break;
 				}
 			}
-		}
 
-		if (doorOpen == doorState.Open) {
-			nmo.enabled = false; // clear path, door is open
-		} else {
-			nmo.enabled = true; // door is not opened fully, treat as a closed path
+			if (ajar) {
+				doorOpen = doorState.Opening;
+				if (anim.speed != speedZero) {
+					anim.Play(openClipName,defIndex, ajarPercentage);
+					anim.speed = speedZero;
+				}
+				return;
+			}
+				
+			if (blocked) {
+				Blocked();
+			} else {
+				Unblocked();
+			}
+
+			if (doorOpen == doorState.Closing || doorOpen == doorState.Opening) {
+				AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
+				animatorPlaybackTime = asi.normalizedTime;
+				//if (anim.GetCurrentAnimatorStateInfo(defIndex).IsName(idleClosedClipName))
+				if (doorOpen == doorState.Closing && animatorPlaybackTime > 0.95f) {
+					doorOpen = doorState.Closed;  // Door is closed
+				}
+
+				//if (anim.GetCurrentAnimatorStateInfo(defIndex).IsName(idleOpenClipName))
+				if (doorOpen == doorState.Opening && animatorPlaybackTime > 0.95f)
+					doorOpen = doorState.Open; // Door is open
+			}
+
+			if (PauseScript.a.relativeTime > waitBeforeClose) {
+				if ((doorOpen == doorState.Open) && (!stayOpen) && (!startOpen))
+					CloseDoor();
+			}
+
+			if (toggleLasers) {
+				if (lasersFinished < PauseScript.a.relativeTime) {
+					for (int i=defIndex;i<laserLines.Length;i++) {
+						if (!laserLines[i].activeSelf) laserLines[i].SetActive(true);
+					}
+				}
+			}
+
+			if (doorOpen == doorState.Open) {
+				if (nmo.enabled) nmo.enabled = false; // clear path, door is open
+			} else {
+				if (!nmo.enabled) nmo.enabled = true; // door is not opened fully, treat as a closed path
+			}
 		}
 	}
 
-	void Blocked () { anim.speed = speedZero; }
-	void Unblocked () { anim.speed = defaultSpeed; }
+	void SetCollisionLayerOpen() {
+		for (int i=0;i<collidersList.Length;i++) {
+			collidersList[i].layer = 19; // InterDebris
+		}
+	}
+
+	void SetCollisionLayerClosed() {
+		for (int i=0;i<collidersList.Length;i++) {
+			collidersList[i].layer = 18; // Door
+		}
+	}
+
+	void Blocked () {
+		if (anim.speed != speedZero) anim.speed = speedZero;
+	}
+
+	void Unblocked () {
+		if (anim.speed != defaultSpeed) anim.speed = defaultSpeed;
+	}
 }

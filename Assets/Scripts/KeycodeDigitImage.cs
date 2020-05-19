@@ -13,12 +13,14 @@ public class KeycodeDigitImage : MonoBehaviour {
 	}
 
 	void Update () {
-		if (digitIndex != oldIndex && digitIndex >= 0 && digitIndex <= digits.Length || digitIndex == -1) {
-			if (digitIndex == -1) {
-				digitIndex = 10;
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (digitIndex != oldIndex && digitIndex >= 0 && digitIndex <= digits.Length || digitIndex == -1) {
+				if (digitIndex == -1) {
+					digitIndex = 10;
+				}
+				imageDisplay.overrideSprite = digits[digitIndex];
+				oldIndex = digitIndex;
 			}
-			imageDisplay.overrideSprite = digits[digitIndex];
-			oldIndex = digitIndex;
 		}
 	}
 }

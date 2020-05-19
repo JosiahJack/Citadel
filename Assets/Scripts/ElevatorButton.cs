@@ -4,7 +4,6 @@ using System.Collections;
 
 public class ElevatorButton : MonoBehaviour {
 	public bool floorAccessible = false;
-	public bool tooFarAway = false;
 	public bool doorOpen = false;
 	[HideInInspector]
 	public GameObject targetDestination;
@@ -50,10 +49,10 @@ public class ElevatorButton : MonoBehaviour {
 	}
 
 	void ElevButtonClick () {
-		if (tooFarAway) {
+		if (Vector3.Distance(MFDManager.a.objectInUsePos,MFDManager.a.playerCapsuleTransform.position) > Const.a.elevatorPadUseDistance) {
 			Const.sprint(Const.a.stringTable[6],currentPlayer);
 		} else {
-			if (doorOpen) {
+			if (MFDManager.a.linkedElevatorDoor.doorOpen != Door.doorState.Closed) {
 				Const.sprint(Const.a.stringTable[7],currentPlayer);
 			} else {
 				if (floorAccessible) {
@@ -65,10 +64,7 @@ public class ElevatorButton : MonoBehaviour {
 		}
 	}
 
-	public void SetTooFarTrue() { tooFarAway = true; }
-	public void SetTooFarFalse() { tooFarAway = false; }
-
-	void Update() {
+	void OnEnable() {
 		if (childText.text == levR) {
 			levelIndex = zero;
 		}

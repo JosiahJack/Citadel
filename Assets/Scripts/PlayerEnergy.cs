@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerEnergy : MonoBehaviour {
-	public float energy = 54f; //max is 255
+	public float energy = 54f; //max is 255 // save
 	public float resetAfterDeathTime = 0.5f;
-	public float timer;
+	public float timer; // save
     private AudioSource SFX;
     public AudioClip SFXBatteryUse;
     public AudioClip SFXChargeStationUse;
@@ -13,86 +14,100 @@ public class PlayerEnergy : MonoBehaviour {
 	public HardwareInvCurrent hwc;
 	public HardwareInventory hwi;
 	private float tick = 0.1f;
-	private float tickFinished;
+	[HideInInspector]
+	public float tickFinished; // save
 	private float tempF;
 	[HideInInspector]
 	public float maxenergy = 255f;
+	public int drainJPM = 0;
+	public Text drainText;
+	private string jpm = " J/min";
 
-    public void Awake() {
+    public void Start() {
         SFX = GetComponent<AudioSource>();
 		tempF = 0;
-		tickFinished = Time.time + tick + Random.value; // random offset seed to prevent ticks lining up and causing frame hiccups
+		drainJPM = 0;
+		tickFinished = PauseScript.a.relativeTime + tick + Random.value; // random offset seed to prevent ticks lining up and causing frame hiccups
     }
 
 	void Update () {
-		tempF = 1f;
-		bool activeEnergyDrainers = false;
-		if (tickFinished < Time.time) {
-			// 0 System Analyzer doesn't take energy
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			tempF = 1f;
+			bool activeEnergyDrainers = false;
+			if (tickFinished < PauseScript.a.relativeTime) {
+				drainJPM = 0;
+				// 0 System Analyzer doesn't take energy
 
-			// 1 = Navigation Unit doesn't take energy
+				// 1 = Navigation Unit doesn't take energy
 
-			// 2 = Datareader doesn't take energy
+				// 2 = Datareader doesn't take energy
 
-			// 3 Drain sensaround
-			if (hwc.hardwareIsActive[3]) {
-				switch (hwi.hardwareVersionSetting[3]) {
-					case 0: tempF = 0.08533f; break; // takes about 300s to drain full energy
-					case 1: tempF = 0.08533f; break; // takes about 300s to drain full energy
-					case 2: tempF = 0.10666f; break; // takes about 240s to drain full energy
+				// 3 Drain sensaround
+				if (hwc.hardwareIsActive[3]) {
+					switch (hwi.hardwareVersionSetting[3]) {
+						case 0: tempF = 0.08533f; drainJPM += 50; break; // takes about 300s to drain full energy
+						case 1: tempF = 0.08533f; drainJPM += 50; break; // takes about 300s to drain full energy
+						case 2: tempF = 0.10666f; drainJPM += 64; break; // takes about 240s to drain full energy
+					}
+					activeEnergyDrainers = true;
+					TakeEnergy(tempF);
 				}
-				activeEnergyDrainers = true;
-				TakeEnergy(tempF);
-			}
 
-			// 4 = Target Identifier doesn't take energy
+				// 4 = Target Identifier doesn't take energy
 
-			// 5 = Energy Shield - handled by HealthManager
+				// 5 = Energy Shield - handled by HealthManager
 
-			// 6 = Biomonitor
-			if (hwc.hardwareIsActive[6]) {
-				switch (hwi.hardwareVersionSetting[6]) {
-					case 0: tempF = 0.08533f; activeEnergyDrainers = true; break; // takes about 300s to drain full energy
-					case 1: tempF = 0; break; // doesn't take energy
+				// 6 = Biomonitor
+				if (hwc.hardwareIsActive[6]) {
+					switch (hwi.hardwareVersionSetting[6]) {
+						case 0: tempF = 0.08533f; drainJPM += 50;  activeEnergyDrainers = true; break; // takes about 300s to drain full energy
+						case 1: tempF = 0; break; // doesn't take energy
+					}
+					if (tempF > 0) TakeEnergy(tempF);
 				}
-				if (tempF > 0) TakeEnergy(tempF);
-			}
 
-			// 7 = Head Mounted Lantern
-			if (hwc.hardwareIsActive[7]) {
-				switch (hwi.hardwareVersionSetting[7]) {
-					case 0: tempF = 0.1422f; break; // takes about 180s to drain full energy
-					case 1: tempF = 0.21f; break; // takes about 120s to drain full energy
-					case 2: tempF = 0.28f; break; // takes about 90s to drain full energy
+				// 7 = Head Mounted Lantern
+				if (hwc.hardwareIsActive[7]) {
+					switch (hwi.hardwareVersionSetting[7]) {
+						case 0: tempF = 0.1422f; drainJPM += 85; break;// takes about 180s to drain full energy
+						case 1: tempF = 0.21f; drainJPM += 125; break; // takes about 120s to drain full energy
+						case 2: tempF = 0.28f; drainJPM += 170; break; // takes about 90s to drain full energy
+					}
+					activeEnergyDrainers = true;
+					TakeEnergy(tempF);
 				}
-				activeEnergyDrainers = true;
-				TakeEnergy(tempF);
+
+				// 8 Envirosuit - handled by HealthManager for radiation checks
+
+				// 9 = Turbo Motion Booster - done in PlayerMovement since we only use energy on boost, no drain with skates
+
+				// 10 Drain jump jet boots - done in PlayerMovement since we only drain while jumping
+
+				// 11 Drain nightsight
+				if (hwc.hardwareIsActive [11]) {
+					tempF = 0.21f; drainJPM += 125; // takes about 120s to drain full energy
+					activeEnergyDrainers = true;
+					TakeEnergy(tempF);
+				}
+				tickFinished = PauseScript.a.relativeTime + tick;
 			}
 
-			// 8 Envirosuit - handled by HealthManager for radiation checks
-
-			// 9 = Turbo Motion Booster - done in PlayerMovement since we only use energy on boost, no drain with skates
-
-			// 10 Drain jump jet boots - done in PlayerMovement since we only drain while jumping
-
-			// 11 Drain nightsight
-			if (hwc.hardwareIsActive [11]) {
-				tempF = 0.21f; // takes about 120s to drain full energy
-				activeEnergyDrainers = true;
-				TakeEnergy(tempF);
+			// Turn everything off when we are out of energy
+			if (activeEnergyDrainers && energy == 0) {
+				hwc.hardwareIsActive [3] = false;
+				if (hwc.hardwareIsActive [3]) hwc.hardwareButtons[1].SensaroundOff(); //sensaround
+				if (hwc.hardwareIsActive [6] && hwi.hardwareVersionSetting[6] == 0) hwc.hardwareButtons[0].BioOff(); // biomonitor, but only on v1, v2 doesn't use power
+				if (hwc.hardwareIsActive [5]) hwc.hardwareButtons[3].ShieldOff(); // shield
+				if (hwc.hardwareIsActive [7]) hwc.hardwareButtons[2].LanternOff(); // lantern
+				if (hwc.hardwareIsActive [11]) hwc.hardwareButtons[4].InfraredOff(); // infrared
+				activeEnergyDrainers = false;
+				 drainJPM = 0;
 			}
-			tickFinished = Time.time + tick;
-		}
-
-		// Turn everything off when we are out of energy
-		if (activeEnergyDrainers && energy == 0) {
-			hwc.hardwareIsActive [3] = false;
-			if (hwc.hardwareIsActive [3]) hwc.hardwareButtons[1].SensaroundOff(); //sensaround
-			if (hwc.hardwareIsActive [6] && hwi.hardwareVersionSetting[6] == 0) hwc.hardwareButtons[0].BioOff(); // biomonitor, but only on v1, v2 doesn't use power
-			if (hwc.hardwareIsActive [5]) hwc.hardwareButtons[3].ShieldOff(); // shield
-			if (hwc.hardwareIsActive [7]) hwc.hardwareButtons[2].LanternOff(); // lantern
-			if (hwc.hardwareIsActive [11]) hwc.hardwareButtons[4].InfraredOff(); // infrared
-			activeEnergyDrainers = false;
+			if (drainJPM > 0) {
+				drainText.text = (drainJPM.ToString() + jpm);
+			} else {
+				drainText.text = System.String.Empty;
+			}
 		}
 	}
 

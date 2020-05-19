@@ -6,7 +6,7 @@ public class HealingFX : MonoBehaviour {
 	private float effectFinished;
 
 	void OnEnable () {
-		effectFinished = Time.time + activeTime;
+		effectFinished = PauseScript.a.relativeTime + activeTime;
 	}
 		
 	void Deactivate () {
@@ -14,8 +14,10 @@ public class HealingFX : MonoBehaviour {
 	}
 
 	void Update () {
-		if (effectFinished < Time.time) {
-			Deactivate();
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (effectFinished < PauseScript.a.relativeTime) {
+				Deactivate();
+			}
 		}
 	}
 }

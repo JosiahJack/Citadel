@@ -21,7 +21,7 @@ public class MaterialFlash : MonoBehaviour {
 		if (alternateMat == null) Debug.Log("BUG: MaterialFlash.cs has a null alternate material!  Assign your materials!");
 
 		if (startFlashing) isFlashing = true;
-		flashFinished = Time.time;
+		flashFinished = PauseScript.a.relativeTime;
 		changeDone = false;
 		normal = true;
 		if (!startNormal) {
@@ -31,23 +31,25 @@ public class MaterialFlash : MonoBehaviour {
 	}
 
     void Update() {
-		if (Const.a.questData.SelfDestructActivated) isFlashing = true;
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (Const.a.questData.SelfDestructActivated) isFlashing = true;
 
-        if (isFlashing) {
-			if (flashFinished < Time.time) {
-				flashFinished = Time.time + timeBetweenFlashes;
-				if (normal) {
-					meshR.material = alternateMat;
-					normal = !normal;
-				} else {
-					meshR.material = normalMat;
-					normal = !normal;
+			if (isFlashing) {
+				if (flashFinished < PauseScript.a.relativeTime) {
+					flashFinished = PauseScript.a.relativeTime + timeBetweenFlashes;
+					if (normal) {
+						meshR.material = alternateMat;
+						normal = !normal;
+					} else {
+						meshR.material = normalMat;
+						normal = !normal;
+					}
 				}
-			}
-		} else {
-			if (stopReturnsToNormal && !changeDone) {
-				changeDone = true;
-				meshR.material = normalMat;
+			} else {
+				if (stopReturnsToNormal && !changeDone) {
+					changeDone = true;
+					meshR.material = normalMat;
+				}
 			}
 		}
     }

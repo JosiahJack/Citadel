@@ -102,6 +102,8 @@ half4 CalculateLight (unity_v2f_deferred i)
     UnityGGXDeferredCalculateLightParams (i, wpos, uv, light.dir, atten, fadeDist);
 
     light.color = _LightColor.rgb * atten;
+	//float precision = 0.02f;
+    //light.color = floor((_LightColor.rgb * atten)/precision) * precision;
 
     // unpack Gbuffer
     half4 gbuffer0 = tex2D (_CameraGBufferTexture0, uv);
@@ -141,13 +143,14 @@ ENDCG
 // Used only with HDR off, to decode the logarithmic buffer into the main RT
 Pass {
     ZTest Always Cull Off ZWrite Off
+	/*
     Stencil {
         ref [_StencilNonBackground]
         readmask [_StencilNonBackground]
         // Normally just comp would be sufficient, but there's a bug and only front face stencil state is set (case 583207)
         compback equal
         compfront equal
-    }
+    }*/
 
 CGPROGRAM
 #pragma target 3.0

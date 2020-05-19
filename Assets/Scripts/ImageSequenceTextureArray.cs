@@ -11,6 +11,7 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	private Texture[] glowtextures;
 	private Texture[] destroyedTextures;
 	//With this Material object, a reference to the game object Material can be stored
+	private MeshRenderer mR;
 	private Material goMaterial;
 	//An integer to advance frames
 	private int frameCounter = 0;
@@ -32,12 +33,14 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	
 	void Awake() {
 		//Get a reference to the Material of the game object this script is attached to.
+		mR = GetComponent<MeshRenderer>();
+		if (mR == null) { this.gameObject.SetActive(false); return; }
 		this.goMaterial = this.GetComponent<Renderer>().material;
 	}
 	
 	void Start () {
 		//Load all textures found on the Sequence folder, that is placed inside the resources folder
-		if (resourceFolder == "" && !glowOnly) {
+		if (string.IsNullOrWhiteSpace(resourceFolder) && !glowOnly) {
 			return;
 		}
 
@@ -48,7 +51,7 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		}
 
 		tick = frameDelay;
-		tickFinished = Time.time + tick;
+		tickFinished = PauseScript.a.relativeTime + tick;
 
 		if (animateGlow) {
 			this.glowobjects = Resources.LoadAll(glowResourceFolder, typeof(Texture));
@@ -92,14 +95,38 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		screenDestroyed = true; // if not already dead, say so
 	}
 
-	void Update () {
-		if (resourceFolder == "" && !glowOnly) {
+	public void AwakeFromLoad(float health) {
+		if (health > 0) {
+			screenDestroyed = false;
+			tickFinished = PauseScript.a.relativeTime + tick;
+			if (screenDestroyedDone) screenDestroyedDone = false;
+		} else {
+			screenDestroyed = true;
+		}
+		if (reverseSequence) {
+			frameCounter = (textures.Length - 1);
+		} else {
+			frameCounter = 0;
+		}
+		if (glowOnly) {
+			if (initialIndexOffset < glowobjects.Length  && initialIndexOffset > 0) frameCounter = initialIndexOffset;
 			return;
 		}
+		if (initialIndexOffset < objects.Length && initialIndexOffset > 0) frameCounter = initialIndexOffset;
+	}
 
-		if (tickFinished < Time.time) {
-			Think();
-			tickFinished = Time.time + tick;
+	void Update () {
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (string.IsNullOrWhiteSpace(resourceFolder) && !glowOnly) {
+				return;
+			}
+
+			if (mR.isVisible) {
+				if (tickFinished < PauseScript.a.relativeTime) {
+					Think();
+					tickFinished = PauseScript.a.relativeTime + tick;
+				}
+			}
 		}
 	}
 

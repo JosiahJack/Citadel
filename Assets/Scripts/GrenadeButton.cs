@@ -12,6 +12,8 @@ public class GrenadeButton : MonoBehaviour {
 	private Texture2D cursorTexture;
 	private Vector2 cursorHotspot;
 	public GrenadeCurrent playerGrenCurrent;
+	public AudioClip SFXClick;
+	public AudioSource SFX;
 
 	public void PtrEnter () {
 		GUIState.a.PtrHandler(true,true,GUIState.ButtonType.Grenade,gameObject);
@@ -28,9 +30,11 @@ public class GrenadeButton : MonoBehaviour {
 		//Debug.Log("Grenade double clicked");
 	}
 
-	void GrenadeInvClick () {
+	public void GrenadeInvClick () {
 		mfdManager.SendInfoToItemTab(useableItemIndex);
 		GrenadeCurrent.GrenadeInstance.grenadeCurrent = GrenButtonIndex;  //Set current
+		GrenadeCurrent.GrenadeInstance.grenadeIndex = useableItemIndex;  //Set current
+		if (SFX != null && SFXClick != null) SFX.PlayOneShot(SFXClick);
 	}
 	
 	void Start() {

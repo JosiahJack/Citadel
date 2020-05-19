@@ -12,10 +12,12 @@ public class LogTextReaderManager : MonoBehaviour {
 	//public GameObject dataTabManager;
 	
 	void Update () {
-		if (logTextOutput.GetComponent<Text>().text.Length > 568) {
-			moreButtonText.text = "[MORE]";
-		} else {
-			moreButtonText.text = "[CLOSE]";
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (logTextOutput.GetComponent<Text>().text.Length > 568) {
+				moreButtonText.text = "[MORE]";
+			} else {
+				moreButtonText.text = "[CLOSE]";
+			}
 		}
 	}
 
