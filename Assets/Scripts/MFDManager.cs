@@ -550,27 +550,43 @@ public class MFDManager : MonoBehaviour  {
 
 	public void SendElevatorKeypadToDataTab(KeypadElevator ke, bool[] buttonsEnabled, bool[] buttonsDarkened, string[] buttonText,GameObject[] targetDestination,Vector3 tetherPoint,Door linkedDoor,int currentFloor) {
 		TabReset(lastDataSideRH);
+		ElevatorKeypad elevatorKeypad;
 		if (lastDataSideRH) {
-			ElevatorKeypad elevatorKeypadRH = elevatorUIControlRH.GetComponent<ElevatorKeypad>();
-			for (int i=0;i<8;i++) {
-				elevatorKeypadRH.buttonsEnabled[i] = buttonsEnabled[i];
-				elevatorKeypadRH.buttonsDarkened[i] = buttonsDarkened[i];
-				elevatorKeypadRH.buttonText[i] = buttonText[i];
-				elevatorKeypadRH.targetDestination[i] = targetDestination[i];
+			elevatorKeypad = elevatorUIControlRH.GetComponent<ElevatorKeypad>();
+		} else {
+			elevatorKeypad = elevatorUIControlLH.GetComponent<ElevatorKeypad>();
+		}
+		for (int i=0;i<8;i++) {
+			elevatorKeypad.buttonsEnabled[i] = buttonsEnabled[i];
+			elevatorKeypad.buttonsDarkened[i] = buttonsDarkened[i];
+			elevatorKeypad.buttonText[i] = buttonText[i];
+			elevatorKeypad.targetDestination[i] = targetDestination[i];
+
+			if (elevatorKeypad.buttonsEnabled[i]) {
+				if (!elevatorKeypad.buttons[i].activeSelf) elevatorKeypad.buttons[i].SetActive(true);
+				elevatorKeypad.buttonTextHolders[i].text = elevatorKeypad.buttonText[i];
+
+				if (elevatorKeypad.buttonsDarkened[i]) {
+					elevatorKeypad.buttonSprites[i].overrideSprite = elevatorKeypad.buttonDarkened;
+					elevatorKeypad.buttonTextHolders[i].color = elevatorKeypad.textDarkenedColor;
+					elevatorKeypad.buttonHandlers[i].GetComponent<ElevatorButton>().floorAccessible = false;
+				} else {
+					elevatorKeypad.buttonSprites[i].overrideSprite = elevatorKeypad.buttonNormal;
+					elevatorKeypad.buttonSprites[i].overrideSprite = elevatorKeypad.buttonNormal;
+					elevatorKeypad.buttonTextHolders[i].color = elevatorKeypad.textEnabledColor;
+					elevatorKeypad.buttonHandlers[i].GetComponent<ElevatorButton>().floorAccessible = true;
+					elevatorKeypad.buttonHandlers[i].GetComponent<ElevatorButton>().targetDestination = elevatorKeypad.targetDestination[i];
+				}
+			} else {
+				if (elevatorKeypad.buttons[i].activeSelf) elevatorKeypad.buttons[i].SetActive(false);
 			}
-			elevatorKeypadRH.currentFloor = currentFloor;
-			elevatorKeypadRH.activeKeypad = gameObject;
+		}
+		elevatorKeypad.currentFloor = currentFloor;
+		elevatorKeypad.activeKeypad = ke.gameObject;
+		elevatorKeypad.SetCurrentFloor();
+		if (lastDataSideRH) {
 			MFDManager.a.OpenTab(4,true,TabMSG.Elevator,0,handedness.RightHand);
 		} else {
-			ElevatorKeypad elevatorKeypadLH = elevatorUIControlLH.GetComponent<ElevatorKeypad>();
-			for (int i=0;i<8;i++) {
-				elevatorKeypadLH.buttonsEnabled[i] = buttonsEnabled[i];
-				elevatorKeypadLH.buttonsDarkened[i] = buttonsDarkened[i];
-				elevatorKeypadLH.buttonText[i] = buttonText[i];
-				elevatorKeypadLH.targetDestination[i] = targetDestination[i];
-			}
-			elevatorKeypadLH.currentFloor = currentFloor;
-			elevatorKeypadLH.activeKeypad = gameObject;
 			MFDManager.a.OpenTab(4,true,TabMSG.Elevator,0,handedness.LeftHand);
 		}
 		linkedElevatorDoor = linkedDoor;

@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AIAnimationController : MonoBehaviour {
-	public float currentClipPercentage;
+	public float currentClipPercentage; // save
 	public float clipEndThreshold = 0.99f;
 	private SkinnedMeshRenderer smR;
-	private Animator anim;
+	[HideInInspector]
+	public Animator anim;
 	private AnimatorStateInfo anstinfo;
 	public AIController aic;
-	private bool dying;
-	private bool dead;
+	public bool dying; // save
 	public bool useDeadAnimForDeath = false;
 	public bool playDeathAnim = true;
 	public bool playDyingAnim = true;
@@ -20,7 +20,6 @@ public class AIAnimationController : MonoBehaviour {
 	void Start () {
 		anim = GetComponent<Animator>();
 		currentClipPercentage = 0;
-		dead = false;
 		checkVisWithSMR = false;
 		smR = GetComponentInChildren<SkinnedMeshRenderer>();
 		if (smR != null) checkVisWithSMR = true;
@@ -42,26 +41,23 @@ public class AIAnimationController : MonoBehaviour {
 			currentClipPercentage = anstinfo.normalizedTime % 1;
 			Dying();
 		} else {
-			if (dead) {
-				Dead();
-			} else {
-				if (aic.asleep) { 
-					Idle();
-					return;
-				}
-				switch (aic.currentState) {
-				case Const.aiState.Idle: 		Idle(); 		break;
-				case Const.aiState.Walk:	 	Walk(); 		break;
-				case Const.aiState.Run: 		Run(); 			break;
-				case Const.aiState.Attack1: 	Attack1(); 		break;
-				case Const.aiState.Attack2: 	Attack2(); 		break;
-				case Const.aiState.Attack3: 	Attack3(); 		break;
-				case Const.aiState.Pain: 		Pain();			break;
-				case Const.aiState.Dying: 		Dying(); 		break;
-				case Const.aiState.Inspect: 	Inspect(); 		break;
-				case Const.aiState.Interacting: Interacting();	break;
-				default: 						Idle(); 		break;
-				}
+			if (aic.asleep) { 
+				Idle();
+				return;
+			}
+			switch (aic.currentState) {
+			case Const.aiState.Idle: 		Idle(); 		break;
+			case Const.aiState.Walk:	 	Walk(); 		break;
+			case Const.aiState.Run: 		Run(); 			break;
+			case Const.aiState.Attack1: 	Attack1(); 		break;
+			case Const.aiState.Attack2: 	Attack2(); 		break;
+			case Const.aiState.Attack3: 	Attack3(); 		break;
+			case Const.aiState.Pain: 		Pain();			break;
+			case Const.aiState.Dying: 		Dying(); 		break;
+			case Const.aiState.Inspect: 	Inspect(); 		break;
+			case Const.aiState.Interacting: Interacting();	break;
+			case Const.aiState.Dead:		Dead();			break;
+			default: 						Idle(); 		break;
 			}
 		}
 	}
@@ -76,13 +72,10 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Run () {
-		//alreadySetAnimation = false;
-		if (gameObject.activeInHierarchy) {
-			if (aic.actAsTurret) {
-				anim.Play("Idle");
-			} else {
-				anim.Play("Run");
-			}
+		if (aic.actAsTurret) {
+			anim.Play("Idle");
+		} else {
+			anim.Play("Run");
 		}
 	}
 
@@ -99,30 +92,26 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Attack1 () {
-		if (gameObject.activeInHierarchy) anim.Play("Attack1");
+		anim.Play("Attack1");
 	}
 
 	void Attack2 () {
-		//if (!alreadySetAnimation) {
-		//	alreadySetAnimation = true;
-			if (gameObject.activeInHierarchy) anim.Play("Attack2");
-		//}
+		anim.Play("Attack2");
 	}
 
 	void Attack3 () {
-		if (gameObject.activeInHierarchy) anim.Play("Attack3");
+		anim.Play("Attack3");
 	}
 
 	void Pain () {
-		if (gameObject.activeInHierarchy) anim.Play("Pain");
+		anim.Play("Pain");
 	}
 
 	void Dying () {
 		dying = true;
-		if (playDyingAnim && gameObject.activeInHierarchy) anim.Play("Death");
+		if (playDyingAnim) anim.Play("Death");
 		if (currentClipPercentage > clipEndThreshold) {
 			dying = false;
-			dead = true;
 		}
 	}
 
@@ -133,7 +122,6 @@ public class AIAnimationController : MonoBehaviour {
 			if (playDeathAnim && gameObject.activeInHierarchy) anim.Play("Death",0,1.0f);
 		}
 		anim.speed = 0f;
-		
 	}
 
 	void Inspect () {

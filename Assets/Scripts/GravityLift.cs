@@ -4,10 +4,9 @@ using System.Collections;
 public class GravityLift : MonoBehaviour {
 	public float strength = 12f;
 	public float offStrengthFactor = 0.3f;
-	public float topPointDampening = 50f;
-	public float topPointDampeningRange = 0.8f;
 	private Rigidbody otherRbody;
 	private float modulatedStrengthY;
+	public float distancePaddingToTopPoint = 0.32f;
 	public bool active = true;
 	//public Transform topPoint;
 	public Vector3 topPoint;
@@ -16,7 +15,7 @@ public class GravityLift : MonoBehaviour {
 	void Awake() {
 		boxcol = GetComponent<BoxCollider>();
 		if (boxcol == null) return;
-		topPoint = new Vector3(0f,boxcol.bounds.max.y + 1f,0f); // add half the player's capsule height(1f) to the top extent of the box collider
+		topPoint = new Vector3(0f,boxcol.bounds.max.y,0f); // add half the player's capsule height(1f) to the top extent of the box collider
 	}
 
 	void OnTriggerStay (Collider other) {
@@ -24,13 +23,12 @@ public class GravityLift : MonoBehaviour {
 			otherRbody = other.gameObject.GetComponent<Rigidbody>();
 			if (otherRbody != null) {
 				if (otherRbody.velocity.y < strength) {
-					//if (topPoint != null) {
-						if (Vector3.Distance(topPoint,other.gameObject.transform.position) < topPointDampeningRange) {
-							otherRbody.AddForce(new Vector3(0f, (strength-(otherRbody.velocity.y*topPointDampening)), 0f));
-						} else {
-							otherRbody.AddForce(new Vector3(0f, (strength-(otherRbody.velocity.y)), 0f));
-						}
-					//}
+					if (Vector3.Distance(topPoint,other.gameObject.transform.position) < ((other.bounds.max.y/2f) + distancePaddingToTopPoint)) {
+						otherRbody.AddForce(new Vector3(0f, (9.83f-(otherRbody.velocity.y)), 0f),ForceMode.Acceleration);
+						//otherRbody.velocity = new Vector3(otherRbody.velocity.x,0f,otherRbody.velocity.z);
+					} else {
+						otherRbody.AddForce(new Vector3(0f, (strength-(otherRbody.velocity.y)), 0f));
+					}
 				}
 			}
 		} else {

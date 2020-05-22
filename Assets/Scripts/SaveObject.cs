@@ -9,7 +9,8 @@ public class SaveObject : MonoBehaviour {
 	public enum SaveableType {Transform,Player,Useable,Grenade,NPC,Destructable,SearchableStatic,
 							SearchableDestructable,Door,ForceBridge,Switch,FuncWall,TeleDest,
 							LBranch,LRelay,LSpawner,InteractablePanel,ElevatorPanel,Keypad,PuzzleGrid,
-							PuzzleWire,TCounter,TGravity,MChanger,RadTrig,GravPad,TransformParentless};
+							PuzzleWire,TCounter,TGravity,MChanger,RadTrig,GravPad,TransformParentless,
+							ChargeStation};
 	public SaveableType saveType = SaveableType.Transform;
 	[HideInInspector]
 	public string saveableType;
@@ -48,6 +49,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.RadTrig: saveableType = "RadTrig"; break;
 			case SaveableType.GravPad: saveableType = "GravPad"; break;
 			case SaveableType.TransformParentless: saveableType = "TransformParentless"; break;
+			case SaveableType.ChargeStation: saveableType = "ChargeStation"; break;
 			default: saveableType = "Transform"; break;
 		}
 		initialized = true;

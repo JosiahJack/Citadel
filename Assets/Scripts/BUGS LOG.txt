@@ -1,7 +1,5 @@
 Emails and logs don't show side-MFD images
-Bobbing on turned-on repulsor is a bit too much, getting sea-sick :)
 Enemy spawners don't spawn enemies properly
-Cursor should be prevented from leaving side extents of screen
 Sparq OVERHEATED text displays when weapon is not overheated anymore, says ready when switching to other weapon
 Weapon load normal/alt buttons aren't highlighted correctly
 Secret funcwall lev1 by sleeping cyborgs moves down too slowly, jitters
@@ -17,8 +15,9 @@ chunk_eng2_2 is done
 
 
 Profiling
-Music.Update() 0.12ms
-PlayerMovement.Update() 0.05ms
+932.84ms to Awake()
+	Ista takes 557.35ms
+	Const 84.55ms
 
 Updates candidate for consolidation under MFDManager or other:
 ButtonListenFKey1 (getinput check for 

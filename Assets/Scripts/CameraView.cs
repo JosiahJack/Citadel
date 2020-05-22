@@ -10,6 +10,8 @@ public class CameraView : MonoBehaviour {
 	private float maxDistVisible = 5.8f;
 	private Transform playerT;
 	private bool renderedOnce = false;
+	private MeshRenderer mR;
+	private bool mRpresent = false;
 
 	void Start () {
 		cam = GetComponent<Camera>();
@@ -17,10 +19,16 @@ public class CameraView : MonoBehaviour {
 		renderedOnce = false;
 		tickFinished = PauseScript.a.relativeTime + tick;
 		playerT = Const.a.player1.GetComponent<PlayerReferenceManager>().playerCapsule.transform;
+		mRpresent = false;
+		mR = GetComponent<MeshRenderer>();
+		if (mR != null) mRpresent = true;
 	}
 
 	void Update () {
 		if (!PauseScript.a.paused && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (mRpresent) {
+				if (!mR.isVisible) return;
+			}
 			if (screenPoint != null) {
 				if (Vector3.Distance(playerT.position,screenPoint.position) > maxDistVisible) {
 					if (!renderedOnce) return;

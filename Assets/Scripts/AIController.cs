@@ -8,10 +8,10 @@ public class AIController : MonoBehaviour {
 	public int index = 0; // NPC reference index for looking up constants in tables in Const.cs // save
 	[HideInInspector]
 	public string targetID;
-	public Const.aiState currentState; // save
+	public Const.aiState currentState; // save (referenced by int index 0 thru 10)
     public Const.aiMoveType moveType;
 	public Const.npcType npcType;
-	public GameObject enemy; // save (referenced by integer index enemIDRead)
+	public GameObject enemy; // save (referenced by int index enemIDRead)
     public GameObject searchColliderGO;
 	public float yawspeed = 180f;
 	public float fieldOfViewAngle = 180f;
@@ -86,15 +86,15 @@ public class AIController : MonoBehaviour {
 	public bool hasLaserForProj2 = false;
 	public LightningBoltScript laserLightning;
 	public Transform[] walkWaypoints; // point(s) for NPC to walk to when roaming or patrolling
-	public bool inSight = false;
-    public bool infront;
-    public bool inProjFOV;
-    public bool LOSpossible;
-    public bool goIntoPain = false;
+	public bool inSight = false; // save
+    public bool infront; // save
+    public bool inProjFOV; // save
+    public bool LOSpossible; // save
+    public bool goIntoPain = false; // save
 	public bool explodeOnAttack3 = false;
     public bool ignoreEnemy = false;
 	[HideInInspector]
-	public float rangeToEnemy = 999f;
+	public float rangeToEnemy = 999f; // save
 	public GameObject[] meleeDamageColliders;
 	public bool preActivateMeleeColliders = false;
     public GameObject muzzleBurst;
@@ -102,92 +102,114 @@ public class AIController : MonoBehaviour {
     public GameObject rrCheckPoint;
 	[HideInInspector]
 	public GameObject attacker;
-	//private bool hasSFX;
-	public bool firstSighting;
 	[HideInInspector]
-	public bool dyingSetup;
+	public bool firstSighting; // save
 	[HideInInspector]
-	public bool ai_dying;
+	public bool dyingSetup; // save
 	[HideInInspector]
-	public bool ai_dead;
-	private int currentWaypoint;
-	private Vector3 currentDestination;
+	public bool ai_dying; // save
+	[HideInInspector]
+	public bool ai_dead; // save
+	[HideInInspector]
+	public int currentWaypoint; // save
+	[HideInInspector]
+	public Vector3 currentDestination; // save
 	private float idleTime;
 	private float attack1SoundTime;
 	private float attack2SoundTime;
 	private float attack3SoundTime;
-	private float timeTillEnemyChangeFinished;
-	private float timeTillDeadFinished;
-	private float timeTillPainFinished;
+	[HideInInspector]
+	public float timeTillEnemyChangeFinished; // save
+	[HideInInspector]
+	public float timeTillDeadFinished; // save
+	[HideInInspector]
+	public float timeTillPainFinished; // save
 	[HideInInspector]
 	public AudioSource SFX;
 	[HideInInspector]
 	public Rigidbody rbody;
 	public HealthManager healthManager;
-	private BoxCollider boxCollider;
-	private CapsuleCollider capsuleCollider;
-	private SphereCollider sphereCollider;
-	private MeshCollider meshCollider;
+	[HideInInspector]
+	public BoxCollider boxCollider;
+	[HideInInspector]
+	public CapsuleCollider capsuleCollider;
+	[HideInInspector]
+	public SphereCollider sphereCollider;
+	[HideInInspector]
+	public MeshCollider meshCollider;
 	private float tick;
 	private float raycastingTick;
-	private float tickFinished;
-	private float raycastingTickFinished;
+	[HideInInspector]
+	public float tickFinished; // save
+	[HideInInspector]
+	public float raycastingTickFinished; // save
     public float huntTime = 5f;
-    public float huntFinished;
-	private bool hadEnemy;
-    private Vector3 lastKnownEnemyPos;
-    private Vector3 tempVec;
-    private bool shotFired = false;
+	[HideInInspector]
+    public float huntFinished; // save
+	[HideInInspector]
+	public bool hadEnemy; // save
+	[HideInInspector]
+    public Vector3 lastKnownEnemyPos; // save
+	[HideInInspector]
+    public Vector3 tempVec; // save
+	[HideInInspector]
+    public bool shotFired = false; // save
     private DamageData damageData;
     private RaycastHit tempHit;
     private bool useBlood;
     private HealthManager tempHM;
-    private float randomWaitForNextAttack1Finished;
-    private float randomWaitForNextAttack2Finished;
-    private float randomWaitForNextAttack3Finished;
+	[HideInInspector]
+    public float randomWaitForNextAttack1Finished; // save
+	[HideInInspector]
+    public float randomWaitForNextAttack2Finished; // save
+	[HideInInspector]
+    public float randomWaitForNextAttack3Finished; // save
     public GameObject visibleMeshEntity;
     public GameObject gunPoint;
     public GameObject gunPoint2;
-	public Vector3 idealTransformForward;
-    public Vector3 idealPos; // used by flyers to establish correct height
+	[HideInInspector]
+	public Vector3 idealTransformForward; // save
+	[HideInInspector]
+    public Vector3 idealPos; // used by flyers to establish correct height // save
 	public float flightDesiredHeight = 0.75f;
 	public bool flightHeightIsPercentage = true;
 	[HideInInspector]
-	public float attackFinished;
+	public float attackFinished; // save
 	[HideInInspector]
-    public float attack2Finished;
+    public float attack2Finished; // save
 	[HideInInspector]
-    public float attack3Finished;
-    public Vector3 targettingPosition; // used to give the player a chance to dodge attacks by moving after start of an attack, enemy attacks along same starting line
+    public float attack3Finished; // save
+	[HideInInspector]
+    public Vector3 targettingPosition; // used to give the player a chance to dodge attacks by moving after start of an attack, enemy attacks along same starting line // save
 	public Material deathMaterial;
 	public bool switchMaterialOnDeath;
 	public SkinnedMeshRenderer actualSMR;
-	//public BoxCollider flyerCollider;
-	//public CapsuleCollider flyerColliderAlternate1;
 	public GameObject deathBurst;
 	public float deathBurstTimer = 0.1f;
-	private float deathBurstFinished;
 	[HideInInspector]
-	public bool deathBurstDone;
+	public float deathBurstFinished; // save
+	[HideInInspector]
+	public bool deathBurstDone; // save
 	public GameObject sightPoint;
 	private NavMeshPath searchPath;
 	public float rangeToHear = 10f;
-	public bool asleep = false; // check if enemy starts out asleep, e.g. sleeping sec-2 bots on level 8 in the maintenance chargers
+	public bool asleep = false; // check if enemy starts out asleep, e.g. sleeping sec-2 bots on level 8 in the maintenance chargers // save
 	public bool useGravityOnDeath = true;
 	public bool useGravityOnDying = true;
 	public float tranquilizeTime = 3f;
-	public float tranquilizeFinished;
+	[HideInInspector]
+	public float tranquilizeFinished; // save
 	public bool attack1UsesLaser = false;
 	public bool hopOnRun = false;
 	public float hopForce = 500f;
 	public Animator hopAnimator;
-	private bool hopDone;
-	public bool wandering;
-	private float wanderFinished;
-	private float stuckFinished;
-	private Vector3 lastPos;
-	public float dotProjResult = -1f;
-	public float dotResult = -1f;
+	[HideInInspector]
+	public bool hopDone; // save
+	public bool wandering; // save
+	[HideInInspector]
+	public float wanderFinished; // save
+	private float dotProjResult = -1f;
+	private float dotResult = -1f;
 	public bool actAsTurret = false;
 	public GameObject sleepingCables;
 
@@ -247,7 +269,6 @@ public class AIController : MonoBehaviour {
 		tranquilizeFinished = PauseScript.a.relativeTime;
 		deathBurstFinished = PauseScript.a.relativeTime;
 		wanderFinished = PauseScript.a.relativeTime;
-		stuckFinished = PauseScript.a.relativeTime;
         damageData = new DamageData();
 		damageData.ownerIsNPC = true;
         tempHit = new RaycastHit();
@@ -555,16 +576,6 @@ public class AIController : MonoBehaviour {
 					return;
 				}
 			}
-
-			if (stuckFinished < PauseScript.a.relativeTime) {
-				stuckFinished = PauseScript.a.relativeTime + 2f;
-				if (Vector3.Distance(transform.position,lastPos) < 0.64f) {
-					// We are stuck in a hole, hop up a bit!
-					tempVec = Vector3.up * 20f;
-					if (!actAsTurret) rbody.AddForce(tempVec + (sightPoint.transform.forward * 50f));
-				}
-			}
-			lastPos = transform.position;
 
 			// enemy still far away and turned to within angle to move, then move
 			if ((moveType != Const.aiMoveType.None) && (Vector3.Distance(sightPoint.transform.position, enemy.transform.position) > 1.28) && tranquilizeFinished < PauseScript.a.relativeTime) {

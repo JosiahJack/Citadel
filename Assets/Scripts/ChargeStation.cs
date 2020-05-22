@@ -7,14 +7,14 @@ public class ChargeStation : MonoBehaviour {
 	public bool requireReset;
 	public float minSecurityLevel = 100;
 	public float damageOnUse = 0f; 
-	private float nextthink;
+	[HideInInspector]
+	public float nextthink; // save
 	public string target;
 	public string argvalue;
 	public string rechargeMsg;
 	public int rechargeMsgLingdex = 1;
 	public string usedMsg;
 	public int usedMsgLingdex = 0;
-	// private float maxResetTime = 10f;
 	
 	void Start () {
 		nextthink = PauseScript.a.relativeTime;

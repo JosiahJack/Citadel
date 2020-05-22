@@ -36,8 +36,8 @@ public class LightAnimation : MonoBehaviour {
 		differenceInIntensity = (maxIntensity - minIntensity);
 		if (intervalSteps.Length != 0) {
 			stepTime = intervalSteps[currentStep];
-			lerpTime = PauseScript.a.relativeTime + stepTime;
-			lerpStartTime = PauseScript.a.relativeTime;
+			lerpTime = Time.time + stepTime;
+			lerpStartTime = Time.time;
 		} else {
 			noSteps = true;
 			//setIntensity = GetComponent<Light>().intensity;
@@ -71,7 +71,7 @@ public class LightAnimation : MonoBehaviour {
 				if (!noSteps) {
 					if (lerpUp) {
 						// Going from minIntensity to maxIntensity
-						if (lerpTime < PauseScript.a.relativeTime) {
+						if (lerpTime < Time.time) {
 							animLight.intensity = maxIntensity;
 							lerpUp = false;
 							currentStep++;
@@ -79,15 +79,15 @@ public class LightAnimation : MonoBehaviour {
 								currentStep = 0;
 
 							stepTime = intervalSteps[currentStep];
-							lerpTime = PauseScript.a.relativeTime + stepTime;
-							lerpStartTime = PauseScript.a.relativeTime;
+							lerpTime = Time.time + stepTime;
+							lerpStartTime = Time.time;
 							if (lerpTime == 0f)
 								lerpTime = 0.1f;
 						} else {
 							if (lerpOn) {
 								if (currentStep < intervalStepisLerping.Length) {
 									if (intervalStepisLerping[currentStep]) {
-										lerpValue = (PauseScript.a.relativeTime - lerpStartTime)/(lerpTime - lerpStartTime); // percent towards goal time
+										lerpValue = (Time.time - lerpStartTime)/(lerpTime - lerpStartTime); // percent towards goal time
 										lerpValue = minIntensity + (differenceInIntensity * (lerpValue));
 										if (animLight.intensity != lerpValue) animLight.intensity = lerpValue;
 									}
@@ -96,7 +96,7 @@ public class LightAnimation : MonoBehaviour {
 						}
 					} else {
 						// Going from maxIntensity to minIntensity
-						if (lerpTime < PauseScript.a.relativeTime) {
+						if (lerpTime < Time.time) {
 							animLight.intensity = minIntensity;
 							lerpUp = true;
 							currentStep++;
@@ -104,8 +104,8 @@ public class LightAnimation : MonoBehaviour {
 								currentStep = 0;
 							
 							stepTime = intervalSteps[currentStep];
-							lerpTime = PauseScript.a.relativeTime + stepTime;
-							lerpStartTime = PauseScript.a.relativeTime;
+							lerpTime = Time.time + stepTime;
+							lerpStartTime = Time.time;
 							if (lerpTime == 0f)
 								lerpTime = 0.1f;
 						} else {
@@ -115,7 +115,7 @@ public class LightAnimation : MonoBehaviour {
 
 								if (currentStep < intervalStepisLerping.Length) {
 									if (intervalStepisLerping[currentStep]) {
-										lerpValue = (PauseScript.a.relativeTime - lerpStartTime)/(lerpTime - lerpStartTime); // percent towards goal time
+										lerpValue = (Time.time - lerpStartTime)/(lerpTime - lerpStartTime); // percent towards goal time
 										lerpValue = minIntensity + (differenceInIntensity * (1-lerpValue));
 										if (animLight.intensity != lerpValue) animLight.intensity = lerpValue;
 									}
