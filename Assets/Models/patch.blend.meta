@@ -34,7 +34,7 @@ ModelImporter:
       name: None__p_medi_png
     second: {fileID: 2100000, guid: 1dd7e394afb8b7f41b5d1ba52bcd6e67, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0

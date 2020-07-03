@@ -1,23 +1,21 @@
-Emails and logs don't show side-MFD images
-Enemy spawners don't spawn enemies properly
-Sparq OVERHEATED text displays when weapon is not overheated anymore, says ready when switching to other weapon
-Weapon load normal/alt buttons aren't highlighted correctly
-Secret funcwall lev1 by sleeping cyborgs moves down too slowly, jitters
-EMP grenade button not activated
-EMP grenade used when clicking gas grenade button after last frag grenade was used
-Radiation when opening radcloset on lev2 in darkarea doesn't acctivate trigger
-Grenades on lev2 not displaying explosion effect
-Add shield activation effect
-Add shield deactivation effect
+Build Size
+324MB - now 316MB - now 317MB, now 290MB, now 289MB (still)
 
-Full Prefab sweep:
-chunk_eng2_2 is done
+Build Memory Usage
+2.3GB RAM - now 1.6GB, now 1.4GB, now 1.1GB!
 
 
-Profiling
-932.84ms to Awake()
-	Ista takes 557.35ms
-	Const 84.55ms
+
+
+
+
+
+
+
+
+
+
+
 
 Updates candidate for consolidation under MFDManager or other:
 ButtonListenFKey1 (getinput check for 
@@ -40,9 +38,3 @@ GrenadeCountsText (diddo)
 Scripts candidate for removal
 Billboard
 UpdateManager
-
-Build Size
-324MB - now 316MB - now 317MB
-
-Build Memory Usage
-2.3GB RAM - now 1.6GB

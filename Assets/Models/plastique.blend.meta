@@ -31,7 +31,7 @@ ModelImporter:
       name: None__plastique_png
     second: {fileID: 2100000, guid: 6c1f261c08deff54db3eb46a09fffffe, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0

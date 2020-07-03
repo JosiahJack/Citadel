@@ -264,8 +264,6 @@ public class PlayerMovement : MonoBehaviour {
 		if (!PauseScript.a.Paused() && (ressurectingFinished < PauseScript.a.relativeTime)) {
 			rbody.WakeUp();
 
-			//LevelManager.a.SetLeaf(transform.position); // hey we are here, see if and set we are in a leaf for this level
-
 			if (inCyberSpace && !cyberSetup) {
 				cyberCollider.enabled = true;
 				capsuleCollider.enabled = false;

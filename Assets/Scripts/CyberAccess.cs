@@ -5,6 +5,7 @@ using UnityEngine;
 public class CyberAccess : MonoBehaviour {
 	public string target;
 	public string argvalue;
+	public Transform entryPosition;
 
     public void Use (UseData ud) {
 		if (!string.IsNullOrEmpty(target)) {
@@ -16,8 +17,19 @@ public class CyberAccess : MonoBehaviour {
 				Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
 			}
 			Const.a.UseTargets(ud,target);
+		}
+
+		Const.sprint(Const.a.stringTable[441],Const.a.allPlayers); // Entering Cyberspace!
+		PlayerReferenceManager prm = ud.owner.GetComponent<PlayerReferenceManager>();
+		if (prm != null) {
+			MouseLookScript mls = prm.playerCapsuleMainCamera.GetComponent<MouseLookScript>();
+			if (mls != null) {
+				mls.EnterCyberspace(entryPosition);
+			} else {
+				Debug.Log("BUG: Missing MouseLookScript on owner's prm for Use ud passed to CyberAccess!");
+			}
 		} else {
-			Const.sprint("Entering Cyberspace!  Error, subsystem access denied, consider updating Citadel to v1.00!",Const.a.allPlayers);
+			Debug.Log("BUG: Missing PlayerReferenceManager on owner for Use ud passed to CyberAccess!");
 		}
 	}
 }

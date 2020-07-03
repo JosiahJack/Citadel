@@ -34,7 +34,7 @@ ModelImporter:
       name: None__hw_shield_png
     second: {fileID: 2100000, guid: 0ab795899c864f04fa17023b0c223445, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0

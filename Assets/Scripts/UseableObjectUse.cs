@@ -11,7 +11,7 @@ public class UseableObjectUse : MonoBehaviour {
 
 	// was GameObject owner as arguments, now UseData to hold more info
 	public void Use (UseData ud) {
-		if (useableItemIndex < 0) Debug.Log("Oh crap, a useable has an index less than 0!");
+		if (useableItemIndex < 0) Debug.Log("BUG: Oh crap, a useable has an index less than 0! UseableObjectUse.cs");
 		tex = Const.a.useableItemsFrobIcons[useableItemIndex];
 		if (tex != null) ud.owner.GetComponent<PlayerReferenceManager>().playerCursor.GetComponent<MouseCursor>().cursorImage = tex;  // set cursor to this object
 		mlook = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<MouseLookScript>();

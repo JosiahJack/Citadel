@@ -68,11 +68,13 @@ public class PlayerPatch : MonoBehaviour {
 	}
 
 	public void ActivatePatch(int index) {
+		bool depleted = false;
 		switch (index) {
 		case 14:
 			// Berserk Patch
 			//playerPI.patchCounts[2]--;
 			PatchInventory.PatchInvInstance.patchCounts[2]--;
+			if (PatchInventory.PatchInvInstance.patchCounts[2] <= 0) { depleted = true; }
 			if (!(Const.a.CheckFlags(patchActive, PATCH_BERSERK))) patchActive += PATCH_BERSERK;
 			berserkFinishedTime = PauseScript.a.relativeTime + Const.a.berserkTime;
 			float berserkIncrementTime = Const.a.berserkTime/5f;
@@ -82,6 +84,7 @@ public class PlayerPatch : MonoBehaviour {
 			// Detox Patch
 			//playerPI.patchCounts[6]--;
 			PatchInventory.PatchInvInstance.patchCounts[6]--;
+			if (PatchInventory.PatchInvInstance.patchCounts[6] <= 0) { depleted = true; }
 			DisableAllPatches(); // remove all other effects, even medipatch
 			patchActive = PATCH_DETOX; // overwrite all other active patches
 			playerHealthScript.detoxPatchActive = true;
@@ -91,6 +94,7 @@ public class PlayerPatch : MonoBehaviour {
 			// Genius Patch
 			//playerPI.patchCounts[5]--;
 			PatchInventory.PatchInvInstance.patchCounts[5]--;
+			if (PatchInventory.PatchInvInstance.patchCounts[5] <= 0) { depleted = true; }
 			if (!(Const.a.CheckFlags(patchActive, PATCH_GENIUS))) patchActive += PATCH_GENIUS;
 			geniusFinishedTime = PauseScript.a.relativeTime + Const.a.geniusTime;
 			break;
@@ -102,6 +106,7 @@ public class PlayerPatch : MonoBehaviour {
 				return;
 			}
 			PatchInventory.PatchInvInstance.patchCounts[3]--;
+			if (PatchInventory.PatchInvInstance.patchCounts[3] <= 0) { depleted = true; }
 			if (!(Const.a.CheckFlags(patchActive, PATCH_MEDI))) patchActive += PATCH_MEDI;
 			playerHealthScript.mediPatchPulseCount = 0;
 			mediFinishedTime = PauseScript.a.relativeTime + Const.a.mediTime;
@@ -110,6 +115,7 @@ public class PlayerPatch : MonoBehaviour {
 			// Reflex Patch
 			//playerPI.patchCounts[4]--;
 			PatchInventory.PatchInvInstance.patchCounts[4]--;
+			if (PatchInventory.PatchInvInstance.patchCounts[4] <= 0) { depleted = true; }
 			Time.timeScale = Const.a.reflexTimeScale;
 			if (!(Const.a.CheckFlags(patchActive, PATCH_REFLEX))) patchActive += PATCH_REFLEX;
 			reflexFinishedTime = Time.realtimeSinceStartup + Const.a.reflexTime;
@@ -118,6 +124,7 @@ public class PlayerPatch : MonoBehaviour {
 			// Sight Patch
 			//playerPI.patchCounts[1]--;
 			PatchInventory.PatchInvInstance.patchCounts[1]--;
+			if (PatchInventory.PatchInvInstance.patchCounts[1] <= 0) { depleted = true; }
 			sightLight.enabled = true; // enable vision enhancement
 			sightSideEffectFinishedTime = -1f;  // reset side effect timer from previous patch
 			sightDimming.enabled = false; // deactivate side effect from previous patch
@@ -128,12 +135,16 @@ public class PlayerPatch : MonoBehaviour {
 			// Staminup Patch
 			//playerPI.patchCounts[0]--;
 			PatchInventory.PatchInvInstance.patchCounts[0]--;
+			if (PatchInventory.PatchInvInstance.patchCounts[0] <= 0) { depleted = true; }
 			playerMovementScript.staminupActive = true;
 			if (!(Const.a.CheckFlags(patchActive, PATCH_STAMINUP))) patchActive += PATCH_STAMINUP;
 			staminupFinishedTime = PauseScript.a.relativeTime + Const.a.staminupTime;
 			break;
 		}
 
+		if (depleted) {
+			PatchCurrent.PatchInstance.PatchCycleDown();
+		}
 		SFX.PlayOneShot(patchUseSFX);
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 	}

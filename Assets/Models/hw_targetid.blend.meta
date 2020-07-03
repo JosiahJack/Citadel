@@ -34,7 +34,7 @@ ModelImporter:
       name: None__hw_target_png
     second: {fileID: 2100000, guid: d1a0795834e56354898c65336319bf7f, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0

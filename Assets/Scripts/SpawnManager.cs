@@ -51,21 +51,28 @@ public class SpawnManager : MonoBehaviour {
 	}
 
 	void Spawn(int index) {
+		Debug.Log("Spawning new enemy...");
 		dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
         if (dynamicObjectsContainer == null) return; //didn't find current level, can't spawn
-
+		Debug.Log("Found dynamic object container for spawning new enemy");
 		if (NPCSpawner) {
 			GameObject spawnee = (GameObject) Instantiate(Const.a.npcPrefabs[index], new Vector3(0,0,0),  Quaternion.identity);
 			if (spawnee !=null) {
 				spawnee.GetComponent<HealthManager>().spawnMother = this;
 				spawnee.transform.position = GetRandomLocation();
+				if (spawnee.transform.position.x == 0 && spawnee.transform.position.y == 0  && spawnee.transform.position.z == 0 ) Debug.Log("BUG: Spawned enemy at 0 0 0!");
 				if (alertEnemiesOnAwake) {
 					AIController aic = spawnee.GetComponent<AIController>();
 					if (aic != null) aic.enemy = Const.a.player1;
 				}
 				numberActive++;
+				Debug.Log("Number spawned enemies: " + numberActive.ToString());
 				SaveObject so = spawnee.GetComponent<SaveObject>();
-				if (so != null) so.levelParentID = LevelManager.a.currentLevel;
+				if (so != null) {
+					so.levelParentID = LevelManager.a.currentLevel;
+					so.Start();
+					Debug.Log("Spawned enemy SaveObject setup");
+				}
 			}
 		}
 

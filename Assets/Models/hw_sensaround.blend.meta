@@ -103,7 +103,7 @@ ModelImporter:
       name: Material__sensaround_png
     second: {fileID: 2100000, guid: 283c9da8b1c0005448654708310013a5, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0

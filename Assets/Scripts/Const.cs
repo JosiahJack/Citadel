@@ -241,6 +241,10 @@ public class Const : MonoBehaviour {
 	private StringBuilder s1;
 	private StringBuilder s2;
 	private static string splitChar = "|";
+	public Texture2D[] imageSequenceTextures;
+	public Sprite[] logImages;
+	public int[] audioLogImagesRefIndicesLH;
+	public int[] audioLogImagesRefIndicesRH;
 
 	//Instance container variable
 	public static Const a;
@@ -427,11 +431,13 @@ public class Const : MonoBehaviour {
 
 	private void LoadAudioLogMetaData () {
 		// The following to be assigned to the arrays in the Unity Const data structure
-		int readIndexOfLog; // look-up index for assigning the following data on the line in the file to the arrays
+		int readIndexOfLog, readLogImageLHIndex, readLogImageRHIndex; // look-up index for assigning the following data on the line in the file to the arrays
 		string readLogText; // loaded into string audioLogSpeech2Text[]
 
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
+		char logSplitChar = ',';
+		string logs_text = "logs_text";
 
 		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/logs_text.txt",Encoding.Default);
 		using (dataReader) {
@@ -440,19 +446,21 @@ public class Const : MonoBehaviour {
 				// Read the next line
 				readline = dataReader.ReadLine();
 				if (readline == null) continue; // just in case
-				//char[] delimiters = new char[] {','};
-				string[] entries = readline.Split(',');
-				readIndexOfLog = GetIntFromString(entries[i],currentline,"logs_text",i); i++;
+				string[] entries = readline.Split(logSplitChar);
+				readIndexOfLog = GetIntFromString(entries[i],currentline,logs_text,i); i++;
+				readLogImageLHIndex = GetIntFromString(entries[i],currentline,logs_text,i); i++;
+				readLogImageRHIndex = GetIntFromString(entries[i],currentline,logs_text,i); i++;
+				audioLogImagesRefIndicesLH[readIndexOfLog] = readLogImageLHIndex;
+				audioLogImagesRefIndicesRH[readIndexOfLog] = readLogImageRHIndex;
 				audiologNames[readIndexOfLog] = entries[i]; i++;
 				audiologSenders[readIndexOfLog] = entries[i]; i++;
 				audiologSubjects[readIndexOfLog] = entries[i]; i++;
-				audioLogType[readIndexOfLog] = GetIntFromString(entries[i],currentline,"logs_text",i); i++;
-				audioLogLevelFound[readIndexOfLog] = GetIntFromString(entries[i],currentline,"logs_text",i); i++;
+				audioLogType[readIndexOfLog] = GetIntFromString(entries[i],currentline,logs_text,i); i++;
+				audioLogLevelFound[readIndexOfLog] = GetIntFromString(entries[i],currentline,logs_text,i); i++;
 				readLogText = entries[i]; i++;
 				// handle extra commas within the body text and append remaining portions of the line
-				if (entries.Length > 7) {
-					for (int j=7;j<entries.Length;j++) {
-						//UnityEngine.Debug.Log("Combining remaining comma'ed sections of log text: " + j.ToString());
+				if (entries.Length > 8) {
+					for (int j=9;j<entries.Length;j++) {
 						readLogText = (readLogText +"," + entries[j]);  // combine remaining portions of text after other commas and add comma back
 					}
 				}
@@ -465,21 +473,9 @@ public class Const : MonoBehaviour {
 	}
 
 	private void LoadItemNamesData () {
-		string readline; // variable to hold each string read in from the file
-		int currentline = 0;
-
-		// Default to English
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/item_names.txt",Encoding.Default);
-		using (dataReader) {
-			do {
-				// Read the next line
-				readline = dataReader.ReadLine();
-				if (readline == null) break; // just in case
-				useableItemsNameText[currentline] = readline;
-				currentline++;
-			} while (!dataReader.EndOfStream);
-			dataReader.Close();
-			return;
+		int offset = 326;
+		for (int i=0;i<115;i++) {
+			useableItemsNameText[i] = stringTable[i+offset];
 		}
 	}
 
@@ -1146,13 +1142,7 @@ public class Const : MonoBehaviour {
 		line += splitChar + wi.numweapons.ToString();
 		for (j=0;j<16;j++) { line += splitChar + wa.wepAmmo[j].ToString(); }
 		for (j=0;j<16;j++) { line += splitChar + wa.wepAmmoSecondary[j].ToString(); }
-		for (j=0;j<7;j++) {
-			if (wa.currentEnergyWeaponState[j] == WeaponAmmo.energyWeaponStates.Ready) {
-				line += splitChar + "0";
-			} else {
-				line += splitChar + "1";
-			}
-		}
+		for (j=0;j<7;j++) { line += splitChar + wa.currentEnergyWeaponHeat[j].ToString("0000.00000"); }
 		for (j=0;j<7;j++) { line += splitChar + wa.wepLoadedWithAlternate[j].ToString(); }
 		line += splitChar + wc.weaponCurrent.ToString();
 		line += splitChar + wc.weaponIndex.ToString();
@@ -1168,10 +1158,6 @@ public class Const : MonoBehaviour {
 		line += splitChar + wc.lerpStartTime.ToString("0000.00000");
 		line += splitChar + wc.targetY.ToString("0000.00000");
 		line += splitChar + wf.overloadEnabled.ToString();
-		line += splitChar + wf.sparqHeat.ToString("0000.00000");
-		line += splitChar + wf.ionHeat.ToString("0000.00000");
-		line += splitChar + wf.blasterHeat.ToString("0000.00000");
-		line += splitChar + wf.stungunHeat.ToString("0000.00000");
 		line += splitChar + wf.sparqSetting.ToString("0000.00000");
 		line += splitChar + wf.ionSetting.ToString("0000.00000");
 		line += splitChar + wf.blasterSetting.ToString("0000.00000");
@@ -1808,8 +1794,8 @@ public class Const : MonoBehaviour {
 	// ============================================================================
 	//public IEnumerator Save(int saveFileIndex,string savename) {
 	public void Save(int saveFileIndex,string savename) {
-		Stopwatch saveTimer = new Stopwatch();
-		saveTimer.Start();
+		//Stopwatch saveTimer = new Stopwatch();
+		//saveTimer.Start();
 		string[] saveData = new string[8000]; // Found 2987 saveable objects on main level - should be enough for any instantiated dropped items...maybe
 		string line;
 		int i,j;
@@ -2117,8 +2103,8 @@ public class Const : MonoBehaviour {
 		LevelManager.a.DisableAllNonOccupiedLevels(); // go back to how we were
 		// Make "Done!" appear at the end of the line after "Saving..." is finished, stole this from Halo's "Checkpoint...Done!"
 		sprint(stringTable[195],allPlayers);
-		saveTimer.Stop();
-		UnityEngine.Debug.Log("Saved to file in " + saveTimer.Elapsed.ToString());
+		//saveTimer.Stop();
+		//UnityEngine.Debug.Log("Saved to file in " + saveTimer.Elapsed.ToString());
 	}
 
 	void LoadPlayerDataToPlayer(GameObject currentPlayer, string[] entries, int currentline,int index) {
@@ -2279,15 +2265,7 @@ public class Const : MonoBehaviour {
 		wi.numweapons = GetIntFromString(entries[index],currentline,"savegame",index); index++;
 		for (j=0;j<16;j++) { wa.wepAmmo[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
 		for (j=0;j<16;j++) { wa.wepAmmoSecondary[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		for (j=0;j<7;j++) {
-			int tempi = GetIntFromString(entries[index],currentline,"savegame",index);
-			if (tempi == 0) {
-				wa.currentEnergyWeaponState[j] = WeaponAmmo.energyWeaponStates.Ready;
-			} else {
-				wa.currentEnergyWeaponState[j] = WeaponAmmo.energyWeaponStates.Overheated;
-			}
-			index++;
-		}
+		for (j=0;j<7;j++) { wa.currentEnergyWeaponHeat[j] = GetFloatFromString(entries[index],currentline); index++; }
 		for (j=0;j<7;j++) { wa.wepLoadedWithAlternate[j] = GetBoolFromString(entries[index]); index++; }
 		wc.weaponCurrent = GetIntFromString(entries[index],currentline,"savegame",index); index++;
 		wc.weaponIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
@@ -2304,10 +2282,6 @@ public class Const : MonoBehaviour {
 		wc.lerpStartTime = GetFloatFromString(entries[index],currentline); index++;
 		wc.targetY = GetFloatFromString(entries[index],currentline); index++;
 		wf.overloadEnabled = GetBoolFromString(entries[index]); index++;
-		wf.sparqHeat = GetFloatFromString(entries[index],currentline); index++;
-		wf.ionHeat = GetFloatFromString(entries[index],currentline); index++;
-		wf.blasterHeat = GetFloatFromString(entries[index],currentline); index++;
-		wf.stungunHeat = GetFloatFromString(entries[index],currentline); index++;
 		wf.sparqSetting = GetFloatFromString(entries[index],currentline); index++;
 		wf.ionSetting = GetFloatFromString(entries[index],currentline); index++;
 		wf.blasterSetting = GetFloatFromString(entries[index],currentline); index++;
@@ -2920,9 +2894,9 @@ public class Const : MonoBehaviour {
 	}
 
 	public IEnumerator LoadRoutine(int saveFileIndex) {
-		Stopwatch loadTimer = new Stopwatch();
-		Stopwatch matchTimer = new Stopwatch();
-		loadTimer.Start();
+		//Stopwatch loadTimer = new Stopwatch();
+		//Stopwatch matchTimer = new Stopwatch();
+		//loadTimer.Start();
 		PauseScript.a.mainMenu.SetActive(false);
 		PauseScript.a.PauseEnable();
 		PauseScript.a.Loading();
@@ -2956,8 +2930,8 @@ public class Const : MonoBehaviour {
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 		FindAllSaveObjectsGOs(saveableGameObjects);
 
-		UnityEngine.Debug.Log("Num players: " + numPlayers.ToString(),allPlayers);
-		UnityEngine.Debug.Log("Num saveables: " + saveableGameObjects.Count.ToString(),allPlayers);
+		//UnityEngine.Debug.Log("Num players: " + numPlayers.ToString(),allPlayers);
+		//UnityEngine.Debug.Log("Num saveables: " + saveableGameObjects.Count.ToString(),allPlayers);
 
 		List<string> readFileList = new List<string>();
 		char csplit = '|'; // caching since it will be iterated over in a loop
@@ -3074,17 +3048,17 @@ public class Const : MonoBehaviour {
 				// sos[i] = saveableGameObjects[i].GetComponent<SaveObject>();
 			 // }
 
-			int largerCount = numSaveablesFromSavefile-7;
-			bool moreObjectsInSave = false;
-			bool moreObjectsInGame = false;
-			if ((saveableGameObjects.Count-1) > largerCount) {
-				largerCount = (saveableGameObjects.Count-1);
-				moreObjectsInSave = true;
-			}
+			//int largerCount = numSaveablesFromSavefile-7;
+			//bool moreObjectsInSave = false;
+			//bool moreObjectsInGame = false;
+			//if ((saveableGameObjects.Count-1) > largerCount) {
+			//	largerCount = (saveableGameObjects.Count-1);
+			//	moreObjectsInSave = true;
+			//}
 
-			if (largerCount > (saveableGameObjects.Count-1)) moreObjectsInGame = true;
-			UnityEngine.Debug.Log("moreObjectsInSave: " + moreObjectsInSave.ToString());
-			UnityEngine.Debug.Log("moreObjectsInGame: " + moreObjectsInGame.ToString());
+			//if (largerCount > (saveableGameObjects.Count-1)) moreObjectsInGame = true;
+			//UnityEngine.Debug.Log("moreObjectsInSave: " + moreObjectsInSave.ToString());
+			//UnityEngine.Debug.Log("moreObjectsInGame: " + moreObjectsInGame.ToString());
 			//UnityEngine.Debug.Log("largerCount: " + largerCount.ToString());
 			for (i=currentline;i<(numSaveablesFromSavefile-7);i++) {
 				entries = readFileList[i].Split(csplit); // read in Quest bits
@@ -3093,7 +3067,7 @@ public class Const : MonoBehaviour {
 				}
 			}
 
-			matchTimer.Start();
+			//matchTimer.Start();
 			index = 2;
 			bool[] alreadyCheckedThisSaveableGameObject = new bool[saveableGameObjects.Count];
 			for (i=0;i<alreadyCheckedThisSaveableGameObject.Length;i++) {
@@ -3113,8 +3087,8 @@ public class Const : MonoBehaviour {
 					}
 				}
 			}
-			matchTimer.Stop();
-			UnityEngine.Debug.Log("Loading done!");
+			//matchTimer.Stop();
+			//UnityEngine.Debug.Log("Loading done!");
 		}
 		player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().enabled = true;
 		LevelManager.a.PullOutCurrentLevelNPCs();
@@ -3122,9 +3096,9 @@ public class Const : MonoBehaviour {
 		loadingScreen.SetActive(false);
 		PauseScript.a.PauseDisable();
 		sprint(stringTable[197],allPlayers); // Loading...Done!
-		loadTimer.Stop();
-		UnityEngine.Debug.Log("Matching index loop de loop time: " + matchTimer.Elapsed.ToString());
-		UnityEngine.Debug.Log("Loading time: " + loadTimer.Elapsed.ToString());
+		//loadTimer.Stop();
+		//UnityEngine.Debug.Log("Matching index loop de loop time: " + matchTimer.Elapsed.ToString());
+		//UnityEngine.Debug.Log("Loading time: " + loadTimer.Elapsed.ToString());
 	}
 
 	public void SetFOV() {
@@ -3352,32 +3326,32 @@ public class Const : MonoBehaviour {
 	}
 
 	public void DebugQuestBitShoutOut () {
-		UnityEngine.Debug.Log("Level 1 Security Code: " + questData.lev1SecCode.ToString());
-		UnityEngine.Debug.Log("Level 2 Security Code: " + questData.lev2SecCode.ToString());
-		UnityEngine.Debug.Log("Level 3 Security Code: " + questData.lev3SecCode.ToString());
-		UnityEngine.Debug.Log("Level 4 Security Code: " + questData.lev4SecCode.ToString());
-		UnityEngine.Debug.Log("Level 5 Security Code: " + questData.lev5SecCode.ToString());
-		UnityEngine.Debug.Log("Level 6 Security Code: " + questData.lev6SecCode.ToString());
-		UnityEngine.Debug.Log("Level R Robot Spawning Deactivated: " + questData.RobotSpawnDeactivated.ToString());
-		UnityEngine.Debug.Log("Isotope Installed: " + questData.IsotopeInstalled.ToString());
-		UnityEngine.Debug.Log("Shield Activated: " + questData.ShieldActivated.ToString());
-		UnityEngine.Debug.Log("Laser Safety Override On: " + questData.LaserSafetyOverriden.ToString());
-		UnityEngine.Debug.Log("Laser Destroyed: " + questData.LaserDestroyed.ToString());
-		UnityEngine.Debug.Log("Beta Grove Cyber Unlocked: " + questData.BetaGroveCyberUnlocked.ToString());
-		UnityEngine.Debug.Log("Grove Alpha Jettison Enabled: " + questData.GroveAlphaJettisonEnabled.ToString());
-		UnityEngine.Debug.Log("Grove Beta Jettison Enabled: " + questData.GroveBetaJettisonEnabled.ToString());
-		UnityEngine.Debug.Log("Grove Delta Jettison Enabled: " + questData.GroveDeltaJettisonEnabled.ToString());
-		UnityEngine.Debug.Log("Master Jettison Broken: " + questData.MasterJettisonBroken.ToString());
-		UnityEngine.Debug.Log("Relay 428 Fixed: " + questData.Relay428Fixed.ToString());
-		UnityEngine.Debug.Log("Master Jettison Enabled: " + questData.MasterJettisonEnabled.ToString());
-		UnityEngine.Debug.Log("Beta Grove Jettisoned: " + questData.BetaGroveJettisoned.ToString());
-		UnityEngine.Debug.Log("Antenna North Destroyed: " + questData.AntennaNorthDestroyed.ToString());
-		UnityEngine.Debug.Log("Antenna Soutb Destroyed: " + questData.AntennaSouthDestroyed.ToString());
-		UnityEngine.Debug.Log("Antenna East Destroyed: " + questData.AntennaEastDestroyed.ToString());
-		UnityEngine.Debug.Log("Antenna West Destroyed: " + questData.AntennaWestDestroyed.ToString());
-		UnityEngine.Debug.Log("Self Destruct Activated!: " + questData.SelfDestructActivated.ToString());
-		UnityEngine.Debug.Log("Bridge Separation Complete: " + questData.BridgeSeparated.ToString());
-		UnityEngine.Debug.Log("Isolinear Chipset Installed: " + questData.IsolinearChipsetInstalled.ToString());
+		// UnityEngine.Debug.Log("Level 1 Security Code: " + questData.lev1SecCode.ToString());
+		// UnityEngine.Debug.Log("Level 2 Security Code: " + questData.lev2SecCode.ToString());
+		// UnityEngine.Debug.Log("Level 3 Security Code: " + questData.lev3SecCode.ToString());
+		// UnityEngine.Debug.Log("Level 4 Security Code: " + questData.lev4SecCode.ToString());
+		// UnityEngine.Debug.Log("Level 5 Security Code: " + questData.lev5SecCode.ToString());
+		// UnityEngine.Debug.Log("Level 6 Security Code: " + questData.lev6SecCode.ToString());
+		// UnityEngine.Debug.Log("Level R Robot Spawning Deactivated: " + questData.RobotSpawnDeactivated.ToString());
+		// UnityEngine.Debug.Log("Isotope Installed: " + questData.IsotopeInstalled.ToString());
+		// UnityEngine.Debug.Log("Shield Activated: " + questData.ShieldActivated.ToString());
+		// UnityEngine.Debug.Log("Laser Safety Override On: " + questData.LaserSafetyOverriden.ToString());
+		// UnityEngine.Debug.Log("Laser Destroyed: " + questData.LaserDestroyed.ToString());
+		// UnityEngine.Debug.Log("Beta Grove Cyber Unlocked: " + questData.BetaGroveCyberUnlocked.ToString());
+		// UnityEngine.Debug.Log("Grove Alpha Jettison Enabled: " + questData.GroveAlphaJettisonEnabled.ToString());
+		// UnityEngine.Debug.Log("Grove Beta Jettison Enabled: " + questData.GroveBetaJettisonEnabled.ToString());
+		// UnityEngine.Debug.Log("Grove Delta Jettison Enabled: " + questData.GroveDeltaJettisonEnabled.ToString());
+		// UnityEngine.Debug.Log("Master Jettison Broken: " + questData.MasterJettisonBroken.ToString());
+		// UnityEngine.Debug.Log("Relay 428 Fixed: " + questData.Relay428Fixed.ToString());
+		// UnityEngine.Debug.Log("Master Jettison Enabled: " + questData.MasterJettisonEnabled.ToString());
+		// UnityEngine.Debug.Log("Beta Grove Jettisoned: " + questData.BetaGroveJettisoned.ToString());
+		// UnityEngine.Debug.Log("Antenna North Destroyed: " + questData.AntennaNorthDestroyed.ToString());
+		// UnityEngine.Debug.Log("Antenna Soutb Destroyed: " + questData.AntennaSouthDestroyed.ToString());
+		// UnityEngine.Debug.Log("Antenna East Destroyed: " + questData.AntennaEastDestroyed.ToString());
+		// UnityEngine.Debug.Log("Antenna West Destroyed: " + questData.AntennaWestDestroyed.ToString());
+		// UnityEngine.Debug.Log("Self Destruct Activated!: " + questData.SelfDestructActivated.ToString());
+		// UnityEngine.Debug.Log("Bridge Separation Complete: " + questData.BridgeSeparated.ToString());
+		// UnityEngine.Debug.Log("Isolinear Chipset Installed: " + questData.IsolinearChipsetInstalled.ToString());
 	}
 
 	public void Shake(bool effectIsWorldwide, float distance, float force) {
@@ -3420,7 +3394,7 @@ public class Const : MonoBehaviour {
 
 	public void ConwayGameEntry(CyberWall cw,Vector3 pos) {
 		// UPDATE add Conway's game of life effect to cyber panels when hit, only propagate across same orientation panels that are touching
-		UnityEngine.Debug.Log("Registered a Conway's Game of Life hit");
+		//UnityEngine.Debug.Log("Registered a Conway's Game of Life hit");
 	}
 
 	public int GetNPCConstIndexFromIndex23(int ref23) {

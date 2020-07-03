@@ -31,7 +31,7 @@ ModelImporter:
       name: elev3_up__elev3_up_tga
     second: {fileID: 2100000, guid: 9bfab22df6726774985ede07d27fcc13, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -57,7 +57,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 1
+    isReadable: 0
   meshes:
     lODScreenPercentages: []
     globalScale: 1

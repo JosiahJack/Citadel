@@ -31,7 +31,7 @@ ModelImporter:
       name: None__console2_1_png
     second: {fileID: 2100000, guid: ef0f1220010625b41b863781cee4a52d, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0

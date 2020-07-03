@@ -13,6 +13,7 @@ public class UIButtonMask : MonoBehaviour {
 	public bool doubleClickEnabled = false;
 	public int toolTipLingdex = -1;
 	public Handedness toolTipType;
+	private EventTrigger pointerTrigger;
 
 	void Start () {
 		mCursor = playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>();
@@ -20,7 +21,7 @@ public class UIButtonMask : MonoBehaviour {
 		if (playerCamera == null) {
 			Const.sprint("BUG: UIButtonMask script could not find playerCamera",Const.a.allPlayers);
 		}
-		EventTrigger pointerTrigger = GetComponent<EventTrigger>();
+		pointerTrigger = GetComponent<EventTrigger>();
 		if (pointerTrigger == null) {
 			pointerTrigger = gameObject.AddComponent<EventTrigger>();
 			if (pointerTrigger == null) {

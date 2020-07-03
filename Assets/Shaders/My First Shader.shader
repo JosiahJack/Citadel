@@ -9,6 +9,16 @@ Shader "Custom/My First Shader" {
 
 	SubShader {
 
+		Tags {
+			"Queue"="Overlay"
+
+		}
+
+		ZTest Off
+		Blend SrcAlpha OneMinusSrcAlpha
+		Lighting On
+		Cull Off
+
 		Pass {
 			CGPROGRAM
 

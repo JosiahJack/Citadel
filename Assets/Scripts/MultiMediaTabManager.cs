@@ -15,7 +15,7 @@ public class MultiMediaTabManager : MonoBehaviour {
 	public int lastOpened = 1; // default to logs.  0 = email table, 1 = log table, 2 = data table
 
 	public void OpenLastTab() {
-		Debug.Log("Last opened tab index: " + lastOpened.ToString());
+		//Debug.Log("Last opened tab index: " + lastOpened.ToString());
 		switch (lastOpened) {
 			case 0: OpenEmailTableContents(); break;
 			case 1: OpenLogTableContents(); break;

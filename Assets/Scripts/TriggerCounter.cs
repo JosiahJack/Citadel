@@ -34,7 +34,7 @@ public class TriggerCounter : MonoBehaviour {
 		if (tio != null) {
 			ud.SetBits(tio);
 			//Debug.Log("Set tio bits in Target on TriggerCounter.cs");
-			if (tio.targetname == "lev1count1") Debug.Log("tio.lockCodeToScreenMaterialChanger = " + ud.lockCodeToScreenMaterialChanger.ToString());
+			//if (tio.targetname == "lev1count1") Debug.Log("tio.lockCodeToScreenMaterialChanger = " + ud.lockCodeToScreenMaterialChanger.ToString());
 		} else {
 			Debug.Log("BUG: no TargetIO.cs found on an object with a TriggerCounter.cs script!  Trying to call UseTargets without parameters!");
 		}

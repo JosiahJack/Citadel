@@ -471,7 +471,7 @@ ModelImporter:
       name: None__door_x1_png
     second: {fileID: 2100000, guid: f25b6de6d7bf294418846b41374a6f5a, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0

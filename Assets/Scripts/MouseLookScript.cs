@@ -62,7 +62,6 @@ public class MouseLookScript : MonoBehaviour {
     private float currentZRotation;
     private string mlookstring1;
     private Camera playerCamera;
-	public Camera gunCamera;
     private GameObject heldObject;
     private bool itemAdded = false;
 	private Quaternion tempQuat;
@@ -115,6 +114,7 @@ public class MouseLookScript : MonoBehaviour {
 	public bool vmailActive = false;
 	public PuzzleWire puzzleWire;
 	public PuzzleGrid puzzleGrid;
+	public GameObject shootModeButton;
 	//private AudioListener audListener;
 
     //float headbobSpeed = 1;
@@ -132,6 +132,7 @@ public class MouseLookScript : MonoBehaviour {
         ResetCursor();
 		Cursor.lockState = CursorLockMode.None;
 		inventoryMode = true;  // Start with inventory mode turned on
+		shootModeButton.SetActive(true);
 		playerCamera = GetComponent<Camera>();
 		cameraDistances = new float[32];
 		for (int i=0;i<32;i++) {
@@ -139,6 +140,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 		cameraDistances[15] = 2400f; // sky is visible
 		playerCamera.layerCullDistances = cameraDistances; // cull anything beyond 79f except for sky layer
+		playerCamera.depthTextureMode = DepthTextureMode.Depth;
 		//audListener = GetComponent<AudioListener>();
 		frobDistance = Const.a.frobDistance;
 		holdingObject = false;
@@ -161,6 +163,16 @@ public class MouseLookScript : MonoBehaviour {
 		firstTimePickup = true;
 		firstTimeSearch = true;
     }
+
+	public void EnterCyberspace(Transform entryPoint) {
+		MFDManager.a.EnterCyberspace();
+		inCyberSpace = true;
+	}
+
+	public void ExitCyberspace() {
+		MFDManager.a.ExitCyberspace();
+		inCyberSpace = false;
+	}
 
 	public void Recoil (int i) {
 		float strength = Const.a.recoilForWeapon[i];
@@ -211,7 +223,6 @@ public class MouseLookScript : MonoBehaviour {
 
         if (PauseScript.a.mainMenu.activeSelf == true) {
 			if (playerCamera.enabled) playerCamera.enabled = false;
-			if (gunCamera.enabled) gunCamera.enabled = false;
 			// for (int i=0;i<32;i++) {
 				// cameraDistances[i] = 2f;
 			// }
@@ -220,7 +231,6 @@ public class MouseLookScript : MonoBehaviour {
 			return;  // ignore mouselook when main menu is still up
 		} else {
 			if (!playerCamera.enabled) playerCamera.enabled = true;
-			if (!gunCamera.enabled) gunCamera.enabled = true;
 			for (int i=0;i<32;i++) {
 				cameraDistances[i] = 79f;
 			}
@@ -578,7 +588,7 @@ public class MouseLookScript : MonoBehaviour {
 									break;
 								case GUIState.ButtonType.GeneralInv:
 									if (currentButton == null) {
-										Debug.Log("MouseLookScript: currentButton null when trying to right click and over ButtonType.GeneralInv");
+										Debug.Log("BUG:: MouseLookScript: currentButton null when trying to right click and over ButtonType.GeneralInv");
 									} else {
 										GeneralInvButton genbut = currentButton.GetComponent<GeneralInvButton>();
 										cursorTexture = Const.a.useableItemsFrobIcons[genbut.useableItemIndex];
@@ -1466,6 +1476,7 @@ public class MouseLookScript : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
 		inventoryMode = false;
+		shootModeButton.SetActive(false);
 		if (vmailActive) {
 			logInventory.DeactivateVMail();
 			vmailActive = false;
@@ -1476,6 +1487,7 @@ public class MouseLookScript : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = false;
 		inventoryMode = true;
+		shootModeButton.SetActive(true);
 	}
 	
 	void  SearchObject ( int index  ){
@@ -1518,16 +1530,20 @@ public class MouseLookScript : MonoBehaviour {
 		mouseCursor.liveGrenade = true;
 		grenadeActive = true;
 		Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[320],player);
-
+		bool depleted = false;
 		// Subtract one from grenade inventory
 		switch(index) {
-		case 7: heldObject = Const.a.useableItems[154]; playerGrenInv.grenAmmo[0]--; Debug.Log("Frag grenade double clicked"); break; // Frag
-		case 8: heldObject = Const.a.useableItems[150]; playerGrenInv.grenAmmo[3]--; Debug.Log("Concussion grenade double clicked"); break; // Concussion
-		case 9: heldObject = Const.a.useableItems[152]; playerGrenInv.grenAmmo[1]--; Debug.Log("EMP grenade double clicked"); break; // EMP
-		case 10: heldObject = Const.a.useableItems[151]; playerGrenInv.grenAmmo[6]--;Debug.Log("Earth Shaker grenade double clicked"); break; // Earth Shaker
-		case 11: heldObject = Const.a.useableItems[156]; playerGrenInv.grenAmmo[4]--; Debug.Log("Land Mine grenade double clicked"); break; // Land Mine
-		case 12: heldObject = Const.a.useableItems[157]; playerGrenInv.grenAmmo[5]--; Debug.Log("Nitropak grenade double clicked"); break; // Nitropak
-		case 13: heldObject = Const.a.useableItems[155]; playerGrenInv.grenAmmo[2]--; Debug.Log("Gas grenade double clicked"); break; // Gas
+			case 7: heldObject = Const.a.useableItems[154]; playerGrenInv.grenAmmo[0]--; if (playerGrenInv.grenAmmo[0] <= 0) { depleted = true; } break; // Frag
+			case 8: heldObject = Const.a.useableItems[150]; playerGrenInv.grenAmmo[3]--; if (playerGrenInv.grenAmmo[3] <= 0) { depleted = true; } break; // Concussion
+			case 9: heldObject = Const.a.useableItems[152]; playerGrenInv.grenAmmo[1]--; if (playerGrenInv.grenAmmo[1] <= 0) { depleted = true; } break; // EMP
+			case 10: heldObject = Const.a.useableItems[151]; playerGrenInv.grenAmmo[6]--; if (playerGrenInv.grenAmmo[6] <= 0) { depleted = true; } break; // Earth Shaker
+			case 11: heldObject = Const.a.useableItems[156]; playerGrenInv.grenAmmo[4]--; if (playerGrenInv.grenAmmo[4] <= 0) { depleted = true; } break; // Land Mine
+			case 12: heldObject = Const.a.useableItems[157]; playerGrenInv.grenAmmo[5]--; if (playerGrenInv.grenAmmo[5] <= 0) { depleted = true; } break; // Nitropak
+			case 13: heldObject = Const.a.useableItems[155]; playerGrenInv.grenAmmo[2]--; if (playerGrenInv.grenAmmo[2] <= 0) { depleted = true; } break; // Gas
+		}
+
+		if (depleted) {
+			GrenadeCurrent.GrenadeInstance.GrenadeCycleDown();
 		}
 	}
 
@@ -1553,7 +1569,7 @@ public class MouseLookScript : MonoBehaviour {
 	}*/
 
 	public void ScreenShake (float force) {
-		Debug.Log("Screen shake signal received by MouseLookScript!");
+		//Debug.Log("Screen shake signal received by MouseLookScript!");
 	}
 
 	public void ToggleAudioPause() {

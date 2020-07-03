@@ -46,7 +46,7 @@ public class Trigger : MonoBehaviour {
 	}
 
 	void TriggerTripped (Collider col, bool initialEntry) {
-		if (col == null) Debug.Log("TriggerTripped was fed a null col!");
+		if (col == null) Debug.Log("BUG: TriggerTripped was fed a null col!");
 
 		if (col.gameObject.CompareTag("Player")) {
 			HealthManager hm = col.gameObject.GetComponent<HealthManager>();

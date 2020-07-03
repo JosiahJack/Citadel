@@ -354,11 +354,11 @@ public class WeaponCurrent : MonoBehaviour {
 
 			if (weaponCurrent >= 0) {
 				if (WeaponAmmo.a.wepLoadedWithAlternate[weaponCurrent]) {
-					if (loadNormalAmmoButton != null && loadNormalAmmoButton.GetComponent<Image>().sprite != ammoButtonDeHighlighted) loadNormalAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonDeHighlighted;
-					if (loadAlternateAmmoButton != null && loadAlternateAmmoButton.GetComponent<Image>().sprite != ammoButtonHighlighted) loadAlternateAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonHighlighted;
+					if (loadNormalAmmoButton != null && loadNormalAmmoButton.GetComponent<Image>().overrideSprite != ammoButtonDeHighlighted) loadNormalAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonDeHighlighted;
+					if (loadAlternateAmmoButton != null && loadAlternateAmmoButton.GetComponent<Image>().overrideSprite != ammoButtonHighlighted) loadAlternateAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonHighlighted;
 				} else {
-					if (loadNormalAmmoButton != null && loadNormalAmmoButton.GetComponent<Image>().sprite != ammoButtonHighlighted) loadNormalAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonHighlighted;
-					if (loadAlternateAmmoButton != null && loadAlternateAmmoButton.GetComponent<Image>().sprite != ammoButtonDeHighlighted) loadAlternateAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonDeHighlighted;
+					if (loadNormalAmmoButton != null && loadNormalAmmoButton.GetComponent<Image>().overrideSprite != ammoButtonHighlighted) loadNormalAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonHighlighted;
+					if (loadAlternateAmmoButton != null && loadAlternateAmmoButton.GetComponent<Image>().overrideSprite != ammoButtonDeHighlighted) loadAlternateAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonDeHighlighted;
 				}
 				UpdateHUDAmmoCountsEither();
 			}

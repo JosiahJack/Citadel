@@ -18,11 +18,3 @@
 8.909  -50.93805  36.9411
 -1.229 -0.26195   -1.1011
 
-Model cleanup import settings, removing unnecessary import materials and import animations:
-Anim: Stopped at foliage_grass1
-Matl: Stopped at foliage_grass1
-
-Attack 0.750
-Melee 0.625
-Pain 0.583
-Death 3.417

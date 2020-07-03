@@ -37,7 +37,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: 08_-_Default__w_ion_png
-    second: {fileID: 2100000, guid: dcaaa0cd24564204cb1e47d380c9f8be, type: 2}
+    second: {fileID: 2100000, guid: 985ba5737c03039429a9f0b6947f2a61, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -102,7 +102,7 @@ ModelImporter:
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
-  importAnimation: 1
+  importAnimation: 0
   humanDescription:
     serializedVersion: 3
     human: []
@@ -121,9 +121,9 @@ ModelImporter:
     skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 0
   additionalBone: 0
   userData: 
   assetBundleName: 

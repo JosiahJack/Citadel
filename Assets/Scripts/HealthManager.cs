@@ -87,7 +87,7 @@ public class HealthManager : MonoBehaviour {
 			if (pe == null) Debug.Log("BUG: No PlayerEnergy script referenced by a Player's HealthManager");
 		}
 		take = 0;
-		justHurtByEnemy = (PauseScript.a.relativeTime - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
+		if (isNPC) justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
 		if (securityAffected != LevelManager.SecurityType.None) LevelManager.a.RegisterSecurityObject(levelIndex, securityAffected);
 		Const.a.RegisterObjectWithHealth(this);
 		if (gibOnDeath) {
@@ -124,7 +124,7 @@ public class HealthManager : MonoBehaviour {
 		yield return new WaitForSeconds(0.5f);		
 		tempdd.ResetDamageData(tempdd);
 		tempdd.damage = maxhealth * 2f;
-		if (aic != null) aic.SFX.enabled = false;
+		if (aic != null) { if (aic.SFX != null) aic.SFX.enabled = false; }
 		TakeDamage(tempdd); // harrycarry time, we's dead
 	}
 
@@ -293,14 +293,16 @@ public class HealthManager : MonoBehaviour {
 				}
 				if (absorb > 0) {
 					if (absorb < 1f) absorb = absorb + UnityEngine.Random.Range(-0.08f,0.08f); // +/- 8% variation - this was in the original I swear!  You could theoretically have 83% shielding max.
+					if (absorb > 1f) absorb = 1f; // cap it at 100%....shouldn't really ever be here, nothing is 92% + 8%
 					take *= (1f-absorb); // shield doing it's thing
 					ph.shieldEffect.SetActive(true); // Activate shield screen effect to indicate damage was absorbed, effect intensity determined by absorb amount
 					ph.PlayerNoise.PlayOneShot(ph.ShieldClip); // Play shield absorb sound
 					int abs = (int)(absorb * 100f); //  for int display of absorbption percent
 					Const.sprint(Const.a.stringTable[208] + abs.ToString() + Const.a.stringTable[209],dd.other);  // Shield absorbs x% damage
-					float shieldPercentAbsorbed = take/dd.damage;
-					if (shieldPercentAbsorbed > 1f) shieldPercentAbsorbed = 1f;
-					if (shieldPercentAbsorbed > 0) pe.TakeEnergy(enertake*shieldPercentAbsorbed);
+					//float shieldPercentAbsorbed = take/dd.damage;
+					//if (shieldPercentAbsorbed > 1f) shieldPercentAbsorbed = 1f;
+					//if (shieldPercentAbsorbed > 0) pe.TakeEnergy(enertake*shieldPercentAbsorbed);
+					if (absorb > 0) pe.TakeEnergy(enertake*absorb);
 				}
 			}
 			if (take > 0 && ((absorb <0.4f) || Random.Range(0,1f) < 0.5f)) {

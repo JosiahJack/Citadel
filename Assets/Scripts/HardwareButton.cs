@@ -40,6 +40,8 @@ public class HardwareButton : MonoBehaviour {
 	private float beepTick = 3f;
 	public AudioClip beepSFX;
 	private int beepCount = 0;
+	public GameObject ShieldActivateFX;
+	public GameObject ShieldDeactivateFX;
 
 	void Awake () {
 		butn = GetComponent<Button>();
@@ -294,8 +296,12 @@ public class HardwareButton : MonoBehaviour {
 		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
 		if (toggleState) {
 			SFX.PlayOneShot (SFXClipDeactivate);
+			ShieldDeactivateFX.SetActive(true);
+			ShieldActivateFX.SetActive(false);
 		} else {
 			SFX.PlayOneShot (SFXClip);
+			ShieldDeactivateFX.SetActive(false);
+			ShieldActivateFX.SetActive(true);
 		}
 
 		toggleState = !toggleState;
@@ -305,9 +311,12 @@ public class HardwareButton : MonoBehaviour {
 
 	// called by PlayerEnergy when exhausted energy to 0
 	public void ShieldOff() {
+		Debug.Log("ShieldOff");
 		toggleState = false;
 		hwc.hardwareIsActive [5] = toggleState;
 		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
+		ShieldDeactivateFX.SetActive(true);
+		ShieldActivateFX.SetActive(false);
 	}
 
 	public void LanternClick() {

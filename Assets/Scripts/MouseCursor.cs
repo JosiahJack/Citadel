@@ -166,7 +166,12 @@ public class MouseCursor : MonoBehaviour {
 
 	void Update () {
 		cursorPosition = new Vector2(cursorX,cursorY);
-		cursorSize = (24f * (Screen.width/640f));
+		cursorSize = (24f * (Screen.width/640f)); // this works well, not changing it from Screen.width/640f
+
+		if (cursorPosition.y > (0.13541f*Screen.height) && cursorPosition.y < (0.70703f*Screen.height) && cursorPosition.x < (0.96925f*Screen.width) && cursorPosition.x > (0.029282f*Screen.width) && !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			GUIState.a.isBlocking = false; // in the safe zone!
+		}
+
 		if (playerCameraScript.inventoryMode && playerCameraScript.holdingObject && !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
 			// Be sure to pass the camera to the 3rd parameter if using "Screen Space - Camera" on the Canvas, otherwise use "null"
 			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,uiCameraCam)) {
@@ -197,10 +202,6 @@ public class MouseCursor : MonoBehaviour {
 					GUIState.a.isBlocking = true;
 				}
 			}
-		}
-
-		if (cursorPosition.y > 104 && cursorPosition.y < 543 && cursorPosition.x < 1324 && cursorPosition.x > 40 && !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			GUIState.a.isBlocking = false; // in the safe zone!
 		}
 
 		if (cursorPosition.y > Screen.height || cursorPosition.y < 0 || cursorPosition.x < 0 || cursorPosition.x > Screen.width && !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {

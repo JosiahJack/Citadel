@@ -273,20 +273,4 @@ public class LevelManager : MonoBehaviour {
 		}
 		return false;
 	}
-
-	public void SetLeaf(Vector3 playerPos) {
-		Level lev = levelScripts[currentLevel];
-		if (lev != null) {
-			for (int i=0;i<levelScripts[currentLevel].leaves.Length;i++) {
-				LevelLeafData leafData = lev.leaves[i];
-				if (leafData != null) {
-					if (PosWithinLeafBounds(playerPos, leafData.leafBox)) {
-						currentLeaf = i;
-						return;
-					}
-				}
-			}
-		}
-		currentLeaf = -1;
-	}
 }

@@ -36,7 +36,7 @@ ModelImporter:
       name: None__prop_chandelier_png_001
     second: {fileID: 2100000, guid: 6807492091266f5419a3adab8dc3c719, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0

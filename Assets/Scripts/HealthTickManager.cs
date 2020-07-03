@@ -15,6 +15,10 @@ public class HealthTickManager : MonoBehaviour {
 		tickImage = GetComponent<Image>();
 	}
 
+	void Start() {
+		if (playerHealth.hm != null) DrawTicks();
+	}
+
 	// void  Update (){
 		// if (lasthealth != playerHealth.hm.health) DrawTicks();
 		// lasthealth = playerHealth.hm.health;  // reason why this script can't be combined with energy ticks script
@@ -31,25 +35,9 @@ public class HealthTickManager : MonoBehaviour {
 			}
 			step += 11;
 		}
-		//Debug.Log(tempSpriteIndex.ToString());
+
 		if (tempSpriteIndex >= 0 && tempSpriteIndex < 24) {
 			tickImage.overrideSprite = tickImages[tempSpriteIndex];
 		}
-		/*
-		int h = 0;
-		int tickcnt = 0;
-
-		// Clear health ticks
-		for (int i=0;i<24;i++) {
-			healthTicks[i].SetActive(false);
-		}
-
-		// Keep drawing ticks out until playerHealth is met
-		while (h < playerHealth.hm.health) {
-			healthTicks[tickcnt].SetActive(true);
-			tickcnt++;
-			h = h + 11;		
-		}
-		*/
 	}
 }

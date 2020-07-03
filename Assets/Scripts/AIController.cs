@@ -210,6 +210,7 @@ public class AIController : MonoBehaviour {
 	public float wanderFinished; // save
 	private float dotProjResult = -1f;
 	private float dotResult = -1f;
+	private Vector3 infrontVec;
 	public bool actAsTurret = false;
 	public GameObject sleepingCables;
 
@@ -236,7 +237,7 @@ public class AIController : MonoBehaviour {
 		capsuleCollider = GetComponent<CapsuleCollider>();
         if (searchColliderGO != null) searchColliderGO.SetActive(false);
 		currentDestination = sightPoint.transform.position;
-		StartCoroutine(DisableMeleeColliders());
+		if (meleeDamageColliders.Length > 0) StartCoroutine(DisableMeleeColliders());
 
         currentState = Const.aiState.Idle;
 		currentWaypoint = 0;
@@ -1175,12 +1176,12 @@ public class AIController : MonoBehaviour {
 	}
 	
 	void enemyInFrontChecks(GameObject target) {
-        Vector3 vec = target.transform.position;
-		vec.y = sightPoint.transform.position.y; // ignore height difference
-		vec = Vector3.Normalize(vec - sightPoint.transform.position);
+        infrontVec = target.transform.position;
+		infrontVec.y = sightPoint.transform.position.y; // ignore height difference
+		infrontVec = Vector3.Normalize(infrontVec - sightPoint.transform.position);
 		inProjFOV = false;
 		infront = false;
-        dotResult = Vector3.Dot(vec,sightPoint.transform.forward);
+        dotResult = Vector3.Dot(infrontVec,sightPoint.transform.forward);
 		dotProjResult = dotResult;
         if (dotProjResult > 0.800) inProjFOV = true; // enemy is within ±18° of forward facing vector
         if (dotResult > 0.300) infront = true; // enemy is within ±63° of forward facing vector

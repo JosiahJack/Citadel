@@ -34,7 +34,7 @@ ModelImporter:
       name: None__hw_navunit_png
     second: {fileID: 2100000, guid: 05d130110fd2c5b42a6382c7e8fe4d09, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -60,7 +60,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 1
+    isReadable: 0
   meshes:
     lODScreenPercentages: []
     globalScale: 1

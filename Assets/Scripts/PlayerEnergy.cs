@@ -21,6 +21,7 @@ public class PlayerEnergy : MonoBehaviour {
 	public float maxenergy = 255f;
 	public int drainJPM = 0;
 	public Text drainText;
+	public Text jpmText;
 	private string jpm = " J/min";
 
     public void Start() {
@@ -94,21 +95,27 @@ public class PlayerEnergy : MonoBehaviour {
 
 			// Turn everything off when we are out of energy
 			if (activeEnergyDrainers && energy == 0) {
-				hwc.hardwareIsActive [3] = false;
-				if (hwc.hardwareIsActive [3]) hwc.hardwareButtons[1].SensaroundOff(); //sensaround
-				if (hwc.hardwareIsActive [6] && hwi.hardwareVersionSetting[6] == 0) hwc.hardwareButtons[0].BioOff(); // biomonitor, but only on v1, v2 doesn't use power
-				if (hwc.hardwareIsActive [5]) hwc.hardwareButtons[3].ShieldOff(); // shield
-				if (hwc.hardwareIsActive [7]) hwc.hardwareButtons[2].LanternOff(); // lantern
-				if (hwc.hardwareIsActive [11]) hwc.hardwareButtons[4].InfraredOff(); // infrared
+				DeactivateHardwareOnEnergyDepleted();
 				activeEnergyDrainers = false;
 				 drainJPM = 0;
 			}
 			if (drainJPM > 0) {
-				drainText.text = (drainJPM.ToString() + jpm);
+				drainText.text = drainJPM.ToString();
+				jpmText.text = jpm;
 			} else {
 				drainText.text = System.String.Empty;
+				jpmText.text = System.String.Empty;
 			}
 		}
+	}
+
+	void DeactivateHardwareOnEnergyDepleted() {
+		hwc.hardwareIsActive [3] = false;
+		if (hwc.hardwareIsActive [3]) hwc.hardwareButtons[1].SensaroundOff(); //sensaround
+		if (hwc.hardwareIsActive [6] && hwi.hardwareVersionSetting[6] == 0) hwc.hardwareButtons[0].BioOff(); // biomonitor, but only on v1, v2 doesn't use power
+		if (hwc.hardwareIsActive [5]) hwc.hardwareButtons[3].ShieldOff(); // shield
+		if (hwc.hardwareIsActive [7]) hwc.hardwareButtons[2].LanternOff(); // lantern
+		if (hwc.hardwareIsActive [11]) hwc.hardwareButtons[4].InfraredOff(); // infrared
 	}
 
     public void TakeEnergy ( float take  ){
@@ -123,6 +130,7 @@ public class PlayerEnergy : MonoBehaviour {
 			energy = 0f;
 			if (SFX != null && SFXPowerExhausted != null) SFX.PlayOneShot(SFXPowerExhausted); // battery sound
 			Const.sprint(Const.a.stringTable[314],wepCur.owner); //Power supply exhausted.
+			DeactivateHardwareOnEnergyDepleted();
 		}
 		//print("Player Energy: " + energy.ToString());
 		//Debug.Log(take.ToString("F4") +" player energy taken.  Was: " + was.ToString() +", Now: " + energy.ToString());

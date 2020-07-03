@@ -31,7 +31,7 @@ ModelImporter:
       name: maint2_1d__maint2_1d_png
     second: {fileID: 2100000, guid: 5dda45c7d2ddf8f4b99395c558c30c3a, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -57,7 +57,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 1
+    isReadable: 0
   meshes:
     lODScreenPercentages: []
     globalScale: 1

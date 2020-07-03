@@ -69,7 +69,7 @@ public class MainMenuHandler : MonoBehaviour {
 		//}
 
 		if ( (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P)) || (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P)) ) {
-			Debug.Log("Skipping main menu. Debug cheat");
+			//Debug.Log("Skipping main menu. Debug cheat");
 			StartGame(true);
 		}
 
@@ -266,11 +266,11 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	public void PlayIntro () {
-		Debug.Log("Playing intro video");
+		//Debug.Log("Playing intro video");
 	}
 
 	public void PlayCredits () {
-		Debug.Log("Playing credits");
+		//Debug.Log("Playing credits");
 		ResetPages();
 		creditsPage.SetActive(true);
 		currentPage = Pages.cd;

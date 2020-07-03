@@ -42,7 +42,7 @@ public class InteractablePanel : MonoBehaviour {
 	}
 
 	public void Use(UseData ud) {
-		Debug.Log("Used InteractablePanel");
+		//Debug.Log("Used InteractablePanel");
 		if (open) {
 			if (installed && ud.mainIndex == -1) {
 				Const.sprintByIndexOrOverride (alreadyInstalledMessageLingdex, alreadyInstalledMessage,ud.owner);

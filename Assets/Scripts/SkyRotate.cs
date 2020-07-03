@@ -7,7 +7,7 @@ public class SkyRotate : MonoBehaviour {
 	public float timeIncrement = 0.05f;
 	private float nextThink;
 
-	void Awake() {
+	void Start() {
 		nextThink = PauseScript.a.relativeTime + timeIncrement;
 	}
 

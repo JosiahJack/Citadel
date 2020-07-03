@@ -27,67 +27,18 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	private bool screenDestroyedDone = false;
 	private bool screenDestroyFirstFrame = true;
 	public string destroyedScreenFolder = "ScreenDestroyed";
+	public bool useConstArray = false;
+	public int[] constArrayLookup;
+	public int[] constArrayLookupGlow;
 
 	private float tick;
 	private float tickFinished;
-	
+
 	void Awake() {
 		//Get a reference to the Material of the game object this script is attached to.
 		mR = GetComponent<MeshRenderer>();
 		if (mR == null) { this.gameObject.SetActive(false); return; }
 		this.goMaterial = this.GetComponent<Renderer>().material;
-	}
-	
-	void Start () {
-		//Load all textures found on the Sequence folder, that is placed inside the resources folder
-		if (string.IsNullOrWhiteSpace(resourceFolder) && !glowOnly) {
-			return;
-		}
-
-		if (reverseSequence) {
-			frameCounter = (textures.Length - 1);
-		} else {
-			frameCounter = 0;
-		}
-
-		tick = frameDelay;
-		tickFinished = PauseScript.a.relativeTime + tick;
-
-		if (animateGlow) {
-			this.glowobjects = Resources.LoadAll(glowResourceFolder, typeof(Texture));
-			this.glowtextures = new Texture[glowobjects.Length];
-			for(int i=0; i < glowobjects.Length;i++) {
-				this.glowtextures[i] = (Texture)this.glowobjects[i];
-			}
-			if (glowOnly) {
-				if (initialIndexOffset < glowobjects.Length  && initialIndexOffset > 0) frameCounter = initialIndexOffset;
-				return; // don't continue on to the normal part, setup glow only
-			}
-		}
-
-		// Setup normal animated texture sequence
-		this.objects = Resources.LoadAll(resourceFolder, typeof(Texture));
-		//Initialize the array of textures with the same size as the objects array
-		this.textures = new Texture[objects.Length];
-		
-		//Cast each Object to Texture and store the result inside the Textures array
-		for(int i=0; i < objects.Length;i++) {
-			this.textures[i] = (Texture)this.objects[i];
-		}
-
-
-		// Load in screen textures for when this screen gets destroyed
-		if (!string.IsNullOrWhiteSpace(destroyedScreenFolder)) {
-			this.destroyedobjects = Resources.LoadAll(destroyedScreenFolder, typeof(Texture));
-			this.destroyedTextures = new Texture[destroyedobjects.Length];
-
-			//Cast each Object to Texture and store the result inside the Textures array
-			for(int i=0; i < destroyedobjects.Length;i++) {
-				this.destroyedTextures[i] = (Texture)this.destroyedobjects[i];
-			}
-		}
-
-		if (initialIndexOffset < objects.Length && initialIndexOffset > 0) frameCounter = initialIndexOffset;
 	}
 
 	// called by HealthManager.cs's ScreenDeath
@@ -112,6 +63,62 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 			if (initialIndexOffset < glowobjects.Length  && initialIndexOffset > 0) frameCounter = initialIndexOffset;
 			return;
 		}
+		if (initialIndexOffset < objects.Length && initialIndexOffset > 0) frameCounter = initialIndexOffset;
+	}
+
+	void Start () {
+		//Load all textures found on the Sequence folder, that is placed inside the resources folder
+		if (!useConstArray && (string.IsNullOrWhiteSpace(resourceFolder) && !glowOnly)) {
+			return;
+		}
+
+		if (reverseSequence) {
+			frameCounter = (textures.Length - 1);
+		} else {
+			frameCounter = 0;
+		}
+
+		tick = frameDelay;
+		tickFinished = PauseScript.a.relativeTime + tick;
+
+		if (animateGlow) {
+			if (!useConstArray) {
+				this.glowobjects = Resources.LoadAll(glowResourceFolder, typeof(Texture));
+				this.glowtextures = new Texture[glowobjects.Length];
+				for(int i=0; i < glowobjects.Length;i++) {
+					this.glowtextures[i] = (Texture)this.glowobjects[i];
+				}
+				if (glowOnly) {
+					if (initialIndexOffset < glowobjects.Length  && initialIndexOffset > 0) frameCounter = initialIndexOffset;
+					return; // don't continue on to the normal part, setup glow only
+				}
+			}
+		}
+
+		if (!useConstArray) {
+			// Setup normal animated texture sequence
+			this.objects = Resources.LoadAll(resourceFolder, typeof(Texture));
+			//Initialize the array of textures with the same size as the objects array
+			this.textures = new Texture[objects.Length];
+			
+			//Cast each Object to Texture and store the result inside the Textures array
+			for(int i=0; i < objects.Length;i++) {
+				this.textures[i] = (Texture)this.objects[i];
+			}
+		}
+
+
+		// Load in screen textures for when this screen gets destroyed
+		if (!string.IsNullOrWhiteSpace(destroyedScreenFolder)) {
+			this.destroyedobjects = Resources.LoadAll(destroyedScreenFolder, typeof(Texture));
+			this.destroyedTextures = new Texture[destroyedobjects.Length];
+
+			//Cast each Object to Texture and store the result inside the Textures array
+			for(int i=0; i < destroyedobjects.Length;i++) {
+				this.destroyedTextures[i] = (Texture)this.destroyedobjects[i];
+			}
+		}
+
 		if (initialIndexOffset < objects.Length && initialIndexOffset > 0) frameCounter = initialIndexOffset;
 	}
 

@@ -92,7 +92,7 @@ public class WeaponInventory : MonoBehaviour, IBatchUpdate {
 			break;
 		case 37:
 			//ER-90 Blaster
-			if (WeaponAmmo.a.currentEnergyWeaponState [WeaponCurrent.WepInstance.weaponCurrent] == WeaponAmmo.energyWeaponStates.Overheated) {
+			if (WeaponAmmo.a.currentEnergyWeaponHeat[index] > 80f) {
 				retval = Const.a.stringTable[14]; // OVERHEATED
 			} else {
 				retval = Const.a.stringTable[15]; // READY
@@ -108,7 +108,7 @@ public class WeaponInventory : MonoBehaviour, IBatchUpdate {
 			break;
 		case 40:
 			//RW-45 Ion Beam
-			if (WeaponAmmo.a.currentEnergyWeaponState [WeaponCurrent.WepInstance.weaponCurrent] == WeaponAmmo.energyWeaponStates.Overheated) {
+			if (WeaponAmmo.a.currentEnergyWeaponHeat[index] > 80f) {
 				retval = Const.a.stringTable[14]; // OVERHEATED
 			} else {
 				retval = Const.a.stringTable[15]; // READY
@@ -136,7 +136,7 @@ public class WeaponInventory : MonoBehaviour, IBatchUpdate {
 			break;
 		case 46:
 			//LG-XX Plasma Rifle
-			if (WeaponAmmo.a.currentEnergyWeaponState [WeaponCurrent.WepInstance.weaponCurrent] == WeaponAmmo.energyWeaponStates.Overheated) {
+			if (WeaponAmmo.a.currentEnergyWeaponHeat[index] > 80f) {
 				retval = Const.a.stringTable[14]; // OVERHEATED
 			} else {
 				retval = Const.a.stringTable[15]; // READY
@@ -156,7 +156,7 @@ public class WeaponInventory : MonoBehaviour, IBatchUpdate {
 			break;
 		case 50:
 			//Sparq Beam
-			if (WeaponAmmo.a.currentEnergyWeaponState [WeaponCurrent.WepInstance.weaponCurrent] == WeaponAmmo.energyWeaponStates.Overheated) {
+			if (WeaponAmmo.a.currentEnergyWeaponHeat[index] > 80f) {
 				retval = Const.a.stringTable[14]; // OVERHEATED
 			} else {
 				retval = Const.a.stringTable[15]; // READY
@@ -164,7 +164,7 @@ public class WeaponInventory : MonoBehaviour, IBatchUpdate {
 			break;
 		case 51:
 			//DH-07 Stungun
-			if (WeaponAmmo.a.currentEnergyWeaponState [WeaponCurrent.WepInstance.weaponCurrent] == WeaponAmmo.energyWeaponStates.Overheated) {
+			if (WeaponAmmo.a.currentEnergyWeaponHeat[index] > 80f) {
 				retval = Const.a.stringTable[14]; // OVERHEATED
 			} else {
 				retval = Const.a.stringTable[15]; // READY

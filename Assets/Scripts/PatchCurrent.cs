@@ -43,13 +43,13 @@ public class PatchCurrent : MonoBehaviour {
 		int nextIndex = patchCurrent - 1; // add 1 to get slot above this
 		if (nextIndex < 0) nextIndex = 6; // wraparound to top
 		int countCheck = 0;
-		bool noPatches = (PatchInventory.PatchInvInstance.patchCounts[patchCurrent] <= 0);
+		bool noPatches = (PatchInventory.PatchInvInstance.patchCounts[nextIndex] <= 0);
 		while (noPatches) {
 			countCheck++;
 			if (countCheck > 13) return; // no weapons!  don't runaway loop
 			nextIndex--;
 			if (nextIndex < 0) nextIndex = 6;
-			noPatches = (PatchInventory.PatchInvInstance.patchCounts[patchCurrent] <= 0);
+			noPatches = (PatchInventory.PatchInvInstance.patchCounts[nextIndex] <= 0);
 		}
 		patchButtonScripts[nextIndex].PatchInvClick();
 	}
@@ -58,13 +58,13 @@ public class PatchCurrent : MonoBehaviour {
 		int nextIndex = patchCurrent + 1; // add 1 to get slot above this
 		if (nextIndex > 6) nextIndex = 0; // wraparound to bottom
 		int countCheck = 0;
-		bool noPatches = (PatchInventory.PatchInvInstance.patchCounts[patchCurrent] <= 0);
+		bool noPatches = (PatchInventory.PatchInvInstance.patchCounts[nextIndex] <= 0);
 		while (noPatches) {
 			countCheck++;
 			if (countCheck > 13) return; // no grenades!  don't runaway loop
 			nextIndex++;
 			if (nextIndex > 6) nextIndex = 0;
-			noPatches = (PatchInventory.PatchInvInstance.patchCounts[patchCurrent] <= 0);
+			noPatches = (PatchInventory.PatchInvInstance.patchCounts[nextIndex] <= 0);
 		}
 		patchButtonScripts[nextIndex].PatchInvClick();
 	}

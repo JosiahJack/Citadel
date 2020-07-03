@@ -164,18 +164,18 @@ public class TargetIO : MonoBehaviour {
 
 		if (tempUD.forceBridgeActivate) {
 			ForceBridge fb = GetComponent<ForceBridge>();
-			Debug.Log("Activating force bridge");
+			//Debug.Log("Activating force bridge");
 			if (fb != null) fb.Activate(false,false);
 		}
 
 		if (tempUD.forceBridgeDeactivate) {
 			ForceBridge fb = GetComponent<ForceBridge>();
-			Debug.Log("Deactivating force bridge");
+			//Debug.Log("Deactivating force bridge");
 			if (fb != null) fb.Deactivate(false);
 		}
 
 		if (tempUD.forceBridgeToggle) {
-			Debug.Log("Toggling force bridge");
+			//Debug.Log("Toggling force bridge");
 			ForceBridge fb = GetComponent<ForceBridge>();
 			if (fb != null) fb.Toggle();
 		}
@@ -206,7 +206,7 @@ public class TargetIO : MonoBehaviour {
 		}
 
 		if (tempUD.funcwallMove) {
-			Debug.Log("FuncWall move activated!");
+			//Debug.Log("FuncWall move activated!");
 			FuncWall fw = GetComponent<FuncWall>();
 			if (fw != null) fw.Targetted(tempUD);
 		}

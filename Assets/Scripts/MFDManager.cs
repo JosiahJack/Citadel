@@ -86,6 +86,21 @@ public class MFDManager : MonoBehaviour  {
 	public SearchButton searchContainerLH;
 	public SearchButton searchContainerRH;
 
+	// Disableable objects for cyberspace
+	public GameObject ctbButtonMain;
+	public GameObject ctbButtonHardware;
+	public GameObject ctbButtonGeneral;
+	public GameObject tabButtonsLHButtons;
+	public GameObject tabButtonsRHButtons;
+	public GameObject energyTickPanel;
+	public GameObject healthTickPanel;
+	public GameObject cyberHealthTickPanel;
+	public GameObject energyIndicator;
+	public GameObject healthIndicator;
+	public GameObject cyberHealthIndicator;
+	public GameObject cyberTimerT;
+	public GameObject cyberTimer;
+
 	public void Start () {
 		a = this;
 		a.logFinished = PauseScript.a.relativeTime;
@@ -94,6 +109,49 @@ public class MFDManager : MonoBehaviour  {
 		a.TabReset(false);
 	}
 
+	public void EnterCyberspace() {
+		TabReset(true);
+		TabReset(false);
+		ctbButtonMain.SetActive(false);
+		ctbButtonHardware.SetActive(false);
+		ctbButtonGeneral.SetActive(false);
+		tabButtonsLHButtons.SetActive(false);
+		tabButtonsRHButtons.SetActive(false);
+		energyTickPanel.SetActive(false);
+		healthTickPanel.SetActive(false);
+		energyIndicator.SetActive(false);
+		healthIndicator.SetActive(false);
+		cyberHealthTickPanel.SetActive(true);
+		cyberHealthIndicator.SetActive(true);
+		cyberTimerT.SetActive(true);
+		cyberTimer.SetActive(true);
+		CyberTimer ct = cyberTimer.GetComponent<CyberTimer>();
+		if (ct != null) {
+			ct.Reset(Const.a.difficultyCyber);
+		}
+		ctb.TabButtonClickSilent(3,true);
+	}
+
+	public void ExitCyberspace() {
+		TabReset(true);
+		TabReset(false);
+		ReturnToLastTab(true);
+		ReturnToLastTab(false);
+		ctbButtonMain.SetActive(true);
+		ctbButtonHardware.SetActive(true);
+		ctbButtonGeneral.SetActive(true);
+		tabButtonsLHButtons.SetActive(true);
+		tabButtonsRHButtons.SetActive(true);
+		energyTickPanel.SetActive(true);
+		healthTickPanel.SetActive(true);
+		energyIndicator.SetActive(true);
+		healthIndicator.SetActive(true);
+		cyberHealthTickPanel.SetActive(false);
+		cyberHealthIndicator.SetActive(false);
+		cyberTimerT.SetActive(false);
+		cyberTimer.SetActive(false);
+		ctb.TabButtonClickSilent(0,true);
+	}
 
 	public void TabReset(bool isRH) {
 		if (isRH) {
@@ -246,7 +304,7 @@ public class MFDManager : MonoBehaviour  {
 			if (type == TabMSG.AudioLog) {
 				TabReset(false);
 				audioLogContainerLH.SetActive(true);
-				audioLogContainerLH.GetComponent<LogDataTabContainerManager>().SendLogData(intdata1);
+				audioLogContainerLH.GetComponent<LogDataTabContainerManager>().SendLogData(intdata1, false); // true/false for isRH
 			}
 
 			if (type == TabMSG.Keypad) {
@@ -285,7 +343,7 @@ public class MFDManager : MonoBehaviour  {
 			if (type == TabMSG.AudioLog) {
 				TabReset(true);
 				audioLogContainerRH.SetActive(true);
-				audioLogContainerRH.GetComponent<LogDataTabContainerManager>().SendLogData(intdata1);
+				audioLogContainerRH.GetComponent<LogDataTabContainerManager>().SendLogData(intdata1, true); // true/false for isRH
 			}
 
 			if (type == TabMSG.Keypad) {

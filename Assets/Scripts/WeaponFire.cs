@@ -11,7 +11,7 @@ public class WeaponFire : MonoBehaviour {
     public float fireDistance = 200f;
     public float hitscanDistance = 200f;
     public float meleescanDistance = 2.5f;
-	public float overheatedPercent = 80f;
+	private float overheatedPercent = 80f;
     public float magpulseShotForce = 2.20f;
     public float stungunShotForce = 1.92f;
     public float railgunShotForce = 2.60f;
@@ -63,11 +63,6 @@ public class WeaponFire : MonoBehaviour {
     public AudioClip SFXRicochet; // assign in the editor
 
     public bool overloadEnabled; // save
-    public float sparqHeat; // save
-    public float ionHeat; // save
-    public float blasterHeat; // save
-    public float stungunHeat; // save
-    public float plasmaHeat; // save
     public float sparqSetting; // save
     public float ionSetting; // save
     public float blasterSetting; // save
@@ -208,24 +203,26 @@ public class WeaponFire : MonoBehaviour {
 
     bool WeaponsHaveAnyHeat() {
 		if (currentWeapon.redbull) return false;
-        if (ionHeat > 0) return true;
-        if (plasmaHeat > 0) return true;
-        if (sparqHeat > 0) return true;
-        if (stungunHeat > 0) return true;
-        if (blasterHeat > 0) return true;
+		if (WeaponAmmo.a.currentEnergyWeaponHeat[0] > 0f) return true;
+		if (WeaponAmmo.a.currentEnergyWeaponHeat[1] > 0f) return true;
+		if (WeaponAmmo.a.currentEnergyWeaponHeat[2] > 0f) return true;
+		if (WeaponAmmo.a.currentEnergyWeaponHeat[3] > 0f) return true;
+		if (WeaponAmmo.a.currentEnergyWeaponHeat[4] > 0f) return true;
+		if (WeaponAmmo.a.currentEnergyWeaponHeat[5] > 0f) return true;
+		if (WeaponAmmo.a.currentEnergyWeaponHeat[6] > 0f) return true;
         return false;
     }
 
     void HeatBleedOff() {
         if (heatTickFinished < PauseScript.a.relativeTime) {
-            ionHeat -= 10f;  if (ionHeat < 0) ionHeat = 0;
-            blasterHeat -= 10f; if (blasterHeat < 0) blasterHeat = 0;
-            sparqHeat -= 10f; if (sparqHeat < 0) sparqHeat = 0;
-            stungunHeat -= 10f; if (stungunHeat < 0) stungunHeat = 0;
-            plasmaHeat -= 10f; if (plasmaHeat < 0) plasmaHeat = 0;
-            if (CurrentWeaponUsesEnergy())
-                energheatMgr.HeatBleed(GetHeatForCurrentWeapon()); // update hud heat ticks if current weapon uses energy
-
+			WeaponAmmo.a.currentEnergyWeaponHeat[0] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[0] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[0] = 0f;
+			WeaponAmmo.a.currentEnergyWeaponHeat[1] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[1] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[1] = 0f;
+			WeaponAmmo.a.currentEnergyWeaponHeat[2] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[2] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[2] = 0f;
+			WeaponAmmo.a.currentEnergyWeaponHeat[3] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[3] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[3] = 0f;
+			WeaponAmmo.a.currentEnergyWeaponHeat[4] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[4] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[4] = 0f;
+			WeaponAmmo.a.currentEnergyWeaponHeat[5] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[5] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[5] = 0f;
+			WeaponAmmo.a.currentEnergyWeaponHeat[6] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[6] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[6] = 0f;
+            if (CurrentWeaponUsesEnergy()) energheatMgr.HeatBleed(GetHeatForCurrentWeapon()); // update hud heat ticks if current weapon uses energy
             heatTickFinished = PauseScript.a.relativeTime + heatTickTime;
         }
     }
@@ -412,21 +409,15 @@ public class WeaponFire : MonoBehaviour {
             case 37:
                 //ER-90 Blaster
 				blasterSetting = currentWeapon.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent];
-				Debug.Log("Blaster fired with energy setting of " + blasterSetting.ToString());
+				//Debug.Log("Blaster fired with energy setting of " + blasterSetting.ToString());
 				if (!isSilent) { SFX.clip = SFXBlasterFire; SFX.Play(); }
 				if (DidRayHit(index)) HitScanFire(index);
 				muzFlashBlaster.SetActive(true);
                 if (overloadEnabled) {
-                    blasterHeat = 100f;
+                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
-                    blasterHeat += blasterSetting;
+                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += blasterSetting;
                 }
-				if (blasterHeat > 100f) {
-					blasterHeat = 100f;
-					WeaponAmmo.a.currentEnergyWeaponState[WeaponCurrent.WepInstance.weaponCurrent] = WeaponAmmo.energyWeaponStates.Overheated;
-				} else {
-					WeaponAmmo.a.currentEnergyWeaponState[WeaponCurrent.WepInstance.weaponCurrent] = WeaponAmmo.energyWeaponStates.Ready;
-				}
                 break;
             case 38:
                 //SV-23 Dartgun
@@ -443,21 +434,15 @@ public class WeaponFire : MonoBehaviour {
             case 40:
                 //RW-45 Ion Beam
 				ionSetting = currentWeapon.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent];
-				Debug.Log("Ion rifle fired with energy setting of " + ionSetting.ToString());
+				//Debug.Log("Ion rifle fired with energy setting of " + ionSetting.ToString());
                 if (!isSilent) { SFX.clip = SFXIonFire; SFX.Play(); }
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashIonBeam.SetActive(true);
                 if (overloadEnabled) {
-                    ionHeat = 100f;
+                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
-                    ionHeat += ionSetting;
+                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += ionSetting;
                 }
-				if (ionHeat > 100f) {
-					ionHeat = 100f;
-					WeaponAmmo.a.currentEnergyWeaponState[WeaponCurrent.WepInstance.weaponCurrent] = WeaponAmmo.energyWeaponStates.Overheated;
-				} else {
-					WeaponAmmo.a.currentEnergyWeaponState[WeaponCurrent.WepInstance.weaponCurrent] = WeaponAmmo.energyWeaponStates.Ready;
-				}
                 break;
             case 41:
                 //TS-04 Laser Rapier
@@ -488,17 +473,15 @@ public class WeaponFire : MonoBehaviour {
             case 46:
                 //LG-XX Plasma Rifle
 				plasmaSetting = currentWeapon.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent];
-				Debug.Log("Plasma rifle fired with energy setting of " + plasmaSetting.ToString());
+				//Debug.Log("Plasma rifle fired with energy setting of " + plasmaSetting.ToString());
                 if (!isSilent) { SFX.clip = SFXPlasmaFire; SFX.Play(); }
                 FirePlasma(index);
 				muzFlashPlasma.SetActive(true);
-                plasmaHeat += plasmaSetting;
-				if (plasmaHeat > 100f) {
-					plasmaHeat = 100f;
-					WeaponAmmo.a.currentEnergyWeaponState[WeaponCurrent.WepInstance.weaponCurrent] = WeaponAmmo.energyWeaponStates.Overheated;
-				} else {
-					WeaponAmmo.a.currentEnergyWeaponState[WeaponCurrent.WepInstance.weaponCurrent] = WeaponAmmo.energyWeaponStates.Ready;
-				}
+                if (overloadEnabled) {
+                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
+                } else {
+                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += plasmaSetting;
+                }
                 break;
             case 47:
                 //MM-76 Railgun
@@ -521,36 +504,28 @@ public class WeaponFire : MonoBehaviour {
             case 50:
                 //Sparq Beam
 				sparqSetting = currentWeapon.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent];
-				Debug.Log("Sparq beam fired with energy setting of " + sparqSetting.ToString());
+				//Debug.Log("Sparq beam fired with energy setting of " + sparqSetting.ToString());
                 if (!isSilent) { SFX.clip = SFXSparqBeamFire; SFX.Play(); }
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashSparq.SetActive(true);
                 if (overloadEnabled) {
-                    sparqHeat = 100f;
+                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
-                    sparqHeat += sparqSetting;
+                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += sparqSetting;
                 }
-				if (sparqHeat > 100f) {
-					sparqHeat = 100f;
-					WeaponAmmo.a.currentEnergyWeaponState[WeaponCurrent.WepInstance.weaponCurrent] = WeaponAmmo.energyWeaponStates.Overheated;
-				} else {
-					WeaponAmmo.a.currentEnergyWeaponState[WeaponCurrent.WepInstance.weaponCurrent] = WeaponAmmo.energyWeaponStates.Ready;
-				}
                 break;
             case 51:
                 //DH-07 Stungun
 				stungunSetting = currentWeapon.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent];
-				Debug.Log("Stungun fired with energy setting of " + stungunSetting.ToString());
+				//Debug.Log("Stungun fired with energy setting of " + stungunSetting.ToString());
                 if (!isSilent) { SFX.clip = SFXStungunFire; SFX.Play(); }
                 FireStungun(index);
 				muzFlashStungun.SetActive(true);
-                stungunHeat += stungunSetting;
-				if (stungunHeat > 100f) {
-					stungunHeat = 100f;
-					WeaponAmmo.a.currentEnergyWeaponState[WeaponCurrent.WepInstance.weaponCurrent] = WeaponAmmo.energyWeaponStates.Overheated;
-				} else {
-					WeaponAmmo.a.currentEnergyWeaponState[WeaponCurrent.WepInstance.weaponCurrent] = WeaponAmmo.energyWeaponStates.Ready;
-				}
+                if (overloadEnabled) {
+                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
+                } else {
+                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += stungunSetting;
+                }
                 break;
         }
 
@@ -1023,30 +998,7 @@ public class WeaponFire : MonoBehaviour {
     }
 
     public float GetHeatForCurrentWeapon() {
-        retval = 0f;
-        switch (currentWeapon.weaponIndex) {
-            case 37:
-                retval = blasterHeat;
-                break;
-            case 40:
-                retval = ionHeat;
-                break;
-            case 46:
-                retval = plasmaHeat;
-                break;
-            case 50:
-                retval = sparqHeat;
-                break;
-            case 51:
-                retval = stungunHeat;
-                break;
-            default:
-                retval = 0f;
-                break;
-        }
-        if (retval > 100f) retval = 100f;
-        if (retval < 0) retval = 0;
-        return retval;
+        return WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent];
     }
 
     void drawMyLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f) { StartCoroutine(drawLine(start, end, color, duration)); }

@@ -30,7 +30,7 @@ public class RightNeuroButtonsScript : MonoBehaviour {
 		TabSFX.PlayOneShot(TabSFXClip);
 		switch (tabNum) {
 		case 2: //Data Reader
-			Debug.Log ("Data Reader Activated");
+			//Debug.Log ("Data Reader Activated");
 			LeftTabButtonsManager.TabButtonClick (1);
 			iconman.GetComponent<ItemIconManager>().SetItemIcon(0);    //Set Data Reader icon for MFD
 			itemtextman.GetComponent<ItemTextManager>().SetItemText(7);    //Set Data Reader text for MFD

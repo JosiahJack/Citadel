@@ -31,7 +31,7 @@ ModelImporter:
       name: sw2_dn__sw8_dn_png
     second: {fileID: 2100000, guid: 7eaf3630846b0ec479dd063bed46e28d, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -57,7 +57,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 1
+    isReadable: 0
   meshes:
     lODScreenPercentages: []
     globalScale: 1

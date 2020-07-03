@@ -29,12 +29,6 @@ public class ExplosionForce : MonoBehaviour {
 			
 			i++;
 		}
-		//if (dd != null) {
-		//	for (int j=0;j<Const.a.healthObjectsRegistration.Length;j++) {
-		//		if (Vector3.Distance(pos,Const.a.healthObjectsRegistration[j].gameObject.transform.position) < oldradius)
-		//			Const.a.healthObjectsRegistration[j].TakeDamage(dd);
-		//	}
-		//}
 	}
 	
 	// Occlusion support

@@ -52,7 +52,7 @@ ModelImporter:
       name: med2_8__med2_8_png
     second: {fileID: 2100000, guid: e4c7deaf4ee22c64f97b6013132d353c, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -78,7 +78,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 1
+    isReadable: 0
   meshes:
     lODScreenPercentages: []
     globalScale: 1
