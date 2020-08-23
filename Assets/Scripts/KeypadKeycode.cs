@@ -37,7 +37,7 @@ public class KeypadKeycode : MonoBehaviour {
 			return;
 		}
 
-		if (LevelManager.a.superoverride) {
+		if (LevelManager.a.superoverride || Const.a.difficultyMission == 0) {
 			// SHODAN can go anywhere!  Full security override!
 			locked = false;
 		}
@@ -117,15 +117,16 @@ public class KeypadKeycode : MonoBehaviour {
 		Const.sprintByIndexOrOverride (successMessageLingdex, successMessage,ud.owner);
 	}
 
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			if (padInUse) {
-				if (Vector3.Distance(playerCapsule.transform.position, gameObject.transform.position) > disconnectDist) {
-					padInUse = false;
-					MFDManager.a.TurnOffKeypad();
+	// Handled by MFDManager as it should be now
+	// void Update () {
+		// if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			// if (padInUse) {
+				// if (Vector3.Distance(playerCapsule.transform.position, gameObject.transform.position) > disconnectDist) {
+					// padInUse = false;
+					// MFDManager.a.TurnOffKeypad();
 					//keypadControl.SetActive(false);
-				}
-			}
-		}
-	}
+				// }
+			// }
+		// }
+	// }
 }

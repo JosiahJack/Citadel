@@ -16,12 +16,15 @@ public class AIAnimationController : MonoBehaviour {
 	public bool playDyingAnim = true;
 	public float minWalkSpeedToAnimate = 0.32f;
 	private bool checkVisWithSMR = false;
+	private float animSwapFinished;
+	private float animSwapFinishedDelay = 0.5f;
 
 	void Start () {
 		anim = GetComponent<Animator>();
 		currentClipPercentage = 0;
 		checkVisWithSMR = false;
 		smR = GetComponentInChildren<SkinnedMeshRenderer>();
+		animSwapFinished = PauseScript.a.relativeTime;
 		if (smR != null) checkVisWithSMR = true;
 	}
 
@@ -84,10 +87,16 @@ public class AIAnimationController : MonoBehaviour {
 			if (aic.actAsTurret) {
 				anim.Play("Idle");
 			} else {
-				anim.Play("Walk");
+				//if (animSwapFinished < PauseScript.a.relativeTime) {
+				//	animSwapFinished = PauseScript.a.relativeTime + animSwapFinishedDelay; // prevent flickering
+					anim.Play("Walk");
+				//}
 			}
 		} else {
-			anim.Play("Idle");
+			if (animSwapFinished < PauseScript.a.relativeTime) {
+				animSwapFinished = PauseScript.a.relativeTime + animSwapFinishedDelay; // prevent flickering
+				anim.Play("Idle");
+			}
 		}
 	}
 

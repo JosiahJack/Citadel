@@ -7,31 +7,28 @@ public class ObjectImpact : MonoBehaviour {
 	public Rigidbody rbody;
 	[HideInInspector]
 	public Vector3 oldVelocity;
-	private float impactSoundSpeed;
+	public float minVolumeSpeed = 2f;
+	public float maxVolumeSpeed = 10f;
 	[HideInInspector]
 	public AudioSource SFXSource;
-	public AudioClip SFX;
+	public AudioClip ImpactSFX;
 
-/*
-	void Awake () {
+
+	void Start () {
 		rbody = GetComponent<Rigidbody> ();
 		if (rbody == null) {
 			Const.sprint ("ERROR: No rigidbody found on object with ObjectImpact script!", Const.a.allPlayers);
-			transform.gameObject.SetActive (false);
+			//transform.gameObject.SetActive (false);
 		}
-		impactSoundSpeed = 3f;
 		SFXSource = GetComponent<AudioSource> ();
 	}
-*/
-	
-	// void FixedUpdate () {
-		// Handle impact sound
-		// if (SFX == null) return;
-		// if (Mathf.Abs ((oldVelocity.y - rbody.velocity.y)) > impactSoundSpeed) {
-			// if (SFXSource != null) {
-				// SFXSource.PlayOneShot (SFX); // Play sound when object changes velocity significantly enough that it must have hit something
-			// }
-		// }
-		// oldVelocity = rbody.velocity;
-	// }
+
+	void OnCollisionEnter(Collision collision) {
+		if (collision.relativeVelocity.magnitude > minVolumeSpeed) {
+			if (SFXSource != null) {
+				SFXSource.pitch = (UnityEngine.Random.Range(0.8f,1.2f));
+				SFXSource.PlayOneShot (ImpactSFX,(collision.relativeVelocity.magnitude/maxVolumeSpeed) * 0.3f); // Play sound when object changes velocity significantly enough that it must have hit something
+			}
+		}
+	}
 }

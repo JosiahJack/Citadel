@@ -359,7 +359,7 @@ public class HealthManager : MonoBehaviour {
 						deathFX = Const.PoolType.Vaporize;
 					ObjectDeath(null);
 
-					if (searchableItem != null) MFDManager.a.NotifySearchThatSearableWasDestroyed();
+					if (searchableItem != null) MFDManager.a.NotifySearchThatSearchableWasDestroyed();
 				}
 
 				if (isScreen) ScreenDeath(backupDeathSound);
@@ -384,7 +384,7 @@ public class HealthManager : MonoBehaviour {
                     }
 
 					if (searchableItem != null) {
-						MFDManager.a.NotifySearchThatSearableWasDestroyed();
+						MFDManager.a.NotifySearchThatSearchableWasDestroyed();
 						GameObject levelDynamicContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
 						//if (levelDynamicContainer == null) levelDynamicContainer = gameObject;
 						
@@ -481,7 +481,7 @@ public class HealthManager : MonoBehaviour {
 		
 		if (dropItemsOnGib) {
 			if (searchableItem != null) {
-				MFDManager.a.NotifySearchThatSearableWasDestroyed();
+				MFDManager.a.NotifySearchThatSearchableWasDestroyed();
 				GameObject levelDynamicContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
 				//if (levelDynamicContainer == null) levelDynamicContainer = gameObject;
 				

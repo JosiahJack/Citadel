@@ -11,7 +11,8 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 	public AudioClip SFX;
 	public AudioClip SFX_Incorrect;
 	public AudioClip SFX_Success;
-	private int currentEntry;
+	[HideInInspector]
+	public int currentEntry;
 	private int entryOnes;
 	private int entryTens;
 	private int entryHuns;
@@ -120,6 +121,7 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 			if (GetInput.a.Numpad9()) { Keypress(9); }
 			if (GetInput.a.NumpadMinus()) { Keypress(10); }
 			if (GetInput.a.NumpadPeriod()) { Keypress(11); }
+			if (GetInput.a.Backspace()) { Keypress(10); }
 
 			if (currentEntry == keycode) {
 				if ((entryHuns != -1) && sfxPlayed == false) {

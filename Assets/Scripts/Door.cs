@@ -110,19 +110,20 @@ public class Door : MonoBehaviour {
 			return;
 		}
 
-		if (LevelManager.a.superoverride) {
+		if (LevelManager.a.superoverride || Const.a.difficultyMission == 0) {
 			// SHODAN can go anywhere!  Full security override!
 			locked = false;
 			requiredAccessCard = accessCardType.None;
 			accessCardUsedByPlayer = true;
 		}
 
+		if (Const.a.difficultyMission <= 1) {
+			requiredAccessCard = accessCardType.None;
+			accessCardUsedByPlayer = true;
+		}
+
 		AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
 		animatorPlaybackTime = asi.normalizedTime;
-		if (ajar) {
-			ajar = false;
-			animatorPlaybackTime = topTime * ajarPercentage;
-		}
 
 		if (useFinished < PauseScript.a.relativeTime) {
 			if (requiredAccessCard == accessCardType.None || ud.owner.GetComponent<PlayerReferenceManager>().playerInventory.GetComponent<AccessCardInventory>().HasAccessCard(requiredAccessCard) || accessCardUsedByPlayer) {
@@ -157,6 +158,11 @@ public class Door : MonoBehaviour {
 							}
 							Const.a.UseTargets(ud,target);
 						}
+					}
+
+					if (ajar) {
+						ajar = false;
+						animatorPlaybackTime = topTime * ajarPercentage;
 					}
 
 					if (doorOpen == doorState.Open && animatorPlaybackTime > 0.95f) {

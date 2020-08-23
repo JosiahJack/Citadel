@@ -70,6 +70,16 @@ public class PlayerMovement : MonoBehaviour {
 	public Transform cheatG1Spawn;
 	public Transform cheatG2Spawn;
 	public Transform cheatG4Spawn;
+	public GameObject cheatL1arsenal;
+	public GameObject cheatLRarsenal;
+	public GameObject cheatL2arsenal;
+	public GameObject cheatL3arsenal;
+	public GameObject cheatL4arsenal;
+	public GameObject cheatL5arsenal;
+	public GameObject cheatL6arsenal;
+	public GameObject cheatL7arsenal;
+	public GameObject cheatL8arsenal;
+	public GameObject cheatL9arsenal;
 	//[HideInInspector]
 	public bool CheatWallSticky; // save
     //[HideInInspector]
@@ -147,7 +157,10 @@ public class PlayerMovement : MonoBehaviour {
 	public AudioSource PlayerNoise;
 	public AudioClip SFXJump;
 	public AudioClip SFXJumpLand;
+	public AudioClip SFXLadder;
 	public float jumpSFXFinished; // save
+	public float ladderSFXFinished;
+	public float ladderSFXIntervalTime = 1f;
 	public float jumpSFXIntervalTime = 1f;
 	public float jumpLandSoundFinished; // save
 	[HideInInspector]
@@ -183,6 +196,7 @@ public class PlayerMovement : MonoBehaviour {
 		oldBodyState = bodyState;
 		fatigueFinished = PauseScript.a.relativeTime;
 		fatigueFinished2 = PauseScript.a.relativeTime;
+		ladderSFXFinished = PauseScript.a.relativeTime;
 		rbody = GetComponent<Rigidbody>();
 		oldVelocity = rbody.velocity;
 		capsuleCollider = GetComponent<CapsuleCollider>();
@@ -717,7 +731,15 @@ public class PlayerMovement : MonoBehaviour {
 					if (ladderState) {
 						// Climbing off the ground
 						//rbody.AddRelativeForce(Input.GetAxis("Horizontal") * walkAcceleration * walkAccelAirRatio * Time.deltaTime, ladderSpeed * Input.GetAxis("Vertical") * walkAcceleration * Time.deltaTime, 0);
-						rbody.AddRelativeForce (relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime, ladderSpeed * relForward * walkAcceleration * Time.deltaTime, 0);
+						if (ladderSFXFinished < PauseScript.a.relativeTime && rbody.velocity.y > ladderSpeed * 0.5f) {
+							if (PlayerNoise != null) {
+								PlayerNoise.pitch = (UnityEngine.Random.Range(0.8f,1.2f));
+								PlayerNoise.PlayOneShot(SFXLadder,0.2f);
+								//PlayerNoise.pitch = 1f;
+							}
+							ladderSFXFinished = PauseScript.a.relativeTime + ladderSFXIntervalTime;
+						}
+						rbody.AddRelativeForce (relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime * 0.2f, ladderSpeed * relForward * walkAcceleration * Time.deltaTime, 0);
 					} else {
 						// Sprinting in the air
 						if (isSprinting && running && !inCyberSpace && !CheatNoclip) {
@@ -861,11 +883,13 @@ public class PlayerMovement : MonoBehaviour {
 						// quiet, we are tired
 						if (jumpSFXFinished < PauseScript.a.relativeTime) {
 							jumpSFXFinished = PauseScript.a.relativeTime + jumpSFXIntervalTime;
+							PlayerNoise.pitch = 1f;
 							PlayerNoise.PlayOneShot(SFXJump,0.5f);
 						}
 					} else {
 						if (jumpSFXFinished < PauseScript.a.relativeTime) {
 							jumpSFXFinished = PauseScript.a.relativeTime + jumpSFXIntervalTime;
+							PlayerNoise.pitch = 1f;
 							PlayerNoise.PlayOneShot(SFXJump);
 						}
 					}
@@ -895,6 +919,9 @@ public class PlayerMovement : MonoBehaviour {
 					//Vector3 tempvec = mlookScript.cyberLookDir;
 					rbody.AddForce (cameraObject.transform.forward * walkAcceleration * Time.deltaTime);
 					//rbody.AddRelativeForce (relSideways * walkAcceleration * Time.deltaTime, 0, relForward * walkAcceleration * Time.deltaTime);
+				}
+				if (Const.a.difficultyCyber > 1) {
+					rbody.AddForce (cameraObject.transform.forward * walkAcceleration*0.25f * Time.deltaTime);
 				}
 			}
 		}
@@ -1111,31 +1138,70 @@ public class PlayerMovement : MonoBehaviour {
 				GetComponent<HealthManager>().god = true;
 			}
         } else if (consoleinpFd.text == "load0" || consoleinpFd.text == "LOAD0" || consoleinpFd.text == "Load0") {
-			LevelManager.a.LoadLevel(0,LevelManager.a.ressurectionLocation[0].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(0,LevelManager.a.ressurectionLocation[0].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[0].position);
         } else if (consoleinpFd.text == "load1" || consoleinpFd.text == "LOAD1" || consoleinpFd.text == "Load1") {
-			LevelManager.a.LoadLevel(1,LevelManager.a.ressurectionLocation[1].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(1,LevelManager.a.ressurectionLocation[1].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[1].position);
         } else if (consoleinpFd.text == "load2" || consoleinpFd.text == "LOAD2" || consoleinpFd.text == "Load2") {
-			LevelManager.a.LoadLevel(2,LevelManager.a.ressurectionLocation[2].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(2,LevelManager.a.ressurectionLocation[2].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[2].position);
         } else if (consoleinpFd.text == "load3" || consoleinpFd.text == "LOAD3" || consoleinpFd.text == "Load3") {
-			LevelManager.a.LoadLevel(3,LevelManager.a.ressurectionLocation[3].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(3,LevelManager.a.ressurectionLocation[3].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[3].position);
         } else if (consoleinpFd.text == "load4" || consoleinpFd.text == "LOAD4" || consoleinpFd.text == "Load4") {
-			LevelManager.a.LoadLevel(4,LevelManager.a.ressurectionLocation[4].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(4,LevelManager.a.ressurectionLocation[4].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[4].position);
         } else if (consoleinpFd.text == "load5" || consoleinpFd.text == "LOAD5" || consoleinpFd.text == "Load5") {
-			LevelManager.a.LoadLevel(5,LevelManager.a.ressurectionLocation[5].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(5,LevelManager.a.ressurectionLocation[5].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[5].position);
         } else if (consoleinpFd.text == "load6" || consoleinpFd.text == "LOAD6" || consoleinpFd.text == "Load6") {
-			LevelManager.a.LoadLevel(6,LevelManager.a.ressurectionLocation[6].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(6,LevelManager.a.ressurectionLocation[6].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[6].position);
         } else if (consoleinpFd.text == "load7" || consoleinpFd.text == "LOAD7" || consoleinpFd.text == "Load7") {
-			LevelManager.a.LoadLevel(7,LevelManager.a.ressurectionLocation[7].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(7,LevelManager.a.ressurectionLocation[7].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[7].position);
         } else if (consoleinpFd.text == "load8" || consoleinpFd.text == "LOAD8" || consoleinpFd.text == "Load8") {
-			LevelManager.a.LoadLevel(8,LevelManager.a.ressurectionLocation[8].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(8,LevelManager.a.ressurectionLocation[8].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[8].position);
         } else if (consoleinpFd.text == "load9" || consoleinpFd.text == "LOAD9" || consoleinpFd.text == "Load9") {
-			LevelManager.a.LoadLevel(9,LevelManager.a.ressurectionLocation[9].gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(9,LevelManager.a.ressurectionLocation[9].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[9].position);
         } else if (consoleinpFd.text == "loadg1" || consoleinpFd.text == "LOADG1" || consoleinpFd.text == "Loadg1") {
-			LevelManager.a.LoadLevel(10,cheatG1Spawn.gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(10,cheatG1Spawn.gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[10].position);
         } else if (consoleinpFd.text == "loadg2" || consoleinpFd.text == "LOADG2" || consoleinpFd.text == "Loadg2") {
-			LevelManager.a.LoadLevel(11,cheatG2Spawn.gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(11,cheatG2Spawn.gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[11].position);
         } else if (consoleinpFd.text == "loadg4" || consoleinpFd.text == "LOADG4" || consoleinpFd.text == "Loadg4") {
-			LevelManager.a.LoadLevel(12,cheatG4Spawn.gameObject,Const.a.player1);
+			LevelManager.a.LoadLevel(12,cheatG4Spawn.gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[12].position);
+		} else if (consoleinpFd.text == "loadarsenalr" || consoleinpFd.text == "LOADARSENALR" || consoleinpFd.text == "Loadarsenalr" || consoleinpFd.text == "LoadarsenalR" || consoleinpFd.text == "loadarsenalR") {
+			GameObject cheatArsenal = Instantiate(cheatLRarsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+		} else if (consoleinpFd.text == "loadarsenal1" || consoleinpFd.text == "LOADARSENAL1" || consoleinpFd.text == "Loadarsenal1") {
+			GameObject cheatArsenal = Instantiate(cheatL1arsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+		} else if (consoleinpFd.text == "loadarsenal2" || consoleinpFd.text == "LOADARSENAL2" || consoleinpFd.text == "Loadarsenal2") {
+			GameObject cheatArsenal = Instantiate(cheatL2arsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+		} else if (consoleinpFd.text == "loadarsenal3" || consoleinpFd.text == "LOADARSENAL3" || consoleinpFd.text == "Loadarsenal3") {
+			GameObject cheatArsenal = Instantiate(cheatL3arsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+		} else if (consoleinpFd.text == "loadarsenal4" || consoleinpFd.text == "LOADARSENAL4" || consoleinpFd.text == "Loadarsenal4") {
+			GameObject cheatArsenal = Instantiate(cheatL4arsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+		} else if (consoleinpFd.text == "loadarsenal5" || consoleinpFd.text == "LOADARSENAL5" || consoleinpFd.text == "Loadarsenal5") {
+			GameObject cheatArsenal = Instantiate(cheatL5arsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+		} else if (consoleinpFd.text == "loadarsenal6" || consoleinpFd.text == "LOADARSENAL6" || consoleinpFd.text == "Loadarsenal6") {
+			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+		} else if (consoleinpFd.text == "loadarsenal7" || consoleinpFd.text == "LOADARSENAL7" || consoleinpFd.text == "Loadarsenal7") {
+			GameObject cheatArsenal = Instantiate(cheatL7arsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+		} else if (consoleinpFd.text == "loadarsenal8" || consoleinpFd.text == "LOADARSENAL8" || consoleinpFd.text == "Loadarsenal8") {
+			GameObject cheatArsenal = Instantiate(cheatL8arsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+		} else if (consoleinpFd.text == "loadarsenal9" || consoleinpFd.text == "LOADARSENAL9" || consoleinpFd.text == "Loadarsenal9") {
+			GameObject cheatArsenal = Instantiate(cheatL9arsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+		} else if (consoleinpFd.text == "loadarsenalg1" || consoleinpFd.text == "LOADARSENALG1" || consoleinpFd.text == "Loadarsenalg1" || consoleinpFd.text == "LoadarsenalG1" || consoleinpFd.text == "loadarsenalG1") {
+			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+		} else if (consoleinpFd.text == "loadarsenalg2" || consoleinpFd.text == "LOADARSENALG2" || consoleinpFd.text == "Loadarsenalg2" || consoleinpFd.text == "LoadarsenalG2" || consoleinpFd.text == "loadarsenalG2") {
+			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+		} else if (consoleinpFd.text == "loadarsenalg3" || consoleinpFd.text == "LOADARSENALG3" || consoleinpFd.text == "Loadarsenalg3" || consoleinpFd.text == "LoadarsenalG3" || consoleinpFd.text == "loadarsenalG3") {
+			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Quaternion.identity) as GameObject;
+			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
         } else if (consoleinpFd.text == "bottomlessclip" || consoleinpFd.text == "BOTTOMLESSCLIP"  || consoleinpFd.text == "Bottomlessclip" || consoleinpFd.text == "bOTTOMLESSCLIP" || consoleinpFd.text == "bottomless clip" || consoleinpFd.text == "BOTTOMLESS CLIP") {
 			if (wepCur.bottomless) {
 				Const.sprint("Hose disconnected, normal ammo operation restored", Const.a.allPlayers);

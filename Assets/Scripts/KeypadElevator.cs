@@ -30,7 +30,7 @@ public class KeypadElevator : MonoBehaviour {
 			return;
 		}
 
-		if (LevelManager.a.superoverride) {
+		if (LevelManager.a.superoverride || Const.a.difficultyMission == 0) {
 			// SHODAN can go anywhere!  Full security override!
 			locked = false;
 		}

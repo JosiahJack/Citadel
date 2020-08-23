@@ -91,7 +91,7 @@ public class PuzzleGrid : MonoBehaviour {
 		EvaluatePuzzle();
 		UpdateCellImages();
 
-		if (udSender.mainIndex == 54) {
+		if (udSender.mainIndex == 54 || Const.a.difficultyPuzzle == 0) {
 			PuzzleSolved (true);
 		}
 	}
@@ -106,13 +106,17 @@ public class PuzzleGrid : MonoBehaviour {
 	public void OnGridCellClick (int index) {
 		if (puzzleSolved) return;
 		if (cellType[index] == CellType.Standard) {
-			switch (gridType) {
-				case GridType.King: King(index); break;
-				case GridType.Queen: Queen(index); break;
-				case GridType.Knight: Knight(index); break;
-				case GridType.Rook: Rook(index); break;
-				case GridType.Bishop: Bishop(index); break;
-				case GridType.Pawn: Pawn(index); break;
+			if (Const.a.difficultyPuzzle == 1) {
+				King(index); // Easy puzzle difficulty.  Chose King instead of Pawn to help speed up the puzzle by the antenna trap on Level 7
+			} else {
+				switch (gridType) {
+					case GridType.King: King(index); break;
+					case GridType.Queen: Queen(index); break;
+					case GridType.Knight: Knight(index); break;
+					case GridType.Rook: Rook(index); break;
+					case GridType.Bishop: Bishop(index); break;
+					case GridType.Pawn: Pawn(index); break;
+				}
 			}
 		}
 		EvaluatePuzzle();

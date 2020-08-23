@@ -14,7 +14,10 @@ public class EnergySlider : MonoBehaviour {
 	}
 
 	void OnEnable () {
-		slideS.value = currentWeapon.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent];
+		if (WeaponCurrent.WepInstance.weaponCurrent != -1)
+			slideS.value = currentWeapon.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent];
+		else
+			slideS.value = 0;
 	}
 
     public void SetValue(float val) {

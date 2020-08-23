@@ -76,7 +76,9 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject keycodeUIControlLH;
 	public GameObject keycodeUIControlRH;
 	public GameObject[] searchItemImagesLH;
+	public GameObject searchCloseButtonLH;
 	public GameObject[] searchItemImagesRH;
+	public GameObject searchCloseButtonRH;
 	public GameObject audioLogContainerLH;
 	public GameObject audioLogContainerRH;
 	public GameObject puzzleGridLH;
@@ -109,6 +111,7 @@ public class MFDManager : MonoBehaviour  {
 		a.TabReset(false);
 	}
 
+	// Called by MouseLookScript
 	public void EnterCyberspace() {
 		TabReset(true);
 		TabReset(false);
@@ -132,6 +135,7 @@ public class MFDManager : MonoBehaviour  {
 		ctb.TabButtonClickSilent(3,true);
 	}
 
+	// Called by MouseLookScript
 	public void ExitCyberspace() {
 		TabReset(true);
 		TabReset(false);
@@ -183,6 +187,63 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
+	public void RevertDataTabState() {
+		TabReset(true);
+		TabReset(false);
+		usingObject = false;
+		logTable.SetActive(false);
+		logLevelsFolder.SetActive(false);
+		logReaderContainer.SetActive(false);
+		ReturnToLastTab(true);
+		ReturnToLastTab(false);
+	}
+
+	public void ClosePuzzleGrid() {
+		PuzzleGrid pg = puzzleGridLH.GetComponent<PuzzleGrid>();
+		PuzzleGrid pgr = puzzleGridRH.GetComponent<PuzzleGrid>();
+		tetheredPGP.SendDataBackToPanel(pg);
+		pg.Reset();
+		pgr.Reset();
+		tetheredPGP = null;
+		RevertDataTabState();
+	}
+
+	public void ClosePuzzleWire() {
+		PuzzleWire pw = puzzleWireLH.GetComponent<PuzzleWire>();
+		PuzzleWire pwr = puzzleWireRH.GetComponent<PuzzleWire>();
+		tetheredPWP.SendDataBackToPanel(pw);
+		pw.Reset();
+		pwr.Reset();
+		tetheredPWP = null;
+		RevertDataTabState();
+	}
+
+	public void CloseElevatorPad() {
+		tetheredKeypadElevator.SendDataBackToPanel();
+		TurnOffElevatorPad();
+		tetheredKeypadElevator = null;
+		linkedElevatorDoor = null;
+		RevertDataTabState();
+	}
+
+	public void CloseKeycodePad() {
+		TurnOffKeypad();
+		tetheredKeypadKeycode = null;
+		RevertDataTabState();
+	}
+
+	public void CloseSearch() {
+		tetheredSearchable.ResetSearchable(false);
+		tetheredSearchable = null;
+		searchCloseButtonLH.SetActive(false);
+		searchCloseButtonRH.SetActive(false);
+		RevertDataTabState();
+	}
+
+	public void ClosePaperLog() {
+		ctb.TabButtonClickSilent(0,false);  // UPDATE add memory for last center tab as well at some point
+	}
+
 	void Update () {
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
 			if (logActive) {
@@ -212,55 +273,15 @@ public class MFDManager : MonoBehaviour  {
 				}
 			}
 
+			// Handle severing connection with in use keypads, puzzles, etc. when player drifts too far away
 			if (usingObject) {
 				if (Vector3.Distance(playerCapsuleTransform.position, objectInUsePos) > (Const.a.frobDistance + 0.16f)) {
-					if (tetheredPGP != null) {
-						if (lastDataSideRH) {
-							PuzzleGrid pg = puzzleGridRH.GetComponent<PuzzleGrid>();
-							tetheredPGP.SendDataBackToPanel(pg);
-							pg.Reset();
-						} else {
-							PuzzleGrid pg = puzzleGridLH.GetComponent<PuzzleGrid>();
-							tetheredPGP.SendDataBackToPanel(pg);
-							pg.Reset();
-						}
-						tetheredPGP = null;
-					}
-
-					if (tetheredPWP != null) {
-						if (lastDataSideRH) {
-							PuzzleWire pw = puzzleWireRH.GetComponent<PuzzleWire>();
-							tetheredPWP.SendDataBackToPanel(pw);
-							pw.Reset();
-						} else {
-							PuzzleWire pw = puzzleWireLH.GetComponent<PuzzleWire>();
-							tetheredPWP.SendDataBackToPanel(pw);
-							pw.Reset();
-						}
-						tetheredPWP = null;
-					}
-
-					if (tetheredKeypadElevator != null) {
-						tetheredKeypadElevator.SendDataBackToPanel();
-						TurnOffElevatorPad();
-						tetheredKeypadElevator = null;
-						linkedElevatorDoor = null;
-					}
-
-					if (tetheredSearchable != null) {
-						tetheredSearchable.ResetSearchable(false);
-						tetheredSearchable = null;
-					}
-					if (paperLogInUse && ctb != null) {
-						ctb.TabButtonClickSilent(0,false);  // UPDATE add memory for last center tab as well at some point
-					}
-
-					TabReset(lastDataSideRH);
-					usingObject = false;
-					logTable.SetActive(false);
-					logLevelsFolder.SetActive(false);
-					logReaderContainer.SetActive(false);
-					ReturnToLastTab(lastDataSideRH);
+					if (tetheredPGP != null) ClosePuzzleGrid();
+					if (tetheredPWP != null) ClosePuzzleWire();
+					if (tetheredKeypadElevator != null) CloseElevatorPad();
+					if (tetheredKeypadKeycode != null) CloseKeycodePad();
+					if (tetheredSearchable != null) CloseSearch();
+					if (paperLogInUse && ctb != null) ClosePaperLog();
 				}
 			}
 		}
@@ -394,6 +415,7 @@ public class MFDManager : MonoBehaviour  {
 
 			for (int i=0;i<4;i++) {
 				if (contents[i] > -1) {
+					searchCloseButtonRH.SetActive(true);
 					searchItemImagesRH[i].SetActive(true);
 					searchItemImagesRH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[contents[i]];
 					searchContainerRH.contents[i] = contents[i];
@@ -413,6 +435,7 @@ public class MFDManager : MonoBehaviour  {
 
 			for (int i=0;i<4;i++) {
 				if (contents[i] > -1) {
+					searchCloseButtonLH.SetActive(true);
 					searchItemImagesLH[i].SetActive(true);
 					searchItemImagesLH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[contents[i]];
 					searchContainerLH.contents[i] = contents[i];
@@ -593,6 +616,9 @@ public class MFDManager : MonoBehaviour  {
 			kkb.keypad = keypad;
 			kkb.ResetEntry();
 			kkb.done = alreadySolved;
+			if (Const.a.difficultyMission <= 1) {
+				kkb.currentEntry = keycode;
+			}
 		} else {
 			OpenTab(4,true,MFDManager.TabMSG.Keypad,0,MFDManager.handedness.LeftHand);
 			keycodeUIControlLH.SetActive(true);
@@ -601,8 +627,12 @@ public class MFDManager : MonoBehaviour  {
 			kkb.keypad = keypad;
 			kkb.ResetEntry();
 			kkb.done = alreadySolved;
+			if (Const.a.difficultyMission <= 1) {
+				kkb.currentEntry = keycode;
+			}
 		}
 		objectInUsePos = tetherPoint;
+		tetheredKeypadKeycode = keypad;
 		usingObject = true;
 	}
 
@@ -667,29 +697,31 @@ public class MFDManager : MonoBehaviour  {
 		//MFDManager.a.searchItemImagesRH[index].SetActive(false);
 	}
 
-	public void NotifySearchThatSearableWasDestroyed() {
+	public void NotifySearchThatSearchableWasDestroyed() {
 		if (tetheredSearchable != null) {
 			tetheredSearchable.ResetSearchable(true); // reset the actual object
 			// reset the HUD contents
-			// if (headerTextRH.activeSelf) {
-				// headerTextRH.SetActive(false);
-				// headerText_textRH.enabled = false;
-				// headerText_textRH.text = System.String.Empty;
-				// noItemsTextRH.SetActive(false);
-				// noItemsTextRH.GetComponent<Text>().enabled = false;
-				// for (int i=0;i<4;i++) {
-					// searchItemImagesRH[i].SetActive(false);
-					// searchItemImagesRH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[200];
-					// searchContainerRH.contents[i] = -1;
-					// searchContainerRH.customIndex[i] = -1;
-				// }
-			// }
+			if (headerTextRH.activeSelf) {
+				headerTextRH.SetActive(false);
+				headerText_textRH.enabled = false;
+				headerText_textRH.text = System.String.Empty;
+				noItemsTextRH.SetActive(false);
+				noItemsTextRH.GetComponent<Text>().enabled = false;
+				searchCloseButtonRH.SetActive(false);
+				for (int i=0;i<4;i++) {
+					searchItemImagesRH[i].SetActive(false);
+					searchItemImagesRH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[200];
+					searchContainerRH.contents[i] = -1;
+					searchContainerRH.customIndex[i] = -1;
+				}
+			}
 			if (headerTextLH.activeSelf) {
 				headerTextLH.SetActive(false);
 				headerText_textLH.enabled = false;
 				headerText_textLH.text = System.String.Empty;
 				noItemsTextLH.SetActive(false);
 				noItemsTextLH.GetComponent<Text>().enabled = false;
+				searchCloseButtonLH.SetActive(false);
 				for (int i=0;i<4;i++) {
 					searchItemImagesLH[i].SetActive(false);
 					searchItemImagesLH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[200];

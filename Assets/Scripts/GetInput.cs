@@ -77,4 +77,5 @@ public class GetInput : MonoBehaviour {
 	public bool Numpad9() { if (Input.GetKeyDown(KeyCode.Keypad9)) return true; else return false; }
 	public bool NumpadPeriod() { if (Input.GetKeyDown(KeyCode.KeypadPeriod)) return true; else return false; }
 	public bool NumpadMinus() { if (Input.GetKeyDown(KeyCode.KeypadMinus)) return true; else return false; }
+	public bool Backspace() { if (Input.GetKeyDown(KeyCode.Backspace)) return true; else return false; }
 }

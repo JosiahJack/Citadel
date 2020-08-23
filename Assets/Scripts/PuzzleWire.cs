@@ -13,7 +13,11 @@ public class PuzzleWire : MonoBehaviour {
 	//public int[] targetPositionsLeft;
 	//public int[] targetPositionsRight;
 	public Image[] leftNodeSelectedIndicators;
+	public Image[] leftNodeImages;
 	public Image[] rightNodeSelectedIndicators;
+	public Image[] rightNodeImages;
+	public Sprite normalNode;
+	public Sprite highlightedNode;
 	public Slider slider;
 	public int wire1LHPosition;
 	public int wire1RHPosition;
@@ -80,6 +84,7 @@ public class PuzzleWire : MonoBehaviour {
 	public Color actualColorBlue;
 	public Color actualColorPurple;
 	public WireColor[] wireColors;
+	public WireColor[] rememberColors;
 
 	void Awake () {
 		selectedWire = -1;
@@ -126,6 +131,8 @@ public class PuzzleWire : MonoBehaviour {
 		for (tempInt = 0; tempInt < 7; tempInt++) {
 			leftNodeSelectedIndicators[tempInt].enabled = false;
 			rightNodeSelectedIndicators[tempInt].enabled = false;
+			leftNodeImages[tempInt].overrideSprite = normalNode;
+			rightNodeImages[tempInt].overrideSprite = normalNode;
 		}
 	}
 
@@ -226,6 +233,16 @@ public class PuzzleWire : MonoBehaviour {
 					leftNodeSelectedIndicators[wire7LHPosition].enabled = blinkState;
 					break;
 			}
+
+// public Image[] leftNodeImages;
+	// public Image[] rightNodeSelectedIndicators;
+	// public Image[] rightNodeImages;
+	// public Sprite normalNode;
+	// public Sprite highlightedNode;
+			for (int i=0;i<7;i++) {
+				leftNodeImages[i].overrideSprite = highlightedNode;
+				rightNodeImages[i].overrideSprite = normalNode;
+			}
 		} else {
 			switch (selectedWire) {
 				case 0:
@@ -249,6 +266,10 @@ public class PuzzleWire : MonoBehaviour {
 				case 6: 
 					rightNodeSelectedIndicators[wire7RHPosition].enabled = blinkState;
 					break;
+			}
+			for (int i=0;i<7;i++) {
+				leftNodeImages[i].overrideSprite = normalNode;
+				rightNodeImages[i].overrideSprite = highlightedNode;
 			}
 		}
 	}
@@ -287,6 +308,17 @@ public class PuzzleWire : MonoBehaviour {
 		udSender = udSent;
 		theme = sentTheme;
 		wireColors = sentWireColors;
+		rememberColors = sentWireColors;
+		if (Const.a.difficultyPuzzle == 3) {
+			// Set all wire colors to the same on hard
+			wireColors[0] = WireColor.Yellow;
+			wireColors[1] = WireColor.Yellow;
+			wireColors[2] = WireColor.Yellow;
+			wireColors[3] = WireColor.Yellow;
+			wireColors[4] = WireColor.Yellow;
+			wireColors[5] = WireColor.Yellow;
+			wireColors[6] = WireColor.Yellow;
+		}
 		target = t1;
 		argvalue = a1;
 		puzzleWP = pwp;
@@ -295,7 +327,7 @@ public class PuzzleWire : MonoBehaviour {
 		EvaluatePuzzle();
 		ChangeAppearance();
 
-		if (udSent.mainIndex == 54) {
+		if (udSent.mainIndex == 54 || Const.a.difficultyPuzzle == 0) {
 			PuzzleSolved(true);
 		}
 	}
@@ -632,6 +664,7 @@ public class PuzzleWire : MonoBehaviour {
 		if (wire7RHPosition == wire7RHTarget && wireIsActive[6]) tempF += 0.19f;
 		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 
+		if (Const.a.difficultyPuzzle == 1) tempF += 0.19f;
 		actualValue = tempF;
 
 		if (tempF > 0.92f) {

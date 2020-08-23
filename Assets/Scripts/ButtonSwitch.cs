@@ -46,7 +46,7 @@ public class ButtonSwitch : MonoBehaviour {
 			return;
 		}
 
-		if (LevelManager.a.superoverride)
+		if (LevelManager.a.superoverride || Const.a.difficultyMission == 0)
 			locked = false; // SHODAN can go anywhere!  Full security override!
 
 		if (locked) {

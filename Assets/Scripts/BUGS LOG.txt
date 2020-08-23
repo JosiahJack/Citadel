@@ -1,10 +1,44 @@
+Add hourglass cursor when loading cyberspace then change to gray cursor
+Railgun with ammo in it doesn't give ammo
+
+
 Build Size
 324MB - now 316MB - now 317MB, now 290MB, now 289MB (still)
 
 Build Memory Usage
 2.3GB RAM - now 1.6GB, now 1.4GB, now 1.1GB!
 
-
+Ambient volumes:
+airhiss				0.05
+ambient_frogs		0.1 (needs randomized, NOT looped)
+clicker				0.2
+compressor			0.4
+dishwasher			0.2
+drip_amb			0.5
+fan1				0.3
+generator_gas		0.3
+gurgle				0.3
+icemaker			0.6
+intake				0.2
+lathe				0.4
+lava2				0.4
+liquid_bubble		1.0
+machgear_loop		0.4
+machine_ambience	1.0
+machine_go			0.6
+machine_humamb7		1.0
+machine_humlonoise	0.4
+machine_loop1		0.4
+machine_loop2		0.4
+machinea1			0.4
+machinevat_loop		0.8
+pipewater_loop		0.5
+powerloom			0.3
+pump				0.2
+pump2				0.05
+rain				0.4
+steam_loop			0.05
+washing_machine		0.5
 
 
 
@@ -38,3 +72,5 @@ GrenadeCountsText (diddo)
 Scripts candidate for removal
 Billboard
 UpdateManager
+
+Was using Hidden/GGX-DeferredShading for the Defered->Shader under Graphics Settings - specular now working with default shader!

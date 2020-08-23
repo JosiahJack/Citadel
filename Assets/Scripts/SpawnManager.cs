@@ -25,6 +25,8 @@ public class SpawnManager : MonoBehaviour {
 			}
 		}
 		delayFinished = PauseScript.a.relativeTime;
+		if (Const.a.difficultyCombat == 1) numberToSpawn = (int) Mathf.Floor(numberToSpawn*0.5f);
+		if (Const.a.difficultyCombat == 3) numberToSpawn = (int) Mathf.Floor(numberToSpawn*1.5f);
 	}
 
 	public void Activate(bool alertEnemies) {
@@ -51,6 +53,7 @@ public class SpawnManager : MonoBehaviour {
 	}
 
 	void Spawn(int index) {
+		if (Const.a.difficultyCombat == 0) return; // no spawns on combat difficulty 0
 		Debug.Log("Spawning new enemy...");
 		dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
         if (dynamicObjectsContainer == null) return; //didn't find current level, can't spawn

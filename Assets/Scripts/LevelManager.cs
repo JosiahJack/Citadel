@@ -20,8 +20,10 @@ public class LevelManager : MonoBehaviour {
 	public GameObject sky;
 	public bool superoverride = false;
 	public GameObject saturn;
+	public GameObject exterior;
 	public MeshRenderer skyMR;
 	public bool[] showSkyForLevel;
+	public bool[] showExteriorForLevel;
 	public bool[] showSaturnForLevel;
 	public NPCSubManager[] npcsm;
 	public enum SecurityType{None,Camera,NodeSmall,NodeLarge};
@@ -35,6 +37,7 @@ public class LevelManager : MonoBehaviour {
 		SetAllPlayersLevelsToCurrent();
 		if (sky != null) sky.SetActive(true);
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
+		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 		Time.timeScale = Const.a.defaultTimeScale;
 		currentLeaf = -1;
@@ -93,7 +96,7 @@ public class LevelManager : MonoBehaviour {
 
 		if (ressurectionActive[currentLevel]) {
 			if (currentLevel == 10 ||currentLevel == 11 ||currentLevel == 12) {
-				LoadLevel(6,ressurectionLocation[currentLevel].gameObject,currentPlayer);
+				LoadLevel(6,ressurectionLocation[currentLevel].gameObject,currentPlayer,ressurectionLocation[currentLevel].position);
 				ressurectionBayDoor[6].ForceClose();
 			} else {
 				ressurectionBayDoor[currentLevel].ForceClose();
@@ -108,7 +111,7 @@ public class LevelManager : MonoBehaviour {
 		return false;
 	}
 
-	public void LoadLevel (int levnum, GameObject targetDestination, GameObject currentPlayer) {
+	public void LoadLevel (int levnum, GameObject targetDestination, GameObject currentPlayer, Vector3 targetPosition) {
 		// NOTE: Check this first since the button for the current level has a null destination
 		if (currentLevel == levnum) {
 			Const.sprint(Const.a.stringTable[9],currentPlayer); //Already there
@@ -120,23 +123,29 @@ public class LevelManager : MonoBehaviour {
 			return; // prevent possible error if keypad does not have player to move
 		}
 
-		if (targetDestination == null) {
+		if (targetDestination == null && targetPosition == null) {
 			Const.sprint("BUG: LevelManager cannot find destination.",Const.a.allPlayers);
 			return; // prevent possible error if keypad does not have destination set
 		}
 			
 		MFDManager.a.TurnOffElevatorPad();
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
-		currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
+		Vector3 pos = new Vector3();
+		if (targetDestination == null) {
+			pos = targetPosition;
+		} else {
+			pos = targetDestination.transform.position;
+		}
+		currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = pos; // Put player in the new level
 
 		levels[levnum].SetActive(true); // enable new level
 		currentPlayer.GetComponent<PlayerReferenceManager>().playerCurrentLevel = levnum;
-		if (levnum == 13) currentPlayer.GetComponent<PlayerReferenceManager> ().playerCapsule.GetComponent<PlayerMovement> ().inCyberSpace = true;
 		PutBackCurrentLevelNPCs();
 		currentLevel = levnum; // Set current level to be the new level
 		DisableAllNonOccupiedLevels();
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
+		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
 		PullOutCurrentLevelNPCs(); // unparent from level transforms to reduce physics work
 		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) AutoSplitterData.missionSplitID++; // 1 - Medical split - we are now on level 2
 	}

@@ -15,6 +15,8 @@ public class MouseLookScript : MonoBehaviour {
 	public Texture2D cursorTexture;
     [Tooltip("The default cursor texture (Developer sets default)")]
     public Texture2D cursorDefaultTexture;
+    [Tooltip("The cyberspace cursor")]
+	public Texture2D cyberspaceCursor;
     [HideInInspector]
     public Vector2 cursorHotspot;
     [Tooltip("Mouselook sensitivity (Developer sets default)")]
@@ -25,6 +27,8 @@ public class MouseLookScript : MonoBehaviour {
     public AudioClip PickupSFX;
     [Tooltip("Sound effect to play when picking-up/frobbing a hardware item")]
     public AudioClip hwPickupSFX;
+    [Tooltip("Sound effect to play when entering/exiting cyberspace")]
+	public AudioClip CyberSFX;
     [Tooltip("Distance from player origin to spawn objects when tossing them")]
     public float tossOffset = 0.10f;
     [Tooltip("Force given to spawned objects when tossing them")]
@@ -115,6 +119,14 @@ public class MouseLookScript : MonoBehaviour {
 	public PuzzleWire puzzleWire;
 	public PuzzleGrid puzzleGrid;
 	public GameObject shootModeButton;
+	[HideInInspector]
+	public Vector3 cyberspaceReturnPoint; // save
+	[HideInInspector]
+	public Vector3 cyberspaceReturnCameraLocalRotation; // save
+	[HideInInspector]
+	public Vector3 cyberspaceReturnPlayerCapsuleLocalRotation; // save
+	[HideInInspector]
+	public int cyberspaceReturnLevel; // save
 	//private AudioListener audListener;
 
     //float headbobSpeed = 1;
@@ -164,14 +176,30 @@ public class MouseLookScript : MonoBehaviour {
 		firstTimeSearch = true;
     }
 
-	public void EnterCyberspace(Transform entryPoint) {
+	public void EnterCyberspace(GameObject entryPoint) {
+		cyberspaceReturnPoint = entryPoint.transform.position;
+		cyberspaceReturnCameraLocalRotation = transform.localRotation.eulerAngles;
+		cyberspaceReturnPlayerCapsuleLocalRotation = transform.parent.transform.parent.transform.localRotation.eulerAngles;
+		cyberspaceReturnLevel = LevelManager.a.currentLevel;
 		MFDManager.a.EnterCyberspace();
+		LevelManager.a.LoadLevel (13,entryPoint,player,entryPoint.transform.position);
+		playerMovement.inCyberSpace = true;
 		inCyberSpace = true;
+		playerCamera.useOcclusionCulling = false;
+		SFXSource.PlayOneShot(CyberSFX);
+		//mouseCursor.cursorImage = cyberspaceCursor;  Handled by MouseCursor script
 	}
 
 	public void ExitCyberspace() {
 		MFDManager.a.ExitCyberspace();
+		LevelManager.a.LoadLevel (13,null,player,cyberspaceReturnPoint);
+		transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(cyberspaceReturnPlayerCapsuleLocalRotation.x, cyberspaceReturnPlayerCapsuleLocalRotation.y, cyberspaceReturnPlayerCapsuleLocalRotation.z); // left right component applied to capsule
+		transform.localRotation = Quaternion.Euler(cyberspaceReturnCameraLocalRotation.x,cyberspaceReturnCameraLocalRotation.y,cyberspaceReturnCameraLocalRotation.z); // Up down component applied to camera
+		playerMovement.inCyberSpace = false;
 		inCyberSpace = false;
+		playerCamera.useOcclusionCulling = false;
+		SFXSource.PlayOneShot(CyberSFX);
+		//mouseCursor.cursorImage = cursorDefaultTexture;  Handled by MouseCursor script
 	}
 
 	public void Recoil (int i) {
@@ -264,11 +292,15 @@ public class MouseLookScript : MonoBehaviour {
 						xRotation -= (dy * lookSensitivity);
 					}
 				}
-				if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle
-				transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
-				transform.localRotation = Quaternion.Euler(xRotation,0f,0f); // Up down component only applied to camera
-
-				if (inCyberSpace) cyberLookDir = Vector3.Normalize (transform.forward);
+				if (!inCyberSpace) {
+					xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle
+					transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
+					transform.localRotation = Quaternion.Euler(xRotation,0f,0f); // Up down component only applied to camera
+				} else {
+					cyberLookDir = Vector3.Normalize (transform.forward);
+					transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
+					transform.localRotation = Quaternion.Euler(xRotation,0f,0f); // Up down component only applied to camera
+				}
 
 				if (compassContainer.activeInHierarchy) {
 					compassContainer.transform.rotation = Quaternion.Euler(0f, -yRotation + 180f, 0f);
@@ -447,7 +479,7 @@ public class MouseLookScript : MonoBehaviour {
 					        // If we can't use it, Give info about what we are looking at (e.g. "Molybdenum panelling")
 							UseName un = hit.collider.gameObject.GetComponent<UseName> ();
 							if (un != null) {
-								Const.sprint(Const.a.stringTable[29] + un.targetname,player); // Can't use
+								Const.sprint(Const.a.stringTable[29] + un.targetname,player); // Can't use <blah blah blah>
 							}
 						}
 						//if (Physics.Raycast(playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center), out hit, 50f)) {
@@ -457,11 +489,11 @@ public class MouseLookScript : MonoBehaviour {
 							if (hit.collider == null)
 								return;
 
-							// Check if object is usable then use it
-							//if (hit.collider.CompareTag("Usable") || hit.collider.CompareTag("Searchable")) {
+							// Check if object is usable or searchable or has a usename
+							if (hit.collider.CompareTag("Usable") || hit.collider.CompareTag("Searchable") || (hit.collider.gameObject.GetComponent<UseName>()) != null) {
 								Const.sprint(Const.a.stringTable[30],player); // You are too far away from that
 								return;
-							//}
+							}
 						}
 					} else {
 						// First check and see if we can apply held object in a use, or else Drop the object we are holding

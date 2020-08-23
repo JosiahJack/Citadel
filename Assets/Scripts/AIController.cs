@@ -297,6 +297,14 @@ public class AIController : MonoBehaviour {
 		deathBurstDone = false;
 		searchPath = new NavMeshPath();
 		targetID = Const.GetTargetID(index);
+
+		if (Const.a.difficultyCombat == 1) {
+			huntTime *= 0.75f; // more forgetfull on 1
+		}
+
+		if (Const.a.difficultyCombat >= 3) {
+			huntTime *= 2f; // better memory on hardest Combat difficulty
+		}
 	}
 
 	public IEnumerator DisableMeleeColliders() {
@@ -1096,7 +1104,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	bool CheckIfPlayerInSight () {
-        if (ignoreEnemy) return false;
+        if (ignoreEnemy || Const.a.difficultyCombat == 0) return false;
 		if (enemy != null) return CheckIfEnemyInSight();
 		LOSpossible = false;
 
