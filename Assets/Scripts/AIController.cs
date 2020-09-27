@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 using DigitalRuby.LightningBolt;
 
 public class AIController : MonoBehaviour {
 	public int index = 0; // NPC reference index for looking up constants in tables in Const.cs // save
 	[HideInInspector]
 	public string targetID;
+	[HideInInspector]
+	public bool hasTargetIDAttached = false;
 	public Const.aiState currentState; // save (referenced by int index 0 thru 10)
     public Const.aiMoveType moveType;
 	public Const.npcType npcType;
@@ -152,6 +155,7 @@ public class AIController : MonoBehaviour {
     public Vector3 lastKnownEnemyPos; // save
 	[HideInInspector]
     public Vector3 tempVec; // save
+	private Vector3 tempVec2;
 	[HideInInspector]
     public bool shotFired = false; // save
     private DamageData damageData;
@@ -213,6 +217,9 @@ public class AIController : MonoBehaviour {
 	private Vector3 infrontVec;
 	public bool actAsTurret = false;
 	public GameObject sleepingCables;
+	private PlayerMovement pm;
+	public RectTransform npcAutomapOverlay;
+	public Image npcAutomapOverlayImage;
 
 	public void Tranquilize() {
 		// Check against percent chance (disruptability) of getting tranq'ed
@@ -225,7 +232,7 @@ public class AIController : MonoBehaviour {
         rbody = GetComponent<Rigidbody>();
 		if (rbody.isKinematic) rbody.isKinematic = false;
 
-		if (moveType == Const.aiMoveType.Fly) {
+		if (moveType == Const.aiMoveType.Fly || moveType == Const.aiMoveType.Cyber) {
 			//rbody.isKinematic = true;
 			rbody.useGravity = false;
 		}
@@ -296,7 +303,11 @@ public class AIController : MonoBehaviour {
 		idealTransformForward = sightPoint.transform.forward;
 		deathBurstDone = false;
 		searchPath = new NavMeshPath();
-		targetID = Const.GetTargetID(index);
+		if (moveType != Const.aiMoveType.Cyber) {
+			targetID = Const.GetTargetID(index);
+		} else {
+			targetID = Const.GetCyberTargetID(index);
+		}
 
 		if (Const.a.difficultyCombat == 1) {
 			huntTime *= 0.75f; // more forgetfull on 1
@@ -333,6 +344,25 @@ public class AIController : MonoBehaviour {
 	void OnEnable() {
 		if (PauseScript.a != null) {
 			idleTime = PauseScript.a.relativeTime + Random.Range(idleSFXTimeMin,idleSFXTimeMax);
+			if (npcAutomapOverlay == null) {
+				Const.PoolType pt = Const.PoolType.AutomapBotOverlays;
+				switch (npcType) {
+					case Const.npcType.Mutant: pt = Const.PoolType.AutomapMutantOverlays; break;
+					case Const.npcType.Supermutant: pt = Const.PoolType.AutomapMutantOverlays; break;
+					case Const.npcType.Robot: pt = Const.PoolType.AutomapBotOverlays; break;
+					case Const.npcType.Cyborg: pt = Const.PoolType.AutomapCyborgOverlays; break;
+					case Const.npcType.Supercyborg: pt = Const.PoolType.AutomapCyborgOverlays; break;
+					case Const.npcType.MutantCyborg: pt = Const.PoolType.AutomapCyborgOverlays; break;
+				}
+
+				GameObject overlay = Const.a.GetObjectFromPool(pt);
+				if (overlay != null) {
+					overlay.SetActive(true);
+					npcAutomapOverlay = overlay.GetComponent<RectTransform>();
+					npcAutomapOverlayImage = overlay.GetComponent<Image>();
+					//npcAutomapOverlayImage.enabled = false;
+				}
+			}
 		}
 	}
 
@@ -345,6 +375,15 @@ public class AIController : MonoBehaviour {
         if (tickFinished < PauseScript.a.relativeTime) {
 			tickFinished = PauseScript.a.relativeTime + tick;
 			Think();
+			if (npcAutomapOverlay != null && moveType != Const.aiMoveType.Cyber) {
+				// 34.16488, -45.08, 0.4855735
+				// x = ((0.6384575295) * 1008f) + 8;
+				// x = 651
+				tempVec2.y = (((((transform.position.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * 1008f) + Const.a.mapTileMinX));
+				tempVec2.x = (((((transform.position.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * 1008f) + Const.a.mapTileMinY));
+				tempVec2.z = -0.3f;
+				npcAutomapOverlay.localPosition = tempVec2;
+			}
 		}
 
 		if (raycastingTickFinished < PauseScript.a.relativeTime) {
@@ -364,7 +403,7 @@ public class AIController : MonoBehaviour {
         if (currentState != Const.aiState.Dead) {
             if (currentState != Const.aiState.Idle) {
                 idealTransformForward = currentDestination - sightPoint.transform.position;
-                idealTransformForward.y = 0;
+                if (moveType != Const.aiMoveType.Cyber) idealTransformForward.y = 0;
 				idealTransformForward = Vector3.Normalize(idealTransformForward);
 				if (idealTransformForward.magnitude > Mathf.Epsilon) {
 					AI_Face(currentDestination);
@@ -379,11 +418,21 @@ public class AIController : MonoBehaviour {
 			deathBurstDone = true;
 		}
 
-		if (healthManager.health <= 0) {
-			// If we haven't gone into dying and we aren't dead, going into dying
-			if (!ai_dying && !ai_dead) {
-				ai_dying = true; //no going back
-				currentState = Const.aiState.Dying; //start to collapse in a heap, melt, explode, etc.
+		if (moveType != Const.aiMoveType.Cyber) {
+			if (healthManager.health <= 0) {
+				// If we haven't gone into dying and we aren't dead, going into dying
+				if (!ai_dying && !ai_dead) {
+					ai_dying = true; //no going back
+					currentState = Const.aiState.Dying; //start to collapse in a heap, melt, explode, etc.
+				}
+			}
+		} else {
+			if (healthManager.cyberHealth <= 0) {
+				// If we haven't gone into dying and we aren't dead, going into dying
+				if (!ai_dying && !ai_dead) {
+					ai_dying = true; //no going back
+					currentState = Const.aiState.Dying; //start to collapse in a heap, melt, explode, etc.
+				}
 			}
 		}
 
@@ -546,6 +595,8 @@ public class AIController : MonoBehaviour {
         if (inSight) {
 			targettingPosition = enemy.transform.position;
 			currentDestination = enemy.transform.position;
+			pm = enemy.GetComponent<PlayerMovement>();
+			if (pm != null) targettingPosition = pm.cameraObject.transform.position;
             huntFinished = PauseScript.a.relativeTime + huntTime;
             if (rangeToEnemy < meleeRange) {
                 if (hasMelee && infront && (randomWaitForNextAttack1Finished < PauseScript.a.relativeTime)) {
@@ -604,7 +655,7 @@ public class AIController : MonoBehaviour {
 						}
 					} else {
 						tempVec = (sightPoint.transform.forward * runSpeed);
-						tempVec.y = rbody.velocity.y; // carry across gravity
+						if (rbody.useGravity) tempVec.y = rbody.velocity.y; // carry across gravity
 						rbody.velocity = tempVec;
 					}
 				}
@@ -806,7 +857,7 @@ public class AIController : MonoBehaviour {
                         tempVec = gunPoint.transform.position;
                         tempVec = (enemy.transform.position - tempVec);
                         damageData.attacknormal = tempVec;
-                        damageData.damage = 15f;
+                        damageData.damage = Const.a.damageForNPC2[index];
                         damageData.damage = Const.a.GetDamageTakeAmount(damageData);
                         damageData.owner = gameObject;
                         damageData.attackType = Const.AttackType.Projectile;
@@ -814,10 +865,12 @@ public class AIController : MonoBehaviour {
 							GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
 							if (dynamicObjectsContainer == null) return; //didn't find current level
 							GameObject lasertracer = Instantiate(Const.a.useableItems[105],transform.position,Quaternion.identity) as GameObject;
-							lasertracer.transform.SetParent(dynamicObjectsContainer.transform,true);
-							lasertracer.GetComponent<LaserDrawing>().startPoint = sightPoint.transform.position;
-							lasertracer.GetComponent<LaserDrawing>().endPoint = tempHit.point;
-							lasertracer.SetActive(true);
+							if (lasertracer != null) {
+								lasertracer.transform.SetParent(dynamicObjectsContainer.transform,true);
+								lasertracer.GetComponent<LaserDrawing>().startPoint = sightPoint.transform.position;
+								lasertracer.GetComponent<LaserDrawing>().endPoint = tempHit.point;
+								lasertracer.SetActive(true);
+							}
 						}
                         HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
                         if (hm == null) return;
@@ -826,10 +879,15 @@ public class AIController : MonoBehaviour {
                 } else {
 					if (attack2Type == Const.AttackType.ProjectileLaunched) {
 						if (muzzleBurst != null) muzzleBurst.SetActive(true);
-                        tempVec = gunPoint.transform.position;
-                        tempVec = (enemy.transform.position - tempVec);
+						if (moveType != Const.aiMoveType.Cyber) {
+							tempVec = (enemy.transform.position - gunPoint.transform.position);
+						} else {
+							tempVec = enemy.transform.position;
+							tempVec.y += 0.84f;
+							tempVec = (enemy.transform.position - gunPoint.transform.position);
+						}
                         damageData.attacknormal = tempVec;
-                        damageData.damage = 30f;
+                        damageData.damage = Const.a.damageForNPC2[index];
                         damageData.damage = Const.a.GetDamageTakeAmount(damageData);
                         damageData.owner = gameObject;
                         damageData.attackType = Const.AttackType.ProjectileLaunched;
@@ -932,7 +990,7 @@ public class AIController : MonoBehaviour {
                         tempVec = gunPoint2.transform.position;
                         tempVec = (enemy.transform.position - tempVec);
                         damageData.attacknormal = tempVec;
-                        damageData.damage = 15f;
+                        damageData.damage = Const.a.damageForNPC3[index];
                         damageData.damage = Const.a.GetDamageTakeAmount(damageData);
                         damageData.owner = gameObject;
                         damageData.attackType = Const.AttackType.Projectile;
@@ -945,7 +1003,7 @@ public class AIController : MonoBehaviour {
                         tempVec = gunPoint2.transform.position;
                         tempVec = (enemy.transform.position - tempVec);
                         damageData.attacknormal = tempVec;
-                        damageData.damage = 30f;
+                       	damageData.damage = Const.a.damageForNPC3[index];
                         damageData.damage = Const.a.GetDamageTakeAmount(damageData);
                         damageData.owner = gameObject;
                         damageData.attackType = Const.AttackType.ProjectileLaunched;
@@ -996,6 +1054,11 @@ public class AIController : MonoBehaviour {
 	void Dying() {
 		if (!dyingSetup) {
 			if (sleepingCables != null) sleepingCables.SetActive(false);
+			if (npcAutomapOverlay != null) {
+				npcAutomapOverlay.gameObject.SetActive(false);
+				npcAutomapOverlay = null;
+				npcAutomapOverlayImage = null;
+			}
 			dyingSetup = true;
 			if (deathBurstTimer > 0) {
 				deathBurstFinished = PauseScript.a.relativeTime + deathBurstTimer;
@@ -1064,7 +1127,7 @@ public class AIController : MonoBehaviour {
 		}
 		if (!rbody.freezeRotation) rbody.freezeRotation = true;
 		currentState = Const.aiState.Dead;
-		if (healthManager.gibOnDeath || healthManager.teleportOnDeath) {
+		if (healthManager.gibOnDeath || healthManager.teleportOnDeath || healthManager.inCyberSpace) {
 			if (visibleMeshEntity != null && visibleMeshEntity.activeInHierarchy) visibleMeshEntity.SetActive(false); // normally just turn off the main model, then...
 			if (healthManager.gibOnDeath) healthManager.Gib(); // ... turn on the lovely gibs
 			if (healthManager.teleportOnDeath && !healthManager.teleportDone) healthManager.TeleportAway();
@@ -1085,7 +1148,13 @@ public class AIController : MonoBehaviour {
             LOSpossible = true;
 			return true;
 		}
-
+		if (npcAutomapOverlayImage != null) {
+			//if (dist < 50f) {
+				npcAutomapOverlayImage.enabled = true;
+			//} else {
+			//	npcAutomapOverlayImage.enabled = false;
+			//}
+		}
 		if (dist > sightRange) return false;
 
 		Vector3 checkline = enemy.transform.position - sightPoint.transform.position; // Get vector line made from enemy to found player
@@ -1114,6 +1183,13 @@ public class AIController : MonoBehaviour {
 		tempVec = Const.a.player1Capsule.transform.position;
 		Vector3 checkline = tempVec - sightPoint.transform.position; // Get vector line made from enemy to found player
 		float dist = Vector3.Distance(tempVec,sightPoint.transform.position);  // Get distance between enemy and found player
+		if (npcAutomapOverlayImage != null) {
+			//if (dist < 50f) {
+				npcAutomapOverlayImage.enabled = true;
+			//} else {
+			//	npcAutomapOverlayImage.enabled = false;
+			//}
+		}
 		if (dist > sightRange) return false; // don't waste time doing raycasts if we won't be able to see them anyway
 
 		float angle = Vector3.Angle(checkline,sightPoint.transform.forward);

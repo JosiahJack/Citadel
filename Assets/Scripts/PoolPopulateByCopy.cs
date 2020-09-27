@@ -15,6 +15,14 @@ public class PoolPopulateByCopy : MonoBehaviour {
 
     public void CreateCopy() {
 		GameObject copy = Instantiate(transform.GetChild(0).gameObject,transform.position,Quaternion.identity) as GameObject; // create a copy of a pool object
-		copy.transform.parent = transform;
+		if (copy != null) {
+			if (copy.GetComponent<RectTransform>() != null) {
+				copy.GetComponent<RectTransform>().SetParent(transform,true);
+				copy.GetComponent<RectTransform>().localScale = Vector3.one;
+				copy.GetComponent<RectTransform>().localRotation = Quaternion.identity;
+			} else {
+				copy.transform.parent = transform;
+			}
+		}
 	}
 }

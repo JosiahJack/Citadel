@@ -12,7 +12,7 @@ public class CyberTimer : MonoBehaviour {
 
 	void Awake() {
 		t = 60f * 10f;
-		timerFinished = Time.time + 1f;
+		timerFinished = PauseScript.a.relativeTime + 1f;
 	}
 
     public void Reset(int diff) {
@@ -25,12 +25,18 @@ public class CyberTimer : MonoBehaviour {
     }
 
     void Update() {
-		if (timerFinished < Time.time) {
-			t -= 1f;
-			minutes = Mathf.Floor(t/60f);
-			seconds = t - (minutes*60);
-			text.text = (minutes.ToString("00") + ":" + seconds.ToString("00"));
-			timerFinished = Time.time + 1f;
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (t <= 0) {
+				MFDManager.a.playerMLook.ExitCyberspace();
+			}
+
+			if (timerFinished < PauseScript.a.relativeTime) {
+				t -= 1f;
+				minutes = Mathf.Floor(t/60f);
+				seconds = t - (minutes*60);
+				text.text = (minutes.ToString("00") + ":" + seconds.ToString("00"));
+				timerFinished = PauseScript.a.relativeTime + 1f;
+			}
 		}
     }
 }

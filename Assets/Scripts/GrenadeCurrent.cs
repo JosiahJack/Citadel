@@ -11,6 +11,7 @@ public class GrenadeCurrent : MonoBehaviour {
 	public CapsuleCollider playerCapCollider;
 	public MouseLookScript mls;
 	public GrenadeButton[] grenButtons;
+	public SoftwareInventory sinv;
 	
 	void Start() {
 		GrenadeInstance = this;
@@ -24,19 +25,31 @@ public class GrenadeCurrent : MonoBehaviour {
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
 			if (GetInput.a != null) {
 				if (GetInput.a.Grenade()) {
-					if (GrenadeInventory.GrenadeInvInstance.grenAmmo[grenadeCurrent] > 0) {
-						mls.UseGrenade(grenadeIndex);
+					if (mls.inCyberSpace) {
+						sinv.UseCyberspaceItem();
 					} else {
-						Const.sprint(Const.a.stringTable[322],mls.player); // Out of grenades.
+						if (GrenadeInventory.GrenadeInvInstance.grenAmmo[grenadeCurrent] > 0) {
+							mls.UseGrenade(grenadeIndex);
+						} else {
+							Const.sprint(Const.a.stringTable[322],mls.player); // Out of grenades.
+						}
 					}
 				}
 
 				if (GetInput.a.GrenadeCycUp()) {
-					GrenadeCycleUp();
+					if (mls.inCyberSpace) {
+						sinv.CycleCyberSpaceItemUp();
+					} else {
+						GrenadeCycleUp();
+					}
 				}
 
 				if (GetInput.a.GrenadeCycDown()) {
-					GrenadeCycleDown();
+					if (mls.inCyberSpace) {
+						sinv.CycleCyberSpaceItemDn();
+					} else {
+						GrenadeCycleDown();
+					}
 				}
 			}
 		}

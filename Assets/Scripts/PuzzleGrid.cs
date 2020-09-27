@@ -16,6 +16,7 @@ public class PuzzleGrid : MonoBehaviour {
 	public int width;
 	public int height;
 	public Button[] gridCells;
+	public Image[] geniusHighlights;
 	public Sprite nodeOn;
 	public Sprite gridPlus;
 	public Sprite gridPlusgreen;
@@ -62,6 +63,13 @@ public class PuzzleGrid : MonoBehaviour {
 		audsource = GetComponent<AudioSource>();
 		EvaluatePuzzle();
 		UpdateCellImages();
+		GeniusHighlightClear();
+	}
+
+	public void GeniusHighlightClear() {
+		for (int i=0;i<35;i++) {
+			geniusHighlights[i].enabled = false;
+		}
 	}
 
 	public void Reset() {
@@ -121,6 +129,27 @@ public class PuzzleGrid : MonoBehaviour {
 		}
 		EvaluatePuzzle();
 		UpdateCellImages();
+		puzzleGP.SendDataBackToPanel(this);
+	}
+
+	public void OnGridCellHover (int index) {
+		if (MFDManager.a.playerMLook.geniusActive) {
+			if (puzzleSolved) return;
+			if (cellType[index] == CellType.Standard) {
+				if (Const.a.difficultyPuzzle == 1) {
+					HoverKing(index); // Easy puzzle difficulty.  Chose King instead of Pawn to help speed up the puzzle by the antenna trap on Level 7
+				} else {
+					switch (gridType) {
+						case GridType.King: HoverKing(index); break;
+						case GridType.Queen: HoverQueen(index); break;
+						case GridType.Knight: HoverKnight(index); break;
+						case GridType.Rook: HoverRook(index); break;
+						case GridType.Bishop: HoverBishop(index); break;
+						case GridType.Pawn: HoverPawn(index); break;
+					}
+				}
+			}
+		}
 	}
 
 	public void UpdateCellImages() {
@@ -428,6 +457,11 @@ public class PuzzleGrid : MonoBehaviour {
 		if (cellType[index] == CellType.Standard) grid[index] = !grid[index]; // Flip clicked cell if it is standard
 	}
 
+	void HoverPawn(int index) {
+		GeniusHighlightClear();
+		geniusHighlights[index].enabled = true;
+	}
+
 	// Flip vertically and horizontally adjacent standard cells along with center
 	void King(int index) {
 		if (cellType[index] == CellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
@@ -449,6 +483,27 @@ public class PuzzleGrid : MonoBehaviour {
 		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == CellType.Standard) grid[cellDiagDnLf] = !grid[cellDiagDnLf];
 	}
 
+	void HoverKing(int index) {
+		GeniusHighlightClear();
+		if (cellType[index] == CellType.Standard) geniusHighlights[index].enabled = true;
+		int cellAbove = ReturnCellAbove(index);
+		int cellBelow = ReturnCellBelow(index);
+		int cellLeft = ReturnCellToLeft(index);
+		int cellRight = ReturnCellToRight(index);
+		int cellDiagUpRt = ReturnCellDiagUpRight(index);
+		int cellDiagUpLf = ReturnCellDiagUpLeft(index);
+		int cellDiagDnRt = ReturnCellDiagDownRight(index);
+		int cellDiagDnLf = ReturnCellDiagDownLeft(index);
+		if (cellAbove != -1 && cellType[cellAbove] == CellType.Standard) geniusHighlights[cellAbove].enabled = true;
+		if (cellBelow != -1 && cellType[cellBelow] == CellType.Standard) geniusHighlights[cellBelow].enabled = true;
+		if (cellLeft != -1 && cellType[cellLeft] == CellType.Standard) geniusHighlights[cellLeft].enabled = true;
+		if (cellRight != -1 && cellType[cellRight] == CellType.Standard) geniusHighlights[cellRight].enabled = true;
+		if (cellDiagUpRt != -1 && cellType[cellDiagUpRt] == CellType.Standard) geniusHighlights[cellDiagUpRt].enabled = true;
+		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == CellType.Standard) geniusHighlights[cellDiagUpLf].enabled = true;
+		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == CellType.Standard) geniusHighlights[cellDiagDnRt].enabled = true;
+		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == CellType.Standard) geniusHighlights[cellDiagDnLf].enabled = true;
+	}
+
 	// Flip corners along with center
 	void Knight(int index) {
 		if (cellType[index] == CellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
@@ -460,6 +515,19 @@ public class PuzzleGrid : MonoBehaviour {
 		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == CellType.Standard) grid[cellDiagUpLf] = !grid[cellDiagUpLf];
 		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == CellType.Standard) grid[cellDiagDnRt] = !grid[cellDiagDnRt];
 		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == CellType.Standard) grid[cellDiagDnLf] = !grid[cellDiagDnLf];
+	}
+
+	void HoverKnight(int index) {
+		GeniusHighlightClear();
+		if (cellType[index] == CellType.Standard) geniusHighlights[index].enabled = true;
+		int cellDiagUpRt = ReturnCellDiagUpRight(index);
+		int cellDiagUpLf = ReturnCellDiagUpLeft(index);
+		int cellDiagDnRt = ReturnCellDiagDownRight(index);
+		int cellDiagDnLf = ReturnCellDiagDownLeft(index);
+		if (cellDiagUpRt != -1 && cellType[cellDiagUpRt] == CellType.Standard)  geniusHighlights[cellDiagUpRt].enabled = true;
+		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == CellType.Standard)  geniusHighlights[cellDiagUpLf].enabled = true;
+		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == CellType.Standard)  geniusHighlights[cellDiagDnRt].enabled = true;
+		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == CellType.Standard)  geniusHighlights[cellDiagDnLf].enabled = true;
 	}
 
 	// Flip vertically and horizontally adjacent cells across entire puzzle along with center
@@ -510,6 +578,61 @@ public class PuzzleGrid : MonoBehaviour {
 
 			if (cellRight != -1 && cellType[cellRight] == CellType.Standard)
 				grid[cellRight] = !grid[cellRight];
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = cellRight; // move index up to cellAbove
+		}
+	}
+
+	void HoverRook(int index) {
+		GeniusHighlightClear();
+		if (cellType[index] == CellType.Standard) geniusHighlights[index].enabled = true;
+
+		int tempIndex = index;
+		for (int i=0;i<width;i++) {
+			int cellAbove = ReturnCellAbove(tempIndex); // get next cell up
+
+			if (cellAbove != -1 && cellType[cellAbove] == CellType.Standard)
+				geniusHighlights[cellAbove].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+			
+			tempIndex = cellAbove; // move index up to cellAbove
+		}
+
+		tempIndex = index;
+		int cellBelow = -1;
+		for (int i=0;i<width;i++) {
+			cellBelow = ReturnCellBelow(tempIndex); // get next cell up
+
+			if (cellBelow != -1 && cellType[cellBelow] == CellType.Standard)
+				geniusHighlights[cellBelow].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = cellBelow; // move index up to cellAbove
+		}
+
+		tempIndex = index;
+		int cellLeft = -1;
+		for (int i=0;i<width;i++) {
+			cellLeft= ReturnCellToLeft(tempIndex); // get next cell up
+
+			if (cellLeft != -1 && cellType[cellLeft] == CellType.Standard)
+				geniusHighlights[cellLeft].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = cellLeft; // move index up to cellAbove
+		}
+
+		tempIndex = index;
+		for (int i=0;i<width;i++) {
+			int cellRight = ReturnCellToRight(tempIndex); // get next cell up
+
+			if (cellRight != -1 && cellType[cellRight] == CellType.Standard)
+				geniusHighlights[cellRight].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
 
@@ -572,10 +695,181 @@ public class PuzzleGrid : MonoBehaviour {
 		}
 	}
 
+	void HoverBishop(int index) {
+		GeniusHighlightClear();
+		if (cellType[index] == CellType.Standard) geniusHighlights[index].enabled = true;
+		int cellAbove = ReturnCellAbove(index);
+		int cellBelow = ReturnCellBelow(index);
+		int cellDiagUpRt = ReturnCellDiagUpRight(index);
+		int cellDiagUpLf = ReturnCellDiagUpLeft(index);
+		int cellDiagDnRt = ReturnCellDiagDownRight(index);
+		int cellDiagDnLf = ReturnCellDiagDownLeft(index);
+
+		// First run along line up and to the right
+		int tempIndex = cellDiagUpRt;
+		for (int i=0;i<Mathf.Min(height,width);i++) {
+			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+				geniusHighlights[tempIndex].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = ReturnCellDiagUpRight(tempIndex);
+		}
+
+		// Now up and to the left
+		tempIndex = cellDiagUpLf;
+		for (int i=0;i<Mathf.Min(height,width);i++) {
+			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+				geniusHighlights[tempIndex].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = ReturnCellDiagUpLeft(tempIndex);
+		}
+
+		// Now down and to the right
+		tempIndex = cellDiagDnRt;
+		for (int i=0;i<Mathf.Min(height,width);i++) {
+			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+				 geniusHighlights[tempIndex].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = ReturnCellDiagDownRight(tempIndex);
+		}
+
+		// Finally down and to the left
+		tempIndex = cellDiagDnLf;
+		for (int i=0;i<Mathf.Min(height,width);i++) {
+			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+				geniusHighlights[tempIndex].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = ReturnCellDiagDownLeft(tempIndex);
+		}
+	}
+
 	// Flip diagonally adjacent cells and horizontal and vertical across entire puzzle along with center
 	void Queen(int index) {
 		Rook(index);
 		Bishop(index);
 		Pawn(index);
+	}
+
+
+	void HoverQueen(int index) {
+		GeniusHighlightClear();
+		if (cellType[index] == CellType.Standard) geniusHighlights[index].enabled = true;
+
+		int cellAbove;
+		int cellBelow;
+		int cellDiagUpRt;
+		int cellDiagUpLf;
+		int cellDiagDnRt;
+		int cellDiagDnLf;
+		int cellLeft;
+		int cellRight;
+		int tempIndex = index;
+		for (int i=0;i<width;i++) {
+			cellAbove = ReturnCellAbove(tempIndex); // get next cell up
+
+			if (cellAbove != -1 && cellType[cellAbove] == CellType.Standard)
+				geniusHighlights[cellAbove].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+			
+			tempIndex = cellAbove; // move index up to cellAbove
+		}
+
+		tempIndex = index;
+		cellBelow = -1;
+		for (int i=0;i<width;i++) {
+			cellBelow = ReturnCellBelow(tempIndex); // get next cell up
+
+			if (cellBelow != -1 && cellType[cellBelow] == CellType.Standard)
+				geniusHighlights[cellBelow].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = cellBelow; // move index up to cellAbove
+		}
+
+		tempIndex = index;
+		cellLeft = -1;
+		for (int i=0;i<width;i++) {
+			cellLeft= ReturnCellToLeft(tempIndex); // get next cell up
+
+			if (cellLeft != -1 && cellType[cellLeft] == CellType.Standard)
+				geniusHighlights[cellLeft].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = cellLeft; // move index up to cellAbove
+		}
+
+		tempIndex = index;
+		for (int i=0;i<width;i++) {
+			cellRight = ReturnCellToRight(tempIndex); // get next cell up
+
+			if (cellRight != -1 && cellType[cellRight] == CellType.Standard)
+				geniusHighlights[cellRight].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = cellRight; // move index up to cellAbove
+		}
+		if (cellType[index] == CellType.Standard) geniusHighlights[index].enabled = true;
+		cellAbove = ReturnCellAbove(index);
+		cellBelow = ReturnCellBelow(index);
+		cellDiagUpRt = ReturnCellDiagUpRight(index);
+		cellDiagUpLf = ReturnCellDiagUpLeft(index);
+		cellDiagDnRt = ReturnCellDiagDownRight(index);
+		cellDiagDnLf = ReturnCellDiagDownLeft(index);
+
+		// First run along line up and to the right
+		tempIndex = cellDiagUpRt;
+		for (int i=0;i<Mathf.Min(height,width);i++) {
+			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+				geniusHighlights[tempIndex].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = ReturnCellDiagUpRight(tempIndex);
+		}
+
+		// Now up and to the left
+		tempIndex = cellDiagUpLf;
+		for (int i=0;i<Mathf.Min(height,width);i++) {
+			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+				geniusHighlights[tempIndex].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = ReturnCellDiagUpLeft(tempIndex);
+		}
+
+		// Now down and to the right
+		tempIndex = cellDiagDnRt;
+		for (int i=0;i<Mathf.Min(height,width);i++) {
+			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+				 geniusHighlights[tempIndex].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = ReturnCellDiagDownRight(tempIndex);
+		}
+
+		// Finally down and to the left
+		tempIndex = cellDiagDnLf;
+		for (int i=0;i<Mathf.Min(height,width);i++) {
+			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+				geniusHighlights[tempIndex].enabled = true;
+			else
+				break; // blocked by deactivated cells or special
+
+			tempIndex = ReturnCellDiagDownLeft(tempIndex);
+		}
+		geniusHighlights[index].enabled = true;
 	}
 }

@@ -57,7 +57,7 @@ public class Const : MonoBehaviour {
 	[SerializeField] public int[] magazinePitchCountForWeapon;
 	[SerializeField] public int[] magazinePitchCountForWeapon2;
 	[SerializeField] public float[] recoilForWeapon;
-	public enum AttackType{None,Melee,MeleeEnergy,EnergyBeam,Magnetic,Projectile,ProjectileNeedle,ProjectileEnergyBeam,ProjectileLaunched,Gas,Tranq};
+	public enum AttackType{None,Melee,MeleeEnergy,EnergyBeam,Magnetic,Projectile,ProjectileNeedle,ProjectileEnergyBeam,ProjectileLaunched,Gas,Tranq,Drill};
 	[SerializeField] public AttackType[] attackTypeForWeapon;
 	public enum npcType{Mutant,Supermutant,Robot,Cyborg,Supercyborg,Cyber,MutantCyborg};
 	[SerializeField] public npcType[] npcTypes;
@@ -75,6 +75,7 @@ public class Const : MonoBehaviour {
 	[SerializeField] public float[] rangeForNPC2; // Secondary attack range
 	[SerializeField] public float[] rangeForNPC3; // Grenade throw range
 	[SerializeField] public float[] healthForNPC;
+	[SerializeField] public float[] healthForCyberNPC;
 	public enum PerceptionLevel{Low,Medium,High,Omniscient};
 	[SerializeField] public PerceptionLevel[] perceptionForNPC;
 	[SerializeField] public float[] disruptabilityForNPC;
@@ -131,7 +132,10 @@ public class Const : MonoBehaviour {
 						ProjSeedPods, ProjSeedPodsImpacts, TempAudioSources,GrenadeEMPExplosions, ProjEnemShot4,
 						ProjEnemShot4Impacts,CrateExplosions,GrenadeFragLive,CyborgAssassinThrowingStars,
 						ConcussionLive,EMPLive,GasLive,GasExplosions,CorpseHit,NPCMagpulseShots,NPCRailgunShots,
-						LeafBurst,MutationBurst,GraytationBurst,BarrelExplosions};
+						LeafBurst,MutationBurst,GraytationBurst,BarrelExplosions, CyberPlayerShots, CyberDogShots,
+						CyberReaverShots, BulletHoleLarge, BulletHoleScorchLarge, BulletHoleScorchSmall, BulletHoleSmall,
+						BulletHoleTiny, BulletHoleTinySpread, CyberPlayerIceShots, CyberDissolve, TargetIDInstances,
+						AutomapBotOverlays,AutomapCyborgOverlays,AutomapMutantOverlays};
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
 	public GameObject Pool_ProjectilesEnemShot2;
@@ -176,6 +180,21 @@ public class Const : MonoBehaviour {
 	public GameObject Pool_MutationBurst;
 	public GameObject Pool_GraytationBurst;
 	public GameObject Pool_BarrelExplosions;
+	public GameObject Pool_CyberPlayerShots;
+	public GameObject Pool_CyberDogShots;
+	public GameObject Pool_CyberReaverShots;
+	public GameObject Pool_BulletHoleLarge;
+	public GameObject Pool_BulletHoleScorchLarge;
+	public GameObject Pool_BulletHoleScorchSmall;
+	public GameObject Pool_BulletHoleSmall;
+	public GameObject Pool_BulletHoleTiny;
+	public GameObject Pool_BulletHoleTinySpread;
+	public GameObject Pool_CyberPlayerIceShots;
+	public GameObject Pool_CyberDissolve;
+	public GameObject Pool_TargetIDInstances;
+	public GameObject Pool_AutomapBotOverlays;
+	public GameObject Pool_AutomapCyborgOverlays;
+	public GameObject Pool_AutomapMutantOverlays;
 
 	//Global object references
 	public GameObject statusBar;
@@ -203,6 +222,7 @@ public class Const : MonoBehaviour {
 	public int AudioVolumeEffects;
 	public int AudioLanguage;
 	public bool AudioSubtitles;
+	public float MouseSensitivity;
 	public int[] InputCodeSettings;
 	public string[] InputCodes;
 	public string[] InputValues;
@@ -237,7 +257,7 @@ public class Const : MonoBehaviour {
 	public PlayerMovement player1PlayerMovementScript;
 	[HideInInspector]
 	public PlayerHealth player1PlayerHealthScript;
-	public string versionString = "v0.93"; // Global CITADEL PROJECT VERSION
+	public string versionString = "v0.95"; // Global CITADEL PROJECT VERSION
 	private StringBuilder s1;
 	private StringBuilder s2;
 	private static string splitChar = "|";
@@ -245,6 +265,24 @@ public class Const : MonoBehaviour {
 	public Sprite[] logImages;
 	public int[] audioLogImagesRefIndicesLH;
 	public int[] audioLogImagesRefIndicesRH;
+	public MainMenuHandler mmh;
+
+	[HideInInspector]
+	public float camMaxAmount = 0.2548032f;
+	[HideInInspector]
+	public float mapWorldMaxN = 85.83999f;
+	[HideInInspector]
+	public float mapWorldMaxS = -78.00001f;
+	[HideInInspector]
+	public float mapWorldMaxE = -70.44f;
+	[HideInInspector]
+	public float mapWorldMaxW = 93.4f;
+	[HideInInspector]
+	public float mapTileMinX = 8; // top left corner
+	//private float mapTileMaxY = -8; // top left corner
+	[HideInInspector]
+	public float mapTileMinY = -1016; // bottom right corner
+	//private float mapTileMaxX = 1016; // bottom right corner
 
 	//Instance container variable
 	public static Const a;
@@ -381,6 +419,8 @@ public class Const : MonoBehaviour {
 		AudioLanguage = AssignConfigInt("Audio","Language");  // defaults to 0 = english
 		AudioSubtitles = AssignConfigBool("Audio","Subtitles");
 
+		MouseSensitivity = ((AssignConfigInt("Input","MouseSensitivity")/100f) * 2f) + 0.01f;;
+
 		// Input Configurations
 		for (int i=0;i<40;i++) {
 			string inputCapture = INIWorker.IniReadValue("Input",InputCodes[i]);
@@ -417,6 +457,8 @@ public class Const : MonoBehaviour {
 		INIWorker.IniWriteValue("Audio","VolumeEffects",AudioVolumeEffects.ToString());
 		INIWorker.IniWriteValue("Audio","Language",AudioLanguage.ToString());
 		INIWorker.IniWriteValue("Audio","Subtitles",GetBoolAsString(AudioSubtitles));
+		int ms = (int)(MouseSensitivity/2f*100f);
+		INIWorker.IniWriteValue("Input","MouseSensitivity",ms.ToString());
 		for (int i=0;i<40;i++) {
 			INIWorker.IniWriteValue("Input",InputCodes[i],InputValues[InputCodeSettings[i]]);
 		}
@@ -631,6 +673,16 @@ public class Const : MonoBehaviour {
 	public static string GetTargetID(int npc23Index) {
 		Const.a.npcCount[npc23Index]++;
 		return Const.a.nameForNPC[npc23Index] + Const.a.npcCount[npc23Index];
+	}
+
+	public static string GetCyberTargetID (int cyberNPCIndex) {
+		switch(cyberNPCIndex) {
+			case 0: return Const.a.stringTable[499];
+			case 1: return Const.a.stringTable[500];
+			case 2: return Const.a.stringTable[501];
+			case 3: return Const.a.stringTable[502];
+		}
+		return Const.a.stringTable[503];
 	}
 
 	public static void sprintByIndexOrOverride (int index, string overrideString, GameObject playerPassed) {
@@ -871,6 +923,66 @@ public class Const : MonoBehaviour {
 			poolContainer = Pool_BarrelExplosions;
 			poolName = "BarrelExplosions ";
 			break;
+		case PoolType.CyberPlayerShots:
+			poolContainer = Pool_CyberPlayerShots;
+			poolName = "CyberPlayerShots ";
+			break;
+		case PoolType.CyberDogShots:
+			poolContainer = Pool_CyberDogShots;
+			poolName = "CyberDogShots ";
+			break;
+		case PoolType.CyberReaverShots:
+			poolContainer = Pool_CyberReaverShots;
+			poolName = "CyberReaverShots ";
+			break;
+		case PoolType.BulletHoleLarge:
+			poolContainer = Pool_BulletHoleLarge;
+			poolName = "BulletHoleLarge ";
+			break;
+		case PoolType.BulletHoleScorchLarge:
+			poolContainer = Pool_BulletHoleScorchLarge;
+			poolName = "BulletHoleScorchLarge ";
+			break;
+		case PoolType.BulletHoleScorchSmall:
+			poolContainer = Pool_BulletHoleScorchSmall;
+			poolName = "BulletHoleScorchSmall ";
+			break;
+		case PoolType.BulletHoleSmall:
+			poolContainer = Pool_BulletHoleSmall;
+			poolName = "BulletHoleSmall ";
+			break;
+		case PoolType.BulletHoleTiny:
+			poolContainer = Pool_BulletHoleTiny;
+			poolName = "BulletHoleTiny ";
+			break;
+		case PoolType.BulletHoleTinySpread:
+			poolContainer = Pool_BulletHoleTinySpread;
+			poolName = "BulletHoleTinySpread ";
+			break;
+		case PoolType.CyberPlayerIceShots:
+			poolContainer = Pool_CyberPlayerIceShots;
+			poolName = "CyberPlayerIceShots ";
+			break;
+		case PoolType.CyberDissolve:
+			poolContainer = Pool_CyberDissolve;
+			poolName = "CyberDissolve ";
+			break;
+		case PoolType.TargetIDInstances:
+			poolContainer = Pool_TargetIDInstances;
+			poolName = "TargetIDInstances ";
+			break;
+		case PoolType.AutomapBotOverlays:
+			poolContainer = Pool_AutomapBotOverlays;
+			poolName = "AutomapBotOverlays ";
+			break;
+		case PoolType.AutomapCyborgOverlays:
+			poolContainer = Pool_AutomapCyborgOverlays;
+			poolName = "AutomapCyborgOverlays ";
+			break;
+		case PoolType.AutomapMutantOverlays:
+			poolContainer = Pool_AutomapMutantOverlays;
+			poolName = "AutomapMutantOverlays ";
+			break;
         }
 
 		if (poolContainer == null) {
@@ -1073,24 +1185,37 @@ public class Const : MonoBehaviour {
 		line += splitChar + pm.ladderState.ToString();
 		line += splitChar + pm.gravliftState.ToString();
 		line += splitChar + pm.inCyberSpace.ToString();
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExploredR[j] ? "1": "0"); }
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored1[j] ? "1": "0"); }
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored2[j] ? "1": "0"); }
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored3[j] ? "1": "0"); }
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored4[j] ? "1": "0"); }
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored5[j] ? "1": "0"); }
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored6[j] ? "1": "0"); }
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored7[j] ? "1": "0"); }
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored8[j] ? "1": "0"); }
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored9[j] ? "1": "0"); }
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExploredG1[j] ? "1": "0"); }
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExploredG2[j] ? "1": "0"); }
+		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExploredG4[j] ? "1": "0"); }
 		line += splitChar + pm.CheatWallSticky.ToString();
 		line += splitChar + pm.CheatNoclip.ToString();
 		line += splitChar + pm.jumpTime.ToString();
 		line += splitChar + (pm.oldVelocity.x.ToString("0000.00000") + splitChar + pm.oldVelocity.y.ToString("0000.00000") + splitChar + pm.oldVelocity.z.ToString("0000.00000"));
 		line += splitChar + pm.fatigue.ToString();
 		line += splitChar + pm.justJumped.ToString();
-		line += splitChar + pm.fatigueFinished.ToString();
-		line += splitChar + pm.fatigueFinished2.ToString();
+		line += splitChar + pm.fatigueFinished.ToString("0000.00000");
+		line += splitChar + pm.fatigueFinished2.ToString("0000.00000");
 		line += splitChar + pm.running.ToString();
 		line += splitChar + pm.cyberSetup.ToString();
 		line += splitChar + pm.cyberDesetup.ToString();
 		line += splitChar + pm.oldBodyState.ToString();
 		line += splitChar + pm.consoleActivated.ToString();
-		line += splitChar + pm.leanLeftDoubleFinished.ToString();
-		line += splitChar + pm.leanRightDoubleFinished.ToString();
+		line += splitChar + pm.leanLeftDoubleFinished.ToString("0000.00000");
+		line += splitChar + pm.leanRightDoubleFinished.ToString("0000.00000");
 		line += splitChar + pm.leanTarget.ToString();
 		line += splitChar + pm.leanShift.ToString();
-		line += splitChar + pm.jumpSFXFinished.ToString();
+		line += splitChar + pm.jumpSFXFinished.ToString("0000.00000");
 		line += splitChar + pm.jumpLandSoundFinished.ToString();
 		line += splitChar + pm.jumpJetEnergySuckTickFinished.ToString();
 		line += splitChar + pm.leanLHFirstPressed.ToString();
@@ -1098,8 +1223,9 @@ public class Const : MonoBehaviour {
 		line += splitChar + pm.leanLHReset.ToString();
 		line += splitChar + pm.leanRHReset.ToString();
 		line += splitChar + pm.fatigueWarned.ToString();
-		line += splitChar + pm.ressurectingFinished.ToString();
-		line += splitChar + pm.doubleJumpFinished.ToString();
+		line += splitChar + pm.ressurectingFinished.ToString("0000.00000");
+		line += splitChar + pm.doubleJumpFinished.ToString("0000.00000");
+		line += splitChar + pm.turboFinished.ToString("0000.00000");
 		line += splitChar + pp.berserkFinishedTime.ToString("0000.00000");
 		line += splitChar + pp.berserkIncrementFinishedTime.ToString("0000.00000");
 		line += splitChar + pp.detoxFinishedTime.ToString("0000.00000");
@@ -1134,8 +1260,10 @@ public class Const : MonoBehaviour {
 		line += splitChar + (ml.cyberspaceReturnPoint.x.ToString("0000.00000") + splitChar + ml.cyberspaceReturnPoint.y.ToString("0000.00000") + splitChar + ml.cyberspaceReturnPoint.z.ToString("0000.00000"));
 		line += splitChar + (ml.cyberspaceReturnCameraLocalRotation.x.ToString("0000.00000") + splitChar + ml.cyberspaceReturnCameraLocalRotation.y.ToString("0000.00000") + splitChar + ml.cyberspaceReturnCameraLocalRotation.z.ToString("0000.00000"));
 		line += splitChar + (ml.cyberspaceReturnPlayerCapsuleLocalRotation.x.ToString("0000.00000") + splitChar + ml.cyberspaceReturnPlayerCapsuleLocalRotation.y.ToString("0000.00000") + splitChar + ml.cyberspaceReturnPlayerCapsuleLocalRotation.z.ToString("0000.00000"));
+		line += splitChar + (ml.cyberspaceRecallPoint.x.ToString("0000.00000") + splitChar + ml.cyberspaceRecallPoint.y.ToString("0000.00000") + splitChar + ml.cyberspaceRecallPoint.z.ToString("0000.00000"));
 		line += splitChar + ml.cyberspaceReturnLevel.ToString();
 		line += splitChar + hm.health.ToString("0000.00000");
+		line += splitChar + hm.cyberHealth.ToString("0000.00000");
 		line += splitChar + hm.deathDone.ToString();
 		line += splitChar + hm.god.ToString();
 		line += splitChar + hm.teleportDone.ToString();
@@ -1289,6 +1417,7 @@ public class Const : MonoBehaviour {
 		string line = System.String.Empty;
 		if (hm != null) {
 			line = hm.health.ToString("0000.00000"); lineSlotsCount_GetHealthManagerSaveData++; // how much health we have
+			line += splitChar + hm.cyberHealth.ToString("0000.00000"); lineSlotsCount_GetHealthManagerSaveData++; // how much health we have
 			line += splitChar + hm.deathDone.ToString(); lineSlotsCount_GetHealthManagerSaveData++; // bool - are we dead yet?
 			line += splitChar + hm.god.ToString(); lineSlotsCount_GetHealthManagerSaveData++; // are we invincible? - we can save cheats?? OH WOW!
 			line += splitChar + hm.teleportDone.ToString(); lineSlotsCount_GetHealthManagerSaveData++; // did we already teleport?
@@ -2171,6 +2300,19 @@ public class Const : MonoBehaviour {
 		pm.ladderState = GetBoolFromString(entries[index]); index++;
 		pm.gravliftState = GetBoolFromString(entries[index]); index++;
 		pm.inCyberSpace = GetBoolFromString(entries[index]); index++;
+		for (j=0;j<4096;j++) { pm.automapExploredR[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored1[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored2[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored3[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored4[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored5[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored6[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored7[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored8[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored9[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExploredG1[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExploredG2[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExploredG4[j] = entries[index].Equals("1"); index++; }
 		pm.CheatWallSticky = GetBoolFromString(entries[index]); index++;
 		pm.CheatNoclip = GetBoolFromString(entries[index]); index++;
 		pm.jumpTime = GetFloatFromString(entries[index],currentline); index++;
@@ -2199,6 +2341,7 @@ public class Const : MonoBehaviour {
 		pm.leanLHReset = GetBoolFromString(entries[index]); index++;
 		pm.leanRHReset = GetBoolFromString(entries[index]); index++;
 		pm.fatigueWarned = GetBoolFromString(entries[index]); index++;
+		pm.turboFinished = GetFloatFromString(entries[index],currentline); index++;
 		pm.ressurectingFinished = GetFloatFromString(entries[index],currentline); index++;
 		pm.doubleJumpFinished = GetFloatFromString(entries[index],currentline); index++;
 		pp.berserkFinishedTime = GetFloatFromString(entries[index],currentline); index++;
@@ -2266,8 +2409,13 @@ public class Const : MonoBehaviour {
 		readFloaty = GetFloatFromString(entries[index],currentline); index++;
 		readFloatz = GetFloatFromString(entries[index],currentline); index++;
 		ml.cyberspaceReturnPlayerCapsuleLocalRotation = new Vector3(readFloatx,readFloaty,readFloatz);
+		readFloatx = GetFloatFromString(entries[index],currentline); index++;
+		readFloaty = GetFloatFromString(entries[index],currentline); index++;
+		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		ml.cyberspaceRecallPoint = new Vector3(readFloatx,readFloaty,readFloatz);
 		ml.cyberspaceReturnLevel = GetIntFromString(entries[index],currentline,"savegame",index); index++;
 		hm.health = GetFloatFromString(entries[index],currentline); index++; // how much health we have
+		hm.cyberHealth = GetFloatFromString(entries[index],currentline); index++;
 		hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
 		hm.god = GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
 		hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport?
@@ -2323,7 +2471,8 @@ public class Const : MonoBehaviour {
 		for (j=0;j<13;j++) { hi.hasHardware[j] = GetBoolFromString(entries[index]); index++; }
 		if (HardwareInventory.a.hasHardware[1]) {
 			ml.compassContainer.SetActive(true);
-			ml.automapContainer.SetActive(true);
+			ml.automapContainerLH.SetActive(true);
+			ml.automapContainerRH.SetActive(true);
 		}
 		for (j=0;j<13;j++) { hi.hardwareVersion[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
 		for (j=0;j<13;j++) { hi.hardwareVersionSetting[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
@@ -2624,12 +2773,13 @@ public class Const : MonoBehaviour {
 								rbody.isKinematic = false;
 							}
 						}
+						hm.cyberHealth = GetFloatFromString(entries[index],currentline); index++;
 						hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
 						hm.god = GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
 						hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport?
 						hm.AwakeFromLoad();
 					} else {
-						index += 4;
+						index += 5;
 					}
 					if (aiac != null) {
 						aiac.currentClipPercentage = GetFloatFromString(entries[index],currentline); index++; // float
@@ -2645,7 +2795,7 @@ public class Const : MonoBehaviour {
 						currentGameObject.transform.localPosition = tempV;
 					}
 				} else {
-					index += 10;
+					index += 11;
 				}
 				break;
 			case SaveObject.SaveableType.Destructable:
@@ -2688,6 +2838,7 @@ public class Const : MonoBehaviour {
 				}
 				if (hm != null) {
 					hm.health = GetFloatFromString(entries[index],currentline); index++; // how much health we have
+					hm.cyberHealth = GetFloatFromString(entries[index],currentline); index++;
 					hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
 					hm.god = GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
 					hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport?
@@ -3151,8 +3302,16 @@ public class Const : MonoBehaviour {
 	}
 
 	public void SetVolume() {
-		AudioListener.volume = (AudioVolumeMaster/100f);
-		mainmenuMusic.volume = (AudioVolumeMusic/100f);
+		if (mmh.dataFound) {
+			AudioListener.volume = (AudioVolumeMaster/100f);
+			mainmenuMusic.volume = (AudioVolumeMusic/100f);
+			if (Music.a != null) {
+				if (Music.a.SFXMain != null) Music.a.SFXMain.volume = (AudioVolumeMusic/100f);
+				if (Music.a.SFXOverlay != null) Music.a.SFXOverlay.volume = (AudioVolumeMusic/100f);
+			}
+		} else {
+			AudioListener.volume = 0f;
+		}
 	}
 
 	public void RegisterObjectWithHealth(HealthManager hm) {

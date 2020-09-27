@@ -17,8 +17,9 @@ public class ObjectImpact : MonoBehaviour {
 	void Start () {
 		rbody = GetComponent<Rigidbody> ();
 		if (rbody == null) {
-			Const.sprint ("ERROR: No rigidbody found on object with ObjectImpact script!", Const.a.allPlayers);
+			//Const.sprint ("ERROR: No rigidbody found on object with ObjectImpact script!", Const.a.allPlayers);
 			//transform.gameObject.SetActive (false);
+			this.enabled = false;
 		}
 		SFXSource = GetComponent<AudioSource> ();
 	}

@@ -36,7 +36,7 @@ public class PuzzleWirePuzzle : MonoBehaviour {
 		}
 	}
 
-	public void SendDataBackToPanel(PuzzleWire pw) {
+	public void SendDataBackToPanel(PuzzleWire pw, bool stillInUse) {
 		currentPositionsLeft[0] = pw.wire1LHPosition;
 		currentPositionsLeft[1] = pw.wire2LHPosition;
 		currentPositionsLeft[2] = pw.wire3LHPosition;
@@ -51,7 +51,7 @@ public class PuzzleWirePuzzle : MonoBehaviour {
 		currentPositionsRight[4] = pw.wire5RHPosition;
 		currentPositionsRight[5] = pw.wire6RHPosition;
 		currentPositionsRight[6] = pw.wire7RHPosition;
-		inUse = false;
+		inUse = stillInUse;
 	}
 
 	public void Use (UseData ud) {

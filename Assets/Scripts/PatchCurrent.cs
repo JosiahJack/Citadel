@@ -13,8 +13,8 @@ public class PatchCurrent : MonoBehaviour {
 	
 	void Awake() {
 		PatchInstance = this;
-		PatchInstance.patchCurrent = 0; // Current slot in the grenade inventory (7 slots)
-		PatchInstance.patchIndex = 0; // Current index to the grenade look-up tables
+		PatchInstance.patchCurrent = 0; // Current slot in the patch inventory (7 slots)
+		PatchInstance.patchIndex = 0; // Current index to the look-up tables
 	}
 
 	void Update() {

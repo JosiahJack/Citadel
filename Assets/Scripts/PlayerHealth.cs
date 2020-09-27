@@ -18,6 +18,7 @@ public class PlayerHealth : MonoBehaviour {
 	public AudioClip PainSFXClip;
 	public AudioClip RadiationClip;
 	public AudioClip ShieldClip;
+	public AudioClip CyberMineSFXClip;
 	public GameObject cameraObject;
 	public GameObject radiationEffect;
 	public GameObject shieldEffect;
@@ -33,6 +34,7 @@ public class PlayerHealth : MonoBehaviour {
 	public int mediPatchPulseCount = 0; // save
 	public bool makingNoise = false; // save
 	public HealthTickManager playerHealthTicks;
+	public HealthTickManager playerCyberHealthTicks;
 	[HideInInspector]
 	public HealthManager hm;
 
@@ -196,23 +198,28 @@ public class PlayerHealth : MonoBehaviour {
 			pp.DisableAllPatches();
 			pp.playerMovementScript.fatigue = 0f;
 		} else {
-			hm.pstatic.Deactivate();
-			// Death to Main Menu
-			if (mls.inventoryMode == false) {
-				mls.ToggleInventoryMode();
-				mls.ToggleAudioPause();
-			}
-			PauseScript.a.mainMenu.SetActive(true);
-			PauseScript.a.mainMenu.GetComponent<MainMenuHandler>().returnToPause = false;
-			/*
-			#if UNITY_EDITOR
-			if (Application.isEditor) {
-				EditorApplication.isPlaying = false;
-				return;
-			}
-			#endif
-			*/
+			// Game Over
+			PlayerDeathToMenu(mls);
 		}
+	}
+
+	public void PlayerDeathToMenu(MouseLookScript mls) {
+		hm.pstatic.Deactivate();
+		// Death to Main Menu
+		if (mls.inventoryMode == false) {
+			mls.ToggleInventoryMode();
+			mls.ToggleAudioPause();
+		}
+		PauseScript.a.mainMenu.SetActive(true);
+		PauseScript.a.mainMenu.GetComponent<MainMenuHandler>().returnToPause = false;
+		/*
+		#if UNITY_EDITOR
+		if (Application.isEditor) {
+			EditorApplication.isPlaying = false;
+			return;
+		}
+		#endif
+		*/
 	}
 
 	public void GiveRadiation (float rad) {

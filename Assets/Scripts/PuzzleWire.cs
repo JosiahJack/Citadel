@@ -157,42 +157,57 @@ public class PuzzleWire : MonoBehaviour {
 						numberOfWires++;
 				}
 
-				for (tempInt = 0; tempInt < 7; tempInt++) {
-					if (wireIsActive[tempInt]) {
-						switch (tempInt) {
-							case 0:
-								geniusHintsLH[wire1LHTarget].enabled = true;
-								geniusHintsRH[wire1RHTarget].enabled = true;
-								break;
-							case 1:
-								geniusHintsLH[wire2LHTarget].enabled = true;
-								geniusHintsRH[wire2RHTarget].enabled = true;
-								break;
-							case 2:
-								geniusHintsLH[wire3LHTarget].enabled = true;
-								geniusHintsRH[wire3RHTarget].enabled = true;
-								break;
-							case 3:
-								geniusHintsLH[wire4LHTarget].enabled = true;
-								geniusHintsRH[wire4RHTarget].enabled = true;
-								break;
-							case 4:
-								geniusHintsLH[wire5LHTarget].enabled = true;
-								geniusHintsRH[wire5RHTarget].enabled = true;
-								break;
-							case 5:
-								geniusHintsLH[wire6LHTarget].enabled = true;
-								geniusHintsRH[wire6RHTarget].enabled = true;
-								break;
-							case 6:
-								geniusHintsLH[wire7LHTarget].enabled = true;
-								geniusHintsRH[wire7RHTarget].enabled = true;
-								break;
-						}
-					}
+				if (Const.a.difficultyPuzzle == 3) {
+					// Set all wire colors to the same on hard
+					wireColors[0] = rememberColors[0];
+					wireColors[1] = rememberColors[1];
+					wireColors[2] = rememberColors[2];
+					wireColors[3] = rememberColors[3];
+					wireColors[4] = rememberColors[4];
+					wireColors[5] = rememberColors[5];
+					wireColors[6] = rememberColors[6];
+				}
+
+				if (wireIsActive[0]) {
+						geniusHintsLH[wire1LHTarget].enabled = true;
+						geniusHintsRH[wire1RHTarget].enabled = true;
+				}
+				if (wireIsActive[1]) {
+						geniusHintsLH[wire2LHTarget].enabled = true;
+						geniusHintsRH[wire2RHTarget].enabled = true;
+				}
+				if (wireIsActive[2]) {
+						geniusHintsLH[wire3LHTarget].enabled = true;
+						geniusHintsRH[wire3RHTarget].enabled = true;
+				}
+				if (wireIsActive[3]) {
+						geniusHintsLH[wire4LHTarget].enabled = true;
+						geniusHintsRH[wire4RHTarget].enabled = true;
+				}
+				if (wireIsActive[4]) {
+						geniusHintsLH[wire5LHTarget].enabled = true;
+						geniusHintsRH[wire5RHTarget].enabled = true;
+				}
+				if (wireIsActive[5]) {
+						geniusHintsLH[wire6LHTarget].enabled = true;
+						geniusHintsRH[wire6RHTarget].enabled = true;
+				}
+				if (wireIsActive[6]) {
+						geniusHintsLH[wire7LHTarget].enabled = true;
+						geniusHintsRH[wire7RHTarget].enabled = true;
 				}
 			} else {
 				DisableGeniusHints();
+				if (Const.a.difficultyPuzzle == 3) {
+					// Set all wire colors to the same on hard
+					wireColors[0] = WireColor.Yellow;
+					wireColors[1] = WireColor.Yellow;
+					wireColors[2] = WireColor.Yellow;
+					wireColors[3] = WireColor.Yellow;
+					wireColors[4] = WireColor.Yellow;
+					wireColors[5] = WireColor.Yellow;
+					wireColors[6] = WireColor.Yellow;
+				}
 			}
 
 			if (!Solved) {
@@ -396,6 +411,7 @@ public class PuzzleWire : MonoBehaviour {
 		} else {
 			SelectWireLH(spot);
 		}
+		puzzleWP.SendDataBackToPanel(this,true);
 	}
 
 	public void ClickRHNode(int spot) {
@@ -410,6 +426,7 @@ public class PuzzleWire : MonoBehaviour {
 		} else {
 			SelectWireRH(spot);
 		}
+		puzzleWP.SendDataBackToPanel(this,true);
 	}
 
 	public void SelectWireLH(int spot) {

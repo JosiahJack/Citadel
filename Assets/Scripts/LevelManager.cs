@@ -29,6 +29,7 @@ public class LevelManager : MonoBehaviour {
 	public enum SecurityType{None,Camera,NodeSmall,NodeLarge};
 	public Level[] levelScripts;
 	public int currentLeaf;
+	public Transform[] levelGeometryContainers;
 
 	void Awake () {
 		a = this;
@@ -100,9 +101,10 @@ public class LevelManager : MonoBehaviour {
 				ressurectionBayDoor[6].ForceClose();
 			} else {
 				ressurectionBayDoor[currentLevel].ForceClose();
-				currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = ressurectionLocation[currentLevel].position; //teleport to ressurection chamber
+				currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = transform.TransformPoint(ressurectionLocation[currentLevel].position); //teleport to ressurection chamber
 			}
 			currentPlayer.GetComponent<PlayerReferenceManager>().playerDeathRessurectEffect.SetActive(true); // activate death screen and readouts for "BRAIN ACTIVITY SATISFACTORY"            ya debatable right
+			Music.a.PlayTrack(currentLevel,Music.TrackType.Revive,Music.MusicType.Override);
 			currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerMovement>().ressurectingFinished = PauseScript.a.relativeTime + 3f;
 
 			return true;
@@ -136,10 +138,14 @@ public class LevelManager : MonoBehaviour {
 		} else {
 			pos = targetDestination.transform.position;
 		}
-		currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = pos; // Put player in the new level
+		PlayerReferenceManager prm = currentPlayer.GetComponent<PlayerReferenceManager>();
+		prm.playerCapsule.transform.position = pos; // Put player in the new level
+		PlayerMovement pm = prm.playerCapsule.GetComponent<PlayerMovement>();
+		pm.SetAutomapExploredReference(levnum);
+		pm.automapBaseImage.texture = pm.automapsBaseImages[levnum];
 
 		levels[levnum].SetActive(true); // enable new level
-		currentPlayer.GetComponent<PlayerReferenceManager>().playerCurrentLevel = levnum;
+		prm.playerCurrentLevel = levnum;
 		PutBackCurrentLevelNPCs();
 		currentLevel = levnum; // Set current level to be the new level
 		DisableAllNonOccupiedLevels();

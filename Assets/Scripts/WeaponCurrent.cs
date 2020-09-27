@@ -64,7 +64,7 @@ public class WeaponCurrent : MonoBehaviour {
 	void Start() {
 		WepInstance = this;
 		WepInstance.weaponCurrent = 0; // Current slot in the weapon inventory (7 slots)
-		WepInstance.weaponIndex = 0; // Current index to the weapon look-up tables
+		WepInstance.weaponIndex = -1; // Current index to the weapon look-up tables
 		WepInstance.SFX = GetComponent<AudioSource> ();
 		// Put energy settings to lowest energy level as default
 		for (int j=0;j<7;j++) {

@@ -10,6 +10,7 @@ public class HealthTickManager : MonoBehaviour {
 	private Image tickImage;
 	private int tempSpriteIndex;
 	private float lasthealth;
+	public bool isCyberHealth = false;
 
 	void Awake () {
 		tickImage = GetComponent<Image>();
@@ -28,6 +29,7 @@ public class HealthTickManager : MonoBehaviour {
 		tempSpriteIndex = -1;
 		int step = 0;
 		float h = playerHealth.hm.health;
+		if (isCyberHealth) h = playerHealth.hm.cyberHealth;
 		if (h > 255f) h = 255f; // always display ticks properly no matter what crazy health we've been hacked to have
 		while (step < 256) {
 			if (h < (256 - step)) {

@@ -55,7 +55,10 @@ public class GeneralInvButton : MonoBehaviour {
             GeneralInvCurrent.GeneralInvInstance.generalInvCurrent = GeneralInvButtonIndex;  //Set current
         }
 
-		if (reduce) playerGenInv.generalInventoryIndexRef[GeneralInvButtonIndex] = -1;
+		if (reduce)  {
+			playerGenInv.generalInventoryIndexRef[GeneralInvButtonIndex] = -1;
+			GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+		}
 	}
 
     void Start() {

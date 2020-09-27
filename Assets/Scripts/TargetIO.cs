@@ -57,6 +57,7 @@ public class TargetIO : MonoBehaviour {
 	public bool awakeSleepingEnemy; // awaken a sleeping enemy, e.g. the sec-2 bots that are in repair sleep on level 8
 	public bool branchFlip; // flip logic_branchs
 	public bool branchFlipOnly; // only flip the branch, not flip and fire
+	public bool doorAccessCardOverrideToggle; // set that access card has already been used
 	private UseData tempUD;
 
 	void Start() {
@@ -144,6 +145,13 @@ public class TargetIO : MonoBehaviour {
 			if (dr != null) {
 				dr.Unlock();
 				dr.accessCardUsedByPlayer = true;
+			}
+		}
+
+		if (tempUD.doorAccessCardOverrideToggle) {
+			Door dr = GetComponent<Door>();
+			if (dr != null) {
+				dr.accessCardUsedByPlayer = !dr.accessCardUsedByPlayer;
 			}
 		}
 
@@ -410,6 +418,7 @@ public class UseData {
 	public bool awakeSleepingEnemy; // awaken a sleeping enemy, e.g. the sec-2 bots that are in repair sleep on level 8
 	public bool branchFlip; // flip logic_branchs
 	public bool branchFlipOnly; // only flip the branch, not flip and fire
+	public bool doorAccessCardOverrideToggle; // set that access card has already been used
 
 	// function for reseting all data if needed
 	public void Reset (UseData ud) {
@@ -468,6 +477,7 @@ public class UseData {
 		awakeSleepingEnemy = tio.awakeSleepingEnemy;
 		branchFlip = tio.branchFlip;
 		branchFlipOnly = tio.branchFlipOnly;
+		doorAccessCardOverrideToggle = tio.doorAccessCardOverrideToggle;
 		bitsSet = true;
 	}
 }

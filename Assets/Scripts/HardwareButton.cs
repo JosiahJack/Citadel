@@ -31,6 +31,7 @@ public class HardwareButton : MonoBehaviour {
 	public GameObject bioMonitorContainer;
 	public Light infraredLight;
 	public GameObject playerCamera;
+	public GameObject gunCamera;
 	public HeadMountedLantern hml;
 	public PlayerEnergy pe;
 	private float blinkFinished;
@@ -311,7 +312,7 @@ public class HardwareButton : MonoBehaviour {
 
 	// called by PlayerEnergy when exhausted energy to 0
 	public void ShieldOff() {
-		Debug.Log("ShieldOff");
+		//Debug.Log("ShieldOff");
 		toggleState = false;
 		hwc.hardwareIsActive [5] = toggleState;
 		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
@@ -369,9 +370,11 @@ public class HardwareButton : MonoBehaviour {
 		if (toggleState) {
 			infraredLight.enabled = true;
 			playerCamera.GetComponent<Grayscale>().enabled = true;
+			gunCamera.GetComponent<Grayscale>().enabled = true;
 		} else {
 			infraredLight.enabled = false;
 			playerCamera.GetComponent<Grayscale>().enabled = false;
+			gunCamera.GetComponent<Grayscale>().enabled = false;
 		}
 	}
 
@@ -382,6 +385,7 @@ public class HardwareButton : MonoBehaviour {
 		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
 		infraredLight.enabled = false;
 		playerCamera.GetComponent<Grayscale>().enabled = false;
+		gunCamera.GetComponent<Grayscale>().enabled = false;
 	}
 
 	public void EReaderClick () {

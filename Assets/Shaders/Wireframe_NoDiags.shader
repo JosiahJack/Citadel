@@ -3,13 +3,16 @@ Shader "Custom/Geometry/Wireframe" {
         [PowerSlider(3.0)]
         _WireframeVal ("Wireframe width", Range(0., 0.5)) = 0.05
         _Color ("Wire color", color) = (1., 1., 1., 1.)
+		_CenterAlpha ("CenterAlpha", Range(0.,1.0)) = 0.02
         [Toggle] _RemoveDiag("Remove diagonals?", Float) = 0.
     }
     SubShader {
-        Tags { "Queue"="Geometry" "RenderType"="Opaque" }
+        Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" }
 
         Pass {
             Cull Front
+			Blend SrcAlpha One
+			Blend SrcAlpha OneMinusSrcAlpha
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -66,10 +69,12 @@ Shader "Custom/Geometry/Wireframe" {
 
             float _WireframeVal;
             fixed4 _Color;
+			float _CenterAlpha;
 
             fixed4 frag(g2f i) : SV_Target {
-            if(!any(bool3(i.bary.x < _WireframeVal, i.bary.y < _WireframeVal, i.bary.z < _WireframeVal)))
-                 discard;
+				if(!any(bool3(i.bary.x < _WireframeVal, i.bary.y < _WireframeVal, i.bary.z < _WireframeVal)))
+					return fixed4(_Color.r, _Color.g, _Color.b, _CenterAlpha);
+					//discard;
 
                 return _Color;
             }
@@ -79,6 +84,8 @@ Shader "Custom/Geometry/Wireframe" {
 
         Pass {
             Cull Back
+			Blend SrcAlpha One
+			Blend SrcAlpha OneMinusSrcAlpha
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -135,10 +142,12 @@ Shader "Custom/Geometry/Wireframe" {
 
             float _WireframeVal;
             fixed4 _Color;
+			float _CenterAlpha;
 
             fixed4 frag(g2f i) : SV_Target {
-            if(!any(bool3(i.bary.x <= _WireframeVal, i.bary.y <= _WireframeVal, i.bary.z <= _WireframeVal)))
-                 discard;
+				if(!any(bool3(i.bary.x <= _WireframeVal, i.bary.y <= _WireframeVal, i.bary.z <= _WireframeVal)))
+					return fixed4(_Color.r, _Color.g, _Color.b, _CenterAlpha);
+					//discard;
 
                 return _Color;
             }

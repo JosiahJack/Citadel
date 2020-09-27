@@ -56,7 +56,6 @@ public class QuestBitRelay : MonoBehaviour {
 		if (SelfDestructActivated) Const.a.questData.SelfDestructActivated = true;
 		if (BridgeSeparated) Const.a.questData.BridgeSeparated = true;
 		if (IsolinearChipsetInstalled) Const.a.questData.IsolinearChipsetInstalled = true;
-
 		Const.a.DebugQuestBitShoutOut();
 	}
 

@@ -307,7 +307,7 @@ No more of any ammo type to load.
 Level security now 
 %
 Saved slot 
-"Trioptimum Funpack Module, don't play on company time!"
+Trioptimum Funpack Module, don't play on company time!
  picked up.  Proper hardware not detected to play.
 Can't use grenade, hands full
 Already activated.
@@ -440,3 +440,96 @@ CHIPTHING HARDWARE
 DC RUBBER SLUGS
 ADMIN ACCESS CARD
 Entering Cyberspace!
+level 1 elevator taken off line - SHODAN security block established 04.NOV.72
+Cannot play games in cyberspace!
+I.C.E. DRILL v
+PULSER v
+CYBERSHIELD v
+TURBO software acquired.
+DECOY software acquired.
+RECALL software acquired.
+"Ping" GAMES software acquired.
+"15" GAMES software acquired.
+"Wing 0" GAMES software acquired.
+"Botbounce" GAMES software acquired.
+"Eel Zapper" GAMES software acquired.
+"Road" GAMES software acquired.
+"TriopToe" GAMES software acquired.
+new DATA object acquired.
+ software acquired.
+Personal integrity restored.
+Cannot use outside of cyberspace.
+Cybershield always passively active.
+SHODAN security presence controlled by CPU's and maintained by security cameras
+medical security door lock
+Commandos prepare to move to Level 2 core
+Map hardware version doesn't support zoom.
+Security to Level 2 computer nodes
+Bay Door No. 3 unlocked.
+Flight Bay armory unlocked.
+Storage closet unlocked - I.D. Edward Diego.
+Gamma quad in Exec level now property of Edward Diego
+Beta grove elevator unlocked.
+Detention cells unlocked.
+Out of expendable softwares.
+Current level security:
+Mining laser status:
+Lifepod status:
+Station shield status:
+Reactor status:
+Processor nodes:
+Main Program:
+Alpha Grove status:
+Beta Grove status:
+Gamma Grove status:
+Delta Grove status:
+Charging
+ERROR
+Disabled
+Enabled
+Off
+On
+Overload!
+Normal
+Launched
+Preparing laser
+Cultivating virus
+Downloading to earth
+Bridge separation
+Travel to earth
+Cyber Dog
+Cyber Guard
+Cyber Defender
+Cyber Reaver
+Data violation
+Time Until Laser Fires -
+Time Until Download Complete -
+Bridge Antenna in Range in -
+Bridge Separation Countdown -
+Radiation Release Countdown -
+Radiation Released!
+Target Identifier is always passively active.
+NO DAMAGE
+MINOR DAMAGE
+NORMAL DAMAGE
+SEVERE DAMAGE
+MAJOR DAMAGE
+Idle
+Cautious
+Hostile
+Asleep
+MEDI
+STAMINUP
+SIGHT
+GENIUS
+BERSERK
+REFLEX
+Biomonitor Active:
+Heart Rate:
+Patches Active:
+BPM
+DETOX
+Fatigue:
+High!
+Moderate
+Low

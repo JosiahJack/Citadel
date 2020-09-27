@@ -4,6 +4,7 @@ using System.Collections;
 
 public class PlayerPatch : MonoBehaviour {
 	public GameObject playerCamera;
+	public GameObject gunCamera;
 	[HideInInspector]
 	public float berserkFinishedTime; // save
 	[HideInInspector]
@@ -48,6 +49,7 @@ public class PlayerPatch : MonoBehaviour {
 	public Image sightDimming;
 	public PatchInventory playerPI;
 	private UnityStandardAssets.ImageEffects.BerserkEffect berserk;
+	private UnityStandardAssets.ImageEffects.BerserkEffect gunCamBerserk;
 	public int patchActive;  // bitflag carrier for active patches // save
 	public PuzzleWire wirePuzzle;
 
@@ -65,6 +67,7 @@ public class PlayerPatch : MonoBehaviour {
 		reflexFinishedTime = -1f;
 		sightFinishedTime = -1f;
 		berserk = playerCamera.GetComponent<UnityStandardAssets.ImageEffects.BerserkEffect>();
+		gunCamBerserk = gunCamera.GetComponent<UnityStandardAssets.ImageEffects.BerserkEffect>();
 	}
 
 	public void ActivatePatch(int index) {
@@ -78,7 +81,11 @@ public class PlayerPatch : MonoBehaviour {
 			if (!(Const.a.CheckFlags(patchActive, PATCH_BERSERK))) patchActive += PATCH_BERSERK;
 			berserkFinishedTime = PauseScript.a.relativeTime + Const.a.berserkTime;
 			float berserkIncrementTime = Const.a.berserkTime/5f;
-			berserkIncrementFinishedTime = PauseScript.a.relativeTime + berserkIncrementTime;
+			if (berserkIncrementFinishedTime > PauseScript.a.relativeTime) {
+				berserkIncrementFinishedTime += berserkIncrementTime; // berserk effect stacks
+			} else {
+				berserkIncrementFinishedTime = PauseScript.a.relativeTime + berserkIncrementTime;
+			}
 			break;
 		case 15: 
 			// Detox Patch
@@ -88,7 +95,7 @@ public class PlayerPatch : MonoBehaviour {
 			DisableAllPatches(); // remove all other effects, even medipatch
 			patchActive = PATCH_DETOX; // overwrite all other active patches
 			playerHealthScript.detoxPatchActive = true;
-			detoxFinishedTime = PauseScript.a.relativeTime + Const.a.detoxTime;
+			detoxFinishedTime = PauseScript.a.relativeTime + Const.a.detoxTime; // detox doesn't stack, it cancels itself lol
 			break;
 		case 16: 
 			// Genius Patch
@@ -96,7 +103,11 @@ public class PlayerPatch : MonoBehaviour {
 			PatchInventory.PatchInvInstance.patchCounts[5]--;
 			if (PatchInventory.PatchInvInstance.patchCounts[5] <= 0) { depleted = true; }
 			if (!(Const.a.CheckFlags(patchActive, PATCH_GENIUS))) patchActive += PATCH_GENIUS;
-			geniusFinishedTime = PauseScript.a.relativeTime + Const.a.geniusTime;
+			if (geniusFinishedTime > PauseScript.a.relativeTime) {
+				geniusFinishedTime += Const.a.geniusTime; // genius effect stacks
+			} else {
+				geniusFinishedTime = PauseScript.a.relativeTime + Const.a.geniusTime;
+			}
 			break;
 		case 17: 
 			// Medi Patch
@@ -109,7 +120,11 @@ public class PlayerPatch : MonoBehaviour {
 			if (PatchInventory.PatchInvInstance.patchCounts[3] <= 0) { depleted = true; }
 			if (!(Const.a.CheckFlags(patchActive, PATCH_MEDI))) patchActive += PATCH_MEDI;
 			playerHealthScript.mediPatchPulseCount = 0;
-			mediFinishedTime = PauseScript.a.relativeTime + Const.a.mediTime;
+			if (mediFinishedTime > PauseScript.a.relativeTime) {
+				mediFinishedTime += Const.a.mediTime; // medipatch effect stacks
+			} else {
+				mediFinishedTime = PauseScript.a.relativeTime + Const.a.mediTime;
+			}
 			break;
 		case 18: 
 			// Reflex Patch
@@ -118,7 +133,11 @@ public class PlayerPatch : MonoBehaviour {
 			if (PatchInventory.PatchInvInstance.patchCounts[4] <= 0) { depleted = true; }
 			Time.timeScale = Const.a.reflexTimeScale;
 			if (!(Const.a.CheckFlags(patchActive, PATCH_REFLEX))) patchActive += PATCH_REFLEX;
-			reflexFinishedTime = Time.realtimeSinceStartup + Const.a.reflexTime;
+			if (reflexFinishedTime > PauseScript.a.relativeTime) {
+				reflexFinishedTime += Const.a.reflexTime; // reflex effect stacks
+			} else {
+				reflexFinishedTime = PauseScript.a.relativeTime + Const.a.reflexTime;
+			}
 			break;
 		case 19: 
 			// Sight Patch
@@ -129,7 +148,11 @@ public class PlayerPatch : MonoBehaviour {
 			sightSideEffectFinishedTime = -1f;  // reset side effect timer from previous patch
 			sightDimming.enabled = false; // deactivate side effect from previous patch
 			if (!(Const.a.CheckFlags(patchActive, PATCH_SIGHT))) patchActive += PATCH_SIGHT;
-			sightFinishedTime = PauseScript.a.relativeTime + Const.a.sightTime;
+			if (sightFinishedTime > PauseScript.a.relativeTime) {
+				sightFinishedTime += Const.a.sightTime; // sight effect stacks
+			} else {
+				sightFinishedTime = PauseScript.a.relativeTime + Const.a.sightTime;
+			}
 			break;
 		case 20: 
 			// Staminup Patch
@@ -138,7 +161,11 @@ public class PlayerPatch : MonoBehaviour {
 			if (PatchInventory.PatchInvInstance.patchCounts[0] <= 0) { depleted = true; }
 			playerMovementScript.staminupActive = true;
 			if (!(Const.a.CheckFlags(patchActive, PATCH_STAMINUP))) patchActive += PATCH_STAMINUP;
-			staminupFinishedTime = PauseScript.a.relativeTime + Const.a.staminupTime;
+			if (staminupFinishedTime > PauseScript.a.relativeTime) {
+				staminupFinishedTime += Const.a.staminupTime; // staminup effect stacks
+			} else {
+				staminupFinishedTime = PauseScript.a.relativeTime + Const.a.staminupTime;
+			}
 			break;
 		}
 
@@ -199,10 +226,13 @@ public class PlayerPatch : MonoBehaviour {
 					berserkIncrement = 0;
 					patchActive -= PATCH_BERSERK;
 					berserk.Reset();
+					gunCamBerserk.Reset();
 					berserk.enabled = false;
+					gunCamBerserk.enabled = false;
 				} else {
 					// ***Patch Effect***
 					berserk.enabled = true;
+					gunCamBerserk.enabled = true;
 					if (berserkIncrementFinishedTime < PauseScript.a.relativeTime) {
 						berserkIncrement++;
 						switch (berserkIncrement) {
@@ -214,6 +244,8 @@ public class PlayerPatch : MonoBehaviour {
 							case 5: berserk.swapTexture = b6; berserk.effectStrength += 1f; berserk.hithreshold += 0.25f; break;
 							case 6: berserk.swapTexture = b7; berserk.effectStrength += 1f; berserk.hithreshold += 0.25f; break;
 						}
+						gunCamBerserk.swapTexture = berserk.swapTexture;
+						gunCamBerserk.effectStrength = berserk.effectStrength;
 						float berserkIncrementTime = Const.a.berserkTime/5f;
 						berserkIncrementFinishedTime = PauseScript.a.relativeTime + berserkIncrementTime;
 					}
@@ -276,9 +308,9 @@ public class PlayerPatch : MonoBehaviour {
 		berserkIncrement = 0;
 		berserk.Reset();
 		berserk.enabled = false;
-
+		gunCamBerserk.Reset();
+		gunCamBerserk.enabled = false;
 		detoxFinishedTime =  -1f;
-
 		geniusFinishedTime =  -1f;
 		playerMouseLookScript.geniusActive = false;
 		wirePuzzle.geniusActive = false;

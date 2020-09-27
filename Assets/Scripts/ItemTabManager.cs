@@ -7,6 +7,7 @@ public class ItemTabManager : MonoBehaviour {
     public GameObject textManager;
 	public GameObject vaporizeButton;
 	public GameObject applyButton;
+	public ApplyButton applyButtonScript;
 	public GameObject useButton;
 	public GameObject eReaderSectionsContainer;
 
@@ -42,5 +43,17 @@ public class ItemTabManager : MonoBehaviour {
 		eReaderSectionsContainer.SetActive(false);
 		if (Const.a.useableItemsIcons[constIndex] != null) iconManager.GetComponent<Image>().overrideSprite = Const.a.useableItemsIcons[constIndex]; //datareader
 		textManager.GetComponent<Text>().text = Const.a.useableItemsNameText[constIndex];
+		if ((constIndex >= 14 && constIndex < 21) || constIndex == 52 || constIndex == 53 || constIndex == 55) {
+			applyButton.SetActive(true);
+			applyButtonScript.index = constIndex;
+		} else {
+			applyButton.SetActive(false);
+		}
+
+		if (constIndex < 6 || constIndex == 33 || constIndex == 34 || constIndex == 35 || (constIndex > 51 && constIndex < 65) || (constIndex > 91 && constIndex < 113) ) {
+			vaporizeButton.SetActive(true);
+		} else {
+			vaporizeButton.SetActive(false);
+		}
 	}
 }

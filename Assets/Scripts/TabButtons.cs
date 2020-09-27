@@ -41,9 +41,41 @@ public class TabButtons : MonoBehaviour {
 		}
 	}
 
+	// Temp reference
+	// public bool lastWeaponSideRH;
+	// public bool lastItemSideRH;
+	// public bool lastAutomapSideRH;
+	// public bool lastTargetSideRH;
+	// public bool lastDataSideRH;
+	// public bool lastSearchSideRH;
+	// public bool lastLogSideRH;
+	// public bool lastLogSecondarySideRH;
+	// public bool lastMinigameSideRH;
+
 	public void TabButtonClick (int tabNum) {
 		TabSFX.PlayOneShot(TabSFXClip);
 		TabButtonClickSilent(tabNum,false);
+		// if (isRH) {
+			// switch(tabNum) {
+				// case 0:
+					// MFDManager.a.lastWeaponSideRH = true;
+					// break;
+				// case 1:
+					// MFDManager.a.lastWeaponSideRH = true;
+					// break;
+				// case 2:
+					// MFDManager.a.lastWeaponSideRH = true;
+					// break;
+				// case 3:
+					// MFDManager.a.lastWeaponSideRH = true;
+					// break;
+				// case 4:
+					// MFDManager.a.lastWeaponSideRH = true;
+					// break;
+			// }
+		// } else {
+
+		// }
 	}
 
 	public void TabButtonClickSilent (int tabNum,bool overrideToggling) {

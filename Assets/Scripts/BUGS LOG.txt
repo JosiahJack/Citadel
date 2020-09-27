@@ -1,5 +1,38 @@
-Add hourglass cursor when loading cyberspace then change to gray cursor
-Railgun with ammo in it doesn't give ammo
+Intro video
+Outro video
+Music
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 Build Size

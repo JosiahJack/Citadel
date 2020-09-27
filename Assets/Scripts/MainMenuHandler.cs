@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 //using UnityStandardAssets.ImageEffects;
 using System.IO;
 using System.Collections;
+using SimpleFileBrowser;
 
 public class MainMenuHandler : MonoBehaviour {
 	public GameObject Button1;
@@ -22,6 +23,11 @@ public class MainMenuHandler : MonoBehaviour {
 	public GameObject savePage;
 	public GameObject optionsPage;
 	public GameObject creditsPage;
+	public GameObject CouldNotFindDialogue;
+	public GameObject SuccessBanner;
+	public GameObject FailureBanner;
+	public GameObject InitialDisplay;
+	public InputField dataPathInputText;
 	public InputField newgameInputText;
 	public StartMenuDifficultyController combat;
 	public StartMenuDifficultyController mission;
@@ -45,11 +51,35 @@ public class MainMenuHandler : MonoBehaviour {
 	private bool typingSaveGame = false;
 	private string tempSaveNameHolder;
 	public CreditsScroll credScrollManager;
+	[HideInInspector]
+	public bool dataFound = false;
 
 	void Awake () {
 		StartSFX = startFXObject.GetComponent<AudioSource>();
 		BackGroundMusic = GetComponent<AudioSource>();
-		GoToFrontPage();
+		ResetPages();
+		dataFound = false;
+		FileBrowser.SetFilters(false,new FileBrowser.Filter("SHOCK RES Files", ".RES", ".res"));
+		FileBrowser.SetDefaultFilter( ".RES" );
+		Const.a.SetVolume();
+		StartCoroutine(CheckDataFiles());
+	}
+
+	IEnumerator CheckDataFiles () {
+		bool found = (System.IO.File.Exists(Application.dataPath + "/StreamingAssets/CITALOG.RES") && System.IO.File.Exists(Application.dataPath + "/StreamingAssets/CITBARK.RES"));
+		if (found) {
+			// go right on into the game, all good here
+			dataFound = true;
+			Const.a.SetVolume();
+			GoToFrontPage();
+		} else {
+			// Fake like we are checking for the files to be there for a quick bit of time
+			InitialDisplay.SetActive(true);
+			yield return new WaitForSeconds(0.3f);
+			// OK, now show that we didn't find them
+			InitialDisplay.SetActive(false);
+			CouldNotFindDialogue.SetActive(true);
+		}
 	}
 
 	void Update () {
@@ -263,6 +293,60 @@ public class MainMenuHandler : MonoBehaviour {
 			GoToSingleplayerSubmenu();
 			return;
 		}
+	}
+
+	public void PathSearch() {
+		// Open dialogue to search for path to C:\SHOCK\RES\DATA
+			StartCoroutine(ShowSelectPathCoroutine());
+	}
+
+	IEnumerator ShowSelectPathCoroutine () {
+		// Show a select path dialog and wait for a response from user
+		// Path folder: folder, Allow multiple selection: false
+		// Initial path: default (Documents), Title: "Load File", submit button text: "Load"
+		yield return FileBrowser.WaitForLoadDialog(true, false, null, "Select Path", "Select");
+
+		// Dialog is closed
+		// Print whether the user has selected a folder path or cancelled the operation (FileBrowser.Success)
+		//Debug.Log(FileBrowser.Success);
+
+		if (FileBrowser.Success) {
+			dataPathInputText.text = FileBrowser.Result[0]; // Set the folder path only, e.g. C:\SHOCK\RES\DATA
+			//Debug.Log("Found filepath for .RES files: " + FileBrowser.Result[0]);
+		}
+	}
+
+	public void CopyFromPath() {
+		// Copy CITALOG.RES and CITBARK.RES from data path if they exist
+		if (System.IO.File.Exists(System.IO.Path.Combine(dataPathInputText.text,"CITALOG.RES")) && System.IO.File.Exists(System.IO.Path.Combine(dataPathInputText.text,"CITBARK.RES"))) {
+			dataFound = true;
+			System.IO.File.Copy(System.IO.Path.Combine(dataPathInputText.text,"CITALOG.RES"),Application.dataPath + "/StreamingAssets/CITALOG.RES",true); // Set to true in case we have 1 and not the other we can overwrite
+			System.IO.File.Copy(System.IO.Path.Combine(dataPathInputText.text,"CITBARK.RES"),Application.dataPath + "/StreamingAssets/CITBARK.RES",true); // Set to true in case we have 1 and not the other we can overwrite
+		}
+		StartCoroutine(CopyPathCheck());
+	}
+
+	IEnumerator CopyPathCheck () {
+		if (dataFound) {
+			SuccessBanner.SetActive(true);
+			CouldNotFindDialogue.SetActive(false);
+			Const.a.SetVolume();
+			yield return new WaitForSeconds(0.5f);
+			GoToFrontPage();
+		} else {
+			CouldNotFindDialogue.SetActive(false);
+			FailureBanner.SetActive(true);
+			yield return new WaitForSeconds(2f);
+			FailureBanner.SetActive(false);
+			CouldNotFindDialogue.SetActive(true);
+		}
+	}
+
+	public void CloseDataFileNotification() {
+		// Close data file notification without finding sound files CITALOG.RES and CITBARK.RES from data path
+		CouldNotFindDialogue.SetActive(false);
+		Const.a.SetVolume(); // probably not needed here, but just in case
+		GoToFrontPage();
 	}
 
 	public void PlayIntro () {

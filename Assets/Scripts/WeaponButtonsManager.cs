@@ -14,7 +14,9 @@ public class WeaponButtonsManager : MonoBehaviour {
 		bool buttonNotValid = (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[nextIndex] == -1);
 		while (buttonNotValid) {
 			countCheck++;
-			if (countCheck > 13) return; // no weapons!  don't runaway loop
+			if (countCheck > 13) {
+				return; // no weapons!  don't runaway loop
+			}
 			nextIndex++;
 			if (nextIndex > 6) nextIndex = 0;
 			buttonNotValid = (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[nextIndex] == -1);
@@ -29,7 +31,9 @@ public class WeaponButtonsManager : MonoBehaviour {
 		bool buttonNotValid = (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[nextIndex] == -1);
 		while (buttonNotValid) {
 			countCheck++;
-			if (countCheck > 13) return; // no weapons!  don't runaway loop
+			if (countCheck > 13) {
+				return; // no weapons!  don't runaway loop
+			}
 			nextIndex--;
 			if (nextIndex < 0) nextIndex = 6;
 			buttonNotValid = (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[nextIndex] == -1);

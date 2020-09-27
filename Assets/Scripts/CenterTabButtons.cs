@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class CenterTabButtons : MonoBehaviour {
-	[SerializeField] private CenterMFDTabs TabManager = null; // assign in the editor
+	public CenterMFDTabs TabManager = null; // assign in the editor
 	[SerializeField] private Button MainTabButton = null; // assign in the editor
 	[SerializeField] private Button HardwareTabButton = null; // assign in the editor
 	[SerializeField] private Button GeneralTabButton = null; // assign in the editor
@@ -14,7 +14,7 @@ public class CenterTabButtons : MonoBehaviour {
 	[SerializeField] private Sprite MFDSpriteNotification = null; // assign in the editor
 	[SerializeField] private AudioSource TabSFX = null; // assign in the editor
 	[SerializeField] private AudioClip TabSFXClip = null; // assign in the editor
-	[SerializeField] private int curTab = 0;
+	public int curTab = 0;
 	[SerializeField] private float tickTime = 0.5f;
 	[SerializeField] private int numTicks = 14;
 	private bool[] tabNotified;

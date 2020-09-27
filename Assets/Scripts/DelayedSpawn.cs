@@ -6,6 +6,8 @@ public class DelayedSpawn : MonoBehaviour {
     public float delay = 0.5f;
 	public GameObject[] objectsToSpawn;
 	public bool despawnInstead = false;
+	public bool doSelfAfterList = false;
+	public bool destroyAfterListInsteadOfDeactivate = false;
 
 	void OnEnable() {
         StartCoroutine(EnableObjects());
@@ -18,6 +20,17 @@ public class DelayedSpawn : MonoBehaviour {
 				if (objectsToSpawn[i] != null) objectsToSpawn[i].SetActive(false);
 			} else {
 				if (objectsToSpawn[i] != null) objectsToSpawn[i].SetActive(true);
+			}
+		}
+		if (doSelfAfterList) {
+			if (despawnInstead) {
+				if (destroyAfterListInsteadOfDeactivate) {
+					Destroy(gameObject);
+				} else {
+					gameObject.SetActive(false);
+				}
+			} else {
+				gameObject.SetActive(true);
 			}
 		}
     }

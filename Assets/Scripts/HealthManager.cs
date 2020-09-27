@@ -5,8 +5,11 @@ using UnityEngine.UI;
 
 public class HealthManager : MonoBehaviour {
 	public bool isPlayer = false;
+	public bool inCyberSpace = false;
 	public bool isGrenade = false;
-	public float health = -1f; // current health
+	public float health = -1f; // current health //save
+	public float cyberHealth = -1f; //save
+	public int cyberEntityIndex = -1;
 	public float maxhealth; // maximum health
 	public float gibhealth; // point at which we splatter
 	public bool gibOnDeath = false; // used for things like crates to "gib" and shatter
@@ -15,6 +18,7 @@ public class HealthManager : MonoBehaviour {
     public bool vaporizeCorpse = true;
 	public bool isNPC = false;
 	public bool isObject = false;
+	public bool isIce = false;
 	public bool isScreen = false;
 	public bool applyImpact = false;
 	public bool isSecCamera = false;
@@ -35,6 +39,7 @@ public class HealthManager : MonoBehaviour {
     public bool debugMessages = false;
 	public HardwareInvCurrent hic;
 	public HardwareInventory hinv;
+	public SoftwareInventory sinv;
 	public PlayerHealth ph;
 	public float justHurtByEnemy;
 	public PainStaticFX pstatic;
@@ -65,6 +70,7 @@ public class HealthManager : MonoBehaviour {
 	public PlayerEnergy pe;
 	[HideInInspector]
 	public bool teleportDone;
+	public TargetID linkedTargetID;
 
 	void Awake () {
 		deathDone = false;
@@ -108,8 +114,14 @@ public class HealthManager : MonoBehaviour {
 			} else {
 				index = aic.index;
 			}
-			if (health <= 0) health = Const.a.healthForNPC[index]; //leaves possibility of setting health lower than normal, for instance the cortex reaver on level 5
-			if (maxhealth <= 0) maxhealth = Const.a.healthForNPC[index]; // set maxhealth to default healthForNPC, possible to set higher, e.g. for cyborg assassins on level 9 whose health is 3 times normal
+
+			if (cyberEntityIndex >= 0 && cyberEntityIndex <= 4) {
+				if (cyberHealth <= 0) cyberHealth = Const.a.healthForCyberNPC[cyberEntityIndex];
+				if (maxhealth <= 0) maxhealth = Const.a.healthForCyberNPC[cyberEntityIndex];
+			} else {
+				if (health <= 0) health = Const.a.healthForNPC[index]; //leaves possibility of setting health lower than normal, for instance the cortex reaver on level 5
+				if (maxhealth <= 0) maxhealth = Const.a.healthForNPC[index]; // set maxhealth to default healthForNPC, possible to set higher, e.g. for cyborg assassins on level 9 whose health is 3 times normal
+			}
 
             if (Const.a.difficultyCombat == 0) {
             	maxhealth = 1;
@@ -225,6 +237,23 @@ public class HealthManager : MonoBehaviour {
 					case Const.AttackType.Tranq: take *= 1.5f; break; // same
 				}
 			}
+
+			if (aic.npcType == Const.npcType.Cyber) {
+				switch(dd.attackType) {
+					case Const.AttackType.None: take *= 1f; break; // same
+					case Const.AttackType.Melee: take *= 1f; break; // same
+					case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
+					case Const.AttackType.EnergyBeam: take *= 1f; break; // same
+					case Const.AttackType.Magnetic: take *= 1f; break; // same
+					case Const.AttackType.Projectile: take *= 1f; break; // same
+					case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+					case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
+					case Const.AttackType.Gas: take *= 1f; break; // same
+					case Const.AttackType.ProjectileNeedle: take *= 1f; break; // same
+					case Const.AttackType.Tranq: take *= 1f; break; // same
+					case Const.AttackType.Drill: take = 0f; break; // same
+				}
+			}
 		}
 		return take;
 	}
@@ -236,18 +265,8 @@ public class HealthManager : MonoBehaviour {
 			if (dd.impactVelocity <= 0) {
 				//rbody.AddForceAtPosition((dd.attacknormal*dd.damage*3f),dd.hit.point);
 			} else {
-				rbody.AddForceAtPosition((dd.attacknormal*dd.impactVelocity),dd.hit.point);
+				rbody.AddForceAtPosition((dd.attacknormal*dd.impactVelocity*1.5f),dd.hit.point); // impacts were too weak, multiplying by 1.5f to increase impact effect
 			}
-		}
-
-		if (god) {
-			//Debug.Log("God mode detected. Dmg = " + dd.damage.ToString() + ", Taken = 0");
-			return 0; // untouchable!
-		}
-
-		if (health <= 0 && !isObject) {
-			//Debug.Log("GameObject was dead. Dmg = " + dd.damage.ToString() + ", Taken = 0");
-			return 0;
 		}
 
 		if (dd.damage <= 0) {
@@ -255,90 +274,147 @@ public class HealthManager : MonoBehaviour {
 			return 0; // ah!! scaryy!! cannot divide by 0, let's get out of here!
 		}
 
-		take = dd.damage;
+		if (god) {
+			//Debug.Log("God mode detected. Dmg = " + dd.damage.ToString() + ", Taken = 0");
+			return 0; // untouchable!
+		}
+
         tempFloat = health;
+		if (inCyberSpace || cyberEntityIndex >= 0) {
+			tempFloat = cyberHealth;
+			if (dd.attackType == Const.AttackType.Drill && isNPC) return 0; // Drill can't hurt NPC's
+			if (dd.attackType != Const.AttackType.Drill && isIce) return 0; // Pulser can't hurt Ice
+		}
+
+		if (tempFloat <= 0 && !isObject) {
+			//Debug.Log("GameObject was dead. Dmg = " + dd.damage.ToString() + ", Taken = 0");
+			return 0;
+		}
+
+		take = dd.damage;
 		if (isPlayer) {
 			float absorb = 0;
-			// Check if player shield is active
-			if (dd.attackType == Const.AttackType.Magnetic) {
-				take = 0f; // don't get hurt by magnetic interactions
-				empstatic.Flash(2);
-				pe.TakeEnergy(11f);
-			}
-			if (hic.hardwareIsActive[5] && hinv.hasHardware[5]) {
-				// Versions of shield protect against 20, 40, 75, 75%'s
-				// Versions of shield thressholds are 0, 10, 15, 30...ooh what's this hang on now...Huh, turns out it absorbs all damage below the thresshold!  Cool!
-				float thresh = 0;
-				float enertake = 0;
-				switch(hinv.hardwareVersion[5]) {
-					case 0: absorb = 0.2f;
-							thresh = 0;
-							enertake = 24f;
-							break;
-					case 1: absorb = 0.4f;
-							thresh = 10f;
-							enertake = 60f;
-							break;
-					case 2: absorb = 0.75f;
-							thresh = 15f;
-							enertake = 105f;
-							break;
-					case 3: absorb = 0.75f;
-							thresh = 30f;
-							enertake = 30f;
-							break;
+			if (inCyberSpace) {
+				if (sinv.hasSoft[2]) {
+					switch(sinv.softVersions[2]) {
+						case 0: absorb = 0f;
+								break;
+						case 1: absorb = 0.10f;
+								break;
+						case 2: absorb = 0.15f;
+								break;
+						case 3: absorb = 0.20f;
+								break;
+						case 4: absorb = 0.25f;
+								break;
+						case 5: absorb = 0.30f;
+								break;
+						case 6: absorb = 0.35f;
+								break;
+						case 7: absorb = 0.40f;
+								break;
+						case 8: absorb = 0.45f;
+								break;
+						case 9: absorb = 0.50f;
+								break;
+					}
+					take = (take * (1f - absorb)); // absorb percentage from above table
+					if (take <= 0f) return 0f; // nothing to see here
 				}
-				if (take < thresh) {
-					absorb = 1f; // ah yeah! absorb. it. all.
+			} else {
+				// Check if player shield is active
+				if (dd.attackType == Const.AttackType.Magnetic) {
+					take = 0f; // don't get hurt by magnetic interactions
+					empstatic.Flash(2);
+					pe.TakeEnergy(11f);
 				}
-				if (absorb > 0) {
-					if (absorb < 1f) absorb = absorb + UnityEngine.Random.Range(-0.08f,0.08f); // +/- 8% variation - this was in the original I swear!  You could theoretically have 83% shielding max.
-					if (absorb > 1f) absorb = 1f; // cap it at 100%....shouldn't really ever be here, nothing is 92% + 8%
-					take *= (1f-absorb); // shield doing it's thing
-					ph.shieldEffect.SetActive(true); // Activate shield screen effect to indicate damage was absorbed, effect intensity determined by absorb amount
-					ph.PlayerNoise.PlayOneShot(ph.ShieldClip); // Play shield absorb sound
-					int abs = (int)(absorb * 100f); //  for int display of absorbption percent
-					Const.sprint(Const.a.stringTable[208] + abs.ToString() + Const.a.stringTable[209],dd.other);  // Shield absorbs x% damage
-					//float shieldPercentAbsorbed = take/dd.damage;
-					//if (shieldPercentAbsorbed > 1f) shieldPercentAbsorbed = 1f;
-					//if (shieldPercentAbsorbed > 0) pe.TakeEnergy(enertake*shieldPercentAbsorbed);
-					if (absorb > 0) pe.TakeEnergy(enertake*absorb);
+				if (hic.hardwareIsActive[5] && hinv.hasHardware[5]) {
+					// Versions of shield protect against 20, 40, 75, 75%'s
+					// Versions of shield thressholds are 0, 10, 15, 30...ooh what's this hang on now...Huh, turns out it absorbs all damage below the thresshold!  Cool!
+					float thresh = 0;
+					float enertake = 0;
+					switch(hinv.hardwareVersion[5]) {
+						case 0: absorb = 0.2f;
+								thresh = 0;
+								enertake = 24f;
+								break;
+						case 1: absorb = 0.4f;
+								thresh = 10f;
+								enertake = 60f;
+								break;
+						case 2: absorb = 0.75f;
+								thresh = 15f;
+								enertake = 105f;
+								break;
+						case 3: absorb = 0.75f;
+								thresh = 30f;
+								enertake = 30f;
+								break;
+					}
+					if (take < thresh) {
+						absorb = 1f; // ah yeah! absorb. it. all.
+					}
+					if (absorb > 0) {
+						if (absorb < 1f) absorb = absorb + UnityEngine.Random.Range(-0.08f,0.08f); // +/- 8% variation - this was in the original I swear!  You could theoretically have 83% shielding max.
+						if (absorb > 1f) absorb = 1f; // cap it at 100%....shouldn't really ever be here, nothing is 92% + 8%
+						take *= (1f-absorb); // shield doing it's thing
+						ph.shieldEffect.SetActive(true); // Activate shield screen effect to indicate damage was absorbed, effect intensity determined by absorb amount
+						ph.PlayerNoise.PlayOneShot(ph.ShieldClip); // Play shield absorb sound
+						int abs = (int)(absorb * 100f); //  for int display of absorbption percent
+						Const.sprint(Const.a.stringTable[208] + abs.ToString() + Const.a.stringTable[209],dd.other);  // Shield absorbs x% damage
+						//float shieldPercentAbsorbed = take/dd.damage;
+						//if (shieldPercentAbsorbed > 1f) shieldPercentAbsorbed = 1f;
+						//if (shieldPercentAbsorbed > 0) pe.TakeEnergy(enertake*shieldPercentAbsorbed);
+						if (absorb > 0) pe.TakeEnergy(enertake*absorb);
+					}
 				}
-			}
-			if (take > 0 && ((absorb <0.4f) || Random.Range(0,1f) < 0.5f)) {
-				ph.PlayerNoise.PlayOneShot(ph.PainSFXClip); // Play player pain noise
-				// 0 = light, 1 = med, 2 = heavy
-				int intensityOfPainFlash = 0;
-				if (take > 15f) {
-					intensityOfPainFlash = 2;
+				if (take > 0 && ((absorb <0.4f) || Random.Range(0,1f) < 0.5f)) {
+					ph.PlayerNoise.PlayOneShot(ph.PainSFXClip); // Play player pain noise
+					// 0 = light, 1 = med, 2 = heavy
+					int intensityOfPainFlash = 0;
+					if (take > 15f) {
+						intensityOfPainFlash = 2;
+					}
+					if (take > 10f) {
+						intensityOfPainFlash = 1;
+					}
+					pstatic.Flash(intensityOfPainFlash);
 				}
-				if (take > 10f) {
-					intensityOfPainFlash = 1;
-				}
-				pstatic.Flash(intensityOfPainFlash);
-			}
 
-			if (dd.ownerIsNPC) {
-				justHurtByEnemy = PauseScript.a.relativeTime;
+				if (dd.ownerIsNPC) {
+					justHurtByEnemy = PauseScript.a.relativeTime;
+				}
 			}
-			ph.playerHealthTicks.DrawTicks();
 		}
-
-		// Apply critical based on AttackType
-		take = ApplyAttackTypeAdjustments(take,dd);
 
 		// Do the damage, that's right do. your. worst!
-		health -= take; //was directly dd.damage but changed since we are check for extra things in case GetDamageTakeAmount wasn't called on dd.damage beforehand (e.g. player fall damage, internal to player only, need to protect against shield, etc, JJ 9/5/19)
+		if (inCyberSpace || cyberEntityIndex >= 0) {
+			cyberHealth -= take;
+			if (isPlayer) {
+				ph.playerCyberHealthTicks.DrawTicks();
+				if (cyberHealth <= 0) {
+					MFDManager.a.playerMLook.ExitCyberspace();
+					return 0f;
+				}
+			}
+		} else {
+			// Apply critical based on AttackType
+			take = ApplyAttackTypeAdjustments(take,dd);
+
+			health -= take; //was directly dd.damage but changed since we are check for extra things in case GetDamageTakeAmount wasn't called on dd.damage beforehand (e.g. player fall damage, internal to player only, need to protect against shield, etc, JJ 9/5/19)
+			if (isPlayer) ph.playerHealthTicks.DrawTicks();
+		}
 		attacker = dd.owner;
-		if (isNPC && health > 0) {
+		if (isNPC && (health > 0f || (cyberEntityIndex >= 0f && cyberHealth > 0f))) {
 			AIController aic = GetComponent<AIController>();
 			if (aic != null) {
-				aic.goIntoPain = true;
+				if (!inCyberSpace) aic.goIntoPain = true;
 				aic.attacker = attacker;
+				if (linkedTargetID != null) linkedTargetID.SendDamageReceive(take);
 			}
 		}
 
-        if (health <= 0f) {
+        if (health <= 0f || (inCyberSpace && cyberHealth <= 0f)) {
             if (!deathDone) {
 				// use targets targetOnDeath
 				if (!string.IsNullOrWhiteSpace(targetOnDeath)) {
@@ -371,7 +447,8 @@ public class HealthManager : MonoBehaviour {
 				if (isGrenade) GrenadeDeath();
             } else {
                 if (vaporizeCorpse && (health < (0 - (maxhealth / 2))) && dd.attackType == Const.AttackType.EnergyBeam && !isSecCamera) {
-                    GetComponent<MeshRenderer>().enabled = false;
+					MeshRenderer mr = GetComponent<MeshRenderer>();
+                    if (mr != null) mr.enabled = false;
                     GameObject explosionEffect = Const.a.GetObjectFromPool(Const.PoolType.Vaporize);
                     if (explosionEffect != null) {
                         explosionEffect.SetActive(true);
@@ -391,20 +468,20 @@ public class HealthManager : MonoBehaviour {
 						for (int i=0;i<4;i++) {
 							if (searchableItem.contents[i] >= 0) {
 								GameObject tossObject = Instantiate(Const.a.useableItems[searchableItem.contents[i]],transform.position,Quaternion.identity) as GameObject;
-								if (tossObject == null) {
+								if (tossObject != null) {
+									if (tossObject.activeSelf != true) {
+										tossObject.SetActive(true);
+									}
+									if (levelDynamicContainer != null) {
+										tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+										SaveObject so = tossObject.GetComponent<SaveObject>();
+										if (so != null) so.levelParentID = LevelManager.a.currentLevel;
+									}
+									//tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
+									tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
+								} else {
 									Const.sprint("BUG: Failed to instantiate object being dropped on gib.",Const.a.allPlayers);
 								}
-
-								if (tossObject.activeSelf != true) {
-									tossObject.SetActive(true);
-								}
-								if (levelDynamicContainer != null) {
-									tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-									SaveObject so = tossObject.GetComponent<SaveObject>();
-									if (so != null) so.levelParentID = LevelManager.a.currentLevel;
-								}
-								//tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
-								tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
 							}
 						}
 					}
@@ -488,21 +565,20 @@ public class HealthManager : MonoBehaviour {
 				for (int i=0;i<4;i++) {
 					if (searchableItem.contents[i] >= 0) {
 						GameObject tossObject = Instantiate(Const.a.useableItems[searchableItem.contents[i]],transform.position,Quaternion.identity) as GameObject;
-						if (tossObject == null) {
+						if (tossObject != null) {
+							if (tossObject.activeSelf != true) {
+								tossObject.SetActive(true);
+							}
+							if (levelDynamicContainer != null) {
+								tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+								SaveObject so = tossObject.GetComponent<SaveObject>();
+								if (so != null) so.levelParentID = LevelManager.a.currentLevel;
+							}
+							//tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
+							tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
+						} else {
 							Const.sprint("BUG: Failed to instantiate object being dropped on gib.",Const.a.allPlayers);
-							return;
 						}
-
-						if (tossObject.activeSelf != true) {
-							tossObject.SetActive(true);
-						}
-						if (levelDynamicContainer != null) {
-							tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-							SaveObject so = tossObject.GetComponent<SaveObject>();
-							if (so != null) so.levelParentID = LevelManager.a.currentLevel;
-						}
-						//tossObject.GetComponent<Rigidbody>().velocity = transform.forward * tossForce;
-						tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
 						searchableItem.contents[i] = -1;
 						searchableItem.customIndex[i] = -1;
 					}

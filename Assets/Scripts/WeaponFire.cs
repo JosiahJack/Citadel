@@ -16,17 +16,19 @@ public class WeaponFire : MonoBehaviour {
     public float stungunShotForce = 1.92f;
     public float railgunShotForce = 2.60f;
     public float plasmaShotForce = 1.50f;
+	public float inventoryModeViewRotateMax = 48f;
     public GameObject bullet;
     public GameObject impactEffect;
 	public GameObject noDamageIndicator;
     public WeaponMagazineCounter wepmagCounter;
     public Camera playerCamera; // assign in the editor
 	public MouseLookScript mls;
+	public MouseCursor mc;
 	public PlayerMovement playerMovement; // assign in editor
-    public Camera gunCamera; // assign in the editor
     public PlayerEnergy curEnergy;
     public PlayerHealth pH;
 	public PlayerPatch pp;
+	public SoftwareInventory sinv;
     public GameObject playerCapsule;
     public WeaponCurrent currentWeapon; // assign in the editor
     public EnergyOverloadButton energoverButton;
@@ -61,6 +63,8 @@ public class WeaponFire : MonoBehaviour {
     public AudioClip SFXStungunFire; // assign in the editor
     public AudioClip SFXEmpty; // assign in the editor
     public AudioClip SFXRicochet; // assign in the editor
+    public AudioClip SFXPulserFire; // assign in the editor
+    public AudioClip SFXDrillFire; // assign in the editor
 
     public bool overloadEnabled; // save
     public float sparqSetting; // save
@@ -104,6 +108,8 @@ public class WeaponFire : MonoBehaviour {
 	public float justFired; // save
 	public float energySliderClickedTime; // save
 	private Rigidbody playercapRbody;
+	private float cyberWeaponAttackFinished;
+	private float wepYRot;
 
     void Start() {
         damageData = new DamageData();
@@ -114,6 +120,8 @@ public class WeaponFire : MonoBehaviour {
 		justFired = (PauseScript.a.relativeTime - 31f); // set less than 30s before PauseScript.a.relativeTime to guarantee we don't immediately play action music
 		energySliderClickedTime = PauseScript.a.relativeTime;
 		playercapRbody = playerCapsule.GetComponent<Rigidbody>();
+		cyberWeaponAttackFinished = PauseScript.a.relativeTime;
+		wepYRot = 0f;
     }
 
     void GetWeaponData(int index) {
@@ -263,6 +271,13 @@ public class WeaponFire : MonoBehaviour {
 				wepView.transform.localPosition = new Vector3(wepView.transform.localPosition.x,currentWeapon.targetY,wepView.transform.localPosition.z);
 			}
 
+			if (mls.inventoryMode) {
+				wepYRot = ((mc.x-(Screen.width/2f))/(Screen.width/2f)) * inventoryModeViewRotateMax;
+				wepView.transform.localRotation = Quaternion.Euler(0f,wepYRot,0f);
+			} else {
+				wepView.transform.localRotation = Quaternion.Euler(0f,0f,0f);
+			}
+
 			if (recoiling) {
 				float x = wepView.transform.localPosition.x; // side to side
 				float z = wepView.transform.localPosition.z; // forward and back
@@ -293,7 +308,13 @@ public class WeaponFire : MonoBehaviour {
 						return;
 					}
 				}
+
+				if (mls.inCyberSpace) {
+					FireCyberWeapon();
+					return;
+				}
 			}
+
 
             if (!GUIState.a.isBlocking && !mls.holdingObject) {
                 if (i == -1) return;
@@ -389,6 +410,51 @@ public class WeaponFire : MonoBehaviour {
             }
         }
     }
+
+	void FireCyberWeapon() {
+		if (cyberWeaponAttackFinished < PauseScript.a.relativeTime) {
+			if (sinv.isPulserNotDrill) {
+				if (sinv.hasSoft[1]) {
+					// Fire pulser
+					if (sinv.hasSoft[1]) FireCyberBeachball(true,railgunShotForce,Const.PoolType.CyberPlayerShots);
+					if (SFXPulserFire != null) { SFX.clip = SFXPulserFire; SFX.Play(); }
+					cyberWeaponAttackFinished = PauseScript.a.relativeTime + 0.08f;
+				}
+			} else {
+				if (sinv.hasSoft[0]) {
+					// Fire I.C.E. drill
+					if (sinv.hasSoft[0]) FireCyberBeachball(false,plasmaShotForce,Const.PoolType.CyberPlayerIceShots);
+					if (SFXDrillFire != null) { SFX.clip = SFXDrillFire; SFX.Play(); }
+					cyberWeaponAttackFinished = PauseScript.a.relativeTime + 0.5f;
+				}
+			}
+		}
+	}
+
+	void FireCyberBeachball(bool isPulser, float shoveForce, Const.PoolType shotPool) {
+        // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
+        // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
+        GameObject beachball = Const.a.GetObjectFromPool(shotPool);
+        if (beachball != null) {
+			damageData.damage = 10f * sinv.softVersions[0];
+			if (isPulser) damageData.damage = 1f; // Cyberspace enemies don't have much health
+            damageData.owner = playerCapsule;
+            damageData.attackType = Const.AttackType.ProjectileLaunched;
+			if (!isPulser) damageData.attackType = Const.AttackType.Drill;
+            beachball.GetComponent<ProjectileEffectImpact>().dd = damageData;
+            beachball.GetComponent<ProjectileEffectImpact>().host = playerCapsule;
+            beachball.transform.position = playerCamera.transform.position;
+			mls.SetCameraFocusPoint();
+            tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
+            beachball.transform.forward = tempVec.normalized;
+            //drawMyLine(beachball.transform.position, mls.cameraFocusPoint, Color.green, 2f);
+            beachball.SetActive(true);
+            Vector3 shove = beachball.transform.forward * shoveForce;
+			//shove += playercapRbody.velocity; // add in the player's velocity
+            beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
+            beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
+        }
+	}
 
     // index is used to get recoil down at the bottom and pass along ref for damageData,
     // otherwise the cases use currentWeapon.weaponIndex
@@ -614,44 +680,61 @@ public class WeaponFire : MonoBehaviour {
 		// Add bullethole
 		tempVec = tempHit.normal * 0.16f;
 		GameObject holetype = bulletHoleSmall;
+		Const.PoolType constHoleType = Const.PoolType.BulletHoleTiny;
 		switch(wep16index) {
 			case 0: holetype = bulletHoleLarge;
+					constHoleType = Const.PoolType.BulletHoleLarge;
 					break;
 			case 1: holetype = bulletHoleScorchSmall;
+					constHoleType = Const.PoolType.BulletHoleScorchSmall;
 					break;
 			case 2: holetype = bulletHoleTiny;
+					constHoleType = Const.PoolType.BulletHoleTiny;
 					break;
 			case 3: holetype = bulletHoleSmall;
+					constHoleType = Const.PoolType.BulletHoleSmall;
 					break;
 			case 4: holetype = bulletHoleScorchLarge;
+					constHoleType = Const.PoolType.BulletHoleScorchLarge;
 					break;
 			case 5: holetype = bulletHoleScorchSmall;
+					constHoleType = Const.PoolType.BulletHoleScorchSmall;
 					break;
 			case 6: return; // no impact marks for lead pipe
 			case 7: holetype = bulletHoleLarge;
+					constHoleType = Const.PoolType.BulletHoleLarge;
 					break;
 			case 8: holetype = bulletHoleScorchLarge;
+					constHoleType = Const.PoolType.BulletHoleScorchLarge;
 					break;
 			case 9: holetype = bulletHoleSmall;
+					constHoleType = Const.PoolType.BulletHoleSmall;
 					break;
 			case 10: holetype = bulletHoleScorchLarge;
+					constHoleType = Const.PoolType.BulletHoleScorchLarge;
 					break;
 			case 11: holetype = bulletHoleScorchLarge;
+					constHoleType = Const.PoolType.BulletHoleScorchLarge;
 					break;
 			case 12: holetype = bulletHoleSpread;
+					constHoleType = Const.PoolType.BulletHoleTinySpread;
 					break;
 			case 13: holetype = bulletHoleLarge;
+					constHoleType = Const.PoolType.BulletHoleLarge;
 					break;
 			case 14: holetype = bulletHoleScorchSmall;
+					constHoleType = Const.PoolType.BulletHoleScorchSmall;
 					break;
 			case 15: holetype = bulletHoleScorchSmall;
+					constHoleType = Const.PoolType.BulletHoleScorchSmall;
 					break;
 		}
 
 		if (holetype != null) {
-			GameObject impactMark = (GameObject) Instantiate(holetype, (tempHit.point + tempVec),  Quaternion.LookRotation(tempHit.normal*-1,Vector3.up), tempHit.transform.gameObject.transform);
+			GameObject impactMark = Const.a.GetObjectFromPool(constHoleType);
+			if (impactMark == null) impactMark = (GameObject) Instantiate(holetype, (tempHit.point + tempVec),  Quaternion.LookRotation(tempHit.normal*-1,Vector3.up), tempHit.transform.gameObject.transform);
 			if (impactMark == null) {
-				Debug.Log("BUG: Couldn't instantiate holetype for CreateStandardImpactMarks");
+				Debug.Log("BUG: Couldn't find pool object or instantiate holetype for CreateStandardImpactMarks");
 				return;
 			}
 			int rint = Random.Range(0,3);
@@ -717,12 +800,14 @@ public class WeaponFire : MonoBehaviour {
 		GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
 		if (dynamicObjectsContainer == null) return; //didn't find current level
 		GameObject lasertracer = Instantiate(Const.a.useableItems[laserIndex],transform.position,Quaternion.identity) as GameObject;
-		lasertracer.transform.SetParent(dynamicObjectsContainer.transform,true);
-        tempVec = transform.position;
-        tempVec.y += verticalOffset;
-		lasertracer.GetComponent<LaserDrawing>().startPoint = tempVec;
-		lasertracer.GetComponent<LaserDrawing>().endPoint = tempHit.point;
-		lasertracer.SetActive(true);
+		if (lasertracer != null) {
+			lasertracer.transform.SetParent(dynamicObjectsContainer.transform,true);
+			tempVec = transform.position;
+			tempVec.y += verticalOffset;
+			lasertracer.GetComponent<LaserDrawing>().startPoint = tempVec;
+			lasertracer.GetComponent<LaserDrawing>().endPoint = tempHit.point;
+			lasertracer.SetActive(true);
+		}
     }
 
 	// dmg_min is Const.a.damagePerHitForWeapon[wep16Index], dmg_max is Const.a.damagePerHitForWeapon2[wep16Index]
@@ -809,11 +894,80 @@ public class WeaponFire : MonoBehaviour {
 		}
         if (hm != null && hm.health > 0) {
 			float dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
+			float linkDistForTargID = 10f;
+			switch (HardwareInventory.a.hardwareVersion[4]) {
+				case 1: linkDistForTargID = 10f; break;
+				case 2: linkDistForTargID = 15f; break;
+				case 3: linkDistForTargID = 25f; break;
+				case 4: linkDistForTargID = 30f; break;
+			}
+			bool showHealth = false;
+			bool showRange = false;
+			bool showAttitude = false;
+			bool showName = false;
 			if (dmgFinal <= 0) {
+				if (HardwareInventory.a.hasHardware[4]) {
+					if (HardwareInventory.a.hardwareVersion[4] > 0) {
+						// Display Range
+						showRange = true;
+					}
+
+					if (HardwareInventory.a.hardwareVersion[4] > 1) {
+						// Display Attitude
+						showAttitude = true;
+						// Display Name
+						showName = true;
+					}
+
+					if (HardwareInventory.a.hardwareVersion[4] > 3) {
+						// Display enemy health
+						showHealth = true;
+					}
+				}
+				CreateTargetIDInstance(Const.a.stringTable[511], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
 				noDamageIndicator.transform.position = tempHit.transform.position; // center on what we just shot
 				noDamageIndicator.SetActive(true); // do this regardless of target identifier version to show player that hey, it no workie
 			} else {
-				noDamageIndicator.SetActive(false); // I'm assuming that this will auto deactivate after 1sec, but in case the player is snappy about weapon switching, added this
+				if (HardwareInventory.a.hasHardware[4]) {
+					if (HardwareInventory.a.hardwareVersion[4] > 0) {
+						// Display Range
+						showRange = true;
+					}
+
+					if (HardwareInventory.a.hardwareVersion[4] > 1) {
+						// Display Attitude
+						showAttitude = true;
+						// Display Name
+						showName = true;
+					}
+
+					if (HardwareInventory.a.hardwareVersion[4] > 2) {
+						if (dmgFinal > hm.maxhealth * 0.75f) {
+							// Severe Damage
+							CreateTargetIDInstance(Const.a.stringTable[514], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
+						}
+						if (dmgFinal > hm.maxhealth * 0.50f) {
+							// Major Damage
+							CreateTargetIDInstance(Const.a.stringTable[515], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
+						}
+						if (dmgFinal > hm.maxhealth * 0.25f) {
+							// Normal Damage
+							CreateTargetIDInstance(Const.a.stringTable[513], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
+						}
+
+						if (dmgFinal > 0f) {
+							// Minor Damage
+							CreateTargetIDInstance(Const.a.stringTable[512], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
+						}
+					}
+
+					if (HardwareInventory.a.hardwareVersion[4] > 3) {
+						// Display enemy health
+						showHealth = true;
+					}
+				} else {
+					noDamageIndicator.SetActive(false); // I'm assuming that this will auto deactivate after 1sec, but in case the player is snappy about weapon switching, added this
+				}
 			}
 		}
 		UseableObjectUse uou = tempHit.transform.gameObject.GetComponent<UseableObjectUse>();
@@ -824,6 +978,34 @@ public class WeaponFire : MonoBehaviour {
             CreateBeamEffects(wep16Index);
         }
     }
+
+	// TargetIDInstance
+	public bool CreateTargetIDInstance(string message, Transform parent, HealthManager hm, Transform playerCapsuleTransform, float linkDist, bool range, bool health, bool attitude,bool name) {
+        GameObject idFrame = Const.a.GetObjectFromPool(Const.PoolType.TargetIDInstances);
+        if (idFrame != null) {
+            TargetID tid = idFrame.GetComponent<TargetID>();
+			tid.parent = parent;
+			tid.currentText = message;
+			if (message == Const.a.stringTable[511]) {
+				tid.lifetime = 1f;
+				tid.lifetimeFinished = PauseScript.a.relativeTime + tid.lifetime;
+			}
+            idFrame.transform.position = parent.position;
+            idFrame.SetActive(true);
+			tid.linkedHM = hm;
+			hm.linkedTargetID = tid;
+			tid.partSys.Play();
+			tid.playerCapsuleTransform = playerCapsuleTransform;
+			tid.playerLinkDistance = linkDist;
+			tid.displayRange = range;
+			tid.displayHealth = health;
+			tid.displayAttitude = attitude;
+			tid.displayName = name;
+			tid.linkedHM.aic.hasTargetIDAttached = true;
+			return true;
+        }
+		return false;
+	}
 
     // Melee weapons
     //----------------------------------------------------------------------------------------------------------

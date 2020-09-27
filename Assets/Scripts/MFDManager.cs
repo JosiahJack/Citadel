@@ -21,8 +21,7 @@ public class MFDManager : MonoBehaviour  {
 	public bool lastMinigameSideRH;
 	public GameObject SearchFXRH;
 	public GameObject SearchFXLH;
-	public enum TabMSG {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,WirePuzzle,EReader,Weapon};
-	public static MFDManager a;
+	public enum TabMSG {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,WirePuzzle,EReader,Weapon,SystemAnalyzer};
 	public MouseLookScript playerMLook;
 	private bool isRH;
 	[HideInInspector]
@@ -57,6 +56,10 @@ public class MFDManager : MonoBehaviour  {
 	public bool logActive;
 	[HideInInspector]
 	public int logType = 0;
+	public WeaponIconManager iconmanLH;
+	public WeaponIconManager iconmanRH;
+	public WeaponTextManager weptextmanLH;
+	public WeaponTextManager weptextmanRH;
 
 	//Handedness inspector assignments
 	//	SearchButton.isRH found on SearchContentsContainer under DataTab
@@ -87,6 +90,10 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject puzzleWireRH;
 	public SearchButton searchContainerLH;
 	public SearchButton searchContainerRH;
+	public GameObject sysAnalyzerLH;
+	public GameObject sysAnalyzerRH;
+	public GameObject viewWeaponsContainer;
+	public GameObject hardwareButtonsContainer;
 
 	// Disableable objects for cyberspace
 	public GameObject ctbButtonMain;
@@ -102,6 +109,14 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject cyberHealthIndicator;
 	public GameObject cyberTimerT;
 	public GameObject cyberTimer;
+	public GameObject cyberSprintContainer;
+	public Text cyberSprintText;
+	public GameObject automapFull;
+
+	public SoftwareInventory sinv;
+	public PlayerMovement pm;
+
+	public static MFDManager a;
 
 	public void Start () {
 		a = this;
@@ -111,10 +126,29 @@ public class MFDManager : MonoBehaviour  {
 		a.TabReset(false);
 	}
 
-	// Called by MouseLookScript
+	// Called by PlayerMovement.cs
+	public void AutomapGoFull() {
+		ctbButtonMain.SetActive(false);
+		ctbButtonHardware.SetActive(false);
+		ctbButtonGeneral.SetActive(false);
+		ctb.TabManager.DisableAllTabs();
+		automapFull.SetActive(true);
+		pm.inFullMap = true;
+	}
+
+	public void CloseFullmap() {
+		ctbButtonMain.SetActive(true);
+		ctbButtonHardware.SetActive(true);
+		ctbButtonGeneral.SetActive(true);
+		ctb.TabButtonClickSilent(0,true);
+		automapFull.SetActive(false);
+		pm.inFullMap = false;
+	}
+
+	// Called by MouseLookScript.cs
 	public void EnterCyberspace() {
-		TabReset(true);
-		TabReset(false);
+		TabReset(true); // right
+		TabReset(false); // left
 		ctbButtonMain.SetActive(false);
 		ctbButtonHardware.SetActive(false);
 		ctbButtonGeneral.SetActive(false);
@@ -128,6 +162,8 @@ public class MFDManager : MonoBehaviour  {
 		cyberHealthIndicator.SetActive(true);
 		cyberTimerT.SetActive(true);
 		cyberTimer.SetActive(true);
+		hardwareButtonsContainer.SetActive(false);
+		viewWeaponsContainer.SetActive(false);
 		CyberTimer ct = cyberTimer.GetComponent<CyberTimer>();
 		if (ct != null) {
 			ct.Reset(Const.a.difficultyCyber);
@@ -154,7 +190,14 @@ public class MFDManager : MonoBehaviour  {
 		cyberHealthIndicator.SetActive(false);
 		cyberTimerT.SetActive(false);
 		cyberTimer.SetActive(false);
+		hardwareButtonsContainer.SetActive(true);
+		viewWeaponsContainer.SetActive(true);
 		ctb.TabButtonClickSilent(0,true);
+	}
+
+	public void CyberSprint (string message) {
+		cyberSprintContainer.SetActive(true);
+		cyberSprintText.text = message;
 	}
 
 	public void TabReset(bool isRH) {
@@ -211,7 +254,7 @@ public class MFDManager : MonoBehaviour  {
 	public void ClosePuzzleWire() {
 		PuzzleWire pw = puzzleWireLH.GetComponent<PuzzleWire>();
 		PuzzleWire pwr = puzzleWireRH.GetComponent<PuzzleWire>();
-		tetheredPWP.SendDataBackToPanel(pw);
+		tetheredPWP.SendDataBackToPanel(pw,false);
 		pw.Reset();
 		pwr.Reset();
 		tetheredPWP = null;
@@ -258,18 +301,42 @@ public class MFDManager : MonoBehaviour  {
 			WeaponButtonsManagerUpdate();
 
 			if (GetInput.a.WeaponCycUp ()) {
-				if (Const.a.InputInvertInventoryCycling) {
-					wepbutMan.WeaponCycleDown();
+				if (playerMLook.inCyberSpace) {
+					sinv.isPulserNotDrill = !sinv.isPulserNotDrill; // there's only two cyberspace weapons, up is down
+					if (sinv.SFX != null && sinv.SFXChangeWeapon != null) sinv.SFX.PlayOneShot(sinv.SFXChangeWeapon);
+					if (sinv.isPulserNotDrill) {
+						sinv.pulserButtonText.Select(true);
+						sinv.drillButtonText.Select(false);
+					} else {
+						sinv.pulserButtonText.Select(false);
+						sinv.drillButtonText.Select(true);
+					}
 				} else {
-					wepbutMan.WeaponCycleUp();
+					if (Const.a.InputInvertInventoryCycling) {
+						wepbutMan.WeaponCycleDown();
+					} else {
+						wepbutMan.WeaponCycleUp();
+					}
 				}
 			}
 
 			if (GetInput.a.WeaponCycDown ()) {
-				if (Const.a.InputInvertInventoryCycling) {
-					wepbutMan.WeaponCycleUp();
+				if (playerMLook.inCyberSpace) {
+					sinv.isPulserNotDrill = !sinv.isPulserNotDrill; // there's only two cyberspace weapons, up is down
+					if (sinv.SFX != null && sinv.SFXChangeWeapon != null) sinv.SFX.PlayOneShot(sinv.SFXChangeWeapon);
+					if (sinv.isPulserNotDrill) {
+						sinv.pulserButtonText.Select(true);
+						sinv.drillButtonText.Select(false);
+					} else {
+						sinv.pulserButtonText.Select(false);
+						sinv.drillButtonText.Select(true);
+					}
 				} else {
-					wepbutMan.WeaponCycleDown();
+					if (Const.a.InputInvertInventoryCycling) {
+						wepbutMan.WeaponCycleUp();
+					} else {
+						wepbutMan.WeaponCycleDown();
+					}
 				}
 			}
 
@@ -357,6 +424,10 @@ public class MFDManager : MonoBehaviour  {
 				itemTabLH.EReaderSectionSContainerOpen();
 				playerMLook.ForceInventoryMode();
 			}
+			if (type == TabMSG.SystemAnalyzer) {
+				TabReset(false);
+				sysAnalyzerLH.SetActive(true);
+			}
 		} else {
 			// RH RIGHT HAND MFD
 			rightTC.SetCurrentAsLast();
@@ -393,12 +464,32 @@ public class MFDManager : MonoBehaviour  {
 				itemTabRH.EReaderSectionSContainerOpen();
 				playerMLook.ForceInventoryMode();
 			}
+			if (type == TabMSG.SystemAnalyzer) {
+				TabReset(false);
+				sysAnalyzerRH.SetActive(true);
+			}
 		}
 	}
 
 	public void SendInfoToItemTab(int index) {
-		if (itemTabRH != null) itemTabRH.SendItemDataToItemTab(index);
 		if (itemTabLH != null) itemTabLH.SendItemDataToItemTab(index);
+		if (itemTabRH != null) itemTabRH.SendItemDataToItemTab(index);
+	}
+
+	public void VaporizeClicked() {
+		itemTabLH.vaporizeButton.SetActive(false);
+		itemTabRH.vaporizeButton.SetActive(false);
+		SendInfoToItemTab(GeneralInvCurrent.GeneralInvInstance.generalInvIndex); // general inventory item vaporized, set item tab to next general inv current
+	}
+
+	public void ApplyButtonClicked(int index) {
+		itemTabLH.applyButton.SetActive(false);
+		itemTabRH.applyButton.SetActive(false);
+		if (index == 55) {
+			SendInfoToItemTab(GeneralInvCurrent.GeneralInvInstance.generalInvIndex);  // health kit was applied, set item tab to next general inv current
+		} else {
+			SendInfoToItemTab(PatchCurrent.PatchInstance.patchIndex); // set item tab to next patch
+		}
 	}
 
 	public void Search(bool isRH, string head, int numberFoundContents, int[] contents, int[] customIndex) {
@@ -731,6 +822,16 @@ public class MFDManager : MonoBehaviour  {
 			}
 			tetheredSearchable = null;
 		}
+	}
+
+	public void SetWepIcon(int index) {
+		iconmanLH.SetWepIcon(index);
+		weptextmanLH.SetWepText(index);
+	}
+
+	public void SetWepText(int index) {
+		iconmanRH.SetWepIcon(index);
+		weptextmanRH.SetWepText(index);
 	}
 
 	public void ReturnToLastTab(bool isRightHand) {

@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using System;
 
 public class PlayerMovement : MonoBehaviour {
-	private float walkAcceleration = 2000f;
+	[HideInInspector]
+	public float walkAcceleration = 2000f;
 	private float walkDeacceleration = 0.1f; // was 0.30f
 	private float walkDeaccelerationBooster = 1f; // was 2f, adjusted player physics material to reduce friction for moving up stairs
 	private float deceleration;
@@ -15,7 +16,8 @@ public class PlayerMovement : MonoBehaviour {
 	public MouseLookScript mlookScript;
 	public float playerSpeed; // save
 	private float maxWalkSpeed = 3f;
-	private float maxCyberSpeed = 4f;
+	private float maxCyberSpeed = 5f;
+	private float maxCyberUltimateSpeed = 12f;
 	private float maxCrouchSpeed = 1.25f; //1.75f
 	private float maxProneSpeed = .5f; //1f
 	private float maxSprintSpeed = 9f;
@@ -41,12 +43,33 @@ public class PlayerMovement : MonoBehaviour {
 	private float fallDamage = 75f;
 	public bool gravliftState = false; // save
 	public bool inCyberSpace = false; // save
-	public GameObject automapContainer;
-	public RectTransform automapRectTransform;
-	public Texture2D[] automapMaskTex;
+	private float automapUpdateFinished;
+	public Camera automapCamera;
+	public GameObject automapContainerLH;
+	public GameObject automapContainerRH;
+	public GameObject automapTabLH;
+	public GameObject automapTabRH;
+	public Transform automapCameraTransform;
+	public bool[] automapExploredR; // save
+	public bool[] automapExplored1; // save
+	public bool[] automapExplored2; // save
+	public bool[] automapExplored3; // save
+	public bool[] automapExplored4; // save
+	public bool[] automapExplored5; // save
+	public bool[] automapExplored6; // save
+	public bool[] automapExplored7; // save
+	public bool[] automapExplored8; // save
+	public bool[] automapExplored9; // save
+	public bool[] automapExploredG1; // save
+	public bool[] automapExploredG2; // save
+	public bool[] automapExploredG4; // save
+	private bool[] automapExplored;
+	public Image[] automapFoWTiles;
+	public RectTransform[] automapFoWTilesRects;
 	public float automapZoom0 = 1.2f;
 	public float automapZoom1 = 0.75f;
 	public float automapZoom2 = 0.55f;
+	public bool inFullMap;
 	private int currentAutomapZoomLevel = 0;
 	public float circleInnerRangev1 = (2.5f * 2.56f) + 1.28f;
 	public float circleOuterRangev1 = (4f * 2.56f) + 1.28f;
@@ -55,18 +78,14 @@ public class PlayerMovement : MonoBehaviour {
 	public float circleInnerRangev3 = (5f * 2.56f) + 1.28f;
 	public float circleOuterRangev3 = (7.5f * 2.56f) + 1.28f;
 	public Vector2[] automapLevelHomePositions; // R= 43.97, 85.66 | 1= -8.53, 85.99 | 2= 10.2, 44.8 | 3= 9.4, 63.83 | 4= -55.65, 116.8 | 5= -9.4, 71.8 | 6= 29.7, 85.5 | 7= 5, 76.55 | 8= 25.1, 84.4 | 9= 39.8, 72.6
-	public Image automapBaseImage;
-	public Image hazardsOverlayImage;
+	public RawImage automapBaseImage;
 	public Image automapInnerCircle;
 	public Image automapOuterCircle;
-	public Sprite[] automapsBaseImages;	
-	public Sprite[] automapsHazardOverlays;
-	public Sprite automapBotOverlay;
-	public Sprite automapCyborgOverlay;
-	public Sprite automapMutantOverlay;
-	public GameObject[] automapsIndividualOverlaysContainer;
+	public Texture2D[] automapsBaseImages;	
+	public RawImage[] automapsHazardOverlays;
 	public float automapFactorx = 0.000285f;
 	public float automapFactory = 0.000285f;
+	public Transform automapFullPlayerIcon;
 	public Transform cheatG1Spawn;
 	public Transform cheatG2Spawn;
 	public Transform cheatG4Spawn;
@@ -80,6 +99,19 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject cheatL7arsenal;
 	public GameObject cheatL8arsenal;
 	public GameObject cheatL9arsenal;
+	public GameObject levelOverlayContainerR;
+	public GameObject levelOverlayContainer1;
+	public GameObject levelOverlayContainer2;
+	public GameObject levelOverlayContainer3;
+	public GameObject levelOverlayContainer4;
+	public GameObject levelOverlayContainer5;
+	public GameObject levelOverlayContainer6;
+	public GameObject levelOverlayContainer7;
+	public GameObject levelOverlayContainer8;
+	public GameObject levelOverlayContainer9;
+	public GameObject levelOverlayContainerG1;
+	public GameObject levelOverlayContainerG2;
+	public GameObject levelOverlayContainerG4;
 	//[HideInInspector]
 	public bool CheatWallSticky; // save
     //[HideInInspector]
@@ -93,13 +125,15 @@ public class PlayerMovement : MonoBehaviour {
 	private float lastCrouchRatio;
 	private int layerGeometry = 9;
 	private int layerMask;
-	private Rigidbody rbody;
+	[HideInInspector]
+	public Rigidbody rbody;
 	private float fallDamageSpeed = 11.72f;
 	[HideInInspector]
 	public Vector3 oldVelocity; // save
 	public GameObject mainMenu;
 	public HardwareInvCurrent hwc;
 	public HardwareInventory hwi;
+	public SoftwareInventory sinv;
 	public HardwareButton hwbJumpJets;
 	public float fatigue; // save
 	private float jumpFatigue = 8.25f;
@@ -167,6 +201,8 @@ public class PlayerMovement : MonoBehaviour {
 	public float jumpJetEnergySuckTickFinished; // save
 	public float jumpJetEnergySuckTick = 1f;
 	private Vector3 tempVec;
+	private Vector2 tempVec2;
+	private Vector2 tempVec2b;
 	private float tempFloat;
 	private int tempInt;
 	public float leanSpeed = 5f;
@@ -188,6 +224,25 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector]
 	public float doubleJumpFinished; // save
 	private Vector3 playerHome;
+	public HealthManager hm;
+	private Texture2D tempTexture;
+	private Color[] mapColorsArray;
+	private Color[] hazardColors;
+	[HideInInspector]
+	public float turboFinished = 0f; // save
+	public float turboCyberTime = 15f;
+	private int doubleJumpTicks = 0;
+	public float automapCorrectionX;
+	public float automapCorrectionY;
+	public float automapTileCorrectionX;
+	public float automapTileCorrectionY;
+	public float automapFoWRadius = 35f;
+	public float automapTileBCorrectionX;
+	public float automapTileBCorrectionY;
+	public GameObject poolContainerAutomapBotOverlays;
+	public GameObject poolContainerAutomapMutantOverlays;
+	public GameObject poolContainerAutomapCyborgOverlays;
+
 
     void Start (){
 		currentCrouchRatio = def1;
@@ -222,7 +277,15 @@ public class PlayerMovement : MonoBehaviour {
 		tempInt = -1;
 		tempFloat = 0;
 		doubleJumpFinished = PauseScript.a.relativeTime;
-		playerHome = transform.localPosition;
+		doubleJumpTicks = 0;
+		turboFinished = PauseScript.a.relativeTime;
+		playerHome = transform.localPosition;	
+		mapColorsArray = new Color[1024*1024];
+		hazardColors = new Color[1024*1024];
+		automapExplored = new bool[4096];
+		automapUpdateFinished = PauseScript.a.relativeTime;
+		SetAutomapExploredReference(LevelManager.a.currentLevel);
+		AutomapZoomAdjust();
     }
 	
 	bool CantStand (){
@@ -418,7 +481,7 @@ public class PlayerMovement : MonoBehaviour {
 				if (fatigue < defIndex) fatigue = defIndex; // clamp at 0
 			}
 			if (fatigue > onehundred) fatigue = onehundred; // clamp at 100 using dummy variables to hang onto the value and not get collected by garbage collector (really?  hey it was back in the old days when we didn't have incremental garbage collector, pre Unity 2019.2 versions
-			if (fatigue > 80 && !fatigueWarned) {
+			if (fatigue > 80 && !fatigueWarned && !inCyberSpace) {
 				twm.SendWarning(("Fatigue high"),0.1f,0,TextWarningsManager.warningTextColor.white,324);
 				fatigueWarned = true;
 			} else {
@@ -591,12 +654,12 @@ public class PlayerMovement : MonoBehaviour {
                 }
 			}
 
-			if (CheatNoclip) playerSpeed = maxCyberSpeed*2f;
+			if (CheatNoclip) playerSpeed = maxCyberSpeed*4f;
 		
 			if (inCyberSpace && !CheatNoclip) {
 				// Limit movement speed in all axes x,y,z in cyberspace
-				if (rbody.velocity.magnitude > playerSpeed) {
-					RigidbodySetVelocity(rbody, playerSpeed);
+				if (rbody.velocity.magnitude > maxCyberUltimateSpeed) {
+					RigidbodySetVelocity(rbody, maxCyberUltimateSpeed);
 				}
 			} else {
 				// Limit movement speed horizontally for normal movement
@@ -631,6 +694,7 @@ public class PlayerMovement : MonoBehaviour {
 				RigidbodySetVelocityX(rbody, horizontalMovement.x);
 				RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG - already passed rbody.velocity.z into the .y of this Vector2
 
+				// Update the map
 				UpdateAutomap();
 
 				// Set vertical velocity
@@ -814,29 +878,37 @@ public class PlayerMovement : MonoBehaviour {
 					//rbody.AddForce(0, (-1 * playerGravity * Time.deltaTime), 0); //Apply gravity force
 				}
 
-				// Get input for Jump and set impulse time, removed "&& (ladderState == false)" since I want to be able to jump off a ladder
-				 
+				// Get input for Jump and set impulse time, removed "&& (ladderState == false)" since I want to be able to jump off a ladder			 
 				if (!inCyberSpace && !consoleActivated && !CheatNoclip) {
+					if (doubleJumpFinished < PauseScript.a.relativeTime) {
+						doubleJumpTicks--;
+						if (doubleJumpTicks < 0) doubleJumpTicks = 0;
+					}	
+
 					if (GetInput.a.Jump()) {
 						if (!justJumped) {
-							//if (gravliftState || (hwc.hardwareIsActive[10])) {
-								if (grounded || gravliftState || hwc.hardwareIsActive[10]) {
+							if (grounded || gravliftState || hwc.hardwareIsActive[10]) {
+								jumpTime = jumpImpulseTime;
+								doubleJumpFinished = PauseScript.a.relativeTime + Const.a.doubleClickTime;
+								doubleJumpTicks++;
+								justJumped = true;
+							} else {
+								if (ladderState) {
 									jumpTime = jumpImpulseTime;
-									doubleJumpFinished = PauseScript.a.relativeTime + Const.a.doubleClickTime;
 									justJumped = true;
-								} else {
-									if (ladderState) {
-										jumpTime = jumpImpulseTime;
-										justJumped = true;
-									}
 								}
-							//}
+							}
 						}
 
 						if (hwc.hardwareIsActive [9] && hwi.hardwareVersionSetting[9] == 1) {
-							if (doubleJumpFinished < PauseScript.a.relativeTime){
+							if (justJumped && doubleJumpTicks == 2) {
+								//Debug.Log("Booster thrust!");
 								rbody.AddForce(new Vector3(transform.forward.x * burstForce,transform.forward.y * burstForce,transform.forward.z * burstForce),ForceMode.Impulse);
-								pe.TakeEnergy(40f);
+								pe.TakeEnergy(22f);
+								justJumped = false;
+								jumpTime = 0;
+								doubleJumpTicks = 0;
+								doubleJumpFinished = PauseScript.a.relativeTime - 1f; // make sure we can't do it again right away
 							}
 						}
 					} 
@@ -906,7 +978,7 @@ public class PlayerMovement : MonoBehaviour {
 					dd.attackType = Const.AttackType.None;
 					dd.offense = 0f;
 					dd.isOtherNPC = false;
-					GetComponent<HealthManager>().TakeDamage (dd);  // was previously referring to the no longer used TakeDamage within PlayerHealth.cs
+					hm.TakeDamage (dd);  // was previously referring to the no longer used TakeDamage within PlayerHealth.cs
 				}
 				oldVelocity = rbody.velocity;
 
@@ -915,99 +987,235 @@ public class PlayerMovement : MonoBehaviour {
 					grounded = false;
 			} else {
 				// Handle cyberspace movement
+				bool inputtingMovement = false;
 				if (GetInput.a.Forward() && !consoleActivated) {
-					//Vector3 tempvec = mlookScript.cyberLookDir;
-					rbody.AddForce (cameraObject.transform.forward * walkAcceleration * Time.deltaTime);
-					//rbody.AddRelativeForce (relSideways * walkAcceleration * Time.deltaTime, 0, relForward * walkAcceleration * Time.deltaTime);
+					if (turboFinished > PauseScript.a.relativeTime) {
+						if (Vector3.Project(rbody.velocity, (cameraObject.transform.forward)).magnitude < playerSpeed * 2f)
+						rbody.AddForce (cameraObject.transform.forward * walkAcceleration * 1.3f * 2f * Time.deltaTime,ForceMode.Acceleration); // double speed with turbo on
+					} else {
+						if (Vector3.Project(rbody.velocity, cameraObject.transform.forward).magnitude < playerSpeed) 
+						rbody.AddForce (cameraObject.transform.forward * walkAcceleration * 1.3f * Time.deltaTime,ForceMode.Acceleration);
+					}
+					inputtingMovement = true;
 				}
+
+				if (GetInput.a.Backpedal() && !consoleActivated) {
+					if (turboFinished > PauseScript.a.relativeTime) {
+						if (Vector3.Project(rbody.velocity, (cameraObject.transform.forward * -1f)).magnitude < playerSpeed * 2f)
+						rbody.AddForce (cameraObject.transform.forward * walkAcceleration * 1.3f * 2f * Time.deltaTime * -1f,ForceMode.Acceleration); // double speed with turbo on
+					} else {
+						if (Vector3.Project(rbody.velocity, cameraObject.transform.forward * -1f).magnitude < playerSpeed) 
+						rbody.AddForce (cameraObject.transform.forward * walkAcceleration * 1.3f * Time.deltaTime * -1f,ForceMode.Acceleration);
+					}
+					inputtingMovement = true;
+				}
+
+				if (GetInput.a.StrafeLeft() && !consoleActivated) {
+					if (turboFinished > PauseScript.a.relativeTime) {
+						if (Vector3.Project(rbody.velocity, (cameraObject.transform.right * -1f)).magnitude < playerSpeed * 2f)
+						rbody.AddForce (cameraObject.transform.right * walkAcceleration * 1.3f * 2f * Time.deltaTime * -1f,ForceMode.Acceleration); // double speed with turbo on
+					} else {
+						if (Vector3.Project(rbody.velocity, cameraObject.transform.right * -1f).magnitude < playerSpeed) 
+						rbody.AddForce (cameraObject.transform.right * walkAcceleration * 1.3f * Time.deltaTime * -1f,ForceMode.Acceleration);
+					}
+					inputtingMovement = true;
+				}
+
+				if (GetInput.a.StrafeRight() && !consoleActivated) {
+					if (turboFinished > PauseScript.a.relativeTime) {
+						if (Vector3.Project(rbody.velocity, cameraObject.transform.right).magnitude < playerSpeed * 2f)
+						rbody.AddForce (cameraObject.transform.right * walkAcceleration * 1.3f * 2f * Time.deltaTime,ForceMode.Acceleration); // double speed with turbo on
+					} else {
+						if (Vector3.Project(rbody.velocity, cameraObject.transform.right).magnitude < playerSpeed) 
+						rbody.AddForce (cameraObject.transform.right * walkAcceleration * 1.3f * Time.deltaTime,ForceMode.Acceleration);
+					}
+					inputtingMovement = true;
+				}
+
 				if (Const.a.difficultyCyber > 1) {
-					rbody.AddForce (cameraObject.transform.forward * walkAcceleration*0.25f * Time.deltaTime);
+					rbody.AddForce (cameraObject.transform.forward * walkAcceleration*0.05f * Time.deltaTime); // turbo doesn't affect detrimental forces :)
+				} else {
+					if (!inputtingMovement) {
+						rbody.velocity = Vector3.zero;
+					}
 				}
 			}
 		}
 	}
 
-	void SetActiveCurrentLevelOverlayContainer() {
-		if (LevelManager.a.currentLevel < 0) return;
-		for (int i=0;i<14;i++) {
-			if (i == LevelManager.a.currentLevel) {
-				if (!automapsIndividualOverlaysContainer[i].activeSelf) automapsIndividualOverlaysContainer[i].SetActive(true);
-			} else {
-				if (automapsIndividualOverlaysContainer[i].activeSelf) automapsIndividualOverlaysContainer[i].SetActive(false);
-			}
-		}
-	}
-
-	void PaintAwayAlphaInAlphaMask(Texture2D alphaSource,Vector3 paintBrushPosition) {
-		
-	}
-
-	float GetMappedAlphaFromSmallerAlphaMask(int srcx, int srcy, Texture2D alphaSource) {
-		Color c = alphaSource.GetPixel((srcx/16),(srcy/16));
-		return c.a;
-	}
-
-	Texture2D spriteWithAppliedAlphaMask(Texture2D tex) {
-		Texture2D retTex = tex;
-		if (LevelManager.a.currentLevel >= 0 && LevelManager.a.currentLevel < 14) {
-
-			for (int y=0;y<tex.height;y++) {
-				for (int x=0;x<tex.width;x++) {
-					Color oldC = tex.GetPixel(x,y);
-					float a = oldC.a;
-					if (a > 0) a = GetMappedAlphaFromSmallerAlphaMask(x,y,automapMaskTex[LevelManager.a.currentLevel]);
-					Color newC = new Color(oldC.r,oldC.g,oldC.b, a ); // alpha is kinda the whole point
-					retTex.SetPixel(x,y,newC);
-				}
-			}
-		}
-		return retTex;
-	}
-
+	// AUTOMAP - rather than making yet another singleton Automap.a. because that's annoying
+	// =====================================================================================
 	// Update automap location
 	public void UpdateAutomap () {
-		Vector3 newpos;
-		if (hwi.hasHardware[1]) {
-			if (LevelManager.a.currentLevel >= 0 && LevelManager.a.currentLevel < 14) {
-				//Sprite fogOfWarSprite = Sprite.Create(spriteWithAppliedAlphaMask(automapsBaseImages[LevelManager.a.currentLevel].texture),automapBaseImage.sprite.rect,new Vector2(0f,0f));
-				//automapBaseImage.overrideSprite = fogOfWarSprite;
-				automapBaseImage.overrideSprite = automapsBaseImages[LevelManager.a.currentLevel];
-				//SetActiveCurrentLevelOverlayContainer();
-				newpos = new Vector3(automapLevelHomePositions[LevelManager.a.currentLevel].x,automapLevelHomePositions[LevelManager.a.currentLevel].y,0f);
+		if (inCyberSpace) return;
+
+		if (hwi.hardwareVersion[1] < 2) {
+			if (poolContainerAutomapBotOverlays.activeSelf) poolContainerAutomapBotOverlays.SetActive(false);
+		} else {
+			if (!poolContainerAutomapBotOverlays.activeSelf) poolContainerAutomapBotOverlays.SetActive(true);
+		}
+
+		if (hwi.hardwareVersion[1] < 3) {
+			if (poolContainerAutomapCyborgOverlays.activeSelf) poolContainerAutomapCyborgOverlays.SetActive(false);
+			if (poolContainerAutomapMutantOverlays.activeSelf) poolContainerAutomapMutantOverlays.SetActive(false);
+		} else {
+			if (!poolContainerAutomapCyborgOverlays.activeSelf) poolContainerAutomapCyborgOverlays.SetActive(true);
+			if (!poolContainerAutomapMutantOverlays.activeSelf) poolContainerAutomapMutantOverlays.SetActive(true);
+		}
+
+		if (automapUpdateFinished < PauseScript.a.relativeTime) {
+			// private float camMaxAmount = 0.2548032f;
+			// private float mapWorldMaxN = 85.83999f;
+			// private float mapWorldMaxS = -78.00001f;
+			// private float mapWorldMaxE = -70.44f;
+			// private float mapWorldMaxW = 93.4f;
+			tempVec.x = (((transform.localPosition.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * (Const.a.camMaxAmount * 2f)) + (Const.a.camMaxAmount * -1f);
+			tempVec.y = (((transform.localPosition.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * (Const.a.camMaxAmount * 2f)) + (Const.a.camMaxAmount * -1f);
+			tempVec.z = automapCameraTransform.localPosition.z;
+			tempVec.x = (tempVec.x * -1f) + automapCorrectionX;
+			tempVec.y += automapCorrectionY;
+
+			// private float mapTileMinX = 8; // top left corner
+			// private float mapTileMaxY = -8; // top left corner
+			// private float mapTileMinY = -1016; // bottom right corner
+			// private float mapTileMaxX = 1016; // bottom right corner
+			tempVec2b.x = (((transform.localPosition.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * 1008f) + Const.a.mapTileMinX + automapTileBCorrectionX;
+			tempVec2b.y = ((((transform.localPosition.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * 1008f) + Const.a.mapTileMinY + automapTileBCorrectionY);
+
+			if (inFullMap) {
+				tempVec2b.x -= automapTileBCorrectionX;
+				tempVec2b.y -= automapTileBCorrectionY;
+				automapFullPlayerIcon.localPosition = tempVec2b;
+				tempVec.x = 0;
+				tempVec.y = 0;
+				automapCameraTransform.localPosition = tempVec; // move the map to center
 			} else {
-				newpos = new Vector3(-9.9f,112.9f,0f);
+				automapCameraTransform.localPosition = tempVec; // move the map to reflect player movement
 			}
-			float deltay = (transform.localPosition.x - playerHome.x)/2.56f * 8f * automapFactorx;
-			float deltax = (transform.localPosition.z - playerHome.z)/2.56f * 8f * automapFactory;
-			newpos.y -= deltay; // needs to be flipped for some reason
-			newpos.x += deltax;
-			automapRectTransform.localPosition = newpos;
-			//if (LevelManager.a.currentLevel >= 0 && LevelManager.a.currentLevel < 14) PaintAwayAlphaInAlphaMask(automapMaskTex[LevelManager.a.currentLevel],newpos);
-			/*
-			switch (hwi.hardwareVersion[1]) {
-				case 0:
-					hazardsOverlayImage.enabled = false;
-					break;
-				case 1:
-					hazardsOverlayImage.enabled = false;
-					//AutomapDisplayBots();
-					break;
-				case 2:
-					hazardsOverlayImage.enabled = true;
-					if (LevelManager.a.currentLevel >= 0 && LevelManager.a.currentLevel < 14) {
-						if (automapsHazardOverlays[LevelManager.a.currentLevel] != null) {
-							hazardsOverlayImage.overrideSprite = automapsHazardOverlays[LevelManager.a.currentLevel];
-						}
+
+
+			for (int i=0;i<4096;i++) {
+				if (automapExplored[i]) {
+					if (automapFoWTiles[i] != null) automapFoWTiles[i].enabled = false;
+				} else {
+					tempVec2.x = automapFoWTilesRects[i].localPosition.x * -1f - automapTileCorrectionX;// - tempVec.x;
+					tempVec2.y = automapFoWTilesRects[i].localPosition.y + automapTileCorrectionY;// - tempVec.y;
+					if (Vector2.Distance(tempVec2,tempVec2b) < automapFoWRadius) {
+						automapExplored[i] = true;
+						SetAutomapTileExplored(LevelManager.a.currentLevel,i);
+						if (automapFoWTiles[i] != null) automapFoWTiles[i].enabled = false;
+					} else {
+						if (automapFoWTiles[i] != null) automapFoWTiles[i].enabled = true;
 					}
-					//AutomapDisplayBots();
-					//AutomapDisplayCyborgs();
-					//AutomapDisplayMutants();
-					break;
-			}*/
+				}
+			}
+
+			float updateTime = 0.2f;
+			if (hwi.hardwareVersion[1] > 1) {
+				updateTime = 0.1f;
+				// Display just bot overlays
+
+			}
+			if (hwi.hardwareVersion[1] > 2) {
+				updateTime = 0.05f;
+
+				// Display hazards
+				for (int j=0;j<13;j++) {
+					if (j != LevelManager.a.currentLevel) {
+						if (automapsHazardOverlays[j].enabled) automapsHazardOverlays[j].enabled = false;
+					} else {
+						if (!automapsHazardOverlays[j].enabled) automapsHazardOverlays[j].enabled = true;
+					}
+				}
+
+				// Display cyborg and mutant overlays
+
+			}
+			automapUpdateFinished = PauseScript.a.relativeTime + updateTime;
+		}
+
+		if (hwi.hasHardware[1]) {
+			if (automapTabLH.activeInHierarchy || automapTabRH.activeInHierarchy || inFullMap) {
+				automapCamera.enabled = true;
+				switch (LevelManager.a.currentLevel) {
+					case 0: if (!levelOverlayContainerR.activeSelf) {levelOverlayContainerR.SetActive(true);}   DeactivateLevelOverlayContainersExcept(0); break;
+					case 1: if (!levelOverlayContainer1.activeSelf) {levelOverlayContainer1.SetActive(true);}   DeactivateLevelOverlayContainersExcept(1); break;
+					case 2: if (!levelOverlayContainer2.activeSelf) {levelOverlayContainer2.SetActive(true);}   DeactivateLevelOverlayContainersExcept(2); break;
+					case 3: if (!levelOverlayContainer3.activeSelf) {levelOverlayContainer3.SetActive(true);}   DeactivateLevelOverlayContainersExcept(3); break;
+					case 4: if (!levelOverlayContainer4.activeSelf) {levelOverlayContainer4.SetActive(true);}   DeactivateLevelOverlayContainersExcept(4); break;
+					case 5: if (!levelOverlayContainer5.activeSelf) {levelOverlayContainer5.SetActive(true);}   DeactivateLevelOverlayContainersExcept(5); break;
+					case 6: if (!levelOverlayContainer6.activeSelf) {levelOverlayContainer6.SetActive(true);}   DeactivateLevelOverlayContainersExcept(6); break;
+					case 7: if (!levelOverlayContainer7.activeSelf) {levelOverlayContainer7.SetActive(true);}   DeactivateLevelOverlayContainersExcept(7); break;
+					case 8: if (!levelOverlayContainer8.activeSelf) {levelOverlayContainer8.SetActive(true);}   DeactivateLevelOverlayContainersExcept(8); break;
+					case 9: if (!levelOverlayContainer9.activeSelf) {levelOverlayContainer9.SetActive(true);}   DeactivateLevelOverlayContainersExcept(9); break;
+					case 10:if (!levelOverlayContainerG1.activeSelf) {levelOverlayContainerG1.SetActive(true);} DeactivateLevelOverlayContainersExcept(10);break;
+					case 11:if (!levelOverlayContainerG2.activeSelf) {levelOverlayContainerG2.SetActive(true);} DeactivateLevelOverlayContainersExcept(11);break;
+					case 12:if (!levelOverlayContainerG4.activeSelf) {levelOverlayContainerG4.SetActive(true);} DeactivateLevelOverlayContainersExcept(12);break;
+				}
+			}
+		} else {
+			automapCamera.enabled = false;
+		}
+	}
+
+	void DeactivateLevelOverlayContainersExcept(int current) {
+		if (current != 0) {if (levelOverlayContainerR.activeSelf) levelOverlayContainerR.SetActive(false); }
+		if (current != 1) {if (levelOverlayContainer1.activeSelf) levelOverlayContainer1.SetActive(false); }
+		if (current != 2) {if (levelOverlayContainer2.activeSelf) levelOverlayContainer2.SetActive(false); }
+		if (current != 3) {if (levelOverlayContainer3.activeSelf) levelOverlayContainer3.SetActive(false); }
+		if (current != 4) {if (levelOverlayContainer4.activeSelf) levelOverlayContainer4.SetActive(false); }
+		if (current != 5) {if (levelOverlayContainer5.activeSelf) levelOverlayContainer5.SetActive(false); }
+		if (current != 6) {if (levelOverlayContainer6.activeSelf) levelOverlayContainer6.SetActive(false); }
+		if (current != 7) {if (levelOverlayContainer7.activeSelf) levelOverlayContainer7.SetActive(false); }
+		if (current != 8) {if (levelOverlayContainer8.activeSelf) levelOverlayContainer8.SetActive(false); }
+		if (current != 9) {if (levelOverlayContainer9.activeSelf) levelOverlayContainer9.SetActive(false); }
+		if (current != 10){if (levelOverlayContainerG1.activeSelf)levelOverlayContainerG1.SetActive(false);}
+		if (current != 11){if (levelOverlayContainerG2.activeSelf)levelOverlayContainerG2.SetActive(false);}
+		if (current != 12){if (levelOverlayContainerG4.activeSelf)levelOverlayContainerG4.SetActive(false);}
+	}
+
+	public void SetAutomapExploredReference(int currentLevel) {
+		switch(currentLevel) {
+			case 0: for (int i=0;i<4096;i++) { automapExplored[i] = automapExploredR[i]; } break;
+			case 1: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored1[i]; } break;
+			case 2: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored2[i]; } break;
+			case 3: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored3[i]; } break;
+			case 4: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored4[i]; } break;
+			case 5: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored5[i]; } break;
+			case 6: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored6[i]; } break;
+			case 7: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored7[i]; } break;
+			case 8: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored8[i]; } break;
+			case 9: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored9[i]; } break;
+			case 10:for (int i=0;i<4096;i++) { automapExplored[i] = automapExploredG1[i];} break;
+			case 11:for (int i=0;i<4096;i++) { automapExplored[i] = automapExploredG2[i];} break;
+			case 12:for (int i=0;i<4096;i++) { automapExplored[i] = automapExploredG4[i];} break;
+		}
+	}
+
+	void SetAutomapTileExplored(int currentLevel, int index) {
+		switch(currentLevel) {
+			case 0: automapExploredR[index] = true; break;
+			case 1: automapExplored1[index] = true; break;
+			case 2: automapExplored2[index] = true; break;
+			case 3: automapExplored3[index] = true; break;
+			case 4: automapExplored4[index] = true; break;
+			case 5: automapExplored5[index] = true; break;
+			case 6: automapExplored6[index] = true; break;
+			case 7: automapExplored7[index] = true; break;
+			case 8: automapExplored8[index] = true; break;
+			case 9: automapExplored9[index] = true; break;
+			case 10:automapExploredG1[index]= true; break;
+			case 11:automapExploredG2[index]= true; break;
+			case 12:automapExploredG4[index]= true; break;
 		}
 	}
 
 	public void AutomapZoomOut() {
+		if (hwi.hardwareVersion[1] < 2) {
+			Const.sprint(Const.a.stringTable[465],Const.a.player1); // Map hardware version doesn't support zoom.
+			return;
+		}
+
 		currentAutomapZoomLevel++;
 		if (currentAutomapZoomLevel > 2) {
 			currentAutomapZoomLevel = 2;
@@ -1018,6 +1226,11 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	public void AutomapZoomIn() {
+		if (hwi.hardwareVersion[1] < 2) {
+			Const.sprint(Const.a.stringTable[465],Const.a.player1); // Map hardware version doesn't support zoom.
+			return;
+		}
+
 		currentAutomapZoomLevel--;
 		if (currentAutomapZoomLevel < 0) {
 			currentAutomapZoomLevel = 0;
@@ -1034,7 +1247,8 @@ public class PlayerMovement : MonoBehaviour {
 			case 1: scaleVec = new Vector3(automapZoom1, automapZoom1, automapZoom1); break;
 			case 2: scaleVec = new Vector3(automapZoom2, automapZoom2, automapZoom2); break;
 		}
-		automapContainer.transform.localScale = scaleVec;
+		automapContainerLH.transform.localScale = scaleVec;
+		automapContainerRH.transform.localScale = scaleVec;
 	}
 
 	public void AutomapGoSide() {
@@ -1042,8 +1256,10 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	public void AutomapGoFull() {
-		Const.sprint("Unable to connect full map, try updating to version 1.00",Const.a.player1); // zoom at max
+		MFDManager.a.AutomapGoFull();
 	}
+	// =====================================================================================
+	// =====================================================================================
 
 
 	// Reset grounded to false when player is mid-air
@@ -1106,6 +1322,7 @@ public class PlayerMovement : MonoBehaviour {
     }
 
 	// CHEAT CODES you cheaty cheatface you
+	// =====================================================================================
     public void ConsoleEntry() {
         if (consoleinpFd.text == "noclip" || consoleinpFd.text == "NOCLIP" || consoleinpFd.text == "Noclip" || consoleinpFd.text == "nOCLIP" || consoleinpFd.text == "idclip" || consoleinpFd.text == "IDCLIP") {
 			if (CheatNoclip) {
@@ -1130,12 +1347,12 @@ public class PlayerMovement : MonoBehaviour {
 				Const.sprint("notarget activated!", Const.a.allPlayers);
 			}
         } else if (consoleinpFd.text == "god" || consoleinpFd.text == "GOD" || consoleinpFd.text == "God"  || consoleinpFd.text == "gOD" || consoleinpFd.text == "power overwhelming" || consoleinpFd.text == "POWER OVERWHELMING" || consoleinpFd.text == "poweroverwhelming" || consoleinpFd.text == "POWEROVERWHELMING" || consoleinpFd.text == "WhosYourDaddy" || consoleinpFd.text == "WHOSYOURDADDY" || consoleinpFd.text == "wHOSyOURdADDY" || consoleinpFd.text == "iddqd") {
-			if (GetComponent<HealthManager>().god) {
+			if (hm.god) {
 				Const.sprint("god mode disabled", Const.a.allPlayers);
-				GetComponent<HealthManager>().god = false;
+				hm.god = false;
 			} else {
 				Const.sprint("god mode activated!", Const.a.allPlayers);
-				GetComponent<HealthManager>().god = true;
+				hm.god = true;
 			}
         } else if (consoleinpFd.text == "load0" || consoleinpFd.text == "LOAD0" || consoleinpFd.text == "Load0") {
 			LevelManager.a.LoadLevel(0,LevelManager.a.ressurectionLocation[0].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[0].position);
@@ -1165,43 +1382,43 @@ public class PlayerMovement : MonoBehaviour {
 			LevelManager.a.LoadLevel(12,cheatG4Spawn.gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[12].position);
 		} else if (consoleinpFd.text == "loadarsenalr" || consoleinpFd.text == "LOADARSENALR" || consoleinpFd.text == "Loadarsenalr" || consoleinpFd.text == "LoadarsenalR" || consoleinpFd.text == "loadarsenalR") {
 			GameObject cheatArsenal = Instantiate(cheatLRarsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 		} else if (consoleinpFd.text == "loadarsenal1" || consoleinpFd.text == "LOADARSENAL1" || consoleinpFd.text == "Loadarsenal1") {
 			GameObject cheatArsenal = Instantiate(cheatL1arsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 		} else if (consoleinpFd.text == "loadarsenal2" || consoleinpFd.text == "LOADARSENAL2" || consoleinpFd.text == "Loadarsenal2") {
 			GameObject cheatArsenal = Instantiate(cheatL2arsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 		} else if (consoleinpFd.text == "loadarsenal3" || consoleinpFd.text == "LOADARSENAL3" || consoleinpFd.text == "Loadarsenal3") {
 			GameObject cheatArsenal = Instantiate(cheatL3arsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 		} else if (consoleinpFd.text == "loadarsenal4" || consoleinpFd.text == "LOADARSENAL4" || consoleinpFd.text == "Loadarsenal4") {
 			GameObject cheatArsenal = Instantiate(cheatL4arsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 		} else if (consoleinpFd.text == "loadarsenal5" || consoleinpFd.text == "LOADARSENAL5" || consoleinpFd.text == "Loadarsenal5") {
 			GameObject cheatArsenal = Instantiate(cheatL5arsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 		} else if (consoleinpFd.text == "loadarsenal6" || consoleinpFd.text == "LOADARSENAL6" || consoleinpFd.text == "Loadarsenal6") {
 			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 		} else if (consoleinpFd.text == "loadarsenal7" || consoleinpFd.text == "LOADARSENAL7" || consoleinpFd.text == "Loadarsenal7") {
 			GameObject cheatArsenal = Instantiate(cheatL7arsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 		} else if (consoleinpFd.text == "loadarsenal8" || consoleinpFd.text == "LOADARSENAL8" || consoleinpFd.text == "Loadarsenal8") {
 			GameObject cheatArsenal = Instantiate(cheatL8arsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 		} else if (consoleinpFd.text == "loadarsenal9" || consoleinpFd.text == "LOADARSENAL9" || consoleinpFd.text == "Loadarsenal9") {
 			GameObject cheatArsenal = Instantiate(cheatL9arsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 		} else if (consoleinpFd.text == "loadarsenalg1" || consoleinpFd.text == "LOADARSENALG1" || consoleinpFd.text == "Loadarsenalg1" || consoleinpFd.text == "LoadarsenalG1" || consoleinpFd.text == "loadarsenalG1") {
 			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 		} else if (consoleinpFd.text == "loadarsenalg2" || consoleinpFd.text == "LOADARSENALG2" || consoleinpFd.text == "Loadarsenalg2" || consoleinpFd.text == "LoadarsenalG2" || consoleinpFd.text == "loadarsenalG2") {
 			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 		} else if (consoleinpFd.text == "loadarsenalg3" || consoleinpFd.text == "LOADARSENALG3" || consoleinpFd.text == "Loadarsenalg3" || consoleinpFd.text == "LoadarsenalG3" || consoleinpFd.text == "loadarsenalG3") {
 			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Quaternion.identity) as GameObject;
-			cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
         } else if (consoleinpFd.text == "bottomlessclip" || consoleinpFd.text == "BOTTOMLESSCLIP"  || consoleinpFd.text == "Bottomlessclip" || consoleinpFd.text == "bOTTOMLESSCLIP" || consoleinpFd.text == "bottomless clip" || consoleinpFd.text == "BOTTOMLESS CLIP") {
 			if (wepCur.bottomless) {
 				Const.sprint("Hose disconnected, normal ammo operation restored", Const.a.allPlayers);

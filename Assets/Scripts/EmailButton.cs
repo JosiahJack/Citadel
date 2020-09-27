@@ -26,7 +26,7 @@ public class EmailButton : MonoBehaviour {
 		EmailTitle.Instance.SFX.clip = EmailTitle.Instance.emailVoiceClips[EmailCurrent.Instance.emailCurrent];
 		EmailTitle.Instance.SFX.Play ();
 		
-		CenterTabButtonsManager.TabButtonClick (5);
+		CenterTabButtonsManager.TabButtonClick(5);
 	}
 	
 	[SerializeField] private Button MailButton = null; // assign in the editor

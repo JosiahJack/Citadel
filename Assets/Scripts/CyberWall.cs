@@ -4,47 +4,66 @@ using System.Linq;
 using UnityEngine;
 
 public class CyberWall : MonoBehaviour {
-	public Material cyberwallTouching;
-	public Material cyberwall;
+	private Material cyberwall;
 	public MeshRenderer mr;
 	List<GameObject> currentCollisions = new List<GameObject>();
-	private bool wasTouching;
+	//private bool wasTouching;
 	private float conwayFinished;
 	private float conwayTime = 0.5f;
+	private float centerAlphaMinimum = 0.02f;
+	private float centerAlphaMaximum = 1f;
+	private float centerAlphaCurrent = 0.02f;
+	public float tick = 0.05f;
+	private float tickFinished;
 
 	void Start() {
-		Const.a.AddCyberPanelToRegistry(this);
-		wasTouching = false;
+		cyberwall = mr.material;
+		centerAlphaCurrent = centerAlphaMinimum;
+		cyberwall.SetFloat("_CenterAlpha",centerAlphaCurrent);
+		tickFinished = PauseScript.a.relativeTime + 2f;
+		//Const.a.AddCyberPanelToRegistry(this);
+		//wasTouching = false;
 	}
 
-	// void Update() {
-		// if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			// if (currentCollisions.Any()) {
-				// if (mr.material != cyberwallTouching) mr.material = cyberwallTouching;
-				// wasTouching = true;
-				// conwayFinished = PauseScript.a.relativeTime + conwayTime; // keep resetting timer so it's fresh for if an object stops touching us
-			// } else {
-				//See if we were just touched and the conway timer is up so that touch material is active for conwayTime seconds
-				// if (wasTouching && conwayFinished < PauseScript.a.relativeTime) {
-					// wasTouching = false; // reset bit so we don't spam Conway's Game of Life
-					// Const.a.ConwayGameEntry(this,transform.position); // keep spreading life!
+	void Update() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (tickFinished < PauseScript.a.relativeTime) {
+				if (centerAlphaCurrent > centerAlphaMinimum) {
+					centerAlphaCurrent -= 0.05f;
+					if (centerAlphaCurrent < centerAlphaMinimum) centerAlphaCurrent = centerAlphaMinimum;
+					cyberwall.SetFloat("_CenterAlpha",centerAlphaCurrent);
+				}
+
+				// if (currentCollisions.Any()) {
+					// if (mr.material != cyberwallTouching) mr.material = cyberwallTouching;
+					// wasTouching = true;
+					// conwayFinished = PauseScript.a.relativeTime + conwayTime; // keep resetting timer so it's fresh for if an object stops touching us
+				// } else {
+					//See if we were just touched and the conway timer is up so that touch material is active for conwayTime seconds
+					// if (wasTouching && conwayFinished < PauseScript.a.relativeTime) {
+						// wasTouching = false; // reset bit so we don't spam Conway's Game of Life
+						// Const.a.ConwayGameEntry(this,transform.position); // keep spreading life!
+					// }
+					// if (mr.material != cyberwall) mr.material = cyberwall;
 				// }
-				// if (mr.material != cyberwall) mr.material = cyberwall;
-			// }
-		// }
-	// }
+				tickFinished = PauseScript.a.relativeTime + tick;
+			}
+
+		}
+	}
 
 	// Input conway signal to keep spreading life!
 	public void ConwaySignal() {
 		conwayFinished = PauseScript.a.relativeTime + conwayTime;
-		wasTouching = true;
+		//wasTouching = true;
 	}
 
 	void OnCollisionEnter (Collision other) {
-		currentCollisions.Add(other.gameObject);
+		centerAlphaCurrent = centerAlphaMaximum;
+		//currentCollisions.Add(other.gameObject);
 	}
 
     void OnCollisionExit (Collision other) {
-		currentCollisions.Remove(other.gameObject);
+		//currentCollisions.Remove(other.gameObject);
 	}
 }

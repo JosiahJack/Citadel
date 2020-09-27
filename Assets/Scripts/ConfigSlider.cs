@@ -19,6 +19,7 @@ public class ConfigSlider : MonoBehaviour {
 		case 3: slideControl.value = Const.a.AudioVolumeMusic; break;
 		case 4: slideControl.value = Const.a.AudioVolumeMessage; break;
 		case 5: slideControl.value = Const.a.AudioVolumeEffects; break;
+		case 6: slideControl.value = (Const.a.MouseSensitivity/2.01f*100f); break;
 		}
 	}
 
@@ -30,6 +31,7 @@ public class ConfigSlider : MonoBehaviour {
 		case 3: Const.a.AudioVolumeMusic = (int)slideControl.value; Const.a.SetVolume(); break;
 		case 4: Const.a.AudioVolumeMessage = (int)slideControl.value; Const.a.SetVolume(); break;
 		case 5: Const.a.AudioVolumeEffects = (int)slideControl.value; Const.a.SetVolume(); break;
+		case 6: Const.a.MouseSensitivity = ((slideControl.value/100f) * 2f) + 0.01f; break;
 		}
 		Const.a.WriteConfig();
 	}

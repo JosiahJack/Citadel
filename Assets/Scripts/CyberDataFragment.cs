@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CyberDataFragment : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+public class CyberDataFragment : MonoBehaviour {
+	public int textIndex = 0;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	void OnTriggerEnter(Collider other) {
+		if (other.gameObject.CompareTag("Player")) {
+			MFDManager.a.CyberSprint(Const.a.stringTable[textIndex]);
+		}
+	}
 }

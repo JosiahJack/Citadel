@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class GameEnd : MonoBehaviour {
 	public void Targetted(UseData ud) {
-		Const.a.gameFinished = true;
-		PauseScript.a.PauseEnable();
-		PauseScript.a.NoSavePauseQuit();
-		PauseScript.a.mainMenu.GetComponent<MainMenuHandler>().creditsPage.SetActive(true);
+		Const.a.gameFinished = true; // YAY WE DID IT!!!!
+		PauseScript.a.PauseEnable(); // Pauses game, no more to do
+		PauseScript.a.NoSavePauseQuit(); // quit to and enable main menu (exits the game to menu)
+		PauseScript.a.mainMenu.GetComponent<MainMenuHandler>().PlayCredits(); // Play credits and set page in menu handler
 	}
 }

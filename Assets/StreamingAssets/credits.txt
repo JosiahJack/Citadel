@@ -47,7 +47,10 @@ Gigaquad for higher res object textures
 #
 -Sound and Music-
 Denhonator for remixed menu music
-Nameless Voice for fluid midi
+Nameless Voice for fluid midis
+
+-Misc Code-
+lerenwe
 
 -Playtesters-
 Rachel Jack
@@ -60,6 +63,7 @@ Denhonator
 Kolya
 Dertseha
 JML
+TheMotherload
 #
 ----------------------------------------------------------------------
 Indirect involvment list found...
@@ -67,11 +71,13 @@ Indirect involvment list found...
 Steven Kick and Night Dive Studios for letting this project continue!
 And for providing the MAC source code of the original!
 
+The community on systemshock.org
+
 edx for a copy of System Shock Enhanced 2.5
-
 Riky Zedd, aka Thurlik for HD Hudmaps source and reference
+Speedy#3182 for his music data and pointing to ssplayer10
 
-The TTSHP Team for their Contributions:
+The TTSHP Team for their many Contributions:
 Jim Cameron, aka hairyjim, for engine reverse engineering
 Christian Haas, aka firefreak, for HUD textures and InkyBlackness
 Bryan Nolen, aka bryann, for music & sound system
@@ -262,6 +268,15 @@ ran by Kolya
 #
 XMI2MID and RIPXMI
 by Markus Hein
+
+ssplayer10
+by Ryan Nunn (Cless, aka Colourless)
+
+XWE (eXtendable Wad Editor) Version 1.16 (Thank you Trance on TTLG)
+by Csabo, ReX (Gurkha Boy), Espi, Nigel Rowand (Enjay),
+Russell^, Doom_Dude, Fredrik, Angst, CacodemonLeader,
+Nick Baker, YicklePigeon, TZipMaster VCL by Chris
+Vleghert and Eric W. Engler
 
 Quake BSP to VRML Converter: bsp2wrl V1.3
 by Patrick McCormick 

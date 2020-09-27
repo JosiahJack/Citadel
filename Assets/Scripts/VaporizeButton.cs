@@ -21,5 +21,6 @@ public class VaporizeButton : MonoBehaviour {
 
 	public void OnVaporizeClick() {
 		playerGenInv.generalInventoryIndexRef[playerGenCur.generalInvCurrent] = -1;
+		MFDManager.a.VaporizeClicked();
 	}
 }
