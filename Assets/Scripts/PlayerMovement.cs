@@ -15,12 +15,12 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject cameraObject;
 	public MouseLookScript mlookScript;
 	public float playerSpeed; // save
-	private float maxWalkSpeed = 3f;
+	private float maxWalkSpeed = 3.2f;
 	private float maxCyberSpeed = 5f;
 	private float maxCyberUltimateSpeed = 12f;
 	private float maxCrouchSpeed = 1.25f; //1.75f
 	private float maxProneSpeed = .5f; //1f
-	private float maxSprintSpeed = 9f;
+	private float maxSprintSpeed = 8.8f;
 	private float maxSprintSpeedFatigued = 5.5f;
 	private float maxVerticalSpeed = 5f;
 	private float boosterSpeedBoost = 0.5f; // ammount to boost by when booster is active
@@ -205,7 +205,7 @@ public class PlayerMovement : MonoBehaviour {
 	private Vector2 tempVec2b;
 	private float tempFloat;
 	private int tempInt;
-	public float leanSpeed = 5f;
+	public float leanSpeed = 6.5f;
 	public bool leanLHFirstPressed = false; // save
 	public bool leanRHFirstPressed = false; // save
 	public bool leanLHReset = false; // save

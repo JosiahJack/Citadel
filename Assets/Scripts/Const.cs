@@ -617,6 +617,8 @@ public class Const : MonoBehaviour {
 				sw.Close();
 			}
 		}
+		a.startingNewGame = bitStartingNew;
+		a.freshRun = bitFreshRun;
 	}
 
 	private void LoadEnemyTablesData() {
@@ -1906,6 +1908,23 @@ public class Const : MonoBehaviour {
 		return line;
 	}
 
+	string SaveLightAnimationData(GameObject go) {
+		string line = System.String.Empty;
+		LightAnimation la = go.GetComponent<LightAnimation>();
+		if (la != null) {
+			line = la.lightOn.ToString();
+			line += splitChar + la.lerpOn.ToString();
+			line += splitChar + la.currentStep.ToString();
+			line += splitChar + la.lerpRef.ToString("0000.00000");
+			line += splitChar + la.lerpTime.ToString("0000.00000");
+			line += splitChar + la.stepTime.ToString("0000.00000");
+			line += splitChar + la.lerpStartTime.ToString("0000.00000");
+		} else {
+			UnityEngine.Debug.Log("LightAnimation missing on savetype of Light!");
+		}
+		return line;
+	}
+
 	void FindAllSaveObjectsGOs(List<GameObject> gos) {
 		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
 		for (int i=0;i<allParents.Count;i++) {
@@ -1963,6 +1982,7 @@ public class Const : MonoBehaviour {
 		int numRadTrigs = 0;
 		int numGravPads = 0;
 		int numChargeStations = 0;
+		int numLights = 0;
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 		FindAllSaveObjectsGOs(saveableGameObjects);
 
@@ -2189,6 +2209,7 @@ public class Const : MonoBehaviour {
 				case SaveObject.SaveableType.RadTrig: numRadTrigs++;  line += SaveTRadiationData(saveableGameObjects[i]); break;
 				case SaveObject.SaveableType.GravPad: numGravPads++;  line += SaveGravLiftPadTextureData(saveableGameObjects[i]); break;
 				case SaveObject.SaveableType.ChargeStation: numChargeStations++;  line += SaveChargeStationData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.Light: numLights++;  line += SaveLightAnimationData(saveableGameObjects[i]); break;
 				default: numTransforms++; break; // we already did the plain ol transform data first up above
 			}
 			saveData[index] = line; // take this objects data and add it to the array
@@ -2221,6 +2242,7 @@ public class Const : MonoBehaviour {
 		// UnityEngine.Debug.Log("Number of RadiationTriggers: " + numRadTrigs.ToString());
 		// UnityEngine.Debug.Log("Number of GravityPads: " + numGravPads.ToString());
 		// UnityEngine.Debug.Log("Number of ChargeStations: " + numChargeStations.ToString());
+		// UnityEngine.Debug.Log("Number of Lights: " + numLights.ToString());
 
 		// Write to file
 		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt");
@@ -2427,6 +2449,7 @@ public class Const : MonoBehaviour {
 		GUIState.a.overButton = GetBoolFromString(entries[index]); index++;
 		for (j=0;j<7;j++) { wi.weaponInventoryIndices[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
 		for (j=0;j<7;j++) { wi.weaponInventoryAmmoIndices[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
+		for (j=0;j<7;j++) { wi.weaponInventoryText[j] = wi.weaponInvTextSource[(wi.weaponInventoryIndices[j] - 36)]; } // derived from the above
 		wi.numweapons = GetIntFromString(entries[index],currentline,"savegame",index); index++;
 		for (j=0;j<16;j++) { wa.wepAmmo[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
 		for (j=0;j<16;j++) { wa.wepAmmoSecondary[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
@@ -3051,6 +3074,18 @@ public class Const : MonoBehaviour {
 					chg.nextthink = GetFloatFromString(entries[index],currentline); index++; // float - time before recharged
 				}
 				break;
+			case SaveObject.SaveableType.Light:
+				LightAnimation la = currentGameObject.GetComponent<LightAnimation>();
+				if (la != null) {
+					la.lightOn = GetBoolFromString(entries[index]); index++;
+					la.lerpOn = GetBoolFromString(entries[index]); index++;
+					la.currentStep = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					la.lerpRef = GetFloatFromString(entries[index],currentline); index++;
+					la.lerpTime = GetFloatFromString(entries[index],currentline); index++;
+					la.stepTime = GetFloatFromString(entries[index],currentline); index++;
+					la.lerpStartTime = GetFloatFromString(entries[index],currentline); index++;
+				}
+				break;
 		}
 		//objectLoadTimer.Stop();
 		//UnityEngine.Debug.Log("LoadObjectData to Object savetype of " + so.saveType + " took time of " + objectLoadTimer.Elapsed.ToString());
@@ -3601,6 +3636,43 @@ public class Const : MonoBehaviour {
 			case 23: return 183; // Plant Mutant
 		}
 		return -1;
+	}
+
+	public string CreditsStats() {
+		string retval = Const.a.creditsText[0];
+		int index = 0;
+		char[] checkCharacters = retval.ToCharArray();
+		char[] updatedCharacters = new char[checkCharacters.Length + 106];
+		for (int i=0;i<updatedCharacters.Length;i++) {
+			if (checkCharacters[i] == '#') {
+				char[] tempChar = null;
+				switch(index) {
+					case 0: // Straight Time: #h
+						tempChar = new char[2];
+						float t = PauseScript.a.relativeTime;
+						t = Mathf.Floor(t/3600f); // hours
+						string s_t = t.ToString("00");
+						char[] s_t_c = s_t.ToCharArray();
+						tempChar[0] = s_t_c[0];
+						tempChar[1] = s_t_c[1];
+						break;
+
+				}
+				if (tempChar != null) {
+					for (int j=0;j<tempChar.Length;j++) {
+						updatedCharacters[i] = tempChar[j];
+						i++;
+					}
+				} else {
+					updatedCharacters[i] = checkCharacters[i];
+				}
+				index++;
+			} else {
+				updatedCharacters[i] = checkCharacters[i];
+			}
+		}
+
+		return retval;
 	}
 }
 

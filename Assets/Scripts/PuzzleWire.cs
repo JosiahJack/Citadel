@@ -684,9 +684,20 @@ public class PuzzleWire : MonoBehaviour {
 		if (Const.a.difficultyPuzzle == 1) tempF += 0.19f;
 		actualValue = tempF;
 
-		if (tempF > 0.92f) {
+		if (tempF > 0.92f || AllWiresCorrect()) {
 			PuzzleSolved(false);
 		}
+	}
+
+	bool AllWiresCorrect() {
+		bool w1 = wireIsActive[0] ? (wire1LHPosition == wire1LHTarget && wire1RHPosition == wire1RHTarget): true;
+ 		bool w2 = wireIsActive[1] ? (wire2LHPosition == wire2LHTarget && wire2RHPosition == wire2RHTarget): true;
+		bool w3 = wireIsActive[2] ? (wire3LHPosition == wire3LHTarget && wire3RHPosition == wire3RHTarget): true;
+		bool w4 = wireIsActive[3] ? (wire4LHPosition == wire4LHTarget && wire4RHPosition == wire4RHTarget): true;
+		bool w5 = wireIsActive[4] ? (wire5LHPosition == wire5LHTarget && wire5RHPosition == wire5RHTarget): true;
+		bool w6 = wireIsActive[5] ? (wire6LHPosition == wire6LHTarget && wire6RHPosition == wire6RHTarget): true;
+		bool w7 = wireIsActive[6] ? (wire7LHPosition == wire7LHTarget && wire7RHPosition == wire7RHTarget): true;
+		return (w1 && w2 && w3 && w4 && w5 && w6 && w7);
 	}
 
 	void PuzzleSolved(bool usedLogicProbe) {

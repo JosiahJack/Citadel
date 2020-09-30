@@ -89,6 +89,9 @@ public class Door : MonoBehaviour {
 			stayOpen = true;
 			OpenDoor();
 		} else {
+			if (changeLayerOnOpenClose && !ajar) {
+				SetCollisionLayerClosed();
+			}
 			doorOpen = doorState.Closed;
 			anim.Play(idleClosedClipName);
 		}

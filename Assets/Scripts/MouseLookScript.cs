@@ -881,7 +881,7 @@ public class MouseLookScript : MonoBehaviour {
 			logInventory.numLogsFromLevel[levelnum]++;
 			logContentsManager.InitializeLogsFromLevelIntoFolder();
 			string audName = Const.a.audiologNames[heldObjectCustomIndex];
-			string logPlaybackKey = Const.a.InputConfigNames[20];
+			string logPlaybackKey = Const.a.InputValues[Const.a.InputCodeSettings[15]];
 			MFDManager.a.SendInfoToItemTab(6);
 			if (HardwareInventory.a.hasHardware[2] == true) {
 				Const.sprint(Const.a.stringTable[36] + audName + Const.a.stringTable[37] + logPlaybackKey + Const.a.stringTable[38],player); // Audio log ## picked up.  Press '##' to play back.

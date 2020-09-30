@@ -52,6 +52,7 @@ public class Music : MonoBehaviour {
 					SFXMain.clip = tempC;
 					curC = tempC;
 					SFXMain.Play();
+					SFXMain.loop = true;
 				} else {
 					curC = null;
 				}
@@ -64,6 +65,7 @@ public class Music : MonoBehaviour {
 					SFXMain.clip = tempC;
 					curC = tempC;
 					SFXMain.Play();
+					SFXMain.loop = false;
 				} else {
 					curC = null;
 				}
@@ -75,6 +77,7 @@ public class Music : MonoBehaviour {
 					SFXOverlay.clip = tempC;
 					curOverlayC = tempC;
 					SFXOverlay.PlayOneShot(tempC);
+					SFXOverlay.loop = false;
 				} else {
 					curOverlayC = null;
 				}
@@ -89,6 +92,8 @@ public class Music : MonoBehaviour {
 					SFXMain.clip = tempC;
 					curC = tempC;
 					SFXMain.Play();
+					SFXMain.loop = false;
+					if (ttype == TrackType.Elevator) SFXMain.loop = true;
 				} else {
 					curC = null;
 				}

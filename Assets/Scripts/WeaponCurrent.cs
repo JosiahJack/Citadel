@@ -375,14 +375,23 @@ public class WeaponCurrent : MonoBehaviour {
 		if (wep16index == 1 || wep16index == 4 || wep16index == 10 || wep16index == 14 || wep16index == 15) {
 			if (overloadButton.activeInHierarchy) overloadButton.GetComponent<EnergyOverloadButton>().OverloadEnergyClick();
 		} else {
+			//Unload(true);
 			if (WeaponAmmo.a.wepLoadedWithAlternate[weaponCurrent]) {
+				if (WeaponAmmo.a.wepAmmo[wep16index] > 0) {
 				WeaponAmmo.a.wepLoadedWithAlternate[weaponCurrent] = false;
 				ReloadSecret(true);
 				//LoadPrimaryAmmoType(false);
+				} else {
+					Const.sprint(Const.a.stringTable[535],owner); //No more of ammo type to load.
+				}
 			} else {
-				WeaponAmmo.a.wepLoadedWithAlternate[weaponCurrent] = true;
-				ReloadSecret(true);
-				//LoadSecondaryAmmoType(false);
+				if (WeaponAmmo.a.wepAmmoSecondary[wep16index] > 0) {
+					WeaponAmmo.a.wepLoadedWithAlternate[weaponCurrent] = true;
+					ReloadSecret(true);
+					//LoadSecondaryAmmoType(false);
+				} else {
+					Const.sprint(Const.a.stringTable[535],owner); //No more of ammo type to load.
+				}
 			}
 		}
 	}

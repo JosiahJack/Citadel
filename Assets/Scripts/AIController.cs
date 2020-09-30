@@ -224,7 +224,7 @@ public class AIController : MonoBehaviour {
 	public void Tranquilize() {
 		// Check against percent chance (disruptability) of getting tranq'ed
 		//if (UnityEngine.Random.Range(0,1f) < Const.a.disruptabilityForNPC[index])
-			tranquilizeFinished = PauseScript.a.relativeTime + tranquilizeTime;
+		tranquilizeFinished = PauseScript.a.relativeTime + tranquilizeTime;
 	}
 
 	// Initialization and find components
@@ -490,7 +490,7 @@ public class AIController : MonoBehaviour {
 	bool CheckPain() {
 		if (asleep) return false;
 
-		if (goIntoPain) {
+		if (goIntoPain && timeTillPainFinished < PauseScript.a.relativeTime) {
 			currentState = Const.aiState.Pain;
 			if (attacker != null) {
 				if (timeTillEnemyChangeFinished < PauseScript.a.relativeTime) {
@@ -595,11 +595,13 @@ public class AIController : MonoBehaviour {
         if (inSight) {
 			targettingPosition = enemy.transform.position;
 			currentDestination = enemy.transform.position;
-			pm = enemy.GetComponent<PlayerMovement>();
-			if (pm != null) targettingPosition = pm.cameraObject.transform.position;
+			if (moveType == Const.aiMoveType.Cyber) {
+				pm = enemy.GetComponent<PlayerMovement>();
+				if (pm != null) targettingPosition = pm.cameraObject.transform.position;
+			}
             huntFinished = PauseScript.a.relativeTime + huntTime;
             if (rangeToEnemy < meleeRange) {
-                if (hasMelee && infront && (randomWaitForNextAttack1Finished < PauseScript.a.relativeTime)) {
+                if (hasMelee && infront && (randomWaitForNextAttack1Finished < PauseScript.a.relativeTime) && tranquilizeFinished < PauseScript.a.relativeTime) {
                     //nav.speed = meleeSpeed;
                     attackFinished = PauseScript.a.relativeTime + timeBetweenAttack1 + timeTillActualAttack1;
                     currentState = Const.aiState.Attack1;
@@ -617,7 +619,7 @@ public class AIController : MonoBehaviour {
                 }
             }
 			if (rangeToEnemy < proj1Range) {
-				if (hasProj1 && infront && inProjFOV && (randomWaitForNextAttack2Finished < PauseScript.a.relativeTime)) {
+				if (hasProj1 && infront && inProjFOV && (randomWaitForNextAttack2Finished < PauseScript.a.relativeTime) && tranquilizeFinished < PauseScript.a.relativeTime) {
 					//nav.speed = proj1Speed;
 					shotFired = false;
 					attackFinished = PauseScript.a.relativeTime + timeBetweenAttack2 + timeTillActualAttack2;
@@ -627,7 +629,7 @@ public class AIController : MonoBehaviour {
 				}
 			}
 			if (rangeToEnemy < proj2Range) {
-				if (hasProj2 && infront && inProjFOV && (randomWaitForNextAttack3Finished < PauseScript.a.relativeTime)) {
+				if (hasProj2 && infront && inProjFOV && (randomWaitForNextAttack3Finished < PauseScript.a.relativeTime) && tranquilizeFinished < PauseScript.a.relativeTime) {
 					//nav.speed = proj2Speed;
 					shotFired = false;
 					attackFinished = PauseScript.a.relativeTime + timeBetweenAttack3 + timeTillActualAttack3;
@@ -810,7 +812,7 @@ public class AIController : MonoBehaviour {
             GameObject impact = GetImpactType(tempHM);
             if (impact != null) {
                 tempVec = tempHit.normal;
-                impact.transform.position = tempHit.point + tempVec;
+                impact.transform.position = tempHit.point + (tempVec*0.08f);
                 impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
                 impact.SetActive(true);
             }
@@ -846,7 +848,6 @@ public class AIController : MonoBehaviour {
                 if (attack2Type == Const.AttackType.Projectile) {
                     if (muzzleBurst != null) muzzleBurst.SetActive(true);
                     if (DidRayHit(targettingPosition, proj1Range,false)) {
-                        CreateStandardImpactEffects(false);
                         damageData.other = tempHit.transform.gameObject;
                         if (tempHit.transform.gameObject.CompareTag("NPC")) {
                             damageData.isOtherNPC = true;
@@ -873,7 +874,10 @@ public class AIController : MonoBehaviour {
 							}
 						}
                         HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
-                        if (hm == null) return;
+                        if (hm == null) {
+							CreateStandardImpactEffects(false);
+							return;
+						}
                         hm.TakeDamage(damageData);
                     }
                 } else {
@@ -979,7 +983,6 @@ public class AIController : MonoBehaviour {
 						}
 					}
                     if (DidRayHit(targettingPosition, proj1Range,true)) {
-                        CreateStandardImpactEffects(false);
                         damageData.other = tempHit.transform.gameObject;
                         if (tempHit.transform.gameObject.CompareTag("NPC")) {
                             damageData.isOtherNPC = true;
@@ -995,7 +998,10 @@ public class AIController : MonoBehaviour {
                         damageData.owner = gameObject;
                         damageData.attackType = Const.AttackType.Projectile;
                         HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
-                        if (hm == null) return;
+                        if (hm == null) {
+							CreateStandardImpactEffects(false);
+							return;
+						}
                         hm.TakeDamage(damageData);
                     }
                 } else {
@@ -1079,21 +1085,21 @@ public class AIController : MonoBehaviour {
 			if (moveType == Const.aiMoveType.Fly && !healthManager.gibOnDeath) {
 				rbody.useGravity = true; // for avian mutant and zero-g mutant
 			} else {
-				rbody.useGravity = false;
+				rbody.useGravity = true;
 				rbody.isKinematic = true;
 				//RaycastHit hit;
 				//if (Physics.Raycast(sightPoint.transform.position, Vector3.down, out hit, sightRange)) {
 					//if (hit.collider.gameObject.CompareTag("Geometry"))
 						//transform.parent = hit.collider.gameObject.transform;
 				//}
-				rbody.velocity = new Vector3(rbody.velocity.x,0,rbody.velocity.z);
-				rbody.Sleep();
+				//rbody.velocity = new Vector3(rbody.velocity.x,0,rbody.velocity.z);
+				//rbody.Sleep();
 			}
 			asleep = false;
 			rbody.constraints = RigidbodyConstraints.None;
 			if (!rbody.freezeRotation) rbody.freezeRotation = true;
 			gameObject.layer = 13; // Change to Corpse layer
-			transform.position = new Vector3(transform.position.x, transform.position.y + 0.01f, transform.position.z); // bump it up a hair to prevent corpse falling through the floor
+			transform.position = new Vector3(transform.position.x, transform.position.y + 0.04f, transform.position.z); // bump it up a hair to prevent corpse falling through the floor
 			firstSighting = true;
 			timeTillDeadFinished = PauseScript.a.relativeTime + timeTillDead; // wait for death animation to finish before going into Dead()
 			if (switchMaterialOnDeath) actualSMR.material = deathMaterial;
@@ -1144,10 +1150,10 @@ public class AIController : MonoBehaviour {
 
 	bool CheckIfEnemyInSight() {
 		float dist = Vector3.Distance(enemy.transform.position,sightPoint.transform.position);  // Get distance between enemy and found player	
-		if (dist < distToSeeWhenBehind && !enemy.GetComponent<PlayerMovement>().Notarget) {
-            LOSpossible = true;
-			return true;
-		}
+		//if (dist < distToSeeWhenBehind && !enemy.GetComponent<PlayerMovement>().Notarget) {
+        //    LOSpossible = true;
+		//	return true;
+		//}
 		if (npcAutomapOverlayImage != null) {
 			//if (dist < 50f) {
 				npcAutomapOverlayImage.enabled = true;
@@ -1211,11 +1217,11 @@ public class AIController : MonoBehaviour {
 					return true;
 				}
 			} else {
-				if (dist < distToSeeWhenBehind) {
-					SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
-					PlaySightSound();
-					return true;
-				}
+				// if (dist < distToSeeWhenBehind) {
+					// SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
+					// PlaySightSound();
+					// return true;
+				// }
 				if (Const.a.player1PlayerHealthScript != null) {
 					if (Const.a.player1PlayerHealthScript.makingNoise) {
 						if (dist < rangeToHear) {
@@ -1228,9 +1234,26 @@ public class AIController : MonoBehaviour {
 			}
 		} else {
 			if (dist < distToSeeWhenBehind) {
-				SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
-				PlaySightSound();
-				return true;
+				// Still check for line of sight, some locations there could be walls in the ways still due to the angles
+				RaycastHit hit;
+				int layMask = LayerMask.GetMask("Default","Geometry","Bullets","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
+				// changed from using sightRange to dist to minimize checkdistance
+				if (Physics.Raycast(sightPoint.transform.position, checkline.normalized, out hit, (dist + 0.1f),layMask)) {
+					//Debug.Log("Sight raycast successful");
+					//Debug.DrawRay(sightPoint.transform.position,checkline.normalized, Color.green, 0.1f,false);
+					//Debug.DrawLine(sightPoint.transform.position,hit.point,Color.green,0.1f,false);
+					//Debug.Log(hit.collider.gameObject.name);
+					if (hit.collider.gameObject == Const.a.player1Capsule) {
+						//Debug.Log("Hit collider was player");
+						LOSpossible = true;  // Clear path from enemy to found player
+						SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
+						PlaySightSound();
+						return true;
+					}
+				}
+				// SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
+				// PlaySightSound();
+				// return true;
 			}
 			if (Const.a.player1PlayerHealthScript != null) {
 				if (Const.a.player1PlayerHealthScript.makingNoise) {

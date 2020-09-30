@@ -7,23 +7,16 @@ public class SearchButton : MonoBehaviour {
 	public MouseLookScript playerCamera;
 	public int[] contents;
 	public int[] customIndex;
-	private int j;
 
 	void Awake () {
 		for (int i=0;i<=3;i++) {
 			contents[i] = -1;
 			customIndex[i] = -1;
 		}
-		j = 0;
 	}
 
 	public void CheckForEmpty () {
-		j = 0;
-		for (int i=0;i<=3;i++) {
-			if (contents[i] == -1)
-				j++;
-		}
-		if (j == 4) {
+		if (contents[0] == -1 && contents[1] == -1 && contents[2] == -1 && contents[3] == -1) {
 			MFDManager.a.ReturnToLastTab(isRH);
 		}
 	}

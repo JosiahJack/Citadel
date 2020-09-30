@@ -20,10 +20,10 @@ public class HealthTickManager : MonoBehaviour {
 		if (playerHealth.hm != null) DrawTicks();
 	}
 
-	// void  Update (){
-		// if (lasthealth != playerHealth.hm.health) DrawTicks();
-		// lasthealth = playerHealth.hm.health;  // reason why this script can't be combined with energy ticks script
-	// }
+	void  Update (){
+		if (lasthealth != playerHealth.hm.health) DrawTicks();
+			lasthealth = playerHealth.hm.health;  // reason why this script can't be combined with energy ticks script
+	}
 		
 	public void DrawTicks() {
 		tempSpriteIndex = -1;

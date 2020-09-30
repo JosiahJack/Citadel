@@ -134,6 +134,10 @@ public class MFDManager : MonoBehaviour  {
 		ctb.TabManager.DisableAllTabs();
 		automapFull.SetActive(true);
 		pm.inFullMap = true;
+		TabReset(true); // right
+		TabReset(false); // left
+		tabButtonsLHButtons.SetActive(false);
+		tabButtonsRHButtons.SetActive(false);
 	}
 
 	public void CloseFullmap() {
@@ -143,6 +147,10 @@ public class MFDManager : MonoBehaviour  {
 		ctb.TabButtonClickSilent(0,true);
 		automapFull.SetActive(false);
 		pm.inFullMap = false;
+		TabReset(true); // right
+		TabReset(false); // left
+		ReturnToLastTab(true);
+		ReturnToLastTab(false);
 	}
 
 	// Called by MouseLookScript.cs
@@ -188,6 +196,7 @@ public class MFDManager : MonoBehaviour  {
 		healthIndicator.SetActive(true);
 		cyberHealthTickPanel.SetActive(false);
 		cyberHealthIndicator.SetActive(false);
+		cyberSprintContainer.SetActive(false);
 		cyberTimerT.SetActive(false);
 		cyberTimer.SetActive(false);
 		hardwareButtonsContainer.SetActive(true);
@@ -284,7 +293,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void ClosePaperLog() {
-		ctb.TabButtonClickSilent(0,false);  // UPDATE add memory for last center tab as well at some point
+		ctb.TabButtonClickSilent(0,false);
 	}
 
 	void Update () {
@@ -292,9 +301,9 @@ public class MFDManager : MonoBehaviour  {
 			if (logActive) {
 				if (logFinished < PauseScript.a.relativeTime && logType != 3 && logType != 0) {
 					logActive = false;
-					ReturnToLastTab(lastLogSideRH);
-					//ReturnToLastTab(lastLogSideSecondaryRH);  UPDATE add back in when LH MFD is done
-					if (ctb != null) ctb.TabButtonClickSilent(0,true);  // UPDATE add memory for last center tab as well at some point
+					ReturnToLastTab(true);
+					ReturnToLastTab(false);
+					if (ctb != null) ctb.TabButtonClickSilent(0,true);
 				}
 			}
 
@@ -479,7 +488,7 @@ public class MFDManager : MonoBehaviour  {
 	public void VaporizeClicked() {
 		itemTabLH.vaporizeButton.SetActive(false);
 		itemTabRH.vaporizeButton.SetActive(false);
-		SendInfoToItemTab(GeneralInvCurrent.GeneralInvInstance.generalInvIndex); // general inventory item vaporized, set item tab to next general inv current
+		SendInfoToItemTab(-1); // general inventory item vaporized, set item tab to next general inv current
 	}
 
 	public void ApplyButtonClicked(int index) {

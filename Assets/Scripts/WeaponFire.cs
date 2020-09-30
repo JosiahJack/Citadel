@@ -483,6 +483,7 @@ public class WeaponFire : MonoBehaviour {
                     WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
                     WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += blasterSetting;
+					if (WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
                 }
                 break;
             case 38:
@@ -508,6 +509,7 @@ public class WeaponFire : MonoBehaviour {
                     WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
                     WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += ionSetting;
+					if (WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
                 }
                 break;
             case 41:
@@ -547,6 +549,7 @@ public class WeaponFire : MonoBehaviour {
                     WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
                     WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += plasmaSetting;
+					if (WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
                 }
                 break;
             case 47:
@@ -578,6 +581,7 @@ public class WeaponFire : MonoBehaviour {
                     WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
                     WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += sparqSetting;
+					if (WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
                 }
                 break;
             case 51:
@@ -591,6 +595,7 @@ public class WeaponFire : MonoBehaviour {
                     WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
                     WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += stungunSetting;
+					if (WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
                 }
                 break;
         }

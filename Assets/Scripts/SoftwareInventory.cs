@@ -262,6 +262,7 @@ public class SoftwareInventory : MonoBehaviour {
 			case SoftwareType.Data:		
 				if (SFX != null && SFXAcquireCyberData != null) SFX.PlayOneShot(SFXAcquireCyberData);
 				Const.sprint(Const.a.stringTable[457],Const.a.player1);
+				LogInventory.a.hasLog[vers] = true;
 				return true;
 			case SoftwareType.Integrity:
 				if (hm.cyberHealth >=255) return false;

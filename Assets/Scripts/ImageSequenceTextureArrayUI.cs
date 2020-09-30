@@ -16,6 +16,7 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 	public bool stopAtEnd = false;
 	private bool playDone = false;
 	public bool replayOnEnable = false;
+	public bool playOnMenu = false;
 	
 	void Awake() {
 		//Get a reference to the Material of the game object this script is attached to.
@@ -42,16 +43,18 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 	}
 	
 	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			//Call the 'PlayLoop' method as a coroutine with a float delay
-			if (stopAtEnd && playDone) return;
-			if (stopAtEnd && !playDone) {
-				StartCoroutine("Play", frameDelay);
-			} else {
-				StartCoroutine("PlayLoop", frameDelay);
+		if (!PauseScript.a.Paused()) {
+			if (!PauseScript.a.mainMenu.activeInHierarchy || playOnMenu) {
+				//Call the 'PlayLoop' method as a coroutine with a float delay
+				if (stopAtEnd && playDone) return;
+				if (stopAtEnd && !playDone) {
+					StartCoroutine("Play", frameDelay);
+				} else {
+					StartCoroutine("PlayLoop", frameDelay);
+				}
+				//Set the material's texture to the current value of the frameCounter variable
+				goImage.overrideSprite = sprites[frameCounter];
 			}
-			//Set the material's texture to the current value of the frameCounter variable
-			goImage.overrideSprite = sprites[frameCounter];
 		}
 	}
 	

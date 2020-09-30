@@ -259,6 +259,7 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	public float TakeDamage(DamageData dd) {
+		//Debug.Log("Entered takeDamage with damage: " + dd.damage.ToString());
 		if (dd == null) return 0;
 		// 5. Apply Velocity for Damage Amount
 		if (applyImpact && rbody != null) {

@@ -112,6 +112,13 @@ public class TargetID : MonoBehaviour {
 		secondaryText.text = secondaryDisplayString;
 
 		if (currentText != System.String.Empty) {
+			if (linkedHM != null) {
+				if (linkedHM.aic != null) {
+					if (linkedHM.aic.tranquilizeFinished > PauseScript.a.relativeTime) {
+						currentText = Const.a.stringTable[536];
+					}
+				}
+			}
 			text.text = currentText;
 		}
     }

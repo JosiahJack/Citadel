@@ -45,7 +45,8 @@ public class GeneralInvButton : MonoBehaviour {
 						Const.sprint(Const.a.stringTable[304],playerHealth.mainPlayerParent.GetComponent<PlayerReferenceManager>().playerCapsule);
 					} else {
 						playerHealth.hm.health = playerHealth.hm.maxhealth;
-					}
+						playerHealth.playerHealthTicks.DrawTicks();
+					}					
                     reduce = true;
                     break;
             }

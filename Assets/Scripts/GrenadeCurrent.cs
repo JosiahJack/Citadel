@@ -67,6 +67,7 @@ public class GrenadeCurrent : MonoBehaviour {
 			if (nextIndex < 0) nextIndex = 6;
 			noGrenAmmo = (GrenadeInventory.GrenadeInvInstance.grenAmmo[nextIndex] <= 0);
 		}
+		MFDManager.a.ctb.TabButtonClickSilent(0,true);
 		grenButtons[nextIndex].GrenadeInvClick();
 	}
 
@@ -82,6 +83,7 @@ public class GrenadeCurrent : MonoBehaviour {
 			if (nextIndex > 6) nextIndex = 0;
 			noGrenAmmo = (GrenadeInventory.GrenadeInvInstance.grenAmmo[nextIndex] <= 0);
 		}
+		MFDManager.a.ctb.TabButtonClickSilent(0,true);
 		grenButtons[nextIndex].GrenadeInvClick();
 	}
 }

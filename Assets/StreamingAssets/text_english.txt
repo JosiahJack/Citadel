@@ -533,3 +533,5 @@ Fatigue:
 High!
 Moderate
 Low
+No more of ammo type to load.
+STUNNED

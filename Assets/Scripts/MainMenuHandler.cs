@@ -53,12 +53,17 @@ public class MainMenuHandler : MonoBehaviour {
 	public CreditsScroll credScrollManager;
 	[HideInInspector]
 	public bool dataFound = false;
+	public GameObject IntroVideo;
+	public GameObject IntroVideoContainer;
+	public bool inCutscene = false;
+	public AudioSource introSFX;
 
 	void Awake () {
 		StartSFX = startFXObject.GetComponent<AudioSource>();
 		BackGroundMusic = GetComponent<AudioSource>();
 		ResetPages();
 		dataFound = false;
+		inCutscene = false;
 		FileBrowser.SetFilters(false,new FileBrowser.Filter("SHOCK RES Files", ".RES", ".res"));
 		FileBrowser.SetDefaultFilter( ".RES" );
 		Const.a.SetVolume();
@@ -66,12 +71,15 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	IEnumerator CheckDataFiles () {
+		BackGroundMusic.Stop();
 		bool found = (System.IO.File.Exists(Application.dataPath + "/StreamingAssets/CITALOG.RES") && System.IO.File.Exists(Application.dataPath + "/StreamingAssets/CITBARK.RES"));
 		if (found) {
 			// go right on into the game, all good here
 			dataFound = true;
 			Const.a.SetVolume();
 			GoToFrontPage();
+
+			IntroVideo.SetActive(true);	
 		} else {
 			// Fake like we are checking for the files to be there for a quick bit of time
 			InitialDisplay.SetActive(true);
@@ -85,18 +93,28 @@ public class MainMenuHandler : MonoBehaviour {
 	void Update () {
 		// Escape/back button listener
 		if (Input.GetKeyDown(KeyCode.Escape)) {
+			if (inCutscene && !CouldNotFindDialogue.activeSelf) {
+				inCutscene = false;
+				IntroVideo.SetActive(false);
+				IntroVideoContainer.SetActive(false);
+				BackGroundMusic.Play();
+			}
 			GoBack();
 		}
 
-		//if (creditsPage.activeSelf) {
-			//if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1)){ //|| Input.anyKey) {
-				//if (credScrollManager.stopped) {
-				//	credScrollManager.Continue();
-				//} else {
-					//GoBack();
-				//}
-			//}
-		//}
+		if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)){ //|| Input.anyKey) {
+			//Debug.Log("Click registered on main menu!");
+			if (IntroVideoContainer.activeSelf && !CouldNotFindDialogue.activeSelf) {
+				inCutscene = false;
+				IntroVideo.SetActive(false);
+				IntroVideoContainer.SetActive(false);
+				BackGroundMusic.Play();
+			}
+		}
+
+		if (!IntroVideoContainer.activeSelf) {
+			if (!BackGroundMusic.isPlaying) BackGroundMusic.Play();
+		}
 
 		if ( (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P)) || (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P)) ) {
 			//Debug.Log("Skipping main menu. Debug cheat");
@@ -347,10 +365,15 @@ public class MainMenuHandler : MonoBehaviour {
 		CouldNotFindDialogue.SetActive(false);
 		Const.a.SetVolume(); // probably not needed here, but just in case
 		GoToFrontPage();
+		IntroVideo.SetActive(true);
 	}
 
 	public void PlayIntro () {
 		//Debug.Log("Playing intro video");
+		IntroVideoContainer.SetActive(true);
+		IntroVideo.SetActive(true);
+		inCutscene = true;
+		BackGroundMusic.Stop();
 	}
 
 	public void PlayCredits () {

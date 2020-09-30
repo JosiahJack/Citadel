@@ -22,6 +22,7 @@ public class LogMoreButton : MonoBehaviour {
 			if (mfdManager.leftTC != null) mfdManager.leftTC.ReturnToLastTab();
 			if (mfdManager.rightTC != null) mfdManager.rightTC.ReturnToLastTab();
 			mfdManager.ClearDataTab();
+			MFDManager.a.ctb.TabButtonClickSilent(0,true);
 			GetComponent<UIButtonMask>().PtrExit(); // force mouse cursor out of UI
 		}
 	}

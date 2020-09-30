@@ -7,8 +7,8 @@ Click to continue...
 CITADEL
 ======================================================================
 CONGRATULATIONS!
-Straight Time: 00h 00m 00s
-Total Time (with reload from deaths): 00h 00m 00s
+Straight Time: #h #m #s
+Total Time (with reload from deaths): #h #m #s
 Kills: 0000
 Kills in Cyberspace: 0000
 Score Subtotal: 0000000000000000
@@ -84,7 +84,7 @@ Bryan Nolen, aka bryann, for music & sound system
 Damian Gryski, for SDL support
 Matt Hargett, for QA and leak detection
 Glen Sawyer, for hacking source files
-Jörg Fischer, for texture compression
+Jorg Fischer, for texture compression
 Alistair Brown, for hacking Underworld object format
 Ulf Wohlers, for hacking Underworld objects and models 
 #
@@ -330,7 +330,7 @@ over the years.
 
 
 
-To McDonald's for the employees reminder and vague reference:
+To McDonald's for the employee reminder and vague reference:
 
 Don't Forget to Salt the Fries!
 #

@@ -8,6 +8,8 @@ public class PatchButton: MonoBehaviour {
 	public int useableItemIndex;
 	public MFDManager mfdManager;
 	public PlayerPatch pps;
+	public AudioClip SFXClick;
+	public AudioSource SFX;
 
 	public void DoubleClick() {
 		pps.ActivatePatch(useableItemIndex);
@@ -20,6 +22,7 @@ public class PatchButton: MonoBehaviour {
 			PatchCurrent.PatchInstance.patchCountsTextObjects [i].color = Const.a.ssGreenText;
 		}
 		PatchCurrent.PatchInstance.patchCountsTextObjects[PatchButtonIndex].color = Const.a.ssYellowText;
+		if (SFX != null && SFXClick != null) SFX.PlayOneShot(SFXClick);
 	}
 
     void Start() {

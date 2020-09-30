@@ -51,6 +51,7 @@ public class PatchCurrent : MonoBehaviour {
 			if (nextIndex < 0) nextIndex = 6;
 			noPatches = (PatchInventory.PatchInvInstance.patchCounts[nextIndex] <= 0);
 		}
+		MFDManager.a.ctb.TabButtonClickSilent(0,true);
 		patchButtonScripts[nextIndex].PatchInvClick();
 	}
 
@@ -66,6 +67,7 @@ public class PatchCurrent : MonoBehaviour {
 			if (nextIndex > 6) nextIndex = 0;
 			noPatches = (PatchInventory.PatchInvInstance.patchCounts[nextIndex] <= 0);
 		}
+		MFDManager.a.ctb.TabButtonClickSilent(0,true);
 		patchButtonScripts[nextIndex].PatchInvClick();
 	}
 }

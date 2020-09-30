@@ -30,6 +30,8 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	public bool useConstArray = false;
 	public int[] constArrayLookup;
 	public int[] constArrayLookupGlow;
+	public AudioClip SFXClip;
+	private AudioSource SFX;
 
 	private float tick;
 	private float tickFinished;
@@ -39,10 +41,14 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		mR = GetComponent<MeshRenderer>();
 		if (mR == null) { this.gameObject.SetActive(false); return; }
 		this.goMaterial = this.GetComponent<Renderer>().material;
+		SFX = GetComponent<AudioSource>();
 	}
 
 	// called by HealthManager.cs's ScreenDeath
 	public void Destroy() {
+		if (SFX != null) {
+			if (SFXClip != null) SFX.PlayOneShot(SFXClip);
+		}
 		screenDestroyed = true; // if not already dead, say so
 	}
 

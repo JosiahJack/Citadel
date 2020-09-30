@@ -186,21 +186,25 @@ public class PlayerHealth : MonoBehaviour {
 		}
 		if (LevelManager.a.ressurectionActive[lindex]) {
 			// Ressurection
-			bool ressurected = LevelManager.a.RessurectPlayer(mainPlayerParent);
-			if (!ressurected) Debug.Log("ERROR: failed to ressurect player!");
-			hm.health = 211f;
-			playerHealthTicks.DrawTicks();
-			radiationArea = false;
-			radiated = 0;
-			playerDead = false;
-			mediPatchActive = false;
-			detoxPatchActive = false;
-			pp.DisableAllPatches();
-			pp.playerMovementScript.fatigue = 0f;
+			PlayerRessurect();
 		} else {
 			// Game Over
 			PlayerDeathToMenu(mls);
 		}
+	}
+
+	public void PlayerRessurect() {
+		bool ressurected = LevelManager.a.RessurectPlayer(mainPlayerParent);
+		if (!ressurected) Debug.Log("ERROR: failed to ressurect player!");
+		hm.health = 211f;
+		playerHealthTicks.DrawTicks();
+		radiationArea = false;
+		radiated = 0;
+		playerDead = false;
+		mediPatchActive = false;
+		detoxPatchActive = false;
+		pp.DisableAllPatches();
+		pp.playerMovementScript.fatigue = 0f;
 	}
 
 	public void PlayerDeathToMenu(MouseLookScript mls) {
@@ -212,6 +216,7 @@ public class PlayerHealth : MonoBehaviour {
 		}
 		PauseScript.a.mainMenu.SetActive(true);
 		PauseScript.a.mainMenu.GetComponent<MainMenuHandler>().returnToPause = false;
+		PlayerRessurect();
 		/*
 		#if UNITY_EDITOR
 		if (Application.isEditor) {

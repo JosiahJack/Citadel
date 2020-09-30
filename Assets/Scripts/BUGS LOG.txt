@@ -1,39 +1,13 @@
-Intro video
-Outro video
-Music
+Laser line comes out of player center rather than view weapon
+Centering from lean should lerp
+cut bars on broken sci vent
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+decoy software doesn't distract cyber enemies
+Sparq hit doesn't agro npc
+Lev2 cpu screen still still still doesn't display
+Screen shake not working
+Changing ammo type destroys what was in current clip
+levr puzzle for medbed doesn't unlock or open door
 
 Build Size
 324MB - now 316MB - now 317MB, now 290MB, now 289MB (still)
