@@ -20,6 +20,7 @@ public class LogInventory : MonoBehaviour {
 	public MouseLookScript mls;
 	public bool beepDone = false; // save
 	private int tempRefIndex = -1;
+	private bool paused;
 
 	void Awake() {
 		SFXSource = GetComponent<AudioSource>();
@@ -27,10 +28,16 @@ public class LogInventory : MonoBehaviour {
 			SFXSource = gameObject.AddComponent<AudioSource>();
 		
 		a = this;
+		a.paused = false;
 	}
 
 	void Update () {
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			if (paused) {
+				paused = false;
+				SFXSource.UnPause();
+			}
+
 			if(GetInput.a.RecentLog() && (HardwareInventory.a.hasHardware[2] == true)) {
 				if (lastAddedIndex != -1) {
 					PlayLog(lastAddedIndex);
@@ -41,6 +48,11 @@ public class LogInventory : MonoBehaviour {
 					if (tempRefIndex != -1) lastAddedIndex = tempRefIndex;
 					tempRefIndex = -1;
 				}
+			}
+		} else {
+			if (!paused) {
+				paused = true;
+				SFXSource.Pause();
 			}
 		}
 	}

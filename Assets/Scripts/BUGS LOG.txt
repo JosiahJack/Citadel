@@ -1,19 +1,25 @@
-Laser line comes out of player center rather than view weapon
-Centering from lean should lerp
 cut bars on broken sci vent
-
+Change mouse cursor to normal in inventory mode when OverGUI bit is on
+Searching body again should pick up objects in the body
 decoy software doesn't distract cyber enemies
-Sparq hit doesn't agro npc
 Lev2 cpu screen still still still doesn't display
-Screen shake not working
-Changing ammo type destroys what was in current clip
-levr puzzle for medbed doesn't unlock or open door
+
+Grounded fails when above secret hall lev1
+close button for search doesn't display sometimes
+2nd close button displays on top of keypad close button
+keypad close button and search close buttons aren't in exact same spot
+no damage indicator starts at base of hopper
+audiolog doesn't pause playback when game is paused
+when game is paused, change mousecursor out for normal
+blocked by shodan level security is not tethered
+blocked by shodan level security does not change back to weapon when done
+shooting enemy doesn't always agro them, keep wandering
 
 Build Size
-324MB - now 316MB - now 317MB, now 290MB, now 289MB (still)
+324MB - now 316MB - now 317MB, now 290MB, now 289MB (still), now 404MB
 
 Build Memory Usage
-2.3GB RAM - now 1.6GB, now 1.4GB, now 1.1GB!
+2.3GB RAM - now 1.6GB, now 1.4GB, now 1.1GB, now 1.5GB
 
 Ambient volumes:
 airhiss				0.05

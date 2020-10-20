@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class TabButtons : MonoBehaviour {
-	[SerializeField] private LeftMFDTabs TabManager = null; // assign in the editor
+	public LeftMFDTabs TabManager = null; // assign in the editor
 	[SerializeField] private Button WeaponTabButton = null; // assign in the editor
 	[SerializeField] private Button ItemTabButton = null; // assign in the editor
 	[SerializeField] private Button AutomapTabButton = null; // assign in the editor

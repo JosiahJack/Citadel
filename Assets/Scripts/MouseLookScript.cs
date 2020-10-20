@@ -130,6 +130,8 @@ public class MouseLookScript : MonoBehaviour {
 	public Vector3 cyberspaceRecallPoint; // save
 	public HealthManager hm;
 	public float cyberSpinSensitivity = 0.5f;
+	private float shakeFinished;
+	private float shakeForce;
 	//private AudioListener audListener;
 
     //float headbobSpeed = 1;
@@ -177,6 +179,7 @@ public class MouseLookScript : MonoBehaviour {
 		recoiling = false;
 		firstTimePickup = true;
 		firstTimeSearch = true;
+		shakeFinished = PauseScript.a.relativeTime;
     }
 
 	public void EnterCyberspace(GameObject entryPoint) {
@@ -273,6 +276,9 @@ public class MouseLookScript : MonoBehaviour {
 		float camz = Mathf.Lerp(transform.localPosition.z,0f,0.1f);
 		Vector3 camPos = new Vector3(0f,Const.a.playerCameraOffsetY*playerMovement.currentCrouchRatio,camz);
 		transform.localPosition = camPos;
+		if (shakeFinished > PauseScript.a.relativeTime) {
+			transform.localPosition = new Vector3(transform.localPosition.x + UnityEngine.Random.Range(shakeForce * -1f,shakeForce),transform.localPosition.y + UnityEngine.Random.Range(shakeForce * -1f,shakeForce),transform.localPosition.z + UnityEngine.Random.Range(shakeForce * -1f,shakeForce));
+		}
 
         if (PauseScript.a.mainMenu.activeSelf == true) {
 			if (playerCamera.enabled) playerCamera.enabled = false;
@@ -730,7 +736,8 @@ public class MouseLookScript : MonoBehaviour {
 							if (GUIState.a.overButtonType != GUIState.ButtonType.Generic && GUIState.a.overButtonType != GUIState.ButtonType.PGrid && GUIState.a.overButtonType != GUIState.ButtonType.PWire) {
 	                       		mouseCursor.cursorImage = cursorTexture;
 								ForceInventoryMode();
-		                        holdingObject = true;
+								holdingObject = true;
+								if (Const.a.InputQuickItemPickup && GUIState.a.overButtonType == GUIState.ButtonType.Search) holdingObject = false;
 							}
 						}
 					}
@@ -1447,6 +1454,7 @@ public class MouseLookScript : MonoBehaviour {
 	public void DropHeldItem() {
 		if (heldObjectIndex < 0 || heldObjectIndex > 255) {
 			Const.sprint("BUG: Attempted to DropHeldItem with index out of bounds (<0 or >255) and heldObjectIndex = " + heldObjectIndex.ToString(),player);
+			Debug.Log("BUG: Attempted to DropHeldItem with index out of bounds (<0 or >255) and heldObjectIndex = " + heldObjectIndex.ToString(),player);
 			return;
 		}
 
@@ -1579,6 +1587,7 @@ public class MouseLookScript : MonoBehaviour {
 	
 	void  SearchObject ( int index  ){
 		SearchableItem curSearchScript = currentSearchItem.GetComponent<SearchableItem>();
+		if (curSearchScript.searchableInUse) Debug.Log("Re-Searching same object");
 		curSearchScript.searchableInUse = true;
 		curSearchScript.currentPlayerCapsule = transform.parent.gameObject;  // Get playerCapsule of player this is attached to
 
@@ -1658,6 +1667,10 @@ public class MouseLookScript : MonoBehaviour {
 
 	public void ScreenShake (float force) {
 		//Debug.Log("Screen shake signal received by MouseLookScript!");
+		shakeFinished = PauseScript.a.relativeTime + 1f;
+		shakeForce = 0.08f;
+		if (force < 0.48f)
+			shakeForce = force;
 	}
 
 	public void ToggleAudioPause() {

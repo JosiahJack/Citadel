@@ -19,6 +19,7 @@ public class FuncWall : MonoBehaviour {
 	private bool stopSoundPlayed;
 	//private bool movedToLocation;
 	private float dist;
+	private float startTime;
 
 	void Awake () {
 		currentState = startState; // set door position to picked state
@@ -35,6 +36,7 @@ public class FuncWall : MonoBehaviour {
 		stopSoundPlayed = false;
 		//movedToLocation = false;
 		dist = 0;
+		startTime = PauseScript.a.relativeTime;
 	}
 		
 	public void Targetted (UseData ud) {
@@ -68,64 +70,73 @@ public class FuncWall : MonoBehaviour {
 
 	void MoveStart() {
 		currentState = FuncStates.MovingStart;
+		//startTime = PauseScript.a.relativeTime + ((Vector3.Distance(startPosition,targetPosition.transform.position)) / speed);.
+		startTime = PauseScript.a.relativeTime + 10f;
 	}
 
 	void MoveTarget() {
 		currentState = FuncStates.MovingTarget;
+		//startTime = PauseScript.a.relativeTime + ((Vector3.Distance(startPosition,targetPosition.transform.position)) / speed);
+		startTime = PauseScript.a.relativeTime + 10f;
 	}
 
-	void FixedUpdate () {
-		switch (currentState) {
-			case FuncStates.Start:
-				//if (!movedToLocation) {
-					transform.position = startPosition;
-					if (rbody.velocity.magnitude > 0) rbody.velocity = Vector3.zero;
-					//movedToLocation = true;
-				//}
-				break;
-			case FuncStates.Target:
-				//if (!movedToLocation) {
-					transform.position = targetPosition.transform.position;
-					if (rbody.velocity.magnitude > 0) rbody.velocity = Vector3.zero;
-					//movedToLocation = true;
-				//}
-				break;
-			case FuncStates.MovingStart:
-				goalPosition = startPosition;
-				rbody.WakeUp();
-				dist = speed * Time.deltaTime;
-				tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
-				rbody.MovePosition(tempVec);
-				if (Vector3.Distance(transform.position,goalPosition) <= 0.04f) {
-					currentState = FuncStates.Start;
-					if (!stopSoundPlayed) {
-						if (SFXSource != null && SFXStop != null && gameObject.activeInHierarchy)  {
+	void Update () {
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeSelf) {
+			switch (currentState) {
+				case FuncStates.Start:
+					//if (!movedToLocation) {
+						transform.position = startPosition;
+						if (rbody.velocity.magnitude > 0) rbody.velocity = Vector3.zero;
+						//movedToLocation = true;
+					//}
+					break;
+				case FuncStates.Target:
+					//if (!movedToLocation) {
+						transform.position = targetPosition.transform.position;
+						if (rbody.velocity.magnitude > 0) rbody.velocity = Vector3.zero;
+						//movedToLocation = true;
+					//}
+					break;
+				case FuncStates.MovingStart:
+					goalPosition = startPosition;
+					rbody.WakeUp();
+					dist = speed * Time.deltaTime;
+					tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
+					rbody.MovePosition(tempVec);
+					if (Vector3.Distance(transform.position,goalPosition) <= 0.04f || startTime < PauseScript.a.relativeTime) {
+						currentState = FuncStates.Start;
+
+						if (SFXSource != null) {
 							SFXSource.Stop ();
 							SFXSource.loop = false;
-							SFXSource.PlayOneShot (SFXStop);
-							stopSoundPlayed = true;
+							if (!stopSoundPlayed && SFXSource != null) {
+								SFXSource.PlayOneShot (SFXStop);
+								stopSoundPlayed = true;
+							}
 						}
 					}
-				}
-				break;
-			case FuncStates.MovingTarget:
-				goalPosition = targetPosition.transform.position;
-				rbody.WakeUp();
-				dist = speed * Time.deltaTime;
-				tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
-				rbody.MovePosition(tempVec);
-				if (Vector3.Distance(transform.position,goalPosition) <= 0.04f) {
-					currentState = FuncStates.Target;
+					break;
+				case FuncStates.MovingTarget:
+					goalPosition = targetPosition.transform.position;
+					rbody.WakeUp();
+					dist = speed * Time.deltaTime;
+					tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
+					rbody.MovePosition(tempVec);
+					if (Vector3.Distance(transform.position,goalPosition) <= 0.04f || startTime < PauseScript.a.relativeTime) {
+						currentState = FuncStates.Target;
 
-					if (!stopSoundPlayed && SFXSource != null) {
-						SFXSource.Stop ();
-						SFXSource.loop = false;
-						SFXSource.PlayOneShot (SFXStop);
-						stopSoundPlayed = true;
+						if (SFXSource != null) {
+							SFXSource.Stop ();
+							SFXSource.loop = false;
+							if (!stopSoundPlayed && SFXSource != null) {
+								SFXSource.PlayOneShot (SFXStop);
+								stopSoundPlayed = true;
+							}
+						}
 					}
-				}
-				
-				break;
+					
+					break;
+			}
 		}
 	}
 }

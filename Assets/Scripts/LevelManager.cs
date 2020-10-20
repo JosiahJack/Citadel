@@ -142,7 +142,7 @@ public class LevelManager : MonoBehaviour {
 		prm.playerCapsule.transform.position = pos; // Put player in the new level
 		PlayerMovement pm = prm.playerCapsule.GetComponent<PlayerMovement>();
 		pm.SetAutomapExploredReference(levnum);
-		pm.automapBaseImage.texture = pm.automapsBaseImages[levnum];
+		pm.automapBaseImage.overrideSprite = pm.automapsBaseImages[levnum];
 
 		levels[levnum].SetActive(true); // enable new level
 		prm.playerCurrentLevel = levnum;

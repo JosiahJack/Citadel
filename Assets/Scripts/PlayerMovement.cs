@@ -78,11 +78,11 @@ public class PlayerMovement : MonoBehaviour {
 	public float circleInnerRangev3 = (5f * 2.56f) + 1.28f;
 	public float circleOuterRangev3 = (7.5f * 2.56f) + 1.28f;
 	public Vector2[] automapLevelHomePositions; // R= 43.97, 85.66 | 1= -8.53, 85.99 | 2= 10.2, 44.8 | 3= 9.4, 63.83 | 4= -55.65, 116.8 | 5= -9.4, 71.8 | 6= 29.7, 85.5 | 7= 5, 76.55 | 8= 25.1, 84.4 | 9= 39.8, 72.6
-	public RawImage automapBaseImage;
+	public Image automapBaseImage;
 	public Image automapInnerCircle;
 	public Image automapOuterCircle;
-	public Texture2D[] automapsBaseImages;	
-	public RawImage[] automapsHazardOverlays;
+	public Sprite[] automapsBaseImages;	
+	public Image[] automapsHazardOverlays;
 	public float automapFactorx = 0.000285f;
 	public float automapFactory = 0.000285f;
 	public Transform automapFullPlayerIcon;
@@ -1064,6 +1064,7 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		if (automapUpdateFinished < PauseScript.a.relativeTime) {
+			if (automapBaseImage.overrideSprite == null) automapBaseImage.overrideSprite = automapsBaseImages[LevelManager.a.currentLevel];
 			// private float camMaxAmount = 0.2548032f;
 			// private float mapWorldMaxN = 85.83999f;
 			// private float mapWorldMaxS = -78.00001f;

@@ -16,7 +16,8 @@ public class CyberPush : MonoBehaviour {
 			otherRbody = other.gameObject.GetComponent<Rigidbody>();
 			if (otherRbody != null) {
 				otherRbody.AddForce(direction * force * Time.deltaTime, ForceMode.Acceleration);
-				Music.a.PlayTrack(LevelManager.a.currentLevel,Music.TrackType.Cybertube,Music.MusicType.Override);
+				//Music.a.PlayTrack(LevelManager.a.currentLevel,Music.TrackType.Cybertube,Music.MusicType.Override);
+				Music.a.NotifyCyberTube();
 			} else {
 				Debug.Log("Failed to get PlayerManager on collision with player in CyberPush.cs");
 			}

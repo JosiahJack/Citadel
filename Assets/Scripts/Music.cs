@@ -3,17 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Music : MonoBehaviour {
-	// DT optional since not all levels have all music types
+	public AudioClip[] levelMusic1;
+	public AudioClip[] levelMusic2;
+	public AudioClip[] levelMusicReactor;
+	public AudioClip[] levelMusic6;
+	public AudioClip[] levelMusicGroves;
+	public AudioClip[] levelMusicBetaGrove;
+	public AudioClip[] levelMusic8;
 	public AudioClip[] levelMusicWalking;
 	public AudioClip[] levelMusicCombat;
-	public AudioClip[] levelMusicMutantNear;
-	public AudioClip[] levelMusicCyborgNear;
-	public AudioClip[] levelMusicCyborgDroneNear;
-	public AudioClip[] levelMusicRobotNear;
-	public AudioClip[] levelMusicTransition;
+	// public AudioClip[] levelMusicMutantNear;
+	// public AudioClip[] levelMusicCyborgNear;
+	// public AudioClip[] levelMusicCyborgDroneNear;
+	// public AudioClip[] levelMusicRobotNear;
+	//public AudioClip[] levelMusicTransition;
 	public AudioClip[] levelMusicRevive;
 	public AudioClip[] levelMusicDeath;
-	public AudioClip[] levelMusicCybertube;
+	public AudioClip[] levelMusicCyber;
 	public AudioClip[] levelMusicElevator;
 	public AudioClip[] levelMusicDistortion;
 	public AudioSource SFXMain;
@@ -22,7 +28,6 @@ public class Music : MonoBehaviour {
 	private float clipLength;
 	private float clipOverlayLength;
 	private float clipOverlayFinished;
-	//private int actionState;
 	public GameObject mainMenu;
 	public WeaponFire wf;
 	public HealthManager hm;
@@ -31,129 +36,251 @@ public class Music : MonoBehaviour {
 	private AudioClip tempC;
 	private AudioClip curC;
 	private AudioClip curOverlayC;
-
 	public static Music a;
+	private bool paused;
+	private bool cyberTube;
+	public bool levelEntry;
+	private int rand;
+	private bool inZone;
+	private bool distortion;
+	private bool elevator;
+	public bool inCombat;
+	private float combatImpulseFinished;
 
 	void Start() {
 		a = this;
 		a.clipFinished = Time.time;
 		a.clipOverlayFinished = Time.time;
 		a.tempC = null;
+		a.cyberTube = false;
+		a.levelEntry = true;
+		a.inZone = false;
+		a.rand = 0;
+		a.combatImpulseFinished = PauseScript.a.relativeTime + 5f;
+		//LoadMusic();
 	}
+
+	//void LoadMusic() {
+		//for (int i=0;i<14;i++) {
+			//string tempStringWalking = Application.streamingAssetsPath + "/cit1/music/walking/lev" + i.ToString() + "walking.wav";
+			//UnityWebRequestMultimedia uwrm = UnityWebRequest.Get(tempStringWalking);
+			//UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(tempStringWalking,AudioType.MP3);
+			//if (www != null) levelMusicWalking[i] = DownloadHandlerAudioClip.GetContent(www);
+		//}
+	//}
 
 	public void PlayTrack(int levnum, TrackType ttype, MusicType mtype) {
 		tempC = GetCorrespondingLevelClip(levnum,ttype);
-		switch(mtype) {
-			case MusicType.Walking:
-				if (tempC == curC && SFXMain.isPlaying) break; // no need, already playing
+		if (!elevator) levelEntry = false; // already used by GetCorresponding... just now
+		if (mtype == MusicType.Walking || mtype == MusicType.Combat) {
+			if (tempC == curC && SFXMain.isPlaying) return; // no need, already playing
+			if (SFXMain != null) SFXMain.Stop(); // stop playing normal
+			if (tempC != null) {
+				SFXMain.clip = tempC;
+				curC = tempC;
+				SFXMain.PlayOneShot(tempC);
+				SFXMain.loop = false;
+			} else {
+				curC = null;
+			}
+		}
 
-				if (SFXMain != null) SFXMain.Stop(); // stop playing normal
-				if (tempC != null) {
-					SFXMain.clip = tempC;
-					curC = tempC;
-					SFXMain.Play();
-					SFXMain.loop = true;
-				} else {
-					curC = null;
-				}
-				break;
-			case MusicType.Combat:
-				if (tempC == curC && SFXMain.isPlaying) break; // no need, already playing
+		if (mtype == MusicType.Overlay) {
+			if (tempC == curOverlayC && SFXOverlay.isPlaying) return; // no need, already playing
+			if (SFXOverlay != null) SFXOverlay.Stop(); // stop any overlays
+			if (tempC != null) {
+				SFXOverlay.clip = tempC;
+				curOverlayC = tempC;
+				SFXOverlay.PlayOneShot(tempC);
+				SFXOverlay.loop = false;
+			} else {
+				curOverlayC = null;
+			}
+		}
 
-				if (SFXMain != null) SFXMain.Stop(); // stop playing normal
-				if (tempC != null) {
-					SFXMain.clip = tempC;
-					curC = tempC;
-					SFXMain.Play();
-					SFXMain.loop = false;
-				} else {
-					curC = null;
-				}
-				break;
-			case MusicType.Overlay:
-				if (tempC == curOverlayC && SFXOverlay.isPlaying) break; // no need, already playing
-				if (SFXOverlay != null) SFXOverlay.Stop(); // stop any overlays
-				if (tempC != null) {
-					SFXOverlay.clip = tempC;
-					curOverlayC = tempC;
-					SFXOverlay.PlayOneShot(tempC);
-					SFXOverlay.loop = false;
-				} else {
-					curOverlayC = null;
-				}
-				break;
-			case MusicType.Override:
-				if (tempC == curC && SFXMain.isPlaying) break; // no need, already playing
+		if (mtype == MusicType.Override) {
+			if (tempC == curC && SFXMain.isPlaying) return; // no need, already playing
 
-				// stop both
-				if (SFXMain != null) SFXMain.Stop();
-				if (SFXOverlay != null) SFXOverlay.Stop();
-				if (tempC != null) {
-					SFXMain.clip = tempC;
-					curC = tempC;
-					SFXMain.Play();
-					SFXMain.loop = false;
-					if (ttype == TrackType.Elevator) SFXMain.loop = true;
-				} else {
-					curC = null;
-				}
-				break;
+			// stop both
+			if (SFXMain != null) SFXMain.Stop();
+			if (SFXOverlay != null) SFXOverlay.Stop();
+			if (tempC != null) {
+				SFXMain.clip = tempC;
+				curC = tempC;
+				SFXMain.Play();
+				SFXMain.loop = false;
+				//if (ttype == TrackType.Elevator) SFXMain.loop = true;
+			} else {
+				curC = null;
+			}
 		}
 	}
 
 	AudioClip GetCorrespondingLevelClip(int levnum, TrackType ttype) {
 		if (levnum < 0 || levnum > 13) return null; // out of bounds
 
+		// 13 CYBERSPACE
+		if (levnum == 13) {
+			if (levelEntry) return levelMusicCyber[0];
+			if (cyberTube) {
+				rand = UnityEngine.Random.Range(4,8);
+				return levelMusicCyber[rand];
+			}
+			if (UnityEngine.Random.Range(0,1f) < 0.5f) {
+				rand = UnityEngine.Random.Range(1,5);
+				return levelMusicCyber[rand];
+			} else {
+				return levelMusicCyber[8];
+			}
+		}
+
+		// These act as override types, return from these first before special level handling
 		switch(ttype) {
-			case TrackType.Walking: return levelMusicWalking[levnum];
-			case TrackType.Combat: return levelMusicCombat[levnum];
-			case TrackType.MutantNear: return levelMusicMutantNear[levnum];
-			case TrackType.CyborgNear: return levelMusicCyborgNear[levnum];
-			case TrackType.CyborgDroneNear: return levelMusicCyborgDroneNear[levnum];
-			case TrackType.RobotNear: return levelMusicRobotNear[levnum];
-			case TrackType.Transition: return levelMusicTransition[levnum];
+			//case TrackType.MutantNear: return levelMusicMutantNear[levnum];
+			//case TrackType.CyborgNear: return levelMusicCyborgNear[levnum];
+			//case TrackType.CyborgDroneNear: return levelMusicCyborgDroneNear[levnum];
+			//case TrackType.RobotNear: return levelMusicRobotNear[levnum];
+			//case TrackType.Transition: return levelMusicTransition[levnum];
 			case TrackType.Revive: return levelMusicRevive[levnum];
 			case TrackType.Death: return levelMusicDeath[levnum];
-			case TrackType.Cybertube: return levelMusicCybertube[levnum];
+			//case TrackType.Cybertube: return levelMusicCybertube[levnum];
 			case TrackType.Elevator: return levelMusicElevator[levnum];
 			case TrackType.Distortion: return levelMusicDistortion[levnum];
 		}
 
-		return null; // Tracktype none
+		// 1  MEDICAL
+		if (levnum == 1) {
+			if (levelEntry) return levelMusic1[0];
+			if (ttype == TrackType.Combat) {
+				rand = UnityEngine.Random.Range(5,11);
+				return levelMusic1[rand];
+			}
+			rand = UnityEngine.Random.Range(1,5);
+			return levelMusic1[rand];
+		}
+
+		// 2  SCIENCE
+		if (levnum == 2) {
+			if (levelEntry) return levelMusic2[0];
+			if (ttype == TrackType.Combat) {
+				rand = UnityEngine.Random.Range(8,10);
+				return levelMusic2[rand];
+			}
+			rand = UnityEngine.Random.Range(1,8);
+			return levelMusic2[rand];
+		}
+
+		// 0  REACTOR, 5 FLIGHT, 7 ENGINEERING
+		if (levnum == 0 || levnum == 5 || levnum == 7) {
+			if (levelEntry) return levelMusicReactor[6];
+			if (ttype == TrackType.Combat) {
+				rand = UnityEngine.Random.Range(0,6);
+				return levelMusicReactor[rand];
+			}
+			rand = UnityEngine.Random.Range(6,13);
+			return levelMusicReactor[rand];
+		}
+
+		// 8 SECURITY, 9 BRIDGE
+		if (levnum == 8 || levnum == 9) {
+			if (levelEntry) return levelMusic8[9];
+			if (ttype == TrackType.Combat) {
+				rand = UnityEngine.Random.Range(0,6);
+				return levelMusic8[rand];
+			}
+			rand = UnityEngine.Random.Range(6,19);
+			return levelMusic8[rand];
+		}
+
+		// 6 EXECUTIVE
+		if (levnum == 6) {
+			if (levelEntry) return levelMusic6[0];
+			if (ttype == TrackType.Combat) {
+				rand = UnityEngine.Random.Range(9,13);
+				return levelMusic6[rand];
+			}
+			rand = UnityEngine.Random.Range(0,10);
+			return levelMusic6[rand];
+		}
+
+		// 10, 12 GROVES
+		if (levnum == 10 || levnum == 11 || levnum == 12) {
+			if (levelEntry) return levelMusicGroves[19];
+			if (ttype == TrackType.Combat) {
+				rand = UnityEngine.Random.Range(0,9);
+				return levelMusicGroves[rand];
+			}
+			rand = UnityEngine.Random.Range(9,24);
+			return levelMusicGroves[rand];
+		}
+
+		return null; // Tracktype none when nothing was found
+	}
+
+	public void NotifyCyberTube() {
+		cyberTube = true;
+	}
+
+	public void NotifyZone(TrackType tt) {
+		inZone = true;
+		switch(tt) {
+			//case TrackType.MutantNear: return levelMusicMutantNear[levnum];
+			//case TrackType.CyborgNear: return levelMusicCyborgNear[levnum];
+			//case TrackType.CyborgDroneNear: return levelMusicCyborgDroneNear[levnum];
+			//case TrackType.RobotNear: return levelMusicRobotNear[levnum];
+			//case TrackType.Transition: return levelMusicTransition[levnum];
+			//case TrackType.Revive: return levelMusicRevive[levnum];
+			//case TrackType.Death: return levelMusicDeath[levnum];
+			//case TrackType.Cybertube: return levelMusicCybertube[levnum];
+			case TrackType.Elevator: elevator = true; break;
+			case TrackType.Distortion: distortion = true; break;
+		}
+	}
+
+	public void Stop() {
+		// stop both
+		if (SFXMain != null) SFXMain.Stop();
+		if (SFXOverlay != null) SFXOverlay.Stop();
+		inZone = false;
+		elevator = false;
+		distortion = false;
 	}
 
     void Update() {
 		// Check if main menu is active and disable playing background music
-		if (mainMenu.activeSelf == true) {
-			if (SFXMain != null) SFXMain.Stop();
-			if (SFXOverlay != null) SFXOverlay.Stop();
-			return;
+		if (mainMenu.activeSelf == true || Const.a.loadingScreen.activeSelf == true) {
+			if (!paused) {
+				paused = true;
+				if (SFXMain != null) SFXMain.Pause();
+				if (SFXOverlay != null) SFXOverlay.Pause();
+			}
+		} else {
+			if (paused) {
+				paused = false;
+				if (SFXMain != null) SFXMain.UnPause();
+				if (SFXOverlay != null) SFXOverlay.UnPause();
+			}
+
+			if (inCombat && !inZone && combatImpulseFinished < PauseScript.a.relativeTime) {
+				inCombat = false;
+				PlayTrack(LevelManager.a.currentLevel, TrackType.Combat, MusicType.Override);
+				combatImpulseFinished = PauseScript.a.relativeTime + 10f;
+				return;
+			}
+
+			if (!SFXMain.isPlaying) {
+				if (inZone) {
+					if (distortion) {
+						PlayTrack(LevelManager.a.currentLevel, TrackType.Distortion, MusicType.Override);
+						return;
+					}
+					if (elevator) {
+						PlayTrack(LevelManager.a.currentLevel, TrackType.Elevator, MusicType.Override);
+						return;
+					}
+				}
+				PlayTrack(LevelManager.a.currentLevel, TrackType.Walking, MusicType.Walking);
+			}
 		}
-
-		//CheckActionState();
     }
-
-	// void SetClip (AudioClip acNormal, AudioClip acSuspense, AudioClip acAction, AudioClip acDistorted, float vol) {
-		// switch(actionState) {
-			// case 0: if (SFXMain.clip != acNormal) SFX.clip = acNormal; break;
-			// case 1: if (SFX.clip != acSuspense) SFX.clip = acSuspense; break;
-			// case 2: if (SFX.clip != acAction) SFX.clip = acAction; break;
-			// case 3: if (SFX.clip != acDistorted) SFX.clip = acDistorted; break;
-			// default: if (SFX.clip != acNormal) SFX.clip = acNormal; break;
-		// }
-
-		// if (SFX.clip != null && SFX != null && clipFinished < Time.time) {
-			// if (SFX.clip != null) {
-				// clipLength = SFX.clip.length;
-			// } else {
-				// clipLength = 0;
-			// }
-			// SFX.loop = true;
-			// SFX.volume = vol;
-			// clipFinished = Time.time + clipLength;
-			// if (SFX != null) SFX.PlayOneShot(SFX.clip);
-		// } else {
-			// if (SFX != null) SFX.Stop();
-		// }
-	// }
 }

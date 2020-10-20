@@ -113,7 +113,7 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 
 		if (!IntroVideoContainer.activeSelf) {
-			if (!BackGroundMusic.isPlaying) BackGroundMusic.Play();
+			if (!BackGroundMusic.isPlaying && !saltTheFries.activeInHierarchy) BackGroundMusic.Play();
 		}
 
 		if ( (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P)) || (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P)) ) {
@@ -183,6 +183,7 @@ public class MainMenuHandler : MonoBehaviour {
 
 	public void GoToOptionsSubmenu (bool accessedFromPause) {
 		ResetPages();
+		if (accessedFromPause) IntroVideoContainer.SetActive(false);
 		optionsPage.SetActive(true);
 		currentPage = Pages.op;
 		returnToPause = accessedFromPause;

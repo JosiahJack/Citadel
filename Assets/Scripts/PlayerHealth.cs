@@ -216,7 +216,15 @@ public class PlayerHealth : MonoBehaviour {
 		}
 		PauseScript.a.mainMenu.SetActive(true);
 		PauseScript.a.mainMenu.GetComponent<MainMenuHandler>().returnToPause = false;
-		PlayerRessurect();
+		hm.health = 211f;
+		playerHealthTicks.DrawTicks();
+		radiationArea = false;
+		radiated = 0;
+		playerDead = false;
+		mediPatchActive = false;
+		detoxPatchActive = false;
+		pp.DisableAllPatches();
+		pp.playerMovementScript.fatigue = 0f;
 		/*
 		#if UNITY_EDITOR
 		if (Application.isEditor) {

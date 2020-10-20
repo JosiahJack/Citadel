@@ -40,7 +40,6 @@ public class MouseCursor : MonoBehaviour {
 	public Texture2D cursorLHTexture;
 	public Texture2D cursorRHTexture;
 	public Texture2D cursorDNTexture;
-	public Texture2D cursorOverButtonTexture;
 	private Texture2D tempTexture;
 	public WeaponCurrent wepCurrent;
 	public RectTransform energySliderRect;

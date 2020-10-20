@@ -116,27 +116,29 @@ public class ButtonSwitch : MonoBehaviour {
 	}
 
 	void Update() {
+		if (PauseScript.a.Paused() || PauseScript.a.mainMenu.activeInHierarchy) {
+			return; // don't do any checks or anything else...we're paused!
+		}
 		if (!gameObject.activeSelf) return;
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			if ((delayFinished < PauseScript.a.relativeTime) && delayFinished != 0) {
-				delayFinished = 0;
-				UseTargets();
-			}
 
-			// blink the switch when active
-			if (blinkWhenActive) {
-				if (active) {
-					if (tickFinished < PauseScript.a.relativeTime) {
-						if (mRenderer.isVisible) {
-							if (alternateOn) {
-								if (mRenderer.material != mainSwitchMaterial) mRenderer.material = mainSwitchMaterial;
-							} else {
-								if (mRenderer.material != alternateSwitchMaterial) mRenderer.material = alternateSwitchMaterial;
-							}
+		if ((delayFinished < PauseScript.a.relativeTime) && delayFinished != 0) {
+			delayFinished = 0;
+			UseTargets();
+		}
+
+		// blink the switch when active
+		if (blinkWhenActive) {
+			if (active) {
+				if (tickFinished < PauseScript.a.relativeTime) {
+					if (mRenderer.isVisible) {
+						if (alternateOn) {
+							if (mRenderer.material != mainSwitchMaterial) mRenderer.material = mainSwitchMaterial;
+						} else {
+							if (mRenderer.material != alternateSwitchMaterial) mRenderer.material = alternateSwitchMaterial;
 						}
-						alternateOn = !alternateOn;
-						tickFinished = PauseScript.a.relativeTime + tickTime;
 					}
+					alternateOn = !alternateOn;
+					tickFinished = PauseScript.a.relativeTime + tickTime;
 				}
 			}
 		}

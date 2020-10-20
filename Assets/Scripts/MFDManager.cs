@@ -7,6 +7,7 @@ public class MFDManager : MonoBehaviour  {
 	public TabButtons leftTC;
 	public TabButtons rightTC;
 	public CenterTabButtons ctb;
+	public CenterMFDTabs cmfdt;
 	public ItemTabManager itemTabLH;
 	public ItemTabManager itemTabRH;
 	public enum handedness {LeftHand,RightHand};
@@ -122,7 +123,7 @@ public class MFDManager : MonoBehaviour  {
 		a = this;
 		a.logFinished = PauseScript.a.relativeTime;
 		a.logActive = false;
-		//a.TabReset(true);
+		a.TabReset(true);
 		a.TabReset(false);
 	}
 
@@ -301,9 +302,9 @@ public class MFDManager : MonoBehaviour  {
 			if (logActive) {
 				if (logFinished < PauseScript.a.relativeTime && logType != 3 && logType != 0) {
 					logActive = false;
-					ReturnToLastTab(true);
-					ReturnToLastTab(false);
-					if (ctb != null) ctb.TabButtonClickSilent(0,true);
+					if (itemTabLH.eReaderSectionsContainer.activeInHierarchy) ReturnToLastTab(true);
+					if (itemTabRH.eReaderSectionsContainer.activeInHierarchy) ReturnToLastTab(false);
+					if (ctb != null && cmfdt.DataReaderContentTab.activeInHierarchy) ctb.TabButtonClickSilent(0,true);
 				}
 			}
 

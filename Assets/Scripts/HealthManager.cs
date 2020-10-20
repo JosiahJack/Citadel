@@ -403,7 +403,10 @@ public class HealthManager : MonoBehaviour {
 			take = ApplyAttackTypeAdjustments(take,dd);
 
 			health -= take; //was directly dd.damage but changed since we are check for extra things in case GetDamageTakeAmount wasn't called on dd.damage beforehand (e.g. player fall damage, internal to player only, need to protect against shield, etc, JJ 9/5/19)
-			if (isPlayer) ph.playerHealthTicks.DrawTicks();
+			if (isPlayer) {
+				ph.playerHealthTicks.DrawTicks();
+				Music.a.inCombat = true;
+			}
 		}
 		attacker = dd.owner;
 		if (isNPC && (health > 0f || (cyberEntityIndex >= 0f && cyberHealth > 0f))) {

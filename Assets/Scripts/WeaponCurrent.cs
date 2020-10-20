@@ -379,16 +379,21 @@ public class WeaponCurrent : MonoBehaviour {
 			if (WeaponAmmo.a.wepLoadedWithAlternate[weaponCurrent]) {
 				if (WeaponAmmo.a.wepAmmo[wep16index] > 0) {
 				WeaponAmmo.a.wepLoadedWithAlternate[weaponCurrent] = false;
-				ReloadSecret(true);
-				//LoadPrimaryAmmoType(false);
+				// Take bullets out of the clip, put them back into the ammo stockpile, then zero out the clip amount, did I say clip?  I mean magazine but whatever
+				WeaponAmmo.a.wepAmmoSecondary[wep16index] += currentMagazineAmount2[weaponCurrent];
+				currentMagazineAmount2[weaponCurrent] = 0;
+				//ReloadSecret(true);
+				LoadPrimaryAmmoType(false);
 				} else {
 					Const.sprint(Const.a.stringTable[535],owner); //No more of ammo type to load.
 				}
 			} else {
 				if (WeaponAmmo.a.wepAmmoSecondary[wep16index] > 0) {
 					WeaponAmmo.a.wepLoadedWithAlternate[weaponCurrent] = true;
-					ReloadSecret(true);
-					//LoadSecondaryAmmoType(false);
+					WeaponAmmo.a.wepAmmo[wep16index] += currentMagazineAmount[weaponCurrent];
+					currentMagazineAmount[weaponCurrent] = 0;
+					//ReloadSecret(true);
+					LoadSecondaryAmmoType(false);
 				} else {
 					Const.sprint(Const.a.stringTable[535],owner); //No more of ammo type to load.
 				}

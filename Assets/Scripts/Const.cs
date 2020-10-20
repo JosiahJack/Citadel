@@ -266,6 +266,8 @@ public class Const : MonoBehaviour {
 	public int[] audioLogImagesRefIndicesLH;
 	public int[] audioLogImagesRefIndicesRH;
 	public MainMenuHandler mmh;
+	[HideInInspector]
+	public PauseRigidbody[] prb;
 
 	[HideInInspector]
 	public float camMaxAmount = 0.2548032f;
@@ -391,9 +393,13 @@ public class Const : MonoBehaviour {
 		questData.lev6SecCode = UnityEngine.Random.Range(0,10);
 		if (mainFont1 != null) mainFont1.material.mainTexture.filterMode = FilterMode.Point;
 		if (mainFont2 != null) mainFont2.material.mainTexture.filterMode = FilterMode.Point;
+		PauseRigidbody[] prbTemp = FindObjectsOfType<PauseRigidbody>();
+		prb = prbTemp;
 		if (startingNewGame) {
 			PauseScript.a.mainMenu.SetActive(false);
 			loadingScreen.SetActive(false);
+			mmh.IntroVideo.SetActive(false);
+			mmh.IntroVideoContainer.SetActive(false);
 			sprint(stringTable[197],allPlayers); // Loading...Done!
 			WriteDatForNewGame(false,false);
 		}

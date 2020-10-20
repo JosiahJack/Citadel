@@ -899,6 +899,7 @@ public class WeaponFire : MonoBehaviour {
 		}
         if (hm != null && hm.health > 0) {
 			float dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
+			Music.a.inCombat = true;
 			float linkDistForTargID = 10f;
 			switch (HardwareInventory.a.hardwareVersion[4]) {
 				case 1: linkDistForTargID = 10f; break;
@@ -1046,7 +1047,8 @@ public class WeaponFire : MonoBehaviour {
 			SFX.Play();
 			return;
 		}
-		if (hm!= null) hm.TakeDamage(damageData); //no need to check if damage was done and if we need noDamageIndicator since melee weapons always do damage against all types
+		hm.TakeDamage(damageData); //no need to check if damage was done and if we need noDamageIndicator since melee weapons always do damage against all types
+		Music.a.inCombat = true;
 		if (!silent) {
 			if ((hm.bloodType == HealthManager.BloodType.Red) || (hm.bloodType == HealthManager.BloodType.Yellow) || (hm.bloodType == HealthManager.BloodType.Green)) {
 				SFX.clip = hitflesh;
