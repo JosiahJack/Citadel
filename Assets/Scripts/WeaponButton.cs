@@ -25,6 +25,7 @@ public class WeaponButton : MonoBehaviour {
 		WeaponCurrent.WepInstance.weaponCurrent = WepButtonIndex;				//Set current weapon
 		WeaponCurrent.WepInstance.weaponIndex = useableItemIndex;				//Set current weapon
 		WeaponCurrent.WepInstance.UpdateHUDAmmoCountsEither();
+		WeaponCurrent.WepInstance.reloadContainer.transform.localPosition = WeaponCurrent.WepInstance.reloadContainerOrigin; // pop it back to start to be sure
 		if (useableItemIndex != -1) iconman.GetComponent<WeaponIconManager>().SetWepIcon(useableItemIndex);    //Set weapon icon for MFD
 		if (weptextman.activeInHierarchy && useableItemIndex != -1) weptextman.GetComponent<WeaponTextManager>().SetWepText(useableItemIndex); //Set weapon text for MFD
 		if (useableItemIndex != -1) MFDManager.a.SendInfoToItemTab(useableItemIndex);

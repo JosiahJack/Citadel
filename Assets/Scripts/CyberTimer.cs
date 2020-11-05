@@ -8,7 +8,8 @@ public class CyberTimer : MonoBehaviour {
 	public Text text;
 	private float minutes;
 	private float seconds;
-	private float timerFinished;
+	[HideInInspector]
+	public float timerFinished; // save
 
 	void Awake() {
 		t = 60f * 10f;

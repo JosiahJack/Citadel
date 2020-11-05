@@ -546,20 +546,24 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
-	public void SendSearchToDataTab (string name, int contentCount, int[] resultContents, int[] resultsIndices, Vector3 searchPosition, SearchableItem si) {
+	public void SendSearchToDataTab (string name, int contentCount, int[] resultContents, int[] resultsIndices, Vector3 searchPosition, SearchableItem si, bool useFX) {
 		// Enable search box scaling effect
 		if (lastSearchSideRH) {
 			TabReset(true);
 			Search(true,name,contentCount,resultContents,resultsIndices);
 			OpenTab(4,true,TabMSG.Search,0,handedness.RightHand);
-			SearchFXRH.SetActive(true);
+			if (useFX) SearchFXRH.SetActive(true);
 		} else {
 			TabReset(false);
 			Search(false,name,contentCount,resultContents,resultsIndices);
 			OpenTab(4,true,TabMSG.Search,0,handedness.LeftHand);
-			SearchFXLH.SetActive(true);
+			if (useFX) SearchFXLH.SetActive(true);
 		}
-		if (tetheredSearchable != null) tetheredSearchable.ResetSearchable(false);
+		if (tetheredSearchable != si) {
+			if (tetheredSearchable != null) {
+				tetheredSearchable.ResetSearchable(false);
+			}
+		}
 		tetheredSearchable = si;
 		objectInUsePos = searchPosition;
 		usingObject = true;

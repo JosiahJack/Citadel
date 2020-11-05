@@ -7,7 +7,8 @@ public class LogicTimer : MonoBehaviour, IBatchUpdate {
 	public float randomMax = 10f;
 	public bool useRandomTimes = false;
 	public bool active = true;
-	private float intervalFinished;
+	[HideInInspector]
+	public float intervalFinished; //save
 	public string target;
 	public string argvalue;
 

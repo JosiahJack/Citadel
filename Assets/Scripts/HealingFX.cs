@@ -3,10 +3,10 @@ using System.Collections;
 
 public class HealingFX : MonoBehaviour {
 	public float activeTime = 0.1f;
-	private float effectFinished;
+	private float effectFinished; // Visual only, Time.time controlled
 
 	void OnEnable () {
-		effectFinished = PauseScript.a.relativeTime + activeTime;
+		effectFinished = Time.time + activeTime;
 	}
 		
 	void Deactivate () {
@@ -15,7 +15,7 @@ public class HealingFX : MonoBehaviour {
 
 	void Update () {
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			if (effectFinished < PauseScript.a.relativeTime) {
+			if (effectFinished < Time.time) {
 				Deactivate();
 			}
 		}

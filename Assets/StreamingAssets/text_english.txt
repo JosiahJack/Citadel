@@ -535,3 +535,4 @@ Moderate
 Low
 No more of ammo type to load.
 STUNNED
+Decoy already active

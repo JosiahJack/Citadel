@@ -89,7 +89,7 @@ public class TargetIO : MonoBehaviour {
 	// comes from Const.a.UseTargets - already checked that target matched targetname of this interaction
 	public void Targetted(UseData ud) {
 		tempUD = ud; // prevent overwrites in the stack
-		//Debug.Log("Entering Targetted() on a TargetIO.cs script, this targetname: " + targetname + " and forceBridgeActivate is " + tempUD.forceBridgeActivate.ToString());
+		//Debug.Log("Entering Targetted() on a TargetIO.cs script, with targetname: " + targetname);
 		
 		// Whatever else happens, try to access a LogicRelay and keep the messages going
 		LogicRelay lr = GetComponent<LogicRelay>();
@@ -179,7 +179,7 @@ public class TargetIO : MonoBehaviour {
 		if (tempUD.forceBridgeDeactivate) {
 			ForceBridge fb = GetComponent<ForceBridge>();
 			//Debug.Log("Deactivating force bridge");
-			if (fb != null) fb.Deactivate(false);
+			if (fb != null) fb.Deactivate(false,false);
 		}
 
 		if (tempUD.forceBridgeToggle) {
@@ -238,8 +238,12 @@ public class TargetIO : MonoBehaviour {
 		}
 
 		if (tempUD.sendEmail) {
+			Debug.Log("sendEmail was true for Targetted() with targetname: " + targetname);
 			Email msg = GetComponent<Email>();
-			if (msg != null) msg.Targetted();
+			if (msg != null) {
+				Debug.Log("sendEmail was true and msg was found for Targetted() with targetname: " + targetname);
+				msg.Targetted();
+			}
 		}
 
 		if (tempUD.switchLockToggle) {
@@ -429,6 +433,59 @@ public class UseData {
 	}
 
 	public void SetBits(TargetIO tio) {
+		tripTrigger = tio.tripTrigger;
+		doorOpen = tio.doorOpen;
+		doorOpenIfUnlocked = tio.doorOpenIfUnlocked;
+		doorClose = tio.doorClose;
+		doorLock = tio.doorLock;
+		doorUnlock = tio.doorUnlock;
+		switchTrigger = tio.switchTrigger;
+		chargeStationRecharge = tio.chargeStationRecharge;
+		enemyAlert = tio.enemyAlert;
+		forceBridgeActivate = tio.forceBridgeActivate;
+		forceBridgeDeactivate = tio.forceBridgeDeactivate;
+		forceBridgeToggle = tio.forceBridgeToggle;
+		gravityLiftToggle = tio.gravityLiftToggle;
+		textureChangeToggle = tio.textureChangeToggle;
+		lightOn = tio.lightOn;
+		lightOff = tio.lightOff;
+		lightToggle = tio.lightToggle;
+		funcwallMove = tio.funcwallMove;
+		missionBitOn = tio.missionBitOn;
+		missionBitOff = tio.missionBitOff;
+		missionBitToggle = tio.missionBitToggle;
+		sendEmail = tio.sendEmail;
+		switchLockToggle = tio.switchLockToggle;
+		lockCodeToScreenMaterialChanger = tio.lockCodeToScreenMaterialChanger;
+		spawnerActivate = tio.spawnerActivate;
+		spawnerActivateAlerted = tio.spawnerActivateAlerted;
+		cyborgConversionToggle = tio.cyborgConversionToggle;
+		GOSetActive = tio.GOSetActive;
+		GOSetDeactive = tio.GOSetDeactive;
+		GOToggleActive = tio.GOToggleActive;
+		toggleRadiationTrigger = tio.toggleRadiationTrigger;
+		toggleRelayEnabled = tio.toggleRelayEnabled;
+		togglePuzzlePanelLocked = tio.togglePuzzlePanelLocked;
+		testQuestBitIsOn = tio.testQuestBitIsOn;
+		testQuestBitIsOff = tio.testQuestBitIsOff;
+		playSoundOnce = tio.playSoundOnce;
+		stopSound = tio.stopSound;
+		sendSprintMessage = tio.sendSprintMessage;
+		radiationTreatment = tio.radiationTreatment;
+		startFlashingMaterials = tio.startFlashingMaterials;
+		stopFlashingMaterials = tio.stopFlashingMaterials;
+		unlockElevatorPad = tio.unlockElevatorPad;
+		unlockKeycodePad = tio.unlockKeycodePad;
+		unlockPuzzlePad = tio.unlockPuzzlePad;
+		screenShake = tio.screenShake;
+		awakeSleepingEnemy = tio.awakeSleepingEnemy;
+		branchFlip = tio.branchFlip;
+		branchFlipOnly = tio.branchFlipOnly;
+		doorAccessCardOverrideToggle = tio.doorAccessCardOverrideToggle;
+		bitsSet = true;
+	}
+
+	public void CopyBitsFromUseData(UseData tio) {
 		tripTrigger = tio.tripTrigger;
 		doorOpen = tio.doorOpen;
 		doorOpenIfUnlocked = tio.doorOpenIfUnlocked;

@@ -20,15 +20,15 @@ public class BioMonitor : MonoBehaviour {
 	public HardwareInventory hwi;
 
 	private string tempStr;
-	private float beatFinished;
+	private float beatFinished; // Visual only, Time.time controlled
 
 	void Start() {
-		beatFinished = PauseScript.a.relativeTime + beatTick;
+		beatFinished = Time.time + beatTick;
 		tempStr = "";
 	}
 
     void Update() {
-		if (!PauseScript.a.Paused() && beatFinished < PauseScript.a.relativeTime) {
+		if (!PauseScript.a.Paused() && beatFinished < Time.time) {
 			if (hwc.hardwareIsActive[6]) {
 				header.text = Const.a.stringTable[526];
 				heartRateText.text = Const.a.stringTable[527];
@@ -57,7 +57,7 @@ public class BioMonitor : MonoBehaviour {
 					patchEffects.text = System.String.Empty;
 				}
 			}
-			beatFinished = PauseScript.a.relativeTime + beatTick;
+			beatFinished = Time.time + beatTick;
 		}
     }
 }

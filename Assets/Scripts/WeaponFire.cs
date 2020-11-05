@@ -3,7 +3,7 @@ using System.Collections;
 
 public class WeaponFire : MonoBehaviour {
     [HideInInspector]
-    public float waitTilNextFire = 0f;
+    public float waitTilNextFire = 0f; // save
     public float muzzleDistance = 0.10f;
     public float hitOffset = 0.2f;
     public float normalHitOffset = 0.2f;
@@ -42,11 +42,9 @@ public class WeaponFire : MonoBehaviour {
     public AudioSource SFX = null; // assign in the editor
     public AudioClip SFXMark3Fire; // assign in the editor
     public AudioClip SFXBlasterFire; // assign in the editor
-    //public AudioClip SFXBlasterOverFire; // assign in the editor
     public AudioClip SFXDartFire; // assign in the editor
     public AudioClip SFXFlechetteFire; // assign in the editor
     public AudioClip SFXIonFire; // assign in the editor
-    //public AudioClip SFXIonOverFire; // assign in the editor
     public AudioClip SFXRapierMiss; // assign in the editor
     public AudioClip SFXRapierHit; // assign in the editor
     public AudioClip SFXPipeMiss; // assign in the editor
@@ -108,8 +106,15 @@ public class WeaponFire : MonoBehaviour {
 	public float justFired; // save
 	public float energySliderClickedTime; // save
 	private Rigidbody playercapRbody;
-	private float cyberWeaponAttackFinished;
+	[HideInInspector]
+	public float cyberWeaponAttackFinished; // save
 	private float wepYRot;
+
+	public static WeaponFire a;
+
+	void Awake() {
+		a = this;
+	}
 
     void Start() {
         damageData = new DamageData();
@@ -899,7 +904,7 @@ public class WeaponFire : MonoBehaviour {
 		}
         if (hm != null && hm.health > 0) {
 			float dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
-			Music.a.inCombat = true;
+			if (hm.isNPC) Music.a.inCombat = true;
 			float linkDistForTargID = 10f;
 			switch (HardwareInventory.a.hardwareVersion[4]) {
 				case 1: linkDistForTargID = 10f; break;
@@ -911,7 +916,7 @@ public class WeaponFire : MonoBehaviour {
 			bool showRange = false;
 			bool showAttitude = false;
 			bool showName = false;
-			if (dmgFinal <= 0) {
+			if (dmgFinal <= 0 && hm.isNPC) {
 				if (HardwareInventory.a.hasHardware[4]) {
 					if (HardwareInventory.a.hardwareVersion[4] > 0) {
 						// Display Range
@@ -932,6 +937,14 @@ public class WeaponFire : MonoBehaviour {
 				}
 				CreateTargetIDInstance(Const.a.stringTable[511], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
 				noDamageIndicator.transform.position = tempHit.transform.position; // center on what we just shot
+				if (hm.aic != null) {
+					if (hm.aic.index == 14) {
+						// Adjust position for hopper origin since it's special and all melty
+						Vector3 adjustment = tempHit.transform.position;
+						adjustment.y += 1f;
+						noDamageIndicator.transform.position = adjustment;
+					}
+				}
 				noDamageIndicator.SetActive(true); // do this regardless of target identifier version to show player that hey, it no workie
 			} else {
 				if (HardwareInventory.a.hasHardware[4]) {
@@ -1048,7 +1061,7 @@ public class WeaponFire : MonoBehaviour {
 			return;
 		}
 		hm.TakeDamage(damageData); //no need to check if damage was done and if we need noDamageIndicator since melee weapons always do damage against all types
-		Music.a.inCombat = true;
+		if (hm.isNPC) Music.a.inCombat = true;
 		if (!silent) {
 			if ((hm.bloodType == HealthManager.BloodType.Red) || (hm.bloodType == HealthManager.BloodType.Yellow) || (hm.bloodType == HealthManager.BloodType.Green)) {
 				SFX.clip = hitflesh;

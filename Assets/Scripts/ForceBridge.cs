@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ForceBridge : MonoBehaviour, IBatchUpdate {
+public class ForceBridge : MonoBehaviour {
     public bool x;
 	public bool y;
 	public bool z;
@@ -16,7 +16,8 @@ public class ForceBridge : MonoBehaviour, IBatchUpdate {
 	private AudioSource SFX;
 	[HideInInspector]
 	public bool lerping; // save
-	private float tickFinished;
+	[HideInInspector]
+	public float tickFinished; // save
 	public float tickTime = 0.05f;
 
 	void Start() {
@@ -29,12 +30,11 @@ public class ForceBridge : MonoBehaviour, IBatchUpdate {
 		lerping = false;
 		tickFinished = PauseScript.a.relativeTime + tickTime + Random.value;
 		if (activated) Activate(true,true);
-		else Deactivate(true);
-		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketA);
+		else Deactivate(true, true);
+		//UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketA);
 	}
 
-	public void BatchUpdate () {
-	}void Update() {
+	void Update() {
 		if (!gameObject.activeSelf) return;
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
 			if (tickFinished < PauseScript.a.relativeTime) {
@@ -91,17 +91,17 @@ public class ForceBridge : MonoBehaviour, IBatchUpdate {
 		transform.localScale = new Vector3(sx,sy,sz);
 	}
 
-	public void Deactivate(bool forceIt) {
+	public void Deactivate(bool forceIt, bool isSilent) {
 		if (!activated && !forceIt) return; // already there
 
-		if (SFX != null && SFXBridgeChange != null) SFX.PlayOneShot(SFXBridgeChange);
+		if (!isSilent && SFX != null && SFXBridgeChange != null) SFX.PlayOneShot(SFXBridgeChange);
 		activated = false;
 		lerping = true;
 	}
 
 	public void Toggle() {
 		if (activated) {
-			Deactivate(false);
+			Deactivate(false, false);
 		} else {
 			Activate(false,false);
 		}

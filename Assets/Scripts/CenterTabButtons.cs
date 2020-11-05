@@ -18,13 +18,13 @@ public class CenterTabButtons : MonoBehaviour {
 	[SerializeField] private float tickTime = 0.5f;
 	[SerializeField] private int numTicks = 14;
 	private bool[] tabNotified;
-	private float tickFinished;
+	private float tickFinished; // Visual only, Time.time controlled
 	private bool[] highlightStatus;
 	private int[] highlightTickCount;
 
 	void Start () {
 		tabNotified = new bool[] {false, false, false, false};
-		tickFinished = PauseScript.a.relativeTime;
+		tickFinished = Time.time;
 		tabNotified = new bool[] {false, false, false, false};
 		highlightStatus = new bool[] {false, false, false, false};
 		highlightTickCount = new int[] {0,0,0,0};
@@ -32,13 +32,13 @@ public class CenterTabButtons : MonoBehaviour {
 
 	void Update () {
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			if (tickFinished < PauseScript.a.relativeTime) {
+			if (tickFinished < Time.time) {
 				for (int i=0;i<4;i++) {
 					if (tabNotified[i]) {
 						ToggleHighlightOnButton(i);
 					}
 				}
-				tickFinished = PauseScript.a.relativeTime + tickTime;
+				tickFinished = Time.time + tickTime;
 			}
 		}
 	}

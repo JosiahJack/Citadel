@@ -11,7 +11,7 @@ public class MaterialFlash : MonoBehaviour {
 	public float timeBetweenFlashes = 0.35f;
 	private MeshRenderer meshR;
 	private bool isFlashing = false;
-	private float flashFinished;
+	private float flashFinished; // Visual only, using Time.time
 	private bool changeDone = false;
 	private bool normal = true;
 
@@ -21,7 +21,7 @@ public class MaterialFlash : MonoBehaviour {
 		if (alternateMat == null) Debug.Log("BUG: MaterialFlash.cs has a null alternate material!  Assign your materials!");
 
 		if (startFlashing) isFlashing = true;
-		flashFinished = PauseScript.a.relativeTime;
+		flashFinished = Time.time;
 		changeDone = false;
 		normal = true;
 		if (!startNormal) {
@@ -35,8 +35,8 @@ public class MaterialFlash : MonoBehaviour {
 			if (Const.a.questData.SelfDestructActivated) isFlashing = true;
 
 			if (isFlashing) {
-				if (flashFinished < PauseScript.a.relativeTime) {
-					flashFinished = PauseScript.a.relativeTime + timeBetweenFlashes;
+				if (flashFinished < Time.time) {
+					flashFinished = Time.time + timeBetweenFlashes;
 					if (normal) {
 						meshR.material = alternateMat;
 						normal = !normal;

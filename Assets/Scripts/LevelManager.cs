@@ -49,11 +49,11 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void PullOutCurrentLevelNPCs() {
-		if (npcsm[currentLevel] != null) npcsm[currentLevel].PullOutNPCs();
+		//if (npcsm[currentLevel] != null) npcsm[currentLevel].PullOutNPCs();
 	}
 
 	public void PutBackCurrentLevelNPCs() {
-		if (npcsm[currentLevel] != null) npcsm[currentLevel].PutBackNPCs();
+		//if (npcsm[currentLevel] != null) npcsm[currentLevel].PutBackNPCs();
 	}
 	/*public void InitializeAllLevels() {
 		PauseScript.a.paused = true;
@@ -143,7 +143,10 @@ public class LevelManager : MonoBehaviour {
 		PlayerMovement pm = prm.playerCapsule.GetComponent<PlayerMovement>();
 		pm.SetAutomapExploredReference(levnum);
 		pm.automapBaseImage.overrideSprite = pm.automapsBaseImages[levnum];
-
+		Music.a.inCombat = false;
+		Music.a.SFXMain.Stop();
+		Music.a.SFXOverlay.Stop();
+		Music.a.levelEntry = true;
 		levels[levnum].SetActive(true); // enable new level
 		prm.playerCurrentLevel = levnum;
 		PutBackCurrentLevelNPCs();
@@ -162,6 +165,9 @@ public class LevelManager : MonoBehaviour {
 			return;
 		}
 		
+		Music.a.inCombat = false;
+		Music.a.SFXMain.Stop();
+		Music.a.SFXOverlay.Stop();
 		levels[currentLevel].SetActive(false); // Unload current level	
 		levels[levnum].SetActive(true); // Load new level
 		currentLevel = levnum; // Set current level to be the new level

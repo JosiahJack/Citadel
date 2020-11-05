@@ -36,7 +36,7 @@ public class TargetID : MonoBehaviour {
 	}
 
 	public void SendDamageReceive(float damage) {
-		if (linkedHM == null) return;
+		if (linkedHM == null || (HardwareInventory.a.hardwareVersion[4] < 3 && (damage > 0f))) return;
 
 		if (damage > linkedHM.maxhealth * 0.75f) {
 			// Severe Damage

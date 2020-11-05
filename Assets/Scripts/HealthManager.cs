@@ -71,8 +71,12 @@ public class HealthManager : MonoBehaviour {
 	[HideInInspector]
 	public bool teleportDone;
 	public TargetID linkedTargetID;
+	[HideInInspector]
+	public bool awakeInitialized = false;
+	[HideInInspector]
+	public bool startInitialized = false;
 
-	void Awake () {
+	public void Awake () {
 		deathDone = false;
 		teleportDone = false;
 		rbody = GetComponent<Rigidbody>();
@@ -102,14 +106,16 @@ public class HealthManager : MonoBehaviour {
 				if (so != null) so.Start();
 			}
 		}
+		awakeInitialized = true;
 	}
 
 	// Put into Start instead of Awake to give Const time to populate from enemy_tables.txt
-	void Start () {
+	public void Start () {
 		if (isNPC) {
 			aic = GetComponent<AIController>();
 			if (aic == null) {
 				Debug.Log("BUG: No AIController script on NPC at + " + transform.position.ToString());
+				startInitialized = true;
 				return;
 			} else {
 				index = aic.index;
@@ -129,15 +135,34 @@ public class HealthManager : MonoBehaviour {
             }
         }
 		if (maxhealth < 1) maxhealth = health;
-		if (actAsCorpseOnly && isNPC && health > 0) StartCoroutine(InitializeCorpseOnly());
+		if (actAsCorpseOnly && isNPC && health > 0) InitializeCorpseOnly();
+		startInitialized = true;
 	}
 
-	public IEnumerator InitializeCorpseOnly() {
-		yield return new WaitForSeconds(0.5f);		
-		tempdd.ResetDamageData(tempdd);
-		tempdd.damage = maxhealth * 2f;
+	void InitializeCorpseOnly() {
+		health = 0;
+		cyberHealth = 0;
 		if (aic != null) { if (aic.SFX != null) aic.SFX.enabled = false; }
-		TakeDamage(tempdd); // harrycarry time, we's dead
+		if (!deathDone) {
+			// use targets targetOnDeath
+			if (!string.IsNullOrWhiteSpace(targetOnDeath)) {
+				UseData ud = new UseData();
+				ud.argvalue = argvalue;
+				TargetIO tio = GetComponent<TargetIO>();
+				if (tio != null) {
+					ud.SetBits(tio);
+				} else {
+					Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
+				}
+				Const.a.UseTargets(ud,targetOnDeath);
+			}
+
+			if (teleportOnDeath) {
+				TeleportAway();
+			}
+
+			NPCDeath(null);
+		}
 	}
 
 	float ApplyAttackTypeAdjustments(float take,DamageData dd) {
@@ -412,9 +437,10 @@ public class HealthManager : MonoBehaviour {
 		if (isNPC && (health > 0f || (cyberEntityIndex >= 0f && cyberHealth > 0f))) {
 			AIController aic = GetComponent<AIController>();
 			if (aic != null) {
-				if (!inCyberSpace) aic.goIntoPain = true;
+				aic.goIntoPain = true;
 				aic.attacker = attacker;
 				if (linkedTargetID != null) linkedTargetID.SendDamageReceive(take);
+				bool goPain = aic.CheckPain(); // setup enemy with NPC
 			}
 		}
 
@@ -714,6 +740,10 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	public void AwakeFromLoad() {
+		if (!awakeInitialized) { Awake(); }
+		if (!startInitialized) { Start(); }
+		//if (!awakeInitialized || !startInitialized) return;
+
 		// Already done this in Load:
 		// hm.health = GetFloatFromString(entries[index],currentline); index++; // how much health we have
 		// hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?

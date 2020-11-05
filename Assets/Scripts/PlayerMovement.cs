@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour {
 	private float walkDeacceleration = 0.1f; // was 0.30f
 	private float walkDeaccelerationBooster = 1f; // was 2f, adjusted player physics material to reduce friction for moving up stairs
 	private float deceleration;
-	private float walkAccelAirRatio = 0.6f;
+	private float walkAccelAirRatio = 0.75f;
 	public GameObject cameraObject;
 	public MouseLookScript mlookScript;
 	public float playerSpeed; // save
@@ -695,7 +695,7 @@ public class PlayerMovement : MonoBehaviour {
 				RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG - already passed rbody.velocity.z into the .y of this Vector2
 
 				// Update the map
-				UpdateAutomap();
+				if (HardwareInventory.a.hasHardware[1]) UpdateAutomap();
 
 				// Set vertical velocity
 				verticalMovement = rbody.velocity.y;
@@ -1064,7 +1064,8 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		if (automapUpdateFinished < PauseScript.a.relativeTime) {
-			if (automapBaseImage.overrideSprite == null) automapBaseImage.overrideSprite = automapsBaseImages[LevelManager.a.currentLevel];
+			if (!automapBaseImage.enabled) automapBaseImage.enabled = true;
+			if (automapBaseImage.overrideSprite != automapsBaseImages[LevelManager.a.currentLevel]) automapBaseImage.overrideSprite = automapsBaseImages[LevelManager.a.currentLevel];
 			// private float camMaxAmount = 0.2548032f;
 			// private float mapWorldMaxN = 85.83999f;
 			// private float mapWorldMaxS = -78.00001f;

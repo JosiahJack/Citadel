@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class PauseScript : MonoBehaviour {
 	public GameObject pauseText;
@@ -15,13 +17,17 @@ public class PauseScript : MonoBehaviour {
 	public GameObject[] enableUIOnPause;
 	public GameObject mainMenu;
 	public GameObject saveDialog;
+	public GameObject hardSaveDialog;
 	public bool onSaveDialog = false;
 	public PlayerMovement pm;
 	[HideInInspector]
 	public float relativeTime;
-	public bool hardSaveQuit = false;
+	public List<AmbientRegistration> ambientRegistry;
 
-	void Awake() {a = this;}
+	void Awake() {
+		a = this;
+		a.ambientRegistry = new List<AmbientRegistration>();
+	}
 
 	void Update () {
 		if (mainMenu == null) {
@@ -85,6 +91,10 @@ public class PauseScript : MonoBehaviour {
 		for (int k=0;k<Const.a.prb.Length;k++) {
 			Const.a.prb[k].Pause();
 		}
+
+		for (int u=0;u<ambientRegistry.Count;u++) {
+			if (ambientRegistry[u].SFX != null) ambientRegistry[u].SFX.Pause();
+		}
 	}
 
 	public void Loading() {
@@ -113,6 +123,10 @@ public class PauseScript : MonoBehaviour {
 			Const.a.prb[k].UnPause();
 		}
 
+		for (int u=0;u<ambientRegistry.Count;u++) {
+			if (ambientRegistry[u].SFX != null) ambientRegistry[u].SFX.UnPause();
+		}
+
 		pm.ConsoleDisable();
 	}
 
@@ -127,16 +141,15 @@ public class PauseScript : MonoBehaviour {
 	public void OpenSaveDialogHard() {
 		if (onSaveDialog) return;
 		if (Const.a.justSavedTimeStamp < Time.time) {
-			hardSaveQuit = true;
 			onSaveDialog = true;
-			saveDialog.SetActive(true);
+			hardSaveDialog.SetActive(true);
 		}
 	}
 		
 	public void ExitSaveDialog() {
 		saveDialog.SetActive(false);
+		hardSaveDialog.SetActive(false);
 		onSaveDialog = false;
-		hardSaveQuit = false;
 	}
 
 	public void SavePause() {
@@ -175,16 +188,17 @@ public class PauseScript : MonoBehaviour {
 		}
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
-		if (hardSaveQuit) { PauseQuitHard(); return; } // Application.Quit();
+		//if (hardSaveQuit) { PauseQuitHard(); return; } // Application.Quit();
 		mainMenu.GetComponent<MainMenuHandler>().GoToFrontPage();
 	}
 
 	public void PauseQuitHard () {
+		mainMenu.SetActive(true);
 		mainMenu.GetComponent<MainMenuHandler>().Quit();
 	}
 
 	public void EnablePauseUI () {
-		if (hardSaveQuit) { mainMenu.SetActive(true); PauseQuitHard(); return; } // Application.Quit();
+		//if (hardSaveQuit) { mainMenu.SetActive(true); PauseQuitHard(); return; } // Application.Quit();
 
 		for (int i=0;i<enableUIOnPause.Length;i++) {
 			enableUIOnPause[i].SetActive(true);
@@ -213,6 +227,10 @@ public class PauseScript : MonoBehaviour {
 		string spath = Application.dataPath + "/Screenshots/" + sname;
 		ScreenCapture.CaptureScreenshot(spath);
 		Const.sprint("Wrote screenshot " + sname,Const.a.allPlayers);
+	}
+
+	public void AddAmbientToRegistry(AmbientRegistration ar) {
+		ambientRegistry.Add(ar);
 	}
 }
 

@@ -19,7 +19,7 @@ public class SearchableItem : MonoBehaviour {
 	public string objectName;
 	[Tooltip("Number of slots.")]
 	public int numSlots = 4;
-	[HideInInspector]
+	//[HideInInspector]
 	public bool searchableInUse;
 	[HideInInspector]
 	public GameObject currentPlayerCapsule;
@@ -53,7 +53,14 @@ public class SearchableItem : MonoBehaviour {
 	public void ResetSearchable(bool wipeContents) {
 		searchableInUse = false;
 		if (wipeContents) {
-			
+			contents[0] = -1;
+			contents[1] = -1;
+			contents[2] = -1;
+			contents[3] = -1;
+			customIndex[0] = -1;
+			customIndex[1] = -1;
+			customIndex[2] = -1;
+			customIndex[3] = -1;
 		}
 	}
 }

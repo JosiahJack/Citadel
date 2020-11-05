@@ -68,6 +68,12 @@ public class MainMenuHandler : MonoBehaviour {
 		FileBrowser.SetDefaultFilter( ".RES" );
 		Const.a.SetVolume();
 		StartCoroutine(CheckDataFiles());
+		if (System.IO.File.Exists(Application.dataPath + "/StreamingAssets/introdone.dat")) {
+			IntroVideo.SetActive(false);	
+			IntroVideoContainer.SetActive(false);
+		} else {
+			System.IO.File.Create(Application.dataPath + "/StreamingAssets/introdone.dat");
+		}
 	}
 
 	IEnumerator CheckDataFiles () {
@@ -78,7 +84,6 @@ public class MainMenuHandler : MonoBehaviour {
 			dataFound = true;
 			Const.a.SetVolume();
 			GoToFrontPage();
-
 			IntroVideo.SetActive(true);	
 		} else {
 			// Fake like we are checking for the files to be there for a quick bit of time
@@ -91,8 +96,13 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	void Update () {
-		// Escape/back button listener
+		// Escape/back button listenerj      
 		if (Input.GetKeyDown(KeyCode.Escape)) {
+			if (savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
+				currentSaveSlot = -1;
+				typingSaveGame = false;
+				saveNameInputField[currentSaveSlot].GetComponentInChildren<InputField>().DeactivateInputField();
+			}
 			if (inCutscene && !CouldNotFindDialogue.activeSelf) {
 				inCutscene = false;
 				IntroVideo.SetActive(false);
@@ -102,7 +112,7 @@ public class MainMenuHandler : MonoBehaviour {
 			GoBack();
 		}
 
-		if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)){ //|| Input.anyKey) {
+		if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.anyKey) {
 			//Debug.Log("Click registered on main menu!");
 			if (IntroVideoContainer.activeSelf && !CouldNotFindDialogue.activeSelf) {
 				inCutscene = false;
@@ -121,9 +131,10 @@ public class MainMenuHandler : MonoBehaviour {
 			StartGame(true);
 		}
 
-		if (Input.GetKeyUp(KeyCode.Return) && savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
+		if (typingSaveGame && Input.GetKeyUp(KeyCode.Return) && savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
+			if (currentSaveSlot < 0) return;
 			string sname = saveNameInputField[currentSaveSlot].GetComponentInChildren<InputField>().text;
-			if (currentSaveSlot != -1 && !string.IsNullOrEmpty(sname)) {
+			if (!string.IsNullOrEmpty(sname)) {
 				//Debug.Log("Calling savegame with name of: " + sname);
 				SaveGame(currentSaveSlot,sname);
 				saveNameInput[currentSaveSlot].SetActive(false);
@@ -237,6 +248,7 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	public void SaveGameEntry (int index) {
+		currentSaveSlot = index;
 		typingSaveGame = true;
 		saveNameInput[index].SetActive(true);
 		saveNamePlaceholder[index].SetActive(true);
@@ -244,7 +256,6 @@ public class MainMenuHandler : MonoBehaviour {
 		tempSaveNameHolder = savePage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text;
 		savePage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text = System.String.Empty;
 		saveNameInputField[index].ActivateInputField();
-		currentSaveSlot = index;
 	}
 
 	public void SaveQuickSaveButton () {
@@ -259,7 +270,7 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	public void LoadGame (int index) {
-		if (loadPage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text == "- unused -") {
+		if (loadPage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text == "- unused -" || loadPage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text == "- unused quicksave -") {
 			Const.sprint("No data to load",Const.a.allPlayers);
 		} else {
 			if (Const.a.freshRun) {
@@ -283,9 +294,6 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 
 		if (returnToPause) {
-			if (Const.a.justSavedTimeStamp < Time.time) {
-				pauseHandler.hardSaveQuit = false;
-			}
 			pauseHandler.EnablePauseUI();
 			ResetPages();
 			this.gameObject.SetActive(false);

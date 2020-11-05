@@ -100,7 +100,7 @@ public class MouseLookScript : MonoBehaviour {
 	public GrenadeInventory playerGrenInv;
 	[HideInInspector]
 	public GameObject currentButton;
-	[HideInInspector]
+	//[HideInInspector]
 	public GameObject currentSearchItem;
 	[HideInInspector]
 	//public GameObject mouseCursor;
@@ -217,6 +217,7 @@ public class MouseLookScript : MonoBehaviour {
 		hm.inCyberSpace = false;
 		inCyberSpace = false;
 		playerCamera.useOcclusionCulling = false;
+		Const.a.decoyActive = false;
 		SFXSource.PlayOneShot(CyberSFX);
 		for (int i=0;i<32;i++) {
 			cameraDistances[i] = 79f; //can't see further than this please.  31 * 2.56 - player radius 0.48 = 78.88f rounded up to be careful..longest line of sight is the crawlway on level 6
@@ -280,6 +281,10 @@ public class MouseLookScript : MonoBehaviour {
 			transform.localPosition = new Vector3(transform.localPosition.x + UnityEngine.Random.Range(shakeForce * -1f,shakeForce),transform.localPosition.y + UnityEngine.Random.Range(shakeForce * -1f,shakeForce),transform.localPosition.z + UnityEngine.Random.Range(shakeForce * -1f,shakeForce));
 		}
 
+		if (Input.GetKeyUp("f9")) {
+			Const.a.Load(7);
+		}
+
         if (PauseScript.a.mainMenu.activeSelf == true) {
 			if (playerCamera.enabled) playerCamera.enabled = false;
 			// for (int i=0;i<32;i++) {
@@ -299,10 +304,6 @@ public class MouseLookScript : MonoBehaviour {
 
 		if (Input.GetKeyUp("f6")) {
 			Const.a.StartSave(7,"quicksave");
-		}
-
-		if (Input.GetKeyUp("f9")) {
-			Const.a.Load(7);
 		}
 
         if (inventoryMode == false) {
@@ -780,7 +781,22 @@ public class MouseLookScript : MonoBehaviour {
 
     void AddWeaponToInventory(int index) {
 		centerTabButtonsControl.TabButtonClickSilent (0,true);
-		MFDManager.a.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,MFDManager.handedness.LeftHand);
+		int numberFoundContents = 0;
+
+		if (currentSearchItem != null) {
+			SearchableItem curSearchScript = currentSearchItem.GetComponent<SearchableItem>();
+			if (curSearchScript != null) {
+				int[] resultContents = {-1,-1,-1,-1};  // create blanked container for search results
+				for (int i=curSearchScript.numSlots - 1;i>=0;i--) {
+					resultContents[i] = curSearchScript.contents[i];
+					//resultCustomIndex[i] = curSearchScript.customIndex[i];
+					if (resultContents[i] > -1) {
+						numberFoundContents++; // if something was found, add 1 to count
+					}
+				}
+			}
+		}
+		if (numberFoundContents == 0) MFDManager.a.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,MFDManager.handedness.LeftHand);
 		centerTabButtonsControl.NotifyToCenterTab(0);
 		MFDManager.a.SetWepIcon(index);
 		MFDManager.a.SetWepText(index);
@@ -1586,13 +1602,38 @@ public class MouseLookScript : MonoBehaviour {
 	}
 	
 	void  SearchObject ( int index  ){
+		bool useFX = true;
 		SearchableItem curSearchScript = currentSearchItem.GetComponent<SearchableItem>();
-		if (curSearchScript.searchableInUse) Debug.Log("Re-Searching same object");
+		if (curSearchScript.searchableInUse) {
+			//Debug.Log("Re-Searching same object");
+			for (int i=0;i<curSearchScript.numSlots;i++) {
+				//Debug.Log("curSearchScript.contents[i]: " + curSearchScript.contents[i].ToString());
+				if (curSearchScript.contents[i] >= 0) {
+					mouseCursor.GetComponent<MouseCursor>().cursorImage = Const.a.useableItemsFrobIcons[curSearchScript.contents[i]];
+					heldObjectIndex = curSearchScript.contents[i];
+					curSearchScript.contents[i] = -1;
+					curSearchScript.customIndex[i] = -1;
+					holdingObject = true;
+					Const.sprint(Const.a.useableItemsNameText[heldObjectIndex] + Const.a.stringTable[319],player);
+					// if (Const.a.InputQuickItemPickup) {
+						// AddItemToInventory(playerCamera.heldObjectIndex);
+						// ResetHeldItem();
+						// ResetCursor();
+						// holdingObject = false;
+					// }
+					MFDManager.a.DisableSearchItemImage(i);
+					useFX = false;
+					// Play frob sound
+					//SFXSource.PlayOneShot(FrobSFX);
+					break;
+				}
+			}
+		} else {
+			// Play search sound
+			SFXSource.PlayOneShot(SearchSFX);
+		}
 		curSearchScript.searchableInUse = true;
 		curSearchScript.currentPlayerCapsule = transform.parent.gameObject;  // Get playerCapsule of player this is attached to
-
-		// Play search sound
-		SFXSource.PlayOneShot(SearchSFX);
 
 		// Search through array to see if any items are in the container
 		int numberFoundContents = 0;
@@ -1611,7 +1652,7 @@ public class MouseLookScript : MonoBehaviour {
 			firstTimeSearch = false;
 			MFDManager.a.OpenTab (4, true, MFDManager.TabMSG.Search, -1,MFDManager.handedness.LeftHand);
 		}
-		MFDManager.a.SendSearchToDataTab(curSearchScript.objectName, numberFoundContents, resultContents, resultCustomIndex,currentSearchItem.transform.position,curSearchScript);
+		MFDManager.a.SendSearchToDataTab(curSearchScript.objectName, numberFoundContents, resultContents, resultCustomIndex,currentSearchItem.transform.position,curSearchScript, useFX);
 		ForceInventoryMode();
 	}
 

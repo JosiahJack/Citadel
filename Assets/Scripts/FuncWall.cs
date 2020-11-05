@@ -102,6 +102,7 @@ public class FuncWall : MonoBehaviour {
 					rbody.WakeUp();
 					dist = speed * Time.deltaTime;
 					tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
+					//Debug.Log("Func_Wall MovePosition to tempVec: " + tempVec.ToString());
 					rbody.MovePosition(tempVec);
 					if (Vector3.Distance(transform.position,goalPosition) <= 0.04f || startTime < PauseScript.a.relativeTime) {
 						currentState = FuncStates.Start;
@@ -121,6 +122,7 @@ public class FuncWall : MonoBehaviour {
 					rbody.WakeUp();
 					dist = speed * Time.deltaTime;
 					tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
+					//Debug.Log("Func_Wall MovePosition to tempVec: " + tempVec.ToString());
 					rbody.MovePosition(tempVec);
 					if (Vector3.Distance(transform.position,goalPosition) <= 0.04f || startTime < PauseScript.a.relativeTime) {
 						currentState = FuncStates.Target;

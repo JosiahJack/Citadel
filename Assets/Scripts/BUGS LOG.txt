@@ -1,67 +1,27 @@
-cut bars on broken sci vent
-Change mouse cursor to normal in inventory mode when OverGUI bit is on
-Searching body again should pick up objects in the body
-decoy software doesn't distract cyber enemies
-Lev2 cpu screen still still still doesn't display
+TRIAGE::
+===========================================================================
+CHANGES/MINOR ADDS:
+[BACK] button for log text reader
 
-Grounded fails when above secret hall lev1
-close button for search doesn't display sometimes
-2nd close button displays on top of keypad close button
-keypad close button and search close buttons aren't in exact same spot
-no damage indicator starts at base of hopper
-audiolog doesn't pause playback when game is paused
-when game is paused, change mousecursor out for normal
-blocked by shodan level security is not tethered
-blocked by shodan level security does not change back to weapon when done
-shooting enemy doesn't always agro them, keep wandering
+VISUAL:
 
-Build Size
-324MB - now 316MB - now 317MB, now 290MB, now 289MB (still), now 404MB
+LOW Bugs:
 
-Build Memory Usage
-2.3GB RAM - now 1.6GB, now 1.4GB, now 1.1GB, now 1.5GB
+MED Bugs:
+searching with quick item pickup enabled causes mouselook to still have bit set to true for holdingObject
 
-Ambient volumes:
-airhiss				0.05
-ambient_frogs		0.1 (needs randomized, NOT looped)
-clicker				0.2
-compressor			0.4
-dishwasher			0.2
-drip_amb			0.5
-fan1				0.3
-generator_gas		0.3
-gurgle				0.3
-icemaker			0.6
-intake				0.2
-lathe				0.4
-lava2				0.4
-liquid_bubble		1.0
-machgear_loop		0.4
-machine_ambience	1.0
-machine_go			0.6
-machine_humamb7		1.0
-machine_humlonoise	0.4
-machine_loop1		0.4
-machine_loop2		0.4
-machinea1			0.4
-machinevat_loop		0.8
-pipewater_loop		0.5
-powerloom			0.3
-pump				0.2
-pump2				0.05
-rain				0.4
-steam_loop			0.05
-washing_machine		0.5
+CRIT Bugs:
 
 
 
 
 
-
-
-
-
-
+Release prep
+Blank out sav files with "- unused -" and quicksave with "- unused quicksave -" without quotes of course
+set ng.dat to False False
+Delete .RES files
+Delete introdone.dat
+Add "Screenshots" folder next to StreamingAssets
 
 
 Updates candidate for consolidation under MFDManager or other:
@@ -85,5 +45,3 @@ GrenadeCountsText (diddo)
 Scripts candidate for removal
 Billboard
 UpdateManager
-
-Was using Hidden/GGX-DeferredShading for the Defered->Shader under Graphics Settings - specular now working with default shader!

@@ -130,6 +130,10 @@ public class SoftwareInventory : MonoBehaviour {
 	}
 
 	public void UseDecoy() {
+		if (Const.a.decoyActive) {
+			Const.sprint(Const.a.stringTable[537],Const.a.player1);
+			return;
+		}
 		if (softVersions[4] <= 0) {
 			softs[4].SetActive(false); // turn the button off now that we are out
 			return; // out of decoys

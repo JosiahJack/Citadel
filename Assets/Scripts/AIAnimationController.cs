@@ -16,7 +16,8 @@ public class AIAnimationController : MonoBehaviour {
 	public bool playDyingAnim = true;
 	public float minWalkSpeedToAnimate = 0.32f;
 	private bool checkVisWithSMR = false;
-	private float animSwapFinished;
+	[HideInInspector]
+	public float animSwapFinished; // save
 	private float animSwapFinishedDelay = 0.5f;
 
 	void Start () {

@@ -285,6 +285,8 @@ public class Const : MonoBehaviour {
 	[HideInInspector]
 	public float mapTileMinY = -1016; // bottom right corner
 	//private float mapTileMaxX = 1016; // bottom right corner
+	[HideInInspector]
+	public bool decoyActive = false;
 
 	//Instance container variable
 	public static Const a;
@@ -1147,7 +1149,7 @@ public class Const : MonoBehaviour {
 		WeaponInventory wi = playerInventory.GetComponent<WeaponInventory>();
 		WeaponAmmo wa = playerInventory.GetComponent<WeaponAmmo>();
 		WeaponCurrent wc = playerInventory.GetComponent<WeaponCurrent>();
-		WeaponFire wf = pp.playerWeapon; // surprisingly the only reference to WeaponFire
+		WeaponFire wf = pp.playerWeapon;
 		GrenadeCurrent gc = playerInventory.GetComponent<GrenadeCurrent>();
 		GrenadeInventory gi = playerInventory.GetComponent<GrenadeInventory>();
 		PatchCurrent pc = playerInventory.GetComponent<PatchCurrent>();
@@ -1297,6 +1299,7 @@ public class Const : MonoBehaviour {
 		line += splitChar + wc.reloadLerpValue.ToString("0000.00000");
 		line += splitChar + wc.lerpStartTime.ToString("0000.00000");
 		line += splitChar + wc.targetY.ToString("0000.00000");
+		line += splitChar + wf.waitTilNextFire.ToString("0000.00000");
 		line += splitChar + wf.overloadEnabled.ToString();
 		line += splitChar + wf.sparqSetting.ToString("0000.00000");
 		line += splitChar + wf.ionSetting.ToString("0000.00000");
@@ -1306,6 +1309,7 @@ public class Const : MonoBehaviour {
 		line += splitChar + wf.recoiling.ToString();
 		line += splitChar + wf.justFired.ToString("0000.00000");
 		line += splitChar + wf.energySliderClickedTime.ToString("0000.00000");
+		line += splitChar + wf.cyberWeaponAttackFinished.ToString("0000.00000");
 		line += splitChar + gc.grenadeCurrent.ToString();
 		line += splitChar + gc.grenadeIndex.ToString();
 		line += splitChar + gc.nitroTimeSetting.ToString("0000.00000");
@@ -1376,7 +1380,8 @@ public class Const : MonoBehaviour {
 		line += splitChar + mfd.logLevelsFolder.activeSelf.ToString();
 		line += splitChar + mfd.logFinished.ToString("0000.00000");
 		line += splitChar + mfd.logActive.ToString();
-		line += splitChar + mfd.logType.ToString(); // int
+		line += splitChar + mfd.logType.ToString();
+		line += splitChar + mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished.ToString("0000.00000");
 		return line;
 	}
 
@@ -1421,20 +1426,22 @@ public class Const : MonoBehaviour {
 
 	// Generic health info string
 	string GetHealthManagerSaveData(HealthManager hm) {
-		int lineSlotsCount_GetHealthManagerSaveData = 0;
+		//if (hm.isNPC) {
+		if (!hm.awakeInitialized) hm.Awake();
+		if (!hm.startInitialized) hm.Start();
+		//}
 		string line = System.String.Empty;
 		if (hm != null) {
-			line = hm.health.ToString("0000.00000"); lineSlotsCount_GetHealthManagerSaveData++; // how much health we have
-			line += splitChar + hm.cyberHealth.ToString("0000.00000"); lineSlotsCount_GetHealthManagerSaveData++; // how much health we have
-			line += splitChar + hm.deathDone.ToString(); lineSlotsCount_GetHealthManagerSaveData++; // bool - are we dead yet?
-			line += splitChar + hm.god.ToString(); lineSlotsCount_GetHealthManagerSaveData++; // are we invincible? - we can save cheats?? OH WOW!
-			line += splitChar + hm.teleportDone.ToString(); lineSlotsCount_GetHealthManagerSaveData++; // did we already teleport?
+			line = hm.health.ToString("0000.00000"); // how much health we have
+			line += splitChar + hm.cyberHealth.ToString("0000.00000"); // how much health we have
+			line += splitChar + hm.deathDone.ToString(); // bool - are we dead yet?
+			line += splitChar + hm.god.ToString(); // are we invincible? - we can save cheats?? OH WOW!
+			line += splitChar + hm.teleportDone.ToString(); // did we already teleport?
 		} else {
 			UnityEngine.Debug.Log("HealthManager missing on savetype of HealthManager!");
 			//line = "0000.00000|False|False|False";
 			line = "noHM!";
 		}
-		//UnityEngine.Debug.Log("lineSlotsCount_GetHealthManagerSaveData: " + lineSlotsCount_GetHealthManagerSaveData.ToString());
 		return line;
 	}
 
@@ -1456,6 +1463,8 @@ public class Const : MonoBehaviour {
 		AIController aic = go.GetComponent<AIController>();
 		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>();
 		if (aic != null) {
+			if (!aic.startInitialized) aic.Start();
+
 			s2.Append(aic.index.ToString());
 			s2.Append(splitChar);
 			//line = aic.index.ToString(); // int - NPC const lookup table index for instantiating
@@ -1608,7 +1617,8 @@ public class Const : MonoBehaviour {
 		}
 		if (aiac != null) {
 			s2.Append(splitChar); s2.Append(aiac.currentClipPercentage.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aiac.currentClipPercentage.ToString(aiac.dying.ToString()));
+			s2.Append(splitChar); s2.Append(aiac.dying.ToString());
+			s2.Append(splitChar); s2.Append(aiac.animSwapFinished.ToString("0000.00000"));
 			//line += splitChar + aiac.currentClipPercentage.ToString("0000.00000"); // float
 			//line += splitChar + aiac.dying.ToString(); // bool
 		}
@@ -1678,6 +1688,7 @@ public class Const : MonoBehaviour {
 		if (fb != null) {
 			line = fb.activated.ToString(); // bool - is the bridge on?
 			line += splitChar + fb.lerping.ToString(); // bool - are we currently lerping one way or tother
+			line += splitChar + fb.tickFinished.ToString("0000.00000"); // float - time before firing targets
 		} else {
 			UnityEngine.Debug.Log("ForceBridge missing on savetype of ForceBridge!");
 		}
@@ -1694,6 +1705,7 @@ public class Const : MonoBehaviour {
 			line += splitChar + bs.active.ToString(); // bool - is the switch flashing?
 			line += splitChar + bs.alternateOn.ToString(); // bool - is the flashing material on?
 			line += splitChar + bs.delayFinished.ToString("0000.00000"); // float - time before firing targets
+			line += splitChar + bs.tickFinished.ToString("0000.00000"); // float - time before firing targets
 		} else {
 			UnityEngine.Debug.Log("ButtonSwitch missing on savetype of ButtonSwitch!");
 		}
@@ -1931,6 +1943,18 @@ public class Const : MonoBehaviour {
 		return line;
 	}
 
+	string SaveLogicTimerData(GameObject go) {
+		string line = System.String.Empty;
+		LogicTimer lt = go.GetComponent<LogicTimer>();
+		if (lt != null) {
+			line = lt.intervalFinished.ToString("0000.00000"); // float
+		} else {
+			UnityEngine.Debug.Log("LogicTimer missing on savetype of LogicTimer!");
+		}
+		//1
+		return line;
+	}
+
 	void FindAllSaveObjectsGOs(List<GameObject> gos) {
 		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
 		for (int i=0;i<allParents.Count;i++) {
@@ -1954,7 +1978,7 @@ public class Const : MonoBehaviour {
 	public void Save(int saveFileIndex,string savename) {
 		//Stopwatch saveTimer = new Stopwatch();
 		//saveTimer.Start();
-		string[] saveData = new string[8000]; // Found 2987 saveable objects on main level - should be enough for any instantiated dropped items...maybe
+		string[] saveData = new string[16000]; // Found 2987 saveable objects on main level - should be enough for any instantiated dropped items...maybe
 		string line;
 		int i,j;
 		int index = 0;
@@ -1989,6 +2013,7 @@ public class Const : MonoBehaviour {
 		int numGravPads = 0;
 		int numChargeStations = 0;
 		int numLights = 0;
+		int numTimers = 0;
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 		FindAllSaveObjectsGOs(saveableGameObjects);
 
@@ -2216,6 +2241,7 @@ public class Const : MonoBehaviour {
 				case SaveObject.SaveableType.GravPad: numGravPads++;  line += SaveGravLiftPadTextureData(saveableGameObjects[i]); break;
 				case SaveObject.SaveableType.ChargeStation: numChargeStations++;  line += SaveChargeStationData(saveableGameObjects[i]); break;
 				case SaveObject.SaveableType.Light: numLights++;  line += SaveLightAnimationData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.LTimer: numTimers++; line += SaveLogicTimerData(saveableGameObjects[i]); break;
 				default: numTransforms++; break; // we already did the plain ol transform data first up above
 			}
 			saveData[index] = line; // take this objects data and add it to the array
@@ -2249,6 +2275,7 @@ public class Const : MonoBehaviour {
 		// UnityEngine.Debug.Log("Number of GravityPads: " + numGravPads.ToString());
 		// UnityEngine.Debug.Log("Number of ChargeStations: " + numChargeStations.ToString());
 		// UnityEngine.Debug.Log("Number of Lights: " + numLights.ToString());
+		// UnityEngine.Debug.Log("Number of LogicTimers: " + numTimers.ToString());
 
 		// Write to file
 		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt");
@@ -2447,7 +2474,7 @@ public class Const : MonoBehaviour {
 		hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
 		hm.god = GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
 		hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport?
-		//hm.AwakeFromLoad();  Nothing done fore isPlayer
+		//hm.AwakeFromLoad();  Nothing done for isPlayer
 		GUIState.ButtonType bt = (GUIState.ButtonType) Enum.Parse(typeof(GUIState.ButtonType), entries[index]);
 		if (Enum.IsDefined(typeof(GUIState.ButtonType),bt)) {
 			GUIState.a.overButtonType = bt;
@@ -2455,7 +2482,7 @@ public class Const : MonoBehaviour {
 		GUIState.a.overButton = GetBoolFromString(entries[index]); index++;
 		for (j=0;j<7;j++) { wi.weaponInventoryIndices[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
 		for (j=0;j<7;j++) { wi.weaponInventoryAmmoIndices[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		for (j=0;j<7;j++) { wi.weaponInventoryText[j] = wi.weaponInvTextSource[(wi.weaponInventoryIndices[j] - 36)]; } // derived from the above
+		//for (j=0;j<7;j++) { wi.weaponInventoryText[j] = wi.weaponInvTextSource[(WeaponFire.Get16WeaponIndexFromConstIndex(wi.weaponInventoryIndices[j]))]; } // derived from the above
 		wi.numweapons = GetIntFromString(entries[index],currentline,"savegame",index); index++;
 		for (j=0;j<16;j++) { wa.wepAmmo[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
 		for (j=0;j<16;j++) { wa.wepAmmoSecondary[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
@@ -2475,6 +2502,7 @@ public class Const : MonoBehaviour {
 		wc.reloadLerpValue = GetFloatFromString(entries[index],currentline); index++;
 		wc.lerpStartTime = GetFloatFromString(entries[index],currentline); index++;
 		wc.targetY = GetFloatFromString(entries[index],currentline); index++;
+		wf.waitTilNextFire = GetFloatFromString(entries[index],currentline); index++;
 		wf.overloadEnabled = GetBoolFromString(entries[index]); index++;
 		wf.sparqSetting = GetFloatFromString(entries[index],currentline); index++;
 		wf.ionSetting = GetFloatFromString(entries[index],currentline); index++;
@@ -2484,6 +2512,7 @@ public class Const : MonoBehaviour {
 		wf.recoiling = GetBoolFromString(entries[index]); index++;
 		wf.justFired = GetFloatFromString(entries[index],currentline); index++;
 		wf.energySliderClickedTime = GetFloatFromString(entries[index],currentline); index++;
+		wf.cyberWeaponAttackFinished = GetFloatFromString(entries[index],currentline); index++;
 		gc.grenadeCurrent = GetIntFromString(entries[index],currentline,"savegame",index); index++;
 		gc.grenadeIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
 		gc.nitroTimeSetting = GetFloatFromString(entries[index],currentline); index++;
@@ -2564,7 +2593,8 @@ public class Const : MonoBehaviour {
 		mfd.logLevelsFolder.SetActive(GetBoolFromString(entries[index])); index++;
 		mfd.logFinished = GetFloatFromString(entries[index],currentline); index++;
 		mfd.logActive = GetBoolFromString(entries[index]); index++;
-		mfd.logType = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int
+		mfd.logType = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+		mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished = GetFloatFromString(entries[index],currentline); index++;
 	}
 
 	// int GetNumLinesExpectedFromSaveTypeInSavefile(SaveObject.SaveableType t) {
@@ -2636,7 +2666,7 @@ public class Const : MonoBehaviour {
 		if (currentGameObject.transform.localPosition != tempvec) {
 			currentGameObject.transform.localPosition = tempvec;
 		}
-		Vector3 tempV = currentGameObject.transform.localPosition;
+		//Vector3 tempV = currentGameObject.transform.localPosition;
 
 		// Get rotation
 		readFloatx = GetFloatFromString(entries[index],currentline); index++;
@@ -2813,16 +2843,17 @@ public class Const : MonoBehaviour {
 					if (aiac != null) {
 						aiac.currentClipPercentage = GetFloatFromString(entries[index],currentline); index++; // float
 						aiac.dying = GetBoolFromString(entries[index]); index++; // bool
+						aiac.animSwapFinished = GetFloatFromString(entries[index],currentline); index++; // float
 						if (!aic.ai_dead) {
 							if (aiac.anim != null) aiac.anim.speed = 1f;
 						}
 					} else {
 						index += 2;
 					}
-					if (so.levelParentID >= 0 && so.levelParentID < 14) {
-						currentGameObject.transform.SetParent(LevelManager.a.npcsm[so.levelParentID].transform);
-						currentGameObject.transform.localPosition = tempV;
-					}
+					// if (so.levelParentID >= 0 && so.levelParentID < 14) {
+						// currentGameObject.transform.SetParent(LevelManager.a.npcsm[so.levelParentID].transform);
+						// currentGameObject.transform.localPosition = tempV;
+					// }
 				} else {
 					index += 11;
 				}
@@ -2907,6 +2938,7 @@ public class Const : MonoBehaviour {
 				if (fb != null) {
 					fb.activated = GetBoolFromString(entries[index]); index++; // bool - is the bridge on?
 					fb.lerping = GetBoolFromString(entries[index]); index++; // bool - are we currently lerping one way or tother
+					fb.tickFinished = GetFloatFromString(entries[index],currentline); index++; // float - time before thinking
 				} else {
 					index += 2;
 				}
@@ -2919,6 +2951,7 @@ public class Const : MonoBehaviour {
 					bs.active = GetBoolFromString(entries[index]); index++; // bool - is the switch flashing?
 					bs.alternateOn = GetBoolFromString(entries[index]); index++; // bool - is the flashing material on?
 					bs.delayFinished = GetFloatFromString(entries[index],currentline); index++; // float - time before firing targets
+					bs.tickFinished = GetFloatFromString(entries[index],currentline); index++; // float - time before thinking
 				} else {
 					index += 4;
 				}
@@ -3099,6 +3132,8 @@ public class Const : MonoBehaviour {
 
 	public void Load(int saveFileIndex) {
 		loadingScreen.SetActive(true);
+		MFDManager.a.TabReset(true);
+		MFDManager.a.TabReset(false);
 		StartCoroutine(Const.a.LoadRoutine(saveFileIndex));
 	}
 
@@ -3109,7 +3144,8 @@ public class Const : MonoBehaviour {
 		PauseScript.a.mainMenu.SetActive(false);
 		PauseScript.a.PauseEnable();
 		PauseScript.a.Loading();
-		LevelManager.a.PutBackCurrentLevelNPCs();
+		//LevelManager.a.PutBackCurrentLevelNPCs();
+		//Physics.SyncTransforms();
 		yield return null;
 		player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().enabled = false;
 		if (saveFileIndex < 0) {
@@ -3251,6 +3287,7 @@ public class Const : MonoBehaviour {
 			if (currentline != 7) UnityEngine.Debug.Log("ERROR: currentline wasn't 7 before iterating through saveObjects!");
 			//int[] lookupList = new int[(numSaveablesFromSavefile-currentline)];
 			//SaveObject[] sos = new SaveObject[saveableGameObjects.Count];
+			yield return null;
 			int[] readIDs = new int[(numSaveablesFromSavefile-currentline)];
 			// get the existing IDs
 			 // for (int i=currentline;i<saveableGameObjects.Count;i++) {
@@ -3300,8 +3337,9 @@ public class Const : MonoBehaviour {
 			//UnityEngine.Debug.Log("Loading done!");
 		}
 		player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().enabled = true;
-		LevelManager.a.PullOutCurrentLevelNPCs();
+		//LevelManager.a.PullOutCurrentLevelNPCs();
 		yield return null;
+		//Physics.SyncTransforms();
 		loadingScreen.SetActive(false);
 		PauseScript.a.PauseDisable();
 		sprint(stringTable[197],allPlayers); // Loading...Done!
@@ -3493,12 +3531,6 @@ public class Const : MonoBehaviour {
 	}
 
 	public static float AngleInDeg(Vector3 vec1, Vector3 vec2) { return ((Mathf.Atan2(vec2.y - vec1.y, vec2.x - vec1.x)) * (180 / Mathf.PI)); }
-	/*
-	public void UseTargets (UseData ud, GameObject[] targets) {
-		for (int i = 0; i < targets.Length; i++) {
-			if (targets [i] != null) targets [i].SendMessageUpwards ("Targetted", ud);
-		}
-	}*/
 
 	public void UseTargets (UseData ud, string targetname) {
 		// Old method used SendMessage but this is horribly slow and does not give as much control
@@ -3512,18 +3544,19 @@ public class Const : MonoBehaviour {
 			return;
 		}
 
-		if (ud.bitsSet == false) UnityEngine.Debug.Log("BUG: calling UseTargets without first setting bits on the UseData struct.  Owner:  " + ud.owner.ToString());
+		UseData tempUD = new UseData();
 		float numtargetsfound = 0;
 		// Find each gameobject with matching targetname in the register, then call Use for each
 		for (int i=0;i<TargetRegister.Length;i++) {
 			if (TargetnameRegister[i] == targetname) {
 				if (TargetRegister[i] != null) {
 					numtargetsfound++;
-					if (ud.GOSetActive && !TargetRegister[i].activeSelf) TargetRegister[i].SetActive(true); //added activeSelf bit to keep from spamming SetActive when running targets through a trigger_multiple
-					if (ud.GOSetDeactive && TargetRegister[i].activeSelf) TargetRegister[i].SetActive(false); // diddo for activeSelf to prevent spamming SetActive
-					if (ud.GOToggleActive) TargetRegister[i].SetActive(!TargetRegister[i].activeSelf); // if I abuse this with a trigger_multiple someone should shoot me
+					tempUD.CopyBitsFromUseData(ud);
+					if (tempUD.GOSetActive && !TargetRegister[i].activeSelf) TargetRegister[i].SetActive(true); //added activeSelf bit to keep from spamming SetActive when running targets through a trigger_multiple
+					if (tempUD.GOSetDeactive && TargetRegister[i].activeSelf) TargetRegister[i].SetActive(false); // diddo for activeSelf to prevent spamming SetActive
+					if (tempUD.GOToggleActive) TargetRegister[i].SetActive(!TargetRegister[i].activeSelf); // if I abuse this with a trigger_multiple someone should shoot me
 					TargetIO tio = TargetRegister[i].GetComponent<TargetIO>();
-					tio.Targetted(ud);
+					tio.Targetted(tempUD);
 				} else {
 					UnityEngine.Debug.Log("WARNING: null TargetRegister GameObject linked to targetname of " + targetname + ". Could not run Targetted.");
 				}

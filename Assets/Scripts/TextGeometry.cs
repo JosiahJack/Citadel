@@ -5,6 +5,15 @@ using UnityEngine.UI;
 
 public class TextGeometry : MonoBehaviour {
 	void Start () {
-		GetComponent<Text> ().font.material.mainTexture.filterMode = FilterMode.Point;
+		Text txt = GetComponent<Text>();
+		if (txt != null) {
+			if (txt.font != null) {
+				if (txt.font.material != null) {
+					if (txt.font.material.mainTexture != null) {
+						txt.font.material.mainTexture.filterMode = FilterMode.Point;
+					}
+				}
+			}
+		}
 	}
 }

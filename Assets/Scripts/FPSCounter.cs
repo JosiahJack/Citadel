@@ -12,7 +12,7 @@ public class FPSCounter : MonoBehaviour {
 	private float fps;
 	private string textString;
 	private Text text;
-	private float tickFinished;
+	private float tickFinished; // Visual only, Time.time controlled
 	public float tickSecs = 0.1f;
 	private int count;
 	private float thousand = 1000f;

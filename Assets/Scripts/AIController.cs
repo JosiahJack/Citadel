@@ -220,6 +220,9 @@ public class AIController : MonoBehaviour {
 	private PlayerMovement pm;
 	public RectTransform npcAutomapOverlay;
 	public Image npcAutomapOverlayImage;
+	[HideInInspector]
+	public bool startInitialized = false;
+	private HealthManager enemyHM;
 
 	public void Tranquilize() {
 		// Check against percent chance (disruptability) of getting tranq'ed
@@ -228,7 +231,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	// Initialization and find components
-	void Start () {
+	public void Start () {
         rbody = GetComponent<Rigidbody>();
 		if (rbody.isKinematic) rbody.isKinematic = false;
 
@@ -244,11 +247,20 @@ public class AIController : MonoBehaviour {
 		capsuleCollider = GetComponent<CapsuleCollider>();
         if (searchColliderGO != null) searchColliderGO.SetActive(false);
 		currentDestination = sightPoint.transform.position;
-		if (meleeDamageColliders.Length > 0) StartCoroutine(DisableMeleeColliders());
+		if (meleeDamageColliders.Length > 0) {
+			for (int i = 0; i < meleeDamageColliders.Length; i++) {
+				if (meleeDamageColliders[i] != null) {
+					if (meleeDamageColliders[i].activeSelf) {
+						meleeDamageColliders[i].SetActive(false);
+					}
+				}
+			}
+		}
 
         currentState = Const.aiState.Idle;
 		currentWaypoint = 0;
 		enemy = null;
+		enemyHM = null;
 		firstSighting = true;
 		inSight = false;
 		goIntoPain = false;
@@ -316,19 +328,7 @@ public class AIController : MonoBehaviour {
 		if (Const.a.difficultyCombat >= 3) {
 			huntTime *= 2f; // better memory on hardest Combat difficulty
 		}
-	}
-
-	public IEnumerator DisableMeleeColliders() {
-		yield return new WaitForSeconds(0.2f);
-		if (meleeDamageColliders.Length > 0) {
-			for (int i = 0; i < meleeDamageColliders.Length; i++) {
-				if (meleeDamageColliders[i] != null) {
-					if (meleeDamageColliders[i].activeSelf) {
-						meleeDamageColliders[i].SetActive(false); // turn off melee colliders, give a little time to register SaveObject
-					}
-				}
-			}
-		}
+		startInitialized = true;
 	}
 
 	void AI_Face(Vector3 goalLocation) {
@@ -390,6 +390,26 @@ public class AIController : MonoBehaviour {
 			raycastingTickFinished = PauseScript.a.relativeTime + raycastingTick;
 			inSight = CheckIfPlayerInSight();
 			if (enemy != null) {
+				// Check if enemy health drops to 0
+				if (enemyHM == null) enemyHM = GetComponent<HealthManager>();
+				if (enemyHM != null) {
+					if (moveType == Const.aiMoveType.Cyber) {
+						if (enemyHM.cyberHealth <= 0) {
+							currentState = Const.aiState.Idle;
+							enemy = null;
+							enemyHM = null;
+						}
+					} else {
+						if (enemyHM.health <= 0) {
+							wandering = true; // enemy is dead, let's wander around aimlessly now
+							currentState = Const.aiState.Walk;
+							enemy = null;
+							enemyHM = null;
+						}
+					}
+				}
+
+				// Enemy still has health
 				enemyInFrontChecks(enemy);
 				rangeToEnemy = Vector3.Distance(enemy.transform.position, sightPoint.transform.position);
 			} else {
@@ -432,6 +452,7 @@ public class AIController : MonoBehaviour {
 				if (!ai_dying && !ai_dead) {
 					ai_dying = true; //no going back
 					currentState = Const.aiState.Dying; //start to collapse in a heap, melt, explode, etc.
+					Dying();
 				}
 			}
 		}
@@ -487,16 +508,20 @@ public class AIController : MonoBehaviour {
 		}
 	}
 
-	bool CheckPain() {
+	public bool CheckPain() {
 		if (asleep) return false;
 
 		if (goIntoPain && timeTillPainFinished < PauseScript.a.relativeTime) {
-			currentState = Const.aiState.Pain;
+			if (moveType != Const.aiMoveType.Cyber) currentState = Const.aiState.Pain;
 			if (attacker != null) {
 				if (timeTillEnemyChangeFinished < PauseScript.a.relativeTime) {
 					timeTillEnemyChangeFinished = PauseScript.a.relativeTime + changeEnemyTime;
 					enemy = attacker; // Switch to whoever just attacked us
-					lastKnownEnemyPos = enemy.transform.position;
+					if (enemy != null) {
+						enemyHM = enemy.GetComponent<HealthManager>();
+						lastKnownEnemyPos = enemy.transform.position;
+						currentDestination = enemy.transform.position;
+					}
 				}
 			}
 			goIntoPain = false;
@@ -592,10 +617,18 @@ public class AIController : MonoBehaviour {
 	void Run() {
 		if (CheckPain()) return; // Go into pain if we just got hurt, data is sent by the HealthManager
 		if (asleep) return;
+		if (enemy == null) {
+			currentState = Const.aiState.Idle;
+			return;
+		}
         if (inSight) {
-			targettingPosition = enemy.transform.position;
-			currentDestination = enemy.transform.position;
-			if (moveType == Const.aiMoveType.Cyber) {
+			//if (enemy == null) {
+				//inSight = false;
+				//return;
+			//}
+			if (enemy != null) targettingPosition = enemy.transform.position;
+			if (enemy != null) currentDestination = enemy.transform.position;
+			if (moveType == Const.aiMoveType.Cyber && enemy != null) {
 				pm = enemy.GetComponent<PlayerMovement>();
 				if (pm != null) targettingPosition = pm.cameraObject.transform.position;
 			}
@@ -640,7 +673,7 @@ public class AIController : MonoBehaviour {
 			}
 
 			// enemy still far away and turned to within angle to move, then move
-			if ((moveType != Const.aiMoveType.None) && (Vector3.Distance(sightPoint.transform.position, enemy.transform.position) > 1.28) && tranquilizeFinished < PauseScript.a.relativeTime) {
+			if ((moveType != Const.aiMoveType.None) && (rangeToEnemy > 1.28) && tranquilizeFinished < PauseScript.a.relativeTime) {
 				//if (WithinAngleToTarget()) rbody.AddForce(transform.forward * runSpeed);
 				if (WithinAngleToTarget()) {
 					if (hopOnRun) {
@@ -664,12 +697,13 @@ public class AIController : MonoBehaviour {
 				
 			}
 
-            lastKnownEnemyPos = enemy.transform.position;
+            if (enemy != null) lastKnownEnemyPos = enemy.transform.position;
         } else {
             if (huntFinished > PauseScript.a.relativeTime) {
                 Hunt();
             } else {
                 enemy = null;
+				enemyHM = null;
 				wandering = true; // magically look like we are still searching maybe?  Sometimes!
 				wanderFinished = PauseScript.a.relativeTime - 1f;
                 currentState = Const.aiState.Walk;
@@ -905,6 +939,15 @@ public class AIController : MonoBehaviour {
 							beachball.transform.position = gunPoint.transform.position;
 							beachball.transform.forward = tempVec.normalized;
 							beachball.SetActive(true);
+							GrenadeActivate ga = beachball.GetComponent<GrenadeActivate>();
+							if (ga != null) {
+								int typ = 7; // frag
+								if (attack2ProjectileLaunchedType == Const.PoolType.GrenadeFragLive) typ = 7; // Fragmentation Grenade
+								if (attack2ProjectileLaunchedType == Const.PoolType.ConcussionLive) typ = 8; // Concussion Grenade
+								if (attack2ProjectileLaunchedType == Const.PoolType.EMPLive) typ = 9; // EMP Grenade
+								if (attack2ProjectileLaunchedType == Const.PoolType.GasLive) typ = 13; // Gas Grenade
+								ga.Activate(typ,null);
+							}
 							Vector3 shove = (beachball.transform.forward * attack2projectilespeed);
 							shove += rbody.velocity; // add in the enemy's velocity to the projectile (in case they are riding on a moving platform or something - wait I don't have those!
 							beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
@@ -946,7 +989,7 @@ public class AIController : MonoBehaviour {
 			float take = Const.a.GetDamageTakeAmount(dd);
 			dd.other = gameObject;
 			dd.damage = take;
-			HealthManager hm = new HealthManager();
+			HealthManager hm = null;
 			if (dd == null) return;
 			float damageOriginal = dd.damage;
 			Collider[] colliders = Physics.OverlapSphere(sightPoint.transform.position, attack3Radius);
@@ -1026,6 +1069,15 @@ public class AIController : MonoBehaviour {
 							beachball.transform.position = gunPoint2.transform.position;
 							beachball.transform.forward = tempVec.normalized;
 							beachball.SetActive(true);
+							GrenadeActivate ga = beachball.GetComponent<GrenadeActivate>();
+							if (ga != null) {
+								int typ = 7; // frag
+								if (attack2ProjectileLaunchedType == Const.PoolType.GrenadeFragLive) typ = 7; // Fragmentation Grenade
+								if (attack2ProjectileLaunchedType == Const.PoolType.ConcussionLive) typ = 8; // Concussion Grenade
+								if (attack2ProjectileLaunchedType == Const.PoolType.EMPLive) typ = 9; // EMP Grenade
+								if (attack2ProjectileLaunchedType == Const.PoolType.GasLive) typ = 13; // Gas Grenade
+								ga.Activate(typ,null);
+							}
 							Vector3 shove = beachball.transform.forward * attack3projectilespeed;
 							shove += rbody.velocity; // add in the enemy's velocity to the projectile (in case they are riding on a moving platform or something - wait I don't have those!
 							beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
@@ -1121,11 +1173,11 @@ public class AIController : MonoBehaviour {
         if (meshCollider != null) { if (meshCollider.enabled) meshCollider.enabled = false; }
 		if (capsuleCollider != null) { if (capsuleCollider.enabled) capsuleCollider.enabled = false; }
 
-		if (useGravityOnDeath) {
+		//if (useGravityOnDeath) {
 			rbody.useGravity = true;
-		} else {
-			rbody.useGravity = false;
-		}
+		//} else {
+		//	rbody.useGravity = false;
+		//}
 
 		if (searchColliderGO != null) {
 			searchColliderGO.SetActive(true);
@@ -1133,6 +1185,7 @@ public class AIController : MonoBehaviour {
 		}
 		if (!rbody.freezeRotation) rbody.freezeRotation = true;
 		currentState = Const.aiState.Dead;
+		if (npcAutomapOverlayImage != null) npcAutomapOverlayImage.enabled = false;
 		if (healthManager.gibOnDeath || healthManager.teleportOnDeath || healthManager.inCyberSpace) {
 			if (visibleMeshEntity != null && visibleMeshEntity.activeInHierarchy) visibleMeshEntity.SetActive(false); // normally just turn off the main model, then...
 			if (healthManager.gibOnDeath) healthManager.Gib(); // ... turn on the lovely gibs
@@ -1149,6 +1202,10 @@ public class AIController : MonoBehaviour {
 	}
 
 	bool CheckIfEnemyInSight() {
+		if (moveType == Const.aiMoveType.Cyber && Const.a.decoyActive) {
+			LOSpossible = false;
+			return false;
+		}
 		float dist = Vector3.Distance(enemy.transform.position,sightPoint.transform.position);  // Get distance between enemy and found player	
 		//if (dist < distToSeeWhenBehind && !enemy.GetComponent<PlayerMovement>().Notarget) {
         //    LOSpossible = true;
@@ -1181,6 +1238,7 @@ public class AIController : MonoBehaviour {
 	bool CheckIfPlayerInSight () {
         if (ignoreEnemy || Const.a.difficultyCombat == 0) return false;
 		if (enemy != null) return CheckIfEnemyInSight();
+		if (moveType == Const.aiMoveType.Cyber && Const.a.decoyActive) return false;
 		LOSpossible = false;
 
 		if (Const.a.player1Capsule == null) return false; // no found player
@@ -1191,7 +1249,7 @@ public class AIController : MonoBehaviour {
 		float dist = Vector3.Distance(tempVec,sightPoint.transform.position);  // Get distance between enemy and found player
 		if (npcAutomapOverlayImage != null) {
 			//if (dist < 50f) {
-				npcAutomapOverlayImage.enabled = true;
+				if (healthManager.health > 0 ) npcAutomapOverlayImage.enabled = true;
 			//} else {
 			//	npcAutomapOverlayImage.enabled = false;
 			//}
@@ -1270,7 +1328,9 @@ public class AIController : MonoBehaviour {
 	}
 
 	void SetEnemy(GameObject enemSent,Transform targettingPosSent) {
+		if (enemSent == null) return;
 		enemy = enemSent;
+		enemyHM = enemSent.GetComponent<HealthManager>();
 		lastKnownEnemyPos = enemy.transform.position;
 		targettingPosition = targettingPosSent.position;
 	}
@@ -1315,7 +1375,13 @@ public class AIController : MonoBehaviour {
 			if (playr2 != null && i == 1) tempent = playr2;
 			if (playr3 != null && i == 2) tempent = playr3;
 			if (playr4 != null && i == 4) tempent = playr4;
-			if (ud.owner == tempent) { enemy = tempent; } else { if (tempent != enemy) enemy = tempent;}
+			if (ud.owner == tempent) {
+				enemy = tempent;
+				if (enemy != null) enemyHM = enemy.GetComponent<HealthManager>();
+			} else {
+				if (tempent != enemy) enemy = tempent;
+				if (enemy != null) enemyHM = enemy.GetComponent<HealthManager>();
+			}
 		}
 	}
 

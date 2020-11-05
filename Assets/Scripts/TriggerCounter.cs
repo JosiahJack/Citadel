@@ -13,7 +13,7 @@ public class TriggerCounter : MonoBehaviour {
 	public void Targetted (UseData ud) {
 		counter++;
 		//owner = ud.owner;  Nope, last targetter becomes the owner
-		//Debug.Log("Trigger_counter count at " + counter.ToString() + ".");
+		Debug.Log("Trigger_counter count at " + counter.ToString() + ", with targetname of " + GetComponent<TargetIO>().targetname);
 		if (counter == countToTrigger) {
 			if (delay <=0) {
 				Target (ud);

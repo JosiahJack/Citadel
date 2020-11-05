@@ -181,8 +181,8 @@ public class Music : MonoBehaviour {
 			return levelMusicReactor[rand];
 		}
 
-		// 8 SECURITY, 9 BRIDGE
-		if (levnum == 8 || levnum == 9) {
+		// 8 SECURITY, 9 BRIDGE, 4 STORAGE
+		if (levnum == 8 || levnum == 9 || levnum == 4) {
 			if (levelEntry) return levelMusic8[9];
 			if (ttype == TrackType.Combat) {
 				rand = UnityEngine.Random.Range(0,6);

@@ -12,6 +12,7 @@ public class CyborgConversionToggle : MonoBehaviour {
 	}
 
 	public void PlayVoxMessage() {
+		if (SFX != null) SFX.Stop();
 		if (LevelManager.a.IsCurrentLevelCyborgConversionEnabled()) {
 			if (SFX != null && SFX.enabled == true && SFXEnabled != null) SFX.PlayOneShot(SFXEnabled);
 		} else {

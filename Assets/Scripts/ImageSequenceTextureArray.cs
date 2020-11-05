@@ -34,7 +34,7 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	private AudioSource SFX;
 
 	private float tick;
-	private float tickFinished;
+	private float tickFinished; // save....except handled purely through HealthManager
 
 	void Awake() {
 		//Get a reference to the Material of the game object this script is attached to.

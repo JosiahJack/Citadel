@@ -30,13 +30,13 @@ public class NPCSubManager : MonoBehaviour {
 
 	public void PullOutNPCs() {
 		for (int i=0;i<count;i++) {
-			childrenNPCs[i].transform.SetParent(null);
+			//childrenNPCs[i].transform.SetParent(null);
 		}
 	}
 
 	public void PutBackNPCs() {
 		for (int i=0;i<count;i++) {
-			childrenNPCs[i].transform.SetParent(transform);
+			//childrenNPCs[i].transform.SetParent(transform);
 		}
 	}
 }

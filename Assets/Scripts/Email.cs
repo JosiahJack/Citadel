@@ -8,6 +8,7 @@ public class Email : MonoBehaviour {
 	private LogInventory pinv;
 
     public void Targetted() {
+		//UnityEngine.Debug.Log("Sending email with emailIndex of " + emailIndex.ToString());
 		SendEmailToPlayer(LogInventory.a, emailIndex); // give the email
 	}
 
@@ -18,6 +19,9 @@ public class Email : MonoBehaviour {
 		if (Const.a.audioLogType[index] == 2) {
 			LogInventory.a.beepDone = true;
 		}
-		if (autoPlayEmail) linv.PlayLastAddedLog(index);
+		if (autoPlayEmail) {
+			//UnityEngine.Debug.Log("Email was an autoPlayEmail with emailIndex of " + emailIndex.ToString());
+			linv.PlayLastAddedLog(index);
+		}
 	}
 }

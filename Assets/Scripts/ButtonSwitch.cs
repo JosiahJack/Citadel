@@ -18,7 +18,8 @@ public class ButtonSwitch : MonoBehaviour {
 	public bool changeMatOnActive = true;
 	[HideInInspector]
 	public float delayFinished; // save
-	private float tickFinished;
+	[HideInInspector]
+	public float tickFinished; // save
 	private GameObject player;
 	private AudioSource SFXSource;
 	[HideInInspector]
