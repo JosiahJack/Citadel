@@ -21,7 +21,3 @@ SOBRECARGA
 BAJO
 ALTO
 CALOR
-
-
-
-//@1s1n-AAgt!

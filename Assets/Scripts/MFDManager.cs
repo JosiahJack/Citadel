@@ -113,10 +113,13 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject cyberSprintContainer;
 	public Text cyberSprintText;
 	public GameObject automapFull;
-
 	public SoftwareInventory sinv;
 	public PlayerMovement pm;
-
+	public BiomonitorGraphs biograph;
+	public PlayerEnergy pe;
+	public PlayerPatch pp;
+	private float ecgValue = 0;
+	private float beatShift;
 	public static MFDManager a;
 
 	public void Start () {
@@ -125,6 +128,11 @@ public class MFDManager : MonoBehaviour  {
 		a.logActive = false;
 		a.TabReset(true);
 		a.TabReset(false);
+		if (biograph != null) a.biograph.beatFinished = PauseScript.a.relativeTime + 0.5f;
+	}
+
+	void OnEnable() {
+		if (biograph != null) biograph.beatFinished = PauseScript.a.relativeTime + 0.5f;
 	}
 
 	// Called by PlayerMovement.cs
@@ -297,6 +305,32 @@ public class MFDManager : MonoBehaviour  {
 		ctb.TabButtonClickSilent(0,false);
 	}
 
+	// Updating here so that the graphed values keep updating even when the graph visibility is off.
+	void BioMonitorGraphUpdate() {
+		if (BiomonitorGraphSystem.a == null) return;
+
+		biograph.fatigueFactor = (((pm.fatigue / 100f) * 150f) + 20f) / 60f; // Apply percent fatigued to 200bpm max heart rate with baseline 50bpm.
+		if (biograph.beatFinished < PauseScript.a.relativeTime) {
+			biograph.beatFinished = PauseScript.a.relativeTime + (1f/biograph.fatigueFactor); // Adjust into seconds and add to game timer.
+		}
+
+        if (biograph.gameObject.activeSelf) BiomonitorGraphSystem.a.Graph(0,((pe.drainJPM/449f)*2f)-1f); // Take percentage of max JPM drain per second (449) and apply it to a scale of ±1.0
+
+		// Chi wave is different when on genius patch
+		if (pp.geniusFinishedTime > PauseScript.a.relativeTime) {
+			if (biograph.gameObject.activeSelf) BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 3f) + UnityEngine.Random.Range(-0.3f,0.3f));
+		} else {
+			if (biograph.gameObject.activeSelf) BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 1f));
+		}
+
+		beatShift = (biograph.beatFinished - PauseScript.a.relativeTime)/(1f/biograph.fatigueFactor);
+		if (beatShift > 0.8f) {
+			ecgValue = Mathf.Sin(beatShift * biograph.freq);
+		} else ecgValue = 0;
+		if (ecgValue > biograph.beatThresh || ecgValue < (biograph.beatThresh * -1f)) ecgValue += UnityEngine.Random.Range((biograph.beatVariation * -1f),biograph.beatVariation); // Inject variation when beating
+        if (biograph.gameObject.activeSelf) BiomonitorGraphSystem.a.Graph(2, ecgValue);
+	}
+
 	void Update () {
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
 			if (logActive) {
@@ -308,6 +342,7 @@ public class MFDManager : MonoBehaviour  {
 				}
 			}
 
+			BioMonitorGraphUpdate();
 			WeaponButtonsManagerUpdate();
 
 			if (GetInput.a.WeaponCycUp ()) {

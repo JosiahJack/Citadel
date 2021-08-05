@@ -1111,6 +1111,7 @@ public class AIController : MonoBehaviour {
 
 	void Dying() {
 		if (!dyingSetup) {
+			enemy = null; // reset for loading from saves
 			if (sleepingCables != null) sleepingCables.SetActive(false);
 			if (npcAutomapOverlay != null) {
 				npcAutomapOverlay.gameObject.SetActive(false);

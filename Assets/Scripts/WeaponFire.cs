@@ -102,6 +102,7 @@ public class WeaponFire : MonoBehaviour {
 	public GameObject wepView;
 	private Vector3 wepViewDefaultLocalPos;
 	public bool recoiling; // save
+	public int lerpUp = 0; // 0 = not lerping, 1 = up, 2 = down
 	[HideInInspector]
 	public float justFired; // save
 	public float energySliderClickedTime; // save
@@ -254,26 +255,51 @@ public class WeaponFire : MonoBehaviour {
 		recoiling = true;
 	}
 
+	void WeaponLerpGetTargetUp() {
+		currentWeapon.reloadLerpValue = (0.5f- (1 - currentWeapon.reloadLerpValue))/0.5f; // percentage of this half of the trip
+		currentWeapon.targetY = (-1 * currentWeapon.reloadContainerDropAmount * (1 - currentWeapon.reloadLerpValue));
+		if (currentWeapon.targetY > wepViewDefaultLocalPos.y) currentWeapon.targetY = wepViewDefaultLocalPos.y;
+	}
+
+	void WeaponLerpGetTargetDown() {
+		currentWeapon.targetY = (currentWeapon.reloadContainerOrigin.y - currentWeapon.reloadContainerDropAmount);
+		currentWeapon.reloadLerpValue = currentWeapon.reloadLerpValue/0.5f; // percentage of this half of the trip
+		currentWeapon.targetY = (currentWeapon.targetY * currentWeapon.reloadLerpValue);
+	}
+
     void Update() {
         if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
             if (WeaponsHaveAnyHeat()) HeatBleedOff(); // Slowly cool off any weapons that have been heated from firing
-			int i = Get16WeaponIndexFromConstIndex(currentWeapon.weaponIndex);
 
-			if (currentWeapon.reloadFinished > PauseScript.a.relativeTime) {
+			// Move the weapon transform up and down for reload "animation" and weapon swap
+			int i = Get16WeaponIndexFromConstIndex(currentWeapon.weaponIndex);
+			if (currentWeapon.reloadFinished > PauseScript.a.relativeTime && i >= 0) {
 				currentWeapon.reloadLerpValue = ((PauseScript.a.relativeTime - currentWeapon.lerpStartTime)/Const.a.reloadTime[i]); // percent towards goal time total (both halves of the action)
-				//Debug.Log("reloadLerpValue initial: " + currentWeapon.reloadLerpValue.ToString());
-				if (currentWeapon.reloadLerpValue >= 0.5) {
-					//currentWeapon.targetY = (currentWeapon.reloadContainerDropAmount - currentWeapon.reloadContainerOrigin.y);
-					currentWeapon.reloadLerpValue = (0.5f- (1 - currentWeapon.reloadLerpValue))/0.5f; // percentage of this half of the trip
-					currentWeapon.targetY = (-1 * currentWeapon.reloadContainerDropAmount * (1 - currentWeapon.reloadLerpValue));
+				if (currentWeapon.reloadLerpValue >= 0.5f) {
+					lerpUp = 1;
+					WeaponLerpGetTargetUp();
+					if (currentWeapon.weaponCurrentPending != -1) {
+						currentWeapon.weaponCurrent = currentWeapon.weaponCurrentPending; //Set current weapon 7 slot
+						currentWeapon.weaponIndex = currentWeapon.weaponIndexPending;	  //Set current weapon inventory lookup index
+						currentWeapon.weaponCurrentPending = -1;
+						currentWeapon.weaponIndexPending = -1;
+					}
 				} else {
-					currentWeapon.targetY = (currentWeapon.reloadContainerOrigin.y - currentWeapon.reloadContainerDropAmount);
-					currentWeapon.reloadLerpValue = currentWeapon.reloadLerpValue/0.5f; // percentage of this half of the trip
-					currentWeapon.targetY = (currentWeapon.targetY * currentWeapon.reloadLerpValue);
+					lerpUp = 2;
+					WeaponLerpGetTargetDown();
 				}
-				//Debug.Log("reloadLerpValue splithalf: " + currentWeapon.reloadLerpValue.ToString());
-				//Debug.Log("Setting Y to: " + (currentWeapon.targetY * currentWeapon.reloadLerpValue).ToString());
+				Mathf.Clamp(currentWeapon.targetY, -100f, 100f);
 				wepView.transform.localPosition = new Vector3(wepView.transform.localPosition.x,currentWeapon.targetY,wepView.transform.localPosition.z);
+			} else {
+				lerpUp = 0;
+				wepView.transform.localPosition = new Vector3(wepView.transform.localPosition.x, wepViewDefaultLocalPos.y, wepView.transform.localPosition.z);
+				// if (currentWeapon.weaponCurrentPending != -1) {
+					// currentWeapon.weaponCurrent = currentWeapon.weaponCurrentPending; //Set current weapon 7 slot
+					// currentWeapon.weaponIndex = currentWeapon.weaponIndexPending;	  //Set current weapon inventory lookup index
+					// currentWeapon.weaponCurrentPending = -1;
+					// currentWeapon.weaponIndexPending = -1;
+					// Debug.Log("Changed indices for current weapon.");
+				// }
 			}
 
 			if (mls.inventoryMode) {
@@ -319,7 +345,6 @@ public class WeaponFire : MonoBehaviour {
 					return;
 				}
 			}
-
 
             if (!GUIState.a.isBlocking && !mls.holdingObject) {
                 if (i == -1) return;
@@ -375,16 +400,20 @@ public class WeaponFire : MonoBehaviour {
 						// First press reload to unload, then press again to load
 						int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (WeaponCurrent.WepInstance.weaponIndex);
 						if (WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
-							if (WeaponAmmo.a.wepAmmoSecondary[wep16index] <= 0) {
+							if (WeaponCurrent.WepInstance.currentMagazineAmount2[WeaponCurrent.WepInstance.weaponCurrent] <= 0 || WeaponAmmo.a.wepAmmoSecondary[wep16index] <= 0) { // True for no wepAmmoSecondary causes Reload to run and display no ammo message.
 								WeaponCurrent.WepInstance.Reload();
+								// Debug.Log("Reload step");
 							} else {
 								WeaponCurrent.WepInstance.Unload(false);
+								// Debug.Log("Unload step");
 							}
 						} else {
-							if (WeaponAmmo.a.wepAmmo[wep16index] <= 0) {
+							if (WeaponCurrent.WepInstance.currentMagazineAmount[WeaponCurrent.WepInstance.weaponCurrent] <= 0 || WeaponAmmo.a.wepAmmo[wep16index] <= 0) { // True for no wepAmmo causes Reload to run and display no ammo message.
 								WeaponCurrent.WepInstance.Reload();
+								// Debug.Log("Reload step");
 							} else {
 								WeaponCurrent.WepInstance.Unload(false);
+								// Debug.Log("Unload step");
 							}
 						}
 					}
@@ -623,11 +652,11 @@ public class WeaponFire : MonoBehaviour {
                 }
             } else {
                 if (WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
-                    if (!currentWeapon.bottomless) WeaponCurrent.WepInstance.currentMagazineAmount2[WeaponCurrent.WepInstance.weaponCurrent]--;
+                    if (!currentWeapon.bottomless) WeaponCurrent.WepInstance.currentMagazineAmount2[WeaponCurrent.WepInstance.weaponCurrent]--; // Take ammo away
                     // Update the counter
                     //MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount2[WeaponCurrent.WepInstance.weaponCurrent]);
                 } else {
-                    if (!currentWeapon.bottomless) WeaponCurrent.WepInstance.currentMagazineAmount[WeaponCurrent.WepInstance.weaponCurrent]--;
+                    if (!currentWeapon.bottomless) WeaponCurrent.WepInstance.currentMagazineAmount[WeaponCurrent.WepInstance.weaponCurrent]--; // Take ammo away
                     // Update the counter
                     //MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount[WeaponCurrent.WepInstance.weaponCurrent]);
                 }
@@ -642,6 +671,8 @@ public class WeaponFire : MonoBehaviour {
         } else {
             waitTilNextFire = PauseScript.a.relativeTime + Const.a.delayBetweenShotsForWeapon[index];
         }
+
+		currentWeapon.UpdateAmmoText();
     }
 
     bool DidRayHit(int wep16Index) {

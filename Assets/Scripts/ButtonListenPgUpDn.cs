@@ -6,7 +6,6 @@ public class ButtonListenPgUpDn : MonoBehaviour {
 	public Button[] button;
 	private int curTab = 0;
 
-	// Update is called once per frame
 	void Update () {
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
 			if (Input.GetKeyDown(KeyCode.PageUp)) {

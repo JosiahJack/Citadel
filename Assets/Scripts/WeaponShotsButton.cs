@@ -27,21 +27,7 @@ public class WeaponShotsButton : MonoBehaviour {
 
 	void WeaponInvClick () {
 		WepButton.GetComponent<WeaponButton>().WeaponInvClick();
-		/*
-		invslot = WeaponInventory.WepInventoryInstance.weaponInventoryIndices[WepButtonIndex];
-		if (invslot < 0)
-			return;
-
-		SFX.PlayOneShot(SFXClip);
-		WeaponCurrent.WepInstance.weaponCurrent = WepButtonIndex;				//Set current weapon
-		WeaponCurrent.WepInstance.weaponIndex = useableItemIndex;				//Set current weapon
-		WeaponCurrent.WepInstance.UpdateHUDAmmoCountsEither();
-		if (ammoiconman.activeInHierarchy) ammoiconman.GetComponent<AmmoIconManager>().SetAmmoIcon(invslot,WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]);
-		if (iconman.activeInHierarchy) iconman.GetComponent<WeaponIconManager>().SetWepIcon(invslot);    //Set weapon icon for MFD
-		if (weptextman.activeInHierarchy) weptextman.GetComponent<WeaponTextManager>().SetWepText(invslot); //Set weapon text for MFD
-		*/
 	}
-
 
 	void Start() {
 		WepButton.onClick.AddListener(() => { WeaponInvClick();});

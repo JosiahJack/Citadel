@@ -19,6 +19,7 @@ public class Email : MonoBehaviour {
 		if (Const.a.audioLogType[index] == 2) {
 			LogInventory.a.beepDone = true;
 		}
+
 		if (autoPlayEmail) {
 			//UnityEngine.Debug.Log("Email was an autoPlayEmail with emailIndex of " + emailIndex.ToString());
 			linv.PlayLastAddedLog(index);

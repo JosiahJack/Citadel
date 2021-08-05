@@ -1,3 +1,13 @@
+Startup Time Improvement.
+Improve to less than 1 second on the test blank scene.
+Improve to less than 10 seconds on the main scene.
+
+Times taken with Deep Profile OFF
+Current Time in Test Blank:     7.8s
+Current Time in Main Scene: 1m 23.0s
+
+PostLateUpdate.PlayerUpdateCanvases 2.8MB, 849.12ms
+
 TRIAGE::
 ===========================================================================
 CHANGES/MINOR ADDS:

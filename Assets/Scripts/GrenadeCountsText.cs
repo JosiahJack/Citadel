@@ -6,14 +6,19 @@ using System.Collections;
 public class GrenadeCountsText : MonoBehaviour {
 	Text text;
 	public int countsSlotnum = 0;
-	
+	private int lastCount = 0;
+
 	void Start () {
 		text = GetComponent<Text>();
 	}
 
 	void Update () {
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			text.text = GrenadeInventory.GrenadeInvInstance.grenAmmo[countsSlotnum].ToString();
+			if (lastCount != GrenadeInventory.GrenadeInvInstance.grenAmmo[countsSlotnum]) {
+				text.text = GrenadeInventory.GrenadeInvInstance.grenAmmo[countsSlotnum].ToString();
+				lastCount = GrenadeInventory.GrenadeInvInstance.grenAmmo[countsSlotnum];
+			}
+
 			if (countsSlotnum == GrenadeCurrent.GrenadeInstance.grenadeCurrent) {
 				text.color = Const.a.ssYellowText; // Yellow
 			} else {

@@ -238,10 +238,10 @@ public class TargetIO : MonoBehaviour {
 		}
 
 		if (tempUD.sendEmail) {
-			Debug.Log("sendEmail was true for Targetted() with targetname: " + targetname);
+			//Debug.Log("sendEmail was true for Targetted() with targetname: " + targetname);
 			Email msg = GetComponent<Email>();
 			if (msg != null) {
-				Debug.Log("sendEmail was true and msg was found for Targetted() with targetname: " + targetname);
+				//Debug.Log("sendEmail was true and msg was found for Targetted() with targetname: " + targetname);
 				msg.Targetted();
 			}
 		}

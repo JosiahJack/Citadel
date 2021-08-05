@@ -14,8 +14,7 @@ public class ConfigToggles : MonoBehaviour {
 			case ConfigToggleType.Fullscreen: self.isOn = Const.a.GraphicsFullscreen; break;
 			case ConfigToggleType.SSAO: self.isOn = Const.a.GraphicsSSAO; break;
 			case ConfigToggleType.Bloom: self.isOn = Const.a.GraphicsBloom; break;
-			case ConfigToggleType.Reverb: self.isOn = Const.a.AudioReverb; Const.sprint("This doesn't do anything at the moment.",Const.a.allPlayers); break;
-			case ConfigToggleType.Subtitles: self.isOn = Const.a.AudioSubtitles; Const.sprint("This doesn't do anything at the moment.",Const.a.allPlayers); break;
+			case ConfigToggleType.Reverb: self.isOn = Const.a.AudioReverb; break;
 			case ConfigToggleType.InvertLook: self.isOn = Const.a.InputInvertLook; break;
 			case ConfigToggleType.InvertCyber: self.isOn = Const.a.InputInvertCyberspaceLook; break;
 			case ConfigToggleType.InvertInventoryCycling: self.isOn = Const.a.InputInvertInventoryCycling; break;
@@ -28,7 +27,6 @@ public class ConfigToggles : MonoBehaviour {
 	public void ToggleSSAO () { Const.a.GraphicsSSAO = self.isOn; Const.a.WriteConfig(); }
 	public void ToggleBloom () { Const.a.GraphicsBloom = self.isOn; Const.a.WriteConfig(); }
 	public void ToggleReverb () { Const.a.AudioReverb = self.isOn; Const.a.WriteConfig(); }
-	public void ToggleSubtitles () { Const.a.AudioSubtitles = self.isOn; Const.a.WriteConfig(); }
 	public void ToggleInvertLook () { Const.a.InputInvertLook = self.isOn; Const.a.WriteConfig(); }
 	public void ToggleInvertCyberLook () { Const.a.InputInvertCyberspaceLook = self.isOn; Const.a.WriteConfig(); }
 	public void ToggleInvertInventoryCycling () { Const.a.InputInvertInventoryCycling = self.isOn; Const.a.WriteConfig(); }

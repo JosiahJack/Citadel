@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class CreditsScroll : MonoBehaviour {
 	public Text creditsText;
 	private bool bottom = false;
-	public MainMenuHandler mainMenuHandler;
 	public int pagenum = 0;
 	public GameObject exitVideo;
 
@@ -28,7 +27,7 @@ public class CreditsScroll : MonoBehaviour {
 				exitVideo.SetActive(false);
 				return;
 			}
-			mainMenuHandler.GoBack();
+			MainMenuHandler.a.GoBack();
 		}
 
 		if (Input.GetMouseButtonUp(0)) {
@@ -47,7 +46,7 @@ public class CreditsScroll : MonoBehaviour {
 					creditsText.text = Const.a.creditsText[pagenum];
 				}
 			} else {
-				mainMenuHandler.GoBack();
+				MainMenuHandler.a.GoBack();
 			}
 		}
 

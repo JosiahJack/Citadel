@@ -7,7 +7,6 @@ using System.Collections.Generic;
 public class LogMoreButton : MonoBehaviour {
 	public GameObject logTextOutput;
 	public GameObject multiMediaTab;
-	public MFDManager mfdManager;
 	private string remainder = System.String.Empty;
 
 	void LogMoreButtonClick() {
@@ -19,9 +18,9 @@ public class LogMoreButton : MonoBehaviour {
 		} else {
 			// CLOSE BUTTON
 			multiMediaTab.GetComponent<MultiMediaTabManager>().ResetTabs();
-			if (mfdManager.leftTC != null) mfdManager.leftTC.ReturnToLastTab();
-			if (mfdManager.rightTC != null) mfdManager.rightTC.ReturnToLastTab();
-			mfdManager.ClearDataTab();
+			MFDManager.a.leftTC.ReturnToLastTab();
+			MFDManager.a.rightTC.ReturnToLastTab();
+			MFDManager.a.ClearDataTab();
 			MFDManager.a.ctb.TabButtonClickSilent(0,true);
 			GetComponent<UIButtonMask>().PtrExit(); // force mouse cursor out of UI
 		}

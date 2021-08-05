@@ -22,7 +22,7 @@ public class PatchButton: MonoBehaviour {
 			PatchCurrent.PatchInstance.patchCountsTextObjects [i].color = Const.a.ssGreenText;
 		}
 		PatchCurrent.PatchInstance.patchCountsTextObjects[PatchButtonIndex].color = Const.a.ssYellowText;
-		if (SFX != null && SFXClick != null) SFX.PlayOneShot(SFXClick);
+		if (SFX != null && SFXClick != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXClick);
 	}
 
     void Start() {

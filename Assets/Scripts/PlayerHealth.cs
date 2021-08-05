@@ -215,7 +215,7 @@ public class PlayerHealth : MonoBehaviour {
 			mls.ToggleAudioPause();
 		}
 		PauseScript.a.mainMenu.SetActive(true);
-		PauseScript.a.mainMenu.GetComponent<MainMenuHandler>().returnToPause = false;
+		MainMenuHandler.a.returnToPause = false;
 		hm.health = 211f;
 		playerHealthTicks.DrawTicks();
 		radiationArea = false;

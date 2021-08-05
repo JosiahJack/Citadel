@@ -6,6 +6,7 @@ using System.Collections;
 public class PatchCountsText : MonoBehaviour {
 	public Text text;
 	public int countsSlotnum = 0;
+	private int lastCount = 0;
 	
 	void Start () {
 		text = GetComponent<Text>();
@@ -13,7 +14,11 @@ public class PatchCountsText : MonoBehaviour {
 
 	void Update () {
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			text.text = PatchInventory.PatchInvInstance.patchCounts[countsSlotnum].ToString();
+			if (lastCount != PatchInventory.PatchInvInstance.patchCounts[countsSlotnum]) {
+				text.text = PatchInventory.PatchInvInstance.patchCounts[countsSlotnum].ToString();
+				lastCount = PatchInventory.PatchInvInstance.patchCounts[countsSlotnum];
+			}
+
 			if (countsSlotnum == PatchCurrent.PatchInstance.patchCurrent) {
 				text.color = Const.a.ssYellowText; // Yellow
 			} else {

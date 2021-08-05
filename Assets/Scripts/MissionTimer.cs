@@ -42,11 +42,13 @@ public class MissionTimer : MonoBehaviour {
 	// 2700 for biotoxin release (level 9)
 
     public void UpdateToNextMission(float newTimerAmount,int misTextIndex, int nextMissionIndex) {
-		if (Const.a.difficultyMission < 3) return;
+		QuestLogNotesManager.a.UpdateToNextMission(nextMissionIndex);
+
+		if (Const.a.difficultyMission < 3) return; // Don't update timer on lower skill settings.
 		t = newTimerAmount;
 		currentMissionIndex = nextMissionIndex;
 		currentMission = Const.a.stringTable[misTextIndex];
-		if (currentMissionIndex == 4) lastTimer = true; // No gameover for last timer
+		if (currentMissionIndex == 4) lastTimer = true; // No gameover for last timer.
     }
 
     void Update() {

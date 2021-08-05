@@ -175,7 +175,7 @@ public class Door : MonoBehaviour {
 						return;
 					}
 
-					if (doorOpen == doorState.Closed  && animatorPlaybackTime > 0.95f){
+					if (doorOpen == doorState.Closed && animatorPlaybackTime > 0.95f){
 						//Debug.Log("Was Close, Now Opening");
 						doorOpen = doorState.Opening;
 						OpenDoor();
@@ -204,6 +204,7 @@ public class Door : MonoBehaviour {
 						accessCardUsedByPlayer = true;
 					} else {
 						Const.sprint(lockedMessage,ud.owner); // tell the owner of the Use command that we are locked
+						QuestLogNotesManager.a.NotifyLockedDoorAttempt(this);
 					}
 				}
 			} else {
@@ -213,9 +214,11 @@ public class Door : MonoBehaviour {
 	}
 
 	void Targetted (UseData ud) {
-		if (locked) 
+		if (locked) {
 			locked = false;
-	
+			QuestLogNotesManager.a.NotifyDoorUnlock(this);
+		}
+
 		if (!targettingOnlyUnlocks) Use(ud);
 	}
 
@@ -306,6 +309,7 @@ public class Door : MonoBehaviour {
 					case "DoorOpen": doorOpen = doorState.Opening; break;
 					case "DoorClose": doorOpen = doorState.Closing; break;
 				}
+				return;
 			}
 
 			if (ajar) {
@@ -354,7 +358,7 @@ public class Door : MonoBehaviour {
 			} else {
 				if (!nmo.enabled) nmo.enabled = true; // door is not opened fully, treat as a closed path
 			}
-		}
+		} else anim.speed = speedZero;
 	}
 
 	void SetCollisionLayerOpen() {

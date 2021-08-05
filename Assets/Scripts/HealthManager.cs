@@ -391,7 +391,11 @@ public class HealthManager : MonoBehaviour {
 						//float shieldPercentAbsorbed = take/dd.damage;
 						//if (shieldPercentAbsorbed > 1f) shieldPercentAbsorbed = 1f;
 						//if (shieldPercentAbsorbed > 0) pe.TakeEnergy(enertake*shieldPercentAbsorbed);
-						if (absorb > 0) pe.TakeEnergy(enertake*absorb);
+						if (absorb > 0) {
+							pe.TakeEnergy(enertake*absorb);
+							pe.drainJPM += (int) enertake;
+							pe.tickFinished = PauseScript.a.relativeTime + 0.1f; // So blip registers on biomonitor graph
+						}
 					}
 				}
 				if (take > 0 && ((absorb <0.4f) || Random.Range(0,1f) < 0.5f)) {

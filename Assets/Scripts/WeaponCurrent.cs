@@ -60,6 +60,10 @@ public class WeaponCurrent : MonoBehaviour {
 	public float lerpStartTime; // save
 	[HideInInspector]
 	public float targetY; // save
+	[HideInInspector]
+	public int weaponCurrentPending;
+	[HideInInspector]
+	public int weaponIndexPending;
 
 	void Start() {
 		WepInstance = this;
@@ -75,6 +79,8 @@ public class WeaponCurrent : MonoBehaviour {
 		reloadFinished = PauseScript.a.relativeTime;
 		reloadContainerOrigin = reloadContainer.transform.localPosition;
 		reloadLerpValue = 0;
+		weaponCurrentPending = -1;
+		weaponIndexPending = -1;
 	}
 
 	public float GetDefaultEnergySettingForWeaponFrom16Index(int wep16Index) {
@@ -113,18 +119,53 @@ public class WeaponCurrent : MonoBehaviour {
 		if (loadAlternateAmmoButton != null) loadAlternateAmmoButton.SetActive(false);
 	}
 
+	public void WeaponChange(int useableItemIndex, int WepButtonIndex) {
+		if (useableItemIndex == -1 || WepButtonIndex > 6 || WepButtonIndex < 0) { Debug.Log("Early exit on WeaponChange() in WeaponCurrent.cs!"); return; }
+
+		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(useableItemIndex); // Get index into the list of 16 weapons
+		float delay = Const.a.reloadTime[wep16index];
+		reloadFinished = PauseScript.a.relativeTime + delay;
+		lerpStartTime = PauseScript.a.relativeTime;
+		// weaponCurrent = WepButtonIndex;				//Set current weapon 7 slot
+		// weaponIndex = useableItemIndex;				//Set current weapon inventory lookup index
+		weaponCurrentPending = WepButtonIndex;
+		weaponIndexPending = useableItemIndex;
+		UpdateHUDAmmoCountsEither();
+		// MFDManager.a.SetWepIcon(useableItemIndex);
+		// MFDManager.a.SetWepText(useableItemIndex);
+		// MFDManager.a.SendInfoToItemTab(useableItemIndex);
+		// reloadContainer.transform.localPosition = reloadContainerOrigin; // Pop it back to start to be sure, in case it was partly lerping.
+		// yield return new WaitForSeconds(delay/2f); // Allow time for weapon to go below bottom edge of screen, or at least mostly.
+	}
+
+	public void UpdateAmmoText() {
+		// Update ammo text
+		if (WeaponInventory.WepInventoryInstance.gameObject.activeSelf) {
+			for (int i=0;i<WeaponShotsText.weaponShotsInventoryText.Length;i++) {
+				WeaponShotsText.weaponShotsInventoryText[i] = WeaponInventory.WepInventoryInstance.GetTextForWeaponAmmo(i);
+			}
+			WeaponInventory.WepInventoryInstance.GetNumWeapons();
+		}
+	}
+
 	void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
 			if (justChangedWeap) {
 				justChangedWeap = false;
+				UpdateAmmoText();
 				SetAllViewModelsDeactive();
+				UpdateWeaponViewModels();
 			}
 
 			if (lastIndex != weaponIndex) {
 				justChangedWeap = true;
 				lastIndex = weaponIndex;
 			}
-			
+		}
+	}
+
+	public void UpdateWeaponViewModels() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
 			switch (weaponIndex) {
 			case 36:
 				if (!ViewModelAssault.activeSelf) ViewModelAssault.SetActive(true);
@@ -137,11 +178,11 @@ public class WeaponCurrent : MonoBehaviour {
 				if (unloadButton != null) unloadButton.SetActive(true);
 				if (loadNormalAmmoButton != null) {
 					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = "LOAD MAGNESIUM";
+					loadNormalAmmoButtonText.text = Const.a.stringTable[539]; // "LOAD MAGNESIUM"
 				}
 				if (loadAlternateAmmoButton != null) {
 					if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
-					loadAlternateAmmoButtonText.text = "LOAD PENETRATOR";
+					loadAlternateAmmoButtonText.text = Const.a.stringTable[540]; // "LOAD PENETRATOR"
 				}
 				break;
 			case 37:
@@ -166,11 +207,11 @@ public class WeaponCurrent : MonoBehaviour {
 				if (unloadButton != null) unloadButton.SetActive(true);
 				if (loadNormalAmmoButton != null) {
 					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = "LOAD NEEDLE";
+					loadNormalAmmoButtonText.text = Const.a.stringTable[541]; // "LOAD NEEDLE";
 				}
 				if (loadAlternateAmmoButton != null) {
 					if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
-					loadAlternateAmmoButtonText.text = "LOAD TRANQ";
+					loadAlternateAmmoButtonText.text = Const.a.stringTable[542]; // "LOAD TRANQ";
 				}
 				break;
 			case 39:
@@ -184,11 +225,11 @@ public class WeaponCurrent : MonoBehaviour {
 				if (unloadButton != null) unloadButton.SetActive(true);
 				if (loadNormalAmmoButton != null) {
 					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = "LOAD HORNET";
+					loadNormalAmmoButtonText.text = Const.a.stringTable[543]; // "LOAD HORNET";
 				}
 				if (loadAlternateAmmoButton != null) {
 					if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
-					loadAlternateAmmoButtonText.text = "LOAD SPLINTER";
+					loadAlternateAmmoButtonText.text = Const.a.stringTable[544]; // "LOAD SPLINTER";
 				}
 				break;
 			case 40:
@@ -232,11 +273,11 @@ public class WeaponCurrent : MonoBehaviour {
 				if (unloadButton != null) unloadButton.SetActive(true);
 				if (loadNormalAmmoButton != null) {
 					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = "LOAD HOLLOW TIP";
+					loadNormalAmmoButtonText.text = Const.a.stringTable[545]; // "LOAD HOLLOW TIP";
 				}
 				if (loadAlternateAmmoButton != null) {
 					if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
-					loadAlternateAmmoButtonText.text = "LOAD HEAVY SLUG";
+					loadAlternateAmmoButtonText.text = Const.a.stringTable[546]; // "LOAD HEAVY SLUG";
 				}
 				break;
 			case 44:
@@ -250,7 +291,7 @@ public class WeaponCurrent : MonoBehaviour {
 				if (unloadButton != null) unloadButton.SetActive(true);
 				if (loadNormalAmmoButton != null) {
 					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = "LOAD CARTRIDGE";
+					loadNormalAmmoButtonText.text = Const.a.stringTable[547]; // "LOAD CARTRIDGE";
 				}
 				break;
 			case 45:
@@ -264,11 +305,11 @@ public class WeaponCurrent : MonoBehaviour {
 				if (unloadButton != null) unloadButton.SetActive(true);
 				if (loadNormalAmmoButton != null) {
 					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = "LOAD STANDARD";
+					loadNormalAmmoButtonText.text = Const.a.stringTable[548]; // "LOAD STANDARD";
 				}
 				if (loadAlternateAmmoButton != null) {
 					if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
-					loadAlternateAmmoButtonText.text = "LOAD TEFLON";
+					loadAlternateAmmoButtonText.text = Const.a.stringTable[549]; // "LOAD TEFLON";
 				}
 				break;
 			case 46:
@@ -293,7 +334,7 @@ public class WeaponCurrent : MonoBehaviour {
 				if (unloadButton != null) unloadButton.SetActive(true);
 				if (loadNormalAmmoButton != null) {
 					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = "LOAD RAIL CLIP";
+					loadNormalAmmoButtonText.text = Const.a.stringTable[550]; // "LOAD RAIL CLIP";
 				}
 				break;
 			case 48:
@@ -307,7 +348,7 @@ public class WeaponCurrent : MonoBehaviour {
 				if (unloadButton != null) unloadButton.SetActive(true);
 				if (loadNormalAmmoButton != null) {
 					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = "LOAD RUBBER SLUG";
+					loadNormalAmmoButtonText.text = Const.a.stringTable[551]; // "LOAD RUBBER SLUG";
 				}
 				break;
 			case 49:
@@ -321,11 +362,11 @@ public class WeaponCurrent : MonoBehaviour {
 				if (unloadButton != null) unloadButton.SetActive(true);
 				if (loadNormalAmmoButton != null) {
 					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = "LOAD SLAG";
+					loadNormalAmmoButtonText.text = Const.a.stringTable[552]; // "LOAD SLAG";
 				}
 				if (loadAlternateAmmoButton != null) {
 					if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
-					loadAlternateAmmoButtonText.text = "LOAD LARGE SLAG";
+					loadAlternateAmmoButtonText.text = Const.a.stringTable[553]; // "LOAD LARGE SLAG";
 				}
 				break;
 			case 50:
@@ -502,11 +543,12 @@ public class WeaponCurrent : MonoBehaviour {
 	public void ReloadSecret(bool isSilent) {
 		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (weaponIndex);
 		if (wep16index == 5 || wep16index == 6) {
-			Const.sprint(Const.a.stringTable[315],owner);
+			Const.sprint(Const.a.stringTable[315],owner); // Weapon does not need reloaded.
 			return; // do nothing for pipe or rapier
 		}
 
 		if (wep16index == 1 || wep16index == 4 || wep16index == 10 || wep16index == 14 || wep16index == 15) {
+			Const.sprint(Const.a.stringTable[538],owner); // We
 			return; // do nothing for energy weapons
 		}
 

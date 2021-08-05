@@ -536,3 +536,36 @@ Low
 No more of ammo type to load.
 STUNNED
 Decoy already active
+Weapon does not need reloaded.
+LOAD MAGNESIUM
+LOAD PENETRATOR
+LOAD NEEDLE
+LOAD TRANQ
+LOAD HORNET
+LOAD SPLINTER
+LOAD HOLLOW TIP
+LOAD HEAVY SLUG
+LOAD CARTRIDGE
+LOAD STANDARD
+LOAD TEFLON
+LOAD RAIL CLIP
+LOAD RUBBER SLUG
+LOAD SLAG
+LOAD LARGE SLAG
+Escape neurosurgery suite.
+  Keycode is 451.
+Destroy level 
+ nodes.
+  Code is 
+Disengage laser safety override.
+Activate the station energy shield.
+Destroy the mining laser.
+Enable master jettison.
+Diagnose and repair broken relay
+: 428.
+Jettison Beta Grove.
+Destroy the four relay antennae.
+Engage reactor self-destruct.
+Escape on escape pod.
+Access the bridge.
+Destroy SHODAN.

@@ -33,7 +33,6 @@ public class MainMenuHandler : MonoBehaviour {
 	public StartMenuDifficultyController mission;
 	public StartMenuDifficultyController puzzle;
 	public StartMenuDifficultyController cyber;
-	public PauseScript pauseHandler;
 	public InputField[] saveNameInputField;
 	public GameObject[] saveNameInput;
 	public GameObject[] saveNamePlaceholder;
@@ -57,8 +56,16 @@ public class MainMenuHandler : MonoBehaviour {
 	public GameObject IntroVideoContainer;
 	public bool inCutscene = false;
 	public AudioSource introSFX;
+	public GameObject PresetConfirmDialog;
+	public Text presetQuestionText;
+	public string presetQuestionDefault = "RESET ALL KEYS TO DEFAULT?";
+	public string presetQuestionLegacy = "CHANGE ALL KEYS TO LEGACY PRESET?";
+	private int presetQuestionValue = -1;
+	public static MainMenuHandler a;
+	public ConfigKeybindButton[] keybindButtons;
 
-	void Awake () {
+	void Awake() {
+		a = this;
 		StartSFX = startFXObject.GetComponent<AudioSource>();
 		BackGroundMusic = GetComponent<AudioSource>();
 		ResetPages();
@@ -107,7 +114,7 @@ public class MainMenuHandler : MonoBehaviour {
 				inCutscene = false;
 				IntroVideo.SetActive(false);
 				IntroVideoContainer.SetActive(false);
-				BackGroundMusic.Play();
+				if (gameObject.activeSelf) BackGroundMusic.Play();
 			}
 			GoBack();
 		}
@@ -118,12 +125,12 @@ public class MainMenuHandler : MonoBehaviour {
 				inCutscene = false;
 				IntroVideo.SetActive(false);
 				IntroVideoContainer.SetActive(false);
-				BackGroundMusic.Play();
+				if (gameObject.activeSelf) BackGroundMusic.Play();
 			}
 		}
 
 		if (!IntroVideoContainer.activeSelf) {
-			if (!BackGroundMusic.isPlaying && !saltTheFries.activeInHierarchy) BackGroundMusic.Play();
+			if (!BackGroundMusic.isPlaying && !saltTheFries.activeInHierarchy && gameObject.activeSelf) BackGroundMusic.Play();
 		}
 
 		if ( (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P)) || (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P)) ) {
@@ -265,7 +272,7 @@ public class MainMenuHandler : MonoBehaviour {
 	public void SaveGame (int index,string savename) {
 		Const.a.StartSave(index,savename);
 		Const.sprint(Const.a.stringTable[28] + index.ToString() + "!",Const.a.player1);
-		pauseHandler.EnablePauseUI();
+		PauseScript.a.EnablePauseUI();
 		this.gameObject.SetActive(false);
 	}
 
@@ -294,7 +301,7 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 
 		if (returnToPause) {
-			pauseHandler.EnablePauseUI();
+			PauseScript.a.EnablePauseUI();
 			ResetPages();
 			this.gameObject.SetActive(false);
 			return;
@@ -315,7 +322,7 @@ public class MainMenuHandler : MonoBehaviour {
 		if (currentPage == Pages.np || currentPage == Pages.lp || currentPage == Pages.cd) {
 			if (currentPage == Pages.cd) {
 				BackGroundMusic.clip = titleMusic;
-				BackGroundMusic.Play();
+				if (gameObject.activeSelf) BackGroundMusic.Play();
 			}
 			GoToSingleplayerSubmenu();
 			return;
@@ -391,7 +398,116 @@ public class MainMenuHandler : MonoBehaviour {
 		creditsPage.SetActive(true);
 		currentPage = Pages.cd;
 		BackGroundMusic.clip = creditsMusic;
-		BackGroundMusic.Play();
+		if (gameObject.activeSelf) BackGroundMusic.Play();
+	}
+
+	public void SetConfigPreset(int index) {
+		presetQuestionValue = index;
+
+		if (presetQuestionValue == 1)  presetQuestionText.text = presetQuestionLegacy;
+		else presetQuestionText.text = presetQuestionDefault;
+
+		PresetConfirmDialog.SetActive(true);
+	}
+
+	public void CancelPresetSet() {
+		presetQuestionValue = -1;
+		PresetConfirmDialog.SetActive(false);
+	}
+	
+	public void ApplyPreset() {
+		switch (presetQuestionValue) {
+			case 0: // Default
+				Const.a.InputCodeSettings[0] = 22; // Forward = w
+				Const.a.InputCodeSettings[1] = 0; // Strafe Left = a
+				Const.a.InputCodeSettings[2] = 18; // Backpedal = s
+				Const.a.InputCodeSettings[3] = 3; // Strafe Right = d
+				Const.a.InputCodeSettings[4] = 87; // Jump = space
+				Const.a.InputCodeSettings[5] = 2; // Crouch = c
+				Const.a.InputCodeSettings[6] = 23; // Prone = x
+				Const.a.InputCodeSettings[7] = 16; // Lean Left = q
+				Const.a.InputCodeSettings[8] = 4; // Lean Right = e
+				Const.a.InputCodeSettings[9] = 46; // Sprint = left shift
+				Const.a.InputCodeSettings[10] = 139; // Toggle Sprint = capslock
+				Const.a.InputCodeSettings[11] = 38; // Turn Left = left
+				Const.a.InputCodeSettings[12] = 39; // Turn Right = right
+				Const.a.InputCodeSettings[13] = 36; // Look Up = up
+				Const.a.InputCodeSettings[14] = 37; // Look Down = down
+				Const.a.InputCodeSettings[15] = 20; // Recent Log = u
+				Const.a.InputCodeSettings[16] = 26; // Biomonitor = 1
+				Const.a.InputCodeSettings[17] = 27; // Sensaround = 2
+				Const.a.InputCodeSettings[18] = 28; // Lantern = 3
+				Const.a.InputCodeSettings[19] = 29; // Shield = 4
+				Const.a.InputCodeSettings[20] = 30; // Infrared = 5
+				Const.a.InputCodeSettings[21] = 31; // Email = 6
+				Const.a.InputCodeSettings[22] = 32; // Booster = 7
+				Const.a.InputCodeSettings[23] = 33; // Jumpjets = 8
+				Const.a.InputCodeSettings[24] = 53; // Attack = mouse 0
+				Const.a.InputCodeSettings[25] = 54; // Use = mouse 1
+				Const.a.InputCodeSettings[26] = 86; // Menu/Back = escape
+				Const.a.InputCodeSettings[27] = 84; // Toggle Mode = tab
+				Const.a.InputCodeSettings[28] = 17; // Reload = r
+				Const.a.InputCodeSettings[29] = 153; // Weapon + = mwheel up
+				Const.a.InputCodeSettings[30] = 154; // Weapon - = mwheel dn
+				Const.a.InputCodeSettings[31] = 6; // Grenade = g
+				Const.a.InputCodeSettings[32] = 19; // Grenade + = t
+				Const.a.InputCodeSettings[33] = 1; // Grenade - = b
+				Const.a.InputCodeSettings[34] = 21; // Ammo Type = v
+				Const.a.InputCodeSettings[35] = 109; // Unused
+				Const.a.InputCodeSettings[36] = 9; // Patch Use = j
+				Const.a.InputCodeSettings[37] = 8; // Patch + = i
+				Const.a.InputCodeSettings[38] = 133; // Patch - = ,
+				Const.a.InputCodeSettings[39] = 12; // Full Map = m
+				break;
+			case 1: // Legacy SS1
+				Const.a.InputCodeSettings[0] = 18; // Forward = s
+				Const.a.InputCodeSettings[1] = 25; // Strafe Left = z
+				Const.a.InputCodeSettings[2] = 23; // Backpedal = x
+				Const.a.InputCodeSettings[3] = 2; // Strafe Right = c
+				Const.a.InputCodeSettings[4] = 87; // Jump = space
+				Const.a.InputCodeSettings[5] = 6; // Crouch = g
+				Const.a.InputCodeSettings[6] = 1; // Prone = b
+				Const.a.InputCodeSettings[7] = 16; // Lean Left = q
+				Const.a.InputCodeSettings[8] = 4; // Lean Right = e
+				Const.a.InputCodeSettings[9] = 46; // Sprint = left shift
+				Const.a.InputCodeSettings[10] = 139; // Toggle Sprint = capslock
+				Const.a.InputCodeSettings[11] = 0; // Turn Left = a
+				Const.a.InputCodeSettings[12] = 3; // Turn Right = d
+				Const.a.InputCodeSettings[13] = 17; // Look Up = r
+				Const.a.InputCodeSettings[14] = 21; // Look Down = v
+				Const.a.InputCodeSettings[15] = 20; // Recent Log = p
+				Const.a.InputCodeSettings[16] = 26; // Biomonitor = 1
+				Const.a.InputCodeSettings[17] = 28; // Sensaround = 3
+				Const.a.InputCodeSettings[18] = 29; // Lantern = 4
+				Const.a.InputCodeSettings[19] = 30; // Shield = 5
+				Const.a.InputCodeSettings[20] = 31; // Infrared = 6
+				Const.a.InputCodeSettings[21] = 33; // Email = 8
+				Const.a.InputCodeSettings[22] = 34; // Booster = 9
+				Const.a.InputCodeSettings[23] = 35; // Jumpjets = 0
+				Const.a.InputCodeSettings[24] = 54; // Use = mouse 1
+				Const.a.InputCodeSettings[25] = 53; // Attack = mouse 0
+				Const.a.InputCodeSettings[26] = 86; // Menu/Back = escape
+				Const.a.InputCodeSettings[27] = 84; // Toggle Mode = tab
+				Const.a.InputCodeSettings[28] = 19; // Reload = t
+				Const.a.InputCodeSettings[29] = 153; // Weapon + = mwheel up
+				Const.a.InputCodeSettings[30] = 154; // Weapon - = mwheel dn
+				Const.a.InputCodeSettings[31] = 7; // Grenade = h
+				Const.a.InputCodeSettings[32] = 24; // Grenade + = y
+				Const.a.InputCodeSettings[33] = 13; // Grenade - = n
+				Const.a.InputCodeSettings[34] = 10; // Ammo Type = k
+				Const.a.InputCodeSettings[35] = 109; // Unused
+				Const.a.InputCodeSettings[36] = 9; // Patch Use = j
+				Const.a.InputCodeSettings[37] = 8; // Patch + = i
+				Const.a.InputCodeSettings[38] = 133; // Patch - = ,
+				Const.a.InputCodeSettings[39] = 12; // Full Map = m
+				break;
+		}
+		presetQuestionValue = -1;	
+		Const.a.WriteConfig(); // Save config.  Always set to autosave.
+		for (int i=0;i<keybindButtons.Length;i++) {
+			keybindButtons[i].UpdateText();
+		}
+		CancelPresetSet();
 	}
 
 	public void Quit () {

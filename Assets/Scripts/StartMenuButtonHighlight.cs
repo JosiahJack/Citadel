@@ -8,17 +8,26 @@ public class StartMenuButtonHighlight : MonoBehaviour {
 	public int menuItemIndex;
 	public Text text;
 	public Shadow textshadow;
+	public Outline outlineGlow;
 	public Color lit;
 	public Color dark;
 	public Color darkshadow;
 	public Color litshadow;
 
 	void DeHighlight () {
-		if (textshadow != null) textshadow.effectColor = darkshadow;
+		if (textshadow != null) {
+			textshadow.effectColor = darkshadow;
+			// textshadow.enabled = true;
+		}
+		if (outlineGlow != null) outlineGlow.enabled = false;
 		if (text != null) text.color = dark;
 	}
 	void Highlight () {
-		if (textshadow != null) textshadow.effectColor = litshadow;
+		if (textshadow != null) {
+			textshadow.effectColor = litshadow;
+			// textshadow.enabled = false;
+		}
+		if (outlineGlow != null) outlineGlow.enabled = true;
 		if (text != null) text.color = lit;
 	}
 

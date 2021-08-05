@@ -101,6 +101,7 @@ public class Const : MonoBehaviour {
 	public float playerCameraOffsetY = 0.84f; //Vertical camera offset from player 0,0,0 position (mid-body)
 	public Color ssYellowText = new Color(0.8902f, 0.8745f, 0f); // Yellow, e.g. for current inventory text
 	public Color ssGreenText = new Color(0.3725f, 0.6549f, 0.1686f); // Green, e.g. for inventory text
+	public Color ssRedText = new Color(0.9180f, 0.1367f, 0.1679f); // Red, e.g. for inventory text
 
 	//Patch constants
 	public float berserkTime = 15.5f;
@@ -197,7 +198,7 @@ public class Const : MonoBehaviour {
 	public GameObject Pool_AutomapMutantOverlays;
 
 	//Global object references
-	public GameObject statusBar;
+	// public GameObject statusBar;
 	public GameObject loadingScreen;
    
 	//Config constants
@@ -220,13 +221,12 @@ public class Const : MonoBehaviour {
 	public int AudioVolumeMusic;
 	public int AudioVolumeMessage;
 	public int AudioVolumeEffects;
-	public int AudioLanguage;
-	public bool AudioSubtitles;
-	public float MouseSensitivity;
-	public int[] InputCodeSettings;
-	public string[] InputCodes;
-	public string[] InputValues;
-	public string[] InputConfigNames;
+	public int AudioLanguage;			// The language index. Used for choosing which text to display on-screen.
+	public float MouseSensitivity;		// The responsiveness of the mouse. Used for scaling slow mice up and fast mice down.
+	public int[] InputCodeSettings;		// The integer index values
+	public string[] InputCodes;			// The readable mapping names used as labels on the configuration page
+	public string[] InputValues;		// The list of all valid keys: letters, numbers, etc.
+	public string[] InputConfigNames;	// The readable keys used as text representations on the configuration page for set values.
 	public bool InputInvertLook;
 	public bool InputInvertCyberspaceLook;
 	public bool InputInvertInventoryCycling;
@@ -236,7 +236,7 @@ public class Const : MonoBehaviour {
     public enum aiMoveType {Walk,Fly,Swim,Cyber,None};
     public Font mainFont1;
 	public Font mainFont2;
-	public GameObject[] TargetRegister; // doesn't need to be full, available space for maps and mods made by the community to use tons of objects
+	public GameObject[] TargetRegister; // Doesn't need to be full, available space for maps and mods made by the community to use tons of objects
 	public string[] TargetnameRegister;
 	public float globalShakeDistance;
 	public float globalShakeForce;
@@ -257,7 +257,7 @@ public class Const : MonoBehaviour {
 	public PlayerMovement player1PlayerMovementScript;
 	[HideInInspector]
 	public PlayerHealth player1PlayerHealthScript;
-	public string versionString = "v0.95"; // Global CITADEL PROJECT VERSION
+	public string versionString = "v0.96"; // Global CITADEL PROJECT VERSION
 	private StringBuilder s1;
 	private StringBuilder s2;
 	private static string splitChar = "|";
@@ -265,7 +265,6 @@ public class Const : MonoBehaviour {
 	public Sprite[] logImages;
 	public int[] audioLogImagesRefIndicesLH;
 	public int[] audioLogImagesRefIndicesRH;
-	public MainMenuHandler mmh;
 	[HideInInspector]
 	public PauseRigidbody[] prb;
 
@@ -294,7 +293,7 @@ public class Const : MonoBehaviour {
 	// Private CONSTANTS
 	private int TARGET_FPS = 60;
 
-	// Instantiate it so that it can be accessed globally. MOST IMPORTANT PART!!
+	// Create a new instance so that it can be accessed globally. MOST IMPORTANT PART!!
 	// =========================================================================
 	void Awake() {
 		Application.targetFrameRate = TARGET_FPS;
@@ -360,7 +359,7 @@ public class Const : MonoBehaviour {
                 sourceFile = "/StreamingAssets/text_english.txt";
                 break;
         }
-        StreamReader dataReader = new StreamReader(Application.dataPath + sourceFile, Encoding.Default);
+        StreamReader dataReader = new StreamReader(Application.dataPath + sourceFile, Encoding.ASCII);
         using (dataReader) {
             do {
                 // Read the next line
@@ -387,7 +386,7 @@ public class Const : MonoBehaviour {
 		LoadEnemyTablesData();
 		LoadCreditsData();
 		questData = new QuestBits ();
-		questData.lev1SecCode = UnityEngine.Random.Range(0,10);
+		questData.lev1SecCode = UnityEngine.Random.Range(0,10); // Integer overload is maximum exclusive.  Confirmed maximum return value is 9.
 		questData.lev2SecCode = UnityEngine.Random.Range(0,10);
 		questData.lev3SecCode = UnityEngine.Random.Range(0,10);
 		questData.lev4SecCode = UnityEngine.Random.Range(0,10);
@@ -400,8 +399,8 @@ public class Const : MonoBehaviour {
 		if (startingNewGame) {
 			PauseScript.a.mainMenu.SetActive(false);
 			loadingScreen.SetActive(false);
-			mmh.IntroVideo.SetActive(false);
-			mmh.IntroVideoContainer.SetActive(false);
+			MainMenuHandler.a.IntroVideo.SetActive(false);
+			MainMenuHandler.a.IntroVideoContainer.SetActive(false);
 			sprint(stringTable[197],allPlayers); // Loading...Done!
 			WriteDatForNewGame(false,false);
 		}
@@ -425,13 +424,13 @@ public class Const : MonoBehaviour {
 		AudioVolumeMessage = AssignConfigInt("Audio","VolumeMessage");
 		AudioVolumeEffects = AssignConfigInt("Audio","VolumeEffects");
 		AudioLanguage = AssignConfigInt("Audio","Language");  // defaults to 0 = english
-		AudioSubtitles = AssignConfigBool("Audio","Subtitles");
 
 		MouseSensitivity = ((AssignConfigInt("Input","MouseSensitivity")/100f) * 2f) + 0.01f;;
 
+		string inputCapture;
 		// Input Configurations
 		for (int i=0;i<40;i++) {
-			string inputCapture = INIWorker.IniReadValue("Input",InputCodes[i]);
+			inputCapture = INIWorker.IniReadValue("Input",InputCodes[i]);
 			for (int j=0;j<159;j++) {
 				if (InputValues[j] == inputCapture) {
 					InputCodeSettings[i] = j;
@@ -464,7 +463,6 @@ public class Const : MonoBehaviour {
 		INIWorker.IniWriteValue("Audio","VolumeMessage",AudioVolumeMessage.ToString());
 		INIWorker.IniWriteValue("Audio","VolumeEffects",AudioVolumeEffects.ToString());
 		INIWorker.IniWriteValue("Audio","Language",AudioLanguage.ToString());
-		INIWorker.IniWriteValue("Audio","Subtitles",GetBoolAsString(AudioSubtitles));
 		int ms = (int)(MouseSensitivity/2f*100f);
 		INIWorker.IniWriteValue("Input","MouseSensitivity",ms.ToString());
 		for (int i=0;i<40;i++) {
@@ -489,7 +487,7 @@ public class Const : MonoBehaviour {
 		char logSplitChar = ',';
 		string logs_text = "logs_text";
 
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/logs_text.txt",Encoding.Default);
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/logs_text.txt",Encoding.ASCII);
 		using (dataReader) {
 			do {
 				int i = 0;
@@ -534,7 +532,7 @@ public class Const : MonoBehaviour {
 		int currentline = 0;
 		int readInt = 0;
 
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/damage_tables.txt",Encoding.Default);
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/damage_tables.txt",Encoding.ASCII);
 		using (dataReader) {
 			do {
 				int i = 0;
@@ -572,7 +570,7 @@ public class Const : MonoBehaviour {
 		int pagenum = 0;
 		creditsLength = 1;
 
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/credits.txt",Encoding.Default);
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/credits.txt",Encoding.ASCII);
 		using (dataReader) {
 			do {
 				// Read the next line
@@ -599,7 +597,7 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/ng.dat",Encoding.Default);
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/ng.dat",Encoding.ASCII);
 		using (dataReader) {
 			do {
 				// Read the next line
@@ -617,7 +615,7 @@ public class Const : MonoBehaviour {
 
 	public void WriteDatForNewGame(bool bitStartingNew, bool bitFreshRun) {
 		// Write bit to file
-		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/ng.dat");
+		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/ng.dat",false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
 				sw.WriteLine(bitStartingNew.ToString());
@@ -643,7 +641,7 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 		int readInt = 0;
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/enemy_tables.txt",Encoding.Default);
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/enemy_tables.txt",Encoding.ASCII);
 		using (dataReader) {
 			do {
 				int i = 0;
@@ -2278,7 +2276,7 @@ public class Const : MonoBehaviour {
 		// UnityEngine.Debug.Log("Number of LogicTimers: " + numTimers.ToString());
 
 		// Write to file
-		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt");
+		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt",false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
 				for (j=0;j<saveData.Length;j++) {
@@ -2928,7 +2926,6 @@ public class Const : MonoBehaviour {
 					}
 					dr.animatorPlaybackTime = GetFloatFromString(entries[index],currentline); index++;
 					dr.SetAnimFromLoad(clipName,0,dr.animatorPlaybackTime);
-					//dr.anim.Play(clipName,0, dr.animatorPlaybackTime);
 				} else {
 					index += 4;
 				}
@@ -3381,7 +3378,7 @@ public class Const : MonoBehaviour {
 	}
 
 	public void SetVolume() {
-		if (mmh.dataFound) {
+		if (MainMenuHandler.a.dataFound) {
 			AudioListener.volume = (AudioVolumeMaster/100f);
 			mainmenuMusic.volume = (AudioVolumeMusic/100f);
 			if (Music.a != null) {
@@ -3411,12 +3408,14 @@ public class Const : MonoBehaviour {
 		}
 	}
 
+	private CultureInfo en_US_Culture = new CultureInfo("en-US");
+
 	private int AssignConfigInt(string section, string keyname) {
 		int inputInt = -1;
 		string inputCapture = System.String.Empty;
 		inputCapture = INIWorker.IniReadValue(section,keyname);
 		if (inputCapture == null) inputCapture = "NULL";
-		bool parsed = Int32.TryParse(inputCapture, out inputInt);
+		bool parsed = Int32.TryParse(inputCapture, NumberStyles.Integer, en_US_Culture, out inputInt);
 		if (parsed) return inputInt; else sprint("Warning: Could not parse config key " + keyname + " as integer: " + inputCapture,allPlayers);
 		return 0;
 	}
@@ -3426,7 +3425,7 @@ public class Const : MonoBehaviour {
 		string inputCapture = System.String.Empty;
 		inputCapture = INIWorker.IniReadValue(section,keyname);
 		if (inputCapture == null) inputCapture = "NULL";
-		bool parsed = Int32.TryParse(inputCapture, out inputInt);
+		bool parsed = Int32.TryParse(inputCapture, NumberStyles.Integer, en_US_Culture, out inputInt);
 		if (parsed) {
 			if (inputInt > 0) return true; else return false;
 		} else sprint("Warning: Could not parse config key " + keyname + " as bool: " + inputCapture,allPlayers);
@@ -3442,10 +3441,8 @@ public class Const : MonoBehaviour {
 	private int getValreadInt;
 	private float getValreadFloat;
 	public int GetIntFromString(string val, int currentline, string source, int index) {
-		//bool parsed;
-		//int readInt;
 		if (val == "0") return 0;
-		getValparsed = Int32.TryParse(val,out getValreadInt);
+		getValparsed = Int32.TryParse(val, NumberStyles.Integer, en_US_Culture, out getValreadInt);
 		if (!getValparsed) {
 			UnityEngine.Debug.Log("BUG: Could not parse int from " + source + " file on line " + currentline.ToString() + ", from index: " + index.ToString(),allPlayers);
 			return 0;
@@ -3454,9 +3451,7 @@ public class Const : MonoBehaviour {
 	}
 
 	public float GetFloatFromString(string val, int currentline) {
-		//bool parsed;
-		//float readFloat;
-		getValparsed = Single.TryParse(val,out getValreadFloat);
+		getValparsed = Single.TryParse(val, NumberStyles.Float, en_US_Culture, out getValreadFloat);
 		if (!getValparsed) {
 			UnityEngine.Debug.Log("BUG: Could not parse float from save file on line " + currentline.ToString(),allPlayers);
 			return 0.0f;

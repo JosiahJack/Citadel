@@ -7,7 +7,6 @@ using System.Linq;
 public class PauseScript : MonoBehaviour {
 	public GameObject pauseText;
 	public bool paused = false;
-	public static PauseScript a;
 	public MouseLookScript mouselookScript;
 	public MouseCursor mouseCursor;
 	public GameObject[] disableUIOnPause;
@@ -23,18 +22,17 @@ public class PauseScript : MonoBehaviour {
 	[HideInInspector]
 	public float relativeTime;
 	public List<AmbientRegistration> ambientRegistry;
+	public static PauseScript a;
 
 	void Awake() {
 		a = this;
 		a.ambientRegistry = new List<AmbientRegistration>();
+		if (mainMenu == null) {
+			Const.sprint("BUG: PauseScript: mainMenu is null!",Const.a.allPlayers);
+		}
 	}
 
 	void Update () {
-		if (mainMenu == null) {
-			Const.sprint("BUG: PauseScript: mainMenu is null!",Const.a.allPlayers);
-			return;
-		}
-
 		if (Input.GetKeyDown(KeyCode.F12)) {
 			TakeScreenshot();
 		}
@@ -48,11 +46,7 @@ public class PauseScript : MonoBehaviour {
 				}
 			}
 
-			if (Input.GetKeyDown(KeyCode.Home)) {
-				PauseEnable();
-			}
-
-			if (Input.GetKeyDown(KeyCode.Menu)) {
+			if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Menu)) {
 				PauseEnable();
 			}
 		}
@@ -60,7 +54,7 @@ public class PauseScript : MonoBehaviour {
 		if (paused) {
 			// yep...relativeTime is stuck;
 		} else {
-			relativeTime += Time.deltaTime;
+			relativeTime = relativeTime + Time.deltaTime;
 		}
 	}
 
@@ -159,7 +153,7 @@ public class PauseScript : MonoBehaviour {
 		}
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
-		mainMenu.GetComponent<MainMenuHandler>().GoToSaveGameSubmenu(true);
+		MainMenuHandler.a.GoToSaveGameSubmenu(true);
 	}
 
 	public void LoadPause() {
@@ -169,7 +163,7 @@ public class PauseScript : MonoBehaviour {
 		}
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
-		mainMenu.GetComponent<MainMenuHandler>().GoToLoadGameSubmenu(true);
+		MainMenuHandler.a.GoToLoadGameSubmenu(true);
 	}
 
 	public void SavePauseQuit() {
@@ -178,7 +172,7 @@ public class PauseScript : MonoBehaviour {
 		}
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
-		mainMenu.GetComponent<MainMenuHandler>().GoToSaveGameSubmenu(true);
+		MainMenuHandler.a.GoToSaveGameSubmenu(true);
 	}
 
 	public void NoSavePauseQuit () {
@@ -189,12 +183,12 @@ public class PauseScript : MonoBehaviour {
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
 		//if (hardSaveQuit) { PauseQuitHard(); return; } // Application.Quit();
-		mainMenu.GetComponent<MainMenuHandler>().GoToFrontPage();
+		MainMenuHandler.a.GoToFrontPage();
 	}
 
 	public void PauseQuitHard () {
 		mainMenu.SetActive(true);
-		mainMenu.GetComponent<MainMenuHandler>().Quit();
+		MainMenuHandler.a.Quit();
 	}
 
 	public void EnablePauseUI () {
@@ -211,7 +205,7 @@ public class PauseScript : MonoBehaviour {
 			enableUIOnPause[i].SetActive(false);
 		}
 		mainMenu.SetActive(true);
-		mainMenu.GetComponent<MainMenuHandler>().GoToOptionsSubmenu(true);
+		MainMenuHandler.a.GoToOptionsSubmenu(true);
 	}
 
 	public bool Paused() {

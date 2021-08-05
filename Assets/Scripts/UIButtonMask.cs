@@ -29,16 +29,6 @@ public class UIButtonMask : MonoBehaviour {
 				return;
 			}
 		}
-			
-		EventTrigger.Entry entry = new EventTrigger.Entry();
-		entry.eventID = EventTriggerType.PointerEnter;
-		entry.callback.AddListener((eventData) => { PtrEnter(); } );
-		pointerTrigger.triggers.Add(entry);
-
-		EventTrigger.Entry entry2 = new EventTrigger.Entry();
-		entry2.eventID = EventTriggerType.PointerExit;
-		entry2.callback.AddListener((eventData) => { PtrExit(); } );
-		pointerTrigger.triggers.Add(entry2);
 
 		if (doubleClickEnabled) {
 			doubleClickTime = Const.a.doubleClickTime;

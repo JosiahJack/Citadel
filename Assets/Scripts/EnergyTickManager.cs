@@ -3,9 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class EnergyTickManager : MonoBehaviour {
-	public GameObject playerObject;
 	public PlayerEnergy playerEnergy;
-	public GameObject[] energyTicks;
 	public Sprite[] tickImages;
 	private Image tickImage;
 	private int tempSpriteIndex;
@@ -32,8 +30,6 @@ public class EnergyTickManager : MonoBehaviour {
 			step += 11;
 		}
 
-		if (tempSpriteIndex >= 0 && tempSpriteIndex < 24) {
-			tickImage.overrideSprite = tickImages[tempSpriteIndex];
-		}
+		if (tempSpriteIndex >= 0 && tempSpriteIndex < 24) tickImage.overrideSprite = tickImages[tempSpriteIndex];
 	}
 }

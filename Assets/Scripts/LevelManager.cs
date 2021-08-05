@@ -151,6 +151,7 @@ public class LevelManager : MonoBehaviour {
 		prm.playerCurrentLevel = levnum;
 		PutBackCurrentLevelNPCs();
 		currentLevel = levnum; // Set current level to be the new level
+		QuestLogNotesManager.a.NotifyLevelChange(currentLevel);
 		DisableAllNonOccupiedLevels();
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
@@ -278,6 +279,11 @@ public class LevelManager : MonoBehaviour {
 			levelSecurity[currentLevel] = 0;
 		}
 		Const.sprint(Const.a.stringTable[306] + levelSecurity[currentLevel].ToString() + Const.a.stringTable[307],Const.a.allPlayers);
+
+		// Notify quest log if all nodes were destroyed
+		if (levelLargeNodeDestroyedCount[currentLevel] == levelLargeNodeCount[currentLevel]) {
+			QuestLogNotesManager.a.NodesDestroyed(currentLevel);
+		}
 	}
 
 	bool PosWithinLeafBounds(Vector3 pos, BoxCollider b) {

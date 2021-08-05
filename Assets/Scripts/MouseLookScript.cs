@@ -132,6 +132,11 @@ public class MouseLookScript : MonoBehaviour {
 	public float cyberSpinSensitivity = 0.5f;
 	private float shakeFinished;
 	private float shakeForce;
+	private string f9 = "f9";
+	private string f6 = "f6";
+	private string qsavename = "quicksave";
+	private string mouseX = "Mouse X";
+	private string mouseY = "Mouse Y";
 	//private AudioListener audListener;
 
     //float headbobSpeed = 1;
@@ -170,8 +175,7 @@ public class MouseLookScript : MonoBehaviour {
 		cyberLookDir = Vector3.zero;
 		logInventory = mainInventory.GetComponent<LogInventory>();
 
-		if (canvasContainer == null)
-			Const.sprint("BUG: No canvas given for camera to display UI",player);
+		if (canvasContainer == null) Const.sprint("BUG: No canvas given for camera to display UI",player);
 
 		canvasContainer.SetActive(true); //enable UI
 		//cameraDefaultLocalPos = transform.localPosition;
@@ -281,7 +285,7 @@ public class MouseLookScript : MonoBehaviour {
 			transform.localPosition = new Vector3(transform.localPosition.x + UnityEngine.Random.Range(shakeForce * -1f,shakeForce),transform.localPosition.y + UnityEngine.Random.Range(shakeForce * -1f,shakeForce),transform.localPosition.z + UnityEngine.Random.Range(shakeForce * -1f,shakeForce));
 		}
 
-		if (Input.GetKeyUp("f9")) {
+		if (Input.GetKeyUp(f9)) {
 			Const.a.Load(7);
 		}
 
@@ -302,14 +306,14 @@ public class MouseLookScript : MonoBehaviour {
 			playerCamera.layerCullDistances = cameraDistances; // cull anything beyond 50f except for sky layer
 		}
 
-		if (Input.GetKeyUp("f6")) {
-			Const.a.StartSave(7,"quicksave");
+		if (Input.GetKeyUp(f6)) {
+			Const.a.StartSave(7,qsavename);
 		}
 
         if (inventoryMode == false) {
 			if (!PauseScript.a.Paused() && playerMovement.ressurectingFinished < PauseScript.a.relativeTime) {
-				float dx = Input.GetAxisRaw("Mouse X");
-				float dy = Input.GetAxisRaw("Mouse Y");
+				float dx = Input.GetAxisRaw(mouseX);
+				float dy = Input.GetAxisRaw(mouseY);
 
 				if (inCyberSpace) {
 					if (Const.a.InputInvertCyberspaceLook) {
@@ -704,8 +708,10 @@ public class MouseLookScript : MonoBehaviour {
 									cursorTexture = Const.a.useableItemsFrobIcons[sebut.contents[tempButtonindex]];
 									heldObjectIndex = sebut.contents[tempButtonindex];
 									heldObjectCustomIndex = sebut.customIndex[tempButtonindex];
-									currentSearchItem.GetComponent<SearchableItem>().contents[tempButtonindex] = -1;
-									currentSearchItem.GetComponent<SearchableItem>().customIndex[tempButtonindex] = -1;
+									if (currentSearchItem != null) {
+										currentSearchItem.GetComponent<SearchableItem>().contents[tempButtonindex] = -1;
+										currentSearchItem.GetComponent<SearchableItem>().customIndex[tempButtonindex] = -1;
+									}
 									sebut.contents[tempButtonindex] = -1;
 									sebut.customIndex[tempButtonindex] = -1;
 									MFDManager.a.DisableSearchItemImage(tempButtonindex);
@@ -842,6 +848,7 @@ public class MouseLookScript : MonoBehaviour {
 			return;
 		}
 		MFDManager.a.SendInfoToItemTab(index);
+		WeaponCurrent.WepInstance.UpdateAmmoText();
     }
 
 	void AddAmmoToInventory (int index, int constIndex, int amount, bool isSecondary) {
@@ -1505,6 +1512,7 @@ public class MouseLookScript : MonoBehaviour {
 						return;
 					}
 				} else {
+					// Debug.Log("WARNING: Failed to get freeObjectInPool for object " + heldObject.ToString() + "being dropped! MouseLookScript DropHeldItem.",player);
 					tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Quaternion.identity) as GameObject;  //effect
 					if (tossObject == null) {
 						Const.sprint("BUG: Failed to instantiate object being dropped!",player);
@@ -1602,6 +1610,8 @@ public class MouseLookScript : MonoBehaviour {
 	}
 	
 	void  SearchObject ( int index  ){
+		if (currentSearchItem == null) { Debug.Log("Early exit from SearchObject, currentSearchItem was null!"); return;}
+
 		bool useFX = true;
 		SearchableItem curSearchScript = currentSearchItem.GetComponent<SearchableItem>();
 		if (curSearchScript.searchableInUse) {

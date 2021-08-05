@@ -5,7 +5,6 @@ using System.Collections;
 public class HealthTickManager : MonoBehaviour {
 	public GameObject playerObject;
 	public PlayerHealth playerHealth;
-	public GameObject[] healthTicks;
 	public Sprite[] tickImages;
 	private Image tickImage;
 	private int tempSpriteIndex;
@@ -38,8 +37,6 @@ public class HealthTickManager : MonoBehaviour {
 			step += 11;
 		}
 
-		if (tempSpriteIndex >= 0 && tempSpriteIndex < 24) {
-			tickImage.overrideSprite = tickImages[tempSpriteIndex];
-		}
+		if (tempSpriteIndex >= 0 && tempSpriteIndex < 24) tickImage.overrideSprite = tickImages[tempSpriteIndex];
 	}
 }

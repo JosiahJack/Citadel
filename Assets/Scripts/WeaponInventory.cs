@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class WeaponInventory : MonoBehaviour, IBatchUpdate {
+public class WeaponInventory : MonoBehaviour {
 	public string[] weaponInventoryText;
 	public int[] weaponInventoryIndices; // save
     public int[] weaponInventoryAmmoIndices; // save
@@ -48,23 +48,9 @@ public class WeaponInventory : MonoBehaviour, IBatchUpdate {
 		weaponInvTextSource[13] = Const.a.stringTable[277]; // SKORPION
 		weaponInvTextSource[14] = Const.a.stringTable[278]; // SPARQ BEAM
 		weaponInvTextSource[15] = Const.a.stringTable[279]; // STUNGUN
-
-		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketB);
     }
 
-	public void BatchUpdate () {
-	}void Update() {
-		if (!gameObject.activeSelf) return;
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			for (int i=0;i<WeaponShotsText.weaponShotsInventoryText.Length;i++) {
-				WeaponShotsText.weaponShotsInventoryText[i] = GetTextForWeaponAmmo(i);
-			}
-
-			GetNumWeapons();
-		}
-	}
-
-	void GetNumWeapons() {
+	public void GetNumWeapons() {
 			int slot1 = WeaponInventory.WepInventoryInstance.weaponInventoryIndices [0];
 			int slot2 = WeaponInventory.WepInventoryInstance.weaponInventoryIndices [1];
 			int slot3 = WeaponInventory.WepInventoryInstance.weaponInventoryIndices [2];
@@ -82,7 +68,7 @@ public class WeaponInventory : MonoBehaviour, IBatchUpdate {
 			if (slot7 != -1) numweapons++;
 	}
 
-	string GetTextForWeaponAmmo(int index) {
+	public string GetTextForWeaponAmmo(int index) {
 		globalLookupIndex = weaponInventoryIndices[index];
 		retval = zeroString;
 		switch (globalLookupIndex) {

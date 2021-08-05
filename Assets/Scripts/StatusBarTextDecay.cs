@@ -19,8 +19,7 @@ public class StatusBarTextDecay : MonoBehaviour {
 	}
 
 	public void SendText(string inputString) {
-		if (tempString == "")
-			return; // no text sent
+		if (tempString == "") return; // no text sent
 
 		shouldFlash = false;
 		decayFinished = Time.time + defaultDecayTime; // text stays on screen for next n seconds
@@ -36,8 +35,7 @@ public class StatusBarTextDecay : MonoBehaviour {
 	}
 
 	void Update () {
-		if (shouldFlash && (flashTime < Time.time))
-			statusText.text = tempString; // re-enable text
+		if (shouldFlash && (flashTime < Time.time)) statusText.text = tempString; // re-enable text
 
 		if (decayFinished < Time.time) {
 			oldString = statusText.text;

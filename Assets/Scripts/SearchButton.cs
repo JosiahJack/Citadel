@@ -27,8 +27,10 @@ public class SearchButton : MonoBehaviour {
 			if (contents[0] == -1) return;
 			playerCamera.mouseCursor.GetComponent<MouseCursor>().cursorImage = Const.a.useableItemsFrobIcons[contents[0]];
 			playerCamera.heldObjectIndex = contents[0];
-			playerCamera.currentSearchItem.GetComponent<SearchableItem>().contents[0] = -1;
-			playerCamera.currentSearchItem.GetComponent<SearchableItem>().customIndex[0] = -1;
+			if (playerCamera.currentSearchItem != null) {
+				playerCamera.currentSearchItem.GetComponent<SearchableItem>().contents[0] = -1;
+				playerCamera.currentSearchItem.GetComponent<SearchableItem>().customIndex[0] = -1;
+			}
 			playerCamera.holdingObject = true;
 			Const.sprint(Const.a.useableItemsNameText[contents[0]] + Const.a.stringTable[319],playerCamera.player);
 			contents[0] = -1;
@@ -46,8 +48,10 @@ public class SearchButton : MonoBehaviour {
 			if (contents[1] == -1) return;
 			playerCamera.mouseCursor.GetComponent<MouseCursor>().cursorImage = Const.a.useableItemsFrobIcons[contents[1]];
 			playerCamera.heldObjectIndex = contents[1];
-			playerCamera.currentSearchItem.GetComponent<SearchableItem>().contents[1] = -1;
-			playerCamera.currentSearchItem.GetComponent<SearchableItem>().customIndex[1] = -1;
+			if (playerCamera.currentSearchItem != null) {
+				playerCamera.currentSearchItem.GetComponent<SearchableItem>().contents[1] = -1;
+				playerCamera.currentSearchItem.GetComponent<SearchableItem>().customIndex[1] = -1;
+			}
 			playerCamera.holdingObject = true;
 			Const.sprint(Const.a.useableItemsNameText[contents[1]] + Const.a.stringTable[319],playerCamera.player);
 			contents[1] = -1;
@@ -65,8 +69,10 @@ public class SearchButton : MonoBehaviour {
 			if (contents[2] == -1) return;
 			playerCamera.mouseCursor.GetComponent<MouseCursor>().cursorImage = Const.a.useableItemsFrobIcons[contents[2]];
 			playerCamera.heldObjectIndex = contents[2];
-			playerCamera.currentSearchItem.GetComponent<SearchableItem>().contents[2] = -1;
-			playerCamera.currentSearchItem.GetComponent<SearchableItem>().customIndex[2] = -1;
+			if (playerCamera.currentSearchItem != null) {
+				playerCamera.currentSearchItem.GetComponent<SearchableItem>().contents[2] = -1;
+				playerCamera.currentSearchItem.GetComponent<SearchableItem>().customIndex[2] = -1;
+			}
 			playerCamera.holdingObject = true;
 			Const.sprint(Const.a.useableItemsNameText[contents[2]] + Const.a.stringTable[319],playerCamera.player);
 			contents[2] = -1;
@@ -84,8 +90,10 @@ public class SearchButton : MonoBehaviour {
 			if (contents[3] == -1) return;
 			playerCamera.mouseCursor.GetComponent<MouseCursor>().cursorImage = Const.a.useableItemsFrobIcons[contents[3]];
 			playerCamera.heldObjectIndex = contents[3];
-			playerCamera.currentSearchItem.GetComponent<SearchableItem>().contents[3] = -1;
-			playerCamera.currentSearchItem.GetComponent<SearchableItem>().customIndex[3] = -1;
+			if (playerCamera.currentSearchItem != null) {
+				playerCamera.currentSearchItem.GetComponent<SearchableItem>().contents[3] = -1;
+				playerCamera.currentSearchItem.GetComponent<SearchableItem>().customIndex[3] = -1;
+			}
 			playerCamera.holdingObject = true;
 			Const.sprint(Const.a.useableItemsNameText[contents[3]] + Const.a.stringTable[319],playerCamera.player);
 			contents[3] = -1;

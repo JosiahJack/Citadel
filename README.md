@@ -1,6 +1,7 @@
 # Citadel
+Version 0.96, as of 8/4/2021
 Started 7/6/2015
-Released TBD
+Released TBD, Estimate 9/22/2021
 The System Shock Fan Remake.  The goal is to recreate the original closely while enhancing it with 3D models instead of 2D sprites, 3D details to the station in and out, particle effects, and subtle sound effect additions.  After releasing a playable version, focus will shift to making mod and mapping tools.
 
 PLEASE submit bug and feature requests here on this github.

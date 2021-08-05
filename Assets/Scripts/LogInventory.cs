@@ -9,7 +9,8 @@ public class LogInventory : MonoBehaviour {
 	public static LogInventory a;
 	public int lastAddedIndex = -1; // save
 	public CenterTabButtons centerTabButtonsControl;
-	private AudioSource SFXSource;
+	[HideInInspector]
+	public AudioSource SFXSource;
 	private AudioClip SFXClip;
 	public GameObject vmailbetajet;
 	public GameObject vmailbridgesep;
@@ -24,8 +25,7 @@ public class LogInventory : MonoBehaviour {
 
 	void Awake() {
 		SFXSource = GetComponent<AudioSource>();
-		if (SFXSource == null)
-			SFXSource = gameObject.AddComponent<AudioSource>();
+		if (SFXSource == null) SFXSource = gameObject.AddComponent<AudioSource>();
 		
 		a = this;
 		a.paused = false;
@@ -77,6 +77,8 @@ public class LogInventory : MonoBehaviour {
 			if (Const.a.audioLogs != null) SFXClip = Const.a.audioLogs[logIndex];
 			if (SFXClip != null && SFXSource != null) SFXSource.PlayOneShot(SFXClip);
 		//}
+
+		if (!readLog[logIndex]) QuestLogNotesManager.a.LogAdded(logIndex);
 
 		readLog[logIndex] = true;
 		if (Const.a.audioLogType[logIndex] == 4) {

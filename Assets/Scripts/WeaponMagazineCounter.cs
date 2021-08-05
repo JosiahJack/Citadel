@@ -37,6 +37,8 @@ public class WeaponMagazineCounter : MonoBehaviour {
 	void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
 			int index = WeaponCurrent.WepInstance.weaponCurrent; // 0 to 6, Changed from this: WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.WepInstance.weaponIndex); 0 to 15
+			if (index < 0) return;
+
 			if (WeaponCurrent.WepInstance.weaponIndex == -1 || WeaponCurrent.WepInstance.weaponIndex == 41 || WeaponCurrent.WepInstance.weaponIndex == 42 || MFDManager.a.playerMLook.inCyberSpace) {
 				tempis[0] = 10; // blank
 				tempis[1] = 10; // blank

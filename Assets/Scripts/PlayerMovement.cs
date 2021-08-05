@@ -226,8 +226,8 @@ public class PlayerMovement : MonoBehaviour {
 	private Vector3 playerHome;
 	public HealthManager hm;
 	private Texture2D tempTexture;
-	private Color[] mapColorsArray;
-	private Color[] hazardColors;
+	// private Color[] mapColorsArray;
+	// private Color[] hazardColors;
 	[HideInInspector]
 	public float turboFinished = 0f; // save
 	public float turboCyberTime = 15f;
@@ -280,8 +280,8 @@ public class PlayerMovement : MonoBehaviour {
 		doubleJumpTicks = 0;
 		turboFinished = PauseScript.a.relativeTime;
 		playerHome = transform.localPosition;	
-		mapColorsArray = new Color[1024*1024];
-		hazardColors = new Color[1024*1024];
+		// mapColorsArray = new Color[1024*1024];
+		// hazardColors = new Color[1024*1024];
 		automapExplored = new bool[4096];
 		automapUpdateFinished = PauseScript.a.relativeTime;
 		SetAutomapExploredReference(LevelManager.a.currentLevel);
