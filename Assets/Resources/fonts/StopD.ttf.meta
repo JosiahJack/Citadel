@@ -1,7 +1,5 @@
 fileFormatVersion: 2
 guid: f96cf750221a2d9459ad5ad07ff26850
-timeCreated: 1434676523
-licenseType: Free
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -10,13 +8,17 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: StopD
+  fontName: My Font
   fontNames:
-  - StopD
-  fallbackFontReferences: []
+  - My Font
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 6bf1bb901525a8b43bbfb242cd13a95b, type: 3}
+  - {fileID: 12800000, guid: 2b03768c1bd0b9066996c3e27b6ccc85, type: 3}
   customCharacters: 
-  fontRenderingMode: 3
+  fontRenderingMode: 0
   ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
   userData: 
   assetBundleName: 
   assetBundleVariant: 

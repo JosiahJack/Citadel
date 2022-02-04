@@ -12,6 +12,9 @@ using UnityEngine.SceneManagement;
 
 // [ExecuteInEditMode]
 public class LightGeneration : MonoBehaviour {
+	public void Reset_Selected() {}
+	public void GenerateLighting_MultipleSelectionHandler() {}
+	/*
 	public GameObject selected;
 	public Light singleLight;
 	public string directoryPath = "C:/Users/Josiah/Dropbox/GitHub/Citadel/Assets/Models/Materials/GeneratedMaterials/";
@@ -309,7 +312,7 @@ public class LightGeneration : MonoBehaviour {
 		}
 		// UnityEngine.Debug.Log("Casts: " + potentialCastRegister.Count.ToString());
 		for (int i=0;i<potentialCastRegister.Count;i++) {
-			if (/*Physics.Raycast(testLight.transform.position, potentialCastRegister[i], out tempHit, testLight.range + Mathf.Epsilon,layerMaskGeoLight)*/ false) {
+			if (Physics.Raycast(testLight.transform.position, potentialCastRegister[i], out tempHit, testLight.range + Mathf.Epsilon,layerMaskGeoLight)) {
 				// Raycasts are 42% of the performance cost.
 
 				// This inner bit is 13% of the performance cost.
@@ -435,5 +438,5 @@ public class LightGeneration : MonoBehaviour {
 		rangePercent = Mathf.Clamp((radius - dist) / radius,0f,1f); // Clamp falloff to the lights set range value as a radius.
 		diffuse = ((Mathf.Pow(rangePercent,0.5f) * intensity * angredux * 0.5f) / 2.2f); // Apply base light intensity.
 		return Mathf.Max(0f,diffuse + ((1f/Mathf.Max(0f,(Mathf.Pow(Mathf.Max(0f,(dist/radius)) * 5f,2f)))) * intensity * angredux) * multiplier * rangePercent + (boost * rangePercent) + (distBoost * (1f/(dist*dist))));
-	}
+	}*/
 }
