@@ -8,7 +8,7 @@ PLEASE submit bug and feature requests here on this github.
 
 If you would like to join and aid in any capacity, please email Josiah Jack, the main author, at josiahjackcitadel@gmail.com
 
-Special thanks to Looing Glass Studios and Origin Games for the original 1994 product. 
+Special thanks to Looking Glass Studios and Origin Games for the original 1994 product. 
 Special thanks to Night Dive Studios for allowing this project to live on (unhindered).
 
 
