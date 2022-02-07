@@ -43,7 +43,7 @@ HAPPY SPEEDRUNNING!!
 
 
 The code as it is in PauseScript.cs
-// Fore use with LiveSplit or other future speedrunner utilities for doing speedruns
+// For use with LiveSplit or other future speedrunner utilities for doing speedruns
 [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
 public static class AutoSplitterData {
 	public static long magicNumber = 0x1337133713371337;

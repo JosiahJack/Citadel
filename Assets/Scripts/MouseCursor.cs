@@ -30,6 +30,8 @@ public class MouseCursor : MonoBehaviour {
 	public static Vector2 cursorPosition;
 	public float x;
 	public float y;
+	public float inputX;
+	public float inputY;
 	public static float cursorXmax;
 	public static float cursorYmax;
 	public GUIStyle liveGrenadeStyle;
@@ -80,6 +82,8 @@ public class MouseCursor : MonoBehaviour {
 		if (x < 0) x = 0;
 		if (x > Screen.width) x = Screen.width;
 		y = cursorY;
+		inputX = Input.mousePosition.x;
+		inputY = Input.mousePosition.y;
 		cursorXmax = drawTexture.xMax;
 		cursorYmax = drawTexture.yMax;
 

@@ -5,16 +5,15 @@ using System.Diagnostics;
 using System.Linq;
 using Unity.Collections;
 using Unity.Jobs;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 // [ExecuteInEditMode]
 public class LightGeneration : MonoBehaviour {
-	public void Reset_Selected() {}
-	public void GenerateLighting_MultipleSelectionHandler() {}
-	/*
 	public GameObject selected;
 	public Light singleLight;
 	public string directoryPath = "C:/Users/Josiah/Dropbox/GitHub/Citadel/Assets/Models/Materials/GeneratedMaterials/";
@@ -63,6 +62,7 @@ public class LightGeneration : MonoBehaviour {
 	private float diffuse;
 
 	public void Reset_Selected() {
+		#if UNITY_EDITOR
 		if (lightWasForGeometry != null) {
 			if (lightWasForGeometry.Length > 0) {
 				for (int i =0; i< allLightsInLevel.Length;i++) {
@@ -83,10 +83,13 @@ public class LightGeneration : MonoBehaviour {
 				else UnityEngine.Debug.Log("Failed to reset material on mr " + mr.ToString());
 			}
 		}
+		#endif
 	}
 
 	public void GenerateLighting_MultipleSelectionHandler() {
+		#if UNITY_EDITOR
 		GenerateLighting_MultipleSelection();
+		#endif
 	}
 
 	bool PositionValid(Vector3 pos) {
@@ -438,5 +441,5 @@ public class LightGeneration : MonoBehaviour {
 		rangePercent = Mathf.Clamp((radius - dist) / radius,0f,1f); // Clamp falloff to the lights set range value as a radius.
 		diffuse = ((Mathf.Pow(rangePercent,0.5f) * intensity * angredux * 0.5f) / 2.2f); // Apply base light intensity.
 		return Mathf.Max(0f,diffuse + ((1f/Mathf.Max(0f,(Mathf.Pow(Mathf.Max(0f,(dist/radius)) * 5f,2f)))) * intensity * angredux) * multiplier * rangePercent + (boost * rangePercent) + (distBoost * (1f/(dist*dist))));
-	}*/
+	}
 }

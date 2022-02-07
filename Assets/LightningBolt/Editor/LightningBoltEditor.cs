@@ -45,6 +45,7 @@ namespace DigitalRuby.LightningBolt
             }
 
             DrawDefaultInspector();
+			GUIUtility.ExitGUI();
         }
     }
 }

@@ -1,0 +1,53 @@
+This game uses the following sequential struct to store data for speedrunners to access using a utility like LiveSplit or other
+
+magicNumber:
+is the handle for finding the struct stored in memory and referencing the bits immediately after.
+
+thisRunTime:
+is the current total time for this run.  This is reset to 0 when starting a New Game.
+This does not include time spent: in the Main Menu before New Game, loading the game from saves, loading for new game,
+or loading between levels when travelling on elevators or entering/exiting cyberspace.
+
+This DOES include time for: cutscenes (skippable by clicking), vmail (skippable by clicking), resurrections, time spent in Main Menu to
+reload a save game after dying (when ressurection was not active yet for that level).
+
+isLoading:
+is a bool to indicate we are loading or not and therefore NOT increment the timer.
+
+
+=====================
+// SPOILERS WARNING //
+=====================
+missionSplitID:
+is an integer value to indicate which split we are on.  Resets to 0 when starting a New Game.
+The splits are as follows, the value is the resulting ID after the split:
+	0 - Game start - as soon as intro cutscene begins to play (cutscene can be skipped quickly by clicking)
+	1 - Medical: Split occurs once player enters into Level 2: Research (Located in code in LevelManager.a.LoadLevel() after check for proper level and ID == 0)
+	2 - Laser Destroyed: Split occurs once player has flipped the switch for destroying the laser.
+		The split occurs immediately before the Vmail displays.
+	3 - Master Grove Jettison failure: split occurs once master jettison lever fails on flip (this is after all 3 groves are readied)
+	4 - Master Grove Jettison complete: split occurs once master jettison lever is succesful on flip (this is after relay is fixed)
+	5 - Beta Grove Jettisoned: as soon as lever is flipped to jettison beta, immediately before vmail
+	6 - Executive Finished: as soon as player enters into Level 7: Engineering
+	7 - Antennas destroyed: as soon as all 4 antennas are destroyed, splits at explosion of 4th plastique.
+	8 - Self-destruct activated: splits as soon as self destruct lever is flipped.
+	9 - Side mission split (optional): Lifepod failure: happens as soon as lever for lifepod launch is flipped and fails.
+	10- You are Now in Leaving Citadel Station: as soon as locked door for level 8 opens via trigger - this gives access to level 8
+	11- Bridge: As soon as you are on the bridge after taking the last elevator.
+	12- Isolinear installed: As soon as isolinear chipset program has been installed in the computer room (this opens access to center of bridge)
+	13- Bridge Cyberspace: As soon as you have entered cyberspace on the Bridge (after Cyberspace loading - loading not included in time, see above)
+	14- SHODAN: As soon as SHODAN is defeated.
+	15- END: As soon as stats screen is reached on the credits. (if you click so fast that you go past the stats page, you can right click to go back)
+
+HAPPY SPEEDRUNNING!!
+
+
+The code as it is in PauseScript.cs
+// Fore use with LiveSplit or other future speedrunner utilities for doing speedruns
+[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+public static class AutoSplitterData {
+	public static long magicNumber = 0x1337133713371337;
+	public static double thisRunTime = 0;
+	public static bool isLoading = false;
+	public static int missionSplitID = 0;
+}

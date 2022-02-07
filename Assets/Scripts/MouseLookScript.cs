@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Collections;
@@ -163,7 +165,6 @@ public class MouseLookScript : MonoBehaviour {
 		cameraDistances[15] = 2400f; // sky is visible
 		playerCamera.layerCullDistances = cameraDistances; // cull anything beyond 79f except for sky layer
 		playerCamera.depthTextureMode = DepthTextureMode.Depth;
-		//audListener = GetComponent<AudioListener>();
 		frobDistance = Const.a.frobDistance;
 		holdingObject = false;
 		heldObjectIndex = -1;
@@ -174,12 +175,8 @@ public class MouseLookScript : MonoBehaviour {
 		xRotation = startxRotation;
 		cyberLookDir = Vector3.zero;
 		logInventory = mainInventory.GetComponent<LogInventory>();
-
 		if (canvasContainer == null) Const.sprint("BUG: No canvas given for camera to display UI",player);
-
 		canvasContainer.SetActive(true); //enable UI
-		//cameraDefaultLocalPos = transform.localPosition;
-		//cameraDefaultLocalRot = transform.localRotation;
 		recoiling = false;
 		firstTimePickup = true;
 		firstTimeSearch = true;
@@ -1592,6 +1589,15 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	public void ForceShootMode() {
+		#if UNITY_EDITOR
+		var editorWindow = UnityEditor.EditorWindow.GetWindow(typeof(UnityEditor.EditorWindow).Assembly.GetType("UnityEditor.GameView"));
+		Vector2 warpPosition = editorWindow.rootVisualElement.contentRect.center; // Screen.safeArea.center;
+		# else
+		Vector2 warpPosition = new Vector2(Screen.width/2,Screen.height/2); // Screen.safeArea.center;
+		#endif
+		
+		Mouse.current.WarpCursorPosition (warpPosition); // Note that y position is flipped, but no need to check here anyway.
+		InputState.Change(Mouse.current.position, warpPosition);
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
 		inventoryMode = false;
