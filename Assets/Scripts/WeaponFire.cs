@@ -442,7 +442,9 @@ public class WeaponFire : MonoBehaviour {
 					}
 				}
             }
-        }
+        } else {
+
+	}
     }
 
 	void FireCyberWeapon() {
