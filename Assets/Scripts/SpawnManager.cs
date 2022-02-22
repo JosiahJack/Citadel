@@ -36,7 +36,7 @@ public class SpawnManager : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (active) {
 				if (numberActive < numberToSpawn) {
 					if (spawnAllAtOnce) {
@@ -59,7 +59,7 @@ public class SpawnManager : MonoBehaviour {
         if (dynamicObjectsContainer == null) return; //didn't find current level, can't spawn
 		Debug.Log("Found dynamic object container for spawning new enemy");
 		if (NPCSpawner) {
-			GameObject spawnee = (GameObject) Instantiate(Const.a.npcPrefabs[index], new Vector3(0,0,0),  Quaternion.identity);
+			GameObject spawnee = (GameObject) Instantiate(Const.a.npcPrefabs[index], new Vector3(0,0,0),  Const.a.quaternionIdentity);
 			if (spawnee !=null) {
 				spawnee.GetComponent<HealthManager>().spawnMother = this;
 				spawnee.transform.position = GetRandomLocation();
@@ -73,6 +73,9 @@ public class SpawnManager : MonoBehaviour {
 				SaveObject so = spawnee.GetComponent<SaveObject>();
 				if (so != null) {
 					so.levelParentID = LevelManager.a.currentLevel;
+					so.instantiated = true;
+					so.constLookupTable = 1; // Special npcPrefabs table.
+					so.constLookupIndex = index;
 					so.Start();
 					Debug.Log("Spawned enemy SaveObject setup");
 				}
@@ -93,7 +96,6 @@ public class SpawnManager : MonoBehaviour {
 			numberActive--;
 		}
 		if (numberActive < 0) numberActive = 0;
-		//if (numberActive > numberToSpawn) numberActive = numberToSpawn;
 	}
 
 	Vector3 GetRandomLocation() {
@@ -105,10 +107,10 @@ public class SpawnManager : MonoBehaviour {
 		return new Vector3(0,0,0);
 	}
 
+	// CapsuleCast using largest NPC's bounding capsule to check if area is clear.
 	bool AreaClear(Vector3 spot) {
-		int layMask = LayerMask.GetMask("Default","Water","Geometry","NPC","Corpse","Door","InterDebris","Player");
 		RaycastHit hit = new RaycastHit();
-		if (Physics.CapsuleCast(spot + new Vector3(0,0.52f,0),spot + new Vector3(0,-0.52f,0),0.48f,Vector3.zero,out hit,0.02f,layMask)) {
+		if (Physics.CapsuleCast(spot + new Vector3(0,0.52f,0),spot + new Vector3(0,-0.52f,0),0.48f,Const.a.vectorZero,out hit,0.02f,Const.a.layerMaskNPCCollision)) {
 			return false;
 		} else {
 			return true;

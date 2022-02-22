@@ -11,7 +11,6 @@ public class GrenadeButton : MonoBehaviour {
 	private int itemLookup;
 	private Texture2D cursorTexture;
 	private Vector2 cursorHotspot;
-	public GrenadeCurrent playerGrenCurrent;
 	public AudioClip SFXClick;
 	public AudioSource SFX;
 
@@ -27,13 +26,12 @@ public class GrenadeButton : MonoBehaviour {
 	void DoubleClick() {
 		// Put grenade in the player's hand (cursor)
 		playerCamera.GetComponent<MouseLookScript>().UseGrenade(useableItemIndex);
-		//Debug.Log("Grenade double clicked");
 	}
 
 	public void GrenadeInvClick () {
 		mfdManager.SendInfoToItemTab(useableItemIndex);
-		GrenadeCurrent.GrenadeInstance.grenadeCurrent = GrenButtonIndex;  //Set current
-		GrenadeCurrent.GrenadeInstance.grenadeIndex = useableItemIndex;  //Set current
+		Inventory.a.grenadeCurrent = GrenButtonIndex;  //Set current
+		Inventory.a.grenadeIndex = useableItemIndex;  //Set current
 		if (SFX != null && SFXClick != null) SFX.PlayOneShot(SFXClick);
 	}
 	

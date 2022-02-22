@@ -14,7 +14,7 @@ public class StartMenuButtonHighlight : MonoBehaviour {
 	public Color darkshadow;
 	public Color litshadow;
 
-	void DeHighlight () {
+	public void DeHighlight () {
 		if (textshadow != null) {
 			textshadow.effectColor = darkshadow;
 			// textshadow.enabled = true;
@@ -22,7 +22,8 @@ public class StartMenuButtonHighlight : MonoBehaviour {
 		if (outlineGlow != null) outlineGlow.enabled = false;
 		if (text != null) text.color = dark;
 	}
-	void Highlight () {
+
+	public void Highlight () {
 		if (textshadow != null) {
 			textshadow.effectColor = litshadow;
 			// textshadow.enabled = false;

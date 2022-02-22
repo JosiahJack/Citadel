@@ -4,24 +4,12 @@ using System.Collections;
 using UnityStandardAssets.ImageEffects;
 
 public class HardwareButton : MonoBehaviour {
-	//[SerializeField] private GameObject iconman;
-	[SerializeField] private AudioSource SFX = null; // assign in the editor
-	[SerializeField] private AudioClip SFXClip = null; // assign in the editor
-	[SerializeField] private AudioClip SFXClipDeactivate = null; // assign in the editor
-	//public CenterTabButtons ctb;
-	public Sprite buttonDeactive;
-	public Sprite buttonActive1;
-	public Sprite buttonActive2;
-	public Sprite buttonActive3;
-	public Sprite buttonActive4;
-	public HardwareInventory hwi;
-	public HardwareInvCurrent hwc;
-	public int referenceIndex;
-	public int ref14Index;
-	private bool toggleState = false;
-	private Button butn;
-	private float defaultZero = 0f;
-	private float brightness = 0f;
+	public Button[] buttons;
+	public Sprite[] buttonDeactive;
+	public Sprite[] buttonActive1;
+	public Sprite[] buttonActive2;
+	public Sprite[] buttonActive3;
+	public Sprite[] buttonActive4;
 	public GameObject sensaroundCenter;
 	public GameObject sensaroundLH;
 	public GameObject sensaroundRH;
@@ -32,215 +20,104 @@ public class HardwareButton : MonoBehaviour {
 	public Light infraredLight;
 	public GameObject playerCamera;
 	public GameObject gunCamera;
-	public HeadMountedLantern hml;
+	public Light headlight;
 	public PlayerEnergy pe;
-	private float blinkFinished;
-	private float blinkTick = 1f;
 	public EmailContentsButtonsManager ecbm;
-	private float beepFinished;
-	private float beepTick = 3f;
 	public AudioClip beepSFX;
-	private int beepCount = 0;
 	public GameObject ShieldActivateFX;
 	public GameObject ShieldDeactivateFX;
+	public AudioClip[] SFXClip;
+	public AudioClip[] SFXClipDeactivate;
+
+	// Hw referenceIndex, ref14Index, button index
+	// Bio 27,6, 0
+	// Sen 24,3, 1
+	// Lan 28,7, 2
+	// Shi 26,5, 3
+	// Nig 32,11,4
+	// Ere 23,2, 5
+	// Boo 30,9, 6
+	// Jum 31,10,7
+
+	[HideInInspector] public AudioSource SFX;
+	private float defaultZero = 0f;
+	private float brightness = 0f;
+	private float lanternVersion1Brightness = 2.5f;
+	private float lanternVersion2Brightness = 4;
+	private float lanternVersion3Brightness = 5;
 
 	void Awake () {
-		butn = GetComponent<Button>();
-		blinkFinished = blinkTick + PauseScript.a.relativeTime;
-		beepFinished = beepTick + PauseScript.a.relativeTime;
-	}
-
-	public void PtrEnter () {
-		GUIState.a.isBlocking = true;
-	}
-
-	public void PtrExit () {
-		GUIState.a.isBlocking = false;
-	}
-
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			ListenForHardwareHotkeys();
-			if (ref14Index == 2) {
-				if (ecbm != null) {
-					bool foundsome = false;
-					for (int i=0;i<ecbm.mmLBs.Length;i++) {
-						if (LogInventory.a.hasLog[ecbm.mmLBs[i].logReferenceIndex] && !LogInventory.a.readLog[ecbm.mmLBs[i].logReferenceIndex])
-							foundsome = true;
-					}
-					if (foundsome) {
-						// You've got mail!
-						if (blinkFinished < PauseScript.a.relativeTime) {
-							blinkFinished = blinkTick + PauseScript.a.relativeTime;
-							toggleState = !toggleState;
-							if (toggleState) {
-								butn.image.overrideSprite = buttonActive1;
-							} else {
-								butn.image.overrideSprite = buttonDeactive;
-							}
-						}
-						if (beepFinished < PauseScript.a.relativeTime && LogInventory.a.beepDone) {
-							beepFinished = beepTick + PauseScript.a.relativeTime;
-							beepCount++;
-							if (beepCount >= 3) {
-								LogInventory.a.beepDone = false;
-								beepCount = 0;
-							}
-							if (SFX != null && beepSFX != null) SFX.PlayOneShot(beepSFX);
-						}
-					} else {
-						butn.image.overrideSprite = buttonDeactive;
-					}
-				}
-			}
-		}
-	}
-
-	public void ChangeHardwareVersion (int ind, int verz) {
-		SetVersionIconForButton (true, verz);
-		switch (ind) {
-		case 0:
-			break;
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		case 4:
-			break;
-		case 5:
-			break;
-		case 6:
-			// Bio
-			break;
-		case 7:
-			// Lantern
-			// figure out which brightness setting to use depending on version again
-			switch(verz) {
-				case 0: brightness = hml.lanternVersion1Brightness; break;
-				case 1: brightness = hml.lanternVersion2Brightness; break;
-				case 2: brightness = hml.lanternVersion3Brightness; break;
-				default: brightness = defaultZero; break;
-			}
-
-			hml.headlight.intensity = brightness; // set the light intensity per version
-			break;
-		case 8:
-			break;
-		case 9:
-			break;
-		case 10:
-			break;
-		case 11:
-			break;
-		case 12:
-			break;
-		case 13:
-			break;
-		}
+		SFX = GetComponent<AudioSource>();
 	}
 
 	public void ListenForHardwareHotkeys () {
-		// Bio
-		if (ref14Index == 6 && GetInput.a != null && HardwareInventory.a.hasHardware[6] &&  GetInput.a.Biomonitor()) {
-			BioClick ();
-		}
-
-		// Sensaround
-		if (ref14Index == 3 && GetInput.a != null && HardwareInventory.a.hasHardware[3] &&  GetInput.a.Sensaround()) {
-			SensaroundClick ();
-		}
-
-		// Shield
-		if (ref14Index == 5 && GetInput.a != null && HardwareInventory.a.hasHardware[5] &&  GetInput.a.Shield()) {
-			ShieldClick ();
-		}
-
-		// Lantern
-		if (ref14Index == 7 && GetInput.a != null && HardwareInventory.a.hasHardware[7] &&  GetInput.a.Lantern()) {
-			LanternClick ();
-		}
-
-		// Infrared
-		if (ref14Index == 11 && GetInput.a != null && HardwareInventory.a.hasHardware[11] && GetInput.a.Infrared()) {
-			InfraredClick ();
-		}
-
-		// Ereader
-		if (ref14Index == 2 && GetInput.a != null && HardwareInventory.a.hasHardware[2] && GetInput.a.Email()) {
-			EReaderClick ();
-		}
-
-		// Booster
-		if (ref14Index == 9 && GetInput.a != null && HardwareInventory.a.hasHardware[9] && GetInput.a.Booster()) {
-			BoosterClick ();
-		}
-
-		// JumpJets
-		if (ref14Index == 10 && GetInput.a != null && HardwareInventory.a.hasHardware[10] && GetInput.a.Jumpjets()) {
-			JumpJetsClick ();
-		}
+		if (Inventory.a.hasHardware[6] && GetInput.a.Biomonitor()) BioClick();
+		if (Inventory.a.hasHardware[3] && GetInput.a.Sensaround()) SensaroundClick();
+		if (Inventory.a.hasHardware[5] && GetInput.a.Shield())     ShieldClick();
+		if (Inventory.a.hasHardware[7] && GetInput.a.Lantern())    LanternClick();
+		if (Inventory.a.hasHardware[11]&& GetInput.a.Infrared())   InfraredClick();
+		if (Inventory.a.hasHardware[2] && GetInput.a.Email())      EReaderClick();
+		if (Inventory.a.hasHardware[9] && GetInput.a.Booster())    BoosterClick();
+		if (Inventory.a.hasHardware[10]&& GetInput.a.Jumpjets())   JumpJetsClick();
 	}
 
-	public void SetVersionIconForButton(bool isOn, int verz) {
-		if (verz > 3 || verz < 0 || butn == null) { Debug.Log("BUG: in SetVersionIconForButton"); return; }
+	// 0 = bio, 1 = sen, 2 = lan, 3 = shi, 4 = nig, 5 = ere, 6 = boo, 7 = jum
+	public void SetVersionIconForButton(bool isOn, int verz, int button8Index) {
+		if (button8Index < 0 || button8Index > 7) button8Index = 0;
 		if (isOn) {
 			switch (verz) {
 			case 0:
-				butn.image.overrideSprite = buttonActive1;
+				buttons[button8Index].image.overrideSprite = buttonActive1[button8Index];
 				break;
 			case 1:
-				butn.image.overrideSprite = buttonActive2;
+				buttons[button8Index].image.overrideSprite = buttonActive2[button8Index];
 				break;
 			case 2:
-				butn.image.overrideSprite = buttonActive3;
+				buttons[button8Index].image.overrideSprite = buttonActive3[button8Index];
 				break;
 			case 3:
-				butn.image.overrideSprite = buttonActive4;
+				buttons[button8Index].image.overrideSprite = buttonActive4[button8Index];
+				break;
+			default:
+				buttons[button8Index].image.overrideSprite = buttonActive4[button8Index];
 				break;
 			}
 		} else {
-			butn.image.overrideSprite = buttonDeactive;
+			buttons[button8Index].image.overrideSprite = buttonDeactive[button8Index];
 		}
 	}
 
 	public void BioClick() {
-		if (hwi.hardwareVersionSetting[ref14Index] == 0 && pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
-		if (toggleState) {
-			SFX.PlayOneShot (SFXClipDeactivate);
+		if (Inventory.a.hardwareVersionSetting[6] == 0 && pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
+		if (Inventory.a.hardwareIsActive[6]) {
+			SFX.PlayOneShot (SFXClipDeactivate[0]);
 			bioMonitorContainer.SetActive(false);
 		} else {
-			SFX.PlayOneShot (SFXClip);
+			SFX.PlayOneShot (SFXClip[0]);
 			bioMonitorContainer.SetActive(true);
 		}
-
-		toggleState = !toggleState;
-		hwc.hardwareIsActive [6] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
+		Inventory.a.hardwareIsActive[6] = !Inventory.a.hardwareIsActive[6];
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[6], Inventory.a.hardwareVersionSetting[6],0);
 	}
 
 	// called by PlayerEnergy when exhausted energy to 0
 	public void BioOff() {
-		toggleState = false;
-		hwc.hardwareIsActive [6] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
+		Inventory.a.hardwareIsActive[6] = false;
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[6], Inventory.a.hardwareVersionSetting[6],0);
 		bioMonitorContainer.SetActive(false);
 	}
 
 	public void SensaroundClick() {
 		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
-		if (toggleState) {
-			SFX.PlayOneShot (SFXClipDeactivate);
+		if (Inventory.a.hardwareIsActive[3]) {
+			SFX.PlayOneShot (SFXClipDeactivate[1]);
 		} else {
-			SFX.PlayOneShot (SFXClip);
+			SFX.PlayOneShot (SFXClip[1]);
 		}
-
-		toggleState = !toggleState;
-		hwc.hardwareIsActive [3] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
-		if (toggleState) {
-			switch (hwi.hardwareVersion [ref14Index]) {
+		Inventory.a.hardwareIsActive[3] = !Inventory.a.hardwareIsActive[3];
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[3], Inventory.a.hardwareVersionSetting[3],1);
+		if (Inventory.a.hardwareIsActive[3]) {
+			switch (Inventory.a.hardwareVersion[3]) {
 			case 1:
 				if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (true);
 				if (sensaroundCenter != null) sensaroundCenter.SetActive (true);
@@ -282,92 +159,81 @@ public class HardwareButton : MonoBehaviour {
 
 	// called by PlayerEnergy when exhausted energy to 0
 	public void SensaroundOff() {
-		toggleState = false;
-		hwc.hardwareIsActive [3] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
-		if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (false);
-		if (sensaroundCenter != null) sensaroundCenter.SetActive (false);
-		if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (false);
-		if (sensaroundLH != null) sensaroundLH.SetActive (false);
-		if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (false);
-		if (sensaroundRH != null) sensaroundRH.SetActive (false);
+		Inventory.a.hardwareIsActive[3] = false;
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[3], Inventory.a.hardwareVersionSetting[3],1);
+		sensaroundCenterCamera.SetActive (false);
+		sensaroundCenter.SetActive (false);
+		sensaroundLHCamera.SetActive (false);
+		sensaroundLH.SetActive (false);
+		sensaroundRHCamera.SetActive (false);
+		sensaroundRH.SetActive (false);
 	}
 
 	public void ShieldClick() {
 		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
-		if (toggleState) {
-			SFX.PlayOneShot (SFXClipDeactivate);
+		if (Inventory.a.hardwareIsActive[5]) {
+			SFX.PlayOneShot (SFXClipDeactivate[3]);
 			ShieldDeactivateFX.SetActive(true);
 			ShieldActivateFX.SetActive(false);
 		} else {
-			SFX.PlayOneShot (SFXClip);
+			SFX.PlayOneShot (SFXClip[3]);
 			ShieldDeactivateFX.SetActive(false);
 			ShieldActivateFX.SetActive(true);
 		}
-
-		toggleState = !toggleState;
-		hwc.hardwareIsActive [5] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
+		Inventory.a.hardwareIsActive[5] = !Inventory.a.hardwareIsActive[5];
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[5], Inventory.a.hardwareVersionSetting[5],3);
 	}
 
-	// called by PlayerEnergy when exhausted energy to 0
+	// Called by PlayerEnergy when exhausted energy to 0.
 	public void ShieldOff() {
-		//Debug.Log("ShieldOff");
-		toggleState = false;
-		hwc.hardwareIsActive [5] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
+		Inventory.a.hardwareIsActive[5] = false;
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[5], Inventory.a.hardwareVersionSetting[5],3);
 		ShieldDeactivateFX.SetActive(true);
 		ShieldActivateFX.SetActive(false);
 	}
 
 	public void LanternClick() {
 		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
-		if (toggleState) {
-			SFX.PlayOneShot (SFXClipDeactivate);
+		if (Inventory.a.hardwareIsActive[7]) {
+			SFX.PlayOneShot (SFXClipDeactivate[2]);
 		} else {
-			SFX.PlayOneShot (SFXClip);
+			SFX.PlayOneShot (SFXClip[2]);
 		}
+		Inventory.a.hardwareIsActive[7] = !Inventory.a.hardwareIsActive[7];
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[7], Inventory.a.hardwareVersionSetting[7],2);
 
-		toggleState = !toggleState;
-		hwc.hardwareIsActive [7] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
-
-		// figure out which brightness setting to use depending on version
-		switch(hwi.hardwareVersionSetting[ref14Index]) {
-			case 0: brightness = hml.lanternVersion1Brightness; break;
-			case 1: brightness = hml.lanternVersion2Brightness; break;
-			case 2: brightness = hml.lanternVersion3Brightness; break;
+		// Figure out which brightness setting to use depending on version.
+		switch(Inventory.a.hardwareVersionSetting[7]) {
+			case 0: brightness = lanternVersion1Brightness; break;
+			case 1: brightness = lanternVersion2Brightness; break;
+			case 2: brightness = lanternVersion3Brightness; break;
 			default: brightness = defaultZero; break;
 		}
 
-		if (hwc.hardwareIsActive [ref14Index]) {
-			hml.headlight.intensity = brightness; // set the light intensity per version
+		if (Inventory.a.hardwareIsActive[7]) {
+			headlight.intensity = brightness; // Set the light intensity per version.
 		} else {
-			hml.headlight.intensity = defaultZero; // turn the light off
+			headlight.intensity = defaultZero; // Turn the light off.
 		}
 	}
 
-	// called by PlayerEnergy when exhausted energy to 0
+	// Called by PlayerEnergy when exhausted energy to 0.
 	public void LanternOff() {
-		toggleState = false;
-		hwc.hardwareIsActive [7] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
-		hml.headlight.intensity = defaultZero; // turn the light off
+		Inventory.a.hardwareIsActive[7] = false;
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[7], Inventory.a.hardwareVersionSetting[7],2);
+		headlight.intensity = defaultZero; // Turn the light off.
 	}
 
 	public void InfraredClick() {
 		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
-		if (infraredLight == null) return;
-		if (toggleState) {
-			SFX.PlayOneShot (SFXClipDeactivate);
+		if (Inventory.a.hardwareIsActive[11]) {
+			SFX.PlayOneShot (SFXClipDeactivate[4]);
 		} else {
-			SFX.PlayOneShot (SFXClip);
+			SFX.PlayOneShot (SFXClip[4]);
 		}
-
-		toggleState = !toggleState;
-		hwc.hardwareIsActive [11] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
-		if (toggleState) {
+		Inventory.a.hardwareIsActive[11] = !Inventory.a.hardwareIsActive[11];
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[11], Inventory.a.hardwareVersionSetting[11],4);
+		if (Inventory.a.hardwareIsActive[11]) {
 			infraredLight.enabled = true;
 			playerCamera.GetComponent<Grayscale>().enabled = true;
 			gunCamera.GetComponent<Grayscale>().enabled = true;
@@ -380,64 +246,50 @@ public class HardwareButton : MonoBehaviour {
 
 	// called by PlayerMovement when exhausted energy to < 11f
 	public void InfraredOff() {
-		toggleState = false;
-		hwc.hardwareIsActive [11] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
+		Inventory.a.hardwareIsActive[11] = false;
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[11], Inventory.a.hardwareVersionSetting[11],4);
 		infraredLight.enabled = false;
 		playerCamera.GetComponent<Grayscale>().enabled = false;
 		gunCamera.GetComponent<Grayscale>().enabled = false;
 	}
 
 	public void EReaderClick () {
-		toggleState = true;
-		if (SFXClip != null) SFX.PlayOneShot (SFXClip);
-		hwc.hardwareIsActive [2] = toggleState;
-		//if (ctb != null) ctb.TabButtonClickSilent(4,false);  Moved to MFDManager
+		if (SFXClip != null) SFX.PlayOneShot (SFXClip[5]);
+		Inventory.a.hardwareIsActive[2] = true;
 		MFDManager.a.OpenEReaderInItemsTab();
 	}
 
 	public void BoosterClick() {
-		if (hwi.hardwareVersionSetting[ref14Index] == 1 && pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
-		if (toggleState) {
-			SFX.PlayOneShot (SFXClipDeactivate);
+		if (Inventory.a.hardwareVersionSetting[6] == 1 && pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
+		if (Inventory.a.hardwareIsActive[9]) {
+			SFX.PlayOneShot (SFXClipDeactivate[6]);
 		} else {
-			SFX.PlayOneShot (SFXClip);
+			SFX.PlayOneShot (SFXClip[6]);
 		}
-
-		toggleState = !toggleState;
-		hwc.hardwareIsActive [9] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
+		Inventory.a.hardwareIsActive[9] = !Inventory.a.hardwareIsActive[9];
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[9], Inventory.a.hardwareVersionSetting[9],6);
 	}
 
 	// called by PlayerMovement when exhausted energy to < 11f
 	public void BoosterOff() {
-		toggleState = false;
-		hwc.hardwareIsActive [9] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
+		Inventory.a.hardwareIsActive[9] = false;
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[9], Inventory.a.hardwareVersionSetting[9],6);
 	}
 
 	public void JumpJetsClick() {
 		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
-		if (toggleState) {
-			SFX.PlayOneShot (SFXClipDeactivate);
+		if (Inventory.a.hardwareIsActive[10]) {
+			SFX.PlayOneShot (SFXClipDeactivate[7]);
 		} else {
-			SFX.PlayOneShot (SFXClip);
+			SFX.PlayOneShot (SFXClip[7]);
 		}
-
-		toggleState = !toggleState;
-		hwc.hardwareIsActive [10] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
+		Inventory.a.hardwareIsActive[10] = !Inventory.a.hardwareIsActive[10];
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[10], Inventory.a.hardwareVersionSetting[10],7);
 	}
 
 	// called by PlayerMovement when exhausted energy to < 11f
 	public void JumpJetsOff() {
-		toggleState = false;
-		hwc.hardwareIsActive [10] = toggleState;
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
-	}
-
-	public void UpdateIconForVersionUpgrade() {
-		toggleState = hwc.hardwareIsActive [ref14Index];
-		SetVersionIconForButton (toggleState, hwi.hardwareVersionSetting[ref14Index]);
+		Inventory.a.hardwareIsActive[10] = false;
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[10], Inventory.a.hardwareVersionSetting[10],7);
 	}
 }

@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SaveObject : MonoBehaviour {
-	//public string SaveID;
 	public int SaveID;
 	public bool isRuntimeObject = false;
-	public enum SaveableType {Transform,Player,Useable,Grenade,NPC,Destructable,SearchableStatic,
+	public enum SaveableType : byte {Transform,Player,Useable,Grenade,NPC,Destructable,SearchableStatic,
 							SearchableDestructable,Door,ForceBridge,Switch,FuncWall,TeleDest,
 							LBranch,LRelay,LSpawner,InteractablePanel,ElevatorPanel,Keypad,PuzzleGrid,
 							PuzzleWire,TCounter,TGravity,MChanger,RadTrig,GravPad,TransformParentless,
@@ -17,6 +16,9 @@ public class SaveObject : MonoBehaviour {
 	public int levelParentID = -1;
 	[HideInInspector]
 	public bool initialized = false;
+	public bool instantiated = false; // True when this object has been instantiated at runtime
+	public int constLookupTable = 0; // The table to check. 0 = useableItems, 1 = npcPrefabs
+	public int constLookupIndex = -1; // Index into the Const lookup table for referencing during instantiation.
 
 	public void Start () {
 		if (initialized) return;

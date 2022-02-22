@@ -3,35 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class NPC_Hopper_Death : MonoBehaviour {
-	public int step;
-	public float blendAmount1;
-	public float blendAmount2;
-	public int blendStep1;
-	public int blendStep2;
-	public float blendAmountPerTick;
-	public float redBlendAmountPerTick;
-	public float rimPowerShiftPerTick;
-	public float blendShapeTickSecs;
-	public float blendRimColorTickSecs;
-	private float redTint;
-	private float rimPower;
+	private float blendAmount1 = 0;
+	private float blendAmount2 = 0;
+	private int blendStep1 = -1;
+	private int blendStep2 = 0;
+	private float blendAmountPerTick = 18f;
+	private float redBlendAmountPerTick = 0.5f;
+	private float rimPowerShiftPerTick = 15f;
+	private float blendShapeTickSecs = 0.05f;
+	private float blendRimColorTickSecs = 0.05f;
+	private float redTint = 0f;
+	private float rimPower = 255f;
 	private float tick2Finished;
 	private float tickFinished;
 	private SkinnedMeshRenderer smr;
 
 	void Awake() {
 		smr = GetComponent<SkinnedMeshRenderer>();
-		step = 0;
 		redTint = 0f;
 		rimPower = 255f;
 		tick2Finished = PauseScript.a.relativeTime + blendRimColorTickSecs;
 		tickFinished = PauseScript.a.relativeTime + blendShapeTickSecs;
 		blendStep1 = -1;
 		blendStep2 = 0;
+		blendAmountPerTick = 18f;
+		blendAmount1 = 0;
+		blendAmount2 = 0;
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (tick2Finished < PauseScript.a.relativeTime) {
 				rimPower = smr.material.GetColor("_RimColor").r;
 				rimPower -= rimPowerShiftPerTick;

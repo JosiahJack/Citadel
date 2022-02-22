@@ -2,62 +2,68 @@
 using System.Collections;
 
 public class ButtonSwitch : MonoBehaviour {
-	public int securityThreshhold = 100; // if security level is not below this level, this is unusable
+	// External references, optional depending on (changeMatOnActive || blinkWhenActive)
+	public Material mainSwitchMaterial;
+	public Material alternateSwitchMaterial;
+
+	// Internal references
+	private AudioSource SFXSource;
+	private MeshRenderer mRenderer; // Optional depending on (changeMatOnActive || blinkWhenActive)
+	private Animator anim;
+	private GameObject player; // Set on use, no need for initialization check.
+
+	// Individually set values per prefab isntance within the scene
+	public int securityThreshhold = 100; // If security level is not <= this level (100), this is unusable until security falls.
 	public string target;
 	public string argvalue;
 	public string message;
 	public int messageIndex = -1;
 	public float delay = 0f;
-	public Material mainSwitchMaterial;
-	public Material alternateSwitchMaterial;
 	public AudioClip SFX;
 	public AudioClip SFXLocked;
 	public float tickTime = 1.5f;
-	public bool active; // save
 	public bool blinkWhenActive;
 	public bool changeMatOnActive = true;
-	[HideInInspector]
-	public float delayFinished; // save
-	[HideInInspector]
-	public float tickFinished; // save
-	private GameObject player;
-	private AudioSource SFXSource;
-	[HideInInspector]
-	public bool alternateOn; // save
-	private MeshRenderer mRenderer;
 	public bool animateModel = false;
-	private Animator anim;
 	public bool locked = false; // save
 	public string lockedMessage;
 	public int lockedMessageLingdex = 193;
+	public bool active; // save
+
+	// Externally modified
+	[HideInInspector] public float delayFinished; // save
+	[HideInInspector] public float tickFinished; // save
+	[HideInInspector] public bool alternateOn; // save
 
 	void Awake () {
 		SFXSource = GetComponent<AudioSource>();
-		if (SFXSource != null) SFXSource.playOnAwake = false;
+		if (SFXSource == null) Debug.Log("BUG: ButtonSwitch missing component for SFXSource");
+		else SFXSource.playOnAwake = false;
 		mRenderer = GetComponent<MeshRenderer>();
+		if (mRenderer == null && (changeMatOnActive || blinkWhenActive)) Debug.Log("BUG: ButtonSwitch missing component for mRenderer");
+		if (mainSwitchMaterial == null && (changeMatOnActive || blinkWhenActive)) Debug.Log("BUG: ButtonSwitch missing manually assigned reference for mainSwitchMaterial");
+		if (alternateSwitchMaterial == null && (changeMatOnActive || blinkWhenActive)) Debug.Log("BUG: ButtonSwitch missing manually assigned reference for alternateSwitchMaterial");
 		delayFinished = 0; // prevent using targets on awake
 		if (animateModel) anim = GetComponent<Animator>();
 		if (active) tickFinished = PauseScript.a.relativeTime + tickTime + Random.value;
 	}
 
 	public void Use (UseData ud) {
-		//Debug.Log("Using a ButtonSwitch.cs!");
 		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
 			MFDManager.a.BlockedBySecurity(transform.position,ud);
 			return;
 		}
 
-		if (LevelManager.a.superoverride || Const.a.difficultyMission == 0)
-			locked = false; // SHODAN can go anywhere!  Full security override!
+		if (LevelManager.a.superoverride || Const.a.difficultyMission == 0) locked = false; // SHODAN can go anywhere!  Full security override!
 
 		if (locked) {
 			Const.sprintByIndexOrOverride (lockedMessageLingdex, lockedMessage,ud.owner);
-			if (SFXLocked != null && SFXSource != null) SFXSource.PlayOneShot(SFXLocked);
+			if (SFXLocked != null && SFXSource != null && gameObject.activeSelf) SFXSource.PlayOneShot(SFXLocked);
 			return;
 		}
 
 		player = ud.owner;  // set playerCamera to owner of the input (always should be the player camera)
-		if (SFX != null && SFXSource != null) SFXSource.PlayOneShot(SFX);
+		if (SFX != null && SFXSource != null && gameObject.activeSelf) SFXSource.PlayOneShot(SFX);
 		Const.sprintByIndexOrOverride (messageIndex, message,ud.owner);
 		if (delay > 0) {
 			delayFinished = PauseScript.a.relativeTime + delay;
@@ -67,10 +73,7 @@ public class ButtonSwitch : MonoBehaviour {
 	}
 
 	public void Targetted (UseData ud) {
-		// prevent runaway circular targetting of self
-		if (ud.owner != player) {
-			Use(ud); 
-		}
+		if (ud.owner != player) Use(ud); // Prevents runaway circular targetting of self with this if statement.
 	}
 
 	public void ToggleLocked() {
@@ -117,9 +120,7 @@ public class ButtonSwitch : MonoBehaviour {
 	}
 
 	void Update() {
-		if (PauseScript.a.Paused() || PauseScript.a.mainMenu.activeInHierarchy) {
-			return; // don't do any checks or anything else...we're paused!
-		}
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return; // Don't do any checks or anything else...we're paused!
 		if (!gameObject.activeSelf) return;
 
 		if ((delayFinished < PauseScript.a.relativeTime) && delayFinished != 0) {

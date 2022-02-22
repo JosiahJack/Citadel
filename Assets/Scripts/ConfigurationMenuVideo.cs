@@ -4,14 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ConfigurationMenuVideo : MonoBehaviour {
-	public Resolution[] resolutions;
+	// Internal references
+	[HideInInspector] public Resolution[] resolutions;
 	private Dropdown resSelector;
 
 	void Awake () {
-		//List<int> widths = new List<int>();
-		//List<int> heights = new List<int>();
 		resolutions = Screen.resolutions;
 		resSelector = GetComponent<Dropdown>();
+		if (resSelector == null) Debug.Log("BUG: ConfigurationMenuVideo missing component for resSelector.");
 		List<string> resList = new List<string>();
 		int refindex = 0;
 		for (int i=0;i<resolutions.Length;i++) {

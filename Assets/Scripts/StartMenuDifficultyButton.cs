@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class StartMenuDifficultyButton : MonoBehaviour {
 	public GameObject[] otherControllers;
-	public GameObject controller;
+	public StartMenuDifficultyController controller;
+	public StartMenuButtonHighlight controllerHighlighter;
 	public int difficultyValue;
 
 	public void OnDiffButtonClick () {
-		controller.GetComponent<StartMenuDifficultyController>().SetDifficulty(difficultyValue);
-		controller.SendMessage("Highlight",SendMessageOptions.DontRequireReceiver);
+		controller.SetDifficulty(difficultyValue);
+		controller.HighlightUpdate();
+		controllerHighlighter.Highlight();
+		DeHighlightNeighbors();
+	}
 
-		if (otherControllers.Length <= 0) return;
-
-		for (int i=0; i<(otherControllers.Length-1);i++) {
-			otherControllers[i].SendMessage("DeHighlight",SendMessageOptions.DontRequireReceiver);
+	public void DeHighlightNeighbors() {
+		for (int i=0;i<otherControllers.Length;i++) {
+			if (otherControllers[i] != null) otherControllers[i].SendMessage("DeHighlight",SendMessageOptions.DontRequireReceiver);
 		}
 	}
 }

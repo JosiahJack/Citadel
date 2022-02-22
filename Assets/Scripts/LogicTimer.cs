@@ -1,36 +1,31 @@
 using UnityEngine;
 using System.Collections;
 
-public class LogicTimer : MonoBehaviour, IBatchUpdate {
+public class LogicTimer : MonoBehaviour {
 	public float timeInterval = 0.35f;
 	public float randomMin = 5f;
 	public float randomMax = 10f;
 	public bool useRandomTimes = false;
 	public bool active = true;
-	[HideInInspector]
-	public float intervalFinished; //save
+	[HideInInspector] public float intervalFinished; //save
 	public string target;
 	public string argvalue;
 
 	void Start() {
-		if (useRandomTimes) {
+		if (useRandomTimes)
 			intervalFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(randomMin,randomMax);
-		} else {
+		else
 			intervalFinished = PauseScript.a.relativeTime + timeInterval;
-		}
-		UpdateManager.Instance.RegisterSlicedUpdate(this, UpdateManager.UpdateMode.BucketB);
     }
 
-	public void BatchUpdate () {
-	}void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy && active) {
+	void Update() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive() && active) {
 			if (intervalFinished < PauseScript.a.relativeTime) {
 				if (useRandomTimes) {
 					intervalFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(randomMin,randomMax);
 				} else {
 					intervalFinished = PauseScript.a.relativeTime + timeInterval;
 				}
-				
 				UseTargets();
 			}
 		}

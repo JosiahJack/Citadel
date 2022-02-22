@@ -52,21 +52,18 @@ public class UseableAttachment : MonoBehaviour {
 		}
 	}
 
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			if (activated) {
+	void Update() {
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return;
+		if (!activated) return;
 
-				// Plastique delayed effect (to give player time to escape of course)
-				if (timerFinished != -1f) {
-					if (timerFinished < PauseScript.a.relativeTime) {
-						explosion.SetActive (true);
-						for (int i = 0; i < destructables.Length; i++) {
-							destructables [i].SetActive (false); // blow up the walls and floor
-						}
-						timerFinished = -1f;
-						this.gameObject.SetActive (false); // blow up the panel as well
-					}
+		if (timerFinished != -1f) { // Plastique delayed effect (to give player time to escape of course)
+			if (timerFinished < PauseScript.a.relativeTime) {
+				explosion.SetActive (true);
+				for (int i = 0; i < destructables.Length; i++) {
+					destructables [i].SetActive (false); // blow up the walls and floor
 				}
+				timerFinished = -1f;
+				this.gameObject.SetActive (false); // blow up the panel as well
 			}
 		}
 	}

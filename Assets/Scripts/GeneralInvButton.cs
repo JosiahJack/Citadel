@@ -8,18 +8,18 @@ public class GeneralInvButton : MonoBehaviour {
     public int useableItemIndex;
 	public PlayerEnergy playerEnergy;
 	public PlayerHealth playerHealth;
-	public GeneralInventory playerGenInv;
 	public MFDManager mfdManager;
 	private bool reduce = false;
 
     void GeneralInvClick() {
-        GeneralInvCurrent.GeneralInvInstance.generalInvCurrent = GeneralInvButtonIndex;  //Set current
+        Inventory.a.generalInvCurrent = GeneralInvButtonIndex;  //Set current
+		useableItemIndex = Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex];
 		mfdManager.SendInfoToItemTab(useableItemIndex);
     }
 
     public void DoubleClick() {
         reduce = false;
-
+		useableItemIndex = Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex];
         if (useableItemIndex == 52 || useableItemIndex == 53 || useableItemIndex == 55) {
             switch (useableItemIndex) {
                 case 52:
@@ -45,30 +45,24 @@ public class GeneralInvButton : MonoBehaviour {
 						Const.sprint(Const.a.stringTable[304],playerHealth.mainPlayerParent.GetComponent<PlayerReferenceManager>().playerCapsule);
 					} else {
 						playerHealth.hm.health = playerHealth.hm.maxhealth;
-						playerHealth.playerHealthTicks.DrawTicks();
+						MFDManager.a.DrawTicks(true);
 					}					
                     reduce = true;
                     break;
             }
         } else {
             mfdManager.SendInfoToItemTab(useableItemIndex);
-            mfdManager.OpenTab(1, true, MFDManager.TabMSG.None, useableItemIndex, MFDManager.handedness.LeftHand);
-            GeneralInvCurrent.GeneralInvInstance.generalInvCurrent = GeneralInvButtonIndex;  //Set current
+            mfdManager.OpenTab(1, true, MFDManager.TabMSG.None, useableItemIndex, Handedness.LH);
+            Inventory.a.generalInvCurrent = GeneralInvButtonIndex; // Set current.
         }
 
 		if (reduce)  {
-			playerGenInv.generalInventoryIndexRef[GeneralInvButtonIndex] = -1;
+			Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex] = -1;
 			GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 		}
 	}
 
     void Start() {
         GetComponent<Button>().onClick.AddListener(() => { GeneralInvClick(); });
-    }
-
-    void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			useableItemIndex = GeneralInventory.GeneralInventoryInstance.generalInventoryIndexRef[GeneralInvButtonIndex];
-		}
     }
 }

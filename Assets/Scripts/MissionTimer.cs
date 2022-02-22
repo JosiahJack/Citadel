@@ -4,20 +4,19 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class MissionTimer : MonoBehaviour {
-	private float t;
 	public Text text;
 	public Text timerTypeText;
-	private float minutes;
-	private float seconds;
-	private float timerFinished;
 	public string currentMission;
 	public int currentMissionIndex;
 	public PlayerHealth playerHealth;
 	public MouseLookScript mls;
-	public bool lastTimer = false;
-	public string lastTimerTarget;
-	public string argvalue;
 	public GameObject radTrigger;
+
+	[HideInInspector] public bool lastTimer = false;
+	private float t;
+	private float minutes;
+	private float seconds;
+	private float timerFinished;
 
 	public static MissionTimer a;
 
@@ -69,20 +68,10 @@ public class MissionTimer : MonoBehaviour {
 			UpdateToNextMission(2700f,506,4);
 		}
 
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (t <= 0) {
 				if (lastTimer) {
-					UseData ud = new UseData();
-					ud.owner = Const.a.player1;
-					ud.argvalue = argvalue;
-					TargetIO tio = GetComponent<TargetIO>();
-					if (tio != null) {
-						ud.SetBits(tio);
-					} else {
-						Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
-					}
-					Const.a.UseTargets(ud,lastTimerTarget);
-					text.text = System.String.Empty;
+					text.text = "<shocked>";
 					timerTypeText.text = Const.a.stringTable[509];
 					radTrigger.SetActive(true);
 					gameObject.SetActive(false);

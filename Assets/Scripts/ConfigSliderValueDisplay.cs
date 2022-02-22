@@ -1,20 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class ConfigSliderValueDisplay : MonoBehaviour {
+	// Externally assigned, required.
 	public Slider slideControl;
+
+	// Internal references
 	private Text self;
 
 	void Awake () {
 		self = GetComponent<Text>();
-		if (self == null) {
-			Debug.Log("ERROR: No slider for object with ConfigSliderValueDisplay script");
-		}
+		if (self == null) Debug.Log("ERROR: No Slider component for self on ConfigSliderValueDisplay.");
+		if (slideControl == null) Debug.Log("BUG: ConfigSliderValueDisplay missing manually assigned reference for slideControl.");
+		if (self == null || slideControl == null) this.enabled = false;
 	}
 
-	void Update () {
+	void Update() {
 		self.text = slideControl.value.ToString();
 	}
 }

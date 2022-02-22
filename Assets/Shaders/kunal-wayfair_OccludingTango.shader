@@ -1,5 +1,6 @@
 Shader "Custom/AutomapMaskingFoW" {
 Properties {
+	_MainTex("MainTexture",2D) = "black"{}
     _Stencil ("Stencil ID", Float) = 0
 	_StencilComp ("Stencil Comparison", Float) = 8
 	_StencilOp ("Stencil Operation", Float) = 0

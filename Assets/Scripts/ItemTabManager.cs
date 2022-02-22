@@ -7,7 +7,6 @@ public class ItemTabManager : MonoBehaviour {
     public GameObject textManager;
 	public GameObject vaporizeButton;
 	public GameObject applyButton;
-	public ApplyButton applyButtonScript;
 	public GameObject useButton;
 	public GameObject eReaderSectionsContainer;
 
@@ -37,7 +36,7 @@ public class ItemTabManager : MonoBehaviour {
 		textManager.GetComponent<Text>().text = Const.a.useableItemsNameText[constIndex];
 		if ((constIndex >= 14 && constIndex < 21) || constIndex == 52 || constIndex == 53 || constIndex == 55) {
 			applyButton.SetActive(true);
-			applyButtonScript.index = constIndex;
+			MFDManager.a.applyButtonReferenceIndex = constIndex;
 		}
 
 		if (constIndex < 6 || constIndex == 33 || constIndex == 34 || constIndex == 35 || (constIndex > 51 && constIndex < 65) || (constIndex > 91 && constIndex < 113) ) {

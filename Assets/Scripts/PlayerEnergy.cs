@@ -3,37 +3,36 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerEnergy : MonoBehaviour {
-	public float energy = 54f; //max is 255 // save
-	public float resetAfterDeathTime = 0.5f;
-	public float timer; // save
-    private AudioSource SFX;
+	// External references
+	public Text drainText;
+	public Text jpmText;
+	public WeaponFire wepFire;
     public AudioClip SFXBatteryUse;
     public AudioClip SFXChargeStationUse;
     public AudioClip SFXPowerExhausted;
 	public WeaponCurrent wepCur;
-	public HardwareInvCurrent hwc;
-	public HardwareInventory hwi;
+	public float energy = 54f; // save
+
+	// Internal references
+	[HideInInspector] public float timer; // save
+    private AudioSource SFX;
 	private float tick = 0.1f;
-	[HideInInspector]
-	public float tickFinished; // save
+	[HideInInspector] public float tickFinished; // save
 	private float tempF;
-	[HideInInspector]
-	public float maxenergy = 255f;
-	public int drainJPM = 0;
-	public Text drainText;
-	public Text jpmText;
+	[HideInInspector] public float maxenergy = 255f;
+	[HideInInspector] public int drainJPM = 0;
 	private string jpm = " J/min";
-	public WeaponFire wepFire;
 
     public void Start() {
         SFX = GetComponent<AudioSource>();
 		tempF = 0;
 		drainJPM = 0;
+		energy = 54f; //max is 255 
 		tickFinished = PauseScript.a.relativeTime + tick + Random.value; // random offset seed to prevent ticks lining up and causing frame hiccups
     }
 
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+	void Update() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			tempF = 1f;
 			bool activeEnergyDrainers = false;
 			if (tickFinished < PauseScript.a.relativeTime) {
@@ -45,8 +44,8 @@ public class PlayerEnergy : MonoBehaviour {
 				// 2 = Datareader doesn't take energy
 
 				// 3 Drain sensaround
-				if (hwc.hardwareIsActive[3]) {
-					switch (hwi.hardwareVersionSetting[3]) {
+				if (Inventory.a.hardwareIsActive[3]) {
+					switch (Inventory.a.hardwareVersionSetting[3]) {
 						case 0: tempF = 0.08533f; drainJPM += 50; break; // takes about 300s to drain full energy
 						case 1: tempF = 0.08533f; drainJPM += 50; break; // takes about 300s to drain full energy
 						case 2: tempF = 0.10666f; drainJPM += 64; break; // takes about 240s to drain full energy
@@ -56,15 +55,15 @@ public class PlayerEnergy : MonoBehaviour {
 				}
 
 				// 4 = Target Identifier doesn't take energy
-				if (HardwareInventory.a.hasHardware[4]) {
+				if (Inventory.a.hasHardware[4]) {
 					float sensingRange = 10f;
-					switch (HardwareInventory.a.hardwareVersion[4]) {
+					switch (Inventory.a.hardwareVersion[4]) {
 						case 1: sensingRange = 10f; break;
 						case 2: sensingRange = 20f; break;
 						case 3: sensingRange = 30f; break;
 						case 4: sensingRange = 40f; break;
 					}
-					if (HardwareInventory.a.hardwareVersion[4] > 3) {
+					if (Inventory.a.hardwareVersion[4] > 3) {
 						if (LevelManager.a.npcsm[LevelManager.a.currentLevel] != null) {
 							int numNPCsOnCurrentLevel = LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs.Length; // very specific variable names are good right
 							if (numNPCsOnCurrentLevel > 0) {
@@ -85,8 +84,8 @@ public class PlayerEnergy : MonoBehaviour {
 				// 5 = Energy Shield - handled by HealthManager
 
 				// 6 = Biomonitor
-				if (hwc.hardwareIsActive[6]) {
-					switch (hwi.hardwareVersionSetting[6]) {
+				if (Inventory.a.hardwareIsActive[6]) {
+					switch (Inventory.a.hardwareVersionSetting[6]) {
 						case 0: tempF = 0.08533f; drainJPM += 50;  activeEnergyDrainers = true; break; // takes about 300s to drain full energy
 						case 1: tempF = 0; break; // doesn't take energy
 					}
@@ -94,8 +93,8 @@ public class PlayerEnergy : MonoBehaviour {
 				}
 
 				// 7 = Head Mounted Lantern
-				if (hwc.hardwareIsActive[7]) {
-					switch (hwi.hardwareVersionSetting[7]) {
+				if (Inventory.a.hardwareIsActive[7]) {
+					switch (Inventory.a.hardwareVersionSetting[7]) {
 						case 0: tempF = 0.1422f; drainJPM += 85; break;// takes about 180s to drain full energy
 						case 1: tempF = 0.21f; drainJPM += 125; break; // takes about 120s to drain full energy
 						case 2: tempF = 0.28f; drainJPM += 170; break; // takes about 90s to drain full energy
@@ -111,7 +110,7 @@ public class PlayerEnergy : MonoBehaviour {
 				// 10 Drain jump jet boots - done in PlayerMovement since we only drain while jumping
 
 				// 11 Drain nightsight
-				if (hwc.hardwareIsActive [11]) {
+				if (Inventory.a.hardwareIsActive [11]) {
 					tempF = 0.21f; drainJPM += 125; // takes about 120s to drain full energy
 					activeEnergyDrainers = true;
 					TakeEnergy(tempF);
@@ -136,21 +135,20 @@ public class PlayerEnergy : MonoBehaviour {
 	}
 
 	void DeactivateHardwareOnEnergyDepleted() {
-		hwc.hardwareIsActive [3] = false;
-		if (hwc.hardwareIsActive [3]) hwc.hardwareButtons[1].SensaroundOff(); //sensaround
-		if (hwc.hardwareIsActive [6] && hwi.hardwareVersionSetting[6] == 0) hwc.hardwareButtons[0].BioOff(); // biomonitor, but only on v1, v2 doesn't use power
-		if (hwc.hardwareIsActive [5]) hwc.hardwareButtons[3].ShieldOff(); // shield
-		if (hwc.hardwareIsActive [7]) hwc.hardwareButtons[2].LanternOff(); // lantern
-		if (hwc.hardwareIsActive [9]) hwc.hardwareButtons[6].BoosterOff(); // turbo motion booster
-		if (hwc.hardwareIsActive [11]) hwc.hardwareButtons[4].InfraredOff(); // infrared
+		Inventory.a.hardwareIsActive [3] = false;
+		if (Inventory.a.hardwareIsActive [3]) Inventory.a.hardwareButtonManager.SensaroundOff(); //sensaround
+		if (Inventory.a.hardwareIsActive [6] && Inventory.a.hardwareVersionSetting[6] == 0) Inventory.a.hardwareButtonManager.BioOff(); // biomonitor, but only on v1, v2 doesn't use power
+		if (Inventory.a.hardwareIsActive [5]) Inventory.a.hardwareButtonManager.ShieldOff(); // shield
+		if (Inventory.a.hardwareIsActive [7]) Inventory.a.hardwareButtonManager.LanternOff(); // lantern
+		if (Inventory.a.hardwareIsActive [9]) Inventory.a.hardwareButtonManager.BoosterOff(); // turbo motion booster
+		if (Inventory.a.hardwareIsActive [11]) Inventory.a.hardwareButtonManager.InfraredOff(); // infrared
 	}
 
     public void TakeEnergy ( float take  ){
 		float was = energy;
 		if (energy == 0) return;
 		if (wepCur != null) {
-			if (wepCur.redbull) return; // no energy drain!
-		}
+			if (wepCur.redbull) return; } // No energy drain!
 
 		energy -= take;
 		if (energy <= 0f) {
@@ -159,16 +157,11 @@ public class PlayerEnergy : MonoBehaviour {
 			Const.sprint(Const.a.stringTable[314],wepCur.owner); //Power supply exhausted.
 			DeactivateHardwareOnEnergyDepleted();
 		}
-		//print("Player Energy: " + energy.ToString());
-		//Debug.Log(take.ToString("F4") +" player energy taken.  Was: " + was.ToString() +", Now: " + energy.ToString());
 	}
 
 	public void GiveEnergy (float give, int type) {
 		energy += give;
-		if (energy > maxenergy) {
-			energy = maxenergy;
-		}
-
+		if (energy > maxenergy) energy = maxenergy;
         if (type == 0) {
             if (SFX != null && SFXBatteryUse != null) SFX.PlayOneShot(SFXBatteryUse); // battery sound
         }

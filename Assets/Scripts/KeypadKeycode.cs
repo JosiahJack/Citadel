@@ -3,8 +3,6 @@ using System.Collections;
 
 public class KeypadKeycode : MonoBehaviour {
 	public int securityThreshhold = 100; // if security level is not below this level, this is unusable
-	//public DataTab dataTabResetter;
-	//public GameObject keypadControl;
 	public int keycode; // the access code
 	public bool locked = false; // save
 	public string target;
@@ -32,16 +30,9 @@ public class KeypadKeycode : MonoBehaviour {
 	}
 
 	public void Use (UseData ud) {
-		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
-			MFDManager.a.BlockedBySecurity(transform.position,ud);
-			return;
-		}
+		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) { MFDManager.a.BlockedBySecurity(transform.position,ud); return; }
 
-		if (LevelManager.a.superoverride || Const.a.difficultyMission == 0) {
-			// SHODAN can go anywhere!  Full security override!
-			locked = false;
-		}
-
+		if (LevelManager.a.superoverride || Const.a.difficultyMission == 0) locked = false; // SHODAN can go anywhere!  Full security override!
 		if (locked) {
 			Const.sprintByIndexOrOverride (lockedMessageLingdex, lockedMessage,ud.owner);
 			
@@ -92,14 +83,9 @@ public class KeypadKeycode : MonoBehaviour {
 
 		padInUse = true;
 		SFXSource.PlayOneShot(SFX);
-		//dataTabResetter.Reset();
-		//keypadControl.SetActive(true);
-		//keypadControl.GetComponent<KeypadKeycodeButtons>().keycode = keycode;
-		//keypadControl.GetComponent<KeypadKeycodeButtons>().keypad = this;
 		playerCamera = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
 		playerCapsule = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule; // Get player capsule of player using this pad
 		playerCamera.GetComponent<MouseLookScript>().ForceInventoryMode();
-		//MFDManager.a.OpenTab(4,true,MFDManager.TabMSG.Keypad,0,MFDManager.handedness.LeftHand);
 		MFDManager.a.SendKeypadKeycodeToDataTab(keycode,transform.position,this,solved);
 	}
 
@@ -116,17 +102,4 @@ public class KeypadKeycode : MonoBehaviour {
 		Const.a.UseTargets(ud,target);
 		Const.sprintByIndexOrOverride (successMessageLingdex, successMessage,ud.owner);
 	}
-
-	// Handled by MFDManager as it should be now
-	// void Update () {
-		// if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			// if (padInUse) {
-				// if (Vector3.Distance(playerCapsule.transform.position, gameObject.transform.position) > disconnectDist) {
-					// padInUse = false;
-					// MFDManager.a.TurnOffKeypad();
-					//keypadControl.SetActive(false);
-				// }
-			// }
-		// }
-	// }
 }

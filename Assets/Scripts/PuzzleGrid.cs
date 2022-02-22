@@ -8,8 +8,8 @@ public class PuzzleGrid : MonoBehaviour {
 	public PuzzleGridPuzzle puzzleGP;
 	public bool[] powered;
 	public CellType[] cellType;
-	public enum CellType {Off,Standard,And,Bypass}; // off is blank, standard is X or +, AND takes two power sources, Bypass is always +
-	public enum GridType {King,Queen,Knight,Rook,Bishop,Pawn};
+	public enum CellType : byte {Off,Standard,And,Bypass}; // off is blank, standard is X or +, AND takes two power sources, Bypass is always +
+	public enum GridType : byte {King,Queen,Knight,Rook,Bishop,Pawn};
 	public GridType gridType;
 	public int sourceIndex;
 	public int outputIndex;
@@ -46,7 +46,7 @@ public class PuzzleGrid : MonoBehaviour {
 	public Sprite gridAlwaysOn0blue;
 	public Sprite gridAlwaysOn1;
 	public Image outputNode;
-	public enum GridColorTheme {Gray,Green,Purple,Blue};
+	public enum GridColorTheme : byte {Gray,Green,Purple,Blue};
 	public GridColorTheme theme;
 	public AudioClip solvedSFX;
 	public bool puzzleSolved;
@@ -104,11 +104,8 @@ public class PuzzleGrid : MonoBehaviour {
 		}
 	}
 
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			//EvaluatePuzzle(); not needed, useless activity
-			UpdateCellImages();
-		}
+	void Update() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) UpdateCellImages();
 	}
 
 	public void OnGridCellClick (int index) {
@@ -271,23 +268,19 @@ public class PuzzleGrid : MonoBehaviour {
 			powered [i] = false;
 		}
 
+		if (grid.Length < 1) return;
+
 		// Set power for starting node
-		if (grid.Length < 1)
-			return;
 		powered [sourceIndex] = grid [sourceIndex];  // Turn on power for cell adjacent to source node if it is a plus
 		movingIndex = sourceIndex;
-		if (!powered [movingIndex])
-			return; // Source is off
+		if (!powered [movingIndex]) return; // Source is off
 
 		// Flow power to all nodes, adding any nodes to check to the queue
 		queue.Add (sourceIndex); // Initialize queue
 		while (queue.Count > 0) {
 			movingIndex = queue [0]; // Get next item in the queue
-			if (checkedCells [movingIndex]) {
-				queue.Remove (movingIndex);
-				continue;
-			}
-			//Const.sprint(("movingIndex = " + movingIndex.ToString()),Const.a.allPlayers);
+			if (checkedCells [movingIndex]) { queue.Remove (movingIndex); continue; }
+
 			cellAbove = ReturnCellAbove (movingIndex);
 			cellBelow = ReturnCellBelow (movingIndex);
 			cellLeft = ReturnCellToLeft (movingIndex);
@@ -322,9 +315,7 @@ public class PuzzleGrid : MonoBehaviour {
 					powered [movingIndex] = true;
 			} else {
 				if (cellType [movingIndex] == CellType.Standard || cellType [movingIndex] == CellType.Bypass) {
-					if (grid [movingIndex] && poweredCount > 0)
-						powered [movingIndex] = true;
-					//Const.sprint (("movingIndex = " + movingIndex.ToString () + ", powered = " + powered [movingIndex].ToString ()), Const.a.allPlayers);
+					if (grid [movingIndex] && poweredCount > 0) powered [movingIndex] = true;
 				}
 			}
 			checkedCells [movingIndex] = true;
@@ -341,8 +332,7 @@ public class PuzzleGrid : MonoBehaviour {
 			progressBar.value = percentProgress;
 		}
 
-		if (powered[outputIndex])
-			PuzzleSolved(false); // Latched solved state, no else statement to switch solved state back
+		if (powered[outputIndex]) PuzzleSolved(false); // Latched solved state, no else statement to switch solved state back
 	}
 
 	void PuzzleSolved(bool usedLogicProbe) {

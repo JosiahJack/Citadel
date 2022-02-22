@@ -3,19 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EReaderSectionsButtons : MonoBehaviour {
-	public MultiMediaTabManager mmtm;
 	public EReaderSectionsButtonHighlight ersbh0;
 	public EReaderSectionsButtonHighlight ersbh1;
 	public EReaderSectionsButtonHighlight ersbh2;
 	public EReaderSectionsButtonHighlight ersbh3;
 
+	void OnEnable() {
+		if (Const.a.difficultyMission == 0) ersbh3.gameObject.SetActive(false);
+	}
+
 	public void OnClick(int index) {
 		SetEReaderSectionsButtonsHighlights(index);
 		switch (index) {
-			case 0: mmtm.OpenEmailTableContents(); break;
-			case 1: mmtm.OpenLogTableContents(); break;
-			case 2: mmtm.OpenDataTableContents(); break;
-			case 3: mmtm.OpenNotesTableContents(); break;
+			case 0: MFDManager.a.OpenEmailTableContents(); break;
+			case 1: MFDManager.a.OpenLogTableContents(); break;
+			case 2: MFDManager.a.OpenDataTableContents(); break;
+			case 3: MFDManager.a.OpenNotesTableContents(); break;
 		}
 	}
 

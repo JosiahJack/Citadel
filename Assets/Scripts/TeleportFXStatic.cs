@@ -54,11 +54,9 @@ public class TeleportFXStatic : MonoBehaviour {
 		gameObject.SetActive(false);
 	}
 
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			if (effectFinished < PauseScript.a.relativeTime) {
-				Deactivate();
-			}
+	void Update() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
+			if (effectFinished < PauseScript.a.relativeTime) Deactivate();
 			if (flipTime < PauseScript.a.relativeTime) {
 				flipTime = PauseScript.a.relativeTime + intervalTime;
 				randHolder = Random.Range(0f,1f);

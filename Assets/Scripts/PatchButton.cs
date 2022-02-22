@@ -17,11 +17,11 @@ public class PatchButton: MonoBehaviour {
 
 	public void PatchInvClick () {
 		mfdManager.SendInfoToItemTab(useableItemIndex);
-		PatchCurrent.PatchInstance.patchCurrent = PatchButtonIndex;			//Set current
+		Inventory.a.patchCurrent = PatchButtonIndex; // Set current.
 		for (int i = 0; i < 7; i++) {
-			PatchCurrent.PatchInstance.patchCountsTextObjects [i].color = Const.a.ssGreenText;
+			Inventory.a.patchCountTextObjects [i].color = Const.a.ssGreenText;
 		}
-		PatchCurrent.PatchInstance.patchCountsTextObjects[PatchButtonIndex].color = Const.a.ssYellowText;
+		Inventory.a.patchCountTextObjects[PatchButtonIndex].color = Const.a.ssYellowText;
 		if (SFX != null && SFXClick != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXClick);
 	}
 

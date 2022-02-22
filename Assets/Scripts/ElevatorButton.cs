@@ -5,11 +5,14 @@ using System.Collections;
 public class ElevatorButton : MonoBehaviour {
 	public bool floorAccessible = false;
 	public bool doorOpen = false;
-	[HideInInspector]
-	public GameObject targetDestination;
+	public GameObject currentPlayer;
+
+	// Externally modified
+	[HideInInspector] public GameObject targetDestination;
+
+	// Internal references
 	private Text childText;
 	private int levelIndex;
-	public GameObject currentPlayer;
 	private string levR = "R";
 	private string lev1 = "1";
 	private string lev2 = "2";
@@ -24,20 +27,6 @@ public class ElevatorButton : MonoBehaviour {
 	private string levG2 = "G2";
 	private string levG4 = "G4";
 	private string levC = "C";
-	private int zero = 0; // because it's in an update and I don't want to generate garbage to collect in random spikes
-	private int one = 1;
-	private int two = 2;
-	private int three = 3;
-	private int four = 4;
-	private int five = 5;
-	private int six = 6;
-	private int seven = 7;
-	private int eight = 8;
-	private int nine = 9;
-	private int ten = 10;
-	private int eleven = 11;
-	private int twelve = 12;
-	private int thirteen = 13;
 
 	void Awake() {
 		childText = GetComponentInChildren<Text>();
@@ -49,7 +38,7 @@ public class ElevatorButton : MonoBehaviour {
 	}
 
 	void ElevButtonClick () {
-		if (Vector3.Distance(MFDManager.a.objectInUsePos,MFDManager.a.playerCapsuleTransform.position) > Const.a.elevatorPadUseDistance) {
+		if (Vector3.Distance(MFDManager.a.objectInUsePos,MFDManager.a.playerCapsuleTransform.position) > Const.a.elevatorPadUseDistance || MFDManager.a.linkedElevatorDoor == null) {
 			Const.sprint(Const.a.stringTable[6],currentPlayer);
 		} else {
 			if (MFDManager.a.linkedElevatorDoor.doorOpen != Door.doorState.Closed) {
@@ -66,46 +55,33 @@ public class ElevatorButton : MonoBehaviour {
 
 	void OnEnable() {
 		if (childText.text == levR) {
-			levelIndex = zero;
-		}
-		if (childText.text == lev1) {
-			levelIndex = one;
-		}
-		if (childText.text == lev2) {
-			levelIndex = two;
-		}
-		if (childText.text == lev3) {
-			levelIndex = three;
-		}
-		if (childText.text == lev4) {
-			levelIndex = four;
-		}
-		if (childText.text == lev5) {
-			levelIndex = five;
-		}
-		if (childText.text == lev6) {
-			levelIndex = six;
-		}
-		if (childText.text == lev7) {
-			levelIndex = seven;
-		}
-		if (childText.text == lev8) {
-			levelIndex = eight;
-		}
-		if (childText.text == lev9) {
-			levelIndex = nine;
-		}
-		if (childText.text == levG1) {
-			levelIndex = ten;
-		}
-		if (childText.text == levG2) {
-			levelIndex = eleven;
-		}
-		if (childText.text == levG4) {
-			levelIndex = twelve;
-		}
-		if (childText.text == levC) {
-			levelIndex = thirteen;
+			levelIndex = 0;
+		} else if (childText.text == lev1) {
+			levelIndex = 1;
+		} else if (childText.text == lev2) {
+			levelIndex = 2;
+		} else if (childText.text == lev3) {
+			levelIndex = 3;
+		} else if (childText.text == lev4) {
+			levelIndex = 4;
+		} else if (childText.text == lev5) {
+			levelIndex = 5;
+		} else if (childText.text == lev6) {
+			levelIndex = 6;
+		} else if (childText.text == lev7) {
+			levelIndex = 7;
+		} else if (childText.text == lev8) {
+			levelIndex = 8;
+		} else if (childText.text == lev9) {
+			levelIndex = 9;
+		} else if (childText.text == levG1) {
+			levelIndex = 10;
+		} else if (childText.text == levG2) {
+			levelIndex = 11;
+		} else if (childText.text == levG4) {
+			levelIndex = 12;
+		} else if (childText.text == levC) {
+			levelIndex = 13;
 		}
 	}
 }

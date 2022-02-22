@@ -8,15 +8,7 @@ public class Music : MonoBehaviour {
 	public AudioClip[] levelMusicReactor;
 	public AudioClip[] levelMusic6;
 	public AudioClip[] levelMusicGroves;
-	public AudioClip[] levelMusicBetaGrove;
 	public AudioClip[] levelMusic8;
-	public AudioClip[] levelMusicWalking;
-	public AudioClip[] levelMusicCombat;
-	// public AudioClip[] levelMusicMutantNear;
-	// public AudioClip[] levelMusicCyborgNear;
-	// public AudioClip[] levelMusicCyborgDroneNear;
-	// public AudioClip[] levelMusicRobotNear;
-	//public AudioClip[] levelMusicTransition;
 	public AudioClip[] levelMusicRevive;
 	public AudioClip[] levelMusicDeath;
 	public AudioClip[] levelMusicCyber;
@@ -31,20 +23,20 @@ public class Music : MonoBehaviour {
 	public GameObject mainMenu;
 	public WeaponFire wf;
 	public HealthManager hm;
-	public enum MusicType{None,Walking,Combat,Overlay,Override};
-	public enum TrackType{None,Walking,Combat,MutantNear,CyborgNear,CyborgDroneNear,RobotNear,Transition,Revive,Death,Cybertube,Elevator,Distortion};
+	public enum MusicType : byte {None,Walking,Combat,Overlay,Override};
+	public enum TrackType : byte {None,Walking,Combat,MutantNear,CyborgNear,CyborgDroneNear,RobotNear,Transition,Revive,Death,Cybertube,Elevator,Distortion};
 	private AudioClip tempC;
 	private AudioClip curC;
 	private AudioClip curOverlayC;
 	public static Music a;
 	private bool paused;
 	private bool cyberTube;
-	public bool levelEntry;
+	[HideInInspector] public bool levelEntry;
 	private int rand;
 	private bool inZone;
 	private bool distortion;
 	private bool elevator;
-	public bool inCombat;
+	[HideInInspector] public bool inCombat;
 	private float combatImpulseFinished;
 
 	void Start() {
@@ -57,17 +49,7 @@ public class Music : MonoBehaviour {
 		a.inZone = false;
 		a.rand = 0;
 		a.combatImpulseFinished = PauseScript.a.relativeTime + 5f;
-		//LoadMusic();
 	}
-
-	//void LoadMusic() {
-		//for (int i=0;i<14;i++) {
-			//string tempStringWalking = Application.streamingAssetsPath + "/cit1/music/walking/lev" + i.ToString() + "walking.wav";
-			//UnityWebRequestMultimedia uwrm = UnityWebRequest.Get(tempStringWalking);
-			//UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(tempStringWalking,AudioType.MP3);
-			//if (www != null) levelMusicWalking[i] = DownloadHandlerAudioClip.GetContent(www);
-		//}
-	//}
 
 	public void PlayTrack(int levnum, TrackType ttype, MusicType mtype) {
 		tempC = GetCorrespondingLevelClip(levnum,ttype);
@@ -279,7 +261,8 @@ public class Music : MonoBehaviour {
 						return;
 					}
 				}
-				PlayTrack(LevelManager.a.currentLevel, TrackType.Walking, MusicType.Walking);
+				if (LevelManager.a != null) PlayTrack(LevelManager.a.currentLevel, TrackType.Walking, MusicType.Walking);
+				else  PlayTrack(1, TrackType.Walking, MusicType.Walking);
 			}
 		}
     }

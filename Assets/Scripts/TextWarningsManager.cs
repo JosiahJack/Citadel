@@ -5,17 +5,15 @@ using UnityEngine.UI;
 
 public class TextWarningsManager : MonoBehaviour {
 	public GameObject[] warningTextGObjects;
+
 	private Text[] warningTexts;
 	private bool[] initialized;
 	private float[] finishedTime;
-	public float[] warningLifeTimes;
-	public int[] uniqueID;
-	public float warningDefaultLifeTime = 2f;
-	public enum warningTextColor {white,red,green,yellow};
-	public Color colwhite;
-	public Color colred;
-	public Color colgreen;
-	public Color colyellow;
+	[HideInInspector] public float[] warningLifeTimes;
+	[HideInInspector] public int[] uniqueID;
+	private float warningDefaultLifeTime = 2f;
+
+	public enum warningTextColor : byte {white,red,green,yellow};
 
 	void Start () {
 		warningTexts = new Text[warningTextGObjects.Length];
@@ -43,10 +41,10 @@ public class TextWarningsManager : MonoBehaviour {
 		if (forcedReference >= 0) setIndex = forcedReference;
 		warningTexts[setIndex].text = message;
 		uniqueID[setIndex] = id;
-		if (col == warningTextColor.green) warningTexts[setIndex].color = colgreen;
-		if (col == warningTextColor.white) warningTexts[setIndex].color = colwhite;
-		if (col == warningTextColor.red) warningTexts[setIndex].color = colred;
-		if (col == warningTextColor.yellow) warningTexts[setIndex].color = colyellow;
+		if (col == warningTextColor.green) warningTexts[setIndex].color = Const.a.ssGreenText;
+		if (col == warningTextColor.white) warningTexts[setIndex].color = Const.a.ssWhiteText;
+		if (col == warningTextColor.red) warningTexts[setIndex].color = Const.a.ssRedText;
+		if (col == warningTextColor.yellow) warningTexts[setIndex].color = Const.a.ssYellowText;
 
 		if (lifetime > -1)
 			if (warningLifeTimes[setIndex] < lifetime) warningLifeTimes[setIndex] = lifetime;
@@ -56,19 +54,19 @@ public class TextWarningsManager : MonoBehaviour {
 		finishedTime[setIndex] = PauseScript.a.relativeTime + warningLifeTimes[setIndex];
 	}
 
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			for (int i=0;i<warningTextGObjects.Length;i++) {
-				if (!string.IsNullOrWhiteSpace(warningTexts[i].text)) {
-					if (finishedTime[i] < PauseScript.a.relativeTime) {
-						warningTexts[i].text = System.String.Empty;
-						if (warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(false);
-						continue;
-					}
-					if (!warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(true);
-				} else {
+	void Update() {
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return;
+
+		for (int i=0;i<warningTextGObjects.Length;i++) {
+			if (!string.IsNullOrWhiteSpace(warningTexts[i].text)) {
+				if (finishedTime[i] < PauseScript.a.relativeTime) {
+					warningTexts[i].text = System.String.Empty;
 					if (warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(false);
+					continue;
 				}
+				if (!warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(true);
+			} else {
+				if (warningTextGObjects[i].activeInHierarchy) warningTextGObjects[i].SetActive(false);
 			}
 		}
 	}

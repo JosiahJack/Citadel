@@ -16,11 +16,7 @@ public class LaserDrawing : MonoBehaviour {
         line.enabled = true;
 	}
 
-	void Update () {
-		//if (followStarter != null) {
-		//	endPoint = followStarter.transform.position;
-//
-		//}
+	void Update() {
 		line.SetPosition(0,startPoint);
 		line.SetPosition(1,endPoint);
 	}
@@ -29,15 +25,6 @@ public class LaserDrawing : MonoBehaviour {
         StartCoroutine(DelayedDestroy());
         line.enabled = true;
     }
-
-    //IEnumerator DisableLine() {
-    //    yield return new WaitForSeconds(lineLife);
-    //    Vector3 sp = new Vector3(5000f, 5000f, 5000f);
-    //    Vector3 ep = sp;
-    //    line.SetPosition(0, sp);
-    //    line.SetPosition(1, ep);
-    //    line.enabled = false;
-    //}
 
 	IEnumerator DelayedDestroy () {
 		yield return new WaitForSeconds (lineLife);

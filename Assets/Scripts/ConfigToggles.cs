@@ -4,9 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ConfigToggles : MonoBehaviour {
-	private Toggle self;
-	public enum ConfigToggleType{Fullscreen,SSAO,Bloom,Reverb,Subtitles,InvertLook,InvertCyber,InvertInventoryCycling,QuickPickup,QuickReload};
+	// Enumerations
+	public enum ConfigToggleType : byte {Fullscreen,SSAO,Bloom,Reverb,Subtitles,InvertLook,InvertCyber,InvertInventoryCycling,QuickPickup,QuickReload,Reflections};
+
+	// External references
 	public ConfigToggleType ToggleType;
+
+	// Internal references
+	private Toggle self;
 
 	void Start () {
 		self = GetComponent<Toggle>();

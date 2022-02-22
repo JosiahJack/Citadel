@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class VaporizeButton : MonoBehaviour {
-	public GeneralInventory playerGenInv;
-	public GeneralInvCurrent playerGenCur;
 	public GameObject playerCamera;
 	public Image ico;
 	public Text ict;
@@ -20,7 +18,7 @@ public class VaporizeButton : MonoBehaviour {
 	}
 
 	public void OnVaporizeClick() {
-		playerGenInv.generalInventoryIndexRef[playerGenCur.generalInvCurrent] = -1;
+		Inventory.a.generalInventoryIndexRef[Inventory.a.generalInvCurrent] = -1;
 		MFDManager.a.VaporizeClicked();
 	}
 }

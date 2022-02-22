@@ -3,7 +3,6 @@ using System.Collections;
 
 public class LevelManager : MonoBehaviour {
 	public int currentLevel;
-	public static LevelManager a;
 	public GameObject[] levels;
 	public int[] levelSecurity;
 	public int[] levelCameraCount;
@@ -15,8 +14,6 @@ public class LevelManager : MonoBehaviour {
 	public Transform[] ressurectionLocation;
 	public bool[] ressurectionActive;
 	public Door[] ressurectionBayDoor;
-	//public GameObject currentPlayer;
-	//public GameObject elevatorControl;
 	public GameObject sky;
 	public bool superoverride = false;
 	public GameObject saturn;
@@ -26,45 +23,24 @@ public class LevelManager : MonoBehaviour {
 	public bool[] showExteriorForLevel;
 	public bool[] showSaturnForLevel;
 	public NPCSubManager[] npcsm;
-	public enum SecurityType{None,Camera,NodeSmall,NodeLarge};
+	public enum SecurityType : byte {None,Camera,NodeSmall,NodeLarge};
 	public Level[] levelScripts;
-	public int currentLeaf;
-	public Transform[] levelGeometryContainers;
+
+	// Singleton instance
+	public static LevelManager a;
 
 	void Awake () {
 		a = this;
 		if (currentLevel == -1) return;
-		//StartCoroutine(InitializeAllLevels());
 		SetAllPlayersLevelsToCurrent();
-		if (sky != null) sky.SetActive(true);
+		if (sky == null) Debug.Log("BUG: LevelManager missing manually assigned reference for sky.");
+		else sky.SetActive(true);
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
 		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
+		if (ressurectionBayDoor.Length != 8) Debug.Log("BUG: LevelManager ressurectionBayDoor array length not equal to 8.");
 		Time.timeScale = Const.a.defaultTimeScale;
-		currentLeaf = -1;
 	}
-
-	public void Start() {
-		PullOutCurrentLevelNPCs();
-	}
-
-	public void PullOutCurrentLevelNPCs() {
-		//if (npcsm[currentLevel] != null) npcsm[currentLevel].PullOutNPCs();
-	}
-
-	public void PutBackCurrentLevelNPCs() {
-		//if (npcsm[currentLevel] != null) npcsm[currentLevel].PutBackNPCs();
-	}
-	/*public void InitializeAllLevels() {
-		PauseScript.a.paused = true;
-		for (int i=0;i<levels.Length;i++) {
-			if (levels[i] != null) levels[i].SetActive(true);
-			//yield return null); // should be 0.14s total
-		}
-		yield return new WaitForSeconds(0.5f); // 0.14+0.5 = 0.6s total for level initialization
-		DisableAllNonOccupiedLevels(); // sure, this probably takes another second at least :)
-		PauseScript.a.paused = false;
-	}*/
 
 	public void CyborgConversionToggleForCurrentLevel() {
 		if (currentLevel == 6) {
@@ -80,66 +56,42 @@ public class LevelManager : MonoBehaviour {
 				ressurectionActive[12] = true;
 			}
 		} else {
-			ressurectionActive[currentLevel] = !ressurectionActive[currentLevel]; // toggle current level
+			ressurectionActive[currentLevel] = !ressurectionActive[currentLevel]; // Toggle current level.
 		}
 	}
 
-	public bool IsCurrentLevelCyborgConversionEnabled() {
-		return ressurectionActive[currentLevel];
-	}
+	public bool IsCurrentLevelCyborgConversionEnabled() { return ressurectionActive[currentLevel]; }
 
 	public bool RessurectPlayer (GameObject currentPlayer) {
-		// Note: currentPlayer is the main Player gameObject that contains PlayerReferenceManager
-		if (currentPlayer == null) {
-			Const.sprint("BUG: LevelManager cannot find current player for RessurectPlayer.",Const.a.allPlayers);
-			return false; // prevent possible error if wrong player is passed
-		}
+		// Note:  currentPlayer is the main Player gameObject that contains PlayerReferenceManager.
+		if (currentPlayer == null) { Const.sprint("BUG: LevelManager cannot find current player for RessurectPlayer."); return false; } // Prevent possible error if wrong player is passed.
 
 		if (ressurectionActive[currentLevel]) {
 			if (currentLevel == 10 ||currentLevel == 11 ||currentLevel == 12) {
 				LoadLevel(6,ressurectionLocation[currentLevel].gameObject,currentPlayer,ressurectionLocation[currentLevel].position);
 				ressurectionBayDoor[6].ForceClose();
 			} else {
-				ressurectionBayDoor[currentLevel].ForceClose();
-				currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = transform.TransformPoint(ressurectionLocation[currentLevel].position); //teleport to ressurection chamber
+				if (currentLevel <= 7 && currentLevel >= 0) ressurectionBayDoor[currentLevel].ForceClose();
+				if (currentLevel != 13) currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = transform.TransformPoint(ressurectionLocation[currentLevel].position); //teleport to ressurection chamber
 			}
 			currentPlayer.GetComponent<PlayerReferenceManager>().playerDeathRessurectEffect.SetActive(true); // activate death screen and readouts for "BRAIN ACTIVITY SATISFACTORY"            ya debatable right
 			Music.a.PlayTrack(currentLevel,Music.TrackType.Revive,Music.MusicType.Override);
 			currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerMovement>().ressurectingFinished = PauseScript.a.relativeTime + 3f;
-
 			return true;
 		}
-
 		return false;
 	}
 
 	public void LoadLevel (int levnum, GameObject targetDestination, GameObject currentPlayer, Vector3 targetPosition) {
-		// NOTE: Check this first since the button for the current level has a null destination
-		if (currentLevel == levnum) {
-			Const.sprint(Const.a.stringTable[9],currentPlayer); //Already there
-			return;
-		}
-			
-		if (currentPlayer == null) {
-			Const.sprint("BUG: LevelManager cannot find current player.",Const.a.allPlayers);
-			return; // prevent possible error if keypad does not have player to move
-		}
-
-		if (targetDestination == null && targetPosition == null) {
-			Const.sprint("BUG: LevelManager cannot find destination.",Const.a.allPlayers);
-			return; // prevent possible error if keypad does not have destination set
-		}
-			
+		// NOTE: Check this first since the button for the current level has a null destination.  This is fine and expected.
+		if (currentLevel == levnum) { Const.sprint(Const.a.stringTable[9],currentPlayer); return; } //Already there
+		if (currentPlayer == null) { Const.sprint("BUG: LevelManager cannot find current player."); return; } // Prevent possible error if keypad does not have player to move.
+		if (targetDestination == null && targetPosition == null) { Const.sprint("BUG: LevelManager cannot find destination."); return; } // Prevent possible error if keypad does not have destination set.
+		
 		MFDManager.a.TurnOffElevatorPad();
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
-		Vector3 pos = new Vector3();
-		if (targetDestination == null) {
-			pos = targetPosition;
-		} else {
-			pos = targetDestination.transform.position;
-		}
 		PlayerReferenceManager prm = currentPlayer.GetComponent<PlayerReferenceManager>();
-		prm.playerCapsule.transform.position = pos; // Put player in the new level
+		prm.playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
 		PlayerMovement pm = prm.playerCapsule.GetComponent<PlayerMovement>();
 		pm.SetAutomapExploredReference(levnum);
 		pm.automapBaseImage.overrideSprite = pm.automapsBaseImages[levnum];
@@ -149,22 +101,18 @@ public class LevelManager : MonoBehaviour {
 		Music.a.levelEntry = true;
 		levels[levnum].SetActive(true); // enable new level
 		prm.playerCurrentLevel = levnum;
-		PutBackCurrentLevelNPCs();
 		currentLevel = levnum; // Set current level to be the new level
-		QuestLogNotesManager.a.NotifyLevelChange(currentLevel);
+		if (QuestLogNotesManager.a != null) QuestLogNotesManager.a.NotifyLevelChange(currentLevel);
 		DisableAllNonOccupiedLevels();
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
-		PullOutCurrentLevelNPCs(); // unparent from level transforms to reduce physics work
 		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) AutoSplitterData.missionSplitID++; // 1 - Medical split - we are now on level 2
 	}
 
 	public void LoadLevelFromSave (int levnum) {
 		// NOTE: Check this first since the button for the current level has a null destination
-		if (currentLevel == levnum) {
-			return;
-		}
+		if (currentLevel == levnum) return;
 		
 		Music.a.inCombat = false;
 		Music.a.SFXMain.Stop();
@@ -175,18 +123,10 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	void SetAllPlayersLevelsToCurrent () {
-		if (Const.a.player1 != null) {
-			Const.a.player1.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
-		}
-		if (Const.a.player2 != null) {
-			Const.a.player2.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
-		}
-		if (Const.a.player3 != null) {
-			Const.a.player3.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
-		}
-		if (Const.a.player4 != null) {
-			Const.a.player4.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
-		}
+		if (Const.a.player1 != null) Const.a.player1.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
+		if (Const.a.player2 != null) Const.a.player2.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
+		if (Const.a.player3 != null) Const.a.player3.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
+		if (Const.a.player4 != null) Const.a.player4.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
 	}
 
 	public void DisableAllNonOccupiedLevels() {
@@ -215,21 +155,15 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public GameObject GetCurrentLevelDynamicContainer() {
-        GameObject retval = null;
-		if (currentLevel == -1) return retval;
-        if (currentLevel < levels.Length)
-            retval = levelScripts[currentLevel].dynamicObjectsContainer;
-
-        return retval;
+		if (currentLevel == -1) return null;
+        if (currentLevel < levels.Length) return levelScripts[currentLevel].dynamicObjectsContainer;
+        return null;
 	}
 
 	public GameObject GetRequestedLevelDynamicContainer(int index) {
-        GameObject retval = null;
-		if (index == -1) return retval;
-        if (currentLevel < levels.Length)
-            retval = levelScripts[index].dynamicObjectsContainer;
-
-        return retval;
+		if (index == -1) return null;
+        if (currentLevel < levels.Length) return levelScripts[index].dynamicObjectsContainer;
+        return null;
 	}
 
 	public int GetCurrentLevelSecurity() {
@@ -269,20 +203,16 @@ public class LevelManager : MonoBehaviour {
 			case SecurityType.NodeSmall: secDrop = ((nodeSmallScore/secscoreTotal) * 100); levelSmallNodeDestroyedCount[currentLevel]++; break;
 			case SecurityType.NodeLarge: secDrop = ((nodeLargeScore/secscoreTotal) * 100); levelLargeNodeDestroyedCount[currentLevel]++; break;
 		}
-		//Debug.Log("secDrop: " + secDrop.ToString());
-		//Debug.Log("Camera calc: " + (((camScore/secscoreTotal) * 100)).ToString());
-		//Debug.Log("Node small calc: " + (((nodeSmallScore/secscoreTotal) * 100)).ToString());
-		//Debug.Log("Node large calc: " + (((nodeLargeScore/secscoreTotal) * 100)).ToString());
 		levelSecurity [currentLevel] -= (int)secDrop;
 		if (levelSecurity [currentLevel] < 0) levelSecurity [currentLevel] = 0;
 		if ((levelLargeNodeDestroyedCount[currentLevel] == levelLargeNodeCount[currentLevel]) && (levelSmallNodeDestroyedCount[currentLevel] == levelSmallNodeCount[currentLevel]) && (levelCameraDestroyedCount[currentLevel] == levelCameraCount[currentLevel])) {
 			levelSecurity[currentLevel] = 0;
 		}
-		Const.sprint(Const.a.stringTable[306] + levelSecurity[currentLevel].ToString() + Const.a.stringTable[307],Const.a.allPlayers);
+		Const.sprint(Const.a.stringTable[306] + levelSecurity[currentLevel].ToString() + Const.a.stringTable[307]);
 
 		// Notify quest log if all nodes were destroyed
 		if (levelLargeNodeDestroyedCount[currentLevel] == levelLargeNodeCount[currentLevel]) {
-			QuestLogNotesManager.a.NodesDestroyed(currentLevel);
+			if (QuestLogNotesManager.a != null) QuestLogNotesManager.a.NodesDestroyed(currentLevel);
 		}
 	}
 
@@ -293,11 +223,7 @@ public class LevelManager : MonoBehaviour {
 		float xMin = b.bounds.min.x;
 		float yMax = b.bounds.max.z; // Yes Unity you stupid engine...z is y people!  
 		float yMin = b.bounds.min.z; // NO I'm not making a 2D game....it's y and I'm sticking to it
-		if (pos.x < xMax && pos.x > xMin) {
-			if (pos.z < yMax && pos.z > yMin) {
-				return true;
-			}
-		}
+		if ((pos.x < xMax && pos.x > xMin) && (pos.z < yMax && pos.z > yMin)) return true;
 		return false;
 	}
 }

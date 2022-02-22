@@ -4,29 +4,27 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ConfigKeybindButton : MonoBehaviour {
+	// Externally set per instance
+	public int index;
+
+	// Internal references
 	private Button self;
 	private bool enterMode;
 	private bool firstFrame;
 	private Text selfText;
-	public int index;
 
 	void Awake () {
+		if (index < 0 || index >= 40) { index = 0; Debug.Log("BUG: Setting index on ConfigKeybindButton to 0 because it was outside the range >=0index<40");}
 		self = GetComponent<Button>();
+		if (self == null) Debug.Log("BUG: ConfigKeybindButton missing component for self.");
 		selfText = GetComponentInChildren<Text>();
 		enterMode = false;
 		firstFrame = true;
 	}
 
+	// Wait for Const to be initialized.s
 	void Start() {
 		UpdateText();
-	}
-
-	public void UpdateText() {
-		if (selfText != null) {
-			selfText.text = Const.a.InputConfigNames[Const.a.InputCodeSettings[index]];
-			if (Const.a.InputCodeSettings[index] == 109) selfText.color = Const.a.ssRedText;
-			else selfText.color = Const.a.ssGreenText;
-		}
 	}
 
 	public void KeybindButtonClick() {
@@ -45,19 +43,14 @@ public class ConfigKeybindButton : MonoBehaviour {
 
 			if (Const.a.InputCodeSettings[i] == checkVal) {
 				Const.a.InputCodeSettings[i] = 109; Const.sprint("Found and unbound conflict with " + Const.a.InputCodes[i],Const.a.player1);
-				// cbm.configButtons[i].index = 109;
-				// cbm.configButtons[i].UpdateText();
 				break;
 			}
 		}
 	}
 
-	void Update () {
+	void Update() {
 		if (enterMode) {
-			if (firstFrame) {
-				firstFrame = false;
-				return; // Prevent capturing the click in input check when first clicking on the button to enter the entry mode.
-			}
+			if (firstFrame) {firstFrame = false; return; } // Prevent capturing the click in input check when first clicking on the button to enter the entry mode.
 
 			bool goodkey = false;
 			for (int i=0;i<159;i++) {
@@ -78,6 +71,14 @@ public class ConfigKeybindButton : MonoBehaviour {
 			}
 		} else {
 			UpdateText();
+		}
+	}
+
+	public void UpdateText() { // Called by Start also.
+		if (selfText != null) {
+			selfText.text = Const.a.InputConfigNames[Const.a.InputCodeSettings[index]];
+			if (Const.a.InputCodeSettings[index] == 109) selfText.color = Const.a.ssRedText;
+			else selfText.color = Const.a.ssGreenText;
 		}
 	}
 }

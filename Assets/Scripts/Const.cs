@@ -14,129 +14,149 @@ using UnityEngine.SceneManagement;
 using System.Diagnostics;
 
 // Global types
-public enum Handedness {Center,LH,RH};
+public enum Handedness : byte {Center,LH,RH};
 
 public class Const : MonoBehaviour {
-	[HideInInspector]
-	public bool startingNewGame = false;
-	[HideInInspector]
-	public bool freshRun = false;
 	//Item constants
-	[SerializeField] public QuestBits questData;
-	[SerializeField] public GameObject[] useableItems;
-	[SerializeField] public Texture2D[] useableItemsFrobIcons;
-    [SerializeField] public Sprite[] useableItemsIcons;
-    [SerializeField] public string[] useableItemsNameText;
-	[SerializeField] public Sprite[] searchItemIconSprites;
-	[SerializeField] public string[] genericText;
+	public QuestBits questData;
+	public GameObject[] useableItems;
+	public Texture2D[] useableItemsFrobIcons;
+    public Sprite[] useableItemsIcons;
+    public string[] useableItemsNameText;
+	public Sprite[] searchItemIconSprites;
 
 	//Audiolog constants
-	[SerializeField] public string[] audiologNames;
-	[SerializeField] public string[] audiologSenders;
-	[SerializeField] public string[] audiologSubjects;
-	[SerializeField] public AudioClip[] audioLogs;
-	[SerializeField] public int[] audioLogType;  // 0 = text only, 1 = normal, 2 = email, 3 = papers, 4 = vmail
-	[SerializeField] public string[] audioLogSpeech2Text;
-	[SerializeField] public int[] audioLogLevelFound;
+	[HideInInspector] public string[] audiologNames;
+	[HideInInspector] public string[] audiologSenders;
+	[HideInInspector] public string[] audiologSubjects;
+	public AudioClip[] audioLogs;
+	[HideInInspector] public int[] audioLogType;  // 0 = text only, 1 = normal, 2 = email, 3 = papers, 4 = vmail
+	[HideInInspector] public string[] audioLogSpeech2Text;
+	[HideInInspector] public int[] audioLogLevelFound;
 
 	//Weapon constants
-	[SerializeField] public bool[] isFullAutoForWeapon;
-	[SerializeField] public float[] delayBetweenShotsForWeapon;
-	[SerializeField] public float[] delayBetweenShotsForWeapon2;
-	[SerializeField] public float[] damagePerHitForWeapon;
-	[SerializeField] public float[] damagePerHitForWeapon2;
-	[SerializeField] public float[] damageOverloadForWeapon;
-	[SerializeField] public float[] energyDrainLowForWeapon;
-	[SerializeField] public float[] energyDrainHiForWeapon;
-	[SerializeField] public float[] energyDrainOverloadForWeapon;
-	[SerializeField] public float[] penetrationForWeapon;
-	[SerializeField] public float[] penetrationForWeapon2;
-	[SerializeField] public float[] offenseForWeapon;
-	[SerializeField] public float[] offenseForWeapon2;
-	[SerializeField] public float[] rangeForWeapon;
-	[SerializeField] public int[] magazinePitchCountForWeapon;
-	[SerializeField] public int[] magazinePitchCountForWeapon2;
-	[SerializeField] public float[] recoilForWeapon;
-	public enum AttackType{None,Melee,MeleeEnergy,EnergyBeam,Magnetic,Projectile,ProjectileNeedle,ProjectileEnergyBeam,ProjectileLaunched,Gas,Tranq,Drill};
-	[SerializeField] public AttackType[] attackTypeForWeapon;
-	public enum npcType{Mutant,Supermutant,Robot,Cyborg,Supercyborg,Cyber,MutantCyborg};
-	[SerializeField] public npcType[] npcTypes;
+	public bool[] isFullAutoForWeapon;
+	public float[] delayBetweenShotsForWeapon;
+	public float[] delayBetweenShotsForWeapon2;
+	public float[] damagePerHitForWeapon;
+	public float[] damagePerHitForWeapon2;
+	public float[] damageOverloadForWeapon;
+	public float[] energyDrainLowForWeapon;
+	public float[] energyDrainHiForWeapon;
+	public float[] energyDrainOverloadForWeapon;
+	public float[] penetrationForWeapon;
+	public float[] penetrationForWeapon2;
+	public float[] offenseForWeapon;
+	public float[] offenseForWeapon2;
+	public float[] rangeForWeapon;
+	public int[] magazinePitchCountForWeapon;
+	public int[] magazinePitchCountForWeapon2;
+	public float[] recoilForWeapon;
+	public enum AttackType : byte {None,Melee,MeleeEnergy,EnergyBeam,Magnetic,Projectile,ProjectileNeedle,ProjectileEnergyBeam,ProjectileLaunched,Gas,Tranq,Drill};
+	public AttackType[] attackTypeForWeapon;
+	public enum npcType : byte {Mutant,Supermutant,Robot,Cyborg,Supercyborg,Cyber,MutantCyborg};
+	public enum PerceptionLevel : byte {Low,Medium,High,Omniscient};
 
 	//NPC constants
-	[SerializeField] public GameObject[] npcPrefabs;
-	[SerializeField] public string[] nameForNPC;
-	[SerializeField] public AttackType[] attackTypeForNPC;
-	[SerializeField] public AttackType[] attackTypeForNPC2;
-	[SerializeField] public AttackType[] attackTypeForNPC3;
-	[SerializeField] public float[] damageForNPC; // Primary attack damage
-	[SerializeField] public float[] damageForNPC2; // Secondary attack damage
-	[SerializeField] public float[] damageForNPC3; // Grenade attack damage
-	[SerializeField] public float[] rangeForNPC; // Primary attack range
-	[SerializeField] public float[] rangeForNPC2; // Secondary attack range
-	[SerializeField] public float[] rangeForNPC3; // Grenade throw range
-	[SerializeField] public float[] healthForNPC;
-	[SerializeField] public float[] healthForCyberNPC;
-	public enum PerceptionLevel{Low,Medium,High,Omniscient};
-	[SerializeField] public PerceptionLevel[] perceptionForNPC;
-	[SerializeField] public float[] disruptabilityForNPC;
-	[SerializeField] public float[] armorvalueForNPC;
-	[SerializeField] public float[] defenseForNPC;
-	[SerializeField] public float[] randomMinimumDamageModifierForNPC; // minimum value that NPC damage can be
-	[SerializeField] public string[] creditsText;
-	[HideInInspector]
-	public int creditsLength;
+	public GameObject[] npcPrefabs;
+	[HideInInspector] public string[] nameForNPC;
+	[HideInInspector] public AttackType[] attackTypeForNPC;
+	[HideInInspector] public AttackType[] attackTypeForNPC2;
+	[HideInInspector] public AttackType[] attackTypeForNPC3;
+	[HideInInspector] public float[] damageForNPC; // Primary attack damage
+	[HideInInspector] public float[] damageForNPC2; // Secondary attack damage
+	[HideInInspector] public float[] damageForNPC3; // Grenade attack damage
+	[HideInInspector] public float[] rangeForNPC; // Primary attack range
+	[HideInInspector] public float[] rangeForNPC2; // Secondary attack range
+	[HideInInspector] public float[] rangeForNPC3; // Grenade throw range
+	[HideInInspector] public float[] healthForNPC;
+	[HideInInspector] public float[] healthForCyberNPC;
+	[HideInInspector] public PerceptionLevel[] perceptionForNPC;
+	[HideInInspector] public float[] disruptabilityForNPC;
+	[HideInInspector] public float[] armorvalueForNPC;
+	[HideInInspector] public aiMoveType[] moveTypeForNPC;
+	[HideInInspector] public float[] defenseForNPC;
+	[HideInInspector] public float[] yawSpeedForNPC;
+	[HideInInspector] public float[] fovForNPC;
+	[HideInInspector] public float[] fovAttackForNPC;
+	[HideInInspector] public float[] fovStartMovementForNPC;
+	[HideInInspector] public float[] distToSeeBehindForNPC;
+	[HideInInspector] public float[] sightRangeForNPC;
+	[HideInInspector] public float[] walkSpeedForNPC;
+	[HideInInspector] public float[] runSpeedForNPC;
+	[HideInInspector] public float[] attack1SpeedForNPC;
+	[HideInInspector] public float[] attack2SpeedForNPC;
+	[HideInInspector] public float[] attack3SpeedForNPC;
+	[HideInInspector] public float[] attack3ForceForNPC;
+	[HideInInspector] public float[] attack3RadiusForNPC;
+	[HideInInspector] public float[] timeToPainForNPC;
+	[HideInInspector] public float[] timeBetweenPainForNPC;
+	[HideInInspector] public float[] timeTillDeadForNPC;
+	[HideInInspector] public float[] timeToActualAttack1ForNPC;
+	[HideInInspector] public float[] timeToActualAttack2ForNPC;
+	[HideInInspector] public float[] timeToActualAttack3ForNPC;
+	[HideInInspector] public float[] timeBetweenAttack1ForNPC;
+	[HideInInspector] public float[] timeBetweenAttack2ForNPC;
+	[HideInInspector] public float[] timeBetweenAttack3ForNPC;
+	[HideInInspector] public float[] timeToChangeEnemyForNPC;
+	[HideInInspector] public float[] timeIdleSFXMinForNPC;
+	[HideInInspector] public float[] timeIdleSFXMaxForNPC;
+	[HideInInspector] public float[] timeAttack1WaitMinForNPC;
+	[HideInInspector] public float[] timeAttack1WaitMaxForNPC;
+	[HideInInspector] public float[] timeAttack1WaitChanceForNPC;
+	[HideInInspector] public float[] timeAttack2WaitMinForNPC;
+	[HideInInspector] public float[] timeAttack2WaitMaxForNPC;
+	[HideInInspector] public float[] timeAttack2WaitChanceForNPC;
+	[HideInInspector] public float[] timeAttack3WaitMinForNPC;
+	[HideInInspector] public float[] timeAttack3WaitMaxForNPC;
+	[HideInInspector] public float[] timeAttack3WaitChanceForNPC;
+	[HideInInspector] public PoolType[] attack1ProjectileLaunchedTypeForNPC;
+	[HideInInspector] public PoolType[] attack2ProjectileLaunchedTypeForNPC;
+	[HideInInspector] public PoolType[] attack3ProjectileLaunchedTypeForNPC;
+	[HideInInspector] public float[] projectileSpeedAttack1ForNPC;
+	[HideInInspector] public float[] projectileSpeedAttack2ForNPC;
+	[HideInInspector] public float[] projectileSpeedAttack3ForNPC;
+	[HideInInspector] public bool[] hasLaserOnAttack1ForNPC;
+	[HideInInspector] public bool[] hasLaserOnAttack2ForNPC;
+	[HideInInspector] public bool[] hasLaserOnAttack3ForNPC;
+	[HideInInspector] public bool[] explodeOnAttack3ForNPC;
+	[HideInInspector] public bool[] preactivateMeleeCollidersForNPC;
+	[HideInInspector] public float[] huntTimeForNPC;
+	[HideInInspector] public float[] flightHeightForNPC;
+	[HideInInspector] public bool[] flightHeightIsPercentageForNPC;
+	[HideInInspector] public bool[] switchMaterialOnDeathForNPC;
+	[HideInInspector] public float[] hearingRangeForNPC;
+	[HideInInspector] public float[] timeForTranquilizationForNPC;
+	[HideInInspector] public bool[] hopsOnMoveForNPC;
 
-	[SerializeField] public HealthManager[] healthObjectsRegistration; // List of objects with health, used for fast application of damage in explosions
-	public GameObject[] levelChunks;
+	// System constants
+	[HideInInspector] public string[] creditsText;
+	[HideInInspector] public HealthManager[] healthObjectsRegistration; // List of objects with health, used for fast application of damage in explosions
+	[HideInInspector] public GameObject player1;
+	[HideInInspector] public GameObject player2;
+	[HideInInspector] public GameObject player3;
+	[HideInInspector] public GameObject player4;
 
-	//System constants
-	public float doubleClickTime = 0.500f;
-	public float frobDistance = 5f;
-	public float elevatorPadUseDistance = 2f;
-	public GameObject player1;
-	public GameObject player2;
-	public GameObject player3;
-	public GameObject player4;
-	public GameObject allPlayers;
-	public float playerCameraOffsetY = 0.84f; //Vertical camera offset from player 0,0,0 position (mid-body)
-	public Color ssYellowText = new Color(0.8902f, 0.8745f, 0f); // Yellow, e.g. for current inventory text
-	public Color ssGreenText = new Color(0.3725f, 0.6549f, 0.1686f); // Green, e.g. for inventory text
-	public Color ssRedText = new Color(0.9180f, 0.1367f, 0.1679f); // Red, e.g. for inventory text
-
-	//Patch constants
-	public float berserkTime = 15.5f;
-	public float detoxTime = 60f;
-	public float geniusTime = 35f;
-	public float mediTime = 35f;
-	public float reflexTime = 155f;
-	public float sightTime= 35f;
-	public float sightSideEffectTime = 10f;
-	public float staminupTime = 60f;
-	public float reflexTimeScale = 0.25f;
-	public float defaultTimeScale = 1.0f;
-	public float berserkDamageMultiplier = 4.0f;
-
-	//Grenade constants
-	public float nitroMinTime = 1.0f;
-	public float nitroMaxTime = 60.0f;
-	public float nitroDefaultTime = 7.0f;
-	public float earthShMinTime = 4.0f;
-	public float earthShMaxTime = 60.0f;
-	public float earthShDefaultTime = 10.0f;
+	// Layer masks
+	[HideInInspector] public int layerMaskPlayerFrob;
+	[HideInInspector] public int layerMaskPlayerAttack;
+	[HideInInspector] public int layerMaskNPCSight;
+	[HideInInspector] public int layerMaskNPCAttack;
+	[HideInInspector] public int layerMaskNPCCollision;
 
 	//Pool references
-	public enum PoolType {None,SparqImpacts,CameraExplosions,ProjEnemShot2,SparksSmall,BloodSpurtSmall,
-						BloodSpurtSmallYellow,BloodSpurtSmallGreen,SparksSmallBlue,HopperImpact,
-						GrenadeFragExplosions,Vaporize, BlasterImpacts, IonImpacts,
-						MagpulseShots, MagpulseImpacts,StungunShots, StungunImpacts, RailgunShots, RailgunImpacts,
-						PlasmaShots, PlasmaImpacts, ProjEnemShot6,ProjEnemShot6Impacts, ProjEnemShot2Impacts,
-						ProjSeedPods, ProjSeedPodsImpacts, TempAudioSources,GrenadeEMPExplosions, ProjEnemShot4,
-						ProjEnemShot4Impacts,CrateExplosions,GrenadeFragLive,CyborgAssassinThrowingStars,
-						ConcussionLive,EMPLive,GasLive,GasExplosions,CorpseHit,NPCMagpulseShots,NPCRailgunShots,
-						LeafBurst,MutationBurst,GraytationBurst,BarrelExplosions, CyberPlayerShots, CyberDogShots,
-						CyberReaverShots, BulletHoleLarge, BulletHoleScorchLarge, BulletHoleScorchSmall, BulletHoleSmall,
-						BulletHoleTiny, BulletHoleTinySpread, CyberPlayerIceShots, CyberDissolve, TargetIDInstances,
-						AutomapBotOverlays,AutomapCyborgOverlays,AutomapMutantOverlays};
+	public enum PoolType : byte {None,SparqImpacts,CameraExplosions,ProjEnemShot2,SparksSmall,BloodSpurtSmall,
+						  BloodSpurtSmallYellow,BloodSpurtSmallGreen,SparksSmallBlue,HopperImpact,
+						  GrenadeFragExplosions,Vaporize, BlasterImpacts, IonImpacts,
+						  MagpulseShots, MagpulseImpacts,StungunShots, StungunImpacts, RailgunShots, RailgunImpacts,
+						  PlasmaShots, PlasmaImpacts, ProjEnemShot6,ProjEnemShot6Impacts, ProjEnemShot2Impacts,
+						  ProjSeedPods, ProjSeedPodsImpacts, TempAudioSources,GrenadeEMPExplosions, ProjEnemShot4,
+						  ProjEnemShot4Impacts,CrateExplosions,GrenadeFragLive,CyborgAssassinThrowingStars,
+						  ConcussionLive,EMPLive,GasLive,GasExplosions,CorpseHit,NPCMagpulseShots,NPCRailgunShots,
+						  LeafBurst,MutationBurst,GraytationBurst,BarrelExplosions, CyberPlayerShots, CyberDogShots,
+						  CyberReaverShots, BulletHoleLarge, BulletHoleScorchLarge, BulletHoleScorchSmall, BulletHoleSmall,
+						  BulletHoleTiny, BulletHoleTinySpread, CyberPlayerIceShots, CyberDissolve, TargetIDInstances,
+						  AutomapBotOverlays,AutomapCyborgOverlays,AutomapMutantOverlays, AutomapCameraOverlays};
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
 	public GameObject Pool_ProjectilesEnemShot2;
@@ -196,168 +216,161 @@ public class Const : MonoBehaviour {
 	public GameObject Pool_AutomapBotOverlays;
 	public GameObject Pool_AutomapCyborgOverlays;
 	public GameObject Pool_AutomapMutantOverlays;
+	public GameObject Pool_AutomapCameraOverlays;
 
 	//Global object references
-	// public GameObject statusBar;
 	public GameObject loadingScreen;
+	public GameObject mainMenuInit; // Used to force mainMenuOn before Start() is called.
    
 	//Config constants
-	public int difficultyCombat;
-	public int difficultyMission;
-	public int difficultyPuzzle;
-	public int difficultyCyber;
-	public string playerName;
+	[HideInInspector] public int difficultyCombat;
+	[HideInInspector] public int difficultyMission;
+	[HideInInspector] public int difficultyPuzzle;
+	[HideInInspector] public int difficultyCyber;
+	[HideInInspector] public string playerName;
 	public AudioSource mainmenuMusic;
-	public int GraphicsResWidth;
-	public int GraphicsResHeight;
-	public bool GraphicsFullscreen;
-	public bool GraphicsSSAO;
-	public bool GraphicsBloom;
-	public int GraphicsFOV;
-	public int GraphicsGamma;
-	public int AudioSpeakerMode;
-	public bool AudioReverb;
-	public int AudioVolumeMaster;
-	public int AudioVolumeMusic;
-	public int AudioVolumeMessage;
-	public int AudioVolumeEffects;
-	public int AudioLanguage;			// The language index. Used for choosing which text to display on-screen.
-	public float MouseSensitivity;		// The responsiveness of the mouse. Used for scaling slow mice up and fast mice down.
+	[HideInInspector] public int GraphicsResWidth;
+	[HideInInspector] public int GraphicsResHeight;
+	[HideInInspector] public bool GraphicsFullscreen;
+	[HideInInspector] public bool GraphicsSSAO;
+	[HideInInspector] public bool GraphicsBloom;
+	[HideInInspector] public int GraphicsAAMode;
+	[HideInInspector] public int GraphicsFOV;
+	[HideInInspector] public int GraphicsGamma;
+	[HideInInspector] public int AudioSpeakerMode;
+	[HideInInspector] public bool AudioReverb;
+	[HideInInspector] public int AudioVolumeMaster;
+	[HideInInspector] public int AudioVolumeMusic;
+	[HideInInspector] public int AudioVolumeMessage;
+	[HideInInspector] public int AudioVolumeEffects;
+	[HideInInspector] public int AudioLanguage;			// The language index. Used for choosing which text to display on-screen.
+	[HideInInspector] public float MouseSensitivity;		// The responsiveness of the mouse. Used for scaling slow mice up and fast mice down.
 	public int[] InputCodeSettings;		// The integer index values
 	public string[] InputCodes;			// The readable mapping names used as labels on the configuration page
 	public string[] InputValues;		// The list of all valid keys: letters, numbers, etc.
 	public string[] InputConfigNames;	// The readable keys used as text representations on the configuration page for set values.
-	public bool InputInvertLook;
-	public bool InputInvertCyberspaceLook;
-	public bool InputInvertInventoryCycling;
-	public bool InputQuickItemPickup;
-	public bool InputQuickReloadWeapons;
-	public enum aiState{Idle,Walk,Run,Attack1,Attack2,Attack3,Pain,Dying,Dead,Inspect,Interacting};
-    public enum aiMoveType {Walk,Fly,Swim,Cyber,None};
-    public Font mainFont1;
-	public Font mainFont2;
+	[HideInInspector] public bool InputInvertLook;
+	[HideInInspector] public bool InputInvertCyberspaceLook;
+	[HideInInspector] public bool InputInvertInventoryCycling;
+	[HideInInspector] public bool InputQuickItemPickup;
+	[HideInInspector] public bool InputQuickReloadWeapons;
+
+	public enum aiState : byte {Idle,Walk,Run,Attack1,Attack2,Attack3,Pain,Dying,Dead,Inspect,Interacting};
+    public enum aiMoveType : byte {Walk,Fly,Swim,Cyber,None};
+
+    public Font mainFont1; // Used to force Point filter mode.
+	public Font mainFont2; // Used to force Point filter mode.
 	public GameObject[] TargetRegister; // Doesn't need to be full, available space for maps and mods made by the community to use tons of objects
 	public string[] TargetnameRegister;
-	public float globalShakeDistance;
-	public float globalShakeForce;
-    public string[] stringTable;
+    [HideInInspector] public string[] stringTable;
 	public float[] reloadTime;
-	public CyberWall[] cyberpanelsRegistry;
+	// public CyberWall[] cyberpanelsRegistry;
 	public Material[] screenCodes;
 	public int[] npcCount;
-	public float justSavedTimeStamp;
-	public float savedReminderTime = 7f; // human short-term memory length
-	public bool gameFinished = false;
-	//public Texture2D[] screenTextures;
-	[HideInInspector]
-	public Transform player1TargettingPos;
-	[HideInInspector]
-	public GameObject player1Capsule;
-	[HideInInspector]
-	public PlayerMovement player1PlayerMovementScript;
-	[HideInInspector]
-	public PlayerHealth player1PlayerHealthScript;
-	public string versionString = "v0.96"; // Global CITADEL PROJECT VERSION
-	private StringBuilder s1;
-	private StringBuilder s2;
-	private static string splitChar = "|";
-	public Texture2D[] imageSequenceTextures;
 	public Sprite[] logImages;
 	public int[] audioLogImagesRefIndicesLH;
 	public int[] audioLogImagesRefIndicesRH;
-	[HideInInspector]
-	public PauseRigidbody[] prb;
+	public GameObject eventSystem;
+	public Texture[] sequenceTextures;
 
-	[HideInInspector]
-	public float camMaxAmount = 0.2548032f;
-	[HideInInspector]
-	public float mapWorldMaxN = 85.83999f;
-	[HideInInspector]
-	public float mapWorldMaxS = -78.00001f;
-	[HideInInspector]
-	public float mapWorldMaxE = -70.44f;
-	[HideInInspector]
-	public float mapWorldMaxW = 93.4f;
-	[HideInInspector]
-	public float mapTileMinX = 8; // top left corner
-	//private float mapTileMaxY = -8; // top left corner
-	[HideInInspector]
-	public float mapTileMinY = -1016; // bottom right corner
-	//private float mapTileMaxX = 1016; // bottom right corner
-	[HideInInspector]
-	public bool decoyActive = false;
+	// Irrelevant to inspector constants; automatically assigned during initialization or play.
+	[HideInInspector] public string versionString = "v0.97"; // Global CITADEL PROJECT VERSION
+	[HideInInspector] public bool gameFinished = false; // Global constants
+	[HideInInspector] public float justSavedTimeStamp;
+	[HideInInspector] public float savedReminderTime = 7f; // human short-term memory length
+	[HideInInspector] public bool startingNewGame = false;
+	[HideInInspector] public bool freshRun = false;
+	[HideInInspector] public float doubleClickTime = 0.500f;
+	[HideInInspector] public float frobDistance = 5f;
+	[HideInInspector] public float elevatorPadUseDistance = 2f;
+	[HideInInspector] public int creditsLength;
+	[HideInInspector] public Transform player1TargettingPos;
+	[HideInInspector] public GameObject player1Capsule;
+	[HideInInspector] public PlayerMovement player1PlayerMovementScript;
+	[HideInInspector] public PlayerHealth player1PlayerHealthScript;
+	[HideInInspector] public GameObject player1CapsuleMainCameragGO;
+	[HideInInspector] public PauseRigidbody[] prb;
+	[HideInInspector] public float playerCameraOffsetY = 0.84f; //Vertical camera offset from player 0,0,0 position (mid-body)
+	[HideInInspector] public Color ssYellowText = new Color(0.8902f, 0.8745f, 0f); // Yellow, e.g. for current inventory text
+	[HideInInspector] public Color ssGreenText = new Color(0.3725f, 0.6549f, 0.1686f); // Green, e.g. for inventory text
+	[HideInInspector] public Color ssRedText = new Color(0.9176f, 0.1373f, 0.1686f); // Red, e.g. for inventory text
+	[HideInInspector] public Color ssWhiteText = new Color(1f, 1f, 1f); // White, e.g. for warnings text
+	[HideInInspector] public Color ssOrangeText = new Color(1f, 0.498f, 0f); // Orange, e.g. for map buttons text
+	[HideInInspector] public float camMaxAmount = 0.2548032f;
+	[HideInInspector] public float mapWorldMaxN = 85.83999f;
+	[HideInInspector] public float mapWorldMaxS = -78.00001f;
+	[HideInInspector] public float mapWorldMaxE = -70.44f;
+	[HideInInspector] public float mapWorldMaxW = 93.4f;
+	[HideInInspector] public float mapTileMinX = 8; // top left corner
+	[HideInInspector] public float mapTileMinY = -1016; // bottom right corner
+	[HideInInspector] public bool decoyActive = false;
+	[HideInInspector] public float berserkTime = 20f; //Patch constants
+	[HideInInspector] public float detoxTime = 60f;
+	[HideInInspector] public float geniusTime = 180f;
+	[HideInInspector] public float mediTime = 35f;
+	[HideInInspector] public float reflexTime = 155f;
+	[HideInInspector] public float sightTime= 40f;
+	[HideInInspector] public float sightSideEffectTime = 17f;
+	[HideInInspector] public float staminupTime = 60f;
+	[HideInInspector] public float reflexTimeScale = 0.25f;
+	[HideInInspector] public float defaultTimeScale = 1.0f;
+	[HideInInspector] public float berserkDamageMultiplier = 4.0f;
+	[HideInInspector] public float nitroMinTime = 1.0f; //Grenade constants
+	[HideInInspector] public float nitroMaxTime = 60.0f;
+	[HideInInspector] public float nitroDefaultTime = 7.0f;
+	[HideInInspector] public float earthShMinTime = 4.0f;
+	[HideInInspector] public float earthShMaxTime = 60.0f;
+	[HideInInspector] public float earthShDefaultTime = 10.0f;
+	[HideInInspector] public float globalShakeDistance = 0.3f;
+	[HideInInspector] public float globalShakeForce = 5f;
+	[HideInInspector] public Quaternion quaternionIdentity;
+	[HideInInspector] public Vector3 vectorZero;
+	[HideInInspector] public Vector3 vectorOne;
+	[HideInInspector] public int numberOfRaycastsThisFrame = 0;
+	[HideInInspector] public int maxRaycastsPerFrame = 20;
+	[HideInInspector] public float raycastTick = 0.2f;
+	[HideInInspector] public float aiTickTime = 0.1f;
+
+	// Private CONSTANTS
+	private int TARGET_FPS = 60;
+	private StringBuilder s1;
+	private StringBuilder s2;
+	private static string splitChar = "|";
 
 	//Instance container variable
 	public static Const a;
 
-	// Private CONSTANTS
-	private int TARGET_FPS = 60;
-
-	// Create a new instance so that it can be accessed globally. MOST IMPORTANT PART!!
-	// =========================================================================
 	void Awake() {
 		Application.targetFrameRate = TARGET_FPS;
-		a = this;
-		//for (int i=0;i<Display.displays.Length;i++) {
-		//	Display.displays[i].Activate();
-		//}
-		a.justSavedTimeStamp = Time.time - savedReminderTime;
-		FindPlayers();
-		CheckIfNewGame();
-		LoadTextForLanguage(0); //initialize with US English (index 0)
-		s1 = new StringBuilder();
-		s2 = new StringBuilder();
-	}
-	// =========================================================================
-
-	private void FindPlayers() {
-		/*
-		List<GameObject> playerGameObjects = new List<GameObject>();
-
-		// Find all gameobjects with SaveObject script attached
-		GameObject[] getAllGameObjects = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
-		for (int i=0;i<getAllGameObjects.Length;i++) {
-			if (getAllGameObjects[i].GetComponent<PlayerReferenceManager>() != null) {
-				SaveObject so = getAllGameObjects[i].GetComponent<SaveObject>();
-				if (so != null) {
-					if (so.isRuntimeObject) {
-						playerGameObjects.Add(getAllGameObjects[i]);
-					}
-				}
-			}
+		a = this; // Create a new instance so that it can be accessed globally. MOST IMPORTANT PART!!
+		a.justSavedTimeStamp = Time.time - a.savedReminderTime;
+		if (a.player1 != null) {
+			a.player1CapsuleMainCameragGO = a.player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
+			a.player1TargettingPos = a.player1CapsuleMainCameragGO.transform;
+			a.player1Capsule = a.player1.GetComponent<PlayerReferenceManager>().playerCapsule;
+			a.player1PlayerMovementScript = a.player1Capsule.GetComponent<PlayerMovement>();
+			a.player1PlayerHealthScript = a.player1Capsule.GetComponent<PlayerHealth>();
 		}
-
-		//if (playerGameObjects.Count > 0) player1 = playerGameObjects[0];
-		//if (playerGameObjects.Count > 1) player2 = playerGameObjects[1];
-		//if (playerGameObjects.Count > 2) player3 = playerGameObjects[2];
-		//if (playerGameObjects.Count > 3) player4 = playerGameObjects[3];*/
-		if (player1 != null) player1TargettingPos = player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.transform;
-		if (player1 != null) player1Capsule = player1.GetComponent<PlayerReferenceManager>().playerCapsule;
-		if (player1 != null) player1PlayerMovementScript = player1Capsule.GetComponent<PlayerMovement>();
-		if (player1 != null) player1PlayerHealthScript = player1Capsule.GetComponent<PlayerHealth>();
-		allPlayers = new GameObject();
-		allPlayers.name = "All Players"; // for use in self printing Sprint() function for sending messages to HUD on all players
+		a.CheckIfNewGame();
+		a.LoadTextForLanguage(0); // Initialize with US English (index 0)
+		a.s1 = new StringBuilder();
+		a.s2 = new StringBuilder();
+		if (a.mainMenuInit != null) {
+			if (!a.mainMenuInit.activeSelf) a.mainMenuInit.SetActive(true);
+		}
+		a.quaternionIdentity = Quaternion.identity;
+		a.vectorZero = Vector3.zero;
+		a.vectorOne = Vector3.one;
+		a.stringTable = new string[587];
 	}
 
     public void LoadTextForLanguage(int lang) {
         string readline; // variable to hold each string read in from the file
         int currentline = 0;
         string sourceFile = "/StreamingAssets/text_english.txt";
-
-        // UPKEEP: support other languages
         switch (lang) {
-            case 0:
-                sourceFile = "/StreamingAssets/text_english.txt";
-                break;
-            case 1:
-                sourceFile = "/StreamingAssets/text_espanol.txt";
-                break;
-            //case 2:
-                //sourceFile = "/StreamingAssets/text_francois.txt";
-                //break;
-            default:
-                sourceFile = "/StreamingAssets/text_english.txt";
-                break;
+            case 0: sourceFile = "/StreamingAssets/text_english.txt"; break;
+            case 1: sourceFile = "/StreamingAssets/text_espanol.txt"; break; // UPKEEP: support other languages
         }
         StreamReader dataReader = new StreamReader(Application.dataPath + sourceFile, Encoding.ASCII);
         using (dataReader) {
@@ -367,7 +380,7 @@ public class Const : MonoBehaviour {
                 if (currentline < stringTable.Length) {
                     stringTable[currentline] = readline;
 				} else {
-					UnityEngine.Debug.Log("WARNING: Ran out of slots in stringTable, didn't finish reading all text from text_<language>.txt");
+					UnityEngine.Debug.Log("WARNING: Ran out of slots in stringTable at " + currentline.ToString());
 					dataReader.Close();
 					return;
 				}
@@ -384,7 +397,13 @@ public class Const : MonoBehaviour {
 		LoadItemNamesData();
 		LoadDamageTablesData();
 		LoadEnemyTablesData();
+		layerMaskNPCSight = LayerMask.GetMask("Default","Geometry","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
+		layerMaskNPCAttack = LayerMask.GetMask("Default","Geometry","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
+		layerMaskNPCCollision = LayerMask.GetMask("Default","TransparentFX","IgnoreRaycast","Geometry","NPC","Door","InterDebris","Player","Clip","NPCClip","PhysObjects"); // Not including "Bullets" as this is merely used for spawning, not setting level-wide NPC collisions.
+		layerMaskPlayerFrob = LayerMask.GetMask("Default","Geometry","Water","Corpse","Door","InterDebris","PhysObjects","Player2","Player3","Player4","NPC"); // Water is a hidden layer that prevents the player frobbing through gratings, X-doors, etc.  Oh and also water...if that were a thing.
+		layerMaskPlayerAttack = LayerMask.GetMask("Default","Geometry","NPC","Bullets","Corpse","Door","InterDebris","PhysObjects","Player2","Player3","Player4");
 		LoadCreditsData();
+		StartCoroutine(InitializeEventSystem());
 		questData = new QuestBits ();
 		questData.lev1SecCode = UnityEngine.Random.Range(0,10); // Integer overload is maximum exclusive.  Confirmed maximum return value is 9.
 		questData.lev2SecCode = UnityEngine.Random.Range(0,10);
@@ -394,16 +413,21 @@ public class Const : MonoBehaviour {
 		questData.lev6SecCode = UnityEngine.Random.Range(0,10);
 		if (mainFont1 != null) mainFont1.material.mainTexture.filterMode = FilterMode.Point;
 		if (mainFont2 != null) mainFont2.material.mainTexture.filterMode = FilterMode.Point;
-		PauseRigidbody[] prbTemp = FindObjectsOfType<PauseRigidbody>();
-		prb = prbTemp;
+		prb = FindObjectsOfType<PauseRigidbody>();
 		if (startingNewGame) {
 			PauseScript.a.mainMenu.SetActive(false);
 			loadingScreen.SetActive(false);
 			MainMenuHandler.a.IntroVideo.SetActive(false);
 			MainMenuHandler.a.IntroVideoContainer.SetActive(false);
-			sprint(stringTable[197],allPlayers); // Loading...Done!
+			sprint(stringTable[197]); // Loading...Done!
 			WriteDatForNewGame(false,false);
 		}
+	}
+
+
+	IEnumerator InitializeEventSystem () {
+		yield return new WaitForSeconds(1f);
+		if (eventSystem != null) eventSystem.SetActive(true);
 	}
 
 	private void LoadConfig() {
@@ -414,6 +438,7 @@ public class Const : MonoBehaviour {
 		GraphicsSSAO = AssignConfigBool("Graphics","SSAO");
 		GraphicsBloom = AssignConfigBool("Graphics","Bloom");
 		GraphicsFOV = AssignConfigInt("Graphics","FOV");
+		GraphicsAAMode = AssignConfigInt("Graphics","AA");
 		GraphicsGamma = AssignConfigInt("Graphics","Gamma");
 
 		// Audio Configurations
@@ -432,9 +457,7 @@ public class Const : MonoBehaviour {
 		for (int i=0;i<40;i++) {
 			inputCapture = INIWorker.IniReadValue("Input",InputCodes[i]);
 			for (int j=0;j<159;j++) {
-				if (InputValues[j] == inputCapture) {
-					InputCodeSettings[i] = j;
-				}
+				if (InputValues[j] == inputCapture) InputCodeSettings[i] = j;
 			}
 		}
 		InputInvertLook = AssignConfigBool("Input","InvertLook");
@@ -442,7 +465,6 @@ public class Const : MonoBehaviour {
 		InputInvertInventoryCycling = AssignConfigBool("Input","InvertInventoryCycling");
 		InputQuickItemPickup = AssignConfigBool("Input","QuickItemPickup");
 		InputQuickReloadWeapons = AssignConfigBool("Input","QuickReloadWeapons");
-
 		SetVolume();
 		Screen.SetResolution(GraphicsResWidth,GraphicsResHeight,true);
 		Screen.fullScreen = Const.a.GraphicsFullscreen;
@@ -451,13 +473,14 @@ public class Const : MonoBehaviour {
 	public void WriteConfig() {
 		INIWorker.IniWriteValue("Graphics","ResolutionWidth",GraphicsResWidth.ToString());
 		INIWorker.IniWriteValue("Graphics","ResolutionHeight",GraphicsResHeight.ToString());
-		INIWorker.IniWriteValue("Graphics","Fullscreen",GetBoolAsString(GraphicsFullscreen));
-		INIWorker.IniWriteValue("Graphics","SSAO",GetBoolAsString(GraphicsSSAO));
-		INIWorker.IniWriteValue("Graphics","Bloom",GetBoolAsString(GraphicsBloom));
+		INIWorker.IniWriteValue("Graphics","Fullscreen",BoolToString(GraphicsFullscreen));
+		INIWorker.IniWriteValue("Graphics","SSAO",BoolToString(GraphicsSSAO));
+		INIWorker.IniWriteValue("Graphics","Bloom",BoolToString(GraphicsBloom));
 		INIWorker.IniWriteValue("Graphics","FOV",GraphicsFOV.ToString());
+		INIWorker.IniWriteValue("Graphics","AA",GraphicsAAMode.ToString());
 		INIWorker.IniWriteValue("Graphics","Gamma",GraphicsGamma.ToString());
 		INIWorker.IniWriteValue("Audio","SpeakerMode",AudioSpeakerMode.ToString());
-		INIWorker.IniWriteValue("Audio","Reverb",GetBoolAsString(AudioReverb));
+		INIWorker.IniWriteValue("Audio","Reverb",BoolToString(AudioReverb));
 		INIWorker.IniWriteValue("Audio","VolumeMaster",AudioVolumeMaster.ToString());
 		INIWorker.IniWriteValue("Audio","VolumeMusic",AudioVolumeMusic.ToString());
 		INIWorker.IniWriteValue("Audio","VolumeMessage",AudioVolumeMessage.ToString());
@@ -468,25 +491,23 @@ public class Const : MonoBehaviour {
 		for (int i=0;i<40;i++) {
 			INIWorker.IniWriteValue("Input",InputCodes[i],InputValues[InputCodeSettings[i]]);
 		}
-		INIWorker.IniWriteValue("Input","InvertLook",GetBoolAsString(InputInvertLook));
-		INIWorker.IniWriteValue("Input","InvertCyberspaceLook",GetBoolAsString(InputInvertCyberspaceLook));
-		INIWorker.IniWriteValue("Input","InvertInventoryCycling",GetBoolAsString(InputInvertInventoryCycling));
-		INIWorker.IniWriteValue("Input","QuickItemPickup",GetBoolAsString(InputQuickItemPickup));
-		INIWorker.IniWriteValue("Input","QuickReloadWeapons",GetBoolAsString(InputQuickReloadWeapons));
+		INIWorker.IniWriteValue("Input","InvertLook",BoolToString(InputInvertLook));
+		INIWorker.IniWriteValue("Input","InvertCyberspaceLook",BoolToString(InputInvertCyberspaceLook));
+		INIWorker.IniWriteValue("Input","InvertInventoryCycling",BoolToString(InputInvertInventoryCycling));
+		INIWorker.IniWriteValue("Input","QuickItemPickup",BoolToString(InputQuickItemPickup));
+		INIWorker.IniWriteValue("Input","QuickReloadWeapons",BoolToString(InputQuickReloadWeapons));
 		SetBloom();
 		SetSSAO();
+		SetAA();
 	}
 
 	private void LoadAudioLogMetaData () {
 		// The following to be assigned to the arrays in the Unity Const data structure
 		int readIndexOfLog, readLogImageLHIndex, readLogImageRHIndex; // look-up index for assigning the following data on the line in the file to the arrays
 		string readLogText; // loaded into string audioLogSpeech2Text[]
-
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 		char logSplitChar = ',';
-		string logs_text = "logs_text";
-
 		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/logs_text.txt",Encoding.ASCII);
 		using (dataReader) {
 			do {
@@ -495,16 +516,16 @@ public class Const : MonoBehaviour {
 				readline = dataReader.ReadLine();
 				if (readline == null) continue; // just in case
 				string[] entries = readline.Split(logSplitChar);
-				readIndexOfLog = GetIntFromString(entries[i],currentline,logs_text,i); i++;
-				readLogImageLHIndex = GetIntFromString(entries[i],currentline,logs_text,i); i++;
-				readLogImageRHIndex = GetIntFromString(entries[i],currentline,logs_text,i); i++;
+				readIndexOfLog = GetIntFromString(entries[i],currentline); i++;
+				readLogImageLHIndex = GetIntFromString(entries[i],currentline); i++;
+				readLogImageRHIndex = GetIntFromString(entries[i],currentline); i++;
 				audioLogImagesRefIndicesLH[readIndexOfLog] = readLogImageLHIndex;
 				audioLogImagesRefIndicesRH[readIndexOfLog] = readLogImageRHIndex;
 				audiologNames[readIndexOfLog] = entries[i]; i++;
 				audiologSenders[readIndexOfLog] = entries[i]; i++;
 				audiologSubjects[readIndexOfLog] = entries[i]; i++;
-				audioLogType[readIndexOfLog] = GetIntFromString(entries[i],currentline,logs_text,i); i++;
-				audioLogLevelFound[readIndexOfLog] = GetIntFromString(entries[i],currentline,logs_text,i); i++;
+				audioLogType[readIndexOfLog] = GetIntFromString(entries[i],currentline); i++;
+				audioLogLevelFound[readIndexOfLog] = GetIntFromString(entries[i],currentline); i++;
 				readLogText = entries[i]; i++;
 				// handle extra commas within the body text and append remaining portions of the line
 				if (entries.Length > 8) {
@@ -531,16 +552,13 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 		int readInt = 0;
-
 		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/damage_tables.txt",Encoding.ASCII);
 		using (dataReader) {
 			do {
 				int i = 0;
 				// Read the next line
 				readline = dataReader.ReadLine();
-				//char[] delimiters = new char[] {','};
 				string[] entries = readline.Split(',');
-                //isFullAutoForWeapon[currentline] = GetBoolFromString(entries[i]); i++;
                 isFullAutoForWeapon[currentline] = true; i++; // better this way
 				delayBetweenShotsForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
 				delayBetweenShotsForWeapon2[currentline] = GetFloatFromString(entries[i],currentline); i++;
@@ -555,7 +573,7 @@ public class Const : MonoBehaviour {
 				offenseForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
 				offenseForWeapon2[currentline] = GetFloatFromString(entries[i],currentline); i++;
 				rangeForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				readInt = GetIntFromString(entries[i],currentline,"damage_tables",i); i++;
+				readInt = GetIntFromString(entries[i],currentline); i++;
 				attackTypeForWeapon[currentline] = GetAttackTypeFromInt(readInt);
 				currentline++;
 			} while (!dataReader.EndOfStream);
@@ -569,7 +587,6 @@ public class Const : MonoBehaviour {
 		int currentline = 0;
 		int pagenum = 0;
 		creditsLength = 1;
-
 		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/credits.txt",Encoding.ASCII);
 		using (dataReader) {
 			do {
@@ -618,8 +635,8 @@ public class Const : MonoBehaviour {
 		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/ng.dat",false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
-				sw.WriteLine(bitStartingNew.ToString());
-				sw.WriteLine(bitFreshRun.ToString());
+				sw.WriteLine(BoolToString(bitStartingNew));
+				sw.WriteLine(BoolToString(bitFreshRun));
 				sw.Close();
 			}
 		}
@@ -628,6 +645,77 @@ public class Const : MonoBehaviour {
 	}
 
 	private void LoadEnemyTablesData() {
+		int numberOfNPCs = 29;
+		nameForNPC = new string[numberOfNPCs];
+		attackTypeForNPC = new AttackType[numberOfNPCs];
+		attackTypeForNPC2 = new AttackType[numberOfNPCs];
+		attackTypeForNPC3 = new AttackType[numberOfNPCs];
+		damageForNPC = new float[numberOfNPCs];
+		damageForNPC2 = new float[numberOfNPCs];
+		damageForNPC3 = new float[numberOfNPCs];
+		rangeForNPC = new float[numberOfNPCs];
+		rangeForNPC2 = new float[numberOfNPCs];
+		rangeForNPC3 = new float[numberOfNPCs];
+		healthForNPC = new float[numberOfNPCs];
+		healthForCyberNPC = new float[numberOfNPCs];
+		perceptionForNPC = new PerceptionLevel[numberOfNPCs];
+		disruptabilityForNPC = new float[numberOfNPCs];
+		armorvalueForNPC = new float[numberOfNPCs];
+		moveTypeForNPC = new aiMoveType[numberOfNPCs];
+		defenseForNPC = new float[numberOfNPCs];
+		yawSpeedForNPC = new float[numberOfNPCs];
+		fovForNPC = new float[numberOfNPCs];
+		fovAttackForNPC = new float[numberOfNPCs];
+		fovStartMovementForNPC = new float[numberOfNPCs];
+		distToSeeBehindForNPC = new float[numberOfNPCs];
+		sightRangeForNPC = new float[numberOfNPCs];
+		walkSpeedForNPC = new float[numberOfNPCs];
+		runSpeedForNPC = new float[numberOfNPCs];
+		attack1SpeedForNPC = new float[numberOfNPCs];
+		attack2SpeedForNPC = new float[numberOfNPCs];
+		attack3SpeedForNPC = new float[numberOfNPCs];
+		attack3ForceForNPC = new float[numberOfNPCs];
+		attack3RadiusForNPC = new float[numberOfNPCs];
+		timeToPainForNPC = new float[numberOfNPCs];
+		timeBetweenPainForNPC = new float[numberOfNPCs];
+		timeTillDeadForNPC = new float[numberOfNPCs];
+		timeToActualAttack1ForNPC = new float[numberOfNPCs];
+		timeToActualAttack2ForNPC = new float[numberOfNPCs];
+		timeToActualAttack3ForNPC = new float[numberOfNPCs];
+		timeBetweenAttack1ForNPC = new float[numberOfNPCs];
+		timeBetweenAttack2ForNPC = new float[numberOfNPCs];
+		timeBetweenAttack3ForNPC = new float[numberOfNPCs];
+		timeToChangeEnemyForNPC = new float[numberOfNPCs];
+		timeIdleSFXMinForNPC = new float[numberOfNPCs];
+		timeIdleSFXMaxForNPC = new float[numberOfNPCs];
+		timeAttack1WaitMinForNPC = new float[numberOfNPCs];
+		timeAttack1WaitMaxForNPC = new float[numberOfNPCs];
+		timeAttack1WaitChanceForNPC = new float[numberOfNPCs];
+		timeAttack2WaitMinForNPC = new float[numberOfNPCs];
+		timeAttack2WaitMaxForNPC = new float[numberOfNPCs];
+		timeAttack2WaitChanceForNPC = new float[numberOfNPCs];
+		timeAttack3WaitMinForNPC = new float[numberOfNPCs];
+		timeAttack3WaitMaxForNPC = new float[numberOfNPCs];
+		timeAttack3WaitChanceForNPC = new float[numberOfNPCs];
+		attack1ProjectileLaunchedTypeForNPC = new PoolType[numberOfNPCs];
+		attack2ProjectileLaunchedTypeForNPC = new PoolType[numberOfNPCs];
+		attack3ProjectileLaunchedTypeForNPC = new PoolType[numberOfNPCs];
+		projectileSpeedAttack1ForNPC = new float[numberOfNPCs];
+		projectileSpeedAttack2ForNPC = new float[numberOfNPCs];
+		projectileSpeedAttack3ForNPC = new float[numberOfNPCs];
+		hasLaserOnAttack1ForNPC = new bool[numberOfNPCs];
+		hasLaserOnAttack2ForNPC = new bool[numberOfNPCs];
+		hasLaserOnAttack3ForNPC = new bool[numberOfNPCs];
+		explodeOnAttack3ForNPC = new bool[numberOfNPCs];
+		preactivateMeleeCollidersForNPC = new bool[numberOfNPCs];
+		huntTimeForNPC = new float[numberOfNPCs];
+		flightHeightForNPC = new float[numberOfNPCs];
+		flightHeightIsPercentageForNPC = new bool[numberOfNPCs];
+		switchMaterialOnDeathForNPC = new bool[numberOfNPCs];
+		hearingRangeForNPC = new float[numberOfNPCs];
+		timeForTranquilizationForNPC = new float[numberOfNPCs];
+		hopsOnMoveForNPC = new bool[numberOfNPCs];
+
 		//case 1: return AttackType.Melee;
 		//case 2: return AttackType.EnergyBeam;
 		//case 3: return AttackType.Magnetic;
@@ -638,40 +726,110 @@ public class Const : MonoBehaviour {
 		//case 2: return PerceptionLevel.High;
 		//case 3: return PerceptionLevel.Omniscient;
 
+		//case 0: return aiMoveType.None;
+		//case 1: return aiMoveType.Walk;
+		//case 2: return aiMoveType.Fly;
+		//case 3: return aiMoveType.Swim;
+		//case 4: return aiMoveType.Cyber;
+
+		//case 0: return PoolType.None;
+		//case 1: return PoolType.;
+		//case 2: return PoolType.;
+		//case 3: return PoolType.;
+		//case 4: return PoolType.;
+
 		string readline; // variable to hold each string read in from the file
-		int currentline = 0;
+		bool skippedFirstLine = false;
+		int currentline = 1;
 		int readInt = 0;
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/enemy_tables.txt",Encoding.ASCII);
+		int i = 0;
+		int refIndex = 0;
+		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/enemy_tables.csv",Encoding.ASCII);
 		using (dataReader) {
 			do {
-				int i = 0;
-				// Read the next line
-				readline = dataReader.ReadLine();
+				i = 0;
+				refIndex = 0;
+				readline = dataReader.ReadLine(); // Read the next line
+				if (!skippedFirstLine) {skippedFirstLine = true; continue;}
 				string[] entries = readline.Split(',');
 				char[] commentCheck = entries[i].ToCharArray();
-				if (commentCheck[0] == '/' && commentCheck[1] == '/') {
-					currentline++;
-					continue; // Skip lines that start with '//'
-				}
-				nameForNPC[currentline] = entries[i]; i++;
-				readInt = GetIntFromString(entries[i],currentline,"enemy_tables",i); i++; attackTypeForNPC[currentline] = GetAttackTypeFromInt(readInt);
-				readInt = GetIntFromString(entries[i],currentline,"enemy_tables",i); i++; attackTypeForNPC2[currentline] = GetAttackTypeFromInt(readInt);
-				readInt = GetIntFromString(entries[i],currentline,"enemy_tables",i); i++; attackTypeForNPC3[currentline] = GetAttackTypeFromInt(readInt);
-				damageForNPC[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				damageForNPC2[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				damageForNPC3[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				rangeForNPC[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				rangeForNPC2[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				rangeForNPC3[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				healthForNPC[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				readInt = GetIntFromString(entries[i],currentline,"enemy_tables",i); i++;
-				perceptionForNPC[currentline] = GetPerceptionLevelFromInt(readInt);
-				disruptabilityForNPC[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				armorvalueForNPC[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				defenseForNPC[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				randomMinimumDamageModifierForNPC[currentline] = GetFloatFromString(entries[i],currentline);
+				if (commentCheck[0] == '/' && commentCheck[1] == '/') continue; // Skip lines that start with '//'
+
+				refIndex = GetIntFromString(entries[i+1],currentline); // Index is stored at 2nd spot
+				if (refIndex < 0 || refIndex > 28) continue; // Invalid value, skip
+				nameForNPC[refIndex] = entries[i].Trim(); i++;
+				i++; // No need to read the index again so we skip over it.
+				readInt = GetIntFromString(entries[i].Trim(),currentline); i++; attackTypeForNPC[refIndex] = GetAttackTypeFromInt(readInt);
+				readInt = GetIntFromString(entries[i].Trim(),currentline); i++; attackTypeForNPC2[refIndex] = GetAttackTypeFromInt(readInt);
+				readInt = GetIntFromString(entries[i].Trim(),currentline); i++; attackTypeForNPC3[refIndex] = GetAttackTypeFromInt(readInt);
+				damageForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				damageForNPC2[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				damageForNPC3[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				rangeForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				rangeForNPC2[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				rangeForNPC3[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				healthForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				healthForCyberNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				readInt = GetIntFromString(entries[i].Trim(),currentline); i++;
+				perceptionForNPC[refIndex] = GetPerceptionLevelFromInt(readInt);
+				disruptabilityForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				armorvalueForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				moveTypeForNPC[refIndex] = GetMoveTypeFromInt(GetIntFromString(entries[i].Trim(),currentline)); i++;
+				defenseForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				yawSpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				fovForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				fovAttackForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				fovStartMovementForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				distToSeeBehindForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				sightRangeForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				walkSpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				runSpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				attack1SpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				attack2SpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				attack3SpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				attack3ForceForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				attack3RadiusForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeToPainForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeBetweenPainForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeTillDeadForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeToActualAttack1ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeToActualAttack2ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeToActualAttack3ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeBetweenAttack1ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeBetweenAttack2ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeBetweenAttack3ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeToChangeEnemyForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeIdleSFXMinForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeIdleSFXMaxForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeAttack1WaitMinForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeAttack1WaitMaxForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeAttack1WaitChanceForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeAttack2WaitMinForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeAttack2WaitMaxForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeAttack2WaitChanceForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeAttack3WaitMinForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeAttack3WaitMaxForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeAttack3WaitChanceForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				readInt = GetIntFromString(entries[i].Trim(),currentline); i++; //attack1ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt);
+				readInt = GetIntFromString(entries[i].Trim(),currentline); i++; //attack2ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt);
+				readInt = GetIntFromString(entries[i].Trim(),currentline); i++; //attack3ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt); // Not worrying about projectile type for now, would require indexing all of the pools.
+				projectileSpeedAttack1ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				projectileSpeedAttack2ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				projectileSpeedAttack3ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				hasLaserOnAttack1ForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
+				hasLaserOnAttack2ForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
+				hasLaserOnAttack3ForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
+				explodeOnAttack3ForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
+				preactivateMeleeCollidersForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
+				huntTimeForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				flightHeightForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				flightHeightIsPercentageForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
+				switchMaterialOnDeathForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
+				hearingRangeForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				timeForTranquilizationForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				hopsOnMoveForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
 				currentline++;
-				if (currentline > 23) break;
+				if (currentline > 29) break;
 			} while (!dataReader.EndOfStream);
 			dataReader.Close();
 			return;
@@ -694,62 +852,51 @@ public class Const : MonoBehaviour {
 	}
 
 	public static void sprintByIndexOrOverride (int index, string overrideString, GameObject playerPassed) {
-		bool useAllPlayers = false;
-		if (playerPassed == null) useAllPlayers = true;
-
 		if (string.IsNullOrWhiteSpace(overrideString)) {
 			if (index >= 0) {
-				if (useAllPlayers) {
-					sprint(Const.a.stringTable[index],Const.a.allPlayers);
-				} else {
-					sprint(Const.a.stringTable[index],playerPassed);
-				}
-			} else {
-				//UnityEngine.Debug.Log("Attempting to sprintByIndexOrOverride with a -1 index and a nullorwhitespace overrideString");
+				sprint(Const.a.stringTable[index],playerPassed);
 			}
-		} else {
-			if (useAllPlayers) {
-				sprint(overrideString,Const.a.allPlayers);
-			} else {
-				sprint(overrideString,playerPassed);
-			}
-		}
+		} else sprint(overrideString,playerPassed);
 	}
 
 	// StatusBar Print
 	public static void sprint (string input, GameObject player) {
-		//UnityEngine.Debug.Log(input);  // print to console
-		if (player == null) return;
-		if (a != null) {
-			if (player.name == "All Players") {
-				if (a.player1 != null) a.player1.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-				if (a.player2 != null) a.player2.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-				if (a.player3 != null) a.player3.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-				if (a.player4 != null) a.player4.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+		if (player == null || a == null) return;
+
+		#if UNITY_EDITOR
+			UnityEngine.Debug.Log(input); // Print to Editor console.
+		#endif
+
+		if (player == null) {
+			if (a.player1 != null) a.player1.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+			if (a.player2 != null) a.player2.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+			if (a.player3 != null) a.player3.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+			if (a.player4 != null) a.player4.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+		} else {
+			PlayerReferenceManager prm = player.GetComponent<PlayerReferenceManager>();
+			if (prm != null) {
+				prm.playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
 			} else {
-				PlayerReferenceManager prm = player.GetComponent<PlayerReferenceManager>();
-				if (prm != null) {
-					prm.playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-				} else {
-					if (a.player1 != null) {
-						if (player.transform.IsChildOf(a.player1.transform)) a.player1.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-					}
-					if (a.player2 != null) {
-						if (player.transform.IsChildOf(a.player1.transform)) a.player2.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-					}
-					if (a.player3 != null) {
-						if (player.transform.IsChildOf(a.player1.transform)) a.player3.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-					}
-					if (a.player4 != null) {
-						if (player.transform.IsChildOf(a.player1.transform)) a.player4.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-					}
+				if (a.player1 != null) {
+					if (player.transform.IsChildOf(a.player1.transform)) a.player1.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+				}
+				if (a.player2 != null) {
+					if (player.transform.IsChildOf(a.player1.transform)) a.player2.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+				}
+				if (a.player3 != null) {
+					if (player.transform.IsChildOf(a.player1.transform)) a.player3.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
+				}
+				if (a.player4 != null) {
+					if (player.transform.IsChildOf(a.player1.transform)) a.player4.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
 				}
 			}
 		}
 	}
 
+	public static void sprint (string input) { Const.sprint(input,null); }
+
 	public GameObject GetObjectFromPool(PoolType pool) {
-		if (pool == PoolType.None) return null; //do nothing, no pool requested
+		if (pool == PoolType.None) return null; // Do nothing, no pool requested.
 
 		GameObject poolContainer = Pool_SparksSmall;
 		string poolName = " ";
@@ -991,18 +1138,16 @@ public class Const : MonoBehaviour {
 			poolContainer = Pool_AutomapMutantOverlays;
 			poolName = "AutomapMutantOverlays ";
 			break;
+		case PoolType.AutomapCameraOverlays:
+			poolContainer = Pool_AutomapCameraOverlays;
+			poolName = "AutomapCameraOverlays ";
+			break;
         }
 
-		if (poolContainer == null) {
-			UnityEngine.Debug.Log("Cannot find " + poolName + "pool",allPlayers);
-			return null;
-		}
-
+		if (poolContainer == null) { UnityEngine.Debug.Log("Cannot find " + poolName + "pool"); return null; }
 		for (int i=0;i<poolContainer.transform.childCount;i++) {
 			Transform child = poolContainer.transform.GetChild(i);
-			if (child.gameObject.activeInHierarchy == false) {
-				return child.gameObject;
-			}
+			if (child.gameObject.activeInHierarchy == false) return child.gameObject;
 		}
 
 		return null;
@@ -1013,27 +1158,26 @@ public class Const : MonoBehaviour {
 		if (pool == PoolType.None) return PoolType.None; //do nothing, no impact effect for no object
 
 		switch (pool) {
-		case PoolType.ProjEnemShot2: return PoolType.ProjEnemShot2Impacts;
-        case PoolType.MagpulseShots: return PoolType.MagpulseImpacts;
-        case PoolType.StungunShots: return PoolType.StungunImpacts;
-        case PoolType.RailgunShots: return PoolType.RailgunImpacts;
-        case PoolType.PlasmaShots: return PoolType.PlasmaImpacts;
-        case PoolType.ProjEnemShot6: return PoolType.ProjEnemShot6Impacts;
-		case PoolType.ProjSeedPods: return PoolType.ProjSeedPodsImpacts;
+			case PoolType.ProjEnemShot2: return PoolType.ProjEnemShot2Impacts;
+			case PoolType.MagpulseShots: return PoolType.MagpulseImpacts;
+			case PoolType.StungunShots: return PoolType.StungunImpacts;
+			case PoolType.RailgunShots: return PoolType.RailgunImpacts;
+			case PoolType.PlasmaShots: return PoolType.PlasmaImpacts;
+			case PoolType.ProjEnemShot6: return PoolType.ProjEnemShot6Impacts;
+			case PoolType.ProjSeedPods: return PoolType.ProjSeedPodsImpacts;
         }
-
 		return PoolType.None;
 	}
 
 	// ========================DAMAGE SYSTEM===========================
-	// 0. First checks against whether the entity is damageable (i.e. not the world)
-	// 1. Armor absorption (see ICE Breaker Guide for all of 4 these)
-	// 2. Weapon vulnerabilities based on attack type and the a_att_type bits stored in the npc
-	// 3. Critical hits, chance for critical hit damage based on defense and offense of attack and target
+	// 0. First checks against whether the entity is damageable (i.e. not the world) - handled by Physics Layers.
+	// 1. Armor Absorption (see ICE Breaker Guide for all of 4 these)
+	// 2. Weapon Vulnerabilities based on attack type and the a_att_type bits stored in the npc
+	// 3. Critical Hits, chance for critical hit damage based on defense and offense of attack and target
 	// 4. Random Factor, +/- 10% damage for randomness
-	// 5. Apply velocity for damage, this is after all the above because otherwise the damage multipliers wouldn't affect velocity
-	// 6. Return the damage to original TakeDamage() function
-
+	// 5. Apply Velocity for damage, this is after all the above because otherwise the damage multipliers wouldn't affect velocity
+	// 6. Berserk Damage Increase
+	// 7. Return the damage to original TakeDamage() function
 	public float GetDamageTakeAmount (DamageData dd) {
 		// a_* = attacker
 		float a_damage = dd.damage;
@@ -1047,90 +1191,35 @@ public class Const : MonoBehaviour {
 		float o_armorvalue = dd.armorvalue;
 		float o_defense = dd.defense;
 
-		float take = 0f;
-		float chance = 0f;
-		float f = 0f;
-		// 1. Armor Absorption
-		if (o_armorvalue > a_penetration) {
-			take = (a_damage - a_penetration);
-		} else {
-			take = a_damage;
-		}
-
-		// 2. Weapon Vulnerabilities
-		if (a_att_type != AttackType.None) {
-
-		}
-
+		float take, crit;
+		take = (o_armorvalue > a_penetration ? a_damage - a_penetration : a_damage); // 1. Armor Absorption (NPC armor, not player)
+		// 2. Weapon Vulnerabilities - handled by HealthManager.
 		// 3. Critical Hits (NPCs only)
 		if (o_isnpc) {
-			f = (a_offense - o_defense);
-			float crit = f;
-			if (f > 0) {
+			crit = (a_offense - o_defense);
+			if (crit > 0) {
 				// 71% success with 5/6  5 = f, 6 = max offense or defense value
 				// 62% success with 4/6
 				// 50% success with 3/6
 				// 24% success with 2/6
 				// 10% success with 1/6
-				chance = (f/6); // 5/6|4/6|3/6|2/6|1/6 = .833|.666|.5|.333|.166
-				if (UnityEngine.Random.Range(0f,1f) < chance) {
-					if (UnityEngine.Random.Range(0f,1f) < 0.2f) {
-						// SUCCESS! Applying critical hit.
-						//UnityEngine.Debug.Log("Critical hit!");
-						crit = (take * f);  //How many extra damages we add to damage that we will take
-						take = (take + crit); // Maximum extra is 5X + 1X Damage
-					}
-				}
+				// chance of f/6 = 5/6|4/6|3/6|2/6|1/6 = .833|.666|.5|.333|.166
+				if ((UnityEngine.Random.Range(0f,1f) < (crit/6)) && (UnityEngine.Random.Range(0f,1f) < 0.2f)) take += crit * take; // SUCCESS! Maximum extra is 5X + 1X Damage.
 			}
 		}
-
-		// 4. Random Factor +/- 10% (aka 0.10 damage)
-		chance = (0.1f * UnityEngine.Random.Range(0f,1f));
-
-		// 50% chance of being positive or negative
-		f = UnityEngine.Random.Range(0f,1f);
-		if (f > 0.5f) {
-			chance = (chance * (-1)); // Make negative
-		}
-		chance = (chance * take);
-		take = (take + chance); // Add the random factor, anywhere up to +/- 10%
-		if (take <= 0f)
-			return take;
-
-		// 5. Apply Velocity for Damage Amount
-		// Done in HealthManager TakeDamage()
-
-		// 6. Specialties
-		if (a_berserk) take *= Const.a.berserkDamageMultiplier;
-
-		// 6. Return the Damage 
-		return take;
-	}
-
-	public static void drawDebugLine(Vector3 start , Vector3 end, Color color,float duration = 0.2f){
-		GameObject myLine = new GameObject ();
-		myLine.transform.position = start;
-		myLine.AddComponent<LineRenderer> ();
-		LineRenderer lr = myLine.GetComponent<LineRenderer> ();
-		lr.material = new Material (Shader.Find ("Particles/Additive"));
-		lr.startColor = color;
-		lr.endColor = color;
-		lr.startWidth = 0.1f;
-		lr.endWidth = 0.1f;
-		lr.SetPosition (0, start);
-		lr.SetPosition (1, end);
-		Destroy(myLine,duration);
+		take *= UnityEngine.Random.Range(0.9f,1.1f); // 4. Random Factor +/- 10% (aka 0.10 damage).
+		// 5. Apply Impact Velocity for Damage - handled by HealthManager.
+		if (a_berserk) take *= Const.a.berserkDamageMultiplier; // 6. Berserk Damage Increase.
+		return take; // 7. Return the Damage.
 	}
 
 	string SavePlayerData(GameObject plyr) {
+		if (plyr == null) return "!";
+
 		string line = System.String.Empty;
-		if (plyr == null) {
-			line = "!";
-			return line;
-		}
 		Transform tr, trml;
 		int j = 0;
-		// First get all references to relevant componenets on all relevant gameobjects in the player gameobject
+		// Get all references to relevant components.
 		PlayerReferenceManager PRman = plyr.GetComponent<PlayerReferenceManager>();
 		GameObject pCap = PRman.playerCapsule;
 		GameObject playerMainCamera = PRman.playerCapsuleMainCamera;
@@ -1141,116 +1230,89 @@ public class Const : MonoBehaviour {
 		PlayerPatch pp = pCap.GetComponent<PlayerPatch>();
 		HealthManager hm = pCap.GetComponent<HealthManager>();
 		tr = pCap.transform;
-		//UnityEngine.Debug.Log("Saving player located at " + tr.position.x.ToString("0000.00000") + ", " + tr.position.y.ToString("0000.00000") + ", " + tr.position.z.ToString("0000.00000"));
 		MouseLookScript ml = playerMainCamera.GetComponent<MouseLookScript>();
 		trml = playerMainCamera.transform;
-		WeaponInventory wi = playerInventory.GetComponent<WeaponInventory>();
-		WeaponAmmo wa = playerInventory.GetComponent<WeaponAmmo>();
 		WeaponCurrent wc = playerInventory.GetComponent<WeaponCurrent>();
-		WeaponFire wf = pp.playerWeapon;
-		GrenadeCurrent gc = playerInventory.GetComponent<GrenadeCurrent>();
-		GrenadeInventory gi = playerInventory.GetComponent<GrenadeInventory>();
-		PatchCurrent pc = playerInventory.GetComponent<PatchCurrent>();
-		PatchInventory pi = playerInventory.GetComponent<PatchInventory>();
-		LogInventory li = playerInventory.GetComponent<LogInventory>();
-		HardwareInventory hi = playerInventory.GetComponent<HardwareInventory>();
-		HardwareInvCurrent hinc = playerInventory.GetComponent<HardwareInvCurrent>();
-		AccessCardInventory acc = playerInventory.GetComponent<AccessCardInventory>();
-		GeneralInventory genv = playerInventory.GetComponent<GeneralInventory>();
-		GeneralInvCurrent genc = playerInventory.GetComponent<GeneralInvCurrent>();
-		MFDManager mfd = PRman.playerMFDManager;
-
+		WeaponFire wf = pe.wepFire;
+		Inventory inv = playerInventory.GetComponent<Inventory>();
+		MFDManager mfd = MFDManager.a;
 		SaveObject sav = plyr.GetComponent<SaveObject>();
 
 		line = sav.saveableType;
 		line += splitChar + sav.SaveID.ToString();
-
-		if (string.IsNullOrEmpty(Const.a.playerName)) {
-			line += splitChar + "Hacker";
-		} else {
-			line += splitChar + Const.a.playerName;
-		}
-		line += splitChar + ph.radiated.ToString("0000.00000");
-		line += splitChar + ph.timer.ToString("0000.00000");
-		line += splitChar + ph.playerDead.ToString();
-		line += splitChar + ph.mediPatchActive.ToString();
-		line += splitChar + ph.detoxPatchActive.ToString();
-		line += splitChar + ph.radiationArea.ToString();
-		line += splitChar + ph.mediPatchPulseFinished.ToString("0000.00000");
-		line += splitChar + ph.mediPatchPulseCount.ToString();
-		line += splitChar + ph.makingNoise.ToString();
-		line += splitChar + ph.lastHealth.ToString("0000.00000");
-		line += splitChar + ph.painSoundFinished.ToString("0000.00000");
-		line += splitChar + ph.radSoundFinished.ToString("0000.00000");
-		line += splitChar + ph.radFXFinished.ToString("0000.00000");
-		line += splitChar + pe.energy.ToString("0000.00000");
-		line += splitChar + pe.timer.ToString("0000.00000");
-		line += splitChar + pe.tickFinished.ToString("0000.00000");
-		line += splitChar + pm.playerSpeed.ToString("0000.00000");
-		line += splitChar + pm.grounded.ToString();
-		line += splitChar + pm.currentCrouchRatio.ToString("0000.00000");
-		line += splitChar + pm.bodyState.ToString();
-		line += splitChar + pm.ladderState.ToString();
-		line += splitChar + pm.gravliftState.ToString();
-		line += splitChar + pm.inCyberSpace.ToString();
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExploredR[j] ? "1": "0"); }
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored1[j] ? "1": "0"); }
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored2[j] ? "1": "0"); }
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored3[j] ? "1": "0"); }
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored4[j] ? "1": "0"); }
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored5[j] ? "1": "0"); }
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored6[j] ? "1": "0"); }
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored7[j] ? "1": "0"); }
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored8[j] ? "1": "0"); }
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExplored9[j] ? "1": "0"); }
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExploredG1[j] ? "1": "0"); }
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExploredG2[j] ? "1": "0"); }
-		for (j=0;j<4096;j++) { line += splitChar + (pm.automapExploredG4[j] ? "1": "0"); }
-		line += splitChar + pm.CheatWallSticky.ToString();
-		line += splitChar + pm.CheatNoclip.ToString();
-		line += splitChar + pm.jumpTime.ToString();
-		line += splitChar + (pm.oldVelocity.x.ToString("0000.00000") + splitChar + pm.oldVelocity.y.ToString("0000.00000") + splitChar + pm.oldVelocity.z.ToString("0000.00000"));
-		line += splitChar + pm.fatigue.ToString();
-		line += splitChar + pm.justJumped.ToString();
-		line += splitChar + pm.fatigueFinished.ToString("0000.00000");
-		line += splitChar + pm.fatigueFinished2.ToString("0000.00000");
-		line += splitChar + pm.running.ToString();
-		line += splitChar + pm.cyberSetup.ToString();
-		line += splitChar + pm.cyberDesetup.ToString();
-		line += splitChar + pm.oldBodyState.ToString();
-		line += splitChar + pm.consoleActivated.ToString();
-		line += splitChar + pm.leanLeftDoubleFinished.ToString("0000.00000");
-		line += splitChar + pm.leanRightDoubleFinished.ToString("0000.00000");
-		line += splitChar + pm.leanTarget.ToString();
-		line += splitChar + pm.leanShift.ToString();
-		line += splitChar + pm.jumpSFXFinished.ToString("0000.00000");
-		line += splitChar + pm.jumpLandSoundFinished.ToString();
-		line += splitChar + pm.jumpJetEnergySuckTickFinished.ToString();
-		line += splitChar + pm.leanLHFirstPressed.ToString();
-		line += splitChar + pm.leanRHFirstPressed.ToString();
-		line += splitChar + pm.leanLHReset.ToString();
-		line += splitChar + pm.leanRHReset.ToString();
+		string pname = string.IsNullOrEmpty(Const.a.playerName) ? "Hacker" : Const.a.playerName;
+		line += splitChar + pname;
+		line += splitChar + ph.radiated.ToString("0000.00000"); // float
+		line += splitChar + ph.timer.ToString("0000.00000"); // float
+		line += splitChar + BoolToString(ph.playerDead); // bool
+		line += splitChar + BoolToString(ph.radiationArea); // bool
+		line += splitChar + ph.mediPatchPulseFinished.ToString("0000.00000"); // float
+		line += splitChar + ph.mediPatchPulseCount.ToString(); // int
+		line += splitChar + BoolToString(ph.makingNoise); // bool
+		line += splitChar + ph.lastHealth.ToString("0000.00000"); // float
+		line += splitChar + ph.painSoundFinished.ToString("0000.00000"); // float
+		line += splitChar + ph.radSoundFinished.ToString("0000.00000"); // float
+		line += splitChar + ph.radFXFinished.ToString("0000.00000"); // float
+		line += splitChar + pe.energy.ToString("0000.00000"); // float
+		line += splitChar + pe.timer.ToString("0000.00000"); // float
+		line += splitChar + pe.tickFinished.ToString("0000.00000"); // float
+		line += splitChar + pm.playerSpeed.ToString("0000.00000"); // float
+		line += splitChar + BoolToString(pm.grounded); // bool
+		line += splitChar + pm.currentCrouchRatio.ToString("0000.00000"); // float
+		line += splitChar + pm.bodyState.ToString(); // int
+		line += splitChar + BoolToString(pm.ladderState); // bool
+		line += splitChar + BoolToString(pm.gravliftState); // bool
+		line += splitChar + BoolToString(pm.inCyberSpace); // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExploredR[j]); } // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored1[j]); } // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored2[j]); } // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored3[j]); } // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored4[j]); } // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored5[j]); } // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored6[j]); } // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored7[j]); } // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored8[j]); } // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored9[j]); } // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExploredG1[j]); } // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExploredG2[j]); } // bool
+		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExploredG4[j]); } // bool
+		line += splitChar + BoolToString(pm.CheatWallSticky); // bool
+		line += splitChar + BoolToString(pm.CheatNoclip); // bool
+		line += splitChar + pm.jumpTime.ToString("0000.00000"); // float
+		line += splitChar + (pm.oldVelocity.x.ToString("0000.00000") + splitChar + pm.oldVelocity.y.ToString("0000.00000") + splitChar + pm.oldVelocity.z.ToString("0000.00000")); // Vector3 (float|float|float)
+		line += splitChar + pm.fatigue.ToString("0000.00000"); // float
+		line += splitChar + BoolToString(pm.justJumped); // bool
+		line += splitChar + pm.fatigueFinished.ToString("0000.00000"); // float
+		line += splitChar + pm.fatigueFinished2.ToString("0000.00000"); // float
+		line += splitChar + BoolToString(pm.cyberSetup); // bool
+		line += splitChar + BoolToString(pm.cyberDesetup); // bool
+		line += splitChar + pm.oldBodyState.ToString(); // int
+		line += splitChar + pm.leanTarget.ToString("0000.00000"); // float
+		line += splitChar + pm.leanShift.ToString("0000.00000"); // float
+		line += splitChar + pm.jumpSFXFinished.ToString("0000.00000"); // float
+		line += splitChar + pm.jumpLandSoundFinished.ToString("0000.00000"); // float
+		line += splitChar + pm.jumpJetEnergySuckTickFinished.ToString("0000.00000"); // float
 		line += splitChar + pm.fatigueWarned.ToString();
-		line += splitChar + pm.ressurectingFinished.ToString("0000.00000");
-		line += splitChar + pm.doubleJumpFinished.ToString("0000.00000");
-		line += splitChar + pm.turboFinished.ToString("0000.00000");
-		line += splitChar + pp.berserkFinishedTime.ToString("0000.00000");
-		line += splitChar + pp.berserkIncrementFinishedTime.ToString("0000.00000");
-		line += splitChar + pp.detoxFinishedTime.ToString("0000.00000");
-		line += splitChar + pp.geniusFinishedTime.ToString("0000.00000");
-		line += splitChar + pp.mediFinishedTime.ToString("0000.00000");
-		line += splitChar + pp.reflexFinishedTime.ToString("0000.00000");
-		line += splitChar + pp.sightFinishedTime.ToString("0000.00000");
-		line += splitChar + pp.sightSideEffectFinishedTime.ToString("0000.00000");
-		line += splitChar + pp.staminupFinishedTime.ToString("0000.00000");
+		line += splitChar + pm.ressurectingFinished.ToString("0000.00000"); // float
+		line += splitChar + pm.doubleJumpFinished.ToString("0000.00000"); // float
+		line += splitChar + pm.turboFinished.ToString("0000.00000"); // float
+		line += splitChar + pp.berserkFinishedTime.ToString("0000.00000"); // float
+		line += splitChar + pp.berserkIncrementFinishedTime.ToString("0000.00000"); // float
+		line += splitChar + pp.detoxFinishedTime.ToString("0000.00000"); // float
+		line += splitChar + pp.geniusFinishedTime.ToString("0000.00000"); // float
+		line += splitChar + pp.mediFinishedTime.ToString("0000.00000"); // float
+		line += splitChar + pp.reflexFinishedTime.ToString("0000.00000"); // float
+		line += splitChar + pp.sightFinishedTime.ToString("0000.00000"); // float
+		line += splitChar + pp.sightSideEffectFinishedTime.ToString("0000.00000"); // float
+		line += splitChar + pp.staminupFinishedTime.ToString("0000.00000"); // float
 		line += splitChar + pp.berserkIncrement.ToString();
 		line += splitChar + pp.patchActive.ToString();
-		line += splitChar + (tr.localPosition.x.ToString("0000.00000") + splitChar + tr.localPosition.y.ToString("0000.00000") + splitChar + tr.localPosition.z.ToString("0000.00000"));
-		line += splitChar + (tr.localRotation.x.ToString("0000.00000") + splitChar + tr.localRotation.y.ToString("0000.00000") + splitChar + tr.localRotation.z.ToString("0000.00000") + splitChar + tr.localRotation.w.ToString("0000.00000"));
-		line += splitChar + (tr.localScale.x.ToString("0000.00000") + splitChar + tr.localScale.y.ToString("0000.00000") + splitChar + tr.localScale.z.ToString("0000.00000"));
-		line += splitChar + (trml.localPosition.x.ToString("0000.00000") + splitChar + trml.localPosition.y.ToString("0000.00000") + splitChar + trml.localPosition.z.ToString("0000.00000"));
-		line += splitChar + (trml.localRotation.x.ToString("0000.00000") + splitChar + trml.localRotation.y.ToString("0000.00000") + splitChar + trml.localRotation.z.ToString("0000.00000") + splitChar + trml.localRotation.w.ToString("0000.00000"));
-		line += splitChar + (trml.localScale.x.ToString("0000.00000") + splitChar + trml.localScale.y.ToString("0000.00000") + splitChar + trml.localScale.z.ToString("0000.00000"));
+		line += splitChar + (tr.localPosition.x.ToString("0000.00000") + splitChar + tr.localPosition.y.ToString("0000.00000") + splitChar + tr.localPosition.z.ToString("0000.00000")); // Vector3 (float|float|float)
+		line += splitChar + (tr.localRotation.x.ToString("0000.00000") + splitChar + tr.localRotation.y.ToString("0000.00000") + splitChar + tr.localRotation.z.ToString("0000.00000") + splitChar + tr.localRotation.w.ToString("0000.00000")); // Quaternion (float|float|float|float)
+		line += splitChar + (tr.localScale.x.ToString("0000.00000") + splitChar + tr.localScale.y.ToString("0000.00000") + splitChar + tr.localScale.z.ToString("0000.00000")); // Vector3 (float|float|float)
+		line += splitChar + (trml.localPosition.x.ToString("0000.00000") + splitChar + trml.localPosition.y.ToString("0000.00000") + splitChar + trml.localPosition.z.ToString("0000.00000")); // Vector3 (float|float|float)
+		line += splitChar + (trml.localRotation.x.ToString("0000.00000") + splitChar + trml.localRotation.y.ToString("0000.00000") + splitChar + trml.localRotation.z.ToString("0000.00000") + splitChar + trml.localRotation.w.ToString("0000.00000")); // Quaternion (float|float|float|float)
+		line += splitChar + (trml.localScale.x.ToString("0000.00000") + splitChar + trml.localScale.y.ToString("0000.00000") + splitChar + trml.localScale.z.ToString("0000.00000")); // Vector3 (float|float|float)
 		line += splitChar + ml.inventoryMode.ToString();
 		line += splitChar + ml.holdingObject.ToString();
 		line += splitChar + ml.heldObjectIndex.ToString();
@@ -1261,74 +1323,74 @@ public class Const : MonoBehaviour {
 		line += splitChar + ml.firstTimeSearch.ToString();
 		line += splitChar + ml.grenadeActive.ToString();
 		line += splitChar + ml.inCyberSpace.ToString();
-		line += splitChar + ml.yRotation.ToString("0000.00000");
+		line += splitChar + ml.yRotation.ToString("0000.00000"); // float
 		line += splitChar + ml.geniusActive.ToString();
-		line += splitChar + ml.xRotation.ToString("0000.00000");
+		line += splitChar + ml.xRotation.ToString("0000.00000"); // float
 		line += splitChar + ml.vmailActive.ToString();
 		line += splitChar + (ml.cyberspaceReturnPoint.x.ToString("0000.00000") + splitChar + ml.cyberspaceReturnPoint.y.ToString("0000.00000") + splitChar + ml.cyberspaceReturnPoint.z.ToString("0000.00000"));
 		line += splitChar + (ml.cyberspaceReturnCameraLocalRotation.x.ToString("0000.00000") + splitChar + ml.cyberspaceReturnCameraLocalRotation.y.ToString("0000.00000") + splitChar + ml.cyberspaceReturnCameraLocalRotation.z.ToString("0000.00000"));
 		line += splitChar + (ml.cyberspaceReturnPlayerCapsuleLocalRotation.x.ToString("0000.00000") + splitChar + ml.cyberspaceReturnPlayerCapsuleLocalRotation.y.ToString("0000.00000") + splitChar + ml.cyberspaceReturnPlayerCapsuleLocalRotation.z.ToString("0000.00000"));
 		line += splitChar + (ml.cyberspaceRecallPoint.x.ToString("0000.00000") + splitChar + ml.cyberspaceRecallPoint.y.ToString("0000.00000") + splitChar + ml.cyberspaceRecallPoint.z.ToString("0000.00000"));
 		line += splitChar + ml.cyberspaceReturnLevel.ToString();
-		line += splitChar + hm.health.ToString("0000.00000");
-		line += splitChar + hm.cyberHealth.ToString("0000.00000");
+		line += splitChar + hm.health.ToString("0000.00000"); // float
+		line += splitChar + hm.cyberHealth.ToString("0000.00000"); // float
 		line += splitChar + hm.deathDone.ToString();
 		line += splitChar + hm.god.ToString();
 		line += splitChar + hm.teleportDone.ToString();
 		line += splitChar + GUIState.a.overButtonType.ToString();
 		line += splitChar + GUIState.a.overButton.ToString();
-		for (j=0;j<7;j++) { line += splitChar + wi.weaponInventoryIndices[j].ToString(); }
-		for (j=0;j<7;j++) { line += splitChar + wi.weaponInventoryAmmoIndices[j].ToString(); }
-		line += splitChar + wi.numweapons.ToString();
-		for (j=0;j<16;j++) { line += splitChar + wa.wepAmmo[j].ToString(); }
-		for (j=0;j<16;j++) { line += splitChar + wa.wepAmmoSecondary[j].ToString(); }
-		for (j=0;j<7;j++) { line += splitChar + wa.currentEnergyWeaponHeat[j].ToString("0000.00000"); }
-		for (j=0;j<7;j++) { line += splitChar + wa.wepLoadedWithAlternate[j].ToString(); }
+		for (j=0;j<7;j++) { line += splitChar + inv.weaponInventoryIndices[j].ToString(); }
+		for (j=0;j<7;j++) { line += splitChar + inv.weaponInventoryAmmoIndices[j].ToString(); }
+		line += splitChar + inv.numweapons.ToString();
+		for (j=0;j<16;j++) { line += splitChar + inv.wepAmmo[j].ToString(); }
+		for (j=0;j<16;j++) { line += splitChar + inv.wepAmmoSecondary[j].ToString(); }
+		for (j=0;j<7;j++) { line += splitChar + inv.currentEnergyWeaponHeat[j].ToString("0000.00000"); } // float
+		for (j=0;j<7;j++) { line += splitChar + inv.wepLoadedWithAlternate[j].ToString(); }
 		line += splitChar + wc.weaponCurrent.ToString();
 		line += splitChar + wc.weaponIndex.ToString();
-		for (j=0;j<7;j++) { line += splitChar + wc.weaponEnergySetting[j].ToString("0000.00000"); }
+		for (j=0;j<7;j++) { line += splitChar + wc.weaponEnergySetting[j].ToString("0000.00000"); } // float
 		for (j=0;j<7;j++) { line += splitChar + wc.currentMagazineAmount[j].ToString(); }
 		for (j=0;j<7;j++) { line += splitChar + wc.currentMagazineAmount2[j].ToString(); }
 		line += splitChar + wc.justChangedWeap.ToString();
 		line += splitChar + wc.lastIndex.ToString();
 		line += splitChar + wc.bottomless.ToString();
 		line += splitChar + wc.redbull.ToString();
-		line += splitChar + wc.reloadFinished.ToString("0000.00000");
-		line += splitChar + wc.reloadLerpValue.ToString("0000.00000");
-		line += splitChar + wc.lerpStartTime.ToString("0000.00000");
-		line += splitChar + wc.targetY.ToString("0000.00000");
-		line += splitChar + wf.waitTilNextFire.ToString("0000.00000");
+		line += splitChar + wc.reloadFinished.ToString("0000.00000"); // float
+		line += splitChar + wc.reloadLerpValue.ToString("0000.00000"); // float
+		line += splitChar + wc.lerpStartTime.ToString("0000.00000"); // float
+		line += splitChar + wc.targetY.ToString("0000.00000"); // float
+		line += splitChar + wf.waitTilNextFire.ToString("0000.00000"); // float
 		line += splitChar + wf.overloadEnabled.ToString();
-		line += splitChar + wf.sparqSetting.ToString("0000.00000");
-		line += splitChar + wf.ionSetting.ToString("0000.00000");
-		line += splitChar + wf.blasterSetting.ToString("0000.00000");
-		line += splitChar + wf.plasmaSetting.ToString("0000.00000");
-		line += splitChar + wf.stungunSetting.ToString("0000.00000");
+		line += splitChar + wf.sparqSetting.ToString("0000.00000"); // float
+		line += splitChar + wf.ionSetting.ToString("0000.00000"); // float
+		line += splitChar + wf.blasterSetting.ToString("0000.00000"); // float
+		line += splitChar + wf.plasmaSetting.ToString("0000.00000"); // float
+		line += splitChar + wf.stungunSetting.ToString("0000.00000"); // float
 		line += splitChar + wf.recoiling.ToString();
-		line += splitChar + wf.justFired.ToString("0000.00000");
-		line += splitChar + wf.energySliderClickedTime.ToString("0000.00000");
-		line += splitChar + wf.cyberWeaponAttackFinished.ToString("0000.00000");
-		line += splitChar + gc.grenadeCurrent.ToString();
-		line += splitChar + gc.grenadeIndex.ToString();
-		line += splitChar + gc.nitroTimeSetting.ToString("0000.00000");
-		line += splitChar + gc.earthShakerTimeSetting.ToString("0000.00000");
-		for (j=0;j<7;j++) { line += splitChar + gi.grenAmmo[j].ToString(); }
-		line += splitChar + pc.patchCurrent.ToString();
-		line += splitChar + pc.patchIndex.ToString();
-		for (j=0;j<7;j++) { line += splitChar + pi.patchCounts[j].ToString(); }
-		for (j=0;j<128;j++) { line += splitChar + li.hasLog[j].ToString(); }
-		for (j=0;j<128;j++) { line += splitChar + li.readLog[j].ToString(); }
-		for (j=0;j<10;j++) { line += splitChar + li.numLogsFromLevel[j].ToString(); }
-		line += splitChar + li.lastAddedIndex.ToString();
-		line += splitChar + li.beepDone.ToString();
-		for (j=0;j<13;j++) { line += splitChar + hi.hasHardware[j].ToString(); }
-		for (j=0;j<13;j++) { line += splitChar + hi.hardwareVersion[j].ToString(); }
-		for (j=0;j<13;j++) { line += splitChar + hi.hardwareVersionSetting[j].ToString(); }
-		line += splitChar + hinc.hardwareInvCurrent.ToString();
-		line += splitChar + hinc.hardwareInvIndex.ToString();
-		for (j=0;j<13;j++) { line += splitChar + hinc.hardwareIsActive[j].ToString(); }
+		line += splitChar + wf.justFired.ToString("0000.00000"); // float
+		line += splitChar + wf.energySliderClickedTime.ToString("0000.00000"); // float
+		line += splitChar + wf.cyberWeaponAttackFinished.ToString("0000.00000"); // float
+		line += splitChar + inv.grenadeCurrent.ToString();
+		line += splitChar + inv.grenadeIndex.ToString();
+		line += splitChar + inv.nitroTimeSetting.ToString("0000.00000"); // float
+		line += splitChar + inv.earthShakerTimeSetting.ToString("0000.00000"); // float
+		for (j=0;j<7;j++) { line += splitChar + inv.grenAmmo[j].ToString(); }
+		line += splitChar + inv.patchCurrent.ToString();
+		line += splitChar + inv.patchIndex.ToString();
+		for (j=0;j<7;j++) { line += splitChar + inv.patchCounts[j].ToString(); }
+		for (j=0;j<134;j++) { line += splitChar + inv.hasLog[j].ToString(); }
+		for (j=0;j<134;j++) { line += splitChar + inv.readLog[j].ToString(); }
+		for (j=0;j<10;j++) { line += splitChar + inv.numLogsFromLevel[j].ToString(); }
+		line += splitChar + inv.lastAddedIndex.ToString();
+		line += splitChar + inv.beepDone.ToString();
+		for (j=0;j<13;j++) { line += splitChar + inv.hasHardware[j].ToString(); }
+		for (j=0;j<13;j++) { line += splitChar + inv.hardwareVersion[j].ToString(); }
+		for (j=0;j<13;j++) { line += splitChar + inv.hardwareVersionSetting[j].ToString(); }
+		line += splitChar + inv.hardwareInvCurrent.ToString();
+		line += splitChar + inv.hardwareInvIndex.ToString();
+		for (j=0;j<13;j++) { line += splitChar + inv.hardwareIsActive[j].ToString(); }
 		for (j=0;j<32;j++) {
-			switch (acc.accessCardsOwned[j]) {
+			switch (inv.accessCardsOwned[j]) {
 				case Door.accessCardType.None: line+= splitChar + "0"; break;
 				case Door.accessCardType.Standard: line+= splitChar + "1"; break;
 				case Door.accessCardType.Medical: line+= splitChar + "2"; break;
@@ -1352,9 +1414,15 @@ public class Const : MonoBehaviour {
 				case Door.accessCardType.Command: line+= splitChar + "20"; break;
 			}
 		}
-		for (j=0;j<14;j++) { line += splitChar + genv.generalInventoryIndexRef[j].ToString(); }
-		line += splitChar + genc.generalInvCurrent.ToString();
-		line += splitChar + genc.generalInvIndex.ToString();
+		for (j=0;j<14;j++) { line += splitChar + inv.generalInventoryIndexRef[j].ToString(); }
+		line += splitChar + inv.generalInvCurrent.ToString();
+		line += splitChar + inv.generalInvIndex.ToString();
+		line += splitChar + inv.currentCyberItem.ToString();
+		line += splitChar + inv.isPulserNotDrill.ToString();
+		for (j=0;j<7;j++) { line += splitChar + inv.softVersions[j].ToString(); }
+		for (j=0;j<7;j++) { line += splitChar + inv.hasSoft[j].ToString(); }
+		line += splitChar + inv.emailCurrent.ToString();
+		line += splitChar + inv.emailIndex.ToString();
 		line += splitChar + mfd.lastWeaponSideRH.ToString();
 		line += splitChar + mfd.lastItemSideRH.ToString();
 		line += splitChar + mfd.lastAutomapSideRH.ToString();
@@ -1373,7 +1441,7 @@ public class Const : MonoBehaviour {
 		line += splitChar + mfd.paperLogInUse.ToString();
 		line += splitChar + mfd.usingObject.ToString();
 		line += splitChar + mfd.logReaderContainer.activeSelf.ToString();
-		line += splitChar + mfd.multiMediaTab.activeSelf.ToString();
+		line += splitChar + mfd.DataReaderContentTab.activeSelf.ToString();
 		line += splitChar + mfd.logTable.activeSelf.ToString();
 		line += splitChar + mfd.logLevelsFolder.activeSelf.ToString();
 		line += splitChar + mfd.logFinished.ToString("0000.00000");
@@ -1931,7 +1999,7 @@ public class Const : MonoBehaviour {
 			line = la.lightOn.ToString();
 			line += splitChar + la.lerpOn.ToString();
 			line += splitChar + la.currentStep.ToString();
-			line += splitChar + la.lerpRef.ToString("0000.00000");
+			line += splitChar + la.lerpValue.ToString("0000.00000");
 			line += splitChar + la.lerpTime.ToString("0000.00000");
 			line += splitChar + la.stepTime.ToString("0000.00000");
 			line += splitChar + la.lerpStartTime.ToString("0000.00000");
@@ -1974,8 +2042,8 @@ public class Const : MonoBehaviour {
 	// ============================================================================
 	//public IEnumerator Save(int saveFileIndex,string savename) {
 	public void Save(int saveFileIndex,string savename) {
-		//Stopwatch saveTimer = new Stopwatch();
-		//saveTimer.Start();
+		Stopwatch saveTimer = new Stopwatch();
+		saveTimer.Start();
 		string[] saveData = new string[16000]; // Found 2987 saveable objects on main level - should be enough for any instantiated dropped items...maybe
 		string line;
 		int i,j;
@@ -2016,7 +2084,7 @@ public class Const : MonoBehaviour {
 		FindAllSaveObjectsGOs(saveableGameObjects);
 
 		// Indicate we are saving "Saving..."
-		sprint(stringTable[194],allPlayers);
+		sprint(stringTable[194]);
 
 		// Header
 		// -----------------------------------------------------
@@ -2027,21 +2095,7 @@ public class Const : MonoBehaviour {
 
 		saveData[index] = PauseScript.a.relativeTime.ToString("0000.00000"); // float - time that we need to spawn next
 		index++;
-		// temp string to hold global states
-		//string states = "00000000|00000000|";
 		s1.Clear(); // keep reusing s1
-		/*
-		string states = (questData.lev1SecCode.ToString() + splitChar + questData.lev2SecCode.ToString() + splitChar + questData.lev3SecCode.ToString() + splitChar +
-						questData.lev4SecCode.ToString() + splitChar + questData.lev5SecCode.ToString() + splitChar + questData.lev6SecCode.ToString() + splitChar +
-						questData.RobotSpawnDeactivated.ToString() + splitChar + questData.IsotopeInstalled.ToString() + splitChar + questData.ShieldActivated.ToString() + splitChar +
-						questData.LaserSafetyOverriden.ToString() + splitChar + questData.LaserDestroyed.ToString() + splitChar + questData.BetaGroveCyberUnlocked.ToString() + splitChar +
-						questData.GroveAlphaJettisonEnabled.ToString() +splitChar + questData.GroveBetaJettisonEnabled.ToString() + splitChar +
-						questData.GroveDeltaJettisonEnabled.ToString() + splitChar + questData.MasterJettisonBroken.ToString() + splitChar +
-						questData.Relay428Fixed.ToString() + splitChar + questData.MasterJettisonEnabled.ToString() + splitChar + questData.BetaGroveJettisoned.ToString() + splitChar +
-						questData.AntennaNorthDestroyed.ToString() + splitChar + questData.AntennaSouthDestroyed.ToString() + splitChar +
-						questData.AntennaEastDestroyed.ToString() + splitChar + questData.AntennaWestDestroyed.ToString() + splitChar + questData.SelfDestructActivated.ToString() + splitChar +
-						questData.BridgeSeparated.ToString() + splitChar + questData.IsolinearChipsetInstalled.ToString() + splitChar);
-		*/
 		// Global states and Difficulties
 		s1.Append(LevelManager.a.currentLevel.ToString());
 		//line = LevelManager.a.currentLevel.ToString();
@@ -2139,8 +2193,6 @@ public class Const : MonoBehaviour {
 		if (player2 != null) playercount++;
 		if (player3 != null) playercount++;
 		if (player4 != null) playercount++;
-		// UnityEngine.Debug.Log("Num players: " + playercount.ToString(),allPlayers);
-		//UnityEngine.Debug.Log("Num saveables: " + saveableGameObjects.Count.ToString(),allPlayers);
 
 		// Save all the players' data
 		saveData[index] = SavePlayerData(player1); index++; // saves as "!" if null
@@ -2160,6 +2212,12 @@ public class Const : MonoBehaviour {
 			s1.Append(stype);
 			s1.Append(splitChar);
 			s1.Append(sav.SaveID.ToString());
+			s1.Append(splitChar);
+			s1.Append(sav.instantiated.ToString());
+			s1.Append(splitChar);
+			s1.Append(sav.constLookupTable.ToString());
+			s1.Append(splitChar);
+			s1.Append(sav.constLookupIndex.ToString());
 			s1.Append(splitChar);
 			s1.Append(saveableGameObjects[i].activeSelf.ToString());
 			s1.Append(splitChar);
@@ -2288,19 +2346,17 @@ public class Const : MonoBehaviour {
 
 		LevelManager.a.DisableAllNonOccupiedLevels(); // go back to how we were
 		// Make "Done!" appear at the end of the line after "Saving..." is finished, stole this from Halo's "Checkpoint...Done!"
-		sprint(stringTable[195],allPlayers);
-		//saveTimer.Stop();
-		//UnityEngine.Debug.Log("Saved to file in " + saveTimer.Elapsed.ToString());
+		sprint(stringTable[195]);
+		saveTimer.Stop();
+		UnityEngine.Debug.Log("Saved to file in " + saveTimer.Elapsed.ToString());
 	}
 
 	void LoadPlayerDataToPlayer(GameObject currentPlayer, string[] entries, int currentline,int index) {
-		//int index = 1;  // Already parsed ID number in main Load() function, skip index 0
 		int j;
 		float readFloatx;
 		float readFloaty;
 		float readFloatz;
 		float readFloatw;
-
 		PlayerReferenceManager PRman = currentPlayer.GetComponent<PlayerReferenceManager>();
 		GameObject pCap = PRman.playerCapsule;
 		GameObject playerMainCamera = PRman.playerCapsuleMainCamera;
@@ -2313,31 +2369,18 @@ public class Const : MonoBehaviour {
 		Transform tr = pCap.transform;
 		MouseLookScript ml = playerMainCamera.GetComponent<MouseLookScript>();
 		Transform trml = playerMainCamera.transform;
-		WeaponInventory wi = playerInventory.GetComponent<WeaponInventory>();
-		WeaponAmmo wa = playerInventory.GetComponent<WeaponAmmo>();
 		WeaponCurrent wc = playerInventory.GetComponent<WeaponCurrent>();
-		WeaponFire wf = pp.playerWeapon; // surprisingly the only reference to WeaponFire
-		GrenadeCurrent gc = playerInventory.GetComponent<GrenadeCurrent>();
-		GrenadeInventory gi = playerInventory.GetComponent<GrenadeInventory>();
-		PatchCurrent pc = playerInventory.GetComponent<PatchCurrent>();
-		PatchInventory pi = playerInventory.GetComponent<PatchInventory>();
-		LogInventory li = playerInventory.GetComponent<LogInventory>();
-		HardwareInventory hi = playerInventory.GetComponent<HardwareInventory>();
-		HardwareInvCurrent hinc = playerInventory.GetComponent<HardwareInvCurrent>();
-		AccessCardInventory acc = playerInventory.GetComponent<AccessCardInventory>();
-		GeneralInventory genv = playerInventory.GetComponent<GeneralInventory>();
-		GeneralInvCurrent genc = playerInventory.GetComponent<GeneralInvCurrent>();
-		MFDManager mfd = PRman.playerMFDManager;
-
+		WeaponFire wf = pe.wepFire;
+		Inventory inv = playerInventory.GetComponent<Inventory>();
+		MFDManager mfd = MFDManager.a;
+		// Already parsed saveableType and ID number in main Load() function, skipping ahead to index 2 (3rd slot).
 		Const.a.playerName = entries[index]; index++; 
 		ph.radiated = GetFloatFromString(entries[index],currentline); index++;
 		ph.timer = GetFloatFromString(entries[index],currentline); index++;
 		ph.playerDead = GetBoolFromString(entries[index]); index++;
-		ph.mediPatchActive = GetBoolFromString(entries[index]); index++;
-		ph.detoxPatchActive = GetBoolFromString(entries[index]); index++;
 		ph.radiationArea = GetBoolFromString(entries[index]); index++;
 		ph.mediPatchPulseFinished = GetFloatFromString(entries[index],currentline); index++;
-		ph.mediPatchPulseCount = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+		ph.mediPatchPulseCount = GetIntFromString(entries[index],currentline ); index++;
 		ph.makingNoise = GetBoolFromString(entries[index]); index++;
 		ph.lastHealth = GetFloatFromString(entries[index],currentline); index++;
 		ph.painSoundFinished = GetFloatFromString(entries[index],currentline); index++;
@@ -2349,7 +2392,7 @@ public class Const : MonoBehaviour {
 		pm.playerSpeed = GetFloatFromString(entries[index],currentline); index++;
 		pm.grounded = GetBoolFromString(entries[index]); index++;
 		pm.currentCrouchRatio = GetFloatFromString(entries[index],currentline); index++;
-		pm.bodyState = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+		pm.bodyState = GetIntFromString(entries[index],currentline ); index++;
 		pm.ladderState = GetBoolFromString(entries[index]); index++;
 		pm.gravliftState = GetBoolFromString(entries[index]); index++;
 		pm.inCyberSpace = GetBoolFromString(entries[index]); index++;
@@ -2377,22 +2420,15 @@ public class Const : MonoBehaviour {
 		pm.justJumped = GetBoolFromString(entries[index]); index++;
 		pm.fatigueFinished = GetFloatFromString(entries[index],currentline); index++;
 		pm.fatigueFinished2 = GetFloatFromString(entries[index],currentline); index++;
-		pm.running = GetBoolFromString(entries[index]); index++;
 		pm.cyberSetup = GetBoolFromString(entries[index]); index++;
 		pm.cyberDesetup = GetBoolFromString(entries[index]); index++;
-		pm.oldBodyState = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		pm.consoleActivated = GetBoolFromString(entries[index]); index++;
-		pm.leanLeftDoubleFinished = GetFloatFromString(entries[index],currentline); index++;
-		pm.leanRightDoubleFinished = GetFloatFromString(entries[index],currentline); index++;
+		pm.oldBodyState = GetIntFromString(entries[index],currentline ); index++;
+		pm.ConsoleDisable();
 		pm.leanTarget = GetFloatFromString(entries[index],currentline); index++;
 		pm.leanShift = GetFloatFromString(entries[index],currentline); index++;
 		pm.jumpSFXFinished = GetFloatFromString(entries[index],currentline); index++;
 		pm.jumpLandSoundFinished = GetFloatFromString(entries[index],currentline); index++;
 		pm.jumpJetEnergySuckTickFinished = GetFloatFromString(entries[index],currentline); index++;
-		pm.leanLHFirstPressed = GetBoolFromString(entries[index]); index++;
-		pm.leanRHFirstPressed = GetBoolFromString(entries[index]); index++;
-		pm.leanLHReset = GetBoolFromString(entries[index]); index++;
-		pm.leanRHReset = GetBoolFromString(entries[index]); index++;
 		pm.fatigueWarned = GetBoolFromString(entries[index]); index++;
 		pm.turboFinished = GetFloatFromString(entries[index],currentline); index++;
 		pm.ressurectingFinished = GetFloatFromString(entries[index],currentline); index++;
@@ -2406,8 +2442,8 @@ public class Const : MonoBehaviour {
 		pp.sightFinishedTime = GetFloatFromString(entries[index],currentline); index++;
 		pp.sightSideEffectFinishedTime = GetFloatFromString(entries[index],currentline); index++;
 		pp.staminupFinishedTime = GetFloatFromString(entries[index],currentline); index++;
-		pp.berserkIncrement = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		pp.patchActive = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+		pp.berserkIncrement = GetIntFromString(entries[index],currentline ); index++;
+		pp.patchActive = GetIntFromString(entries[index],currentline ); index++;
 		readFloatx = GetFloatFromString(entries[index],currentline); index++;
 		readFloaty = GetFloatFromString(entries[index],currentline); index++;
 		readFloatz = GetFloatFromString(entries[index],currentline); index++;
@@ -2438,10 +2474,10 @@ public class Const : MonoBehaviour {
 		ml.inventoryMode = !GetBoolFromString(entries[index]); index++; // take opposite because we are about to opposite again
 		ml.ToggleInventoryMode(); // correctly set cursor lock state, and opposite again, now it is what was saved
 		ml.holdingObject = GetBoolFromString(entries[index]); index++;
-		ml.heldObjectIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		ml.heldObjectCustomIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		ml.heldObjectAmmo = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		ml.heldObjectAmmo2 = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+		ml.heldObjectIndex = GetIntFromString(entries[index],currentline ); index++;
+		ml.heldObjectCustomIndex = GetIntFromString(entries[index],currentline ); index++;
+		ml.heldObjectAmmo = GetIntFromString(entries[index],currentline ); index++;
+		ml.heldObjectAmmo2 = GetIntFromString(entries[index],currentline ); index++;
 		ml.firstTimePickup = GetBoolFromString(entries[index]); index++;
 		ml.firstTimeSearch = GetBoolFromString(entries[index]); index++;
 		ml.grenadeActive = GetBoolFromString(entries[index]); index++;
@@ -2466,34 +2502,33 @@ public class Const : MonoBehaviour {
 		readFloaty = GetFloatFromString(entries[index],currentline); index++;
 		readFloatz = GetFloatFromString(entries[index],currentline); index++;
 		ml.cyberspaceRecallPoint = new Vector3(readFloatx,readFloaty,readFloatz);
-		ml.cyberspaceReturnLevel = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+		ml.cyberspaceReturnLevel = GetIntFromString(entries[index],currentline ); index++;
+		ml.currentSearchItem = null; // Prevent picking up first item immediately. Not currently possible to save references.
 		hm.health = GetFloatFromString(entries[index],currentline); index++; // how much health we have
 		hm.cyberHealth = GetFloatFromString(entries[index],currentline); index++;
 		hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
-		hm.god = GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
-		hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport?
-		//hm.AwakeFromLoad();  Nothing done for isPlayer
+		hm.god = GetBoolFromString(entries[index]); index++; // Are we invincible? - we can save cheats?? OH WOW!
+		hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport? //hm.AwakeFromLoad();  Nothing done for isPlayer
 		GUIState.ButtonType bt = (GUIState.ButtonType) Enum.Parse(typeof(GUIState.ButtonType), entries[index]);
-		if (Enum.IsDefined(typeof(GUIState.ButtonType),bt)) {
-			GUIState.a.overButtonType = bt;
-		} index++;
+		if (Enum.IsDefined(typeof(GUIState.ButtonType),bt)) GUIState.a.overButtonType = bt;
+		index++;
 		GUIState.a.overButton = GetBoolFromString(entries[index]); index++;
-		for (j=0;j<7;j++) { wi.weaponInventoryIndices[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		for (j=0;j<7;j++) { wi.weaponInventoryAmmoIndices[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		//for (j=0;j<7;j++) { wi.weaponInventoryText[j] = wi.weaponInvTextSource[(WeaponFire.Get16WeaponIndexFromConstIndex(wi.weaponInventoryIndices[j]))]; } // derived from the above
-		wi.numweapons = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		for (j=0;j<16;j++) { wa.wepAmmo[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		for (j=0;j<16;j++) { wa.wepAmmoSecondary[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		for (j=0;j<7;j++) { wa.currentEnergyWeaponHeat[j] = GetFloatFromString(entries[index],currentline); index++; }
-		for (j=0;j<7;j++) { wa.wepLoadedWithAlternate[j] = GetBoolFromString(entries[index]); index++; }
-		wc.weaponCurrent = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		wc.weaponIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+		for (j=0;j<7;j++) { inv.weaponInventoryIndices[j] = GetIntFromString(entries[index],currentline ); index++; }
+		for (j=0;j<7;j++) { inv.weaponInventoryAmmoIndices[j] = GetIntFromString(entries[index],currentline ); index++; }
+		//for (j=0;j<7;j++) { inv.weaponInventoryText[j] = inv.weaponInvTextSource[(WeaponFire.Get16WeaponIndexFromConstIndex(inv.weaponInventoryIndices[j]))]; } // derived from the above
+		inv.numweapons = GetIntFromString(entries[index],currentline ); index++;
+		for (j=0;j<16;j++) { inv.wepAmmo[j] = GetIntFromString(entries[index],currentline ); index++; }
+		for (j=0;j<16;j++) { inv.wepAmmoSecondary[j] = GetIntFromString(entries[index],currentline ); index++; }
+		for (j=0;j<7;j++) { inv.currentEnergyWeaponHeat[j] = GetFloatFromString(entries[index],currentline); index++; }
+		for (j=0;j<7;j++) { inv.wepLoadedWithAlternate[j] = GetBoolFromString(entries[index]); index++; }
+		wc.weaponCurrent = GetIntFromString(entries[index],currentline ); index++;
+		wc.weaponIndex = GetIntFromString(entries[index],currentline ); index++;
 		for (j=0;j<7;j++) { wc.weaponEnergySetting[j] = GetFloatFromString(entries[index],currentline); index++; }
-		for (j=0;j<7;j++) { wc.currentMagazineAmount[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		for (j=0;j<7;j++) { wc.currentMagazineAmount2[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
+		for (j=0;j<7;j++) { wc.currentMagazineAmount[j] = GetIntFromString(entries[index],currentline ); index++; }
+		for (j=0;j<7;j++) { wc.currentMagazineAmount2[j] = GetIntFromString(entries[index],currentline ); index++; }
 		wc.justChangedWeap = GetBoolFromString(entries[index]); index++;
 		WeaponCurrent.WepInstance.SetAllViewModelsDeactive();
-		wc.lastIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+		wc.lastIndex = GetIntFromString(entries[index],currentline ); index++;
 		wc.bottomless = GetBoolFromString(entries[index]); index++;
 		wc.redbull = GetBoolFromString(entries[index]); index++;
 		wc.reloadFinished = GetFloatFromString(entries[index],currentline); index++;
@@ -2511,60 +2546,66 @@ public class Const : MonoBehaviour {
 		wf.justFired = GetFloatFromString(entries[index],currentline); index++;
 		wf.energySliderClickedTime = GetFloatFromString(entries[index],currentline); index++;
 		wf.cyberWeaponAttackFinished = GetFloatFromString(entries[index],currentline); index++;
-		gc.grenadeCurrent = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		gc.grenadeIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		gc.nitroTimeSetting = GetFloatFromString(entries[index],currentline); index++;
-		gc.earthShakerTimeSetting = GetFloatFromString(entries[index],currentline); index++;
-		for (j=0;j<7;j++) { gi.grenAmmo[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		pc.patchCurrent = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		pc.patchIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		for (j=0;j<7;j++) { pi.patchCounts[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		for (j=0;j<128;j++) { li.hasLog[j] = GetBoolFromString(entries[index]); index++; }
-		for (j=0;j<128;j++) { li.readLog[j] = GetBoolFromString(entries[index]); index++; }
-		for (j=0;j<10;j++) { li.numLogsFromLevel[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		li.lastAddedIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		li.beepDone = GetBoolFromString(entries[index]); index++;
-		for (j=0;j<13;j++) { hi.hasHardware[j] = GetBoolFromString(entries[index]); index++; }
-		if (HardwareInventory.a.hasHardware[1]) {
+		inv.grenadeCurrent = GetIntFromString(entries[index],currentline ); index++;
+		inv.grenadeIndex = GetIntFromString(entries[index],currentline ); index++;
+		inv.nitroTimeSetting = GetFloatFromString(entries[index],currentline); index++;
+		inv.earthShakerTimeSetting = GetFloatFromString(entries[index],currentline); index++;
+		for (j=0;j<7;j++) { inv.grenAmmo[j] = GetIntFromString(entries[index],currentline ); index++; }
+		inv.patchCurrent = GetIntFromString(entries[index],currentline ); index++;
+		inv.patchIndex = GetIntFromString(entries[index],currentline ); index++;
+		for (j=0;j<7;j++) { inv.patchCounts[j] = GetIntFromString(entries[index],currentline ); index++; }
+		for (j=0;j<134;j++) { inv.hasLog[j] = GetBoolFromString(entries[index]); index++; }
+		for (j=0;j<134;j++) { inv.readLog[j] = GetBoolFromString(entries[index]); index++; }
+		for (j=0;j<10;j++) { inv.numLogsFromLevel[j] = GetIntFromString(entries[index],currentline ); index++; }
+		inv.lastAddedIndex = GetIntFromString(entries[index],currentline ); index++;
+		inv.beepDone = GetBoolFromString(entries[index]); index++;
+		for (j=0;j<13;j++) { inv.hasHardware[j] = GetBoolFromString(entries[index]); index++; }
+		if (Inventory.a.hasHardware[1]) {
 			ml.compassContainer.SetActive(true);
 			ml.automapContainerLH.SetActive(true);
 			ml.automapContainerRH.SetActive(true);
 		}
-		for (j=0;j<13;j++) { hi.hardwareVersion[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		for (j=0;j<13;j++) { hi.hardwareVersionSetting[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		hinc.hardwareInvCurrent = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		hinc.hardwareInvIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		for (j=0;j<13;j++) { hinc.hardwareIsActive[j] = GetBoolFromString(entries[index]); index++; }
+		for (j=0;j<13;j++) { inv.hardwareVersion[j] = GetIntFromString(entries[index],currentline ); index++; }
+		for (j=0;j<13;j++) { inv.hardwareVersionSetting[j] = GetIntFromString(entries[index],currentline ); index++; }
+		inv.hardwareInvCurrent = GetIntFromString(entries[index],currentline ); index++;
+		inv.hardwareInvIndex = GetIntFromString(entries[index],currentline ); index++;
+		for (j=0;j<13;j++) { inv.hardwareIsActive[j] = GetBoolFromString(entries[index]); index++; }
 		for (j=0;j<32;j++) {
-			int cardType = GetIntFromString(entries[index],currentline,"savegame",index);
+			int cardType = GetIntFromString(entries[index],currentline );
 			switch (cardType) {
-				case 0: acc.accessCardsOwned[j] = Door.accessCardType.None; break;
-				case 1: acc.accessCardsOwned[j] = Door.accessCardType.Standard; break;
-				case 2: acc.accessCardsOwned[j] = Door.accessCardType.Medical; break;
-				case 3: acc.accessCardsOwned[j] = Door.accessCardType.Science; break;
-				case 4: acc.accessCardsOwned[j] = Door.accessCardType.Admin; break;
-				case 5: acc.accessCardsOwned[j] = Door.accessCardType.Group1; break;
-				case 6: acc.accessCardsOwned[j] = Door.accessCardType.Group2; break;
-				case 7: acc.accessCardsOwned[j] = Door.accessCardType.Group3; break;
-				case 8: acc.accessCardsOwned[j] = Door.accessCardType.Group4; break;
-				case 9: acc.accessCardsOwned[j] = Door.accessCardType.GroupA; break;
-				case 10: acc.accessCardsOwned[j] = Door.accessCardType.GroupB; break;
-				case 11: acc.accessCardsOwned[j] = Door.accessCardType.Storage; break;
-				case 12: acc.accessCardsOwned[j] = Door.accessCardType.Engineering; break;
-				case 13: acc.accessCardsOwned[j] = Door.accessCardType.Maintenance; break;
-				case 14: acc.accessCardsOwned[j] = Door.accessCardType.Security; break;
-				case 15: acc.accessCardsOwned[j] = Door.accessCardType.Per1; break;
-				case 16: acc.accessCardsOwned[j] = Door.accessCardType.Per2; break;
-				case 17: acc.accessCardsOwned[j] = Door.accessCardType.Per3; break;
-				case 18: acc.accessCardsOwned[j] = Door.accessCardType.Per4; break;
-				case 19: acc.accessCardsOwned[j] = Door.accessCardType.Per5; break;
-				case 20: acc.accessCardsOwned[j] = Door.accessCardType.Command; break;
+				case 0: inv.accessCardsOwned[j] = Door.accessCardType.None; break;
+				case 1: inv.accessCardsOwned[j] = Door.accessCardType.Standard; break;
+				case 2: inv.accessCardsOwned[j] = Door.accessCardType.Medical; break;
+				case 3: inv.accessCardsOwned[j] = Door.accessCardType.Science; break;
+				case 4: inv.accessCardsOwned[j] = Door.accessCardType.Admin; break;
+				case 5: inv.accessCardsOwned[j] = Door.accessCardType.Group1; break;
+				case 6: inv.accessCardsOwned[j] = Door.accessCardType.Group2; break;
+				case 7: inv.accessCardsOwned[j] = Door.accessCardType.Group3; break;
+				case 8: inv.accessCardsOwned[j] = Door.accessCardType.Group4; break;
+				case 9: inv.accessCardsOwned[j] = Door.accessCardType.GroupA; break;
+				case 10: inv.accessCardsOwned[j] = Door.accessCardType.GroupB; break;
+				case 11: inv.accessCardsOwned[j] = Door.accessCardType.Storage; break;
+				case 12: inv.accessCardsOwned[j] = Door.accessCardType.Engineering; break;
+				case 13: inv.accessCardsOwned[j] = Door.accessCardType.Maintenance; break;
+				case 14: inv.accessCardsOwned[j] = Door.accessCardType.Security; break;
+				case 15: inv.accessCardsOwned[j] = Door.accessCardType.Per1; break;
+				case 16: inv.accessCardsOwned[j] = Door.accessCardType.Per2; break;
+				case 17: inv.accessCardsOwned[j] = Door.accessCardType.Per3; break;
+				case 18: inv.accessCardsOwned[j] = Door.accessCardType.Per4; break;
+				case 19: inv.accessCardsOwned[j] = Door.accessCardType.Per5; break;
+				case 20: inv.accessCardsOwned[j] = Door.accessCardType.Command; break;
 			}
 			index++;
 		}
-		for (j=0;j<14;j++) { genv.generalInventoryIndexRef[j] = GetIntFromString(entries[index],currentline,"savegame",index); index++; }
-		genc.generalInvCurrent = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-		genc.generalInvIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+		for (j=0;j<14;j++) { inv.generalInventoryIndexRef[j] = GetIntFromString(entries[index],currentline ); index++; }
+		inv.generalInvCurrent = GetIntFromString(entries[index],currentline ); index++;
+		inv.generalInvIndex = GetIntFromString(entries[index],currentline ); index++;
+		inv.currentCyberItem = GetIntFromString(entries[index],currentline ); index++;
+		inv.isPulserNotDrill = GetBoolFromString(entries[index]); index++;
+		for (j=0;j<7;j++) { inv.softVersions[j] = GetIntFromString(entries[index],currentline ); index++; }
+		for (j=0;j<7;j++) { inv.hasSoft[j] = GetBoolFromString(entries[index]); index++; }
+		inv.emailCurrent = GetIntFromString(entries[index],currentline ); index++;
+		inv.emailIndex = GetIntFromString(entries[index],currentline ); index++;	
 		mfd.lastWeaponSideRH = GetBoolFromString(entries[index]); index++;
 		mfd.lastItemSideRH = GetBoolFromString(entries[index]); index++;
 		mfd.lastAutomapSideRH = GetBoolFromString(entries[index]); index++;
@@ -2586,74 +2627,30 @@ public class Const : MonoBehaviour {
 		mfd.paperLogInUse = GetBoolFromString(entries[index]); index++;
 		mfd.usingObject = GetBoolFromString(entries[index]); index++;
 		mfd.logReaderContainer.SetActive(GetBoolFromString(entries[index])); index++;
-		mfd.multiMediaTab.SetActive(GetBoolFromString(entries[index])); index++;
+		mfd.DataReaderContentTab.SetActive(GetBoolFromString(entries[index])); index++;
 		mfd.logTable.SetActive(GetBoolFromString(entries[index])); index++;
 		mfd.logLevelsFolder.SetActive(GetBoolFromString(entries[index])); index++;
 		mfd.logFinished = GetFloatFromString(entries[index],currentline); index++;
 		mfd.logActive = GetBoolFromString(entries[index]); index++;
-		mfd.logType = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+		mfd.logType = GetIntFromString(entries[index],currentline ); index++;
 		mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished = GetFloatFromString(entries[index],currentline); index++;
 	}
 
-	// int GetNumLinesExpectedFromSaveTypeInSavefile(SaveObject.SaveableType t) {
-		// int retval = 0;
-		// switch (t) {
-			// case SaveObject.SaveableType.Player:  retval = 666; break;
-			// case SaveObject.SaveableType.Useable: retval = 4; break;
-			// case SaveObject.SaveableType.Grenade:  retval = 5;  break; //live only
-			// case SaveObject.SaveableType.NPC: retval = 12; break;
-			// case SaveObject.SaveableType.Destructable: retval = 4; break;
-			// case SaveObject.SaveableType.SearchableStatic: retval = 8; break;
-			// case SaveObject.SaveableType.SearchableDestructable: retval = 12; break;
-			// case SaveObject.SaveableType.Door: retval = 8; break;
-			// case SaveObject.SaveableType.ForceBridge: retval = 2; break;
-			// case SaveObject.SaveableType.Switch: retval = 4; break;
-			// case SaveObject.SaveableType.FuncWall: retval = 1; break;
-			// case SaveObject.SaveableType.TeleDest: retval = 1; break;
-			// case SaveObject.SaveableType.LBranch: retval = 2; break;
-			// case SaveObject.SaveableType.LRelay: retval = 1; break;
-			// case SaveObject.SaveableType.LSpawner: retval = 3; break;
-			// case SaveObject.SaveableType.InteractablePanel: retval = 2; break;
-			// case SaveObject.SaveableType.ElevatorPanel: retval = 2; break;
-			// case SaveObject.SaveableType.Keypad: retval = 3; break;
-			// case SaveObject.SaveableType.PuzzleGrid: retval = 38; break;
-			// case SaveObject.SaveableType.PuzzleWire: retval = 16; break;
-			// case SaveObject.SaveableType.TCounter: retval = 1; break;
-			// case SaveObject.SaveableType.TGravity: retval = 1; break;
-			// case SaveObject.SaveableType.MChanger: retval = 1; break;
-			// case SaveObject.SaveableType.RadTrig: retval = 2; break;
-			// case SaveObject.SaveableType.GravPad: retval = 1; break;
-			// case SaveObject.SaveableType.TransformParentless: retval = 0; break;
-			// default: retval = 777; break;
-		// }
-		// return (retval+17);
-	// }
-
 	void LoadObjectDataToObject(GameObject currentGameObject, string[] entries, int currentline, int index) {
-		//Stopwatch objectLoadTimer = new Stopwatch();
-		//objectLoadTimer.Start();
 		float readFloatx;
 		float readFloaty;
 		float readFloatz;
 		float readFloatw;
 		Vector3 tempvec;
-
 		SaveObject so = currentGameObject.GetComponent<SaveObject>();
-		//int numLinesExpected = GetNumLinesExpectedFromSaveTypeInSavefile(so.saveType);
-		//UnityEngine.Debug.Log("Starting LoadObjectDataToObject, index = " + index.ToString() + ", saveType = " + so.saveableType + ", entries length = " + (entries.Length-2).ToString() + ", number of slots to load = " + numLinesExpected.ToString());
-		//if (so == null) { UnityEngine.Debug.Log("BUG: Missing SaveObject on gameobject passed to LoadObjectDataToObject()"); return; }
-		//if (numLinesExpected > (entries.Length - 2)) { return; }
-		// index starts at 2 here for SetActive
+
+		// Index starts at 3 here for SetActive.
 		// Set active state of GameObject in Hierarchy
 		bool setToActive = GetBoolFromString(entries[index]); index++;
 		if (setToActive) {
-			if (!currentGameObject.activeSelf) {
-				currentGameObject.SetActive(true); 
-			}
+			if (!currentGameObject.activeSelf) currentGameObject.SetActive(true); 
 		} else {
-			if (currentGameObject.activeSelf) {
-				currentGameObject.SetActive(false); 
-			}
+			if (currentGameObject.activeSelf) currentGameObject.SetActive(false); 
 		}
 
 		// Get transform
@@ -2661,10 +2658,7 @@ public class Const : MonoBehaviour {
 		readFloaty = GetFloatFromString(entries[index],currentline); index++;
 		readFloatz = GetFloatFromString(entries[index],currentline); index++;
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
-		if (currentGameObject.transform.localPosition != tempvec) {
-			currentGameObject.transform.localPosition = tempvec;
-		}
-		//Vector3 tempV = currentGameObject.transform.localPosition;
+		if (currentGameObject.transform.localPosition != tempvec) currentGameObject.transform.localPosition = tempvec;
 
 		// Get rotation
 		readFloatx = GetFloatFromString(entries[index],currentline); index++;
@@ -2695,22 +2689,22 @@ public class Const : MonoBehaviour {
 
 		HealthManager hm = currentGameObject.GetComponent<HealthManager>(); // used multiple times below
 		SearchableItem se = currentGameObject.GetComponent<SearchableItem>(); // used multiple times below
-		so.levelParentID = GetIntFromString(entries[index],currentline,"savegame",index); index++; // 16
+		so.levelParentID = GetIntFromString(entries[index],currentline ); index++; // 16
 		if (index >= entries.Length) return;
 		switch (so.saveType) {
 			case SaveObject.SaveableType.Useable:
 				UseableObjectUse uou = currentGameObject.GetComponent<UseableObjectUse>();
 				if (uou != null) {
-					uou.useableItemIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-					uou.customIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-					uou.ammo = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-					uou.ammo2 = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					uou.useableItemIndex = GetIntFromString(entries[index],currentline ); index++;
+					uou.customIndex = GetIntFromString(entries[index],currentline ); index++;
+					uou.ammo = GetIntFromString(entries[index],currentline ); index++;
+					uou.ammo2 = GetIntFromString(entries[index],currentline ); index++;
 				}
 				break;
 			case SaveObject.SaveableType.Grenade:
 				GrenadeActivate ga = currentGameObject.GetComponent<GrenadeActivate>();
 				if (ga != null) {
-					ga.constIndex = GetIntFromString(entries[index],currentline,"savegame",index); index++; // const lookup table index
+					ga.constIndex = GetIntFromString(entries[index],currentline ); index++; // const lookup table index
 					ga.useTimer = GetBoolFromString(entries[index]); index++; // do we have a timer going?
 					ga.timeFinished = GetFloatFromString(entries[index],currentline); index++; // float - how much time left before the fun part?
 					ga.explodeOnContact = GetBoolFromString(entries[index]); index++; // bool - or not a landmine
@@ -2721,8 +2715,8 @@ public class Const : MonoBehaviour {
 				AIController aic = currentGameObject.GetComponent<AIController>();
 				AIAnimationController aiac = currentGameObject.GetComponentInChildren<AIAnimationController>();
 				if (aic != null) {
-					aic.index = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int - NPC const lookup table index for instantiating
-					int state = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					aic.index = GetIntFromString(entries[index],currentline ); index++; // int - NPC const lookup table index for instantiating
+					int state = GetIntFromString(entries[index],currentline ); index++;
 					switch (state) {
 						case 0: aic.currentState = Const.aiState.Idle; break;
 						case 1: aic.currentState = Const.aiState.Walk; break;
@@ -2737,7 +2731,7 @@ public class Const : MonoBehaviour {
 						case 10: aic.currentState = Const.aiState.Dead; break;
 						default: aic.currentState = Const.aiState.Idle; break;
 					}
-					int enemIDRead = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					int enemIDRead = GetIntFromString(entries[index],currentline ); index++;
 					if (enemIDRead >= 0) {
 						if (player1 != null) {
 							if (player1.GetComponent<SaveObject>().SaveID == enemIDRead) {
@@ -2772,7 +2766,7 @@ public class Const : MonoBehaviour {
 					aic.dyingSetup = GetBoolFromString(entries[index]); index++; // bool - or are we dead?
 					aic.ai_dying = GetBoolFromString(entries[index]); index++; // bool - are we dying the slow painful death
 					aic.ai_dead = GetBoolFromString(entries[index]); index++; // bool - or are we dead?
-					aic.currentWaypoint = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int
+					aic.currentWaypoint = GetIntFromString(entries[index],currentline ); index++; // int
 					readFloatx = GetFloatFromString(entries[index],currentline); index++; // float
 					readFloaty = GetFloatFromString(entries[index],currentline); index++; // float
 					readFloatz = GetFloatFromString(entries[index],currentline); index++; // float
@@ -2825,7 +2819,7 @@ public class Const : MonoBehaviour {
 							if (aic.sphereCollider != null) { aic.sphereCollider.enabled = true; }
 							if (aic.meshCollider != null) { aic.meshCollider.enabled = true; }
 							if (aic.capsuleCollider != null) { aic.capsuleCollider.enabled = true; }
-							if (aic.moveType != Const.aiMoveType.Fly) {
+							if (Const.a.moveTypeForNPC[aic.index] != Const.aiMoveType.Fly) {
 								rbody.useGravity = true;
 								rbody.isKinematic = false;
 							}
@@ -2869,28 +2863,30 @@ public class Const : MonoBehaviour {
 				break;
 			case SaveObject.SaveableType.SearchableStatic:
 				if (se != null) {
-					se.contents[0] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
-					se.contents[1] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
-					se.contents[2] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
-					se.contents[3] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
-					se.customIndex[0] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
-					se.customIndex[1] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
-					se.customIndex[2] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
-					se.customIndex[3] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
+					se.contents[0] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
+					se.contents[1] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
+					se.contents[2] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
+					se.contents[3] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
+					se.customIndex[0] = GetIntFromString(entries[index],currentline ); index++; // int custom index
+					se.customIndex[1] = GetIntFromString(entries[index],currentline ); index++; // int custom index
+					se.customIndex[2] = GetIntFromString(entries[index],currentline ); index++; // int custom index
+					se.customIndex[3] = GetIntFromString(entries[index],currentline ); index++; // int custom index
+					se.searchableInUse = false;
 				} else {
 					index += 8;
 				}
 				break;
 			case SaveObject.SaveableType.SearchableDestructable:
 				if (se != null) {
-					se.contents[0] = GetIntFromString(entries[index],currentline,"savegame",index); index++;; // int main lookup index
-					se.contents[1] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
-					se.contents[2] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
-					se.contents[3] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int main lookup index
-					se.customIndex[0] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
-					se.customIndex[1] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
-					se.customIndex[2] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
-					se.customIndex[3] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int custom index
+					se.contents[0] = GetIntFromString(entries[index],currentline ); index++;; // int main lookup index
+					se.contents[1] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
+					se.contents[2] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
+					se.contents[3] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
+					se.customIndex[0] = GetIntFromString(entries[index],currentline ); index++; // int custom index
+					se.customIndex[1] = GetIntFromString(entries[index],currentline ); index++; // int custom index
+					se.customIndex[2] = GetIntFromString(entries[index],currentline ); index++; // int custom index
+					se.customIndex[3] = GetIntFromString(entries[index],currentline ); index++; // int custom index
+					se.searchableInUse = false;
 				} else {
 					index += 8;
 				}
@@ -2916,7 +2912,7 @@ public class Const : MonoBehaviour {
 					dr.lasersFinished = GetFloatFromString(entries[index],currentline); index++;
 					dr.blocked = GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
 					dr.accessCardUsedByPlayer = GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
-					int state = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					int state = GetIntFromString(entries[index],currentline ); index++;
 					string clipName = "IdleClosed";
 					switch (state) {
 						case 0: dr.doorOpen = Door.doorState.Closed; clipName = "IdleClosed"; break;
@@ -2956,7 +2952,7 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.FuncWall:
 				FuncWall fw = currentGameObject.GetComponent<FuncWall>(); // actually this is on movertarget gameObjects
 				if (fw != null) {
-					int state = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+					int state = GetIntFromString(entries[index],currentline ); index++;
 					switch (state) {
 						case 0: fw.currentState = FuncWall.FuncStates.Start; break;
 						case 1: fw.currentState = FuncWall.FuncStates.Target; break;
@@ -2998,7 +2994,7 @@ public class Const : MonoBehaviour {
 				SpawnManager sm = currentGameObject.GetComponent<SpawnManager>();
 				if (sm != null) {
 					sm.active = GetBoolFromString(entries[index]); index++; // bool - is this enabled
-					sm.numberActive = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int - number spawned
+					sm.numberActive = GetIntFromString(entries[index],currentline ); index++; // int - number spawned
 					sm.delayFinished = GetFloatFromString(entries[index],currentline); index++; // float - time that we need to spawn next
 				} else {
 					index += 3;
@@ -3050,10 +3046,10 @@ public class Const : MonoBehaviour {
 				if (pwp != null) {
 					pwp.puzzleSolved = GetBoolFromString(entries[index]); index++; // bool - is this puzzle already solved?
 					for (int i=0;i<pwp.currentPositionsLeft.Length;i++) {
-						pwp.currentPositionsLeft[i] = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int - get the current wire positions
+						pwp.currentPositionsLeft[i] = GetIntFromString(entries[index],currentline ); index++; // int - get the current wire positions
 					}
 					for (int i=0;i<pwp.currentPositionsRight.Length;i++) {
-						pwp.currentPositionsRight[i] = GetIntFromString(entries[index],currentline,"savegame",index); index++;  // int - get the current wire positions
+						pwp.currentPositionsRight[i] = GetIntFromString(entries[index],currentline ); index++;  // int - get the current wire positions
 					}
 					pwp.locked = GetBoolFromString(entries[index]); index++; // bool - is this locked?
 				} else {
@@ -3063,7 +3059,7 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.TCounter:
 				TriggerCounter tc = currentGameObject.GetComponent<TriggerCounter>();
 				if (tc != null) {
-					tc.counter = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int - how many counts we have
+					tc.counter = GetIntFromString(entries[index],currentline ); index++; // int - how many counts we have
 				} else {
 					index++;
 				}
@@ -3091,7 +3087,7 @@ public class Const : MonoBehaviour {
 				Radiation rad = currentGameObject.GetComponent<Radiation>();
 				if (rad != null) {
 					rad.isEnabled = GetBoolFromString(entries[index]); index++; // bool - hey is this on? hello?
-					rad.numPlayers = GetIntFromString(entries[index],currentline,"savegame",index); index++; // int - how many players we are affecting
+					rad.numPlayers = GetIntFromString(entries[index],currentline ); index++; // int - how many players we are affecting
 				} else {
 					index += 2;
 				}
@@ -3115,8 +3111,8 @@ public class Const : MonoBehaviour {
 				if (la != null) {
 					la.lightOn = GetBoolFromString(entries[index]); index++;
 					la.lerpOn = GetBoolFromString(entries[index]); index++;
-					la.currentStep = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-					la.lerpRef = GetFloatFromString(entries[index],currentline); index++;
+					la.currentStep = GetIntFromString(entries[index],currentline ); index++;
+					la.lerpValue = GetFloatFromString(entries[index],currentline); index++;
 					la.lerpTime = GetFloatFromString(entries[index],currentline); index++;
 					la.stepTime = GetFloatFromString(entries[index],currentline); index++;
 					la.lerpStartTime = GetFloatFromString(entries[index],currentline); index++;
@@ -3135,25 +3131,25 @@ public class Const : MonoBehaviour {
 	}
 
 	public IEnumerator LoadRoutine(int saveFileIndex) {
-		//Stopwatch loadTimer = new Stopwatch();
+		Stopwatch loadTimer = new Stopwatch();
 		//Stopwatch matchTimer = new Stopwatch();
-		//loadTimer.Start();
+		loadTimer.Start();
 		PauseScript.a.mainMenu.SetActive(false);
 		PauseScript.a.PauseEnable();
 		PauseScript.a.Loading();
-		//LevelManager.a.PutBackCurrentLevelNPCs();
-		//Physics.SyncTransforms();
 		yield return null;
-		player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().enabled = false;
+
+		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = false;
 		if (saveFileIndex < 0) {
 			WriteDatForNewGame(true,false); // set bit to know to deactivate main menu when we reload
-			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // reload. it. all.
+			//SceneManager.LoadScene(0); // reload. it. all.
 			yield break;
 		}
-	
 		startingNewGame = false;
 		freshRun = false;
 		WriteDatForNewGame(false,false); // reset
+		//SceneManager.LoadScene(0);
+		yield return null;
 
 		string readline;
 		int currentline = 0;
@@ -3161,8 +3157,7 @@ public class Const : MonoBehaviour {
 		int numSaveablesFromSavefile = 0;
 		int i,j;
 		GameObject currentGameObject = null;
-
-		sprint(stringTable[196],allPlayers); // Loading...
+		sprint(stringTable[196]); // Loading...
 		yield return null; // to update the sprint
 		if (player1 != null) numPlayers++;
 		if (player2 != null) numPlayers++;
@@ -3170,11 +3165,7 @@ public class Const : MonoBehaviour {
 		if (player4 != null) numPlayers++;
 		// Find all gameobjects with SaveObject script attached
 		List<GameObject> saveableGameObjects = new List<GameObject>();
-		FindAllSaveObjectsGOs(saveableGameObjects);
-
-		//UnityEngine.Debug.Log("Num players: " + numPlayers.ToString(),allPlayers);
-		//UnityEngine.Debug.Log("Num saveables: " + saveableGameObjects.Count.ToString(),allPlayers);
-
+		FindAllSaveObjectsGOs(saveableGameObjects); // Find and add GameObjects to the list of saveables.
 		List<string> readFileList = new List<string>();
 		char csplit = '|'; // caching since it will be iterated over in a loop
 		int index = 0; // caching since...I just said this
@@ -3206,29 +3197,29 @@ public class Const : MonoBehaviour {
 
 			// Read in global states and quest mission bits in questData and difficulty indices
 			entries = readFileList[currentline].Split(csplit);
-			int levelNum = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+			int levelNum = GetIntFromString(entries[index],currentline ); index++;
 			LevelManager.a.LoadLevelFromSave(levelNum);
 			for (i=0;i<14;i++) {
-				LevelManager.a.levelSecurity[i] = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+				LevelManager.a.levelSecurity[i] = GetIntFromString(entries[index],currentline); index++;
 			}
 			for (i=0;i<14;i++) {
-				LevelManager.a.levelCameraDestroyedCount[i] = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+				LevelManager.a.levelCameraDestroyedCount[i] = GetIntFromString(entries[index],currentline); index++;
 			}
 			for (i=0;i<14;i++) {
-				LevelManager.a.levelSmallNodeDestroyedCount[i] = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+				LevelManager.a.levelSmallNodeDestroyedCount[i] = GetIntFromString(entries[index],currentline); index++;
 			}
 			for (i=0;i<14;i++) {
-				LevelManager.a.levelLargeNodeDestroyedCount[i] = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+				LevelManager.a.levelLargeNodeDestroyedCount[i] = GetIntFromString(entries[index],currentline); index++;
 			}
 			for (i=0;i<14;i++) {
 				LevelManager.a.ressurectionActive[i] = GetBoolFromString(entries[index]); index++;
 			}
-			questData.lev1SecCode = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-			questData.lev2SecCode = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-			questData.lev3SecCode = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-			questData.lev4SecCode = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-			questData.lev5SecCode = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-			questData.lev6SecCode = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+			questData.lev1SecCode = GetIntFromString(entries[index],currentline); index++;
+			questData.lev2SecCode = GetIntFromString(entries[index],currentline); index++;
+			questData.lev3SecCode = GetIntFromString(entries[index],currentline); index++;
+			questData.lev4SecCode = GetIntFromString(entries[index],currentline); index++;
+			questData.lev5SecCode = GetIntFromString(entries[index],currentline); index++;
+			questData.lev6SecCode = GetIntFromString(entries[index],currentline); index++;
 			questData.RobotSpawnDeactivated = GetBoolFromString(entries[index]); index++;
 			questData.IsotopeInstalled = GetBoolFromString(entries[index]); index++;
 			questData.ShieldActivated = GetBoolFromString(entries[index]); index++;
@@ -3249,12 +3240,11 @@ public class Const : MonoBehaviour {
 			questData.SelfDestructActivated = GetBoolFromString(entries[index]); index++;
 			questData.BridgeSeparated = GetBoolFromString(entries[index]); index++;
 			questData.IsolinearChipsetInstalled = GetBoolFromString(entries[index]); index++;
-			difficultyCombat = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-			difficultyMission = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-			difficultyPuzzle = GetIntFromString(entries[index],currentline,"savegame",index); index++;
-			difficultyCyber = GetIntFromString(entries[index],currentline,"savegame",index); index++;
+			difficultyCombat = GetIntFromString(entries[index],currentline); index++;
+			difficultyMission = GetIntFromString(entries[index],currentline); index++;
+			difficultyPuzzle = GetIntFromString(entries[index],currentline); index++;
+			difficultyCyber = GetIntFromString(entries[index],currentline); index++;
 			currentline++; // line is over, now we are at 3
-			
 
 			// Load player 1 data
 			index = 2; // reset before starting next line, skipping savetype and ID number
@@ -3285,7 +3275,7 @@ public class Const : MonoBehaviour {
 			//int[] lookupList = new int[(numSaveablesFromSavefile-currentline)];
 			//SaveObject[] sos = new SaveObject[saveableGameObjects.Count];
 			yield return null;
-			int[] readIDs = new int[(numSaveablesFromSavefile-currentline)];
+
 			// get the existing IDs
 			 // for (int i=currentline;i<saveableGameObjects.Count;i++) {
 				// sos[i] = saveableGameObjects[i].GetComponent<SaveObject>();
@@ -3303,64 +3293,188 @@ public class Const : MonoBehaviour {
 			//UnityEngine.Debug.Log("moreObjectsInSave: " + moreObjectsInSave.ToString());
 			//UnityEngine.Debug.Log("moreObjectsInGame: " + moreObjectsInGame.ToString());
 			//UnityEngine.Debug.Log("largerCount: " + largerCount.ToString());
+
+			int[] readIDs = new int[(numSaveablesFromSavefile-currentline)];
+			List<int> instantiatedFound = new List<int>();
+			bool instantiatedCheck;
+			bool instantiatedActive;
 			for (i=currentline;i<(numSaveablesFromSavefile-7);i++) {
-				entries = readFileList[i].Split(csplit); // read in Quest bits
+				entries = readFileList[i].Split(csplit);
 				if (entries.Length > 1) {
-					readIDs[i] = GetIntFromString(entries[1],i,"savegame",1); // int - get saveID from 2nd slot
+					instantiatedCheck = instantiatedActive = false;
+					readIDs[i] = GetIntFromString(entries[1],i); // int - get saveID from 2nd slot
+					instantiatedActive = GetBoolFromString(entries[3]); // bool - get activeSelf value of the gameObject
+					instantiatedCheck = GetBoolFromString(entries[2]); // bool - get instantiated from 3rd slot
+					if (instantiatedCheck && instantiatedActive) instantiatedFound.Add(i);
 				}
 			}
+			// UnityEngine.Debug.Log("Number of instantiated objects to instantiate later: " + instantiatedFound.Count.ToString());
 
 			//matchTimer.Start();
-			index = 2;
+			index = 5; // 0 = Saveable type, 1 = SaveID, 2 = instantiated boolean, 3 = constLookupTable, 4 = constLookupIndex 
 			bool[] alreadyCheckedThisSaveableGameObject = new bool[saveableGameObjects.Count];
 			for (i=0;i<alreadyCheckedThisSaveableGameObject.Length;i++) {
-				alreadyCheckedThisSaveableGameObject[i] = false;
+				alreadyCheckedThisSaveableGameObject[i] = false; // Reset the list
 			}
+
+			SaveObject so;
+			// Ok, so we have a list of all saveableGameObjects and a list of all saveables from the savefile.
+			// Main iteration loops through all lines in the savefile.
+			// Second iteration loops through all saveableGameObjects to find a match.
+			// The save file will always have more objects in it than in the level since the level is fresh.
+			// When we come across an instantiated object in the saveable file, we need to remember it for later and instantiate them all.
 			for (i=currentline;i<(numSaveablesFromSavefile-7);i++) {
 				for (j=0;j<(saveableGameObjects.Count);j++) {
 					if (alreadyCheckedThisSaveableGameObject[j]) continue; // skip checking this and doing GetComponent
 					currentGameObject = saveableGameObjects[j];
-					SaveObject so = currentGameObject.GetComponent<SaveObject>();
+					so = currentGameObject.GetComponent<SaveObject>();
 					if(so.SaveID == readIDs[i]) {
 						entries = readFileList[i].Split(csplit);
 						//UnityEngine.Debug.Log("Loading line: " + i.ToString() + " to GameObject named: " + currentGameObject.name + " with SaveID " + so.SaveID.ToString());
 						LoadObjectDataToObject(currentGameObject,entries,i,index);
-						alreadyCheckedThisSaveableGameObject[j] = true;
+						alreadyCheckedThisSaveableGameObject[j] = true; // Huge time saver right here!
 						break;
+					}
+				}
+			}
+
+			int numberOfMissedObjects = 0;
+			for (i=0;i<saveableGameObjects.Count;i++) {
+				if (alreadyCheckedThisSaveableGameObject[i]) continue;
+				numberOfMissedObjects++;
+				if (saveableGameObjects[i].name != "Player") Destroy(saveableGameObjects[i]);
+			}
+
+			// Now time to instantiate anything left that is supposed to be here
+			if (instantiatedFound.Count > 0) {
+				int constdex = -1;
+				int consttable = 0;
+				GameObject instantiatedObject = null;
+				GameObject prefabReferenceGO = null;
+				for (i=0;i<instantiatedFound.Count;i++) {
+					entries = readFileList[i].Split(csplit);
+					if (entries.Length > 1) {
+						consttable = GetIntFromString(entries[3],i); // int - get the prefab table type to use for lookups in Const
+						constdex = GetIntFromString(entries[4],i); // int - get the index into the Const table of prefabs
+						if (constdex >= 0 && (consttable == 0 || consttable == 1)) {
+							if (consttable == 0) prefabReferenceGO = Const.a.useableItems[constdex];
+							else if (consttable == 1) prefabReferenceGO = Const.a.npcPrefabs[constdex];
+							if (prefabReferenceGO != null) instantiatedObject = Instantiate(prefabReferenceGO,Const.a.vectorZero,quaternionIdentity) as GameObject; // Instantiate at generic location
+							if (instantiatedObject != null) LoadObjectDataToObject(instantiatedObject, entries, i, index); // Load it
+						}
 					}
 				}
 			}
 			//matchTimer.Stop();
 			//UnityEngine.Debug.Log("Loading done!");
 		}
-		player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().enabled = true;
-		//LevelManager.a.PullOutCurrentLevelNPCs();
+		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = true;
 		yield return null;
-		//Physics.SyncTransforms();
 		loadingScreen.SetActive(false);
 		PauseScript.a.PauseDisable();
-		sprint(stringTable[197],allPlayers); // Loading...Done!
-		//loadTimer.Stop();
+		sprint(stringTable[197]); // Loading...Done!
+		loadTimer.Stop();
 		//UnityEngine.Debug.Log("Matching index loop de loop time: " + matchTimer.Elapsed.ToString());
-		//UnityEngine.Debug.Log("Loading time: " + loadTimer.Elapsed.ToString());
+		UnityEngine.Debug.Log("Loading time: " + loadTimer.Elapsed.ToString());
 	}
 
 	public void SetFOV() {
-		if (player1 != null) player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
+		if (player1 != null) player1CapsuleMainCameragGO.GetComponent<Camera>().fieldOfView = GraphicsFOV;
 		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
 		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
 		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
 	}
 
 	public void SetBloom() {
-		if (player1 != null) player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
+		if (player1 != null) player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
 		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
 		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
 		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
 	}
 
+
+	void SetFXAA(AntialiasingModel.FxaaPreset preset) {
+		AntialiasingModel.Settings amS = AntialiasingModel.Settings.defaultSettings;
+		amS.fxaaSettings.preset = preset;
+		amS.method = AntialiasingModel.Method.Fxaa;
+		if (player1 != null) {
+			player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
+			player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
+		}
+		if (player2 != null) {
+			player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
+			player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
+		}
+		if (player3 != null) {
+			player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
+			player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
+		}
+		if (player4 != null) {
+			player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
+			player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
+		}
+	}
+
+	// None
+	// ExtremePerformance,
+	// Performance,
+	// Default,
+	// Quality,
+	// ExtremeQuality
+	public void SetAA() {
+		switch (GraphicsAAMode) {
+			case 0: // No Antialiasing
+				if (player1 != null) player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = false;
+				if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = false;
+				if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = false;
+				if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = false;
+				break;
+			case 1: // FXAA Extreme Performance
+				SetFXAA(AntialiasingModel.FxaaPreset.ExtremePerformance);
+				break;
+			case 2: // FXAA Performance
+				SetFXAA(AntialiasingModel.FxaaPreset.Performance);
+				break;
+			case 3: // FXAA Default
+				SetFXAA(AntialiasingModel.FxaaPreset.Default);
+				break;
+			case 4: // FXAA Extreme Quality
+				SetFXAA(AntialiasingModel.FxaaPreset.Quality);
+				break;
+			case 5: // FXAA Extreme Quality
+				SetFXAA(AntialiasingModel.FxaaPreset.ExtremeQuality);
+				break;
+			case 6: // TAA Default
+				if (player1 != null) {
+					player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
+					AntialiasingModel.Settings amS = player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings;
+					amS.method = AntialiasingModel.Method.Taa;
+					player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
+				}
+				if (player2 != null) {
+					player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
+					AntialiasingModel.Settings amS = player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings;
+					amS.method = AntialiasingModel.Method.Taa;
+					player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
+				}
+				if (player3 != null) {
+					player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
+					AntialiasingModel.Settings amS = player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings;
+					amS.method = AntialiasingModel.Method.Taa;
+					player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
+				}
+				if (player4 != null) {
+					player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
+					AntialiasingModel.Settings amS = player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings;
+					amS.method = AntialiasingModel.Method.Taa;
+					player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
+				}
+				break;
+		}
+	}
+
 	public void SetSSAO() {
-		if (player1 != null) player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
+		if (player1 != null) player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
 		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
 		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
 		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
@@ -3370,8 +3484,8 @@ public class Const : MonoBehaviour {
 		float tempf = Const.a.GraphicsGamma;
 		if (tempf < 1) tempf = 0;
 		else tempf = tempf/100;
-		tempf = (tempf * 4f) + -2f;
-		PostProcessingProfile ppf = player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile;
+		tempf = (tempf * 4f) - 4f;
+		PostProcessingProfile ppf = player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile;
 		ColorGradingModel.Settings cgms = ppf.colorGrading.settings;
 		cgms.basic.postExposure = tempf;
 		if (player1 != null) ppf.colorGrading.settings = cgms;
@@ -3416,7 +3530,7 @@ public class Const : MonoBehaviour {
 		inputCapture = INIWorker.IniReadValue(section,keyname);
 		if (inputCapture == null) inputCapture = "NULL";
 		bool parsed = Int32.TryParse(inputCapture, NumberStyles.Integer, en_US_Culture, out inputInt);
-		if (parsed) return inputInt; else sprint("Warning: Could not parse config key " + keyname + " as integer: " + inputCapture,allPlayers);
+		if (parsed) return inputInt; else sprint("Warning: Could not parse config key " + keyname + " as integer: " + inputCapture);
 		return 0;
 	}
 
@@ -3428,42 +3542,48 @@ public class Const : MonoBehaviour {
 		bool parsed = Int32.TryParse(inputCapture, NumberStyles.Integer, en_US_Culture, out inputInt);
 		if (parsed) {
 			if (inputInt > 0) return true; else return false;
-		} else sprint("Warning: Could not parse config key " + keyname + " as bool: " + inputCapture,allPlayers);
+		} else sprint("Warning: Could not parse config key " + keyname + " as bool: " + inputCapture);
 		return false;
 	}
 
-	private string trueCheck = "True";
 	public bool GetBoolFromString(string val) {
-		return val.Equals(trueCheck);
+		return val.Equals("1");
+	}
+
+	private string boolFalseString = "0";
+	private string boolTrueString = "1";
+	public string BoolToString(bool inputValue) {
+		if (inputValue) return boolTrueString;
+		return boolFalseString;
 	}
 
 	private bool getValparsed;
 	private int getValreadInt;
 	private float getValreadFloat;
-	public int GetIntFromString(string val, int currentline, string source, int index) {
+	public int GetIntFromString(string val, int currentline) {
 		if (val == "0") return 0;
 		getValparsed = Int32.TryParse(val, NumberStyles.Integer, en_US_Culture, out getValreadInt);
 		if (!getValparsed) {
-			UnityEngine.Debug.Log("BUG: Could not parse int from " + source + " file on line " + currentline.ToString() + ", from index: " + index.ToString(),allPlayers);
+			UnityEngine.Debug.Log("BUG: Could not parse int from `" + val + "` on line " + currentline.ToString());
 			return 0;
 		}
+		return getValreadInt;
+	}
+
+	public int GetIntFromString(string val) {
+		if (val == "0") return 0;
+		getValparsed = Int32.TryParse(val, NumberStyles.Integer, en_US_Culture, out getValreadInt);
+		if (!getValparsed) { UnityEngine.Debug.Log("BUG: Could not parse int from `" + val + "`"); return 0; }
 		return getValreadInt;
 	}
 
 	public float GetFloatFromString(string val, int currentline) {
 		getValparsed = Single.TryParse(val, NumberStyles.Float, en_US_Culture, out getValreadFloat);
 		if (!getValparsed) {
-			UnityEngine.Debug.Log("BUG: Could not parse float from save file on line " + currentline.ToString(),allPlayers);
+			UnityEngine.Debug.Log("BUG: Could not parse float from `" + val + "` on line " + currentline.ToString());
 			return 0.0f;
 		}
 		return getValreadFloat;
-	}
-
-	private string boolFalseString = "0";
-	private string boolTrueString = "1";
-	public string GetBoolAsString(bool inputValue) {
-		if (inputValue) return boolTrueString;
-		return boolFalseString;
 	}
 
 	public AttackType GetAttackTypeFromInt(int att_type_i) {
@@ -3485,29 +3605,38 @@ public class Const : MonoBehaviour {
 
 	public PerceptionLevel GetPerceptionLevelFromInt(int percep_i) {
 		switch(percep_i) {
-		case 1: return PerceptionLevel.Medium;
-		case 2: return PerceptionLevel.High;
-		case 3: return PerceptionLevel.Omniscient;
+			case 1: return PerceptionLevel.Medium;
+			case 2: return PerceptionLevel.High;
+			case 3: return PerceptionLevel.Omniscient;
 		}
 		return PerceptionLevel.Low;
 	}
 
-	public static DamageData SetNPCDamageData (int NPCindex, aiState attackIndex, GameObject ownedBy) {
-		if (NPCindex < 0 || NPCindex > 23) {
-			UnityEngine.Debug.Log("BUG: NPCindex set incorrectly on NPC.  Not 0 to 23 on NPC at: " + ownedBy.transform.position.x.ToString() + ", " + ownedBy.transform.position.y.ToString() + ", " + ownedBy.transform.position.z + ".");
-			return null;
+	public aiMoveType GetMoveTypeFromInt(int movetype_i) { 
+		switch (movetype_i) {
+			case 0: return aiMoveType.None;
+			case 1: return aiMoveType.Walk;
+			case 2: return aiMoveType.Fly;
+			case 3: return aiMoveType.Swim;
+			case 4: return aiMoveType.Cyber;
 		}
+		return aiMoveType.None;
+	}
+
+	public static DamageData SetNPCDamageData (int NPCindex, int attackNum, GameObject ownedBy) {
+		if (NPCindex < 0 || NPCindex > 23) { NPCindex = 0; UnityEngine.Debug.Log("BUG: NPCindex set incorrectly on NPC.  Not 0 to 23 on NPC at: " + ownedBy.transform.position.x.ToString() + ", " + ownedBy.transform.position.y.ToString() + ", " + ownedBy.transform.position.z + "."); }
+		if (attackNum < 1 || attackNum > 3) attackNum = 1;
 		DamageData dd = new DamageData(); 
 		// Attacker (self [a]) data
 		dd.owner = ownedBy;
-		switch (attackIndex) {
-		case aiState.Attack1:
+		switch (attackNum) {
+		case 1:
 			dd.damage = Const.a.damageForNPC[NPCindex];
 			break;
-		case aiState.Attack2:
+		case 2:
 			dd.damage = Const.a.damageForNPC2[NPCindex];
 			break;
-		case aiState.Attack3:
+		case 3:
 			dd.damage = Const.a.damageForNPC3[NPCindex];
 			break;
 		default: UnityEngine.Debug.Log("BUG: attackIndex not 0,1, or 2 on NPC! Damage set to 1."); dd.damage = 1f; break;
@@ -3518,26 +3647,13 @@ public class Const : MonoBehaviour {
 	}
 
 	// Check if particular bit is 1 (ON/TRUE) in binary format of given integer
-	public bool CheckFlags (int checkInt, int flag) {
-		if ((checkInt & flag) != 0)
-			return true;
-
-		return false;
-	}
+	public bool CheckFlags (int checkInt, int flag) { return ((checkInt & flag) != 0); }
 
 	public static float AngleInDeg(Vector3 vec1, Vector3 vec2) { return ((Mathf.Atan2(vec2.y - vec1.y, vec2.x - vec1.x)) * (180 / Mathf.PI)); }
 
 	public void UseTargets (UseData ud, string targetname) {
-		// Old method used SendMessage but this is horribly slow and does not give as much control
-		//if (target != null) target.SendMessageUpwards ("Targetted", ud);
-		//UnityEngine.Debug.Log("Running UseTargets() for targetname of " + targetname);
-		// New method allows for targetting multiple objects, not just one gameobject
+		if (string.IsNullOrWhiteSpace(targetname)) return; // First check if targetname is valid.  This is fine if not, some triggers we just want to play the trigger's SFX and do nothing else.
 
-		// First check if targetname is valid
-		if (string.IsNullOrWhiteSpace(targetname)) {
-			UnityEngine.Debug.Log("WARNING: invalid targetname is null or white space!  Ignoring and returning from Const.UseTargets()");
-			return;
-		}
 
 		UseData tempUD = new UseData();
 		float numtargetsfound = 0;
@@ -3557,7 +3673,6 @@ public class Const : MonoBehaviour {
 				}
 			}
 		}
-		//UnityEngine.Debug.Log("Ran Targetted() on " + numtargetsfound.ToString() + " GameObject(s) with targetname of " + targetname);
 	}
 
 	public void AddToTargetRegister (GameObject go, string tn) {
@@ -3570,76 +3685,34 @@ public class Const : MonoBehaviour {
 		}
 	}
 
-	public void DebugQuestBitShoutOut () {
-		// UnityEngine.Debug.Log("Level 1 Security Code: " + questData.lev1SecCode.ToString());
-		// UnityEngine.Debug.Log("Level 2 Security Code: " + questData.lev2SecCode.ToString());
-		// UnityEngine.Debug.Log("Level 3 Security Code: " + questData.lev3SecCode.ToString());
-		// UnityEngine.Debug.Log("Level 4 Security Code: " + questData.lev4SecCode.ToString());
-		// UnityEngine.Debug.Log("Level 5 Security Code: " + questData.lev5SecCode.ToString());
-		// UnityEngine.Debug.Log("Level 6 Security Code: " + questData.lev6SecCode.ToString());
-		// UnityEngine.Debug.Log("Level R Robot Spawning Deactivated: " + questData.RobotSpawnDeactivated.ToString());
-		// UnityEngine.Debug.Log("Isotope Installed: " + questData.IsotopeInstalled.ToString());
-		// UnityEngine.Debug.Log("Shield Activated: " + questData.ShieldActivated.ToString());
-		// UnityEngine.Debug.Log("Laser Safety Override On: " + questData.LaserSafetyOverriden.ToString());
-		// UnityEngine.Debug.Log("Laser Destroyed: " + questData.LaserDestroyed.ToString());
-		// UnityEngine.Debug.Log("Beta Grove Cyber Unlocked: " + questData.BetaGroveCyberUnlocked.ToString());
-		// UnityEngine.Debug.Log("Grove Alpha Jettison Enabled: " + questData.GroveAlphaJettisonEnabled.ToString());
-		// UnityEngine.Debug.Log("Grove Beta Jettison Enabled: " + questData.GroveBetaJettisonEnabled.ToString());
-		// UnityEngine.Debug.Log("Grove Delta Jettison Enabled: " + questData.GroveDeltaJettisonEnabled.ToString());
-		// UnityEngine.Debug.Log("Master Jettison Broken: " + questData.MasterJettisonBroken.ToString());
-		// UnityEngine.Debug.Log("Relay 428 Fixed: " + questData.Relay428Fixed.ToString());
-		// UnityEngine.Debug.Log("Master Jettison Enabled: " + questData.MasterJettisonEnabled.ToString());
-		// UnityEngine.Debug.Log("Beta Grove Jettisoned: " + questData.BetaGroveJettisoned.ToString());
-		// UnityEngine.Debug.Log("Antenna North Destroyed: " + questData.AntennaNorthDestroyed.ToString());
-		// UnityEngine.Debug.Log("Antenna Soutb Destroyed: " + questData.AntennaSouthDestroyed.ToString());
-		// UnityEngine.Debug.Log("Antenna East Destroyed: " + questData.AntennaEastDestroyed.ToString());
-		// UnityEngine.Debug.Log("Antenna West Destroyed: " + questData.AntennaWestDestroyed.ToString());
-		// UnityEngine.Debug.Log("Self Destruct Activated!: " + questData.SelfDestructActivated.ToString());
-		// UnityEngine.Debug.Log("Bridge Separation Complete: " + questData.BridgeSeparated.ToString());
-		// UnityEngine.Debug.Log("Isolinear Chipset Installed: " + questData.IsolinearChipsetInstalled.ToString());
-	}
-
 	public void Shake(bool effectIsWorldwide, float distance, float force) {
 		if (distance == -1) distance = globalShakeDistance;
 		if (force == -1) force = globalShakeForce;
 		if (player1 == null) { UnityEngine.Debug.Log("WARNING: Shake() check - no host player1."); return; }  // No host player
 
 		if (effectIsWorldwide) {
-			// the whole station is a shakin' and a movin'!
+			// The whole station is a shakin' and a movin'!
 			if (player1 != null) { if (player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			//if (player2 != null) { if (player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			//if (player3 != null) { if (player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			//if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			// if (player2 != null) { if (player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			// if (player3 != null) { if (player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			// if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
 		} else {
 			// check if player is close enough and shake em' up!
-			if (Vector3.Distance(transform.position, player1.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
-				if (player1 != null) { if (player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			if (player1 != null) {
+				if (Vector3.Distance(transform.position, player1.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
+					if (player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force);
+				}
 			}
-			//if (Vector3.Distance(transform.position, player2.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
-			//	if (player2 != null) { if (player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			//}
-			//if (Vector3.Distance(transform.position, player3.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
-			//	if (player3 != null) { if (player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			//}
-			//if (Vector3.Distance(transform.position, player4.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
-			//	if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			//}
+			// if (Vector3.Distance(transform.position, player2.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
+				// if (player2 != null) { if (player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			// }
+			// if (Vector3.Distance(transform.position, player3.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
+				// if (player3 != null) { if (player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			// }
+			// if (Vector3.Distance(transform.position, player4.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
+				// if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			// }
 		}
-	}
-
-	public void AddCyberPanelToRegistry(CyberWall cw) {
-		for (int i=0;i<cyberpanelsRegistry.Length;i++) {
-			if (cyberpanelsRegistry[i] == null) {
-				cyberpanelsRegistry[i] = cw;
-				return;
-			}
-		}
-		UnityEngine.Debug.Log("ERROR: Cyberpanels list ran out of room to add into registry in Const.AddCyberPanelToRegistry()");
-	}
-
-	public void ConwayGameEntry(CyberWall cw,Vector3 pos) {
-		// UPDATE add Conway's game of life effect to cyber panels when hit, only propagate across same orientation panels that are touching
-		//UnityEngine.Debug.Log("Registered a Conway's Game of Life hit");
 	}
 
 	public int GetNPCConstIndexFromIndex23(int ref23) {

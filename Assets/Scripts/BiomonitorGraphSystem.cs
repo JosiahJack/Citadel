@@ -7,6 +7,7 @@ using UnityEngine;
 
 // Heavily stripped down version of WeaverDev's DebugGUI Graph available on the Unity Asset Store for Free.
 public class BiomonitorGraphSystem : MonoBehaviour {
+	// Internal refernces
     private int graphWidth = 480;
     private int graphHeight = 80;
     public Color backgroundColor = new Color(0f, 0f, 0f, 0.7f);
@@ -18,6 +19,8 @@ public class BiomonitorGraphSystem : MonoBehaviour {
     private HashSet<int> graphGroupBoxesDrawn = new HashSet<int>();
     private Dictionary<Type, HashSet<FieldInfo>> debugGUIGraphFields = new Dictionary<Type, HashSet<FieldInfo>>();
     private Dictionary<Type, HashSet<PropertyInfo>> debugGUIGraphProperties = new Dictionary<Type, HashSet<PropertyInfo>>();
+
+	// Singleton instance
     public static BiomonitorGraphSystem a; // Ensure an instance is present
 
     void Awake() {

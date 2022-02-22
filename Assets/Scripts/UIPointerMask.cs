@@ -4,27 +4,27 @@ using UnityEngine.EventSystems;
 using System.Collections;
 
 public class UIPointerMask : MonoBehaviour {
+	private BoxCollider boxCol;
+	private RectTransform rect;
+
 	void Awake () {
-		EventTrigger pointerTrigger = GetComponent<EventTrigger>();
-		if (pointerTrigger == null) {
-			pointerTrigger = gameObject.AddComponent<EventTrigger>();
-			if (pointerTrigger == null) {
-				Const.sprint("BUG: Could not create Event Trigger for UIPointerMask",Const.a.allPlayers);
-				return;
-			}
-		}
-
-		EventTrigger.Entry entry = new EventTrigger.Entry();
-		entry.eventID = EventTriggerType.PointerEnter;
-		entry.callback.AddListener((eventData) => { PtrEnter(); } );
-		pointerTrigger.triggers.Add(entry);
-
-		EventTrigger.Entry entry2 = new EventTrigger.Entry();
-		entry2.eventID = EventTriggerType.PointerExit;
-		entry2.callback.AddListener((eventData) => { PtrExit(); } );
-		pointerTrigger.triggers.Add(entry2);
+		// Create box collider for cursor entry detection.
+		rect = GetComponent<RectTransform>();
+		boxCol = gameObject.AddComponent<BoxCollider>();
+		float width = rect.sizeDelta.x * rect.localScale.x;
+		float height = rect.sizeDelta.y * rect.localScale.y;
+		if (width < 0) width *= -1f;
+		if (height < 0) height *= -1f; // Cannot have negative size on box colliders.
+		boxCol.size = new Vector3(width,height,1f);
 	}
 
+	public void OnMouseEnter() {
+		PtrEnter();
+	}
+
+	public void OnMouseExit() {
+		PtrExit();
+	}
 
 	public void PtrEnter () {
 		GUIState.a.isBlocking = true;

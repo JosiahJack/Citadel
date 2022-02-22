@@ -11,16 +11,10 @@ public class INIWorker {
     private static bool Initialized = false;
 
     /// Sections list
-    public enum Sections {
-        Section01,
-    }
-    /// Keys list
-    public enum Keys {
-        Key01,
-        Key02,
-        Key03,
-    }
+    public enum Sections : byte {Section01, }
 
+    /// Keys list
+    public enum Keys : byte { Key01, Key02, Key03, }
 
     private static bool FirstRead() {
         if (File.Exists(path)) {

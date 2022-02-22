@@ -12,9 +12,8 @@ public class MenuArrowKeyControls : MonoBehaviour {
 		currentIndex = 0;
 	}
 
-	void  Update () {
+	void  Update() {
 		if (Input.GetKeyUp(KeyCode.Return)) {
-			//menuItems[currentIndex].SendMessage("Click",SendMessageOptions.DontRequireReceiver);
 			if (menuItems[currentIndex].GetComponent<Button>() != null) {
 				menuItems[currentIndex].GetComponent<Button>().onClick.Invoke();
 			} else {
@@ -24,13 +23,8 @@ public class MenuArrowKeyControls : MonoBehaviour {
 			return;
 		}
 
-		if (Input.GetKeyUp(KeyCode.UpArrow)) {
-			ShiftMenuItem(false);
-		}
-
-		if (Input.GetKeyUp(KeyCode.DownArrow)) {
-			ShiftMenuItem(true);
-		}
+		if (Input.GetKeyUp(KeyCode.UpArrow)) ShiftMenuItem(false);
+		if (Input.GetKeyUp(KeyCode.DownArrow)) ShiftMenuItem(true);
 	}
 
 	void ShiftMenuItem (bool isDownKey) {

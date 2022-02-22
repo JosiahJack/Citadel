@@ -114,7 +114,6 @@ public class QuestBitRelay : MonoBehaviour {
 			QuestLogNotesManager.a.labels[17].text = Const.a.stringTable[570]; // Set:Destroy SHODAN.
 		}
 		if (IsolinearChipsetInstalled) Const.a.questData.IsolinearChipsetInstalled = true;
-		Const.a.DebugQuestBitShoutOut();
 	}
 
 	public void DisableBits() {
@@ -159,7 +158,6 @@ public class QuestBitRelay : MonoBehaviour {
 		}
 		if (BridgeSeparated) Const.a.questData.BridgeSeparated = false;
 		if (IsolinearChipsetInstalled) Const.a.questData.IsolinearChipsetInstalled = false;
-		Const.a.DebugQuestBitShoutOut();
 	}
 
     public void ToggleBits() {
@@ -252,8 +250,6 @@ public class QuestBitRelay : MonoBehaviour {
 			}
 		}
 		if (IsolinearChipsetInstalled) Const.a.questData.IsolinearChipsetInstalled = !Const.a.questData.IsolinearChipsetInstalled;
-
-		Const.a.DebugQuestBitShoutOut();
 	}
 
 	public void TestBits(bool testIfTrue, UseData ud, TargetIO tio) {

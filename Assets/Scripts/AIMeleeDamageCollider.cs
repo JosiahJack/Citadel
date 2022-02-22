@@ -34,20 +34,15 @@ public class AIMeleeDamageCollider : MonoBehaviour {
 		if (other == null) return;
 
         if (other.CompareTag("Player") || other.CompareTag("NPC")) {
-			if (ownerAIC == null) {
-				Debug.Log("BUG: AIMeleeDamageCollider is on but doesn't have an AIC assigned!");
-				return;
-			}
+			if (ownerAIC == null) { Debug.Log("BUG: AIMeleeDamageCollider is on but doesn't have an AIC assigned!"); gameObject.SetActive(false); return; }
 
 			// Make sure we aren't hitting the lean transform by accident...target the actual player capsule with its health manager
 			if (other.GetComponent<HealthManager>() != null) {
 				if (ownerAIC.meleeDamageFinished < PauseScript.a.relativeTime) {
-					ownerAIC.meleeDamageFinished = PauseScript.a.relativeTime + ownerAIC.timeTillActualAttack1;
-					//Debug.Log("aimelee collider collided!");
-					DamageData ddNPC = Const.SetNPCDamageData(index, Const.aiState.Attack1, ownedBy);
-					ddNPC.other = gameObject;
+					ownerAIC.meleeDamageFinished = PauseScript.a.relativeTime + Const.a.timeToActualAttack1ForNPC[index];
+					DamageData ddNPC = Const.SetNPCDamageData(index,1,ownedBy);
+					ddNPC.other = other.gameObject;
 					ddNPC.attacknormal = Vector3.Normalize(other.transform.position - transform.position);
-					//ddNPC.impactVelocity = impactMelee;
 					ddNPC.damage = 11f;
 					float take = Const.a.GetDamageTakeAmount(ddNPC);
 					take = (take / meleeColliderCounter); //split it for multiple tap melee attacks, e.g. double paw swipe

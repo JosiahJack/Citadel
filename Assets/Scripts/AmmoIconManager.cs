@@ -3,33 +3,17 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class AmmoIconManager : MonoBehaviour {
-	[SerializeField] public Sprite[] ammIcons;
-	[SerializeField] public GameObject clipBox;
-    [SerializeField] public GameObject energySlider;
-    [SerializeField] public GameObject energyHeatTicks;
-    [SerializeField] public GameObject energyOverloadButton;
-    private Image border;
-    private Image icon;
-	private int checkIndex = -1;
-
-    public void Awake() {
-        icon = GetComponent<Image>();
-        border = clipBox.GetComponent<Image>();
-    }
-
-	void Update() {
-		checkIndex = WeaponCurrent.WepInstance.weaponCurrent;
-		if (checkIndex >= 0)
-			SetAmmoIcon(WeaponCurrent.WepInstance.weaponIndex,WeaponAmmo.a.wepLoadedWithAlternate[checkIndex]);
-	}
+	// External references, required
+	public Sprite[] ammIcons;
+	public GameObject clipBox;
+    public GameObject energySlider;
+    public GameObject energyHeatTicks;
+    public GameObject energyOverloadButton;
+    public Image border;
+    public Image icon;
 
     public void SetAmmoIcon (int index, bool alternateAmmo) {
 		if (index >= 36) {
-			//if (!icon.enabled) icon.enabled = true;
-			//if (!border.enabled) border.enabled = true;
-            //if (energySlider.activeSelf) energySlider.SetActive(false);
-            //if (energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-            //if (energyOverloadButton.activeSelf) energyOverloadButton.SetActive(false);
             switch (index) {
 			case 36:
                 if (alternateAmmo) {

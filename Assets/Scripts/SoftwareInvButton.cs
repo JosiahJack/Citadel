@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SoftwareInvButton : MonoBehaviour {
 	public int index = 0;
-	public SoftwareInventory sinv;
 	public MouseLookScript mls;
 
 	public void DoubleClick() {
@@ -15,17 +14,17 @@ public class SoftwareInvButton : MonoBehaviour {
 		switch(index) {
 			case 0:
 					// Drill
-					sinv.pulserButtonText.Select(false);
-					sinv.drillButtonText.Select(true);
-					sinv.isPulserNotDrill = false;
-					if (sinv.SFX != null && sinv.SFXChangeWeapon != null) sinv.SFX.PlayOneShot(sinv.SFXChangeWeapon);
+					Inventory.a.pulserButtonText.Select(false);
+					Inventory.a.drillButtonText.Select(true);
+					Inventory.a.isPulserNotDrill = false;
+					if (Inventory.a.SFX != null && Inventory.a.SFXChangeWeapon != null) Inventory.a.SFX.PlayOneShot(Inventory.a.SFXChangeWeapon);
 					break;
 			case 1:
 					// Pulser
-					sinv.pulserButtonText.Select(true);
-					sinv.drillButtonText.Select(false);
-					sinv.isPulserNotDrill = true;
-					if (sinv.SFX != null && sinv.SFXChangeWeapon != null) sinv.SFX.PlayOneShot(sinv.SFXChangeWeapon);
+					Inventory.a.pulserButtonText.Select(true);
+					Inventory.a.drillButtonText.Select(false);
+					Inventory.a.isPulserNotDrill = true;
+					if (Inventory.a.SFX != null && Inventory.a.SFXChangeWeapon != null) Inventory.a.SFX.PlayOneShot(Inventory.a.SFXChangeWeapon);
 					break;
 			case 2:
 					// CyberShield
@@ -38,7 +37,7 @@ public class SoftwareInvButton : MonoBehaviour {
 			case 3:
 					// Turbo
 					if (mls.inCyberSpace) {
-						sinv.UseTurbo();
+						Inventory.a.UseTurbo();
 						GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 					} else {
 						Const.sprint(Const.a.stringTable[460],Const.a.player1);
@@ -47,7 +46,7 @@ public class SoftwareInvButton : MonoBehaviour {
 			case 4:
 					// Decoy
 					if (mls.inCyberSpace) {
-						sinv.UseDecoy();
+						Inventory.a.UseDecoy();
 						GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 					} else {
 						Const.sprint(Const.a.stringTable[460],Const.a.player1);
@@ -56,7 +55,7 @@ public class SoftwareInvButton : MonoBehaviour {
 			case 5:
 					// Recall
 					if (mls.inCyberSpace) {
-						sinv.UseRecall();
+						Inventory.a.UseRecall();
 						GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 					} else {
 						Const.sprint(Const.a.stringTable[460],Const.a.player1);

@@ -74,9 +74,9 @@ public class PuzzleWire : MonoBehaviour {
 	public Image[] geniusHintsLH;
 	public Image[] geniusHintsRH;
 
-	public enum WireColorTheme {Red,Yellow,Green};
+	public enum WireColorTheme : byte {Red,Yellow,Green};
 	public WireColorTheme theme;
-	public enum WireColor {Red,Orange,Yellow,Green,Blue,Purple};
+	public enum WireColor : byte {Red,Orange,Yellow,Green,Blue,Purple};
 	public Color actualColorRed;
 	public Color actualColorOrange;
 	public Color actualColorYellow;
@@ -136,8 +136,8 @@ public class PuzzleWire : MonoBehaviour {
 		}
 	}
 
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+	void Update() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (Solved) return;
 
 			if (selectedWire != -1) {
@@ -348,14 +348,14 @@ public class PuzzleWire : MonoBehaviour {
 	}
 
 	private Vector3 GetPositionOfLHNode(int index) {
-		tempVec = Vector3.zero;
+		tempVec = Const.a.vectorZero;
 		tempVec.x = 0;
 		tempVec.y = nodeYOffset * -1 * index;
 		return tempVec;
 	}
 
 	private Vector3 GetPositionOfRHNode(int index) {
-		tempVec = Vector3.zero;
+		tempVec = Const.a.vectorZero;
 		tempVec.x = nodeXOffset;
 		tempVec.y = nodeYOffset * -1 * index;
 		return tempVec;
@@ -630,63 +630,23 @@ public class PuzzleWire : MonoBehaviour {
 
 	void EvaluatePuzzle() {
 		tempF = 0;
-		//numberOfWires = 0;
-		//for (int tempInt = 0; tempInt < 7; tempInt++) {
-		//	if (wireIsActive[tempInt]) numberOfWires++;
-		//}
-
-		/*
-		if (wire1LHPosition == wire1LHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire2LHPosition == wire2LHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire3LHPosition == wire3LHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire4LHPosition == wire4LHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire5LHPosition == wire5LHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire6LHPosition == wire6LHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire7LHPosition == wire7LHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire1RHPosition == wire1RHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire2RHPosition == wire2RHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire3RHPosition == wire3RHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire4RHPosition == wire4RHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire5RHPosition == wire5RHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire6RHPosition == wire6RHTarget) tempF += (1 / numberOfWires)/2;
-		if (wire7RHPosition == wire7RHTarget) tempF += (1 / numberOfWires)/2;
-		*/
-
 		if (wire1LHPosition == wire1LHTarget && wireIsActive[0]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire2LHPosition == wire2LHTarget && wireIsActive[1]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire3LHPosition == wire3LHTarget && wireIsActive[2]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire4LHPosition == wire4LHTarget && wireIsActive[3]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire5LHPosition == wire5LHTarget && wireIsActive[4]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire6LHPosition == wire6LHTarget && wireIsActive[5]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire7LHPosition == wire7LHTarget && wireIsActive[6]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire1RHPosition == wire1RHTarget && wireIsActive[0]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire2RHPosition == wire2RHTarget && wireIsActive[1]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire3RHPosition == wire3RHTarget && wireIsActive[2]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire4RHPosition == wire4RHTarget && wireIsActive[3]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire5RHPosition == wire5RHTarget && wireIsActive[4]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire6RHPosition == wire6RHTarget && wireIsActive[5]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
 		if (wire7RHPosition == wire7RHTarget && wireIsActive[6]) tempF += 0.19f;
-		// Const.sprint("Puzzle value: " + tempF.ToString(),Const.a.allPlayers);
-
 		if (Const.a.difficultyPuzzle == 1) tempF += 0.19f;
 		actualValue = tempF;
-
-		if (tempF > 0.92f || AllWiresCorrect()) {
-			PuzzleSolved(false);
-		}
+		if (tempF > 0.92f || AllWiresCorrect()) PuzzleSolved(false);
 	}
 
 	bool AllWiresCorrect() {

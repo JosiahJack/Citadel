@@ -12,14 +12,11 @@ public class LogCountsText : MonoBehaviour {
 		text = GetComponent<Text>();
 	}
 
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			tempint = LogInventory.a.numLogsFromLevel[countsSlotnum];
-			if (tempint > 0) {
-				text.text = LogInventory.a.numLogsFromLevel[countsSlotnum].ToString();
-			} else {
-				text.text = " ";  // Blank out the text
-			}
+	void Update() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
+			tempint = Inventory.a.numLogsFromLevel[countsSlotnum];
+			if (tempint > 0)text.text = Inventory.a.numLogsFromLevel[countsSlotnum].ToString();
+			else 			text.text = " ";  // Blank out the text
 		}
 	}
 }

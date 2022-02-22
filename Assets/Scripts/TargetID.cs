@@ -36,7 +36,7 @@ public class TargetID : MonoBehaviour {
 	}
 
 	public void SendDamageReceive(float damage) {
-		if (linkedHM == null || (HardwareInventory.a.hardwareVersion[4] < 3 && (damage > 0f))) return;
+		if (linkedHM == null || (Inventory.a.hardwareVersion[4] < 3 && (damage > 0f))) return;
 
 		if (damage > linkedHM.maxhealth * 0.75f) {
 			// Severe Damage
@@ -72,24 +72,17 @@ public class TargetID : MonoBehaviour {
 			linkedHM = null;
 			gameObject.SetActive(false); // put back into pool
 		}
-
 		if (displayName) {
 			if (nameText != null && linkedHM != null) {
 				if (linkedHM.aic != null) nameText.text = linkedHM.aic.targetID; 
 			}
 		}
-
 		if (displayHealth && linkedHM != null) {
 			secondaryDisplayString = Mathf.Floor(linkedHM.health).ToString("000");
 		} else {
 			secondaryDisplayString = System.String.Empty;
 		}
-
-		if (displayRange && linkedHM != null) {
-			secondaryDisplayString += (comma + Vector3.Distance(playerCapsuleTransform.position,linkedHM.transform.position).ToString("00.0"), rangeMetersM); 
-		}
-
-//public enum aiState{Idle,Walk,Run,Attack1,Attack2,Attack3,Pain,Dying,Dead,Inspect,Interacting};
+		if (displayRange && linkedHM != null) secondaryDisplayString += (comma + Vector3.Distance(playerCapsuleTransform.position,linkedHM.transform.position).ToString("00.0"), rangeMetersM); 
 		if (displayAttitude && linkedHM != null) {
 				secondaryDisplayString += comma;
 			if (linkedHM.aic.asleep) {
@@ -108,9 +101,7 @@ public class TargetID : MonoBehaviour {
 				}
 			}
 		}
-
 		secondaryText.text = secondaryDisplayString;
-
 		if (currentText != System.String.Empty) {
 			if (linkedHM != null) {
 				if (linkedHM.aic != null) {

@@ -10,13 +10,9 @@ public class LogTextReaderManager : MonoBehaviour {
 	public GameObject backButton;
 	public LogBackButton logBackButton;
 	public int refIndex = -1;
-
-	//public MFDManager mfdManager;
-	//public GameObject dataTabAudioLogContainer;
-	//public GameObject dataTabManager;
 	
 	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (logTextOutput.GetComponent<Text>().text.Length > 568) {
 				moreButtonText.text = "[MORE]";
 				if (backButton.activeSelf) backButton.SetActive(false);

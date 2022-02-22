@@ -221,19 +221,16 @@ public class TargetIO : MonoBehaviour {
 
 		if (tempUD.missionBitOn) {
 			QuestBitRelay qbr = GetComponent<QuestBitRelay>();
-			Const.a.DebugQuestBitShoutOut();
 			if (qbr != null) qbr.EnableBits();
 		}
 
 		if (tempUD.missionBitOff) {
 			QuestBitRelay qbr = GetComponent<QuestBitRelay>();
-			Const.a.DebugQuestBitShoutOut();
 			if (qbr != null) qbr.DisableBits();
 		}
 
 		if (tempUD.missionBitToggle) {
 			QuestBitRelay qbr = GetComponent<QuestBitRelay>();
-			Const.a.DebugQuestBitShoutOut();
 			if (qbr != null) qbr.ToggleBits();
 		}
 

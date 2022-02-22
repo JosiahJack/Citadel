@@ -1,29 +1,55 @@
-Startup Time Improvement.
-Improve to less than 1 second on the test blank scene.
-Improve to less than 10 seconds on the main scene.
+SAVE: 10.9242211 seconds, 2055KB
 
-Times taken with Deep Profile OFF
-Current Time in Test Blank:     7.8s
-Current Time in Main Scene: 1m 23.0s
+Meshes Profiler Simple Memory: 1124 / 0.95GB
 
-PostLateUpdate.PlayerUpdateCanvases 2.8MB, 849.12ms
+GUI.Repaint 0.10ms
+
+Memory usage:
+Other:	1.99GB
+Scene:	1.61GB
+	Mesh (119): 			850.0MB
+	ParticleSystem (8087):	375.8MB
+	MeshRenderer (154465):   94.9MB
+	Transform (223961):		 89.8MB
+	GameObject (231043):	 70.4MB  Player is comprised of 6326 GameObjects
+		Heaviest objects:
+		item_battery		  0.6KB
+		Inventory			  0.5KB
+		weapon_grenademine	  0.5KB
+		weapon_grenadeconc    0.5KB
+		weapon_grenadefrag	  0.5KB
+	MonoBehaviour (103451):	 43.4MB
+	Light (15464):			 19.0MB
+	MeshFilter (154300):	 17.7MB
+
+
 
 TRIAGE::
 ===========================================================================
 CHANGES/MINOR ADDS:
-[BACK] button for log text reader
+Graph not active on new game page.
 
 VISUAL:
+Searching sometimes plays sound twice at the same time
+Add text indicator for current ammo
+Ammo icon is not displaying
+Radiation tiles not animating
+Camera icon on automap not dissappearing on medical
+Image for energy setting slider is slightly visible
 
 LOW Bugs:
+Puzzle buttons do not block shooting
+Don't start action music if attacking sleeping enemy
+Able to shoot while ressurection animation is occuring
 
 MED Bugs:
-searching with quick item pickup enabled causes mouselook to still have bit set to true for holdingObject
+Dropping a weapon from 2 down to 1 weapon prevents selecting a weapon again or cycling until picking up a weapon again
+No damage indicator needs to dissappear immediately on actually receiving damage.
+Invalid targetname when triggering "You are not welcome here, remove yourself!" SHODAN message, but message plays.
+Selecting EMAIL, LOGS, or DATA tabs of eReader does not deactivate the NOTES tab.
+Cameras are not linked to automap markers.
 
 CRIT Bugs:
-
-
-
 
 
 Release prep
@@ -33,24 +59,7 @@ Delete .RES files
 Delete introdone.dat
 Add "Screenshots" folder next to StreamingAssets
 
-
-Updates candidate for consolidation under MFDManager or other:
-ButtonListenFKey1 (getinput check for 
-ButtonListenPgUpDn (getinput check on pgup or pgdn for centertab)
-CenterTabButtons (highlight pulse for red blinking buttons)
-FPSCounter
-GeneralInventoryButtonsManager
-GrenadeCurrent (handles grenade cycling and hotkey activation)
-
 Updates candidate for only single function call as needed, no Update:
-AmmoIconManager (updates the icon image sprite)
 EmailContentsButtonsManager (activates/deactivates email buttons based on which ones we have)
 GeneralInventoryButtonsManager (diddo)
 GrenadeButtonsManager (diddo)
-EmailInventory (sets buttons text to green/yellow and sets title header text)
-GeneralInvButton (sets index for inventory based on button index...or maybe based on itself??)
-GeneralInvText (set button text and green/yellow)
-GrenadeCountsText (diddo)
-
-Scripts candidate for removal
-UpdateManager

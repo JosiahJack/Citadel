@@ -16,24 +16,22 @@ public class LightAnimation : MonoBehaviour {
 	public bool[] intervalStepisLerping; //lerp for this step? assign per step
 	[Tooltip("Current interval element in float array")]
 	public int currentStep; //save
-	public float lerpRef = 0f; //save
+
 	private bool lerpUp;
 	private bool noSteps = false;
-	[HideInInspector]
-	public float lerpTime = 0.5f; //save
-	[HideInInspector]
-	public float stepTime; //save
-	[HideInInspector]
-	public float lerpStartTime; //save
+	[HideInInspector] public float lerpTime = 0.5f; //save
+	[HideInInspector] public float stepTime; //save
+	[HideInInspector] public float lerpStartTime; //save
 	private Light animLight;
 	private float differenceInIntensity;
-	private float lerpValue;
+	[HideInInspector] public float lerpValue; //save
 
 	void Start () {
+		if (minIntensity < 0) minIntensity = 0;
+
 		animLight = GetComponent<Light>();
 		animLight.intensity = minIntensity;
 		currentStep = 0;
-		//lightOn = true;
 		lerpUp = true;
 		differenceInIntensity = (maxIntensity - minIntensity);
 		if (intervalSteps.Length != 0) {
@@ -67,13 +65,13 @@ public class LightAnimation : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (lightOn) {
 				if (!noSteps) {
 					if (lerpUp) {
 						// Going from minIntensity to maxIntensity
 						if (lerpTime < PauseScript.a.relativeTime) {
-							animLight.intensity = maxIntensity;
+							if (animLight.intensity != maxIntensity) animLight.intensity = maxIntensity;
 							lerpUp = false;
 							currentStep++;
 							if (currentStep == intervalSteps.Length)
@@ -98,7 +96,7 @@ public class LightAnimation : MonoBehaviour {
 					} else {
 						// Going from maxIntensity to minIntensity
 						if (lerpTime < PauseScript.a.relativeTime) {
-							animLight.intensity = minIntensity;
+							if (animLight.intensity != minIntensity) animLight.intensity = minIntensity;
 							lerpUp = true;
 							currentStep++;
 							if (currentStep == intervalSteps.Length)
@@ -127,11 +125,11 @@ public class LightAnimation : MonoBehaviour {
 
 				} else {
 					// Light is on but no steps so set to editor setting
-					animLight.intensity = maxIntensity;
+					if (animLight.intensity != maxIntensity) animLight.intensity = maxIntensity;
 				}
 			} else {
 				// Light is turned off.
-				animLight.intensity = minIntensity;
+				if (animLight.intensity != minIntensity) animLight.intensity = minIntensity;
 			}
 		}
 	}

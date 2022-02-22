@@ -3,19 +3,21 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class TabButtons : MonoBehaviour {
-	public LeftMFDTabs TabManager = null; // assign in the editor
-	[SerializeField] private Button WeaponTabButton = null; // assign in the editor
-	[SerializeField] private Button ItemTabButton = null; // assign in the editor
-	[SerializeField] private Button AutomapTabButton = null; // assign in the editor
-	[SerializeField] private Button TargetTabButton = null; // assign in the editor
-	[SerializeField] private Button DataTabButton = null; // assign in the editor
-	[SerializeField] private Sprite MFDSprite = null; // assign in the editor
-	[SerializeField] private Sprite MFDSpriteSelected = null; // assign in the editor
-	[SerializeField] private AudioSource TabSFX = null; // assign in the editor
-	[SerializeField] private AudioClip TabSFXClip = null; // assign in the editor
+	// Externally assigned, required
+	public LeftMFDTabs TabManager;
+	public Button WeaponTabButton;
+	public Button ItemTabButton;
+	public Button AutomapTabButton;
+	public Button TargetTabButton;
+	public Button DataTabButton;
+	public Sprite MFDSprite;
+	public Sprite MFDSpriteSelected;
+	public AudioSource TabSFX;
+	public AudioClip TabSFXClip;
+	public bool isRH; // Assign in the editors
+
 	public int curTab = 0;
 	public int lastTab = 0;
-	public bool isRH;
 
 	void Start() {
 		TabManager.WeaponTab.SetActive(false);
@@ -35,47 +37,15 @@ public class TabButtons : MonoBehaviour {
 
 	public void ReturnToLastTab () {
 		if (isRH) {
-			TabButtonClickSilent(2,true); // force automap for right
+			TabButtonClickSilent(2,true); // Force automap for right
 		} else {
-			TabButtonClickSilent(0,true); // force weapon for left
+			TabButtonClickSilent(0,true); // Force weapon for left
 		}
 	}
-
-	// Temp reference
-	// public bool lastWeaponSideRH;
-	// public bool lastItemSideRH;
-	// public bool lastAutomapSideRH;
-	// public bool lastTargetSideRH;
-	// public bool lastDataSideRH;
-	// public bool lastSearchSideRH;
-	// public bool lastLogSideRH;
-	// public bool lastLogSecondarySideRH;
-	// public bool lastMinigameSideRH;
 
 	public void TabButtonClick (int tabNum) {
 		TabSFX.PlayOneShot(TabSFXClip);
 		TabButtonClickSilent(tabNum,false);
-		// if (isRH) {
-			// switch(tabNum) {
-				// case 0:
-					// MFDManager.a.lastWeaponSideRH = true;
-					// break;
-				// case 1:
-					// MFDManager.a.lastWeaponSideRH = true;
-					// break;
-				// case 2:
-					// MFDManager.a.lastWeaponSideRH = true;
-					// break;
-				// case 3:
-					// MFDManager.a.lastWeaponSideRH = true;
-					// break;
-				// case 4:
-					// MFDManager.a.lastWeaponSideRH = true;
-					// break;
-			// }
-		// } else {
-
-		// }
 	}
 
 	public void TabButtonClickSilent (int tabNum,bool overrideToggling) {

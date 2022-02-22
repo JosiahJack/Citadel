@@ -19,7 +19,7 @@ public class CyberAccess : MonoBehaviour {
 			Const.a.UseTargets(ud,target);
 		}
 
-		Const.sprint(Const.a.stringTable[441],Const.a.allPlayers); // Entering Cyberspace!
+		Const.sprint(Const.a.stringTable[441]); // Entering Cyberspace!
 		PlayerReferenceManager prm = ud.owner.GetComponent<PlayerReferenceManager>();
 		if (prm != null) {
 			MouseLookScript mls = prm.playerCapsuleMainCamera.GetComponent<MouseLookScript>();

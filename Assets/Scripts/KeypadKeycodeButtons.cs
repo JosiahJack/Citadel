@@ -76,7 +76,7 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 
 	void SetDigit(int value) {
 		if ((value > 9) || (value < 0)) {
-			Const.sprint("BUG: incorrect value sent to keypad controller",Const.a.allPlayers);
+			Const.sprint("BUG: incorrect value sent to keypad controller");
 			return;
 		}
 
@@ -101,13 +101,12 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 		}
 	}
 
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+	void Update() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			digit1s.digitIndex = entryOnes;
 			digit10s.digitIndex = entryTens;
 			digit100s.digitIndex = entryHuns;
-			if (done)
-				return;
+			if (done) return;
 
 			if (GetInput.a.Numpad0()) { Keypress(0); }
 			if (GetInput.a.Numpad1()) { Keypress(1); }

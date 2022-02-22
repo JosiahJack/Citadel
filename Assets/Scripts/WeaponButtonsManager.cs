@@ -11,7 +11,7 @@ public class WeaponButtonsManager : MonoBehaviour {
 		int nextIndex = WeaponCurrent.WepInstance.weaponCurrent + 1; // add 1 to get slot above this
 		if (nextIndex > 6) nextIndex = 0; // wraparound to bottom
 		int countCheck = 0;
-		bool buttonNotValid = (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[nextIndex] == -1);
+		bool buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);
 		while (buttonNotValid) {
 			countCheck++;
 			if (countCheck > 13) {
@@ -19,7 +19,7 @@ public class WeaponButtonsManager : MonoBehaviour {
 			}
 			nextIndex++;
 			if (nextIndex > 6) nextIndex = 0;
-			buttonNotValid = (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[nextIndex] == -1);
+			buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);
 		}
 		if (wepButtons[nextIndex].activeSelf) wepButtonsScripts[nextIndex].WeaponInvClick ();
 	}
@@ -28,7 +28,7 @@ public class WeaponButtonsManager : MonoBehaviour {
 		int nextIndex = WeaponCurrent.WepInstance.weaponCurrent - 1; // add 1 to get slot above this
 		if (nextIndex < 0) nextIndex = 6; // wraparound to top
 		int countCheck = 0;
-		bool buttonNotValid = (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[nextIndex] == -1);
+		bool buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);
 		while (buttonNotValid) {
 			countCheck++;
 			if (countCheck > 13) {
@@ -36,7 +36,7 @@ public class WeaponButtonsManager : MonoBehaviour {
 			}
 			nextIndex--;
 			if (nextIndex < 0) nextIndex = 6;
-			buttonNotValid = (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[nextIndex] == -1);
+			buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);
 		}
 		if (wepButtons[nextIndex].activeSelf) 	wepButtonsScripts[nextIndex].WeaponInvClick ();
 	}

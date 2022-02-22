@@ -1,0 +1,42 @@
+Citadel Scene Listing:
+GlobalConsts
+	Pool
+		All the various pool gameobjects
+LevelManager
+Sky
+	SaturnTransformHolder
+		rings
+		Saturn
+	Sun
+Player
+	PlayerCapsule
+		LeanTransform
+			MainCamera
+				GunCamera
+				ReloadDipContainer
+					...
+					various weapon view models
+					...
+			SensaroundCenterCam
+			SensaroundLeftCam
+			SensaroundRightCam
+			HeadMountedLantern // Necessary to hold the light at an offset to mimic physical lantern location
+		EReaderAudioSource
+		BGMusicHandler
+			OverlaySource
+	UICamera // NO SCRIPTS AT ALL ON THIS OR CHILDREN!
+		CompassContainer
+			HeadingN
+			HeadingS
+			HeadingE
+			HeadingW
+			MidHeadingsContainer
+			HeadingI_sContainer
+			HeadingTick_sContainer // Using _ here instead of apostraphe
+	AutomapCanvas // NO SCRIPTS AT ALL ON THIS OR CHILDREN!
+		...
+		Automap images and stuff
+		...
+	AutomapCamera // NO SCRIPTS
+	Inventory
+	

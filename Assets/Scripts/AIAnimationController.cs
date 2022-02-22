@@ -3,65 +3,75 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AIAnimationController : MonoBehaviour {
-	public float currentClipPercentage; // save
-	public float clipEndThreshold = 0.99f;
-	private SkinnedMeshRenderer smR;
-	[HideInInspector]
-	public Animator anim;
-	private AnimatorStateInfo anstinfo;
+	// External manually assigned references
 	public AIController aic;
-	public bool dying; // save
+
+	// Externall set values per instance
 	public bool useDeadAnimForDeath = false;
 	public bool playDeathAnim = true;
 	public bool playDyingAnim = true;
 	public float minWalkSpeedToAnimate = 0.32f;
+
+	// Internal
+	[HideInInspector] public float currentClipPercentage; // save
+	[HideInInspector] public float clipEndThreshold = 0.99f;
+	[HideInInspector] public Animator anim;
+	[HideInInspector] public bool dying; // save
+	[HideInInspector] public float animSwapFinished; // save
+	private SkinnedMeshRenderer smR; // Optional
+	private AnimatorStateInfo anstinfo;
 	private bool checkVisWithSMR = false;
-	[HideInInspector]
-	public float animSwapFinished; // save
 	private float animSwapFinishedDelay = 0.5f;
+	private bool pauseStateUpdated = false;
 
 	void Start () {
 		anim = GetComponent<Animator>();
-		currentClipPercentage = 0;
-		checkVisWithSMR = false;
 		smR = GetComponentInChildren<SkinnedMeshRenderer>();
 		animSwapFinished = PauseScript.a.relativeTime;
 		if (smR != null) checkVisWithSMR = true;
+		else checkVisWithSMR = false;
+		currentClipPercentage = 0;
 	}
 
 	void Update() {
-		if (PauseScript.a.Paused() || PauseScript.a.mainMenu.activeInHierarchy) {
-			if (anim.speed != 0) anim.speed = 0;
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
+			if (!pauseStateUpdated) {
+				if (anim.speed != 0) anim.speed = 0;
+				pauseStateUpdated = true;
+			}
 			return;
 		} else {
-			if (anim.speed != 1f) anim.speed = 1f;
+			if (pauseStateUpdated) {
+				if (anim.speed != 1f) anim.speed = 1f;
+				pauseStateUpdated = false;
+			}
 		}
 
 		if (checkVisWithSMR) {
-			if (!smR.isVisible) return;
+			if (smR != null) {
+				if (!smR.isVisible) return;
+			}
 		}
 		if (dying) {
 			anstinfo = anim.GetCurrentAnimatorStateInfo(0);
 			currentClipPercentage = anstinfo.normalizedTime % 1;
 			Dying();
 		} else {
-			if (aic.asleep) { 
+			if (aic.asleep) {
 				Idle();
 				return;
 			}
 			switch (aic.currentState) {
-			case Const.aiState.Idle: 		Idle(); 		break;
-			case Const.aiState.Walk:	 	Walk(); 		break;
-			case Const.aiState.Run: 		Run(); 			break;
-			case Const.aiState.Attack1: 	Attack1(); 		break;
-			case Const.aiState.Attack2: 	Attack2(); 		break;
-			case Const.aiState.Attack3: 	Attack3(); 		break;
-			case Const.aiState.Pain: 		Pain();			break;
-			case Const.aiState.Dying: 		Dying(); 		break;
-			case Const.aiState.Inspect: 	Inspect(); 		break;
-			case Const.aiState.Interacting: Interacting();	break;
-			case Const.aiState.Dead:		Dead();			break;
-			default: 						Idle(); 		break;
+				case Const.aiState.Idle: 		Idle(); 		break;
+				case Const.aiState.Walk:	 	Walk(); 		break;
+				case Const.aiState.Run: 		Run(); 			break;
+				case Const.aiState.Attack1: 	Attack1(); 		break;
+				case Const.aiState.Attack2: 	Attack2(); 		break;
+				case Const.aiState.Attack3: 	Attack3(); 		break;
+				case Const.aiState.Pain: 		Pain();			break;
+				case Const.aiState.Dying: 		Dying(); 		break;
+				case Const.aiState.Dead:		Dead();			break;
+				default: 						Idle(); 		break;
 			}
 		}
 	}
@@ -84,14 +94,11 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Walk () {
-		if (aic.rbody.velocity.magnitude > minWalkSpeedToAnimate) {
+		if (aic.rbody.velocity.sqrMagnitude > (minWalkSpeedToAnimate * minWalkSpeedToAnimate)) {
 			if (aic.actAsTurret) {
 				anim.Play("Idle");
 			} else {
-				//if (animSwapFinished < PauseScript.a.relativeTime) {
-				//	animSwapFinished = PauseScript.a.relativeTime + animSwapFinishedDelay; // prevent flickering
-					anim.Play("Walk");
-				//}
+				anim.Play("Walk");
 			}
 		} else {
 			if (animSwapFinished < PauseScript.a.relativeTime) {
@@ -120,25 +127,25 @@ public class AIAnimationController : MonoBehaviour {
 	void Dying () {
 		dying = true;
 		if (playDyingAnim) anim.Play("Death");
-		if (currentClipPercentage > clipEndThreshold) {
-			dying = false;
-		}
+		if (currentClipPercentage > clipEndThreshold) dying = false;
 	}
 
 	void Dead () {
-		if (useDeadAnimForDeath) {
-			if (playDeathAnim && gameObject.activeInHierarchy) anim.Play("Dead",0,1.0f);
-		} else {
-			if (playDeathAnim && gameObject.activeInHierarchy) anim.Play("Death",0,1.0f);
+		if (playDeathAnim) {
+			if (useDeadAnimForDeath) {
+				anim.Play("Dead",0,1.0f);
+			} else {
+				anim.Play("Death",0,1.0f);
+			}
 		}
-		anim.speed = 0f;
+		if (anim.speed > 0) anim.speed = 0f;
 	}
 
 	void Inspect () {
-		if (gameObject.activeInHierarchy) anim.Play("Inspect");
+		anim.Play("Inspect");
 	}
 
 	void Interacting () {
-		if (gameObject.activeInHierarchy) anim.Play("Interact");
+		anim.Play("Interact");
 	}
 }

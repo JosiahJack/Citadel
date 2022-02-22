@@ -23,11 +23,11 @@ public class LogContentsButtonsManager : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			for (int i=0; i<15; i++) {
 				LogButtonsText[i].text = logNames[i];
 				logRefButtons[i].logReferenceIndex = retrievedIndices[i];
-				if (LogInventory.a.hasLog[retrievedIndices[i]]) {
+				if (Inventory.a.hasLog[retrievedIndices[i]]) {
 					LogButtons[i].SetActive(true);
 				} else {
 					LogButtons[i].SetActive(false);
@@ -39,7 +39,7 @@ public class LogContentsButtonsManager : MonoBehaviour {
 	string[] GetLogNamesFromLevel (int index) {
 		string[] retval = {"","","","","","","","","","","","","","",""};
 		int indexingVal = 0;
-		for (int i=0;i<255;i++) {
+		for (int i=0;i<134;i++) {
 			if ((Const.a.audioLogLevelFound[i] == index)) {
 				retval[indexingVal] = Const.a.audiologNames[i];
 				retrievedIndices[indexingVal] = i;

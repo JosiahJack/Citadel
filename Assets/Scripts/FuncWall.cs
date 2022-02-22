@@ -3,21 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class FuncWall : MonoBehaviour {
+	// Externally set in inspector per instance
 	public float speed = 0.64f;
 	public GameObject targetPosition;
-	public enum FuncStates {Start, Target, MovingStart, MovingTarget,AjarMovingStart,AjarMovingTarget};
 	public FuncStates startState;
 	public float percentAjar = 0;
 	public AudioClip SFXMoving;
 	public AudioClip SFXStop;
+	public AudioSource SFXSource;
+	public FuncStates currentState; // save
+
+	// Enumerations
+	public enum FuncStates : byte {Start, Target, MovingStart, MovingTarget,AjarMovingStart,AjarMovingTarget};
+
 	private Vector3 startPosition;
 	private Vector3 goalPosition;
 	private Vector3 tempVec;
-	public AudioSource SFXSource;
-	public FuncStates currentState; // save
 	private Rigidbody rbody;
 	private bool stopSoundPlayed;
-	//private bool movedToLocation;
 	private float dist;
 	private float startTime;
 
@@ -34,13 +37,11 @@ public class FuncWall : MonoBehaviour {
 		rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 		if (SFXSource == null) SFXSource = GetComponent<AudioSource>();
 		stopSoundPlayed = false;
-		//movedToLocation = false;
 		dist = 0;
 		startTime = PauseScript.a.relativeTime;
 	}
 		
 	public void Targetted (UseData ud) {
-		//Debug.Log("Made it to Targetted on FuncWall!");
 		switch (currentState) {
 			case FuncStates.Start:
 				MoveTarget();
@@ -65,48 +66,37 @@ public class FuncWall : MonoBehaviour {
 		if (SFXSource != null) SFXSource.loop = true;
 		if (SFXSource != null) SFXSource.Play();
 		stopSoundPlayed = false;
-		//movedToLocation = false;
 	}
 
 	void MoveStart() {
 		currentState = FuncStates.MovingStart;
-		//startTime = PauseScript.a.relativeTime + ((Vector3.Distance(startPosition,targetPosition.transform.position)) / speed);.
 		startTime = PauseScript.a.relativeTime + 10f;
 	}
 
 	void MoveTarget() {
 		currentState = FuncStates.MovingTarget;
-		//startTime = PauseScript.a.relativeTime + ((Vector3.Distance(startPosition,targetPosition.transform.position)) / speed);
 		startTime = PauseScript.a.relativeTime + 10f;
 	}
 
-	void Update () {
+	void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeSelf) {
 			switch (currentState) {
 				case FuncStates.Start:
-					//if (!movedToLocation) {
-						transform.position = startPosition;
-						if (rbody.velocity.magnitude > 0) rbody.velocity = Vector3.zero;
-						//movedToLocation = true;
-					//}
+					transform.position = startPosition;
+					if (rbody.velocity.sqrMagnitude > 0) rbody.velocity = Const.a.vectorZero;
 					break;
 				case FuncStates.Target:
-					//if (!movedToLocation) {
-						transform.position = targetPosition.transform.position;
-						if (rbody.velocity.magnitude > 0) rbody.velocity = Vector3.zero;
-						//movedToLocation = true;
-					//}
+					transform.position = targetPosition.transform.position;
+					if (rbody.velocity.sqrMagnitude > 0) rbody.velocity = Const.a.vectorZero;
 					break;
 				case FuncStates.MovingStart:
 					goalPosition = startPosition;
 					rbody.WakeUp();
 					dist = speed * Time.deltaTime;
 					tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
-					//Debug.Log("Func_Wall MovePosition to tempVec: " + tempVec.ToString());
 					rbody.MovePosition(tempVec);
 					if (Vector3.Distance(transform.position,goalPosition) <= 0.04f || startTime < PauseScript.a.relativeTime) {
 						currentState = FuncStates.Start;
-
 						if (SFXSource != null) {
 							SFXSource.Stop ();
 							SFXSource.loop = false;
@@ -122,11 +112,9 @@ public class FuncWall : MonoBehaviour {
 					rbody.WakeUp();
 					dist = speed * Time.deltaTime;
 					tempVec = ((transform.position - goalPosition).normalized * dist * -1) + transform.position;
-					//Debug.Log("Func_Wall MovePosition to tempVec: " + tempVec.ToString());
 					rbody.MovePosition(tempVec);
 					if (Vector3.Distance(transform.position,goalPosition) <= 0.04f || startTime < PauseScript.a.relativeTime) {
 						currentState = FuncStates.Target;
-
 						if (SFXSource != null) {
 							SFXSource.Stop ();
 							SFXSource.loop = false;
@@ -136,7 +124,6 @@ public class FuncWall : MonoBehaviour {
 							}
 						}
 					}
-					
 					break;
 			}
 		}

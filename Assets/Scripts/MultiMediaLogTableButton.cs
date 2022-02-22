@@ -5,10 +5,9 @@ using System.Collections;
 
 public class MultiMediaLogTableButton : MonoBehaviour {
 	public int logTableButtonIndex;
-	public GameObject multiMediaTab;
 
 	void LogTableButtonClick() {
-		multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogsLevelFolder(logTableButtonIndex);
+		MFDManager.a.OpenLogsLevelFolder(logTableButtonIndex);
 	}
 
 	void Start() {

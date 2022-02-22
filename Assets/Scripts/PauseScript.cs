@@ -2,74 +2,83 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using System.Linq;
 
 public class PauseScript : MonoBehaviour {
 	public GameObject pauseText;
-	public bool paused = false;
 	public MouseLookScript mouselookScript;
 	public MouseCursor mouseCursor;
 	public GameObject[] disableUIOnPause;
-	private bool previousInvMode = false;
-	private Texture2D previousCursorImage;
 	public GameObject saltTheFries;
 	public GameObject[] enableUIOnPause;
 	public GameObject mainMenu;
 	public GameObject saveDialog;
 	public GameObject hardSaveDialog;
-	public bool onSaveDialog = false;
 	public PlayerMovement pm;
-	[HideInInspector]
-	public float relativeTime;
-	public List<AmbientRegistration> ambientRegistry;
+	public GameObject medicalLights;
+	public GameObject medicalLightsStatic;
+
+	[HideInInspector] public bool paused = false;
+	private bool previousInvMode = false;
+	private Texture2D previousCursorImage;
+	[HideInInspector] public bool onSaveDialog = false;
+	[HideInInspector] public float relativeTime;
+	[HideInInspector] public List<AmbientRegistration> ambientRegistry;
+	private bool menuActive = true; // Store the state of the main menu gameobject active state
+									// so that we don't have to do a gameobject engine call more
+									// than once on every Update all over the code.
+
 	public static PauseScript a;
 
 	void Awake() {
 		a = this;
 		a.ambientRegistry = new List<AmbientRegistration>();
-		if (mainMenu == null) {
-			Const.sprint("BUG: PauseScript: mainMenu is null!",Const.a.allPlayers);
+		if (!MenuActive()) {
+			medicalLights.SetActive(false);
+			medicalLightsStatic.SetActive(false);
 		}
 	}
 
-	void Update () {
-		if (Input.GetKeyDown(KeyCode.F12)) {
-			TakeScreenshot();
-		}
+	// The whole point right here:
+	public bool Paused() { return paused; }
+	public bool MenuActive() { return menuActive; }
 
-		if (mainMenu.activeSelf == false) {
+	void Update() {
+		if (Input.GetKeyDown(KeyCode.F12)) TakeScreenshot();
+
+		menuActive = mainMenu.activeSelf;
+		if (!menuActive) {
 			if (GetInput.a.Menu()) {
-				if (onSaveDialog) {
+				if (onSaveDialog)
 					ExitSaveDialog();
-				} else {
+				else
 					PauseToggle();
-				}
 			}
-
-			if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Menu)) {
-				PauseEnable();
+			if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Menu)) PauseEnable();
+			if (!medicalLights.activeSelf) {
+				medicalLights.SetActive(true);
+				medicalLightsStatic.SetActive(true);
 			}
 		}
-
-		if (paused) {
-			// yep...relativeTime is stuck;
-		} else {
-			relativeTime = relativeTime + Time.deltaTime;
-		}
+		if (!Paused()) relativeTime = relativeTime + Time.deltaTime;
 	}
 
 	public void PauseToggle() {
-		if (paused)
-			PauseDisable();
-		else
-			PauseEnable();
+		if (Paused())	PauseDisable();
+		else			PauseEnable();
+	}
+
+	public void ToggleAudioPause() {
+		if (Paused())	AudioListener.pause = true;
+		else			AudioListener.pause = false;
 	}
 
 	public void PauseEnable() {
 		previousInvMode = mouselookScript.inventoryMode;
 		if (mouselookScript.inventoryMode == false) {
 			mouselookScript.ToggleInventoryMode();
-			mouselookScript.ToggleAudioPause();
+			ToggleAudioPause();
 		}
 		paused = true;
 		pauseText.SetActive(true);
@@ -80,8 +89,6 @@ public class PauseScript : MonoBehaviour {
 		}
 
 		EnablePauseUI();
-		//System.GC.Collect();
-		//PauseRigidbody[] prb = FindObjectsOfType<PauseRigidbody>();
 		for (int k=0;k<Const.a.prb.Length;k++) {
 			Const.a.prb[k].Pause();
 		}
@@ -102,6 +109,7 @@ public class PauseScript : MonoBehaviour {
 		pauseText.SetActive(false);
 		if (previousInvMode != mouselookScript.inventoryMode) {
 			mouselookScript.ToggleInventoryMode();
+			mouselookScript.SetCameraCullDistances();
 		}
 		mouseCursor.cursorImage = previousCursorImage;
 		for (int i=0;i<disableUIOnPause.Length;i++) {
@@ -176,13 +184,11 @@ public class PauseScript : MonoBehaviour {
 	}
 
 	public void NoSavePauseQuit () {
-		//StartCoroutine(quitFunction());
 		for (int i=0;i<enableUIOnPause.Length;i++) {
 			enableUIOnPause[i].SetActive(false);
 		}
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
-		//if (hardSaveQuit) { PauseQuitHard(); return; } // Application.Quit();
 		MainMenuHandler.a.GoToFrontPage();
 	}
 
@@ -192,8 +198,6 @@ public class PauseScript : MonoBehaviour {
 	}
 
 	public void EnablePauseUI () {
-		//if (hardSaveQuit) { mainMenu.SetActive(true); PauseQuitHard(); return; } // Application.Quit();
-
 		for (int i=0;i<enableUIOnPause.Length;i++) {
 			enableUIOnPause[i].SetActive(true);
 		}
@@ -208,19 +212,11 @@ public class PauseScript : MonoBehaviour {
 		MainMenuHandler.a.GoToOptionsSubmenu(true);
 	}
 
-	public bool Paused() {
-		//if (paused || mainMenu.activeSelf == true) { // there are cases where I want to check for main menu separately
-		//	return true;
-		//}
-		//return false;
-		return paused;
-	}
-
 	public void TakeScreenshot() {
 		string sname = System.DateTime.UtcNow.ToString("ddMMMyyyy_HH_mm_ss") + "_v0.91.png";
 		string spath = Application.dataPath + "/Screenshots/" + sname;
 		ScreenCapture.CaptureScreenshot(spath);
-		Const.sprint("Wrote screenshot " + sname,Const.a.allPlayers);
+		Const.sprint("Wrote screenshot " + sname);
 	}
 
 	public void AddAmbientToRegistry(AmbientRegistration ar) {

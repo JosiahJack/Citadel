@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+// Holds the data about attacker and attackee for use when applying damage.
+// Useful to pass all of this data around rather than having a ton of function arguments.
 public class DamageData {
 	// Attacker (self [a]) data
 	public GameObject owner;
@@ -55,7 +55,7 @@ public class DamageData {
 		damageData.other = null;
 		damageData.indexNPC = -1;
 		damageData.hit = new RaycastHit();
-		damageData.attacknormal = Vector3.zero;
+		damageData.attacknormal = Const.a.vectorZero;
 		damageData.impactVelocity = 0f;
 	}
 }

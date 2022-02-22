@@ -34,7 +34,7 @@ public class StatusBarTextDecay : MonoBehaviour {
 		}
 	}
 
-	void Update () {
+	void Update() {
 		if (shouldFlash && (flashTime < Time.time)) statusText.text = tempString; // re-enable text
 
 		if (decayFinished < Time.time) {

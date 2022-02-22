@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-//using UnityStandardAssets.ImageEffects;
+using UnityEngine.SceneManagement;
 using System.IO;
 using System.Collections;
 using SimpleFileBrowser;
@@ -39,7 +39,7 @@ public class MainMenuHandler : MonoBehaviour {
 	public Text[] saveButtonText;
 	public Text[] loadButtonText;
 	public int currentSaveSlot = -1;
-	private enum Pages {fp,sp,mp,np,lp,op,sv,cd};
+	private enum Pages : byte {fp,sp,mp,np,lp,op,sv,cd};
 	private Pages currentPage;
 	private AudioSource StartSFX;
 	private AudioSource BackGroundMusic;
@@ -87,7 +87,7 @@ public class MainMenuHandler : MonoBehaviour {
 		BackGroundMusic.Stop();
 		bool found = (System.IO.File.Exists(Application.dataPath + "/StreamingAssets/CITALOG.RES") && System.IO.File.Exists(Application.dataPath + "/StreamingAssets/CITBARK.RES"));
 		if (found) {
-			// go right on into the game, all good here
+			// Go right on into the game, all good here.
 			dataFound = true;
 			Const.a.SetVolume();
 			GoToFrontPage();
@@ -102,9 +102,8 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 	}
 
-	void Update () {
-		// Escape/back button listenerj      
-		if (Input.GetKeyDown(KeyCode.Escape)) {
+	void Update() {
+		if (Input.GetKeyDown(KeyCode.Escape)) { // Escape/back button listener
 			if (savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
 				currentSaveSlot = -1;
 				typingSaveGame = false;
@@ -120,7 +119,6 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 
 		if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.anyKey) {
-			//Debug.Log("Click registered on main menu!");
 			if (IntroVideoContainer.activeSelf && !CouldNotFindDialogue.activeSelf) {
 				inCutscene = false;
 				IntroVideo.SetActive(false);
@@ -132,12 +130,7 @@ public class MainMenuHandler : MonoBehaviour {
 		if (!IntroVideoContainer.activeSelf) {
 			if (!BackGroundMusic.isPlaying && !saltTheFries.activeInHierarchy && gameObject.activeSelf) BackGroundMusic.Play();
 		}
-
-		if ( (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P)) || (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P)) ) {
-			//Debug.Log("Skipping main menu. Debug cheat");
-			StartGame(true);
-		}
-
+		if ( (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P)) || (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P)) ) StartGame(true);
 		if (typingSaveGame && Input.GetKeyUp(KeyCode.Return) && savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
 			if (currentSaveSlot < 0) return;
 			string sname = saveNameInputField[currentSaveSlot].GetComponentInChildren<InputField>().text;
@@ -167,6 +160,8 @@ public class MainMenuHandler : MonoBehaviour {
 			Const.a.difficultyCyber = cyber.difficultySetting;
 			Const.a.Load(-1); // load default scene
 		}
+		//SceneManager.UnloadScene(SceneManager.GetActiveScene().buildIndex);
+		// SceneManager.LoadScene(0);
 		this.gameObject.SetActive(false);
 	}
 
@@ -278,7 +273,7 @@ public class MainMenuHandler : MonoBehaviour {
 
 	public void LoadGame (int index) {
 		if (loadPage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text == "- unused -" || loadPage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text == "- unused quicksave -") {
-			Const.sprint("No data to load",Const.a.allPlayers);
+			Const.sprint("No data to load.");
 		} else {
 			if (Const.a.freshRun) {
 				StartGame(false);

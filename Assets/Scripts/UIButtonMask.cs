@@ -13,22 +13,20 @@ public class UIButtonMask : MonoBehaviour {
 	public bool doubleClickEnabled = false;
 	public int toolTipLingdex = -1;
 	public Handedness toolTipType;
-	private EventTrigger pointerTrigger;
+	private BoxCollider boxCol;
+	private RectTransform rect;
 
-	void Start () {
+	void Start() {
+		rect = GetComponent<RectTransform>(); // Create box collider for cursor entry detection.
+		boxCol = gameObject.AddComponent<BoxCollider>();
+		float width = rect.sizeDelta.x * rect.localScale.x;
+		float height = rect.sizeDelta.y * rect.localScale.y;
+		if (width < 0) width *= -1f;
+		if (height < 0) height *= -1f; // Cannot have negative size on box colliders.
+		boxCol.size = new Vector3(width,height,1f);
 		mCursor = playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>();
 		mCursor.RegisterRaycastRect(gameObject,GetComponent<RectTransform>());
-		if (playerCamera == null) {
-			Const.sprint("BUG: UIButtonMask script could not find playerCamera",Const.a.allPlayers);
-		}
-		pointerTrigger = GetComponent<EventTrigger>();
-		if (pointerTrigger == null) {
-			pointerTrigger = gameObject.AddComponent<EventTrigger>();
-			if (pointerTrigger == null) {
-				Const.sprint("BUG: Could not create EventTrigger for UIButtonMask",Const.a.allPlayers);
-				return;
-			}
-		}
+		if (playerCamera == null) Const.sprint("BUG: UIButtonMask script could not find playerCamera");
 
 		if (doubleClickEnabled) {
 			doubleClickTime = Const.a.doubleClickTime;
@@ -38,16 +36,23 @@ public class UIButtonMask : MonoBehaviour {
 		}
 	}
 
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+	void Update() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (doubleClickEnabled) {
 				if (dbclickFinished < PauseScript.a.relativeTime) {
 					doubleClickTicks--;
-					if (doubleClickTicks < 0)
-						doubleClickTicks = 0;
+					if (doubleClickTicks < 0) doubleClickTicks = 0;
 				}
 			}
 		}
+	}
+
+	public void OnMouseEnter() {
+		PtrEnter();
+	}
+
+	public void OnMouseExit() {
+		PtrExit();
 	}
 
 	public void PtrEnter () {

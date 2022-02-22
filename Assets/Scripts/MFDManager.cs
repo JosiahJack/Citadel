@@ -3,68 +3,58 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
+// Handles the HUD UI.
 public class MFDManager : MonoBehaviour  {
+	// External references, required
 	public TabButtons leftTC;
 	public TabButtons rightTC;
-	public CenterTabButtons ctb;
-	public CenterMFDTabs cmfdt;
+
+	// Center tabs
+	public Button MainTabButton;
+	public Button HardwareTabButton;
+	public Button GeneralTabButton;
+	public Button SoftwareTabButton;
+	public Sprite MFDSprite;
+	public Sprite MFDSpriteSelected;
+	public Sprite MFDSpriteNotification;
+	public AudioSource TabSFX;
+	public AudioClip TabSFXClip;
+	public GameObject MainTab;
+	public GameObject HardwareTab;
+	public GameObject GeneralTab;
+	public GameObject SoftwareTab;
+	public GameObject DataReaderContentTab;
+
+	// Multi Media Tab
+	public GameObject startingSubTab;
+	public GameObject secondaryTab1;
+	public GameObject secondaryTab2;
+	public GameObject emailTab;
+	public GameObject dataTab;
+	public GameObject notesTab;
+	public Text multiMediaHeaderLabel;
+	public EReaderSectionsButtons ersbLH;
+	public EReaderSectionsButtons ersbRH;
+	[HideInInspector] public int lastMultiMediaTabOpened = 1; // TODO: save!, default to logs.  0 = email table, 1 = log table, 2 = data table
+
+	// Main MFD
 	public ItemTabManager itemTabLH;
 	public ItemTabManager itemTabRH;
-	public enum handedness {LeftHand,RightHand};
-	public bool lastWeaponSideRH;
-	public bool lastItemSideRH;
-	public bool lastAutomapSideRH;
-	public bool lastTargetSideRH;
-	public bool lastDataSideRH;
-	public bool lastSearchSideRH;
-	public bool lastLogSideRH;
-	public bool lastLogSecondarySideRH;
-	public bool lastMinigameSideRH;
 	public GameObject SearchFXRH;
 	public GameObject SearchFXLH;
-	public enum TabMSG {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,WirePuzzle,EReader,Weapon,SystemAnalyzer};
 	public MouseLookScript playerMLook;
-	private bool isRH;
-	[HideInInspector]
-	public Vector3 objectInUsePos;
-	[HideInInspector]
-	public PuzzleGridPuzzle tetheredPGP = null;
-	[HideInInspector]
-	public PuzzleWirePuzzle tetheredPWP = null;
-	[HideInInspector]
-	public SearchableItem tetheredSearchable = null;
-	[HideInInspector]
-	public KeypadElevator tetheredKeypadElevator = null;
-	[HideInInspector]
-	public KeypadKeycode tetheredKeypadKeycode = null;
-	[HideInInspector]
-	public bool paperLogInUse = false;
-	[HideInInspector]
-	public bool usingObject = false;
 	public Transform playerCapsuleTransform;
-
-	// External to gameObject, assigned in Inspector
 	public WeaponMagazineCounter wepmagCounterLH;
 	public WeaponMagazineCounter wepmagCounterRH;
 	public GameObject logReaderContainer;
-	public GameObject multiMediaTab;
 	public GameObject logTable;
 	public GameObject logLevelsFolder;
 	public WeaponButtonsManager wepbutMan;
-	[HideInInspector]
-	public float logFinished;
-	[HideInInspector]
-	public bool logActive;
-	[HideInInspector]
-	public int logType = 0;
-	public WeaponIconManager iconmanLH;
-	public WeaponIconManager iconmanRH;
-	public WeaponTextManager weptextmanLH;
-	public WeaponTextManager weptextmanRH;
-
-	//Handedness inspector assignments
-	//	SearchButton.isRH found on SearchContentsContainer under DataTab
-
+	public Image iconLH;
+	public Image iconRH;
+	public Sprite[] wepIcons;
+	public Text weptextLH;
+	public Text weptextRH;
 	public GameObject headerTextLH;
 	public GameObject headerTextRH;
 	public Text headerText_textLH;
@@ -75,13 +65,11 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject blockedBySecurityRH;
 	public GameObject elevatorUIControlLH;
 	public GameObject elevatorUIControlRH;
-	[HideInInspector]
-	public Door linkedElevatorDoor;
 	public GameObject keycodeUIControlLH;
 	public GameObject keycodeUIControlRH;
 	public GameObject[] searchItemImagesLH;
-	public GameObject searchCloseButtonLH;
 	public GameObject[] searchItemImagesRH;
+	public GameObject searchCloseButtonLH;
 	public GameObject searchCloseButtonRH;
 	public GameObject audioLogContainerLH;
 	public GameObject audioLogContainerRH;
@@ -95,16 +83,13 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject sysAnalyzerRH;
 	public GameObject viewWeaponsContainer;
 	public GameObject hardwareButtonsContainer;
-
-	// Disableable objects for cyberspace
+	public HardwareButton hwb;
 	public GameObject ctbButtonMain;
 	public GameObject ctbButtonHardware;
 	public GameObject ctbButtonGeneral;
 	public GameObject tabButtonsLHButtons;
 	public GameObject tabButtonsRHButtons;
 	public GameObject energyTickPanel;
-	public GameObject healthTickPanel;
-	public GameObject cyberHealthTickPanel;
 	public GameObject energyIndicator;
 	public GameObject healthIndicator;
 	public GameObject cyberHealthIndicator;
@@ -113,13 +98,100 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject cyberSprintContainer;
 	public Text cyberSprintText;
 	public GameObject automapFull;
-	public SoftwareInventory sinv;
 	public PlayerMovement pm;
-	public BiomonitorGraphs biograph;
+	public GameObject biograph;
 	public PlayerEnergy pe;
 	public PlayerPatch pp;
+	public GameObject autoMapCamera;
+
+	// Public enumerations
+	public enum TabMSG : byte {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,WirePuzzle,EReader,Weapon,SystemAnalyzer};
+
+	// Externally modifiable.
+	// Not intended to be set in inspector, some are not HideInInspector for reference only.
+	// Also, don't care about encapsulation - it works, it's good.
+	public bool lastWeaponSideRH;
+	public bool lastItemSideRH;
+	public bool lastAutomapSideRH;
+	public bool lastTargetSideRH;
+	public bool lastDataSideRH;
+	public bool lastSearchSideRH;
+	public bool lastLogSideRH;
+	public bool lastLogSecondarySideRH;
+	public bool lastMinigameSideRH;
+	[HideInInspector] public float logFinished;
+	[HideInInspector] public bool logActive;
+	[HideInInspector] public int logType = 0;
+	[HideInInspector] public Door linkedElevatorDoor;
+	[HideInInspector] public Vector3 objectInUsePos;
+	[HideInInspector] public PuzzleGridPuzzle tetheredPGP = null;
+	[HideInInspector] public PuzzleWirePuzzle tetheredPWP = null;
+	[HideInInspector] public SearchableItem tetheredSearchable = null;
+	[HideInInspector] public KeypadElevator tetheredKeypadElevator = null;
+	[HideInInspector] public KeypadKeycode tetheredKeypadKeycode = null;
+	[HideInInspector] public bool paperLogInUse = false;
+	[HideInInspector] public bool usingObject = false;
+	[HideInInspector] public int applyButtonReferenceIndex = 0;
+	public int curCenterTab = 0;
+
+	// Internal references
+	private bool isRH;
 	private float ecgValue = 0;
 	private float beatShift;
+	private float beatThresh = 0.1f;
+	private float beatVariation = 0.05f;
+	private float freq = 35f;
+	private float fatigueFactor = 0f;
+	private float beatFinished = 0f;
+	// private string[] wepText = new string[]{"MARK3 ASSAULT RIFLE","ER-90 BLASTER","SV-23 DARTGUN"
+		// "AM-27 FLECHETTE","RW-45 ION BEAM","TS-04 LASER RAPIER","LEAD PIPE","MAGNUM 2100","SB-20 MAGPULSE",
+		// "ML-41 PISTOL","LG-XX PLASMA RIFLE","MM-76 RAIL GUN","DC-05 RIOT GUN","RF-07 SKORPION","SPARQ BEAM",
+		// "DH-07 STUNGUN"};
+	private int wep16index = 0;
+
+	// For health and energy ticks
+	public PlayerHealth playerHealth;
+	public PlayerEnergy playerEnergy;
+	public Sprite[] tickImages;
+	public Image tickImageHealth;
+	public Image tickImageEnergy;
+	private int tempSpriteIndex;
+	private float lastEnergy;
+	private float lastHealth;
+
+	// For FPS counter
+	public GameObject FPS;
+	private float deltaTime = 0.0f;
+	private float msecs;
+	private float fps;
+	private string textString;
+	private Text text;
+	private float tickFinished; // Visual only, Time.time controlled
+	public float tickSecs = 0.1f;
+	private int count;
+	private float thousand = 1000f;
+	private int zero = 0;
+	private int one = 1;
+	private string formatToDisplayMS;
+	private string formatToDisplayFPS;
+	public Text msText;
+	public Text fpsText;
+	public Text versionText;
+
+	// Center Tabs
+	private float centerTabsTickTime = 0.5f;
+	private int numTicks = 15;
+	private bool[] tabNotified;
+	private float centerTabsTickFinished; // Visual only, Time.time controlled
+	private bool[] highlightStatus;
+	private int[] highlightTickCount;
+	private float blinkFinished;
+	private float blinkTick = 1f;
+	private float beepFinished;
+	private float beepTick = 3f;
+	private int beepCount = 0;
+
+	// Singleton instance
 	public static MFDManager a;
 
 	public void Start () {
@@ -128,11 +200,216 @@ public class MFDManager : MonoBehaviour  {
 		a.logActive = false;
 		a.TabReset(true);
 		a.TabReset(false);
-		if (biograph != null) a.biograph.beatFinished = PauseScript.a.relativeTime + 0.5f;
+		a.beatFinished = PauseScript.a.relativeTime + 1.2f;
+		a.DrawTicks(true); // Health
+		a.DrawTicks(false); // Energy
+		a.text = GetComponent<Text> ();
+		a.deltaTime = Time.time;
+		a.count = 0;
+		a.tickFinished = a.centerTabsTickFinished = Time.time + a.tickSecs + UnityEngine.Random.value;
+		a.formatToDisplayMS = "{0:0.0}";
+		a.formatToDisplayFPS = "{0:0.0}";
+		a.versionText.text = Const.a.versionString; // CITADEL PROJECT VERSION
+
+		// Center tabs
+		a.tabNotified = new bool[] {false, false, false, false};
+		a.tabNotified = new bool[] {false, false, false, false};
+		a.highlightStatus = new bool[] {false, false, false, false};
+		a.highlightTickCount = new int[] {0,0,0,0};
+		a.blinkFinished = blinkTick + PauseScript.a.relativeTime;
+		a.beepFinished = beepTick + PauseScript.a.relativeTime;
 	}
 
 	void OnEnable() {
-		if (biograph != null) biograph.beatFinished = PauseScript.a.relativeTime + 0.5f;
+		beatFinished = PauseScript.a.relativeTime + 1.2f;
+		if (BiomonitorGraphSystem.a != null) BiomonitorGraphSystem.a.ClearGraphs();
+	}
+
+	void Update() {
+		if (FPS.activeInHierarchy) {
+			count++;
+			deltaTime += Time.unscaledDeltaTime;
+			if (tickFinished < Time.time) {
+				msecs = deltaTime/count*thousand;
+				deltaTime = zero;
+				fps = count * (one / tickSecs);
+				count = zero;
+				msText.text = string.Format (formatToDisplayMS, msecs);
+				fpsText.text = string.Format (formatToDisplayFPS, fps);
+				tickFinished = Time.time + tickSecs;
+			}
+		}
+
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
+			HardwareButtonsUpdate();
+			if (logActive) {
+				if (logFinished < PauseScript.a.relativeTime && logType != 3 && logType != 0) {
+					logActive = false;
+					if (itemTabLH.eReaderSectionsContainer.activeInHierarchy) ReturnToLastTab(true);
+					if (itemTabRH.eReaderSectionsContainer.activeInHierarchy) ReturnToLastTab(false);
+					if (DataReaderContentTab.activeInHierarchy) CenterTabButtonClickSilent(0,true);
+				}
+			}
+			CenterTabBlink();
+			if (lastEnergy != playerEnergy.energy) DrawTicks(false);
+			lastEnergy = playerEnergy.energy;
+			if (lastHealth != playerHealth.hm.health) DrawTicks(true);
+			lastHealth = playerHealth.hm.health;
+			BioMonitorGraphUpdate();
+			WeaponButtonsManagerUpdate();
+			if (AutoMapDisplayActive() && !autoMapCamera.activeSelf) autoMapCamera.SetActive(true);
+			else if (!AutoMapDisplayActive() && autoMapCamera.activeSelf) autoMapCamera.SetActive(false);
+			if (GetInput.a.WeaponCycUp ()) {
+				if (playerMLook.inCyberSpace) {
+					Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill; // There's only two cyberspace weapons, up is down.
+					if (Inventory.a.SFX != null && Inventory.a.SFXChangeWeapon != null) Inventory.a.SFX.PlayOneShot(Inventory.a.SFXChangeWeapon);
+					if (Inventory.a.isPulserNotDrill) {
+						Inventory.a.pulserButtonText.Select(true);
+						Inventory.a.drillButtonText.Select(false);
+					} else {
+						Inventory.a.pulserButtonText.Select(false);
+						Inventory.a.drillButtonText.Select(true);
+					}
+				} else {
+					if (Const.a.InputInvertInventoryCycling) {
+						wepbutMan.WeaponCycleDown();
+					} else {
+						wepbutMan.WeaponCycleUp();
+					}
+				}
+			}
+
+			if (GetInput.a.WeaponCycDown ()) {
+				if (playerMLook.inCyberSpace) {
+					Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill; // There's only two cyberspace weapons, up is down.
+					if (Inventory.a.SFX != null && Inventory.a.SFXChangeWeapon != null) Inventory.a.SFX.PlayOneShot(Inventory.a.SFXChangeWeapon);
+					if (Inventory.a.isPulserNotDrill) {
+						Inventory.a.pulserButtonText.Select(true);
+						Inventory.a.drillButtonText.Select(false);
+					} else {
+						Inventory.a.pulserButtonText.Select(false);
+						Inventory.a.drillButtonText.Select(true);
+					}
+				} else {
+					if (Const.a.InputInvertInventoryCycling) {
+						wepbutMan.WeaponCycleUp();
+					} else {
+						wepbutMan.WeaponCycleDown();
+					}
+				}
+			}
+
+			if (Input.GetKeyDown(KeyCode.F1)) leftTC.WeaponTabButton.onClick.Invoke();
+			if (Input.GetKeyDown(KeyCode.F2)) leftTC.ItemTabButton.onClick.Invoke();
+			if (Input.GetKeyDown(KeyCode.F3)) leftTC.AutomapTabButton.onClick.Invoke();
+			if (Input.GetKeyDown(KeyCode.F4)) leftTC.DataTabButton.onClick.Invoke();
+			if (Input.GetKeyDown(KeyCode.F5)) rightTC.WeaponTabButton.onClick.Invoke();
+			if (Input.GetKeyDown(KeyCode.F7)) rightTC.ItemTabButton.onClick.Invoke();
+			if (Input.GetKeyDown(KeyCode.F8)) rightTC.AutomapTabButton.onClick.Invoke();
+			if (Input.GetKeyDown(KeyCode.F10)) rightTC.DataTabButton.onClick.Invoke();
+
+			if (Input.GetKeyDown(KeyCode.PageUp)) {
+				switch(curCenterTab) {
+					case 0: CenterTabButtonClick(3); break;
+					case 1: CenterTabButtonClick(0); break;
+					case 2: CenterTabButtonClick(1); break;
+					case 3: CenterTabButtonClick(2); break;
+				}
+			}
+			if (Input.GetKeyDown(KeyCode.PageDown)) {
+				switch(curCenterTab) {
+					case 0: CenterTabButtonClick(1); break;
+					case 1: CenterTabButtonClick(2); break;
+					case 2: CenterTabButtonClick(3); break;
+					case 3: CenterTabButtonClick(0); break;
+				}
+			}
+
+			// Handle severing connection with in use keypads, puzzles, etc. when player drifts too far away
+			if (usingObject) {
+				if (Vector3.Distance(playerCapsuleTransform.position, objectInUsePos) > (Const.a.frobDistance + 0.16f)) {
+					if (tetheredPGP != null) ClosePuzzleGrid();
+					if (tetheredPWP != null) ClosePuzzleWire();
+					if (tetheredKeypadElevator != null) CloseElevatorPad();
+					if (tetheredKeypadKeycode != null) CloseKeycodePad();
+					if (tetheredSearchable != null) CloseSearch();
+					if (paperLogInUse) ClosePaperLog();
+				}
+			}
+
+			// Update the weapon icon
+			wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.WepInstance.weaponIndex);
+			if (wep16index >=0 && wep16index < 16) {
+				if (leftTC.TabManager.WeaponTab.activeInHierarchy) {
+					iconLH.overrideSprite = wepIcons[wep16index];
+					if (Inventory.a.numweapons <= 0) {
+						if (iconLH.enabled) iconLH.enabled = false;
+					} else {
+						if (!iconLH.enabled) iconLH.enabled = true;
+					}
+				}
+
+				if (rightTC.TabManager.WeaponTab.activeInHierarchy) {
+					iconRH.overrideSprite = wepIcons[wep16index];
+					if (Inventory.a.numweapons <= 0) {
+						if (iconRH.enabled) iconRH.enabled = false;
+					} else {
+						if (!iconRH.enabled) iconRH.enabled = true;
+					}
+				}
+			}
+		}
+	}
+
+	void HardwareButtonsUpdate() {
+		if (!hardwareButtonsContainer.activeInHierarchy) return; // In cyber space.
+
+		hwb.ListenForHardwareHotkeys();
+
+		// Check for and make the eReader button blink
+		if (hwb.buttons[5].gameObject.activeSelf) {
+			bool foundsome = false;
+			for (int i=0;i<hwb.ecbm.mmLBs.Length;i++) {
+				if (Inventory.a.hasLog[hwb.ecbm.mmLBs[i].logReferenceIndex] && !Inventory.a.readLog[hwb.ecbm.mmLBs[i].logReferenceIndex]) foundsome = true;
+			}
+
+			if (foundsome) {
+				// You've got mail!
+				if (blinkFinished < PauseScript.a.relativeTime) {
+					blinkFinished = blinkTick + PauseScript.a.relativeTime;
+					Inventory.a.hardwareIsActive[2] = !Inventory.a.hardwareIsActive[2];
+					if (Inventory.a.hardwareIsActive[2]) {
+						hwb.buttons[5].image.overrideSprite = hwb.buttonActive1[5];
+					} else {
+						hwb.buttons[5].image.overrideSprite = hwb.buttonDeactive[5];
+					}
+				}
+				if (beepFinished < PauseScript.a.relativeTime && Inventory.a.beepDone) {
+					beepFinished = beepTick + PauseScript.a.relativeTime;
+					beepCount++;
+					if (beepCount >= 3) { Inventory.a.beepDone = false; beepCount = 0; } // Reset beeping, notification done.
+					if (hwb.SFX != null && hwb.beepSFX != null) hwb.SFX.PlayOneShot(hwb.beepSFX); // GO active handled by guard clause.
+				}
+			} else {
+				hwb.buttons[5].image.overrideSprite = hwb.buttonDeactive[5];
+			}
+		}
+	}
+
+	void CenterTabBlink() {
+		if (centerTabsTickFinished >= Time.time) return;
+
+		for (int i=0;i<4;i++) {
+			if (tabNotified[i]) ToggleHighlightOnCenterTabButton(i);
+		}
+		centerTabsTickFinished = Time.time + centerTabsTickTime;
+	}
+
+	bool AutoMapDisplayActive() { // True if either the full map is displayed or either left or right automap.
+		if (automapFull.activeSelf) return true;
+		if (leftTC.TabManager.AutomapTab.activeSelf) return true;
+		if (rightTC.TabManager.AutomapTab.activeSelf) return true;
+		return false;
 	}
 
 	// Called by PlayerMovement.cs
@@ -140,7 +417,7 @@ public class MFDManager : MonoBehaviour  {
 		ctbButtonMain.SetActive(false);
 		ctbButtonHardware.SetActive(false);
 		ctbButtonGeneral.SetActive(false);
-		ctb.TabManager.DisableAllTabs();
+		DisableAllCenterTabs();
 		automapFull.SetActive(true);
 		pm.inFullMap = true;
 		TabReset(true); // right
@@ -153,7 +430,7 @@ public class MFDManager : MonoBehaviour  {
 		ctbButtonMain.SetActive(true);
 		ctbButtonHardware.SetActive(true);
 		ctbButtonGeneral.SetActive(true);
-		ctb.TabButtonClickSilent(0,true);
+		CenterTabButtonClickSilent(0,true);
 		automapFull.SetActive(false);
 		pm.inFullMap = false;
 		TabReset(true); // right
@@ -172,20 +449,16 @@ public class MFDManager : MonoBehaviour  {
 		tabButtonsLHButtons.SetActive(false);
 		tabButtonsRHButtons.SetActive(false);
 		energyTickPanel.SetActive(false);
-		healthTickPanel.SetActive(false);
 		energyIndicator.SetActive(false);
 		healthIndicator.SetActive(false);
-		cyberHealthTickPanel.SetActive(true);
 		cyberHealthIndicator.SetActive(true);
 		cyberTimerT.SetActive(true);
 		cyberTimer.SetActive(true);
 		hardwareButtonsContainer.SetActive(false);
 		viewWeaponsContainer.SetActive(false);
 		CyberTimer ct = cyberTimer.GetComponent<CyberTimer>();
-		if (ct != null) {
-			ct.Reset(Const.a.difficultyCyber);
-		}
-		ctb.TabButtonClickSilent(3,true);
+		if (ct != null) ct.Reset(Const.a.difficultyCyber);
+		CenterTabButtonClickSilent(3,true);
 	}
 
 	// Called by MouseLookScript
@@ -200,17 +473,15 @@ public class MFDManager : MonoBehaviour  {
 		tabButtonsLHButtons.SetActive(true);
 		tabButtonsRHButtons.SetActive(true);
 		energyTickPanel.SetActive(true);
-		healthTickPanel.SetActive(true);
 		energyIndicator.SetActive(true);
 		healthIndicator.SetActive(true);
-		cyberHealthTickPanel.SetActive(false);
 		cyberHealthIndicator.SetActive(false);
 		cyberSprintContainer.SetActive(false);
 		cyberTimerT.SetActive(false);
 		cyberTimer.SetActive(false);
 		hardwareButtonsContainer.SetActive(true);
 		viewWeaponsContainer.SetActive(true);
-		ctb.TabButtonClickSilent(0,true);
+		CenterTabButtonClickSilent(0,true);
 	}
 
 	public void CyberSprint (string message) {
@@ -294,7 +565,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void CloseSearch() {
-		tetheredSearchable.ResetSearchable(false);
+		if (tetheredSearchable != null) tetheredSearchable.ResetSearchable(false);
 		tetheredSearchable = null;
 		searchCloseButtonLH.SetActive(false);
 		searchCloseButtonRH.SetActive(false);
@@ -302,108 +573,68 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void ClosePaperLog() {
-		ctb.TabButtonClickSilent(0,false);
+		CenterTabButtonClickSilent(0,false);
 	}
 
 	// Updating here so that the graphed values keep updating even when the graph visibility is off.
 	void BioMonitorGraphUpdate() {
 		if (BiomonitorGraphSystem.a == null) return;
 
-		biograph.fatigueFactor = (((pm.fatigue / 100f) * 150f) + 20f) / 60f; // Apply percent fatigued to 200bpm max heart rate with baseline 50bpm.
-		if (biograph.beatFinished < PauseScript.a.relativeTime) {
-			biograph.beatFinished = PauseScript.a.relativeTime + (1f/biograph.fatigueFactor); // Adjust into seconds and add to game timer.
+		fatigueFactor = (((pm.fatigue / 100f) * 150f) + 20f) / 60f; // Apply percent fatigued to 200bpm max heart rate with baseline 50bpm.
+		if (beatFinished < PauseScript.a.relativeTime) {
+			beatFinished = PauseScript.a.relativeTime + (1f/fatigueFactor); // Adjust into seconds and add to game timer.
 		}
 
-        if (biograph.gameObject.activeSelf) BiomonitorGraphSystem.a.Graph(0,((pe.drainJPM/449f)*2f)-1f); // Take percentage of max JPM drain per second (449) and apply it to a scale of ±1.0
+        if (biograph.activeSelf) BiomonitorGraphSystem.a.Graph(0,((pe.drainJPM/449f)*2f)-1f); // Take percentage of max JPM drain per second (449) and apply it to a scale of ±1.0
 
 		// Chi wave is different when on genius patch
 		if (pp.geniusFinishedTime > PauseScript.a.relativeTime) {
-			if (biograph.gameObject.activeSelf) BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 3f) + UnityEngine.Random.Range(-0.3f,0.3f));
+			if (biograph.activeSelf) BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 3f) + UnityEngine.Random.Range(-0.3f,0.3f));
 		} else {
-			if (biograph.gameObject.activeSelf) BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 1f));
+			if (biograph.activeSelf) BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 1f));
 		}
 
-		beatShift = (biograph.beatFinished - PauseScript.a.relativeTime)/(1f/biograph.fatigueFactor);
+		beatShift = (beatFinished - PauseScript.a.relativeTime)/(1f/fatigueFactor);
 		if (beatShift > 0.8f) {
-			ecgValue = Mathf.Sin(beatShift * biograph.freq);
+			ecgValue = Mathf.Sin(beatShift * freq);
 		} else ecgValue = 0;
-		if (ecgValue > biograph.beatThresh || ecgValue < (biograph.beatThresh * -1f)) ecgValue += UnityEngine.Random.Range((biograph.beatVariation * -1f),biograph.beatVariation); // Inject variation when beating
-        if (biograph.gameObject.activeSelf) BiomonitorGraphSystem.a.Graph(2, ecgValue);
+		if (ecgValue > beatThresh || ecgValue < (beatThresh * -1f)) ecgValue += UnityEngine.Random.Range((beatVariation * -1f),beatVariation); // Inject variation when beating
+        if (biograph.activeSelf) BiomonitorGraphSystem.a.Graph(2, ecgValue);
 	}
 
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			if (logActive) {
-				if (logFinished < PauseScript.a.relativeTime && logType != 3 && logType != 0) {
-					logActive = false;
-					if (itemTabLH.eReaderSectionsContainer.activeInHierarchy) ReturnToLastTab(true);
-					if (itemTabRH.eReaderSectionsContainer.activeInHierarchy) ReturnToLastTab(false);
-					if (ctb != null && cmfdt.DataReaderContentTab.activeInHierarchy) ctb.TabButtonClickSilent(0,true);
-				}
+	public void DrawTicks(bool health) {
+		tempSpriteIndex = -1;
+		int step = 0;
+		float checkVal = 0;
+		if (health) {
+			if (playerMLook.inCyberSpace) checkVal = playerHealth.hm.cyberHealth;
+			else checkVal = playerHealth.hm.health;
+		} else {
+			checkVal = playerEnergy.energy;
+		}
+		
+		if (checkVal > 255f) checkVal = 255f; // Always display ticks properly no matter what crazy value we've been hacked to have.
+		while (step < 256) {
+			if (checkVal < (256 - step)) {
+				tempSpriteIndex++;
 			}
+			step += 11;
+		}
 
-			BioMonitorGraphUpdate();
-			WeaponButtonsManagerUpdate();
-
-			if (GetInput.a.WeaponCycUp ()) {
-				if (playerMLook.inCyberSpace) {
-					sinv.isPulserNotDrill = !sinv.isPulserNotDrill; // there's only two cyberspace weapons, up is down
-					if (sinv.SFX != null && sinv.SFXChangeWeapon != null) sinv.SFX.PlayOneShot(sinv.SFXChangeWeapon);
-					if (sinv.isPulserNotDrill) {
-						sinv.pulserButtonText.Select(true);
-						sinv.drillButtonText.Select(false);
-					} else {
-						sinv.pulserButtonText.Select(false);
-						sinv.drillButtonText.Select(true);
-					}
-				} else {
-					if (Const.a.InputInvertInventoryCycling) {
-						wepbutMan.WeaponCycleDown();
-					} else {
-						wepbutMan.WeaponCycleUp();
-					}
-				}
-			}
-
-			if (GetInput.a.WeaponCycDown ()) {
-				if (playerMLook.inCyberSpace) {
-					sinv.isPulserNotDrill = !sinv.isPulserNotDrill; // there's only two cyberspace weapons, up is down
-					if (sinv.SFX != null && sinv.SFXChangeWeapon != null) sinv.SFX.PlayOneShot(sinv.SFXChangeWeapon);
-					if (sinv.isPulserNotDrill) {
-						sinv.pulserButtonText.Select(true);
-						sinv.drillButtonText.Select(false);
-					} else {
-						sinv.pulserButtonText.Select(false);
-						sinv.drillButtonText.Select(true);
-					}
-				} else {
-					if (Const.a.InputInvertInventoryCycling) {
-						wepbutMan.WeaponCycleUp();
-					} else {
-						wepbutMan.WeaponCycleDown();
-					}
-				}
-			}
-
-			// Handle severing connection with in use keypads, puzzles, etc. when player drifts too far away
-			if (usingObject) {
-				if (Vector3.Distance(playerCapsuleTransform.position, objectInUsePos) > (Const.a.frobDistance + 0.16f)) {
-					if (tetheredPGP != null) ClosePuzzleGrid();
-					if (tetheredPWP != null) ClosePuzzleWire();
-					if (tetheredKeypadElevator != null) CloseElevatorPad();
-					if (tetheredKeypadKeycode != null) CloseKeycodePad();
-					if (tetheredSearchable != null) CloseSearch();
-					if (paperLogInUse && ctb != null) ClosePaperLog();
-				}
+		if (tempSpriteIndex >= 0 && tempSpriteIndex < 24) {
+			if (health) {
+				tickImageHealth.overrideSprite = tickImages[tempSpriteIndex];
+			} else {
+				tickImageEnergy.overrideSprite = tickImages[tempSpriteIndex];
 			}
 		}
 	}
 
 	void WeaponButtonsManagerUpdate() {
 		for (int i=0; i<7; i++) {
-			if (WeaponInventory.WepInventoryInstance.weaponInventoryIndices[i] > 0) {
+			if (Inventory.a.weaponInventoryIndices[i] > 0) {
 				if (!wepbutMan.wepButtons[i].activeInHierarchy) wepbutMan.wepButtons[i].SetActive(true);
-				wepbutMan.wepButtonsScripts[i].useableItemIndex = WeaponInventory.WepInventoryInstance.weaponInventoryIndices[i];
+				wepbutMan.wepButtonsScripts[i].useableItemIndex = Inventory.a.weaponInventoryIndices[i];
 				if (!wepbutMan.wepCountsText[i].activeInHierarchy) wepbutMan.wepCountsText[i].SetActive(true);
 			} else {
 				if (wepbutMan.wepButtons[i].activeInHierarchy) wepbutMan.wepButtons[i].SetActive(false);
@@ -413,8 +644,8 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
-	public void OpenTab(int index, bool overrideToggling,TabMSG type,int intdata1, handedness side) {
-		if (side == handedness.LeftHand) {
+	public void OpenTab(int index, bool overrideToggling,TabMSG type,int intdata1, Handedness side) {
+		if (side == Handedness.LH) {
 			isRH = false;
 		} else {
 			isRH = true;
@@ -465,7 +696,6 @@ public class MFDManager : MonoBehaviour  {
 			}
 
 			if (type == TabMSG.EReader) {
-				//TabReset(false);
 				itemTabLH.EReaderSectionSContainerOpen();
 				playerMLook.ForceInventoryMode();
 			}
@@ -505,7 +735,6 @@ public class MFDManager : MonoBehaviour  {
 			}
 
 			if (type == TabMSG.EReader) {
-				//TabReset(true);
 				itemTabRH.EReaderSectionSContainerOpen();
 				playerMLook.ForceInventoryMode();
 			}
@@ -524,16 +753,21 @@ public class MFDManager : MonoBehaviour  {
 	public void VaporizeClicked() {
 		itemTabLH.vaporizeButton.SetActive(false);
 		itemTabRH.vaporizeButton.SetActive(false);
-		SendInfoToItemTab(-1); // general inventory item vaporized, set item tab to next general inv current
+		SendInfoToItemTab(-1); // General inventory item vaporized, set item tab to next general inv current.
 	}
 
-	public void ApplyButtonClicked(int index) {
+	// Clicking [Apply] button on left or right MFD's Item Tab to apply current patch or general inventory item.
+	public void ApplyButtonClicked() {
 		itemTabLH.applyButton.SetActive(false);
 		itemTabRH.applyButton.SetActive(false);
-		if (index == 55) {
-			SendInfoToItemTab(GeneralInvCurrent.GeneralInvInstance.generalInvIndex);  // health kit was applied, set item tab to next general inv current
+		if (applyButtonReferenceIndex < 0) return;
+
+		if (applyButtonReferenceIndex == 55) {
+			Inventory.a.genButtons[Inventory.a.generalInvCurrent].GetComponent<GeneralInvButton>().DoubleClick();
+			SendInfoToItemTab(Inventory.a.generalInvIndex);  // Health kit was applied, set item tab to next general inv current.
 		} else {
-			SendInfoToItemTab(PatchCurrent.PatchInstance.patchIndex); // set item tab to next patch
+			Inventory.a.patchButtonScripts[Inventory.a.patchCurrent].DoubleClick();
+			SendInfoToItemTab(Inventory.a.patchIndex); // Set item tab to next patch.
 		}
 	}
 
@@ -542,13 +776,11 @@ public class MFDManager : MonoBehaviour  {
 			headerTextRH.SetActive(true);
 			headerText_textRH.enabled = true;
 			headerText_textRH.text = head;
-
 			if (numberFoundContents <= 0) {
 				noItemsTextRH.SetActive(true);
 				noItemsTextRH.GetComponent<Text>().enabled = true;
 				return;
 			}
-
 			for (int i=0;i<4;i++) {
 				if (contents[i] > -1) {
 					searchCloseButtonRH.SetActive(true);
@@ -562,13 +794,11 @@ public class MFDManager : MonoBehaviour  {
 			headerTextLH.SetActive(true);
 			headerText_textLH.enabled = true;
 			headerText_textLH.text = head;
-
 			if (numberFoundContents <= 0) {
 				noItemsTextLH.SetActive(true);
 				noItemsTextLH.GetComponent<Text>().enabled = true;
 				return;
 			}
-
 			for (int i=0;i<4;i++) {
 				if (contents[i] > -1) {
 					searchCloseButtonLH.SetActive(true);
@@ -586,12 +816,12 @@ public class MFDManager : MonoBehaviour  {
 		if (lastSearchSideRH) {
 			TabReset(true);
 			Search(true,name,contentCount,resultContents,resultsIndices);
-			OpenTab(4,true,TabMSG.Search,0,handedness.RightHand);
+			OpenTab(4,true,TabMSG.Search,0,Handedness.RH);
 			if (useFX) SearchFXRH.SetActive(true);
 		} else {
 			TabReset(false);
 			Search(false,name,contentCount,resultContents,resultsIndices);
-			OpenTab(4,true,TabMSG.Search,0,handedness.LeftHand);
+			OpenTab(4,true,TabMSG.Search,0,Handedness.LH);
 			if (useFX) SearchFXLH.SetActive(true);
 		}
 		if (tetheredSearchable != si) {
@@ -609,13 +839,13 @@ public class MFDManager : MonoBehaviour  {
 			// Send to RH tab
 			TabReset(true);
 			puzzleGridRH.GetComponent<PuzzleGrid>().SendGrid(states,types,gtype,start,end, width, height,colors,t1,ud,pgp);
-			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.RightHand);
+			OpenTab(4,true,TabMSG.GridPuzzle,0,Handedness.RH);
 			SearchFXRH.SetActive(true);
 		} else {
 			// Send to LH tab
 			TabReset(false);
 			puzzleGridLH.GetComponent<PuzzleGrid>().SendGrid(states,types,gtype,start,end, width, height,colors,t1,ud,pgp);
-			OpenTab(4,true,TabMSG.GridPuzzle,0,handedness.LeftHand);
+			OpenTab(4,true,TabMSG.GridPuzzle,0,Handedness.LH);
 			SearchFXLH.SetActive(true);
 		}
 		objectInUsePos = tetherPoint;
@@ -628,12 +858,12 @@ public class MFDManager : MonoBehaviour  {
 		if (lastDataSideRH) {
 			// Send to RH tab
 			puzzleWireRH.GetComponent<PuzzleWire>().SendWirePuzzleData(sentWiresOn,sentNodeRowsActive,sentCurrentPositionsLeft,sentCurrentPositionsRight,sentTargetsLeft,sentTargetsRight,theme,wireColors,t1,a1,udSent,pwp);
-			OpenTab(4,true,TabMSG.WirePuzzle,0,handedness.RightHand);
+			OpenTab(4,true,TabMSG.WirePuzzle,0,Handedness.RH);
 			SearchFXRH.SetActive(true);
 		} else {
 			// Send to LH tab
 			puzzleWireLH.GetComponent<PuzzleWire>().SendWirePuzzleData(sentWiresOn,sentNodeRowsActive,sentCurrentPositionsLeft,sentCurrentPositionsRight,sentTargetsLeft,sentTargetsRight,theme,wireColors,t1,a1,udSent,pwp);
-			OpenTab(4,true,TabMSG.WirePuzzle,0,handedness.LeftHand);
+			OpenTab(4,true,TabMSG.WirePuzzle,0,Handedness.LH);
 			SearchFXLH.SetActive(true);
 		}
 		objectInUsePos = tetherPoint;
@@ -645,17 +875,17 @@ public class MFDManager : MonoBehaviour  {
 		TabReset(lastDataSideRH);
 		if (lastDataSideRH) {
 			// Send to RH tab
-			OpenTab(4,true,TabMSG.AudioLog,index,handedness.RightHand);
+			OpenTab(4,true,TabMSG.AudioLog,index,Handedness.RH);
 			SearchFXRH.SetActive(true);
 		} else {
 			// Send to LH tab
-			OpenTab(4,true,TabMSG.AudioLog,index,handedness.LeftHand);
+			OpenTab(4,true,TabMSG.AudioLog,index,Handedness.LH);
 			SearchFXLH.SetActive(true);
 		}
 		objectInUsePos = tetherPoint;
 		usingObject = true;
-		multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogTextReader();
-		multiMediaTab.SetActive(true);
+		OpenLogTextReader();
+		DataReaderContentTab.SetActive(true);
 		logReaderContainer.SetActive(true);
 		logReaderContainer.GetComponent<LogTextReaderManager>().SendTextToReader(index);
 		logTable.SetActive(false);
@@ -666,17 +896,15 @@ public class MFDManager : MonoBehaviour  {
 		TabReset(lastDataSideRH);
 		if (lastDataSideRH) {
 			// Send to RH tab
-			OpenTab(4,true,TabMSG.AudioLog,index,handedness.RightHand);
+			OpenTab(4,true,TabMSG.AudioLog,index,Handedness.RH);
 		} else {
 			// Send to LH tab
-			OpenTab(4,true,TabMSG.AudioLog,index,handedness.LeftHand);
+			OpenTab(4,true,TabMSG.AudioLog,index,Handedness.LH);
 		}
-		ctb.TabButtonClickSilent(4,true);	
-		if (tetheredSearchable != null) {
-			tetheredSearchable.searchableInUse = false;
-		}
-		multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLogTextReader();
-		multiMediaTab.SetActive(true);
+		CenterTabButtonClickSilent(4,true);	
+		if (tetheredSearchable != null) tetheredSearchable.searchableInUse = false;
+		OpenLogTextReader();
+		DataReaderContentTab.SetActive(true);
 		logReaderContainer.SetActive(true);
 		logReaderContainer.GetComponent<LogTextReaderManager>().SendTextToReader(index);
 		logTable.SetActive(false);
@@ -688,20 +916,16 @@ public class MFDManager : MonoBehaviour  {
 
 	public void OpenEReaderInItemsTab() {
 		if (lastItemSideRH) {
-			//itemTabRH.Reset();  done later in OpenTab
-			OpenTab(1,true,TabMSG.EReader,-1,handedness.RightHand);
+			OpenTab(1,true,TabMSG.EReader,-1,Handedness.RH);
 		} else {
-			//itemTabLH.Reset();  done later in OpenTab
-			OpenTab(1,true,TabMSG.EReader,-1,handedness.LeftHand);
+			OpenTab(1,true,TabMSG.EReader,-1,Handedness.LH);
 		}
-		if (ctb != null) ctb.TabButtonClickSilent(4,false);
-		if (tetheredSearchable != null) {
-			tetheredSearchable.searchableInUse = false;
-		}
+		CenterTabButtonClickSilent(4,false);
+		if (tetheredSearchable != null) tetheredSearchable.searchableInUse = false;
 		logTable.SetActive(false);
 		logLevelsFolder.SetActive(false);
 		logReaderContainer.SetActive(false);
-		multiMediaTab.GetComponent<MultiMediaTabManager>().OpenLastTab();
+		OpenLastMultiMediaTab();
 	}
 
 	public void ClearDataTab() {
@@ -735,10 +959,10 @@ public class MFDManager : MonoBehaviour  {
 	public void BlockedBySecurity(Vector3 tetherPoint, UseData ud) {
 		TabReset(lastDataSideRH);
 		if (lastDataSideRH) {
-			OpenTab(4,true,MFDManager.TabMSG.None,0,MFDManager.handedness.RightHand);
+			OpenTab(4,true,TabMSG.None,0,Handedness.RH);
 			blockedBySecurityRH.SetActive(true);
 		} else {
-			OpenTab(4,true,MFDManager.TabMSG.None,0,MFDManager.handedness.LeftHand);
+			OpenTab(4,true,TabMSG.None,0,Handedness.LH);
 			blockedBySecurityLH.SetActive(true);
 		}
 		Const.sprint(Const.a.stringTable[25],ud.owner);
@@ -749,7 +973,7 @@ public class MFDManager : MonoBehaviour  {
 	public void SendKeypadKeycodeToDataTab(int keycode, Vector3 tetherPoint, KeypadKeycode keypad, bool alreadySolved) {
 		TabReset(lastDataSideRH);
 		if (lastDataSideRH) {
-			OpenTab(4,true,MFDManager.TabMSG.Keypad,0,MFDManager.handedness.RightHand);
+			OpenTab(4,true,TabMSG.Keypad,0,Handedness.RH);
 			keycodeUIControlRH.SetActive(true);
 			KeypadKeycodeButtons kkb = keycodeUIControlRH.GetComponent<KeypadKeycodeButtons>();
 			kkb.keycode = keycode;
@@ -760,7 +984,7 @@ public class MFDManager : MonoBehaviour  {
 				kkb.currentEntry = keycode;
 			}
 		} else {
-			OpenTab(4,true,MFDManager.TabMSG.Keypad,0,MFDManager.handedness.LeftHand);
+			OpenTab(4,true,TabMSG.Keypad,0,Handedness.LH);
 			keycodeUIControlLH.SetActive(true);
 			KeypadKeycodeButtons kkb = keycodeUIControlLH.GetComponent<KeypadKeycodeButtons>();
 			kkb.keycode = keycode;
@@ -813,9 +1037,9 @@ public class MFDManager : MonoBehaviour  {
 		elevatorKeypad.activeKeypad = ke.gameObject;
 		elevatorKeypad.SetCurrentFloor();
 		if (lastDataSideRH) {
-			MFDManager.a.OpenTab(4,true,TabMSG.Elevator,0,handedness.RightHand);
+			OpenTab(4,true,TabMSG.Elevator,0,Handedness.RH);
 		} else {
-			MFDManager.a.OpenTab(4,true,TabMSG.Elevator,0,handedness.LeftHand);
+			OpenTab(4,true,TabMSG.Elevator,0,Handedness.LH);
 		}
 		linkedElevatorDoor = linkedDoor;
 		objectInUsePos = tetherPoint;
@@ -823,18 +1047,14 @@ public class MFDManager : MonoBehaviour  {
 		usingObject = true;
 	}
 
-	public void OpenFullMap() {
-
-	}
-
 	public void UpdateHUDAmmoCounts(int amount) {
-		if (wepmagCounterLH != null) wepmagCounterLH.UpdateDigits(amount);
-		if (wepmagCounterRH != null) wepmagCounterRH.UpdateDigits(amount);
+		wepmagCounterLH.UpdateDigits(amount);
+		wepmagCounterRH.UpdateDigits(amount);
 	}
 
 	public void DisableSearchItemImage(int index) {
-		MFDManager.a.searchItemImagesLH[index].SetActive(false);
-		//MFDManager.a.searchItemImagesRH[index].SetActive(false);
+		searchItemImagesLH[index].SetActive(false);
+		searchItemImagesRH[index].SetActive(false);
 	}
 
 	public void NotifySearchThatSearchableWasDestroyed() {
@@ -873,14 +1093,11 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
-	public void SetWepIcon(int index) {
-		iconmanLH.SetWepIcon(index);
-		weptextmanLH.SetWepText(index);
-	}
-
-	public void SetWepText(int index) {
-		iconmanRH.SetWepIcon(index);
-		weptextmanRH.SetWepText(index);
+	public void SetWepInfo(int index) {
+		if (index >= 0) {
+			weptextRH.text = weptextLH.text = Const.a.useableItemsNameText[index];
+			iconRH.overrideSprite = iconLH.overrideSprite = Const.a.useableItemsIcons[index];
+		}
 	}
 
 	public void ReturnToLastTab(bool isRightHand) {
@@ -892,4 +1109,225 @@ public class MFDManager : MonoBehaviour  {
 			leftTC.ReturnToLastTab();
 		}
 	}
+
+
+	// Center tabs
+	public void DisableAllCenterTabs () {
+		MainTab.SetActive(false);
+		HardwareTab.SetActive(false);
+		GeneralTab.SetActive(false);
+		SoftwareTab.SetActive(false);
+		DataReaderContentTab.SetActive(false);
+	}
+
+	void ToggleHighlightOnCenterTabButton (int buttonIndex) {
+		Image buttonImage = null;
+		switch (buttonIndex) {
+			case 0: if (buttonImage != MainTabButton.image) buttonImage = MainTabButton.image; break;
+			case 1: if (buttonImage != HardwareTabButton.image) buttonImage = HardwareTabButton.image; break;
+			case 2: if (buttonImage != GeneralTabButton.image) buttonImage = GeneralTabButton.image; break;
+			case 3: if (buttonImage != SoftwareTabButton.image) buttonImage = SoftwareTabButton.image; break;
+		}
+
+		if (buttonImage == null) return;
+		if (highlightStatus[buttonIndex]) {
+			if (buttonImage.overrideSprite != MFDSpriteNotification) buttonImage.overrideSprite = MFDSpriteNotification;
+		} else {
+			if (curCenterTab == buttonIndex) {
+				if (buttonImage.overrideSprite != MFDSpriteSelected) buttonImage.overrideSprite = MFDSpriteSelected;
+			} else {
+				if (buttonImage.overrideSprite != MFDSprite) buttonImage.overrideSprite = MFDSprite;
+			}
+		}
+
+		highlightTickCount[buttonIndex]++;
+		highlightStatus[buttonIndex] = (!highlightStatus[buttonIndex]);
+
+		if (highlightTickCount[buttonIndex] >= numTicks) {
+			highlightStatus[buttonIndex] = false;
+			highlightTickCount[buttonIndex] = 0;
+			tabNotified[buttonIndex] = false; // stop blinking
+			if (curCenterTab == buttonIndex) {
+				if (buttonImage.overrideSprite != MFDSpriteSelected) buttonImage.overrideSprite = MFDSpriteSelected; // If we are on this tab, return to selected
+			} else {
+				if (buttonImage.overrideSprite != MFDSprite) buttonImage.overrideSprite = MFDSprite; // Return to normal
+			}
+		}
+	}
+
+	public void NotifyToCenterTab(int tabNum) {
+		tabNotified[tabNum] = true;
+		centerTabsTickFinished = PauseScript.a.relativeTime + centerTabsTickTime;
+		ToggleHighlightOnCenterTabButton(tabNum);
+	}
+
+	public void CenterTabButtonClick (int tabNum) {
+		TabSFX.PlayOneShot(TabSFXClip);
+		CenterTabButtonClickSilent(tabNum,false);
+	}
+
+	public void CenterTabButtonClickSilent (int tabNum, bool forceOn) {
+		bool wasActive = false;
+
+		switch (tabNum) {
+		case 0:
+			wasActive = MainTab.activeInHierarchy;
+			DisableAllCenterTabs();
+			if (curCenterTab == 0) {
+				if (wasActive && !forceOn) {
+					break;
+				} else {
+					MainTab.SetActive(true);
+					break;
+				}
+			}
+			MainTabButton.image.overrideSprite = MFDSpriteSelected;
+			DisableAllCenterTabs();
+			MainTab.SetActive(true);
+			HardwareTabButton.image.overrideSprite = MFDSprite;
+			GeneralTabButton.image.overrideSprite = MFDSprite;
+			SoftwareTabButton.image.overrideSprite = MFDSprite;
+			curCenterTab = 0;
+			break;
+		case 1:
+			wasActive = HardwareTab.activeInHierarchy;
+			DisableAllCenterTabs();
+			if (curCenterTab == 1) {
+				if (wasActive && !forceOn) {
+					break;
+				} else {
+					HardwareTab.SetActive(true);
+					break;
+				}
+			}
+			HardwareTabButton.image.overrideSprite = MFDSpriteSelected;
+			DisableAllCenterTabs();
+			HardwareTab.SetActive(true);
+			MainTabButton.image.overrideSprite = MFDSprite;
+			GeneralTabButton.image.overrideSprite = MFDSprite;
+			SoftwareTabButton.image.overrideSprite = MFDSprite;
+			curCenterTab = 1;
+			break;
+		case 2:
+			wasActive = GeneralTab.activeInHierarchy;
+			DisableAllCenterTabs();
+			if (curCenterTab == 2) {
+				if (wasActive && !forceOn) {
+					break;
+				} else {
+					GeneralTab.SetActive(true);
+					break;
+				}
+			}
+			GeneralTabButton.image.overrideSprite = MFDSpriteSelected;
+			DisableAllCenterTabs();
+			GeneralTab.SetActive(true);
+			MainTabButton.image.overrideSprite = MFDSprite;
+			HardwareTabButton.image.overrideSprite = MFDSprite;
+			SoftwareTabButton.image.overrideSprite = MFDSprite;
+			curCenterTab = 2;
+			break;
+		case 3:
+			wasActive = SoftwareTab.activeInHierarchy;
+			DisableAllCenterTabs();
+			if (curCenterTab == 3) {
+				if (wasActive && !forceOn) {
+					break;
+				} else {
+					SoftwareTab.SetActive(true);
+					break;
+				}
+			}
+			SoftwareTabButton.image.overrideSprite = MFDSpriteSelected;
+			DisableAllCenterTabs();
+			SoftwareTab.SetActive(true);
+			MainTabButton.image.overrideSprite = MFDSprite;
+			HardwareTabButton.image.overrideSprite = MFDSprite;
+			GeneralTabButton.image.overrideSprite = MFDSprite;
+			curCenterTab = 3;
+			break;
+		case 4:
+			DisableAllCenterTabs();
+			DataReaderContentTab.SetActive(true);
+			OpenLogTableContents();
+			MainTabButton.image.overrideSprite = MFDSprite;
+			HardwareTabButton.image.overrideSprite = MFDSprite;
+			GeneralTabButton.image.overrideSprite = MFDSprite;
+			SoftwareTabButton.image.overrideSprite = MFDSprite;
+			curCenterTab = 4;
+			break;
+		}
+	}
+	//--- End Center Tabs ---
+
+	// Multi Media Tabs
+	public void OpenLastMultiMediaTab() {
+		switch (lastMultiMediaTabOpened) {
+			case 0: OpenEmailTableContents(); break;
+			case 1: OpenLogTableContents(); break;
+			case 2: OpenDataTableContents(); break;
+			case 3: OpenNotesTableContents(); break;
+		}
+	}
+
+	public void ResetMultiMediaTabs() {
+		startingSubTab.SetActive(false);
+		secondaryTab1.SetActive(false);
+		secondaryTab2.SetActive(false);
+		emailTab.SetActive(false);
+		ersbLH.SetEReaderSectionsButtonsHighlights(lastMultiMediaTabOpened);
+		ersbRH.SetEReaderSectionsButtonsHighlights(lastMultiMediaTabOpened);
+		dataTab.SetActive(false);
+		multiMediaHeaderLabel.text = System.String.Empty;
+	}
+
+	public void OpenLogTableContents() {
+		ResetMultiMediaTabs();
+		startingSubTab.SetActive(true);
+		multiMediaHeaderLabel.text = "LOGS";
+		lastMultiMediaTabOpened = 1;
+		ersbLH.SetEReaderSectionsButtonsHighlights(1);
+		ersbRH.SetEReaderSectionsButtonsHighlights(1);
+	}
+
+	public void OpenLogsLevelFolder(int curlevel) {
+		ResetMultiMediaTabs();
+		secondaryTab1.SetActive(true);
+		multiMediaHeaderLabel.text = "Level " + curlevel.ToString() + " Logs";
+		secondaryTab1.GetComponent<LogContentsButtonsManager>().currentLevelFolder = curlevel;
+		secondaryTab1.GetComponent<LogContentsButtonsManager>().InitializeLogsFromLevelIntoFolder();
+	}
+
+	public void OpenLogTextReader() {
+		ResetMultiMediaTabs();
+		secondaryTab2.SetActive(true);
+	}
+
+	public void OpenEmailTableContents() {
+		ResetMultiMediaTabs();
+		emailTab.SetActive(true);
+		multiMediaHeaderLabel.text = "EMAIL";
+		lastMultiMediaTabOpened = 0;
+		ersbLH.SetEReaderSectionsButtonsHighlights(0);
+		ersbRH.SetEReaderSectionsButtonsHighlights(0);
+	}
+
+	public void OpenDataTableContents() {
+		ResetMultiMediaTabs();
+		dataTab.SetActive(true);
+		multiMediaHeaderLabel.text = "DATA";
+		lastMultiMediaTabOpened = 2;
+		ersbLH.SetEReaderSectionsButtonsHighlights(2);
+		ersbRH.SetEReaderSectionsButtonsHighlights(2);
+	}
+
+	public void OpenNotesTableContents() {
+		ResetMultiMediaTabs();
+		notesTab.SetActive(true);
+		multiMediaHeaderLabel.text = "NOTES";
+		lastMultiMediaTabOpened = 3;
+		ersbLH.SetEReaderSectionsButtonsHighlights(3);
+		ersbRH.SetEReaderSectionsButtonsHighlights(3);
+	}
+	//--- End Multi Media Tabs ---
 }

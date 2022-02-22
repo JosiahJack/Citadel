@@ -14,13 +14,10 @@ public class CreditsScroll : MonoBehaviour {
 		pagenum = 0;
 		creditsText.text = Const.a.creditsText[pagenum];
 		exitVideo.SetActive(true);
-		if (Const.a.gameFinished) {
-			// Get player stats for finishing the game
-			Const.a.creditsText[1] = Const.a.CreditsStats();
-		}
+		if (Const.a.gameFinished) Const.a.creditsText[1] = Const.a.CreditsStats(); // Get player stats for finishing the game
     }
 
-	void Update () {
+	void Update() {
 		// Escape/back button listener
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			if (exitVideo.activeSelf) {
@@ -31,9 +28,7 @@ public class CreditsScroll : MonoBehaviour {
 		}
 
 		if (Input.GetMouseButtonUp(0)) {
-			if (exitVideo.activeSelf) {
-				return;
-			}
+			if (exitVideo.activeSelf) return;
 
 			if (!bottom) {
 				pagenum++;
@@ -51,9 +46,7 @@ public class CreditsScroll : MonoBehaviour {
 		}
 
 		if (Input.GetMouseButtonUp(1)) {
-			if (exitVideo.activeSelf) {
-				return;
-			}
+			if (exitVideo.activeSelf) return;
 
 			pagenum--;
 			if (pagenum <0) pagenum = 0;

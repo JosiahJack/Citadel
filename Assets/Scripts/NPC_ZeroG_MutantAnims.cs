@@ -33,7 +33,7 @@ public class NPC_ZeroG_MutantAnims : MonoBehaviour {
 	}
 
     void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			//if (aic.rangeToEnemy >= aic.sightRange) return;
 			// only update model frames every tick seconds and only if we aren't on the last frame if we need to stop there
 			if (endOnLastFrame && currentFrame == (frames.Length-1)) return;

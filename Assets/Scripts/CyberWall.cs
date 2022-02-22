@@ -26,7 +26,7 @@ public class CyberWall : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (tickFinished < Time.time) {
 				if (centerAlphaCurrent > centerAlphaMinimum) {
 					centerAlphaCurrent -= 0.05f;
@@ -63,7 +63,7 @@ public class CyberWall : MonoBehaviour {
 		//currentCollisions.Add(other.gameObject);
 	}
 
-    void OnCollisionExit (Collision other) {
-		//currentCollisions.Remove(other.gameObject);
-	}
+    // void OnCollisionExit (Collision other) {
+		// currentCollisions.Remove(other.gameObject);
+	// }
 }

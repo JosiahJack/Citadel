@@ -21,7 +21,7 @@ public class SecurityCameraRotate : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (!mR.isVisible) return;
 			if (waitingTime < PauseScript.a.relativeTime) {
 				if (rotatePositive) {

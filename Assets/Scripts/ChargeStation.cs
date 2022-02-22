@@ -2,29 +2,28 @@
 using System.Collections;
 
 public class ChargeStation : MonoBehaviour {
+	// Externally modified per prefab instance
 	public float amount = 170;  //default to 2/3 of 255, the total energy player can have
 	public float resetTime = 150; //150 seconds
 	public bool requireReset;
 	public float minSecurityLevel = 100;
 	public float damageOnUse = 0f; 
-	[HideInInspector]
-	public float nextthink; // save
 	public string target;
 	public string argvalue;
 	public string rechargeMsg;
 	public int rechargeMsgLingdex = 1;
 	public string usedMsg;
 	public int usedMsgLingdex = 0;
+
+	// Internal references
+	[HideInInspector] public float nextthink; // save, stores the time after which this will be usable again.  Soem charge stations must recharge.
 	
-	void Start () {
+	void Awake() {
 		nextthink = PauseScript.a.relativeTime;
 	}
 
 	public void Use (UseData ud) {
-		if (LevelManager.a.GetCurrentLevelSecurity() > minSecurityLevel) {
-			MFDManager.a.BlockedBySecurity (transform.position,ud);
-			return;
-		}
+		if (LevelManager.a.GetCurrentLevelSecurity() > minSecurityLevel) { MFDManager.a.BlockedBySecurity (transform.position,ud); return; }
 		
 		if (nextthink < PauseScript.a.relativeTime) {
 			PlayerEnergy pe = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerEnergy>();
@@ -47,10 +46,7 @@ public class ChargeStation : MonoBehaviour {
 				}
 			}
 			Const.sprintByIndexOrOverride (usedMsgLingdex, usedMsg,ud.owner);
-			if (requireReset) {
-				nextthink = PauseScript.a.relativeTime + resetTime;
-			}
-
+			if (requireReset) nextthink = PauseScript.a.relativeTime + resetTime;
 			if (!string.IsNullOrWhiteSpace(target)) {
 				ud.argvalue = argvalue;
 				TargetIO tio = GetComponent<TargetIO>();

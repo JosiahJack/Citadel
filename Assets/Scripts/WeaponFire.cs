@@ -2,21 +2,7 @@
 using System.Collections;
 
 public class WeaponFire : MonoBehaviour {
-    [HideInInspector]
-    public float waitTilNextFire = 0f; // save
-    public float muzzleDistance = 0.10f;
-    public float hitOffset = 0.2f;
-    public float normalHitOffset = 0.2f;
-    public float verticalOffset = -0.2f; // For laser beams
-    public float fireDistance = 200f;
-    public float hitscanDistance = 200f;
-    public float meleescanDistance = 2.5f;
-	private float overheatedPercent = 80f;
-    public float magpulseShotForce = 2.20f;
-    public float stungunShotForce = 1.92f;
-    public float railgunShotForce = 2.60f;
-    public float plasmaShotForce = 1.50f;
-	public float inventoryModeViewRotateMax = 48f;
+	// External references, required
     public GameObject bullet;
     public GameObject impactEffect;
 	public GameObject noDamageIndicator;
@@ -28,7 +14,6 @@ public class WeaponFire : MonoBehaviour {
     public PlayerEnergy curEnergy;
     public PlayerHealth pH;
 	public PlayerPatch pp;
-	public SoftwareInventory sinv;
     public GameObject playerCapsule;
     public WeaponCurrent currentWeapon; // assign in the editor
     public EnergyOverloadButton energoverButton;
@@ -63,25 +48,8 @@ public class WeaponFire : MonoBehaviour {
     public AudioClip SFXRicochet; // assign in the editor
     public AudioClip SFXPulserFire; // assign in the editor
     public AudioClip SFXDrillFire; // assign in the editor
-
-    public bool overloadEnabled; // save
-    public float sparqSetting; // save
-    public float ionSetting; // save
-    public float blasterSetting; // save
-    public float plasmaSetting; // save
-    public float stungunSetting;  // save
-    private float clipEnd;
     public Animator anim; // assign in the editor
 	public Animator rapieranim; // assign in the editor
-    public DamageData damageData;
-    private RaycastHit tempHit;
-    private Vector3 tempVec;
-    private bool useBlood;
-    private HealthManager tempHM;
-    private float retval;
-    private float heatTickFinished;
-    private float heatTickTime = 0.50f;
-
 	public GameObject muzFlashMK3;
 	public GameObject muzFlashBlaster;
 	public GameObject muzFlashDartgun;
@@ -96,21 +64,47 @@ public class WeaponFire : MonoBehaviour {
 	public GameObject muzFlashSkorpion;
 	public GameObject muzFlashSparq;
 	public GameObject muzFlashStungun;
-	public float[] driftForWeapon;
+	public GameObject wepView; // Recoil the weapon view models
+    [HideInInspector] public bool overloadEnabled; // save
+    [HideInInspector] public float sparqSetting = 50f; // save
+    [HideInInspector] public float ionSetting = 100f; // save
+    [HideInInspector] public float blasterSetting = 15f; // save
+    [HideInInspector] public float plasmaSetting = 40f; // save
+    [HideInInspector] public float stungunSetting = 20f;  // save
 
-	// Recoil the weapon view models
-	public GameObject wepView;
+	// Internal references
+    [HideInInspector] public DamageData damageData;
+    [HideInInspector] public float waitTilNextFire = 0f; // save
+    private float hitOffset = 0f;
+    private float verticalOffset = -0.2f; // For laser beams
+    private float fireDistance = 200f;
+    private float hitscanDistance = 200f;
+    private float meleescanDistance = 3.2f;
+	private float overheatedPercent = 80f;
+    private float magpulseShotForce = 2.2f;
+    private float stungunShotForce = 2.0f;
+    private float railgunShotForce = 5f;
+    private float plasmaShotForce = 1.5f;
+	private float inventoryModeViewRotateMax = 48f;
+    private float clipEnd;
+    private RaycastHit tempHit;
+    private Vector3 tempVec;
+    private bool useBlood;
+    private HealthManager tempHM;
+    private float retval;
+    private float heatTickFinished;
+    private float heatTickTime = 0.50f;
+	private float[] driftForWeapon = new float[16]{5f,0f,15f,50f,0f,0f,0f,8f,3f,3f,3f,12f,10f,30f,0f,3f}; // Not needed on Const as this only exists in one unique place on the player.
 	private Vector3 wepViewDefaultLocalPos;
-	public bool recoiling; // save
-	public int lerpUp = 0; // 0 = not lerping, 1 = up, 2 = down
-	[HideInInspector]
-	public float justFired; // save
-	public float energySliderClickedTime; // save
+	[HideInInspector] public bool recoiling; // save
+	[HideInInspector] public int lerpUp = 0; // 0 = not lerping, 1 = up, 2 = down
+	[HideInInspector] public float justFired; // save
+	[HideInInspector] public float energySliderClickedTime; // save
 	private Rigidbody playercapRbody;
-	[HideInInspector]
-	public float cyberWeaponAttackFinished; // save
+	[HideInInspector] public float cyberWeaponAttackFinished; // save
 	private float wepYRot;
 
+	// Singleton instance
 	public static WeaponFire a;
 
 	void Awake() {
@@ -128,12 +122,17 @@ public class WeaponFire : MonoBehaviour {
 		playercapRbody = playerCapsule.GetComponent<Rigidbody>();
 		cyberWeaponAttackFinished = PauseScript.a.relativeTime;
 		wepYRot = 0f;
+		sparqSetting = 50f;
+		ionSetting = 100f;
+		blasterSetting = 15f;
+		plasmaSetting = 40f;
+		stungunSetting = 20f;
     }
 
     void GetWeaponData(int index) {
         if (index == -1) return;
         damageData.isFullAuto = Const.a.isFullAutoForWeapon[index];
-        if (WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
+        if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
             damageData.damage = Const.a.damagePerHitForWeapon2[index];
             damageData.delayBetweenShots = Const.a.delayBetweenShotsForWeapon2[index];
             damageData.penetration = Const.a.penetrationForWeapon2[index];
@@ -154,89 +153,57 @@ public class WeaponFire : MonoBehaviour {
     }
 
     public static int Get16WeaponIndexFromConstIndex(int index) {
-        int i = -1;
         switch (index) {
-            case 36:
-                //Mark3 Assault Rifle
-                i = 0; break;
-            case 37:
-                //ER-90 Blaster
-                i = 1; break;
-            case 38:
-                //SV-23 Dartgun
-                i = 2; break;
-            case 39:
-                //AM-27 Flechette
-                i = 3; break;
-            case 40:
-                //RW-45 Ion Beam
-                i = 4; break;
-            case 41:
-                //TS-04 Laser Rapier
-                i = 5; break;
-            case 42:
-                //Lead Pipe
-                i = 6; break;
-            case 43:
-                //Magnum 2100
-                i = 7; break;
-            case 44:
-                //SB-20 Magpulse
-                i = 8; break;
-            case 45:
-                //ML-41 Pistol
-                i = 9; break;
-            case 46:
-                //LG-XX Plasma Rifle
-                i = 10; break;
-            case 47:
-                //MM-76 Railgun
-                i = 11; break;
-            case 48:
-                //DC-05 Riotgun
-                i = 12; break;
-            case 49:
-                //RF-07 Skorpion
-                i = 13; break;
-            case 50:
-                //Sparq Beam
-                i = 14; break;
-            case 51:
-                //DH-07 Stungun
-                i = 15; break;
+            case 36: return 0; // Mark3 Assault Rifle
+            case 37: return 1; // ER-90 Blaster
+            case 38: return 2; // SV-23 Dartgun
+            case 39: return 3; // AM-27 Flechette
+            case 40: return 4; // RW-45 Ion Beam
+            case 41: return 5; // TS-04 Laser Rapier
+            case 42: return 6; // Lead Pipe
+            case 43: return 7; // Magnum 2100
+            case 44: return 8; // SB-20 Magpulse
+            case 45: return 9; // ML-41 Pistol
+            case 46: return 10;// LG-XX Plasma Rifle
+            case 47: return 11;// MM-76 Railgun
+            case 48: return 12;// DC-05 Riotgun
+            case 49: return 13;// RF-07 Skorpion
+            case 50: return 14;// Sparq Beam
+            case 51: return 15;// DH-07 Stungun
         }
-        return i;
+        return -1;
     }
 
     bool CurrentWeaponUsesEnergy () {
-        if (currentWeapon.weaponIndex == 37 || currentWeapon.weaponIndex == 40 || currentWeapon.weaponIndex == 46 || currentWeapon.weaponIndex == 50 || currentWeapon.weaponIndex == 51)
-            return true;
-
+        if (currentWeapon.weaponIndex == 37 || currentWeapon.weaponIndex == 40 ||
+			currentWeapon.weaponIndex == 46 || currentWeapon.weaponIndex == 50 ||
+			currentWeapon.weaponIndex == 51)
+			return true;
         return false;
     }
 
     bool WeaponsHaveAnyHeat() {
 		if (currentWeapon.redbull) return false;
-		if (WeaponAmmo.a.currentEnergyWeaponHeat[0] > 0f) return true;
-		if (WeaponAmmo.a.currentEnergyWeaponHeat[1] > 0f) return true;
-		if (WeaponAmmo.a.currentEnergyWeaponHeat[2] > 0f) return true;
-		if (WeaponAmmo.a.currentEnergyWeaponHeat[3] > 0f) return true;
-		if (WeaponAmmo.a.currentEnergyWeaponHeat[4] > 0f) return true;
-		if (WeaponAmmo.a.currentEnergyWeaponHeat[5] > 0f) return true;
-		if (WeaponAmmo.a.currentEnergyWeaponHeat[6] > 0f) return true;
+		if (Inventory.a.currentEnergyWeaponHeat[0] > 0f) return true;
+		if (Inventory.a.currentEnergyWeaponHeat[1] > 0f) return true;
+		if (Inventory.a.currentEnergyWeaponHeat[2] > 0f) return true;
+		if (Inventory.a.currentEnergyWeaponHeat[3] > 0f) return true;
+		if (Inventory.a.currentEnergyWeaponHeat[4] > 0f) return true;
+		if (Inventory.a.currentEnergyWeaponHeat[5] > 0f) return true;
+		if (Inventory.a.currentEnergyWeaponHeat[6] > 0f) return true;
         return false;
     }
 
     void HeatBleedOff() {
         if (heatTickFinished < PauseScript.a.relativeTime) {
-			WeaponAmmo.a.currentEnergyWeaponHeat[0] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[0] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[0] = 0f;
-			WeaponAmmo.a.currentEnergyWeaponHeat[1] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[1] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[1] = 0f;
-			WeaponAmmo.a.currentEnergyWeaponHeat[2] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[2] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[2] = 0f;
-			WeaponAmmo.a.currentEnergyWeaponHeat[3] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[3] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[3] = 0f;
-			WeaponAmmo.a.currentEnergyWeaponHeat[4] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[4] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[4] = 0f;
-			WeaponAmmo.a.currentEnergyWeaponHeat[5] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[5] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[5] = 0f;
-			WeaponAmmo.a.currentEnergyWeaponHeat[6] -= 10f; if (WeaponAmmo.a.currentEnergyWeaponHeat[6] < 0f) WeaponAmmo.a.currentEnergyWeaponHeat[6] = 0f;
-            if (CurrentWeaponUsesEnergy()) energheatMgr.HeatBleed(GetHeatForCurrentWeapon()); // update hud heat ticks if current weapon uses energy
+			Inventory.a.currentEnergyWeaponHeat[0] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[0] < 0f) Inventory.a.currentEnergyWeaponHeat[0] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[1] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[1] < 0f) Inventory.a.currentEnergyWeaponHeat[1] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[2] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[2] < 0f) Inventory.a.currentEnergyWeaponHeat[2] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[3] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[3] < 0f) Inventory.a.currentEnergyWeaponHeat[3] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[4] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[4] < 0f) Inventory.a.currentEnergyWeaponHeat[4] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[5] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[5] < 0f) Inventory.a.currentEnergyWeaponHeat[5] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[6] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[6] < 0f) Inventory.a.currentEnergyWeaponHeat[6] = 0f;
+            if (CurrentWeaponUsesEnergy()) energheatMgr.HeatBleed(Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent]); // update hud heat ticks if current weapon uses energy
             heatTickFinished = PauseScript.a.relativeTime + heatTickTime;
         }
     }
@@ -268,7 +235,7 @@ public class WeaponFire : MonoBehaviour {
 	}
 
     void Update() {
-        if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+        if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
             if (WeaponsHaveAnyHeat()) HeatBleedOff(); // Slowly cool off any weapons that have been heated from firing
 
 			// Move the weapon transform up and down for reload "animation" and weapon swap
@@ -319,7 +286,7 @@ public class WeaponFire : MonoBehaviour {
 
 			if (GetInput.a.Attack(true)) {
 				if (mls.vmailActive) {
-					mls.logInventory.DeactivateVMail();
+					Inventory.a.DeactivateVMail();
 					mls.vmailActive = false;
 					waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
 					return;
@@ -361,19 +328,19 @@ public class WeaponFire : MonoBehaviour {
                         if (i == 1 || i == 4 || i == 10 || i == 14 || i == 15) {
                             // Even if we have only 1 energy, we still fire with all we've got up to the energy level setting of course
                             if (curEnergy.energy > 0 || currentWeapon.bottomless || currentWeapon.redbull) {
-								if (GetHeatForCurrentWeapon() > overheatedPercent && !currentWeapon.bottomless && !currentWeapon.redbull) {
+								if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > overheatedPercent && !currentWeapon.bottomless && !currentWeapon.redbull) {
 									if (SFXEmpty != null) SFX.PlayOneShot(SFXEmpty);
                                     waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
-                                    Const.sprint(Const.a.stringTable[11],Const.a.allPlayers);
+                                    Const.sprint(Const.a.stringTable[11]);
 								} else {
 									FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
 								}
 							} else {
-									Const.sprint(Const.a.stringTable[207],Const.a.allPlayers); // Not enough energy to fire weapon.
+									Const.sprint(Const.a.stringTable[207]); // Not enough energy to fire weapon.
 							}
                         } else {
                             // Uses normal ammo, check versus alternate or normal to see if we have ammo then fire
-                            if (WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
+                            if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
                                 if (WeaponCurrent.WepInstance.currentMagazineAmount2[WeaponCurrent.WepInstance.weaponCurrent] > 0 || currentWeapon.bottomless) {
                                     FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
                                 } else {
@@ -399,8 +366,8 @@ public class WeaponFire : MonoBehaviour {
 					} else {
 						// First press reload to unload, then press again to load
 						int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (WeaponCurrent.WepInstance.weaponIndex);
-						if (WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
-							if (WeaponCurrent.WepInstance.currentMagazineAmount2[WeaponCurrent.WepInstance.weaponCurrent] <= 0 || WeaponAmmo.a.wepAmmoSecondary[wep16index] <= 0) { // True for no wepAmmoSecondary causes Reload to run and display no ammo message.
+						if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
+							if (WeaponCurrent.WepInstance.currentMagazineAmount2[WeaponCurrent.WepInstance.weaponCurrent] <= 0 || Inventory.a.wepAmmoSecondary[wep16index] <= 0) { // True for no wepAmmoSecondary causes Reload to run and display no ammo message.
 								WeaponCurrent.WepInstance.Reload();
 								// Debug.Log("Reload step");
 							} else {
@@ -408,7 +375,7 @@ public class WeaponFire : MonoBehaviour {
 								// Debug.Log("Unload step");
 							}
 						} else {
-							if (WeaponCurrent.WepInstance.currentMagazineAmount[WeaponCurrent.WepInstance.weaponCurrent] <= 0 || WeaponAmmo.a.wepAmmo[wep16index] <= 0) { // True for no wepAmmo causes Reload to run and display no ammo message.
+							if (WeaponCurrent.WepInstance.currentMagazineAmount[WeaponCurrent.WepInstance.weaponCurrent] <= 0 || Inventory.a.wepAmmo[wep16index] <= 0) { // True for no wepAmmo causes Reload to run and display no ammo message.
 								WeaponCurrent.WepInstance.Reload();
 								// Debug.Log("Reload step");
 							} else {
@@ -426,14 +393,14 @@ public class WeaponFire : MonoBehaviour {
 					} else {
 						// First press change ammo type button to unload, then press again to load
 						int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (WeaponCurrent.WepInstance.weaponIndex);
-						if (WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
-							if (WeaponAmmo.a.wepAmmoSecondary[wep16index] <= 0) {
+						if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
+							if (Inventory.a.wepAmmoSecondary[wep16index] <= 0) {
 								WeaponCurrent.WepInstance.ChangeAmmoType();
 							} else {
 								WeaponCurrent.WepInstance.Unload(false);
 							}
 						} else {
-							if (WeaponAmmo.a.wepAmmo[wep16index] <= 0) {
+							if (Inventory.a.wepAmmo[wep16index] <= 0) {
 								WeaponCurrent.WepInstance.ChangeAmmoType();
 							} else {
 								WeaponCurrent.WepInstance.Unload(false);
@@ -442,24 +409,22 @@ public class WeaponFire : MonoBehaviour {
 					}
 				}
             }
-        } else {
-
-	}
+        }
     }
 
 	void FireCyberWeapon() {
 		if (cyberWeaponAttackFinished < PauseScript.a.relativeTime) {
-			if (sinv.isPulserNotDrill) {
-				if (sinv.hasSoft[1]) {
+			if (Inventory.a.isPulserNotDrill) {
+				if (Inventory.a.hasSoft[1]) {
 					// Fire pulser
-					if (sinv.hasSoft[1]) FireCyberBeachball(true,railgunShotForce,Const.PoolType.CyberPlayerShots);
+					if (Inventory.a.hasSoft[1]) FireCyberBeachball(true,railgunShotForce,Const.PoolType.CyberPlayerShots);
 					if (SFXPulserFire != null) { SFX.clip = SFXPulserFire; SFX.Play(); }
 					cyberWeaponAttackFinished = PauseScript.a.relativeTime + 0.08f;
 				}
 			} else {
-				if (sinv.hasSoft[0]) {
+				if (Inventory.a.hasSoft[0]) {
 					// Fire I.C.E. drill
-					if (sinv.hasSoft[0]) FireCyberBeachball(false,plasmaShotForce,Const.PoolType.CyberPlayerIceShots);
+					if (Inventory.a.hasSoft[0]) FireCyberBeachball(false,plasmaShotForce,Const.PoolType.CyberPlayerIceShots);
 					if (SFXDrillFire != null) { SFX.clip = SFXDrillFire; SFX.Play(); }
 					cyberWeaponAttackFinished = PauseScript.a.relativeTime + 0.5f;
 				}
@@ -472,7 +437,7 @@ public class WeaponFire : MonoBehaviour {
         // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
         GameObject beachball = Const.a.GetObjectFromPool(shotPool);
         if (beachball != null) {
-			damageData.damage = 10f * sinv.softVersions[0];
+			damageData.damage = 10f * Inventory.a.softVersions[0];
 			if (isPulser) damageData.damage = 1f; // Cyberspace enemies don't have much health
             damageData.owner = playerCapsule;
             damageData.attackType = Const.AttackType.ProjectileLaunched;
@@ -483,17 +448,14 @@ public class WeaponFire : MonoBehaviour {
 			mls.SetCameraFocusPoint();
             tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
             beachball.transform.forward = tempVec.normalized;
-            //drawMyLine(beachball.transform.position, mls.cameraFocusPoint, Color.green, 2f);
             beachball.SetActive(true);
             Vector3 shove = beachball.transform.forward * shoveForce;
-			//shove += playercapRbody.velocity; // add in the player's velocity
-            beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
+            beachball.GetComponent<Rigidbody>().velocity = Const.a.vectorZero; // prevent random variation from the last shot's velocity
             beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
         }
 	}
 
-    // index is used to get recoil down at the bottom and pass along ref for damageData,
-    // otherwise the cases use currentWeapon.weaponIndex
+    // index is used to get recoil down at the bottom and pass along ref for damageData, otherwise the cases use currentWeapon.weaponIndex
     void FireWeapon(int index, bool isSilent) {
         //damageData.ResetDamageData(damageData);
 		if (currentWeapon.weaponIndex != 41 && currentWeapon.weaponIndex != 42) {
@@ -516,10 +478,10 @@ public class WeaponFire : MonoBehaviour {
 				if (DidRayHit(index)) HitScanFire(index);
 				muzFlashBlaster.SetActive(true);
                 if (overloadEnabled) {
-                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
+                    Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
-                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += blasterSetting;
-					if (WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
+                    Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += blasterSetting;
+					if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
                 }
                 break;
             case 38:
@@ -542,10 +504,10 @@ public class WeaponFire : MonoBehaviour {
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashIonBeam.SetActive(true);
                 if (overloadEnabled) {
-                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
+                    Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
-                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += ionSetting;
-					if (WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
+                    Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += ionSetting;
+					if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
                 }
                 break;
             case 41:
@@ -582,10 +544,10 @@ public class WeaponFire : MonoBehaviour {
                 FirePlasma(index);
 				muzFlashPlasma.SetActive(true);
                 if (overloadEnabled) {
-                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
+                    Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
-                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += plasmaSetting;
-					if (WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
+                    Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += plasmaSetting;
+					if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
                 }
                 break;
             case 47:
@@ -609,29 +571,27 @@ public class WeaponFire : MonoBehaviour {
             case 50:
                 //Sparq Beam
 				sparqSetting = currentWeapon.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent];
-				//Debug.Log("Sparq beam fired with energy setting of " + sparqSetting.ToString());
                 if (!isSilent) { SFX.clip = SFXSparqBeamFire; SFX.Play(); }
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashSparq.SetActive(true);
                 if (overloadEnabled) {
-                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
+                    Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
-                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += sparqSetting;
-					if (WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
+                    Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += sparqSetting;
+					if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
                 }
                 break;
             case 51:
                 //DH-07 Stungun
 				stungunSetting = currentWeapon.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent];
-				//Debug.Log("Stungun fired with energy setting of " + stungunSetting.ToString());
                 if (!isSilent) { SFX.clip = SFXStungunFire; SFX.Play(); }
                 FireStungun(index);
 				muzFlashStungun.SetActive(true);
                 if (overloadEnabled) {
-                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
+                    Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f;
                 } else {
-                    WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += stungunSetting;
-					if (WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
+                    Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] += stungunSetting;
+					if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 100f) Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] = 100f; // cap it
                 }
                 break;
         }
@@ -653,28 +613,23 @@ public class WeaponFire : MonoBehaviour {
                     if (!currentWeapon.bottomless && !currentWeapon.redbull) curEnergy.TakeEnergy(takeEnerg);
                 }
             } else {
-                if (WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
+                if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
                     if (!currentWeapon.bottomless) WeaponCurrent.WepInstance.currentMagazineAmount2[WeaponCurrent.WepInstance.weaponCurrent]--; // Take ammo away
-                    // Update the counter
-                    //MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount2[WeaponCurrent.WepInstance.weaponCurrent]);
                 } else {
                     if (!currentWeapon.bottomless) WeaponCurrent.WepInstance.currentMagazineAmount[WeaponCurrent.WepInstance.weaponCurrent]--; // Take ammo away
-                    // Update the counter
-                    //MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount[WeaponCurrent.WepInstance.weaponCurrent]);
                 }
             }
         }
 
-        playerCamera.GetComponent<MouseLookScript>().Recoil(index);
+        // playerCamera.GetComponent<MouseLookScript>().Recoil(index);
 		Recoil(index);
-        if (WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent] || overloadEnabled) {
+        if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent] || overloadEnabled) {
             overloadEnabled = false;
             waitTilNextFire = PauseScript.a.relativeTime + Const.a.delayBetweenShotsForWeapon2[index];
         } else {
             waitTilNextFire = PauseScript.a.relativeTime + Const.a.delayBetweenShotsForWeapon[index];
         }
-
-		currentWeapon.UpdateAmmoText();
+		Inventory.a.UpdateAmmoText();
     }
 
     bool DidRayHit(int wep16Index) {
@@ -683,8 +638,7 @@ public class WeaponFire : MonoBehaviour {
         tempVec.y = Screen.height - tempVec.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
 		tempVec.x += UnityEngine.Random.Range(-driftForWeapon[wep16Index],driftForWeapon[wep16Index]);
 		tempVec.y += UnityEngine.Random.Range(-driftForWeapon[wep16Index],driftForWeapon[wep16Index]);
-        int layMask = LayerMask.GetMask("Default","Geometry","NPC","Bullets","Corpse","Door","InterDebris","PhysObjects","Player2","Player3","Player4"); //UPDATE: Can't shoot players, but we can't shoot the back of our eyeballs now
-        if (Physics.Raycast(playerCamera.ScreenPointToRay(tempVec), out tempHit, fireDistance,layMask)) {
+        if (Physics.Raycast(playerCamera.ScreenPointToRay(tempVec), out tempHit, fireDistance,Const.a.layerMaskPlayerAttack)) {
             tempHM = tempHit.transform.gameObject.GetComponent<HealthManager>();
 			
             if (tempHM != null) {
@@ -775,10 +729,13 @@ public class WeaponFire : MonoBehaviour {
 
 		if (holetype != null) {
 			GameObject impactMark = Const.a.GetObjectFromPool(constHoleType);
-			if (impactMark == null) impactMark = (GameObject) Instantiate(holetype, (tempHit.point + tempVec),  Quaternion.LookRotation(tempHit.normal*-1,Vector3.up), tempHit.transform.gameObject.transform);
 			if (impactMark == null) {
-				Debug.Log("BUG: Couldn't find pool object or instantiate holetype for CreateStandardImpactMarks");
-				return;
+				impactMark = (GameObject) Instantiate(holetype, (tempHit.point + tempVec),  Quaternion.LookRotation(tempHit.normal*-1,Vector3.up), tempHit.transform.gameObject.transform);
+				// No need to get SaveObject to set `instantiated` bit since the prefab already has it set as it is never not considered an instantiated object.
+				if (impactMark == null) {
+					Debug.Log("BUG: Couldn't find pool object or instantiate holetype for CreateStandardImpactMarks");
+					return;
+				}
 			}
 			int rint = Random.Range(0,3);
 			Quaternion roll = impactMark.transform.localRotation;
@@ -795,8 +752,9 @@ public class WeaponFire : MonoBehaviour {
             GameObject impact = GetImpactType(tempHM);
             if (impact != null) {
                 tempVec = tempHit.normal * hitOffset;
-                impact.transform.position = tempHit.point + tempVec;
-                impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
+                // impact.transform.position = tempHit.point + tempVec;
+                // impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
+				impact.transform.SetPositionAndRotation(tempHit.point + tempVec,Quaternion.FromToRotation(Vector3.up, tempHit.normal));
                 impact.SetActive(true);
             }
         } else {
@@ -805,8 +763,9 @@ public class WeaponFire : MonoBehaviour {
                 GameObject impact = Const.a.GetObjectFromPool(Const.PoolType.SparksSmall); //Didn't hit an object with a HealthManager script, use sparks
                 if (impact != null) {
                     tempVec = tempHit.normal * hitOffset;
-                    impact.transform.position = tempHit.point + tempVec;
-                    impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
+                    // impact.transform.position = tempHit.point + tempVec;
+                    // impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
+					impact.transform.SetPositionAndRotation(tempHit.point + tempVec,Quaternion.FromToRotation(Vector3.up, tempHit.normal));
                     impact.SetActive(true);
                 }
             }
@@ -824,8 +783,9 @@ public class WeaponFire : MonoBehaviour {
         }
 
         if (impact != null) {
-            impact.transform.position = tempHit.point;
-            impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
+            // impact.transform.position = tempHit.point;
+            // impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
+			impact.transform.SetPositionAndRotation(tempHit.point,Quaternion.FromToRotation(Vector3.up, tempHit.normal));
             impact.SetActive(true);
         }
     }
@@ -842,7 +802,8 @@ public class WeaponFire : MonoBehaviour {
         
 		GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
 		if (dynamicObjectsContainer == null) return; //didn't find current level
-		GameObject lasertracer = Instantiate(Const.a.useableItems[laserIndex],transform.position,Quaternion.identity) as GameObject;
+		GameObject lasertracer = Instantiate(Const.a.useableItems[laserIndex],transform.position,Const.a.quaternionIdentity) as GameObject;
+		// Temporary object only, no need to save or mark as instantiated.
 		if (lasertracer != null) {
 			lasertracer.transform.SetParent(dynamicObjectsContainer.transform,true);
 			tempVec = transform.position;
@@ -895,7 +856,7 @@ public class WeaponFire : MonoBehaviour {
 			//}
 
 			// the only exception
-			if (wep16Index == 2 && WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) damageData.attackType = Const.AttackType.Tranq; // tranquilize the untranquil....yes
+			if (wep16Index == 2 && Inventory.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) damageData.attackType = Const.AttackType.Tranq; // tranquilize the untranquil....yes
         }
         // Fill the damageData container
         damageData.other = tempHit.transform.gameObject;
@@ -912,7 +873,7 @@ public class WeaponFire : MonoBehaviour {
         }
         damageData.hit = tempHit;
         damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.drawTexture.center).direction;
-        if (WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
+        if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
             damageData.damage = Const.a.damagePerHitForWeapon2[wep16Index];
 			damageData.offense = Const.a.offenseForWeapon2[wep16Index];
 			damageData.penetration = Const.a.penetrationForWeapon2[wep16Index];
@@ -925,8 +886,8 @@ public class WeaponFire : MonoBehaviour {
 			damageData.offense = Const.a.offenseForWeapon[wep16Index];
 			damageData.penetration = Const.a.penetrationForWeapon[wep16Index];
         }
-        damageData.damage = Const.a.GetDamageTakeAmount(damageData);
 		damageData.attackType = Const.a.attackTypeForWeapon[wep16Index];
+        damageData.damage = Const.a.GetDamageTakeAmount(damageData);
         damageData.owner = playerCapsule;
 		HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
 		if (wep16Index == 12) {
@@ -939,7 +900,7 @@ public class WeaponFire : MonoBehaviour {
 			float dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
 			if (hm.isNPC) Music.a.inCombat = true;
 			float linkDistForTargID = 10f;
-			switch (HardwareInventory.a.hardwareVersion[4]) {
+			switch (Inventory.a.hardwareVersion[4]) {
 				case 1: linkDistForTargID = 10f; break;
 				case 2: linkDistForTargID = 15f; break;
 				case 3: linkDistForTargID = 25f; break;
@@ -950,50 +911,48 @@ public class WeaponFire : MonoBehaviour {
 			bool showAttitude = false;
 			bool showName = false;
 			if (dmgFinal <= 0 && hm.isNPC) {
-				if (HardwareInventory.a.hasHardware[4]) {
-					if (HardwareInventory.a.hardwareVersion[4] > 0) {
-						// Display Range
-						showRange = true;
-					}
-
-					if (HardwareInventory.a.hardwareVersion[4] > 1) {
+				if (Inventory.a.hasHardware[4]) {
+					if (Inventory.a.hardwareVersion[4] > 0) showRange = true; // Display Range
+					if (Inventory.a.hardwareVersion[4] > 1) {
 						// Display Attitude
 						showAttitude = true;
 						// Display Name
 						showName = true;
 					}
 
-					if (HardwareInventory.a.hardwareVersion[4] > 3) {
+					if (Inventory.a.hardwareVersion[4] > 3) {
 						// Display enemy health
 						showHealth = true;
 					}
 				}
 				CreateTargetIDInstance(Const.a.stringTable[511], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
-				noDamageIndicator.transform.position = tempHit.transform.position; // center on what we just shot
-				if (hm.aic != null) {
-					if (hm.aic.index == 14) {
-						// Adjust position for hopper origin since it's special and all melty
-						Vector3 adjustment = tempHit.transform.position;
-						adjustment.y += 1f;
-						noDamageIndicator.transform.position = adjustment;
+				if (noDamageIndicator != null) {
+					noDamageIndicator.transform.position = tempHit.transform.position; // center on what we just shot
+					if (hm.aic != null) {
+						if (hm.aic.index == 14) {
+							// Adjust position for hopper origin since it's special and all melty
+							Vector3 adjustment = tempHit.transform.position;
+							adjustment.y += 1f;
+							noDamageIndicator.transform.position = adjustment;
+						}
 					}
+					noDamageIndicator.SetActive(true); // do this regardless of target identifier version to show player that hey, it no workie
 				}
-				noDamageIndicator.SetActive(true); // do this regardless of target identifier version to show player that hey, it no workie
 			} else {
-				if (HardwareInventory.a.hasHardware[4]) {
-					if (HardwareInventory.a.hardwareVersion[4] > 0) {
+				if (Inventory.a.hasHardware[4]) {
+					if (Inventory.a.hardwareVersion[4] > 0) {
 						// Display Range
 						showRange = true;
 					}
 
-					if (HardwareInventory.a.hardwareVersion[4] > 1) {
+					if (Inventory.a.hardwareVersion[4] > 1) {
 						// Display Attitude
 						showAttitude = true;
 						// Display Name
 						showName = true;
 					}
 
-					if (HardwareInventory.a.hardwareVersion[4] > 2) {
+					if (Inventory.a.hardwareVersion[4] > 2) {
 						if (dmgFinal > hm.maxhealth * 0.75f) {
 							// Severe Damage
 							CreateTargetIDInstance(Const.a.stringTable[514], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
@@ -1013,12 +972,9 @@ public class WeaponFire : MonoBehaviour {
 						}
 					}
 
-					if (HardwareInventory.a.hardwareVersion[4] > 3) {
-						// Display enemy health
-						showHealth = true;
-					}
+					if (Inventory.a.hardwareVersion[4] > 3) showHealth = true; // Display enemy health
 				} else {
-					noDamageIndicator.SetActive(false); // I'm assuming that this will auto deactivate after 1sec, but in case the player is snappy about weapon switching, added this
+					if (noDamageIndicator != null) noDamageIndicator.SetActive(false); // I'm assuming that this will auto deactivate after 1sec, but in case the player is snappy about weapon switching, added this
 				}
 			}
 		}
@@ -1026,9 +982,7 @@ public class WeaponFire : MonoBehaviour {
 		if (uou != null) uou.HitForce(damageData); // knock objects around
 
         // Draw a laser beam for beam weapons
-        if (wep16Index == 1 || wep16Index == 4 || wep16Index == 14) {
-            CreateBeamEffects(wep16Index);
-        }
+        if (wep16Index == 1 || wep16Index == 4 || wep16Index == 14) CreateBeamEffects(wep16Index);
     }
 
 	// TargetIDInstance
@@ -1039,6 +993,7 @@ public class WeaponFire : MonoBehaviour {
 			tid.parent = parent;
 			tid.currentText = message;
 			if (message == Const.a.stringTable[511]) {
+				noDamageIndicator = idFrame;
 				tid.lifetime = 1f;
 				tid.lifetimeFinished = PauseScript.a.relativeTime + tid.lifetime;
 			}
@@ -1142,8 +1097,11 @@ public class WeaponFire : MonoBehaviour {
 		if (!foundTarg) {		
 			for (int i=0;i<Const.a.healthObjectsRegistration.Length;i++) {
 				if (Const.a.healthObjectsRegistration[i] != null) {
-					HealthManager hm = Const.a.healthObjectsRegistration[i].gameObject.GetComponent<HealthManager>();
 					GameObject ho = Const.a.healthObjectsRegistration[i].gameObject;
+					if (!ho.activeInHierarchy) continue; // Don't hurt deactive objects, like you know, corpses...at least don't do it again please.
+
+					HealthManager hm = ho.GetComponent<HealthManager>();
+
 					if (hm != null && ho != null) {
 						if (Vector3.Distance(ho.transform.position,playerCapsule.transform.position) < meleescanDistance) {
 							if (mls != null) {
@@ -1211,46 +1169,20 @@ public class WeaponFire : MonoBehaviour {
 			damageData.penetration = Const.a.penetrationForWeapon[index16];
             beachball.GetComponent<ProjectileEffectImpact>().dd = damageData;
             beachball.GetComponent<ProjectileEffectImpact>().host = playerCapsule;
-			//beachball.layer = playerCapsule.gameObject.layer; // don't touch the player who shot us
             beachball.transform.position = playerCamera.transform.position;
 			mls.SetCameraFocusPoint();
             tempVec = mls.cameraFocusPoint - playerCamera.transform.position;
             beachball.transform.forward = tempVec.normalized;
-            //drawMyLine(beachball.transform.position, mls.cameraFocusPoint, Color.green, 2f);
             beachball.SetActive(true);
             Vector3 shove = beachball.transform.forward * shoveForce;
-			//shove += playercapRbody.velocity; // add in the player's velocity
-            beachball.GetComponent<Rigidbody>().velocity = Vector3.zero; // prevent random variation from the last shot's velocity
+            beachball.GetComponent<Rigidbody>().velocity = Const.a.vectorZero; // Prevent random variation from the last shot's velocity
             beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
         }
 	}
 
     public Vector3 ScreenPointToDirectionVector() {
-        Vector3 retval = Vector3.zero;
+        Vector3 retval = Const.a.vectorZero;
         retval = playerCamera.transform.forward;
-        
         return retval;
-    }
-
-    public float GetHeatForCurrentWeapon() {
-        return WeaponAmmo.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent];
-    }
-
-    void drawMyLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f) { StartCoroutine(drawLine(start, end, color, duration)); }
-
-    IEnumerator drawLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f) {
-        GameObject myLine = new GameObject();
-        myLine.transform.position = start;
-        myLine.AddComponent<LineRenderer>();
-        LineRenderer lr = myLine.GetComponent<LineRenderer>();
-        lr.material = new Material(Shader.Find("Particles/Additive"));
-        lr.startColor = color;
-        lr.endColor = color;
-        lr.startWidth = 0.1f;
-        lr.endWidth = 0.1f;
-        lr.SetPosition(0, start);
-        lr.SetPosition(1, end);
-        yield return new WaitForSeconds(duration);
-        GameObject.Destroy(myLine);
     }
 }

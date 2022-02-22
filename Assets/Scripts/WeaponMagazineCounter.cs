@@ -35,7 +35,7 @@ public class WeaponMagazineCounter : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			int index = WeaponCurrent.WepInstance.weaponCurrent; // 0 to 6, Changed from this: WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.WepInstance.weaponIndex); 0 to 15
 			if (index < 0) return;
 
@@ -49,7 +49,7 @@ public class WeaponMagazineCounter : MonoBehaviour {
 				return;
 			}
 
-			if (WeaponAmmo.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
+			if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
 				UpdateDigits(WeaponCurrent.WepInstance.currentMagazineAmount2[index]);
 			} else {
 				UpdateDigits(WeaponCurrent.WepInstance.currentMagazineAmount[index]);

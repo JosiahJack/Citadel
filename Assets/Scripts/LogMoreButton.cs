@@ -17,12 +17,12 @@ public class LogMoreButton : MonoBehaviour {
 			logTextOutput.GetComponent<Text>().text = remainder;
 		} else {
 			// CLOSE BUTTON
-			multiMediaTab.GetComponent<MultiMediaTabManager>().ResetTabs();
+			MFDManager.a.ResetMultiMediaTabs();
 			MFDManager.a.leftTC.ReturnToLastTab();
 			MFDManager.a.rightTC.ReturnToLastTab();
 			MFDManager.a.ClearDataTab();
-			MFDManager.a.ctb.TabButtonClickSilent(0,true);
-			GetComponent<UIButtonMask>().PtrExit(); // force mouse cursor out of UI
+			MFDManager.a.CenterTabButtonClickSilent(0,true);
+			GetComponent<UIButtonMask>().PtrExit(); // Force mouse cursor out of UI.
 		}
 	}
 

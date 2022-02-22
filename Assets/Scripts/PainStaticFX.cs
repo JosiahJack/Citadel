@@ -39,8 +39,8 @@ public class PainStaticFX : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+	void Update() {
+		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (img.enabled == false) return; // only care if flash is on
 			if (effectFinished < PauseScript.a.relativeTime) Deactivate();
 		}
