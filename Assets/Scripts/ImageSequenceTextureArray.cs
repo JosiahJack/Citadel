@@ -169,7 +169,7 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 			constArrayLookup[42] = 45;
 			// Glow
 			constArrayLookupGlow = null;
-		} else if (resourceFolder == "EngScreen1") {
+		} else if (resourceFolder == "EngScreen2") {
 			// Normal
 			constArrayLookup = new int[8];
 			constArrayLookup[0] = 52;
@@ -613,6 +613,17 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 			constArrayLookup[6] = 76;
 			constArrayLookup[7] = 77;
 			constArrayLookup[8] = 75;
+			// Glow
+			constArrayLookupGlow = null;
+		} else if (resourceFolder == "ScreenDestroyed") {
+			// Normal
+			constArrayLookup = new int[6];
+			constArrayLookup[0] = 0;
+			constArrayLookup[1] = 1;
+			constArrayLookup[2] = 2;
+			constArrayLookup[3] = 3;
+			constArrayLookup[4] = 4;
+			constArrayLookup[5] = 5;
 			// Glow
 			constArrayLookupGlow = null;
 		} else if (resourceFolder == "ScreenCodeRandom") {
