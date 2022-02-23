@@ -266,10 +266,10 @@ public class Const : MonoBehaviour {
 	public float[] reloadTime;
 	// public CyberWall[] cyberpanelsRegistry;
 	public Material[] screenCodes;
-	public int[] npcCount;
+	[HideInInspector] public int[] npcCount;
 	public Sprite[] logImages;
-	public int[] audioLogImagesRefIndicesLH;
-	public int[] audioLogImagesRefIndicesRH;
+	[HideInInspector] public int[] audioLogImagesRefIndicesLH;
+	[HideInInspector] public int[] audioLogImagesRefIndicesRH;
 	public GameObject eventSystem;
 	public Texture[] sequenceTextures;
 
@@ -838,7 +838,7 @@ public class Const : MonoBehaviour {
 
 	public static string GetTargetID(int npc23Index) {
 		Const.a.npcCount[npc23Index]++;
-		return Const.a.nameForNPC[npc23Index] + Const.a.npcCount[npc23Index];
+		return Const.a.nameForNPC[npc23Index] + Const.a.npcCount[npc23Index].ToString();
 	}
 
 	public static string GetCyberTargetID (int cyberNPCIndex) {
