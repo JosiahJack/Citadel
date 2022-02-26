@@ -4,12 +4,7 @@ name: CI
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for tagged version commits
-  push:
-    tags:
-      - '*'
-
-  # Allows you to run this workflow manually from the Actions tab
+  # Manual runs only.
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -23,33 +18,11 @@ jobs:
       matrix:
         targetPlatform:
           - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
-          - StandaloneWindows # Build a Windows standalone.
           - StandaloneWindows64 # Build a Windows 64-bit standalone.
           - StandaloneLinux64 # Build a Linux 64-bit standalone.
-          - Android # Build an Android .apk standalone app.
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          lfs: true
-
-      # Git LFS
-      - name: Create LFS file list
-        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
-
-      - name: Restore LFS cache
-        uses: actions/cache@v2
-        id: lfs-cache
-        with:
-          path: .git/lfs
-          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
-
-      - name: Git LFS Pull
-        run: |
-          git lfs pull
-          git add .
-          git reset --hard
 
       # Cache
       - uses: actions/cache@v2
@@ -58,21 +31,6 @@ jobs:
           key: Library-${{ matrix.targetPlatform }}
           restore-keys: |
             Library-
-
-      # Test
-      - name: Run tests
-        uses: game-ci/unity-test-runner@v2
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Uploade test results artifact
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: Test results
-          path: artifacts
 
       # Build
       - name: Build project

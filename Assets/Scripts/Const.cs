@@ -260,7 +260,7 @@ public class Const : MonoBehaviour {
 
     public Font mainFont1; // Used to force Point filter mode.
 	public Font mainFont2; // Used to force Point filter mode.
-	[DTValidator.Optional] public GameObject[] TargetRegister; // Doesn't need to be full, available space for maps and mods made by the community to use tons of objects
+	/*[DTValidator.Optional] */public GameObject[] TargetRegister; // Doesn't need to be full, available space for maps and mods made by the community to use tons of objects
 	public string[] TargetnameRegister;
     [HideInInspector] public string[] stringTable;
 	public float[] reloadTime;

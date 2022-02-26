@@ -11,29 +11,29 @@ public class AIController : MonoBehaviour {
 	public HealthManager healthManager;
 
 	// External manually assigned references, but ok if not assigned
-    [DTValidator.Optional] public GameObject searchColliderGO;
-	[DTValidator.Optional] public AudioClip SFXIdle;
-	[DTValidator.Optional] public AudioClip SFXSightSound;
-	[DTValidator.Optional] public AudioClip SFXAttack1;
-	[DTValidator.Optional] public AudioClip SFXAttack2;
-	[DTValidator.Optional] public AudioClip SFXAttack3;
-	[DTValidator.Optional] public AudioClip SFXDeathClip;
-	[DTValidator.Optional] public LightningBoltScript laserLightning;
-	[DTValidator.Optional] public Transform[] walkWaypoints; // point(s) for NPC to walk to when roaming or patrolling
-	[DTValidator.Optional] public GameObject[] meleeDamageColliders; // Used by avian mutant lunge
-    [DTValidator.Optional] public GameObject muzzleBurst;
-    [DTValidator.Optional] public GameObject muzzleBurst2;
-    [DTValidator.Optional] public GameObject visibleMeshEntity;
-    [DTValidator.Optional] public GameObject gunPoint;
-    [DTValidator.Optional] public GameObject gunPoint2;
-	[DTValidator.Optional] public Material deathMaterial;
-	[DTValidator.Optional] public SkinnedMeshRenderer actualSMR;
-	[DTValidator.Optional] public GameObject deathBurst;
-	[DTValidator.Optional] public GameObject sightPoint;
-	[DTValidator.Optional] public Animator hopAnimator;
-	[DTValidator.Optional] public GameObject sleepingCables;
-	[DTValidator.Optional] public RectTransform npcAutomapOverlay;
-	[DTValidator.Optional] public Image npcAutomapOverlayImage;
+    /*[DTValidator.Optional] */public GameObject searchColliderGO;
+	/*[DTValidator.Optional] */public AudioClip SFXIdle;
+	/*[DTValidator.Optional] */public AudioClip SFXSightSound;
+	/*[DTValidator.Optional] */public AudioClip SFXAttack1;
+	/*[DTValidator.Optional] */public AudioClip SFXAttack2;
+	/*[DTValidator.Optional] */public AudioClip SFXAttack3;
+	/*[DTValidator.Optional] */public AudioClip SFXDeathClip;
+	/*[DTValidator.Optional] */public LightningBoltScript laserLightning;
+	/*[DTValidator.Optional] */public Transform[] walkWaypoints; // point(s) for NPC to walk to when roaming or patrolling
+	/*[DTValidator.Optional] */public GameObject[] meleeDamageColliders; // Used by avian mutant lunge
+    /*[DTValidator.Optional] */public GameObject muzzleBurst;
+    /*[DTValidator.Optional] */public GameObject muzzleBurst2;
+    /*[DTValidator.Optional] */public GameObject visibleMeshEntity;
+    /*[DTValidator.Optional] */public GameObject gunPoint;
+    /*[DTValidator.Optional] */public GameObject gunPoint2;
+	/*[DTValidator.Optional] */public Material deathMaterial;
+	/*[DTValidator.Optional] */public SkinnedMeshRenderer actualSMR;
+	/*[DTValidator.Optional] */public GameObject deathBurst;
+	/*[DTValidator.Optional] */public GameObject sightPoint;
+	/*[DTValidator.Optional] */public Animator hopAnimator;
+	/*[DTValidator.Optional] */public GameObject sleepingCables;
+	/*[DTValidator.Optional] */public RectTransform npcAutomapOverlay;
+	/*[DTValidator.Optional] */public Image npcAutomapOverlayImage;
 	public Const.aiState currentState; // save (referenced by int index 0 thru 10)
 	public Const.npcType npcType;
     public Const.AttackType attack1Type = Const.AttackType.Melee;
@@ -51,7 +51,7 @@ public class AIController : MonoBehaviour {
 	public bool actAsTurret = false;
 
 	// Internal, keeping exposed in inspector for troubleshooting.
-	[DTValidator.Optional] public GameObject enemy; // save (referenced by int index enemIDRead)
+	/*[DTValidator.Optional] */public GameObject enemy; // save (referenced by int index enemIDRead)
 
 	// Internal
 	[HideInInspector] public string targetID;

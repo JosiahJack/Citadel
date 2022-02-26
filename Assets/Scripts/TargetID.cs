@@ -9,8 +9,8 @@ public class TargetID : MonoBehaviour {
 	public float lifetime;
 	[HideInInspector] public float lifetimeFinished;
 	public ParticleSystem partSys;
-	[DTValidator.Optional] public Transform parent;
-	[DTValidator.Optional] public HealthManager linkedHM;
+	/*[DTValidator.Optional] */public Transform parent;
+	/*[DTValidator.Optional] */public HealthManager linkedHM;
 	public Transform playerCapsuleTransform;
 	public float playerLinkDistance = 10f;
 	public bool displayHealth = false;

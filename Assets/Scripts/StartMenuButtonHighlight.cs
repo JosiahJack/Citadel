@@ -4,11 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class StartMenuButtonHighlight : MonoBehaviour {
-	[DTValidator.Optional] public MenuArrowKeyControls pageController; //not used on sub-buttons within the start menu page for new game difficulty settings
+	/*[DTValidator.Optional] */public MenuArrowKeyControls pageController; //not used on sub-buttons within the start menu page for new game difficulty settings
 	public int menuItemIndex;
 	public Text text;
 	public Shadow textshadow;
-	[DTValidator.Optional] public Outline outlineGlow; // Only used on the difficulty number buttons, looked odd on the difficulty names.
+	/*[DTValidator.Optional] */public Outline outlineGlow; // Only used on the difficulty number buttons, looked odd on the difficulty names.
 	public Color lit;
 	public Color dark;
 	public Color darkshadow;

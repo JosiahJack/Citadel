@@ -7,19 +7,19 @@ public class HealthManager : MonoBehaviour {
 	// External references, required
 
 	// External references, optional
-	[DTValidator.Optional] public SearchableItem searchableItem; // Not used universally.  Some objects can be destroyed but not searched, such as barrels.
-	[DTValidator.Optional] public Image linkedCameraOverlay;
-	public LevelManager.SecurityType securityAffected;
-	[DTValidator.Optional] public AudioClip backupDeathSound;
-	[DTValidator.Optional] public GameObject teleportEffect;
-	[DTValidator.Optional] public GameObject[] gibObjects;
-	[DTValidator.Optional] public GameObject[] disableOnGib;
+	/*[DTValidator.Optional] */public SearchableItem searchableItem; // Not used universally.  Some objects can be destroyed but not searched, such as barrels.
+	/*[DTValidator.Optional] */public Image linkedCameraOverlay;
+	public LevelManager.SecurityType securityAffected; // Not a reference, needs no optional flag, if using DTValidator that is.
+	/*[DTValidator.Optional] */public AudioClip backupDeathSound;
+	/*[DTValidator.Optional] */public GameObject teleportEffect;
+	/*[DTValidator.Optional] */public GameObject[] gibObjects;
+	/*[DTValidator.Optional] */public GameObject[] disableOnGib;
 
 	// External references, optional...Player references only
-	[DTValidator.Optional] public PlayerHealth ph;
-	[DTValidator.Optional] public PainStaticFX pstatic;
-	[DTValidator.Optional] public PainStaticFX empstatic;
-	[DTValidator.Optional] public GameObject healingFXFlash;
+	/*[DTValidator.Optional] */public PlayerHealth ph;
+	/*[DTValidator.Optional] */public PainStaticFX pstatic;
+	/*[DTValidator.Optional] */public PainStaticFX empstatic;
+	/*[DTValidator.Optional] */public GameObject healingFXFlash;
 
 	// Externally set values in inspector per instance
 	public float health = -1f; // save, Current health, set in inspector for a different starting health than default on enemies.

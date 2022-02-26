@@ -3,8 +3,8 @@ using System.Collections;
 
 public class ButtonSwitch : MonoBehaviour {
 	// External references, optional depending on (changeMatOnActive || blinkWhenActive)
-	[DTValidator.Optional] public Material mainSwitchMaterial;
-	[DTValidator.Optional] public Material alternateSwitchMaterial;
+	/*[DTValidator.Optional] */public Material mainSwitchMaterial;
+	/*[DTValidator.Optional] */public Material alternateSwitchMaterial;
 
 	// Internal references
 	private AudioSource SFXSource;
@@ -20,7 +20,7 @@ public class ButtonSwitch : MonoBehaviour {
 	public int messageIndex = -1;
 	public float delay = 0f;
 	public AudioClip SFX;
-	[DTValidator.Optional] public AudioClip SFXLocked;
+	/*[DTValidator.Optional] */public AudioClip SFXLocked;
 	public float tickTime = 1.5f;
 	public bool blinkWhenActive;
 	public bool changeMatOnActive = true;

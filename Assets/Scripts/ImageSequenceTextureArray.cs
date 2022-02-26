@@ -21,7 +21,7 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	public int[] constArrayLookup;
 	public int[] constArrayLookupGlow;
 	public int[] constArrayDestroyed;
-	[DTValidator.Optional] public AudioClip SFXClip;
+	/*[DTValidator.Optional] */public AudioClip SFXClip;
 	private AudioSource SFX;
 	private float tick;
 	private float tickFinished; // save....except handled purely through HealthManager
