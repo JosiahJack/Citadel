@@ -569,3 +569,4 @@ Engage reactor self-destruct.
 Escape on escape pod.
 Access the bridge.
 Destroy SHODAN.
+The lever is stuck.

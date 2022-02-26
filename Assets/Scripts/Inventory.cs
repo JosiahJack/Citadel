@@ -456,9 +456,7 @@ public class Inventory : MonoBehaviour {
 
 		if (mls.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent (2,true);
 		switch (index) {
-			/// MAKE SURE TO ADD ANY KEYCARD CORRECTIONS TO Inventory.cs too for cyberspace acquiring!!!
 			case 81: doorAccessTypeAcquired = Door.accessCardType.Standard; break; //CHECKED! Good here
-			case 82: doorAccessTypeAcquired = Door.accessCardType.Per1; break; //CHECKED! Good here
 			case 83: doorAccessTypeAcquired = Door.accessCardType.Group1; break; //CHECKED! Good here
 			case 84: doorAccessTypeAcquired = Door.accessCardType.Science; break; //CHECKED! Good here
 			case 85: doorAccessTypeAcquired = Door.accessCardType.Engineering; break;  //CHECKED! Good here
@@ -466,9 +464,9 @@ public class Inventory : MonoBehaviour {
 			case 87: doorAccessTypeAcquired = Door.accessCardType.Security; break; //CHECKED! Good here
 			case 88: doorAccessTypeAcquired = Door.accessCardType.Per5; break;
 			case 89: doorAccessTypeAcquired = Door.accessCardType.Medical; break;
-			case 90: doorAccessTypeAcquired = Door.accessCardType.Standard; break;
+			case 90: doorAccessTypeAcquired = Door.accessCardType.Per1; break;
 			case 91: doorAccessTypeAcquired = Door.accessCardType.Group4; break;
-			case 114: doorAccessTypeAcquired = Door.accessCardType.Admin; break;
+			case 34: doorAccessTypeAcquired = Door.accessCardType.Admin; break;
 		}
 		if (HasAccessCard(doorAccessTypeAcquired)) { Const.sprint(Const.a.stringTable[44] + doorAccessTypeAcquired.ToString() ); return; } // Already have access: ##
 		if (AddCardToInventory(doorAccessTypeAcquired)) {

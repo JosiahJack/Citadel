@@ -42,6 +42,7 @@ public class ChargeStation : MonoBehaviour {
 				if (hm != null) {
 					if (hm.health <= dd.damage) dd.damage = hm.health - 1; // don't ever kill the player from this, way too cheap
 					if (hm.god) dd.damage = 0;
+					// No impact force here, it's a zap.
 					if (dd.damage > 0) hm.TakeDamage(dd);  // ouch it zapped me...that really hurt Charlie, that hurt my finger, owhow, OW! ow, hahahow ow! OWW!  Charlie zapped my finger (it helps if you use a British accent)
 				}
 			}

@@ -34,6 +34,7 @@ public class CyberMine : MonoBehaviour {
 				damageData.owner = gameObject;
 				damageData.attackType = Const.AttackType.None;
 				damageData.damage = dmg;
+				// No impact force in cyberspace.
 				pm.hm.TakeDamage(damageData);
 				pm.hm.ph.PlayerNoise.PlayOneShot(pm.hm.ph.CyberMineSFXClip);
 				gameObject.SetActive(false);

@@ -8,7 +8,7 @@ public class StartMenuButtonHighlight : MonoBehaviour {
 	public int menuItemIndex;
 	public Text text;
 	public Shadow textshadow;
-	public Outline outlineGlow;
+	[DTValidator.Optional] public Outline outlineGlow; // Only used on the difficulty number buttons, looked odd on the difficulty names.
 	public Color lit;
 	public Color dark;
 	public Color darkshadow;

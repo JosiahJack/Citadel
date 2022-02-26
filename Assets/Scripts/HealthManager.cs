@@ -7,19 +7,19 @@ public class HealthManager : MonoBehaviour {
 	// External references, required
 
 	// External references, optional
-	public SearchableItem searchableItem; // Not used universally.  Some objects can be destroyed but not searched, such as barrels.
-	public Image linkedCameraOverlay;
+	[DTValidator.Optional] public SearchableItem searchableItem; // Not used universally.  Some objects can be destroyed but not searched, such as barrels.
+	[DTValidator.Optional] public Image linkedCameraOverlay;
 	public LevelManager.SecurityType securityAffected;
-	public AudioClip backupDeathSound;
-	public GameObject teleportEffect;
-	public GameObject[] gibObjects;
-	public GameObject[] disableOnGib;
+	[DTValidator.Optional] public AudioClip backupDeathSound;
+	[DTValidator.Optional] public GameObject teleportEffect;
+	[DTValidator.Optional] public GameObject[] gibObjects;
+	[DTValidator.Optional] public GameObject[] disableOnGib;
 
 	// External references, optional...Player references only
-	public PlayerHealth ph;
-	public PainStaticFX pstatic;
-	public PainStaticFX empstatic;
-	public GameObject healingFXFlash;
+	[DTValidator.Optional] public PlayerHealth ph;
+	[DTValidator.Optional] public PainStaticFX pstatic;
+	[DTValidator.Optional] public PainStaticFX empstatic;
+	[DTValidator.Optional] public GameObject healingFXFlash;
 
 	// Externally set values in inspector per instance
 	public float health = -1f; // save, Current health, set in inspector for a different starting health than default on enemies.
@@ -36,7 +36,6 @@ public class HealthManager : MonoBehaviour {
 	public bool isObject = false;
 	public bool isIce = false;
 	public bool isScreen = false;
-	public bool applyImpact = false;
 	public bool isSecCamera = false;
 	public bool teleportOnDeath = false;
 	public bool actAsCorpseOnly = false;
@@ -297,10 +296,6 @@ public class HealthManager : MonoBehaviour {
 
 	public float TakeDamage(DamageData dd) {
 		if (dd == null) return 0;
-
-		// 5. Apply Velocity for Damage Amount
-		if (applyImpact && rbody != null && dd.impactVelocity > 0) rbody.AddForceAtPosition((dd.attacknormal*dd.impactVelocity*1.5f),dd.hit.point); // Impacts were too weak, multiplying by 1.5f to increase impact effect
-
 		if (dd.damage <= 0) return 0; // Ah!! scaryy!! cannot divide by 0, let's get out of here!
 		if (god) return 0; // untouchable!
 

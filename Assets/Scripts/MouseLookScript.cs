@@ -492,7 +492,7 @@ public class MouseLookScript : MonoBehaviour {
 		if ((index >= 0 && index <= 5) || index == 33 || index == 35 || (index >= 52 && index < 59) || (index >= 61 && index <= 64) || (index >= 92 && index <= 101)) { if (!Inventory.a.AddGenericObjectToInventory(index)) AddItemFail(index); }
 		else if (index == 6) Inventory.a.AddAudioLogToInventory(heldObjectCustomIndex);
 		else if (index >= 36 && index <= 51) { if (!Inventory.a.AddWeaponToInventory(index,heldObjectAmmo,heldObjectAmmo2)) AddItemFail(index); }
-		else if (index >= 81 && index <= 91) Inventory.a.AddAccessCardToInventory(index);
+		else if (index == 81 || (index >= 83 && index <= 91)) Inventory.a.AddAccessCardToInventory(index);
 		else {
 			switch (index) {
 				case 7:  Inventory.a.AddGrenadeToInventory(0,index); break; // Frag
@@ -744,13 +744,13 @@ public class MouseLookScript : MonoBehaviour {
 		grenadeActive = true;
 		Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[320],player);
 		switch(index) { // Subtract one from the correct grenade inventory
-			case 7: heldObject = Const.a.useableItems[154];  Inventory.a.RemoveGrenade(0); break; // Frag
-			case 8: heldObject = Const.a.useableItems[150];  Inventory.a.RemoveGrenade(3); break; // Concussion
-			case 9: heldObject = Const.a.useableItems[152];  Inventory.a.RemoveGrenade(1); break; // EMP
-			case 10: heldObject = Const.a.useableItems[151]; Inventory.a.RemoveGrenade(6); break; // Earth Shaker
-			case 11: heldObject = Const.a.useableItems[156]; Inventory.a.RemoveGrenade(4); break; // Land Mine
-			case 12: heldObject = Const.a.useableItems[157]; Inventory.a.RemoveGrenade(5); break; // Nitropak
-			case 13: heldObject = Const.a.useableItems[155]; Inventory.a.RemoveGrenade(2); break; // Gas
+			case 7: heldObject = Const.a.useableItems[63];  Inventory.a.RemoveGrenade(0); break; // Frag
+			case 8: heldObject = Const.a.useableItems[65];  Inventory.a.RemoveGrenade(3); break; // Concussion
+			case 9: heldObject = Const.a.useableItems[80];  Inventory.a.RemoveGrenade(1); break; // EMP
+			case 10: heldObject = Const.a.useableItems[82]; Inventory.a.RemoveGrenade(6); break; // Earth Shaker
+			case 11: heldObject = Const.a.useableItems[95]; Inventory.a.RemoveGrenade(4); break; // Land Mine
+			case 12: heldObject = Const.a.useableItems[96]; Inventory.a.RemoveGrenade(5); break; // Nitropak
+			case 13: heldObject = Const.a.useableItems[97]; Inventory.a.RemoveGrenade(2); break; // Gas
 		}
 	}
 

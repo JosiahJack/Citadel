@@ -11,29 +11,29 @@ public class AIController : MonoBehaviour {
 	public HealthManager healthManager;
 
 	// External manually assigned references, but ok if not assigned
-    public GameObject searchColliderGO;
-	public AudioClip SFXIdle;
-	public AudioClip SFXSightSound;
-	public AudioClip SFXAttack1;
-	public AudioClip SFXAttack2;
-	public AudioClip SFXAttack3;
-	public AudioClip SFXDeathClip;
-	public LightningBoltScript laserLightning;
-	public Transform[] walkWaypoints; // point(s) for NPC to walk to when roaming or patrolling
-	public GameObject[] meleeDamageColliders; // Used by avian mutant lunge
-    public GameObject muzzleBurst;
-    public GameObject muzzleBurst2;
-    public GameObject visibleMeshEntity;
-    public GameObject gunPoint;
-    public GameObject gunPoint2;
-	public Material deathMaterial;
-	public SkinnedMeshRenderer actualSMR;
-	public GameObject deathBurst;
-	public GameObject sightPoint;
-	public Animator hopAnimator;
-	public GameObject sleepingCables;
-	public RectTransform npcAutomapOverlay;
-	public Image npcAutomapOverlayImage;
+    [DTValidator.Optional] public GameObject searchColliderGO;
+	[DTValidator.Optional] public AudioClip SFXIdle;
+	[DTValidator.Optional] public AudioClip SFXSightSound;
+	[DTValidator.Optional] public AudioClip SFXAttack1;
+	[DTValidator.Optional] public AudioClip SFXAttack2;
+	[DTValidator.Optional] public AudioClip SFXAttack3;
+	[DTValidator.Optional] public AudioClip SFXDeathClip;
+	[DTValidator.Optional] public LightningBoltScript laserLightning;
+	[DTValidator.Optional] public Transform[] walkWaypoints; // point(s) for NPC to walk to when roaming or patrolling
+	[DTValidator.Optional] public GameObject[] meleeDamageColliders; // Used by avian mutant lunge
+    [DTValidator.Optional] public GameObject muzzleBurst;
+    [DTValidator.Optional] public GameObject muzzleBurst2;
+    [DTValidator.Optional] public GameObject visibleMeshEntity;
+    [DTValidator.Optional] public GameObject gunPoint;
+    [DTValidator.Optional] public GameObject gunPoint2;
+	[DTValidator.Optional] public Material deathMaterial;
+	[DTValidator.Optional] public SkinnedMeshRenderer actualSMR;
+	[DTValidator.Optional] public GameObject deathBurst;
+	[DTValidator.Optional] public GameObject sightPoint;
+	[DTValidator.Optional] public Animator hopAnimator;
+	[DTValidator.Optional] public GameObject sleepingCables;
+	[DTValidator.Optional] public RectTransform npcAutomapOverlay;
+	[DTValidator.Optional] public Image npcAutomapOverlayImage;
 	public Const.aiState currentState; // save (referenced by int index 0 thru 10)
 	public Const.npcType npcType;
     public Const.AttackType attack1Type = Const.AttackType.Melee;
@@ -51,7 +51,7 @@ public class AIController : MonoBehaviour {
 	public bool actAsTurret = false;
 
 	// Internal, keeping exposed in inspector for troubleshooting.
-	public GameObject enemy; // save (referenced by int index enemIDRead)
+	[DTValidator.Optional] public GameObject enemy; // save (referenced by int index enemIDRead)
 
 	// Internal
 	[HideInInspector] public string targetID;
@@ -798,7 +798,7 @@ public class AIController : MonoBehaviour {
 			if ((attackNum == 1 && Const.a.hasLaserOnAttack1ForNPC[index]) || (attackNum == 2 && Const.a.hasLaserOnAttack2ForNPC[index]) || (attackNum == 3 && Const.a.hasLaserOnAttack3ForNPC[index])) {
 				GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
 				if (dynamicObjectsContainer == null) return; // Didn't find current level.
-				GameObject lasertracer = Instantiate(Const.a.useableItems[105],transform.position,Const.a.quaternionIdentity) as GameObject;
+				GameObject lasertracer = Instantiate(Const.a.useableItems[101],transform.position,Const.a.quaternionIdentity) as GameObject;
 				if (lasertracer != null) {
 					lasertracer.transform.SetParent(dynamicObjectsContainer.transform,true);
 					lasertracer.GetComponent<LaserDrawing>().startPoint = sightPoint.transform.position;
@@ -833,7 +833,9 @@ public class AIController : MonoBehaviour {
 				//   isOtherNPC
 				//   armorvalue
 				//   defense
+				damageData.impactVelocity = damageData.damage * 1.5f;
 				damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+				Const.a.ApplyImpactForce(tempHit.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
 				tempHM.TakeDamage(damageData);
 			} else {
 				CreateStandardImpactEffects(false);
@@ -919,11 +921,9 @@ public class AIController : MonoBehaviour {
 			if (colliders[i] != null) {
 				if (colliders[i].GetComponent<Rigidbody>() != null) colliders[i].GetComponent<Rigidbody>().AddExplosionForce(Const.a.attack3ForceForNPC[index], sightPoint.transform.position, Const.a.attack3RadiusForNPC[index], 1.0f);
 				hm = colliders[i].GetComponent<HealthManager>();
-				if (hm != null) {
-					DamageData dnew = dd;
-					dnew.damage = dd.damage;
-					hm.TakeDamage(dd);
-				}
+				dd.impactVelocity = dd.damage * 1.5f;
+				Const.a.ApplyImpactForce(colliders[i].gameObject, dd.impactVelocity,dd.attacknormal,dd.hit.point);
+				if (hm != null) hm.TakeDamage(dd);
 			}
 			i++;
 		}

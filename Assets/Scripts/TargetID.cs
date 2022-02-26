@@ -7,11 +7,10 @@ public class TargetID : MonoBehaviour {
 	public string currentText;
 	public bool useLife;
 	public float lifetime;
-	[HideInInspector]
-	public float lifetimeFinished;
+	[HideInInspector] public float lifetimeFinished;
 	public ParticleSystem partSys;
-	public Transform parent;
-	public HealthManager linkedHM;
+	[DTValidator.Optional] public Transform parent;
+	[DTValidator.Optional] public HealthManager linkedHM;
 	public Transform playerCapsuleTransform;
 	public float playerLinkDistance = 10f;
 	public bool displayHealth = false;
@@ -32,7 +31,7 @@ public class TargetID : MonoBehaviour {
     }
 
 	void FixedUpdate() {
-		transform.position = parent.position;
+		if (parent != null) transform.position = parent.position;
 	}
 
 	public void SendDamageReceive(float damage) {

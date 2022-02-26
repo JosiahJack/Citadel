@@ -726,7 +726,8 @@ public class PlayerMovement : MonoBehaviour {
 				dd.attackType = Const.AttackType.None;
 				dd.offense = 0f;
 				dd.isOtherNPC = false;
-				hm.TakeDamage (dd);  // was previously referring to the no longer used TakeDamage within PlayerHealth.cs
+				// No impact force from fall damage.
+				hm.TakeDamage (dd);
 			}
 			oldVelocity = rbody.velocity;
 			if (!CheatWallSticky || gravliftState) grounded = false; // Automatically set grounded to false to prevent ability to climb any wall

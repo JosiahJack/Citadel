@@ -51,7 +51,9 @@ Nameless Voice for fluid midis
 
 -Misc Code-
 lerenwe
-
+Benjamin Stanley
+cxong
+#
 -Playtesters-
 Rachel Jack
 Kaitlyn Jack
@@ -64,6 +66,7 @@ Kolya
 Dertseha
 JML
 TheMotherload
+SHODAN
 #
 ----------------------------------------------------------------------
 Indirect involvment list found...
@@ -245,13 +248,13 @@ Alex Camilleri (Cam-man)
 ----------------------------------------------------------------------
 Tools
 ----------------------------------------------------------------------
-Game Engine: Unity 2019.3.6f1
+Game Engine: Unity 2019.4.35f1
 by Unity Technologies
 
-3D Modeling: Blender
+3D Modeling: Blender 2.68 through 2.78b
 by the Blender Foundation headed up by Ton Roosendal
 
-2D Textures: GIMP 2.10.6
+2D Textures: GIMP 2.8 through 2.10.6
 by The GIMP Development Team
 
 Code: Notepad++

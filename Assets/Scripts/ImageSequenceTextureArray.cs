@@ -16,12 +16,12 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	public bool reverseSequence = false;
 	public bool glowOnly = false;
 	public bool screenDestroyed = false;
-	private bool screenDestroyedDone = false;
+	private bool screenDestroyedDone = false; // Delay ending animation for a few destroy frames.
 	private bool screenDestroyFirstFrame = true;
 	public int[] constArrayLookup;
 	public int[] constArrayLookupGlow;
 	public int[] constArrayDestroyed;
-	public AudioClip SFXClip;
+	[DTValidator.Optional] public AudioClip SFXClip;
 	private AudioSource SFX;
 	private float tick;
 	private float tickFinished; // save....except handled purely through HealthManager

@@ -15,9 +15,7 @@ public class ExplosionForce : MonoBehaviour {
 		int i = 0;
 		while (i < colliders.Length) {
 			if (colliders[i] != null) {
-				if (colliders[i].GetComponent<Rigidbody>() != null) {
-					colliders[i].GetComponent<Rigidbody>().AddExplosionForce(oldforce, pos, oldradius, 1.0f);
-				}
+				Const.a.ApplyImpactForce(colliders[i].gameObject, dd.impactVelocity,dd.attacknormal,dd.hit.point);
 				hm = colliders[i].GetComponent<HealthManager>();
 				if (hm != null) {
 					DamageData dnew = dd;

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.PostProcessing;
 using System.Text;
@@ -260,11 +260,11 @@ public class Const : MonoBehaviour {
 
     public Font mainFont1; // Used to force Point filter mode.
 	public Font mainFont2; // Used to force Point filter mode.
-	public GameObject[] TargetRegister; // Doesn't need to be full, available space for maps and mods made by the community to use tons of objects
+	[DTValidator.Optional] public GameObject[] TargetRegister; // Doesn't need to be full, available space for maps and mods made by the community to use tons of objects
 	public string[] TargetnameRegister;
     [HideInInspector] public string[] stringTable;
 	public float[] reloadTime;
-	// public CyberWall[] cyberpanelsRegistry;
+
 	public Material[] screenCodes;
 	[HideInInspector] public int[] npcCount;
 	public Sprite[] logImages;
@@ -3780,6 +3780,11 @@ public class Const : MonoBehaviour {
 		}
 
 		return retval;
+	}
+
+	public void ApplyImpactForce(GameObject hitObject, float impactVelocity, Vector3 attackNormal, Vector3 hitPoint) {
+		Rigidbody rbody = hitObject.GetComponent<Rigidbody>();
+		if (rbody != null && impactVelocity > 0) rbody.AddForceAtPosition((attackNormal*impactVelocity*1.5f),hitPoint);
 	}
 }
 

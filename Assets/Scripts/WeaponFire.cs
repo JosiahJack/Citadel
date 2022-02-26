@@ -791,12 +791,12 @@ public class WeaponFire : MonoBehaviour {
     }
 
     void CreateBeamEffects(int wep16index) {
-        int laserIndex = 102; // Turquoise/Pale-Teal for sparq
+        int laserIndex = 98; // Turquoise/Pale-Teal for sparq
         if (wep16index == 1) {
-            laserIndex = 103;  //Red laser for blaster
+            laserIndex = 99;  //Red laser for blaster
         } else {
            if (wep16index == 4) {
-               laserIndex = 104; // Yellow laser for ion
+               laserIndex = 100; // Yellow laser for ion
            }
         }
         
@@ -898,6 +898,8 @@ public class WeaponFire : MonoBehaviour {
 		}
         if (hm != null && hm.health > 0) {
 			float dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
+			damageData.impactVelocity = damageData.damage * 1.5f;
+			Const.a.ApplyImpactForce(tempHit.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
 			if (hm.isNPC) Music.a.inCombat = true;
 			float linkDistForTargID = 10f;
 			switch (Inventory.a.hardwareVersion[4]) {
@@ -1048,6 +1050,8 @@ public class WeaponFire : MonoBehaviour {
 			SFX.Play();
 			return;
 		}
+		damageData.impactVelocity = damageData.damage * 1.5f;
+		Const.a.ApplyImpactForce(targ, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
 		hm.TakeDamage(damageData); //no need to check if damage was done and if we need noDamageIndicator since melee weapons always do damage against all types
 		if (hm.isNPC) Music.a.inCombat = true;
 		if (!silent) {

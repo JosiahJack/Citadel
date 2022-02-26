@@ -49,6 +49,8 @@ public class ProjectileEffectImpact : MonoBehaviour {
 					//   defense
 					// Most already was when this was launched by AIController or WeaponFire
 					dd.damage = Const.a.GetDamageTakeAmount(dd);
+					dd.impactVelocity = dd.damage * 1.5f;
+					Const.a.ApplyImpactForce(other.gameObject, dd.impactVelocity,dd.attacknormal,dd.hit.point);
 					float dmgFinal = hm.TakeDamage(dd); // send the damageData container to HealthManager of hit object and apply damage
 					if (hm.isNPC || dd.isOtherNPC) Music.a.inCombat = true;
 					float linkDistForTargID = 10f;
