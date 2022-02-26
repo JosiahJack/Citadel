@@ -6,7 +6,7 @@ using System.Collections;
 public class SoftwareInvText : MonoBehaviour {
 	Text text;
 	public int slotnum = 0;
-	public Text versionText;
+	[DTValidator.Optional] public Text versionText; // Not needed for game player
 	
 	void Start () {
 		text = GetComponent<Text>();

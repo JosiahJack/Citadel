@@ -3,7 +3,6 @@ using System.Collections;
 
 public class WeaponFire : MonoBehaviour {
 	// External references, required
-    public GameObject bullet;
     public GameObject impactEffect;
 	public GameObject noDamageIndicator;
     public WeaponMagazineCounter wepmagCounter;

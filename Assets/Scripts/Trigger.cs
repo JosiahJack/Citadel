@@ -13,7 +13,7 @@ public class Trigger : MonoBehaviour {
 	private float delayFireFinished;
 	private float delayResetFinished;
 	private AudioSource SFX;
-	public AudioClip SFXClip;
+	[DTValidator.Optional] public AudioClip SFXClip;
 	public bool playAudioOnTrigger = false;
 	private bool allDone = false;
 

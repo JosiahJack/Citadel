@@ -7,8 +7,8 @@ public class CameraView : MonoBehaviour {
 	public Transform screenPoint;
 
 	// External reference, optional
-	public Transform screenPoint2; // Added both of these for the bridge camera, only instance of having more than one screen for the same camera.
-	public Transform screenPoint3;
+	[DTValidator.Optional] public Transform screenPoint2; // Added both of these for the bridge camera, only instance of having more than one screen for the same camera.
+	[DTValidator.Optional] public Transform screenPoint3;
 
 	// Internal references
 	private Camera cam;

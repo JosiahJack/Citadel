@@ -37,7 +37,7 @@ public class ElevatorButton : MonoBehaviour {
 		GetComponent<Button>().onClick.AddListener(() => { ElevButtonClick(); });
 	}
 
-	void ElevButtonClick () {
+	public void ElevButtonClick () {
 		if (Vector3.Distance(MFDManager.a.objectInUsePos,MFDManager.a.playerCapsuleTransform.position) > Const.a.elevatorPadUseDistance || MFDManager.a.linkedElevatorDoor == null) {
 			Const.sprint(Const.a.stringTable[6],currentPlayer);
 		} else {

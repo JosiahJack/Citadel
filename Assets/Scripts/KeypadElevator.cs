@@ -4,7 +4,7 @@ using System.Collections;
 
 public class KeypadElevator : MonoBehaviour {
 	public int securityThreshhold = 100; // if security level is not below this level, this is unusable
-	public GameObject[] targetDestination; // set by ElevatorKeypad.cs in Use(), which actually gets it from ElevatorButton.cs
+	[DTValidator.Optional] public GameObject[] targetDestination; // set by ElevatorKeypad.cs in Use(), which actually gets it from ElevatorButton.cs
 	public Door linkedDoor;
 	public bool[] buttonsEnabled;
 	public bool[] buttonsDarkened;

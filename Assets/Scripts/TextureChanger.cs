@@ -10,8 +10,8 @@ public class TextureChanger : MonoBehaviour {
 	public bool startAlternate = false;
 	public bool currentTexture = false;
 	public Renderer rMainLod0;
-	public Renderer rMainLod1;
-	public Renderer rMainLod2;
+	[DTValidator.Optional] public Renderer rMainLod1;
+	[DTValidator.Optional] public Renderer rMainLod2;
 	public bool useGlow;
 
 	public void Awake() {

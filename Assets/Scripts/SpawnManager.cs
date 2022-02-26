@@ -5,7 +5,7 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour {
 	public int index;
 	public int numberToSpawn = 1;
-	public GameObject[] activeSpawned;
+	[DTValidator.Optional] public GameObject[] activeSpawned;
 	public int numberActive; // save
 	public bool active = false; // save
 	public Transform[] spawnLocations;
