@@ -127,8 +127,12 @@ public class AIController : MonoBehaviour {
 	public void Start () {
         rbody = GetComponent<Rigidbody>();
 		rbody.isKinematic = false;
-		if (Const.a.moveTypeForNPC[index] == Const.aiMoveType.Fly || Const.a.moveTypeForNPC[index] == Const.aiMoveType.Cyber) rbody.useGravity = false;
-		else rbody.useGravity = true;
+		if (index < 29 && index > 0) {
+			if (Const.a.moveTypeForNPC.Length > 1) {
+				if (Const.a.moveTypeForNPC[index] == Const.aiMoveType.Fly || Const.a.moveTypeForNPC[index] == Const.aiMoveType.Cyber) rbody.useGravity = false;
+				else rbody.useGravity = true;
+			} else { rbody.useGravity = true; Debug.Log("Const.a.moveTypeForNPC had no length!"); }
+		} else { rbody.useGravity = true; Debug.Log("Index was out of range with value of " + index.ToString() + " on " + gameObject.name);}
 		healthManager = GetComponent<HealthManager>();
 	    boxCollider = GetComponent<BoxCollider>();
 		sphereCollider = GetComponent<SphereCollider>();

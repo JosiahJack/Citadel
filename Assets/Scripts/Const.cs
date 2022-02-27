@@ -362,6 +362,10 @@ public class Const : MonoBehaviour {
 		a.vectorZero = Vector3.zero;
 		a.vectorOne = Vector3.one;
 		a.stringTable = new string[587];
+		a.LoadAudioLogMetaData();
+		a.LoadItemNamesData();
+		a.LoadDamageTablesData();
+		a.LoadEnemyTablesData(); // Doing earlier since these are needed by AIController's Start().
 	}
 
     public void LoadTextForLanguage(int lang) {
@@ -393,10 +397,7 @@ public class Const : MonoBehaviour {
 
 	void Start() {
 		LoadConfig();
-		LoadAudioLogMetaData();
-		LoadItemNamesData();
-		LoadDamageTablesData();
-		LoadEnemyTablesData();
+
 		layerMaskNPCSight = LayerMask.GetMask("Default","Geometry","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
 		layerMaskNPCAttack = LayerMask.GetMask("Default","Geometry","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
 		layerMaskNPCCollision = LayerMask.GetMask("Default","TransparentFX","IgnoreRaycast","Geometry","NPC","Door","InterDebris","Player","Clip","NPCClip","PhysObjects"); // Not including "Bullets" as this is merely used for spawning, not setting level-wide NPC collisions.
@@ -543,7 +544,7 @@ public class Const : MonoBehaviour {
 
 	private void LoadItemNamesData () {
 		int offset = 326;
-		for (int i=0;i<115;i++) {
+		for (int i=0;i<102;i++) {
 			useableItemsNameText[i] = stringTable[i+offset];
 		}
 	}
@@ -645,6 +646,7 @@ public class Const : MonoBehaviour {
 	}
 
 	private void LoadEnemyTablesData() {
+		UnityEngine.Debug.Log("Entered LoadEnemyTablesData");
 		int numberOfNPCs = 29;
 		nameForNPC = new string[numberOfNPCs];
 		attackTypeForNPC = new AttackType[numberOfNPCs];
@@ -3785,6 +3787,12 @@ public class Const : MonoBehaviour {
 	public void ApplyImpactForce(GameObject hitObject, float impactVelocity, Vector3 attackNormal, Vector3 hitPoint) {
 		Rigidbody rbody = hitObject.GetComponent<Rigidbody>();
 		if (rbody != null && impactVelocity > 0) rbody.AddForceAtPosition((attackNormal*impactVelocity*1.5f),hitPoint);
+	}
+
+	public int SafeIndex(int[] array, int index, int max, int failvalue) {
+		if (index < 0 || index > max || index > array.Length) { UnityEngine.Debug.Log("Unexpected situation, index out of bounds passed to SafeIndex!"); return failvalue; }
+		if (array.Length < 1) { UnityEngine.Debug.Log("Unexpected situation, array passed to SafeIndex was empty!"); return failvalue; }
+		return array[index]; // Safe to pass the index value into the array space.
 	}
 }
 

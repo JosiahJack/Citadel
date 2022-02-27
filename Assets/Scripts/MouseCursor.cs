@@ -94,7 +94,7 @@ public class MouseCursor : MonoBehaviour {
 				cursorImage = cursorGUI;
 			} else {
 				if (playerCameraScript.vmailActive) {
-					cursorImage = Const.a.useableItemsFrobIcons[120];	// vmail
+					cursorImage = Const.a.useableItemsFrobIcons[108];	// vmail
 				} else {
 					if (playerCameraScript.inCyberSpace) {
 						cursorImage = playerCameraScript.cyberspaceCursor;
@@ -104,55 +104,55 @@ public class MouseCursor : MonoBehaviour {
 						} else {
 							switch(wepCurrent.weaponIndex) {
 								case 36:
-									cursorImage = Const.a.useableItemsFrobIcons[116];	// red
+									cursorImage = Const.a.useableItemsFrobIcons[102];	// red
 									break;
 								case 37:
-									cursorImage = Const.a.useableItemsFrobIcons[125];	// blue
+									cursorImage = Const.a.useableItemsFrobIcons[107];	// blue
 									break;
 								case 38:
-									cursorImage = Const.a.useableItemsFrobIcons[116];	// red
+									cursorImage = Const.a.useableItemsFrobIcons[102];	// red
 									break;
 								case 39:
-									cursorImage = Const.a.useableItemsFrobIcons[115];	// green
+									cursorImage = Const.a.useableItemsFrobIcons[105];	// green
 									break;
 								case 40:
-									cursorImage = Const.a.useableItemsFrobIcons[125];	// blue
+									cursorImage = Const.a.useableItemsFrobIcons[107];	// blue
 									break;
 								case 41:
-									cursorImage = Const.a.useableItemsFrobIcons[126];	// orange
+									cursorImage = Const.a.useableItemsFrobIcons[103];	// orange
 									break;
 								case 42:
-									cursorImage = Const.a.useableItemsFrobIcons[126];	// orange
+									cursorImage = Const.a.useableItemsFrobIcons[103];	// orange
 									break;
 								case 43:
-									cursorImage = Const.a.useableItemsFrobIcons[116];	// red
+									cursorImage = Const.a.useableItemsFrobIcons[102];	// red
 									break;
 								case 44:
-									cursorImage = Const.a.useableItemsFrobIcons[123];	// yellow
+									cursorImage = Const.a.useableItemsFrobIcons[104];	// yellow
 									break;
 								case 45:
-									cursorImage = Const.a.useableItemsFrobIcons[116];	// red
+									cursorImage = Const.a.useableItemsFrobIcons[102];	// red
 									break;
 								case 46:
-									cursorImage = Const.a.useableItemsFrobIcons[127];	// teal
+									cursorImage = Const.a.useableItemsFrobIcons[106];	// teal
 									break;
 								case 47:
-									cursorImage = Const.a.useableItemsFrobIcons[123];	// yellow
+									cursorImage = Const.a.useableItemsFrobIcons[104];	// yellow
 									break;
 								case 48:
-									cursorImage = Const.a.useableItemsFrobIcons[116];	// red
+									cursorImage = Const.a.useableItemsFrobIcons[102];	// red
 									break;
 								case 49:
-									cursorImage = Const.a.useableItemsFrobIcons[115];	// green
+									cursorImage = Const.a.useableItemsFrobIcons[105];	// green
 									break;
 								case 50:
-									cursorImage = Const.a.useableItemsFrobIcons[125];	// blue
+									cursorImage = Const.a.useableItemsFrobIcons[107];	// blue
 									break;
 								case 51:
-									cursorImage = Const.a.useableItemsFrobIcons[127];	// teal
+									cursorImage = Const.a.useableItemsFrobIcons[106];	// teal
 									break;
 								default:
-									cursorImage = Const.a.useableItemsFrobIcons[115];	// green
+									cursorImage = Const.a.useableItemsFrobIcons[105];	// green
 									break;
 							}
 						}
@@ -168,20 +168,18 @@ public class MouseCursor : MonoBehaviour {
 	void Update() {
 		cursorPosition = new Vector2(cursorX,cursorY);
 		cursorSize = (24f * (Screen.width/640f)); // This works well, not changing it from Screen.width/640f
+		if (cursorPosition.y > (0.13541f*Screen.height) && cursorPosition.y < (0.70703f*Screen.height) && cursorPosition.x < (0.96925f*Screen.width) && cursorPosition.x > (0.029282f*Screen.width) && !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			GUIState.a.isBlocking = false; // in the safe zone!
+		}
+
+		if (EventSystem.current.IsPointerOverGameObject()) GUIState.a.isBlocking = true;
+		else GUIState.a.isBlocking = false;
+
+		if (cursorPosition.y > Screen.height || cursorPosition.y < 0 || cursorPosition.x < 0 || cursorPosition.x > Screen.width && !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+			GUIState.a.isBlocking = true; // outside the screen, don't shoot we're innocent!
+		}
 
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			if (cursorPosition.y > (0.13541f*Screen.height) && cursorPosition.y < (0.70703f*Screen.height) && cursorPosition.x < (0.96925f*Screen.width) && cursorPosition.x > (0.029282f*Screen.width) && !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-				GUIState.a.isBlocking = false; // in the safe zone!
-			}
-
-
-			if (EventSystem.current.IsPointerOverGameObject()) GUIState.a.isBlocking = true;
-			else GUIState.a.isBlocking = false;
-
-			if (cursorPosition.y > Screen.height || cursorPosition.y < 0 || cursorPosition.x < 0 || cursorPosition.x > Screen.width && !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-				GUIState.a.isBlocking = true; // outside the screen, don't shoot we're innocent!
-			}
-
 			if (cursorPosition.y > (0.13541f*Screen.height) && cursorPosition.y < (0.70703f*Screen.height) && cursorPosition.x < (0.96925f*Screen.width) && cursorPosition.x > (0.029282f*Screen.width)) GUIState.a.isBlocking = false; // in the safe zone!
 			if (playerCameraScript.inventoryMode && playerCameraScript.holdingObject) {
 				// Be sure to pass the camera to the 3rd parameter if using "Screen Space - Camera" on the Canvas, otherwise use "null"
