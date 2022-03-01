@@ -127,9 +127,10 @@ public class AIController : MonoBehaviour {
 	public void Start () {
         rbody = GetComponent<Rigidbody>();
 		rbody.isKinematic = false;
-		if (index < 29 && index > 0) {
+		if (index < 29 && index >= 0) {
 			if (Const.a.moveTypeForNPC.Length > 1) {
-				if (Const.a.moveTypeForNPC[index] == Const.aiMoveType.Fly || Const.a.moveTypeForNPC[index] == Const.aiMoveType.Cyber) rbody.useGravity = false;
+				if (Const.a.moveTypeForNPC[index] == Const.aiMoveType.Fly ||
+				    Const.a.moveTypeForNPC[index] == Const.aiMoveType.Cyber) rbody.useGravity = false;
 				else rbody.useGravity = true;
 			} else { rbody.useGravity = true; Debug.Log("Const.a.moveTypeForNPC had no length!"); }
 		} else { rbody.useGravity = true; Debug.Log("Index was out of range with value of " + index.ToString() + " on " + gameObject.name);}
@@ -313,7 +314,7 @@ public class AIController : MonoBehaviour {
 	void FixedUpdate() {
 		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return; // Don't do any checks or anything else...we're paused!
 
-		if (!rbody.useGravity && Const.a.moveTypeForNPC[index] != Const.aiMoveType.Cyber && Const.a.moveTypeForNPC[index] != Const.aiMoveType.Fly) Debug.Log(gameObject.name + " has rbody.useGravity set to false!");
+		if (!rbody.useGravity && Const.a.moveTypeForNPC[index] != Const.aiMoveType.Cyber && Const.a.moveTypeForNPC[index] != Const.aiMoveType.Fly) rbody.useGravity = true; //Debug.Log(gameObject.name + " has rbody.useGravity set to false!");
 
         // Only think every tick seconds to save on CPU and prevent race conditions
         if (tickFinished < PauseScript.a.relativeTime) {

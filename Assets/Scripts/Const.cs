@@ -272,9 +272,10 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int[] audioLogImagesRefIndicesRH;
 	public GameObject eventSystem;
 	public Texture[] sequenceTextures;
+	public Text loadPercentText;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
-	[HideInInspector] public string versionString = "v0.97"; // Global CITADEL PROJECT VERSION
+	[HideInInspector] public string versionString = "v0.98"; // Global CITADEL PROJECT VERSION
 	[HideInInspector] public bool gameFinished = false; // Global constants
 	[HideInInspector] public float justSavedTimeStamp;
 	[HideInInspector] public float savedReminderTime = 7f; // human short-term memory length
@@ -397,7 +398,6 @@ public class Const : MonoBehaviour {
 
 	void Start() {
 		LoadConfig();
-
 		layerMaskNPCSight = LayerMask.GetMask("Default","Geometry","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
 		layerMaskNPCAttack = LayerMask.GetMask("Default","Geometry","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
 		layerMaskNPCCollision = LayerMask.GetMask("Default","TransparentFX","IgnoreRaycast","Geometry","NPC","Door","InterDebris","Player","Clip","NPCClip","PhysObjects"); // Not including "Bullets" as this is merely used for spawning, not setting level-wide NPC collisions.
@@ -415,14 +415,14 @@ public class Const : MonoBehaviour {
 		if (mainFont1 != null) mainFont1.material.mainTexture.filterMode = FilterMode.Point;
 		if (mainFont2 != null) mainFont2.material.mainTexture.filterMode = FilterMode.Point;
 		prb = FindObjectsOfType<PauseRigidbody>();
-		if (startingNewGame) {
-			PauseScript.a.mainMenu.SetActive(false);
-			loadingScreen.SetActive(false);
-			MainMenuHandler.a.IntroVideo.SetActive(false);
-			MainMenuHandler.a.IntroVideoContainer.SetActive(false);
-			sprint(stringTable[197]); // Loading...Done!
-			WriteDatForNewGame(false,false);
-		}
+		//if (startingNewGame) {
+		//	PauseScript.a.mainMenu.SetActive(false);
+		//	loadingScreen.SetActive(false);
+		//	MainMenuHandler.a.IntroVideo.SetActive(false);
+		//	MainMenuHandler.a.IntroVideoContainer.SetActive(false);
+		//	sprint(stringTable[197]); // Loading...Done!
+		//	WriteDatForNewGame(false,false);
+		//}
 	}
 
 
@@ -584,6 +584,7 @@ public class Const : MonoBehaviour {
 	}
 
 	private void LoadCreditsData () {
+		creditsText = new string[20];
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 		int pagenum = 0;
@@ -606,7 +607,6 @@ public class Const : MonoBehaviour {
 				currentline++;
 			} while (!dataReader.EndOfStream);
 			dataReader.Close();
-			//UnityEngine.Debug.Log("Credits pages length is " + creditsLength.ToString());
 			return;
 		}
 	}
@@ -620,13 +620,11 @@ public class Const : MonoBehaviour {
 			do {
 				// Read the next line
 				readline = dataReader.ReadLine();
-
 				if (currentline == 0) a.startingNewGame = GetBoolFromString(readline);
 				if (currentline == 1) a.freshRun = GetBoolFromString(readline);
 				currentline++;
 			} while (!dataReader.EndOfStream);
 			dataReader.Close();
-			//UnityEngine.Debug.Log("Credits pages length is " + creditsLength.ToString());
 			return;
 		}
 	}
@@ -646,7 +644,6 @@ public class Const : MonoBehaviour {
 	}
 
 	private void LoadEnemyTablesData() {
-		UnityEngine.Debug.Log("Entered LoadEnemyTablesData");
 		int numberOfNPCs = 29;
 		nameForNPC = new string[numberOfNPCs];
 		attackTypeForNPC = new AttackType[numberOfNPCs];
@@ -1724,31 +1721,7 @@ public class Const : MonoBehaviour {
 		return line;
 	}
 
-	string SaveDoorData(GameObject go) {
-		string line = System.String.Empty;
-		Door dr = go.GetComponent<Door>();
-		if (dr != null) {
-			line = dr.targetAlreadyDone.ToString(); // bool - have we already ran targets
-			line += splitChar + dr.locked.ToString(); // bool - is this locked?
-			line += splitChar + dr.ajar.ToString(); // bool - is this locked?
-			line += splitChar + dr.useFinished.ToString("0000.00000"); // float
-			line += splitChar + dr.waitBeforeClose.ToString("0000.00000"); // float
-			line += splitChar + dr.lasersFinished.ToString("0000.00000"); // float
-			line += splitChar + dr.blocked.ToString(); // bool - is the door blocked currently?
-			line += splitChar + dr.accessCardUsedByPlayer.ToString(); // bool - is the door blocked currently?
-			switch (dr.doorOpen) {
-				case Door.doorState.Closed: line += "|0"; break;
-				case Door.doorState.Open: line += "|1"; break;
-				case Door.doorState.Closing: line += "|2"; break;
-				case Door.doorState.Opening: line += "|3"; break;
-			}
-			line += splitChar + dr.animatorPlaybackTime.ToString("0000.00000"); // float - current animation time
-		} else {
-			UnityEngine.Debug.Log("Door missing on savetype of Door! GameObject.name: " + go.name);
-		}
-		//8
-		return line;
-	}	
+
 
 	string SaveForceBridgeData(GameObject go) {
 		string line = System.String.Empty;
@@ -2279,7 +2252,7 @@ public class Const : MonoBehaviour {
 				case SaveObject.SaveableType.Destructable: numDestructables++;  line += SaveDestructableData(saveableGameObjects[i]); break;
 				case SaveObject.SaveableType.SearchableStatic: numSearchableStatics++;  line += SaveSearchableStaticData(saveableGameObjects[i]); break;
 				case SaveObject.SaveableType.SearchableDestructable: numSearchableDestructs++;  line += SaveSearchableDestructsData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.Door: numDoors++;  line += SaveDoorData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.Door: numDoors++;  line += saveableGameObjects[i].GetComponent<Door>().SaveDoorData(splitChar); break;
 				case SaveObject.SaveableType.ForceBridge: numForceBs++;  line += SaveForceBridgeData(saveableGameObjects[i]); break;
 				case SaveObject.SaveableType.Switch: numSwitches++;  line += SaveSwitchData(saveableGameObjects[i]); break;
 				case SaveObject.SaveableType.FuncWall: numFuncWalls++;  line += SaveFuncWallData(saveableGameObjects[i]); break;
@@ -3127,6 +3100,10 @@ public class Const : MonoBehaviour {
 
 	public void Load(int saveFileIndex) {
 		loadingScreen.SetActive(true);
+		loadPercentText.text = "--.----";
+		PauseScript.a.mainMenu.SetActive(false);
+		PauseScript.a.PauseEnable();
+		PauseScript.a.Loading();
 		MFDManager.a.TabReset(true);
 		MFDManager.a.TabReset(false);
 		StartCoroutine(Const.a.LoadRoutine(saveFileIndex));
@@ -3136,20 +3113,20 @@ public class Const : MonoBehaviour {
 		Stopwatch loadTimer = new Stopwatch();
 		//Stopwatch matchTimer = new Stopwatch();
 		loadTimer.Start();
-		PauseScript.a.mainMenu.SetActive(false);
-		PauseScript.a.PauseEnable();
-		PauseScript.a.Loading();
+		Cursor.visible = true;
 		yield return null;
 
 		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = false;
 		if (saveFileIndex < 0) {
-			WriteDatForNewGame(true,false); // set bit to know to deactivate main menu when we reload
+			//WriteDatForNewGame(true,false); // set bit to know to deactivate main menu when we reload
 			//SceneManager.LoadScene(0); // reload. it. all.
+			loadingScreen.SetActive(false);
+			PauseScript.a.PauseDisable();
 			yield break;
 		}
 		startingNewGame = false;
 		freshRun = false;
-		WriteDatForNewGame(false,false); // reset
+		//WriteDatForNewGame(false,false); // reset
 		//SceneManager.LoadScene(0);
 		yield return null;
 
@@ -3276,6 +3253,7 @@ public class Const : MonoBehaviour {
 			if (currentline != 7) UnityEngine.Debug.Log("ERROR: currentline wasn't 7 before iterating through saveObjects!");
 			//int[] lookupList = new int[(numSaveablesFromSavefile-currentline)];
 			//SaveObject[] sos = new SaveObject[saveableGameObjects.Count];
+			loadPercentText.text = "0.0001";
 			yield return null;
 
 			// get the existing IDs
@@ -3338,6 +3316,8 @@ public class Const : MonoBehaviour {
 						break;
 					}
 				}
+				loadPercentText.text = (currentline / numSaveablesFromSavefile).ToString("00.0000");
+				yield return null;
 			}
 
 			int numberOfMissedObjects = 0;
@@ -3365,11 +3345,16 @@ public class Const : MonoBehaviour {
 							if (instantiatedObject != null) LoadObjectDataToObject(instantiatedObject, entries, i, index); // Load it
 						}
 					}
+					loadPercentText.text = (i / instantiatedFound.Count).ToString("00.0000");
+					yield return null;
 				}
 			}
 			//matchTimer.Stop();
 			//UnityEngine.Debug.Log("Loading done!");
 		}
+		player1Capsule.SetActive(true);
+		player1CapsuleMainCameragGO.transform.parent.gameObject.SetActive(true);
+		player1CapsuleMainCameragGO.SetActive(true);
 		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = true;
 		yield return null;
 		loadingScreen.SetActive(false);
@@ -3789,7 +3774,7 @@ public class Const : MonoBehaviour {
 		if (rbody != null && impactVelocity > 0) rbody.AddForceAtPosition((attackNormal*impactVelocity*1.5f),hitPoint);
 	}
 
-	public int SafeIndex(int[] array, int index, int max, int failvalue) {
+	public int SafeIndex(ref int[] array, int index, int max, int failvalue) {
 		if (index < 0 || index > max || index > array.Length) { UnityEngine.Debug.Log("Unexpected situation, index out of bounds passed to SafeIndex!"); return failvalue; }
 		if (array.Length < 1) { UnityEngine.Debug.Log("Unexpected situation, array passed to SafeIndex was empty!"); return failvalue; }
 		return array[index]; // Safe to pass the index value into the array space.

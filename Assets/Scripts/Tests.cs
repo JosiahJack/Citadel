@@ -8,7 +8,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+[InitializeOnLoad]
 public class Tests : MonoBehaviour {
+	public string buttonLabel = "Run Tests";
+
+	static Tests() {
+		//Run();
+	}
 	public void RunUnits() {
 		Stopwatch testTimer = new Stopwatch();
 		testTimer.Start();
@@ -600,6 +606,7 @@ public class Tests : MonoBehaviour {
 		PrintTally("TargetIO",					issueCount_TargetIO,					num_TargetIO);
 		testTimer.Stop();
 		UnityEngine.Debug.Log("All tests completed in " + testTimer.Elapsed.ToString());
+		buttonLabel = "Run Tests (Last was: " + testTimer.Elapsed.ToString() + ")";
 	}
 
 	private void PrintTally(string className, int issueCount, int objCount) {

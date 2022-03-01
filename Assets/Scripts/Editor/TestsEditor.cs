@@ -8,11 +8,11 @@ public class TestsEditor : Editor {
 	public override void OnInspectorGUI() {
 		base.OnInspectorGUI();
 		Tests testScript = (Tests)target;
-		if (GUILayout.Button("Run Setup Tests")) {
+		//if (GUILayout.Button("Run Unit Tests")) {
+		//	testScript.RunUnits();
+		//}
+		if (GUILayout.Button(testScript.buttonLabel)) {
 			testScript.Run();
-		}
-		if (GUILayout.Button("Run Unit Tests")) {
-			testScript.RunUnits();
 		}
 	}
 }

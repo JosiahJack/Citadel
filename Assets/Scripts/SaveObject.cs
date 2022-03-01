@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class SaveObject : MonoBehaviour {
 	public int SaveID;
@@ -20,9 +21,14 @@ public class SaveObject : MonoBehaviour {
 	public int constLookupTable = 0; // The table to check. 0 = useableItems, 1 = npcPrefabs
 	public int constLookupIndex = -1; // Index into the Const lookup table for referencing during instantiation.
 
+	public void SetSaveID() {
+		SaveID = gameObject.GetInstanceID();
+	}
+
 	public void Start () {
 		if (initialized) return;
-		SaveID = gameObject.GetInstanceID();
+
+		SetSaveID();
 		isRuntimeObject = true;  // Lets us know if this object is indeed not the prefab but rather an instance of a prefab
 		switch (saveType) {
 			case SaveableType.Player: saveableType = "Player"; break;
