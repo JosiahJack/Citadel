@@ -1106,7 +1106,7 @@ public class PlayerMovement : MonoBehaviour {
 		consoleinpFd.DeactivateInputField();
 		consoleinpFd.enabled = false;
 		consolebg.enabled = false;
-		consoleentryText.text = null;
+		consoleentryText.text = "";
 		consoleentryText.enabled = false;
 	}
 

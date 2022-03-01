@@ -61,7 +61,7 @@ public class GetInput : MonoBehaviour {
     public bool SwimUp()		{ if (Const.a.InputCodeSettings[40]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[40]== 154) return MouseWheelDn(); if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[40]])) return true; else return false; }
     public bool SwimDn()		{ if (Const.a.InputCodeSettings[41]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[41]== 154) return MouseWheelDn(); if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[41]])) return true; else return false; }
     // public bool SwapAmmoType()	{ if (Const.a.InputCodeSettings[42]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[42]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[42]])) return true; else return false; }
-    public bool Console()		{ if (Const.a.InputCodeSettings[43]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[43]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[43]])) return true; else return false; }
+    public bool Console()		{ if (Const.a.InputCodeSettings[43]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[43]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[43]]) || Input.GetKeyDown(KeyCode.Caret)) return true; else return false; } // UPDATE should replace the 94 check here with a system to handle Shift+6 binding to set directly?
 
 	public bool Numpad0()		{ if (Input.GetKeyDown(KeyCode.Keypad0)) return true; else return false; }
 	public bool Numpad1()		{ if (Input.GetKeyDown(KeyCode.Keypad1)) return true; else return false; }
