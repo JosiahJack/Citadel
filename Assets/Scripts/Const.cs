@@ -1808,7 +1808,7 @@ public class Const : MonoBehaviour {
 		PuzzleGridPuzzle pgp = go.GetComponent<PuzzleGridPuzzle>();
 		if (pgp != null) {
 			line = BoolToString(pgp.puzzleSolved); // bool - is this puzzle already solved?
-			for (int i=0;i<35;i++) { line += splitChar + pgp.grid[i].ToString(); } // bool - get the current grid states + or X
+			for (int i=0;i<35;i++) { line += splitChar + BoolToString(pgp.grid[i]); } // bool - get the current grid states + or X
 			line += splitChar + BoolToString(pgp.fired); // bool - have we already fired yet?
 			line += splitChar + BoolToString(pgp.locked); // bool - is this locked?
 		} else {
@@ -3233,8 +3233,8 @@ public class Const : MonoBehaviour {
 						break;
 					}
 				}
-				loadPercentText.text = (currentline / numSaveablesFromSavefile).ToString("00.0000");
-				yield return null;
+				loadPercentText.text = currentline.ToString("00.00");
+				if (currentline < 1000) yield return null;
 			}
 
 			int numberOfMissedObjects = 0;
