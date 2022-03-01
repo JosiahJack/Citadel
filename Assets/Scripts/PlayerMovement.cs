@@ -1306,8 +1306,12 @@ public class PlayerMovement : MonoBehaviour {
 				Const.sprint("Use the Pause Menu by hitting Escape and clicking QUIT");
 		} else if (ts.Contains("cd") || ts.Contains("./")) {
 				Const.sprint("Attempting to access directory... already at root");
-		} else if (ts.Contains("kill") || ts.Contains("kick") || ts.Contains("ban") || ts.Contains("destroy") || ts.Contains("attack")) {
-				Const.sprint("Ok, give me a minute and I'll send a Cortex Reaver to help with that");
+		} else if (ts.Contains("kill") || ts.Contains("kick") || ts.Contains("ban") || ts.Contains("destroy") || ts.Contains("attack") || ts.Contains("suicide") || ts.Contains("die")) {
+				Const.sprint("Player decides to become a cyborg.");
+				DamageData dd = new DamageData();
+				dd.damage = hm.health + 1.0f;
+				dd.other = gameObject;
+				hm.TakeDamage(dd);
 		} else if (ts.Contains("justinbailey")) {
 				Const.sprint("Well, you don't have a suit already so...");
 		} else if (ts.Contains("woodstock")) {
