@@ -371,14 +371,14 @@ public class Door : MonoBehaviour {
 
 	public string SaveDoorData(string splitChar) {
 		string line = System.String.Empty;
-		line = targetAlreadyDone.ToString(); // bool - have we already ran targets
-		line += splitChar + locked.ToString(); // bool - is this locked?
-		line += splitChar + ajar.ToString(); // bool - is this locked?
+		line = Const.a.BoolToString(targetAlreadyDone); // bool - have we already ran targets
+		line += splitChar + Const.a.BoolToString(locked); // bool - is this locked?
+		line += splitChar + Const.a.BoolToString(ajar); // bool - is this locked?
 		line += splitChar + useFinished.ToString("0000.00000"); // float
 		line += splitChar + waitBeforeClose.ToString("0000.00000"); // float
 		line += splitChar + lasersFinished.ToString("0000.00000"); // float
-		line += splitChar + blocked.ToString(); // bool - is the door blocked currently?
-		line += splitChar + accessCardUsedByPlayer.ToString(); // bool - is the door blocked currently?
+		line += splitChar + Const.a.BoolToString(blocked); // bool - is the door blocked currently?
+		line += splitChar + Const.a.BoolToString(accessCardUsedByPlayer); // bool - is the door blocked currently?
 		switch (doorOpen) {
 			case Door.doorState.Closed: line += "|0"; break;
 			case Door.doorState.Open: line += "|1"; break;
