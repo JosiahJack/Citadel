@@ -8,13 +8,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-[InitializeOnLoad]
 public class Tests : MonoBehaviour {
 	public string buttonLabel = "Run Tests";
 
-	static Tests() {
-		//Run();
-	}
 	public void RunUnits() {
 		Stopwatch testTimer = new Stopwatch();
 		testTimer.Start();

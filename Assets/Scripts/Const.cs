@@ -3234,7 +3234,7 @@ public class Const : MonoBehaviour {
 					}
 				}
 				loadPercentText.text = currentline.ToString("00.00");
-				if (currentline < 1000) yield return null;
+				if (UnityEngine.Random.Range(0f,1.0f) < 0.01f) yield return null;
 			}
 
 			int numberOfMissedObjects = 0;

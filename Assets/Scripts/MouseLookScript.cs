@@ -276,7 +276,7 @@ public class MouseLookScript : MonoBehaviour {
 		if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.a.frobDistance,Const.a.layerMaskPlayerFrob)) { // Separate from below which uses different mask
 			if (tempHit.collider == null) return;
 		
-			Debug.Log("FrobEmptyHanded: Const.a.frobDistance = " + Const.a.frobDistance.ToString("000.00000"));
+			//Debug.Log("FrobEmptyHanded: Const.a.frobDistance = " + Const.a.frobDistance.ToString("000.00000"));
 			if (tempHit.collider.CompareTag("Usable") || tempHit.collider.CompareTag("Searchable") || tempHit.collider.CompareTag("Geometry") || tempHit.collider.CompareTag("NPC")) {
 				if (tempHit.collider.CompareTag("Usable")) { // Use
 					UseData ud = new UseData ();
@@ -306,9 +306,9 @@ public class MouseLookScript : MonoBehaviour {
 				}
 			}
 		} else {
-			Debug.Log("FrobEmptyHanded: First raycast failed...");
+			//Debug.Log("FrobEmptyHanded: First raycast failed...");
 			if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit, 79f,Const.a.layerMaskPlayerFrob)) { // TIP: Use Camera.main.ViewportPointToRay for center of screen
-				Debug.Log("FrobEmptyHanded: Second raycast entry...");
+				//Debug.Log("FrobEmptyHanded: Second raycast entry...");
 				if (tempHit.collider == null) return;
 
 				Const.sprint(Const.a.stringTable[30],player); // You are too far away from that
