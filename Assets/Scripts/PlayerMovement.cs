@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Text.RegularExpressions;
 
 public class PlayerMovement : MonoBehaviour {
 	// External references, required
@@ -1334,7 +1335,24 @@ public class PlayerMovement : MonoBehaviour {
 				GameObject cheatObject = Instantiate(Const.a.useableItems[val],transform.position,Const.a.quaternionIdentity) as GameObject;
 				if (cheatObject != null) cheatObject.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 			}
-        } else {
+
+        } else if (ts.Contains("const.")) {
+			string numGet = Regex.Match(ts, @"\d+").Value;
+			int numGot = Int32.Parse(numGet);
+			if (numGot >= 0) {
+				// Debug value parsing within build
+				if (ts.Contains("useableItemsNameText")) {
+					if (numGot < Const.a.useableItemsNameText.Length) Const.sprint(Const.a.useableItemsNameText[numGot]);
+					else Const.sprint("Value of " + numGot.ToString() + " was outside of bounds, needs to be 0 - " + Const.a.useableItemsNameText.Length.ToString());
+				} else if (ts.Contains("isFullAutoForWeapon")) {
+					if (numGot < Const.a.isFullAutoForWeapon.Length) Const.sprint(Const.a.isFullAutoForWeapon[numGot].ToString());
+					else Const.sprint("Value of " + numGot.ToString() + " was outside of bounds, needs to be 0 - " + Const.a.isFullAutoForWeapon.Length.ToString());
+				} else if (ts.Contains("moveTypeForNPC")) {
+					if (numGot < Const.a.moveTypeForNPC.Length) Const.sprint(Const.a.moveTypeForNPC[numGot].ToString());
+					else Const.sprint("Value of " + numGot.ToString() + " was outside of bounds, needs to be 0 - " + Const.a.moveTypeForNPC.Length.ToString());
+				}
+			}
+		} else {
             Const.sprint("Uknown command or function: " + consoleinpFd.text);
         }
 

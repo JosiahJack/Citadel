@@ -1520,10 +1520,8 @@ public class Const : MonoBehaviour {
 		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>();
 		if (aic != null) {
 			if (!aic.startInitialized) aic.Start();
-
 			s2.Append(aic.index.ToString()); // int
 			s2.Append(splitChar);
-			//line = aic.index.ToString(); // int - NPC const lookup table index for instantiating
 			switch (aic.currentState) {
 				case Const.aiState.Walk: s2.Append("1"); break;
 				case Const.aiState.Run: s2.Append("2"); break;
@@ -1537,19 +1535,6 @@ public class Const : MonoBehaviour {
 				case Const.aiState.Dead: s2.Append("10");  break;
 				default: s2.Append("0");  break;
 			}
-			// switch (aic.currentState) {
-				// case Const.aiState.Walk: line += splitChar + "1"; break;
-				// case Const.aiState.Run: line += splitChar + "2"; break;
-				// case Const.aiState.Attack1: line += splitChar + "3"; break;
-				// case Const.aiState.Attack2: line += splitChar + "4"; break;
-				// case Const.aiState.Attack3: line += splitChar + "5"; break;
-				// case Const.aiState.Pain: line += splitChar + "6"; break;
-				// case Const.aiState.Dying: line += splitChar + "7"; break;
-				// case Const.aiState.Inspect: line += splitChar + "8"; break;
-				// case Const.aiState.Interacting: line += splitChar + "9"; break;
-				// case Const.aiState.Dead: line += splitChar + "10"; break;
-				// default: line += splitChar + "0"; break;
-			// }
 			s2.Append(splitChar);
 			if (aic.enemy != null) {
 				SaveObject so = aic.enemy.GetComponent<SaveObject>();

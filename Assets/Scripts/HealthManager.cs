@@ -466,14 +466,14 @@ public class HealthManager : MonoBehaviour {
 				AudioSource aS = tempAud.GetComponent<AudioSource> ();
 				if (aS != null) {
 					aS.enabled = true;
-					if (deathSound != null) aS.PlayOneShot (deathSound);
-					else if (backupDeathSound != null) aS.PlayOneShot (backupDeathSound);
+					if (deathSound != null && !actAsCorpseOnly) aS.PlayOneShot (deathSound);
+					else if (backupDeathSound != null && !actAsCorpseOnly) aS.PlayOneShot (backupDeathSound);
 				}
 			}
 		}
 	}
 
-	public void NPCDeath (AudioClip deathSound) {
+	void NPCDeath (AudioClip deathSound) {
 		if (deathDone) return; // We died the death, no 2nd deaths here.
 
 		deathDone = true; // Mark it so we only die once.
@@ -484,6 +484,7 @@ public class HealthManager : MonoBehaviour {
 				explosionEffect.transform.position = transform.position; // Put it at the location of this object.
 			}
 		}
+		
 		PlayDeathSound(deathSound); // Play death sound, if present
 		if (spawnMother != null) spawnMother.SpawneeJustDied();
 	}

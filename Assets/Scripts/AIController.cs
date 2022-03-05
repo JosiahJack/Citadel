@@ -135,7 +135,7 @@ public class AIController : MonoBehaviour {
 			} else { rbody.useGravity = true; Debug.Log("Const.a.moveTypeForNPC had no length!"); }
 		} else { rbody.useGravity = true; Debug.Log("Index was out of range with value of " + index.ToString() + " on " + gameObject.name);}
 		healthManager = GetComponent<HealthManager>();
-	    boxCollider = GetComponent<BoxCollider>();
+		boxCollider = GetComponent<BoxCollider>();
 		sphereCollider = GetComponent<SphereCollider>();
 		meshCollider = GetComponent<MeshCollider>();
 		capsuleCollider = GetComponent<CapsuleCollider>();
@@ -273,7 +273,8 @@ public class AIController : MonoBehaviour {
 	}
 
 	void Update() {
-		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return;
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive() || !startInitialized) return;
+
 		if (raycastingTickFinished < PauseScript.a.relativeTime) {
 			raycastingTickFinished = PauseScript.a.relativeTime + Const.a.raycastTick;
 			inSight = CheckIfPlayerInSight();
@@ -312,7 +313,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return; // Don't do any checks or anything else...we're paused!
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive() || !startInitialized) return; // Don't do any checks or anything else...we're paused!
 
 		if (!rbody.useGravity && Const.a.moveTypeForNPC[index] != Const.aiMoveType.Cyber && Const.a.moveTypeForNPC[index] != Const.aiMoveType.Fly) rbody.useGravity = true; //Debug.Log(gameObject.name + " has rbody.useGravity set to false!");
 
@@ -354,7 +355,7 @@ public class AIController : MonoBehaviour {
 			deathBurstDone = true;
 		}
 
-		if (Const.a.moveTypeForNPC[index] != Const.aiMoveType.Cyber) {
+		if (Const.a.moveTypeForNPC[index] != Const.aiMoveType.Cyber ||  npcType != Const.npcType.Cyber) {
 			if (healthManager.health <= 0) {
 				// If we haven't gone into dying and we aren't dead, going into dying
 				if (!ai_dying && !ai_dead) {
@@ -363,7 +364,7 @@ public class AIController : MonoBehaviour {
 				}
 			}
 		} else {
-			if (healthManager.cyberHealth <= 0) {
+			if (healthManager.cyberHealth <= 0 && npcType == Const.npcType.Cyber) {
 				// If we haven't gone into dying and we aren't dead, going into dying
 				if (!ai_dying && !ai_dead) {
 					ai_dying = true; //no going back
