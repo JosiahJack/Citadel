@@ -268,51 +268,115 @@ public class MouseLookScript : MonoBehaviour {
 		}
 	}
 
-	void FrobEmptyHanded() {
-		cursorPoint.x = MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2f);
-		cursorPoint.y = Screen.height - MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
-		cursorPoint.z = 0f;
+	bool RayOffset() {
+		bool successfulRay = false;
+		successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.a.frobDistance,Const.a.layerMaskPlayerFrob);
 		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,playerCamera.ScreenPointToRay(cursorPoint).direction * Const.a.frobDistance, Color.green,1f,true);
-		if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.a.frobDistance,Const.a.layerMaskPlayerFrob)) { // Separate from below which uses different mask
-			if (tempHit.collider == null) return;
-		
-			//Debug.Log("FrobEmptyHanded: Const.a.frobDistance = " + Const.a.frobDistance.ToString("000.00000"));
-			if (tempHit.collider.CompareTag("Usable") || tempHit.collider.CompareTag("Searchable") || tempHit.collider.CompareTag("Geometry") || tempHit.collider.CompareTag("NPC")) {
-				if (tempHit.collider.CompareTag("Usable")) { // Use
-					UseData ud = new UseData ();
-					ud.owner = player;
-					UseHandler uh = tempHit.collider.gameObject.GetComponent<UseHandler>();
-					if (uh != null) {
-						uh.Use(ud);
+		if (successfulRay) {
+			successfulRay = (tempHit.collider != null);
+			if (successfulRay) {
+				successfulRay = (tempHit.collider.CompareTag("Usable") || tempHit.collider.CompareTag("Searchable") || tempHit.collider.CompareTag("NPC"));
+			}
+		}
+		return successfulRay;
+	}
+
+	void FrobEmptyHanded() {
+		cursorPoint.x = MouseCursor.cursorPosition.x; //MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2f);
+		cursorPoint.y = Screen.height - MouseCursor.cursorPosition.y; //Screen.height - MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+		cursorPoint.z = 0f;
+		float offset = Screen.height * 0.02f;
+		bool successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.a.frobDistance,Const.a.layerMaskPlayerFrob); // Separate from below which uses different mask
+		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,playerCamera.ScreenPointToRay(cursorPoint).direction * Const.a.frobDistance, Color.green,1f,true);
+		if (successfulRay) {
+			successfulRay = (tempHit.collider != null);
+			if (successfulRay) {
+				successfulRay = (tempHit.collider.CompareTag("Usable") || tempHit.collider.CompareTag("Searchable") || tempHit.collider.CompareTag("NPC"));
+			}
+		}
+
+		if (!successfulRay) { // Try down
+			cursorPoint.y -= offset;
+			successfulRay = RayOffset();
+			cursorPoint.y += offset;
+		}
+		if (!successfulRay) { // Try up
+			cursorPoint.y += offset;
+			successfulRay = RayOffset();
+			cursorPoint.y -= offset;
+		}
+		if (!successfulRay) { // Try to the right
+			cursorPoint.x += offset;
+			successfulRay = RayOffset();
+			cursorPoint.x -= offset;
+		}
+		if (!successfulRay) { // Try to the left
+			cursorPoint.x -= offset;
+			successfulRay = RayOffset();
+			cursorPoint.x += offset;
+		}
+		if (!successfulRay) { // Try up and to the right
+			cursorPoint.x += offset;
+			cursorPoint.y += offset;
+			successfulRay = RayOffset();
+			cursorPoint.x -= offset;
+			cursorPoint.y -= offset;
+		}
+		if (!successfulRay) { // Try down and to the left
+			cursorPoint.x -= offset;
+			cursorPoint.y -= offset;
+			successfulRay = RayOffset();
+			cursorPoint.x += offset;
+			cursorPoint.y += offset;
+		}
+		if (!successfulRay) { // Try up and to the left
+			cursorPoint.x -= offset;
+			cursorPoint.y += offset;
+			successfulRay = RayOffset();
+			cursorPoint.x += offset;
+			cursorPoint.y -= offset;
+		}
+		if (!successfulRay) { // Try down and to the right
+			cursorPoint.x += offset;
+			cursorPoint.y -= offset;
+			successfulRay = RayOffset();
+			cursorPoint.x -= offset;
+			cursorPoint.y += offset;
+		}
+
+		// Okay we've checked first center, then in a box patter of 8, surely we've hit something the player was reasonably aiming at by now.
+		if (successfulRay) {
+			if (tempHit.collider.CompareTag("Usable")) { // Use
+				UseData ud = new UseData ();
+				ud.owner = player;
+				UseHandler uh = tempHit.collider.gameObject.GetComponent<UseHandler>();
+				if (uh != null) {
+					uh.Use(ud);
+				} else {
+					UseHandlerRelay uhr = tempHit.collider.gameObject.GetComponent<UseHandlerRelay>();
+					if (uhr != null) {
+						uhr.referenceUseHandler.Use(ud);
 					} else {
-						UseHandlerRelay uhr = tempHit.collider.gameObject.GetComponent<UseHandlerRelay>();
-						if (uhr != null) {
-							uhr.referenceUseHandler.Use(ud);
-						} else {
-							Debug.Log("BUG: Attempting to use a useable without a UseHandler or UseHandlerRelay!");
-						}
+						Debug.Log("BUG: Attempting to use a useable without a UseHandler or UseHandlerRelay!");
 					}
-				} else if (tempHit.collider.CompareTag("Searchable")) { // Search
-					currentSearchItem = tempHit.collider.gameObject;
-					SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
-				} else if (tempHit.collider.CompareTag("NPC")) { // Say we can't use enemy and give enemy name.
-					AIController aic = tempHit.collider.gameObject.GetComponent<AIController>();
-					if (aic != null) Const.sprint(Const.a.stringTable[29] + Const.a.nameForNPC[aic.index],player); // "Can not use <enemy>"
-				} else if (tempHit.collider.CompareTag("Geometry")) { // Give info about what we are looking at, e.g. "Molybdenum panelling".
+				}
+			} else if (tempHit.collider.CompareTag("Searchable")) { // Search
+				currentSearchItem = tempHit.collider.gameObject;
+				SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
+			} else if (tempHit.collider.CompareTag("NPC")) { // Say we can't use enemy and give enemy name.
+				AIController aic = tempHit.collider.gameObject.GetComponent<AIController>();
+				if (aic != null) Const.sprint(Const.a.stringTable[29] + Const.a.nameForNPC[aic.index],player); // "Can not use <enemy>"
+			} else {
+				Const.sprint(Const.a.stringTable[29],player); // "Can not use "
+			}
+		} else { // Frobbed into empty space, so whatever it is is too far.
+			if (tempHit.collider != null) {
+				if (tempHit.collider.CompareTag("Geometry")) { // Give info about what we are looking at, e.g. "Molybdenum panelling".
 					UseName un = tempHit.collider.gameObject.GetComponent<UseName> ();
 					if (un != null) Const.sprint(Const.a.stringTable[29] + un.targetname,player); // "Can not use <blah blah blah>"
-				} else {
-					Const.sprint(Const.a.stringTable[29],player); // "Can not use "
 				}
 			}
-		} else {
-			//Debug.Log("FrobEmptyHanded: First raycast failed...");
-			if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit, 79f,Const.a.layerMaskPlayerFrob)) { // TIP: Use Camera.main.ViewportPointToRay for center of screen
-				//Debug.Log("FrobEmptyHanded: Second raycast entry...");
-				if (tempHit.collider == null) return;
-
-				Const.sprint(Const.a.stringTable[30],player); // You are too far away from that
-			}
+			Const.sprint(Const.a.stringTable[30],player); // You are too far away from that
 		}
 	}
 
