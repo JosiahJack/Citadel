@@ -520,6 +520,7 @@ public class Inventory : MonoBehaviour {
 		if (button8Index > 0) {
 			mls.hardwareButtons[button8Index].SetActive(true);  // Enable HUD button
 			hardwareButtonManager.SetVersionIconForButton(hardwareIsActive[index],hardwareVersionSetting[index],4);
+			hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
 		}
 		hasHardware[index] = true;
 		hardwareVersion[index] = hwversion;
