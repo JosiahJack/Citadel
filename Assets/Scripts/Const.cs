@@ -262,7 +262,7 @@ public class Const : MonoBehaviour {
 	public Font mainFont2; // Used to force Point filter mode.
 	/*[DTValidator.Optional] */public GameObject[] TargetRegister; // Doesn't need to be full, available space for maps and mods made by the community to use tons of objects
 	public string[] TargetnameRegister;
-    [HideInInspector] public string[] stringTable;
+    public string[] stringTable;
 	public float[] reloadTime;
 
 	public Material[] screenCodes;
@@ -362,7 +362,6 @@ public class Const : MonoBehaviour {
 		a.quaternionIdentity = Quaternion.identity;
 		a.vectorZero = Vector3.zero;
 		a.vectorOne = Vector3.one;
-		a.stringTable = new string[587];
 		a.LoadAudioLogMetaData();
 		a.LoadItemNamesData();
 		a.LoadDamageTablesData();
@@ -383,7 +382,7 @@ public class Const : MonoBehaviour {
                 // Read the next line
                 readline = dataReader.ReadLine();
                 if (currentline < stringTable.Length) {
-                    stringTable[currentline] = readline;
+                    stringTable[currentline] = readline; UnityEngine.Debug.Log("Wrote line '" + stringTable[currentline] + "' into  stringTable at index " + currentline.ToString());
 				} else {
 					UnityEngine.Debug.Log("WARNING: Ran out of slots in stringTable at " + currentline.ToString());
 					dataReader.Close();

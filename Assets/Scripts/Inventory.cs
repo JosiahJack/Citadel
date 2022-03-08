@@ -260,7 +260,7 @@ public class Inventory : MonoBehaviour {
 					}
 
 					if (genButtons[i].activeInHierarchy) {
-						int referenceIndex = genButtons[i].transform.GetComponentInParent<GeneralInvButton>().useableItemIndex;
+						int referenceIndex = genButtons[i].transform.GetComponent<GeneralInvButton>().useableItemIndex;
 						if (referenceIndex > -1) {
 							genButtonsText[i].text = Const.a.useableItemsNameText[referenceIndex];
 						} else {
@@ -426,7 +426,6 @@ public class Inventory : MonoBehaviour {
 			}
 			//--- End Logs ---
 		}
-		
 	}
 
 	// Access Cards
@@ -541,6 +540,7 @@ public class Inventory : MonoBehaviour {
                 generalInventoryIndexRef[i] = index;
 				Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[31] ); // Item added to general inventory
                 generalInvCurrent = index;
+				genButtons[i].transform.GetComponent<GeneralInvButton>().useableItemIndex = index;
 				MFDManager.a.SendInfoToItemTab(index);
 				MFDManager.a.NotifyToCenterTab(2);
 				if (mls.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(2,true);
