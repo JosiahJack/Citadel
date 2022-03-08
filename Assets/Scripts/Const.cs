@@ -382,7 +382,7 @@ public class Const : MonoBehaviour {
                 // Read the next line
                 readline = dataReader.ReadLine();
                 if (currentline < stringTable.Length) {
-                    stringTable[currentline] = readline; UnityEngine.Debug.Log("Wrote line '" + stringTable[currentline] + "' into  stringTable at index " + currentline.ToString());
+                    stringTable[currentline] = readline;
 				} else {
 					UnityEngine.Debug.Log("WARNING: Ran out of slots in stringTable at " + currentline.ToString());
 					dataReader.Close();

@@ -218,6 +218,13 @@ public class MFDManager : MonoBehaviour  {
 		a.highlightTickCount = new int[] {0,0,0,0};
 		a.blinkFinished = blinkTick + PauseScript.a.relativeTime;
 		a.beepFinished = beepTick + PauseScript.a.relativeTime;
+		DisableAllCenterTabs();
+		MainTabButton.image.overrideSprite = MFDSpriteSelected;
+		DisableAllCenterTabs();
+		HardwareTabButton.image.overrideSprite = MFDSprite;
+		GeneralTabButton.image.overrideSprite = MFDSprite;
+		SoftwareTabButton.image.overrideSprite = MFDSprite;
+		curCenterTab = 0;
 	}
 
 	void OnEnable() {
@@ -612,7 +619,7 @@ public class MFDManager : MonoBehaviour  {
 		} else {
 			checkVal = playerEnergy.energy;
 		}
-		
+
 		if (checkVal > 255f) checkVal = 255f; // Always display ticks properly no matter what crazy value we've been hacked to have.
 		while (step < 256) {
 			if (checkVal < (256 - step)) {
@@ -901,7 +908,7 @@ public class MFDManager : MonoBehaviour  {
 			// Send to LH tab
 			OpenTab(4,true,TabMSG.AudioLog,index,Handedness.LH);
 		}
-		CenterTabButtonClickSilent(4,true);	
+		CenterTabButtonClickSilent(4,true);
 		if (tetheredSearchable != null) tetheredSearchable.searchableInUse = false;
 		OpenLogTextReader();
 		DataReaderContentTab.SetActive(true);
