@@ -39,7 +39,9 @@ public class ItemTabManager : MonoBehaviour {
 			MFDManager.a.applyButtonReferenceIndex = constIndex;
 		}
 
-		if (constIndex < 6 || constIndex == 33 || constIndex == 34 || constIndex == 35 || (constIndex > 51 && constIndex < 65) || (constIndex > 91 && constIndex < 113) ) {
+		if (constIndex < 6 || constIndex == 33 || constIndex == 35 ||
+            (constIndex > 51 && constIndex < 63) || constIndex == 64 ||
+            (constIndex > 91 && constIndex < 95)) {
 			vaporizeButton.SetActive(true);
 		}
 	}

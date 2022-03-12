@@ -161,7 +161,6 @@ public class Inventory : MonoBehaviour {
 			a.hardwareVersion[i] = a.hardwareVersionSetting[i] = 0; // Default to version 1 acquired for all hardware which is represented by 0.
 		}
         a.hardwareInvCurrent = a.hardwareInvIndex = 0;
-		
 
 		// General
 		a.generalInventoryIndexRef = new int[14];
@@ -275,6 +274,8 @@ public class Inventory : MonoBehaviour {
 					}
 				}
 			}
+
+			if (generalInvIndex >= 14 || generalInvIndex < 0) { Debug.Log("generalInvIndex out of bounds at " + generalInvIndex.ToString() + ", reset to 0."); generalInvIndex = 0; }
 			//--- End General ---
 
 			// Grenades
@@ -339,6 +340,7 @@ public class Inventory : MonoBehaviour {
 					}
 				}
 			}
+			if (hardwareInvIndex >= 14 || hardwareInvIndex < 0) { Debug.Log("hardwareInvIndex out of bounds at " + hardwareInvIndex.ToString() + ", reset to 0."); hardwareInvIndex = 0; }
 			//--- End Hardware ---
 
 			// Logs
@@ -477,6 +479,8 @@ public class Inventory : MonoBehaviour {
 	//--- End Access Cards ---
 
 	// Hardware
+	// index [0,11]: Reference into the list of just hardwares.
+	// constIndex [0,102]: Reference into the Const.cs global item lists.
 	public void AddHardwareToInventory(int index, int constIndex) {
 		if (index < 0) return;
 
@@ -515,11 +519,13 @@ public class Inventory : MonoBehaviour {
 			case 10:textIndex = 31; button8Index = 7; break; // Jump Jet Boots
 			case 11:textIndex = 32; button8Index = 4; break; // Infrared Night Vision Enhancement
 		}
+		hardwareInvIndex = index;
 
 		if (button8Index > 0) {
 			mls.hardwareButtons[button8Index].SetActive(true);  // Enable HUD button
 			hardwareButtonManager.SetVersionIconForButton(hardwareIsActive[index],hardwareVersionSetting[index],4);
 			hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
+			Debug.Log("Enabled a hardware button with index of " + button8Index.ToString());
 		}
 		hasHardware[index] = true;
 		hardwareVersion[index] = hwversion;
@@ -539,7 +545,7 @@ public class Inventory : MonoBehaviour {
             if (generalInventoryIndexRef[i] == -1) {
                 generalInventoryIndexRef[i] = index;
 				Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[31] ); // Item added to general inventory
-                generalInvCurrent = index;
+                generalInvCurrent = i;
 				genButtons[i].transform.GetComponent<GeneralInvButton>().useableItemIndex = index;
 				MFDManager.a.SendInfoToItemTab(index);
 				MFDManager.a.NotifyToCenterTab(2);
@@ -610,6 +616,8 @@ public class Inventory : MonoBehaviour {
 		}
 	}
 
+	// index [0,6]: Reference into the list of the 7 grenade types.
+	// useableIndex [0,101]: Reference into the Const.cs global item array lists.
     public void AddGrenadeToInventory(int index, int useableIndex) {
 		if (index < 0) return;
 
@@ -728,6 +736,7 @@ public class Inventory : MonoBehaviour {
 		patchButtonScripts[nextIndex].PatchInvClick();
 	}
 
+	// index [0,6]: Index into the list of just the 7 grenade types.
 	public void AddPatchToInventory (int index,int constIndex) {
 		if (index < 0) return;
 

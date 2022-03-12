@@ -676,7 +676,7 @@ public class MouseLookScript : MonoBehaviour {
 					SaveObject so = tossObject.GetComponent<SaveObject>();
 					if (so != null) so.levelParentID = LevelManager.a.currentLevel;
 				}
-				
+
 				Vector3 tossDir = new Vector3(MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2),MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2),0);
 				tossDir.y = Screen.height - tossDir.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
 				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
@@ -695,7 +695,7 @@ public class MouseLookScript : MonoBehaviour {
 					SaveObject so = tossObject.GetComponent<SaveObject>();
 					if (so != null) so.levelParentID = LevelManager.a.currentLevel;
 				}
-				tossObject.layer = 12; // Set to player layer to prevent collision.
+				tossObject.layer = 11; // Set to player bullets layer to prevent collision and still be visible.
 				Vector3 tossDir = new Vector3(MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2),MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2),0);
 				tossDir.y = Screen.height - tossDir.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
 				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
@@ -727,7 +727,7 @@ public class MouseLookScript : MonoBehaviour {
 			Const.sprint("BUG: Could Not Find object 'MouseCursorHandler' in scene\n");
         }
 	}
-		
+
 	public void ToggleInventoryMode (){
 		if (inventoryMode)	ForceShootMode();
 		else				ForceInventoryMode();
@@ -750,7 +750,7 @@ public class MouseLookScript : MonoBehaviour {
 		inventoryMode = true;
 		shootModeButton.SetActive(true);
 	}
-	
+
 	void SearchObject (int index){
 		if (currentSearchItem == null) { Debug.Log("BUG: Early exit from SearchObject, currentSearchItem was null!"); return;}
 

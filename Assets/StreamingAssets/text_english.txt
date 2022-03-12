@@ -569,4 +569,20 @@ Engage reactor self-destruct.
 Escape on escape pod.
 Access the bridge.
 Destroy SHODAN.
+Biological Systems Monitor
+Sensaround Multi-view Unit
+Head-mounted Lantern
+Energy/Projectile Shield
+Infrared Night Sight Unit
+Multimeda Data Reader
+Turbo Motion Booster System
+Jump-Jet Motion Hardware
+Switched to fragmentation grenade.
+Switched to EMP grenade
+Switched to gas grenade.
+Switched to concussion bomb.
+Swotched to land mine.
+Swotched to nitropack.
+Switched to earth shaker explosive.
+live
 The lever is stuck.

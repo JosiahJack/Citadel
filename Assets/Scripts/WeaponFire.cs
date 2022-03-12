@@ -798,7 +798,7 @@ public class WeaponFire : MonoBehaviour {
                laserIndex = 100; // Yellow laser for ion
            }
         }
-        
+
 		GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
 		if (dynamicObjectsContainer == null) return; //didn't find current level
 		GameObject lasertracer = Instantiate(Const.a.useableItems[laserIndex],transform.position,Const.a.quaternionIdentity) as GameObject;
