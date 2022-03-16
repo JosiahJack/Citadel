@@ -1919,6 +1919,25 @@ public class Const : MonoBehaviour {
 		return line;
 	}
 
+	string SaveCameraData(GameObject go) {
+		string line = System.String.Empty;
+		Camera cm = go.GetComponent<Camera>();
+		UnityStandardAssets.ImageEffects.BerserkEffect bzk = go.GetComponent<UnityStandardAssets.ImageEffects.BerserkEffect>();
+		Grayscale gsc = go.GetComponent<Grayscale>();
+		if (cm != null) {
+			line = BoolToString(cm.enabled); // bool
+			if (bzk != null) line += splitChar + BoolToString(bzk.enabled);
+			else line += splitChar + "0";
+
+			if (gsc != null) line += splitChar + BoolToString(gsc.enabled);
+			else line += splitChar + "0";
+		} else {
+			UnityEngine.Debug.Log("Camera missing on savetype of Camera!");
+		}
+		// 4
+		return line;
+	}
+
 	void FindAllSaveObjectsGOs(List<GameObject> gos) {
 		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
 		for (int i=0;i<allParents.Count;i++) {
@@ -1978,6 +1997,7 @@ public class Const : MonoBehaviour {
 		int numChargeStations = 0;
 		int numLights = 0;
 		int numTimers = 0;
+		int numCameras = 0;
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 		FindAllSaveObjectsGOs(saveableGameObjects);
 
@@ -2174,6 +2194,7 @@ public class Const : MonoBehaviour {
 				case SaveObject.SaveableType.ChargeStation: numChargeStations++;  line += SaveChargeStationData(saveableGameObjects[i]); break;
 				case SaveObject.SaveableType.Light: numLights++;  line += SaveLightAnimationData(saveableGameObjects[i]); break;
 				case SaveObject.SaveableType.LTimer: numTimers++; line += SaveLogicTimerData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.Camera: numCameras++;  line += SaveCameraData(saveableGameObjects[i]); break;
 				default: numTransforms++; break; // we already did the plain ol transform data first up above
 			}
 			saveData[index] = line; // take this objects data and add it to the array
@@ -2994,6 +3015,17 @@ public class Const : MonoBehaviour {
 					la.lerpStartTime = GetFloatFromString(entries[index],currentline); index++;
 				}
 				break;
+			case SaveObject.SaveableType.Camera:
+				Camera cm = currentGameObject.GetComponent<Camera>();
+				UnityStandardAssets.ImageEffects.BerserkEffect bzk = currentGameObject.GetComponent<UnityStandardAssets.ImageEffects.BerserkEffect>();
+				Grayscale gsc = currentGameObject.GetComponent<Grayscale>();
+				if (cm != null) { cm.enabled = GetBoolFromString(entries[index]); index++;
+				} else index++;
+				if (bzk != null) { bzk.enabled = GetBoolFromString(entries[index]); index++;
+				} else index++;
+				if (gsc != null) { gsc.enabled = GetBoolFromString(entries[index]); index++;
+				} else index++;
+				break;
 		}
 		//objectLoadTimer.Stop();
 		//UnityEngine.Debug.Log("LoadObjectData to Object savetype of " + so.saveType + " took time of " + objectLoadTimer.Elapsed.ToString());
@@ -3372,7 +3404,7 @@ public class Const : MonoBehaviour {
 		float tempf = Const.a.GraphicsGamma;
 		if (tempf < 1) tempf = 0;
 		else tempf = tempf/100;
-		tempf = (tempf * 4f) - 4f;
+		tempf = (tempf * 8f) - 4f;
 		PostProcessingProfile ppf = player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile;
 		ColorGradingModel.Settings cgms = ppf.colorGrading.settings;
 		cgms.basic.postExposure = tempf;

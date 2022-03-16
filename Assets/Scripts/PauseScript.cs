@@ -134,6 +134,8 @@ public class PauseScript : MonoBehaviour {
 
 	public void OpenSaveDialog() {
 		if (onSaveDialog) return;
+
+		DisablePauseUI();
 		if (Const.a.justSavedTimeStamp < Time.time) {
 			onSaveDialog = true;
 			saveDialog.SetActive(true);
@@ -142,13 +144,16 @@ public class PauseScript : MonoBehaviour {
 
 	public void OpenSaveDialogHard() {
 		if (onSaveDialog) return;
+
+		DisablePauseUI();
 		if (Const.a.justSavedTimeStamp < Time.time) {
 			onSaveDialog = true;
 			hardSaveDialog.SetActive(true);
 		}
 	}
-		
+
 	public void ExitSaveDialog() {
+		EnablePauseUI();
 		saveDialog.SetActive(false);
 		hardSaveDialog.SetActive(false);
 		onSaveDialog = false;
@@ -156,9 +161,8 @@ public class PauseScript : MonoBehaviour {
 
 	public void SavePause() {
 		if (onSaveDialog) return;
-		for (int i=0;i<enableUIOnPause.Length;i++) {
-			enableUIOnPause[i].SetActive(false);
-		}
+
+		DisablePauseUI();
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
 		MainMenuHandler.a.GoToSaveGameSubmenu(true);
@@ -166,40 +170,41 @@ public class PauseScript : MonoBehaviour {
 
 	public void LoadPause() {
 		if (onSaveDialog) return;
-		for (int i=0;i<enableUIOnPause.Length;i++) {
-			enableUIOnPause[i].SetActive(false);
-		}
+
+		DisablePauseUI();
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
 		MainMenuHandler.a.GoToLoadGameSubmenu(true);
 	}
 
 	public void SavePauseQuit() {
-		for (int i=0;i<enableUIOnPause.Length;i++) {
-			enableUIOnPause[i].SetActive(false);
-		}
+		DisablePauseUI();
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
 		MainMenuHandler.a.GoToSaveGameSubmenu(true);
 	}
 
-	public void NoSavePauseQuit () {
-		for (int i=0;i<enableUIOnPause.Length;i++) {
-			enableUIOnPause[i].SetActive(false);
-		}
+	public void NoSavePauseQuit() {
+		DisablePauseUI();
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
 		MainMenuHandler.a.GoToFrontPage();
 	}
 
-	public void PauseQuitHard () {
+	public void PauseQuitHard() {
 		mainMenu.SetActive(true);
 		MainMenuHandler.a.Quit();
 	}
 
-	public void EnablePauseUI () {
+	public void EnablePauseUI() {
 		for (int i=0;i<enableUIOnPause.Length;i++) {
 			enableUIOnPause[i].SetActive(true);
+		}
+	}
+
+	public void DisablePauseUI() {
+		for (int i=0;i<enableUIOnPause.Length;i++) {
+			enableUIOnPause[i].SetActive(false);
 		}
 	}
 

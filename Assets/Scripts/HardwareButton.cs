@@ -48,6 +48,12 @@ public class HardwareButton : MonoBehaviour {
 
 	void Awake () {
 		SFX = GetComponent<AudioSource>();
+		infraredLight.enabled = false;
+		playerCamera.GetComponent<Grayscale>().enabled = false;
+		gunCamera.GetComponent<Grayscale>().enabled = false;
+		sensaroundCenterCamera.GetComponent<Grayscale>().enabled = false;
+		sensaroundLHCamera.GetComponent<Grayscale>().enabled = false;
+		sensaroundRHCamera.GetComponent<Grayscale>().enabled = false;
 	}
 
 	public void ListenForHardwareHotkeys () {
@@ -107,6 +113,27 @@ public class HardwareButton : MonoBehaviour {
 		bioMonitorContainer.SetActive(false);
 	}
 
+	public void ActivateSensaroundCenter() {
+		if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (true);
+		if (sensaroundCenter != null) sensaroundCenter.SetActive (true);
+	}
+
+	public void ActivateSensaroundSides() {
+		if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (true);
+		if (sensaroundLH != null) sensaroundLH.SetActive (true);
+		if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (true);
+		if (sensaroundRH != null) sensaroundRH.SetActive (true);
+	}
+
+	public void DeactivateSensaround() {
+		if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (false);
+		if (sensaroundCenter != null) sensaroundCenter.SetActive (false);
+		if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (false);
+		if (sensaroundLH != null) sensaroundLH.SetActive (false);
+		if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (false);
+		if (sensaroundRH != null) sensaroundRH.SetActive (false);
+	}
+
 	public void SensaroundClick() {
 		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
 		if (Inventory.a.hardwareIsActive[3]) {
@@ -117,43 +144,14 @@ public class HardwareButton : MonoBehaviour {
 		Inventory.a.hardwareIsActive[3] = !Inventory.a.hardwareIsActive[3];
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[3], Inventory.a.hardwareVersionSetting[3],1);
 		if (Inventory.a.hardwareIsActive[3]) {
-			switch (Inventory.a.hardwareVersion[3]) {
-			case 1:
-				if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (true);
-				if (sensaroundCenter != null) sensaroundCenter.SetActive (true);
-				break;
-			case 2:
-				if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (true);
-				if (sensaroundCenter != null) sensaroundCenter.SetActive (true);
-				if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (true);
-				if (sensaroundLH != null) sensaroundLH.SetActive (true);
-				if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (true);
-				if (sensaroundRH != null) sensaroundRH.SetActive (true);
-				break;
-			case 3:
-				if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (true);
-				if (sensaroundCenter != null) sensaroundCenter.SetActive (true);
-				if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (true);
-				if (sensaroundLH != null) sensaroundLH.SetActive (true);
-				if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (true);
-				if (sensaroundRH != null) sensaroundRH.SetActive (true);
-				break;
-			case 4:
-				if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (true);
-				if (sensaroundCenter != null) sensaroundCenter.SetActive (true);
-				if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (true);
-				if (sensaroundLH != null) sensaroundLH.SetActive (true);
-				if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (true);
-				if (sensaroundRH != null) sensaroundRH.SetActive (true);
-				break;
+			if (Inventory.a.hardwareVersion[3] == 1) {
+				ActivateSensaroundCenter(); // Only center on version 1.
+			} else {
+				ActivateSensaroundCenter();
+				ActivateSensaroundSides();
 			}
 		} else {
-			if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (false);
-			if (sensaroundCenter != null) sensaroundCenter.SetActive (false);
-			if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (false);
-			if (sensaroundLH != null) sensaroundLH.SetActive (false);
-			if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (false);
-			if (sensaroundRH != null) sensaroundRH.SetActive (false);
+			DeactivateSensaround();
 		}
 	}
 
@@ -161,12 +159,7 @@ public class HardwareButton : MonoBehaviour {
 	public void SensaroundOff() {
 		Inventory.a.hardwareIsActive[3] = false;
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[3], Inventory.a.hardwareVersionSetting[3],1);
-		sensaroundCenterCamera.SetActive (false);
-		sensaroundCenter.SetActive (false);
-		sensaroundLHCamera.SetActive (false);
-		sensaroundLH.SetActive (false);
-		sensaroundRHCamera.SetActive (false);
-		sensaroundRH.SetActive (false);
+		DeactivateSensaround();
 	}
 
 	public void ShieldClick() {
@@ -237,10 +230,16 @@ public class HardwareButton : MonoBehaviour {
 			infraredLight.enabled = true;
 			playerCamera.GetComponent<Grayscale>().enabled = true;
 			gunCamera.GetComponent<Grayscale>().enabled = true;
+			sensaroundCenterCamera.GetComponent<Grayscale>().enabled = true;
+			sensaroundLHCamera.GetComponent<Grayscale>().enabled = true;
+			sensaroundRHCamera.GetComponent<Grayscale>().enabled = true;
 		} else {
 			infraredLight.enabled = false;
 			playerCamera.GetComponent<Grayscale>().enabled = false;
 			gunCamera.GetComponent<Grayscale>().enabled = false;
+			sensaroundCenterCamera.GetComponent<Grayscale>().enabled = false;
+			sensaroundLHCamera.GetComponent<Grayscale>().enabled = false;
+			sensaroundRHCamera.GetComponent<Grayscale>().enabled = false;
 		}
 	}
 

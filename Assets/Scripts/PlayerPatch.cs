@@ -4,7 +4,6 @@ using System.Collections;
 
 public class PlayerPatch : MonoBehaviour {
 	public GameObject playerCamera;
-	public GameObject gunCamera;
 	public HealthManager hm;
 	public PlayerMovement playerMovementScript;
 	public Texture2D b1;
@@ -18,6 +17,11 @@ public class PlayerPatch : MonoBehaviour {
 	public Light sightLight;
 	public Image sightDimming;
 	public PuzzleWire wirePuzzle;
+	public UnityStandardAssets.ImageEffects.BerserkEffect berserk;
+	public UnityStandardAssets.ImageEffects.BerserkEffect gunCamBerserk;
+	public UnityStandardAssets.ImageEffects.BerserkEffect sensaroundCamCenterBerserk;
+	public UnityStandardAssets.ImageEffects.BerserkEffect sensaroundCamLeftBerserk;
+	public UnityStandardAssets.ImageEffects.BerserkEffect sensaroundCamRightBerserk;
 
 	[HideInInspector] public float berserkFinishedTime; // save
 	[HideInInspector] public float berserkIncrementFinishedTime; // save
@@ -39,8 +43,6 @@ public class PlayerPatch : MonoBehaviour {
 	private AudioSource SFX;
 	private MouseLookScript playerMouseLookScript;
 	private PlayerHealth playerHealthScript;
-	private UnityStandardAssets.ImageEffects.BerserkEffect berserk;
-	private UnityStandardAssets.ImageEffects.BerserkEffect gunCamBerserk;
 	[HideInInspector] public int patchActive;  // bitflag carrier for active patches // save
 
 	// Patches stack so multiple can be used at once
@@ -57,8 +59,7 @@ public class PlayerPatch : MonoBehaviour {
 		reflexFinishedTime = -1f;
 		sightFinishedTime = -1f;
 		sightLight.enabled = false;
-		berserk = playerCamera.GetComponent<UnityStandardAssets.ImageEffects.BerserkEffect>();
-		gunCamBerserk = gunCamera.GetComponent<UnityStandardAssets.ImageEffects.BerserkEffect>();
+		BerserkDisable();
 	}
 
 	public void ActivatePatch(int index) {
@@ -77,7 +78,7 @@ public class PlayerPatch : MonoBehaviour {
 				berserkIncrementFinishedTime = PauseScript.a.relativeTime + berserkIncrementTime;
 			}
 			break;
-		case 15: 
+		case 15:
 			// Detox Patch
 			Inventory.a.patchCounts[6]--;
 			if (Inventory.a.patchCounts[6] <= 0) { depleted = true; }
@@ -85,7 +86,7 @@ public class PlayerPatch : MonoBehaviour {
 			patchActive = PATCH_DETOX; // overwrite all other active patches
 			detoxFinishedTime = PauseScript.a.relativeTime + Const.a.detoxTime; // detox doesn't stack, it cancels itself lol
 			break;
-		case 16: 
+		case 16:
 			// Genius Patch
 			Inventory.a.patchCounts[5]--;
 			if (Inventory.a.patchCounts[5] <= 0) { depleted = true; }
@@ -96,7 +97,7 @@ public class PlayerPatch : MonoBehaviour {
 				geniusFinishedTime = PauseScript.a.relativeTime + Const.a.geniusTime;
 			}
 			break;
-		case 17: 
+		case 17:
 			// Medi Patch
 			if (hm.health >=255) {
 				Const.sprint(Const.a.stringTable[304],playerMouseLookScript.player);
@@ -112,7 +113,7 @@ public class PlayerPatch : MonoBehaviour {
 				mediFinishedTime = PauseScript.a.relativeTime + Const.a.mediTime;
 			}
 			break;
-		case 18: 
+		case 18:
 			// Reflex Patch
 			Inventory.a.patchCounts[4]--;
 			if (Inventory.a.patchCounts[4] <= 0) { depleted = true; }
@@ -124,7 +125,7 @@ public class PlayerPatch : MonoBehaviour {
 				reflexFinishedTime = PauseScript.a.relativeTime + Const.a.reflexTime;
 			}
 			break;
-		case 19: 
+		case 19:
 			// Sight Patch
 			Inventory.a.patchCounts[1]--;
 			if (Inventory.a.patchCounts[1] <= 0) { depleted = true; }
@@ -138,7 +139,7 @@ public class PlayerPatch : MonoBehaviour {
 				sightFinishedTime = PauseScript.a.relativeTime + Const.a.sightTime;
 			}
 			break;
-		case 20: 
+		case 20:
 			// Staminup Patch
 			Inventory.a.patchCounts[0]--;
 			if (Inventory.a.patchCounts[0] <= 0) { depleted = true; }
@@ -202,12 +203,10 @@ public class PlayerPatch : MonoBehaviour {
 					patchActive -= PATCH_BERSERK;
 					berserk.Reset();
 					gunCamBerserk.Reset();
-					berserk.enabled = false;
-					gunCamBerserk.enabled = false;
+					BerserkDisable();
 				} else {
 					// ***Patch Effect***
-					berserk.enabled = true;
-					gunCamBerserk.enabled = true;
+					BerserkEnable();
 					if (berserkIncrementFinishedTime < PauseScript.a.relativeTime) {
 						berserkIncrement++;
 						switch (berserkIncrement) {
@@ -275,6 +274,22 @@ public class PlayerPatch : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	void BerserkEnable() {
+		berserk.enabled = true;
+		gunCamBerserk.enabled = true;
+		sensaroundCamCenterBerserk.enabled = true;
+		sensaroundCamLeftBerserk.enabled = true;
+		sensaroundCamRightBerserk.enabled = true;
+	}
+
+	void BerserkDisable() {
+		berserk.enabled = false;
+		gunCamBerserk.enabled = false;
+		sensaroundCamCenterBerserk.enabled = false;
+		sensaroundCamLeftBerserk.enabled = false;
+		sensaroundCamRightBerserk.enabled = false;
 	}
 
 	public void DisableAllPatches() {

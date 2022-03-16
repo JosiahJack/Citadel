@@ -46,7 +46,7 @@ public class GeneralInvButton : MonoBehaviour {
 					} else {
 						playerHealth.hm.health = playerHealth.hm.maxhealth;
 						MFDManager.a.DrawTicks(true);
-					}					
+					}
                     reduce = true;
                     break;
             }

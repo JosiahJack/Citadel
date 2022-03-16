@@ -459,7 +459,7 @@ new DATA object acquired.
  software acquired.
 Personal integrity restored.
 Cannot use outside of cyberspace.
-Cybershield always passively active.
+Cybershield is always passively active.
 SHODAN security presence controlled by CPU's and maintained by security cameras
 medical security door lock
 Commandos prepare to move to Level 2 core
@@ -586,3 +586,4 @@ Swotched to nitropack.
 Switched to earth shaker explosive.
 live
 The lever is stuck.
+Envirosuit is always passively active.

@@ -757,12 +757,6 @@ public class MFDManager : MonoBehaviour  {
 		if (itemTabRH != null) itemTabRH.SendItemDataToItemTab(index);
 	}
 
-	public void VaporizeClicked() {
-		itemTabLH.vaporizeButton.SetActive(false);
-		itemTabRH.vaporizeButton.SetActive(false);
-		SendInfoToItemTab(-1); // General inventory item vaporized, set item tab to next general inv current.
-	}
-
 	// Clicking [Apply] button on left or right MFD's Item Tab to apply current patch or general inventory item.
 	public void ApplyButtonClicked() {
 		itemTabLH.applyButton.SetActive(false);
@@ -1172,6 +1166,7 @@ public class MFDManager : MonoBehaviour  {
 	public void CenterTabButtonClick (int tabNum) {
 		TabSFX.PlayOneShot(TabSFXClip);
 		CenterTabButtonClickSilent(tabNum,false);
+		hwb.DeactivateSensaround();
 	}
 
 	public void CenterTabButtonClickSilent (int tabNum, bool forceOn) {

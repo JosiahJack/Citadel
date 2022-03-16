@@ -18,7 +18,9 @@ public class VaporizeButton : MonoBehaviour {
 	}
 
 	public void OnVaporizeClick() {
-		Inventory.a.generalInventoryIndexRef[Inventory.a.generalInvCurrent] = -1;
-		MFDManager.a.VaporizeClicked();
+		Inventory.a.generalInventoryIndexRef[Inventory.a.generalInvCurrent] = -1; // Remove item
+		Inventory.a.generalInvCurrent -= 1; // Set selection index up one in the list.
+		if (Inventory.a.generalInvCurrent < 0) Inventory.a.generalInvCurrent = 0; // Bound to lowest.
+		MFDManager.a.SendInfoToItemTab(Inventory.a.generalInventoryIndexRef[Inventory.a.generalInvCurrent]);
 	}
 }

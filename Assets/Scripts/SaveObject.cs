@@ -10,7 +10,7 @@ public class SaveObject : MonoBehaviour {
 							SearchableDestructable,Door,ForceBridge,Switch,FuncWall,TeleDest,
 							LBranch,LRelay,LSpawner,InteractablePanel,ElevatorPanel,Keypad,PuzzleGrid,
 							PuzzleWire,TCounter,TGravity,MChanger,RadTrig,GravPad,TransformParentless,
-							ChargeStation,Light,LTimer};
+							ChargeStation,Light,LTimer,Camera};
 	public SaveableType saveType = SaveableType.Transform;
 	[HideInInspector]
 	public string saveableType;
@@ -60,6 +60,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.ChargeStation: saveableType = "ChargeStation"; break;
 			case SaveableType.Light: saveableType = "Light"; break;
 			case SaveableType.LTimer: saveableType = "LTimer"; break;
+			case SaveableType.Camera: saveableType = "Camera"; break;
 			default: saveableType = "Transform"; break;
 		}
 		initialized = true;

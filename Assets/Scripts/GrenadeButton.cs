@@ -18,7 +18,7 @@ public class GrenadeButton : MonoBehaviour {
 		GUIState.a.PtrHandler(true,true,GUIState.ButtonType.Grenade,gameObject);
 		playerCamera.GetComponent<MouseLookScript>().currentButton = gameObject;
 	}
-	
+
 	public void PtrExit () {
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
     }
@@ -34,7 +34,7 @@ public class GrenadeButton : MonoBehaviour {
 		Inventory.a.grenadeIndex = useableItemIndex;  //Set current
 		if (SFX != null && SFXClick != null) SFX.PlayOneShot(SFXClick);
 	}
-	
+
 	void Start() {
 		GetComponent<Button>().onClick.AddListener(() => { GrenadeInvClick();});
 	}

@@ -23,8 +23,8 @@ public class MenuArrowKeyControls : MonoBehaviour {
 			return;
 		}
 
-		if (Input.GetKeyUp(KeyCode.UpArrow)) ShiftMenuItem(false);
-		if (Input.GetKeyUp(KeyCode.DownArrow)) ShiftMenuItem(true);
+		if (Input.GetKeyUp(KeyCode.UpArrow) || Input.GetKeyUp(KeyCode.LeftArrow)) ShiftMenuItem(false);
+		if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetKeyUp(KeyCode.RightArrow)) ShiftMenuItem(true);
 	}
 
 	void ShiftMenuItem (bool isDownKey) {
