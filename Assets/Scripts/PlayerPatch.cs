@@ -153,7 +153,12 @@ public class PlayerPatch : MonoBehaviour {
 			break;
 		}
 
-		if (depleted) Inventory.a.PatchCycleDown();
+		if (depleted) {
+			Inventory.a.PatchCycleDown(false);
+			Const.sprint((Const.a.stringTable[590] + Const.a.useableItemsNameText[index] + Const.a.stringTable[589]),playerMouseLookScript.player);
+		} else {
+			Const.sprint((Const.a.useableItemsNameText[index] + Const.a.stringTable[589]),playerMouseLookScript.player);
+		}
 		SFX.PlayOneShot(patchUseSFX);
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 	}
@@ -201,8 +206,6 @@ public class PlayerPatch : MonoBehaviour {
 				if (berserkFinishedTime < PauseScript.a.relativeTime) {
 					berserkIncrement = 0;
 					patchActive -= PATCH_BERSERK;
-					berserk.Reset();
-					gunCamBerserk.Reset();
 					BerserkDisable();
 				} else {
 					// ***Patch Effect***
@@ -286,12 +289,17 @@ public class PlayerPatch : MonoBehaviour {
 
 	void BerserkDisable() {
 		berserk.enabled = false;
+		berserk.Reset();
 		gunCamBerserk.enabled = false;
+		gunCamBerserk.Reset();
 		sensaroundCamCenterBerserk.enabled = false;
+		sensaroundCamCenterBerserk.Reset();
 		sensaroundCamLeftBerserk.enabled = false;
+		sensaroundCamLeftBerserk.Reset();
 		sensaroundCamRightBerserk.enabled = false;
-	}
+		sensaroundCamRightBerserk.Reset();
 
+	}
 	public void DisableAllPatches() {
 		berserkFinishedTime = -1f;
 		berserkIncrementFinishedTime =  -1f;

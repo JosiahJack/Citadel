@@ -220,6 +220,8 @@ public class PlayerMovement : MonoBehaviour {
 	private float automapPlayerIconZAdjusted;
 	private bool inputtingMovement;
 	private float updateTime;
+	private List<string> lastCommand;
+	private int commandMemoryIndex;
 
     void Start (){
 		currentCrouchRatio = def1;
@@ -242,7 +244,7 @@ public class PlayerMovement : MonoBehaviour {
 		justJumped = false;
 		jumpSFXFinished = PauseScript.a.relativeTime;
 		fatigueWarned = false;
-		pe = GetComponent<PlayerEnergy>();	
+		pe = GetComponent<PlayerEnergy>();
 		jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime;
 		ressurectingFinished = PauseScript.a.relativeTime;
 		tempInt = -1;
@@ -250,7 +252,7 @@ public class PlayerMovement : MonoBehaviour {
 		doubleJumpFinished = PauseScript.a.relativeTime;
 		doubleJumpTicks = 0;
 		turboFinished = PauseScript.a.relativeTime;
-		playerHome = transform.localPosition;	
+		playerHome = transform.localPosition;
 		automapExplored = new bool[4096];
 		automapUpdateFinished = PauseScript.a.relativeTime;
 		if (LevelManager.a != null)
@@ -259,8 +261,10 @@ public class PlayerMovement : MonoBehaviour {
 			SetAutomapExploredReference(1);
 		AutomapZoomAdjust();
 		automapPlayerIconZAdjusted = 0f;
+		lastCommand = new List<string>();
+		commandMemoryIndex = 0;
     }
-	
+
 	void  Update() {
 		// Crouch input state machine
 		// Body states:
@@ -274,7 +278,21 @@ public class PlayerMovement : MonoBehaviour {
 
 		// Always allow console, even when paused
         if (GetInput.a.Console()) ToggleConsole();
-		if (Input.GetKeyDown(KeyCode.Return) && !PauseScript.a.mainMenu.activeSelf == true && consoleActivated) ConsoleEntry();
+		if (Input.GetKeyDown(KeyCode.UpArrow) && consoleentryText.enabled) {
+			commandMemoryIndex++;
+			if (commandMemoryIndex >= lastCommand.Count) commandMemoryIndex = 0;
+			if (lastCommand.Count > 0 && commandMemoryIndex >= 0 && commandMemoryIndex < lastCommand.Count) consoleentryText.text = lastCommand[commandMemoryIndex];
+			else commandMemoryIndex = 0;
+		}
+
+		if (Input.GetKeyDown(KeyCode.DownArrow) && consoleentryText.enabled) {
+			commandMemoryIndex--;
+			if (commandMemoryIndex >= lastCommand.Count) commandMemoryIndex = 0;
+			if (lastCommand.Count > 0 && commandMemoryIndex >= 0 && commandMemoryIndex < lastCommand.Count) consoleentryText.text = lastCommand[commandMemoryIndex];
+			else commandMemoryIndex = 0;
+		}
+
+		if ((Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter)) && !PauseScript.a.mainMenu.activeSelf == true && consoleActivated) ConsoleEntry();
 		if (locationIndicator.activeInHierarchy) locationText.text = "location: " +(transform.position.x.ToString("00.00")+" "+transform.position.y.ToString("00.00")+" "+transform.position.z.ToString("00.00"));
 
 		if (consoleActivated) {
@@ -307,7 +325,7 @@ public class PlayerMovement : MonoBehaviour {
 				cyberSetup = true;
 				cyberDesetup = true;
 			}
-				
+
 			if (!inCyberSpace && cyberDesetup || CheatNoclip) {
                 if (CheatNoclip) {
                     // Flying cheat...also map editing mode!
@@ -354,7 +372,7 @@ public class PlayerMovement : MonoBehaviour {
 					}
 				}
 			}
-			
+
 			if (GetInput.a.Crouch() && !CheatNoclip && !consoleActivated) {
 				if ((bodyState == 1) || (bodyState == 2)) {
 					if (!(CantStand())) {
@@ -379,7 +397,7 @@ public class PlayerMovement : MonoBehaviour {
 					}
 				}
 			}
-			
+
 			if (GetInput.a.Prone() && !CheatNoclip && !consoleActivated) {
 				if (bodyState == 0 || bodyState == 1 || bodyState == 2 || bodyState == 3 || bodyState == 6) {
 					//Debug.Log ("Proning down...");
@@ -1335,7 +1353,6 @@ public class PlayerMovement : MonoBehaviour {
 				GameObject cheatObject = Instantiate(Const.a.useableItems[val],transform.position,Const.a.quaternionIdentity) as GameObject;
 				if (cheatObject != null) cheatObject.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
 			}
-
         } else if (ts.Contains("const.")) {
 			string numGet = Regex.Match(ts, @"\d+").Value;
 			int numGot = Int32.Parse(numGet);
@@ -1356,8 +1373,12 @@ public class PlayerMovement : MonoBehaviour {
             Const.sprint("Uknown command or function: " + consoleinpFd.text);
         }
 
-        // Reset console and hide it, command was entered
-        consoleinpFd.text = "";
+		lastCommand.Add(consoleinpFd.text);
+		if (lastCommand.Count > 99) {
+			lastCommand.Remove(lastCommand[0]);
+			commandMemoryIndex = (int)Mathf.Min((lastCommand.Count - 1), commandMemoryIndex);
+		}
+        consoleinpFd.text = ""; // Reset console and hide it, command was entered.
         ToggleConsole();
     }
 }

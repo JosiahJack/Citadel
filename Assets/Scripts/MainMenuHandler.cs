@@ -131,7 +131,7 @@ public class MainMenuHandler : MonoBehaviour {
 			if (!BackGroundMusic.isPlaying && !saltTheFries.activeInHierarchy && gameObject.activeSelf) BackGroundMusic.Play();
 		}
 		if ( (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P)) || (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P)) ) StartGame(true);
-		if (typingSaveGame && Input.GetKeyUp(KeyCode.Return) && savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
+		if (typingSaveGame && (Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter)) && savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
 			if (currentSaveSlot < 0) return;
 			string sname = saveNameInputField[currentSaveSlot].GetComponentInChildren<InputField>().text;
 			if (!string.IsNullOrEmpty(sname)) {

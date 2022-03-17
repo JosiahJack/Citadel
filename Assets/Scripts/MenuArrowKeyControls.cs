@@ -12,8 +12,12 @@ public class MenuArrowKeyControls : MonoBehaviour {
 		currentIndex = 0;
 	}
 
+	void OnEnable() {
+		SetIndex(0);
+	}
+
 	void  Update() {
-		if (Input.GetKeyUp(KeyCode.Return)) {
+		if (Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter)) {
 			if (menuItems[currentIndex].GetComponent<Button>() != null) {
 				menuItems[currentIndex].GetComponent<Button>().onClick.Invoke();
 			} else {

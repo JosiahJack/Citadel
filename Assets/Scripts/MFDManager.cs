@@ -141,6 +141,7 @@ public class MFDManager : MonoBehaviour  {
 	private float beatThresh = 0.1f;
 	private float beatVariation = 0.05f;
 	private float freq = 35f;
+	private float graphAdd = 20f;
 	private float fatigueFactor = 0f;
 	private float beatFinished = 0f;
 	// private string[] wepText = new string[]{"MARK3 ASSAULT RIFLE","ER-90 BLASTER","SV-23 DARTGUN"
@@ -587,7 +588,7 @@ public class MFDManager : MonoBehaviour  {
 	void BioMonitorGraphUpdate() {
 		if (BiomonitorGraphSystem.a == null) return;
 
-		fatigueFactor = (((pm.fatigue / 100f) * 150f) + 20f) / 60f; // Apply percent fatigued to 200bpm max heart rate with baseline 50bpm.
+		fatigueFactor = (((pm.fatigue / 100f) * 150f) + graphAdd) / 60f; // Apply percent fatigued to 200bpm max heart rate with baseline 50bpm.
 		if (beatFinished < PauseScript.a.relativeTime) {
 			beatFinished = PauseScript.a.relativeTime + (1f/fatigueFactor); // Adjust into seconds and add to game timer.
 		}
@@ -1164,9 +1165,13 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void CenterTabButtonClick (int tabNum) {
+		if (PauseScript.a.mainMenu.activeInHierarchy) return;
 		TabSFX.PlayOneShot(TabSFXClip);
 		CenterTabButtonClickSilent(tabNum,false);
-		hwb.DeactivateSensaround();
+		if (Inventory.a.hardwareIsActive[3]) {
+			hwb.SensaroundOff();
+			hwb.SFX.PlayOneShot(hwb.SFXClipDeactivate[1]);
+		}
 	}
 
 	public void CenterTabButtonClickSilent (int tabNum, bool forceOn) {

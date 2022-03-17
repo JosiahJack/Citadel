@@ -15,14 +15,18 @@ public class MainMenuButtonHighlight : MonoBehaviour {
 		Color tempcol = subtext.color;
 		tempcol.a = 0.5f;
 		subtext.color = tempcol;
-		pad.GetComponent<Image>().overrideSprite = paddrk;
+		if (pad != null) {
+			if (pad.GetComponent<Image>() != null) pad.GetComponent<Image>().overrideSprite = paddrk;
+		}
 	}
 
 	void Highlight () {
 		Color tempcol = subtext.color;
 		tempcol.a = 1.0f;
 		subtext.color = tempcol;
-		pad.GetComponent<Image>().overrideSprite = padlit;
+		if (pad != null) {
+			if (pad.GetComponent<Image>() != null) pad.GetComponent<Image>().overrideSprite = padlit;
+		}
 	}
 
 	public void CursorHighlight () {

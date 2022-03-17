@@ -125,7 +125,7 @@ public class HardwareButton : MonoBehaviour {
 		if (sensaroundRH != null) sensaroundRH.SetActive (true);
 	}
 
-	public void DeactivateSensaround() {
+	public void DeactivateSensaroundCameras() {
 		if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (false);
 		if (sensaroundCenter != null) sensaroundCenter.SetActive (false);
 		if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (false);
@@ -134,24 +134,26 @@ public class HardwareButton : MonoBehaviour {
 		if (sensaroundRH != null) sensaroundRH.SetActive (false);
 	}
 
+	public void SensaroundActivate() {
+		Inventory.a.hardwareIsActive[3] = true;
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[3], Inventory.a.hardwareVersionSetting[3],1);
+		if (Inventory.a.hardwareVersion[3] == 1) {
+			ActivateSensaroundCenter(); // Only center on version 1.
+		} else {
+			ActivateSensaroundCenter();
+			ActivateSensaroundSides();
+		}
+	}
+
 	public void SensaroundClick() {
 		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
+
 		if (Inventory.a.hardwareIsActive[3]) {
-			SFX.PlayOneShot (SFXClipDeactivate[1]);
+			SFX.PlayOneShot(SFXClipDeactivate[1]);
+			SensaroundOff();
 		} else {
-			SFX.PlayOneShot (SFXClip[1]);
-		}
-		Inventory.a.hardwareIsActive[3] = !Inventory.a.hardwareIsActive[3];
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[3], Inventory.a.hardwareVersionSetting[3],1);
-		if (Inventory.a.hardwareIsActive[3]) {
-			if (Inventory.a.hardwareVersion[3] == 1) {
-				ActivateSensaroundCenter(); // Only center on version 1.
-			} else {
-				ActivateSensaroundCenter();
-				ActivateSensaroundSides();
-			}
-		} else {
-			DeactivateSensaround();
+			SFX.PlayOneShot(SFXClip[1]);
+			SensaroundActivate();
 		}
 	}
 
@@ -159,7 +161,7 @@ public class HardwareButton : MonoBehaviour {
 	public void SensaroundOff() {
 		Inventory.a.hardwareIsActive[3] = false;
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[3], Inventory.a.hardwareVersionSetting[3],1);
-		DeactivateSensaround();
+		DeactivateSensaroundCameras();
 	}
 
 	public void ShieldClick() {

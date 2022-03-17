@@ -371,8 +371,8 @@ public class Inventory : MonoBehaviour {
 						Const.sprint(Const.a.stringTable[324] ); // Out of patches.
 					}
 				}
-				if (GetInput.a.PatchCycUp())   PatchCycleUp();
-				if (GetInput.a.PatchCycDown()) PatchCycleDown();
+				if (GetInput.a.PatchCycUp())   PatchCycleUp(true);
+				if (GetInput.a.PatchCycDown()) PatchCycleDown(true);
 			}
 
 			if (MFDManager.a.MainTab.activeInHierarchy) {
@@ -521,7 +521,7 @@ public class Inventory : MonoBehaviour {
 		}
 		hardwareInvIndex = index;
 
-		if (button8Index > 0) {
+		if (button8Index >= 0 && button8Index < 8) {
 			mls.hardwareButtons[button8Index].SetActive(true);  // Enable HUD button
 			hardwareButtonManager.SetVersionIconForButton(hardwareIsActive[index],hardwareVersionSetting[index],4);
 			hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
@@ -549,7 +549,7 @@ public class Inventory : MonoBehaviour {
 				genButtons[i].transform.GetComponent<GeneralInvButton>().useableItemIndex = index;
 				MFDManager.a.SendInfoToItemTab(index);
 				MFDManager.a.NotifyToCenterTab(2);
-				if (mls.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(2,true);
+				if (mls.firstTimePickup) { MFDManager.a.CenterTabButtonClickSilent(2,true); mls.firstTimePickup = false; }
 				return true;
             }
         }
@@ -704,7 +704,7 @@ public class Inventory : MonoBehaviour {
 	//--- End Logs ---
 
 	// Patches
-	public void PatchCycleDown() {
+	public void PatchCycleDown(bool useSound) {
 		int nextIndex = patchCurrent - 1; // Add 1 to get slot above this.
 		if (nextIndex < 0) nextIndex = 6; // Wraparound to top.
 		int countCheck = 0;
@@ -717,10 +717,10 @@ public class Inventory : MonoBehaviour {
 			noPatches = (patchCounts[nextIndex] <= 0);
 		}
 		MFDManager.a.CenterTabButtonClickSilent(0,true);
-		patchButtonScripts[nextIndex].PatchInvClick();
+		patchButtonScripts[nextIndex].PatchInvClick(useSound);
 	}
 
-	public void PatchCycleUp() {
+	public void PatchCycleUp(bool useSound) {
 		int nextIndex = patchCurrent + 1; // Add 1 to get slot above this.
 		if (nextIndex > 6) nextIndex = 0; // Wraparound to bottom.
 		int countCheck = 0;
@@ -733,7 +733,7 @@ public class Inventory : MonoBehaviour {
 			noPatches = (patchCounts[nextIndex] <= 0);
 		}
 		MFDManager.a.CenterTabButtonClickSilent(0,true);
-		patchButtonScripts[nextIndex].PatchInvClick();
+		patchButtonScripts[nextIndex].PatchInvClick(useSound);
 	}
 
 	// index [0,6]: Index into the list of just the 7 grenade types.

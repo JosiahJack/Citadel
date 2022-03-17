@@ -10,8 +10,12 @@ public class ConfigurationMenuVideo : MonoBehaviour {
 	private Dropdown resSelector;
 
 	void Awake () {
-		resolutions = GetResolutions().ToArray();//Screen.resolutions.Where(resolutions => resolutions.refreshRate >= 60).ToArray();
 		resSelector = GetComponent<Dropdown>();
+		RepopulateResolutionsDropdown();
+	}
+
+	public void RepopulateResolutionsDropdown() {
+		resolutions = GetResolutions().ToArray();//Screen.resolutions.Where(resolutions => resolutions.refreshRate >= 60).ToArray();
 		if (resSelector == null) Debug.Log("BUG: ConfigurationMenuVideo missing component for resSelector.");
 		List<string> resList = new List<string>();
 		int refindex = 0;
