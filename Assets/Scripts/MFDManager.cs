@@ -508,6 +508,8 @@ public class MFDManager : MonoBehaviour  {
 			puzzleGridRH.SetActive(false);
 			puzzleWireRH.SetActive(false);
 			audioLogContainerRH.SetActive(false);
+			sysAnalyzerRH.SetActive(false);
+			searchCloseButtonRH.SetActive(false);
 			for (int i=0; i<=3;i++) {
 				searchItemImagesRH[i].SetActive(false);
 			}
@@ -521,6 +523,8 @@ public class MFDManager : MonoBehaviour  {
 			puzzleGridLH.SetActive(false);
 			puzzleWireLH.SetActive(false);
 			audioLogContainerLH.SetActive(false);
+			sysAnalyzerLH.SetActive(false);
+			searchCloseButtonLH.SetActive(false);
 			for (int i=0; i<=3;i++) {
 				searchItemImagesLH[i].SetActive(false);
 			}

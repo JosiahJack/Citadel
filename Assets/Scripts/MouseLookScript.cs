@@ -201,7 +201,7 @@ public class MouseLookScript : MonoBehaviour {
 	public void ExitCyberspace() {
 		playerRadiationTreatmentFlash.SetActive(true);
 		MFDManager.a.ExitCyberspace();
-		LevelManager.a.LoadLevel (cyberspaceReturnLevel,null,player,cyberspaceReturnPoint);
+		LevelManager.a.LoadLevel(cyberspaceReturnLevel,null,player,cyberspaceReturnPoint);
 		transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(cyberspaceReturnPlayerCapsuleLocalRotation.x, cyberspaceReturnPlayerCapsuleLocalRotation.y, cyberspaceReturnPlayerCapsuleLocalRotation.z); // left right component applied to capsule
 		transform.localRotation = Quaternion.Euler(cyberspaceReturnCameraLocalRotation.x,cyberspaceReturnCameraLocalRotation.y,cyberspaceReturnCameraLocalRotation.z); // Up down component applied to camera
 		playerMovement.inCyberSpace = false;

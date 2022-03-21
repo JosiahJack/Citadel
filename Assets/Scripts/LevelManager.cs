@@ -87,11 +87,12 @@ public class LevelManager : MonoBehaviour {
 		if (currentLevel == levnum) { Const.sprint(Const.a.stringTable[9],currentPlayer); return; } //Already there
 		if (currentPlayer == null) { Const.sprint("BUG: LevelManager cannot find current player."); return; } // Prevent possible error if keypad does not have player to move.
 		if (targetDestination == null && targetPosition == null) { Const.sprint("BUG: LevelManager cannot find destination."); return; } // Prevent possible error if keypad does not have destination set.
-		
+
 		MFDManager.a.TurnOffElevatorPad();
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 		PlayerReferenceManager prm = currentPlayer.GetComponent<PlayerReferenceManager>();
-		prm.playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
+		if (targetDestination != null) prm.playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
+		else prm.playerCapsule.transform.position = targetPosition; // Return to level from cyberspace.
 		PlayerMovement pm = prm.playerCapsule.GetComponent<PlayerMovement>();
 		pm.SetAutomapExploredReference(levnum);
 		pm.automapBaseImage.overrideSprite = pm.automapsBaseImages[levnum];

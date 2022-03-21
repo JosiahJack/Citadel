@@ -852,8 +852,8 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 			if (frameCounter >= 0 && frameCounter <= 5) goMaterial.mainTexture = Const.a.sequenceTextures[frameCounter]; // 0 thru 5
 			if (frameCounter >= 0 && frameCounter <= 5) goMaterial.SetTexture("_EmissionMap", Const.a.sequenceTextures[frameCounter]);
 			return;
-		} 
-		
+		}
+
 		// Oh hey we aren't destroyed yet, so let's get to actual animating!
 
 		// Flip it, on the back. -Nathan Drake

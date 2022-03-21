@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour {
 	public Image automapBaseImage;
 	public Image automapInnerCircle;
 	public Image automapOuterCircle;
-	public Sprite[] automapsBaseImages;	
+	public Sprite[] automapsBaseImages;
 	public Image[] automapsHazardOverlays;
 	public Transform automapFullPlayerIcon;
 	public Transform automapNormalPlayerIconLH;
@@ -658,7 +658,7 @@ public class PlayerMovement : MonoBehaviour {
 				if (doubleJumpFinished < PauseScript.a.relativeTime) {
 					doubleJumpTicks--;
 					if (doubleJumpTicks < 0) doubleJumpTicks = 0;
-				}	
+				}
 
 				if (GetInput.a.Jump() && !CheatNoclip) {
 					if (!justJumped) {
@@ -685,9 +685,9 @@ public class PlayerMovement : MonoBehaviour {
 							doubleJumpFinished = PauseScript.a.relativeTime - 1f; // Make sure we can't do it again right away.
 						}
 					}
-				} 
+				}
 			}
-		
+
 			// Perform Jump
 			while (jumpTime > 0) {
 				jumpTime -= Time.smoothDeltaTime;
@@ -756,10 +756,10 @@ public class PlayerMovement : MonoBehaviour {
 			if (GetInput.a.Forward() && !consoleActivated) {
 				if (turboFinished > PauseScript.a.relativeTime) {
 					if (Vector3.Project(rbody.velocity, (cameraObject.transform.forward)).magnitude < playerSpeed * 2f)
-					rbody.AddForce (cameraObject.transform.forward * walkAcceleration * 1.3f * 2f * Time.deltaTime,ForceMode.Acceleration); // double speed with turbo on
+						rbody.AddForce (cameraObject.transform.forward * walkAcceleration * 1.3f * 2f * Time.deltaTime,ForceMode.Acceleration); // double speed with turbo on
 				} else {
-					if (Vector3.Project(rbody.velocity, cameraObject.transform.forward).magnitude < playerSpeed) 
-					rbody.AddForce (cameraObject.transform.forward * walkAcceleration * 1.3f * Time.deltaTime,ForceMode.Acceleration);
+					if (Vector3.Project(rbody.velocity, cameraObject.transform.forward).magnitude < playerSpeed)
+						rbody.AddForce (cameraObject.transform.forward * walkAcceleration * 1.3f * Time.deltaTime,ForceMode.Acceleration);
 				}
 				inputtingMovement = true;
 			}
@@ -798,7 +798,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 
 			if (Const.a.difficultyCyber > 1) {
-				rbody.AddForce (cameraObject.transform.forward * walkAcceleration*0.05f * Time.deltaTime); // turbo doesn't affect detrimental forces :)
+				if (rbody.velocity.magnitude < walkAcceleration * 0.05f) rbody.AddForce (cameraObject.transform.forward * walkAcceleration*0.05f * Time.deltaTime); // turbo doesn't affect detrimental forces :)
 			} else {
 				if (!inputtingMovement) {
 					rbody.velocity = Const.a.vectorZero;

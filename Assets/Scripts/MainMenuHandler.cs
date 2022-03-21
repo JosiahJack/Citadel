@@ -333,7 +333,7 @@ public class MainMenuHandler : MonoBehaviour {
 		// Show a select path dialog and wait for a response from user
 		// Path folder: folder, Allow multiple selection: false
 		// Initial path: default (Documents), Title: "Load File", submit button text: "Load"
-		yield return FileBrowser.WaitForLoadDialog(true, false, null, "Select Path", "Select");
+		yield return FileBrowser.WaitForLoadDialog(true, false, System.String.Empty, "Select Path", "Select");
 
 		// Dialog is closed
 		// Print whether the user has selected a folder path or cancelled the operation (FileBrowser.Success)
