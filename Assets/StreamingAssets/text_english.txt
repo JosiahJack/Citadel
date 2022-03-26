@@ -574,7 +574,7 @@ Sensaround Multi-view Unit
 Head-mounted Lantern
 Energy/Projectile Shield
 Infrared Night Sight Unit
-Multimeda Data Reader
+Multimedia Data Reader
 Turbo Motion Booster System
 Jump-Jet Motion Hardware
 Switched to fragmentation grenade.

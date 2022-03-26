@@ -213,7 +213,7 @@ public class AIController : MonoBehaviour {
 		}
 		startInitialized = true;
 
-		if (npcAutomapOverlay == null) {
+		if (npcAutomapOverlay == null && !healthManager.actAsCorpseOnly) {
 			Const.PoolType pt = Const.PoolType.AutomapBotOverlays;
 			switch (npcType) {
 				case Const.npcType.Mutant: pt = Const.PoolType.AutomapMutantOverlays; break;

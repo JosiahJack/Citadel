@@ -49,7 +49,6 @@ public class TabButtons : MonoBehaviour {
 	}
 
 	public void TabButtonClickSilent (int tabNum,bool overrideToggling) {
-		Debug.Log("TabButtonClickSilent ran.");
 		switch (tabNum) {
 		case 0:
 			if (curTab == 0) {

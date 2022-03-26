@@ -89,8 +89,8 @@ public class MouseLookScript : MonoBehaviour {
         ResetCursor();
 		ResetHeldItem();
 		Cursor.lockState = CursorLockMode.None;
-		inventoryMode = true; // Start with inventory mode turned on.
-		shootModeButton.SetActive(true);
+		inventoryMode = false; // Start with inventory mode turned off.
+		shootModeButton.SetActive(false);
 		playerCamera = GetComponent<Camera>();
 		cameraDistances = new float[32];
 		SetCameraCullDistances();
@@ -443,7 +443,7 @@ public class MouseLookScript : MonoBehaviour {
 				WeaponCurrent.WepInstance.weaponIndex = 0;
 				wepbut.useableItemIndex = -1;
 				MFDManager.a.wepbutMan.WeaponCycleDown();
-				MFDManager.a.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,Handedness.LH);
+				MFDManager.a.OpenTab(0, true, MFDManager.TabMSG.Weapon, 0,Handedness.LH);
 				GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 				mouseCursor.cursorImage = cursorTexture;
 				ForceInventoryMode();
@@ -616,8 +616,11 @@ public class MouseLookScript : MonoBehaviour {
 					if (resultContents[i] > -1) numberFoundContents++; // if something was found, add 1 to count
 				}
 			}
+	    	if (numberFoundContents == 0) {
+				MFDManager.a.OpenTab(0, true, MFDManager.TabMSG.Weapon, 0,Handedness.LH);
+				currentSearchItem = null;
+			}
 		}
-		if (numberFoundContents == 0) MFDManager.a.OpenTab (0, true, MFDManager.TabMSG.Weapon, 0,Handedness.LH);
 		firstTimePickup = false;
 	}
 

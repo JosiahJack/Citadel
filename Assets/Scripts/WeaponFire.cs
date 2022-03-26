@@ -291,6 +291,11 @@ public class WeaponFire : MonoBehaviour {
 					return;
 				}
 
+				if (mls.inCyberSpace) {
+					FireCyberWeapon();
+					return;
+				}
+
 				if (mls.holdingObject) {
 					if (!GUIState.a.isBlocking) {
 						// Drop it
@@ -304,11 +309,6 @@ public class WeaponFire : MonoBehaviour {
 						mls.ResetCursor();
 						return;
 					}
-				}
-
-				if (mls.inCyberSpace) {
-					FireCyberWeapon();
-					return;
 				}
 			}
 

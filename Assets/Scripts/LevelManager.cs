@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour {
 	public int currentLevel;
@@ -88,6 +89,7 @@ public class LevelManager : MonoBehaviour {
 		if (currentPlayer == null) { Const.sprint("BUG: LevelManager cannot find current player."); return; } // Prevent possible error if keypad does not have player to move.
 		if (targetDestination == null && targetPosition == null) { Const.sprint("BUG: LevelManager cannot find destination."); return; } // Prevent possible error if keypad does not have destination set.
 
+		int lastlev = currentLevel;
 		MFDManager.a.TurnOffElevatorPad();
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 		PlayerReferenceManager prm = currentPlayer.GetComponent<PlayerReferenceManager>();
@@ -109,18 +111,59 @@ public class LevelManager : MonoBehaviour {
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
 		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) AutoSplitterData.missionSplitID++; // 1 - Medical split - we are now on level 2
+		LoadAdditiveScene(levnum);
+		UnloadAdditiveScene(lastlev);
+	}
+
+	void LoadAdditiveScene(int levnum) {
+		switch (levnum) {
+			//case 0: SceneManager.LoadScene("LevelRScene", LoadSceneMode.Additive); break;
+			//case 1: SceneManager.LoadScene("Level1Scene", LoadSceneMode.Additive); break;
+			//case 2: SceneManager.LoadScene("Level2Scene", LoadSceneMode.Additive); break;
+			//case 3: SceneManager.LoadScene("Level3Scene", LoadSceneMode.Additive); break;
+			//case 4: SceneManager.LoadScene("Level4Scene", LoadSceneMode.Additive); break;
+			//case 5: SceneManager.LoadScene("Level5Scene", LoadSceneMode.Additive); break;
+			//case 6: SceneManager.LoadScene("Level6Scene", LoadSceneMode.Additive); break;
+			//case 7: SceneManager.LoadScene("Level7Scene", LoadSceneMode.Additive); break;
+			//case 8: SceneManager.LoadScene("Level8Scene", LoadSceneMode.Additive); break;
+			//case 9: SceneManager.LoadScene("Level9Scene", LoadSceneMode.Additive); break;
+			//case 10:SceneManager.LoadScene("LevelG1Scene", LoadSceneMode.Additive); break;
+			//case 11:SceneManager.LoadScene("LevelG2Scene", LoadSceneMode.Additive); break;
+			//case 12:SceneManager.LoadScene("LevelG3Scene", LoadSceneMode.Additive); break;
+		}
+	}
+
+	void UnloadAdditiveScene(int levnum) {
+		switch (levnum) {
+			//case 0: SceneManager.LoadScene("LevelRScene", LoadSceneMode.Additive); break;
+			//case 1: SceneManager.LoadScene("Level1Scene", LoadSceneMode.Additive); break;
+			//case 2: SceneManager.UnloadSceneAsync("Level2Scene"); break;
+			//case 3: SceneManager.LoadScene("Level3Scene", LoadSceneMode.Additive); break;
+			//case 4: SceneManager.LoadScene("Level4Scene", LoadSceneMode.Additive); break;
+			//case 5: SceneManager.LoadScene("Level5Scene", LoadSceneMode.Additive); break;
+			//case 6: SceneManager.LoadScene("Level6Scene", LoadSceneMode.Additive); break;
+			//case 7: SceneManager.LoadScene("Level7Scene", LoadSceneMode.Additive); break;
+			//case 8: SceneManager.LoadScene("Level8Scene", LoadSceneMode.Additive); break;
+			//case 9: SceneManager.LoadScene("Level9Scene", LoadSceneMode.Additive); break;
+			//case 10:SceneManager.LoadScene("LevelG1Scene", LoadSceneMode.Additive); break;
+			//case 11:SceneManager.LoadScene("LevelG2Scene", LoadSceneMode.Additive); break;
+			//case 12:SceneManager.LoadScene("LevelG3Scene", LoadSceneMode.Additive); break;
+		}
 	}
 
 	public void LoadLevelFromSave (int levnum) {
 		// NOTE: Check this first since the button for the current level has a null destination
 		if (currentLevel == levnum) return;
-		
+
+		int lastlev = currentLevel;
 		Music.a.inCombat = false;
 		Music.a.SFXMain.Stop();
 		Music.a.SFXOverlay.Stop();
 		levels[currentLevel].SetActive(false); // Unload current level	
 		levels[levnum].SetActive(true); // Load new level
 		currentLevel = levnum; // Set current level to be the new level
+		LoadAdditiveScene(levnum);
+		UnloadAdditiveScene(lastlev);
 	}
 
 	void SetAllPlayersLevelsToCurrent () {

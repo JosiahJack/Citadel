@@ -63,7 +63,7 @@ public class MouseCursor : MonoBehaviour {
             offsetX = cursorSize * halfFactor;
             offsetY = offsetX;
         }
-			
+
 		//Debug.Log("MouseCursor:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
 		if (playerCameraScript.inventoryMode || PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
             // Inventory Mode Cursor
@@ -82,7 +82,7 @@ public class MouseCursor : MonoBehaviour {
 		y = cursorY;
 		cursorXmax = drawTexture.xMax;
 		cursorYmax = drawTexture.yMax;
-		if (!string.IsNullOrWhiteSpace(toolTip) && toolTip != nullStr && !PauseScript.a.Paused()) {
+		if (!string.IsNullOrWhiteSpace(toolTip) && toolTip != nullStr && !PauseScript.a.Paused() && (playerCameraScript.inventoryMode || liveGrenade)) {
 			switch(toolTipType) {
 				case Handedness.LH: GUI.Label(drawTexture,toolTip,toolTipStyleLH); tempTexture = cursorLHTexture; break;
 				case Handedness.RH: GUI.Label(drawTexture,toolTip,toolTipStyleRH); tempTexture = cursorRHTexture; break;

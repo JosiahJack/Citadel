@@ -485,9 +485,9 @@ public class Inventory : MonoBehaviour {
 		if (index < 0) return;
 
 		int hwversion = mls.heldObjectCustomIndex;
-		if (hwversion < 0) {
+		if (hwversion < 1) {
 			Const.sprint("BUG: Hardware picked up has no assigned versioning, defaulting to 1 (value of 0)" );
-			hwversion = 0;
+			hwversion = 1;
 		}
 
 		MFDManager.a.SendInfoToItemTab(constIndex);
