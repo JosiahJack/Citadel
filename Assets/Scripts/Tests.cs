@@ -9,7 +9,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Tests : MonoBehaviour {
-	public string buttonLabel = "Run Tests";
+	[HideInInspector] public string buttonLabel = "Run Tests";
 
 	public void RunUnits() {
 		Stopwatch testTimer = new Stopwatch();
@@ -88,7 +88,6 @@ public class Tests : MonoBehaviour {
 		if (itemTabRH == null) Debug.Log("BUG: MFDManager missing manually assigned reference for itemTabRH");
 		if (SearchFXRH == null) Debug.Log("BUG: MFDManager missing manually assigned reference for SearchFXRH");
 		if (SearchFXLH == null) Debug.Log("BUG: MFDManager missing manually assigned reference for SearchFXLH");
-		if (playerMLook == null) Debug.Log("BUG: MFDManager missing manually assigned reference for playerMLook");
 		if (playerCapsuleTransform == null) Debug.Log("BUG: MFDManager missing manually assigned reference for playerCapsuleTransform");
 		if (wepmagCounterLH == null) Debug.Log("BUG: MFDManager missing manually assigned reference for wepmagCounterLH");
 		if (wepmagCounterRH == null) Debug.Log("BUG: MFDManager missing manually assigned reference for wepmagCounterRH");
@@ -187,9 +186,9 @@ public class Tests : MonoBehaviour {
 						}
 					}
 				}
-				if (aic.attack1Type == Const.AttackType.ProjectileLaunched && aic.attack1ProjectileLaunchedType == Const.PoolType.None) { UnityEngine.Debug.Log(script + " has no projectile set for attack1 but is intended to be projectile launched."); issueCount_AIController++; }
-				if (aic.attack2Type == Const.AttackType.ProjectileLaunched && aic.attack2ProjectileLaunchedType == Const.PoolType.None) { UnityEngine.Debug.Log(script + " has no projectile set for attack2 but is intended to be projectile launched."); issueCount_AIController++; }
-				if (aic.attack3Type == Const.AttackType.ProjectileLaunched && aic.attack3ProjectileLaunchedType == Const.PoolType.None) { UnityEngine.Debug.Log(script + " has no projectile set for attack3 but is intended to be projectile launched."); issueCount_AIController++; }
+				if (aic.attack1Type == AttackType.ProjectileLaunched && aic.attack1ProjectileLaunchedType == PoolType.None) { UnityEngine.Debug.Log(script + " has no projectile set for attack1 but is intended to be projectile launched."); issueCount_AIController++; }
+				if (aic.attack2Type == AttackType.ProjectileLaunched && aic.attack2ProjectileLaunchedType == PoolType.None) { UnityEngine.Debug.Log(script + " has no projectile set for attack2 but is intended to be projectile launched."); issueCount_AIController++; }
+				if (aic.attack3Type == AttackType.ProjectileLaunched && aic.attack3ProjectileLaunchedType == PoolType.None) { UnityEngine.Debug.Log(script + " has no projectile set for attack3 but is intended to be projectile launched."); issueCount_AIController++; }
 				if (BoundsError(script,allGOs[i],0f,1.0f,aic.deathBurstTimer,"deathBurstTimer")) issueCount_AIController++;
 			}
 
@@ -270,7 +269,6 @@ public class Tests : MonoBehaviour {
 				num_MouseLookScript++;
 				if (num_MouseLookScript > 1) { UnityEngine.Debug.Log(script + " has more than one instance!!"); issueCount_MouseLookScript++; }
 				if (mls.player == null) { UnityEngine.Debug.Log(script + " is missing player."); issueCount_MouseLookScript++; }
-				if (mls.mouseCursor == null) { UnityEngine.Debug.Log(script + " is missing mouseCursor."); issueCount_MouseLookScript++; }
 				if (mls.canvasContainer == null) { UnityEngine.Debug.Log(script + " is missing canvasContainer."); issueCount_MouseLookScript++; }
 				if (mls.compassContainer == null) { UnityEngine.Debug.Log(script + " is missing compassContainer."); issueCount_MouseLookScript++; }
 				if (mls.automapContainerLH == null) { UnityEngine.Debug.Log(script + " is missing automapContainerLH."); issueCount_MouseLookScript++; }
@@ -283,8 +281,6 @@ public class Tests : MonoBehaviour {
 				if (mls.logContentsManager == null) { UnityEngine.Debug.Log(script + " is missing logContentsManager."); issueCount_MouseLookScript++; }
 				if (mls.SFXSource == null) { UnityEngine.Debug.Log(script + " is missing SFXSource."); issueCount_MouseLookScript++; }
 				if (mls.hardwareButtons == null) { UnityEngine.Debug.Log(script + " is missing hardwareButtons."); issueCount_MouseLookScript++; }
-				if (mls.wepmagCounter == null) { UnityEngine.Debug.Log(script + " is missing wepmagCounter."); issueCount_MouseLookScript++; }
-				if (mls.playerMovement == null) { UnityEngine.Debug.Log(script + " is missing playerMovement."); issueCount_MouseLookScript++; }
 				if (mls.puzzleWire == null) { UnityEngine.Debug.Log(script + " is missing puzzleWire."); issueCount_MouseLookScript++; }
 				if (mls.puzzleGrid == null) { UnityEngine.Debug.Log(script + " is missing puzzleGrid."); issueCount_MouseLookScript++; }
 				if (mls.shootModeButton == null) { UnityEngine.Debug.Log(script + " is missing shootModeButton."); issueCount_MouseLookScript++; }

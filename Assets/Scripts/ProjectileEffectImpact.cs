@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class ProjectileEffectImpact : MonoBehaviour {
-    public Const.PoolType impactType;
+    public PoolType impactType;
 	[HideInInspector] public GameObject host;
     [HideInInspector] public DamageData dd;
     [SerializeField] public int hitCountBeforeRemoval = 1;
@@ -124,7 +124,7 @@ public class ProjectileEffectImpact : MonoBehaviour {
 					}
 				}
 
-				if (dd.attackType == Const.AttackType.Tranq) {
+				if (dd.attackType == AttackType.Tranq) {
 					AIController aic = other.contacts[0].otherCollider.gameObject.GetComponent<AIController>();
 					if (aic !=null) aic.Tranquilize();
 					else {

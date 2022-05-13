@@ -17,6 +17,8 @@ public class MenuArrowKeyControls : MonoBehaviour {
 	}
 
 	void  Update() {
+		if (PlayerMovement.a.consoleActivated) return;
+
 		if (Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter)) {
 			if (menuItems[currentIndex].GetComponent<Button>() != null) {
 				menuItems[currentIndex].GetComponent<Button>().onClick.Invoke();

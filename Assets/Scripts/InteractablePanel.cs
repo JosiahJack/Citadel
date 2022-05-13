@@ -65,14 +65,10 @@ public class InteractablePanel : MonoBehaviour {
 						if (effects[i] != null) effects[i].SetActive(true);
 					}
 				}
-				PlayerReferenceManager prm = ud.owner.GetComponent<PlayerReferenceManager>();
-				if (prm != null) {
-					MouseLookScript mls = prm.playerCapsuleMainCamera.GetComponent<MouseLookScript>();
-					if (mls != null) {
-						mls.ResetHeldItem();
-						mls.ResetCursor();
-					}
-				}
+
+				MouseLookScript.a.ResetHeldItem();
+				MouseLookScript.a.ResetCursor();
+
 				// use the target now that we are active
 				ud.argvalue = argvalue;
 				TargetIO tio = GetComponent<TargetIO>();

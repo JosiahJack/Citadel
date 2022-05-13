@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public class LogicTimer : MonoBehaviour {
 	public float timeInterval = 0.35f;
@@ -11,18 +10,22 @@ public class LogicTimer : MonoBehaviour {
 	public string target;
 	public string argvalue;
 
+	public string Save() {
+		string line = System.String.Empty;
+		line = Const.a.FloatToString(intervalFinished);
+		//1
+		return line;
+	}
+
 	void Start() {
-		if (useRandomTimes)
-			intervalFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(randomMin,randomMax);
-		else
-			intervalFinished = PauseScript.a.relativeTime + timeInterval;
-    }
+		intervalFinished = PauseScript.a.relativeTime + (useRandomTimes ? Random.Range(randomMin,randomMax) : timeInterval);
+	}
 
 	void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive() && active) {
 			if (intervalFinished < PauseScript.a.relativeTime) {
 				if (useRandomTimes) {
-					intervalFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(randomMin,randomMax);
+					intervalFinished = PauseScript.a.relativeTime + Random.Range(randomMin,randomMax);
 				} else {
 					intervalFinished = PauseScript.a.relativeTime + timeInterval;
 				}

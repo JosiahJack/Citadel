@@ -121,7 +121,6 @@ public class ButtonSwitch : MonoBehaviour {
 
 	void Update() {
 		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return; // Don't do any checks or anything else...we're paused!
-		if (!gameObject.activeSelf) return;
 
 		if ((delayFinished < PauseScript.a.relativeTime) && delayFinished != 0) {
 			delayFinished = 0;

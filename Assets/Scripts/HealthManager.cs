@@ -16,7 +16,6 @@ public class HealthManager : MonoBehaviour {
 	/*[DTValidator.Optional] */public GameObject[] disableOnGib;
 
 	// External references, optional...Player references only
-	/*[DTValidator.Optional] */public PlayerHealth ph;
 	/*[DTValidator.Optional] */public PainStaticFX pstatic;
 	/*[DTValidator.Optional] */public PainStaticFX empstatic;
 	/*[DTValidator.Optional] */public GameObject healingFXFlash;
@@ -41,7 +40,7 @@ public class HealthManager : MonoBehaviour {
 	public bool actAsCorpseOnly = false;
 	public bool gibsGetVelocity = false;
 	public Vector3 gibVelocityBoost;
-	public Const.PoolType deathFX;
+	public PoolType deathFX;
 	public BloodType bloodType;
 	public string targetOnDeath;
 	public string argvalue;
@@ -67,7 +66,6 @@ public class HealthManager : MonoBehaviour {
 	[HideInInspector] public bool god = false; // is this entity invincible? used for player cheat
 	private DamageData tempdd;
 	private Rigidbody gibrbody;
-	[HideInInspector] public PlayerEnergy pe;
 	[HideInInspector] public bool teleportDone;
 	[HideInInspector] public TargetID linkedTargetID;
 	[HideInInspector] public bool awakeInitialized = false;
@@ -87,16 +85,13 @@ public class HealthManager : MonoBehaviour {
 		tempdd = new DamageData();
 		take = 0;
 		if (isPlayer) {
-			pe = GetComponent<PlayerEnergy>();
-			if (ph == null) Debug.Log("BUG: No PlayerHealth script referenced by a Player's HealthManager");
-			if (pe == null) Debug.Log("BUG: No PlayerEnergy script referenced by a Player's HealthManager");
 			health = 211;
 			cyberHealth = 255;
 			maxhealth = 255;
 		}
 		if (isNPC) justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
 		if (securityAffected != LevelManager.SecurityType.None) LevelManager.a.RegisterSecurityObject(levelIndex, securityAffected);
-		Const.a.RegisterObjectWithHealth(this);
+		if (Const.a != null) Const.a.RegisterObjectWithHealth(this);
 		if (gibOnDeath) {
 			for (int i=0;i<gibObjects.Length;i++) {
 				SaveObject so = gibObjects[i].GetComponent<SaveObject>();
@@ -133,7 +128,7 @@ public class HealthManager : MonoBehaviour {
 	void OnEnable() {
 		if (PauseScript.a != null) {
 			if (isSecCamera && linkedCameraOverlay == null) {
-				GameObject overlay = Const.a.GetObjectFromPool(Const.PoolType.AutomapCameraOverlays);
+				GameObject overlay = Const.a.GetObjectFromPool(PoolType.AutomapCameraOverlays);
 				if (overlay != null) {
 					overlay.SetActive(true);
 					RectTransform rect = overlay.GetComponent<RectTransform>();
@@ -178,116 +173,116 @@ public class HealthManager : MonoBehaviour {
 
 	float ApplyAttackTypeAdjustments(float take,DamageData dd) {
 		if (aic != null && isNPC && health > 0f) {
-			if (aic.npcType == Const.npcType.Mutant) {
+			if (aic.npcType == NPCType.Mutant) {
 				switch(dd.attackType) {
-					case Const.AttackType.None: take *= 1f; break; // same
-					case Const.AttackType.Melee: take *= 1f; break; // same
-					case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
-					case Const.AttackType.EnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.Magnetic: take *= 0; break;
-					case Const.AttackType.Projectile: take *= 1f; break; // same
-					case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
-					case Const.AttackType.Gas: take *= 2f; break;
-					case Const.AttackType.ProjectileNeedle: take *= 2f; break; // same
-					case Const.AttackType.Tranq: take *= 1f; break; // same
+					case AttackType.None: take *= 1f; break; // same
+					case AttackType.Melee: take *= 1f; break; // same
+					case AttackType.MeleeEnergy: take *= 1f; break; // same
+					case AttackType.EnergyBeam: take *= 1f; break; // same
+					case AttackType.Magnetic: take *= 0; break;
+					case AttackType.Projectile: take *= 1f; break; // same
+					case AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+					case AttackType.ProjectileLaunched: take *= 1f; break; // same
+					case AttackType.Gas: take *= 2f; break;
+					case AttackType.ProjectileNeedle: take *= 2f; break; // same
+					case AttackType.Tranq: take *= 1f; break; // same
 				}
 			}
 
-			if (aic.npcType == Const.npcType.Supermutant) {
+			if (aic.npcType == NPCType.Supermutant) {
 				switch(dd.attackType) {
-					case Const.AttackType.None: take *= 1f; break; // same
-					case Const.AttackType.Melee: take *= 1f; break; // same
-					case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
-					case Const.AttackType.EnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.Magnetic: take *= 0; break; // no damage
-					case Const.AttackType.Projectile: take *= 1f; break; // same
-					case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
-					case Const.AttackType.Gas: take *= 1.5f; break;
-					case Const.AttackType.ProjectileNeedle: take *= 1f; break; // same
-					case Const.AttackType.Tranq: take *= 1f; break; // same
+					case AttackType.None: take *= 1f; break; // same
+					case AttackType.Melee: take *= 1f; break; // same
+					case AttackType.MeleeEnergy: take *= 1f; break; // same
+					case AttackType.EnergyBeam: take *= 1f; break; // same
+					case AttackType.Magnetic: take *= 0; break; // no damage
+					case AttackType.Projectile: take *= 1f; break; // same
+					case AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+					case AttackType.ProjectileLaunched: take *= 1f; break; // same
+					case AttackType.Gas: take *= 1.5f; break;
+					case AttackType.ProjectileNeedle: take *= 1f; break; // same
+					case AttackType.Tranq: take *= 1f; break; // same
 				}
 			}
 
-			if (aic.npcType == Const.npcType.Robot) {
+			if (aic.npcType == NPCType.Robot) {
 				switch(dd.attackType) {
-					case Const.AttackType.None: take *= 1f; break; // same
-					case Const.AttackType.Melee: take *= 1f; break; // same
-					case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
-					case Const.AttackType.EnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.Magnetic: take *= 4f; break; // same
-					case Const.AttackType.Projectile: take *= 1f; break; // same
-					case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
-					case Const.AttackType.Gas: take = 0; break; // no damage
-					case Const.AttackType.ProjectileNeedle: take = 0; break; // no damage
-					case Const.AttackType.Tranq: take *= 1f; break; // no damage
+					case AttackType.None: take *= 1f; break; // same
+					case AttackType.Melee: take *= 1f; break; // same
+					case AttackType.MeleeEnergy: take *= 1f; break; // same
+					case AttackType.EnergyBeam: take *= 1f; break; // same
+					case AttackType.Magnetic: take *= 4f; break; // same
+					case AttackType.Projectile: take *= 1f; break; // same
+					case AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+					case AttackType.ProjectileLaunched: take *= 1f; break; // same
+					case AttackType.Gas: take = 0; break; // no damage
+					case AttackType.ProjectileNeedle: take = 0; break; // no damage
+					case AttackType.Tranq: take *= 1f; break; // no damage
 				}
 			}
 
-			if (aic.npcType == Const.npcType.Cyborg) {
+			if (aic.npcType == NPCType.Cyborg) {
 				switch(dd.attackType) {
-					case Const.AttackType.None: take *= 1f; break; // same
-					case Const.AttackType.Melee: take *= 1f; break; // same
-					case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
-					case Const.AttackType.EnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.Magnetic: take *= 2f; break; // same
-					case Const.AttackType.Projectile: take *= 1f; break; // same
-					case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
-					case Const.AttackType.Gas: take *= 1f; break; // same
-					case Const.AttackType.ProjectileNeedle: take *= 1f; break; // same
-					case Const.AttackType.Tranq: take *= 1f; break; // same
+					case AttackType.None: take *= 1f; break; // same
+					case AttackType.Melee: take *= 1f; break; // same
+					case AttackType.MeleeEnergy: take *= 1f; break; // same
+					case AttackType.EnergyBeam: take *= 1f; break; // same
+					case AttackType.Magnetic: take *= 2f; break; // same
+					case AttackType.Projectile: take *= 1f; break; // same
+					case AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+					case AttackType.ProjectileLaunched: take *= 1f; break; // same
+					case AttackType.Gas: take *= 1f; break; // same
+					case AttackType.ProjectileNeedle: take *= 1f; break; // same
+					case AttackType.Tranq: take *= 1f; break; // same
 				}
 			}
 
-			if (aic.npcType == Const.npcType.Supercyborg) {
+			if (aic.npcType == NPCType.Supercyborg) {
 				switch(dd.attackType) {
-					case Const.AttackType.None: take *= 1f; break; // same
-					case Const.AttackType.Melee: take *= 1f; break; // same
-					case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
-					case Const.AttackType.EnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.Magnetic: take *= 2f; break; // same
-					case Const.AttackType.Projectile: take *= 1f; break; // same
-					case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
-					case Const.AttackType.Gas: take = 0; break;
-					case Const.AttackType.ProjectileNeedle: take = 0; break;
-					case Const.AttackType.Tranq: take *= 1f; break;
+					case AttackType.None: take *= 1f; break; // same
+					case AttackType.Melee: take *= 1f; break; // same
+					case AttackType.MeleeEnergy: take *= 1f; break; // same
+					case AttackType.EnergyBeam: take *= 1f; break; // same
+					case AttackType.Magnetic: take *= 2f; break; // same
+					case AttackType.Projectile: take *= 1f; break; // same
+					case AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+					case AttackType.ProjectileLaunched: take *= 1f; break; // same
+					case AttackType.Gas: take = 0; break;
+					case AttackType.ProjectileNeedle: take = 0; break;
+					case AttackType.Tranq: take *= 1f; break;
 				}
 			}
 
-			if (aic.npcType == Const.npcType.MutantCyborg) {
+			if (aic.npcType == NPCType.MutantCyborg) {
 				switch(dd.attackType) {
-					case Const.AttackType.None: take *= 1f; break; // same
-					case Const.AttackType.Melee: take *= 1f; break; // same
-					case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
-					case Const.AttackType.EnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.Magnetic: take *= 0.5f; break; // same
-					case Const.AttackType.Projectile: take *= 1f; break; // same
-					case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
-					case Const.AttackType.Gas: take *= 2f; break; // same
-					case Const.AttackType.ProjectileNeedle: take *= 2f; break; // same
-					case Const.AttackType.Tranq: take *= 1.5f; break; // same
+					case AttackType.None: take *= 1f; break; // same
+					case AttackType.Melee: take *= 1f; break; // same
+					case AttackType.MeleeEnergy: take *= 1f; break; // same
+					case AttackType.EnergyBeam: take *= 1f; break; // same
+					case AttackType.Magnetic: take *= 0.5f; break; // same
+					case AttackType.Projectile: take *= 1f; break; // same
+					case AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+					case AttackType.ProjectileLaunched: take *= 1f; break; // same
+					case AttackType.Gas: take *= 2f; break; // same
+					case AttackType.ProjectileNeedle: take *= 2f; break; // same
+					case AttackType.Tranq: take *= 1.5f; break; // same
 				}
 			}
 
-			if (aic.npcType == Const.npcType.Cyber) {
+			if (aic.npcType == NPCType.Cyber) {
 				switch(dd.attackType) {
-					case Const.AttackType.None: take *= 1f; break; // same
-					case Const.AttackType.Melee: take *= 1f; break; // same
-					case Const.AttackType.MeleeEnergy: take *= 1f; break; // same
-					case Const.AttackType.EnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.Magnetic: take *= 1f; break; // same
-					case Const.AttackType.Projectile: take *= 1f; break; // same
-					case Const.AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
-					case Const.AttackType.ProjectileLaunched: take *= 1f; break; // same
-					case Const.AttackType.Gas: take *= 1f; break; // same
-					case Const.AttackType.ProjectileNeedle: take *= 1f; break; // same
-					case Const.AttackType.Tranq: take *= 1f; break; // same
-					case Const.AttackType.Drill: take = 0f; break; // same
+					case AttackType.None: take *= 1f; break; // same
+					case AttackType.Melee: take *= 1f; break; // same
+					case AttackType.MeleeEnergy: take *= 1f; break; // same
+					case AttackType.EnergyBeam: take *= 1f; break; // same
+					case AttackType.Magnetic: take *= 1f; break; // same
+					case AttackType.Projectile: take *= 1f; break; // same
+					case AttackType.ProjectileEnergyBeam: take *= 1f; break; // same
+					case AttackType.ProjectileLaunched: take *= 1f; break; // same
+					case AttackType.Gas: take *= 1f; break; // same
+					case AttackType.ProjectileNeedle: take *= 1f; break; // same
+					case AttackType.Tranq: take *= 1f; break; // same
+					case AttackType.Drill: take = 0f; break; // same
 				}
 			}
 		}
@@ -302,8 +297,8 @@ public class HealthManager : MonoBehaviour {
         tempFloat = health;
 		if (inCyberSpace || index > 23) {
 			tempFloat = cyberHealth;
-			if (dd.attackType == Const.AttackType.Drill && isNPC) return 0; // Drill can't hurt NPC's
-			if (dd.attackType != Const.AttackType.Drill && isIce) return 0; // Pulser can't hurt Ice
+			if (dd.attackType == AttackType.Drill && isNPC) return 0; // Drill can't hurt NPC's
+			if (dd.attackType != AttackType.Drill && isIce) return 0; // Pulser can't hurt Ice
 		}
 		if (tempFloat <= 0 && !isObject) return 0;
 
@@ -329,10 +324,10 @@ public class HealthManager : MonoBehaviour {
 				}
 			} else {
 				// Check if player shield is active
-				if (dd.attackType == Const.AttackType.Magnetic) {
+				if (dd.attackType == AttackType.Magnetic) {
 					take = 0f; // don't get hurt by magnetic interactions
 					empstatic.Flash(2);
-					pe.TakeEnergy(11f);
+					PlayerEnergy.a.TakeEnergy(11f);
 				}
 				if (Inventory.a.hardwareIsActive[5] && Inventory.a.hasHardware[5]) {
 					// Versions of shield protect against 20, 40, 75, 75%'s
@@ -362,19 +357,19 @@ public class HealthManager : MonoBehaviour {
 						if (absorb < 1f) absorb = absorb + UnityEngine.Random.Range(-0.08f,0.08f); // +/- 8% variation - this was in the original I swear!  You could theoretically have 83% shielding max.
 						if (absorb > 1f) absorb = 1f; // cap it at 100%....shouldn't really ever be here, nothing is 92% + 8%
 						take *= (1f-absorb); // shield doing it's thing
-						ph.shieldEffect.SetActive(true); // Activate shield screen effect to indicate damage was absorbed, effect intensity determined by absorb amount
-						ph.PlayerNoise.PlayOneShot(ph.ShieldClip); // Play shield absorb sound
+						PlayerHealth.a.shieldEffect.SetActive(true); // Activate shield screen effect to indicate damage was absorbed, effect intensity determined by absorb amount
+						PlayerHealth.a.PlayerNoise.PlayOneShot(PlayerHealth.a.ShieldClip); // Play shield absorb sound
 						int abs = (int)(absorb * 100f); //  for int display of absorbption percent
 						Const.sprint(Const.a.stringTable[208] + abs.ToString() + Const.a.stringTable[209],dd.other);  // Shield absorbs x% damage
 						if (absorb > 0) {
-							pe.TakeEnergy(enertake*absorb);
-							pe.drainJPM += (int) enertake;
-							pe.tickFinished = PauseScript.a.relativeTime + 0.1f; // So blip registers on biomonitor graph
+							PlayerEnergy.a.TakeEnergy(enertake*absorb);
+							PlayerEnergy.a.drainJPM += (int) enertake;
+							PlayerEnergy.a.tickFinished = PauseScript.a.relativeTime + 0.1f; // So blip registers on biomonitor graph
 						}
 					}
 				}
 				if (take > 0 && ((absorb <0.4f) || Random.Range(0,1f) < 0.5f)) {
-					ph.PlayerNoise.PlayOneShot(ph.PainSFXClip); // Play player pain noise
+					PlayerHealth.a.PlayerNoise.PlayOneShot(PlayerHealth.a.PainSFXClip); // Play player pain noise
 					int intensityOfPainFlash = 0; // 0 = light
 					if (take > 15f) {
 						intensityOfPainFlash = 2; // 2 = heavy
@@ -394,7 +389,7 @@ public class HealthManager : MonoBehaviour {
 			if (isPlayer) {
 				MFDManager.a.DrawTicks(true);
 				if (cyberHealth <= 0) {
-					MFDManager.a.playerMLook.ExitCyberspace();
+					MouseLookScript.a.ExitCyberspace();
 					return 0f;
 				}
 			}
@@ -421,7 +416,7 @@ public class HealthManager : MonoBehaviour {
             if (!deathDone) {
 				UseDeathTargets();
                 if (isObject) {
-					if (vaporizeCorpse && dd.attackType == Const.AttackType.EnergyBeam && !isSecCamera) deathFX = Const.PoolType.Vaporize;
+					if (vaporizeCorpse && dd.attackType == AttackType.EnergyBeam && !isSecCamera) deathFX = PoolType.Vaporize;
 					ObjectDeath(null);
 					if (searchableItem != null) MFDManager.a.NotifySearchThatSearchableWasDestroyed();
 				}
@@ -430,10 +425,10 @@ public class HealthManager : MonoBehaviour {
                 if (isNPC) NPCDeath(null);
 				if (isGrenade) GrenadeDeath();
             } else {
-                if (vaporizeCorpse && (health < (0 - (maxhealth * 0.5f))) && dd.attackType == Const.AttackType.EnergyBeam && !isSecCamera) {
+                if (vaporizeCorpse && (health < (0 - (maxhealth * 0.5f))) && dd.attackType == AttackType.EnergyBeam && !isSecCamera) {
 					MeshRenderer mr = GetComponent<MeshRenderer>();
                     if (mr != null) mr.enabled = false;
-                    GameObject explosionEffect = Const.a.GetObjectFromPool(Const.PoolType.Vaporize);
+                    GameObject explosionEffect = Const.a.GetObjectFromPool(PoolType.Vaporize);
                     if (explosionEffect != null) {
                         explosionEffect.SetActive(true);
 						if (aic != null) {
@@ -459,7 +454,7 @@ public class HealthManager : MonoBehaviour {
 
 	void PlayDeathSound(AudioClip deathSound) {
 		if (deathSound != null || backupDeathSound != null && gameObject.activeInHierarchy) {
-			tempAud = Const.a.GetObjectFromPool(Const.PoolType.TempAudioSources);
+			tempAud = Const.a.GetObjectFromPool(PoolType.TempAudioSources);
 			if (tempAud != null) {
 				tempAud.transform.position = transform.position;
 				tempAud.SetActive(true);
@@ -477,7 +472,7 @@ public class HealthManager : MonoBehaviour {
 		if (deathDone) return; // We died the death, no 2nd deaths here.
 
 		deathDone = true; // Mark it so we only die once.
-		if (deathFX != Const.PoolType.None) {
+		if (deathFX != PoolType.None) {
 			GameObject explosionEffect = Const.a.GetObjectFromPool(deathFX);
 			if (explosionEffect != null) {
 				explosionEffect.SetActive(true); // Enable death effects (e.g. explosion particle effect)
@@ -566,7 +561,7 @@ public class HealthManager : MonoBehaviour {
 		if (capCol != null) capCol.enabled = false;
 		if (isSecCamera && linkedCameraOverlay != null) linkedCameraOverlay.enabled = false; // disable on automap
 		if (securityAffected != LevelManager.SecurityType.None) LevelManager.a.ReduceCurrentLevelSecurity(securityAffected);
-		if (deathFX != Const.PoolType.None) {
+		if (deathFX != PoolType.None) {
 			GameObject explosionEffect = Const.a.GetObjectFromPool(deathFX);
 			if (explosionEffect != null) {
 				explosionEffect.SetActive(true); // Enabel death effects (e.g. explosion particle effect)
@@ -593,7 +588,7 @@ public class HealthManager : MonoBehaviour {
 	public void HealingBed(float amount,bool flashBed) {
 		health += amount;
 		if (health > 255) health = 255;
-		if (ph != null) MFDManager.a.DrawTicks(true);
+		if (isPlayer) MFDManager.a.DrawTicks(true);
 		if (flashBed && healingFXFlash != null) healingFXFlash.SetActive(true);
 	}
 

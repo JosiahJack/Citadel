@@ -10,7 +10,7 @@ public class ItemTabManager : MonoBehaviour {
 	public GameObject useButton;
 	public GameObject eReaderSectionsContainer;
 
-	public void Reset () {
+	public void Reset() {
 		eReaderSectionsContainer.SetActive(false);
 		iconManager.GetComponent<Image>().overrideSprite = Const.a.useableItemsIcons[0]; //nullsprite
 		textManager.GetComponent<Text>().text = System.String.Empty;
@@ -37,12 +37,15 @@ public class ItemTabManager : MonoBehaviour {
 		if ((constIndex >= 14 && constIndex < 21) || constIndex == 52 || constIndex == 53 || constIndex == 55) {
 			applyButton.SetActive(true);
 			MFDManager.a.applyButtonReferenceIndex = constIndex;
+		} else {
+			applyButton.SetActive(false);
 		}
 
-		if (constIndex < 6 || constIndex == 33 || constIndex == 35 ||
-            (constIndex > 51 && constIndex < 63) || constIndex == 64 ||
-            (constIndex > 91 && constIndex < 95)) {
+		if (constIndex < 6 || constIndex == 33 || constIndex == 35 || constIndex == 58
+		    || constIndex == 62 || (constIndex > 91 && constIndex < 95)) {
 			vaporizeButton.SetActive(true);
+		} else {
+			vaporizeButton.SetActive(false);
 		}
 	}
 }

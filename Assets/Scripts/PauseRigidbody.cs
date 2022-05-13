@@ -9,15 +9,29 @@ public class PauseRigidbody : MonoBehaviour {
 	private CollisionDetectionMode previouscolDetMode;
 
 	void Awake () {
+		Initialize();
+	}
+
+	void Initialize() {
 		rbody = GetComponent<Rigidbody>();
+		if (!Const.a.prb.Contains(this)) Const.a.prb.Add(this);
+		SetPreviousValuse();
+	}
+
+	void SetPreviousValuse() {
+		previousVelocity = rbody.velocity;
+		previousUseGravity = rbody.useGravity;
+		previousKinematic = rbody.isKinematic;
+		previouscolDetMode = rbody.collisionDetectionMode;
+	}
+
+	void OnEnable () {
+		if (rbody == null) Initialize();
 	}
 		
 	public void Pause () {
 		if (rbody != null) {
-			previousVelocity = rbody.velocity;
-			previousUseGravity = rbody.useGravity;
-			previousKinematic = rbody.isKinematic;
-			previouscolDetMode = rbody.collisionDetectionMode;
+			SetPreviousValuse();
 			rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 			rbody.useGravity = false;
 			rbody.isKinematic = true;

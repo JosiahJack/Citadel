@@ -2,13 +2,13 @@
 
 // Holds the data about attacker and attackee for use when applying damage.
 // Useful to pass all of this data around rather than having a ton of function arguments.
+// Relying on null checks, hence a class...bad?
 public class DamageData {
 	// Attacker (self [a]) data
 	public GameObject owner;
 	public bool ownerIsNPC;
 	public GameObject ownersCamera;
-	public WeaponFire ownersWeaponFireScript;
-	public Const.AttackType attackType;
+	public AttackType attackType;
 	public bool isFullAuto;
 	public float damage;
 	public float delayBetweenShots;
@@ -34,9 +34,8 @@ public class DamageData {
 	public void ResetDamageData (DamageData damageData) {
 		damageData.owner = null;
 		damageData.ownersCamera = null;
-		damageData.ownersWeaponFireScript = null;
 		damageData.other = null;
-		damageData.attackType = Const.AttackType.None;
+		damageData.attackType = AttackType.None;
 		damageData.ownerIsNPC = false;
 		damageData.isOtherNPC = false;
 		damageData.isFullAuto = false;

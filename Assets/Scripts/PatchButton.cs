@@ -6,17 +6,15 @@ using System.Collections;
 public class PatchButton: MonoBehaviour {
 	public int PatchButtonIndex;
 	public int useableItemIndex;
-	public MFDManager mfdManager;
-	public PlayerPatch pps;
 	public AudioClip SFXClick;
 	public AudioSource SFX;
 
 	public void DoubleClick() {
-		pps.ActivatePatch(useableItemIndex);
+		PlayerPatch.a.ActivatePatch(useableItemIndex);
 	}
 
 	public void PatchInvClick (bool useSound) {
-		mfdManager.SendInfoToItemTab(useableItemIndex);
+		MFDManager.a.SendInfoToItemTab(useableItemIndex);
 		Inventory.a.patchCurrent = PatchButtonIndex; // Set current.
 		for (int i = 0; i < 7; i++) {
 			Inventory.a.patchCountTextObjects [i].color = Const.a.ssGreenText;

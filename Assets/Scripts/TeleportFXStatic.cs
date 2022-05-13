@@ -4,11 +4,8 @@ using System.Collections;
 public class TeleportFXStatic : MonoBehaviour {
 	public float intervalTime = 0.08f;
 	public float activeTime = 1f;
-	[HideInInspector]
-	public GameObject mouseCursor;
 	public Texture2D tempCursorTexture;
-	[HideInInspector]
-	public Texture2D cursorTexture;
+	[HideInInspector] public Texture2D cursorTexture;
 	private float effectFinished;
 	private float flipTime;
 	private float randHolder;
@@ -17,13 +14,8 @@ public class TeleportFXStatic : MonoBehaviour {
 	private RectTransform rect;
 
 	void OnEnable () {
-		mouseCursor = GameObject.Find("MouseCursorHandler");
-		if (mouseCursor == null) {
-			print("Warning: Could Not Find object 'MouseCursorHandler' in scene\n");
-			return;
-		}
-		cursorTexture = mouseCursor.GetComponent<MouseCursor>().cursorImage; //store correct cursor
-		mouseCursor.GetComponent<MouseCursor>().cursorImage = tempCursorTexture; //give dummy cursor to hide it
+		cursorTexture = MouseCursor.a.cursorImage; //store correct cursor
+		MouseCursor.a.cursorImage = tempCursorTexture; //give dummy cursor to hide it
 		effectFinished = PauseScript.a.relativeTime + activeTime;
 		rect = GetComponent<RectTransform>();
 		flipTime = PauseScript.a.relativeTime + intervalTime;
@@ -50,7 +42,7 @@ public class TeleportFXStatic : MonoBehaviour {
 	}
 
 	void Deactivate () {
-		mouseCursor.GetComponent<MouseCursor>().cursorImage = cursorTexture; //return to previous cursor
+		MouseCursor.a.cursorImage = cursorTexture; //return to previous cursor
 		gameObject.SetActive(false);
 	}
 

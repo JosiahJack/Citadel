@@ -6,7 +6,6 @@ public class WeaponCurrent : MonoBehaviour {
 	public static WeaponCurrent WepInstance;
 	public AmmoIconManager ammoIconManLH;
 	public AmmoIconManager ammoIconManRH;
-	public WeaponMagazineCounter wepmagCounter;
 	public GameObject ammoIndicatorHuns;
 	public GameObject ammoIndicatorTens;
 	public GameObject ammoIndicatorOnes;

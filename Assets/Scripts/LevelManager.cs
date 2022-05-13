@@ -61,8 +61,6 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 
-	public bool IsCurrentLevelCyborgConversionEnabled() { return ressurectionActive[currentLevel]; }
-
 	public bool RessurectPlayer (GameObject currentPlayer) {
 		// Note:  currentPlayer is the main Player gameObject that contains PlayerReferenceManager.
 		if (currentPlayer == null) { Const.sprint("BUG: LevelManager cannot find current player for RessurectPlayer."); return false; } // Prevent possible error if wrong player is passed.
@@ -95,9 +93,9 @@ public class LevelManager : MonoBehaviour {
 		PlayerReferenceManager prm = currentPlayer.GetComponent<PlayerReferenceManager>();
 		if (targetDestination != null) prm.playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
 		else prm.playerCapsule.transform.position = targetPosition; // Return to level from cyberspace.
-		PlayerMovement pm = prm.playerCapsule.GetComponent<PlayerMovement>();
-		pm.SetAutomapExploredReference(levnum);
-		pm.automapBaseImage.overrideSprite = pm.automapsBaseImages[levnum];
+
+		PlayerMovement.a.SetAutomapExploredReference(levnum);
+		PlayerMovement.a.automapBaseImage.overrideSprite = PlayerMovement.a.automapsBaseImages[levnum];
 		Music.a.inCombat = false;
 		Music.a.SFXMain.Stop();
 		Music.a.SFXOverlay.Stop();
@@ -111,44 +109,7 @@ public class LevelManager : MonoBehaviour {
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
 		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) AutoSplitterData.missionSplitID++; // 1 - Medical split - we are now on level 2
-		LoadAdditiveScene(levnum);
-		UnloadAdditiveScene(lastlev);
-	}
-
-	void LoadAdditiveScene(int levnum) {
-		switch (levnum) {
-			//case 0: SceneManager.LoadScene("LevelRScene", LoadSceneMode.Additive); break;
-			//case 1: SceneManager.LoadScene("Level1Scene", LoadSceneMode.Additive); break;
-			//case 2: SceneManager.LoadScene("Level2Scene", LoadSceneMode.Additive); break;
-			//case 3: SceneManager.LoadScene("Level3Scene", LoadSceneMode.Additive); break;
-			//case 4: SceneManager.LoadScene("Level4Scene", LoadSceneMode.Additive); break;
-			//case 5: SceneManager.LoadScene("Level5Scene", LoadSceneMode.Additive); break;
-			//case 6: SceneManager.LoadScene("Level6Scene", LoadSceneMode.Additive); break;
-			//case 7: SceneManager.LoadScene("Level7Scene", LoadSceneMode.Additive); break;
-			//case 8: SceneManager.LoadScene("Level8Scene", LoadSceneMode.Additive); break;
-			//case 9: SceneManager.LoadScene("Level9Scene", LoadSceneMode.Additive); break;
-			//case 10:SceneManager.LoadScene("LevelG1Scene", LoadSceneMode.Additive); break;
-			//case 11:SceneManager.LoadScene("LevelG2Scene", LoadSceneMode.Additive); break;
-			//case 12:SceneManager.LoadScene("LevelG3Scene", LoadSceneMode.Additive); break;
-		}
-	}
-
-	void UnloadAdditiveScene(int levnum) {
-		switch (levnum) {
-			//case 0: SceneManager.LoadScene("LevelRScene", LoadSceneMode.Additive); break;
-			//case 1: SceneManager.LoadScene("Level1Scene", LoadSceneMode.Additive); break;
-			//case 2: SceneManager.UnloadSceneAsync("Level2Scene"); break;
-			//case 3: SceneManager.LoadScene("Level3Scene", LoadSceneMode.Additive); break;
-			//case 4: SceneManager.LoadScene("Level4Scene", LoadSceneMode.Additive); break;
-			//case 5: SceneManager.LoadScene("Level5Scene", LoadSceneMode.Additive); break;
-			//case 6: SceneManager.LoadScene("Level6Scene", LoadSceneMode.Additive); break;
-			//case 7: SceneManager.LoadScene("Level7Scene", LoadSceneMode.Additive); break;
-			//case 8: SceneManager.LoadScene("Level8Scene", LoadSceneMode.Additive); break;
-			//case 9: SceneManager.LoadScene("Level9Scene", LoadSceneMode.Additive); break;
-			//case 10:SceneManager.LoadScene("LevelG1Scene", LoadSceneMode.Additive); break;
-			//case 11:SceneManager.LoadScene("LevelG2Scene", LoadSceneMode.Additive); break;
-			//case 12:SceneManager.LoadScene("LevelG3Scene", LoadSceneMode.Additive); break;
-		}
+		System.GC.Collect();
 	}
 
 	public void LoadLevelFromSave (int levnum) {
@@ -162,29 +123,17 @@ public class LevelManager : MonoBehaviour {
 		levels[currentLevel].SetActive(false); // Unload current level	
 		levels[levnum].SetActive(true); // Load new level
 		currentLevel = levnum; // Set current level to be the new level
-		LoadAdditiveScene(levnum);
-		UnloadAdditiveScene(lastlev);
+		System.GC.Collect();
 	}
 
 	void SetAllPlayersLevelsToCurrent () {
-		if (Const.a.player1 != null) Const.a.player1.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
-		if (Const.a.player2 != null) Const.a.player2.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
-		if (Const.a.player3 != null) Const.a.player3.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
-		if (Const.a.player4 != null) Const.a.player4.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
+		Const.a.player1.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
 	}
 
 	public void DisableAllNonOccupiedLevels() {
-		int p1level = -1;
-		int p2level = -1;
-		int p3level = -1;
-		int p4level = -1;;
-		if (Const.a.player1 != null) p1level = Const.a.player1.GetComponent<PlayerReferenceManager>().playerCurrentLevel;
-		if (Const.a.player2 != null) p2level = Const.a.player2.GetComponent<PlayerReferenceManager>().playerCurrentLevel;
-		if (Const.a.player3 != null) p3level = Const.a.player3.GetComponent<PlayerReferenceManager>().playerCurrentLevel;
-		if (Const.a.player4 != null) p4level = Const.a.player4.GetComponent<PlayerReferenceManager>().playerCurrentLevel;
-
+		int p1level = Const.a.player1.GetComponent<PlayerReferenceManager>().playerCurrentLevel;
 		for (int i=0;i<levels.Length;i++) {
-			if (p1level != i && p2level != i && p3level != i && p4level != i) {
+			if (p1level != i) {
 				if (levels[i] != null) levels[i].SetActive(false);
 			} else {
 				if (levels[i] != null) levels[i].SetActive(true);

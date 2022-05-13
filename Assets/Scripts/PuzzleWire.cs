@@ -667,13 +667,9 @@ public class PuzzleWire : MonoBehaviour {
 		if (SFXSource != null && SFX != null) SFXSource.PlayOneShot(SFX,1.0f);
 		puzzleWP.puzzleSolved = true;
 		puzzleWP.UseTargets(udSender.owner);
-		//Const.a.UseTargets(udSender,target);
 		if (usedLogicProbe) {
-			MouseLookScript mls = udSender.owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<MouseLookScript>();
-			if (mls != null) {
-				mls.ResetHeldItem();
-				mls.ResetCursor();
-			}
+			MouseLookScript.a.ResetHeldItem();
+			MouseLookScript.a.ResetCursor();
 		}
 	}
 }

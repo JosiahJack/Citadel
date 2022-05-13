@@ -7,7 +7,6 @@ public class GrenadeButton : MonoBehaviour {
 	public int GrenButtonIndex;
 	public GameObject playerCamera;
 	public int useableItemIndex;
-	public MFDManager mfdManager;
 	private int itemLookup;
 	private Texture2D cursorTexture;
 	private Vector2 cursorHotspot;
@@ -29,7 +28,7 @@ public class GrenadeButton : MonoBehaviour {
 	}
 
 	public void GrenadeInvClick () {
-		mfdManager.SendInfoToItemTab(useableItemIndex);
+		MFDManager.a.SendInfoToItemTab(useableItemIndex);
 		Inventory.a.grenadeCurrent = GrenButtonIndex;  //Set current
 		Inventory.a.grenadeIndex = useableItemIndex;  //Set current
 		if (SFX != null && SFXClick != null) SFX.PlayOneShot(SFXClick);

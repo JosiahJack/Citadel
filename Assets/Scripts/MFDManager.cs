@@ -42,7 +42,6 @@ public class MFDManager : MonoBehaviour  {
 	public ItemTabManager itemTabRH;
 	public GameObject SearchFXRH;
 	public GameObject SearchFXLH;
-	public MouseLookScript playerMLook;
 	public Transform playerCapsuleTransform;
 	public WeaponMagazineCounter wepmagCounterLH;
 	public WeaponMagazineCounter wepmagCounterRH;
@@ -98,10 +97,7 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject cyberSprintContainer;
 	public Text cyberSprintText;
 	public GameObject automapFull;
-	public PlayerMovement pm;
 	public GameObject biograph;
-	public PlayerEnergy pe;
-	public PlayerPatch pp;
 	public GameObject autoMapCamera;
 
 	// Public enumerations
@@ -151,8 +147,6 @@ public class MFDManager : MonoBehaviour  {
 	private int wep16index = 0;
 
 	// For health and energy ticks
-	public PlayerHealth playerHealth;
-	public PlayerEnergy playerEnergy;
 	public Sprite[] tickImages;
 	public Image tickImageHealth;
 	public Image tickImageEnergy;
@@ -234,6 +228,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	void Update() {
+		// Actions during Pause and Unpause (always)
 		if (FPS.activeInHierarchy) {
 			count++;
 			deltaTime += Time.unscaledDeltaTime;
@@ -248,6 +243,7 @@ public class MFDManager : MonoBehaviour  {
 			}
 		}
 
+		// Unpaused Actions
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			HardwareButtonsUpdate();
 			if (logActive) {
@@ -259,16 +255,16 @@ public class MFDManager : MonoBehaviour  {
 				}
 			}
 			CenterTabBlink();
-			if (lastEnergy != playerEnergy.energy) DrawTicks(false);
-			lastEnergy = playerEnergy.energy;
-			if (lastHealth != playerHealth.hm.health) DrawTicks(true);
-			lastHealth = playerHealth.hm.health;
+			if (lastEnergy != PlayerEnergy.a.energy) DrawTicks(false);
+			lastEnergy = PlayerEnergy.a.energy;
+			if (lastHealth != PlayerHealth.a.hm.health) DrawTicks(true);
+			lastHealth = PlayerHealth.a.hm.health;
 			BioMonitorGraphUpdate();
 			WeaponButtonsManagerUpdate();
 			if (AutoMapDisplayActive() && !autoMapCamera.activeSelf) autoMapCamera.SetActive(true);
 			else if (!AutoMapDisplayActive() && autoMapCamera.activeSelf) autoMapCamera.SetActive(false);
-			if (GetInput.a.WeaponCycUp ()) {
-				if (playerMLook.inCyberSpace) {
+			if (GetInput.a.WeaponCycUp()) {
+				if (MouseLookScript.a.inCyberSpace) {
 					Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill; // There's only two cyberspace weapons, up is down.
 					if (Inventory.a.SFX != null && Inventory.a.SFXChangeWeapon != null) Inventory.a.SFX.PlayOneShot(Inventory.a.SFXChangeWeapon);
 					if (Inventory.a.isPulserNotDrill) {
@@ -287,8 +283,8 @@ public class MFDManager : MonoBehaviour  {
 				}
 			}
 
-			if (GetInput.a.WeaponCycDown ()) {
-				if (playerMLook.inCyberSpace) {
+			if (GetInput.a.WeaponCycDown()) {
+				if (MouseLookScript.a.inCyberSpace) {
 					Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill; // There's only two cyberspace weapons, up is down.
 					if (Inventory.a.SFX != null && Inventory.a.SFXChangeWeapon != null) Inventory.a.SFX.PlayOneShot(Inventory.a.SFXChangeWeapon);
 					if (Inventory.a.isPulserNotDrill) {
@@ -427,7 +423,7 @@ public class MFDManager : MonoBehaviour  {
 		ctbButtonGeneral.SetActive(false);
 		DisableAllCenterTabs();
 		automapFull.SetActive(true);
-		pm.inFullMap = true;
+		PlayerMovement.a.inFullMap = true;
 		TabReset(true); // right
 		TabReset(false); // left
 		tabButtonsLHButtons.SetActive(false);
@@ -440,7 +436,7 @@ public class MFDManager : MonoBehaviour  {
 		ctbButtonGeneral.SetActive(true);
 		CenterTabButtonClickSilent(0,true);
 		automapFull.SetActive(false);
-		pm.inFullMap = false;
+		PlayerMovement.a.inFullMap = false;
 		TabReset(true); // right
 		TabReset(false); // left
 		ReturnToLastTab(true);
@@ -592,15 +588,15 @@ public class MFDManager : MonoBehaviour  {
 	void BioMonitorGraphUpdate() {
 		if (BiomonitorGraphSystem.a == null) return;
 
-		fatigueFactor = (((pm.fatigue / 100f) * 150f) + graphAdd) / 60f; // Apply percent fatigued to 200bpm max heart rate with baseline 50bpm.
+		fatigueFactor = (((PlayerMovement.a.fatigue / 100f) * 150f) + graphAdd) / 60f; // Apply percent fatigued to 200bpm max heart rate with baseline 50bpm.
 		if (beatFinished < PauseScript.a.relativeTime) {
 			beatFinished = PauseScript.a.relativeTime + (1f/fatigueFactor); // Adjust into seconds and add to game timer.
 		}
 
-        if (biograph.activeSelf) BiomonitorGraphSystem.a.Graph(0,((pe.drainJPM/449f)*2f)-1f); // Take percentage of max JPM drain per second (449) and apply it to a scale of ±1.0
+        if (biograph.activeSelf) BiomonitorGraphSystem.a.Graph(0,((PlayerEnergy.a.drainJPM/449f)*2f)-1f); // Take percentage of max JPM drain per second (449) and apply it to a scale of ï¿½1.0
 
 		// Chi wave is different when on genius patch
-		if (pp.geniusFinishedTime > PauseScript.a.relativeTime) {
+		if (PlayerPatch.a.geniusFinishedTime > PauseScript.a.relativeTime) {
 			if (biograph.activeSelf) BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 3f) + UnityEngine.Random.Range(-0.3f,0.3f));
 		} else {
 			if (biograph.activeSelf) BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 1f));
@@ -619,10 +615,10 @@ public class MFDManager : MonoBehaviour  {
 		int step = 0;
 		float checkVal = 0;
 		if (health) {
-			if (playerMLook.inCyberSpace) checkVal = playerHealth.hm.cyberHealth;
-			else checkVal = playerHealth.hm.health;
+			if (MouseLookScript.a.inCyberSpace) checkVal = PlayerHealth.a.hm.cyberHealth;
+			else checkVal = PlayerHealth.a.hm.health;
 		} else {
-			checkVal = playerEnergy.energy;
+			checkVal = PlayerEnergy.a.energy;
 		}
 
 		if (checkVal > 255f) checkVal = 255f; // Always display ticks properly no matter what crazy value we've been hacked to have.
@@ -686,30 +682,30 @@ public class MFDManager : MonoBehaviour  {
 			if (type == TabMSG.Keypad) {
 				TabReset(false);
 				keycodeUIControlLH.SetActive(true);
-				playerMLook.ForceInventoryMode();
+				MouseLookScript.a.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.Elevator) {
 				TabReset(false);
 				elevatorUIControlLH.SetActive(true);
-				playerMLook.ForceInventoryMode();
+				MouseLookScript.a.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.GridPuzzle) {
 				TabReset(false);
 				puzzleGridLH.SetActive(true);
-				playerMLook.ForceInventoryMode();
+				MouseLookScript.a.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.WirePuzzle) {
 				TabReset(false);
 				puzzleWireLH.SetActive(true);
-				playerMLook.ForceInventoryMode();
+				MouseLookScript.a.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.EReader) {
 				itemTabLH.EReaderSectionSContainerOpen();
-				playerMLook.ForceInventoryMode();
+				MouseLookScript.a.ForceInventoryMode();
 			}
 			if (type == TabMSG.SystemAnalyzer) {
 				TabReset(false);
@@ -743,12 +739,12 @@ public class MFDManager : MonoBehaviour  {
 			if (type == TabMSG.WirePuzzle) {
 				TabReset(true);
 				puzzleWireRH.SetActive(true);
-				playerMLook.ForceInventoryMode();
+				MouseLookScript.a.ForceInventoryMode();
 			}
 
 			if (type == TabMSG.EReader) {
 				itemTabRH.EReaderSectionSContainerOpen();
-				playerMLook.ForceInventoryMode();
+				MouseLookScript.a.ForceInventoryMode();
 			}
 			if (type == TabMSG.SystemAnalyzer) {
 				TabReset(false);
@@ -757,9 +753,16 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
+	public void ResetItemTab() {
+		itemTabLH.Reset();
+		itemTabRH.Reset();
+	}
+
 	public void SendInfoToItemTab(int index) {
-		if (itemTabLH != null) itemTabLH.SendItemDataToItemTab(index);
-		if (itemTabRH != null) itemTabRH.SendItemDataToItemTab(index);
+		if (index < 0 || index > 94) { ResetItemTab(); return; }
+
+		itemTabLH.SendItemDataToItemTab(index);
+		itemTabRH.SendItemDataToItemTab(index);
 	}
 
 	// Clicking [Apply] button on left or right MFD's Item Tab to apply current patch or general inventory item.
@@ -770,6 +773,9 @@ public class MFDManager : MonoBehaviour  {
 
 		if (applyButtonReferenceIndex == 55) {
 			Inventory.a.genButtons[Inventory.a.generalInvCurrent].GetComponent<GeneralInvButton>().DoubleClick();
+			int nextIndex = Inventory.a.generalInvIndex - 1;
+			if (nextIndex < 0) nextIndex = 0;
+			Inventory.a.generalInvIndex = nextIndex;
 			SendInfoToItemTab(Inventory.a.generalInvIndex);  // Health kit was applied, set item tab to next general inv current.
 		} else {
 			Inventory.a.patchButtonScripts[Inventory.a.patchCurrent].DoubleClick();
@@ -1076,7 +1082,7 @@ public class MFDManager : MonoBehaviour  {
 				searchCloseButtonRH.SetActive(false);
 				for (int i=0;i<4;i++) {
 					searchItemImagesRH[i].SetActive(false);
-					searchItemImagesRH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[200];
+					searchItemImagesRH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[101];
 					searchContainerRH.contents[i] = -1;
 					searchContainerRH.customIndex[i] = -1;
 				}
@@ -1090,7 +1096,7 @@ public class MFDManager : MonoBehaviour  {
 				searchCloseButtonLH.SetActive(false);
 				for (int i=0;i<4;i++) {
 					searchItemImagesLH[i].SetActive(false);
-					searchItemImagesLH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[200];
+					searchItemImagesLH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[101];
 					searchContainerLH.contents[i] = -1;
 					searchContainerLH.customIndex[i] = -1;
 				}

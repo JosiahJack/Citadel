@@ -11,7 +11,6 @@ public class MouseCursor : MonoBehaviour {
 	public bool liveGrenade = false;
 	public string toolTip = "";
 	public Camera mainCamera;
-	public MouseLookScript playerCameraScript;
 	public RectTransform centerMFDPanel;
 	public GameObject inventoryAddHelper;
     public float cursorSize = 24f;
@@ -20,18 +19,18 @@ public class MouseCursor : MonoBehaviour {
     private float offsetX;
     private float offsetY;
 	public bool justDroppedItemInHelper = false;
-	public static Rect drawTexture;
+	public Rect drawTexture;
 	public List<RectTransform> uiRaycastRects;
 	public List<GameObject> uiRaycastRectGOs;
-	public static float cursorXmin;
-	public static float cursorYmin;
-	public static float cursorX;
-	public static float cursorY;
-	public static Vector2 cursorPosition;
+	public float cursorXmin;
+	public float cursorYmin;
+	public float cursorX;
+	public float cursorY;
+	public Vector2 cursorPosition;
 	public float x;
 	public float y;
-	public static float cursorXmax;
-	public static float cursorYmax;
+	public float cursorXmax;
+	public float cursorYmax;
 	public GUIStyle liveGrenadeStyle;
 	public GUIStyle toolTipStyle;
 	public GUIStyle toolTipStyleLH;
@@ -42,15 +41,17 @@ public class MouseCursor : MonoBehaviour {
 	public Texture2D cursorDNTexture;
 	private Texture2D tempTexture;
 	public Texture2D cursorGUI;
-	public WeaponCurrent wepCurrent;
 	public RectTransform energySliderRect;
 	private float halfFactor = 0.5f;
 	private float zero = 0f;
 	private string nullStr = "-1";
 
+	public static MouseCursor a;
+
 	void Awake() {
-		uiCameraCam = uiCamera.GetComponent<Camera>();
-		drawTexture = new Rect((Screen.width*halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize, cursorSize, cursorSize);
+		a = this;
+		a.uiCameraCam = uiCamera.GetComponent<Camera>();
+		a.drawTexture = new Rect((Screen.width*halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize, cursorSize, cursorSize);
 	}
 
 	public void RegisterRaycastRect(GameObject go, RectTransform rectToAdd) {
@@ -59,13 +60,15 @@ public class MouseCursor : MonoBehaviour {
 	}
 
 	void OnGUI () {
+		if (MouseLookScript.a == null) return;
+
         if (offsetCentering) {
             offsetX = cursorSize * halfFactor;
             offsetY = offsetX;
         }
 
 		//Debug.Log("MouseCursor:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
-		if (playerCameraScript.inventoryMode || PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
+		if (MouseLookScript.a.inventoryMode || PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
             // Inventory Mode Cursor
 			drawTexture.Set(Input.mousePosition.x - offsetX,Screen.height - Input.mousePosition.y - offsetY,cursorSize,cursorSize);
         } else {
@@ -82,27 +85,27 @@ public class MouseCursor : MonoBehaviour {
 		y = cursorY;
 		cursorXmax = drawTexture.xMax;
 		cursorYmax = drawTexture.yMax;
-		if (!string.IsNullOrWhiteSpace(toolTip) && toolTip != nullStr && !PauseScript.a.Paused() && (playerCameraScript.inventoryMode || liveGrenade)) {
+		if (!string.IsNullOrWhiteSpace(toolTip) && toolTip != nullStr && !PauseScript.a.Paused() && (MouseLookScript.a.inventoryMode || liveGrenade)) {
 			switch(toolTipType) {
 				case Handedness.LH: GUI.Label(drawTexture,toolTip,toolTipStyleLH); tempTexture = cursorLHTexture; break;
 				case Handedness.RH: GUI.Label(drawTexture,toolTip,toolTipStyleRH); tempTexture = cursorRHTexture; break;
 				default: GUI.Label(drawTexture,toolTip,toolTipStyle); tempTexture = cursorDNTexture; break; // Handedness.Center
 			}
-			if (!playerCameraScript.holdingObject) cursorImage = tempTexture;
+			if (!MouseLookScript.a.holdingObject) cursorImage = tempTexture;
 		} else {
-			if ((PauseScript.a.Paused() && !(PauseScript.a.mainMenu.activeSelf == true)) || GUIState.a.isBlocking && !playerCameraScript.holdingObject) {
+			if ((PauseScript.a.Paused() && !(PauseScript.a.mainMenu.activeSelf == true)) || GUIState.a.isBlocking && !MouseLookScript.a.holdingObject) {
 				cursorImage = cursorGUI;
 			} else {
-				if (playerCameraScript.vmailActive) {
+				if (MouseLookScript.a.vmailActive) {
 					cursorImage = Const.a.useableItemsFrobIcons[108];	// vmail
 				} else {
-					if (playerCameraScript.inCyberSpace) {
-						cursorImage = playerCameraScript.cyberspaceCursor;
+					if (MouseLookScript.a.inCyberSpace) {
+						cursorImage = MouseLookScript.a.cyberspaceCursor;
 					} else {
-						if (playerCameraScript.holdingObject && playerCameraScript.heldObjectIndex >= 0) {
-							cursorImage = Const.a.useableItemsFrobIcons[playerCameraScript.heldObjectIndex];
+						if (MouseLookScript.a.holdingObject && MouseLookScript.a.heldObjectIndex >= 0) {
+							cursorImage = Const.a.useableItemsFrobIcons[MouseLookScript.a.heldObjectIndex];
 						} else {
-							switch(wepCurrent.weaponIndex) {
+							switch(WeaponCurrent.WepInstance.weaponIndex) {
 								case 36:
 									cursorImage = Const.a.useableItemsFrobIcons[102];	// red
 									break;
@@ -165,7 +168,7 @@ public class MouseCursor : MonoBehaviour {
 		if (liveGrenade && !PauseScript.a.Paused()) GUI.Label(drawTexture,Const.a.stringTable[586],liveGrenadeStyle); // Display "live" next to cursor
 	}
 
-	void Update() {
+	void Update() { 
 		cursorPosition = new Vector2(cursorX,cursorY);
 		cursorSize = (24f * (Screen.width/640f)); // This works well, not changing it from Screen.width/640f
 		if (cursorPosition.y > (0.13541f*Screen.height) && cursorPosition.y < (0.70703f*Screen.height) && cursorPosition.x < (0.96925f*Screen.width) && cursorPosition.x > (0.029282f*Screen.width) && !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
@@ -181,7 +184,7 @@ public class MouseCursor : MonoBehaviour {
 
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (cursorPosition.y > (0.13541f*Screen.height) && cursorPosition.y < (0.70703f*Screen.height) && cursorPosition.x < (0.96925f*Screen.width) && cursorPosition.x > (0.029282f*Screen.width)) GUIState.a.isBlocking = false; // in the safe zone!
-			if (playerCameraScript.inventoryMode && playerCameraScript.holdingObject) {
+			if (MouseLookScript.a.inventoryMode && MouseLookScript.a.holdingObject) {
 				// Be sure to pass the camera to the 3rd parameter if using "Screen Space - Camera" on the Canvas, otherwise use "null"
 				if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,uiCameraCam)) {
 					if (!inventoryAddHelper.activeInHierarchy) inventoryAddHelper.SetActive(true);

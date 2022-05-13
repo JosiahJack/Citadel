@@ -1,6 +1,6 @@
 // Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
 
-Shader "Hidden/GGX-DeferredShading" {
+Shader "Hidden/MaxwellGengGGX-DeferredShading" {
 Properties {
     _LightTexture0 ("", any) = "" {}
     _LightTextureB0 ("", 2D) = "" {}
@@ -27,6 +27,7 @@ CGPROGRAM
 #pragma exclude_renderers nomrt
 
 #include "UnityCG.cginc"
+//#include "MyDeferredShading.cginc"
 #include "UnityDeferredLibrary.cginc"
 #include "UnityPBSLighting.cginc"
 #include "UnityStandardUtils.cginc"
@@ -45,7 +46,7 @@ float4 BRDF (float3 diffColor, float3 specColor, float oneMinusReflectivity, flo
     float perceptualRoughness = SmoothnessToPerceptualRoughness (smoothness);
     float3 floatDir = Unity_SafeNormalize (float3(light.dir) + viewDir);
 
-    float nv = dot(normal, viewDir);    // This abs allow to limit artifact
+    float nv = 0.5;//dot(normal, viewDir);    // This abs allow to limit artifact
 
     float nl = saturate(dot(normal, light.dir));
     float nh = saturate(dot(normal, floatDir));

@@ -7,7 +7,6 @@ public class UseableObjectUse : MonoBehaviour {
 	public int ammo = 0;
 	public int ammo2 = 0;
 	private Texture2D tex;
-	private MouseLookScript mlook;
 
 	void Awake() {
 		if (Const.a.difficultyPuzzle == 3) {
@@ -33,19 +32,18 @@ public class UseableObjectUse : MonoBehaviour {
 	public void Use (UseData ud) {
 		if (useableItemIndex < 0) Debug.Log("BUG: Oh crap, a useable has an index less than 0! UseableObjectUse.cs");
 		tex = Const.a.useableItemsFrobIcons[useableItemIndex];
-		if (tex != null) ud.owner.GetComponent<PlayerReferenceManager>().playerCursor.GetComponent<MouseCursor>().cursorImage = tex;  // set cursor to this object
-		mlook = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<MouseLookScript>();
-		mlook.holdingObject = true;
-		mlook.heldObjectIndex = useableItemIndex;
-		mlook.heldObjectCustomIndex = customIndex;
-		mlook.heldObjectAmmo = ammo;
-		mlook.heldObjectAmmo2 = ammo2;
+		if (tex != null) MouseCursor.a.cursorImage = tex;  // Set cursor to this object
+		MouseLookScript.a.holdingObject = true;
+		MouseLookScript.a.heldObjectIndex = useableItemIndex;
+		MouseLookScript.a.heldObjectCustomIndex = customIndex;
+		MouseLookScript.a.heldObjectAmmo = ammo;
+		MouseLookScript.a.heldObjectAmmo2 = ammo2;
 		if (Const.a.InputQuickItemPickup) {
-			mlook.AddItemToInventory(useableItemIndex);
-			mlook.ResetHeldItem();
-			mlook.ResetCursor();
+			MouseLookScript.a.AddItemToInventory(useableItemIndex);
+			MouseLookScript.a.ResetHeldItem();
+			MouseLookScript.a.ResetCursor();
 		} else {
-			mlook.ForceInventoryMode();  // inventory mode is turned on when picking something up
+			MouseLookScript.a.ForceInventoryMode();  // inventory mode is turned on when picking something up
 			Const.sprint(Const.a.useableItemsNameText[useableItemIndex] + Const.a.stringTable[319],ud.owner); // <item_name> picked up.
 		}
 		this.gameObject.SetActive(false); //we've been picked up, quick hide like you are actually in the player's hand

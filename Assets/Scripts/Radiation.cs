@@ -12,14 +12,11 @@ public class Radiation : MonoBehaviour {
 	void OnTriggerEnter (Collider col) {
 		if (!isEnabled) return;
 		if (col.gameObject.CompareTag("Player")) {
-			PlayerHealth ph = col.gameObject.GetComponent<PlayerHealth>();
-			if (ph != null) {
-				if (ph.hm.health > 0f) {
-					numPlayers++;
-					ph.radiationArea = true;
-					ph.GiveRadiation(radiationAmount);
-					radFinished = PauseScript.a.relativeTime + (intervalTime*Random.Range(1f,1.5f));
-				}
+			if (PlayerHealth.a.hm.health > 0f) {
+				numPlayers++;
+				PlayerHealth.a.radiationArea = true;
+				PlayerHealth.a.GiveRadiation(radiationAmount);
+				radFinished = PauseScript.a.relativeTime + (intervalTime*Random.Range(1f,1.5f));
 			}
 		}
 	}
@@ -27,13 +24,10 @@ public class Radiation : MonoBehaviour {
 	void  OnTriggerStay (Collider col) {
 		if (!isEnabled) return;
 		if (col.gameObject.CompareTag("Player")) {
-			PlayerHealth ph = col.gameObject.GetComponent<PlayerHealth>();
-			if (ph != null) {
-				if (ph.hm.health > 0f && (radFinished < PauseScript.a.relativeTime)) {
-					ph.radiationArea = true;
-					ph.GiveRadiation(radiationAmount);
-					radFinished = PauseScript.a.relativeTime + (intervalTime*Random.Range(1f,1.5f));
-				}
+			if (PlayerHealth.a.hm.health > 0f && (radFinished < PauseScript.a.relativeTime)) {
+				PlayerHealth.a.radiationArea = true;
+				PlayerHealth.a.GiveRadiation(radiationAmount);
+				radFinished = PauseScript.a.relativeTime + (intervalTime*Random.Range(1f,1.5f));
 			}
 		}
 	}
@@ -41,13 +35,10 @@ public class Radiation : MonoBehaviour {
 	void OnTriggerExit (Collider col) {
 		if (!isEnabled) return;
 		if (col.gameObject.CompareTag("Player")) { 
-			PlayerHealth ph = col.gameObject.GetComponent<PlayerHealth>();
-			if (ph != null) {
-				if (ph.hm.health > 0f) {
-					ph.radiationArea = false;
-					numPlayers--;
-					if (numPlayers == 0) radFinished = PauseScript.a.relativeTime;  // reset so re-triggering is instant
-				}
+			if (PlayerHealth.a.hm.health > 0f) {
+				PlayerHealth.a.radiationArea = false;
+				numPlayers--;
+				if (numPlayers == 0) radFinished = PauseScript.a.relativeTime;  // reset so re-triggering is instant
 			}
 		}
 	}

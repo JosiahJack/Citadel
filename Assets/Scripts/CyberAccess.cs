@@ -20,16 +20,6 @@ public class CyberAccess : MonoBehaviour {
 		}
 
 		Const.sprint(Const.a.stringTable[441]); // Entering Cyberspace!
-		PlayerReferenceManager prm = ud.owner.GetComponent<PlayerReferenceManager>();
-		if (prm != null) {
-			MouseLookScript mls = prm.playerCapsuleMainCamera.GetComponent<MouseLookScript>();
-			if (mls != null) {
-				mls.EnterCyberspace(entryPosition);
-			} else {
-				Debug.Log("BUG: Missing MouseLookScript on owner's prm for Use ud passed to CyberAccess!");
-			}
-		} else {
-			Debug.Log("BUG: Missing PlayerReferenceManager on owner for Use ud passed to CyberAccess!");
-		}
+		MouseLookScript.a.EnterCyberspace(entryPosition);
 	}
 }

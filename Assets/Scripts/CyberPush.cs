@@ -8,18 +8,17 @@ public class CyberPush : MonoBehaviour {
 	private Rigidbody otherRbody;
 	private Vector3 tempVec;
 
-	void OnTriggerStay(Collider other) {
+	void OnTriggerStay(Collider col) {
 		if (Const.a.difficultyCyber < 1) return;
 
-		if (other.gameObject.CompareTag("Player")) {
-			//Debug.Log("CyberPush.cs-ing player!");
-			otherRbody = other.gameObject.GetComponent<Rigidbody>();
-			if (otherRbody != null) {
-				otherRbody.AddForce(direction * force * Time.deltaTime, ForceMode.Acceleration);
-				//Music.a.PlayTrack(LevelManager.a.currentLevel,Music.TrackType.Cybertube,Music.MusicType.Override);
-				Music.a.NotifyCyberTube();
-			} else {
-				Debug.Log("Failed to get PlayerManager on collision with player in CyberPush.cs");
+		if (col.gameObject.CompareTag("Player")) {
+			PlayerMovement pm = col.gameObject.GetComponent<PlayerMovement>();
+			if (pm != null) {
+				otherRbody = col.gameObject.GetComponent<Rigidbody>();
+				if (otherRbody != null) {
+					otherRbody.AddForce(direction * force * Time.deltaTime, ForceMode.Acceleration);
+					Music.a.NotifyCyberTube();
+				}
 			}
 		}
 	}

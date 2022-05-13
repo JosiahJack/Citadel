@@ -21,7 +21,6 @@ public class HardwareButton : MonoBehaviour {
 	public GameObject playerCamera;
 	public GameObject gunCamera;
 	public Light headlight;
-	public PlayerEnergy pe;
 	public EmailContentsButtonsManager ecbm;
 	public AudioClip beepSFX;
 	public GameObject ShieldActivateFX;
@@ -49,7 +48,7 @@ public class HardwareButton : MonoBehaviour {
 	void Awake () {
 		SFX = GetComponent<AudioSource>();
 		infraredLight.enabled = false;
-		playerCamera.GetComponent<Grayscale>().enabled = false;
+		//playerCamera.GetComponent<Grayscale>().enabled = false;
 		gunCamera.GetComponent<Grayscale>().enabled = false;
 		sensaroundCenterCamera.GetComponent<Grayscale>().enabled = false;
 		sensaroundLHCamera.GetComponent<Grayscale>().enabled = false;
@@ -94,7 +93,7 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void BioClick() {
-		if (Inventory.a.hardwareVersionSetting[6] == 0 && pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
+		if (Inventory.a.hardwareVersionSetting[6] == 0 && PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.WepInstance.owner); return; }
 		if (Inventory.a.hardwareIsActive[6]) {
 			SFX.PlayOneShot (SFXClipDeactivate[0]);
 			bioMonitorContainer.SetActive(false);
@@ -146,7 +145,7 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void SensaroundClick() {
-		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
+		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.WepInstance.owner); return; }
 
 		if (Inventory.a.hardwareIsActive[3]) {
 			SFX.PlayOneShot(SFXClipDeactivate[1]);
@@ -165,7 +164,7 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void ShieldClick() {
-		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
+		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.WepInstance.owner); return; }
 		if (Inventory.a.hardwareIsActive[5]) {
 			SFX.PlayOneShot (SFXClipDeactivate[3]);
 			ShieldDeactivateFX.SetActive(true);
@@ -188,7 +187,7 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void LanternClick() {
-		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
+		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.WepInstance.owner); return; }
 		if (Inventory.a.hardwareIsActive[7]) {
 			SFX.PlayOneShot (SFXClipDeactivate[2]);
 		} else {
@@ -220,7 +219,7 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void InfraredClick() {
-		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
+		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.WepInstance.owner); return; }
 		if (Inventory.a.hardwareIsActive[11]) {
 			SFX.PlayOneShot (SFXClipDeactivate[4]);
 		} else {
@@ -230,14 +229,14 @@ public class HardwareButton : MonoBehaviour {
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[11], Inventory.a.hardwareVersionSetting[11],4);
 		if (Inventory.a.hardwareIsActive[11]) {
 			infraredLight.enabled = true;
-			playerCamera.GetComponent<Grayscale>().enabled = true;
+			//playerCamera.GetComponent<Grayscale>().enabled = true;
 			gunCamera.GetComponent<Grayscale>().enabled = true;
 			sensaroundCenterCamera.GetComponent<Grayscale>().enabled = true;
 			sensaroundLHCamera.GetComponent<Grayscale>().enabled = true;
 			sensaroundRHCamera.GetComponent<Grayscale>().enabled = true;
 		} else {
 			infraredLight.enabled = false;
-			playerCamera.GetComponent<Grayscale>().enabled = false;
+			//playerCamera.GetComponent<Grayscale>().enabled = false;
 			gunCamera.GetComponent<Grayscale>().enabled = false;
 			sensaroundCenterCamera.GetComponent<Grayscale>().enabled = false;
 			sensaroundLHCamera.GetComponent<Grayscale>().enabled = false;
@@ -250,7 +249,7 @@ public class HardwareButton : MonoBehaviour {
 		Inventory.a.hardwareIsActive[11] = false;
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[11], Inventory.a.hardwareVersionSetting[11],4);
 		infraredLight.enabled = false;
-		playerCamera.GetComponent<Grayscale>().enabled = false;
+		//playerCamera.GetComponent<Grayscale>().enabled = false;
 		gunCamera.GetComponent<Grayscale>().enabled = false;
 	}
 
@@ -261,7 +260,7 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void BoosterClick() {
-		if (Inventory.a.hardwareVersionSetting[6] == 1 && pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
+		if (Inventory.a.hardwareVersionSetting[6] == 1 && PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.WepInstance.owner); return; }
 		if (Inventory.a.hardwareIsActive[9]) {
 			SFX.PlayOneShot (SFXClipDeactivate[6]);
 		} else {
@@ -278,7 +277,7 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void JumpJetsClick() {
-		if (pe.energy <=0) { Const.sprint(Const.a.stringTable[314],pe.wepCur.owner); return; }
+		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.WepInstance.owner); return; }
 		if (Inventory.a.hardwareIsActive[10]) {
 			SFX.PlayOneShot (SFXClipDeactivate[7]);
 		} else {

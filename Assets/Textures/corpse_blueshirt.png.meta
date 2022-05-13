@@ -32,8 +32,8 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 0
     wrapV: 0
     wrapW: 0
@@ -64,8 +64,8 @@ TextureImporter:
     maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 3
-    compressionQuality: 10
+    textureCompression: 2
+    compressionQuality: 88
     crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0
@@ -76,8 +76,8 @@ TextureImporter:
     maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 3
-    compressionQuality: 10
+    textureCompression: 2
+    compressionQuality: 88
     crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0

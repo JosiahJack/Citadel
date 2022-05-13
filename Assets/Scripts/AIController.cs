@@ -34,14 +34,14 @@ public class AIController : MonoBehaviour {
 	/*[DTValidator.Optional] */public GameObject sleepingCables;
 	/*[DTValidator.Optional] */public RectTransform npcAutomapOverlay;
 	/*[DTValidator.Optional] */public Image npcAutomapOverlayImage;
-	public Const.aiState currentState; // save (referenced by int index 0 thru 10)
-	public Const.npcType npcType;
-    public Const.AttackType attack1Type = Const.AttackType.Melee;
-    public Const.AttackType attack2Type = Const.AttackType.Projectile;
-    public Const.AttackType attack3Type = Const.AttackType.Projectile;
-	public Const.PoolType attack1ProjectileLaunchedType = Const.PoolType.None;
-	public Const.PoolType attack2ProjectileLaunchedType = Const.PoolType.None;
-	public Const.PoolType attack3ProjectileLaunchedType = Const.PoolType.None;
+	public AIState currentState; // save (referenced by int index 0 thru 10)
+	public NPCType npcType;
+    public AttackType attack1Type = AttackType.Melee;
+    public AttackType attack2Type = AttackType.Projectile;
+    public AttackType attack3Type = AttackType.Projectile;
+	public PoolType attack1ProjectileLaunchedType = PoolType.None;
+	public PoolType attack2ProjectileLaunchedType = PoolType.None;
+	public PoolType attack3ProjectileLaunchedType = PoolType.None;
 	public bool walkPathOnStart = false;
     public bool dontLoopWaypoints = false;
 	public bool visitWaypointsRandomly = false;
@@ -114,7 +114,6 @@ public class AIController : MonoBehaviour {
 	[HideInInspector] public float wanderFinished; // save
 	private float dotResult = -1f;
 	private Vector3 infrontVec;
-	private PlayerMovement pm;
 	[HideInInspector] public bool startInitialized = false;
 	private HealthManager enemyHM;
 	private float stopDistance = 1.28f;
@@ -129,8 +128,8 @@ public class AIController : MonoBehaviour {
 		rbody.isKinematic = false;
 		if (index < 29 && index >= 0) {
 			if (Const.a.moveTypeForNPC.Length > 1) {
-				if (Const.a.moveTypeForNPC[index] == Const.aiMoveType.Fly ||
-				    Const.a.moveTypeForNPC[index] == Const.aiMoveType.Cyber) rbody.useGravity = false;
+				if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly ||
+				    Const.a.moveTypeForNPC[index] == AIMoveType.Cyber) rbody.useGravity = false;
 				else rbody.useGravity = true;
 			} else { rbody.useGravity = true; Debug.Log("Const.a.moveTypeForNPC had no length!"); }
 		} else { rbody.useGravity = true; Debug.Log("Index was out of range with value of " + index.ToString() + " on " + gameObject.name);}
@@ -151,7 +150,7 @@ public class AIController : MonoBehaviour {
 				}
 			}
 		}
-        currentState = Const.aiState.Idle;
+        currentState = AIState.Idle;
 		currentWaypoint = 0;
 		enemy = null;
 		enemyHM = null;
@@ -192,13 +191,13 @@ public class AIController : MonoBehaviour {
 		if (SFX != null) SFX.playOnAwake = false;
 		if (walkWaypoints.Length > 0 && walkWaypoints[currentWaypoint] != null && walkPathOnStart && !asleep) {
             currentDestination = walkWaypoints[currentWaypoint].transform.position;
-            currentState = Const.aiState.Walk; // If waypoints are set, start walking them from the get go
+            currentState = AIState.Walk; // If waypoints are set, start walking them from the get go
 		} else {
-            currentState = Const.aiState.Idle; // No waypoints, stay put
+            currentState = AIState.Idle; // No waypoints, stay put
         }
 		if (wandering) {
-			currentState = Const.aiState.Walk;
-			if (asleep) currentState = Const.aiState.Idle;
+			currentState = AIState.Walk;
+			if (asleep) currentState = AIState.Idle;
 		}
 		tickFinished = PauseScript.a.relativeTime + Const.a.aiTickTime + Random.value;
 		raycastingTickFinished = PauseScript.a.relativeTime + Const.a.aiTickTime + Random.value;
@@ -206,7 +205,7 @@ public class AIController : MonoBehaviour {
 		idealTransformForward = sightPoint.transform.forward;
 		deathBurstDone = false;
 		searchPath = new NavMeshPath();
-		if (Const.a.moveTypeForNPC[index] != Const.aiMoveType.Cyber) {
+		if (Const.a.moveTypeForNPC[index] != AIMoveType.Cyber) {
 			targetID = Const.GetTargetID(index);
 		} else {
 			targetID = Const.GetCyberTargetID(index);
@@ -214,14 +213,14 @@ public class AIController : MonoBehaviour {
 		startInitialized = true;
 
 		if (npcAutomapOverlay == null && !healthManager.actAsCorpseOnly) {
-			Const.PoolType pt = Const.PoolType.AutomapBotOverlays;
+			PoolType pt = PoolType.AutomapBotOverlays;
 			switch (npcType) {
-				case Const.npcType.Mutant: pt = Const.PoolType.AutomapMutantOverlays; break;
-				case Const.npcType.Supermutant: pt = Const.PoolType.AutomapMutantOverlays; break;
-				case Const.npcType.Robot: pt = Const.PoolType.AutomapBotOverlays; break;
-				case Const.npcType.Cyborg: pt = Const.PoolType.AutomapCyborgOverlays; break;
-				case Const.npcType.Supercyborg: pt = Const.PoolType.AutomapCyborgOverlays; break;
-				case Const.npcType.MutantCyborg: pt = Const.PoolType.AutomapCyborgOverlays; break;
+				case NPCType.Mutant: pt = PoolType.AutomapMutantOverlays; break;
+				case NPCType.Supermutant: pt = PoolType.AutomapMutantOverlays; break;
+				case NPCType.Robot: pt = PoolType.AutomapBotOverlays; break;
+				case NPCType.Cyborg: pt = PoolType.AutomapCyborgOverlays; break;
+				case NPCType.Supercyborg: pt = PoolType.AutomapCyborgOverlays; break;
+				case NPCType.MutantCyborg: pt = PoolType.AutomapCyborgOverlays; break;
 			}
 
 			GameObject overlay = Const.a.GetObjectFromPool(pt);
@@ -248,14 +247,14 @@ public class AIController : MonoBehaviour {
 
 	void OnEnable() {
 		if (npcAutomapOverlay == null) {
-			Const.PoolType pt = Const.PoolType.AutomapBotOverlays;
+			PoolType pt = PoolType.AutomapBotOverlays;
 			switch (npcType) {
-				case Const.npcType.Mutant: pt = Const.PoolType.AutomapMutantOverlays; break;
-				case Const.npcType.Supermutant: pt = Const.PoolType.AutomapMutantOverlays; break;
-				case Const.npcType.Robot: pt = Const.PoolType.AutomapBotOverlays; break;
-				case Const.npcType.Cyborg: pt = Const.PoolType.AutomapCyborgOverlays; break;
-				case Const.npcType.Supercyborg: pt = Const.PoolType.AutomapCyborgOverlays; break;
-				case Const.npcType.MutantCyborg: pt = Const.PoolType.AutomapCyborgOverlays; break;
+				case NPCType.Mutant: pt = PoolType.AutomapMutantOverlays; break;
+				case NPCType.Supermutant: pt = PoolType.AutomapMutantOverlays; break;
+				case NPCType.Robot: pt = PoolType.AutomapBotOverlays; break;
+				case NPCType.Cyborg: pt = PoolType.AutomapCyborgOverlays; break;
+				case NPCType.Supercyborg: pt = PoolType.AutomapCyborgOverlays; break;
+				case NPCType.MutantCyborg: pt = PoolType.AutomapCyborgOverlays; break;
 			}
 
 			GameObject overlay = Const.a.GetObjectFromPool(pt);
@@ -282,16 +281,16 @@ public class AIController : MonoBehaviour {
 				// Check if enemy health drops to 0
 				if (enemyHM == null) enemyHM = enemy.GetComponent<HealthManager>();
 				if (enemyHM != null) {
-					if (Const.a.moveTypeForNPC[index] == Const.aiMoveType.Cyber) {
+					if (Const.a.moveTypeForNPC[index] == AIMoveType.Cyber) {
 						if (enemyHM.cyberHealth <= 0) {
-							currentState = Const.aiState.Idle;
+							currentState = AIState.Idle;
 							enemy = null;
 							enemyHM = null;
 						}
 					} else {
 						if (enemyHM.health <= 0) {
 							wandering = true; // enemy is dead, let's wander around aimlessly now
-							currentState = Const.aiState.Walk;
+							currentState = AIState.Walk;
 							enemy = null;
 							enemyHM = null;
 						}
@@ -315,13 +314,13 @@ public class AIController : MonoBehaviour {
 	void FixedUpdate() {
 		if (PauseScript.a.Paused() || PauseScript.a.MenuActive() || !startInitialized) return; // Don't do any checks or anything else...we're paused!
 
-		if (!rbody.useGravity && Const.a.moveTypeForNPC[index] != Const.aiMoveType.Cyber && Const.a.moveTypeForNPC[index] != Const.aiMoveType.Fly) rbody.useGravity = true; //Debug.Log(gameObject.name + " has rbody.useGravity set to false!");
+		if (!rbody.useGravity && Const.a.moveTypeForNPC[index] != AIMoveType.Cyber && Const.a.moveTypeForNPC[index] != AIMoveType.Fly) rbody.useGravity = true; //Debug.Log(gameObject.name + " has rbody.useGravity set to false!");
 
         // Only think every tick seconds to save on CPU and prevent race conditions
         if (tickFinished < PauseScript.a.relativeTime) {
 			tickFinished = PauseScript.a.relativeTime + Const.a.aiTickTime;
 			Think();
-			if (npcAutomapOverlay != null && Const.a.moveTypeForNPC[index] != Const.aiMoveType.Cyber && healthManager.health > 0 && Inventory.a.hasHardware[1] && Inventory.a.hardwareVersion[1] > 1) {
+			if (npcAutomapOverlay != null && Const.a.moveTypeForNPC[index] != AIMoveType.Cyber && healthManager.health > 0 && Inventory.a.hasHardware[1] && Inventory.a.hardwareVersion[1] > 1) {
 				// 34.16488, -45.08, 0.4855735
 				// x = ((0.6384575295) * 1008f) + 8;
 				// x = 651
@@ -337,10 +336,10 @@ public class AIController : MonoBehaviour {
 		}
 
         // Rotation and Special movement that must be done every FixedUpdate
-        if (currentState != Const.aiState.Dead) {
-            if (currentState != Const.aiState.Idle) {
+        if (currentState != AIState.Dead) {
+            if (currentState != AIState.Idle) {
                 idealTransformForward = currentDestination - sightPoint.transform.position;
-                if (Const.a.moveTypeForNPC[index] != Const.aiMoveType.Cyber) idealTransformForward.y = 0;
+                if (Const.a.moveTypeForNPC[index] != AIMoveType.Cyber) idealTransformForward.y = 0;
 				idealTransformForward = Vector3.Normalize(idealTransformForward);
 				if (idealTransformForward.sqrMagnitude > Mathf.Epsilon) {
 					AI_Face(currentDestination);
@@ -355,42 +354,42 @@ public class AIController : MonoBehaviour {
 			deathBurstDone = true;
 		}
 
-		if (Const.a.moveTypeForNPC[index] != Const.aiMoveType.Cyber ||  npcType != Const.npcType.Cyber) {
+		if (Const.a.moveTypeForNPC[index] != AIMoveType.Cyber ||  npcType != NPCType.Cyber) {
 			if (healthManager.health <= 0) {
 				// If we haven't gone into dying and we aren't dead, going into dying
 				if (!ai_dying && !ai_dead) {
 					ai_dying = true; //no going back
-					currentState = Const.aiState.Dying; //start to collapse in a heap, melt, explode, etc.
+					currentState = AIState.Dying; //start to collapse in a heap, melt, explode, etc.
 				}
 			}
 		} else {
-			if (healthManager.cyberHealth <= 0 && npcType == Const.npcType.Cyber) {
+			if (healthManager.cyberHealth <= 0 && npcType == NPCType.Cyber) {
 				// If we haven't gone into dying and we aren't dead, going into dying
 				if (!ai_dying && !ai_dead) {
 					ai_dying = true; //no going back
-					currentState = Const.aiState.Dying; //start to collapse in a heap, melt, explode, etc.
+					currentState = AIState.Dying; //start to collapse in a heap, melt, explode, etc.
 					Dying();
 				}
 			}
 		}
 
 		switch (currentState) {
-			case Const.aiState.Idle: 			Idle(); 		break;
-			case Const.aiState.Walk:	 		Walk(); 		break;
-			case Const.aiState.Run: 			Run(); 			break;
-			case Const.aiState.Attack1: 		Attack1(); 		break;
-			case Const.aiState.Attack2: 		Attack2(); 		break;
-			case Const.aiState.Attack3: 		Attack3(); 		break;
-			case Const.aiState.Pain: 			Pain();			break;
-			case Const.aiState.Dying: 		    Dying(); 		break;
-			case Const.aiState.Dead: 			Dead(); 		break;
-			default: 							Idle(); 		break;
+			case AIState.Idle: 	  Idle(); 	 break;
+			case AIState.Walk:	  Walk(); 	 break;
+			case AIState.Run: 	  Run(); 	 break;
+			case AIState.Attack1: Attack1(); break;
+			case AIState.Attack2: Attack2(); break;
+			case AIState.Attack3: Attack3(); break;
+			case AIState.Pain: 	  Pain();	 break;
+			case AIState.Dying:   Dying(); 	 break;
+			case AIState.Dead: 	  Dead(); 	 break;
+			default: 			  Idle(); 	 break;
 		}
 
-		if (currentState == Const.aiState.Dead || currentState == Const.aiState.Dying) return; // Don't do any checks, we're dead.
+		if (currentState == AIState.Dead || currentState == AIState.Dying) return; // Don't do any checks, we're dead.
 		if (asleep) return; // Don't check for an enemy, we are sleeping! shh!!
 
-		if (Const.a.moveTypeForNPC[index] == Const.aiMoveType.Fly && tranquilizeFinished < PauseScript.a.relativeTime) {
+		if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly && tranquilizeFinished < PauseScript.a.relativeTime) {
 			float distUp = 0;
 			float distDn = 0;
 			Vector3 floorPoint = new Vector3();
@@ -424,7 +423,7 @@ public class AIController : MonoBehaviour {
 		if (asleep) return false;
 
 		if (goIntoPain && timeTillPainFinished < PauseScript.a.relativeTime) {
-			if (Const.a.moveTypeForNPC[index] != Const.aiMoveType.Cyber) currentState = Const.aiState.Pain;
+			if (Const.a.moveTypeForNPC[index] != AIMoveType.Cyber) currentState = AIState.Pain;
 			if (attacker != null) {
 				if (timeTillEnemyChangeFinished < PauseScript.a.relativeTime) {
 					timeTillEnemyChangeFinished = PauseScript.a.relativeTime + Const.a.timeToChangeEnemyForNPC[index];
@@ -444,7 +443,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	void Idle() {
-		if (enemy != null) { currentState = Const.aiState.Run; return; }
+		if (enemy != null) { currentState = AIState.Run; return; }
 
 		if (idleTime < PauseScript.a.relativeTime && SFXIdle != null) {
 			float rand = UnityEngine.Random.Range(0,1f); // for calculating 50% chance of idle
@@ -460,8 +459,9 @@ public class AIController : MonoBehaviour {
 	void Walk() {
         if (CheckPain()) return; // Go into pain if we just got hurt, data is sent by the HealthManager
 		if (asleep) return;
-        if (inSight || enemy != null) { currentState = Const.aiState.Run; return; }
-        if (Const.a.moveTypeForNPC[index] == Const.aiMoveType.None) return;
+        if (inSight || enemy != null) { currentState = AIState.Run; return; }
+        if (actAsTurret) { currentState = AIState.Idle; return; }
+        if (Const.a.moveTypeForNPC[index] == AIMoveType.None) return;
 
 		if (wandering) {
 			if (wanderFinished < PauseScript.a.relativeTime || (Vector3.Distance(transform.position,currentDestination) < 0.64f)) {
@@ -502,12 +502,12 @@ public class AIController : MonoBehaviour {
                 currentWaypoint++;
 				if ((currentWaypoint >= walkWaypoints.Length) || (walkWaypoints[currentWaypoint] == null)) {
                     if (dontLoopWaypoints) {
-                        currentState = Const.aiState.Idle; // Reached end of waypoints, just stop.
+                        currentState = AIState.Idle; // Reached end of waypoints, just stop.
                         return;
                     } else {
                         currentWaypoint = 0; // Wrap around.
                         if (walkWaypoints[currentWaypoint] == null) {
-                            currentState = Const.aiState.Idle;
+                            currentState = AIState.Idle;
                             return; // Stop walking, out of waypoints.
                         }
                     }
@@ -522,25 +522,22 @@ public class AIController : MonoBehaviour {
 	void Run() {
 		if (CheckPain()) return; // Go into pain if we just got hurt, data is sent by the HealthManager
 		if (asleep) return;
-		if (enemy == null) { currentState = Const.aiState.Idle; return; }
+		if (enemy == null) { currentState = AIState.Idle; return; }
 
         if (inSight) {
 			if (enemy != null) {
 				targettingPosition = enemy.transform.position;
 				currentDestination = enemy.transform.position;
-				if (Const.a.moveTypeForNPC[index] == Const.aiMoveType.Cyber) {
-					pm = enemy.GetComponent<PlayerMovement>();
-					if (pm != null) targettingPosition = pm.cameraObject.transform.position;
-				}
+				if (Const.a.moveTypeForNPC[index] == AIMoveType.Cyber) targettingPosition = PlayerMovement.a.cameraObject.transform.position;
 			}
             huntFinished = PauseScript.a.relativeTime + Const.a.huntTimeForNPC[index];
 			if (Const.a.difficultyCombat == 1) huntFinished = PauseScript.a.relativeTime + (Const.a.huntTimeForNPC[index] * 0.75f); // more forgetfull on 1
 			if (Const.a.difficultyCombat >= 3) huntFinished = PauseScript.a.relativeTime + (Const.a.huntTimeForNPC[index] * 2.00f); // better memory on hardest Combat difficulty
             if (rangeToEnemy < (Const.a.rangeForNPC[index] * Const.a.rangeForNPC[index])) {
-                if ((attack1Type != Const.AttackType.None) && infront && (randomWaitForNextAttack1Finished < PauseScript.a.relativeTime) && tranquilizeFinished < PauseScript.a.relativeTime) {
+                if ((attack1Type != AttackType.None) && infront && (randomWaitForNextAttack1Finished < PauseScript.a.relativeTime) && tranquilizeFinished < PauseScript.a.relativeTime) {
                     attackFinished = PauseScript.a.relativeTime + Const.a.timeBetweenAttack1ForNPC[index] + Const.a.timeToActualAttack1ForNPC[index];
 					gracePeriodFinished = PauseScript.a.relativeTime + Const.a.timeToActualAttack1ForNPC[index];
-                    currentState = Const.aiState.Attack1;
+                    currentState = AIState.Attack1;
 					if (Const.a.preactivateMeleeCollidersForNPC[index]) {
 						for (int i = 0; i < meleeDamageColliders.Length; i++) {
 							if (meleeDamageColliders[i] != null) meleeDamageColliders[i].SetActive(true);
@@ -554,26 +551,26 @@ public class AIController : MonoBehaviour {
                 }
             }
 			if (rangeToEnemy < (Const.a.rangeForNPC2[index] * Const.a.rangeForNPC2[index])) {
-				if ((attack2Type != Const.AttackType.None) && infront && inProjFOV && (randomWaitForNextAttack2Finished < PauseScript.a.relativeTime) && tranquilizeFinished < PauseScript.a.relativeTime) {
+				if ((attack2Type != AttackType.None) && infront && inProjFOV && (randomWaitForNextAttack2Finished < PauseScript.a.relativeTime) && tranquilizeFinished < PauseScript.a.relativeTime) {
 					shotFired = false;
 					attackFinished = PauseScript.a.relativeTime + Const.a.timeBetweenAttack2ForNPC[index] + Const.a.timeToActualAttack2ForNPC[index];
 					gracePeriodFinished = PauseScript.a.relativeTime + Const.a.timeToActualAttack2ForNPC[index];
-					currentState = Const.aiState.Attack2;
+					currentState = AIState.Attack2;
 					return;
 				}
 			}
 			if (rangeToEnemy < (Const.a.rangeForNPC3[index] * Const.a.rangeForNPC3[index])) {
-				if ((attack3Type != Const.AttackType.None) && infront && inProjFOV && (randomWaitForNextAttack3Finished < PauseScript.a.relativeTime) && tranquilizeFinished < PauseScript.a.relativeTime) {
+				if ((attack3Type != AttackType.None) && infront && inProjFOV && (randomWaitForNextAttack3Finished < PauseScript.a.relativeTime) && tranquilizeFinished < PauseScript.a.relativeTime) {
 					shotFired = false;
 					attackFinished = PauseScript.a.relativeTime + Const.a.timeBetweenAttack3ForNPC[index] + Const.a.timeToActualAttack3ForNPC[index];
 					gracePeriodFinished = PauseScript.a.relativeTime + Const.a.timeToActualAttack3ForNPC[index];
-					currentState = Const.aiState.Attack3;
+					currentState = AIState.Attack3;
 					return;
 				}
 			}
 
 			// Enemy still far away and turned to within angle to move, then move
-			if ((Const.a.moveTypeForNPC[index] != Const.aiMoveType.None) && (rangeToEnemy > (stopDistance * stopDistance)) && tranquilizeFinished < PauseScript.a.relativeTime) {
+			if ((Const.a.moveTypeForNPC[index] != AIMoveType.None) && (rangeToEnemy > (stopDistance * stopDistance)) && tranquilizeFinished < PauseScript.a.relativeTime) {
 				if (WithinAngleToTarget()) {
 					if (Const.a.hopsOnMoveForNPC[index]) {
 						// Move it move it.
@@ -605,7 +602,7 @@ public class AIController : MonoBehaviour {
 				enemyHM = null;
 				wandering = true; // Magically look like we are still searching maybe?  Sometimes!
 				wanderFinished = PauseScript.a.relativeTime - 1f;
-                currentState = Const.aiState.Walk;
+                currentState = AIState.Walk;
                 return;
             }
 		}
@@ -619,8 +616,8 @@ public class AIController : MonoBehaviour {
 		}
 
 		// The destination is still far enough away and within angle to move, then move.
-		// if ((Const.a.moveTypeForNPC[index] != Const.aiMoveType.None) && (Vector3.Distance(sightPoint.transform.position, currentDestination) > stopDistance)) {
-		if ((Const.a.moveTypeForNPC[index] != Const.aiMoveType.None) && ((sightPoint.transform.position - currentDestination).sqrMagnitude > (stopDistance * stopDistance))) {
+		// if ((Const.a.moveTypeForNPC[index] != AIMoveType.None) && (Vector3.Distance(sightPoint.transform.position, currentDestination) > stopDistance)) {
+		if ((Const.a.moveTypeForNPC[index] != AIMoveType.None) && ((sightPoint.transform.position - currentDestination).sqrMagnitude > (stopDistance * stopDistance))) {
 			if (WithinAngleToTarget() && !actAsTurret && Const.a.runSpeedForNPC[index] > 0) rbody.velocity = (sightPoint.transform.forward * Const.a.runSpeedForNPC[index]);
 		}
     }
@@ -666,7 +663,7 @@ public class AIController : MonoBehaviour {
 		}
 
 		goIntoPain = false; // Prevent going into pain immediately after an attack.
-		currentState = Const.aiState.Run;
+		currentState = AIState.Run;
 		return; // Done with attack.
 	}
 
@@ -725,19 +722,19 @@ public class AIController : MonoBehaviour {
 	}
 
     GameObject GetImpactType(HealthManager hm) {
-        if (hm == null) return Const.a.GetObjectFromPool(Const.PoolType.SparksSmall);
+        if (hm == null) return Const.a.GetObjectFromPool(PoolType.SparksSmall);
         switch (hm.bloodType) {
-            case HealthManager.BloodType.None: return Const.a.GetObjectFromPool(Const.PoolType.SparksSmall);
-            case HealthManager.BloodType.Red: return Const.a.GetObjectFromPool(Const.PoolType.BloodSpurtSmall);
-            case HealthManager.BloodType.Yellow: return Const.a.GetObjectFromPool(Const.PoolType.BloodSpurtSmallYellow);
-            case HealthManager.BloodType.Green: return Const.a.GetObjectFromPool(Const.PoolType.BloodSpurtSmallGreen);
-            case HealthManager.BloodType.Robot: return Const.a.GetObjectFromPool(Const.PoolType.SparksSmallBlue);
-			case HealthManager.BloodType.Leaf: return Const.a.GetObjectFromPool(Const.PoolType.LeafBurst);
-			case HealthManager.BloodType.Mutation: return Const.a.GetObjectFromPool(Const.PoolType.MutationBurst);
-			case HealthManager.BloodType.GrayMutation: return Const.a.GetObjectFromPool(Const.PoolType.GraytationBurst);
+            case HealthManager.BloodType.None: return Const.a.GetObjectFromPool(PoolType.SparksSmall);
+            case HealthManager.BloodType.Red: return Const.a.GetObjectFromPool(PoolType.BloodSpurtSmall);
+            case HealthManager.BloodType.Yellow: return Const.a.GetObjectFromPool(PoolType.BloodSpurtSmallYellow);
+            case HealthManager.BloodType.Green: return Const.a.GetObjectFromPool(PoolType.BloodSpurtSmallGreen);
+            case HealthManager.BloodType.Robot: return Const.a.GetObjectFromPool(PoolType.SparksSmallBlue);
+			case HealthManager.BloodType.Leaf: return Const.a.GetObjectFromPool(PoolType.LeafBurst);
+			case HealthManager.BloodType.Mutation: return Const.a.GetObjectFromPool(PoolType.MutationBurst);
+			case HealthManager.BloodType.GrayMutation: return Const.a.GetObjectFromPool(PoolType.GraytationBurst);
         }
 
-        return Const.a.GetObjectFromPool(Const.PoolType.SparksSmall);
+        return Const.a.GetObjectFromPool(PoolType.SparksSmall);
     }
 
     void CreateStandardImpactEffects(bool onlyBloodIfHitHasHM) {
@@ -752,7 +749,7 @@ public class AIController : MonoBehaviour {
         } else {
             // Allow for skipping adding sparks after special override impact effects per attack functions below
             if (!onlyBloodIfHitHasHM) {
-                GameObject impact = Const.a.GetObjectFromPool(Const.PoolType.SparksSmall); //Didn't hit an object with a HealthManager script, use sparks
+                GameObject impact = Const.a.GetObjectFromPool(PoolType.SparksSmall); //Didn't hit an object with a HealthManager script, use sparks
                 if (impact != null) {
                     impact.transform.position = tempHit.point + tempHit.normal;
                     impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
@@ -791,7 +788,7 @@ public class AIController : MonoBehaviour {
         return false;
     }
 
-	// Used for attack type of Const.AttackType.Projectile.
+	// Used for attack type of AttackType.Projectile.
 	// Does a raycast and then applies attack instantly.
 	// Also turns on laser effect if used.
 	// attackNum corresponds to the attack used so correct lookup tables can be used.
@@ -829,7 +826,7 @@ public class AIController : MonoBehaviour {
 				}
 				damageData.hit = tempHit;
 				damageData.attacknormal = tempVec;
-				damageData.attackType = Const.AttackType.Projectile;
+				damageData.attackType = AttackType.Projectile;
 				// GetDamageTakeAmount expects damageData to already have the following set:
 				//   damage
 				//   offense
@@ -849,7 +846,7 @@ public class AIController : MonoBehaviour {
 		}
 	}
 
-	// Used for attack type of Const.AttackType.ProjectileLaunched.
+	// Used for attack type of AttackType.ProjectileLaunched.
 	// Hurls a beachball-like object that will apply damage later if it hits something that can be hurt.
 	// attackNum corresponds to the attack used so correct lookup tables can be used.
 	// attackNum of 1 = Attack1, 2 = Attack2, 3 = Attack3
@@ -858,11 +855,11 @@ public class AIController : MonoBehaviour {
 		MuzzleBurst(attackNum);
 		tempVec = GetDirectionRayToEnemy(targettingPosition, attackNum);
 		Vector3 startPos = GetAttackStartPoint(attackNum);
-		float launchSpeed = Const.a.projectileSpeedAttack1ForNPC[index];
 		damageData = Const.SetNPCDamageData(index,attackNum,gameObject); // SetNPCDamageData sets : owner, damage, penetration, offense
 		damageData.attacknormal = tempVec;
-		damageData.attackType = Const.AttackType.ProjectileLaunched; // Can't call Const.a.GetDamageTakeAmount here since we haven't hit anyone yet so we don't know if isOtherNPC is true or not, called in ProjectileEffectImpact
-		Const.PoolType projectileType = Const.PoolType.GrenadeFragLive; // Default to Fragmentation Grenade
+		damageData.attackType = AttackType.ProjectileLaunched; // Can't call Const.a.GetDamageTakeAmount here since we haven't hit anyone yet so we don't know if isOtherNPC is true or not, called in ProjectileEffectImpact
+		PoolType projectileType = PoolType.GrenadeFragLive; // Default to Fragmentation Grenade, defaulting up here because it saves lines and precious scrolling.
+		float launchSpeed = Const.a.projectileSpeedAttack1ForNPC[index];
 		switch (attackNum) {
 			case 1:
 				projectileType = attack1ProjectileLaunchedType;
@@ -895,10 +892,10 @@ public class AIController : MonoBehaviour {
 			if (ga != null) {
 				int typ = 7; // Default to Fragmentation Grenade
 				switch (projectileType) {
-					case Const.PoolType.GrenadeFragLive: typ = 7; break; // Fragmentation Grenade
-					case Const.PoolType.ConcussionLive: typ = 8; break; // Concussion Grenade
-					case Const.PoolType.EMPLive: typ = 9; break; // EMP Grenade
-					case Const.PoolType.GasLive: typ = 13; break; // Gas Grenade
+					case PoolType.GrenadeFragLive: typ = 7; break; // Fragmentation Grenade
+					case PoolType.ConcussionLive: typ = 8; break; // Concussion Grenade
+					case PoolType.EMPLive: typ = 9; break; // EMP Grenade
+					case PoolType.GasLive: typ = 13; break; // Gas Grenade
 				}
 				ga.Activate(typ);
 			}
@@ -947,9 +944,9 @@ public class AIController : MonoBehaviour {
 					attack1SoundTime = PauseScript.a.relativeTime + Const.a.timeBetweenAttack1ForNPC[index];
 				}
 				switch (attack1Type) {
-					case Const.AttackType.Melee:				ProjectileRaycast(1); break; // Melee
-					case Const.AttackType.Projectile:			ProjectileRaycast(1); break;
-					case Const.AttackType.ProjectileLaunched:	ProjectileLaunched(1); break;
+					case AttackType.Melee:				ProjectileRaycast(1); break; // Melee
+					case AttackType.Projectile:			ProjectileRaycast(1); break;
+					case AttackType.ProjectileLaunched:	ProjectileLaunched(1); break;
 				}
 			}
         }
@@ -968,9 +965,9 @@ public class AIController : MonoBehaviour {
                     attack2SoundTime = PauseScript.a.relativeTime + Const.a.timeBetweenAttack2ForNPC[index];
                 }
 				switch (attack2Type) {
-					case Const.AttackType.Melee:				ProjectileRaycast(2); break; // Melee
-					case Const.AttackType.Projectile:			ProjectileRaycast(2); break;
-					case Const.AttackType.ProjectileLaunched:	ProjectileLaunched(2); break;
+					case AttackType.Melee:				ProjectileRaycast(2);  break;
+					case AttackType.Projectile:			ProjectileRaycast(2);  break;
+					case AttackType.ProjectileLaunched:	ProjectileLaunched(2); break;
 				}
             }
         }
@@ -991,9 +988,9 @@ public class AIController : MonoBehaviour {
 					attack3SoundTime = PauseScript.a.relativeTime + Const.a.timeBetweenAttack3ForNPC[index];
 				}
 				switch (attack1Type) {
-					case Const.AttackType.Melee:				ProjectileRaycast(3); break; // Melee
-					case Const.AttackType.Projectile:			ProjectileRaycast(3); break;
-					case Const.AttackType.ProjectileLaunched:	ProjectileLaunched(3); break;
+					case AttackType.Melee:				ProjectileRaycast(3); break;
+					case AttackType.Projectile:			ProjectileRaycast(3); break;
+					case AttackType.ProjectileLaunched:	ProjectileLaunched(3); break;
 				}
             }
         }
@@ -1002,7 +999,7 @@ public class AIController : MonoBehaviour {
 
 	void Pain() {
 		if (timeTillPainFinished < PauseScript.a.relativeTime) {
-			currentState = Const.aiState.Run; // go into run after we get hurt
+			currentState = AIState.Run; // go into run after we get hurt
 			goIntoPain = false;
 			timeTillPainFinished = PauseScript.a.relativeTime + Const.a.timeBetweenPainForNPC[index];
 		}
@@ -1027,7 +1024,7 @@ public class AIController : MonoBehaviour {
             }
 
 			if (!healthManager.actAsCorpseOnly && SFX != null && SFXDeathClip != null) SFX.PlayOneShot(SFXDeathClip);
-			if (Const.a.moveTypeForNPC[index] == Const.aiMoveType.Fly && !healthManager.gibOnDeath) {
+			if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly && !healthManager.gibOnDeath) {
 				rbody.useGravity = true; // for avian mutant and zero-g mutant
 			} else {
 				rbody.useGravity = true;
@@ -1047,7 +1044,7 @@ public class AIController : MonoBehaviour {
 		if (timeTillDeadFinished < PauseScript.a.relativeTime) {
 			ai_dead = true;
 			ai_dying = false;
-			currentState = Const.aiState.Dead;
+			currentState = AIState.Dead;
 		}
 	}
 	private bool deadChecksDone = false;
@@ -1067,7 +1064,7 @@ public class AIController : MonoBehaviour {
 			}
 			rbody.useGravity = true;
 			if (!rbody.freezeRotation) rbody.freezeRotation = true;
-			currentState = Const.aiState.Dead;
+			currentState = AIState.Dead;
 			if (npcAutomapOverlayImage != null) npcAutomapOverlayImage.enabled = false;
 			if (healthManager.gibOnDeath || healthManager.teleportOnDeath || healthManager.inCyberSpace) {
 				if (visibleMeshEntity != null) {
@@ -1080,8 +1077,8 @@ public class AIController : MonoBehaviour {
 	}
 
 	bool CheckIfEnemyInSight() {
-		if (Const.a.moveTypeForNPC[index] == Const.aiMoveType.Cyber && Const.a.decoyActive) { LOSpossible = false; return false; }
-		if (enemy.GetComponent<PlayerMovement>().Notarget) { enemy = null; LOSpossible = false; return false; } // Force forget when using Notarget cheat
+		if (Const.a.moveTypeForNPC[index] == AIMoveType.Cyber && Const.a.decoyActive) { LOSpossible = false; return false; }
+		if (PlayerMovement.a.Notarget) { enemy = null; LOSpossible = false; return false; } // Force forget when using Notarget cheat
 
 		float dist = Vector3.Distance(enemy.transform.position,sightPoint.transform.position);  // Get distance between enemy and found player	
 		if (npcAutomapOverlayImage != null) {
@@ -1109,7 +1106,7 @@ public class AIController : MonoBehaviour {
 
 		LOSpossible = false; // Reset line of sight value. Doing this after CheckIfEnemyInSight so it doesn't break it.
 
-		if (Const.a.moveTypeForNPC[index] == Const.aiMoveType.Cyber && Const.a.decoyActive) return false;
+		if (Const.a.moveTypeForNPC[index] == AIMoveType.Cyber && Const.a.decoyActive) return false;
 		if (Const.a.player1Capsule == null) return false; // No found player
 
 		// Found player
@@ -1136,13 +1133,11 @@ public class AIController : MonoBehaviour {
 					return true;
 				}
 			} else {
-				if (Const.a.player1PlayerHealthScript != null) {
-					if (Const.a.player1PlayerHealthScript.makingNoise) {
-						if (dist < Const.a.hearingRangeForNPC[index]) {
-							SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
-							PlaySightSound();
-							return true;
-						}
+				if (PlayerHealth.a.makingNoise) {
+					if (dist < Const.a.hearingRangeForNPC[index]) {
+						SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
+						PlaySightSound();
+						return true;
 					}
 				}
 			}
@@ -1162,13 +1157,11 @@ public class AIController : MonoBehaviour {
 					}
 				}
 			}
-			if (Const.a.player1PlayerHealthScript != null) {
-				if (Const.a.player1PlayerHealthScript.makingNoise) {
-					if (dist < Const.a.hearingRangeForNPC[index]) {
-						SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
-						PlaySightSound();
-						return true;
-					}
+			if (PlayerHealth.a.makingNoise) {
+				if (dist < Const.a.hearingRangeForNPC[index]) {
+					SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
+					PlaySightSound();
+					return true;
 				}
 			}
 		}
@@ -1206,43 +1199,20 @@ public class AIController : MonoBehaviour {
     }
 
 	public void Alert(UseData ud) {
-		GameObject playr1 = Const.a.player1;
-		GameObject playr2 = Const.a.player2;
-		GameObject playr3 = Const.a.player3;
-		GameObject playr4 = Const.a.player4;
-
-		if (playr1 == null) { Debug.Log("WARNING: NPC Alert() check - no host player 1."); return; }  // No host player
-		if (playr1 != null) {playr1 = playr1.GetComponent<PlayerReferenceManager>().playerCapsule;}
-		if (playr2 != null) {playr2 = playr2.GetComponent<PlayerReferenceManager>().playerCapsule;}
-		if (playr3 != null) {playr3 = playr3.GetComponent<PlayerReferenceManager>().playerCapsule;}
-		if (playr4 != null) {playr4 = playr4.GetComponent<PlayerReferenceManager>().playerCapsule;}
-
-		GameObject tempent = null;
-
-		for (int i=0;i<4;i++) {
-			tempent = null;
-
-			// Cycle through all the players to see if we can see anybody.  Defaults to earlier joined players.
-			if (playr1 != null && i == 0) tempent = playr1;
-			if (playr2 != null && i == 1) tempent = playr2;
-			if (playr3 != null && i == 2) tempent = playr3;
-			if (playr4 != null && i == 4) tempent = playr4;
-
-			if (ud != null) {
-				if (ud.owner != null) {
-					if (ud.owner == tempent) {
-						enemy = tempent;
-					} else {
-						if (tempent != enemy) enemy = tempent;	
-					}
+		if (ud != null) {
+			if (ud.owner != null) {
+				if (ud.owner == Const.a.player1Capsule) {
+					enemy = Const.a.player1Capsule;
 				} else {
-					if (tempent != enemy) enemy = tempent;	
+					if (Const.a.player1Capsule != enemy) enemy = Const.a.player1Capsule;	
 				}
 			} else {
-				if (tempent != enemy) enemy = tempent;
+				if (Const.a.player1Capsule != enemy) enemy = Const.a.player1Capsule;	
 			}
-			if (enemy != null) enemyHM = enemy.GetComponent<HealthManager>();
+		} else {
+			if (Const.a.player1Capsule != enemy) enemy = Const.a.player1Capsule;
 		}
+		if (enemy != null) enemyHM = enemy.GetComponent<HealthManager>();
 	}
 
 	public void AwakeFromSleep(UseData ud) {

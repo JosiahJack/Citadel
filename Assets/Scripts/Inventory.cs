@@ -46,7 +46,6 @@ public class Inventory : MonoBehaviour {
 	public GameObject vmailgenstatus;
 	public GameObject vmaillaserdest;
 	public GameObject vmailshieldsup;
-	public MouseLookScript mls;
 	public AudioSource SFXSource;
 	[HideInInspector] public bool[] hasLog; // save
 	[HideInInspector] public bool[] readLog; // save
@@ -84,7 +83,6 @@ public class Inventory : MonoBehaviour {
 	public Text turboCountText;
 	public Text decoyCountText;
 	public Text recallCountText;
-	public PlayerMovement pm;
 	public GameObject decoyPrefab;
 	public GameObject CyberSpaceStaticContainer;
 	[HideInInspector] public int currentCyberItem = -1; // save
@@ -118,7 +116,7 @@ public class Inventory : MonoBehaviour {
 	//-------------------------------------------------------------------------
 	// 0 = System Analyzer
 	// 1 = Navigation Unit
-	// 2 = Datareader
+	// 2 = Datareader/EReader
 	// 3 = Sensaround
 	// 4 = Target Identifier
 	// 5 = Energy Shield
@@ -132,14 +130,55 @@ public class Inventory : MonoBehaviour {
 	//13 = Fry Salter
 
 	// Hw referenceIndex, ref14Index
-	// Bio 27,6
-	// Sen 24,3
-	// Lan 28,7
-	// Shi 26,5
-	// Nig 32,11
+	// Sys 21,0
+	// Nav 22,1
 	// Ere 23,2
+	// Sen 24,3
+	// Trg 25,4
+	// Shi 26,5
+	// Bio 27,6
+	// Lan 28,7
+	// Env 29,8
 	// Boo 30,9
 	// Jum 31,10
+	// Nig 32,11
+	public int hardware14fromConstdex (int constdex) {
+		switch (constdex) {
+			case 21: return 0;
+			case 22: return 1;
+			case 23: return 2;
+			case 24: return 3;
+			case 25: return 4;
+			case 26: return 5;
+			case 27: return 6;
+			case 28: return 7;
+			case 29: return 8;
+			case 30: return 9;
+			case 31: return 10;
+			case 32: return 11;
+		}
+		return 0; // Using zero in case I pass this straight into the ever dangerous [ ]
+	}
+
+	public int hardwareConstdexfrom14 (int dex14) {
+		switch (dex14) {
+			case 0: return 21;
+			case 1: return 22;
+			case 2: return 23;
+			case 3: return 24;
+			case 4: return 25;
+			case 5: return 26;
+			case 6: return 27;
+			case 7: return 28;
+			case 8: return 29;
+			case 9: return 30;
+			case 10: return 31;
+			case 11: return 32;
+			case 12: return 0;
+			case 13: return 0;
+		}
+		return 0; // Using zero in case I pass this straight into the ever dangerous [ ]
+	}
 
 	void Awake() {
 		a = this;
@@ -155,7 +194,7 @@ public class Inventory : MonoBehaviour {
 		a.hardwareVersion = new int[14];
 		a.hardwareVersionSetting = new int[14];
 		a.hardwareIsActive = new bool[14];
-		a.hardwareInvReferenceIndex = new int[]{21,22,23,24,25,26,27,28,29,30,31,32,111,112}; // Hardcoded lookup indices into the Const main table.
+		a.hardwareInvReferenceIndex = new int[]{21,22,23,24,25,26,27,28,29,30,31,32,0,0}; // Hardcoded lookup indices into the Const main table.
 		for (int i = 0; i < a.hasHardware.Length; i++) {
 			a.hasHardware[i] = a.hardwareIsActive[i] = false; // Default to no hardware present.
 			a.hardwareVersion[i] = a.hardwareVersionSetting[i] = 0; // Default to version 1 acquired for all hardware which is represented by 0.
@@ -280,11 +319,11 @@ public class Inventory : MonoBehaviour {
 
 			// Grenades
 			if (GetInput.a.Grenade()) {
-				if (mls.inCyberSpace) {
+				if (MouseLookScript.a.inCyberSpace) {
 					UseCyberspaceItem();
 				} else {
 					if (grenAmmo[grenadeCurrent] > 0) {
-						mls.UseGrenade(grenadeIndex);
+						MouseLookScript.a.UseGrenade(grenadeIndex);
 					} else {
 						Const.sprint(Const.a.stringTable[322] ); // Out of grenades.
 					}
@@ -292,7 +331,7 @@ public class Inventory : MonoBehaviour {
 			}
 
 			if (GetInput.a.GrenadeCycUp()) {
-				if (mls.inCyberSpace) {
+				if (MouseLookScript.a.inCyberSpace) {
 					CycleCyberSpaceItemUp();
 				} else {
 					GrenadeCycleUp();
@@ -300,7 +339,7 @@ public class Inventory : MonoBehaviour {
 			}
 
 			if (GetInput.a.GrenadeCycDown()) {
-				if (mls.inCyberSpace) {
+				if (MouseLookScript.a.inCyberSpace) {
 					CycleCyberSpaceItemDn();
 				} else {
 					GrenadeCycleDown();
@@ -442,21 +481,10 @@ public class Inventory : MonoBehaviour {
 		return false;
 	}
 
-	bool AddCardToInventory(Door.accessCardType card) {
-		if (!HasAccessCard(card)) {
-			for (int i=0;i<accessCardsOwned.Length;i++) {
-				if (accessCardsOwned[i] == Door.accessCardType.None) accessCardsOwned[i] = card;
-			}
-			return true;
-		}
-		return false;
-	}
-
 	public void AddAccessCardToInventory (int index) {
-		if (index < 0) return;
-
-		if (mls.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent (2,true);
+		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(2,true);
 		switch (index) {
+			case 34: doorAccessTypeAcquired = Door.accessCardType.Admin; break;
 			case 81: doorAccessTypeAcquired = Door.accessCardType.Standard; break; //CHECKED! Good here
 			case 83: doorAccessTypeAcquired = Door.accessCardType.Group1; break; //CHECKED! Good here
 			case 84: doorAccessTypeAcquired = Door.accessCardType.Science; break; //CHECKED! Good here
@@ -467,13 +495,30 @@ public class Inventory : MonoBehaviour {
 			case 89: doorAccessTypeAcquired = Door.accessCardType.Medical; break;
 			case 90: doorAccessTypeAcquired = Door.accessCardType.Per1; break;
 			case 91: doorAccessTypeAcquired = Door.accessCardType.Group4; break;
-			case 34: doorAccessTypeAcquired = Door.accessCardType.Admin; break;
+			default: 
+				Const.sprint("Attempted to add an unmarked access card, we'll treat it as a STANDARD.");
+				doorAccessTypeAcquired = Door.accessCardType.Standard;
+				break;
 		}
-		if (HasAccessCard(doorAccessTypeAcquired)) { Const.sprint(Const.a.stringTable[44] + doorAccessTypeAcquired.ToString() ); return; } // Already have access: ##
-		if (AddCardToInventory(doorAccessTypeAcquired)) {
-			Const.sprint(Const.a.stringTable[45] + doorAccessTypeAcquired.ToString()); // New accesses gained ##
-			MFDManager.a.NotifyToCenterTab(2);
-			MFDManager.a.SendInfoToItemTab(index);
+		if (HasAccessCard(doorAccessTypeAcquired)) {
+			Const.sprint(Const.a.stringTable[44] + doorAccessTypeAcquired.ToString()); // Already have access: ##
+		} else {
+			bool added = false;
+			for (int i=0;i<accessCardsOwned.Length;i++) {
+				if (accessCardsOwned[i] == Door.accessCardType.None){
+					added = true;
+					accessCardsOwned[i] = doorAccessTypeAcquired;
+				}
+			}
+
+			if (added) {
+				Const.sprint(Const.a.stringTable[45] + doorAccessTypeAcquired.ToString()); // New accesses gained ##
+				MFDManager.a.NotifyToCenterTab(2);
+				MFDManager.a.SendInfoToItemTab(index);
+			} else {
+				Const.sprint("Something went wrong when trying to add that access card.");
+				MFDManager.a.ResetItemTab();
+			}
 		}
 	}
 	//--- End Access Cards ---
@@ -484,7 +529,7 @@ public class Inventory : MonoBehaviour {
 	public void AddHardwareToInventory(int index, int constIndex) {
 		if (index < 0) return;
 
-		int hwversion = mls.heldObjectCustomIndex;
+		int hwversion = MouseLookScript.a.heldObjectCustomIndex;
 		if (hwversion < 1) {
 			Const.sprint("BUG: Hardware picked up has no assigned versioning, defaulting to 1 (value of 0)" );
 			hwversion = 1;
@@ -498,13 +543,13 @@ public class Inventory : MonoBehaviour {
 		switch(index) {
 			case 0: textIndex = 21; break; // System Analyzer
 			case 1: textIndex = 22; // Navigation Unit
-				mls.compassContainer.SetActive(true); // Turn on HUD compass
-				mls.automapContainerLH.SetActive(true);
-				mls.automapContainerRH.SetActive(true);
-				if (hwversion >= 2) mls.compassMidpoints.SetActive(true);
+				MouseLookScript.a.compassContainer.SetActive(true); // Turn on HUD compass
+				MouseLookScript.a.automapContainerLH.SetActive(true);
+				MouseLookScript.a.automapContainerRH.SetActive(true);
+				if (hwversion >= 2) MouseLookScript.a.compassMidpoints.SetActive(true);
 				if (hwversion >= 3) {
-					mls.compassSmallTicks.SetActive(true);
-					mls.compassLargeTicks.SetActive(true);
+					MouseLookScript.a.compassSmallTicks.SetActive(true);
+					MouseLookScript.a.compassLargeTicks.SetActive(true);
 				}
 				MFDManager.a.OpenTab(2,true,MFDManager.TabMSG.None,0,Handedness.RH);
 				break;
@@ -522,7 +567,7 @@ public class Inventory : MonoBehaviour {
 		hardwareInvIndex = index;
 
 		if (button8Index >= 0 && button8Index < 8) {
-			mls.hardwareButtons[button8Index].SetActive(true);  // Enable HUD button
+			MouseLookScript.a.hardwareButtons[button8Index].SetActive(true);  // Enable HUD button
 			hardwareButtonManager.SetVersionIconForButton(hardwareIsActive[index],hardwareVersionSetting[index],4);
 			hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
 			Debug.Log("Enabled a hardware button with index of " + button8Index.ToString());
@@ -531,7 +576,7 @@ public class Inventory : MonoBehaviour {
 		hardwareVersion[index] = hwversion;
 		hardwareVersionSetting[index] = hwversion - 1;
 		Const.sprint(Const.a.useableItemsNameText[textIndex] + " v" + hwversion.ToString() );
-		if (mls.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(1,true);
+		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(1,true);
 		ActivateHardwareButton(index);
 		MFDManager.a.NotifyToCenterTab(1);
 	}
@@ -549,7 +594,10 @@ public class Inventory : MonoBehaviour {
 				genButtons[i].transform.GetComponent<GeneralInvButton>().useableItemIndex = index;
 				MFDManager.a.SendInfoToItemTab(index);
 				MFDManager.a.NotifyToCenterTab(2);
-				if (mls.firstTimePickup) { MFDManager.a.CenterTabButtonClickSilent(2,true); mls.firstTimePickup = false; }
+				if (MouseLookScript.a.firstTimePickup) {
+					MFDManager.a.CenterTabButtonClickSilent(2,true);
+					MouseLookScript.a.firstTimePickup = false;
+				}
 				return true;
             }
         }
@@ -621,7 +669,7 @@ public class Inventory : MonoBehaviour {
     public void AddGrenadeToInventory(int index, int useableIndex) {
 		if (index < 0) return;
 
-		if (mls.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(0,true);
+		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(0,true);
 		grenAmmo[index]++;
 		grenadeCurrent = index;
 		grenadeIndex = useableIndex;
@@ -660,8 +708,8 @@ public class Inventory : MonoBehaviour {
 		if (!readLog[logIndex]) QuestLogNotesManager.a.LogAdded(logIndex);
 		readLog[logIndex] = true;
 		if (Const.a.audioLogType[logIndex] == 4) {
-			mls.vmailActive = true; // allow click to end
-			mls.ForceInventoryMode();
+			MouseLookScript.a.vmailActive = true; // allow click to end
+			MouseLookScript.a.ForceInventoryMode();
 			switch (logIndex) {
 				case 119: vmailbetajet.SetActive(true); break;
 				case 116: vmailbridgesep.SetActive(true); break;
@@ -693,7 +741,7 @@ public class Inventory : MonoBehaviour {
 		hasLog[index] = true;
 		lastAddedIndex = index;
 		numLogsFromLevel[Const.a.audioLogLevelFound[index]]++;
-		mls.logContentsManager.InitializeLogsFromLevelIntoFolder();
+		MouseLookScript.a.logContentsManager.InitializeLogsFromLevelIntoFolder();
 		MFDManager.a.SendInfoToItemTab(6);
 		if (Inventory.a.hasHardware[2] == true) {
 			Const.sprint(Const.a.stringTable[36] + Const.a.audiologNames[index] + Const.a.stringTable[37] + Const.a.InputValues[Const.a.InputCodeSettings[15]] + Const.a.stringTable[38]); // Audio log ## picked up.  Press '##' to play back.
@@ -740,7 +788,7 @@ public class Inventory : MonoBehaviour {
 	public void AddPatchToInventory (int index,int constIndex) {
 		if (index < 0) return;
 
-		if (mls.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(0,true);
+		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(0,true);
 		patchCounts[index]++;
 		patchCurrent = index;
 
@@ -848,10 +896,10 @@ public class Inventory : MonoBehaviour {
 			hasSoft[3] = false;
 			softs[3].SetActive(false); // turn the button off now that we are out
 		}
-		if (pm.turboFinished > PauseScript.a.relativeTime) {
-			pm.turboFinished += pm.turboCyberTime; // effect stacks
+		if (PlayerMovement.a.turboFinished > PauseScript.a.relativeTime) {
+			PlayerMovement.a.turboFinished += PlayerMovement.a.turboCyberTime; // effect stacks
 		} else {
-			pm.turboFinished = pm.turboCyberTime + PauseScript.a.relativeTime;
+			PlayerMovement.a.turboFinished = PlayerMovement.a.turboCyberTime + PauseScript.a.relativeTime;
 		}
 	}
 
@@ -869,7 +917,7 @@ public class Inventory : MonoBehaviour {
 			hasSoft[4] = false;
 			softs[4].SetActive(false); // turn the button off now that we are out
 		}
-		GameObject decoyObj = Instantiate(decoyPrefab,pm.transform.position,mls.transform.rotation) as GameObject;
+		GameObject decoyObj = Instantiate(decoyPrefab,PlayerMovement.a.transform.position,MouseLookScript.a.transform.rotation) as GameObject;
 		if (decoyObj != null) {
 			decoyObj.transform.SetParent(CyberSpaceStaticContainer.transform,true);
 		}
@@ -885,7 +933,7 @@ public class Inventory : MonoBehaviour {
 			hasSoft[5] = false;
 			softs[5].SetActive(false); // turn the button off now that we are out
 		}
-		pm.transform.position = mls.cyberspaceRecallPoint; // pop back to cyber section start
+		PlayerMovement.a.transform.position = MouseLookScript.a.cyberspaceRecallPoint; // pop back to cyber section start
 	}
 
 	public bool AddSoftwareItem(SoftwareType type, int vers) {
@@ -1003,6 +1051,7 @@ public class Inventory : MonoBehaviour {
 				Const.sprint(Const.a.stringTable[459],Const.a.player1);
 				return true;
 			case SoftwareType.Keycard:
+				if (vers < 0 || vers > 94) vers = 81; // At least give them STD.
 				AddAccessCardToInventory(vers);
 				return true;
 		}
@@ -1144,7 +1193,7 @@ public class Inventory : MonoBehaviour {
 	public void AddAmmoToInventory (int index, int constIndex, int amount, bool isSecondary) {
 		if (index < 0) return;
 
-		if (mls.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent (0,true);
+		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent (0,true);
 		if (isSecondary) wepAmmoSecondary[index] += amount;
 		else			 wepAmmo[index]          += amount;
 		Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[33]); // Item added to weapon inventory

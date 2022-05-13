@@ -71,6 +71,8 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	}
 
 	void Start () {
+		if (PauseScript.a == null) { this.enabled = false; return; }
+
 		//Load all textures found on the Sequence folder, that is placed inside the resources folder
 		if (string.IsNullOrWhiteSpace(resourceFolder)) resourceFolder = glowResourceFolder;
 		if (string.IsNullOrWhiteSpace(resourceFolder)) return;

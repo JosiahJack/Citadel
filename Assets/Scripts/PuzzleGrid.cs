@@ -83,8 +83,8 @@ public class PuzzleGrid : MonoBehaviour {
 		grid = states;
 		cellType = types;
 		gridType = gtype;
-		sourceIndex = start;
-		outputIndex = end;
+		sourceIndex = start >= 0 && start < 35 ? start : 0;
+		outputIndex = end >= 0 && end < 35 ? end : w;
 		width = w;
 		height = h;
 		theme = colors;
@@ -130,7 +130,7 @@ public class PuzzleGrid : MonoBehaviour {
 	}
 
 	public void OnGridCellHover (int index) {
-		if (MFDManager.a.playerMLook.geniusActive) {
+		if (MouseLookScript.a.geniusActive) {
 			if (puzzleSolved) return;
 			if (cellType[index] == CellType.Standard) {
 				if (Const.a.difficultyPuzzle == 1) {
@@ -271,51 +271,50 @@ public class PuzzleGrid : MonoBehaviour {
 		if (grid.Length < 1) return;
 
 		// Set power for starting node
-		powered [sourceIndex] = grid [sourceIndex];  // Turn on power for cell adjacent to source node if it is a plus
+		powered[sourceIndex] = grid[sourceIndex];  // Turn on power for cell adjacent to source node if it is a plus
 		movingIndex = sourceIndex;
-		if (!powered [movingIndex]) return; // Source is off
+		if (!powered[movingIndex]) return; // Source is off
 
 		// Flow power to all nodes, adding any nodes to check to the queue
-		queue.Add (sourceIndex); // Initialize queue
+		queue.Add(sourceIndex); // Initialize queue
 		while (queue.Count > 0) {
-			movingIndex = queue [0]; // Get next item in the queue
-			if (checkedCells [movingIndex]) { queue.Remove (movingIndex); continue; }
+			movingIndex = queue[0]; // Get next item in the queue
+			if (checkedCells[movingIndex]) { queue.Remove(movingIndex); continue; }
 
-			cellAbove = ReturnCellAbove (movingIndex);
-			cellBelow = ReturnCellBelow (movingIndex);
-			cellLeft = ReturnCellToLeft (movingIndex);
-			cellRight = ReturnCellToRight (movingIndex);
-			if (cellAbove != -1 && !checkedCells [cellAbove] && grid [cellAbove])
-				queue.Add (cellAbove);
-			if (cellBelow != -1 && !checkedCells [cellBelow] && grid [cellBelow])
-				queue.Add (cellBelow);
-			if (cellLeft != -1 && !checkedCells [cellLeft] && grid [cellLeft])
-				queue.Add (cellLeft);
-			if (cellRight != -1 && !checkedCells [cellRight] && grid [cellRight])
-				queue.Add (cellRight);
+			cellAbove = ReturnCellAbove(movingIndex);
+			cellBelow = ReturnCellBelow(movingIndex);
+			cellLeft = ReturnCellToLeft(movingIndex);
+			cellRight = ReturnCellToRight(movingIndex);
+			if (cellAbove != -1 && !checkedCells[cellAbove] && grid[cellAbove])
+				queue.Add(cellAbove);
+			if (cellBelow != -1 && !checkedCells[cellBelow] && grid[cellBelow])
+				queue.Add(cellBelow);
+			if (cellLeft != -1 && !checkedCells[cellLeft] && grid[cellLeft])
+				queue.Add(cellLeft);
+			if (cellRight != -1 && !checkedCells[cellRight] && grid[cellRight])
+				queue.Add(cellRight);
 			int poweredCount = 0;
 			if (cellAbove != -1) {
-				if (powered [cellAbove])
+				if (powered[cellAbove])
 					poweredCount++;
 			}
 			if (cellBelow != -1) {
-				if (powered [cellBelow])
+				if (powered[cellBelow])
 					poweredCount++;
 			}
 			if (cellLeft != -1) {
-				if (powered [cellLeft])
+				if (powered[cellLeft])
 					poweredCount++;
 			}
 			if (cellRight != -1) {
-				if (powered [cellRight])
+				if (powered[cellRight])
 					poweredCount++;
 			}
-			if (cellType [movingIndex] == CellType.And) {
-				if (poweredCount > 1)
-					powered [movingIndex] = true;
+			if (cellType[movingIndex] == CellType.And) {
+				if (poweredCount > 1) powered[movingIndex] = true;
 			} else {
-				if (cellType [movingIndex] == CellType.Standard || cellType [movingIndex] == CellType.Bypass) {
-					if (grid [movingIndex] && poweredCount > 0) powered [movingIndex] = true;
+				if (cellType[movingIndex] == CellType.Standard || cellType[movingIndex] == CellType.Bypass) {
+					if ((grid[movingIndex] || cellType[movingIndex] == CellType.Bypass) && poweredCount > 0) powered[movingIndex] = true;
 				}
 			}
 			checkedCells [movingIndex] = true;
@@ -350,11 +349,8 @@ public class PuzzleGrid : MonoBehaviour {
 				}
 			}
 			UpdateCellImages();
-			MouseLookScript mls = udSender.owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<MouseLookScript>();
-			if (mls != null) {
-				mls.ResetHeldItem();
-				mls.ResetCursor();
-			}
+			MouseLookScript.a.ResetHeldItem();
+			MouseLookScript.a.ResetCursor();
 		}
 		
 		//Const.a.UseTargets(udSender,target);

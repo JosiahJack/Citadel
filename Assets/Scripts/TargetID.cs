@@ -88,14 +88,14 @@ public class TargetID : MonoBehaviour {
 				secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[519]); // Asleep
 			} else {
 				switch (linkedHM.aic.currentState) {
-					case Const.aiState.Walk: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[517]); break; // Cautious
-					case Const.aiState.Inspect: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[517]); break; // Cautious
-					case Const.aiState.Interacting: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[517]); break; // Cautious
-					case Const.aiState.Run: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[518]); break; // Hostile
-					case Const.aiState.Attack1: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[518]); break; // Hostile
-					case Const.aiState.Attack2: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[518]); break; // Hostile
-					case Const.aiState.Attack3: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[518]); break; // Hostile
-					case Const.aiState.Pain: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[518]); break; // Hostile
+					case AIState.Walk: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[517]); break; // Cautious
+					case AIState.Inspect: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[517]); break; // Cautious
+					case AIState.Interacting: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[517]); break; // Cautious
+					case AIState.Run: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[518]); break; // Hostile
+					case AIState.Attack1: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[518]); break; // Hostile
+					case AIState.Attack2: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[518]); break; // Hostile
+					case AIState.Attack3: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[518]); break; // Hostile
+					case AIState.Pain: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[518]); break; // Hostile
 					default: secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[516]); break; // Idle
 				}
 			}

@@ -589,3 +589,5 @@ The lever is stuck.
 Envirosuit is always passively active.
  used.
 Last 
+Cyborg conversion cancelled.  Healing normal.
+Cyborg conversion reactivated.

@@ -32,10 +32,10 @@ Remake Credits
 Direct involvement list found...
 
 Lead Developer, Programmer, Artist, 3D Modeler
-Josiah Jack, aka Qmaster
+W. Josiah Jack, aka Qmaster
 
 -3D Modelers-
-GOLD LEVEL CONTRIBUTOR: BastardRodent for most NPC's
+GOLD LEVEL CONTRIBUTOR: BastardRodent for most of the NPCs
 RocketMan for NPC and weapon models
 Chris S Evinrude for base item models
 MaxEvil for base weapon models
@@ -70,7 +70,6 @@ SHODAN
 #
 ----------------------------------------------------------------------
 Indirect involvment list found...
-----------------------------------------------------------------------
 Steven Kick and Night Dive Studios for letting this project continue!
 And for providing the MAC source code of the original!
 
@@ -79,6 +78,7 @@ The community on systemshock.org
 edx for a copy of System Shock Enhanced 2.5
 Riky Zedd, aka Thurlik for HD Hudmaps source and reference
 Speedy#3182 for his music data and pointing to ssplayer10
+Ruben Torres Bonet, aka Gamedev Guru, for his technical support.
 
 The TTSHP Team for their many Contributions:
 Jim Cameron, aka hairyjim, for engine reverse engineering
@@ -89,7 +89,7 @@ Matt Hargett, for QA and leak detection
 Glen Sawyer, for hacking source files
 Jorg Fischer, for texture compression
 Alistair Brown, for hacking Underworld object format
-Ulf Wohlers, for hacking Underworld objects and models 
+Ulf Wohlers, for hacking Underworld objects and models
 #
 ----------------------------------------------------------------------
 Original Game Developers (1994)
@@ -291,6 +291,18 @@ by Torben Giesselmann
 Batch Converter: ImageBatch 1.2
 by Dmitry Kopasov
 #
+DTValidator
+by Darren Tsung
+
+MissingReferencesUnity
+by Lior Tal aka liortal53
+
+MissingScriptsFinder
+by Leslie Young aka plyoung
+
+Texture2DArray Import Pipeline
+by Peter Schraut
+#
 ----------------------------------------------------------------------
 Protoype Tools for when this project
 used a variant of the Quake 1 engine...
@@ -304,14 +316,14 @@ by XaeroX, DarkEssence, FreeSlave, GNU/Hurt, Phantomas, and Scrama.
 Prototype Code Editing: FTE QuakeC Compiler
 by Forethough Entertainment, Spike, Moodles, Blub/0, TimeServ, Bigfoot,
 Molgrum, Up2nOgOoD, RjLan, CheapAlert, purplehaze, avirox, and XavioR
-
+#
 Prototype 3D Model Exporter: Blender MDL Exporter
 by Bill Currie
 
 Prototype 3D Model Exporter: Blender MD3 Exporter
 by Derek McPherson, Xembie, PhaethonH, Bob Holcomb, Damien McGinnes,
 Robert (Tr3B) Beckebans, and CoDEmanX
-#
+
 Prototype Model Converter (.md3 to .mdl): md3tomdl
 by Preach for converting 3d model files to Quake 1 format
 

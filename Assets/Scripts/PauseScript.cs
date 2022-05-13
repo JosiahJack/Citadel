@@ -7,8 +7,6 @@ using System.Linq;
 
 public class PauseScript : MonoBehaviour {
 	public GameObject pauseText;
-	public MouseLookScript mouselookScript;
-	public MouseCursor mouseCursor;
 	public GameObject[] disableUIOnPause;
 	public GameObject saltTheFries;
 	public GameObject[] enableUIOnPause;
@@ -61,6 +59,7 @@ public class PauseScript : MonoBehaviour {
 				medicalLightsStatic.SetActive(true);
 			}
 		}
+
 		if (!Paused()) relativeTime = relativeTime + Time.deltaTime;
 	}
 
@@ -75,22 +74,26 @@ public class PauseScript : MonoBehaviour {
 	}
 
 	public void PauseEnable() {
-		previousInvMode = mouselookScript.inventoryMode;
-		if (mouselookScript.inventoryMode == false) {
-			mouselookScript.ToggleInventoryMode();
+		previousInvMode = MouseLookScript.a.inventoryMode;
+		if (MouseLookScript.a.inventoryMode == false) {
+			MouseLookScript.a.ToggleInventoryMode();
 			ToggleAudioPause();
 		}
 		paused = true;
 		pauseText.SetActive(true);
-		previousCursorImage = mouseCursor.cursorImage;
-		mouseCursor.cursorImage = mouselookScript.cursorDefaultTexture;
+		previousCursorImage = MouseCursor.a.cursorImage;
+		MouseCursor.a.cursorImage = MouseLookScript.a.cursorDefaultTexture;
 		for (int i=0;i<disableUIOnPause.Length;i++) {
 			disableUIOnPause[i].SetActive(false);
 		}
 
 		EnablePauseUI();
-		for (int k=0;k<Const.a.prb.Length;k++) {
+		for (int k=0;k<Const.a.prb.Count;k++) {
 			Const.a.prb[k].Pause();
+		}
+
+		for (int k=0;k<Const.a.psys.Count;k++) {
+			Const.a.psys[k].Pause();
 		}
 
 		for (int u=0;u<ambientRegistry.Count;u++) {
@@ -107,11 +110,11 @@ public class PauseScript : MonoBehaviour {
 	public void PauseDisable() {
 		paused = false;
 		pauseText.SetActive(false);
-		if (previousInvMode != mouselookScript.inventoryMode) {
-			mouselookScript.ToggleInventoryMode();
-			mouselookScript.SetCameraCullDistances();
+		if (previousInvMode != MouseLookScript.a.inventoryMode) {
+			MouseLookScript.a.ToggleInventoryMode();
+			MouseLookScript.a.SetCameraCullDistances();
 		}
-		mouseCursor.cursorImage = previousCursorImage;
+		MouseCursor.a.cursorImage = previousCursorImage;
 		for (int i=0;i<disableUIOnPause.Length;i++) {
 			disableUIOnPause[i].SetActive(true);
 		}
@@ -120,9 +123,12 @@ public class PauseScript : MonoBehaviour {
 			enableUIOnPause[j].SetActive(false);
 		}
 
-		//PauseRigidbody[] prb = FindObjectsOfType<PauseRigidbody>();
-		for (int k=0;k<Const.a.prb.Length;k++) {
+		for (int k=0;k<Const.a.prb.Count;k++) {
 			Const.a.prb[k].UnPause();
+		}
+
+		for (int k=0;k<Const.a.psys.Count;k++) {
+			Const.a.psys[k].UnPause();
 		}
 
 		for (int u=0;u<ambientRegistry.Count;u++) {

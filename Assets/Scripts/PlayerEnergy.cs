@@ -6,11 +6,9 @@ public class PlayerEnergy : MonoBehaviour {
 	// External references
 	public Text drainText;
 	public Text jpmText;
-	public WeaponFire wepFire;
     public AudioClip SFXBatteryUse;
     public AudioClip SFXChargeStationUse;
     public AudioClip SFXPowerExhausted;
-	public WeaponCurrent wepCur;
 	public float energy = 54f; // save
 
 	// Internal references
@@ -22,6 +20,12 @@ public class PlayerEnergy : MonoBehaviour {
 	[HideInInspector] public float maxenergy = 255f;
 	[HideInInspector] public int drainJPM = 0;
 	private string jpm = " J/min";
+
+	public static PlayerEnergy a;
+
+	public void Awake() {
+		a = this;
+	}
 
     public void Start() {
         SFX = GetComponent<AudioSource>();
@@ -71,7 +75,7 @@ public class PlayerEnergy : MonoBehaviour {
 									// if NPC is in range....
 									if (Vector3.Distance(LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i].transform.position,transform.position) < sensingRange) {
 										if (LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i].healthManager.health > 0f && !LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i].hasTargetIDAttached) {
-											bool createdAnIDInstance = wepFire.CreateTargetIDInstance(System.String.Empty,LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i].transform,LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i].healthManager,transform,sensingRange,true,true,true,true);
+											bool createdAnIDInstance = WeaponFire.a.CreateTargetIDInstance(System.String.Empty,LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i].transform,LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i].healthManager,transform,sensingRange,true,true,true,true);
 											if (!createdAnIDInstance) break;
 										}
 									}
@@ -147,14 +151,13 @@ public class PlayerEnergy : MonoBehaviour {
     public void TakeEnergy ( float take  ){
 		float was = energy;
 		if (energy == 0) return;
-		if (wepCur != null) {
-			if (wepCur.redbull) return; } // No energy drain!
+		if (WeaponCurrent.WepInstance.redbull) return; // No energy drain!
 
 		energy -= take;
 		if (energy <= 0f) {
 			energy = 0f;
 			if (SFX != null && SFXPowerExhausted != null) SFX.PlayOneShot(SFXPowerExhausted); // battery sound
-			Const.sprint(Const.a.stringTable[314],wepCur.owner); //Power supply exhausted.
+			Const.sprint(Const.a.stringTable[314],WeaponCurrent.WepInstance.owner); //Power supply exhausted.
 			DeactivateHardwareOnEnergyDepleted();
 		}
 	}

@@ -11,7 +11,6 @@ public class EnergyOverloadButton : MonoBehaviour {
     public Color textEnergyOverloaded;
     public Sprite normalButtonSprite;
     public Sprite overloadButtonSprite;
-    public WeaponFire wf;
     public Text buttonText;
     public Text energySettingText;
     private Image buttonSprite;
@@ -28,16 +27,16 @@ public class EnergyOverloadButton : MonoBehaviour {
             return;
         }
 
-        if (wf.overloadEnabled) {
+        if (WeaponFire.a.overloadEnabled) {
             Const.sprint(Const.a.stringTable[13]);
-            wf.overloadEnabled = false;
+            WeaponFire.a.overloadEnabled = false;
             buttonSprite.overrideSprite = normalButtonSprite;
             buttonText.color = textClickableColor;
             energySettingText.color = textEnergySetting;
             energySettingText.text = "ENERGY SETTING";
         } else { 
             Const.sprint(Const.a.stringTable[17]);
-            wf.overloadEnabled = true;
+            WeaponFire.a.overloadEnabled = true;
             buttonSprite.overrideSprite = overloadButtonSprite;
             buttonText.color = textOverloadColor;
             energySettingText.color = textEnergyOverloaded;

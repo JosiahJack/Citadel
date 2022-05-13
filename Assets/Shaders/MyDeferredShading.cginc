@@ -137,7 +137,7 @@ float4 FragmentProgram (Interpolators i) : SV_Target {
 	float3 rayToFarPlane = i.ray * _ProjectionParams.z / i.ray.z;
 	float3 viewPos = rayToFarPlane * depth;
 	float3 worldPos = mul(unity_CameraToWorld, float4(viewPos, 1)).xyz;
-	float3 viewDir = normalize(_WorldSpaceCameraPos - worldPos);
+
 
 	float3 albedo = tex2D(_CameraGBufferTexture0, uv).rgb;
 	float3 specularTint = tex2D(_CameraGBufferTexture1, uv).rgb;
@@ -146,6 +146,7 @@ float4 FragmentProgram (Interpolators i) : SV_Target {
 	float oneMinusReflectivity = 1 - SpecularStrength(specularTint);
 
 	UnityLight light = CreateLight(uv, worldPos, viewPos.z);
+	float3 viewDir = 1;//light.dir;//normalize(_WorldSpaceCameraPos - worldPos);
 	UnityIndirect indirectLight;
 	indirectLight.diffuse = 0;
 	indirectLight.specular = 0;

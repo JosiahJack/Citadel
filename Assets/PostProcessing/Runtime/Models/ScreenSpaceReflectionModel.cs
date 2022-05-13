@@ -96,7 +96,7 @@ namespace UnityEngine.PostProcessing
                     {
                         reflection = new ReflectionSettings
                         {
-                            blendType = SSRReflectionBlendType.PhysicallyBased,
+                            blendType = SSRReflectionBlendType.Additive,
                             reflectionQuality = SSRResolution.Low,
                             maxDistance = 100f,
                             iterationCount = 256,

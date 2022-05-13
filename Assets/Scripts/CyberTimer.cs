@@ -27,7 +27,7 @@ public class CyberTimer : MonoBehaviour {
 
     void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			if (t <= 0) MFDManager.a.playerMLook.ExitCyberspace();
+			if (t <= 0) MouseLookScript.a.ExitCyberspace();
 			if (timerFinished < PauseScript.a.relativeTime) {
 				t -= 1f;
 				minutes = Mathf.Floor(t/60f);

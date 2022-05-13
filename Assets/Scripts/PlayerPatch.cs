@@ -5,7 +5,6 @@ using System.Collections;
 public class PlayerPatch : MonoBehaviour {
 	public GameObject playerCamera;
 	public HealthManager hm;
-	public PlayerMovement playerMovementScript;
 	public Texture2D b1;
 	public Texture2D b2;
 	public Texture2D b3;
@@ -18,7 +17,6 @@ public class PlayerPatch : MonoBehaviour {
 	public Image sightDimming;
 	public PuzzleWire wirePuzzle;
 	public UnityStandardAssets.ImageEffects.BerserkEffect berserk;
-	public UnityStandardAssets.ImageEffects.BerserkEffect gunCamBerserk;
 	public UnityStandardAssets.ImageEffects.BerserkEffect sensaroundCamCenterBerserk;
 	public UnityStandardAssets.ImageEffects.BerserkEffect sensaroundCamLeftBerserk;
 	public UnityStandardAssets.ImageEffects.BerserkEffect sensaroundCamRightBerserk;
@@ -41,9 +39,9 @@ public class PlayerPatch : MonoBehaviour {
 	[HideInInspector] public int PATCH_SIGHT = 32;
 	[HideInInspector] public int PATCH_STAMINUP = 64;
 	private AudioSource SFX;
-	private MouseLookScript playerMouseLookScript;
-	private PlayerHealth playerHealthScript;
 	[HideInInspector] public int patchActive;  // bitflag carrier for active patches // save
+
+	public static PlayerPatch a;
 
 	// Patches stack so multiple can be used at once
 	// For instance, berserk + staminup + medi = 1 + 64 + 8 = 73
@@ -52,14 +50,13 @@ public class PlayerPatch : MonoBehaviour {
 	// but the 7th bit can be used for sign +/-)
 
 	void Awake () {
-		playerHealthScript = gameObject.GetComponent<PlayerHealth>();
-		playerMouseLookScript = playerCamera.GetComponent<MouseLookScript>();
-		SFX = GetComponent<AudioSource>();
-		mediFinishedTime = -1f;
-		reflexFinishedTime = -1f;
-		sightFinishedTime = -1f;
-		sightLight.enabled = false;
-		BerserkDisable();
+		a = this;
+		a.SFX = GetComponent<AudioSource>();
+		a.mediFinishedTime = -1f;
+		a.reflexFinishedTime = -1f;
+		a.sightFinishedTime = -1f;
+		a.sightLight.enabled = false;
+		a.BerserkDisable();
 	}
 
 	public void ActivatePatch(int index) {
@@ -100,13 +97,13 @@ public class PlayerPatch : MonoBehaviour {
 		case 17:
 			// Medi Patch
 			if (hm.health >=255) {
-				Const.sprint(Const.a.stringTable[304],playerMouseLookScript.player);
+				Const.sprint(Const.a.stringTable[304],MouseLookScript.a.player);
 				return;
 			}
 			Inventory.a.patchCounts[3]--;
 			if (Inventory.a.patchCounts[3] <= 0) { depleted = true; }
 			if (!(Const.a.CheckFlags(patchActive, PATCH_MEDI))) patchActive += PATCH_MEDI;
-			playerHealthScript.mediPatchPulseCount = 0;
+			PlayerHealth.a.mediPatchPulseCount = 0;
 			if (mediFinishedTime > PauseScript.a.relativeTime) {
 				mediFinishedTime += Const.a.mediTime; // medipatch effect stacks
 			} else {
@@ -143,7 +140,7 @@ public class PlayerPatch : MonoBehaviour {
 			// Staminup Patch
 			Inventory.a.patchCounts[0]--;
 			if (Inventory.a.patchCounts[0] <= 0) { depleted = true; }
-			playerMovementScript.staminupActive = true;
+			PlayerMovement.a.staminupActive = true;
 			if (!(Const.a.CheckFlags(patchActive, PATCH_STAMINUP))) patchActive += PATCH_STAMINUP;
 			if (staminupFinishedTime > PauseScript.a.relativeTime) {
 				staminupFinishedTime += Const.a.staminupTime; // staminup effect stacks
@@ -155,9 +152,9 @@ public class PlayerPatch : MonoBehaviour {
 
 		if (depleted) {
 			Inventory.a.PatchCycleDown(false);
-			Const.sprint((Const.a.stringTable[590] + Const.a.useableItemsNameText[index] + Const.a.stringTable[589]),playerMouseLookScript.player);
+			Const.sprint((Const.a.stringTable[590] + Const.a.useableItemsNameText[index] + Const.a.stringTable[589]),MouseLookScript.a.player);
 		} else {
-			Const.sprint((Const.a.useableItemsNameText[index] + Const.a.stringTable[589]),playerMouseLookScript.player);
+			Const.sprint((Const.a.useableItemsNameText[index] + Const.a.stringTable[589]),MouseLookScript.a.player);
 		}
 		SFX.PlayOneShot(patchUseSFX);
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
@@ -221,8 +218,8 @@ public class PlayerPatch : MonoBehaviour {
 							case 5: berserk.swapTexture = b6; berserk.effectStrength += 1f; berserk.hithreshold += 0.25f; break;
 							case 6: berserk.swapTexture = b7; berserk.effectStrength += 1f; berserk.hithreshold += 0.25f; break;
 						}
-						gunCamBerserk.swapTexture = berserk.swapTexture;
-						gunCamBerserk.effectStrength = berserk.effectStrength;
+						//gunCamBerserk.swapTexture = berserk.swapTexture;
+						//gunCamBerserk.effectStrength = berserk.effectStrength;
 						float berserkIncrementTime = Const.a.berserkTime/5f;
 						berserkIncrementFinishedTime = PauseScript.a.relativeTime + berserkIncrementTime;
 					}
@@ -233,12 +230,12 @@ public class PlayerPatch : MonoBehaviour {
 			if (Const.a.CheckFlags(patchActive, PATCH_GENIUS)) {
 				// ---Disable Patch---
 				if (geniusFinishedTime < PauseScript.a.relativeTime) {
-					playerMouseLookScript.geniusActive = false;
+					MouseLookScript.a.geniusActive = false;
 					patchActive -= PATCH_GENIUS;
 					wirePuzzle.geniusActive = false;
 				} else {
 					// ***Patch Effect***
-					playerMouseLookScript.geniusActive = true;  // so that LH/RH are swapped for mouse look
+					MouseLookScript.a.geniusActive = true;  // so that LH/RH are swapped for mouse look
 					wirePuzzle.geniusActive = true;
 				}
 			}
@@ -267,13 +264,13 @@ public class PlayerPatch : MonoBehaviour {
 			if (Const.a.CheckFlags(patchActive, PATCH_STAMINUP)) {
 				// ---Disable Patch---
 				if (staminupFinishedTime < PauseScript.a.relativeTime) {
-					playerMovementScript.staminupActive = false;
-					playerMovementScript.fatigue = 100f;  // side effect
+					PlayerMovement.a.staminupActive = false;
+					PlayerMovement.a.fatigue = 100f;  // side effect
 					patchActive -= PATCH_STAMINUP;
 				} else {
 					// ***Patch Effect***
-					playerMovementScript.fatigue = 0f;
-					playerMovementScript.staminupActive = true;
+					PlayerMovement.a.fatigue = 0f;
+					PlayerMovement.a.staminupActive = true;
 				}
 			}
 		}
@@ -281,7 +278,6 @@ public class PlayerPatch : MonoBehaviour {
 
 	void BerserkEnable() {
 		berserk.enabled = true;
-		gunCamBerserk.enabled = true;
 		sensaroundCamCenterBerserk.enabled = true;
 		sensaroundCamLeftBerserk.enabled = true;
 		sensaroundCamRightBerserk.enabled = true;
@@ -290,8 +286,6 @@ public class PlayerPatch : MonoBehaviour {
 	void BerserkDisable() {
 		berserk.enabled = false;
 		berserk.Reset();
-		gunCamBerserk.enabled = false;
-		gunCamBerserk.Reset();
 		sensaroundCamCenterBerserk.enabled = false;
 		sensaroundCamCenterBerserk.Reset();
 		sensaroundCamLeftBerserk.enabled = false;
@@ -306,11 +300,9 @@ public class PlayerPatch : MonoBehaviour {
 		berserkIncrement = 0;
 		berserk.Reset();
 		berserk.enabled = false;
-		gunCamBerserk.Reset();
-		gunCamBerserk.enabled = false;
 		detoxFinishedTime =  -1f;
 		geniusFinishedTime =  -1f;
-		playerMouseLookScript.geniusActive = false;
+		MouseLookScript.a.geniusActive = false;
 		wirePuzzle.geniusActive = false;
 		mediFinishedTime =  -1f;
 		reflexFinishedTime =  -1f;
@@ -320,7 +312,7 @@ public class PlayerPatch : MonoBehaviour {
 		sightDimming.enabled = false;
 		sightLight.enabled = false;
 		staminupFinishedTime =  -1f;
-		playerMovementScript.staminupActive = false;
+		PlayerMovement.a.staminupActive = false;
 		patchActive = 0;
 	}
 }

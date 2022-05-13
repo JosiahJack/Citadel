@@ -380,10 +380,10 @@ public class Door : MonoBehaviour {
 		line += splitChar + Const.a.BoolToString(blocked); // bool - is the door blocked currently?
 		line += splitChar + Const.a.BoolToString(accessCardUsedByPlayer); // bool - is the door blocked currently?
 		switch (doorOpen) {
-			case Door.doorState.Closed: line += "|0"; break;
-			case Door.doorState.Open: line += "|1"; break;
-			case Door.doorState.Closing: line += "|2"; break;
-			case Door.doorState.Opening: line += "|3"; break;
+			case doorState.Closed: line += "|0"; break;
+			case doorState.Open: line += "|1"; break;
+			case doorState.Closing: line += "|2"; break;
+			case doorState.Opening: line += "|3"; break;
 		}
 		line += splitChar + animatorPlaybackTime.ToString("0000.00000"); // float - current animation time
 

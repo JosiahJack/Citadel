@@ -5,7 +5,6 @@ using System.Collections;
 
 public class UIButtonMask : MonoBehaviour {
     public GameObject playerCamera;
-	private MouseCursor mCursor;
 	public GUIState.ButtonType overButtonType = GUIState.ButtonType.Generic;  // default to generic button
 	private float doubleClickTime;
 	private float dbclickFinished;
@@ -24,8 +23,7 @@ public class UIButtonMask : MonoBehaviour {
 		if (width < 0) width *= -1f;
 		if (height < 0) height *= -1f; // Cannot have negative size on box colliders.
 		boxCol.size = new Vector3(width,height,1f);
-		mCursor = playerCamera.GetComponent<MouseLookScript>().mouseCursor.GetComponent<MouseCursor>();
-		mCursor.RegisterRaycastRect(gameObject,GetComponent<RectTransform>());
+		MouseCursor.a.RegisterRaycastRect(gameObject,GetComponent<RectTransform>());
 		if (playerCamera == null) Const.sprint("BUG: UIButtonMask script could not find playerCamera");
 
 		if (doubleClickEnabled) {
@@ -61,8 +59,8 @@ public class UIButtonMask : MonoBehaviour {
 		doubleClickTicks = 0;
 
 		if (toolTipLingdex >= 0) {
-			mCursor.toolTip = Const.a.stringTable[toolTipLingdex];
-			mCursor.toolTipType = toolTipType;
+			MouseCursor.a.toolTip = Const.a.stringTable[toolTipLingdex];
+			MouseCursor.a.toolTipType = toolTipType;
 		}
     }
 
@@ -70,7 +68,7 @@ public class UIButtonMask : MonoBehaviour {
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 		doubleClickTicks = 0;
 		if (toolTipLingdex >= 0) {
-			mCursor.toolTip = string.Empty;
+			MouseCursor.a.toolTip = string.Empty;
 		}
     }
 

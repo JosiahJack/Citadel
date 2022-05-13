@@ -12,7 +12,6 @@ public class PlayerHealth : MonoBehaviour {
 	public GameObject radiationEffect;
 	public GameObject shieldEffect;
 	public GameObject mainPlayerParent;
-	public PlayerPatch pp;
 
 	// Internal references
 	[HideInInspector] public float radiated = 0f; // save
@@ -37,18 +36,21 @@ public class PlayerHealth : MonoBehaviour {
 	[HideInInspector] public float radSoundFinished; // save
 	[HideInInspector] public float radFXFinished; // save
 	private TextWarningsManager twm;
-	private PlayerEnergy pe;
 	private float radAdjust;
 	private float initialRadiation;
 	[HideInInspector] public float noiseFinished;
+
+	public static PlayerHealth a;
+
+	void Awake() {
+		a = this;
+	}
 
 	void Start () {
 		twm = mainPlayerParent.GetComponent<PlayerReferenceManager>().playerTextWarningManager.GetComponent<TextWarningsManager>();
 		if (twm == null) Debug.Log("BUG: No TextWarningManager script found on player (sent from PlayerHealth.Awake)");
 		hm = GetComponent<HealthManager>();
 		if (hm == null) Debug.Log("BUG: No HealthManager script found on player (sent from PlayerHealth.Awake)");
-		pe = GetComponent<PlayerEnergy>();
-		if (pe == null) Debug.Log("BUG: No PlayerEnergy script found on player (sent from PlayerHealth.Awake)");
 		painSoundFinished = PauseScript.a.relativeTime;
 		radSoundFinished = PauseScript.a.relativeTime;
 		radFXFinished = PauseScript.a.relativeTime;
@@ -68,7 +70,7 @@ public class PlayerHealth : MonoBehaviour {
 			return;
 		}
 
-		if (Const.a.CheckFlags(pp.patchActive, pp.PATCH_MEDI)) {
+		if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_MEDI)) {
 			if (mediPatchPulseFinished == 0) mediPatchPulseCount = 0;
 			if (mediPatchPulseFinished < PauseScript.a.relativeTime) {
 				hm.HealingBed(mediPatchHealAmount,false);
@@ -80,7 +82,7 @@ public class PlayerHealth : MonoBehaviour {
 			mediPatchPulseFinished = 0;
 			mediPatchPulseCount = 0;
 		}
-		if (Const.a.CheckFlags(pp.patchActive, pp.PATCH_DETOX)) radiated = 0f;
+		if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_DETOX)) radiated = 0f;
 		if (radiated > 1f) {
 			if (radiationArea) twm.SendWarning((Const.a.stringTable[184]),0.1f,-2,TextWarningsManager.warningTextColor.white,radiationAreaWarningID); // Radiation area
 			if (Inventory.a.hasHardware[8]) {
@@ -135,28 +137,15 @@ public class PlayerHealth : MonoBehaviour {
 	}
 	
 	void PlayerDead (){
-		MouseLookScript mls = cameraObject.GetComponent<MouseLookScript>();
-		if (mls == null) { Debug.Log("BUG: No mouselookscript for PlayerDead"); return; }
-
-		if (mls.heldObjectIndex != -1) {
-			mls.DropHeldItem();
-			mls.ResetHeldItem ();
-			mls.ResetCursor ();
-			Cursor.lockState = CursorLockMode.None;
+		if (MouseLookScript.a.heldObjectIndex != -1) {
+			MouseLookScript.a.DropHeldItem();
+			MouseLookScript.a.ForceInventoryMode();
 		}	
-		int lindex = 0;
-		if (LevelManager.a.currentLevel != -1) {
-			lindex = LevelManager.a.currentLevel;
-		} else {
-			lindex = 0;
-		}
-		if (LevelManager.a.ressurectionActive[lindex]) {
-			// Ressurection
-			PlayerRessurect();
-		} else {
-			// Game Over
-			PlayerDeathToMenu(mls);
-		}
+		int lindex = LevelManager.a.currentLevel != -1 ? LevelManager.a.currentLevel : 0;
+		if (LevelManager.a.ressurectionActive[lindex])
+			PlayerRessurect(); // Ressurection
+		else
+			PlayerDeathToMenu(); // Game Over
 	}
 
 	public void PlayerRessurect() {
@@ -167,15 +156,15 @@ public class PlayerHealth : MonoBehaviour {
 		radiationArea = false;
 		radiated = 0;
 		playerDead = false;
-		pp.DisableAllPatches();
-		pp.playerMovementScript.fatigue = 0f;
+		PlayerPatch.a.DisableAllPatches();
+		PlayerMovement.a.fatigue = 0f;
 	}
 
-	public void PlayerDeathToMenu(MouseLookScript mls) {
+	public void PlayerDeathToMenu() {
 		hm.pstatic.Deactivate();
 		// Death to Main Menu
-		if (mls.inventoryMode == false) {
-			mls.ToggleInventoryMode();
+		if (MouseLookScript.a.inventoryMode == false) {
+			MouseLookScript.a.ToggleInventoryMode();
 			PauseScript.a.ToggleAudioPause();
 		}
 		PauseScript.a.mainMenu.SetActive(true);
@@ -185,8 +174,8 @@ public class PlayerHealth : MonoBehaviour {
 		radiationArea = false;
 		radiated = 0;
 		playerDead = false;
-		pp.DisableAllPatches();
-		pp.playerMovementScript.fatigue = 0f;
+		PlayerPatch.a.DisableAllPatches();
+		PlayerMovement.a.fatigue = 0f;
 	}
 
 	public void GiveRadiation (float rad) {
@@ -195,7 +184,7 @@ public class PlayerHealth : MonoBehaviour {
 			radiated = rad;
 
 		// Check for envirosuit and apply reduction based on version
-		if (Inventory.a.hasHardware[8] && pe.energy > 0) {
+		if (Inventory.a.hasHardware[8] && PlayerEnergy.a.energy > 0) {
 			radAdjust = radiated;
 			float enerTake = 0.25f;
 			switch (Inventory.a.hardwareVersion[8]) {
@@ -205,7 +194,7 @@ public class PlayerHealth : MonoBehaviour {
 			}
 			radiated *= radAdjust;
 			radAdjust = initialRadiation - radiated;
-			pe.TakeEnergy(enerTake);
+			PlayerEnergy.a.TakeEnergy(enerTake);
 		} else {
 			radAdjust = 0f;
 		}

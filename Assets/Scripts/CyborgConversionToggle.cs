@@ -13,10 +13,13 @@ public class CyborgConversionToggle : MonoBehaviour {
 
 	public void PlayVoxMessage() {
 		if (SFX != null) SFX.Stop();
-		if (LevelManager.a.IsCurrentLevelCyborgConversionEnabled()) {
+		int lindex = LevelManager.a.currentLevel != -1 ? LevelManager.a.currentLevel : 0;
+		if (LevelManager.a.ressurectionActive[lindex]) {
 			if (SFX != null && SFX.enabled == true && SFXEnabled != null) SFX.PlayOneShot(SFXEnabled);
+			Const.sprint(Const.a.stringTable[591]); // "Cyborg conversion cancelled.  Healing normal."
 		} else {
 			if (SFX != null && SFX.enabled == true && SFXDisabled != null) SFX.PlayOneShot(SFXDisabled);
+			Const.sprint(Const.a.stringTable[592]); // "Cyborg conversion reactivated."
 		}
 	}
 }

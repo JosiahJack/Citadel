@@ -13,7 +13,6 @@ public class MouseLookScript : MonoBehaviour {
     [Tooltip("Sound effect to play when picking-up/frobbing an object")] public AudioClip PickupSFX;
     [Tooltip("Sound effect to play when picking-up/frobbing a hardware item")] public AudioClip hwPickupSFX;
     [Tooltip("Sound effect to play when entering/exiting cyberspace")] public AudioClip CyberSFX;
-	public MouseCursor mouseCursor;
 	public GameObject canvasContainer;
 	public GameObject compassContainer;
 	public GameObject automapContainerLH;
@@ -26,8 +25,6 @@ public class MouseLookScript : MonoBehaviour {
 	public LogContentsButtonsManager logContentsManager;
 	public AudioSource SFXSource;
 	public GameObject[] hardwareButtons;
-	public WeaponMagazineCounter wepmagCounter;
-	public PlayerMovement playerMovement;
 	public PuzzleWire puzzleWire;
 	public PuzzleGrid puzzleGrid;
 	public GameObject shootModeButton;
@@ -85,6 +82,12 @@ public class MouseLookScript : MonoBehaviour {
 	private string mouseY = "Mouse Y";
 	private Vector3 cursorPoint;
 
+	public static MouseLookScript a;
+
+	void Awake() {
+		a = this;
+	}
+
     void Start (){
         ResetCursor();
 		ResetHeldItem();
@@ -115,7 +118,7 @@ public class MouseLookScript : MonoBehaviour {
 		else 							  if (!playerCamera.enabled) playerCamera.enabled = true;
 
 		if (PauseScript.a.Paused()) return;
-		if (playerMovement.ressurectingFinished > PauseScript.a.relativeTime) return;
+		if (PlayerMovement.a.ressurectingFinished > PauseScript.a.relativeTime) return;
 
 		// Unpaused, normal functions::
 		// ==============================================================================================================================================================================================================================================================================================
@@ -141,8 +144,6 @@ public class MouseLookScript : MonoBehaviour {
 				currentButton = null; // Force this to reset.
 				if (holdingObject) {
 					if (!FrobWithHeldObject()) DropHeldItem();
-					ResetHeldItem();
-					ResetCursor();
 				} else FrobEmptyHanded();
 			} else {
 				//We are holding cursor over the GUI
@@ -183,14 +184,14 @@ public class MouseLookScript : MonoBehaviour {
 	public void EnterCyberspace(GameObject entryPoint) {
 		cyberspaceRecallPoint = entryPoint.transform.position;
 		playerRadiationTreatmentFlash.SetActive(true);
-		cyberspaceReturnPoint = playerMovement.transform.position;
+		cyberspaceReturnPoint = PlayerMovement.a.transform.position;
 		cyberspaceReturnCameraLocalRotation = transform.localRotation.eulerAngles;
 		cyberspaceReturnPlayerCapsuleLocalRotation = transform.parent.transform.parent.transform.localRotation.eulerAngles;
 		cyberspaceReturnLevel = LevelManager.a.currentLevel;
 		MFDManager.a.EnterCyberspace();
 		LevelManager.a.LoadLevel (13,entryPoint,player,cyberspaceRecallPoint);
-		playerMovement.inCyberSpace = true;
-		playerMovement.leanCapsuleCollider.enabled = false;
+		PlayerMovement.a.inCyberSpace = true;
+		PlayerMovement.a.leanCapsuleCollider.enabled = false;
 		hm.inCyberSpace = true;
 		inCyberSpace = true;
 		playerCamera.useOcclusionCulling = false;
@@ -204,9 +205,9 @@ public class MouseLookScript : MonoBehaviour {
 		LevelManager.a.LoadLevel(cyberspaceReturnLevel,null,player,cyberspaceReturnPoint);
 		transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(cyberspaceReturnPlayerCapsuleLocalRotation.x, cyberspaceReturnPlayerCapsuleLocalRotation.y, cyberspaceReturnPlayerCapsuleLocalRotation.z); // left right component applied to capsule
 		transform.localRotation = Quaternion.Euler(cyberspaceReturnCameraLocalRotation.x,cyberspaceReturnCameraLocalRotation.y,cyberspaceReturnCameraLocalRotation.z); // Up down component applied to camera
-		playerMovement.inCyberSpace = false;
-		playerMovement.rbody.velocity = Const.a.vectorZero;
-		playerMovement.leanCapsuleCollider.enabled = true;
+		PlayerMovement.a.inCyberSpace = false;
+		PlayerMovement.a.rbody.velocity = Const.a.vectorZero;
+		PlayerMovement.a.leanCapsuleCollider.enabled = true;
 		hm.inCyberSpace = false;
 		inCyberSpace = false;
 		playerCamera.useOcclusionCulling = false;
@@ -217,7 +218,7 @@ public class MouseLookScript : MonoBehaviour {
 
 	// Draw line from cursor - used for projectile firing, e.g. magpulse/stugngun/railgun/plasma
 	public void SetCameraFocusPoint() {
-        Vector3 cursorPoint0 = new Vector3(MouseCursor.drawTexture.x + (MouseCursor.drawTexture.width * 0.5f), MouseCursor.drawTexture.y + (MouseCursor.drawTexture.height * 0.5f), 0f);
+        Vector3 cursorPoint0 = new Vector3(MouseCursor.a.drawTexture.x + (MouseCursor.a.drawTexture.width * 0.5f), MouseCursor.a.drawTexture.y + (MouseCursor.a.drawTexture.height * 0.5f), 0f);
         cursorPoint0.y = Screen.height - cursorPoint0.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
         if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint0), out tempHit, Mathf.Infinity)) cameraFocusPoint = tempHit.point;
 	}
@@ -282,8 +283,8 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	void FrobEmptyHanded() {
-		cursorPoint.x = MouseCursor.cursorPosition.x; //MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2f);
-		cursorPoint.y = Screen.height - MouseCursor.cursorPosition.y; //Screen.height - MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+		cursorPoint.x = MouseCursor.a.cursorPosition.x; //MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2f);
+		cursorPoint.y = Screen.height - MouseCursor.a.cursorPosition.y; //Screen.height - MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
 		cursorPoint.z = 0f;
 		float offset = Screen.height * 0.02f;
 		bool successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.a.frobDistance,Const.a.layerMaskPlayerFrob); // Separate from below which uses different mask
@@ -294,6 +295,17 @@ public class MouseLookScript : MonoBehaviour {
 				successfulRay = (tempHit.collider.CompareTag("Usable") || tempHit.collider.CompareTag("Searchable") || tempHit.collider.CompareTag("NPC"));
 			}
 		}
+
+		// Shoot rays in a pattern like this
+		// * * *
+		// * + *
+		// * * *
+
+		// In an order like this:
+		// 8 3 6
+		// 5 1 4
+		// 7 2 9
+		// To kind of walk around the center point to hopefully minimize rays we try.
 
 		if (!successfulRay) { // Try down
 			cursorPoint.y -= offset;
@@ -384,8 +396,8 @@ public class MouseLookScript : MonoBehaviour {
 		if (heldObjectIndex < 0) { Debug.Log("BUG: Attempting to frob with held object, but heldObjectIndex < 0."); return false; } // Invalid item will be dropped, wasn't used up.
 
 		if (heldObjectIndex == 54 || heldObjectIndex == 56 || heldObjectIndex == 57 || heldObjectIndex == 61 || heldObjectIndex == 64) {
-			cursorPoint.x = MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2f);
-			cursorPoint.y = Screen.height - MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+			cursorPoint.x = MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2f);
+			cursorPoint.y = Screen.height - MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
 			if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit, Const.a.frobDistance)) {
 				if (tempHit.collider.CompareTag("Usable")) {
 					UseData ud = new UseData ();
@@ -414,27 +426,27 @@ public class MouseLookScript : MonoBehaviour {
 		return false; // Item will be dropped, wasn't used up.
 	}
 
+	void PutObjectInHand(int useableConstdex, int customIndex, int ammo1, int ammo2, Texture2D cursorTex, bool fromButton) {
+		holdingObject = true;
+		heldObjectIndex = useableConstdex;
+		heldObjectCustomIndex = customIndex;
+		heldObjectAmmo = ammo1;
+		heldObjectAmmo2 = ammo2;
+		cursorTexture = cursorTex;
+		MouseCursor.a.cursorImage = cursorTexture;
+		if (fromButton) GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+		ForceInventoryMode();
+	}
+
 	void InventoryButtonUse() {
 		if (!GUIState.a.overButton) return;
 		if (GUIState.a.overButtonType == GUIState.ButtonType.None) return;
+		if (currentButton == null) return;
 
-		// overButtonTypes:
-		//-1 Not over a button
-		// 0 WeaponButton
-		// 1 GrenadeButton
-		// 2 PatchButton
-		// 3 GeneralInventoryButton
-		// 4 Search contents button
 		switch(GUIState.a.overButtonType) {
 			case GUIState.ButtonType.Weapon:
 				// Take weapon out of inventory, removing weapon, remove weapon and any other strings I need to CTRL+F my way to this buggy code!
 				WeaponButton wepbut = currentButton.GetComponent<WeaponButton>();
-				cursorTexture = Const.a.useableItemsFrobIcons[wepbut.useableItemIndex];
-				holdingObject = true;
-				heldObjectIndex = wepbut.useableItemIndex;
-				heldObjectCustomIndex = -1;
-				heldObjectAmmo = WeaponCurrent.WepInstance.currentMagazineAmount[wepbut.WepButtonIndex];
-				heldObjectAmmo2 = WeaponCurrent.WepInstance.currentMagazineAmount2[wepbut.WepButtonIndex];
 				WeaponCurrent.WepInstance.currentMagazineAmount[wepbut.WepButtonIndex] = 0; // zero out the current ammo
 				WeaponCurrent.WepInstance.currentMagazineAmount2[wepbut.WepButtonIndex] = 0; // zero out the current ammo
 				Inventory.a.RemoveWeapon(wepbut.WepButtonIndex);
@@ -443,56 +455,56 @@ public class MouseLookScript : MonoBehaviour {
 				WeaponCurrent.WepInstance.weaponIndex = 0;
 				wepbut.useableItemIndex = -1;
 				MFDManager.a.wepbutMan.WeaponCycleDown();
+				MFDManager.a.SendInfoToItemTab(WeaponCurrent.WepInstance.weaponIndexPending);
 				MFDManager.a.OpenTab(0, true, MFDManager.TabMSG.Weapon, 0,Handedness.LH);
-				GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
-				mouseCursor.cursorImage = cursorTexture;
-				ForceInventoryMode();
+				PutObjectInHand(wepbut.useableItemIndex,-1,
+								WeaponCurrent.WepInstance.currentMagazineAmount[wepbut.WepButtonIndex],
+								WeaponCurrent.WepInstance.currentMagazineAmount2[wepbut.WepButtonIndex],
+								Const.a.useableItemsFrobIcons[wepbut.useableItemIndex], true);
 				break;
 			case GUIState.ButtonType.Grenade:
 				GrenadeButton grenbut = currentButton.GetComponent<GrenadeButton>();
-				cursorTexture = Const.a.useableItemsFrobIcons[grenbut.useableItemIndex];
-				holdingObject = true;
-				heldObjectIndex = grenbut.useableItemIndex;
 				Inventory.a.grenAmmo[grenbut.GrenButtonIndex]--;
 				Inventory.a.GrenadeCycleDown();
-				Inventory.a.grenadeCurrent = 0;
+				//Inventory.a.grenadeCurrent = -1; This was up here, and seemed fine.  Might need to revert line 473 add.
 				if (Inventory.a.grenAmmo[grenbut.GrenButtonIndex] <= 0) {
-					Inventory.a.grenAmmo[grenbut.GrenButtonIndex] = 0; 
+					Inventory.a.grenAmmo[grenbut.GrenButtonIndex] = 0;
+					Inventory.a.grenadeCurrent = -1;
 					for (int i = 0; i < 7; i++) {
 						if (Inventory.a.grenAmmo[i] > 0) Inventory.a.grenadeCurrent = i;
 					}
+					MFDManager.a.SendInfoToItemTab(Inventory.a.grenadeCurrent);
+					if (Inventory.a.grenadeCurrent < 0) Inventory.a.grenadeCurrent = 0;
 				}
-				mouseCursor.cursorImage = cursorTexture;
-				ForceInventoryMode();
+				PutObjectInHand(grenbut.useableItemIndex,-1,0,0,Const.a.useableItemsFrobIcons[grenbut.useableItemIndex],true);
 				break;
 			case GUIState.ButtonType.Patch:
 				PatchButton patbut = currentButton.GetComponent<PatchButton>();
-				cursorTexture = Const.a.useableItemsFrobIcons[patbut.useableItemIndex];
-				holdingObject = true;
-				heldObjectIndex = patbut.useableItemIndex;
 				Inventory.a.patchCounts[patbut.PatchButtonIndex]--;
 				if (Inventory.a.patchCounts[patbut.PatchButtonIndex] <= 0) {
 					Inventory.a.patchCounts[patbut.PatchButtonIndex] = 0;
+					Inventory.a.patchCurrent = -1;
 					GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 					for (int i = 0; i < 7; i++) {
 						if (Inventory.a.patchCounts[i] > 0) Inventory.a.patchCurrent = i;
 					}
+					MFDManager.a.SendInfoToItemTab(Inventory.a.patchCurrent);
+					if (Inventory.a.patchCurrent < 0) Inventory.a.patchCurrent = 0;
 				}
-				mouseCursor.cursorImage = cursorTexture;
-				ForceInventoryMode();
+				PutObjectInHand(patbut.useableItemIndex,-1,0,0,Const.a.useableItemsFrobIcons[patbut.useableItemIndex],true);
 				break;
 			case GUIState.ButtonType.GeneralInv:
-				if (currentButton == null) {
-					Debug.Log("BUG:: MouseLookScript: currentButton null when trying to right click and over ButtonType.GeneralInv");
-				} else {
-					GeneralInvButton genbut = currentButton.GetComponent<GeneralInvButton>();
-					cursorTexture = Const.a.useableItemsFrobIcons[genbut.useableItemIndex];
-					holdingObject = true;
-					heldObjectIndex = genbut.useableItemIndex;
-					Inventory.a.generalInventoryIndexRef[genbut.GeneralInvButtonIndex] = -1;
+				GeneralInvButton genbut = currentButton.GetComponent<GeneralInvButton>();
+				Inventory.a.generalInventoryIndexRef[genbut.GeneralInvButtonIndex] = -1;
+				Inventory.a.generalInvCurrent = -1;
+				for (int i = 0; i < 7; i++) {
+					if (Inventory.a.generalInventoryIndexRef[i] >= 0) Inventory.a.generalInvCurrent = i;
 				}
-				mouseCursor.cursorImage = cursorTexture;
-				ForceInventoryMode();
+				int referenceIndex = -1;
+				if (Inventory.a.generalInvCurrent >= 0) referenceIndex = Inventory.a.genButtons[Inventory.a.generalInvCurrent].transform.GetComponent<GeneralInvButton>().useableItemIndex;
+				if (referenceIndex < 0 || referenceIndex > 94) MFDManager.a.ResetItemTab();
+				else MFDManager.a.SendInfoToItemTab(referenceIndex);
+				PutObjectInHand(genbut.useableItemIndex,-1,0,0,Const.a.useableItemsFrobIcons[genbut.useableItemIndex],true);
 				break;
 			case GUIState.ButtonType.Search:
 				SearchButton sebut = currentButton.GetComponentInParent<SearchButton>();
@@ -516,7 +528,7 @@ public class MouseLookScript : MonoBehaviour {
 					ResetCursor();
 				} else {
 					Const.sprint(Const.a.useableItemsNameText[heldObjectIndex] + Const.a.stringTable[319],player);
-					mouseCursor.cursorImage = cursorTexture;
+					MouseCursor.a.cursorImage = cursorTexture;
 					ForceInventoryMode();
 				}
 				break;
@@ -538,25 +550,24 @@ public class MouseLookScript : MonoBehaviour {
 
 	void RecoilAndRest() {
 		float camz = Mathf.Lerp(transform.localPosition.z,0f,0.1f);
-		Vector3 camPos = new Vector3(transform.localPosition.x,Const.a.playerCameraOffsetY*playerMovement.currentCrouchRatio,camz);
+		Vector3 camPos = new Vector3(transform.localPosition.x,Const.a.playerCameraOffsetY*PlayerMovement.a.currentCrouchRatio,camz);
 		transform.localPosition = camPos;
 		if (shakeFinished > PauseScript.a.relativeTime) transform.localPosition = new Vector3(transform.localPosition.x + UnityEngine.Random.Range(shakeForce * -1f,shakeForce),transform.localPosition.y + UnityEngine.Random.Range(shakeForce * -1f,shakeForce),transform.localPosition.z + UnityEngine.Random.Range(shakeForce * -1f,shakeForce));
 	}
 
 	void AddItemFail(int index) {
 		DropHeldItem();
-		ResetHeldItem();
-		ResetCursor();
 		Const.sprint(Const.a.stringTable[32] + Const.a.useableItemsNameText[index] + Const.a.stringTable[318],player); // Inventory full.
 	}
 
 	public void AddItemToInventory (int index) {
-		AudioClip pickclip;
-		pickclip = PickupSFX;
+		if (index < 0) index = 0; // Good check on paper.
+		if (index > 94) index = 94; // Way to get a head.
+		AudioClip pickclip = PickupSFX;
 		if ((index >= 0 && index <= 5) || index == 33 || index == 35 || (index >= 52 && index < 59) || (index >= 61 && index <= 64) || (index >= 92 && index <= 101)) { if (!Inventory.a.AddGenericObjectToInventory(index)) AddItemFail(index); }
 		else if (index == 6) Inventory.a.AddAudioLogToInventory(heldObjectCustomIndex);
 		else if (index >= 36 && index <= 51) { if (!Inventory.a.AddWeaponToInventory(index,heldObjectAmmo,heldObjectAmmo2)) AddItemFail(index); }
-		else if (index == 81 || (index >= 83 && index <= 91)) Inventory.a.AddAccessCardToInventory(index);
+		else if (index == 34 || index == 81 || (index >= 83 && index <= 91)) Inventory.a.AddAccessCardToInventory(index);
 		else {
 			switch (index) {
 				case 7:  Inventory.a.AddGrenadeToInventory(0,index); break; // Frag
@@ -585,7 +596,6 @@ public class MouseLookScript : MonoBehaviour {
 				case 30: Inventory.a.AddHardwareToInventory(9,index); break;
 				case 31: Inventory.a.AddHardwareToInventory(10,index); break;
 				case 32: Inventory.a.AddHardwareToInventory(11,index); break;
-				case 34: Inventory.a.AddAccessCardToInventory(34); break;
 				case 60: Inventory.a.AddAmmoToInventory(12,index, Const.a.magazinePitchCountForWeapon[12], false); break; // rubber slugs
 				case 65: Inventory.a.AddAmmoToInventory(8,index, Const.a.magazinePitchCountForWeapon2[8], true); break; // magpulse cartridge super
 				case 66: Inventory.a.AddAmmoToInventory(2,index, Const.a.magazinePitchCountForWeapon[2], false); break; // needle darts
@@ -625,9 +635,14 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	public void DropHeldItem() {
-		if (heldObjectIndex < 0 || heldObjectIndex > 255) { Debug.Log("BUG: Attempted to DropHeldItem with index out of bounds (<0 or >255) and heldObjectIndex = " + heldObjectIndex.ToString(),player); return; }
+		if (heldObjectIndex < 0 || heldObjectIndex > 101) { 
+			Debug.Log("BUG: Attempted to DropHeldItem with index out of bounds (<0 or >101) and heldObjectIndex = " + heldObjectIndex.ToString(),player);
+			ResetHeldItem();
+			ResetCursor();
+			return;
+		}
 
-		if (!grenadeActive) heldObject = Const.a.useableItems[heldObjectIndex]; // set by UseGrenade()
+		if (!grenadeActive) heldObject = Const.a.useableItems[heldObjectIndex]; // heldObject is set by UseGrenade() so don't override here.
 		if (heldObject != null) {
 			GameObject tossObject = null;
 			bool freeObjectInPoolFound = false;
@@ -654,6 +669,8 @@ public class MouseLookScript : MonoBehaviour {
 				if (freeObjectInPoolFound) {
 					if (tossObject == null) {
 						Const.sprint("BUG: Failed to get freeObjectInPool for object being dropped!",player);
+						ResetHeldItem();
+						ResetCursor();
 						return;
 					} else {
 						tossObject.transform.position = (transform.position + (transform.forward * tossOffset));
@@ -663,6 +680,8 @@ public class MouseLookScript : MonoBehaviour {
 					tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Const.a.quaternionIdentity) as GameObject;  //effect
 					if (tossObject == null) {
 						Const.sprint("BUG: Failed to instantiate object being dropped!",player);
+						ResetHeldItem();
+						ResetCursor();
 						return;
 					} else {
 						SaveObject so = tossObject.GetComponent<SaveObject>();
@@ -680,7 +699,7 @@ public class MouseLookScript : MonoBehaviour {
 					if (so != null) so.levelParentID = LevelManager.a.currentLevel;
 				}
 
-				Vector3 tossDir = new Vector3(MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2),MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2),0);
+				Vector3 tossDir = new Vector3(MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2),MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2),0);
 				tossDir.y = Screen.height - tossDir.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
 				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
 				tossObject.GetComponent<Rigidbody>().velocity = tossDir * tossForce;
@@ -691,7 +710,12 @@ public class MouseLookScript : MonoBehaviour {
 				// Throw an active grenade
 				grenadeActive = false;
 				tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Const.a.quaternionIdentity) as GameObject;  //effect
-				if (tossObject == null) { Const.sprint("BUG: Failed to instantiate object being dropped!",player); return; }
+				if (tossObject == null) {
+					Const.sprint("BUG: Failed to instantiate object being dropped!",player);
+					ResetHeldItem();
+					ResetCursor();
+					return;
+				}
 
 				if (levelDynamicContainer != null){
 					tossObject.transform.SetParent(levelDynamicContainer.transform,true);
@@ -699,17 +723,19 @@ public class MouseLookScript : MonoBehaviour {
 					if (so != null) so.levelParentID = LevelManager.a.currentLevel;
 				}
 				tossObject.layer = 11; // Set to player bullets layer to prevent collision and still be visible.
-				Vector3 tossDir = new Vector3(MouseCursor.drawTexture.x+(MouseCursor.drawTexture.width/2),MouseCursor.drawTexture.y+(MouseCursor.drawTexture.height/2),0);
+				Vector3 tossDir = new Vector3(MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2),MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2),0);
 				tossDir.y = Screen.height - tossDir.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
 				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
 				tossObject.GetComponent<Rigidbody>().velocity = tossDir * tossForce;
 				GrenadeActivate ga = tossObject.GetComponent<GrenadeActivate>();
 				if (ga != null) ga.Activate(heldObjectIndex); // Time to boom!
-				mouseCursor.liveGrenade = false;
+				MouseCursor.a.liveGrenade = false;
 			}
 		} else {
 			Const.sprint("BUG: Object "+heldObjectIndex.ToString()+" not assigned, vaporized.",player);
 		}
+		ResetHeldItem();
+		ResetCursor();
 	}
 
 	public void ResetHeldItem() {
@@ -718,14 +744,14 @@ public class MouseLookScript : MonoBehaviour {
 		heldObjectAmmo = 0;
 		heldObjectAmmo2 = 0;
 		holdingObject = false;
-		mouseCursor.justDroppedItemInHelper = true;
+		MouseCursor.a.justDroppedItemInHelper = true;
 	}
 
 	public void ResetCursor () {
-        if (mouseCursor != null) {
+        if (MouseCursor.a != null) {
             cursorTexture = cursorDefaultTexture;
-            mouseCursor.cursorImage = cursorTexture;
-			mouseCursor.liveGrenade = false;
+            MouseCursor.a.cursorImage = cursorTexture;
+			MouseCursor.a.liveGrenade = false;
         } else {
 			Const.sprint("BUG: Could Not Find object 'MouseCursorHandler' in scene\n");
         }
@@ -762,7 +788,7 @@ public class MouseLookScript : MonoBehaviour {
 		if (curSearchScript.searchableInUse) {
 			for (int i=0;i<4;i++) {
 				if (curSearchScript.contents[i] >= 0) {
-					mouseCursor.GetComponent<MouseCursor>().cursorImage = Const.a.useableItemsFrobIcons[curSearchScript.contents[i]];
+					MouseCursor.a.GetComponent<MouseCursor>().cursorImage = Const.a.useableItemsFrobIcons[curSearchScript.contents[i]];
 					heldObjectIndex = curSearchScript.contents[i];
 					curSearchScript.contents[i] = -1;
 					curSearchScript.customIndex[i] = -1;
@@ -802,12 +828,8 @@ public class MouseLookScript : MonoBehaviour {
 		if (index < 7 || index > 13) { Debug.Log("BUG: index outside of 7 to 13 passed to UseGrenade() in MouseLookScript.cs"); return; }
 
 		ForceInventoryMode();  // Inventory mode is turned on when picking something up.
-		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 		ResetHeldItem();
-		holdingObject = true;
-		heldObjectIndex = index;
-		mouseCursor.cursorImage = Const.a.useableItemsFrobIcons[index];
-		mouseCursor.liveGrenade = true;
+		MouseCursor.a.liveGrenade = true;
 		grenadeActive = true;
 		Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[320],player);
 		switch(index) { // Subtract one from the correct grenade inventory
@@ -819,6 +841,8 @@ public class MouseLookScript : MonoBehaviour {
 			case 12: heldObject = Const.a.useableItems[96]; Inventory.a.RemoveGrenade(5); break; // Nitropak
 			case 13: heldObject = Const.a.useableItems[97]; Inventory.a.RemoveGrenade(2); break; // Gas
 		}
+		MFDManager.a.ResetItemTab();
+		PutObjectInHand(index,-1,0,0,Const.a.useableItemsFrobIcons[index], true);
 	}
 
 	public void ScreenShake (float force) {

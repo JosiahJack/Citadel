@@ -8,8 +8,6 @@ public class MissionTimer : MonoBehaviour {
 	public Text timerTypeText;
 	public string currentMission;
 	public int currentMissionIndex;
-	public PlayerHealth playerHealth;
-	public MouseLookScript mls;
 	public GameObject radTrigger;
 
 	[HideInInspector] public bool lastTimer = false;
@@ -77,12 +75,12 @@ public class MissionTimer : MonoBehaviour {
 					gameObject.SetActive(false);
 					return;
 				} else {
-					playerHealth.PlayerDeathToMenu(mls);
+					PlayerHealth.a.PlayerDeathToMenu();
 					return;
 				}
 			}
 
-			if (mls.inCyberSpace) return; // timer doesn't count down in cyberspace, yay!
+			if (MouseLookScript.a.inCyberSpace) return; // timer doesn't count down in cyberspace, yay!
 
 			if (timerFinished < PauseScript.a.relativeTime) {
 				t -= 1f;

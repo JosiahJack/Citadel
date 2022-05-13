@@ -1,6 +1,6 @@
 // Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
 
-Shader "Hidden/DeferredReflections" {
+Shader "Hidden/MaxwellGengDeferredReflections" {
 Properties {
     _SrcBlend ("", Float) = 1
     _DstBlend ("", Float) = 1

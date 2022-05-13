@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+// Helper script to put a button in the inspector for me to click and run tests.
 [CustomEditor(typeof(Tests))]
 public class TestsEditor : Editor {
 	public override void OnInspectorGUI() {

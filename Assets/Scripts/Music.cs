@@ -21,7 +21,6 @@ public class Music : MonoBehaviour {
 	private float clipOverlayLength;
 	private float clipOverlayFinished;
 	public GameObject mainMenu;
-	public WeaponFire wf;
 	public HealthManager hm;
 	public enum MusicType : byte {None,Walking,Combat,Overlay,Override};
 	public enum TrackType : byte {None,Walking,Combat,MutantNear,CyborgNear,CyborgDroneNear,RobotNear,Transition,Revive,Death,Cybertube,Elevator,Distortion};

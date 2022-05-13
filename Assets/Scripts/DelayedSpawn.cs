@@ -8,30 +8,44 @@ public class DelayedSpawn : MonoBehaviour {
 	public bool despawnInstead = false;
 	public bool doSelfAfterList = false;
 	public bool destroyAfterListInsteadOfDeactivate = false;
+	[HideInInspector] public float timerFinished; // save
+	[HideInInspector] public bool active; // save
 
 	void OnEnable() {
-        StartCoroutine(EnableObjects());
+		timerFinished = PauseScript.a.relativeTime + delay;
+        active = true;
     }
 
-    IEnumerator EnableObjects() {
-        yield return new WaitForSeconds(delay);
-        for (int i=0;i<objectsToSpawn.Length;i++) {
-			if (despawnInstead) {
-				if (objectsToSpawn[i] != null) objectsToSpawn[i].SetActive(false);
-			} else {
-				if (objectsToSpawn[i] != null) objectsToSpawn[i].SetActive(true);
-			}
-		}
-		if (doSelfAfterList) {
-			if (despawnInstead) {
-				if (destroyAfterListInsteadOfDeactivate) {
-					Destroy(gameObject);
-				} else {
-					gameObject.SetActive(false);
+	void Update() {
+		if (active) {
+			if (timerFinished < PauseScript.a.relativeTime) {
+				active = false; // Once only, unless we do self after the list.
+				for (int i=0;i<objectsToSpawn.Length;i++) {
+					if (despawnInstead) {
+						if (objectsToSpawn[i] != null) objectsToSpawn[i].SetActive(false);
+					} else {
+						if (objectsToSpawn[i] != null) objectsToSpawn[i].SetActive(true);
+					}
 				}
-			} else {
-				gameObject.SetActive(true);
+				if (doSelfAfterList) {
+					if (despawnInstead) {
+						if (destroyAfterListInsteadOfDeactivate) {
+							Destroy(gameObject);
+						} else {
+							gameObject.SetActive(false);
+						}
+					} else {
+						gameObject.SetActive(true);
+					}
+				}
 			}
 		}
     }
+
+	public string Save() {
+		string line = System.String.Empty;
+		line = Const.a.FloatToString(timerFinished);
+		line += Const.splitChar + Const.a.BoolToString(active);
+		return line;
+	}
 }

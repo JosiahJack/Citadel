@@ -10,7 +10,6 @@ using System.Text.RegularExpressions;
 public class PlayerMovement : MonoBehaviour {
 	// External references, required
 	public GameObject cameraObject;
-	public MouseLookScript mlookScript;
 	public Camera automapCamera;
 	public GameObject automapContainerLH;
 	public GameObject automapContainerRH;
@@ -53,7 +52,18 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject levelOverlayContainerG1;
 	public GameObject levelOverlayContainerG2;
 	public GameObject levelOverlayContainerG4;
-	public Vector2[] automapLevelHomePositions; // R= 43.97, 85.66 | 1= -8.53, 85.99 | 2= 10.2, 44.8 | 3= 9.4, 63.83 | 4= -55.65, 116.8 | 5= -9.4, 71.8 | 6= 29.7, 85.5 | 7= 5, 76.55 | 8= 25.1, 84.4 | 9= 39.8, 72.6
+	public Vector2[] automapLevelHomePositions;
+		// R=  43.97,  85.66
+		// 1=  -8.53,  85.99
+		// 2=  10.20,  44.80
+		// 3=    9.4,  63.83
+		// 4= -55.65, 116.80
+		// 5=  -9.40,  71.80
+		// 6=  29.70,  85.50
+		// 7=   5.00,  76.55
+		// 8=  25.10,  84.40
+		// 9=  39.80,  72.60
+	
 	public HardwareButton hwbJumpJets;
 	public TextWarningsManager twm;
 	public CapsuleCollider leanCapsuleCollider;
@@ -70,7 +80,6 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject fpsCounter;
 	public GameObject locationIndicator;
 	public Text locationText;
-	public WeaponCurrent wepCur;
 	public HealthManager hm;
 	public GameObject poolContainerAutomapBotOverlays;
 	public GameObject poolContainerAutomapMutantOverlays;
@@ -93,7 +102,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	// Internal references
 	[HideInInspector] public float playerSpeed; // save
-	[HideInInspector] public int bodyState = 0; // save
+	[HideInInspector] public BodyState bodyState; // save
 	[HideInInspector] public bool isSprinting = false;
 	[HideInInspector] public bool grounded = false; // save
 	[HideInInspector] public bool ladderState = false; // save
@@ -133,14 +142,14 @@ public class PlayerMovement : MonoBehaviour {
 	private float automapZoom1 = 0.75f;
 	private float automapZoom2 = 0.55f;
 	private int currentAutomapZoomLevel = 0;
-	// private float circleInnerRangev1 = 7.679999f; //(2.5f * 2.56f) + 1.28f;
-	// private float circleOuterRangev1 = 11.52f; //(4f * 2.56f) + 1.28f;
-	// private float circleInnerRangev2 = 8.96f; //(3f * 2.56f) + 1.28f;
-	// private float circleOuterRangev2 = 12.8f; //(4.5f * 2.56f) + 1.28f;
-	// private float circleInnerRangev3 = 14.08f; //(5f * 2.56f) + 1.28f;
-	// private float circleOuterRangev3 = 20.48f; //(7.5f * 2.56f) + 1.28f;
-	// private float automapFactorx = 1.25f;
-	// private float automapFactory = 1.135f;
+		// private float circleInnerRangev1 = 7.679999f; //(2.5f * 2.56f) + 1.28f;
+		// private float circleOuterRangev1 = 11.52f; //(4f * 2.56f) + 1.28f;
+		// private float circleInnerRangev2 = 8.96f; //(3f * 2.56f) + 1.28f;
+		// private float circleOuterRangev2 = 12.8f; //(4.5f * 2.56f) + 1.28f;
+		// private float circleInnerRangev3 = 14.08f; //(5f * 2.56f) + 1.28f;
+		// private float circleOuterRangev3 = 20.48f; //(7.5f * 2.56f) + 1.28f;
+		// private float automapFactorx = 1.25f;
+		// private float automapFactory = 1.135f;
 	[HideInInspector] public bool CheatWallSticky; // save
     [HideInInspector] public bool CheatNoclip; // save
     [HideInInspector] public bool staminupActive = false;
@@ -175,7 +184,7 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector] public bool cyberDesetup = false; // save
 	private SphereCollider cyberCollider;
 	private CapsuleCollider capsuleCollider;
-	[HideInInspector] public int oldBodyState; // save
+	[HideInInspector] public BodyState oldBodyState; // save
 	private float bonus;
     private float walkDeaccelerationVolx;
     private float walkDeaccelerationVoly;
@@ -200,7 +209,6 @@ public class PlayerMovement : MonoBehaviour {
 	private float leanSpeed = 70f;
 	[HideInInspector] public bool Notarget = false; // for cheat to disable enemy sight checks against this player
 	[HideInInspector] public bool fatigueWarned; // save
-	private PlayerEnergy pe;
 	[HideInInspector] public float ressurectingFinished; // save
 	private float burstForce = 35f;
 	[HideInInspector] public float doubleJumpFinished; // save
@@ -223,9 +231,15 @@ public class PlayerMovement : MonoBehaviour {
 	private List<string> lastCommand;
 	private int commandMemoryIndex;
 
+	public static PlayerMovement a;
+
+	void Awake() {
+		a = this;
+	}
+
     void Start (){
 		currentCrouchRatio = def1;
-		bodyState = defIndex;
+		bodyState = BodyState.Standing;
 		cyberDesetup = false;
 		oldBodyState = bodyState;
 		fatigueFinished = PauseScript.a.relativeTime;
@@ -244,7 +258,6 @@ public class PlayerMovement : MonoBehaviour {
 		justJumped = false;
 		jumpSFXFinished = PauseScript.a.relativeTime;
 		fatigueWarned = false;
-		pe = GetComponent<PlayerEnergy>();
 		jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime;
 		ressurectingFinished = PauseScript.a.relativeTime;
 		tempInt = -1;
@@ -265,281 +278,122 @@ public class PlayerMovement : MonoBehaviour {
 		commandMemoryIndex = 0;
     }
 
-	void  Update() {
-		// Crouch input state machine
-		// Body states:
-		// 0 = Standing
-		// 1 = Crouch
-		// 2 = Crouching down in process
-		// 3 = Standing up in process
-		// 4 = Prone
-		// 5 = Proning down in process
-		// 6 = Proning up to crouch in process
+	void Update() {
+		// Always allowed items, even when paused...
+		ConsoleUpdate();
 
-		// Always allow console, even when paused
-        if (GetInput.a.Console()) ToggleConsole();
-		if (Input.GetKeyDown(KeyCode.UpArrow) && consoleentryText.enabled) {
-			commandMemoryIndex++;
-			if (commandMemoryIndex >= lastCommand.Count) commandMemoryIndex = 0;
-			if (lastCommand.Count > 0 && commandMemoryIndex >= 0 && commandMemoryIndex < lastCommand.Count) consoleentryText.text = lastCommand[commandMemoryIndex];
-			else commandMemoryIndex = 0;
+		// Bug Hunter feedback (puts it into their screenshots for me)
+		if (locationIndicator.activeInHierarchy) locationText.text = "location: " +(transform.position.x.ToString("00.00")
+																	 + " " + transform.position.y.ToString("00.00")
+																	 + " " + transform.position.z.ToString("00.00"));
+
+		// Prevent falling or movement while menu is up. Force it here in case PauseScript didn't catch it at startup.
+		if (PauseScript.a.mainMenu.activeSelf == true) { rbody.useGravity = false; rbody.Sleep(); return; }
+		if (PauseScript.a.Paused() || (ressurectingFinished >= PauseScript.a.relativeTime)) return;
+
+		// Normal play when not paused...
+
+		rbody.WakeUp(); // Force player physics to never sleep.
+		CyberSetup();
+		if (!inCyberSpace) {
+			CyberDestupOrNoclipMaintain();
 		}
 
-		if (Input.GetKeyDown(KeyCode.DownArrow) && consoleentryText.enabled) {
-			commandMemoryIndex--;
-			if (commandMemoryIndex >= lastCommand.Count) commandMemoryIndex = 0;
-			if (lastCommand.Count > 0 && commandMemoryIndex >= 0 && commandMemoryIndex < lastCommand.Count) consoleentryText.text = lastCommand[commandMemoryIndex];
-			else commandMemoryIndex = 0;
-		}
-
-		if ((Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter)) && !PauseScript.a.mainMenu.activeSelf == true && consoleActivated) ConsoleEntry();
-		if (locationIndicator.activeInHierarchy) locationText.text = "location: " +(transform.position.x.ToString("00.00")+" "+transform.position.y.ToString("00.00")+" "+transform.position.z.ToString("00.00"));
-
-		if (consoleActivated) {
-			if (!String.IsNullOrEmpty(consoleentryText.text)) {
-				if (consoleplaceholderText.activeSelf) consoleplaceholderText.SetActive(false);
-			} else {
-				if (!consoleplaceholderText.activeSelf) consoleplaceholderText.SetActive(true);
-			}
-		} else {
-			if (consoleplaceholderText.activeSelf) consoleplaceholderText.SetActive(false);
-		}
-
-		if (PauseScript.a.mainMenu.activeSelf == true) {
-			if (rbody.useGravity) rbody.useGravity = false;
-			return;  // ignore movement when main menu is still up
-		} else {
-			if (!inCyberSpace && !rbody.useGravity) rbody.useGravity = true;
-		}
-
-		if (!PauseScript.a.Paused() && (ressurectingFinished < PauseScript.a.relativeTime)) {
-			rbody.WakeUp();
-			if (inCyberSpace && !cyberSetup) {
-				cyberCollider.enabled = true;
-				capsuleCollider.enabled = false;
-				rbody.useGravity = false;
-				mlookScript.inCyberSpace = true; // enable full camera rotation up/down by disabling clamp
-				oldBodyState = bodyState;
-				bodyState = defIndex; // reset to "standing" to prevent speed anomolies
-				// UPDATE enable dummy player for coop games
-				cyberSetup = true;
-				cyberDesetup = true;
-			}
-
-			if (!inCyberSpace && cyberDesetup || CheatNoclip) {
-                if (CheatNoclip) {
-                    // Flying cheat...also map editing mode!
-                    cyberCollider.enabled = false; // can't touch dis
-                    capsuleCollider.enabled = false; //na nana na, na na, can't touch dis
-					leanCapsuleCollider.enabled = false;
-                    rbody.useGravity = false; // look ma! no legs
-
-                    Mathf.Clamp(mlookScript.xRotation, -90f, 90f); // pre-clamp camera rotation - still useful
-                    mlookScript.inCyberSpace = false; // disable full camera rotation up/down by enabling auto clamp
-                    bodyState = oldBodyState; // return to what we were doing in the "real world" (real lol)
-                                              // UPDATE disable dummy player for coop games  dummyPlayerModel.SetActive(false); dummyPlayerCapsule.enabled = false;
-                    cyberSetup = false;
-                    cyberDesetup = false;
-                } else {
-                    cyberCollider.enabled = false;
-                    capsuleCollider.enabled = true;
-					leanCapsuleCollider.enabled = true;
-                    rbody.useGravity = true;
-
-                    Mathf.Clamp(mlookScript.xRotation, -90f, 90f); // pre-clamp camera rotation
-                    mlookScript.inCyberSpace = false; // disable full camera rotation up/down by enabling auto clamp
-                    bodyState = oldBodyState; // return to what we were doing in the "real world" (real lol)
-                                              // UPDATE disable dummy player for coop games
-                    cyberSetup = false;
-                    cyberDesetup = false;
-                }
-			}
-
-			if (GetInput.a.Sprint() && !consoleActivated) {
-				if (grounded || CheatNoclip) {
-					if (GetInput.a.CapsLockOn()) {
-						isSprinting = false;
-					} else {
-						isSprinting = true;
-					}
-				}
-			} else {
-				if (grounded || CheatNoclip) {
-					if (GetInput.a.CapsLockOn()) {
-						isSprinting = true;
-					} else {
-						isSprinting = false;
-					}
-				}
-			}
-
-			if (GetInput.a.Crouch() && !CheatNoclip && !consoleActivated) {
-				if ((bodyState == 1) || (bodyState == 2)) {
-					if (!(CantStand())) {
-						bodyState = 3; // Start standing up
-						//Debug.Log ("Standing up from crouch...");
-					} else {
-						Const.sprint(Const.a.stringTable[187],Const.a.player1);
-					}
-				} else {
-					if ((bodyState == 0) || (bodyState == 3)) {
-						//Debug.Log ("Crouching down...");
-						bodyState = 2; // Start crouching down
-					} else {
-						if ((bodyState == 4) || (bodyState == 5)) {
-							if (!(CantCrouch())) {
-								//Debug.Log ("Getting up from prone to crouch...");
-								bodyState = 6; // Start getting up to crouch
-							} else {
-								Const.sprint(Const.a.stringTable[188],Const.a.player1);
-							}
-						}
-					}
-				}
-			}
-
-			if (GetInput.a.Prone() && !CheatNoclip && !consoleActivated) {
-				if (bodyState == 0 || bodyState == 1 || bodyState == 2 || bodyState == 3 || bodyState == 6) {
-					//Debug.Log ("Proning down...");
-					bodyState = 5; // Start proning down
-				} else {
-					if (bodyState == 4 || bodyState == 5) {
-						if (!CantStand()) {
-							//Debug.Log ("Getting up from prone to standing...");
-							bodyState = 3; // Start standing up
-						} else {
-							Const.sprint(Const.a.stringTable[187],Const.a.player1);
-						}
-					}
-				}
-			}
-			
-			if (currentCrouchRatio > 1) {
-				if (bodyState == 0 || bodyState == 3) {
-					currentCrouchRatio = 1; //Clamp it
-					bodyState = 0;
-				}
-			} else {	
-				if (currentCrouchRatio < crouchRatio) {
-					if (bodyState == 1 || bodyState == 2) {
-						currentCrouchRatio = crouchRatio; //Clamp it
-						bodyState = 1;
-					} else {
-						if (bodyState == 4 || bodyState == 5) {
-							if (currentCrouchRatio < proneRatio) {
-								currentCrouchRatio = proneRatio; //Clamp it
-								bodyState = 4;
-								
-							}
-						}
-					}
-				} else {
-					if (bodyState == 6) {
-						if (currentCrouchRatio > crouchRatio) {
-							currentCrouchRatio = crouchRatio; //Clamp it
-							bodyState = 1;
-						}
-					}
-				}
-			}
-			// here fatigue me out, except in cyberspace
-			if (fatigueFinished < PauseScript.a.relativeTime && !inCyberSpace && !CheatNoclip) {
-				fatigueFinished = PauseScript.a.relativeTime + fatigueWaneTickSecs;
-				switch (bodyState) {
-				case 0: fatigue -= fatigueWanePerTick; break;
-				case 1: fatigue -= fatigueWanePerTickCrouched; break;
-				case 4: fatigue -= fatigueWanePerTickProne; break;
-				default: fatigue -= fatigueWanePerTick; break;
-				}
-				if (fatigue < defIndex) fatigue = defIndex; // clamp at 0
-			}
-			if (fatigue > onehundred) fatigue = onehundred; // clamp at 100 using dummy variables to hang onto the value and not get collected by garbage collector (really?  hey it was back in the old days when we didn't have incremental garbage collector, pre Unity 2019.2 versions
-			if (fatigue > 80 && !fatigueWarned && !inCyberSpace) {
-				twm.SendWarning(("Fatigue high"),0.1f,0,TextWarningsManager.warningTextColor.white,324);
-				fatigueWarned = true;
-			} else {
-				fatigueWarned = false;
-			}
-		}
+		isSprinting = GetSprintInputState();
+		Crouch();
+		Prone();
+		EndCrouchProneTransition();
+		FatigueApply(); // Here fatigue me out, except in cyberspace
 	}
 
 	void FixedUpdate() {
-		if (PauseScript.a.Paused() || PauseScript.a.MenuActive() || ressurectingFinished > PauseScript.a.relativeTime) return;
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return;
+		if (ressurectingFinished > PauseScript.a.relativeTime) return;
+		if (consoleActivated) return;
 
 		if (capsuleCollider.height != (currentCrouchRatio * 2f)) capsuleCollider.height = currentCrouchRatio * 2f; // Crouch
-		if (leanCapsuleCollider.height != capsuleCollider.height) leanCapsuleCollider.height = capsuleCollider.height;
-		
-		// Handle body state speeds and body position lerping for smooth transitions
-		if (inCyberSpace) {
-			playerSpeed = maxCyberSpeed; //Cyber space state
-			if (rbody.velocity.magnitude > maxCyberUltimateSpeed) RigidbodySetVelocity(rbody, maxCyberUltimateSpeed); // Limit movement speed in all axes x,y,z in cyberspace
+		if (leanCapsuleCollider.height != capsuleCollider.height) leanCapsuleCollider.height = capsuleCollider.height; // Lean should always match stalk.
+		SetRunningRelForwardsAndSidewaysFlags();
+		playerSpeed = GetBasePlayerSpeed();
+		if (Inventory.a.hasHardware[1]) UpdateAutomap(); // Update the map
+		ApplyBodyStateLerps(); // Handle body position lerping for smooth transitions
+		horizontalMovement = GetClampedHorizontalMovement(); // Limit movement speed horizontally for normal movement
+		RigidbodySetVelocityX(rbody, horizontalMovement.x); // Clamp horizontal movement
+		RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG - already passed rbody.velocity.z into the .y of this Vector2
+		verticalMovement = GetClampedVerticalMovement();
+		RigidbodySetVelocityY(rbody, verticalMovement); // Clamp vetical movement
+		ApplyGroundFriction();
+		bool grav = GetGravity();
+		if (rbody.useGravity != grav) rbody.useGravity = grav; // Avoid useless setting of the rbody.
+		Noclip();
+		if (!inCyberSpace) {
+			Lean();
+			WalkRun();
+			LadderStates();			 
+			Jump();
+			FallDamage();
+			oldVelocity = rbody.velocity;
+			if (!CheatWallSticky || gravliftState) grounded = false; // Automatically set grounded to false to prevent ability to climb any wall
 		} else {
-			if (Inventory.a.hasHardware[1]) UpdateAutomap(); // Update the map
-			bonus = 0f;
-			if (Inventory.a.hardwareIsActive [9]) bonus = boosterSpeedBoost;
-			switch (bodyState) {
-				case 0: playerSpeed = maxWalkSpeed + bonus; break; // Standing
-				case 1: playerSpeed = maxCrouchSpeed + bonus; break; // Crouched
-				case 2: currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec); break; // Crouching down
-				case 3: // Standing up
-					lastCrouchRatio = currentCrouchRatio;
-					currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, 1.01f, ref crouchingVelocity, transitionToCrouchSec);
-					LocalPositionSetY (transform, (((currentCrouchRatio - lastCrouchRatio) * capsuleHeight) / 2) + transform.position.y);
-					break;
-				case 4: playerSpeed = maxProneSpeed + bonus;  break; // Prone
-				case 5: currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec); break; // Proning down
-				case 6: // Prone to crouch
-					lastCrouchRatio = currentCrouchRatio;
-					currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, 1.01f, ref crouchingVelocity, (transitionToCrouchSec + transitionToProneAdd));
-					LocalPositionSetY (transform, (((currentCrouchRatio - lastCrouchRatio) * capsuleHeight) / 2) + transform.position.y);
-					break;
-			}
+			CyberspaceMovement();
+		}
+	}
 
-			// Limit movement speed horizontally for normal movement
-			horizontalMovement = new Vector2(rbody.velocity.x, rbody.velocity.z);
-			if (horizontalMovement.magnitude > playerSpeed) {
-				horizontalMovement = horizontalMovement.normalized;
-				if (isSprinting && running) {
-					if (fatigue > 80f) {
-						playerSpeed = maxSprintSpeedFatigued + bonus;
-					} else {
-						playerSpeed = maxSprintSpeed + bonus;
-					}
+	float GetBasePlayerSpeed() {
+		if (CheatNoclip) return maxCyberSpeed * 1.5f; // Cheat speed.
+		if (inCyberSpace) return maxCyberSpeed; //Cyber space state
 
-					if (bodyState == 1 || bodyState == 2 || bodyState == 3) playerSpeed -= ((maxWalkSpeed - maxCrouchSpeed)*1.5f);  // subtract off the difference in speed between walking and crouching from the sprint speed
-					else if (bodyState == 4 || bodyState == 5 || bodyState == 6) playerSpeed -= ((maxWalkSpeed - maxProneSpeed)*2f);  // subtract off the difference in speed between walking and proning from the sprint speed
-				}
-				if (CheatNoclip) playerSpeed = maxCyberSpeed*4f; // Cheat speed.
-				horizontalMovement *= playerSpeed;  // cap velocity to max speed
-			}
+		float retval = maxWalkSpeed;
+		bonus = 0f;
+		if (Inventory.a.hardwareIsActive [9]) bonus = boosterSpeedBoost;
+		switch (bodyState) {
+			case BodyState.Standing: 		retval = maxWalkSpeed;   break;
+			case BodyState.Crouch: 			retval = maxCrouchSpeed; break;
+			case BodyState.CrouchingDown: 	retval = maxCrouchSpeed; break;
+			case BodyState.StandingUp: 		retval = maxWalkSpeed;   break;
+			case BodyState.Prone: 			retval = maxProneSpeed;  break;
+			case BodyState.ProningDown: 	retval = maxProneSpeed;  break;
+			case BodyState.ProningUp: 		retval = maxProneSpeed;  break;
+		}
 
-			// Set horizontal velocity
-			RigidbodySetVelocityX(rbody, horizontalMovement.x);
-			RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG - already passed rbody.velocity.z into the .y of this Vector2
+		if (isSprinting && running) {
+			if (fatigue > 80f) retval = maxSprintSpeedFatigued;
+			else retval = maxSprintSpeed;
 
-			// Set vertical velocity
-			verticalMovement = rbody.velocity.y;
-			if (verticalMovement > maxVerticalSpeed) verticalMovement = maxVerticalSpeed;
-			if (!CheatNoclip) RigidbodySetVelocityY(rbody, verticalMovement);
-
-			// Ground friction
-			if (grounded) {
-				tempVecRbody = rbody.velocity;
-				deceleration = Inventory.a.hardwareIsActive[9] ? walkDeaccelerationBooster : walkDeacceleration;
-				if (CheatNoclip) {
-					deceleration = 0.05f;
-					tempVecRbody.y = Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVoly, deceleration); // Prevent gravity from affecting.
-				} else tempVecRbody.y = rbody.velocity.y; // Don't affect gravity and let gravity keep pulling down.
-				tempVecRbody.x = Mathf.SmoothDamp(rbody.velocity.x, 0, ref walkDeaccelerationVolx, deceleration);
-				tempVecRbody.z = Mathf.SmoothDamp(rbody.velocity.z, 0, ref walkDeaccelerationVolz, deceleration);
-				rbody.velocity = tempVecRbody;
+			if (bodyState == BodyState.Standing || bodyState == BodyState.Crouch || bodyState == BodyState.CrouchingDown) {
+				retval -= ((maxWalkSpeed - maxCrouchSpeed)*1.5f);  // Subtract off the difference in speed between walking and crouching from the sprint speed
+			} else if (bodyState == BodyState.Prone || bodyState == BodyState.ProningDown || bodyState == BodyState.ProningUp) {
+				retval -= ((maxWalkSpeed - maxProneSpeed)*2f);  // Subtract off the difference in speed between walking and proning from the sprint speed
 			}
 		}
 
-		relForward = 0f;
-		relSideways = 0f;
-		running = false;
-		if (GetInput.a.Forward() && !consoleActivated) {
+		return retval + bonus;
+	}
+
+	void ApplyBodyStateLerps() {
+		switch (bodyState) {
+		case BodyState.CrouchingDown:
+			currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
+			break;
+		case BodyState.StandingUp:
+			lastCrouchRatio = currentCrouchRatio;
+			currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, 1.01f, ref crouchingVelocity, transitionToCrouchSec);
+			LocalPositionSetY (transform, (((currentCrouchRatio - lastCrouchRatio) * capsuleHeight) / 2) + transform.position.y);
+			break;
+		case BodyState.ProningDown:
+			currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
+			break;
+		case BodyState.ProningUp: // Prone to crouch
+			lastCrouchRatio = currentCrouchRatio;
+			currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, 1.01f, ref crouchingVelocity, (transitionToCrouchSec + transitionToProneAdd));
+			LocalPositionSetY (transform, (((currentCrouchRatio - lastCrouchRatio) * capsuleHeight) / 2) + transform.position.y);
+			break;
+		}
+	}
+
+	void SetRunningRelForwardsAndSidewaysFlags() {
+		relForward = GetInput.a.Backpedal() ? -1f : 0f;
+		if (GetInput.a.Forward()) {
 			relForward = 1f;
 			if (leanTarget > 0) {
 				if (Mathf.Abs(leanTarget - 0) < 0.02f) leanTarget = 0;
@@ -555,260 +409,451 @@ public class PlayerMovement : MonoBehaviour {
 				else leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1));
 			}
 		}
+		relSideways = GetInput.a.StrafeLeft() ? -1f : 0f;
+		if (GetInput.a.StrafeRight()) relSideways = 1f;
+		running = ((relForward + relSideways) != 0); // We are mashing a run button down.	
+	}
 
-		if (GetInput.a.Backpedal() && !consoleActivated) relForward = -1f;
-		if (GetInput.a.StrafeLeft() && !consoleActivated) relSideways = -1f;
-		if (GetInput.a.StrafeRight() && !consoleActivated) relSideways = 1f;
-		if (relForward != 0 || relSideways != 0) running = true; // we are mashing a run button down
+	void ApplyGroundFriction() {
+		if (!grounded) return;
 
-		// Handle movement
-		if (!inCyberSpace) {
-			if (grounded == true || CheatNoclip ||  (Inventory.a.hardwareIsActive[10])) {
-				if (ladderState && !CheatNoclip) {
-					rbody.AddRelativeForce (relSideways * walkAcceleration * Time.deltaTime, relForward * walkAcceleration * Time.deltaTime, 0); // Climbing when touching the ground
+		tempVecRbody = rbody.velocity;
+		deceleration = walkDeacceleration;
+		if (CheatNoclip) {
+			// Prevent gravity from affecting and decelerate like a horizontal.
+			tempVecRbody.y = Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVoly, deceleration); 
+		} else {
+			if (Inventory.a.hardwareIsActive[9]) deceleration = walkDeaccelerationBooster;
+			tempVecRbody.y = rbody.velocity.y; // Don't affect gravity and let gravity keep pulling down.
+		}
+		tempVecRbody.x = Mathf.SmoothDamp(rbody.velocity.x, 0, ref walkDeaccelerationVolx, deceleration);
+		tempVecRbody.z = Mathf.SmoothDamp(rbody.velocity.z, 0, ref walkDeaccelerationVolz, deceleration);
+		rbody.velocity = tempVecRbody;
+	}
+
+	void Lean() {
+		if (CheatNoclip) return;
+
+		if (GetInput.a.LeanRight()) {
+			leanTarget -= (leanSpeed * Time.deltaTime);
+			if (leanTarget < (leanMaxAngle * -1)) leanTarget = (leanMaxAngle * -1);
+			leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle));
+		}
+		if (GetInput.a.LeanLeft()) {
+			leanTarget += (leanSpeed * Time.deltaTime);
+			if (leanTarget > leanMaxAngle) leanTarget = leanMaxAngle;
+			leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1));
+		}
+		leanTransform.localRotation = Quaternion.Euler(0, 0, leanTarget);
+		leanTransform.localPosition = new Vector3(leanShift,0,0);
+	}
+
+	bool GetGravity() {
+		if (inCyberSpace) return false;
+		if (CheatNoclip) return false;
+		if (ladderState) return false;
+		if (gravliftState) return false;
+		if (grounded) return false; // Disables gravity when touching the ground to prevent player sliding down ramps...hacky?
+		return true;
+	}
+
+	// Get input for Jump and set impulse time, removed "&& (ladderState == false)" since I want to be able to jump off a ladder
+	void Jump() {
+		if (CheatNoclip && !Inventory.a.hardwareIsActive[10]) return;
+
+		if (doubleJumpFinished < PauseScript.a.relativeTime) {
+			doubleJumpTicks--;
+			if (doubleJumpTicks < 0) doubleJumpTicks = 0;
+		}
+
+		if (GetInput.a.Jump()) {
+			if (!justJumped) {
+				if (grounded || gravliftState || Inventory.a.hardwareIsActive[10]) {
+					jumpTime = jumpImpulseTime;
+					doubleJumpFinished = PauseScript.a.relativeTime + Const.a.doubleClickTime;
+					doubleJumpTicks++;
+					justJumped = true;
 				} else {
-					//Walking on the ground
-					if (CheatNoclip) {
-						rbody.AddRelativeForce(relSideways * 2f * walkAcceleration * Time.deltaTime, 0, relForward * 2f * walkAcceleration * Time.deltaTime);
-					} else {
-						rbody.AddRelativeForce(relSideways * walkAcceleration * Time.deltaTime, 0, relForward * walkAcceleration * Time.deltaTime);
-					}
-
-					// Noclip up and down
-					if (GetInput.a.SwimUp() && !consoleActivated) {
-						if (CheatNoclip) rbody.AddRelativeForce(0, 4f * walkAcceleration * Time.deltaTime, 0);
-					}
-
-					if (GetInput.a.SwimDn() && !consoleActivated) {
-						if (CheatNoclip) rbody.AddRelativeForce(0, 4f * walkAcceleration * Time.deltaTime * -1, 0);
-					}
-
-					if (fatigueFinished2 < PauseScript.a.relativeTime && relForward != defIndex && !CheatNoclip) {
-						fatigueFinished2 = PauseScript.a.relativeTime + fatigueWaneTickSecs;
-						if (isSprinting) {
-							fatigue += fatiguePerSprintTick;
-							if (staminupActive) fatigue = 0;
-						} else {
-							fatigue += fatiguePerWalkTick;
-							if (staminupActive) fatigue = 0;
-						}
+					if (ladderState) {
+						jumpTime = jumpImpulseTime;
+						justJumped = true;
 					}
 				}
+			}
+
+			if (Inventory.a.hardwareIsActive [9] && Inventory.a.hardwareVersionSetting[9] == 1) {
+				if (justJumped && doubleJumpTicks == 2) {
+					rbody.AddForce(new Vector3(transform.forward.x * burstForce,transform.forward.y * burstForce,transform.forward.z * burstForce),ForceMode.Impulse); // Booster thrust
+					PlayerEnergy.a.TakeEnergy(22f);
+					justJumped = false;
+					jumpTime = 0;
+					doubleJumpTicks = 0;
+					doubleJumpFinished = PauseScript.a.relativeTime - 1f; // Make sure we can't do it again right away.
+				}
+			}
+		}
+		// Perform Jump
+		while (jumpTime > 0) {
+			jumpTime -= Time.smoothDeltaTime;
+			if (fatigue > 80 && !(Inventory.a.hardwareIsActive[10])) {
+				rbody.AddForce (new Vector3 (0, jumpVelocityFatigued * rbody.mass, 0), ForceMode.Force);  // huhnh!
 			} else {
-				if (ladderState) {
-					// Climbing off the ground
-					if (ladderSFXFinished < PauseScript.a.relativeTime && rbody.velocity.y > ladderSpeed * 0.5f) {
-						if (PlayerNoise != null) {
-							PlayerNoise.pitch = (UnityEngine.Random.Range(0.8f,1.2f));
-							PlayerNoise.PlayOneShot(SFXLadder,0.2f);
+				if (Inventory.a.hardwareIsActive [10]) {
+					if (PlayerEnergy.a.energy > 11f) {
+						rbody.AddForce (new Vector3 (0, jumpVelocityBoots * rbody.mass, 0), ForceMode.Force);  // huhnh!
+						float energysuck = 25f;
+						switch (Inventory.a.hardwareVersion[10]) {
+							case 0: energysuck = 25f; break;
+							case 1: energysuck = 30f; break;
+							case 2: energysuck = 35f; break;
 						}
-						ladderSFXFinished = PauseScript.a.relativeTime + ladderSFXIntervalTime;
-					}
-					rbody.AddRelativeForce (relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime * 0.2f, ladderSpeed * relForward * walkAcceleration * Time.deltaTime, 0);
-				} else {
-					// Sprinting in the air
-					if (isSprinting && running && !inCyberSpace) {
-						rbody.AddRelativeForce (relSideways * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
+						if (jumpJetEnergySuckTickFinished < PauseScript.a.relativeTime) {
+							jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime + jumpJetEnergySuckTick;
+							PlayerEnergy.a.TakeEnergy(energysuck);
+						}
 					} else {
-						// Walking in the air, we're floating in the moonlit sky, the people far below are sleeping as we fly
-						rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
+						hwbJumpJets.JumpJetsOff();
+					}
+				} else {
+					if (ladderState) {
+						Vector3 jumpDir = transform.forward * jumpVelocity * rbody.mass;
+						rbody.AddForce (jumpDir, ForceMode.Force);  // jump off ladder in direction of player facing
+					} else {
+						rbody.AddForce (new Vector3 (0, jumpVelocity * rbody.mass, 0), ForceMode.Force);  // huhnh!
 					}
 				}
 			}
+		}
 
-			// Handle leaning, double tap to reset is handled in Update to prevent repeat calls within the same frame
-			if (GetInput.a.LeanRight()) {
-				leanTarget -= (leanSpeed * Time.deltaTime);
-				if (leanTarget < (leanMaxAngle * -1)) leanTarget = (leanMaxAngle * -1);
-				leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle));
-			}
-			if (GetInput.a.LeanLeft()) {
-				leanTarget += (leanSpeed * Time.deltaTime);
-				if (leanTarget > leanMaxAngle) leanTarget = leanMaxAngle;
-				leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1));
-			}
-			leanTransform.localRotation = Quaternion.Euler(0, 0, leanTarget);
-			leanTransform.localPosition = new Vector3(leanShift,0,0);
+		if (jumpTime < 0) justJumped = false; // for jump jets to work 
 
-			// Handle gravity and ladders
-			if (ladderState) {
-				if (rbody.useGravity) rbody.useGravity = false;
-				if (Inventory.a.hardwareIsActive [9] && Inventory.a.hardwareVersionSetting[9] == 0)
-					deceleration = walkDeaccelerationBooster;
+		if (justJumped && !(Inventory.a.hardwareIsActive[10])) {
+			// Play jump sound
+			if (jumpSFXFinished < PauseScript.a.relativeTime) {
+				jumpSFXFinished = PauseScript.a.relativeTime + jumpSFXIntervalTime;
+				PlayerNoise.pitch = 1f;
+				if (fatigue > 80)
+					PlayerNoise.PlayOneShot(SFXJump,0.5f); // Quietly, we are tired.
 				else
-					deceleration = walkDeacceleration;
-
-				RigidbodySetVelocityY(rbody, (Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVoly, deceleration))); // Set vertical velocity towards 0 when climbing
-			} else {
-				// Check if using a gravity lift
-				if (gravliftState == true || CheatNoclip) {
-					if (rbody.useGravity) rbody.useGravity = false;
-				} else {
-					// Disables gravity when touching the ground to prevent player sliding down ramps...hacky?
-					if (grounded == true || CheatNoclip) {
-						if (rbody.useGravity) rbody.useGravity = false;
-					} else {
-						if (!inCyberSpace && !rbody.useGravity) rbody.useGravity = true;
-					}
-				}
+					PlayerNoise.PlayOneShot(SFXJump);
 			}
+			justJumped = false;
+			fatigue += jumpFatigue;
+			if (staminupActive) fatigue = 0;
+		}
+	}
 
-			// Get input for Jump and set impulse time, removed "&& (ladderState == false)" since I want to be able to jump off a ladder			 
-			if (!inCyberSpace && !consoleActivated && !CheatNoclip) {
-				if (doubleJumpFinished < PauseScript.a.relativeTime) {
-					doubleJumpTicks--;
-					if (doubleJumpTicks < 0) doubleJumpTicks = 0;
+	void LadderStates() {
+		if (CheatNoclip) return;
+		if (!ladderState) return;
+
+		if (grounded || Inventory.a.hardwareIsActive[10]) {
+			// Ladder climb, allow while grounded
+			rbody.AddRelativeForce(relSideways * walkAcceleration * Time.deltaTime, ladderSpeed * relForward * walkAcceleration * Time.deltaTime, 0); // Climbing when touching the ground
+		} else {
+			// Climbing off the ground
+			if (ladderSFXFinished < PauseScript.a.relativeTime && rbody.velocity.y > ladderSpeed * 0.5f) {
+				if (PlayerNoise != null) {
+					PlayerNoise.pitch = (UnityEngine.Random.Range(0.8f,1.2f));
+					PlayerNoise.PlayOneShot(SFXLadder,0.2f);
 				}
-
-				if (GetInput.a.Jump() && !CheatNoclip) {
-					if (!justJumped) {
-						if (grounded || gravliftState || Inventory.a.hardwareIsActive[10]) {
-							jumpTime = jumpImpulseTime;
-							doubleJumpFinished = PauseScript.a.relativeTime + Const.a.doubleClickTime;
-							doubleJumpTicks++;
-							justJumped = true;
-						} else {
-							if (ladderState) {
-								jumpTime = jumpImpulseTime;
-								justJumped = true;
-							}
-						}
-					}
-
-					if (Inventory.a.hardwareIsActive [9] && Inventory.a.hardwareVersionSetting[9] == 1) {
-						if (justJumped && doubleJumpTicks == 2) {
-							rbody.AddForce(new Vector3(transform.forward.x * burstForce,transform.forward.y * burstForce,transform.forward.z * burstForce),ForceMode.Impulse); // Booster thrust
-							pe.TakeEnergy(22f);
-							justJumped = false;
-							jumpTime = 0;
-							doubleJumpTicks = 0;
-							doubleJumpFinished = PauseScript.a.relativeTime - 1f; // Make sure we can't do it again right away.
-						}
-					}
-				}
+				ladderSFXFinished = PauseScript.a.relativeTime + ladderSFXIntervalTime;
 			}
+			rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime * 0.2f, ladderSpeed * relForward * walkAcceleration * Time.deltaTime, 0);
+		}
 
-			// Perform Jump
-			while (jumpTime > 0) {
-				jumpTime -= Time.smoothDeltaTime;
-				if (fatigue > 80 && !(Inventory.a.hardwareIsActive[10])) {
-					rbody.AddForce (new Vector3 (0, jumpVelocityFatigued * rbody.mass, 0), ForceMode.Force);  // huhnh!
-				} else {
-					if (Inventory.a.hardwareIsActive [10]) {
-						if (pe.energy > 11f) {
-							rbody.AddForce (new Vector3 (0, jumpVelocityBoots * rbody.mass, 0), ForceMode.Force);  // huhnh!
-							float energysuck = 25f;
-							switch (Inventory.a.hardwareVersion[10]) {
-								case 0: energysuck = 25f; break;
-								case 1: energysuck = 30f; break;
-								case 2: energysuck = 35f; break;
-							}
-							if (jumpJetEnergySuckTickFinished < PauseScript.a.relativeTime) {
-								jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime + jumpJetEnergySuckTick;
-								pe.TakeEnergy(energysuck);
-							}
-						} else {
-							hwbJumpJets.JumpJetsOff();
-						}
-					} else {
-						if (ladderState) {
-							Vector3 jumpDir = transform.forward * jumpVelocity * rbody.mass;
-							rbody.AddForce (jumpDir, ForceMode.Force);  // jump off ladder in direction of player facing
-						} else {
-							rbody.AddForce (new Vector3 (0, jumpVelocity * rbody.mass, 0), ForceMode.Force);  // huhnh!
-						}
-					}
-				}
-			}
+		if (Inventory.a.hardwareIsActive [9] && Inventory.a.hardwareVersionSetting[9] == 0)
+			deceleration = walkDeaccelerationBooster;
+		else
+			deceleration = walkDeacceleration;
 
-			if (jumpTime < 0) justJumped = false; // for jump jets to work 
+		RigidbodySetVelocityY(rbody, (Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVoly, deceleration))); // Set vertical velocity towards 0 when climbing
+	}
 
-			if (justJumped && !(Inventory.a.hardwareIsActive[10])) {
-				// Play jump sound
-				if (jumpSFXFinished < PauseScript.a.relativeTime) {
-					jumpSFXFinished = PauseScript.a.relativeTime + jumpSFXIntervalTime;
-					PlayerNoise.pitch = 1f;
-					if (fatigue > 80)
-						PlayerNoise.PlayOneShot(SFXJump,0.5f); // Quietly, we are tired.
-					else
-						PlayerNoise.PlayOneShot(SFXJump);
-				}
-				justJumped = false;
-				fatigue += jumpFatigue;
+	void WalkRun() {
+		if (CheatNoclip) return;
+		if (ladderState) return;
+
+		if (grounded || Inventory.a.hardwareIsActive[10]) {
+			// Normal walking
+			rbody.AddRelativeForce(relSideways * walkAcceleration * Time.deltaTime, 0, relForward * walkAcceleration * Time.deltaTime);
+			if (fatigueFinished2 < PauseScript.a.relativeTime && relForward != defIndex) {
+				fatigueFinished2 = PauseScript.a.relativeTime + fatigueWaneTickSecs;
+				fatigue += isSprinting ? fatiguePerSprintTick : fatiguePerWalkTick;
 				if (staminupActive) fatigue = 0;
 			}
-
-			// Handle fall damage (no impact damage in cyber space 5/5/18, JJ)
-			if (Mathf.Abs ((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed && !inCyberSpace && !CheatNoclip) {
-				DamageData dd = new DamageData ();
-				dd.damage = fallDamage; // No need for GetDamageTakeAmount since this is strictly internal to Player
-				dd.attackType = Const.AttackType.None;
-				dd.offense = 0f;
-				dd.isOtherNPC = false;
-				// No impact force from fall damage.
-				hm.TakeDamage (dd);
-			}
-			oldVelocity = rbody.velocity;
-			if (!CheatWallSticky || gravliftState) grounded = false; // Automatically set grounded to false to prevent ability to climb any wall
 		} else {
-			// Handle cyberspace movement
-			inputtingMovement = false;
-			if (GetInput.a.Forward() && !consoleActivated) {
-				if (turboFinished > PauseScript.a.relativeTime) {
-					if (Vector3.Project(rbody.velocity, (cameraObject.transform.forward)).magnitude < playerSpeed * 2f)
-						rbody.AddForce (cameraObject.transform.forward * walkAcceleration * 1.3f * 2f * Time.deltaTime,ForceMode.Acceleration); // double speed with turbo on
-				} else {
-					if (Vector3.Project(rbody.velocity, cameraObject.transform.forward).magnitude < playerSpeed)
-						rbody.AddForce (cameraObject.transform.forward * walkAcceleration * 1.3f * Time.deltaTime,ForceMode.Acceleration);
-				}
-				inputtingMovement = true;
-			}
-
-			if (GetInput.a.Backpedal() && !consoleActivated) {
-				if (turboFinished > PauseScript.a.relativeTime) {
-					if (Vector3.Project(rbody.velocity, (cameraObject.transform.forward * -1f)).magnitude < playerSpeed * 2f)
-					rbody.AddForce (cameraObject.transform.forward * walkAcceleration * 1.3f * 2f * Time.deltaTime * -1f,ForceMode.Acceleration); // double speed with turbo on
-				} else {
-					if (Vector3.Project(rbody.velocity, cameraObject.transform.forward * -1f).magnitude < playerSpeed) 
-					rbody.AddForce (cameraObject.transform.forward * walkAcceleration * 1.3f * Time.deltaTime * -1f,ForceMode.Acceleration);
-				}
-				inputtingMovement = true;
-			}
-
-			if (GetInput.a.StrafeLeft() && !consoleActivated) {
-				if (turboFinished > PauseScript.a.relativeTime) {
-					if (Vector3.Project(rbody.velocity, (cameraObject.transform.right * -1f)).magnitude < playerSpeed * 2f)
-					rbody.AddForce (cameraObject.transform.right * walkAcceleration * 1.3f * 2f * Time.deltaTime * -1f,ForceMode.Acceleration); // double speed with turbo on
-				} else {
-					if (Vector3.Project(rbody.velocity, cameraObject.transform.right * -1f).magnitude < playerSpeed) 
-					rbody.AddForce (cameraObject.transform.right * walkAcceleration * 1.3f * Time.deltaTime * -1f,ForceMode.Acceleration);
-				}
-				inputtingMovement = true;
-			}
-
-			if (GetInput.a.StrafeRight() && !consoleActivated) {
-				if (turboFinished > PauseScript.a.relativeTime) {
-					if (Vector3.Project(rbody.velocity, cameraObject.transform.right).magnitude < playerSpeed * 2f)
-					rbody.AddForce (cameraObject.transform.right * walkAcceleration * 1.3f * 2f * Time.deltaTime,ForceMode.Acceleration); // double speed with turbo on
-				} else {
-					if (Vector3.Project(rbody.velocity, cameraObject.transform.right).magnitude < playerSpeed) 
-					rbody.AddForce (cameraObject.transform.right * walkAcceleration * 1.3f * Time.deltaTime,ForceMode.Acceleration);
-				}
-				inputtingMovement = true;
-			}
-
-			if (Const.a.difficultyCyber > 1) {
-				if (rbody.velocity.magnitude < walkAcceleration * 0.05f) rbody.AddForce (cameraObject.transform.forward * walkAcceleration*0.05f * Time.deltaTime); // turbo doesn't affect detrimental forces :)
+			// Sprinting in the air
+			if (isSprinting && running) {
+				rbody.AddRelativeForce (relSideways * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
 			} else {
-				if (!inputtingMovement) {
-					rbody.velocity = Const.a.vectorZero;
+				// Walking in the air, we're floating in the moonlit sky, the people far below are sleeping as we fly
+				rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
+			}
+		}
+	}
+
+	void FallDamage() {
+		if (CheatNoclip) return;
+		if (ladderState) return;
+
+		// Handle fall damage (no impact damage in cyber space 5/5/18, JJ)
+		if (Mathf.Abs((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed) {
+			DamageData dd = new DamageData ();
+			dd.damage = fallDamage; // No need for GetDamageTakeAmount since this is strictly internal to Player
+			dd.attackType = AttackType.None;
+			dd.offense = 0f;
+			dd.isOtherNPC = false;
+			// No impact force from fall damage.
+			hm.TakeDamage (dd);
+		}
+	}
+
+	void CyberspaceMovement() {
+		if (!inCyberSpace) return;
+		if (CheatNoclip) return;
+
+		if (rbody.velocity.magnitude > maxCyberUltimateSpeed) RigidbodySetVelocity(rbody, maxCyberUltimateSpeed); // Limit movement speed in all axes x,y,z in cyberspace
+		inputtingMovement = false;
+
+		if (GetInput.a.Forward()) {
+			if (turboFinished > PauseScript.a.relativeTime) {
+				if (Vector3.Project(rbody.velocity, (cameraObject.transform.forward)).magnitude < playerSpeed * 2f)
+					rbody.AddForce(cameraObject.transform.forward * walkAcceleration * 1.3f * 2f * Time.deltaTime,ForceMode.Acceleration); // double speed with turbo on
+			} else {
+				if (Vector3.Project(rbody.velocity, cameraObject.transform.forward).magnitude < playerSpeed)
+					rbody.AddForce(cameraObject.transform.forward * walkAcceleration * 1.3f * Time.deltaTime,ForceMode.Acceleration);
+			}
+			inputtingMovement = true;
+		}
+
+		if (GetInput.a.Backpedal()) {
+			if (turboFinished > PauseScript.a.relativeTime) {
+				if (Vector3.Project(rbody.velocity, (cameraObject.transform.forward * -1f)).magnitude < playerSpeed * 2f)
+				rbody.AddForce(cameraObject.transform.forward * walkAcceleration * 1.3f * 2f * Time.deltaTime * -1f,ForceMode.Acceleration); // double speed with turbo on
+			} else {
+				if (Vector3.Project(rbody.velocity, cameraObject.transform.forward * -1f).magnitude < playerSpeed) 
+				rbody.AddForce(cameraObject.transform.forward * walkAcceleration * 1.3f * Time.deltaTime * -1f,ForceMode.Acceleration);
+			}
+			inputtingMovement = true;
+		}
+
+		if (GetInput.a.StrafeLeft()) {
+			if (turboFinished > PauseScript.a.relativeTime) {
+				if (Vector3.Project(rbody.velocity, (cameraObject.transform.right * -1f)).magnitude < playerSpeed * 2f)
+				rbody.AddForce(cameraObject.transform.right * walkAcceleration * 1.3f * 2f * Time.deltaTime * -1f,ForceMode.Acceleration); // double speed with turbo on
+			} else {
+				if (Vector3.Project(rbody.velocity, cameraObject.transform.right * -1f).magnitude < playerSpeed) 
+				rbody.AddForce(cameraObject.transform.right * walkAcceleration * 1.3f * Time.deltaTime * -1f,ForceMode.Acceleration);
+			}
+			inputtingMovement = true;
+		}
+
+		if (GetInput.a.StrafeRight()) {
+			if (turboFinished > PauseScript.a.relativeTime) {
+				if (Vector3.Project(rbody.velocity, cameraObject.transform.right).magnitude < playerSpeed * 2f)
+				rbody.AddForce(cameraObject.transform.right * walkAcceleration * 1.3f * 2f * Time.deltaTime,ForceMode.Acceleration); // double speed with turbo on
+			} else {
+				if (Vector3.Project(rbody.velocity, cameraObject.transform.right).magnitude < playerSpeed) 
+				rbody.AddForce(cameraObject.transform.right * walkAcceleration * 1.3f * Time.deltaTime,ForceMode.Acceleration);
+			}
+			inputtingMovement = true;
+		}
+
+		if (Const.a.difficultyCyber > 1) {
+			if (rbody.velocity.magnitude < walkAcceleration * 0.05f) rbody.AddForce(cameraObject.transform.forward * walkAcceleration*0.05f * Time.deltaTime); // turbo doesn't affect detrimental forces :)
+		} else {
+			if (!inputtingMovement) rbody.velocity = Const.a.vectorZero;
+		}
+	}
+
+	void Noclip() {
+		if (!CheatNoclip) return;
+
+		rbody.AddRelativeForce(relSideways * 2f * walkAcceleration * Time.deltaTime, 0, relForward * 2f * walkAcceleration * Time.deltaTime);
+		if (GetInput.a.SwimUp()) rbody.AddRelativeForce(0, 4f * walkAcceleration * Time.deltaTime, 0); // Noclip up and down
+		if (GetInput.a.SwimDn()) rbody.AddRelativeForce(0, 4f * walkAcceleration * Time.deltaTime * -1, 0);
+	}
+
+	Vector2 GetClampedHorizontalMovement() {
+		horizontalMovement = new Vector2(rbody.velocity.x, rbody.velocity.z);
+		if (horizontalMovement.magnitude > playerSpeed) {
+			horizontalMovement = horizontalMovement.normalized;
+			horizontalMovement *= playerSpeed;  // Cap velocity to current max speed.
+		}
+		return horizontalMovement;
+	}
+
+	float GetClampedVerticalMovement() {
+		float retval = (rbody.velocity.y > maxVerticalSpeed) ? maxVerticalSpeed : rbody.velocity.y;
+		return retval;
+	}
+
+	void FatigueApply() {
+		if (fatigueFinished < PauseScript.a.relativeTime && !inCyberSpace && !CheatNoclip) {
+			fatigueFinished = PauseScript.a.relativeTime + fatigueWaneTickSecs;
+			switch (bodyState) {
+				case BodyState.Standing:    fatigue -= fatigueWanePerTick; break;
+				case BodyState.Crouch:      fatigue -= fatigueWanePerTickCrouched; break;
+				case BodyState.StandingUp:  fatigue -= fatigueWanePerTickCrouched; break;
+				case BodyState.ProningDown: fatigue -= fatigueWanePerTickCrouched; break;
+				case BodyState.Prone:       fatigue -= fatigueWanePerTickProne; break;
+				case BodyState.ProningUp:   fatigue -= fatigueWanePerTickProne; break;
+				default: fatigue -= fatigueWanePerTick; break;
+			}
+			if (fatigue < defIndex) fatigue = defIndex; // clamp at 0
+		}
+		if (fatigue > onehundred) fatigue = onehundred; // clamp at 100 using dummy variables to hang onto the value and not get collected by garbage collector (really?  hey it was back in the old days when we didn't have incremental garbage collector, pre Unity 2019.2 versions
+		if (fatigue > 80 && !fatigueWarned && !inCyberSpace) {
+			twm.SendWarning(("Fatigue high"),0.1f,0,TextWarningsManager.warningTextColor.white,324);
+			fatigueWarned = true;
+		} else {
+			fatigueWarned = false;
+		}
+	}
+
+	void EndCrouchProneTransition() {
+		if (currentCrouchRatio > 1) {
+			if (bodyState == BodyState.StandingUp // Should overshoot slightly.
+			    || bodyState == BodyState.Standing) { // Maintain it.
+				currentCrouchRatio = 1; //Clamp it
+				bodyState = BodyState.Standing;
+			}
+		} else {
+			if (currentCrouchRatio < crouchRatio) {
+				if (bodyState == BodyState.CrouchingDown // Should undershoot slightly
+				    || bodyState == BodyState.Crouch) { // Maintain it.
+					currentCrouchRatio = crouchRatio; //Clamp it
+					bodyState = BodyState.Crouch;
+				} else {
+					if (bodyState == BodyState.ProningDown // Should undershoot slightly
+					    || bodyState == BodyState.Prone) { // Maintain it.
+						if (currentCrouchRatio < proneRatio) {
+							currentCrouchRatio = proneRatio; //Clamp it
+							bodyState = BodyState.Prone;
+						}
+					}
 				}
+			} else {
+				if (bodyState == BodyState.ProningUp) { // Should overshoot slightly
+					if (currentCrouchRatio > crouchRatio) {
+						currentCrouchRatio = crouchRatio; //Clamp it
+						bodyState = BodyState.Crouch;
+					}
+				}
+			}
+		}
+	}
+
+	void Prone() {
+		if (CheatNoclip) return;
+		if (consoleActivated) return;
+		if (!GetInput.a.Prone()) return;
+
+		if (bodyState != BodyState.Prone || bodyState != BodyState.ProningDown) {
+			bodyState = BodyState.ProningDown;
+		} else {
+			if (bodyState == BodyState.Prone || bodyState == BodyState.ProningDown) {
+				if (CantStand()) { Const.sprint(Const.a.stringTable[187]); return; } // Can't stand here
+					
+				bodyState = BodyState.StandingUp;
 			}
 		}
 	}
 
 	bool CantStand() { return Physics.CheckCapsule(cameraObject.transform.position, cameraObject.transform.position + new Vector3(0f,(1.6f-0.84f),0f), capsuleRadius, layerMask); }
 	bool CantCrouch() { return Physics.CheckCapsule(cameraObject.transform.position, cameraObject.transform.position + new Vector3(0f,0.4f,0f), capsuleRadius, layerMask); } 
+
+	void Crouch() {
+		if (CheatNoclip) return;
+		if (consoleActivated) return;
+		if (!GetInput.a.Crouch()) return;
+
+		if ((bodyState == BodyState.Crouch) || (bodyState == BodyState.CrouchingDown)) {
+			if (CantStand()) Const.sprint(Const.a.stringTable[187]); // Can't stand here
+			else bodyState = BodyState.StandingUp; // Start standing up
+		} else {
+			if ((bodyState == BodyState.Standing) || (bodyState == BodyState.StandingUp)) {
+				bodyState = BodyState.CrouchingDown; // Start crouching down
+			} else {
+				if ((bodyState == BodyState.Prone) || (bodyState == BodyState.ProningDown)) {
+					if ((CantCrouch())) { Const.sprint(Const.a.stringTable[188]); return; } // Can't crouch here
+					
+					bodyState = BodyState.ProningUp; // Start getting up to crouch
+				}
+			}
+		}
+	}
+
+	bool GetSprintInputState() {
+		if (consoleActivated) return false;
+
+		if (GetInput.a.Sprint()) {
+			if (grounded || CheatNoclip) return !(GetInput.a.CapsLockOn());
+			return false;
+		} else {
+			if (grounded || CheatNoclip) return GetInput.a.CapsLockOn();
+			return false; // Can't sprint in the air.
+		}
+	}
+
+	void CyberSetup() {
+		if (inCyberSpace && !cyberSetup) {
+			cyberCollider.enabled = true;
+			capsuleCollider.enabled = false;
+			MouseLookScript.a.inCyberSpace = true; // Enable full camera rotation up/down by disabling clamp
+			oldBodyState = bodyState;
+			bodyState = BodyState.Standing; // Put to "standing" to prevent speed anomolies
+			cyberSetup = true;
+			cyberDesetup = true;
+		}
+	}
+
+	void CyberDestupOrNoclipMaintain() {
+		if (cyberDesetup || CheatNoclip) {
+			cyberDesetup = false;
+			cyberSetup = false;
+			cyberCollider.enabled = false; // Can't touch dis!
+			Mathf.Clamp(MouseLookScript.a.xRotation, -90f, 90f); // Pre-clamp camera rotation.
+			MouseLookScript.a.inCyberSpace = false; // Disable full camera rotation up/down by enabling auto clamp.
+			bodyState = oldBodyState; // Return to what we were doing in the "real world" (real lol)
+			if (CheatNoclip) { // Flying cheat...also map editing mode!
+				capsuleCollider.enabled = false; //na nana na, na na, can't touch dis
+				leanCapsuleCollider.enabled = false;
+			} else {
+				capsuleCollider.enabled = true;
+				leanCapsuleCollider.enabled = true;
+			}
+		}
+	}
+
+	void ConsoleUpdate() {
+        if (GetInput.a.Console()) ToggleConsole();
+		if (consoleActivated) {
+			if (!String.IsNullOrEmpty(consoleentryText.text)) {
+				if (consoleplaceholderText.activeSelf) consoleplaceholderText.SetActive(false);
+			} else {
+				if (!consoleplaceholderText.activeSelf) consoleplaceholderText.SetActive(true);
+			}
+
+			if (Input.GetKeyDown(KeyCode.UpArrow)) {
+				commandMemoryIndex++;
+				if (commandMemoryIndex >= lastCommand.Count) commandMemoryIndex = 0;
+				if (lastCommand.Count > 0 && commandMemoryIndex >= 0 && commandMemoryIndex < lastCommand.Count) consoleentryText.text = lastCommand[commandMemoryIndex];
+				else commandMemoryIndex = 0;
+			}
+
+			if (Input.GetKeyDown(KeyCode.DownArrow)) {
+				commandMemoryIndex--;
+				if (commandMemoryIndex >= lastCommand.Count) commandMemoryIndex = 0;
+				if (lastCommand.Count > 0 && commandMemoryIndex >= 0 && commandMemoryIndex < lastCommand.Count) consoleentryText.text = lastCommand[commandMemoryIndex];
+				else commandMemoryIndex = 0;
+			}
+			if ((Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter)) && !PauseScript.a.mainMenu.activeSelf == true) ConsoleEntry();
+		} else {
+			if (consoleplaceholderText.activeSelf) consoleplaceholderText.SetActive(false);
+		}
+	}
 
 	public void LocalScaleSetX(Transform t, float s) {
 		tempVecRbody = t.localScale;
@@ -1157,12 +1202,13 @@ public class PlayerMovement : MonoBehaviour {
         if (ts.Contains("noclip") || ts.Contains("idclip")) {
 			if (CheatNoclip) {
 				CheatNoclip = false;
-				rbody.useGravity = true;
+				grounded = false;
 				capsuleCollider.enabled = true;
 				leanCapsuleCollider.enabled = true;
 				Const.sprint("noclip disabled");
 			} else {
 				CheatNoclip = true;
+				grounded = false;
 				rbody.useGravity = false;
 				capsuleCollider.enabled = false;
 				leanCapsuleCollider.enabled = false;
@@ -1255,20 +1301,20 @@ public class PlayerMovement : MonoBehaviour {
 			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
 			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
         } else if (ts.Contains("bottomless") && ts.Contains("clip")) { // bottomlessclip
-			if (wepCur.bottomless) {
+			if (WeaponCurrent.WepInstance.bottomless) {
 				Const.sprint("Hose disconnected from interdimensional wormhole. Normal ammo operation restored.");
-				wepCur.bottomless = false;
+				WeaponCurrent.WepInstance.bottomless = false;
 			} else {
 				Const.sprint("bottomlessclip!  Bring it!");
-				wepCur.bottomless = true;
+				WeaponCurrent.WepInstance.bottomless = true;
 			}
         } else if (ts.Contains("ifeelthepower") || (ts.Contains("i") && ts.Contains("feel") && ts.Contains("the") && ts.Contains("power"))) { // ifeelthepower
-			if (wepCur.redbull) {
+			if (WeaponCurrent.WepInstance.redbull) {
 				Const.sprint("Energy usage normal");
-				wepCur.redbull = false;
+				WeaponCurrent.WepInstance.redbull = false;
 			} else {
 				Const.sprint("I feel the power! 0 energy consumption!");
-				wepCur.redbull = true;
+				WeaponCurrent.WepInstance.redbull = true;
 			}
         } else if (ts.Contains("show") && ts.Contains("fps")) { // showfps
 			Const.sprint("Toggling FPS counter for framerate (bottom right corner)...");
@@ -1349,9 +1395,18 @@ public class PlayerMovement : MonoBehaviour {
 				Const.sprint("I can only hold 7 weapons!! Nice try dearies!");
 		} else if (ts.Contains("summon_obj")) {
 			int val = Const.a.GetIntFromString(ts.Split(' ').Last()); // That's a slow line to compute!
-			if (val < 256 && val >= 0) {
+			if (val < 102 && val >= 0) {
 				GameObject cheatObject = Instantiate(Const.a.useableItems[val],transform.position,Const.a.quaternionIdentity) as GameObject;
-				if (cheatObject != null) cheatObject.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+				if (cheatObject != null) {
+					cheatObject.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
+					if (val < 33 && val > 20) {
+						UseableObjectUse uo = cheatObject.GetComponent<UseableObjectUse>();
+						int dex14 = Inventory.a.hardware14fromConstdex(uo.useableItemIndex);
+						if (Inventory.a.hasHardware[dex14]) {
+							uo.customIndex = (Inventory.a.hardwareVersion[dex14] + 1);
+						}
+					}
+				}
 			}
         } else if (ts.Contains("const.")) {
 			string numGet = Regex.Match(ts, @"\d+").Value;

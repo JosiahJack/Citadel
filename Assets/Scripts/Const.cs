@@ -11,10 +11,30 @@ using System.Linq;
 using System.Runtime.Serialization;
 using UnityStandardAssets.ImageEffects;
 using UnityEngine.SceneManagement;
-using System.Diagnostics;
+using System.Diagnostics; // Stopwatch
 
 // Global types
+public enum BodyState : byte {Standing,Crouch,CrouchingDown,StandingUp,Prone,ProningDown,ProningUp};
 public enum Handedness : byte {Center,LH,RH};
+public enum AttackType : byte {None,Melee,MeleeEnergy,EnergyBeam,Magnetic,Projectile,ProjectileNeedle,ProjectileEnergyBeam,ProjectileLaunched,Gas,Tranq,Drill};
+public enum NPCType : byte {Mutant,Supermutant,Robot,Cyborg,Supercyborg,Cyber,MutantCyborg};
+public enum PerceptionLevel : byte {Low,Medium,High,Omniscient};
+public enum AIState : byte {Idle,Walk,Run,Attack1,Attack2,Attack3,Pain,Dying,Dead,Inspect,Interacting};
+public enum AIMoveType : byte {Walk,Fly,Swim,Cyber,None};
+
+//Pool references
+public enum PoolType {None,SparqImpacts,CameraExplosions,ProjEnemShot2,SparksSmall,BloodSpurtSmall,
+					  BloodSpurtSmallYellow,BloodSpurtSmallGreen,SparksSmallBlue,HopperImpact,
+					  GrenadeFragExplosions,Vaporize, BlasterImpacts, IonImpacts,
+					  MagpulseShots, MagpulseImpacts,StungunShots, StungunImpacts, RailgunShots, RailgunImpacts,
+					  PlasmaShots, PlasmaImpacts, ProjEnemShot6,ProjEnemShot6Impacts, ProjEnemShot2Impacts,
+					  ProjSeedPods, ProjSeedPodsImpacts, TempAudioSources,GrenadeEMPExplosions, ProjEnemShot4,
+					  ProjEnemShot4Impacts,CrateExplosions,GrenadeFragLive,CyborgAssassinThrowingStars,
+					  ConcussionLive,EMPLive,GasLive,GasExplosions,CorpseHit,NPCMagpulseShots,NPCRailgunShots,
+					  LeafBurst,MutationBurst,GraytationBurst,BarrelExplosions, CyberPlayerShots, CyberDogShots,
+					  CyberReaverShots, BulletHoleLarge, BulletHoleScorchLarge, BulletHoleScorchSmall, BulletHoleSmall,
+					  BulletHoleTiny, BulletHoleTinySpread, CyberPlayerIceShots, CyberDissolve, TargetIDInstances,
+					  AutomapBotOverlays,AutomapCyborgOverlays,AutomapMutantOverlays, AutomapCameraOverlays};
 
 public class Const : MonoBehaviour {
 	//Item constants
@@ -52,10 +72,7 @@ public class Const : MonoBehaviour {
 	public int[] magazinePitchCountForWeapon;
 	public int[] magazinePitchCountForWeapon2;
 	public float[] recoilForWeapon;
-	public enum AttackType : byte {None,Melee,MeleeEnergy,EnergyBeam,Magnetic,Projectile,ProjectileNeedle,ProjectileEnergyBeam,ProjectileLaunched,Gas,Tranq,Drill};
 	public AttackType[] attackTypeForWeapon;
-	public enum npcType : byte {Mutant,Supermutant,Robot,Cyborg,Supercyborg,Cyber,MutantCyborg};
-	public enum PerceptionLevel : byte {Low,Medium,High,Omniscient};
 
 	//NPC constants
 	public GameObject[] npcPrefabs;
@@ -74,7 +91,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public PerceptionLevel[] perceptionForNPC;
 	[HideInInspector] public float[] disruptabilityForNPC;
 	[HideInInspector] public float[] armorvalueForNPC;
-	[HideInInspector] public aiMoveType[] moveTypeForNPC;
+	[HideInInspector] public AIMoveType[] moveTypeForNPC;
 	[HideInInspector] public float[] defenseForNPC;
 	[HideInInspector] public float[] yawSpeedForNPC;
 	[HideInInspector] public float[] fovForNPC;
@@ -132,10 +149,7 @@ public class Const : MonoBehaviour {
 	// System constants
 	[HideInInspector] public string[] creditsText;
 	[HideInInspector] public HealthManager[] healthObjectsRegistration; // List of objects with health, used for fast application of damage in explosions
-	[HideInInspector] public GameObject player1;
-	[HideInInspector] public GameObject player2;
-	[HideInInspector] public GameObject player3;
-	[HideInInspector] public GameObject player4;
+	public GameObject player1;
 
 	// Layer masks
 	[HideInInspector] public int layerMaskPlayerFrob;
@@ -144,19 +158,6 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int layerMaskNPCAttack;
 	[HideInInspector] public int layerMaskNPCCollision;
 
-	//Pool references
-	public enum PoolType : byte {None,SparqImpacts,CameraExplosions,ProjEnemShot2,SparksSmall,BloodSpurtSmall,
-						  BloodSpurtSmallYellow,BloodSpurtSmallGreen,SparksSmallBlue,HopperImpact,
-						  GrenadeFragExplosions,Vaporize, BlasterImpacts, IonImpacts,
-						  MagpulseShots, MagpulseImpacts,StungunShots, StungunImpacts, RailgunShots, RailgunImpacts,
-						  PlasmaShots, PlasmaImpacts, ProjEnemShot6,ProjEnemShot6Impacts, ProjEnemShot2Impacts,
-						  ProjSeedPods, ProjSeedPodsImpacts, TempAudioSources,GrenadeEMPExplosions, ProjEnemShot4,
-						  ProjEnemShot4Impacts,CrateExplosions,GrenadeFragLive,CyborgAssassinThrowingStars,
-						  ConcussionLive,EMPLive,GasLive,GasExplosions,CorpseHit,NPCMagpulseShots,NPCRailgunShots,
-						  LeafBurst,MutationBurst,GraytationBurst,BarrelExplosions, CyberPlayerShots, CyberDogShots,
-						  CyberReaverShots, BulletHoleLarge, BulletHoleScorchLarge, BulletHoleScorchSmall, BulletHoleSmall,
-						  BulletHoleTiny, BulletHoleTinySpread, CyberPlayerIceShots, CyberDissolve, TargetIDInstances,
-						  AutomapBotOverlays,AutomapCyborgOverlays,AutomapMutantOverlays, AutomapCameraOverlays};
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
 	public GameObject Pool_ProjectilesEnemShot2;
@@ -221,6 +222,7 @@ public class Const : MonoBehaviour {
 	//Global object references
 	public GameObject loadingScreen;
 	public GameObject mainMenuInit; // Used to force mainMenuOn before Start() is called.
+	public StatusBarTextDecay statusBar;
    
 	//Config constants
 	[HideInInspector] public int difficultyCombat;
@@ -235,6 +237,8 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public bool GraphicsSSAO;
 	[HideInInspector] public bool GraphicsBloom;
 	[HideInInspector] public int GraphicsAAMode;
+	[HideInInspector] public int GraphicsShadowMode;
+	[HideInInspector] public int GraphicsSSRMode;
 	[HideInInspector] public int GraphicsFOV;
 	[HideInInspector] public int GraphicsGamma;
 	[HideInInspector] public int AudioSpeakerMode;
@@ -254,9 +258,6 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public bool InputInvertInventoryCycling;
 	[HideInInspector] public bool InputQuickItemPickup;
 	[HideInInspector] public bool InputQuickReloadWeapons;
-
-	public enum aiState : byte {Idle,Walk,Run,Attack1,Attack2,Attack3,Pain,Dying,Dead,Inspect,Interacting};
-    public enum aiMoveType : byte {Walk,Fly,Swim,Cyber,None};
 
     public Font mainFont1; // Used to force Point filter mode.
 	public Font mainFont2; // Used to force Point filter mode.
@@ -290,7 +291,8 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public PlayerMovement player1PlayerMovementScript;
 	[HideInInspector] public PlayerHealth player1PlayerHealthScript;
 	[HideInInspector] public GameObject player1CapsuleMainCameragGO;
-	[HideInInspector] public PauseRigidbody[] prb;
+	[HideInInspector] public List<PauseRigidbody> prb;
+	[HideInInspector] public List<PauseParticleSystem> psys;
 	[HideInInspector] public float playerCameraOffsetY = 0.84f; //Vertical camera offset from player 0,0,0 position (mid-body)
 	[HideInInspector] public Color ssYellowText = new Color(0.8902f, 0.8745f, 0f); // Yellow, e.g. for current inventory text
 	[HideInInspector] public Color ssGreenText = new Color(0.3725f, 0.6549f, 0.1686f); // Green, e.g. for inventory text
@@ -336,7 +338,8 @@ public class Const : MonoBehaviour {
 	private int TARGET_FPS = 60;
 	private StringBuilder s1;
 	private StringBuilder s2;
-	private static string splitChar = "|";
+	[HideInInspector] public static string splitChar = "|";
+	private CultureInfo en_US_Culture = new CultureInfo("en-US");
 
 	//Instance container variable
 	public static Const a;
@@ -345,13 +348,11 @@ public class Const : MonoBehaviour {
 		Application.targetFrameRate = TARGET_FPS;
 		a = this; // Create a new instance so that it can be accessed globally. MOST IMPORTANT PART!!
 		a.justSavedTimeStamp = Time.time - a.savedReminderTime;
-		if (a.player1 != null) {
-			a.player1CapsuleMainCameragGO = a.player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
-			a.player1TargettingPos = a.player1CapsuleMainCameragGO.transform;
-			a.player1Capsule = a.player1.GetComponent<PlayerReferenceManager>().playerCapsule;
-			a.player1PlayerMovementScript = a.player1Capsule.GetComponent<PlayerMovement>();
-			a.player1PlayerHealthScript = a.player1Capsule.GetComponent<PlayerHealth>();
-		}
+		a.player1CapsuleMainCameragGO = a.player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
+		a.player1TargettingPos = a.player1CapsuleMainCameragGO.transform;
+		a.player1Capsule = a.player1.GetComponent<PlayerReferenceManager>().playerCapsule;
+		a.player1PlayerMovementScript = a.player1Capsule.GetComponent<PlayerMovement>();
+		//a.player1PlayerHealthScript = a.player1Capsule.GetComponent<PlayerHealth>();
 		a.CheckIfNewGame();
 		a.LoadTextForLanguage(0); // Initialize with US English (index 0)
 		a.s1 = new StringBuilder();
@@ -413,7 +414,10 @@ public class Const : MonoBehaviour {
 		questData.lev6SecCode = UnityEngine.Random.Range(0,10);
 		if (mainFont1 != null) mainFont1.material.mainTexture.filterMode = FilterMode.Point;
 		if (mainFont2 != null) mainFont2.material.mainTexture.filterMode = FilterMode.Point;
-		prb = FindObjectsOfType<PauseRigidbody>();
+		PauseRigidbody[] prbTemp = FindObjectsOfType<PauseRigidbody>();
+		for (int i=0;i<prbTemp.Length;i++) prb.Add(prbTemp[i]);
+		PauseParticleSystem[] psysTemp = FindObjectsOfType<PauseParticleSystem>();
+		for (int i=0;i<psysTemp.Length;i++) psys.Add(psysTemp[i]);
 		//if (startingNewGame) {
 		//	PauseScript.a.mainMenu.SetActive(false);
 		//	loadingScreen.SetActive(false);
@@ -439,6 +443,8 @@ public class Const : MonoBehaviour {
 		GraphicsBloom = AssignConfigBool("Graphics","Bloom");
 		GraphicsFOV = AssignConfigInt("Graphics","FOV");
 		GraphicsAAMode = AssignConfigInt("Graphics","AA");
+		GraphicsShadowMode = AssignConfigInt("Graphics", "Shadows");
+		GraphicsSSRMode = AssignConfigInt("Graphics", "SSR");
 		GraphicsGamma = AssignConfigInt("Graphics","Gamma");
 
 		// Audio Configurations
@@ -478,6 +484,8 @@ public class Const : MonoBehaviour {
 		INIWorker.IniWriteValue("Graphics","Bloom",BoolToString(GraphicsBloom));
 		INIWorker.IniWriteValue("Graphics","FOV",GraphicsFOV.ToString());
 		INIWorker.IniWriteValue("Graphics","AA",GraphicsAAMode.ToString());
+		INIWorker.IniWriteValue("Graphics","Shadows",GraphicsShadowMode.ToString());
+		INIWorker.IniWriteValue("Grpahics","SSR",GraphicsSSRMode.ToString());
 		INIWorker.IniWriteValue("Graphics","Gamma",GraphicsGamma.ToString());
 		INIWorker.IniWriteValue("Audio","SpeakerMode",AudioSpeakerMode.ToString());
 		INIWorker.IniWriteValue("Audio","Reverb",BoolToString(AudioReverb));
@@ -583,7 +591,7 @@ public class Const : MonoBehaviour {
 	}
 
 	private void LoadCreditsData () {
-		creditsText = new string[20];
+		creditsText = new string[21];
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 		int pagenum = 0;
@@ -659,7 +667,7 @@ public class Const : MonoBehaviour {
 		perceptionForNPC = new PerceptionLevel[numberOfNPCs];
 		disruptabilityForNPC = new float[numberOfNPCs];
 		armorvalueForNPC = new float[numberOfNPCs];
-		moveTypeForNPC = new aiMoveType[numberOfNPCs];
+		moveTypeForNPC = new AIMoveType[numberOfNPCs];
 		defenseForNPC = new float[numberOfNPCs];
 		yawSpeedForNPC = new float[numberOfNPCs];
 		fovForNPC = new float[numberOfNPCs];
@@ -724,11 +732,11 @@ public class Const : MonoBehaviour {
 		//case 2: return PerceptionLevel.High;
 		//case 3: return PerceptionLevel.Omniscient;
 
-		//case 0: return aiMoveType.None;
-		//case 1: return aiMoveType.Walk;
-		//case 2: return aiMoveType.Fly;
-		//case 3: return aiMoveType.Swim;
-		//case 4: return aiMoveType.Cyber;
+		//case 0: return AIMoveType.None;
+		//case 1: return AIMoveType.Walk;
+		//case 2: return AIMoveType.Fly;
+		//case 3: return AIMoveType.Swim;
+		//case 4: return AIMoveType.Cyber;
 
 		//case 0: return PoolType.None;
 		//case 1: return PoolType.;
@@ -757,9 +765,9 @@ public class Const : MonoBehaviour {
 				if (refIndex < 0 || refIndex > 28) continue; // Invalid value, skip
 				nameForNPC[refIndex] = entries[i].Trim(); i++;
 				i++; // No need to read the index again so we skip over it.
-				readInt = GetIntFromString(entries[i].Trim(),currentline); i++; attackTypeForNPC[refIndex] = GetAttackTypeFromInt(readInt);
-				readInt = GetIntFromString(entries[i].Trim(),currentline); i++; attackTypeForNPC2[refIndex] = GetAttackTypeFromInt(readInt);
-				readInt = GetIntFromString(entries[i].Trim(),currentline); i++; attackTypeForNPC3[refIndex] = GetAttackTypeFromInt(readInt);
+				readInt = GetIntFromString(entries[i].Trim(),currentline); attackTypeForNPC[refIndex] = GetAttackTypeFromInt(readInt); i++; 
+				readInt = GetIntFromString(entries[i].Trim(),currentline); attackTypeForNPC2[refIndex] = GetAttackTypeFromInt(readInt); i++; 
+				readInt = GetIntFromString(entries[i].Trim(),currentline); attackTypeForNPC3[refIndex] = GetAttackTypeFromInt(readInt); i++; 
 				damageForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
 				damageForNPC2[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
 				damageForNPC3[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
@@ -768,12 +776,11 @@ public class Const : MonoBehaviour {
 				rangeForNPC3[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
 				healthForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
 				healthForCyberNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				readInt = GetIntFromString(entries[i].Trim(),currentline); i++;
-				perceptionForNPC[refIndex] = GetPerceptionLevelFromInt(readInt);
+				readInt = GetIntFromString(entries[i].Trim(),currentline); perceptionForNPC[refIndex] = GetPerceptionLevelFromInt(readInt); i++;
 				disruptabilityForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
 				armorvalueForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				moveTypeForNPC[refIndex] = GetMoveTypeFromInt(GetIntFromString(entries[i].Trim(),currentline)); i++;
 				defenseForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
+				moveTypeForNPC[refIndex] = GetMoveTypeFromInt(GetIntFromString(entries[i].Trim(),currentline)); i++;
 				yawSpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
 				fovForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
 				fovAttackForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
@@ -859,36 +866,10 @@ public class Const : MonoBehaviour {
 
 	// StatusBar Print
 	public static void sprint (string input, GameObject player) {
-		if (player == null || a == null) return;
-
 		#if UNITY_EDITOR
 			UnityEngine.Debug.Log(input); // Print to Editor console.
 		#endif
-
-		if (player == null) {
-			if (a.player1 != null) a.player1.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-			if (a.player2 != null) a.player2.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-			if (a.player3 != null) a.player3.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-			if (a.player4 != null) a.player4.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-		} else {
-			PlayerReferenceManager prm = player.GetComponent<PlayerReferenceManager>();
-			if (prm != null) {
-				prm.playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-			} else {
-				if (a.player1 != null) {
-					if (player.transform.IsChildOf(a.player1.transform)) a.player1.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-				}
-				if (a.player2 != null) {
-					if (player.transform.IsChildOf(a.player1.transform)) a.player2.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-				}
-				if (a.player3 != null) {
-					if (player.transform.IsChildOf(a.player1.transform)) a.player3.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-				}
-				if (a.player4 != null) {
-					if (player.transform.IsChildOf(a.player1.transform)) a.player4.GetComponent<PlayerReferenceManager>().playerStatusBar.GetComponent<StatusBarTextDecay>().SendText(input);
-				}
-			}
-		}
+		a.statusBar.SendText(input);
 	}
 
 	public static void sprint (string input) { Const.sprint(input,null); }
@@ -1220,19 +1201,15 @@ public class Const : MonoBehaviour {
 		// Get all references to relevant components.
 		PlayerReferenceManager PRman = plyr.GetComponent<PlayerReferenceManager>();
 		GameObject pCap = PRman.playerCapsule;
-		GameObject playerMainCamera = PRman.playerCapsuleMainCamera;
-		GameObject playerInventory = PRman.playerInventory;
-		PlayerHealth ph = pCap.GetComponent<PlayerHealth>();
-		PlayerEnergy pe = pCap.GetComponent<PlayerEnergy>();
-		PlayerMovement pm = pCap.GetComponent<PlayerMovement>();
-		PlayerPatch pp = pCap.GetComponent<PlayerPatch>();
+		PlayerHealth ph = PlayerHealth.a;
+		PlayerEnergy pe = PlayerEnergy.a;
+		PlayerMovement pm = PlayerMovement.a;
+		PlayerPatch pp = PlayerPatch.a;
 		HealthManager hm = pCap.GetComponent<HealthManager>();
 		tr = pCap.transform;
-		MouseLookScript ml = playerMainCamera.GetComponent<MouseLookScript>();
-		trml = playerMainCamera.transform;
-		WeaponCurrent wc = playerInventory.GetComponent<WeaponCurrent>();
-		WeaponFire wf = pe.wepFire;
-		Inventory inv = playerInventory.GetComponent<Inventory>();
+		MouseLookScript ml = MouseLookScript.a;
+		trml = MouseLookScript.a.transform;
+		Inventory inv = Inventory.a;
 		MFDManager mfd = MFDManager.a;
 		SaveObject sav = plyr.GetComponent<SaveObject>();
 
@@ -1240,24 +1217,24 @@ public class Const : MonoBehaviour {
 		line += splitChar + sav.SaveID.ToString();
 		string pname = string.IsNullOrEmpty(Const.a.playerName) ? "Hacker" : Const.a.playerName;
 		line += splitChar + pname;
-		line += splitChar + ph.radiated.ToString("0000.00000"); // float
-		line += splitChar + ph.timer.ToString("0000.00000"); // float
+		line += splitChar + FloatToString(ph.radiated); // float
+		line += splitChar + FloatToString(ph.timer); // float
 		line += splitChar + BoolToString(ph.playerDead); // bool
 		line += splitChar + BoolToString(ph.radiationArea); // bool
-		line += splitChar + ph.mediPatchPulseFinished.ToString("0000.00000"); // float
+		line += splitChar + FloatToString(ph.mediPatchPulseFinished); // float
 		line += splitChar + ph.mediPatchPulseCount.ToString(); // int
 		line += splitChar + BoolToString(ph.makingNoise); // bool
-		line += splitChar + ph.lastHealth.ToString("0000.00000"); // float
-		line += splitChar + ph.painSoundFinished.ToString("0000.00000"); // float
-		line += splitChar + ph.radSoundFinished.ToString("0000.00000"); // float
-		line += splitChar + ph.radFXFinished.ToString("0000.00000"); // float
-		line += splitChar + pe.energy.ToString("0000.00000"); // float
-		line += splitChar + pe.timer.ToString("0000.00000"); // float
-		line += splitChar + pe.tickFinished.ToString("0000.00000"); // float
-		line += splitChar + pm.playerSpeed.ToString("0000.00000"); // float
+		line += splitChar + FloatToString(ph.lastHealth); // float
+		line += splitChar + FloatToString(ph.painSoundFinished); // float
+		line += splitChar + FloatToString(ph.radSoundFinished); // float
+		line += splitChar + FloatToString(ph.radFXFinished); // float
+		line += splitChar + FloatToString(pe.energy); // float
+		line += splitChar + FloatToString(pe.timer); // float
+		line += splitChar + FloatToString(pe.tickFinished); // float
+		line += splitChar + FloatToString(pm.playerSpeed); // float
 		line += splitChar + BoolToString(pm.grounded); // bool
-		line += splitChar + pm.currentCrouchRatio.ToString("0000.00000"); // float
-		line += splitChar + pm.bodyState.ToString(); // int
+		line += splitChar + FloatToString(pm.currentCrouchRatio); // float
+		line += splitChar + BodyStateToInt(pm.bodyState).ToString(); // int
 		line += splitChar + BoolToString(pm.ladderState); // bool
 		line += splitChar + BoolToString(pm.gravliftState); // bool
 		line += splitChar + BoolToString(pm.inCyberSpace); // bool
@@ -1276,41 +1253,57 @@ public class Const : MonoBehaviour {
 		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExploredG4[j]); } // bool
 		line += splitChar + BoolToString(pm.CheatWallSticky); // bool
 		line += splitChar + BoolToString(pm.CheatNoclip); // bool
-		line += splitChar + pm.jumpTime.ToString("0000.00000"); // float
-		line += splitChar + (pm.oldVelocity.x.ToString("0000.00000") + splitChar + pm.oldVelocity.y.ToString("0000.00000") + splitChar + pm.oldVelocity.z.ToString("0000.00000")); // Vector3 (float|float|float)
-		line += splitChar + pm.fatigue.ToString("0000.00000"); // float
+		line += splitChar + FloatToString(pm.jumpTime); // float
+		line += splitChar + FloatToString(pm.oldVelocity.x) + splitChar
+						  + FloatToString(pm.oldVelocity.y) + splitChar
+						  + FloatToString(pm.oldVelocity.z); // Vector3 (float|float|float)
+		line += splitChar + FloatToString(pm.fatigue); // float
 		line += splitChar + BoolToString(pm.justJumped); // bool
-		line += splitChar + pm.fatigueFinished.ToString("0000.00000"); // float
-		line += splitChar + pm.fatigueFinished2.ToString("0000.00000"); // float
+		line += splitChar + FloatToString(pm.fatigueFinished); // float
+		line += splitChar + FloatToString(pm.fatigueFinished2); // float
 		line += splitChar + BoolToString(pm.cyberSetup); // bool
 		line += splitChar + BoolToString(pm.cyberDesetup); // bool
-		line += splitChar + pm.oldBodyState.ToString(); // int
-		line += splitChar + pm.leanTarget.ToString("0000.00000"); // float
-		line += splitChar + pm.leanShift.ToString("0000.00000"); // float
-		line += splitChar + pm.jumpSFXFinished.ToString("0000.00000"); // float
-		line += splitChar + pm.jumpLandSoundFinished.ToString("0000.00000"); // float
-		line += splitChar + pm.jumpJetEnergySuckTickFinished.ToString("0000.00000"); // float
+		line += splitChar + BodyStateToInt(pm.oldBodyState).ToString(); // int
+		line += splitChar + FloatToString(pm.leanTarget); // float
+		line += splitChar + FloatToString(pm.leanShift); // float
+		line += splitChar + FloatToString(pm.jumpSFXFinished); // float
+		line += splitChar + FloatToString(pm.jumpLandSoundFinished); // float
+		line += splitChar + FloatToString(pm.jumpJetEnergySuckTickFinished); // float
 		line += splitChar + BoolToString(pm.fatigueWarned); // bool
-		line += splitChar + pm.ressurectingFinished.ToString("0000.00000"); // float
-		line += splitChar + pm.doubleJumpFinished.ToString("0000.00000"); // float
-		line += splitChar + pm.turboFinished.ToString("0000.00000"); // float
-		line += splitChar + pp.berserkFinishedTime.ToString("0000.00000"); // float
-		line += splitChar + pp.berserkIncrementFinishedTime.ToString("0000.00000"); // float
-		line += splitChar + pp.detoxFinishedTime.ToString("0000.00000"); // float
-		line += splitChar + pp.geniusFinishedTime.ToString("0000.00000"); // float
-		line += splitChar + pp.mediFinishedTime.ToString("0000.00000"); // float
-		line += splitChar + pp.reflexFinishedTime.ToString("0000.00000"); // float
-		line += splitChar + pp.sightFinishedTime.ToString("0000.00000"); // float
-		line += splitChar + pp.sightSideEffectFinishedTime.ToString("0000.00000"); // float
-		line += splitChar + pp.staminupFinishedTime.ToString("0000.00000"); // float
+		line += splitChar + FloatToString(pm.ressurectingFinished); // float
+		line += splitChar + FloatToString(pm.doubleJumpFinished); // float
+		line += splitChar + FloatToString(pm.turboFinished); // float
+		line += splitChar + FloatToString(pp.berserkFinishedTime); // float
+		line += splitChar + FloatToString(pp.berserkIncrementFinishedTime); // float
+		line += splitChar + FloatToString(pp.detoxFinishedTime); // float
+		line += splitChar + FloatToString(pp.geniusFinishedTime); // float
+		line += splitChar + FloatToString(pp.mediFinishedTime); // float
+		line += splitChar + FloatToString(pp.reflexFinishedTime); // float
+		line += splitChar + FloatToString(pp.sightFinishedTime); // float
+		line += splitChar + FloatToString(pp.sightSideEffectFinishedTime); // float
+		line += splitChar + FloatToString(pp.staminupFinishedTime); // float
 		line += splitChar + pp.berserkIncrement.ToString(); // int
 		line += splitChar + pp.patchActive.ToString(); // int
-		line += splitChar + (tr.localPosition.x.ToString("0000.00000") + splitChar + tr.localPosition.y.ToString("0000.00000") + splitChar + tr.localPosition.z.ToString("0000.00000")); // Vector3 (float|float|float)
-		line += splitChar + (tr.localRotation.x.ToString("0000.00000") + splitChar + tr.localRotation.y.ToString("0000.00000") + splitChar + tr.localRotation.z.ToString("0000.00000") + splitChar + tr.localRotation.w.ToString("0000.00000")); // Quaternion (float|float|float|float)
-		line += splitChar + (tr.localScale.x.ToString("0000.00000") + splitChar + tr.localScale.y.ToString("0000.00000") + splitChar + tr.localScale.z.ToString("0000.00000")); // Vector3 (float|float|float)
-		line += splitChar + (trml.localPosition.x.ToString("0000.00000") + splitChar + trml.localPosition.y.ToString("0000.00000") + splitChar + trml.localPosition.z.ToString("0000.00000")); // Vector3 (float|float|float)
-		line += splitChar + (trml.localRotation.x.ToString("0000.00000") + splitChar + trml.localRotation.y.ToString("0000.00000") + splitChar + trml.localRotation.z.ToString("0000.00000") + splitChar + trml.localRotation.w.ToString("0000.00000")); // Quaternion (float|float|float|float)
-		line += splitChar + (trml.localScale.x.ToString("0000.00000") + splitChar + trml.localScale.y.ToString("0000.00000") + splitChar + trml.localScale.z.ToString("0000.00000")); // Vector3 (float|float|float)
+		line += splitChar + FloatToString(tr.localPosition.x) + splitChar
+						  + FloatToString(tr.localPosition.y) + splitChar
+						  + FloatToString(tr.localPosition.z); // Vector3 (float|float|float)
+		line += splitChar + FloatToString(tr.localRotation.x) + splitChar
+						  + FloatToString(tr.localRotation.y) + splitChar
+						  + FloatToString(tr.localRotation.z) + splitChar
+						  + FloatToString(tr.localRotation.w); // Quaternion (float|float|float|float)
+		line += splitChar + FloatToString(tr.localScale.x) + splitChar
+						  + FloatToString(tr.localScale.y) + splitChar
+						  + FloatToString(tr.localScale.z); // Vector3 (float|float|float)
+		line += splitChar + FloatToString(trml.localPosition.x) + splitChar
+						  + FloatToString(trml.localPosition.y) + splitChar
+						  + FloatToString(trml.localPosition.z); // Vector3 (float|float|float)
+		line += splitChar + FloatToString(trml.localRotation.x) + splitChar
+						  + FloatToString(trml.localRotation.y) + splitChar
+						  + FloatToString(trml.localRotation.z) + splitChar
+						  + FloatToString(trml.localRotation.w); // Quaternion (float|float|float|float)
+		line += splitChar + FloatToString(trml.localScale.x) + splitChar
+						  + FloatToString(trml.localScale.y) + splitChar
+						  + FloatToString(trml.localScale.z); // Vector3 (float|float|float)
 		line += splitChar + BoolToString(ml.inventoryMode); // bool
 		line += splitChar + BoolToString(ml.holdingObject); // bool
 		line += splitChar + ml.heldObjectIndex.ToString(); // int
@@ -1321,17 +1314,25 @@ public class Const : MonoBehaviour {
 		line += splitChar + BoolToString(ml.firstTimeSearch); // bool
 		line += splitChar + BoolToString(ml.grenadeActive); // bool
 		line += splitChar + BoolToString(ml.inCyberSpace); // bool
-		line += splitChar + ml.yRotation.ToString("0000.00000"); // float
+		line += splitChar + FloatToString(ml.yRotation); // float
 		line += splitChar + BoolToString(ml.geniusActive); // bool
-		line += splitChar + ml.xRotation.ToString("0000.00000"); // float
+		line += splitChar + FloatToString(ml.xRotation); // float
 		line += splitChar + BoolToString(ml.vmailActive); // bool
-		line += splitChar + (ml.cyberspaceReturnPoint.x.ToString("0000.00000") + splitChar + ml.cyberspaceReturnPoint.y.ToString("0000.00000") + splitChar + ml.cyberspaceReturnPoint.z.ToString("0000.00000"));
-		line += splitChar + (ml.cyberspaceReturnCameraLocalRotation.x.ToString("0000.00000") + splitChar + ml.cyberspaceReturnCameraLocalRotation.y.ToString("0000.00000") + splitChar + ml.cyberspaceReturnCameraLocalRotation.z.ToString("0000.00000"));
-		line += splitChar + (ml.cyberspaceReturnPlayerCapsuleLocalRotation.x.ToString("0000.00000") + splitChar + ml.cyberspaceReturnPlayerCapsuleLocalRotation.y.ToString("0000.00000") + splitChar + ml.cyberspaceReturnPlayerCapsuleLocalRotation.z.ToString("0000.00000"));
-		line += splitChar + (ml.cyberspaceRecallPoint.x.ToString("0000.00000") + splitChar + ml.cyberspaceRecallPoint.y.ToString("0000.00000") + splitChar + ml.cyberspaceRecallPoint.z.ToString("0000.00000"));
+		line += splitChar + FloatToString(ml.cyberspaceReturnPoint.x) + splitChar
+						  + FloatToString(ml.cyberspaceReturnPoint.y) + splitChar
+						  + FloatToString(ml.cyberspaceReturnPoint.z);
+		line += splitChar + FloatToString(ml.cyberspaceReturnCameraLocalRotation.x) + splitChar
+						  + FloatToString(ml.cyberspaceReturnCameraLocalRotation.y) + splitChar
+						  + FloatToString(ml.cyberspaceReturnCameraLocalRotation.z);
+		line += splitChar + FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.x) + splitChar
+						  + FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.y) + splitChar
+						  + FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.z);
+		line += splitChar + FloatToString(ml.cyberspaceRecallPoint.x) + splitChar
+						  + FloatToString(ml.cyberspaceRecallPoint.y) + splitChar
+						  + FloatToString(ml.cyberspaceRecallPoint.z); // Vector3 (float|float|float)
 		line += splitChar + ml.cyberspaceReturnLevel.ToString(); // int
-		line += splitChar + hm.health.ToString("0000.00000"); // float
-		line += splitChar + hm.cyberHealth.ToString("0000.00000"); // float
+		line += splitChar + FloatToString(hm.health); // float
+		line += splitChar + FloatToString(hm.cyberHealth); // float
 		line += splitChar + BoolToString(hm.deathDone); // bool
 		line += splitChar + BoolToString(hm.god); // bool
 		line += splitChar + BoolToString(hm.teleportDone); // bool
@@ -1342,36 +1343,36 @@ public class Const : MonoBehaviour {
 		line += splitChar + inv.numweapons.ToString(); // int
 		for (j=0;j<16;j++) { line += splitChar + inv.wepAmmo[j].ToString(); } // int
 		for (j=0;j<16;j++) { line += splitChar + inv.wepAmmoSecondary[j].ToString(); } // int
-		for (j=0;j<7;j++) { line += splitChar + inv.currentEnergyWeaponHeat[j].ToString("0000.00000"); } // float
+		for (j=0;j<7;j++) { line += splitChar + FloatToString(inv.currentEnergyWeaponHeat[j]); } // float
 		for (j=0;j<7;j++) { line += splitChar + BoolToString(inv.wepLoadedWithAlternate[j]); } // bool
-		line += splitChar + wc.weaponCurrent.ToString(); // int
-		line += splitChar + wc.weaponIndex.ToString(); // int
-		for (j=0;j<7;j++) { line += splitChar + wc.weaponEnergySetting[j].ToString("0000.00000"); } // float
-		for (j=0;j<7;j++) { line += splitChar + wc.currentMagazineAmount[j].ToString(); } // int
-		for (j=0;j<7;j++) { line += splitChar + wc.currentMagazineAmount2[j].ToString(); } // int
-		line += splitChar + BoolToString(wc.justChangedWeap); // bool
-		line += splitChar + wc.lastIndex.ToString(); // int
-		line += splitChar + BoolToString(wc.bottomless); // bool
-		line += splitChar + BoolToString(wc.redbull); // bool
-		line += splitChar + wc.reloadFinished.ToString("0000.00000"); // float
-		line += splitChar + wc.reloadLerpValue.ToString("0000.00000"); // float
-		line += splitChar + wc.lerpStartTime.ToString("0000.00000"); // float
-		line += splitChar + wc.targetY.ToString("0000.00000"); // float
-		line += splitChar + wf.waitTilNextFire.ToString("0000.00000"); // float
-		line += splitChar + BoolToString(wf.overloadEnabled); // bool
-		line += splitChar + wf.sparqSetting.ToString("0000.00000"); // float
-		line += splitChar + wf.ionSetting.ToString("0000.00000"); // float
-		line += splitChar + wf.blasterSetting.ToString("0000.00000"); // float
-		line += splitChar + wf.plasmaSetting.ToString("0000.00000"); // float
-		line += splitChar + wf.stungunSetting.ToString("0000.00000"); // float
-		line += splitChar + BoolToString(wf.recoiling); // bool
-		line += splitChar + wf.justFired.ToString("0000.00000"); // float
-		line += splitChar + wf.energySliderClickedTime.ToString("0000.00000"); // float
-		line += splitChar + wf.cyberWeaponAttackFinished.ToString("0000.00000"); // float
+		line += splitChar + WeaponCurrent.WepInstance.weaponCurrent.ToString(); // int
+		line += splitChar + WeaponCurrent.WepInstance.weaponIndex.ToString(); // int
+		for (j=0;j<7;j++) { line += splitChar + FloatToString(WeaponCurrent.WepInstance.weaponEnergySetting[j]); } // float
+		for (j=0;j<7;j++) { line += splitChar + WeaponCurrent.WepInstance.currentMagazineAmount[j].ToString(); } // int
+		for (j=0;j<7;j++) { line += splitChar + WeaponCurrent.WepInstance.currentMagazineAmount2[j].ToString(); } // int
+		line += splitChar + BoolToString(WeaponCurrent.WepInstance.justChangedWeap); // bool
+		line += splitChar + WeaponCurrent.WepInstance.lastIndex.ToString(); // int
+		line += splitChar + BoolToString(WeaponCurrent.WepInstance.bottomless); // bool
+		line += splitChar + BoolToString(WeaponCurrent.WepInstance.redbull); // bool
+		line += splitChar + FloatToString(WeaponCurrent.WepInstance.reloadFinished); // float
+		line += splitChar + FloatToString(WeaponCurrent.WepInstance.reloadLerpValue); // float
+		line += splitChar + FloatToString(WeaponCurrent.WepInstance.lerpStartTime); // float
+		line += splitChar + FloatToString(WeaponCurrent.WepInstance.targetY); // float
+		line += splitChar + FloatToString(WeaponFire.a.waitTilNextFire); // float
+		line += splitChar + BoolToString(WeaponFire.a.overloadEnabled); // bool
+		line += splitChar + FloatToString(WeaponFire.a.sparqSetting); // float
+		line += splitChar + FloatToString(WeaponFire.a.ionSetting); // float
+		line += splitChar + FloatToString(WeaponFire.a.blasterSetting); // float
+		line += splitChar + FloatToString(WeaponFire.a.plasmaSetting); // float
+		line += splitChar + FloatToString(WeaponFire.a.stungunSetting); // float
+		line += splitChar + BoolToString(WeaponFire.a.recoiling); // bool
+		line += splitChar + FloatToString(WeaponFire.a.justFired); // float
+		line += splitChar + FloatToString(WeaponFire.a.energySliderClickedTime); // float
+		line += splitChar + FloatToString(WeaponFire.a.cyberWeaponAttackFinished); // float
 		line += splitChar + inv.grenadeCurrent.ToString(); // int
 		line += splitChar + inv.grenadeIndex.ToString(); // int
-		line += splitChar + inv.nitroTimeSetting.ToString("0000.00000"); // float
-		line += splitChar + inv.earthShakerTimeSetting.ToString("0000.00000"); // float
+		line += splitChar + FloatToString(inv.nitroTimeSetting); // float
+		line += splitChar + FloatToString(inv.earthShakerTimeSetting); // float
 		for (j=0;j<7;j++) { line += splitChar + inv.grenAmmo[j].ToString(); } // int
 		line += splitChar + inv.patchCurrent.ToString(); // int
 		line += splitChar + inv.patchIndex.ToString(); // int
@@ -1430,7 +1431,9 @@ public class Const : MonoBehaviour {
 		line += splitChar + BoolToString(mfd.lastLogSideRH); // bool
 		line += splitChar + BoolToString(mfd.lastLogSecondarySideRH); // bool
 		line += splitChar + BoolToString(mfd.lastMinigameSideRH); // bool
-		line += splitChar + mfd.objectInUsePos.x.ToString("0000.00000") + splitChar + mfd.objectInUsePos.y.ToString("0000.00000") + splitChar + mfd.objectInUsePos.z.ToString("0000.00000");
+		line += splitChar + FloatToString(mfd.objectInUsePos.x) + splitChar
+						  + FloatToString(mfd.objectInUsePos.y) + splitChar
+						  + FloatToString(mfd.objectInUsePos.z);
 		// tetheredPGP
 		// tetheredPWP
 		// tetheredSearchable
@@ -1442,10 +1445,10 @@ public class Const : MonoBehaviour {
 		line += splitChar + BoolToString(mfd.DataReaderContentTab.activeSelf); // bool
 		line += splitChar + BoolToString(mfd.logTable.activeSelf); // bool
 		line += splitChar + BoolToString(mfd.logLevelsFolder.activeSelf); // bool
-		line += splitChar + mfd.logFinished.ToString("0000.00000");
+		line += splitChar + FloatToString(mfd.logFinished);
 		line += splitChar + BoolToString(mfd.logActive); // bool
 		line += splitChar + mfd.logType.ToString(); // int
-		line += splitChar + mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished.ToString("0000.00000");
+		line += splitChar + FloatToString(mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished);
 		return line;
 	}
 
@@ -1475,7 +1478,7 @@ public class Const : MonoBehaviour {
 		if (ga != null) {
 			line = ga.constIndex.ToString(); // int - lookup index to the const items table for instantiating
 			line += splitChar + BoolToString(ga.useTimer); // bool - do we have a timer going? MAKE SURE YOU CHECK THIS BIT IN LOAD!
-			line += splitChar + ga.timeFinished.ToString("0000.00000"); // float - how much time left before the fun part?
+			line += splitChar + FloatToString(ga.timeFinished); // float - how much time left before the fun part?
 			line += splitChar + BoolToString(ga.explodeOnContact); // bool - or not a landmine
 			line += splitChar + BoolToString(ga.useProx); // bool - is this a landmine?
 		} else {
@@ -1491,8 +1494,8 @@ public class Const : MonoBehaviour {
 		if (!hm.startInitialized) hm.Start();
 		string line = System.String.Empty;
 		if (hm != null) {
-			line = hm.health.ToString("0000.00000"); // how much health we have
-			line += splitChar + hm.cyberHealth.ToString("0000.00000"); // how much health we have
+			line = FloatToString(hm.health); // how much health we have
+			line += splitChar + FloatToString(hm.cyberHealth); // how much health we have
 			line += splitChar + BoolToString(hm.deathDone); // bool - are we dead yet?
 			line += splitChar + BoolToString(hm.god); // are we invincible? - we can save cheats?? OH WOW!
 			line += splitChar + BoolToString(hm.teleportDone); // did we already teleport?
@@ -1522,16 +1525,16 @@ public class Const : MonoBehaviour {
 			s2.Append(aic.index.ToString()); // int
 			s2.Append(splitChar);
 			switch (aic.currentState) {
-				case Const.aiState.Walk: s2.Append("1"); break;
-				case Const.aiState.Run: s2.Append("2"); break;
-				case Const.aiState.Attack1: s2.Append("3");  break;
-				case Const.aiState.Attack2: s2.Append("4");  break;
-				case Const.aiState.Attack3: s2.Append("5");  break;
-				case Const.aiState.Pain: s2.Append("6");  break;
-				case Const.aiState.Dying: s2.Append("7");  break;
-				case Const.aiState.Inspect: s2.Append("8");  break;
-				case Const.aiState.Interacting: s2.Append("9");  break;
-				case Const.aiState.Dead: s2.Append("10");  break;
+				case AIState.Walk: s2.Append("1"); break;
+				case AIState.Run: s2.Append("2"); break;
+				case AIState.Attack1: s2.Append("3");  break;
+				case AIState.Attack2: s2.Append("4");  break;
+				case AIState.Attack3: s2.Append("5");  break;
+				case AIState.Pain: s2.Append("6");  break;
+				case AIState.Dying: s2.Append("7");  break;
+				case AIState.Inspect: s2.Append("8");  break;
+				case AIState.Interacting: s2.Append("9");  break;
+				case AIState.Dead: s2.Append("10");  break;
 				default: s2.Append("0");  break;
 			}
 			s2.Append(splitChar);
@@ -1549,66 +1552,66 @@ public class Const : MonoBehaviour {
 				s2.Append("-1");
 				//line += splitChar + "-1";
 			}
-			s2.Append(splitChar); s2.Append(aic.gracePeriodFinished.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.meleeDamageFinished.ToString("0000.00000"));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.gracePeriodFinished));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.meleeDamageFinished));
 			s2.Append(splitChar); s2.Append(BoolToString(aic.inSight)); // bool
 			s2.Append(splitChar); s2.Append(BoolToString(aic.infront)); // bool
 			s2.Append(splitChar); s2.Append(BoolToString(aic.inProjFOV)); // bool
 			s2.Append(splitChar); s2.Append(BoolToString(aic.LOSpossible)); // bool
 			s2.Append(splitChar); s2.Append(BoolToString(aic.goIntoPain)); // bool
-			s2.Append(splitChar); s2.Append(aic.rangeToEnemy.ToString("0000.00000"));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.rangeToEnemy));
 			s2.Append(splitChar); s2.Append(BoolToString(aic.firstSighting)); // bool
 			s2.Append(splitChar); s2.Append(BoolToString(aic.dyingSetup)); // bool
 			s2.Append(splitChar); s2.Append(BoolToString(aic.ai_dying)); // bool
 			s2.Append(splitChar); s2.Append(BoolToString(aic.ai_dead)); // bool
 			s2.Append(splitChar); s2.Append(aic.currentWaypoint.ToString()); // int
-			s2.Append(splitChar); s2.Append(aic.currentDestination.x.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.currentDestination.y.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.currentDestination.z.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.timeTillEnemyChangeFinished.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.timeTillDeadFinished.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.timeTillPainFinished.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.tickFinished.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.raycastingTickFinished.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.huntFinished.ToString("0000.00000"));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.currentDestination.x));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.currentDestination.y));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.currentDestination.z));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.timeTillEnemyChangeFinished));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.timeTillDeadFinished));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.timeTillPainFinished));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.tickFinished));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.raycastingTickFinished));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.huntFinished));
 			s2.Append(splitChar); s2.Append(BoolToString(aic.hadEnemy)); // bool
-			s2.Append(splitChar); s2.Append(aic.lastKnownEnemyPos.x.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.lastKnownEnemyPos.y.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.lastKnownEnemyPos.z.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.tempVec.x.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.tempVec.y.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.tempVec.z.ToString("0000.00000"));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.lastKnownEnemyPos.x));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.lastKnownEnemyPos.y));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.lastKnownEnemyPos.z));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.tempVec.x));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.tempVec.y));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.tempVec.z));
 			s2.Append(splitChar); s2.Append(BoolToString(aic.shotFired)); // bool
-			s2.Append(splitChar); s2.Append(aic.randomWaitForNextAttack1Finished.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.randomWaitForNextAttack2Finished.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.randomWaitForNextAttack3Finished.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.idealTransformForward.x.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.idealTransformForward.y.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.idealTransformForward.z.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.idealPos.x.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.idealPos.y.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.idealPos.z.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.attackFinished.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.attack2Finished.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.attack3Finished.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.targettingPosition.x.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.targettingPosition.y.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.targettingPosition.z.ToString("0000.00000"));
-			s2.Append(splitChar); s2.Append(aic.deathBurstFinished.ToString("0000.00000"));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.randomWaitForNextAttack1Finished));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.randomWaitForNextAttack2Finished));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.randomWaitForNextAttack3Finished));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.idealTransformForward.x));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.idealTransformForward.y));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.idealTransformForward.z));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.idealPos.x));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.idealPos.y));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.idealPos.z));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.attackFinished));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.attack2Finished));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.attack3Finished));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.targettingPosition.x));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.targettingPosition.y));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.targettingPosition.z));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.deathBurstFinished));
 			s2.Append(splitChar); s2.Append(BoolToString(aic.deathBurstDone)); // bool
 			s2.Append(splitChar); s2.Append(BoolToString(aic.asleep)); // bool
-			s2.Append(splitChar); s2.Append(aic.tranquilizeFinished.ToString("0000.00000"));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.tranquilizeFinished));
 			s2.Append(splitChar); s2.Append(BoolToString(aic.hopDone)); // bool
 			s2.Append(splitChar); s2.Append(BoolToString(aic.wandering)); // bool
-			s2.Append(splitChar); s2.Append(aic.wanderFinished.ToString("0000.00000"));
+			s2.Append(splitChar); s2.Append(FloatToString(aic.wanderFinished));
 			s2.Append(splitChar); s2.Append(GetHealthManagerSaveData(aic.healthManager));
 		} else {
 			UnityEngine.Debug.Log("BUG: SaveNPCData missing AIController");
 		}
 		if (aiac != null) {
-			s2.Append(splitChar); s2.Append(aiac.currentClipPercentage.ToString("0000.00000"));
+			s2.Append(splitChar); s2.Append(FloatToString(aiac.currentClipPercentage));
 			s2.Append(splitChar); s2.Append(BoolToString(aiac.dying)); // bool
-			s2.Append(splitChar); s2.Append(aiac.animSwapFinished.ToString("0000.00000"));
+			s2.Append(splitChar); s2.Append(FloatToString(aiac.animSwapFinished));
 		}
 		//12
 		if (s2 != null) return s2.ToString();
@@ -1652,7 +1655,7 @@ public class Const : MonoBehaviour {
 		if (fb != null) {
 			line = BoolToString(fb.activated); // bool - is the bridge on?
 			line += splitChar + BoolToString(fb.lerping); // bool - are we currently lerping one way or tother
-			line += splitChar + fb.tickFinished.ToString("0000.00000"); // float - time before firing targets
+			line += splitChar + FloatToString(fb.tickFinished); // float - time before firing targets
 		} else {
 			UnityEngine.Debug.Log("ForceBridge missing on savetype of ForceBridge!");
 		}
@@ -1668,8 +1671,8 @@ public class Const : MonoBehaviour {
 			line = BoolToString(bs.locked); // bool - is this switch locked
 			line += splitChar + BoolToString(bs.active); // bool - is the switch flashing?
 			line += splitChar + BoolToString(bs.alternateOn); // bool - is the flashing material on?
-			line += splitChar + bs.delayFinished.ToString("0000.00000"); // float - time before firing targets
-			line += splitChar + bs.tickFinished.ToString("0000.00000"); // float - time before firing targets
+			line += splitChar + FloatToString(bs.delayFinished); // float - time before firing targets
+			line += splitChar + FloatToString(bs.tickFinished); // float - time before firing targets
 		} else {
 			UnityEngine.Debug.Log("ButtonSwitch missing on savetype of ButtonSwitch!");
 		}
@@ -1700,7 +1703,7 @@ public class Const : MonoBehaviour {
 		string line = System.String.Empty;
 		TeleportTouch tt = go.GetComponent<TeleportTouch>();
 		if (tt != null) {
-			line = tt.justUsed.ToString("0000.00000"); // float - is the player still touching it?
+			line = FloatToString(tt.justUsed); // float - is the player still touching it?
 		} else {
 			UnityEngine.Debug.Log("TeleportTouch missing on savetype of TeleportTouch! GameObject.name: " + go.name);
 		}
@@ -1739,7 +1742,7 @@ public class Const : MonoBehaviour {
 		if (sm != null) {
 			line = BoolToString(sm.active); // bool - is this enabled
 			line += splitChar + sm.numberActive.ToString(); // int - number spawned
-			line += splitChar + sm.delayFinished.ToString("0000.00000"); // float - time that we need to spawn next
+			line += splitChar + FloatToString(sm.delayFinished); // float - time that we need to spawn next
 		} else {
 			UnityEngine.Debug.Log("SpawnManager missing on savetype of SpawnManager!");
 		}
@@ -1882,7 +1885,7 @@ public class Const : MonoBehaviour {
 		string line = System.String.Empty;
 		ChargeStation chg = go.GetComponent<ChargeStation>();
 		if (chg != null) {
-			line = chg.nextthink.ToString("0000.00000"); // float - time before recharged
+			line = FloatToString(chg.nextthink); // float - time before recharged
 		} else {
 			UnityEngine.Debug.Log("ChargeStation missing on savetype of ChargeStation!");
 		}
@@ -1897,25 +1900,13 @@ public class Const : MonoBehaviour {
 			line = BoolToString(la.lightOn); // bool
 			line += splitChar + BoolToString(la.lerpOn); // bool
 			line += splitChar + la.currentStep.ToString(); // int
-			line += splitChar + la.lerpValue.ToString("0000.00000");
-			line += splitChar + la.lerpTime.ToString("0000.00000");
-			line += splitChar + la.stepTime.ToString("0000.00000");
-			line += splitChar + la.lerpStartTime.ToString("0000.00000");
+			line += splitChar + FloatToString(la.lerpValue);
+			line += splitChar + FloatToString(la.lerpTime);
+			line += splitChar + FloatToString(la.stepTime);
+			line += splitChar + FloatToString(la.lerpStartTime);
 		} else {
 			UnityEngine.Debug.Log("LightAnimation missing on savetype of Light!");
 		}
-		return line;
-	}
-
-	string SaveLogicTimerData(GameObject go) {
-		string line = System.String.Empty;
-		LogicTimer lt = go.GetComponent<LogicTimer>();
-		if (lt != null) {
-			line = lt.intervalFinished.ToString("0000.00000"); // float
-		} else {
-			UnityEngine.Debug.Log("LogicTimer missing on savetype of LogicTimer!");
-		}
-		//1
 		return line;
 	}
 
@@ -1968,7 +1959,6 @@ public class Const : MonoBehaviour {
 		Transform tr;
 		// counting integers for grins and giggles
 		//...hey it did let me see I had the wrong saveable type whenever there were zero or only 5 of certain objects
-		int playercount = 0;
 		int numTransforms = 0;
 		int numUseables = 0;
 		int numGrenades = 0;
@@ -1998,11 +1988,14 @@ public class Const : MonoBehaviour {
 		int numLights = 0;
 		int numTimers = 0;
 		int numCameras = 0;
+		int numDelayedSpawn = 0;
+		// All saveable classes
+		LogicTimer lt;
+		DelayedSpawn ds;
+
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 		FindAllSaveObjectsGOs(saveableGameObjects);
-
-		// Indicate we are saving "Saving..."
-		sprint(stringTable[194]);
+		sprint(stringTable[194]); // Indicate we are saving "Saving..."
 
 		// Header
 		// -----------------------------------------------------
@@ -2011,7 +2004,7 @@ public class Const : MonoBehaviour {
 		saveData[index] = savename;
 		index++;
 
-		saveData[index] = PauseScript.a.relativeTime.ToString("0000.00000"); // float - time that we need to spawn next
+		saveData[index] = FloatToString(PauseScript.a.relativeTime); // float - pausable game time
 		index++;
 		s1.Clear(); // keep reusing s1
 		// Global states and Difficulties
@@ -2099,16 +2092,11 @@ public class Const : MonoBehaviour {
 		saveData[index] = s1.ToString();
 		index++;
 
-		if (player1 != null) playercount++;
-		if (player2 != null) playercount++;
-		if (player3 != null) playercount++;
-		if (player4 != null) playercount++;
-
 		// Save all the players' data
 		saveData[index] = SavePlayerData(player1); index++; // saves as "!" if null
-		saveData[index] = SavePlayerData(player2); index++; // saves as "!" if null
-		saveData[index] = SavePlayerData(player3); index++; // saves as "!" if null
-		saveData[index] = SavePlayerData(player4); index++; // saves as "!" if null
+		saveData[index] = "!"; index++; // Null player2.
+		saveData[index] = "!"; index++; // saves as "!" if null
+		saveData[index] = "!"; index++; // saves as "!" if null
 
 		string rbodynullstr = "|0000.00000|0000.00000|0000.00000";
 		Rigidbody rbody;
@@ -2132,33 +2120,33 @@ public class Const : MonoBehaviour {
 			s1.Append(BoolToString(saveableGameObjects[i].activeSelf)); // bool.  Watch it next time buddy.  Yeesh, 2/28/22 was kind of scary till I realized this was still just using ToString here.  All saveables were turned off!!
 			s1.Append(splitChar);
 			tr = saveableGameObjects[i].GetComponent<Transform>();
-			s1.Append(tr.localPosition.x.ToString("0000.00000"));
+			s1.Append(FloatToString(tr.localPosition.x));
 			s1.Append(splitChar);
-			s1.Append(tr.localPosition.y.ToString("0000.00000"));
+			s1.Append(FloatToString(tr.localPosition.y));
 			s1.Append(splitChar);
-			s1.Append(tr.localPosition.z.ToString("0000.00000"));
+			s1.Append(FloatToString(tr.localPosition.z));
 			s1.Append(splitChar);
-			s1.Append(tr.localRotation.x.ToString("0000.00000"));
+			s1.Append(FloatToString(tr.localRotation.x));
 			s1.Append(splitChar);
-			s1.Append(tr.localRotation.y.ToString("0000.00000"));
+			s1.Append(FloatToString(tr.localRotation.y));
 			s1.Append(splitChar);
-			s1.Append(tr.localRotation.z.ToString("0000.00000"));
+			s1.Append(FloatToString(tr.localRotation.z));
 			s1.Append(splitChar);
-			s1.Append(tr.localRotation.w.ToString("0000.00000"));
+			s1.Append(FloatToString(tr.localRotation.w));
 			s1.Append(splitChar);
-			s1.Append(tr.localScale.x.ToString("0000.00000"));
+			s1.Append(FloatToString(tr.localScale.x));
 			s1.Append(splitChar);
-			s1.Append(tr.localScale.y.ToString("0000.00000"));
+			s1.Append(FloatToString(tr.localScale.y));
 			s1.Append(splitChar);
-			s1.Append(tr.localScale.z.ToString("0000.00000"));
+			s1.Append(FloatToString(tr.localScale.z));
 			rbody = saveableGameObjects[i].GetComponent<Rigidbody>();
 			if (rbody != null) {
 				s1.Append(splitChar);
-				s1.Append(rbody.velocity.x.ToString("0000.00000"));
+				s1.Append(FloatToString(rbody.velocity.x));
 				s1.Append(splitChar);
-				s1.Append(rbody.velocity.y.ToString("0000.00000"));
+				s1.Append(FloatToString(rbody.velocity.y));
 				s1.Append(splitChar);
-				s1.Append(rbody.velocity.z.ToString("0000.00000"));
+				s1.Append(FloatToString(rbody.velocity.z));
 			} else {
 				s1.Append(rbodynullstr);
 			}
@@ -2193,8 +2181,25 @@ public class Const : MonoBehaviour {
 				case SaveObject.SaveableType.GravPad: numGravPads++;  line += SaveGravLiftPadTextureData(saveableGameObjects[i]); break;
 				case SaveObject.SaveableType.ChargeStation: numChargeStations++;  line += SaveChargeStationData(saveableGameObjects[i]); break;
 				case SaveObject.SaveableType.Light: numLights++;  line += SaveLightAnimationData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.LTimer: numTimers++; line += SaveLogicTimerData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.Camera: numCameras++;  line += SaveCameraData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.LTimer:
+					lt = saveableGameObjects[i].GetComponent<LogicTimer>();
+					if (lt != null) {
+						numTimers++;
+						line += lt.Save(); 
+					} else {
+						UnityEngine.Debug.Log("LogicTimer missing on savetype of LogicTimer!");
+					}
+					break;
+				case SaveObject.SaveableType.Camera: numCameras++; line += SaveCameraData(saveableGameObjects[i]); break;
+				case SaveObject.SaveableType.DelayedSpawn:
+					numDelayedSpawn++;
+					ds = saveableGameObjects[i].GetComponent<DelayedSpawn>();
+					if (ds != null) {
+						line += ds.Save();
+					} else {
+						UnityEngine.Debug.Log("DelayedSpawn missing on savetype of DelayedSpawn!");
+					}
+					break;
 				default: numTransforms++; break; // we already did the plain ol transform data first up above
 			}
 			saveData[index] = line; // take this objects data and add it to the array
@@ -2229,6 +2234,7 @@ public class Const : MonoBehaviour {
 		// UnityEngine.Debug.Log("Number of ChargeStations: " + numChargeStations.ToString());
 		// UnityEngine.Debug.Log("Number of Lights: " + numLights.ToString());
 		// UnityEngine.Debug.Log("Number of LogicTimers: " + numTimers.ToString());
+		// UnityEngine.Debug.Log("Number of DelayedSpawn: " + numDelayedSpawn.ToString());
 
 		// Write to file
 		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt",false,Encoding.ASCII);
@@ -2256,19 +2262,15 @@ public class Const : MonoBehaviour {
 		float readFloatw;
 		PlayerReferenceManager PRman = currentPlayer.GetComponent<PlayerReferenceManager>();
 		GameObject pCap = PRman.playerCapsule;
-		GameObject playerMainCamera = PRman.playerCapsuleMainCamera;
-		GameObject playerInventory = PRman.playerInventory;
-		PlayerHealth ph = pCap.GetComponent<PlayerHealth>();
-		PlayerEnergy pe = pCap.GetComponent<PlayerEnergy>();
-		PlayerMovement pm = pCap.GetComponent<PlayerMovement>();
-		PlayerPatch pp = pCap.GetComponent<PlayerPatch>();
+		PlayerHealth ph = PlayerHealth.a;
+		PlayerEnergy pe = PlayerEnergy.a;
+		PlayerMovement pm = PlayerMovement.a;
+		PlayerPatch pp = PlayerPatch.a;
 		HealthManager hm = pCap.GetComponent<HealthManager>();
 		Transform tr = pCap.transform;
-		MouseLookScript ml = playerMainCamera.GetComponent<MouseLookScript>();
-		Transform trml = playerMainCamera.transform;
-		WeaponCurrent wc = playerInventory.GetComponent<WeaponCurrent>();
-		WeaponFire wf = pe.wepFire;
-		Inventory inv = playerInventory.GetComponent<Inventory>();
+		MouseLookScript ml = MouseLookScript.a;
+		Transform trml = MouseLookScript.a.transform;
+		Inventory inv = Inventory.a;
 		MFDManager mfd = MFDManager.a;
 		// Already parsed saveableType and ID number in main Load() function, skipping ahead to index 2 (3rd slot).
 		Const.a.playerName = entries[index]; index++; 
@@ -2289,7 +2291,7 @@ public class Const : MonoBehaviour {
 		pm.playerSpeed = GetFloatFromString(entries[index],currentline); index++;
 		pm.grounded = GetBoolFromString(entries[index]); index++;
 		pm.currentCrouchRatio = GetFloatFromString(entries[index],currentline); index++;
-		pm.bodyState = GetIntFromString(entries[index],currentline ); index++;
+		pm.bodyState = IntToBodyState(GetIntFromString(entries[index],currentline)); index++;
 		pm.ladderState = GetBoolFromString(entries[index]); index++;
 		pm.gravliftState = GetBoolFromString(entries[index]); index++;
 		pm.inCyberSpace = GetBoolFromString(entries[index]); index++;
@@ -2319,7 +2321,7 @@ public class Const : MonoBehaviour {
 		pm.fatigueFinished2 = GetFloatFromString(entries[index],currentline); index++;
 		pm.cyberSetup = GetBoolFromString(entries[index]); index++;
 		pm.cyberDesetup = GetBoolFromString(entries[index]); index++;
-		pm.oldBodyState = GetIntFromString(entries[index],currentline ); index++;
+		pm.oldBodyState = IntToBodyState(GetIntFromString(entries[index],currentline)); index++;
 		pm.ConsoleDisable();
 		pm.leanTarget = GetFloatFromString(entries[index],currentline); index++;
 		pm.leanShift = GetFloatFromString(entries[index],currentline); index++;
@@ -2418,31 +2420,31 @@ public class Const : MonoBehaviour {
 		for (j=0;j<16;j++) { inv.wepAmmoSecondary[j] = GetIntFromString(entries[index],currentline ); index++; }
 		for (j=0;j<7;j++) { inv.currentEnergyWeaponHeat[j] = GetFloatFromString(entries[index],currentline); index++; }
 		for (j=0;j<7;j++) { inv.wepLoadedWithAlternate[j] = GetBoolFromString(entries[index]); index++; }
-		wc.weaponCurrent = GetIntFromString(entries[index],currentline ); index++;
-		wc.weaponIndex = GetIntFromString(entries[index],currentline ); index++;
-		for (j=0;j<7;j++) { wc.weaponEnergySetting[j] = GetFloatFromString(entries[index],currentline); index++; }
-		for (j=0;j<7;j++) { wc.currentMagazineAmount[j] = GetIntFromString(entries[index],currentline ); index++; }
-		for (j=0;j<7;j++) { wc.currentMagazineAmount2[j] = GetIntFromString(entries[index],currentline ); index++; }
-		wc.justChangedWeap = GetBoolFromString(entries[index]); index++;
+		WeaponCurrent.WepInstance.weaponCurrent = GetIntFromString(entries[index],currentline ); index++;
+		WeaponCurrent.WepInstance.weaponIndex = GetIntFromString(entries[index],currentline ); index++;
+		for (j=0;j<7;j++) { WeaponCurrent.WepInstance.weaponEnergySetting[j] = GetFloatFromString(entries[index],currentline); index++; }
+		for (j=0;j<7;j++) { WeaponCurrent.WepInstance.currentMagazineAmount[j] = GetIntFromString(entries[index],currentline ); index++; }
+		for (j=0;j<7;j++) { WeaponCurrent.WepInstance.currentMagazineAmount2[j] = GetIntFromString(entries[index],currentline ); index++; }
+		WeaponCurrent.WepInstance.justChangedWeap = GetBoolFromString(entries[index]); index++;
 		WeaponCurrent.WepInstance.SetAllViewModelsDeactive();
-		wc.lastIndex = GetIntFromString(entries[index],currentline ); index++;
-		wc.bottomless = GetBoolFromString(entries[index]); index++;
-		wc.redbull = GetBoolFromString(entries[index]); index++;
-		wc.reloadFinished = GetFloatFromString(entries[index],currentline); index++;
-		wc.reloadLerpValue = GetFloatFromString(entries[index],currentline); index++;
-		wc.lerpStartTime = GetFloatFromString(entries[index],currentline); index++;
-		wc.targetY = GetFloatFromString(entries[index],currentline); index++;
-		wf.waitTilNextFire = GetFloatFromString(entries[index],currentline); index++;
-		wf.overloadEnabled = GetBoolFromString(entries[index]); index++;
-		wf.sparqSetting = GetFloatFromString(entries[index],currentline); index++;
-		wf.ionSetting = GetFloatFromString(entries[index],currentline); index++;
-		wf.blasterSetting = GetFloatFromString(entries[index],currentline); index++;
-		wf.plasmaSetting = GetFloatFromString(entries[index],currentline); index++;
-		wf.stungunSetting = GetFloatFromString(entries[index],currentline); index++;
-		wf.recoiling = GetBoolFromString(entries[index]); index++;
-		wf.justFired = GetFloatFromString(entries[index],currentline); index++;
-		wf.energySliderClickedTime = GetFloatFromString(entries[index],currentline); index++;
-		wf.cyberWeaponAttackFinished = GetFloatFromString(entries[index],currentline); index++;
+		WeaponCurrent.WepInstance.lastIndex = GetIntFromString(entries[index],currentline ); index++;
+		WeaponCurrent.WepInstance.bottomless = GetBoolFromString(entries[index]); index++;
+		WeaponCurrent.WepInstance.redbull = GetBoolFromString(entries[index]); index++;
+		WeaponCurrent.WepInstance.reloadFinished = GetFloatFromString(entries[index],currentline); index++;
+		WeaponCurrent.WepInstance.reloadLerpValue = GetFloatFromString(entries[index],currentline); index++;
+		WeaponCurrent.WepInstance.lerpStartTime = GetFloatFromString(entries[index],currentline); index++;
+		WeaponCurrent.WepInstance.targetY = GetFloatFromString(entries[index],currentline); index++;
+		WeaponFire.a.waitTilNextFire = GetFloatFromString(entries[index],currentline); index++;
+		WeaponFire.a.overloadEnabled = GetBoolFromString(entries[index]); index++;
+		WeaponFire.a.sparqSetting = GetFloatFromString(entries[index],currentline); index++;
+		WeaponFire.a.ionSetting = GetFloatFromString(entries[index],currentline); index++;
+		WeaponFire.a.blasterSetting = GetFloatFromString(entries[index],currentline); index++;
+		WeaponFire.a.plasmaSetting = GetFloatFromString(entries[index],currentline); index++;
+		WeaponFire.a.stungunSetting = GetFloatFromString(entries[index],currentline); index++;
+		WeaponFire.a.recoiling = GetBoolFromString(entries[index]); index++;
+		WeaponFire.a.justFired = GetFloatFromString(entries[index],currentline); index++;
+		WeaponFire.a.energySliderClickedTime = GetFloatFromString(entries[index],currentline); index++;
+		WeaponFire.a.cyberWeaponAttackFinished = GetFloatFromString(entries[index],currentline); index++;
 		inv.grenadeCurrent = GetIntFromString(entries[index],currentline ); index++;
 		inv.grenadeIndex = GetIntFromString(entries[index],currentline ); index++;
 		inv.nitroTimeSetting = GetFloatFromString(entries[index],currentline); index++;
@@ -2615,40 +2617,23 @@ public class Const : MonoBehaviour {
 					aic.index = GetIntFromString(entries[index],currentline ); index++; // int - NPC const lookup table index for instantiating
 					int state = GetIntFromString(entries[index],currentline ); index++;
 					switch (state) {
-						case 0: aic.currentState = Const.aiState.Idle; break;
-						case 1: aic.currentState = Const.aiState.Walk; break;
-						case 2: aic.currentState = Const.aiState.Run; break;
-						case 3: aic.currentState = Const.aiState.Attack1; break;
-						case 4: aic.currentState = Const.aiState.Attack2; break;
-						case 5: aic.currentState = Const.aiState.Attack3; break;
-						case 6: aic.currentState = Const.aiState.Pain; break;
-						case 7: aic.currentState = Const.aiState.Dying; break;
-						case 8: aic.currentState = Const.aiState.Inspect; break;
-						case 9: aic.currentState = Const.aiState.Interacting; break;
-						case 10: aic.currentState = Const.aiState.Dead; break;
-						default: aic.currentState = Const.aiState.Idle; break;
+						case 0: aic.currentState = AIState.Idle; break;
+						case 1: aic.currentState = AIState.Walk; break;
+						case 2: aic.currentState = AIState.Run; break;
+						case 3: aic.currentState = AIState.Attack1; break;
+						case 4: aic.currentState = AIState.Attack2; break;
+						case 5: aic.currentState = AIState.Attack3; break;
+						case 6: aic.currentState = AIState.Pain; break;
+						case 7: aic.currentState = AIState.Dying; break;
+						case 8: aic.currentState = AIState.Inspect; break;
+						case 9: aic.currentState = AIState.Interacting; break;
+						case 10:aic.currentState = AIState.Dead; break;
+						default:aic.currentState = AIState.Idle; break;
 					}
 					int enemIDRead = GetIntFromString(entries[index],currentline ); index++;
 					if (enemIDRead >= 0) {
-						if (player1 != null) {
-							if (player1.GetComponent<SaveObject>().SaveID == enemIDRead) {
-								aic.enemy = player1;
-							}
-						}
-						if (player2 != null) {
-							if (player2.GetComponent<SaveObject>().SaveID == enemIDRead) {
-								aic.enemy = player2;
-							}
-						}
-						if (player3 != null) {
-							if (player3.GetComponent<SaveObject>().SaveID == enemIDRead) {
-								aic.enemy = player3;
-							}
-						}
-						if (player4 != null) {
-							if (player4.GetComponent<SaveObject>().SaveID == enemIDRead) {
-								aic.enemy = player4;
-							}
+						if (player1.GetComponent<SaveObject>().SaveID == enemIDRead) {
+							aic.enemy = player1;
 						}
 					}
 					aic.gracePeriodFinished = GetFloatFromString(entries[index],currentline); index++; // float - time before applying pain damage on attack2
@@ -2716,7 +2701,7 @@ public class Const : MonoBehaviour {
 							if (aic.sphereCollider != null) { aic.sphereCollider.enabled = true; }
 							if (aic.meshCollider != null) { aic.meshCollider.enabled = true; }
 							if (aic.capsuleCollider != null) { aic.capsuleCollider.enabled = true; }
-							if (Const.a.moveTypeForNPC[aic.index] != Const.aiMoveType.Fly) {
+							if (Const.a.moveTypeForNPC[aic.index] != AIMoveType.Fly) {
 								rbody.useGravity = true;
 								rbody.isKinematic = false;
 							}
@@ -3065,16 +3050,12 @@ public class Const : MonoBehaviour {
 
 		string readline;
 		int currentline = 0;
-		int numPlayers = 0;
 		int numSaveablesFromSavefile = 0;
 		int i,j;
 		GameObject currentGameObject = null;
 		sprint(stringTable[196]); // Loading...
 		yield return null; // to update the sprint
-		if (player1 != null) numPlayers++;
-		if (player2 != null) numPlayers++;
-		if (player3 != null) numPlayers++;
-		if (player4 != null) numPlayers++;
+
 		// Find all gameobjects with SaveObject script attached
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 		FindAllSaveObjectsGOs(saveableGameObjects); // Find and add GameObjects to the list of saveables.
@@ -3167,19 +3148,19 @@ public class Const : MonoBehaviour {
 
 			// Load player 2 data
 			entries = readFileList[currentline].Split(csplit); // read in Quest bits
-			if (entries[0] != "!" && player2 != null) LoadPlayerDataToPlayer(player2,entries,currentline,index);
+			//if (entries[0] != "!" && player2 != null) LoadPlayerDataToPlayer(player2,entries,currentline,index);
 			currentline++; // line is over, now we are at 5
 			index = 2; // reset before starting next line, skipping savetype and ID number
 
 			// Load player 3 data
 			entries = readFileList[currentline].Split(csplit); // read in Quest bits
-			if (entries[0] != "!" && player3 != null) LoadPlayerDataToPlayer(player3,entries,currentline,index);
+			//if (entries[0] != "!" && player3 != null) LoadPlayerDataToPlayer(player3,entries,currentline,index);
 			currentline++; // line is over, now we are at 6
 			index = 2; // reset before starting next line, skipping savetype and ID number
 
 			// Load player 4 data
 			entries = readFileList[currentline].Split(csplit); // read in Quest bits
-			if (entries[0] != "!" && player4 != null) LoadPlayerDataToPlayer(player4,entries,currentline,index);
+			//if (entries[0] != "!" && player4 != null) LoadPlayerDataToPlayer(player4,entries,currentline,index);
 			currentline++; // line is over, now we are at 7
 			index = 0; // reset before starting next line, last one before I start doing an array, promise!
 
@@ -3299,17 +3280,11 @@ public class Const : MonoBehaviour {
 	}
 
 	public void SetFOV() {
-		if (player1 != null) player1CapsuleMainCameragGO.GetComponent<Camera>().fieldOfView = GraphicsFOV;
-		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
-		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
-		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().fieldOfView = GraphicsFOV;
+		player1CapsuleMainCameragGO.GetComponent<Camera>().fieldOfView = GraphicsFOV;
 	}
 
 	public void SetBloom() {
-		if (player1 != null) player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
-		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
-		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
-		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
+		player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = GraphicsBloom;
 	}
 
 
@@ -3317,22 +3292,8 @@ public class Const : MonoBehaviour {
 		AntialiasingModel.Settings amS = AntialiasingModel.Settings.defaultSettings;
 		amS.fxaaSettings.preset = preset;
 		amS.method = AntialiasingModel.Method.Fxaa;
-		if (player1 != null) {
-			player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
-			player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
-		}
-		if (player2 != null) {
-			player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
-			player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
-		}
-		if (player3 != null) {
-			player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
-			player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
-		}
-		if (player4 != null) {
-			player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
-			player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
-		}
+		player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
+		player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
 	}
 
 	// None
@@ -3342,14 +3303,13 @@ public class Const : MonoBehaviour {
 	// Quality,
 	// ExtremeQuality
 	public void SetAA() {
+		if (GraphicsAAMode < 0) GraphicsAAMode = 0;
+		if (GraphicsAAMode > 5) GraphicsAAMode = 5;
 		switch (GraphicsAAMode) {
-			case 0: // No Antialiasing
-				if (player1 != null) player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = false;
-				if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = false;
-				if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = false;
-				if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = false;
+			case 0: // No Antialiasing, turn off the profile's antialiasing entirely.
+				player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = false;
 				break;
-			case 1: // FXAA Extreme Performance
+			case 1: // FXAA Extreme Performance, FXAA is a bit different so we call a helper function to set it.
 				SetFXAA(AntialiasingModel.FxaaPreset.ExtremePerformance);
 				break;
 			case 2: // FXAA Performance
@@ -3364,40 +3324,78 @@ public class Const : MonoBehaviour {
 			case 5: // FXAA Extreme Quality
 				SetFXAA(AntialiasingModel.FxaaPreset.ExtremeQuality);
 				break;
-			case 6: // TAA Default
-				if (player1 != null) {
-					player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
-					AntialiasingModel.Settings amS = player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings;
-					amS.method = AntialiasingModel.Method.Taa;
-					player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
-				}
-				if (player2 != null) {
-					player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
-					AntialiasingModel.Settings amS = player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings;
-					amS.method = AntialiasingModel.Method.Taa;
-					player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
-				}
-				if (player3 != null) {
-					player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
-					AntialiasingModel.Settings amS = player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings;
-					amS.method = AntialiasingModel.Method.Taa;
-					player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
-				}
-				if (player4 != null) {
-					player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
-					AntialiasingModel.Settings amS = player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings;
-					amS.method = AntialiasingModel.Method.Taa;
-					player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
-				}
+			//case 6: // TAA Default  -- Too ugly, removed.  Might add back later to test if there's better quality settings when I have a graphics card that can handle it.
+		//		player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
+		//		AntialiasingModel.Settings amS = player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings;
+		//		amS.method = AntialiasingModel.Method.Taa;
+		//		player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
+		//		break;
+		}
+	}
+
+	// No Shadows
+	// Hard Shadows,
+	// Soft Shadows
+	public void SetShadows() {
+		if (GraphicsShadowMode > 2) GraphicsShadowMode = 2;
+		if (GraphicsShadowMode < 0) GraphicsShadowMode = 0;
+		switch (GraphicsShadowMode) {
+			case 0: // No Shadows
+				QualitySettings.shadows = ShadowQuality.Disable;
+				break;
+			case 1: // Hard Shadows
+				QualitySettings.shadows = ShadowQuality.HardOnly;
+				QualitySettings.shadowResolution = ShadowResolution.Low;
+				QualitySettings.shadowDistance = 35.0f;
+				break;
+			case 2: // Soft Shadows
+				QualitySettings.shadows = ShadowQuality.All;
+				QualitySettings.shadowResolution = ShadowResolution.Low;
+				QualitySettings.shadowDistance = 35.0f;
+				break;
+		}
+	}
+
+	void SetSSRPreset(ScreenSpaceReflectionModel.SSRResolution preset) {
+		ScreenSpaceReflectionModel.Settings ssr = ScreenSpaceReflectionModel.Settings.defaultSettings;
+		ssr.reflection.blendType = ScreenSpaceReflectionModel.SSRReflectionBlendType.Additive;
+		ssr.reflection.reflectionQuality = preset;
+		ssr.reflection.maxDistance = 100f;
+		ssr.reflection.iterationCount = 256;
+		ssr.reflection.stepSize = 12;
+		ssr.reflection.widthModifier = 0.5f;
+		ssr.reflection.reflectionBlur = 1.0f;
+		ssr.reflection.reflectBackfaces = false;
+		ssr.intensity.reflectionMultiplier = 0.25f;
+		ssr.intensity.fadeDistance = 100f;
+		ssr.intensity.fresnelFade = 1.0f;
+		ssr.intensity.fresnelFadePower = 1.0f;
+		ssr.screenEdgeMask.intensity = 0.03f;
+		player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.screenSpaceReflection.enabled = true;
+		player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.screenSpaceReflection.settings = ssr;
+	}
+
+	// No SSR
+	// Low SSR,
+	// High SSR
+	public void SetSSR() {
+		if (GraphicsSSRMode > 2) GraphicsSSRMode = 2;
+		if (GraphicsSSRMode < 0) GraphicsSSRMode = 0;
+		switch (GraphicsSSRMode) {
+			case 0: // No SSR
+				player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.screenSpaceReflection.enabled = false;
+				break;
+			case 1: // Low SSR
+				SetSSRPreset(ScreenSpaceReflectionModel.SSRResolution.Low);
+				break;
+			case 2: // High SSR
+				SetSSRPreset(ScreenSpaceReflectionModel.SSRResolution.High);
 				break;
 		}
 	}
 
 	public void SetSSAO() {
-		if (player1 != null) player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
-		if (player2 != null) player2.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
-		if (player3 != null) player3.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
-		if (player4 != null) player4.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
+		player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = GraphicsSSAO;
 	}
 
 	public void SetBrightness() {
@@ -3441,8 +3439,6 @@ public class Const : MonoBehaviour {
 			if (i == (healthObjectsRegistration.Length - 1)) UnityEngine.Debug.Log("WARNING: Could not register object with health.  Hit limit of " + healthObjectsRegistration.Length.ToString() + ".");
 		}
 	}
-
-	private CultureInfo en_US_Culture = new CultureInfo("en-US");
 
 	private int AssignConfigInt(string section, string keyname) {
 		int inputInt = -1;
@@ -3506,6 +3502,10 @@ public class Const : MonoBehaviour {
 		return getValreadFloat;
 	}
 
+	public string FloatToString(float val) {
+		return val.ToString("0000.00000", CultureInfo.InvariantCulture); // Output with 4 integer places and 5 mantissa, culture invariant to guarantee . vs , for all regions.
+	}
+
 	public AttackType GetAttackTypeFromInt(int att_type_i) {
 		switch(att_type_i) {
 			case 0: return AttackType.None;
@@ -3532,15 +3532,41 @@ public class Const : MonoBehaviour {
 		return PerceptionLevel.Low;
 	}
 
-	public aiMoveType GetMoveTypeFromInt(int movetype_i) { 
+	public AIMoveType GetMoveTypeFromInt(int movetype_i) { 
 		switch (movetype_i) {
-			case 0: return aiMoveType.None;
-			case 1: return aiMoveType.Walk;
-			case 2: return aiMoveType.Fly;
-			case 3: return aiMoveType.Swim;
-			case 4: return aiMoveType.Cyber;
+			case 0: return AIMoveType.None;
+			case 1: return AIMoveType.Walk;
+			case 2: return AIMoveType.Fly;
+			case 3: return AIMoveType.Swim;
+			case 4: return AIMoveType.Cyber;
 		}
-		return aiMoveType.None;
+		return AIMoveType.None;
+	}
+
+	public int BodyStateToInt(BodyState bs) {
+		switch (bs) {
+			case BodyState.Standing: return 0;
+			case BodyState.Crouch: return 1;
+			case BodyState.CrouchingDown: return 2;
+			case BodyState.StandingUp: return 3;
+			case BodyState.Prone: return 4;
+			case BodyState.ProningDown: return 5;
+			case BodyState.ProningUp: return 6;
+		}
+		return 0;
+	}
+
+	public BodyState IntToBodyState(int state) {
+		switch (state) {
+			case 0: return BodyState.Standing;
+			case 1: return BodyState.Crouch;
+			case 2: return BodyState.CrouchingDown;
+			case 3: return BodyState.StandingUp;
+			case 4: return BodyState.Prone;
+			case 5: return BodyState.ProningDown;
+			case 6: return BodyState.ProningUp;
+		}
+		return BodyState.Standing;
 	}
 
 	public static DamageData SetNPCDamageData (int NPCindex, int attackNum, GameObject ownedBy) {
@@ -3608,30 +3634,15 @@ public class Const : MonoBehaviour {
 	public void Shake(bool effectIsWorldwide, float distance, float force) {
 		if (distance == -1) distance = globalShakeDistance;
 		if (force == -1) force = globalShakeForce;
-		if (player1 == null) { UnityEngine.Debug.Log("WARNING: Shake() check - no host player1."); return; }  // No host player
 
 		if (effectIsWorldwide) {
 			// The whole station is a shakin' and a movin'!
-			if (player1 != null) { if (player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			// if (player2 != null) { if (player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			// if (player3 != null) { if (player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			// if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
+			MouseLookScript.a.ScreenShake(force);
 		} else {
 			// check if player is close enough and shake em' up!
-			if (player1 != null) {
-				if (Vector3.Distance(transform.position, player1.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
-					if (player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player1.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force);
-				}
+			if (Vector3.Distance(transform.position,player1Capsule.transform.position) < distance) {
+				MouseLookScript.a.ScreenShake(force);
 			}
-			// if (Vector3.Distance(transform.position, player2.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
-				// if (player2 != null) { if (player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player2.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			// }
-			// if (Vector3.Distance(transform.position, player3.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
-				// if (player3 != null) { if (player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player3.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			// }
-			// if (Vector3.Distance(transform.position, player4.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position) < distance) {
-				// if (player4 != null) { if (player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>() != null) player4.GetComponent<PlayerReferenceManager>().GetComponent<MouseLookScript>().ScreenShake(force); }
-			// }
 		}
 	}
 
@@ -3704,86 +3715,12 @@ public class Const : MonoBehaviour {
 
 	public void ApplyImpactForce(GameObject hitObject, float impactVelocity, Vector3 attackNormal, Vector3 hitPoint) {
 		Rigidbody rbody = hitObject.GetComponent<Rigidbody>();
-		if (rbody != null && impactVelocity > 0) rbody.AddForceAtPosition((attackNormal*impactVelocity*1.5f),hitPoint);
+		if (rbody != null && impactVelocity > 0) rbody.AddForceAtPosition((attackNormal*impactVelocity*50f),hitPoint);
 	}
 
 	public int SafeIndex(ref int[] array, int index, int max, int failvalue) {
 		if (index < 0 || index > max || index > array.Length) { UnityEngine.Debug.Log("Unexpected situation, index out of bounds passed to SafeIndex!"); return failvalue; }
 		if (array.Length < 1) { UnityEngine.Debug.Log("Unexpected situation, array passed to SafeIndex was empty!"); return failvalue; }
 		return array[index]; // Safe to pass the index value into the array space.
-	}
-}
-
-public class QuestBits {
-	public int lev1SecCode = -1;
-	public int lev2SecCode = -1;
-	public int lev3SecCode = -1;
-	public int lev4SecCode = -1;
-	public int lev5SecCode = -1;
-	public int lev6SecCode = -1;
-	public bool RobotSpawnDeactivated;
-	public bool IsotopeInstalled;
-	public bool ShieldActivated;
-	public bool LaserSafetyOverriden;
-	public bool LaserDestroyed;
-	public bool BetaGroveCyberUnlocked;
-	public bool GroveAlphaJettisonEnabled;
-	public bool GroveBetaJettisonEnabled;
-	public bool GroveDeltaJettisonEnabled;
-	public bool MasterJettisonBroken;
-	public bool Relay428Fixed;
-	public bool MasterJettisonEnabled;
-	public bool BetaGroveJettisoned;
-	public bool AntennaNorthDestroyed;
-	public bool AntennaSouthDestroyed;
-	public bool AntennaEastDestroyed;
-	public bool AntennaWestDestroyed;
-	public bool SelfDestructActivated;
-	public bool BridgeSeparated;
-	public bool IsolinearChipsetInstalled;
-
-	public void ResetQuestData(QuestBits qD) {
-		qD.lev1SecCode = UnityEngine.Random.Range(0,10);
-		qD.lev2SecCode = UnityEngine.Random.Range(0,10);
-		qD.lev3SecCode = UnityEngine.Random.Range(0,10);
-		qD.lev4SecCode = UnityEngine.Random.Range(0,10);
-		qD.lev5SecCode = UnityEngine.Random.Range(0,10);
-		qD.lev6SecCode = UnityEngine.Random.Range(0,10);
-		qD.RobotSpawnDeactivated = false;
-		qD.IsotopeInstalled = false;
-		qD.ShieldActivated = false;
-		qD.LaserSafetyOverriden = false;
-		qD.LaserDestroyed = false;
-		qD.BetaGroveCyberUnlocked = false;
-		qD.GroveAlphaJettisonEnabled = false;
-		qD.GroveBetaJettisonEnabled = false;
-		qD.GroveDeltaJettisonEnabled = false;
-		qD.MasterJettisonBroken = false;
-		qD.Relay428Fixed = false;
-		qD.MasterJettisonEnabled = false;
-		qD.BetaGroveJettisoned = false;
-		qD.AntennaNorthDestroyed = false;
-		qD.AntennaSouthDestroyed = false;
-		qD.AntennaEastDestroyed = false;
-		qD.AntennaWestDestroyed = false;
-		qD.SelfDestructActivated = false;
-		qD.BridgeSeparated = false;
-		qD.IsolinearChipsetInstalled = false;
-	}
-
-	public void TargetOnGatePassed(bool bitToCheck, bool passIfTrue, UseData ud, TargetIO tio, string targ, string arg, string targOnFalse, string argOnFalse) {
-		if (passIfTrue) {
-			if (!bitToCheck) { RunTargets(ud,tio,targOnFalse,argOnFalse); return; }
-		} else {
-			if (bitToCheck) { RunTargets(ud,tio,targOnFalse,argOnFalse); return; }
-		}
-
-		RunTargets(ud,tio,targ,arg);
-	}
-
-	private void RunTargets(UseData ud, TargetIO tio, string target, string argvalue) {
-		ud.argvalue = argvalue; // grr, arg! (Mutant Enemy reference alert)
-		ud.SetBits(tio);
-		Const.a.UseTargets(ud,target);
 	}
 }

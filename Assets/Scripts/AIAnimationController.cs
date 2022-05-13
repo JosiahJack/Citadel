@@ -62,16 +62,16 @@ public class AIAnimationController : MonoBehaviour {
 				return;
 			}
 			switch (aic.currentState) {
-				case Const.aiState.Idle: 		Idle(); 		break;
-				case Const.aiState.Walk:	 	Walk(); 		break;
-				case Const.aiState.Run: 		Run(); 			break;
-				case Const.aiState.Attack1: 	Attack1(); 		break;
-				case Const.aiState.Attack2: 	Attack2(); 		break;
-				case Const.aiState.Attack3: 	Attack3(); 		break;
-				case Const.aiState.Pain: 		Pain();			break;
-				case Const.aiState.Dying: 		Dying(); 		break;
-				case Const.aiState.Dead:		Dead();			break;
-				default: 						Idle(); 		break;
+				case AIState.Idle: 		Idle(); 	break;
+				case AIState.Walk:	 	Walk(); 	break;
+				case AIState.Run: 		Run(); 		break;
+				case AIState.Attack1: 	Attack1(); 	break;
+				case AIState.Attack2: 	Attack2(); 	break;
+				case AIState.Attack3: 	Attack3(); 	break;
+				case AIState.Pain: 		Pain();		break;
+				case AIState.Dying: 	Dying(); 	break;
+				case AIState.Dead:		Dead();		break;
+				default: 				Idle(); 	break;
 			}
 		}
 	}

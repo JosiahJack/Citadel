@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SoftwareInvButton : MonoBehaviour {
 	public int index = 0;
-	public MouseLookScript mls;
 
 	public void DoubleClick() {
 		SoftInvClick();
@@ -28,7 +27,7 @@ public class SoftwareInvButton : MonoBehaviour {
 					break;
 			case 2:
 					// CyberShield
-					if (mls.inCyberSpace) {
+					if (MouseLookScript.a.inCyberSpace) {
 						Const.sprint(Const.a.stringTable[461],Const.a.player1);
 					} else {
 						Const.sprint(Const.a.stringTable[460],Const.a.player1);
@@ -36,7 +35,7 @@ public class SoftwareInvButton : MonoBehaviour {
 					break;
 			case 3:
 					// Turbo
-					if (mls.inCyberSpace) {
+					if (MouseLookScript.a.inCyberSpace) {
 						Inventory.a.UseTurbo();
 						GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 					} else {
@@ -45,7 +44,7 @@ public class SoftwareInvButton : MonoBehaviour {
 					break;
 			case 4:
 					// Decoy
-					if (mls.inCyberSpace) {
+					if (MouseLookScript.a.inCyberSpace) {
 						Inventory.a.UseDecoy();
 						GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 					} else {
@@ -54,7 +53,7 @@ public class SoftwareInvButton : MonoBehaviour {
 					break;
 			case 5:
 					// Recall
-					if (mls.inCyberSpace) {
+					if (MouseLookScript.a.inCyberSpace) {
 						Inventory.a.UseRecall();
 						GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
 					} else {
@@ -63,7 +62,7 @@ public class SoftwareInvButton : MonoBehaviour {
 					break;
 			case 6:
 					// Games
-					if (mls.inCyberSpace) {
+					if (MouseLookScript.a.inCyberSpace) {
 						Const.sprint(Const.a.stringTable[443],Const.a.player1);
 					} else {
 						// UPDATE: Add HUD minigames

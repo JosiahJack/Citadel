@@ -3,8 +3,6 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class TickIndicatorAnimation : MonoBehaviour {
-	public PlayerHealth playerHealth;
-	public PlayerEnergy playerEnergy;
 	public Sprite[] indicatorImages;
 	public bool healthIndicator; // true = health, false = energy
 	public float thinkTime = 0.5f;
@@ -23,10 +21,10 @@ public class TickIndicatorAnimation : MonoBehaviour {
 
 		if (nextthink < PauseScript.a.relativeTime) {
 			if (healthIndicator) {
-				if (playerHealth.hm.health > 176) {
+				if (PlayerHealth.a.hm.health > 176) {
 					if (indicator.overrideSprite != indicatorImages[0]) indicator.overrideSprite = indicatorImages[0];
 				} else {
-					if (playerHealth.hm.health > 88) {
+					if (PlayerHealth.a.hm.health > 88) {
 						if (indicator.overrideSprite != indicatorImages[1]) indicator.overrideSprite = indicatorImages[1];
 					} else {
 						switch (tick) {
@@ -39,10 +37,10 @@ public class TickIndicatorAnimation : MonoBehaviour {
 					}
 				}
 			} else {
-				if (playerEnergy.energy > 176) {
+				if (PlayerEnergy.a.energy > 176) {
 					if (indicator.overrideSprite != indicatorImages[0]) indicator.overrideSprite = indicatorImages[0];
 				} else {
-					if (playerEnergy.energy > 88) {
+					if (PlayerEnergy.a.energy > 88) {
 						if (indicator.overrideSprite != indicatorImages[1]) indicator.overrideSprite = indicatorImages[1];
 					} else {
 						switch (tick) {

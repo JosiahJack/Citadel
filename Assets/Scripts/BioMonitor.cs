@@ -13,8 +13,6 @@ public class BioMonitor : MonoBehaviour {
 	public Text bpmText;
 	public Text fatigueDetailText;
 	public Text fatigue;
-	public PlayerMovement pm;
-	public PlayerPatch ph;
 
 	// Internal references
 	private float beatTick = 0.5f;
@@ -32,8 +30,6 @@ public class BioMonitor : MonoBehaviour {
 		if (bpmText == null) Debug.Log("BUG: BioMonitor missing manually assigned reference for bpmText");
 		if (fatigueDetailText == null) Debug.Log("BUG: BioMonitor missing manually assigned reference for fatigueDetailText");
 		if (fatigue == null) Debug.Log("BUG: BioMonitor missing manually assigned reference for fatigue");
-		if (pm == null) Debug.Log("BUG: BioMonitor missing manually assigned reference for pm");
-		if (ph == null) Debug.Log("BUG: BioMonitor missing manually assigned reference for ph");
 	}
 
     void Update() {
@@ -46,20 +42,20 @@ public class BioMonitor : MonoBehaviour {
 				bpmText.text = Const.a.stringTable[529];
 				fatigueDetailText.text = Const.a.stringTable[531];
 				tempStr = Const.a.stringTable[532]; // High!
-				if (pm.fatigue < 80f) tempStr = Const.a.stringTable[533]; // Moderate
-				if (pm.fatigue < 30f) tempStr = Const.a.stringTable[534]; // Low
+				if (PlayerMovement.a.fatigue < 80f) tempStr = Const.a.stringTable[533]; // Moderate
+				if (PlayerMovement.a.fatigue < 30f) tempStr = Const.a.stringTable[534]; // Low
 				fatigue.text = tempStr;
 				tempStr = "";
-				heartRate.text = ((70 + ((pm.fatigue/100f) * 110)) * Random.Range(0.9f,1.1f)).ToString("000");
+				heartRate.text = ((70 + ((PlayerMovement.a.fatigue/100f) * 110)) * Random.Range(0.9f,1.1f)).ToString("000");
 				if (Inventory.a.hardwareVersion[6] > 1) {
 					patchesActiveText.text = Const.a.stringTable[528];
-					if (Const.a.CheckFlags(ph.patchActive, ph.PATCH_MEDI)) tempStr += Const.a.stringTable[520];
-					if (Const.a.CheckFlags(ph.patchActive, ph.PATCH_STAMINUP)) tempStr += Const.a.stringTable[521];
-					if (Const.a.CheckFlags(ph.patchActive, ph.PATCH_SIGHT)) tempStr += Const.a.stringTable[522];
-					if (Const.a.CheckFlags(ph.patchActive, ph.PATCH_GENIUS)) tempStr += Const.a.stringTable[523];
-					if (Const.a.CheckFlags(ph.patchActive, ph.PATCH_BERSERK)) tempStr += Const.a.stringTable[524];
-					if (Const.a.CheckFlags(ph.patchActive, ph.PATCH_REFLEX)) tempStr += Const.a.stringTable[525];
-					if (Const.a.CheckFlags(ph.patchActive, ph.PATCH_DETOX)) tempStr = Const.a.stringTable[530];
+					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_MEDI)) tempStr += Const.a.stringTable[520];
+					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_STAMINUP)) tempStr += Const.a.stringTable[521];
+					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_SIGHT)) tempStr += Const.a.stringTable[522];
+					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_GENIUS)) tempStr += Const.a.stringTable[523];
+					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_BERSERK)) tempStr += Const.a.stringTable[524];
+					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_REFLEX)) tempStr += Const.a.stringTable[525];
+					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_DETOX)) tempStr = Const.a.stringTable[530];
 					patchEffects.text = tempStr;
 				} else {
 					patchesActiveText.text = System.String.Empty;
