@@ -15,5 +15,9 @@ public class TestsEditor : Editor {
 		if (GUILayout.Button(testScript.buttonLabel)) {
 			testScript.Run();
 		}
+
+		if (GUILayout.Button("Output All Lights to File")) {
+			testScript.GenerateLightsDataFile();
+		}
 	}
 }

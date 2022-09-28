@@ -2,28 +2,29 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Tests : MonoBehaviour {
+	public GameObject[] lightContainers;
+	public int levelToOutputLights = 0;
+
 	[HideInInspector] public string buttonLabel = "Run Tests";
 
 	public void RunUnits() {
 		Stopwatch testTimer = new Stopwatch();
 		testTimer.Start();
-
 		GameObject go = new GameObject();
-
-
-		
 		ActivateButton ab = go.AddComponent<ActivateButton>();
 		UnityEngine.Object.DestroyImmediate(ab);
-
 		UnityEngine.Object.DestroyImmediate(go);
-
 		testTimer.Stop();
 		UnityEngine.Debug.Log("All unit tests completed in " + testTimer.Elapsed.ToString());
 	}
@@ -599,6 +600,148 @@ public class Tests : MonoBehaviour {
 		testTimer.Stop();
 		UnityEngine.Debug.Log("All tests completed in " + testTimer.Elapsed.ToString());
 		buttonLabel = "Run Tests (Last was: " + testTimer.Elapsed.ToString() + ")";
+	}
+
+	public struct LightGOData {
+		public Vector3 position;
+		public Vector3 rotation;
+		public Color color;
+		public float intensity;
+		public bool isSpotlight;
+	}
+
+    //private List<GameObject> GetAllObjectsOnlyInScene() {
+    //    List<GameObject> objectsInScene = new List<GameObject>();
+    //    foreach (GameObject go in Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[]) {
+    //        if (!EditorUtility.IsPersistent(go.transform.root.gameObject)
+	//			&& !(go.hideFlags == HideFlags.NotEditable
+	//			     || go.hideFlags == HideFlags.HideAndDontSave)) objectsInScene.Add(go);
+    //    }
+
+    //    return objectsInScene;
+    //}
+
+	public void GenerateLightsDataFile() {
+		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_lights_level1.dat");
+		StringBuilder s1 = new StringBuilder();
+		string splitChar = "|";
+		List<GameObject> allLights = new List<GameObject>();
+		//List<GameObject> allGameObjects = GetAllObjectsOnlyInScene();
+		//for (int i=0;i<allGameObjects.Count;i++) {
+		//	Light lit = allGameObjects[i].GetComponent<Light>();
+		//	if (lit == null) continue;
+		//	if (!allGameObjects[i].isStatic) continue; // Only get static lights.
+		//	if (allGameObjects[i].GetComponent<LightAnimation>() != null) continue; // No scripted lights.
+		//	//if (PrefabUtility.IsPartOfPrefabInstance(allGameObjects[i])) continue; // Part of prefab, don't change it!
+		//	//UnityEngine.Debug.Log("Added to list of light GOs");
+		//	allLights.Add(allGameObjects[i].gameObject);
+		//}
+
+		Component[] compArray = lightContainers[levelToOutputLights].GetComponentsInChildren(typeof(Light),true);
+		for (int i=0;i<compArray.Length;i++) {
+			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) {
+				UnityEngine.Debug.Log("Skipping light with LightAnimation");
+				continue;
+			}
+			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) {
+				UnityEngine.Debug.Log("Skipping light with TargetIO");
+				continue;
+			}
+			allLights.Add(compArray[i].gameObject);
+		}
+
+		UnityEngine.Debug.Log("Found " + allLights.Count + " lights in level 1");
+
+		StreamWriter sw = new StreamWriter(Application.dataPath + "/StreamingAssets/CitadelScene_lights_level" + levelToOutputLights.ToString() + ".dat",false,Encoding.ASCII);
+		if (sw == null) { UnityEngine.Debug.Log("Lights output file path invalid"); return; }
+
+		using (sw) {
+			for (int i=0;i<allLights.Count;i++) {
+				s1.Clear();
+				Transform tr = allLights[i].transform;
+				s1.Append(FloatToString(tr.localPosition.x));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(tr.localPosition.y));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(tr.localPosition.z));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(tr.localRotation.x));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(tr.localRotation.y));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(tr.localRotation.z));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(tr.localRotation.w));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(tr.localScale.x));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(tr.localScale.y));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(tr.localScale.z));
+				s1.Append(splitChar);
+				Light lit = allLights[i].GetComponent<Light>();
+				s1.Append(FloatToString(lit.intensity));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(lit.range));
+				s1.Append(splitChar);
+				s1.Append(lit.type.ToString());
+				s1.Append(splitChar);
+				s1.Append(FloatToString(lit.color.r));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(lit.color.g));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(lit.color.b));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(lit.color.a));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(lit.spotAngle));
+				s1.Append(splitChar);
+				s1.Append(lit.shadows.ToString());
+				s1.Append(splitChar);
+				s1.Append(FloatToString(lit.shadowStrength));
+				s1.Append(splitChar);
+				s1.Append(lit.shadowResolution);
+				s1.Append(splitChar);
+				s1.Append(FloatToString(lit.shadowBias));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(lit.shadowNormalBias));
+				s1.Append(splitChar);
+				s1.Append(FloatToString(lit.shadowNearPlane));
+				s1.Append(splitChar);
+				s1.Append(lit.cullingMask.ToString());
+				//UnityEngine.Debug.Log(s1.ToString());
+				sw.Write(s1.ToString());
+				sw.Write(Environment.NewLine);
+			}
+			sw.Close();
+		}
+	}
+
+	private string FloatToString(float val) {
+		return val.ToString("0000.00000", CultureInfo.InvariantCulture); // Output with 4 integer places and 5 mantissa, culture invariant to guarantee . vs , for all regions.
+	}
+
+
+	private LightType GetLightTypeFromString(string type) {
+		if (type == "Spot") return LightType.Spot;
+		else if (type == "Directional") return LightType.Directional;
+		else if (type == "Rectangle") return LightType.Rectangle;
+		else if (type == "Disc") return LightType.Disc;
+		return LightType.Point;	
+	}
+
+	private LightShadows GetLightShadowsFromString(string shadows) {
+		if (shadows == "None") return LightShadows.None;
+		else if (shadows == "Hard") return LightShadows.Hard;
+		return LightShadows.Soft;	
+	}
+
+	private LightShadowResolution GetShadowResFromString(string res) {
+		if (res == "Low") return LightShadowResolution.Low;
+		else if (res == "Medium") return LightShadowResolution.Medium;
+		else if (res == "High") return LightShadowResolution.High;
+		else if (res == "VeryHigh") return LightShadowResolution.VeryHigh;
+		return LightShadowResolution.FromQualitySettings;	
 	}
 
 	private void PrintTally(string className, int issueCount, int objCount) {
