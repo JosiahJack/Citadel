@@ -15,6 +15,7 @@ using UnityEngine.SceneManagement;
 public class Tests : MonoBehaviour {
 	public GameObject[] lightContainers;
 	public int levelToOutputLights = 0;
+	private CultureInfo en_US_Culture = new CultureInfo("en-US");
 
 	[HideInInspector] public string buttonLabel = "Run Tests";
 
@@ -621,6 +622,93 @@ public class Tests : MonoBehaviour {
     //    return objectsInScene;
     //}
 
+	public void LoadLevelLights() {
+		StreamReader sf = new StreamReader(Application.dataPath + "/StreamingAssets/CitadelScene_lights_level" + levelToOutputLights.ToString() + ".dat");
+		if (sf == null) { UnityEngine.Debug.Log("Lights input file path invalid"); return; }
+
+		string readline;
+		List<string> readFileList = new List<string>();
+		using (sf) {
+			do {
+				readline = sf.ReadLine();
+				if (readline != null) {
+					readFileList.Add(readline);
+				}
+			} while (!sf.EndOfStream);
+			sf.Close();
+		}
+
+		string[] entries = new string[27];
+		char delimiter = '|';
+		int index = 0;
+		float readFloatx;
+		float readFloaty;
+		float readFloatz;
+		float readFloatw;
+		Vector3 tempvec;
+		Quaternion tempquat;
+		for (int i=0;i<readFileList.Count;i++) {
+			entries = readFileList[i].Split(delimiter);
+			if (entries.Length <= 1) continue;
+
+			index = 0;
+			GameObject newLight = new GameObject("PointLight" + i.ToString());
+			Light lit = newLight.AddComponent<Light>();
+			Transform tr = newLight.transform;
+			tr.SetParent(lightContainers[levelToOutputLights].transform);
+
+			// Get transform
+			readFloatx = GetFloatFromString(entries[index]); index++;
+			readFloaty = GetFloatFromString(entries[index]); index++;
+			readFloatz = GetFloatFromString(entries[index]); index++;
+			tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
+			tr.localPosition = tempvec;
+
+			// Get rotation
+			readFloatx = GetFloatFromString(entries[index]); index++;
+			readFloaty = GetFloatFromString(entries[index]); index++;
+			readFloatz = GetFloatFromString(entries[index]); index++;
+			readFloatw = GetFloatFromString(entries[index]); index++;
+			tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
+			tr.localRotation = tempquat;
+
+			// Get scale
+			readFloatx = GetFloatFromString(entries[index]); index++;
+			readFloaty = GetFloatFromString(entries[index]); index++;
+			readFloatz = GetFloatFromString(entries[index]); index++;
+			tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
+			tr.localScale = tempvec;
+
+			lit.intensity = GetFloatFromString(entries[index]); index++;
+			lit.range = GetFloatFromString(entries[index]); index++;
+			lit.type = GetLightTypeFromString(entries[index]); index++;
+			readFloatx = GetFloatFromString(entries[index]); index++;
+			readFloaty = GetFloatFromString(entries[index]); index++;
+			readFloatz = GetFloatFromString(entries[index]); index++;
+			readFloatw = GetFloatFromString(entries[index]); index++;
+			lit.color = new Color(readFloatx, readFloaty, readFloatz, readFloatw);
+			lit.spotAngle = GetFloatFromString(entries[index]); index++;
+			lit.shadows = GetLightShadowsFromString(entries[index]); index++;
+			lit.shadowStrength = GetFloatFromString(entries[index]); index++;
+			lit.shadowResolution = GetShadowResFromString(entries[index]); index++;
+			lit.shadowBias = GetFloatFromString(entries[index]); index++;
+			lit.shadowNormalBias = GetFloatFromString(entries[index]); index++;
+			lit.shadowNearPlane = GetFloatFromString(entries[index]); index++;
+			lit.cullingMask = GetIntFromString(entries[index]); index++;
+		}
+	}
+
+	public void UnloadLevelLights() {
+		Component[] compArray = lightContainers[levelToOutputLights].GetComponentsInChildren(typeof(Light),true);
+		for (int i=0;i<compArray.Length;i++) {
+			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) continue;
+			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) continue;
+
+			DestroyImmediate(compArray[i].gameObject);
+		}
+		compArray = null;
+	}
+
 	public void GenerateLightsDataFile() {
 		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_lights_level1.dat");
 		StringBuilder s1 = new StringBuilder();
@@ -717,8 +805,26 @@ public class Tests : MonoBehaviour {
 		}
 	}
 
+	private bool getValparsed;
+	private int getValreadInt;
+	private float getValreadFloat;
 	private string FloatToString(float val) {
 		return val.ToString("0000.00000", CultureInfo.InvariantCulture); // Output with 4 integer places and 5 mantissa, culture invariant to guarantee . vs , for all regions.
+	}
+	private int GetIntFromString(string val) {
+		if (val == "0") return 0;
+		getValparsed = Int32.TryParse(val, NumberStyles.Integer, en_US_Culture, out getValreadInt);
+		if (!getValparsed) { UnityEngine.Debug.Log("BUG: Could not parse int from `" + val + "`"); return 0; }
+		return getValreadInt;
+	}
+
+	private float GetFloatFromString(string val) {
+		getValparsed = Single.TryParse(val, NumberStyles.Float, en_US_Culture, out getValreadFloat);
+		if (!getValparsed) {
+			UnityEngine.Debug.Log("BUG: Could not parse float from `" + val + "`");
+			return 0.0f;
+		}
+		return getValreadFloat;
 	}
 
 

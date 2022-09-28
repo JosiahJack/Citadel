@@ -19,5 +19,12 @@ public class TestsEditor : Editor {
 		if (GUILayout.Button("Output All Lights to File")) {
 			testScript.GenerateLightsDataFile();
 		}
+
+		if (GUILayout.Button("Load Lights for\nSelected Level")) {
+			testScript.LoadLevelLights();
+		}
+		if (GUILayout.Button("Unload Lights for\nSelected Level")) {
+			testScript.UnloadLevelLights();
+		}
 	}
 }
