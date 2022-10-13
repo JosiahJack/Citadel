@@ -4,14 +4,14 @@ using UnityEngine.EventSystems;
 using System.Collections;
 
 public class UIButtonMask : MonoBehaviour {
-    public GameObject playerCamera;
 	public GUIState.ButtonType overButtonType = GUIState.ButtonType.Generic;  // default to generic button
-	private float doubleClickTime;
-	private float dbclickFinished;
 	public int doubleClickTicks;  // takes 2 to activate double click function
 	public bool doubleClickEnabled = false;
 	public int toolTipLingdex = -1;
 	public Handedness toolTipType;
+
+	private float doubleClickTime;
+	private float dbclickFinished;
 	private BoxCollider boxCol;
 	private RectTransform rect;
 
@@ -24,8 +24,6 @@ public class UIButtonMask : MonoBehaviour {
 		if (height < 0) height *= -1f; // Cannot have negative size on box colliders.
 		boxCol.size = new Vector3(width,height,1f);
 		MouseCursor.a.RegisterRaycastRect(gameObject,GetComponent<RectTransform>());
-		if (playerCamera == null) Const.sprint("BUG: UIButtonMask script could not find playerCamera");
-
 		if (doubleClickEnabled) {
 			doubleClickTime = Const.a.doubleClickTime;
 			dbclickFinished = PauseScript.a.relativeTime;
@@ -55,7 +53,7 @@ public class UIButtonMask : MonoBehaviour {
 
 	public void PtrEnter () {
 		GUIState.a.PtrHandler(true,true,overButtonType,gameObject);
-        playerCamera.GetComponent<MouseLookScript>().currentButton = gameObject;
+        MouseLookScript.a.currentButton = gameObject;
 		doubleClickTicks = 0;
 
 		if (toolTipLingdex >= 0) {

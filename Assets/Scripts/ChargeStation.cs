@@ -27,7 +27,7 @@ public class ChargeStation : MonoBehaviour {
 		
 		if (nextthink < PauseScript.a.relativeTime) {
 			if (PlayerEnergy.a.energy >= PlayerEnergy.a.maxenergy) {
-				Const.sprint(Const.a.stringTable[303],ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule);
+				Const.sprint(Const.a.stringTable[303],PlayerReferenceManager.a.playerCapsule);
 				return;
 			} else {
 				PlayerEnergy.a.GiveEnergy(amount, 1);

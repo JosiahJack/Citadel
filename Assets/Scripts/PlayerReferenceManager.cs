@@ -20,4 +20,11 @@ public class PlayerReferenceManager : MonoBehaviour {
 
 	// Internal references
 	[HideInInspector] public int playerCurrentLevel;
+
+	public static PlayerReferenceManager a;
+
+	void Awake() {
+		a = this;
+		a.playerCurrentLevel = LevelManager.a.currentLevel;
+	}
 }

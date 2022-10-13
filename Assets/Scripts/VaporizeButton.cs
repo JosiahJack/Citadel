@@ -4,13 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class VaporizeButton : MonoBehaviour {
-	public GameObject playerCamera;
 	public Image ico;
 	public Text ict;
 
 	public void PtrEnter () {
 		GUIState.a.PtrHandler(true,true,GUIState.ButtonType.Generic,gameObject);
-		playerCamera.GetComponent<MouseLookScript>().currentButton = gameObject;
+		MouseLookScript.a.currentButton = gameObject;
 	}
 
 	public void PtrExit () {

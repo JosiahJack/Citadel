@@ -1,5 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour {
@@ -26,14 +32,22 @@ public class LevelManager : MonoBehaviour {
 	public NPCSubManager[] npcsm;
 	public enum SecurityType : byte {None,Camera,NodeSmall,NodeLarge};
 	public Level[] levelScripts;
+	public GameObject[] lightContainers;
+
+	private bool getValparsed;
+	private bool[] levelDataLoaded;
+	private int getValreadInt;
+	private float getValreadFloat;
+	private CultureInfo en_US_Culture = new CultureInfo("en-US");
 
 	// Singleton instance
 	public static LevelManager a;
 
 	void Awake () {
 		a = this;
-		if (currentLevel == -1) return;
-		SetAllPlayersLevelsToCurrent();
+		if (currentLevel < 0 || currentLevel > 12) return; // 12 because I don't think I support starting in cyberspace, 13, for testing.
+
+		//PlayerReferenceManager.a.playerCurrentLevel = currentLevel;
 		if (sky == null) Debug.Log("BUG: LevelManager missing manually assigned reference for sky.");
 		else sky.SetActive(true);
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
@@ -41,6 +55,9 @@ public class LevelManager : MonoBehaviour {
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 		if (ressurectionBayDoor.Length != 8) Debug.Log("BUG: LevelManager ressurectionBayDoor array length not equal to 8.");
 		Time.timeScale = Const.a.defaultTimeScale;
+		levelDataLoaded = new bool[14];
+		for (int i=0;i<14;i++) levelDataLoaded[i] = false;
+		LoadLevelData(currentLevel);
 	}
 
 	public void CyborgConversionToggleForCurrentLevel() {
@@ -67,32 +84,48 @@ public class LevelManager : MonoBehaviour {
 
 		if (ressurectionActive[currentLevel]) {
 			if (currentLevel == 10 ||currentLevel == 11 ||currentLevel == 12) {
-				LoadLevel(6,ressurectionLocation[currentLevel].gameObject,currentPlayer,ressurectionLocation[currentLevel].position);
+				LoadLevel(6,ressurectionLocation[currentLevel].gameObject,ressurectionLocation[currentLevel].position);
 				ressurectionBayDoor[6].ForceClose();
 			} else {
 				if (currentLevel <= 7 && currentLevel >= 0) ressurectionBayDoor[currentLevel].ForceClose();
-				if (currentLevel != 13) currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.transform.position = transform.TransformPoint(ressurectionLocation[currentLevel].position); //teleport to ressurection chamber
+				if (currentLevel != 13) PlayerReferenceManager.a.playerCapsule.transform.position = transform.TransformPoint(ressurectionLocation[currentLevel].position); //teleport to ressurection chamber
 			}
-			currentPlayer.GetComponent<PlayerReferenceManager>().playerDeathRessurectEffect.SetActive(true); // activate death screen and readouts for "BRAIN ACTIVITY SATISFACTORY"            ya debatable right
+			PlayerReferenceManager.a.playerDeathRessurectEffect.SetActive(true); // activate death screen and readouts for "BRAIN ACTIVITY SATISFACTORY"            ya debatable right
 			Music.a.PlayTrack(currentLevel,Music.TrackType.Revive,Music.MusicType.Override);
-			currentPlayer.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<PlayerMovement>().ressurectingFinished = PauseScript.a.relativeTime + 3f;
+			PlayerMovement.a.ressurectingFinished = PauseScript.a.relativeTime + 3f;
 			return true;
 		}
 		return false;
 	}
 
-	public void LoadLevel (int levnum, GameObject targetDestination, GameObject currentPlayer, Vector3 targetPosition) {
+	// Make sure that unneeded objects are unloaded
+	public void UnloadLevelData (int levnum) {
+		if (levnum < 0 || levnum > 12) return; // Not in a level, in a test or editor space.
+		if (!levelDataLoaded[levnum]) return; // Already cleared.
+
+		UnloadLevelLights(levnum);
+		levelDataLoaded[levnum] = false;
+	}
+
+	// Make sure relevant data and objects are loaded in and present for the level.
+	public void LoadLevelData (int levnum) {
+		if (levnum < 0 || levnum > 12) return; // Not in a level, in a test or editor space.
+		if (levelDataLoaded[levnum]) return; // Already loaded.
+
+		LoadLevelLights(levnum);
+		if (QuestLogNotesManager.a != null) QuestLogNotesManager.a.NotifyLevelChange(currentLevel);
+		levelDataLoaded[levnum] = true;
+	}
+
+	public void LoadLevel (int levnum, GameObject targetDestination, Vector3 targetPosition) {
 		// NOTE: Check this first since the button for the current level has a null destination.  This is fine and expected.
-		if (currentLevel == levnum) { Const.sprint(Const.a.stringTable[9],currentPlayer); return; } //Already there
-		if (currentPlayer == null) { Const.sprint("BUG: LevelManager cannot find current player."); return; } // Prevent possible error if keypad does not have player to move.
-		if (targetDestination == null && targetPosition == null) { Const.sprint("BUG: LevelManager cannot find destination."); return; } // Prevent possible error if keypad does not have destination set.
+		if (currentLevel == levnum) { Const.sprint(Const.a.stringTable[9]); return; } //Already there
 
 		int lastlev = currentLevel;
 		MFDManager.a.TurnOffElevatorPad();
 		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
-		PlayerReferenceManager prm = currentPlayer.GetComponent<PlayerReferenceManager>();
-		if (targetDestination != null) prm.playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
-		else prm.playerCapsule.transform.position = targetPosition; // Return to level from cyberspace.
+		if (targetDestination != null) PlayerReferenceManager.a.playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
+		else if (targetPosition != null) PlayerReferenceManager.a.playerCapsule.transform.position = targetPosition; // Return to level from cyberspace.
 
 		PlayerMovement.a.SetAutomapExploredReference(levnum);
 		PlayerMovement.a.automapBaseImage.overrideSprite = PlayerMovement.a.automapsBaseImages[levnum];
@@ -101,10 +134,11 @@ public class LevelManager : MonoBehaviour {
 		Music.a.SFXOverlay.Stop();
 		Music.a.levelEntry = true;
 		levels[levnum].SetActive(true); // enable new level
-		prm.playerCurrentLevel = levnum;
+		PlayerReferenceManager.a.playerCurrentLevel = levnum;
 		currentLevel = levnum; // Set current level to be the new level
-		if (QuestLogNotesManager.a != null) QuestLogNotesManager.a.NotifyLevelChange(currentLevel);
-		DisableAllNonOccupiedLevels();
+
+		LoadLevelData(currentLevel);
+		DisableAllNonOccupiedLevels(currentLevel);
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
@@ -113,7 +147,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void LoadLevelFromSave (int levnum) {
-		// NOTE: Check this first since the button for the current level has a null destination
+		LoadLevelData(levnum); // Let this function check and load data if it isn't yet.
 		if (currentLevel == levnum) return;
 
 		int lastlev = currentLevel;
@@ -126,24 +160,12 @@ public class LevelManager : MonoBehaviour {
 		System.GC.Collect();
 	}
 
-	void SetAllPlayersLevelsToCurrent () {
-		Const.a.player1.GetComponent<PlayerReferenceManager>().playerCurrentLevel = currentLevel;
-	}
-
-	public void DisableAllNonOccupiedLevels() {
-		int p1level = Const.a.player1.GetComponent<PlayerReferenceManager>().playerCurrentLevel;
+	public void DisableAllNonOccupiedLevels(int occupiedLevel) {
 		for (int i=0;i<levels.Length;i++) {
-			if (p1level != i) {
-				if (levels[i] != null) levels[i].SetActive(false);
-			} else {
-				if (levels[i] != null) levels[i].SetActive(true);
-			}
-		}
-	}
+			if (i == occupiedLevel) continue;
 
-	public void EnableAllLevels() {
-		for (int i=0;i<levels.Length;i++) {
-			if (levels[i] != null) levels[i].SetActive(true);
+			UnloadLevelData(i);
+			if (levels[i] != null) levels[i].SetActive(false);
 		}
 	}
 
@@ -182,7 +204,7 @@ public class LevelManager : MonoBehaviour {
 	// 100% = 4x + 20y
 	// Assuming that a good camera percentage is 2-3%, CPU % would be about 10-15 each
 	public void ReduceCurrentLevelSecurity(SecurityType stype) {
-		if (currentLevel == -1) return;
+		if (currentLevel < 0 || currentLevel > 12) return;
 
 		float camScore = 4;
 		float nodeSmallScore = 10;
@@ -218,5 +240,138 @@ public class LevelManager : MonoBehaviour {
 		float yMin = b.bounds.min.z; // NO I'm not making a 2D game....it's y and I'm sticking to it
 		if ((pos.x < xMax && pos.x > xMin) && (pos.z < yMax && pos.z > yMin)) return true;
 		return false;
+	}
+
+	public void LoadLevelLights(int curlevel) {
+		if (curlevel > (lightContainers.Length - 1)) return;
+		if (curlevel < 0) return;
+
+		StreamReader sf = new StreamReader(Application.dataPath + "/StreamingAssets/CitadelScene_lights_level" + curlevel.ToString() + ".dat");
+		if (sf == null) { UnityEngine.Debug.Log("Lights input file path invalid"); return; }
+
+		string readline;
+		List<string> readFileList = new List<string>();
+		using (sf) {
+			do {
+				readline = sf.ReadLine();
+				if (readline != null) {
+					readFileList.Add(readline);
+				}
+			} while (!sf.EndOfStream);
+			sf.Close();
+		}
+
+		string[] entries = new string[27];
+		char delimiter = '|';
+		int index = 0;
+		float readFloatx;
+		float readFloaty;
+		float readFloatz;
+		float readFloatw;
+		Vector3 tempvec;
+		Quaternion tempquat;
+		for (int i=0;i<readFileList.Count;i++) {
+			entries = readFileList[i].Split(delimiter);
+			if (entries.Length <= 1) continue;
+
+			index = 0;
+			GameObject newLight = new GameObject("PointLight" + i.ToString());
+			Light lit = newLight.AddComponent<Light>();
+			Transform tr = newLight.transform;
+			tr.SetParent(lightContainers[curlevel].transform);
+
+			// Get transform
+			readFloatx = GetFloatFromString(entries[index]); index++;
+			readFloaty = GetFloatFromString(entries[index]); index++;
+			readFloatz = GetFloatFromString(entries[index]); index++;
+			tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
+			tr.localPosition = tempvec;
+
+			// Get rotation
+			readFloatx = GetFloatFromString(entries[index]); index++;
+			readFloaty = GetFloatFromString(entries[index]); index++;
+			readFloatz = GetFloatFromString(entries[index]); index++;
+			readFloatw = GetFloatFromString(entries[index]); index++;
+			tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
+			tr.localRotation = tempquat;
+
+			// Get scale
+			readFloatx = GetFloatFromString(entries[index]); index++;
+			readFloaty = GetFloatFromString(entries[index]); index++;
+			readFloatz = GetFloatFromString(entries[index]); index++;
+			tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
+			tr.localScale = tempvec;
+
+			lit.intensity = GetFloatFromString(entries[index]); index++;
+			lit.range = GetFloatFromString(entries[index]); index++;
+			lit.type = GetLightTypeFromString(entries[index]); index++;
+			readFloatx = GetFloatFromString(entries[index]); index++;
+			readFloaty = GetFloatFromString(entries[index]); index++;
+			readFloatz = GetFloatFromString(entries[index]); index++;
+			readFloatw = GetFloatFromString(entries[index]); index++;
+			lit.color = new Color(readFloatx, readFloaty, readFloatz, readFloatw);
+			lit.spotAngle = GetFloatFromString(entries[index]); index++;
+			lit.shadows = GetLightShadowsFromString(entries[index]); index++;
+			lit.shadowStrength = GetFloatFromString(entries[index]); index++;
+			lit.shadowResolution = GetShadowResFromString(entries[index]); index++;
+			lit.shadowBias = GetFloatFromString(entries[index]); index++;
+			lit.shadowNormalBias = GetFloatFromString(entries[index]); index++;
+			lit.shadowNearPlane = GetFloatFromString(entries[index]); index++;
+			lit.cullingMask = GetIntFromString(entries[index]); index++;
+		}
+	}
+
+	public void UnloadLevelLights(int curlevel) {
+		if (curlevel > (lightContainers.Length - 1)) return;
+		if (curlevel < 0) return;
+
+		Component[] compArray = lightContainers[curlevel].GetComponentsInChildren(typeof(Light),true);
+		for (int i=0;i<compArray.Length;i++) {
+			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) continue;
+			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) continue;
+
+			DestroyImmediate(compArray[i].gameObject);
+		}
+		compArray = null;
+	}
+
+	private int GetIntFromString(string val) {
+		if (val == "0") return 0;
+
+		getValparsed = Int32.TryParse(val, NumberStyles.Integer, en_US_Culture, out getValreadInt);
+		if (!getValparsed) { UnityEngine.Debug.Log("BUG: Could not parse int from `" + val + "`"); return 0; }
+		return getValreadInt;
+	}
+
+	private float GetFloatFromString(string val) {
+		getValparsed = Single.TryParse(val, NumberStyles.Float, en_US_Culture, out getValreadFloat);
+		if (!getValparsed) {
+			UnityEngine.Debug.Log("BUG: Could not parse float from `" + val + "`");
+			return 0.0f;
+		}
+		return getValreadFloat;
+	}
+
+
+	private LightType GetLightTypeFromString(string type) {
+		if (type == "Spot") return LightType.Spot;
+		else if (type == "Directional") return LightType.Directional;
+		else if (type == "Rectangle") return LightType.Rectangle;
+		else if (type == "Disc") return LightType.Disc;
+		return LightType.Point;	
+	}
+
+	private LightShadows GetLightShadowsFromString(string shadows) {
+		if (shadows == "None") return LightShadows.None;
+		else if (shadows == "Hard") return LightShadows.Hard;
+		return LightShadows.Soft;	
+	}
+
+	private LightShadowResolution GetShadowResFromString(string res) {
+		if (res == "Low") return LightShadowResolution.Low;
+		else if (res == "Medium") return LightShadowResolution.Medium;
+		else if (res == "High") return LightShadowResolution.High;
+		else if (res == "VeryHigh") return LightShadowResolution.VeryHigh;
+		return LightShadowResolution.FromQualitySettings;	
 	}
 }

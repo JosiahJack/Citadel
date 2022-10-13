@@ -54,5 +54,4 @@
         }
         ENDCG
     }
-    FallBack "Mobile/VetexLit"
 }

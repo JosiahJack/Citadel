@@ -18,7 +18,6 @@ public class KeypadKeycode : MonoBehaviour {
 	[HideInInspector]
 	public bool padInUse = false; // save
 	private GameObject playerCamera;
-	private GameObject playerCapsule;
 	public bool solved = false; // save
 	public bool useQuestKeycode1 = false;
 	public bool useQuestKeycode2 = false;
@@ -27,6 +26,7 @@ public class KeypadKeycode : MonoBehaviour {
 		padInUse = false;
 		disconnectDist = Const.a.frobDistance;
 		SFXSource = GetComponent<AudioSource>();
+		playerCamera = PlayerReferenceManager.a.playerCapsuleMainCamera;
 	}
 
 	public void Use (UseData ud) {
@@ -83,9 +83,7 @@ public class KeypadKeycode : MonoBehaviour {
 
 		padInUse = true;
 		SFXSource.PlayOneShot(SFX);
-		playerCamera = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
-		playerCapsule = ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule; // Get player capsule of player using this pad
-		playerCamera.GetComponent<MouseLookScript>().ForceInventoryMode();
+		MouseLookScript.a.ForceInventoryMode();
 		MFDManager.a.SendKeypadKeycodeToDataTab(keycode,transform.position,this,solved);
 	}
 

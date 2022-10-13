@@ -273,6 +273,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int[] audioLogImagesRefIndicesRH;
 	public GameObject eventSystem;
 	public Texture[] sequenceTextures;
+	public GameObject[] chunkPrefabs;
 	public Text loadPercentText;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
@@ -352,7 +353,6 @@ public class Const : MonoBehaviour {
 		a.player1TargettingPos = a.player1CapsuleMainCameragGO.transform;
 		a.player1Capsule = a.player1.GetComponent<PlayerReferenceManager>().playerCapsule;
 		a.player1PlayerMovementScript = a.player1Capsule.GetComponent<PlayerMovement>();
-		//a.player1PlayerHealthScript = a.player1Capsule.GetComponent<PlayerHealth>();
 		a.CheckIfNewGame();
 		a.LoadTextForLanguage(0); // Initialize with US English (index 0)
 		a.s1 = new StringBuilder();
@@ -2247,8 +2247,7 @@ public class Const : MonoBehaviour {
 			}
 		}
 
-		LevelManager.a.DisableAllNonOccupiedLevels(); // go back to how we were
-		// Make "Done!" appear at the end of the line after "Saving..." is finished, stole this from Halo's "Checkpoint...Done!"
+		// Make "Done!" appear at the end of the line after "Saving..." is finished, concept from Halo's "Checkpoint...Done!"
 		sprint(stringTable[195]);
 		saveTimer.Stop();
 		UnityEngine.Debug.Log("Saved to file in " + saveTimer.Elapsed.ToString());

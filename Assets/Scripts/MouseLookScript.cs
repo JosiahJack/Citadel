@@ -189,7 +189,7 @@ public class MouseLookScript : MonoBehaviour {
 		cyberspaceReturnPlayerCapsuleLocalRotation = transform.parent.transform.parent.transform.localRotation.eulerAngles;
 		cyberspaceReturnLevel = LevelManager.a.currentLevel;
 		MFDManager.a.EnterCyberspace();
-		LevelManager.a.LoadLevel (13,entryPoint,player,cyberspaceRecallPoint);
+		LevelManager.a.LoadLevel(13,entryPoint,cyberspaceRecallPoint);
 		PlayerMovement.a.inCyberSpace = true;
 		PlayerMovement.a.leanCapsuleCollider.enabled = false;
 		hm.inCyberSpace = true;
@@ -202,7 +202,7 @@ public class MouseLookScript : MonoBehaviour {
 	public void ExitCyberspace() {
 		playerRadiationTreatmentFlash.SetActive(true);
 		MFDManager.a.ExitCyberspace();
-		LevelManager.a.LoadLevel(cyberspaceReturnLevel,null,player,cyberspaceReturnPoint);
+		LevelManager.a.LoadLevel(cyberspaceReturnLevel,null,cyberspaceReturnPoint);
 		transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(cyberspaceReturnPlayerCapsuleLocalRotation.x, cyberspaceReturnPlayerCapsuleLocalRotation.y, cyberspaceReturnPlayerCapsuleLocalRotation.z); // left right component applied to capsule
 		transform.localRotation = Quaternion.Euler(cyberspaceReturnCameraLocalRotation.x,cyberspaceReturnCameraLocalRotation.y,cyberspaceReturnCameraLocalRotation.z); // Up down component applied to camera
 		PlayerMovement.a.inCyberSpace = false;

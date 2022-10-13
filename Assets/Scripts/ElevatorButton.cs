@@ -5,7 +5,6 @@ using System.Collections;
 public class ElevatorButton : MonoBehaviour {
 	public bool floorAccessible = false;
 	public bool doorOpen = false;
-	public GameObject currentPlayer;
 
 	// Externally modified
 	[HideInInspector] public GameObject targetDestination;
@@ -39,15 +38,15 @@ public class ElevatorButton : MonoBehaviour {
 
 	public void ElevButtonClick () {
 		if (Vector3.Distance(MFDManager.a.objectInUsePos,MFDManager.a.playerCapsuleTransform.position) > Const.a.elevatorPadUseDistance || MFDManager.a.linkedElevatorDoor == null) {
-			Const.sprint(Const.a.stringTable[6],currentPlayer);
+			Const.sprint(Const.a.stringTable[6]);
 		} else {
 			if (MFDManager.a.linkedElevatorDoor.doorOpen != Door.doorState.Closed) {
-				Const.sprint(Const.a.stringTable[7],currentPlayer);
+				Const.sprint(Const.a.stringTable[7]);
 			} else {
 				if (floorAccessible) {
-					LevelManager.a.LoadLevel(levelIndex,targetDestination,currentPlayer,targetDestination.transform.position);
+					LevelManager.a.LoadLevel(levelIndex,targetDestination,targetDestination.transform.position);
 				} else {
-					Const.sprint(Const.a.stringTable[8],currentPlayer);
+					Const.sprint(Const.a.stringTable[8]);
 				}
 			}
 		}

@@ -5,17 +5,17 @@ using System.Collections;
 
 public class GrenadeButton : MonoBehaviour {
 	public int GrenButtonIndex;
-	public GameObject playerCamera;
 	public int useableItemIndex;
-	private int itemLookup;
-	private Texture2D cursorTexture;
-	private Vector2 cursorHotspot;
 	public AudioClip SFXClick;
 	public AudioSource SFX;
 
+	private int itemLookup;
+	private Texture2D cursorTexture;
+	private Vector2 cursorHotspot;
+
 	public void PtrEnter () {
 		GUIState.a.PtrHandler(true,true,GUIState.ButtonType.Grenade,gameObject);
-		playerCamera.GetComponent<MouseLookScript>().currentButton = gameObject;
+		MouseLookScript.a.currentButton = gameObject;
 	}
 
 	public void PtrExit () {
@@ -24,7 +24,7 @@ public class GrenadeButton : MonoBehaviour {
 
 	void DoubleClick() {
 		// Put grenade in the player's hand (cursor)
-		playerCamera.GetComponent<MouseLookScript>().UseGrenade(useableItemIndex);
+		MouseLookScript.a.UseGrenade(useableItemIndex);
 	}
 
 	public void GrenadeInvClick () {

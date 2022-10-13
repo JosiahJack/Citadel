@@ -602,7 +602,6 @@ public class WeaponFire : MonoBehaviour {
             }
         }
 
-        // playerCamera.GetComponent<MouseLookScript>().Recoil(index);
 		Recoil(index);
         if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent] || overloadEnabled) {
             overloadEnabled = false;

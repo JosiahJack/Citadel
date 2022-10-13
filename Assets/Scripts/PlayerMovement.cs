@@ -1231,31 +1231,31 @@ public class PlayerMovement : MonoBehaviour {
 				hm.god = true;
 			}
         } else if (ts.Contains("load") && tn.Contains("0")) {
-			LevelManager.a.LoadLevel(0,LevelManager.a.ressurectionLocation[0].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[0].position);
+			LevelManager.a.LoadLevel(0,LevelManager.a.ressurectionLocation[0].gameObject,LevelManager.a.ressurectionLocation[0].position);
         } else if (ts.Contains("load") && tn.Contains("1")) {
-			LevelManager.a.LoadLevel(1,LevelManager.a.ressurectionLocation[1].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[1].position);
+			LevelManager.a.LoadLevel(1,LevelManager.a.ressurectionLocation[1].gameObject,LevelManager.a.ressurectionLocation[1].position);
         } else if (ts.Contains("load") && tn.Contains("2")) {
-			LevelManager.a.LoadLevel(2,LevelManager.a.ressurectionLocation[2].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[2].position);
+			LevelManager.a.LoadLevel(2,LevelManager.a.ressurectionLocation[2].gameObject,LevelManager.a.ressurectionLocation[2].position);
         } else if (ts.Contains("load") && tn.Contains("3")) {
-			LevelManager.a.LoadLevel(3,LevelManager.a.ressurectionLocation[3].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[3].position);
+			LevelManager.a.LoadLevel(3,LevelManager.a.ressurectionLocation[3].gameObject,LevelManager.a.ressurectionLocation[3].position);
         } else if (ts.Contains("load") && tn.Contains("4")) {
-			LevelManager.a.LoadLevel(4,LevelManager.a.ressurectionLocation[4].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[4].position);
+			LevelManager.a.LoadLevel(4,LevelManager.a.ressurectionLocation[4].gameObject,LevelManager.a.ressurectionLocation[4].position);
         } else if (ts.Contains("load") && tn.Contains("5")) {
-			LevelManager.a.LoadLevel(5,LevelManager.a.ressurectionLocation[5].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[5].position);
+			LevelManager.a.LoadLevel(5,LevelManager.a.ressurectionLocation[5].gameObject,LevelManager.a.ressurectionLocation[5].position);
         } else if (ts.Contains("load") && tn.Contains("6")) {
-			LevelManager.a.LoadLevel(6,LevelManager.a.ressurectionLocation[6].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[6].position);
+			LevelManager.a.LoadLevel(6,LevelManager.a.ressurectionLocation[6].gameObject,LevelManager.a.ressurectionLocation[6].position);
         } else if (ts.Contains("load") && tn.Contains("7")) {
-			LevelManager.a.LoadLevel(7,LevelManager.a.ressurectionLocation[7].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[7].position);
+			LevelManager.a.LoadLevel(7,LevelManager.a.ressurectionLocation[7].gameObject,LevelManager.a.ressurectionLocation[7].position);
         } else if (ts.Contains("load") && tn.Contains("8")) {
-			LevelManager.a.LoadLevel(8,LevelManager.a.ressurectionLocation[8].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[8].position);
+			LevelManager.a.LoadLevel(8,LevelManager.a.ressurectionLocation[8].gameObject,LevelManager.a.ressurectionLocation[8].position);
         } else if (ts.Contains("load") && tn.Contains("9")) {
-			LevelManager.a.LoadLevel(9,LevelManager.a.ressurectionLocation[9].gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[9].position);
+			LevelManager.a.LoadLevel(9,LevelManager.a.ressurectionLocation[9].gameObject,LevelManager.a.ressurectionLocation[9].position);
         } else if (ts.Contains("load") && ts.Contains("g1")) {
-			LevelManager.a.LoadLevel(10,cheatG1Spawn.gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[10].position);
+			LevelManager.a.LoadLevel(10,cheatG1Spawn.gameObject,LevelManager.a.ressurectionLocation[10].position);
         } else if (ts.Contains("load") && ts.Contains("g2")) {
-			LevelManager.a.LoadLevel(11,cheatG2Spawn.gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[11].position);
+			LevelManager.a.LoadLevel(11,cheatG2Spawn.gameObject,LevelManager.a.ressurectionLocation[11].position);
         } else if (ts.Contains("load") && ts.Contains("g4")) {
-			LevelManager.a.LoadLevel(12,cheatG4Spawn.gameObject,Const.a.player1,LevelManager.a.ressurectionLocation[12].position);
+			LevelManager.a.LoadLevel(12,cheatG4Spawn.gameObject,LevelManager.a.ressurectionLocation[12].position);
 		} else if (ts.Contains("load") && ts.Contains("g3")) {
 			Const.sprint("Gamma grove already jettisoned!  Those poor arrogant people.");
 		} else if (ts.Contains("loadarsenalr") || ts.Contains("loadarsenal r")) {

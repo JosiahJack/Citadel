@@ -21,7 +21,7 @@ public class GeneralInvButton : MonoBehaviour {
             switch (useableItemIndex) {
                 case 52:
 					if (PlayerEnergy.a.energy >= 255f) {
-						Const.sprint(Const.a.stringTable[303],PlayerHealth.a.mainPlayerParent.GetComponent<PlayerReferenceManager>().playerCapsule);
+						Const.sprint(Const.a.stringTable[303],PlayerReferenceManager.a.playerCapsule);
 						reduce = false;
 					} else {
 						PlayerEnergy.a.GiveEnergy(83f,0);
@@ -30,7 +30,7 @@ public class GeneralInvButton : MonoBehaviour {
                     break;
                 case 53:
 					if (PlayerEnergy.a.energy >= 255f) {
-						Const.sprint(Const.a.stringTable[303],PlayerHealth.a.mainPlayerParent.GetComponent<PlayerReferenceManager>().playerCapsule);
+						Const.sprint(Const.a.stringTable[303],PlayerReferenceManager.a.playerCapsule);
 						reduce = false;
 					} else {
 						PlayerEnergy.a.GiveEnergy(255f,0);
@@ -39,7 +39,7 @@ public class GeneralInvButton : MonoBehaviour {
                     break;
                 case 55:
 					if (PlayerHealth.a.hm.health >= PlayerHealth.a.hm.maxhealth) {
-						Const.sprint(Const.a.stringTable[304],PlayerHealth.a.mainPlayerParent.GetComponent<PlayerReferenceManager>().playerCapsule);
+						Const.sprint(Const.a.stringTable[304],PlayerReferenceManager.a.playerCapsule);
 					} else {
 						PlayerHealth.a.hm.health = PlayerHealth.a.hm.maxhealth;
 						MFDManager.a.DrawTicks(true);

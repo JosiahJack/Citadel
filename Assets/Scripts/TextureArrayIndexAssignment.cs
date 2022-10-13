@@ -42,20 +42,24 @@ public class TextureArrayIndexAssignment : MonoBehaviour {
                 foreach (ObjectOverride over in PrefabUtility.GetObjectOverrides(gameObject)) {
                     Object obj = over.instanceObject;
                     if (obj.GetType() == typeof(MeshFilter)) {
-                        string mname = mf.sharedMesh.name;
-                        if (mname.Contains("_assigned")) {
-                            RevertPrefabPropertyOverrideWithMatchingName(obj,"m_Mesh");
+                        if (mf.sharedMesh != null) {
+                            string mname = mf.sharedMesh.name;
+                            if (mname.Contains("_assigned")) {
+                                RevertPrefabPropertyOverrideWithMatchingName(obj,"m_Mesh");
+                            }
                         }
                     } else if (obj.GetType() == typeof(MeshRenderer)) {
-                        string mname = mr.sharedMaterial.name;
-                        if (mname.Contains("(Instance)")) {
-                            RevertPrefabPropertyOverrideWithMatchingName(obj,"m_Materials");
-                        }
-                        if (mname.Contains("chunk")) {
-                            RevertPrefabPropertyOverrideWithMatchingName(obj,"m_CastShadows");
-                            RevertPrefabPropertyOverrideWithMatchingName(obj,"m_LightProbeUsage");
-                            RevertPrefabPropertyOverrideWithMatchingName(obj,"m_MotionVectors");
-                            RevertPrefabPropertyOverrideWithMatchingName(obj,"m_CastShadows");
+                        if (mr.sharedMaterial != null) {
+                            string mname = mr.sharedMaterial.name;
+                            if (mname.Contains("(Instance)")) {
+                                RevertPrefabPropertyOverrideWithMatchingName(obj,"m_Materials");
+                            }
+                            if (mname.Contains("chunk")) {
+                                RevertPrefabPropertyOverrideWithMatchingName(obj,"m_CastShadows");
+                                RevertPrefabPropertyOverrideWithMatchingName(obj,"m_LightProbeUsage");
+                                RevertPrefabPropertyOverrideWithMatchingName(obj,"m_MotionVectors");
+                                RevertPrefabPropertyOverrideWithMatchingName(obj,"m_CastShadows");
+                            }
                         }
                     }
                 }

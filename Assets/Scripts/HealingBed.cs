@@ -21,7 +21,7 @@ public class HealingBed : MonoBehaviour {
 	public void Use (UseData ud) {
 		if (LevelManager.a.GetCurrentLevelSecurity() <= minSecurityLevel) {
 			if (!broken) {
-				ud.owner.GetComponent<PlayerReferenceManager>().playerCapsule.GetComponent<HealthManager>().HealingBed(amount,true);
+				PlayerReferenceManager.a.playerCapsule.GetComponent<HealthManager>().HealingBed(amount,true);
 				Const.sprint(Const.a.stringTable[23],ud.owner);
 				SFXSource.PlayOneShot(SFX);
 			} else {
