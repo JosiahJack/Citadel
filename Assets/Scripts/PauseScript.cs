@@ -14,8 +14,6 @@ public class PauseScript : MonoBehaviour {
 	public GameObject saveDialog;
 	public GameObject hardSaveDialog;
 	public PlayerMovement pm;
-	public GameObject medicalLights;
-	public GameObject medicalLightsStatic;
 
 	[HideInInspector] public bool paused = false;
 	private bool previousInvMode = false;
@@ -32,10 +30,6 @@ public class PauseScript : MonoBehaviour {
 	void Awake() {
 		a = this;
 		a.ambientRegistry = new List<AmbientRegistration>();
-		if (!MenuActive()) {
-			medicalLights.SetActive(false);
-			medicalLightsStatic.SetActive(false);
-		}
 	}
 
 	// The whole point right here:
@@ -54,10 +48,6 @@ public class PauseScript : MonoBehaviour {
 					PauseToggle();
 			}
 			if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Menu)) PauseEnable();
-			if (!medicalLights.activeSelf) {
-				medicalLights.SetActive(true);
-				medicalLightsStatic.SetActive(true);
-			}
 		}
 
 		if (!Paused()) relativeTime = relativeTime + Time.deltaTime;

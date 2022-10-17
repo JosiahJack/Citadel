@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: cbd4f907ab68fc140b1b783c41fb66fe
 ModelImporter:
-  serializedVersion: 19300
+  serializedVersion: 19301
   internalIDToNameTable:
   - first:
       1: 100000
@@ -37,9 +37,9 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: 08_-_Default__w_ion_png
-    second: {fileID: 2100000, guid: 985ba5737c03039429a9f0b6947f2a61, type: 2}
+    second: {fileID: 2100000, guid: d12212804af6f6e88ad4cb8c6f169e8c, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -77,6 +77,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 0
     importLights: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1

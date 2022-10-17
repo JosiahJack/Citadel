@@ -22,9 +22,11 @@ public class TextureArrayIndexAssignment : MonoBehaviour {
     }
 
     public static void RevertPrefabPropertyOverrideWithMatchingName(Object ob, string name) {
+        #if UNITY_EDITOR
         SerializedObject serializedObject = new SerializedObject(ob);
         SerializedProperty serializedProperty = serializedObject.FindProperty(name);
         PrefabUtility.RevertPropertyOverride(serializedProperty,InteractionMode.AutomatedAction);
+        #endif
     }
 
     void SetIndex() {

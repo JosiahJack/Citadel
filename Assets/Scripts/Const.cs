@@ -3714,7 +3714,7 @@ public class Const : MonoBehaviour {
 
 	public void ApplyImpactForce(GameObject hitObject, float impactVelocity, Vector3 attackNormal, Vector3 hitPoint) {
 		Rigidbody rbody = hitObject.GetComponent<Rigidbody>();
-		if (rbody != null && impactVelocity > 0) rbody.AddForceAtPosition((attackNormal*impactVelocity*50f),hitPoint);
+		if (rbody != null && impactVelocity > 0) rbody.AddForceAtPosition((attackNormal*impactVelocity*30f),hitPoint);
 	}
 
 	public int SafeIndex(ref int[] array, int index, int max, int failvalue) {

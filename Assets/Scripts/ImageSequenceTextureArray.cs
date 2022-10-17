@@ -2,11 +2,6 @@
 using System.Collections;
 
 public class ImageSequenceTextureArray : MonoBehaviour {
-	//With this Material object, a reference to the game object Material can be stored
-	private MeshRenderer mR;
-	private Material goMaterial;
-	private int frameCounter = 0; //An integer to advance frames
-	private int frameCounterGlow = 0;
 	public string resourceFolder;
 	public string glowResourceFolder;
 	public float frameDelay = 0.35f;
@@ -16,15 +11,22 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	public bool reverseSequence = false;
 	public bool glowOnly = false;
 	public bool screenDestroyed = false;
-	private bool screenDestroyedDone = false; // Delay ending animation for a few destroy frames.
-	private bool screenDestroyFirstFrame = true;
 	public int[] constArrayLookup;
 	public int[] constArrayLookupGlow;
 	public int[] constArrayDestroyed;
 	/*[DTValidator.Optional] */public AudioClip SFXClip;
+	/*[DTValidator.Optional] */public GameObject lightContainer;
+
 	private AudioSource SFX;
 	private float tick;
 	private float tickFinished; // save....except handled purely through HealthManager
+	private bool screenDestroyedDone = false; // Delay ending animation for a few destroy frames.
+	private bool screenDestroyFirstFrame = true;
+	private MeshRenderer mR;
+	private Material goMaterial;
+	private Light lit;
+	private int frameCounter = 0; //An integer to advance frames
+	private int frameCounterGlow = 0;
 
 	void Awake() {
 		//Get a reference to the Material of the game object this script is attached to.
@@ -32,6 +34,16 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		if (mR == null) { this.gameObject.SetActive(false); return; }
 		this.goMaterial = this.GetComponent<Renderer>().material;
 		SFX = GetComponent<AudioSource>();
+		if (lightContainer != null) {
+			lit = lightContainer.GetComponent<Light>();
+			if (lit != null) {
+				if ((transform.localScale.x < 1.0f) || (transform.localScale.y < 1.0f) || (transform.localScale.z < 1.0f)) {
+					float factor = Mathf.Min(transform.localScale.x, transform.localScale.y, transform.localScale.z);
+					lit.range *= factor;
+					if (lit.range < 2.0f) lit.range = 2.0f;
+				}
+			}
+		}
 	}
 
 	// called by HealthManager.cs's ScreenDeath
@@ -39,15 +51,18 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		if (SFX != null) {
 			if (SFXClip != null) SFX.PlayOneShot(SFXClip);
 		}
+		if (lightContainer != null) lightContainer.SetActive(false);
 		screenDestroyed = true; // if not already dead, say so
 	}
 
 	public void AwakeFromLoad(float health) {
 		if (health > 0) {
 			screenDestroyed = screenDestroyedDone = false;
+			if (lightContainer != null) lightContainer.SetActive(true);
 			tickFinished = PauseScript.a.relativeTime + tick;
 			SetFrameIndices();
 		} else {
+			if (lightContainer != null) lightContainer.SetActive(false);
 			screenDestroyed = true;
 			goMaterial.SetTexture("_EmissionMap", Const.a.sequenceTextures[5]);
 			goMaterial.mainTexture = Const.a.sequenceTextures[5]; // End frame of destroyed texture
@@ -845,7 +860,7 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 			}
 
 			frameCounter++;
-			if (frameCounter >= 5) {
+			if (frameCounter > 5) {
 				screenDestroyedDone = true; // stop continuing to increment counter, all done counting
 				return; // we are done, no need to continue animating frames, destruction complete, unit lost, unit ready, wait is this a Command and Conquer reference?  Yes.  Yes it is.
 			}

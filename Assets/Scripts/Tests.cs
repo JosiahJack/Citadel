@@ -13,8 +13,8 @@ using UnityEngine.SceneManagement;
 
 public class Tests : MonoBehaviour {
 	public GameObject[] lightContainers;
-	public GameObject[] chunkContainers;
 	public int levelToOutputFrom = 0;
+	public LevelManager lm;
 
 	private bool getValparsed;
 	private bool[] levelDataLoaded;
@@ -628,92 +628,11 @@ public class Tests : MonoBehaviour {
     //}
 
 	public void LoadLevelLights() {
-		LevelManager.a.LoadLevelLights(levelToOutputFrom);
-		//StreamReader sf = new StreamReader(Application.dataPath + "/StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat");
-		//if (sf == null) { UnityEngine.Debug.Log("Lights input file path invalid"); return; }
-
-		//string readline;
-		//List<string> readFileList = new List<string>();
-		//using (sf) {
-		//	do {
-		//		readline = sf.ReadLine();
-		//		if (readline != null) {
-		//			readFileList.Add(readline);
-		//		}
-		//	} while (!sf.EndOfStream);
-		//	sf.Close();
-		//}
-
-		//string[] entries = new string[27];
-		//char delimiter = '|';
-		//int index = 0;
-		//float readFloatx;
-		//float readFloaty;
-		//float readFloatz;
-		//float readFloatw;
-		//Vector3 tempvec;
-		//Quaternion tempquat;
-		//for (int i=0;i<readFileList.Count;i++) {
-		//	entries = readFileList[i].Split(delimiter);
-		//	if (entries.Length <= 1) continue;
-
-		//	index = 0;
-		//	GameObject newLight = new GameObject("PointLight" + i.ToString());
-		//	Light lit = newLight.AddComponent<Light>();
-		//	Transform tr = newLight.transform;
-		//	tr.SetParent(lightContainers[levelToOutputFrom].transform);
-
-		//	// Get transform
-		//	readFloatx = GetFloatFromString(entries[index]); index++;
-		//	readFloaty = GetFloatFromString(entries[index]); index++;
-		//	readFloatz = GetFloatFromString(entries[index]); index++;
-		//	tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
-		//	tr.localPosition = tempvec;
-
-		//	// Get rotation
-		//	readFloatx = GetFloatFromString(entries[index]); index++;
-		//	readFloaty = GetFloatFromString(entries[index]); index++;
-		//	readFloatz = GetFloatFromString(entries[index]); index++;
-		//	readFloatw = GetFloatFromString(entries[index]); index++;
-		//	tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
-		//	tr.localRotation = tempquat;
-
-		//	// Get scale
-		//	readFloatx = GetFloatFromString(entries[index]); index++;
-		//	readFloaty = GetFloatFromString(entries[index]); index++;
-		//	readFloatz = GetFloatFromString(entries[index]); index++;
-		//	tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
-		//	tr.localScale = tempvec;
-
-		//	lit.intensity = GetFloatFromString(entries[index]); index++;
-		//	lit.range = GetFloatFromString(entries[index]); index++;
-		//	lit.type = GetLightTypeFromString(entries[index]); index++;
-		//	readFloatx = GetFloatFromString(entries[index]); index++;
-		//	readFloaty = GetFloatFromString(entries[index]); index++;
-		//	readFloatz = GetFloatFromString(entries[index]); index++;
-		//	readFloatw = GetFloatFromString(entries[index]); index++;
-		//	lit.color = new Color(readFloatx, readFloaty, readFloatz, readFloatw);
-		//	lit.spotAngle = GetFloatFromString(entries[index]); index++;
-		//	lit.shadows = GetLightShadowsFromString(entries[index]); index++;
-		//	lit.shadowStrength = GetFloatFromString(entries[index]); index++;
-		//	lit.shadowResolution = GetShadowResFromString(entries[index]); index++;
-		//	lit.shadowBias = GetFloatFromString(entries[index]); index++;
-		//	lit.shadowNormalBias = GetFloatFromString(entries[index]); index++;
-		//	lit.shadowNearPlane = GetFloatFromString(entries[index]); index++;
-		//	lit.cullingMask = GetIntFromString(entries[index]); index++;
-		//}
+		lm.LoadLevelLights(levelToOutputFrom);
 	}
 
 	public void UnloadLevelLights() {
-		LevelManager.a.UnloadLevelLights(levelToOutputFrom);
-		//Component[] compArray = lightContainers[levelToOutputFrom].GetComponentsInChildren(typeof(Light),true);
-		//for (int i=0;i<compArray.Length;i++) {
-		//	if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) continue;
-		//	if (compArray[i].gameObject.GetComponent<TargetIO>() != null) continue;
-
-		//	DestroyImmediate(compArray[i].gameObject);
-		//}
-		//compArray = null;
+		lm.UnloadLevelLights(levelToOutputFrom);
 	}
 
 	public void GenerateLightsDataFile() {
@@ -794,161 +713,6 @@ public class Tests : MonoBehaviour {
 				s1.Append(splitChar);
 				s1.Append(lit.cullingMask.ToString());
 				//UnityEngine.Debug.Log(s1.ToString());
-				sw.Write(s1.ToString());
-				sw.Write(Environment.NewLine);
-			}
-			sw.Close();
-		}
-	}
-
-	public void LoadLevelChunks() {
-		//StreamReader sf = new StreamReader(Application.dataPath + "/StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat");
-		//if (sf == null) { UnityEngine.Debug.Log("Lights input file path invalid"); return; }
-
-		//string readline;
-		//List<string> readFileList = new List<string>();
-		//using (sf) {
-		//	do {
-		//		readline = sf.ReadLine();
-		//		if (readline != null) {
-		//			readFileList.Add(readline);
-		//		}
-		//	} while (!sf.EndOfStream);
-		//	sf.Close();
-		//}
-
-		//string[] entries = new string[27];
-		//char delimiter = '|';
-		//int index = 0;
-		//float readFloatx;
-		//float readFloaty;
-		//float readFloatz;
-		//float readFloatw;
-		//Vector3 tempvec;
-		//Quaternion tempquat;
-		//for (int i=0;i<readFileList.Count;i++) {
-		//	entries = readFileList[i].Split(delimiter);
-		//	if (entries.Length <= 1) continue;
-
-		//	index = 0;
-		//	GameObject newLight = new GameObject("PointLight" + i.ToString());
-		//	Light lit = newLight.AddComponent<Light>();
-		//	Transform tr = newLight.transform;
-		//	tr.SetParent(lightContainers[levelToOutputFrom].transform);
-
-		//	// Get transform
-		//	readFloatx = GetFloatFromString(entries[index]); index++;
-		//	readFloaty = GetFloatFromString(entries[index]); index++;
-		//	readFloatz = GetFloatFromString(entries[index]); index++;
-		//	tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
-		//	tr.localPosition = tempvec;
-
-		//	// Get rotation
-		//	readFloatx = GetFloatFromString(entries[index]); index++;
-		//	readFloaty = GetFloatFromString(entries[index]); index++;
-		//	readFloatz = GetFloatFromString(entries[index]); index++;
-		//	readFloatw = GetFloatFromString(entries[index]); index++;
-		//	tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
-		//	tr.localRotation = tempquat;
-
-		//	// Get scale
-		//	readFloatx = GetFloatFromString(entries[index]); index++;
-		//	readFloaty = GetFloatFromString(entries[index]); index++;
-		//	readFloatz = GetFloatFromString(entries[index]); index++;
-		//	tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
-		//	tr.localScale = tempvec;
-
-		//	lit.intensity = GetFloatFromString(entries[index]); index++;
-		//	lit.range = GetFloatFromString(entries[index]); index++;
-		//	lit.type = GetLightTypeFromString(entries[index]); index++;
-		//	readFloatx = GetFloatFromString(entries[index]); index++;
-		//	readFloaty = GetFloatFromString(entries[index]); index++;
-		//	readFloatz = GetFloatFromString(entries[index]); index++;
-		//	readFloatw = GetFloatFromString(entries[index]); index++;
-		//	lit.color = new Color(readFloatx, readFloaty, readFloatz, readFloatw);
-		//	lit.spotAngle = GetFloatFromString(entries[index]); index++;
-		//	lit.shadows = GetLightShadowsFromString(entries[index]); index++;
-		//	lit.shadowStrength = GetFloatFromString(entries[index]); index++;
-		//	lit.shadowResolution = GetShadowResFromString(entries[index]); index++;
-		//	lit.shadowBias = GetFloatFromString(entries[index]); index++;
-		//	lit.shadowNormalBias = GetFloatFromString(entries[index]); index++;
-		//	lit.shadowNearPlane = GetFloatFromString(entries[index]); index++;
-		//	lit.cullingMask = GetIntFromString(entries[index]); index++;
-		//}
-	}
-
-	public void UnloadLevelChunks() {
-		//Component[] compArray = lightContainers[levelToOutputFrom].GetComponentsInChildren(typeof(Light),true);
-		//for (int i=0;i<compArray.Length;i++) {
-		//	if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) continue;
-		//	if (compArray[i].gameObject.GetComponent<TargetIO>() != null) continue;
-
-		//	DestroyImmediate(compArray[i].gameObject);
-		//}
-		//compArray = null;
-	}
-
-	public void GenerateChunksDataFile() {
-		UnityEngine.Debug.Log("Outputting all geometry chunks to StreamingAssets/CitadelScene_chunks_level" + levelToOutputFrom.ToString() + ".dat");
-		StringBuilder s1 = new StringBuilder();
-		string splitChar = "|";
-		GameObject go;
-		List<GameObject> allChunks = new List<GameObject>();
-		for (int i=0;i<chunkContainers[levelToOutputFrom].transform.childCount;i++) {
-			Transform tr = chunkContainers[levelToOutputFrom].transform.GetChild(i);
-			if (tr == null) continue;
-
-			go = tr.gameObject;
-			if (go == null) continue;
-
-			if (go.GetComponent<PrefabIdentifier>() == null) {
-				UnityEngine.Debug.Log("Skipping chunk " + go.name
-									  + " missing PrefabIdentifier");
-				continue;
-			}
-			allChunks.Add(go);
-		}
-
-		UnityEngine.Debug.Log("Found " + allChunks.Count + " chunks in level "
-							  + levelToOutputFrom.ToString());
-
-		StreamWriter sw = new StreamWriter(Application.dataPath + "/StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat",false,Encoding.ASCII);
-		if (sw == null) { UnityEngine.Debug.Log("Chunk output file path invalid"); return; }
-		PrefabIdentifier pif;
-		using (sw) {
-			for (int i=0;i<allChunks.Count;i++) {
-				go = allChunks[i];
-				s1.Clear();
-				Transform tr = go.transform;
-				s1.Append(FloatToString(tr.localPosition.x));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localPosition.y));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localPosition.z));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localRotation.x));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localRotation.y));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localRotation.z));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localRotation.w));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localScale.x));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localScale.y));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localScale.z));
-				s1.Append(splitChar);
-				pif = go.GetComponent<PrefabIdentifier>();
-				if (pif != null) {
-					s1.Append(pif.constIndex.ToString());
-				} else {
-					UnityEngine.Debug.Log("Could not find PrefabIdentifier on "
-										  + go.name);
-					s1.Append("30"); // Pick common chunk eng2_1 as fallback.
-				}
-
 				sw.Write(s1.ToString());
 				sw.Write(Environment.NewLine);
 			}

@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour {
 	// External references, required
 	public GameObject cameraObject;
 	public Camera automapCamera;
+	public GameObject automapCanvasGO;
 	public GameObject automapContainerLH;
 	public GameObject automapContainerRH;
 	public GameObject automapTabLH;
@@ -294,6 +295,7 @@ public class PlayerMovement : MonoBehaviour {
 		// Normal play when not paused...
 
 		rbody.WakeUp(); // Force player physics to never sleep.
+		if (rbody.isKinematic) rbody.isKinematic = false; // Allow physics to react and move.
 		CyberSetup();
 		if (!inCyberSpace) {
 			CyberDestupOrNoclipMaintain();
@@ -921,6 +923,8 @@ public class PlayerMovement : MonoBehaviour {
 	public void UpdateAutomap () {
 		if (inCyberSpace) return;
 
+		Vector3 playerPosition = transform.localPosition;
+
 		if (Inventory.a.hardwareVersion[1] < 2) {
 			if (poolContainerAutomapBotOverlays.activeSelf) poolContainerAutomapBotOverlays.SetActive(false);
 		} else {
@@ -943,8 +947,8 @@ public class PlayerMovement : MonoBehaviour {
 			// private float mapWorldMaxS = -78.00001f;
 			// private float mapWorldMaxE = -70.44f;
 			// private float mapWorldMaxW = 93.4f;
-			tempVec.x = (((transform.localPosition.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * (Const.a.camMaxAmount * 2f)) + (Const.a.camMaxAmount * -1f);
-			tempVec.y = (((transform.localPosition.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * (Const.a.camMaxAmount * 2f)) + (Const.a.camMaxAmount * -1f);
+			tempVec.x = (((playerPosition.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * (Const.a.camMaxAmount * 2f)) + (Const.a.camMaxAmount * -1f);
+			tempVec.y = (((playerPosition.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * (Const.a.camMaxAmount * 2f)) + (Const.a.camMaxAmount * -1f);
 			tempVec.z = automapCameraTransform.localPosition.z;
 			tempVec.x = (tempVec.x * -1f) + automapCorrectionX;
 			tempVec.y += automapCorrectionY;
@@ -953,8 +957,8 @@ public class PlayerMovement : MonoBehaviour {
 			// private float mapTileMaxY = -8; // top left corner
 			// private float mapTileMinY = -1016; // bottom right corner
 			// private float mapTileMaxX = 1016; // bottom right corner
-			tempVec2b.x = (((transform.localPosition.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * 1008f) + Const.a.mapTileMinX + automapTileBCorrectionX;
-			tempVec2b.y = ((((transform.localPosition.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * 1008f) + Const.a.mapTileMinY + automapTileBCorrectionY);
+			tempVec2b.x = (((playerPosition.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * 1008f) + Const.a.mapTileMinX + automapTileBCorrectionX;
+			tempVec2b.y = ((((playerPosition.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * 1008f) + Const.a.mapTileMinY + automapTileBCorrectionY);
 
 			if (inFullMap) {
 				tempVec2b.x -= automapTileBCorrectionX;
@@ -976,16 +980,16 @@ public class PlayerMovement : MonoBehaviour {
 			// Update explored tiles
 			for (int i=0;i<4096;i++) {
 				if (automapExplored[i]) {
-					if (automapFoWTiles[i] != null) automapFoWTiles[i].enabled = false;
+					automapFoWTiles[i].enabled = false;
 				} else {
 					tempVec2.x = automapFoWTilesRects[i].localPosition.x * -1f - automapTileCorrectionX;// - tempVec.x;
 					tempVec2.y = automapFoWTilesRects[i].localPosition.y + automapTileCorrectionY;// - tempVec.y;
 					if (Vector2.Distance(tempVec2,tempVec2b) < automapFoWRadius) {
 						automapExplored[i] = true;
 						SetAutomapTileExplored(LevelManager.a.currentLevel,i);
-						if (automapFoWTiles[i] != null) automapFoWTiles[i].enabled = false;
+						automapFoWTiles[i].enabled = false;
 					} else {
-						if (automapFoWTiles[i] != null) automapFoWTiles[i].enabled = true;
+						automapFoWTiles[i].enabled = true;
 					}
 				}
 			}
@@ -1011,6 +1015,7 @@ public class PlayerMovement : MonoBehaviour {
 		if (Inventory.a.hasHardware[1]) {
 			if (automapTabLH.activeInHierarchy || automapTabRH.activeInHierarchy || inFullMap) {
 				automapCamera.enabled = true;
+				automapCanvasGO.SetActive(true);
 				switch (LevelManager.a.currentLevel) {
 					case 0: if (!levelOverlayContainerR.activeSelf) {levelOverlayContainerR.SetActive(true);}   DeactivateLevelOverlayContainersExcept(0); break;
 					case 1: if (!levelOverlayContainer1.activeSelf) {levelOverlayContainer1.SetActive(true);}   DeactivateLevelOverlayContainersExcept(1); break;
@@ -1029,6 +1034,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		} else {
 			automapCamera.enabled = false;
+			automapCanvasGO.SetActive(false);
 		}
 	}
 

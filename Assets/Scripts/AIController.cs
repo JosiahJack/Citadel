@@ -122,8 +122,20 @@ public class AIController : MonoBehaviour {
 
 	public void Tranquilize() { tranquilizeFinished = PauseScript.a.relativeTime + Const.a.timeForTranquilizationForNPC[index]; }
 
+	private void DeactivateMeleeColliders() {
+		if (meleeDamageColliders.Length < 1) return;
+
+		for (int i = 0; i < meleeDamageColliders.Length; i++) {
+			if (meleeDamageColliders[i] != null) {
+				if (meleeDamageColliders[i].activeSelf) {
+					meleeDamageColliders[i].SetActive(false);
+				}
+			}
+		}
+	}
+
 	// Initialization and find components
-	public void Start () {
+	public void Start() {
         rbody = GetComponent<Rigidbody>();
 		rbody.isKinematic = false;
 		if (index < 29 && index >= 0) {
@@ -140,16 +152,8 @@ public class AIController : MonoBehaviour {
 		capsuleCollider = GetComponent<CapsuleCollider>();
         if (searchColliderGO != null) searchColliderGO.SetActive(false);
 		if (sightPoint == null) sightPoint = gameObject;
+		DeactivateMeleeColliders();
 		currentDestination = sightPoint.transform.position;
-		if (meleeDamageColliders.Length > 0) {
-			for (int i = 0; i < meleeDamageColliders.Length; i++) {
-				if (meleeDamageColliders[i] != null) {
-					if (meleeDamageColliders[i].activeSelf) {
-						meleeDamageColliders[i].SetActive(false);
-					}
-				}
-			}
-		}
         currentState = AIState.Idle;
 		currentWaypoint = 0;
 		enemy = null;
@@ -237,6 +241,7 @@ public class AIController : MonoBehaviour {
 
 	void AI_Face(Vector3 goalLocation) {
 		if (asleep) return;
+
 		faceVec = (goalLocation - transform.position).normalized;
 		faceVec.y = 0f;
 		if (faceVec.sqrMagnitude > 0 && faceVec != Vector3.up) {
@@ -272,8 +277,12 @@ public class AIController : MonoBehaviour {
 	}
 
 	void Update() {
-		if (PauseScript.a.Paused() || PauseScript.a.MenuActive() || !startInitialized) return;
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive() || !startInitialized) {
+			rbody.isKinematic = true;
+			return;
+		}
 
+		rbody.isKinematic = false;
 		if (raycastingTickFinished < PauseScript.a.relativeTime) {
 			raycastingTickFinished = PauseScript.a.relativeTime + Const.a.raycastTick;
 			inSight = CheckIfPlayerInSight();
@@ -300,7 +309,6 @@ public class AIController : MonoBehaviour {
 				// Enemy still has health
 				if (enemy != null) {
 					enemyInFrontChecks(enemy);
-					// rangeToEnemy = Vector3.Distance(enemy.transform.position, sightPoint.transform.position);
 					rangeToEnemy = (enemy.transform.position - sightPoint.transform.position).sqrMagnitude;
 				}
 			} else {
@@ -531,6 +539,7 @@ public class AIController : MonoBehaviour {
 				if (Const.a.moveTypeForNPC[index] == AIMoveType.Cyber) targettingPosition = PlayerMovement.a.cameraObject.transform.position;
 			}
             huntFinished = PauseScript.a.relativeTime + Const.a.huntTimeForNPC[index];
+			shotFired = false;
 			if (Const.a.difficultyCombat == 1) huntFinished = PauseScript.a.relativeTime + (Const.a.huntTimeForNPC[index] * 0.75f); // more forgetfull on 1
 			if (Const.a.difficultyCombat >= 3) huntFinished = PauseScript.a.relativeTime + (Const.a.huntTimeForNPC[index] * 2.00f); // better memory on hardest Combat difficulty
             if (rangeToEnemy < (Const.a.rangeForNPC[index] * Const.a.rangeForNPC[index])) {
@@ -552,7 +561,7 @@ public class AIController : MonoBehaviour {
             }
 			if (rangeToEnemy < (Const.a.rangeForNPC2[index] * Const.a.rangeForNPC2[index])) {
 				if ((attack2Type != AttackType.None) && infront && inProjFOV && (randomWaitForNextAttack2Finished < PauseScript.a.relativeTime) && tranquilizeFinished < PauseScript.a.relativeTime) {
-					shotFired = false;
+					//shotFired = false;
 					attackFinished = PauseScript.a.relativeTime + Const.a.timeBetweenAttack2ForNPC[index] + Const.a.timeToActualAttack2ForNPC[index];
 					gracePeriodFinished = PauseScript.a.relativeTime + Const.a.timeToActualAttack2ForNPC[index];
 					currentState = AIState.Attack2;
@@ -561,7 +570,7 @@ public class AIController : MonoBehaviour {
 			}
 			if (rangeToEnemy < (Const.a.rangeForNPC3[index] * Const.a.rangeForNPC3[index])) {
 				if ((attack3Type != AttackType.None) && infront && inProjFOV && (randomWaitForNextAttack3Finished < PauseScript.a.relativeTime) && tranquilizeFinished < PauseScript.a.relativeTime) {
-					shotFired = false;
+					//shotFired = false;
 					attackFinished = PauseScript.a.relativeTime + Const.a.timeBetweenAttack3ForNPC[index] + Const.a.timeToActualAttack3ForNPC[index];
 					gracePeriodFinished = PauseScript.a.relativeTime + Const.a.timeToActualAttack3ForNPC[index];
 					currentState = AIState.Attack3;
@@ -662,6 +671,7 @@ public class AIController : MonoBehaviour {
 			// Any other values are Unknown, do nothing with the timers.
 		}
 
+		DeactivateMeleeColliders();
 		goIntoPain = false; // Prevent going into pain immediately after an attack.
 		currentState = AIState.Run;
 		return; // Done with attack.

@@ -25,15 +25,5 @@ public class TestsEditor : Editor {
 		if (GUILayout.Button("Unload Lights for\nSelected Level")) {
 			testScript.UnloadLevelLights();
 		}
-
-		if (GUILayout.Button("Output All\nGeometry Chunks\nto File")) {
-			testScript.GenerateChunksDataFile();
-		}
-		if (GUILayout.Button("Load Geometry\nChunks for\nSelected Level")) {
-			testScript.LoadLevelChunks();
-		}
-		if (GUILayout.Button("Unload Geometry\nChunks for\nSelected Level")) {
-			testScript.UnloadLevelChunks();
-		}
 	}
 }

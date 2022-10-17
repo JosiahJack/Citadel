@@ -15,10 +15,10 @@ public class PauseRigidbody : MonoBehaviour {
 	void Initialize() {
 		rbody = GetComponent<Rigidbody>();
 		if (!Const.a.prb.Contains(this)) Const.a.prb.Add(this);
-		SetPreviousValuse();
+		SetPreviousValues();
 	}
 
-	void SetPreviousValuse() {
+	void SetPreviousValues() {
 		previousVelocity = rbody.velocity;
 		previousUseGravity = rbody.useGravity;
 		previousKinematic = rbody.isKinematic;
@@ -31,7 +31,7 @@ public class PauseRigidbody : MonoBehaviour {
 		
 	public void Pause () {
 		if (rbody != null) {
-			SetPreviousValuse();
+			SetPreviousValues();
 			rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 			rbody.useGravity = false;
 			rbody.isKinematic = true;
