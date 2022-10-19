@@ -12,7 +12,10 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Tests : MonoBehaviour {
-	public GameObject[] lightContainers;
+	public GameObject[] lightContainers; // Can't use LevelManager's since
+										 // there is no instance unless in Play
+										 // mode.
+	public GameObject gameObjectToSave;
 	public int levelToOutputFrom = 0;
 	public LevelManager lm;
 
@@ -20,7 +23,6 @@ public class Tests : MonoBehaviour {
 	private bool[] levelDataLoaded;
 	private int getValreadInt;
 	private float getValreadFloat;
-	private CultureInfo en_US_Culture = new CultureInfo("en-US");
 
 	[HideInInspector] public string buttonLabel = "Run Tests";
 
@@ -32,7 +34,8 @@ public class Tests : MonoBehaviour {
 		UnityEngine.Object.DestroyImmediate(ab);
 		UnityEngine.Object.DestroyImmediate(go);
 		testTimer.Stop();
-		UnityEngine.Debug.Log("All unit tests completed in " + testTimer.Elapsed.ToString());
+		UnityEngine.Debug.Log("All unit tests completed in "
+							  + testTimer.Elapsed.ToString());
 	}
 
 	public void Run() {
@@ -662,54 +665,36 @@ public class Tests : MonoBehaviour {
 			for (int i=0;i<allLights.Count;i++) {
 				s1.Clear();
 				Transform tr = allLights[i].transform;
-				s1.Append(FloatToString(tr.localPosition.x));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localPosition.y));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localPosition.z));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localRotation.x));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localRotation.y));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localRotation.z));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localRotation.w));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localScale.x));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localScale.y));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(tr.localScale.z));
+				s1.Append(Utils.SaveTransform(allLights[i].transform));
 				s1.Append(splitChar);
 				Light lit = allLights[i].GetComponent<Light>();
-				s1.Append(FloatToString(lit.intensity));
+				s1.Append(Utils.FloatToString(lit.intensity));
 				s1.Append(splitChar);
-				s1.Append(FloatToString(lit.range));
+				s1.Append(Utils.FloatToString(lit.range));
 				s1.Append(splitChar);
 				s1.Append(lit.type.ToString());
 				s1.Append(splitChar);
-				s1.Append(FloatToString(lit.color.r));
+				s1.Append(Utils.FloatToString(lit.color.r));
 				s1.Append(splitChar);
-				s1.Append(FloatToString(lit.color.g));
+				s1.Append(Utils.FloatToString(lit.color.g));
 				s1.Append(splitChar);
-				s1.Append(FloatToString(lit.color.b));
+				s1.Append(Utils.FloatToString(lit.color.b));
 				s1.Append(splitChar);
-				s1.Append(FloatToString(lit.color.a));
+				s1.Append(Utils.FloatToString(lit.color.a));
 				s1.Append(splitChar);
-				s1.Append(FloatToString(lit.spotAngle));
+				s1.Append(Utils.FloatToString(lit.spotAngle));
 				s1.Append(splitChar);
 				s1.Append(lit.shadows.ToString());
 				s1.Append(splitChar);
-				s1.Append(FloatToString(lit.shadowStrength));
+				s1.Append(Utils.FloatToString(lit.shadowStrength));
 				s1.Append(splitChar);
 				s1.Append(lit.shadowResolution);
 				s1.Append(splitChar);
-				s1.Append(FloatToString(lit.shadowBias));
+				s1.Append(Utils.FloatToString(lit.shadowBias));
 				s1.Append(splitChar);
-				s1.Append(FloatToString(lit.shadowNormalBias));
+				s1.Append(Utils.FloatToString(lit.shadowNormalBias));
 				s1.Append(splitChar);
-				s1.Append(FloatToString(lit.shadowNearPlane));
+				s1.Append(Utils.FloatToString(lit.shadowNearPlane));
 				s1.Append(splitChar);
 				s1.Append(lit.cullingMask.ToString());
 				//UnityEngine.Debug.Log(s1.ToString());
@@ -720,25 +705,19 @@ public class Tests : MonoBehaviour {
 		}
 	}
 
-	private int GetIntFromString(string val) {
-		if (val == "0") return 0;
+	public void LoadObject() {
 
-		getValparsed = Int32.TryParse(val, NumberStyles.Integer, en_US_Culture, out getValreadInt);
-		if (!getValparsed) { UnityEngine.Debug.Log("BUG: Could not parse int from `" + val + "`"); return 0; }
-		return getValreadInt;
 	}
 
-	private float GetFloatFromString(string val) {
-		getValparsed = Single.TryParse(val, NumberStyles.Float, en_US_Culture, out getValreadFloat);
-		if (!getValparsed) {
-			UnityEngine.Debug.Log("BUG: Could not parse float from `" + val + "`");
-			return 0.0f;
+	public void SaveObject() {
+		SaveObject so = gameObjectToSave.GetComponent<SaveObject>();
+		if (so == null) {
+			UnityEngine.Debug.Log("ERROR: Missing SaveObject on "
+								  + gameObjectToSave.name + "!"); 
+			return;
 		}
-		return getValreadFloat;
-	}
 
-	private string FloatToString(float val) {
-		return val.ToString("0000.00000", CultureInfo.InvariantCulture); // Output with 4 integer places and 5 mantissa, culture invariant to guarantee . vs , for all regions.
+		
 	}
 
 	private void PrintTally(string className, int issueCount, int objCount) {

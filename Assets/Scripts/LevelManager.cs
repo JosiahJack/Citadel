@@ -281,43 +281,43 @@ public class LevelManager : MonoBehaviour {
 			tr.SetParent(lightContainers[curlevel].transform);
 
 			// Get transform
-			readFloatx = GetFloatFromString(entries[index]); index++;
-			readFloaty = GetFloatFromString(entries[index]); index++;
-			readFloatz = GetFloatFromString(entries[index]); index++;
+			readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+			readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+			readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 			tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 			tr.localPosition = tempvec;
 
 			// Get rotation
-			readFloatx = GetFloatFromString(entries[index]); index++;
-			readFloaty = GetFloatFromString(entries[index]); index++;
-			readFloatz = GetFloatFromString(entries[index]); index++;
-			readFloatw = GetFloatFromString(entries[index]); index++;
+			readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+			readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+			readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+			readFloatw = Utils.GetFloatFromString(entries[index]); index++;
 			tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
 			tr.localRotation = tempquat;
 
 			// Get scale
-			readFloatx = GetFloatFromString(entries[index]); index++;
-			readFloaty = GetFloatFromString(entries[index]); index++;
-			readFloatz = GetFloatFromString(entries[index]); index++;
+			readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+			readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+			readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 			tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 			tr.localScale = tempvec;
 
-			lit.intensity = GetFloatFromString(entries[index]); index++;
-			lit.range = GetFloatFromString(entries[index]); index++;
-			lit.type = GetLightTypeFromString(entries[index]); index++;
-			readFloatx = GetFloatFromString(entries[index]); index++;
-			readFloaty = GetFloatFromString(entries[index]); index++;
-			readFloatz = GetFloatFromString(entries[index]); index++;
-			readFloatw = GetFloatFromString(entries[index]); index++;
+			lit.intensity = Utils.GetFloatFromString(entries[index]); index++;
+			lit.range = Utils.GetFloatFromString(entries[index]); index++;
+			lit.type = Utils.GetLightTypeFromString(entries[index]); index++;
+			readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+			readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+			readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+			readFloatw = Utils.GetFloatFromString(entries[index]); index++;
 			lit.color = new Color(readFloatx, readFloaty, readFloatz, readFloatw);
-			lit.spotAngle = GetFloatFromString(entries[index]); index++;
-			lit.shadows = GetLightShadowsFromString(entries[index]); index++;
-			lit.shadowStrength = GetFloatFromString(entries[index]); index++;
-			lit.shadowResolution = GetShadowResFromString(entries[index]); index++;
-			lit.shadowBias = GetFloatFromString(entries[index]); index++;
-			lit.shadowNormalBias = GetFloatFromString(entries[index]); index++;
-			lit.shadowNearPlane = GetFloatFromString(entries[index]); index++;
-			lit.cullingMask = GetIntFromString(entries[index]); index++;
+			lit.spotAngle = Utils.GetFloatFromString(entries[index]); index++;
+			lit.shadows = Utils.GetLightShadowsFromString(entries[index]); index++;
+			lit.shadowStrength = Utils.GetFloatFromString(entries[index]); index++;
+			lit.shadowResolution = Utils.GetShadowResFromString(entries[index]); index++;
+			lit.shadowBias = Utils.GetFloatFromString(entries[index]); index++;
+			lit.shadowNormalBias = Utils.GetFloatFromString(entries[index]); index++;
+			lit.shadowNearPlane = Utils.GetFloatFromString(entries[index]); index++;
+			lit.cullingMask = Utils.GetIntFromString(entries[index]); index++;
 		}
 	}
 
@@ -333,45 +333,5 @@ public class LevelManager : MonoBehaviour {
 			DestroyImmediate(compArray[i].gameObject);
 		}
 		compArray = null;
-	}
-
-	private int GetIntFromString(string val) {
-		if (val == "0") return 0;
-
-		getValparsed = Int32.TryParse(val, NumberStyles.Integer, en_US_Culture, out getValreadInt);
-		if (!getValparsed) { UnityEngine.Debug.Log("BUG: Could not parse int from `" + val + "`"); return 0; }
-		return getValreadInt;
-	}
-
-	private float GetFloatFromString(string val) {
-		getValparsed = Single.TryParse(val, NumberStyles.Float, en_US_Culture, out getValreadFloat);
-		if (!getValparsed) {
-			UnityEngine.Debug.Log("BUG: Could not parse float from `" + val + "`");
-			return 0.0f;
-		}
-		return getValreadFloat;
-	}
-
-
-	private LightType GetLightTypeFromString(string type) {
-		if (type == "Spot") return LightType.Spot;
-		else if (type == "Directional") return LightType.Directional;
-		else if (type == "Rectangle") return LightType.Rectangle;
-		else if (type == "Disc") return LightType.Disc;
-		return LightType.Point;	
-	}
-
-	private LightShadows GetLightShadowsFromString(string shadows) {
-		if (shadows == "None") return LightShadows.None;
-		else if (shadows == "Hard") return LightShadows.Hard;
-		return LightShadows.Soft;	
-	}
-
-	private LightShadowResolution GetShadowResFromString(string res) {
-		if (res == "Low") return LightShadowResolution.Low;
-		else if (res == "Medium") return LightShadowResolution.Medium;
-		else if (res == "High") return LightShadowResolution.High;
-		else if (res == "VeryHigh") return LightShadowResolution.VeryHigh;
-		return LightShadowResolution.FromQualitySettings;	
 	}
 }

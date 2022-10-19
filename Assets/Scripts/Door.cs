@@ -369,23 +369,29 @@ public class Door : MonoBehaviour {
 		if (anim.speed != defaultSpeed) anim.speed = defaultSpeed;
 	}
 
-	public string SaveDoorData(string splitChar) {
-		string line = System.String.Empty;
-		line = Const.a.BoolToString(targetAlreadyDone); // bool - have we already ran targets
-		line += splitChar + Const.a.BoolToString(locked); // bool - is this locked?
-		line += splitChar + Const.a.BoolToString(ajar); // bool - is this locked?
-		line += splitChar + useFinished.ToString("0000.00000"); // float
-		line += splitChar + waitBeforeClose.ToString("0000.00000"); // float
-		line += splitChar + lasersFinished.ToString("0000.00000"); // float
-		line += splitChar + Const.a.BoolToString(blocked); // bool - is the door blocked currently?
-		line += splitChar + Const.a.BoolToString(accessCardUsedByPlayer); // bool - is the door blocked currently?
-		switch (doorOpen) {
-			case doorState.Closed: line += "|0"; break;
-			case doorState.Open: line += "|1"; break;
-			case doorState.Closing: line += "|2"; break;
-			case doorState.Opening: line += "|3"; break;
+	public static string Save(GameObject go) {
+		Door dr = go.GetComponent<Door>();
+		if (dr == null) {
+			UnityEngine.Debug.Log("SearchableItem missing on savetype of SearchableItem! GameObject.name: " + go.name);
+			return "0|0|0|0000.00000|0000.00000|0000.00000|0|0|2";
 		}
-		line += splitChar + animatorPlaybackTime.ToString("0000.00000"); // float - current animation time
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(dr.targetAlreadyDone); // bool - have we already ran targets
+		line += Utils.splitChar + Utils.BoolToString(dr.locked); // bool - is this locked?
+		line += Utils.splitChar + Utils.BoolToString(dr.ajar); // bool - is this locked?
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(dr.useFinished); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(dr.waitBeforeClose); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(dr.lasersFinished); // float
+		line += Utils.splitChar + Utils.BoolToString(dr.blocked); // bool - is the door blocked currently?
+		line += Utils.splitChar + Utils.BoolToString(dr.accessCardUsedByPlayer); // bool - is the door blocked currently?
+		switch (dr.doorOpen) {
+			case doorState.Closed: line += Utils.splitChar + "0"; break;
+			case doorState.Open: line += Utils.splitChar + "1"; break;
+			case doorState.Closing: line += Utils.splitChar + "2"; break;
+			case doorState.Opening: line += Utils.splitChar + "3"; break;
+		}
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(dr.animatorPlaybackTime); // float - current animation time
 
 		//8
 		return line;

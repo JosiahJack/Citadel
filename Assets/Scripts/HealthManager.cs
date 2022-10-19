@@ -679,4 +679,23 @@ public class HealthManager : MonoBehaviour {
 			if (ga != null) ga.AwakeFromLoad(health);
 		}
 	}
+
+	// Generic health info string
+	public static string Save(GameObject go) {
+		HealthManager hm = go.GetComponent<HealthManager>();
+		if (hm == null) {
+			Debug.Log("HealthManager missing on savetype of HealthManager! GameObject.name: " + go.name);
+			return "0000.00000|0000.00000|0|0|0";
+		}
+
+		if (!hm.awakeInitialized) hm.Awake();
+		if (!hm.startInitialized) hm.Start();
+		string line = System.String.Empty;
+		line = Utils.FloatToString(hm.health); // how much health we have
+		line += Utils.splitChar + Utils.FloatToString(hm.cyberHealth); // how much health we have
+		line += Utils.splitChar + Utils.BoolToString(hm.deathDone); // bool - are we dead yet?
+		line += Utils.splitChar + Utils.BoolToString(hm.god); // are we invincible? - we can save cheats?? OH WOW!
+		line += Utils.splitChar + Utils.BoolToString(hm.teleportDone); // did we already teleport?
+		return line;
+	}
 }

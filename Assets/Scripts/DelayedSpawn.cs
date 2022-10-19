@@ -44,8 +44,8 @@ public class DelayedSpawn : MonoBehaviour {
 
 	public string Save() {
 		string line = System.String.Empty;
-		line = Const.a.FloatToString(timerFinished);
-		line += Const.splitChar + Const.a.BoolToString(active);
+		line = Utils.SaveRelativeTimeDifferential(timerFinished);
+		line += Utils.splitChar + Utils.BoolToString(active);
 		return line;
 	}
 }

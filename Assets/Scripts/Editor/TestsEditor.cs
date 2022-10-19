@@ -25,5 +25,13 @@ public class TestsEditor : Editor {
 		if (GUILayout.Button("Unload Lights for\nSelected Level")) {
 			testScript.UnloadLevelLights();
 		}
+
+		if (GUILayout.Button("Save Object")) {
+			testScript.SaveObject();
+		}
+
+		if (GUILayout.Button("Load Object")) {
+			testScript.LoadObject();
+		}
 	}
 }

@@ -48,4 +48,24 @@ public class SearchableItem : MonoBehaviour {
 			customIndex[3] = -1;
 		}
 	}
+
+	// Save searchable data
+	public static string Save(GameObject go) {
+		SearchableItem se = go.GetComponent<SearchableItem>();
+		if (se == null) {
+			UnityEngine.Debug.Log("SearchableItem missing on savetype of SearchableItem! GameObject.name: " + go.name);
+			return "-1|-1|-1|-1|-1|-1|-1|-1";
+		}
+
+		string line = System.String.Empty;
+		line = se.contents[0].ToString(); // int main lookup index
+		line += Utils.splitChar + se.contents[1].ToString(); // int main lookup index
+		line += Utils.splitChar + se.contents[2].ToString(); // int main lookup index
+		line += Utils.splitChar + se.contents[3].ToString(); // int main lookup index
+		line += Utils.splitChar + se.customIndex[0].ToString(); // int custom index
+		line += Utils.splitChar + se.customIndex[1].ToString(); // int custom index
+		line += Utils.splitChar + se.customIndex[2].ToString(); // int custom index
+		line += Utils.splitChar + se.customIndex[3].ToString(); // int custom index
+		return line;
+	}
 }

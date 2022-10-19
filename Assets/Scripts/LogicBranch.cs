@@ -72,4 +72,17 @@ public class LogicBranch : MonoBehaviour {
 		Const.a.UseTargets(ud,currenttarget);
 		if (autoFlipOnTarget) FlipTrackSwitch();
 	}
+
+	public static string Save(GameObject go) {
+		LogicBranch lb = go.GetComponent<LogicBranch>();
+		if (lb != null) {
+			UnityEngine.Debug.Log("LogicBranch missing on savetype of LogicBranch! GameObject.name: " + go.name);
+			return "1|0";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(lb.relayEnabled); // bool - is this enabled
+		line += Utils.splitChar + Utils.BoolToString(lb.onSecond); // bool - He is. But who's on third? What's on first? Wait what??
+		return line;
+	}	
 }

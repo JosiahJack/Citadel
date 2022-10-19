@@ -105,4 +105,18 @@ public class ForceBridge : MonoBehaviour {
 			Activate(false,false);
 		}
 	}
+
+	public static string Save(GameObject go) {
+		ForceBridge fb = go.GetComponent<ForceBridge>();
+		if (fb == null) {
+			UnityEngine.Debug.Log("ForceBridge missing on savetype of ForceBridge! GameObject.name: " + go.name);
+			return "1|0|0000.00000";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(fb.activated); // bool - is the bridge on?
+		line += Utils.splitChar + Utils.BoolToString(fb.lerping); // bool - are we currently lerping one way or tother
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(fb.tickFinished); // float - time before firing targets
+		return line;
+	}
 }

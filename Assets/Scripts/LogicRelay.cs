@@ -41,4 +41,24 @@ public class LogicRelay : MonoBehaviour {
 		}
 		Const.a.UseTargets(ud,target);
 	}
+
+	// This is only here because I added this functionality to trigger_relay in
+	// my Quake Keep mod when I thought it was a feature of Arcane Dimensions,
+	// but then resulted in me having a completely broken halloween jam map for
+	// I think, Halloween Jam 2 and thus felt I should really make it available
+	// here as well since it's a whole thing now.
+	//
+	// Also I think I used this in a few places.  This is the relayEnabled by
+	// the way.
+	public static string Save(GameObject go) {
+		LogicRelay lr = go.GetComponent<LogicRelay>();
+		if (lr != null) {
+			UnityEngine.Debug.Log("LogicRelay missing on savetype of LogicRelay! GameObject.name: " + go.name);
+			return "1";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(lr.relayEnabled); // bool - is this enabled, Sherlock?
+		return line;
+	}
 }

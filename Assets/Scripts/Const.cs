@@ -339,7 +339,6 @@ public class Const : MonoBehaviour {
 	private int TARGET_FPS = 60;
 	private StringBuilder s1;
 	private StringBuilder s2;
-	[HideInInspector] public static string splitChar = "|";
 	private CultureInfo en_US_Culture = new CultureInfo("en-US");
 
 	//Instance container variable
@@ -479,16 +478,16 @@ public class Const : MonoBehaviour {
 	public void WriteConfig() {
 		INIWorker.IniWriteValue("Graphics","ResolutionWidth",GraphicsResWidth.ToString());
 		INIWorker.IniWriteValue("Graphics","ResolutionHeight",GraphicsResHeight.ToString());
-		INIWorker.IniWriteValue("Graphics","Fullscreen",BoolToString(GraphicsFullscreen));
-		INIWorker.IniWriteValue("Graphics","SSAO",BoolToString(GraphicsSSAO));
-		INIWorker.IniWriteValue("Graphics","Bloom",BoolToString(GraphicsBloom));
+		INIWorker.IniWriteValue("Graphics","Fullscreen",Utils.BoolToString(GraphicsFullscreen));
+		INIWorker.IniWriteValue("Graphics","SSAO",Utils.BoolToString(GraphicsSSAO));
+		INIWorker.IniWriteValue("Graphics","Bloom",Utils.BoolToString(GraphicsBloom));
 		INIWorker.IniWriteValue("Graphics","FOV",GraphicsFOV.ToString());
 		INIWorker.IniWriteValue("Graphics","AA",GraphicsAAMode.ToString());
 		INIWorker.IniWriteValue("Graphics","Shadows",GraphicsShadowMode.ToString());
 		INIWorker.IniWriteValue("Grpahics","SSR",GraphicsSSRMode.ToString());
 		INIWorker.IniWriteValue("Graphics","Gamma",GraphicsGamma.ToString());
 		INIWorker.IniWriteValue("Audio","SpeakerMode",AudioSpeakerMode.ToString());
-		INIWorker.IniWriteValue("Audio","Reverb",BoolToString(AudioReverb));
+		INIWorker.IniWriteValue("Audio","Reverb",Utils.BoolToString(AudioReverb));
 		INIWorker.IniWriteValue("Audio","VolumeMaster",AudioVolumeMaster.ToString());
 		INIWorker.IniWriteValue("Audio","VolumeMusic",AudioVolumeMusic.ToString());
 		INIWorker.IniWriteValue("Audio","VolumeMessage",AudioVolumeMessage.ToString());
@@ -499,11 +498,11 @@ public class Const : MonoBehaviour {
 		for (int i=0;i<40;i++) {
 			INIWorker.IniWriteValue("Input",InputCodes[i],InputValues[InputCodeSettings[i]]);
 		}
-		INIWorker.IniWriteValue("Input","InvertLook",BoolToString(InputInvertLook));
-		INIWorker.IniWriteValue("Input","InvertCyberspaceLook",BoolToString(InputInvertCyberspaceLook));
-		INIWorker.IniWriteValue("Input","InvertInventoryCycling",BoolToString(InputInvertInventoryCycling));
-		INIWorker.IniWriteValue("Input","QuickItemPickup",BoolToString(InputQuickItemPickup));
-		INIWorker.IniWriteValue("Input","QuickReloadWeapons",BoolToString(InputQuickReloadWeapons));
+		INIWorker.IniWriteValue("Input","InvertLook",Utils.BoolToString(InputInvertLook));
+		INIWorker.IniWriteValue("Input","InvertCyberspaceLook",Utils.BoolToString(InputInvertCyberspaceLook));
+		INIWorker.IniWriteValue("Input","InvertInventoryCycling",Utils.BoolToString(InputInvertInventoryCycling));
+		INIWorker.IniWriteValue("Input","QuickItemPickup",Utils.BoolToString(InputQuickItemPickup));
+		INIWorker.IniWriteValue("Input","QuickReloadWeapons",Utils.BoolToString(InputQuickReloadWeapons));
 		SetBloom();
 		SetSSAO();
 		SetAA();
@@ -514,7 +513,6 @@ public class Const : MonoBehaviour {
 		int readIndexOfLog, readLogImageLHIndex, readLogImageRHIndex; // look-up index for assigning the following data on the line in the file to the arrays
 		string readLogText; // loaded into string audioLogSpeech2Text[]
 		string readline; // variable to hold each string read in from the file
-		int currentline = 0;
 		char logSplitChar = ',';
 		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/logs_text.txt",Encoding.ASCII);
 		using (dataReader) {
@@ -524,16 +522,16 @@ public class Const : MonoBehaviour {
 				readline = dataReader.ReadLine();
 				if (readline == null) continue; // just in case
 				string[] entries = readline.Split(logSplitChar);
-				readIndexOfLog = GetIntFromString(entries[i],currentline); i++;
-				readLogImageLHIndex = GetIntFromString(entries[i],currentline); i++;
-				readLogImageRHIndex = GetIntFromString(entries[i],currentline); i++;
+				readIndexOfLog = Utils.GetIntFromString(entries[i]); i++;
+				readLogImageLHIndex = Utils.GetIntFromString(entries[i]); i++;
+				readLogImageRHIndex = Utils.GetIntFromString(entries[i]); i++;
 				audioLogImagesRefIndicesLH[readIndexOfLog] = readLogImageLHIndex;
 				audioLogImagesRefIndicesRH[readIndexOfLog] = readLogImageRHIndex;
 				audiologNames[readIndexOfLog] = entries[i]; i++;
 				audiologSenders[readIndexOfLog] = entries[i]; i++;
 				audiologSubjects[readIndexOfLog] = entries[i]; i++;
-				audioLogType[readIndexOfLog] = GetIntFromString(entries[i],currentline); i++;
-				audioLogLevelFound[readIndexOfLog] = GetIntFromString(entries[i],currentline); i++;
+				audioLogType[readIndexOfLog] = Utils.GetIntFromString(entries[i]); i++;
+				audioLogLevelFound[readIndexOfLog] = Utils.GetIntFromString(entries[i]); i++;
 				readLogText = entries[i]; i++;
 				// handle extra commas within the body text and append remaining portions of the line
 				if (entries.Length > 8) {
@@ -542,7 +540,6 @@ public class Const : MonoBehaviour {
 					}
 				}
 				audioLogSpeech2Text[readIndexOfLog] = readLogText;
-				currentline++;
 			} while (!dataReader.EndOfStream);
 			dataReader.Close();
 			return;
@@ -568,21 +565,21 @@ public class Const : MonoBehaviour {
 				readline = dataReader.ReadLine();
 				string[] entries = readline.Split(',');
                 isFullAutoForWeapon[currentline] = true; i++; // better this way
-				delayBetweenShotsForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				delayBetweenShotsForWeapon2[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				damagePerHitForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				damagePerHitForWeapon2[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				damageOverloadForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				energyDrainLowForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				energyDrainHiForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				energyDrainOverloadForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				penetrationForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				penetrationForWeapon2[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				offenseForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				offenseForWeapon2[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				rangeForWeapon[currentline] = GetFloatFromString(entries[i],currentline); i++;
-				readInt = GetIntFromString(entries[i],currentline); i++;
-				attackTypeForWeapon[currentline] = GetAttackTypeFromInt(readInt);
+				delayBetweenShotsForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				delayBetweenShotsForWeapon2[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				damagePerHitForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				damagePerHitForWeapon2[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				damageOverloadForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				energyDrainLowForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				energyDrainHiForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				energyDrainOverloadForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				penetrationForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				penetrationForWeapon2[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				offenseForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				offenseForWeapon2[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				rangeForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
+				readInt = Utils.GetIntFromString(entries[i]); i++;
+				attackTypeForWeapon[currentline] = Utils.GetAttackTypeFromInt(readInt);
 				currentline++;
 			} while (!dataReader.EndOfStream);
 			dataReader.Close();
@@ -593,7 +590,6 @@ public class Const : MonoBehaviour {
 	private void LoadCreditsData () {
 		creditsText = new string[21];
 		string readline; // variable to hold each string read in from the file
-		int currentline = 0;
 		int pagenum = 0;
 		creditsLength = 1;
 		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/credits.txt",Encoding.ASCII);
@@ -611,7 +607,6 @@ public class Const : MonoBehaviour {
 				}
 				if (pagenum >= creditsText.Length) { UnityEngine.Debug.Log("pagenum was too large at " + pagenum.ToString()); return; }
                 creditsText[pagenum] += readline + System.Environment.NewLine;
-				currentline++;
 			} while (!dataReader.EndOfStream);
 			dataReader.Close();
 			return;
@@ -627,8 +622,8 @@ public class Const : MonoBehaviour {
 			do {
 				// Read the next line
 				readline = dataReader.ReadLine();
-				if (currentline == 0) a.startingNewGame = GetBoolFromString(readline);
-				if (currentline == 1) a.freshRun = GetBoolFromString(readline);
+				if (currentline == 0) a.startingNewGame = Utils.GetBoolFromString(readline);
+				if (currentline == 1) a.freshRun = Utils.GetBoolFromString(readline);
 				currentline++;
 			} while (!dataReader.EndOfStream);
 			dataReader.Close();
@@ -641,8 +636,8 @@ public class Const : MonoBehaviour {
 		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/ng.dat",false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
-				sw.WriteLine(BoolToString(bitStartingNew));
-				sw.WriteLine(BoolToString(bitFreshRun));
+				sw.WriteLine(Utils.BoolToString(bitStartingNew));
+				sw.WriteLine(Utils.BoolToString(bitFreshRun));
 				sw.Close();
 			}
 		}
@@ -761,78 +756,78 @@ public class Const : MonoBehaviour {
 				char[] commentCheck = entries[i].ToCharArray();
 				if (commentCheck[0] == '/' && commentCheck[1] == '/') continue; // Skip lines that start with '//'
 
-				refIndex = GetIntFromString(entries[i+1],currentline); // Index is stored at 2nd spot
+				refIndex = Utils.GetIntFromString(entries[i+1]); // Index is stored at 2nd spot
 				if (refIndex < 0 || refIndex > 28) continue; // Invalid value, skip
 				nameForNPC[refIndex] = entries[i].Trim(); i++;
 				i++; // No need to read the index again so we skip over it.
-				readInt = GetIntFromString(entries[i].Trim(),currentline); attackTypeForNPC[refIndex] = GetAttackTypeFromInt(readInt); i++; 
-				readInt = GetIntFromString(entries[i].Trim(),currentline); attackTypeForNPC2[refIndex] = GetAttackTypeFromInt(readInt); i++; 
-				readInt = GetIntFromString(entries[i].Trim(),currentline); attackTypeForNPC3[refIndex] = GetAttackTypeFromInt(readInt); i++; 
-				damageForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				damageForNPC2[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				damageForNPC3[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				rangeForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				rangeForNPC2[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				rangeForNPC3[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				healthForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				healthForCyberNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				readInt = GetIntFromString(entries[i].Trim(),currentline); perceptionForNPC[refIndex] = GetPerceptionLevelFromInt(readInt); i++;
-				disruptabilityForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				armorvalueForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				defenseForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				moveTypeForNPC[refIndex] = GetMoveTypeFromInt(GetIntFromString(entries[i].Trim(),currentline)); i++;
-				yawSpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				fovForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				fovAttackForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				fovStartMovementForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				distToSeeBehindForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				sightRangeForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				walkSpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				runSpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				attack1SpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				attack2SpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				attack3SpeedForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				attack3ForceForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				attack3RadiusForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeToPainForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeBetweenPainForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeTillDeadForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeToActualAttack1ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeToActualAttack2ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeToActualAttack3ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeBetweenAttack1ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeBetweenAttack2ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeBetweenAttack3ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeToChangeEnemyForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeIdleSFXMinForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeIdleSFXMaxForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeAttack1WaitMinForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeAttack1WaitMaxForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeAttack1WaitChanceForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeAttack2WaitMinForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeAttack2WaitMaxForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeAttack2WaitChanceForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeAttack3WaitMinForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeAttack3WaitMaxForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeAttack3WaitChanceForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				readInt = GetIntFromString(entries[i].Trim(),currentline); i++; //attack1ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt);
-				readInt = GetIntFromString(entries[i].Trim(),currentline); i++; //attack2ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt);
-				readInt = GetIntFromString(entries[i].Trim(),currentline); i++; //attack3ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt); // Not worrying about projectile type for now, would require indexing all of the pools.
-				projectileSpeedAttack1ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				projectileSpeedAttack2ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				projectileSpeedAttack3ForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				hasLaserOnAttack1ForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
-				hasLaserOnAttack2ForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
-				hasLaserOnAttack3ForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
-				explodeOnAttack3ForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
-				preactivateMeleeCollidersForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
-				huntTimeForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				flightHeightForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				flightHeightIsPercentageForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
-				switchMaterialOnDeathForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
-				hearingRangeForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				timeForTranquilizationForNPC[refIndex] = GetFloatFromString(entries[i].Trim(),currentline); i++;
-				hopsOnMoveForNPC[refIndex] = GetBoolFromString(entries[i].Trim()); i++;
+				readInt = Utils.GetIntFromString(entries[i].Trim()); attackTypeForNPC[refIndex] = Utils.GetAttackTypeFromInt(readInt); i++; 
+				readInt = Utils.GetIntFromString(entries[i].Trim()); attackTypeForNPC2[refIndex] = Utils.GetAttackTypeFromInt(readInt); i++; 
+				readInt = Utils.GetIntFromString(entries[i].Trim()); attackTypeForNPC3[refIndex] = Utils.GetAttackTypeFromInt(readInt); i++; 
+				damageForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				damageForNPC2[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				damageForNPC3[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				rangeForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				rangeForNPC2[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				rangeForNPC3[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				healthForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				healthForCyberNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				readInt = Utils.GetIntFromString(entries[i].Trim()); perceptionForNPC[refIndex] = Utils.GetPerceptionLevelFromInt(readInt); i++;
+				disruptabilityForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				armorvalueForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				defenseForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				moveTypeForNPC[refIndex] = Utils.GetMoveTypeFromInt(Utils.GetIntFromString(entries[i].Trim())); i++;
+				yawSpeedForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				fovForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				fovAttackForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				fovStartMovementForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				distToSeeBehindForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				sightRangeForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				walkSpeedForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				runSpeedForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				attack1SpeedForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				attack2SpeedForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				attack3SpeedForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				attack3ForceForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				attack3RadiusForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeToPainForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeBetweenPainForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeTillDeadForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeToActualAttack1ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeToActualAttack2ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeToActualAttack3ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeBetweenAttack1ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeBetweenAttack2ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeBetweenAttack3ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeToChangeEnemyForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeIdleSFXMinForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeIdleSFXMaxForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeAttack1WaitMinForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeAttack1WaitMaxForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeAttack1WaitChanceForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeAttack2WaitMinForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeAttack2WaitMaxForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeAttack2WaitChanceForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeAttack3WaitMinForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeAttack3WaitMaxForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeAttack3WaitChanceForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				readInt = Utils.GetIntFromString(entries[i].Trim()); i++; //attack1ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt);
+				readInt = Utils.GetIntFromString(entries[i].Trim()); i++; //attack2ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt);
+				readInt = Utils.GetIntFromString(entries[i].Trim()); i++; //attack3ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt); // Not worrying about projectile type for now, would require indexing all of the pools.
+				projectileSpeedAttack1ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				projectileSpeedAttack2ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				projectileSpeedAttack3ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				hasLaserOnAttack1ForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
+				hasLaserOnAttack2ForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
+				hasLaserOnAttack3ForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
+				explodeOnAttack3ForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
+				preactivateMeleeCollidersForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
+				huntTimeForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				flightHeightForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				flightHeightIsPercentageForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
+				switchMaterialOnDeathForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
+				hearingRangeForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				timeForTranquilizationForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
+				hopsOnMoveForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
 				currentline++;
 				if (currentline > 29) break;
 			} while (!dataReader.EndOfStream);
@@ -1214,307 +1209,244 @@ public class Const : MonoBehaviour {
 		SaveObject sav = plyr.GetComponent<SaveObject>();
 
 		line = sav.saveableType;
-		line += splitChar + sav.SaveID.ToString();
+		line += Utils.splitChar + sav.SaveID.ToString();
 		string pname = string.IsNullOrEmpty(Const.a.playerName) ? "Hacker" : Const.a.playerName;
-		line += splitChar + pname;
-		line += splitChar + FloatToString(ph.radiated); // float
-		line += splitChar + FloatToString(ph.timer); // float
-		line += splitChar + BoolToString(ph.playerDead); // bool
-		line += splitChar + BoolToString(ph.radiationArea); // bool
-		line += splitChar + FloatToString(ph.mediPatchPulseFinished); // float
-		line += splitChar + ph.mediPatchPulseCount.ToString(); // int
-		line += splitChar + BoolToString(ph.makingNoise); // bool
-		line += splitChar + FloatToString(ph.lastHealth); // float
-		line += splitChar + FloatToString(ph.painSoundFinished); // float
-		line += splitChar + FloatToString(ph.radSoundFinished); // float
-		line += splitChar + FloatToString(ph.radFXFinished); // float
-		line += splitChar + FloatToString(pe.energy); // float
-		line += splitChar + FloatToString(pe.timer); // float
-		line += splitChar + FloatToString(pe.tickFinished); // float
-		line += splitChar + FloatToString(pm.playerSpeed); // float
-		line += splitChar + BoolToString(pm.grounded); // bool
-		line += splitChar + FloatToString(pm.currentCrouchRatio); // float
-		line += splitChar + BodyStateToInt(pm.bodyState).ToString(); // int
-		line += splitChar + BoolToString(pm.ladderState); // bool
-		line += splitChar + BoolToString(pm.gravliftState); // bool
-		line += splitChar + BoolToString(pm.inCyberSpace); // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExploredR[j]); } // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored1[j]); } // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored2[j]); } // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored3[j]); } // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored4[j]); } // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored5[j]); } // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored6[j]); } // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored7[j]); } // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored8[j]); } // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExplored9[j]); } // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExploredG1[j]); } // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExploredG2[j]); } // bool
-		for (j=0;j<4096;j++) { line += splitChar + BoolToString(pm.automapExploredG4[j]); } // bool
-		line += splitChar + BoolToString(pm.CheatWallSticky); // bool
-		line += splitChar + BoolToString(pm.CheatNoclip); // bool
-		line += splitChar + FloatToString(pm.jumpTime); // float
-		line += splitChar + FloatToString(pm.oldVelocity.x) + splitChar
-						  + FloatToString(pm.oldVelocity.y) + splitChar
-						  + FloatToString(pm.oldVelocity.z); // Vector3 (float|float|float)
-		line += splitChar + FloatToString(pm.fatigue); // float
-		line += splitChar + BoolToString(pm.justJumped); // bool
-		line += splitChar + FloatToString(pm.fatigueFinished); // float
-		line += splitChar + FloatToString(pm.fatigueFinished2); // float
-		line += splitChar + BoolToString(pm.cyberSetup); // bool
-		line += splitChar + BoolToString(pm.cyberDesetup); // bool
-		line += splitChar + BodyStateToInt(pm.oldBodyState).ToString(); // int
-		line += splitChar + FloatToString(pm.leanTarget); // float
-		line += splitChar + FloatToString(pm.leanShift); // float
-		line += splitChar + FloatToString(pm.jumpSFXFinished); // float
-		line += splitChar + FloatToString(pm.jumpLandSoundFinished); // float
-		line += splitChar + FloatToString(pm.jumpJetEnergySuckTickFinished); // float
-		line += splitChar + BoolToString(pm.fatigueWarned); // bool
-		line += splitChar + FloatToString(pm.ressurectingFinished); // float
-		line += splitChar + FloatToString(pm.doubleJumpFinished); // float
-		line += splitChar + FloatToString(pm.turboFinished); // float
-		line += splitChar + FloatToString(pp.berserkFinishedTime); // float
-		line += splitChar + FloatToString(pp.berserkIncrementFinishedTime); // float
-		line += splitChar + FloatToString(pp.detoxFinishedTime); // float
-		line += splitChar + FloatToString(pp.geniusFinishedTime); // float
-		line += splitChar + FloatToString(pp.mediFinishedTime); // float
-		line += splitChar + FloatToString(pp.reflexFinishedTime); // float
-		line += splitChar + FloatToString(pp.sightFinishedTime); // float
-		line += splitChar + FloatToString(pp.sightSideEffectFinishedTime); // float
-		line += splitChar + FloatToString(pp.staminupFinishedTime); // float
-		line += splitChar + pp.berserkIncrement.ToString(); // int
-		line += splitChar + pp.patchActive.ToString(); // int
-		line += splitChar + FloatToString(tr.localPosition.x) + splitChar
-						  + FloatToString(tr.localPosition.y) + splitChar
-						  + FloatToString(tr.localPosition.z); // Vector3 (float|float|float)
-		line += splitChar + FloatToString(tr.localRotation.x) + splitChar
-						  + FloatToString(tr.localRotation.y) + splitChar
-						  + FloatToString(tr.localRotation.z) + splitChar
-						  + FloatToString(tr.localRotation.w); // Quaternion (float|float|float|float)
-		line += splitChar + FloatToString(tr.localScale.x) + splitChar
-						  + FloatToString(tr.localScale.y) + splitChar
-						  + FloatToString(tr.localScale.z); // Vector3 (float|float|float)
-		line += splitChar + FloatToString(trml.localPosition.x) + splitChar
-						  + FloatToString(trml.localPosition.y) + splitChar
-						  + FloatToString(trml.localPosition.z); // Vector3 (float|float|float)
-		line += splitChar + FloatToString(trml.localRotation.x) + splitChar
-						  + FloatToString(trml.localRotation.y) + splitChar
-						  + FloatToString(trml.localRotation.z) + splitChar
-						  + FloatToString(trml.localRotation.w); // Quaternion (float|float|float|float)
-		line += splitChar + FloatToString(trml.localScale.x) + splitChar
-						  + FloatToString(trml.localScale.y) + splitChar
-						  + FloatToString(trml.localScale.z); // Vector3 (float|float|float)
-		line += splitChar + BoolToString(ml.inventoryMode); // bool
-		line += splitChar + BoolToString(ml.holdingObject); // bool
-		line += splitChar + ml.heldObjectIndex.ToString(); // int
-		line += splitChar + ml.heldObjectCustomIndex.ToString(); // int
-		line += splitChar + ml.heldObjectAmmo.ToString(); // int
-		line += splitChar + ml.heldObjectAmmo2.ToString(); // int
-		line += splitChar + BoolToString(ml.firstTimePickup); // bool
-		line += splitChar + BoolToString(ml.firstTimeSearch); // bool
-		line += splitChar + BoolToString(ml.grenadeActive); // bool
-		line += splitChar + BoolToString(ml.inCyberSpace); // bool
-		line += splitChar + FloatToString(ml.yRotation); // float
-		line += splitChar + BoolToString(ml.geniusActive); // bool
-		line += splitChar + FloatToString(ml.xRotation); // float
-		line += splitChar + BoolToString(ml.vmailActive); // bool
-		line += splitChar + FloatToString(ml.cyberspaceReturnPoint.x) + splitChar
-						  + FloatToString(ml.cyberspaceReturnPoint.y) + splitChar
-						  + FloatToString(ml.cyberspaceReturnPoint.z);
-		line += splitChar + FloatToString(ml.cyberspaceReturnCameraLocalRotation.x) + splitChar
-						  + FloatToString(ml.cyberspaceReturnCameraLocalRotation.y) + splitChar
-						  + FloatToString(ml.cyberspaceReturnCameraLocalRotation.z);
-		line += splitChar + FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.x) + splitChar
-						  + FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.y) + splitChar
-						  + FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.z);
-		line += splitChar + FloatToString(ml.cyberspaceRecallPoint.x) + splitChar
-						  + FloatToString(ml.cyberspaceRecallPoint.y) + splitChar
-						  + FloatToString(ml.cyberspaceRecallPoint.z); // Vector3 (float|float|float)
-		line += splitChar + ml.cyberspaceReturnLevel.ToString(); // int
-		line += splitChar + FloatToString(hm.health); // float
-		line += splitChar + FloatToString(hm.cyberHealth); // float
-		line += splitChar + BoolToString(hm.deathDone); // bool
-		line += splitChar + BoolToString(hm.god); // bool
-		line += splitChar + BoolToString(hm.teleportDone); // bool
-		line += splitChar + GUIState.a.overButtonType.ToString(); // int
-		line += splitChar + BoolToString(GUIState.a.overButton); // bool
-		for (j=0;j<7;j++) { line += splitChar + inv.weaponInventoryIndices[j].ToString(); } // int
-		for (j=0;j<7;j++) { line += splitChar + inv.weaponInventoryAmmoIndices[j].ToString(); } // int
-		line += splitChar + inv.numweapons.ToString(); // int
-		for (j=0;j<16;j++) { line += splitChar + inv.wepAmmo[j].ToString(); } // int
-		for (j=0;j<16;j++) { line += splitChar + inv.wepAmmoSecondary[j].ToString(); } // int
-		for (j=0;j<7;j++) { line += splitChar + FloatToString(inv.currentEnergyWeaponHeat[j]); } // float
-		for (j=0;j<7;j++) { line += splitChar + BoolToString(inv.wepLoadedWithAlternate[j]); } // bool
-		line += splitChar + WeaponCurrent.WepInstance.weaponCurrent.ToString(); // int
-		line += splitChar + WeaponCurrent.WepInstance.weaponIndex.ToString(); // int
-		for (j=0;j<7;j++) { line += splitChar + FloatToString(WeaponCurrent.WepInstance.weaponEnergySetting[j]); } // float
-		for (j=0;j<7;j++) { line += splitChar + WeaponCurrent.WepInstance.currentMagazineAmount[j].ToString(); } // int
-		for (j=0;j<7;j++) { line += splitChar + WeaponCurrent.WepInstance.currentMagazineAmount2[j].ToString(); } // int
-		line += splitChar + BoolToString(WeaponCurrent.WepInstance.justChangedWeap); // bool
-		line += splitChar + WeaponCurrent.WepInstance.lastIndex.ToString(); // int
-		line += splitChar + BoolToString(WeaponCurrent.WepInstance.bottomless); // bool
-		line += splitChar + BoolToString(WeaponCurrent.WepInstance.redbull); // bool
-		line += splitChar + FloatToString(WeaponCurrent.WepInstance.reloadFinished); // float
-		line += splitChar + FloatToString(WeaponCurrent.WepInstance.reloadLerpValue); // float
-		line += splitChar + FloatToString(WeaponCurrent.WepInstance.lerpStartTime); // float
-		line += splitChar + FloatToString(WeaponCurrent.WepInstance.targetY); // float
-		line += splitChar + FloatToString(WeaponFire.a.waitTilNextFire); // float
-		line += splitChar + BoolToString(WeaponFire.a.overloadEnabled); // bool
-		line += splitChar + FloatToString(WeaponFire.a.sparqSetting); // float
-		line += splitChar + FloatToString(WeaponFire.a.ionSetting); // float
-		line += splitChar + FloatToString(WeaponFire.a.blasterSetting); // float
-		line += splitChar + FloatToString(WeaponFire.a.plasmaSetting); // float
-		line += splitChar + FloatToString(WeaponFire.a.stungunSetting); // float
-		line += splitChar + BoolToString(WeaponFire.a.recoiling); // bool
-		line += splitChar + FloatToString(WeaponFire.a.justFired); // float
-		line += splitChar + FloatToString(WeaponFire.a.energySliderClickedTime); // float
-		line += splitChar + FloatToString(WeaponFire.a.cyberWeaponAttackFinished); // float
-		line += splitChar + inv.grenadeCurrent.ToString(); // int
-		line += splitChar + inv.grenadeIndex.ToString(); // int
-		line += splitChar + FloatToString(inv.nitroTimeSetting); // float
-		line += splitChar + FloatToString(inv.earthShakerTimeSetting); // float
-		for (j=0;j<7;j++) { line += splitChar + inv.grenAmmo[j].ToString(); } // int
-		line += splitChar + inv.patchCurrent.ToString(); // int
-		line += splitChar + inv.patchIndex.ToString(); // int
-		for (j=0;j<7;j++) { line += splitChar + inv.patchCounts[j].ToString(); } // int
-		for (j=0;j<134;j++) { line += splitChar + BoolToString(inv.hasLog[j]); } // bool
-		for (j=0;j<134;j++) { line += splitChar + BoolToString(inv.readLog[j]); } // bool
-		for (j=0;j<10;j++) { line += splitChar + inv.numLogsFromLevel[j].ToString(); } // int
-		line += splitChar + inv.lastAddedIndex.ToString(); // int
-		line += splitChar + BoolToString(inv.beepDone); // bool
-		for (j=0;j<13;j++) { line += splitChar + BoolToString(inv.hasHardware[j]); } // bool
-		for (j=0;j<13;j++) { line += splitChar + inv.hardwareVersion[j].ToString(); } // int
-		for (j=0;j<13;j++) { line += splitChar + inv.hardwareVersionSetting[j].ToString(); } // int
-		line += splitChar + inv.hardwareInvCurrent.ToString(); // int
-		line += splitChar + inv.hardwareInvIndex.ToString(); // int
-		for (j=0;j<13;j++) { line += splitChar + BoolToString(inv.hardwareIsActive[j]); } // bool
+		line += Utils.splitChar + pname;
+		line += Utils.splitChar + Utils.FloatToString(ph.radiated); // float
+		line += Utils.splitChar + Utils.FloatToString(ph.timer); // float, not relative timer
+		line += Utils.splitChar + Utils.BoolToString(ph.playerDead); // bool
+		line += Utils.splitChar + Utils.BoolToString(ph.radiationArea); // bool
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ph.mediPatchPulseFinished); // float
+		line += Utils.splitChar + ph.mediPatchPulseCount.ToString(); // int
+		line += Utils.splitChar + Utils.BoolToString(ph.makingNoise); // bool
+		line += Utils.splitChar + Utils.FloatToString(ph.lastHealth); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ph.painSoundFinished); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ph.radSoundFinished); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ph.radFXFinished); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pe.tickFinished); // float
+		line += Utils.splitChar + Utils.FloatToString(pm.playerSpeed); // float
+		line += Utils.splitChar + Utils.BoolToString(pm.grounded); // bool
+		line += Utils.splitChar + Utils.FloatToString(pm.currentCrouchRatio); // float
+		line += Utils.splitChar + Utils.BodyStateToInt(pm.bodyState).ToString(); // int
+		line += Utils.splitChar + Utils.BoolToString(pm.ladderState); // bool
+		line += Utils.splitChar + Utils.BoolToString(pm.gravliftState); // bool
+		line += Utils.splitChar + Utils.BoolToString(pm.inCyberSpace); // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExploredR[j]); } // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExplored1[j]); } // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExplored2[j]); } // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExplored3[j]); } // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExplored4[j]); } // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExplored5[j]); } // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExplored6[j]); } // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExplored7[j]); } // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExplored8[j]); } // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExplored9[j]); } // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExploredG1[j]); } // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExploredG2[j]); } // bool
+		for (j=0;j<4096;j++) { line += Utils.splitChar + Utils.BoolToString(pm.automapExploredG4[j]); } // bool
+		line += Utils.splitChar + Utils.BoolToString(pm.CheatWallSticky); // bool
+		line += Utils.splitChar + Utils.BoolToString(pm.CheatNoclip); // bool
+		line += Utils.splitChar + Utils.FloatToString(pm.jumpTime); // float, not a timer
+		line += Utils.splitChar + Utils.FloatToString(pm.oldVelocity.x) + Utils.splitChar
+						  + Utils.FloatToString(pm.oldVelocity.y) + Utils.splitChar
+						  + Utils.FloatToString(pm.oldVelocity.z); // Vector3 (float|float|float)
+		line += Utils.splitChar + Utils.FloatToString(pm.fatigue); // float
+		line += Utils.splitChar + Utils.BoolToString(pm.justJumped); // bool
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pm.fatigueFinished); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pm.fatigueFinished2); // float
+		line += Utils.splitChar + Utils.BoolToString(pm.cyberSetup); // bool
+		line += Utils.splitChar + Utils.BoolToString(pm.cyberDesetup); // bool
+		line += Utils.splitChar + Utils.BodyStateToInt(pm.oldBodyState).ToString(); // int
+		line += Utils.splitChar + Utils.FloatToString(pm.leanTarget); // float
+		line += Utils.splitChar + Utils.FloatToString(pm.leanShift); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pm.jumpSFXFinished); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pm.jumpLandSoundFinished); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pm.jumpJetEnergySuckTickFinished); // float
+		line += Utils.splitChar + Utils.BoolToString(pm.fatigueWarned); // bool
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pm.ressurectingFinished); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pm.doubleJumpFinished); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pm.turboFinished); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.berserkFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.berserkIncrementFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.detoxFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.geniusFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.mediFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.reflexFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.sightFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.sightSideEffectFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.staminupFinishedTime); // float
+		line += Utils.splitChar + pp.berserkIncrement.ToString(); // int
+		line += Utils.splitChar + pp.patchActive.ToString(); // int
+		line += Utils.splitChar + Utils.FloatToString(tr.localPosition.x) + Utils.splitChar
+						  + Utils.FloatToString(tr.localPosition.y) + Utils.splitChar
+						  + Utils.FloatToString(tr.localPosition.z); // Vector3 (float|float|float)
+		line += Utils.splitChar + Utils.FloatToString(tr.localRotation.x) + Utils.splitChar
+						  + Utils.FloatToString(tr.localRotation.y) + Utils.splitChar
+						  + Utils.FloatToString(tr.localRotation.z) + Utils.splitChar
+						  + Utils.FloatToString(tr.localRotation.w); // Quaternion (float|float|float|float)
+		line += Utils.splitChar + Utils.FloatToString(tr.localScale.x) + Utils.splitChar
+						  + Utils.FloatToString(tr.localScale.y) + Utils.splitChar
+						  + Utils.FloatToString(tr.localScale.z); // Vector3 (float|float|float)
+		line += Utils.splitChar + Utils.FloatToString(trml.localPosition.x) + Utils.splitChar
+						  + Utils.FloatToString(trml.localPosition.y) + Utils.splitChar
+						  + Utils.FloatToString(trml.localPosition.z); // Vector3 (float|float|float)
+		line += Utils.splitChar + Utils.FloatToString(trml.localRotation.x) + Utils.splitChar
+						  + Utils.FloatToString(trml.localRotation.y) + Utils.splitChar
+						  + Utils.FloatToString(trml.localRotation.z) + Utils.splitChar
+						  + Utils.FloatToString(trml.localRotation.w); // Quaternion (float|float|float|float)
+		line += Utils.splitChar + Utils.FloatToString(trml.localScale.x) + Utils.splitChar
+						  + Utils.FloatToString(trml.localScale.y) + Utils.splitChar
+						  + Utils.FloatToString(trml.localScale.z); // Vector3 (float|float|float)
+		line += Utils.splitChar + Utils.BoolToString(ml.inventoryMode); // bool
+		line += Utils.splitChar + Utils.BoolToString(ml.holdingObject); // bool
+		line += Utils.splitChar + ml.heldObjectIndex.ToString(); // int
+		line += Utils.splitChar + ml.heldObjectCustomIndex.ToString(); // int
+		line += Utils.splitChar + ml.heldObjectAmmo.ToString(); // int
+		line += Utils.splitChar + ml.heldObjectAmmo2.ToString(); // int
+		line += Utils.splitChar + Utils.BoolToString(ml.firstTimePickup); // bool
+		line += Utils.splitChar + Utils.BoolToString(ml.firstTimeSearch); // bool
+		line += Utils.splitChar + Utils.BoolToString(ml.grenadeActive); // bool
+		line += Utils.splitChar + Utils.BoolToString(ml.inCyberSpace); // bool
+		line += Utils.splitChar + Utils.FloatToString(ml.yRotation); // float
+		line += Utils.splitChar + Utils.BoolToString(ml.geniusActive); // bool
+		line += Utils.splitChar + Utils.FloatToString(ml.xRotation); // float
+		line += Utils.splitChar + Utils.BoolToString(ml.vmailActive); // bool
+		line += Utils.splitChar + Utils.FloatToString(ml.cyberspaceReturnPoint.x) + Utils.splitChar
+						  + Utils.FloatToString(ml.cyberspaceReturnPoint.y) + Utils.splitChar
+						  + Utils.FloatToString(ml.cyberspaceReturnPoint.z);
+		line += Utils.splitChar + Utils.FloatToString(ml.cyberspaceReturnCameraLocalRotation.x) + Utils.splitChar
+						  + Utils.FloatToString(ml.cyberspaceReturnCameraLocalRotation.y) + Utils.splitChar
+						  + Utils.FloatToString(ml.cyberspaceReturnCameraLocalRotation.z);
+		line += Utils.splitChar + Utils.FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.x) + Utils.splitChar
+						  + Utils.FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.y) + Utils.splitChar
+						  + Utils.FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.z);
+		line += Utils.splitChar + Utils.FloatToString(ml.cyberspaceRecallPoint.x) + Utils.splitChar
+						  + Utils.FloatToString(ml.cyberspaceRecallPoint.y) + Utils.splitChar
+						  + Utils.FloatToString(ml.cyberspaceRecallPoint.z); // Vector3 (float|float|float)
+		line += Utils.splitChar + ml.cyberspaceReturnLevel.ToString(); // int
+		line += Utils.splitChar + Utils.FloatToString(hm.health); // float
+		line += Utils.splitChar + Utils.FloatToString(hm.cyberHealth); // float
+		line += Utils.splitChar + Utils.BoolToString(hm.deathDone); // bool
+		line += Utils.splitChar + Utils.BoolToString(hm.god); // bool
+		line += Utils.splitChar + Utils.BoolToString(hm.teleportDone); // bool
+		line += Utils.splitChar + GUIState.a.overButtonType.ToString(); // int
+		line += Utils.splitChar + Utils.BoolToString(GUIState.a.overButton); // bool
+		for (j=0;j<7;j++) { line += Utils.splitChar + inv.weaponInventoryIndices[j].ToString(); } // int
+		for (j=0;j<7;j++) { line += Utils.splitChar + inv.weaponInventoryAmmoIndices[j].ToString(); } // int
+		line += Utils.splitChar + inv.numweapons.ToString(); // int
+		for (j=0;j<16;j++) { line += Utils.splitChar + inv.wepAmmo[j].ToString(); } // int
+		for (j=0;j<16;j++) { line += Utils.splitChar + inv.wepAmmoSecondary[j].ToString(); } // int
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.FloatToString(inv.currentEnergyWeaponHeat[j]); } // float
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.BoolToString(inv.wepLoadedWithAlternate[j]); } // bool
+		line += Utils.splitChar + WeaponCurrent.WepInstance.weaponCurrent.ToString(); // int
+		line += Utils.splitChar + WeaponCurrent.WepInstance.weaponIndex.ToString(); // int
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.FloatToString(WeaponCurrent.WepInstance.weaponEnergySetting[j]); } // float
+		for (j=0;j<7;j++) { line += Utils.splitChar + WeaponCurrent.WepInstance.currentMagazineAmount[j].ToString(); } // int
+		for (j=0;j<7;j++) { line += Utils.splitChar + WeaponCurrent.WepInstance.currentMagazineAmount2[j].ToString(); } // int
+		line += Utils.splitChar + Utils.BoolToString(WeaponCurrent.WepInstance.justChangedWeap); // bool
+		line += Utils.splitChar + WeaponCurrent.WepInstance.lastIndex.ToString(); // int
+		line += Utils.splitChar + Utils.BoolToString(WeaponCurrent.WepInstance.bottomless); // bool
+		line += Utils.splitChar + Utils.BoolToString(WeaponCurrent.WepInstance.redbull); // bool
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(WeaponCurrent.WepInstance.reloadFinished); // float
+		line += Utils.splitChar + Utils.FloatToString(WeaponCurrent.WepInstance.reloadLerpValue); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(WeaponCurrent.WepInstance.lerpStartTime); // float
+		line += Utils.splitChar + Utils.FloatToString(WeaponCurrent.WepInstance.targetY); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(WeaponFire.a.waitTilNextFire); // float
+		line += Utils.splitChar + Utils.BoolToString(WeaponFire.a.overloadEnabled); // bool
+		line += Utils.splitChar + Utils.FloatToString(WeaponFire.a.sparqSetting); // float
+		line += Utils.splitChar + Utils.FloatToString(WeaponFire.a.ionSetting); // float
+		line += Utils.splitChar + Utils.FloatToString(WeaponFire.a.blasterSetting); // float
+		line += Utils.splitChar + Utils.FloatToString(WeaponFire.a.plasmaSetting); // float
+		line += Utils.splitChar + Utils.FloatToString(WeaponFire.a.stungunSetting); // float
+		line += Utils.splitChar + Utils.BoolToString(WeaponFire.a.recoiling); // bool
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(WeaponFire.a.justFired); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(WeaponFire.a.energySliderClickedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(WeaponFire.a.cyberWeaponAttackFinished); // float
+		line += Utils.splitChar + inv.grenadeCurrent.ToString(); // int
+		line += Utils.splitChar + inv.grenadeIndex.ToString(); // int
+		line += Utils.splitChar + Utils.FloatToString(inv.nitroTimeSetting); // float
+		line += Utils.splitChar + Utils.FloatToString(inv.earthShakerTimeSetting); // float
+		for (j=0;j<7;j++) { line += Utils.splitChar + inv.grenAmmo[j].ToString(); } // int
+		line += Utils.splitChar + inv.patchCurrent.ToString(); // int
+		line += Utils.splitChar + inv.patchIndex.ToString(); // int
+		for (j=0;j<7;j++) { line += Utils.splitChar + inv.patchCounts[j].ToString(); } // int
+		for (j=0;j<134;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hasLog[j]); } // bool
+		for (j=0;j<134;j++) { line += Utils.splitChar + Utils.BoolToString(inv.readLog[j]); } // bool
+		for (j=0;j<10;j++) { line += Utils.splitChar + inv.numLogsFromLevel[j].ToString(); } // int
+		line += Utils.splitChar + inv.lastAddedIndex.ToString(); // int
+		line += Utils.splitChar + Utils.BoolToString(inv.beepDone); // bool
+		for (j=0;j<13;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hasHardware[j]); } // bool
+		for (j=0;j<13;j++) { line += Utils.splitChar + inv.hardwareVersion[j].ToString(); } // int
+		for (j=0;j<13;j++) { line += Utils.splitChar + inv.hardwareVersionSetting[j].ToString(); } // int
+		line += Utils.splitChar + inv.hardwareInvCurrent.ToString(); // int
+		line += Utils.splitChar + inv.hardwareInvIndex.ToString(); // int
+		for (j=0;j<13;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hardwareIsActive[j]); } // bool
 		for (j=0;j<32;j++) {
 			switch (inv.accessCardsOwned[j]) {
-				case Door.accessCardType.None: line+= splitChar + "0"; break;
-				case Door.accessCardType.Standard: line+= splitChar + "1"; break;
-				case Door.accessCardType.Medical: line+= splitChar + "2"; break;
-				case Door.accessCardType.Science: line+= splitChar + "3"; break;
-				case Door.accessCardType.Admin: line+= splitChar + "4"; break;
-				case Door.accessCardType.Group1: line+= splitChar + "5"; break;
-				case Door.accessCardType.Group2: line+= splitChar + "6"; break;
-				case Door.accessCardType.Group3: line+= splitChar + "7"; break;
-				case Door.accessCardType.Group4: line+= splitChar + "8"; break;
-				case Door.accessCardType.GroupA: line+= splitChar + "9"; break;
-				case Door.accessCardType.GroupB: line+= splitChar + "10"; break;
-				case Door.accessCardType.Storage: line+= splitChar + "11"; break;
-				case Door.accessCardType.Engineering: line+= splitChar + "12"; break;
-				case Door.accessCardType.Maintenance: line+= splitChar + "13"; break;
-				case Door.accessCardType.Security: line+= splitChar + "14"; break;
-				case Door.accessCardType.Per1: line+= splitChar + "15"; break;
-				case Door.accessCardType.Per2: line+= splitChar + "16"; break;
-				case Door.accessCardType.Per3: line+= splitChar + "17"; break;
-				case Door.accessCardType.Per4: line+= splitChar + "18"; break;
-				case Door.accessCardType.Per5: line+= splitChar + "19"; break;
-				case Door.accessCardType.Command: line+= splitChar + "20"; break;
+				case Door.accessCardType.None: line+= Utils.splitChar + "0"; break;
+				case Door.accessCardType.Standard: line+= Utils.splitChar + "1"; break;
+				case Door.accessCardType.Medical: line+= Utils.splitChar + "2"; break;
+				case Door.accessCardType.Science: line+= Utils.splitChar + "3"; break;
+				case Door.accessCardType.Admin: line+= Utils.splitChar + "4"; break;
+				case Door.accessCardType.Group1: line+= Utils.splitChar + "5"; break;
+				case Door.accessCardType.Group2: line+= Utils.splitChar + "6"; break;
+				case Door.accessCardType.Group3: line+= Utils.splitChar + "7"; break;
+				case Door.accessCardType.Group4: line+= Utils.splitChar + "8"; break;
+				case Door.accessCardType.GroupA: line+= Utils.splitChar + "9"; break;
+				case Door.accessCardType.GroupB: line+= Utils.splitChar + "10"; break;
+				case Door.accessCardType.Storage: line+= Utils.splitChar + "11"; break;
+				case Door.accessCardType.Engineering: line+= Utils.splitChar + "12"; break;
+				case Door.accessCardType.Maintenance: line+= Utils.splitChar + "13"; break;
+				case Door.accessCardType.Security: line+= Utils.splitChar + "14"; break;
+				case Door.accessCardType.Per1: line+= Utils.splitChar + "15"; break;
+				case Door.accessCardType.Per2: line+= Utils.splitChar + "16"; break;
+				case Door.accessCardType.Per3: line+= Utils.splitChar + "17"; break;
+				case Door.accessCardType.Per4: line+= Utils.splitChar + "18"; break;
+				case Door.accessCardType.Per5: line+= Utils.splitChar + "19"; break;
+				case Door.accessCardType.Command: line+= Utils.splitChar + "20"; break;
 			}
 		}
-		for (j=0;j<14;j++) { line += splitChar + inv.generalInventoryIndexRef[j].ToString(); } // int
-		line += splitChar + inv.generalInvCurrent.ToString(); // int
-		line += splitChar + inv.generalInvIndex.ToString(); // int
-		line += splitChar + inv.currentCyberItem.ToString(); // int
-		line += splitChar + BoolToString(inv.isPulserNotDrill); // bool
-		for (j=0;j<7;j++) { line += splitChar + inv.softVersions[j].ToString(); } // int 
-		for (j=0;j<7;j++) { line += splitChar + BoolToString(inv.hasSoft[j]); } // bool
-		line += splitChar + inv.emailCurrent.ToString(); // int
-		line += splitChar + inv.emailIndex.ToString(); // int
-		line += splitChar + BoolToString(mfd.lastWeaponSideRH); // bool
-		line += splitChar + BoolToString(mfd.lastItemSideRH); // bool
-		line += splitChar + BoolToString(mfd.lastAutomapSideRH); // bool
-		line += splitChar + BoolToString(mfd.lastTargetSideRH); // bool
-		line += splitChar + BoolToString(mfd.lastDataSideRH); // bool
-		line += splitChar + BoolToString(mfd.lastSearchSideRH); // bool
-		line += splitChar + BoolToString(mfd.lastLogSideRH); // bool
-		line += splitChar + BoolToString(mfd.lastLogSecondarySideRH); // bool
-		line += splitChar + BoolToString(mfd.lastMinigameSideRH); // bool
-		line += splitChar + FloatToString(mfd.objectInUsePos.x) + splitChar
-						  + FloatToString(mfd.objectInUsePos.y) + splitChar
-						  + FloatToString(mfd.objectInUsePos.z);
+		for (j=0;j<14;j++) { line += Utils.splitChar + inv.generalInventoryIndexRef[j].ToString(); } // int
+		line += Utils.splitChar + inv.generalInvCurrent.ToString(); // int
+		line += Utils.splitChar + inv.generalInvIndex.ToString(); // int
+		line += Utils.splitChar + inv.currentCyberItem.ToString(); // int
+		line += Utils.splitChar + Utils.BoolToString(inv.isPulserNotDrill); // bool
+		for (j=0;j<7;j++) { line += Utils.splitChar + inv.softVersions[j].ToString(); } // int 
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hasSoft[j]); } // bool
+		line += Utils.splitChar + inv.emailCurrent.ToString(); // int
+		line += Utils.splitChar + inv.emailIndex.ToString(); // int
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastWeaponSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastItemSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastAutomapSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastTargetSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastDataSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastSearchSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastLogSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastLogSecondarySideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastMinigameSideRH); // bool
+		line += Utils.splitChar + Utils.FloatToString(mfd.objectInUsePos.x) + Utils.splitChar
+						  + Utils.FloatToString(mfd.objectInUsePos.y) + Utils.splitChar
+						  + Utils.FloatToString(mfd.objectInUsePos.z);
 		// tetheredPGP
 		// tetheredPWP
 		// tetheredSearchable
 		// tetheredKeypadElevator
 		// tetheredKeypadKeycode
-		line += splitChar + BoolToString(mfd.paperLogInUse); // bool
-		line += splitChar + BoolToString(mfd.usingObject); // bool
-		line += splitChar + BoolToString(mfd.logReaderContainer.activeSelf); // bool
-		line += splitChar + BoolToString(mfd.DataReaderContentTab.activeSelf); // bool
-		line += splitChar + BoolToString(mfd.logTable.activeSelf); // bool
-		line += splitChar + BoolToString(mfd.logLevelsFolder.activeSelf); // bool
-		line += splitChar + FloatToString(mfd.logFinished);
-		line += splitChar + BoolToString(mfd.logActive); // bool
-		line += splitChar + mfd.logType.ToString(); // int
-		line += splitChar + FloatToString(mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished);
+		line += Utils.splitChar + Utils.BoolToString(mfd.paperLogInUse); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.usingObject); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.logReaderContainer.activeSelf); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.DataReaderContentTab.activeSelf); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.logTable.activeSelf); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.logLevelsFolder.activeSelf); // bool
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(mfd.logFinished);
+		line += Utils.splitChar + Utils.BoolToString(mfd.logActive); // bool
+		line += Utils.splitChar + mfd.logType.ToString(); // int
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished);
 		return line;
 	}
-
-	// For ammo on the weapons
-	string SaveUseableData(GameObject go) {
-		int lineSlotsCount_SaveUseableData = 0;
-		string line = System.String.Empty;
-		UseableObjectUse uou = go.GetComponent<UseableObjectUse>();
-		if (uou != null) {
-			line = uou.useableItemIndex.ToString(); lineSlotsCount_SaveUseableData++; // int - the main lookup index, needed for intanciating on load if doesn't match original SaveID
-			line += splitChar + uou.customIndex.ToString(); lineSlotsCount_SaveUseableData++; // int - special reference like audiolog message
-			line += splitChar + uou.ammo.ToString(); lineSlotsCount_SaveUseableData++; // int - how much normal ammo is on the weapon
-			line += splitChar + uou.ammo2.ToString(); lineSlotsCount_SaveUseableData++; //int - alternate ammo type, e.g. Penetrator or Teflon
-		} else {
-			UnityEngine.Debug.Log("UseableObjectUse missing on savetype of UseableObjectUse!");
-			line = "-1|-1|0|0|BUG: Missing UseableObjectUse";
-		}
-		//4
-		//UnityEngine.Debug.Log("lineSlotsCount_SaveUseableData: " + lineSlotsCount_SaveUseableData.ToString());
-		return line;
-	}
-
-	// Live grenades - These should only be up in the air or active running timer, but still...or it's a landmine
-	string SaveGrenadeData(GameObject go) {
-		string line = System.String.Empty;
-		GrenadeActivate ga = go.GetComponent<GrenadeActivate>();
-		if (ga != null) {
-			line = ga.constIndex.ToString(); // int - lookup index to the const items table for instantiating
-			line += splitChar + BoolToString(ga.useTimer); // bool - do we have a timer going? MAKE SURE YOU CHECK THIS BIT IN LOAD!
-			line += splitChar + FloatToString(ga.timeFinished); // float - how much time left before the fun part?
-			line += splitChar + BoolToString(ga.explodeOnContact); // bool - or not a landmine
-			line += splitChar + BoolToString(ga.useProx); // bool - is this a landmine?
-		} else {
-			UnityEngine.Debug.Log("GrenadeActivate missing on savetype of GrenadeActivate!");
-			line = "-1|0|0000.00000|0|0";
-		}
-		return line;
-	}
-
-	// Generic health info string
-	string GetHealthManagerSaveData(HealthManager hm) {
-		if (!hm.awakeInitialized) hm.Awake();
-		if (!hm.startInitialized) hm.Start();
-		string line = System.String.Empty;
-		if (hm != null) {
-			line = FloatToString(hm.health); // how much health we have
-			line += splitChar + FloatToString(hm.cyberHealth); // how much health we have
-			line += splitChar + BoolToString(hm.deathDone); // bool - are we dead yet?
-			line += splitChar + BoolToString(hm.god); // are we invincible? - we can save cheats?? OH WOW!
-			line += splitChar + BoolToString(hm.teleportDone); // did we already teleport?
-		} else {
-			UnityEngine.Debug.Log("HealthManager missing on savetype of HealthManager!");
-			line = "0000.00000|0000.00000|0|0|0";
-		}
-		return line;
-	}
-
-	// Save destructable items like cameras, barrels, etc.
-	string SaveDestructableData(GameObject go) {
-		string line = System.String.Empty;
-		line = GetHealthManagerSaveData(go.GetComponent<HealthManager>()); // get the health info
-		return line;
-	}	
 
 	// Info about the enemy's current state
-	string SaveNPCData(GameObject go) {
+	public string SaveNPCData(GameObject go) {
 		s2.Clear();
 		if (go == null) { UnityEngine.Debug.Log("BUG: attempting to SaveNPCData for null GameObject go"); }
 		//string line = System.String.Empty;
@@ -1523,7 +1455,7 @@ public class Const : MonoBehaviour {
 		if (aic != null) {
 			if (!aic.startInitialized) aic.Start();
 			s2.Append(aic.index.ToString()); // int
-			s2.Append(splitChar);
+			s2.Append(Utils.splitChar);
 			switch (aic.currentState) {
 				case AIState.Walk: s2.Append("1"); break;
 				case AIState.Run: s2.Append("2"); break;
@@ -1537,393 +1469,275 @@ public class Const : MonoBehaviour {
 				case AIState.Dead: s2.Append("10");  break;
 				default: s2.Append("0");  break;
 			}
-			s2.Append(splitChar);
+			s2.Append(Utils.splitChar);
 			if (aic.enemy != null) {
 				SaveObject so = aic.enemy.GetComponent<SaveObject>();
 				if (so != null) {
 					s2.Append(so.SaveID.ToString());
-					//line += splitChar + so.SaveID.ToString(); // saveID of NPC's enemy
+					//line += Utils.splitChar + so.SaveID.ToString(); // saveID of NPC's enemy
 				} else {
 					s2.Append("-1");
 					UnityEngine.Debug.Log("BUG: SaveNPCData missing SaveObject on aic.enemy with index " + aic.index.ToString());
-					//line += splitChar + "-1";
+					//line += Utils.splitChar + "-1";
 				}
 			} else {
 				s2.Append("-1");
-				//line += splitChar + "-1";
+				//line += Utils.splitChar + "-1";
 			}
-			s2.Append(splitChar); s2.Append(FloatToString(aic.gracePeriodFinished));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.meleeDamageFinished));
-			s2.Append(splitChar); s2.Append(BoolToString(aic.inSight)); // bool
-			s2.Append(splitChar); s2.Append(BoolToString(aic.infront)); // bool
-			s2.Append(splitChar); s2.Append(BoolToString(aic.inProjFOV)); // bool
-			s2.Append(splitChar); s2.Append(BoolToString(aic.LOSpossible)); // bool
-			s2.Append(splitChar); s2.Append(BoolToString(aic.goIntoPain)); // bool
-			s2.Append(splitChar); s2.Append(FloatToString(aic.rangeToEnemy));
-			s2.Append(splitChar); s2.Append(BoolToString(aic.firstSighting)); // bool
-			s2.Append(splitChar); s2.Append(BoolToString(aic.dyingSetup)); // bool
-			s2.Append(splitChar); s2.Append(BoolToString(aic.ai_dying)); // bool
-			s2.Append(splitChar); s2.Append(BoolToString(aic.ai_dead)); // bool
-			s2.Append(splitChar); s2.Append(aic.currentWaypoint.ToString()); // int
-			s2.Append(splitChar); s2.Append(FloatToString(aic.currentDestination.x));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.currentDestination.y));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.currentDestination.z));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.timeTillEnemyChangeFinished));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.timeTillDeadFinished));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.timeTillPainFinished));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.tickFinished));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.raycastingTickFinished));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.huntFinished));
-			s2.Append(splitChar); s2.Append(BoolToString(aic.hadEnemy)); // bool
-			s2.Append(splitChar); s2.Append(FloatToString(aic.lastKnownEnemyPos.x));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.lastKnownEnemyPos.y));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.lastKnownEnemyPos.z));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.tempVec.x));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.tempVec.y));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.tempVec.z));
-			s2.Append(splitChar); s2.Append(BoolToString(aic.shotFired)); // bool
-			s2.Append(splitChar); s2.Append(FloatToString(aic.randomWaitForNextAttack1Finished));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.randomWaitForNextAttack2Finished));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.randomWaitForNextAttack3Finished));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.idealTransformForward.x));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.idealTransformForward.y));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.idealTransformForward.z));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.idealPos.x));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.idealPos.y));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.idealPos.z));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.attackFinished));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.attack2Finished));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.attack3Finished));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.targettingPosition.x));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.targettingPosition.y));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.targettingPosition.z));
-			s2.Append(splitChar); s2.Append(FloatToString(aic.deathBurstFinished));
-			s2.Append(splitChar); s2.Append(BoolToString(aic.deathBurstDone)); // bool
-			s2.Append(splitChar); s2.Append(BoolToString(aic.asleep)); // bool
-			s2.Append(splitChar); s2.Append(FloatToString(aic.tranquilizeFinished));
-			s2.Append(splitChar); s2.Append(BoolToString(aic.hopDone)); // bool
-			s2.Append(splitChar); s2.Append(BoolToString(aic.wandering)); // bool
-			s2.Append(splitChar); s2.Append(FloatToString(aic.wanderFinished));
-			s2.Append(splitChar); s2.Append(GetHealthManagerSaveData(aic.healthManager));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.gracePeriodFinished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.meleeDamageFinished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.inSight)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.infront)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.inProjFOV)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.LOSpossible)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.goIntoPain)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.rangeToEnemy));
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.firstSighting)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.dyingSetup)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.ai_dying)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.ai_dead)); // bool
+			s2.Append(Utils.splitChar); s2.Append(aic.currentWaypoint.ToString()); // int
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.currentDestination.x));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.currentDestination.y));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.currentDestination.z));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.timeTillEnemyChangeFinished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.timeTillDeadFinished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.timeTillPainFinished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.tickFinished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.raycastingTickFinished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.huntFinished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.hadEnemy)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.lastKnownEnemyPos.x));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.lastKnownEnemyPos.y));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.lastKnownEnemyPos.z));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.tempVec.x));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.tempVec.y));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.tempVec.z));
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.shotFired)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.randomWaitForNextAttack1Finished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.randomWaitForNextAttack2Finished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.randomWaitForNextAttack3Finished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.idealTransformForward.x));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.idealTransformForward.y));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.idealTransformForward.z));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.idealPos.x));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.idealPos.y));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.idealPos.z));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.attackFinished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.attack2Finished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.attack3Finished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.targettingPosition.x));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.targettingPosition.y));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aic.targettingPosition.z));
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.deathBurstFinished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.deathBurstDone)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.asleep)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.tranquilizeFinished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.hopDone)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aic.wandering)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aic.wanderFinished));
+			s2.Append(Utils.splitChar); s2.Append(HealthManager.Save(aic.healthManager.gameObject));
 		} else {
 			UnityEngine.Debug.Log("BUG: SaveNPCData missing AIController");
 		}
 		if (aiac != null) {
-			s2.Append(splitChar); s2.Append(FloatToString(aiac.currentClipPercentage));
-			s2.Append(splitChar); s2.Append(BoolToString(aiac.dying)); // bool
-			s2.Append(splitChar); s2.Append(FloatToString(aiac.animSwapFinished));
+			s2.Append(Utils.splitChar); s2.Append(Utils.FloatToString(aiac.currentClipPercentage));
+			s2.Append(Utils.splitChar); s2.Append(Utils.BoolToString(aiac.dying)); // bool
+			s2.Append(Utils.splitChar); s2.Append(Utils.SaveRelativeTimeDifferential(aiac.animSwapFinished));
 		}
 		//12
 		if (s2 != null) return s2.ToString();
 		return System.String.Empty;
 	}
 
-	// Save searchable data
-	string SaveSearchableStaticData(GameObject go) {
-		string line = System.String.Empty;
-		SearchableItem se = go.GetComponent<SearchableItem>();
-		if (se != null) {
-			line = se.contents[0].ToString(); // int main lookup index
-			line += splitChar + se.contents[1].ToString(); // int main lookup index
-			line += splitChar + se.contents[2].ToString(); // int main lookup index
-			line += splitChar + se.contents[3].ToString(); // int main lookup index
-			line += splitChar + se.customIndex[0].ToString(); // int custom index
-			line += splitChar + se.customIndex[1].ToString(); // int custom index
-			line += splitChar + se.customIndex[2].ToString(); // int custom index
-			line += splitChar + se.customIndex[3].ToString(); // int custom index
-		} else {
-			line = "BUG: SearchableItemMissing";
-			UnityEngine.Debug.Log("SearchableItem missing on savetype of SearchableItem!");
-		}
-		//8
-		return line;
-	}	
-
-	string SaveSearchableDestructsData(GameObject go) {
-		string line = System.String.Empty;
-		line = SaveSearchableStaticData(go); // get the searchable data
-		line += splitChar + GetHealthManagerSaveData(go.GetComponent<HealthManager>()); // get health info
-		//12
-		return line;
-	}
-
-
-
-	string SaveForceBridgeData(GameObject go) {
-		string line = System.String.Empty;
-		ForceBridge fb = go.GetComponent<ForceBridge>();
-		if (fb != null) {
-			line = BoolToString(fb.activated); // bool - is the bridge on?
-			line += splitChar + BoolToString(fb.lerping); // bool - are we currently lerping one way or tother
-			line += splitChar + FloatToString(fb.tickFinished); // float - time before firing targets
-		} else {
-			UnityEngine.Debug.Log("ForceBridge missing on savetype of ForceBridge!");
-		}
-		//2
-		return line;
-	}
-
-	string SaveSwitchData(GameObject go) {
-		string line = System.String.Empty;
-		ButtonSwitch bs = go.GetComponent<ButtonSwitch>();
-		if (bs != null) {
-			// bs?  null??  that's bs
-			line = BoolToString(bs.locked); // bool - is this switch locked
-			line += splitChar + BoolToString(bs.active); // bool - is the switch flashing?
-			line += splitChar + BoolToString(bs.alternateOn); // bool - is the flashing material on?
-			line += splitChar + FloatToString(bs.delayFinished); // float - time before firing targets
-			line += splitChar + FloatToString(bs.tickFinished); // float - time before firing targets
-		} else {
-			UnityEngine.Debug.Log("ButtonSwitch missing on savetype of ButtonSwitch!");
-		}
-		//4
-		return line;
-	}	
-
-	string SaveFuncWallData(GameObject go) {
-		string line = System.String.Empty;
-		FuncWall fw = go.GetComponent<FuncWall>();
-		if (fw != null) {
-			switch (fw.currentState) {
-				case FuncWall.FuncStates.Start: line = "0"; break;
-				case FuncWall.FuncStates.Target: line = "1"; break;
-				case FuncWall.FuncStates.MovingStart: line = "2"; break; // Position already handled by saving transform elsewhere.
-				case FuncWall.FuncStates.MovingTarget: line = "3"; break;
-				case FuncWall.FuncStates.AjarMovingStart: line = "4"; break;
-				case FuncWall.FuncStates.AjarMovingTarget: line = "5"; break;
-			}
-		} else {
-			UnityEngine.Debug.Log("FuncWall missing on savetype of FuncWall!");
-		}
-		//1
-		return line;
-	}	
-
-	string SaveTeleDestData(GameObject go) {
-		string line = System.String.Empty;
-		TeleportTouch tt = go.GetComponent<TeleportTouch>();
-		if (tt != null) {
-			line = FloatToString(tt.justUsed); // float - is the player still touching it?
-		} else {
-			UnityEngine.Debug.Log("TeleportTouch missing on savetype of TeleportTouch! GameObject.name: " + go.name);
-		}
-		//1
-		return line;
-	}	
-
-	string SaveLogicBranchData(GameObject go) {
-		string line = System.String.Empty;
-		LogicBranch lb = go.GetComponent<LogicBranch>();
-		if (lb != null) {
-			line = BoolToString(lb.relayEnabled); // bool - is this enabled
-			line += splitChar + BoolToString(lb.onSecond); // bool - He is. But who's on third? What's on first? Wait what??
-		} else {
-			UnityEngine.Debug.Log("LogicBranch missing on savetype of LogicBranch!");
-		}
-		//2
-		return line;
-	}	
-
-	string SaveLogicRelayData(GameObject go) {
-		string line = System.String.Empty;
-		LogicRelay lr = go.GetComponent<LogicRelay>();
-		if (lr != null) {
-			line = BoolToString(lr.relayEnabled); // bool - is this enabled, Sherlock?
-		} else {
-			UnityEngine.Debug.Log("LogicRelay missing on savetype of LogicRelay!");
-		}
-		//1
-		return line;
-	}
-
-	string SaveSpawnerData(GameObject go) {
+	public string SaveSpawnerData(GameObject go) {
 		string line = System.String.Empty;
 		SpawnManager sm = go.GetComponent<SpawnManager>();
 		if (sm != null) {
-			line = BoolToString(sm.active); // bool - is this enabled
-			line += splitChar + sm.numberActive.ToString(); // int - number spawned
-			line += splitChar + FloatToString(sm.delayFinished); // float - time that we need to spawn next
+			line = Utils.BoolToString(sm.active); // bool - is this enabled
+			line += Utils.splitChar + sm.numberActive.ToString(); // int - number spawned
+			line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(sm.delayFinished); // float - time that we need to spawn next
 		} else {
-			UnityEngine.Debug.Log("SpawnManager missing on savetype of SpawnManager!");
+			UnityEngine.Debug.Log("SpawnManager missing on savetype of SpawnManager! GameObject.name: " + go.name);
 		}
 		//3
 		return line;
 	}	
 
-	string SaveInteractablePanelData(GameObject go) {
+	public string SaveInteractablePanelData(GameObject go) {
 		string line = System.String.Empty;
 		InteractablePanel ip = go.GetComponent<InteractablePanel>();
 		if (ip != null) {
-			line = BoolToString(ip.open); // bool - is the panel opened
-			line += splitChar + BoolToString(ip.installed); // bool - is the item installed, MAKE SURE YOU ENABLE THE INSTALL ITEM GameObject IN LOAD
+			line = Utils.BoolToString(ip.open); // bool - is the panel opened
+			line += Utils.splitChar + Utils.BoolToString(ip.installed); // bool - is the item installed, MAKE SURE YOU ENABLE THE INSTALL ITEM GameObject IN LOAD
 		} else {
-			UnityEngine.Debug.Log("InteractablePanel missing on savetype of InteractablePanel!");
+			UnityEngine.Debug.Log("InteractablePanel missing on savetype of InteractablePanel! GameObject.name: " + go.name);
 		}
 		//2
 		return line;
 	}		
 
-	string SaveElevatorPanelData(GameObject go) {
+	public string SaveElevatorPanelData(GameObject go) {
 		string line = System.String.Empty;
 		KeypadElevator ke = go.GetComponent<KeypadElevator>();
 		if (ke != null) {
-			line = BoolToString(ke.padInUse); // bool - is the pad being used by a player
-			line += splitChar + BoolToString(ke.locked); // bool - locked?
+			line = Utils.BoolToString(ke.padInUse); // bool - is the pad being used by a player
+			line += Utils.splitChar + Utils.BoolToString(ke.locked); // bool - locked?
 		} else {
-			UnityEngine.Debug.Log("KeypadElevator missing on savetype of KeypadElevator!");
+			UnityEngine.Debug.Log("KeypadElevator missing on savetype of KeypadElevator! GameObject.name: " + go.name);
 		}
 		//2
 		return line;
 	}	
 
-	string SaveKeypadData(GameObject go) {
+	public string SaveKeypadData(GameObject go) {
 		string line = System.String.Empty;
 		KeypadKeycode kk = go.GetComponent<KeypadKeycode>();
 		if (kk != null) {
-			line = BoolToString(kk.padInUse); // bool - is the pad being used by a player
-			line += splitChar + BoolToString(kk.locked); // bool - locked?
-			line += splitChar + BoolToString(kk.solved); // bool - already entered correct keycode?
+			line = Utils.BoolToString(kk.padInUse); // bool - is the pad being used by a player
+			line += Utils.splitChar + Utils.BoolToString(kk.locked); // bool - locked?
+			line += Utils.splitChar + Utils.BoolToString(kk.solved); // bool - already entered correct keycode?
 		} else {
-			UnityEngine.Debug.Log("KeypadKeycode missing on savetype of KeypadKeycode!");
+			UnityEngine.Debug.Log("KeypadKeycode missing on savetype of KeypadKeycode! GameObject.name: " + go.name);
 		}
 		//3
 		return line;
 	}	
 
-	string SavePuzzleGridData(GameObject go) {
+	public string SavePuzzleGridData(GameObject go) {
 		string line = System.String.Empty;
 		PuzzleGridPuzzle pgp = go.GetComponent<PuzzleGridPuzzle>();
 		if (pgp != null) {
-			line = BoolToString(pgp.puzzleSolved); // bool - is this puzzle already solved?
-			for (int i=0;i<35;i++) { line += splitChar + BoolToString(pgp.grid[i]); } // bool - get the current grid states + or X
-			line += splitChar + BoolToString(pgp.fired); // bool - have we already fired yet?
-			line += splitChar + BoolToString(pgp.locked); // bool - is this locked?
+			line = Utils.BoolToString(pgp.puzzleSolved); // bool - is this puzzle already solved?
+			for (int i=0;i<35;i++) { line += Utils.splitChar + Utils.BoolToString(pgp.grid[i]); } // bool - get the current grid states + or X
+			line += Utils.splitChar + Utils.BoolToString(pgp.fired); // bool - have we already fired yet?
+			line += Utils.splitChar + Utils.BoolToString(pgp.locked); // bool - is this locked?
 		} else {
-			UnityEngine.Debug.Log("PuzzleGridData missing on savetype of PuzzleGrid!");
+			UnityEngine.Debug.Log("PuzzleGridData missing on savetype of PuzzleGrid! GameObject.name: " + go.name);
 		}
 		//38
 		return line;
 	}	
 
-	string SavePuzzleWireData(GameObject go) {
+	public string SavePuzzleWireData(GameObject go) {
 		string line = System.String.Empty;
 		PuzzleWirePuzzle pwp = go.GetComponent<PuzzleWirePuzzle>();
 		if (pwp != null) {
-			line = BoolToString(pwp.puzzleSolved); // bool - is this puzzle already solved?
-			for (int i=0;i<7;i++) { line += splitChar + pwp.currentPositionsLeft[i].ToString(); } // int - get the current wire positions
-			for (int i=0;i<7;i++) { line += splitChar + pwp.currentPositionsRight[i].ToString(); } // int - get the current wire positions
-			line += splitChar + BoolToString(pwp.locked); // bool - is this locked?
+			line = Utils.BoolToString(pwp.puzzleSolved); // bool - is this puzzle already solved?
+			for (int i=0;i<7;i++) { line += Utils.splitChar + pwp.currentPositionsLeft[i].ToString(); } // int - get the current wire positions
+			for (int i=0;i<7;i++) { line += Utils.splitChar + pwp.currentPositionsRight[i].ToString(); } // int - get the current wire positions
+			line += Utils.splitChar + Utils.BoolToString(pwp.locked); // bool - is this locked?
 		} else {
-			UnityEngine.Debug.Log("PuzzleWirePuzzle missing on savetype of PuzzleWire!");
+			UnityEngine.Debug.Log("PuzzleWirePuzzle missing on savetype of PuzzleWire! GameObject.name: " + go.name);
 		}
 		//16
 		return line;
 	}
 
-	string SaveTCounterData(GameObject go) {
+	public string SaveTCounterData(GameObject go) {
 		string line = System.String.Empty;
 		TriggerCounter tc = go.GetComponent<TriggerCounter>();
 		if (tc != null) {
 			line = tc.counter.ToString(); // int - how many counts we have
 		} else {
-			UnityEngine.Debug.Log("TriggerCounter missing on savetype of TriggerCounter!");
+			UnityEngine.Debug.Log("TriggerCounter missing on savetype of TriggerCounter! GameObject.name: " + go.name);
 		}
 		//1
 		return line;	
 	}
 
-	string SaveTGravityData(GameObject go) {
+	public string SaveTGravityData(GameObject go) {
 		string line = System.String.Empty;
 		GravityLift gl = go.GetComponent<GravityLift>();
 		if (gl != null) {
-			line = BoolToString(gl.active); // bool - is this gravlift on?
+			line = Utils.BoolToString(gl.active); // bool - is this gravlift on?
 		} else {
-			UnityEngine.Debug.Log("GravityLift missing on savetype of GravityLift!");
+			UnityEngine.Debug.Log("GravityLift missing on savetype of GravityLift! GameObject.name: " + go.name);
 		}
 		//1
 		return line;
 	}
 
-	string SaveMChangerData(GameObject go) {
+	public string SaveMChangerData(GameObject go) {
 		string line = System.String.Empty;
 		MaterialChanger mch = go.GetComponent<MaterialChanger>();
 		if (mch != null) {
-			line = BoolToString(mch.alreadyDone); // bool - is this gravlift on?  Much is already done.
+			line = Utils.BoolToString(mch.alreadyDone); // bool - is this gravlift on?  Much is already done.
 		} else {
-			UnityEngine.Debug.Log("MaterialChanger missing on savetype of MaterialChanger!");
+			UnityEngine.Debug.Log("MaterialChanger missing on savetype of MaterialChanger! GameObject.name: " + go.name);
 		}
 		//1
 		return line;
 	}
 
-	string SaveTRadiationData(GameObject go) {
+	public string SaveTRadiationData(GameObject go) {
 		string line = System.String.Empty;
 		Radiation rad = go.GetComponent<Radiation>();
 		if (rad != null) {
-			line = BoolToString(rad.isEnabled); // bool - hey is this on? hello?
-			line += splitChar + rad.numPlayers.ToString(); // int - how many players we are affecting
+			line = Utils.BoolToString(rad.isEnabled); // bool - hey is this on? hello?
+			line += Utils.splitChar + rad.numPlayers.ToString(); // int - how many players we are affecting
 		} else {
-			UnityEngine.Debug.Log("Radiation missing on savetype of Radiation!");
+			UnityEngine.Debug.Log("Radiation missing on savetype of Radiation! GameObject.name: " + go.name);
 		}
 		//2
 		return line;
 	}
 
-	string SaveGravLiftPadTextureData(GameObject go) {
+	public string SaveGravLiftPadTextureData(GameObject go) {
 		string line = System.String.Empty;
 		TextureChanger tex = go.GetComponent<TextureChanger>();
 		if (tex != null) {
-			line = BoolToString(tex.currentTexture); // bool - is this gravlift on?
+			line = Utils.BoolToString(tex.currentTexture); // bool - is this gravlift on?
 		} else {
-			UnityEngine.Debug.Log("TextureChanger missing on savetype of TextureChanger!");
+			UnityEngine.Debug.Log("TextureChanger missing on savetype of TextureChanger! GameObject.name: " + go.name);
 		}
 		//1
 		return line;
 	}
 
-	string SaveChargeStationData(GameObject go) {
+	public string SaveChargeStationData(GameObject go) {
 		string line = System.String.Empty;
 		ChargeStation chg = go.GetComponent<ChargeStation>();
 		if (chg != null) {
-			line = FloatToString(chg.nextthink); // float - time before recharged
+			line = Utils.SaveRelativeTimeDifferential(chg.nextthink); // float - time before recharged
 		} else {
-			UnityEngine.Debug.Log("ChargeStation missing on savetype of ChargeStation!");
+			UnityEngine.Debug.Log("ChargeStation missing on savetype of ChargeStation! GameObject.name: " + go.name);
 		}
 		//1
 		return line;
 	}
 
-	string SaveLightAnimationData(GameObject go) {
+	public string SaveLightAnimationData(GameObject go) {
 		string line = System.String.Empty;
 		LightAnimation la = go.GetComponent<LightAnimation>();
 		if (la != null) {
-			line = BoolToString(la.lightOn); // bool
-			line += splitChar + BoolToString(la.lerpOn); // bool
-			line += splitChar + la.currentStep.ToString(); // int
-			line += splitChar + FloatToString(la.lerpValue);
-			line += splitChar + FloatToString(la.lerpTime);
-			line += splitChar + FloatToString(la.stepTime);
-			line += splitChar + FloatToString(la.lerpStartTime);
+			line = Utils.BoolToString(la.lightOn); // bool
+			line += Utils.splitChar + Utils.BoolToString(la.lerpOn); // bool
+			line += Utils.splitChar + la.currentStep.ToString(); // int
+			line += Utils.splitChar + Utils.FloatToString(la.lerpValue); // %
+			line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(la.lerpTime);
+			line += Utils.splitChar + Utils.FloatToString(la.stepTime); // Not a timer, current time amount
+			line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(la.lerpStartTime);
 		} else {
-			UnityEngine.Debug.Log("LightAnimation missing on savetype of Light!");
+			UnityEngine.Debug.Log("LightAnimation missing on savetype of Light! GameObject.name: " + go.name);
 		}
 		return line;
 	}
 
-	string SaveCameraData(GameObject go) {
+	public string SaveCameraData(GameObject go) {
 		string line = System.String.Empty;
 		Camera cm = go.GetComponent<Camera>();
 		UnityStandardAssets.ImageEffects.BerserkEffect bzk = go.GetComponent<UnityStandardAssets.ImageEffects.BerserkEffect>();
 		Grayscale gsc = go.GetComponent<Grayscale>();
 		if (cm != null) {
-			line = BoolToString(cm.enabled); // bool
-			if (bzk != null) line += splitChar + BoolToString(bzk.enabled);
-			else line += splitChar + "0";
+			line = Utils.BoolToString(cm.enabled); // bool
+			if (bzk != null) line += Utils.splitChar + Utils.BoolToString(bzk.enabled);
+			else line += Utils.splitChar + "0";
 
-			if (gsc != null) line += splitChar + BoolToString(gsc.enabled);
-			else line += splitChar + "0";
+			if (gsc != null) line += Utils.splitChar + Utils.BoolToString(gsc.enabled);
+			else line += Utils.splitChar + "0";
 		} else {
-			UnityEngine.Debug.Log("Camera missing on savetype of Camera!");
+			UnityEngine.Debug.Log("Camera missing on savetype of Camera! GameObject.name: " + go.name);
 		}
 		// 4
 		return line;
@@ -1939,10 +1753,16 @@ public class Const : MonoBehaviour {
 		}
 	}
 
-	// wrapper function to enable Save to be a coroutine...and now we can enable all the levels before a save for a tiny bit
+	// Wrapper function to enable Save to be a coroutine...and now we can
+	// enable all the levels before a save for a tiny bit.  Except we don't
+	// since I need to figure out how to save as fast as possible while still
+	// taking the time to display feedback at some point.  Currently we just
+	// haul off and get it with top speed, no pausing momentarily to draw any
+	// progress bar.  Left here just in case I try this later.
 	public void StartSave(int index, string savename) {
-		if (index < 7) Const.a.justSavedTimeStamp = Time.time + Const.a.savedReminderTime; // using normal run time, don't ask again to save for next 7 seconds
-		//StartCoroutine(Const.a.Save(index,savename));
+		if (PlayerHealth.a.hm.health < 1.0f) return; // Can't save while dead!
+
+		//StartCoroutine(Save(index,savename));
 		Save(index,savename);
 	}
 
@@ -1953,144 +1773,59 @@ public class Const : MonoBehaviour {
 		Stopwatch saveTimer = new Stopwatch();
 		saveTimer.Start();
 		string[] saveData = new string[16000]; // Found 2987 saveable objects on main level - should be enough for any instantiated dropped items...maybe
-		string line;
 		int i,j;
 		int index = 0;
-		Transform tr;
-		// counting integers for grins and giggles
-		//...hey it did let me see I had the wrong saveable type whenever there were zero or only 5 of certain objects
-		int numTransforms = 0;
-		int numUseables = 0;
-		int numGrenades = 0;
-		int numNPCs = 0;
-		int numDestructables = 0;
-		int numSearchableStatics = 0;
-		int numSearchableDestructs = 0;
-		int numDoors = 0;
-		int numForceBs = 0;
-		int numSwitches = 0;
-		int numFuncWalls = 0;
-		int numTeleDests = 0;
-		int numBranches = 0;
-		int numRelays = 0;
-		int numSpawners = 0;
-		int numIntPanels = 0;
-		int numElevPanels = 0;
-		int numKeypads = 0;
-		int numPuzGrids = 0;
-		int numPuzWires = 0;
-		int numTrigCounters = 0;
-		int numTrigGravity = 0;
-		int numMChangers = 0;
-		int numRadTrigs = 0;
-		int numGravPads = 0;
-		int numChargeStations = 0;
-		int numLights = 0;
-		int numTimers = 0;
-		int numCameras = 0;
-		int numDelayedSpawn = 0;
-		// All saveable classes
-		LogicTimer lt;
-		DelayedSpawn ds;
 
+		// All saveable classes
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 		FindAllSaveObjectsGOs(saveableGameObjects);
 		sprint(stringTable[194]); // Indicate we are saving "Saving..."
+		if (string.IsNullOrWhiteSpace(savename)) {
+			savename = "Unnamed " + saveFileIndex.ToString(); // int
+		}
 
-		// Header
-		// -----------------------------------------------------
-		// Save Name
-		if (string.IsNullOrWhiteSpace(savename)) savename = "Unnamed " + saveFileIndex.ToString(); // int
-		saveData[index] = savename;
-		index++;
-
-		saveData[index] = FloatToString(PauseScript.a.relativeTime); // float - pausable game time
-		index++;
+		saveData[index] = savename; index++;
+		saveData[index] = Utils.FloatToString(PauseScript.a.relativeTime); index++; // float - pausable game time
 		s1.Clear(); // keep reusing s1
 		// Global states and Difficulties
 		s1.Append(LevelManager.a.currentLevel.ToString()); // int
 		for (i=0;i<14;i++) {
-			s1.Append(splitChar);
+			s1.Append(Utils.splitChar);
 			s1.Append(LevelManager.a.levelSecurity[i].ToString()); // int
 		}
+
 		for (i=0;i<14;i++) {
-			s1.Append(splitChar);
+			s1.Append(Utils.splitChar);
 			s1.Append(LevelManager.a.levelCameraDestroyedCount[i].ToString()); // int
 		}
+
 		for (i=0;i<14;i++) {
-			s1.Append(splitChar);
+			s1.Append(Utils.splitChar);
 			s1.Append(LevelManager.a.levelSmallNodeDestroyedCount[i].ToString()); // int
 		}
+
 		for (i=0;i<14;i++) {
-			s1.Append(splitChar);
+			s1.Append(Utils.splitChar);
 			s1.Append(LevelManager.a.levelLargeNodeDestroyedCount[i].ToString()); // int
 		}
+
 		for (i=0;i<14;i++) {
-			s1.Append(splitChar);
-			s1.Append(BoolToString(LevelManager.a.ressurectionActive[i]));
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.BoolToString(LevelManager.a.ressurectionActive[i]));
 		}
-		s1.Append(splitChar);
-		s1.Append(questData.lev1SecCode.ToString());
-		s1.Append(splitChar);
-		s1.Append(questData.lev2SecCode.ToString());
-		s1.Append(splitChar);
-		s1.Append(questData.lev3SecCode.ToString());
-		s1.Append(splitChar);
-		s1.Append(questData.lev4SecCode.ToString());
-		s1.Append(splitChar);
-		s1.Append(questData.lev5SecCode.ToString());
-		s1.Append(splitChar);
-		s1.Append(questData.lev6SecCode.ToString());
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.RobotSpawnDeactivated));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.IsotopeInstalled));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.ShieldActivated));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.LaserSafetyOverriden));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.LaserDestroyed));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.BetaGroveCyberUnlocked));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.GroveAlphaJettisonEnabled));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.GroveBetaJettisonEnabled));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.GroveDeltaJettisonEnabled));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.MasterJettisonBroken));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.Relay428Fixed));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.MasterJettisonEnabled));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.BetaGroveJettisoned));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.AntennaNorthDestroyed));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.AntennaSouthDestroyed));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.AntennaEastDestroyed));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.AntennaWestDestroyed));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.SelfDestructActivated));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.BridgeSeparated));
-		s1.Append(splitChar);
-		s1.Append(BoolToString(questData.IsolinearChipsetInstalled));
-		s1.Append(splitChar);
+
+		s1.Append(Utils.splitChar);
+		s1.Append(questData.Save());
+		s1.Append(Utils.splitChar);
 		s1.Append(difficultyCombat.ToString());
-		s1.Append(splitChar);
+		s1.Append(Utils.splitChar);
 		s1.Append(difficultyMission.ToString());
-		s1.Append(splitChar);
+		s1.Append(Utils.splitChar);
 		s1.Append(difficultyPuzzle.ToString());
-		s1.Append(splitChar);
+		s1.Append(Utils.splitChar);
 		s1.Append(difficultyCyber.ToString());
-		saveData[index] = s1.ToString();
-		index++;
+		saveData[index] = s1.ToString(); index++;
+		s1.Clear();
 
 		// Save all the players' data
 		saveData[index] = SavePlayerData(player1); index++; // saves as "!" if null
@@ -2098,143 +1833,13 @@ public class Const : MonoBehaviour {
 		saveData[index] = "!"; index++; // saves as "!" if null
 		saveData[index] = "!"; index++; // saves as "!" if null
 
-		string rbodynullstr = "|0000.00000|0000.00000|0000.00000";
-		Rigidbody rbody;
 		// Save all the objects data
 		for (i=0;i<saveableGameObjects.Count;i++) {
-			s1.Clear();
 			SaveObject sav = saveableGameObjects[i].GetComponent<SaveObject>();
-			if (!sav.initialized) sav.Start();
-			string stype = sav.saveableType;
-			if (stype == "Player") { continue;}
-			s1.Append(stype);
-			s1.Append(splitChar);
-			s1.Append(sav.SaveID.ToString());
-			s1.Append(splitChar);
-			s1.Append(BoolToString(sav.instantiated)); // bool
-			s1.Append(splitChar);
-			s1.Append(sav.constLookupTable.ToString());
-			s1.Append(splitChar);
-			s1.Append(sav.constLookupIndex.ToString());
-			s1.Append(splitChar);
-			s1.Append(BoolToString(saveableGameObjects[i].activeSelf)); // bool.  Watch it next time buddy.  Yeesh, 2/28/22 was kind of scary till I realized this was still just using ToString here.  All saveables were turned off!!
-			s1.Append(splitChar);
-			tr = saveableGameObjects[i].GetComponent<Transform>();
-			s1.Append(FloatToString(tr.localPosition.x));
-			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localPosition.y));
-			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localPosition.z));
-			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localRotation.x));
-			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localRotation.y));
-			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localRotation.z));
-			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localRotation.w));
-			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localScale.x));
-			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localScale.y));
-			s1.Append(splitChar);
-			s1.Append(FloatToString(tr.localScale.z));
-			rbody = saveableGameObjects[i].GetComponent<Rigidbody>();
-			if (rbody != null) {
-				s1.Append(splitChar);
-				s1.Append(FloatToString(rbody.velocity.x));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(rbody.velocity.y));
-				s1.Append(splitChar);
-				s1.Append(FloatToString(rbody.velocity.z));
-			} else {
-				s1.Append(rbodynullstr);
-			}
-			s1.Append(splitChar);
-			s1.Append(sav.levelParentID.ToString()); // int
-			s1.Append(splitChar);
-			line = s1.ToString();
-			switch (sav.saveType) {
-				case SaveObject.SaveableType.Useable: numUseables++; line += SaveUseableData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.Grenade: numGrenades++; line += SaveGrenadeData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.NPC: numNPCs++; line += SaveNPCData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.Destructable: numDestructables++;  line += SaveDestructableData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.SearchableStatic: numSearchableStatics++;  line += SaveSearchableStaticData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.SearchableDestructable: numSearchableDestructs++;  line += SaveSearchableDestructsData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.Door: numDoors++;  line += saveableGameObjects[i].GetComponent<Door>().SaveDoorData(splitChar); break;
-				case SaveObject.SaveableType.ForceBridge: numForceBs++;  line += SaveForceBridgeData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.Switch: numSwitches++;  line += SaveSwitchData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.FuncWall: numFuncWalls++;  line += SaveFuncWallData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.TeleDest: numTeleDests++;  line += SaveTeleDestData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.LBranch: numBranches++;  line += SaveLogicBranchData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.LRelay: numRelays++;  line += SaveLogicRelayData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.LSpawner: numSpawners++;  line += SaveSpawnerData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.InteractablePanel: numIntPanels++;  line += SaveInteractablePanelData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.ElevatorPanel: numElevPanels++;  line += SaveElevatorPanelData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.Keypad: numKeypads++;  line += SaveKeypadData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.PuzzleGrid: numPuzGrids++;  line += SavePuzzleGridData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.PuzzleWire: numPuzWires++;  line += SavePuzzleWireData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.TCounter: numTrigCounters++;  line += SaveTCounterData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.TGravity: numTrigGravity++;  line += SaveTGravityData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.MChanger: numMChangers++;  line += SaveMChangerData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.RadTrig: numRadTrigs++;  line += SaveTRadiationData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.GravPad: numGravPads++;  line += SaveGravLiftPadTextureData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.ChargeStation: numChargeStations++;  line += SaveChargeStationData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.Light: numLights++;  line += SaveLightAnimationData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.LTimer:
-					lt = saveableGameObjects[i].GetComponent<LogicTimer>();
-					if (lt != null) {
-						numTimers++;
-						line += lt.Save(); 
-					} else {
-						UnityEngine.Debug.Log("LogicTimer missing on savetype of LogicTimer!");
-					}
-					break;
-				case SaveObject.SaveableType.Camera: numCameras++; line += SaveCameraData(saveableGameObjects[i]); break;
-				case SaveObject.SaveableType.DelayedSpawn:
-					numDelayedSpawn++;
-					ds = saveableGameObjects[i].GetComponent<DelayedSpawn>();
-					if (ds != null) {
-						line += ds.Save();
-					} else {
-						UnityEngine.Debug.Log("DelayedSpawn missing on savetype of DelayedSpawn!");
-					}
-					break;
-				default: numTransforms++; break; // we already did the plain ol transform data first up above
-			}
-			saveData[index] = line; // take this objects data and add it to the array
-			index++; // move to the next line
-		}
+			if (sav.saveableType == "Player") continue;
 
-		// UnityEngine.Debug.Log("Number of Transforms: " + numTransforms.ToString());
-		// UnityEngine.Debug.Log("Number of Useable: " + numUseables.ToString());
-		// UnityEngine.Debug.Log("Number of Grenades: " + numGrenades.ToString());
-		// UnityEngine.Debug.Log("Number of NPCs: " + numNPCs.ToString());
-		// UnityEngine.Debug.Log("Number of Destructables: " + numDestructables.ToString());
-		// UnityEngine.Debug.Log("Number of SearchableStatics: " + numSearchableStatics.ToString());
-		// UnityEngine.Debug.Log("Number of SearchableDestructables: " + numSearchableDestructs.ToString());
-		// UnityEngine.Debug.Log("Number of Doors: " + numDoors.ToString());
-		// UnityEngine.Debug.Log("Number of ForceBridges: " + numForceBs.ToString());
-		// UnityEngine.Debug.Log("Number of Switches: " + numSwitches.ToString());
-		// UnityEngine.Debug.Log("Number of FuncWalls: " + numFuncWalls.ToString());
-		// UnityEngine.Debug.Log("Number of TeleDests: " + numTeleDests.ToString());
-		// UnityEngine.Debug.Log("Number of Branches: " + numBranches.ToString());
-		// UnityEngine.Debug.Log("Number of Relays: " + numRelays.ToString());
-		// UnityEngine.Debug.Log("Number of Spawners: " + numSpawners.ToString());
-		// UnityEngine.Debug.Log("Number of InteractablePanels: " + numIntPanels.ToString());
-		// UnityEngine.Debug.Log("Number of ElevatorPanels: " + numElevPanels.ToString());
-		// UnityEngine.Debug.Log("Number of Keypad: " + numKeypads.ToString());
-		// UnityEngine.Debug.Log("Number of PuzzleGrid: " + numPuzGrids.ToString());
-		// UnityEngine.Debug.Log("Number of PuzzleWire: " + numPuzWires.ToString());
-		// UnityEngine.Debug.Log("Number of TriggerCounters: " + numTrigCounters.ToString());
-		// UnityEngine.Debug.Log("Number of TriggerGravities: " + numTrigGravity.ToString());
-		// UnityEngine.Debug.Log("Number of MaterialChangers: " + numMChangers.ToString());
-		// UnityEngine.Debug.Log("Number of RadiationTriggers: " + numRadTrigs.ToString());
-		// UnityEngine.Debug.Log("Number of GravityPads: " + numGravPads.ToString());
-		// UnityEngine.Debug.Log("Number of ChargeStations: " + numChargeStations.ToString());
-		// UnityEngine.Debug.Log("Number of Lights: " + numLights.ToString());
-		// UnityEngine.Debug.Log("Number of LogicTimers: " + numTimers.ToString());
-		// UnityEngine.Debug.Log("Number of DelayedSpawn: " + numDelayedSpawn.ToString());
+			saveData[index] = sav.Save(saveableGameObjects[i]); index++; // Take this objects data and add it to the array.
+		}
 
 		// Write to file
 		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt",false,Encoding.ASCII);
@@ -2249,11 +1854,12 @@ public class Const : MonoBehaviour {
 
 		// Make "Done!" appear at the end of the line after "Saving..." is finished, concept from Halo's "Checkpoint...Done!"
 		sprint(stringTable[195]);
+		if (saveFileIndex < 7) Const.a.justSavedTimeStamp = Time.time + Const.a.savedReminderTime; // using normal run time, don't ask again to save for next 7 seconds
 		saveTimer.Stop();
 		UnityEngine.Debug.Log("Saved to file in " + saveTimer.Elapsed.ToString());
 	}
 
-	void LoadPlayerDataToPlayer(GameObject currentPlayer, string[] entries, int currentline,int index) {
+	void LoadPlayerDataToPlayer(GameObject currentPlayer, string[] entries,int index) {
 		int j;
 		float readFloatx;
 		float readFloaty;
@@ -2273,27 +1879,26 @@ public class Const : MonoBehaviour {
 		MFDManager mfd = MFDManager.a;
 		// Already parsed saveableType and ID number in main Load() function, skipping ahead to index 2 (3rd slot).
 		Const.a.playerName = entries[index]; index++; 
-		ph.radiated = GetFloatFromString(entries[index],currentline); index++;
-		ph.timer = GetFloatFromString(entries[index],currentline); index++;
-		ph.playerDead = GetBoolFromString(entries[index]); index++;
-		ph.radiationArea = GetBoolFromString(entries[index]); index++;
-		ph.mediPatchPulseFinished = GetFloatFromString(entries[index],currentline); index++;
-		ph.mediPatchPulseCount = GetIntFromString(entries[index],currentline ); index++;
-		ph.makingNoise = GetBoolFromString(entries[index]); index++;
-		ph.lastHealth = GetFloatFromString(entries[index],currentline); index++;
-		ph.painSoundFinished = GetFloatFromString(entries[index],currentline); index++;
-		ph.radSoundFinished = GetFloatFromString(entries[index],currentline); index++;
-		ph.radFXFinished = GetFloatFromString(entries[index],currentline); index++;
-		pe.energy = GetFloatFromString(entries[index],currentline); index++;
-		pe.timer = GetFloatFromString(entries[index],currentline); index++;
-		pe.tickFinished = GetFloatFromString(entries[index],currentline); index++;
-		pm.playerSpeed = GetFloatFromString(entries[index],currentline); index++;
-		pm.grounded = GetBoolFromString(entries[index]); index++;
-		pm.currentCrouchRatio = GetFloatFromString(entries[index],currentline); index++;
-		pm.bodyState = IntToBodyState(GetIntFromString(entries[index],currentline)); index++;
-		pm.ladderState = GetBoolFromString(entries[index]); index++;
-		pm.gravliftState = GetBoolFromString(entries[index]); index++;
-		pm.inCyberSpace = GetBoolFromString(entries[index]); index++;
+		ph.radiated = Utils.GetFloatFromString(entries[index]); index++;
+		ph.timer = Utils.GetFloatFromString(entries[index]); index++; // Not relative time
+		ph.playerDead = Utils.GetBoolFromString(entries[index]); index++;
+		ph.radiationArea = Utils.GetBoolFromString(entries[index]); index++;
+		ph.mediPatchPulseFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		ph.mediPatchPulseCount = Utils.GetIntFromString(entries[index] ); index++;
+		ph.makingNoise = Utils.GetBoolFromString(entries[index]); index++;
+		ph.lastHealth = Utils.GetFloatFromString(entries[index]); index++;
+		ph.painSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		ph.radSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		ph.radFXFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pe.energy = Utils.GetFloatFromString(entries[index]); index++;
+		pe.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.playerSpeed = Utils.GetFloatFromString(entries[index]); index++;
+		pm.grounded = Utils.GetBoolFromString(entries[index]); index++;
+		pm.currentCrouchRatio = Utils.GetFloatFromString(entries[index]); index++;
+		pm.bodyState = Utils.IntToBodyState(Utils.GetIntFromString(entries[index])); index++;
+		pm.ladderState = Utils.GetBoolFromString(entries[index]); index++;
+		pm.gravliftState = Utils.GetBoolFromString(entries[index]); index++;
+		pm.inCyberSpace = Utils.GetBoolFromString(entries[index]); index++;
 		for (j=0;j<4096;j++) { pm.automapExploredR[j] = entries[index].Equals("1"); index++; }
 		for (j=0;j<4096;j++) { pm.automapExplored1[j] = entries[index].Equals("1"); index++; }
 		for (j=0;j<4096;j++) { pm.automapExplored2[j] = entries[index].Equals("1"); index++; }
@@ -2307,169 +1912,169 @@ public class Const : MonoBehaviour {
 		for (j=0;j<4096;j++) { pm.automapExploredG1[j] = entries[index].Equals("1"); index++; }
 		for (j=0;j<4096;j++) { pm.automapExploredG2[j] = entries[index].Equals("1"); index++; }
 		for (j=0;j<4096;j++) { pm.automapExploredG4[j] = entries[index].Equals("1"); index++; }
-		pm.CheatWallSticky = GetBoolFromString(entries[index]); index++;
-		pm.CheatNoclip = GetBoolFromString(entries[index]); index++;
-		pm.jumpTime = GetFloatFromString(entries[index],currentline); index++;
-		readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		pm.CheatWallSticky = Utils.GetBoolFromString(entries[index]); index++;
+		pm.CheatNoclip = Utils.GetBoolFromString(entries[index]); index++;
+		pm.jumpTime = Utils.GetFloatFromString(entries[index]); index++; // not a timer
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		pm.oldVelocity = new Vector3(readFloatx,readFloaty,readFloatz);
-		pm.fatigue = GetFloatFromString(entries[index],currentline); index++;
-		pm.justJumped = GetBoolFromString(entries[index]); index++;
-		pm.fatigueFinished = GetFloatFromString(entries[index],currentline); index++;
-		pm.fatigueFinished2 = GetFloatFromString(entries[index],currentline); index++;
-		pm.cyberSetup = GetBoolFromString(entries[index]); index++;
-		pm.cyberDesetup = GetBoolFromString(entries[index]); index++;
-		pm.oldBodyState = IntToBodyState(GetIntFromString(entries[index],currentline)); index++;
+		pm.fatigue = Utils.GetFloatFromString(entries[index]); index++;
+		pm.justJumped = Utils.GetBoolFromString(entries[index]); index++;
+		pm.fatigueFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.fatigueFinished2 = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.cyberSetup = Utils.GetBoolFromString(entries[index]); index++;
+		pm.cyberDesetup = Utils.GetBoolFromString(entries[index]); index++;
+		pm.oldBodyState = Utils.IntToBodyState(Utils.GetIntFromString(entries[index])); index++;
 		pm.ConsoleDisable();
-		pm.leanTarget = GetFloatFromString(entries[index],currentline); index++;
-		pm.leanShift = GetFloatFromString(entries[index],currentline); index++;
-		pm.jumpSFXFinished = GetFloatFromString(entries[index],currentline); index++;
-		pm.jumpLandSoundFinished = GetFloatFromString(entries[index],currentline); index++;
-		pm.jumpJetEnergySuckTickFinished = GetFloatFromString(entries[index],currentline); index++;
-		pm.fatigueWarned = GetBoolFromString(entries[index]); index++;
-		pm.turboFinished = GetFloatFromString(entries[index],currentline); index++;
-		pm.ressurectingFinished = GetFloatFromString(entries[index],currentline); index++;
-		pm.doubleJumpFinished = GetFloatFromString(entries[index],currentline); index++;
-		pp.berserkFinishedTime = GetFloatFromString(entries[index],currentline); index++;
-		pp.berserkIncrementFinishedTime = GetFloatFromString(entries[index],currentline); index++;
-		pp.detoxFinishedTime = GetFloatFromString(entries[index],currentline); index++;
-		pp.geniusFinishedTime = GetFloatFromString(entries[index],currentline); index++;
-		pp.mediFinishedTime = GetFloatFromString(entries[index],currentline); index++;
-		pp.reflexFinishedTime = GetFloatFromString(entries[index],currentline); index++;
-		pp.sightFinishedTime = GetFloatFromString(entries[index],currentline); index++;
-		pp.sightSideEffectFinishedTime = GetFloatFromString(entries[index],currentline); index++;
-		pp.staminupFinishedTime = GetFloatFromString(entries[index],currentline); index++;
-		pp.berserkIncrement = GetIntFromString(entries[index],currentline ); index++;
-		pp.patchActive = GetIntFromString(entries[index],currentline ); index++;
-		readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		pm.leanTarget = Utils.GetFloatFromString(entries[index]); index++;
+		pm.leanShift = Utils.GetFloatFromString(entries[index]); index++;
+		pm.jumpSFXFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.jumpLandSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.jumpJetEnergySuckTickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.fatigueWarned = Utils.GetBoolFromString(entries[index]); index++;
+		pm.turboFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.ressurectingFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.doubleJumpFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.berserkFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.berserkIncrementFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.detoxFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.geniusFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.mediFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.reflexFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.sightFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.sightSideEffectFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.staminupFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.berserkIncrement = Utils.GetIntFromString(entries[index]); index++;
+		pp.patchActive = Utils.GetIntFromString(entries[index]); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		tr.localPosition = new Vector3(readFloatx,readFloaty,readFloatz);
-		readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		readFloatz = GetFloatFromString(entries[index],currentline); index++;
-		readFloatw = GetFloatFromString(entries[index],currentline); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatw = Utils.GetFloatFromString(entries[index]); index++;
 		tr.localRotation = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
-		readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		tr.localScale = new Vector3(readFloatx,readFloaty,readFloatz);
-		// readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		// readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		// readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		// readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		// readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		// readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		//trml.localPosition = new Vector3(readFloatx,readFloaty,readFloatz);
-		// readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		// readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		// readFloatz = GetFloatFromString(entries[index],currentline); index++;
-		// readFloatw = GetFloatFromString(entries[index],currentline); index++;
+		// readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		// readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		// readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		// readFloatw = Utils.GetFloatFromString(entries[index]); index++;
 		//trml.localRotation = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
-		// readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		// readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		// readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		// readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		// readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		// readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		index += 10;
 		//trml.localScale = new Vector3(readFloatx,readFloaty,readFloatz);
-		ml.inventoryMode = !GetBoolFromString(entries[index]); index++; // take opposite because we are about to opposite again
+		ml.inventoryMode = !Utils.GetBoolFromString(entries[index]); index++; // take opposite because we are about to opposite again
 		ml.ToggleInventoryMode(); // correctly set cursor lock state, and opposite again, now it is what was saved
-		ml.holdingObject = GetBoolFromString(entries[index]); index++;
-		ml.heldObjectIndex = GetIntFromString(entries[index],currentline ); index++;
-		ml.heldObjectCustomIndex = GetIntFromString(entries[index],currentline ); index++;
-		ml.heldObjectAmmo = GetIntFromString(entries[index],currentline ); index++;
-		ml.heldObjectAmmo2 = GetIntFromString(entries[index],currentline ); index++;
-		ml.firstTimePickup = GetBoolFromString(entries[index]); index++;
-		ml.firstTimeSearch = GetBoolFromString(entries[index]); index++;
-		ml.grenadeActive = GetBoolFromString(entries[index]); index++;
-		ml.inCyberSpace = GetBoolFromString(entries[index]); index++;
-		ml.yRotation = GetFloatFromString(entries[index],currentline); index++;
-		ml.geniusActive = GetBoolFromString(entries[index]); index++;
-		ml.xRotation = GetFloatFromString(entries[index],currentline); index++;
-		ml.vmailActive = GetBoolFromString(entries[index]); index++;
-		readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		ml.holdingObject = Utils.GetBoolFromString(entries[index]); index++;
+		ml.heldObjectIndex = Utils.GetIntFromString(entries[index]); index++;
+		ml.heldObjectCustomIndex = Utils.GetIntFromString(entries[index]); index++;
+		ml.heldObjectAmmo = Utils.GetIntFromString(entries[index]); index++;
+		ml.heldObjectAmmo2 = Utils.GetIntFromString(entries[index]); index++;
+		ml.firstTimePickup = Utils.GetBoolFromString(entries[index]); index++;
+		ml.firstTimeSearch = Utils.GetBoolFromString(entries[index]); index++;
+		ml.grenadeActive = Utils.GetBoolFromString(entries[index]); index++;
+		ml.inCyberSpace = Utils.GetBoolFromString(entries[index]); index++;
+		ml.yRotation = Utils.GetFloatFromString(entries[index]); index++;
+		ml.geniusActive = Utils.GetBoolFromString(entries[index]); index++;
+		ml.xRotation = Utils.GetFloatFromString(entries[index]); index++;
+		ml.vmailActive = Utils.GetBoolFromString(entries[index]); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		ml.cyberspaceReturnPoint = new Vector3(readFloatx,readFloaty,readFloatz);
-		readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		ml.cyberspaceReturnCameraLocalRotation = new Vector3(readFloatx,readFloaty,readFloatz);
-		readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		ml.cyberspaceReturnPlayerCapsuleLocalRotation = new Vector3(readFloatx,readFloaty,readFloatz);
-		readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		ml.cyberspaceRecallPoint = new Vector3(readFloatx,readFloaty,readFloatz);
-		ml.cyberspaceReturnLevel = GetIntFromString(entries[index],currentline ); index++;
+		ml.cyberspaceReturnLevel = Utils.GetIntFromString(entries[index]); index++;
 		ml.currentSearchItem = null; // Prevent picking up first item immediately. Not currently possible to save references.
-		hm.health = GetFloatFromString(entries[index],currentline); index++; // how much health we have
-		hm.cyberHealth = GetFloatFromString(entries[index],currentline); index++;
-		hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
-		hm.god = GetBoolFromString(entries[index]); index++; // Are we invincible? - we can save cheats?? OH WOW!
-		hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport? //hm.AwakeFromLoad();  Nothing done for isPlayer
+		hm.health = Utils.GetFloatFromString(entries[index]); index++; // how much health we have
+		hm.cyberHealth = Utils.GetFloatFromString(entries[index]); index++;
+		hm.deathDone = Utils.GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
+		hm.god = Utils.GetBoolFromString(entries[index]); index++; // Are we invincible? - we can save cheats?? OH WOW!
+		hm.teleportDone = Utils.GetBoolFromString(entries[index]); index++; // did we already teleport? //hm.AwakeFromLoad();  Nothing done for isPlayer
 		GUIState.ButtonType bt = (GUIState.ButtonType) Enum.Parse(typeof(GUIState.ButtonType), entries[index]);
 		if (Enum.IsDefined(typeof(GUIState.ButtonType),bt)) GUIState.a.overButtonType = bt;
 		index++;
-		GUIState.a.overButton = GetBoolFromString(entries[index]); index++;
-		for (j=0;j<7;j++) { inv.weaponInventoryIndices[j] = GetIntFromString(entries[index],currentline ); index++; }
-		for (j=0;j<7;j++) { inv.weaponInventoryAmmoIndices[j] = GetIntFromString(entries[index],currentline ); index++; }
+		GUIState.a.overButton = Utils.GetBoolFromString(entries[index]); index++;
+		for (j=0;j<7;j++) { inv.weaponInventoryIndices[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		for (j=0;j<7;j++) { inv.weaponInventoryAmmoIndices[j] = Utils.GetIntFromString(entries[index] ); index++; }
 		//for (j=0;j<7;j++) { inv.weaponInventoryText[j] = inv.weaponInvTextSource[(WeaponFire.Get16WeaponIndexFromConstIndex(inv.weaponInventoryIndices[j]))]; } // derived from the above
-		inv.numweapons = GetIntFromString(entries[index],currentline ); index++;
-		for (j=0;j<16;j++) { inv.wepAmmo[j] = GetIntFromString(entries[index],currentline ); index++; }
-		for (j=0;j<16;j++) { inv.wepAmmoSecondary[j] = GetIntFromString(entries[index],currentline ); index++; }
-		for (j=0;j<7;j++) { inv.currentEnergyWeaponHeat[j] = GetFloatFromString(entries[index],currentline); index++; }
-		for (j=0;j<7;j++) { inv.wepLoadedWithAlternate[j] = GetBoolFromString(entries[index]); index++; }
-		WeaponCurrent.WepInstance.weaponCurrent = GetIntFromString(entries[index],currentline ); index++;
-		WeaponCurrent.WepInstance.weaponIndex = GetIntFromString(entries[index],currentline ); index++;
-		for (j=0;j<7;j++) { WeaponCurrent.WepInstance.weaponEnergySetting[j] = GetFloatFromString(entries[index],currentline); index++; }
-		for (j=0;j<7;j++) { WeaponCurrent.WepInstance.currentMagazineAmount[j] = GetIntFromString(entries[index],currentline ); index++; }
-		for (j=0;j<7;j++) { WeaponCurrent.WepInstance.currentMagazineAmount2[j] = GetIntFromString(entries[index],currentline ); index++; }
-		WeaponCurrent.WepInstance.justChangedWeap = GetBoolFromString(entries[index]); index++;
+		inv.numweapons = Utils.GetIntFromString(entries[index] ); index++;
+		for (j=0;j<16;j++) { inv.wepAmmo[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		for (j=0;j<16;j++) { inv.wepAmmoSecondary[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		for (j=0;j<7;j++) { inv.currentEnergyWeaponHeat[j] = Utils.GetFloatFromString(entries[index]); index++; }
+		for (j=0;j<7;j++) { inv.wepLoadedWithAlternate[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		WeaponCurrent.WepInstance.weaponCurrent = Utils.GetIntFromString(entries[index] ); index++;
+		WeaponCurrent.WepInstance.weaponIndex = Utils.GetIntFromString(entries[index] ); index++;
+		for (j=0;j<7;j++) { WeaponCurrent.WepInstance.weaponEnergySetting[j] = Utils.GetFloatFromString(entries[index]); index++; }
+		for (j=0;j<7;j++) { WeaponCurrent.WepInstance.currentMagazineAmount[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		for (j=0;j<7;j++) { WeaponCurrent.WepInstance.currentMagazineAmount2[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		WeaponCurrent.WepInstance.justChangedWeap = Utils.GetBoolFromString(entries[index]); index++;
 		WeaponCurrent.WepInstance.SetAllViewModelsDeactive();
-		WeaponCurrent.WepInstance.lastIndex = GetIntFromString(entries[index],currentline ); index++;
-		WeaponCurrent.WepInstance.bottomless = GetBoolFromString(entries[index]); index++;
-		WeaponCurrent.WepInstance.redbull = GetBoolFromString(entries[index]); index++;
-		WeaponCurrent.WepInstance.reloadFinished = GetFloatFromString(entries[index],currentline); index++;
-		WeaponCurrent.WepInstance.reloadLerpValue = GetFloatFromString(entries[index],currentline); index++;
-		WeaponCurrent.WepInstance.lerpStartTime = GetFloatFromString(entries[index],currentline); index++;
-		WeaponCurrent.WepInstance.targetY = GetFloatFromString(entries[index],currentline); index++;
-		WeaponFire.a.waitTilNextFire = GetFloatFromString(entries[index],currentline); index++;
-		WeaponFire.a.overloadEnabled = GetBoolFromString(entries[index]); index++;
-		WeaponFire.a.sparqSetting = GetFloatFromString(entries[index],currentline); index++;
-		WeaponFire.a.ionSetting = GetFloatFromString(entries[index],currentline); index++;
-		WeaponFire.a.blasterSetting = GetFloatFromString(entries[index],currentline); index++;
-		WeaponFire.a.plasmaSetting = GetFloatFromString(entries[index],currentline); index++;
-		WeaponFire.a.stungunSetting = GetFloatFromString(entries[index],currentline); index++;
-		WeaponFire.a.recoiling = GetBoolFromString(entries[index]); index++;
-		WeaponFire.a.justFired = GetFloatFromString(entries[index],currentline); index++;
-		WeaponFire.a.energySliderClickedTime = GetFloatFromString(entries[index],currentline); index++;
-		WeaponFire.a.cyberWeaponAttackFinished = GetFloatFromString(entries[index],currentline); index++;
-		inv.grenadeCurrent = GetIntFromString(entries[index],currentline ); index++;
-		inv.grenadeIndex = GetIntFromString(entries[index],currentline ); index++;
-		inv.nitroTimeSetting = GetFloatFromString(entries[index],currentline); index++;
-		inv.earthShakerTimeSetting = GetFloatFromString(entries[index],currentline); index++;
-		for (j=0;j<7;j++) { inv.grenAmmo[j] = GetIntFromString(entries[index],currentline ); index++; }
-		inv.patchCurrent = GetIntFromString(entries[index],currentline ); index++;
-		inv.patchIndex = GetIntFromString(entries[index],currentline ); index++;
-		for (j=0;j<7;j++) { inv.patchCounts[j] = GetIntFromString(entries[index],currentline ); index++; }
-		for (j=0;j<134;j++) { inv.hasLog[j] = GetBoolFromString(entries[index]); index++; }
-		for (j=0;j<134;j++) { inv.readLog[j] = GetBoolFromString(entries[index]); index++; }
-		for (j=0;j<10;j++) { inv.numLogsFromLevel[j] = GetIntFromString(entries[index],currentline ); index++; }
-		inv.lastAddedIndex = GetIntFromString(entries[index],currentline ); index++;
-		inv.beepDone = GetBoolFromString(entries[index]); index++;
-		for (j=0;j<13;j++) { inv.hasHardware[j] = GetBoolFromString(entries[index]); index++; }
+		WeaponCurrent.WepInstance.lastIndex = Utils.GetIntFromString(entries[index] ); index++;
+		WeaponCurrent.WepInstance.bottomless = Utils.GetBoolFromString(entries[index]); index++;
+		WeaponCurrent.WepInstance.redbull = Utils.GetBoolFromString(entries[index]); index++;
+		WeaponCurrent.WepInstance.reloadFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		WeaponCurrent.WepInstance.reloadLerpValue = Utils.GetFloatFromString(entries[index]); index++; // %
+		WeaponCurrent.WepInstance.lerpStartTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		WeaponCurrent.WepInstance.targetY = Utils.GetFloatFromString(entries[index]); index++;
+		WeaponFire.a.waitTilNextFire = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		WeaponFire.a.overloadEnabled = Utils.GetBoolFromString(entries[index]); index++;
+		WeaponFire.a.sparqSetting = Utils.GetFloatFromString(entries[index]); index++;
+		WeaponFire.a.ionSetting = Utils.GetFloatFromString(entries[index]); index++;
+		WeaponFire.a.blasterSetting = Utils.GetFloatFromString(entries[index]); index++;
+		WeaponFire.a.plasmaSetting = Utils.GetFloatFromString(entries[index]); index++;
+		WeaponFire.a.stungunSetting = Utils.GetFloatFromString(entries[index]); index++;
+		WeaponFire.a.recoiling = Utils.GetBoolFromString(entries[index]); index++;
+		WeaponFire.a.justFired = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		WeaponFire.a.energySliderClickedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		WeaponFire.a.cyberWeaponAttackFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		inv.grenadeCurrent = Utils.GetIntFromString(entries[index]); index++;
+		inv.grenadeIndex = Utils.GetIntFromString(entries[index]); index++;
+		inv.nitroTimeSetting = Utils.GetFloatFromString(entries[index]); index++;
+		inv.earthShakerTimeSetting = Utils.GetFloatFromString(entries[index]); index++;
+		for (j=0;j<7;j++) { inv.grenAmmo[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		inv.patchCurrent = Utils.GetIntFromString(entries[index]); index++;
+		inv.patchIndex = Utils.GetIntFromString(entries[index]); index++;
+		for (j=0;j<7;j++) { inv.patchCounts[j] = Utils.GetIntFromString(entries[index]); index++; }
+		for (j=0;j<134;j++) { inv.hasLog[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		for (j=0;j<134;j++) { inv.readLog[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		for (j=0;j<10;j++) { inv.numLogsFromLevel[j] = Utils.GetIntFromString(entries[index]); index++; }
+		inv.lastAddedIndex = Utils.GetIntFromString(entries[index]); index++;
+		inv.beepDone = Utils.GetBoolFromString(entries[index]); index++;
+		for (j=0;j<13;j++) { inv.hasHardware[j] = Utils.GetBoolFromString(entries[index]); index++; }
 		if (Inventory.a.hasHardware[1]) {
 			ml.compassContainer.SetActive(true);
 			ml.automapContainerLH.SetActive(true);
 			ml.automapContainerRH.SetActive(true);
 		}
-		for (j=0;j<13;j++) { inv.hardwareVersion[j] = GetIntFromString(entries[index],currentline ); index++; }
-		for (j=0;j<13;j++) { inv.hardwareVersionSetting[j] = GetIntFromString(entries[index],currentline ); index++; }
-		inv.hardwareInvCurrent = GetIntFromString(entries[index],currentline ); index++;
-		inv.hardwareInvIndex = GetIntFromString(entries[index],currentline ); index++;
-		for (j=0;j<13;j++) { inv.hardwareIsActive[j] = GetBoolFromString(entries[index]); index++; }
+		for (j=0;j<13;j++) { inv.hardwareVersion[j] = Utils.GetIntFromString(entries[index]); index++; }
+		for (j=0;j<13;j++) { inv.hardwareVersionSetting[j] = Utils.GetIntFromString(entries[index]); index++; }
+		inv.hardwareInvCurrent = Utils.GetIntFromString(entries[index]); index++;
+		inv.hardwareInvIndex = Utils.GetIntFromString(entries[index]); index++;
+		for (j=0;j<13;j++) { inv.hardwareIsActive[j] = Utils.GetBoolFromString(entries[index]); index++; }
 		for (j=0;j<32;j++) {
-			int cardType = GetIntFromString(entries[index],currentline );
+			int cardType = Utils.GetIntFromString(entries[index]);
 			switch (cardType) {
 				case 0: inv.accessCardsOwned[j] = Door.accessCardType.None; break;
 				case 1: inv.accessCardsOwned[j] = Door.accessCardType.Standard; break;
@@ -2495,46 +2100,46 @@ public class Const : MonoBehaviour {
 			}
 			index++;
 		}
-		for (j=0;j<14;j++) { inv.generalInventoryIndexRef[j] = GetIntFromString(entries[index],currentline ); index++; }
-		inv.generalInvCurrent = GetIntFromString(entries[index],currentline ); index++;
-		inv.generalInvIndex = GetIntFromString(entries[index],currentline ); index++;
-		inv.currentCyberItem = GetIntFromString(entries[index],currentline ); index++;
-		inv.isPulserNotDrill = GetBoolFromString(entries[index]); index++;
-		for (j=0;j<7;j++) { inv.softVersions[j] = GetIntFromString(entries[index],currentline ); index++; }
-		for (j=0;j<7;j++) { inv.hasSoft[j] = GetBoolFromString(entries[index]); index++; }
-		inv.emailCurrent = GetIntFromString(entries[index],currentline ); index++;
-		inv.emailIndex = GetIntFromString(entries[index],currentline ); index++;	
-		mfd.lastWeaponSideRH = GetBoolFromString(entries[index]); index++;
-		mfd.lastItemSideRH = GetBoolFromString(entries[index]); index++;
-		mfd.lastAutomapSideRH = GetBoolFromString(entries[index]); index++;
-		mfd.lastTargetSideRH = GetBoolFromString(entries[index]); index++;
-		mfd.lastDataSideRH = GetBoolFromString(entries[index]); index++;
-		mfd.lastSearchSideRH = GetBoolFromString(entries[index]); index++;
-		mfd.lastLogSideRH = GetBoolFromString(entries[index]); index++;
-		mfd.lastLogSecondarySideRH = GetBoolFromString(entries[index]); index++;
-		mfd.lastMinigameSideRH = GetBoolFromString(entries[index]); index++;
-		readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		for (j=0;j<14;j++) { inv.generalInventoryIndexRef[j] = Utils.GetIntFromString(entries[index]); index++; }
+		inv.generalInvCurrent = Utils.GetIntFromString(entries[index]); index++;
+		inv.generalInvIndex = Utils.GetIntFromString(entries[index]); index++;
+		inv.currentCyberItem = Utils.GetIntFromString(entries[index]); index++;
+		inv.isPulserNotDrill = Utils.GetBoolFromString(entries[index]); index++;
+		for (j=0;j<7;j++) { inv.softVersions[j] = Utils.GetIntFromString(entries[index]); index++; }
+		for (j=0;j<7;j++) { inv.hasSoft[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		inv.emailCurrent = Utils.GetIntFromString(entries[index]); index++;
+		inv.emailIndex = Utils.GetIntFromString(entries[index]); index++;	
+		mfd.lastWeaponSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastItemSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastAutomapSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastTargetSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastDataSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastSearchSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastLogSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastLogSecondarySideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastMinigameSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		mfd.objectInUsePos = new Vector3(readFloatx,readFloaty,readFloatz);
 		// tetheredPGP
 		// tetheredPWP
 		// tetheredSearchable
 		// tetheredKeypadElevator
 		// tetheredKeypadKeycode
-		mfd.paperLogInUse = GetBoolFromString(entries[index]); index++;
-		mfd.usingObject = GetBoolFromString(entries[index]); index++;
-		mfd.logReaderContainer.SetActive(GetBoolFromString(entries[index])); index++;
-		mfd.DataReaderContentTab.SetActive(GetBoolFromString(entries[index])); index++;
-		mfd.logTable.SetActive(GetBoolFromString(entries[index])); index++;
-		mfd.logLevelsFolder.SetActive(GetBoolFromString(entries[index])); index++;
-		mfd.logFinished = GetFloatFromString(entries[index],currentline); index++;
-		mfd.logActive = GetBoolFromString(entries[index]); index++;
-		mfd.logType = GetIntFromString(entries[index],currentline ); index++;
-		mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished = GetFloatFromString(entries[index],currentline); index++;
+		mfd.paperLogInUse = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.usingObject = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.logReaderContainer.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+		mfd.DataReaderContentTab.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+		mfd.logTable.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+		mfd.logLevelsFolder.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+		mfd.logFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		mfd.logActive = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.logType = Utils.GetIntFromString(entries[index]); index++;
+		mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 	}
 
-	void LoadObjectDataToObject(GameObject currentGameObject, string[] entries, int currentline, int index) {
+	void LoadObjectDataToObject(GameObject currentGameObject, string[] entries, int index) {
 		float readFloatx;
 		float readFloaty;
 		float readFloatz;
@@ -2544,7 +2149,7 @@ public class Const : MonoBehaviour {
 
 		// Index starts at 3 here for SetActive.
 		// Set active state of GameObject in Hierarchy
-		bool setToActive = GetBoolFromString(entries[index]); index++;
+		bool setToActive = Utils.GetBoolFromString(entries[index]); index++;
 		if (setToActive) {
 			if (!currentGameObject.activeSelf) currentGameObject.SetActive(true); 
 		} else {
@@ -2552,69 +2157,70 @@ public class Const : MonoBehaviour {
 		}
 
 		// Get transform
-		readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		if (currentGameObject.transform.localPosition != tempvec) currentGameObject.transform.localPosition = tempvec;
 
 		// Get rotation
-		readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		readFloatz = GetFloatFromString(entries[index],currentline); index++;
-		readFloatw = GetFloatFromString(entries[index],currentline); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatw = Utils.GetFloatFromString(entries[index]); index++;
 		Quaternion tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
 		currentGameObject.transform.localRotation = tempquat;
 
 		// Get scale
-		readFloatx = GetFloatFromString(entries[index],currentline); index++;
-		readFloaty = GetFloatFromString(entries[index],currentline); index++;
-		readFloatz = GetFloatFromString(entries[index],currentline); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		currentGameObject.transform.localScale = tempvec;
 
 		// Get rigidbody velocity
 		Rigidbody rbody = currentGameObject.GetComponent<Rigidbody>();
 		if (rbody != null) {
-			readFloatx = GetFloatFromString(entries[index],currentline); index++;
-			readFloaty = GetFloatFromString(entries[index],currentline); index++;
-			readFloatz = GetFloatFromString(entries[index],currentline); index++;
+			readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+			readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+			readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 			tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 			rbody.velocity = tempvec;
+			rbody.isKinematic = Utils.GetBoolFromString(entries[index]); index++;
 		} else {
-			index = index + 3; // at 15 here, moving along and ignoring the zeros
+			index = index + 4; // At 15 here, moving along and ignoring the zeros
 		}
 
 		HealthManager hm = currentGameObject.GetComponent<HealthManager>(); // used multiple times below
 		SearchableItem se = currentGameObject.GetComponent<SearchableItem>(); // used multiple times below
-		so.levelParentID = GetIntFromString(entries[index],currentline ); index++; // 16
+		so.levelParentID = Utils.GetIntFromString(entries[index]); index++; // 16
 		if (index >= entries.Length) return;
 		switch (so.saveType) {
 			case SaveObject.SaveableType.Useable:
 				UseableObjectUse uou = currentGameObject.GetComponent<UseableObjectUse>();
 				if (uou != null) {
-					uou.useableItemIndex = GetIntFromString(entries[index],currentline ); index++;
-					uou.customIndex = GetIntFromString(entries[index],currentline ); index++;
-					uou.ammo = GetIntFromString(entries[index],currentline ); index++;
-					uou.ammo2 = GetIntFromString(entries[index],currentline ); index++;
+					uou.useableItemIndex = Utils.GetIntFromString(entries[index]); index++;
+					uou.customIndex = Utils.GetIntFromString(entries[index]); index++;
+					uou.ammo = Utils.GetIntFromString(entries[index]); index++;
+					uou.ammo2 = Utils.GetIntFromString(entries[index]); index++;
 				}
 				break;
 			case SaveObject.SaveableType.Grenade:
 				GrenadeActivate ga = currentGameObject.GetComponent<GrenadeActivate>();
 				if (ga != null) {
-					ga.constIndex = GetIntFromString(entries[index],currentline ); index++; // const lookup table index
-					ga.useTimer = GetBoolFromString(entries[index]); index++; // do we have a timer going?
-					ga.timeFinished = GetFloatFromString(entries[index],currentline); index++; // float - how much time left before the fun part?
-					ga.explodeOnContact = GetBoolFromString(entries[index]); index++; // bool - or not a landmine
-					ga.useProx = GetBoolFromString(entries[index]); index++; // bool - is this a landmine?
+					ga.constIndex = Utils.GetIntFromString(entries[index]); index++; // const lookup table index
+					ga.useTimer = Utils.GetBoolFromString(entries[index]); index++; // do we have a timer going?
+					ga.timeFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - how much time left before the fun part?
+					ga.explodeOnContact = Utils.GetBoolFromString(entries[index]); index++; // bool - or not a landmine
+					ga.useProx = Utils.GetBoolFromString(entries[index]); index++; // bool - is this a landmine?
 				}
 				break;
 			case SaveObject.SaveableType.NPC:
 				AIController aic = currentGameObject.GetComponent<AIController>();
 				AIAnimationController aiac = currentGameObject.GetComponentInChildren<AIAnimationController>();
 				if (aic != null) {
-					aic.index = GetIntFromString(entries[index],currentline ); index++; // int - NPC const lookup table index for instantiating
-					int state = GetIntFromString(entries[index],currentline ); index++;
+					aic.index = Utils.GetIntFromString(entries[index]); index++; // int - NPC const lookup table index for instantiating
+					int state = Utils.GetIntFromString(entries[index]); index++;
 					switch (state) {
 						case 0: aic.currentState = AIState.Idle; break;
 						case 1: aic.currentState = AIState.Walk; break;
@@ -2629,72 +2235,72 @@ public class Const : MonoBehaviour {
 						case 10:aic.currentState = AIState.Dead; break;
 						default:aic.currentState = AIState.Idle; break;
 					}
-					int enemIDRead = GetIntFromString(entries[index],currentline ); index++;
+					int enemIDRead = Utils.GetIntFromString(entries[index]); index++;
 					if (enemIDRead >= 0) {
 						if (player1.GetComponent<SaveObject>().SaveID == enemIDRead) {
 							aic.enemy = player1;
 						}
 					}
-					aic.gracePeriodFinished = GetFloatFromString(entries[index],currentline); index++; // float - time before applying pain damage on attack2
-					aic.meleeDamageFinished = GetFloatFromString(entries[index],currentline); index++; // float - time before applying pain damage on attack2
-					aic.inSight = GetBoolFromString(entries[index]); index++; // bool
-					aic.infront = GetBoolFromString(entries[index]); index++; // bool
-					aic.inProjFOV = GetBoolFromString(entries[index]); index++; // bool
-					aic.LOSpossible = GetBoolFromString(entries[index]); index++; // bool
-					aic.goIntoPain = GetBoolFromString(entries[index]); index++; // bool
-					aic.rangeToEnemy = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.firstSighting = GetBoolFromString(entries[index]); index++; // bool - or are we dead?
-					aic.dyingSetup = GetBoolFromString(entries[index]); index++; // bool - or are we dead?
-					aic.ai_dying = GetBoolFromString(entries[index]); index++; // bool - are we dying the slow painful death
-					aic.ai_dead = GetBoolFromString(entries[index]); index++; // bool - or are we dead?
-					aic.currentWaypoint = GetIntFromString(entries[index],currentline ); index++; // int
-					readFloatx = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloaty = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloatz = GetFloatFromString(entries[index],currentline); index++; // float
+					aic.gracePeriodFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before applying pain damage on attack2
+					aic.meleeDamageFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before applying pain damage on attack2
+					aic.inSight = Utils.GetBoolFromString(entries[index]); index++; // bool
+					aic.infront = Utils.GetBoolFromString(entries[index]); index++; // bool
+					aic.inProjFOV = Utils.GetBoolFromString(entries[index]); index++; // bool
+					aic.LOSpossible = Utils.GetBoolFromString(entries[index]); index++; // bool
+					aic.goIntoPain = Utils.GetBoolFromString(entries[index]); index++; // bool
+					aic.rangeToEnemy = Utils.GetFloatFromString(entries[index]); index++; // float
+					aic.firstSighting = Utils.GetBoolFromString(entries[index]); index++; // bool - or are we dead?
+					aic.dyingSetup = Utils.GetBoolFromString(entries[index]); index++; // bool - or are we dead?
+					aic.ai_dying = Utils.GetBoolFromString(entries[index]); index++; // bool - are we dying the slow painful death
+					aic.ai_dead = Utils.GetBoolFromString(entries[index]); index++; // bool - or are we dead?
+					aic.currentWaypoint = Utils.GetIntFromString(entries[index]); index++; // int
+					readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
+					readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
+					readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
 					aic.currentDestination = new Vector3(readFloatx,readFloaty,readFloatz);
-					aic.timeTillEnemyChangeFinished = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.timeTillDeadFinished = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.timeTillPainFinished = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.tickFinished = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.raycastingTickFinished = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.huntFinished = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.hadEnemy = GetBoolFromString(entries[index]); index++; // bool
-					readFloatx = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloaty = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloatz = GetFloatFromString(entries[index],currentline); index++; // float
+					aic.timeTillEnemyChangeFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					aic.timeTillDeadFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					aic.timeTillPainFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					aic.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					aic.raycastingTickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					aic.huntFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					aic.hadEnemy = Utils.GetBoolFromString(entries[index]); index++; // bool
+					readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
+					readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
+					readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
 					aic.lastKnownEnemyPos = new Vector3(readFloatx,readFloaty,readFloatz);
-					readFloatx = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloaty = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloatz = GetFloatFromString(entries[index],currentline); index++; // float
+					readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
+					readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
+					readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
 					aic.tempVec = new Vector3(readFloatx,readFloaty,readFloatz);
-					aic.shotFired = GetBoolFromString(entries[index]); index++; // bool
-					aic.randomWaitForNextAttack1Finished = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.randomWaitForNextAttack2Finished = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.randomWaitForNextAttack3Finished = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloatx = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloaty = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloatz = GetFloatFromString(entries[index],currentline); index++; // float
+					aic.shotFired = Utils.GetBoolFromString(entries[index]); index++; // bool
+					aic.randomWaitForNextAttack1Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					aic.randomWaitForNextAttack2Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					aic.randomWaitForNextAttack3Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
+					readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
+					readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
 					aic.idealTransformForward = new Vector3(readFloatx,readFloaty,readFloatz);
-					readFloatx = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloaty = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloatz = GetFloatFromString(entries[index],currentline); index++; // float
+					readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
+					readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
+					readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
 					aic.idealPos = new Vector3(readFloatx,readFloaty,readFloatz);
-					aic.attackFinished = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.attack2Finished = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.attack3Finished = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloatx = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloaty = GetFloatFromString(entries[index],currentline); index++; // float
-					readFloatz = GetFloatFromString(entries[index],currentline); index++; // float
+					aic.attackFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					aic.attack2Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					aic.attack3Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
+					readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
+					readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
 					aic.targettingPosition = new Vector3(readFloatx,readFloaty,readFloatz);
-					aic.deathBurstFinished = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.deathBurstDone = GetBoolFromString(entries[index]); index++; // bool
-					aic.asleep = GetBoolFromString(entries[index]); index++; // bool - are we sleepnir? vague reference alert
-					aic.tranquilizeFinished = GetFloatFromString(entries[index],currentline); index++; // float
-					aic.hopDone = GetBoolFromString(entries[index]); index++; // bool
-					aic.wandering = GetBoolFromString(entries[index]); index++; // bool
-					aic.wanderFinished = GetFloatFromString(entries[index],currentline); index++; // float
+					aic.deathBurstFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					aic.deathBurstDone = Utils.GetBoolFromString(entries[index]); index++; // bool
+					aic.asleep = Utils.GetBoolFromString(entries[index]); index++; // bool - are we sleepnir? vague reference alert
+					aic.tranquilizeFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+					aic.hopDone = Utils.GetBoolFromString(entries[index]); index++; // bool
+					aic.wandering = Utils.GetBoolFromString(entries[index]); index++; // bool
+					aic.wanderFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
 					if (hm != null) {
-						hm.health = GetFloatFromString(entries[index],currentline); index++; // how much health we have
+						hm.health = Utils.GetFloatFromString(entries[index]); index++; // how much health we have
 						if (hm.health > 0) {
 							if (aic.boxCollider != null) { aic.boxCollider.enabled = true; }
 							if (aic.sphereCollider != null) { aic.sphereCollider.enabled = true; }
@@ -2705,18 +2311,18 @@ public class Const : MonoBehaviour {
 								rbody.isKinematic = false;
 							}
 						}
-						hm.cyberHealth = GetFloatFromString(entries[index],currentline); index++;
-						hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
-						hm.god = GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
-						hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport?
+						hm.cyberHealth = Utils.GetFloatFromString(entries[index]); index++;
+						hm.deathDone = Utils.GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
+						hm.god = Utils.GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
+						hm.teleportDone = Utils.GetBoolFromString(entries[index]); index++; // did we already teleport?
 						hm.AwakeFromLoad();
 					} else {
 						index += 5;
 					}
 					if (aiac != null) {
-						aiac.currentClipPercentage = GetFloatFromString(entries[index],currentline); index++; // float
-						aiac.dying = GetBoolFromString(entries[index]); index++; // bool
-						aiac.animSwapFinished = GetFloatFromString(entries[index],currentline); index++; // float
+						aiac.currentClipPercentage = Utils.GetFloatFromString(entries[index]); index++; // float
+						aiac.dying = Utils.GetBoolFromString(entries[index]); index++; // bool
+						aiac.animSwapFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
 						if (!aic.ai_dead) {
 							if (aiac.anim != null) aiac.anim.speed = 1f;
 						}
@@ -2733,10 +2339,10 @@ public class Const : MonoBehaviour {
 				break;
 			case SaveObject.SaveableType.Destructable:
 				if (hm != null) {
-					hm.health = GetFloatFromString(entries[index],currentline); index++; // how much health we have
-					hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
-					hm.god = GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
-					hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport?
+					hm.health = Utils.GetFloatFromString(entries[index]); index++; // how much health we have
+					hm.deathDone = Utils.GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
+					hm.god = Utils.GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
+					hm.teleportDone = Utils.GetBoolFromString(entries[index]); index++; // did we already teleport?
 					hm.AwakeFromLoad();
 				} else {
 					index = index + 4;
@@ -2744,14 +2350,14 @@ public class Const : MonoBehaviour {
 				break;
 			case SaveObject.SaveableType.SearchableStatic:
 				if (se != null) {
-					se.contents[0] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
-					se.contents[1] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
-					se.contents[2] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
-					se.contents[3] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
-					se.customIndex[0] = GetIntFromString(entries[index],currentline ); index++; // int custom index
-					se.customIndex[1] = GetIntFromString(entries[index],currentline ); index++; // int custom index
-					se.customIndex[2] = GetIntFromString(entries[index],currentline ); index++; // int custom index
-					se.customIndex[3] = GetIntFromString(entries[index],currentline ); index++; // int custom index
+					se.contents[0] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
+					se.contents[1] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
+					se.contents[2] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
+					se.contents[3] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
+					se.customIndex[0] = Utils.GetIntFromString(entries[index]); index++; // int custom index
+					se.customIndex[1] = Utils.GetIntFromString(entries[index]); index++; // int custom index
+					se.customIndex[2] = Utils.GetIntFromString(entries[index]); index++; // int custom index
+					se.customIndex[3] = Utils.GetIntFromString(entries[index]); index++; // int custom index
 					se.searchableInUse = false;
 				} else {
 					index += 8;
@@ -2759,24 +2365,24 @@ public class Const : MonoBehaviour {
 				break;
 			case SaveObject.SaveableType.SearchableDestructable:
 				if (se != null) {
-					se.contents[0] = GetIntFromString(entries[index],currentline ); index++;; // int main lookup index
-					se.contents[1] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
-					se.contents[2] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
-					se.contents[3] = GetIntFromString(entries[index],currentline ); index++; // int main lookup index
-					se.customIndex[0] = GetIntFromString(entries[index],currentline ); index++; // int custom index
-					se.customIndex[1] = GetIntFromString(entries[index],currentline ); index++; // int custom index
-					se.customIndex[2] = GetIntFromString(entries[index],currentline ); index++; // int custom index
-					se.customIndex[3] = GetIntFromString(entries[index],currentline ); index++; // int custom index
+					se.contents[0] = Utils.GetIntFromString(entries[index]); index++;; // int main lookup index
+					se.contents[1] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
+					se.contents[2] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
+					se.contents[3] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
+					se.customIndex[0] = Utils.GetIntFromString(entries[index]); index++; // int custom index
+					se.customIndex[1] = Utils.GetIntFromString(entries[index]); index++; // int custom index
+					se.customIndex[2] = Utils.GetIntFromString(entries[index]); index++; // int custom index
+					se.customIndex[3] = Utils.GetIntFromString(entries[index]); index++; // int custom index
 					se.searchableInUse = false;
 				} else {
 					index += 8;
 				}
 				if (hm != null) {
-					hm.health = GetFloatFromString(entries[index],currentline); index++; // how much health we have
-					hm.cyberHealth = GetFloatFromString(entries[index],currentline); index++;
-					hm.deathDone = GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
-					hm.god = GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
-					hm.teleportDone = GetBoolFromString(entries[index]); index++; // did we already teleport?
+					hm.health = Utils.GetFloatFromString(entries[index]); index++; // how much health we have
+					hm.cyberHealth = Utils.GetFloatFromString(entries[index]); index++;
+					hm.deathDone = Utils.GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
+					hm.god = Utils.GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
+					hm.teleportDone = Utils.GetBoolFromString(entries[index]); index++; // did we already teleport?
 					hm.AwakeFromLoad();
 				} else {
 					index = index + 4;
@@ -2785,15 +2391,15 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.Door:
 				Door dr = currentGameObject.GetComponent<Door>();
 				if (dr != null) {
-					dr.targetAlreadyDone = GetBoolFromString(entries[index]); index++; // bool - have we already ran targets
-					dr.locked = GetBoolFromString(entries[index]); index++; // bool - is this locked?
-					dr.ajar = GetBoolFromString(entries[index]); index++; // bool - is this ajar?
-					dr.useFinished = GetFloatFromString(entries[index],currentline); index++;
-					dr.waitBeforeClose = GetFloatFromString(entries[index],currentline); index++;
-					dr.lasersFinished = GetFloatFromString(entries[index],currentline); index++;
-					dr.blocked = GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
-					dr.accessCardUsedByPlayer = GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
-					int state = GetIntFromString(entries[index],currentline ); index++;
+					dr.targetAlreadyDone = Utils.GetBoolFromString(entries[index]); index++; // bool - have we already ran targets
+					dr.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - is this locked?
+					dr.ajar = Utils.GetBoolFromString(entries[index]); index++; // bool - is this ajar?
+					dr.useFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+					dr.waitBeforeClose = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+					dr.lasersFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+					dr.blocked = Utils.GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
+					dr.accessCardUsedByPlayer = Utils.GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
+					int state = Utils.GetIntFromString(entries[index]); index++;
 					string clipName = "IdleClosed";
 					switch (state) {
 						case 0: dr.doorOpen = Door.doorState.Closed; clipName = "IdleClosed"; break;
@@ -2801,7 +2407,7 @@ public class Const : MonoBehaviour {
 						case 2: dr.doorOpen = Door.doorState.Closing; clipName = "DoorClose"; break;
 						case 3: dr.doorOpen = Door.doorState.Opening; clipName = "DoorOpen"; break;
 					}
-					dr.animatorPlaybackTime = GetFloatFromString(entries[index],currentline); index++;
+					dr.animatorPlaybackTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 					dr.SetAnimFromLoad(clipName,0,dr.animatorPlaybackTime);
 				} else {
 					index += 4;
@@ -2810,9 +2416,9 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.ForceBridge:
 				ForceBridge fb = currentGameObject.GetComponent<ForceBridge>();
 				if (fb != null) {
-					fb.activated = GetBoolFromString(entries[index]); index++; // bool - is the bridge on?
-					fb.lerping = GetBoolFromString(entries[index]); index++; // bool - are we currently lerping one way or tother
-					fb.tickFinished = GetFloatFromString(entries[index],currentline); index++; // float - time before thinking
+					fb.activated = Utils.GetBoolFromString(entries[index]); index++; // bool - is the bridge on?
+					fb.lerping = Utils.GetBoolFromString(entries[index]); index++; // bool - are we currently lerping one way or tother
+					fb.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before thinking
 				} else {
 					index += 2;
 				}
@@ -2821,11 +2427,11 @@ public class Const : MonoBehaviour {
 				ButtonSwitch bs = currentGameObject.GetComponent<ButtonSwitch>();
 				if (bs != null) {
 					// bs?  null?  that's bs
-					bs.locked = GetBoolFromString(entries[index]); index++; // bool - is this switch locked
-					bs.active = GetBoolFromString(entries[index]); index++; // bool - is the switch flashing?
-					bs.alternateOn = GetBoolFromString(entries[index]); index++; // bool - is the flashing material on?
-					bs.delayFinished = GetFloatFromString(entries[index],currentline); index++; // float - time before firing targets
-					bs.tickFinished = GetFloatFromString(entries[index],currentline); index++; // float - time before thinking
+					bs.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - is this switch locked
+					bs.active = Utils.GetBoolFromString(entries[index]); index++; // bool - is the switch flashing?
+					bs.alternateOn = Utils.GetBoolFromString(entries[index]); index++; // bool - is the flashing material on?
+					bs.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before firing targets
+					bs.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before thinking
 				} else {
 					index += 4;
 				}
@@ -2833,7 +2439,7 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.FuncWall:
 				FuncWall fw = currentGameObject.GetComponent<FuncWall>(); // actually this is on movertarget gameObjects
 				if (fw != null) {
-					int state = GetIntFromString(entries[index],currentline ); index++;
+					int state = Utils.GetIntFromString(entries[index]); index++;
 					switch (state) {
 						case 0: fw.currentState = FuncWall.FuncStates.Start; break;
 						case 1: fw.currentState = FuncWall.FuncStates.Target; break;
@@ -2849,7 +2455,7 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.TeleDest:
 				TeleportTouch tt = currentGameObject.GetComponent<TeleportTouch>();
 				if (tt != null) {
-					tt.justUsed = GetFloatFromString(entries[index],currentline); index++; // bool - is the player still touching it?
+					tt.justUsed = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // bool - is the player still touching it?
 				} else {
 					index++;
 				}
@@ -2857,8 +2463,8 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.LBranch:
 				LogicBranch lb = currentGameObject.GetComponent<LogicBranch>();
 				if (lb != null) {
-					lb.relayEnabled = GetBoolFromString(entries[index]); index++; // bool - is this enabled
-					lb.onSecond = GetBoolFromString(entries[index]); index++; // bool - which one are we on?
+					lb.relayEnabled = Utils.GetBoolFromString(entries[index]); index++; // bool - is this enabled
+					lb.onSecond = Utils.GetBoolFromString(entries[index]); index++; // bool - which one are we on?
 				} else {
 					index += 2;
 				}
@@ -2866,7 +2472,7 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.LRelay:
 				LogicRelay lr = currentGameObject.GetComponent<LogicRelay>();
 				if (lr != null) {
-					lr.relayEnabled = GetBoolFromString(entries[index]); index++; // bool - is this enabled
+					lr.relayEnabled = Utils.GetBoolFromString(entries[index]); index++; // bool - is this enabled
 				} else {
 					index++;
 				}
@@ -2874,9 +2480,9 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.LSpawner:
 				SpawnManager sm = currentGameObject.GetComponent<SpawnManager>();
 				if (sm != null) {
-					sm.active = GetBoolFromString(entries[index]); index++; // bool - is this enabled
-					sm.numberActive = GetIntFromString(entries[index],currentline ); index++; // int - number spawned
-					sm.delayFinished = GetFloatFromString(entries[index],currentline); index++; // float - time that we need to spawn next
+					sm.active = Utils.GetBoolFromString(entries[index]); index++; // bool - is this enabled
+					sm.numberActive = Utils.GetIntFromString(entries[index]); index++; // int - number spawned
+					sm.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time that we need to spawn next
 				} else {
 					index += 3;
 				}
@@ -2884,8 +2490,8 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.InteractablePanel:
 				InteractablePanel ip = currentGameObject.GetComponent<InteractablePanel>();
 				if (ip != null) {
-					ip.open = GetBoolFromString(entries[index]); index++; // bool - is the panel opened
-					ip.installed = GetBoolFromString(entries[index]); index++; // bool - is the item installed, MAKE SURE YOU ENABLE THE INSTALL ITEM GameObject IN LOAD
+					ip.open = Utils.GetBoolFromString(entries[index]); index++; // bool - is the panel opened
+					ip.installed = Utils.GetBoolFromString(entries[index]); index++; // bool - is the item installed, MAKE SURE YOU ENABLE THE INSTALL ITEM GameObject IN LOAD
 				} else {
 					index += 2;
 				}
@@ -2893,8 +2499,8 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.ElevatorPanel:
 				KeypadElevator ke = currentGameObject.GetComponent<KeypadElevator>();
 				if (ke != null) {
-					ke.padInUse = GetBoolFromString(entries[index]); index++; // bool - is the pad being used by a player
-					ke.locked = GetBoolFromString(entries[index]); index++; // bool - locked?
+					ke.padInUse = Utils.GetBoolFromString(entries[index]); index++; // bool - is the pad being used by a player
+					ke.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - locked?
 				} else {
 					index += 2;
 				}
@@ -2902,9 +2508,9 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.Keypad:
 				KeypadKeycode kk = currentGameObject.GetComponent<KeypadKeycode>();
 				if (kk != null) {
-					kk.padInUse = GetBoolFromString(entries[index]); index++; // bool - is the pad being used by a player
-					kk.locked = GetBoolFromString(entries[index]); index++; // bool - locked?
-					kk.solved = GetBoolFromString(entries[index]); index++; // bool - already entered correct keycode?
+					kk.padInUse = Utils.GetBoolFromString(entries[index]); index++; // bool - is the pad being used by a player
+					kk.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - locked?
+					kk.solved = Utils.GetBoolFromString(entries[index]); index++; // bool - already entered correct keycode?
 				} else {
 					index += 3;
 				}
@@ -2912,12 +2518,12 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.PuzzleGrid:
 				PuzzleGridPuzzle pgp = currentGameObject.GetComponent<PuzzleGridPuzzle>();
 				if (pgp != null) {
-					pgp.puzzleSolved = GetBoolFromString(entries[index]); index++; // bool - is this puzzle already solved?
+					pgp.puzzleSolved = Utils.GetBoolFromString(entries[index]); index++; // bool - is this puzzle already solved?
 					for (int i=0;i<pgp.grid.Length;i++) {
-						pgp.grid[i] = GetBoolFromString(entries[index]); index++;  // bool - get the current grid states + or X
+						pgp.grid[i] = Utils.GetBoolFromString(entries[index]); index++;  // bool - get the current grid states + or X
 					}
-					pgp.fired = GetBoolFromString(entries[index]); index++; // bool - have we already fired yet?
-					pgp.locked = GetBoolFromString(entries[index]); index++; // bool - is this locked?
+					pgp.fired = Utils.GetBoolFromString(entries[index]); index++; // bool - have we already fired yet?
+					pgp.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - is this locked?
 				} else {
 					index += 38; // grid length is always 35
 				}
@@ -2925,14 +2531,14 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.PuzzleWire:
 				PuzzleWirePuzzle pwp = currentGameObject.GetComponent<PuzzleWirePuzzle>();
 				if (pwp != null) {
-					pwp.puzzleSolved = GetBoolFromString(entries[index]); index++; // bool - is this puzzle already solved?
+					pwp.puzzleSolved = Utils.GetBoolFromString(entries[index]); index++; // bool - is this puzzle already solved?
 					for (int i=0;i<pwp.currentPositionsLeft.Length;i++) {
-						pwp.currentPositionsLeft[i] = GetIntFromString(entries[index],currentline ); index++; // int - get the current wire positions
+						pwp.currentPositionsLeft[i] = Utils.GetIntFromString(entries[index]); index++; // int - get the current wire positions
 					}
 					for (int i=0;i<pwp.currentPositionsRight.Length;i++) {
-						pwp.currentPositionsRight[i] = GetIntFromString(entries[index],currentline ); index++;  // int - get the current wire positions
+						pwp.currentPositionsRight[i] = Utils.GetIntFromString(entries[index]); index++;  // int - get the current wire positions
 					}
-					pwp.locked = GetBoolFromString(entries[index]); index++; // bool - is this locked?
+					pwp.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - is this locked?
 				} else {
 					index += 16; // number of wire positions is always 7 for each side
 				}
@@ -2940,7 +2546,7 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.TCounter:
 				TriggerCounter tc = currentGameObject.GetComponent<TriggerCounter>();
 				if (tc != null) {
-					tc.counter = GetIntFromString(entries[index],currentline ); index++; // int - how many counts we have
+					tc.counter = Utils.GetIntFromString(entries[index]); index++; // int - how many counts we have
 				} else {
 					index++;
 				}
@@ -2948,7 +2554,7 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.TGravity:
 				GravityLift gl = currentGameObject.GetComponent<GravityLift>();
 				if (gl != null) {
-					gl.active = GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
+					gl.active = Utils.GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
 				} else {
 					index++;
 				}
@@ -2956,7 +2562,7 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.MChanger:
 				MaterialChanger mch = currentGameObject.GetComponent<MaterialChanger>();
 				if (mch != null) {
-					mch.alreadyDone = GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
+					mch.alreadyDone = Utils.GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
 					// if (mch.alreadyDone) {
 						// mch.SetMaterialFromCode(); // do it agains
 					// }
@@ -2967,8 +2573,8 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.RadTrig:
 				Radiation rad = currentGameObject.GetComponent<Radiation>();
 				if (rad != null) {
-					rad.isEnabled = GetBoolFromString(entries[index]); index++; // bool - hey is this on? hello?
-					rad.numPlayers = GetIntFromString(entries[index],currentline ); index++; // int - how many players we are affecting
+					rad.isEnabled = Utils.GetBoolFromString(entries[index]); index++; // bool - hey is this on? hello?
+					rad.numPlayers = Utils.GetIntFromString(entries[index]); index++; // int - how many players we are affecting
 				} else {
 					index += 2;
 				}
@@ -2976,7 +2582,7 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.GravPad:
 				TextureChanger tex = currentGameObject.GetComponent<TextureChanger>();
 				if (tex != null) {
-					tex.currentTexture = GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
+					tex.currentTexture = Utils.GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
 					tex.currentTexture = !tex.currentTexture; // gets done again in Toggle()
 					tex.Toggle(); // set it again to be sure, does other stuff than just change the bool
 				}
@@ -2984,30 +2590,30 @@ public class Const : MonoBehaviour {
 			case SaveObject.SaveableType.ChargeStation:
 				ChargeStation chg = currentGameObject.GetComponent<ChargeStation>();
 				if (chg != null) {
-					chg.nextthink = GetFloatFromString(entries[index],currentline); index++; // float - time before recharged
+					chg.nextthink = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before recharged
 				}
 				break;
 			case SaveObject.SaveableType.Light:
 				LightAnimation la = currentGameObject.GetComponent<LightAnimation>();
 				if (la != null) {
-					la.lightOn = GetBoolFromString(entries[index]); index++;
-					la.lerpOn = GetBoolFromString(entries[index]); index++;
-					la.currentStep = GetIntFromString(entries[index],currentline ); index++;
-					la.lerpValue = GetFloatFromString(entries[index],currentline); index++;
-					la.lerpTime = GetFloatFromString(entries[index],currentline); index++;
-					la.stepTime = GetFloatFromString(entries[index],currentline); index++;
-					la.lerpStartTime = GetFloatFromString(entries[index],currentline); index++;
+					la.lightOn = Utils.GetBoolFromString(entries[index]); index++;
+					la.lerpOn = Utils.GetBoolFromString(entries[index]); index++;
+					la.currentStep = Utils.GetIntFromString(entries[index]); index++;
+					la.lerpValue = Utils.GetFloatFromString(entries[index]); index++; // %
+					la.lerpTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+					la.stepTime = Utils.GetFloatFromString(entries[index]); index++; // Not a timer, current time amount
+					la.lerpStartTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 				}
 				break;
 			case SaveObject.SaveableType.Camera:
 				Camera cm = currentGameObject.GetComponent<Camera>();
 				UnityStandardAssets.ImageEffects.BerserkEffect bzk = currentGameObject.GetComponent<UnityStandardAssets.ImageEffects.BerserkEffect>();
 				Grayscale gsc = currentGameObject.GetComponent<Grayscale>();
-				if (cm != null) { cm.enabled = GetBoolFromString(entries[index]); index++;
+				if (cm != null) { cm.enabled = Utils.GetBoolFromString(entries[index]); index++;
 				} else index++;
-				if (bzk != null) { bzk.enabled = GetBoolFromString(entries[index]); index++;
+				if (bzk != null) { bzk.enabled = Utils.GetBoolFromString(entries[index]); index++;
 				} else index++;
-				if (gsc != null) { gsc.enabled = GetBoolFromString(entries[index]); index++;
+				if (gsc != null) { gsc.enabled = Utils.GetBoolFromString(entries[index]); index++;
 				} else index++;
 				break;
 		}
@@ -3083,83 +2689,83 @@ public class Const : MonoBehaviour {
 
 			// Read in global time and pause data
 			entries = readFileList[currentline].Split(csplit);
-			PauseScript.a.relativeTime = GetFloatFromString(entries[index],currentline); // the global time from which everything checks it's somethingerotherFinished timer states
+			PauseScript.a.relativeTime = Utils.GetFloatFromString(entries[index]); // the global time from which everything checks it's somethingerotherFinished timer states
 			currentline++; // line is over, now we are at 2
 			index = 0; // reset before starting next line
 
 			// Read in global states and quest mission bits in questData and difficulty indices
 			entries = readFileList[currentline].Split(csplit);
-			int levelNum = GetIntFromString(entries[index],currentline ); index++;
+			int levelNum = Utils.GetIntFromString(entries[index]); index++;
 			LevelManager.a.LoadLevelFromSave(levelNum);
 			for (i=0;i<14;i++) {
-				LevelManager.a.levelSecurity[i] = GetIntFromString(entries[index],currentline); index++;
+				LevelManager.a.levelSecurity[i] = Utils.GetIntFromString(entries[index]); index++;
 			}
 			for (i=0;i<14;i++) {
-				LevelManager.a.levelCameraDestroyedCount[i] = GetIntFromString(entries[index],currentline); index++;
+				LevelManager.a.levelCameraDestroyedCount[i] = Utils.GetIntFromString(entries[index]); index++;
 			}
 			for (i=0;i<14;i++) {
-				LevelManager.a.levelSmallNodeDestroyedCount[i] = GetIntFromString(entries[index],currentline); index++;
+				LevelManager.a.levelSmallNodeDestroyedCount[i] = Utils.GetIntFromString(entries[index]); index++;
 			}
 			for (i=0;i<14;i++) {
-				LevelManager.a.levelLargeNodeDestroyedCount[i] = GetIntFromString(entries[index],currentline); index++;
+				LevelManager.a.levelLargeNodeDestroyedCount[i] = Utils.GetIntFromString(entries[index]); index++;
 			}
 			for (i=0;i<14;i++) {
-				LevelManager.a.ressurectionActive[i] = GetBoolFromString(entries[index]); index++;
+				LevelManager.a.ressurectionActive[i] = Utils.GetBoolFromString(entries[index]); index++;
 			}
-			questData.lev1SecCode = GetIntFromString(entries[index],currentline); index++;
-			questData.lev2SecCode = GetIntFromString(entries[index],currentline); index++;
-			questData.lev3SecCode = GetIntFromString(entries[index],currentline); index++;
-			questData.lev4SecCode = GetIntFromString(entries[index],currentline); index++;
-			questData.lev5SecCode = GetIntFromString(entries[index],currentline); index++;
-			questData.lev6SecCode = GetIntFromString(entries[index],currentline); index++;
-			questData.RobotSpawnDeactivated = GetBoolFromString(entries[index]); index++;
-			questData.IsotopeInstalled = GetBoolFromString(entries[index]); index++;
-			questData.ShieldActivated = GetBoolFromString(entries[index]); index++;
-			questData.LaserSafetyOverriden = GetBoolFromString(entries[index]); index++;
-			questData.LaserDestroyed = GetBoolFromString(entries[index]); index++;
-			questData.BetaGroveCyberUnlocked = GetBoolFromString(entries[index]); index++;
-			questData.GroveAlphaJettisonEnabled = GetBoolFromString(entries[index]); index++;
-			questData.GroveBetaJettisonEnabled = GetBoolFromString(entries[index]); index++;
-			questData.GroveDeltaJettisonEnabled = GetBoolFromString(entries[index]); index++;
-			questData.MasterJettisonBroken = GetBoolFromString(entries[index]); index++;
-			questData.Relay428Fixed = GetBoolFromString(entries[index]); index++;
-			questData.MasterJettisonEnabled = GetBoolFromString(entries[index]); index++;
-			questData.BetaGroveJettisoned = GetBoolFromString(entries[index]); index++;
-			questData.AntennaNorthDestroyed = GetBoolFromString(entries[index]); index++;
-			questData.AntennaSouthDestroyed = GetBoolFromString(entries[index]); index++;
-			questData.AntennaEastDestroyed = GetBoolFromString(entries[index]); index++;
-			questData.AntennaWestDestroyed = GetBoolFromString(entries[index]); index++;
-			questData.SelfDestructActivated = GetBoolFromString(entries[index]); index++;
-			questData.BridgeSeparated = GetBoolFromString(entries[index]); index++;
-			questData.IsolinearChipsetInstalled = GetBoolFromString(entries[index]); index++;
-			difficultyCombat = GetIntFromString(entries[index],currentline); index++;
-			difficultyMission = GetIntFromString(entries[index],currentline); index++;
-			difficultyPuzzle = GetIntFromString(entries[index],currentline); index++;
-			difficultyCyber = GetIntFromString(entries[index],currentline); index++;
+			questData.lev1SecCode = Utils.GetIntFromString(entries[index]); index++;
+			questData.lev2SecCode = Utils.GetIntFromString(entries[index]); index++;
+			questData.lev3SecCode = Utils.GetIntFromString(entries[index]); index++;
+			questData.lev4SecCode = Utils.GetIntFromString(entries[index]); index++;
+			questData.lev5SecCode = Utils.GetIntFromString(entries[index]); index++;
+			questData.lev6SecCode = Utils.GetIntFromString(entries[index]); index++;
+			questData.RobotSpawnDeactivated = Utils.GetBoolFromString(entries[index]); index++;
+			questData.IsotopeInstalled = Utils.GetBoolFromString(entries[index]); index++;
+			questData.ShieldActivated = Utils.GetBoolFromString(entries[index]); index++;
+			questData.LaserSafetyOverriden = Utils.GetBoolFromString(entries[index]); index++;
+			questData.LaserDestroyed = Utils.GetBoolFromString(entries[index]); index++;
+			questData.BetaGroveCyberUnlocked = Utils.GetBoolFromString(entries[index]); index++;
+			questData.GroveAlphaJettisonEnabled = Utils.GetBoolFromString(entries[index]); index++;
+			questData.GroveBetaJettisonEnabled = Utils.GetBoolFromString(entries[index]); index++;
+			questData.GroveDeltaJettisonEnabled = Utils.GetBoolFromString(entries[index]); index++;
+			questData.MasterJettisonBroken = Utils.GetBoolFromString(entries[index]); index++;
+			questData.Relay428Fixed = Utils.GetBoolFromString(entries[index]); index++;
+			questData.MasterJettisonEnabled = Utils.GetBoolFromString(entries[index]); index++;
+			questData.BetaGroveJettisoned = Utils.GetBoolFromString(entries[index]); index++;
+			questData.AntennaNorthDestroyed = Utils.GetBoolFromString(entries[index]); index++;
+			questData.AntennaSouthDestroyed = Utils.GetBoolFromString(entries[index]); index++;
+			questData.AntennaEastDestroyed = Utils.GetBoolFromString(entries[index]); index++;
+			questData.AntennaWestDestroyed = Utils.GetBoolFromString(entries[index]); index++;
+			questData.SelfDestructActivated = Utils.GetBoolFromString(entries[index]); index++;
+			questData.BridgeSeparated = Utils.GetBoolFromString(entries[index]); index++;
+			questData.IsolinearChipsetInstalled = Utils.GetBoolFromString(entries[index]); index++;
+			difficultyCombat = Utils.GetIntFromString(entries[index]); index++;
+			difficultyMission = Utils.GetIntFromString(entries[index]); index++;
+			difficultyPuzzle = Utils.GetIntFromString(entries[index]); index++;
+			difficultyCyber = Utils.GetIntFromString(entries[index]); index++;
 			currentline++; // line is over, now we are at 3
 
 			// Load player 1 data
 			index = 2; // reset before starting next line, skipping savetype and ID number
 			entries = readFileList[currentline].Split(csplit); // read in Quest bits
-			if (entries[0] != "!" && player1 != null) LoadPlayerDataToPlayer(player1,entries,currentline,index);
+			if (entries[0] != "!" && player1 != null) LoadPlayerDataToPlayer(player1,entries,index);
 			currentline++; // line is over, now we are at 4
 			index = 2; // reset before starting next line, skipping savetype and ID number
 
 			// Load player 2 data
 			entries = readFileList[currentline].Split(csplit); // read in Quest bits
-			//if (entries[0] != "!" && player2 != null) LoadPlayerDataToPlayer(player2,entries,currentline,index);
+			//if (entries[0] != "!" && player2 != null) LoadPlayerDataToPlayer(player2,entries,index);
 			currentline++; // line is over, now we are at 5
 			index = 2; // reset before starting next line, skipping savetype and ID number
 
 			// Load player 3 data
 			entries = readFileList[currentline].Split(csplit); // read in Quest bits
-			//if (entries[0] != "!" && player3 != null) LoadPlayerDataToPlayer(player3,entries,currentline,index);
+			//if (entries[0] != "!" && player3 != null) LoadPlayerDataToPlayer(player3,entries,index);
 			currentline++; // line is over, now we are at 6
 			index = 2; // reset before starting next line, skipping savetype and ID number
 
 			// Load player 4 data
 			entries = readFileList[currentline].Split(csplit); // read in Quest bits
-			//if (entries[0] != "!" && player4 != null) LoadPlayerDataToPlayer(player4,entries,currentline,index);
+			//if (entries[0] != "!" && player4 != null) LoadPlayerDataToPlayer(player4,entries,index);
 			currentline++; // line is over, now we are at 7
 			index = 0; // reset before starting next line, last one before I start doing an array, promise!
 
@@ -3195,9 +2801,9 @@ public class Const : MonoBehaviour {
 				entries = readFileList[i].Split(csplit);
 				if (entries.Length > 1) {
 					instantiatedCheck = instantiatedActive = false;
-					readIDs[i] = GetIntFromString(entries[1],i); // int - get saveID from 2nd slot
-					instantiatedActive = GetBoolFromString(entries[3]); // bool - get activeSelf value of the gameObject
-					instantiatedCheck = GetBoolFromString(entries[2]); // bool - get instantiated from 3rd slot
+					readIDs[i] = Utils.GetIntFromString(entries[1]); // int - get saveID from 2nd slot
+					instantiatedActive = Utils.GetBoolFromString(entries[3]); // bool - get activeSelf value of the gameObject
+					instantiatedCheck = Utils.GetBoolFromString(entries[2]); // bool - get instantiated from 3rd slot
 					if (instantiatedCheck && instantiatedActive) instantiatedFound.Add(i);
 				}
 			}
@@ -3224,7 +2830,7 @@ public class Const : MonoBehaviour {
 					if(so.SaveID == readIDs[i]) {
 						entries = readFileList[i].Split(csplit);
 						//UnityEngine.Debug.Log("Loading line: " + i.ToString() + " to GameObject named: " + currentGameObject.name + " with SaveID " + so.SaveID.ToString());
-						LoadObjectDataToObject(currentGameObject,entries,i,index);
+						LoadObjectDataToObject(currentGameObject,entries,index);
 						alreadyCheckedThisSaveableGameObject[j] = true; // Huge time saver right here!
 						break;
 					}
@@ -3249,13 +2855,13 @@ public class Const : MonoBehaviour {
 				for (i=0;i<instantiatedFound.Count;i++) {
 					entries = readFileList[i].Split(csplit);
 					if (entries.Length > 1) {
-						consttable = GetIntFromString(entries[3],i); // int - get the prefab table type to use for lookups in Const
-						constdex = GetIntFromString(entries[4],i); // int - get the index into the Const table of prefabs
+						consttable = Utils.GetIntFromString(entries[3]); // int - get the prefab table type to use for lookups in Const
+						constdex = Utils.GetIntFromString(entries[4]); // int - get the index into the Const table of prefabs
 						if (constdex >= 0 && (consttable == 0 || consttable == 1)) {
 							if (consttable == 0) prefabReferenceGO = Const.a.useableItems[constdex];
 							else if (consttable == 1) prefabReferenceGO = Const.a.npcPrefabs[constdex];
 							if (prefabReferenceGO != null) instantiatedObject = Instantiate(prefabReferenceGO,Const.a.vectorZero,quaternionIdentity) as GameObject; // Instantiate at generic location
-							if (instantiatedObject != null) LoadObjectDataToObject(instantiatedObject, entries, i, index); // Load it
+							if (instantiatedObject != null) LoadObjectDataToObject(instantiatedObject, entries, index); // Load it
 						}
 					}
 					loadPercentText.text = (i / instantiatedFound.Count).ToString("00.0000");
@@ -3461,113 +3067,6 @@ public class Const : MonoBehaviour {
 		return false;
 	}
 
-	public bool GetBoolFromString(string val) {
-		return val.Equals("1");
-	}
-
-	private string boolFalseString = "0";
-	private string boolTrueString = "1";
-	public string BoolToString(bool inputValue) {
-		if (inputValue) return boolTrueString;
-		return boolFalseString;
-	}
-
-	private bool getValparsed;
-	private int getValreadInt;
-	private float getValreadFloat;
-	public int GetIntFromString(string val, int currentline) {
-		if (val == "0") return 0;
-		getValparsed = Int32.TryParse(val, NumberStyles.Integer, en_US_Culture, out getValreadInt);
-		if (!getValparsed) {
-			UnityEngine.Debug.Log("BUG: Could not parse int from `" + val + "` on line " + currentline.ToString());
-			return 0;
-		}
-		return getValreadInt;
-	}
-
-	public int GetIntFromString(string val) {
-		if (val == "0") return 0;
-		getValparsed = Int32.TryParse(val, NumberStyles.Integer, en_US_Culture, out getValreadInt);
-		if (!getValparsed) { UnityEngine.Debug.Log("BUG: Could not parse int from `" + val + "`"); return 0; }
-		return getValreadInt;
-	}
-
-	public float GetFloatFromString(string val, int currentline) {
-		getValparsed = Single.TryParse(val, NumberStyles.Float, en_US_Culture, out getValreadFloat);
-		if (!getValparsed) {
-			UnityEngine.Debug.Log("BUG: Could not parse float from `" + val + "` on line " + currentline.ToString());
-			return 0.0f;
-		}
-		return getValreadFloat;
-	}
-
-	public string FloatToString(float val) {
-		return val.ToString("0000.00000", CultureInfo.InvariantCulture); // Output with 4 integer places and 5 mantissa, culture invariant to guarantee . vs , for all regions.
-	}
-
-	public AttackType GetAttackTypeFromInt(int att_type_i) {
-		switch(att_type_i) {
-			case 0: return AttackType.None;
-			case 1: return AttackType.Melee;
-			case 6: return AttackType.MeleeEnergy;
-			case 2: return AttackType.EnergyBeam;
-			case 3: return AttackType.Magnetic;
-			case 4: return AttackType.Projectile;
-			case 5: return AttackType.ProjectileEnergyBeam;
-			case 7: return AttackType.ProjectileLaunched;
-			case 8: return AttackType.Gas;
-			case 9: return AttackType.ProjectileNeedle;
-			case 10:return AttackType.Tranq;
-		}
-		return AttackType.None;
-	}
-
-	public PerceptionLevel GetPerceptionLevelFromInt(int percep_i) {
-		switch(percep_i) {
-			case 1: return PerceptionLevel.Medium;
-			case 2: return PerceptionLevel.High;
-			case 3: return PerceptionLevel.Omniscient;
-		}
-		return PerceptionLevel.Low;
-	}
-
-	public AIMoveType GetMoveTypeFromInt(int movetype_i) { 
-		switch (movetype_i) {
-			case 0: return AIMoveType.None;
-			case 1: return AIMoveType.Walk;
-			case 2: return AIMoveType.Fly;
-			case 3: return AIMoveType.Swim;
-			case 4: return AIMoveType.Cyber;
-		}
-		return AIMoveType.None;
-	}
-
-	public int BodyStateToInt(BodyState bs) {
-		switch (bs) {
-			case BodyState.Standing: return 0;
-			case BodyState.Crouch: return 1;
-			case BodyState.CrouchingDown: return 2;
-			case BodyState.StandingUp: return 3;
-			case BodyState.Prone: return 4;
-			case BodyState.ProningDown: return 5;
-			case BodyState.ProningUp: return 6;
-		}
-		return 0;
-	}
-
-	public BodyState IntToBodyState(int state) {
-		switch (state) {
-			case 0: return BodyState.Standing;
-			case 1: return BodyState.Crouch;
-			case 2: return BodyState.CrouchingDown;
-			case 3: return BodyState.StandingUp;
-			case 4: return BodyState.Prone;
-			case 5: return BodyState.ProningDown;
-			case 6: return BodyState.ProningUp;
-		}
-		return BodyState.Standing;
-	}
-
 	public static DamageData SetNPCDamageData (int NPCindex, int attackNum, GameObject ownedBy) {
 		if (NPCindex < 0 || NPCindex > 23) { NPCindex = 0; UnityEngine.Debug.Log("BUG: NPCindex set incorrectly on NPC.  Not 0 to 23 on NPC at: " + ownedBy.transform.position.x.ToString() + ", " + ownedBy.transform.position.y.ToString() + ", " + ownedBy.transform.position.z + "."); }
 		if (attackNum < 1 || attackNum > 3) attackNum = 1;
@@ -3591,14 +3090,8 @@ public class Const : MonoBehaviour {
 		return dd;
 	}
 
-	// Check if particular bit is 1 (ON/TRUE) in binary format of given integer
-	public bool CheckFlags (int checkInt, int flag) { return ((checkInt & flag) != 0); }
-
-	public static float AngleInDeg(Vector3 vec1, Vector3 vec2) { return ((Mathf.Atan2(vec2.y - vec1.y, vec2.x - vec1.x)) * (180 / Mathf.PI)); }
-
 	public void UseTargets (UseData ud, string targetname) {
 		if (string.IsNullOrWhiteSpace(targetname)) return; // First check if targetname is valid.  This is fine if not, some triggers we just want to play the trigger's SFX and do nothing else.
-
 
 		UseData tempUD = new UseData();
 		float numtargetsfound = 0;
@@ -3645,36 +3138,6 @@ public class Const : MonoBehaviour {
 		}
 	}
 
-	public int GetNPCConstIndexFromIndex23(int ref23) {
-		switch (ref23) {
-			case 0: return 160; // Autobomb
-			case 1: return 161; // Cyborg Assassin
-			case 2: return 162; // Avian Mutant
-			case 3: return 163; // Exec Bot
-			case 4: return 164; // Cyborg Drone
-			case 5: return 165; // Cortex Reaver
-			case 6: return 166; // Cyborg Warrior
-			case 7: return 167; // Cyborg Enforcer
-			case 8: return 168; // Cyborg Elite Guard
-			case 9: return 169; // Cyborg of Edward Diego
-			case 10: return 170; // Security-1 Robot
-			case 11: return 171; // Security-2 Robot
-			case 12: return 172; // Maintenance Bot
-			case 13: return 173; // Mutated Cyborg
-			case 14: return 174; // Hopper
-			case 15: return 175; // Humanoid Mutant
-			case 16: return 176; // Invisible Mutant
-			case 17: return 177; // Virus Mutant
-			case 18: return 178; // Serv-Bot
-			case 19: return 179; // Flier Bot
-			case 20: return 180; // Zero-G Mutant
-			case 21: return 181; // Gorilla Tiger Mutant
-			case 22: return 182; // Repair Bot
-			case 23: return 183; // Plant Mutant
-		}
-		return -1;
-	}
-
 	public string CreditsStats() {
 		string retval = Const.a.creditsText[0];
 		int index = 0;
@@ -3715,11 +3178,5 @@ public class Const : MonoBehaviour {
 	public void ApplyImpactForce(GameObject hitObject, float impactVelocity, Vector3 attackNormal, Vector3 hitPoint) {
 		Rigidbody rbody = hitObject.GetComponent<Rigidbody>();
 		if (rbody != null && impactVelocity > 0) rbody.AddForceAtPosition((attackNormal*impactVelocity*30f),hitPoint);
-	}
-
-	public int SafeIndex(ref int[] array, int index, int max, int failvalue) {
-		if (index < 0 || index > max || index > array.Length) { UnityEngine.Debug.Log("Unexpected situation, index out of bounds passed to SafeIndex!"); return failvalue; }
-		if (array.Length < 1) { UnityEngine.Debug.Log("Unexpected situation, array passed to SafeIndex was empty!"); return failvalue; }
-		return array[index]; // Safe to pass the index value into the array space.
 	}
 }

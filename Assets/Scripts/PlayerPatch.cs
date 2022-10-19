@@ -66,7 +66,7 @@ public class PlayerPatch : MonoBehaviour {
 			// Berserk Patch
 			Inventory.a.patchCounts[2]--;
 			if (Inventory.a.patchCounts[2] <= 0) { depleted = true; }
-			if (!(Const.a.CheckFlags(patchActive, PATCH_BERSERK))) patchActive += PATCH_BERSERK;
+			if (!(Utils.CheckFlags(patchActive, PATCH_BERSERK))) patchActive += PATCH_BERSERK;
 			berserkFinishedTime = PauseScript.a.relativeTime + Const.a.berserkTime;
 			float berserkIncrementTime = Const.a.berserkTime/5f;
 			if (berserkIncrementFinishedTime > PauseScript.a.relativeTime) {
@@ -87,7 +87,7 @@ public class PlayerPatch : MonoBehaviour {
 			// Genius Patch
 			Inventory.a.patchCounts[5]--;
 			if (Inventory.a.patchCounts[5] <= 0) { depleted = true; }
-			if (!(Const.a.CheckFlags(patchActive, PATCH_GENIUS))) patchActive += PATCH_GENIUS;
+			if (!(Utils.CheckFlags(patchActive, PATCH_GENIUS))) patchActive += PATCH_GENIUS;
 			if (geniusFinishedTime > PauseScript.a.relativeTime) {
 				geniusFinishedTime += Const.a.geniusTime; // genius effect stacks
 			} else {
@@ -102,7 +102,7 @@ public class PlayerPatch : MonoBehaviour {
 			}
 			Inventory.a.patchCounts[3]--;
 			if (Inventory.a.patchCounts[3] <= 0) { depleted = true; }
-			if (!(Const.a.CheckFlags(patchActive, PATCH_MEDI))) patchActive += PATCH_MEDI;
+			if (!(Utils.CheckFlags(patchActive, PATCH_MEDI))) patchActive += PATCH_MEDI;
 			PlayerHealth.a.mediPatchPulseCount = 0;
 			if (mediFinishedTime > PauseScript.a.relativeTime) {
 				mediFinishedTime += Const.a.mediTime; // medipatch effect stacks
@@ -115,7 +115,7 @@ public class PlayerPatch : MonoBehaviour {
 			Inventory.a.patchCounts[4]--;
 			if (Inventory.a.patchCounts[4] <= 0) { depleted = true; }
 			Time.timeScale = Const.a.reflexTimeScale;
-			if (!(Const.a.CheckFlags(patchActive, PATCH_REFLEX))) patchActive += PATCH_REFLEX;
+			if (!(Utils.CheckFlags(patchActive, PATCH_REFLEX))) patchActive += PATCH_REFLEX;
 			if (reflexFinishedTime > PauseScript.a.relativeTime) {
 				reflexFinishedTime += Const.a.reflexTime; // reflex effect stacks
 			} else {
@@ -129,7 +129,7 @@ public class PlayerPatch : MonoBehaviour {
 			sightLight.enabled = true; // enable vision enhancement
 			sightSideEffectFinishedTime = -1f;  // reset side effect timer from previous patch
 			sightDimming.enabled = false; // deactivate side effect from previous patch
-			if (!(Const.a.CheckFlags(patchActive, PATCH_SIGHT))) patchActive += PATCH_SIGHT;
+			if (!(Utils.CheckFlags(patchActive, PATCH_SIGHT))) patchActive += PATCH_SIGHT;
 			if (sightFinishedTime > PauseScript.a.relativeTime) {
 				sightFinishedTime += Const.a.sightTime; // sight effect stacks
 			} else {
@@ -141,7 +141,7 @@ public class PlayerPatch : MonoBehaviour {
 			Inventory.a.patchCounts[0]--;
 			if (Inventory.a.patchCounts[0] <= 0) { depleted = true; }
 			PlayerMovement.a.staminupActive = true;
-			if (!(Const.a.CheckFlags(patchActive, PATCH_STAMINUP))) patchActive += PATCH_STAMINUP;
+			if (!(Utils.CheckFlags(patchActive, PATCH_STAMINUP))) patchActive += PATCH_STAMINUP;
 			if (staminupFinishedTime > PauseScript.a.relativeTime) {
 				staminupFinishedTime += Const.a.staminupTime; // staminup effect stacks
 			} else {
@@ -163,7 +163,7 @@ public class PlayerPatch : MonoBehaviour {
 	void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			// ================================== DETOX PATCH =========================
-			if (Const.a.CheckFlags(patchActive, PATCH_DETOX)) {
+			if (Utils.CheckFlags(patchActive, PATCH_DETOX)) {
 				// ---Disable Patch---
 				if (detoxFinishedTime < PauseScript.a.relativeTime) {
 					patchActive -= PATCH_DETOX; // Back to full force radiation effects, if present.  All normal.
@@ -174,7 +174,7 @@ public class PlayerPatch : MonoBehaviour {
 			}
 
 			// ================================== MEDI PATCH =========================
-			if (Const.a.CheckFlags(patchActive, PATCH_MEDI)) {
+			if (Utils.CheckFlags(patchActive, PATCH_MEDI)) {
 				// ---Disable Patch---
 				if (mediFinishedTime < PauseScript.a.relativeTime && mediFinishedTime != -1) {
 					patchActive -= PATCH_MEDI;
@@ -183,7 +183,7 @@ public class PlayerPatch : MonoBehaviour {
 			}
 
 			// ================================== REFLEX PATCH =======================
-			if (Const.a.CheckFlags(patchActive, PATCH_REFLEX)) {
+			if (Utils.CheckFlags(patchActive, PATCH_REFLEX)) {
 				// ---Disable Patch---
 				if (reflexFinishedTime < Time.realtimeSinceStartup && reflexFinishedTime != -1) {
 					patchActive -= PATCH_REFLEX;
@@ -198,7 +198,7 @@ public class PlayerPatch : MonoBehaviour {
 			}
 
 			// ================================== BERSERK PATCH =======================
-			if (Const.a.CheckFlags(patchActive, PATCH_BERSERK)) {
+			if (Utils.CheckFlags(patchActive, PATCH_BERSERK)) {
 				// ---Disable Patch---
 				if (berserkFinishedTime < PauseScript.a.relativeTime) {
 					berserkIncrement = 0;
@@ -227,7 +227,7 @@ public class PlayerPatch : MonoBehaviour {
 			}
 
 			// ================================== GENIUS PATCH ========================
-			if (Const.a.CheckFlags(patchActive, PATCH_GENIUS)) {
+			if (Utils.CheckFlags(patchActive, PATCH_GENIUS)) {
 				// ---Disable Patch---
 				if (geniusFinishedTime < PauseScript.a.relativeTime) {
 					MouseLookScript.a.geniusActive = false;
@@ -241,7 +241,7 @@ public class PlayerPatch : MonoBehaviour {
 			}
 
 			// ================================== SIGHT PATCH =========================
-			if (Const.a.CheckFlags(patchActive, PATCH_SIGHT)) {
+			if (Utils.CheckFlags(patchActive, PATCH_SIGHT)) {
 				// [[[Enable Side Effect]]]
 				if (sightFinishedTime < PauseScript.a.relativeTime && sightFinishedTime != -1f) {
 					sightFinishedTime = -1f;
@@ -261,7 +261,7 @@ public class PlayerPatch : MonoBehaviour {
 			}
 
 			// ================================== STAMINUP PATCH ======================
-			if (Const.a.CheckFlags(patchActive, PATCH_STAMINUP)) {
+			if (Utils.CheckFlags(patchActive, PATCH_STAMINUP)) {
 				// ---Disable Patch---
 				if (staminupFinishedTime < PauseScript.a.relativeTime) {
 					PlayerMovement.a.staminupActive = false;

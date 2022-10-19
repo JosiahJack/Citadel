@@ -144,4 +144,21 @@ public class ButtonSwitch : MonoBehaviour {
 			}
 		}
 	}
+
+	public static string Save(GameObject go) {
+
+		ButtonSwitch bs = go.GetComponent<ButtonSwitch>();
+		if (bs == null) { // bs?  null??  that's bs
+			UnityEngine.Debug.Log("ButtonSwitch missing on savetype of ButtonSwitch! GameObject.name: " + go.name);
+			return "0|0|0|0000.00000|0000.00000";
+		}
+
+		string line = System.String.Empty;		
+		line = Utils.BoolToString(bs.locked); // bool - is this switch locked
+		line += Utils.splitChar + Utils.BoolToString(bs.active); // bool - is the switch flashing?
+		line += Utils.splitChar + Utils.BoolToString(bs.alternateOn); // bool - is the flashing material on?
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(bs.delayFinished); // float - time before firing targets
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(bs.tickFinished); // float - time before firing targets
+		return line;
+	}	
 }

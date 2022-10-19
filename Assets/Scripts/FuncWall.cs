@@ -128,4 +128,23 @@ public class FuncWall : MonoBehaviour {
 			}
 		}
 	}
+
+	public static string Save(GameObject go) {
+		FuncWall fw = go.GetComponent<FuncWall>();
+		if (fw == null) {
+			Debug.Log("FuncWall missing on savetype of FuncWall! GameObject.name: " + go.name);
+			return "0";
+		}
+
+		string line = System.String.Empty;
+		switch (fw.currentState) {
+			case FuncStates.Start: line = "0"; break;
+			case FuncStates.Target: line = "1"; break;
+			case FuncStates.MovingStart: line = "2"; break; // Position already handled by saving transform elsewhere.
+			case FuncStates.MovingTarget: line = "3"; break;
+			case FuncStates.AjarMovingStart: line = "4"; break;
+			case FuncStates.AjarMovingTarget: line = "5"; break;
+		}
+		return line;
+	}
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEditor;
 
@@ -25,7 +26,7 @@ public class SaveObject : MonoBehaviour {
 		SaveID = gameObject.GetInstanceID();
 	}
 
-	public void Start () {
+	public void Start() {
 		if (initialized) return;
 
 		SetSaveID();
@@ -65,5 +66,82 @@ public class SaveObject : MonoBehaviour {
 			default: saveableType = "Transform"; break;
 		}
 		initialized = true;
+	}
+
+	// Generates a string of object data with the specific object type's info.
+	public string Save(GameObject go) {
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		if (!this.initialized) this.Start();
+		string stype = this.saveableType;
+		s1.Append(stype);
+		s1.Append(Utils.splitChar);
+		s1.Append(this.SaveID.ToString());
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(this.instantiated)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(this.constLookupTable.ToString());
+		s1.Append(Utils.splitChar);
+		s1.Append(this.constLookupIndex.ToString());
+		s1.Append(Utils.splitChar);
+
+		// bool.  Watch it next time buddy.  Yeesh, 2/28/22 was kind of scary
+		// till I realized this was still just using ToString here.  All
+		// saveables were turned off!!  Need to use util function, ahhhhh!
+		s1.Append(Utils.BoolToString(go.activeSelf)); 
+		s1.Append(Utils.splitChar);
+
+		s1.Append(Utils.SaveTransform(go.transform));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRigidbody(go.GetComponent<Rigidbody>()));
+		s1.Append(Utils.splitChar);
+		s1.Append(this.levelParentID.ToString()); // int
+		s1.Append(Utils.splitChar);
+		switch (this.saveType) {
+			case SaveableType.Useable:                s1.Append(UseableObjectUse.Save(go)); break;
+			case SaveableType.Grenade:                s1.Append(GrenadeActivate.Save(go)); break;
+			case SaveableType.NPC:                    s1.Append(Const.a.SaveNPCData(go)); break;
+			case SaveableType.Destructable:           s1.Append(HealthManager.Save(go)); break;
+			case SaveableType.SearchableStatic:       s1.Append(SearchableItem.Save(go)); break;
+			case SaveableType.SearchableDestructable: s1.Append(SearchableItem.Save(go));
+                                                      s1.Append(HealthManager.Save(go)); break;
+			case SaveableType.Door:                   s1.Append(Door.Save(go)); break;
+			case SaveableType.ForceBridge:            s1.Append(ForceBridge.Save(go)); break;
+			case SaveableType.Switch:                 s1.Append(ButtonSwitch.Save(go)); break;
+			case SaveableType.FuncWall:               s1.Append(FuncWall.Save(go)); break;
+			case SaveableType.TeleDest:               s1.Append(TeleportTouch.Save(go)); break;
+			case SaveableType.LBranch:                s1.Append(LogicBranch.Save(go)); break;
+			case SaveableType.LRelay:                 s1.Append(LogicRelay.Save(go)); break;
+			case SaveableType.LSpawner:               s1.Append(Const.a.SaveSpawnerData(go)); break;
+			case SaveableType.InteractablePanel:      s1.Append(Const.a.SaveInteractablePanelData(go)); break;
+			case SaveableType.ElevatorPanel:          s1.Append(Const.a.SaveElevatorPanelData(go)); break;
+			case SaveableType.Keypad:                 s1.Append(Const.a.SaveKeypadData(go)); break;
+			case SaveableType.PuzzleGrid:             s1.Append(Const.a.SavePuzzleGridData(go)); break;
+			case SaveableType.PuzzleWire:             s1.Append(Const.a.SavePuzzleWireData(go)); break;
+			case SaveableType.TCounter:               s1.Append(Const.a.SaveTCounterData(go)); break;
+			case SaveableType.TGravity:               s1.Append(Const.a.SaveTGravityData(go)); break;
+			case SaveableType.MChanger:               s1.Append(Const.a.SaveMChangerData(go)); break;
+			case SaveableType.RadTrig:                s1.Append(Const.a.SaveTRadiationData(go)); break;
+			case SaveableType.GravPad:                s1.Append(Const.a.SaveGravLiftPadTextureData(go)); break;
+			case SaveableType.ChargeStation:          s1.Append(Const.a.SaveChargeStationData(go)); break;
+			case SaveableType.Light:                  s1.Append(Const.a.SaveLightAnimationData(go)); break;
+			case SaveableType.LTimer:                 LogicTimer lt = go.GetComponent<LogicTimer>();
+													  if (lt != null) {
+													  	  s1.Append(lt.Save()); 
+													  } else {
+														  Debug.Log("LogicTimer missing on savetype of LogicTimer! GameObject.name: " + go.name);
+													  }
+													  break;
+			case SaveableType.Camera: s1.Append(Const.a.SaveCameraData(go)); break;
+			case SaveableType.DelayedSpawn:
+				DelayedSpawn ds = go.GetComponent<DelayedSpawn>();
+				if (ds != null) {
+					s1.Append(ds.Save());
+				} else {
+					Debug.Log("DelayedSpawn missing on savetype of DelayedSpawn! GameObject.name: " + go.name);
+				}
+				break;
+		}
+		return s1.ToString();
 	}
 }

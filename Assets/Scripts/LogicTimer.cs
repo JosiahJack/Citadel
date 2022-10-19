@@ -12,7 +12,7 @@ public class LogicTimer : MonoBehaviour {
 
 	public string Save() {
 		string line = System.String.Empty;
-		line = Const.a.FloatToString(intervalFinished);
+		line = Utils.SaveRelativeTimeDifferential(intervalFinished);
 		//1
 		return line;
 	}
@@ -25,9 +25,11 @@ public class LogicTimer : MonoBehaviour {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive() && active) {
 			if (intervalFinished < PauseScript.a.relativeTime) {
 				if (useRandomTimes) {
-					intervalFinished = PauseScript.a.relativeTime + Random.Range(randomMin,randomMax);
+					intervalFinished = PauseScript.a.relativeTime
+									   + Random.Range(randomMin,randomMax);
 				} else {
-					intervalFinished = PauseScript.a.relativeTime + timeInterval;
+					intervalFinished = PauseScript.a.relativeTime
+									   + timeInterval;
 				}
 				UseTargets();
 			}
@@ -45,7 +47,9 @@ public class LogicTimer : MonoBehaviour {
 		if (tio != null) {
 			ud.SetBits(tio);
 		} else {
-			Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
+			Debug.Log("BUG: no TargetIO.cs found on an object with a "
+					  + "ButtonSwitch.cs script!  Trying to call UseTargets "
+					  + "without parameters!");
 		}
 		Const.a.UseTargets(ud,target);
 	}

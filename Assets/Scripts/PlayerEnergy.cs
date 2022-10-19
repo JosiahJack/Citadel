@@ -12,7 +12,6 @@ public class PlayerEnergy : MonoBehaviour {
 	public float energy = 54f; // save
 
 	// Internal references
-	[HideInInspector] public float timer; // save
     private AudioSource SFX;
 	private float tick = 0.1f;
 	[HideInInspector] public float tickFinished; // save

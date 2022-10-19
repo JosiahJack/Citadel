@@ -49,13 +49,13 @@ public class BioMonitor : MonoBehaviour {
 				heartRate.text = ((70 + ((PlayerMovement.a.fatigue/100f) * 110)) * Random.Range(0.9f,1.1f)).ToString("000");
 				if (Inventory.a.hardwareVersion[6] > 1) {
 					patchesActiveText.text = Const.a.stringTable[528];
-					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_MEDI)) tempStr += Const.a.stringTable[520];
-					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_STAMINUP)) tempStr += Const.a.stringTable[521];
-					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_SIGHT)) tempStr += Const.a.stringTable[522];
-					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_GENIUS)) tempStr += Const.a.stringTable[523];
-					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_BERSERK)) tempStr += Const.a.stringTable[524];
-					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_REFLEX)) tempStr += Const.a.stringTable[525];
-					if (Const.a.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_DETOX)) tempStr = Const.a.stringTable[530];
+					if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_MEDI)) tempStr += Const.a.stringTable[520];
+					if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_STAMINUP)) tempStr += Const.a.stringTable[521];
+					if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_SIGHT)) tempStr += Const.a.stringTable[522];
+					if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_GENIUS)) tempStr += Const.a.stringTable[523];
+					if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_BERSERK)) tempStr += Const.a.stringTable[524];
+					if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_REFLEX)) tempStr += Const.a.stringTable[525];
+					if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_DETOX)) tempStr = Const.a.stringTable[530];
 					patchEffects.text = tempStr;
 				} else {
 					patchesActiveText.text = System.String.Empty;

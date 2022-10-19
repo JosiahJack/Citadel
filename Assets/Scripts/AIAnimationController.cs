@@ -102,7 +102,7 @@ public class AIAnimationController : MonoBehaviour {
 			}
 		} else {
 			if (animSwapFinished < PauseScript.a.relativeTime) {
-				animSwapFinished = PauseScript.a.relativeTime + animSwapFinishedDelay; // prevent flickering
+				animSwapFinished = PauseScript.a.relativeTime + animSwapFinishedDelay; // Prevent flickering.
 				anim.Play("Idle");
 			}
 		}

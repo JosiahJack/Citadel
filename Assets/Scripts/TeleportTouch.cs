@@ -31,4 +31,16 @@ public class TeleportTouch : MonoBehaviour {
 			}
 		}
 	}
+
+	public static string Save(GameObject go) {
+		TeleportTouch tt = go.GetComponent<TeleportTouch>();
+		if (tt == null) {
+			Debug.Log("TeleportTouch missing on savetype of TeleportTouch! GameObject.name: " + go.name);
+			return "0000.00000";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.SaveRelativeTimeDifferential(tt.justUsed); // float - is the player still touching it?
+		return line;
+	}	
 }

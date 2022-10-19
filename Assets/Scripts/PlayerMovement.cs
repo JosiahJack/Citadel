@@ -495,7 +495,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 		// Perform Jump
-		while (jumpTime > 0) {
+		if (jumpTime > 0) { // Why was this a `while` instead of an `if`??
 			jumpTime -= Time.smoothDeltaTime;
 			if (fatigue > 80 && !(Inventory.a.hardwareIsActive[10])) {
 				rbody.AddForce (new Vector3 (0, jumpVelocityFatigued * rbody.mass, 0), ForceMode.Force);  // huhnh!
@@ -527,7 +527,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 
-		if (jumpTime < 0) justJumped = false; // for jump jets to work 
+		if (jumpTime <= 0) justJumped = false; // for jump jets to work 
 
 		if (justJumped && !(Inventory.a.hardwareIsActive[10])) {
 			// Play jump sound
@@ -1205,7 +1205,7 @@ public class PlayerMovement : MonoBehaviour {
     public void ConsoleEntry() {
 		string ts = consoleinpFd.text.ToLower(); // test string = lower case text
 		string tn = consoleinpFd.text; // test number = number searching
-        if (ts.Contains("noclip") || ts.Contains("idclip")) {
+        if (ts.Contains("noclip") || ts.Contains("idclip") || ts.Contains("no clip")) {
 			if (CheatNoclip) {
 				CheatNoclip = false;
 				grounded = false;
@@ -1220,7 +1220,7 @@ public class PlayerMovement : MonoBehaviour {
 				leanCapsuleCollider.enabled = false;
 				Const.sprint("noclip activated!");
 			}
-        } else if (ts.Contains("notarget")) {
+        } else if (ts.Contains("notarget") || ts.Contains("no target")) {
 			if (Notarget) {
 				Notarget = false;
 				Const.sprint("notarget disabled");
@@ -1368,7 +1368,7 @@ public class PlayerMovement : MonoBehaviour {
 				else if (ts.Contains("merge")) Const.sprint("Failed, could not connect with origin/triop");
 				else if (ts.Contains("push")) Const.sprint("Could not find Username for 'triopttp://192.168.1.451'");
 				else if (ts.Contains("clone")) Const.sprint("Failed, connection blocked by SHODAN. Employee ID invalid.");
-				else if (ts.Contains("branch") || ts.Contains("-b")) Const.sprint("Created new branch " + Const.a.GetIntFromString(ts.Split(' ').Last()));
+				else if (ts.Contains("branch") || ts.Contains("-b")) Const.sprint("Created new branch " + Utils.GetIntFromString(ts.Split(' ').Last()));
 				else if (ts.Contains("checkout")) Const.sprint("Branch name not recognized.  Contact your TriopBucket representative.");
 				else Const.sprint("Branch name not recognized.  Contact your TriopBucket representative.");
 		} else if (ts.Contains("restart")) {
@@ -1400,7 +1400,7 @@ public class PlayerMovement : MonoBehaviour {
 		} else if ((ts.Contains("impulse") && tn.Contains("9")) || ts.Contains("idkfa")) {
 				Const.sprint("I can only hold 7 weapons!! Nice try dearies!");
 		} else if (ts.Contains("summon_obj")) {
-			int val = Const.a.GetIntFromString(ts.Split(' ').Last()); // That's a slow line to compute!
+			int val = Utils.GetIntFromString(ts.Split(' ').Last()); // That's a slow line to compute!
 			if (val < 102 && val >= 0) {
 				GameObject cheatObject = Instantiate(Const.a.useableItems[val],transform.position,Const.a.quaternionIdentity) as GameObject;
 				if (cheatObject != null) {
