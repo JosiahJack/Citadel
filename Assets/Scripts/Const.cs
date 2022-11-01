@@ -28,6 +28,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int[] audioLogType;  // 0 = text only, 1 = normal, 2 = email, 3 = papers, 4 = vmail
 	[HideInInspector] public string[] audioLogSpeech2Text;
 	[HideInInspector] public int[] audioLogLevelFound;
+	public AudioClip[] sounds;
 
 	//Weapon constants
 	public bool[] isFullAutoForWeapon;
