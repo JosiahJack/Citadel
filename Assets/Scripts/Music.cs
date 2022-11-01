@@ -22,8 +22,7 @@ public class Music : MonoBehaviour {
 	private float clipOverlayFinished;
 	public GameObject mainMenu;
 	public HealthManager hm;
-	public enum MusicType : byte {None,Walking,Combat,Overlay,Override};
-	public enum TrackType : byte {None,Walking,Combat,MutantNear,CyborgNear,CyborgDroneNear,RobotNear,Transition,Revive,Death,Cybertube,Elevator,Distortion};
+
 	private AudioClip tempC;
 	private AudioClip curC;
 	private AudioClip curOverlayC;
@@ -59,7 +58,7 @@ public class Music : MonoBehaviour {
 			if (tempC != null) {
 				SFXMain.clip = tempC;
 				curC = tempC;
-				SFXMain.PlayOneShot(tempC);
+				Utils.PlayOneShotSavable(SFXMain,tempC);
 				SFXMain.loop = false;
 			} else {
 				curC = null;
@@ -72,7 +71,7 @@ public class Music : MonoBehaviour {
 			if (tempC != null) {
 				SFXOverlay.clip = tempC;
 				curOverlayC = tempC;
-				SFXOverlay.PlayOneShot(tempC);
+				Utils.PlayOneShotSavable(SFXOverlay,tempC);
 				SFXOverlay.loop = false;
 			} else {
 				curOverlayC = null;

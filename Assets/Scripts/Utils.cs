@@ -13,8 +13,12 @@ public class Utils {
 	private static bool getValparsed;
 	private static int getValreadInt;
 	private static float getValreadFloat;
+	private static float readFloatx, readFloaty, readFloatz, readFloatw;
+	private static Vector3 tempvec;
+	private static Quaternion tempquat;
 
-	public static int SafeIndex(ref int[] array, int index, int max, int failValue) {
+	public static object SafeIndex(ref object[] array, int index, int max,
+                                   object failValue) {
 		if (array.Length < 1) {
             Debug.Log("SafeIndex: Unexpected situation, array " + nameof(array)
                       + " was empty!  Using fallback value of "
@@ -75,6 +79,36 @@ public class Utils {
         return ((checkInt & flag) != 0);
     }
 
+	public static int ButtonTypeToInt(ButtonType bt) {
+		switch (bt) { // Man what a load of
+			case ButtonType.None:       return 0;
+			case ButtonType.Generic:    return 1;
+			case ButtonType.GeneralInv: return 2;
+			case ButtonType.Patch:      return 3;
+			case ButtonType.Grenade:    return 4;
+			case ButtonType.Weapon:     return 5;
+			case ButtonType.Search:     return 6;
+			case ButtonType.PGrid:      return 7;
+			case ButtonType.PWire:      return 8;
+		}
+		return 0;
+	}
+
+	public static ButtonType IntToButtonType(int state) {
+		switch (state) {
+			case 0: return ButtonType.None;
+			case 1: return ButtonType.Generic;
+			case 2: return ButtonType.GeneralInv;
+			case 3: return ButtonType.Patch;
+			case 4: return ButtonType.Grenade;
+			case 5: return ButtonType.Weapon;
+			case 6: return ButtonType.Search;
+			case 7: return ButtonType.PGrid;
+			case 8: return ButtonType.PWire;
+		}
+		return ButtonType.None;
+	}
+
 	public static int BodyStateToInt(BodyState bs) {
 		switch (bs) { // Man what a load of
 			case BodyState.Standing: return 0;
@@ -99,6 +133,15 @@ public class Utils {
 			case 6: return BodyState.ProningUp;
 		}
 		return BodyState.Standing;
+	}
+
+	public static string IntToString(int val) {
+		return val.ToString();
+	}
+
+	public static string UintToString(int val) {
+		if (val < 0) return "-1";
+		return val.ToString();
 	}
 
 	public static bool GetBoolFromString(string val) {
@@ -140,6 +183,61 @@ public class Utils {
 	public static string FloatToString(float val) {
 		return val.ToString("0000.00000", CultureInfo.InvariantCulture); 
 	}
+
+	// This is mostly just here for me to make the save strings commonized when
+	// dummying them out in the case of an error.  Robustness above all else.
+	// If I have some preference on how to handle a particular variable, shove
+	// it here to make sure all types are consistently saved same as the other
+	// to strings here.
+	public static string DTypeWordToSaveString(string word) {
+		char[] characters = word.ToLower().ToCharArray(); // In case I forget when making my debug words.
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		for (int i=0;i<characters.Length;i++) {
+			if (characters[i] == 'b') s1.Append(BoolToString(false));
+			else if (characters[i] == 'u') s1.Append(UintToString(-99999));
+			else if (characters[i] == 'i') s1.Append(IntToString(0));
+			else if (characters[i] == 'f') s1.Append(FloatToString(0.0f));
+			else if (characters[i] == 't') s1.Append(FloatToString(0.0f));
+			else if (characters[i] == '1') s1.Append("1"); // Force it true
+			else s1.Append("-");
+			if (i != (characters.Length - 1)) s1.Append(splitChar);
+		}
+		return s1.ToString();
+	}
+
+    public static int AIStateToInt(AIState ai_state) {
+		switch (ai_state) {
+			case AIState.Walk: return 1;
+			case AIState.Run: return 2;
+			case AIState.Attack1: return 3;
+			case AIState.Attack2: return 4;
+			case AIState.Attack3: return 5;
+			case AIState.Pain: return 6;
+			case AIState.Dying: return 7;
+			case AIState.Inspect: return 8;
+			case AIState.Interacting: return 9;
+			case AIState.Dead: return 10;
+		}
+        return 0; // Idle
+    }
+
+    public static AIState GetAIStateFromInt(int ai_state_i) {
+        switch (ai_state_i) {
+            case 0:  return AIState.Idle;
+            case 1:  return AIState.Walk;
+            case 2:  return AIState.Run;
+            case 3:  return AIState.Attack1;
+            case 4:  return AIState.Attack2;
+            case 5:  return AIState.Attack3;
+            case 6:  return AIState.Pain;
+            case 7:  return AIState.Dying;
+            case 8:  return AIState.Inspect;
+            case 9:  return AIState.Interacting;
+            case 10: return AIState.Dead;
+        }
+        return AIState.Idle;
+    }
 
 	public static AttackType GetAttackTypeFromInt(int att_type_i) {
 		switch(att_type_i) {
@@ -201,6 +299,11 @@ public class Utils {
 	}
 
     public static string SaveTransform(Transform tr) {
+		if (tr == null) {
+			Debug.Log("Transform null while trying to save!");
+			return DTypeWordToSaveString("ffffffffff");
+		}
+
         StringBuilder s1 = new StringBuilder();
         s1.Clear();
         s1.Append(FloatToString(tr.localPosition.x));
@@ -225,8 +328,47 @@ public class Utils {
         return s1.ToString();
     }
 
-    public static string SaveRigidbody(Rigidbody rbody) {
-        if (rbody == null) return "0000.00000|0000.00000|0000.00000|1";
+	public static int LoadTransform(Transform tr, ref string[] entries,
+									 int index) {
+		if (tr == null) {
+			Debug.Log("Transform null while trying to load!");
+			return index + 10;
+		}
+
+		// Get position
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
+		if (tr.localPosition != tempvec) tr.localPosition = tempvec;
+
+		// Get rotation
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatw = Utils.GetFloatFromString(entries[index]); index++;
+		tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
+		tr.localRotation = tempquat;
+
+		// Don't use Transform.SetPositionAndRotation since that sets global
+		// position and the local is what is saved and loaded here.
+
+		// Get scale
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
+		tr.localScale = tempvec;
+		return index; // Carry on with current index read.
+	}
+
+    public static string SaveRigidbody(GameObject go) {
+		Rigidbody rbody = go.GetComponent<Rigidbody>();
+		if (rbody == null) {
+			Debug.Log("Rigidbody null while trying to save! GameObject.name: " + go.name);
+			return DTypeWordToSaveString("fff1");
+		}
+
         StringBuilder s1 = new StringBuilder();
         s1.Clear();
         s1.Append(FloatToString(rbody.velocity.x));
@@ -238,6 +380,109 @@ public class Utils {
         s1.Append(BoolToString(rbody.isKinematic));
         return s1.ToString();
     }
+
+	public static int LoadRigidbody(GameObject go, ref string[] entries,
+									 int index) {
+		Rigidbody rbody = go.GetComponent<Rigidbody>();
+		if (rbody == null) {
+			Debug.Log("Rigidbody null while trying to load! GameObject.name: " + go.name);
+			return index + 4;
+		}
+
+		// Get rigidbody velocity
+		readFloatx = GetFloatFromString(entries[index]); index++;
+		readFloaty = GetFloatFromString(entries[index]); index++;
+		readFloatz = GetFloatFromString(entries[index]); index++;
+		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
+		rbody.velocity = tempvec;
+		rbody.isKinematic = GetBoolFromString(entries[index]); index++;
+		return index; // Carry on with current index read.
+	}
+
+	public static string SaveCamera(GameObject go) {
+		Camera cm = go.GetComponent<Camera>();
+        Grayscale gsc = go.GetComponent<Grayscale>();
+		if (cm == null) {
+			Debug.Log("Camera missing on savetype of Camera!  GameObject.name: " + go.name);
+			return DTypeWordToSaveString("bbfb");
+		}
+
+		string line = System.String.Empty;
+        line = BoolToString(cm.enabled); // bool
+        if (gsc != null) line += splitChar + BoolToString(gsc.enabled);
+        else line += splitChar + "0";
+		// 4
+		return line;
+	}
+
+	public static int LoadCamera(GameObject go, ref string[] entries, int index) {
+		Camera cm = go.GetComponent<Camera>();
+		Grayscale gsc = go.GetComponent<Grayscale>();
+		if (cm == null || index < 0 || entries == null) return index + 4;
+
+		cm.enabled = GetBoolFromString(entries[index]); index++;
+		if (gsc != null) {
+			gsc.enabled = GetBoolFromString(entries[index]); index++;
+		} else index++;
+
+		return index;
+	}
+
+	public static void PlayAudioSavable(AudioSource SFX, AudioClip fxclip) {
+		if (SFX == null) return;
+
+		GameObject sourceGO = SFX.gameObject;
+		if (!sourceGO.activeInHierarchy) return;
+		if (fxclip == null) return; // This is a common usage, don't warn. 
+		if (SFX.enabled == false) return;
+
+		SFX.clip = fxclip; // Save the currently playing clip otherwise this is
+						 // always the default that was assigned in inspector.
+		SFX.PlayOneShot(fxclip);
+	}
+
+	public static void PlayOneShotSavable(AudioSource SFX, AudioClip fxclip,
+										  float vol) {
+		if (SFX == null) return;
+
+		GameObject sourceGO = SFX.gameObject;
+		if (!sourceGO.activeInHierarchy) return;
+		if (fxclip == null) return; // This is a common usage, don't warn. 
+		if (SFX.enabled == false) return;
+
+		SFX.clip = fxclip; // Save the currently playing clip otherwise this is
+						 // always the default that was assigned in inspector.
+		if (vol != 0) SFX.PlayOneShot(fxclip,vol);
+		else		  SFX.PlayOneShot(fxclip);
+	}
+
+	public static void PlayOneShotSavable(AudioSource SFX, AudioClip fxclip) {
+		PlayOneShotSavable(SFX,fxclip,0);
+	}
+
+	public static string SaveAudioSource(GameObject go) {
+		AudioSource aus = go.GetComponent<AudioSource>();
+		if (aus == null) {
+			Debug.Log("AudioSource missing!  GameObject.name: " + go.name);
+			return DTypeWordToSaveString("b");
+		}
+
+		string line = System.String.Empty;
+        line = BoolToString(aus.enabled);
+		line += splitChar + FloatToString(aus.time);
+		line += splitChar + aus.clip.name;
+		return line;
+	}
+
+	public static int LoadAudioSource(GameObject go, ref string[] entries, int index) {
+		AudioSource aus = go.GetComponent<AudioSource>();
+		if (aus == null || index < 0 || entries == null) return index + 3;
+
+		aus.enabled = GetBoolFromString(entries[index]); index++;
+		aus.time = GetFloatFromString(entries[index]); index++;
+		index++;
+		return index;
+	}
 
     // Using "relative time" = PauseScript.a.relativeTime and "finished" = some
     // script's timer float value, e.g. attackFinished, in the notes below...

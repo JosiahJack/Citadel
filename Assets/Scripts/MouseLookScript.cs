@@ -196,7 +196,7 @@ public class MouseLookScript : MonoBehaviour {
 		inCyberSpace = true;
 		playerCamera.useOcclusionCulling = false;
 		SetCameraCullDistances();
-		SFXSource.PlayOneShot(CyberSFX);
+		Utils.PlayOneShotSavable(SFXSource,CyberSFX);
 	}
 
 	public void ExitCyberspace() {
@@ -212,7 +212,7 @@ public class MouseLookScript : MonoBehaviour {
 		inCyberSpace = false;
 		playerCamera.useOcclusionCulling = false;
 		Const.a.decoyActive = false;
-		SFXSource.PlayOneShot(CyberSFX);
+		Utils.PlayOneShotSavable(SFXSource,CyberSFX);
 		SetCameraCullDistances();
 	}
 
@@ -406,13 +406,13 @@ public class MouseLookScript : MonoBehaviour {
 					ud.customIndex = heldObjectCustomIndex;
 					UseHandler uh = tempHit.collider.gameObject.GetComponent<UseHandler>();
 					if (uh != null) {
-						SFXSource.PlayOneShot(SearchSFX);
+						Utils.PlayOneShotSavable(SFXSource,SearchSFX);
 						uh.Use(ud);
 						return true; // Item can get absorbed and not dropped.
 					} else {
 						UseHandlerRelay uhr = tempHit.collider.gameObject.GetComponent<UseHandlerRelay>();
 						if (uhr != null) {
-							SFXSource.PlayOneShot(SearchSFX);
+							Utils.PlayOneShotSavable(SFXSource,SearchSFX);
 							uhr.referenceUseHandler.Use(ud);
 							return true; // Item can get absorbed and not dropped.
 						} else {
@@ -434,35 +434,35 @@ public class MouseLookScript : MonoBehaviour {
 		heldObjectAmmo2 = ammo2;
 		cursorTexture = cursorTex;
 		MouseCursor.a.cursorImage = cursorTexture;
-		if (fromButton) GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+		if (fromButton) GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 		ForceInventoryMode();
 	}
 
 	void InventoryButtonUse() {
 		if (!GUIState.a.overButton) return;
-		if (GUIState.a.overButtonType == GUIState.ButtonType.None) return;
+		if (GUIState.a.overButtonType == ButtonType.None) return;
 		if (currentButton == null) return;
 
 		switch(GUIState.a.overButtonType) {
-			case GUIState.ButtonType.Weapon:
+			case ButtonType.Weapon:
 				// Take weapon out of inventory, removing weapon, remove weapon and any other strings I need to CTRL+F my way to this buggy code!
 				WeaponButton wepbut = currentButton.GetComponent<WeaponButton>();
-				WeaponCurrent.WepInstance.currentMagazineAmount[wepbut.WepButtonIndex] = 0; // zero out the current ammo
-				WeaponCurrent.WepInstance.currentMagazineAmount2[wepbut.WepButtonIndex] = 0; // zero out the current ammo
+				WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex] = 0; // zero out the current ammo
+				WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex] = 0; // zero out the current ammo
 				Inventory.a.RemoveWeapon(wepbut.WepButtonIndex);
-				WeaponCurrent.WepInstance.SetAllViewModelsDeactive();
-				WeaponCurrent.WepInstance.weaponCurrent = -1;
-				WeaponCurrent.WepInstance.weaponIndex = 0;
+				WeaponCurrent.a.SetAllViewModelsDeactive();
+				WeaponCurrent.a.weaponCurrent = -1;
+				WeaponCurrent.a.weaponIndex = 0;
 				wepbut.useableItemIndex = -1;
 				MFDManager.a.wepbutMan.WeaponCycleDown();
-				MFDManager.a.SendInfoToItemTab(WeaponCurrent.WepInstance.weaponIndexPending);
-				MFDManager.a.OpenTab(0, true, MFDManager.TabMSG.Weapon, 0,Handedness.LH);
+				MFDManager.a.SendInfoToItemTab(WeaponCurrent.a.weaponIndexPending);
+				MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
 				PutObjectInHand(wepbut.useableItemIndex,-1,
-								WeaponCurrent.WepInstance.currentMagazineAmount[wepbut.WepButtonIndex],
-								WeaponCurrent.WepInstance.currentMagazineAmount2[wepbut.WepButtonIndex],
+								WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex],
+								WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex],
 								Const.a.useableItemsFrobIcons[wepbut.useableItemIndex], true);
 				break;
-			case GUIState.ButtonType.Grenade:
+			case ButtonType.Grenade:
 				GrenadeButton grenbut = currentButton.GetComponent<GrenadeButton>();
 				Inventory.a.grenAmmo[grenbut.GrenButtonIndex]--;
 				Inventory.a.GrenadeCycleDown();
@@ -478,13 +478,13 @@ public class MouseLookScript : MonoBehaviour {
 				}
 				PutObjectInHand(grenbut.useableItemIndex,-1,0,0,Const.a.useableItemsFrobIcons[grenbut.useableItemIndex],true);
 				break;
-			case GUIState.ButtonType.Patch:
+			case ButtonType.Patch:
 				PatchButton patbut = currentButton.GetComponent<PatchButton>();
 				Inventory.a.patchCounts[patbut.PatchButtonIndex]--;
 				if (Inventory.a.patchCounts[patbut.PatchButtonIndex] <= 0) {
 					Inventory.a.patchCounts[patbut.PatchButtonIndex] = 0;
 					Inventory.a.patchCurrent = -1;
-					GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+					GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 					for (int i = 0; i < 7; i++) {
 						if (Inventory.a.patchCounts[i] > 0) Inventory.a.patchCurrent = i;
 					}
@@ -493,7 +493,7 @@ public class MouseLookScript : MonoBehaviour {
 				}
 				PutObjectInHand(patbut.useableItemIndex,-1,0,0,Const.a.useableItemsFrobIcons[patbut.useableItemIndex],true);
 				break;
-			case GUIState.ButtonType.GeneralInv:
+			case ButtonType.GeneralInv:
 				GeneralInvButton genbut = currentButton.GetComponent<GeneralInvButton>();
 				Inventory.a.generalInventoryIndexRef[genbut.GeneralInvButtonIndex] = -1;
 				Inventory.a.generalInvCurrent = -1;
@@ -506,7 +506,7 @@ public class MouseLookScript : MonoBehaviour {
 				else MFDManager.a.SendInfoToItemTab(referenceIndex);
 				PutObjectInHand(genbut.useableItemIndex,-1,0,0,Const.a.useableItemsFrobIcons[genbut.useableItemIndex],true);
 				break;
-			case GUIState.ButtonType.Search:
+			case ButtonType.Search:
 				SearchButton sebut = currentButton.GetComponentInParent<SearchButton>();
 				int tempButtonindex = currentButton.GetComponent<SearchContainerButton>().refIndex;
 				cursorTexture = Const.a.useableItemsFrobIcons[sebut.contents[tempButtonindex]];
@@ -521,7 +521,7 @@ public class MouseLookScript : MonoBehaviour {
 				sebut.customIndex[tempButtonindex] = -1;
 				MFDManager.a.DisableSearchItemImage(tempButtonindex);
 				sebut.CheckForEmpty();
-				GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+				GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 				if (Const.a.InputQuickItemPickup) {
 					AddItemToInventory(heldObjectIndex);
 					ResetHeldItem();
@@ -532,11 +532,11 @@ public class MouseLookScript : MonoBehaviour {
 					ForceInventoryMode();
 				}
 				break;
-			case GUIState.ButtonType.PGrid:
+			case ButtonType.PGrid:
 				PuzzleUIButton puib = currentButton.GetComponent<PuzzleUIButton>();
 				if (puib != null) puzzleGrid.OnGridCellClick(puib.buttonIndex);
 				break;
-			case GUIState.ButtonType.PWire:
+			case ButtonType.PWire:
 				PuzzleUIButton wpuib = currentButton.GetComponent<PuzzleUIButton>();
 				if (wpuib != null) {
 					if (wpuib.isRH)
@@ -615,7 +615,7 @@ public class MouseLookScript : MonoBehaviour {
 				case 80: Inventory.a.AddAmmoToInventory(8,index, Const.a.magazinePitchCountForWeapon2[8], false); break; // small magpulse cartridges
 			}
 		}
-		SFXSource.PlayOneShot(pickclip);
+		Utils.PlayOneShotSavable(SFXSource,pickclip);
 		int numberFoundContents = 0;
 		if (currentSearchItem != null) {
 			SearchableItem curSearchScript = currentSearchItem.GetComponent<SearchableItem>();
@@ -627,7 +627,7 @@ public class MouseLookScript : MonoBehaviour {
 				}
 			}
 	    	if (numberFoundContents == 0) {
-				MFDManager.a.OpenTab(0, true, MFDManager.TabMSG.Weapon, 0,Handedness.LH);
+				MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
 				currentSearchItem = null;
 			}
 		}
@@ -646,7 +646,7 @@ public class MouseLookScript : MonoBehaviour {
 		if (heldObject != null) {
 			GameObject tossObject = null;
 			bool freeObjectInPoolFound = false;
-			GameObject levelDynamicContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
+			GameObject levelDynamicContainer = LevelManager.a.GetCurrentDynamicContainer();
 
 			// Find any free inactive objects within the level's Levelnumber.Dynamic container and activate those before instantiating
 			if (!grenadeActive) {
@@ -800,7 +800,7 @@ public class MouseLookScript : MonoBehaviour {
 				}
 			}
 		} else {
-			SFXSource.PlayOneShot(SearchSFX); // Play search sound
+			Utils.PlayOneShotSavable(SFXSource,SearchSFX); // Play search sound
 		}
 		curSearchScript.searchableInUse = true;
 		curSearchScript.currentPlayerCapsule = transform.parent.gameObject;  // Get playerCapsule of player this is attached to
@@ -812,14 +812,19 @@ public class MouseLookScript : MonoBehaviour {
 		for (int i=3;i>=0;i--) {
 			resultContents[i] = curSearchScript.contents[i];
 			resultCustomIndex[i] = curSearchScript.customIndex[i];
-			if (resultContents[i] > -1) numberFoundContents++; // if something was found, add 1 to count
+			// If something was found, add 1 to count.
+			if (resultContents[i] > -1) numberFoundContents++;
 		}
 
 		if (firstTimeSearch) {
 			firstTimeSearch = false;
-			MFDManager.a.OpenTab (4, true, MFDManager.TabMSG.Search, -1,Handedness.LH);
+			MFDManager.a.OpenTab (4, true, TabMSG.Search, -1,Handedness.LH);
 		}
-		MFDManager.a.SendSearchToDataTab(curSearchScript.objectName, numberFoundContents, resultContents, resultCustomIndex,currentSearchItem.transform.position,curSearchScript, useFX);
+		MFDManager.a.SendSearchToDataTab(curSearchScript.objectName,
+										 numberFoundContents,resultContents,
+										 resultCustomIndex,
+										 currentSearchItem.transform.position,
+										 curSearchScript, useFX);
 		ForceInventoryMode();
 	}
 
@@ -849,5 +854,84 @@ public class MouseLookScript : MonoBehaviour {
 		shakeFinished = PauseScript.a.relativeTime + 1f;
 		if (force < 0.48f) shakeForce = force;
 		else shakeForce = 0.48f;
+	}
+
+	public static string Save(GameObject go) {
+		MouseLookScript ml = go.GetComponent<MouseLookScript>();
+		if (ml == null) {
+			Debug.Log("MouseLook missing on savetype of Player!  GameObject.name: " + go.name);
+			return "0|0|-1|-1|0|0|0|0|0|0|0000.00000|0|0000.00000|0|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|1";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(ml.inventoryMode); // bool
+		line += Utils.splitChar + Utils.BoolToString(ml.holdingObject); // bool
+		line += Utils.splitChar + ml.heldObjectIndex.ToString(); // int
+		line += Utils.splitChar + ml.heldObjectCustomIndex.ToString(); // int
+		line += Utils.splitChar + ml.heldObjectAmmo.ToString(); // int
+		line += Utils.splitChar + ml.heldObjectAmmo2.ToString(); // int
+		line += Utils.splitChar + Utils.BoolToString(ml.firstTimePickup); // bool
+		line += Utils.splitChar + Utils.BoolToString(ml.firstTimeSearch); // bool
+		line += Utils.splitChar + Utils.BoolToString(ml.grenadeActive); // bool
+		line += Utils.splitChar + Utils.BoolToString(ml.inCyberSpace); // bool
+		line += Utils.splitChar + Utils.FloatToString(ml.yRotation); // float
+		line += Utils.splitChar + Utils.BoolToString(ml.geniusActive); // bool
+		line += Utils.splitChar + Utils.FloatToString(ml.xRotation); // float
+		line += Utils.splitChar + Utils.BoolToString(ml.vmailActive); // bool
+		line += Utils.splitChar + Utils.FloatToString(ml.cyberspaceReturnPoint.x) + Utils.splitChar
+						 	    + Utils.FloatToString(ml.cyberspaceReturnPoint.y) + Utils.splitChar
+						  	    + Utils.FloatToString(ml.cyberspaceReturnPoint.z);
+		line += Utils.splitChar + Utils.FloatToString(ml.cyberspaceReturnCameraLocalRotation.x) + Utils.splitChar
+								+ Utils.FloatToString(ml.cyberspaceReturnCameraLocalRotation.y) + Utils.splitChar
+						  		+ Utils.FloatToString(ml.cyberspaceReturnCameraLocalRotation.z);
+		line += Utils.splitChar + Utils.FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.x) + Utils.splitChar
+						  		+ Utils.FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.y) + Utils.splitChar
+						  		+ Utils.FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.z);
+		line += Utils.splitChar + Utils.FloatToString(ml.cyberspaceRecallPoint.x) + Utils.splitChar
+						  		+ Utils.FloatToString(ml.cyberspaceRecallPoint.y) + Utils.splitChar
+						  		+ Utils.FloatToString(ml.cyberspaceRecallPoint.z); // Vector3 (float|float|float)
+		line += Utils.splitChar + ml.cyberspaceReturnLevel.ToString(); // int
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		MouseLookScript ml = go.GetComponent<MouseLookScript>();
+		if (ml == null || index < 0 || entries == null) return index + 27;
+
+		float readFloatx, readFloaty, readFloatz;
+		ml.inventoryMode = !Utils.GetBoolFromString(entries[index]); index++; // take opposite because we are about to opposite again
+		ml.ToggleInventoryMode(); // correctly set cursor lock state, and opposite again, now it is what was saved
+		ml.holdingObject = Utils.GetBoolFromString(entries[index]); index++;
+		ml.heldObjectIndex = Utils.GetIntFromString(entries[index]); index++;
+		ml.heldObjectCustomIndex = Utils.GetIntFromString(entries[index]); index++;
+		ml.heldObjectAmmo = Utils.GetIntFromString(entries[index]); index++;
+		ml.heldObjectAmmo2 = Utils.GetIntFromString(entries[index]); index++;
+		ml.firstTimePickup = Utils.GetBoolFromString(entries[index]); index++;
+		ml.firstTimeSearch = Utils.GetBoolFromString(entries[index]); index++;
+		ml.grenadeActive = Utils.GetBoolFromString(entries[index]); index++;
+		ml.inCyberSpace = Utils.GetBoolFromString(entries[index]); index++;
+		ml.yRotation = Utils.GetFloatFromString(entries[index]); index++;
+		ml.geniusActive = Utils.GetBoolFromString(entries[index]); index++;
+		ml.xRotation = Utils.GetFloatFromString(entries[index]); index++;
+		ml.vmailActive = Utils.GetBoolFromString(entries[index]); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		ml.cyberspaceReturnPoint = new Vector3(readFloatx,readFloaty,readFloatz);
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		ml.cyberspaceReturnCameraLocalRotation = new Vector3(readFloatx,readFloaty,readFloatz);
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		ml.cyberspaceReturnPlayerCapsuleLocalRotation = new Vector3(readFloatx,readFloaty,readFloatz); // Euler Angles, only 3
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		ml.cyberspaceRecallPoint = new Vector3(readFloatx,readFloaty,readFloatz);
+		ml.cyberspaceReturnLevel = Utils.GetIntFromString(entries[index]); index++;
+		ml.currentSearchItem = null; // Prevent picking up first item immediately. Not currently possible to save references.
+		return index;
 	}
 }

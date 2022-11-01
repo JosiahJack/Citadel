@@ -13,8 +13,6 @@ public class TextWarningsManager : MonoBehaviour {
 	[HideInInspector] public int[] uniqueID;
 	private float warningDefaultLifeTime = 2f;
 
-	public enum warningTextColor : byte {white,red,green,yellow};
-
 	void Start () {
 		warningTexts = new Text[warningTextGObjects.Length];
 		initialized = new bool[warningTextGObjects.Length];
@@ -29,7 +27,7 @@ public class TextWarningsManager : MonoBehaviour {
 		}
 	}
 
-	public void SendWarning(string message, float lifetime, int forcedReference, warningTextColor col, int id) {
+	public void SendWarning(string message, float lifetime, int forcedReference, HUDColor col, int id) {
 		int setIndex = (warningTextGObjects.Length - 1);
 
 		for (int i=setIndex;i>=0;i--) {
@@ -41,10 +39,10 @@ public class TextWarningsManager : MonoBehaviour {
 		if (forcedReference >= 0) setIndex = forcedReference;
 		warningTexts[setIndex].text = message;
 		uniqueID[setIndex] = id;
-		if (col == warningTextColor.green) warningTexts[setIndex].color = Const.a.ssGreenText;
-		if (col == warningTextColor.white) warningTexts[setIndex].color = Const.a.ssWhiteText;
-		if (col == warningTextColor.red) warningTexts[setIndex].color = Const.a.ssRedText;
-		if (col == warningTextColor.yellow) warningTexts[setIndex].color = Const.a.ssYellowText;
+		if (col == HUDColor.Green) warningTexts[setIndex].color = Const.a.ssGreenText;
+		if (col == HUDColor.White) warningTexts[setIndex].color = Const.a.ssWhiteText;
+		if (col == HUDColor.Red) warningTexts[setIndex].color = Const.a.ssRedText;
+		if (col == HUDColor.Yellow) warningTexts[setIndex].color = Const.a.ssYellowText;
 
 		if (lifetime > -1)
 			if (warningLifeTimes[setIndex] < lifetime) warningLifeTimes[setIndex] = lifetime;

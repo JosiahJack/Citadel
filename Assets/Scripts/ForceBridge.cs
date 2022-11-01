@@ -6,19 +6,19 @@ public class ForceBridge : MonoBehaviour {
     public bool x;
 	public bool y;
 	public bool z;
+	public bool activated; // save
+	public AudioClip SFXBridgeChange;
+	public float tickTime = 0.05f;
+
+	[HideInInspector] public bool lerping; // save
+	[HideInInspector] public float tickFinished; // save
+
 	private float activatedScaleX;
 	private float activatedScaleY;
 	private float activatedScaleZ;
 	private MeshRenderer mr;
 	private BoxCollider bCol;
-	public bool activated; // save
-	public AudioClip SFXBridgeChange;
 	private AudioSource SFX;
-	[HideInInspector]
-	public bool lerping; // save
-	[HideInInspector]
-	public float tickFinished; // save
-	public float tickTime = 0.05f;
 
 	void Start() {
 		activatedScaleX = transform.localScale.x;
@@ -78,7 +78,7 @@ public class ForceBridge : MonoBehaviour {
 	public void Activate(bool forceIt, bool isSilent) {
 		if (activated && !forceIt) return; // already there
 
-		if (SFX != null && SFXBridgeChange != null && !isSilent) SFX.PlayOneShot(SFXBridgeChange);
+		if (!isSilent) Utils.PlayOneShotSavable(SFX,SFXBridgeChange);
 		activated = true;
 		lerping = true;
 		float sx = activatedScaleX;
@@ -93,7 +93,7 @@ public class ForceBridge : MonoBehaviour {
 	public void Deactivate(bool forceIt, bool isSilent) {
 		if (!activated && !forceIt) return; // already there
 
-		if (!isSilent && SFX != null && SFXBridgeChange != null) SFX.PlayOneShot(SFXBridgeChange);
+		if (!isSilent) Utils.PlayOneShotSavable(SFX,SFXBridgeChange);
 		activated = false;
 		lerping = true;
 	}
@@ -109,7 +109,7 @@ public class ForceBridge : MonoBehaviour {
 	public static string Save(GameObject go) {
 		ForceBridge fb = go.GetComponent<ForceBridge>();
 		if (fb == null) {
-			UnityEngine.Debug.Log("ForceBridge missing on savetype of ForceBridge! GameObject.name: " + go.name);
+			Debug.Log("ForceBridge missing on savetype of ForceBridge!  GameObject.name: " + go.name);
 			return "1|0|0000.00000";
 		}
 
@@ -118,5 +118,15 @@ public class ForceBridge : MonoBehaviour {
 		line += Utils.splitChar + Utils.BoolToString(fb.lerping); // bool - are we currently lerping one way or tother
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(fb.tickFinished); // float - time before firing targets
 		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		ForceBridge fb = go.GetComponent<ForceBridge>(); // fjb
+		if (fb == null || index < 0 || entries == null) return index + 3;
+
+		fb.activated = Utils.GetBoolFromString(entries[index]); index++; // bool - is the bridge on?
+		fb.lerping = Utils.GetBoolFromString(entries[index]); index++; // bool - are we currently lerping one way or tother
+		fb.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before thinking
+		return index;
 	}
 }

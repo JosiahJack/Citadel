@@ -47,4 +47,23 @@ public class TriggerCounter : MonoBehaviour {
         Target(ud);
     }
 
+	public static string Save(GameObject go) {
+		TriggerCounter tc = go.GetComponent<TriggerCounter>();
+		if (tc == null) {
+			Debug.Log("TriggerCounter missing on savetype of TriggerCounter!  GameObject.name: " + go.name);
+			return "0";
+		}
+
+		string line = System.String.Empty;
+		line = tc.counter.ToString(); // int - how many counts we have
+		return line;	
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		TriggerCounter tc = go.GetComponent<TriggerCounter>();
+		if (tc == null || index < 0 || entries == null) return index + 1;
+
+		tc.counter = Utils.GetIntFromString(entries[index]); index++; // int - how many counts we have
+		return index;
+	}
 }

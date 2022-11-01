@@ -9,7 +9,7 @@ public class HealthManager : MonoBehaviour {
 	// External references, optional
 	/*[DTValidator.Optional] */public SearchableItem searchableItem; // Not used universally.  Some objects can be destroyed but not searched, such as barrels.
 	/*[DTValidator.Optional] */public Image linkedCameraOverlay;
-	public LevelManager.SecurityType securityAffected; // Not a reference, needs no optional flag, if using DTValidator that is.
+	public SecurityType securityAffected; // Not a reference, needs no optional flag, if using DTValidator that is.
 	/*[DTValidator.Optional] */public AudioClip backupDeathSound;
 	/*[DTValidator.Optional] */public GameObject teleportEffect;
 	/*[DTValidator.Optional] */public GameObject[] gibObjects;
@@ -45,9 +45,6 @@ public class HealthManager : MonoBehaviour {
 	public string targetOnDeath;
 	public string argvalue;
 	public bool inCyberSpace = false; // Externally modifiable
-
-	// Enumerations
-	public enum BloodType : byte {None,Red,Yellow,Green,Robot,Leaf,Mutation,GrayMutation};
 
 	// Internal references
 	[HideInInspector] public GameObject attacker;
@@ -90,7 +87,7 @@ public class HealthManager : MonoBehaviour {
 			maxhealth = 255;
 		}
 		if (isNPC) justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
-		if (securityAffected != LevelManager.SecurityType.None) LevelManager.a.RegisterSecurityObject(levelIndex, securityAffected);
+		if (securityAffected != SecurityType.None) LevelManager.a.RegisterSecurityObject(levelIndex, securityAffected);
 		if (Const.a != null) Const.a.RegisterObjectWithHealth(this);
 		if (gibOnDeath) {
 			for (int i=0;i<gibObjects.Length;i++) {
@@ -358,7 +355,7 @@ public class HealthManager : MonoBehaviour {
 						if (absorb > 1f) absorb = 1f; // cap it at 100%....shouldn't really ever be here, nothing is 92% + 8%
 						take *= (1f-absorb); // shield doing it's thing
 						PlayerHealth.a.shieldEffect.SetActive(true); // Activate shield screen effect to indicate damage was absorbed, effect intensity determined by absorb amount
-						PlayerHealth.a.PlayerNoise.PlayOneShot(PlayerHealth.a.ShieldClip); // Play shield absorb sound
+						Utils.PlayOneShotSavable(PlayerHealth.a.PlayerNoise,PlayerHealth.a.ShieldClip); // Play shield absorb sound
 						int abs = (int)(absorb * 100f); //  for int display of absorbption percent
 						Const.sprint(Const.a.stringTable[208] + abs.ToString() + Const.a.stringTable[209],dd.other);  // Shield absorbs x% damage
 						if (absorb > 0) {
@@ -369,7 +366,7 @@ public class HealthManager : MonoBehaviour {
 					}
 				}
 				if (take > 0 && ((absorb <0.4f) || Random.Range(0,1f) < 0.5f)) {
-					PlayerHealth.a.PlayerNoise.PlayOneShot(PlayerHealth.a.PainSFXClip); // Play player pain noise
+					Utils.PlayOneShotSavable(PlayerHealth.a.PlayerNoise,PlayerHealth.a.PainSFXClip); // Play player pain noise
 					int intensityOfPainFlash = 0; // 0 = light
 					if (take > 15f) {
 						intensityOfPainFlash = 2; // 2 = heavy
@@ -461,8 +458,8 @@ public class HealthManager : MonoBehaviour {
 				AudioSource aS = tempAud.GetComponent<AudioSource> ();
 				if (aS != null) {
 					aS.enabled = true;
-					if (deathSound != null && !actAsCorpseOnly) aS.PlayOneShot (deathSound);
-					else if (backupDeathSound != null && !actAsCorpseOnly) aS.PlayOneShot (backupDeathSound);
+					if (deathSound != null && !actAsCorpseOnly) Utils.PlayOneShotSavable(aS,deathSound);
+					else if (backupDeathSound != null && !actAsCorpseOnly) Utils.PlayOneShotSavable(aS,backupDeathSound);
 				}
 			}
 		}
@@ -509,7 +506,7 @@ public class HealthManager : MonoBehaviour {
 	void DropSearchables() {
 		if (searchableItem != null) {
 			MFDManager.a.NotifySearchThatSearchableWasDestroyed();
-			GameObject levelDynamicContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
+			GameObject levelDynamicContainer = LevelManager.a.GetCurrentDynamicContainer();
 			for (int i=0;i<4;i++) {
 				if (searchableItem.contents[i] >= 0) {
 					GameObject tossObject = Instantiate(Const.a.useableItems[searchableItem.contents[i]],transform.position,Const.a.quaternionIdentity) as GameObject;
@@ -560,7 +557,7 @@ public class HealthManager : MonoBehaviour {
 		if (sphereCol != null) sphereCol.enabled = false;
 		if (capCol != null) capCol.enabled = false;
 		if (isSecCamera && linkedCameraOverlay != null) linkedCameraOverlay.enabled = false; // disable on automap
-		if (securityAffected != LevelManager.SecurityType.None) LevelManager.a.ReduceCurrentLevelSecurity(securityAffected);
+		if (securityAffected != SecurityType.None) LevelManager.a.ReduceCurrentLevelSecurity(securityAffected);
 		if (deathFX != PoolType.None) {
 			GameObject explosionEffect = Const.a.GetObjectFromPool(deathFX);
 			if (explosionEffect != null) {
@@ -684,7 +681,7 @@ public class HealthManager : MonoBehaviour {
 	public static string Save(GameObject go) {
 		HealthManager hm = go.GetComponent<HealthManager>();
 		if (hm == null) {
-			Debug.Log("HealthManager missing on savetype of HealthManager! GameObject.name: " + go.name);
+			Debug.Log("HealthManager missing on savetype of HealthManager!  GameObject.name: " + go.name);
 			return "0000.00000|0000.00000|0|0|0";
 		}
 
@@ -696,6 +693,20 @@ public class HealthManager : MonoBehaviour {
 		line += Utils.splitChar + Utils.BoolToString(hm.deathDone); // bool - are we dead yet?
 		line += Utils.splitChar + Utils.BoolToString(hm.god); // are we invincible? - we can save cheats?? OH WOW!
 		line += Utils.splitChar + Utils.BoolToString(hm.teleportDone); // did we already teleport?
+
 		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		HealthManager hm = go.GetComponent<HealthManager>();
+		if (hm == null || index < 0 || entries == null) return index + 5;
+
+		hm.health = Utils.GetFloatFromString(entries[index]); index++; // how much health we have
+		hm.cyberHealth = Utils.GetFloatFromString(entries[index]); index++;
+		hm.deathDone = Utils.GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
+		hm.god = Utils.GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
+		hm.teleportDone = Utils.GetBoolFromString(entries[index]); index++; // did we already teleport?
+		hm.AwakeFromLoad();
+		return index;
 	}
 }

@@ -105,7 +105,7 @@ public class MouseCursor : MonoBehaviour {
 						if (MouseLookScript.a.holdingObject && MouseLookScript.a.heldObjectIndex >= 0) {
 							cursorImage = Const.a.useableItemsFrobIcons[MouseLookScript.a.heldObjectIndex];
 						} else {
-							switch(WeaponCurrent.WepInstance.weaponIndex) {
+							switch(WeaponCurrent.a.weaponIndex) {
 								case 36:
 									cursorImage = Const.a.useableItemsFrobIcons[102];	// red
 									break;
@@ -192,7 +192,7 @@ public class MouseCursor : MonoBehaviour {
 				} else {
 					if (inventoryAddHelper.activeInHierarchy) inventoryAddHelper.SetActive(false);
 					if (justDroppedItemInHelper) {
-						GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+						GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 						justDroppedItemInHelper = false; // only disable blocking state once, not constantly
 					}
 				}
@@ -200,7 +200,7 @@ public class MouseCursor : MonoBehaviour {
 				if (justDroppedItemInHelper) {
 					justDroppedItemInHelper = false; // only disable blocking state once, not constantly
 					inventoryAddHelper.SetActive(false);
-					GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+					GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 				}
 			}
 		}

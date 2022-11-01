@@ -10,13 +10,6 @@ public class LogicTimer : MonoBehaviour {
 	public string target;
 	public string argvalue;
 
-	public string Save() {
-		string line = System.String.Empty;
-		line = Utils.SaveRelativeTimeDifferential(intervalFinished);
-		//1
-		return line;
-	}
-
 	void Start() {
 		intervalFinished = PauseScript.a.relativeTime + (useRandomTimes ? Random.Range(randomMin,randomMax) : timeInterval);
 	}
@@ -52,5 +45,17 @@ public class LogicTimer : MonoBehaviour {
 					  + "without parameters!");
 		}
 		Const.a.UseTargets(ud,target);
+	}
+
+	public static string Save(GameObject go) {
+		LogicTimer lt = go.GetComponent<LogicTimer>();
+		if (lt == null) {
+			Debug.Log("LogicTimer missing on savetype of LTimer!  GameObject.name: " + go.name);
+			return "0000.00000";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.SaveRelativeTimeDifferential(lt.intervalFinished);
+		return line;
 	}
 }

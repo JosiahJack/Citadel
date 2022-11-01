@@ -133,4 +133,36 @@ public class LightAnimation : MonoBehaviour {
 			}
 		}
 	}
+
+	public static string Save(GameObject go) {
+		LightAnimation la = go.GetComponent<LightAnimation>();
+		if (la == null) {
+			Debug.Log("LightAnimation missing on savetype of Light!  GameObject.name: " + go.name);
+			return "1|0|0|0000.00000|0000.00000|0000.00000|0000.00000";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(la.lightOn); // bool
+		line += Utils.splitChar + Utils.BoolToString(la.lerpOn); // bool
+		line += Utils.splitChar + la.currentStep.ToString(); // int
+		line += Utils.splitChar + Utils.FloatToString(la.lerpValue); // %
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(la.lerpTime);
+		line += Utils.splitChar + Utils.FloatToString(la.stepTime); // Not a timer, current time amount
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(la.lerpStartTime);
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		LightAnimation la = go.GetComponent<LightAnimation>();
+		if (la == null || index < 0 || entries == null) return index + 7;
+
+		la.lightOn = Utils.GetBoolFromString(entries[index]); index++;
+		la.lerpOn = Utils.GetBoolFromString(entries[index]); index++;
+		la.currentStep = Utils.GetIntFromString(entries[index]); index++;
+		la.lerpValue = Utils.GetFloatFromString(entries[index]); index++; // %
+		la.lerpTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		la.stepTime = Utils.GetFloatFromString(entries[index]); index++; // Not a timer, current time amount
+		la.lerpStartTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		return index;
+	}
 }

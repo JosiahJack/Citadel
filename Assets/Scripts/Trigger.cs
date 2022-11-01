@@ -41,7 +41,7 @@ public class Trigger : MonoBehaviour {
 		Const.a.UseTargets(ud,target);
 
 		if (playAudioOnTrigger && SFX != null && SFXClip != null) {
-			SFX.PlayOneShot(SFXClip);
+			Utils.PlayOneShotSavable(SFX,SFXClip);
 		}
 	}
 

@@ -148,4 +148,33 @@ public class AIAnimationController : MonoBehaviour {
 	void Interacting () {
 		anim.Play("Interact");
 	}
+
+	public static string Save(GameObject go) {
+		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>();
+		if (aiac == null) {
+			Debug.Log("AIAnimationController missing on savetype of NPC!  GameObject.name: " + go.name);
+			return "0000.00000|0|0000.00000";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.FloatToString(aiac.currentClipPercentage);
+		line += Utils.splitChar;
+		line += Utils.BoolToString(aiac.dying); // bool
+		line += Utils.splitChar;
+		line += Utils.SaveRelativeTimeDifferential(aiac.animSwapFinished);
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>();
+		if (aiac == null || index < 0 || entries == null) return index + 3;
+
+		aiac.currentClipPercentage = Utils.GetFloatFromString(entries[index]); index++; // float
+		aiac.dying = Utils.GetBoolFromString(entries[index]); index++; // bool
+		aiac.animSwapFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		if (!aiac.aic.ai_dead) {
+			if (aiac.anim != null) aiac.anim.speed = 1f;
+		}
+		return index;
+	}
 }

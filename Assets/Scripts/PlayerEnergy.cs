@@ -150,13 +150,13 @@ public class PlayerEnergy : MonoBehaviour {
     public void TakeEnergy ( float take  ){
 		float was = energy;
 		if (energy == 0) return;
-		if (WeaponCurrent.WepInstance.redbull) return; // No energy drain!
+		if (WeaponCurrent.a.redbull) return; // No energy drain!
 
 		energy -= take;
 		if (energy <= 0f) {
 			energy = 0f;
-			if (SFX != null && SFXPowerExhausted != null) SFX.PlayOneShot(SFXPowerExhausted); // battery sound
-			Const.sprint(Const.a.stringTable[314],WeaponCurrent.WepInstance.owner); //Power supply exhausted.
+			Utils.PlayOneShotSavable(SFX,SFXPowerExhausted); // battery sound
+			Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); //Power supply exhausted.
 			DeactivateHardwareOnEnergyDepleted();
 		}
 	}
@@ -165,10 +165,32 @@ public class PlayerEnergy : MonoBehaviour {
 		energy += give;
 		if (energy > maxenergy) energy = maxenergy;
         if (type == 0) {
-            if (SFX != null && SFXBatteryUse != null) SFX.PlayOneShot(SFXBatteryUse); // battery sound
+            Utils.PlayOneShotSavable(SFX,SFXBatteryUse); // battery sound
         }
         if (type == 1) {
-            if (SFX != null && SFXChargeStationUse != null) SFX.PlayOneShot(SFXChargeStationUse); // charging station sound
+            Utils.PlayOneShotSavable(SFX,SFXChargeStationUse); // charging station sound
         }
     }
+
+	public static string Save(GameObject go) {
+		PlayerEnergy pe = go.GetComponent<PlayerEnergy>();
+		if (pe == null) {
+			Debug.Log("PlayerEnergy missing on savetype of Player!  GameObject.name: " + go.name);
+			return "0000.00000|0000.00000";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.FloatToString(pe.energy); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pe.tickFinished); // float
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		PlayerEnergy pe = go.GetComponent<PlayerEnergy>();
+		if (pe == null || index < 0 || entries == null) return index + 2;
+
+		pe.energy = Utils.GetFloatFromString(entries[index]); index++;
+		pe.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		return index;
+	}
 }

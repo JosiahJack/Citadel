@@ -60,4 +60,24 @@ public class ChargeStation : MonoBehaviour {
 	public void ForceRecharge() {
 		nextthink = 0;
 	}
+
+	public static string Save(GameObject go) {
+		ChargeStation chg = go.GetComponent<ChargeStation>();
+		if (chg == null) {
+			UnityEngine.Debug.Log("ChargeStation missing on savetype of ChargeStation!  GameObject.name: " + go.name);
+			return "0000.00000";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.SaveRelativeTimeDifferential(chg.nextthink); // float - time before recharged
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		ChargeStation chg = go.GetComponent<ChargeStation>();
+		if (chg == null || index < 0 || entries == null) return index + 1;
+
+		chg.nextthink = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before recharged
+		return index;
+	}
 }

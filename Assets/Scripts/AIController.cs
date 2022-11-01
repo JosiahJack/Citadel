@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -455,9 +456,7 @@ public class AIController : MonoBehaviour {
 
 		if (idleTime < PauseScript.a.relativeTime && SFXIdle != null) {
 			float rand = UnityEngine.Random.Range(0,1f); // for calculating 50% chance of idle
-			if (rand < 0.5f) {
-				if (SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXIdle);
-			}
+			if (rand < 0.5f) Utils.PlayOneShotSavable(SFX,SFXIdle);
 			idleTime = PauseScript.a.relativeTime + Random.Range(Const.a.timeIdleSFXMinForNPC[index],Const.a.timeIdleSFXMaxForNPC[index]);
 		}
 		if (asleep) rbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
@@ -731,26 +730,10 @@ public class AIController : MonoBehaviour {
 		return range;
 	}
 
-    GameObject GetImpactType(HealthManager hm) {
-        if (hm == null) return Const.a.GetObjectFromPool(PoolType.SparksSmall);
-        switch (hm.bloodType) {
-            case HealthManager.BloodType.None: return Const.a.GetObjectFromPool(PoolType.SparksSmall);
-            case HealthManager.BloodType.Red: return Const.a.GetObjectFromPool(PoolType.BloodSpurtSmall);
-            case HealthManager.BloodType.Yellow: return Const.a.GetObjectFromPool(PoolType.BloodSpurtSmallYellow);
-            case HealthManager.BloodType.Green: return Const.a.GetObjectFromPool(PoolType.BloodSpurtSmallGreen);
-            case HealthManager.BloodType.Robot: return Const.a.GetObjectFromPool(PoolType.SparksSmallBlue);
-			case HealthManager.BloodType.Leaf: return Const.a.GetObjectFromPool(PoolType.LeafBurst);
-			case HealthManager.BloodType.Mutation: return Const.a.GetObjectFromPool(PoolType.MutationBurst);
-			case HealthManager.BloodType.GrayMutation: return Const.a.GetObjectFromPool(PoolType.GraytationBurst);
-        }
-
-        return Const.a.GetObjectFromPool(PoolType.SparksSmall);
-    }
-
     void CreateStandardImpactEffects(bool onlyBloodIfHitHasHM) {
         // Determine blood type of hit target and spawn corresponding blood particle effect from the Const.Pool
         if (useBlood) {
-            GameObject impact = GetImpactType(tempHM);
+            GameObject impact = Const.a.GetImpactType(tempHM);
             if (impact != null) {
                 impact.transform.position = tempHit.point + (tempHit.normal*0.08f);
                 impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
@@ -809,7 +792,7 @@ public class AIController : MonoBehaviour {
 		MuzzleBurst(attackNum);
 		if (DidRayHit(attackNum)) {
 			if ((attackNum == 1 && Const.a.hasLaserOnAttack1ForNPC[index]) || (attackNum == 2 && Const.a.hasLaserOnAttack2ForNPC[index]) || (attackNum == 3 && Const.a.hasLaserOnAttack3ForNPC[index])) {
-				GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
+				GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
 				if (dynamicObjectsContainer == null) return; // Didn't find current level.
 				GameObject lasertracer = Instantiate(Const.a.useableItems[101],transform.position,Const.a.quaternionIdentity) as GameObject;
 				if (lasertracer != null) {
@@ -822,12 +805,12 @@ public class AIController : MonoBehaviour {
 
 			if (tempHM != null) {
 				useBlood = true;
-				// SetNPCDamageData sets :
+				// DamageData.SetNPCData sets:
 				//   owner
 				//   damage
 				//   penetration
 				//   offense
-				damageData = Const.SetNPCDamageData(index,attackNum,gameObject);
+				damageData = DamageData.SetNPCData(index,attackNum,gameObject);
 				damageData.other = tempHit.transform.gameObject;
 				if (tempHit.transform.gameObject.CompareTag("NPC")) {
 					damageData.isOtherNPC = true;
@@ -865,9 +848,18 @@ public class AIController : MonoBehaviour {
 		MuzzleBurst(attackNum);
 		tempVec = GetDirectionRayToEnemy(targettingPosition, attackNum);
 		Vector3 startPos = GetAttackStartPoint(attackNum);
-		damageData = Const.SetNPCDamageData(index,attackNum,gameObject); // SetNPCDamageData sets : owner, damage, penetration, offense
+		// DamageData.SetNPCData sets:
+		//	 owner
+		//   damage
+		//   penetration
+		//   offense
+		damageData = DamageData.SetNPCData(index,attackNum,gameObject);
 		damageData.attacknormal = tempVec;
-		damageData.attackType = AttackType.ProjectileLaunched; // Can't call Const.a.GetDamageTakeAmount here since we haven't hit anyone yet so we don't know if isOtherNPC is true or not, called in ProjectileEffectImpact
+		damageData.attackType = AttackType.ProjectileLaunched;
+		// Can't call Const.a.GetDamageTakeAmount here since we haven't hit
+		// anyone yet so we don't know if isOtherNPC is true or not, called in
+		// ProjectileEffectImpact.
+
 		PoolType projectileType = PoolType.GrenadeFragLive; // Default to Fragmentation Grenade, defaulting up here because it saves lines and precious scrolling.
 		float launchSpeed = Const.a.projectileSpeedAttack1ForNPC[index];
 		switch (attackNum) {
@@ -920,7 +912,7 @@ public class AIController : MonoBehaviour {
 	// attackNum corresponds to the attack used so correct lookup tables can be used. 1 = Attack1, 2 = Attack2, 3 = Attack3
 	void ExplodeAttack(int attackNum) {
 		if (attackNum < 1 || attackNum > 3) attackNum = 3;
-		DamageData dd = Const.SetNPCDamageData(index,attackNum,gameObject);
+		DamageData dd = DamageData.SetNPCData(index,attackNum,gameObject);
 		if (dd == null) return;
 
 		float take = Const.a.GetDamageTakeAmount(dd);
@@ -950,7 +942,7 @@ public class AIController : MonoBehaviour {
 			if (!shotFired) {
 				shotFired = true;
 				if (attack1SoundTime < PauseScript.a.relativeTime) {
-					if (SFX != null && SFXAttack1 != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXAttack1);
+					Utils.PlayOneShotSavable(SFX,SFXAttack1);
 					attack1SoundTime = PauseScript.a.relativeTime + Const.a.timeBetweenAttack1ForNPC[index];
 				}
 				switch (attack1Type) {
@@ -971,7 +963,7 @@ public class AIController : MonoBehaviour {
             if (!shotFired) {
                 shotFired = true; 
                 if (attack2SoundTime < PauseScript.a.relativeTime && SFXAttack2 != null) {
-					if (SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXAttack2);
+					Utils.PlayOneShotSavable(SFX,SFXAttack2);
                     attack2SoundTime = PauseScript.a.relativeTime + Const.a.timeBetweenAttack2ForNPC[index];
                 }
 				switch (attack2Type) {
@@ -994,7 +986,7 @@ public class AIController : MonoBehaviour {
             if (!shotFired) {
                 shotFired = true;
 				if (attack3SoundTime < PauseScript.a.relativeTime && SFXAttack3 != null) {
-					if (SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXAttack3);
+					Utils.PlayOneShotSavable(SFX,SFXAttack3);
 					attack3SoundTime = PauseScript.a.relativeTime + Const.a.timeBetweenAttack3ForNPC[index];
 				}
 				switch (attack1Type) {
@@ -1033,7 +1025,7 @@ public class AIController : MonoBehaviour {
                 if (meleeDamageColliders[i] != null) meleeDamageColliders[i].SetActive(false);
             }
 
-			if (!healthManager.actAsCorpseOnly && SFX != null && SFXDeathClip != null) SFX.PlayOneShot(SFXDeathClip);
+			if (!healthManager.actAsCorpseOnly) Utils.PlayOneShotSavable(SFX,SFXDeathClip);
 			if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly && !healthManager.gibOnDeath) {
 				rbody.useGravity = true; // for avian mutant and zero-g mutant
 			} else {
@@ -1191,7 +1183,7 @@ public class AIController : MonoBehaviour {
 	void PlaySightSound() {
 		if (firstSighting && healthManager.health > 0) {
 			firstSighting = false;
-			if (!healthManager.actAsCorpseOnly && SFXSightSound != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXSightSound);
+			if (!healthManager.actAsCorpseOnly) Utils.PlayOneShotSavable(SFX,SFXSightSound);
 		}
 	}
 	
@@ -1229,5 +1221,214 @@ public class AIController : MonoBehaviour {
 		if (sleepingCables != null) sleepingCables.SetActive(false);
 		asleep = false;
 		if (ud != null) Alert(ud);
+	}
+
+	public static string Save(GameObject go) {
+		AIController aic = go.GetComponent<AIController>();
+		if (aic == null) {
+			Debug.Log("AIController missing on savetype of NPC!  GameObject.name: " + go.name);
+			return "";
+		}
+
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		if (!aic.startInitialized) aic.Start();
+		s1.Append(Utils.UintToString(aic.index)); // int
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(Utils.AIStateToInt(aic.currentState)));
+		s1.Append(Utils.splitChar);
+		if (aic.enemy != null) s1.Append("1");
+		else s1.Append("-1");
+
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.gracePeriodFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.meleeDamageFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.inSight)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.infront)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.inProjFOV)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.LOSpossible)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.goIntoPain)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.rangeToEnemy));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.firstSighting)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.dyingSetup)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.ai_dying)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.ai_dead)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(aic.currentWaypoint)); // int
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.currentDestination.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.currentDestination.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.currentDestination.z));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.timeTillEnemyChangeFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.timeTillDeadFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.timeTillPainFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.tickFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.raycastingTickFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.huntFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.hadEnemy)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.lastKnownEnemyPos.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.lastKnownEnemyPos.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.lastKnownEnemyPos.z));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.tempVec.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.tempVec.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.tempVec.z));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.shotFired)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.randomWaitForNextAttack1Finished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.randomWaitForNextAttack2Finished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.randomWaitForNextAttack3Finished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.idealTransformForward.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.idealTransformForward.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.idealTransformForward.z));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.idealPos.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.idealPos.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.idealPos.z));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.attackFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack2Finished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack3Finished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.targettingPosition.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.targettingPosition.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.targettingPosition.z));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.deathBurstFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.deathBurstDone)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.asleep)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.tranquilizeFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.hopDone)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.wandering)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.wanderFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(HealthManager.Save(aic.healthManager.gameObject));
+		return s1.ToString();
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		AIController aic = go.GetComponent<AIController>();
+		if (aic == null || index < 0 || entries == null) return index + 55;
+
+		float readFloatx, readFloaty, readFloatz;
+		aic.index = Utils.GetIntFromString(entries[index]); index++; // int - NPC const lookup table index for instantiating
+		int state = Utils.GetIntFromString(entries[index]); index++;
+		aic.currentState = Utils.GetAIStateFromInt(state);
+		int enemIDRead = Utils.GetIntFromString(entries[index]); index++;
+		if (enemIDRead >= 0) aic.enemy = Const.a.player1Capsule;
+		aic.gracePeriodFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before applying pain damage on attack2
+		aic.meleeDamageFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before applying pain damage on attack2
+		aic.inSight = Utils.GetBoolFromString(entries[index]); index++; // bool
+		aic.infront = Utils.GetBoolFromString(entries[index]); index++; // bool
+		aic.inProjFOV = Utils.GetBoolFromString(entries[index]); index++; // bool
+		aic.LOSpossible = Utils.GetBoolFromString(entries[index]); index++; // bool
+		aic.goIntoPain = Utils.GetBoolFromString(entries[index]); index++; // bool
+		aic.rangeToEnemy = Utils.GetFloatFromString(entries[index]); index++; // float
+		aic.firstSighting = Utils.GetBoolFromString(entries[index]); index++; // bool - or are we dead?
+		aic.dyingSetup = Utils.GetBoolFromString(entries[index]); index++; // bool - or are we dead?
+		aic.ai_dying = Utils.GetBoolFromString(entries[index]); index++; // bool - are we dying the slow painful death
+		aic.ai_dead = Utils.GetBoolFromString(entries[index]); index++; // bool - or are we dead?
+		aic.currentWaypoint = Utils.GetIntFromString(entries[index]); index++; // int
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
+		aic.currentDestination = new Vector3(readFloatx,readFloaty,readFloatz);
+		aic.timeTillEnemyChangeFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.timeTillDeadFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.timeTillPainFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.raycastingTickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.huntFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.hadEnemy = Utils.GetBoolFromString(entries[index]); index++; // bool
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
+		aic.lastKnownEnemyPos = new Vector3(readFloatx,readFloaty,readFloatz);
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
+		aic.tempVec = new Vector3(readFloatx,readFloaty,readFloatz);
+		aic.shotFired = Utils.GetBoolFromString(entries[index]); index++; // bool
+		aic.randomWaitForNextAttack1Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.randomWaitForNextAttack2Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.randomWaitForNextAttack3Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
+		aic.idealTransformForward = new Vector3(readFloatx,readFloaty,readFloatz);
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
+		aic.idealPos = new Vector3(readFloatx,readFloaty,readFloatz);
+		aic.attackFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.attack2Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.attack3Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
+		aic.targettingPosition = new Vector3(readFloatx,readFloaty,readFloatz);
+		aic.deathBurstFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.deathBurstDone = Utils.GetBoolFromString(entries[index]); index++; // bool
+		aic.asleep = Utils.GetBoolFromString(entries[index]); index++; // bool - are we sleepnir? vague reference alert
+		aic.tranquilizeFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.hopDone = Utils.GetBoolFromString(entries[index]); index++; // bool
+		aic.wandering = Utils.GetBoolFromString(entries[index]); index++; // bool
+		aic.wanderFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		if (aic.healthManager != null) {
+			if (aic.healthManager.health > 0) {
+				if (aic.boxCollider != null) aic.boxCollider.enabled = true;
+				if (aic.sphereCollider != null) aic.sphereCollider.enabled = true;
+				if (aic.meshCollider != null) aic.meshCollider.enabled = true;
+				if (aic.capsuleCollider != null) aic.capsuleCollider.enabled = true;
+				if (Const.a.moveTypeForNPC[aic.index] != AIMoveType.Fly) {
+					aic.rbody.useGravity = true;
+					aic.rbody.isKinematic = false;
+				}
+			}
+		}
+		return index;
 	}
 }

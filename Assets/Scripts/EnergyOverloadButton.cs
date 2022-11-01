@@ -22,7 +22,7 @@ public class EnergyOverloadButton : MonoBehaviour {
     }
 
     public void OverloadEnergyClick() {
-        if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.WepInstance.weaponCurrent] > 25f) {
+        if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.a.weaponCurrent] > 25f) {
             Const.sprint(Const.a.stringTable[12]);
             return;
         }

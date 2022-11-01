@@ -11,14 +11,14 @@ public class EnergySlider : MonoBehaviour {
 	}
 
 	void OnEnable () {
-		if (WeaponCurrent.WepInstance.weaponCurrent != -1)
-			slideS.value = WeaponCurrent.WepInstance.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent];
+		if (WeaponCurrent.a.weaponCurrent != -1)
+			slideS.value = WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent];
 		else
 			slideS.value = 0;
 	}
 
     public void SetValue(float val) {
 		slideS.value = val*100f;
-        WeaponCurrent.WepInstance.weaponEnergySetting[WeaponCurrent.WepInstance.weaponCurrent] = slideS.value;
+        WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent] = slideS.value;
     }
 }

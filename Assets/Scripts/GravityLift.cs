@@ -43,4 +43,24 @@ public class GravityLift : MonoBehaviour {
 	public void Toggle() {
 		active = !active;
 	}
+
+	public static string Save(GameObject go) {
+		GravityLift gl = go.GetComponent<GravityLift>(); // Not quite Open, but hey
+		if (gl == null) {
+			Debug.Log("GravityLift missing on savetype of GravityLift!  GameObject.name: " + go.name);
+			return "1";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(gl.active); // bool - is this gravlift on?
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		GravityLift gl = go.GetComponent<GravityLift>();
+		if (gl == null || index < 0 || entries == null) return index + 1;
+
+		gl.active = Utils.GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
+		return index;
+	}
 }

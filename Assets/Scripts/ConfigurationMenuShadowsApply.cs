@@ -17,7 +17,7 @@ public class ConfigurationMenuShadowsApply : MonoBehaviour {
 		else
 			Const.a.GraphicsShadowMode = 0; // Default to off, huge performance impact
 
-		Const.a.WriteConfig();
-		Const.a.SetShadows();
+		Config.WriteConfig();
+		Config.SetShadows();
 	}
 }

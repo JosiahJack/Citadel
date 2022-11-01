@@ -42,10 +42,16 @@ public class DelayedSpawn : MonoBehaviour {
 		}
     }
 
-	public string Save() {
+	public static string Save(GameObject go) {
+		DelayedSpawn ds = go.GetComponent<DelayedSpawn>();
+		if (ds == null) {
+			Debug.Log("DelayedSpawn missing on savetype of DelayedSpawn!  GameObject.name: " + go.name);
+			return "0000.00000|0";
+		}
+
 		string line = System.String.Empty;
-		line = Utils.SaveRelativeTimeDifferential(timerFinished);
-		line += Utils.splitChar + Utils.BoolToString(active);
+		line = Utils.SaveRelativeTimeDifferential(ds.timerFinished);
+		line += Utils.splitChar + Utils.BoolToString(ds.active);
 		return line;
 	}
 }

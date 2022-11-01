@@ -13,9 +13,6 @@ public class FuncWall : MonoBehaviour {
 	public AudioSource SFXSource;
 	public FuncStates currentState; // save
 
-	// Enumerations
-	public enum FuncStates : byte {Start, Target, MovingStart, MovingTarget,AjarMovingStart,AjarMovingTarget};
-
 	private Vector3 startPosition;
 	private Vector3 goalPosition;
 	private Vector3 tempVec;
@@ -100,8 +97,8 @@ public class FuncWall : MonoBehaviour {
 						if (SFXSource != null) {
 							SFXSource.Stop ();
 							SFXSource.loop = false;
-							if (!stopSoundPlayed && SFXSource != null) {
-								SFXSource.PlayOneShot (SFXStop);
+							if (!stopSoundPlayed) {
+								Utils.PlayOneShotSavable(SFXSource,SFXStop);
 								stopSoundPlayed = true;
 							}
 						}
@@ -118,8 +115,8 @@ public class FuncWall : MonoBehaviour {
 						if (SFXSource != null) {
 							SFXSource.Stop ();
 							SFXSource.loop = false;
-							if (!stopSoundPlayed && SFXSource != null) {
-								SFXSource.PlayOneShot (SFXStop);
+							if (!stopSoundPlayed) {
+								Utils.PlayOneShotSavable(SFXSource,SFXStop);
 								stopSoundPlayed = true;
 							}
 						}
@@ -129,10 +126,12 @@ public class FuncWall : MonoBehaviour {
 		}
 	}
 
+	// Only need to save state here.  Transform position is saved higher up in
+	// the saving hierarchy and that is the only other thing needed for these.
 	public static string Save(GameObject go) {
 		FuncWall fw = go.GetComponent<FuncWall>();
 		if (fw == null) {
-			Debug.Log("FuncWall missing on savetype of FuncWall! GameObject.name: " + go.name);
+			Debug.Log("FuncWall missing on savetype of FuncWall!  GameObject.name: " + go.name);
 			return "0";
 		}
 
@@ -146,5 +145,21 @@ public class FuncWall : MonoBehaviour {
 			case FuncStates.AjarMovingTarget: line = "5"; break;
 		}
 		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		FuncWall fw = go.GetComponent<FuncWall>(); // Fairweather we are having.
+		if (fw == null || index < 0 || entries == null) return index + 1;
+
+		int state = Utils.GetIntFromString(entries[index]); index++;
+		switch (state) {
+			case 0: fw.currentState = FuncStates.Start; break;
+			case 1: fw.currentState = FuncStates.Target; break;
+			case 2: fw.currentState = FuncStates.MovingStart; break;
+			case 3: fw.currentState = FuncStates.MovingTarget; break;
+			case 4: fw.currentState = FuncStates.AjarMovingStart; break;
+			case 5: fw.currentState = FuncStates.AjarMovingTarget; break;
+		}
+		return index;
 	}
 }

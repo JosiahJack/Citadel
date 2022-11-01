@@ -14,12 +14,12 @@ public class GrenadeButton : MonoBehaviour {
 	private Vector2 cursorHotspot;
 
 	public void PtrEnter () {
-		GUIState.a.PtrHandler(true,true,GUIState.ButtonType.Grenade,gameObject);
+		GUIState.a.PtrHandler(true,true,ButtonType.Grenade,gameObject);
 		MouseLookScript.a.currentButton = gameObject;
 	}
 
 	public void PtrExit () {
-		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
     }
 
 	void DoubleClick() {
@@ -31,7 +31,7 @@ public class GrenadeButton : MonoBehaviour {
 		MFDManager.a.SendInfoToItemTab(useableItemIndex);
 		Inventory.a.grenadeCurrent = GrenButtonIndex;  //Set current
 		Inventory.a.grenadeIndex = useableItemIndex;  //Set current
-		if (SFX != null && SFXClick != null) SFX.PlayOneShot(SFXClick);
+		Utils.PlayOneShotSavable(SFX,SFXClick);
 	}
 
 	void Start() {

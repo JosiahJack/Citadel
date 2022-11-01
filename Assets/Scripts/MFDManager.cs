@@ -100,9 +100,6 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject biograph;
 	public GameObject autoMapCamera;
 
-	// Public enumerations
-	public enum TabMSG : byte {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,WirePuzzle,EReader,Weapon,SystemAnalyzer};
-
 	// Externally modifiable.
 	// Not intended to be set in inspector, some are not HideInInspector for reference only.
 	// Also, don't care about encapsulation - it works, it's good.
@@ -266,7 +263,7 @@ public class MFDManager : MonoBehaviour  {
 			if (GetInput.a.WeaponCycUp()) {
 				if (MouseLookScript.a.inCyberSpace) {
 					Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill; // There's only two cyberspace weapons, up is down.
-					if (Inventory.a.SFX != null && Inventory.a.SFXChangeWeapon != null) Inventory.a.SFX.PlayOneShot(Inventory.a.SFXChangeWeapon);
+					Utils.PlayOneShotSavable(Inventory.a.SFX,Inventory.a.SFXChangeWeapon);
 					if (Inventory.a.isPulserNotDrill) {
 						Inventory.a.pulserButtonText.Select(true);
 						Inventory.a.drillButtonText.Select(false);
@@ -286,7 +283,7 @@ public class MFDManager : MonoBehaviour  {
 			if (GetInput.a.WeaponCycDown()) {
 				if (MouseLookScript.a.inCyberSpace) {
 					Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill; // There's only two cyberspace weapons, up is down.
-					if (Inventory.a.SFX != null && Inventory.a.SFXChangeWeapon != null) Inventory.a.SFX.PlayOneShot(Inventory.a.SFXChangeWeapon);
+					Utils.PlayOneShotSavable(Inventory.a.SFX,Inventory.a.SFXChangeWeapon);
 					if (Inventory.a.isPulserNotDrill) {
 						Inventory.a.pulserButtonText.Select(true);
 						Inventory.a.drillButtonText.Select(false);
@@ -342,7 +339,7 @@ public class MFDManager : MonoBehaviour  {
 			}
 
 			// Update the weapon icon
-			wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.WepInstance.weaponIndex);
+			wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
 			if (wep16index >=0 && wep16index < 16) {
 				if (leftTC.TabManager.WeaponTab.activeInHierarchy) {
 					iconLH.overrideSprite = wepIcons[wep16index];
@@ -392,7 +389,7 @@ public class MFDManager : MonoBehaviour  {
 					beepFinished = beepTick + PauseScript.a.relativeTime;
 					beepCount++;
 					if (beepCount >= 3) { Inventory.a.beepDone = false; beepCount = 0; } // Reset beeping, notification done.
-					if (hwb.SFX != null && hwb.beepSFX != null) hwb.SFX.PlayOneShot(hwb.beepSFX); // GO active handled by guard clause.
+					Utils.PlayOneShotSavable(hwb.SFX,hwb.beepSFX); // GO active handled by guard clause.
 				}
 			} else {
 				hwb.buttons[5].image.overrideSprite = hwb.buttonDeactive[5];
@@ -846,7 +843,7 @@ public class MFDManager : MonoBehaviour  {
 		usingObject = true;
 	}
 
-	public void SendGridPuzzleToDataTab (bool[] states, PuzzleGrid.CellType[] types, PuzzleGrid.GridType gtype, int start, int end, int width, int height, PuzzleGrid.GridColorTheme colors, string t1, UseData ud, Vector3 tetherPoint, PuzzleGridPuzzle pgp) {
+	public void SendGridPuzzleToDataTab (bool[] states, PuzzleCellType[] types, PuzzleGridType gtype, int start, int end, int width, int height, HUDColor colors, string t1, UseData ud, Vector3 tetherPoint, PuzzleGridPuzzle pgp) {
 		if (lastDataSideRH) {
 			// Send to RH tab
 			TabReset(true);
@@ -865,7 +862,7 @@ public class MFDManager : MonoBehaviour  {
 		usingObject = true;
 	}
 
-	public void SendWirePuzzleToDataTab(bool[] sentWiresOn, bool[] sentNodeRowsActive, int[] sentCurrentPositionsLeft, int[] sentCurrentPositionsRight, int[] sentTargetsLeft, int[] sentTargetsRight, PuzzleWire.WireColorTheme theme, PuzzleWire.WireColor[] wireColors, string t1, string a1, UseData udSent,Vector3 tetherPoint, PuzzleWirePuzzle pwp) {
+	public void SendWirePuzzleToDataTab(bool[] sentWiresOn, bool[] sentNodeRowsActive, int[] sentCurrentPositionsLeft, int[] sentCurrentPositionsRight, int[] sentTargetsLeft, int[] sentTargetsRight, HUDColor theme, HUDColor[] wireColors, string t1, string a1, UseData udSent,Vector3 tetherPoint, PuzzleWirePuzzle pwp) {
 		TabReset(lastDataSideRH);
 		if (lastDataSideRH) {
 			// Send to RH tab
@@ -1176,11 +1173,11 @@ public class MFDManager : MonoBehaviour  {
 
 	public void CenterTabButtonClick (int tabNum) {
 		if (PauseScript.a.mainMenu.activeInHierarchy) return;
-		TabSFX.PlayOneShot(TabSFXClip);
+		Utils.PlayOneShotSavable(TabSFX,TabSFXClip);
 		CenterTabButtonClickSilent(tabNum,false);
 		if (Inventory.a.hardwareIsActive[3]) {
 			hwb.SensaroundOff();
-			hwb.SFX.PlayOneShot(hwb.SFXClipDeactivate[1]);
+			Utils.PlayOneShotSavable(hwb.SFX,hwb.SFXClipDeactivate[1]);
 		}
 	}
 
@@ -1348,4 +1345,78 @@ public class MFDManager : MonoBehaviour  {
 		ersbRH.SetEReaderSectionsButtonsHighlights(3);
 	}
 	//--- End Multi Media Tabs ---
+
+	public static string Save(GameObject go) {
+		MFDManager mfd = go.GetComponent<MFDManager>();
+		if (mfd == null) {
+			Debug.Log("MFDManager missing on Player!  GameObject.name: " + go.name);
+			return Utils.DTypeWordToSaveString("bbbbbbbbbfffbbbbbbtbut");
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(mfd.lastWeaponSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastItemSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastAutomapSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastTargetSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastDataSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastSearchSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastLogSideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastLogSecondarySideRH); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.lastMinigameSideRH); // bool
+		line += Utils.splitChar + Utils.FloatToString(mfd.objectInUsePos.x)
+			  + Utils.splitChar + Utils.FloatToString(mfd.objectInUsePos.y)
+			  + Utils.splitChar + Utils.FloatToString(mfd.objectInUsePos.z);
+		// tetheredPGP
+		// tetheredPWP
+		// tetheredSearchable
+		// tetheredKeypadElevator
+		// tetheredKeypadKeycode
+		line += Utils.splitChar + Utils.BoolToString(mfd.paperLogInUse); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.usingObject); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.logReaderContainer.activeSelf); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.DataReaderContentTab.activeSelf); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.logTable.activeSelf); // bool
+		line += Utils.splitChar + Utils.BoolToString(mfd.logLevelsFolder.activeSelf); // bool
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(mfd.logFinished);
+		line += Utils.splitChar + Utils.BoolToString(mfd.logActive); // bool
+		line += Utils.splitChar + mfd.logType.ToString(); // int
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished);
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		MFDManager mfd = go.GetComponent<MFDManager>();
+		if (mfd == null || index < 0 || entries == null) return index + 3;
+
+		float readFloatx, readFloaty, readFloatz;
+		mfd.lastWeaponSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastItemSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastAutomapSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastTargetSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastDataSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastSearchSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastLogSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastLogSecondarySideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastMinigameSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		mfd.objectInUsePos = new Vector3(readFloatx,readFloaty,readFloatz);
+		// tetheredPGP
+		// tetheredPWP
+		// tetheredSearchable
+		// tetheredKeypadElevator
+		// tetheredKeypadKeycode
+		mfd.paperLogInUse = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.usingObject = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.logReaderContainer.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+		mfd.DataReaderContentTab.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+		mfd.logTable.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+		mfd.logLevelsFolder.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+		mfd.logFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		mfd.logActive = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.logType = Utils.GetIntFromString(entries[index]); index++;
+		mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		return index;
+	}
 }

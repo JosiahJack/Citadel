@@ -8,11 +8,11 @@ public class KeycodeButton : MonoBehaviour {
 	public int index;
 
 	public void PtrEnter () {
-		GUIState.a.PtrHandler(true,true,GUIState.ButtonType.Generic,gameObject);
+		GUIState.a.PtrHandler(true,true,ButtonType.Generic,gameObject);
 	}
 
 	public void PtrExit () {
-		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 	}
 
 	void KeycodeButtonClick () {

@@ -13,18 +13,14 @@ public class InteractablePanel : MonoBehaviour {
 	public AudioClip SFXOpen;
 	public AudioClip SFXFail;
 	private Animator anim;
-	[HideInInspector]
-	public string wrongItemMessage;
+	[HideInInspector] public string wrongItemMessage;
 	public int wrongItemMessageLingdex;
-	[HideInInspector]
-	public string installedMessage;
+	[HideInInspector] public string installedMessage;
 	public int installedMessageLingdex;
-	[HideInInspector]
-	public string alreadyInstalledMessage;
+	[HideInInspector] public string alreadyInstalledMessage;
 	public int alreadyInstalledMessageLingdex;
 	public AudioClip SFXAlreadyInstalled;
-	[HideInInspector]
-	public string openMessage;
+	[HideInInspector] public string openMessage;
 	public int openMessageLingdex;
 	public string target;
 	public string argvalue;
@@ -52,12 +48,12 @@ public class InteractablePanel : MonoBehaviour {
 			// was player holding correct item in their hand when they used us?
 			if (ud.mainIndex == requiredIndex) {
 				if (installed) {
-					if (SFXAlreadyInstalled != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXAlreadyInstalled);
+					Utils.PlayOneShotSavable(SFX,SFXAlreadyInstalled);
 					return; // do nothing already done here
 				}
 				installed = true;
 				installationItem.SetActive(true);
-				if (SFXInstallation != null && SFX != null) SFX.PlayOneShot(SFXInstallation);
+				Utils.PlayOneShotSavable(SFX,SFXInstallation);
 				Const.sprintByIndexOrOverride (installedMessageLingdex, installedMessage,ud.owner);
 				// any extra effect objects?  activate them here...good for sparks or turning on any extra bits and bobs
 				if (effects.Length > 0) {
@@ -79,14 +75,42 @@ public class InteractablePanel : MonoBehaviour {
 				}
 				Const.a.UseTargets(ud,target);
 			} else {
-				if (SFXFail != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXFail); // aaaahhh!! Try again
+				Utils.PlayOneShotSavable(SFX,SFXFail); // aaaahhh!! Try again
 				Const.sprintByIndexOrOverride (wrongItemMessageLingdex, wrongItemMessage,ud.owner);
 			}
 		} else {
 			open = true;
 			anim.Play("Open");
-			if (SFXOpen != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXOpen);
+			Utils.PlayOneShotSavable(SFX,SFXOpen);
 			Const.sprintByIndexOrOverride (openMessageLingdex, openMessage,ud.owner);
 		}
+	}
+
+	public static string Save(GameObject go) {
+		InteractablePanel ip = go.GetComponent<InteractablePanel>();
+		if (ip == null) {
+			Debug.Log("InteractablePanel missing on savetype of InteractablePanel!  GameObject.name: " + go.name);
+			return "0|0";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(ip.open); // bool - is the panel opened
+		line += Utils.splitChar + Utils.BoolToString(ip.installed); // bool - is the item installed
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		InteractablePanel ip = go.GetComponent<InteractablePanel>(); // ip man!
+		if (ip == null || index < 0 || entries == null) return index + 2;
+
+		ip.open = Utils.GetBoolFromString(entries[index]); index++; // bool - is the panel opened
+		ip.installed = Utils.GetBoolFromString(entries[index]); index++; // bool - is the item installed
+		if (ip.installed && ip.installationItem != null){
+			ip.installationItem.SetActive(true);
+			// I already set up the effects[] objects with SaveObject of
+			// Transform so no need to set them active here as they will be set
+			// active by normal load loop that called this.
+		}
+		return index;
 	}
 }

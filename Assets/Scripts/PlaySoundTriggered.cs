@@ -43,7 +43,7 @@ public class PlaySoundTriggered : MonoBehaviour {
 
 	// For ambient noises
 	void OnEnable() {
-		if (SFX == null) SFX = GetComponent<AudioSource>(); 
+		if (SFX == null) SFX = GetComponent<AudioSource>();
 		if (loopingAmbient) {
 			if (SFX != null) SFX.loop = true;
 			if (SFX != null) SFX.clip = SFXClipToPlay;
@@ -68,7 +68,7 @@ public class PlaySoundTriggered : MonoBehaviour {
 			if (playSoundOnParticleEmit){
 				int count = psys.particleCount;
 				if (count > numparticles && (count == burstemittcnt1 || count == burstemittcnt2)) {
-					if (SFX != null) SFX.PlayOneShot(SFXClipToPlay);
+					Utils.PlayOneShotSavable(SFX,SFXClipToPlay);
 				}
 				numparticles = count;
 			}
@@ -77,6 +77,6 @@ public class PlaySoundTriggered : MonoBehaviour {
 
     public void PlaySoundEffect() {
 		if (SFX != null) SFX.loop = false;
-		if (SFX != null) SFX.PlayOneShot(SFXClipToPlay);
+		Utils.PlayOneShotSavable(SFX,SFXClipToPlay);
 	}
 }

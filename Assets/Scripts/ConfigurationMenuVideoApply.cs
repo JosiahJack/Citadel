@@ -11,6 +11,6 @@ public class ConfigurationMenuVideoApply : MonoBehaviour {
 		Screen.fullScreen = Const.a.GraphicsFullscreen;
 		Const.a.GraphicsResWidth = Screen.resolutions[resolutionPicker.value].width;
 		Const.a.GraphicsResHeight = Screen.resolutions[resolutionPicker.value].height;
-		Const.a.WriteConfig();
+		Config.WriteConfig();
 	}
 }

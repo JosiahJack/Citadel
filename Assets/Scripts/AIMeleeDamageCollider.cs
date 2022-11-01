@@ -40,7 +40,7 @@ public class AIMeleeDamageCollider : MonoBehaviour {
 			if (other.GetComponent<HealthManager>() != null) {
 				if (ownerAIC.meleeDamageFinished < PauseScript.a.relativeTime) {
 					ownerAIC.meleeDamageFinished = PauseScript.a.relativeTime + Const.a.timeToActualAttack1ForNPC[index];
-					DamageData ddNPC = Const.SetNPCDamageData(index,1,ownedBy);
+					DamageData ddNPC = DamageData.SetNPCData(index,1,ownedBy);
 					ddNPC.other = other.gameObject;
 					ddNPC.attacknormal = Vector3.Normalize(other.transform.position - transform.position);
 					ddNPC.damage = 11f;

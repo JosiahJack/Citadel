@@ -4,9 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ConfigToggles : MonoBehaviour {
-	// Enumerations
-	public enum ConfigToggleType : byte {Fullscreen,SSAO,Bloom,Reverb,Subtitles,InvertLook,InvertCyber,InvertInventoryCycling,QuickPickup,QuickReload,Reflections};
-
 	// External references
 	public ConfigToggleType ToggleType;
 
@@ -28,13 +25,13 @@ public class ConfigToggles : MonoBehaviour {
 		}
 	}
 
-	public void ToggleFullscreen () { Const.a.GraphicsFullscreen = self.isOn; Const.a.WriteConfig(); }
-	public void ToggleSSAO () { Const.a.GraphicsSSAO = self.isOn; Const.a.WriteConfig(); }
-	public void ToggleBloom () { Const.a.GraphicsBloom = self.isOn; Const.a.WriteConfig(); }
-	public void ToggleReverb () { Const.a.AudioReverb = self.isOn; Const.a.WriteConfig(); }
-	public void ToggleInvertLook () { Const.a.InputInvertLook = self.isOn; Const.a.WriteConfig(); }
-	public void ToggleInvertCyberLook () { Const.a.InputInvertCyberspaceLook = self.isOn; Const.a.WriteConfig(); }
-	public void ToggleInvertInventoryCycling () { Const.a.InputInvertInventoryCycling = self.isOn; Const.a.WriteConfig(); }
-	public void ToggleQuickItemPickup () { Const.a.InputQuickItemPickup = self.isOn; Const.a.WriteConfig(); }
-	public void ToggleQuickReloadWeapon () { Const.a.InputQuickReloadWeapons = self.isOn; Const.a.WriteConfig(); }
+	public void ToggleFullscreen () { Const.a.GraphicsFullscreen = self.isOn; Config.WriteConfig(); }
+	public void ToggleSSAO () { Const.a.GraphicsSSAO = self.isOn; Config.WriteConfig(); }
+	public void ToggleBloom () { Const.a.GraphicsBloom = self.isOn; Config.WriteConfig(); }
+	public void ToggleReverb () { Const.a.AudioReverb = self.isOn; Config.WriteConfig(); }
+	public void ToggleInvertLook () { Const.a.InputInvertLook = self.isOn; Config.WriteConfig(); }
+	public void ToggleInvertCyberLook () { Const.a.InputInvertCyberspaceLook = self.isOn; Config.WriteConfig(); }
+	public void ToggleInvertInventoryCycling () { Const.a.InputInvertInventoryCycling = self.isOn; Config.WriteConfig(); }
+	public void ToggleQuickItemPickup () { Const.a.InputQuickItemPickup = self.isOn; Config.WriteConfig(); }
+	public void ToggleQuickReloadWeapon () { Const.a.InputQuickReloadWeapons = self.isOn; Config.WriteConfig(); }
 }

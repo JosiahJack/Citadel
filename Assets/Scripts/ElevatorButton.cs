@@ -40,7 +40,7 @@ public class ElevatorButton : MonoBehaviour {
 		if (Vector3.Distance(MFDManager.a.objectInUsePos,MFDManager.a.playerCapsuleTransform.position) > Const.a.elevatorPadUseDistance || MFDManager.a.linkedElevatorDoor == null) {
 			Const.sprint(Const.a.stringTable[6]);
 		} else {
-			if (MFDManager.a.linkedElevatorDoor.doorOpen != Door.doorState.Closed) {
+			if (MFDManager.a.linkedElevatorDoor.doorOpen != DoorState.Closed) {
 				Const.sprint(Const.a.stringTable[7]);
 			} else {
 				if (floorAccessible) {

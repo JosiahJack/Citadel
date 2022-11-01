@@ -57,4 +57,38 @@ public class DamageData {
 		damageData.attacknormal = Const.a.vectorZero;
 		damageData.impactVelocity = 0f;
 	}
+
+	public static DamageData SetNPCData (int NPCindex, int attackNum,
+											   GameObject ownedBy) {
+		if (NPCindex < 0 || NPCindex > 23) {
+			NPCindex = 0;
+			Debug.Log("BUG: NPCindex incorrect on NPC.  Not 0 to 23 on NPC at: "
+					  + ownedBy.transform.position.x.ToString() + ", "
+					  + ownedBy.transform.position.y.ToString() + ", "
+					  + ownedBy.transform.position.z + ".");
+		}
+
+		if (attackNum < 1 || attackNum > 3) attackNum = 1;
+		DamageData dd = new DamageData(); 
+		// Attacker (self [a]) data
+		dd.owner = ownedBy;
+		switch (attackNum) {
+		case 1:
+			dd.damage = Const.a.damageForNPC[NPCindex];
+			break;
+		case 2:
+			dd.damage = Const.a.damageForNPC2[NPCindex];
+			break;
+		case 3:
+			dd.damage = Const.a.damageForNPC3[NPCindex];
+			break;
+		default:
+			Debug.Log("BUG: NPC attackIndex not 0,1, or 2!  Damage set to 1.");
+			dd.damage = 1f;
+			break;
+		}
+		dd.penetration = 0;
+		dd.offense = 0;
+		return dd;
+	}
 }

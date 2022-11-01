@@ -23,7 +23,7 @@ public class HealingBed : MonoBehaviour {
 			if (!broken) {
 				PlayerReferenceManager.a.playerCapsule.GetComponent<HealthManager>().HealingBed(amount,true);
 				Const.sprint(Const.a.stringTable[23],ud.owner);
-				SFXSource.PlayOneShot(SFX);
+				Utils.PlayOneShotSavable(SFXSource,SFX);
 			} else {
 				Const.sprint(Const.a.stringTable[24],ud.owner);
 			}

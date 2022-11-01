@@ -24,14 +24,14 @@ public class ConfigSlider : MonoBehaviour {
 
 	public void SetValue() {
 		switch(index) {
-			case 0: Const.a.GraphicsFOV = (int)slideControl.value; Const.a.SetFOV(); break;
-			case 1: Const.a.GraphicsGamma = (int)slideControl.value; Const.a.SetBrightness(); break;
-			case 2: Const.a.AudioVolumeMaster = (int)slideControl.value; Const.a.SetVolume(); break;
-			case 3: Const.a.AudioVolumeMusic = (int)slideControl.value; Const.a.SetVolume(); break;
-			case 4: Const.a.AudioVolumeMessage = (int)slideControl.value; Const.a.SetVolume(); break;
-			case 5: Const.a.AudioVolumeEffects = (int)slideControl.value; Const.a.SetVolume(); break;
+			case 0: Const.a.GraphicsFOV = (int)slideControl.value; Config.SetFOV(); break;
+			case 1: Const.a.GraphicsGamma = (int)slideControl.value; Config.SetBrightness(); break;
+			case 2: Const.a.AudioVolumeMaster = (int)slideControl.value; Config.SetVolume(); break;
+			case 3: Const.a.AudioVolumeMusic = (int)slideControl.value; Config.SetVolume(); break;
+			case 4: Const.a.AudioVolumeMessage = (int)slideControl.value; Config.SetVolume(); break;
+			case 5: Const.a.AudioVolumeEffects = (int)slideControl.value; Config.SetVolume(); break;
 			case 6: Const.a.MouseSensitivity = ((slideControl.value/100f) * 2f) + 0.01f; break;
 		}
-		Const.a.WriteConfig();
+		Config.WriteConfig();
 	}
 }

@@ -55,7 +55,7 @@ public class SpawnManager : MonoBehaviour {
 	void Spawn(int index) {
 		if (Const.a.difficultyCombat == 0) return; // no spawns on combat difficulty 0
 		Debug.Log("Spawning new enemy...");
-		dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
+		dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
         if (dynamicObjectsContainer == null) return; //didn't find current level, can't spawn
 		Debug.Log("Found dynamic object container for spawning new enemy");
 		if (NPCSpawner) {
@@ -115,5 +115,29 @@ public class SpawnManager : MonoBehaviour {
 		} else {
 			return true;
 		}
+	}
+
+	public static string Save(GameObject go) {
+		SpawnManager sm = go.GetComponent<SpawnManager>();
+		if (sm == null) {
+			Debug.Log("SpawnManager missing on savetype of SpawnManager!  GameObject.name: " + go.name);
+			return "0|0|0000.00000";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(sm.active); // bool - is this enabled
+		line += Utils.splitChar + sm.numberActive.ToString(); // int - number spawned
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(sm.delayFinished); // float - time that we need to spawn next
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		SpawnManager sm = go.GetComponent<SpawnManager>(); // Spawn martin.  Ok dang, this is such a vague reference it makes vague references look specific.  See source code for a Quake mod called vigil (the source code, not referenced as Martin in the mod though that's what your friend's name is, requires decompiling to see that it's called spawnmartin() as it isn't available separately, goodness gracious!)
+		if (sm == null || index < 0 || entries == null) return index + 3;
+
+		sm.active = Utils.GetBoolFromString(entries[index]); index++; // bool - is this enabled
+		sm.numberActive = Utils.GetIntFromString(entries[index]); index++; // int - number spawned
+		sm.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time that we need to spawn next
+		return index;
 	}
 }

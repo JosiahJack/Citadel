@@ -1,11 +1,12 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Networking;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System;
+using System.Text;
 using System.Text.RegularExpressions;
+using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour {
 	// External references, required
@@ -184,7 +185,7 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector] public bool cyberSetup = false; // save
 	[HideInInspector] public bool cyberDesetup = false; // save
 	private SphereCollider cyberCollider;
-	private CapsuleCollider capsuleCollider;
+	[HideInInspector] public CapsuleCollider capsuleCollider;
 	[HideInInspector] public BodyState oldBodyState; // save
 	private float bonus;
     private float walkDeaccelerationVolx;
@@ -229,8 +230,6 @@ public class PlayerMovement : MonoBehaviour {
 	private float automapPlayerIconZAdjusted;
 	private bool inputtingMovement;
 	private float updateTime;
-	private List<string> lastCommand;
-	private int commandMemoryIndex;
 
 	public static PlayerMovement a;
 
@@ -275,13 +274,13 @@ public class PlayerMovement : MonoBehaviour {
 			SetAutomapExploredReference(1);
 		AutomapZoomAdjust();
 		automapPlayerIconZAdjusted = 0f;
-		lastCommand = new List<string>();
-		commandMemoryIndex = 0;
+		ConsoleEmulator.lastCommand = new string[7];
+		ConsoleEmulator.consoleMemdex = 0;
     }
 
 	void Update() {
 		// Always allowed items, even when paused...
-		ConsoleUpdate();
+		ConsoleEmulator.ConsoleUpdate();
 
 		// Bug Hunter feedback (puts it into their screenshots for me)
 		if (locationIndicator.activeInHierarchy) locationText.text = "location: " +(transform.position.x.ToString("00.00")
@@ -535,9 +534,9 @@ public class PlayerMovement : MonoBehaviour {
 				jumpSFXFinished = PauseScript.a.relativeTime + jumpSFXIntervalTime;
 				PlayerNoise.pitch = 1f;
 				if (fatigue > 80)
-					PlayerNoise.PlayOneShot(SFXJump,0.5f); // Quietly, we are tired.
+					Utils.PlayOneShotSavable(PlayerNoise,SFXJump,0.5f); // Quietly, we are tired.
 				else
-					PlayerNoise.PlayOneShot(SFXJump);
+					Utils.PlayOneShotSavable(PlayerNoise,SFXJump);
 			}
 			justJumped = false;
 			fatigue += jumpFatigue;
@@ -557,7 +556,7 @@ public class PlayerMovement : MonoBehaviour {
 			if (ladderSFXFinished < PauseScript.a.relativeTime && rbody.velocity.y > ladderSpeed * 0.5f) {
 				if (PlayerNoise != null) {
 					PlayerNoise.pitch = (UnityEngine.Random.Range(0.8f,1.2f));
-					PlayerNoise.PlayOneShot(SFXLadder,0.2f);
+					Utils.PlayOneShotSavable(PlayerNoise,SFXLadder,0.2f);
 				}
 				ladderSFXFinished = PauseScript.a.relativeTime + ladderSFXIntervalTime;
 			}
@@ -707,7 +706,7 @@ public class PlayerMovement : MonoBehaviour {
 		}
 		if (fatigue > onehundred) fatigue = onehundred; // clamp at 100 using dummy variables to hang onto the value and not get collected by garbage collector (really?  hey it was back in the old days when we didn't have incremental garbage collector, pre Unity 2019.2 versions
 		if (fatigue > 80 && !fatigueWarned && !inCyberSpace) {
-			twm.SendWarning(("Fatigue high"),0.1f,0,TextWarningsManager.warningTextColor.white,324);
+			twm.SendWarning(("Fatigue high"),0.1f,0,HUDColor.White,324);
 			fatigueWarned = true;
 		} else {
 			fatigueWarned = false;
@@ -826,34 +825,6 @@ public class PlayerMovement : MonoBehaviour {
 				capsuleCollider.enabled = true;
 				leanCapsuleCollider.enabled = true;
 			}
-		}
-	}
-
-	void ConsoleUpdate() {
-        if (GetInput.a.Console()) ToggleConsole();
-		if (consoleActivated) {
-			if (!String.IsNullOrEmpty(consoleentryText.text)) {
-				if (consoleplaceholderText.activeSelf) consoleplaceholderText.SetActive(false);
-			} else {
-				if (!consoleplaceholderText.activeSelf) consoleplaceholderText.SetActive(true);
-			}
-
-			if (Input.GetKeyDown(KeyCode.UpArrow)) {
-				commandMemoryIndex++;
-				if (commandMemoryIndex >= lastCommand.Count) commandMemoryIndex = 0;
-				if (lastCommand.Count > 0 && commandMemoryIndex >= 0 && commandMemoryIndex < lastCommand.Count) consoleentryText.text = lastCommand[commandMemoryIndex];
-				else commandMemoryIndex = 0;
-			}
-
-			if (Input.GetKeyDown(KeyCode.DownArrow)) {
-				commandMemoryIndex--;
-				if (commandMemoryIndex >= lastCommand.Count) commandMemoryIndex = 0;
-				if (lastCommand.Count > 0 && commandMemoryIndex >= 0 && commandMemoryIndex < lastCommand.Count) consoleentryText.text = lastCommand[commandMemoryIndex];
-				else commandMemoryIndex = 0;
-			}
-			if ((Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter)) && !PauseScript.a.mainMenu.activeSelf == true) ConsoleEntry();
-		} else {
-			if (consoleplaceholderText.activeSelf) consoleplaceholderText.SetActive(false);
 		}
 	}
 
@@ -1169,6 +1140,32 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	}
 
+	public void EnableCheatArsenal(int lev) {
+		GameObject arsenal;
+		switch(lev) {
+			case 0: arsenal = cheatLRarsenal; break;
+			case 1: arsenal = cheatL1arsenal; break;
+			case 2: arsenal = cheatL2arsenal; break;
+			case 3: arsenal = cheatL3arsenal; break;
+			case 4: arsenal = cheatL4arsenal; break;
+			case 5: arsenal = cheatL5arsenal; break;
+			case 6: arsenal = cheatL6arsenal; break;
+			case 7: arsenal = cheatL7arsenal; break;
+			case 8: arsenal = cheatL8arsenal; break;
+			case 9: arsenal = cheatL9arsenal; break;
+			case 10: arsenal = cheatL6arsenal; break;
+			case 11: arsenal = cheatL6arsenal; break;
+			case 12: arsenal = cheatL6arsenal; break;
+			default: arsenal = cheatL1arsenal; break;
+		}
+		GameObject cheatArsenal = Instantiate(arsenal,transform.position,
+								    Const.a.quaternionIdentity) as GameObject;
+		if (cheatArsenal == null) return; // Failed!
+
+		Transform prt = LevelManager.a.GetCurrentDynamicContainer().transform;
+		cheatArsenal.transform.SetParent(prt);
+	}
+
 	public void ConsoleDisable() { // Note this is called during Load from a save.
 		consoleActivated = false;
 		consoleplaceholderText.SetActive(false);
@@ -1178,6 +1175,7 @@ public class PlayerMovement : MonoBehaviour {
 		consolebg.enabled = false;
 		consoleentryText.text = "";
 		consoleentryText.enabled = false;
+		ConsoleEmulator.consoleMemdex = 0;
 	}
 
 	void ConsoleEnable() {
@@ -1188,9 +1186,10 @@ public class PlayerMovement : MonoBehaviour {
 		consoleinpFd.ActivateInputField();
 		consolebg.enabled = true;
 		consoleentryText.enabled = true;
+		ConsoleEmulator.consoleMemdex = 0;
 	}
 
-    void ToggleConsole() {
+    public void ToggleConsole() {
 		if (consoleActivated) {
 			ConsoleDisable();
 			PauseScript.a.PauseDisable();
@@ -1200,246 +1199,142 @@ public class PlayerMovement : MonoBehaviour {
 		}
     }
 
-	// CHEAT CODES you cheaty cheatface you...why here?? why not.
-	// =====================================================================================
-    public void ConsoleEntry() {
-		string ts = consoleinpFd.text.ToLower(); // test string = lower case text
-		string tn = consoleinpFd.text; // test number = number searching
-        if (ts.Contains("noclip") || ts.Contains("idclip") || ts.Contains("no clip")) {
-			if (CheatNoclip) {
-				CheatNoclip = false;
-				grounded = false;
-				capsuleCollider.enabled = true;
-				leanCapsuleCollider.enabled = true;
-				Const.sprint("noclip disabled");
-			} else {
-				CheatNoclip = true;
-				grounded = false;
-				rbody.useGravity = false;
-				capsuleCollider.enabled = false;
-				leanCapsuleCollider.enabled = false;
-				Const.sprint("noclip activated!");
-			}
-        } else if (ts.Contains("notarget") || ts.Contains("no target")) {
-			if (Notarget) {
-				Notarget = false;
-				Const.sprint("notarget disabled");
-			} else {
-				Notarget = true;
-				Const.sprint("notarget activated!");
-			}
-        } else if (ts.Contains("god") || (ts.Contains("power") && ts.Contains("overwhelming")) || ts.Contains("whosyourdaddy") || ts.Contains("iddqd")) {
-			if (hm.god) {
-				Const.sprint("god mode disabled");
-				hm.god = false;
-			} else {
-				Const.sprint("god mode activated!");
-				hm.god = true;
-			}
-        } else if (ts.Contains("load") && tn.Contains("0")) {
-			LevelManager.a.LoadLevel(0,LevelManager.a.ressurectionLocation[0].gameObject,LevelManager.a.ressurectionLocation[0].position);
-        } else if (ts.Contains("load") && tn.Contains("1")) {
-			LevelManager.a.LoadLevel(1,LevelManager.a.ressurectionLocation[1].gameObject,LevelManager.a.ressurectionLocation[1].position);
-        } else if (ts.Contains("load") && tn.Contains("2")) {
-			LevelManager.a.LoadLevel(2,LevelManager.a.ressurectionLocation[2].gameObject,LevelManager.a.ressurectionLocation[2].position);
-        } else if (ts.Contains("load") && tn.Contains("3")) {
-			LevelManager.a.LoadLevel(3,LevelManager.a.ressurectionLocation[3].gameObject,LevelManager.a.ressurectionLocation[3].position);
-        } else if (ts.Contains("load") && tn.Contains("4")) {
-			LevelManager.a.LoadLevel(4,LevelManager.a.ressurectionLocation[4].gameObject,LevelManager.a.ressurectionLocation[4].position);
-        } else if (ts.Contains("load") && tn.Contains("5")) {
-			LevelManager.a.LoadLevel(5,LevelManager.a.ressurectionLocation[5].gameObject,LevelManager.a.ressurectionLocation[5].position);
-        } else if (ts.Contains("load") && tn.Contains("6")) {
-			LevelManager.a.LoadLevel(6,LevelManager.a.ressurectionLocation[6].gameObject,LevelManager.a.ressurectionLocation[6].position);
-        } else if (ts.Contains("load") && tn.Contains("7")) {
-			LevelManager.a.LoadLevel(7,LevelManager.a.ressurectionLocation[7].gameObject,LevelManager.a.ressurectionLocation[7].position);
-        } else if (ts.Contains("load") && tn.Contains("8")) {
-			LevelManager.a.LoadLevel(8,LevelManager.a.ressurectionLocation[8].gameObject,LevelManager.a.ressurectionLocation[8].position);
-        } else if (ts.Contains("load") && tn.Contains("9")) {
-			LevelManager.a.LoadLevel(9,LevelManager.a.ressurectionLocation[9].gameObject,LevelManager.a.ressurectionLocation[9].position);
-        } else if (ts.Contains("load") && ts.Contains("g1")) {
-			LevelManager.a.LoadLevel(10,cheatG1Spawn.gameObject,LevelManager.a.ressurectionLocation[10].position);
-        } else if (ts.Contains("load") && ts.Contains("g2")) {
-			LevelManager.a.LoadLevel(11,cheatG2Spawn.gameObject,LevelManager.a.ressurectionLocation[11].position);
-        } else if (ts.Contains("load") && ts.Contains("g4")) {
-			LevelManager.a.LoadLevel(12,cheatG4Spawn.gameObject,LevelManager.a.ressurectionLocation[12].position);
-		} else if (ts.Contains("load") && ts.Contains("g3")) {
-			Const.sprint("Gamma grove already jettisoned!  Those poor arrogant people.");
-		} else if (ts.Contains("loadarsenalr") || ts.Contains("loadarsenal r")) {
-			GameObject cheatArsenal = Instantiate(cheatLRarsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-		} else if (ts.Contains("loadarsenal1") || ts.Contains("loadarsenal 1")) {
-			GameObject cheatArsenal = Instantiate(cheatL1arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-		} else if (ts.Contains("loadarsenal2") || ts.Contains("loadarsenal 2")) {
-			GameObject cheatArsenal = Instantiate(cheatL2arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-		} else if (ts.Contains("loadarsenal3") || ts.Contains("loadarsenal 3")) {
-			GameObject cheatArsenal = Instantiate(cheatL3arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-		} else if (ts.Contains("loadarsenal4") || ts.Contains("loadarsenal 4")) {
-			GameObject cheatArsenal = Instantiate(cheatL4arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-		} else if (ts.Contains("loadarsenal5") || ts.Contains("loadarsenal 5")) {
-			GameObject cheatArsenal = Instantiate(cheatL5arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-		} else if (ts.Contains("loadarsenal6") || ts.Contains("loadarsenal 6")) {
-			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-		} else if (ts.Contains("loadarsenal7") || ts.Contains("loadarsenal 7")) {
-			GameObject cheatArsenal = Instantiate(cheatL7arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-		} else if (ts.Contains("loadarsenal8") || ts.Contains("loadarsenal 8")) {
-			GameObject cheatArsenal = Instantiate(cheatL8arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-		} else if (ts.Contains("loadarsenal9") || ts.Contains("loadarsenal 9")) {
-			GameObject cheatArsenal = Instantiate(cheatL9arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-		} else if (ts.Contains("loadarsenalg1") || ts.Contains("loadarsenal g1")) {
-			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-		} else if (ts.Contains("loadarsenalg2") || ts.Contains("loadarsenal g2")) {
-			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-		} else if (ts.Contains("loadarsenalg3") || ts.Contains("loadarsenal g3")) {
-			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-        } else if (ts.Contains("loadarsenalg4") || ts.Contains("loadarsenal g4")) {
-			GameObject cheatArsenal = Instantiate(cheatL6arsenal,transform.position,Const.a.quaternionIdentity) as GameObject;
-			if (cheatArsenal != null) cheatArsenal.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-        } else if (ts.Contains("bottomless") && ts.Contains("clip")) { // bottomlessclip
-			if (WeaponCurrent.WepInstance.bottomless) {
-				Const.sprint("Hose disconnected from interdimensional wormhole. Normal ammo operation restored.");
-				WeaponCurrent.WepInstance.bottomless = false;
-			} else {
-				Const.sprint("bottomlessclip!  Bring it!");
-				WeaponCurrent.WepInstance.bottomless = true;
-			}
-        } else if (ts.Contains("ifeelthepower") || (ts.Contains("i") && ts.Contains("feel") && ts.Contains("the") && ts.Contains("power"))) { // ifeelthepower
-			if (WeaponCurrent.WepInstance.redbull) {
-				Const.sprint("Energy usage normal");
-				WeaponCurrent.WepInstance.redbull = false;
-			} else {
-				Const.sprint("I feel the power! 0 energy consumption!");
-				WeaponCurrent.WepInstance.redbull = true;
-			}
-        } else if (ts.Contains("show") && ts.Contains("fps")) { // showfps
-			Const.sprint("Toggling FPS counter for framerate (bottom right corner)...");
-			fpsCounter.SetActive(!fpsCounter.activeInHierarchy);
-        } else if (ts.Contains("show") && ts.Contains("location")) { // showlocation
-			Const.sprint("Toggling locationIndicator (bottom left corner)...");
-			locationIndicator.SetActive(!locationIndicator.activeInHierarchy);
-		} else if (ts.Contains("i") && ts.Contains("am") && ts.Contains("shodan")) { // iamshodan
-			if (LevelManager.a.superoverride) {
-				Const.sprint("SHODAN has regained control of security from you");
-				LevelManager.a.superoverride = false;
-			} else {
-				Const.sprint("Full security override enabled!");
-				LevelManager.a.superoverride = true;
-			}
-		} else if (consoleinpFd.text == "Mr. Bean") {
-				Const.sprint("Nice try, there are no go carts to slow down here");
-		} else if (consoleinpFd.text == "Simon Foster") {
-				Const.sprint("Nice try, nothing to paint here");
-		} else if (consoleinpFd.text == "Motherlode" || consoleinpFd.text == "Rosebud" || consoleinpFd.text == "Kaching" || consoleinpFd.text == "money") {
-				Const.sprint("Nice try, there's no money here.");
-		} else if (consoleinpFd.text == "Richard Branson") {
-				Const.sprint("Nice try, there's no money here.  You do realize this isn't Rollercoaster Tycoon right?");
-		} else if (consoleinpFd.text == "John Wardley") {
-				Const.sprint("WOW!");
-		} else if (consoleinpFd.text == "John Mace") {
-				Const.sprint("Nice try, there's nothing to pay double for here");
-		} else if (consoleinpFd.text == "Melanie Warn") {
-				Const.sprint("I feel happy!!!");
-		} else if (consoleinpFd.text == "Damon Hill") {
-				Const.sprint("Nice try, there are no go carts to speed up here");
-		} else if (consoleinpFd.text == "Michael Schumacher") {
-				Const.sprint("Nice try, there are no go carts to give ludicrous speed here");
-		} else if (consoleinpFd.text == "Tony Day") {
-				Const.sprint("Ok, now I want a hamburger");
-		} else if (consoleinpFd.text == "Katie Brayshaw") {
-				Const.sprint("Hi there! Hello! Hey! Howdy!");
-		} else if (ts.Contains("sudo") || ts.Contains("admin")) {
-				Const.sprint("Super user access granted...ERROR: access restricted by SHODAN");
-		} else if (ts.Contains("git")) {
-				if (ts.Contains("pull") || ts.Contains("fetch")) Const.sprint("remote: Enumerating objects: 24601, done. Failed, could not connect with origin/triop.");
-				else if (ts.Contains("status")) Const.sprint("Your branch is up to date with origin/triop. Working directory clean.");
-				else if (ts.Contains("log")) Const.sprint("<Merge pull request #451 from SHODAN/NeuralLinkBugfix> 6 months ago...");
-				else if (ts.Contains("reflog")) Const.sprint("dc51440 HEAD0 -> master: commit: Establish neural connection ... ERROR: invalid ID `2-4601`");
-				else if (ts.Contains("merge")) Const.sprint("Failed, could not connect with origin/triop");
-				else if (ts.Contains("push")) Const.sprint("Could not find Username for 'triopttp://192.168.1.451'");
-				else if (ts.Contains("clone")) Const.sprint("Failed, connection blocked by SHODAN. Employee ID invalid.");
-				else if (ts.Contains("branch") || ts.Contains("-b")) Const.sprint("Created new branch " + Utils.GetIntFromString(ts.Split(' ').Last()));
-				else if (ts.Contains("checkout")) Const.sprint("Branch name not recognized.  Contact your TriopBucket representative.");
-				else Const.sprint("Branch name not recognized.  Contact your TriopBucket representative.");
-		} else if (ts.Contains("restart")) {
-				Const.sprint("Yeah...better not");
-		} else if (ts.Contains("quit") || ts.Contains("exit")) {
-				Const.sprint("Use the Pause Menu by hitting Escape and clicking QUIT");
-		} else if (ts.Contains("cd") || ts.Contains("./")) {
-				Const.sprint("Attempting to access directory... already at root");
-		} else if (ts.Contains("kill") || ts.Contains("kick") || ts.Contains("ban") || ts.Contains("destroy") || ts.Contains("attack") || ts.Contains("suicide") || ts.Contains("die")) {
-				Const.sprint("Player decides to become a cyborg.");
-				DamageData dd = new DamageData();
-				dd.damage = hm.health + 1.0f;
-				dd.other = gameObject;
-				hm.TakeDamage(dd);
-		} else if (ts.Contains("justinbailey")) {
-				Const.sprint("Well, you don't have a suit already so...");
-		} else if (ts.Contains("woodstock")) {
-				Const.sprint("How much wood could a woodchuck chuck...there's no wood in SPACE!");
-		} else if (ts.Contains("quarry")) {
-				Const.sprint("There's obsidian on levels 6 and 8 if want to feel decadant, otherwise we are lacking in the stone department.");
-		} else if (ts.Contains("help")) {
-				Const.sprint("There's no one to save you now Hacker!");
-		} else if (ts.Contains("zelda")) {
-				Const.sprint("Too late, already been to level 1");
-		} else if (ts.Contains("allyourbasearebelongtous") || (ts.Contains("all") && ts.Contains("your") && ts.Contains("base"))) {
-				Const.sprint("ERROR: SHODAN has overriden your command, remove SHODAN first."); // This is not an easter egg if you run this after removing SHODAN!!
-		} else if (ts.Contains("i") && ts.Contains("am") && ((ts.Contains("iron") && ts.Contains("man")) || ts.Contains("amazing") || ts.Contains("cool") || ts.Contains("best"))) {
-				Const.sprint("That's nice dear.");
-		} else if ((ts.Contains("impulse") && tn.Contains("9")) || ts.Contains("idkfa")) {
-				Const.sprint("I can only hold 7 weapons!! Nice try dearies!");
-		} else if (ts.Contains("summon_obj")) {
-			int val = Utils.GetIntFromString(ts.Split(' ').Last()); // That's a slow line to compute!
-			if (val < 102 && val >= 0) {
-				GameObject cheatObject = Instantiate(Const.a.useableItems[val],transform.position,Const.a.quaternionIdentity) as GameObject;
-				if (cheatObject != null) {
-					cheatObject.transform.SetParent(LevelManager.a.GetCurrentLevelDynamicContainer().transform);
-					if (val < 33 && val > 20) {
-						UseableObjectUse uo = cheatObject.GetComponent<UseableObjectUse>();
-						int dex14 = Inventory.a.hardware14fromConstdex(uo.useableItemIndex);
-						if (Inventory.a.hasHardware[dex14]) {
-							uo.customIndex = (Inventory.a.hardwareVersion[dex14] + 1);
-						}
-					}
-				}
-			}
-        } else if (ts.Contains("const.")) {
-			string numGet = Regex.Match(ts, @"\d+").Value;
-			int numGot = Int32.Parse(numGet);
-			if (numGot >= 0) {
-				// Debug value parsing within build
-				if (ts.Contains("useableItemsNameText")) {
-					if (numGot < Const.a.useableItemsNameText.Length) Const.sprint(Const.a.useableItemsNameText[numGot]);
-					else Const.sprint("Value of " + numGot.ToString() + " was outside of bounds, needs to be 0 - " + Const.a.useableItemsNameText.Length.ToString());
-				} else if (ts.Contains("isFullAutoForWeapon")) {
-					if (numGot < Const.a.isFullAutoForWeapon.Length) Const.sprint(Const.a.isFullAutoForWeapon[numGot].ToString());
-					else Const.sprint("Value of " + numGot.ToString() + " was outside of bounds, needs to be 0 - " + Const.a.isFullAutoForWeapon.Length.ToString());
-				} else if (ts.Contains("moveTypeForNPC")) {
-					if (numGot < Const.a.moveTypeForNPC.Length) Const.sprint(Const.a.moveTypeForNPC[numGot].ToString());
-					else Const.sprint("Value of " + numGot.ToString() + " was outside of bounds, needs to be 0 - " + Const.a.moveTypeForNPC.Length.ToString());
-				}
-			}
-		} else {
-            Const.sprint("Uknown command or function: " + consoleinpFd.text);
-        }
-
-		lastCommand.Add(consoleinpFd.text);
-		if (lastCommand.Count > 99) {
-			lastCommand.Remove(lastCommand[0]);
-			commandMemoryIndex = (int)Mathf.Min((lastCommand.Count - 1), commandMemoryIndex);
+	public static string Save(GameObject go) {
+		PlayerMovement pm = go.GetComponent<PlayerMovement>();
+		int j = 0;
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		if (pm == null) {
+			Debug.Log("PlayerMovement missing on savetype of Player!  GameObject.name: " + go.name);
+			s1.Append("fbfibbb");
+			for (j=0;j<(4096 * 13);j++) s1.Append("b");
+			s1.Append("bbfffffbffbbifftttbttt");
+			return Utils.DTypeWordToSaveString(s1.ToString());
 		}
-        consoleinpFd.text = ""; // Reset console and hide it, command was entered.
-        ToggleConsole();
-    }
+
+		s1.Append(Utils.FloatToString(pm.playerSpeed)); // float
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pm.grounded)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(pm.currentCrouchRatio)); // float
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(Utils.BodyStateToInt(pm.bodyState)));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pm.ladderState)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pm.gravliftState)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pm.inCyberSpace)); // bool
+		s1.Append(Utils.splitChar);
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExploredR[j])); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored1[j])); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored2[j])); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored3[j])); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored4[j])); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored5[j])); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored6[j])); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored7[j])); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored8[j])); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored9[j])); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExploredG1[j])); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExploredG2[j])); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExploredG4[j])); s1.Append(Utils.splitChar); } // bool
+		s1.Append(Utils.BoolToString(pm.CheatWallSticky)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pm.CheatNoclip)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(pm.jumpTime)); // float, not a timer
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(pm.oldVelocity.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(pm.oldVelocity.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(pm.oldVelocity.z)); // Vector3 (float|float|float)
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(pm.fatigue)); // float
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pm.justJumped)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.fatigueFinished)); // float
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.fatigueFinished2)); // float
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pm.cyberSetup)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pm.cyberDesetup)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(Utils.BodyStateToInt(pm.oldBodyState)));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(pm.leanTarget)); // float
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(pm.leanShift)); // float
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpSFXFinished)); // float
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpLandSoundFinished)); // float
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpJetEnergySuckTickFinished)); // float
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pm.fatigueWarned)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.ressurectingFinished)); // float
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.doubleJumpFinished)); // float
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.turboFinished)); // float
+		return s1.ToString();
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		PlayerMovement pm = go.GetComponent<PlayerMovement>();
+		int j = 0;
+		if (pm == null || index < 0 || entries == null) return index + 29 + (4096 * 13);
+
+		float readFloatx, readFloaty, readFloatz;
+		pm.playerSpeed = Utils.GetFloatFromString(entries[index]); index++;
+		pm.grounded = Utils.GetBoolFromString(entries[index]); index++;
+		pm.currentCrouchRatio = Utils.GetFloatFromString(entries[index]); index++;
+		pm.bodyState = Utils.IntToBodyState(Utils.GetIntFromString(entries[index])); index++;
+		pm.ladderState = Utils.GetBoolFromString(entries[index]); index++;
+		pm.gravliftState = Utils.GetBoolFromString(entries[index]); index++;
+		pm.inCyberSpace = Utils.GetBoolFromString(entries[index]); index++;
+		for (j=0;j<4096;j++) { pm.automapExploredR[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored1[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored2[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored3[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored4[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored5[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored6[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored7[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored8[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExplored9[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExploredG1[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExploredG2[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { pm.automapExploredG4[j] = entries[index].Equals("1"); index++; }
+		pm.CheatWallSticky = Utils.GetBoolFromString(entries[index]); index++;
+		pm.CheatNoclip = Utils.GetBoolFromString(entries[index]); index++;
+		pm.jumpTime = Utils.GetFloatFromString(entries[index]); index++; // not a timer
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		pm.oldVelocity = new Vector3(readFloatx,readFloaty,readFloatz);
+		pm.fatigue = Utils.GetFloatFromString(entries[index]); index++;
+		pm.justJumped = Utils.GetBoolFromString(entries[index]); index++;
+		pm.fatigueFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.fatigueFinished2 = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.cyberSetup = Utils.GetBoolFromString(entries[index]); index++;
+		pm.cyberDesetup = Utils.GetBoolFromString(entries[index]); index++;
+		pm.oldBodyState = Utils.IntToBodyState(Utils.GetIntFromString(entries[index])); index++;
+		pm.ConsoleDisable();
+		pm.leanTarget = Utils.GetFloatFromString(entries[index]); index++;
+		pm.leanShift = Utils.GetFloatFromString(entries[index]); index++;
+		pm.jumpSFXFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.jumpLandSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.jumpJetEnergySuckTickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.fatigueWarned = Utils.GetBoolFromString(entries[index]); index++;
+		pm.turboFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.ressurectingFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.doubleJumpFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		return index;
+	}
 }

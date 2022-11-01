@@ -49,13 +49,13 @@ public class GeneralInvButton : MonoBehaviour {
             }
         } else {
             MFDManager.a.SendInfoToItemTab(useableItemIndex);
-            MFDManager.a.OpenTab(1, true, MFDManager.TabMSG.None, useableItemIndex, Handedness.LH);
+            MFDManager.a.OpenTab(1, true, TabMSG.None, useableItemIndex, Handedness.LH);
             Inventory.a.generalInvCurrent = GeneralInvButtonIndex; // Set current.
         }
 
 		if (reduce)  {
 			Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex] = -1;
-			GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+			GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 		}
 	}
 

@@ -62,7 +62,7 @@ public class ConfigKeybindButton : MonoBehaviour {
 				if (goodkey) {
 					selfText.text = Const.a.InputConfigNames[i];
 					Const.a.InputCodeSettings[index] = i;
-					Const.a.WriteConfig();
+					Config.WriteConfig();
 					enterMode = false;
 					firstFrame = true;
 					CheckAndHandleConflicts(i);

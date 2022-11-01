@@ -38,13 +38,10 @@ public class Door : MonoBehaviour {
 	private AudioSource SFX = null;
 	[Tooltip("Door sound when opening or closing")]
 	public AudioClip SFXClip; // assign in the editor
-	public enum doorState : byte {Closed, Open, Closing, Opening};
-	public enum accessCardType : byte {	None,Standard,Medical,Science,Admin,Group1,Group2,Group3,
-										Group4,GroupA,GroupB,Storage,Engineering,Maintenance,Security,
-										Per1,Per2,Per3,Per4,Per5,Command};
-	public accessCardType requiredAccessCard = accessCardType.None;
+
+	public AccessCardType requiredAccessCard = AccessCardType.None;
 	public bool accessCardUsedByPlayer = false; // save
-	public doorState doorOpen; // save
+	public DoorState doorOpen; // save
 
 	public float timeBeforeLasersOn;
 	[HideInInspector]
@@ -75,7 +72,7 @@ public class Door : MonoBehaviour {
 	void Start () {
 		anim = GetComponent<Animator>();
 		animatorPlaybackTime = 0;
-		if (requiredAccessCard == accessCardType.None)
+		if (requiredAccessCard == AccessCardType.None)
 			accessCardUsedByPlayer = true;
 		
 		SFX = GetComponent<AudioSource>();
@@ -94,7 +91,7 @@ public class Door : MonoBehaviour {
 			if (changeLayerOnOpenClose && !ajar) {
 				SetCollisionLayerClosed();
 			}
-			doorOpen = doorState.Closed;
+			doorOpen = DoorState.Closed;
 			anim.Play(idleClosedClipName);
 		}
 
@@ -117,22 +114,22 @@ public class Door : MonoBehaviour {
 		// SHODAN can go anywhere!  Full security override!
 		if (LevelManager.a.superoverride || Const.a.difficultyMission <= 0) {
 			locked = false;
-			requiredAccessCard = accessCardType.None;
+			requiredAccessCard = AccessCardType.None;
 			accessCardUsedByPlayer = true;
 		}
 
 		if (Const.a.difficultyMission <= 1) {
-			requiredAccessCard = accessCardType.None;
+			requiredAccessCard = AccessCardType.None;
 			accessCardUsedByPlayer = true;
 		}
 
 		AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
 		animatorPlaybackTime = asi.normalizedTime;
 		if (useFinished < PauseScript.a.relativeTime) {
-			if (requiredAccessCard == accessCardType.None || Inventory.a.HasAccessCard(requiredAccessCard) || accessCardUsedByPlayer) {
+			if (requiredAccessCard == AccessCardType.None || Inventory.a.HasAccessCard(requiredAccessCard) || accessCardUsedByPlayer) {
 				useFinished = PauseScript.a.relativeTime + useTimeDelay;	
 				if (!locked) {
-					if (requiredAccessCard != accessCardType.None) {
+					if (requiredAccessCard != AccessCardType.None) {
 						Const.sprint(requiredAccessCard.ToString() + cardUsedMessage,ud.owner); // state that we just used a keycard and access was granted
 						accessCardUsedByPlayer = true;
 					}
@@ -166,34 +163,34 @@ public class Door : MonoBehaviour {
 						animatorPlaybackTime = topTime * ajarPercentage;
 					}
 
-					if (doorOpen == doorState.Open && animatorPlaybackTime > 0.95f) {
-						doorOpen = doorState.Closing;
+					if (doorOpen == DoorState.Open && animatorPlaybackTime > 0.95f) {
+						doorOpen = DoorState.Closing;
 						CloseDoor();
 						return;
 					}
 
-					if (doorOpen == doorState.Closed && animatorPlaybackTime > 0.95f){
-						doorOpen = doorState.Opening;
+					if (doorOpen == DoorState.Closed && animatorPlaybackTime > 0.95f){
+						doorOpen = DoorState.Opening;
 						OpenDoor();
 						return;
 					}
 
-					if (doorOpen == doorState.Opening) {
-						doorOpen = doorState.Closing;
+					if (doorOpen == DoorState.Opening) {
+						doorOpen = DoorState.Closing;
 						anim.Play(closeClipName,defIndex, topTime-animatorPlaybackTime);
-						if (SFXClip != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXClip);
+						Utils.PlayOneShotSavable(SFX,SFXClip);
 						return;
 					}
 
-					if (doorOpen == doorState.Closing) {
-						doorOpen = doorState.Opening;
+					if (doorOpen == DoorState.Closing) {
+						doorOpen = DoorState.Opening;
 						waitBeforeClose = PauseScript.a.relativeTime + delay;
 						anim.Play(openClipName,defIndex, topTime-animatorPlaybackTime);
-						if (SFXClip != null && SFX != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXClip);
+						Utils.PlayOneShotSavable(SFX,SFXClip);
 						return;
 					}
 				} else {
-					if (requiredAccessCard != accessCardType.None) {
+					if (requiredAccessCard != AccessCardType.None) {
 						Const.sprint (requiredAccessCard.ToString() + cardUsedMessage + butdoorStillLockedMessage,ud.owner);
 						accessCardUsedByPlayer = true;
 					} else {
@@ -217,12 +214,12 @@ public class Door : MonoBehaviour {
 	}
 
 	public void ForceOpen() {
-		if (doorOpen == doorState.Open) return;
+		if (doorOpen == DoorState.Open) return;
 		OpenDoor();
 	}
 
 	public void ForceClose() {
-		if (doorOpen == doorState.Closed) return;
+		if (doorOpen == DoorState.Closed) return;
 		CloseDoor();
 	}
 
@@ -246,10 +243,10 @@ public class Door : MonoBehaviour {
 
 	void OpenDoor() {
 		anim.speed = defaultSpeed;
-		doorOpen = doorState.Opening;
+		doorOpen = DoorState.Opening;
 		waitBeforeClose = PauseScript.a.relativeTime + delay;
 		anim.Play(openClipName);
-		if (SFX != null && SFXClip != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXClip);
+		Utils.PlayOneShotSavable(SFX,SFXClip);
 		if (toggleLasers) {
 			for (int i=defIndex;i<laserLines.Length;i++) {
 				if (laserLines[i].activeSelf) laserLines[i].SetActive(false);
@@ -264,13 +261,13 @@ public class Door : MonoBehaviour {
 
 	void CloseDoor() {
 		anim.speed = defaultSpeed;
-		doorOpen = doorState.Closing;
+		doorOpen = DoorState.Closing;
 		anim.Play(closeClipName);
-		if (SFX != null && SFXClip != null && gameObject.activeInHierarchy) SFX.PlayOneShot(SFXClip);
+		Utils.PlayOneShotSavable(SFX,SFXClip);
 		if (toggleLasers) {
 			lasersFinished = PauseScript.a.relativeTime + timeBeforeLasersOn;
 		}
-		dynamicObjectsContainer = LevelManager.a.GetCurrentLevelDynamicContainer();
+		dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
         if (dynamicObjectsContainer == null) return; //didn't find current level, go ahead and ghost through objects
 		// horrible hack to keep objects that have their physics sleeping ghosting through the door as it closes
 		for (i=defIndex;i<dynamicObjectsContainer.transform.childCount;i++) {
@@ -285,29 +282,22 @@ public class Door : MonoBehaviour {
 		}
 	}
 
-	public void SetAnimFromLoad(string n, int i, float t) {
-		firstUpdateAfterLoad = true;
-		loadedClipName = n;
-		loadedClipIndex = i;
-		loadedAnimatorPlaybackTime = t;
-	}
-
 	void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (firstUpdateAfterLoad) {
 				firstUpdateAfterLoad = false;
 				anim.Play(loadedClipName,loadedClipIndex,loadedAnimatorPlaybackTime);
 				switch(loadedClipName) {
-					case "IdleOpen": doorOpen = doorState.Open; break;
-					case "IdleClosed": doorOpen = doorState.Closed; break;
-					case "DoorOpen": doorOpen = doorState.Opening; break;
-					case "DoorClose": doorOpen = doorState.Closing; break;
+					case "IdleOpen": doorOpen = DoorState.Open; break;
+					case "IdleClosed": doorOpen = DoorState.Closed; break;
+					case "DoorOpen": doorOpen = DoorState.Opening; break;
+					case "DoorClose": doorOpen = DoorState.Closing; break;
 				}
 				return;
 			}
 
 			if (ajar) {
-				doorOpen = doorState.Opening;
+				doorOpen = DoorState.Opening;
 				if (anim.speed != speedZero) {
 					anim.Play(openClipName,defIndex, ajarPercentage);
 					anim.speed = speedZero;
@@ -321,15 +311,15 @@ public class Door : MonoBehaviour {
 				Unblocked();
 			}
 
-			if (doorOpen == doorState.Closing || doorOpen == doorState.Opening) {
+			if (doorOpen == DoorState.Closing || doorOpen == DoorState.Opening) {
 				AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
 				animatorPlaybackTime = asi.normalizedTime;
-				if (doorOpen == doorState.Closing && animatorPlaybackTime > 0.95f) doorOpen = doorState.Closed; // Door is closed
-				if (doorOpen == doorState.Opening && animatorPlaybackTime > 0.95f) doorOpen = doorState.Open; // Door is open
+				if (doorOpen == DoorState.Closing && animatorPlaybackTime > 0.95f) doorOpen = DoorState.Closed; // Door is closed
+				if (doorOpen == DoorState.Opening && animatorPlaybackTime > 0.95f) doorOpen = DoorState.Open; // Door is open
 			}
 
 			if (PauseScript.a.relativeTime > waitBeforeClose) {
-				if ((doorOpen == doorState.Open) && (!stayOpen) && (!startOpen)) CloseDoor();
+				if ((doorOpen == DoorState.Open) && (!stayOpen) && (!startOpen)) CloseDoor();
 			}
 
 			if (toggleLasers) {
@@ -341,7 +331,7 @@ public class Door : MonoBehaviour {
 				}
 			}
 
-			if (doorOpen == doorState.Open) {
+			if (doorOpen == DoorState.Open) {
 				if (nmo.enabled) nmo.enabled = false; // clear path, door is open
 			} else {
 				if (!nmo.enabled) nmo.enabled = true; // door is not opened fully, treat as a closed path
@@ -369,11 +359,18 @@ public class Door : MonoBehaviour {
 		if (anim.speed != defaultSpeed) anim.speed = defaultSpeed;
 	}
 
+	public void SetAnimFromLoad(string n, int i, float t) {
+		firstUpdateAfterLoad = true;
+		loadedClipName = n;
+		loadedClipIndex = i;
+		loadedAnimatorPlaybackTime = t;
+	}
+
 	public static string Save(GameObject go) {
 		Door dr = go.GetComponent<Door>();
 		if (dr == null) {
-			UnityEngine.Debug.Log("SearchableItem missing on savetype of SearchableItem! GameObject.name: " + go.name);
-			return "0|0|0|0000.00000|0000.00000|0000.00000|0|0|2";
+			Debug.Log("SearchableItem missing on savetype of SearchableItem!  GameObject.name: " + go.name);
+			return "0|0|0|0000.00000|0000.00000|0000.00000|0|0|2|0000.00000";
 		}
 
 		string line = System.String.Empty;
@@ -386,14 +383,37 @@ public class Door : MonoBehaviour {
 		line += Utils.splitChar + Utils.BoolToString(dr.blocked); // bool - is the door blocked currently?
 		line += Utils.splitChar + Utils.BoolToString(dr.accessCardUsedByPlayer); // bool - is the door blocked currently?
 		switch (dr.doorOpen) {
-			case doorState.Closed: line += Utils.splitChar + "0"; break;
-			case doorState.Open: line += Utils.splitChar + "1"; break;
-			case doorState.Closing: line += Utils.splitChar + "2"; break;
-			case doorState.Opening: line += Utils.splitChar + "3"; break;
+			case DoorState.Closed: line += Utils.splitChar + "0"; break;
+			case DoorState.Open: line += Utils.splitChar + "1"; break;
+			case DoorState.Closing: line += Utils.splitChar + "2"; break;
+			case DoorState.Opening: line += Utils.splitChar + "3"; break;
 		}
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(dr.animatorPlaybackTime); // float - current animation time
-
-		//8
 		return line;
-	}	
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		Door dr = go.GetComponent<Door>();
+		if (dr == null || index < 0 || entries == null) return index + 10;
+
+		dr.targetAlreadyDone = Utils.GetBoolFromString(entries[index]); index++; // bool - have we already ran targets
+		dr.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - is this locked?
+		dr.ajar = Utils.GetBoolFromString(entries[index]); index++; // bool - is this ajar?
+		dr.useFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		dr.waitBeforeClose = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		dr.lasersFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		dr.blocked = Utils.GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
+		dr.accessCardUsedByPlayer = Utils.GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
+		int state = Utils.GetIntFromString(entries[index]); index++;
+		string clipName = "IdleClosed";
+		switch (state) {
+			case 0: dr.doorOpen = DoorState.Closed; clipName = "IdleClosed"; break;
+			case 1: dr.doorOpen = DoorState.Open; clipName = "IdleOpen"; break;
+			case 2: dr.doorOpen = DoorState.Closing; clipName = "DoorClose"; break;
+			case 3: dr.doorOpen = DoorState.Opening; clipName = "DoorOpen"; break;
+		}
+		dr.animatorPlaybackTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		dr.SetAnimFromLoad(clipName,0,dr.animatorPlaybackTime); index++;
+		return index;
+	}
 }

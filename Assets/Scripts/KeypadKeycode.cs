@@ -82,7 +82,7 @@ public class KeypadKeycode : MonoBehaviour {
 		}
 
 		padInUse = true;
-		SFXSource.PlayOneShot(SFX);
+		Utils.PlayOneShotSavable(SFXSource,SFX);
 		MouseLookScript.a.ForceInventoryMode();
 		MFDManager.a.SendKeypadKeycodeToDataTab(keycode,transform.position,this,solved);
 	}
@@ -99,5 +99,29 @@ public class KeypadKeycode : MonoBehaviour {
 		}
 		Const.a.UseTargets(ud,target);
 		Const.sprintByIndexOrOverride (successMessageLingdex, successMessage,ud.owner);
+	}
+
+	public static string Save(GameObject go) {
+		KeypadKeycode kk = go.GetComponent<KeypadKeycode>();
+		if (kk == null) {
+			Debug.Log("KeypadKeycode missing on savetype of KeypadKeycode!  GameObject.name: " + go.name);
+			return "0|0|0";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(kk.padInUse); // bool - is the pad being used by a player
+		line += Utils.splitChar + Utils.BoolToString(kk.locked); // bool - locked?
+		line += Utils.splitChar + Utils.BoolToString(kk.solved); // bool - already entered correct keycode?
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		KeypadKeycode kk = go.GetComponent<KeypadKeycode>();
+		if (kk == null || index < 0 || entries == null) return index + 3;
+
+		kk.padInUse = Utils.GetBoolFromString(entries[index]); index++; // bool - is the pad being used by a player
+		kk.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - locked?
+		kk.solved = Utils.GetBoolFromString(entries[index]); index++; // bool - already entered correct keycode?
+		return index;
 	}
 }

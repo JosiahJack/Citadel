@@ -51,11 +51,33 @@ public class KeypadElevator : MonoBehaviour {
 		}
 
 		padInUse = true;
-		SFXSource.PlayOneShot(SFX);
+		Utils.PlayOneShotSavable(SFXSource,SFX);
 		MFDManager.a.SendElevatorKeypadToDataTab(this,buttonsEnabled,buttonsDarkened,buttonText,targetDestination,transform.position,linkedDoor,currentFloor);
 	}
 
 	public void SendDataBackToPanel() {
 		padInUse = false;
+	}
+
+	public static string Save(GameObject go) {
+		KeypadElevator ke = go.GetComponent<KeypadElevator>();
+		if (ke == null) {
+			Debug.Log("KeypadElevator missing on savetype of KeypadElevator!  GameObject.name: " + go.name);
+			return "0|0";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(ke.padInUse); // bool - is the pad being used by a player
+		line += Utils.splitChar + Utils.BoolToString(ke.locked); // bool - locked?
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		KeypadElevator ke = go.GetComponent<KeypadElevator>();
+		if (ke == null || index < 0 || entries == null) return index + 2;
+
+		ke.padInUse = Utils.GetBoolFromString(entries[index]); index++; // bool - is the pad being used by a player
+		ke.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - locked?
+		return index;
 	}
 }

@@ -69,10 +69,12 @@ public class TargetIO : MonoBehaviour {
 					gameObject.AddComponent(typeof(SaveObject));
 					so = GetComponent<SaveObject>();
 					if (so != null) {
-						so.saveType = SaveObject.SaveableType.Transform;
+						so.saveType = SaveableType.Transform;
 						so.saveableType = "Transform";
 					} else {
-						Debug.Log("BUG: failed to add SaveObject to a disabled on awake gameobject with TargetIO.cs");
+						Debug.Log("BUG: failed to add SaveObject to a "
+								  + "disabled on awake gameobject with "
+								  + "TargetIO.cs");
 					}
 				}
 				this.gameObject.SetActive(false);

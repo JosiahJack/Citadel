@@ -15,10 +15,10 @@ public class CyborgConversionToggle : MonoBehaviour {
 		if (SFX != null) SFX.Stop();
 		int lindex = LevelManager.a.currentLevel != -1 ? LevelManager.a.currentLevel : 0;
 		if (LevelManager.a.ressurectionActive[lindex]) {
-			if (SFX != null && SFX.enabled == true && SFXEnabled != null) SFX.PlayOneShot(SFXEnabled);
+			Utils.PlayOneShotSavable(SFX,SFXEnabled);
 			Const.sprint(Const.a.stringTable[591]); // "Cyborg conversion cancelled.  Healing normal."
 		} else {
-			if (SFX != null && SFX.enabled == true && SFXDisabled != null) SFX.PlayOneShot(SFXDisabled);
+			Utils.PlayOneShotSavable(SFX,SFXDisabled);
 			Const.sprint(Const.a.stringTable[592]); // "Cyborg conversion reactivated."
 		}
 	}

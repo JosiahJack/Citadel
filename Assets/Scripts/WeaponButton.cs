@@ -14,10 +14,10 @@ public class WeaponButton : MonoBehaviour {
 	private int invslot;
 
 	public void WeaponInvClick () {
-		if (WeaponCurrent.WepInstance.reloadFinished > PauseScript.a.relativeTime) return;
+		if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime) return;
 
-		WeaponCurrent.WepInstance.WeaponChange(useableItemIndex, WepButtonIndex);
-		if (gameObject.activeInHierarchy && SFX != null && SFXClip != null) SFX.PlayOneShot(SFXClip);
+		WeaponCurrent.a.WeaponChange(useableItemIndex, WepButtonIndex);
+		if (gameObject.activeInHierarchy && SFX != null && SFXClip != null) Utils.PlayOneShotSavable(SFX,SFXClip);
 	}
 
 	void Start() {

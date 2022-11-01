@@ -16,14 +16,14 @@ public class SoftwareInvButton : MonoBehaviour {
 					Inventory.a.pulserButtonText.Select(false);
 					Inventory.a.drillButtonText.Select(true);
 					Inventory.a.isPulserNotDrill = false;
-					if (Inventory.a.SFX != null && Inventory.a.SFXChangeWeapon != null) Inventory.a.SFX.PlayOneShot(Inventory.a.SFXChangeWeapon);
+					Utils.PlayOneShotSavable(Inventory.a.SFX,Inventory.a.SFXChangeWeapon);
 					break;
 			case 1:
 					// Pulser
 					Inventory.a.pulserButtonText.Select(true);
 					Inventory.a.drillButtonText.Select(false);
 					Inventory.a.isPulserNotDrill = true;
-					if (Inventory.a.SFX != null && Inventory.a.SFXChangeWeapon != null) Inventory.a.SFX.PlayOneShot(Inventory.a.SFXChangeWeapon);
+					Utils.PlayOneShotSavable(Inventory.a.SFX,Inventory.a.SFXChangeWeapon);
 					break;
 			case 2:
 					// CyberShield
@@ -37,7 +37,7 @@ public class SoftwareInvButton : MonoBehaviour {
 					// Turbo
 					if (MouseLookScript.a.inCyberSpace) {
 						Inventory.a.UseTurbo();
-						GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+						GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 					} else {
 						Const.sprint(Const.a.stringTable[460],Const.a.player1);
 					}
@@ -46,7 +46,7 @@ public class SoftwareInvButton : MonoBehaviour {
 					// Decoy
 					if (MouseLookScript.a.inCyberSpace) {
 						Inventory.a.UseDecoy();
-						GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+						GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 					} else {
 						Const.sprint(Const.a.stringTable[460],Const.a.player1);
 					}
@@ -55,7 +55,7 @@ public class SoftwareInvButton : MonoBehaviour {
 					// Recall
 					if (MouseLookScript.a.inCyberSpace) {
 						Inventory.a.UseRecall();
-						GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+						GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 					} else {
 						Const.sprint(Const.a.stringTable[460],Const.a.player1);
 					}

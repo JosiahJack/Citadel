@@ -20,7 +20,7 @@ public class PatchButton: MonoBehaviour {
 			Inventory.a.patchCountTextObjects [i].color = Const.a.ssGreenText;
 		}
 		Inventory.a.patchCountTextObjects[PatchButtonIndex].color = Const.a.ssYellowText;
-		if (SFX != null && SFXClick != null && useSound) SFX.PlayOneShot(SFXClick);
+		if (useSound) Utils.PlayOneShotSavable(SFX,SFXClick);
 	}
 
     void Start() {

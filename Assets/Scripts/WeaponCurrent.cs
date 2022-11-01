@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class WeaponCurrent : MonoBehaviour {
-	public static WeaponCurrent WepInstance;
 	public AmmoIconManager ammoIconManLH;
 	public AmmoIconManager ammoIconManRH;
 	public GameObject ammoIndicatorHuns;
@@ -59,17 +58,19 @@ public class WeaponCurrent : MonoBehaviour {
 	[HideInInspector] public int weaponCurrentPending;
 	[HideInInspector] public int weaponIndexPending;
 
+	public static WeaponCurrent a;
+
 	void Start() {
-		WepInstance = this;
-		WepInstance.weaponCurrent = 0; // Current slot in the weapon inventory (7 slots)
-		WepInstance.weaponIndex = -1; // Current index to the weapon look-up tables
-		WepInstance.SFX = GetComponent<AudioSource> ();
+		a = this;
+		a.weaponCurrent = 0; // Current slot in the weapon inventory (7 slots)
+		a.weaponIndex = -1; // Current index to the weapon look-up tables
+		a.SFX = GetComponent<AudioSource> ();
 
 		// Put energy settings to lowest energy level as default
 		for (int j=0;j<7;j++) {
-			WepInstance.weaponEnergySetting[j] = 0f;
-			WepInstance.currentMagazineAmount[j] = 0;
-			WepInstance.currentMagazineAmount2[j] = 0;
+			a.weaponEnergySetting[j] = 0f;
+			a.currentMagazineAmount[j] = 0;
+			a.currentMagazineAmount2[j] = 0;
 		}
 		reloadFinished = PauseScript.a.relativeTime;
 		reloadContainerOrigin = reloadContainer.transform.localPosition;
@@ -425,9 +426,9 @@ public class WeaponCurrent : MonoBehaviour {
 
 		if (!isSilent) {
 			if (wep16index == 0 || wep16index == 3) {
-				SFX.PlayOneShot (ReloadInStyleSFX);
+				Utils.PlayOneShotSavable(SFX,ReloadInStyleSFX);
 			} else {
-				SFX.PlayOneShot (ReloadSFX);
+				Utils.PlayOneShotSavable(SFX,ReloadSFX);
 			}
 		}
 
@@ -456,9 +457,9 @@ public class WeaponCurrent : MonoBehaviour {
 
 		if (!isSilent) {
 			if (wep16index == 0 || wep16index == 3) {
-				SFX.PlayOneShot (ReloadInStyleSFX);
+				Utils.PlayOneShotSavable(SFX,ReloadInStyleSFX);
 			} else {
-				SFX.PlayOneShot (ReloadSFX);
+				Utils.PlayOneShotSavable(SFX,ReloadSFX);
 			}
 		}
 
@@ -503,7 +504,7 @@ public class WeaponCurrent : MonoBehaviour {
 			// Update the counter on the HUD
 			MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount[weaponCurrent]);
 		}
-		if (!isSilent) SFX.PlayOneShot (ReloadSFX);
+		if (!isSilent) Utils.PlayOneShotSavable(SFX,ReloadSFX);
 	}
 
 	public void ReloadSecret(bool isSilent) {
@@ -557,5 +558,52 @@ public class WeaponCurrent : MonoBehaviour {
 
 	public void Reload() {
 		ReloadSecret(false);
+	}
+
+	public static string Save(GameObject go) {
+		WeaponCurrent wc = go.GetComponent<WeaponCurrent>();
+		if (wc == null) {
+			Debug.Log("WeaponCurrent missing on Player!  GameObject.name: " + go.name);
+			return "0|0|0";
+		}
+
+		int j =0;
+		string line = System.String.Empty;
+		line = wc.weaponCurrent.ToString(); // int
+		line += Utils.splitChar + wc.weaponIndex.ToString(); // int
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.FloatToString(wc.weaponEnergySetting[j]); } // float
+		for (j=0;j<7;j++) { line += Utils.splitChar + wc.currentMagazineAmount[j].ToString(); } // int
+		for (j=0;j<7;j++) { line += Utils.splitChar + wc.currentMagazineAmount2[j].ToString(); } // int
+		line += Utils.splitChar + Utils.BoolToString(wc.justChangedWeap); // bool
+		line += Utils.splitChar + wc.lastIndex.ToString(); // int
+		line += Utils.splitChar + Utils.BoolToString(wc.bottomless); // bool
+		line += Utils.splitChar + Utils.BoolToString(wc.redbull); // bool
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wc.reloadFinished); // float
+		line += Utils.splitChar + Utils.FloatToString(wc.reloadLerpValue); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wc.lerpStartTime); // float
+		line += Utils.splitChar + Utils.FloatToString(wc.targetY); // float
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		WeaponCurrent wc = go.GetComponent<WeaponCurrent>();
+		if (wc == null || index < 0 || entries == null) return index + 31;
+
+		int j =0;
+		wc.weaponCurrent = Utils.GetIntFromString(entries[index] ); index++;
+		wc.weaponIndex = Utils.GetIntFromString(entries[index] ); index++;
+		for (j=0;j<7;j++) { wc.weaponEnergySetting[j] = Utils.GetFloatFromString(entries[index]); index++; }
+		for (j=0;j<7;j++) { wc.currentMagazineAmount[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		for (j=0;j<7;j++) { wc.currentMagazineAmount2[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		wc.justChangedWeap = Utils.GetBoolFromString(entries[index]); index++;
+		wc.SetAllViewModelsDeactive();
+		wc.lastIndex = Utils.GetIntFromString(entries[index] ); index++;
+		wc.bottomless = Utils.GetBoolFromString(entries[index]); index++;
+		wc.redbull = Utils.GetBoolFromString(entries[index]); index++;
+		wc.reloadFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		wc.reloadLerpValue = Utils.GetFloatFromString(entries[index]); index++; // %
+		wc.lerpStartTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		wc.targetY = Utils.GetFloatFromString(entries[index]); index++;
+		return index;
 	}
 }

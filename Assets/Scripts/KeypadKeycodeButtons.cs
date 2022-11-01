@@ -38,7 +38,7 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 		if (done)
 			return;
 		
-		SFXSource.PlayOneShot(SFX);
+		Utils.PlayOneShotSavable(SFXSource,SFX);
 		// Digit key pressed 0 thru 9
 		if ((button >= 0) && (button <= 9))
 			SetDigit(button);
@@ -124,7 +124,7 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 
 			if (currentEntry == keycode) {
 				if ((entryHuns != -1) && sfxPlayed == false) {
-					SFXSource.PlayOneShot(SFX_Success);
+					Utils.PlayOneShotSavable(SFXSource,SFX_Success);
 					sfxPlayed = true;  // prevent play sfx every frame once 3 digits have been entered
 				}
 				keypad.UseTargets();
@@ -132,7 +132,7 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 				done = true;
 			} else {
 				if ((entryHuns != -1) && sfxPlayed == false) {
-					SFXSource.PlayOneShot(SFX_Incorrect);
+					Utils.PlayOneShotSavable(SFXSource,SFX_Incorrect);
 					sfxPlayed = true;  // prevent play sfx every frame once 3 digits have been entered
 				}
 			}

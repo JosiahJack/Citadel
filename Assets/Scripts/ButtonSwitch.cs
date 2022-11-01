@@ -58,12 +58,12 @@ public class ButtonSwitch : MonoBehaviour {
 
 		if (locked) {
 			Const.sprintByIndexOrOverride (lockedMessageLingdex, lockedMessage,ud.owner);
-			if (SFXLocked != null && SFXSource != null && gameObject.activeSelf) SFXSource.PlayOneShot(SFXLocked);
+			Utils.PlayOneShotSavable(SFXSource,SFXLocked);
 			return;
 		}
 
 		player = ud.owner;  // set playerCamera to owner of the input (always should be the player camera)
-		if (SFX != null && SFXSource != null && gameObject.activeSelf) SFXSource.PlayOneShot(SFX);
+		Utils.PlayOneShotSavable(SFXSource,SFX);
 		Const.sprintByIndexOrOverride (messageIndex, message,ud.owner);
 		if (delay > 0) {
 			delayFinished = PauseScript.a.relativeTime + delay;
@@ -146,10 +146,9 @@ public class ButtonSwitch : MonoBehaviour {
 	}
 
 	public static string Save(GameObject go) {
-
 		ButtonSwitch bs = go.GetComponent<ButtonSwitch>();
 		if (bs == null) { // bs?  null??  that's bs
-			UnityEngine.Debug.Log("ButtonSwitch missing on savetype of ButtonSwitch! GameObject.name: " + go.name);
+			Debug.Log("ButtonSwitch missing on savetype of ButtonSwitch!  GameObject.name: " + go.name);
 			return "0|0|0|0000.00000|0000.00000";
 		}
 
@@ -160,5 +159,17 @@ public class ButtonSwitch : MonoBehaviour {
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(bs.delayFinished); // float - time before firing targets
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(bs.tickFinished); // float - time before firing targets
 		return line;
-	}	
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		ButtonSwitch bs = go.GetComponent<ButtonSwitch>(); // what a load of bs
+		if (bs == null || index < 0 || entries == null) return index + 5;
+
+		bs.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - is this switch locked
+		bs.active = Utils.GetBoolFromString(entries[index]); index++; // bool - is the switch flashing?
+		bs.alternateOn = Utils.GetBoolFromString(entries[index]); index++; // bool - is the flashing material on?
+		bs.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before firing targets
+		bs.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before thinking
+		return index;
+	}
 }

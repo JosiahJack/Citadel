@@ -17,7 +17,7 @@ public class ConfigurationMenuAAApply : MonoBehaviour {
 		else
 			Const.a.GraphicsAAMode = 1; // Default to FXAA Extreme Performance
 
-		Const.a.WriteConfig();
-		Const.a.SetAA();
+		Config.WriteConfig();
+		Config.SetAA();
 	}
 }

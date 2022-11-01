@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -30,7 +31,6 @@ public class LevelManager : MonoBehaviour {
 	public bool[] showExteriorForLevel;
 	public bool[] showSaturnForLevel;
 	public NPCSubManager[] npcsm;
-	public enum SecurityType : byte {None,Camera,NodeSmall,NodeLarge};
 	public Level[] levelScripts;
 	public GameObject[] lightContainers;
 
@@ -38,7 +38,6 @@ public class LevelManager : MonoBehaviour {
 	private bool[] levelDataLoaded;
 	private int getValreadInt;
 	private float getValreadFloat;
-	private CultureInfo en_US_Culture = new CultureInfo("en-US");
 
 	// Singleton instance
 	public static LevelManager a;
@@ -78,10 +77,7 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 
-	public bool RessurectPlayer (GameObject currentPlayer) {
-		// Note:  currentPlayer is the main Player gameObject that contains PlayerReferenceManager.
-		if (currentPlayer == null) { Const.sprint("BUG: LevelManager cannot find current player for RessurectPlayer."); return false; } // Prevent possible error if wrong player is passed.
-
+	public bool RessurectPlayer() {
 		if (ressurectionActive[currentLevel]) {
 			if (currentLevel == 10 ||currentLevel == 11 ||currentLevel == 12) {
 				LoadLevel(6,ressurectionLocation[currentLevel].gameObject,ressurectionLocation[currentLevel].position);
@@ -90,8 +86,12 @@ public class LevelManager : MonoBehaviour {
 				if (currentLevel <= 7 && currentLevel >= 0) ressurectionBayDoor[currentLevel].ForceClose();
 				if (currentLevel != 13) PlayerReferenceManager.a.playerCapsule.transform.position = transform.TransformPoint(ressurectionLocation[currentLevel].position); //teleport to ressurection chamber
 			}
-			PlayerReferenceManager.a.playerDeathRessurectEffect.SetActive(true); // activate death screen and readouts for "BRAIN ACTIVITY SATISFACTORY"            ya debatable right
-			Music.a.PlayTrack(currentLevel,Music.TrackType.Revive,Music.MusicType.Override);
+
+			// Activate death screen and readouts for
+			// "BRAIN ACTIVITY SATISFACTORY..."            ya debatable right
+			// etc. etc.
+			PlayerReferenceManager.a.playerDeathRessurectEffect.SetActive(true);
+			Music.a.PlayTrack(currentLevel,TrackType.Revive,MusicType.Override);
 			PlayerMovement.a.ressurectingFinished = PauseScript.a.relativeTime + 3f;
 			return true;
 		}
@@ -99,7 +99,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	// Make sure that unneeded objects are unloaded
-	public void UnloadLevelData (int levnum) {
+	public void UnloadLevelData(int levnum) {
 		if (levnum < 0 || levnum > 12) return; // Not in a level, in a test or editor space.
 		if (!levelDataLoaded[levnum]) return; // Already cleared.
 
@@ -108,7 +108,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	// Make sure relevant data and objects are loaded in and present for the level.
-	public void LoadLevelData (int levnum) {
+	public void LoadLevelData(int levnum) {
 		if (levnum < 0 || levnum > 12) return; // Not in a level, in a test or editor space.
 		if (levelDataLoaded[levnum]) return; // Already loaded.
 
@@ -117,13 +117,13 @@ public class LevelManager : MonoBehaviour {
 		levelDataLoaded[levnum] = true;
 	}
 
-	public void LoadLevel (int levnum, GameObject targetDestination, Vector3 targetPosition) {
+	public void LoadLevel(int levnum, GameObject targetDestination, Vector3 targetPosition) {
 		// NOTE: Check this first since the button for the current level has a null destination.  This is fine and expected.
 		if (currentLevel == levnum) { Const.sprint(Const.a.stringTable[9]); return; } //Already there
 
 		int lastlev = currentLevel;
 		MFDManager.a.TurnOffElevatorPad();
-		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 		if (targetDestination != null) PlayerReferenceManager.a.playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
 		else if (targetPosition != null) PlayerReferenceManager.a.playerCapsule.transform.position = targetPosition; // Return to level from cyberspace.
 
@@ -169,16 +169,15 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 
-	public GameObject GetCurrentLevelDynamicContainer() {
-		if (currentLevel == -1) return null;
-        if (currentLevel < levels.Length) return levelScripts[currentLevel].dynamicObjectsContainer;
-        return null;
+	public GameObject GetCurrentDynamicContainer() {
+		if (currentLevel < 0 || currentLevel > 13) return levelScripts[1].dynamicObjectsContainer;
+        return levelScripts[currentLevel].dynamicObjectsContainer;
 	}
 
 	public GameObject GetRequestedLevelDynamicContainer(int index) {
-		if (index == -1) return null;
-        if (currentLevel < levels.Length) return levelScripts[index].dynamicObjectsContainer;
-        return null;
+		if (index < 0 || index > 13) return levelScripts[1].dynamicObjectsContainer; // Default to Medical level
+
+        return levelScripts[index].dynamicObjectsContainer;
 	}
 
 	public int GetCurrentLevelSecurity() {
@@ -333,5 +332,93 @@ public class LevelManager : MonoBehaviour {
 			DestroyImmediate(compArray[i].gameObject);
 		}
 		compArray = null;
+	}
+
+	public void CheatLoadLevel(int ind) {
+		if (ind == 10) {
+			LoadLevel(10,PlayerMovement.a.cheatG1Spawn.gameObject,
+					  ressurectionLocation[10].position);
+			return;
+		} else if (ind == 11) {
+			LoadLevel(11,PlayerMovement.a.cheatG2Spawn.gameObject,
+					  ressurectionLocation[11].position);
+			return;
+		} else if (ind == 12) {
+			LoadLevel(12,PlayerMovement.a.cheatG4Spawn.gameObject,
+					  ressurectionLocation[12].position);
+			return;
+		}
+
+		LoadLevel(ind,ressurectionLocation[ind].gameObject,
+				  ressurectionLocation[ind].position);
+	}
+
+	public static string Save(GameObject go) {
+		int i=0;
+		LevelManager lvm = go.GetComponent<LevelManager>();
+		if (lvm == null) {
+			Debug.Log("LevelManager missing!  GameObject.name: " + go.name);
+			string line = "i";
+			for (i=0;i<(14 * 4);i++) line += "i";
+			for (i=0;i<14;i++) line += "b";
+			return Utils.DTypeWordToSaveString(line);
+		}
+
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear(); // keep reusing s1
+		// Global states and Difficulties
+		s1.Append(Utils.UintToString(LevelManager.a.currentLevel)); // int
+		s1.Append(Utils.splitChar);
+		for (i=0;i<14;i++) {
+			s1.Append(Utils.UintToString(LevelManager.a.levelSecurity[i])); // int
+			s1.Append(Utils.splitChar);
+		}
+
+		for (i=0;i<14;i++) {
+			s1.Append(Utils.UintToString(LevelManager.a.levelCameraDestroyedCount[i])); // int
+			s1.Append(Utils.splitChar);
+		}
+
+		for (i=0;i<14;i++) {
+			s1.Append(Utils.UintToString(LevelManager.a.levelSmallNodeDestroyedCount[i])); // int
+			s1.Append(Utils.splitChar);
+		}
+
+		for (i=0;i<14;i++) {
+			s1.Append(Utils.UintToString(LevelManager.a.levelLargeNodeDestroyedCount[i])); // int
+			s1.Append(Utils.splitChar);
+		}
+
+		for (i=0;i<13;i++) {
+			s1.Append(Utils.BoolToString(LevelManager.a.ressurectionActive[i]));
+			s1.Append(Utils.splitChar);
+		}
+		s1.Append(Utils.BoolToString(LevelManager.a.ressurectionActive[13]));
+		return s1.ToString();
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		LevelManager lvm = go.GetComponent<LevelManager>();
+		if (lvm == null || index < 0 || entries == null) return index + (14 * 5) + 1;
+
+		int i = 0;
+		int levelNum = Utils.GetIntFromString(entries[index]); index++;
+		LevelManager.a.LoadLevelFromSave(levelNum);
+		for (i=0;i<14;i++) {
+			LevelManager.a.levelSecurity[i] = Utils.GetIntFromString(entries[index]); index++;
+		}
+		for (i=0;i<14;i++) {
+			LevelManager.a.levelCameraDestroyedCount[i] = Utils.GetIntFromString(entries[index]); index++;
+		}
+		for (i=0;i<14;i++) {
+			LevelManager.a.levelSmallNodeDestroyedCount[i] = Utils.GetIntFromString(entries[index]); index++;
+		}
+		for (i=0;i<14;i++) {
+			LevelManager.a.levelLargeNodeDestroyedCount[i] = Utils.GetIntFromString(entries[index]); index++;
+		}
+		for (i=0;i<14;i++) {
+			LevelManager.a.ressurectionActive[i] = Utils.GetBoolFromString(entries[index]); index++;
+		}
+		return index;
 	}
 }

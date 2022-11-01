@@ -26,7 +26,7 @@ public class TeleportTouch : MonoBehaviour {
 					col.transform.position = targetDestination.position;
 					TeleportTouch tt = targetDestination.transform.gameObject.GetComponent<TeleportTouch>();
 					if (tt != null) tt.justUsed = PauseScript.a.relativeTime + 1.0f;
-					if (playSound && SoundFXSource != null && SoundFX != null) SoundFXSource.PlayOneShot(SoundFX);
+					if (playSound && SoundFXSource != null && SoundFX != null) Utils.PlayOneShotSavable(SoundFXSource,SoundFX);
 				}
 			}
 		}
@@ -35,12 +35,20 @@ public class TeleportTouch : MonoBehaviour {
 	public static string Save(GameObject go) {
 		TeleportTouch tt = go.GetComponent<TeleportTouch>();
 		if (tt == null) {
-			Debug.Log("TeleportTouch missing on savetype of TeleportTouch! GameObject.name: " + go.name);
+			Debug.Log("TeleportTouch missing on savetype of TeleportTouch!  GameObject.name: " + go.name);
 			return "0000.00000";
 		}
 
 		string line = System.String.Empty;
 		line = Utils.SaveRelativeTimeDifferential(tt.justUsed); // float - is the player still touching it?
 		return line;
-	}	
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		TeleportTouch tt = go.GetComponent<TeleportTouch>();
+		if (tt == null || index < 0 || entries == null) return index + 1;
+
+		tt.justUsed = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - is the player still touching it?
+		return index;
+	}
 }

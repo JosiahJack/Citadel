@@ -53,8 +53,8 @@ public class SearchableItem : MonoBehaviour {
 	public static string Save(GameObject go) {
 		SearchableItem se = go.GetComponent<SearchableItem>();
 		if (se == null) {
-			UnityEngine.Debug.Log("SearchableItem missing on savetype of SearchableItem! GameObject.name: " + go.name);
-			return "-1|-1|-1|-1|-1|-1|-1|-1";
+			Debug.Log("SearchableItem missing on savetype of SearchableItem!  GameObject.name: " + go.name);
+			return "-1|-1|-1|-1|-1|-1|-1|-1|0";
 		}
 
 		string line = System.String.Empty;
@@ -66,6 +66,39 @@ public class SearchableItem : MonoBehaviour {
 		line += Utils.splitChar + se.customIndex[1].ToString(); // int custom index
 		line += Utils.splitChar + se.customIndex[2].ToString(); // int custom index
 		line += Utils.splitChar + se.customIndex[3].ToString(); // int custom index
+		line += Utils.splitChar + se.searchableInUse;
 		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		SearchableItem se = go.GetComponent<SearchableItem>();
+		if (se == null || index < 0 || entries == null) return index + 9;
+
+		se.contents[0] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
+		se.contents[1] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
+		se.contents[2] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
+		se.contents[3] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
+		se.customIndex[0] = Utils.GetIntFromString(entries[index]); index++; // int custom index
+		se.customIndex[1] = Utils.GetIntFromString(entries[index]); index++; // int custom index
+		se.customIndex[2] = Utils.GetIntFromString(entries[index]); index++; // int custom index
+		se.customIndex[3] = Utils.GetIntFromString(entries[index]); index++; // int custom index
+		se.searchableInUse = Utils.GetBoolFromString(entries[index]); index++; // bool - is this being searched by Player?
+		if (se.searchableInUse) {
+			int numberFoundContents = 0;
+			for (int i=3;i>=0;i--) {
+				// If something was found, add 1 to count.
+				if (se.contents[i] > -1) numberFoundContents++;
+			}
+
+			if (MFDManager.a.tetheredSearchable != se) {
+				if (MFDManager.a.tetheredSearchable != null) {
+					MFDManager.a.tetheredSearchable.ResetSearchable(false);
+				}
+			}
+			MFDManager.a.tetheredSearchable = se;
+			MFDManager.a.objectInUsePos = se.gameObject.transform.position;
+			MFDManager.a.usingObject = true;
+		}
+		return index;
 	}
 }

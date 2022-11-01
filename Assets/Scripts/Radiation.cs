@@ -42,4 +42,26 @@ public class Radiation : MonoBehaviour {
 			}
 		}
 	}
+
+	public static string Save(GameObject go) {
+		Radiation rad = go.GetComponent<Radiation>();
+		if (rad == null) {
+			UnityEngine.Debug.Log("Radiation missing on savetype of Radiation!  GameObject.name: " + go.name);
+			return "1|0";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(rad.isEnabled); // bool - hey is this on? hello?
+		line += Utils.splitChar + rad.numPlayers.ToString(); // int - how many players we are affecting
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		Radiation rad = go.GetComponent<Radiation>(); // ... ado about nothing
+		if (rad == null || index < 0 || entries == null) return index + 2;
+
+		rad.isEnabled = Utils.GetBoolFromString(entries[index]); index++; // bool - hey is this on? hello?
+		rad.numPlayers = Utils.GetIntFromString(entries[index]); index++; // int - how many players we are affecting
+		return index;
+	}
 }

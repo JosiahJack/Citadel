@@ -36,13 +36,13 @@ public class WeaponMagazineCounter : MonoBehaviour {
 
 	void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			int index = WeaponCurrent.WepInstance.weaponCurrent; // 0 to 6, 
-			// Changed from this: WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.WepInstance.weaponIndex); 0 to 15
+			int index = WeaponCurrent.a.weaponCurrent; // 0 to 6, 
+			// Changed from this: WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex); 0 to 15
 			if (index < 0) return;
 
-			if (WeaponCurrent.WepInstance.weaponIndex == -1
-			    || WeaponCurrent.WepInstance.weaponIndex == 41
-				|| WeaponCurrent.WepInstance.weaponIndex == 42
+			if (WeaponCurrent.a.weaponIndex == -1
+			    || WeaponCurrent.a.weaponIndex == 41
+				|| WeaponCurrent.a.weaponIndex == 42
 				|| MouseLookScript.a.inCyberSpace) {
 					tempis[0] = 10; // blank
 					tempis[1] = 10; // blank
@@ -53,10 +53,10 @@ public class WeaponMagazineCounter : MonoBehaviour {
 					return;
 			}
 
-			if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent]) {
-				UpdateDigits(WeaponCurrent.WepInstance.currentMagazineAmount2[index]);
+			if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
+				UpdateDigits(WeaponCurrent.a.currentMagazineAmount2[index]);
 			} else {
-				UpdateDigits(WeaponCurrent.WepInstance.currentMagazineAmount[index]);
+				UpdateDigits(WeaponCurrent.a.currentMagazineAmount[index]);
 			}
 		}
 	}

@@ -74,17 +74,15 @@ public class PuzzleWire : MonoBehaviour {
 	public Image[] geniusHintsLH;
 	public Image[] geniusHintsRH;
 
-	public enum WireColorTheme : byte {Red,Yellow,Green};
-	public WireColorTheme theme;
-	public enum WireColor : byte {Red,Orange,Yellow,Green,Blue,Purple};
+	public HUDColor theme;
 	public Color actualColorRed;
 	public Color actualColorOrange;
 	public Color actualColorYellow;
 	public Color actualColorGreen;
 	public Color actualColorBlue;
 	public Color actualColorPurple;
-	public WireColor[] wireColors;
-	public WireColor[] rememberColors;
+	public HUDColor[] wireColors;
+	public HUDColor[] rememberColors;
 
 	void Awake () {
 		selectedWire = -1;
@@ -110,13 +108,13 @@ public class PuzzleWire : MonoBehaviour {
 		gameObject.SetActive(false);
 	}
 
-	Color GetColor(WireColor index) {
-		if (index == WireColor.Red) return actualColorRed;
-		if (index == WireColor.Orange) return actualColorOrange;
-		if (index == WireColor.Yellow) return actualColorYellow;
-		if (index == WireColor.Green) return actualColorGreen;
-		if (index == WireColor.Blue) return actualColorBlue;
-		if (index == WireColor.Purple) return actualColorPurple;
+	Color GetColor(HUDColor index) {
+		if (index == HUDColor.Red) return actualColorRed;
+		if (index == HUDColor.Orange) return actualColorOrange;
+		if (index == HUDColor.Yellow) return actualColorYellow;
+		if (index == HUDColor.Green) return actualColorGreen;
+		if (index == HUDColor.Blue) return actualColorBlue;
+		if (index == HUDColor.Purple) return actualColorPurple;
 		return actualColorRed;
 	}
 
@@ -200,13 +198,13 @@ public class PuzzleWire : MonoBehaviour {
 				DisableGeniusHints();
 				if (Const.a.difficultyPuzzle == 3) {
 					// Set all wire colors to the same on hard
-					wireColors[0] = WireColor.Yellow;
-					wireColors[1] = WireColor.Yellow;
-					wireColors[2] = WireColor.Yellow;
-					wireColors[3] = WireColor.Yellow;
-					wireColors[4] = WireColor.Yellow;
-					wireColors[5] = WireColor.Yellow;
-					wireColors[6] = WireColor.Yellow;
+					wireColors[0] = HUDColor.Yellow;
+					wireColors[1] = HUDColor.Yellow;
+					wireColors[2] = HUDColor.Yellow;
+					wireColors[3] = HUDColor.Yellow;
+					wireColors[4] = HUDColor.Yellow;
+					wireColors[5] = HUDColor.Yellow;
+					wireColors[6] = HUDColor.Yellow;
 				}
 			}
 
@@ -289,7 +287,7 @@ public class PuzzleWire : MonoBehaviour {
 		}
 	}
 
-	public void SendWirePuzzleData(bool[] sentWiresOn, bool[] sentNodeRowsActive, int[] sentCurrentPositionsLeft, int[] sentCurrentPositionsRight, int[] sentTargetsLeft, int[] sentTargetsRight,WireColorTheme sentTheme, WireColor[] sentWireColors, string t1, string a1, UseData udSent,PuzzleWirePuzzle pwp) {
+	public void SendWirePuzzleData(bool[] sentWiresOn, bool[] sentNodeRowsActive, int[] sentCurrentPositionsLeft, int[] sentCurrentPositionsRight, int[] sentTargetsLeft, int[] sentTargetsRight,HUDColor sentTheme, HUDColor[] sentHUDColors, string t1, string a1, UseData udSent,PuzzleWirePuzzle pwp) {
 		wireIsActive = sentWiresOn;
 		nodeRowIsActive = sentNodeRowsActive;
 		wire1LHPosition = sentCurrentPositionsLeft[0];
@@ -322,17 +320,17 @@ public class PuzzleWire : MonoBehaviour {
 		wire7RHTarget = sentTargetsRight[6];
 		udSender = udSent;
 		theme = sentTheme;
-		wireColors = sentWireColors;
-		rememberColors = sentWireColors;
+		wireColors = sentHUDColors;
+		rememberColors = sentHUDColors;
 		if (Const.a.difficultyPuzzle == 3) {
 			// Set all wire colors to the same on hard
-			wireColors[0] = WireColor.Yellow;
-			wireColors[1] = WireColor.Yellow;
-			wireColors[2] = WireColor.Yellow;
-			wireColors[3] = WireColor.Yellow;
-			wireColors[4] = WireColor.Yellow;
-			wireColors[5] = WireColor.Yellow;
-			wireColors[6] = WireColor.Yellow;
+			wireColors[0] = HUDColor.Yellow;
+			wireColors[1] = HUDColor.Yellow;
+			wireColors[2] = HUDColor.Yellow;
+			wireColors[3] = HUDColor.Yellow;
+			wireColors[4] = HUDColor.Yellow;
+			wireColors[5] = HUDColor.Yellow;
+			wireColors[6] = HUDColor.Yellow;
 		}
 		target = t1;
 		argvalue = a1;
@@ -664,7 +662,7 @@ public class PuzzleWire : MonoBehaviour {
 		actualValue = 1f;
 		slider.value = actualValue;
 		Solved = true;
-		if (SFXSource != null && SFX != null) SFXSource.PlayOneShot(SFX,1.0f);
+		if (SFXSource != null && SFX != null) Utils.PlayOneShotSavable(SFXSource,SFX,1.0f);
 		puzzleWP.puzzleSolved = true;
 		puzzleWP.UseTargets(udSender.owner);
 		if (usedLogicProbe) {

@@ -8,7 +8,7 @@ public class WeaponButtonsManager : MonoBehaviour {
 	public GameObject[] wepCountsText;
 
 	public void WeaponCycleUp() {
-		int nextIndex = WeaponCurrent.WepInstance.weaponCurrent + 1; // add 1 to get slot above this
+		int nextIndex = WeaponCurrent.a.weaponCurrent + 1; // add 1 to get slot above this
 		if (nextIndex > 6) nextIndex = 0; // wraparound to bottom
 		int countCheck = 0;
 		bool buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);
@@ -25,7 +25,7 @@ public class WeaponButtonsManager : MonoBehaviour {
 	}
 
 	public void WeaponCycleDown() {
-		int nextIndex = WeaponCurrent.WepInstance.weaponCurrent - 1; // add 1 to get slot above this
+		int nextIndex = WeaponCurrent.a.weaponCurrent - 1; // add 1 to get slot above this
 		if (nextIndex < 0) nextIndex = 6; // wraparound to top
 		int countCheck = 0;
 		bool buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);

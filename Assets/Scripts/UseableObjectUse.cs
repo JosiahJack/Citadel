@@ -62,15 +62,26 @@ public class UseableObjectUse : MonoBehaviour {
 	public static string Save(GameObject go) {
 		UseableObjectUse uou = go.GetComponent<UseableObjectUse>();
 		if (uou == null) {
-			UnityEngine.Debug.Log("UseableObjectUse missing on saveable");
+			Debug.Log("UseableObjectUse missing on saveable");
 			return "-1|-1|0|0|BUG: Missing UseableObjectUse";
 		}
 
 		string line = System.String.Empty;
-		line = uou.useableItemIndex.ToString(); // int - the main lookup index, needed for intanciating on load if doesn't match original SaveID
-		line += Utils.splitChar + uou.customIndex.ToString(); // int - special reference like audiolog message
-		line += Utils.splitChar + uou.ammo.ToString(); // int - how much normal ammo is on the weapon
-		line += Utils.splitChar + uou.ammo2.ToString(); //int - alternate ammo type, e.g. Penetrator or Teflon
+		line = Utils.UintToString(uou.useableItemIndex); // int - the main lookup index, needed for intanciating on load if doesn't match original SaveID
+		line += Utils.splitChar + Utils.UintToString(uou.customIndex); // int - special reference like audiolog message
+		line += Utils.splitChar + Utils.UintToString(uou.ammo); // int - how much normal ammo is on the weapon
+		line += Utils.splitChar + Utils.UintToString(uou.ammo2); //int - alternate ammo type, e.g. Penetrator or Teflon
 		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		UseableObjectUse uou = go.GetComponent<UseableObjectUse>();
+		if (uou == null || index < 0 || entries == null) return index + 4;
+
+		uou.useableItemIndex = Utils.GetIntFromString(entries[index]); index++;
+		uou.customIndex = Utils.GetIntFromString(entries[index]); index++;
+		uou.ammo = Utils.GetIntFromString(entries[index]); index++;
+		uou.ammo2 = Utils.GetIntFromString(entries[index]); index++;
+		return index;
 	}
 }

@@ -73,7 +73,7 @@ public class MainMenuHandler : MonoBehaviour {
 		inCutscene = false;
 		FileBrowser.SetFilters(false,new FileBrowser.Filter("SHOCK RES Files", ".RES", ".res"));
 		FileBrowser.SetDefaultFilter( ".RES" );
-		Const.a.SetVolume();
+		Config.SetVolume();
 		StartCoroutine(CheckDataFiles());
 		if (System.IO.File.Exists(Application.dataPath + "/StreamingAssets/introdone.dat")) {
 			IntroVideo.SetActive(false);	
@@ -89,7 +89,7 @@ public class MainMenuHandler : MonoBehaviour {
 		if (found) {
 			// Go right on into the game, all good here.
 			dataFound = true;
-			Const.a.SetVolume();
+			Config.SetVolume();
 			GoToFrontPage();
 			IntroVideo.SetActive(true);	
 		} else {
@@ -149,7 +149,7 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	public void StartGame (bool isNew) {
-		StartSFX.PlayOneShot(StartGameSFX);
+		Utils.PlayOneShotSavable(StartSFX,StartGameSFX);
 		if (isNew) {
 			string pname = newgamePage.GetComponentInChildren<InputField>().text;
 			if (string.IsNullOrWhiteSpace(pname)) pname = "Hacker";
@@ -359,7 +359,7 @@ public class MainMenuHandler : MonoBehaviour {
 		if (dataFound) {
 			SuccessBanner.SetActive(true);
 			CouldNotFindDialogue.SetActive(false);
-			Const.a.SetVolume();
+			Config.SetVolume();
 			yield return new WaitForSeconds(0.5f);
 			GoToFrontPage();
 		} else {
@@ -374,7 +374,7 @@ public class MainMenuHandler : MonoBehaviour {
 	public void CloseDataFileNotification() {
 		// Close data file notification without finding sound files CITALOG.RES and CITBARK.RES from data path
 		CouldNotFindDialogue.SetActive(false);
-		Const.a.SetVolume(); // probably not needed here, but just in case
+		Config.SetVolume(); // probably not needed here, but just in case
 		GoToFrontPage();
 		IntroVideo.SetActive(true);
 	}
@@ -498,7 +498,7 @@ public class MainMenuHandler : MonoBehaviour {
 				break;
 		}
 		presetQuestionValue = -1;	
-		Const.a.WriteConfig(); // Save config.  Always set to autosave.
+		Config.WriteConfig(); // Save config.  Always set to autosave.
 		for (int i=0;i<keybindButtons.Length;i++) {
 			keybindButtons[i].UpdateText();
 		}

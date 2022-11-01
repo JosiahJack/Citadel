@@ -107,6 +107,6 @@ public class SearchButton : MonoBehaviour {
 			CheckForEmpty();
 			break;
 		}
-		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 	}
 }

@@ -5,8 +5,8 @@ using UnityEngine;
 public class MusicTrigger : MonoBehaviour {
 	public float tick = 0.1f;
 	private float tickFinished;
-	public Music.TrackType trackType;
-	public Music.MusicType musicType;
+	public TrackType trackType;
+	public MusicType musicType;
 
 	void Awake() {
 		tickFinished = PauseScript.a.relativeTime + 2f;

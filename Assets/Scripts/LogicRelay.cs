@@ -52,13 +52,21 @@ public class LogicRelay : MonoBehaviour {
 	// the way.
 	public static string Save(GameObject go) {
 		LogicRelay lr = go.GetComponent<LogicRelay>();
-		if (lr != null) {
-			UnityEngine.Debug.Log("LogicRelay missing on savetype of LogicRelay! GameObject.name: " + go.name);
+		if (lr == null) {
+			Debug.Log("LogicRelay missing on savetype of LogicRelay!  GameObject.name: " + go.name);
 			return "1";
 		}
 
 		string line = System.String.Empty;
 		line = Utils.BoolToString(lr.relayEnabled); // bool - is this enabled, Sherlock?
 		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		LogicRelay lr = go.GetComponent<LogicRelay>(); // Similar to the LB, also a handy L shaped junction box complete with a lid for easy wire pulling.  This time, the lid is to the Right instead of the Back, hence the R of LR.
+		if (lr == null || index < 0 || entries == null) return index + 1;
+
+		lr.relayEnabled = Utils.GetBoolFromString(entries[index]); index++; // bool - is this enabled
+		return index;
 	}
 }

@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class Inventory : MonoBehaviour {
 	// Access Cards
-	[HideInInspector] public Door.accessCardType[] accessCardsOwned; // save
-	private Door.accessCardType doorAccessTypeAcquired;
+	[HideInInspector] public AccessCardType[] accessCardsOwned; // save
+	private AccessCardType doorAccessTypeAcquired;
 
 	// Hardware
 	[HideInInspector] public bool[] hasHardware; // save
@@ -89,7 +89,6 @@ public class Inventory : MonoBehaviour {
 	[HideInInspector] public bool isPulserNotDrill = true; // save
 	[HideInInspector] public int[] softVersions; // save
 	[HideInInspector] public bool[] hasSoft; // save
-	public enum SoftwareType : byte {None,Drill,Pulser,CShield,Decoy,Recall,Turbo,Game,Data,Integrity,Keycard};
 
 	// Weapons
 	[HideInInspector] public string[] weaponInventoryText;
@@ -105,7 +104,9 @@ public class Inventory : MonoBehaviour {
 	private string retval;
 	private string scorpSmall = "sm, ";
 	private string scorpLg = "lg";
-	public static string[] weaponShotsInventoryText = new string[]{"RELOAD","n 8","s 20","","OK","",""};
+	public static string[] weaponShotsInventoryText = new string[]{
+		"RELOAD","n 8","s 20","","OK","","" // Merely placeholder for checking.
+	};
 	public Text[] weaponShotsInventory;
 	public Text[] weaponButtonText;
 
@@ -184,9 +185,9 @@ public class Inventory : MonoBehaviour {
 		a = this;
 
 		// Access Cards
-		a.accessCardsOwned = new Door.accessCardType[32];
+		a.accessCardsOwned = new AccessCardType[32];
 		for (int i = 0; i < a.accessCardsOwned.Length; i++) {
-			a.accessCardsOwned[i] = Door.accessCardType.None;
+			a.accessCardsOwned[i] = AccessCardType.None;
 		}
 
 		// Hardware
@@ -448,7 +449,7 @@ public class Inventory : MonoBehaviour {
 					if (weaponButtonText[i].gameObject.activeInHierarchy) {
 						weaponButtonText[i].text = weaponInventoryText[i];
 						weaponShotsInventory[i].text = weaponShotsInventoryText[i];
-						if (i == WeaponCurrent.WepInstance.weaponCurrent) {
+						if (i == WeaponCurrent.a.weaponCurrent) {
 							weaponButtonText[i].color = Const.a.ssYellowText; // Yellow
 							weaponShotsInventory[i].color = Const.a.ssYellowText; // Yellow
 						} else {
@@ -474,7 +475,7 @@ public class Inventory : MonoBehaviour {
 		hwButtons[index].SetActive(true);
 	}
 
-	public bool HasAccessCard(Door.accessCardType card) {
+	public bool HasAccessCard(AccessCardType card) {
 		for (int i=0;i<accessCardsOwned.Length;i++) {
 			if (accessCardsOwned[i] == card) return true;
 		}
@@ -484,20 +485,20 @@ public class Inventory : MonoBehaviour {
 	public void AddAccessCardToInventory (int index) {
 		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(2,true);
 		switch (index) {
-			case 34: doorAccessTypeAcquired = Door.accessCardType.Admin; break;
-			case 81: doorAccessTypeAcquired = Door.accessCardType.Standard; break; //CHECKED! Good here
-			case 83: doorAccessTypeAcquired = Door.accessCardType.Group1; break; //CHECKED! Good here
-			case 84: doorAccessTypeAcquired = Door.accessCardType.Science; break; //CHECKED! Good here
-			case 85: doorAccessTypeAcquired = Door.accessCardType.Engineering; break;  //CHECKED! Good here
-			case 86: doorAccessTypeAcquired = Door.accessCardType.GroupB; break; //CHECKED! Good here
-			case 87: doorAccessTypeAcquired = Door.accessCardType.Security; break; //CHECKED! Good here
-			case 88: doorAccessTypeAcquired = Door.accessCardType.Per5; break;
-			case 89: doorAccessTypeAcquired = Door.accessCardType.Medical; break;
-			case 90: doorAccessTypeAcquired = Door.accessCardType.Per1; break;
-			case 91: doorAccessTypeAcquired = Door.accessCardType.Group4; break;
+			case 34: doorAccessTypeAcquired = AccessCardType.Admin; break;
+			case 81: doorAccessTypeAcquired = AccessCardType.Standard; break; //CHECKED! Good here
+			case 83: doorAccessTypeAcquired = AccessCardType.Group1; break; //CHECKED! Good here
+			case 84: doorAccessTypeAcquired = AccessCardType.Science; break; //CHECKED! Good here
+			case 85: doorAccessTypeAcquired = AccessCardType.Engineering; break;  //CHECKED! Good here
+			case 86: doorAccessTypeAcquired = AccessCardType.GroupB; break; //CHECKED! Good here
+			case 87: doorAccessTypeAcquired = AccessCardType.Security; break; //CHECKED! Good here
+			case 88: doorAccessTypeAcquired = AccessCardType.Per5; break;
+			case 89: doorAccessTypeAcquired = AccessCardType.Medical; break;
+			case 90: doorAccessTypeAcquired = AccessCardType.Per1; break;
+			case 91: doorAccessTypeAcquired = AccessCardType.Group4; break;
 			default: 
 				Const.sprint("Attempted to add an unmarked access card, we'll treat it as a STANDARD.");
-				doorAccessTypeAcquired = Door.accessCardType.Standard;
+				doorAccessTypeAcquired = AccessCardType.Standard;
 				break;
 		}
 		if (HasAccessCard(doorAccessTypeAcquired)) {
@@ -505,7 +506,7 @@ public class Inventory : MonoBehaviour {
 		} else {
 			bool added = false;
 			for (int i=0;i<accessCardsOwned.Length;i++) {
-				if (accessCardsOwned[i] == Door.accessCardType.None){
+				if (accessCardsOwned[i] == AccessCardType.None){
 					added = true;
 					accessCardsOwned[i] = doorAccessTypeAcquired;
 				}
@@ -551,7 +552,7 @@ public class Inventory : MonoBehaviour {
 					MouseLookScript.a.compassSmallTicks.SetActive(true);
 					MouseLookScript.a.compassLargeTicks.SetActive(true);
 				}
-				MFDManager.a.OpenTab(2,true,MFDManager.TabMSG.None,0,Handedness.RH);
+				MFDManager.a.OpenTab(2,true,TabMSG.None,0,Handedness.RH);
 				break;
 			case 2: textIndex = 23; button8Index = 5; break; // Datareader
 			case 3: textIndex = 24; button8Index = 1; break; // Sensaround
@@ -704,7 +705,7 @@ public class Inventory : MonoBehaviour {
 		SFXClip = null;
 		SFXSource.Stop();
 		if (Const.a.audioLogs != null) SFXClip = Const.a.audioLogs[logIndex];
-		if (SFXClip != null && SFXSource != null) SFXSource.PlayOneShot(SFXClip); // Play the log audio
+		Utils.PlayOneShotSavable(SFXSource,SFXClip); // Play the log audio
 		if (!readLog[logIndex]) QuestLogNotesManager.a.LogAdded(logIndex);
 		readLog[logIndex] = true;
 		if (Const.a.audioLogType[logIndex] == 4) {
@@ -949,7 +950,7 @@ public class Inventory : MonoBehaviour {
 				else Const.sprint(Const.a.stringTable[46],Const.a.player1);
 				drillVersionText.text = softVersions[0].ToString();
 				hasSoft[0] = true;
-				if (SFX != null && SFXAcquireCyberItem != null) SFX.PlayOneShot(SFXAcquireCyberItem);
+				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
 				Const.sprint(Const.a.stringTable[444] + softVersions[0].ToString() + Const.a.stringTable[458],Const.a.player1);
 				return true;
 			case SoftwareType.Pulser:	
@@ -963,7 +964,7 @@ public class Inventory : MonoBehaviour {
 				else Const.sprint(Const.a.stringTable[46],Const.a.player1);
 				pulserVersionText.text = softVersions[1].ToString();
 				hasSoft[1] = true;
-				if (SFX != null && SFXAcquireCyberItem != null) SFX.PlayOneShot(SFXAcquireCyberItem);
+				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
 				Const.sprint(Const.a.stringTable[445] + softVersions[1].ToString() + Const.a.stringTable[458],Const.a.player1);
 				return true;
 			case SoftwareType.CShield:	
@@ -972,7 +973,7 @@ public class Inventory : MonoBehaviour {
 				else Const.sprint(Const.a.stringTable[46],Const.a.player1);
 				cshieldVersionText.text = softVersions[2].ToString();
 				hasSoft[2] = true;
-				if (SFX != null && SFXAcquireCyberItem != null) SFX.PlayOneShot(SFXAcquireCyberItem);
+				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
 				Const.sprint(Const.a.stringTable[446] + softVersions[2].ToString() + Const.a.stringTable[458],Const.a.player1);
 				return true;
 			case SoftwareType.Turbo:
@@ -981,7 +982,7 @@ public class Inventory : MonoBehaviour {
 				softVersions[3]++;
 				turboCountText.text = softVersions[3].ToString();
 				hasSoft[3] = true;
-				if (SFX != null && SFXAcquireCyberItem != null) SFX.PlayOneShot(SFXAcquireCyberItem);
+				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
 				Const.sprint(Const.a.stringTable[447],Const.a.player1);
 				return true;
 			case SoftwareType.Decoy:	
@@ -990,7 +991,7 @@ public class Inventory : MonoBehaviour {
 				softVersions[4]++;
 				decoyCountText.text = softVersions[4].ToString();
 				hasSoft[4] = true;
-				if (SFX != null && SFXAcquireCyberItem != null) SFX.PlayOneShot(SFXAcquireCyberItem);
+				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
 				Const.sprint(Const.a.stringTable[448],Const.a.player1);
 				return true;
 			case SoftwareType.Recall:	
@@ -999,7 +1000,7 @@ public class Inventory : MonoBehaviour {
 				softVersions[5]++;
 				recallCountText.text = softVersions[5].ToString();
 				hasSoft[5] = true;
-				if (SFX != null && SFXAcquireCyberItem != null) SFX.PlayOneShot(SFXAcquireCyberItem);
+				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
 				Const.sprint(Const.a.stringTable[449],Const.a.player1);
 				return true;
 			case SoftwareType.Game:		
@@ -1034,17 +1035,17 @@ public class Inventory : MonoBehaviour {
 							Const.sprint(Const.a.stringTable[456],Const.a.player1);
 							break;
 				}
-				if (SFX != null && SFXAcquireCyberItem != null) SFX.PlayOneShot(SFXAcquireCyberItem);
+				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
 				
 				return true;
 			case SoftwareType.Data:		
-				if (SFX != null && SFXAcquireCyberData != null) SFX.PlayOneShot(SFXAcquireCyberData);
+				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberData);
 				Const.sprint(Const.a.stringTable[457],Const.a.player1);
 				hasLog[vers] = true;
 				return true;
 			case SoftwareType.Integrity:
 				if (hm.cyberHealth >=255) return false;
-				if (SFX != null && SFXAcquireCyberItem != null) SFX.PlayOneShot(SFXAcquireCyberItem);
+				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
 				hm.cyberHealth += 77f;
 				if (hm.cyberHealth > 255f) hm.cyberHealth = 255f;
 				MFDManager.a.DrawTicks(true);
@@ -1209,21 +1210,21 @@ public class Inventory : MonoBehaviour {
             if (weaponInventoryIndices[i] < 0) {
                 weaponInventoryIndices[i] = index;
                 weaponInventoryText[i] = weaponInvTextSource[(index - 36)]; // Yech!
-                WeaponCurrent.WepInstance.weaponCurrent = i;
-				WeaponCurrent.WepInstance.weaponIndex = index;
+                WeaponCurrent.a.weaponCurrent = i;
+				WeaponCurrent.a.weaponIndex = index;
 				int tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(index);
 				wepAmmo[tempindex] += ammo1;
 				wepAmmoSecondary[tempindex] += ammo2;
-				wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent] = false;
-				if (ammo2 > 0) Inventory.a.wepLoadedWithAlternate[WeaponCurrent.WepInstance.weaponCurrent] = true;
+				wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent] = false;
+				if (ammo2 > 0) Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent] = true;
                 MFDManager.a.wepbutMan.wepButtons[i].GetComponent<WeaponButton>().useableItemIndex = index;
 				MFDManager.a.wepbutMan.wepButtons[i].GetComponent<WeaponButton>().WeaponInvClick();
 				MFDManager.a.SetWepInfo(index);
-				MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.WepInstance.currentMagazineAmount[WeaponCurrent.WepInstance.weaponCurrent]);
+				MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.a.currentMagazineAmount[WeaponCurrent.a.weaponCurrent]);
 				MFDManager.a.SendInfoToItemTab(index); // notify item tab we clicked on a weapon
 				Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[33]);
-				WeaponCurrent.WepInstance.ReloadSecret(true);
-				WeaponCurrent.WepInstance.weaponEnergySetting[i] = Inventory.a.GetDefaultEnergySettingForWeaponFrom16Index(tempindex);
+				WeaponCurrent.a.ReloadSecret(true);
+				WeaponCurrent.a.weaponEnergySetting[i] = Inventory.a.GetDefaultEnergySettingForWeaponFrom16Index(tempindex);
 				MFDManager.a.SendInfoToItemTab(index);
 				MFDManager.a.NotifyToCenterTab(0);
 				UpdateAmmoText();
@@ -1233,4 +1234,180 @@ public class Inventory : MonoBehaviour {
 		return false;
     }
 	//--- End Weapons ---
+
+
+	public static string Save(GameObject go) {
+		int j;
+		Inventory inv = go.GetComponent<Inventory>();
+		string line = System.String.Empty;
+		if (inv == null) {
+			Debug.Log("Inventory missing on Player!  GameObject.name: " + go.name);
+			line = "u";
+			for (j=1;j<7;j++) line += "u";
+			for (j=1;j<7;j++) line += "u";
+			line += "u";
+			for (j=0;j<16;j++) line += "u";
+			for (j=0;j<16;j++) line += "u";
+			for (j=0;j<7;j++) line += "f";
+			for (j=0;j<7;j++) line += "b";
+			line += "uuff";
+			for (j=0;j<7;j++) line += "u";
+			line += "uu";
+			for (j=0;j<7;j++) line += "u";
+			for (j=0;j<134;j++) line += "b";
+			for (j=0;j<134;j++) line += "b";
+			for (j=0;j<10;j++) line += "u";
+			line += "ub";
+			for (j=0;j<13;j++) line += "b";
+			for (j=0;j<13;j++) line += "u";
+			for (j=0;j<13;j++) line += "u";
+			line += "uu";
+			for (j=0;j<13;j++) line += "b";
+			for (j=0;j<32;j++) line += "i"; // u will be -1, i will be 0 for enums
+			for (j=0;j<14;j++) line += "u";
+			line += "uuub";
+			for (j=0;j<7;j++) line += "u";
+			for (j=0;j<7;j++) line += "b";
+			line += "uu";
+			return Utils.DTypeWordToSaveString(line);
+		}
+
+		line = Utils.UintToString(inv.weaponInventoryIndices[0]);
+		for (j=1;j<7;j++) line += Utils.splitChar + Utils.UintToString(inv.weaponInventoryIndices[j]); // int
+		for (j=0;j<7;j++) line += Utils.splitChar + Utils.UintToString(inv.weaponInventoryAmmoIndices[j]); // int
+		line += Utils.splitChar + Utils.UintToString(inv.numweapons); // int
+		for (j=0;j<16;j++) line += Utils.splitChar + Utils.UintToString(inv.wepAmmo[j]); // int
+		for (j=0;j<16;j++) line += Utils.splitChar + Utils.UintToString(inv.wepAmmoSecondary[j]); // int
+		for (j=0;j<7;j++) line += Utils.splitChar + Utils.FloatToString(inv.currentEnergyWeaponHeat[j]); // float
+		for (j=0;j<7;j++) line += Utils.splitChar + Utils.BoolToString(inv.wepLoadedWithAlternate[j]); // bool
+		line += Utils.splitChar + Utils.UintToString(inv.grenadeCurrent); // int
+		line += Utils.splitChar + Utils.UintToString(inv.grenadeIndex); // int
+		line += Utils.splitChar + Utils.FloatToString(inv.nitroTimeSetting); // float
+		line += Utils.splitChar + Utils.FloatToString(inv.earthShakerTimeSetting); // float
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.UintToString(inv.grenAmmo[j]); } // int
+		line += Utils.splitChar + Utils.UintToString(inv.patchCurrent); // int
+		line += Utils.splitChar + Utils.UintToString(inv.patchIndex); // int
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.UintToString(inv.patchCounts[j]); } // int
+		for (j=0;j<134;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hasLog[j]); } // bool
+		for (j=0;j<134;j++) { line += Utils.splitChar + Utils.BoolToString(inv.readLog[j]); } // bool
+		for (j=0;j<10;j++) { line += Utils.splitChar + Utils.UintToString(inv.numLogsFromLevel[j]); } // int
+		line += Utils.splitChar + Utils.UintToString(inv.lastAddedIndex); // int
+		line += Utils.splitChar + Utils.BoolToString(inv.beepDone); // bool
+		for (j=0;j<13;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hasHardware[j]); } // bool
+		for (j=0;j<13;j++) { line += Utils.splitChar + Utils.UintToString(inv.hardwareVersion[j]); } // int
+		for (j=0;j<13;j++) { line += Utils.splitChar + Utils.UintToString(inv.hardwareVersionSetting[j]); } // int
+		line += Utils.splitChar + Utils.UintToString(inv.hardwareInvCurrent); // int
+		line += Utils.splitChar + Utils.UintToString(inv.hardwareInvIndex); // int
+		for (j=0;j<13;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hardwareIsActive[j]); } // bool
+		for (j=0;j<32;j++) {
+			switch (inv.accessCardsOwned[j]) {
+				case AccessCardType.None: line+= Utils.splitChar + "0"; break;
+				case AccessCardType.Standard: line+= Utils.splitChar + "1"; break;
+				case AccessCardType.Medical: line+= Utils.splitChar + "2"; break;
+				case AccessCardType.Science: line+= Utils.splitChar + "3"; break;
+				case AccessCardType.Admin: line+= Utils.splitChar + "4"; break;
+				case AccessCardType.Group1: line+= Utils.splitChar + "5"; break;
+				case AccessCardType.Group2: line+= Utils.splitChar + "6"; break;
+				case AccessCardType.Group3: line+= Utils.splitChar + "7"; break;
+				case AccessCardType.Group4: line+= Utils.splitChar + "8"; break;
+				case AccessCardType.GroupA: line+= Utils.splitChar + "9"; break;
+				case AccessCardType.GroupB: line+= Utils.splitChar + "10"; break;
+				case AccessCardType.Storage: line+= Utils.splitChar + "11"; break;
+				case AccessCardType.Engineering: line+= Utils.splitChar + "12"; break;
+				case AccessCardType.Maintenance: line+= Utils.splitChar + "13"; break;
+				case AccessCardType.Security: line+= Utils.splitChar + "14"; break;
+				case AccessCardType.Per1: line+= Utils.splitChar + "15"; break;
+				case AccessCardType.Per2: line+= Utils.splitChar + "16"; break;
+				case AccessCardType.Per3: line+= Utils.splitChar + "17"; break;
+				case AccessCardType.Per4: line+= Utils.splitChar + "18"; break;
+				case AccessCardType.Per5: line+= Utils.splitChar + "19"; break;
+				case AccessCardType.Command: line+= Utils.splitChar + "20"; break;
+			}
+		}
+		for (j=0;j<14;j++) { line += Utils.splitChar + Utils.UintToString(inv.generalInventoryIndexRef[j]); } // int
+		line += Utils.splitChar + Utils.UintToString(inv.generalInvCurrent); // int
+		line += Utils.splitChar + Utils.UintToString(inv.generalInvIndex); // int
+		line += Utils.splitChar + Utils.UintToString(inv.currentCyberItem); // int
+		line += Utils.splitChar + Utils.BoolToString(inv.isPulserNotDrill); // bool
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.UintToString(inv.softVersions[j]); } // int 
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hasSoft[j]); } // bool
+		line += Utils.splitChar + Utils.UintToString(inv.emailCurrent); // int
+		line += Utils.splitChar + Utils.UintToString(inv.emailIndex); // int
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		Inventory inv = go.GetComponent<Inventory>();
+		if (inv == null || index < 0 || entries == null) return index + 481;
+
+		int j;
+		for (j=0;j<7;j++) { inv.weaponInventoryIndices[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		for (j=0;j<7;j++) { inv.weaponInventoryAmmoIndices[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		inv.numweapons = Utils.GetIntFromString(entries[index] ); index++;
+		for (j=0;j<16;j++) { inv.wepAmmo[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		for (j=0;j<16;j++) { inv.wepAmmoSecondary[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		for (j=0;j<7;j++) { inv.currentEnergyWeaponHeat[j] = Utils.GetFloatFromString(entries[index]); index++; }
+		for (j=0;j<7;j++) { inv.wepLoadedWithAlternate[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		inv.grenadeCurrent = Utils.GetIntFromString(entries[index]); index++;
+		inv.grenadeIndex = Utils.GetIntFromString(entries[index]); index++;
+		inv.nitroTimeSetting = Utils.GetFloatFromString(entries[index]); index++;
+		inv.earthShakerTimeSetting = Utils.GetFloatFromString(entries[index]); index++;
+		for (j=0;j<7;j++) { inv.grenAmmo[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		inv.patchCurrent = Utils.GetIntFromString(entries[index]); index++;
+		inv.patchIndex = Utils.GetIntFromString(entries[index]); index++;
+		for (j=0;j<7;j++) { inv.patchCounts[j] = Utils.GetIntFromString(entries[index]); index++; }
+		for (j=0;j<134;j++) { inv.hasLog[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		for (j=0;j<134;j++) { inv.readLog[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		for (j=0;j<10;j++) { inv.numLogsFromLevel[j] = Utils.GetIntFromString(entries[index]); index++; }
+		inv.lastAddedIndex = Utils.GetIntFromString(entries[index]); index++;
+		inv.beepDone = Utils.GetBoolFromString(entries[index]); index++;
+		for (j=0;j<13;j++) { inv.hasHardware[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		if (Inventory.a.hasHardware[1]) {
+			MouseLookScript.a.compassContainer.SetActive(true);
+			MouseLookScript.a.automapContainerLH.SetActive(true);
+			MouseLookScript.a.automapContainerRH.SetActive(true);
+		}
+		for (j=0;j<13;j++) { inv.hardwareVersion[j] = Utils.GetIntFromString(entries[index]); index++; }
+		for (j=0;j<13;j++) { inv.hardwareVersionSetting[j] = Utils.GetIntFromString(entries[index]); index++; }
+		inv.hardwareInvCurrent = Utils.GetIntFromString(entries[index]); index++;
+		inv.hardwareInvIndex = Utils.GetIntFromString(entries[index]); index++;
+		for (j=0;j<13;j++) { inv.hardwareIsActive[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		for (j=0;j<32;j++) {
+			int cardType = Utils.GetIntFromString(entries[index]);
+			switch (cardType) {
+				case 0: inv.accessCardsOwned[j] = AccessCardType.None; break;
+				case 1: inv.accessCardsOwned[j] = AccessCardType.Standard; break;
+				case 2: inv.accessCardsOwned[j] = AccessCardType.Medical; break;
+				case 3: inv.accessCardsOwned[j] = AccessCardType.Science; break;
+				case 4: inv.accessCardsOwned[j] = AccessCardType.Admin; break;
+				case 5: inv.accessCardsOwned[j] = AccessCardType.Group1; break;
+				case 6: inv.accessCardsOwned[j] = AccessCardType.Group2; break;
+				case 7: inv.accessCardsOwned[j] = AccessCardType.Group3; break;
+				case 8: inv.accessCardsOwned[j] = AccessCardType.Group4; break;
+				case 9: inv.accessCardsOwned[j] = AccessCardType.GroupA; break;
+				case 10: inv.accessCardsOwned[j] = AccessCardType.GroupB; break;
+				case 11: inv.accessCardsOwned[j] = AccessCardType.Storage; break;
+				case 12: inv.accessCardsOwned[j] = AccessCardType.Engineering; break;
+				case 13: inv.accessCardsOwned[j] = AccessCardType.Maintenance; break;
+				case 14: inv.accessCardsOwned[j] = AccessCardType.Security; break;
+				case 15: inv.accessCardsOwned[j] = AccessCardType.Per1; break;
+				case 16: inv.accessCardsOwned[j] = AccessCardType.Per2; break;
+				case 17: inv.accessCardsOwned[j] = AccessCardType.Per3; break;
+				case 18: inv.accessCardsOwned[j] = AccessCardType.Per4; break;
+				case 19: inv.accessCardsOwned[j] = AccessCardType.Per5; break;
+				case 20: inv.accessCardsOwned[j] = AccessCardType.Command; break;
+			}
+			index++;
+		}
+		for (j=0;j<14;j++) { inv.generalInventoryIndexRef[j] = Utils.GetIntFromString(entries[index]); index++; }
+		inv.generalInvCurrent = Utils.GetIntFromString(entries[index]); index++;
+		inv.generalInvIndex = Utils.GetIntFromString(entries[index]); index++;
+		inv.currentCyberItem = Utils.GetIntFromString(entries[index]); index++;
+		inv.isPulserNotDrill = Utils.GetBoolFromString(entries[index]); index++;
+		for (j=0;j<7;j++) { inv.softVersions[j] = Utils.GetIntFromString(entries[index]); index++; }
+		for (j=0;j<7;j++) { inv.hasSoft[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		inv.emailCurrent = Utils.GetIntFromString(entries[index]); index++;
+		inv.emailIndex = Utils.GetIntFromString(entries[index]); index++;	
+		return index;
+	}
 }

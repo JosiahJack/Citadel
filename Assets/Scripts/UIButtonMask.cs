@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using System.Collections;
 
 public class UIButtonMask : MonoBehaviour {
-	public GUIState.ButtonType overButtonType = GUIState.ButtonType.Generic;  // default to generic button
+	public ButtonType overButtonType = ButtonType.Generic;  // default to generic button
 	public int doubleClickTicks;  // takes 2 to activate double click function
 	public bool doubleClickEnabled = false;
 	public int toolTipLingdex = -1;
@@ -63,7 +63,7 @@ public class UIButtonMask : MonoBehaviour {
     }
 
 	public void PtrExit () {
-		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 		doubleClickTicks = 0;
 		if (toolTipLingdex >= 0) {
 			MouseCursor.a.toolTip = string.Empty;

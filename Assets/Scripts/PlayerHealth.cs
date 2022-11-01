@@ -35,7 +35,6 @@ public class PlayerHealth : MonoBehaviour {
 	[HideInInspector] public float painSoundFinished; // save
 	[HideInInspector] public float radSoundFinished; // save
 	[HideInInspector] public float radFXFinished; // save
-	private TextWarningsManager twm;
 	private float radAdjust;
 	private float initialRadiation;
 	[HideInInspector] public float noiseFinished;
@@ -47,8 +46,6 @@ public class PlayerHealth : MonoBehaviour {
 	}
 
 	void Start () {
-		twm = mainPlayerParent.GetComponent<PlayerReferenceManager>().playerTextWarningManager.GetComponent<TextWarningsManager>();
-		if (twm == null) Debug.Log("BUG: No TextWarningManager script found on player (sent from PlayerHealth.Awake)");
 		hm = GetComponent<HealthManager>();
 		if (hm == null) Debug.Log("BUG: No HealthManager script found on player (sent from PlayerHealth.Awake)");
 		painSoundFinished = PauseScript.a.relativeTime;
@@ -84,13 +81,13 @@ public class PlayerHealth : MonoBehaviour {
 		}
 		if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_DETOX)) radiated = 0f;
 		if (radiated > 1f) {
-			if (radiationArea) twm.SendWarning((Const.a.stringTable[184]),0.1f,-2,TextWarningsManager.warningTextColor.white,radiationAreaWarningID); // Radiation area
+			if (radiationArea) PlayerMovement.a.twm.SendWarning((Const.a.stringTable[184]),0.1f,-2,HUDColor.White,radiationAreaWarningID); // Radiation area
 			if (Inventory.a.hasHardware[8]) {
 				// Suit absorbs some radiation, say it.  Envirosuit absorbed ##, Radiation poisoning ## LBP
-				twm.SendWarning((Const.a.stringTable[280]+radAdjust.ToString()+Const.a.stringTable[281] + Const.a.stringTable[185] + radiated.ToString()+Const.a.stringTable[186]),0.1f,-2,TextWarningsManager.warningTextColor.red,radiationAmountWarningID); // Envirosuit absorbed ##LBP, Radiation poisoning ##LBP
+				PlayerMovement.a.twm.SendWarning((Const.a.stringTable[280]+radAdjust.ToString()+Const.a.stringTable[281] + Const.a.stringTable[185] + radiated.ToString()+Const.a.stringTable[186]),0.1f,-2,HUDColor.Red,radiationAmountWarningID); // Envirosuit absorbed ##LBP, Radiation poisoning ##LBP
 			} else {
 				// Radiation poisoning ## LBP
-				twm.SendWarning((Const.a.stringTable[185]+radiated.ToString()+Const.a.stringTable[186]),0.1f,-2,TextWarningsManager.warningTextColor.red,radiationAmountWarningID); // Radiation poisoning ##LBP
+				PlayerMovement.a.twm.SendWarning((Const.a.stringTable[185]+radiated.ToString()+Const.a.stringTable[186]),0.1f,-2,HUDColor.Red,radiationAmountWarningID); // Radiation poisoning ##LBP
 			}
 			if (radFXFinished < PauseScript.a.relativeTime) {
 				radiationEffect.SetActive(true);
@@ -113,14 +110,14 @@ public class PlayerHealth : MonoBehaviour {
 				}
 				if (radSoundFinished < PauseScript.a.relativeTime) {
 					radSoundFinished = PauseScript.a.relativeTime + Random.Range(1f,3f);
-					PlayerNoise.PlayOneShot(RadiationClip);
+					Utils.PlayOneShotSavable(PlayerNoise,RadiationClip);
 				}
 			}
 		}
 		if (lastHealth > hm.health) { // Did we lose health?
 			if (painSoundFinished < PauseScript.a.relativeTime && !(radSoundFinished < PauseScript.a.relativeTime)) {
 				painSoundFinished = PauseScript.a.relativeTime + Random.Range(0.25f,3f); // Don't spam pain sounds
-				PlayerNoise.PlayOneShot(PainSFXClip);
+				Utils.PlayOneShotSavable(PlayerNoise,PainSFXClip);
 			}
 		}
 		lastHealth = hm.health;
@@ -149,7 +146,7 @@ public class PlayerHealth : MonoBehaviour {
 	}
 
 	public void PlayerRessurect() {
-		bool ressurected = LevelManager.a.RessurectPlayer(mainPlayerParent);
+		bool ressurected = LevelManager.a.RessurectPlayer();
 		if (!ressurected) Debug.Log("ERROR: failed to ressurect player!");
 		hm.health = 211f;
 		MFDManager.a.DrawTicks(true);
@@ -199,6 +196,45 @@ public class PlayerHealth : MonoBehaviour {
 			radAdjust = 0f;
 		}
 		initialRadiation = radiated;
-		//radiated -= suitReduction;
+	}
+
+	public static string Save(GameObject go) {
+		PlayerHealth ph = go.GetComponent<PlayerHealth>();
+		if (ph == null) {
+			Debug.Log("PlayerHealth missing on savetype of Player!  GameObject.name: " + go.name);
+			return "0000.00000|0000.00000|0|0|0000.00000|-1|0|211.00000|0000.00000|0000.00000|0000.00000";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.FloatToString(ph.radiated); // float
+		line += Utils.splitChar + Utils.FloatToString(ph.timer); // float, not relative timer
+		line += Utils.splitChar + Utils.BoolToString(ph.playerDead); // bool
+		line += Utils.splitChar + Utils.BoolToString(ph.radiationArea); // bool
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ph.mediPatchPulseFinished); // float
+		line += Utils.splitChar + ph.mediPatchPulseCount.ToString(); // int
+		line += Utils.splitChar + Utils.BoolToString(ph.makingNoise); // bool
+		line += Utils.splitChar + Utils.FloatToString(ph.lastHealth); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ph.painSoundFinished); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ph.radSoundFinished); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ph.radFXFinished); // float
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		PlayerHealth ph = go.GetComponent<PlayerHealth>();
+		if (ph == null || index < 0 || entries == null) return index + 11;
+
+		ph.radiated = Utils.GetFloatFromString(entries[index]); index++;
+		ph.timer = Utils.GetFloatFromString(entries[index]); index++; // Not relative time
+		ph.playerDead = Utils.GetBoolFromString(entries[index]); index++;
+		ph.radiationArea = Utils.GetBoolFromString(entries[index]); index++;
+		ph.mediPatchPulseFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		ph.mediPatchPulseCount = Utils.GetIntFromString(entries[index] ); index++;
+		ph.makingNoise = Utils.GetBoolFromString(entries[index]); index++;
+		ph.lastHealth = Utils.GetFloatFromString(entries[index]); index++;
+		ph.painSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		ph.radSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		ph.radFXFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		return index;
 	}
 }

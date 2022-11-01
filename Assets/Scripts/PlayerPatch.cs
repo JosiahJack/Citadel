@@ -16,10 +16,10 @@ public class PlayerPatch : MonoBehaviour {
 	public Light sightLight;
 	public Image sightDimming;
 	public PuzzleWire wirePuzzle;
-	public UnityStandardAssets.ImageEffects.BerserkEffect berserk;
-	public UnityStandardAssets.ImageEffects.BerserkEffect sensaroundCamCenterBerserk;
-	public UnityStandardAssets.ImageEffects.BerserkEffect sensaroundCamLeftBerserk;
-	public UnityStandardAssets.ImageEffects.BerserkEffect sensaroundCamRightBerserk;
+	public BerserkEffect berserk;
+	public BerserkEffect sensaroundCamCenterBerserk;
+	public BerserkEffect sensaroundCamLeftBerserk;
+	public BerserkEffect sensaroundCamRightBerserk;
 
 	[HideInInspector] public float berserkFinishedTime; // save
 	[HideInInspector] public float berserkIncrementFinishedTime; // save
@@ -156,8 +156,8 @@ public class PlayerPatch : MonoBehaviour {
 		} else {
 			Const.sprint((Const.a.useableItemsNameText[index] + Const.a.stringTable[589]),MouseLookScript.a.player);
 		}
-		SFX.PlayOneShot(patchUseSFX);
-		GUIState.a.PtrHandler(false,false,GUIState.ButtonType.None,null);
+		Utils.PlayOneShotSavable(SFX,patchUseSFX);
+		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 	}
 
 	void Update() {
@@ -314,5 +314,45 @@ public class PlayerPatch : MonoBehaviour {
 		staminupFinishedTime =  -1f;
 		PlayerMovement.a.staminupActive = false;
 		patchActive = 0;
+	}
+
+	public static string Save(GameObject go) {
+		PlayerPatch pp = go.GetComponent<PlayerPatch>();
+		if (pp == null) {
+			Debug.Log("PlayerEnergy missing on savetype of Player!  GameObject.name: " + go.name);
+			return "0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|-1|-1";
+		}
+
+		string line = System.String.Empty;
+		line = Utils.SaveRelativeTimeDifferential(pp.berserkFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.berserkIncrementFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.detoxFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.geniusFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.mediFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.reflexFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.sightFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.sightSideEffectFinishedTime); // float
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.staminupFinishedTime); // float
+		line += Utils.splitChar + pp.berserkIncrement.ToString(); // int
+		line += Utils.splitChar + pp.patchActive.ToString(); // int
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		PlayerPatch pp = go.GetComponent<PlayerPatch>();
+		if (pp == null || index < 0 || entries == null) return index + 11;
+
+		pp.berserkFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.berserkIncrementFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.detoxFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.geniusFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.mediFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.reflexFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.sightFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.sightSideEffectFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.staminupFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pp.berserkIncrement = Utils.GetIntFromString(entries[index]); index++;
+		pp.patchActive = Utils.GetIntFromString(entries[index]); index++;
+		return index;
 	}
 }

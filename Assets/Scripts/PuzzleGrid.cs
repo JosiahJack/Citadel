@@ -7,10 +7,8 @@ public class PuzzleGrid : MonoBehaviour {
 	[HideInInspector]
 	public PuzzleGridPuzzle puzzleGP;
 	public bool[] powered;
-	public CellType[] cellType;
-	public enum CellType : byte {Off,Standard,And,Bypass}; // off is blank, standard is X or +, AND takes two power sources, Bypass is always +
-	public enum GridType : byte {King,Queen,Knight,Rook,Bishop,Pawn};
-	public GridType gridType;
+	public PuzzleCellType[] cellType;
+	public PuzzleGridType gridType;
 	public int sourceIndex;
 	public int outputIndex;
 	public int width;
@@ -46,8 +44,7 @@ public class PuzzleGrid : MonoBehaviour {
 	public Sprite gridAlwaysOn0blue;
 	public Sprite gridAlwaysOn1;
 	public Image outputNode;
-	public enum GridColorTheme : byte {Gray,Green,Purple,Blue};
-	public GridColorTheme theme;
+	public HUDColor theme;
 	public AudioClip solvedSFX;
 	public bool puzzleSolved;
 	public Slider progressBar;
@@ -79,7 +76,7 @@ public class PuzzleGrid : MonoBehaviour {
 		gameObject.SetActive(false);
 	}
 
-	public void SendGrid(bool[] states, CellType[] types, GridType gtype, int start, int end, int w, int h, GridColorTheme colors, string senttarget, UseData ud,PuzzleGridPuzzle pgp) {
+	public void SendGrid(bool[] states, PuzzleCellType[] types, PuzzleGridType gtype, int start, int end, int w, int h, HUDColor colors, string senttarget, UseData ud,PuzzleGridPuzzle pgp) {
 		grid = states;
 		cellType = types;
 		gridType = gtype;
@@ -110,17 +107,17 @@ public class PuzzleGrid : MonoBehaviour {
 
 	public void OnGridCellClick (int index) {
 		if (puzzleSolved) return;
-		if (cellType[index] == CellType.Standard) {
+		if (cellType[index] == PuzzleCellType.Standard) {
 			if (Const.a.difficultyPuzzle == 1) {
 				King(index); // Easy puzzle difficulty.  Chose King instead of Pawn to help speed up the puzzle by the antenna trap on Level 7
 			} else {
 				switch (gridType) {
-					case GridType.King: King(index); break;
-					case GridType.Queen: Queen(index); break;
-					case GridType.Knight: Knight(index); break;
-					case GridType.Rook: Rook(index); break;
-					case GridType.Bishop: Bishop(index); break;
-					case GridType.Pawn: Pawn(index); break;
+					case PuzzleGridType.King: King(index); break;
+					case PuzzleGridType.Queen: Queen(index); break;
+					case PuzzleGridType.Knight: Knight(index); break;
+					case PuzzleGridType.Rook: Rook(index); break;
+					case PuzzleGridType.Bishop: Bishop(index); break;
+					case PuzzleGridType.Pawn: Pawn(index); break;
 				}
 			}
 		}
@@ -132,17 +129,17 @@ public class PuzzleGrid : MonoBehaviour {
 	public void OnGridCellHover (int index) {
 		if (MouseLookScript.a.geniusActive) {
 			if (puzzleSolved) return;
-			if (cellType[index] == CellType.Standard) {
+			if (cellType[index] == PuzzleCellType.Standard) {
 				if (Const.a.difficultyPuzzle == 1) {
 					HoverKing(index); // Easy puzzle difficulty.  Chose King instead of Pawn to help speed up the puzzle by the antenna trap on Level 7
 				} else {
 					switch (gridType) {
-						case GridType.King: HoverKing(index); break;
-						case GridType.Queen: HoverQueen(index); break;
-						case GridType.Knight: HoverKnight(index); break;
-						case GridType.Rook: HoverRook(index); break;
-						case GridType.Bishop: HoverBishop(index); break;
-						case GridType.Pawn: HoverPawn(index); break;
+						case PuzzleGridType.King: HoverKing(index); break;
+						case PuzzleGridType.Queen: HoverQueen(index); break;
+						case PuzzleGridType.Knight: HoverKnight(index); break;
+						case PuzzleGridType.Rook: HoverRook(index); break;
+						case PuzzleGridType.Bishop: HoverBishop(index); break;
+						case PuzzleGridType.Pawn: HoverPawn(index); break;
 					}
 				}
 			}
@@ -151,21 +148,21 @@ public class PuzzleGrid : MonoBehaviour {
 
 	public void UpdateCellImages() {
 		for (int i=0;i<(width*height);i++) {
-			if (cellType[i] != CellType.Off) {
-				if (cellType[i] == CellType.Standard) {
+			if (cellType[i] != PuzzleCellType.Off) {
+				if (cellType[i] == PuzzleCellType.Standard) {
 					if (!grid[i]) {
 						// Theme dependent
 						switch (theme) {
-						case GridColorTheme.Gray:
+						case HUDColor.Gray:
 							gridCells [i].image.overrideSprite = gridX;
 							break;
-						case GridColorTheme.Green:
+						case HUDColor.Green:
 							gridCells [i].image.overrideSprite = gridXgreen;
 							break;
-						case GridColorTheme.Purple:
+						case HUDColor.Purple:
 							gridCells [i].image.overrideSprite = gridXpurple;
 							break;
-						case GridColorTheme.Blue:
+						case HUDColor.Blue:
 							gridCells [i].image.overrideSprite = gridXblue;
 							break;
 						}
@@ -176,73 +173,73 @@ public class PuzzleGrid : MonoBehaviour {
 						} else {
 							// Theme dependent
 							switch (theme) {
-							case GridColorTheme.Gray:
+							case HUDColor.Gray:
 								gridCells [i].image.overrideSprite = gridPlus;
 								break;
-							case GridColorTheme.Green:
+							case HUDColor.Green:
 								gridCells [i].image.overrideSprite = gridPlusgreen;
 								break;
-							case GridColorTheme.Purple:
+							case HUDColor.Purple:
 								gridCells [i].image.overrideSprite = gridPluspurple;
 								break;
-							case GridColorTheme.Blue:
+							case HUDColor.Blue:
 								gridCells [i].image.overrideSprite = gridPlusblue;
 								break;
 							}
 						}
 					}
 				}
-				if (cellType[i] == CellType.And) {
+				if (cellType[i] == PuzzleCellType.And) {
 					if (powered[i]) {
 						// Theme dependent
 						switch (theme) {
-						case GridColorTheme.Gray:
+						case HUDColor.Gray:
 							gridCells [i].image.overrideSprite = gridSpecialOn0;
 							break;
-						case GridColorTheme.Green:
+						case HUDColor.Green:
 							gridCells [i].image.overrideSprite = gridSpecialOn0green;
 							break;
-						case GridColorTheme.Purple:
+						case HUDColor.Purple:
 							gridCells [i].image.overrideSprite = gridSpecialOn0purple;
 							break;
-						case GridColorTheme.Blue:
+						case HUDColor.Blue:
 							gridCells [i].image.overrideSprite = gridSpecialOn0blue;
 							break;
 						}
 					} else {
 						// Theme dependent
 						switch (theme) {
-						case GridColorTheme.Gray:
+						case HUDColor.Gray:
 							gridCells [i].image.overrideSprite = gridSpecial;
 							break;
-						case GridColorTheme.Green:
+						case HUDColor.Green:
 							gridCells [i].image.overrideSprite = gridSpecialgreen;
 							break;
-						case GridColorTheme.Purple:
+						case HUDColor.Purple:
 							gridCells [i].image.overrideSprite = gridSpecialpurple;
 							break;
-						case GridColorTheme.Blue:
+						case HUDColor.Blue:
 							gridCells [i].image.overrideSprite = gridSpecialblue;
 							break;
 						}
 					}
 				}
-				if (cellType[i] == CellType.Bypass) {
+				if (cellType[i] == PuzzleCellType.Bypass) {
 					if (powered[i]) {
 						gridCells[i].image.overrideSprite = gridAlwaysOn1; // And node powered
 					} else {
 						// Theme dependent
 						switch (theme) {
-						case GridColorTheme.Gray:
+						case HUDColor.Gray:
 							gridCells [i].image.overrideSprite = gridAlwaysOn0;
 							break;
-						case GridColorTheme.Green:
+						case HUDColor.Green:
 							gridCells [i].image.overrideSprite = gridAlwaysOn0green;
 							break;
-						case GridColorTheme.Purple:
+						case HUDColor.Purple:
 							gridCells [i].image.overrideSprite = gridAlwaysOn0purple;
 							break;
-						case GridColorTheme.Blue:
+						case HUDColor.Blue:
 							gridCells [i].image.overrideSprite = gridAlwaysOn0blue;
 							break;
 						}
@@ -310,11 +307,11 @@ public class PuzzleGrid : MonoBehaviour {
 				if (powered[cellRight])
 					poweredCount++;
 			}
-			if (cellType[movingIndex] == CellType.And) {
+			if (cellType[movingIndex] == PuzzleCellType.And) {
 				if (poweredCount > 1) powered[movingIndex] = true;
 			} else {
-				if (cellType[movingIndex] == CellType.Standard || cellType[movingIndex] == CellType.Bypass) {
-					if ((grid[movingIndex] || cellType[movingIndex] == CellType.Bypass) && poweredCount > 0) powered[movingIndex] = true;
+				if (cellType[movingIndex] == PuzzleCellType.Standard || cellType[movingIndex] == PuzzleCellType.Bypass) {
+					if ((grid[movingIndex] || cellType[movingIndex] == PuzzleCellType.Bypass) && poweredCount > 0) powered[movingIndex] = true;
 				}
 			}
 			checkedCells [movingIndex] = true;
@@ -337,13 +334,13 @@ public class PuzzleGrid : MonoBehaviour {
 	void PuzzleSolved(bool usedLogicProbe) {
 		puzzleSolved = true;
 		outputNode.overrideSprite = nodeOn;
-		if (audsource != null && solvedSFX != null) audsource.PlayOneShot(solvedSFX);
+		if (audsource != null && solvedSFX != null) Utils.PlayOneShotSavable(audsource,solvedSFX);
 		puzzleGP.puzzleSolved = true;
 		puzzleGP.UseTargets(udSender.owner);
 		progressBar.value = 100f;
 		if (usedLogicProbe) {
 			for (int i=0;i<powered.Length;i++) {
-				if (cellType[i] == CellType.Standard) {
+				if (cellType[i] == PuzzleCellType.Standard) {
 					grid[i] = true;
 					powered[i] = true;
 				}
@@ -361,7 +358,7 @@ public class PuzzleGrid : MonoBehaviour {
 		if (index == -1) return retval;
 		bool outOfBounds = ((index-width) < 0) ? true: false;
 		if (!outOfBounds){
-			if (cellType[index-width] != CellType.Off)
+			if (cellType[index-width] != PuzzleCellType.Off)
 				retval = (index-width); // return cell above if not on top row
 		}
 		return retval;
@@ -372,7 +369,7 @@ public class PuzzleGrid : MonoBehaviour {
 		if (index == -1) return retval;
 		bool outOfBounds = ((index+width) > ((width*height)-1)) ? true: false;
 		if (!outOfBounds) {
-			if (cellType[index+width] != CellType.Off)
+			if (cellType[index+width] != PuzzleCellType.Off)
 				retval = (index+width); // return cell below if not on bottom row
 		}
 		return retval;
@@ -383,7 +380,7 @@ public class PuzzleGrid : MonoBehaviour {
 		if (index == -1) return retval;
 		if (!((index/width) > 0 && (index%width < 1))) {
 			if ((index-1) >= 0) {
-				if (cellType[index-1] != CellType.Off)
+				if (cellType[index-1] != PuzzleCellType.Off)
 					retval = index-1;  // return index to left if not in far left column
 			}
 		}
@@ -395,7 +392,7 @@ public class PuzzleGrid : MonoBehaviour {
 		if (index == -1) return retval;
 		if (!(((index+1)/width) > 0 && ((index+1)%width < 1))) {
 			if ((index+1) < (width*height)) {
-				if (cellType[index+1] != CellType.Off)
+				if (cellType[index+1] != PuzzleCellType.Off)
 					retval = index+1;  // return index to right if not in far right column
 			}
 		} 
@@ -440,7 +437,7 @@ public class PuzzleGrid : MonoBehaviour {
 
 	// Only flip clicked cell
 	void Pawn(int index) {
-		if (cellType[index] == CellType.Standard) grid[index] = !grid[index]; // Flip clicked cell if it is standard
+		if (cellType[index] == PuzzleCellType.Standard) grid[index] = !grid[index]; // Flip clicked cell if it is standard
 	}
 
 	void HoverPawn(int index) {
@@ -450,7 +447,7 @@ public class PuzzleGrid : MonoBehaviour {
 
 	// Flip vertically and horizontally adjacent standard cells along with center
 	void King(int index) {
-		if (cellType[index] == CellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
+		if (cellType[index] == PuzzleCellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
 		int cellAbove = ReturnCellAbove(index);
 		int cellBelow = ReturnCellBelow(index);
 		int cellLeft = ReturnCellToLeft(index);
@@ -459,19 +456,19 @@ public class PuzzleGrid : MonoBehaviour {
 		int cellDiagUpLf = ReturnCellDiagUpLeft(index);
 		int cellDiagDnRt = ReturnCellDiagDownRight(index);
 		int cellDiagDnLf = ReturnCellDiagDownLeft(index);
-		if (cellAbove != -1 && cellType[cellAbove] == CellType.Standard) grid[cellAbove] = !grid[cellAbove];
-		if (cellBelow != -1 && cellType[cellBelow] == CellType.Standard) grid[cellBelow] = !grid[cellBelow];
-		if (cellLeft != -1 && cellType[cellLeft] == CellType.Standard) grid[cellLeft] = !grid[cellLeft];
-		if (cellRight != -1 && cellType[cellRight] == CellType.Standard) grid[cellRight] = !grid[cellRight];
-		if (cellDiagUpRt != -1 && cellType[cellDiagUpRt] == CellType.Standard) grid[cellDiagUpRt] = !grid[cellDiagUpRt];
-		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == CellType.Standard) grid[cellDiagUpLf] = !grid[cellDiagUpLf];
-		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == CellType.Standard) grid[cellDiagDnRt] = !grid[cellDiagDnRt];
-		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == CellType.Standard) grid[cellDiagDnLf] = !grid[cellDiagDnLf];
+		if (cellAbove != -1 && cellType[cellAbove] == PuzzleCellType.Standard) grid[cellAbove] = !grid[cellAbove];
+		if (cellBelow != -1 && cellType[cellBelow] == PuzzleCellType.Standard) grid[cellBelow] = !grid[cellBelow];
+		if (cellLeft != -1 && cellType[cellLeft] == PuzzleCellType.Standard) grid[cellLeft] = !grid[cellLeft];
+		if (cellRight != -1 && cellType[cellRight] == PuzzleCellType.Standard) grid[cellRight] = !grid[cellRight];
+		if (cellDiagUpRt != -1 && cellType[cellDiagUpRt] == PuzzleCellType.Standard) grid[cellDiagUpRt] = !grid[cellDiagUpRt];
+		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == PuzzleCellType.Standard) grid[cellDiagUpLf] = !grid[cellDiagUpLf];
+		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == PuzzleCellType.Standard) grid[cellDiagDnRt] = !grid[cellDiagDnRt];
+		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == PuzzleCellType.Standard) grid[cellDiagDnLf] = !grid[cellDiagDnLf];
 	}
 
 	void HoverKing(int index) {
 		GeniusHighlightClear();
-		if (cellType[index] == CellType.Standard) geniusHighlights[index].enabled = true;
+		if (cellType[index] == PuzzleCellType.Standard) geniusHighlights[index].enabled = true;
 		int cellAbove = ReturnCellAbove(index);
 		int cellBelow = ReturnCellBelow(index);
 		int cellLeft = ReturnCellToLeft(index);
@@ -480,51 +477,51 @@ public class PuzzleGrid : MonoBehaviour {
 		int cellDiagUpLf = ReturnCellDiagUpLeft(index);
 		int cellDiagDnRt = ReturnCellDiagDownRight(index);
 		int cellDiagDnLf = ReturnCellDiagDownLeft(index);
-		if (cellAbove != -1 && cellType[cellAbove] == CellType.Standard) geniusHighlights[cellAbove].enabled = true;
-		if (cellBelow != -1 && cellType[cellBelow] == CellType.Standard) geniusHighlights[cellBelow].enabled = true;
-		if (cellLeft != -1 && cellType[cellLeft] == CellType.Standard) geniusHighlights[cellLeft].enabled = true;
-		if (cellRight != -1 && cellType[cellRight] == CellType.Standard) geniusHighlights[cellRight].enabled = true;
-		if (cellDiagUpRt != -1 && cellType[cellDiagUpRt] == CellType.Standard) geniusHighlights[cellDiagUpRt].enabled = true;
-		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == CellType.Standard) geniusHighlights[cellDiagUpLf].enabled = true;
-		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == CellType.Standard) geniusHighlights[cellDiagDnRt].enabled = true;
-		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == CellType.Standard) geniusHighlights[cellDiagDnLf].enabled = true;
+		if (cellAbove != -1 && cellType[cellAbove] == PuzzleCellType.Standard) geniusHighlights[cellAbove].enabled = true;
+		if (cellBelow != -1 && cellType[cellBelow] == PuzzleCellType.Standard) geniusHighlights[cellBelow].enabled = true;
+		if (cellLeft != -1 && cellType[cellLeft] == PuzzleCellType.Standard) geniusHighlights[cellLeft].enabled = true;
+		if (cellRight != -1 && cellType[cellRight] == PuzzleCellType.Standard) geniusHighlights[cellRight].enabled = true;
+		if (cellDiagUpRt != -1 && cellType[cellDiagUpRt] == PuzzleCellType.Standard) geniusHighlights[cellDiagUpRt].enabled = true;
+		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == PuzzleCellType.Standard) geniusHighlights[cellDiagUpLf].enabled = true;
+		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == PuzzleCellType.Standard) geniusHighlights[cellDiagDnRt].enabled = true;
+		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == PuzzleCellType.Standard) geniusHighlights[cellDiagDnLf].enabled = true;
 	}
 
 	// Flip corners along with center
 	void Knight(int index) {
-		if (cellType[index] == CellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
+		if (cellType[index] == PuzzleCellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
 		int cellDiagUpRt = ReturnCellDiagUpRight(index);
 		int cellDiagUpLf = ReturnCellDiagUpLeft(index);
 		int cellDiagDnRt = ReturnCellDiagDownRight(index);
 		int cellDiagDnLf = ReturnCellDiagDownLeft(index);
-		if (cellDiagUpRt != -1 && cellType[cellDiagUpRt] == CellType.Standard) grid[cellDiagUpRt] = !grid[cellDiagUpRt];
-		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == CellType.Standard) grid[cellDiagUpLf] = !grid[cellDiagUpLf];
-		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == CellType.Standard) grid[cellDiagDnRt] = !grid[cellDiagDnRt];
-		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == CellType.Standard) grid[cellDiagDnLf] = !grid[cellDiagDnLf];
+		if (cellDiagUpRt != -1 && cellType[cellDiagUpRt] == PuzzleCellType.Standard) grid[cellDiagUpRt] = !grid[cellDiagUpRt];
+		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == PuzzleCellType.Standard) grid[cellDiagUpLf] = !grid[cellDiagUpLf];
+		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == PuzzleCellType.Standard) grid[cellDiagDnRt] = !grid[cellDiagDnRt];
+		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == PuzzleCellType.Standard) grid[cellDiagDnLf] = !grid[cellDiagDnLf];
 	}
 
 	void HoverKnight(int index) {
 		GeniusHighlightClear();
-		if (cellType[index] == CellType.Standard) geniusHighlights[index].enabled = true;
+		if (cellType[index] == PuzzleCellType.Standard) geniusHighlights[index].enabled = true;
 		int cellDiagUpRt = ReturnCellDiagUpRight(index);
 		int cellDiagUpLf = ReturnCellDiagUpLeft(index);
 		int cellDiagDnRt = ReturnCellDiagDownRight(index);
 		int cellDiagDnLf = ReturnCellDiagDownLeft(index);
-		if (cellDiagUpRt != -1 && cellType[cellDiagUpRt] == CellType.Standard)  geniusHighlights[cellDiagUpRt].enabled = true;
-		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == CellType.Standard)  geniusHighlights[cellDiagUpLf].enabled = true;
-		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == CellType.Standard)  geniusHighlights[cellDiagDnRt].enabled = true;
-		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == CellType.Standard)  geniusHighlights[cellDiagDnLf].enabled = true;
+		if (cellDiagUpRt != -1 && cellType[cellDiagUpRt] == PuzzleCellType.Standard)  geniusHighlights[cellDiagUpRt].enabled = true;
+		if (cellDiagUpLf != -1 && cellType[cellDiagUpLf] == PuzzleCellType.Standard)  geniusHighlights[cellDiagUpLf].enabled = true;
+		if (cellDiagDnRt != -1 && cellType[cellDiagDnRt] == PuzzleCellType.Standard)  geniusHighlights[cellDiagDnRt].enabled = true;
+		if (cellDiagDnLf != -1 && cellType[cellDiagDnLf] == PuzzleCellType.Standard)  geniusHighlights[cellDiagDnLf].enabled = true;
 	}
 
 	// Flip vertically and horizontally adjacent cells across entire puzzle along with center
 	void Rook(int index) {
-		if (cellType[index] == CellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
+		if (cellType[index] == PuzzleCellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
 
 		int tempIndex = index;
 		for (int i=0;i<width;i++) {
 			int cellAbove = ReturnCellAbove(tempIndex); // get next cell up
 
-			if (cellAbove != -1 && cellType[cellAbove] == CellType.Standard)
+			if (cellAbove != -1 && cellType[cellAbove] == PuzzleCellType.Standard)
 				grid[cellAbove] = !grid[cellAbove];
 			else
 				break; // blocked by deactivated cells or special
@@ -537,7 +534,7 @@ public class PuzzleGrid : MonoBehaviour {
 		for (int i=0;i<width;i++) {
 			cellBelow = ReturnCellBelow(tempIndex); // get next cell up
 
-			if (cellBelow != -1 && cellType[cellBelow] == CellType.Standard)
+			if (cellBelow != -1 && cellType[cellBelow] == PuzzleCellType.Standard)
 				grid[cellBelow] = !grid[cellBelow];
 			else
 				break; // blocked by deactivated cells or special
@@ -550,7 +547,7 @@ public class PuzzleGrid : MonoBehaviour {
 		for (int i=0;i<width;i++) {
 			cellLeft= ReturnCellToLeft(tempIndex); // get next cell up
 
-			if (cellLeft != -1 && cellType[cellLeft] == CellType.Standard)
+			if (cellLeft != -1 && cellType[cellLeft] == PuzzleCellType.Standard)
 				grid[cellLeft] = !grid[cellLeft];
 			else
 				break; // blocked by deactivated cells or special
@@ -562,7 +559,7 @@ public class PuzzleGrid : MonoBehaviour {
 		for (int i=0;i<width;i++) {
 			int cellRight = ReturnCellToRight(tempIndex); // get next cell up
 
-			if (cellRight != -1 && cellType[cellRight] == CellType.Standard)
+			if (cellRight != -1 && cellType[cellRight] == PuzzleCellType.Standard)
 				grid[cellRight] = !grid[cellRight];
 			else
 				break; // blocked by deactivated cells or special
@@ -573,13 +570,13 @@ public class PuzzleGrid : MonoBehaviour {
 
 	void HoverRook(int index) {
 		GeniusHighlightClear();
-		if (cellType[index] == CellType.Standard) geniusHighlights[index].enabled = true;
+		if (cellType[index] == PuzzleCellType.Standard) geniusHighlights[index].enabled = true;
 
 		int tempIndex = index;
 		for (int i=0;i<width;i++) {
 			int cellAbove = ReturnCellAbove(tempIndex); // get next cell up
 
-			if (cellAbove != -1 && cellType[cellAbove] == CellType.Standard)
+			if (cellAbove != -1 && cellType[cellAbove] == PuzzleCellType.Standard)
 				geniusHighlights[cellAbove].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -592,7 +589,7 @@ public class PuzzleGrid : MonoBehaviour {
 		for (int i=0;i<width;i++) {
 			cellBelow = ReturnCellBelow(tempIndex); // get next cell up
 
-			if (cellBelow != -1 && cellType[cellBelow] == CellType.Standard)
+			if (cellBelow != -1 && cellType[cellBelow] == PuzzleCellType.Standard)
 				geniusHighlights[cellBelow].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -605,7 +602,7 @@ public class PuzzleGrid : MonoBehaviour {
 		for (int i=0;i<width;i++) {
 			cellLeft= ReturnCellToLeft(tempIndex); // get next cell up
 
-			if (cellLeft != -1 && cellType[cellLeft] == CellType.Standard)
+			if (cellLeft != -1 && cellType[cellLeft] == PuzzleCellType.Standard)
 				geniusHighlights[cellLeft].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -617,7 +614,7 @@ public class PuzzleGrid : MonoBehaviour {
 		for (int i=0;i<width;i++) {
 			int cellRight = ReturnCellToRight(tempIndex); // get next cell up
 
-			if (cellRight != -1 && cellType[cellRight] == CellType.Standard)
+			if (cellRight != -1 && cellType[cellRight] == PuzzleCellType.Standard)
 				geniusHighlights[cellRight].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -628,7 +625,7 @@ public class PuzzleGrid : MonoBehaviour {
 
 	// Flip diagonally adjacent cells across entire puzzle along with center
 	void Bishop(int index) {
-		if (cellType[index] == CellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
+		if (cellType[index] == PuzzleCellType.Standard) grid[index] = !grid[index]; // Flip clicked cell
 		int cellAbove = ReturnCellAbove(index);
 		int cellBelow = ReturnCellBelow(index);
 		int cellDiagUpRt = ReturnCellDiagUpRight(index);
@@ -639,7 +636,7 @@ public class PuzzleGrid : MonoBehaviour {
 		// First run along line up and to the right
 		int tempIndex = cellDiagUpRt;
 		for (int i=0;i<Mathf.Min(height,width);i++) {
-			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+			if (tempIndex != -1 && cellType[tempIndex] == PuzzleCellType.Standard)
 				grid[tempIndex] = !grid[tempIndex];
 			else
 				break; // blocked by deactivated cells or special
@@ -650,7 +647,7 @@ public class PuzzleGrid : MonoBehaviour {
 		// Now up and to the left
 		tempIndex = cellDiagUpLf;
 		for (int i=0;i<Mathf.Min(height,width);i++) {
-			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+			if (tempIndex != -1 && cellType[tempIndex] == PuzzleCellType.Standard)
 				grid[tempIndex] = !grid[tempIndex];
 			else
 				break; // blocked by deactivated cells or special
@@ -661,7 +658,7 @@ public class PuzzleGrid : MonoBehaviour {
 		// Now down and to the right
 		tempIndex = cellDiagDnRt;
 		for (int i=0;i<Mathf.Min(height,width);i++) {
-			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+			if (tempIndex != -1 && cellType[tempIndex] == PuzzleCellType.Standard)
 				grid[tempIndex] = !grid[tempIndex];
 			else
 				break; // blocked by deactivated cells or special
@@ -672,7 +669,7 @@ public class PuzzleGrid : MonoBehaviour {
 		// Finally down and to the left
 		tempIndex = cellDiagDnLf;
 		for (int i=0;i<Mathf.Min(height,width);i++) {
-			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+			if (tempIndex != -1 && cellType[tempIndex] == PuzzleCellType.Standard)
 				grid[tempIndex] = !grid[tempIndex];
 			else
 				break; // blocked by deactivated cells or special
@@ -683,7 +680,7 @@ public class PuzzleGrid : MonoBehaviour {
 
 	void HoverBishop(int index) {
 		GeniusHighlightClear();
-		if (cellType[index] == CellType.Standard) geniusHighlights[index].enabled = true;
+		if (cellType[index] == PuzzleCellType.Standard) geniusHighlights[index].enabled = true;
 		int cellAbove = ReturnCellAbove(index);
 		int cellBelow = ReturnCellBelow(index);
 		int cellDiagUpRt = ReturnCellDiagUpRight(index);
@@ -694,7 +691,7 @@ public class PuzzleGrid : MonoBehaviour {
 		// First run along line up and to the right
 		int tempIndex = cellDiagUpRt;
 		for (int i=0;i<Mathf.Min(height,width);i++) {
-			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+			if (tempIndex != -1 && cellType[tempIndex] == PuzzleCellType.Standard)
 				geniusHighlights[tempIndex].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -705,7 +702,7 @@ public class PuzzleGrid : MonoBehaviour {
 		// Now up and to the left
 		tempIndex = cellDiagUpLf;
 		for (int i=0;i<Mathf.Min(height,width);i++) {
-			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+			if (tempIndex != -1 && cellType[tempIndex] == PuzzleCellType.Standard)
 				geniusHighlights[tempIndex].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -716,7 +713,7 @@ public class PuzzleGrid : MonoBehaviour {
 		// Now down and to the right
 		tempIndex = cellDiagDnRt;
 		for (int i=0;i<Mathf.Min(height,width);i++) {
-			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+			if (tempIndex != -1 && cellType[tempIndex] == PuzzleCellType.Standard)
 				 geniusHighlights[tempIndex].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -727,7 +724,7 @@ public class PuzzleGrid : MonoBehaviour {
 		// Finally down and to the left
 		tempIndex = cellDiagDnLf;
 		for (int i=0;i<Mathf.Min(height,width);i++) {
-			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+			if (tempIndex != -1 && cellType[tempIndex] == PuzzleCellType.Standard)
 				geniusHighlights[tempIndex].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -746,7 +743,7 @@ public class PuzzleGrid : MonoBehaviour {
 
 	void HoverQueen(int index) {
 		GeniusHighlightClear();
-		if (cellType[index] == CellType.Standard) geniusHighlights[index].enabled = true;
+		if (cellType[index] == PuzzleCellType.Standard) geniusHighlights[index].enabled = true;
 
 		int cellAbove;
 		int cellBelow;
@@ -760,7 +757,7 @@ public class PuzzleGrid : MonoBehaviour {
 		for (int i=0;i<width;i++) {
 			cellAbove = ReturnCellAbove(tempIndex); // get next cell up
 
-			if (cellAbove != -1 && cellType[cellAbove] == CellType.Standard)
+			if (cellAbove != -1 && cellType[cellAbove] == PuzzleCellType.Standard)
 				geniusHighlights[cellAbove].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -773,7 +770,7 @@ public class PuzzleGrid : MonoBehaviour {
 		for (int i=0;i<width;i++) {
 			cellBelow = ReturnCellBelow(tempIndex); // get next cell up
 
-			if (cellBelow != -1 && cellType[cellBelow] == CellType.Standard)
+			if (cellBelow != -1 && cellType[cellBelow] == PuzzleCellType.Standard)
 				geniusHighlights[cellBelow].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -786,7 +783,7 @@ public class PuzzleGrid : MonoBehaviour {
 		for (int i=0;i<width;i++) {
 			cellLeft= ReturnCellToLeft(tempIndex); // get next cell up
 
-			if (cellLeft != -1 && cellType[cellLeft] == CellType.Standard)
+			if (cellLeft != -1 && cellType[cellLeft] == PuzzleCellType.Standard)
 				geniusHighlights[cellLeft].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -798,14 +795,14 @@ public class PuzzleGrid : MonoBehaviour {
 		for (int i=0;i<width;i++) {
 			cellRight = ReturnCellToRight(tempIndex); // get next cell up
 
-			if (cellRight != -1 && cellType[cellRight] == CellType.Standard)
+			if (cellRight != -1 && cellType[cellRight] == PuzzleCellType.Standard)
 				geniusHighlights[cellRight].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
 
 			tempIndex = cellRight; // move index up to cellAbove
 		}
-		if (cellType[index] == CellType.Standard) geniusHighlights[index].enabled = true;
+		if (cellType[index] == PuzzleCellType.Standard) geniusHighlights[index].enabled = true;
 		cellAbove = ReturnCellAbove(index);
 		cellBelow = ReturnCellBelow(index);
 		cellDiagUpRt = ReturnCellDiagUpRight(index);
@@ -816,7 +813,7 @@ public class PuzzleGrid : MonoBehaviour {
 		// First run along line up and to the right
 		tempIndex = cellDiagUpRt;
 		for (int i=0;i<Mathf.Min(height,width);i++) {
-			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+			if (tempIndex != -1 && cellType[tempIndex] == PuzzleCellType.Standard)
 				geniusHighlights[tempIndex].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -827,7 +824,7 @@ public class PuzzleGrid : MonoBehaviour {
 		// Now up and to the left
 		tempIndex = cellDiagUpLf;
 		for (int i=0;i<Mathf.Min(height,width);i++) {
-			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+			if (tempIndex != -1 && cellType[tempIndex] == PuzzleCellType.Standard)
 				geniusHighlights[tempIndex].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -838,7 +835,7 @@ public class PuzzleGrid : MonoBehaviour {
 		// Now down and to the right
 		tempIndex = cellDiagDnRt;
 		for (int i=0;i<Mathf.Min(height,width);i++) {
-			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+			if (tempIndex != -1 && cellType[tempIndex] == PuzzleCellType.Standard)
 				 geniusHighlights[tempIndex].enabled = true;
 			else
 				break; // blocked by deactivated cells or special
@@ -849,7 +846,7 @@ public class PuzzleGrid : MonoBehaviour {
 		// Finally down and to the left
 		tempIndex = cellDiagDnLf;
 		for (int i=0;i<Mathf.Min(height,width);i++) {
-			if (tempIndex != -1 && cellType[tempIndex] == CellType.Standard)
+			if (tempIndex != -1 && cellType[tempIndex] == PuzzleCellType.Standard)
 				geniusHighlights[tempIndex].enabled = true;
 			else
 				break; // blocked by deactivated cells or special

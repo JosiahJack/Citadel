@@ -48,9 +48,7 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 
 	// called by HealthManager.cs's ScreenDeath
 	public void Destroy() {
-		if (SFX != null) {
-			if (SFXClip != null) SFX.PlayOneShot(SFXClip);
-		}
+		Utils.PlayOneShotSavable(SFX,SFXClip);
 		if (lightContainer != null) lightContainer.SetActive(false);
 		screenDestroyed = true; // if not already dead, say so
 	}

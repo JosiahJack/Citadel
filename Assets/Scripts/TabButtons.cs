@@ -44,7 +44,7 @@ public class TabButtons : MonoBehaviour {
 	}
 
 	public void TabButtonClick (int tabNum) {
-		TabSFX.PlayOneShot(TabSFXClip);
+		Utils.PlayOneShotSavable(TabSFX,TabSFXClip);
 		TabButtonClickSilent(tabNum,false);
 	}
 

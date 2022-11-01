@@ -17,7 +17,7 @@ public class ConfigurationMenuSSRApply : MonoBehaviour {
 		else
 			Const.a.GraphicsSSRMode = 0; // Default to off
 
-		Const.a.WriteConfig();
-		Const.a.SetSSR();
+		Config.WriteConfig();
+		Config.SetSSR();
 	}
 }

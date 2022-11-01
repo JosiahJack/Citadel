@@ -59,7 +59,8 @@ public class LogicBranch : MonoBehaviour {
 	}
 
 	void RunTargets(UseData ud) {
-		if (currenttarget == null || currenttarget == "" || currenttarget == " " || currenttarget == "  ") return; // no target, do nothing
+		if (string.IsNullOrWhiteSpace(currenttarget)) return; // no target, do nothing
+
 		ud.argvalue = currentargvalue;
 		if (thisTioOverridesSender) {
 			TargetIO tio = GetComponent<TargetIO>();
@@ -75,8 +76,8 @@ public class LogicBranch : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		LogicBranch lb = go.GetComponent<LogicBranch>();
-		if (lb != null) {
-			UnityEngine.Debug.Log("LogicBranch missing on savetype of LogicBranch! GameObject.name: " + go.name);
+		if (lb == null) {
+			Debug.Log("LogicBranch missing on savetype of LogicBranch!  GameObject.name: " + go.name);
 			return "1|0";
 		}
 
@@ -84,5 +85,14 @@ public class LogicBranch : MonoBehaviour {
 		line = Utils.BoolToString(lb.relayEnabled); // bool - is this enabled
 		line += Utils.splitChar + Utils.BoolToString(lb.onSecond); // bool - He is. But who's on third? What's on first? Wait what??
 		return line;
-	}	
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		LogicBranch lb = go.GetComponent<LogicBranch>(); // A handy L shaped junction box complete with a lid for easy wire pulling.  Who knew LB's could be so cool!
+		if (lb == null || index < 0 || entries == null) return index + 2;
+
+		lb.relayEnabled = Utils.GetBoolFromString(entries[index]); index++; // bool - is this enabled
+		lb.onSecond = Utils.GetBoolFromString(entries[index]); index++; // bool - which one are we on?  Tap tap...this thing on?  I'll second that.
+		return index;
+	}
 }
