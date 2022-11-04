@@ -95,17 +95,17 @@ public class SaveObject : MonoBehaviour {
 		s1.Clear();
 		// Start Saving
 		// --------------------------------------------------------------------
-		s1.Append(so.saveableType); s1.Append(Utils.splitChar);
-		s1.Append(so.SaveID.ToString()); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(so.instantiated)); s1.Append(Utils.splitChar);
-		s1.Append(so.constLookupTable.ToString()); s1.Append(Utils.splitChar);
-		s1.Append(so.constLookupIndex.ToString()); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(go.activeSelf));  s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveTransform(go.transform)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRigidbody(go)); s1.Append(Utils.splitChar);
-		s1.Append(so.levelParentID.ToString()); s1.Append(Utils.splitChar);
+		s1.Append(so.saveableType); s1.Append(Utils.splitChar);					    // 0
+		s1.Append(so.SaveID.ToString()); s1.Append(Utils.splitChar);				// 1
+		s1.Append(Utils.BoolToString(so.instantiated)); s1.Append(Utils.splitChar); // 2
+		s1.Append(so.constLookupTable.ToString()); s1.Append(Utils.splitChar);      // 3
+		s1.Append(so.constLookupIndex.ToString()); s1.Append(Utils.splitChar);      // 4
+		s1.Append(Utils.BoolToString(go.activeSelf));  s1.Append(Utils.splitChar);  // 5
+		s1.Append(Utils.SaveTransform(go.transform)); s1.Append(Utils.splitChar);	// 6,7,8,9,10,11,12,13,14,15
+		s1.Append(Utils.SaveRigidbody(go)); s1.Append(Utils.splitChar);			    // 16,17,18,19
+		s1.Append(so.levelParentID.ToString()); s1.Append(Utils.splitChar);			// 20
 		switch (so.saveType) {
-			case SaveableType.Player:                 s1.Append(Const.a.SavePlayerData(go)); break;
+			case SaveableType.Player:                 s1.Append(PlayerReferenceManager.SavePlayerData(go)); break;
 			case SaveableType.Useable:                s1.Append(UseableObjectUse.Save(go)); break;
 			case SaveableType.Grenade:                s1.Append(GrenadeActivate.Save(go)); break;
 			case SaveableType.NPC:                    s1.Append(HealthManager.Save(go)); s1.Append(Utils.splitChar);
@@ -165,22 +165,28 @@ public class SaveObject : MonoBehaviour {
 			if (go.activeSelf) go.SetActive(false); 
 		}
 
+		if (entries[0] != so.saveableType) { Debug.Log("Saveable type mismatch.  Save data has type " + entries[0] + " but object is " + so.saveableType); return index + 21; }
+
 		// Set parent prior to setting localPosition, localRotation, localScale
 		// so that the relative positioning is correct.
-		so.levelParentID = Utils.GetIntFromString(entries[8]);
-		//go.transform.SetParent(LevelManager.a.GetRequestedLevelDynamicContainer(so.levelParentID).transform);
+		so.levelParentID = Utils.GetIntFromString(entries[20]);
+		Transform curLevDynContainer = LevelManager.a.GetRequestedLevelDynamicContainer(so.levelParentID).transform;
+		if (so.levelParentID >= 0 && so.levelParentID <= 13 && so.instantiated
+			  && go.transform.parent != curLevDynContainer) {
+			go.transform.SetParent(curLevDynContainer);
+		}
 
 		index = Utils.LoadTransform(go.transform,ref entries,index);
 		index = Utils.LoadRigidbody(go,ref entries,index);
-		index++; // Already loaded index 8 for levelParentID.
-		if (index != 9) {
+		index++; // Already loaded index 20 for levelParentID.
+		if (index != 21) {
 			Debug.Log("SaveObject.Load:: index was not equal to 9 prior to "
 					  + "loading SaveableType data.");
-			index = 9;
+			index = 21;
 		}
 		if (index >= entries.Length) return index;
 		switch (so.saveType) {
-			case SaveableType.Player:				  index = Const.a.LoadPlayerDataToPlayer(go,ref entries, index); break;
+			case SaveableType.Player:				  index = PlayerReferenceManager.LoadPlayerDataToPlayer(go,ref entries, index); break;
 			case SaveableType.Useable:				  index = UseableObjectUse.Load(go,ref entries,index); break;
 			case SaveableType.Grenade:				  index = GrenadeActivate.Load(go,ref entries,index); break;
 			case SaveableType.NPC:					  index = HealthManager.Load(go,ref entries,index);

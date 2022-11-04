@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class PlayerReferenceManager : MonoBehaviour {
@@ -17,6 +18,7 @@ public class PlayerReferenceManager : MonoBehaviour {
 	public GameObject playerDeathRessurectEffect;
 	public GameObject playerDeathEffect;
 	public GameObject playerRadiationTreatmentFlash;
+	public GameObject playerMFDManager;
 
 	// Internal references
 	[HideInInspector] public int playerCurrentLevel;
@@ -26,5 +28,56 @@ public class PlayerReferenceManager : MonoBehaviour {
 	void Awake() {
 		a = this;
 		a.playerCurrentLevel = LevelManager.a.currentLevel;
+	}
+
+	public static string SavePlayerData(GameObject plyr) {
+		if (plyr == null) return "!";
+
+		// Get all references to relevant components.
+		PlayerReferenceManager PRman = plyr.GetComponent<PlayerReferenceManager>();
+        StringBuilder s1 = new StringBuilder();
+
+        s1.Clear();
+		s1.Append("Hacker");//s1.Append(Const.a.playerName);
+        s1.Append(Utils.splitChar);
+		s1.Append(PlayerHealth.Save(PRman.playerCapsule));
+        s1.Append(Utils.splitChar);
+		s1.Append(PlayerEnergy.Save(PRman.playerCapsule));
+        s1.Append(Utils.splitChar);
+		s1.Append(PlayerMovement.Save(PRman.playerCapsule));
+        s1.Append(Utils.splitChar);
+		s1.Append(PlayerPatch.Save(PRman.playerCapsule));
+        s1.Append(Utils.splitChar);
+		s1.Append(MouseLookScript.Save(PRman.playerCapsuleMainCamera));
+        s1.Append(Utils.splitChar);
+		s1.Append(HealthManager.Save(PRman.playerCapsule));
+        s1.Append(Utils.splitChar);
+		s1.Append(GUIState.Save(PRman.playerCanvas));
+        s1.Append(Utils.splitChar);
+		s1.Append(Inventory.Save(PRman.playerInventory));
+        s1.Append(Utils.splitChar);
+		s1.Append(WeaponCurrent.Save(PRman.playerInventory));
+        s1.Append(Utils.splitChar);
+		s1.Append(WeaponFire.Save(PRman.playerCapsuleMainCameraGunCamera));
+        s1.Append(Utils.splitChar);
+		s1.Append(MFDManager.Save(PRman.playerMFDManager));
+		return s1.ToString();
+	}
+
+	public static int LoadPlayerDataToPlayer(GameObject currentPlayer, ref string[] entries,int index) {
+		PlayerReferenceManager PRman = currentPlayer.GetComponent<PlayerReferenceManager>();
+		Const.a.playerName = entries[index]; index++; 
+		index = PlayerHealth.Load(PRman.playerCapsule,ref entries,index);
+		index = PlayerEnergy.Load(PRman.playerCapsule,ref entries,index);
+		index = PlayerMovement.Load(PRman.playerCapsule,ref entries,index);
+		index = PlayerPatch.Load(PRman.playerCapsule,ref entries,index);
+		index = MouseLookScript.Load(PRman.playerCapsuleMainCamera,ref entries,index);
+		index = HealthManager.Load(PRman.playerCapsule,ref entries,index);
+		index = GUIState.Load(PRman.playerCanvas,ref entries,index);
+		index = Inventory.Load(PRman.playerInventory,ref entries,index);
+		index = WeaponCurrent.Load(PRman.playerInventory,ref entries,index);
+		index = WeaponFire.Load(PRman.playerCapsuleMainCameraGunCamera,ref entries,index);
+		index = MFDManager.Load(PRman.playerMFDManager,ref entries,index);
+		return index;
 	}
 }

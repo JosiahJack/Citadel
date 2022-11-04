@@ -27,11 +27,11 @@ public class TestsEditor : Editor {
 		}
 
 		if (GUILayout.Button("Save Object")) {
-			testScript.SaveObject();
+			testScript.SaveSelectedObject();
 		}
 
 		if (GUILayout.Button("Load Object")) {
-			testScript.LoadObject();
+			testScript.LoadSelectedObject();
 		}
 	}
 }

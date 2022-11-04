@@ -1386,7 +1386,7 @@ public class MFDManager : MonoBehaviour  {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		MFDManager mfd = go.GetComponent<MFDManager>();
-		if (mfd == null || index < 0 || entries == null) return index + 3;
+		if (mfd == null || index < 0 || entries == null) return index + 22;
 
 		float readFloatx, readFloaty, readFloatz;
 		mfd.lastWeaponSideRH = Utils.GetBoolFromString(entries[index]); index++;

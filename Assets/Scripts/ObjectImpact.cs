@@ -20,10 +20,13 @@ public class ObjectImpact : MonoBehaviour {
 	}
 
 	void OnCollisionEnter(Collision collision) {
+		if (collision == null) return;
+
 		if (collision.relativeVelocity.sqrMagnitude > (minVolumeSpeed * minVolumeSpeed)) {
 			if (SFXSource != null) {
 				SFXSource.pitch = (UnityEngine.Random.Range(0.8f,1.2f));
-				Utils.PlayOneShotSavable(SFXSource,ImpactSFX,(collision.relativeVelocity.magnitude/maxVolumeSpeed) * 0.3f); // Play sound when object changes velocity significantly enough that it must have hit something
+				float vol = (collision.relativeVelocity.magnitude/maxVolumeSpeed) * 0.3f;
+				Utils.PlayOneShotSavable(SFXSource,ImpactSFX,vol); // Play sound when object changes velocity significantly enough that it must have hit something
 			}
 		}
 	}

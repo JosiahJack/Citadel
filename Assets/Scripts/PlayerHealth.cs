@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PlayerHealth : MonoBehaviour {
 	// External references, required
-	public AudioSource PlayerNoise;
+	public AudioSource SFX;
 	public AudioClip PainSFXClip;
 	public AudioClip RadiationClip;
 	public AudioClip ShieldClip;
@@ -110,14 +110,14 @@ public class PlayerHealth : MonoBehaviour {
 				}
 				if (radSoundFinished < PauseScript.a.relativeTime) {
 					radSoundFinished = PauseScript.a.relativeTime + Random.Range(1f,3f);
-					Utils.PlayOneShotSavable(PlayerNoise,RadiationClip);
+					Utils.PlayOneShotSavable(SFX,RadiationClip);
 				}
 			}
 		}
 		if (lastHealth > hm.health) { // Did we lose health?
 			if (painSoundFinished < PauseScript.a.relativeTime && !(radSoundFinished < PauseScript.a.relativeTime)) {
 				painSoundFinished = PauseScript.a.relativeTime + Random.Range(0.25f,3f); // Don't spam pain sounds
-				Utils.PlayOneShotSavable(PlayerNoise,PainSFXClip);
+				Utils.PlayOneShotSavable(SFX,PainSFXClip);
 			}
 		}
 		lastHealth = hm.health;

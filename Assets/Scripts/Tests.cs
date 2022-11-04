@@ -199,7 +199,6 @@ public class Tests : MonoBehaviour {
 				if (aic.attack1Type == AttackType.ProjectileLaunched && aic.attack1ProjectileLaunchedType == PoolType.None) { UnityEngine.Debug.Log(script + " has no projectile set for attack1 but is intended to be projectile launched."); issueCount_AIController++; }
 				if (aic.attack2Type == AttackType.ProjectileLaunched && aic.attack2ProjectileLaunchedType == PoolType.None) { UnityEngine.Debug.Log(script + " has no projectile set for attack2 but is intended to be projectile launched."); issueCount_AIController++; }
 				if (aic.attack3Type == AttackType.ProjectileLaunched && aic.attack3ProjectileLaunchedType == PoolType.None) { UnityEngine.Debug.Log(script + " has no projectile set for attack3 but is intended to be projectile launched."); issueCount_AIController++; }
-				if (BoundsError(script,allGOs[i],0f,1.0f,aic.deathBurstTimer,"deathBurstTimer")) issueCount_AIController++;
 			}
 
 			script = "AIAnimationController";
@@ -705,19 +704,39 @@ public class Tests : MonoBehaviour {
 		}
 	}
 
-	public void LoadObject() {
+	public void SaveSelectedObject() {
+		string line = SaveObject.Save(gameObjectToSave);
+		StreamWriter sw = new StreamWriter(Application.dataPath + "/StreamingAssets/saving_unit_test.dat",false,Encoding.ASCII);
+		if (sw == null) { UnityEngine.Debug.Log("Save unit test output file path invalid"); return; }
 
+		using (sw) {;
+			sw.Write(line);
+			sw.Write(Environment.NewLine);
+			sw.Close();
+		}
+		UnityEngine.Debug.Log("Saved data for " + gameObjectToSave.name);
 	}
 
-	public void SaveObject() {
-		SaveObject so = gameObjectToSave.GetComponent<SaveObject>();
-		if (so == null) {
-			UnityEngine.Debug.Log("ERROR: Missing SaveObject on "
-								  + gameObjectToSave.name + "!"); 
-			return;
+	public void LoadSelectedObject() {
+		StreamReader sf = new StreamReader(Application.dataPath + "/StreamingAssets/saving_unit_test.dat");
+		if (sf == null) { UnityEngine.Debug.Log("Save unit test input file path invalid"); return; }
+
+		string readline;
+		List<string> readFileList = new List<string>();
+		using (sf) {
+			do {
+				readline = sf.ReadLine();
+				if (readline != null) {
+					readFileList.Add(readline);
+				}
+			} while (!sf.EndOfStream);
+			sf.Close();
 		}
 
-		
+		string[] entries = readFileList[0].Split('|');
+		int index = 5;
+		index = SaveObject.Load(gameObjectToSave,ref entries,5);
+		UnityEngine.Debug.Log("Loaded data for " + gameObjectToSave.name + ", contained " + index.ToString() + " entries on the line.");
 	}
 
 	private void PrintTally(string className, int issueCount, int objCount) {

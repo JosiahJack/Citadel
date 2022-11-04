@@ -152,8 +152,7 @@ public class AIAnimationController : MonoBehaviour {
 	public static string Save(GameObject go) {
 		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>();
 		if (aiac == null) {
-			Debug.Log("AIAnimationController missing on savetype of NPC!  GameObject.name: " + go.name);
-			return "0000.00000|0|0000.00000";
+			return "0000.00000|0|0000.00000"; // No warn, cyber enemies don't have one.
 		}
 
 		string line = System.String.Empty;

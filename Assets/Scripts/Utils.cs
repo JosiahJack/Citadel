@@ -365,8 +365,7 @@ public class Utils {
     public static string SaveRigidbody(GameObject go) {
 		Rigidbody rbody = go.GetComponent<Rigidbody>();
 		if (rbody == null) {
-			Debug.Log("Rigidbody null while trying to save! GameObject.name: " + go.name);
-			return DTypeWordToSaveString("fff1");
+			return DTypeWordToSaveString("fff1"); // No warn, normal scenario.
 		}
 
         StringBuilder s1 = new StringBuilder();
@@ -385,8 +384,7 @@ public class Utils {
 									 int index) {
 		Rigidbody rbody = go.GetComponent<Rigidbody>();
 		if (rbody == null) {
-			Debug.Log("Rigidbody null while trying to load! GameObject.name: " + go.name);
-			return index + 4;
+			return index + 4; // No warn, normal scenario.
 		}
 
 		// Get rigidbody velocity
@@ -428,19 +426,6 @@ public class Utils {
 		return index;
 	}
 
-	public static void PlayAudioSavable(AudioSource SFX, AudioClip fxclip) {
-		if (SFX == null) return;
-
-		GameObject sourceGO = SFX.gameObject;
-		if (!sourceGO.activeInHierarchy) return;
-		if (fxclip == null) return; // This is a common usage, don't warn. 
-		if (SFX.enabled == false) return;
-
-		SFX.clip = fxclip; // Save the currently playing clip otherwise this is
-						 // always the default that was assigned in inspector.
-		SFX.PlayOneShot(fxclip);
-	}
-
 	public static void PlayOneShotSavable(AudioSource SFX, AudioClip fxclip,
 										  float vol) {
 		if (SFX == null) return;
@@ -458,6 +443,21 @@ public class Utils {
 
 	public static void PlayOneShotSavable(AudioSource SFX, AudioClip fxclip) {
 		PlayOneShotSavable(SFX,fxclip,0);
+	}
+
+	public static void PlayOneShotSavable(AudioSource SFX, int fxclip) {
+		if (fxclip < 0) return;
+		if (fxclip >= Const.a.sounds.Length) return;
+
+		PlayOneShotSavable(SFX,Const.a.sounds[fxclip],0);
+	}
+
+	public static void PlayOneShotSavable(AudioSource SFX, int fxclip,
+										  float vol) {
+		if (fxclip < 0) return;
+		if (fxclip >= Const.a.sounds.Length) return;
+
+		PlayOneShotSavable(SFX,Const.a.sounds[fxclip],vol);
 	}
 
 	public static string SaveAudioSource(GameObject go) {

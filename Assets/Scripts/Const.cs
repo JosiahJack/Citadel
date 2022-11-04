@@ -121,6 +121,14 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public float[] hearingRangeForNPC;
 	[HideInInspector] public float[] timeForTranquilizationForNPC;
 	[HideInInspector] public bool[] hopsOnMoveForNPC;
+												      // NPC Sounds  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28
+	[HideInInspector] public int[] sfxIdleForNPC =       new int[]{ -1, -1, -1, -1, 58, -1, 59, -1, 59, 52, -1, -1, -1, -1, -1, -1,121, -1, -1, -1,121,118, -1, -1, -1, -1, -1, -1, -1};
+	[HideInInspector] public int[] sfxSightSoundForNPC = new int[]{ -1, -1,111,150, 58,150, 59,152,152, -1,150,150,151,152,150, -1,121, -1,151,150,121,119,151, -1, -1, -1, -1, -1, -1};
+	[HideInInspector] public int[] sfxAttack1ForNPC =    new int[]{ -1, -1,108, -1, -1,146, -1,146,252,247, -1, -1, -1, -1, -1,122, -1,108,146, -1, -1,118, -1,125,258,258,258,258,258};
+	[HideInInspector] public int[] sfxAttack2ForNPC =    new int[]{ -1,256, -1,148, 50, 50, 50, 50, 50,250, 50, 50,146,259,148, -1,121, -1, -1,147, -1, -1,146, -1,258,258,258,258,258};
+	[HideInInspector] public int[] sfxAttack3ForNPC =    new int[]{ -1, -1, -1, -1, -1,244,244,244,245, -1, -1,149, -1, -1, -1, -1, -1, -1, -1,244, -1, -1, -1, -1,258,258,258,258,258};
+	[HideInInspector] public int[] sfxDeathForNPC =      new int[]{ -1, 48,110,143, 48,145, 48, 51, 47, 47,142,143,144, 47,162,123,120,134,144,144,120,117,144,124, -1, -1, -1, -1, -1};
+	[HideInInspector] public float[] deathBurstTimerForNPC=new float[]{0.0f,0.0f,0.1f,0.0f,0.1f,0.1f,0.2f,0.1f,0.1f,0.1f,0.0f,0.45f,0.75f,0.1f,0.0f,0.0f,0.1f,0.224f,0.9f,0.0f,0.1f,0.1f,0.1f,0.2f,0.1f,0.1f,0.1f,0.1f,0.1f};
 
 	// System constants
 	[HideInInspector] public string[] creditsText;
@@ -1103,40 +1111,6 @@ public class Const : MonoBehaviour {
 		return take; // 7. Return the Damage.
 	}
 
-	public string SavePlayerData(GameObject plyr) {
-		if (plyr == null) return "!";
-
-		// Get all references to relevant components.
-		PlayerReferenceManager PRman = plyr.GetComponent<PlayerReferenceManager>();
-		GameObject pCap = PRman.playerCapsule;
-        StringBuilder s1 = new StringBuilder();
-        s1.Clear();
-		s1.Append(Const.a.playerName);
-        s1.Append(Utils.splitChar);
-		s1.Append(PlayerHealth.Save(PlayerHealth.a.gameObject));
-        s1.Append(Utils.splitChar);
-		s1.Append(PlayerEnergy.Save(PlayerEnergy.a.gameObject));
-        s1.Append(Utils.splitChar);
-		s1.Append(PlayerMovement.Save(PlayerMovement.a.gameObject));
-        s1.Append(Utils.splitChar);
-		s1.Append(PlayerPatch.Save(PlayerPatch.a.gameObject));
-        s1.Append(Utils.splitChar);
-		s1.Append(MouseLookScript.Save(MouseLookScript.a.gameObject));
-        s1.Append(Utils.splitChar);
-		s1.Append(HealthManager.Save(pCap));
-        s1.Append(Utils.splitChar);
-		s1.Append(GUIState.Save(GUIState.a.gameObject));
-        s1.Append(Utils.splitChar);
-		s1.Append(Inventory.Save(Inventory.a.gameObject));
-        s1.Append(Utils.splitChar);
-		s1.Append(WeaponCurrent.Save(WeaponCurrent.a.gameObject));
-        s1.Append(Utils.splitChar);
-		s1.Append(WeaponFire.Save(WeaponFire.a.gameObject));
-        s1.Append(Utils.splitChar);
-		s1.Append(MFDManager.Save(MFDManager.a.gameObject));
-		return s1.ToString();
-	}
-
 	void FindAllSaveObjectsGOs(List<GameObject> gos) {
 		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
 		for (int i=0;i<allParents.Count;i++) {
@@ -1215,24 +1189,6 @@ public class Const : MonoBehaviour {
 		if (saveFileIndex < 7) Const.a.justSavedTimeStamp = Time.time + Const.a.savedReminderTime; // using normal run time, don't ask again to save for next 7 seconds
 		saveTimer.Stop();
 		UnityEngine.Debug.Log("Saved to file in " + saveTimer.Elapsed.ToString());
-	}
-
-	public int LoadPlayerDataToPlayer(GameObject currentPlayer, ref string[] entries,int index) {
-		PlayerReferenceManager PRman = currentPlayer.GetComponent<PlayerReferenceManager>();
-		GameObject pCap = PRman.playerCapsule;
-		Const.a.playerName = entries[index]; index++; 
-		index = PlayerHealth.Load(PlayerHealth.a.gameObject,ref entries,index);
-		index = PlayerEnergy.Load(PlayerEnergy.a.gameObject,ref entries,index);
-		index = PlayerMovement.Load(PlayerMovement.a.gameObject,ref entries,index);
-		index = PlayerPatch.Load(PlayerPatch.a.gameObject,ref entries,index);
-		index = MouseLookScript.Load(MouseLookScript.a.gameObject,ref entries,index);
-		index = HealthManager.Load(pCap,ref entries,index);
-		index = GUIState.Load(GUIState.a.gameObject,ref entries,index);
-		index = Inventory.Load(Inventory.a.gameObject,ref entries,index);
-		index = WeaponCurrent.Load(WeaponCurrent.a.gameObject,ref entries,index);
-		index = WeaponFire.Load(WeaponFire.a.gameObject,ref entries,index);
-		index = MFDManager.Load(MFDManager.a.gameObject,ref entries,index);
-		return index;
 	}
 
 	public void Load(int saveFileIndex) {

@@ -178,7 +178,7 @@ public class MouseLookScript : MonoBehaviour {
 
 		// Apply the normal mouselook
 		transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
-		transform.localRotation = Quaternion.Euler(xRotation,0f,0f); // Up down component only applied to camera
+		transform.localRotation = Quaternion.Euler(xRotation,0f,0f); // Up down component only applied to camera.  Must be 0 for others or else movement will go in wrong direction!
 	}
 
 	public void EnterCyberspace(GameObject entryPoint) {
@@ -447,6 +447,8 @@ public class MouseLookScript : MonoBehaviour {
 			case ButtonType.Weapon:
 				// Take weapon out of inventory, removing weapon, remove weapon and any other strings I need to CTRL+F my way to this buggy code!
 				WeaponButton wepbut = currentButton.GetComponent<WeaponButton>();
+				int am1 = WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex];
+				int am2 = WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex];
 				WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex] = 0; // zero out the current ammo
 				WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex] = 0; // zero out the current ammo
 				Inventory.a.RemoveWeapon(wepbut.WepButtonIndex);
@@ -457,9 +459,7 @@ public class MouseLookScript : MonoBehaviour {
 				MFDManager.a.wepbutMan.WeaponCycleDown();
 				MFDManager.a.SendInfoToItemTab(WeaponCurrent.a.weaponIndexPending);
 				MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
-				PutObjectInHand(wepbut.useableItemIndex,-1,
-								WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex],
-								WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex],
+				PutObjectInHand(wepbut.useableItemIndex,-1,am1,am2,
 								Const.a.useableItemsFrobIcons[wepbut.useableItemIndex], true);
 				break;
 			case ButtonType.Grenade:
@@ -690,6 +690,8 @@ public class MouseLookScript : MonoBehaviour {
 							so.constLookupTable = 0; // Standard useableItems table.
 							so.constLookupIndex = heldObjectIndex;
 						}
+
+
 					}
 				}
 				if (tossObject.activeSelf != true) tossObject.SetActive(true);
@@ -702,10 +704,16 @@ public class MouseLookScript : MonoBehaviour {
 				Vector3 tossDir = new Vector3(MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2),MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2),0);
 				tossDir.y = Screen.height - tossDir.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
 				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
-				tossObject.GetComponent<Rigidbody>().velocity = tossDir * tossForce;
+				Rigidbody rbody = tossObject.GetComponent<Rigidbody>();
+				if (rbody != null) {
+					rbody.isKinematic = false;
+					rbody.useGravity = true;
+					rbody.velocity = tossDir * tossForce;
+				}
 				tossObject.GetComponent<UseableObjectUse>().customIndex = heldObjectCustomIndex;
 				tossObject.GetComponent<UseableObjectUse>().ammo = heldObjectAmmo;
 				tossObject.GetComponent<UseableObjectUse>().ammo2 = heldObjectAmmo2;
+
 			} else {
 				// Throw an active grenade
 				grenadeActive = false;
@@ -726,7 +734,12 @@ public class MouseLookScript : MonoBehaviour {
 				Vector3 tossDir = new Vector3(MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2),MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2),0);
 				tossDir.y = Screen.height - tossDir.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
 				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
-				tossObject.GetComponent<Rigidbody>().velocity = tossDir * tossForce;
+				Rigidbody rbody = tossObject.GetComponent<Rigidbody>();
+				if (rbody != null) {
+					rbody.isKinematic = false;
+					rbody.useGravity = true;
+					rbody.velocity = tossDir * tossForce;
+				}
 				GrenadeActivate ga = tossObject.GetComponent<GrenadeActivate>();
 				if (ga != null) ga.Activate(heldObjectIndex); // Time to boom!
 				MouseCursor.a.liveGrenade = false;
@@ -932,6 +945,8 @@ public class MouseLookScript : MonoBehaviour {
 		ml.cyberspaceRecallPoint = new Vector3(readFloatx,readFloaty,readFloatz);
 		ml.cyberspaceReturnLevel = Utils.GetIntFromString(entries[index]); index++;
 		ml.currentSearchItem = null; // Prevent picking up first item immediately. Not currently possible to save references.
+		ml.transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, ml.yRotation, 0f); // left right component applied to capsule
+		ml.transform.localRotation = Quaternion.Euler(ml.xRotation,0f,0f); // Up down component only applied to camera
 		return index;
 	}
 }

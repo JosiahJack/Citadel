@@ -75,10 +75,10 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject consoleTitle;
 	public Text consoleentryText;
 	public Transform leanTransform;
-	public AudioSource PlayerNoise;
-	public AudioClip SFXJump;
-	public AudioClip SFXJumpLand;
-	public AudioClip SFXLadder;
+	public AudioSource SFX;
+	[HideInInspector] public int SFXJump = 135;
+	[HideInInspector] public int SFXJumpLand = 136;
+	[HideInInspector] public int SFXLadder = 137;
 	public GameObject fpsCounter;
 	public GameObject locationIndicator;
 	public Text locationText;
@@ -112,6 +112,7 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector] public bool inCyberSpace = false; // save
 	[HideInInspector] public bool inFullMap;
 	[HideInInspector] public float walkAcceleration = 2000f;
+	[HideInInspector] public int SFXIndex = -1; // save
 	private float walkDeacceleration = 0.1f; // was 0.30f
 	private float walkDeaccelerationBooster = 1f; // was 2f, adjusted player physics material to reduce friction for moving up stairs
 	private float deceleration;
@@ -532,11 +533,11 @@ public class PlayerMovement : MonoBehaviour {
 			// Play jump sound
 			if (jumpSFXFinished < PauseScript.a.relativeTime) {
 				jumpSFXFinished = PauseScript.a.relativeTime + jumpSFXIntervalTime;
-				PlayerNoise.pitch = 1f;
+				SFX.pitch = 1f;
 				if (fatigue > 80)
-					Utils.PlayOneShotSavable(PlayerNoise,SFXJump,0.5f); // Quietly, we are tired.
+					Utils.PlayOneShotSavable(SFX,SFXJump,0.5f); // Quietly, we are tired.
 				else
-					Utils.PlayOneShotSavable(PlayerNoise,SFXJump);
+					Utils.PlayOneShotSavable(SFX,SFXJump);
 			}
 			justJumped = false;
 			fatigue += jumpFatigue;
@@ -554,10 +555,8 @@ public class PlayerMovement : MonoBehaviour {
 		} else {
 			// Climbing off the ground
 			if (ladderSFXFinished < PauseScript.a.relativeTime && rbody.velocity.y > ladderSpeed * 0.5f) {
-				if (PlayerNoise != null) {
-					PlayerNoise.pitch = (UnityEngine.Random.Range(0.8f,1.2f));
-					Utils.PlayOneShotSavable(PlayerNoise,SFXLadder,0.2f);
-				}
+				SFX.pitch = (UnityEngine.Random.Range(0.8f,1.2f));
+				Utils.PlayOneShotSavable(SFX,SFXLadder,0.2f);
 				ladderSFXFinished = PauseScript.a.relativeTime + ladderSFXIntervalTime;
 			}
 			rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime * 0.2f, ladderSpeed * relForward * walkAcceleration * Time.deltaTime, 0);
@@ -1208,7 +1207,7 @@ public class PlayerMovement : MonoBehaviour {
 			Debug.Log("PlayerMovement missing on savetype of Player!  GameObject.name: " + go.name);
 			s1.Append("fbfibbb");
 			for (j=0;j<(4096 * 13);j++) s1.Append("b");
-			s1.Append("bbfffffbffbbifftttbttt");
+			s1.Append("bbfffffbffbbifftttbtttu");
 			return Utils.DTypeWordToSaveString(s1.ToString());
 		}
 
@@ -1267,21 +1266,26 @@ public class PlayerMovement : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(pm.leanTarget)); // float
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(pm.leanShift)); // float
+		s1.Append(Utils.FloatToString(pm.leanShift));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpSFXFinished)); // float
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpSFXFinished));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpLandSoundFinished)); // float
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpLandSoundFinished));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpJetEnergySuckTickFinished)); // float
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpJetEnergySuckTickFinished));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(pm.fatigueWarned)); // bool
+		s1.Append(Utils.BoolToString(pm.fatigueWarned));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.ressurectingFinished)); // float
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.ressurectingFinished));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.doubleJumpFinished)); // float
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.doubleJumpFinished));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.turboFinished)); // float
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.turboFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(pm.SFX.time)); // float
+		s1.Append(Utils.splitChar);
+		if (!pm.SFX.isPlaying) pm.SFXIndex = -1; // Safely can set to null, not playing a sound.
+		s1.Append(Utils.UintToString(pm.SFXIndex));
 		return s1.ToString();
 	}
 
@@ -1335,6 +1339,13 @@ public class PlayerMovement : MonoBehaviour {
 		pm.turboFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.ressurectingFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.doubleJumpFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		float sfxTime = Utils.GetFloatFromString(entries[index]); index++;
+		pm.SFXIndex = Utils.GetIntFromString(entries[index]); index++;
+		if (pm.SFXIndex >= 0) {
+			pm.SFX.time = sfxTime;
+			pm.SFX.clip = Const.a.sounds[pm.SFXIndex];
+			Utils.PlayOneShotSavable(pm.SFX,Const.a.sounds[pm.SFXIndex]);
+		}
 		return index;
 	}
 }

@@ -42,9 +42,7 @@ public class BerserkEffect : UnityStandardAssets.ImageEffects.ImageEffectBase {
 	public static string Save(GameObject go) {
 		BerserkEffect bzk = go.GetComponent<BerserkEffect>();
 		if (bzk == null) {
-			Debug.Log("BerserkEffect missing on savetype of Camera! "
-					  + "GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("bf");
+			return Utils.DTypeWordToSaveString("bf"); // No warn, only placed on GunCamera to avoid duplicate application.
 
 		}
 

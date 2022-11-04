@@ -355,7 +355,7 @@ public class HealthManager : MonoBehaviour {
 						if (absorb > 1f) absorb = 1f; // cap it at 100%....shouldn't really ever be here, nothing is 92% + 8%
 						take *= (1f-absorb); // shield doing it's thing
 						PlayerHealth.a.shieldEffect.SetActive(true); // Activate shield screen effect to indicate damage was absorbed, effect intensity determined by absorb amount
-						Utils.PlayOneShotSavable(PlayerHealth.a.PlayerNoise,PlayerHealth.a.ShieldClip); // Play shield absorb sound
+						Utils.PlayOneShotSavable(PlayerHealth.a.SFX,PlayerHealth.a.ShieldClip); // Play shield absorb sound
 						int abs = (int)(absorb * 100f); //  for int display of absorbption percent
 						Const.sprint(Const.a.stringTable[208] + abs.ToString() + Const.a.stringTable[209],dd.other);  // Shield absorbs x% damage
 						if (absorb > 0) {
@@ -366,7 +366,7 @@ public class HealthManager : MonoBehaviour {
 					}
 				}
 				if (take > 0 && ((absorb <0.4f) || Random.Range(0,1f) < 0.5f)) {
-					Utils.PlayOneShotSavable(PlayerHealth.a.PlayerNoise,PlayerHealth.a.PainSFXClip); // Play player pain noise
+					Utils.PlayOneShotSavable(PlayerHealth.a.SFX,PlayerHealth.a.PainSFXClip); // Play player pain noise
 					int intensityOfPainFlash = 0; // 0 = light
 					if (take > 15f) {
 						intensityOfPainFlash = 2; // 2 = heavy

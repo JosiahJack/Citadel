@@ -68,6 +68,7 @@ public class MainMenuHandler : MonoBehaviour {
 		a = this;
 		StartSFX = startFXObject.GetComponent<AudioSource>();
 		BackGroundMusic = GetComponent<AudioSource>();
+		BackGroundMusic.ignoreListenerPause = true; // Play when paused.
 		ResetPages();
 		dataFound = false;
 		inCutscene = false;

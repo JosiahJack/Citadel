@@ -13,12 +13,6 @@ public class AIController : MonoBehaviour {
 
 	// External manually assigned references, but ok if not assigned
     /*[DTValidator.Optional] */public GameObject searchColliderGO;
-	/*[DTValidator.Optional] */public AudioClip SFXIdle;
-	/*[DTValidator.Optional] */public AudioClip SFXSightSound;
-	/*[DTValidator.Optional] */public AudioClip SFXAttack1;
-	/*[DTValidator.Optional] */public AudioClip SFXAttack2;
-	/*[DTValidator.Optional] */public AudioClip SFXAttack3;
-	/*[DTValidator.Optional] */public AudioClip SFXDeathClip;
 	/*[DTValidator.Optional] */public LightningBoltScript laserLightning;
 	/*[DTValidator.Optional] */public Transform[] walkWaypoints; // point(s) for NPC to walk to when roaming or patrolling
 	/*[DTValidator.Optional] */public GameObject[] meleeDamageColliders; // Used by avian mutant lunge
@@ -31,7 +25,6 @@ public class AIController : MonoBehaviour {
 	/*[DTValidator.Optional] */public SkinnedMeshRenderer actualSMR;
 	/*[DTValidator.Optional] */public GameObject deathBurst;
 	/*[DTValidator.Optional] */public GameObject sightPoint;
-	/*[DTValidator.Optional] */public Animator hopAnimator;
 	/*[DTValidator.Optional] */public GameObject sleepingCables;
 	/*[DTValidator.Optional] */public RectTransform npcAutomapOverlay;
 	/*[DTValidator.Optional] */public Image npcAutomapOverlayImage;
@@ -46,7 +39,6 @@ public class AIController : MonoBehaviour {
 	public bool walkPathOnStart = false;
     public bool dontLoopWaypoints = false;
 	public bool visitWaypointsRandomly = false;
-	public float deathBurstTimer = 0.1f;
 	public bool asleep = false; // check if enemy starts out asleep, e.g. sleeping sec-2 bots on level 8 in the maintenance chargers // save
 	public bool wandering; // save
 	public bool actAsTurret = false;
@@ -76,6 +68,7 @@ public class AIController : MonoBehaviour {
 	private float attack1SoundTime;
 	private float attack2SoundTime;
 	private float attack3SoundTime;
+	[HideInInspector] public int SFXIndex = -1; // save
 	[HideInInspector] public float timeTillEnemyChangeFinished; // save
 	[HideInInspector] public float timeTillDeadFinished; // save
 	[HideInInspector] public float timeTillPainFinished; // save
@@ -120,6 +113,7 @@ public class AIController : MonoBehaviour {
 	private float stopDistance = 1.28f;
 	private Vector3 faceVec;
 	private Quaternion lookRot;
+	private Animator hopAnimator;
 
 	public void Tranquilize() { tranquilizeFinished = PauseScript.a.relativeTime + Const.a.timeForTranquilizationForNPC[index]; }
 
@@ -151,6 +145,7 @@ public class AIController : MonoBehaviour {
 		sphereCollider = GetComponent<SphereCollider>();
 		meshCollider = GetComponent<MeshCollider>();
 		capsuleCollider = GetComponent<CapsuleCollider>();
+		if (visibleMeshEntity != null) hopAnimator = visibleMeshEntity.GetComponent<Animator>();
         if (searchColliderGO != null) searchColliderGO.SetActive(false);
 		if (sightPoint == null) sightPoint = gameObject;
 		DeactivateMeleeColliders();
@@ -193,7 +188,8 @@ public class AIController : MonoBehaviour {
         tempVec = new Vector3(0f, 0f, 0f);
         SFX = GetComponent<AudioSource>();
 		if (SFX == null) Debug.Log("WARNING: No audio source for npc at: " + transform.position.ToString());
-		if (SFX != null) SFX.playOnAwake = false;
+		else SFX.playOnAwake = false;
+
 		if (walkWaypoints.Length > 0 && walkWaypoints[currentWaypoint] != null && walkPathOnStart && !asleep) {
             currentDestination = walkWaypoints[currentWaypoint].transform.position;
             currentState = AIState.Walk; // If waypoints are set, start walking them from the get go
@@ -454,9 +450,12 @@ public class AIController : MonoBehaviour {
 	void Idle() {
 		if (enemy != null) { currentState = AIState.Run; return; }
 
-		if (idleTime < PauseScript.a.relativeTime && SFXIdle != null) {
+		if (idleTime < PauseScript.a.relativeTime) {
 			float rand = UnityEngine.Random.Range(0,1f); // for calculating 50% chance of idle
-			if (rand < 0.5f) Utils.PlayOneShotSavable(SFX,SFXIdle);
+			if (rand < 0.5f) {
+				SFXIndex = Const.a.sfxIdleForNPC[index];
+				Utils.PlayOneShotSavable(SFX,SFXIndex);
+			}
 			idleTime = PauseScript.a.relativeTime + Random.Range(Const.a.timeIdleSFXMinForNPC[index],Const.a.timeIdleSFXMaxForNPC[index]);
 		}
 		if (asleep) rbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
@@ -582,8 +581,12 @@ public class AIController : MonoBehaviour {
 				if (WithinAngleToTarget()) {
 					if (Const.a.hopsOnMoveForNPC[index]) {
 						// Move it move it.
-						AnimatorStateInfo asi = hopAnimator.GetCurrentAnimatorStateInfo(0);
-						float playbackTime = asi.normalizedTime;
+						float playbackTime = 0.0f;
+						if (hopAnimator != null) {
+							AnimatorStateInfo asi = hopAnimator.GetCurrentAnimatorStateInfo(0);
+							playbackTime = asi.normalizedTime;
+						}
+
 						if (playbackTime > 0.1395f) {
 							if (!hopDone) {
 								hopDone = true;
@@ -942,7 +945,8 @@ public class AIController : MonoBehaviour {
 			if (!shotFired) {
 				shotFired = true;
 				if (attack1SoundTime < PauseScript.a.relativeTime) {
-					Utils.PlayOneShotSavable(SFX,SFXAttack1);
+					SFXIndex = Const.a.sfxAttack1ForNPC[index];
+					Utils.PlayOneShotSavable(SFX,SFXIndex);
 					attack1SoundTime = PauseScript.a.relativeTime + Const.a.timeBetweenAttack1ForNPC[index];
 				}
 				switch (attack1Type) {
@@ -962,10 +966,12 @@ public class AIController : MonoBehaviour {
         if (gracePeriodFinished < PauseScript.a.relativeTime) {
             if (!shotFired) {
                 shotFired = true; 
-                if (attack2SoundTime < PauseScript.a.relativeTime && SFXAttack2 != null) {
-					Utils.PlayOneShotSavable(SFX,SFXAttack2);
+                if (attack2SoundTime < PauseScript.a.relativeTime) {
+					SFXIndex = Const.a.sfxAttack2ForNPC[index];
+					Utils.PlayOneShotSavable(SFX,SFXIndex);
                     attack2SoundTime = PauseScript.a.relativeTime + Const.a.timeBetweenAttack2ForNPC[index];
                 }
+
 				switch (attack2Type) {
 					case AttackType.Melee:				ProjectileRaycast(2);  break;
 					case AttackType.Projectile:			ProjectileRaycast(2);  break;
@@ -985,10 +991,12 @@ public class AIController : MonoBehaviour {
         if (gracePeriodFinished < PauseScript.a.relativeTime) {
             if (!shotFired) {
                 shotFired = true;
-				if (attack3SoundTime < PauseScript.a.relativeTime && SFXAttack3 != null) {
-					Utils.PlayOneShotSavable(SFX,SFXAttack3);
+				if (attack3SoundTime < PauseScript.a.relativeTime) {
+					SFXIndex = Const.a.sfxAttack3ForNPC[index];
+					Utils.PlayOneShotSavable(SFX,SFXIndex);
 					attack3SoundTime = PauseScript.a.relativeTime + Const.a.timeBetweenAttack3ForNPC[index];
 				}
+
 				switch (attack1Type) {
 					case AttackType.Melee:				ProjectileRaycast(3); break;
 					case AttackType.Projectile:			ProjectileRaycast(3); break;
@@ -1012,8 +1020,8 @@ public class AIController : MonoBehaviour {
 			enemy = null; // reset for loading from saves
 			if (sleepingCables != null) sleepingCables.SetActive(false);
 			if (npcAutomapOverlay != null) npcAutomapOverlay.gameObject.SetActive(false);
-			if (deathBurstTimer > 0) {
-				deathBurstFinished = PauseScript.a.relativeTime + deathBurstTimer;
+			if (Const.a.deathBurstTimerForNPC[index] > 0) {
+				deathBurstFinished = PauseScript.a.relativeTime + Const.a.deathBurstTimerForNPC[index];
 			} else {
 				if (!deathBurstDone) {
 					if (deathBurst != null) deathBurst.SetActive(true); // activate any death effects
@@ -1025,7 +1033,11 @@ public class AIController : MonoBehaviour {
                 if (meleeDamageColliders[i] != null) meleeDamageColliders[i].SetActive(false);
             }
 
-			if (!healthManager.actAsCorpseOnly) Utils.PlayOneShotSavable(SFX,SFXDeathClip);
+			if (!healthManager.actAsCorpseOnly) {
+				SFXIndex = Const.a.sfxDeathForNPC[index];
+				Utils.PlayOneShotSavable(SFX,SFXIndex);
+			}
+
 			if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly && !healthManager.gibOnDeath) {
 				rbody.useGravity = true; // for avian mutant and zero-g mutant
 			} else {
@@ -1183,7 +1195,10 @@ public class AIController : MonoBehaviour {
 	void PlaySightSound() {
 		if (firstSighting && healthManager.health > 0) {
 			firstSighting = false;
-			if (!healthManager.actAsCorpseOnly) Utils.PlayOneShotSavable(SFX,SFXSightSound);
+			if (!healthManager.actAsCorpseOnly) {
+				SFXIndex = Const.a.sfxSightSoundForNPC[index];
+				Utils.PlayOneShotSavable(SFX,SFXIndex);	
+			}
 		}
 	}
 	
@@ -1345,7 +1360,11 @@ public class AIController : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(aic.wanderFinished));
 		s1.Append(Utils.splitChar);
-		s1.Append(HealthManager.Save(aic.healthManager.gameObject));
+		s1.Append(Utils.UintToString(aic.SFXIndex));
+		s1.Append(Utils.splitChar);
+		if (aic.sleepingCables != null) s1.Append(Utils.BoolToString(aic.sleepingCables.activeSelf));
+		else s1.Append(Utils.BoolToString(false));
+
 		return s1.ToString();
 	}
 
@@ -1359,6 +1378,7 @@ public class AIController : MonoBehaviour {
 		aic.currentState = Utils.GetAIStateFromInt(state);
 		int enemIDRead = Utils.GetIntFromString(entries[index]); index++;
 		if (enemIDRead >= 0) aic.enemy = Const.a.player1Capsule;
+		else aic.enemy = null;
 		aic.gracePeriodFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before applying pain damage on attack2
 		aic.meleeDamageFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before applying pain damage on attack2
 		aic.inSight = Utils.GetBoolFromString(entries[index]); index++; // bool
@@ -1417,8 +1437,10 @@ public class AIController : MonoBehaviour {
 		aic.hopDone = Utils.GetBoolFromString(entries[index]); index++; // bool
 		aic.wandering = Utils.GetBoolFromString(entries[index]); index++; // bool
 		aic.wanderFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aic.SFXIndex = Utils.GetIntFromString(entries[index]); index++;
 		if (aic.healthManager != null) {
 			if (aic.healthManager.health > 0) {
+				if (aic.visibleMeshEntity != null) aic.visibleMeshEntity.SetActive(true);
 				if (aic.boxCollider != null) aic.boxCollider.enabled = true;
 				if (aic.sphereCollider != null) aic.sphereCollider.enabled = true;
 				if (aic.meshCollider != null) aic.meshCollider.enabled = true;
@@ -1429,6 +1451,9 @@ public class AIController : MonoBehaviour {
 				}
 			}
 		}
+		bool scablesOn = Utils.GetBoolFromString(entries[index]); index++;
+		if (aic.sleepingCables != null) aic.sleepingCables.SetActive(scablesOn);
+
 		return index;
 	}
 }

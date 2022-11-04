@@ -574,7 +574,6 @@ public class WeaponCurrent : MonoBehaviour {
 		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.FloatToString(wc.weaponEnergySetting[j]); } // float
 		for (j=0;j<7;j++) { line += Utils.splitChar + wc.currentMagazineAmount[j].ToString(); } // int
 		for (j=0;j<7;j++) { line += Utils.splitChar + wc.currentMagazineAmount2[j].ToString(); } // int
-		line += Utils.splitChar + Utils.BoolToString(wc.justChangedWeap); // bool
 		line += Utils.splitChar + wc.lastIndex.ToString(); // int
 		line += Utils.splitChar + Utils.BoolToString(wc.bottomless); // bool
 		line += Utils.splitChar + Utils.BoolToString(wc.redbull); // bool
@@ -595,7 +594,6 @@ public class WeaponCurrent : MonoBehaviour {
 		for (j=0;j<7;j++) { wc.weaponEnergySetting[j] = Utils.GetFloatFromString(entries[index]); index++; }
 		for (j=0;j<7;j++) { wc.currentMagazineAmount[j] = Utils.GetIntFromString(entries[index] ); index++; }
 		for (j=0;j<7;j++) { wc.currentMagazineAmount2[j] = Utils.GetIntFromString(entries[index] ); index++; }
-		wc.justChangedWeap = Utils.GetBoolFromString(entries[index]); index++;
 		wc.SetAllViewModelsDeactive();
 		wc.lastIndex = Utils.GetIntFromString(entries[index] ); index++;
 		wc.bottomless = Utils.GetBoolFromString(entries[index]); index++;
@@ -604,6 +602,7 @@ public class WeaponCurrent : MonoBehaviour {
 		wc.reloadLerpValue = Utils.GetFloatFromString(entries[index]); index++; // %
 		wc.lerpStartTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		wc.targetY = Utils.GetFloatFromString(entries[index]); index++;
+		wc.justChangedWeap = true;
 		return index;
 	}
 }

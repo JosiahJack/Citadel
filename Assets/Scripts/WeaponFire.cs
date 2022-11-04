@@ -1152,7 +1152,7 @@ public class WeaponFire : MonoBehaviour {
 		}
 
 		string line = System.String.Empty;
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.waitTilNextFire); // float
+		line = Utils.SaveRelativeTimeDifferential(wf.waitTilNextFire); // float
 		line += Utils.splitChar + Utils.BoolToString(wf.overloadEnabled); // bool
 		line += Utils.splitChar + Utils.FloatToString(wf.sparqSetting); // float
 		line += Utils.splitChar + Utils.FloatToString(wf.ionSetting); // float

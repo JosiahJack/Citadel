@@ -33,8 +33,8 @@ public class GUIState : MonoBehaviour {
 		}
 
 		string line = System.String.Empty;
-		line = Utils.UintToString(Utils.ButtonTypeToInt(GUIState.a.overButtonType)); // int
-		line += Utils.splitChar + Utils.BoolToString(GUIState.a.overButton); // bool
+		line = Utils.UintToString(Utils.ButtonTypeToInt(guis.overButtonType)); // int
+		line += Utils.splitChar + Utils.BoolToString(guis.overButton); // bool
 		return line;
 	}
 
