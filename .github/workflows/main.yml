@@ -25,6 +25,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Unzip blender zip
+        run: unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip
+        
       - name: Setup symlink to blender
         run: sudo ln -s ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender /usr/bin/blender
 
