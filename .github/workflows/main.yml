@@ -1,16 +1,10 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
   # Manual runs only.
   workflow_dispatch:
 
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
     name: Citadel Build for ${{ matrix.targetPlatform }}
     runs-on: ubuntu-latest
@@ -24,6 +18,12 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      
+      - name: Setup symlink to blender
+        run: ln -s ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender /usr/bin/blender
+      
+      - name: Check blender presence
+        run: which blender
 
       # Cache
       - uses: actions/cache@v2
