@@ -27,9 +27,12 @@ jobs:
 
       - name: Unzip blender zip
         run: unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip
-        
+
       - name: Setup symlink to blender
         run: sudo ln -s ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender /usr/bin/blender
+
+      - name: Check which presence
+        run: which git
 
       - name: Check blender presence
         run: which blender

@@ -756,7 +756,7 @@ public class PlayerMovement : MonoBehaviour {
 			if (bodyState == BodyState.Prone || bodyState == BodyState.ProningDown) {
 				if (CantStand()) { Const.sprint(Const.a.stringTable[187]); return; } // Can't stand here
 					
-				bodyState = BodyState.StandingUp;
+				bodyState = BodyState.ProningUp;
 			}
 		}
 	}
