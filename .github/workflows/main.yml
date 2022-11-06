@@ -7,6 +7,7 @@ on:
   # Manual runs only.
   workflow_dispatch:
 
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -46,5 +47,5 @@ jobs:
       # Output
       - uses: actions/upload-artifact@v2
         with:
-          name: Build-${{ matrix.targetPlatform }}
-          path: build/${{ matrix.targetPlatform }}
+          name: Citadel_DevBuild_${{ matrix.targetPlatform }}
+          path: build/Citadel_DevBuild_${{ matrix.targetPlatform }}

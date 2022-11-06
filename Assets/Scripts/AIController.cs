@@ -761,6 +761,10 @@ public class AIController : MonoBehaviour {
 	// attackNum of 1 = Attack1, 2 = Attack2, 3 = Attack3
 	void MuzzleBurst(int attackNum) {
 		if (attackNum < 1 || attackNum > 3) attackNum = 1;
+		if (index == 18) {
+			if (muzzleBurst != null) muzzleBurst.SetActive(true);
+		}
+
 		switch (attackNum) {
 			case 2:
 				if (muzzleBurst != null) muzzleBurst.SetActive(true);

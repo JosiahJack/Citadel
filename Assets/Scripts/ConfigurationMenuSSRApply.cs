@@ -11,11 +11,13 @@ public class ConfigurationMenuSSRApply : MonoBehaviour {
 		if (picker == null) Debug.Log("BUG: ConfigurationMenuAAApply missing component for aaPicker.");
 	}
 
+	void OnEnable() {
+		if (picker != null) picker.value = Const.a.GraphicsSSRMode;
+	}
+
 	public void OnDropdownSelect () {
-		if (picker != null)
-			Const.a.GraphicsSSRMode = picker.value;
-		else
-			Const.a.GraphicsSSRMode = 0; // Default to off
+		if (picker != null) Const.a.GraphicsSSRMode = picker.value;
+		else Const.a.GraphicsSSRMode = 0; // Default to off
 
 		Config.WriteConfig();
 		Config.SetSSR();

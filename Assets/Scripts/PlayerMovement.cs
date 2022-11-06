@@ -495,7 +495,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 		// Perform Jump
-		if (jumpTime > 0) { // Why was this a `while` instead of an `if`??
+		while (jumpTime > 0) { // Why ~was~ is this a `while` instead of an `if`??  Because otherwise it don't work, duh!
 			jumpTime -= Time.smoothDeltaTime;
 			if (fatigue > 80 && !(Inventory.a.hardwareIsActive[10])) {
 				rbody.AddForce (new Vector3 (0, jumpVelocityFatigued * rbody.mass, 0), ForceMode.Force);  // huhnh!

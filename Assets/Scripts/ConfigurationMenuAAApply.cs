@@ -11,6 +11,10 @@ public class ConfigurationMenuAAApply : MonoBehaviour {
 		if (aaPicker == null) Debug.Log("BUG: ConfigurationMenuAAApply missing component for aaPicker.");
 	}
 
+	void OnEnable() {
+		if (aaPicker != null) aaPicker.value = Const.a.GraphicsAAMode;
+	}
+
 	public void OnDropdownSelect () {
 		if (aaPicker != null)
 			Const.a.GraphicsAAMode = aaPicker.value;

@@ -215,7 +215,7 @@ public class PauseScript : MonoBehaviour {
 
 	public void TakeScreenshot() {
 		string sname = System.DateTime.UtcNow.ToString("ddMMMyyyy_HH_mm_ss") + "_v0.91.png";
-		string spath = Application.dataPath + "/Screenshots/" + sname;
+		string spath = Application.dataPath + "/StreamingAssets/Screenshots/" + sname;
 		ScreenCapture.CaptureScreenshot(spath);
 		Const.sprint("Wrote screenshot " + sname);
 	}
