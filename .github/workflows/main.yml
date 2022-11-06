@@ -22,25 +22,28 @@ jobs:
           - StandaloneWindows64 # Build a Windows 64-bit standalone.
           - StandaloneLinux64 # Build a Linux 64-bit standalone.
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Unzip blender zip
-        run: unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip
+      - name: Unzip blender and add to path
+        run: |
+          unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip
+          cd ${GITHUB_WORKSPACE}
+          cd ../
+          mv -n ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender ../../../blender
+          cd ../../../
+          echo $PWD >> $GITHUB_PATH
+          cd ${GITHUB_WORKSPACE}
 
-      - name: Add blender to path
-        run: echo "${GITHUB_WORKSPACE}/BuildTools/blender2.76b/" >> $GITHUB_PATH
-
-      # Cache
-      - uses: actions/cache@v2
+      - name: Mark Library folder to be preserved
+        uses: actions/cache@v2
         with:
           path: Library
           key: Library-${{ matrix.targetPlatform }}
           restore-keys: |
             Library-
 
-      # Build
-      - name: Build project
+      - name: Build game
         uses: game-ci/unity-builder@v2
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -51,7 +54,8 @@ jobs:
           versioning: Semantic
 
       # Output
-      - uses: actions/upload-artifact@v2
+      - name: Upload built files
+        uses: actions/upload-artifact@v2
         with:
           name: Citadel_DevBuild_${{ matrix.targetPlatform }}
           path: build/Citadel_DevBuild_${{ matrix.targetPlatform }}
