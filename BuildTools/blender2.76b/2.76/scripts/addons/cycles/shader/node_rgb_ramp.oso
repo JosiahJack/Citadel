@@ -1,0 +1,99 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.11
+shader node_rgb_ramp
+param	color[256]	ramp_color	0 0 0 		 %read{15,26} %write{2147483647,-1}
+param	float[256]	ramp_alpha	0 		 %read{16,32} %write{2147483647,-1}
+param	int	ramp_interpolate	1 		 %read{17,17} %write{2147483647,-1}
+param	float	Fac	0 		 %read{1,1} %write{2147483647,-1}
+oparam	color	Color	0 0 0 		 %read{24,24} %write{15,28}
+oparam	float	Alpha	1 		 %read{30,30} %write{16,34}
+local	float	f	 %read{6,14} %write{5,5}
+local	int	i	 %read{7,31} %write{6,12}
+local	float	t	 %read{19,33} %write{14,14}
+temp	float	$tmp1	 %read{5,5} %write{2,2}
+const	float	$const1	0		 %read{2,19} %write{2147483647,-1}
+const	float	$const2	1		 %read{1,29} %write{2147483647,-1}
+const	string	$const3	"clamp"		 %read{0,0} %write{2147483647,-1}
+temp	float	$tmp2	 %read{2,2} %write{1,1}
+const	int	$const4	256		 %read{3,12} %write{2147483647,-1}
+const	int	$const5	1		 %read{3,31} %write{2147483647,-1}
+temp	int	$tmp3	 %read{4,4} %write{3,3}
+temp	float	$tmp4	 %read{5,5} %write{4,4}
+const	int	$const6	0		 %read{7,20} %write{2147483647,-1}
+temp	int	$tmp5	 %read{8,8} %write{7,7}
+temp	int	$tmp6	 %read{11,11} %write{10,10}
+temp	float	$tmp7	 %read{14,14} %write{13,13}
+temp	int	$tmp8	 %read{18,22} %write{17,21}
+temp	int	$tmp9	 %read{20,20} %write{19,19}
+temp	int	$tmp10	 %read{21,21} %write{20,20}
+temp	float	$tmp11	 %read{24,24} %write{23,23}
+temp	color	$tmp12	 %read{28,28} %write{24,24}
+temp	int	$tmp13	 %read{26,26} %write{25,25}
+temp	color	$tmp14	 %read{27,27} %write{26,26}
+temp	color	$tmp15	 %read{28,28} %write{27,27}
+temp	float	$tmp16	 %read{30,30} %write{29,29}
+temp	float	$tmp17	 %read{34,34} %write{30,30}
+temp	int	$tmp18	 %read{32,32} %write{31,31}
+temp	float	$tmp19	 %read{33,33} %write{32,32}
+temp	float	$tmp20	 %read{34,34} %write{33,33}
+code ___main___
+# intern/cycles/kernel/shaders/node_rgb_ramp.osl:29
+# 	float f = clamp(Fac, 0.0, 1.0) * (RAMP_TABLE_SIZE - 1);
+	functioncall	$const3 3 	%filename{"intern/cycles/kernel/shaders/node_rgb_ramp.osl"} %line{29} %argrw{"r"}
+# intern/cycles/kernel/shaders/stdosl.h:144
+# PERCOMP1 (abs)
+	min		$tmp2 Fac $const2 	%filename{"intern/cycles/kernel/shaders/stdosl.h"} %line{144} %argrw{"wrr"}
+	max		$tmp1 $tmp2 $const1 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_ramp.osl:29
+# 	float f = clamp(Fac, 0.0, 1.0) * (RAMP_TABLE_SIZE - 1);
+	sub		$tmp3 $const4 $const5 	%filename{"intern/cycles/kernel/shaders/node_rgb_ramp.osl"} %line{29} %argrw{"wrr"}
+	assign		$tmp4 $tmp3 	%argrw{"wr"}
+	mul		f $tmp1 $tmp4 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_ramp.osl:32
+# 	int i = (int)f;
+	assign		i f 	%line{32} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_rgb_ramp.osl:33
+# 	if (i < 0) i = 0;
+	lt		$tmp5 i $const6 	%line{33} %argrw{"wrr"}
+	if		$tmp5 10 10 	%argrw{"r"}
+	assign		i $const6 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_rgb_ramp.osl:34
+# 	if (i >= RAMP_TABLE_SIZE) i = RAMP_TABLE_SIZE - 1;
+	ge		$tmp6 i $const4 	%line{34} %argrw{"wrr"}
+	if		$tmp6 13 13 	%argrw{"r"}
+	sub		i $const4 $const5 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_ramp.osl:35
+# 	float t = f - (float)i;
+	assign		$tmp7 i 	%line{35} %argrw{"wr"}
+	sub		t f $tmp7 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_ramp.osl:37
+# 	Color = ramp_color[i];
+	aref		Color ramp_color i 	%line{37} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_ramp.osl:38
+# 	Alpha = ramp_alpha[i];
+	aref		Alpha ramp_alpha i 	%line{38} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_ramp.osl:40
+# 	if (ramp_interpolate && t > 0.0) {
+	neq		$tmp8 ramp_interpolate $const6 	%line{40} %argrw{"wrr"}
+	if		$tmp8 22 22 	%argrw{"r"}
+	gt		$tmp9 t $const1 	%argrw{"wrr"}
+	neq		$tmp10 $tmp9 $const6 	%argrw{"wrr"}
+	assign		$tmp8 $tmp10 	%argrw{"wr"}
+	if		$tmp8 35 35 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_rgb_ramp.osl:41
+# 		Color = (1.0 - t) * Color + t * ramp_color[i + 1];
+	sub		$tmp11 $const2 t 	%line{41} %argrw{"wrr"}
+	mul		$tmp12 $tmp11 Color 	%argrw{"wrr"}
+	add		$tmp13 i $const5 	%argrw{"wrr"}
+	aref		$tmp14 ramp_color $tmp13 	%argrw{"wrr"}
+	mul		$tmp15 t $tmp14 	%argrw{"wrr"}
+	add		Color $tmp12 $tmp15 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_ramp.osl:42
+# 		Alpha = (1.0 - t) * Alpha + t * ramp_alpha[i + 1];
+	sub		$tmp16 $const2 t 	%line{42} %argrw{"wrr"}
+	mul		$tmp17 $tmp16 Alpha 	%argrw{"wrr"}
+	add		$tmp18 i $const5 	%argrw{"wrr"}
+	aref		$tmp19 ramp_alpha $tmp18 	%argrw{"wrr"}
+	mul		$tmp20 t $tmp19 	%argrw{"wrr"}
+	add		Alpha $tmp17 $tmp20 	%argrw{"wrr"}
+	end

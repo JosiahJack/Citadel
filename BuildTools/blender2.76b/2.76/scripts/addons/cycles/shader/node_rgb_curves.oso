@@ -1,0 +1,243 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.11
+shader node_rgb_curves
+param	color[256]	ramp	0 0 0 		 %read{17,84} %write{2147483647,-1}
+param	color	ColorIn	0 0 0 		 %read{0,90} %write{2147483647,-1}
+param	float	Fac	0 		 %read{90,90} %write{2147483647,-1}
+oparam	color	ColorOut	0 0 0 		 %read{90,90} %write{29,90}
+local	float	___645_f	 %read{8,76} %write{7,67}
+local	int	___645_i	 %read{9,83} %write{8,74}
+local	float	___645_t	 %read{19,86} %write{16,76}
+local	float	___645_result	 %read{22,88} %write{18,87}
+temp	float	$tmp1	 %read{29,29} %write{28,28}
+const	int	$const1	0		 %read{0,71} %write{2147483647,-1}
+temp	float	$tmp2	 %read{3,3} %write{0,0}
+const	string	$const2	"ramp_lookup"		 %read{1,61} %write{2147483647,-1}
+temp	float	$tmp3	 %read{7,7} %write{4,4}
+const	float	$const3	0		 %read{4,79} %write{2147483647,-1}
+const	float	$const4	1		 %read{3,81} %write{2147483647,-1}
+const	string	$const5	"clamp"		 %read{2,62} %write{2147483647,-1}
+temp	float	$tmp4	 %read{4,4} %write{3,3}
+const	int	$const6	256		 %read{5,74} %write{2147483647,-1}
+const	int	$const7	1		 %read{5,83} %write{2147483647,-1}
+temp	int	$tmp5	 %read{6,6} %write{5,5}
+temp	float	$tmp6	 %read{7,7} %write{6,6}
+temp	int	$tmp7	 %read{10,10} %write{9,9}
+temp	int	$tmp8	 %read{13,13} %write{12,12}
+temp	float	$tmp9	 %read{16,16} %write{15,15}
+temp	color	$tmp10	 %read{18,18} %write{17,17}
+temp	int	$tmp11	 %read{20,20} %write{19,19}
+temp	float	$tmp12	 %read{22,22} %write{21,21}
+temp	float	$tmp13	 %read{27,27} %write{22,22}
+temp	int	$tmp14	 %read{24,24} %write{23,23}
+temp	float	$tmp15	 %read{26,26} %write{25,25}
+temp	color	$tmp16	 %read{25,25} %write{24,24}
+temp	float	$tmp17	 %read{27,27} %write{26,26}
+temp	float	$tmp18	 %read{59,59} %write{58,58}
+temp	float	$tmp19	 %read{33,33} %write{30,30}
+temp	float	$tmp20	 %read{37,37} %write{34,34}
+temp	float	$tmp21	 %read{34,34} %write{33,33}
+temp	int	$tmp22	 %read{36,36} %write{35,35}
+temp	float	$tmp23	 %read{37,37} %write{36,36}
+temp	int	$tmp24	 %read{40,40} %write{39,39}
+temp	int	$tmp25	 %read{43,43} %write{42,42}
+temp	float	$tmp26	 %read{46,46} %write{45,45}
+temp	color	$tmp27	 %read{48,48} %write{47,47}
+temp	int	$tmp28	 %read{50,50} %write{49,49}
+temp	float	$tmp29	 %read{52,52} %write{51,51}
+temp	float	$tmp30	 %read{57,57} %write{52,52}
+temp	int	$tmp31	 %read{54,54} %write{53,53}
+temp	float	$tmp32	 %read{56,56} %write{55,55}
+temp	color	$tmp33	 %read{55,55} %write{54,54}
+temp	float	$tmp34	 %read{57,57} %write{56,56}
+temp	float	$tmp35	 %read{89,89} %write{88,88}
+const	int	$const8	2		 %read{60,89} %write{2147483647,-1}
+temp	float	$tmp36	 %read{63,63} %write{60,60}
+temp	float	$tmp37	 %read{67,67} %write{64,64}
+temp	float	$tmp38	 %read{64,64} %write{63,63}
+temp	int	$tmp39	 %read{66,66} %write{65,65}
+temp	float	$tmp40	 %read{67,67} %write{66,66}
+temp	int	$tmp41	 %read{70,70} %write{69,69}
+temp	int	$tmp42	 %read{73,73} %write{72,72}
+temp	float	$tmp43	 %read{76,76} %write{75,75}
+temp	color	$tmp44	 %read{78,78} %write{77,77}
+temp	int	$tmp45	 %read{80,80} %write{79,79}
+temp	float	$tmp46	 %read{82,82} %write{81,81}
+temp	float	$tmp47	 %read{87,87} %write{82,82}
+temp	int	$tmp48	 %read{84,84} %write{83,83}
+temp	float	$tmp49	 %read{86,86} %write{85,85}
+temp	color	$tmp50	 %read{85,85} %write{84,84}
+temp	float	$tmp51	 %read{87,87} %write{86,86}
+code ___main___
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:45
+# 	ColorOut[0] = ramp_lookup(ramp, ColorIn[0], 0);
+	compref		$tmp2 ColorIn $const1 	%filename{"intern/cycles/kernel/shaders/node_rgb_curves.osl"} %line{45} %argrw{"wrr"}
+	functioncall	$const2 29 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:22
+# 	float f = clamp(at, 0.0, 1.0) * (RAMP_TABLE_SIZE - 1);
+	functioncall	$const5 5 	%line{22} %argrw{"r"}
+# intern/cycles/kernel/shaders/stdosl.h:144
+# PERCOMP1 (round)
+	min		$tmp4 $tmp2 $const4 	%filename{"intern/cycles/kernel/shaders/stdosl.h"} %line{144} %argrw{"wrr"}
+	max		$tmp3 $tmp4 $const3 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:22
+# 	float f = clamp(at, 0.0, 1.0) * (RAMP_TABLE_SIZE - 1);
+	sub		$tmp5 $const6 $const7 	%filename{"intern/cycles/kernel/shaders/node_rgb_curves.osl"} %line{22} %argrw{"wrr"}
+	assign		$tmp6 $tmp5 	%argrw{"wr"}
+	mul		___645_f $tmp3 $tmp6 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:25
+# 	int i = (int)f;
+	assign		___645_i ___645_f 	%line{25} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:26
+# 	if (i < 0) i = 0;
+	lt		$tmp7 ___645_i $const1 	%line{26} %argrw{"wrr"}
+	if		$tmp7 12 12 	%argrw{"r"}
+	assign		___645_i $const1 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:27
+# 	if (i >= RAMP_TABLE_SIZE) i = RAMP_TABLE_SIZE - 1;
+	ge		$tmp8 ___645_i $const6 	%line{27} %argrw{"wrr"}
+	if		$tmp8 15 15 	%argrw{"r"}
+	sub		___645_i $const6 $const7 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:28
+# 	float t = f - (float)i;
+	assign		$tmp9 ___645_i 	%line{28} %argrw{"wr"}
+	sub		___645_t ___645_f $tmp9 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:30
+# 	float result = ramp[i][component];
+	aref		$tmp10 ramp ___645_i 	%line{30} %argrw{"wrr"}
+	compref		___645_result $tmp10 $const1 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:32
+# 	if (t > 0.0)
+	gt		$tmp11 ___645_t $const3 	%line{32} %argrw{"wrr"}
+	if		$tmp11 28 28 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:33
+# 		result = (1.0 - t) * result + t * ramp[i + 1][component];
+	sub		$tmp12 $const4 ___645_t 	%line{33} %argrw{"wrr"}
+	mul		$tmp13 $tmp12 ___645_result 	%argrw{"wrr"}
+	add		$tmp14 ___645_i $const7 	%argrw{"wrr"}
+	aref		$tmp16 ramp $tmp14 	%argrw{"wrr"}
+	compref		$tmp15 $tmp16 $const1 	%argrw{"wrr"}
+	mul		$tmp17 ___645_t $tmp15 	%argrw{"wrr"}
+	add		___645_result $tmp13 $tmp17 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:35
+# 	return result;
+	assign		$tmp1 ___645_result 	%line{35} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:45
+# 	ColorOut[0] = ramp_lookup(ramp, ColorIn[0], 0);
+	compassign	ColorOut $const1 $tmp1 	%line{45} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:46
+# 	ColorOut[1] = ramp_lookup(ramp, ColorIn[1], 1);
+	compref		$tmp19 ColorIn $const7 	%line{46} %argrw{"wrr"}
+	functioncall	$const2 59 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:22
+# 	float f = clamp(at, 0.0, 1.0) * (RAMP_TABLE_SIZE - 1);
+	functioncall	$const5 35 	%line{22} %argrw{"r"}
+# intern/cycles/kernel/shaders/stdosl.h:144
+# PERCOMP1 (round)
+	min		$tmp21 $tmp19 $const4 	%filename{"intern/cycles/kernel/shaders/stdosl.h"} %line{144} %argrw{"wrr"}
+	max		$tmp20 $tmp21 $const3 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:22
+# 	float f = clamp(at, 0.0, 1.0) * (RAMP_TABLE_SIZE - 1);
+	sub		$tmp22 $const6 $const7 	%filename{"intern/cycles/kernel/shaders/node_rgb_curves.osl"} %line{22} %argrw{"wrr"}
+	assign		$tmp23 $tmp22 	%argrw{"wr"}
+	mul		___645_f $tmp20 $tmp23 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:25
+# 	int i = (int)f;
+	assign		___645_i ___645_f 	%line{25} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:26
+# 	if (i < 0) i = 0;
+	lt		$tmp24 ___645_i $const1 	%line{26} %argrw{"wrr"}
+	if		$tmp24 42 42 	%argrw{"r"}
+	assign		___645_i $const1 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:27
+# 	if (i >= RAMP_TABLE_SIZE) i = RAMP_TABLE_SIZE - 1;
+	ge		$tmp25 ___645_i $const6 	%line{27} %argrw{"wrr"}
+	if		$tmp25 45 45 	%argrw{"r"}
+	sub		___645_i $const6 $const7 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:28
+# 	float t = f - (float)i;
+	assign		$tmp26 ___645_i 	%line{28} %argrw{"wr"}
+	sub		___645_t ___645_f $tmp26 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:30
+# 	float result = ramp[i][component];
+	aref		$tmp27 ramp ___645_i 	%line{30} %argrw{"wrr"}
+	compref		___645_result $tmp27 $const7 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:32
+# 	if (t > 0.0)
+	gt		$tmp28 ___645_t $const3 	%line{32} %argrw{"wrr"}
+	if		$tmp28 58 58 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:33
+# 		result = (1.0 - t) * result + t * ramp[i + 1][component];
+	sub		$tmp29 $const4 ___645_t 	%line{33} %argrw{"wrr"}
+	mul		$tmp30 $tmp29 ___645_result 	%argrw{"wrr"}
+	add		$tmp31 ___645_i $const7 	%argrw{"wrr"}
+	aref		$tmp33 ramp $tmp31 	%argrw{"wrr"}
+	compref		$tmp32 $tmp33 $const7 	%argrw{"wrr"}
+	mul		$tmp34 ___645_t $tmp32 	%argrw{"wrr"}
+	add		___645_result $tmp30 $tmp34 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:35
+# 	return result;
+	assign		$tmp18 ___645_result 	%line{35} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:46
+# 	ColorOut[1] = ramp_lookup(ramp, ColorIn[1], 1);
+	compassign	ColorOut $const7 $tmp18 	%line{46} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:47
+# 	ColorOut[2] = ramp_lookup(ramp, ColorIn[2], 2);
+	compref		$tmp36 ColorIn $const8 	%line{47} %argrw{"wrr"}
+	functioncall	$const2 89 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:22
+# 	float f = clamp(at, 0.0, 1.0) * (RAMP_TABLE_SIZE - 1);
+	functioncall	$const5 65 	%line{22} %argrw{"r"}
+# intern/cycles/kernel/shaders/stdosl.h:144
+# PERCOMP1 (round)
+	min		$tmp38 $tmp36 $const4 	%filename{"intern/cycles/kernel/shaders/stdosl.h"} %line{144} %argrw{"wrr"}
+	max		$tmp37 $tmp38 $const3 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:22
+# 	float f = clamp(at, 0.0, 1.0) * (RAMP_TABLE_SIZE - 1);
+	sub		$tmp39 $const6 $const7 	%filename{"intern/cycles/kernel/shaders/node_rgb_curves.osl"} %line{22} %argrw{"wrr"}
+	assign		$tmp40 $tmp39 	%argrw{"wr"}
+	mul		___645_f $tmp37 $tmp40 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:25
+# 	int i = (int)f;
+	assign		___645_i ___645_f 	%line{25} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:26
+# 	if (i < 0) i = 0;
+	lt		$tmp41 ___645_i $const1 	%line{26} %argrw{"wrr"}
+	if		$tmp41 72 72 	%argrw{"r"}
+	assign		___645_i $const1 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:27
+# 	if (i >= RAMP_TABLE_SIZE) i = RAMP_TABLE_SIZE - 1;
+	ge		$tmp42 ___645_i $const6 	%line{27} %argrw{"wrr"}
+	if		$tmp42 75 75 	%argrw{"r"}
+	sub		___645_i $const6 $const7 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:28
+# 	float t = f - (float)i;
+	assign		$tmp43 ___645_i 	%line{28} %argrw{"wr"}
+	sub		___645_t ___645_f $tmp43 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:30
+# 	float result = ramp[i][component];
+	aref		$tmp44 ramp ___645_i 	%line{30} %argrw{"wrr"}
+	compref		___645_result $tmp44 $const8 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:32
+# 	if (t > 0.0)
+	gt		$tmp45 ___645_t $const3 	%line{32} %argrw{"wrr"}
+	if		$tmp45 88 88 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:33
+# 		result = (1.0 - t) * result + t * ramp[i + 1][component];
+	sub		$tmp46 $const4 ___645_t 	%line{33} %argrw{"wrr"}
+	mul		$tmp47 $tmp46 ___645_result 	%argrw{"wrr"}
+	add		$tmp48 ___645_i $const7 	%argrw{"wrr"}
+	aref		$tmp50 ramp $tmp48 	%argrw{"wrr"}
+	compref		$tmp49 $tmp50 $const8 	%argrw{"wrr"}
+	mul		$tmp51 ___645_t $tmp49 	%argrw{"wrr"}
+	add		___645_result $tmp47 $tmp51 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:35
+# 	return result;
+	assign		$tmp35 ___645_result 	%line{35} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:47
+# 	ColorOut[2] = ramp_lookup(ramp, ColorIn[2], 2);
+	compassign	ColorOut $const8 $tmp35 	%line{47} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_rgb_curves.osl:49
+# 	ColorOut = mix(ColorIn, ColorOut, Fac);
+	mix		ColorOut ColorIn ColorOut Fac 	%line{49} %argrw{"wrrr"}
+	end

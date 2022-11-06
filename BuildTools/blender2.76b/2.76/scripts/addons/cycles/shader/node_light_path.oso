@@ -1,0 +1,87 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.11
+shader node_light_path
+oparam	float	IsCameraRay	0 		 %read{2147483647,-1} %write{1,1}
+oparam	float	IsShadowRay	0 		 %read{2147483647,-1} %write{3,3}
+oparam	float	IsDiffuseRay	0 		 %read{2147483647,-1} %write{5,5}
+oparam	float	IsGlossyRay	0 		 %read{2147483647,-1} %write{7,7}
+oparam	float	IsSingularRay	0 		 %read{2147483647,-1} %write{9,9}
+oparam	float	IsReflectionRay	0 		 %read{2147483647,-1} %write{11,11}
+oparam	float	IsTransmissionRay	0 		 %read{2147483647,-1} %write{13,13}
+oparam	float	IsVolumeScatterRay	0 		 %read{2147483647,-1} %write{15,15}
+oparam	float	RayLength	0 		 %read{2147483647,-1} %write{16,16}
+oparam	float	RayDepth	0 		 %read{2147483647,-1} %write{18,18}
+oparam	float	TransparentDepth	0 		 %read{2147483647,-1} %write{20,20}
+local	int	ray_depth	 %read{18,18} %write{17,17}
+local	int	transparent_depth	 %read{20,20} %write{19,19}
+temp	int	$tmp1	 %read{1,1} %write{0,0}
+const	string	$const1	"camera"		 %read{0,0} %write{2147483647,-1}
+temp	int	$tmp2	 %read{3,3} %write{2,2}
+const	string	$const2	"shadow"		 %read{2,2} %write{2147483647,-1}
+temp	int	$tmp3	 %read{5,5} %write{4,4}
+const	string	$const3	"diffuse"		 %read{4,4} %write{2147483647,-1}
+temp	int	$tmp4	 %read{7,7} %write{6,6}
+const	string	$const4	"glossy"		 %read{6,6} %write{2147483647,-1}
+temp	int	$tmp5	 %read{9,9} %write{8,8}
+const	string	$const5	"singular"		 %read{8,8} %write{2147483647,-1}
+temp	int	$tmp6	 %read{11,11} %write{10,10}
+const	string	$const6	"reflection"		 %read{10,10} %write{2147483647,-1}
+temp	int	$tmp7	 %read{13,13} %write{12,12}
+const	string	$const7	"refraction"		 %read{12,12} %write{2147483647,-1}
+temp	int	$tmp8	 %read{15,15} %write{14,14}
+const	string	$const8	"volume_scatter"		 %read{14,14} %write{2147483647,-1}
+temp	int	$tmp9	 %read{2147483647,-1} %write{16,16}
+const	string	$const9	"path:ray_length"		 %read{16,16} %write{2147483647,-1}
+temp	int	$tmp10	 %read{2147483647,-1} %write{17,17}
+const	string	$const10	"path:ray_depth"		 %read{17,17} %write{2147483647,-1}
+temp	int	$tmp11	 %read{2147483647,-1} %write{19,19}
+const	string	$const11	"path:transparent_depth"		 %read{19,19} %write{2147483647,-1}
+code ___main___
+# intern/cycles/kernel/shaders/node_light_path.osl:32
+# 	IsCameraRay = raytype("camera");
+	raytype		$tmp1 $const1 	%filename{"intern/cycles/kernel/shaders/node_light_path.osl"} %line{32} %argrw{"wr"}
+	assign		IsCameraRay $tmp1 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_light_path.osl:33
+# 	IsShadowRay = raytype("shadow");
+	raytype		$tmp2 $const2 	%line{33} %argrw{"wr"}
+	assign		IsShadowRay $tmp2 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_light_path.osl:34
+# 	IsDiffuseRay = raytype("diffuse");
+	raytype		$tmp3 $const3 	%line{34} %argrw{"wr"}
+	assign		IsDiffuseRay $tmp3 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_light_path.osl:35
+# 	IsGlossyRay = raytype("glossy");
+	raytype		$tmp4 $const4 	%line{35} %argrw{"wr"}
+	assign		IsGlossyRay $tmp4 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_light_path.osl:36
+# 	IsSingularRay = raytype("singular");
+	raytype		$tmp5 $const5 	%line{36} %argrw{"wr"}
+	assign		IsSingularRay $tmp5 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_light_path.osl:37
+# 	IsReflectionRay = raytype("reflection");
+	raytype		$tmp6 $const6 	%line{37} %argrw{"wr"}
+	assign		IsReflectionRay $tmp6 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_light_path.osl:38
+# 	IsTransmissionRay = raytype("refraction");
+	raytype		$tmp7 $const7 	%line{38} %argrw{"wr"}
+	assign		IsTransmissionRay $tmp7 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_light_path.osl:39
+# 	IsVolumeScatterRay = raytype("volume_scatter");
+	raytype		$tmp8 $const8 	%line{39} %argrw{"wr"}
+	assign		IsVolumeScatterRay $tmp8 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_light_path.osl:41
+# 	getattribute("path:ray_length", RayLength);
+	getattribute	$tmp9 $const9 RayLength 	%line{41} %argrw{"wrw"}
+# intern/cycles/kernel/shaders/node_light_path.osl:44
+# 	getattribute("path:ray_depth", ray_depth);
+	getattribute	$tmp10 $const10 ray_depth 	%line{44} %argrw{"wrw"}
+# intern/cycles/kernel/shaders/node_light_path.osl:45
+# 	RayDepth = (float)ray_depth;
+	assign		RayDepth ray_depth 	%line{45} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_light_path.osl:48
+# 	getattribute("path:transparent_depth", transparent_depth);
+	getattribute	$tmp11 $const11 transparent_depth 	%line{48} %argrw{"wrw"}
+# intern/cycles/kernel/shaders/node_light_path.osl:49
+# 	TransparentDepth = (float)transparent_depth;
+	assign		TransparentDepth transparent_depth 	%line{49} %argrw{"wr"}
+	end

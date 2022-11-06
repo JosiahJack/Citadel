@@ -1,0 +1,17 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.11
+shader node_normal
+param	normal	Direction	0 0 0 		 %read{0,0} %write{2147483647,-1}
+param	normal	NormalIn	0 0 0 		 %read{1,1} %write{2147483647,-1}
+oparam	normal	NormalOut	0 0 0 		 %read{2,2} %write{0,0}
+oparam	float	Dot	1 		 %read{2147483647,-1} %write{2,2}
+temp	normal	$tmp1	 %read{2,2} %write{1,1}
+code ___main___
+# intern/cycles/kernel/shaders/node_normal.osl:25
+# 	NormalOut = normalize(Direction);
+	normalize	NormalOut Direction 	%filename{"intern/cycles/kernel/shaders/node_normal.osl"} %line{25} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_normal.osl:26
+# 	Dot = dot(NormalOut, normalize(NormalIn));
+	normalize	$tmp1 NormalIn 	%line{26} %argrw{"wr"}
+	dot		Dot NormalOut $tmp1 	%argrw{"wrr"}
+	end

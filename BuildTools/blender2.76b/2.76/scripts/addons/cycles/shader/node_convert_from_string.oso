@@ -1,0 +1,12 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.11
+shader node_convert_from_string
+param	string	String	"" 		 %read{2147483647,-1} %write{2147483647,-1}
+oparam	color	Color	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+oparam	float	Val	0 		 %read{2147483647,-1} %write{2147483647,-1}
+oparam	int	ValInt	0 		 %read{2147483647,-1} %write{2147483647,-1}
+oparam	vector	Vector	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+oparam	point	Point	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+oparam	normal	Normal	0 0 0 		 %read{2147483647,-1} %write{2147483647,-1}
+code ___main___
+	end

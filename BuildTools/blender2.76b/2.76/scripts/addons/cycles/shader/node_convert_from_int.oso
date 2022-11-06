@@ -1,0 +1,31 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.5.11
+shader node_convert_from_int
+param	int	ValInt	0 		 %read{0,0} %write{2147483647,-1}
+oparam	string	String	"" 		 %read{2147483647,-1} %write{2147483647,-1}
+oparam	float	Val	0 		 %read{2147483647,-1} %write{1,1}
+oparam	color	Color	0 0 0 		 %read{2147483647,-1} %write{2,2}
+oparam	vector	Vector	0 0 0 		 %read{2147483647,-1} %write{3,3}
+oparam	point	Point	0 0 0 		 %read{2147483647,-1} %write{4,4}
+oparam	normal	Normal	0 0 0 		 %read{2147483647,-1} %write{5,5}
+local	float	f	 %read{1,5} %write{0,0}
+code ___main___
+# intern/cycles/kernel/shaders/node_convert_from_int.osl:28
+# 	float f = (float)ValInt;
+	assign		f ValInt 	%filename{"intern/cycles/kernel/shaders/node_convert_from_int.osl"} %line{28} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_convert_from_int.osl:29
+# 	Val = f;
+	assign		Val f 	%line{29} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_convert_from_int.osl:30
+# 	Color = color(f, f, f);
+	color		Color f f f 	%line{30} %argrw{"wrrr"}
+# intern/cycles/kernel/shaders/node_convert_from_int.osl:31
+# 	Vector = vector(f, f, f);
+	vector		Vector f f f 	%line{31} %argrw{"wrrr"}
+# intern/cycles/kernel/shaders/node_convert_from_int.osl:32
+# 	Point = point(f, f, f);
+	point		Point f f f 	%line{32} %argrw{"wrrr"}
+# intern/cycles/kernel/shaders/node_convert_from_int.osl:33
+# 	Normal = normal(f, f, f);
+	normal		Normal f f f 	%line{33} %argrw{"wrrr"}
+	end
