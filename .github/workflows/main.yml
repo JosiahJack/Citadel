@@ -30,8 +30,7 @@ jobs:
           unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip
           cd ${GITHUB_WORKSPACE}
           cd ../
-          mv -n ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender ../../../blender
-          cd ../../../
+          mv -n ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender ./blender
           echo $PWD >> $GITHUB_PATH
           cd ${GITHUB_WORKSPACE}
 
