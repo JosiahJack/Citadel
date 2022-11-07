@@ -1,16 +1,8 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
-
-# Controls when the workflow will run
 on:
   # Manual runs only.
   workflow_dispatch:
-
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
     name: Citadel Build for ${{ matrix.targetPlatform }}
     runs-on: ubuntu-latest
@@ -24,17 +16,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
       - name: Unzip blender and add to path
         run: |
           unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
-          ls
-          mv -n /home/runner/work/Citadel/Citadel/blender /home/runner/work/Citadel/blender
-          echo "/home/runner/work/Citadel/" >> $GITHUB_PATH
+          echo ${GITHUB_WORKSPACE} >> $GITHUB_PATH
 
       # No caching in case there is an importing issue.
       # The Library folder will be rebuilt.  This will take a while!
-
       - name: Build game
         uses: game-ci/unity-builder@v2
         env:
@@ -44,8 +32,6 @@ jobs:
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
           versioning: Semantic
-
-      # Output
       - name: Upload built files
         uses: actions/upload-artifact@v2
         with:
