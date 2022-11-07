@@ -1,0 +1,53 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Manual runs only.
+  workflow_dispatch:
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    name: Citadel Build for ${{ matrix.targetPlatform }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform:
+          - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
+          - StandaloneWindows64 # Build a Windows 64-bit standalone.
+          - StandaloneLinux64 # Build a Linux 64-bit standalone.
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Unzip blender and add to path
+        run: |
+          unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
+          ls
+          mv -n /home/runner/work/Citadel/Citadel/blender /home/runner/work/Citadel/blender
+          echo "/home/runner/work/Citadel/" >> $GITHUB_PATH
+
+      # No caching in case there is an importing issue.
+      # The Library folder will be rebuilt.  This will take a while!
+
+      - name: Build game
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: ${{ matrix.targetPlatform }}
+          versioning: Semantic
+
+      # Output
+      - name: Upload built files
+        uses: actions/upload-artifact@v2
+        with:
+          name: Citadel_DevBuild_${{ matrix.targetPlatform }}
+          path: build/Citadel_DevBuild_${{ matrix.targetPlatform }}
