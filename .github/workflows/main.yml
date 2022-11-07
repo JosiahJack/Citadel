@@ -29,7 +29,7 @@ jobs:
         run: |
           unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
           ls
-          mv -n /home/runner/work/Citadel/Citadel/BuildTools/blender2.76b/blender /home/runner/work/Citadel/blender
+          mv -n /home/runner/work/Citadel/Citadel/blender /home/runner/work/Citadel/blender
           echo "/home/runner/work/Citadel/" >> $GITHUB_PATH
 
       - name: Mark Library folder to be preserved
