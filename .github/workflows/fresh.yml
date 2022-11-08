@@ -19,7 +19,9 @@ jobs:
       - name: Unzip blender and add to path
         run: |
           unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
+          echo "$PATH"
           export "PATH=$PATH:${GITHUB_WORKSPACE}"
+          echo "$PATH"
 
       # No caching in case there is an importing issue.
       # The Library folder will be rebuilt.  This will take a while!
