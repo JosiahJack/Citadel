@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Unzip blender and add to path
+      - name: Unzip blender and add to path and associate blend files
         run: |
           unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
           echo "$PATH"
@@ -24,10 +24,13 @@ jobs:
           export "PATH=$PATH:${GITHUB_WORKSPACE}"
           echo "$PATH"
           which blender
+          xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
+          xdg-mime query default application/x-blender
 
       # No caching in case there is an importing issue.
       # The Library folder will be rebuilt.  This will take a while!
       - name: Build game
+        id: buildStep
         uses: game-ci/unity-builder@v2
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -35,7 +38,9 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
+          buildName: Citadel_DevBuild
           versioning: Semantic
+          allowDirtyBuild: true
       - name: Upload built files
         uses: actions/upload-artifact@v2
         with:
