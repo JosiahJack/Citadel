@@ -10,9 +10,9 @@ jobs:
       fail-fast: false
       matrix:
         targetPlatform:
-          - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
+          - StandaloneOSX       # Build a macOS standalone (Intel 64-bit).
           - StandaloneWindows64 # Build a Windows 64-bit standalone.
-          - StandaloneLinux64 # Build a Linux 64-bit standalone.
+          - StandaloneLinux64   # Build a Linux 64-bit standalone.
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -44,12 +44,11 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
-          buildName: Citadel_DevBuild
           versioning: Semantic
           allowDirtyBuild: true
       - name: Upload built files
         uses: actions/upload-artifact@v2
         with:
           name: Citadel_DevBuild_${{ matrix.targetPlatform }}
-          path: build/${{ matrix.targetPlatform }}/Citadel_DevBuild
+          path: build/${{ matrix.targetPlatform }}
           if-no-files-found: error
