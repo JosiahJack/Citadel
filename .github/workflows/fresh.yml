@@ -27,10 +27,10 @@ jobs:
           mv ${GITHUB_WORKSPACE}/blender ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender
           sudo apt-get install libglu1
           export "PATH=$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
-          echo "$PATH"
+          echo "$PATH" >> $GITHUB_PATH
           which blender
-          xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
-          xdg-mime query default application/x-blender
+          # xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
+          # xdg-mime query default application/x-blender
           blender --version
 
       # No caching in case there is an importing issue.
@@ -51,4 +51,5 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Citadel_DevBuild_${{ matrix.targetPlatform }}
-          path: build/Citadel_DevBuild_${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}/Citadel_DevBuild
+          if-no-files-found: error
