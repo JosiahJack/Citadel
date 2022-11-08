@@ -1293,6 +1293,7 @@ public class MFDManager : MonoBehaviour  {
 		ersbLH.SetEReaderSectionsButtonsHighlights(lastMultiMediaTabOpened);
 		ersbRH.SetEReaderSectionsButtonsHighlights(lastMultiMediaTabOpened);
 		dataTab.SetActive(false);
+		notesTab.SetActive(false);
 		multiMediaHeaderLabel.text = System.String.Empty;
 	}
 

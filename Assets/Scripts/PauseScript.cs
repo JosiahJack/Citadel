@@ -177,6 +177,12 @@ public class PauseScript : MonoBehaviour {
 		DisablePauseUI();
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
+		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
+		GameObject loadGameIndicator = GameObject.Find("LoadGameIndicator");
+		GameObject freshGame = GameObject.Find("GameNotYetStarted");
+		if (newGameIndicator != null) Destroy(newGameIndicator);
+		if (loadGameIndicator != null) Destroy(loadGameIndicator);
+		if (freshGame != null) Destroy(freshGame);
 		MainMenuHandler.a.GoToSaveGameSubmenu(true);
 	}
 
@@ -184,6 +190,12 @@ public class PauseScript : MonoBehaviour {
 		DisablePauseUI();
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
+		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
+		GameObject loadGameIndicator = GameObject.Find("LoadGameIndicator");
+		GameObject freshGame = GameObject.Find("GameNotYetStarted");
+		if (newGameIndicator != null) Destroy(newGameIndicator);
+		if (loadGameIndicator != null) Destroy(loadGameIndicator);
+		if (freshGame != null) Destroy(freshGame);
 		MainMenuHandler.a.GoToFrontPage();
 	}
 

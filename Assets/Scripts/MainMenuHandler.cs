@@ -161,9 +161,6 @@ public class MainMenuHandler : MonoBehaviour {
 			Const.a.difficultyMission = mission.difficultySetting;
 			Const.a.difficultyPuzzle = puzzle.difficultySetting;
 			Const.a.difficultyCyber = cyber.difficultySetting;
-			GameObject go = new GameObject();
-			go.name = "NewGameIndicator";
-			DontDestroyOnLoad(go);
 			Const.a.Load(-1); // load default scene
 		}
 

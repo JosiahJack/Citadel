@@ -400,19 +400,18 @@ public class Const : MonoBehaviour {
 		for (int i=0;i<prbTemp.Length;i++) prb.Add(prbTemp[i]);
 		PauseParticleSystem[] psysTemp = FindObjectsOfType<PauseParticleSystem>();
 		for (int i=0;i<psysTemp.Length;i++) psys.Add(psysTemp[i]);
-		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
-		if (newGameIndicator != null) {
-			startingNewGame = true;
-			Destroy(newGameIndicator);
-		} else startingNewGame = false;
 
-		if (startingNewGame) {
+		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
+		GameObject loadGameIndicator = GameObject.Find("LoadGameIndicator");
+		if (loadGameIndicator != null || newGameIndicator != null) {
 			PauseScript.a.mainMenu.SetActive(false);
 			loadingScreen.SetActive(false);
 			MainMenuHandler.a.IntroVideo.SetActive(false);
 			MainMenuHandler.a.IntroVideoContainer.SetActive(false);
 			sprint(stringTable[197]); // Loading...Done!
 			WriteDatForIntroPlayed(false);
+			if (loadGameIndicator != null) Destroy(loadGameIndicator);
+			else if (newGameIndicator != null) Destroy(newGameIndicator);
 		}
 	}
 
@@ -1195,6 +1194,11 @@ public class Const : MonoBehaviour {
 	}
 
 	public void Load(int saveFileIndex) {
+		GameObject loadGameIndicator = new GameObject();
+		if (saveFileIndex < 0) loadGameIndicator.name = "NewGameIndicator";
+		else loadGameIndicator.name = "LoadGameIndicator";
+
+		DontDestroyOnLoad(loadGameIndicator);
 		loadingScreen.SetActive(true);
 		loadPercentText.text = "(0) --.--";
 		PauseScript.a.mainMenu.SetActive(false);
@@ -1215,8 +1219,11 @@ public class Const : MonoBehaviour {
 		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = false;
 		if (saveFileIndex < 0) {
 			WriteDatForIntroPlayed(false);
-			SceneManager.UnloadScene(SceneManager.GetActiveScene().buildIndex);
-			SceneManager.LoadScene(0); // reload. it. all.
+			GameObject freshGame = GameObject.Find("GameNotYetStarted");
+			if (freshGame == null) {
+				SceneManager.UnloadScene(SceneManager.GetActiveScene().buildIndex);
+				SceneManager.LoadScene(0); // reload. it. all.
+			} else Destroy(freshGame);
 			loadingScreen.SetActive(false);
 			PauseScript.a.PauseDisable();
 			yield break;

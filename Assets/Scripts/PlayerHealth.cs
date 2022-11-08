@@ -164,6 +164,13 @@ public class PlayerHealth : MonoBehaviour {
 			MouseLookScript.a.ToggleInventoryMode();
 			PauseScript.a.ToggleAudioPause();
 		}
+
+		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
+		GameObject loadGameIndicator = GameObject.Find("LoadGameIndicator");
+		GameObject freshGame = GameObject.Find("GameNotYetStarted");
+		if (newGameIndicator != null) Destroy(newGameIndicator);
+		if (loadGameIndicator != null) Destroy(loadGameIndicator);
+		if (freshGame != null) Destroy(freshGame);
 		PauseScript.a.mainMenu.SetActive(true);
 		MainMenuHandler.a.returnToPause = false;
 		hm.health = 211f;
