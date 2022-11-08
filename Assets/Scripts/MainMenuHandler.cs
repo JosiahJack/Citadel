@@ -114,6 +114,7 @@ public class MainMenuHandler : MonoBehaviour {
 				inCutscene = false;
 				IntroVideo.SetActive(false);
 				IntroVideoContainer.SetActive(false);
+				Const.a.WriteDatForIntroPlayed(false);
 				if (gameObject.activeSelf) BackGroundMusic.Play();
 			}
 			GoBack();
@@ -124,6 +125,7 @@ public class MainMenuHandler : MonoBehaviour {
 				inCutscene = false;
 				IntroVideo.SetActive(false);
 				IntroVideoContainer.SetActive(false);
+				Const.a.WriteDatForIntroPlayed(false);
 				if (gameObject.activeSelf) BackGroundMusic.Play();
 			}
 		}
@@ -159,10 +161,12 @@ public class MainMenuHandler : MonoBehaviour {
 			Const.a.difficultyMission = mission.difficultySetting;
 			Const.a.difficultyPuzzle = puzzle.difficultySetting;
 			Const.a.difficultyCyber = cyber.difficultySetting;
+			GameObject go = new GameObject();
+			go.name = "NewGameIndicator";
+			DontDestroyOnLoad(go);
 			Const.a.Load(-1); // load default scene
 		}
-		//SceneManager.UnloadScene(SceneManager.GetActiveScene().buildIndex);
-		// SceneManager.LoadScene(0);
+
 		this.gameObject.SetActive(false);
 	}
 
@@ -276,9 +280,8 @@ public class MainMenuHandler : MonoBehaviour {
 		if (loadPage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text == "- unused -" || loadPage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text == "- unused quicksave -") {
 			Const.sprint("No data to load.");
 		} else {
-			if (Const.a.freshRun) {
+			if (Const.a.introNotPlayed) {
 				StartGame(false);
-				Const.a.WriteDatForNewGame(false,false);
 			} else {
 				Const.a.Load(index);
 				StartGame(false);
@@ -377,11 +380,11 @@ public class MainMenuHandler : MonoBehaviour {
 		CouldNotFindDialogue.SetActive(false);
 		Config.SetVolume(); // probably not needed here, but just in case
 		GoToFrontPage();
-		IntroVideo.SetActive(true);
+		PlayIntro();
 	}
 
-	public void PlayIntro () {
-		//Debug.Log("Playing intro video");
+	public void PlayIntro() {
+		Const.a.WriteDatForIntroPlayed(false);
 		IntroVideoContainer.SetActive(true);
 		IntroVideo.SetActive(true);
 		inCutscene = true;
@@ -389,7 +392,6 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	public void PlayCredits () {
-		//Debug.Log("Playing credits");
 		ResetPages();
 		creditsPage.SetActive(true);
 		currentPage = Pages.cd;
@@ -512,7 +514,7 @@ public class MainMenuHandler : MonoBehaviour {
 
 	IEnumerator quitFunction () {
 		BackGroundMusic.Stop();
-		Const.a.WriteDatForNewGame(false,true);
+		Const.a.WriteDatForIntroPlayed(false);
 		saltTheFries.SetActive(true);
 		yield return new WaitForSeconds(0.8f);
 		#if UNITY_EDITOR_WIN

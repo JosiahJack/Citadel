@@ -266,7 +266,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public float justSavedTimeStamp;
 	[HideInInspector] public float savedReminderTime = 7f; // human short-term memory length
 	[HideInInspector] public bool startingNewGame = false;
-	[HideInInspector] public bool freshRun = false;
+	[HideInInspector] public bool introNotPlayed = false;
 	[HideInInspector] public float doubleClickTime = 0.500f;
 	[HideInInspector] public float frobDistance = 5f;
 	[HideInInspector] public float elevatorPadUseDistance = 2f;
@@ -400,14 +400,20 @@ public class Const : MonoBehaviour {
 		for (int i=0;i<prbTemp.Length;i++) prb.Add(prbTemp[i]);
 		PauseParticleSystem[] psysTemp = FindObjectsOfType<PauseParticleSystem>();
 		for (int i=0;i<psysTemp.Length;i++) psys.Add(psysTemp[i]);
-		//if (startingNewGame) {
-		//	PauseScript.a.mainMenu.SetActive(false);
-		//	loadingScreen.SetActive(false);
-		//	MainMenuHandler.a.IntroVideo.SetActive(false);
-		//	MainMenuHandler.a.IntroVideoContainer.SetActive(false);
-		//	sprint(stringTable[197]); // Loading...Done!
-		//	WriteDatForNewGame(false,false);
-		//}
+		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
+		if (newGameIndicator != null) {
+			startingNewGame = true;
+			Destroy(newGameIndicator);
+		} else startingNewGame = false;
+
+		if (startingNewGame) {
+			PauseScript.a.mainMenu.SetActive(false);
+			loadingScreen.SetActive(false);
+			MainMenuHandler.a.IntroVideo.SetActive(false);
+			MainMenuHandler.a.IntroVideoContainer.SetActive(false);
+			sprint(stringTable[197]); // Loading...Done!
+			WriteDatForIntroPlayed(false);
+		}
 	}
 
 
@@ -530,8 +536,7 @@ public class Const : MonoBehaviour {
 			do {
 				// Read the next line
 				readline = dataReader.ReadLine();
-				if (currentline == 0) a.startingNewGame = Utils.GetBoolFromString(readline);
-				if (currentline == 1) a.freshRun = Utils.GetBoolFromString(readline);
+				if (currentline == 1) a.introNotPlayed = Utils.GetBoolFromString(readline);
 				currentline++;
 			} while (!dataReader.EndOfStream);
 			dataReader.Close();
@@ -539,18 +544,16 @@ public class Const : MonoBehaviour {
 		}
 	}
 
-	public void WriteDatForNewGame(bool bitStartingNew, bool bitFreshRun) {
+	public void WriteDatForIntroPlayed(bool setIntroNotPlayed) {
 		// Write bit to file
 		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/ng.dat",false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
-				sw.WriteLine(Utils.BoolToString(bitStartingNew));
-				sw.WriteLine(Utils.BoolToString(bitFreshRun));
+				sw.WriteLine(Utils.BoolToString(setIntroNotPlayed));
 				sw.Close();
 			}
 		}
-		a.startingNewGame = bitStartingNew;
-		a.freshRun = bitFreshRun;
+		a.introNotPlayed = setIntroNotPlayed;
 	}
 
 	private void LoadEnemyTablesData() {
@@ -1193,7 +1196,7 @@ public class Const : MonoBehaviour {
 
 	public void Load(int saveFileIndex) {
 		loadingScreen.SetActive(true);
-		loadPercentText.text = "--.----";
+		loadPercentText.text = "(0) --.--";
 		PauseScript.a.mainMenu.SetActive(false);
 		PauseScript.a.PauseEnable();
 		PauseScript.a.Loading();
@@ -1211,16 +1214,19 @@ public class Const : MonoBehaviour {
 
 		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = false;
 		if (saveFileIndex < 0) {
-			//WriteDatForNewGame(true,false); // set bit to know to deactivate main menu when we reload
-			//SceneManager.LoadScene(0); // reload. it. all.
+			WriteDatForIntroPlayed(false);
+			GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
+			if (newGameIndicator != null) Destroy(newGameIndicator);
+			SceneManager.LoadScene(0); // reload. it. all.
 			loadingScreen.SetActive(false);
 			PauseScript.a.PauseDisable();
 			yield break;
 		}
 		startingNewGame = false;
-		freshRun = false;
-		//WriteDatForNewGame(false,false); // reset
-		//SceneManager.LoadScene(0);
+		introNotPlayed = false;
+		loadPercentText.text = "(1) --.--";
+		WriteDatForIntroPlayed(false); // reset
+		SceneManager.LoadScene(0);
 		yield return null;
 
 		string readline;
@@ -1229,6 +1235,7 @@ public class Const : MonoBehaviour {
 		int i,j;
 		GameObject currentGameObject = null;
 		sprint(stringTable[196]); // Loading...
+		loadPercentText.text = "(2) --.--";
 		yield return null; // to update the sprint
 
 		// Find all gameobjects with SaveObject script attached
@@ -1251,6 +1258,8 @@ public class Const : MonoBehaviour {
 				sr.Close();
 			}
 
+			loadPercentText.text = "(3) --.--";
+			yield return null; // to update the sprint
 			numSaveablesFromSavefile = readFileList.Count;
 
 			// readFileList[currentline] == saveName;  Not important, we are loading already now
@@ -1276,7 +1285,7 @@ public class Const : MonoBehaviour {
 			if (currentline != 3) UnityEngine.Debug.Log("ERROR: currentline wasn't 3 before iterating through saveObjects!");
 			//int[] lookupList = new int[(numSaveablesFromSavefile-currentline)];
 			//SaveObject[] sos = new SaveObject[saveableGameObjects.Count];
-			loadPercentText.text = "0.0001";
+			loadPercentText.text = "(4) --.--";
 			yield return null;
 
 			// get the existing IDs
@@ -1346,7 +1355,7 @@ public class Const : MonoBehaviour {
 						break;
 					}
 				}
-				loadPercentText.text = currentline.ToString("00.00");
+				loadPercentText.text = "(5) " + currentline.ToString("00.00");
 				if (UnityEngine.Random.Range(0f,1.0f) < 0.01f) yield return null;
 			}
 
@@ -1382,7 +1391,7 @@ public class Const : MonoBehaviour {
 							if (instantiatedObject != null) SaveObject.Load(instantiatedObject,ref entries,5); // Load it
 						}
 					}
-					loadPercentText.text = (i / instantiatedFound.Count).ToString("00.0000");
+					loadPercentText.text = "(6) " + ((i / instantiatedFound.Count).ToString("00.0000"));
 					yield return null;
 				}
 			}
@@ -1393,11 +1402,13 @@ public class Const : MonoBehaviour {
 		player1CapsuleMainCameragGO.transform.parent.gameObject.SetActive(true);
 		player1CapsuleMainCameragGO.SetActive(true);
 		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = true;
+		loadPercentText.text = "(7) 99.99%";
 		yield return null;
 		loadingScreen.SetActive(false);
 		PauseScript.a.PauseDisable();
 		sprint(stringTable[197]); // Loading...Done!
 		loadTimer.Stop();
+		loadPercentText.text = "   100.00%";
 		//UnityEngine.Debug.Log("Matching index loop de loop time: " + matchTimer.Elapsed.ToString());
 		UnityEngine.Debug.Log("Loading time: " + loadTimer.Elapsed.ToString());
 	}

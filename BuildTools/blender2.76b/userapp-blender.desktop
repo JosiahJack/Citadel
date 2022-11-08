@@ -3,6 +3,6 @@ Encoding=UTF-8
 Version=1.0
 Type=Application
 NoDisplay=true
-Exec=/home/runner/work/Citadel/Citadel/blender %f
+Exec=/home/runner/work/Citadel/Citadel/BuildTools/blender2.76b/blender %f
 Name=blender
 Comment=Custom definition for blender
