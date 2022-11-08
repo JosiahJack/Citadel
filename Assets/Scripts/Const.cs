@@ -1215,8 +1215,7 @@ public class Const : MonoBehaviour {
 		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = false;
 		if (saveFileIndex < 0) {
 			WriteDatForIntroPlayed(false);
-			GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
-			if (newGameIndicator != null) Destroy(newGameIndicator);
+			SceneManager.UnloadScene(SceneManager.GetActiveScene().buildIndex);
 			SceneManager.LoadScene(0); // reload. it. all.
 			loadingScreen.SetActive(false);
 			PauseScript.a.PauseDisable();
