@@ -21,7 +21,8 @@ jobs:
           unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
           echo "$PATH"
           ls
-          export "PATH=$PATH:${GITHUB_WORKSPACE}"
+          mv ${GITHUB_WORKSPACE}/blender ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender
+          export "PATH=$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
           echo "$PATH"
           which blender
           xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
