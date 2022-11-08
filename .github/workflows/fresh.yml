@@ -26,6 +26,7 @@ jobs:
           which blender
           xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
           xdg-mime query default application/x-blender
+          blender --version
 
       # No caching in case there is an importing issue.
       # The Library folder will be rebuilt.  This will take a while!
