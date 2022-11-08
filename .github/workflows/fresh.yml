@@ -20,8 +20,10 @@ jobs:
         run: |
           unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
           echo "$PATH"
+          ls
           export "PATH=$PATH:${GITHUB_WORKSPACE}"
           echo "$PATH"
+          which blender
 
       # No caching in case there is an importing issue.
       # The Library folder will be rebuilt.  This will take a while!
