@@ -25,17 +25,11 @@ jobs:
           echo "$PATH"
           ls
           mv ${GITHUB_WORKSPACE}/blender ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender
-      - name: Setup blender to work
-        run: |
           sudo apt-get install libglu1
-      - name: Add blender to path and file associations
-        run: |
           export "PATH=$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
           echo "$PATH"
           which blender
           xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
-      - name: Check blender setup properly
-        run: |
           xdg-mime query default application/x-blender
           blender --version
 
