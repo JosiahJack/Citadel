@@ -25,9 +25,9 @@ jobs:
           echo "$PATH"
           ls
           mv ${GITHUB_WORKSPACE}/blender ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender
-      - name: Setup blender to work without gl requirements
+      - name: Setup blender to work
         run: |
-          ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender-softwaregl
+          sudo apt-get install libglu1
       - name: Add blender to path and file associations
         run: |
           export "PATH=$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
