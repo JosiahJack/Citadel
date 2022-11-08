@@ -16,16 +16,26 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        
+      # This project requires Blender 2.76b to be installed for .blend files to be imported
+      # as .fbx files prior to builds or else no models will be included in the build.
       - name: Unzip blender and add to path and associate blend files
         run: |
           unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
           echo "$PATH"
           ls
           mv ${GITHUB_WORKSPACE}/blender ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender
+      - name: Setup blender to work without gl requirements
+        run: |
+          ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender-softwaregl
+      - name: Add blender to path and file associations
+        run: |
           export "PATH=$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
           echo "$PATH"
           which blender
           xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
+      - name: Check blender setup properly
+        run: |
           xdg-mime query default application/x-blender
           blender --version
 
