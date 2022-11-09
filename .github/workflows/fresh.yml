@@ -5,7 +5,7 @@ on:
 jobs:
   build:
     name: Citadel Build for ${{ matrix.targetPlatform }}
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -21,6 +21,7 @@ jobs:
       # as .fbx files prior to builds or else no models will be included in the build.
       - name: Install blender
         run: |
+          sudo apt-get update
           sudo apt-get install blender
           #unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
           #echo "$PATH"
