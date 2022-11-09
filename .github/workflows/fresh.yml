@@ -18,30 +18,24 @@ jobs:
       steps:
         - name: Checkout repository
           uses: actions/checkout@v2
-
-        # This project requires Blender 2.76b to be installed for .blend files to be imported
-        # as .fbx files prior to builds or else no models will be included in the build.
         - name: Install blender and build
           run: |
             sudo apt-get update
             sudo apt-get install blender
-          #unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
-          #echo "$PATH"
-          #ls
-          #mv ${GITHUB_WORKSPACE}/blender ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender
-          #sudo apt-get install libglu1
-          #export "PATH=$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
-          #echo "$PATH" >> $GITHUB_PATH
-          #echo "PATH=${GITHUB_PATH}" >> $GITHUB_ENV
-          #echo "Path set: $PATH"
-          #which blender
-          # xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
+            #unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
+            #echo "$PATH"
+            #ls
+            #mv ${GITHUB_WORKSPACE}/blender ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender
+            #sudo apt-get install libglu1
+            #export "PATH=$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
+            #echo "$PATH" >> $GITHUB_PATH
+            #echo "PATH=${GITHUB_PATH}" >> $GITHUB_ENV
+            #echo "Path set: $PATH"
+            #which blender
+            # xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
             echo "Confirm Blender installation: "
             xdg-mime query default application/x-blender
             blender --version
-
-        # No caching in case there is an importing issue.
-        # The Library folder will be rebuilt.  This will take a while!
         - id: buildStep
           uses: game-ci/unity-builder@v2
           env:
