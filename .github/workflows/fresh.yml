@@ -19,10 +19,12 @@ jobs:
 
       # This project requires Blender 2.76b to be installed for .blend files to be imported
       # as .fbx files prior to builds or else no models will be included in the build.
-      - name: Install blender
-        run: |
-          sudo apt-get update
-          sudo apt-get install blender
+      - name: Install blender and build
+        using: "composite"
+        steps:
+          run: |
+            sudo apt-get update
+            sudo apt-get install blender
           #unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
           #echo "$PATH"
           #ls
@@ -34,14 +36,13 @@ jobs:
           #echo "Path set: $PATH"
           #which blender
           # xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
-          echo "Confirm Blender installation: "
-          xdg-mime query default application/x-blender
-          blender --version
+            echo "Confirm Blender installation: "
+            xdg-mime query default application/x-blender
+            blender --version
 
       # No caching in case there is an importing issue.
       # The Library folder will be rebuilt.  This will take a while!
-      - name: Build game
-        id: buildStep
+      - id: buildStep
         uses: game-ci/unity-builder@v2
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
