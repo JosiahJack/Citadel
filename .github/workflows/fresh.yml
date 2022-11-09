@@ -40,21 +40,21 @@ jobs:
             xdg-mime query default application/x-blender
             blender --version
 
-      # No caching in case there is an importing issue.
-      # The Library folder will be rebuilt.  This will take a while!
-      - id: buildStep
-        uses: game-ci/unity-builder@v2
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          targetPlatform: ${{ matrix.targetPlatform }}
-          versioning: Semantic
-          allowDirtyBuild: true
-      - name: Upload built files
-        uses: actions/upload-artifact@v2
-        with:
-          name: Citadel_DevBuild_${{ matrix.targetPlatform }}
-          path: build/${{ matrix.targetPlatform }}
-          if-no-files-found: error
+        # No caching in case there is an importing issue.
+        # The Library folder will be rebuilt.  This will take a while!
+        - id: buildStep
+          uses: game-ci/unity-builder@v2
+          env:
+            UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+            UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+            UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          with:
+            targetPlatform: ${{ matrix.targetPlatform }}
+            versioning: Semantic
+            allowDirtyBuild: true
+        - name: Upload built files
+          uses: actions/upload-artifact@v2
+          with:
+            name: Citadel_DevBuild_${{ matrix.targetPlatform }}
+            path: build/${{ matrix.targetPlatform }}
+            if-no-files-found: error
