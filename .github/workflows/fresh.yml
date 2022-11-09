@@ -24,6 +24,11 @@ jobs:
           file_name: .env
           fail_on_empty: true
 
+      - name: Set environment path for all steps
+        uses: c-py/action-dotenv-to-setenv@v2
+        with:
+          env-file: .env
+
       # This project requires Blender 2.76b to be installed for .blend files to be imported
       # as .fbx files prior to builds or else no models will be included in the build.
       - name: Unzip blender and add to path and associate blend files
