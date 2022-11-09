@@ -30,6 +30,7 @@ jobs:
           sudo apt-get install libglu1
           export "PATH=$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
           echo "$PATH" >> $GITHUB_PATH
+          echo "$PATH" >> $GITHUB_ENV
           which blender
           # xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
           # xdg-mime query default application/x-blender
