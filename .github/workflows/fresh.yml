@@ -13,12 +13,17 @@ jobs:
           - StandaloneOSX       # Build a macOS standalone (Intel 64-bit).
           - StandaloneWindows64 # Build a Windows 64-bit standalone.
           - StandaloneLinux64   # Build a Linux 64-bit standalone.
-    env:
-      GITHUB_PATH: ${GITHUB_WORKSPACE}/BuildTools/blender2.76b
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
+
+      - name: Make env file
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_PATH: "$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
+          file_name: .env
+          fail_on_empty: true
+
       # This project requires Blender 2.76b to be installed for .blend files to be imported
       # as .fbx files prior to builds or else no models will be included in the build.
       - name: Unzip blender and add to path and associate blend files
@@ -28,9 +33,9 @@ jobs:
           ls
           mv ${GITHUB_WORKSPACE}/blender ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender
           sudo apt-get install libglu1
-          export "PATH=$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
-          echo "$PATH" >> $GITHUB_PATH
-          echo "$PATH" >> $GITHUB_ENV
+          # export "PATH=$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
+          # echo "$PATH" >> $GITHUB_PATH
+          # echo "$PATH"
           which blender
           # xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
           # xdg-mime query default application/x-blender
