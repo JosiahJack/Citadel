@@ -13,6 +13,8 @@ jobs:
           - StandaloneOSX       # Build a macOS standalone (Intel 64-bit).
           - StandaloneWindows64 # Build a Windows 64-bit standalone.
           - StandaloneLinux64   # Build a Linux 64-bit standalone.
+    env:
+      GITHUB_PATH: ${GITHUB_WORKSPACE}/BuildTools/blender2.76b
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -27,7 +29,7 @@ jobs:
           mv ${GITHUB_WORKSPACE}/blender ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender
           sudo apt-get install libglu1
           export "PATH=$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
-          echo "$PATH" >> $PATH
+          echo "$PATH" >> $GITHUB_PATH
           which blender
           # xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
           # xdg-mime query default application/x-blender
