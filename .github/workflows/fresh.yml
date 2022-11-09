@@ -13,15 +13,15 @@ jobs:
           - StandaloneOSX       # Build a macOS standalone (Intel 64-bit).
           - StandaloneWindows64 # Build a Windows 64-bit standalone.
           - StandaloneLinux64   # Build a Linux 64-bit standalone.
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    runs:
+      using: "composite"
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v2
 
-      # This project requires Blender 2.76b to be installed for .blend files to be imported
-      # as .fbx files prior to builds or else no models will be included in the build.
-      - name: Install blender and build
-        using: "composite"
-        steps:
+        # This project requires Blender 2.76b to be installed for .blend files to be imported
+        # as .fbx files prior to builds or else no models will be included in the build.
+        - name: Install blender and build
           run: |
             sudo apt-get update
             sudo apt-get install blender
