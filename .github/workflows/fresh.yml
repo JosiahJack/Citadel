@@ -13,25 +13,14 @@ jobs:
           - StandaloneOSX       # Build a macOS standalone (Intel 64-bit).
           - StandaloneWindows64 # Build a Windows 64-bit standalone.
           - StandaloneLinux64   # Build a Linux 64-bit standalone.
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v2
-        - name: Install blender and build
-          run: |
-            sudo apt-get update
-            sudo apt-get install blender
-            #unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
-            #echo "$PATH"
-            #ls
-            #mv ${GITHUB_WORKSPACE}/blender ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender
-            #sudo apt-get install libglu1
-            #export "PATH=$PATH:${GITHUB_WORKSPACE}/BuildTools/blender2.76b"
-            #echo "$PATH" >> $GITHUB_PATH
-            #echo "PATH=${GITHUB_PATH}" >> $GITHUB_ENV
-            #echo "Path set: $PATH"
-            #which blender
-            # xdg-mime default ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/userapp-blender.desktop application/x-blender
-            echo "Confirm Blender installation: "
-            xdg-mime query default application/x-blender
-            blender --version
-            gh workflow run build_unity.yml
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Install blender and build
+      run: |
+        sudo apt-get update
+        sudo apt-get install blender
+        echo "Confirm Blender installation: "
+        xdg-mime query default application/x-blender
+        blender --version
+        gh workflow run build_unity.yml
