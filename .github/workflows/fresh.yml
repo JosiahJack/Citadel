@@ -19,11 +19,19 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Install blender and build
-      run: |
-        sudo apt-get update
-        sudo apt-get install blender
-        echo "Confirm Blender installation: "
-        xdg-mime query default application/x-blender
-        blender --version
-        gh workflow run build_unity.yml
+    - uses: game-ci/unity-builder@v2
+      env:
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      with:
+        targetPlatform: ${{ matrix.targetPlatform }}
+        versioning: Semantic
+        allowDirtyBuild: true
+        #customImage: 'JosiahJack/editor:ubuntu-2019.4.35f1'
+      - name: Upload built files
+        uses: actions/upload-artifact@v2
+        with:
+          name: Citadel_DevBuild_${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}
+          if-no-files-found: error
