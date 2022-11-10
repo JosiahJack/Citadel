@@ -13,8 +13,6 @@ jobs:
           - StandaloneOSX       # Build a macOS standalone (Intel 64-bit).
           - StandaloneWindows64 # Build a Windows 64-bit standalone.
           - StandaloneLinux64   # Build a Linux 64-bit standalone.
-    runs:
-      using: "composite"
       steps:
         - name: Checkout repository
           uses: actions/checkout@v2
@@ -36,19 +34,4 @@ jobs:
             echo "Confirm Blender installation: "
             xdg-mime query default application/x-blender
             blender --version
-        - id: buildStep
-          uses: game-ci/unity-builder@v2
-          env:
-            UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-            UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-            UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          with:
-            targetPlatform: ${{ matrix.targetPlatform }}
-            versioning: Semantic
-            allowDirtyBuild: true
-        - name: Upload built files
-          uses: actions/upload-artifact@v2
-          with:
-            name: Citadel_DevBuild_${{ matrix.targetPlatform }}
-            path: build/${{ matrix.targetPlatform }}
-            if-no-files-found: error
+            gh workflow run build_unity.yml
