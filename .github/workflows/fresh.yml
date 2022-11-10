@@ -28,10 +28,10 @@ jobs:
         targetPlatform: ${{ matrix.targetPlatform }}
         versioning: Semantic
         allowDirtyBuild: true
-        #customImage: 'JosiahJack/editor:ubuntu-2019.4.35f1'
-      - name: Upload built files
-        uses: actions/upload-artifact@v2
-        with:
-          name: Citadel_DevBuild_${{ matrix.targetPlatform }}
-          path: build/${{ matrix.targetPlatform }}
-          if-no-files-found: error
+        customImage: 'aallbrig/editor:ubuntu-2019.4.35f1'
+    - name: Upload built files
+      uses: actions/upload-artifact@v2
+      with:
+        name: Citadel_DevBuild_${{ matrix.targetPlatform }}
+        path: build/${{ matrix.targetPlatform }}
+        if-no-files-found: error
