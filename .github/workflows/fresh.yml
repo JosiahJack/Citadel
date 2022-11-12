@@ -16,7 +16,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
+      - name: Run custom image build
+        run: |
+          chmod +x ./build.sh
+          ./build.sh
+      - name: Confirm blender installation
+        run: |
+          docker run --rm -it gableroux/editor:ubuntu-2019.4.35f1-linux-il2cpp-0.15.0 blender --version
       - name: Build game
         uses: game-ci/unity-builder@v2
         env:
@@ -26,6 +32,7 @@ jobs:
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
           versioning: Semantic
+          customImage: gableroux/editor:ubuntu-2019.4.35f1-linux-il2cpp-0.15.0
           allowDirtyBuild: true
 
       - name: Upload built files

@@ -1,6 +1,7 @@
-FROM unityci/base
+ARG GAME_CI_UNITY_EDITOR_IMAGE
 
-MAINTAINER ***@m***
+FROM $GAME_CI_UNITY_EDITOR_IMAGE
+#FROM unityci/editor:ubuntu-2019.4.35f1-linux-il2cpp-1
 
 RUN apt-get update && \
     apt-get install -y blender
