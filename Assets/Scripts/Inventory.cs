@@ -708,7 +708,7 @@ public class Inventory : MonoBehaviour {
 		Utils.PlayOneShotSavable(SFXSource,SFXClip); // Play the log audio
 		if (!readLog[logIndex]) QuestLogNotesManager.a.LogAdded(logIndex);
 		readLog[logIndex] = true;
-		if (Const.a.audioLogType[logIndex] == 4) {
+		if (Const.a.audioLogType[logIndex] == AudioLogType.Vmail) {
 			MouseLookScript.a.vmailActive = true; // allow click to end
 			MouseLookScript.a.ForceInventoryMode();
 			switch (logIndex) {

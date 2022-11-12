@@ -276,6 +276,28 @@ public class Utils {
 		return AIMoveType.None;
 	}
 
+	public static AudioLogType GetAudioLogTypeFromInt(int audtype_i) {
+		switch(audtype_i) {
+			case 0: return AudioLogType.TextOnly;
+			case 1: return AudioLogType.Normal;
+			case 2: return AudioLogType.Email;
+			case 3: return AudioLogType.Papers;
+			case 4: return AudioLogType.Vmail;
+		}
+		return AudioLogType.Normal;
+	}
+
+	public static int GetIntFromAudioLogType(AudioLogType audtype) {
+		switch(audtype) {
+			case AudioLogType.TextOnly: return 0;
+			case AudioLogType.Normal:   return 1;
+			case AudioLogType.Email:    return 2;
+			case AudioLogType.Papers:   return 3;
+			case AudioLogType.Vmail:    return 4;
+		}
+		return 1;
+	}
+
 	public static LightType GetLightTypeFromString(string type) {
 		if (type == "Spot") return LightType.Spot;
 		else if (type == "Directional") return LightType.Directional;

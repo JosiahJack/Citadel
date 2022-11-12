@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
 jobs:
   build:
-  
     name: Citadel Build for ${{ matrix.targetPlatform }}
     runs-on: ubuntu-latest
     strategy:
@@ -14,24 +13,24 @@ jobs:
           - StandaloneOSX       # Build a macOS standalone (Intel 64-bit).
           - StandaloneWindows64 # Build a Windows 64-bit standalone.
           - StandaloneLinux64   # Build a Linux 64-bit standalone.
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-    - uses: game-ci/unity-builder@v2
-      env:
-        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-      with:
-        targetPlatform: ${{ matrix.targetPlatform }}
-        versioning: Semantic
-        allowDirtyBuild: true
-        customImage: 'aallbrig/editor:ubuntu-2019.4.35f1'
-    - name: Upload built files
-      uses: actions/upload-artifact@v2
-      with:
-        name: Citadel_DevBuild_${{ matrix.targetPlatform }}
-        path: build/${{ matrix.targetPlatform }}
-        if-no-files-found: error
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build game
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: ${{ matrix.targetPlatform }}
+          versioning: Semantic
+          allowDirtyBuild: true
+
+      - name: Upload built files
+        uses: actions/upload-artifact@v2
+        with:
+          name: Citadel_DevBuild_${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}
+          if-no-files-found: error

@@ -114,7 +114,7 @@ public class MFDManager : MonoBehaviour  {
 	public bool lastMinigameSideRH;
 	[HideInInspector] public float logFinished;
 	[HideInInspector] public bool logActive;
-	[HideInInspector] public int logType = 0;
+	[HideInInspector] public AudioLogType logType;
 	[HideInInspector] public Door linkedElevatorDoor;
 	[HideInInspector] public Vector3 objectInUsePos;
 	[HideInInspector] public PuzzleGridPuzzle tetheredPGP = null;
@@ -244,7 +244,9 @@ public class MFDManager : MonoBehaviour  {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			HardwareButtonsUpdate();
 			if (logActive) {
-				if (logFinished < PauseScript.a.relativeTime && logType != 3 && logType != 0) {
+				if (logFinished < PauseScript.a.relativeTime
+				    && logType != AudioLogType.Papers
+					&& logType != AudioLogType.TextOnly) {
 					logActive = false;
 					if (itemTabLH.eReaderSectionsContainer.activeInHierarchy) ReturnToLastTab(true);
 					if (itemTabRH.eReaderSectionsContainer.activeInHierarchy) ReturnToLastTab(false);
@@ -1380,7 +1382,7 @@ public class MFDManager : MonoBehaviour  {
 		line += Utils.splitChar + Utils.BoolToString(mfd.logLevelsFolder.activeSelf); // bool
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(mfd.logFinished);
 		line += Utils.splitChar + Utils.BoolToString(mfd.logActive); // bool
-		line += Utils.splitChar + mfd.logType.ToString(); // int
+		line += Utils.splitChar + Utils.IntToString(Utils.GetIntFromAudioLogType(mfd.logType)); // int
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished);
 		return line;
 	}
@@ -1416,7 +1418,7 @@ public class MFDManager : MonoBehaviour  {
 		mfd.logLevelsFolder.SetActive(Utils.GetBoolFromString(entries[index])); index++;
 		mfd.logFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		mfd.logActive = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.logType = Utils.GetIntFromString(entries[index]); index++;
+		mfd.logType = Utils.GetAudioLogTypeFromInt(Utils.GetIntFromString(entries[index])); index++;
 		mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		return index;
 	}

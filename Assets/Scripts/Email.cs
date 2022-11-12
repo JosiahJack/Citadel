@@ -9,9 +9,13 @@ public class Email : MonoBehaviour {
     public void Targetted() {
 		// Give email.
 		if (Inventory.a.hasLog[emailIndex]) return; // Already have it.
+
 		Inventory.a.hasLog[emailIndex] = true;
 		Inventory.a.lastAddedIndex = emailIndex;
-		if (Const.a.audioLogType[emailIndex] == 2) Inventory.a.beepDone = true;
+		if (Const.a.audioLogType[emailIndex] == AudioLogType.Email) {
+			Inventory.a.beepDone = true;
+		}
+
 		if (autoPlayEmail) Inventory.a.PlayLastAddedLog(emailIndex);
 	}
 }

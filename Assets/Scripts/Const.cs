@@ -25,7 +25,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public string[] audiologSenders;
 	[HideInInspector] public string[] audiologSubjects;
 	public AudioClip[] audioLogs;
-	[HideInInspector] public int[] audioLogType;  // 0 = text only, 1 = normal, 2 = email, 3 = papers, 4 = vmail
+	[HideInInspector] public AudioLogType[] audioLogType;  // 0 = text only, 1 = normal, 2 = email, 3 = papers, 4 = vmail
 	[HideInInspector] public string[] audioLogSpeech2Text;
 	[HideInInspector] public int[] audioLogLevelFound;
 	public AudioClip[] sounds;
@@ -380,26 +380,58 @@ public class Const : MonoBehaviour {
 
 	void Start() {
 		Config.LoadConfig();
-		layerMaskNPCSight = LayerMask.GetMask("Default","Geometry","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
-		layerMaskNPCAttack = LayerMask.GetMask("Default","Geometry","Corpse","Door","InterDebris","PhysObjects","Player","Player2","Player3","Player4");
-		layerMaskNPCCollision = LayerMask.GetMask("Default","TransparentFX","IgnoreRaycast","Geometry","NPC","Door","InterDebris","Player","Clip","NPCClip","PhysObjects"); // Not including "Bullets" as this is merely used for spawning, not setting level-wide NPC collisions.
-		layerMaskPlayerFrob = LayerMask.GetMask("Default","Geometry","Water","Corpse","Door","InterDebris","PhysObjects","Player2","Player3","Player4","NPC"); // Water is a hidden layer that prevents the player frobbing through gratings, X-doors, etc.  Oh and also water...if that were a thing.
-		layerMaskPlayerAttack = LayerMask.GetMask("Default","Geometry","NPC","Bullets","Corpse","Door","InterDebris","PhysObjects","Player2","Player3","Player4");
+		layerMaskNPCSight = LayerMask.GetMask("Default","Geometry","Corpse",
+											  "Door","InterDebris",
+											  "PhysObjects","Player","Player2",
+											  "Player3","Player4");
+		layerMaskNPCAttack = LayerMask.GetMask("Default","Geometry","Corpse",
+											   "Door","InterDebris",
+											   "PhysObjects","Player","Player2",
+											   "Player3","Player4");
+
+		// Not including "Bullets" as this is merely used for spawning, not
+		// setting level-wide NPC collisions.
+		layerMaskNPCCollision = LayerMask.GetMask("Default","TransparentFX",
+												  "IgnoreRaycast","Geometry",
+												  "NPC","Door","InterDebris",
+												  "Player","Clip","NPCClip",
+												  "PhysObjects");
+
+		// Water is a hidden layer that prevents the player frobbing through
+		// gratings, X-doors, etc.  Oh and also water...if that were a thing.
+		layerMaskPlayerFrob = LayerMask.GetMask("Default","Geometry","Water",
+												"Corpse","Door","InterDebris",
+												"PhysObjects","Player2","Player3",
+												"Player4","NPC");
+
+		layerMaskPlayerAttack = LayerMask.GetMask("Default","Geometry","NPC",
+												  "Bullets","Corpse","Door",
+												  "InterDebris","PhysObjects",
+												  "Player2","Player3","Player4");
 		LoadCreditsData();
 		StartCoroutine(InitializeEventSystem());
 		questData = new QuestBits ();
-		questData.lev1SecCode = UnityEngine.Random.Range(0,10); // Integer overload is maximum exclusive.  Confirmed maximum return value is 9.
+		// Integer overload is maximum exclusive.  Confirmed maximum return
+		// value is 9 and not 10.
+		questData.lev1SecCode = UnityEngine.Random.Range(0,10); 
 		questData.lev2SecCode = UnityEngine.Random.Range(0,10);
 		questData.lev3SecCode = UnityEngine.Random.Range(0,10);
 		questData.lev4SecCode = UnityEngine.Random.Range(0,10);
 		questData.lev5SecCode = UnityEngine.Random.Range(0,10);
 		questData.lev6SecCode = UnityEngine.Random.Range(0,10);
-		if (mainFont1 != null) mainFont1.material.mainTexture.filterMode = FilterMode.Point;
-		if (mainFont2 != null) mainFont2.material.mainTexture.filterMode = FilterMode.Point;
+		if (mainFont1 != null) {
+			mainFont1.material.mainTexture.filterMode = FilterMode.Point;
+		}
+
+		if (mainFont2 != null) {
+			mainFont2.material.mainTexture.filterMode = FilterMode.Point;
+		}
+
 		PauseRigidbody[] prbTemp = FindObjectsOfType<PauseRigidbody>();
 		for (int i=0;i<prbTemp.Length;i++) prb.Add(prbTemp[i]);
-		PauseParticleSystem[] psysTemp = FindObjectsOfType<PauseParticleSystem>();
-		for (int i=0;i<psysTemp.Length;i++) psys.Add(psysTemp[i]);
+		 // P.P.S. PP. That's funny right there.
+		PauseParticleSystem[] ppses = FindObjectsOfType<PauseParticleSystem>();
+		for (int i=0;i<ppses.Length;i++) psys.Add(ppses[i]);
 
 		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
 		GameObject loadGameIndicator = GameObject.Find("LoadGameIndicator");
@@ -410,8 +442,22 @@ public class Const : MonoBehaviour {
 			MainMenuHandler.a.IntroVideoContainer.SetActive(false);
 			sprint(stringTable[197]); // Loading...Done!
 			WriteDatForIntroPlayed(false);
-			if (loadGameIndicator != null) Destroy(loadGameIndicator);
-			else if (newGameIndicator != null) Destroy(newGameIndicator);
+			if (loadGameIndicator != null) {
+				PrefabIdentifier pfID = loadGameIndicator.GetComponent<PrefabIdentifier>();
+				int saveID = pfID.constIndex; // Done here so that gameobject
+				Destroy(loadGameIndicator);   // is destroyed prior to starting
+											  // the coroutine in case I have
+											  // it load next scene too quickly.
+				loadingScreen.SetActive(true);
+				loadPercentText.text = "(0) --.--";
+				PauseScript.a.PauseEnable();
+				PauseScript.a.Loading();
+				MFDManager.a.TabReset(true);
+				MFDManager.a.TabReset(false);
+
+				// This is the actual hook to load a game!
+				StartCoroutine(Const.a.LoadRoutine(saveID,true));
+			} else if (newGameIndicator != null) Destroy(newGameIndicator);
 		}
 	}
 
@@ -443,7 +489,7 @@ public class Const : MonoBehaviour {
 				audiologNames[readIndexOfLog] = entries[i]; i++;
 				audiologSenders[readIndexOfLog] = entries[i]; i++;
 				audiologSubjects[readIndexOfLog] = entries[i]; i++;
-				audioLogType[readIndexOfLog] = Utils.GetIntFromString(entries[i]); i++;
+				audioLogType[readIndexOfLog] = Utils.GetAudioLogTypeFromInt(Utils.GetIntFromString(entries[i])); i++;
 				audioLogLevelFound[readIndexOfLog] = Utils.GetIntFromString(entries[i]); i++;
 				readLogText = entries[i]; i++;
 				// handle extra commas within the body text and append remaining portions of the line
@@ -1198,6 +1244,8 @@ public class Const : MonoBehaviour {
 		if (saveFileIndex < 0) loadGameIndicator.name = "NewGameIndicator";
 		else loadGameIndicator.name = "LoadGameIndicator";
 
+		PrefabIdentifier svID = loadGameIndicator.AddComponent<PrefabIdentifier>();
+		svID.constIndex = saveFileIndex;
 		DontDestroyOnLoad(loadGameIndicator);
 		loadingScreen.SetActive(true);
 		loadPercentText.text = "(0) --.--";
@@ -1206,10 +1254,10 @@ public class Const : MonoBehaviour {
 		PauseScript.a.Loading();
 		MFDManager.a.TabReset(true);
 		MFDManager.a.TabReset(false);
-		StartCoroutine(Const.a.LoadRoutine(saveFileIndex));
+		StartCoroutine(Const.a.LoadRoutine(saveFileIndex,false));
 	}
 
-	public IEnumerator LoadRoutine(int saveFileIndex) {
+	public IEnumerator LoadRoutine(int saveFileIndex, bool actual) {
 		Stopwatch loadTimer = new Stopwatch();
 		//Stopwatch matchTimer = new Stopwatch();
 		loadTimer.Start();
@@ -1232,7 +1280,10 @@ public class Const : MonoBehaviour {
 		introNotPlayed = false;
 		loadPercentText.text = "(1) --.--";
 		WriteDatForIntroPlayed(false); // reset
-		SceneManager.LoadScene(0);
+		if (!actual) {
+			SceneManager.LoadScene(0);
+			yield break;
+		}
 		yield return null;
 
 		string readline;
