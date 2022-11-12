@@ -14,5 +14,5 @@ do
   IMAGE_TO_PUBLISH=${MY_USERNAME}/editor:ubuntu-${UNITY_VERSION}-${component}-${GAME_CI_VERSION}
   docker build --build-arg GAME_CI_UNITY_EDITOR_IMAGE=${GAME_CI_UNITY_EDITOR_IMAGE} . -t ${IMAGE_TO_PUBLISH}
 # uncomment the following to publish the built images to docker hub
-#  docker push ${IMAGE_TO_PUBLISH}
+  docker push ${IMAGE_TO_PUBLISH}
 done
