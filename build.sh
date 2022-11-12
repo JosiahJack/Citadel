@@ -3,7 +3,7 @@
 set -ex
 
 UNITY_VERSION=2019.4.35f1
-GAME_CI_VERSION=0.15.0 # https://github.com/game-ci/docker/releases
+GAME_CI_VERSION=1 # https://github.com/game-ci/docker/releases
 MY_USERNAME=gableroux
 
 declare -a components=("linux-il2cpp" "mac-mono" "windows-mono")
