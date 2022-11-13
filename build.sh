@@ -8,6 +8,7 @@ MY_USERNAME=josiahjack
 
 declare -a components=("linux-il2cpp" "mac-mono" "windows-mono")
 
+docker login -u="$1" -p="$2"
 for component in "${components[@]}"
 do
   GAME_CI_UNITY_EDITOR_IMAGE=unityci/editor:ubuntu-${UNITY_VERSION}-${component}-${GAME_CI_VERSION}
