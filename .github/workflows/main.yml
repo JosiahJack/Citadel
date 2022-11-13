@@ -1,37 +1,18 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
-
-# Controls when the workflow will run
+name: Fresh Build
 on:
   # Manual runs only.
   workflow_dispatch:
-
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
     name: Citadel Build for ${{ matrix.targetPlatform }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        targetPlatform:
-          - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
-          - StandaloneWindows64 # Build a Windows 64-bit standalone.
-          - StandaloneLinux64 # Build a Linux 64-bit standalone.
+        plans: [ {targetPlatform: StandaloneOSX, dockerImage: mac-mono}, {targetPlatform: StandaloneWindows64, dockerImage: windows-mono}, {targetPlatform: StandaloneLinux64, dockerImage: linux-il2cpp} ] 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Unzip blender and add to path
-        run: |
-          unzip ${GITHUB_WORKSPACE}/BuildTools/blender2.76b/blender.zip;
-          ls
-          mv -n /home/runner/work/Citadel/Citadel/blender /home/runner/work/Citadel/blender
-          echo "/home/runner/work/Citadel/" >> $GITHUB_PATH
-
       - name: Mark Library folder to be preserved
         uses: actions/cache@v2
         with:
@@ -39,7 +20,6 @@ jobs:
           key: Library-${{ matrix.targetPlatform }}
           restore-keys: |
             Library-
-
       - name: Build game
         uses: game-ci/unity-builder@v2
         env:
@@ -47,12 +27,14 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          targetPlatform: ${{ matrix.targetPlatform }}
+          targetPlatform: ${{ matrix.plans.targetPlatform }}
           versioning: Semantic
+          customImage: josiahjack/citadel-ci:ubuntu-2019.4.35f1-${{ matrix.plans.dockerImage }}-1
+          allowDirtyBuild: true
 
-      # Output
       - name: Upload built files
         uses: actions/upload-artifact@v2
         with:
           name: Citadel_DevBuild_${{ matrix.targetPlatform }}
-          path: build/Citadel_DevBuild_${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}
+          if-no-files-found: error
