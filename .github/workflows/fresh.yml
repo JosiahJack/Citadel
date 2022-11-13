@@ -9,10 +9,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        targetPlatform:
-          - StandaloneOSX       # Build a macOS standalone (Intel 64-bit).
-          - StandaloneWindows64 # Build a Windows 64-bit standalone.
-          - StandaloneLinux64   # Build a Linux 64-bit standalone.
+        - targetPlatform: StandaloneOSX       # Build a macOS standalone (Intel 64-bit).
+          dockerImage: mac-mono
+        - targetPlatform: StandaloneWindows64 # Build a Windows 64-bit standalone.
+          dockerImage: windows-mono
+        - targetPlatform: StandaloneLinux64   # Build a Linux 64-bit standalone.
+          dockerImage: linux-il2cpp
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -30,7 +32,7 @@ jobs:
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
           versioning: Semantic
-          customImage: josiahjack/citadel-ci:ubuntu-2019.4.35f1-linux-il2cpp-1
+          customImage: josiahjack/citadel-ci:ubuntu-2019.4.35f1-${{ matrix.dockerImage }}-1
           allowDirtyBuild: true
 
       - name: Upload built files
