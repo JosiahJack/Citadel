@@ -32,7 +32,7 @@ jobs:
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
           versioning: Semantic
-          customImage: gableroux/editor:ubuntu-2019.4.35f1-linux-il2cpp-0.15.0
+          customImage: josiahjack/citadel-ci:ubuntu-2019.4.35f1-linux-il2cpp-1
           allowDirtyBuild: true
 
       - name: Upload built files
