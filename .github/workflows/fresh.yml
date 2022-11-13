@@ -18,9 +18,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Run custom image build
         run: |
-          echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username ${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           chmod +x ./build.sh
-          ./build.sh $DOCKER_USERNAME $DOCKER_TOKEN
+          ./build.sh
       - name: Build game
         uses: game-ci/unity-builder@v2
         env:
