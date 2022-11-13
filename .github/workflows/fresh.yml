@@ -18,11 +18,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Run custom image build
         run: |
+          echo "::add-mask::${{ secrets.DOCKER_TOKEN }}"
           chmod +x ./build.sh
-          ./build.sh
-      - name: Confirm blender installation
-        run: |
-          docker run --rm -it gableroux/editor:ubuntu-2019.4.35f1-linux-il2cpp-0.15.0 blender --version
+          ./build.sh $DOCKER_USERNAME $DOCKER_TOKEN
       - name: Build game
         uses: game-ci/unity-builder@v2
         env:
