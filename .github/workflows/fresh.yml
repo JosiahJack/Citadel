@@ -9,12 +9,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - targetPlatform: StandaloneOSX       # Build a macOS standalone (Intel 64-bit).
-          dockerImage: mac-mono
-        - targetPlatform: StandaloneWindows64 # Build a Windows 64-bit standalone.
-          dockerImage: windows-mono
-        - targetPlatform: StandaloneLinux64   # Build a Linux 64-bit standalone.
-          dockerImage: linux-il2cpp
+        targetPlatform:
+          - StandaloneOSX       # Build a macOS standalone (Intel 64-bit).
+          - StandaloneWindows64 # Build a Windows 64-bit standalone.
+          - StandaloneLinux64   # Build a Linux 64-bit standalone.
+        dockerImage:
+          - mac-mono
+          - windows-mono
+          - linux-il2cpp
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
