@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    name: Citadel Build for ${{ matrix.targetPlatform }}
+    name: Citadel Build ${{ matrix.plans.targetPlatform }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
