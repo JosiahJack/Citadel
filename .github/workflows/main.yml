@@ -1,4 +1,4 @@
-name: Fresh Build
+name: Citadel Build - Main
 on:
   # Manual runs only.
   workflow_dispatch:
@@ -9,18 +9,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        plans: [ {targetPlatform: StandaloneOSX, dockerImage: mac-mono}, {targetPlatform: StandaloneWindows64, dockerImage: windows-mono}, {targetPlatform: StandaloneLinux64, dockerImage: linux-il2cpp} ] 
+        plans: [ {targetPlatform: StandaloneOSX, dockerImage: mac-mono, downloadName: Mac64}, {targetPlatform: StandaloneWindows64, dockerImage: windows-mono, downloadName: Win64}, {targetPlatform: StandaloneLinux64, dockerImage: linux-il2cpp, downloadName: Linux64} ] 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Mark Library folder to be preserved
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: Library
           key: Library-${{ matrix.plans.targetPlatform }}
           restore-keys: |
             Library-
       - name: Build game
+        id: build
         uses: game-ci/unity-builder@v2
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -33,8 +34,8 @@ jobs:
           allowDirtyBuild: true
 
       - name: Upload built files
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: Citadel_DevBuild_${{ matrix.plans.targetPlatform }}
+          name: Citadel_DevBuild_${{ matrix.plans.downloadName }}_${{ steps.build.outputs.buildVersion }}
           path: build/${{ matrix.plans.targetPlatform }}
           if-no-files-found: error
