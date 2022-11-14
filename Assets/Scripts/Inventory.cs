@@ -386,7 +386,9 @@ public class Inventory : MonoBehaviour {
 			// Logs
 			if (logPaused) {
 				logPaused = false;
-				SFXSource.UnPause();
+				if (SFXSource == null) SFXSource = GetComponent<AudioSource>();
+				if (SFXSource == null) Debug.Log("ERROR: Missing SFXSource on Inventory!");
+				else SFXSource.UnPause();
 			}
 
 			if(GetInput.a.RecentLog() && (hasHardware[2] == true)) {
@@ -464,7 +466,9 @@ public class Inventory : MonoBehaviour {
 			// Logs pause exceptions.
 			if (!logPaused) {
 				logPaused = true;
-				SFXSource.Pause();
+				if (SFXSource == null) SFXSource = GetComponent<AudioSource>();
+				if (SFXSource == null) Debug.Log("ERROR: Missing SFXSource on Inventory!");
+				else SFXSource.Pause();
 			}
 			//--- End Logs ---
 		}

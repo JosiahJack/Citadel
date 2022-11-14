@@ -30,7 +30,7 @@ public class DelayedSpawn : MonoBehaviour {
 				if (doSelfAfterList) {
 					if (despawnInstead) {
 						if (destroyAfterListInsteadOfDeactivate) {
-							Destroy(gameObject);
+							Utils.SafeDestroy(gameObject);
 						} else {
 							gameObject.SetActive(false);
 						}

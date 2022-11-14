@@ -143,6 +143,12 @@ public class HealthManager : MonoBehaviour {
 		}
 	}
 
+	public void ClearOverlays() {
+		if (pstatic != null) pstatic.Deactivate();
+		if (empstatic != null) empstatic.Deactivate();
+		if (healingFXFlash != null) healingFXFlash.SetActive(false);
+	}
+
 	void UseDeathTargets() {
 		if (!string.IsNullOrWhiteSpace(targetOnDeath)) {
 			UseData ud = new UseData();

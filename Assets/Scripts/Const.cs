@@ -327,7 +327,7 @@ public class Const : MonoBehaviour {
 	//Instance container variable
 	public static Const a;
 
-	void Awake() {
+	public void Awake() {
 		Application.targetFrameRate = TARGET_FPS;
 		a = this; // Create a new instance so that it can be accessed globally. MOST IMPORTANT PART!!
 		a.justSavedTimeStamp = Time.time - a.savedReminderTime;
@@ -419,45 +419,33 @@ public class Const : MonoBehaviour {
 		questData.lev4SecCode = UnityEngine.Random.Range(0,10);
 		questData.lev5SecCode = UnityEngine.Random.Range(0,10);
 		questData.lev6SecCode = UnityEngine.Random.Range(0,10);
-		if (mainFont1 != null) {
+		if (mainFont1 != null) { // Ensure text is crisp and readable.
 			mainFont1.material.mainTexture.filterMode = FilterMode.Point;
 		}
 
-		if (mainFont2 != null) {
+		if (mainFont2 != null) { // Ensure text is crisp and readable.
 			mainFont2.material.mainTexture.filterMode = FilterMode.Point;
 		}
 
 		PauseRigidbody[] prbTemp = FindObjectsOfType<PauseRigidbody>();
 		for (int i=0;i<prbTemp.Length;i++) prb.Add(prbTemp[i]);
-		 // P.P.S. PP. That's funny right there.
+
+		 // P.P.S. PP. That's funny right there.  ...What?  I have kids.
 		PauseParticleSystem[] ppses = FindObjectsOfType<PauseParticleSystem>();
 		for (int i=0;i<ppses.Length;i++) psys.Add(ppses[i]);
 
 		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
 		GameObject loadGameIndicator = GameObject.Find("LoadGameIndicator");
-		if (loadGameIndicator != null || newGameIndicator != null) {
-			PauseScript.a.mainMenu.SetActive(false);
-			loadingScreen.SetActive(false);
+		if (loadGameIndicator != null) {
 			MainMenuHandler.a.IntroVideo.SetActive(false);
 			MainMenuHandler.a.IntroVideoContainer.SetActive(false);
-			sprint(stringTable[197]); // Loading...Done!
-			WriteDatForIntroPlayed(false);
-			if (loadGameIndicator != null) {
-				PrefabIdentifier pfID = loadGameIndicator.GetComponent<PrefabIdentifier>();
-				int saveID = pfID.constIndex; // Done here so that gameobject
-				Destroy(loadGameIndicator);   // is destroyed prior to starting
-											  // the coroutine in case I have
-											  // it load next scene too quickly.
-				loadingScreen.SetActive(true);
-				loadPercentText.text = "(0) --.--";
-				PauseScript.a.PauseEnable();
-				PauseScript.a.Loading();
-				MFDManager.a.TabReset(true);
-				MFDManager.a.TabReset(false);
-
-				// This is the actual hook to load a game!
-				StartCoroutine(Const.a.LoadRoutine(saveID,true));
-			} else if (newGameIndicator != null) Destroy(newGameIndicator);
+			PauseScript.a.mainMenu.SetActive(false);
+			SceneTransitionHandler sth = loadGameIndicator.GetComponent<SceneTransitionHandler>();
+			sth.Load();
+		} else if (newGameIndicator != null) {
+			UnityEngine.Debug.Log("newGameIndicator.name: " + newGameIndicator.name);
+			Utils.SafeDestroy(newGameIndicator);
+			GoIntoGame();				  // Start of the game!!
 		}
 	}
 
@@ -1183,7 +1171,7 @@ public class Const : MonoBehaviour {
 	}
 
 	// Save the Game
-	// ============================================================================
+	// ========================================================================
 	//public IEnumerator Save(int saveFileIndex,string savename) {
 	public void Save(int saveFileIndex,string savename) {
 		Stopwatch saveTimer = new Stopwatch();
@@ -1239,51 +1227,135 @@ public class Const : MonoBehaviour {
 		UnityEngine.Debug.Log("Saved to file in " + saveTimer.Elapsed.ToString());
 	}
 
-	public void Load(int saveFileIndex) {
-		GameObject loadGameIndicator = new GameObject();
-		if (saveFileIndex < 0) loadGameIndicator.name = "NewGameIndicator";
-		else loadGameIndicator.name = "LoadGameIndicator";
+	// Start a New Game
+	// ========================================================================
+	// Sequence is as follows
+	// 1. Button on New Game page sets difficulty, player name, and calls this.
+	// 2. Write ng.dat file to show value of false to prevent intro playing.
+	// 3. Look for GameNotYetStarted GameObject existence.
+	// 4a. If fresh
+	//   1. Destroy the GameNotYetStarted indicator GameObject.
+	//   2. then simply turn off menu.
+	// 4b. If not fresh
+	//   1. Create NewGameIndicator GameObject.
+	//   2. Flag it as DontDestroyOnLoad so it is preserved across scenes.
+	//   3. Unload current scene.
+	//   4. SceneTransitionHandler on DontDestroyOnLoad GameObject loads scene.
+	// 5. Const.a.Start() checks for NewGameIndicator existence.
+	// 6a. If present, simply turn off main menu.
+	// 6b. Else same as if game was started from scratch.
+	public void NewGame() {
+		UnityEngine.Debug.Log("Starting new game!");
+		WriteDatForIntroPlayed(false);
+		GameObject freshGame = GameObject.Find("GameNotYetStarted");
+		if (freshGame == null) {
+			GameObject newGameIndicator = new GameObject();
+			newGameIndicator.name = "NewGameIndicator";
+			SceneTransitionHandler sth =
+			  newGameIndicator.AddComponent<SceneTransitionHandler>();
+			sth.saveGameIndex = -1;
+			DontDestroyOnLoad(newGameIndicator);
+			ReloadScene(sth);
+		} else {
+			UnityEngine.Debug.Log("freshGame.name: " + freshGame.name);
+			Utils.SafeDestroy(freshGame);
+			GoIntoGame();
+		}
+	}
 
-		PrefabIdentifier svID = loadGameIndicator.AddComponent<PrefabIdentifier>();
-		svID.constIndex = saveFileIndex;
-		DontDestroyOnLoad(loadGameIndicator);
-		loadingScreen.SetActive(true);
-		loadPercentText.text = "(0) --.--";
+	public void GoIntoGame() {
+		GameObject freshGame = GameObject.Find("GameNotYetStarted");
+		if (freshGame != null) Utils.SafeDestroy(freshGame);
+		GameObject saveIndicator = GameObject.Find("NewGameIndicator");
+		if (saveIndicator != null)  Utils.SafeDestroy(saveIndicator);
+		GameObject loadIndicator = GameObject.Find("LoadGameIndicator");
+		if (loadIndicator != null)  Utils.SafeDestroy(loadIndicator);
+		Cursor.visible = true;
+		loadingScreen.SetActive(false);
+		MainMenuHandler.a.IntroVideo.SetActive(false);
+		MainMenuHandler.a.IntroVideoContainer.SetActive(false);
 		PauseScript.a.mainMenu.SetActive(false);
+		PauseScript.a.PauseDisable();
+		PlayerHealth.a.hm.ClearOverlays();
+		loadingScreen.SetActive(false);
+		if (player1Capsule != null) player1Capsule.SetActive(true);
+		else UnityEngine.Debug.Log("ERROR: Missing player1Capsule on GoIntoGame");
+		player1CapsuleMainCameragGO.transform.parent.gameObject.SetActive(true);
+		player1CapsuleMainCameragGO.SetActive(true);
+		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = true;
+		WriteDatForIntroPlayed(false);
+		sprint(stringTable[197]); // Loading...Done!
+	}
+
+	public void ShowLoading() {
 		PauseScript.a.PauseEnable();
 		PauseScript.a.Loading();
-		MFDManager.a.TabReset(true);
-		MFDManager.a.TabReset(false);
+		PauseScript.a.mainMenu.SetActive(false);
+		sprint(stringTable[196]); // Loading...
+		if (PlayerHealth.a != null) PlayerHealth.a.hm.ClearOverlays();
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+		loadPercentText.text = "(0) --.--";
+		loadingScreen.SetActive(true);
+	}
+
+	public void ReloadScene(SceneTransitionHandler sth) {
+		int index = SceneManager.GetActiveScene().buildIndex; // CitadelScene
+        SceneManager.CreateScene("LoadScene");
+		Scene loadScene = SceneManager.GetSceneByName("LoadScene");
+        SceneManager.SetActiveScene(loadScene);
+		AsyncOperation aso = SceneManager.UnloadSceneAsync(index,
+							  UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+		sth.Reload(index, ref aso);
+
+	}
+
+	// Load the Game
+	// ========================================================================
+	// Sequence is as follows
+	// 1. Player clicks on a button in load game menu
+	// 2. This function Load() is called with index -1 thru 7 and actual=false
+	// 3. Load then creates a DontDestroyOnLoad gameobject
+	// 4. Current scene is unloaded.
+	// 5. SceneTransitionHandler on DontDestroyOnLoad gameobject loads scene.
+	// 6. Const Start() detects DontDestroyOnLoad object, uses Load actual=true
+	// 7. Load then does actual load.
+	public void Load(int saveFileIndex, bool actual) {
+		ShowLoading();
+		if (!actual) {
+			UnityEngine.Debug.Log("Initial Load() with saveFileIndex of " + saveFileIndex.ToString());
+			GameObject loadGameIndicator = new GameObject();
+			loadGameIndicator.name = "LoadGameIndicator";
+			SceneTransitionHandler sth =
+			  loadGameIndicator.AddComponent<SceneTransitionHandler>();
+			sth.saveGameIndex = saveFileIndex;
+			DontDestroyOnLoad(loadGameIndicator);
+			ReloadScene(sth);
+			return;
+		} else UnityEngine.Debug.Log("Second pass Actual Load() with saveFileIndex of " + saveFileIndex.ToString());
+
+		GameObject freshGame = GameObject.Find("GameNotYetStarted");
+		if (freshGame != null) Utils.SafeDestroy(freshGame);
+		startingNewGame = false;
+		introNotPlayed = false;
+		WriteDatForIntroPlayed(introNotPlayed); // reset
 		StartCoroutine(Const.a.LoadRoutine(saveFileIndex,false));
 	}
 
 	public IEnumerator LoadRoutine(int saveFileIndex, bool actual) {
 		Stopwatch loadTimer = new Stopwatch();
+		Stopwatch loadUpdateTimer = new Stopwatch(); // For loading % indicator.
 		//Stopwatch matchTimer = new Stopwatch();
 		loadTimer.Start();
-		Cursor.visible = true;
-		yield return null;
-
 		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = false;
-		if (saveFileIndex < 0) {
-			WriteDatForIntroPlayed(false);
-			GameObject freshGame = GameObject.Find("GameNotYetStarted");
-			if (freshGame == null) {
-				SceneManager.UnloadScene(SceneManager.GetActiveScene().buildIndex);
-				SceneManager.LoadScene(0); // reload. it. all.
-			} else Destroy(freshGame);
-			loadingScreen.SetActive(false);
-			PauseScript.a.PauseDisable();
-			yield break;
-		}
-		startingNewGame = false;
-		introNotPlayed = false;
+		PauseScript.a.mainMenu.SetActive(false);
+		PauseScript.a.PauseEnable();
+		PauseScript.a.Loading();
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+		MFDManager.a.TabReset(true);
+		MFDManager.a.TabReset(false);
 		loadPercentText.text = "(1) --.--";
-		WriteDatForIntroPlayed(false); // reset
-		if (!actual) {
-			SceneManager.LoadScene(0);
-			yield break;
-		}
 		yield return null;
 
 		string readline;
@@ -1291,7 +1363,6 @@ public class Const : MonoBehaviour {
 		int numSaveablesFromSavefile = 0;
 		int i,j;
 		GameObject currentGameObject = null;
-		sprint(stringTable[196]); // Loading...
 		loadPercentText.text = "(2) --.--";
 		yield return null; // to update the sprint
 
@@ -1392,6 +1463,7 @@ public class Const : MonoBehaviour {
 			// Second iteration loops through all saveableGameObjects to find a match.
 			// The save file will always have more objects in it than in the level since the level is fresh.
 			// When we come across an instantiated object in the saveable file, we need to remember it for later and instantiate them all.
+			loadUpdateTimer.Start(); // For loading update
 			for (i=currentline;i<(numSaveablesFromSavefile - 3);i++) {
 				for (j=0;j<(saveableGameObjects.Count);j++) {
 					if (alreadyCheckedThisSaveableGameObject[j]) continue; // skip checking this and doing GetComponent
@@ -1412,18 +1484,30 @@ public class Const : MonoBehaviour {
 						break;
 					}
 				}
-				loadPercentText.text = "(5) " + currentline.ToString("00.00");
-				if (UnityEngine.Random.Range(0f,1.0f) < 0.01f) yield return null;
+				//UnityEngine.Debug.Log("Loading to saveable object number: ...................................");
+				loadPercentText.text = "(5) " + (i/numSaveablesFromSavefile).ToString("00.00");
+				if (loadUpdateTimer.ElapsedMilliseconds > 100) {
+					loadUpdateTimer.Reset();
+					loadUpdateTimer.Start();
+					Cursor.lockState = CursorLockMode.None;
+					Cursor.visible = true;
+					yield return null;
+				}
 			}
+			loadUpdateTimer.Stop();
+
 
 			int numberOfMissedObjects = 0;
 			for (i=0;i<saveableGameObjects.Count;i++) {
 				if (alreadyCheckedThisSaveableGameObject[i]) continue;
 				numberOfMissedObjects++;
-				if (saveableGameObjects[i].name != "Player") Destroy(saveableGameObjects[i]);
+				//Utils.SafeDestroy(saveableGameObjects[i]);
 			}
+			UnityEngine.Debug.Log("numberOfMissedObjects: "
+								  + numberOfMissedObjects.ToString());
 
 			// Now time to instantiate anything left that is supposed to be here
+			loadUpdateTimer.Start(); // For loading update
 			if (instantiatedFound.Count > 0) {
 				int constdex = -1;
 				int consttable = 0;
@@ -1449,23 +1533,23 @@ public class Const : MonoBehaviour {
 						}
 					}
 					loadPercentText.text = "(6) " + ((i / instantiatedFound.Count).ToString("00.0000"));
-					yield return null;
+					if (loadUpdateTimer.ElapsedMilliseconds > 100) {
+						loadUpdateTimer.Reset();
+						loadUpdateTimer.Start();
+						Cursor.lockState = CursorLockMode.None;
+						Cursor.visible = true;
+						yield return null;
+					}
 				}
 			}
 			//matchTimer.Stop();
-			//UnityEngine.Debug.Log("Loading done!");
 		}
-		player1Capsule.SetActive(true);
-		player1CapsuleMainCameragGO.transform.parent.gameObject.SetActive(true);
-		player1CapsuleMainCameragGO.SetActive(true);
-		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = true;
-		loadPercentText.text = "(7) 99.99%";
+
+		loadPercentText.text = "(7)100.00%";
+		yield return new WaitForSeconds(0.10f);
+		GoIntoGame();
 		yield return null;
-		loadingScreen.SetActive(false);
-		PauseScript.a.PauseDisable();
-		sprint(stringTable[197]); // Loading...Done!
 		loadTimer.Stop();
-		loadPercentText.text = "   100.00%";
 		//UnityEngine.Debug.Log("Matching index loop de loop time: " + matchTimer.Elapsed.ToString());
 		UnityEngine.Debug.Log("Loading time: " + loadTimer.Elapsed.ToString());
 	}

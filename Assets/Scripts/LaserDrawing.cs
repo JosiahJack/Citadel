@@ -28,6 +28,6 @@ public class LaserDrawing : MonoBehaviour {
 
 	IEnumerator DelayedDestroy () {
 		yield return new WaitForSeconds (lineLife);
-		Destroy(this.gameObject);
+		Utils.SafeDestroy(this.gameObject);
 	}
 }

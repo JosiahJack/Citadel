@@ -47,6 +47,6 @@ public class PainStaticFX : MonoBehaviour {
 	}
 
 	public void Deactivate () {
-		img.enabled = false;;
+		img.enabled = false;
 	}
 }

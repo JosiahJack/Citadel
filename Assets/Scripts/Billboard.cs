@@ -26,6 +26,6 @@ public class Billboard : MonoBehaviour {
 	}
 
 	public void DestroySprite() {
-		Destroy(gameObject);
+		Utils.SafeDestroy(gameObject);
 	}
 }

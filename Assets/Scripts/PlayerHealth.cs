@@ -139,6 +139,7 @@ public class PlayerHealth : MonoBehaviour {
 			MouseLookScript.a.ForceInventoryMode();
 		}	
 		int lindex = LevelManager.a.currentLevel != -1 ? LevelManager.a.currentLevel : 0;
+		hm.ClearOverlays();
 		if (LevelManager.a.ressurectionActive[lindex])
 			PlayerRessurect(); // Ressurection
 		else
@@ -158,7 +159,6 @@ public class PlayerHealth : MonoBehaviour {
 	}
 
 	public void PlayerDeathToMenu() {
-		hm.pstatic.Deactivate();
 		// Death to Main Menu
 		if (MouseLookScript.a.inventoryMode == false) {
 			MouseLookScript.a.ToggleInventoryMode();
@@ -168,9 +168,9 @@ public class PlayerHealth : MonoBehaviour {
 		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
 		GameObject loadGameIndicator = GameObject.Find("LoadGameIndicator");
 		GameObject freshGame = GameObject.Find("GameNotYetStarted");
-		if (newGameIndicator != null) Destroy(newGameIndicator);
-		if (loadGameIndicator != null) Destroy(loadGameIndicator);
-		if (freshGame != null) Destroy(freshGame);
+		if (newGameIndicator != null) Utils.SafeDestroy(newGameIndicator);
+		if (loadGameIndicator != null) Utils.SafeDestroy(loadGameIndicator);
+		if (freshGame != null) Utils.SafeDestroy(freshGame);
 		PauseScript.a.mainMenu.SetActive(true);
 		MainMenuHandler.a.returnToPause = false;
 		hm.health = 211f;

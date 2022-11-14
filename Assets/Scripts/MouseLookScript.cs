@@ -112,7 +112,7 @@ public class MouseLookScript : MonoBehaviour {
 	void Update() {
 		// Always allowed regardless of pause state:
         if (Cursor.visible) Cursor.visible = false; // Hides main cursor so we can show custom cursor textures and position cursor smartly independently.
-		if (Input.GetKeyUp(f9)) Const.a.Load(7); // Allow quick load straight from the menu.
+		if (Input.GetKeyUp(f9)) Const.a.Load(7,false); // Allow quick load straight from the menu.
 
         if (PauseScript.a.MenuActive()) { if (playerCamera.enabled) playerCamera.enabled = false; return; } // Ignore mouselook and turn off camera when main menu is up.
 		else 							  if (!playerCamera.enabled) playerCamera.enabled = true;

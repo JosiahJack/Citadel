@@ -180,9 +180,9 @@ public class PauseScript : MonoBehaviour {
 		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
 		GameObject loadGameIndicator = GameObject.Find("LoadGameIndicator");
 		GameObject freshGame = GameObject.Find("GameNotYetStarted");
-		if (newGameIndicator != null) Destroy(newGameIndicator);
-		if (loadGameIndicator != null) Destroy(loadGameIndicator);
-		if (freshGame != null) Destroy(freshGame);
+		if (newGameIndicator != null) Utils.SafeDestroy(newGameIndicator);
+		if (loadGameIndicator != null) Utils.SafeDestroy(loadGameIndicator);
+		if (freshGame != null) Utils.SafeDestroy(freshGame);
 		MainMenuHandler.a.GoToSaveGameSubmenu(true);
 	}
 
@@ -193,9 +193,9 @@ public class PauseScript : MonoBehaviour {
 		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
 		GameObject loadGameIndicator = GameObject.Find("LoadGameIndicator");
 		GameObject freshGame = GameObject.Find("GameNotYetStarted");
-		if (newGameIndicator != null) Destroy(newGameIndicator);
-		if (loadGameIndicator != null) Destroy(loadGameIndicator);
-		if (freshGame != null) Destroy(freshGame);
+		if (newGameIndicator != null) Utils.SafeDestroy(newGameIndicator);
+		if (loadGameIndicator != null) Utils.SafeDestroy(loadGameIndicator);
+		if (freshGame != null) Utils.SafeDestroy(freshGame);
 		MainMenuHandler.a.GoToFrontPage();
 	}
 

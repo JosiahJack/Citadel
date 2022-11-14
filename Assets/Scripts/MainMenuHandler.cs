@@ -39,19 +39,9 @@ public class MainMenuHandler : MonoBehaviour {
 	public Text[] saveButtonText;
 	public Text[] loadButtonText;
 	public int currentSaveSlot = -1;
-	private enum Pages : byte {fp,sp,mp,np,lp,op,sv,cd};
-	private Pages currentPage;
-	private AudioSource StartSFX;
-	private AudioSource BackGroundMusic;
 	public AudioClip titleMusic;
 	public AudioClip creditsMusic;
-	[HideInInspector]
-	public bool returnToPause = false;
-	private bool typingSaveGame = false;
-	private string tempSaveNameHolder;
 	public CreditsScroll credScrollManager;
-	[HideInInspector]
-	public bool dataFound = false;
 	public GameObject IntroVideo;
 	public GameObject IntroVideoContainer;
 	public bool inCutscene = false;
@@ -60,9 +50,20 @@ public class MainMenuHandler : MonoBehaviour {
 	public Text presetQuestionText;
 	public string presetQuestionDefault = "RESET ALL KEYS TO DEFAULT?";
 	public string presetQuestionLegacy = "CHANGE ALL KEYS TO LEGACY PRESET?";
-	private int presetQuestionValue = -1;
 	public static MainMenuHandler a;
 	public ConfigKeybindButton[] keybindButtons;
+
+	[HideInInspector] public bool returnToPause = false;
+	[HideInInspector] public bool dataFound = false;
+	private enum Pages : byte {fp,sp,mp,np,lp,op,sv,cd};
+	private Pages currentPage;
+	private AudioSource StartSFX;
+	private AudioSource BackGroundMusic;
+	private bool typingSaveGame = false;
+	private string tempSaveNameHolder;
+	private int presetQuestionValue = -1;
+	private LoadPageGetSaveNames lpgsn_load;
+	private LoadPageGetSaveNames lpgsn_save;
 
 	void Awake() {
 		a = this;
@@ -82,6 +83,8 @@ public class MainMenuHandler : MonoBehaviour {
 		} else {
 			System.IO.File.Create(Application.dataPath + "/StreamingAssets/introdone.dat");
 		}
+		lpgsn_load = loadPage.GetComponent<LoadPageGetSaveNames>();
+		lpgsn_save = savePage.GetComponent<LoadPageGetSaveNames>();
 	}
 
 	IEnumerator CheckDataFiles () {
@@ -118,27 +121,47 @@ public class MainMenuHandler : MonoBehaviour {
 				if (gameObject.activeSelf) BackGroundMusic.Play();
 			}
 			GoBack();
+			return;
 		}
 
-		if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.anyKey) {
-			if (IntroVideoContainer.activeSelf && !CouldNotFindDialogue.activeSelf) {
+		if (Input.GetMouseButtonDown(0)
+			|| Input.GetMouseButtonDown(1)
+			|| Input.anyKey) {
+			if (IntroVideoContainer.activeSelf
+				&& !CouldNotFindDialogue.activeSelf) {
 				inCutscene = false;
 				IntroVideo.SetActive(false);
 				IntroVideoContainer.SetActive(false);
 				Const.a.WriteDatForIntroPlayed(false);
 				if (gameObject.activeSelf) BackGroundMusic.Play();
+				return;
 			}
 		}
 
 		if (!IntroVideoContainer.activeSelf) {
-			if (!BackGroundMusic.isPlaying && !saltTheFries.activeInHierarchy && gameObject.activeSelf) BackGroundMusic.Play();
+			if (!BackGroundMusic.isPlaying
+				&& !saltTheFries.activeInHierarchy
+				&& gameObject.activeSelf) {
+				BackGroundMusic.Play();
+			}
 		}
-		if ( (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P)) || (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P)) ) StartGame(true);
-		if (typingSaveGame && (Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter)) && savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
+
+		if (   (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P))
+			|| (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P))) {
+			StartGame(true);
+			return;
+		}
+
+		if (typingSaveGame && (Input.GetKeyUp(KeyCode.Return)
+							   || Input.GetKeyUp(KeyCode.KeypadEnter))
+			&& savePage.activeInHierarchy
+			&& !newgamePage.activeInHierarchy) {
 			if (currentSaveSlot < 0) return;
+
 			string sname = saveNameInputField[currentSaveSlot].GetComponentInChildren<InputField>().text;
 			if (!string.IsNullOrEmpty(sname)) {
-				//Debug.Log("Calling savegame with name of: " + sname);
+				if (sname == "- unused -") sname = "Savegame: - unused - "
+												   + currentSaveSlot.ToString();
 				SaveGame(currentSaveSlot,sname);
 				saveNameInput[currentSaveSlot].SetActive(false);
 				saveNamePlaceholder[currentSaveSlot].SetActive(false);
@@ -147,6 +170,7 @@ public class MainMenuHandler : MonoBehaviour {
 				currentSaveSlot = -1;
 			} else {
 				GoBack();
+				return;
 			}
 		}
 	}
@@ -161,7 +185,7 @@ public class MainMenuHandler : MonoBehaviour {
 			Const.a.difficultyMission = mission.difficultySetting;
 			Const.a.difficultyPuzzle = puzzle.difficultySetting;
 			Const.a.difficultyCyber = cyber.difficultySetting;
-			Const.a.Load(-1); // load default scene
+			Const.a.NewGame();
 		}
 
 		this.gameObject.SetActive(false);
@@ -257,33 +281,27 @@ public class MainMenuHandler : MonoBehaviour {
 		saveNameInput[index].SetActive(true);
 		saveNamePlaceholder[index].SetActive(true);
 		saveButtonText[index].text = System.String.Empty;
-		tempSaveNameHolder = savePage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text;
-		savePage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text = System.String.Empty;
+		tempSaveNameHolder = lpgsn_save.loadButtonText[index].text;
+		lpgsn_save.loadButtonText[index].text = System.String.Empty;
 		saveNameInputField[index].ActivateInputField();
 	}
 
 	public void SaveQuickSaveButton () {
-		SaveGame (7,"quicksave");
+		SaveGame(7,"quicksave");
 	}
 
-	public void SaveGame (int index,string savename) {
+	public void SaveGame(int index,string savename) {
 		Const.a.StartSave(index,savename);
 		Const.sprint(Const.a.stringTable[28] + index.ToString() + "!",Const.a.player1);
 		PauseScript.a.EnablePauseUI();
 		this.gameObject.SetActive(false);
 	}
 
-	public void LoadGame (int index) {
-		if (loadPage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text == "- unused -" || loadPage.GetComponent<LoadPageGetSaveNames>().loadButtonText[index].text == "- unused quicksave -") {
+	public void LoadGame(int index) {
+		if (lpgsn_load.loadButtonText[index].text == "- unused -"
+			|| lpgsn_load.loadButtonText[index].text == "- unused quicksave -") {
 			Const.sprint("No data to load.");
-		} else {
-			if (Const.a.introNotPlayed) {
-				StartGame(false);
-			} else {
-				Const.a.Load(index);
-				StartGame(false);
-			}
-		}
+		} else Const.a.Load(index,false);
 	}
 
 	public void GoBack () {
@@ -291,7 +309,7 @@ public class MainMenuHandler : MonoBehaviour {
 			saveNameInput[currentSaveSlot].SetActive(false);
 			saveNamePlaceholder[currentSaveSlot].SetActive(false);
 			typingSaveGame = false;
-			savePage.GetComponent<LoadPageGetSaveNames>().loadButtonText[currentSaveSlot].text = tempSaveNameHolder;
+			lpgsn_save.loadButtonText[currentSaveSlot].text = tempSaveNameHolder;
 			currentSaveSlot = -1;
 			return;
 		}

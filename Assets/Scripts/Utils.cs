@@ -544,4 +544,58 @@ public class Utils {
                                                  // timer in context of current
                                                  // time.  See above notes.
     }
+
+	public static void SafeDestroy(GameObject go) {
+		if (go.layer == 12) {
+			Debug.Log("Tried to Destroy() layered part of player!");
+			return;
+		}
+
+		if (go.CompareTag("Player")) {
+			Debug.Log("Tried to Destroy() tagged part of player!");
+			return;
+		}
+
+		if (go.name == "Player") {
+			Debug.Log("Tried to Destroy() Player!");
+			return;
+		}
+
+		if (go.name == "Const") {
+			Debug.Log("Tried to Destroy() Const!");
+			return;
+		}
+
+		if (go.name == "PlayerCapsule") {
+			Debug.Log("Tried to Destroy() PlayerCapsule!");
+			return;
+		}
+
+		if (go.name == "Sky") {
+			Debug.Log("Tried to Destroy() Sky!");
+			return;
+		}
+
+		if (go.name == "LevelManager") {
+			Debug.Log("Tried to Destroy() LevelManager!");
+			return;
+		}
+
+		if (go.name == "EventSystem") {
+			Debug.Log("Tried to Destroy() EventSystem!");
+			return;
+		}
+
+		if (go.name == "Exterior") {
+			Debug.Log("Tried to Destroy() Exterior!");
+			return;
+		}
+
+		if (go.name == "1.MedicalLevel") {
+			Debug.Log("Tried to Destroy() Medical level!");
+			return;
+		}
+
+		MonoBehaviour.Destroy(go);
+	}
 }

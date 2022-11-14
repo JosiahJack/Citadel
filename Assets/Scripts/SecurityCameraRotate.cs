@@ -18,11 +18,18 @@ public class SecurityCameraRotate : MonoBehaviour {
 		waitingTime = PauseScript.a.relativeTime;
 		rotatePositive = true;
 		if (this.enabled) active = true; else active = false;
+		if (mR == null) mR = gameObject.GetComponentInChildren<MeshRenderer>();
 	}
 
 	void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			if (!mR.isVisible) return;
+			if (mR != null) {
+				if (!mR.isVisible) return;
+			} else {
+				mR = gameObject.GetComponentInChildren<MeshRenderer>();
+				return;
+			}
+
 			if (waitingTime < PauseScript.a.relativeTime) {
 				if (rotatePositive) {
 					RotatePositive();

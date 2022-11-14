@@ -31,7 +31,7 @@ public class ExplosionLife : MonoBehaviour {
 		if (dontDestroy) {
 			gameObject.SetActive(false);
 		} else {
-			Destroy(this.gameObject);
+			Utils.SafeDestroy(this.gameObject);
 		}
 	}
 }
