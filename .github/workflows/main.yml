@@ -17,7 +17,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: Library
-          key: Library-${{ matrix.targetPlatform }}
+          key: Library-${{ matrix.plans.targetPlatform }}
           restore-keys: |
             Library-
       - name: Build game
@@ -35,6 +35,6 @@ jobs:
       - name: Upload built files
         uses: actions/upload-artifact@v2
         with:
-          name: Citadel_DevBuild_${{ matrix.targetPlatform }}
-          path: build/${{ matrix.targetPlatform }}
+          name: Citadel_DevBuild_${{ matrix.plans.targetPlatform }}
+          path: build/${{ matrix.plans.targetPlatform }}
           if-no-files-found: error
