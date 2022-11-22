@@ -91,6 +91,8 @@ public class SaveObject : MonoBehaviour {
 		}
 
 		if (!so.initialized) so.Start();
+		PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
+
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		// Start Saving
@@ -104,6 +106,7 @@ public class SaveObject : MonoBehaviour {
 		s1.Append(Utils.SaveTransform(go.transform)); s1.Append(Utils.splitChar);	// 6,7,8,9,10,11,12,13,14,15
 		s1.Append(Utils.SaveRigidbody(go)); s1.Append(Utils.splitChar);			    // 16,17,18,19
 		s1.Append(so.levelParentID.ToString()); s1.Append(Utils.splitChar);			// 20
+		if (prefID != null) s1.Append(Utils.UintToString(prefID.constIndex));		// 21
 		switch (so.saveType) {
 			case SaveableType.Player:                 s1.Append(PlayerReferenceManager.SavePlayerData(go)); break;
 			case SaveableType.Useable:                s1.Append(UseableObjectUse.Save(go)); break;
@@ -162,7 +165,7 @@ public class SaveObject : MonoBehaviour {
 		if (setToActive) {
 			if (!go.activeSelf) go.SetActive(true); 
 		} else {
-			if (go.activeSelf) go.SetActive(false); 
+			if (go.activeSelf) go.SetActive(false);
 		}
 
 		if (entries[0] != so.saveableType) { Debug.Log("Saveable type mismatch.  Save data has type " + entries[0] + " but object is " + so.saveableType); return index + 21; }
@@ -176,13 +179,17 @@ public class SaveObject : MonoBehaviour {
 			go.transform.SetParent(curLevDynContainer);
 		}
 
+		if (so.saveType == SaveableType.TransformParentless && go.CompareTag("Player")) Debug.Log("Loading player transform from " + go.transform.localPosition.ToString() + "...");
 		index = Utils.LoadTransform(go.transform,ref entries,index);
+		if (so.saveType == SaveableType.TransformParentless && go.CompareTag("Player")) Debug.Log("Loaded player transform to " + go.transform.localPosition.ToString());
 		index = Utils.LoadRigidbody(go,ref entries,index);
 		index++; // Already loaded index 20 for levelParentID.
-		if (index != 21) {
-			Debug.Log("SaveObject.Load:: index was not equal to 9 prior to "
+		index++; // ALready loaded index 21 for prefab master index as that is
+				 // how this object was instantiated prior to calling Load.
+		if (index != 22) {
+			Debug.Log("SaveObject.Load:: index was not equal to 22 prior to "
 					  + "loading SaveableType data.");
-			index = 21;
+			index = 22;
 		}
 		if (index >= entries.Length) return index;
 		switch (so.saveType) {

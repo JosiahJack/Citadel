@@ -486,38 +486,99 @@ public class Inventory : MonoBehaviour {
 		return false;
 	}
 
+	string AccessCardCodeForType(AccessCardType acc) {
+		switch(acc) {
+			case AccessCardType.Standard: return "STD";
+			case AccessCardType.Medical: return "MED";
+			case AccessCardType.Science: return "SCI";
+			case AccessCardType.Admin: return "ADM";
+			case AccessCardType.Group1: return "Group-1";
+			case AccessCardType.Group2: return "Group-2";
+			case AccessCardType.Group3: return "Group-3";
+			case AccessCardType.Group4: return "Group-4";
+			case AccessCardType.GroupA: return "Group-A";
+			case AccessCardType.GroupB: return "Group-B";
+			case AccessCardType.Storage: return "STO";
+			case AccessCardType.Engineering: return "ENG";
+			case AccessCardType.Maintenance: return "MTN";
+			case AccessCardType.Security: return "SEC";
+			case AccessCardType.Per1: return "PER-1";
+			case AccessCardType.Per2: return "PER-2";
+			case AccessCardType.Per3: return "PER-3";
+			case AccessCardType.Per4: return "PER-4";
+			case AccessCardType.Per5: return "PER-5";
+		}
+		return "Group-2";
+	}
+
 	public void AddAccessCardToInventory (int index) {
 		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(2,true);
 		switch (index) {
-			case 34: doorAccessTypeAcquired = AccessCardType.Admin; break;
-			case 81: doorAccessTypeAcquired = AccessCardType.Standard; break; //CHECKED! Good here
-			case 83: doorAccessTypeAcquired = AccessCardType.Group1; break; //CHECKED! Good here
-			case 84: doorAccessTypeAcquired = AccessCardType.Science; break; //CHECKED! Good here
-			case 85: doorAccessTypeAcquired = AccessCardType.Engineering; break;  //CHECKED! Good here
-			case 86: doorAccessTypeAcquired = AccessCardType.GroupB; break; //CHECKED! Good here
-			case 87: doorAccessTypeAcquired = AccessCardType.Security; break; //CHECKED! Good here
-			case 88: doorAccessTypeAcquired = AccessCardType.Per5; break;
-			case 89: doorAccessTypeAcquired = AccessCardType.Medical; break;
-			case 90: doorAccessTypeAcquired = AccessCardType.Per1; break;
-			case 91: doorAccessTypeAcquired = AccessCardType.Group4; break;
+			case 34: doorAccessTypeAcquired = AccessCardType.Admin; break;	  // Green Rim, Turquoise Inner with Yellow Cross (card_group5)
+			case 81: doorAccessTypeAcquired = AccessCardType.Standard; break; //CHECKED! Good here.  Orange Rim, Turquoise Inner (card_std)
+			case 83: doorAccessTypeAcquired = AccessCardType.Group1; break; //CHECKED! Good here.  Blue Rim, Orange Inner (card_group1_actual)
+			case 84: doorAccessTypeAcquired = AccessCardType.Science; break; //CHECKED! Good here.  All Yellow (card_group1)
+			case 85: doorAccessTypeAcquired = AccessCardType.Engineering; break;  //CHECKED! Good here.  Blue Rim, Turquoise Inner (card_eng)
+			case 86: doorAccessTypeAcquired = AccessCardType.GroupB; break; //CHECKED! Good here.  Blue Rim, Orange Inner (card_group1_actual)
+			//case 87: doorAccessTypeAcquired = AccessCardType.Security; break; //CHECKED! Good here. Command = Security = Storage Red Rim, Yellow Inner (card_per1)
+			case 88: doorAccessTypeAcquired = AccessCardType.Per5; break; // Purple Rim, Red Inner (card_per5)
+			case 89: doorAccessTypeAcquired = AccessCardType.Medical; break; // Gray with Red Cross (card_medi)
+			case 90: doorAccessTypeAcquired = AccessCardType.Group3; break; // CHECKED! Good here.  Blue Rim, Orange Inner with Yellow prongs (card_blue)
+			case 91: doorAccessTypeAcquired = AccessCardType.Group4; break; // Cyberspace only
+			case 111: doorAccessTypeAcquired = AccessCardType.Per1; break; // Darcy, Purple Rim, Red Inner (card_per5)
 			default: 
 				Const.sprint("Attempted to add an unmarked access card, we'll treat it as a STANDARD.");
 				doorAccessTypeAcquired = AccessCardType.Standard;
 				break;
 		}
-		if (HasAccessCard(doorAccessTypeAcquired)) {
+
+		 // Command = STO+MTN+SEC
+		if (HasAccessCard(doorAccessTypeAcquired) || (index == 87
+			  && HasAccessCard(AccessCardType.Storage) // If Command, only give
+			  && HasAccessCard(AccessCardType.Security)//    message if missing
+			  && HasAccessCard(AccessCardType.Maintenance))) { //        all 3
 			Const.sprint(Const.a.stringTable[44] + doorAccessTypeAcquired.ToString()); // Already have access: ##
 		} else {
 			bool added = false;
-			for (int i=0;i<accessCardsOwned.Length;i++) {
-				if (accessCardsOwned[i] == AccessCardType.None){
-					added = true;
-					accessCardsOwned[i] = doorAccessTypeAcquired;
+			if (index == 87) {
+				for (int j=0;j<3;j++) {
+					switch(j) {
+						case 0: doorAccessTypeAcquired = AccessCardType.Storage; break;
+						case 1: doorAccessTypeAcquired = AccessCardType.Security; break;
+						case 2: doorAccessTypeAcquired = AccessCardType.Maintenance; break;
+					}
+
+					for (int i=0;i<accessCardsOwned.Length;i++) {
+						if (accessCardsOwned[i] == AccessCardType.None){
+							added = true;
+							accessCardsOwned[i] = doorAccessTypeAcquired;
+						}
+					}
+				}
+			} else {
+				for (int i=0;i<accessCardsOwned.Length;i++) {
+					if (accessCardsOwned[i] == AccessCardType.None){
+						added = true;
+						accessCardsOwned[i] = doorAccessTypeAcquired;
+					}
 				}
 			}
 
 			if (added) {
-				Const.sprint(Const.a.stringTable[45] + doorAccessTypeAcquired.ToString()); // New accesses gained ##
+				if (index == 87) {
+					// New accesses gained STO MTN SEC
+					Const.sprint(Const.a.stringTable[45] 
+						+ AccessCardCodeForType(AccessCardType.Storage)
+						+ ", "
+						+ AccessCardCodeForType(AccessCardType.Security)
+						+ ", "
+						+ AccessCardCodeForType(AccessCardType.Maintenance)); 
+				} else {
+					 // New accesses gained ##
+					Const.sprint(Const.a.stringTable[45]
+						+ AccessCardCodeForType(doorAccessTypeAcquired));
+				}
+
 				MFDManager.a.NotifyToCenterTab(2);
 				MFDManager.a.SendInfoToItemTab(index);
 			} else {
@@ -588,7 +649,7 @@ public class Inventory : MonoBehaviour {
 	//--- End Hardware ---
 
 	// General
-    public bool AddGenericObjectToInventory(int index) {
+    public bool AddGeneralObjectToInventory(int index) {
 		if (index < 0) return false;
 
         for (int i=0;i<14;i++) {
@@ -1303,31 +1364,7 @@ public class Inventory : MonoBehaviour {
 		line += Utils.splitChar + Utils.UintToString(inv.hardwareInvCurrent); // int
 		line += Utils.splitChar + Utils.UintToString(inv.hardwareInvIndex); // int
 		for (j=0;j<13;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hardwareIsActive[j]); } // bool
-		for (j=0;j<32;j++) {
-			switch (inv.accessCardsOwned[j]) {
-				case AccessCardType.None: line+= Utils.splitChar + "0"; break;
-				case AccessCardType.Standard: line+= Utils.splitChar + "1"; break;
-				case AccessCardType.Medical: line+= Utils.splitChar + "2"; break;
-				case AccessCardType.Science: line+= Utils.splitChar + "3"; break;
-				case AccessCardType.Admin: line+= Utils.splitChar + "4"; break;
-				case AccessCardType.Group1: line+= Utils.splitChar + "5"; break;
-				case AccessCardType.Group2: line+= Utils.splitChar + "6"; break;
-				case AccessCardType.Group3: line+= Utils.splitChar + "7"; break;
-				case AccessCardType.Group4: line+= Utils.splitChar + "8"; break;
-				case AccessCardType.GroupA: line+= Utils.splitChar + "9"; break;
-				case AccessCardType.GroupB: line+= Utils.splitChar + "10"; break;
-				case AccessCardType.Storage: line+= Utils.splitChar + "11"; break;
-				case AccessCardType.Engineering: line+= Utils.splitChar + "12"; break;
-				case AccessCardType.Maintenance: line+= Utils.splitChar + "13"; break;
-				case AccessCardType.Security: line+= Utils.splitChar + "14"; break;
-				case AccessCardType.Per1: line+= Utils.splitChar + "15"; break;
-				case AccessCardType.Per2: line+= Utils.splitChar + "16"; break;
-				case AccessCardType.Per3: line+= Utils.splitChar + "17"; break;
-				case AccessCardType.Per4: line+= Utils.splitChar + "18"; break;
-				case AccessCardType.Per5: line+= Utils.splitChar + "19"; break;
-				case AccessCardType.Command: line+= Utils.splitChar + "20"; break;
-			}
-		}
+		for (j=0;j<32;j++) { line += Utils.splitChar + Utils.IntToString(Utils.AccessCardTypeToInt(inv.accessCardsOwned[j])); } // int
 		for (j=0;j<14;j++) { line += Utils.splitChar + Utils.UintToString(inv.generalInventoryIndexRef[j]); } // int
 		line += Utils.splitChar + Utils.UintToString(inv.generalInvCurrent); // int
 		line += Utils.splitChar + Utils.UintToString(inv.generalInvIndex); // int
@@ -1376,33 +1413,7 @@ public class Inventory : MonoBehaviour {
 		inv.hardwareInvCurrent = Utils.GetIntFromString(entries[index]); index++;
 		inv.hardwareInvIndex = Utils.GetIntFromString(entries[index]); index++;
 		for (j=0;j<13;j++) { inv.hardwareIsActive[j] = Utils.GetBoolFromString(entries[index]); index++; }
-		for (j=0;j<32;j++) {
-			int cardType = Utils.GetIntFromString(entries[index]);
-			switch (cardType) {
-				case 0: inv.accessCardsOwned[j] = AccessCardType.None; break;
-				case 1: inv.accessCardsOwned[j] = AccessCardType.Standard; break;
-				case 2: inv.accessCardsOwned[j] = AccessCardType.Medical; break;
-				case 3: inv.accessCardsOwned[j] = AccessCardType.Science; break;
-				case 4: inv.accessCardsOwned[j] = AccessCardType.Admin; break;
-				case 5: inv.accessCardsOwned[j] = AccessCardType.Group1; break;
-				case 6: inv.accessCardsOwned[j] = AccessCardType.Group2; break;
-				case 7: inv.accessCardsOwned[j] = AccessCardType.Group3; break;
-				case 8: inv.accessCardsOwned[j] = AccessCardType.Group4; break;
-				case 9: inv.accessCardsOwned[j] = AccessCardType.GroupA; break;
-				case 10: inv.accessCardsOwned[j] = AccessCardType.GroupB; break;
-				case 11: inv.accessCardsOwned[j] = AccessCardType.Storage; break;
-				case 12: inv.accessCardsOwned[j] = AccessCardType.Engineering; break;
-				case 13: inv.accessCardsOwned[j] = AccessCardType.Maintenance; break;
-				case 14: inv.accessCardsOwned[j] = AccessCardType.Security; break;
-				case 15: inv.accessCardsOwned[j] = AccessCardType.Per1; break;
-				case 16: inv.accessCardsOwned[j] = AccessCardType.Per2; break;
-				case 17: inv.accessCardsOwned[j] = AccessCardType.Per3; break;
-				case 18: inv.accessCardsOwned[j] = AccessCardType.Per4; break;
-				case 19: inv.accessCardsOwned[j] = AccessCardType.Per5; break;
-				case 20: inv.accessCardsOwned[j] = AccessCardType.Command; break;
-			}
-			index++;
-		}
+		for (j=0;j<32;j++) { inv.accessCardsOwned[j] = Utils.IntToAccessCardType(Utils.GetIntFromString(entries[index])); index++; }
 		for (j=0;j<14;j++) { inv.generalInventoryIndexRef[j] = Utils.GetIntFromString(entries[index]); index++; }
 		inv.generalInvCurrent = Utils.GetIntFromString(entries[index]); index++;
 		inv.generalInvIndex = Utils.GetIntFromString(entries[index]); index++;

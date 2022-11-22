@@ -79,6 +79,58 @@ public class Utils {
         return ((checkInt & flag) != 0);
     }
 
+	public static int AccessCardTypeToInt(AccessCardType acc) {
+		switch (acc) {
+			case AccessCardType.None:        return  0;
+			case AccessCardType.Standard:    return  1;
+			case AccessCardType.Medical:     return  2;
+			case AccessCardType.Science:     return  3;
+			case AccessCardType.Admin:       return  4;
+			case AccessCardType.Group1:      return  5;
+			case AccessCardType.Group2:      return  6;
+			case AccessCardType.Group3:      return  7;
+			case AccessCardType.Group4:      return  8;
+			case AccessCardType.GroupA:      return  9;
+			case AccessCardType.GroupB:      return 10;
+			case AccessCardType.Storage:     return 11;
+			case AccessCardType.Engineering: return 12;
+			case AccessCardType.Maintenance: return 13;
+			case AccessCardType.Security:    return 14;
+			case AccessCardType.Per1:        return 15;
+			case AccessCardType.Per2:        return 16;
+			case AccessCardType.Per3:        return 17;
+			case AccessCardType.Per4:        return 18;
+			case AccessCardType.Per5:        return 19;
+		}
+		return 0;
+	}
+
+	public static AccessCardType IntToAccessCardType(int cardType) {
+		switch (cardType) {
+			case 0:  return AccessCardType.None;
+			case 1:  return AccessCardType.Standard;
+			case 2:  return AccessCardType.Medical;
+			case 3:  return AccessCardType.Science;
+			case 4:  return AccessCardType.Admin;
+			case 5:  return AccessCardType.Group1;
+			case 6:  return AccessCardType.Group2;
+			case 7:  return AccessCardType.Group3;
+			case 8:  return AccessCardType.Group4;
+			case 9:  return AccessCardType.GroupA;
+			case 10: return AccessCardType.GroupB;
+			case 11: return AccessCardType.Storage;
+			case 12: return AccessCardType.Engineering;
+			case 13: return AccessCardType.Maintenance;
+			case 14: return AccessCardType.Security;
+			case 15: return AccessCardType.Per1;
+			case 16: return AccessCardType.Per2;
+			case 17: return AccessCardType.Per3;
+			case 18: return AccessCardType.Per4;
+			case 19: return AccessCardType.Per5;
+		}
+		return AccessCardType.None;
+	}
+
 	public static int ButtonTypeToInt(ButtonType bt) {
 		switch (bt) { // Man what a load of
 			case ButtonType.None:       return 0;

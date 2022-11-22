@@ -29,7 +29,7 @@ public enum SoftwareType : byte {None,Drill,Pulser,CShield,Decoy,Recall,Turbo,
 public enum AccessCardType : byte {	None,Standard,Medical,Science,Admin,Group1,
                                     Group2,Group3,Group4,GroupA,GroupB,Storage,
                                     Engineering,Maintenance,Security,Per1,Per2,
-                                    Per3,Per4,Per5,Command};
+                                    Per3,Per4,Per5}; // Command = STO+MTN+SEC
 public enum MusicType : byte {None,Walking,Combat,Overlay,Override};
 public enum TrackType : byte {None,Walking,Combat,MutantNear,CyborgNear,
                               CyborgDroneNear,RobotNear,Transition,Revive,Death,

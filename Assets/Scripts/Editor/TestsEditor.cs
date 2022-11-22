@@ -16,6 +16,12 @@ public class TestsEditor : Editor {
 			testScript.Run();
 		}
 
+		EditorGUILayout.BeginVertical();
+        GUILayout.Space(8f);
+        EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
+        GUILayout.Space(8f);
+		EditorGUILayout.EndVertical();
+
 		if (GUILayout.Button("Output All Lights to File")) {
 			testScript.GenerateLightsDataFile();
 		}
@@ -26,12 +32,36 @@ public class TestsEditor : Editor {
 			testScript.UnloadLevelLights();
 		}
 
+		EditorGUILayout.BeginVertical();
+        GUILayout.Space(8f);
+        EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
+        GUILayout.Space(8f);
+		EditorGUILayout.EndVertical();
+
 		if (GUILayout.Button("Save Object")) {
 			testScript.SaveSelectedObject();
 		}
 
 		if (GUILayout.Button("Load Object")) {
 			testScript.LoadSelectedObject();
+		}
+
+		EditorGUILayout.BeginVertical();
+        GUILayout.Space(8f);
+        EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
+        GUILayout.Space(8f);
+		EditorGUILayout.EndVertical();
+
+		if (GUILayout.Button("Output All Dynamic Objects to File")) {
+			testScript.GenerateDynamicObjectsDataFile();
+		}
+
+		if (GUILayout.Button("Load Dynamic Objects for\nSelected Level")) {
+			testScript.LoadLevelLights();
+		}
+
+		if (GUILayout.Button("Unload Dynamic Objects for\nSelected Level")) {
+			testScript.UnloadLevelLights();
 		}
 	}
 }

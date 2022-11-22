@@ -640,7 +640,6 @@ public class Tests : MonoBehaviour {
 	public void GenerateLightsDataFile() {
 		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat");
 		StringBuilder s1 = new StringBuilder();
-		string splitChar = "|";
 		List<GameObject> allLights = new List<GameObject>();
 		Component[] compArray = lightContainers[levelToOutputFrom].GetComponentsInChildren(typeof(Light),true);
 		for (int i=0;i<compArray.Length;i++) {
@@ -665,40 +664,78 @@ public class Tests : MonoBehaviour {
 				s1.Clear();
 				Transform tr = allLights[i].transform;
 				s1.Append(Utils.SaveTransform(allLights[i].transform));
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				Light lit = allLights[i].GetComponent<Light>();
 				s1.Append(Utils.FloatToString(lit.intensity));
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(Utils.FloatToString(lit.range));
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(lit.type.ToString());
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(Utils.FloatToString(lit.color.r));
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(Utils.FloatToString(lit.color.g));
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(Utils.FloatToString(lit.color.b));
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(Utils.FloatToString(lit.color.a));
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(Utils.FloatToString(lit.spotAngle));
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(lit.shadows.ToString());
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(Utils.FloatToString(lit.shadowStrength));
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(lit.shadowResolution);
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(Utils.FloatToString(lit.shadowBias));
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(Utils.FloatToString(lit.shadowNormalBias));
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(Utils.FloatToString(lit.shadowNearPlane));
-				s1.Append(splitChar);
+				s1.Append(Utils.splitChar);
 				s1.Append(lit.cullingMask.ToString());
 				//UnityEngine.Debug.Log(s1.ToString());
 				sw.Write(s1.ToString());
 				sw.Write(Environment.NewLine);
+			}
+			sw.Close();
+		}
+	}
+
+	public void LoadLevelDynamicObjects() {
+		lm.LoadLevelDynamicObjects(levelToOutputFrom);
+	}
+
+	public void UnloadLevelDynamicObjects() {
+		lm.UnloadLevelDynamicObjects(levelToOutputFrom);
+	}
+
+	public void GenerateDynamicObjectsDataFile() {
+		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_dynamics_level" + levelToOutputFrom.ToString() + ".dat");
+		StringBuilder s1 = new StringBuilder();
+		List<GameObject> allDynamicObjects = new List<GameObject>();
+		Component[] compArray = lightContainers[levelToOutputFrom].GetComponentsInChildren(typeof(SaveObject),true);
+		for (int i=0;i<compArray.Length;i++) {
+			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) {
+				UnityEngine.Debug.Log("Skipping light with LightAnimation");
+				continue;
+			}
+			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) {
+				UnityEngine.Debug.Log("Skipping light with TargetIO");
+				continue;
+			}
+			allDynamicObjects.Add(compArray[i].gameObject);
+		}
+
+		UnityEngine.Debug.Log("Found " + allDynamicObjects.Count + " lights in level 1");
+
+		StreamWriter sw = new StreamWriter(Application.dataPath + "/StreamingAssets/CitadelScene_dynamics_level" + levelToOutputFrom.ToString() + ".dat",false,Encoding.ASCII);
+		if (sw == null) { UnityEngine.Debug.Log("Lights output file path invalid"); return; }
+
+		using (sw) {
+			for (int i=0;i<allDynamicObjects.Count;i++) {
+				SaveObject.Save(allDynamicObjects[i]);
 			}
 			sw.Close();
 		}

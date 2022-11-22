@@ -563,12 +563,27 @@ public class MouseLookScript : MonoBehaviour {
 	public void AddItemToInventory (int index) {
 		if (index < 0) index = 0; // Good check on paper.
 		if (index > 94) index = 94; // Way to get a head.
+
 		AudioClip pickclip = PickupSFX;
-		if ((index >= 0 && index <= 5) || index == 33 || index == 35 || (index >= 52 && index < 59) || (index >= 61 && index <= 64) || (index >= 92 && index <= 101)) { if (!Inventory.a.AddGenericObjectToInventory(index)) AddItemFail(index); }
-		else if (index == 6) Inventory.a.AddAudioLogToInventory(heldObjectCustomIndex);
-		else if (index >= 36 && index <= 51) { if (!Inventory.a.AddWeaponToInventory(index,heldObjectAmmo,heldObjectAmmo2)) AddItemFail(index); }
-		else if (index == 34 || index == 81 || (index >= 83 && index <= 91)) Inventory.a.AddAccessCardToInventory(index);
-		else {
+		if ((index >= 0 && index <= 5)
+             || index == 33
+             || index == 35
+             || (index >= 52 && index < 59)
+             || (index >= 61 && index <= 64)
+             || (index >= 92 && index <= 101)) {
+			if (!Inventory.a.AddGeneralObjectToInventory(index)) {
+				AddItemFail(index);
+			}
+		} else if (index == 6) {
+			Inventory.a.AddAudioLogToInventory(heldObjectCustomIndex);
+		} else if (index >= 36 && index <= 51) {
+			if (!Inventory.a.AddWeaponToInventory(index,heldObjectAmmo,
+												        heldObjectAmmo2)) {
+				AddItemFail(index);
+			}
+		} else if (index == 34 || index == 81 || (index >= 83 && index <= 91)) {
+			Inventory.a.AddAccessCardToInventory(index);
+		} else {
 			switch (index) {
 				case 7:  Inventory.a.AddGrenadeToInventory(0,index); break; // Frag
 				case 8:  Inventory.a.AddGrenadeToInventory(3,index); break; // Concussion

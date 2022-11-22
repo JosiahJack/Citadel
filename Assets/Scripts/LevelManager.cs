@@ -241,6 +241,20 @@ public class LevelManager : MonoBehaviour {
 		return false;
 	}
 
+	public void UnloadLevelLights(int curlevel) {
+		if (curlevel > (lightContainers.Length - 1)) return;
+		if (curlevel < 0) return;
+
+		Component[] compArray = lightContainers[curlevel].GetComponentsInChildren(typeof(Light),true);
+		for (int i=0;i<compArray.Length;i++) {
+			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) continue;
+			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) continue;
+
+			DestroyImmediate(compArray[i].gameObject);
+		}
+		compArray = null;
+	}
+
 	public void LoadLevelLights(int curlevel) {
 		if (curlevel > (lightContainers.Length - 1)) return;
 		if (curlevel < 0) return;
@@ -261,7 +275,6 @@ public class LevelManager : MonoBehaviour {
 		}
 
 		string[] entries = new string[27];
-		char delimiter = '|';
 		int index = 0;
 		float readFloatx;
 		float readFloaty;
@@ -270,7 +283,7 @@ public class LevelManager : MonoBehaviour {
 		Vector3 tempvec;
 		Quaternion tempquat;
 		for (int i=0;i<readFileList.Count;i++) {
-			entries = readFileList[i].Split(delimiter);
+			entries = readFileList[i].Split(Convert.ToChar(Utils.splitChar));
 			if (entries.Length <= 1) continue;
 
 			index = 0;
@@ -320,18 +333,45 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 
-	public void UnloadLevelLights(int curlevel) {
-		if (curlevel > (lightContainers.Length - 1)) return;
+	public void UnloadLevelDynamicObjects(int curlevel) {
+		if (curlevel > (levelScripts.Length - 1)) return;
 		if (curlevel < 0) return;
 
-		Component[] compArray = lightContainers[curlevel].GetComponentsInChildren(typeof(Light),true);
+		Component[] compArray = levelScripts[currentLevel].dynamicObjectsContainer.GetComponentsInChildren(typeof(SaveObject),true);
 		for (int i=0;i<compArray.Length;i++) {
-			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) continue;
-			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) continue;
-
 			DestroyImmediate(compArray[i].gameObject);
 		}
 		compArray = null;
+	}
+
+	public void LoadLevelDynamicObjects(int curlevel) {
+		if (curlevel > (levelScripts.Length - 1)) return;
+		if (curlevel < 0) return;
+
+		StreamReader sf = new StreamReader(Application.dataPath + "/StreamingAssets/CitadelScene_lights_level" + curlevel.ToString() + ".dat");
+		if (sf == null) { UnityEngine.Debug.Log("Dynamic objects input file path invalid"); return; }
+
+		string readline;
+		List<string> readFileList = new List<string>();
+		using (sf) {
+			do {
+				readline = sf.ReadLine();
+				if (readline != null) readFileList.Add(readline);
+			} while (!sf.EndOfStream);
+			sf.Close();
+		}
+
+		string[] entries;
+		int index = 0;
+		for (int i=0;i<readFileList.Count;i++) {
+			entries = readFileList[i].Split(Convert.ToChar(Utils.splitChar));
+			if (entries.Length <= 1) continue;
+
+			index = 0;
+			int val = 0; // TODO!!!!!
+			GameObject newGO = ConsoleEmulator.SpawnDynamicObject(val,curlevel,false);
+			if (newGO != null) SaveObject.Load(newGO,ref entries,5);
+		}
 	}
 
 	public void CheatLoadLevel(int ind) {
