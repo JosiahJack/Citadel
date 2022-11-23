@@ -71,6 +71,10 @@ public class UseableObjectUse : MonoBehaviour {
 		line += Utils.splitChar + Utils.UintToString(uou.customIndex); // int - special reference like audiolog message
 		line += Utils.splitChar + Utils.UintToString(uou.ammo); // int - how much normal ammo is on the weapon
 		line += Utils.splitChar + Utils.UintToString(uou.ammo2); //int - alternate ammo type, e.g. Penetrator or Teflon
+		if (uou.useableItemIndex == 35) { // Worker Helmet with its two flaps.
+			line += Utils.splitChar + Utils.SaveTransform(go.transform.GetChild(0));
+			line += Utils.splitChar + Utils.SaveTransform(go.transform.GetChild(1));
+		}
 		return line;
 	}
 
@@ -82,6 +86,12 @@ public class UseableObjectUse : MonoBehaviour {
 		uou.customIndex = Utils.GetIntFromString(entries[index]); index++;
 		uou.ammo = Utils.GetIntFromString(entries[index]); index++;
 		uou.ammo2 = Utils.GetIntFromString(entries[index]); index++;
+		if (uou.useableItemIndex == 35) { // Worker Helmet with its two flaps.
+			Transform tr_child1 = go.transform.GetChild(0);
+			Transform tr_child2 = go.transform.GetChild(1);
+			index = Utils.LoadTransform(tr_child1,ref entries,index);
+			index = Utils.LoadTransform(tr_child2,ref entries,index);
+		}
 		return index;
 	}
 }

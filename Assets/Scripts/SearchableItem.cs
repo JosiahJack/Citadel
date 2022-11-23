@@ -50,7 +50,7 @@ public class SearchableItem : MonoBehaviour {
 	}
 
 	// Save searchable data
-	public static string Save(GameObject go) {
+	public static string Save(GameObject go, PrefabIdentifier prefID) {
 		SearchableItem se = go.GetComponent<SearchableItem>();
 		if (se == null) {
 			Debug.Log("SearchableItem missing on savetype of SearchableItem!  GameObject.name: " + go.name);
@@ -58,19 +58,39 @@ public class SearchableItem : MonoBehaviour {
 		}
 
 		string line = System.String.Empty;
-		line = se.contents[0].ToString(); // int main lookup index
-		line += Utils.splitChar + se.contents[1].ToString(); // int main lookup index
-		line += Utils.splitChar + se.contents[2].ToString(); // int main lookup index
-		line += Utils.splitChar + se.contents[3].ToString(); // int main lookup index
-		line += Utils.splitChar + se.customIndex[0].ToString(); // int custom index
-		line += Utils.splitChar + se.customIndex[1].ToString(); // int custom index
-		line += Utils.splitChar + se.customIndex[2].ToString(); // int custom index
-		line += Utils.splitChar + se.customIndex[3].ToString(); // int custom index
-		line += Utils.splitChar + se.searchableInUse;
+		line = Utils.UintToString(se.contents[0]); // int main lookup index
+		line += Utils.splitChar + Utils.UintToString(se.contents[1]); // int main lookup index
+		line += Utils.splitChar + Utils.UintToString(se.contents[2]); // int main lookup index
+		line += Utils.splitChar + Utils.UintToString(se.contents[3]); // int main lookup index
+		line += Utils.splitChar + Utils.UintToString(se.customIndex[0]); // int custom index
+		line += Utils.splitChar + Utils.UintToString(se.customIndex[1]); // int custom index
+		line += Utils.splitChar + Utils.UintToString(se.customIndex[2]); // int custom index
+		line += Utils.splitChar + Utils.UintToString(se.customIndex[3]); // int custom index
+		line += Utils.splitChar + Utils.BoolToString(se.searchableInUse);
+		if (prefID.constIndex == 464) { // Briefcase with its gibs.
+			Transform child1 = go.transform.GetChild(0);
+			GameObject child1GO = child1.gameObject;
+			line += Utils.splitChar + Utils.SaveTransform(child1);
+			line += Utils.splitChar + Utils.SaveRigidbody(child1GO);
+			line += Utils.splitChar + Utils.BoolToString(child1GO.activeSelf);
+
+			Transform child2 = go.transform.GetChild(1);
+			GameObject child2GO = child2.gameObject;
+			line += Utils.splitChar + Utils.SaveTransform(child2);
+			line += Utils.splitChar + Utils.SaveRigidbody(child2GO);
+			line += Utils.splitChar + Utils.BoolToString(child2GO.activeSelf);
+
+			Transform child3 = go.transform.GetChild(2);
+			GameObject child3GO = child3.gameObject;
+			line += Utils.splitChar + Utils.SaveTransform(child3);
+			line += Utils.splitChar + Utils.SaveRigidbody(child3GO);
+			line += Utils.splitChar + Utils.BoolToString(child3GO.activeSelf);
+		}
 		return line;
 	}
 
-	public static int Load(GameObject go, ref string[] entries, int index) {
+	public static int Load(GameObject go, ref string[] entries, int index,
+						   PrefabIdentifier prefID) {
 		SearchableItem se = go.GetComponent<SearchableItem>();
 		if (se == null || index < 0 || entries == null) return index + 9;
 
@@ -83,6 +103,34 @@ public class SearchableItem : MonoBehaviour {
 		se.customIndex[2] = Utils.GetIntFromString(entries[index]); index++; // int custom index
 		se.customIndex[3] = Utils.GetIntFromString(entries[index]); index++; // int custom index
 		se.searchableInUse = Utils.GetBoolFromString(entries[index]); index++; // bool - is this being searched by Player?
+
+		if (prefID.constIndex == 464) { // Briefcase with its gibs.
+			bool childActive = false;
+			Transform child1 = go.transform.GetChild(0);
+			GameObject child1GO =child1.gameObject;
+
+			Transform child2 = go.transform.GetChild(1);
+			GameObject child2GO = child2.gameObject;
+
+			Transform child3 = go.transform.GetChild(2);
+			GameObject child3GO = child3.gameObject;
+
+			index = Utils.LoadTransform(child1,ref entries,index);
+			index = Utils.LoadRigidbody(child1GO,ref entries,index);
+			childActive = Utils.GetBoolFromString(entries[index]); index++; // bool - is the gib active?
+			child1GO.SetActive(childActive);
+
+			index = Utils.LoadTransform(child2,ref entries,index);
+			index = Utils.LoadRigidbody(child2GO,ref entries,index);
+			childActive = Utils.GetBoolFromString(entries[index]); index++; // bool - is the gib active?
+			child2GO.SetActive(childActive);
+
+			index = Utils.LoadTransform(child3,ref entries,index);
+			index = Utils.LoadRigidbody(child3GO,ref entries,index);
+			childActive = Utils.GetBoolFromString(entries[index]); index++; // bool - is the gib active?
+			child3GO.SetActive(childActive);
+		}
+
 		if (se.searchableInUse) {
 			int numberFoundContents = 0;
 			for (int i=3;i>=0;i--) {

@@ -259,6 +259,8 @@ public class Const : MonoBehaviour {
 	public Texture[] sequenceTextures;
 	public GameObject[] chunkPrefabs;
 	public Text loadPercentText;
+	public GameObject[] cyberItemPrefabs;
+	public GameObject[] miscellaneousPrefabs;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
 	[HideInInspector] public string versionString = "v0.98"; // Global CITADEL PROJECT VERSION
@@ -1147,7 +1149,7 @@ public class Const : MonoBehaviour {
 		return take; // 7. Return the Damage.
 	}
 
-	void FindAllSaveObjectsGOs(List<GameObject> gos) {
+	void FindAllSaveObjectsGOs(ref List<GameObject> gos) {
 		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
 		for (int i=0;i<allParents.Count;i++) {
 			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(SaveObject),true); // find all SaveObject components, including inactive (hence the true here at the end)
@@ -1182,7 +1184,7 @@ public class Const : MonoBehaviour {
 
 		// All saveable classes
 		List<GameObject> saveableGameObjects = new List<GameObject>();
-		FindAllSaveObjectsGOs(saveableGameObjects);
+		FindAllSaveObjectsGOs(ref saveableGameObjects);
 		sprint(stringTable[194]); // Indicate we are saving "Saving..."
 		if (string.IsNullOrWhiteSpace(savename)) {
 			savename = "Unnamed " + Utils.UintToString(saveFileIndex); // int
@@ -1206,15 +1208,21 @@ public class Const : MonoBehaviour {
 
 		// Save all the objects data
 		for (i=0;i<saveableGameObjects.Count;i++) {
-			saveData[index] = SaveObject.Save(saveableGameObjects[i]); index++; // Take this objects data and add it to the array.
+			// Take this object's data and add it to the array.
+			saveData[index] = SaveObject.Save(saveableGameObjects[i]);
+			index++; // Each item saved on a separate line.
 		}
 
 		// Write to file
-		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt",false,Encoding.ASCII);
+		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath
+										   + "/sav"+saveFileIndex.ToString()
+										   +".txt",false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
 				for (j=0;j<saveData.Length;j++) {
-					if (!string.IsNullOrWhiteSpace(saveData[j])) sw.WriteLine(saveData[j]);
+					if (!string.IsNullOrWhiteSpace(saveData[j])) {
+						sw.WriteLine(saveData[j]);
+					}
 				}
 				sw.Close();
 			}
@@ -1368,7 +1376,7 @@ public class Const : MonoBehaviour {
 
 		// Find all gameobjects with SaveObject script attached
 		List<GameObject> saveableGameObjects = new List<GameObject>();
-		FindAllSaveObjectsGOs(saveableGameObjects); // Find and add GameObjects to the list of saveables.
+		FindAllSaveObjectsGOs(ref saveableGameObjects); // Find and add GameObjects to the list of saveables.
 		List<string> readFileList = new List<string>();
 		char csplit = '|'; // caching since it will be iterated over in a loop
 		int index = 0; // caching since...I just said this
@@ -1443,9 +1451,11 @@ public class Const : MonoBehaviour {
 				if (entries.Length > 1) {
 					instantiatedCheck = instantiatedActive = false;
 					readIDs[i] = Utils.GetIntFromString(entries[1]); // int - get saveID from 2nd slot
-					instantiatedActive = Utils.GetBoolFromString(entries[3]); // bool - get activeSelf value of the gameObject
+					instantiatedActive = Utils.GetBoolFromString(entries[5]); // bool - get activeSelf value of the gameObject
 					instantiatedCheck = Utils.GetBoolFromString(entries[2]); // bool - get instantiated from 3rd slot
-					if (instantiatedCheck && instantiatedActive) instantiatedFound.Add(i);
+					if (instantiatedCheck && instantiatedActive) {
+						instantiatedFound.Add(i);
+					}
 				}
 			}
 			// UnityEngine.Debug.Log("Number of instantiated objects to instantiate later: " + instantiatedFound.Count.ToString());

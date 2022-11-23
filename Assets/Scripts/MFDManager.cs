@@ -703,6 +703,7 @@ public class MFDManager : MonoBehaviour  {
 			}
 
 			if (type == TabMSG.EReader) {
+				TabReset(false);
 				itemTabLH.EReaderSectionSContainerOpen();
 				MouseLookScript.a.ForceInventoryMode();
 			}
@@ -742,11 +743,12 @@ public class MFDManager : MonoBehaviour  {
 			}
 
 			if (type == TabMSG.EReader) {
+				TabReset(true);
 				itemTabRH.EReaderSectionSContainerOpen();
 				MouseLookScript.a.ForceInventoryMode();
 			}
 			if (type == TabMSG.SystemAnalyzer) {
-				TabReset(false);
+				TabReset(true);
 				sysAnalyzerRH.SetActive(true);
 			}
 		}

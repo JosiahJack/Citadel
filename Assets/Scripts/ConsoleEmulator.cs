@@ -292,8 +292,10 @@ public static class ConsoleEmulator {
 
 /*
 Prefab Indices Master List
+Pardon the staggered tables here.  This is an attempt to show as much as I can.
 ===============================================================================
 Master Index
+    Prefab Name                  Secondary Array Indices
 0   chunk_black
 1   chunk_blocker                Texture Array Index(es)
 2   chunk_bridg1_1               0
@@ -640,7 +642,7 @@ Master Index
 343 weapon_mk3                  36  0
 344 weapon_blaster              37  1
 345 weapon_dartgun              38  2
-346 weapon_flechett             39  3
+346 weapon_flechette            39  3
 347 weapon_ionrifle             40  4
 348 weapon_rapier               41  5
 349 weapon_pipe                 42  6
@@ -741,8 +743,40 @@ Master Index
 444 npc_cyberguard                    25
 445 npc_cyberram                      26
 446 npc_cyber_reaver                  27
-447 npc_cybershodan                   28
-
+447 npc_cybershodan                   28  Cyber Items
+448 item_cyber_data                       0
+449 item_cyber_decoy                      1
+450 item_cyber_drill                      2
+451 item_cyber_game                       3
+452 item_cyber_integrity                  4
+453 item_cyber_keycard                    5
+454 item_cyber_pulser                     6
+455 item_cyber_recall                     7
+456 item_cyber_shield                     8
+457 item_cyber_turbo           Misc       9 
+458 prop_phys_barrel_chemical  0
+459 prop_phys_barrel_radiation 1
+460 prop_phys_barrel_toxic     2
+461 prop_phys_cart             3
+462 prop_phys_pot              4
+463 prop_phys_toolcart         5 
+464 se_briefcase               6
+465 se_corpse_blueshirt        7
+466 se_corpse_brownshirt       8
+467 se_corpse_eaten            9
+468 se_corpse_labcoat          10
+469 se_corpse_security         11
+470 se_corpse_tan              12
+471 se_corpse_torso            13
+472 se_crate1                  14
+473 se_crate2                  15
+474 se_crate3                  16
+475 se_crate4                  17
+476 se_crate5                  18
+477 sec_camera                 19
+478 sec_cpunode                20
+479 sec_cpunode_small          21
+480 weapon_cyber_mine          22
 */
 
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat) {
@@ -754,18 +788,49 @@ Master Index
 			Debug.Log("Missing Inventory");
 			return null;
 		}
+		if (cheat && Const.a == null) {
+			Debug.Log("Missing Const");
+			return null;
+		}
 
 		Vector3 spawnPos = Vector3.zero;
 		if (cheat) spawnPos = PlayerMovement.a.transform.position;
 
 		GameObject go = null;
-		if (val >= 0 && val < 307) {
-			go = MonoBehaviour.Instantiate(Const.a.useableItems[val],spawnPos,
+		if (val >= 0 && val < 307) {			// [0, 306]
+			if (val > (Const.a.chunkPrefabs.Length - 1)) return null;
+			if (Const.a.chunkPrefabs[val] == null) return null;
+
+			go = MonoBehaviour.Instantiate(Const.a.chunkPrefabs[val],spawnPos,
 									  Const.a.quaternionIdentity) as GameObject;
-		} else if (val >= 307 && val < 409) {
+		} else if (val >= 307 && val < 419) {	// [307, 418]
 			val -= 307;
+			if (val > (Const.a.useableItems.Length - 1)) return null;
+			if (Const.a.useableItems[val] == null) return null;
+
 			go = MonoBehaviour.Instantiate(Const.a.useableItems[val],spawnPos,
 									  Const.a.quaternionIdentity) as GameObject;
+		} else if (val >= 419 && val < 448) {	// [419, 447]
+			val -= 419;
+			if (val > (Const.a.npcPrefabs.Length - 1)) return null;
+			if (Const.a.npcPrefabs[val] == null) return null;
+
+			go = MonoBehaviour.Instantiate(Const.a.npcPrefabs[val],spawnPos,
+									  Const.a.quaternionIdentity) as GameObject;
+		} else if (val >= 448 && val < 458) {	// [448, 457]
+			val -= 448;
+			if (val > (Const.a.cyberItemPrefabs.Length - 1)) return null;
+			if (Const.a.cyberItemPrefabs[val] == null) return null;
+
+			go = MonoBehaviour.Instantiate(Const.a.cyberItemPrefabs[val],
+							 spawnPos,Const.a.quaternionIdentity) as GameObject;
+		} else if (val >= 458 && val < 481) {	// [458, 480]
+			val -= 458;
+			if (val > (Const.a.miscellaneousPrefabs.Length - 1)) return null;
+			if (Const.a.miscellaneousPrefabs[val] == null) return null;
+
+			go = MonoBehaviour.Instantiate(Const.a.miscellaneousPrefabs[val],
+							 spawnPos,Const.a.quaternionIdentity) as GameObject;
 		}
 
 		if (go != null) {

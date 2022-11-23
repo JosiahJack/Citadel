@@ -92,7 +92,7 @@ public class SaveObject : MonoBehaviour {
 
 		if (!so.initialized) so.Start();
 		PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
-
+		if (prefID == null) Debug.Log("No PrefabIdentifier on " + go.name);
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		// Start Saving
@@ -106,7 +106,11 @@ public class SaveObject : MonoBehaviour {
 		s1.Append(Utils.SaveTransform(go.transform)); s1.Append(Utils.splitChar);	// 6,7,8,9,10,11,12,13,14,15
 		s1.Append(Utils.SaveRigidbody(go)); s1.Append(Utils.splitChar);			    // 16,17,18,19
 		s1.Append(so.levelParentID.ToString()); s1.Append(Utils.splitChar);			// 20
-		if (prefID != null) s1.Append(Utils.UintToString(prefID.constIndex));		// 21
+		if (prefID != null) {
+			s1.Append(Utils.UintToString(prefID.constIndex));                       // 21
+			s1.Append(Utils.splitChar);
+		} else s1.Append("307" + Utils.splitChar);
+
 		switch (so.saveType) {
 			case SaveableType.Player:                 s1.Append(PlayerReferenceManager.SavePlayerData(go)); break;
 			case SaveableType.Useable:                s1.Append(UseableObjectUse.Save(go)); break;
@@ -115,8 +119,8 @@ public class SaveObject : MonoBehaviour {
 													  s1.Append(AIController.Save(go)); s1.Append(Utils.splitChar);
 													  s1.Append(AIAnimationController.Save(go)); break;
 			case SaveableType.Destructable:           s1.Append(HealthManager.Save(go)); break;
-			case SaveableType.SearchableStatic:       s1.Append(SearchableItem.Save(go)); break;
-			case SaveableType.SearchableDestructable: s1.Append(SearchableItem.Save(go)); s1.Append(Utils.splitChar);
+			case SaveableType.SearchableStatic:       s1.Append(SearchableItem.Save(go,prefID)); break;
+			case SaveableType.SearchableDestructable: s1.Append(SearchableItem.Save(go,prefID)); s1.Append(Utils.splitChar);
                                                       s1.Append(HealthManager.Save(go)); break;
 			case SaveableType.Door:                   s1.Append(Door.Save(go)); break;
 			case SaveableType.ForceBridge:            s1.Append(ForceBridge.Save(go)); break;
@@ -192,6 +196,9 @@ public class SaveObject : MonoBehaviour {
 			index = 22;
 		}
 		if (index >= entries.Length) return index;
+
+		PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
+		if (prefID == null) Debug.Log("No PrefabIdentifier on " + go.name);
 		switch (so.saveType) {
 			case SaveableType.Player:				  index = PlayerReferenceManager.LoadPlayerDataToPlayer(go,ref entries, index); break;
 			case SaveableType.Useable:				  index = UseableObjectUse.Load(go,ref entries,index); break;
@@ -200,8 +207,8 @@ public class SaveObject : MonoBehaviour {
 													  index = AIController.Load(go,ref entries,index);
 													  index = AIAnimationController.Load(go,ref entries,index); break;
 			case SaveableType.Destructable:			  index = HealthManager.Load(go,ref entries,index); break;
-			case SaveableType.SearchableStatic:		  index = SearchableItem.Load(go,ref entries,index); break;
-			case SaveableType.SearchableDestructable: index = SearchableItem.Load(go,ref entries,index);
+			case SaveableType.SearchableStatic:		  index = SearchableItem.Load(go,ref entries,index,prefID); break;
+			case SaveableType.SearchableDestructable: index = SearchableItem.Load(go,ref entries,index,prefID);
 													  index = HealthManager.Load(go,ref entries,index); break;
 			case SaveableType.Door:                   index = Door.Load(go,ref entries,index); break;
 			case SaveableType.ForceBridge:            index = ForceBridge.Load(go,ref entries,index); break;
