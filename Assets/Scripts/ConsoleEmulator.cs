@@ -779,7 +779,7 @@ Master Index
 480 weapon_cyber_mine          22
 */
 
-	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat) {
+	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat, GameObject forcedContainer) {
 		if (LevelManager.a == null) {
 			Debug.Log("Missing LevelManager");
 			return null;
@@ -834,7 +834,11 @@ Master Index
 		}
 
 		if (go != null) {
-			go.transform.SetParent(LevelManager.a.levelScripts[lev].dynamicObjectsContainer.transform);
+			if (forcedContainer != null) {
+				go.transform.SetParent(forcedContainer.transform);
+			} else {
+				go.transform.SetParent(LevelManager.a.levelScripts[lev].dynamicObjectsContainer.transform);
+			}
 			if (cheat && (val < 33) && (val > 20)) {
 				UseableObjectUse uo = go.GetComponent<UseableObjectUse>();
 				int dex14 = Inventory.a.hardware14fromConstdex(uo.useableItemIndex);
@@ -844,5 +848,9 @@ Master Index
 			}
 		}
 		return go;
+	}
+
+	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat) {
+		return SpawnDynamicObject(val, lev, cheat, null);
 	}
 }

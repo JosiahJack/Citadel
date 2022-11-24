@@ -15,6 +15,7 @@ public class Tests : MonoBehaviour {
 	public GameObject[] lightContainers; // Can't use LevelManager's since
 										 // there is no instance unless in Play
 										 // mode.
+	public GameObject[] dynamicObjectContainers;
 	public GameObject gameObjectToSave;
 	public int levelToOutputFrom = 0;
 	public LevelManager lm;
@@ -654,7 +655,7 @@ public class Tests : MonoBehaviour {
 			allLights.Add(compArray[i].gameObject);
 		}
 
-		UnityEngine.Debug.Log("Found " + allLights.Count + " lights in level 1");
+		UnityEngine.Debug.Log("Found " + allLights.Count + " lights in level " + levelToOutputFrom.ToString());
 
 		StreamWriter sw = new StreamWriter(Application.dataPath + "/StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat",false,Encoding.ASCII);
 		if (sw == null) { UnityEngine.Debug.Log("Lights output file path invalid"); return; }
@@ -704,7 +705,7 @@ public class Tests : MonoBehaviour {
 	}
 
 	public void LoadLevelDynamicObjects() {
-		lm.LoadLevelDynamicObjects(levelToOutputFrom);
+		lm.LoadLevelDynamicObjects(levelToOutputFrom,dynamicObjectContainers[levelToOutputFrom]);
 	}
 
 	public void UnloadLevelDynamicObjects() {
@@ -712,30 +713,23 @@ public class Tests : MonoBehaviour {
 	}
 
 	public void GenerateDynamicObjectsDataFile() {
-		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_dynamics_level" + levelToOutputFrom.ToString() + ".dat");
+		UnityEngine.Debug.Log("Outputting all dynamic objects to StreamingAssets/CitadelScene_dynamics_level" + levelToOutputFrom.ToString() + ".dat");
 		StringBuilder s1 = new StringBuilder();
 		List<GameObject> allDynamicObjects = new List<GameObject>();
-		Component[] compArray = lightContainers[levelToOutputFrom].GetComponentsInChildren(typeof(SaveObject),true);
+		Component[] compArray = dynamicObjectContainers[levelToOutputFrom].GetComponentsInChildren(typeof(SaveObject),true);
 		for (int i=0;i<compArray.Length;i++) {
-			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) {
-				UnityEngine.Debug.Log("Skipping light with LightAnimation");
-				continue;
-			}
-			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) {
-				UnityEngine.Debug.Log("Skipping light with TargetIO");
-				continue;
-			}
 			allDynamicObjects.Add(compArray[i].gameObject);
 		}
 
-		UnityEngine.Debug.Log("Found " + allDynamicObjects.Count + " lights in level 1");
+		UnityEngine.Debug.Log("Found " + allDynamicObjects.Count + " dynamic objects in level " + levelToOutputFrom.ToString());
 
 		StreamWriter sw = new StreamWriter(Application.dataPath + "/StreamingAssets/CitadelScene_dynamics_level" + levelToOutputFrom.ToString() + ".dat",false,Encoding.ASCII);
 		if (sw == null) { UnityEngine.Debug.Log("Lights output file path invalid"); return; }
 
 		using (sw) {
 			for (int i=0;i<allDynamicObjects.Count;i++) {
-				SaveObject.Save(allDynamicObjects[i]);
+				sw.Write(SaveObject.Save(allDynamicObjects[i]));
+				sw.Write(Environment.NewLine);
 			}
 			sw.Close();
 		}

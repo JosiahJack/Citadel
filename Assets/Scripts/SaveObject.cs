@@ -58,6 +58,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.LTimer: saveableType = "LTimer"; break;
 			case SaveableType.Camera: saveableType = "Camera"; break;
 			case SaveableType.DelayedSpawn: saveableType = "DelayedSpawn"; break;
+			case SaveableType.SecurityCamera: saveableType = "SecurityCamera"; break;
 			default: saveableType = "Transform"; break;
 		}
 		initialized = true;
@@ -146,6 +147,9 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Camera:                 s1.Append(BerserkEffect.Save(go)); s1.Append(Utils.splitChar);
 													  s1.Append(Utils.SaveCamera(go)); break;
 			case SaveableType.DelayedSpawn:           s1.Append(DelayedSpawn.Save(go)); break;
+			case SaveableType.SecurityCamera:         s1.Append(SecurityCameraRotate.Save(go)); s1.Append(Utils.splitChar);
+													  s1.Append(HealthManager.Save(go.transform.GetChild(0).gameObject)); s1.Append(Utils.splitChar);
+													  s1.Append(Utils.SaveTransform(go.transform.GetChild(0))); break;
 		}
 		return s1.ToString();
 	}
@@ -201,37 +205,40 @@ public class SaveObject : MonoBehaviour {
 		if (prefID == null) Debug.Log("No PrefabIdentifier on " + go.name);
 		switch (so.saveType) {
 			case SaveableType.Player:				  index = PlayerReferenceManager.LoadPlayerDataToPlayer(go,ref entries, index); break;
-			case SaveableType.Useable:				  index = UseableObjectUse.Load(go,ref entries,index); break;
-			case SaveableType.Grenade:				  index = GrenadeActivate.Load(go,ref entries,index); break;
-			case SaveableType.NPC:					  index = HealthManager.Load(go,ref entries,index);
-													  index = AIController.Load(go,ref entries,index);
-													  index = AIAnimationController.Load(go,ref entries,index); break;
-			case SaveableType.Destructable:			  index = HealthManager.Load(go,ref entries,index); break;
-			case SaveableType.SearchableStatic:		  index = SearchableItem.Load(go,ref entries,index,prefID); break;
-			case SaveableType.SearchableDestructable: index = SearchableItem.Load(go,ref entries,index,prefID);
-													  index = HealthManager.Load(go,ref entries,index); break;
-			case SaveableType.Door:                   index = Door.Load(go,ref entries,index); break;
-			case SaveableType.ForceBridge:            index = ForceBridge.Load(go,ref entries,index); break;
-			case SaveableType.Switch:                 index = ButtonSwitch.Load(go,ref entries,index); break;
-			case SaveableType.FuncWall:               index = FuncWall.Load(go,ref entries,index); break;
-			case SaveableType.TeleDest:               index = TeleportTouch.Load(go,ref entries,index); break;
-			case SaveableType.LBranch:                index = LogicBranch.Load(go,ref entries,index); break;
-			case SaveableType.LRelay:                 index = LogicRelay.Load(go,ref entries,index); break;
-			case SaveableType.LSpawner:               index = SpawnManager.Load(go,ref entries,index); break;
-			case SaveableType.InteractablePanel:      index = InteractablePanel.Load(go,ref entries,index); break;
-			case SaveableType.ElevatorPanel:          index = KeypadElevator.Load(go,ref entries,index); break;
-			case SaveableType.Keypad:                 index = KeypadKeycode.Load(go,ref entries,index); break;
-			case SaveableType.PuzzleGrid:             index = PuzzleGridPuzzle.Load(go,ref entries,index); break;
-			case SaveableType.PuzzleWire:             index = PuzzleWirePuzzle.Load(go,ref entries,index); break;
-			case SaveableType.TCounter:               index = TriggerCounter.Load(go,ref entries,index); break;
-			case SaveableType.TGravity:               index = GravityLift.Load(go,ref entries,index); break;
-			case SaveableType.MChanger:               index = MaterialChanger.Load(go,ref entries,index); break;
-			case SaveableType.RadTrig:                index = Radiation.Load(go,ref entries,index); break;
-			case SaveableType.GravPad:                index = TextureChanger.Load(go,ref entries,index); break;
-			case SaveableType.ChargeStation:          index = ChargeStation.Load(go,ref entries,index); break;
-			case SaveableType.Light:                  index = LightAnimation.Load(go,ref entries,index); break;
-			case SaveableType.Camera:                 index = BerserkEffect.Load(go,ref entries,index);
-													  index = Utils.LoadCamera(go,ref entries,index); break;
+			case SaveableType.Useable:				  index =       UseableObjectUse.Load(go,ref entries,index); break;
+			case SaveableType.Grenade:				  index =        GrenadeActivate.Load(go,ref entries,index); break;
+			case SaveableType.NPC:					  index =          HealthManager.Load(go,ref entries,index);
+													  index =           AIController.Load(go,ref entries,index);
+													  index =  AIAnimationController.Load(go,ref entries,index); break;
+			case SaveableType.Destructable:			  index =          HealthManager.Load(go,ref entries,index); break;
+			case SaveableType.SearchableStatic:		  index =         SearchableItem.Load(go,ref entries,index,prefID); break;
+			case SaveableType.SearchableDestructable: index =         SearchableItem.Load(go,ref entries,index,prefID);
+													  index =          HealthManager.Load(go,ref entries,index); break;
+			case SaveableType.Door:                   index =                   Door.Load(go,ref entries,index); break;
+			case SaveableType.ForceBridge:            index =            ForceBridge.Load(go,ref entries,index); break;
+			case SaveableType.Switch:                 index =           ButtonSwitch.Load(go,ref entries,index); break;
+			case SaveableType.FuncWall:               index =               FuncWall.Load(go,ref entries,index); break;
+			case SaveableType.TeleDest:               index =          TeleportTouch.Load(go,ref entries,index); break;
+			case SaveableType.LBranch:                index =            LogicBranch.Load(go,ref entries,index); break;
+			case SaveableType.LRelay:                 index =             LogicRelay.Load(go,ref entries,index); break;
+			case SaveableType.LSpawner:               index =           SpawnManager.Load(go,ref entries,index); break;
+			case SaveableType.InteractablePanel:      index =      InteractablePanel.Load(go,ref entries,index); break;
+			case SaveableType.ElevatorPanel:          index =         KeypadElevator.Load(go,ref entries,index); break;
+			case SaveableType.Keypad:                 index =          KeypadKeycode.Load(go,ref entries,index); break;
+			case SaveableType.PuzzleGrid:             index =       PuzzleGridPuzzle.Load(go,ref entries,index); break;
+			case SaveableType.PuzzleWire:             index =       PuzzleWirePuzzle.Load(go,ref entries,index); break;
+			case SaveableType.TCounter:               index =         TriggerCounter.Load(go,ref entries,index); break;
+			case SaveableType.TGravity:               index =            GravityLift.Load(go,ref entries,index); break;
+			case SaveableType.MChanger:               index =        MaterialChanger.Load(go,ref entries,index); break;
+			case SaveableType.RadTrig:                index =              Radiation.Load(go,ref entries,index); break;
+			case SaveableType.GravPad:                index =         TextureChanger.Load(go,ref entries,index); break;
+			case SaveableType.ChargeStation:          index =          ChargeStation.Load(go,ref entries,index); break;
+			case SaveableType.Light:                  index =         LightAnimation.Load(go,ref entries,index); break;
+			case SaveableType.Camera:                 index =          BerserkEffect.Load(go,ref entries,index);
+													  index =                  Utils.LoadCamera(go,ref entries,index); break;
+			case SaveableType.SecurityCamera:         index =   SecurityCameraRotate.Load(go,ref entries,index);
+													  index =          HealthManager.Load(go.transform.GetChild(0).gameObject,ref entries,index);
+													  index =                  Utils.LoadTransform(go.transform.GetChild(0),ref entries,index); break;
 		}
 		return index;
 	}

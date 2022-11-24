@@ -344,11 +344,11 @@ public class LevelManager : MonoBehaviour {
 		compArray = null;
 	}
 
-	public void LoadLevelDynamicObjects(int curlevel) {
+	public void LoadLevelDynamicObjects(int curlevel, GameObject container) {
 		if (curlevel > (levelScripts.Length - 1)) return;
 		if (curlevel < 0) return;
 
-		StreamReader sf = new StreamReader(Application.dataPath + "/StreamingAssets/CitadelScene_lights_level" + curlevel.ToString() + ".dat");
+		StreamReader sf = new StreamReader(Application.dataPath + "/StreamingAssets/CitadelScene_dynamics_level" + curlevel.ToString() + ".dat");
 		if (sf == null) { UnityEngine.Debug.Log("Dynamic objects input file path invalid"); return; }
 
 		string readline;
@@ -361,17 +361,20 @@ public class LevelManager : MonoBehaviour {
 			sf.Close();
 		}
 
+		int val = 307; // First useable object (paper wad) just in case.  Don't want to spawn 0 as a fallback which is a wall.
 		string[] entries;
-		int index = 0;
 		for (int i=0;i<readFileList.Count;i++) {
 			entries = readFileList[i].Split(Convert.ToChar(Utils.splitChar));
 			if (entries.Length <= 1) continue;
 
-			index = 0;
-			int val = 0; // TODO!!!!!
-			GameObject newGO = ConsoleEmulator.SpawnDynamicObject(val,curlevel,false);
+			val = Utils.GetIntFromString(entries[21]); // Master Index
+			GameObject newGO = ConsoleEmulator.SpawnDynamicObject(val,curlevel,false,container);
 			if (newGO != null) SaveObject.Load(newGO,ref entries,5);
 		}
+	}
+
+	public void LoadLevelDynamicObjects(int curlevel) {
+		LoadLevelDynamicObjects(curlevel,null);
 	}
 
 	public void CheatLoadLevel(int ind) {

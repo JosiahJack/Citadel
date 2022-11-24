@@ -87,7 +87,7 @@ public class HealthManager : MonoBehaviour {
 			maxhealth = 255;
 		}
 		if (isNPC) justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
-		if (securityAffected != SecurityType.None) LevelManager.a.RegisterSecurityObject(levelIndex, securityAffected);
+		if (securityAffected != SecurityType.None && LevelManager.a != null) LevelManager.a.RegisterSecurityObject(levelIndex, securityAffected);
 		if (Const.a != null) Const.a.RegisterObjectWithHealth(this);
 		if (gibOnDeath) {
 			for (int i=0;i<gibObjects.Length;i++) {
@@ -104,18 +104,20 @@ public class HealthManager : MonoBehaviour {
 			aic = GetComponent<AIController>();
 			index = aic.index;
 
-			if (index > 23) {
-				if (cyberHealth <= 0) cyberHealth = Const.a.healthForCyberNPC[index];
-				if (maxhealth <= 0) maxhealth = Const.a.healthForCyberNPC[index];
-			} else {
-				if (health <= 0) health = Const.a.healthForNPC[index]; //leaves possibility of setting health lower than normal, for instance the cortex reaver on level 5
-				if (maxhealth <= 0) maxhealth = Const.a.healthForNPC[index]; // set maxhealth to default healthForNPC, possible to set higher, e.g. for cyborg assassins on level 9 whose health is 3 times normal
-			}
+			if (Const.a != null) {
+				if (index > 23) {
+					if (cyberHealth <= 0) cyberHealth = Const.a.healthForCyberNPC[index];
+					if (maxhealth <= 0) maxhealth = Const.a.healthForCyberNPC[index];
+				} else {
+					if (health <= 0) health = Const.a.healthForNPC[index]; //leaves possibility of setting health lower than normal, for instance the cortex reaver on level 5
+					if (maxhealth <= 0) maxhealth = Const.a.healthForNPC[index]; // set maxhealth to default healthForNPC, possible to set higher, e.g. for cyborg assassins on level 9 whose health is 3 times normal
+				}
 
-            if (Const.a.difficultyCombat == 0) {
-            	maxhealth = 1;
-            	health = maxhealth;
-            }
+				if (Const.a.difficultyCombat == 0) {
+					maxhealth = 1;
+					health = maxhealth;
+				}
+			}
 			if (actAsCorpseOnly && isNPC) InitializeCorpseOnly();
         }
 		if (maxhealth <= 0) maxhealth = health;
@@ -133,6 +135,7 @@ public class HealthManager : MonoBehaviour {
 					if (linkedCameraOverlay != null) {
 						linkedCameraOverlay.enabled = true;
 						Vector3 tempVec2 = new Vector2(0f,0f);
+						// 436,-367, -0.3 is the center point of the map UI
 						tempVec2.y = -367 + (((((transform.position.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * 1008f) + Const.a.mapTileMinX));
 						tempVec2.x = 436 + (((((transform.position.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * 1008f) + Const.a.mapTileMinY));
 						tempVec2.z = -0.3f;
@@ -157,7 +160,7 @@ public class HealthManager : MonoBehaviour {
 			if (tio != null) {
 				ud.SetBits(tio);
 			} else {
-				Debug.Log("BUG: no TargetIO.cs found on an gameobject with a HealthManager.cs script!  Trying to call UseTargets without parameters!");
+				Debug.Log("BUG: no TargetIO.cs found on a gameobject with a HealthManager.cs script!  Trying to call UseTargets without parameters!");
 			}
 			Const.a.UseTargets(ud,targetOnDeath);
 		}
