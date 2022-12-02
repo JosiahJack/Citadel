@@ -750,13 +750,13 @@ public class PlayerMovement : MonoBehaviour {
 		if (consoleActivated) return;
 		if (!GetInput.a.Prone()) return;
 
-		if (bodyState != BodyState.Prone || bodyState != BodyState.ProningDown) {
+		if (bodyState != BodyState.Prone && bodyState != BodyState.ProningDown) {
 			bodyState = BodyState.ProningDown;
 		} else {
 			if (bodyState == BodyState.Prone || bodyState == BodyState.ProningDown) {
 				if (CantStand()) { Const.sprint(Const.a.stringTable[187]); return; } // Can't stand here
 					
-				bodyState = BodyState.ProningUp;
+				bodyState = BodyState.StandingUp;
 			}
 		}
 	}

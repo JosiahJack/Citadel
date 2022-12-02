@@ -130,7 +130,7 @@ public class Door : MonoBehaviour {
 				useFinished = PauseScript.a.relativeTime + useTimeDelay;	
 				if (!locked) {
 					if (requiredAccessCard != AccessCardType.None) {
-						Const.sprint(requiredAccessCard.ToString() + cardUsedMessage,ud.owner); // state that we just used a keycard and access was granted
+						Const.sprint(Inventory.AccessCardCodeForType(requiredAccessCard) + cardUsedMessage,ud.owner); // state that we just used a keycard and access was granted
 						accessCardUsedByPlayer = true;
 					}
 

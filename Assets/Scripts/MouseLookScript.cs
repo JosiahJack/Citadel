@@ -502,7 +502,7 @@ public class MouseLookScript : MonoBehaviour {
 				}
 				int referenceIndex = -1;
 				if (Inventory.a.generalInvCurrent >= 0) referenceIndex = Inventory.a.genButtons[Inventory.a.generalInvCurrent].transform.GetComponent<GeneralInvButton>().useableItemIndex;
-				if (referenceIndex < 0 || referenceIndex > 94) MFDManager.a.ResetItemTab();
+				if (referenceIndex < 0 || referenceIndex > 110) MFDManager.a.ResetItemTab();
 				else MFDManager.a.SendInfoToItemTab(referenceIndex);
 				PutObjectInHand(genbut.useableItemIndex,-1,0,0,Const.a.useableItemsFrobIcons[genbut.useableItemIndex],true);
 				break;
@@ -562,7 +562,7 @@ public class MouseLookScript : MonoBehaviour {
 
 	public void AddItemToInventory (int index) {
 		if (index < 0) index = 0; // Good check on paper.
-		if (index > 94) index = 94; // Way to get a head.
+		if (index > 110) index = 94; // Way to get a head.
 
 		AudioClip pickclip = PickupSFX;
 		if ((index >= 0 && index <= 5)
@@ -581,7 +581,7 @@ public class MouseLookScript : MonoBehaviour {
 												        heldObjectAmmo2)) {
 				AddItemFail(index);
 			}
-		} else if (index == 34 || index == 81 || (index >= 83 && index <= 91)) {
+		} else if (index == 34 || index == 81 || (index >= 83 && index <= 91) || index == 110) {
 			Inventory.a.AddAccessCardToInventory(index);
 		} else {
 			switch (index) {
@@ -650,8 +650,8 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	public void DropHeldItem() {
-		if (heldObjectIndex < 0 || heldObjectIndex > 101) { 
-			Debug.Log("BUG: Attempted to DropHeldItem with index out of bounds (<0 or >101) and heldObjectIndex = " + heldObjectIndex.ToString(),player);
+		if (heldObjectIndex < 0 || heldObjectIndex > 110) { 
+			Debug.Log("BUG: Attempted to DropHeldItem with index out of bounds (<0 or >110) and heldObjectIndex = " + heldObjectIndex.ToString(),player);
 			ResetHeldItem();
 			ResetCursor();
 			return;

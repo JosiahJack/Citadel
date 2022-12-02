@@ -486,7 +486,7 @@ public class Inventory : MonoBehaviour {
 		return false;
 	}
 
-	string AccessCardCodeForType(AccessCardType acc) {
+	public static string AccessCardCodeForType(AccessCardType acc) {
 		switch(acc) {
 			case AccessCardType.Standard: return "STD";
 			case AccessCardType.Medical: return "MED";
@@ -520,12 +520,12 @@ public class Inventory : MonoBehaviour {
 			case 84: doorAccessTypeAcquired = AccessCardType.Science; break; //CHECKED! Good here.  All Yellow (card_group1)
 			case 85: doorAccessTypeAcquired = AccessCardType.Engineering; break;  //CHECKED! Good here.  Blue Rim, Turquoise Inner (card_eng)
 			case 86: doorAccessTypeAcquired = AccessCardType.GroupB; break; //CHECKED! Good here.  Blue Rim, Orange Inner (card_group1_actual)
-			//case 87: doorAccessTypeAcquired = AccessCardType.Security; break; //CHECKED! Good here. Command = Security = Storage Red Rim, Yellow Inner (card_per1)
+			case 87: doorAccessTypeAcquired = AccessCardType.Security; break; //CHECKED! Good here. Command = Security = Storage Red Rim, Yellow Inner (card_per1)
 			case 88: doorAccessTypeAcquired = AccessCardType.Per5; break; // Purple Rim, Red Inner (card_per5)
 			case 89: doorAccessTypeAcquired = AccessCardType.Medical; break; // Gray with Red Cross (card_medi)
 			case 90: doorAccessTypeAcquired = AccessCardType.Group3; break; // CHECKED! Good here.  Blue Rim, Orange Inner with Yellow prongs (card_blue)
 			case 91: doorAccessTypeAcquired = AccessCardType.Group4; break; // Cyberspace only
-			case 111: doorAccessTypeAcquired = AccessCardType.Per1; break; // Darcy, Purple Rim, Red Inner (card_per5)
+			case 110: doorAccessTypeAcquired = AccessCardType.Per1; break; // Darcy, Purple Rim, Red Inner (card_per5)
 			default: 
 				Const.sprint("Attempted to add an unmarked access card, we'll treat it as a STANDARD.");
 				doorAccessTypeAcquired = AccessCardType.Standard;
@@ -537,7 +537,7 @@ public class Inventory : MonoBehaviour {
 			  && HasAccessCard(AccessCardType.Storage) // If Command, only give
 			  && HasAccessCard(AccessCardType.Security)//    message if missing
 			  && HasAccessCard(AccessCardType.Maintenance))) { //        all 3
-			Const.sprint(Const.a.stringTable[44] + doorAccessTypeAcquired.ToString()); // Already have access: ##
+			Const.sprint(Const.a.stringTable[44] + AccessCardCodeForType(doorAccessTypeAcquired)); // Already have access: ##
 		} else {
 			bool added = false;
 			if (index == 87) {
@@ -552,6 +552,7 @@ public class Inventory : MonoBehaviour {
 						if (accessCardsOwned[i] == AccessCardType.None){
 							added = true;
 							accessCardsOwned[i] = doorAccessTypeAcquired;
+							break;
 						}
 					}
 				}
@@ -560,6 +561,7 @@ public class Inventory : MonoBehaviour {
 					if (accessCardsOwned[i] == AccessCardType.None){
 						added = true;
 						accessCardsOwned[i] = doorAccessTypeAcquired;
+						break;
 					}
 				}
 			}
@@ -582,7 +584,7 @@ public class Inventory : MonoBehaviour {
 				MFDManager.a.NotifyToCenterTab(2);
 				MFDManager.a.SendInfoToItemTab(index);
 			} else {
-				Const.sprint("Something went wrong when trying to add that access card.");
+				Const.sprint("BUG: Something went wrong when trying to add that access card.");
 				MFDManager.a.ResetItemTab();
 			}
 		}
@@ -1117,7 +1119,7 @@ public class Inventory : MonoBehaviour {
 				Const.sprint(Const.a.stringTable[459],Const.a.player1);
 				return true;
 			case SoftwareType.Keycard:
-				if (vers < 0 || vers > 94) vers = 81; // At least give them STD.
+				if (vers < 0 || vers > 110) vers = 81; // At least give them STD.
 				AddAccessCardToInventory(vers);
 				return true;
 		}

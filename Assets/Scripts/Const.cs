@@ -1284,7 +1284,9 @@ public class Const : MonoBehaviour {
 		MainMenuHandler.a.IntroVideoContainer.SetActive(false);
 		PauseScript.a.mainMenu.SetActive(false);
 		PauseScript.a.PauseDisable();
-		PlayerHealth.a.hm.ClearOverlays();
+		if (PlayerHealth.a != null) {
+			if (PlayerHealth.a.hm != null) PlayerHealth.a.hm.ClearOverlays();
+		}
 		loadingScreen.SetActive(false);
 		if (player1Capsule != null) player1Capsule.SetActive(true);
 		else UnityEngine.Debug.Log("ERROR: Missing player1Capsule on GoIntoGame");

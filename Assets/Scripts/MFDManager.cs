@@ -760,7 +760,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void SendInfoToItemTab(int index) {
-		if (index < 0 || index > 94) { ResetItemTab(); return; }
+		if (index < 0 || index > 110) { ResetItemTab(); return; }
 
 		itemTabLH.SendItemDataToItemTab(index);
 		itemTabRH.SendItemDataToItemTab(index);

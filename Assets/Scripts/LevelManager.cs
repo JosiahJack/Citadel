@@ -44,6 +44,16 @@ public class LevelManager : MonoBehaviour {
 
 	void Awake () {
 		a = this;
+		if (currentLevel < 0) {
+			if (Const.a == null) return;
+			if (Const.a.player1CapsuleMainCameragGO == null) return;
+
+			Camera cam = Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>();
+			if (cam == null) return;
+
+			cam.useOcclusionCulling = false;
+			return;
+		}
 		if (currentLevel < 0 || currentLevel > 12) return; // 12 because I don't think I support starting in cyberspace, 13, for testing.
 
 		//PlayerReferenceManager.a.playerCurrentLevel = currentLevel;

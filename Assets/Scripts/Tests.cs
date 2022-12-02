@@ -303,10 +303,10 @@ public class Tests : MonoBehaviour {
 			SearchableItem sitem = allGOs[i].GetComponent<SearchableItem>();
 			if (sitem != null) {
 				num_SearchableItem++;
-				if (sitem.contents[0] < -1 || sitem.contents[0] > 94) { UnityEngine.Debug.Log(script + " has invalid item index of " + sitem.contents[0].ToString() + " for content 0, with parent of " + allGOs[i].transform.parent.name); issueCount_SearchableItem++; }
-				if (sitem.contents[1] < -1 || sitem.contents[1] > 94) { UnityEngine.Debug.Log(script + " has invalid item index of " + sitem.contents[1].ToString() + " for content 1, with parent of " + allGOs[i].transform.parent.name); issueCount_SearchableItem++; }
-				if (sitem.contents[2] < -1 || sitem.contents[2] > 94) { UnityEngine.Debug.Log(script + " has invalid item index of " + sitem.contents[2].ToString() + " for content 2, with parent of " + allGOs[i].transform.parent.name); issueCount_SearchableItem++; }
-				if (sitem.contents[3] < -1 || sitem.contents[3] > 94) { UnityEngine.Debug.Log(script + " has invalid item index of " + sitem.contents[3].ToString() + " for content 3, with parent of " + allGOs[i].transform.parent.name); issueCount_SearchableItem++; }
+				if (sitem.contents[0] < -1 || sitem.contents[0] > 110) { UnityEngine.Debug.Log(script + " has invalid item index of " + sitem.contents[0].ToString() + " for content 0, with parent of " + allGOs[i].transform.parent.name); issueCount_SearchableItem++; }
+				if (sitem.contents[1] < -1 || sitem.contents[1] > 110) { UnityEngine.Debug.Log(script + " has invalid item index of " + sitem.contents[1].ToString() + " for content 1, with parent of " + allGOs[i].transform.parent.name); issueCount_SearchableItem++; }
+				if (sitem.contents[2] < -1 || sitem.contents[2] > 110) { UnityEngine.Debug.Log(script + " has invalid item index of " + sitem.contents[2].ToString() + " for content 2, with parent of " + allGOs[i].transform.parent.name); issueCount_SearchableItem++; }
+				if (sitem.contents[3] < -1 || sitem.contents[3] > 110) { UnityEngine.Debug.Log(script + " has invalid item index of " + sitem.contents[3].ToString() + " for content 3, with parent of " + allGOs[i].transform.parent.name); issueCount_SearchableItem++; }
 				if (sitem.customIndex[0] < -1) { UnityEngine.Debug.Log(script + " has invalid customIndex of " + sitem.customIndex[0].ToString() + " for content 0, with parent of " + allGOs[i].transform.parent.name); issueCount_SearchableItem++; }
 				if (sitem.customIndex[1] < -1) { UnityEngine.Debug.Log(script + " has invalid customIndex of " + sitem.customIndex[1].ToString() + " for content 1, with parent of " + allGOs[i].transform.parent.name); issueCount_SearchableItem++; }
 				if (sitem.customIndex[2] < -1) { UnityEngine.Debug.Log(script + " has invalid customIndex of " + sitem.customIndex[2].ToString() + " for content 2, with parent of " + allGOs[i].transform.parent.name); issueCount_SearchableItem++; }

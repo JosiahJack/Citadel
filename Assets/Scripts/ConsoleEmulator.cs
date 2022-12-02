@@ -636,8 +636,8 @@ Master Index
 337 item_hw_booster             30         9
 338 item_hw_jumpjets            31         10
 339 item_hw_infrared            32         11
-340 item_fireextinguisher       33               Access Card Type
-341 item_access_card_admin      34               Admin (Green Rim, Turquoise Inner with Yellow Cross) (card_group5)
+340 item_fireextinguisher       33     Access Card Type
+341 item_access_card_admin      34     Admin (Green Rim, Turquoise Inner with Yellow Cross) (card_group5)
 342 item_workerhelmet           35  Weapon Type (aka Wep16Index)
 343 weapon_mk3                  36  0
 344 weapon_blaster              37  1
@@ -683,18 +683,18 @@ Master Index
 384 item_ammo_slag              77
 385 item_ammo_slaglarge         78
 386 item_ammo_magcart           79  Grenade Type (same as non-live)
-387 weapon_grenadeemp_live      80  1            Access Card Type
-388 item_access_card_std        81               Standard (Orange Rim, Turquoise Inner) (card_std)
+387 weapon_grenadeemp_live      80  1  Access Card Type
+388 item_access_card_std        81     Standard (Orange Rim, Turquoise Inner) (card_std)
 389 weapon_grenadeearth_live    82  6
-390 item_access_card_group1     83               Group 1 (Blue Rim, Orange Inner) (card_group1_actual)
-391 item_access_card_science    84               Science (All Yellow) (card_group1)
-392 item_access_card_eng        85               Engineering (Blue Rim, Turquoise Inner) (card_eng)
-393 item_access_card_groupB     86               Group B (Blue Rim, Orange Inner) (card_group1_actual)
-394 item_access_card_security   87               Security (Red Rim, Yellow Inner) (card_per1)
-395 item_access_card_per5diego  88               Personnel 5 (Edward Diego) (Purple Rim, Red Inner) (card_per5)
-396 item_access_card_medi       89               Medical (Gray with Red Cross) (card_medi)
-397 item_access_card_group3     90               Group3 (Blue Rim, Orange Inner) (card_blue)
-398 item_access_card_purple     91               Group4
+390 item_access_card_group1     83     Group 1 (Blue Rim, Orange Inner) (card_group1_actual)
+391 item_access_card_science    84     Science (All Yellow) (card_group1)
+392 item_access_card_eng        85     Engineering (Blue Rim, Turquoise Inner) (card_eng)
+393 item_access_card_groupB     86     Group B (Blue Rim, Orange Inner) (card_group1_actual)
+394 item_access_card_security   87     Security (Red Rim, Yellow Inner) (card_per1)
+395 item_access_card_per5diego  88     Personnel 5 (Edward Diego) (Purple Rim, Red Inner) (card_per5)
+396 item_access_card_medi       89     Medical (Gray with Red Cross) (card_medi)
+397 item_access_card_group3     90     Group3 (Blue Rim, Orange Inner) (card_blue)
+398 item_access_card_purple     91     Group4
 399 item_head_male              92
 400 item_head_female            93
 401 item_severedhead            94  Grenade Type (same as non-live)
@@ -712,9 +712,9 @@ Master Index
 413 null                        106
 414 null                        107
 415 null                        108
-416 null                        109
-417 null                        110             Access Card Type
-418 item_access_card_perdarcy   111   NPC       Personnel 1 (Darcy) (Purple Rim, Red Inner) (card_per5)
+416 null                        109    Access Card Type
+417 item_access_card_perdarcy   110    Personnel 1 (Darcy) (Purple Rim, Red Inner) (card_per5)
+418 null  (whoops!, oh well)          NPC
 419 npc_autobomb                      0
 420 npc_cyborg_assassin               1
 421 npc_avian_mutant                  2
