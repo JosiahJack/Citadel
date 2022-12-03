@@ -283,12 +283,16 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	void FrobEmptyHanded() {
+		RaycastHit firstHit;
 		cursorPoint.x = MouseCursor.a.cursorPosition.x; //MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2f);
 		cursorPoint.y = Screen.height - MouseCursor.a.cursorPosition.y; //Screen.height - MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
 		cursorPoint.z = 0f;
 		float offset = Screen.height * 0.02f;
 		bool successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.a.frobDistance,Const.a.layerMaskPlayerFrob); // Separate from below which uses different mask
 		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,playerCamera.ScreenPointToRay(cursorPoint).direction * Const.a.frobDistance, Color.green,1f,true);
+		firstHit = tempHit;
+		// Success here means hit a useable something.
+		// If a ray hits a wall or other unusable something, that's not success and print "Can't use <something>"
 		if (successfulRay) {
 			successfulRay = (tempHit.collider != null);
 			if (successfulRay) {
@@ -306,6 +310,7 @@ public class MouseLookScript : MonoBehaviour {
 		// 5 1 4
 		// 7 2 9
 		// To kind of walk around the center point to hopefully minimize rays we try.
+		// And tighten our lug nuts properly so the wheels don't fall off this thing.
 
 		if (!successfulRay) { // Try down
 			cursorPoint.y -= offset;
@@ -356,6 +361,8 @@ public class MouseLookScript : MonoBehaviour {
 			cursorPoint.y += offset;
 		}
 
+		if (!successfulRay) tempHit = firstHit;
+
 		// Okay we've checked first center, then in a box patter of 8, surely we've hit something the player was reasonably aiming at by now.
 		if (successfulRay) {
 			if (tempHit.collider.CompareTag("Usable")) { // Use
@@ -377,19 +384,28 @@ public class MouseLookScript : MonoBehaviour {
 				SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
 			} else if (tempHit.collider.CompareTag("NPC")) { // Say we can't use enemy and give enemy name.
 				AIController aic = tempHit.collider.gameObject.GetComponent<AIController>();
-				if (aic != null) Const.sprint(Const.a.stringTable[29] + Const.a.nameForNPC[aic.index],player); // "Can not use <enemy>"
+				if (aic != null) Const.sprint(Const.a.stringTable[29] + Const.a.nameForNPC[aic.index],player); // "Can't use <enemy>"
 			} else {
-				Const.sprint(Const.a.stringTable[29],player); // "Can not use "
+				Const.sprint(Const.a.stringTable[29],player); // "Can't use "
 			}
 		} else { // Frobbed into empty space, so whatever it is is too far.
-			if (tempHit.collider != null) {
-				if (tempHit.collider.CompareTag("Geometry")) { // Give info about what we are looking at, e.g. "Molybdenum panelling".
-					UseName un = tempHit.collider.gameObject.GetComponent<UseName> ();
-					if (un != null) Const.sprint(Const.a.stringTable[29] + un.targetname,player); // "Can not use <blah blah blah>"
-				}
-			}
-			Const.sprint(Const.a.stringTable[30],player); // You are too far away from that
+			if (tempHit.collider != null) UseNameSprint(tempHit.collider.gameObject); // This sprints the "Can't use <something>" text.
+			else Const.sprint(Const.a.stringTable[30],player); // You are too far away from that
 		}
+	}
+
+	bool UseNameSprint(GameObject go) {
+		UseName un = go.GetComponent<UseName>();
+		if (un == null) un = go.transform.parent.gameObject.GetComponent<UseName>(); // Ok, maybe the parent has it.
+		if (un == null) un = go.GetComponentInChildren<UseName>(); // Ok...so maybe a child has UseName on it, find it in the children.
+		if (un != null) {
+			Const.sprint(Const.a.stringTable[29] + un.targetname,player); // "Can't use <blah blah blah>"
+			return true;
+		}
+
+		// Fine we don't know what it is.
+		Const.sprint(Const.a.stringTable[29],player); // "Can't use "
+		return false; 
 	}
 
 	bool FrobWithHeldObject() {
