@@ -13,7 +13,7 @@ public class UseableObjectUse : MonoBehaviour {
 		if (Const.a.difficultyPuzzle == 3) {
 			if (useableItemIndex == 54) {
 				if (UnityEngine.Random.Range(0,1f) < 0.33f) {
-					gameObject.SetActive(false);
+					Utils.SafeDestroy(gameObject);
 				}
 			}
 		}
@@ -21,23 +21,21 @@ public class UseableObjectUse : MonoBehaviour {
 		// Remove access cards on Mission difficulty 1 or 0
 		if (Const.a.difficultyMission <= 1) {
 			if (useableItemIndex >= 81 && useableItemIndex <= 91) {
-				gameObject.SetActive(false); 
+				Utils.SafeDestroy(gameObject);
 			}
 		}
 
 		// Remove audiologs on Mission difficulty 0
 		if (Const.a.difficultyMission == 0) {
-			if (useableItemIndex == 6) {
-				gameObject.SetActive(false);
-			}
+			if (useableItemIndex == 6) Utils.SafeDestroy(gameObject);
 		}
 	}
 
 	// Was GameObject owner as arguments, now UseData to hold more info.
 	public void Use (UseData ud) {
-		if (useableItemIndex < 0) Debug.Log("BUG: Oh crap, a useable has an index less than 0! UseableObjectUse.cs");
+		if (useableItemIndex < 0) Debug.Log("BUG: Useable index less than 0!");
 		tex = Const.a.useableItemsFrobIcons[useableItemIndex];
-		if (tex != null) MouseCursor.a.cursorImage = tex;  // Set cursor to this object
+		if (tex != null) MouseCursor.a.cursorImage = tex; // Set cursor to this object
 		MouseLookScript.a.holdingObject = true;
 		MouseLookScript.a.heldObjectIndex = useableItemIndex;
 		MouseLookScript.a.heldObjectCustomIndex = customIndex;
@@ -51,7 +49,7 @@ public class UseableObjectUse : MonoBehaviour {
 			MouseLookScript.a.ForceInventoryMode();  // Inventory mode is turned on when picking something up
 			Const.sprint(Const.a.useableItemsNameText[useableItemIndex] + Const.a.stringTable[319],ud.owner); // <item_name> picked up.
 		}
-		this.gameObject.SetActive(false); // We've been picked up, quick hide like you are actually in the player's hand
+		Utils.SafeDestroy(gameObject);
 	}
 
 	public void HitForce (DamageData dd) {

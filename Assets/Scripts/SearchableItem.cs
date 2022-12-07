@@ -68,23 +68,9 @@ public class SearchableItem : MonoBehaviour {
 		line += Utils.splitChar + Utils.UintToString(se.customIndex[3]); // int custom index
 		line += Utils.splitChar + Utils.BoolToString(se.searchableInUse);
 		if (prefID.constIndex == 464) { // Briefcase with its gibs.
-			Transform child1 = go.transform.GetChild(0);
-			GameObject child1GO = child1.gameObject;
-			line += Utils.splitChar + Utils.SaveTransform(child1);
-			line += Utils.splitChar + Utils.SaveRigidbody(child1GO);
-			line += Utils.splitChar + Utils.BoolToString(child1GO.activeSelf);
-
-			Transform child2 = go.transform.GetChild(1);
-			GameObject child2GO = child2.gameObject;
-			line += Utils.splitChar + Utils.SaveTransform(child2);
-			line += Utils.splitChar + Utils.SaveRigidbody(child2GO);
-			line += Utils.splitChar + Utils.BoolToString(child2GO.activeSelf);
-
-			Transform child3 = go.transform.GetChild(2);
-			GameObject child3GO = child3.gameObject;
-			line += Utils.splitChar + Utils.SaveTransform(child3);
-			line += Utils.splitChar + Utils.SaveRigidbody(child3GO);
-			line += Utils.splitChar + Utils.BoolToString(child3GO.activeSelf);
+			line += Utils.splitChar + Utils.SaveChildGOState(go,0);
+			line += Utils.splitChar + Utils.SaveChildGOState(go,1);
+			line += Utils.splitChar + Utils.SaveChildGOState(go,2);
 		}
 		return line;
 	}
@@ -105,30 +91,9 @@ public class SearchableItem : MonoBehaviour {
 		se.searchableInUse = Utils.GetBoolFromString(entries[index]); index++; // bool - is this being searched by Player?
 
 		if (prefID.constIndex == 464) { // Briefcase with its gibs.
-			bool childActive = false;
-			Transform child1 = go.transform.GetChild(0);
-			GameObject child1GO =child1.gameObject;
-
-			Transform child2 = go.transform.GetChild(1);
-			GameObject child2GO = child2.gameObject;
-
-			Transform child3 = go.transform.GetChild(2);
-			GameObject child3GO = child3.gameObject;
-
-			index = Utils.LoadTransform(child1,ref entries,index);
-			index = Utils.LoadRigidbody(child1GO,ref entries,index);
-			childActive = Utils.GetBoolFromString(entries[index]); index++; // bool - is the gib active?
-			child1GO.SetActive(childActive);
-
-			index = Utils.LoadTransform(child2,ref entries,index);
-			index = Utils.LoadRigidbody(child2GO,ref entries,index);
-			childActive = Utils.GetBoolFromString(entries[index]); index++; // bool - is the gib active?
-			child2GO.SetActive(childActive);
-
-			index = Utils.LoadTransform(child3,ref entries,index);
-			index = Utils.LoadRigidbody(child3GO,ref entries,index);
-			childActive = Utils.GetBoolFromString(entries[index]); index++; // bool - is the gib active?
-			child3GO.SetActive(childActive);
+			index = Utils.LoadChildGOState(go.transform.GetChild(0).gameObject,ref entries,index);
+			index = Utils.LoadChildGOState(go.transform.GetChild(1).gameObject,ref entries,index);
+			index = Utils.LoadChildGOState(go.transform.GetChild(2).gameObject,ref entries,index);
 		}
 
 		if (se.searchableInUse) {

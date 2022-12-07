@@ -24,7 +24,7 @@ public class GeneralInvButton : MonoBehaviour {
 						Const.sprint(Const.a.stringTable[303],PlayerReferenceManager.a.playerCapsule);
 						reduce = false;
 					} else {
-						PlayerEnergy.a.GiveEnergy(83f,0);
+						PlayerEnergy.a.GiveEnergy(83f,EnergyType.Battery);
 						reduce = true;
 					}
                     break;
@@ -33,7 +33,7 @@ public class GeneralInvButton : MonoBehaviour {
 						Const.sprint(Const.a.stringTable[303],PlayerReferenceManager.a.playerCapsule);
 						reduce = false;
 					} else {
-						PlayerEnergy.a.GiveEnergy(255f,0);
+						PlayerEnergy.a.GiveEnergy(255f,EnergyType.Battery);
 						reduce = true;
 					}
                     break;

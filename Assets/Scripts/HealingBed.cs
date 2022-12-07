@@ -27,6 +27,8 @@ public class HealingBed : MonoBehaviour {
 			} else {
 				Const.sprint(Const.a.stringTable[24],ud.owner);
 			}
+		} else {
+			MFDManager.a.BlockedBySecurity(transform.position,ud);
 		}
 	}
 }

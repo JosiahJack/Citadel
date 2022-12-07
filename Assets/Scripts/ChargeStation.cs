@@ -23,22 +23,25 @@ public class ChargeStation : MonoBehaviour {
 	}
 
 	public void Use (UseData ud) {
-		if (LevelManager.a.GetCurrentLevelSecurity() > minSecurityLevel) { MFDManager.a.BlockedBySecurity (transform.position,ud); return; }
+		if (LevelManager.a.GetCurrentLevelSecurity() > minSecurityLevel) { 
+			MFDManager.a.BlockedBySecurity (transform.position,ud);
+			return;
+		}
 		
 		if (nextthink < PauseScript.a.relativeTime) {
 			if (PlayerEnergy.a.energy >= PlayerEnergy.a.maxenergy) {
 				Const.sprint(Const.a.stringTable[303],PlayerReferenceManager.a.playerCapsule);
 				return;
 			} else {
-				PlayerEnergy.a.GiveEnergy(amount, 1);
+				PlayerEnergy.a.GiveEnergy(amount, EnergyType.ChargeStation);
 			}
 			if (damageOnUse > 0f) {
 				DamageData dd = new DamageData();
 				dd.damage = damageOnUse;
-				if (PlayerHealth.a.hm.health <= dd.damage) dd.damage = PlayerHealth.a.hm.health - 1; // don't ever kill the player from this, way too cheap
+				if (PlayerHealth.a.hm.health <= dd.damage) dd.damage = PlayerHealth.a.hm.health - 1; // Don't ever kill the player from this, way too cheap
 				if (PlayerHealth.a.hm.god) dd.damage = 0;
 				// No impact force here, it's a zap.
-				if (dd.damage > 0) PlayerHealth.a.hm.TakeDamage(dd);  // ouch it zapped me...that really hurt Charlie, that hurt my finger, owhow, OW! ow, hahahow ow! OWW!  Charlie zapped my finger (it helps if you use a British accent)
+				if (dd.damage > 0) PlayerHealth.a.hm.TakeDamage(dd);  // Ouch, it zapped me...that really hurt Charlie, that hurt my finger, owhow, OW! ow, hahahow ow! OWW!  Charlie zapped my finger (it helps if you use a British accent)
 			}
 			Const.sprintByIndexOrOverride (usedMsgLingdex, usedMsg,ud.owner);
 			if (requireReset) nextthink = PauseScript.a.relativeTime + resetTime;
@@ -48,7 +51,9 @@ public class ChargeStation : MonoBehaviour {
 				if (tio != null) {
 					ud.SetBits(tio);
 				} else {
-					Debug.Log("BUG: no TargetIO.cs found on an object with a ChargeStation.cs script!  Trying to call UseTargets without parameters!");
+					Debug.Log("BUG: no TargetIO.cs found on an object with a "
+							  + "ChargeStation.cs script!  Trying to call "
+							  + "UseTargets without parameters!");
 				}
 				Const.a.UseTargets(ud,target);
 			}

@@ -6,8 +6,16 @@ using UnityEngine.Rendering;
 
 // Globally accessible utility functions for parsing values, generating save
 // strings, converting enumerated and integer values, and other helpful things.
+//
+// Most of this is for saving.
+// All save strings should follow this rule:
+//
+// Start with data; End with data.
+//
+// E.g. 0|1|1 and NOT these: |0|1|1| or 0|1|1|.
 public class Utils {
-	public static string splitChar = "|";
+	public static string splitChar = "|"; // Common delimiter, not a comma as
+										  // text could contain commas.
 	public static CultureInfo en_US_Culture = new CultureInfo("en-US");
 
 	private static bool getValparsed;
@@ -234,6 +242,16 @@ public class Utils {
     // guarantee . is used as a separator rather than , for all regions.
 	public static string FloatToString(float val) {
 		return val.ToString("0000.00000", CultureInfo.InvariantCulture); 
+	}
+
+	public static string Vector3ToString(Vector3 vec) {
+		if (vec == null) return DTypeWordToSaveString("fff");
+
+		string line = System.String.Empty;
+        line =              FloatToString(vec.x);
+		line += splitChar + FloatToString(vec.y);
+		line += splitChar + FloatToString(vec.z);
+		return line;
 	}
 
 	// This is mostly just here for me to make the save strings commonized when
@@ -469,6 +487,27 @@ public class Utils {
 		rbody.velocity = tempvec;
 		rbody.isKinematic = GetBoolFromString(entries[index]); index++;
 		return index; // Carry on with current index read.
+	}
+
+	public static string SaveChildGOState(GameObject mainParent, int childex) {
+			Transform childTR = mainParent.transform.GetChild(childex);
+			GameObject childGO = childTR.gameObject;
+			string line = System.String.Empty;
+			line = Utils.SaveTransform(childTR);
+			line += Utils.splitChar + Utils.SaveRigidbody(childGO);
+			line += Utils.splitChar + Utils.BoolToString(childGO.activeSelf);
+			return line;
+	}
+
+	public static int LoadChildGOState(GameObject childGO,ref string[] entries,
+									   int index) {
+		bool childActive = false;
+		Transform childTR = childGO.transform;
+		index = Utils.LoadTransform(childTR,ref entries,index);
+		index = Utils.LoadRigidbody(childGO,ref entries,index);
+		childActive = Utils.GetBoolFromString(entries[index]); index++; // bool - is the gib active?
+		childGO.SetActive(childActive);
+		return index;
 	}
 
 	public static string SaveCamera(GameObject go) {

@@ -161,13 +161,13 @@ public class PlayerEnergy : MonoBehaviour {
 		}
 	}
 
-	public void GiveEnergy (float give, int type) {
+	public void GiveEnergy (float give, EnergyType type) {
 		energy += give;
 		if (energy > maxenergy) energy = maxenergy;
-        if (type == 0) {
+        if (type == EnergyType.Battery) {
             Utils.PlayOneShotSavable(SFX,SFXBatteryUse); // battery sound
         }
-        if (type == 1) {
+        if (type == EnergyType.ChargeStation) {
             Utils.PlayOneShotSavable(SFX,SFXChargeStationUse); // charging station sound
         }
     }

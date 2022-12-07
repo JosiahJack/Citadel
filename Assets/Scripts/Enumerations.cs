@@ -38,6 +38,7 @@ public enum BloodType : byte {None,Red,Yellow,Green,Robot,Leaf,Mutation,
                               GrayMutation};
 public enum SecurityType : byte {None,Camera,NodeSmall,NodeLarge};
 public enum AudioLogType : byte {TextOnly,Normal,Email,Papers,Vmail};
+public enum EnergyType : byte {Battery,ChargeStation};
 
 // Pool references
 public enum PoolType {None,SparqImpacts,CameraExplosions,ProjEnemShot2,

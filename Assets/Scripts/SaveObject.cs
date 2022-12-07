@@ -8,11 +8,9 @@ public class SaveObject : MonoBehaviour {
 	public int SaveID;
 	public bool isRuntimeObject = false;
 	public SaveableType saveType = SaveableType.Transform;
-	[HideInInspector]
-	public string saveableType;
+	[HideInInspector] public string saveableType;
 	public int levelParentID = -1;
-	[HideInInspector]
-	public bool initialized = false;
+	[HideInInspector] public bool initialized = false;
 	public bool instantiated = false; // True when this object has been instantiated at runtime
 	public int constLookupTable = 0; // The table to check. 0 = useableItems, 1 = npcPrefabs
 	public int constLookupIndex = -1; // Index into the Const lookup table for referencing during instantiation.
@@ -126,7 +124,8 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Door:                   s1.Append(Door.Save(go)); break;
 			case SaveableType.ForceBridge:            s1.Append(ForceBridge.Save(go)); break;
 			case SaveableType.Switch:                 s1.Append(ButtonSwitch.Save(go)); break;
-			case SaveableType.FuncWall:               s1.Append(FuncWall.Save(go)); break;
+			case SaveableType.FuncWall:               s1.Append(FuncWall.Save(go)); s1.Append(Utils.splitChar);
+													  s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.TeleDest:               s1.Append(TeleportTouch.Save(go)); break;
 			case SaveableType.LBranch:                s1.Append(LogicBranch.Save(go)); break;
 			case SaveableType.LRelay:                 s1.Append(LogicRelay.Save(go)); break;
@@ -217,7 +216,8 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Door:                   index =                   Door.Load(go,ref entries,index); break;
 			case SaveableType.ForceBridge:            index =            ForceBridge.Load(go,ref entries,index); break;
 			case SaveableType.Switch:                 index =           ButtonSwitch.Load(go,ref entries,index); break;
-			case SaveableType.FuncWall:               index =               FuncWall.Load(go,ref entries,index); break;
+			case SaveableType.FuncWall:               index =               FuncWall.Load(go,ref entries,index);
+													  index =               TargetIO.Load(go,ref entries,index); break;
 			case SaveableType.TeleDest:               index =          TeleportTouch.Load(go,ref entries,index); break;
 			case SaveableType.LBranch:                index =            LogicBranch.Load(go,ref entries,index); break;
 			case SaveableType.LRelay:                 index =             LogicRelay.Load(go,ref entries,index); break;

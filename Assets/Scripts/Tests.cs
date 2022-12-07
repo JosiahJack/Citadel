@@ -770,6 +770,33 @@ public class Tests : MonoBehaviour {
 		UnityEngine.Debug.Log("Loaded data for " + gameObjectToSave.name + ", contained " + index.ToString() + " entries on the line.");
 	}
 
+	public void TEMP_SetFunc_WallChunkIDs() {
+		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+		for (int i=0;i<allParents.Count;i++) {
+			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(FuncWall),true); // Find all FuncWall components, including inactive (hence the true here at the end)
+			for (int k=0;k<compArray.Length;k++) {
+				TEMP_Func_Wall_SetChunkIDs(compArray[k].gameObject);
+			}
+		}
+	}
+
+	void TEMP_Func_Wall_SetChunkIDs(GameObject go) {
+		UnityEngine.Debug.Log("go.name: " + go.name);
+		FuncWall fw = go.GetComponent<FuncWall>();
+		fw.chunkIDs = new int[go.transform.childCount];
+		GameObject childGO;
+		for (int i = 0; i < go.transform.childCount; i++) {
+			childGO = go.transform.GetChild(i).gameObject;
+			UnityEngine.Debug.Log("childGO.name: " + childGO.name);
+			PrefabIdentifier pid = childGO.GetComponent<PrefabIdentifier>();
+			if (pid == null) {
+				UnityEngine.Debug.Log("ERROR: FuncWall child missing PrefabIdentifier");
+				continue;
+			}
+			fw.chunkIDs[i] = pid.constIndex;
+		}
+	}
+
 	private void PrintTally(string className, int issueCount, int objCount) {
 		UnityEngine.Debug.Log(issueCount.ToString() + " " + className + " issues found on " + objCount.ToString() + " gameobjects");
 	}

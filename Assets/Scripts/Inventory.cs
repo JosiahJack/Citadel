@@ -671,6 +671,15 @@ public class Inventory : MonoBehaviour {
         }
 		return false;
     }
+
+	public void GeneralInventoryActivate() {
+		GeneralInvButton ginvb =
+			    genButtons[generalInvCurrent].GetComponent<GeneralInvButton>();
+		if (ginvb!= null) {
+			ginvb.DoubleClick();
+			generalInventoryIndexRef[generalInvCurrent] = -1;
+		} else Debug.Log("BUG: Current general inv button was null");
+	}
 	//--- End General ---
 
 	// Grenades
