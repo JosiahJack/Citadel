@@ -197,9 +197,27 @@ public class Tests : MonoBehaviour {
 						}
 					}
 				}
-				if (aic.attack1Type == AttackType.ProjectileLaunched && aic.attack1ProjectileLaunchedType == PoolType.None) { UnityEngine.Debug.Log(script + " has no projectile set for attack1 but is intended to be projectile launched."); issueCount_AIController++; }
-				if (aic.attack2Type == AttackType.ProjectileLaunched && aic.attack2ProjectileLaunchedType == PoolType.None) { UnityEngine.Debug.Log(script + " has no projectile set for attack2 but is intended to be projectile launched."); issueCount_AIController++; }
-				if (aic.attack3Type == AttackType.ProjectileLaunched && aic.attack3ProjectileLaunchedType == PoolType.None) { UnityEngine.Debug.Log(script + " has no projectile set for attack3 but is intended to be projectile launched."); issueCount_AIController++; }
+				//if (Const.a.attackTypeForNPC[aic.index] == AttackType.ProjectileLaunched
+				//	&& aic.attack1ProjectileLaunchedType == PoolType.None) {
+				//	UnityEngine.Debug.Log(script + " has no projectile set " 
+				//						  + "for attack1 but is intended to"
+				//						  + "be projectile launched.");
+				//	issueCount_AIController++;
+				//}
+				//if (Const.a.attackTypeForNPC2[aic.index] == AttackType.ProjectileLaunched
+				//	&& aic.attack1ProjectileLaunchedType == PoolType.None) {
+				//	UnityEngine.Debug.Log(script + " has no projectile set " 
+				//						  + "for attack1 but is intended to"
+				//						  + "be projectile launched.");
+				//	issueCount_AIController++;
+				//}
+				//if (Const.a.attackTypeForNPC3[aic.index] == AttackType.ProjectileLaunched
+				//	&& aic.attack1ProjectileLaunchedType == PoolType.None) {
+				//	UnityEngine.Debug.Log(script + " has no projectile set " 
+				//						  + "for attack1 but is intended to"
+				//						  + "be projectile launched.");
+				//	issueCount_AIController++;
+				//}
 			}
 
 			script = "AIAnimationController";
@@ -547,9 +565,10 @@ public class Tests : MonoBehaviour {
 			script = "Trigger";
 			Trigger trig = allGOs[i].GetComponent<Trigger>();
 			if (trig != null) {
-				if (trig.playAudioOnTrigger && trig.SFXClip == null) {  UnityEngine.Debug.Log(script + " has no SFX when it is set to play sound on trigger on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
-				if (string.IsNullOrWhiteSpace(trig.target) && !trig.playAudioOnTrigger) {
-					UnityEngine.Debug.Log(script + " has no target on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
+				if (string.IsNullOrWhiteSpace(trig.target)) {
+					UnityEngine.Debug.Log(script + " has no target on "
+										  + allGOs[i].name + " with parent of "
+										  + allGOs[i].transform.parent.name);
 				} else {
 					float numtargetsfound = 0;
 					for (int m=0;m<allGOs.Count;m++) {
@@ -558,7 +577,14 @@ public class Tests : MonoBehaviour {
 							if (tioTemp.targetname == trig.target) numtargetsfound++;
 						}
 					}
-					if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + trig.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
+					if (numtargetsfound < 1) {
+						UnityEngine.Debug.Log(script
+											  + " has no matching targets for "
+											  + trig.target + " on "
+											  + allGOs[i].name
+											  + " with parent of "
+											  + allGOs[i].transform.parent.name);
+					}
 				}
 			}
 

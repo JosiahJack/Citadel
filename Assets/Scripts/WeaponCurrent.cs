@@ -37,6 +37,7 @@ public class WeaponCurrent : MonoBehaviour {
 	public Text loadAlternateAmmoButtonText;
 	public AudioClip ReloadSFX;
 	public AudioClip ReloadInStyleSFX;
+	public AudioClip WeaponChangeSFX;
 	public GameObject reloadContainer;
 
 	[HideInInspector] public Vector3 reloadContainerOrigin;
@@ -105,9 +106,15 @@ public class WeaponCurrent : MonoBehaviour {
 	}
 
 	public void WeaponChange(int useableItemIndex, int WepButtonIndex) {
-		if (useableItemIndex == -1 || WepButtonIndex > 6 || WepButtonIndex < 0) { Debug.Log("Early exit on WeaponChange() in WeaponCurrent.cs!"); return; }
+		if (useableItemIndex == -1 || WepButtonIndex > 6
+			|| WepButtonIndex < 0) {
+			Debug.Log("Early exit on WeaponChange() in WeaponCurrent.cs!");
+			return;
+		}
 
-		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(useableItemIndex); // Get index into the list of 16 weapons
+		Utils.PlayOneShotSavable(SFX,WeaponChangeSFX);
+		int wep16index =  // Get index into the list of 16 weapons
+			  WeaponFire.Get16WeaponIndexFromConstIndex(useableItemIndex);
 		float delay = Const.a.reloadTime[wep16index];
 		reloadFinished = PauseScript.a.relativeTime + delay;
 		lerpStartTime = PauseScript.a.relativeTime;

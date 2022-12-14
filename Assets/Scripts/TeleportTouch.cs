@@ -26,7 +26,7 @@ public class TeleportTouch : MonoBehaviour {
 					col.transform.position = targetDestination.position;
 					TeleportTouch tt = targetDestination.transform.gameObject.GetComponent<TeleportTouch>();
 					if (tt != null) tt.justUsed = PauseScript.a.relativeTime + 1.0f;
-					if (playSound && SoundFXSource != null && SoundFX != null) Utils.PlayOneShotSavable(SoundFXSource,SoundFX);
+					if (playSound) Utils.PlayOneShotSavable(SoundFXSource,SoundFX);
 				}
 			}
 		}

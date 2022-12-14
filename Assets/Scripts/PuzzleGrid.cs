@@ -334,7 +334,7 @@ public class PuzzleGrid : MonoBehaviour {
 	void PuzzleSolved(bool usedLogicProbe) {
 		puzzleSolved = true;
 		outputNode.overrideSprite = nodeOn;
-		if (audsource != null && solvedSFX != null) Utils.PlayOneShotSavable(audsource,solvedSFX);
+		Utils.PlayOneShotSavable(audsource,solvedSFX);
 		puzzleGP.puzzleSolved = true;
 		puzzleGP.UseTargets(udSender.owner);
 		progressBar.value = 100f;
@@ -350,7 +350,7 @@ public class PuzzleGrid : MonoBehaviour {
 			MouseLookScript.a.ResetCursor();
 		}
 		
-		//Const.a.UseTargets(udSender,target);
+		Const.a.UseTargets(udSender,target);
 	}
 
 	int ReturnCellAbove(int index) {

@@ -662,7 +662,7 @@ public class PuzzleWire : MonoBehaviour {
 		actualValue = 1f;
 		slider.value = actualValue;
 		Solved = true;
-		if (SFXSource != null && SFX != null) Utils.PlayOneShotSavable(SFXSource,SFX,1.0f);
+		Utils.PlayOneShotSavable(SFXSource,SFX,1.0f);
 		puzzleWP.puzzleSolved = true;
 		puzzleWP.UseTargets(udSender.owner);
 		if (usedLogicProbe) {

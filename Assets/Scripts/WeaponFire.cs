@@ -311,7 +311,7 @@ public class WeaponFire : MonoBehaviour {
                             // Even if we have only 1 energy, we still fire with all we've got up to the energy level setting of course
                             if (PlayerEnergy.a.energy > 0 || WeaponCurrent.a.bottomless || WeaponCurrent.a.redbull) {
 								if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.a.weaponCurrent] > overheatedPercent && !WeaponCurrent.a.bottomless && !WeaponCurrent.a.redbull) {
-									if (SFXEmpty != null) Utils.PlayOneShotSavable(SFX,SFXEmpty);
+									Utils.PlayOneShotSavable(SFX,SFXEmpty);
                                     waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
                                     Const.sprint(Const.a.stringTable[11]);
 								} else {
@@ -326,14 +326,14 @@ public class WeaponFire : MonoBehaviour {
                                 if (WeaponCurrent.a.currentMagazineAmount2[WeaponCurrent.a.weaponCurrent] > 0 || WeaponCurrent.a.bottomless) {
                                     FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
                                 } else {
-                                    if (SFXEmpty != null) Utils.PlayOneShotSavable(SFX,SFXEmpty);
+                                    Utils.PlayOneShotSavable(SFX,SFXEmpty);
                                     waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
                                 }
                             } else {
                                 if (WeaponCurrent.a.currentMagazineAmount[WeaponCurrent.a.weaponCurrent] > 0 || WeaponCurrent.a.bottomless) {
                                     FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
                                 } else {
-                                    if (SFXEmpty != null) Utils.PlayOneShotSavable(SFX,SFXEmpty);
+                                    Utils.PlayOneShotSavable(SFX,SFXEmpty);
                                     waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
                                 }
                             }

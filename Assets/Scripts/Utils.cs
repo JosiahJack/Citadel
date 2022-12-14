@@ -276,6 +276,32 @@ public class Utils {
 		return s1.ToString();
 	}
 
+	public static int NPCTypeToInt(NPCType typ) {
+		switch(typ) {
+			case NPCType.Mutant: return 0;
+			case NPCType.Supermutant: return 1;
+			case NPCType.Robot: return 2;
+			case NPCType.Cyborg: return 3;
+			case NPCType.Supercyborg: return 4;
+			case NPCType.MutantCyborg: return 5;
+			case NPCType.Cyber: return 6;
+		}
+		return 0;
+	}
+
+	public static NPCType GetNPCTypeFromInt(int typ_i) {
+		switch(typ_i) {
+			case 0: return NPCType.Mutant;
+			case 1: return NPCType.Supermutant;
+			case 2: return NPCType.Robot;
+			case 3: return NPCType.Cyborg;
+			case 4: return NPCType.Supercyborg;
+			case 5: return NPCType.MutantCyborg;
+			case 6: return NPCType.Cyber;
+		}
+		return NPCType.Mutant;
+	}
+
     public static int AIStateToInt(AIState ai_state) {
 		switch (ai_state) {
 			case AIState.Walk: return 1;
@@ -313,11 +339,11 @@ public class Utils {
 		switch(att_type_i) {
 			case 0: return AttackType.None;
 			case 1: return AttackType.Melee;
-			case 6: return AttackType.MeleeEnergy;
 			case 2: return AttackType.EnergyBeam;
 			case 3: return AttackType.Magnetic;
 			case 4: return AttackType.Projectile;
 			case 5: return AttackType.ProjectileEnergyBeam;
+			case 6: return AttackType.MeleeEnergy;
 			case 7: return AttackType.ProjectileLaunched;
 			case 8: return AttackType.Gas;
 			case 9: return AttackType.ProjectileNeedle;
@@ -389,6 +415,31 @@ public class Utils {
 		else if (res == "VeryHigh") return LightShadowResolution.VeryHigh;
 		return LightShadowResolution.FromQualitySettings;	
 	}
+
+    public static int FuncStatesToInt(FuncStates funcStates) {
+		switch (funcStates) {
+			case FuncStates.Start:            return 1;
+			case FuncStates.Target:           return 2;
+			case FuncStates.MovingStart:      return 3;
+			case FuncStates.MovingTarget:     return 4;
+			case FuncStates.AjarMovingStart:  return 5;
+			case FuncStates.AjarMovingTarget: return 6;
+		}
+        return 0; // Idle
+    }
+
+    public static FuncStates GetFuncStatesFromInt(int state_i) {
+        switch (state_i) {
+            case 0:  return FuncStates.Start;
+            case 1:  return FuncStates.Start;
+            case 2:  return FuncStates.Target;
+            case 3:  return FuncStates.MovingStart;
+            case 4:  return FuncStates.MovingTarget;
+            case 5:  return FuncStates.AjarMovingStart;
+            case 6:  return FuncStates.AjarMovingTarget;
+        }
+        return FuncStates.Start;
+    }
 
     public static string SaveTransform(Transform tr) {
 		if (tr == null) {
@@ -539,8 +590,8 @@ public class Utils {
 		return index;
 	}
 
-	public static void PlayOneShotSavable(AudioSource SFX, AudioClip fxclip,
-										  float vol) {
+	public static void PlayAudioSavable(AudioSource SFX, AudioClip fxclip,
+										  float vol, bool isOneShot) {
 		if (SFX == null) return;
 
 		GameObject sourceGO = SFX.gameObject;
@@ -549,9 +600,18 @@ public class Utils {
 		if (SFX.enabled == false) return;
 
 		SFX.clip = fxclip; // Save the currently playing clip otherwise this is
-						 // always the default that was assigned in inspector.
-		if (vol != 0) SFX.PlayOneShot(fxclip,vol);
-		else		  SFX.PlayOneShot(fxclip);
+						   // always the default that was assigned in inspector.
+		if (isOneShot) {
+			if (vol != 0) SFX.PlayOneShot(fxclip,vol);
+			else		  SFX.PlayOneShot(fxclip);
+		} else {
+			SFX.Play();
+		}
+	}
+
+	public static void PlayOneShotSavable(AudioSource SFX, AudioClip fxclip,
+										  float vol) {
+		PlayAudioSavable(SFX,fxclip,vol,true);
 	}
 
 	public static void PlayOneShotSavable(AudioSource SFX, AudioClip fxclip) {
@@ -573,11 +633,19 @@ public class Utils {
 		PlayOneShotSavable(SFX,Const.a.sounds[fxclip],vol);
 	}
 
+	public static void PlaySavable(AudioSource SFX, AudioClip fxclip) {
+		PlayAudioSavable(SFX,fxclip,0,false);
+	}
+
+	public static void PlaySavable(AudioSource SFX, int fxclip) {
+		PlayAudioSavable(SFX,Const.a.sounds[fxclip],0,false);
+	}
+
 	public static string SaveAudioSource(GameObject go) {
 		AudioSource aus = go.GetComponent<AudioSource>();
 		if (aus == null) {
 			Debug.Log("AudioSource missing!  GameObject.name: " + go.name);
-			return DTypeWordToSaveString("b");
+			return DTypeWordToSaveString("bfs");
 		}
 
 		string line = System.String.Empty;

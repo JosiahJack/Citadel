@@ -6,11 +6,9 @@ public class PlaySoundTriggered : MonoBehaviour {
 	public AudioClip SFXClipToPlay;
 	public bool loopingAmbient = false;
 	public bool playEverywhere = false;
-	[HideInInspector]
-    public AudioSource SFX;
+	[HideInInspector] public AudioSource SFX;
 	private bool justPaused;
-	[HideInInspector]
-	public bool currentlyPlaying = false;
+	[HideInInspector] public bool currentlyPlaying = false;
 	public bool playSoundOnParticleEmit = false;
 	private ParticleSystem psys;
 	public int numparticles;

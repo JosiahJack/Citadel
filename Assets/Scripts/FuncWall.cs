@@ -4,28 +4,36 @@ using UnityEngine;
 
 public class FuncWall : MonoBehaviour {
 	// Externally set in inspector per instance
-	public float speed = 0.64f;
+	public float speed = 0.64f; // save
 	public GameObject targetPosition;
-	public FuncStates startState;
-	public float percentAjar = 0;
+	public FuncStates startState; // save
+	public float percentAjar = 0; // save
 	public AudioClip SFXMoving;
 	public AudioClip SFXStop;
 	public AudioSource SFXSource;
 	public FuncStates currentState; // save
+	public int[] chunkIDs; // save
 
-	public int[] chunkIDs;
+	[HideInInspector] public float startTime; // save
 	[HideInInspector] public Vector3 startPosition; // save
-	private Vector3 goalPosition;
+	[HideInInspector] public Rigidbody rbody;
+	[HideInInspector] public bool stopSoundPlayed; // save
 	private Vector3 tempVec;
-	private Rigidbody rbody;
-	private bool stopSoundPlayed;
-	private float dist;
-	private float distanceLeft;
-	private float startTime;
+	private float dist;         // Only ever used right away, not saved.
+	private float distanceLeft; // Only ever used right away, not saved.
 
-	void Awake () {
+	public void Awake () {
 		currentState = startState; // set door position to picked state
 		startPosition = transform.position;
+		rbody = GetComponent<Rigidbody>();
+		if (SFXSource == null) SFXSource = GetComponent<AudioSource>();
+		Initialize();
+		dist = distanceLeft = 0;
+		startTime = PauseScript.a.relativeTime;
+	}
+
+	public void Initialize() {
+		stopSoundPlayed = false;
 		if (currentState == FuncStates.AjarMovingStart
 			|| currentState == FuncStates.AjarMovingTarget) {
 			tempVec = (transform.position - targetPosition.transform.position);
@@ -35,42 +43,37 @@ public class FuncWall : MonoBehaviour {
 			tempVec += transform.position;
 			transform.position = tempVec;
 		}
-		rbody = GetComponent<Rigidbody>();
 		rbody.isKinematic = true;
 		rbody.useGravity = false;
 		rbody.collisionDetectionMode =
 		  CollisionDetectionMode.ContinuousSpeculative;
 
-		if (SFXSource == null) SFXSource = GetComponent<AudioSource>();
-		stopSoundPlayed = false;
-		dist = distanceLeft = 0;
-		startTime = PauseScript.a.relativeTime;
-	}
-		
-	public void Targetted (UseData ud) {
-		switch (currentState) {
-			case FuncStates.Start:
-				MoveTarget();
-				break;
-			case FuncStates.Target:
-				MoveStart();
-				break;
-			case FuncStates.MovingStart:
-				MoveTarget ();
-				break;
-			case FuncStates.MovingTarget:
-				MoveStart ();
-				break;
-			case FuncStates.AjarMovingStart:
-				MoveStart();
-				break;
-			case FuncStates.AjarMovingTarget:
-				MoveTarget();
-				break;
+		// Ensure children are non-static.  Necessary to move them with parent!
+		GameObject childGO;
+		for (int i = 0; i < transform.childCount; i++) {
+			childGO = transform.GetChild(i).gameObject;
+			childGO.isStatic = false;
+			childGO.layer = 18; // Door
 		}
-		if (SFXSource != null) SFXSource.clip = SFXMoving;
-		if (SFXSource != null) SFXSource.loop = true;
-		if (SFXSource != null) SFXSource.Play();
+	}
+
+	public void Targetted (UseData ud) {
+		UnityEngine.Debug.Log("FuncWall was targetted");
+		switch (currentState) {
+			case FuncStates.Start:            MoveTarget(); break;
+			case FuncStates.Target:           MoveStart();  break;
+			case FuncStates.MovingStart:      MoveTarget(); break;
+			case FuncStates.MovingTarget:     MoveStart();  break;
+			case FuncStates.AjarMovingStart:  MoveStart();  break;
+			case FuncStates.AjarMovingTarget: MoveTarget(); break;
+		}
+
+		if (SFXSource != null) {
+			SFXSource.clip = SFXMoving;
+			SFXSource.loop = true;
+			SFXSource.Play();
+		}
+
 		stopSoundPlayed = false;
 	}
 
@@ -84,66 +87,50 @@ public class FuncWall : MonoBehaviour {
 		startTime = PauseScript.a.relativeTime + 10f;
 	}
 
-	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeSelf) {
-			switch (currentState) {
-				case FuncStates.Start:
-					transform.position = startPosition;
-					if (rbody.velocity.sqrMagnitude > 0) {
-						rbody.velocity = Const.a.vectorZero;
-					}
-					break;
-				case FuncStates.Target:
-					transform.position = targetPosition.transform.position;
-					if (rbody.velocity.sqrMagnitude > 0) {
-						rbody.velocity = Const.a.vectorZero;
-					}
-					break;
-				case FuncStates.MovingStart:
-					goalPosition = startPosition;
-					rbody.WakeUp();
-					dist = speed * Time.deltaTime;
-					tempVec = (transform.position - goalPosition).normalized;
-					tempVec = (tempVec * dist * -1) + transform.position;
-					rbody.MovePosition(tempVec);
-					distanceLeft = Vector3.Distance(transform.position,
-													goalPosition);
-					if (distanceLeft <= 0.04f
-						|| startTime < PauseScript.a.relativeTime) {
-						currentState = FuncStates.Start;
-						if (SFXSource != null) {
-							SFXSource.Stop ();
-							SFXSource.loop = false;
-							if (!stopSoundPlayed) {
-								Utils.PlayOneShotSavable(SFXSource,SFXStop);
-								stopSoundPlayed = true;
-							}
-						}
-					}
-					break;
-				case FuncStates.MovingTarget:
-					goalPosition = targetPosition.transform.position;
-					rbody.WakeUp();
-					dist = speed * Time.deltaTime;
-					tempVec = (transform.position - goalPosition).normalized;
-					tempVec = (tempVec * dist * -1) + transform.position;
-					rbody.MovePosition(tempVec);
-					distanceLeft = Vector3.Distance(transform.position,
-													goalPosition);
-					if (distanceLeft <= 0.04f
-						|| startTime < PauseScript.a.relativeTime) {
-						currentState = FuncStates.Target;
-						if (SFXSource != null) {
-							SFXSource.Stop ();
-							SFXSource.loop = false;
-							if (!stopSoundPlayed) {
-								Utils.PlayOneShotSavable(SFXSource,SFXStop);
-								stopSoundPlayed = true;
-							}
-						}
-					}
-					break;
+	void MoveToPosition(Vector3 goalPosition, FuncStates newState) {
+		rbody.WakeUp();
+		dist = speed * Time.deltaTime;
+		tempVec = (transform.position - goalPosition).normalized; // Relative
+		tempVec = (tempVec * dist * -1) + transform.position; // Absolute
+		rbody.MovePosition(tempVec);
+		distanceLeft = Vector3.Distance(transform.position, goalPosition);
+		if (distanceLeft <= 0.04f || startTime < PauseScript.a.relativeTime) {
+			currentState = newState;
+			if (SFXSource != null) {
+				SFXSource.Stop ();
+				SFXSource.loop = false;
+				if (!stopSoundPlayed) {
+					Utils.PlayOneShotSavable(SFXSource,SFXStop);
+					stopSoundPlayed = true;
+				}
 			}
+		}
+	}
+
+	void FixedUpdate() {
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.mainMenu.activeSelf) return;
+
+		switch (currentState) {
+			case FuncStates.Start:
+				transform.position = startPosition;
+				if (rbody.velocity.sqrMagnitude > 0) {
+					rbody.velocity = Const.a.vectorZero;
+				}
+				break;
+			case FuncStates.Target:
+				transform.position = targetPosition.transform.position;
+				if (rbody.velocity.sqrMagnitude > 0) {
+					rbody.velocity = Const.a.vectorZero;
+				}
+				break;
+			case FuncStates.MovingStart:
+				MoveToPosition(startPosition, FuncStates.Start);
+				break;
+			case FuncStates.MovingTarget:
+				MoveToPosition(targetPosition.transform.position,
+								FuncStates.Target);
+				break;
 		}
 	}
 
@@ -154,19 +141,16 @@ public class FuncWall : MonoBehaviour {
 		if (fw == null) {
 			Debug.Log("FuncWall missing on savetype of FuncWall!  "
 					  + "GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("uffffffffff");
+			return Utils.DTypeWordToSaveString("uufffffffffffffff");
 		}
 
 		string line = System.String.Empty;
-		switch (fw.currentState) {
-			case FuncStates.Start: line = "0"; break;
-			case FuncStates.Target: line = "1"; break;
-			case FuncStates.MovingStart: line = "2"; break;
-			case FuncStates.MovingTarget: line = "3"; break;
-			case FuncStates.AjarMovingStart: line = "4"; break;
-			case FuncStates.AjarMovingTarget: line = "5"; break;
-		}
+		line = Utils.IntToString(Utils.FuncStatesToInt(fw.currentState));
+		line += Utils.splitChar + Utils.IntToString(Utils.FuncStatesToInt(fw.startState));
 		line += Utils.splitChar + Utils.Vector3ToString(fw.startPosition);
+		line += Utils.splitChar + Utils.FloatToString(fw.speed);
+		line += Utils.splitChar + Utils.FloatToString(fw.percentAjar);
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(fw.startTime);
 
 		// The mover_target transform and position was saved by SaveObject.Save
 		// prior to that function calling this function, so only save the
@@ -177,6 +161,9 @@ public class FuncWall : MonoBehaviour {
 			line += Utils.splitChar + Utils.UintToString(fw.chunkIDs[i]);
 			line += Utils.splitChar + Utils.SaveChildGOState(go,i);
 		}
+		Transform info_target = go.transform.parent.transform.GetChild(1);
+		line += Utils.splitChar + Utils.SaveTransform(info_target);
+		line += Utils.splitChar + Utils.SaveAudioSource(go);
 		return line;
 	}
 
@@ -193,29 +180,28 @@ public class FuncWall : MonoBehaviour {
 		float readFloatx, readFloaty, readFloatz;
 		FuncWall fw = go.GetComponent<FuncWall>(); // Fairweather we are having.
 												   // Vague Quake mapper reference
-		if (fw == null || index < 0 || entries == null) return index + 1;
+		if (fw == null || index < 0 || entries == null) return index + 17;
 
 		int state = Utils.GetIntFromString(entries[index]); index++;
-		switch (state) {
-			case 0: fw.currentState = FuncStates.Start; break;
-			case 1: fw.currentState = FuncStates.Target; break;
-			case 2: fw.currentState = FuncStates.MovingStart; break;
-			case 3: fw.currentState = FuncStates.MovingTarget; break;
-			case 4: fw.currentState = FuncStates.AjarMovingStart; break;
-			case 5: fw.currentState = FuncStates.AjarMovingTarget; break;
-		}
-		readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
-		readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
-		readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
+		fw.currentState = Utils.GetFuncStatesFromInt(state);
+		state = Utils.GetIntFromString(entries[index]); index++;
+		fw.startState = Utils.GetFuncStatesFromInt(state);
+		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		fw.startPosition = new Vector3(readFloatx,readFloaty,readFloatz);
-
-		index = Utils.LoadTransform(go.transform.parent.transform,ref entries,
-									index);
+		fw.speed = Utils.GetFloatFromString(entries[index]); index++;
+		fw.percentAjar = Utils.GetFloatFromString(entries[index]); index++;
+		fw.startTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		Transform parentTR = go.transform.parent.transform;
+		index = Utils.LoadTransform(parentTR,ref entries,index);
 		int numChildren = Utils.GetIntFromString(entries[index]); index++;
+		fw.chunkIDs = new int[numChildren];
 		int chunkdex = 0;
 		for (int i=0; i<numChildren; i++) {
 			// Get the index of the chunk prefab
 			chunkdex = Utils.GetIntFromString(entries[index]); index++;
+			fw.chunkIDs[i] = chunkdex;
 
 			// Assumption here is that we are loading to a freshly instantiated
 			// func_wall prefab and that there are no children chunks on the
@@ -225,8 +211,15 @@ public class FuncWall : MonoBehaviour {
 						Const.a.quaternionIdentity) as GameObject;
 			childGO.transform.SetParent(go.transform); // Always set parent prior
 													   // to loading transform.
+			childGO.isStatic = false;
+			childGO.layer = 18; // Door
 			index = Utils.LoadChildGOState(childGO,ref entries,index);
 		}
+		Transform info_target = go.transform.parent.transform.GetChild(1);
+		index = Utils.LoadTransform(info_target,ref entries,index);
+		index = Utils.LoadAudioSource(go,ref entries,index);
+		fw.Initialize();
+
 		return index;
 	}
 }

@@ -129,6 +129,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int[] sfxAttack3ForNPC =    new int[]{ -1, -1, -1, -1, -1,244,244,244,245, -1, -1,149, -1, -1, -1, -1, -1, -1, -1,244, -1, -1, -1, -1,258,258,258,258,258};
 	[HideInInspector] public int[] sfxDeathForNPC =      new int[]{ -1, 48,110,143, 48,145, 48, 51, 47, 47,142,143,144, 47,162,123,120,134,144,144,120,117,144,124, -1, -1, -1, -1, -1};
 	[HideInInspector] public float[] deathBurstTimerForNPC=new float[]{0.0f,0.0f,0.1f,0.0f,0.1f,0.1f,0.2f,0.1f,0.1f,0.1f,0.0f,0.45f,0.75f,0.1f,0.0f,0.0f,0.1f,0.224f,0.9f,0.0f,0.1f,0.1f,0.1f,0.2f,0.1f,0.1f,0.1f,0.1f,0.1f};
+	[HideInInspector] public NPCType[] typeForNPC;
 
 	// System constants
 	[HideInInspector] public string[] creditsText;
@@ -774,6 +775,7 @@ public class Const : MonoBehaviour {
 				hearingRangeForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
 				timeForTranquilizationForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
 				hopsOnMoveForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
+				readInt = Utils.GetIntFromString(entries[i].Trim()); typeForNPC[refIndex] = Utils.GetNPCTypeFromInt(readInt); i++;
 				currentline++;
 				if (currentline > 29) break;
 			} while (!dataReader.EndOfStream);

@@ -57,6 +57,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Camera: saveableType = "Camera"; break;
 			case SaveableType.DelayedSpawn: saveableType = "DelayedSpawn"; break;
 			case SaveableType.SecurityCamera: saveableType = "SecurityCamera"; break;
+			case SaveableType.Trigger: saveableType = "Trigger"; break;
 			default: saveableType = "Transform"; break;
 		}
 		initialized = true;
@@ -78,7 +79,8 @@ public class SaveObject : MonoBehaviour {
 
 		SaveObject so = go.GetComponent<SaveObject>();
 		if (so == null) {
-			Debug.Log("BUG: SaveObject missing on saveable!  GameObject.name: " + go.name);
+			Debug.Log("BUG: SaveObject missing on saveable!  GameObject.name: "
+					  + go.name);
 			string line = "Transform" + Utils.splitChar + "0" + Utils.splitChar
 						  + "0" + Utils.splitChar + "-1" + Utils.splitChar
 						  + "-1" + Utils.splitChar + "1";
@@ -149,6 +151,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.SecurityCamera:         s1.Append(SecurityCameraRotate.Save(go)); s1.Append(Utils.splitChar);
 													  s1.Append(HealthManager.Save(go.transform.GetChild(0).gameObject)); s1.Append(Utils.splitChar);
 													  s1.Append(Utils.SaveTransform(go.transform.GetChild(0))); break;
+			case SaveableType.Trigger:                s1.Append(Trigger.Save(go)); break;
 		}
 		return s1.ToString();
 	}
@@ -217,7 +220,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.ForceBridge:            index =            ForceBridge.Load(go,ref entries,index); break;
 			case SaveableType.Switch:                 index =           ButtonSwitch.Load(go,ref entries,index); break;
 			case SaveableType.FuncWall:               index =               FuncWall.Load(go,ref entries,index);
-													  index =               TargetIO.Load(go,ref entries,index); break;
+													  index =               TargetIO.Load(go,ref entries,index,true); break;
 			case SaveableType.TeleDest:               index =          TeleportTouch.Load(go,ref entries,index); break;
 			case SaveableType.LBranch:                index =            LogicBranch.Load(go,ref entries,index); break;
 			case SaveableType.LRelay:                 index =             LogicRelay.Load(go,ref entries,index); break;
@@ -239,6 +242,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.SecurityCamera:         index =   SecurityCameraRotate.Load(go,ref entries,index);
 													  index =          HealthManager.Load(go.transform.GetChild(0).gameObject,ref entries,index);
 													  index =                  Utils.LoadTransform(go.transform.GetChild(0),ref entries,index); break;
+			case SaveableType.Trigger:                index =                Trigger.Load(go,ref entries,index); break;
 		}
 		return index;
 	}

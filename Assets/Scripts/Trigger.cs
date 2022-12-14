@@ -9,18 +9,10 @@ public class Trigger : MonoBehaviour {
 	public int numPlayers = 0;
 	public string target;
 	public string argvalue; // e.g. how much to set a counter to
-	private GameObject recentMostActivator;
-	private float delayFireFinished;
-	private float delayResetFinished;
-	private AudioSource SFX;
-	/*[DTValidator.Optional] */public AudioClip SFXClip;
-	public bool playAudioOnTrigger = false;
-	private bool allDone = false;
-
-	void Start () {
-		SFX = GetComponent<AudioSource>();
-	}
-
+	[HideInInspector] public GameObject recentMostActivator;
+	[HideInInspector] public float delayFireFinished;
+	[HideInInspector] public float delayResetFinished;
+	[HideInInspector] public bool allDone = false;
 
     IEnumerator DelayedTarget(GameObject activator) {
         yield return new WaitForSeconds(delay);
@@ -39,10 +31,6 @@ public class Trigger : MonoBehaviour {
 		}
 
 		Const.a.UseTargets(ud,target);
-
-		if (playAudioOnTrigger && SFX != null && SFXClip != null) {
-			Utils.PlayOneShotSavable(SFX,SFXClip);
-		}
 	}
 
 	void TriggerTripped (Collider col, bool initialEntry) {
@@ -94,5 +82,45 @@ public class Trigger : MonoBehaviour {
 	public void Targetted (UseData ud) {
 		if (ignoreSecondaryTriggers) recentMostActivator = ud.owner;
 		//TriggerTripped (Collider col, bool initialEntry);
+	}
+
+	public static string Save(GameObject go) {
+		Trigger trig = go.GetComponent<Trigger>();
+		if (trig == null) {
+			Debug.Log("Trigger missing on trigger GameObject.name: " + go.name);
+			return Utils.DTypeWordToSaveString("bibfffbbss");
+		}
+
+		string line = System.String.Empty;
+		line = Utils.BoolToString(trig.allDone);
+		line += Utils.splitChar + Utils.IntToString(trig.numPlayers);
+		if (trig.recentMostActivator != null) line += Utils.splitChar + "1";
+		else line += Utils.splitChar + "0";
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(trig.delayFireFinished);
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(trig.delayResetFinished);
+		line += Utils.splitChar + Utils.FloatToString(trig.delay);
+		line += Utils.splitChar + Utils.BoolToString(trig.onlyOnce);
+		line += Utils.splitChar + Utils.BoolToString(trig.ignoreSecondaryTriggers);
+		line += Utils.splitChar + trig.target;
+		line += Utils.splitChar + trig.argvalue;
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		Trigger trig = go.GetComponent<Trigger>();
+		if (trig == null || index < 0 || entries == null) return index + 10;
+
+		trig.allDone = Utils.GetBoolFromString(entries[index]); index++;
+		trig.numPlayers = Utils.GetIntFromString(entries[index]); index++;
+		bool hadRecentActivator = Utils.GetBoolFromString(entries[index]); index++;
+		if (hadRecentActivator) trig.recentMostActivator = PlayerMovement.a.gameObject;
+		trig.delayFireFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		trig.delayResetFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		trig.delay = Utils.GetFloatFromString(entries[index]); index++;
+		trig.onlyOnce = Utils.GetBoolFromString(entries[index]); index++;
+		trig.ignoreSecondaryTriggers = Utils.GetBoolFromString(entries[index]); index++;
+		trig.target = entries[index]; index++;
+		trig.argvalue = entries[index]; index++;
+		return index;
 	}
 }

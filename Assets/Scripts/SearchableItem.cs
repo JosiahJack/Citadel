@@ -10,18 +10,16 @@ public class SearchableItem : MonoBehaviour {
 	[Tooltip("Pick index from Const list of potential random item.")] public int[] randomItemCustomIndex; // possible item this container could contain if generateContents is true
 	public int[] randomItemDropChance;
 	[Tooltip("Name of the searchable item.")] public string objectName;
+
 	[HideInInspector] public bool searchableInUse;
-	[HideInInspector] public GameObject currentPlayerCapsule;
-	private bool generationDone = false;
-	private int tempInt = 100;
+	[HideInInspector] public bool generationDone = false;
 	public int maxRandomItems = 2;
-	private int numRandomGeneratedItems;
 
 	void Start () {
-		numRandomGeneratedItems = 0;
+		int numRandomGeneratedItems = 0;
 		if (generateContents && !generationDone) {
 			// Generate random contents once
-			tempInt = 100;
+			int tempInt = 100;
 			for(int i=0;i<randomItem.Length;i++) {
 				tempInt = Random.Range(0,100); // generate even distribution random value from 0 to 100, e.g. 35
 				if (randomItemDropChance[i] <= 0) continue; // next!
@@ -54,11 +52,16 @@ public class SearchableItem : MonoBehaviour {
 		SearchableItem se = go.GetComponent<SearchableItem>();
 		if (se == null) {
 			Debug.Log("SearchableItem missing on savetype of SearchableItem!  GameObject.name: " + go.name);
-			return "-1|-1|-1|-1|-1|-1|-1|-1|0";
+			return Utils.DTypeWordToSaveString("uubbuuuuuuuuuuuuuuuuuuuuuuuuuuuuub");
+
 		}
 
 		string line = System.String.Empty;
-		line = Utils.UintToString(se.contents[0]); // int main lookup index
+		line = Utils.UintToString(se.lookUpIndex);
+		line += Utils.splitChar + Utils.UintToString(se.maxRandomItems);
+		line += Utils.splitChar + Utils.BoolToString(se.generateContents);
+		line += Utils.splitChar + Utils.BoolToString(se.generationDone);
+		line += Utils.splitChar + Utils.UintToString(se.contents[0]); // int main lookup index
 		line += Utils.splitChar + Utils.UintToString(se.contents[1]); // int main lookup index
 		line += Utils.splitChar + Utils.UintToString(se.contents[2]); // int main lookup index
 		line += Utils.splitChar + Utils.UintToString(se.contents[3]); // int main lookup index
@@ -66,6 +69,27 @@ public class SearchableItem : MonoBehaviour {
 		line += Utils.splitChar + Utils.UintToString(se.customIndex[1]); // int custom index
 		line += Utils.splitChar + Utils.UintToString(se.customIndex[2]); // int custom index
 		line += Utils.splitChar + Utils.UintToString(se.customIndex[3]); // int custom index
+		line += Utils.splitChar + Utils.UintToString(se.randomItem[0]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItem[1]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItem[2]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItem[3]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItem[4]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItem[5]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItem[6]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemCustomIndex[0]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemCustomIndex[1]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemCustomIndex[2]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemCustomIndex[3]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemCustomIndex[4]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemCustomIndex[5]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemCustomIndex[6]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemDropChance[0]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemDropChance[1]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemDropChance[2]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemDropChance[3]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemDropChance[4]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemDropChance[5]);
+		line += Utils.splitChar + Utils.UintToString(se.randomItemDropChance[6]);
 		line += Utils.splitChar + Utils.BoolToString(se.searchableInUse);
 		if (prefID.constIndex == 464) { // Briefcase with its gibs.
 			line += Utils.splitChar + Utils.SaveChildGOState(go,0);
@@ -78,8 +102,12 @@ public class SearchableItem : MonoBehaviour {
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   PrefabIdentifier prefID) {
 		SearchableItem se = go.GetComponent<SearchableItem>();
-		if (se == null || index < 0 || entries == null) return index + 9;
+		if (se == null || index < 0 || entries == null) return index + 36;
 
+		se.lookUpIndex = Utils.GetIntFromString(entries[index]); index++;
+		se.maxRandomItems = Utils.GetIntFromString(entries[index]); index++;
+		se.generateContents = Utils.GetBoolFromString(entries[index]); index++;
+		se.generationDone = Utils.GetBoolFromString(entries[index]); index++;
 		se.contents[0] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
 		se.contents[1] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
 		se.contents[2] = Utils.GetIntFromString(entries[index]); index++; // int main lookup index
@@ -88,6 +116,27 @@ public class SearchableItem : MonoBehaviour {
 		se.customIndex[1] = Utils.GetIntFromString(entries[index]); index++; // int custom index
 		se.customIndex[2] = Utils.GetIntFromString(entries[index]); index++; // int custom index
 		se.customIndex[3] = Utils.GetIntFromString(entries[index]); index++; // int custom index
+		se.randomItem[0] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItem[1] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItem[2] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItem[3] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItem[4] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItem[5] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItem[6] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemCustomIndex[0] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemCustomIndex[1] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemCustomIndex[2] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemCustomIndex[3] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemCustomIndex[4] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemCustomIndex[5] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemCustomIndex[6] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemDropChance[0] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemDropChance[1] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemDropChance[2] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemDropChance[3] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemDropChance[4] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemDropChance[5] = Utils.GetIntFromString(entries[index]); index++;
+		se.randomItemDropChance[6] = Utils.GetIntFromString(entries[index]); index++;
 		se.searchableInUse = Utils.GetBoolFromString(entries[index]); index++; // bool - is this being searched by Player?
 
 		if (prefID.constIndex == 464) { // Briefcase with its gibs.

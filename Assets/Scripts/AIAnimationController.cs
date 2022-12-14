@@ -3,33 +3,34 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AIAnimationController : MonoBehaviour {
-	// External manually assigned references
+	// External manually assigned references, unsaved, depends on prefab
 	public AIController aic;
 
 	// Externall set values per instance
-	public bool useDeadAnimForDeath = false;
-	public bool playDeathAnim = true;
-	public bool playDyingAnim = true;
-	public float minWalkSpeedToAnimate = 0.32f;
+	public bool useDeadAnimForDeath = false; // save
+	public bool playDeathAnim = true; // save
+	public bool playDyingAnim = true; // save
+	public float minWalkSpeedToAnimate = 0.32f; // save
 
 	// Internal
 	[HideInInspector] public float currentClipPercentage; // save
-	[HideInInspector] public float clipEndThreshold = 0.99f;
-	[HideInInspector] public Animator anim;
 	[HideInInspector] public bool dying; // save
 	[HideInInspector] public float animSwapFinished; // save
-	private SkinnedMeshRenderer smR; // Optional
+
+	// Derived or temporary variables, unsaved
+	[HideInInspector] public Animator anim;
+	private SkinnedMeshRenderer smR; // Optional, used for performance
 	private AnimatorStateInfo anstinfo;
 	private bool checkVisWithSMR = false;
-	private float animSwapFinishedDelay = 0.5f;
 	private bool pauseStateUpdated = false;
 
 	void Start () {
 		anim = GetComponent<Animator>();
 		smR = GetComponentInChildren<SkinnedMeshRenderer>();
-		animSwapFinished = PauseScript.a.relativeTime;
 		if (smR != null) checkVisWithSMR = true;
 		else checkVisWithSMR = false;
+
+		animSwapFinished = PauseScript.a.relativeTime;
 		currentClipPercentage = 0;
 	}
 
@@ -102,7 +103,7 @@ public class AIAnimationController : MonoBehaviour {
 			}
 		} else {
 			if (animSwapFinished < PauseScript.a.relativeTime) {
-				animSwapFinished = PauseScript.a.relativeTime + animSwapFinishedDelay; // Prevent flickering.
+				animSwapFinished = PauseScript.a.relativeTime + 0.5f; // Prevent flickering.
 				anim.Play("Idle");
 			}
 		}
@@ -127,7 +128,7 @@ public class AIAnimationController : MonoBehaviour {
 	void Dying () {
 		dying = true;
 		if (playDyingAnim) anim.Play("Death");
-		if (currentClipPercentage > clipEndThreshold) dying = false;
+		if (currentClipPercentage > 0.99f) dying = false;
 	}
 
 	void Dead () {
@@ -138,7 +139,7 @@ public class AIAnimationController : MonoBehaviour {
 				anim.Play("Death",0,1.0f);
 			}
 		}
-		if (anim.speed > 0) anim.speed = 0f;
+		if (anim.speed > 0f) anim.speed = 0f;
 	}
 
 	void Inspect () {
@@ -151,16 +152,20 @@ public class AIAnimationController : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>();
-		if (aiac == null) {
-			return "0000.00000|0|0000.00000"; // No warn, cyber enemies don't have one.
-		}
+		// No debug warn, cyber enemies don't have one.
+		if (aiac == null) return Utils.DTypeWordToSaveString("fbf");
 
 		string line = System.String.Empty;
 		line = Utils.FloatToString(aiac.currentClipPercentage);
-		line += Utils.splitChar;
-		line += Utils.BoolToString(aiac.dying); // bool
-		line += Utils.splitChar;
-		line += Utils.SaveRelativeTimeDifferential(aiac.animSwapFinished);
+		line += Utils.splitChar + Utils.BoolToString(aiac.dying);
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(aiac.animSwapFinished);
+		line += Utils.splitChar + Utils.BoolToString(aiac.useDeadAnimForDeath);
+		line += Utils.splitChar + Utils.BoolToString(aiac.playDeathAnim);
+		line += Utils.splitChar + Utils.BoolToString(aiac.playDyingAnim);
+		line += Utils.splitChar + Utils.FloatToString(aiac.minWalkSpeedToAnimate);
+		if (aiac.anim != null) line += Utils.splitChar + Utils.FloatToString(aiac.anim.speed);
+		else line += Utils.splitChar + Utils.FloatToString(1.0f);
+
 		return line;
 	}
 
@@ -168,11 +173,17 @@ public class AIAnimationController : MonoBehaviour {
 		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>();
 		if (aiac == null || index < 0 || entries == null) return index + 3;
 
-		aiac.currentClipPercentage = Utils.GetFloatFromString(entries[index]); index++; // float
-		aiac.dying = Utils.GetBoolFromString(entries[index]); index++; // bool
-		aiac.animSwapFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
+		aiac.currentClipPercentage = Utils.GetFloatFromString(entries[index]); index++;
+		aiac.dying = Utils.GetBoolFromString(entries[index]); index++;
+		aiac.animSwapFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		aiac.useDeadAnimForDeath = Utils.GetBoolFromString(entries[index]); index++;
+		aiac.playDeathAnim = Utils.GetBoolFromString(entries[index]); index++;
+		aiac.playDyingAnim = Utils.GetBoolFromString(entries[index]); index++;
+		aiac.minWalkSpeedToAnimate = Utils.GetFloatFromString(entries[index]); index++;
 		if (!aiac.aic.ai_dead) {
-			if (aiac.anim != null) aiac.anim.speed = 1f;
+			float setSpeed = Utils.GetFloatFromString(entries[index]); index++;
+			if (setSpeed < 0f || setSpeed > 100f) setSpeed = 1f;
+			if (aiac.anim != null) aiac.anim.speed = setSpeed;
 		}
 		return index;
 	}

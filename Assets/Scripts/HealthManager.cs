@@ -24,7 +24,7 @@ public class HealthManager : MonoBehaviour {
 	public float health = -1f; // save, Current health, set in inspector for a different starting health than default on enemies.
 	public float cyberHealth = -1f; //save
 	public float maxhealth; // maximum health
-	private int index;
+	private int index; // NPC Index
 	public int levelIndex; // Only for if a security camera.
 	public bool isPlayer = false;
 	public bool isGrenade = false;
@@ -178,8 +178,8 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	float ApplyAttackTypeAdjustments(float take,DamageData dd) {
-		if (aic != null && isNPC && health > 0f) {
-			if (aic.npcType == NPCType.Mutant) {
+		if (isNPC && health > 0f) {
+			if (Const.a.typeForNPC[index] == NPCType.Mutant) {
 				switch(dd.attackType) {
 					case AttackType.None: take *= 1f; break; // same
 					case AttackType.Melee: take *= 1f; break; // same
@@ -195,7 +195,7 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 
-			if (aic.npcType == NPCType.Supermutant) {
+			if (Const.a.typeForNPC[index] == NPCType.Supermutant) {
 				switch(dd.attackType) {
 					case AttackType.None: take *= 1f; break; // same
 					case AttackType.Melee: take *= 1f; break; // same
@@ -211,7 +211,7 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 
-			if (aic.npcType == NPCType.Robot) {
+			if (Const.a.typeForNPC[index] == NPCType.Robot) {
 				switch(dd.attackType) {
 					case AttackType.None: take *= 1f; break; // same
 					case AttackType.Melee: take *= 1f; break; // same
@@ -227,7 +227,7 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 
-			if (aic.npcType == NPCType.Cyborg) {
+			if (Const.a.typeForNPC[index] == NPCType.Cyborg) {
 				switch(dd.attackType) {
 					case AttackType.None: take *= 1f; break; // same
 					case AttackType.Melee: take *= 1f; break; // same
@@ -243,7 +243,7 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 
-			if (aic.npcType == NPCType.Supercyborg) {
+			if (Const.a.typeForNPC[index] == NPCType.Supercyborg) {
 				switch(dd.attackType) {
 					case AttackType.None: take *= 1f; break; // same
 					case AttackType.Melee: take *= 1f; break; // same
@@ -259,7 +259,7 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 
-			if (aic.npcType == NPCType.MutantCyborg) {
+			if (Const.a.typeForNPC[index] == NPCType.MutantCyborg) {
 				switch(dd.attackType) {
 					case AttackType.None: take *= 1f; break; // same
 					case AttackType.Melee: take *= 1f; break; // same
@@ -275,7 +275,7 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 
-			if (aic.npcType == NPCType.Cyber) {
+			if (Const.a.typeForNPC[index] == NPCType.Cyber) {
 				switch(dd.attackType) {
 					case AttackType.None: take *= 1f; break; // same
 					case AttackType.Melee: take *= 1f; break; // same

@@ -84,7 +84,7 @@ public class TargetIO : MonoBehaviour {
 		}
 	}
 
-	void RegisterToConst() {
+	public void RegisterToConst() {
 		Const.a.AddToTargetRegister(this.gameObject, targetname);
 	}
 
@@ -424,7 +424,8 @@ public class TargetIO : MonoBehaviour {
 		return line;
 	}
 
-	public static int Load(GameObject go, ref string[] entries, int index) {
+	public static int Load(GameObject go, ref string[] entries, int index,
+						   bool instantiated) {
 		TargetIO tio = go.GetComponent<TargetIO>();
 		if (tio == null || index < 0 || entries == null) return index + 51;
 
@@ -479,6 +480,7 @@ public class TargetIO : MonoBehaviour {
 		tio.branchFlip = Utils.GetBoolFromString(entries[index]); index++;
 		tio.branchFlipOnly = Utils.GetBoolFromString(entries[index]); index++;
 		tio.doorAccessCardOverrideToggle = Utils.GetBoolFromString(entries[index]); index++;
+		if (instantiated) tio.RegisterToConst();
 		return index;
 	}
 }

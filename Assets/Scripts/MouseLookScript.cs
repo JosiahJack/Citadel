@@ -846,8 +846,8 @@ public class MouseLookScript : MonoBehaviour {
 		} else {
 			Utils.PlayOneShotSavable(SFXSource,SearchSFX); // Play search sound
 		}
+
 		curSearchScript.searchableInUse = true;
-		curSearchScript.currentPlayerCapsule = transform.parent.gameObject;  // Get playerCapsule of player this is attached to
 
 		// Search through array to see if any items are in the container
 		int numberFoundContents = 0;
