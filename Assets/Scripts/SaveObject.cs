@@ -8,12 +8,10 @@ public class SaveObject : MonoBehaviour {
 	public int SaveID;
 	public bool isRuntimeObject = false;
 	public SaveableType saveType = SaveableType.Transform;
+	public bool instantiated = false; // Should oject be instantiated on load?
+
 	[HideInInspector] public string saveableType;
-	public int levelParentID = -1;
 	[HideInInspector] public bool initialized = false;
-	public bool instantiated = false; // True when this object has been instantiated at runtime
-	public int constLookupTable = 0; // The table to check. 0 = useableItems, 1 = npcPrefabs
-	public int constLookupIndex = -1; // Index into the Const lookup table for referencing during instantiation.
 
 	public void SetSaveID() {
 		SaveID = gameObject.GetInstanceID();
@@ -58,6 +56,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.DelayedSpawn: saveableType = "DelayedSpawn"; break;
 			case SaveableType.SecurityCamera: saveableType = "SecurityCamera"; break;
 			case SaveableType.Trigger: saveableType = "Trigger"; break;
+			case SaveableType.Projectile: saveableType = "Projectile"; break;
 			default: saveableType = "Transform"; break;
 		}
 		initialized = true;
@@ -101,14 +100,21 @@ public class SaveObject : MonoBehaviour {
 		s1.Append(so.saveableType); s1.Append(Utils.splitChar);					    // 0
 		s1.Append(so.SaveID.ToString()); s1.Append(Utils.splitChar);				// 1
 		s1.Append(Utils.BoolToString(so.instantiated)); s1.Append(Utils.splitChar); // 2
-		s1.Append(so.constLookupTable.ToString()); s1.Append(Utils.splitChar);      // 3
-		s1.Append(so.constLookupIndex.ToString()); s1.Append(Utils.splitChar);      // 4
-		s1.Append(Utils.BoolToString(go.activeSelf));  s1.Append(Utils.splitChar);  // 5
-		s1.Append(Utils.SaveTransform(go.transform)); s1.Append(Utils.splitChar);	// 6,7,8,9,10,11,12,13,14,15
-		s1.Append(Utils.SaveRigidbody(go)); s1.Append(Utils.splitChar);			    // 16,17,18,19
-		s1.Append(so.levelParentID.ToString()); s1.Append(Utils.splitChar);			// 20
+		s1.Append(Utils.BoolToString(go.activeSelf));  s1.Append(Utils.splitChar);  // 3
+		s1.Append(Utils.SaveTransform(go.transform)); s1.Append(Utils.splitChar);	// 4,5,6,7,8,9,10,11,12,13
+		s1.Append(Utils.SaveRigidbody(go)); s1.Append(Utils.splitChar);			    // 14,15,16,17
+		int levelID = 1;
+		GameObject par = go.transform.parent.gameObject;
+		for (int i=0; i < 14; i++) {
+			if (par == LevelManager.a.levelScripts[i].dynamicObjectsContainer) {
+				levelID = i;
+				break;
+			}
+		}
+
+		s1.Append(levelID.ToString()); s1.Append(Utils.splitChar);					// 18
 		if (prefID != null) {
-			s1.Append(Utils.UintToString(prefID.constIndex));                       // 21
+			s1.Append(Utils.UintToString(prefID.constIndex));                       // 19
 			s1.Append(Utils.splitChar);
 		} else s1.Append("307" + Utils.splitChar);
 
@@ -152,6 +158,8 @@ public class SaveObject : MonoBehaviour {
 													  s1.Append(HealthManager.Save(go.transform.GetChild(0).gameObject)); s1.Append(Utils.splitChar);
 													  s1.Append(Utils.SaveTransform(go.transform.GetChild(0))); break;
 			case SaveableType.Trigger:                s1.Append(Trigger.Save(go)); break;
+			case SaveableType.Projectile:             s1.Append(DelayedSpawn.Save(go)); s1.Append(Utils.splitChar);
+													  s1.Append(ProjectileEffectImpact.Save(go)); break;
 		}
 		return s1.ToString();
 	}
@@ -164,11 +172,9 @@ public class SaveObject : MonoBehaviour {
 		// saveableType; index++;     // 0
 		// SaveID; index++;           // 1
 		// instantiated; index++;     // 2
-		// constLookupTable; index++; // 3
-		// constLookupIndex; index++; // 4
-		if (index != 5) {
-			Debug.Log("SaveObject.Load:: index was not equal to 5 at start");
-			index = 5;
+		if (index != 3) {
+			Debug.Log("SaveObject.Load:: index was not equal to 3 at start");
+			index = 3;
 		}
 		bool setToActive = Utils.GetBoolFromString(entries[index]); index++;
 		// Set active state of GameObject in Hierarchy
@@ -178,13 +184,13 @@ public class SaveObject : MonoBehaviour {
 			if (go.activeSelf) go.SetActive(false);
 		}
 
-		if (entries[0] != so.saveableType) { Debug.Log("Saveable type mismatch.  Save data has type " + entries[0] + " but object is " + so.saveableType); return index + 21; }
+		if (entries[0] != so.saveableType) { Debug.Log("Saveable type mismatch.  Save data has type " + entries[0] + " but object is " + so.saveableType); return index + 19; }
 
 		// Set parent prior to setting localPosition, localRotation, localScale
 		// so that the relative positioning is correct.
-		so.levelParentID = Utils.GetIntFromString(entries[20]);
-		Transform curLevDynContainer = LevelManager.a.GetRequestedLevelDynamicContainer(so.levelParentID).transform;
-		if (so.levelParentID >= 0 && so.levelParentID <= 13 && so.instantiated
+		int levelID = Utils.GetIntFromString(entries[18]);
+		Transform curLevDynContainer = LevelManager.a.GetRequestedLevelDynamicContainer(levelID).transform;
+		if (levelID >= 0 && levelID <= 13 && so.instantiated
 			  && go.transform.parent != curLevDynContainer) {
 			go.transform.SetParent(curLevDynContainer);
 		}
@@ -193,13 +199,13 @@ public class SaveObject : MonoBehaviour {
 		index = Utils.LoadTransform(go.transform,ref entries,index);
 		if (so.saveType == SaveableType.TransformParentless && go.CompareTag("Player")) Debug.Log("Loaded player transform to " + go.transform.localPosition.ToString());
 		index = Utils.LoadRigidbody(go,ref entries,index);
-		index++; // Already loaded index 20 for levelParentID.
-		index++; // ALready loaded index 21 for prefab master index as that is
+		index++; // Already loaded index 18 for levelID.
+		index++; // ALready loaded index 19 for prefab master index as that is
 				 // how this object was instantiated prior to calling Load.
-		if (index != 22) {
-			Debug.Log("SaveObject.Load:: index was not equal to 22 prior to "
+		if (index != 20) {
+			Debug.Log("SaveObject.Load:: index was not equal to 20 prior to "
 					  + "loading SaveableType data.");
-			index = 22;
+			index = 20;
 		}
 		if (index >= entries.Length) return index;
 
@@ -239,10 +245,13 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Light:                  index =         LightAnimation.Load(go,ref entries,index); break;
 			case SaveableType.Camera:                 index =          BerserkEffect.Load(go,ref entries,index);
 													  index =                  Utils.LoadCamera(go,ref entries,index); break;
+			case SaveableType.DelayedSpawn:           index =           DelayedSpawn.Load(go,ref entries,index); break;
 			case SaveableType.SecurityCamera:         index =   SecurityCameraRotate.Load(go,ref entries,index);
 													  index =          HealthManager.Load(go.transform.GetChild(0).gameObject,ref entries,index);
 													  index =                  Utils.LoadTransform(go.transform.GetChild(0),ref entries,index); break;
 			case SaveableType.Trigger:                index =                Trigger.Load(go,ref entries,index); break;
+			case SaveableType.Projectile:             index =           DelayedSpawn.Load(go,ref entries,index);
+													  index = ProjectileEffectImpact.Load(go,ref entries,index); break;
 		}
 		return index;
 	}

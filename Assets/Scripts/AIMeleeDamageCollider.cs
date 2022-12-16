@@ -13,7 +13,8 @@ public class AIMeleeDamageCollider : MonoBehaviour {
     private SphereCollider sphereCollider;
     private CapsuleCollider capCollider;
 
-	public void MeleeColliderSetup (int ind, int colCount, float impact, GameObject sourceOwner) {
+	public void MeleeColliderSetup (int ind, int colCount, float impact,
+									GameObject sourceOwner) {
 		index = ind;
 		meleeColliderCounter = colCount;
 		impactMelee = impact;
@@ -24,35 +25,37 @@ public class AIMeleeDamageCollider : MonoBehaviour {
         sphereCollider = GetComponent<SphereCollider>();
         capCollider = GetComponent<CapsuleCollider>();
 
-        if (meshCollider != null) meshCollider.isTrigger = true;
-        if (boxCollider != null) boxCollider.isTrigger = true;
+        if (meshCollider != null)     meshCollider.isTrigger = true;
+        if (boxCollider != null)       boxCollider.isTrigger = true;
         if (sphereCollider != null) sphereCollider.isTrigger = true;
-        if (capCollider != null) capCollider.isTrigger = true;
+        if (capCollider != null)       capCollider.isTrigger = true;
     }
 
 	void OnTriggerEnter (Collider other) {
 		if (other == null) return;
-
-        if (other.CompareTag("Player") || other.CompareTag("NPC")) {
-			if (ownerAIC == null) { Debug.Log("BUG: AIMeleeDamageCollider is on but doesn't have an AIC assigned!"); gameObject.SetActive(false); return; }
-
-			// Make sure we aren't hitting the lean transform by accident...target the actual player capsule with its health manager
-			if (other.GetComponent<HealthManager>() != null) {
-				if (ownerAIC.meleeDamageFinished < PauseScript.a.relativeTime) {
-					ownerAIC.meleeDamageFinished = PauseScript.a.relativeTime + Const.a.timeToActualAttack1ForNPC[index];
-					DamageData ddNPC = DamageData.SetNPCData(index,1,ownedBy);
-					ddNPC.other = other.gameObject;
-					ddNPC.attacknormal = Vector3.Normalize(other.transform.position - transform.position);
-					ddNPC.damage = 11f;
-					float take = Const.a.GetDamageTakeAmount(ddNPC);
-					take = (take / meleeColliderCounter); //split it for multiple tap melee attacks, e.g. double paw swipe
-					ddNPC.damage = take;
-					HealthManager hm = other.GetComponent<HealthManager>();
-					ddNPC.impactVelocity = ddNPC.damage * 1.5f;
-					Const.a.ApplyImpactForce(other.gameObject, ddNPC.impactVelocity,ddNPC.attacknormal,ddNPC.hit.point);
-					if (hm != null) hm.TakeDamage(ddNPC);
-				}
-			}
+		if (ownerAIC.meleeDamageFinished >= PauseScript.a.relativeTime) return;
+        if (!(other.CompareTag("Player") || other.CompareTag("NPC"))) return;
+		if (ownerAIC == null) {
+			Debug.Log("BUG: AIMeleeDamageCollider on but no AIC assigned!");
+			gameObject.SetActive(false);
+			return;
 		}
+
+		// Make sure we aren't hitting the lean transform by accident...target
+		// the actual player capsule with its health manager.
+		HealthManager hm = other.GetComponent<HealthManager>();
+		if (hm == null) return;
+
+		ownerAIC.meleeDamageFinished = PauseScript.a.relativeTime + Const.a.timeToActualAttack1ForNPC[index];
+		DamageData ddNPC = DamageData.SetNPCData(index,1,ownedBy);
+		ddNPC.other = other.gameObject;
+		ddNPC.attacknormal = Vector3.Normalize(other.transform.position - transform.position);
+		ddNPC.damage = 11f;
+		float take = Const.a.GetDamageTakeAmount(ddNPC);
+		take = (take / meleeColliderCounter); //split it for multiple tap melee attacks, e.g. double paw swipe
+		ddNPC.damage = take;
+		ddNPC.impactVelocity = ddNPC.damage * 1.5f;
+		Utils.ApplyImpactForce(other.gameObject,ddNPC.impactVelocity,ddNPC.attacknormal,ddNPC.hit.point);
+		hm.TakeDamage(ddNPC);
 	}
 }

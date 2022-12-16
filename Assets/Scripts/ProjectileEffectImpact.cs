@@ -3,11 +3,12 @@ using System.Collections;
 
 public class ProjectileEffectImpact : MonoBehaviour {
     public PoolType impactType;
+	public bool destroyInsteadOfDeactivate = false;
 	[HideInInspector] public GameObject host;
     [HideInInspector] public DamageData dd;
     [SerializeField] public int hitCountBeforeRemoval = 1;
     private Vector3 tempVec;
-    private int numHits;
+    [HideInInspector] public int numHits;
 
     private void OnEnable() {
         numHits = 0; // Reset when pulled from pool.
@@ -50,7 +51,7 @@ public class ProjectileEffectImpact : MonoBehaviour {
 					// Most already was when this was launched by AIController or WeaponFire
 					dd.damage = Const.a.GetDamageTakeAmount(dd);
 					dd.impactVelocity = dd.damage * 1.5f;
-					Const.a.ApplyImpactForce(other.gameObject, dd.impactVelocity,dd.attacknormal,dd.hit.point);
+					Utils.ApplyImpactForce(other.gameObject, dd.impactVelocity,dd.attacknormal,dd.hit.point);
 					float dmgFinal = hm.TakeDamage(dd); // send the damageData container to HealthManager of hit object and apply damage
 					if (hm.isNPC || dd.isOtherNPC) Music.a.inCombat = true;
 					float linkDistForTargID = 10f;
@@ -132,8 +133,34 @@ public class ProjectileEffectImpact : MonoBehaviour {
 						if (aic !=null) aic.Tranquilize();
 					}
 				}
-                gameObject.SetActive(false); // disable the projectile
+				if (destroyInsteadOfDeactivate) Utils.SafeDestroy(gameObject);
+                else gameObject.SetActive(false); // disable the projectile
             }
         }
+	}
+
+	public static string Save(GameObject go) {
+		ProjectileEffectImpact pei = go.GetComponent<ProjectileEffectImpact>();
+		if (pei == null) {
+			Debug.Log("ProjectileEffectImpact missing on savetype of Projectile!  GameObject.name: " + go.name);
+			return Utils.DTypeWordToSaveString("uu");
+
+		}
+
+		string line = System.String.Empty;
+		line = Utils.UintToString(pei.hitCountBeforeRemoval);
+		line += Utils.splitChar + Utils.UintToString(pei.numHits);
+		line += Utils.splitChar + Utils.BoolToString(pei.destroyInsteadOfDeactivate);
+		return line;
+	}
+
+	public static int Load(GameObject go, ref string[] entries, int index) {
+		ProjectileEffectImpact pei = go.GetComponent<ProjectileEffectImpact>();
+		if (pei == null || index < 0 || entries == null) return index + 6;
+
+		pei.hitCountBeforeRemoval = Utils.GetIntFromString(entries[index]); index++;
+		pei.numHits = Utils.GetIntFromString(entries[index]); index++;
+		pei.destroyInsteadOfDeactivate = Utils.GetBoolFromString(entries[index]); index++;
+		return index;
 	}
 }

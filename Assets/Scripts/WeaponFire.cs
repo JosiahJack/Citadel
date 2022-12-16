@@ -399,14 +399,14 @@ public class WeaponFire : MonoBehaviour {
 			if (Inventory.a.isPulserNotDrill) {
 				if (Inventory.a.hasSoft[1]) {
 					// Fire pulser
-					if (Inventory.a.hasSoft[1]) FireCyberBeachball(true,railgunShotForce,PoolType.CyberPlayerShots);
+					if (Inventory.a.hasSoft[1]) FireCyberBeachball(true,railgunShotForce,492);
 					if (SFXPulserFire != null) { SFX.clip = SFXPulserFire; SFX.Play(); }
 					cyberWeaponAttackFinished = PauseScript.a.relativeTime + 0.08f;
 				}
 			} else {
 				if (Inventory.a.hasSoft[0]) {
 					// Fire I.C.E. drill
-					if (Inventory.a.hasSoft[0]) FireCyberBeachball(false,plasmaShotForce,PoolType.CyberPlayerIceShots);
+					if (Inventory.a.hasSoft[0]) FireCyberBeachball(false,plasmaShotForce,495);
 					if (SFXDrillFire != null) { SFX.clip = SFXDrillFire; SFX.Play(); }
 					cyberWeaponAttackFinished = PauseScript.a.relativeTime + 0.5f;
 				}
@@ -414,10 +414,10 @@ public class WeaponFire : MonoBehaviour {
 		}
 	}
 
-	void FireCyberBeachball(bool isPulser, float shoveForce, PoolType shotPool) {
+	void FireCyberBeachball(bool isPulser, float shoveForce, int prefabID) {
         // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
         // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
-        GameObject beachball = Const.a.GetObjectFromPool(shotPool);
+        GameObject beachball = ConsoleEmulator.SpawnDynamicObject(prefabID);
         if (beachball != null) {
 			damageData.damage = 10f * Inventory.a.softVersions[0];
 			if (isPulser) damageData.damage = 1f; // Cyberspace enemies don't have much health
@@ -853,7 +853,7 @@ public class WeaponFire : MonoBehaviour {
         if (hm != null && hm.health > 0) {
 			float dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
 			damageData.impactVelocity += (damageData.damage * 1.5f);
-			Const.a.ApplyImpactForce(tempHit.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
+			Utils.ApplyImpactForce(tempHit.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
 			if (hm.isNPC) Music.a.inCombat = true;
 			float linkDistForTargID = 10f;
 			switch (Inventory.a.hardwareVersion[4]) {
@@ -1005,7 +1005,7 @@ public class WeaponFire : MonoBehaviour {
 			return;
 		}
 		damageData.impactVelocity = damageData.damage * 1.5f;
-		Const.a.ApplyImpactForce(targ, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
+		Utils.ApplyImpactForce(targ, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
 		hm.TakeDamage(damageData); //no need to check if damage was done and if we need noDamageIndicator since melee weapons always do damage against all types
 		if (hm.isNPC) Music.a.inCombat = true;
 		if (!silent) {
@@ -1109,16 +1109,16 @@ public class WeaponFire : MonoBehaviour {
 	}
 
     // Projectile weapons
-    //----------------------------------------------------------------------------------------------------------
-    void FirePlasma(int index16) { FireBeachball(index16,plasmaShotForce,PoolType.PlasmaShots); }
-    void FireRailgun(int index16) { FireBeachball(index16,railgunShotForce,PoolType.RailgunShots); }
-    void FireMagpulse(int index16) { FireBeachball(index16,magpulseShotForce,PoolType.MagpulseShots); }
-    void FireStungun(int index16) { FireBeachball(index16,stungunShotForce,PoolType.StungunShots); }
+    //-------------------------------------------------------------------------
+    void FirePlasma(int index16) { FireBeachball(index16,plasmaShotForce,485); }
+    void FireRailgun(int index16) { FireBeachball(index16,railgunShotForce,484); }
+    void FireMagpulse(int index16) { FireBeachball(index16,magpulseShotForce,482); }
+    void FireStungun(int index16) { FireBeachball(index16,stungunShotForce,483); }
 
-	void FireBeachball(int index16, float shoveForce, PoolType shotPool) {
+	void FireBeachball(int index16, float shoveForce, int prefabID) {
         // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
         // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
-        GameObject beachball = Const.a.GetObjectFromPool(shotPool);
+        GameObject beachball = ConsoleEmulator.SpawnDynamicObject(prefabID);
         if (beachball != null) {
             damageData.damage = Const.a.damagePerHitForWeapon[index16];
             damageData.owner = playerCapsule;

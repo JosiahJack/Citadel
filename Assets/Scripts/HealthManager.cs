@@ -67,7 +67,6 @@ public class HealthManager : MonoBehaviour {
 	[HideInInspector] public TargetID linkedTargetID;
 	[HideInInspector] public bool awakeInitialized = false;
 	[HideInInspector] public bool startInitialized = false;
-	private GameObject tempAud;
 
 	public void Awake () {
 		deathDone = false;
@@ -78,7 +77,6 @@ public class HealthManager : MonoBehaviour {
 		sphereCol = GetComponent<SphereCollider>();
 		capCol = GetComponent<CapsuleCollider>();
         attacker = null;
-		tempAud = null;
 		tempdd = new DamageData();
 		take = 0;
 		if (isPlayer) {
@@ -341,22 +339,10 @@ public class HealthManager : MonoBehaviour {
 					float thresh = 0;
 					float enertake = 0;
 					switch(Inventory.a.hardwareVersion[5]) {
-						case 0: absorb = 0.2f;
-								thresh = 0;
-								enertake = 24f;
-								break;
-						case 1: absorb = 0.4f;
-								thresh = 10f;
-								enertake = 60f;
-								break;
-						case 2: absorb = 0.75f;
-								thresh = 15f;
-								enertake = 105f;
-								break;
-						case 3: absorb = 0.75f;
-								thresh = 30f;
-								enertake = 30f;
-								break;
+						case 0: absorb = 0.2f;   thresh = 0f; enertake =  24f; break;
+						case 1: absorb = 0.4f;  thresh = 10f; enertake =  60f; break;
+						case 2: absorb = 0.75f; thresh = 15f; enertake = 105f; break;
+						case 3: absorb = 0.75f; thresh = 30f; enertake =  30f; break;
 					}
 					if (take < thresh) absorb = 1f; // ah yeah! absorb. it. all.
 					if (absorb > 0) {
@@ -454,22 +440,18 @@ public class HealthManager : MonoBehaviour {
 	public void TeleportAway() {
 		if (!teleportDone) {
 			teleportDone = true;
-			if (teleportEffect != null && !teleportEffect.activeSelf) teleportEffect.SetActive(true);
+			if (teleportEffect != null && !teleportEffect.activeSelf) {
+				teleportEffect.SetActive(true);
+			}
 		}
 	}
 
 	void PlayDeathSound(AudioClip deathSound) {
-		if (deathSound != null || backupDeathSound != null && gameObject.activeInHierarchy) {
-			tempAud = Const.a.GetObjectFromPool(PoolType.TempAudioSources);
-			if (tempAud != null) {
-				tempAud.transform.position = transform.position;
-				tempAud.SetActive(true);
-				AudioSource aS = tempAud.GetComponent<AudioSource> ();
-				if (aS != null) {
-					aS.enabled = true;
-					if (deathSound != null && !actAsCorpseOnly) Utils.PlayOneShotSavable(aS,deathSound);
-					else if (backupDeathSound != null && !actAsCorpseOnly) Utils.PlayOneShotSavable(aS,backupDeathSound);
-				}
+		if (!actAsCorpseOnly) {
+			if (deathSound != null) {
+				Utils.PlayTempAudio(transform.position,deathSound);
+			} else if (backupDeathSound != null) {
+				Utils.PlayTempAudio(transform.position,backupDeathSound);
 			}
 		}
 	}
@@ -523,13 +505,6 @@ public class HealthManager : MonoBehaviour {
 						if (tossObject.activeSelf != true) tossObject.SetActive(true);
 						if (levelDynamicContainer != null) {
 							tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-							SaveObject so = tossObject.GetComponent<SaveObject>();
-							if (so != null) {
-								so.levelParentID = LevelManager.a.currentLevel;
-								so.instantiated = true;
-								so.constLookupTable = 0; // Standard useableItems table.
-								so.constLookupIndex = searchableItem.contents[i];
-							}
 						}
 						tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
 					} else {

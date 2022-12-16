@@ -29,24 +29,21 @@ public class AIController : MonoBehaviour {
 	/*[DTValidator.Optional] */public RectTransform npcAutomapOverlay;
 	/*[DTValidator.Optional] */public Image npcAutomapOverlayImage;
 	public AIState currentState; // save (referenced by int index 0 thru 10)
-	public PoolType attack1ProjectileLaunchedType = PoolType.None;
-	public PoolType attack2ProjectileLaunchedType = PoolType.None;
-	public PoolType attack3ProjectileLaunchedType = PoolType.None;
-	public bool walkPathOnStart = false;
-    public bool dontLoopWaypoints = false;
-	public bool visitWaypointsRandomly = false;
+	public bool walkPathOnStart = false; // save
+    public bool dontLoopWaypoints = false; // save
+	public bool visitWaypointsRandomly = false; // save
 	public bool asleep = false; // save, Check if enemy starts out asleep such
 								// as the sleeping sec-2 bots on level 8 in the
 								// maintenance and recharge bays.
 	public bool wandering; // save
-	public bool actAsTurret = false;
+	public bool actAsTurret = false; // save
 
 	// Internal, keeping exposed in inspector for troubleshooting.
 	/*[DTValidator.Optional] */public GameObject enemy; // save (referenced by int index enemIDRead)
 
 	// Internal
-	[HideInInspector] public string targetID;
-	[HideInInspector] public bool hasTargetIDAttached = false;
+	[HideInInspector] public string targetID; // save
+	[HideInInspector] public bool hasTargetIDAttached = false; // save
     [HideInInspector] public float gracePeriodFinished; // save
     [HideInInspector] public float meleeDamageFinished; // save
 	[HideInInspector] public bool inSight = false; // save
@@ -62,10 +59,10 @@ public class AIController : MonoBehaviour {
 	[HideInInspector] public bool ai_dead; // save
 	[HideInInspector] public int currentWaypoint; // save
 	[HideInInspector] public Vector3 currentDestination; // save
-	private float idleTime;
-	private float attack1SoundTime;
-	private float attack2SoundTime;
-	private float attack3SoundTime;
+	[HideInInspector] public float idleTime; // save
+	[HideInInspector] public float attack1SoundTime; // save
+	[HideInInspector] public float attack2SoundTime; // save
+	[HideInInspector] public float attack3SoundTime; // save
 	[HideInInspector] public int SFXIndex = -1; // save
 	[HideInInspector] public float timeTillEnemyChangeFinished; // save
 	[HideInInspector] public float timeTillDeadFinished; // save
@@ -76,18 +73,16 @@ public class AIController : MonoBehaviour {
 	[HideInInspector] public CapsuleCollider capsuleCollider;
 	[HideInInspector] public SphereCollider sphereCollider;
 	[HideInInspector] public MeshCollider meshCollider;
-	private float tick;
 	[HideInInspector] public float tickFinished; // save
 	[HideInInspector] public float raycastingTickFinished; // save
 	[HideInInspector] public float huntFinished; // save
 	[HideInInspector] public bool hadEnemy; // save
 	[HideInInspector] public Vector3 lastKnownEnemyPos; // save
 	[HideInInspector] public Vector3 tempVec; // save
-	private Vector3 tempVec2;
+	private Vector3 tempVec2; // Only ever used right away, nosave
 	[HideInInspector] public bool shotFired = false; // save
     private DamageData damageData;
     private RaycastHit tempHit;
-    private bool useBlood;
     private HealthManager tempHM;
 	[HideInInspector] public float randomWaitForNextAttack1Finished; // save
 	[HideInInspector] public float randomWaitForNextAttack2Finished; // save
@@ -104,13 +99,13 @@ public class AIController : MonoBehaviour {
 	[HideInInspector] public float tranquilizeFinished; // save
 	[HideInInspector] public bool hopDone; // save
 	[HideInInspector] public float wanderFinished; // save
-	private float dotResult = -1f;
-	private Vector3 infrontVec;
-	[HideInInspector] public bool startInitialized = false;
+	private float dotResult = -1f; // Only ever used right away, nosave
+	private Vector3 infrontVec; // Only ever used right away, nosave
+	[HideInInspector] public bool startInitialized = false; // nosave
 	private HealthManager enemyHM;
-	private float stopDistance = 1.28f;
-	private Vector3 faceVec;
-	private Quaternion lookRot;
+	private float stopDistance = 1.28f; // Constant
+	private Vector3 faceVec; // Only ever used right away, nosave
+	private Quaternion lookRot; // Only ever used right away, nosave
 	private Animator hopAnimator;
 
 	public void Tranquilize() { tranquilizeFinished = PauseScript.a.relativeTime + Const.a.timeForTranquilizationForNPC[index]; }
@@ -119,11 +114,23 @@ public class AIController : MonoBehaviour {
 		if (meleeDamageColliders.Length < 1) return;
 
 		for (int i = 0; i < meleeDamageColliders.Length; i++) {
-			if (meleeDamageColliders[i] != null) {
-				if (meleeDamageColliders[i].activeSelf) {
-					meleeDamageColliders[i].SetActive(false);
-				}
-			}
+			GameObject mdc = meleeDamageColliders[i];
+			if (mdc == null) continue;
+
+			if (mdc.activeSelf) mdc.SetActive(false);
+		}
+	}
+
+	private void PreActivateMeleeColliders() {
+		for (int i = 0; i < meleeDamageColliders.Length; i++) {
+			GameObject mdc = meleeDamageColliders[i];
+			if (mdc == null) continue;
+
+			if (!mdc.activeSelf) mdc.SetActive(true);
+			AIMeleeDamageCollider mcs = mdc.GetComponent<AIMeleeDamageCollider>();
+			if (mcs == null) continue;
+
+			mcs.MeleeColliderSetup(index,meleeDamageColliders.Length,10f,gameObject);
 		}
 	}
 
@@ -549,13 +556,7 @@ public class AIController : MonoBehaviour {
 					gracePeriodFinished = PauseScript.a.relativeTime + Const.a.timeToActualAttack1ForNPC[index];
                     currentState = AIState.Attack1;
 					if (Const.a.preactivateMeleeCollidersForNPC[index]) {
-						for (int i = 0; i < meleeDamageColliders.Length; i++) {
-							if (meleeDamageColliders[i] != null) meleeDamageColliders[i].SetActive(true);
-							if (meleeDamageColliders[i] != null) {
-								AIMeleeDamageCollider mcs = meleeDamageColliders[i].GetComponent<AIMeleeDamageCollider>();
-								if (mcs != null) mcs.MeleeColliderSetup(index, meleeDamageColliders.Length, 10f, gameObject);
-							}
-						}
+						PreActivateMeleeColliders();
 					}
                     return;
                 }
@@ -736,7 +737,7 @@ public class AIController : MonoBehaviour {
 		return range;
 	}
 
-    void CreateStandardImpactEffects(bool onlyBloodIfHitHasHM) {
+    void CreateStandardImpactEffects(bool useBlood) {
         // Determine blood type of hit target and spawn corresponding blood particle effect from the Const.Pool
         if (useBlood) {
             GameObject impact = Const.a.GetImpactType(tempHM);
@@ -746,15 +747,12 @@ public class AIController : MonoBehaviour {
                 impact.SetActive(true);
             }
         } else {
-            // Allow for skipping adding sparks after special override impact effects per attack functions below
-            if (!onlyBloodIfHitHasHM) {
-                GameObject impact = Const.a.GetObjectFromPool(PoolType.SparksSmall); //Didn't hit an object with a HealthManager script, use sparks
-                if (impact != null) {
-                    impact.transform.position = tempHit.point + tempHit.normal;
-                    impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
-                    impact.SetActive(true);
-                }
-            }
+			GameObject impact = Const.a.GetObjectFromPool(PoolType.SparksSmall); //Didn't hit an object with a HealthManager script, use sparks
+			if (impact != null) {
+				impact.transform.position = tempHit.point + tempHit.normal;
+				impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
+				impact.SetActive(true);
+			}
         }
     }
 
@@ -814,7 +812,6 @@ public class AIController : MonoBehaviour {
 			}
 
 			if (tempHM != null) {
-				useBlood = true;
 				// DamageData.SetNPCData sets:
 				//   owner
 				//   damage
@@ -841,7 +838,8 @@ public class AIController : MonoBehaviour {
 				//   defense
 				damageData.impactVelocity = damageData.damage * 1.5f;
 				damageData.damage = Const.a.GetDamageTakeAmount(damageData);
-				Const.a.ApplyImpactForce(tempHit.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
+				Utils.ApplyImpactForce(tempHit.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
+				CreateStandardImpactEffects(true);
 				tempHM.TakeDamage(damageData);
 			} else {
 				CreateStandardImpactEffects(false);
@@ -870,53 +868,44 @@ public class AIController : MonoBehaviour {
 		// anyone yet so we don't know if isOtherNPC is true or not, called in
 		// ProjectileEffectImpact.
 
-		PoolType projectileType = PoolType.GrenadeFragLive; // Default to Fragmentation Grenade, defaulting up here because it saves lines and precious scrolling.
+		// Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
+		// like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
+		// Calling it a beachball for fun.
+		GameObject beachball = Const.a.useableItems[63]; // Default frag.
 		float launchSpeed = Const.a.projectileSpeedAttack1ForNPC[index];
 		switch (attackNum) {
 			case 1:
-				projectileType = attack1ProjectileLaunchedType;
+				beachball = ConsoleEmulator.SpawnDynamicObject(Const.a.projectile1PrefabForNPC[index]);
 				launchSpeed = Const.a.projectileSpeedAttack1ForNPC[index];
 				break;
 			case 2:
-				projectileType = attack2ProjectileLaunchedType;
+				beachball = ConsoleEmulator.SpawnDynamicObject(Const.a.projectile2PrefabForNPC[index]);
 				launchSpeed = Const.a.projectileSpeedAttack2ForNPC[index];
 				break;
 			case 3:
-				projectileType = attack3ProjectileLaunchedType;
+				beachball = ConsoleEmulator.SpawnDynamicObject(Const.a.projectile3PrefabForNPC[index]);
 				launchSpeed = Const.a.projectileSpeedAttack3ForNPC[index];
 				break;
 		}
 
-		// Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
-		// like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
-		// Calling it a beachball for fun.
-		GameObject beachball = Const.a.GetObjectFromPool(projectileType);
-		if (beachball != null) {
-			ProjectileEffectImpact pei = beachball.GetComponent<ProjectileEffectImpact>();
-			if (pei != null) {
-				pei.dd = damageData;
-				pei.host = gameObject;
-				pei.impactType = Const.a.GetPoolImpactFromPoolProjectileType(projectileType);
-			}
-			beachball.transform.position = startPos;
-			beachball.transform.forward = tempVec.normalized;
-			beachball.SetActive(true);
-			GrenadeActivate ga = beachball.GetComponent<GrenadeActivate>();
-			if (ga != null) {
-				int typ = 7; // Default to Fragmentation Grenade
-				switch (projectileType) {
-					case PoolType.GrenadeFragLive: typ = 7; break; // Fragmentation Grenade
-					case PoolType.ConcussionLive: typ = 8; break; // Concussion Grenade
-					case PoolType.EMPLive: typ = 9; break; // EMP Grenade
-					case PoolType.GasLive: typ = 13; break; // Gas Grenade
-				}
-				ga.Activate(typ);
-			}
-			Vector3 shove = (beachball.transform.forward * launchSpeed);
-			shove += rbody.velocity; // add in the enemy's velocity to the projectile (in case they are riding on a moving platform or something - wait I don't have those!
-			beachball.GetComponent<Rigidbody>().velocity = Const.a.vectorZero; // prevent random variation from the last shot's velocity
-			beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
+		if (beachball == null) return;
+
+		beachball.tag = "NPC";
+		beachball.layer = 24; // NPCBullet
+		ProjectileEffectImpact pei = beachball.GetComponent<ProjectileEffectImpact>();
+		if (pei != null) {
+			pei.dd = damageData;
+			pei.host = gameObject;
 		}
+		beachball.transform.position = startPos;
+		beachball.transform.forward = tempVec.normalized;
+		beachball.SetActive(true);
+		GrenadeActivate ga = beachball.GetComponent<GrenadeActivate>();
+		if (ga != null) ga.Activate();
+		Vector3 shove = (beachball.transform.forward * launchSpeed);
+		shove += rbody.velocity; // add in the enemy's velocity to the projectile (in case they are riding on a moving platform or something - wait I don't have those!
+		beachball.GetComponent<Rigidbody>().velocity = Const.a.vectorZero; // prevent random variation from the last shot's velocity
+		beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
 	}
 
 	// Die in a fiery explosion BOOM!
@@ -929,20 +918,9 @@ public class AIController : MonoBehaviour {
 		float take = Const.a.GetDamageTakeAmount(dd);
 		dd.other = gameObject;
 		dd.damage = take;
-		HealthManager hm = null;
-		float damageOriginal = dd.damage;
-		Collider[] colliders = Physics.OverlapSphere(sightPoint.transform.position, Const.a.attack3RadiusForNPC[index]);
-		int i = 0;
-		while (i < colliders.Length) {
-			if (colliders[i] != null) {
-				if (colliders[i].GetComponent<Rigidbody>() != null) colliders[i].GetComponent<Rigidbody>().AddExplosionForce(Const.a.attack3ForceForNPC[index], sightPoint.transform.position, Const.a.attack3RadiusForNPC[index], 1.0f);
-				hm = colliders[i].GetComponent<HealthManager>();
-				dd.impactVelocity = dd.damage * 1.5f;
-				Const.a.ApplyImpactForce(colliders[i].gameObject, dd.impactVelocity,dd.attacknormal,dd.hit.point);
-				if (hm != null) hm.TakeDamage(dd);
-			}
-			i++;
-		}
+		Utils.ApplyImpactForceSphere(dd,sightPoint.transform.position,
+									 Const.a.attack3RadiusForNPC[index],1.5f,
+									 Const.a.layerMaskNPCAttack);
 		healthManager.TakeDamage(dd);
 	}
 
@@ -1037,10 +1015,7 @@ public class AIController : MonoBehaviour {
 				}
 			}
 
-			for (int i = 0; i < meleeDamageColliders.Length; i++) {
-                if (meleeDamageColliders[i] != null) meleeDamageColliders[i].SetActive(false);
-            }
-
+			DeactivateMeleeColliders();
 			if (!healthManager.actAsCorpseOnly) {
 				SFXIndex = Const.a.sfxDeathForNPC[index];
 				Utils.PlayOneShotSavable(SFX,SFXIndex);
@@ -1257,12 +1232,21 @@ public class AIController : MonoBehaviour {
 		s1.Clear();
 		if (!aic.startInitialized) aic.Start();
 		s1.Append(Utils.UintToString(aic.index)); // int
-		s1.Append(Utils.splitChar);
-		s1.Append(Utils.UintToString(Utils.AIStateToInt(aic.currentState)));
+		s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(Utils.AIStateToInt(aic.currentState)));
 		s1.Append(Utils.splitChar);
 		if (aic.enemy != null) s1.Append("1");
 		else s1.Append("-1");
 
+		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.walkPathOnStart));
+		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.dontLoopWaypoints));
+		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.visitWaypointsRandomly));
+		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.actAsTurret));
+		s1.Append(Utils.splitChar); s1.Append(aic.targetID);
+		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.hasTargetIDAttached));
+		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.idleTime));
+		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack1SoundTime));
+		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack2SoundTime));
+		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack3SoundTime));
 		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.gracePeriodFinished));
 		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.meleeDamageFinished));
 		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.inSight)); // bool
@@ -1334,6 +1318,16 @@ public class AIController : MonoBehaviour {
 		int enemIDRead = Utils.GetIntFromString(entries[index]); index++;
 		if (enemIDRead >= 0) aic.enemy = Const.a.player1Capsule;
 		else aic.enemy = null;
+		aic.walkPathOnStart = Utils.GetBoolFromString(entries[index]); index++;
+		aic.dontLoopWaypoints = Utils.GetBoolFromString(entries[index]); index++;
+		aic.visitWaypointsRandomly = Utils.GetBoolFromString(entries[index]); index++;
+		aic.actAsTurret = Utils.GetBoolFromString(entries[index]); index++;
+		aic.targetID = entries[index]; index++;
+		aic.hasTargetIDAttached = Utils.GetBoolFromString(entries[index]); index++;
+		aic.idleTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		aic.attack1SoundTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		aic.attack2SoundTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		aic.attack3SoundTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		aic.gracePeriodFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before applying pain damage on attack2
 		aic.meleeDamageFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before applying pain damage on attack2
 		aic.inSight = Utils.GetBoolFromString(entries[index]); index++; // bool

@@ -777,6 +777,21 @@ Master Index
 478 sec_cpunode                20
 479 sec_cpunode_small          21
 480 weapon_cyber_mine          22
+481 proj_enemshot2         0
+482 proj_magpulse_shot     1
+483 proj_stungun_shot      2
+484 proj_rail_shot         3
+485 proj_plasmarifle_shot  4
+486 proj_enemshot6         5
+487 proj_enemshot5         6
+488 proj_enemshot4         7
+489 proj_throwingstar      8
+490 proj_magpulsenpc_shot  9
+491 proj_railnpc_shot     10
+492 proj_cyberplayer_shot 11
+493 proj_cyberdog_shot    12
+494 proj_cyberreaver_shot 13
+495 proj_cyberice_shot    14
 */
 
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat, GameObject forcedContainer) {
@@ -831,6 +846,13 @@ Master Index
 
 			go = MonoBehaviour.Instantiate(Const.a.miscellaneousPrefabs[val],
 							 spawnPos,Const.a.quaternionIdentity) as GameObject;
+		} else if (val >= 481 && val < 496) {	// [481, 495]
+			val -= 481;
+			if (val > (Const.a.projectilesLaunched.Length - 1)) return null;
+			if (Const.a.projectilesLaunched[val] == null) return null;
+
+			go = MonoBehaviour.Instantiate(Const.a.projectilesLaunched[val],
+							 spawnPos,Const.a.quaternionIdentity) as GameObject;
 		}
 
 		if (go != null) {
@@ -852,5 +874,9 @@ Master Index
 
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat) {
 		return SpawnDynamicObject(val, lev, cheat, null);
+	}
+
+	public static GameObject SpawnDynamicObject(int val) {
+		return SpawnDynamicObject(val,LevelManager.a.currentLevel,false, null);
 	}
 }

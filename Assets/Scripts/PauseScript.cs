@@ -232,6 +232,7 @@ public class PauseScript : MonoBehaviour {
 		Const.sprint("Wrote screenshot " + sname);
 	}
 
+	// No need to clear, these are all unsaved and static.
 	public void AddAmbientToRegistry(AmbientRegistration ar) {
 		ambientRegistry.Add(ar);
 	}

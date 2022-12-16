@@ -714,22 +714,11 @@ public class MouseLookScript : MonoBehaviour {
 						ResetHeldItem();
 						ResetCursor();
 						return;
-					} else {
-						SaveObject so = tossObject.GetComponent<SaveObject>();
-						if (so != null) {
-							so.instantiated = true;
-							so.constLookupTable = 0; // Standard useableItems table.
-							so.constLookupIndex = heldObjectIndex;
-						}
-
-
 					}
 				}
 				if (tossObject.activeSelf != true) tossObject.SetActive(true);
 				if (levelDynamicContainer != null) {
 					tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-					SaveObject so = tossObject.GetComponent<SaveObject>();
-					if (so != null) so.levelParentID = LevelManager.a.currentLevel;
 				}
 
 				Vector3 tossDir = new Vector3(MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2),MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2),0);
@@ -758,8 +747,6 @@ public class MouseLookScript : MonoBehaviour {
 
 				if (levelDynamicContainer != null){
 					tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-					SaveObject so = tossObject.GetComponent<SaveObject>();
-					if (so != null) so.levelParentID = LevelManager.a.currentLevel;
 				}
 				tossObject.layer = 11; // Set to player bullets layer to prevent collision and still be visible.
 				Vector3 tossDir = new Vector3(MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2),MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2),0);
@@ -772,7 +759,7 @@ public class MouseLookScript : MonoBehaviour {
 					rbody.velocity = tossDir * tossForce;
 				}
 				GrenadeActivate ga = tossObject.GetComponent<GrenadeActivate>();
-				if (ga != null) ga.Activate(heldObjectIndex); // Time to boom!
+				if (ga != null) ga.Activate(); // Time to boom!
 				MouseCursor.a.liveGrenade = false;
 			}
 		} else {

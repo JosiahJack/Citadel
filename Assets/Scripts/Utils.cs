@@ -757,4 +757,60 @@ public class Utils {
 
 		MonoBehaviour.Destroy(go);
 	}
+
+	public static void ApplyImpactForce(GameObject go, float impactVelocity,
+										Vector3 attackNormal, Vector3 spot) {
+		Rigidbody rbody = go.GetComponent<Rigidbody>();
+		if (rbody == null) return;
+		if (impactVelocity <= 0) return;
+
+		rbody.AddForceAtPosition((attackNormal*impactVelocity*30f),spot);
+	}
+
+	public static void ApplyImpactForceSphere(DamageData dd,Vector3 centerPoint,
+											  float radius,float impactScale,
+											  int mask) {
+		HealthManager hm = null;
+		Collider[] colliders = Physics.OverlapSphere(centerPoint,radius);
+		int i = 0;
+		while (i < colliders.Length) {
+			GameObject go = colliders[i].gameObject;
+			if (go == null) { i++; continue; }
+			if (go.isStatic) { i++; continue; }
+
+			Rigidbody rbody = go.GetComponent<Rigidbody>();
+			if (rbody == null) { i++; continue; }
+
+			dd.impactVelocity = dd.damage * impactScale;
+			Vector3 dir = go.transform.position - centerPoint;
+			RaycastHit hit;
+			if (Physics.Raycast(centerPoint,dir,out hit,radius + 0.02f,mask)) {
+				hm = go.GetComponent<HealthManager>();
+				if (hm != null) {
+					if (hm.isPlayer) {
+						dd.damage = dd.damage * 0.5f; // give em a chance mate
+					}
+
+					float distPenalty = (radius - hit.distance) / radius;
+					dd.damage *= distPenalty * distPenalty; // Quadratic falloff
+					hm.TakeDamage(dd);
+				}
+
+				if (hit.collider == colliders[i] || hit.rigidbody == rbody) {
+					rbody.AddExplosionForce(dd.impactVelocity,centerPoint,radius,1f);
+				}
+			}
+			i++;
+		}
+	}
+
+	public static void PlayTempAudio(Vector3 spot,AudioClip clip) {
+		GameObject tempAud = Const.a.GetObjectFromPool(PoolType.TempAudioSources);
+		if (tempAud != null) {
+			tempAud.transform.position = spot; // set temporary audiosource to right here
+			tempAud.SetActive(true);
+			AudioSource aS = tempAud.GetComponent<AudioSource>();
+			PlayOneShotSavable(aS,clip);
+		}
+	}
 }

@@ -197,27 +197,6 @@ public class Tests : MonoBehaviour {
 						}
 					}
 				}
-				//if (Const.a.attackTypeForNPC[aic.index] == AttackType.ProjectileLaunched
-				//	&& aic.attack1ProjectileLaunchedType == PoolType.None) {
-				//	UnityEngine.Debug.Log(script + " has no projectile set " 
-				//						  + "for attack1 but is intended to"
-				//						  + "be projectile launched.");
-				//	issueCount_AIController++;
-				//}
-				//if (Const.a.attackTypeForNPC2[aic.index] == AttackType.ProjectileLaunched
-				//	&& aic.attack1ProjectileLaunchedType == PoolType.None) {
-				//	UnityEngine.Debug.Log(script + " has no projectile set " 
-				//						  + "for attack1 but is intended to"
-				//						  + "be projectile launched.");
-				//	issueCount_AIController++;
-				//}
-				//if (Const.a.attackTypeForNPC3[aic.index] == AttackType.ProjectileLaunched
-				//	&& aic.attack1ProjectileLaunchedType == PoolType.None) {
-				//	UnityEngine.Debug.Log(script + " has no projectile set " 
-				//						  + "for attack1 but is intended to"
-				//						  + "be projectile launched.");
-				//	issueCount_AIController++;
-				//}
 			}
 
 			script = "AIAnimationController";

@@ -72,12 +72,7 @@ public class SpawnManager : MonoBehaviour {
 				Debug.Log("Number spawned enemies: " + numberActive.ToString());
 				SaveObject so = spawnee.GetComponent<SaveObject>();
 				if (so != null) {
-					so.levelParentID = LevelManager.a.currentLevel;
-					so.instantiated = true;
-					so.constLookupTable = 1; // Special npcPrefabs table.
-					so.constLookupIndex = index;
 					so.Start();
-					Debug.Log("Spawned enemy SaveObject setup");
 				}
 			}
 		}

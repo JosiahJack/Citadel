@@ -130,6 +130,11 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int[] sfxDeathForNPC =      new int[]{ -1, 48,110,143, 48,145, 48, 51, 47, 47,142,143,144, 47,162,123,120,134,144,144,120,117,144,124, -1, -1, -1, -1, -1};
 	[HideInInspector] public float[] deathBurstTimerForNPC=new float[]{0.0f,0.0f,0.1f,0.0f,0.1f,0.1f,0.2f,0.1f,0.1f,0.1f,0.0f,0.45f,0.75f,0.1f,0.0f,0.0f,0.1f,0.224f,0.9f,0.0f,0.1f,0.1f,0.1f,0.2f,0.1f,0.1f,0.1f,0.1f,0.1f};
 	[HideInInspector] public NPCType[] typeForNPC;
+	[HideInInspector] public int[] projectile1PrefabForNPC;
+	[HideInInspector] public int[] projectile2PrefabForNPC;
+	[HideInInspector] public int[] projectile3PrefabForNPC;
+
+	public GameObject[] projectilesLaunched;
 
 	// System constants
 	[HideInInspector] public string[] creditsText;
@@ -145,7 +150,6 @@ public class Const : MonoBehaviour {
 
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
-	public GameObject Pool_ProjectilesEnemShot2;
 	public GameObject Pool_BloodSpurtSmall;
 	public GameObject Pool_SparksSmall;
 	public GameObject Pool_SparksSmallBlue;
@@ -156,47 +160,33 @@ public class Const : MonoBehaviour {
     public GameObject Pool_Vaporize;
     public GameObject Pool_BlasterImpacts;
     public GameObject Pool_IonImpacts;
-    public GameObject Pool_MagpulseShots;
     public GameObject Pool_MagpulseImpacts;
-    public GameObject Pool_StungunShots;
     public GameObject Pool_StungunImpacts;
-    public GameObject Pool_RailgunShots;
     public GameObject Pool_RailgunImpacts;
-    public GameObject Pool_PlasmaShots;
     public GameObject Pool_PlasmaImpacts;
-	public GameObject Pool_ProjEnemShot6;
 	public GameObject Pool_ProjEnemShot6Impacts;
 	public GameObject Pool_ProjEnemShot2Impacts;
-	public GameObject Pool_ProjSeedPods;
 	public GameObject Pool_ProjSeedPodsImpacts;
 	public GameObject Pool_TempAudioSources;
 	public GameObject Pool_GrenadeEMPExplosions;
-	public GameObject Pool_ProjEnemShot4;
 	public GameObject Pool_ProjEnemShot4Impacts;
 	public GameObject Pool_CrateExplosions;
 	public GameObject Pool_GrenadeFragLive;
-	public GameObject Pool_CyborgAssassinThrowingStars;
 	public GameObject Pool_ConcussionLive;
 	public GameObject Pool_EMPLive;
 	public GameObject Pool_GasLive;
 	public GameObject Pool_GasExplosions;
 	public GameObject Pool_CorpseHit;
-	public GameObject Pool_NPCMagpulseShots;
-	public GameObject Pool_NPCRailgunShots;
 	public GameObject Pool_LeafBurst;
 	public GameObject Pool_MutationBurst;
 	public GameObject Pool_GraytationBurst;
 	public GameObject Pool_BarrelExplosions;
-	public GameObject Pool_CyberPlayerShots;
-	public GameObject Pool_CyberDogShots;
-	public GameObject Pool_CyberReaverShots;
 	public GameObject Pool_BulletHoleLarge;
 	public GameObject Pool_BulletHoleScorchLarge;
 	public GameObject Pool_BulletHoleScorchSmall;
 	public GameObject Pool_BulletHoleSmall;
 	public GameObject Pool_BulletHoleTiny;
 	public GameObject Pool_BulletHoleTinySpread;
-	public GameObject Pool_CyberPlayerIceShots;
 	public GameObject Pool_CyberDissolve;
 	public GameObject Pool_TargetIDInstances;
 	public GameObject Pool_AutomapBotOverlays;
@@ -663,6 +653,10 @@ public class Const : MonoBehaviour {
 		hearingRangeForNPC = new float[numberOfNPCs];
 		timeForTranquilizationForNPC = new float[numberOfNPCs];
 		hopsOnMoveForNPC = new bool[numberOfNPCs];
+		typeForNPC = new NPCType[numberOfNPCs];
+		projectile1PrefabForNPC = new int[numberOfNPCs];
+		projectile2PrefabForNPC = new int[numberOfNPCs];
+		projectile3PrefabForNPC = new int[numberOfNPCs];
 
 		//case 1: return AttackType.Melee;
 		//case 2: return AttackType.EnergyBeam;
@@ -776,6 +770,10 @@ public class Const : MonoBehaviour {
 				timeForTranquilizationForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
 				hopsOnMoveForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
 				readInt = Utils.GetIntFromString(entries[i].Trim()); typeForNPC[refIndex] = Utils.GetNPCTypeFromInt(readInt); i++;
+				projectile1PrefabForNPC[refIndex] = Utils.GetIntFromString(entries[i].Trim()); i++;
+				projectile2PrefabForNPC[refIndex] = Utils.GetIntFromString(entries[i].Trim()); i++;
+				projectile3PrefabForNPC[refIndex] = Utils.GetIntFromString(entries[i].Trim()); i++;
+
 				currentline++;
 				if (currentline > 29) break;
 			} while (!dataReader.EndOfStream);
@@ -836,10 +834,6 @@ public class Const : MonoBehaviour {
 			poolContainer = Pool_CameraExplosions;
 			poolName = "CameraExplosions ";
 			break;
-		case PoolType.ProjEnemShot2:
-			poolContainer = Pool_ProjectilesEnemShot2;
-			poolName = "ProjectilesEnemShot2 ";
-			break;
 		case PoolType.BloodSpurtSmall: 
 			poolContainer = Pool_BloodSpurtSmall;
 			poolName = "BloodSpurtSmall ";
@@ -876,41 +870,21 @@ public class Const : MonoBehaviour {
             poolContainer = Pool_IonImpacts;
             poolName = "IonImpacts ";
             break;
-        case PoolType.MagpulseShots:
-            poolContainer = Pool_MagpulseShots;
-            poolName = "MagpulseShots ";
-            break;
         case PoolType.MagpulseImpacts:
             poolContainer = Pool_MagpulseImpacts;
             poolName = "MagpulseImpacts ";
-            break;
-        case PoolType.StungunShots:
-            poolContainer = Pool_StungunShots;
-            poolName = "StungunShots ";
             break;
         case PoolType.StungunImpacts:
             poolContainer = Pool_StungunImpacts;
             poolName = "StungunImpacts ";
             break;
-        case PoolType.RailgunShots:
-            poolContainer = Pool_RailgunShots;
-            poolName = "RailgunShots ";
-            break;
         case PoolType.RailgunImpacts:
             poolContainer = Pool_RailgunImpacts;
             poolName = "RailgunImpacts ";
             break;
-        case PoolType.PlasmaShots:
-            poolContainer = Pool_PlasmaShots;
-            poolName = "PlasmaShots ";
-            break;
         case PoolType.PlasmaImpacts:
             poolContainer = Pool_PlasmaImpacts;
             poolName = "PlasmaImpacts ";
-            break;
-        case PoolType.ProjEnemShot6:
-            poolContainer = Pool_ProjEnemShot6;
-            poolName = "ProjEnemShot6 ";
             break;
 		case PoolType.ProjEnemShot6Impacts:
             poolContainer = Pool_ProjEnemShot6Impacts;
@@ -919,10 +893,6 @@ public class Const : MonoBehaviour {
 		case PoolType.ProjEnemShot2Impacts:
             poolContainer = Pool_ProjEnemShot2Impacts;
             poolName = "ProjEnemShot2Impacts ";
-            break;
-		case PoolType.ProjSeedPods:
-            poolContainer = Pool_ProjSeedPods;
-            poolName = "ProjSeedPods ";
             break;
 		case PoolType.ProjSeedPodsImpacts:
             poolContainer = Pool_ProjSeedPodsImpacts;
@@ -936,10 +906,6 @@ public class Const : MonoBehaviour {
             poolContainer = Pool_GrenadeEMPExplosions;
             poolName = "GrenadeEMPExplosions ";
             break;
-		case PoolType.ProjEnemShot4:
-            poolContainer = Pool_ProjEnemShot4;
-            poolName = "ProjEnemShot4 ";
-            break;
 		case PoolType.ProjEnemShot4Impacts:
             poolContainer = Pool_ProjEnemShot4Impacts;
             poolName = "ProjEnemShot4Impacts ";
@@ -951,10 +917,6 @@ public class Const : MonoBehaviour {
 		case PoolType.GrenadeFragLive:
             poolContainer = Pool_GrenadeFragLive;
             poolName = "GrenadeFragLive ";
-            break;
-		case PoolType.CyborgAssassinThrowingStars:
-            poolContainer = Pool_CyborgAssassinThrowingStars;
-            poolName = "CyborgAssassinThrowingStars ";
             break;
 		case PoolType.ConcussionLive:
             poolContainer = Pool_ConcussionLive;
@@ -976,14 +938,6 @@ public class Const : MonoBehaviour {
             poolContainer = Pool_CorpseHit;
             poolName = "CorpseHit ";
             break;
-		case PoolType.NPCMagpulseShots:
-			poolContainer = Pool_NPCMagpulseShots;
-			poolName = "NPCMagpulseShots ";
-			break;
-		case PoolType.NPCRailgunShots:
-			poolContainer = Pool_NPCRailgunShots;
-			poolName = "NPCRailgunShots ";
-			break;
 		case PoolType.LeafBurst:
 			poolContainer = Pool_LeafBurst;
 			poolName = "LeafBurst ";
@@ -999,18 +953,6 @@ public class Const : MonoBehaviour {
 		case PoolType.BarrelExplosions:
 			poolContainer = Pool_BarrelExplosions;
 			poolName = "BarrelExplosions ";
-			break;
-		case PoolType.CyberPlayerShots:
-			poolContainer = Pool_CyberPlayerShots;
-			poolName = "CyberPlayerShots ";
-			break;
-		case PoolType.CyberDogShots:
-			poolContainer = Pool_CyberDogShots;
-			poolName = "CyberDogShots ";
-			break;
-		case PoolType.CyberReaverShots:
-			poolContainer = Pool_CyberReaverShots;
-			poolName = "CyberReaverShots ";
 			break;
 		case PoolType.BulletHoleLarge:
 			poolContainer = Pool_BulletHoleLarge;
@@ -1035,10 +977,6 @@ public class Const : MonoBehaviour {
 		case PoolType.BulletHoleTinySpread:
 			poolContainer = Pool_BulletHoleTinySpread;
 			poolName = "BulletHoleTinySpread ";
-			break;
-		case PoolType.CyberPlayerIceShots:
-			poolContainer = Pool_CyberPlayerIceShots;
-			poolName = "CyberPlayerIceShots ";
 			break;
 		case PoolType.CyberDissolve:
 			poolContainer = Pool_CyberDissolve;
@@ -1073,22 +1011,6 @@ public class Const : MonoBehaviour {
 		}
 
 		return null;
-	}
-
-	// Give it a pool for a projectile, get the impact effect pool
-	public PoolType GetPoolImpactFromPoolProjectileType(PoolType pool) {
-		if (pool == PoolType.None) return PoolType.None; //do nothing, no impact effect for no object
-
-		switch (pool) {
-			case PoolType.ProjEnemShot2: return PoolType.ProjEnemShot2Impacts;
-			case PoolType.MagpulseShots: return PoolType.MagpulseImpacts;
-			case PoolType.StungunShots: return PoolType.StungunImpacts;
-			case PoolType.RailgunShots: return PoolType.RailgunImpacts;
-			case PoolType.PlasmaShots: return PoolType.PlasmaImpacts;
-			case PoolType.ProjEnemShot6: return PoolType.ProjEnemShot6Impacts;
-			case PoolType.ProjSeedPods: return PoolType.ProjSeedPodsImpacts;
-        }
-		return PoolType.None;
 	}
 
     public GameObject GetImpactType(HealthManager hm) {
@@ -1465,7 +1387,7 @@ public class Const : MonoBehaviour {
 			// UnityEngine.Debug.Log("Number of instantiated objects to instantiate later: " + instantiatedFound.Count.ToString());
 
 			//matchTimer.Start();
-			index = 5; // 0 = saveableType, 1 = SaveID, 2 = instantiated, 3 = constLookupTable, 4 = constLookupIndex 
+			index = 3; // 0 = saveableType, 1 = SaveID, 2 = instantiated
 			bool[] alreadyCheckedThisSaveableGameObject = new bool[saveableGameObjects.Count];
 			for (i=0;i<alreadyCheckedThisSaveableGameObject.Length;i++) {
 				alreadyCheckedThisSaveableGameObject[i] = false; // Reset the list
@@ -1490,10 +1412,8 @@ public class Const : MonoBehaviour {
 						// saveableType; index++;     // 0
 						// SaveID; index++;           // 1
 						// instantiated; index++;     // 2
-						// constLookupTable; index++; // 3
-						// constLookupIndex; index++; // 4
-						// Feed index value of 5 here:
-						SaveObject.Load(currentGameObject,ref entries,5);
+						// Feed index value of 3 here:
+						SaveObject.Load(currentGameObject,ref entries,3);
 						alreadyCheckedThisSaveableGameObject[j] = true; // Huge time saver right here!
 						break;
 					}
@@ -1540,10 +1460,8 @@ public class Const : MonoBehaviour {
 							// saveableType; index++;     // 0
 							// SaveID; index++;           // 1
 							// instantiated; index++;     // 2
-							// constLookupTable; index++; // 3
-							// constLookupIndex; index++; // 4
-							// Feed index value of 5 here:
-							if (instantiatedObject != null) SaveObject.Load(instantiatedObject,ref entries,5); // Load it
+							// Feed index value of 3 here:
+							if (instantiatedObject != null) SaveObject.Load(instantiatedObject,ref entries,3); // Load it
 						}
 					}
 					loadPercentText.text = "(6) " + ((i / instantiatedFound.Count).ToString("00.0000"));
@@ -1669,10 +1587,5 @@ public class Const : MonoBehaviour {
 		}
 
 		return retval;
-	}
-
-	public void ApplyImpactForce(GameObject hitObject, float impactVelocity, Vector3 attackNormal, Vector3 hitPoint) {
-		Rigidbody rbody = hitObject.GetComponent<Rigidbody>();
-		if (rbody != null && impactVelocity > 0) rbody.AddForceAtPosition((attackNormal*impactVelocity*30f),hitPoint);
 	}
 }

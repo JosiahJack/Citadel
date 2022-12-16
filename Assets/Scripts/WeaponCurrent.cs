@@ -40,7 +40,7 @@ public class WeaponCurrent : MonoBehaviour {
 	public AudioClip WeaponChangeSFX;
 	public GameObject reloadContainer;
 
-	[HideInInspector] public Vector3 reloadContainerOrigin;
+	[HideInInspector] public Vector3 reloadContainerOrigin; // save
 	[HideInInspector] public bool justChangedWeap = true; // save
 	[HideInInspector] public int weaponCurrent = new int(); // save
 	[HideInInspector] public int weaponIndex = new int(); // save
@@ -52,12 +52,12 @@ public class WeaponCurrent : MonoBehaviour {
 	[HideInInspector] public bool bottomless = false; // don't use any ammo (and energy weapons no energy) // save
 	[HideInInspector] public bool redbull = false; // don't use any energy // save
 	[HideInInspector] public float reloadFinished; // save
-	[HideInInspector] public float reloadContainerDropAmount = 0.64f;
+	[HideInInspector] public float reloadContainerDropAmount = 0.66f;
 	[HideInInspector] public float reloadLerpValue; // save
 	[HideInInspector] public float lerpStartTime; // save
 	[HideInInspector] public float targetY; // save
-	[HideInInspector] public int weaponCurrentPending;
-	[HideInInspector] public int weaponIndexPending;
+	[HideInInspector] public int weaponCurrentPending; // save
+	[HideInInspector] public int weaponIndexPending; // save
 
 	public static WeaponCurrent a;
 
@@ -130,10 +130,14 @@ public class WeaponCurrent : MonoBehaviour {
 				Inventory.a.UpdateAmmoText();
 				SetAllViewModelsDeactive();
 				UpdateWeaponViewModels();
-				// Update the ammo icon
 				if (weaponCurrent >= 0) {
+					// Update the ammo icons.
 					ammoIconManLH.SetAmmoIcon(weaponIndex,Inventory.a.wepLoadedWithAlternate[weaponCurrent]);
 					ammoIconManRH.SetAmmoIcon(weaponIndex,Inventory.a.wepLoadedWithAlternate[weaponCurrent]);
+				} else {
+					// Clear the ammo icons.
+					ammoIconManLH.SetAmmoIcon(-1,false);
+					ammoIconManRH.SetAmmoIcon(-1,false);
 				}
 			}
 
@@ -576,18 +580,21 @@ public class WeaponCurrent : MonoBehaviour {
 
 		int j =0;
 		string line = System.String.Empty;
-		line = wc.weaponCurrent.ToString(); // int
-		line += Utils.splitChar + wc.weaponIndex.ToString(); // int
-		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.FloatToString(wc.weaponEnergySetting[j]); } // float
-		for (j=0;j<7;j++) { line += Utils.splitChar + wc.currentMagazineAmount[j].ToString(); } // int
-		for (j=0;j<7;j++) { line += Utils.splitChar + wc.currentMagazineAmount2[j].ToString(); } // int
-		line += Utils.splitChar + wc.lastIndex.ToString(); // int
-		line += Utils.splitChar + Utils.BoolToString(wc.bottomless); // bool
-		line += Utils.splitChar + Utils.BoolToString(wc.redbull); // bool
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wc.reloadFinished); // float
-		line += Utils.splitChar + Utils.FloatToString(wc.reloadLerpValue); // float
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wc.lerpStartTime); // float
-		line += Utils.splitChar + Utils.FloatToString(wc.targetY); // float
+		line = Utils.UintToString(wc.weaponCurrent);
+		line += Utils.splitChar + Utils.UintToString(wc.weaponIndex);
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.FloatToString(wc.weaponEnergySetting[j]); }
+		for (j=0;j<7;j++) { line += Utils.splitChar + wc.currentMagazineAmount[j].ToString(); }
+		for (j=0;j<7;j++) { line += Utils.splitChar + wc.currentMagazineAmount2[j].ToString(); }
+		line += Utils.splitChar + Utils.UintToString(wc.lastIndex);
+		line += Utils.splitChar + Utils.BoolToString(wc.bottomless);
+		line += Utils.splitChar + Utils.BoolToString(wc.redbull);
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wc.reloadFinished);
+		line += Utils.splitChar + Utils.FloatToString(wc.reloadLerpValue);
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wc.lerpStartTime);
+		line += Utils.splitChar + Utils.FloatToString(wc.targetY);
+		line += Utils.splitChar + Utils.UintToString(wc.weaponCurrentPending);
+		line += Utils.splitChar + Utils.UintToString(wc.weaponIndexPending);
+		line += Utils.splitChar + Utils.SaveTransform(wc.reloadContainer.transform);
 		return line;
 	}
 
@@ -609,6 +616,9 @@ public class WeaponCurrent : MonoBehaviour {
 		wc.reloadLerpValue = Utils.GetFloatFromString(entries[index]); index++; // %
 		wc.lerpStartTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		wc.targetY = Utils.GetFloatFromString(entries[index]); index++;
+		wc.weaponCurrentPending = Utils.GetIntFromString(entries[index] ); index++;
+		wc.weaponIndexPending = Utils.GetIntFromString(entries[index] ); index++;
+		index = Utils.LoadTransform(wc.reloadContainer,ref entries,index);
 		wc.justChangedWeap = true;
 		return index;
 	}

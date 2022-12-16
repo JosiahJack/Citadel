@@ -8,7 +8,8 @@ public enum SaveableType : byte {Transform,Player,Useable,Grenade,NPC,
                                  PuzzleGrid,PuzzleWire,TCounter,TGravity,
                                  MChanger,RadTrig,GravPad,TransformParentless,
                                  ChargeStation,Light,LTimer,Camera,
-                                 DelayedSpawn,SecurityCamera,Trigger};
+                                 DelayedSpawn,SecurityCamera,Trigger,
+                                 Projectile};
 public enum BodyState : byte {Standing,Crouch,CrouchingDown,StandingUp,Prone,
                               ProningDown,ProningUp};
 public enum Handedness : byte {Center,LH,RH};
@@ -41,24 +42,20 @@ public enum AudioLogType : byte {TextOnly,Normal,Email,Papers,Vmail};
 public enum EnergyType : byte {Battery,ChargeStation};
 
 // Pool references
-public enum PoolType {None,SparqImpacts,CameraExplosions,ProjEnemShot2,
-                      SparksSmall,BloodSpurtSmall,BloodSpurtSmallYellow,
+public enum PoolType {None,SparqImpacts,CameraExplosions,SparksSmall,
+                      BloodSpurtSmall,BloodSpurtSmallYellow,
                       BloodSpurtSmallGreen,SparksSmallBlue,HopperImpact,
 					  GrenadeFragExplosions,Vaporize,BlasterImpacts,IonImpacts,
-					  MagpulseShots,MagpulseImpacts,StungunShots,StungunImpacts,
-                      RailgunShots,RailgunImpacts,PlasmaShots,PlasmaImpacts,
-                      ProjEnemShot6,ProjEnemShot6Impacts,ProjEnemShot2Impacts,
-					  ProjSeedPods,ProjSeedPodsImpacts,TempAudioSources,
-                      GrenadeEMPExplosions,ProjEnemShot4,ProjEnemShot4Impacts,
-                      CrateExplosions,GrenadeFragLive,
-                      CyborgAssassinThrowingStars,ConcussionLive,EMPLive,
-                      GasLive,GasExplosions,CorpseHit,NPCMagpulseShots,
-                      NPCRailgunShots,LeafBurst,MutationBurst,GraytationBurst,
-                      BarrelExplosions,CyberPlayerShots,CyberDogShots,
-					  CyberReaverShots,BulletHoleLarge,BulletHoleScorchLarge,
-                      BulletHoleScorchSmall,BulletHoleSmall,BulletHoleTiny,
-                      BulletHoleTinySpread,CyberPlayerIceShots,CyberDissolve,
-                      TargetIDInstances,AutomapBotOverlays,
+					  MagpulseImpacts,StungunImpacts,RailgunImpacts,
+                      PlasmaImpacts,ProjEnemShot6Impacts,ProjEnemShot2Impacts,
+					  ProjSeedPodsImpacts,TempAudioSources,
+                      GrenadeEMPExplosions,ProjEnemShot4Impacts,CrateExplosions,
+                      GrenadeFragLive,ConcussionLive,EMPLive,GasLive,
+                      GasExplosions,CorpseHit,LeafBurst,MutationBurst,
+                      GraytationBurst,BarrelExplosions,BulletHoleLarge,
+                      BulletHoleScorchLarge,BulletHoleScorchSmall,
+                      BulletHoleSmall,BulletHoleTiny,BulletHoleTinySpread,
+                      CyberDissolve,TargetIDInstances,AutomapBotOverlays,
                       AutomapCyborgOverlays,AutomapMutantOverlays,
                       AutomapCameraOverlays};
 

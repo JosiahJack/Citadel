@@ -12,7 +12,8 @@ public class PooledItemDestroy : MonoBehaviour {
 
 	IEnumerator DestroyBackToPool () {
 		if (!doneYet) {
-			yield return new WaitForSeconds(itemLifeTime);
+			yield return new WaitForSeconds(itemLifeTime); // Keep alive.
+
 			if (onlyOnce) doneYet = true;
 			gameObject.SetActive(false);
 		}
