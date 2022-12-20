@@ -303,7 +303,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public float earthShMaxTime = 60.0f;
 	[HideInInspector] public float earthShDefaultTime = 10.0f;
 	[HideInInspector] public float globalShakeDistance = 0.3f;
-	[HideInInspector] public float globalShakeForce = 5f;
+	[HideInInspector] public float globalShakeForce = 1f;
 	[HideInInspector] public Quaternion quaternionIdentity;
 	[HideInInspector] public Vector3 vectorZero;
 	[HideInInspector] public Vector3 vectorOne;
@@ -1279,25 +1279,35 @@ public class Const : MonoBehaviour {
 	public IEnumerator LoadRoutine(int saveFileIndex, bool actual) {
 		Stopwatch loadTimer = new Stopwatch();
 		Stopwatch loadUpdateTimer = new Stopwatch(); // For loading % indicator.
-		//Stopwatch matchTimer = new Stopwatch();
+		Stopwatch matchTimer = new Stopwatch();
 		loadTimer.Start();
+
+		// Turn off player camera to hide things.
 		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = false;
+
+		// Ensure that main menu is off if loading from Load page.
 		PauseScript.a.mainMenu.SetActive(false);
+
+		// Enable pause to make sure that nothing goes on during couroutine.
 		PauseScript.a.PauseEnable();
+
+		// Enable loading texts and unlock cursor.
 		PauseScript.a.Loading();
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
+
+		// Clear the HUD
 		MFDManager.a.TabReset(true);
 		MFDManager.a.TabReset(false);
+		MFDManager.a.DisableAllCenterTabs();
 		loadPercentText.text = "(1) --.--";
-		yield return null;
+		yield return null; // Update the view to show all this above.
 
 		string readline;
-		int currentline = 0;
 		int numSaveablesFromSavefile = 0;
 		int i,j;
 		GameObject currentGameObject = null;
-		loadPercentText.text = "(2) --.--";
+		loadPercentText.text = "(2) --.-0";
 		yield return null; // to update the sprint
 
 		// Find all gameobjects with SaveObject script attached
@@ -1320,59 +1330,36 @@ public class Const : MonoBehaviour {
 				sr.Close();
 			}
 
-			loadPercentText.text = "(3) --.--";
+			loadPercentText.text = "(3) --.00";
 			yield return null; // to update the sprint
-			numSaveablesFromSavefile = readFileList.Count;
+			int numSaveFileLines = readFileList.Count;
+			numSaveablesFromSavefile = numSaveFileLines - 3;
 
-			// readFileList[currentline] == saveName;  Not important, we are loading already now
-			currentline++; // line is over, now we are at 1
-			index = 0; // I already did this but just to be sure
+			// readFileList[0] == saveName;  Not important, we are loading already now
+			//index = 0; // Uncomment this if we pull in the saveName from this line for something.
 
 			// Read in global time and pause data
-			entries = readFileList[currentline].Split(csplit);
+			entries = readFileList[1].Split(csplit);
 			PauseScript.a.relativeTime = Utils.GetFloatFromString(entries[index]); // the global time from which everything checks it's somethingerotherFinished timer states
-			currentline++; // line is over, now we are at 2
 			index = 0; // reset before starting next line
 
 			// Read in global states, difficulties, and quest mission bits.
-			entries = readFileList[currentline].Split(csplit);
+			entries = readFileList[2].Split(csplit);
 			index = LevelManager.Load(LevelManager.a.gameObject,ref entries,index);
 			index = questData.Load(ref entries,index);
 			difficultyCombat = Utils.GetIntFromString(entries[index]); index++;
 			difficultyMission = Utils.GetIntFromString(entries[index]); index++;
 			difficultyPuzzle = Utils.GetIntFromString(entries[index]); index++;
 			difficultyCyber = Utils.GetIntFromString(entries[index]); index++;
-			currentline++; // line is over, now we are at 3
 
-			if (currentline != 3) UnityEngine.Debug.Log("ERROR: currentline wasn't 3 before iterating through saveObjects!");
-			//int[] lookupList = new int[(numSaveablesFromSavefile-currentline)];
-			//SaveObject[] sos = new SaveObject[saveableGameObjects.Count];
-			loadPercentText.text = "(4) --.--";
+			loadPercentText.text = "(4) 00.00";
 			yield return null;
 
-			// get the existing IDs
-			 // for (int i=currentline;i<saveableGameObjects.Count;i++) {
-				// sos[i] = saveableGameObjects[i].GetComponent<SaveObject>();
-			 // }
-
-			//int largerCount = numSaveablesFromSavefile - 3;
-			//bool moreObjectsInSave = false;
-			//bool moreObjectsInGame = false;
-			//if ((saveableGameObjects.Count-1) > largerCount) {
-			//	largerCount = (saveableGameObjects.Count - 1);
-			//	moreObjectsInSave = true;
-			//}
-
-			//if (largerCount > (saveableGameObjects.Count - 1)) moreObjectsInGame = true;
-			//UnityEngine.Debug.Log("moreObjectsInSave: " + moreObjectsInSave.ToString());
-			//UnityEngine.Debug.Log("moreObjectsInGame: " + moreObjectsInGame.ToString());
-			//UnityEngine.Debug.Log("largerCount: " + largerCount.ToString());
-
-			int[] readIDs = new int[(numSaveablesFromSavefile-currentline)];
+			int[] readIDs = new int[(numSaveablesFromSavefile)];
 			List<int> instantiatedFound = new List<int>();
 			bool instantiatedCheck;
 			bool instantiatedActive;
-			for (i=currentline;i<(numSaveablesFromSavefile - 3);i++) {
+			for (i=3;i<(numSaveablesFromSavefile);i++) {
 				entries = readFileList[i].Split(csplit);
 				if (entries.Length > 1) {
 					instantiatedCheck = instantiatedActive = false;
@@ -1384,10 +1371,9 @@ public class Const : MonoBehaviour {
 					}
 				}
 			}
-			// UnityEngine.Debug.Log("Number of instantiated objects to instantiate later: " + instantiatedFound.Count.ToString());
 
-			//matchTimer.Start();
-			index = 3; // 0 = saveableType, 1 = SaveID, 2 = instantiated
+			matchTimer.Start();
+			index = 3; 
 			bool[] alreadyCheckedThisSaveableGameObject = new bool[saveableGameObjects.Count];
 			for (i=0;i<alreadyCheckedThisSaveableGameObject.Length;i++) {
 				alreadyCheckedThisSaveableGameObject[i] = false; // Reset the list
@@ -1400,26 +1386,19 @@ public class Const : MonoBehaviour {
 			// The save file will always have more objects in it than in the level since the level is fresh.
 			// When we come across an instantiated object in the saveable file, we need to remember it for later and instantiate them all.
 			loadUpdateTimer.Start(); // For loading update
-			for (i=currentline;i<(numSaveablesFromSavefile - 3);i++) {
+			for (i=3;i<(numSaveablesFromSavefile);i++) {
 				for (j=0;j<(saveableGameObjects.Count);j++) {
 					if (alreadyCheckedThisSaveableGameObject[j]) continue; // skip checking this and doing GetComponent
 					currentGameObject = saveableGameObjects[j];
 					so = currentGameObject.GetComponent<SaveObject>();
 					if(so.SaveID == readIDs[i]) {
 						entries = readFileList[i].Split(csplit);
-						//UnityEngine.Debug.Log("Loading line: " + i.ToString() + " to GameObject named: " + currentGameObject.name + " with SaveID " + so.SaveID.ToString());
-
-						// saveableType; index++;     // 0
-						// SaveID; index++;           // 1
-						// instantiated; index++;     // 2
-						// Feed index value of 3 here:
-						SaveObject.Load(currentGameObject,ref entries,3);
+						SaveObject.Load(currentGameObject,ref entries,3); // Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated
 						alreadyCheckedThisSaveableGameObject[j] = true; // Huge time saver right here!
 						break;
 					}
 				}
-				//UnityEngine.Debug.Log("Loading to saveable object number: ...................................");
-				loadPercentText.text = "(5) " + (i/numSaveablesFromSavefile).ToString("00.00");
+				loadPercentText.text = "(5) " + (i/numSaveFileLines).ToString("00.00");
 				if (loadUpdateTimer.ElapsedMilliseconds > 100) {
 					loadUpdateTimer.Reset();
 					loadUpdateTimer.Start();
@@ -1430,12 +1409,10 @@ public class Const : MonoBehaviour {
 			}
 			loadUpdateTimer.Stop();
 
-
 			int numberOfMissedObjects = 0;
 			for (i=0;i<saveableGameObjects.Count;i++) {
 				if (alreadyCheckedThisSaveableGameObject[i]) continue;
 				numberOfMissedObjects++;
-				//Utils.SafeDestroy(saveableGameObjects[i]);
 			}
 			UnityEngine.Debug.Log("numberOfMissedObjects: "
 								  + numberOfMissedObjects.ToString());
@@ -1456,12 +1433,7 @@ public class Const : MonoBehaviour {
 							if (consttable == 0) prefabReferenceGO = Const.a.useableItems[constdex];
 							else if (consttable == 1) prefabReferenceGO = Const.a.npcPrefabs[constdex];
 							if (prefabReferenceGO != null) instantiatedObject = Instantiate(prefabReferenceGO,Const.a.vectorZero,quaternionIdentity) as GameObject; // Instantiate at generic location
- 
-							// saveableType; index++;     // 0
-							// SaveID; index++;           // 1
-							// instantiated; index++;     // 2
-							// Feed index value of 3 here:
-							if (instantiatedObject != null) SaveObject.Load(instantiatedObject,ref entries,3); // Load it
+							if (instantiatedObject != null) SaveObject.Load(instantiatedObject,ref entries,3); // Load it.  Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated
 						}
 					}
 					loadPercentText.text = "(6) " + ((i / instantiatedFound.Count).ToString("00.0000"));
@@ -1474,7 +1446,8 @@ public class Const : MonoBehaviour {
 					}
 				}
 			}
-			//matchTimer.Stop();
+			loadUpdateTimer.Stop();
+			matchTimer.Stop();
 		}
 
 		loadPercentText.text = "(7)100.00%";
@@ -1482,7 +1455,7 @@ public class Const : MonoBehaviour {
 		GoIntoGame();
 		yield return null;
 		loadTimer.Stop();
-		//UnityEngine.Debug.Log("Matching index loop de loop time: " + matchTimer.Elapsed.ToString());
+		UnityEngine.Debug.Log("Matching index loop de loop time: " + matchTimer.Elapsed.ToString());
 		UnityEngine.Debug.Log("Loading time: " + loadTimer.Elapsed.ToString());
 	}
 

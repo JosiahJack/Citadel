@@ -49,7 +49,14 @@ public class SearchableItem : MonoBehaviour {
 
 	// Save searchable data
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
-		SearchableItem se = go.GetComponent<SearchableItem>();
+		PrefabIdentifier pid = go.GetComponent<PrefabIdentifier>();
+		SearchableItem se;
+		if (pid.constIndex == 467) { // se_corpse_eaten
+			se = go.transform.GetChild(0).GetComponent<SearchableItem>();
+		} else {
+			se = go.GetComponent<SearchableItem>();
+		}
+
 		if (se == null) {
 			Debug.Log("SearchableItem missing on savetype of SearchableItem!  GameObject.name: " + go.name);
 			return Utils.DTypeWordToSaveString("uubbuuuuuuuuuuuuuuuuuuuuuuuuuuuuub");
@@ -91,11 +98,6 @@ public class SearchableItem : MonoBehaviour {
 		line += Utils.splitChar + Utils.UintToString(se.randomItemDropChance[5]);
 		line += Utils.splitChar + Utils.UintToString(se.randomItemDropChance[6]);
 		line += Utils.splitChar + Utils.BoolToString(se.searchableInUse);
-		if (prefID.constIndex == 464) { // Briefcase with its gibs.
-			line += Utils.splitChar + Utils.SaveChildGOState(go,0);
-			line += Utils.splitChar + Utils.SaveChildGOState(go,1);
-			line += Utils.splitChar + Utils.SaveChildGOState(go,2);
-		}
 		return line;
 	}
 
@@ -138,13 +140,6 @@ public class SearchableItem : MonoBehaviour {
 		se.randomItemDropChance[5] = Utils.GetIntFromString(entries[index]); index++;
 		se.randomItemDropChance[6] = Utils.GetIntFromString(entries[index]); index++;
 		se.searchableInUse = Utils.GetBoolFromString(entries[index]); index++; // bool - is this being searched by Player?
-
-		if (prefID.constIndex == 464) { // Briefcase with its gibs.
-			index = Utils.LoadChildGOState(go.transform.GetChild(0).gameObject,ref entries,index);
-			index = Utils.LoadChildGOState(go.transform.GetChild(1).gameObject,ref entries,index);
-			index = Utils.LoadChildGOState(go.transform.GetChild(2).gameObject,ref entries,index);
-		}
-
 		if (se.searchableInUse) {
 			int numberFoundContents = 0;
 			for (int i=3;i>=0;i--) {

@@ -663,7 +663,14 @@ public class HealthManager : MonoBehaviour {
 
 	// Generic health info string
 	public static string Save(GameObject go) {
-		HealthManager hm = go.GetComponent<HealthManager>();
+		PrefabIdentifier pid = go.GetComponent<PrefabIdentifier>();
+		HealthManager hm;
+		if (pid.constIndex == 467) { // se_corpse_eaten
+			hm = go.transform.GetChild(0).GetComponent<HealthManager>();
+		} else {
+			hm = go.GetComponent<HealthManager>();
+		}
+
 		if (hm == null) {
 			Debug.Log("HealthManager missing on savetype of HealthManager!  GameObject.name: " + go.name);
 			return "0000.00000|0000.00000|0|0|0";
@@ -677,7 +684,10 @@ public class HealthManager : MonoBehaviour {
 		line += Utils.splitChar + Utils.BoolToString(hm.deathDone); // bool - are we dead yet?
 		line += Utils.splitChar + Utils.BoolToString(hm.god); // are we invincible? - we can save cheats?? OH WOW!
 		line += Utils.splitChar + Utils.BoolToString(hm.teleportDone); // did we already teleport?
-
+		line += Utils.splitChar + Utils.UintToString(hm.gibObjects.Length);
+		for (int i=0;i<go.transform.childCount; i++) {
+			line += Utils.splitChar + Utils.SaveChildGOState(go,i);
+		}
 		return line;
 	}
 
@@ -691,6 +701,23 @@ public class HealthManager : MonoBehaviour {
 		hm.god = Utils.GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
 		hm.teleportDone = Utils.GetBoolFromString(entries[index]); index++; // did we already teleport?
 		hm.AwakeFromLoad();
+		int numChildren = hm.gibObjects.Length;
+		int numChildrenFromSave = Utils.GetIntFromString(entries[index]); index++;
+		if (numChildren != go.transform.childCount) {
+			Debug.Log("BUG: HealthManager gibObjects.Length != child count on"
+					  + go.name + "!");
+			return index + numChildrenFromSave;
+		}
+
+		if (numChildren != numChildrenFromSave) {
+			Debug.Log("BUG: HealthManager gibObjects.Length != children from"
+					  + " savefile on " + go.name + "!");
+			return index + numChildrenFromSave;
+		}
+
+		for (int i=0; i<numChildren; i++) {
+			index = Utils.LoadChildGOState(go.transform.GetChild(i).gameObject,ref entries,index);
+		}
 		return index;
 	}
 }
