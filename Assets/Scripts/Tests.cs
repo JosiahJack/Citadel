@@ -332,6 +332,25 @@ public class Tests : MonoBehaviour {
 					}
 					if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + bsw.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
 				}
+
+				if (bsw.GetComponent<MeshRenderer>() == null
+					&& (bsw.changeMatOnActive || bsw.blinkWhenActive)) {
+					UnityEngine.Debug.Log("BUG: ButtonSwitch missing component for mRenderer, "
+							  			  + "name: " + bsw.gameObject.name);
+				}
+
+				if (bsw.mainSwitchMaterial == null
+					&& (bsw.changeMatOnActive || bsw.blinkWhenActive)) {
+					UnityEngine.Debug.Log("BUG: ButtonSwitch missing manually assigned reference"
+										  + "for mainSwitchMaterial, name: " + bsw.gameObject.name);
+				}
+
+				if (bsw.alternateSwitchMaterial == null
+					&& (bsw.changeMatOnActive || bsw.blinkWhenActive)) {
+					UnityEngine.Debug.Log("BUG: ButtonSwitch missing manually assigned reference "
+										  + "for alternateSwitchMaterial, name: "
+										  + bsw.gameObject.name);
+				}
 			}
 
 			script = "ChargeStation";
@@ -594,6 +613,19 @@ public class Tests : MonoBehaviour {
 						if (mrend.sharedMaterials[j] == null) { UnityEngine.Debug.Log(script + " on " + allGOs[i].name + " has missing material " + j.ToString() + " with parent of " + allGOs[i].transform.parent.name); issueCount_MeshRenderer++; }
 					}
 				}
+			}
+
+			script = "BioMonitor";
+			BioMonitor bio = allGOs[i].GetComponent<BioMonitor>();
+			if (bio != null) {
+				if (bio.heartRate == null) UnityEngine.Debug.Log("BUG: BioMonitor missing manually assigned reference for heartRate");
+				if (bio.patchEffects == null) UnityEngine.Debug.Log("BUG: BioMonitor missing manually assigned reference for patchEffects");
+				if (bio.heartRateText == null) UnityEngine.Debug.Log("BUG: BioMonitor missing manually assigned reference for heartRateText");
+				if (bio.header == null) UnityEngine.Debug.Log("BUG: BioMonitor missing manually assigned reference for header");
+				if (bio.patchesActiveText == null) UnityEngine.Debug.Log("BUG: BioMonitor missing manually assigned reference for patchesActiveText");
+				if (bio.bpmText == null) UnityEngine.Debug.Log("BUG: BioMonitor missing manually assigned reference for bpmText");
+				if (bio.fatigueDetailText == null) UnityEngine.Debug.Log("BUG: BioMonitor missing manually assigned reference for fatigueDetailText");
+				if (bio.fatigue == null) UnityEngine.Debug.Log("BUG: BioMonitor missing manually assigned reference for fatigue");
 			}
 
 			//script = "Transform";

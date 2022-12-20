@@ -2,6 +2,23 @@
 using System.Collections;
 
 public class ButtonSwitch : MonoBehaviour {
+	// Individually set values per prefab isntance within the scene
+	public int securityThreshhold = 100;  // save, If security level is not <= this level (100), this is unusable until security falls.
+	public string target; // save
+	public string argvalue; // save
+	public string message; // save
+	public int messageIndex = -1; // save
+	public float delay = 0f; // save
+	public AudioClip SFX;
+	/*[DTValidator.Optional] */public AudioClip SFXLocked;
+	public bool blinkWhenActive; // save
+	public bool changeMatOnActive = true; // save
+	public bool animateModel = false; // save
+	public bool locked = false; // save
+	public string lockedMessage; // save
+	public int lockedMessageLingdex = 193; // save
+	public bool active; // save
+
 	// External references, optional depending on (changeMatOnActive || blinkWhenActive)
 	/*[DTValidator.Optional] */public Material mainSwitchMaterial;
 	/*[DTValidator.Optional] */public Material alternateSwitchMaterial;
@@ -11,24 +28,7 @@ public class ButtonSwitch : MonoBehaviour {
 	private MeshRenderer mRenderer; // Optional depending on (changeMatOnActive || blinkWhenActive)
 	private Animator anim;
 	private GameObject player; // Set on use, no need for initialization check.
-
-	// Individually set values per prefab isntance within the scene
-	public int securityThreshhold = 100; // If security level is not <= this level (100), this is unusable until security falls.
-	public string target;
-	public string argvalue;
-	public string message;
-	public int messageIndex = -1;
-	public float delay = 0f;
-	public AudioClip SFX;
-	/*[DTValidator.Optional] */public AudioClip SFXLocked;
-	public float tickTime = 1.5f;
-	public bool blinkWhenActive;
-	public bool changeMatOnActive = true;
-	public bool animateModel = false;
-	public bool locked = false; // save
-	public string lockedMessage;
-	public int lockedMessageLingdex = 193;
-	public bool active; // save
+	private float tickTime = 1.5f;
 
 	// Externally modified
 	[HideInInspector] public float delayFinished; // save
@@ -40,12 +40,9 @@ public class ButtonSwitch : MonoBehaviour {
 		if (SFXSource == null) Debug.Log("BUG: ButtonSwitch missing component for SFXSource");
 		else SFXSource.playOnAwake = false;
 		mRenderer = GetComponent<MeshRenderer>();
-		if (mRenderer == null && (changeMatOnActive || blinkWhenActive)) Debug.Log("BUG: ButtonSwitch missing component for mRenderer");
-		if (mainSwitchMaterial == null && (changeMatOnActive || blinkWhenActive)) Debug.Log("BUG: ButtonSwitch missing manually assigned reference for mainSwitchMaterial");
-		if (alternateSwitchMaterial == null && (changeMatOnActive || blinkWhenActive)) Debug.Log("BUG: ButtonSwitch missing manually assigned reference for alternateSwitchMaterial");
 		delayFinished = 0; // prevent using targets on awake
 		if (animateModel) anim = GetComponent<Animator>();
-		if (active) tickFinished = PauseScript.a.relativeTime + tickTime + Random.value;
+		if (active) tickFinished = PauseScript.a.relativeTime + 1.5f + Random.value;
 	}
 
 	public void Use (UseData ud) {
@@ -149,11 +146,22 @@ public class ButtonSwitch : MonoBehaviour {
 		ButtonSwitch bs = go.GetComponent<ButtonSwitch>();
 		if (bs == null) { // bs?  null??  that's bs
 			Debug.Log("ButtonSwitch missing on savetype of ButtonSwitch!  GameObject.name: " + go.name);
-			return "0|0|0|0000.00000|0000.00000";
+			return Utils.DTypeWordToSaveString("usssufbbbbsubbff");
 		}
 
-		string line = System.String.Empty;		
-		line = Utils.BoolToString(bs.locked); // bool - is this switch locked
+		string line = System.String.Empty;
+		line = Utils.UintToString(bs.securityThreshhold);
+		line += Utils.splitChar + bs.target;
+		line += Utils.splitChar + bs.argvalue;
+		line += Utils.splitChar + bs.message;
+		line += Utils.splitChar + Utils.UintToString(bs.messageIndex);
+		line += Utils.splitChar + Utils.FloatToString(bs.delay);
+		line += Utils.splitChar + Utils.BoolToString(bs.blinkWhenActive);
+		line += Utils.splitChar + Utils.BoolToString(bs.changeMatOnActive);
+		line += Utils.splitChar + Utils.BoolToString(bs.animateModel);
+		line += Utils.splitChar + Utils.BoolToString(bs.locked); // bool - is this switch locked
+		line += Utils.splitChar + bs.lockedMessage;
+		line += Utils.splitChar + Utils.UintToString(bs.lockedMessageLingdex);
 		line += Utils.splitChar + Utils.BoolToString(bs.active); // bool - is the switch flashing?
 		line += Utils.splitChar + Utils.BoolToString(bs.alternateOn); // bool - is the flashing material on?
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(bs.delayFinished); // float - time before firing targets
@@ -163,9 +171,20 @@ public class ButtonSwitch : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		ButtonSwitch bs = go.GetComponent<ButtonSwitch>(); // what a load of bs
-		if (bs == null || index < 0 || entries == null) return index + 5;
+		if (bs == null || index < 0 || entries == null) return index + 16;
 
+		bs.securityThreshhold = Utils.GetIntFromString(entries[index]); index++;
+		bs.target = entries[index]; index++;
+		bs.argvalue = entries[index]; index++;
+		bs.message = entries[index]; index++;
+		bs.messageIndex = Utils.GetIntFromString(entries[index]); index++;
+		bs.delay = Utils.GetFloatFromString(entries[index]); index++;
+		bs.blinkWhenActive = Utils.GetBoolFromString(entries[index]); index++;
+		bs.changeMatOnActive = Utils.GetBoolFromString(entries[index]); index++;
+		bs.animateModel = Utils.GetBoolFromString(entries[index]); index++;
 		bs.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - is this switch locked
+		bs.lockedMessage = entries[index]; index++;
+		bs.lockedMessageLingdex = Utils.GetIntFromString(entries[index]); index++;
 		bs.active = Utils.GetBoolFromString(entries[index]); index++; // bool - is the switch flashing?
 		bs.alternateOn = Utils.GetBoolFromString(entries[index]); index++; // bool - is the flashing material on?
 		bs.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before firing targets

@@ -97,8 +97,10 @@ public class HardwareButton : MonoBehaviour {
 		if (Inventory.a.hardwareIsActive[6]) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[0]);
 			bioMonitorContainer.SetActive(false);
+			if (BiomonitorGraphSystem.a != null) BiomonitorGraphSystem.a.ClearGraphs();
 		} else {
 			Utils.PlayOneShotSavable(SFX,SFXClip[0]);
+			if (BiomonitorGraphSystem.a != null) BiomonitorGraphSystem.a.ClearGraphs();
 			bioMonitorContainer.SetActive(true);
 		}
 		Inventory.a.hardwareIsActive[6] = !Inventory.a.hardwareIsActive[6];
@@ -109,6 +111,7 @@ public class HardwareButton : MonoBehaviour {
 	public void BioOff() {
 		Inventory.a.hardwareIsActive[6] = false;
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[6], Inventory.a.hardwareVersionSetting[6],0);
+		if (BiomonitorGraphSystem.a != null) BiomonitorGraphSystem.a.ClearGraphs();
 		bioMonitorContainer.SetActive(false);
 	}
 

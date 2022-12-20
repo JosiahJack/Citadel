@@ -54,7 +54,9 @@ public class BiomonitorGraphSystem : MonoBehaviour {
 
     // Add a data point to a graph.
     public void Graph(int index, float val) {
-        graphs[index].Push(val);
+        //if (!gameObject.activeSelf) return; // Commented out to try to have values update so toggling will look correct.
+
+        graphs[index].Push(val,gameObject.activeSelf);
     }
 
     // Resets graph data.
@@ -122,7 +124,7 @@ public class BiomonitorGraphSystem : MonoBehaviour {
         }
 
         // Add a data point to the beginning of the graph
-        public void Push(float val) {
+        public void Push(float val, bool doDraw) {
             if (autoScale && (val > max || val < min)) SetMinMax(Mathf.Min(val, min), Mathf.Max(val, max));
             currentIndex = (currentIndex + 1) % values.Length;
             values[currentIndex] = val;
@@ -144,7 +146,7 @@ public class BiomonitorGraphSystem : MonoBehaviour {
             int y1 = (int)(Mathf.InverseLerp(min, max, nextVal) * BiomonitorGraphSystem.a.graphHeight); // Flip the y coordinate to start at the bottom
             y0 = y0 >= BiomonitorGraphSystem.a.graphHeight ? BiomonitorGraphSystem.a.graphHeight - 1 : y0; // Prevent wraparound to zero
             y1 = y1 >= BiomonitorGraphSystem.a.graphHeight ? BiomonitorGraphSystem.a.graphHeight - 1 : y1; // Prevent wraparound to zero
-            DrawLine(target, 0, y0, 1, y1, color);
+            if (doDraw) DrawLine(target, 0, y0, 1, y1, color);
         }
 
         public void Clear() {

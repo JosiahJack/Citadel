@@ -587,26 +587,37 @@ public class MFDManager : MonoBehaviour  {
 	void BioMonitorGraphUpdate() {
 		if (BiomonitorGraphSystem.a == null) return;
 
-		fatigueFactor = (((PlayerMovement.a.fatigue / 100f) * 150f) + graphAdd) / 60f; // Apply percent fatigued to 200bpm max heart rate with baseline 50bpm.
+		// Energy Usage
+		// --------------------------------------------------------------------
+		BiomonitorGraphSystem.a.Graph(0,((PlayerEnergy.a.drainJPM/449f)*2f)-1f); // Take percentage of max JPM drain per second (449) and apply it to a scale of �1.0
+
+		// Chi Wave
+		// --------------------------------------------------------------------
+		// Different when genius patch active
+		if (PlayerPatch.a.geniusFinishedTime > PauseScript.a.relativeTime) {
+			BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 3f) + UnityEngine.Random.Range(-0.3f,0.3f));
+		} else {
+			BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 1f));
+		}
+
+		// ECG
+		// --------------------------------------------------------------------
+		// Apply percent fatigued to 200bpm max heart rate with baseline 50bpm.
+		fatigueFactor = (((PlayerMovement.a.fatigue / 100f) * 120f) + graphAdd) / 60f;
 		if (beatFinished < PauseScript.a.relativeTime) {
 			beatFinished = PauseScript.a.relativeTime + (1f/fatigueFactor); // Adjust into seconds and add to game timer.
 		}
 
-        if (biograph.activeSelf) BiomonitorGraphSystem.a.Graph(0,((PlayerEnergy.a.drainJPM/449f)*2f)-1f); // Take percentage of max JPM drain per second (449) and apply it to a scale of �1.0
-
-		// Chi wave is different when on genius patch
-		if (PlayerPatch.a.geniusFinishedTime > PauseScript.a.relativeTime) {
-			if (biograph.activeSelf) BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 3f) + UnityEngine.Random.Range(-0.3f,0.3f));
-		} else {
-			if (biograph.activeSelf) BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 1f));
-		}
-
+		// Create shifted sine wave for heart beat.
 		beatShift = (beatFinished - PauseScript.a.relativeTime)/(1f/fatigueFactor);
-		if (beatShift > 0.8f) {
-			ecgValue = Mathf.Sin(beatShift * freq);
-		} else ecgValue = 0;
-		if (ecgValue > beatThresh || ecgValue < (beatThresh * -1f)) ecgValue += UnityEngine.Random.Range((beatVariation * -1f),beatVariation); // Inject variation when beating
-        if (biograph.activeSelf) BiomonitorGraphSystem.a.Graph(2, ecgValue);
+		if (beatShift > 0.8f) ecgValue = Mathf.Sin(beatShift * freq);
+		else ecgValue = 0;
+
+		 // Inject variation when beating
+		if (ecgValue > beatThresh || ecgValue < (beatThresh * -1f)) {
+			ecgValue += UnityEngine.Random.Range((beatVariation * -1f),beatVariation);
+		}
+		BiomonitorGraphSystem.a.Graph(2, ecgValue);
 	}
 
 	public void DrawTicks(bool health) {

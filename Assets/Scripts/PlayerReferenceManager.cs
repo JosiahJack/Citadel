@@ -78,6 +78,7 @@ public class PlayerReferenceManager : MonoBehaviour {
 		index = WeaponCurrent.Load(PRman.playerInventory,ref entries,index);
 		index = WeaponFire.Load(PRman.playerCapsuleMainCameraGunCamera,ref entries,index);
 		index = MFDManager.Load(PRman.playerMFDManager,ref entries,index);
+		if (BiomonitorGraphSystem.a != null) BiomonitorGraphSystem.a.ClearGraphs();
 		return index;
 	}
 }

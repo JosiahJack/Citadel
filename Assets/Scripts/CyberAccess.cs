@@ -14,7 +14,7 @@ public class CyberAccess : MonoBehaviour {
 			if (tio != null) {
 				ud.SetBits(tio);
 			} else {
-				Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
+				Debug.Log("BUG: no TargetIO.cs found on an object with a CyberAccess.cs script!  Trying to call UseTargets without parameters!");
 			}
 			Const.a.UseTargets(ud,target);
 		}

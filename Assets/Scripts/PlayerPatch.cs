@@ -211,12 +211,12 @@ public class PlayerPatch : MonoBehaviour {
 						berserkIncrement++;
 						switch (berserkIncrement) {
 							case 0: berserk.swapTexture = b1; break;
-							case 1: berserk.swapTexture = b2; berserk.effectStrength += 1f; break;
+							case 1: berserk.swapTexture = b2; berserk.IncrementStrength(); break;
 							case 2: berserk.swapTexture = b3; break;
-							case 3: berserk.swapTexture = b4; berserk.effectStrength += 1f; berserk.hithreshold += 0.25f; break;
+							case 3: berserk.swapTexture = b4; berserk.IncrementStats(); break;
 							case 4: berserk.swapTexture = b5; break;
-							case 5: berserk.swapTexture = b6; berserk.effectStrength += 1f; berserk.hithreshold += 0.25f; break;
-							case 6: berserk.swapTexture = b7; berserk.effectStrength += 1f; berserk.hithreshold += 0.25f; break;
+							case 5: berserk.swapTexture = b6; berserk.IncrementStats(); break;
+							case 6: berserk.swapTexture = b7; berserk.IncrementStats(); break;
 						}
 						//gunCamBerserk.swapTexture = berserk.swapTexture;
 						//gunCamBerserk.effectStrength = berserk.effectStrength;
@@ -284,22 +284,21 @@ public class PlayerPatch : MonoBehaviour {
 	}
 
 	void BerserkDisable() {
-		berserk.enabled = false;
 		berserk.Reset();
-		sensaroundCamCenterBerserk.enabled = false;
+		berserk.enabled = false;
 		sensaroundCamCenterBerserk.Reset();
-		sensaroundCamLeftBerserk.enabled = false;
+		sensaroundCamCenterBerserk.enabled = false;
 		sensaroundCamLeftBerserk.Reset();
-		sensaroundCamRightBerserk.enabled = false;
+		sensaroundCamLeftBerserk.enabled = false;
 		sensaroundCamRightBerserk.Reset();
-
+		sensaroundCamRightBerserk.enabled = false;
 	}
+
 	public void DisableAllPatches() {
 		berserkFinishedTime = -1f;
 		berserkIncrementFinishedTime =  -1f;
 		berserkIncrement = 0;
-		berserk.Reset();
-		berserk.enabled = false;
+		BerserkDisable();
 		detoxFinishedTime =  -1f;
 		geniusFinishedTime =  -1f;
 		MouseLookScript.a.geniusActive = false;
@@ -320,7 +319,7 @@ public class PlayerPatch : MonoBehaviour {
 		PlayerPatch pp = go.GetComponent<PlayerPatch>();
 		if (pp == null) {
 			Debug.Log("PlayerEnergy missing on savetype of Player!  GameObject.name: " + go.name);
-			return "0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|-1|-1";
+			return Utils.DTypeWordToSaveString("fffffffffuu");
 		}
 
 		string line = System.String.Empty;

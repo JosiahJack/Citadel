@@ -262,6 +262,8 @@ public static class ConsoleEmulator {
 			if (val < 438 && val >= 0) {
 				SpawnDynamicObject(val,LevelManager.a.currentLevel,true);
 			}
+        } else if (ts.Contains("shake")) {
+			Const.a.Shake(true,-1,-1);
         } else if (ts.Contains("const.")) {
 			string numGet = Regex.Match(ts, @"\d+").Value;
 			int numGot = Int32.Parse(numGet);

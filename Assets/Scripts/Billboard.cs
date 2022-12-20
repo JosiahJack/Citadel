@@ -14,7 +14,11 @@ public class Billboard : MonoBehaviour {
 
 	void Awake () {
 		if (mainCamera == null) mainCamera = GetComponent<Camera> ();
-		if (mainCamera == null) { Debug.Log("BUG: Billboard missing manually assigned reference for mainCamera"); gameObject.SetActive (false); }
+		if (mainCamera == null) { 
+			Debug.Log("BUG: Billboard missing manually assigned reference "
+					  + "for mainCamera");
+			gameObject.SetActive(false);
+		}
 	}
 
 	void Update(){

@@ -70,19 +70,41 @@ public class ChargeStation : MonoBehaviour {
 		ChargeStation chg = go.GetComponent<ChargeStation>();
 		if (chg == null) {
 			UnityEngine.Debug.Log("ChargeStation missing on savetype of ChargeStation!  GameObject.name: " + go.name);
-			return "0000.00000";
+			return Utils.DTypeWordToSaveString("fffbffsssusu");
 		}
 
 		string line = System.String.Empty;
 		line = Utils.SaveRelativeTimeDifferential(chg.nextthink); // float - time before recharged
+		line += Utils.splitChar + Utils.FloatToString(chg.amount);
+		line += Utils.splitChar + Utils.FloatToString(chg.resetTime);
+		line += Utils.splitChar + Utils.BoolToString(chg.requireReset);
+		line += Utils.splitChar + Utils.FloatToString(chg.minSecurityLevel);
+		line += Utils.splitChar + Utils.FloatToString(chg.damageOnUse);
+		line += Utils.splitChar + chg.target;
+		line += Utils.splitChar + chg.argvalue;
+		line += Utils.splitChar + chg.rechargeMsg;
+		line += Utils.splitChar + Utils.UintToString(chg.rechargeMsgLingdex);
+		line += Utils.splitChar + chg.usedMsg;
+		line += Utils.splitChar + Utils.UintToString(chg.usedMsgLingdex);
 		return line;
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		ChargeStation chg = go.GetComponent<ChargeStation>();
-		if (chg == null || index < 0 || entries == null) return index + 1;
+		if (chg == null || index < 0 || entries == null) return index + 12;
 
 		chg.nextthink = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before recharged
+		chg.amount  = Utils.GetFloatFromString(entries[index]); index++;
+		chg.resetTime  = Utils.GetFloatFromString(entries[index]); index++;
+		chg.requireReset  = Utils.GetBoolFromString(entries[index]); index++;
+		chg.minSecurityLevel  = Utils.GetFloatFromString(entries[index]); index++;
+		chg.damageOnUse  = Utils.GetFloatFromString(entries[index]); index++;
+		chg.target = entries[index]; index++;
+		chg.argvalue = entries[index]; index++;
+		chg.rechargeMsg = entries[index]; index++;
+		chg.rechargeMsgLingdex = Utils.GetIntFromString(entries[index]); index++;
+		chg.usedMsg = entries[index]; index++;
+		chg.usedMsgLingdex = Utils.GetIntFromString(entries[index]); index++;
 		return index;
 	}
 }

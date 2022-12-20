@@ -50,9 +50,10 @@ Denhonator for remixed menu music
 Nameless Voice for fluid midis
 
 -Misc Code-
-lerenwe
-Benjamin Stanley
-cxong
+lerenwe, Benjamin Stanley, cxong, Eric Haines(Eric5h5)
+Keijiro Takahashi, Morgan McGuire, Michael Mara, NVIDIA,
+Williams College, Casual Effects, Unity Technologies,
+Jeff Johnson, WeaverDev
 #
 -Playtesters-
 Rachel Jack

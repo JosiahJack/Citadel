@@ -568,7 +568,17 @@ public class MouseLookScript : MonoBehaviour {
 		float camz = Mathf.Lerp(transform.localPosition.z,0f,0.1f);
 		Vector3 camPos = new Vector3(transform.localPosition.x,Const.a.playerCameraOffsetY*PlayerMovement.a.currentCrouchRatio,camz);
 		transform.localPosition = camPos;
-		if (shakeFinished > PauseScript.a.relativeTime) transform.localPosition = new Vector3(transform.localPosition.x + UnityEngine.Random.Range(shakeForce * -1f,shakeForce),transform.localPosition.y + UnityEngine.Random.Range(shakeForce * -1f,shakeForce),transform.localPosition.z + UnityEngine.Random.Range(shakeForce * -1f,shakeForce));
+		if (shakeFinished > PauseScript.a.relativeTime) {
+			float x = transform.localPosition.x + UnityEngine.Random.Range(shakeForce * -1f,shakeForce);
+			float y = transform.localPosition.y + UnityEngine.Random.Range(shakeForce * -1f,shakeForce);
+			float z = transform.localPosition.z + UnityEngine.Random.Range(shakeForce * -1f,shakeForce);
+			x = Mathf.Clamp(x,-0.17f,0.17f);
+			y = Mathf.Clamp(x,-0.08f,0.08f); y += 0.84f;
+			z = Mathf.Clamp(x,-0.17f,0.17f);
+			transform.localPosition = new Vector3(x,y,z);
+		} else {
+			transform.localPosition = new Vector3(0.0f,0.84f,0.0f);
+		}
 	}
 
 	void AddItemFail(int index) {

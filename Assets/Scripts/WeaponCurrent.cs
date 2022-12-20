@@ -618,7 +618,7 @@ public class WeaponCurrent : MonoBehaviour {
 		wc.targetY = Utils.GetFloatFromString(entries[index]); index++;
 		wc.weaponCurrentPending = Utils.GetIntFromString(entries[index] ); index++;
 		wc.weaponIndexPending = Utils.GetIntFromString(entries[index] ); index++;
-		index = Utils.LoadTransform(wc.reloadContainer,ref entries,index);
+		index = Utils.LoadTransform(wc.reloadContainer.transform,ref entries,index);
 		wc.justChangedWeap = true;
 		return index;
 	}

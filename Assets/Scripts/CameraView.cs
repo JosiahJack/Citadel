@@ -24,9 +24,8 @@ public class CameraView : MonoBehaviour {
 		else cam.enabled = false;
 		tickFinished = Time.time + tick;
 		if (screenPoint == null) Debug.Log("BUG: CameraView missing manually assigned reference for screenPoint");
-		else {
-			mR = screenPoint.gameObject.GetComponent<MeshRenderer>();
-		}
+		else mR = screenPoint.gameObject.GetComponent<MeshRenderer>();
+
 		if (mR == null) Debug.Log("BUG: CameraView missing component for screenPoint.gameObject to assign to mR");
 
 		if (screenPoint2 != null) mR2 = screenPoint2.gameObject.GetComponent<MeshRenderer>();
