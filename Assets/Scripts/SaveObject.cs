@@ -64,10 +64,22 @@ public class SaveObject : MonoBehaviour {
 		if (instantiated) {
 			SaveObject[] sos = GetComponentsInChildren<SaveObject>();
 			if (sos.Length > 0) {
-				Debug.Log("BUG: SaveObject found on child of instantiated "
-						  + "Saveable Object: "
-						  + gameObject.name + ", child name: "
-						  + sos[0].gameObject.name);
+				if (!(sos.Length == 1 && sos[0] == this)) {
+					PrefabIdentifier prefID = GetComponent<PrefabIdentifier>();
+					if (prefID != null) {
+						if (prefID.constIndex != 467) { // se_corpse_eaten
+							Debug.Log("BUG: SaveObject found on child of instantiated "
+									+ "Saveable Object: "
+									+ gameObject.name + ", child name: "
+									+ sos[0].gameObject.name);
+						}
+					} else {
+						Debug.Log("BUG: SaveObject found on child of instantiated "
+								+ "Saveable Object: "
+								+ gameObject.name + ", child name: "
+								+ sos[0].gameObject.name);
+					}
+				}
 			}
 		}
 		initialized = true;
