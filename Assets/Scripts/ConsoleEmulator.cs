@@ -794,6 +794,25 @@ Master Index
 493 proj_cyberdog_shot    12
 494 proj_cyberreaver_shot 13
 495 proj_cyberice_shot    14
+496 doorA
+497 doorB
+498 doorC
+499 doorD
+500 doorE
+501 doorF
+502 doorG
+503 doorH
+504 doorI
+505 doorJ
+506 doorK
+507 doorL
+508 door_elevator1
+509 door_elevator2
+510 door_elevator3
+511 door_elevator4
+512 door_secret1
+513 door_secret2
+514 door_secret3
 */
 
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat, GameObject forcedContainer) {

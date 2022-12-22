@@ -93,7 +93,8 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		tick = frameDelay;
 		tickFinished = PauseScript.a.relativeTime + tick;
 
-		// New method...long, but reduces overall memory load from duplicate frames and reduces startup time by over 8 seconds.
+		// New method...long, but reduces overall memory load from duplicate
+		// frames and reduces startup time by over 8 seconds. :party:
 		if (resourceFolder == "Bridge11") {
 			// Normal
 			constArrayLookup = new int[8];

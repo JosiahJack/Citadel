@@ -30,7 +30,8 @@ public class PlayerReferenceManager : MonoBehaviour {
 		a.playerCurrentLevel = LevelManager.a.currentLevel;
 	}
 
-	public static string SavePlayerData(GameObject plyr) {
+	public static string SavePlayerData(GameObject plyr,
+										PrefabIdentifier prefID) {
 		if (plyr == null) return "!";
 
 		// Get all references to relevant components.
@@ -50,7 +51,7 @@ public class PlayerReferenceManager : MonoBehaviour {
         s1.Append(Utils.splitChar);
 		s1.Append(MouseLookScript.Save(PRman.playerCapsuleMainCamera));
         s1.Append(Utils.splitChar);
-		s1.Append(HealthManager.Save(PRman.playerCapsule));
+		s1.Append(HealthManager.Save(PRman.playerCapsule,prefID));
         s1.Append(Utils.splitChar);
 		s1.Append(GUIState.Save(PRman.playerCanvas));
         s1.Append(Utils.splitChar);
@@ -64,7 +65,9 @@ public class PlayerReferenceManager : MonoBehaviour {
 		return s1.ToString();
 	}
 
-	public static int LoadPlayerDataToPlayer(GameObject currentPlayer, ref string[] entries,int index) {
+	public static int LoadPlayerDataToPlayer(GameObject currentPlayer,
+											 ref string[] entries,int index,
+						   					 PrefabIdentifier prefID) {
 		PlayerReferenceManager PRman = currentPlayer.GetComponent<PlayerReferenceManager>();
 		Const.a.playerName = entries[index]; index++; 
 		index = PlayerHealth.Load(PRman.playerCapsule,ref entries,index);
@@ -72,7 +75,7 @@ public class PlayerReferenceManager : MonoBehaviour {
 		index = PlayerMovement.Load(PRman.playerCapsule,ref entries,index);
 		index = PlayerPatch.Load(PRman.playerCapsule,ref entries,index);
 		index = MouseLookScript.Load(PRman.playerCapsuleMainCamera,ref entries,index);
-		index = HealthManager.Load(PRman.playerCapsule,ref entries,index);
+		index = HealthManager.Load(PRman.playerCapsule,ref entries,index,prefID);
 		index = GUIState.Load(PRman.playerCanvas,ref entries,index);
 		index = Inventory.Load(PRman.playerInventory,ref entries,index);
 		index = WeaponCurrent.Load(PRman.playerInventory,ref entries,index);

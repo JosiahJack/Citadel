@@ -66,7 +66,7 @@ public class MouseLookScript : MonoBehaviour {
     private float zRotationV;
     private float currentZRotation;
     private string mlookstring1;
-    private Camera playerCamera;
+    [HideInInspector] public Camera playerCamera;
     private GameObject heldObject;
 	private Quaternion tempQuat;
 	private Vector3 tempVec;
@@ -86,6 +86,7 @@ public class MouseLookScript : MonoBehaviour {
 
 	void Awake() {
 		a = this;
+		a.playerCamera = GetComponent<Camera>(); // Needed elsewhere, do early.
 	}
 
     void Start (){
@@ -94,7 +95,6 @@ public class MouseLookScript : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.None;
 		inventoryMode = false; // Start with inventory mode turned off.
 		shootModeButton.SetActive(false);
-		playerCamera = GetComponent<Camera>();
 		cameraDistances = new float[32];
 		SetCameraCullDistances();
 		playerCamera.depthTextureMode = DepthTextureMode.Depth;

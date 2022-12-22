@@ -1211,26 +1211,40 @@ public class Const : MonoBehaviour {
 		if (PlayerHealth.a != null) {
 			if (PlayerHealth.a.hm != null) PlayerHealth.a.hm.ClearOverlays();
 		}
+
 		loadingScreen.SetActive(false);
 		if (player1Capsule != null) player1Capsule.SetActive(true);
 		else UnityEngine.Debug.Log("ERROR: Missing player1Capsule on GoIntoGame");
 		player1CapsuleMainCameragGO.transform.parent.gameObject.SetActive(true);
 		player1CapsuleMainCameragGO.SetActive(true);
-		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = true;
+		if (MouseLookScript.a != null) {
+			MouseLookScript.a.playerCamera.enabled = true;
+		}
+
 		WriteDatForIntroPlayed(false);
 		sprint(stringTable[197]); // Loading...Done!
 	}
 
 	public void ShowLoading() {
-		PauseScript.a.PauseEnable();
-		PauseScript.a.Loading();
-		PauseScript.a.mainMenu.SetActive(false);
+		MouseLookScript.a.playerCamera.enabled = false; // Hide world changes.
+		PauseScript.a.mainMenu.SetActive(false); // Ensure that main menu is 
+												 // off if came from Load page.
+ 		PauseScript.a.PauseEnable(); // Enable pause to make sure that nothing 
+									 // goes on during couroutine as it happens
+									 // over multiple frames.
+		PauseScript.a.DisablePauseUI(); // Enable loading texts and unlock cursor.
 		sprint(stringTable[196]); // Loading...
 		if (PlayerHealth.a != null) PlayerHealth.a.hm.ClearOverlays();
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
-		loadPercentText.text = "(0) --.--";
+		loadPercentText.text = "(1) --.--";
+
+		// Clear the HUD
+		MFDManager.a.TabReset(true);
+		MFDManager.a.TabReset(false);
+		MFDManager.a.DisableAllCenterTabs();
 		loadingScreen.SetActive(true);
+		AutoSplitterData.isLoading = true;
 	}
 
 	public void ReloadScene(SceneTransitionHandler sth) {
@@ -1247,17 +1261,21 @@ public class Const : MonoBehaviour {
 	// Load the Game
 	// ========================================================================
 	// Sequence is as follows
-	// 1. Player clicks on a button in load game menu
-	// 2. This function Load() is called with index -1 thru 7 and actual=false
+	// 1. Player clicks on a button in load game menu or presses Quick Load.
+	// 2. This function Load() is called with index -1 thru 7 and actual=false.
 	// 3. Load then creates a DontDestroyOnLoad gameobject
 	// 4. Current scene is unloaded.
 	// 5. SceneTransitionHandler on DontDestroyOnLoad gameobject loads scene.
 	// 6. Const Start() detects DontDestroyOnLoad object, uses Load actual=true
 	// 7. Load then does actual load.
+	//    a. Iterate over and destroy all dynamic objects in level containers.
+	//    b. Iterate over dynamic object containers instantiating from save.
+	//    c. Load to remaining static saveable objects left unloaded from save.
 	public void Load(int saveFileIndex, bool actual) {
 		ShowLoading();
 		if (!actual) {
-			UnityEngine.Debug.Log("Initial Load() with saveFileIndex of " + saveFileIndex.ToString());
+			UnityEngine.Debug.Log("Initial Load() with saveFileIndex of " 
+								  + saveFileIndex.ToString());
 			GameObject loadGameIndicator = new GameObject();
 			loadGameIndicator.name = "LoadGameIndicator";
 			SceneTransitionHandler sth =
@@ -1266,7 +1284,11 @@ public class Const : MonoBehaviour {
 			DontDestroyOnLoad(loadGameIndicator);
 			ReloadScene(sth);
 			return;
-		} else UnityEngine.Debug.Log("Second pass Actual Load() with saveFileIndex of " + saveFileIndex.ToString());
+		} else {
+			UnityEngine.Debug.Log("Second pass Actual Load() with "
+								  + "saveFileIndex of "
+								  + saveFileIndex.ToString());
+		}
 
 		GameObject freshGame = GameObject.Find("GameNotYetStarted");
 		if (freshGame != null) Utils.SafeDestroy(freshGame);
@@ -1281,38 +1303,24 @@ public class Const : MonoBehaviour {
 		Stopwatch loadUpdateTimer = new Stopwatch(); // For loading % indicator.
 		Stopwatch matchTimer = new Stopwatch();
 		loadTimer.Start();
+		yield return null; // Update the view to show ShowLoading changes.
 
-		// Turn off player camera to hide things.
-		player1CapsuleMainCameragGO.GetComponent<Camera>().enabled = false;
-
-		// Ensure that main menu is off if loading from Load page.
-		PauseScript.a.mainMenu.SetActive(false);
-
-		// Enable pause to make sure that nothing goes on during couroutine.
-		PauseScript.a.PauseEnable();
-
-		// Enable loading texts and unlock cursor.
-		PauseScript.a.Loading();
-		Cursor.lockState = CursorLockMode.None;
-		Cursor.visible = true;
-
-		// Clear the HUD
-		MFDManager.a.TabReset(true);
-		MFDManager.a.TabReset(false);
-		MFDManager.a.DisableAllCenterTabs();
-		loadPercentText.text = "(1) --.--";
-		yield return null; // Update the view to show all this above.
-
-		string readline;
+		string readline; 					// Initialize temporary variables.
 		int numSaveablesFromSavefile = 0;
 		int i,j;
 		GameObject currentGameObject = null;
 		loadPercentText.text = "(2) --.-0";
-		yield return null; // to update the sprint
+		yield return null; // Update progress text.
 
-		// Find all gameobjects with SaveObject script attached
+		// Find all gameobjects with SaveObject script attached.
+		// This assumes every prefab and static GameObject has only one
+		// SaveObject script attached at top parent for that object.
+		// Exceptions:
+		// - func_wall has its SaveObject on first child
+		// - doorE has its SaveObject on first child
+		// - se_corpse_eaten has its SearchableItem on first child
 		List<GameObject> saveableGameObjects = new List<GameObject>();
-		FindAllSaveObjectsGOs(ref saveableGameObjects); // Find and add GameObjects to the list of saveables.
+		FindAllSaveObjectsGOs(ref saveableGameObjects); // ref to avoid boxing.
 		List<string> readFileList = new List<string>();
 		char csplit = '|'; // caching since it will be iterated over in a loop
 		int index = 0; // caching since...I just said this
@@ -1452,6 +1460,7 @@ public class Const : MonoBehaviour {
 
 		loadPercentText.text = "(7)100.00%";
 		yield return new WaitForSeconds(0.10f);
+		AutoSplitterData.isLoading = false;
 		GoIntoGame();
 		yield return null;
 		loadTimer.Stop();

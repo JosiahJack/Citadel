@@ -366,7 +366,7 @@ public class Door : MonoBehaviour {
 		loadedAnimatorPlaybackTime = t;
 	}
 
-	public static string Save(GameObject go) {
+	public static string Save(GameObject go, PrefabIdentifier prefID) {
 		Door dr = go.GetComponent<Door>();
 		if (dr == null) {
 			Debug.Log("SearchableItem missing on savetype of SearchableItem!  GameObject.name: " + go.name);
@@ -389,10 +389,14 @@ public class Door : MonoBehaviour {
 			case DoorState.Opening: line += Utils.splitChar + "3"; break;
 		}
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(dr.animatorPlaybackTime); // float - current animation time
+		if (prefID.constIndex == 500) { // doorE
+			line += Utils.splitChar + Utils.SaveTransform(go.transform.parent.transform);
+		}
 		return line;
 	}
 
-	public static int Load(GameObject go, ref string[] entries, int index) {
+	public static int Load(GameObject go, ref string[] entries, int index,
+						   PrefabIdentifier prefID) {
 		Door dr = go.GetComponent<Door>();
 		if (dr == null || index < 0 || entries == null) return index + 10;
 
@@ -414,6 +418,10 @@ public class Door : MonoBehaviour {
 		}
 		dr.animatorPlaybackTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		dr.SetAnimFromLoad(clipName,0,dr.animatorPlaybackTime); index++;
+		if (prefID.constIndex == 500) { // doorE
+			Transform parentTR = go.transform.parent.transform;
+			index = Utils.LoadTransform(parentTR,ref entries,index);
+		}
 		return index;
 	}
 }

@@ -25,7 +25,6 @@ public class AIController : MonoBehaviour {
 	/*[DTValidator.Optional] */public SkinnedMeshRenderer actualSMR;
 	/*[DTValidator.Optional] */public GameObject deathBurst;
 	/*[DTValidator.Optional] */public GameObject sightPoint;
-	/*[DTValidator.Optional] */public GameObject sleepingCables;
 	/*[DTValidator.Optional] */public RectTransform npcAutomapOverlay;
 	/*[DTValidator.Optional] */public Image npcAutomapOverlayImage;
 	public AIState currentState; // save (referenced by int index 0 thru 10)
@@ -151,7 +150,7 @@ public class AIController : MonoBehaviour {
 		meshCollider = GetComponent<MeshCollider>();
 		capsuleCollider = GetComponent<CapsuleCollider>();
 		if (visibleMeshEntity != null) hopAnimator = visibleMeshEntity.GetComponent<Animator>();
-        if (searchColliderGO != null) searchColliderGO.SetActive(false);
+        if (searchColliderGO != null && ((!healthManager.gibOnDeath && !healthManager.vaporizeCorpse) || index == 2 /* avian mutant */)) searchColliderGO.SetActive(false);
 		if (sightPoint == null) sightPoint = gameObject;
 		DeactivateMeleeColliders();
 		currentDestination = sightPoint.transform.position;
@@ -1004,7 +1003,6 @@ public class AIController : MonoBehaviour {
 	void Dying() {
 		if (!dyingSetup) {
 			enemy = null; // reset for loading from saves
-			if (sleepingCables != null) sleepingCables.SetActive(false);
 			if (npcAutomapOverlay != null) npcAutomapOverlay.gameObject.SetActive(false);
 			if (Const.a.deathBurstTimerForNPC[index] > 0) {
 				deathBurstFinished = PauseScript.a.relativeTime + Const.a.deathBurstTimerForNPC[index];
@@ -1021,7 +1019,7 @@ public class AIController : MonoBehaviour {
 				Utils.PlayOneShotSavable(SFX,SFXIndex);
 			}
 
-			if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly && !healthManager.gibOnDeath) {
+			if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly && (!healthManager.gibOnDeath || index == 2 /* avian mutant */)) {
 				rbody.useGravity = true; // for avian mutant and zero-g mutant
 			} else {
 				rbody.useGravity = true;
@@ -1055,7 +1053,7 @@ public class AIController : MonoBehaviour {
 			if (sphereCollider != null) { if (sphereCollider.enabled) sphereCollider.enabled = false; }
 			if (meshCollider != null) { if (meshCollider.enabled) meshCollider.enabled = false; }
 			if (capsuleCollider != null) { if (capsuleCollider.enabled) capsuleCollider.enabled = false; }
-			if (searchColliderGO != null) {
+			if (searchColliderGO != null && ((!healthManager.gibOnDeath && !healthManager.vaporizeCorpse) || index == 2 /* avian mutant */)) {
 				searchColliderGO.SetActive(true);
 				rbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
 			}
@@ -1216,12 +1214,11 @@ public class AIController : MonoBehaviour {
 	}
 
 	public void AwakeFromSleep(UseData ud) {
-		if (sleepingCables != null) sleepingCables.SetActive(false);
 		asleep = false;
 		if (ud != null) Alert(ud);
 	}
 
-	public static string Save(GameObject go) {
+	public static string Save(GameObject go, PrefabIdentifier prefID) {
 		AIController aic = go.GetComponent<AIController>();
 		if (aic == null) {
 			Debug.Log("AIController missing on savetype of NPC!  GameObject.name: " + go.name);
@@ -1294,20 +1291,38 @@ public class AIController : MonoBehaviour {
 		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.targettingPosition.z));
 		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.deathBurstFinished));
 		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.deathBurstDone)); // bool
+		if (aic.deathBurst != null) {
+			s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.deathBurst.activeSelf));
+			s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(aic.deathBurst.transform.childCount));
+			for (int i=0;i<aic.deathBurst.transform.childCount;i++) {
+				Transform childTR = aic.deathBurst.transform.GetChild(i);
+				s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(childTR.gameObject.activeSelf));
+				for (int j=0;j<childTR.childCount;j++) {
+					s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(childTR.transform.GetChild(j).gameObject.activeSelf));
+				}
+			}
+		}
+
+		if (aic.visibleMeshEntity != null) {
+			s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.visibleMeshEntity.activeSelf));
+		}
+
 		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.asleep)); // bool
 		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.tranquilizeFinished));
 		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.hopDone)); // bool
 		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.wandering)); // bool
 		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.wanderFinished));
 		s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(aic.SFXIndex));
-		s1.Append(Utils.splitChar);
-		if (aic.sleepingCables != null) s1.Append(Utils.BoolToString(aic.sleepingCables.activeSelf));
-		else s1.Append(Utils.BoolToString(false));
-
+		if (aic.searchColliderGO != null) {
+			s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.searchColliderGO.activeSelf));
+			s1.Append(Utils.splitChar); s1.Append(SearchableItem.Save(aic.searchColliderGO,prefID));
+            if (!aic.healthManager.gibOnDeath || prefID.constIndex == 421 /* avian mutant */) s1.Append(Utils.splitChar);  s1.Append(HealthManager.Save(aic.searchColliderGO,prefID)); // Weird exclusion for hopper to not check  && !healthManager.vaporizeCorpse
+		}
 		return s1.ToString();
 	}
 
-	public static int Load(GameObject go, ref string[] entries, int index) {
+	public static int Load(GameObject go, ref string[] entries, int index,
+						   PrefabIdentifier prefID) {
 		AIController aic = go.GetComponent<AIController>();
 		if (aic == null || index < 0 || entries == null) return index + 55;
 
@@ -1381,6 +1396,23 @@ public class AIController : MonoBehaviour {
 		aic.targettingPosition = new Vector3(readFloatx,readFloaty,readFloatz);
 		aic.deathBurstFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
 		aic.deathBurstDone = Utils.GetBoolFromString(entries[index]); index++; // bool
+		if (aic.deathBurst != null) {
+			aic.deathBurst.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+			int numChildrenFromSave = Utils.GetIntFromString(entries[index]); index++;
+			if (numChildrenFromSave != aic.deathBurst.transform.childCount) Debug.Log("BUG: Number of deathBurst children in save does not match prefab on " + aic.gameObject.name);
+			for (int i=0;i<aic.deathBurst.transform.childCount;i++) {
+				Transform childTR = aic.deathBurst.transform.GetChild(i);
+				childTR.gameObject.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+				for (int j=0;j<childTR.childCount;j++) {
+					childTR.GetChild(j).gameObject.SetActive(Utils.GetBoolFromString(entries[index])); index++;	
+				}
+			}
+		}
+
+		if (aic.visibleMeshEntity != null) {
+			aic.visibleMeshEntity.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+		}
+
 		aic.asleep = Utils.GetBoolFromString(entries[index]); index++; // bool - are we sleepnir? vague reference alert
 		aic.tranquilizeFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
 		aic.hopDone = Utils.GetBoolFromString(entries[index]); index++; // bool
@@ -1400,9 +1432,12 @@ public class AIController : MonoBehaviour {
 				}
 			}
 		}
-		bool scablesOn = Utils.GetBoolFromString(entries[index]); index++;
-		if (aic.sleepingCables != null) aic.sleepingCables.SetActive(scablesOn);
 
+		if (aic.searchColliderGO != null) {
+			aic.searchColliderGO.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+			index = SearchableItem.Load(aic.searchColliderGO,ref entries,index,prefID);
+			if (!aic.healthManager.gibOnDeath) index = HealthManager.Load(aic.searchColliderGO,ref entries,index,prefID);
+		}
 		return index;
 	}
 }

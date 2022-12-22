@@ -87,6 +87,14 @@ public class MainMenuHandler : MonoBehaviour {
 		lpgsn_save = savePage.GetComponent<LoadPageGetSaveNames>();
 	}
 
+	void OnEnable() {
+		MouseLookScript.a.playerCamera.enabled = false; // Improve menu performance.
+	}
+
+	void OnDisable() {
+		MouseLookScript.a.playerCamera.enabled = true; // Improve menu performance.
+	}
+
 	IEnumerator CheckDataFiles () {
 		BackGroundMusic.Stop();
 		bool found = (System.IO.File.Exists(Application.dataPath + "/StreamingAssets/CITALOG.RES") && System.IO.File.Exists(Application.dataPath + "/StreamingAssets/CITBARK.RES"));
@@ -255,11 +263,11 @@ public class MainMenuHandler : MonoBehaviour {
 		}	
 	}
 
-	public void GoToSaveGameSubmenu (bool fromPause) {
+	public void GoToSaveGameSubmenu (bool accessedFromPause) {
 		ResetPages();
 		savePage.SetActive(true);
 		currentPage = Pages.sv;
-		returnToPause = fromPause;
+		returnToPause = accessedFromPause;
 
 		string readline; // variable to hold each string read in from the file
 		for (int i=0;i<8;i++) {

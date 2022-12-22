@@ -57,7 +57,18 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.SecurityCamera: saveableType = "SecurityCamera"; break;
 			case SaveableType.Trigger: saveableType = "Trigger"; break;
 			case SaveableType.Projectile: saveableType = "Projectile"; break;
+			case SaveableType.NormalScreen: saveableType = "NormalScreen"; break;
 			default: saveableType = "Transform"; break;
+		}
+
+		if (instantiated) {
+			SaveObject[] sos = GetComponentsInChildren<SaveObject>();
+			if (sos.Length > 0) {
+				Debug.Log("BUG: SaveObject found on child of instantiated "
+						  + "Saveable Object: "
+						  + gameObject.name + ", child name: "
+						  + sos[0].gameObject.name);
+			}
 		}
 		initialized = true;
 	}
@@ -119,47 +130,48 @@ public class SaveObject : MonoBehaviour {
 		} else s1.Append("307" + Utils.splitChar);
 
 		switch (so.saveType) {
-			case SaveableType.Player:                 s1.Append(PlayerReferenceManager.SavePlayerData(go)); break;
-			case SaveableType.Useable:                s1.Append(UseableObjectUse.Save(go)); break;
-			case SaveableType.Grenade:                s1.Append(GrenadeActivate.Save(go)); break;
-			case SaveableType.NPC:                    s1.Append(HealthManager.Save(go)); s1.Append(Utils.splitChar);
-													  s1.Append(AIController.Save(go)); s1.Append(Utils.splitChar);
-													  s1.Append(AIAnimationController.Save(go)); break;
-			case SaveableType.Destructable:           s1.Append(HealthManager.Save(go)); break;
+			case SaveableType.Player:         s1.Append(PlayerReferenceManager.SavePlayerData(go,prefID)); break;
+			case SaveableType.Useable:              s1.Append(UseableObjectUse.Save(go)); break;
+			case SaveableType.Grenade:               s1.Append(GrenadeActivate.Save(go)); break;
+			case SaveableType.NPC:                     s1.Append(HealthManager.Save(go,prefID)); s1.Append(Utils.splitChar);
+													    s1.Append(AIController.Save(go,prefID)); s1.Append(Utils.splitChar); // Handles SearchableDestructable for corpse child
+										       s1.Append(AIAnimationController.Save(go)); break;
+			case SaveableType.Destructable:            s1.Append(HealthManager.Save(go,prefID)); break;
 			case SaveableType.SearchableStatic:       s1.Append(SearchableItem.Save(go,prefID)); break;
 			case SaveableType.SearchableDestructable: s1.Append(SearchableItem.Save(go,prefID)); s1.Append(Utils.splitChar);
-                                                      s1.Append(HealthManager.Save(go)); break;
-			case SaveableType.Door:                   s1.Append(Door.Save(go)); break;
-			case SaveableType.ForceBridge:            s1.Append(ForceBridge.Save(go)); break;
-			case SaveableType.Switch:                 s1.Append(ButtonSwitch.Save(go)); break;
-			case SaveableType.FuncWall:               s1.Append(FuncWall.Save(go)); s1.Append(Utils.splitChar);
-													  s1.Append(TargetIO.Save(go)); break;
-			case SaveableType.TeleDest:               s1.Append(TeleportTouch.Save(go)); break;
-			case SaveableType.LBranch:                s1.Append(LogicBranch.Save(go)); break;
-			case SaveableType.LRelay:                 s1.Append(LogicRelay.Save(go)); break;
-			case SaveableType.LSpawner:               s1.Append(SpawnManager.Save(go)); break;
-			case SaveableType.InteractablePanel:      s1.Append(InteractablePanel.Save(go)); break;
+                                                       s1.Append(HealthManager.Save(go,prefID)); break;
+			case SaveableType.Door:                             s1.Append(Door.Save(go,prefID)); break;
+			case SaveableType.ForceBridge:               s1.Append(ForceBridge.Save(go)); break;
+			case SaveableType.Switch:                   s1.Append(ButtonSwitch.Save(go)); break;
+			case SaveableType.FuncWall:                     s1.Append(FuncWall.Save(go)); s1.Append(Utils.splitChar);
+													        s1.Append(TargetIO.Save(go)); break;
+			case SaveableType.TeleDest:                s1.Append(TeleportTouch.Save(go)); break;
+			case SaveableType.LBranch:                   s1.Append(LogicBranch.Save(go)); break;
+			case SaveableType.LRelay:                     s1.Append(LogicRelay.Save(go)); break;
+			case SaveableType.LSpawner:                 s1.Append(SpawnManager.Save(go)); break;
+			case SaveableType.InteractablePanel:   s1.Append(InteractablePanel.Save(go)); break;
 			case SaveableType.ElevatorPanel:          s1.Append(KeypadElevator.Save(go)); break;
-			case SaveableType.Keypad:                 s1.Append(KeypadKeycode.Save(go)); break;
-			case SaveableType.PuzzleGrid:             s1.Append(PuzzleGridPuzzle.Save(go)); break;
-			case SaveableType.PuzzleWire:             s1.Append(PuzzleWirePuzzle.Save(go)); break;
+			case SaveableType.Keypad:                  s1.Append(KeypadKeycode.Save(go)); break;
+			case SaveableType.PuzzleGrid:           s1.Append(PuzzleGridPuzzle.Save(go)); break;
+			case SaveableType.PuzzleWire:           s1.Append(PuzzleWirePuzzle.Save(go)); break;
 			case SaveableType.TCounter:               s1.Append(TriggerCounter.Save(go)); break;
-			case SaveableType.TGravity:               s1.Append(GravityLift.Save(go)); break;
-			case SaveableType.MChanger:               s1.Append(MaterialChanger.Save(go)); break;
-			case SaveableType.RadTrig:                s1.Append(Radiation.Save(go)); break;
+			case SaveableType.TGravity:                  s1.Append(GravityLift.Save(go)); break;
+			case SaveableType.MChanger:              s1.Append(MaterialChanger.Save(go)); break;
+			case SaveableType.RadTrig:                     s1.Append(Radiation.Save(go)); break;
 			case SaveableType.GravPad:                s1.Append(TextureChanger.Save(go)); break;
-			case SaveableType.ChargeStation:          s1.Append(ChargeStation.Save(go)); break;
+			case SaveableType.ChargeStation:           s1.Append(ChargeStation.Save(go)); break;
 			case SaveableType.Light:                  s1.Append(LightAnimation.Save(go)); break;
-			case SaveableType.LTimer:                 s1.Append(LogicTimer.Save(go)); break;
-			case SaveableType.Camera:                 s1.Append(BerserkEffect.Save(go)); s1.Append(Utils.splitChar);
-													  s1.Append(Utils.SaveCamera(go)); break;
-			case SaveableType.DelayedSpawn:           s1.Append(DelayedSpawn.Save(go)); break;
-			case SaveableType.SecurityCamera:         s1.Append(SecurityCameraRotate.Save(go)); s1.Append(Utils.splitChar);
-													  s1.Append(HealthManager.Save(go.transform.GetChild(0).gameObject)); s1.Append(Utils.splitChar);
-													  s1.Append(Utils.SaveTransform(go.transform.GetChild(0))); break;
-			case SaveableType.Trigger:                s1.Append(Trigger.Save(go)); break;
-			case SaveableType.Projectile:             s1.Append(DelayedSpawn.Save(go)); s1.Append(Utils.splitChar);
-													  s1.Append(ProjectileEffectImpact.Save(go)); break;
+			case SaveableType.LTimer:                     s1.Append(LogicTimer.Save(go)); break;
+			case SaveableType.Camera:                  s1.Append(BerserkEffect.Save(go)); s1.Append(Utils.splitChar);
+													           s1.Append(Utils.SaveCamera(go)); break;
+			case SaveableType.DelayedSpawn:             s1.Append(DelayedSpawn.Save(go)); break;
+			case SaveableType.SecurityCamera:   s1.Append(SecurityCameraRotate.Save(go)); s1.Append(Utils.splitChar);
+													   s1.Append(HealthManager.Save(go.transform.GetChild(0).gameObject,prefID)); s1.Append(Utils.splitChar);
+													           s1.Append(Utils.SaveTransform(go.transform.GetChild(0))); break;
+			case SaveableType.Trigger:                       s1.Append(Trigger.Save(go)); break;
+			case SaveableType.Projectile:               s1.Append(DelayedSpawn.Save(go)); s1.Append(Utils.splitChar);
+										      s1.Append(ProjectileEffectImpact.Save(go)); break;
+			case SaveableType.NormalScreen:            s1.Append(HealthManager.Save(go,prefID)); break;
 		}
 		return s1.ToString();
 	}
@@ -212,17 +224,17 @@ public class SaveObject : MonoBehaviour {
 		PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
 		if (prefID == null) Debug.Log("No PrefabIdentifier on " + go.name);
 		switch (so.saveType) {
-			case SaveableType.Player:				  index = PlayerReferenceManager.LoadPlayerDataToPlayer(go,ref entries, index); break;
+			case SaveableType.Player:				  index = PlayerReferenceManager.LoadPlayerDataToPlayer(go,ref entries,index,prefID); break;
 			case SaveableType.Useable:				  index =       UseableObjectUse.Load(go,ref entries,index); break;
 			case SaveableType.Grenade:				  index =        GrenadeActivate.Load(go,ref entries,index); break;
-			case SaveableType.NPC:					  index =          HealthManager.Load(go,ref entries,index);
-													  index =           AIController.Load(go,ref entries,index);
+			case SaveableType.NPC:					  index =          HealthManager.Load(go,ref entries,index,prefID);
+													  index =           AIController.Load(go,ref entries,index,prefID); // Handles SearchableDestructable for corpse child
 													  index =  AIAnimationController.Load(go,ref entries,index); break;
-			case SaveableType.Destructable:			  index =          HealthManager.Load(go,ref entries,index); break;
+			case SaveableType.Destructable:			  index =          HealthManager.Load(go,ref entries,index,prefID); break;
 			case SaveableType.SearchableStatic:		  index =         SearchableItem.Load(go,ref entries,index,prefID); break;
 			case SaveableType.SearchableDestructable: index =         SearchableItem.Load(go,ref entries,index,prefID);
-													  index =          HealthManager.Load(go,ref entries,index); break;
-			case SaveableType.Door:                   index =                   Door.Load(go,ref entries,index); break;
+													  index =          HealthManager.Load(go,ref entries,index,prefID); break;
+			case SaveableType.Door:                   index =                   Door.Load(go,ref entries,index,prefID); break;
 			case SaveableType.ForceBridge:            index =            ForceBridge.Load(go,ref entries,index); break;
 			case SaveableType.Switch:                 index =           ButtonSwitch.Load(go,ref entries,index); break;
 			case SaveableType.FuncWall:               index =               FuncWall.Load(go,ref entries,index);
@@ -247,11 +259,13 @@ public class SaveObject : MonoBehaviour {
 													  index =                  Utils.LoadCamera(go,ref entries,index); break;
 			case SaveableType.DelayedSpawn:           index =           DelayedSpawn.Load(go,ref entries,index); break;
 			case SaveableType.SecurityCamera:         index =   SecurityCameraRotate.Load(go,ref entries,index);
-													  index =          HealthManager.Load(go.transform.GetChild(0).gameObject,ref entries,index);
+													  index =          HealthManager.Load(go.transform.GetChild(0).gameObject,ref entries,index,prefID);
 													  index =                  Utils.LoadTransform(go.transform.GetChild(0),ref entries,index); break;
 			case SaveableType.Trigger:                index =                Trigger.Load(go,ref entries,index); break;
 			case SaveableType.Projectile:             index =           DelayedSpawn.Load(go,ref entries,index);
 													  index = ProjectileEffectImpact.Load(go,ref entries,index); break;
+			case SaveableType.NormalScreen:			  index =          HealthManager.Load(go,ref entries,index,prefID); break;
+
 		}
 		return index;
 	}

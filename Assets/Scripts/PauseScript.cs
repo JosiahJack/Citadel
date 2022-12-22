@@ -91,12 +91,6 @@ public class PauseScript : MonoBehaviour {
 		}
 	}
 
-	public void Loading() {
-		for (int j=0;j<enableUIOnPause.Length;j++) {
-			enableUIOnPause[j].SetActive(false);
-		}
-	}
-
 	public void PauseDisable() {
 		paused = false;
 		pauseText.SetActive(false);
@@ -109,10 +103,7 @@ public class PauseScript : MonoBehaviour {
 			disableUIOnPause[i].SetActive(true);
 		}
 
-		for (int j=0;j<enableUIOnPause.Length;j++) {
-			enableUIOnPause[j].SetActive(false);
-		}
-
+		DisablePauseUI();
 		for (int k=0;k<Const.a.prb.Count;k++) {
 			Const.a.prb[k].UnPause();
 		}
@@ -218,9 +209,8 @@ public class PauseScript : MonoBehaviour {
 
 	public void PauseOptions () {
 		if (onSaveDialog) return;
-		for (int i=0;i<enableUIOnPause.Length;i++) {
-			enableUIOnPause[i].SetActive(false);
-		}
+
+		DisablePauseUI();
 		mainMenu.SetActive(true);
 		MainMenuHandler.a.GoToOptionsSubmenu(true);
 	}
