@@ -684,8 +684,8 @@ public class HealthManager : MonoBehaviour {
 		line += Utils.splitChar + Utils.BoolToString(hm.god); // are we invincible? - we can save cheats?? OH WOW!
 		line += Utils.splitChar + Utils.BoolToString(hm.teleportDone); // did we already teleport?
 		line += Utils.splitChar + Utils.UintToString(hm.gibObjects.Length);
-		for (int i=0;i<go.transform.childCount; i++) {
-			line += Utils.splitChar + Utils.SaveChildGOState(go,i);
+		for (int i=0;i<hm.gibObjects.Length; i++) {
+			line += Utils.splitChar + Utils.SaveSubActivatedGOState(hm.gibObjects[i]);
 		}
 		return line;
 	}
@@ -722,7 +722,7 @@ public class HealthManager : MonoBehaviour {
 		}
 
 		for (int i=0; i<numChildren; i++) {
-			index = Utils.LoadChildGOState(go.transform.GetChild(i).gameObject,ref entries,index);
+			index = Utils.LoadSubActivatedGOState(hm.gibObjects[i],ref entries,index);
 		}
 		return index;
 	}

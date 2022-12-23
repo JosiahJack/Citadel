@@ -267,6 +267,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.GravPad:                index =         TextureChanger.Load(go,ref entries,index); break;
 			case SaveableType.ChargeStation:          index =          ChargeStation.Load(go,ref entries,index); break;
 			case SaveableType.Light:                  index =         LightAnimation.Load(go,ref entries,index); break;
+			case SaveableType.LTimer:                  index =            LogicTimer.Load(go,ref entries,index); break;
 			case SaveableType.Camera:                 index =          BerserkEffect.Load(go,ref entries,index);
 													  index =                  Utils.LoadCamera(go,ref entries,index); break;
 			case SaveableType.DelayedSpawn:           index =           DelayedSpawn.Load(go,ref entries,index); break;

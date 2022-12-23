@@ -213,7 +213,7 @@ public class FuncWall : MonoBehaviour {
 													   // to loading transform.
 			childGO.isStatic = false;
 			childGO.layer = 18; // Door
-			index = Utils.LoadChildGOState(childGO,ref entries,index);
+			index = Utils.LoadSubActivatedGOState(childGO,ref entries,index);
 		}
 		Transform info_target = go.transform.parent.transform.GetChild(1);
 		index = Utils.LoadTransform(info_target,ref entries,index);

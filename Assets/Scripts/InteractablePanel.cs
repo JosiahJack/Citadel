@@ -96,6 +96,11 @@ public class InteractablePanel : MonoBehaviour {
 		string line = System.String.Empty;
 		line = Utils.BoolToString(ip.open); // bool - is the panel opened
 		line += Utils.splitChar + Utils.BoolToString(ip.installed); // bool - is the item installed
+		line += Utils.splitChar + Utils.SaveSubActivatedGOState(ip.installationItem);
+		for (int i=0;i<ip.effects.Length;i++) {
+			line += Utils.splitChar + Utils.SaveSubActivatedGOState(ip.effects[i]);
+		}
+
 		return line;
 	}
 
@@ -105,12 +110,11 @@ public class InteractablePanel : MonoBehaviour {
 
 		ip.open = Utils.GetBoolFromString(entries[index]); index++; // bool - is the panel opened
 		ip.installed = Utils.GetBoolFromString(entries[index]); index++; // bool - is the item installed
-		if (ip.installed && ip.installationItem != null){
-			ip.installationItem.SetActive(true);
-			// I already set up the effects[] objects with SaveObject of
-			// Transform so no need to set them active here as they will be set
-			// active by normal load loop that called this.
+		index = Utils.LoadSubActivatedGOState(ip.installationItem,ref entries,index);
+		for (int i=0; i<ip.effects.Length; i++) {
+			index = Utils.LoadSubActivatedGOState(ip.effects[i],ref entries,index);
 		}
+
 		return index;
 	}
 }

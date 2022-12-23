@@ -540,25 +540,25 @@ public class Utils {
 		return index; // Carry on with current index read.
 	}
 
-	public static string SaveChildGOState(GameObject mainParent, int childex) {
-			Transform childTR = mainParent.transform.GetChild(childex);
-			GameObject childGO = childTR.gameObject;
-			string line = System.String.Empty;
-			line = Utils.SaveTransform(childTR);
-			line += Utils.splitChar + Utils.SaveRigidbody(childGO);
-			line += Utils.splitChar + Utils.BoolToString(childGO.activeSelf);
-			return line;
+	public static string SaveSubActivatedGOState(GameObject subGO) {
+		string line = System.String.Empty;
+		line = Utils.SaveTransform(subGO.transform);
+		line += Utils.splitChar + Utils.SaveRigidbody(subGO);
+		line += Utils.splitChar + Utils.BoolToString(subGO.activeSelf);
+		return line;
 	}
 
-	public static int LoadChildGOState(GameObject childGO,ref string[] entries,
-									   int index) {
-		bool childActive = false;
-		Transform childTR = childGO.transform;
-		index = Utils.LoadTransform(childTR,ref entries,index);
-		index = Utils.LoadRigidbody(childGO,ref entries,index);
-		childActive = Utils.GetBoolFromString(entries[index]); index++; // bool - is the gib active?
-		childGO.SetActive(childActive);
+	public static int LoadSubActivatedGOState(GameObject subGO,
+											  ref string[] entries, int index) {
+		index = Utils.LoadTransform(subGO.transform,ref entries,index);
+		index = Utils.LoadRigidbody(subGO,ref entries,index);
+		subGO.SetActive(Utils.GetBoolFromString(entries[index])); index++;
 		return index;
+	}
+
+	public static string SaveChildGOState(GameObject mainParent, int childex) {
+			Transform childTR = mainParent.transform.GetChild(childex);
+			return SaveSubActivatedGOState(childTR.gameObject);
 	}
 
 	public static string SaveCamera(GameObject go) {

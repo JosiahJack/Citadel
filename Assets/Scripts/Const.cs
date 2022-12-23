@@ -252,6 +252,7 @@ public class Const : MonoBehaviour {
 	public Text loadPercentText;
 	public GameObject[] cyberItemPrefabs;
 	public GameObject[] miscellaneousPrefabs;
+	public GameObject[] doorPrefabs;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
 	[HideInInspector] public string versionString = "v0.98"; // Global CITADEL PROJECT VERSION

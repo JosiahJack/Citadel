@@ -755,30 +755,30 @@ Master Index
 454 item_cyber_pulser                     6
 455 item_cyber_recall                     7
 456 item_cyber_shield                     8
-457 item_cyber_turbo           Misc       9 
-458 prop_phys_barrel_chemical  0
-459 prop_phys_barrel_radiation 1
-460 prop_phys_barrel_toxic     2
-461 prop_phys_cart             3
-462 prop_phys_pot              4
-463 prop_phys_toolcart         5 
-464 se_briefcase               6
-465 se_corpse_blueshirt        7
-466 se_corpse_brownshirt       8
-467 se_corpse_eaten            9
-468 se_corpse_labcoat          10
-469 se_corpse_security         11
-470 se_corpse_tan              12
-471 se_corpse_torso            13
-472 se_crate1                  14
-473 se_crate2                  15
-474 se_crate3                  16
-475 se_crate4                  17
-476 se_crate5                  18
-477 sec_camera                 19
-478 sec_cpunode                20
-479 sec_cpunode_small          21
-480 weapon_cyber_mine          22
+457 item_cyber_turbo              Misc    9 
+458 prop_phys_barrel_chemical     0
+459 prop_phys_barrel_radiation    1
+460 prop_phys_barrel_toxic        2
+461 prop_phys_cart                3
+462 prop_phys_pot                 4
+463 prop_phys_toolcart            5 
+464 se_briefcase                  6
+465 se_corpse_blueshirt           7
+466 se_corpse_brownshirt          8
+467 se_corpse_eaten               9
+468 se_corpse_labcoat             10
+469 se_corpse_security            11
+470 se_corpse_tan                 12
+471 se_corpse_torso               13
+472 se_crate1                     14
+473 se_crate2                     15
+474 se_crate3                     16
+475 se_crate4                     17
+476 se_crate5                     18
+477 sec_camera                    19
+478 sec_cpunode                   20
+479 sec_cpunode_small             21
+480 weapon_cyber_mine      Proj   22
 481 proj_enemshot2         0
 482 proj_magpulse_shot     1
 483 proj_stungun_shot      2
@@ -793,26 +793,27 @@ Master Index
 492 proj_cyberplayer_shot 11
 493 proj_cyberdog_shot    12
 494 proj_cyberreaver_shot 13
-495 proj_cyberice_shot    14
-496 doorA
-497 doorB
-498 doorC
-499 doorD
-500 doorE
-501 doorF
-502 doorG
-503 doorH
-504 doorI
-505 doorJ
-506 doorK
-507 doorL
-508 door_elevator1
-509 door_elevator2
-510 door_elevator3
-511 door_elevator4
-512 door_secret1
-513 door_secret2
-514 door_secret3
+495 proj_cyberice_shot    14  Doors
+496 doorA                     0
+497 doorB                     1
+498 doorC                     2
+499 doorD                     3
+500 doorE                     4
+501 doorF                     5
+502 doorG                     6
+503 doorH                     7
+504 doorI                     8
+505 doorJ                     9
+506 doorK                     10
+507 doorL                     11
+508 door_elevator1            12
+509 door_elevator2            13
+510 door_elevator3            14
+511 door_elevator4            15
+512 door_secret1              16
+513 door_secret2              17
+514 door_secret3              18  Misc
+515 func_forcebridge              23
 */
 
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat, GameObject forcedContainer) {
@@ -860,8 +861,10 @@ Master Index
 
 			go = MonoBehaviour.Instantiate(Const.a.cyberItemPrefabs[val],
 							 spawnPos,Const.a.quaternionIdentity) as GameObject;
-		} else if (val >= 458 && val < 481) {	// [458, 480]
-			val -= 458;
+		} else if ((val >= 458 && val < 481) || val == 515) {	// [458, 480], 515
+			if (val == 515) val = 23; // func_forcebridge out of order exception.
+			else val -= 458;
+
 			if (val > (Const.a.miscellaneousPrefabs.Length - 1)) return null;
 			if (Const.a.miscellaneousPrefabs[val] == null) return null;
 
@@ -874,6 +877,13 @@ Master Index
 
 			go = MonoBehaviour.Instantiate(Const.a.projectilesLaunched[val],
 							 spawnPos,Const.a.quaternionIdentity) as GameObject;
+		} else if (val >= 496 && val < 515) {	// [496, 514]
+			val -= 496;
+			if (val > (Const.a.doorPrefabs.Length - 1)) return null;
+			if (Const.a.doorPrefabs[val] == null) return null;
+
+			go = MonoBehaviour.Instantiate(Const.a.doorPrefabs[val],spawnPos,
+									  Const.a.quaternionIdentity) as GameObject;
 		}
 
 		if (go != null) {

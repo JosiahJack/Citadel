@@ -86,7 +86,7 @@ public class DelayedSpawn : MonoBehaviour {
 
 		for (int i=0; i<numChildren; i++) {
 			GameObject childGO = go.transform.GetChild(i).gameObject;
-			index = Utils.LoadChildGOState(childGO,ref entries,index);
+			index = Utils.LoadSubActivatedGOState(childGO,ref entries,index);
 		}
 
 		return index;
