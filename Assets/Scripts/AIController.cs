@@ -1438,6 +1438,16 @@ public class AIController : MonoBehaviour {
 			index = SearchableItem.Load(aic.searchColliderGO,ref entries,index,prefID);
 			if (!aic.healthManager.gibOnDeath) index = HealthManager.Load(aic.searchColliderGO,ref entries,index,prefID);
 		}
+
+		if (aic.currentState == AIState.Attack1) {
+			if (Const.a.preactivateMeleeCollidersForNPC[aic.index]) {
+				aic.PreActivateMeleeColliders();
+			} else {
+				aic.DeactivateMeleeColliders();
+			}
+		} else {
+			aic.DeactivateMeleeColliders();
+		}
 		return index;
 	}
 }

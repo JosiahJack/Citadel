@@ -273,7 +273,7 @@ public class TargetIO : MonoBehaviour {
 
 		if (tempUD.toggleRadiationTrigger) {
 			Radiation rad = GetComponent<Radiation>();
-			if (rad != null) rad.isEnabled = !rad.isEnabled;
+			if (rad != null) rad.enabled = !rad.enabled;
 		}
 
 		if (tempUD.toggleRelayEnabled) {

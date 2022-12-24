@@ -814,6 +814,7 @@ Master Index
 513 door_secret2              17
 514 door_secret3              18  Misc
 515 func_forcebridge              23
+516 prop_lift2                    24
 */
 
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat, GameObject forcedContainer) {
@@ -861,8 +862,11 @@ Master Index
 
 			go = MonoBehaviour.Instantiate(Const.a.cyberItemPrefabs[val],
 							 spawnPos,Const.a.quaternionIdentity) as GameObject;
-		} else if ((val >= 458 && val < 481) || val == 515) {	// [458, 480], 515
+		} else if ((val >= 458 && val < 481) 	// [458, 480], [515, 516]
+				   || val == 515
+				   || val == 516) {
 			if (val == 515) val = 23; // func_forcebridge out of order exception.
+			else if (val == 516) val = 24; // prop_lift2 out of order exception.
 			else val -= 458;
 
 			if (val > (Const.a.miscellaneousPrefabs.Length - 1)) return null;

@@ -57,9 +57,8 @@ public class DelayedSpawn : MonoBehaviour {
 		line += Utils.splitChar + Utils.BoolToString(ds.despawnInstead);
 		line += Utils.splitChar + Utils.BoolToString(ds.doSelfAfterList);
 		line += Utils.splitChar + Utils.BoolToString(ds.destroyAfterListInsteadOfDeactivate);
-		line += Utils.splitChar + Utils.UintToString(go.transform.childCount);
-		for (int i=0;i<go.transform.childCount;i++) {
-			line += Utils.splitChar + Utils.SaveChildGOState(go,i);
+		for (int i=0;i<ds.objectsToSpawn.Length;i++) {
+			line += Utils.splitChar + Utils.SaveSubActivatedGOState(ds.objectsToSpawn[i]);
 		}
 
 		return line;
@@ -75,18 +74,8 @@ public class DelayedSpawn : MonoBehaviour {
 		ds.despawnInstead = Utils.GetBoolFromString(entries[index]); index++;
 		ds.doSelfAfterList = Utils.GetBoolFromString(entries[index]); index++;
 		ds.destroyAfterListInsteadOfDeactivate = Utils.GetBoolFromString(entries[index]); index++;
-		int numChildren = Utils.GetIntFromString(entries[index]); index++;
-		if (numChildren != go.transform.childCount) {
-			Debug.Log("Mismatch for DelayedSpawn child count vs savefile on "
-					  + go.name + "!");
-			numChildren = go.transform.childCount;
-		}
-
-		if (go.transform.childCount == 0) return index;
-
-		for (int i=0; i<numChildren; i++) {
-			GameObject childGO = go.transform.GetChild(i).gameObject;
-			index = Utils.LoadSubActivatedGOState(childGO,ref entries,index);
+		for (int i=0; i<ds.objectsToSpawn.Length; i++) {
+			index = Utils.LoadSubActivatedGOState(ds.objectsToSpawn[i],ref entries,index);
 		}
 
 		return index;

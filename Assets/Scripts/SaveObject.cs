@@ -46,7 +46,6 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.TCounter: saveableType = "TCounter"; break;
 			case SaveableType.TGravity: saveableType = "TGravity"; break;
 			case SaveableType.MChanger: saveableType = "MChanger"; break;
-			case SaveableType.RadTrig: saveableType = "RadTrig"; break;
 			case SaveableType.GravPad: saveableType = "GravPad"; break;
 			case SaveableType.TransformParentless: saveableType = "TransformParentless"; break;
 			case SaveableType.ChargeStation: saveableType = "ChargeStation"; break;
@@ -147,7 +146,8 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Grenade:               s1.Append(GrenadeActivate.Save(go)); break;
 			case SaveableType.NPC:                     s1.Append(HealthManager.Save(go,prefID)); s1.Append(Utils.splitChar);
 													    s1.Append(AIController.Save(go,prefID)); s1.Append(Utils.splitChar); // Handles SearchableDestructable for corpse child
-										       s1.Append(AIAnimationController.Save(go)); break;
+										       s1.Append(AIAnimationController.Save(go)); s1.Append(Utils.splitChar);
+													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.Destructable:            s1.Append(HealthManager.Save(go,prefID)); break;
 			case SaveableType.SearchableStatic:       s1.Append(SearchableItem.Save(go,prefID)); break;
 			case SaveableType.SearchableDestructable: s1.Append(SearchableItem.Save(go,prefID)); s1.Append(Utils.splitChar);
@@ -169,7 +169,6 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.TCounter:               s1.Append(TriggerCounter.Save(go)); break;
 			case SaveableType.TGravity:                  s1.Append(GravityLift.Save(go)); break;
 			case SaveableType.MChanger:              s1.Append(MaterialChanger.Save(go)); break;
-			case SaveableType.RadTrig:                     s1.Append(Radiation.Save(go)); break;
 			case SaveableType.GravPad:                s1.Append(TextureChanger.Save(go)); break;
 			case SaveableType.ChargeStation:           s1.Append(ChargeStation.Save(go)); break;
 			case SaveableType.Light:                  s1.Append(LightAnimation.Save(go)); break;
@@ -241,7 +240,8 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Grenade:				  index =        GrenadeActivate.Load(go,ref entries,index); break;
 			case SaveableType.NPC:					  index =          HealthManager.Load(go,ref entries,index,prefID);
 													  index =           AIController.Load(go,ref entries,index,prefID); // Handles SearchableDestructable for corpse child
-													  index =  AIAnimationController.Load(go,ref entries,index); break;
+													  index =  AIAnimationController.Load(go,ref entries,index);
+													  index =               TargetIO.Load(go,ref entries,index,true); break;
 			case SaveableType.Destructable:			  index =          HealthManager.Load(go,ref entries,index,prefID); break;
 			case SaveableType.SearchableStatic:		  index =         SearchableItem.Load(go,ref entries,index,prefID); break;
 			case SaveableType.SearchableDestructable: index =         SearchableItem.Load(go,ref entries,index,prefID);
@@ -263,7 +263,6 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.TCounter:               index =         TriggerCounter.Load(go,ref entries,index); break;
 			case SaveableType.TGravity:               index =            GravityLift.Load(go,ref entries,index); break;
 			case SaveableType.MChanger:               index =        MaterialChanger.Load(go,ref entries,index); break;
-			case SaveableType.RadTrig:                index =              Radiation.Load(go,ref entries,index); break;
 			case SaveableType.GravPad:                index =         TextureChanger.Load(go,ref entries,index); break;
 			case SaveableType.ChargeStation:          index =          ChargeStation.Load(go,ref entries,index); break;
 			case SaveableType.Light:                  index =         LightAnimation.Load(go,ref entries,index); break;

@@ -6,7 +6,7 @@ public enum SaveableType : byte {Transform,Player,Useable,Grenade,NPC,
                                  FuncWall,TeleDest,LBranch,LRelay,LSpawner,
                                  InteractablePanel,ElevatorPanel,Keypad,
                                  PuzzleGrid,PuzzleWire,TCounter,TGravity,
-                                 MChanger,RadTrig,GravPad,TransformParentless,
+                                 MChanger,GravPad,TransformParentless,
                                  ChargeStation,Light,LTimer,Camera,
                                  DelayedSpawn,SecurityCamera,Trigger,
                                  Projectile,NormalScreen};

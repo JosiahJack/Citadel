@@ -101,6 +101,12 @@ public class InteractablePanel : MonoBehaviour {
 			line += Utils.splitChar + Utils.SaveSubActivatedGOState(ip.effects[i]);
 		}
 
+		DelayedSpawn despawner = ip.installationItem.GetComponent<DelayedSpawn>();
+		if (despawner != null) { // plastique
+			line += Utils.splitChar + DelayedSpawn.Save(ip.installationItem);
+			line += Utils.splitChar + DelayedSpawn.Save(ip.installationItem.transform.GetChild(0).gameObject);
+		}
+
 		return line;
 	}
 
@@ -113,6 +119,12 @@ public class InteractablePanel : MonoBehaviour {
 		index = Utils.LoadSubActivatedGOState(ip.installationItem,ref entries,index);
 		for (int i=0; i<ip.effects.Length; i++) {
 			index = Utils.LoadSubActivatedGOState(ip.effects[i],ref entries,index);
+		}
+
+		DelayedSpawn despawner = ip.installationItem.GetComponent<DelayedSpawn>();
+		if (despawner != null) { // plastique
+			index = DelayedSpawn.Load(ip.installationItem,ref entries,index);
+			index = DelayedSpawn.Load(ip.installationItem.transform.GetChild(0).gameObject,ref entries,index);
 		}
 
 		return index;

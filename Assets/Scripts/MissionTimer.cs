@@ -8,13 +8,13 @@ public class MissionTimer : MonoBehaviour {
 	public Text timerTypeText;
 	public string currentMission;
 	public int currentMissionIndex;
-	public GameObject radTrigger;
 
 	[HideInInspector] public bool lastTimer = false;
 	private float t;
 	private float minutes;
 	private float seconds;
 	private float timerFinished;
+	private bool timesUP = false;
 
 	public static MissionTimer a;
 
@@ -24,6 +24,7 @@ public class MissionTimer : MonoBehaviour {
 		a.timerFinished = PauseScript.a.relativeTime + 1f;
 		a.currentMission = Const.a.stringTable[504];
 		a.currentMissionIndex = 0;
+		a.timesUP = false;
 		if (Const.a.difficultyMission < 3) {
 			text.text = System.String.Empty;
 			timerTypeText.text = System.String.Empty;
@@ -50,46 +51,51 @@ public class MissionTimer : MonoBehaviour {
 
     void Update() {
 		if (Const.a.difficultyMission < 3) return;
-		if (Const.a.questData.LaserDestroyed && currentMissionIndex == 0) {
-			UpdateToNextMission(10800f,505,1);
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
+		if (MouseLookScript.a.inCyberSpace) return; // timer doesn't count down in cyberspace, yay!
+
+		if (timesUP) {
+			if (PlayerHealth.a.hm.health > 0f) {
+				PlayerHealth.a.radiationArea = true;
+				PlayerHealth.a.GiveRadiation(0.1f); // Every frame! Muahaha!!!
+				return;
+			}
 		}
 
-		if (Const.a.questData.AntennaNorthDestroyed && Const.a.questData.AntennaSouthDestroyed && Const.a.questData.AntennaEastDestroyed && Const.a.questData.AntennaWestDestroyed && currentMissionIndex == 1) {
-			UpdateToNextMission(2700f,506,2);
+		if (t <= 0) {
+			if (lastTimer) {
+				text.text = "<shocked>";
+				timerTypeText.text = Const.a.stringTable[509];
+				timesUP = true;
+				return;
+			} else {
+				PlayerHealth.a.PlayerDeathToMenu();
+				return;
+			}
 		}
 
-		if (Const.a.questData.SelfDestructActivated && currentMissionIndex == 2) {
-			UpdateToNextMission(3000f,507,3);
-		}
-
-		if (Const.a.questData.BridgeSeparated && currentMissionIndex == 3) {
-			UpdateToNextMission(2700f,506,4);
-		}
-
-		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			if (t <= 0) {
-				if (lastTimer) {
-					text.text = "<shocked>";
-					timerTypeText.text = Const.a.stringTable[509];
-					radTrigger.SetActive(true);
-					gameObject.SetActive(false);
-					return;
-				} else {
-					PlayerHealth.a.PlayerDeathToMenu();
-					return;
+		switch (currentMissionIndex) {
+			case 0: if (Const.a.questData.LaserDestroyed) UpdateToNextMission(10800f,505,1); break;
+			case 1:
+				if (Const.a.questData.AntennaNorthDestroyed
+					&& Const.a.questData.AntennaSouthDestroyed
+					&& Const.a.questData.AntennaEastDestroyed
+					&& Const.a.questData.AntennaWestDestroyed) {
+					UpdateToNextMission(2700f,506,2);
 				}
-			}
+				break;
+			case 2: if (Const.a.questData.SelfDestructActivated) UpdateToNextMission(3000f,507,3); break;
+			case 3: if (Const.a.questData.BridgeSeparated) UpdateToNextMission(2700f,506,4); break;
+		}
 
-			if (MouseLookScript.a.inCyberSpace) return; // timer doesn't count down in cyberspace, yay!
-
-			if (timerFinished < PauseScript.a.relativeTime) {
-				t -= 1f;
-				minutes = Mathf.Floor(t/60f);
-				seconds = t - (minutes*60);
-				text.text = (minutes.ToString("00") + ":" + seconds.ToString("00"));
-				timerTypeText.text = currentMission;
-				timerFinished = PauseScript.a.relativeTime + 1f;
-			}
+		if (timerFinished < PauseScript.a.relativeTime) {
+			t -= 1f;
+			minutes = Mathf.Floor(t/60f);
+			seconds = t - (minutes*60);
+			text.text = (minutes.ToString("00") + ":" + seconds.ToString("00"));
+			timerTypeText.text = currentMission;
+			timerFinished = PauseScript.a.relativeTime + 1f;
 		}
     }
 }

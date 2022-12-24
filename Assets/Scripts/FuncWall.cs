@@ -10,7 +10,7 @@ public class FuncWall : MonoBehaviour {
 	public float percentAjar = 0; // save
 	public AudioClip SFXMoving;
 	public AudioClip SFXStop;
-	public AudioSource SFXSource;
+	private AudioSource SFXSource;
 	public FuncStates currentState; // save
 	public int[] chunkIDs; // save
 
@@ -26,7 +26,7 @@ public class FuncWall : MonoBehaviour {
 		currentState = startState; // set door position to picked state
 		startPosition = transform.position;
 		rbody = GetComponent<Rigidbody>();
-		if (SFXSource == null) SFXSource = GetComponent<AudioSource>();
+		SFXSource = GetComponent<AudioSource>();
 		Initialize();
 		dist = distanceLeft = 0;
 		startTime = PauseScript.a.relativeTime;
