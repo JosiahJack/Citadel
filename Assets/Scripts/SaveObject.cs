@@ -233,7 +233,7 @@ public class SaveObject : MonoBehaviour {
 		if (index >= entries.Length) return index;
 
 		PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
-		if (prefID == null) Debug.Log("No PrefabIdentifier on " + go.name);
+		if (prefID == null && so.instantiated) Debug.Log("No PrefabIdentifier on " + go.name);
 		switch (so.saveType) {
 			case SaveableType.Player:				  index = PlayerReferenceManager.LoadPlayerDataToPlayer(go,ref entries,index,prefID); break;
 			case SaveableType.Useable:				  index =       UseableObjectUse.Load(go,ref entries,index); break;

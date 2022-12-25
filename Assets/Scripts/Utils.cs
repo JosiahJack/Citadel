@@ -680,7 +680,9 @@ public class Utils {
 		string line = System.String.Empty;
         line = BoolToString(aus.enabled);
 		line += splitChar + FloatToString(aus.time);
-		line += splitChar + aus.clip.name;
+		if (aus.clip == null) line += splitChar + "none";
+		else line += splitChar + aus.clip.name;
+
 		return line;
 	}
 

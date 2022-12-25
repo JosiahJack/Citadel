@@ -1485,7 +1485,7 @@ public class Const : MonoBehaviour {
 					levID = Utils.GetIntFromString(entries[18]); // int - get the level this was in
 					if (levID < 0 || levID > 13) levID = 1; // Default to med.
 					constdex = Utils.GetIntFromString(entries[19]); // int - get the index into the Master table of all prefabs
-					if (constdex < 0 || constdex > 516) continue;
+					if (constdex < 0 || constdex > 517) continue;
 
 					instantiatedObject = ConsoleEmulator.SpawnDynamicObject(constdex,levID,false,null);
 					SaveObject.Load(instantiatedObject,ref entries,3); // Load it.  Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated

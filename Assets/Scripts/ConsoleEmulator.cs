@@ -815,6 +815,7 @@ Master Index
 514 door_secret3              18  Misc
 515 func_forcebridge              23
 516 prop_lift2                    24
+517 func_wall                     25
 
 Generic Materials (Const.a.genericMaterials[])
 0  col1                 Dark Gray            In hindsight, maybe I should have named these descriptively.
@@ -913,11 +914,13 @@ Generic Materials (Const.a.genericMaterials[])
 
 			go = MonoBehaviour.Instantiate(Const.a.cyberItemPrefabs[val],
 							 spawnPos,Const.a.quaternionIdentity) as GameObject;
-		} else if ((val >= 458 && val < 481) 	// [458, 480], [515, 516]
+		} else if ((val >= 458 && val < 481) 	// [458, 480], [515, 517]
 				   || val == 515
-				   || val == 516) {
+				   || val == 516
+				   || val == 517) {
 			if (val == 515) val = 23; // func_forcebridge out of order exception.
 			else if (val == 516) val = 24; // prop_lift2 out of order exception.
+			else if (val == 517) val = 25; // func_wall out of order exception.
 			else val -= 458;
 
 			if (val > (Const.a.miscellaneousPrefabs.Length - 1)) return null;
