@@ -33,6 +33,7 @@ public class LevelManager : MonoBehaviour {
 	public NPCSubManager[] npcsm;
 	public Level[] levelScripts;
 	public GameObject[] lightContainers;
+	public GameObject[] npcContainers;
 
 	private bool getValparsed;
 	private bool[] levelDataLoaded;
@@ -119,11 +120,15 @@ public class LevelManager : MonoBehaviour {
 
 	// Make sure relevant data and objects are loaded in and present for the level.
 	public void LoadLevelData(int levnum) {
-		if (levnum < 0 || levnum > 12) return; // Not in a level, in a test or editor space.
+		if (QuestLogNotesManager.a != null) QuestLogNotesManager.a.NotifyLevelChange(currentLevel);
+
+		if (levnum < 0 || levnum > 12) { // Not in a level, in a test or editor space.
+			levelDataLoaded[levnum] = true;
+			return;
+		}
 		if (levelDataLoaded[levnum]) return; // Already loaded.
 
 		LoadLevelLights(levnum);
-		if (QuestLogNotesManager.a != null) QuestLogNotesManager.a.NotifyLevelChange(currentLevel);
 		levelDataLoaded[levnum] = true;
 	}
 
@@ -260,7 +265,7 @@ public class LevelManager : MonoBehaviour {
 			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) continue;
 			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) continue;
 
-			DestroyImmediate(compArray[i].gameObject);
+			DestroyImmediate(compArray[i].gameObject); // Dangerous isn't it :D
 		}
 		compArray = null;
 	}

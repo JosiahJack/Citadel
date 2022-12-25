@@ -817,6 +817,18 @@ public class Tests : MonoBehaviour {
 		}
 	}
 
+	public void SetStaticSaveableIDs() {
+		int idInc = 1000000;
+		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+		for (int i=0;i<allParents.Count;i++) {
+			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(SaveObject),true); // find all SaveObject components, including inactive (hence the true here at the end)
+			for (int k=0;k<compArray.Length;k++) {
+				compArray[k].gameObject.GetComponent<SaveObject>().SaveID = idInc; //add the gameObject associated with all SaveObject components in the scene
+				idInc++;
+			}
+		}
+	}
+
 	void TEMP_Func_Wall_SetChunkIDs(GameObject go) {
 		UnityEngine.Debug.Log("go.name: " + go.name);
 		FuncWall fw = go.GetComponent<FuncWall>();

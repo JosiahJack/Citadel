@@ -1278,8 +1278,9 @@ public class Const : MonoBehaviour {
 	// 6. Const Start() detects DontDestroyOnLoad object, uses Load actual=true
 	// 7. Load then does actual load.
 	//    a. Iterate over and destroy all dynamic objects in level containers.
-	//    b. Iterate over dynamic object containers instantiating from save.
-	//    c. Load to remaining static saveable objects left unloaded from save.
+	//    b. Find all remaining saveables to load static objects to.
+	//    c. Load to static saveable objects.
+	//    d. Iterate over dynamic object containers instantiating from save.
 	public void Load(int saveFileIndex, bool actual) {
 		ShowLoading();
 		if (!actual) {
@@ -1307,6 +1308,8 @@ public class Const : MonoBehaviour {
 		StartCoroutine(Const.a.LoadRoutine(saveFileIndex,false));
 	}
 
+	// LOAD 2. Called from Load menu or Quick Load.
+	// LOAD 6. Called from Const.a.Start().
 	public IEnumerator LoadRoutine(int saveFileIndex, bool actual) {
 		Stopwatch loadTimer = new Stopwatch();
 		Stopwatch loadUpdateTimer = new Stopwatch(); // For loading % indicator.
@@ -1317,19 +1320,10 @@ public class Const : MonoBehaviour {
 		string readline; 					// Initialize temporary variables.
 		int numSaveablesFromSavefile = 0;
 		int i,j;
-		GameObject currentGameObject = null;
+		GameObject currentGameObjectInScene = null;
 		loadPercentText.text = "(2) --.-0";
 		yield return null; // Update progress text.
 
-		// Find all gameobjects with SaveObject script attached.
-		// This assumes every prefab and static GameObject has only one
-		// SaveObject script attached at top parent for that object.
-		// Exceptions:
-		// - func_wall has its SaveObject on first child
-		// - doorE has its SaveObject on first child
-		// - se_corpse_eaten has its SearchableItem on first child
-		List<GameObject> saveableGameObjects = new List<GameObject>();
-		FindAllSaveObjectsGOs(ref saveableGameObjects); // ref to avoid boxing.
 		List<string> readFileList = new List<string>();
 		char csplit = '|'; // caching since it will be iterated over in a loop
 		int index = 0; // caching since...I just said this
@@ -1373,39 +1367,78 @@ public class Const : MonoBehaviour {
 			yield return null;
 
 			// First pass to initialize tracking arrays:
-			// - readIDs, This holds the full list of all unique IDs.
+			// - saveFile_Line_SaveID, This holds the full list of all unique IDs.
 			// - saveableIsInstantiated, True if object is instantiated prefab.
-			int[] readIDs = new int[(numSaveablesFromSavefile)];
-			bool[] saveableIsInstantiated = new int[(numSaveablesFromSavefile)];
+			int[] saveFile_Line_SaveID = new int[(numSaveablesFromSavefile)];
+			bool[] saveFile_Line_IsInstantiated = new bool[(numSaveablesFromSavefile)];
 			for (i=3;i<(numSaveablesFromSavefile);i++) {
 				entries = readFileList[i].Split(csplit);
 				if (entries.Length > 1) {
-					readIDs[i] = Utils.GetIntFromString(entries[1]); // int - get saveID from 2nd slot
-					saveableIsInstantiated[i] = Utils.GetBoolFromString(entries[2]); // bool - get instantiated from 3rd slot
+					saveFile_Line_SaveID[i] = Utils.GetIntFromString(entries[1]); // int - get saveID from 2nd slot
+					saveFile_Line_IsInstantiated[i] = Utils.GetBoolFromString(entries[2]); // bool - get instantiated from 3rd slot
 				}
 			}
 
 			matchTimer.Start();
-			index = 3; 
-			bool[] alreadyCheckedThisSaveableGameObject = new bool[saveableGameObjects.Count];
-			Utils.BlankBoolArray(ref alreadyCheckedThisSaveableGameObject,false); // Fill with false.
+			index = 3;
+			SaveObject currentSaveObjectInScene;
 
-			SaveObject so;
-			// Ok, so we have a list of all saveableGameObjects and a list of all saveables from the savefile.
+			// LOAD 7a. DELETE INSTANTIABLE SAVEABLES
+			// Alright, let's blank out the instantiable objects from current scene by deleting
+			// all of them to empty all 13 containers for all levels:
+			for (i=0;i<14;i++) {
+				Transform containerTR = LevelManager.a.GetRequestedLevelDynamicContainer(i).transform;
+				for (j=0;j<containerTR.childCount;j++) {
+					DestroyImmediate(containerTR.GetChild(j).gameObject); // Dangerous isn't it :D
+				}
+			}
+
+			// Blank out instantiatable NPC containers for all levels.
+			for (i=0;i<14;i++) {
+				Transform containerTR = LevelManager.a.npcContainers[i].transform;
+				for (j=0;j<containerTR.childCount;j++) {
+					DestroyImmediate(containerTR.GetChild(j).gameObject);
+				}
+			}
+
+			// LOAD 7b. FIND ALL STATIC SAVEABLES
+			// DO THIS AFTER BLANKING TO ENSURE WE HAVE UP-TO-DATE LIST!!
+			// Find all gameobjects with SaveObject script attached.
+			// This assumes every prefab and static GameObject has only one
+			// SaveObject script attached at top parent for that object.
+			// Exceptions:
+			// - func_wall has its SaveObject on first child
+			// - doorE has its SaveObject on first child
+			// - se_corpse_eaten has its SearchableItem on first child
+			List<GameObject> saveableGameObjectsInScene = new List<GameObject>();
+			FindAllSaveObjectsGOs(ref saveableGameObjectsInScene); // ref to avoid boxing.
+
+			bool[] alreadyCheckedThisSaveableGameObjectInScene = new bool[saveableGameObjectsInScene.Count];
+			Utils.BlankBoolArray(ref alreadyCheckedThisSaveableGameObjectInScene,false); // Fill with false.
+
+			// LOAD 7c. LOAD TO STATIC SAVEABLES
+			// Ok, so we have a list of all saveableGameObjectsInScene and a list of
+			//   all saveables from the savefile.
 			// Main iteration loops through all lines in the savefile.
-			// Second iteration loops through all saveableGameObjects to find a match.
-			// The save file will always have more objects in it than in the level since the level is fresh.
-			// When we come across an instantiated object in the saveable file, we need to remember it for later and instantiate them all.
+			// Second iteration loops through all saveableGameObjectsInScene to find a match.
+			// The save file will always have more objects in it than in the
+			//   level since we removed the instantiables.
+			// When we come across an instantiated object in the saveable file,
+			//   we need to skip it for later and instantiate them all.
 			loadUpdateTimer.Start(); // For loading update
 			for (i=3;i<(numSaveablesFromSavefile);i++) {
-				for (j=0;j<(saveableGameObjects.Count);j++) {
-					if (alreadyCheckedThisSaveableGameObject[j]) continue; // skip checking this and doing GetComponent
-					currentGameObject = saveableGameObjects[j];
-					so = currentGameObject.GetComponent<SaveObject>();
-					if(so.SaveID == readIDs[i]) {
+				if (saveFile_Line_IsInstantiated[i]) continue; // Skip instantiables.
+
+				for (j=0;j<(saveableGameObjectsInScene.Count);j++) {
+					if (alreadyCheckedThisSaveableGameObjectInScene[j]) continue; // skip checking this and doing GetComponent
+
+					currentGameObjectInScene = saveableGameObjectsInScene[j];
+					currentSaveObjectInScene = currentGameObjectInScene.GetComponent<SaveObject>();
+
+					if(currentSaveObjectInScene.SaveID == saveFile_Line_SaveID[i]) { // Static Objects all have unique ID.
 						entries = readFileList[i].Split(csplit);
-						SaveObject.Load(currentGameObject,ref entries,3); // Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated
-						alreadyCheckedThisSaveableGameObject[j] = true; // Huge time saver right here!
+						SaveObject.Load(currentGameObjectInScene,ref entries,3); // Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated
+						alreadyCheckedThisSaveableGameObjectInScene[j] = true; // Huge time saver right here!
 						break;
 					}
 				}
@@ -1420,41 +1453,45 @@ public class Const : MonoBehaviour {
 			}
 			loadUpdateTimer.Stop();
 
+			// Check if we missed a static non-instantiable object to load to.
 			int numberOfMissedObjects = 0;
-			for (i=0;i<saveableGameObjects.Count;i++) {
-				if (alreadyCheckedThisSaveableGameObject[i]) continue;
+			for (i=0;i<saveableGameObjectsInScene.Count;i++) {
+				if (alreadyCheckedThisSaveableGameObjectInScene[i]) continue;
 				numberOfMissedObjects++;
 			}
-			UnityEngine.Debug.Log("numberOfMissedObjects: "
-								  + numberOfMissedObjects.ToString());
-
-			// Now time to instantiate anything left that is supposed to be here
-			loadUpdateTimer.Start(); // For loading update
-			int constdex = -1;
-			int consttable = 0;
-			GameObject instantiatedObject = null;
-			GameObject prefabReferenceGO = null;
-			for (i=0;i<instantiatedFound.Count;i++) {
-				entries = readFileList[i].Split(csplit);
-				if (entries.Length > 1) {
-					consttable = Utils.GetIntFromString(entries[3]); // int - get the prefab table type to use for lookups in Const
-					constdex = Utils.GetIntFromString(entries[4]); // int - get the index into the Const table of prefabs
-					if (constdex >= 0 && (consttable == 0 || consttable == 1)) {
-						if (consttable == 0) prefabReferenceGO = Const.a.useableItems[constdex];
-						else if (consttable == 1) prefabReferenceGO = Const.a.npcPrefabs[constdex];
-						if (prefabReferenceGO != null) instantiatedObject = Instantiate(prefabReferenceGO,Const.a.vectorZero,quaternionIdentity) as GameObject; // Instantiate at generic location
-						if (instantiatedObject != null) SaveObject.Load(instantiatedObject,ref entries,3); // Load it.  Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated
-					}
-				}
-				loadPercentText.text = "(6) " + ((i / instantiatedFound.Count).ToString("00.0000"));
-				if (loadUpdateTimer.ElapsedMilliseconds > 100) {
-					loadUpdateTimer.Reset();
-					loadUpdateTimer.Start();
-					Cursor.lockState = CursorLockMode.None;
-					Cursor.visible = true;
-					yield return null;
-				}
+			if (numberOfMissedObjects > 0) {
+				UnityEngine.Debug.Log("numberOfMissedObjects: "
+									+ numberOfMissedObjects.ToString());
 			}
+
+			// LOAD 7d. INSTANTIATE AND LOAD TO INSTANTIATED SAVEABLES
+			// Now time to instantiate anything left that is supposed to be here
+			//loadUpdateTimer.Start(); // For loading update
+			//int constdex = -1;
+			//int consttable = 0;
+			//GameObject instantiatedObject = null;
+			//GameObject prefabReferenceGO = null;
+			//for (i=0;i<instantiatedFound.Count;i++) {
+			//	entries = readFileList[i].Split(csplit);
+			//	if (entries.Length > 1) {
+			//		consttable = Utils.GetIntFromString(entries[3]); // int - get the prefab table type to use for lookups in Const
+			//		constdex = Utils.GetIntFromString(entries[4]); // int - get the index into the Const table of prefabs
+			//		if (constdex >= 0 && (consttable == 0 || consttable == 1)) {
+			//			if (consttable == 0) prefabReferenceGO = Const.a.useableItems[constdex];
+			//			else if (consttable == 1) prefabReferenceGO = Const.a.npcPrefabs[constdex];
+			//			if (prefabReferenceGO != null) instantiatedObject = Instantiate(prefabReferenceGO,Const.a.vectorZero,quaternionIdentity) as GameObject; // Instantiate at generic location
+			//			if (instantiatedObject != null) SaveObject.Load(instantiatedObject,ref entries,3); // Load it.  Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated
+			//		}
+			//	}
+			//	loadPercentText.text = "(6) " + ((i / instantiatedFound.Count).ToString("00.0000"));
+			//	if (loadUpdateTimer.ElapsedMilliseconds > 100) {
+			//		loadUpdateTimer.Reset();
+			//		loadUpdateTimer.Start();
+			//		Cursor.lockState = CursorLockMode.None;
+			//		Cursor.visible = true;
+			//		yield return null;
+			//	}
+			//}
 			loadUpdateTimer.Stop();
 			matchTimer.Stop();
 		}

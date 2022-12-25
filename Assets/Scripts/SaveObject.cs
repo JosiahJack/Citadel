@@ -13,14 +13,14 @@ public class SaveObject : MonoBehaviour {
 	[HideInInspector] public string saveableType;
 	[HideInInspector] public bool initialized = false;
 
-	public void SetSaveID() {
-		SaveID = gameObject.GetInstanceID();
-	}
+	//public void SetSaveID() {
+	//	SaveID = gameObject.GetInstanceID();
+	//}
 
 	public void Start() {
 		if (initialized) return;
 
-		SetSaveID();
+		//SetSaveID();
 		isRuntimeObject = true;  // Lets us know if this object is indeed not the prefab but rather an instance of a prefab
 		switch (saveType) {
 			case SaveableType.Player: saveableType = "Player"; break;

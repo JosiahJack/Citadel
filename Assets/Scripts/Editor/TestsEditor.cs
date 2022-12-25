@@ -73,5 +73,15 @@ public class TestsEditor : Editor {
 		if (GUILayout.Button("Set ChunkIDs array for all func_wall's")) {
 			testScript.TEMP_SetFunc_WallChunkIDs();
 		}
+
+		EditorGUILayout.BeginVertical();
+        GUILayout.Space(8f);
+        EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
+        GUILayout.Space(8f);
+		EditorGUILayout.EndVertical();
+
+		if (GUILayout.Button("Reset SaveIDs on Static Saveables")) {
+			testScript.SetStaticSaveableIDs();
+		}
 	}
 }
