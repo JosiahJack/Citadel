@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 
 public class SaveObject : MonoBehaviour {
-	public int SaveID;
+	public int SaveID; // Manually set by Tests.cs in Editor.
 	public bool isRuntimeObject = false;
 	public SaveableType saveType = SaveableType.Transform;
 	public bool instantiated = false; // Should oject be instantiated on load?
@@ -13,14 +13,9 @@ public class SaveObject : MonoBehaviour {
 	[HideInInspector] public string saveableType;
 	[HideInInspector] public bool initialized = false;
 
-	//public void SetSaveID() {
-	//	SaveID = gameObject.GetInstanceID();
-	//}
-
 	public void Start() {
 		if (initialized) return;
 
-		//SetSaveID();
 		isRuntimeObject = true;  // Lets us know if this object is indeed not the prefab but rather an instance of a prefab
 		switch (saveType) {
 			case SaveableType.Player: saveableType = "Player"; break;

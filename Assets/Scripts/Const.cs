@@ -1371,6 +1371,8 @@ public class Const : MonoBehaviour {
 			// - saveableIsInstantiated, True if object is instantiated prefab.
 			int[] saveFile_Line_SaveID = new int[(numSaveablesFromSavefile)];
 			bool[] saveFile_Line_IsInstantiated = new bool[(numSaveablesFromSavefile)];
+			bool[] alreadyLoadedLineFromSaveFile = new bool[(numSaveablesFromSavefile)];
+			Utils.BlankBoolArray(ref alreadyLoadedLineFromSaveFile,false); // Fill with false.
 			for (i=3;i<(numSaveablesFromSavefile);i++) {
 				entries = readFileList[i].Split(csplit);
 				if (entries.Length > 1) {
@@ -1429,6 +1431,7 @@ public class Const : MonoBehaviour {
 			for (i=3;i<(numSaveablesFromSavefile);i++) {
 				if (saveFile_Line_IsInstantiated[i]) continue; // Skip instantiables.
 
+				alreadyLoadedLineFromSaveFile[i] = true;
 				for (j=0;j<(saveableGameObjectsInScene.Count);j++) {
 					if (alreadyCheckedThisSaveableGameObjectInScene[j]) continue; // skip checking this and doing GetComponent
 
@@ -1442,6 +1445,7 @@ public class Const : MonoBehaviour {
 						break;
 					}
 				}
+
 				loadPercentText.text = "(5) " + (i/numSaveFileLines).ToString("00.00");
 				if (loadUpdateTimer.ElapsedMilliseconds > 100) {
 					loadUpdateTimer.Reset();
@@ -1466,32 +1470,35 @@ public class Const : MonoBehaviour {
 
 			// LOAD 7d. INSTANTIATE AND LOAD TO INSTANTIATED SAVEABLES
 			// Now time to instantiate anything left that is supposed to be here
-			//loadUpdateTimer.Start(); // For loading update
-			//int constdex = -1;
+			loadUpdateTimer.Start(); // For loading update
+			int constdex = -1;
+			int levID = -1;
 			//int consttable = 0;
-			//GameObject instantiatedObject = null;
+			GameObject instantiatedObject = null;
 			//GameObject prefabReferenceGO = null;
 			//for (i=0;i<instantiatedFound.Count;i++) {
-			//	entries = readFileList[i].Split(csplit);
-			//	if (entries.Length > 1) {
-			//		consttable = Utils.GetIntFromString(entries[3]); // int - get the prefab table type to use for lookups in Const
-			//		constdex = Utils.GetIntFromString(entries[4]); // int - get the index into the Const table of prefabs
-			//		if (constdex >= 0 && (consttable == 0 || consttable == 1)) {
-			//			if (consttable == 0) prefabReferenceGO = Const.a.useableItems[constdex];
-			//			else if (consttable == 1) prefabReferenceGO = Const.a.npcPrefabs[constdex];
-			//			if (prefabReferenceGO != null) instantiatedObject = Instantiate(prefabReferenceGO,Const.a.vectorZero,quaternionIdentity) as GameObject; // Instantiate at generic location
-			//			if (instantiatedObject != null) SaveObject.Load(instantiatedObject,ref entries,3); // Load it.  Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated
-			//		}
-			//	}
-			//	loadPercentText.text = "(6) " + ((i / instantiatedFound.Count).ToString("00.0000"));
-			//	if (loadUpdateTimer.ElapsedMilliseconds > 100) {
-			//		loadUpdateTimer.Reset();
-			//		loadUpdateTimer.Start();
-			//		Cursor.lockState = CursorLockMode.None;
-			//		Cursor.visible = true;
-			//		yield return null;
-			//	}
-			//}
+			for (i=3;i<(numSaveablesFromSavefile);i++) {
+				if (alreadyLoadedLineFromSaveFile[i]) continue;
+
+				entries = readFileList[i].Split(csplit);
+				if (entries.Length > 1) {
+					levID = Utils.GetIntFromString(entries[18]); // int - get the level this was in
+					if (levID < 0 || levID > 13) levID = 1; // Default to med.
+					constdex = Utils.GetIntFromString(entries[19]); // int - get the index into the Master table of all prefabs
+					if (constdex < 0 || constdex > 516) continue;
+
+					instantiatedObject = ConsoleEmulator.SpawnDynamicObject(constdex,levID,false,null);
+					SaveObject.Load(instantiatedObject,ref entries,3); // Load it.  Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated
+				}
+				loadPercentText.text = "(6) " + ((i / numSaveFileLines).ToString("00.0000"));
+				if (loadUpdateTimer.ElapsedMilliseconds > 100) {
+					loadUpdateTimer.Reset();
+					loadUpdateTimer.Start();
+					Cursor.lockState = CursorLockMode.None;
+					Cursor.visible = true;
+					yield return null;
+				}
+			}
 			loadUpdateTimer.Stop();
 			matchTimer.Stop();
 		}
