@@ -334,6 +334,12 @@ public class PlayerPatch : MonoBehaviour {
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pp.staminupFinishedTime); // float
 		line += Utils.splitChar + pp.berserkIncrement.ToString(); // int
 		line += Utils.splitChar + pp.patchActive.ToString(); // int
+		line += Utils.splitChar + BerserkEffect.Save(pp.sensaroundCamCenterBerserk.gameObject);
+		line += Utils.splitChar + Utils.SaveCamera(pp.sensaroundCamCenterBerserk.gameObject); // Grayscale saved here
+		line += Utils.splitChar + BerserkEffect.Save(pp.sensaroundCamLeftBerserk.gameObject);
+		line += Utils.splitChar + Utils.SaveCamera(pp.sensaroundCamLeftBerserk.gameObject); // Grayscale saved here
+		line += Utils.splitChar + BerserkEffect.Save(pp.sensaroundCamRightBerserk.gameObject);
+		line += Utils.splitChar + Utils.SaveCamera(pp.sensaroundCamRightBerserk.gameObject); // Grayscale saved here
 		return line;
 	}
 
@@ -352,6 +358,12 @@ public class PlayerPatch : MonoBehaviour {
 		pp.staminupFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pp.berserkIncrement = Utils.GetIntFromString(entries[index]); index++;
 		pp.patchActive = Utils.GetIntFromString(entries[index]); index++;
+		index = BerserkEffect.Load(pp.sensaroundCamCenterBerserk.gameObject,ref entries,index);
+		index = Utils.LoadCamera(pp.sensaroundCamCenterBerserk.gameObject,ref entries,index); // Grayscale loaded here
+		index = BerserkEffect.Load(pp.sensaroundCamLeftBerserk.gameObject,ref entries,index);
+		index = Utils.LoadCamera(pp.sensaroundCamLeftBerserk.gameObject,ref entries,index); // Grayscale loaded here
+		index = BerserkEffect.Load(pp.sensaroundCamRightBerserk.gameObject,ref entries,index);
+		index = Utils.LoadCamera(pp.sensaroundCamRightBerserk.gameObject,ref entries,index); // Grayscale loaded here
 		return index;
 	}
 }

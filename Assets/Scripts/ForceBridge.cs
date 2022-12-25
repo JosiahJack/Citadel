@@ -8,6 +8,7 @@ public class ForceBridge : MonoBehaviour {
 	public bool z; // save
 	public bool activated; // save
 	public AudioClip SFXBridgeChange;
+	public ForceFieldColor fieldColor;
 
 	[HideInInspector] public bool lerping; // save
 	[HideInInspector] public float tickFinished; // save
@@ -33,6 +34,17 @@ public class ForceBridge : MonoBehaviour {
 		if (activated) Activate(true,true);
 		else Deactivate(true, true);
 
+		SetColorMaterial();
+	}
+
+	public void SetColorMaterial() {
+		switch (fieldColor) {
+			case ForceFieldColor.Red:      mr.material = Const.a.genericMaterials[5];  break;
+			case ForceFieldColor.Green:    mr.material = Const.a.genericMaterials[9];  break;
+			case ForceFieldColor.Blue:     mr.material = Const.a.genericMaterials[8];  break;
+			case ForceFieldColor.Purple:   mr.material = Const.a.genericMaterials[12]; break;
+			case ForceFieldColor.RedFaint: mr.material = Const.a.genericMaterials[6];  break;
+		}
 	}
 
 	void FixedUpdate() {
@@ -124,6 +136,7 @@ public class ForceBridge : MonoBehaviour {
 		line += Utils.splitChar + Utils.FloatToString(fb.activatedScaleX); // Current lerped value for expansion
 		line += Utils.splitChar + Utils.FloatToString(fb.activatedScaleY);
 		line += Utils.splitChar + Utils.FloatToString(fb.activatedScaleZ);
+		line += Utils.splitChar + Utils.IntToString(Utils.ForceFieldColorToInt(fb.fieldColor));
 		return line;
 	}
 
@@ -140,6 +153,8 @@ public class ForceBridge : MonoBehaviour {
 		fb.activatedScaleX = Utils.GetFloatFromString(entries[index]); index++;
 		fb.activatedScaleY = Utils.GetFloatFromString(entries[index]); index++;
 		fb.activatedScaleZ = Utils.GetFloatFromString(entries[index]); index++;
+		fb.fieldColor = Utils.GetForceFieldColorFromInt(Utils.GetIntFromString(entries[index])); index++;
+		fb.SetColorMaterial();
 		return index;
 	}
 }

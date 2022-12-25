@@ -40,28 +40,17 @@ public class PlayerReferenceManager : MonoBehaviour {
 
         s1.Clear();
 		s1.Append("Hacker");//s1.Append(Const.a.playerName);
-        s1.Append(Utils.splitChar);
-		s1.Append(PlayerHealth.Save(PRman.playerCapsule));
-        s1.Append(Utils.splitChar);
-		s1.Append(PlayerEnergy.Save(PRman.playerCapsule));
-        s1.Append(Utils.splitChar);
-		s1.Append(PlayerMovement.Save(PRman.playerCapsule));
-        s1.Append(Utils.splitChar);
-		s1.Append(PlayerPatch.Save(PRman.playerCapsule));
-        s1.Append(Utils.splitChar);
-		s1.Append(MouseLookScript.Save(PRman.playerCapsuleMainCamera));
-        s1.Append(Utils.splitChar);
-		s1.Append(HealthManager.Save(PRman.playerCapsule,prefID));
-        s1.Append(Utils.splitChar);
-		s1.Append(GUIState.Save(PRman.playerCanvas));
-        s1.Append(Utils.splitChar);
-		s1.Append(Inventory.Save(PRman.playerInventory));
-        s1.Append(Utils.splitChar);
-		s1.Append(WeaponCurrent.Save(PRman.playerInventory));
-        s1.Append(Utils.splitChar);
-		s1.Append(WeaponFire.Save(PRman.playerCapsuleMainCameraGunCamera));
-        s1.Append(Utils.splitChar);
-		s1.Append(MFDManager.Save(PRman.playerMFDManager));
+        s1.Append(Utils.splitChar); s1.Append(PlayerHealth.Save(PRman.playerCapsule));
+        s1.Append(Utils.splitChar); s1.Append(PlayerEnergy.Save(PRman.playerCapsule));
+        s1.Append(Utils.splitChar); s1.Append(PlayerMovement.Save(PRman.playerCapsule));
+        s1.Append(Utils.splitChar); s1.Append(PlayerPatch.Save(PRman.playerCapsule));
+        s1.Append(Utils.splitChar); s1.Append(MouseLookScript.Save(PRman.playerCapsuleMainCamera));
+        s1.Append(Utils.splitChar); s1.Append(HealthManager.Save(PRman.playerCapsule,prefID));
+        s1.Append(Utils.splitChar); s1.Append(GUIState.Save(PRman.playerCanvas));
+        s1.Append(Utils.splitChar); s1.Append(Inventory.Save(PRman.playerInventory));
+        s1.Append(Utils.splitChar); s1.Append(WeaponCurrent.Save(PRman.playerInventory));
+        s1.Append(Utils.splitChar); s1.Append(WeaponFire.Save(PRman.playerCapsuleMainCameraGunCamera));
+        s1.Append(Utils.splitChar); s1.Append(MFDManager.Save(PRman.playerMFDManager));
 		return s1.ToString();
 	}
 

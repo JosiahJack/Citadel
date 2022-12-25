@@ -46,6 +46,12 @@ public class Utils {
 		return array[index]; // Safe to pass the index value into the array space.
 	}
 
+	public static void BlankBoolArray(ref bool[] array, bool value) {
+		for (int i=0;i<array.Length;i++) {
+			array[i] = value; // Reset the list
+		}
+	}
+
     // This isn't used anywhere at the moment but is handy to have as a note.
     //public static int GetNPCConstIndexFromIndex23(int ref23) {
 	//	switch (ref23) {
@@ -430,15 +436,38 @@ public class Utils {
 
     public static FuncStates GetFuncStatesFromInt(int state_i) {
         switch (state_i) {
-            case 0:  return FuncStates.Start;
-            case 1:  return FuncStates.Start;
-            case 2:  return FuncStates.Target;
-            case 3:  return FuncStates.MovingStart;
-            case 4:  return FuncStates.MovingTarget;
-            case 5:  return FuncStates.AjarMovingStart;
-            case 6:  return FuncStates.AjarMovingTarget;
+            case 0: return FuncStates.Start;
+            case 1: return FuncStates.Start;
+            case 2: return FuncStates.Target;
+            case 3: return FuncStates.MovingStart;
+            case 4: return FuncStates.MovingTarget;
+            case 5: return FuncStates.AjarMovingStart;
+            case 6: return FuncStates.AjarMovingTarget;
         }
         return FuncStates.Start;
+    }
+
+//public enum ForceFieldColor : byte {Red,Green,Blue,Purple,RedFaint};
+    public static int ForceFieldColorToInt(ForceFieldColor funcStates) {
+		switch (funcStates) {
+			case ForceFieldColor.Red:      return 1;
+			case ForceFieldColor.Green:    return 2;
+			case ForceFieldColor.Blue:     return 3;
+			case ForceFieldColor.Purple:   return 4;
+			case ForceFieldColor.RedFaint: return 5;
+		}
+        return 1; // Red
+    }
+
+    public static ForceFieldColor GetForceFieldColorFromInt(int state_i) {
+        switch (state_i) {
+            case 1: return ForceFieldColor.Red;
+            case 2: return ForceFieldColor.Green;
+            case 3: return ForceFieldColor.Blue;
+            case 4: return ForceFieldColor.Purple;
+            case 5: return ForceFieldColor.RedFaint;
+        }
+        return ForceFieldColor.Red;
     }
 
     public static string SaveTransform(Transform tr) {

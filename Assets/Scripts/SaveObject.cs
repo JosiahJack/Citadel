@@ -57,6 +57,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Trigger: saveableType = "Trigger"; break;
 			case SaveableType.Projectile: saveableType = "Projectile"; break;
 			case SaveableType.NormalScreen: saveableType = "NormalScreen"; break;
+			case SaveableType.CyberSwitch: saveableType = "CyberSwitch"; break;
 			default: saveableType = "Transform"; break;
 		}
 
@@ -183,6 +184,8 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Projectile:               s1.Append(DelayedSpawn.Save(go)); s1.Append(Utils.splitChar);
 										      s1.Append(ProjectileEffectImpact.Save(go)); break;
 			case SaveableType.NormalScreen:            s1.Append(HealthManager.Save(go,prefID)); break;
+			case SaveableType.CyberSwitch:               s1.Append(CyberSwitch.Save(go)); s1.Append(Utils.splitChar);
+													        s1.Append(TargetIO.Save(go)); break;
 		}
 		return s1.ToString();
 	}
@@ -277,7 +280,8 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Projectile:             index =           DelayedSpawn.Load(go,ref entries,index);
 													  index = ProjectileEffectImpact.Load(go,ref entries,index); break;
 			case SaveableType.NormalScreen:			  index =          HealthManager.Load(go,ref entries,index,prefID); break;
-
+			case SaveableType.CyberSwitch:			  index =            CyberSwitch.Load(go,ref entries,index);
+													  index =               TargetIO.Load(go,ref entries,index,true); break;
 		}
 		return index;
 	}

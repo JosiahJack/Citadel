@@ -566,7 +566,9 @@ public class MouseLookScript : MonoBehaviour {
 
 	void RecoilAndRest() {
 		float camz = Mathf.Lerp(transform.localPosition.z,0f,0.1f);
-		Vector3 camPos = new Vector3(transform.localPosition.x,Const.a.playerCameraOffsetY*PlayerMovement.a.currentCrouchRatio,camz);
+		Vector3 camPos = new Vector3(transform.localPosition.x,
+									 Const.a.playerCameraOffsetY * PlayerMovement.a.currentCrouchRatio,
+									 camz);
 		transform.localPosition = camPos;
 		if (shakeFinished > PauseScript.a.relativeTime) {
 			float x = transform.localPosition.x + UnityEngine.Random.Range(shakeForce * -0.17f,shakeForce * 0.17f);
@@ -898,11 +900,13 @@ public class MouseLookScript : MonoBehaviour {
 		MouseLookScript ml = go.GetComponent<MouseLookScript>();
 		if (ml == null) {
 			Debug.Log("MouseLook missing on savetype of Player!  GameObject.name: " + go.name);
-			return "0|0|-1|-1|0|0|0|0|0|0|0000.00000|0|0000.00000|0|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|1";
+			return "0|0|0|0|-1|-1|0|0|0|0|0|0|0000.00000|0|0000.00000|0|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|1";
 		}
 
 		string line = System.String.Empty;
-		line = Utils.BoolToString(ml.inventoryMode); // bool
+		line = Utils.BoolToString(ml.gameObject.activeSelf); // bool
+		line += Utils.splitChar + Utils.BoolToString(ml.playerCamera.enabled); // bool
+		line += Utils.splitChar + Utils.BoolToString(ml.inventoryMode); // bool
 		line += Utils.splitChar + Utils.BoolToString(ml.holdingObject); // bool
 		line += Utils.splitChar + ml.heldObjectIndex.ToString(); // int
 		line += Utils.splitChar + ml.heldObjectCustomIndex.ToString(); // int
@@ -937,6 +941,8 @@ public class MouseLookScript : MonoBehaviour {
 		if (ml == null || index < 0 || entries == null) return index + 27;
 
 		float readFloatx, readFloaty, readFloatz;
+		ml.gameObject.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+		ml.playerCamera.enabled = Utils.GetBoolFromString(entries[index]); index++;
 		ml.inventoryMode = !Utils.GetBoolFromString(entries[index]); index++; // take opposite because we are about to opposite again
 		ml.ToggleInventoryMode(); // correctly set cursor lock state, and opposite again, now it is what was saved
 		ml.holdingObject = Utils.GetBoolFromString(entries[index]); index++;

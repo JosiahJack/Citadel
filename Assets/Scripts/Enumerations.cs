@@ -9,7 +9,7 @@ public enum SaveableType : byte {Transform,Player,Useable,Grenade,NPC,
                                  MChanger,GravPad,TransformParentless,
                                  ChargeStation,Light,LTimer,Camera,
                                  DelayedSpawn,SecurityCamera,Trigger,
-                                 Projectile,NormalScreen};
+                                 Projectile,NormalScreen,CyberSwitch};
 public enum BodyState : byte {Standing,Crouch,CrouchingDown,StandingUp,Prone,
                               ProningDown,ProningUp};
 public enum Handedness : byte {Center,LH,RH};
@@ -65,6 +65,7 @@ public enum ConfigToggleType : byte {Fullscreen,SSAO,Bloom,Reverb,Subtitles,
                                      InvertInventoryCycling,QuickPickup,
                                      QuickReload,Reflections};
 public enum HUDColor : byte {White,Red,Orange,Yellow,Green,Blue,Purple,Gray};
+public enum ForceFieldColor : byte {Red,Green,Blue,Purple,RedFaint};
 public enum ButtonType : byte {Generic,GeneralInv,Patch,Grenade,Weapon,Search,
                                None,PGrid,PWire};
 public enum TabMSG : byte {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,

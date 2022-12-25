@@ -815,6 +815,57 @@ Master Index
 514 door_secret3              18  Misc
 515 func_forcebridge              23
 516 prop_lift2                    24
+
+Generic Materials (Const.a.genericMaterials[])
+0  col1                 Dark Gray            In hindsight, maybe I should have named these descriptively.
+1  col1_unlit           Dark Gray unlit
+2  col2                 Yellow
+3  col3                 Red
+4  col3_bright          Red
+5  col3_forcefield      Red
+6  col3_forcefieldfaint Red
+7  col4                 Blue
+8  col4_forcefield      Blue
+9  col5_forcefield      Green
+10 col6                 Light Gray
+11 col7                 Purple
+12 col7_forcefield      Purple
+13 colwhite             Pure White Emissive
+14 console1_1
+15 console1_2
+16 console1_3
+17 console1_4
+18 console1_5
+19 console1_6
+20 console1_7
+21 console1_8
+22 console1_9
+23 console2_1
+24 console2_2
+25 console2_3
+26 console2_4
+27 console2_5
+28 console2_6
+29 console2_7
+30 console2_8
+31 console2_9
+32 console3_1
+33 console3_2
+34 console3_4
+35 console3_7
+36 console3_8
+37 console3_9
+38 citmat1_1
+39 citmat1_2
+40 citmat1_3
+41 citmat1_4
+42 citmat1_5
+43 citmat1_8
+44 citmat1_8_mutated
+45 citmat1_9
+46 citmat2_1
+47 citmat2_4
+
 */
 
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat, GameObject forcedContainer) {

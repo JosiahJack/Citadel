@@ -664,8 +664,12 @@ public class HealthManager : MonoBehaviour {
 	// Generic health info string
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
 		HealthManager hm;
-		if (prefID.constIndex == 467) { // se_corpse_eaten
-			hm = go.transform.GetChild(0).GetComponent<HealthManager>();
+		if (prefID != null) {
+			if (prefID.constIndex == 467) { // se_corpse_eaten
+				hm = go.transform.GetChild(0).GetComponent<HealthManager>();
+			} else {
+				hm = go.GetComponent<HealthManager>();
+			}
 		} else {
 			hm = go.GetComponent<HealthManager>();
 		}
@@ -693,8 +697,12 @@ public class HealthManager : MonoBehaviour {
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   PrefabIdentifier prefID) {
 		HealthManager hm;
-		if (prefID.constIndex == 467) { // se_corpse_eaten
-			hm = go.transform.GetChild(0).GetComponent<HealthManager>();
+		if (prefID != null) {
+			if (prefID.constIndex == 467) { // se_corpse_eaten
+				hm = go.transform.GetChild(0).GetComponent<HealthManager>();
+			} else {
+				hm = go.GetComponent<HealthManager>();
+			}
 		} else {
 			hm = go.GetComponent<HealthManager>();
 		}

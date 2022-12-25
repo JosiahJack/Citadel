@@ -5,6 +5,7 @@ public class WeaponFire : MonoBehaviour {
 	// External references, required
     public GameObject impactEffect;
 	public GameObject noDamageIndicator;
+	public Camera gunCamera;
     public Camera playerCamera; // assign in the editor
     public GameObject playerCapsule;
     public EnergyOverloadButton energoverButton;
@@ -1163,6 +1164,9 @@ public class WeaponFire : MonoBehaviour {
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.justFired); // float
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.energySliderClickedTime); // float
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.cyberWeaponAttackFinished); // float
+		line += Utils.splitChar + Utils.BoolToString(wf.gunCamera.enabled); // bool
+		line += Utils.splitChar + BerserkEffect.Save(go);
+		line += Utils.splitChar + Utils.SaveCamera(go); // Grayscale saved here
 		return line;
 	}
 
@@ -1181,6 +1185,9 @@ public class WeaponFire : MonoBehaviour {
 		wf.justFired = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		wf.energySliderClickedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		wf.cyberWeaponAttackFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		wf.gunCamera.enabled = Utils.GetBoolFromString(entries[index]); index++;
+		index = BerserkEffect.Load(go,ref entries,index);
+		index = Utils.LoadCamera(go,ref entries,index); // Grayscale loaded here
 		return index;
 	}
 }

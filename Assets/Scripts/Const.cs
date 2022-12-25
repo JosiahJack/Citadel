@@ -253,6 +253,7 @@ public class Const : MonoBehaviour {
 	public GameObject[] cyberItemPrefabs;
 	public GameObject[] miscellaneousPrefabs;
 	public GameObject[] doorPrefabs;
+	public Material[] genericMaterials;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
 	[HideInInspector] public string versionString = "v0.98"; // Global CITADEL PROJECT VERSION
@@ -1134,7 +1135,7 @@ public class Const : MonoBehaviour {
 		// Save all the objects data
 		for (i=0;i<saveableGameObjects.Count;i++) {
 			// Take this object's data and add it to the array.
-			saveData[index] = SaveObject.Save(saveableGameObjects[i]);
+			saveData[index] = SaveObject.Save(saveableGameObjects[i]); // <<< THIS IS IT <<<
 			index++; // Each item saved on a separate line.
 		}
 
@@ -1170,32 +1171,39 @@ public class Const : MonoBehaviour {
 	//   1. Destroy the GameNotYetStarted indicator GameObject.
 	//   2. then simply turn off menu.
 	// 4b. If not fresh
-	//   1. Create NewGameIndicator GameObject.
+	//   1. Create NewGameIndicator GameObject, with transition handler.
 	//   2. Flag it as DontDestroyOnLoad so it is preserved across scenes.
 	//   3. Unload current scene.
 	//   4. SceneTransitionHandler on DontDestroyOnLoad GameObject loads scene.
 	// 5. Const.a.Start() checks for NewGameIndicator existence.
 	// 6a. If present, simply turn off main menu.
 	// 6b. Else same as if game was started from scratch.
+	// 7. Go into the game.  Player now has normal control.
 	public void NewGame() {
 		UnityEngine.Debug.Log("Starting new game!");
-		WriteDatForIntroPlayed(false);
-		GameObject freshGame = GameObject.Find("GameNotYetStarted");
-		if (freshGame == null) {
-			GameObject newGameIndicator = new GameObject();
+		WriteDatForIntroPlayed(false); // 2. Prevent intro from playing on subsequent sessions; only play intro video once ever after install (require menu option later).
+		GameObject freshGame = GameObject.Find("GameNotYetStarted"); // 3.
+		if (freshGame == null) { // 4b.
+			GameObject newGameIndicator = new GameObject(); // 4b.1.
 			newGameIndicator.name = "NewGameIndicator";
 			SceneTransitionHandler sth =
 			  newGameIndicator.AddComponent<SceneTransitionHandler>();
 			sth.saveGameIndex = -1;
-			DontDestroyOnLoad(newGameIndicator);
-			ReloadScene(sth);
-		} else {
+			DontDestroyOnLoad(newGameIndicator); // 4b.2.
+			ReloadScene(sth); // 4b.3.
+		} else { // 4a.
 			UnityEngine.Debug.Log("freshGame.name: " + freshGame.name);
-			Utils.SafeDestroy(freshGame);
-			GoIntoGame();
+			Utils.SafeDestroy(freshGame); // 4a.1. Destroy GameNotYetStarted. Game is started now.
+			GoIntoGame(); // 4a.2. Ok now it's actually started.
 		}
 	}
 
+	// Going into the game removes the helper GameObjects for these reasons:
+	// - GameNotYetStarted, Game is now started, mark it as such.  This happens
+	//                      only on game entry at beginning of session (first
+	//                      time after launching the game).
+	// - NewGameIndicator,  Game is no longer a new game, because it's started.
+	// - LoadGameIndicator, Game should have been loaded prior to entry.
 	public void GoIntoGame() {
 		GameObject freshGame = GameObject.Find("GameNotYetStarted");
 		if (freshGame != null) Utils.SafeDestroy(freshGame);
@@ -1364,29 +1372,23 @@ public class Const : MonoBehaviour {
 			loadPercentText.text = "(4) 00.00";
 			yield return null;
 
+			// First pass to initialize tracking arrays:
+			// - readIDs, This holds the full list of all unique IDs.
+			// - saveableIsInstantiated, True if object is instantiated prefab.
 			int[] readIDs = new int[(numSaveablesFromSavefile)];
-			List<int> instantiatedFound = new List<int>();
-			bool instantiatedCheck;
-			bool instantiatedActive;
+			bool[] saveableIsInstantiated = new int[(numSaveablesFromSavefile)];
 			for (i=3;i<(numSaveablesFromSavefile);i++) {
 				entries = readFileList[i].Split(csplit);
 				if (entries.Length > 1) {
-					instantiatedCheck = instantiatedActive = false;
 					readIDs[i] = Utils.GetIntFromString(entries[1]); // int - get saveID from 2nd slot
-					instantiatedActive = Utils.GetBoolFromString(entries[5]); // bool - get activeSelf value of the gameObject
-					instantiatedCheck = Utils.GetBoolFromString(entries[2]); // bool - get instantiated from 3rd slot
-					if (instantiatedCheck && instantiatedActive) {
-						instantiatedFound.Add(i);
-					}
+					saveableIsInstantiated[i] = Utils.GetBoolFromString(entries[2]); // bool - get instantiated from 3rd slot
 				}
 			}
 
 			matchTimer.Start();
 			index = 3; 
 			bool[] alreadyCheckedThisSaveableGameObject = new bool[saveableGameObjects.Count];
-			for (i=0;i<alreadyCheckedThisSaveableGameObject.Length;i++) {
-				alreadyCheckedThisSaveableGameObject[i] = false; // Reset the list
-			}
+			Utils.BlankBoolArray(ref alreadyCheckedThisSaveableGameObject,false); // Fill with false.
 
 			SaveObject so;
 			// Ok, so we have a list of all saveableGameObjects and a list of all saveables from the savefile.
@@ -1428,31 +1430,29 @@ public class Const : MonoBehaviour {
 
 			// Now time to instantiate anything left that is supposed to be here
 			loadUpdateTimer.Start(); // For loading update
-			if (instantiatedFound.Count > 0) {
-				int constdex = -1;
-				int consttable = 0;
-				GameObject instantiatedObject = null;
-				GameObject prefabReferenceGO = null;
-				for (i=0;i<instantiatedFound.Count;i++) {
-					entries = readFileList[i].Split(csplit);
-					if (entries.Length > 1) {
-						consttable = Utils.GetIntFromString(entries[3]); // int - get the prefab table type to use for lookups in Const
-						constdex = Utils.GetIntFromString(entries[4]); // int - get the index into the Const table of prefabs
-						if (constdex >= 0 && (consttable == 0 || consttable == 1)) {
-							if (consttable == 0) prefabReferenceGO = Const.a.useableItems[constdex];
-							else if (consttable == 1) prefabReferenceGO = Const.a.npcPrefabs[constdex];
-							if (prefabReferenceGO != null) instantiatedObject = Instantiate(prefabReferenceGO,Const.a.vectorZero,quaternionIdentity) as GameObject; // Instantiate at generic location
-							if (instantiatedObject != null) SaveObject.Load(instantiatedObject,ref entries,3); // Load it.  Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated
-						}
+			int constdex = -1;
+			int consttable = 0;
+			GameObject instantiatedObject = null;
+			GameObject prefabReferenceGO = null;
+			for (i=0;i<instantiatedFound.Count;i++) {
+				entries = readFileList[i].Split(csplit);
+				if (entries.Length > 1) {
+					consttable = Utils.GetIntFromString(entries[3]); // int - get the prefab table type to use for lookups in Const
+					constdex = Utils.GetIntFromString(entries[4]); // int - get the index into the Const table of prefabs
+					if (constdex >= 0 && (consttable == 0 || consttable == 1)) {
+						if (consttable == 0) prefabReferenceGO = Const.a.useableItems[constdex];
+						else if (consttable == 1) prefabReferenceGO = Const.a.npcPrefabs[constdex];
+						if (prefabReferenceGO != null) instantiatedObject = Instantiate(prefabReferenceGO,Const.a.vectorZero,quaternionIdentity) as GameObject; // Instantiate at generic location
+						if (instantiatedObject != null) SaveObject.Load(instantiatedObject,ref entries,3); // Load it.  Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated
 					}
-					loadPercentText.text = "(6) " + ((i / instantiatedFound.Count).ToString("00.0000"));
-					if (loadUpdateTimer.ElapsedMilliseconds > 100) {
-						loadUpdateTimer.Reset();
-						loadUpdateTimer.Start();
-						Cursor.lockState = CursorLockMode.None;
-						Cursor.visible = true;
-						yield return null;
-					}
+				}
+				loadPercentText.text = "(6) " + ((i / instantiatedFound.Count).ToString("00.0000"));
+				if (loadUpdateTimer.ElapsedMilliseconds > 100) {
+					loadUpdateTimer.Reset();
+					loadUpdateTimer.Start();
+					Cursor.lockState = CursorLockMode.None;
+					Cursor.visible = true;
+					yield return null;
 				}
 			}
 			loadUpdateTimer.Stop();

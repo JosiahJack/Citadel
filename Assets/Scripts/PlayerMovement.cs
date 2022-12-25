@@ -1211,6 +1211,10 @@ public class PlayerMovement : MonoBehaviour {
 			return Utils.DTypeWordToSaveString(s1.ToString());
 		}
 
+		s1.Append(Utils.SaveTransform(go.transform));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRigidbody(go));
+		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(pm.playerSpeed)); // float
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(pm.grounded)); // bool
@@ -1295,6 +1299,8 @@ public class PlayerMovement : MonoBehaviour {
 		if (pm == null || index < 0 || entries == null) return index + 29 + (4096 * 13);
 
 		float readFloatx, readFloaty, readFloatz;
+		index = Utils.LoadTransform(go.transform,ref entries,index);
+		index = Utils.LoadRigidbody(go,ref entries,index);
 		pm.playerSpeed = Utils.GetFloatFromString(entries[index]); index++;
 		pm.grounded = Utils.GetBoolFromString(entries[index]); index++;
 		pm.currentCrouchRatio = Utils.GetFloatFromString(entries[index]); index++;
@@ -1332,6 +1338,9 @@ public class PlayerMovement : MonoBehaviour {
 		pm.ConsoleDisable();
 		pm.leanTarget = Utils.GetFloatFromString(entries[index]); index++;
 		pm.leanShift = Utils.GetFloatFromString(entries[index]); index++;
+		pm.leanTransform.localRotation = Quaternion.Euler(0, 0, pm.leanTarget);
+		pm.leanTransform.localPosition = new Vector3(pm.leanShift,0,0);
+
 		pm.jumpSFXFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.jumpLandSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.jumpJetEnergySuckTickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
