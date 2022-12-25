@@ -122,11 +122,13 @@ public class SaveObject : MonoBehaviour {
 		s1.Append(Utils.SaveTransform(go.transform)); s1.Append(Utils.splitChar);	// 4,5,6,7,8,9,10,11,12,13
 		s1.Append(Utils.SaveRigidbody(go)); s1.Append(Utils.splitChar);			    // 14,15,16,17
 		int levelID = 1;
-		GameObject par = go.transform.parent.gameObject;
-		for (int i=0; i < 14; i++) {
-			if (par == LevelManager.a.levelScripts[i].dynamicObjectsContainer) {
-				levelID = i;
-				break;
+		if (go != PlayerReferenceManager.a.gameObject) {
+			GameObject par = go.transform.parent.gameObject;
+			for (int i=0; i < 14; i++) {
+				if (par == LevelManager.a.levelScripts[i].dynamicObjectsContainer) {
+					levelID = i;
+					break;
+				}
 			}
 		}
 
