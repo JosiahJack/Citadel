@@ -110,7 +110,7 @@ public class SaveObject : MonoBehaviour {
 
 		if (!so.initialized) so.Start();
 		PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
-		if (prefID == null) Debug.Log("No PrefabIdentifier on " + go.name);
+		if (prefID == null && so.instantiated) Debug.Log("No PrefabIdentifier on " + go.name);
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		// Start Saving
@@ -122,7 +122,7 @@ public class SaveObject : MonoBehaviour {
 		s1.Append(Utils.SaveTransform(go.transform)); s1.Append(Utils.splitChar);	// 4,5,6,7,8,9,10,11,12,13
 		s1.Append(Utils.SaveRigidbody(go)); s1.Append(Utils.splitChar);			    // 14,15,16,17
 		int levelID = 1;
-		if (go != PlayerReferenceManager.a.gameObject) {
+		if (so.instantiated) {
 			GameObject par = go.transform.parent.gameObject;
 			for (int i=0; i < 14; i++) {
 				if (par == LevelManager.a.levelScripts[i].dynamicObjectsContainer) {

@@ -49,10 +49,13 @@ public class SearchableItem : MonoBehaviour {
 
 	// Save searchable data
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
-		PrefabIdentifier pid = go.GetComponent<PrefabIdentifier>();
 		SearchableItem se;
-		if (pid.constIndex == 467) { // se_corpse_eaten
-			se = go.transform.GetChild(0).GetComponent<SearchableItem>();
+		if (prefID != null) {
+			if (prefID.constIndex == 467) { // se_corpse_eaten
+				se = go.transform.GetChild(0).GetComponent<SearchableItem>();
+			} else {
+				se = go.GetComponent<SearchableItem>();
+			}
 		} else {
 			se = go.GetComponent<SearchableItem>();
 		}
