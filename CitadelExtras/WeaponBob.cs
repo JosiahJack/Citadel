@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 // clone of the Headbob Script, works for most weapons.
+// This one is for the pistol
 [System.Serializable]
 public class WeaponBob : MonoBehaviour
 {
@@ -13,12 +14,6 @@ public class WeaponBob : MonoBehaviour
     public float bobRate = 10.0f;
     public float bob = 0.02f;
 
-    public float dHeight = 0.84f;
-    public float stepRate = 0.5f;
-    public float stepCoolDown;
-
-    
-    
     float timer = 0;
 
     // Start is called before the first frame update
@@ -39,7 +34,7 @@ public class WeaponBob : MonoBehaviour
             transform.localPosition = new Vector3(
 
                 Mathf.Sin(timer) * bob, 
-                dHeight + Mathf.Cos(timer) * bob, 
+                -0.5f + Mathf.Cos(timer) * bob, 
                 transform.localPosition.z
 
                 );
@@ -51,7 +46,7 @@ public class WeaponBob : MonoBehaviour
             timer = 0;
             transform.localPosition = new Vector3(
                 Mathf.Lerp(transform.localPosition.x, 0f, Time.deltaTime * bobRate), 
-                Mathf.Lerp(transform.localPosition.y, dHeight, Time.deltaTime * bobRate), 
+                Mathf.Lerp(transform.localPosition.y, -0.5f, Time.deltaTime * bobRate), 
                 transform.localPosition.z);
         }
 
