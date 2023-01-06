@@ -10,6 +10,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEditor.SceneManagement;
 
 public class Tests : MonoBehaviour {
 	public GameObject[] lightContainers; // Can't use LevelManager's since
@@ -828,6 +829,36 @@ public class Tests : MonoBehaviour {
 			}
 		}
 	}
+
+	// Before: 15006, After 8000, for some reason it didn't work for all of them.
+	public void RevertAll_m_CastShadows() {
+		//List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+		//for (int i=0;i<allParents.Count;i++) {
+		//	Component[] compArray = allParents[i].GetComponentsInChildren(typeof(Transform),true);
+		//	for (int k=0;k<compArray.Length;k++) {
+		//		GameObject go = compArray[k].gameObject;
+		//		if (!PrefabUtility.IsPartOfPrefabInstance(go)) continue;
+		//		if (!PrefabUtility.HasPrefabInstanceAnyOverrides(go, false)) continue;
+
+		//		List<ObjectOverride> ovides = PrefabUtility.GetObjectOverrides(go,false);
+		//		for (int j=0; j < ovides.Count; j++) {
+		//			UnityEngine.Object ob = ovides[j].instanceObject;
+		//			SerializedObject sob = new UnityEditor.SerializedObject(ob);
+		//			SerializedProperty prop = sob.FindProperty("m_CastShadows");
+		//			if (prop == null) continue;
+		//			if (!prop.prefabOverride) continue;
+
+		//			UnityEngine.Debug.Log("Reverting m_CastShadows");
+		//			PrefabUtility.RevertPropertyOverride(prop,InteractionMode.AutomatedAction);
+		//		}
+
+
+		//	}
+		//}
+	}
+	// m_CastShadows
+	// m_MotionVectors Before 19057
+	// m_LightProbeUsage
 
 	void TEMP_Func_Wall_SetChunkIDs(GameObject go) {
 		UnityEngine.Debug.Log("go.name: " + go.name);

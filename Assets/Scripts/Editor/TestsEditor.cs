@@ -83,5 +83,15 @@ public class TestsEditor : Editor {
 		if (GUILayout.Button("Reset SaveIDs on Static Saveables")) {
 			testScript.SetStaticSaveableIDs();
 		}
+
+		//EditorGUILayout.BeginVertical();
+        //GUILayout.Space(8f);
+        //EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
+        //GUILayout.Space(8f);
+		//EditorGUILayout.EndVertical();
+
+		//if (GUILayout.Button("Revert All m_CastShadows")) {
+		//	testScript.RevertAll_m_CastShadows();
+		//}
 	}
 }
