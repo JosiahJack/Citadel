@@ -1,14 +1,15 @@
 # Citadel
 
 ### News
-Have had quite a lot of bugfixes lately and am working on the build process to streamline and improve workflow for maintaining.  Still working through a lot of bugfixing.  Recently finished refactoring the save code for generation of save files and now working through some systematic bugs due to that such as not resetting the game on death.  Still hard at it and pushing for a successful release.
+Wishing you all a Merry Christmas!!
 
-- Sincerely, Josiah 11/7/2022
+Save game system is mostly refactored.  Working through the testing to resolve the last few bugs with it.  Tried to have this ready by today, but alas tis not the season for it yet.
+- Sincerely, Josiah 12/25/2022
 
 ### Information
-Version 0.97, as of 2/21/2022
+Version 0.99, as of 12/25/2022
 Started 7/6/2015
-Released TBD
+Released TBD (currently in alpha, no recent builds)
 The System Shock Fan Remake.  The goal is to recreate the original closely while enhancing it with 3D models instead of 2D sprites, 3D details to the station in and out, particle effects, and subtle sound effect additions.  After releasing a playable version, focus will shift to making mod and mapping tools.
 
 PLEASE submit bug and feature requests here on this github.
