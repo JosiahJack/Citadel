@@ -229,10 +229,18 @@ public class SaveObject : MonoBehaviour {
 		// Set parent prior to setting localPosition, localRotation, localScale
 		// so that the relative positioning is correct.
 		int levelID = Utils.GetIntFromString(entries[18]);
-		Transform curLevDynContainer = LevelManager.a.GetRequestedLevelDynamicContainer(levelID).transform;
-		if (levelID >= 0 && levelID <= 13 && so.instantiated
-			  && go.transform.parent != curLevDynContainer) {
-			go.transform.SetParent(curLevDynContainer);
+		if (levelID >= 0 && levelID <= 13 && so.instantiated) {
+			if (so.saveType == SaveableType.NPC) {
+				Transform curLevNPCContainer = LevelManager.a.GetRequestedLevelNPCContainer(levelID).transform;
+			 	if (go.transform.parent != curLevNPCContainer) {
+					go.transform.SetParent(curLevNPCContainer);
+				}
+			} else {
+				Transform curLevDynContainer = LevelManager.a.GetRequestedLevelDynamicContainer(levelID).transform;
+				if (go.transform.parent != curLevDynContainer) {
+					go.transform.SetParent(curLevDynContainer);
+				}
+			}
 		}
 
 		if (so.saveType == SaveableType.TransformParentless && go.CompareTag("Player")) Debug.Log("Loading player transform from " + go.transform.localPosition.ToString() + "...");

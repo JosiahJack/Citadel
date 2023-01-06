@@ -195,6 +195,12 @@ public class LevelManager : MonoBehaviour {
         return levelScripts[index].dynamicObjectsContainer;
 	}
 
+	public GameObject GetRequestedLevelNPCContainer(int index) {
+		if (index < 0 || index > 13) return npcContainers[1]; // Default to Medical level
+
+        return npcContainers[index];
+	}
+
 	public int GetCurrentLevelSecurity() {
 		if (currentLevel == -1) return 0;
 		if (superoverride) return 0; // tee hee we are SHODAN, no security blocks in place
