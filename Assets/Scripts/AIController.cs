@@ -1316,7 +1316,9 @@ public class AIController : MonoBehaviour {
 		if (aic.searchColliderGO != null) {
 			s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.searchColliderGO.activeSelf));
 			s1.Append(Utils.splitChar); s1.Append(SearchableItem.Save(aic.searchColliderGO,prefID));
-            if (!aic.healthManager.gibOnDeath || prefID.constIndex == 421 /* avian mutant */) s1.Append(Utils.splitChar);  s1.Append(HealthManager.Save(aic.searchColliderGO,prefID)); // Weird exclusion for hopper to not check  && !healthManager.vaporizeCorpse
+            if (!aic.healthManager.gibOnDeath || prefID.constIndex == 421 /* avian mutant */) { // Weird exclusion for hopper to not check  && !healthManager.vaporizeCorpse
+				s1.Append(Utils.splitChar); s1.Append(HealthManager.Save(aic.searchColliderGO,prefID));
+			}
 		}
 		return s1.ToString();
 	}

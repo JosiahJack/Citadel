@@ -28,7 +28,6 @@ public class LightAnimation : MonoBehaviour {
 
 	void Start () {
 		if (minIntensity < 0) minIntensity = 0;
-
 		animLight = GetComponent<Light>();
 		animLight.intensity = minIntensity;
 		currentStep = 0;

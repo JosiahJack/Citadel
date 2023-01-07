@@ -54,6 +54,8 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	}
 
 	public void AwakeFromLoad(float health) {
+		if (!this.enabled) return;
+
 		if (health > 0) {
 			screenDestroyed = screenDestroyedDone = false;
 			if (lightContainer != null) lightContainer.SetActive(true);
