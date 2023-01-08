@@ -804,7 +804,7 @@ public class Tests : MonoBehaviour {
 
 		string[] entries = readFileList[0].Split('|');
 		int index = 5;
-		index = SaveObject.Load(gameObjectToSave,ref entries,5);
+		index = SaveObject.Load(gameObjectToSave,ref entries);
 		UnityEngine.Debug.Log("Loaded data for " + gameObjectToSave.name + ", contained " + index.ToString() + " entries on the line.");
 	}
 

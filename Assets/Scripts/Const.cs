@@ -1100,8 +1100,14 @@ public class Const : MonoBehaviour {
 
 	// Save the Game
 	// ========================================================================
-	//public IEnumerator Save(int saveFileIndex,string savename) {
-	public void Save(int saveFileIndex,string savename) {
+	public void Save(int saveFileIndex, string savename) {
+		StartCoroutine(Const.a.SaveRoutine(saveFileIndex,savename));
+	}
+
+	public IEnumerator SaveRoutine(int saveFileIndex,string savename) {
+		sprint(stringTable[194]); // Indicate we are saving "Saving..."
+		yield return null; // Update to show this sprint.
+
 		Stopwatch saveTimer = new Stopwatch();
 		saveTimer.Start();
 		string[] saveData = new string[16000]; // Found 2987 saveable objects on main level - should be enough for any instantiated dropped items...maybe
@@ -1111,7 +1117,7 @@ public class Const : MonoBehaviour {
 		// All saveable classes
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 		FindAllSaveObjectsGOs(ref saveableGameObjects);
-		sprint(stringTable[194]); // Indicate we are saving "Saving..."
+
 		if (string.IsNullOrWhiteSpace(savename)) {
 			savename = "Unnamed " + Utils.UintToString(saveFileIndex); // int
 		}
@@ -1283,22 +1289,22 @@ public class Const : MonoBehaviour {
 	//    d. Iterate over dynamic object containers instantiating from save.
 	public void Load(int saveFileIndex, bool actual) {
 		ShowLoading();
-		if (!actual) {
-			UnityEngine.Debug.Log("Initial Load() with saveFileIndex of " 
-								  + saveFileIndex.ToString());
-			GameObject loadGameIndicator = new GameObject();
-			loadGameIndicator.name = "LoadGameIndicator";
-			SceneTransitionHandler sth =
-			  loadGameIndicator.AddComponent<SceneTransitionHandler>();
-			sth.saveGameIndex = saveFileIndex;
-			DontDestroyOnLoad(loadGameIndicator);
-			ReloadScene(sth);
-			return;
-		} else {
-			UnityEngine.Debug.Log("Second pass Actual Load() with "
-								  + "saveFileIndex of "
-								  + saveFileIndex.ToString());
-		}
+		//if (!actual) {
+		//	UnityEngine.Debug.Log("Initial Load() with saveFileIndex of " 
+		//						  + saveFileIndex.ToString());
+		//	GameObject loadGameIndicator = new GameObject();
+		//	loadGameIndicator.name = "LoadGameIndicator";
+		//	SceneTransitionHandler sth =
+		//	  loadGameIndicator.AddComponent<SceneTransitionHandler>();
+		//	sth.saveGameIndex = saveFileIndex;
+		//	DontDestroyOnLoad(loadGameIndicator);
+		//	ReloadScene(sth);
+		//	return;
+		//} else {
+		//	UnityEngine.Debug.Log("Second pass Actual Load() with "
+		//						  + "saveFileIndex of "
+		//						  + saveFileIndex.ToString());
+		//}
 
 		GameObject freshGame = GameObject.Find("GameNotYetStarted");
 		if (freshGame != null) Utils.SafeDestroy(freshGame);
@@ -1321,7 +1327,11 @@ public class Const : MonoBehaviour {
 		int numSaveablesFromSavefile = 0;
 		int i,j;
 		GameObject currentGameObjectInScene = null;
-		loadPercentText.text = "(2) --.-0";
+		loadPercentText.text = "(1) --.-0";
+		yield return null; // Update progress text.
+
+		for (i=0;i<14;i++) LevelManager.a.UnloadLevelDynamicObjects(i); // Delete them all!
+		loadPercentText.text = "(2) --.00";
 		yield return null; // Update progress text.
 
 		List<string> readFileList = new List<string>();
@@ -1341,7 +1351,7 @@ public class Const : MonoBehaviour {
 				sr.Close();
 			}
 
-			loadPercentText.text = "(3) --.00";
+			loadPercentText.text = "(3) -0.00";
 			yield return null; // to update the sprint
 			int numSaveFileLines = readFileList.Count;
 			numSaveablesFromSavefile = numSaveFileLines - 3;
@@ -1440,7 +1450,7 @@ public class Const : MonoBehaviour {
 
 					if(currentSaveObjectInScene.SaveID == saveFile_Line_SaveID[i]) { // Static Objects all have unique ID.
 						entries = readFileList[i].Split(csplit);
-						SaveObject.Load(currentGameObjectInScene,ref entries,3); // Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated
+						SaveObject.Load(currentGameObjectInScene,ref entries);
 						alreadyCheckedThisSaveableGameObjectInScene[j] = true; // Huge time saver right here!
 						break;
 					}
@@ -1488,7 +1498,7 @@ public class Const : MonoBehaviour {
 					if (constdex < 0 || constdex > 517) continue;
 
 					instantiatedObject = ConsoleEmulator.SpawnDynamicObject(constdex,levID,false,null);
-					SaveObject.Load(instantiatedObject,ref entries,3); // Load it.  Feed index value of 3 here since 0 = saveableType, 1 = SaveID, 2 = instantiated
+					SaveObject.Load(instantiatedObject,ref entries); // Load it.
 				}
 				loadPercentText.text = "(6) " + ((i / numSaveFileLines).ToString("00.0000"));
 				if (loadUpdateTimer.ElapsedMilliseconds > 100) {

@@ -204,18 +204,25 @@ public class SaveObject : MonoBehaviour {
 		return s1.ToString();
 	}
 
-	public static int Load(GameObject go, ref string[] entries, int index) {
+	public static int Load(GameObject go, ref string[] entries) {
+		if (go == null) { Debug.Log("Null go passed to SaveObject.Load!!!"); return 23; }
+
 		SaveObject so = go.GetComponent<SaveObject>();
+		if (so == null) {
+			Debug.Log("SaveableObject on go.name: " + go.name + " was not found"
+					  + "even though it was passed to Load as though twere a "
+					  + "saveable object. Skipping!");
+			return 23;
+		}
+
+		if (!so.initialized) so.Start();
 
 		// Start Loading
 		// --------------------------------------------------------------------
 		// saveableType; index++;     // 0
 		// SaveID; index++;           // 1
 		// instantiated; index++;     // 2
-		if (index != 3) {
-			Debug.Log("SaveObject.Load:: index was not equal to 3 at start");
-			index = 3;
-		}
+		int index = 3;
 		bool setToActive = Utils.GetBoolFromString(entries[index]); index++;
 		// Set active state of GameObject in Hierarchy
 		if (setToActive) {
@@ -224,7 +231,7 @@ public class SaveObject : MonoBehaviour {
 			if (go.activeSelf) go.SetActive(false);
 		}
 
-		if (entries[0] != so.saveableType) { Debug.Log("Saveable type mismatch.  Save data has type " + entries[0] + " but object is " + so.saveableType); return index + 19; }
+		if (entries[0] != so.saveableType) { Debug.Log("Saveable type mismatch.  Save data has type " + entries[0] + " but object named " + go.name + " is " + so.saveableType.ToString()); return index + 19; }
 
 		// Set parent prior to setting localPosition, localRotation, localScale
 		// so that the relative positioning is correct.

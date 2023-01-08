@@ -470,6 +470,47 @@ public class Utils {
         return ForceFieldColor.Red;
     }
 
+    public static SaveableType GetSaveableTypeFromInt(int savtyp) {
+        switch (savtyp) {
+            case 0:  return SaveableType.Player;
+            case 1:  return SaveableType.Useable;
+            case 2:  return SaveableType.Grenade;
+            case 3:  return SaveableType.NPC;
+            case 4:  return SaveableType.Destructable;
+            case 5:  return SaveableType.SearchableStatic;
+            case 6:  return SaveableType.SearchableDestructable;
+            case 7:  return SaveableType.Door;
+            case 8:  return SaveableType.ForceBridge;
+            case 9:  return SaveableType.Switch;
+            case 10: return SaveableType.FuncWall;
+            case 11: return SaveableType.TeleDest;
+            case 12: return SaveableType.LBranch;
+            case 13: return SaveableType.LRelay;
+            case 14: return SaveableType.LSpawner;
+            case 15: return SaveableType.InteractablePanel;
+            case 16: return SaveableType.ElevatorPanel;
+            case 17: return SaveableType.Keypad;
+            case 18: return SaveableType.PuzzleGrid;
+            case 19: return SaveableType.PuzzleWire;
+            case 20: return SaveableType.TCounter;
+            case 21: return SaveableType.TGravity;
+            case 22: return SaveableType.MChanger;
+            case 23: return SaveableType.GravPad;
+            case 24: return SaveableType.TransformParentless;
+            case 25: return SaveableType.ChargeStation;
+            case 26: return SaveableType.Light;
+            case 27: return SaveableType.LTimer;
+            case 28: return SaveableType.Camera;
+            case 29: return SaveableType.DelayedSpawn;
+            case 30: return SaveableType.SecurityCamera;
+            case 31: return SaveableType.Trigger;
+            case 32: return SaveableType.Projectile;
+            case 33: return SaveableType.NormalScreen;
+            case 34: return SaveableType.CyberSwitch;
+        }
+        return SaveableType.Transform;
+    }
+
     public static string SaveTransform(Transform tr) {
 		if (tr == null) {
 			Debug.Log("Transform null while trying to save!");
