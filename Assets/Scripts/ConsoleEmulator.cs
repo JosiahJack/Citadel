@@ -888,29 +888,53 @@ Generic Materials (Const.a.genericMaterials[])
 
 		GameObject go = null;
 		if (val >= 0 && val < 307) {			// [0, 306]
-			if (val > (Const.a.chunkPrefabs.Length - 1)) return null;
-			if (Const.a.chunkPrefabs[val] == null) return null;
+			if (val > (Const.a.chunkPrefabs.Length - 1)) {
+				Debug.Log("SpawnDynamicObject failure: val > (Const.a.chunkPrefabs.Length - 1), val: " + val.ToString());
+				return null;
+			}
+			if (Const.a.chunkPrefabs[val] == null) {
+				Debug.Log("SpawnDynamicObject failure: Const.a.chunkPrefabs[val] == null, val: " + val.ToString());
+				return null;
+			}
 
 			go = MonoBehaviour.Instantiate(Const.a.chunkPrefabs[val],spawnPos,
 									  Const.a.quaternionIdentity) as GameObject;
 		} else if (val >= 307 && val < 419) {	// [307, 418]
 			val -= 307;
-			if (val > (Const.a.useableItems.Length - 1)) return null;
-			if (Const.a.useableItems[val] == null) return null;
+			if (val > (Const.a.useableItems.Length - 1)) {
+				Debug.Log("SpawnDynamicObject failure: val > (Const.a.useableItems.Length - 1), val: " + val.ToString());
+				return null;
+			}
+			if (Const.a.useableItems[val] == null) {
+				Debug.Log("SpawnDynamicObject failure: val > Const.a.useableItems[val] == null, val: " + val.ToString());
+				return null;
+			}
 
 			go = MonoBehaviour.Instantiate(Const.a.useableItems[val],spawnPos,
 									  Const.a.quaternionIdentity) as GameObject;
 		} else if (val >= 419 && val < 448) {	// [419, 447]
 			val -= 419;
-			if (val > (Const.a.npcPrefabs.Length - 1)) return null;
-			if (Const.a.npcPrefabs[val] == null) return null;
+			if (val > (Const.a.npcPrefabs.Length - 1)) {
+				Debug.Log("SpawnDynamicObject failure: val > (Const.a.npcPrefabs.Length - 1), val: " + val.ToString());
+				return null;
+			}
+			if (Const.a.npcPrefabs[val] == null) {
+				Debug.Log("SpawnDynamicObject failure: Const.a.npcPrefabs[val] == null, val: " + val.ToString());
+				return null;
+			}
 
 			go = MonoBehaviour.Instantiate(Const.a.npcPrefabs[val],spawnPos,
 									  Const.a.quaternionIdentity) as GameObject;
 		} else if (val >= 448 && val < 458) {	// [448, 457]
 			val -= 448;
-			if (val > (Const.a.cyberItemPrefabs.Length - 1)) return null;
-			if (Const.a.cyberItemPrefabs[val] == null) return null;
+			if (val > (Const.a.cyberItemPrefabs.Length - 1)) {
+				Debug.Log("SpawnDynamicObject failure: val > (Const.a.cyberItemPrefabs.Length - 1), val: " + val.ToString());
+				return null;
+			}
+			if (Const.a.cyberItemPrefabs[val] == null) {
+				Debug.Log("SpawnDynamicObject failure: Const.a.cyberItemPrefabs[val] == null, val: " + val.ToString());
+				return null;
+			}
 
 			go = MonoBehaviour.Instantiate(Const.a.cyberItemPrefabs[val],
 							 spawnPos,Const.a.quaternionIdentity) as GameObject;
@@ -923,22 +947,40 @@ Generic Materials (Const.a.genericMaterials[])
 			else if (val == 517) val = 25; // func_wall out of order exception.
 			else val -= 458;
 
-			if (val > (Const.a.miscellaneousPrefabs.Length - 1)) return null;
-			if (Const.a.miscellaneousPrefabs[val] == null) return null;
+			if (val > (Const.a.miscellaneousPrefabs.Length - 1)) {
+				Debug.Log("SpawnDynamicObject failure: val > (Const.a.miscellaneousPrefabs.Length - 1), val: " + val.ToString());
+				return null;
+			}
+			if (Const.a.miscellaneousPrefabs[val] == null) {
+				Debug.Log("SpawnDynamicObject failure: Const.a.miscellaneousPrefabs[val] == null, val: " + val.ToString());
+				return null;
+			}
 
 			go = MonoBehaviour.Instantiate(Const.a.miscellaneousPrefabs[val],
 							 spawnPos,Const.a.quaternionIdentity) as GameObject;
 		} else if (val >= 481 && val < 496) {	// [481, 495]
 			val -= 481;
-			if (val > (Const.a.projectilesLaunched.Length - 1)) return null;
-			if (Const.a.projectilesLaunched[val] == null) return null;
+			if (val > (Const.a.projectilesLaunched.Length - 1)) {
+				Debug.Log("SpawnDynamicObject failure: val > (Const.a.projectilesLaunched.Length - 1), val: " + val.ToString());
+				return null;
+			}
+			if (Const.a.projectilesLaunched[val] == null) {
+				Debug.Log("SpawnDynamicObject failure: Const.a.projectilesLaunched[val] == null, val: " + val.ToString());
+				return null;
+			}
 
 			go = MonoBehaviour.Instantiate(Const.a.projectilesLaunched[val],
 							 spawnPos,Const.a.quaternionIdentity) as GameObject;
 		} else if (val >= 496 && val < 515) {	// [496, 514]
 			val -= 496;
-			if (val > (Const.a.doorPrefabs.Length - 1)) return null;
-			if (Const.a.doorPrefabs[val] == null) return null;
+			if (val > (Const.a.doorPrefabs.Length - 1)) {
+				Debug.Log("SpawnDynamicObject failure: val > (Const.a.doorPrefabs.Length - 1), val: " + val.ToString());
+				return null;
+			}
+			if (Const.a.doorPrefabs[val] == null) {
+				Debug.Log("SpawnDynamicObject failure: Const.a.doorPrefabs[val] == null, val: " + val.ToString());
+				return null;
+			}
 
 			go = MonoBehaviour.Instantiate(Const.a.doorPrefabs[val],spawnPos,
 									  Const.a.quaternionIdentity) as GameObject;
@@ -957,7 +999,7 @@ Generic Materials (Const.a.genericMaterials[])
 					uo.customIndex = (Inventory.a.hardwareVersion[dex14] + 1);
 				}
 			}
-		}
+		} else Debug.Log("SpawnDynamicObject failure: go == null at the end");
 		return go;
 	}
 

@@ -55,7 +55,7 @@ public class CyberSwitch : MonoBehaviour {
 		}
 	}
 
-	public static string Save(GameObject go) {
+	public static string Save(GameObject go, PrefabIdentifier prefID) {
 		CyberSwitch cs = go.GetComponent<CyberSwitch>();
 		if (cs == null) {
 			Debug.Log("CyberSwitch missing on savetype of CyberSwitch!  GameObject.name: " + go.name);
@@ -70,12 +70,13 @@ public class CyberSwitch : MonoBehaviour {
 		line += Utils.splitChar + Utils.BoolToString(cs.iceActive);
 		line += Utils.splitChar + Utils.BoolToString(cs.iceNode.activeSelf);
 		if (cs.iceActive) {
-			line += Utils.splitChar + HealthManager.Save(cs.iceNode,null);
+			line += Utils.splitChar + HealthManager.Save(cs.iceNode,prefID);
 		}
 		return line;
 	}
 
-	public static int Load(GameObject go, ref string[] entries, int index) {
+	public static int Load(GameObject go, ref string[] entries, int index,
+						   PrefabIdentifier prefID) {
 		CyberSwitch cs = go.GetComponent<CyberSwitch>();
 		if (cs == null || index < 0 || entries == null) return index + 4;
 
@@ -86,7 +87,7 @@ public class CyberSwitch : MonoBehaviour {
 		cs.iceActive = Utils.GetBoolFromString(entries[index]); index++;
 		cs.iceNode.SetActive(Utils.GetBoolFromString(entries[index])); index++;
 		if (cs.iceActive) {
-			index = HealthManager.Load(cs.iceNode,ref entries,index,null);
+			index = HealthManager.Load(cs.iceNode,ref entries,index,prefID);
 		}
 		cs.Initialize(cs.active,cs.iceActive);
 		return index;

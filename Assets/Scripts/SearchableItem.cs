@@ -49,21 +49,13 @@ public class SearchableItem : MonoBehaviour {
 
 	// Save searchable data
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
-		SearchableItem se;
-		if (prefID != null) {
-			if (prefID.constIndex == 467) { // se_corpse_eaten
-				se = go.transform.GetChild(0).GetComponent<SearchableItem>();
-			} else {
-				se = go.GetComponent<SearchableItem>();
-			}
-		} else {
-			se = go.GetComponent<SearchableItem>();
-		}
-
+		SearchableItem se = go.GetComponent<SearchableItem>();
 		if (se == null) {
-			Debug.Log("SearchableItem missing on savetype of SearchableItem!  GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("uubbuuuuuuuuuuuuuuuuuuuuuuuuuuuuub");
-
+			se = go.transform.GetChild(0).GetComponent<SearchableItem>();
+			if (se == null) {
+				Debug.Log("SearchableItem missing on savetype of SearchableItem!  GameObject.name: " + go.name);
+				return Utils.DTypeWordToSaveString("uubbuuuuuuuuuuuuuuuuuuuuuuuuuuuuub");
+			}
 		}
 
 		string line = System.String.Empty;
@@ -107,6 +99,11 @@ public class SearchableItem : MonoBehaviour {
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   PrefabIdentifier prefID) {
 		SearchableItem se = go.GetComponent<SearchableItem>();
+		if (prefID != null) {
+			if (prefID.constIndex == 467) {
+				if (se == null) se = go.transform.GetChild(0).gameObject.GetComponent<SearchableItem>();
+			}
+		}
 		if (se == null || index < 0 || entries == null) return index + 36;
 
 		se.lookUpIndex = Utils.GetIntFromString(entries[index]); index++;

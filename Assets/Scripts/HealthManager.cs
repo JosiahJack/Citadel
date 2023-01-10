@@ -607,9 +607,10 @@ public class HealthManager : MonoBehaviour {
 				} else {
 					AIController aicP = GetComponentInParent<AIController>();
 					if (aicP != null) {
+						if (!aicP.startInitialized) aicP.Start();
 						if (aicP.healthManager != null) {
 							if (!aicP.healthManager.gibOnDeath) {
-								aicP.visibleMeshEntity.SetActive(true); // We are a corpse, re-enable parent visibleMeshEntity
+								if (aicP.visibleMeshEntity != null) aicP.visibleMeshEntity.SetActive(true); // We are a corpse, re-enable parent visibleMeshEntity
 							}
 						}
 					}
@@ -629,9 +630,10 @@ public class HealthManager : MonoBehaviour {
 				} else {
 					AIController aicP = GetComponentInParent<AIController>();
 					if (aicP != null) {
+						if (!aicP.startInitialized) aicP.Start();
 						if (aicP.healthManager != null) {
 							if (!aicP.healthManager.gibOnDeath) {
-								aicP.visibleMeshEntity.SetActive(false);
+								if (aicP.visibleMeshEntity != null) aicP.visibleMeshEntity.SetActive(false);
 							}
 						}
 					}
@@ -663,20 +665,13 @@ public class HealthManager : MonoBehaviour {
 
 	// Generic health info string
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
-		HealthManager hm;
-		if (prefID != null) {
-			if (prefID.constIndex == 467) { // se_corpse_eaten
-				hm = go.transform.GetChild(0).GetComponent<HealthManager>();
-			} else {
-				hm = go.GetComponent<HealthManager>();
-			}
-		} else {
-			hm = go.GetComponent<HealthManager>();
-		}
-
+		HealthManager hm = go.GetComponent<HealthManager>();
 		if (hm == null) {
-			Debug.Log("HealthManager missing on savetype of HealthManager!  GameObject.name: " + go.name);
-			return "0000.00000|0000.00000|0|0|0";
+			hm = go.transform.GetChild(0).GetComponent<HealthManager>();
+			if (hm == null) {
+				Debug.Log("HealthManager missing on savetype of HealthManager!  GameObject.name: " + go.name);
+				return Utils.DTypeWordToSaveString("ffbbbu");
+			}
 		}
 
 		if (!hm.awakeInitialized) hm.Awake();
@@ -696,38 +691,37 @@ public class HealthManager : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   PrefabIdentifier prefID) {
-		HealthManager hm;
-		if (prefID != null) {
-			if (prefID.constIndex == 467) { // se_corpse_eaten
-				hm = go.transform.GetChild(0).GetComponent<HealthManager>();
-			} else {
-				hm = go.GetComponent<HealthManager>();
-			}
-		} else {
-			hm = go.GetComponent<HealthManager>();
+		HealthManager hm= go.GetComponent<HealthManager>();
+		if (hm == null) {
+			hm = go.transform.GetChild(0).GetComponent<HealthManager>();
 		}
 
-		if (hm == null || index < 0 || entries == null) return index + 5;
+		if (hm == null || index < 0 || entries == null) return index + 6;
 
+		if (!hm.awakeInitialized) hm.Awake();
+		if (!hm.startInitialized) hm.Start();
+		if (prefID != null) {
+			if (prefID.constIndex == 467) Debug.Log("HealthManager on se_corpse_eaten named " + go.name + " starting Load with index: " + index.ToString());
+		}
 		hm.health = Utils.GetFloatFromString(entries[index]); index++; // how much health we have
 		hm.cyberHealth = Utils.GetFloatFromString(entries[index]); index++;
 		hm.deathDone = Utils.GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
 		hm.god = Utils.GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
 		hm.teleportDone = Utils.GetBoolFromString(entries[index]); index++; // did we already teleport?
 		hm.AwakeFromLoad();
+
 		int numChildren = hm.gibObjects.Length;
 		int numChildrenFromSave = Utils.GetIntFromString(entries[index]); index++;
-		if (numChildren != go.transform.childCount) {
-			Debug.Log("BUG: HealthManager gibObjects.Length != child count on"
-					  + go.name + "!");
-			return index + numChildrenFromSave;
-		}
 
 		if (numChildren != numChildrenFromSave) {
-			Debug.Log("BUG: HealthManager gibObjects.Length != children from"
+			Debug.Log("BUG: HealthManager gibObjects.Length("
+					  + numChildren.ToString() + ") != children("
+					  + numChildrenFromSave.ToString() + ") from"
 					  + " savefile on " + go.name + "!");
-			return index + numChildrenFromSave;
+			return index;
 		}
+
+		if (numChildren == 0) return index;
 
 		for (int i=0; i<numChildren; i++) {
 			index = Utils.LoadSubActivatedGOState(hm.gibObjects[i],ref entries,index);

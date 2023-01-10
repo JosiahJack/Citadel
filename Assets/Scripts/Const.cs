@@ -1117,6 +1117,9 @@ public class Const : MonoBehaviour {
 		// All saveable classes
 		List<GameObject> saveableGameObjects = new List<GameObject>();
 		FindAllSaveObjectsGOs(ref saveableGameObjects);
+		//UnityEngine.Debug.Log("Found "
+		//					  + saveableGameObjects.Count.ToString()
+		//					  + " total saveables for save.");
 
 		if (string.IsNullOrWhiteSpace(savename)) {
 			savename = "Unnamed " + Utils.UintToString(saveFileIndex); // int
@@ -1161,10 +1164,9 @@ public class Const : MonoBehaviour {
 		}
 
 		// Make "Done!" appear at the end of the line after "Saving..." is finished, concept from Halo's "Checkpoint...Done!"
-		sprint(stringTable[195]);
-		if (saveFileIndex < 7) Const.a.justSavedTimeStamp = Time.time + Const.a.savedReminderTime; // using normal run time, don't ask again to save for next 7 seconds
 		saveTimer.Stop();
-		UnityEngine.Debug.Log("Saved to file in " + saveTimer.Elapsed.ToString());
+		sprint(stringTable[195] + " (" + saveTimer.Elapsed.ToString() + ")");
+		if (saveFileIndex < 7) Const.a.justSavedTimeStamp = Time.time + Const.a.savedReminderTime; // using normal run time, don't ask again to save for next 7 seconds
 	}
 
 	// Start a New Game
@@ -1186,7 +1188,7 @@ public class Const : MonoBehaviour {
 	// 6b. Else same as if game was started from scratch.
 	// 7. Go into the game.  Player now has normal control.
 	public void NewGame() {
-		UnityEngine.Debug.Log("Starting new game!");
+		//UnityEngine.Debug.Log("Starting new game!");
 		WriteDatForIntroPlayed(false); // 2. Prevent intro from playing on subsequent sessions; only play intro video once ever after install (require menu option later).
 		GameObject freshGame = GameObject.Find("GameNotYetStarted"); // 3.
 		if (freshGame == null) { // 4b.
@@ -1198,7 +1200,7 @@ public class Const : MonoBehaviour {
 			DontDestroyOnLoad(newGameIndicator); // 4b.2.
 			ReloadScene(sth); // 4b.3.
 		} else { // 4a.
-			UnityEngine.Debug.Log("freshGame.name: " + freshGame.name);
+			//UnityEngine.Debug.Log("freshGame.name: " + freshGame.name);
 			Utils.SafeDestroy(freshGame); // 4a.1. Destroy GameNotYetStarted. Game is started now.
 			GoIntoGame(); // 4a.2. Ok now it's actually started.
 		}
@@ -1210,7 +1212,7 @@ public class Const : MonoBehaviour {
 	//                      time after launching the game).
 	// - NewGameIndicator,  Game is no longer a new game, because it's started.
 	// - LoadGameIndicator, Game should have been loaded prior to entry.
-	public void GoIntoGame() {
+	public void GoIntoGame(Stopwatch loadTimer) {
 		GameObject freshGame = GameObject.Find("GameNotYetStarted");
 		if (freshGame != null) Utils.SafeDestroy(freshGame);
 		GameObject saveIndicator = GameObject.Find("NewGameIndicator");
@@ -1237,8 +1239,19 @@ public class Const : MonoBehaviour {
 		}
 
 		WriteDatForIntroPlayed(false);
-		sprint(stringTable[197]); // Loading...Done!
+		if (loadTimer == null) {
+			sprint(stringTable[197]);
+		} else {
+			sprint(stringTable[197] + " ("
+				   + loadTimer.Elapsed.ToString()
+				   + ")"); // Loading...Done!
+		}
 	}
+
+	public void GoIntoGame() {
+		GoIntoGame(null);
+	}
+
 
 	public void ShowLoading() {
 		MouseLookScript.a.playerCamera.enabled = false; // Hide world changes.
@@ -1327,11 +1340,18 @@ public class Const : MonoBehaviour {
 		int numSaveablesFromSavefile = 0;
 		int i,j;
 		GameObject currentGameObjectInScene = null;
-		loadPercentText.text = "(1) --.-0";
+		List<GameObject> saveableGameObjectsInScene = new List<GameObject>();
+		loadPercentText.text = "Preparing...";
 		yield return null; // Update progress text.
 
-		for (i=0;i<14;i++) LevelManager.a.UnloadLevelDynamicObjects(i); // Delete them all!
-		loadPercentText.text = "(2) --.00";
+		for (i=0;i<14;i++) {
+			LevelManager.a.UnloadLevelDynamicObjects(i); // Delete them all!
+			LevelManager.a.UnloadLevelNPCs(i); // Delete them all!
+			loadPercentText.text = "Preparing level " + i.ToString();
+			yield return new WaitForSeconds(0.1f); // Update progress text.
+		}
+
+		loadPercentText.text = "Levels Prepared";
 		yield return null; // Update progress text.
 
 		List<string> readFileList = new List<string>();
@@ -1351,7 +1371,7 @@ public class Const : MonoBehaviour {
 				sr.Close();
 			}
 
-			loadPercentText.text = "(3) -0.00";
+			loadPercentText.text = "Loa";
 			yield return null; // to update the sprint
 			int numSaveFileLines = readFileList.Count;
 			numSaveablesFromSavefile = numSaveFileLines - 3;
@@ -1373,7 +1393,7 @@ public class Const : MonoBehaviour {
 			difficultyPuzzle = Utils.GetIntFromString(entries[index]); index++;
 			difficultyCyber = Utils.GetIntFromString(entries[index]); index++;
 
-			loadPercentText.text = "(4) 00.00";
+			loadPercentText.text = "Loading...";
 			yield return null;
 
 			// First pass to initialize tracking arrays:
@@ -1398,20 +1418,20 @@ public class Const : MonoBehaviour {
 			// LOAD 7a. DELETE INSTANTIABLE SAVEABLES
 			// Alright, let's blank out the instantiable objects from current scene by deleting
 			// all of them to empty all 13 containers for all levels:
-			for (i=0;i<14;i++) {
-				Transform containerTR = LevelManager.a.GetRequestedLevelDynamicContainer(i).transform;
-				for (j=0;j<containerTR.childCount;j++) {
-					DestroyImmediate(containerTR.GetChild(j).gameObject); // Dangerous isn't it :D
-				}
-			}
+			//for (i=0;i<14;i++) {
+			//	Transform containerTR = LevelManager.a.GetRequestedLevelDynamicContainer(i).transform;
+			//	for (j=0;j<containerTR.childCount;j++) {
+			//		DestroyImmediate(containerTR.GetChild(j).gameObject); // Dangerous isn't it :D
+			//	}
+			//}
 
 			// Blank out instantiatable NPC containers for all levels.
-			for (i=0;i<14;i++) {
-				Transform containerTR = LevelManager.a.npcContainers[i].transform;
-				for (j=0;j<containerTR.childCount;j++) {
-					DestroyImmediate(containerTR.GetChild(j).gameObject);
-				}
-			}
+			//for (i=0;i<14;i++) {
+			//	Transform containerTR = LevelManager.a.npcContainers[i].transform;
+			//	for (j=0;j<containerTR.childCount;j++) {
+			//		DestroyImmediate(containerTR.GetChild(j).gameObject);
+			//	}
+			//}
 
 			// LOAD 7b. FIND ALL STATIC SAVEABLES
 			// DO THIS AFTER BLANKING TO ENSURE WE HAVE UP-TO-DATE LIST!!
@@ -1422,11 +1442,19 @@ public class Const : MonoBehaviour {
 			// - func_wall has its SaveObject on first child
 			// - doorE has its SaveObject on first child
 			// - se_corpse_eaten has its SearchableItem on first child
-			List<GameObject> saveableGameObjectsInScene = new List<GameObject>();
+			saveableGameObjectsInScene.Clear();
 			FindAllSaveObjectsGOs(ref saveableGameObjectsInScene); // ref to avoid boxing.
+			//UnityEngine.Debug.Log("Found " 
+			//					  + saveableGameObjectsInScene.Count.ToString()
+			//					  + " total static saveables remaining in "
+			//					  + "scene after blanking out dynamic "
+			//					  + "containers and NPC containers.");
 
 			bool[] alreadyCheckedThisSaveableGameObjectInScene = new bool[saveableGameObjectsInScene.Count];
 			Utils.BlankBoolArray(ref alreadyCheckedThisSaveableGameObjectInScene,false); // Fill with false.
+
+			bool[] alreadyCheckedThisInstantiableGameObjectInScene = new bool[saveableGameObjectsInScene.Count];
+			Utils.BlankBoolArray(ref alreadyCheckedThisInstantiableGameObjectInScene,false); // Fill with false.
 
 			// LOAD 7c. LOAD TO STATIC SAVEABLES
 			// Ok, so we have a list of all saveableGameObjectsInScene and a list of
@@ -1444,11 +1472,21 @@ public class Const : MonoBehaviour {
 				alreadyLoadedLineFromSaveFile[i] = true;
 				for (j=0;j<(saveableGameObjectsInScene.Count);j++) {
 					if (alreadyCheckedThisSaveableGameObjectInScene[j]) continue; // skip checking this and doing GetComponent
+					if (saveableGameObjectsInScene[j] == null) continue;
 
 					currentGameObjectInScene = saveableGameObjectsInScene[j];
 					currentSaveObjectInScene = currentGameObjectInScene.GetComponent<SaveObject>();
+					if (!currentSaveObjectInScene.instantiated) alreadyCheckedThisInstantiableGameObjectInScene[j] = true; // Huge time saver right here!
 
-					if(currentSaveObjectInScene.SaveID == saveFile_Line_SaveID[i]) { // Static Objects all have unique ID.
+					 // Static Objects all have unique ID.
+					if (currentSaveObjectInScene.SaveID == saveFile_Line_SaveID[i]
+						&& currentSaveObjectInScene.SaveID != 0) {
+						if (!saveableGameObjectsInScene[j].isStatic && currentSaveObjectInScene.saveType != SaveableType.Light) {
+							UnityEngine.Debug.Log("For some reason, attempting "
+												  + "to load to dynamic object "
+												  + saveableGameObjectsInScene[j].name);
+						}
+
 						entries = readFileList[i].Split(csplit);
 						SaveObject.Load(currentGameObjectInScene,ref entries);
 						alreadyCheckedThisSaveableGameObjectInScene[j] = true; // Huge time saver right here!
@@ -1456,8 +1494,8 @@ public class Const : MonoBehaviour {
 					}
 				}
 
-				loadPercentText.text = "(5) " + (i/numSaveFileLines).ToString("00.00");
-				if (loadUpdateTimer.ElapsedMilliseconds > 100) {
+				loadPercentText.text = "Loading Static Objects: " + ((float)i/(float)numSaveablesFromSavefile*100f).ToString("0.0") + "% (" + i.ToString() + " / " + numSaveablesFromSavefile.ToString() + ")";
+				if (loadUpdateTimer.ElapsedMilliseconds > 500) {
 					loadUpdateTimer.Reset();
 					loadUpdateTimer.Start();
 					Cursor.lockState = CursorLockMode.None;
@@ -1470,7 +1508,15 @@ public class Const : MonoBehaviour {
 			// Check if we missed a static non-instantiable object to load to.
 			int numberOfMissedObjects = 0;
 			for (i=0;i<saveableGameObjectsInScene.Count;i++) {
-				if (alreadyCheckedThisSaveableGameObjectInScene[i]) continue;
+				if (alreadyCheckedThisInstantiableGameObjectInScene[i]) continue;
+
+				string staticResult;
+				if (saveableGameObjectsInScene[i].isStatic) staticResult = "is static";
+				else staticResult = "is not static";
+
+				UnityEngine.Debug.Log(saveableGameObjectsInScene[i].name 
+									  + " not loaded during Static Pass and "
+									  + staticResult);
 				numberOfMissedObjects++;
 			}
 			if (numberOfMissedObjects > 0) {
@@ -1500,8 +1546,9 @@ public class Const : MonoBehaviour {
 					instantiatedObject = ConsoleEmulator.SpawnDynamicObject(constdex,levID,false,null);
 					SaveObject.Load(instantiatedObject,ref entries); // Load it.
 				}
-				loadPercentText.text = "(6) " + ((i / numSaveFileLines).ToString("00.0000"));
-				if (loadUpdateTimer.ElapsedMilliseconds > 100) {
+
+				loadPercentText.text = "Loading Dynamic Objects: " + ((float)i/(float)numSaveablesFromSavefile*100f).ToString("0.0") + "% (" + i.ToString() + " / " + numSaveablesFromSavefile.ToString() + ")";
+				if (loadUpdateTimer.ElapsedMilliseconds > 500) {
 					loadUpdateTimer.Reset();
 					loadUpdateTimer.Start();
 					Cursor.lockState = CursorLockMode.None;
@@ -1513,14 +1560,13 @@ public class Const : MonoBehaviour {
 			matchTimer.Stop();
 		}
 
-		loadPercentText.text = "(7)100.00%";
-		yield return new WaitForSeconds(0.10f);
+		//loadPercentText.text = "(7)100.00";
+		yield return new WaitForSeconds(0.1f);
+
 		AutoSplitterData.isLoading = false;
-		GoIntoGame();
-		yield return null;
 		loadTimer.Stop();
-		UnityEngine.Debug.Log("Matching index loop de loop time: " + matchTimer.Elapsed.ToString());
-		UnityEngine.Debug.Log("Loading time: " + loadTimer.Elapsed.ToString());
+		//UnityEngine.Debug.Log("Matching index loop de loop time: " + matchTimer.Elapsed.ToString());
+		GoIntoGame(loadTimer);
 	}
 
 	public void RegisterObjectWithHealth(HealthManager hm) {
@@ -1569,7 +1615,7 @@ public class Const : MonoBehaviour {
 			if (TargetRegister[i] == null) {
 				TargetRegister[i] = go;
 				TargetnameRegister[i] = tn;
-				return; // Ok, game object added to the register.
+				return; // Ok, gameobject added to the register.
 			}
 		}
 	}

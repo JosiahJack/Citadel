@@ -776,7 +776,7 @@ public class Utils {
                                                  // time.  See above notes.
     }
 
-	public static void SafeDestroy(GameObject go) {
+	public static void SafeDestroy(GameObject go, bool immediate) {
 		if (go.layer == 12) {
 			Debug.Log("Tried to Destroy() layered part of player!");
 			return;
@@ -827,7 +827,22 @@ public class Utils {
 			return;
 		}
 
-		MonoBehaviour.Destroy(go);
+		if (immediate) MonoBehaviour.DestroyImmediate(go);
+		else MonoBehaviour.Destroy(go);
+	}
+
+	public static void SafeDestroy(GameObject go) {
+		SafeDestroy(go,false);
+	}
+
+	public static void SafeDestroyImmediate(GameObject go) {
+		SafeDestroy(go,true);
+	}
+
+	public static void DestroyImmediateAllChildren(Transform parent) {
+		for (int i=0;i<parent.childCount;i++) {
+			SafeDestroyImmediate(parent.GetChild(i).gameObject);
+		}
 	}
 
 	public static void ApplyImpactForce(GameObject go, float impactVelocity,

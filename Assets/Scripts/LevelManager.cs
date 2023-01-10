@@ -355,10 +355,25 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void UnloadLevelDynamicObjects(int curlevel) {
-		if (curlevel > (levelScripts.Length - 1)) return;
-		if (curlevel < 0) return;
+		GameObject go = GetRequestedLevelDynamicContainer(curlevel);
+		Component[] compArray = go.GetComponentsInChildren(typeof(SaveObject),true);
+		for (int i=0;i<compArray.Length;i++) {
+			PrefabIdentifier pid = compArray[i].gameObject.GetComponent<PrefabIdentifier>();
+			if (pid == null) Debug.Log("SaveObject on a GameObject missing companion PrefabIdentifier component");
+			else {
+				if (pid.constIndex == 517) { // func_wall has SaveObject on first child mover_target so destroy the parent instead
+					DestroyImmediate(compArray[i].gameObject.transform.parent.gameObject);
+				} else {
+					DestroyImmediate(compArray[i].gameObject);
+				}
+			}
+		}
+		compArray = null;
+	}
 
-		Component[] compArray = levelScripts[currentLevel].dynamicObjectsContainer.GetComponentsInChildren(typeof(SaveObject),true);
+	public void UnloadLevelNPCs(int curlevel) {
+		GameObject go = npcContainers[curlevel];
+		Component[] compArray = go.GetComponentsInChildren(typeof(SaveObject),true);
 		for (int i=0;i<compArray.Length;i++) {
 			DestroyImmediate(compArray[i].gameObject);
 		}

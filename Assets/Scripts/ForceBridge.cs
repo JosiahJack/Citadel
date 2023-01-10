@@ -154,7 +154,7 @@ public class ForceBridge : MonoBehaviour {
 		fb.activatedScaleY = Utils.GetFloatFromString(entries[index]); index++;
 		fb.activatedScaleZ = Utils.GetFloatFromString(entries[index]); index++;
 		fb.fieldColor = Utils.GetForceFieldColorFromInt(Utils.GetIntFromString(entries[index])); index++;
-		fb.SetColorMaterial();
+		fb.Start();
 		return index;
 	}
 }

@@ -1231,7 +1231,7 @@ public class AIController : MonoBehaviour {
 		s1.Append(Utils.UintToString(aic.index)); // int
 		s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(Utils.AIStateToInt(aic.currentState)));
 		s1.Append(Utils.splitChar);
-		if (aic.enemy != null) s1.Append("1");
+		if (aic.enemy != null) s1.Append("1"); // enemID (savefile variable only)
 		else s1.Append("-1");
 
 		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.walkPathOnStart));
@@ -1328,6 +1328,7 @@ public class AIController : MonoBehaviour {
 		AIController aic = go.GetComponent<AIController>();
 		if (aic == null || index < 0 || entries == null) return index + 55;
 
+		aic.Start();
 		float readFloatx, readFloaty, readFloatz;
 		aic.index = Utils.GetIntFromString(entries[index]); index++; // int - NPC const lookup table index for instantiating
 		int state = Utils.GetIntFromString(entries[index]); index++;
@@ -1335,6 +1336,7 @@ public class AIController : MonoBehaviour {
 		int enemIDRead = Utils.GetIntFromString(entries[index]); index++;
 		if (enemIDRead >= 0) aic.enemy = Const.a.player1Capsule;
 		else aic.enemy = null;
+
 		aic.walkPathOnStart = Utils.GetBoolFromString(entries[index]); index++;
 		aic.dontLoopWaypoints = Utils.GetBoolFromString(entries[index]); index++;
 		aic.visitWaypointsRandomly = Utils.GetBoolFromString(entries[index]); index++;

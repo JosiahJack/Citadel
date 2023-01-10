@@ -6,7 +6,6 @@ using UnityEditor;
 
 public class SaveObject : MonoBehaviour {
 	public int SaveID; // Manually set by Tests.cs in Editor.
-	public bool isRuntimeObject = false;
 	public SaveableType saveType = SaveableType.Transform;
 	public bool instantiated = false; // Should oject be instantiated on load?
 
@@ -16,7 +15,6 @@ public class SaveObject : MonoBehaviour {
 	public void Start() {
 		if (initialized) return;
 
-		isRuntimeObject = true;  // Lets us know if this object is indeed not the prefab but rather an instance of a prefab
 		switch (saveType) {
 			case SaveableType.Player: saveableType = "Player"; break;
 			case SaveableType.Useable: saveableType = "Useable"; break;
@@ -124,12 +122,24 @@ public class SaveObject : MonoBehaviour {
 		int levelID = 1;
 		if (so.instantiated) {
 			GameObject par = go.transform.parent.gameObject;
+			if (prefID.constIndex == 517) par = par.transform.parent.gameObject; // func_wall exception.
+
 			for (int i=0; i < 14; i++) {
-				if (par == LevelManager.a.levelScripts[i].dynamicObjectsContainer) {
-					levelID = i;
-					break;
+				if (so.saveType == SaveableType.NPC) {
+					if (par == LevelManager.a.npcContainers[i]) {
+						levelID = i;
+						break;
+					}
+				} else {
+					if (par == LevelManager.a.levelScripts[i].dynamicObjectsContainer) {
+						levelID = i;
+						break;
+					}
 				}
 			}
+			//Debug.Log("Parent for saveable = " + par.name + ", levelID set to "
+			//		  + levelID.ToString());
+
 		}
 
 		s1.Append(levelID.ToString()); s1.Append(Utils.splitChar);					// 18
@@ -198,7 +208,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Projectile:               s1.Append(DelayedSpawn.Save(go)); s1.Append(Utils.splitChar);
 										      s1.Append(ProjectileEffectImpact.Save(go)); break;
 			case SaveableType.NormalScreen:            s1.Append(HealthManager.Save(go,prefID)); break;
-			case SaveableType.CyberSwitch:               s1.Append(CyberSwitch.Save(go)); s1.Append(Utils.splitChar);
+			case SaveableType.CyberSwitch:               s1.Append(CyberSwitch.Save(go,prefID)); s1.Append(Utils.splitChar);
 													        s1.Append(TargetIO.Save(go)); break;
 		}
 		return s1.ToString();
@@ -209,10 +219,16 @@ public class SaveObject : MonoBehaviour {
 
 		SaveObject so = go.GetComponent<SaveObject>();
 		if (so == null) {
-			Debug.Log("SaveableObject on go.name: " + go.name + " was not found"
-					  + "even though it was passed to Load as though twere a "
-					  + "saveable object. Skipping!");
-			return 23;
+			if (go.transform.childCount > 0) {
+				so = go.transform.GetChild(0).GetComponent<SaveObject>();
+			}
+
+			if (so == null) {
+				Debug.Log("SaveableObject on go.name: " + go.name + " was not found"
+						+ " even though it was passed to Load as though twere a "
+						+ "saveable object. Skipping!");
+				return 23;
+			}
 		}
 
 		if (!so.initialized) so.Start();
@@ -265,7 +281,13 @@ public class SaveObject : MonoBehaviour {
 		if (index >= entries.Length) return index;
 
 		PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
-		if (prefID == null && so.instantiated) Debug.Log("No PrefabIdentifier on " + go.name);
+		if (prefID == null && so.instantiated) {
+			prefID = go.transform.GetChild(0).GetComponent<PrefabIdentifier>();
+
+			if (prefID == null) {
+				Debug.Log("No PrefabIdentifier on " + go.name);
+			}
+		}
 		switch (so.saveType) {
 			case SaveableType.Player:				  index = PlayerReferenceManager.LoadPlayerDataToPlayer(go,ref entries,index,prefID); break;
 			case SaveableType.Useable:				  index =       UseableObjectUse.Load(go,ref entries,index); break;
@@ -326,7 +348,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Projectile:             index =           DelayedSpawn.Load(go,ref entries,index);
 													  index = ProjectileEffectImpact.Load(go,ref entries,index); break;
 			case SaveableType.NormalScreen:			  index =          HealthManager.Load(go,ref entries,index,prefID); break;
-			case SaveableType.CyberSwitch:			  index =            CyberSwitch.Load(go,ref entries,index);
+			case SaveableType.CyberSwitch:			  index =            CyberSwitch.Load(go,ref entries,index,prefID);
 													  index =               TargetIO.Load(go,ref entries,index,true); break;
 		}
 		return index;
