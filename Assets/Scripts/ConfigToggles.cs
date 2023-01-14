@@ -12,6 +12,14 @@ public class ConfigToggles : MonoBehaviour {
 
 	void Start () {
 		self = GetComponent<Toggle>();
+		AlignWithConfigFile();
+	}
+
+	void OnEnable() {
+		AlignWithConfigFile();
+	}
+
+	public void AlignWithConfigFile() {
 		switch (ToggleType) {
 			case ConfigToggleType.Fullscreen: self.isOn = Const.a.GraphicsFullscreen; break;
 			case ConfigToggleType.SSAO: self.isOn = Const.a.GraphicsSSAO; break;

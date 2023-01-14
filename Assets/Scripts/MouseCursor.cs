@@ -171,7 +171,9 @@ public class MouseCursor : MonoBehaviour {
 	void Update() { 
 		cursorPosition = new Vector2(cursorX,cursorY);
 		cursorSize = (24f * (Screen.width/640f)); // This works well, not changing it from Screen.width/640f
-		if (cursorPosition.y > (0.13541f*Screen.height) && cursorPosition.y < (0.70703f*Screen.height) && cursorPosition.x < (0.96925f*Screen.width) && cursorPosition.x > (0.029282f*Screen.width) && !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+		if (cursorPosition.y > (0.13541f*Screen.height) && cursorPosition.y < (0.70703f*Screen.height)
+			&& cursorPosition.x < (0.96925f*Screen.width) && cursorPosition.x > (0.029282f*Screen.width)
+			&& !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
 			GUIState.a.isBlocking = false; // in the safe zone!
 		}
 

@@ -815,7 +815,8 @@ public class Const : MonoBehaviour {
 		#if UNITY_EDITOR
 			UnityEngine.Debug.Log(input); // Print to Editor console.
 		#endif
-		Console.WriteLine(input);
+		System.Console.WriteLine(input);
+		//System.Diagnostics.Debug.WriteLine(input);
 		a.statusBar.SendText(input);
 	}
 
@@ -1014,6 +1015,7 @@ public class Const : MonoBehaviour {
 		for (int i=0;i<poolContainer.transform.childCount;i++) {
 			Transform child = poolContainer.transform.GetChild(i);
 			if (child.gameObject.activeSelf == false) return child.gameObject;
+			if (i == (poolContainer.transform.childCount - 1)) UnityEngine.Debug.Log("Ran out of items for " + poolName);
 		}
 
 		return null;
@@ -1235,7 +1237,7 @@ public class Const : MonoBehaviour {
 
 		loadingScreen.SetActive(false);
 		if (player1Capsule != null) player1Capsule.SetActive(true);
-		else UnityEngine.Debug.Log("ERROR: Missing player1Capsule on GoIntoGame");
+		else UnityEngine.Debug.Log("BUG: Missing player1Capsule on GoIntoGame");
 		player1CapsuleMainCameragGO.transform.parent.gameObject.SetActive(true);
 		player1CapsuleMainCameragGO.SetActive(true);
 		if (MouseLookScript.a != null) {

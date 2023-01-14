@@ -45,6 +45,14 @@ public class Config {
 		SetVolume();
 		Screen.SetResolution(Const.a.GraphicsResWidth,Const.a.GraphicsResHeight,true);
 		Screen.fullScreen = Const.a.GraphicsFullscreen;
+		SetShadows();
+		SetBloom();
+		SetSSR();
+		SetBrightness();
+		SetSSAO();
+		SetFOV();
+		SetAA();
+		SetVSync();
 	}
 
 	public static void WriteConfig() {
@@ -77,6 +85,7 @@ public class Config {
 		INIWorker.IniWriteValue("Input","QuickReloadWeapons",Utils.BoolToString(Const.a.InputQuickReloadWeapons));
 		SetBloom();
 		SetSSAO();
+		SetFOV();
 		SetAA();
 		SetVSync();
 	}

@@ -540,7 +540,7 @@ public class MainMenuHandler : MonoBehaviour {
 		Const.a.WriteDatForIntroPlayed(false);
 		saltTheFries.SetActive(true);
 		yield return new WaitForSeconds(0.8f);
-		#if UNITY_EDITOR_WIN
+		#if UNITY_EDITOR
 			UnityEditor.EditorApplication.isPlaying = false;
 		#endif
 

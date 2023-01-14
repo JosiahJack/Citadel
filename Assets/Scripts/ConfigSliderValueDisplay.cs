@@ -10,7 +10,7 @@ public class ConfigSliderValueDisplay : MonoBehaviour {
 
 	void Awake () {
 		self = GetComponent<Text>();
-		if (self == null) Debug.Log("ERROR: No Slider component for self on ConfigSliderValueDisplay.");
+		if (self == null) Debug.Log("BUG: No Slider component for self on ConfigSliderValueDisplay.");
 		if (slideControl == null) Debug.Log("BUG: ConfigSliderValueDisplay missing manually assigned reference for slideControl.");
 		if (self == null || slideControl == null) this.enabled = false;
 	}

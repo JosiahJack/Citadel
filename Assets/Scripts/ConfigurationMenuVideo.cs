@@ -14,6 +14,10 @@ public class ConfigurationMenuVideo : MonoBehaviour {
 		RepopulateResolutionsDropdown();
 	}
 
+	void OnEnable() {
+		RepopulateResolutionsDropdown();
+	}
+
 	public void RepopulateResolutionsDropdown() {
 		resolutions = GetResolutions().ToArray();//Screen.resolutions.Where(resolutions => resolutions.refreshRate >= 60).ToArray();
 		if (resSelector == null) Debug.Log("BUG: ConfigurationMenuVideo missing component for resSelector.");
@@ -27,7 +31,7 @@ public class ConfigurationMenuVideo : MonoBehaviour {
 			if (resolutions[i].height < 1000) paddingHeight = " ";
 			else paddingHeight = "";
 			resList.Add(paddingWidth + resolutions[i].width.ToString() + "x" + paddingHeight + resolutions[i].height.ToString() +  " " + resolutions[i].refreshRate.ToString() + "Hz");
-			if (resolutions[i].width == 1366) refindex = i;
+			if (resolutions[i].width == Screen.width) refindex = i;
 		}
 		resSelector.ClearOptions();
 		resSelector.AddOptions(resList);

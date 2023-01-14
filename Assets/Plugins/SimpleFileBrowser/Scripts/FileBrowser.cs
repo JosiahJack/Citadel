@@ -1484,7 +1484,7 @@ namespace SimpleFileBrowser
 		{
 			if( Instance.gameObject.activeSelf )
 			{
-				Debug.LogError( "Error: Multiple dialogs are not allowed!" );
+				Debug.LogError( "BUG: Multiple dialogs are not allowed!" );
 				return false;
 			}
 
@@ -1508,7 +1508,7 @@ namespace SimpleFileBrowser
 		{
 			if( Instance.gameObject.activeSelf )
 			{
-				Debug.LogError( "Error: Multiple dialogs are not allowed!" );
+				Debug.LogError( "BUG: Multiple dialogs are not allowed!" );
 				return false;
 			}
 

@@ -364,6 +364,17 @@ public class LevelManager : MonoBehaviour {
 				if (pid.constIndex == 517) { // func_wall has SaveObject on first child mover_target so destroy the parent instead
 					DestroyImmediate(compArray[i].gameObject.transform.parent.gameObject);
 				} else {
+					if (pid.constIndex == 477) {
+						HealthManager hm = compArray[i].transform.GetChild(0).GetComponent<HealthManager>();
+						if (hm == null) Debug.Log("Missing HealthManager on security camera " + compArray[i].gameObject.name);
+						else {
+							UnityEngine.UI.Image overlay = hm.linkedCameraOverlay;
+							if (overlay != null) {
+								GameObject hmGO = overlay.gameObject;
+								hmGO.SetActive(false);
+							}
+						}
+					}
 					DestroyImmediate(compArray[i].gameObject);
 				}
 			}
@@ -375,6 +386,14 @@ public class LevelManager : MonoBehaviour {
 		GameObject go = npcContainers[curlevel];
 		Component[] compArray = go.GetComponentsInChildren(typeof(SaveObject),true);
 		for (int i=0;i<compArray.Length;i++) {
+			AIController aic = compArray[i].gameObject.GetComponent<AIController>();
+			if (aic == null) UnityEngine.Debug.Log("AIController missing on child " + compArray[i].gameObject.name + " of NPC container " + go.name);
+			else {
+				if (aic.npcAutomapOverlayImage != null) {
+					aic.npcAutomapOverlayImage.gameObject.SetActive(false);
+				}
+			}
+
 			DestroyImmediate(compArray[i].gameObject);
 		}
 		compArray = null;

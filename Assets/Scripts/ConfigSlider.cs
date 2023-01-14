@@ -10,7 +10,15 @@ public class ConfigSlider : MonoBehaviour {
 	void Start () {
 		if (index < 0 || index >= 7) { index = 0; Debug.Log("BUG: Setting index on ConfigSlider to 0 because it was outside the range >=0index<7");}
 		slideControl = GetComponent<Slider>();
-		if (slideControl == null) Debug.Log("ERROR: No slider component for object with ConfigSlider script");
+		if (slideControl == null) Debug.Log("BUG: No slider component for object with ConfigSlider script");
+		AlignSettingToConfigFile();
+	}
+
+	void OnEnable() {
+		AlignSettingToConfigFile();
+	}
+
+	void AlignSettingToConfigFile() {
 		switch(index) {
 			case 0: slideControl.value = Const.a.GraphicsFOV; break;
 			case 1: slideControl.value = Const.a.GraphicsGamma; break;

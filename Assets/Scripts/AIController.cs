@@ -235,7 +235,7 @@ public class AIController : MonoBehaviour {
 				npcAutomapOverlayImage = overlay.GetComponent<Image>();
 				if (npcAutomapOverlayImage != null) npcAutomapOverlayImage.enabled = true;
 			} else {
-				Debug.Log("ERROR: Couldn't find automap icon for " + gameObject.name + " of type " + pt.ToString());
+				Debug.Log("BUG: Couldn't find automap icon for " + gameObject.name + " of type " + pt.ToString());
 			}
 		}
 	}

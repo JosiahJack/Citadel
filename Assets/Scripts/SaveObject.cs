@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using UnityEditor;
+//#if UNITY_EDITOR
+//	using UnityEditor;
+//#endif
 
 public class SaveObject : MonoBehaviour {
 	public int SaveID; // Manually set by Tests.cs in Editor.

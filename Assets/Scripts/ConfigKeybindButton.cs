@@ -27,6 +27,10 @@ public class ConfigKeybindButton : MonoBehaviour {
 		UpdateText();
 	}
 
+	void OnEnable() {
+		UpdateText();
+	}
+
 	public void KeybindButtonClick() {
 		if (MainMenuHandler.a.PresetConfirmDialog.activeSelf) return;
 

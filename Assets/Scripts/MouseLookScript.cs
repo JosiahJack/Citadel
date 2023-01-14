@@ -835,6 +835,7 @@ public class MouseLookScript : MonoBehaviour {
 
 	public void ForceInventoryMode() {
 		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true; // Attempt to reconcile Linux bug.
 		Cursor.visible = false;
 		inventoryMode = true;
 		shootModeButton.SetActive(true);
