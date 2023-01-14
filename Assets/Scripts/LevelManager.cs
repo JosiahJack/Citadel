@@ -478,7 +478,20 @@ public class LevelManager : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		LevelManager lvm = go.GetComponent<LevelManager>();
-		if (lvm == null || index < 0 || entries == null) return index + (14 * 5) + 1;
+		if (lvm == null) {
+			Debug.Log("LevelManager.Load failure, lvm == null");
+			return index + (14 * 5) + 1;
+		}
+
+		if (index < 0) {
+			Debug.Log("LevelManager.Load failure, index < 0");
+			return index + (14 * 5) + 1;
+		}
+
+		if (entries == null) {
+			Debug.Log("LevelManager.Load failure, entries == null");
+			return index + (14 * 5) + 1;
+		}
 
 		int i = 0;
 		int levelNum = Utils.GetIntFromString(entries[index]); index++;

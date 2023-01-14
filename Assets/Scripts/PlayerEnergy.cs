@@ -187,7 +187,20 @@ public class PlayerEnergy : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PlayerEnergy pe = go.GetComponent<PlayerEnergy>();
-		if (pe == null || index < 0 || entries == null) return index + 2;
+		if (pe == null) {
+			Debug.Log("PlayerEnergy.Load failure, pe == null");
+			return index + 2;
+		}
+
+		if (index < 0) {
+			Debug.Log("PlayerEnergy.Load failure, index < 0");
+			return index + 2;
+		}
+
+		if (entries == null) {
+			Debug.Log("PlayerEnergy.Load failure, entries == null");
+			return index + 2;
+		}
 
 		pe.energy = Utils.GetFloatFromString(entries[index]); index++;
 		pe.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;

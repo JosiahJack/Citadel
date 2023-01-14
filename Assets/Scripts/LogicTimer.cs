@@ -68,7 +68,20 @@ public class LogicTimer : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		LogicTimer lt = go.GetComponent<LogicTimer>();
-		if (lt == null || index < 0 || entries == null) return index + 8;
+		if (lt == null) {
+			Debug.Log("LogicTimer.Load failure, lt == null");
+			return index + 8;
+		}
+
+		if (index < 0) {
+			Debug.Log("LogicTimer.Load failure, index < 0");
+			return index + 8;
+		}
+
+		if (entries == null) {
+			Debug.Log("LogicTimer.Load failure, entries == null");
+			return index + 8;
+		}
 
 		lt.intervalFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		lt.timeInterval = Utils.GetFloatFromString(entries[index]); index++;

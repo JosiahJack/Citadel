@@ -1402,7 +1402,20 @@ public class MFDManager : MonoBehaviour  {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		MFDManager mfd = go.GetComponent<MFDManager>();
-		if (mfd == null || index < 0 || entries == null) return index + 22;
+		if (mfd == null) {
+			Debug.Log("MFDManager.Load failure, mfd == null");
+			return index + 22;
+		}
+
+		if (index < 0) {
+			Debug.Log("MFDManager.Load failure, index < 0");
+			return index + 22;
+		}
+
+		if (entries == null) {
+			Debug.Log("MFDManager.Load failure, entries == null");
+			return index + 22;
+		}
 
 		float readFloatx, readFloaty, readFloatz;
 		mfd.lastWeaponSideRH = Utils.GetBoolFromString(entries[index]); index++;

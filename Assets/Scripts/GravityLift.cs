@@ -58,7 +58,20 @@ public class GravityLift : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		GravityLift gl = go.GetComponent<GravityLift>();
-		if (gl == null || index < 0 || entries == null) return index + 1;
+		if (gl == null) {
+			Debug.Log("GravityLift.Load failure, gl == null");
+			return index + 1;
+		}
+
+		if (index < 0) {
+			Debug.Log("GravityLift.Load failure, index < 0");
+			return index + 1;
+		}
+
+		if (entries == null) {
+			Debug.Log("GravityLift.Load failure, entries == null");
+			return index + 1;
+		}
 
 		gl.active = Utils.GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
 		return index;

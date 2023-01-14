@@ -171,7 +171,20 @@ public class ButtonSwitch : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		ButtonSwitch bs = go.GetComponent<ButtonSwitch>(); // what a load of bs
-		if (bs == null || index < 0 || entries == null) return index + 16;
+		if (bs == null) {
+			Debug.Log("ButtonSwitch.Load failure, bs == null");
+			return index + 16;
+		}
+
+		if (index < 0) {
+			Debug.Log("ButtonSwitch.Load failure, index < 0");
+			return index + 16;
+		}
+
+		if (entries == null) {
+			Debug.Log("ButtonSwitch.Load failure, entries == null");
+			return index + 16;
+		}
 
 		bs.securityThreshhold = Utils.GetIntFromString(entries[index]); index++;
 		bs.target = entries[index]; index++;

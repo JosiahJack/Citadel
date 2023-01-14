@@ -56,7 +56,20 @@ public class MaterialChanger : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		MaterialChanger mch = go.GetComponent<MaterialChanger>(); // ... ado about nothing
-		if (mch == null || index < 0 || entries == null) return index + 1;
+		if (mch == null) {
+			Debug.Log("MaterialChanger.Load failure, mch == null");
+			return index + 1;
+		}
+
+		if (index < 0) {
+			Debug.Log("MaterialChanger.Load failure, index < 0");
+			return index + 1;
+		}
+
+		if (entries == null) {
+			Debug.Log("MaterialChanger.Load failure, entries == null");
+			return index + 1;
+		}
 
 		mch.alreadyDone = Utils.GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
 		return index;

@@ -117,7 +117,20 @@ public class KeypadKeycode : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		KeypadKeycode kk = go.GetComponent<KeypadKeycode>();
-		if (kk == null || index < 0 || entries == null) return index + 3;
+		if (kk == null) {
+			Debug.Log("KeypadKeycode.Load failure, kk == null");
+			return index + 3;
+		}
+
+		if (index < 0) {
+			Debug.Log("KeypadKeycode.Load failure, index < 0");
+			return index + 3;
+		}
+
+		if (entries == null) {
+			Debug.Log("KeypadKeycode.Load failure, entries == null");
+			return index + 3;
+		}
 
 		kk.padInUse = Utils.GetBoolFromString(entries[index]); index++; // bool - is the pad being used by a player
 		kk.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - locked?

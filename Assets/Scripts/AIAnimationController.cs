@@ -171,7 +171,27 @@ public class AIAnimationController : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>();
-		if (aiac == null || index < 0 || entries == null) return index + 3;
+		if (aiac == null) {
+			AIController aic = go.GetComponentInChildren<AIController>();
+			if (aic != null) {
+				if (Const.a.moveTypeForNPC[aic.index] != AIMoveType.Cyber && aic.index != 20 && aic.index != 0) {
+					Debug.Log("AIAnimationController.Load failure, aiac == null on" + go.name);
+				}
+			} else {
+				Debug.Log("AIAnimationController.Load failure, aiac == null on" + go.name);
+			}
+			return index + 3;
+		}
+
+		if (index < 0) {
+			Debug.Log("AIAnimationController.Load failure, index < 0");
+			return index + 3;
+		}
+
+		if (entries == null) {
+			Debug.Log("AIAnimationController.Load failure, entries == null");
+			return index + 3;
+		}
 
 		aiac.currentClipPercentage = Utils.GetFloatFromString(entries[index]); index++;
 		aiac.dying = Utils.GetBoolFromString(entries[index]); index++;

@@ -74,7 +74,20 @@ public class KeypadElevator : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		KeypadElevator ke = go.GetComponent<KeypadElevator>();
-		if (ke == null || index < 0 || entries == null) return index + 2;
+		if (ke == null) {
+			Debug.Log("KeypadElevator.Load failure, ke == null");
+			return index + 2;
+		}
+
+		if (index < 0) {
+			Debug.Log("KeypadElevator.Load failure, index < 0");
+			return index + 2;
+		}
+
+		if (entries == null) {
+			Debug.Log("KeypadElevator.Load failure, entries == null");
+			return index + 2;
+		}
 
 		ke.padInUse = Utils.GetBoolFromString(entries[index]); index++; // bool - is the pad being used by a player
 		ke.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - locked?

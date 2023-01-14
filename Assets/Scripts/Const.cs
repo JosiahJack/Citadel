@@ -812,6 +812,7 @@ public class Const : MonoBehaviour {
 		#if UNITY_EDITOR
 			UnityEngine.Debug.Log(input); // Print to Editor console.
 		#endif
+		Console.WriteLine(input);
 		a.statusBar.SendText(input);
 	}
 

@@ -104,7 +104,20 @@ public class SearchableItem : MonoBehaviour {
 				if (se == null) se = go.transform.GetChild(0).gameObject.GetComponent<SearchableItem>();
 			}
 		}
-		if (se == null || index < 0 || entries == null) return index + 36;
+		if (se == null) {
+			Debug.Log("SearchableItem.Load failure, se == null");
+			return index + 36;
+		}
+
+		if (index < 0) {
+			Debug.Log("SearchableItem.Load failure, index < 0");
+			return index + 36;
+		}
+
+		if (entries == null) {
+			Debug.Log("SearchableItem.Load failure, entries == null");
+			return index + 36;
+		}
 
 		se.lookUpIndex = Utils.GetIntFromString(entries[index]); index++;
 		se.maxRandomItems = Utils.GetIntFromString(entries[index]); index++;

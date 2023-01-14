@@ -123,24 +123,24 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	void OnEnable() {
-		if (PauseScript.a != null) {
-			if (isSecCamera && linkedCameraOverlay == null) {
-				GameObject overlay = Const.a.GetObjectFromPool(PoolType.AutomapCameraOverlays);
-				if (overlay != null) {
-					overlay.SetActive(true);
-					RectTransform rect = overlay.GetComponent<RectTransform>();
-					linkedCameraOverlay = overlay.GetComponent<Image>();
-					if (linkedCameraOverlay != null) {
-						linkedCameraOverlay.enabled = true;
-						Vector3 tempVec2 = new Vector2(0f,0f);
-						// 436,-367, -0.3 is the center point of the map UI
-						tempVec2.y = -367 + (((((transform.position.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * 1008f) + Const.a.mapTileMinX));
-						tempVec2.x = 436 + (((((transform.position.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * 1008f) + Const.a.mapTileMinY));
-						tempVec2.z = -0.3f;
-						rect.transform.localPosition = tempVec2;
-					}
+		if (isSecCamera && linkedCameraOverlay == null) {
+			GameObject overlay = Const.a.GetObjectFromPool(PoolType.AutomapCameraOverlays);
+			if (overlay != null) {
+				overlay.SetActive(true);
+				RectTransform rect = overlay.GetComponent<RectTransform>();
+				linkedCameraOverlay = overlay.GetComponent<Image>();
+				if (linkedCameraOverlay != null) {
+					linkedCameraOverlay.enabled = true;
+					Vector3 tempVec2 = new Vector2(0f,0f);
+					// 436,-367, -0.3 is the center point of the map UI
+					tempVec2.y = -367 + (((((transform.position.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * 1008f) + Const.a.mapTileMinX));
+					tempVec2.x = 436 + (((((transform.position.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * 1008f) + Const.a.mapTileMinY));
+					tempVec2.z = -0.3f;
+					rect.transform.localPosition = tempVec2;
 				}
 			}
+
+			if (linkedCameraOverlay == null) Debug.Log("Security object failed to find Automap overlay!");
 		}
 	}
 
@@ -696,13 +696,23 @@ public class HealthManager : MonoBehaviour {
 			hm = go.transform.GetChild(0).GetComponent<HealthManager>();
 		}
 
-		if (hm == null || index < 0 || entries == null) return index + 6;
+		if (hm == null) {
+			Debug.Log("HealthManager.Load failure, hm == null");
+			return index + 6;
+		}
+
+		if (index < 0) {
+			Debug.Log("HealthManager.Load failure, index < 0");
+			return index + 6;
+		}
+
+		if (entries == null) {
+			Debug.Log("HealthManager.Load failure, entries == null");
+			return index + 6;
+		}
 
 		if (!hm.awakeInitialized) hm.Awake();
 		if (!hm.startInitialized) hm.Start();
-		if (prefID != null) {
-			if (prefID.constIndex == 467) Debug.Log("HealthManager on se_corpse_eaten named " + go.name + " starting Load with index: " + index.ToString());
-		}
 		hm.health = Utils.GetFloatFromString(entries[index]); index++; // how much health we have
 		hm.cyberHealth = Utils.GetFloatFromString(entries[index]); index++;
 		hm.deathDone = Utils.GetBoolFromString(entries[index]); index++; // bool - are we dead yet?

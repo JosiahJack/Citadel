@@ -1296,7 +1296,20 @@ public class PlayerMovement : MonoBehaviour {
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PlayerMovement pm = go.GetComponent<PlayerMovement>();
 		int j = 0;
-		if (pm == null || index < 0 || entries == null) return index + 29 + (4096 * 13);
+		if (pm == null) {
+			Debug.Log("PlayerMovement.Load failure, pm == null");
+			return index + 29 + (4096 * 13);
+		}
+
+		if (index < 0) {
+			Debug.Log("PlayerMovement.Load failure, index < 0");
+			return index + 29 + (4096 * 13);
+		}
+
+		if (entries == null) {
+			Debug.Log("PlayerMovement.Load failure, entries == null");
+			return index + 29 + (4096 * 13);
+		}
 
 		float readFloatx, readFloaty, readFloatz;
 		index = Utils.LoadTransform(go.transform,ref entries,index);

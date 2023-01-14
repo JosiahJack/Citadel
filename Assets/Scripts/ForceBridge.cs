@@ -142,7 +142,20 @@ public class ForceBridge : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		ForceBridge fb = go.GetComponent<ForceBridge>(); // fjb
-		if (fb == null || index < 0 || entries == null) return index + 3;
+		if (fb == null) {
+			Debug.Log("ForceBridge.Load failure, fb == null");
+			return index + 3;
+		}
+
+		if (index < 0) {
+			Debug.Log("ForceBridge.Load failure, index < 0");
+			return index + 3;
+		}
+
+		if (entries == null) {
+			Debug.Log("ForceBridge.Load failure, entries == null");
+			return index + 3;
+		}
 
 		fb.activated = Utils.GetBoolFromString(entries[index]); index++; // bool - is the bridge on?
 		fb.lerping = Utils.GetBoolFromString(entries[index]); index++; // bool - are we currently lerping one way or tother

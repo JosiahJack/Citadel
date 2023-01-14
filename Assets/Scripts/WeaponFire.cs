@@ -1172,7 +1172,20 @@ public class WeaponFire : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		WeaponFire wf = go.GetComponent<WeaponFire>();
-		if (wf == null || index < 0 || entries == null) return index + 11;
+		if (wf == null) {
+			Debug.Log("WeaponFire.Load failure, wf == null");
+			return index + 11;
+		}
+
+		if (index < 0) {
+			Debug.Log("WeaponFire.Load failure, index < 0");
+			return index + 11;
+		}
+
+		if (entries == null) {
+			Debug.Log("WeaponFire.Load failure, entries == null");
+			return index + 11;
+		}
 
 		wf.waitTilNextFire = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		wf.overloadEnabled = Utils.GetBoolFromString(entries[index]); index++;

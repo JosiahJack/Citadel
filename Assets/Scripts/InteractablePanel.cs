@@ -112,7 +112,20 @@ public class InteractablePanel : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		InteractablePanel ip = go.GetComponent<InteractablePanel>(); // ip man!
-		if (ip == null || index < 0 || entries == null) return index + 2;
+		if (ip == null) {
+			Debug.Log("InteractablePanel.Load failure, ip == null");
+			return index + 17;
+		}
+
+		if (index < 0) {
+			Debug.Log("InteractablePanel.Load failure, index < 0");
+			return index + 17;
+		}
+
+		if (entries == null) {
+			Debug.Log("InteractablePanel.Load failure, entries == null");
+			return index + 17;
+		}
 
 		ip.open = Utils.GetBoolFromString(entries[index]); index++; // bool - is the panel opened
 		ip.installed = Utils.GetBoolFromString(entries[index]); index++; // bool - is the item installed

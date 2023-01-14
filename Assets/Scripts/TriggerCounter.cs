@@ -61,7 +61,20 @@ public class TriggerCounter : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		TriggerCounter tc = go.GetComponent<TriggerCounter>();
-		if (tc == null || index < 0 || entries == null) return index + 1;
+		if (tc == null) {
+			Debug.Log("TriggerCounter.Load failure, tc == null");
+			return index + 1;
+		}
+
+		if (index < 0) {
+			Debug.Log("TriggerCounter.Load failure, index < 0");
+			return index + 1;
+		}
+
+		if (entries == null) {
+			Debug.Log("TriggerCounter.Load failure, entries == null");
+			return index + 1;
+		}
 
 		tc.counter = Utils.GetIntFromString(entries[index]); index++; // int - how many counts we have
 		return index;

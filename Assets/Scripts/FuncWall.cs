@@ -178,9 +178,21 @@ public class FuncWall : MonoBehaviour {
 	// ->info_target         This is a relative offset position creator
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		float readFloatx, readFloaty, readFloatz;
-		FuncWall fw = go.GetComponent<FuncWall>(); // Fairweather we are having.
-												   // Vague Quake mapper reference
-		if (fw == null || index < 0 || entries == null) return index + 17;
+		FuncWall fw = go.GetComponent<FuncWall>(); // Fairweather we are having. Vague Quake mapper reference
+		if (fw == null) {
+			Debug.Log("FuncWall.Load failure, fw == null on " + go.name);
+			return index + 17;
+		}
+
+		if (index < 0) {
+			Debug.Log("FuncWall.Load failure, index < 0");
+			return index + 17;
+		}
+
+		if (entries == null) {
+			Debug.Log("FuncWall.Load failure, entries == null");
+			return index + 17;
+		}
 
 		int state = Utils.GetIntFromString(entries[index]); index++;
 		fw.currentState = Utils.GetFuncStatesFromInt(state);

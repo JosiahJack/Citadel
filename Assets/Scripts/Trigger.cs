@@ -108,7 +108,20 @@ public class Trigger : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		Trigger trig = go.GetComponent<Trigger>();
-		if (trig == null || index < 0 || entries == null) return index + 10;
+		if (trig == null) {
+			Debug.Log("Trigger.Load failure, trig == null");
+			return index + 10;
+		}
+
+		if (index < 0) {
+			Debug.Log("Trigger.Load failure, index < 0");
+			return index + 10;
+		}
+
+		if (entries == null) {
+			Debug.Log("Trigger.Load failure, entries == null");
+			return index + 10;
+		}
 
 		trig.allDone = Utils.GetBoolFromString(entries[index]); index++;
 		trig.numPlayers = Utils.GetIntFromString(entries[index]); index++;

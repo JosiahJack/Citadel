@@ -46,7 +46,20 @@ public class TeleportTouch : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		TeleportTouch tt = go.GetComponent<TeleportTouch>();
-		if (tt == null || index < 0 || entries == null) return index + 1;
+		if (tt == null) {
+			Debug.Log("TeleportTouch.Load failure, tt == null");
+			return index + 1;
+		}
+
+		if (index < 0) {
+			Debug.Log("TeleportTouch.Load failure, index < 0");
+			return index + 1;
+		}
+
+		if (entries == null) {
+			Debug.Log("TeleportTouch.Load failure, entries == null");
+			return index + 1;
+		}
 
 		tt.justUsed = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - is the player still touching it?
 		return index;

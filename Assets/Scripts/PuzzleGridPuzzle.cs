@@ -120,7 +120,20 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PuzzleGridPuzzle pgp = go.GetComponent<PuzzleGridPuzzle>();
-		if (pgp == null || index < 0 || entries == null) return index + 38;
+		if (pgp == null) {
+			Debug.Log("PuzzleGridPuzzle.Load failure, pgp == null");
+			return index + 38;
+		}
+
+		if (index < 0) {
+			Debug.Log("PuzzleGridPuzzle.Load failure, index < 0");
+			return index + 38;
+		}
+
+		if (entries == null) {
+			Debug.Log("PuzzleGridPuzzle.Load failure, entries == null");
+			return index + 38;
+		}
 
 		pgp.puzzleSolved = Utils.GetBoolFromString(entries[index]); index++; // bool - is this puzzle already solved?
 		for (int i=0;i<pgp.grid.Length;i++) {

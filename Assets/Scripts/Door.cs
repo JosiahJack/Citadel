@@ -397,8 +397,22 @@ public class Door : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   PrefabIdentifier prefID) {
+		Debug.Log("Door.Load start");
 		Door dr = go.GetComponent<Door>();
-		if (dr == null || index < 0 || entries == null) return index + 10;
+		if (dr == null) {
+			Debug.Log("Door.Load failure, dr == null on " + go.name);
+			return index + 10;
+		}
+
+		if (index < 0) {
+			Debug.Log("Door.Load failure, index < 0");
+			return index + 10;
+		}
+
+		if (entries == null) {
+			Debug.Log("Door.Load failure, entries == null");
+			return index + 10;
+		}
 
 		dr.targetAlreadyDone = Utils.GetBoolFromString(entries[index]); index++; // bool - have we already ran targets
 		dr.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - is this locked?
@@ -407,7 +421,10 @@ public class Door : MonoBehaviour {
 		dr.waitBeforeClose = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		dr.lasersFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		dr.blocked = Utils.GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
+		bool previous = dr.accessCardUsedByPlayer;
 		dr.accessCardUsedByPlayer = Utils.GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
+		Debug.Log("dr.accessCardUsedByPlayer:: before: " + previous.ToString() + ", after load: " + dr.accessCardUsedByPlayer.ToString());
+
 		int state = Utils.GetIntFromString(entries[index]); index++;
 		string clipName = "IdleClosed";
 		switch (state) {

@@ -128,7 +128,20 @@ public class SpawnManager : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		SpawnManager sm = go.GetComponent<SpawnManager>(); // Spawn martin.  Ok dang, this is such a vague reference it makes vague references look specific.  See source code for a Quake mod called vigil (the source code, not referenced as Martin in the mod though that's what your friend's name is, requires decompiling to see that it's called spawnmartin() as it isn't available separately, goodness gracious!)
-		if (sm == null || index < 0 || entries == null) return index + 3;
+		if (sm == null) {
+			Debug.Log("SpawnManager.Load failure, sm == null");
+			return index + 3;
+		}
+
+		if (index < 0) {
+			Debug.Log("SpawnManager.Load failure, index < 0");
+			return index + 3;
+		}
+
+		if (entries == null) {
+			Debug.Log("SpawnManager.Load failure, entries == null");
+			return index + 3;
+		}
 
 		sm.active = Utils.GetBoolFromString(entries[index]); index++; // bool - is this enabled
 		sm.numberActive = Utils.GetIntFromString(entries[index]); index++; // int - number spawned

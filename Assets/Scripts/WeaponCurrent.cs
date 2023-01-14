@@ -600,7 +600,20 @@ public class WeaponCurrent : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		WeaponCurrent wc = go.GetComponent<WeaponCurrent>();
-		if (wc == null || index < 0 || entries == null) return index + 31;
+		if (wc == null) {
+			Debug.Log("WeaponCurrent.Load failure, wc == null");
+			return index + 31;
+		}
+
+		if (index < 0) {
+			Debug.Log("WeaponCurrent.Load failure, index < 0");
+			return index + 31;
+		}
+
+		if (entries == null) {
+			Debug.Log("WeaponCurrent.Load failure, entries == null");
+			return index + 31;
+		}
 
 		int j =0;
 		wc.weaponCurrent = Utils.GetIntFromString(entries[index] ); index++;

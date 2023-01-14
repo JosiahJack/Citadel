@@ -156,7 +156,20 @@ public class ProjectileEffectImpact : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		ProjectileEffectImpact pei = go.GetComponent<ProjectileEffectImpact>();
-		if (pei == null || index < 0 || entries == null) return index + 6;
+		if (pei == null) {
+			Debug.Log("ProjectileEffectImpact.Load failure, pei == null");
+			return index + 3;
+		}
+
+		if (index < 0) {
+			Debug.Log("ProjectileEffectImpact.Load failure, index < 0");
+			return index + 3;
+		}
+
+		if (entries == null) {
+			Debug.Log("ProjectileEffectImpact.Load failure, entries == null");
+			return index + 3;
+		}
 
 		pei.hitCountBeforeRemoval = Utils.GetIntFromString(entries[index]); index++;
 		pei.numHits = Utils.GetIntFromString(entries[index]); index++;

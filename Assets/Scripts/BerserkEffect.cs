@@ -71,7 +71,20 @@ public class BerserkEffect : UnityStandardAssets.ImageEffects.ImageEffectBase {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		BerserkEffect bzk = go.GetComponent<BerserkEffect>();
-		if (bzk == null || index < 0 || entries == null) return index + 2;
+		if (bzk == null) {
+			Debug.Log("BerserkEffect.Load failure, bzk == null");
+			return index + 3;
+		}
+
+		if (index < 0) {
+			Debug.Log("BerserkEffect.Load failure, index < 0");
+			return index + 3;
+		}
+
+		if (entries == null) {
+			Debug.Log("BerserkEffect.Load failure, entries == null");
+			return index + 3;
+		}
 
 		bzk.enabled = Utils.GetBoolFromString(entries[index]); index++;
 		bzk.hithreshold = Utils.GetFloatFromString(entries[index]); index++;

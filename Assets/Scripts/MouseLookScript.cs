@@ -938,7 +938,20 @@ public class MouseLookScript : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		MouseLookScript ml = go.GetComponent<MouseLookScript>();
-		if (ml == null || index < 0 || entries == null) return index + 27;
+		if (ml == null) {
+			Debug.Log("MouseLookScript.Load failure, ml == null");
+			return index + 27;
+		}
+
+		if (index < 0) {
+			Debug.Log("MouseLookScript.Load failure, index < 0");
+			return index + 27;
+		}
+
+		if (entries == null) {
+			Debug.Log("MouseLookScript.Load failure, entries == null");
+			return index + 27;
+		}
 
 		float readFloatx, readFloaty, readFloatz;
 		ml.gameObject.SetActive(Utils.GetBoolFromString(entries[index])); index++;

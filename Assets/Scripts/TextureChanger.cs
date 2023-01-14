@@ -51,7 +51,20 @@ public class TextureChanger : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		TextureChanger tex = go.GetComponent<TextureChanger>();
-		if (tex == null || index < 0 || entries == null) return index + 1;
+		if (tex == null) {
+			Debug.Log("TextureChanger.Load failure, tex == null");
+			return index + 1;
+		}
+
+		if (index < 0) {
+			Debug.Log("TextureChanger.Load failure, index < 0");
+			return index + 1;
+		}
+
+		if (entries == null) {
+			Debug.Log("TextureChanger.Load failure, entries == null");
+			return index + 1;
+		}
 
 		tex.currentTexture = Utils.GetBoolFromString(entries[index]); index++; // is this gravlift on?
 		tex.currentTexture = !tex.currentTexture; // gets done again in Toggle()

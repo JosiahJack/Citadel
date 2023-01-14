@@ -91,7 +91,20 @@ public class ChargeStation : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		ChargeStation chg = go.GetComponent<ChargeStation>();
-		if (chg == null || index < 0 || entries == null) return index + 12;
+		if (chg == null) {
+			Debug.Log("ChargeStation.Load failure, chg == null");
+			return index + 12;
+		}
+
+		if (index < 0) {
+			Debug.Log("ChargeStation.Load failure, index < 0");
+			return index + 12;
+		}
+
+		if (entries == null) {
+			Debug.Log("ChargeStation.Load failure, entries == null");
+			return index + 12;
+		}
 
 		chg.nextthink = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before recharged
 		chg.amount  = Utils.GetFloatFromString(entries[index]); index++;

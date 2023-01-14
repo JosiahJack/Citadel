@@ -40,7 +40,20 @@ public class GUIState : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		GUIState guis = go.GetComponent<GUIState>();
-		if (guis == null || index < 0 || entries == null) return index + 2;
+		if (guis == null) {
+			Debug.Log("GUIState.Load failure, guis == null");
+			return index + 2;
+		}
+
+		if (index < 0) {
+			Debug.Log("GUIState.Load failure, index < 0");
+			return index + 2;
+		}
+
+		if (entries == null) {
+			Debug.Log("GUIState.Load failure, entries == null");
+			return index + 2;
+		}
 
 		int type = Utils.GetIntFromString(entries[index]); index++;
 		guis.overButtonType = Utils.IntToButtonType(type);

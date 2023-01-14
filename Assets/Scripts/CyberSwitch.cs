@@ -78,7 +78,20 @@ public class CyberSwitch : MonoBehaviour {
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   PrefabIdentifier prefID) {
 		CyberSwitch cs = go.GetComponent<CyberSwitch>();
-		if (cs == null || index < 0 || entries == null) return index + 4;
+		if (cs == null) {
+			Debug.Log("CyberSwitch.Load failure, cs == null");
+			return index + 4;
+		}
+
+		if (index < 0) {
+			Debug.Log("CyberSwitch.Load failure, index < 0");
+			return index + 4;
+		}
+
+		if (entries == null) {
+			Debug.Log("CyberSwitch.Load failure, entries == null");
+			return index + 4;
+		}
 
 		cs.active = Utils.GetBoolFromString(entries[index]); index++;
 		cs.textIndex = Utils.GetIntFromString(entries[index]); index++;

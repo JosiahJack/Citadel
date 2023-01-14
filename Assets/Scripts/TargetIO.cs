@@ -69,8 +69,9 @@ public class TargetIO : MonoBehaviour {
 					gameObject.AddComponent(typeof(SaveObject));
 					so = GetComponent<SaveObject>();
 					if (so != null) {
-						so.saveType = SaveableType.Transform;
-						so.saveableType = "Transform";
+						if (!so.initialized) so.Start();
+						//so.saveType = SaveableType.Transform;
+						//so.saveableType = "Transform";
 					} else {
 						Debug.Log("BUG: failed to add SaveObject to a "
 								  + "disabled on awake gameobject with "
@@ -427,7 +428,20 @@ public class TargetIO : MonoBehaviour {
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   bool instantiated) {
 		TargetIO tio = go.GetComponent<TargetIO>();
-		if (tio == null || index < 0 || entries == null) return index + 51;
+		if (tio == null) {
+			Debug.Log("TargetIO.Load failure, tio == null on " + go.name);
+			return index + 51;
+		}
+
+		if (index < 0) {
+			Debug.Log("TargetIO.Load failure, index < 0");
+			return index + 51;
+		}
+
+		if (entries == null) {
+			Debug.Log("TargetIO.Load failure, entries == null");
+			return index + 51;
+		}
 
 		tio.targetname = entries[index]; index++;
 		tio.tripTrigger = Utils.GetBoolFromString(entries[index]); index++;

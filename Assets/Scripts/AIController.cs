@@ -1326,7 +1326,20 @@ public class AIController : MonoBehaviour {
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   PrefabIdentifier prefID) {
 		AIController aic = go.GetComponent<AIController>();
-		if (aic == null || index < 0 || entries == null) return index + 55;
+		if (aic == null) {
+			Debug.Log("AIController.Load failure, aic == null");
+			return index + 55;
+		}
+
+		if (index < 0) {
+			Debug.Log("AIController.Load failure, index < 0");
+			return index + 55;
+		}
+
+		if (entries == null) {
+			Debug.Log("AIController.Load failure, entries == null");
+			return index + 55;
+		}
 
 		aic.Start();
 		float readFloatx, readFloaty, readFloatz;

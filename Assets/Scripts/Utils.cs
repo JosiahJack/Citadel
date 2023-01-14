@@ -620,9 +620,9 @@ public class Utils {
 
 	public static int LoadSubActivatedGOState(GameObject subGO,
 											  ref string[] entries, int index) {
-		index = Utils.LoadTransform(subGO.transform,ref entries,index);
-		index = Utils.LoadRigidbody(subGO,ref entries,index);
-		subGO.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+		index = Utils.LoadTransform(subGO.transform,ref entries,index); // 10
+		index = Utils.LoadRigidbody(subGO,ref entries,index); // 4
+		subGO.SetActive(Utils.GetBoolFromString(entries[index])); index++; // 10+4+1=15
 		return index;
 	}
 

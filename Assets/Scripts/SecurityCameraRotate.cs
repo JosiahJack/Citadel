@@ -77,7 +77,20 @@ public class SecurityCameraRotate : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		SecurityCameraRotate scr = go.GetComponent<SecurityCameraRotate>();
-		if (scr == null || index < 0 || entries == null) return index + 1;
+		if (scr == null) {
+			Debug.Log("SecurityCameraRotate.Load failure, scr == null");
+			return index + 1;
+		}
+
+		if (index < 0) {
+			Debug.Log("SecurityCameraRotate.Load failure, index < 0");
+			return index + 1;
+		}
+
+		if (entries == null) {
+			Debug.Log("SecurityCameraRotate.Load failure, entries == null");
+			return index + 1;
+		}
 
 		scr.waitingFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		scr.enabled = Utils.GetBoolFromString(entries[index]); index++;

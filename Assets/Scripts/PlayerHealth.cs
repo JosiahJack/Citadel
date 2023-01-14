@@ -229,7 +229,20 @@ public class PlayerHealth : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PlayerHealth ph = go.GetComponent<PlayerHealth>();
-		if (ph == null || index < 0 || entries == null) return index + 11;
+		if (ph == null) {
+			Debug.Log("PlayerHealth.Load failure, ph == null");
+			return index + 11;
+		}
+
+		if (index < 0) {
+			Debug.Log("PlayerHealth.Load failure, index < 0");
+			return index + 11;
+		}
+
+		if (entries == null) {
+			Debug.Log("PlayerHealth.Load failure, entries == null");
+			return index + 11;
+		}
 
 		ph.radiated = Utils.GetFloatFromString(entries[index]); index++;
 		ph.timer = Utils.GetFloatFromString(entries[index]); index++; // Not relative time

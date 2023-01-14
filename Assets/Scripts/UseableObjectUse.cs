@@ -78,7 +78,20 @@ public class UseableObjectUse : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		UseableObjectUse uou = go.GetComponent<UseableObjectUse>();
-		if (uou == null || index < 0 || entries == null) return index + 4;
+		if (uou == null) {
+			Debug.Log("UseableObjectUse.Load failure, uou == null");
+			return index + 4;
+		}
+
+		if (index < 0) {
+			Debug.Log("UseableObjectUse.Load failure, index < 0");
+			return index + 4;
+		}
+
+		if (entries == null) {
+			Debug.Log("UseableObjectUse.Load failure, entries == null");
+			return index + 4;
+		}
 
 		uou.useableItemIndex = Utils.GetIntFromString(entries[index]); index++;
 		uou.customIndex = Utils.GetIntFromString(entries[index]); index++;

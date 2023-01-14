@@ -66,7 +66,20 @@ public class DelayedSpawn : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		DelayedSpawn ds = go.GetComponent<DelayedSpawn>();
-		if (ds == null || index < 0 || entries == null) return index + 6;
+		if (ds == null) {
+			Debug.Log("DelayedSpawn.Load failure, ds == null");
+			return index + 6;
+		}
+
+		if (index < 0) {
+			Debug.Log("DelayedSpawn.Load failure, index < 0");
+			return index + 6;
+		}
+
+		if (entries == null) {
+			Debug.Log("DelayedSpawn.Load failure, entries == null");
+			return index + 6;
+		}
 
 		ds.delay = Utils.GetFloatFromString(entries[index]); index++;
 		ds.timerFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;

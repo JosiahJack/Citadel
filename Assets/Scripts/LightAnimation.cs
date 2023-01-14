@@ -153,7 +153,20 @@ public class LightAnimation : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		LightAnimation la = go.GetComponent<LightAnimation>();
-		if (la == null || index < 0 || entries == null) return index + 7;
+		if (la == null) {
+			Debug.Log("LightAnimation.Load failure, la == null");
+			return index + 7;
+		}
+
+		if (index < 0) {
+			Debug.Log("LightAnimation.Load failure, index < 0");
+			return index + 7;
+		}
+
+		if (entries == null) {
+			Debug.Log("LightAnimation.Load failure, entries == null");
+			return index + 7;
+		}
 
 		la.lightOn = Utils.GetBoolFromString(entries[index]); index++;
 		la.lerpOn = Utils.GetBoolFromString(entries[index]); index++;

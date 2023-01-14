@@ -119,7 +119,20 @@ public class PuzzleWirePuzzle : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PuzzleWirePuzzle pwp = go.GetComponent<PuzzleWirePuzzle>();
-		if (pwp == null || index < 0 || entries == null) return index + 16;
+		if (pwp == null) {
+			Debug.Log("PuzzleWirePuzzle.Load failure, pwp == null");
+			return index + 16;
+		}
+
+		if (index < 0) {
+			Debug.Log("PuzzleWirePuzzle.Load failure, index < 0");
+			return index + 16;
+		}
+
+		if (entries == null) {
+			Debug.Log("PuzzleWirePuzzle.Load failure, entries == null");
+			return index + 16;
+		}
 
 		pwp.puzzleSolved = Utils.GetBoolFromString(entries[index]); index++; // bool - is this puzzle already solved?
 		for (int i=0;i<pwp.currentPositionsLeft.Length;i++) {

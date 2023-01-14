@@ -64,7 +64,20 @@ public class LogicRelay : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		LogicRelay lr = go.GetComponent<LogicRelay>(); // Similar to the LB, also a handy L shaped junction box complete with a lid for easy wire pulling.  This time, the lid is to the Right instead of the Back, hence the R of LR.
-		if (lr == null || index < 0 || entries == null) return index + 1;
+		if (lr == null) {
+			Debug.Log("LogicRelay.Load failure, lr == null");
+			return index + 1;
+		}
+
+		if (index < 0) {
+			Debug.Log("LogicRelay.Load failure, index < 0");
+			return index + 1;
+		}
+
+		if (entries == null) {
+			Debug.Log("LogicRelay.Load failure, entries == null");
+			return index + 1;
+		}
 
 		lr.relayEnabled = Utils.GetBoolFromString(entries[index]); index++; // bool - is this enabled
 		return index;

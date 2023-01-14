@@ -1390,7 +1390,20 @@ public class Inventory : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		Inventory inv = go.GetComponent<Inventory>();
-		if (inv == null || index < 0 || entries == null) return index + 481;
+		if (inv == null) {
+			Debug.Log("Inventory.Load failure, inv == null");
+			return index + 481;
+		}
+
+		if (index < 0) {
+			Debug.Log("Inventory.Load failure, index < 0");
+			return index + 481;
+		}
+
+		if (entries == null) {
+			Debug.Log("Inventory.Load failure, entries == null");
+			return index + 481;
+		}
 
 		int j;
 		for (j=0;j<7;j++) { inv.weaponInventoryIndices[j] = Utils.GetIntFromString(entries[index] ); index++; }

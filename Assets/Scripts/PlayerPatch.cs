@@ -345,7 +345,20 @@ public class PlayerPatch : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PlayerPatch pp = go.GetComponent<PlayerPatch>();
-		if (pp == null || index < 0 || entries == null) return index + 11;
+		if (pp == null) {
+			Debug.Log("PlayerPatch.Load failure, pp == null");
+			return index + 11;
+		}
+
+		if (index < 0) {
+			Debug.Log("PlayerPatch.Load failure, index < 0");
+			return index + 11;
+		}
+
+		if (entries == null) {
+			Debug.Log("PlayerPatch.Load failure, entries == null");
+			return index + 11;
+		}
 
 		pp.berserkFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pp.berserkIncrementFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
