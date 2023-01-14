@@ -29,13 +29,16 @@ public class ButtonSwitch : MonoBehaviour {
 	private Animator anim;
 	private GameObject player; // Set on use, no need for initialization check.
 	private float tickTime = 1.5f;
+	private bool awakeInitialized = false;
 
 	// Externally modified
 	[HideInInspector] public float delayFinished; // save
 	[HideInInspector] public float tickFinished; // save
 	[HideInInspector] public bool alternateOn; // save
 
-	void Awake () {
+	public void Awake () {
+		if (awakeInitialized) return;
+
 		SFXSource = GetComponent<AudioSource>();
 		if (SFXSource == null) Debug.Log("BUG: ButtonSwitch missing component for SFXSource");
 		else SFXSource.playOnAwake = false;
@@ -43,6 +46,7 @@ public class ButtonSwitch : MonoBehaviour {
 		delayFinished = 0; // prevent using targets on awake
 		if (animateModel) anim = GetComponent<Animator>();
 		if (active) tickFinished = PauseScript.a.relativeTime + 1.5f + Random.value;
+		awakeInitialized = true;
 	}
 
 	public void Use (UseData ud) {
@@ -116,6 +120,18 @@ public class ButtonSwitch : MonoBehaviour {
 			mRenderer.material = mainSwitchMaterial;
 	}
 
+	public void SetMaterialToAlternate() {
+		if (!blinkWhenActive) return;
+
+		if (mRenderer.material != alternateSwitchMaterial) mRenderer.material = alternateSwitchMaterial;
+	}
+
+	public void SetMaterialToNormal() {
+		if (!blinkWhenActive) return;
+
+		if (mRenderer.material != mainSwitchMaterial) mRenderer.material = mainSwitchMaterial;
+	}
+
 	void Update() {
 		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return; // Don't do any checks or anything else...we're paused!
 
@@ -129,11 +145,8 @@ public class ButtonSwitch : MonoBehaviour {
 			if (active) {
 				if (tickFinished < PauseScript.a.relativeTime) {
 					if (mRenderer.isVisible) {
-						if (alternateOn) {
-							if (mRenderer.material != mainSwitchMaterial) mRenderer.material = mainSwitchMaterial;
-						} else {
-							if (mRenderer.material != alternateSwitchMaterial) mRenderer.material = alternateSwitchMaterial;
-						}
+						if (alternateOn) SetMaterialToAlternate();
+						else SetMaterialToNormal();
 					}
 					alternateOn = !alternateOn;
 					tickFinished = PauseScript.a.relativeTime + tickTime;
@@ -202,6 +215,14 @@ public class ButtonSwitch : MonoBehaviour {
 		bs.alternateOn = Utils.GetBoolFromString(entries[index]); index++; // bool - is the flashing material on?
 		bs.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before firing targets
 		bs.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before thinking
+		if (bs.active && ((bs.tickFinished - PauseScript.a.relativeTime) > 1.5f)) {
+			bs.tickFinished = PauseScript.a.relativeTime + 1.5f;
+		} else {
+			if (bs.blinkWhenActive && !bs.active) {
+				bs.Awake();
+				bs.SetMaterialToNormal();
+			}
+		}
 		return index;
 	}
 }

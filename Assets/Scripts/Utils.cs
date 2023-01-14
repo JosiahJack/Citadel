@@ -606,7 +606,11 @@ public class Utils {
 		readFloatz = GetFloatFromString(entries[index]); index++;
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		rbody.velocity = tempvec;
+		CollisionDetectionMode oldCollision = rbody.collisionDetectionMode;
+		rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 		rbody.isKinematic = GetBoolFromString(entries[index]); index++;
+		if (!rbody.isKinematic) rbody.collisionDetectionMode = oldCollision;
+		if (rbody.collisionDetectionMode != oldCollision) Debug.Log("Collision mode changed on " + go.name + " from " + oldCollision.ToString() + " to " + rbody.collisionDetectionMode.ToString());
 		return index; // Carry on with current index read.
 	}
 

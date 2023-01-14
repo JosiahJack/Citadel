@@ -1125,7 +1125,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void ReturnToLastTab(bool isRightHand) {
-		Debug.Log("Returned to last tab from MFDManager.cs");
+		//Debug.Log("Returned to last tab from MFDManager.cs");
 		usingObject = false;
 		objectInUsePos = new Vector3(999f,999f,999f); // out of bounds
 		if (isRightHand) {

@@ -262,6 +262,12 @@ public static class ConsoleEmulator {
 			if (val < 438 && val >= 0) {
 				SpawnDynamicObject(val,LevelManager.a.currentLevel,true);
 			}
+        }  else if (ts.Contains("settargetfps")) {
+			int val = Utils.GetIntFromString(ts.Split(' ').Last()); // That's a slow line to compute!
+			if (val <= 200 && val > 10) {
+				Const.a.TARGET_FPS = val;
+				Config.SetVSync();
+			}
         } else if (ts.Contains("shake")) {
 			Const.a.Shake(true,-1,-1);
         } else if (ts.Contains("const.")) {

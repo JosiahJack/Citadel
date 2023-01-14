@@ -397,7 +397,6 @@ public class Door : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   PrefabIdentifier prefID) {
-		Debug.Log("Door.Load start");
 		Door dr = go.GetComponent<Door>();
 		if (dr == null) {
 			Debug.Log("Door.Load failure, dr == null on " + go.name);
@@ -421,9 +420,7 @@ public class Door : MonoBehaviour {
 		dr.waitBeforeClose = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		dr.lasersFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		dr.blocked = Utils.GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
-		bool previous = dr.accessCardUsedByPlayer;
 		dr.accessCardUsedByPlayer = Utils.GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
-		Debug.Log("dr.accessCardUsedByPlayer:: before: " + previous.ToString() + ", after load: " + dr.accessCardUsedByPlayer.ToString());
 
 		int state = Utils.GetIntFromString(entries[index]); index++;
 		string clipName = "IdleClosed";
@@ -434,7 +431,7 @@ public class Door : MonoBehaviour {
 			case 3: dr.doorOpen = DoorState.Opening; clipName = "DoorOpen"; break;
 		}
 		dr.animatorPlaybackTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		dr.SetAnimFromLoad(clipName,0,dr.animatorPlaybackTime); index++;
+		dr.SetAnimFromLoad(clipName,0,dr.animatorPlaybackTime);
 		if (prefID.constIndex == 500) { // doorE
 			Transform parentTR = go.transform.parent.transform;
 			index = Utils.LoadTransform(parentTR,ref entries,index);

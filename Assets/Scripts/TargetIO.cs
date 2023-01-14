@@ -494,6 +494,7 @@ public class TargetIO : MonoBehaviour {
 		tio.branchFlip = Utils.GetBoolFromString(entries[index]); index++;
 		tio.branchFlipOnly = Utils.GetBoolFromString(entries[index]); index++;
 		tio.doorAccessCardOverrideToggle = Utils.GetBoolFromString(entries[index]); index++;
+
 		if (instantiated) tio.RegisterToConst();
 		return index;
 	}

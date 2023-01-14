@@ -119,10 +119,11 @@ public class HealthManager : MonoBehaviour {
 			if (actAsCorpseOnly && isNPC) InitializeCorpseOnly();
         }
 		if (maxhealth <= 0) maxhealth = health;
+		LinkToAutomapOverlay();
 		startInitialized = true;
 	}
 
-	void OnEnable() {
+	void LinkToAutomapOverlay() {
 		if (isSecCamera && linkedCameraOverlay == null) {
 			GameObject overlay = Const.a.GetObjectFromPool(PoolType.AutomapCameraOverlays);
 			if (overlay != null) {
@@ -133,15 +134,20 @@ public class HealthManager : MonoBehaviour {
 					linkedCameraOverlay.enabled = true;
 					Vector3 tempVec2 = new Vector2(0f,0f);
 					// 436,-367, -0.3 is the center point of the map UI
-					tempVec2.y = -367 + (((((transform.position.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * 1008f) + Const.a.mapTileMinX));
-					tempVec2.x = 436 + (((((transform.position.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * 1008f) + Const.a.mapTileMinY));
+					tempVec2.y = -367 + (((((transform.position.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * -1008f) + Const.a.mapTileMinX)) + 1008f - 126 + 128;
+					tempVec2.x = 436 + (((((transform.position.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * -1008f) + Const.a.mapTileMinY)) + 1008f + 233 + 116;
 					tempVec2.z = -0.3f;
-					rect.transform.localPosition = tempVec2;
+					rect.anchoredPosition = tempVec2;
 				}
 			}
 
 			if (linkedCameraOverlay == null) Debug.Log("Security object failed to find Automap overlay!");
+			//else Debug.Log("Security object linked to Automap overlay " + linkedCameraOverlay.name + " at " + linkedCameraOverlay.rectTransform.anchoredPosition.ToString());
 		}
+	}
+
+	void OnEnable() {
+		LinkToAutomapOverlay();
 	}
 
 	public void ClearOverlays() {

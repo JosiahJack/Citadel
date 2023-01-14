@@ -10,7 +10,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
 using UnityEditor.SceneManagement;
+#endif
 
 public class Tests : MonoBehaviour {
 	public GameObject[] lightContainers; // Can't use LevelManager's since
@@ -41,6 +43,7 @@ public class Tests : MonoBehaviour {
 	}
 
 	public void Run() {
+		#if UNITY_EDITOR
 		Stopwatch testTimer = new Stopwatch();
 		testTimer.Start();
 
@@ -647,6 +650,7 @@ public class Tests : MonoBehaviour {
 		testTimer.Stop();
 		UnityEngine.Debug.Log("All tests completed in " + testTimer.Elapsed.ToString());
 		buttonLabel = "Run Tests (Last was: " + testTimer.Elapsed.ToString() + ")";
+		#endif
 	}
 
 	public struct LightGOData {
@@ -819,22 +823,24 @@ public class Tests : MonoBehaviour {
 	}
 
 	public void SetStaticSaveableIDs() {
-		int idInc = 1000000;
-		SaveObject so;
-		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
-		for (int i=0;i<allParents.Count;i++) {
-			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(SaveObject),true); // find all SaveObject components, including inactive (hence the true here at the end)
-			for (int k=0;k<compArray.Length;k++) {
-				so = compArray[k].gameObject.GetComponent<SaveObject>();
-				so.SaveID = idInc; //add the gameObject associated with all SaveObject components in the scene
-				//EditorUtility.SetDirty(so as Object);
-				PrefabUtility.RecordPrefabInstancePropertyModifications(so);
-				idInc++;
+		#if UNITY_EDITOR
+			int idInc = 1000000;
+			SaveObject so;
+			List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+			for (int i=0;i<allParents.Count;i++) {
+				Component[] compArray = allParents[i].GetComponentsInChildren(typeof(SaveObject),true); // find all SaveObject components, including inactive (hence the true here at the end)
+				for (int k=0;k<compArray.Length;k++) {
+					so = compArray[k].gameObject.GetComponent<SaveObject>();
+					so.SaveID = idInc; //add the gameObject associated with all SaveObject components in the scene
+					//EditorUtility.SetDirty(so as Object);
+					PrefabUtility.RecordPrefabInstancePropertyModifications(so);
+					idInc++;
+				}
 			}
-		}
-		Scene sc = SceneManager.GetActiveScene();
-		//EditorSceneManager.MarkSceneDirty(sc);
-		EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+			Scene sc = SceneManager.GetActiveScene();
+			//EditorSceneManager.MarkSceneDirty(sc);
+			EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+		#endif
 	}
 
 	// Before: 15006, After 8000, for some reason it didn't work for all of them.

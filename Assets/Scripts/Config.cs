@@ -78,6 +78,7 @@ public class Config {
 		SetBloom();
 		SetSSAO();
 		SetAA();
+		SetVSync();
 	}
 
 	public static void SetVolume() {
@@ -101,6 +102,15 @@ public class Config {
 		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = Const.a.GraphicsBloom;
 	}
 
+	public static void SetVSync() {
+		if (Const.a.GraphicsVSync) {
+			Application.targetFrameRate = Const.a.TARGET_FPS * 2;
+			QualitySettings.vSyncCount = 1;
+		} else {
+			Application.targetFrameRate = Const.a.TARGET_FPS;
+			QualitySettings.vSyncCount = 0;
+		}
+	}
 
 	public static void SetFXAA(AntialiasingModel.FxaaPreset preset) {
 		AntialiasingModel.Settings amS = AntialiasingModel.Settings.defaultSettings;

@@ -22,6 +22,7 @@ public class ConfigToggles : MonoBehaviour {
 			case ConfigToggleType.InvertInventoryCycling: self.isOn = Const.a.InputInvertInventoryCycling; break;
 			case ConfigToggleType.QuickPickup: self.isOn = Const.a.InputQuickItemPickup; break;
 			case ConfigToggleType.QuickReload: self.isOn = Const.a.InputQuickReloadWeapons; break;
+			case ConfigToggleType.Vsync: self.isOn = Const.a.GraphicsVSync; break;
 		}
 	}
 
@@ -34,4 +35,5 @@ public class ConfigToggles : MonoBehaviour {
 	public void ToggleInvertInventoryCycling () { Const.a.InputInvertInventoryCycling = self.isOn; Config.WriteConfig(); }
 	public void ToggleQuickItemPickup () { Const.a.InputQuickItemPickup = self.isOn; Config.WriteConfig(); }
 	public void ToggleQuickReloadWeapon () { Const.a.InputQuickReloadWeapons = self.isOn; Config.WriteConfig(); }
+	public void ToggleVSync () { Const.a.GraphicsVSync = self.isOn; Config.WriteConfig(); }
 }

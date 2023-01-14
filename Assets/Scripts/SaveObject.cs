@@ -288,9 +288,7 @@ public class SaveObject : MonoBehaviour {
 				Debug.Log("No PrefabIdentifier on " + go.name);
 			}
 		}
-		if (go.name.ToLower().Contains("door") || so.saveType == SaveableType.Door) {                  
-			Debug.Log("Door named " + go.name + " loading with save type of " + so.saveType.ToString());
-		}
+
 		switch (so.saveType) {
 			case SaveableType.Player:				  index = PlayerReferenceManager.LoadPlayerDataToPlayer(go,ref entries,index,prefID); break;
 			case SaveableType.Useable:				  index =       UseableObjectUse.Load(go,ref entries,index); break;
@@ -303,9 +301,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.SearchableStatic:		  index =         SearchableItem.Load(go,ref entries,index,prefID); break;
 			case SaveableType.SearchableDestructable: index =         SearchableItem.Load(go,ref entries,index,prefID);
 													  index =          HealthManager.Load(go,ref entries,index,prefID); break;
-			case SaveableType.Door:                   
-Debug.Log("Door.Load call");
-index =                   Door.Load(go,ref entries,index,prefID);
+			case SaveableType.Door:                   index =                   Door.Load(go,ref entries,index,prefID);
 													  index =               TargetIO.Load(go,ref entries,index,true); break;
 			case SaveableType.ForceBridge:            index =            ForceBridge.Load(go,ref entries,index);
 													  index =               TargetIO.Load(go,ref entries,index,true); break;

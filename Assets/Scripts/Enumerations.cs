@@ -63,7 +63,7 @@ public enum PoolType {None,SparqImpacts,CameraExplosions,SparksSmall,
 public enum ConfigToggleType : byte {Fullscreen,SSAO,Bloom,Reverb,Subtitles,
                                      InvertLook,InvertCyber,
                                      InvertInventoryCycling,QuickPickup,
-                                     QuickReload,Reflections};
+                                     QuickReload,Reflections,Vsync};
 public enum HUDColor : byte {White,Red,Orange,Yellow,Green,Blue,Purple,Gray};
 public enum ForceFieldColor : byte {Red,Green,Blue,Purple,RedFaint};
 public enum ButtonType : byte {Generic,GeneralInv,Patch,Grenade,Weapon,Search,

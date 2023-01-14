@@ -81,6 +81,10 @@ public class MouseLookScript : MonoBehaviour {
 	private string mouseX = "Mouse X";
 	private string mouseY = "Mouse Y";
 	private Vector3 cursorPoint;
+	private float headBobTimeShift;
+	private float headBobX;
+	private float headBobY;
+	private float headBobZ;
 
 	public static MouseLookScript a;
 
@@ -570,14 +574,30 @@ public class MouseLookScript : MonoBehaviour {
 									 Const.a.playerCameraOffsetY * PlayerMovement.a.currentCrouchRatio,
 									 camz);
 		transform.localPosition = camPos;
+		headBobX = headBobZ = 0.0f;
+		headBobY = 0.84f;
 		if (shakeFinished > PauseScript.a.relativeTime) {
-			float x = transform.localPosition.x + UnityEngine.Random.Range(shakeForce * -0.17f,shakeForce * 0.17f);
-			float y = transform.localPosition.y + UnityEngine.Random.Range(shakeForce * -0.08f,shakeForce * 0.08f);
-			float z = transform.localPosition.z + UnityEngine.Random.Range(shakeForce * -0.17f,shakeForce * 0.17f);
-			transform.localPosition = new Vector3(x,y,z);
+			headBobX = transform.localPosition.x + UnityEngine.Random.Range(shakeForce * -0.17f,shakeForce * 0.17f);
+			headBobY = transform.localPosition.y + UnityEngine.Random.Range(shakeForce * -0.08f,shakeForce * 0.08f);
+			headBobZ = transform.localPosition.z + UnityEngine.Random.Range(shakeForce * -0.17f,shakeForce * 0.17f);
 		} else {
-			transform.localPosition = new Vector3(0.0f,0.84f,0.0f);
+			if (PlayerMovement.a.rbody.velocity.magnitude > 0.1f) {
+				//headBobTimeShift += Time.deltaTime * Const.a.HeadBobRate;
+				//headBobX = Mathf.Sin(headBobTimeShift) * Const.a.HeadBobAmount;
+				//headBobY = 0.84f - Mathf.Sin(headBobTimeShift) * Const.a.HeadBobAmount;
+
+				// This was going up to the left then down to the right making a diagonal pattern.
+				// Need to implement Lemniscate of Gerono: x^4 = a^2 * (x^2 - y^2)
+				//float oscillator = Mathf.Sin(headBobTimeShift);
+				//headBobY = (oscillator * headBobX * Mathf.Sqrt((Const.a.HeadBobAmount * Const.a.HeadBobAmount) - (headBobX * headBobX))) / Const.a.HeadBobAmount;
+				// Going to bed now
+			} else {
+				//headBobX = Mathf.Lerp(transform.localPosition.x,0f,Time.deltaTime * Const.a.HeadBobRate);
+				//headBobY = Mathf.Lerp(transform.localPosition.y,0.84f,Time.deltaTime * Const.a.HeadBobRate);
+			}
 		}
+		transform.localPosition = new Vector3(headBobX,headBobY,headBobZ);
+
 	}
 
 	void AddItemFail(int index) {

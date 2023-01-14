@@ -209,6 +209,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int GraphicsResWidth;
 	[HideInInspector] public int GraphicsResHeight;
 	[HideInInspector] public bool GraphicsFullscreen;
+	[HideInInspector] public bool GraphicsVSync;
 	[HideInInspector] public bool GraphicsSSAO;
 	[HideInInspector] public bool GraphicsBloom;
 	[HideInInspector] public int GraphicsAAMode;
@@ -216,6 +217,8 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int GraphicsSSRMode;
 	[HideInInspector] public int GraphicsFOV;
 	[HideInInspector] public int GraphicsGamma;
+	public float HeadBobRate = 10.0f;
+	public float HeadBobAmount = 0.02f;
 	[HideInInspector] public int AudioSpeakerMode;
 	[HideInInspector] public bool AudioReverb;
 	[HideInInspector] public int AudioVolumeMaster;
@@ -315,7 +318,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public float aiTickTime = 0.1f;
 
 	// Private CONSTANTS
-	private int TARGET_FPS = 60;
+	[HideInInspector] public int TARGET_FPS = 60;
 	private StringBuilder s1;
 	private StringBuilder s2;
 
@@ -1010,7 +1013,7 @@ public class Const : MonoBehaviour {
 		if (poolContainer == null) { UnityEngine.Debug.Log("Cannot find " + poolName + "pool"); return null; }
 		for (int i=0;i<poolContainer.transform.childCount;i++) {
 			Transform child = poolContainer.transform.GetChild(i);
-			if (child.gameObject.activeInHierarchy == false) return child.gameObject;
+			if (child.gameObject.activeSelf == false) return child.gameObject;
 		}
 
 		return null;
