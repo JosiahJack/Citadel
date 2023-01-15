@@ -55,16 +55,20 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject levelOverlayContainerG2;
 	public GameObject levelOverlayContainerG4;
 	public Vector2[] automapLevelHomePositions;
-		// R=  43.97,  85.66
-		// 1=  -8.53,  85.99
-		// 2=  10.20,  44.80
-		// 3=    9.4,  63.83
-		// 4= -55.65, 116.80
-		// 5=  -9.40,  71.80
-		// 6=  29.70,  85.50
-		// 7=   5.00,  76.55
-		// 8=  25.10,  84.40
-		// 9=  39.80,  72.60
+		// R  =  43.97,  85.66
+		// 1  =  -8.53,  85.99
+		// 2  =  10.20,  44.80
+		// 3  =   9.40,  63.83
+		// 4  = -55.65, 116.80
+		// 5  =  -9.40,  71.80
+		// 6  =  29.70,  85.50
+		// 7  =   5.00,  76.55
+		// 8  =  25.10,  84.40
+		// 9  =  39.80,  72.60
+		// 10 = 440.80, 200.60
+		// 11 =  80.16,-196.68
+		// 12 =  99.50, 416.90
+		// 13 =   0.00,   0.00
 	
 	public HardwareButton hwbJumpJets;
 	public TextWarningsManager twm;
@@ -87,7 +91,6 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject poolContainerAutomapMutantOverlays;
 	public GameObject poolContainerAutomapCyborgOverlays;
 
-	// Public values, visible for the purpose of only assigning size to the arrays of 4096.
 	public bool[] automapExploredR; // save
 	public bool[] automapExplored1; // save
 	public bool[] automapExplored2; // save
@@ -139,12 +142,12 @@ public class PlayerMovement : MonoBehaviour {
 	private float capsuleRadius;
 	private float ladderSpeed = 0.4f;
 	private float fallDamage = 75f;
-	private float automapUpdateFinished;
+	private float automapUpdateFinished; // save
 	private bool[] automapExplored;
 	private float automapZoom0 = 1.2f;
 	private float automapZoom1 = 0.75f;
 	private float automapZoom2 = 0.55f;
-	private int currentAutomapZoomLevel = 0;
+	[HideInInspector] public int currentAutomapZoomLevel = 0;
 		// private float circleInnerRangev1 = 7.679999f; //(2.5f * 2.56f) + 1.28f;
 		// private float circleOuterRangev1 = 11.52f; //(4f * 2.56f) + 1.28f;
 		// private float circleInnerRangev2 = 8.96f; //(3f * 2.56f) + 1.28f;
@@ -324,10 +327,11 @@ public class PlayerMovement : MonoBehaviour {
 		RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG - already passed rbody.velocity.z into the .y of this Vector2
 		verticalMovement = GetClampedVerticalMovement();
 		RigidbodySetVelocityY(rbody, verticalMovement); // Clamp vetical movement
+		Noclip();
 		ApplyGroundFriction();
 		bool grav = GetGravity();
 		if (rbody.useGravity != grav) rbody.useGravity = grav; // Avoid useless setting of the rbody.
-		Noclip();
+		//Noclip();
 		if (!inCyberSpace) {
 			Lean();
 			WalkRun();
@@ -417,11 +421,14 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void ApplyGroundFriction() {
-		if (!grounded) return;
+		if (!CheatNoclip) {
+			if (!grounded) return;
+		}
 
 		tempVecRbody = rbody.velocity;
 		deceleration = walkDeacceleration;
 		if (CheatNoclip) {
+			deceleration = 0.05f;
 			// Prevent gravity from affecting and decelerate like a horizontal.
 			tempVecRbody.y = Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVoly, deceleration); 
 		} else {
@@ -600,7 +607,9 @@ public class PlayerMovement : MonoBehaviour {
 		// Handle fall damage (no impact damage in cyber space 5/5/18, JJ)
 		if (Mathf.Abs((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed) {
 			DamageData dd = new DamageData ();
-			dd.damage = fallDamage; // No need for GetDamageTakeAmount since this is strictly internal to Player
+			float falltake = fallDamage - UnityEngine.Random.Range(0,68f);
+			if (falltake > hm.health && falltake - hm.health < 5f) falltake = hm.health - 1f; // some small saving grace
+			dd.damage = falltake; // No need for GetDamageTakeAmount since this is strictly internal to Player
 			dd.attackType = AttackType.None;
 			dd.offense = 0f;
 			dd.isOtherNPC = false;
@@ -713,33 +722,29 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void EndCrouchProneTransition() {
-		if (currentCrouchRatio > 1) {
+		if (currentCrouchRatio >= 1) {
 			if (bodyState == BodyState.StandingUp // Should overshoot slightly.
 			    || bodyState == BodyState.Standing) { // Maintain it.
 				currentCrouchRatio = 1; //Clamp it
 				bodyState = BodyState.Standing;
 			}
+		} else if (currentCrouchRatio < crouchRatio) {
+			if (bodyState == BodyState.CrouchingDown // Should undershoot slightly
+				|| bodyState == BodyState.Crouch) { // Maintain it.
+				currentCrouchRatio = crouchRatio; //Clamp it
+				bodyState = BodyState.Crouch;
+			} else if (bodyState == BodyState.ProningDown // Should undershoot slightly
+					   || bodyState == BodyState.Prone) { // Maintain it.
+				if (currentCrouchRatio < proneRatio) {
+					currentCrouchRatio = proneRatio; //Clamp it
+					bodyState = BodyState.Prone;
+				}
+			}
 		} else {
-			if (currentCrouchRatio < crouchRatio) {
-				if (bodyState == BodyState.CrouchingDown // Should undershoot slightly
-				    || bodyState == BodyState.Crouch) { // Maintain it.
+			if (bodyState == BodyState.ProningUp) { // Should overshoot slightly
+				if (currentCrouchRatio > crouchRatio) {
 					currentCrouchRatio = crouchRatio; //Clamp it
 					bodyState = BodyState.Crouch;
-				} else {
-					if (bodyState == BodyState.ProningDown // Should undershoot slightly
-					    || bodyState == BodyState.Prone) { // Maintain it.
-						if (currentCrouchRatio < proneRatio) {
-							currentCrouchRatio = proneRatio; //Clamp it
-							bodyState = BodyState.Prone;
-						}
-					}
-				}
-			} else {
-				if (bodyState == BodyState.ProningUp) { // Should overshoot slightly
-					if (currentCrouchRatio > crouchRatio) {
-						currentCrouchRatio = crouchRatio; //Clamp it
-						bodyState = BodyState.Crouch;
-					}
 				}
 			}
 		}
@@ -754,15 +759,27 @@ public class PlayerMovement : MonoBehaviour {
 			bodyState = BodyState.ProningDown;
 		} else {
 			if (bodyState == BodyState.Prone || bodyState == BodyState.ProningDown) {
-				if (CantStand()) { Const.sprint(Const.a.stringTable[187]); return; } // Can't stand here
-					
+				if (CantStand()) {
+					if (CantCrouch()) {
+						Const.sprint(Const.a.stringTable[188]);
+						return; // Can't crouch here
+					} else bodyState = BodyState.ProningUp; // Can't stand, but can crouch here
+
+					return;
+				}
+				
 				bodyState = BodyState.StandingUp;
 			}
 		}
 	}
 
-	bool CantStand() { return Physics.CheckCapsule(cameraObject.transform.position, cameraObject.transform.position + new Vector3(0f,(1.6f-0.84f),0f), capsuleRadius, layerMask); }
-	bool CantCrouch() { return Physics.CheckCapsule(cameraObject.transform.position, cameraObject.transform.position + new Vector3(0f,0.4f,0f), capsuleRadius, layerMask); } 
+	bool CantStand() {
+		return Physics.CheckCapsule(cameraObject.transform.position, cameraObject.transform.position + new Vector3(0f,(1.6f-0.84f),0f), capsuleRadius, layerMask);
+	}
+
+	bool CantCrouch() {
+		return Physics.CheckCapsule(cameraObject.transform.position, cameraObject.transform.position + new Vector3(0f,0.4f,0f), capsuleRadius, layerMask);
+	} 
 
 	void Crouch() {
 		if (CheatNoclip) return;
@@ -1102,7 +1119,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	public void AutomapGoSide() {
-		Const.sprint("Unable to connect to side map, try updating to version 1.00",Const.a.player1); // zoom at max
+		Const.sprint("Unable to connect to side map, try updating to version 1.10",Const.a.player1); // zoom at max
 	}
 
 	public void AutomapGoFull() {
@@ -1243,6 +1260,8 @@ public class PlayerMovement : MonoBehaviour {
 		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExploredG1[j])); s1.Append(Utils.splitChar); } // bool
 		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExploredG2[j])); s1.Append(Utils.splitChar); } // bool
 		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExploredG4[j])); s1.Append(Utils.splitChar); } // bool
+		s1.Append(Utils.UintToString(pm.currentAutomapZoomLevel));
+		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(pm.CheatWallSticky)); // bool
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(pm.CheatNoclip)); // bool
@@ -1278,6 +1297,8 @@ public class PlayerMovement : MonoBehaviour {
 		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpLandSoundFinished));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpJetEnergySuckTickFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.automapUpdateFinished));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(pm.fatigueWarned));
 		s1.Append(Utils.splitChar);
@@ -1337,6 +1358,14 @@ public class PlayerMovement : MonoBehaviour {
 		for (j=0;j<4096;j++) { pm.automapExploredG1[j] = entries[index].Equals("1"); index++; }
 		for (j=0;j<4096;j++) { pm.automapExploredG2[j] = entries[index].Equals("1"); index++; }
 		for (j=0;j<4096;j++) { pm.automapExploredG4[j] = entries[index].Equals("1"); index++; }
+		if (LevelManager.a != null) pm.SetAutomapExploredReference(LevelManager.a.currentLevel);
+		else pm.SetAutomapExploredReference(1);
+
+		pm.currentAutomapZoomLevel = Utils.GetIntFromString(entries[index]); index++;
+		if (pm.currentAutomapZoomLevel < 0) pm.currentAutomapZoomLevel = 0;
+		if (pm.currentAutomapZoomLevel > 2) pm.currentAutomapZoomLevel = 2;
+		pm.AutomapZoomAdjust();
+
 		pm.CheatWallSticky = Utils.GetBoolFromString(entries[index]); index++;
 		pm.CheatNoclip = Utils.GetBoolFromString(entries[index]); index++;
 		pm.jumpTime = Utils.GetFloatFromString(entries[index]); index++; // not a timer
@@ -1360,12 +1389,14 @@ public class PlayerMovement : MonoBehaviour {
 		pm.jumpSFXFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.jumpLandSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.jumpJetEnergySuckTickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pm.automapUpdateFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.fatigueWarned = Utils.GetBoolFromString(entries[index]); index++;
 		pm.turboFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.ressurectingFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.doubleJumpFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		float sfxTime = Utils.GetFloatFromString(entries[index]); index++;
 		pm.SFXIndex = Utils.GetIntFromString(entries[index]); index++;
+		pm.ladderSFXFinished = 0;
 		if (pm.SFXIndex >= 0) {
 			pm.SFX.time = sfxTime;
 			pm.SFX.clip = Const.a.sounds[pm.SFXIndex];

@@ -214,7 +214,7 @@ public class MouseLookScript : MonoBehaviour {
 		PlayerMovement.a.leanCapsuleCollider.enabled = true;
 		hm.inCyberSpace = false;
 		inCyberSpace = false;
-		playerCamera.useOcclusionCulling = false;
+		playerCamera.useOcclusionCulling = true;
 		Const.a.decoyActive = false;
 		Utils.PlayOneShotSavable(SFXSource,CyberSFX);
 		SetCameraCullDistances();
@@ -575,7 +575,7 @@ public class MouseLookScript : MonoBehaviour {
 									 camz);
 		transform.localPosition = camPos;
 		headBobX = headBobZ = 0.0f;
-		headBobY = 0.84f;
+		headBobY = 0.84f * PlayerMovement.a.currentCrouchRatio;
 		if (shakeFinished > PauseScript.a.relativeTime) {
 			headBobX = transform.localPosition.x + UnityEngine.Random.Range(shakeForce * -0.17f,shakeForce * 0.17f);
 			headBobY = transform.localPosition.y + UnityEngine.Random.Range(shakeForce * -0.08f,shakeForce * 0.08f);

@@ -173,6 +173,7 @@ public class PlayerHealth : MonoBehaviour {
 		if (freshGame != null) Utils.SafeDestroy(freshGame);
 		PauseScript.a.mainMenu.SetActive(true);
 		MainMenuHandler.a.returnToPause = false;
+		MainMenuHandler.a.GoToFrontPage();
 		hm.health = 211f;
 		MFDManager.a.DrawTicks(true);
 		radiationArea = false;

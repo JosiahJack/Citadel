@@ -52,7 +52,7 @@ public class LevelManager : MonoBehaviour {
 			Camera cam = Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>();
 			if (cam == null) return;
 
-			cam.useOcclusionCulling = false;
+			cam.useOcclusionCulling = false; // For debug whiteroom
 			return;
 		}
 		if (currentLevel < 0 || currentLevel > 12) return; // 12 because I don't think I support starting in cyberspace, 13, for testing.

@@ -94,12 +94,14 @@ public static class ConsoleEmulator {
         if (ts.Contains("noclip") || ts.Contains("idclip")
             || ts.Contains("no clip")) {
 			if (PlayerMovement.a.CheatNoclip) {
+				MouseLookScript.a.playerCamera.useOcclusionCulling = true;
 				PlayerMovement.a.CheatNoclip = false;
 				PlayerMovement.a.grounded = false;
 				PlayerMovement.a.capsuleCollider.enabled = true;
 				PlayerMovement.a.leanCapsuleCollider.enabled = true;
 				Const.sprint("noclip disabled");
 			} else {
+				MouseLookScript.a.playerCamera.useOcclusionCulling = false;
 				PlayerMovement.a.CheatNoclip = true;
 				PlayerMovement.a.grounded = false;
 				PlayerMovement.a.rbody.useGravity = false;
