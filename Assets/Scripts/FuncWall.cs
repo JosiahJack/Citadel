@@ -52,7 +52,9 @@ public class FuncWall : MonoBehaviour {
 		GameObject childGO;
 		for (int i = 0; i < transform.childCount; i++) {
 			childGO = transform.GetChild(i).gameObject;
-			childGO.isStatic = false;
+			#if UNITY_EDITOR
+				childGO.isStatic = false; // EDITOR ONLY!!!!!!!!!!!!
+			#endif
 			childGO.layer = 18; // Door
 		}
 	}
@@ -223,7 +225,9 @@ public class FuncWall : MonoBehaviour {
 						Const.a.quaternionIdentity) as GameObject;
 			childGO.transform.SetParent(go.transform); // Always set parent prior
 													   // to loading transform.
-			childGO.isStatic = false;
+			#if UNITY_EDITOR
+				childGO.isStatic = false; // EDITOR ONLY!!!!!!!!!!!!
+			#endif
 			childGO.layer = 18; // Door
 			index = Utils.LoadSubActivatedGOState(childGO,ref entries,index);
 		}

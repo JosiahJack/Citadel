@@ -13,21 +13,29 @@ public class ConfigKeybindButton : MonoBehaviour {
 	private bool firstFrame;
 	private Text selfText;
 
-	void Awake () {
-		if (index < 0 || index >= 40) { index = 0; Debug.Log("BUG: Setting index on ConfigKeybindButton to 0 because it was outside the range >=0index<40");}
-		self = GetComponent<Button>();
-		if (self == null) Debug.Log("BUG: ConfigKeybindButton missing component for self.");
-		selfText = GetComponentInChildren<Text>();
-		enterMode = false;
-		firstFrame = true;
-	}
-
-	// Wait for Const to be initialized.s
-	void Start() {
-		UpdateText();
+	void Start() { // Wait for Const.a. to initialize.
+		Initialize();
 	}
 
 	void OnEnable() {
+		Initialize();
+	}
+
+	void Initialize() {
+		if (index < 0 || index >= 40) {
+			Debug.Log("BUG: ConfigKeybindButton index out of range [0,40]");
+			index = 0;
+		}
+
+		enterMode = false;
+		firstFrame = true;
+		if (self == null) self = GetComponent<Button>();
+		if (self == null) {
+			Debug.Log("BUG: ConfigKeybindButton missing component for self.");
+		}
+
+		if (selfText == null) selfText = GetComponentInChildren<Text>();
+
 		UpdateText();
 	}
 
@@ -41,12 +49,13 @@ public class ConfigKeybindButton : MonoBehaviour {
 	}
 
 	void CheckAndHandleConflicts(int checkVal) {
-		// Debug.Log("Checking value of for "+ checkVal.ToString() + " keybind " + Const.a.InputConfigNames[Const.a.InputCodeSettings[checkVal]] + " doesn't match another keybind");
 		for (int i=0;i<Const.a.InputCodeSettings.Length;i++) {
 			if (i == index) continue; // We already know this one is us.
 
 			if (Const.a.InputCodeSettings[i] == checkVal) {
-				Const.a.InputCodeSettings[i] = 109; Const.sprint("Found and unbound conflict with " + Const.a.InputCodes[i],Const.a.player1);
+				Const.a.InputCodeSettings[i] = 109;
+				Const.sprint("Found and unbound conflict with "
+							 + Const.a.InputCodes[i],Const.a.player1);
 				break;
 			}
 		}
@@ -54,14 +63,22 @@ public class ConfigKeybindButton : MonoBehaviour {
 
 	void Update() {
 		if (enterMode) {
-			if (firstFrame) {firstFrame = false; return; } // Prevent capturing the click in input check when first clicking on the button to enter the entry mode.
+			// Prevent capturing the click in input check when first clicking
+			// on the button to enter the entry mode.
+			if (firstFrame) {firstFrame = false; return; } 
 
 			bool goodkey = false;
+			// Prevent checking keys Unity doesn't recognize in GetKeyUp/GetKey
 			for (int i=0;i<159;i++) {
-				if (i == 139) {if (Input.GetKeyDown(KeyCode.CapsLock)) goodkey = true; } // elseif block to prevent bad check for keys that Unity doesn't recognize in GetKeyUp/GetKey
-				else if (i == 153) { if (GetInput.a.MouseWheelUp()) goodkey = true; }
-				else if (i == 154) { if (GetInput.a.MouseWheelDn()) goodkey = true; }
-				else if (Input.GetKeyUp(Const.a.InputValues[i])) goodkey = true;
+				if (i == 139) {
+					if (Input.GetKeyDown(KeyCode.CapsLock)) goodkey = true;
+				} else if (i == 153) {
+					if (GetInput.a.MouseWheelUp()) goodkey = true;
+				} else if (i == 154) {
+					if (GetInput.a.MouseWheelDn()) goodkey = true;
+				} else {
+					if (Input.GetKeyUp(Const.a.InputValues[i])) goodkey = true;
+				}
 
 				if (goodkey) {
 					selfText.text = Const.a.InputConfigNames[i];

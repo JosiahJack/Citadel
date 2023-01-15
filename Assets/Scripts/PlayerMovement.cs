@@ -1211,6 +1211,7 @@ public class PlayerMovement : MonoBehaviour {
 			return Utils.DTypeWordToSaveString(s1.ToString());
 		}
 
+		Debug.Log("Mid Save saved player at " + go.transform.localPosition.ToString());
 		s1.Append(Utils.SaveTransform(go.transform));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRigidbody(go));
@@ -1312,7 +1313,9 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		float readFloatx, readFloaty, readFloatz;
+		string oldpos = go.transform.localPosition.ToString();
 		index = Utils.LoadTransform(go.transform,ref entries,index);
+		Debug.Log("Mid Load loaded player from " + oldpos + " to " + go.transform.localPosition.ToString());
 		index = Utils.LoadRigidbody(go,ref entries,index);
 		pm.playerSpeed = Utils.GetFloatFromString(entries[index]); index++;
 		pm.grounded = Utils.GetBoolFromString(entries[index]); index++;

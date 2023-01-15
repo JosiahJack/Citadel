@@ -867,7 +867,7 @@ public class Utils {
 		while (i < colliders.Length) {
 			GameObject go = colliders[i].gameObject;
 			if (go == null) { i++; continue; }
-			if (go.isStatic) { i++; continue; }
+			//if (go.isStatic) { i++; continue; } EDITOR ONLY!!!!!!
 
 			Rigidbody rbody = go.GetComponent<Rigidbody>();
 			if (rbody == null) { i++; continue; }

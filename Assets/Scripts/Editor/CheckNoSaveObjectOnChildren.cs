@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEditor;
 
-
 namespace Trioptimum {
 	public class CheckNoSaveObjectOnChildren : EditorWindow {
 		[MenuItem("Tools/Report SaveObjects On Children of Selected")]
@@ -22,7 +21,7 @@ namespace Trioptimum {
 					GameObject foundGo = compArray[k].gameObject;
 					SaveObject sob = foundGo.GetComponent<SaveObject>();
 					if (sob.instantiated) numInstantiated++;
-					if (foundGo.isStatic) {
+					if (foundGo.isStatic) { // EDITOR ONLY!!!!!!!!!!!!!!!!!!!!
 						numStatic++;
 						//Debug.Log("Static: " + foundGo.name);
 					}

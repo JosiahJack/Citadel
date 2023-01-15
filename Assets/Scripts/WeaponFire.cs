@@ -841,7 +841,7 @@ public class WeaponFire : MonoBehaviour {
 			damageData.penetration = Const.a.penetrationForWeapon[wep16Index];
         }
 		damageData.attackType = Const.a.attackTypeForWeapon[wep16Index];
-        damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+        damageData.damage = DamageData.GetDamageTakeAmount(damageData);
         damageData.owner = playerCapsule;
 		HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
 		damageData.impactVelocity = 1f;
@@ -988,7 +988,7 @@ public class WeaponFire : MonoBehaviour {
 		damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.a.drawTexture.center).direction;
 		damageData.damage = Const.a.damagePerHitForWeapon[index16]/numTargets; // divide across multiple targets
 		damageData.damage = Const.a.damagePerHitForWeapon[index16]; // divide across multiple targets
-		damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+		damageData.damage = DamageData.GetDamageTakeAmount(damageData);
 		damageData.offense = Const.a.offenseForWeapon[index16];
 		damageData.penetration = Const.a.penetrationForWeapon[index16];
 		damageData.owner = playerCapsule;

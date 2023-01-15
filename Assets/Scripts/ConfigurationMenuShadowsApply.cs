@@ -6,13 +6,19 @@ using UnityEngine.UI;
 public class ConfigurationMenuShadowsApply : MonoBehaviour {
 	private Dropdown picker;
 
-	void Awake() {
-		picker = GetComponent<Dropdown>();
-		if (picker == null) Debug.Log("BUG: ConfigurationMenuShadowsApply missing component for picker.");
+	void Start() { // Wait for Const.a. to initialize.
+		Initialize();
 	}
 
 	void OnEnable() {
-		if (picker != null) picker.value = Const.a.GraphicsShadowMode;
+		Initialize();
+	}
+
+	void Initialize() {
+		if (picker == null) picker = GetComponent<Dropdown>();
+		if (picker == null) Debug.Log("BUG: ConfigurationMenuShadowsApply missing component for picker.");
+
+		picker.value = Const.a.GraphicsShadowMode;
 	}
 
 	public void OnDropdownSelect () {

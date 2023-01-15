@@ -326,6 +326,8 @@ public class Const : MonoBehaviour {
 	public static Const a;
 
 	public void Awake() {
+		UnityEngine.Debug.Log("Initializing Const via Awake");
+
 		Application.targetFrameRate = TARGET_FPS;
 		a = this; // Create a new instance so that it can be accessed globally. MOST IMPORTANT PART!!
 		a.justSavedTimeStamp = Time.time - a.savedReminderTime;
@@ -347,6 +349,12 @@ public class Const : MonoBehaviour {
 		a.LoadItemNamesData();
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier since these are needed by AIController's Start().
+	}
+
+	public static void InitializeSingleton() {
+		Const newConst = new Const();
+		newConst.Awake();
+		UnityEngine.Debug.Log("Initialized Const via InitializeSingleton");
 	}
 
     public void LoadTextForLanguage(int lang) {
@@ -816,7 +824,6 @@ public class Const : MonoBehaviour {
 			UnityEngine.Debug.Log(input); // Print to Editor console.
 		#endif
 		System.Console.WriteLine(input);
-		//System.Diagnostics.Debug.WriteLine(input);
 		a.statusBar.SendText(input);
 	}
 
@@ -1035,51 +1042,8 @@ public class Const : MonoBehaviour {
         }
 
         return GetObjectFromPool(PoolType.SparksSmall);
-    }
-
-	// ========================DAMAGE SYSTEM===========================
-	// 0. First checks against whether the entity is damageable (i.e. not the world) - handled by Physics Layers.
-	// 1. Armor Absorption (see ICE Breaker Guide for all of 4 these)
-	// 2. Weapon Vulnerabilities based on attack type and the a_att_type bits stored in the npc
-	// 3. Critical Hits, chance for critical hit damage based on defense and offense of attack and target
-	// 4. Random Factor, +/- 10% damage for randomness
-	// 5. Apply Velocity for damage, this is after all the above because otherwise the damage multipliers wouldn't affect velocity
-	// 6. Berserk Damage Increase
-	// 7. Return the damage to original TakeDamage() function
-	public float GetDamageTakeAmount (DamageData dd) {
-		// a_* = attacker
-		float a_damage = dd.damage;
-		float a_offense = dd.offense;
-		float a_penetration = dd.penetration;
-		AttackType a_att_type = dd.attackType;
-		bool a_berserk = dd.berserkActive;
-
-		// o_* = other (one being attacked)
-		bool o_isnpc = dd.isOtherNPC;
-		float o_armorvalue = dd.armorvalue;
-		float o_defense = dd.defense;
-
-		float take, crit;
-		take = (o_armorvalue > a_penetration ? a_damage - a_penetration : a_damage); // 1. Armor Absorption (NPC armor, not player)
-		// 2. Weapon Vulnerabilities - handled by HealthManager.
-		// 3. Critical Hits (NPCs only)
-		if (o_isnpc) {
-			crit = (a_offense - o_defense);
-			if (crit > 0) {
-				// 71% success with 5/6  5 = f, 6 = max offense or defense value
-				// 62% success with 4/6
-				// 50% success with 3/6
-				// 24% success with 2/6
-				// 10% success with 1/6
-				// chance of f/6 = 5/6|4/6|3/6|2/6|1/6 = .833|.666|.5|.333|.166
-				if ((UnityEngine.Random.Range(0f,1f) < (crit/6)) && (UnityEngine.Random.Range(0f,1f) < 0.2f)) take += crit * take; // SUCCESS! Maximum extra is 5X + 1X Damage.
-			}
-		}
-		take *= UnityEngine.Random.Range(0.9f,1.1f); // 4. Random Factor +/- 10% (aka 0.10 damage).
-		// 5. Apply Impact Velocity for Damage - handled by HealthManager.
-		if (a_berserk) take *= Const.a.berserkDamageMultiplier; // 6. Berserk Damage Increase.
-		return take; // 7. Return the Damage.
 	}
+
 
 	void FindAllSaveObjectsGOs(ref List<GameObject> gos) {
 		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
@@ -1091,25 +1055,18 @@ public class Const : MonoBehaviour {
 		}
 	}
 
-	// Wrapper function to enable Save to be a coroutine...and now we can
-	// enable all the levels before a save for a tiny bit.  Except we don't
-	// since I need to figure out how to save as fast as possible while still
-	// taking the time to display feedback at some point.  Currently we just
-	// haul off and get it with top speed, no pausing momentarily to draw any
-	// progress bar.  Left here just in case I try this later.
+	// Wrapper function to enable Save to be a coroutine so we can display
+	// progress.  We don't though, currently we just haul off and get it with
+	// top speed, no pausing momentarily to draw any progress bar since it is
+	// plenty fast enough.
 	public void StartSave(int index, string savename) {
 		if (PlayerHealth.a.hm.health < 1.0f) return; // Can't save while dead!
 
-		//StartCoroutine(Save(index,savename));
-		Save(index,savename);
+		StartCoroutine(SaveRoutine(index,savename));
 	}
 
 	// Save the Game
 	// ========================================================================
-	public void Save(int saveFileIndex, string savename) {
-		StartCoroutine(Const.a.SaveRoutine(saveFileIndex,savename));
-	}
-
 	public IEnumerator SaveRoutine(int saveFileIndex,string savename) {
 		sprint(stringTable[194]); // Indicate we are saving "Saving..."
 		yield return null; // Update to show this sprint.
@@ -1340,6 +1297,7 @@ public class Const : MonoBehaviour {
 		Stopwatch loadUpdateTimer = new Stopwatch(); // For loading % indicator.
 		Stopwatch matchTimer = new Stopwatch();
 		loadTimer.Start();
+		UnityEngine.Debug.Log("Start of Load with player at " + PlayerMovement.a.transform.localPosition.ToString());
 		yield return null; // Update the view to show ShowLoading changes.
 
 		string readline; 					// Initialize temporary variables.
@@ -1405,11 +1363,11 @@ public class Const : MonoBehaviour {
 			// First pass to initialize tracking arrays:
 			// - saveFile_Line_SaveID, This holds the full list of all unique IDs.
 			// - saveableIsInstantiated, True if object is instantiated prefab.
-			int[] saveFile_Line_SaveID = new int[(numSaveablesFromSavefile)];
-			bool[] saveFile_Line_IsInstantiated = new bool[(numSaveablesFromSavefile)];
-			bool[] alreadyLoadedLineFromSaveFile = new bool[(numSaveablesFromSavefile)];
+			int[] saveFile_Line_SaveID = new int[numSaveFileLines];
+			bool[] saveFile_Line_IsInstantiated = new bool[numSaveFileLines];
+			bool[] alreadyLoadedLineFromSaveFile = new bool[numSaveFileLines];
 			Utils.BlankBoolArray(ref alreadyLoadedLineFromSaveFile,false); // Fill with false.
-			for (i=3;i<(numSaveablesFromSavefile);i++) {
+			for (i = 3; i < numSaveFileLines; i++) {
 				entries = readFileList[i].Split(csplit);
 				if (entries.Length > 1) {
 					saveFile_Line_SaveID[i] = Utils.GetIntFromString(entries[1]); // int - get saveID from 2nd slot
@@ -1472,7 +1430,7 @@ public class Const : MonoBehaviour {
 			// When we come across an instantiated object in the saveable file,
 			//   we need to skip it for later and instantiate them all.
 			loadUpdateTimer.Start(); // For loading update
-			for (i=3;i<(numSaveablesFromSavefile);i++) {
+			for (i = 3; i < numSaveFileLines; i++) {
 				if (saveFile_Line_IsInstantiated[i]) continue; // Skip instantiables.
 
 				alreadyLoadedLineFromSaveFile[i] = true;
@@ -1484,10 +1442,15 @@ public class Const : MonoBehaviour {
 					currentSaveObjectInScene = currentGameObjectInScene.GetComponent<SaveObject>();
 					if (!currentSaveObjectInScene.instantiated) alreadyCheckedThisInstantiableGameObjectInScene[j] = true; // Huge time saver right here!
 
-					 // Static Objects all have unique ID.
+					// Static Objects all have unique ID.
+					if (currentSaveObjectInScene.SaveID == 999999) UnityEngine.Debug.Log("Checking player during load");
 					if (currentSaveObjectInScene.SaveID == saveFile_Line_SaveID[i]
 						&& currentSaveObjectInScene.SaveID != 0) {
-						if (!saveableGameObjectsInScene[j].isStatic && currentSaveObjectInScene.saveType != SaveableType.Light) {
+						if (currentSaveObjectInScene.SaveID == 999999) UnityEngine.Debug.Log("Found player in savefile on line " + i.ToString() + " during load");
+
+						//if (!saveableGameObjectsInScene[j].isStatic // EDITOR ONLY!!!
+						if (currentSaveObjectInScene.instantiated
+							&& currentSaveObjectInScene.saveType != SaveableType.Light) {
 							UnityEngine.Debug.Log("For some reason, attempting "
 												  + "to load to dynamic object "
 												  + saveableGameObjectsInScene[j].name);
@@ -1513,12 +1476,18 @@ public class Const : MonoBehaviour {
 
 			// Check if we missed a static non-instantiable object to load to.
 			int numberOfMissedObjects = 0;
+			SaveObject sobQuickCheck;
 			for (i=0;i<saveableGameObjectsInScene.Count;i++) {
 				if (alreadyCheckedThisInstantiableGameObjectInScene[i]) continue;
 
-				string staticResult;
-				if (saveableGameObjectsInScene[i].isStatic) staticResult = "is static";
-				else staticResult = "is not static";
+				string staticResult; // Immutable nonsense so no bother doing outside the loop, blech!
+				sobQuickCheck = saveableGameObjectsInScene[i].GetComponent<SaveObject>();
+ 				staticResult = "is not static";
+				if (sobQuickCheck != null) {
+					if (!sobQuickCheck.instantiated) staticResult = "is static";
+				}
+				//if (saveableGameObjectsInScene[i].isStatic) staticResult = "is static"; // EDITOR ONLY!!!!!!!!!!
+				
 
 				UnityEngine.Debug.Log(saveableGameObjectsInScene[i].name 
 									  + " not loaded during Static Pass and "
@@ -1539,7 +1508,7 @@ public class Const : MonoBehaviour {
 			GameObject instantiatedObject = null;
 			//GameObject prefabReferenceGO = null;
 			//for (i=0;i<instantiatedFound.Count;i++) {
-			for (i=3;i<(numSaveablesFromSavefile);i++) {
+			for (i = 3 ; i < numSaveFileLines; i++) {
 				if (alreadyLoadedLineFromSaveFile[i]) continue;
 
 				entries = readFileList[i].Split(csplit);
@@ -1570,6 +1539,8 @@ public class Const : MonoBehaviour {
 		yield return new WaitForSeconds(0.1f);
 
 		AutoSplitterData.isLoading = false;
+		UnityEngine.Debug.Log("End of Load with player at " + PlayerMovement.a.transform.localPosition.ToString());
+
 		loadTimer.Stop();
 		//UnityEngine.Debug.Log("Matching index loop de loop time: " + matchTimer.Elapsed.ToString());
 		GoIntoGame(loadTimer);

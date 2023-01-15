@@ -10,8 +10,7 @@ public class ConfigToggles : MonoBehaviour {
 	// Internal references
 	private Toggle self;
 
-	void Start () {
-		self = GetComponent<Toggle>();
+	void Start () { // Wait for Const.a. to initialize.
 		AlignWithConfigFile();
 	}
 
@@ -20,6 +19,7 @@ public class ConfigToggles : MonoBehaviour {
 	}
 
 	public void AlignWithConfigFile() {
+		if (self == null) self = GetComponent<Toggle>();
 		switch (ToggleType) {
 			case ConfigToggleType.Fullscreen: self.isOn = Const.a.GraphicsFullscreen; break;
 			case ConfigToggleType.SSAO: self.isOn = Const.a.GraphicsSSAO; break;

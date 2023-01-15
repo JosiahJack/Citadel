@@ -836,7 +836,7 @@ public class AIController : MonoBehaviour {
 				//   armorvalue
 				//   defense
 				damageData.impactVelocity = damageData.damage * 1.5f;
-				damageData.damage = Const.a.GetDamageTakeAmount(damageData);
+				damageData.damage = DamageData.GetDamageTakeAmount(damageData);
 				Utils.ApplyImpactForce(tempHit.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
 				CreateStandardImpactEffects(true);
 				tempHM.TakeDamage(damageData);
@@ -863,7 +863,7 @@ public class AIController : MonoBehaviour {
 		damageData = DamageData.SetNPCData(index,attackNum,gameObject);
 		damageData.attacknormal = tempVec;
 		damageData.attackType = AttackType.ProjectileLaunched;
-		// Can't call Const.a.GetDamageTakeAmount here since we haven't hit
+		// Can't call DamageData.GetDamageTakeAmount here since we haven't hit
 		// anyone yet so we don't know if isOtherNPC is true or not, called in
 		// ProjectileEffectImpact.
 
@@ -914,7 +914,7 @@ public class AIController : MonoBehaviour {
 		DamageData dd = DamageData.SetNPCData(index,attackNum,gameObject);
 		if (dd == null) return;
 
-		float take = Const.a.GetDamageTakeAmount(dd);
+		float take = DamageData.GetDamageTakeAmount(dd);
 		dd.other = gameObject;
 		dd.damage = take;
 		Utils.ApplyImpactForceSphere(dd,sightPoint.transform.position,

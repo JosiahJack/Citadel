@@ -49,7 +49,7 @@ public class ProjectileEffectImpact : MonoBehaviour {
 					//   armorvalue
 					//   defense
 					// Most already was when this was launched by AIController or WeaponFire
-					dd.damage = Const.a.GetDamageTakeAmount(dd);
+					dd.damage = DamageData.GetDamageTakeAmount(dd);
 					dd.impactVelocity = dd.damage * 1.5f;
 					Utils.ApplyImpactForce(other.gameObject, dd.impactVelocity,dd.attacknormal,dd.hit.point);
 					float dmgFinal = hm.TakeDamage(dd); // send the damageData container to HealthManager of hit object and apply damage

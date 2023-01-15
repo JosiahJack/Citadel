@@ -6,13 +6,19 @@ using UnityEngine.UI;
 public class ConfigurationMenuSSRApply : MonoBehaviour {
 	private Dropdown picker;
 
-	void Awake() {
-		picker = GetComponent<Dropdown>();
-		if (picker == null) Debug.Log("BUG: ConfigurationMenuAAApply missing component for aaPicker.");
+	void Start() { // Wait for Const.a. to initialize.
+		Initialize();
 	}
 
 	void OnEnable() {
-		if (picker != null) picker.value = Const.a.GraphicsSSRMode;
+		Initialize();
+	}
+
+	void Initialize() {
+		picker = GetComponent<Dropdown>();
+		if (picker == null) Debug.Log("BUG: ConfigurationMenuAAApply missing component for aaPicker.");
+
+		picker.value = Const.a.GraphicsSSRMode;
 	}
 
 	public void OnDropdownSelect () {
