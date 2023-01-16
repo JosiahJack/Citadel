@@ -65,6 +65,15 @@ public class MainMenuHandler : MonoBehaviour {
 	private LoadPageGetSaveNames lpgsn_load;
 	private LoadPageGetSaveNames lpgsn_save;
 
+	// For NewGameGraph duplicate of BiomonitorGraph but faked out
+	private float ecgValue = 0;
+	private float beatShift;
+	public float beatThresh = 0.1f;
+	public float beatVariation = 0.05f;
+	private float beatFinished;
+	public float freq = 35f;
+	public float beatTime = 5f;
+
 	void Awake() {
 		a = this;
 		StartSFX = startFXObject.GetComponent<AudioSource>();
@@ -85,6 +94,7 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 		lpgsn_load = loadPage.GetComponent<LoadPageGetSaveNames>();
 		lpgsn_save = savePage.GetComponent<LoadPageGetSaveNames>();
+		beatFinished = Time.time;
 	}
 
 	void OnEnable() {
@@ -181,6 +191,8 @@ public class MainMenuHandler : MonoBehaviour {
 				return;
 			}
 		}
+
+		NewGameGraphUpdate();
 	}
 
 	public void StartGame (bool isNew) {
@@ -241,6 +253,37 @@ public class MainMenuHandler : MonoBehaviour {
 		newgamePage.SetActive(true);
 		newgameInputText.ActivateInputField();
 		currentPage = Pages.np;
+	}
+
+	void NewGameGraphUpdate() {
+		if (currentPage != Pages.np) return;
+		if (NewGameGraphSystem.a == null) return;
+
+		// Energy Usage
+		NewGameGraphSystem.a.Graph(0,0f); // Take percentage of max JPM drain per second (449) and apply it to a scale of �1.0
+		//NewGameGraphSystem.a.graphs[1].tex0 = (Texture2D)NewGameGraphSystem.a.OutputTexture.texture;
+		//NewGameGraphSystem.a.graphs[1].tex1 = new Texture2D(NewGameGraphSystem.a.graphs[1].tex0.width, NewGameGraphSystem.a.graphs[1].tex0.height);
+		//NewGameGraphSystem.a.graphs[1].texFlipFlop = true;
+
+		// Chi Wave
+		NewGameGraphSystem.a.Graph(1, Mathf.Sin(Time.time * beatTime * 2f) + UnityEngine.Random.Range(-0.3f,0.3f));
+		//NewGameGraphSystem.a.graphs[2].tex0 = (Texture2D)NewGameGraphSystem.a.OutputTexture.texture;
+		//NewGameGraphSystem.a.graphs[2].tex1 = new Texture2D(NewGameGraphSystem.a.graphs[2].tex0.width, NewGameGraphSystem.a.graphs[2].tex0.height);
+		//NewGameGraphSystem.a.graphs[2].texFlipFlop = true;
+
+		// ECG
+		if (beatFinished < Time.time) beatFinished = Time.time + beatTime;
+
+		// Create shifted sine wave for heart beat.
+		beatShift = (beatFinished - Time.time)/beatTime;
+		if (beatShift > 0.8f) ecgValue = Mathf.Sin(beatShift * freq);
+		else ecgValue = 0;
+
+		 // Inject variation when beating
+		if (ecgValue > beatThresh || ecgValue < (beatThresh * -1f)) {
+			ecgValue += UnityEngine.Random.Range((beatVariation * -1f),beatVariation);
+		}
+		NewGameGraphSystem.a.Graph(2, ecgValue);
 	}
 
 	public void GoToLoadGameSubmenu (bool accessedFromPause) {

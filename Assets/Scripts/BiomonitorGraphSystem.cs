@@ -56,7 +56,7 @@ public class BiomonitorGraphSystem : MonoBehaviour {
     public void Graph(int index, float val) {
         //if (!gameObject.activeSelf) return; // Commented out to try to have values update so toggling will look correct.
 
-        graphs[index].Push(val,gameObject.activeSelf);
+        graphs[index].Push(val,true); // The true here was gameObject.activeSelf
     }
 
     // Resets graph data.

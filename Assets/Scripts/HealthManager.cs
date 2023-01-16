@@ -134,8 +134,8 @@ public class HealthManager : MonoBehaviour {
 					linkedCameraOverlay.enabled = true;
 					Vector3 tempVec2 = new Vector2(0f,0f);
 					// 436,-367, -0.3 is the center point of the map UI
-					tempVec2.y = -367 + (((((transform.position.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * -1008f) + Const.a.mapTileMinX)) + 1008f - 126 + 128;
-					tempVec2.x = 436 + (((((transform.position.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * -1008f) + Const.a.mapTileMinY)) + 1008f + 233 + 116;
+					tempVec2.y = -367 + (((((transform.position.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * -1008f) + Const.a.mapTileMinX)) + 1010f - 244.0266f; // Y 177.0266 -> -67
+					tempVec2.x = 436 + (((((transform.position.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * -1008f) + Const.a.mapTileMinY)) + 1357f - 121.41557f; // X 70.41557 -> -51
 					tempVec2.z = -0.3f;
 					rect.anchoredPosition = tempVec2;
 				}

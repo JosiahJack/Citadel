@@ -35,7 +35,7 @@ public class MFDManager : MonoBehaviour  {
 	public Text multiMediaHeaderLabel;
 	public EReaderSectionsButtons ersbLH;
 	public EReaderSectionsButtons ersbRH;
-	[HideInInspector] public int lastMultiMediaTabOpened = 1; // TODO: save!, default to logs.  0 = email table, 1 = log table, 2 = data table
+	[HideInInspector] public int lastMultiMediaTabOpened = 1; // save, 0 = email table, 1 = log table, 2 = data table
 
 	// Main MFD
 	public ItemTabManager itemTabLH;
@@ -1366,7 +1366,7 @@ public class MFDManager : MonoBehaviour  {
 		MFDManager mfd = go.GetComponent<MFDManager>();
 		if (mfd == null) {
 			Debug.Log("MFDManager missing on Player!  GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("bbbbbbbbbfffbbbbbbtbut");
+			return Utils.DTypeWordToSaveString("bbbbbbbbbufffbbbbbbtbut");
 		}
 
 		string line = System.String.Empty;
@@ -1379,6 +1379,7 @@ public class MFDManager : MonoBehaviour  {
 		line += Utils.splitChar + Utils.BoolToString(mfd.lastLogSideRH); // bool
 		line += Utils.splitChar + Utils.BoolToString(mfd.lastLogSecondarySideRH); // bool
 		line += Utils.splitChar + Utils.BoolToString(mfd.lastMinigameSideRH); // bool
+		line += Utils.splitChar + Utils.UintToString(mfd.lastMultiMediaTabOpened); // int
 		line += Utils.splitChar + Utils.FloatToString(mfd.objectInUsePos.x)
 			  + Utils.splitChar + Utils.FloatToString(mfd.objectInUsePos.y)
 			  + Utils.splitChar + Utils.FloatToString(mfd.objectInUsePos.z);
@@ -1404,17 +1405,17 @@ public class MFDManager : MonoBehaviour  {
 		MFDManager mfd = go.GetComponent<MFDManager>();
 		if (mfd == null) {
 			Debug.Log("MFDManager.Load failure, mfd == null");
-			return index + 22;
+			return index + 23;
 		}
 
 		if (index < 0) {
 			Debug.Log("MFDManager.Load failure, index < 0");
-			return index + 22;
+			return index + 23;
 		}
 
 		if (entries == null) {
 			Debug.Log("MFDManager.Load failure, entries == null");
-			return index + 22;
+			return index + 23;
 		}
 
 		float readFloatx, readFloaty, readFloatz;
@@ -1427,6 +1428,7 @@ public class MFDManager : MonoBehaviour  {
 		mfd.lastLogSideRH = Utils.GetBoolFromString(entries[index]); index++;
 		mfd.lastLogSecondarySideRH = Utils.GetBoolFromString(entries[index]); index++;
 		mfd.lastMinigameSideRH = Utils.GetBoolFromString(entries[index]); index++;
+		mfd.lastMultiMediaTabOpened = Utils.GetIntFromString(entries[index]); index++;
 		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
 		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
 		readFloatz = Utils.GetFloatFromString(entries[index]); index++;

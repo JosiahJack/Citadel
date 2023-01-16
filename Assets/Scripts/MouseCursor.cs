@@ -42,6 +42,7 @@ public class MouseCursor : MonoBehaviour {
 	private Texture2D tempTexture;
 	public Texture2D cursorGUI;
 	public RectTransform energySliderRect;
+	public float cursorScreenPercentage = 0.02f;
 	private float halfFactor = 0.5f;
 	private float zero = 0f;
 	private string nullStr = "-1";
@@ -51,6 +52,7 @@ public class MouseCursor : MonoBehaviour {
 	void Awake() {
 		a = this;
 		a.uiCameraCam = uiCamera.GetComponent<Camera>();
+		cursorSize = Screen.width * cursorScreenPercentage;
 		a.drawTexture = new Rect((Screen.width*halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize, cursorSize, cursorSize);
 	}
 
@@ -61,6 +63,8 @@ public class MouseCursor : MonoBehaviour {
 
 	void OnGUI () {
 		if (MouseLookScript.a == null) return;
+
+		cursorSize = Screen.width * cursorScreenPercentage;
 
         if (offsetCentering) {
             offsetX = cursorSize * halfFactor;

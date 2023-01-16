@@ -326,8 +326,6 @@ public class Const : MonoBehaviour {
 	public static Const a;
 
 	public void Awake() {
-		UnityEngine.Debug.Log("Initializing Const via Awake");
-
 		Application.targetFrameRate = TARGET_FPS;
 		a = this; // Create a new instance so that it can be accessed globally. MOST IMPORTANT PART!!
 		a.justSavedTimeStamp = Time.time - a.savedReminderTime;
@@ -349,12 +347,6 @@ public class Const : MonoBehaviour {
 		a.LoadItemNamesData();
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier since these are needed by AIController's Start().
-	}
-
-	public static void InitializeSingleton() {
-		Const newConst = new Const();
-		newConst.Awake();
-		UnityEngine.Debug.Log("Initialized Const via InitializeSingleton");
 	}
 
     public void LoadTextForLanguage(int lang) {

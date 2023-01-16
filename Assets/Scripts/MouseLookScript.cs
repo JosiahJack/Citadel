@@ -446,27 +446,34 @@ public class MouseLookScript : MonoBehaviour {
 		return false; // Item will be dropped, wasn't used up.
 	}
 
-	void PutObjectInHand(int useableConstdex, int customIndex, int ammo1, int ammo2, Texture2D cursorTex, bool fromButton) {
+	void PutObjectInHand(int useableConstdex, int customIndex, int ammo1, int ammo2, bool fromButton) {
+		if (useableConstdex < 0) return;
+
 		holdingObject = true;
 		heldObjectIndex = useableConstdex;
 		heldObjectCustomIndex = customIndex;
 		heldObjectAmmo = ammo1;
 		heldObjectAmmo2 = ammo2;
-		cursorTexture = cursorTex;
+		if (useableConstdex >= 0 && useableConstdex < Const.a.useableItemsFrobIcons.Length) {
+			cursorTexture = Const.a.useableItemsFrobIcons[useableConstdex];
+		}
 		MouseCursor.a.cursorImage = cursorTexture;
 		if (fromButton) GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 		ForceInventoryMode();
 	}
 
 	void InventoryButtonUse() {
+		if (holdingObject) return;
 		if (!GUIState.a.overButton) return;
 		if (GUIState.a.overButtonType == ButtonType.None) return;
 		if (currentButton == null) return;
 
+		int indexPriorToRemoval = -1;
 		switch(GUIState.a.overButtonType) {
 			case ButtonType.Weapon:
 				// Take weapon out of inventory, removing weapon, remove weapon and any other strings I need to CTRL+F my way to this buggy code!
 				WeaponButton wepbut = currentButton.GetComponent<WeaponButton>();
+				indexPriorToRemoval = wepbut.useableItemIndex;
 				int am1 = WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex];
 				int am2 = WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex];
 				WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex] = 0; // zero out the current ammo
@@ -474,16 +481,16 @@ public class MouseLookScript : MonoBehaviour {
 				Inventory.a.RemoveWeapon(wepbut.WepButtonIndex);
 				WeaponCurrent.a.SetAllViewModelsDeactive();
 				WeaponCurrent.a.weaponCurrent = -1;
-				WeaponCurrent.a.weaponIndex = 0;
 				wepbut.useableItemIndex = -1;
+				WeaponCurrent.a.weaponIndex = 0;
 				MFDManager.a.wepbutMan.WeaponCycleDown();
 				MFDManager.a.SendInfoToItemTab(WeaponCurrent.a.weaponIndexPending);
 				MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
-				PutObjectInHand(wepbut.useableItemIndex,-1,am1,am2,
-								Const.a.useableItemsFrobIcons[wepbut.useableItemIndex], true);
+				PutObjectInHand(indexPriorToRemoval,-1,am1,am2, true);
 				break;
 			case ButtonType.Grenade:
 				GrenadeButton grenbut = currentButton.GetComponent<GrenadeButton>();
+				indexPriorToRemoval = grenbut.useableItemIndex;
 				Inventory.a.grenAmmo[grenbut.GrenButtonIndex]--;
 				Inventory.a.GrenadeCycleDown();
 				//Inventory.a.grenadeCurrent = -1; This was up here, and seemed fine.  Might need to revert line 473 add.
@@ -496,10 +503,11 @@ public class MouseLookScript : MonoBehaviour {
 					MFDManager.a.SendInfoToItemTab(Inventory.a.grenadeCurrent);
 					if (Inventory.a.grenadeCurrent < 0) Inventory.a.grenadeCurrent = 0;
 				}
-				PutObjectInHand(grenbut.useableItemIndex,-1,0,0,Const.a.useableItemsFrobIcons[grenbut.useableItemIndex],true);
+				PutObjectInHand(indexPriorToRemoval,-1,0,0,true);
 				break;
 			case ButtonType.Patch:
 				PatchButton patbut = currentButton.GetComponent<PatchButton>();
+				indexPriorToRemoval = patbut.useableItemIndex;
 				Inventory.a.patchCounts[patbut.PatchButtonIndex]--;
 				if (Inventory.a.patchCounts[patbut.PatchButtonIndex] <= 0) {
 					Inventory.a.patchCounts[patbut.PatchButtonIndex] = 0;
@@ -511,10 +519,11 @@ public class MouseLookScript : MonoBehaviour {
 					MFDManager.a.SendInfoToItemTab(Inventory.a.patchCurrent);
 					if (Inventory.a.patchCurrent < 0) Inventory.a.patchCurrent = 0;
 				}
-				PutObjectInHand(patbut.useableItemIndex,-1,0,0,Const.a.useableItemsFrobIcons[patbut.useableItemIndex],true);
+				PutObjectInHand(indexPriorToRemoval,-1,0,0,true);
 				break;
 			case ButtonType.GeneralInv:
 				GeneralInvButton genbut = currentButton.GetComponent<GeneralInvButton>();
+				indexPriorToRemoval = genbut.useableItemIndex;
 				Inventory.a.generalInventoryIndexRef[genbut.GeneralInvButtonIndex] = -1;
 				Inventory.a.generalInvCurrent = -1;
 				for (int i = 0; i < 7; i++) {
@@ -524,7 +533,7 @@ public class MouseLookScript : MonoBehaviour {
 				if (Inventory.a.generalInvCurrent >= 0) referenceIndex = Inventory.a.genButtons[Inventory.a.generalInvCurrent].transform.GetComponent<GeneralInvButton>().useableItemIndex;
 				if (referenceIndex < 0 || referenceIndex > 110) MFDManager.a.ResetItemTab();
 				else MFDManager.a.SendInfoToItemTab(referenceIndex);
-				PutObjectInHand(genbut.useableItemIndex,-1,0,0,Const.a.useableItemsFrobIcons[genbut.useableItemIndex],true);
+				PutObjectInHand(indexPriorToRemoval,-1,0,0,true);
 				break;
 			case ButtonType.Search:
 				SearchButton sebut = currentButton.GetComponentInParent<SearchButton>();
@@ -908,7 +917,7 @@ public class MouseLookScript : MonoBehaviour {
 			case 13: heldObject = Const.a.useableItems[97]; Inventory.a.RemoveGrenade(2); break; // Gas
 		}
 		MFDManager.a.ResetItemTab();
-		PutObjectInHand(index,-1,0,0,Const.a.useableItemsFrobIcons[index], true);
+		PutObjectInHand(index,-1,0,0,true);
 	}
 
 	public void ScreenShake (float force) {
