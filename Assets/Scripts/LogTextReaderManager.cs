@@ -11,7 +11,7 @@ public class LogTextReaderManager : MonoBehaviour {
 	public LogBackButton logBackButton;
 	public int refIndex = -1;
 	
-	void Update () {
+	void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (logTextOutput.GetComponent<Text>().text.Length > 568) {
 				moreButtonText.text = "[MORE]";

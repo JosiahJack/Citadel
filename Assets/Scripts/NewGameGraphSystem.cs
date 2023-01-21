@@ -53,7 +53,6 @@ public class NewGameGraphSystem : MonoBehaviour {
     }
 
     void OnGUI() {
-        GUI.color = Color.white;
         graphWidth = (int)((float)Screen.width * widthPerc);
         graphHeight = (int)((float)Screen.height * heightPerc);
         topEdgeGraph = Screen.height - topEdge;
@@ -105,6 +104,9 @@ public class NewGameGraphSystem : MonoBehaviour {
     }
 
     public void DrawGraphs() {
+        OutputTexture.color = backgroundColor;
+        GUI.color = Color.white;
+        ClearGraphs();
         float graphBlockHeight = (graphHeight + 3);
         GUI.backgroundColor = backgroundColor;
 

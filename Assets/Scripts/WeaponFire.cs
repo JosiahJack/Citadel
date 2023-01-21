@@ -620,7 +620,8 @@ public class WeaponFire : MonoBehaviour {
 		tempVec.x += UnityEngine.Random.Range(-driftForWeapon[wep16Index],driftForWeapon[wep16Index]);
 		tempVec.y += UnityEngine.Random.Range(-driftForWeapon[wep16Index],driftForWeapon[wep16Index]);
         if (Physics.Raycast(playerCamera.ScreenPointToRay(tempVec), out tempHit, fireDistance,Const.a.layerMaskPlayerAttack)) {
-            tempHM = tempHit.transform.gameObject.GetComponent<HealthManager>();
+			tempHM = tempHit.collider.transform.gameObject.GetComponent<HealthManager>(); // Thanks andeeeeeee!!
+			if (tempHM == null) tempHM = tempHit.transform.gameObject.GetComponent<HealthManager>();
 			
             if (tempHM != null) {
                 useBlood = true;
@@ -632,12 +633,14 @@ public class WeaponFire : MonoBehaviour {
 
 	void CreateStandardImpactMarks(int wep16index) {
 		// Don't create bullet holes on objects that move
-		if (tempHit.transform.gameObject == null) return;
-		if (tempHit.transform.GetComponent<Rigidbody>() != null) return;
-		if (tempHit.transform.GetComponent<HealthManager>() != null) return; // don't create bullet holes on objects that die
-		if (tempHit.transform.GetComponent<Animator>() != null) return; // don't create bullet holes on objects that animate
-		if (tempHit.transform.GetComponent<Animation>() != null) return; // don't create bullet holes on objects that animate
-		if (tempHit.transform.GetComponent<Door>() != null) return; // don't create bullet holes on doors, makes them ghost and flicker through walls
+		if (tempHit.collider.transform.gameObject == null) return;
+
+		GameObject hitGO = tempHit.collider.transform.gameObject;
+		if (hitGO.GetComponent<Rigidbody>() != null) return;
+		if (hitGO.GetComponent<HealthManager>() != null) return; // don't create bullet holes on objects that die
+		if (hitGO.GetComponent<Animator>() != null) return; // don't create bullet holes on objects that animate
+		if (hitGO.GetComponent<Animation>() != null) return; // don't create bullet holes on objects that animate
+		if (hitGO.GetComponent<Door>() != null) return; // don't create bullet holes on doors, makes them ghost and flicker through walls
 		//Debug.Log("Generating standard impact marks");
 		// Add bullethole
 		tempVec = tempHit.normal * 0.16f;
@@ -695,7 +698,10 @@ public class WeaponFire : MonoBehaviour {
 		if (holetype != null) {
 			GameObject impactMark = Const.a.GetObjectFromPool(constHoleType);
 			if (impactMark == null) {
-				impactMark = (GameObject) Instantiate(holetype, (tempHit.point + tempVec),  Quaternion.LookRotation(tempHit.normal*-1,Vector3.up), tempHit.transform.gameObject.transform);
+				impactMark = (GameObject)Instantiate(holetype, (tempHit.point + tempVec),
+													 Quaternion.LookRotation(tempHit.normal*-1,Vector3.up),
+													 hitGO.transform);
+
 				// No need to get SaveObject to set `instantiated` bit since the prefab already has it set as it is never not considered an instantiated object.
 				if (impactMark == null) {
 					Debug.Log("BUG: Couldn't find pool object or instantiate holetype for CreateStandardImpactMarks");
@@ -812,18 +818,23 @@ public class WeaponFire : MonoBehaviour {
 			// the only exception
 			if (wep16Index == 2 && Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) damageData.attackType = AttackType.Tranq; // tranquilize the untranquil....yes
         }
+
         // Fill the damageData container
+		// -------------------------------
+		// Using tempHit.transform instead of tempHit.collider.transform to ensure we get overall NPC parent instead of its children.
         damageData.other = tempHit.transform.gameObject;
         if (tempHit.transform.gameObject.CompareTag("NPC")) {
             damageData.isOtherNPC = true;
 			if (damageData.attackType == AttackType.Tranq) {
+				// Using tempHit.transform instead of tempHit.collider.transform to ensure we get overall NPC parent instead of its children.
 				AIController taic = tempHit.transform.gameObject.GetComponent<AIController>();
 				if (taic !=null) taic.Tranquilize();
 			}
         } else {
             damageData.isOtherNPC = false;
-			if (tempHit.transform.gameObject.CompareTag("Geometry"))
+			if (tempHit.transform.gameObject.CompareTag("Geometry")) {
 				CreateStandardImpactMarks(wep16Index);
+			}
         }
         damageData.hit = tempHit;
         damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.a.drawTexture.center).direction;
@@ -851,10 +862,16 @@ public class WeaponFire : MonoBehaviour {
 				if (hm.isObject) damageData.damage *= 10f; // babamm boxes be like, u ded
 			}
 		}
-        if (hm != null && hm.health > 0) {
+        if (hm != null && hm.health > 0 && !(wep16Index == 2 && Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent])) {
 			float dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
-			damageData.impactVelocity += (damageData.damage * 1.5f);
-			Utils.ApplyImpactForce(tempHit.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
+			damageData.impactVelocity += (damageData.damage * 1f);
+			if (wep16Index == 12) damageData.impactVelocity *= 5f;
+			if (!damageData.isOtherNPC || wep16Index == 12) {
+				Utils.ApplyImpactForce(tempHit.collider.transform.gameObject,
+									   damageData.impactVelocity,
+									   damageData.attacknormal,
+									   damageData.hit.point);
+			}
 			if (hm.isNPC) Music.a.inCombat = true;
 			float linkDistForTargID = 10f;
 			switch (Inventory.a.hardwareVersion[4]) {
@@ -882,6 +899,7 @@ public class WeaponFire : MonoBehaviour {
 						showHealth = true;
 					}
 				}
+				// Using tempHit.transform instead of tempHit.collider.transform so that we get the parent NPC on robots.
 				CreateTargetIDInstance(Const.a.stringTable[511], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
 				if (noDamageIndicator != null) {
 					noDamageIndicator.transform.position = tempHit.transform.position; // center on what we just shot
@@ -935,7 +953,7 @@ public class WeaponFire : MonoBehaviour {
 				}
 			}
 		}
-		UseableObjectUse uou = tempHit.transform.gameObject.GetComponent<UseableObjectUse>();
+		UseableObjectUse uou = tempHit.collider.transform.gameObject.GetComponent<UseableObjectUse>();
 		if (uou != null) uou.HitForce(damageData); // knock objects around
 
         // Draw a laser beam for beam weapons
@@ -1006,7 +1024,7 @@ public class WeaponFire : MonoBehaviour {
 			return;
 		}
 		damageData.impactVelocity = damageData.damage * 1.5f;
-		Utils.ApplyImpactForce(targ, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
+		if (!damageData.isOtherNPC || index16 == 12) Utils.ApplyImpactForce(targ, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
 		hm.TakeDamage(damageData); //no need to check if damage was done and if we need noDamageIndicator since melee weapons always do damage against all types
 		if (hm.isNPC) Music.a.inCombat = true;
 		if (!silent) {
@@ -1049,7 +1067,8 @@ public class WeaponFire : MonoBehaviour {
 			foundTarg = true;
 
 			if (numtargets <= 0) numtargets = 1; //don't divide by 0
-			ApplyMeleeHit(index16,tempHit.transform.gameObject,numtargets,isRapier,silent,hit,miss,hitflesh);
+			GameObject hitGO = tempHit.collider.transform.gameObject;
+			ApplyMeleeHit(index16,hitGO,numtargets,isRapier,silent,hit,miss,hitflesh);
 		}
 
 		fireDistance = hitscanDistance; //reset in case raycast failed
@@ -1059,7 +1078,7 @@ public class WeaponFire : MonoBehaviour {
 			for (int i=0;i<Const.a.healthObjectsRegistration.Length;i++) {
 				if (Const.a.healthObjectsRegistration[i] != null) {
 					GameObject ho = Const.a.healthObjectsRegistration[i].gameObject;
-					if (!ho.activeInHierarchy) continue; // Don't hurt deactive objects, like you know, corpses...at least don't do it again please.
+					if (!ho.activeInHierarchy) continue; // Don't hurt deactive objects, like you know, corpse on living entities...at least don't do it again please.
 
 					HealthManager hm = ho.GetComponent<HealthManager>();
 

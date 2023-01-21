@@ -60,9 +60,9 @@ public class DamageData {
 
 	public static DamageData SetNPCData (int NPCindex, int attackNum,
 											   GameObject ownedBy) {
-		if (NPCindex < 0 || NPCindex > 23) {
+		if (NPCindex < 0 || NPCindex > 28) {
 			NPCindex = 0;
-			Debug.Log("BUG: NPCindex incorrect on NPC.  Not 0 to 23 on NPC at: "
+			Debug.Log("BUG: NPCindex incorrect on NPC.  Not 0 to 28 on NPC at: "
 					  + ownedBy.transform.position.x.ToString() + ", "
 					  + ownedBy.transform.position.y.ToString() + ", "
 					  + ownedBy.transform.position.z + ".");

@@ -277,6 +277,12 @@ public class AIController : MonoBehaviour {
 		Const.a.numberOfRaycastsThisFrame = 0;
 	}
 
+	bool HasHealth(HealthManager hm) {
+		if (hm == null) return false;
+		if (hm.inCyberSpace) return (hm.cyberHealth > 0);
+		return (hm.health > 0);
+	}
+
 	void Update() {
 		if (PauseScript.a.Paused() || PauseScript.a.MenuActive() || !startInitialized) {
 			rbody.isKinematic = true;
@@ -286,24 +292,25 @@ public class AIController : MonoBehaviour {
 		rbody.isKinematic = false;
 		if (raycastingTickFinished < PauseScript.a.relativeTime) {
 			raycastingTickFinished = PauseScript.a.relativeTime + Const.a.raycastTick;
+			if (npcAutomapOverlayImage != null) {
+				if (healthManager.health > 0 && !npcAutomapOverlayImage.enabled) {
+					npcAutomapOverlayImage.enabled = true;
+				}
+			}
 			inSight = CheckIfPlayerInSight();
-			if (enemy != null && healthManager.health > 0) {
+			if (enemy != null && HasHealth(healthManager)) {
 				// Check if enemy health drops to 0
 				if (enemyHM == null) enemyHM = enemy.GetComponent<HealthManager>();
 				if (enemyHM != null) {
-					if (Const.a.moveTypeForNPC[index] == AIMoveType.Cyber) {
-						if (enemyHM.cyberHealth <= 0) {
+					if (!HasHealth(enemyHM)) {
+						if (Const.a.moveTypeForNPC[index] == AIMoveType.Cyber) {
 							currentState = AIState.Idle;
-							enemy = null;
-							enemyHM = null;
-						}
-					} else {
-						if (enemyHM.health <= 0) {
+						} else {
 							wandering = true; // enemy is dead, let's wander around aimlessly now
 							currentState = AIState.Walk;
-							enemy = null;
-							enemyHM = null;
 						}
+						enemy = null;
+						enemyHM = null;
 					}
 				}
 
@@ -329,13 +336,19 @@ public class AIController : MonoBehaviour {
         if (tickFinished < PauseScript.a.relativeTime) {
 			tickFinished = PauseScript.a.relativeTime + Const.a.aiTickTime;
 			Think();
-			if (npcAutomapOverlay != null && Const.a.moveTypeForNPC[index] != AIMoveType.Cyber && healthManager.health > 0 && Inventory.a.hasHardware[1] && Inventory.a.hardwareVersion[1] > 1) {
+			if (npcAutomapOverlay != null && Const.a.moveTypeForNPC[index] != AIMoveType.Cyber && HasHealth(healthManager) && Inventory.a.hasHardware[1] && Inventory.a.hardwareVersion[1] > 1) {
 				// 34.16488, -45.08, 0.4855735
 				// x = ((0.6384575295) * 1008f) + 8;
 				// x = 651
-				tempVec2.y = (((((transform.position.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * 1008f) + Const.a.mapTileMinX));
-				tempVec2.x = (((((transform.position.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * 1008f) + Const.a.mapTileMinY));
-				tempVec2.z = -0.3f;
+				tempVec2.y = ( ( (transform.position.z - Const.a.mapWorldMaxE)/
+							     (Const.a.mapWorldMaxW - Const.a.mapWorldMaxE) )
+								 * 1008f)
+							  + Const.a.mapTileMinX;
+				tempVec2.x = ( ( (transform.position.x - Const.a.mapWorldMaxS)/
+								 (Const.a.mapWorldMaxN - Const.a.mapWorldMaxS) )
+								 * 1008f)
+							  + Const.a.mapTileMinY;
+				tempVec2.z = -0.03f;
 				npcAutomapOverlay.localPosition = tempVec2;
 			} else {
 				if (npcAutomapOverlayImage != null) {
@@ -378,7 +391,7 @@ public class AIController : MonoBehaviour {
 				// If we haven't gone into dying and we aren't dead, going into dying
 				if (!ai_dying && !ai_dead) {
 					ai_dying = true; //no going back
-					currentState = AIState.Dying; //start to collapse in a heap, melt, explode, etc.
+					currentState = AIState.Dying;
 					Dying();
 				}
 			}
@@ -478,7 +491,7 @@ public class AIController : MonoBehaviour {
 		if (wandering) {
 			if (wanderFinished < PauseScript.a.relativeTime || (Vector3.Distance(transform.position,currentDestination) < 0.64f)) {
 				wanderFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(3f,8f);
-				currentDestination = new Vector3(UnityEngine.Random.Range(-79f,79f),0,UnityEngine.Random.Range(-79f,79f));
+				currentDestination = new Vector3(transform.position.x + UnityEngine.Random.Range(-79f,79f),0,transform.position.z + UnityEngine.Random.Range(-79f,79f));
 			}
 		}
 
@@ -502,9 +515,11 @@ public class AIController : MonoBehaviour {
 						hopDone = false;
 					}
 				} else {
-					tempVec = (sightPoint.transform.forward * Const.a.walkSpeedForNPC[index]);
-					tempVec.y = rbody.velocity.y; // Carry across gravity.
-					rbody.velocity = tempVec;
+					if (!actAsTurret) {
+						tempVec = (sightPoint.transform.forward * Const.a.walkSpeedForNPC[index]);
+						tempVec.y = rbody.velocity.y; // Carry across gravity.
+						rbody.velocity = tempVec;
+					}
 				}
 			}
 		} else {
@@ -599,9 +614,11 @@ public class AIController : MonoBehaviour {
 							hopDone = false;
 						}
 					} else {
-						tempVec = (sightPoint.transform.forward * Const.a.runSpeedForNPC[index]);
-						if (rbody.useGravity) tempVec.y = rbody.velocity.y; // Carry across gravity.
-						rbody.velocity = tempVec;
+						if (!actAsTurret) {
+							tempVec = (sightPoint.transform.forward * Const.a.runSpeedForNPC[index]);
+							if (rbody.useGravity) tempVec.y = rbody.velocity.y; // Carry across gravity.
+							rbody.velocity = tempVec;
+						}
 					}
 				}
 				
@@ -639,10 +656,14 @@ public class AIController : MonoBehaviour {
 	// Commonized function to remove previous boilerplate code from all 3 attack functions below.
 	// Applies movement towards the enemy while attacking, assumes that we were already facing enemy within the attack angle.
 	void ApplyAttackMovement(float speedToApply) {
+		if (actAsTurret) {
+			currentDestination = sightPoint.transform.position;
+			return;
+		}
 		if (speedToApply <= 0) return;
 
 		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > stopDistance && tranquilizeFinished < PauseScript.a.relativeTime) {
-			if (WithinAngleToTarget() && !actAsTurret) rbody.AddForce(transform.forward * speedToApply);
+			if (WithinAngleToTarget()) rbody.AddForce(transform.forward * speedToApply);
 		}
         currentDestination = enemy.transform.position; // Attack3 used targettingPosition but it is so rare I decided to use the known working method from Attack1 and Attack2.
 	}
@@ -782,7 +803,10 @@ public class AIController : MonoBehaviour {
 		tempVec = GetDirectionRayToEnemy(targettingPosition,attackNum);
 		if (Physics.Raycast(GetAttackStartPoint(attackNum), tempVec, out tempHit, GetRangeForAttack(attackNum),Const.a.layerMaskNPCAttack)) {
 			Const.a.numberOfRaycastsThisFrame++;
-			tempHM = tempHit.transform.gameObject.GetComponent<HealthManager>();
+
+			tempHM = tempHit.collider.transform.gameObject.GetComponent<HealthManager>(); // Thanks andeeeeeee!!
+			if (tempHM == null) tempHM = tempHit.transform.gameObject.GetComponent<HealthManager>();
+
 			return true; // True indicates we hit something, not that we hit something that can be hurt.  We need to know to apply spark impact effects still on walls and such.
 		}
         return false;
@@ -817,7 +841,7 @@ public class AIController : MonoBehaviour {
 				//   penetration
 				//   offense
 				damageData = DamageData.SetNPCData(index,attackNum,gameObject);
-				damageData.other = tempHit.transform.gameObject;
+				damageData.other = tempHit.transform.gameObject; // Using tempHit.transform instead of tempHit.collider.transform to get overall parent of another NPC or of the player
 				if (tempHit.transform.gameObject.CompareTag("NPC")) {
 					damageData.isOtherNPC = true;
 				} else {
@@ -836,8 +860,9 @@ public class AIController : MonoBehaviour {
 				//   armorvalue
 				//   defense
 				damageData.impactVelocity = damageData.damage * 1.5f;
+				if (!tempHit.collider.transform.gameObject.CompareTag("Player")) damageData.impactVelocity *= 0.5f;
 				damageData.damage = DamageData.GetDamageTakeAmount(damageData);
-				Utils.ApplyImpactForce(tempHit.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
+				Utils.ApplyImpactForce(tempHit.collider.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
 				CreateStandardImpactEffects(true);
 				tempHM.TakeDamage(damageData);
 			} else {
@@ -902,6 +927,14 @@ public class AIController : MonoBehaviour {
 		GrenadeActivate ga = beachball.GetComponent<GrenadeActivate>();
 		if (ga != null) ga.Activate();
 		Vector3 shove = (beachball.transform.forward * launchSpeed);
+		if (Const.a.typeForNPC[index] == NPCType.Cyber) {
+			if (enemy != null) {
+				Rigidbody rbodyEnemy = enemy.GetComponent<Rigidbody>();
+				if (rbodyEnemy != null) {
+					shove = shove + (rbodyEnemy.velocity);
+				}
+			}
+		}
 		shove += rbody.velocity; // add in the enemy's velocity to the projectile (in case they are riding on a moving platform or something - wait I don't have those!
 		beachball.GetComponent<Rigidbody>().velocity = Const.a.vectorZero; // prevent random variation from the last shot's velocity
 		beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
@@ -1020,11 +1053,23 @@ public class AIController : MonoBehaviour {
 			}
 
 			if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly && (!healthManager.gibOnDeath || index == 2 /* avian mutant */)) {
-				rbody.useGravity = true; // for avian mutant and zero-g mutant
+				if (healthManager.gibOnDeath) rbody.useGravity = false;
+				else rbody.useGravity = true; // for avian mutant and zero-g mutant
 			} else {
-				rbody.useGravity = true;
-				rbody.isKinematic = true;
+				if (healthManager.gibOnDeath) {
+					Debug.Log("NPC dying and set gravity to false");
+					rbody.useGravity = false;
+				} else {
+					rbody.useGravity = true;
+					rbody.isKinematic = true;
+				}
 			}
+
+			if (healthManager.inCyberSpace || Const.a.moveTypeForNPC[index] == AIMoveType.Cyber
+				|| Const.a.typeForNPC[index] == NPCType.Cyber) {
+				rbody.useGravity = false;
+			}
+
 			asleep = false;
 			rbody.constraints = RigidbodyConstraints.None;
 			if (!rbody.freezeRotation) rbody.freezeRotation = true;
@@ -1053,11 +1098,19 @@ public class AIController : MonoBehaviour {
 			if (sphereCollider != null) { if (sphereCollider.enabled) sphereCollider.enabled = false; }
 			if (meshCollider != null) { if (meshCollider.enabled) meshCollider.enabled = false; }
 			if (capsuleCollider != null) { if (capsuleCollider.enabled) capsuleCollider.enabled = false; }
-			if (searchColliderGO != null && ((!healthManager.gibOnDeath && !healthManager.vaporizeCorpse) || index == 2 /* avian mutant */)) {
+			if (searchColliderGO != null && (!healthManager.gibOnDeath || index == 2 /* avian mutant */)) {
 				searchColliderGO.SetActive(true);
 				rbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
 			}
-			rbody.useGravity = true;
+			if (healthManager.inCyberSpace || Const.a.moveTypeForNPC[index] == AIMoveType.Cyber
+				|| Const.a.typeForNPC[index] == NPCType.Cyber) {
+				rbody.useGravity = false;
+			} else {
+				if (healthManager.gibOnDeath) {
+					Debug.Log("NPC dying and set gravity to false");
+					rbody.useGravity = false;
+				} else rbody.useGravity = true;
+			}
 			if (!rbody.freezeRotation) rbody.freezeRotation = true;
 			currentState = AIState.Dead;
 			if (npcAutomapOverlayImage != null) npcAutomapOverlayImage.enabled = false;
@@ -1072,13 +1125,11 @@ public class AIController : MonoBehaviour {
 	}
 
 	bool CheckIfEnemyInSight() {
+        if (Const.a.difficultyCombat == 0) return false;
 		if (Const.a.moveTypeForNPC[index] == AIMoveType.Cyber && Const.a.decoyActive) { LOSpossible = false; return false; }
 		if (PlayerMovement.a.Notarget) { enemy = null; LOSpossible = false; return false; } // Force forget when using Notarget cheat
 
 		float dist = Vector3.Distance(enemy.transform.position,sightPoint.transform.position);  // Get distance between enemy and found player	
-		if (npcAutomapOverlayImage != null) {
-			if (healthManager.health > 0 && !npcAutomapOverlayImage.enabled) npcAutomapOverlayImage.enabled = true;
-		}
 		if (dist > Const.a.sightRangeForNPC[index]) return false;
 
 		Vector3 checkline = enemy.transform.position - sightPoint.transform.position; // Get vector line made from enemy to found player
@@ -1106,12 +1157,10 @@ public class AIController : MonoBehaviour {
 
 		// Found player
 		if (Const.a.player1PlayerMovementScript.Notarget) return false; // can't see him, he's on notarget. skip to next available player to check against
+
 		tempVec = Const.a.player1Capsule.transform.position;
 		Vector3 checkline = tempVec - sightPoint.transform.position; // Get vector line made from enemy to found player
 		float dist = Vector3.Distance(tempVec,sightPoint.transform.position);  // Get distance between enemy and found player
-		if (npcAutomapOverlayImage != null) {
-			if (healthManager.health > 0 && !npcAutomapOverlayImage.enabled) npcAutomapOverlayImage.enabled = true;
-		}
 		if (dist > Const.a.sightRangeForNPC[index]) return false; // don't waste time doing raycasts if we won't be able to see them anyway
 
 		float angle = Vector3.Angle(checkline,sightPoint.transform.forward);
@@ -1122,6 +1171,11 @@ public class AIController : MonoBehaviour {
 			if (Physics.Raycast(sightPoint.transform.position, checkline.normalized, out tempHit, (dist + 0.1f),Const.a.layerMaskNPCSight)) { // Changed from using sight range to dist to minimize checkdistance.
 				Const.a.numberOfRaycastsThisFrame++;
 				if (tempHit.collider.gameObject == Const.a.player1Capsule) {
+					if (healthManager.inCyberSpace || Const.a.moveTypeForNPC[index] == AIMoveType.Cyber
+						|| Const.a.typeForNPC[index] == NPCType.Cyber) {
+						Debug.DrawRay(sightPoint.transform.position,checkline.normalized * 5f, Color.green,1f,true);
+					//	Debug.Log("Cyber NPC is raytrace hit a player");
+					}
 					LOSpossible = true;  // Clear path from enemy to found player
 					SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
 					PlaySightSound();
@@ -1174,7 +1228,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	void PlaySightSound() {
-		if (firstSighting && healthManager.health > 0) {
+		if (firstSighting && HasHealth(healthManager)) {
 			firstSighting = false;
 			if (!healthManager.actAsCorpseOnly) {
 				SFXIndex = Const.a.sfxSightSoundForNPC[index];

@@ -14,12 +14,21 @@ public class CyberPush : MonoBehaviour {
 		if (col.gameObject.CompareTag("Player")) {
 			PlayerMovement pm = col.gameObject.GetComponent<PlayerMovement>();
 			if (pm != null) {
+				pm.inCyberTube = true;
 				otherRbody = col.gameObject.GetComponent<Rigidbody>();
 				if (otherRbody != null) {
 					otherRbody.AddForce(direction * force * Time.deltaTime, ForceMode.Acceleration);
-					Music.a.NotifyCyberTube();
 				}
 			}
+			Music.a.NotifyCyberTube();
+		}
+	}
+
+	void OnTriggerExit(Collider col) {
+		if (col.gameObject.CompareTag("Player")) {
+			PlayerMovement pm = col.gameObject.GetComponent<PlayerMovement>();
+			if (pm != null) pm.inCyberTube = false; // To re-allow for easy cyber difficulty to stop motion
+			Music.a.NotifyLeftCyberTube();
 		}
 	}
 }

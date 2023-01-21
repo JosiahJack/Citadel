@@ -52,42 +52,6 @@ public class Utils {
 		}
 	}
 
-    // This isn't used anywhere at the moment but is handy to have as a note.
-    //public static int GetNPCConstIndexFromIndex23(int ref23) {
-	//	switch (ref23) {
-	//		case 0: return 160; // Autobomb
-	//		case 1: return 161; // Cyborg Assassin
-	//		case 2: return 162; // Avian Mutant
-	//		case 3: return 163; // Exec Bot
-	//		case 4: return 164; // Cyborg Drone
-	//		case 5: return 165; // Cortex Reaver
-	//		case 6: return 166; // Cyborg Warrior
-	//		case 7: return 167; // Cyborg Enforcer
-	//		case 8: return 168; // Cyborg Elite Guard
-	//		case 9: return 169; // Cyborg of Edward Diego
-	//		case 10: return 170; // Security-1 Robot
-	//		case 11: return 171; // Security-2 Robot
-	//		case 12: return 172; // Maintenance Bot
-	//		case 13: return 173; // Mutated Cyborg
-	//		case 14: return 174; // Hopper
-	//		case 15: return 175; // Humanoid Mutant
-	//		case 16: return 176; // Invisible Mutant
-	//		case 17: return 177; // Virus Mutant
-	//		case 18: return 178; // Serv-Bot
-	//		case 19: return 179; // Flier Bot
-	//		case 20: return 180; // Zero-G Mutant
-	//		case 21: return 181; // Gorilla Tiger Mutant
-	//		case 22: return 182; // Repair Bot
-	//		case 23: return 183; // Plant Mutant
-	//	}
-	//	return -1;
-	//}
-
-	//public static float AngleInDeg(Vector3 vec1, Vector3 vec2) {
-    //    return ((Mathf.Atan2(vec2.y - vec1.y, vec2.x - vec1.x))
-    //            * (180 / Mathf.PI));
-    //}
-
 	// Check if particular bit is 1 (ON/TRUE) in binary format of given integer
 	public static bool CheckFlags (int checkInt, int flag) {
         return ((checkInt & flag) != 0);
@@ -786,11 +750,6 @@ public class Utils {
 			return;
 		}
 
-		if (go.CompareTag("Player")) {
-			Debug.Log("Tried to Destroy() tagged part of player!");
-			return;
-		}
-
 		if (go.name == "Player") {
 			Debug.Log("Tried to Destroy() Player!");
 			return;
@@ -903,5 +862,18 @@ public class Utils {
 			AudioSource aS = tempAud.GetComponent<AudioSource>();
 			PlayOneShotSavable(aS,clip);
 		}
+	}
+
+	public static bool IndexEntriesOk(int index, ref string[] entries, GameObject go) {
+		if (index < 0) {
+			Debug.Log("Index less than zero when loading " + go.name);
+			return false;
+		}
+
+		if (index >= entries.Length) {
+			Debug.Log("Index too large at " + index.ToString() + " when loading " + go.name + ", entries size: " + entries.Length.ToString());
+			return false;
+		}
+		return true;
 	}
 }

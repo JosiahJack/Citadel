@@ -268,19 +268,13 @@ public class SaveObject : MonoBehaviour {
 			}
 		}
 
-		if (so.saveType == SaveableType.TransformParentless && go.CompareTag("Player")) Debug.Log("Loading player transform from " + go.transform.localPosition.ToString() + "...");
-		if (so.saveType == SaveableType.Player) Debug.Log("Mid Load had player at " + go.transform.localPosition.ToString());
 		index = Utils.LoadTransform(go.transform,ref entries,index);
-		if (so.saveType == SaveableType.Player) Debug.Log("Mid Load put player at " + go.transform.localPosition.ToString());
-
-		if (so.saveType == SaveableType.TransformParentless && go.CompareTag("Player")) Debug.Log("Loaded player transform to " + go.transform.localPosition.ToString());
 		index = Utils.LoadRigidbody(go,ref entries,index);
 		index++; // Already loaded index 18 for levelID.
 		index++; // ALready loaded index 19 for prefab master index as that is
 				 // how this object was instantiated prior to calling Load.
 		if (index != 20) {
-			Debug.Log("SaveObject.Load:: index was not equal to 20 prior to "
-					  + "loading SaveableType data.");
+			Debug.Log("SaveObject.Load:: index was not 20 prior to type load");
 			index = 20;
 		}
 		if (index >= entries.Length) return index;

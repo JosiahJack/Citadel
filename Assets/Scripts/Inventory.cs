@@ -1120,6 +1120,7 @@ public class Inventory : MonoBehaviour {
 				hasLog[vers] = true;
 				return true;
 			case SoftwareType.Integrity:
+				Debug.Log("Cyber integrity touched");
 				if (hm.cyberHealth >=255) return false;
 				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
 				hm.cyberHealth += 77f;

@@ -46,7 +46,7 @@ public class MouseLookScript : MonoBehaviour {
 	[HideInInspector] public bool firstTimePickup;
 	[HideInInspector] public bool firstTimeSearch;
 	[HideInInspector] public bool grenadeActive;
-	[HideInInspector] public bool inCyberSpace;
+	public bool inCyberSpace;
     [HideInInspector] public float yRotation;
 	[HideInInspector] public Vector3 cyberspaceReturnPoint; // save
 	[HideInInspector] public Vector3 cyberspaceReturnCameraLocalRotation; // save
@@ -142,16 +142,16 @@ public class MouseLookScript : MonoBehaviour {
 
 		// Frob what is under our cursor.
 		if(GetInput.a.Use()) {
-			if (vmailActive) { Inventory.a.DeactivateVMail(); vmailActive = false; return; }
+			if (vmailActive && !inCyberSpace) { Inventory.a.DeactivateVMail(); vmailActive = false; return; }
 
-			if (!GUIState.a.isBlocking) {
+			if (!GUIState.a.isBlocking && !inCyberSpace) {
 				currentButton = null; // Force this to reset.
 				if (holdingObject) {
 					if (!FrobWithHeldObject()) DropHeldItem();
 				} else FrobEmptyHanded();
 			} else {
 				//We are holding cursor over the GUI
-				if (holdingObject) {
+				if (holdingObject && !inCyberSpace) {
 					AddItemToInventory(heldObjectIndex);
 					ResetHeldItem();
 					ResetCursor();
@@ -199,6 +199,7 @@ public class MouseLookScript : MonoBehaviour {
 		hm.inCyberSpace = true;
 		inCyberSpace = true;
 		playerCamera.useOcclusionCulling = false;
+		MFDManager.a.DrawTicks(true);
 		SetCameraCullDistances();
 		Utils.PlayOneShotSavable(SFXSource,CyberSFX);
 	}
@@ -216,6 +217,7 @@ public class MouseLookScript : MonoBehaviour {
 		inCyberSpace = false;
 		playerCamera.useOcclusionCulling = true;
 		Const.a.decoyActive = false;
+		MFDManager.a.DrawTicks(true);
 		Utils.PlayOneShotSavable(SFXSource,CyberSFX);
 		SetCameraCullDistances();
 	}

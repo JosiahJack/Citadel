@@ -29,7 +29,7 @@ public class PlayerHealth : MonoBehaviour {
 	private int radiationAreaWarningID = 322;
 	[HideInInspector] public float mediPatchPulseFinished = 0f; // save
 	[HideInInspector] public int mediPatchPulseCount = 0; // save, Used to incrementally increase the time between health increases by 0.5s every n+0.5s. Saved so we don't use quick load to cheat health faster.
-	[HideInInspector] public bool makingNoise = false; // save
+	public bool makingNoise = false; // save
 	[HideInInspector] public HealthManager hm;
 	[HideInInspector] public float lastHealth; // save
 	[HideInInspector] public float painSoundFinished; // save

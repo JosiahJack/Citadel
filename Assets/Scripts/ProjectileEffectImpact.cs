@@ -32,7 +32,7 @@ public class ProjectileEffectImpact : MonoBehaviour {
 					if (hmr != null) hm = hmr.healthManagerToRedirectTo; // For hopper joint collisions or other combo-collider setups.
 				}
 
-				if (hm != null && hm.health > 0) {
+				if (hm != null && (hm.health > 0 || hm.cyberHealth > 0)) {
 					dd.other = other.gameObject;
 					if (other.gameObject.CompareTag("NPC")) {
 						dd.isOtherNPC = true;
@@ -51,7 +51,9 @@ public class ProjectileEffectImpact : MonoBehaviour {
 					// Most already was when this was launched by AIController or WeaponFire
 					dd.damage = DamageData.GetDamageTakeAmount(dd);
 					dd.impactVelocity = dd.damage * 1.5f;
-					Utils.ApplyImpactForce(other.gameObject, dd.impactVelocity,dd.attacknormal,dd.hit.point);
+					if (!hm.inCyberSpace) {
+						Utils.ApplyImpactForce(other.gameObject, dd.impactVelocity,dd.attacknormal,dd.hit.point);
+					}
 					float dmgFinal = hm.TakeDamage(dd); // send the damageData container to HealthManager of hit object and apply damage
 					if (hm.isNPC || dd.isOtherNPC) Music.a.inCombat = true;
 					float linkDistForTargID = 10f;

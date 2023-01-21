@@ -201,6 +201,10 @@ public class Music : MonoBehaviour {
 		cyberTube = true;
 	}
 
+	public void NotifyLeftCyberTube() {
+		cyberTube = false;
+	}
+
 	public void NotifyZone(TrackType tt) {
 		inZone = true;
 		switch(tt) {

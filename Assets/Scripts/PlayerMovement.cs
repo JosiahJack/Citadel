@@ -106,10 +106,12 @@ public class PlayerMovement : MonoBehaviour {
 	public bool[] automapExploredG4; // save
 
 	// Internal references
-	[HideInInspector] public float playerSpeed; // save
+	public float playerSpeed; // save
+	public float playerSpeedActual;
+	public float playerSpeedHorizontalActual;
 	[HideInInspector] public BodyState bodyState; // save
-	[HideInInspector] public bool isSprinting = false;
-	[HideInInspector] public bool grounded = false; // save
+	public bool isSprinting = false;
+	public bool grounded = false; // save
 	[HideInInspector] public bool ladderState = false; // save
 	[HideInInspector] public bool gravliftState = false; // save
 	[HideInInspector] public bool inCyberSpace = false; // save
@@ -159,8 +161,8 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector] public bool CheatWallSticky; // save
     [HideInInspector] public bool CheatNoclip; // save
     [HideInInspector] public bool staminupActive = false;
-	private Vector2 horizontalMovement;
-	private float verticalMovement;
+	public Vector2 horizontalMovement;
+	public float verticalMovement;
 	[HideInInspector] public float jumpTime; // save
 	private float crouchingVelocity = 1f;
 	private float lastCrouchRatio;
@@ -183,7 +185,7 @@ public class PlayerMovement : MonoBehaviour {
 	private int defIndex = 0;
 	private int def1 = 1;
 	private int onehundred = 100;
-	private bool running = false;
+	public bool running = false;
 	private float relForward = 0f;
 	private float relSideways = 0f;
 	[HideInInspector] public bool cyberSetup = false; // save
@@ -191,7 +193,7 @@ public class PlayerMovement : MonoBehaviour {
 	private SphereCollider cyberCollider;
 	[HideInInspector] public CapsuleCollider capsuleCollider;
 	[HideInInspector] public BodyState oldBodyState; // save
-	private float bonus;
+	public float bonus;
     private float walkDeaccelerationVolx;
     private float walkDeaccelerationVoly;
     private float walkDeaccelerationVolz;
@@ -222,6 +224,7 @@ public class PlayerMovement : MonoBehaviour {
 	private Texture2D tempTexture;
 	[HideInInspector] public float turboFinished = 0f; // save
 	[HideInInspector] public float turboCyberTime = 15f;
+	[HideInInspector] public bool inCyberTube = false;
 	private int doubleJumpTicks = 0;
 	private float automapCorrectionX = -0.008f;
 	private float automapCorrectionY = 0.099f;
@@ -302,7 +305,7 @@ public class PlayerMovement : MonoBehaviour {
 		CyberSetup();
 		if (!inCyberSpace) {
 			CyberDestupOrNoclipMaintain();
-		}
+		} else PlayerHealth.a.makingNoise = true; // Cyber enemies to look more aware
 
 		isSprinting = GetSprintInputState();
 		Crouch();
@@ -312,6 +315,11 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
+		playerSpeedActual = rbody.velocity.magnitude; // Readout for debugging in Inspector.
+		
+		Vector2 hz = new Vector2(rbody.velocity.x, rbody.velocity.z);
+		playerSpeedHorizontalActual = hz.magnitude;
+
 		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return;
 		if (ressurectingFinished > PauseScript.a.relativeTime) return;
 		if (consoleActivated) return;
@@ -322,17 +330,17 @@ public class PlayerMovement : MonoBehaviour {
 		playerSpeed = GetBasePlayerSpeed();
 		if (Inventory.a.hasHardware[1]) UpdateAutomap(); // Update the map
 		ApplyBodyStateLerps(); // Handle body position lerping for smooth transitions
-		horizontalMovement = GetClampedHorizontalMovement(); // Limit movement speed horizontally for normal movement
-		RigidbodySetVelocityX(rbody, horizontalMovement.x); // Clamp horizontal movement
-		RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG - already passed rbody.velocity.z into the .y of this Vector2
-		verticalMovement = GetClampedVerticalMovement();
-		RigidbodySetVelocityY(rbody, verticalMovement); // Clamp vetical movement
 		Noclip();
 		ApplyGroundFriction();
 		bool grav = GetGravity();
 		if (rbody.useGravity != grav) rbody.useGravity = grav; // Avoid useless setting of the rbody.
 		//Noclip();
 		if (!inCyberSpace) {
+			horizontalMovement = GetClampedHorizontalMovement(); // Limit movement speed horizontally for normal movement
+			RigidbodySetVelocityX(rbody, horizontalMovement.x); // Clamp horizontal movement
+			RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG - already passed rbody.velocity.z into the .y of this Vector2
+			verticalMovement = GetClampedVerticalMovement();
+			RigidbodySetVelocityY(rbody, verticalMovement); // Clamp vetical movement
 			Lean();
 			WalkRun();
 			LadderStates();			 
@@ -341,17 +349,22 @@ public class PlayerMovement : MonoBehaviour {
 			oldVelocity = rbody.velocity;
 			if (!CheatWallSticky || gravliftState) grounded = false; // Automatically set grounded to false to prevent ability to climb any wall
 		} else {
+			if (rbody.velocity.magnitude > playerSpeed && !CheatNoclip) {
+				rbody.velocity = rbody.velocity.normalized * playerSpeed;
+			}
+
 			CyberspaceMovement();
 		}
 	}
 
 	float GetBasePlayerSpeed() {
+		if (CheatNoclip && isSprinting) return maxCyberSpeed * 2.5f; // Cheat speed.
 		if (CheatNoclip) return maxCyberSpeed * 1.5f; // Cheat speed.
 		if (inCyberSpace) return maxCyberSpeed; //Cyber space state
 
 		float retval = maxWalkSpeed;
 		bonus = 0f;
-		if (Inventory.a.hardwareIsActive [9]) bonus = boosterSpeedBoost;
+		if (Inventory.a.hardwareIsActive[9] && Inventory.a.hasHardware[9]) bonus = boosterSpeedBoost;
 		switch (bodyState) {
 			case BodyState.Standing: 		retval = maxWalkSpeed;   break;
 			case BodyState.Crouch: 			retval = maxCrouchSpeed; break;
@@ -401,26 +414,29 @@ public class PlayerMovement : MonoBehaviour {
 		relForward = GetInput.a.Backpedal() ? -1f : 0f;
 		if (GetInput.a.Forward()) {
 			relForward = 1f;
-			if (leanTarget > 0) {
-				if (Mathf.Abs(leanTarget - 0) < 0.02f) leanTarget = 0;
-				else leanTarget -= (leanSpeed * Time.deltaTime);
+			if (!inCyberSpace) {
+				if (leanTarget > 0) {
+					if (Mathf.Abs(leanTarget - 0) < 0.02f) leanTarget = 0;
+					else leanTarget -= (leanSpeed * Time.deltaTime);
 
-				if (Mathf.Abs(leanShift - 0) < 0.02f) leanShift = 0;
-				else leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle));
-			} else {
-				if (Mathf.Abs(leanTarget - 0) < 0.02f) leanTarget = 0;
-				else leanTarget += (leanSpeed * Time.deltaTime);
+					if (Mathf.Abs(leanShift - 0) < 0.02f) leanShift = 0;
+					else leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle));
+				} else {
+					if (Mathf.Abs(leanTarget - 0) < 0.02f) leanTarget = 0;
+					else leanTarget += (leanSpeed * Time.deltaTime);
 
-				if (Mathf.Abs(leanShift - 0) < 0.02f) leanShift = 0;
-				else leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1));
+					if (Mathf.Abs(leanShift - 0) < 0.02f) leanShift = 0;
+					else leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1));
+				}
 			}
 		}
 		relSideways = GetInput.a.StrafeLeft() ? -1f : 0f;
 		if (GetInput.a.StrafeRight()) relSideways = 1f;
-		running = ((relForward + relSideways) != 0); // We are mashing a run button down.	
+		running = ((relForward != 0) || (relSideways != 0)); // We are mashing a run button down.	
 	}
 
 	void ApplyGroundFriction() {
+		if (running && isSprinting) return;
 		if (!CheatNoclip) {
 			if (!grounded) return;
 		}
@@ -441,6 +457,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void Lean() {
+		if (inCyberSpace) return; // 6dof handled in MouseLookScript for this portion.
 		if (CheatNoclip) return;
 
 		if (GetInput.a.LeanRight()) {
@@ -622,6 +639,8 @@ public class PlayerMovement : MonoBehaviour {
 		if (!inCyberSpace) return;
 		if (CheatNoclip) return;
 
+		leanTransform.localRotation = Quaternion.Euler(0, 0, 0);
+		leanTransform.localPosition = new Vector3(0,0,0);
 		if (rbody.velocity.magnitude > maxCyberUltimateSpeed) RigidbodySetVelocity(rbody, maxCyberUltimateSpeed); // Limit movement speed in all axes x,y,z in cyberspace
 		inputtingMovement = false;
 
@@ -670,9 +689,16 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		if (Const.a.difficultyCyber > 1) {
-			if (rbody.velocity.magnitude < walkAcceleration * 0.05f) rbody.AddForce(cameraObject.transform.forward * walkAcceleration*0.05f * Time.deltaTime); // turbo doesn't affect detrimental forces :)
+			if (rbody.velocity.magnitude < walkAcceleration * 0.05f) {
+				tempVec = new Vector3(MouseCursor.a.drawTexture.x + (MouseCursor.a.drawTexture.width / 2),
+									  MouseCursor.a.drawTexture.y + (MouseCursor.a.drawTexture.height / 2),
+									  0);
+				tempVec.y = Screen.height - tempVec.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+				tempVec = MouseLookScript.a.playerCamera.ScreenPointToRay(tempVec).direction;
+				rbody.AddForce(tempVec * walkAcceleration*0.05f * Time.deltaTime); // turbo doesn't affect detrimental forces :)
+			}
 		} else {
-			if (!inputtingMovement) rbody.velocity = Const.a.vectorZero;
+			if (!inputtingMovement && !inCyberTube) rbody.velocity = Const.a.vectorZero;
 		}
 	}
 
@@ -722,6 +748,8 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void EndCrouchProneTransition() {
+		if (inCyberSpace) return;
+
 		if (currentCrouchRatio >= 1) {
 			if (bodyState == BodyState.StandingUp // Should overshoot slightly.
 			    || bodyState == BodyState.Standing) { // Maintain it.
@@ -751,6 +779,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void Prone() {
+		if (inCyberSpace) return;
 		if (CheatNoclip) return;
 		if (consoleActivated) return;
 		if (!GetInput.a.Prone()) return;
@@ -782,6 +811,7 @@ public class PlayerMovement : MonoBehaviour {
 	} 
 
 	void Crouch() {
+		if (inCyberSpace) return;
 		if (CheatNoclip) return;
 		if (consoleActivated) return;
 		if (!GetInput.a.Crouch()) return;

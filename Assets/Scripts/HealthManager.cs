@@ -103,7 +103,7 @@ public class HealthManager : MonoBehaviour {
 			index = aic.index;
 
 			if (Const.a != null) {
-				if (index > 23) {
+				if (index > 23) { // 24, 25, 26, 27, 28 are all Cyber enemies
 					if (cyberHealth <= 0) cyberHealth = Const.a.healthForCyberNPC[index];
 					if (maxhealth <= 0) maxhealth = Const.a.healthForCyberNPC[index];
 				} else {
@@ -125,6 +125,9 @@ public class HealthManager : MonoBehaviour {
 
 	void LinkToAutomapOverlay() {
 		if (isSecCamera && linkedCameraOverlay == null) {
+			Vector3 worldPos = transform.position;
+			SecurityCameraRotate scr = transform.parent.gameObject.GetComponent<SecurityCameraRotate>();
+			if (scr != null) worldPos = scr.transform.position;
 			GameObject overlay = Const.a.GetObjectFromPool(PoolType.AutomapCameraOverlays);
 			if (overlay != null) {
 				overlay.SetActive(true);
@@ -134,9 +137,17 @@ public class HealthManager : MonoBehaviour {
 					linkedCameraOverlay.enabled = true;
 					Vector3 tempVec2 = new Vector2(0f,0f);
 					// 436,-367, -0.3 is the center point of the map UI
-					tempVec2.y = -367 + (((((transform.position.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * -1008f) + Const.a.mapTileMinX)) + 1010f - 244.0266f; // Y 177.0266 -> -67
-					tempVec2.x = 436 + (((((transform.position.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * -1008f) + Const.a.mapTileMinY)) + 1357f - 121.41557f; // X 70.41557 -> -51
-					tempVec2.z = -0.3f;
+					//tempVec2.y = -367 + (((((transform.position.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * -1008f) + Const.a.mapTileMinX)) + 765.9734f + 3.2594f;
+					//tempVec2.x = 436 + (((((transform.position.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * -1008f) + Const.a.mapTileMinY)) + 1130.28443f - 1.4f;
+					tempVec2.y = ( ( (worldPos.z - Const.a.mapWorldMaxE)/
+									(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE) )
+									* 1008f)
+								+ Const.a.mapTileMinX;
+					tempVec2.x = ( ( (worldPos.x - Const.a.mapWorldMaxS)/
+									(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS) )
+									* 1008f)
+								+ Const.a.mapTileMinY;
+					tempVec2.z = -0.03f;
 					rect.anchoredPosition = tempVec2;
 				}
 			}
@@ -310,7 +321,11 @@ public class HealthManager : MonoBehaviour {
 			if (dd.attackType == AttackType.Drill && isNPC) return 0; // Drill can't hurt NPC's
 			if (dd.attackType != AttackType.Drill && isIce) return 0; // Pulser can't hurt Ice
 		}
-		if (tempFloat <= 0 && !isObject) return 0;
+
+		// Object is dead exceptions.
+		if (tempFloat <= 0) {
+			if (gibOnDeath || isIce || isPlayer || isGrenade || isScreen || isSecCamera || teleportOnDeath) return 0;
+		}
 
 		take = dd.damage;
 		if (isPlayer) {
@@ -413,34 +428,44 @@ public class HealthManager : MonoBehaviour {
         if (health <= 0f || (inCyberSpace && cyberHealth <= 0f)) {
             if (!deathDone) {
 				UseDeathTargets();
-                if (isObject) {
-					if (vaporizeCorpse && dd.attackType == AttackType.EnergyBeam && !isSecCamera) deathFX = PoolType.Vaporize;
+				deathDone = true;
+				if (vaporizeCorpse && !isSecCamera) VaporizeCorpse(dd.attackType == AttackType.EnergyBeam);
+                else if (isObject) {
 					ObjectDeath(null);
-					if (searchableItem != null) MFDManager.a.NotifySearchThatSearchableWasDestroyed();
-				}
-				if (isScreen) ScreenDeath(backupDeathSound);
-				if (teleportOnDeath) TeleportAway();
+				}else if (isScreen) ScreenDeath(backupDeathSound);
+				else if (teleportOnDeath) TeleportAway();
+				else if (isGrenade) GrenadeDeath();
+
                 if (isNPC) NPCDeath(null);
-				if (isGrenade) GrenadeDeath();
-            } else {
-                if (vaporizeCorpse && (health < (0 - (maxhealth * 0.5f))) && dd.attackType == AttackType.EnergyBeam && !isSecCamera) {
-					MeshRenderer mr = GetComponent<MeshRenderer>();
-                    if (mr != null) mr.enabled = false;
-                    GameObject explosionEffect = Const.a.GetObjectFromPool(PoolType.Vaporize);
-                    if (explosionEffect != null) {
-                        explosionEffect.SetActive(true);
-						if (aic != null) {
-							tempVec = aic.sightPoint.transform.position;
-						} else {
-							tempVec = transform.position;
-						}
-                        explosionEffect.transform.position = tempVec; // put vaporization effect at raycast center
-                    }
-					DropSearchables();
-                }
             }
 		}
 		return take;
+	}
+
+	void VaporizeCorpse(bool energyVaporized) {
+		deathDone = true;
+		DropSearchables();
+
+		if (deathFX == PoolType.None) deathFX = PoolType.CorpseHit;
+		if (energyVaporized) deathFX = PoolType.Vaporize;
+
+		MeshRenderer mr = GetComponent<MeshRenderer>();
+		if (mr != null) mr.enabled = false;
+
+		AIController aic = transform.parent.gameObject.GetComponent<AIController>();
+		if (aic != null) {
+			if (!aic.healthManager.gibOnDeath) { // We are a corpse here.
+				aic.visibleMeshEntity.SetActive(false); // Turn off visible mesh entity from destroyed corpse.
+				aic.deathBurst.SetActive(false); // For any extra effects.  We are totally gone now!
+			}
+			tempVec = aic.searchColliderGO.transform.position;
+			aic.searchColliderGO.SetActive(false);
+		} else {
+			tempVec = transform.position;
+		}
+		CreateDeathEffects(deathFX,tempVec);
+		if (aic != null) aic.gameObject.SetActive(false);
+		DisableCollision();
 	}
 
 	public void TeleportAway() {
@@ -466,19 +491,20 @@ public class HealthManager : MonoBehaviour {
 		if (deathDone) return; // We died the death, no 2nd deaths here.
 
 		deathDone = true; // Mark it so we only die once.
-		if (deathFX != PoolType.None) {
-			GameObject explosionEffect = Const.a.GetObjectFromPool(deathFX);
-			if (explosionEffect != null) {
-				explosionEffect.SetActive(true); // Enable death effects (e.g. explosion particle effect)
-				explosionEffect.transform.position = transform.position; // Put it at the location of this object.
-			}
-		}
-		
+		CreateDeathEffects(deathFX,transform.position);
 		PlayDeathSound(deathSound); // Play death sound, if present
 		if (spawnMother != null) spawnMother.SpawneeJustDied();
+
+		AIController aic = transform.parent.gameObject.GetComponent<AIController>();
+		if (aic != null) {
+			if (Const.a.typeForNPC[aic.index] == NPCType.Cyber) {
+				aic.gameObject.SetActive(false);
+			}
+		}
 	}
 
     public void Gib() {
+		CreateDeathEffects(deathFX,tempVec);
 		if (gibObjects.Length > 0 ) {
 			for (int i = 0; i < gibObjects.Length; i++) {
 				if (gibObjects[i] != null) {
@@ -497,28 +523,37 @@ public class HealthManager : MonoBehaviour {
 				if (disableOnGib[k] != null) disableOnGib[k].SetActive(false);
 			}
 		}
-		if (dropItemsOnGib) DropSearchables();
+		DropSearchables();
+		DisableCollision();
+		AIController aic = GetComponent<AIController>();
+		if (aic != null) {
+			if (aic.healthManager.gibOnDeath) { // We are a corpse here.
+				aic.visibleMeshEntity.SetActive(false); // Turn off visible mesh entity from destroyed corpse.
+			}
+		}
+
+		HideSelf(); // Can't deactivate parent as gibs are children!
     }
 
 	void DropSearchables() {
-		if (searchableItem != null) {
-			MFDManager.a.NotifySearchThatSearchableWasDestroyed();
-			GameObject levelDynamicContainer = LevelManager.a.GetCurrentDynamicContainer();
-			for (int i=0;i<4;i++) {
-				if (searchableItem.contents[i] >= 0) {
-					GameObject tossObject = Instantiate(Const.a.useableItems[searchableItem.contents[i]],transform.position,Const.a.quaternionIdentity) as GameObject;
-					if (tossObject != null) {
-						if (tossObject.activeSelf != true) tossObject.SetActive(true);
-						if (levelDynamicContainer != null) {
-							tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-						}
-						tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
-					} else {
-						Const.sprint("BUG: Failed to instantiate object being dropped on gib.");
+		if (searchableItem == null) return;
+
+		MFDManager.a.NotifySearchThatSearchableWasDestroyed();
+		GameObject levelDynamicContainer = LevelManager.a.GetCurrentDynamicContainer();
+		for (int i=0;i<4;i++) {
+			if (searchableItem.contents[i] >= 0) {
+				GameObject tossObject = Instantiate(Const.a.useableItems[searchableItem.contents[i]],transform.position,Const.a.quaternionIdentity) as GameObject;
+				if (tossObject != null) {
+					if (tossObject.activeSelf != true) tossObject.SetActive(true);
+					if (levelDynamicContainer != null) {
+						tossObject.transform.SetParent(levelDynamicContainer.transform,true);
 					}
-					searchableItem.contents[i] = -1;
-					searchableItem.customIndex[i] = -1;
+					tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
+				} else {
+					Const.sprint("BUG: Failed to instantiate object being dropped on gib.");
 				}
+				searchableItem.contents[i] = -1;
+				searchableItem.customIndex[i] = -1;
 			}
 		}
 	}
@@ -538,38 +573,41 @@ public class HealthManager : MonoBehaviour {
 		if (gibOnDeath) Gib();
 	}
 
-	public void ObjectDeath(AudioClip deathSound) {
-		if (deathDone) return;
+	void CreateDeathEffects(PoolType fx, Vector3 pos) {
+		if (fx == PoolType.None) return;
 
-		deathDone = true;
-		if (boxCol != null) boxCol.enabled = false; // Disable collision
+		GameObject explosionEffect = Const.a.GetObjectFromPool(fx);
+		if (explosionEffect == null) return;
+
+ 		// Enable death effects (e.g. explosion particle effect)
+		explosionEffect.SetActive(true);
+		explosionEffect.transform.position = pos;
+	}
+
+	void HideSelf() {
+		MeshRenderer mr = GetComponent<MeshRenderer>();
+		if (mr != null) mr.enabled = false;
+	}
+
+	void DisableCollision() {
+		if (boxCol != null) boxCol.enabled = false;
 		if (meshCol != null) meshCol.enabled = false;
 		if (sphereCol != null) sphereCol.enabled = false;
 		if (capCol != null) capCol.enabled = false;
+	}
+
+	public void ObjectDeath(AudioClip deathSound) {
+		if (deathDone) return;
+
+		DisableCollision();
+		DropSearchables();
+		deathDone = true;
 		if (isSecCamera && linkedCameraOverlay != null) linkedCameraOverlay.enabled = false; // disable on automap
 		if (securityAffected != SecurityType.None) LevelManager.a.ReduceCurrentLevelSecurity(securityAffected);
-		if (deathFX != PoolType.None) {
-			GameObject explosionEffect = Const.a.GetObjectFromPool(deathFX);
-			if (explosionEffect != null) {
-				explosionEffect.SetActive(true); // Enabel death effects (e.g. explosion particle effect)
-				explosionEffect.transform.position = transform.position;
-			}
-		}
+		CreateDeathEffects(deathFX,transform.position);
 		PlayDeathSound(deathSound); // Make some noise
 		if (spawnMother != null) spawnMother.SpawneeJustDied();
-		MeshRenderer mr = GetComponent<MeshRenderer>();
-		if (mr != null) {
-			mr.enabled = false;
-		} else {
-			AIController aicP = GetComponentInParent<AIController>();
-			if (aicP != null) { 
-				if (!aicP.healthManager.gibOnDeath) { // We are a corpse here.
-					aicP.visibleMeshEntity.SetActive(false); // Turn off visible mesh entity from destroyed corpse.
-				}
-			}
-		}
 		if (gibOnDeath) Gib();
-		if (rbody != null) rbody.useGravity = false;
 	}
 
 	public void HealingBed(float amount,bool flashBed) {

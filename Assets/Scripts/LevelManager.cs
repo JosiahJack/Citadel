@@ -142,8 +142,6 @@ public class LevelManager : MonoBehaviour {
 		if (targetDestination != null) PlayerReferenceManager.a.playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
 		else if (targetPosition != null) PlayerReferenceManager.a.playerCapsule.transform.position = targetPosition; // Return to level from cyberspace.
 
-		PlayerMovement.a.SetAutomapExploredReference(levnum);
-		PlayerMovement.a.automapBaseImage.overrideSprite = PlayerMovement.a.automapsBaseImages[levnum];
 		Music.a.inCombat = false;
 		Music.a.SFXMain.Stop();
 		Music.a.SFXOverlay.Stop();
@@ -154,6 +152,10 @@ public class LevelManager : MonoBehaviour {
 
 		LoadLevelData(currentLevel);
 		DisableAllNonOccupiedLevels(currentLevel);
+		PlayerMovement.a.SetAutomapExploredReference(levnum);
+		PlayerMovement.a.automapBaseImage.overrideSprite = PlayerMovement.a.automapsBaseImages[levnum];
+		Const.a.ClearActiveAutomapOverlays(); // After other levels turned off.
+		ObjectContainmentSystem.UpdateActiveFlooring(); // Update list to only include active.
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);

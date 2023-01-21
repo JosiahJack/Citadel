@@ -312,7 +312,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public Quaternion quaternionIdentity;
 	[HideInInspector] public Vector3 vectorZero;
 	[HideInInspector] public Vector3 vectorOne;
-	[HideInInspector] public int numberOfRaycastsThisFrame = 0;
+	public int numberOfRaycastsThisFrame = 0;
 	[HideInInspector] public int maxRaycastsPerFrame = 20;
 	[HideInInspector] public float raycastTick = 0.2f;
 	[HideInInspector] public float aiTickTime = 0.1f;
@@ -432,9 +432,24 @@ public class Const : MonoBehaviour {
 		PauseParticleSystem[] ppses = FindObjectsOfType<PauseParticleSystem>();
 		for (int i=0;i<ppses.Length;i++) psys.Add(ppses[i]);
 
+		ObjectContainmentSystem.FindAllFloorGOs();
+		ObjectContainmentSystem.UpdateActiveFlooring();
+
 		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
 		GameObject loadGameIndicator = GameObject.Find("LoadGameIndicator");
 		if (loadGameIndicator != null) {
+			// OK OK ok ok, so we aren't actually using this now and are just wiping out
+			// dynamic object containers and relying on loading all static object data to
+			// all static objects with manually generated indices now instead of Unity's
+			// guid since the guid IS DIFFERENT when you reload the scene because the guids
+			// are recreated as both scenes need loaded at once due to Unity's horrible no
+			// good uncontrollable way of doing scene reloads (which could be round-about
+			// worked around by having an empty dummy scene but poses other problems with
+			// DontDestroyOnLoad stuff.  Regardless the guids are wiped and thus breaks the
+			// old method of correlating saved objects in savefile to objects in the scene.
+			//
+			// Hopefully I've successfully marked and do save every static object to restore
+			// it to its former glory as-is when saved.  Hopefully.
 			MainMenuHandler.a.IntroVideo.SetActive(false);
 			MainMenuHandler.a.IntroVideoContainer.SetActive(false);
 			PauseScript.a.mainMenu.SetActive(false);
@@ -787,9 +802,11 @@ public class Const : MonoBehaviour {
 		}
 	}
 
-	public static string GetTargetID(int npc23Index) {
-		Const.a.npcCount[npc23Index]++;
-		return Const.a.nameForNPC[npc23Index] + Const.a.npcCount[npc23Index].ToString();
+	public static string GetTargetID(int npcIndex) {
+		if (npcIndex > Const.a.npcPrefabs.Length) return "BUG: npcIndex passed to GetTargetID too large!";
+
+		Const.a.npcCount[npcIndex]++;
+		return Const.a.nameForNPC[npcIndex] + Const.a.npcCount[npcIndex].ToString();
 	}
 
 	public static string GetCyberTargetID(int cyberNPCIndex) {
@@ -1020,6 +1037,36 @@ public class Const : MonoBehaviour {
 		return null;
 	}
 
+	public void ClearActiveAutomapOverlays() {
+		for (int i = 0; i < Pool_AutomapCameraOverlays.transform.childCount; i++) {
+			Transform child = Pool_AutomapCameraOverlays.transform.GetChild(i);
+			Image img = child.gameObject.GetComponent<Image>();
+			if (img != null) img.enabled = false;
+			if (child.gameObject.activeSelf == false) child.gameObject.SetActive(false);
+		}
+
+		for (int i = 0; i < Pool_AutomapMutantOverlays.transform.childCount; i++) {
+			Transform child = Pool_AutomapMutantOverlays.transform.GetChild(i);
+			Image img = child.gameObject.GetComponent<Image>();
+			if (img != null) img.enabled = false;
+			if (child.gameObject.activeSelf == false) child.gameObject.SetActive(false);
+		}
+
+		for (int i = 0; i < Pool_AutomapCyborgOverlays.transform.childCount; i++) {
+			Transform child = Pool_AutomapCyborgOverlays.transform.GetChild(i);
+			Image img = child.gameObject.GetComponent<Image>();
+			if (img != null) img.enabled = false;
+			if (child.gameObject.activeSelf == false) child.gameObject.SetActive(false);
+		}
+
+		for (int i = 0; i < Pool_AutomapBotOverlays.transform.childCount; i++) {
+			Transform child = Pool_AutomapBotOverlays.transform.GetChild(i);
+			Image img = child.gameObject.GetComponent<Image>();
+			if (img != null) img.enabled = false;
+			if (child.gameObject.activeSelf == false) child.gameObject.SetActive(false);
+		}
+	}
+
     public GameObject GetImpactType(HealthManager hm) {
         if (hm == null) return GetObjectFromPool(PoolType.SparksSmall);
         switch (hm.bloodType) {
@@ -1035,7 +1082,6 @@ public class Const : MonoBehaviour {
 
         return GetObjectFromPool(PoolType.SparksSmall);
 	}
-
 
 	void FindAllSaveObjectsGOs(ref List<GameObject> gos) {
 		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
@@ -1238,7 +1284,6 @@ public class Const : MonoBehaviour {
 		AsyncOperation aso = SceneManager.UnloadSceneAsync(index,
 							  UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
 		sth.Reload(index, ref aso);
-
 	}
 
 	// Load the Game
@@ -1287,7 +1332,6 @@ public class Const : MonoBehaviour {
 	public IEnumerator LoadRoutine(int saveFileIndex, bool actual) {
 		Stopwatch loadTimer = new Stopwatch();
 		Stopwatch loadUpdateTimer = new Stopwatch(); // For loading % indicator.
-		Stopwatch matchTimer = new Stopwatch();
 		loadTimer.Start();
 		UnityEngine.Debug.Log("Start of Load with player at " + PlayerMovement.a.transform.localPosition.ToString());
 		yield return null; // Update the view to show ShowLoading changes.
@@ -1307,7 +1351,7 @@ public class Const : MonoBehaviour {
 			yield return new WaitForSeconds(0.1f); // Update progress text.
 		}
 
-		loadPercentText.text = "Levels Prepared";
+		loadPercentText.text = "Open Save File         ";
 		yield return null; // Update progress text.
 
 		List<string> readFileList = new List<string>();
@@ -1327,7 +1371,7 @@ public class Const : MonoBehaviour {
 				sr.Close();
 			}
 
-			loadPercentText.text = "Loa";
+			loadPercentText.text = "Load Quest Data...     ";
 			yield return null; // to update the sprint
 			int numSaveFileLines = readFileList.Count;
 			numSaveablesFromSavefile = numSaveFileLines - 3;
@@ -1349,7 +1393,7 @@ public class Const : MonoBehaviour {
 			difficultyPuzzle = Utils.GetIntFromString(entries[index]); index++;
 			difficultyCyber = Utils.GetIntFromString(entries[index]); index++;
 
-			loadPercentText.text = "Loading...";
+			loadPercentText.text = "Preprocess Save File...";
 			yield return null;
 
 			// First pass to initialize tracking arrays:
@@ -1367,27 +1411,10 @@ public class Const : MonoBehaviour {
 				}
 			}
 
-			matchTimer.Start();
+			loadPercentText.text = "Preprocess Arrays...   ";
+			yield return null;
 			index = 3;
 			SaveObject currentSaveObjectInScene;
-
-			// LOAD 7a. DELETE INSTANTIABLE SAVEABLES
-			// Alright, let's blank out the instantiable objects from current scene by deleting
-			// all of them to empty all 13 containers for all levels:
-			//for (i=0;i<14;i++) {
-			//	Transform containerTR = LevelManager.a.GetRequestedLevelDynamicContainer(i).transform;
-			//	for (j=0;j<containerTR.childCount;j++) {
-			//		DestroyImmediate(containerTR.GetChild(j).gameObject); // Dangerous isn't it :D
-			//	}
-			//}
-
-			// Blank out instantiatable NPC containers for all levels.
-			//for (i=0;i<14;i++) {
-			//	Transform containerTR = LevelManager.a.npcContainers[i].transform;
-			//	for (j=0;j<containerTR.childCount;j++) {
-			//		DestroyImmediate(containerTR.GetChild(j).gameObject);
-			//	}
-			//}
 
 			// LOAD 7b. FIND ALL STATIC SAVEABLES
 			// DO THIS AFTER BLANKING TO ENSURE WE HAVE UP-TO-DATE LIST!!
@@ -1421,6 +1448,8 @@ public class Const : MonoBehaviour {
 			//   level since we removed the instantiables.
 			// When we come across an instantiated object in the saveable file,
 			//   we need to skip it for later and instantiate them all.
+			loadPercentText.text = "Loading Static Objects: 0.0% (    0 / " + numSaveablesFromSavefile.ToString() + ")";
+			yield return null;
 			loadUpdateTimer.Start(); // For loading update
 			for (i = 3; i < numSaveFileLines; i++) {
 				if (saveFile_Line_IsInstantiated[i]) continue; // Skip instantiables.
@@ -1524,17 +1553,14 @@ public class Const : MonoBehaviour {
 				}
 			}
 			loadUpdateTimer.Stop();
-			matchTimer.Stop();
 		}
 
-		//loadPercentText.text = "(7)100.00";
+
+		loadPercentText.text = "Cleaning Up...";
 		yield return new WaitForSeconds(0.1f);
-
+ 		System.GC.Collect(); // Collect it all!
 		AutoSplitterData.isLoading = false;
-		UnityEngine.Debug.Log("End of Load with player at " + PlayerMovement.a.transform.localPosition.ToString());
-
 		loadTimer.Stop();
-		//UnityEngine.Debug.Log("Matching index loop de loop time: " + matchTimer.Elapsed.ToString());
 		GoIntoGame(loadTimer);
 	}
 
