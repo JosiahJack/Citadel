@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Collections;
+using System.Runtime.InteropServices;
 
 public class MouseLookScript : MonoBehaviour {
     // External references
@@ -291,7 +293,7 @@ public class MouseLookScript : MonoBehaviour {
 	void FrobEmptyHanded() {
 		RaycastHit firstHit;
 		cursorPoint.x = MouseCursor.a.cursorPosition.x; //MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2f);
-		cursorPoint.y = Screen.height - MouseCursor.a.cursorPosition.y; //Screen.height - MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+		cursorPoint.y = /*Screen.height - */MouseCursor.a.cursorPosition.y; //Screen.height - MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
 		cursorPoint.z = 0f;
 		float offset = Screen.height * 0.02f;
 		bool successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.a.frobDistance,Const.a.layerMaskPlayerFrob); // Separate from below which uses different mask
@@ -305,6 +307,7 @@ public class MouseLookScript : MonoBehaviour {
 				successfulRay = (tempHit.collider.CompareTag("Usable") || tempHit.collider.CompareTag("Searchable") || tempHit.collider.CompareTag("NPC"));
 			}
 		}
+
 
 		// Shoot rays in a pattern like this
 		// * * *
@@ -418,8 +421,9 @@ public class MouseLookScript : MonoBehaviour {
 		if (heldObjectIndex < 0) { Debug.Log("BUG: Attempting to frob with held object, but heldObjectIndex < 0."); return false; } // Invalid item will be dropped, wasn't used up.
 
 		if (heldObjectIndex == 54 || heldObjectIndex == 56 || heldObjectIndex == 57 || heldObjectIndex == 61 || heldObjectIndex == 64) {
-			cursorPoint.x = MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2f);
-			cursorPoint.y = Screen.height - MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+			//cursorPoint.x = MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2f);
+			//cursorPoint.y = Screen.height - MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+			cursorPoint = MouseCursor.a.cursorPosition;
 			if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit, Const.a.frobDistance)) {
 				if (tempHit.collider.CompareTag("Usable")) {
 					UseData ud = new UseData ();
@@ -844,10 +848,26 @@ public class MouseLookScript : MonoBehaviour {
 		}
 	}
 
+	#if UNITY_STANDALONE_WIN
+		[DllImport("user32.dll")]
+		public static extern bool SetCursorPos(int X, int Y);
+	#endif
+
 	public void ForceInventoryMode() {
-		Cursor.lockState = CursorLockMode.None;
+		#if UNITY_STANDALONE_WIN
+			SetCursorPos(Screen.width / 2, Screen.height / 2);
+		#endif
+		if (PauseScript.a.MenuActive() || PauseScript.a.Paused()) {
+			Cursor.lockState = CursorLockMode.None;
+		} else {
+			Cursor.lockState = CursorLockMode.Confined;
+		}
 		Cursor.visible = true; // Attempt to reconcile Linux bug.
 		Cursor.visible = false;
+		MouseCursor.a.deltaX = 0;
+		MouseCursor.a.deltaY = 0;
+		MouseCursor.a.cursorPosition.x = (Screen.width / 2);
+		MouseCursor.a.cursorPosition.y = (Screen.height / 2);
 		inventoryMode = true;
 		shootModeButton.SetActive(true);
 	}

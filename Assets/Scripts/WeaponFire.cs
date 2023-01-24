@@ -255,7 +255,7 @@ public class WeaponFire : MonoBehaviour {
 			}
 
 			if (MouseLookScript.a.inventoryMode) {
-				wepYRot = ((MouseCursor.a.x-(Screen.width/2f))/(Screen.width/2f)) * inventoryModeViewRotateMax;
+				wepYRot = ((MouseCursor.a.cursorPosition.x - (Screen.width/2f))/(Screen.width/2f)) * inventoryModeViewRotateMax;
 				wepView.transform.localRotation = Quaternion.Euler(0f,wepYRot,0f);
 			} else {
 				wepView.transform.localRotation = Quaternion.Euler(0f,0f,0f);

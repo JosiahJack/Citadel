@@ -14,7 +14,6 @@ public class MouseCursor : MonoBehaviour {
 	public RectTransform centerMFDPanel;
 	public GameObject inventoryAddHelper;
     public float cursorSize = 24f;
-    public bool offsetCentering = true;
     public Texture2D cursorImage;
     private float offsetX;
     private float offsetY;
@@ -24,11 +23,9 @@ public class MouseCursor : MonoBehaviour {
 	public List<GameObject> uiRaycastRectGOs;
 	public float cursorXmin;
 	public float cursorYmin;
-	public float cursorX;
-	public float cursorY;
+	public float debugRawX;
+	public float debugRawY;
 	public Vector2 cursorPosition;
-	public float x;
-	public float y;
 	public float cursorXmax;
 	public float cursorYmax;
 	public GUIStyle liveGrenadeStyle;
@@ -44,8 +41,11 @@ public class MouseCursor : MonoBehaviour {
 	public RectTransform energySliderRect;
 	public float cursorScreenPercentage = 0.02f;
 	private float halfFactor = 0.5f;
-	private float zero = 0f;
+	public float deltaX;
+	public float deltaY;
+	public Vector2 lastMousePos;
 	private string nullStr = "-1";
+	public GraphicRaycaster raycaster;
 
 	public static MouseCursor a;
 
@@ -54,6 +54,11 @@ public class MouseCursor : MonoBehaviour {
 		a.uiCameraCam = uiCamera.GetComponent<Camera>();
 		cursorSize = Screen.width * cursorScreenPercentage;
 		a.drawTexture = new Rect((Screen.width*halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize, cursorSize, cursorSize);
+		deltaX = Input.mousePosition.x;
+		deltaY = Input.mousePosition.y;
+		lastMousePos = Input.mousePosition;
+		debugRawX = Input.mousePosition.x;
+		debugRawY = Input.mousePosition.y;
 	}
 
 	public void RegisterRaycastRect(GameObject go, RectTransform rectToAdd) {
@@ -64,29 +69,17 @@ public class MouseCursor : MonoBehaviour {
 	void OnGUI () {
 		if (MouseLookScript.a == null) return;
 
-		cursorSize = Screen.width * cursorScreenPercentage;
-
-        if (offsetCentering) {
-            offsetX = cursorSize * halfFactor;
-            offsetY = offsetX;
-        }
-
 		//Debug.Log("MouseCursor:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
 		if (MouseLookScript.a.inventoryMode || PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
             // Inventory Mode Cursor
-			drawTexture.Set(Input.mousePosition.x - offsetX,Screen.height - Input.mousePosition.y - offsetY,cursorSize,cursorSize);
+			//drawTexture.Set((Input.mousePosition.x) - offsetX,Screen.height - (Input.mousePosition.y) - offsetY,cursorSize,cursorSize);
+			drawTexture.Set(cursorPosition.x - offsetX,Screen.height - cursorPosition.y - offsetY,cursorSize,cursorSize);
         } else {
             // Shoot Mode Cursor
 			drawTexture.Set((Screen.width*halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize, cursorSize, cursorSize);
         }
 		cursorXmin = drawTexture.xMin;
 		cursorYmin = drawTexture.yMin;
-		cursorX = drawTexture.center.x;
-		cursorY = drawTexture.center.y;
-		x = cursorX;
-		if (x < zero) x = zero;
-		if (x > Screen.width) x = Screen.width;
-		y = cursorY;
 		cursorXmax = drawTexture.xMax;
 		cursorYmax = drawTexture.yMax;
 		if (!string.IsNullOrWhiteSpace(toolTip) && toolTip != nullStr && !PauseScript.a.Paused() && (MouseLookScript.a.inventoryMode || liveGrenade)) {
@@ -173,41 +166,118 @@ public class MouseCursor : MonoBehaviour {
 	}
 
 	void Update() { 
-		cursorPosition = new Vector2(cursorX,cursorY);
-		cursorSize = (24f * (Screen.width/640f)); // This works well, not changing it from Screen.width/640f
-		if (cursorPosition.y > (0.13541f*Screen.height) && cursorPosition.y < (0.70703f*Screen.height)
-			&& cursorPosition.x < (0.96925f*Screen.width) && cursorPosition.x > (0.029282f*Screen.width)
-			&& !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
+		debugRawX = Input.mousePosition.x;
+		debugRawY = Input.mousePosition.y;
+		cursorSize = Screen.width * cursorScreenPercentage;
+		offsetX = cursorSize * halfFactor;
+		offsetY = offsetX;
+		deltaX = (float)Input.mousePosition.x - lastMousePos.x;
+		deltaY = (float)Input.mousePosition.y - lastMousePos.y;
+		deltaX = Mathf.Clamp(deltaX,-Screen.width,Screen.width);
+		deltaY = Mathf.Clamp(deltaY,-Screen.height,Screen.height);
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
+			cursorPosition = new Vector2(Input.mousePosition.x,Input.mousePosition.y);
+		} else {
+			cursorPosition = new Vector2(cursorPosition.x + deltaX,cursorPosition.y + deltaY);
+		}
+		cursorPosition.x = Mathf.Clamp(cursorPosition.x,0,Screen.width);
+		cursorPosition.y = Mathf.Clamp(cursorPosition.y,0,Screen.height);
+		lastMousePos = Input.mousePosition;
+		UpdateSafeZone();
+		UpdateEventSystemPointerStatus();
+		CheckIfOutOfScreenBounds(); 
+		UpdateInventoryAddHelper();
+	}
+
+	void UpdateSafeZone() {
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
+
+		if (cursorPosition.x < (0.96925f * Screen.width) && cursorPosition.x > (0.029282f * Screen.width)
+			&& cursorPosition.y > (0.13541f * Screen.height) && cursorPosition.y < (0.70703f * Screen.height)) {
+			GUIState.a.isBlocking = false; // in the safe zone!
+		}
+	}
+
+	// This method was written by an AI and compiled with no changes.
+	// I then needed to update this to assign 'raycaster' in the inspector
+	// to the GraphicRaycaster that is on Canvas.  And badda bing badda boom.
+	// Later updated with an AI again to add custom callback handling for
+	// OnPointerEnter and OnPointerExit to have my fake cursor force these.
+	// But it wasn't quite right so I fixed it.  Dang rampant AI's.
+	void UpdateEventSystemPointerStatus() {
+		Cursor.visible = false;
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
+			GUIState.a.isBlocking = true;
+			return;
+		}
+
+		PointerEventData pointerData = new PointerEventData(EventSystem.current);
+		pointerData.position = cursorPosition;
+		List<RaycastResult> results = new List<RaycastResult>();
+		raycaster.Raycast(pointerData, results);
+		if (results.Count > 0) {
+			GUIState.a.isBlocking = true;
+			EventSystem.current.SetSelectedGameObject(results[0].gameObject);
+			EventTrigger evt = results[0].gameObject.GetComponent<EventTrigger>();
+			if (evt != null) {
+				RectTransform recTr = results[0].gameObject.GetComponent<RectTransform>();
+				if (recTr != null) {
+					if (RectTransformUtility.RectangleContainsScreenPoint(recTr,cursorPosition,uiCameraCam)) {
+						evt.OnPointerEnter(pointerData);
+					} else {
+						evt.OnPointerExit(pointerData);
+					}
+				}
+			}
+			if (Input.GetMouseButtonDown(0)) {
+				ExecuteEvents.Execute(results[0].gameObject, pointerData, ExecuteEvents.submitHandler);
+			}
+		} else {
+			GUIState.a.isBlocking = false;
+			EventSystem.current.SetSelectedGameObject(null);
+		}
+	}
+
+	void CheckIfOutOfScreenBounds() {
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
+
+		if (cursorPosition.y > Screen.height || cursorPosition.y < 0
+			|| cursorPosition.x < 0 || cursorPosition.x > Screen.width) {
+			GUIState.a.isBlocking = true; // outside the screen, don't shoot we're innocent!
+		}
+	}
+
+	void UpdateInventoryAddHelper() {
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
+
+		if (cursorPosition.y > (0.13541f*Screen.height)
+			&& cursorPosition.y < (0.70703f*Screen.height)
+			&& cursorPosition.x < (0.96925f*Screen.width)
+			&& cursorPosition.x > (0.029282f*Screen.width)) {
 			GUIState.a.isBlocking = false; // in the safe zone!
 		}
 
-		if (EventSystem.current.IsPointerOverGameObject()) GUIState.a.isBlocking = true;
-		else GUIState.a.isBlocking = false;
-
-		if (cursorPosition.y > Screen.height || cursorPosition.y < 0 || cursorPosition.x < 0 || cursorPosition.x > Screen.width && !PauseScript.a.Paused() && !PauseScript.a.mainMenu.activeInHierarchy) {
-			GUIState.a.isBlocking = true; // outside the screen, don't shoot we're innocent!
-		}
-
-		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			if (cursorPosition.y > (0.13541f*Screen.height) && cursorPosition.y < (0.70703f*Screen.height) && cursorPosition.x < (0.96925f*Screen.width) && cursorPosition.x > (0.029282f*Screen.width)) GUIState.a.isBlocking = false; // in the safe zone!
-			if (MouseLookScript.a.inventoryMode && MouseLookScript.a.holdingObject) {
-				// Be sure to pass the camera to the 3rd parameter if using "Screen Space - Camera" on the Canvas, otherwise use "null"
-				if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,uiCameraCam)) {
-					if (!inventoryAddHelper.activeInHierarchy) inventoryAddHelper.SetActive(true);
-					GUIState.a.isBlocking = true;
-				} else {
-					if (inventoryAddHelper.activeInHierarchy) inventoryAddHelper.SetActive(false);
-					if (justDroppedItemInHelper) {
-						GUIState.a.PtrHandler(false,false,ButtonType.None,null);
-						justDroppedItemInHelper = false; // only disable blocking state once, not constantly
-					}
-				}
+		if (MouseLookScript.a.inventoryMode && MouseLookScript.a.holdingObject) {
+			// Be sure to pass the camera to the 3rd parameter if using
+			// "Screen Space - Camera" on the Canvas, otherwise use "null"
+			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,uiCameraCam)) {
+				if (!inventoryAddHelper.activeInHierarchy) inventoryAddHelper.SetActive(true);
+				GUIState.a.isBlocking = true;
 			} else {
+				if (inventoryAddHelper.activeInHierarchy) inventoryAddHelper.SetActive(false);
 				if (justDroppedItemInHelper) {
-					justDroppedItemInHelper = false; // only disable blocking state once, not constantly
-					inventoryAddHelper.SetActive(false);
 					GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+					justDroppedItemInHelper = false; // only disable blocking state once, not constantly
 				}
+			}
+		} else {
+			if (justDroppedItemInHelper) {
+				justDroppedItemInHelper = false; // only disable blocking state once, not constantly
+				inventoryAddHelper.SetActive(false);
+				GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 			}
 		}
 	}
