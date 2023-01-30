@@ -599,15 +599,17 @@ public class HealthManager : MonoBehaviour {
 	public void ObjectDeath(AudioClip deathSound) {
 		if (deathDone) return;
 
-		DisableCollision();
-		DropSearchables();
+		if (gibOnDeath) Gib();
+		else {
+			DisableCollision();
+			DropSearchables();
+			CreateDeathEffects(deathFX,transform.position);
+		}
 		deathDone = true;
 		if (isSecCamera && linkedCameraOverlay != null) linkedCameraOverlay.enabled = false; // disable on automap
 		if (securityAffected != SecurityType.None) LevelManager.a.ReduceCurrentLevelSecurity(securityAffected);
-		CreateDeathEffects(deathFX,transform.position);
 		PlayDeathSound(deathSound); // Make some noise
 		if (spawnMother != null) spawnMother.SpawneeJustDied();
-		if (gibOnDeath) Gib();
 	}
 
 	public void HealingBed(float amount,bool flashBed) {

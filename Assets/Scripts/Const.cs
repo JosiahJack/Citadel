@@ -217,6 +217,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int GraphicsSSRMode;
 	[HideInInspector] public int GraphicsFOV;
 	[HideInInspector] public int GraphicsGamma;
+	[HideInInspector] public bool NoShootMode;
 	public float HeadBobRate = 10.0f;
 	public float HeadBobAmount = 0.02f;
 	[HideInInspector] public int AudioSpeakerMode;
@@ -257,6 +258,7 @@ public class Const : MonoBehaviour {
 	public GameObject[] miscellaneousPrefabs;
 	public GameObject[] doorPrefabs;
 	public Material[] genericMaterials;
+	public GameObject[] ReverbRegister;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
 	[HideInInspector] public string versionString = "v0.98"; // Global CITADEL PROJECT VERSION
@@ -1230,6 +1232,8 @@ public class Const : MonoBehaviour {
 			if (PlayerHealth.a.hm != null) PlayerHealth.a.hm.ClearOverlays();
 		}
 
+		if (Const.a.NoShootMode) MouseLookScript.a.ForceInventoryMode();
+
 		loadingScreen.SetActive(false);
 		if (player1Capsule != null) player1Capsule.SetActive(true);
 		else UnityEngine.Debug.Log("BUG: Missing player1Capsule on GoIntoGame");
@@ -1610,6 +1614,33 @@ public class Const : MonoBehaviour {
 			if (TargetRegister[i] == null) {
 				TargetRegister[i] = go;
 				TargetnameRegister[i] = tn;
+				return; // Ok, gameobject added to the register.
+			}
+		}
+	}
+
+	public void ReverbOn() {
+		for (int i=0;i<ReverbRegister.Length;i++) {
+			if (ReverbRegister[i] != null) {
+				AudioReverbZone arz = ReverbRegister[i].GetComponent<AudioReverbZone>();
+				if (arz != null) arz.enabled = true;
+			}
+		}
+	}
+
+	public void ReverbOff() {
+		for (int i=0;i<ReverbRegister.Length;i++) {
+			if (ReverbRegister[i] != null) {
+				AudioReverbZone arz = ReverbRegister[i].GetComponent<AudioReverbZone>();
+				if (arz != null) arz.enabled = false;
+			}
+		}
+	}
+
+	public void AddToReverbRegister (GameObject go) {
+		for (int i=0;i<ReverbRegister.Length;i++) {
+			if (ReverbRegister[i] == null) {
+				ReverbRegister[i] = go;
 				return; // Ok, gameobject added to the register.
 			}
 		}

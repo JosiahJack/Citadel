@@ -414,25 +414,37 @@ public class PlayerMovement : MonoBehaviour {
 		relForward = GetInput.a.Backpedal() ? -1f : 0f;
 		if (GetInput.a.Forward()) {
 			relForward = 1f;
-			if (!inCyberSpace) {
-				if (leanTarget > 0) {
-					if (Mathf.Abs(leanTarget - 0) < 0.02f) leanTarget = 0;
-					else leanTarget -= (leanSpeed * Time.deltaTime);
-
-					if (Mathf.Abs(leanShift - 0) < 0.02f) leanShift = 0;
-					else leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle));
-				} else {
-					if (Mathf.Abs(leanTarget - 0) < 0.02f) leanTarget = 0;
-					else leanTarget += (leanSpeed * Time.deltaTime);
-
-					if (Mathf.Abs(leanShift - 0) < 0.02f) leanShift = 0;
-					else leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1));
-				}
-			}
 		}
 		relSideways = GetInput.a.StrafeLeft() ? -1f : 0f;
 		if (GetInput.a.StrafeRight()) relSideways = 1f;
-		running = ((relForward != 0) || (relSideways != 0)); // We are mashing a run button down.	
+		running = ((relForward != 0) || (relSideways != 0)); // We are mashing a run button down.
+
+		// Now check for thumbstick/joystick input
+		Vector2 leftThumbstick = new Vector2(Input.GetAxisRaw("JoyAxis1"), // Horizontal Left < 0, Right > 0
+											 Input.GetAxisRaw("JoyAxis2") * -1f); // Vertical Down > 0, Up < 0 Inverted
+		if (leftThumbstick.magnitude < 0.05f) leftThumbstick = Vector2.zero;
+		else leftThumbstick = leftThumbstick.normalized * ((leftThumbstick.magnitude - 0.05f) / (1.0f - 0.05f));
+
+		relForward += leftThumbstick.y;
+		relSideways += leftThumbstick.x;
+
+		if (relForward > 0) {
+			if (!inCyberSpace) {
+				if (leanTarget > 0) {
+					if (Mathf.Abs(leanTarget - 0) < 0.02f) leanTarget = 0;
+					else leanTarget -= (leanSpeed * Time.deltaTime * relForward);
+
+					if (Mathf.Abs(leanShift - 0) < 0.02f) leanShift = 0;
+					else leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle)) * relForward;
+				} else {
+					if (Mathf.Abs(leanTarget - 0) < 0.02f) leanTarget = 0;
+					else leanTarget += (leanSpeed * Time.deltaTime * relForward);
+
+					if (Mathf.Abs(leanShift - 0) < 0.02f) leanShift = 0;
+					else leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1)) * relForward;
+				}
+			}
+		}
 	}
 
 	void ApplyGroundFriction() {
@@ -690,10 +702,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		if (Const.a.difficultyCyber > 1) {
 			if (rbody.velocity.magnitude < walkAcceleration * 0.05f) {
-				tempVec = new Vector3(MouseCursor.a.drawTexture.x + (MouseCursor.a.drawTexture.width / 2),
-									  MouseCursor.a.drawTexture.y + (MouseCursor.a.drawTexture.height / 2),
-									  0);
-				tempVec.y = Screen.height - tempVec.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+				tempVec = MouseCursor.a.GetCursorScreenPointForRay();
 				tempVec = MouseLookScript.a.playerCamera.ScreenPointToRay(tempVec).direction;
 				rbody.AddForce(tempVec * walkAcceleration*0.05f * Time.deltaTime); // turbo doesn't affect detrimental forces :)
 			}

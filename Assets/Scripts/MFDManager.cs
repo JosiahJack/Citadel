@@ -1083,7 +1083,7 @@ public class MFDManager : MonoBehaviour  {
 
 	public void NotifySearchThatSearchableWasDestroyed() {
 		if (tetheredSearchable != null) {
-			tetheredSearchable.ResetSearchable(true); // reset the actual object
+			tetheredSearchable.ResetSearchable(false); // reset the actual object
 			// reset the HUD contents
 			if (headerTextRH.activeSelf) {
 				headerTextRH.SetActive(false);

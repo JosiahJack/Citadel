@@ -7,6 +7,8 @@ public class MenuArrowKeyControls : MonoBehaviour {
 	public int currentIndex;
 	public GameObject[] menuItems;
 	/*[DTValidator.Optional] */public GameObject[] menuSubItems;
+	private bool axisUp = false;
+	private bool axisDn = false;
 
 	void Awake () {
 		currentIndex = 0;
@@ -19,7 +21,9 @@ public class MenuArrowKeyControls : MonoBehaviour {
 	void  Update() {
 		if (PlayerMovement.a.consoleActivated) return;
 
-		if (Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter)) {
+		if (Input.GetKeyUp(KeyCode.Return)
+			|| Input.GetKeyUp(KeyCode.KeypadEnter)
+			|| Input.GetKeyDown(KeyCode.JoystickButton0)) {
 			if (menuItems[currentIndex].GetComponent<Button>() != null) {
 				menuItems[currentIndex].GetComponent<Button>().onClick.Invoke();
 			} else {
@@ -29,8 +33,23 @@ public class MenuArrowKeyControls : MonoBehaviour {
 			return;
 		}
 
-		if (Input.GetKeyUp(KeyCode.UpArrow) || Input.GetKeyUp(KeyCode.LeftArrow)) ShiftMenuItem(false);
-		if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetKeyUp(KeyCode.RightArrow)) ShiftMenuItem(true);
+		if (Input.GetAxisRaw("JoyAxis8") >= 0) axisUp = false;
+		if (Input.GetKeyUp(KeyCode.UpArrow)
+		    || Input.GetKeyUp(KeyCode.LeftArrow)
+			|| ((Input.GetAxisRaw("JoyAxis8") < 0 || Input.GetAxisRaw("JoyAxis2") < 0)
+				&& !axisUp)) {
+			axisUp = true;
+			ShiftMenuItem(false);
+		}
+
+		if (Input.GetAxisRaw("JoyAxis8") <= 0) axisDn = false;
+		if (Input.GetKeyUp(KeyCode.DownArrow)
+		    || Input.GetKeyUp(KeyCode.RightArrow)
+			|| ((Input.GetAxisRaw("JoyAxis8") > 0 || Input.GetAxisRaw("JoyAxis2") > 0)
+				&& !axisDn)) {
+			axisDn = true;
+			ShiftMenuItem(true);
+		}
 	}
 
 	void ShiftMenuItem (bool isDownKey) {

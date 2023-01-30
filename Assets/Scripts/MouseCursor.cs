@@ -3,6 +3,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System;
 
 public class MouseCursor : MonoBehaviour {
     public GameObject playerCamera;
@@ -21,13 +23,7 @@ public class MouseCursor : MonoBehaviour {
 	public Rect drawTexture;
 	public List<RectTransform> uiRaycastRects;
 	public List<GameObject> uiRaycastRectGOs;
-	public float cursorXmin;
-	public float cursorYmin;
-	public float debugRawX;
-	public float debugRawY;
 	public Vector2 cursorPosition;
-	public float cursorXmax;
-	public float cursorYmax;
 	public GUIStyle liveGrenadeStyle;
 	public GUIStyle toolTipStyle;
 	public GUIStyle toolTipStyleLH;
@@ -54,11 +50,42 @@ public class MouseCursor : MonoBehaviour {
 		a.uiCameraCam = uiCamera.GetComponent<Camera>();
 		cursorSize = Screen.width * cursorScreenPercentage;
 		a.drawTexture = new Rect((Screen.width*halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize, cursorSize, cursorSize);
-		deltaX = Input.mousePosition.x;
-		deltaY = Input.mousePosition.y;
-		lastMousePos = Input.mousePosition;
-		debugRawX = Input.mousePosition.x;
-		debugRawY = Input.mousePosition.y;
+		deltaX = deltaY = 0;
+		lastMousePos = cursorPosition = Input.mousePosition;
+	}
+
+	#if UNITY_STANDALONE_LINUX
+		[DllImport("libX11")]
+		static extern IntPtr XOpenDisplay(string display);
+
+		[DllImport("libX11")]
+		static extern int XCloseDisplay(IntPtr display);
+
+		[DllImport("libX11")]
+		static extern int XWarpPointer(IntPtr display, IntPtr src_w, 
+									   IntPtr dest_w, int src_x, int src_y,
+									   uint src_width, uint src_height, 
+									   int dest_x, int dest_y);
+	#elif UNITY_STANDALONE_WIN
+		[DllImport("user32.dll")]
+		public static extern bool SetCursorPos(int X, int Y);
+	#endif
+
+	public static void SetCursorPosInternal(int x, int y) {
+		return; // Still experiencing issues, best to live with this bug a while yet.
+
+		#if UNITY_STANDALONE_LINUX
+			IntPtr display = XOpenDisplay(null);
+			if (display == IntPtr.Zero) {
+				throw new Exception("Failed to open display");
+			}
+
+			Debug.Log("warping pointer to " + x.ToString() + ", " + y.ToString());
+			XWarpPointer(display, IntPtr.Zero, IntPtr.Zero, 0, 0, 0, 0, x, y);
+			XCloseDisplay(display);
+		#elif UNITY_STANDALONE_WIN
+			SetCursorPos((int)(Screen.width * 0.5f),(int)(Screen.height * 0.5f));
+		#endif
 	}
 
 	public void RegisterRaycastRect(GameObject go, RectTransform rectToAdd) {
@@ -69,19 +96,15 @@ public class MouseCursor : MonoBehaviour {
 	void OnGUI () {
 		if (MouseLookScript.a == null) return;
 
-		//Debug.Log("MouseCursor:: Input.mousePosition.x: " + Input.mousePosition.x.ToString() + ", Input.mousePosition.y: " + Input.mousePosition.y.ToString());
 		if (MouseLookScript.a.inventoryMode || PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
             // Inventory Mode Cursor
-			//drawTexture.Set((Input.mousePosition.x) - offsetX,Screen.height - (Input.mousePosition.y) - offsetY,cursorSize,cursorSize);
-			drawTexture.Set(cursorPosition.x - offsetX,Screen.height - cursorPosition.y - offsetY,cursorSize,cursorSize);
+			//drawTexture.Set(cursorPosition.x - offsetX,Screen.height - cursorPosition.y - offsetY,cursorSize,cursorSize);
+			drawTexture.Set(Input.mousePosition.x - offsetX,Screen.height - Input.mousePosition.y - offsetY,cursorSize,cursorSize);
         } else {
             // Shoot Mode Cursor
-			drawTexture.Set((Screen.width*halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize, cursorSize, cursorSize);
+			drawTexture.Set((Screen.width * halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize - offsetY, cursorSize, cursorSize);
         }
-		cursorXmin = drawTexture.xMin;
-		cursorYmin = drawTexture.yMin;
-		cursorXmax = drawTexture.xMax;
-		cursorYmax = drawTexture.yMax;
+
 		if (!string.IsNullOrWhiteSpace(toolTip) && toolTip != nullStr && !PauseScript.a.Paused() && (MouseLookScript.a.inventoryMode || liveGrenade)) {
 			switch(toolTipType) {
 				case Handedness.LH: GUI.Label(drawTexture,toolTip,toolTipStyleLH); tempTexture = cursorLHTexture; break;
@@ -90,73 +113,33 @@ public class MouseCursor : MonoBehaviour {
 			}
 			if (!MouseLookScript.a.holdingObject) cursorImage = tempTexture;
 		} else {
-			if ((PauseScript.a.Paused() && !(PauseScript.a.mainMenu.activeSelf == true)) || GUIState.a.isBlocking && !MouseLookScript.a.holdingObject) {
+			if ((PauseScript.a.Paused() || PauseScript.a.MenuActive()) || GUIState.a.isBlocking && !MouseLookScript.a.holdingObject) {
 				cursorImage = cursorGUI;
+			} else if (MouseLookScript.a.vmailActive) {
+				cursorImage = Const.a.useableItemsFrobIcons[108];	// vmail
+			} else if (MouseLookScript.a.inCyberSpace) {
+				cursorImage = MouseLookScript.a.cyberspaceCursor;
+			} else if (MouseLookScript.a.holdingObject && MouseLookScript.a.heldObjectIndex >= 0) {
+				cursorImage = Const.a.useableItemsFrobIcons[MouseLookScript.a.heldObjectIndex];
 			} else {
-				if (MouseLookScript.a.vmailActive) {
-					cursorImage = Const.a.useableItemsFrobIcons[108];	// vmail
-				} else {
-					if (MouseLookScript.a.inCyberSpace) {
-						cursorImage = MouseLookScript.a.cyberspaceCursor;
-					} else {
-						if (MouseLookScript.a.holdingObject && MouseLookScript.a.heldObjectIndex >= 0) {
-							cursorImage = Const.a.useableItemsFrobIcons[MouseLookScript.a.heldObjectIndex];
-						} else {
-							switch(WeaponCurrent.a.weaponIndex) {
-								case 36:
-									cursorImage = Const.a.useableItemsFrobIcons[102];	// red
-									break;
-								case 37:
-									cursorImage = Const.a.useableItemsFrobIcons[107];	// blue
-									break;
-								case 38:
-									cursorImage = Const.a.useableItemsFrobIcons[102];	// red
-									break;
-								case 39:
-									cursorImage = Const.a.useableItemsFrobIcons[105];	// green
-									break;
-								case 40:
-									cursorImage = Const.a.useableItemsFrobIcons[107];	// blue
-									break;
-								case 41:
-									cursorImage = Const.a.useableItemsFrobIcons[103];	// orange
-									break;
-								case 42:
-									cursorImage = Const.a.useableItemsFrobIcons[103];	// orange
-									break;
-								case 43:
-									cursorImage = Const.a.useableItemsFrobIcons[102];	// red
-									break;
-								case 44:
-									cursorImage = Const.a.useableItemsFrobIcons[104];	// yellow
-									break;
-								case 45:
-									cursorImage = Const.a.useableItemsFrobIcons[102];	// red
-									break;
-								case 46:
-									cursorImage = Const.a.useableItemsFrobIcons[106];	// teal
-									break;
-								case 47:
-									cursorImage = Const.a.useableItemsFrobIcons[104];	// yellow
-									break;
-								case 48:
-									cursorImage = Const.a.useableItemsFrobIcons[102];	// red
-									break;
-								case 49:
-									cursorImage = Const.a.useableItemsFrobIcons[105];	// green
-									break;
-								case 50:
-									cursorImage = Const.a.useableItemsFrobIcons[107];	// blue
-									break;
-								case 51:
-									cursorImage = Const.a.useableItemsFrobIcons[106];	// teal
-									break;
-								default:
-									cursorImage = Const.a.useableItemsFrobIcons[105];	// green
-									break;
-							}
-						}
-					}
+				switch(WeaponCurrent.a.weaponIndex) {
+					case 36: cursorImage = Const.a.useableItemsFrobIcons[102]; break; // red
+					case 37: cursorImage = Const.a.useableItemsFrobIcons[107]; break; // blue
+					case 38: cursorImage = Const.a.useableItemsFrobIcons[102]; break; // red
+					case 39: cursorImage = Const.a.useableItemsFrobIcons[105]; break; // green
+					case 40: cursorImage = Const.a.useableItemsFrobIcons[107]; break; // blue
+					case 41: cursorImage = Const.a.useableItemsFrobIcons[103]; break; // orange
+					case 42: cursorImage = Const.a.useableItemsFrobIcons[103]; break; // orange
+					case 43: cursorImage = Const.a.useableItemsFrobIcons[102]; break; // red
+					case 44: cursorImage = Const.a.useableItemsFrobIcons[104]; break; // yellow
+					case 45: cursorImage = Const.a.useableItemsFrobIcons[102]; break; // red
+					case 46: cursorImage = Const.a.useableItemsFrobIcons[106]; break; // teal
+					case 47: cursorImage = Const.a.useableItemsFrobIcons[104]; break; // yellow
+					case 48: cursorImage = Const.a.useableItemsFrobIcons[102]; break; // red
+					case 49: cursorImage = Const.a.useableItemsFrobIcons[105]; break; // green
+					case 50: cursorImage = Const.a.useableItemsFrobIcons[107]; break; // blue
+					case 51: cursorImage = Const.a.useableItemsFrobIcons[106]; break; // teal
+					default: cursorImage = Const.a.useableItemsFrobIcons[105]; break; // green
 				}
 			}
 		}
@@ -166,27 +149,37 @@ public class MouseCursor : MonoBehaviour {
 	}
 
 	void Update() { 
-		debugRawX = Input.mousePosition.x;
-		debugRawY = Input.mousePosition.y;
 		cursorSize = Screen.width * cursorScreenPercentage;
 		offsetX = cursorSize * halfFactor;
 		offsetY = offsetX;
-		deltaX = (float)Input.mousePosition.x - lastMousePos.x;
-		deltaY = (float)Input.mousePosition.y - lastMousePos.y;
-		deltaX = Mathf.Clamp(deltaX,-Screen.width,Screen.width);
-		deltaY = Mathf.Clamp(deltaY,-Screen.height,Screen.height);
-		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
-			cursorPosition = new Vector2(Input.mousePosition.x,Input.mousePosition.y);
-		} else {
-			cursorPosition = new Vector2(cursorPosition.x + deltaX,cursorPosition.y + deltaY);
-		}
+		cursorPosition = new Vector2(Input.mousePosition.x,Input.mousePosition.y);
 		cursorPosition.x = Mathf.Clamp(cursorPosition.x,0,Screen.width);
 		cursorPosition.y = Mathf.Clamp(cursorPosition.y,0,Screen.height);
 		lastMousePos = Input.mousePosition;
 		UpdateSafeZone();
 		UpdateEventSystemPointerStatus();
-		CheckIfOutOfScreenBounds(); 
+		CheckIfOutOfScreenBounds();
 		UpdateInventoryAddHelper();
+
+		// Maintain cursor mode.
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
+			Cursor.lockState = CursorLockMode.None;
+			return;
+		}
+
+		if (MouseLookScript.a.inventoryMode) {
+			if (PauseScript.a.MenuActive() || PauseScript.a.Paused()) {
+				Cursor.lockState = CursorLockMode.None;
+			} else {
+				#if UNITY_EDITOR
+					Cursor.lockState = CursorLockMode.None;
+				#else	
+					Cursor.lockState = CursorLockMode.Confined;
+				#endif
+			}
+		} else {
+			Cursor.lockState = CursorLockMode.Locked;
+		}
 	}
 
 	void UpdateSafeZone() {
@@ -199,19 +192,7 @@ public class MouseCursor : MonoBehaviour {
 		}
 	}
 
-	// This method was written by an AI and compiled with no changes.
-	// I then needed to update this to assign 'raycaster' in the inspector
-	// to the GraphicRaycaster that is on Canvas.  And badda bing badda boom.
-	// Later updated with an AI again to add custom callback handling for
-	// OnPointerEnter and OnPointerExit to have my fake cursor force these.
-	// But it wasn't quite right so I fixed it.  Dang rampant AI's.
 	void UpdateEventSystemPointerStatus() {
-		Cursor.visible = false;
-		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
-			GUIState.a.isBlocking = true;
-			return;
-		}
-
 		PointerEventData pointerData = new PointerEventData(EventSystem.current);
 		pointerData.position = cursorPosition;
 		List<RaycastResult> results = new List<RaycastResult>();
@@ -240,8 +221,8 @@ public class MouseCursor : MonoBehaviour {
 	}
 
 	void CheckIfOutOfScreenBounds() {
-		if (PauseScript.a.Paused()) return;
 		if (PauseScript.a.MenuActive()) return;
+		if (PauseScript.a.Paused()) return;
 
 		if (cursorPosition.y > Screen.height || cursorPosition.y < 0
 			|| cursorPosition.x < 0 || cursorPosition.x > Screen.width) {
@@ -263,7 +244,7 @@ public class MouseCursor : MonoBehaviour {
 		if (MouseLookScript.a.inventoryMode && MouseLookScript.a.holdingObject) {
 			// Be sure to pass the camera to the 3rd parameter if using
 			// "Screen Space - Camera" on the Canvas, otherwise use "null"
-			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,Input.mousePosition,uiCameraCam)) {
+			if (RectTransformUtility.RectangleContainsScreenPoint(centerMFDPanel,cursorPosition,uiCameraCam)) {
 				if (!inventoryAddHelper.activeInHierarchy) inventoryAddHelper.SetActive(true);
 				GUIState.a.isBlocking = true;
 			} else {
@@ -280,5 +261,18 @@ public class MouseCursor : MonoBehaviour {
 				GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 			}
 		}
+	}
+
+	public Vector3 GetCursorScreenPointForRay() {
+		Vector3 retval;
+
+		//retval.x = drawTexture.x+(drawTexture.width/2f);
+		retval.x = drawTexture.center.x;
+
+		// Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+		//retval.y = Screen.height - drawTexture.y+(drawTexture.height/2f);
+		retval.y = Screen.height - drawTexture.center.y;
+		retval.z = 0f;
+		return retval;
 	}
 }

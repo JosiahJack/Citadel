@@ -34,6 +34,7 @@ public class LevelManager : MonoBehaviour {
 	public Level[] levelScripts;
 	public GameObject[] lightContainers;
 	public GameObject[] npcContainers;
+	public GameObject[] elevatorTargetDestinations;
 
 	private bool getValparsed;
 	private bool[] levelDataLoaded;
@@ -139,6 +140,25 @@ public class LevelManager : MonoBehaviour {
 		int lastlev = currentLevel;
 		MFDManager.a.TurnOffElevatorPad();
 		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+
+		if (targetDestination == null && targetPosition.x == 0 && targetPosition.y == 0 && targetPosition.z == 0) {
+			switch(levnum) {
+				case 0:  targetPosition = elevatorTargetDestinations[25].transform.position; break;
+				case 1:  targetPosition =  elevatorTargetDestinations[0].transform.position; break;
+				case 2:  targetPosition =  elevatorTargetDestinations[1].transform.position; break;
+				case 3:  targetPosition =  elevatorTargetDestinations[3].transform.position; break;
+				case 4:  targetPosition =  elevatorTargetDestinations[6].transform.position; break;
+				case 5:  targetPosition =  elevatorTargetDestinations[7].transform.position; break;
+				case 6:  targetPosition =  elevatorTargetDestinations[9].transform.position; break;
+				case 7:  targetPosition = elevatorTargetDestinations[17].transform.position; break;
+				case 8:  targetPosition = elevatorTargetDestinations[19].transform.position; break;
+				case 9:  targetPosition = elevatorTargetDestinations[21].transform.position; break;
+				case 10: targetPosition = elevatorTargetDestinations[22].transform.position; break;
+				case 11: targetPosition = elevatorTargetDestinations[23].transform.position; break;
+				case 12: targetPosition = elevatorTargetDestinations[24].transform.position; break;
+			}
+		}
+
 		if (targetDestination != null) PlayerReferenceManager.a.playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
 		else if (targetPosition != null) PlayerReferenceManager.a.playerCapsule.transform.position = targetPosition; // Return to level from cyberspace.
 

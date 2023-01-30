@@ -29,6 +29,10 @@ public class VaporizeButton : MonoBehaviour {
 		} else Debug.Log("Failed to add EventTrigger to " + gameObject.name);
 	}
 
+	void OnEnable() {
+		pointerEntered = false;
+	}
+
 	// Handle OnPointerEnter event, replaces OnMouseEnter
     public void OnPointerEnterDelegate(PointerEventData data) { PtrEnter(); }
 

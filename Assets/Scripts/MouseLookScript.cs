@@ -32,6 +32,7 @@ public class MouseLookScript : MonoBehaviour {
 	public GameObject shootModeButton;
 	public HealthManager hm;
 	public GameObject playerRadiationTreatmentFlash;
+	public Vector2 lastMousePos;
 
     // Internal references
     [HideInInspector] public bool inventoryMode;
@@ -116,18 +117,21 @@ public class MouseLookScript : MonoBehaviour {
     }
 
 	void Update() {
-		// Always allowed regardless of pause state:
-        if (Cursor.visible) Cursor.visible = false; // Hides main cursor so we can show custom cursor textures and position cursor smartly independently.
-		if (Input.GetKeyUp(f9)) Const.a.Load(7,false); // Allow quick load straight from the menu.
+		// Allow quick load straight from the menu or pause.
+		if (Input.GetKeyUp(f9)) Const.a.Load(7,false);
 
-        if (PauseScript.a.MenuActive()) { if (playerCamera.enabled) playerCamera.enabled = false; return; } // Ignore mouselook and turn off camera when main menu is up.
-		else 							  if (!playerCamera.enabled) playerCamera.enabled = true;
+        if (PauseScript.a.MenuActive()) {
+			// Ignore mouselook and turn off camera when main menu is up.
+			if (playerCamera.enabled) playerCamera.enabled = false;
+			return;
+		}
 
+		if (!playerCamera.enabled) playerCamera.enabled = true;
 		if (PauseScript.a.Paused()) return;
 		if (PlayerMovement.a.ressurectingFinished > PauseScript.a.relativeTime) return;
 
 		// Unpaused, normal functions::
-		// ==============================================================================================================================================================================================================================================================================================
+		// ====================================================================
 		if (Input.GetKeyUp(f6)) Const.a.StartSave(7,qsavename);
 		if(GetInput.a.ToggleMode()) ToggleInventoryMode(); // Toggle inventory mode<->shoot mode
 		RecoilAndRest(); // Spring Back to Rest from Recoil
@@ -140,7 +144,7 @@ public class MouseLookScript : MonoBehaviour {
 		} else {
 			if (compassContainer.activeInHierarchy) compassContainer.transform.rotation = Quaternion.Euler(0f, -yRotation + 180f, 0f); // Update automap player icon orientation.
 		}
-		if (!inventoryMode) Mouselook(Input.GetAxisRaw(mouseX) * Const.a.MouseSensitivity,Input.GetAxisRaw(mouseY) * Const.a.MouseSensitivity);  // Only do mouselook in Shoot Mode.
+		if (!inventoryMode) Mouselook(); // Only do mouselook in Shoot Mode.
 
 		// Frob what is under our cursor.
 		if(GetInput.a.Use()) {
@@ -162,29 +166,47 @@ public class MouseLookScript : MonoBehaviour {
 		}
 	}
 
-	void Mouselook(float dx, float dy) {
+	void Mouselook() {
+		float deltaX = Input.GetAxisRaw(mouseX) * Const.a.MouseSensitivity * Const.a.GraphicsFOV;
+		float deltaY = Input.GetAxisRaw(mouseY) * Const.a.MouseSensitivity * Const.a.GraphicsFOV;
+		Vector2 rightThumbstick = new Vector2(Input.GetAxisRaw("JoyAxis4"), // Horizontal Left < 0, Right > 0
+											  Input.GetAxisRaw("JoyAxis5") * -1f); // Vertical Down > 0, Up < 0 Inverted
+		Vector2 debugRT = rightThumbstick;
+		if (rightThumbstick.magnitude < 0.05f) rightThumbstick = Vector2.zero;
+		rightThumbstick = rightThumbstick.normalized * ((rightThumbstick.magnitude - 0.05f) / (1.0f - 0.05f)) * Const.a.MouseSensitivity * Const.a.GraphicsFOV * 20f;
+		deltaX += rightThumbstick.x;
+		deltaY += rightThumbstick.y;
+		float angX = deltaX * ((Const.a.GraphicsFOV / 2f) / Screen.width / 2f); // deg per screen half / screen
+		float angY = deltaY * ((Const.a.GraphicsFOV / 2f) / Screen.height / 2f);
+		if (angX > Const.a.GraphicsFOV) angX = Const.a.GraphicsFOV;
+		if (angY > Const.a.GraphicsFOV) angY = Const.a.GraphicsFOV; // High pass filter to prevent jumpy behavior.
+		
 		if ((inCyberSpace && Const.a.InputInvertCyberspaceLook) || (!inCyberSpace && Const.a.InputInvertLook))
-			xRotation += dy;
+			xRotation += angY;
 		else 
-			xRotation -= dy;
+			xRotation -= angY;
 
 		if (inCyberSpace) {
 			xRotation = Clamp0360(xRotation);  // Limit up and down angle to within 360°.
 			if(xRotation > 90f || xRotation < -90f && xRotation > -270f) // More flippideedoo shenanigans.
-				yRotation -= dx;
+				yRotation -= angX;
 			else
-				yRotation += dx;
+				yRotation += angX;
 
 			 // Do the cyber mouselook.  Everybody now!  Dance the cyber mouselook.
 			cyberLookDir = Vector3.Normalize (transform.forward);
 		} else {
 			xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle
-			yRotation += dx;
+			yRotation += angX;
 		}
 
 		// Apply the normal mouselook
 		transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
 		transform.localRotation = Quaternion.Euler(xRotation,0f,0f); // Up down component only applied to camera.  Must be 0 for others or else movement will go in wrong direction!
+		if ((((float)Input.mousePosition.x - ((float)Screen.width * 0.5f)) > 2f) 
+			 || (((float)Input.mousePosition.y - ((float)Screen.height * 0.5f)) > 2f)) {
+			MouseCursor.SetCursorPosInternal((int)(Screen.width * 0.5f),(int)(Screen.height * 0.5f));
+		}
 	}
 
 	public void EnterCyberspace(GameObject entryPoint) {
@@ -226,9 +248,8 @@ public class MouseLookScript : MonoBehaviour {
 
 	// Draw line from cursor - used for projectile firing, e.g. magpulse/stugngun/railgun/plasma
 	public void SetCameraFocusPoint() {
-        Vector3 cursorPoint0 = new Vector3(MouseCursor.a.drawTexture.x + (MouseCursor.a.drawTexture.width * 0.5f), MouseCursor.a.drawTexture.y + (MouseCursor.a.drawTexture.height * 0.5f), 0f);
-        cursorPoint0.y = Screen.height - cursorPoint0.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
-        if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint0), out tempHit, Mathf.Infinity)) cameraFocusPoint = tempHit.point;
+		cursorPoint = MouseCursor.a.GetCursorScreenPointForRay();
+        if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit, Mathf.Infinity)) cameraFocusPoint = tempHit.point;
 	}
 
 	// Clamp cyberspace up/down look rotation to with in +/- 360f.
@@ -292,9 +313,7 @@ public class MouseLookScript : MonoBehaviour {
 
 	void FrobEmptyHanded() {
 		RaycastHit firstHit;
-		cursorPoint.x = MouseCursor.a.cursorPosition.x; //MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2f);
-		cursorPoint.y = /*Screen.height - */MouseCursor.a.cursorPosition.y; //Screen.height - MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
-		cursorPoint.z = 0f;
+		cursorPoint = MouseCursor.a.GetCursorScreenPointForRay();
 		float offset = Screen.height * 0.02f;
 		bool successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.a.frobDistance,Const.a.layerMaskPlayerFrob); // Separate from below which uses different mask
 		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,playerCamera.ScreenPointToRay(cursorPoint).direction * Const.a.frobDistance, Color.green,1f,true);
@@ -307,7 +326,6 @@ public class MouseLookScript : MonoBehaviour {
 				successfulRay = (tempHit.collider.CompareTag("Usable") || tempHit.collider.CompareTag("Searchable") || tempHit.collider.CompareTag("NPC"));
 			}
 		}
-
 
 		// Shoot rays in a pattern like this
 		// * * *
@@ -421,9 +439,7 @@ public class MouseLookScript : MonoBehaviour {
 		if (heldObjectIndex < 0) { Debug.Log("BUG: Attempting to frob with held object, but heldObjectIndex < 0."); return false; } // Invalid item will be dropped, wasn't used up.
 
 		if (heldObjectIndex == 54 || heldObjectIndex == 56 || heldObjectIndex == 57 || heldObjectIndex == 61 || heldObjectIndex == 64) {
-			//cursorPoint.x = MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2f);
-			//cursorPoint.y = Screen.height - MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2f); // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
-			cursorPoint = MouseCursor.a.cursorPosition;
+			cursorPoint = MouseCursor.a.GetCursorScreenPointForRay();
 			if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit, Const.a.frobDistance)) {
 				if (tempHit.collider.CompareTag("Usable")) {
 					UseData ud = new UseData ();
@@ -558,6 +574,7 @@ public class MouseLookScript : MonoBehaviour {
 				sebut.CheckForEmpty();
 				GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 				if (Const.a.InputQuickItemPickup) {
+					Debug.Log("Quick item pickup from search!");
 					AddItemToInventory(heldObjectIndex);
 					ResetHeldItem();
 					ResetCursor();
@@ -765,8 +782,7 @@ public class MouseLookScript : MonoBehaviour {
 					tossObject.transform.SetParent(levelDynamicContainer.transform,true);
 				}
 
-				Vector3 tossDir = new Vector3(MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2),MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2),0);
-				tossDir.y = Screen.height - tossDir.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+				Vector3 tossDir = MouseCursor.a.GetCursorScreenPointForRay();
 				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
 				Rigidbody rbody = tossObject.GetComponent<Rigidbody>();
 				if (rbody != null) {
@@ -793,8 +809,7 @@ public class MouseLookScript : MonoBehaviour {
 					tossObject.transform.SetParent(levelDynamicContainer.transform,true);
 				}
 				tossObject.layer = 11; // Set to player bullets layer to prevent collision and still be visible.
-				Vector3 tossDir = new Vector3(MouseCursor.a.drawTexture.x+(MouseCursor.a.drawTexture.width/2),MouseCursor.a.drawTexture.y+(MouseCursor.a.drawTexture.height/2),0);
-				tossDir.y = Screen.height - tossDir.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+				Vector3 tossDir = MouseCursor.a.GetCursorScreenPointForRay();
 				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
 				Rigidbody rbody = tossObject.GetComponent<Rigidbody>();
 				if (rbody != null) {
@@ -838,6 +853,8 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	public void ForceShootMode() {
+		if (Const.a.NoShootMode) return; // We are being like the original now!
+
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
 		inventoryMode = false;
@@ -848,21 +865,19 @@ public class MouseLookScript : MonoBehaviour {
 		}
 	}
 
-	#if UNITY_STANDALONE_WIN
-		[DllImport("user32.dll")]
-		public static extern bool SetCursorPos(int X, int Y);
-	#endif
-
 	public void ForceInventoryMode() {
-		#if UNITY_STANDALONE_WIN
-			SetCursorPos(Screen.width / 2, Screen.height / 2);
-		#endif
+		if (inventoryMode) return;
+
 		if (PauseScript.a.MenuActive() || PauseScript.a.Paused()) {
 			Cursor.lockState = CursorLockMode.None;
 		} else {
-			Cursor.lockState = CursorLockMode.Confined;
+			#if UNITY_EDITOR
+				Cursor.lockState = CursorLockMode.None;
+			#else	
+				Cursor.lockState = CursorLockMode.Confined;
+			#endif
 		}
-		Cursor.visible = true; // Attempt to reconcile Linux bug.
+		MouseCursor.SetCursorPosInternal((int)(Screen.width * 0.5f),(int)(Screen.height * 0.5f));
 		Cursor.visible = false;
 		MouseCursor.a.deltaX = 0;
 		MouseCursor.a.deltaY = 0;

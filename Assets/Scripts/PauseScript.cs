@@ -48,9 +48,19 @@ public class PauseScript : MonoBehaviour {
 					PauseToggle();
 			}
 			if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Menu)) PauseEnable();
+			CheckForSuperWinCmdKey();
 		}
 
 		if (!Paused()) relativeTime = relativeTime + Time.deltaTime;
+	}
+
+	void CheckForSuperWinCmdKey() {
+		if (   Input.GetKeyDown(KeyCode.LeftCommand)     // Apple
+			|| Input.GetKeyDown(KeyCode.RightCommand)    // Apple
+			|| Input.GetKeyDown(KeyCode.LeftWindows)     // Windows
+			|| Input.GetKeyDown(KeyCode.RightWindows)) { // Windows
+			PauseEnable();
+		}
 	}
 
 	public void PauseToggle() {

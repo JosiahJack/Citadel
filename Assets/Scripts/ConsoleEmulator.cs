@@ -33,7 +33,8 @@ public static class ConsoleEmulator {
 			if (Input.GetKeyDown(KeyCode.UpArrow)) SetToCommandMoreDistant();
 			if (Input.GetKeyDown(KeyCode.DownArrow)) SetToCommandMoreRecent();
 			if ((Input.GetKeyUp(KeyCode.Return)
-                  || Input.GetKeyUp(KeyCode.KeypadEnter))
+                  || Input.GetKeyUp(KeyCode.KeypadEnter)
+				  || Input.GetKeyDown(KeyCode.JoystickButton0))
                 && !PauseScript.a.mainMenu.activeSelf == true) {
 
                 string enteredText = PlayerMovement.a.consoleinpFd.text;

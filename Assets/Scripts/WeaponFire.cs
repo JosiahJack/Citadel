@@ -255,7 +255,7 @@ public class WeaponFire : MonoBehaviour {
 			}
 
 			if (MouseLookScript.a.inventoryMode) {
-				wepYRot = ((MouseCursor.a.cursorPosition.x - (Screen.width/2f))/(Screen.width/2f)) * inventoryModeViewRotateMax;
+				wepYRot = ((MouseCursor.a.drawTexture.center.x-(Screen.width/2f))/(Screen.width/2f)) * inventoryModeViewRotateMax;
 				wepView.transform.localRotation = Quaternion.Euler(0f,wepYRot,0f);
 			} else {
 				wepView.transform.localRotation = Quaternion.Euler(0f,0f,0f);
@@ -615,8 +615,7 @@ public class WeaponFire : MonoBehaviour {
 
     bool DidRayHit(int wep16Index) {
         tempHit = new RaycastHit();
-        tempVec = new Vector3(MouseCursor.a.drawTexture.x + (MouseCursor.a.drawTexture.width / 2), MouseCursor.a.drawTexture.y + (MouseCursor.a.drawTexture.height / 2) + verticalOffset, 0);
-        tempVec.y = Screen.height - tempVec.y; // Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
+		tempVec = MouseCursor.a.GetCursorScreenPointForRay();
 		tempVec.x += UnityEngine.Random.Range(-driftForWeapon[wep16Index],driftForWeapon[wep16Index]);
 		tempVec.y += UnityEngine.Random.Range(-driftForWeapon[wep16Index],driftForWeapon[wep16Index]);
         if (Physics.Raycast(playerCamera.ScreenPointToRay(tempVec), out tempHit, fireDistance,Const.a.layerMaskPlayerAttack)) {
@@ -837,7 +836,8 @@ public class WeaponFire : MonoBehaviour {
 			}
         }
         damageData.hit = tempHit;
-        damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.a.drawTexture.center).direction;
+		damageData.attacknormal = MouseCursor.a.GetCursorScreenPointForRay();
+        damageData.attacknormal = playerCamera.ScreenPointToRay(damageData.attacknormal).direction;
         if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
             damageData.damage = Const.a.damagePerHitForWeapon2[wep16Index];
 			damageData.offense = Const.a.offenseForWeapon2[wep16Index];
@@ -1003,7 +1003,8 @@ public class WeaponFire : MonoBehaviour {
 			//CreateStandardImpactMarks(index16);
 		}
 		//damageData.hit = tHit;
-		damageData.attacknormal = playerCamera.ScreenPointToRay(MouseCursor.a.drawTexture.center).direction;
+		damageData.attacknormal = MouseCursor.a.GetCursorScreenPointForRay();
+		damageData.attacknormal = playerCamera.ScreenPointToRay(damageData.attacknormal).direction;
 		damageData.damage = Const.a.damagePerHitForWeapon[index16]/numTargets; // divide across multiple targets
 		damageData.damage = Const.a.damagePerHitForWeapon[index16]; // divide across multiple targets
 		damageData.damage = DamageData.GetDamageTakeAmount(damageData);

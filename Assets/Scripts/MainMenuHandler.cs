@@ -98,10 +98,14 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	void OnEnable() {
+		if (MouseLookScript.a == null) return;
+
 		MouseLookScript.a.playerCamera.enabled = false; // Improve menu performance.
 	}
 
 	void OnDisable() {
+		if (MouseLookScript.a == null) return;
+
 		MouseLookScript.a.playerCamera.enabled = true; // Improve menu performance.
 	}
 
@@ -124,36 +128,37 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 	}
 
+	void LeaveIntroCutscene() {
+		inCutscene = false;
+		IntroVideo.SetActive(false);
+		IntroVideoContainer.SetActive(false);
+		Const.a.WriteDatForIntroPlayed(false);
+		if (gameObject.activeSelf) BackGroundMusic.Play();
+	}
+
 	void Update() {
-		if (Input.GetKeyDown(KeyCode.Escape)) { // Escape/back button listener
+		if (Input.GetMouseButtonDown(0)
+			|| Input.GetMouseButtonDown(1)
+			|| Input.GetKeyDown(KeyCode.Escape)
+			|| Input.GetKeyDown(KeyCode.JoystickButton0)
+			|| Input.GetKeyDown(KeyCode.JoystickButton1)
+			|| Input.anyKey) {
+			if ((inCutscene || IntroVideoContainer.activeSelf)
+				&& !CouldNotFindDialogue.activeSelf) {
+				LeaveIntroCutscene();
+				return;
+			}
+		}
+
+		if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton1)) { // Escape/back button listener
 			if (savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
 				currentSaveSlot = -1;
 				typingSaveGame = false;
 				saveNameInputField[currentSaveSlot].GetComponentInChildren<InputField>().DeactivateInputField();
 			}
-			if (inCutscene && !CouldNotFindDialogue.activeSelf) {
-				inCutscene = false;
-				IntroVideo.SetActive(false);
-				IntroVideoContainer.SetActive(false);
-				Const.a.WriteDatForIntroPlayed(false);
-				if (gameObject.activeSelf) BackGroundMusic.Play();
-			}
+
 			GoBack();
 			return;
-		}
-
-		if (Input.GetMouseButtonDown(0)
-			|| Input.GetMouseButtonDown(1)
-			|| Input.anyKey) {
-			if (IntroVideoContainer.activeSelf
-				&& !CouldNotFindDialogue.activeSelf) {
-				inCutscene = false;
-				IntroVideo.SetActive(false);
-				IntroVideoContainer.SetActive(false);
-				Const.a.WriteDatForIntroPlayed(false);
-				if (gameObject.activeSelf) BackGroundMusic.Play();
-				return;
-			}
 		}
 
 		if (!IntroVideoContainer.activeSelf) {
@@ -171,7 +176,8 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 
 		if (typingSaveGame && (Input.GetKeyUp(KeyCode.Return)
-							   || Input.GetKeyUp(KeyCode.KeypadEnter))
+							   || Input.GetKeyUp(KeyCode.KeypadEnter)
+							   || Input.GetKeyDown(KeyCode.JoystickButton0))
 			&& savePage.activeInHierarchy
 			&& !newgamePage.activeInHierarchy) {
 			if (currentSaveSlot < 0) return;
@@ -522,6 +528,9 @@ public class MainMenuHandler : MonoBehaviour {
 				Const.a.InputCodeSettings[37] = 8; // Patch + = i
 				Const.a.InputCodeSettings[38] = 133; // Patch - = ,
 				Const.a.InputCodeSettings[39] = 12; // Full Map = m
+				Const.a.NoShootMode = true;
+				Const.a.InputQuickReloadWeapons = false;
+				Const.a.InputQuickItemPickup = false;
 				break;
 			case 1: // Legacy SS1
 				Const.a.InputCodeSettings[0] = 18; // Forward = s

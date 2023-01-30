@@ -17,7 +17,7 @@ public class UIButtonMask : MonoBehaviour {
 	private EventTrigger evenT;
 	private bool pointerEntered;
 
-	void Start() {
+	void Start() { // Start for the PauseScript.a and MouseScript.a references.
 		rect = GetComponent<RectTransform>(); // Create box collider for cursor entry detection.
 		pointerEntered = false;
 		boxCol = gameObject.AddComponent<BoxCollider>();
@@ -51,6 +51,10 @@ public class UIButtonMask : MonoBehaviour {
 			doubleClickTicks = 0;
 			GetComponent<Button>().onClick.AddListener(() => { UiButtonMaskClick(); });
 		}
+	}
+
+	void OnEnable() {
+		pointerEntered = false;
 	}
 
 	void Update() {

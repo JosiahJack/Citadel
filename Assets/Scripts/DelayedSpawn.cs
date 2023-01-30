@@ -12,8 +12,10 @@ public class DelayedSpawn : MonoBehaviour {
 	[HideInInspector] public bool active; // save
 
 	void OnEnable() {
-		timerFinished = PauseScript.a.relativeTime + delay;
-        active = true;
+		if (PauseScript.a != null) timerFinished = PauseScript.a.relativeTime + delay;
+        else timerFinished = delay;
+
+		active = true;
     }
 
 	void Update() {

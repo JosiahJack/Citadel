@@ -31,17 +31,25 @@ public class ConfigToggles : MonoBehaviour {
 			case ConfigToggleType.QuickPickup: self.isOn = Const.a.InputQuickItemPickup; break;
 			case ConfigToggleType.QuickReload: self.isOn = Const.a.InputQuickReloadWeapons; break;
 			case ConfigToggleType.Vsync: self.isOn = Const.a.GraphicsVSync; break;
+			case ConfigToggleType.NoShootMode: self.isOn = Const.a.GraphicsVSync; break;
 		}
 	}
 
 	public void ToggleFullscreen () { Const.a.GraphicsFullscreen = self.isOn; Config.WriteConfig(); }
 	public void ToggleSSAO () { Const.a.GraphicsSSAO = self.isOn; Config.WriteConfig(); }
 	public void ToggleBloom () { Const.a.GraphicsBloom = self.isOn; Config.WriteConfig(); }
-	public void ToggleReverb () { Const.a.AudioReverb = self.isOn; Config.WriteConfig(); }
+	public void ToggleReverb () {
+		Const.a.AudioReverb = self.isOn;
+		if (Const.a.AudioReverb) Const.a.ReverbOn();
+		else Const.a.ReverbOff();
+
+		Config.WriteConfig();
+	}
 	public void ToggleInvertLook () { Const.a.InputInvertLook = self.isOn; Config.WriteConfig(); }
 	public void ToggleInvertCyberLook () { Const.a.InputInvertCyberspaceLook = self.isOn; Config.WriteConfig(); }
 	public void ToggleInvertInventoryCycling () { Const.a.InputInvertInventoryCycling = self.isOn; Config.WriteConfig(); }
 	public void ToggleQuickItemPickup () { Const.a.InputQuickItemPickup = self.isOn; Config.WriteConfig(); }
 	public void ToggleQuickReloadWeapon () { Const.a.InputQuickReloadWeapons = self.isOn; Config.WriteConfig(); }
 	public void ToggleVSync () { Const.a.GraphicsVSync = self.isOn; Config.WriteConfig(); }
+	public void ToggleNoShootMode () { Const.a.NoShootMode = self.isOn; Config.WriteConfig(); }
 }
