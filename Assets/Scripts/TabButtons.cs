@@ -31,11 +31,11 @@ public class TabButtons : MonoBehaviour {
 		DataTabButton.image.overrideSprite = MFDSprite;
 	}
 
-	public void SetCurrentAsLast () {
+	public void SetCurrentAsLast() {
 		lastTab = curTab;
 	}
 
-	public void ReturnToLastTab () {
+	public void ReturnToLastTab() {
 		if (isRH) {
 			TabButtonClickSilent(2,true); // Force automap for right
 		} else {
@@ -43,12 +43,18 @@ public class TabButtons : MonoBehaviour {
 		}
 	}
 
-	public void TabButtonClick (int tabNum) {
+	public void TabButtonClick(int tabNum) { // For click events.
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		TabButtonAction(tabNum);
+	}
+
+	public void TabButtonAction(int tabNum) { // For keyboard events.
 		Utils.PlayOneShotSavable(TabSFX,TabSFXClip);
 		TabButtonClickSilent(tabNum,false);
 	}
 
-	public void TabButtonClickSilent (int tabNum,bool overrideToggling) {
+	// For automatic internal events not directly from player input.
+	public void TabButtonClickSilent(int tabNum,bool overrideToggling) {
 		switch (tabNum) {
 		case 0:
 			if (curTab == 0) {

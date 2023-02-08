@@ -10,6 +10,7 @@ public class LogMoreButton : MonoBehaviour {
 	private string remainder = System.String.Empty;
 
 	void LogMoreButtonClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
 		remainder = logTextOutput.GetComponent<Text>().text;
 		if (remainder.Length>568) {
 			// MORE BUTTON

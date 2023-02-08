@@ -72,20 +72,21 @@ public class MouseCursor : MonoBehaviour {
 	#endif
 
 	public static void SetCursorPosInternal(int x, int y) {
-		return; // Still experiencing issues, best to live with this bug a while yet.
+		// Still experiencing issues, best to live with this bug a while yet as
+		// it is better to have consistent behavior rather than what this does.
 
-		#if UNITY_STANDALONE_LINUX
-			IntPtr display = XOpenDisplay(null);
-			if (display == IntPtr.Zero) {
-				throw new Exception("Failed to open display");
-			}
+		//#if UNITY_STANDALONE_LINUX
+		//	IntPtr display = XOpenDisplay(null);
+		//	if (display == IntPtr.Zero) {
+		//		throw new Exception("Failed to open display");
+		//	}
 
-			Debug.Log("warping pointer to " + x.ToString() + ", " + y.ToString());
-			XWarpPointer(display, IntPtr.Zero, IntPtr.Zero, 0, 0, 0, 0, x, y);
-			XCloseDisplay(display);
-		#elif UNITY_STANDALONE_WIN
-			SetCursorPos((int)(Screen.width * 0.5f),(int)(Screen.height * 0.5f));
-		#endif
+		//	Debug.Log("warping pointer to " + x.ToString() + ", " + y.ToString());
+		//	XWarpPointer(display, IntPtr.Zero, IntPtr.Zero, 0, 0, 0, 0, x, y);
+		//	XCloseDisplay(display);
+		//#elif UNITY_STANDALONE_WIN
+		//	SetCursorPos((int)(Screen.width * 0.5f),(int)(Screen.height * 0.5f));
+		//#endif
 	}
 
 	public void RegisterRaycastRect(GameObject go, RectTransform rectToAdd) {
@@ -177,8 +178,13 @@ public class MouseCursor : MonoBehaviour {
 					Cursor.lockState = CursorLockMode.Confined;
 				#endif
 			}
+
+			if (GUIState.a.overButton || GUIState.a.overButtonType != ButtonType.None) {
+				GUIState.a.isBlocking = true;
+			}
 		} else {
 			Cursor.lockState = CursorLockMode.Locked;
+			GUIState.a.isBlocking = false;
 		}
 	}
 

@@ -1,3 +1,10 @@
+#pragma exclude_renderers d3d9
+#pragma exclude_renderers d3d11
+#pragma exclude_renderers gles
+#pragma exclude_renderers gles3
+#pragma exclude_renderers metal
+#pragma exclude_renderers opengl
+
 #include "UnityCG.cginc"
 
 RWStructuredBuffer<uint4> _Histogram;

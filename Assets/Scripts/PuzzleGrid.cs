@@ -106,7 +106,9 @@ public class PuzzleGrid : MonoBehaviour {
 	}
 
 	public void OnGridCellClick (int index) {
+		MFDManager.a.mouseClickHeldOverGUI = true;
 		if (puzzleSolved) return;
+
 		if (cellType[index] == PuzzleCellType.Standard) {
 			if (Const.a.difficultyPuzzle == 1) {
 				King(index); // Easy puzzle difficulty.  Chose King instead of Pawn to help speed up the puzzle by the antenna trap on Level 7

@@ -37,6 +37,7 @@ public class ElevatorButton : MonoBehaviour {
 	}
 
 	public void ElevButtonClick () {
+		MFDManager.a.mouseClickHeldOverGUI = true;
 		if (Vector3.Distance(MFDManager.a.objectInUsePos,MFDManager.a.playerCapsuleTransform.position) > Const.a.elevatorPadUseDistance || MFDManager.a.linkedElevatorDoor == null) {
 			Const.sprint(Const.a.stringTable[6]);
 		} else {

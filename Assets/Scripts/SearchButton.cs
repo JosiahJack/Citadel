@@ -21,6 +21,7 @@ public class SearchButton : MonoBehaviour {
 	}
 
 	public void SearchButtonClick (int buttonIndex) {
+		MFDManager.a.mouseClickHeldOverGUI = true;
 		switch (buttonIndex) {
 		case 0:
 			if (contents[0] == -1) return;

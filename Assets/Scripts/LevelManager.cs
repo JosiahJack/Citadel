@@ -89,14 +89,27 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 
+	void TeleportToRessurectionChamber() {
+		if (currentLevel == 13) return;
+
+		Transform plyr = PlayerReferenceManager.a.playerCapsule.transform;
+		Vector3 spot = ressurectionLocation[currentLevel].position;
+		plyr.position = transform.TransformPoint(spot);
+	}
+
 	public bool RessurectPlayer() {
 		if (ressurectionActive[currentLevel]) {
 			if (currentLevel == 10 ||currentLevel == 11 ||currentLevel == 12) {
-				LoadLevel(6,ressurectionLocation[currentLevel].gameObject,ressurectionLocation[currentLevel].position);
+				LoadLevel(6,ressurectionLocation[currentLevel].gameObject,
+						  ressurectionLocation[currentLevel].position);
+
 				ressurectionBayDoor[6].ForceClose();
 			} else {
-				if (currentLevel <= 7 && currentLevel >= 0) ressurectionBayDoor[currentLevel].ForceClose();
-				if (currentLevel != 13) PlayerReferenceManager.a.playerCapsule.transform.position = transform.TransformPoint(ressurectionLocation[currentLevel].position); //teleport to ressurection chamber
+				if (currentLevel <= 7 && currentLevel >= 0) {
+					ressurectionBayDoor[currentLevel].ForceClose();
+				}
+
+				TeleportToRessurectionChamber();
 			}
 
 			// Activate death screen and readouts for
@@ -280,7 +293,10 @@ public class LevelManager : MonoBehaviour {
 		float xMin = b.bounds.min.x;
 		float yMax = b.bounds.max.z; // Yes Unity you stupid engine...z is y people!  
 		float yMin = b.bounds.min.z; // NO I'm not making a 2D game....it's y and I'm sticking to it
-		if ((pos.x < xMax && pos.x > xMin) && (pos.z < yMax && pos.z > yMin)) return true;
+		if ((pos.x < xMax && pos.x > xMin) && (pos.z < yMax && pos.z > yMin)) {
+			return true;
+		}
+
 		return false;
 	}
 
@@ -288,12 +304,16 @@ public class LevelManager : MonoBehaviour {
 		if (curlevel > (lightContainers.Length - 1)) return;
 		if (curlevel < 0) return;
 
-		Component[] compArray = lightContainers[curlevel].GetComponentsInChildren(typeof(Light),true);
-		for (int i=0;i<compArray.Length;i++) {
-			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) continue;
-			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) continue;
+		Component[] compArray = 
+		  lightContainers[curlevel].GetComponentsInChildren(typeof(Light),true);
 
-			DestroyImmediate(compArray[i].gameObject); // Dangerous isn't it :D
+		GameObject go = null;
+		for (int i=0;i<compArray.Length;i++) {
+			go = compArray[i].gameObject;
+			if (go.GetComponent<LightAnimation>() != null) continue;
+			if (go.GetComponent<TargetIO>() != null) continue;
+
+			DestroyImmediate(go); // Dangerous isn't it :D
 		}
 		compArray = null;
 	}
@@ -302,8 +322,18 @@ public class LevelManager : MonoBehaviour {
 		if (curlevel > (lightContainers.Length - 1)) return;
 		if (curlevel < 0) return;
 
-		StreamReader sf = new StreamReader(Application.dataPath + "/StreamingAssets/CitadelScene_lights_level" + curlevel.ToString() + ".dat");
-		if (sf == null) { UnityEngine.Debug.Log("Lights input file path invalid"); return; }
+		string lName = "CitadelScene_lights_level" + curlevel.ToString()
+						  + ".dat";
+
+		string lPath = Utils.SafePathCombine(Application.streamingAssetsPath,
+											 lName);
+
+		Const.a.ConfirmExistsInStreamingAssetsMakeIfNot(lName);
+		StreamReader sf = new StreamReader(lPath);
+		if (sf == null) {
+			UnityEngine.Debug.Log("Lights input file path invalid");
+			return;
+		}
 
 		string readline;
 		List<string> readFileList = new List<string>();
@@ -406,11 +436,16 @@ public class LevelManager : MonoBehaviour {
 
 	public void UnloadLevelNPCs(int curlevel) {
 		GameObject go = npcContainers[curlevel];
-		Component[] compArray = go.GetComponentsInChildren(typeof(SaveObject),true);
+		Component[] compArray = go.GetComponentsInChildren(typeof(SaveObject),
+														   true);
+
 		for (int i=0;i<compArray.Length;i++) {
 			AIController aic = compArray[i].gameObject.GetComponent<AIController>();
-			if (aic == null) UnityEngine.Debug.Log("AIController missing on child " + compArray[i].gameObject.name + " of NPC container " + go.name);
-			else {
+			if (aic == null) {
+				UnityEngine.Debug.Log("AIController missing on "
+									  + "child " + compArray[i].gameObject.name
+									  + " of NPC container " + go.name);
+			} else {
 				if (aic.npcAutomapOverlayImage != null) {
 					aic.npcAutomapOverlayImage.gameObject.SetActive(false);
 				}
@@ -425,8 +460,18 @@ public class LevelManager : MonoBehaviour {
 		if (curlevel > (levelScripts.Length - 1)) return;
 		if (curlevel < 0) return;
 
-		StreamReader sf = new StreamReader(Application.dataPath + "/StreamingAssets/CitadelScene_dynamics_level" + curlevel.ToString() + ".dat");
-		if (sf == null) { UnityEngine.Debug.Log("Dynamic objects input file path invalid"); return; }
+		string dynName = "CitadelScene_dynamics_level" + curlevel.ToString()
+						 + ".dat";
+
+		string dynPath = Utils.SafePathCombine(Application.streamingAssetsPath,
+											   dynName);
+
+		Const.a.ConfirmExistsInStreamingAssetsMakeIfNot(dynName);
+		StreamReader sf = new StreamReader(dynPath);
+		if (sf == null) {
+			UnityEngine.Debug.Log("Dynamic objects input file path invalid");
+			return;
+		}
 
 		string readline;
 		List<string> readFileList = new List<string>();
@@ -438,14 +483,18 @@ public class LevelManager : MonoBehaviour {
 			sf.Close();
 		}
 
-		int val = 307; // First useable object (paper wad) just in case.  Don't want to spawn 0 as a fallback which is a wall.
+		int val = 307; // First useable object (paper wad) just in case.
+					   // Don't want to spawn 0 as a fallback which is a wall.
+
 		string[] entries;
 		for (int i=0;i<readFileList.Count;i++) {
 			entries = readFileList[i].Split(Convert.ToChar(Utils.splitChar));
 			if (entries.Length <= 1) continue;
 
 			val = Utils.GetIntFromString(entries[21]); // Master Index
-			GameObject newGO = ConsoleEmulator.SpawnDynamicObject(val,curlevel,false,container);
+			GameObject newGO = ConsoleEmulator.SpawnDynamicObject(val,curlevel,
+																  false,
+																  container);
 			if (newGO != null) SaveObject.Load(newGO,ref entries);
 		}
 	}

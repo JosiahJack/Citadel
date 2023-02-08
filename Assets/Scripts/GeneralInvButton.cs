@@ -8,13 +8,24 @@ public class GeneralInvButton : MonoBehaviour {
     public int useableItemIndex;
 	private bool reduce = false;
 
+    void Start() {
+        GetComponent<Button>().onClick.AddListener(() => { GeneralInvClick(); });
+    }
+
     void GeneralInvClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		GeneralInvUse();
+	}
+
+	public void GeneralInvUse() {
         Inventory.a.generalInvCurrent = GeneralInvButtonIndex;  //Set current
 		useableItemIndex = Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex];
 		MFDManager.a.SendInfoToItemTab(useableItemIndex);
     }
 
     public void DoubleClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+
         reduce = false;
 		useableItemIndex = Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex];
         if (useableItemIndex == 52 || useableItemIndex == 53 || useableItemIndex == 55) {
@@ -58,8 +69,4 @@ public class GeneralInvButton : MonoBehaviour {
 			GUIState.a.PtrHandler(false,false,ButtonType.None,null);
 		}
 	}
-
-    void Start() {
-        GetComponent<Button>().onClick.AddListener(() => { GeneralInvClick(); });
-    }
 }

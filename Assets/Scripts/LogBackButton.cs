@@ -10,6 +10,7 @@ public class LogBackButton : MonoBehaviour {
 	public int refIndex = -1;
 
 	void LogBackButtonClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
 		if (refIndex < 0) return;
 
 		logTextOutput.GetComponent<Text>().text = Const.a.audioLogSpeech2Text[refIndex];

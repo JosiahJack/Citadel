@@ -5,15 +5,17 @@ public class PooledItemDestroy : MonoBehaviour {
 	public float itemLifeTime = 3.00f;
 	public bool onlyOnce = false;
 	private bool doneYet = false;
+	private float timerFinished = 9999999f;
 
 	void OnEnable () {
-		StartCoroutine(DestroyBackToPool());
+		timerFinished = PauseScript.a.relativeTime + itemLifeTime;
 	}
 
-	IEnumerator DestroyBackToPool () {
-		if (!doneYet) {
-			yield return new WaitForSeconds(itemLifeTime); // Keep alive.
+	void Update() {
+		if (onlyOnce && doneYet) return;
 
+		if (timerFinished < PauseScript.a.relativeTime) {
+			timerFinished = 9999999f;
 			if (onlyOnce) doneYet = true;
 			gameObject.SetActive(false);
 		}

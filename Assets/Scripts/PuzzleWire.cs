@@ -398,6 +398,7 @@ public class PuzzleWire : MonoBehaviour {
 	}
 
 	public void ClickLHNode(int spot) {
+		MFDManager.a.mouseClickHeldOverGUI = true;
 		if (Solved) return;
 
 		if (selectedWireLH) {
@@ -413,6 +414,7 @@ public class PuzzleWire : MonoBehaviour {
 	}
 
 	public void ClickRHNode(int spot) {
+		MFDManager.a.mouseClickHeldOverGUI = true;
 		if (Solved) return;
 
 		if (!selectedWireLH) {

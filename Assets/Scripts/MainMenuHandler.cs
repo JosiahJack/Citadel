@@ -82,46 +82,56 @@ public class MainMenuHandler : MonoBehaviour {
 		ResetPages();
 		dataFound = false;
 		inCutscene = false;
-		FileBrowser.SetFilters(false,new FileBrowser.Filter("SHOCK RES Files", ".RES", ".res"));
+		FileBrowser.SetFilters(false,new FileBrowser.Filter("SHOCK RES Files",
+															".RES", ".res"));
 		FileBrowser.SetDefaultFilter( ".RES" );
 		Config.SetVolume();
 		StartCoroutine(CheckDataFiles());
-		if (System.IO.File.Exists(Application.dataPath + "/StreamingAssets/introdone.dat")) {
+		string indn = Utils.SafePathCombine(Application.streamingAssetsPath,
+											"introdone.dat");
+		if (System.IO.File.Exists(indn)) {
 			IntroVideo.SetActive(false);	
 			IntroVideoContainer.SetActive(false);
 		} else {
-			System.IO.File.Create(Application.dataPath + "/StreamingAssets/introdone.dat");
+			System.IO.File.Create(indn);
 		}
+
 		lpgsn_load = loadPage.GetComponent<LoadPageGetSaveNames>();
 		lpgsn_save = savePage.GetComponent<LoadPageGetSaveNames>();
 		beatFinished = Time.time;
 	}
 
-	void OnEnable() {
+	// Improve menu performance.
+	void DisableCameraDuringMenu() {
 		if (MouseLookScript.a == null) return;
 
-		MouseLookScript.a.playerCamera.enabled = false; // Improve menu performance.
+		MouseLookScript.a.playerCamera.enabled = false; 
 	}
 
-	void OnDisable() {
-		if (MouseLookScript.a == null) return;
+	void OnEnable() { DisableCameraDuringMenu(); }
 
-		MouseLookScript.a.playerCamera.enabled = true; // Improve menu performance.
-	}
+	void OnDisable() { DisableCameraDuringMenu(); }
 
 	IEnumerator CheckDataFiles () {
 		BackGroundMusic.Stop();
-		bool found = (System.IO.File.Exists(Application.dataPath + "/StreamingAssets/CITALOG.RES") && System.IO.File.Exists(Application.dataPath + "/StreamingAssets/CITBARK.RES"));
-		if (found) {
+		string alogPath = Utils.SafePathCombine(Application.streamingAssetsPath,
+												"CITALOG.RES");
+
+		string barkPath = Utils.SafePathCombine(Application.streamingAssetsPath,
+												"CITBARK.RES");
+		if (File.Exists(alogPath) && File.Exists(barkPath)) {
 			// Go right on into the game, all good here.
 			dataFound = true;
 			Config.SetVolume();
 			GoToFrontPage();
 			IntroVideo.SetActive(true);	
 		} else {
-			// Fake like we are checking for the files to be there for a quick bit of time
+			// Fake like we are checking for the files to be there.
+			// It's fake because we already did it and it is instant.
+			// This is just to show the user that we did in fact look.
 			InitialDisplay.SetActive(true);
 			yield return new WaitForSeconds(0.3f);
+
 			// OK, now show that we didn't find them
 			InitialDisplay.SetActive(false);
 			CouldNotFindDialogue.SetActive(true);
@@ -292,23 +302,33 @@ public class MainMenuHandler : MonoBehaviour {
 		NewGameGraphSystem.a.Graph(2, ecgValue);
 	}
 
+	string GetSaveName(int index) {
+		string savName = "sav" + index.ToString() + ".txt";
+		string sP = Utils.SafePathCombine(Application.streamingAssetsPath,
+											savName);
+
+		string retval = "! unknown !";
+		Const.a.ConfirmExistsInStreamingAssetsMakeIfNot(savName);
+		StreamReader sf = new StreamReader(sP);
+		if (sf == null) return retval;
+
+		using (sf) {
+			retval = sf.ReadLine();
+			if (retval == null) return "! unknown !"; // just in case
+
+			sf.Close();
+		}
+
+		return retval;
+	}
+
 	public void GoToLoadGameSubmenu (bool accessedFromPause) {
 		ResetPages();
 		loadPage.SetActive(true);
 		currentPage = Pages.lp;
 		returnToPause = accessedFromPause;
-
-		string readline; // variable to hold each string read in from the file
 		for (int i=0;i<8;i++) {
-			StreamReader sf = new StreamReader(Application.streamingAssetsPath + "/sav"+i.ToString()+".txt");
-			if (sf != null) {
-				using (sf) {
-					readline = sf.ReadLine();
-					if (readline == null) break; // just in case
-					loadButtonText[i].text = readline;
-					sf.Close();
-				}
-			}
+			loadButtonText[i].text = GetSaveName(i);
 		}	
 	}
 
@@ -317,18 +337,8 @@ public class MainMenuHandler : MonoBehaviour {
 		savePage.SetActive(true);
 		currentPage = Pages.sv;
 		returnToPause = accessedFromPause;
-
-		string readline; // variable to hold each string read in from the file
 		for (int i=0;i<8;i++) {
-			StreamReader sf = new StreamReader(Application.streamingAssetsPath + "/sav"+i.ToString()+".txt");
-			if (sf != null) {
-				using (sf) {
-					readline = sf.ReadLine();
-					if (readline == null) break; // just in case
-					saveButtonText[i].text = readline;
-					sf.Close();
-				}
-			}
+			saveButtonText[i].text = GetSaveName(i);
 		}	
 	}
 
@@ -421,12 +431,29 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 	}
 
+	// Linked in Inspector to dataPathInputText.
 	public void CopyFromPath() {
 		// Copy CITALOG.RES and CITBARK.RES from data path if they exist
-		if (System.IO.File.Exists(System.IO.Path.Combine(dataPathInputText.text,"CITALOG.RES")) && System.IO.File.Exists(System.IO.Path.Combine(dataPathInputText.text,"CITBARK.RES"))) {
+		string alogPath = Utils.SafePathCombine(dataPathInputText.text,
+												"CITALOG.RES");
+
+		string barkPath = Utils.SafePathCombine(dataPathInputText.text,
+												"CITBARK.RES");
+
+		// Must have both to get audio logs and SHODAN barks.
+		if (File.Exists(alogPath) && File.Exists(barkPath)) {
 			dataFound = true;
-			System.IO.File.Copy(System.IO.Path.Combine(dataPathInputText.text,"CITALOG.RES"),Application.dataPath + "/StreamingAssets/CITALOG.RES",true); // Set to true in case we have 1 and not the other we can overwrite
-			System.IO.File.Copy(System.IO.Path.Combine(dataPathInputText.text,"CITBARK.RES"),Application.dataPath + "/StreamingAssets/CITBARK.RES",true); // Set to true in case we have 1 and not the other we can overwrite
+			string alogStrmPath =
+				Utils.SafePathCombine(Application.streamingAssetsPath,
+									  "CITALOG.RES");
+			string barkStrmPath =
+				Utils.SafePathCombine(Application.streamingAssetsPath,
+									  "CITBARK.RES");
+
+			// Set overwrite to true in case we have 1 and not the other.
+			// from, to
+			File.Copy(alogPath,alogStrmPath,true);
+			File.Copy(barkPath,barkStrmPath,true);
 		}
 		StartCoroutine(CopyPathCheck());
 	}

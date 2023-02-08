@@ -126,7 +126,9 @@ public class HealthManager : MonoBehaviour {
 	void LinkToAutomapOverlay() {
 		if (isSecCamera && linkedCameraOverlay == null) {
 			Vector3 worldPos = transform.position;
-			SecurityCameraRotate scr = transform.parent.gameObject.GetComponent<SecurityCameraRotate>();
+			Transform prnt = transform.parent;
+			SecurityCameraRotate scr = null;
+			if (prnt != null) scr = prnt.gameObject.GetComponent<SecurityCameraRotate>();
 			if (scr != null) worldPos = scr.transform.position;
 			GameObject overlay = Const.a.GetObjectFromPool(PoolType.AutomapCameraOverlays);
 			if (overlay != null) {
@@ -426,17 +428,21 @@ public class HealthManager : MonoBehaviour {
 		}
 
         if (health <= 0f || (inCyberSpace && cyberHealth <= 0f)) {
+			Debug.Log("health <= 0f");
             if (!deathDone) {
+				Debug.Log("!deathDone");
+
 				UseDeathTargets();
-				deathDone = true;
 				if (vaporizeCorpse && !isSecCamera) VaporizeCorpse(dd.attackType == AttackType.EnergyBeam);
                 else if (isObject) {
+					Debug.Log("isObject");
 					ObjectDeath(null);
-				}else if (isScreen) ScreenDeath(backupDeathSound);
+				} else if (isScreen) ScreenDeath(backupDeathSound);
 				else if (teleportOnDeath) TeleportAway();
 				else if (isGrenade) GrenadeDeath();
 
                 if (isNPC) NPCDeath(null);
+				deathDone = true;
             }
 		}
 		return take;
@@ -599,12 +605,14 @@ public class HealthManager : MonoBehaviour {
 	public void ObjectDeath(AudioClip deathSound) {
 		if (deathDone) return;
 
+		Debug.Log("ObjectDeath 1");
 		if (gibOnDeath) Gib();
 		else {
 			DisableCollision();
 			DropSearchables();
 			CreateDeathEffects(deathFX,transform.position);
 		}
+		Debug.Log("ObjectDeath 2");
 		deathDone = true;
 		if (isSecCamera && linkedCameraOverlay != null) linkedCameraOverlay.enabled = false; // disable on automap
 		if (securityAffected != SecurityType.None) LevelManager.a.ReduceCurrentLevelSecurity(securityAffected);

@@ -21,7 +21,16 @@ public class EnergyOverloadButton : MonoBehaviour {
         buttonText.color = textClickableColor;
     }
 
+    void Start() {
+        GetComponent<Button>().onClick.AddListener(() => { OverloadEnergyClick(); });
+    }
+
     public void OverloadEnergyClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+        OverloadButtonAction();
+    }
+
+    public void OverloadButtonAction() {
         if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.a.weaponCurrent] > 25f) {
             Const.sprint(Const.a.stringTable[12]);
             return;

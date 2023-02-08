@@ -490,6 +490,8 @@ public class MouseLookScript : MonoBehaviour {
 		if (GUIState.a.overButtonType == ButtonType.None) return;
 		if (currentButton == null) return;
 
+		Debug.Log("InventoryButtonUse entered successfully");
+
 		int indexPriorToRemoval = -1;
 		switch(GUIState.a.overButtonType) {
 			case ButtonType.Weapon:
@@ -558,6 +560,8 @@ public class MouseLookScript : MonoBehaviour {
 				PutObjectInHand(indexPriorToRemoval,-1,0,0,true);
 				break;
 			case ButtonType.Search:
+				Debug.Log("InventoryButtonUse right clicked a Search button.");
+
 				SearchButton sebut = currentButton.GetComponentInParent<SearchButton>();
 				int tempButtonindex = currentButton.GetComponent<SearchContainerButton>().refIndex;
 				cursorTexture = Const.a.useableItemsFrobIcons[sebut.contents[tempButtonindex]];
@@ -855,6 +859,9 @@ public class MouseLookScript : MonoBehaviour {
 	public void ForceShootMode() {
 		if (Const.a.NoShootMode) return; // We are being like the original now!
 
+		GUIState.a.isBlocking = false;
+		GUIState.a.overButton = false;
+		GUIState.a.overButtonType = ButtonType.None;
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
 		inventoryMode = false;
@@ -868,6 +875,9 @@ public class MouseLookScript : MonoBehaviour {
 	public void ForceInventoryMode() {
 		if (inventoryMode) return;
 
+		GUIState.a.isBlocking = false;
+		GUIState.a.overButton = false;
+		GUIState.a.overButtonType = ButtonType.None;
 		if (PauseScript.a.MenuActive() || PauseScript.a.Paused()) {
 			Cursor.lockState = CursorLockMode.None;
 		} else {

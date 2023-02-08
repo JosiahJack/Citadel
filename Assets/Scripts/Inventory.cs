@@ -408,7 +408,7 @@ public class Inventory : MonoBehaviour {
 			if (GetInput.a != null) {
 				if (GetInput.a.Patch()) {
 					if (patchCounts[patchCurrent] > 0) {
-						patchButtonScripts[patchCurrent].DoubleClick();
+						patchButtonScripts[patchCurrent].PatchUse();
 					} else {
 						Const.sprint(Const.a.stringTable[324] ); // Out of patches.
 					}
@@ -676,7 +676,7 @@ public class Inventory : MonoBehaviour {
 		GeneralInvButton ginvb =
 			    genButtons[generalInvCurrent].GetComponent<GeneralInvButton>();
 		if (ginvb!= null) {
-			ginvb.DoubleClick();
+			ginvb.GeneralInvUse();
 			generalInventoryIndexRef[generalInvCurrent] = -1;
 		} else Debug.Log("BUG: Current general inv button was null");
 	}
@@ -700,7 +700,7 @@ public class Inventory : MonoBehaviour {
 		if (lastDex == nextIndex) return; // Don't do anything if we don't have more grenades.
 
 		MFDManager.a.CenterTabButtonClickSilent(0,true);
-		grenButtons[nextIndex].GrenadeInvClick();
+		grenButtons[nextIndex].GrenadeInvSelect();
 		switch(grenadeCurrent) {
 			case 0: Const.sprint(Const.a.stringTable[579]); break;
 			case 1: Const.sprint(Const.a.stringTable[580]); break;
@@ -729,7 +729,7 @@ public class Inventory : MonoBehaviour {
 		if (lastDex == nextIndex) return; // Don't do anything if we don't have more grenades.
 
 		MFDManager.a.CenterTabButtonClickSilent(0,true);
-		grenButtons[nextIndex].GrenadeInvClick();
+		grenButtons[nextIndex].GrenadeInvSelect();
 		switch(grenadeCurrent) {
 			case 0: Const.sprint(Const.a.stringTable[579]); break;
 			case 1: Const.sprint(Const.a.stringTable[580]); break;
@@ -842,7 +842,7 @@ public class Inventory : MonoBehaviour {
 			noPatches = (patchCounts[nextIndex] <= 0);
 		}
 		MFDManager.a.CenterTabButtonClickSilent(0,true);
-		patchButtonScripts[nextIndex].PatchInvClick(useSound);
+		patchButtonScripts[nextIndex].PatchSelect(useSound);
 	}
 
 	public void PatchCycleUp(bool useSound) {
@@ -858,7 +858,7 @@ public class Inventory : MonoBehaviour {
 			noPatches = (patchCounts[nextIndex] <= 0);
 		}
 		MFDManager.a.CenterTabButtonClickSilent(0,true);
-		patchButtonScripts[nextIndex].PatchInvClick(useSound);
+		patchButtonScripts[nextIndex].PatchSelect(useSound);
 	}
 
 	// index [0,6]: Index into the list of just the 7 grenade types.
@@ -1294,8 +1294,9 @@ public class Inventory : MonoBehaviour {
 				wepAmmoSecondary[tempindex] += ammo2;
 				wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent] = false;
 				if (ammo2 > 0) Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent] = true;
-                MFDManager.a.wepbutMan.wepButtons[i].GetComponent<WeaponButton>().useableItemIndex = index;
-				MFDManager.a.wepbutMan.wepButtons[i].GetComponent<WeaponButton>().WeaponInvClick();
+				WeaponButton wepBut = MFDManager.a.wepbutMan.wepButtons[i].GetComponent<WeaponButton>();
+                wepBut.useableItemIndex = index;
+				wepBut.WeaponInvUse();
 				MFDManager.a.SetWepInfo(index);
 				MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.a.currentMagazineAmount[WeaponCurrent.a.weaponCurrent]);
 				MFDManager.a.SendInfoToItemTab(index); // notify item tab we clicked on a weapon

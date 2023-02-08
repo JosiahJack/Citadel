@@ -35,8 +35,12 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 	}
 	
 	public void Keypress (int button) {
-		if (done)
-			return;
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		KeypressAction(button);
+	}
+
+	void KeypressAction(int button) { // Wrapper for non-click events.
+		if (done) return;
 		
 		Utils.PlayOneShotSavable(SFXSource,SFX);
 		// Digit key pressed 0 thru 9
@@ -108,19 +112,19 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 			digit100s.digitIndex = entryHuns;
 			if (done) return;
 
-			if (GetInput.a.Numpad0()) { Keypress(0); }
-			if (GetInput.a.Numpad1()) { Keypress(1); }
-			if (GetInput.a.Numpad2()) { Keypress(2); }
-			if (GetInput.a.Numpad3()) { Keypress(3); }
-			if (GetInput.a.Numpad4()) { Keypress(4); }
-			if (GetInput.a.Numpad5()) { Keypress(5); }
-			if (GetInput.a.Numpad6()) { Keypress(6); }
-			if (GetInput.a.Numpad7()) { Keypress(7); }
-			if (GetInput.a.Numpad8()) { Keypress(8); }
-			if (GetInput.a.Numpad9()) { Keypress(9); }
-			if (GetInput.a.NumpadMinus()) { Keypress(10); }
-			if (GetInput.a.NumpadPeriod()) { Keypress(11); }
-			if (GetInput.a.Backspace()) { Keypress(10); }
+			if (GetInput.a.Numpad0()) { KeypressAction(0); }
+			if (GetInput.a.Numpad1()) { KeypressAction(1); }
+			if (GetInput.a.Numpad2()) { KeypressAction(2); }
+			if (GetInput.a.Numpad3()) { KeypressAction(3); }
+			if (GetInput.a.Numpad4()) { KeypressAction(4); }
+			if (GetInput.a.Numpad5()) { KeypressAction(5); }
+			if (GetInput.a.Numpad6()) { KeypressAction(6); }
+			if (GetInput.a.Numpad7()) { KeypressAction(7); }
+			if (GetInput.a.Numpad8()) { KeypressAction(8); }
+			if (GetInput.a.Numpad9()) { KeypressAction(9); }
+			if (GetInput.a.NumpadMinus()) { KeypressAction(10); }
+			if (GetInput.a.NumpadPeriod()) { KeypressAction(11); }
+			if (GetInput.a.Backspace()) { KeypressAction(10); }
 
 			if (currentEntry == keycode) {
 				if ((entryHuns != -1) && sfxPlayed == false) {

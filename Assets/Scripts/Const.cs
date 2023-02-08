@@ -25,7 +25,11 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public string[] audiologSenders;
 	[HideInInspector] public string[] audiologSubjects;
 	public AudioClip[] audioLogs;
-	[HideInInspector] public AudioLogType[] audioLogType;  // 0 = text only, 1 = normal, 2 = email, 3 = papers, 4 = vmail
+	[HideInInspector] public AudioLogType[] audioLogType; // 0 = text only
+														  // 1 = normal
+														  // 2 = email
+														  // 3 = papers
+														  // 4 = vmail
 	[HideInInspector] public string[] audioLogSpeech2Text;
 	[HideInInspector] public int[] audioLogLevelFound;
 	public AudioClip[] sounds;
@@ -121,14 +125,14 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public float[] hearingRangeForNPC;
 	[HideInInspector] public float[] timeForTranquilizationForNPC;
 	[HideInInspector] public bool[] hopsOnMoveForNPC;
-												      // NPC Sounds  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28
-	[HideInInspector] public int[] sfxIdleForNPC =       new int[]{ -1, -1, -1, -1, 58, -1, 59, -1, 59, 52, -1, -1, -1, -1, -1, -1,121, -1, -1, -1,121,118, -1, -1, -1, -1, -1, -1, -1};
-	[HideInInspector] public int[] sfxSightSoundForNPC = new int[]{ -1, -1,111,150, 58,150, 59,152,152, -1,150,150,151,152,150, -1,121, -1,151,150,121,119,151, -1, -1, -1, -1, -1, -1};
-	[HideInInspector] public int[] sfxAttack1ForNPC =    new int[]{ -1, -1,108, -1, -1,146, -1,146,252,247, -1, -1, -1, -1, -1,122, -1,108,146, -1, -1,118, -1,125,258,258,258,258,258};
-	[HideInInspector] public int[] sfxAttack2ForNPC =    new int[]{ -1,256, -1,148, 50, 50, 50, 50, 50,250, 50, 50,146,259,148, -1,121, -1, -1,147, -1, -1,146, -1,258,258,258,258,258};
-	[HideInInspector] public int[] sfxAttack3ForNPC =    new int[]{ -1, -1, -1, -1, -1,244,244,244,245, -1, -1,149, -1, -1, -1, -1, -1, -1, -1,244, -1, -1, -1, -1,258,258,258,258,258};
-	[HideInInspector] public int[] sfxDeathForNPC =      new int[]{ -1, 48,110,143, 48,145, 48, 51, 47, 47,142,143,144, 47,162,123,120,134,144,144,120,117,144,124, -1, -1, -1, -1, -1};
-	[HideInInspector] public float[] deathBurstTimerForNPC=new float[]{0.0f,0.0f,0.1f,0.0f,0.1f,0.1f,0.2f,0.1f,0.1f,0.1f,0.0f,0.45f,0.75f,0.1f,0.0f,0.0f,0.1f,0.224f,0.9f,0.0f,0.1f,0.1f,0.1f,0.2f,0.1f,0.1f,0.1f,0.1f,0.1f};
+												      // NPC Sounds       0,   1,   2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28
+	[HideInInspector] public int[] sfxIdleForNPC =         new   int[]{  -1,  -1,  -1, -1, 58, -1, 59, -1, 59, 52, -1, -1, -1, -1, -1, -1,121, -1, -1, -1,121,118, -1, -1, -1, -1, -1, -1, -1};
+	[HideInInspector] public int[] sfxSightSoundForNPC =   new   int[]{  -1,  -1, 111,150, 58,150, 59,152,152, -1,150,150,151,152,150, -1,121, -1,151,150,121,119,151, -1, -1, -1, -1, -1, -1};
+	[HideInInspector] public int[] sfxAttack1ForNPC =      new   int[]{  -1,  -1, 108, -1, -1,146, -1,146,252,247, -1, -1, -1, -1, -1,122, -1,108,146, -1, -1,118, -1,125,258,258,258,258,258};
+	[HideInInspector] public int[] sfxAttack2ForNPC =      new   int[]{  -1, 256,  -1,148, 50, 50, 50, 50, 50,250, 50, 50,146,259,148, -1,121, -1, -1,147, -1, -1,146, -1,258,258,258,258,258};
+	[HideInInspector] public int[] sfxAttack3ForNPC =      new   int[]{  -1,  -1,  -1, -1, -1,244,244,244,245, -1, -1,149, -1, -1, -1, -1, -1, -1, -1,244, -1, -1, -1, -1,258,258,258,258,258};
+	[HideInInspector] public int[] sfxDeathForNPC =        new   int[]{  -1,  48, 110,143, 48,145, 48, 51, 47, 47,142,143,144, 47,162,123,120,134,144,144,120,117,144,124, -1, -1, -1, -1, -1};
+	[HideInInspector] public float[] deathBurstTimerForNPC=new float[]{0.0f,0.0f, 0.1f,0.0f,0.1f,0.1f,0.2f,0.1f,0.1f,0.1f,0.0f,0.45f,0.75f,0.1f,0.0f,0.0f,0.1f,0.224f,0.9f,0.0f,0.1f,0.1f,0.1f,0.2f,0.1f,0.1f,0.1f,0.1f,0.1f};
 	[HideInInspector] public NPCType[] typeForNPC;
 	[HideInInspector] public int[] projectile1PrefabForNPC;
 	[HideInInspector] public int[] projectile2PrefabForNPC;
@@ -196,7 +200,7 @@ public class Const : MonoBehaviour {
 
 	//Global object references
 	public GameObject loadingScreen;
-	public GameObject mainMenuInit; // Used to force mainMenuOn before Start() is called.
+	public GameObject mainMenuInit; // Used to force mainMenuOn before Start().
 	public StatusBarTextDecay statusBar;
    
 	//Config constants
@@ -220,23 +224,14 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public bool NoShootMode;
 	public float HeadBobRate = 10.0f;
 	public float HeadBobAmount = 0.02f;
-	[HideInInspector] public int AudioSpeakerMode;
-	[HideInInspector] public bool AudioReverb;
-	[HideInInspector] public int AudioVolumeMaster;
-	[HideInInspector] public int AudioVolumeMusic;
-	[HideInInspector] public int AudioVolumeMessage;
-	[HideInInspector] public int AudioVolumeEffects;
-	[HideInInspector] public int AudioLanguage;			// The language index. Used for choosing which text to display on-screen.
-	[HideInInspector] public float MouseSensitivity;		// The responsiveness of the mouse. Used for scaling slow mice up and fast mice down.
-	public int[] InputCodeSettings;		// The integer index values
-	public string[] InputCodes;			// The readable mapping names used as labels on the configuration page
-	public string[] InputValues;		// The list of all valid keys: letters, numbers, etc.
-	public string[] InputConfigNames;	// The readable keys used as text representations on the configuration page for set values.
-	[HideInInspector] public bool InputInvertLook;
-	[HideInInspector] public bool InputInvertCyberspaceLook;
-	[HideInInspector] public bool InputInvertInventoryCycling;
-	[HideInInspector] public bool InputQuickItemPickup;
-	[HideInInspector] public bool InputQuickReloadWeapons;
+	public int[] InputCodeSettings;	  // The integer index values
+	public string[] InputCodes;		  // The readable mapping names used as
+									  //   labels on the configuration page
+	public string[] InputValues;	  // The list of all valid keys: letters,
+									  //   numbers, etc.
+	public string[] InputConfigNames; // The readable keys used as text
+									  //   representations on the configuration
+									  //   page for set values.
 
     public Font mainFont1; // Used to force Point filter mode.
 	public Font mainFont2; // Used to force Point filter mode.
@@ -246,10 +241,8 @@ public class Const : MonoBehaviour {
 	public float[] reloadTime;
 
 	public Material[] screenCodes;
-	[HideInInspector] public int[] npcCount;
 	public Sprite[] logImages;
-	[HideInInspector] public int[] audioLogImagesRefIndicesLH;
-	[HideInInspector] public int[] audioLogImagesRefIndicesRH;
+
 	public GameObject eventSystem;
 	public Texture[] sequenceTextures;
 	public GameObject[] chunkPrefabs;
@@ -261,7 +254,23 @@ public class Const : MonoBehaviour {
 	public GameObject[] ReverbRegister;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
-	[HideInInspector] public string versionString = "v0.98"; // Global CITADEL PROJECT VERSION
+	[HideInInspector] public int AudioSpeakerMode;
+	[HideInInspector] public bool AudioReverb;
+	[HideInInspector] public int AudioVolumeMaster;
+	[HideInInspector] public int AudioVolumeMusic;
+	[HideInInspector] public int AudioVolumeMessage;
+	[HideInInspector] public int AudioVolumeEffects;
+	[HideInInspector] public int AudioLanguage;			// The language index. Used for choosing which text to display on-screen.
+	[HideInInspector] public float MouseSensitivity;		// The responsiveness of the mouse. Used for scaling slow mice up and fast mice down.
+	[HideInInspector] public bool InputInvertLook;
+	[HideInInspector] public bool InputInvertCyberspaceLook;
+	[HideInInspector] public bool InputInvertInventoryCycling;
+	[HideInInspector] public bool InputQuickItemPickup;
+	[HideInInspector] public bool InputQuickReloadWeapons;
+	[HideInInspector] public int[] npcCount;
+	[HideInInspector] public int[] audioLogImagesRefIndicesLH;
+	[HideInInspector] public int[] audioLogImagesRefIndicesRH;
+	[HideInInspector] public string versionString = "v0.99"; // Global CITADEL PROJECT VERSION
 	[HideInInspector] public bool gameFinished = false; // Global constants
 	[HideInInspector] public float justSavedTimeStamp;
 	[HideInInspector] public float savedReminderTime = 7f; // human short-term memory length
@@ -314,7 +323,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public Quaternion quaternionIdentity;
 	[HideInInspector] public Vector3 vectorZero;
 	[HideInInspector] public Vector3 vectorOne;
-	public int numberOfRaycastsThisFrame = 0;
+	[HideInInspector] public int numberOfRaycastsThisFrame = 0;
 	[HideInInspector] public int maxRaycastsPerFrame = 20;
 	[HideInInspector] public float raycastTick = 0.2f;
 	[HideInInspector] public float aiTickTime = 0.1f;
@@ -329,12 +338,23 @@ public class Const : MonoBehaviour {
 
 	public void Awake() {
 		Application.targetFrameRate = TARGET_FPS;
-		a = this; // Create a new instance so that it can be accessed globally. MOST IMPORTANT PART!!
-		a.justSavedTimeStamp = Time.time - a.savedReminderTime;
-		a.player1CapsuleMainCameragGO = a.player1.GetComponent<PlayerReferenceManager>().playerCapsuleMainCamera;
+		a = this; // Create a new instance so that it can be accessed globally.
+				  // MOST IMPORTANT PART!!
+
+
+		// Cache values needed by awake prior to the .a instances of others.
+		PlayerReferenceManager prm =
+							  a.player1.GetComponent<PlayerReferenceManager>();
+
+		if (prm != null) {
+			a.player1Capsule = prm.playerCapsule;
+			a.player1CapsuleMainCameragGO = prm.playerCapsuleMainCamera;
+		}
+
 		a.player1TargettingPos = a.player1CapsuleMainCameragGO.transform;
-		a.player1Capsule = a.player1.GetComponent<PlayerReferenceManager>().playerCapsule;
-		a.player1PlayerMovementScript = a.player1Capsule.GetComponent<PlayerMovement>();
+		a.player1PlayerMovementScript = 
+							   a.player1Capsule.GetComponent<PlayerMovement>();
+
 		a.CheckIfNewGame();
 		a.LoadTextForLanguage(0); // Initialize with US English (index 0)
 		a.s1 = new StringBuilder();
@@ -342,24 +362,81 @@ public class Const : MonoBehaviour {
 		if (a.mainMenuInit != null) {
 			if (!a.mainMenuInit.activeSelf) a.mainMenuInit.SetActive(true);
 		}
+
+		a.justSavedTimeStamp = Time.time - a.savedReminderTime;
 		a.quaternionIdentity = Quaternion.identity;
 		a.vectorZero = Vector3.zero;
 		a.vectorOne = Vector3.one;
 		a.LoadAudioLogMetaData();
 		a.LoadItemNamesData();
 		a.LoadDamageTablesData();
-		a.LoadEnemyTablesData(); // Doing earlier since these are needed by AIController's Start().
+		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
+	}
+
+	// From the Unity Documentation on Resources.Load:
+	// Note: All asset names and paths in Unity use forward slashes, paths
+	//       using backslashes will not work.
+	// Using Utils.SafePathCombine with `true` to force / separator.
+	// Removes the file extension as well per the docs.
+	// docs.unity3d.com/2019.4/Documentation/ScriptReference/Resources.Load.html
+	string ResourcesPathCombine(string folderInResources, string fileName) {
+		string fname = Path.GetFileNameWithoutExtension(fileName);
+		return Utils.SafePathCombine(folderInResources,true,fname);
+	}
+
+	public void ConfirmExistsInStreamingAssetsMakeIfNot(string fileName) {
+		if (string.IsNullOrWhiteSpace(fileName)) {
+			UnityEngine.Debug.Log("fileName was null or whitespace passed to "
+								  + "ConfirmExistsInStreamingAssetsMakeIfNot");
+			return;
+		}
+
+		string strmAstPth =
+			Utils.SafePathCombine(Application.streamingAssetsPath,fileName);
+
+		if (File.Exists(strmAstPth)) {
+			return; // Already exists, all good!
+		}
+
+		 // Recreate StreamingAssets if it doesn't exist.
+        if (!Directory.Exists(Application.streamingAssetsPath)) {
+			Directory.CreateDirectory(Application.streamingAssetsPath);
+		}
+
+		string rsrc = ResourcesPathCombine("StreamingAssetsRecovery",fileName);
+		//UnityEngine.Debug.Log("rsrc = " + rsrc);
+        TextAsset resourcesFile = (TextAsset)Resources.Load(rsrc);
+		//UnityEngine.Debug.Log(resourcesFile);
+        if (resourcesFile != null) {
+			// Recreate from Resources/StreamingAssetsRecovery/*
+			File.WriteAllText(strmAstPth, resourcesFile.text, // new, contents
+							  Encoding.ASCII);
+			if (File.Exists(strmAstPth)) {
+				UnityEngine.Debug.Log("File " + strmAstPth
+									       + " recreated");
+			} else {
+				UnityEngine.Debug.Log("File " + strmAstPth
+									       + " failed to be created by "
+										   + "File.WriteAllText!");
+			}
+        } else {
+			UnityEngine.Debug.Log("File " + strmAstPth
+								  + " not found in the Resources folder");
+		}
 	}
 
     public void LoadTextForLanguage(int lang) {
         string readline; // variable to hold each string read in from the file
         int currentline = 0;
-        string sourceFile = "/StreamingAssets/text_english.txt";
+        string tF = "text_english.txt";
         switch (lang) {
-            case 0: sourceFile = "/StreamingAssets/text_english.txt"; break;
-            case 1: sourceFile = "/StreamingAssets/text_espanol.txt"; break; // UPKEEP: support other languages
+            case 0: tF = "text_english.txt"; break;
+            case 1: tF = "text_espanol.txt"; break; // UPKEEP: Other languages
         }
-        StreamReader dataReader = new StreamReader(Application.dataPath + sourceFile, Encoding.ASCII);
+
+		ConfirmExistsInStreamingAssetsMakeIfNot(tF);
+		string fp = Utils.SafePathCombine(Application.streamingAssetsPath,tF);
+        StreamReader dataReader = new StreamReader(fp, Encoding.ASCII);
         using (dataReader) {
             do {
                 // Read the next line
@@ -367,7 +444,9 @@ public class Const : MonoBehaviour {
                 if (currentline < stringTable.Length) {
                     stringTable[currentline] = readline;
 				} else {
-					UnityEngine.Debug.Log("WARNING: Ran out of slots in stringTable at " + currentline.ToString());
+					UnityEngine.Debug.Log("WARNING: Ran out of slots in "
+										  + "stringTable at "
+										  + currentline.ToString());
 					dataReader.Close();
 					return;
 				}
@@ -476,7 +555,10 @@ public class Const : MonoBehaviour {
 		string readLogText; // loaded into string audioLogSpeech2Text[]
 		string readline; // variable to hold each string read in from the file
 		char logSplitChar = ',';
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/logs_text.txt",Encoding.ASCII);
+		ConfirmExistsInStreamingAssetsMakeIfNot("logs_text.txt");
+		string logPath = Utils.SafePathCombine(Application.streamingAssetsPath,
+											   "logs_text.txt");
+		StreamReader dataReader = new StreamReader(logPath,Encoding.ASCII);
 		using (dataReader) {
 			do {
 				int i = 0;
@@ -519,7 +601,10 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 		int readInt = 0;
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/damage_tables.txt",Encoding.ASCII);
+		ConfirmExistsInStreamingAssetsMakeIfNot("damage_tables.txt");
+		string dtP = Utils.SafePathCombine(Application.streamingAssetsPath,
+										   "damage_tables.txt");
+		StreamReader dataReader = new StreamReader(dtP,Encoding.ASCII);
 		using (dataReader) {
 			do {
 				int i = 0;
@@ -554,7 +639,11 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int pagenum = 0;
 		creditsLength = 1;
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/credits.txt",Encoding.ASCII);
+		ConfirmExistsInStreamingAssetsMakeIfNot("credits.txt");
+		string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  "credits.txt");
+
+		StreamReader dataReader = new StreamReader(dr,Encoding.ASCII);
 		using (dataReader) {
 			do {
 				// Read the next line
@@ -567,9 +656,16 @@ public class Const : MonoBehaviour {
 						continue;
 					}
 				}
-				if (pagenum >= creditsText.Length) { UnityEngine.Debug.Log("pagenum was too large at " + pagenum.ToString()); return; }
+
+				if (pagenum >= creditsText.Length) {
+					UnityEngine.Debug.Log("Credits pagenum was too large at "
+										  + pagenum.ToString());
+					return;
+				}
+
                 creditsText[pagenum] += readline + System.Environment.NewLine;
 			} while (!dataReader.EndOfStream);
+
 			dataReader.Close();
 			return;
 		}
@@ -579,14 +675,26 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/ng.dat",Encoding.ASCII);
+		ConfirmExistsInStreamingAssetsMakeIfNot("ng.dat");
+		string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  "ng.dat");
+
+		if (!File.Exists(dr)) {
+			UnityEngine.Debug.Log("ng.dat not found nor recreated");
+			return;
+		}
+
+		StreamReader dataReader = new StreamReader(dr,Encoding.ASCII);
 		using (dataReader) {
 			do {
-				// Read the next line
-				readline = dataReader.ReadLine();
-				if (currentline == 1) a.introNotPlayed = Utils.GetBoolFromString(readline);
+				readline = dataReader.ReadLine(); // Read the next line
+				if (currentline == 1) {
+					a.introNotPlayed = Utils.GetBoolFromString(readline);
+				}
+
 				currentline++;
 			} while (!dataReader.EndOfStream);
+
 			dataReader.Close();
 			return;
 		}
@@ -594,7 +702,10 @@ public class Const : MonoBehaviour {
 
 	public void WriteDatForIntroPlayed(bool setIntroNotPlayed) {
 		// Write bit to file
-		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath + "/ng.dat",false,Encoding.ASCII);
+		// No need to confirm it exists as StreamWriter will make it if not.
+		string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  "ng.dat");
+		StreamWriter sw = new StreamWriter(dr,false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
 				sw.WriteLine(Utils.BoolToString(setIntroNotPlayed));
@@ -708,19 +819,27 @@ public class Const : MonoBehaviour {
 		int readInt = 0;
 		int i = 0;
 		int refIndex = 0;
-		StreamReader dataReader = new StreamReader(Application.dataPath + "/StreamingAssets/enemy_tables.csv",Encoding.ASCII);
+		ConfirmExistsInStreamingAssetsMakeIfNot("enemy_tables.csv");
+		string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  "enemy_tables.csv");
+
+		StreamReader dataReader = new StreamReader(dr,Encoding.ASCII);
 		using (dataReader) {
 			do {
 				i = 0;
 				refIndex = 0;
 				readline = dataReader.ReadLine(); // Read the next line
-				if (!skippedFirstLine) {skippedFirstLine = true; continue;}
+				if (!skippedFirstLine) { skippedFirstLine = true; continue; }
+
 				string[] entries = readline.Split(',');
 				char[] commentCheck = entries[i].ToCharArray();
-				if (commentCheck[0] == '/' && commentCheck[1] == '/') continue; // Skip lines that start with '//'
+				if (commentCheck[0] == '/' && commentCheck[1] == '/') {
+					continue; // Skip lines that start with '//'
+				}
 
 				refIndex = Utils.GetIntFromString(entries[i+1]); // Index is stored at 2nd spot
 				if (refIndex < 0 || refIndex > 28) continue; // Invalid value, skip
+
 				nameForNPC[refIndex] = entries[i].Trim(); i++;
 				i++; // No need to read the index again so we skip over it.
 				readInt = Utils.GetIntFromString(entries[i].Trim()); attackTypeForNPC[refIndex] = Utils.GetAttackTypeFromInt(readInt); i++; 
@@ -805,7 +924,9 @@ public class Const : MonoBehaviour {
 	}
 
 	public static string GetTargetID(int npcIndex) {
-		if (npcIndex > Const.a.npcPrefabs.Length) return "BUG: npcIndex passed to GetTargetID too large!";
+		if (npcIndex > Const.a.npcPrefabs.Length) {
+			return "BUG: npcIndex passed to GetTargetID too large!";
+		}
 
 		Const.a.npcCount[npcIndex]++;
 		return Const.a.nameForNPC[npcIndex] + Const.a.npcCount[npcIndex].ToString();
@@ -821,7 +942,8 @@ public class Const : MonoBehaviour {
 		return Const.a.stringTable[503];
 	}
 
-	public static void sprintByIndexOrOverride(int index, string overrideString, GameObject playerPassed) {
+	public static void sprintByIndexOrOverride(int index, string overrideString,
+											   GameObject playerPassed) {
 		if (string.IsNullOrWhiteSpace(overrideString)) {
 			if (index >= 0) {
 				sprint(Const.a.stringTable[index],playerPassed);
@@ -1152,9 +1274,11 @@ public class Const : MonoBehaviour {
 		}
 
 		// Write to file
-		StreamWriter sw = new StreamWriter(Application.streamingAssetsPath
-										   + "/sav"+saveFileIndex.ToString()
-										   +".txt",false,Encoding.ASCII);
+		string sName = "sav" + saveFileIndex.ToString() + ".txt";
+		string sPath = Utils.SafePathCombine(Application.streamingAssetsPath,
+											 sName);
+
+		StreamWriter sw = new StreamWriter(sPath,false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
 				for (j=0;j<saveData.Length;j++) {
@@ -1359,10 +1483,13 @@ public class Const : MonoBehaviour {
 		yield return null; // Update progress text.
 
 		List<string> readFileList = new List<string>();
-		char csplit = '|'; // caching since it will be iterated over in a loop
-		int index = 0; // caching since...I just said this
-		string[] entries = new string[2048]; // hold | delimited strings on individual lines
-		StreamReader sr = new StreamReader(Application.streamingAssetsPath + "/sav"+saveFileIndex.ToString()+".txt");
+		int index = 0; // Caching since it will be iterated over in a loop.
+		string[] entries = new string[2048]; // Holds pipe | delimited strings
+											 // on individual lines.
+		string lName = "sav" + saveFileIndex.ToString() + ".txt";
+		string lPath = Utils.SafePathCombine(Application.streamingAssetsPath,
+											 lName);
+		StreamReader sr = new StreamReader(lPath);
 		if (sr != null) {
 			// Read the file into a list, line by line
 			using (sr) {
@@ -1384,12 +1511,12 @@ public class Const : MonoBehaviour {
 			//index = 0; // Uncomment this if we pull in the saveName from this line for something.
 
 			// Read in global time and pause data
-			entries = readFileList[1].Split(csplit);
+			entries = readFileList[1].Split(Utils.splitChar.ToCharArray()[0]);
 			PauseScript.a.relativeTime = Utils.GetFloatFromString(entries[index]); // the global time from which everything checks it's somethingerotherFinished timer states
 			index = 0; // reset before starting next line
 
 			// Read in global states, difficulties, and quest mission bits.
-			entries = readFileList[2].Split(csplit);
+			entries = readFileList[2].Split(Utils.splitChar.ToCharArray()[0]);
 			index = LevelManager.Load(LevelManager.a.gameObject,ref entries,index);
 			index = questData.Load(ref entries,index);
 			difficultyCombat = Utils.GetIntFromString(entries[index]); index++;
@@ -1408,7 +1535,7 @@ public class Const : MonoBehaviour {
 			bool[] alreadyLoadedLineFromSaveFile = new bool[numSaveFileLines];
 			Utils.BlankBoolArray(ref alreadyLoadedLineFromSaveFile,false); // Fill with false.
 			for (i = 3; i < numSaveFileLines; i++) {
-				entries = readFileList[i].Split(csplit);
+				entries = readFileList[i].Split(Utils.splitChar.ToCharArray()[0]);
 				if (entries.Length > 1) {
 					saveFile_Line_SaveID[i] = Utils.GetIntFromString(entries[1]); // int - get saveID from 2nd slot
 					saveFile_Line_IsInstantiated[i] = Utils.GetBoolFromString(entries[2]); // bool - get instantiated from 3rd slot
@@ -1481,7 +1608,7 @@ public class Const : MonoBehaviour {
 												  + saveableGameObjectsInScene[j].name);
 						}
 
-						entries = readFileList[i].Split(csplit);
+						entries = readFileList[i].Split(Utils.splitChar.ToCharArray()[0]);
 						SaveObject.Load(currentGameObjectInScene,ref entries);
 						alreadyCheckedThisSaveableGameObjectInScene[j] = true; // Huge time saver right here!
 						break;
@@ -1536,7 +1663,7 @@ public class Const : MonoBehaviour {
 			for (i = 3 ; i < numSaveFileLines; i++) {
 				if (alreadyLoadedLineFromSaveFile[i]) continue;
 
-				entries = readFileList[i].Split(csplit);
+				entries = readFileList[i].Split(Utils.splitChar.ToCharArray()[0]);
 				if (entries.Length > 1) {
 					levID = Utils.GetIntFromString(entries[18]); // int - get the level this was in
 					if (levID < 0 || levID > 13) levID = 1; // Default to med.

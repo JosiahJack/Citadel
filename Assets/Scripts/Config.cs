@@ -6,6 +6,9 @@ using UnityEngine.PostProcessing;
 // Handles configuration parsing for user settings.
 public class Config {
 	public static void LoadConfig() {
+		// The currently used config is always Config.ini.
+		Const.a.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
+
 		// Graphics Configurations
 		Const.a.GraphicsResWidth = AssignConfigInt("Graphics","ResolutionWidth");
 		Const.a.GraphicsResHeight = AssignConfigInt("Graphics","ResolutionHeight");

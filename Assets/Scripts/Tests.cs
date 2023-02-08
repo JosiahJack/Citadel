@@ -699,8 +699,17 @@ public class Tests : MonoBehaviour {
 
 		UnityEngine.Debug.Log("Found " + allLights.Count + " lights in level " + levelToOutputFrom.ToString());
 
-		StreamWriter sw = new StreamWriter(Application.dataPath + "/StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat",false,Encoding.ASCII);
-		if (sw == null) { UnityEngine.Debug.Log("Lights output file path invalid"); return; }
+		string lName = "CitadelScene_lights_level"
+					   + levelToOutputFrom.ToString() + ".dat";
+
+		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  lName);
+
+		StreamWriter sw = new StreamWriter(lP,false,Encoding.ASCII);
+		if (sw == null) {
+			UnityEngine.Debug.Log("Lights output file path invalid");
+			return;
+		}
 
 		using (sw) {
 			for (int i=0;i<allLights.Count;i++) {
@@ -763,10 +772,21 @@ public class Tests : MonoBehaviour {
 			allDynamicObjects.Add(compArray[i].gameObject);
 		}
 
-		UnityEngine.Debug.Log("Found " + allDynamicObjects.Count + " dynamic objects in level " + levelToOutputFrom.ToString());
+		UnityEngine.Debug.Log("Found " + allDynamicObjects.Count
+							  + " dynamic objects in level "
+							  + levelToOutputFrom.ToString());
 
-		StreamWriter sw = new StreamWriter(Application.dataPath + "/StreamingAssets/CitadelScene_dynamics_level" + levelToOutputFrom.ToString() + ".dat",false,Encoding.ASCII);
-		if (sw == null) { UnityEngine.Debug.Log("Lights output file path invalid"); return; }
+		string dynName = "CitadelScene_dynamics_level"
+					   + levelToOutputFrom.ToString() + ".dat";
+
+		string dynP = Utils.SafePathCombine(Application.streamingAssetsPath,
+										    dynName);
+
+		StreamWriter sw = new StreamWriter(dynP,false,Encoding.ASCII);
+		if (sw == null) {
+			UnityEngine.Debug.Log("Lights output file path invalid");
+			return;
+		}
 
 		using (sw) {
 			for (int i=0;i<allDynamicObjects.Count;i++) {
@@ -779,8 +799,14 @@ public class Tests : MonoBehaviour {
 
 	public void SaveSelectedObject() {
 		string line = SaveObject.Save(gameObjectToSave);
-		StreamWriter sw = new StreamWriter(Application.dataPath + "/StreamingAssets/saving_unit_test.dat",false,Encoding.ASCII);
-		if (sw == null) { UnityEngine.Debug.Log("Save unit test output file path invalid"); return; }
+		string sName = "saving_unit_test.dat";
+		string sP = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  sName);
+		StreamWriter sw = new StreamWriter(sP,false,Encoding.ASCII);
+		if (sw == null) {
+			UnityEngine.Debug.Log("Save unit test output file path invalid");
+			return;
+		}
 
 		using (sw) {;
 			sw.Write(line);
@@ -791,8 +817,16 @@ public class Tests : MonoBehaviour {
 	}
 
 	public void LoadSelectedObject() {
-		StreamReader sf = new StreamReader(Application.dataPath + "/StreamingAssets/saving_unit_test.dat");
-		if (sf == null) { UnityEngine.Debug.Log("Save unit test input file path invalid"); return; }
+		string lName = "saving_unit_test.dat";
+		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  lName);
+
+		Const.a.ConfirmExistsInStreamingAssetsMakeIfNot(lName);
+		StreamReader sf = new StreamReader(lP);
+		if (sf == null) {
+			UnityEngine.Debug.Log("Save unit test input file path invalid");
+			return;
+		}
 
 		string readline;
 		List<string> readFileList = new List<string>();

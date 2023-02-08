@@ -1,0 +1,364 @@
+
+
+
+Click to continue...
+#
+======================================================================
+CITADEL
+======================================================================
+CONGRATULATIONS!
+Straight Time: #h #m #s
+Total Time (with reload from deaths): #h #m #s
+Kills: 0000
+Kills in Cyberspace: 0000
+Score Subtotal: 0000000000000000
+Deaths: 0000
+Ressurections: 0000
+Difficulty Index: 00
+Final Score: 0000000000000000
+
+Shots Fired: 0000
+Grenades Thrown: 0000
+Damage Dealt: 0000000000000000
+Damage Received: 0000000000000000
+Saves Scummed: 0000
+
+
+Click to continue...
+#
+----------------------------------------------------------------------
+Remake Credits
+----------------------------------------------------------------------
+Direct involvement list found...
+
+Lead Developer, Programmer, Artist, 3D Modeler
+W. Josiah Jack, aka Qmaster
+
+-3D Modelers-
+GOLD LEVEL CONTRIBUTOR: BastardRodent for most of the NPCs
+RocketMan for NPC and weapon models
+Chris S Evinrude for base item models
+MaxEvil for base weapon models
+Anders Jull Nannestad, aka Number47 for pistol ammo model
+
+-Artists-
+Kaucukovnik for HUD icons
+Gigaquad for higher res object textures
+#
+-Sound and Music-
+Denhonator for remixed menu music
+Nameless Voice for fluid midis
+
+-Misc Code-
+lerenwe, Benjamin Stanley, cxong, Eric Haines(Eric5h5)
+Keijiro Takahashi, Morgan McGuire, Michael Mara, NVIDIA,
+Williams College, Casual Effects, Unity Technologies,
+Jeff Johnson, WeaverDev
+#
+-Playtesters-
+Rachel Jack
+Kaitlyn Jack
+Rebecca Jack
+William Van De Kieft
+Trae Van Maanen
+RocketMan
+Denhonator
+Kolya
+Dertseha
+JML
+TheMotherload
+SHODAN
+Berathraben
+Tjomo
+Pacmikey
+#
+----------------------------------------------------------------------
+Indirect involvment list found...
+Steven Kick and Night Dive Studios for letting this project continue!
+And for providing the MAC source code of the original!
+
+The community on systemshock.org
+
+edx for a copy of System Shock Enhanced 2.5
+Riky Zedd, aka Thurlik for HD Hudmaps source and reference
+Speedy#3182 for his music data and pointing to ssplayer10
+Ruben Torres Bonet, aka Gamedev Guru, for his technical support.
+
+The TTSHP Team for their many Contributions:
+Jim Cameron, aka hairyjim, for engine reverse engineering
+Christian Haas, aka firefreak, for HUD textures and InkyBlackness
+Bryan Nolen, aka bryann, for music & sound system
+Damian Gryski, for SDL support
+Matt Hargett, for QA and leak detection
+Glen Sawyer, for hacking source files
+Jorg Fischer, for texture compression
+Alistair Brown, for hacking Underworld object format
+Ulf Wohlers, for hacking Underworld objects and models
+#
+----------------------------------------------------------------------
+Original Game Developers (1994)
+----------------------------------------------------------------------
+Looking Glass Technologies
+"Salt the fries"
+
+Producer
+Warren Spector
+
+Project Leader
+Doug Church
+
+Artists
+James Alexander Dollar
+Mark Lizotte
+Mike Marsicano
+Robb Waters
+Kurt Bickenbach
+
+Designers
+Austin Grossman
+Dorian Hart
+Erik Ray
+Tim Stellmach
+Kurt Bickenbach
+#
+Libraries
+Rex E. Bradford
+Laura Feeney
+James Wiley Fleming
+Jon Maiara
+Carl Muckenhoupt
+Dan Schmidt
+Matt Toschlog
+Kevin Wasserman
+Eric Twietmeyer
+
+Music
+Greg LoPiccolo
+
+Elevator Theme by
+Tim Ries
+
+Audio Processing
+Eric Brosius
+Greg LoPiccolo
+Tom Streit
+#
+Voiceovers
+SHODAN: Terri Brosius
+REBECCA LANSING: Helen Dunsmoir
+EDWARD DIEGO: Austin Grossman
+REX MELLVILLE: Marc LeBlanc
+OTHERS: Random LG members
+
+Looking Glass Playtesters
+Sara Verrilli
+Bart Mallio
+Jill Bidgood
+Nick Carter
+Anna Herbert
+
+Origin Systems Lead Playtesters
+Charles Angel
+Alvaro Moreno
+#
+Origin Systems Playtesters
+Marshall Andrews
+Bernadette Pryor
+Dustin Brimberry
+Brett Bonner
+Harvey Smith
+Jonathan Piasecki
+Todd Bailey
+Evan Brandt
+
+Programming
+Doug Church
+Marc LeBlanc
+Vinay Pulim
+Rob George Fermier
+Art Min
+Eli Wiesel
+
+Physics Programming
+Seamus Blackley
+#
+Special Guest Programmer
+Sean T. Barrett
+
+Sound System
+John Miles
+Fred Lim
+
+Translations Manager
+Kirsten Vaughan
+
+Translations
+Alpha CRC Cambridge
+
+French Translation
+Patricia Norwood
+Dominique Poumeyrol-Jumeau
+#
+French Playtesters
+Didie Jumeau
+
+German Translation
+Frank Dietz
+
+German Playtesters
+Andreas Kohler
+
+Thanks to the rest of LG for putting up with us
+#
+Origin Customer Support, Marketing and Sales
+
+Hardware Lab
+Evan Brandt
+
+Product Manager
+Galen Svanas
+Simon Etchells
+
+Documentation
+Tuesday Frase
+Harvey Smith
+Alvaro Moreno
+Rachel Close
+and assorted ORIGIN, and Looking Glass hackers
+
+UK Documentation QA
+Ashley Richardson
+#
+Editing
+David Ladyman
+Box Design
+Al Carnley
+Jennifer Davis
+
+Cover Art
+Jennifer Davis
+Robb Waters
+
+Documentation Design
+Al Carnley
+Jennifer Davis
+Trey Hermann
+Chris Morgan
+Rachel Close
+
+Quality Assurance
+Alex Camilleri (Cam-man)
+#
+----------------------------------------------------------------------
+Tools
+----------------------------------------------------------------------
+Game Engine: Unity 2019.4.35f1
+by Unity Technologies
+
+3D Modeling: Blender 2.68 through 2.78b
+by the Blender Foundation headed up by Ton Roosendal
+
+2D Textures: GIMP 2.8 through 2.10.6
+by The GIMP Development Team
+
+Code: Notepad++
+by Don Ho and the Notepad++ Team
+
+Hacking: DumpTex and ss1sound
+by Glen Sawyer
+
+Hacking: ss1edit
+by ToxicFrog
+
+The invaluable resources at SystemShock.org
+ran by Kolya
+#
+XMI2MID and RIPXMI
+by Markus Hein
+
+ssplayer10
+by Ryan Nunn (Cless, aka Colourless)
+
+XWE (eXtendable Wad Editor) Version 1.16 (Thank you Trance on TTLG)
+by Csabo, ReX (Gurkha Boy), Espi, Nigel Rowand (Enjay),
+Russell^, Doom_Dude, Fredrik, Angst, CacodemonLeader,
+Nick Baker, YicklePigeon, TZipMaster VCL by Chris
+Vleghert and Eric W. Engler
+
+Quake BSP to VRML Converter: bsp2wrl V1.3
+by Patrick McCormick 
+and Anthony Accardi
+
+Pallete Converter: palcnv12, used JASC output
+by Torben Giesselmann
+
+Batch Converter: ImageBatch 1.2
+by Dmitry Kopasov
+#
+DTValidator
+by Darren Tsung
+
+MissingReferencesUnity
+by Lior Tal aka liortal53
+
+MissingScriptsFinder
+by Leslie Young aka plyoung
+
+Texture2DArray Import Pipeline
+by Peter Schraut
+#
+----------------------------------------------------------------------
+Protoype Tools for when this project
+used a variant of the Quake 1 engine...
+
+Prototype Game Engine: DarkPlaces
+by LordHavoc, aka Forest Hale and id Software
+
+Prototype Level Editor: Jackhammer Level Editor (JACK)
+by XaeroX, DarkEssence, FreeSlave, GNU/Hurt, Phantomas, and Scrama.
+
+Prototype Code Editing: FTE QuakeC Compiler
+by Forethough Entertainment, Spike, Moodles, Blub/0, TimeServ, Bigfoot,
+Molgrum, Up2nOgOoD, RjLan, CheapAlert, purplehaze, avirox, and XavioR
+#
+Prototype 3D Model Exporter: Blender MDL Exporter
+by Bill Currie
+
+Prototype 3D Model Exporter: Blender MD3 Exporter
+by Derek McPherson, Xembie, PhaethonH, Bob Holcomb, Damien McGinnes,
+Robert (Tr3B) Beckebans, and CoDEmanX
+
+Prototype Model Converter (.md3 to .mdl): md3tomdl
+by Preach for converting 3d model files to Quake 1 format
+
+Prototype Particle Font: Particle Font		
+by talisa
+
+Prototype Colormap PCX: FULL.PCX
+by Glen Sawyer
+
+Prototype Pallete Lump: PCX2LMP V1.1
+by Richard Nichols
+----------------------------------------------------------------------
+#
+======================================================================
+Special Thanks
+======================================================================
+My wife for enduring with all my endless hours working on this project
+over the years.
+
+
+
+To McDonald's for the employee reminder and vague reference:
+
+Don't Forget to Salt the Fries!
+#
+======================================================================
+Thank you, and good night.
+======================================================================
+Bloodshot pizza box
+Caffein overdrive sorrow
+Embrace the chaos
+-Bart
+
+Click to continue...

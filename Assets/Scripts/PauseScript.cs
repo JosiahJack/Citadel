@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using System.IO;
 
 public class PauseScript : MonoBehaviour {
 	public GameObject pauseText;
@@ -226,8 +227,15 @@ public class PauseScript : MonoBehaviour {
 	}
 
 	public void TakeScreenshot() {
-		string sname = System.DateTime.UtcNow.ToString("ddMMMyyyy_HH_mm_ss") + "_v0.91.png";
-		string spath = Application.dataPath + "/StreamingAssets/Screenshots/" + sname;
+		string sname = System.DateTime.UtcNow.ToString("ddMMMyyyy_HH_mm_ss")
+					   + "_" + Const.a.versionString + ".png";
+		string spath = Utils.SafePathCombine(Application.streamingAssetsPath,
+											 "Screenshots");
+
+		// Check and recreate Screenshots folder if it was deleted.
+        if (!Directory.Exists(spath)) Directory.CreateDirectory(spath);
+		spath = Utils.SafePathCombine(spath,sname);
+
 		ScreenCapture.CaptureScreenshot(spath);
 		Const.sprint("Wrote screenshot " + sname);
 	}

@@ -6,10 +6,12 @@ public class SoftwareInvButton : MonoBehaviour {
 	public int index = 0;
 
 	public void DoubleClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
 		SoftInvClick();
 	}
 
     public void SoftInvClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
 		switch(index) {
 			case 0:
 					// Drill

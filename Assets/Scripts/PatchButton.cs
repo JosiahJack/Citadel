@@ -10,10 +10,20 @@ public class PatchButton: MonoBehaviour {
 	public AudioSource SFX;
 
 	public void DoubleClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		PatchUse();
+	}
+
+	public void PatchUse() {
 		PlayerPatch.a.ActivatePatch(useableItemIndex);
 	}
 
 	public void PatchInvClick (bool useSound) {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		PatchSelect(useSound);
+	}
+
+	public void PatchSelect(bool useSound) {
 		MFDManager.a.SendInfoToItemTab(useableItemIndex);
 		Inventory.a.patchCurrent = PatchButtonIndex; // Set current.
 		for (int i = 0; i < 7; i++) {

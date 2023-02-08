@@ -18,6 +18,8 @@ public class EnergySlider : MonoBehaviour {
 	}
 
     public void SetValue(float val) {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+
 		slideS.value = val*100f;
         WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent] = slideS.value;
     }

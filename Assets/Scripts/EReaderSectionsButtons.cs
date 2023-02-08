@@ -13,6 +13,8 @@ public class EReaderSectionsButtons : MonoBehaviour {
 	}
 
 	public void OnClick(int index) {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+
 		SetEReaderSectionsButtonsHighlights(index);
 		switch (index) {
 			case 0: MFDManager.a.OpenEmailTableContents(); break;

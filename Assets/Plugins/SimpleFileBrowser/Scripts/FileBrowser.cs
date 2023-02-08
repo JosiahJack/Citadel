@@ -620,7 +620,7 @@ namespace SimpleFileBrowser
 							//{
 							//	try
 							//	{
-							//		driveName = Directory.GetParent( drives[i] ).Name + "/" + driveName;
+							//		driveName = Directory.GetParent( drives[i] ).Name + Path.DirectorySeparatorChar.ToCharArray()[0] + driveName;
 							//	}
 							//	catch
 							//	{

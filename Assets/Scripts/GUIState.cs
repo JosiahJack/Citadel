@@ -58,6 +58,7 @@ public class GUIState : MonoBehaviour {
 		int type = Utils.GetIntFromString(entries[index]); index++;
 		guis.overButtonType = Utils.IntToButtonType(type);
 		guis.overButton = Utils.GetBoolFromString(entries[index]); index++;
+		if (guis.overButton) guis.isBlocking = true;
 		return index;
 	}
 }

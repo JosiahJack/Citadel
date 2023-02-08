@@ -1,0 +1,593 @@
+Energy drawn from power station
+Power station is recharging.
+ access card required
+The door is locked.
+ access granted
+ but door is locked.
+You are too far away from that
+Elevator door is still open
+Shaft Damage. Unable to go there.
+Already there
+RELOAD
+Weapon is too hot to fire
+Weapon too hot for overload
+Weapon normal setting
+OVERHEATED
+READY
+ENERGY SETTING
+Weapon overload enabled
+OVERLOAD ENABLED
+OVERLOAD
+LOW
+HIGH
+HEAT
+Automatic healing processes activated
+Healing bed is broken beyond repair
+Blocked by SHODAN level Security.
+[MORE]
+[CLOSE]
+Saved game to slot 
+Can't use 
+You are too far away from that
+ added to general inventory
+Inventory full, 
+ added to weapon inventory
+ added to grenade inventory
+ added to patch inventory
+Audio log 
+ picked up.  Press '
+' to play back.
+LOGS
+Level 
+ Logs
+EMAIL
+DATA
+Already have access: 
+New accesses gained: 
+THAT WARE IS OBSOLETE. DISCARDED.
+normal screens
+field generation rotor
+power exchanger
+repulsor lift
+warning indicator
+jump disk
+storage crate
+biological infestation
+data transfer schematic
+monitoring port
+stone mosaic tiling
+monitoring post
+video observation screen
+cyber station
+burnished platinum panelling
+SHODAN neural bud
+computer
+cabinet
+energy charge station
+CPU node
+chair
+catwalk
+surface
+cabinet
+table top
+cart
+console
+console panel
+desk
+computer panel
+console controls
+cyber space port
+keyboard
+x-ray machine
+repulsor lights
+environmental regulator
+atmospheric regulator
+fluid transport pipes
+engineering panelling
+ladder
+panelling
+system function gauges
+instruments
+engineering instruments
+electric cable access
+data circuit access port
+data access ports
+hi-grip surface
+halogen light fixture
+damaged light fixture
+observation station
+thick rug
+modular panelling
+soft panelling
+burnt panelling
+tech-rack
+corridor wall
+oak panelling
+titanium panelling
+molybdenum panelling
+light fixture
+carpet
+automatic teller machine
+elevator panelling
+duct
+marble slab
+display screen
+energ-light
+non-dent steel panelling
+grating
+observation ceiling
+grass
+wet grass
+virus infestation
+environment pod wall
+overgrowth
+overgrown panel
+environment regulator
+sprinkler system
+industrial tiles
+storage area
+chemical storage
+chemical dispensory
+repair station
+robot diagnostic system
+quartz light fixture
+incandescent light
+access station
+power conduits
+durallow panelling
+soft panelling
+comm port
+sof-impac panelling
+fluorescent light
+tile panelling
+clinical panelling
+rubberized panelling
+medical diagnostic tools
+healing incubator
+restoration bay
+flood light
+cracked radiation tile
+power coupling
+halogen lighting
+circuit relay
+relay access port
+power monitor
+data transfer array
+diagnostic module
+comm panel
+energy conduits
+equipment storage
+energy monitoring station
+rad observation console
+high energy transformer
+cable access port
+relay network
+sensor grid
+halogen lamp
+magnetic containment system
+aluminum panelling
+damaged panelling
+matter converter
+molecular analyzer
+instrument panel
+damaged regulator
+high-power light
+diagnostic panel
+instrument panel
+composite panelling
+data conduit
+atmospheric regulator
+trioptimum logo
+obsidian slab
+silver panelling
+no-scrape storeroom wall
+structural pillar
+Radiation Area
+Radiation poisoning 
+ LBP
+Can't stand here.
+Can't crouch here.
+Can't use broken panel
+Puzzle interface accessed
+Current weapon magazine already full.
+No more of current ammo type to load, loading with alternate.
+Switch deactivated.
+Saving...
+Saving...Done!
+Loading...
+Loading...Done!
+Medical computer cyberspace lock.
+Military computer cyberspace lock.
+Keypad unlocks door.
+The panel does not move.
+Executive computer cyberspace lock.
+Door locked - no maintenance required.
+Door locked due to bridge separation.
+The door is broken beyond repair.
+Open door with nearby lever, wear protective suit.
+Not enough energy to fire weapon.
+Shield absorbs 
+% damage.
+Does not fit the slot, isolinear chipset required.
+Circuit breaker program installed.
+Program already installed.
+plasma flux monitor
+temporal distortion monitor
+secondary temporal distortion monitor
+tertiary life support monitor
+primary gravity regulator
+auxiliary power monitor gamma
+auxiliary power monitor alpha
+planetary research databank
+secondary gravity regulator
+relay 183
+auxiliary power monitor beta
+xenobiological detection grid control
+routing controller 47-C
+local forcefield monitor
+relay 371
+secondary airlock safety grid
+E-bypass 77
+E-bypass 79
+primary airlock safety grid
+routing controller 47-A
+routing controller 47-B
+relay 73
+E-bypass 78
+relay 998
+relay 44
+relay 2
+iridium transfer control
+relay 333
+relay 516
+relay 101
+soylant green filtration control
+air purification backup control
+food replication backup control
+energy conduit C-7
+primary life support monitor
+secondary coolant regulator
+energy conduit C-4
+energy conduit C-2
+general redundant databank
+energy conduit C-3
+waste disposal backup control
+secondary life support monitor
+energy conduit C-1
+auxiliary engine report generator
+tertiary coolant regulator
+primary coolant regulator
+improper chipset, demodulator required
+interface demodulator installed!
+relay 428 functioning correctly
+relay 428
+Door to CPU room open.
+ASSLT RIFLE
+BLASTER
+DARTGUN
+FLECHETTE
+ION BEAM
+LASER RAPIER
+PIPE
+MAGNUM
+MAGPULSE
+PISTOL
+PLASMA RIFLE
+RAIL GUN
+RIOT GUN
+SKORPION
+SPARQ BEAM
+STUNGUN
+Envirosuit absorbed 
+, 
+improper item, isotope required.
+isotope installed!
+isotope already installed.
+panel is now open.
+The laser is destroyed.
+Unable to fire.  Charging.  Override preventing fire until fully charged.
+Safety override.  Beam not fired.
+Blocked by extant CPU nodes on one of levels 1, 2, or 3.
+Blocked by extant CPU nodes on one of levels 4, 5, or 6.
+Weapon
+Item
+Automap
+Target ID
+Data
+Main
+Hardware
+General
+Software
+Safety override already enabled.
+Access not granted.
+Access panel is locked.
+Energy already full.
+Health already at max.
+No more of any ammo type to load.
+Level security now 
+%
+Saved slot 
+Trioptimum Funpack Module, don't play on company time!
+ picked up.  Proper hardware not detected to play.
+Can't use grenade, hands full
+Already activated.
+WARNING: Bridge Separation Process Initiated. All unnecessary personnel clear the level.
+Power supply exhausted.
+Weapon does not use ammo.
+Map zoom at maximum.
+Map zoom at minimum.
+ dropped
+ picked up.
+ activated, grenade is LIVE!
+Cyberspace lock
+Out of grenades.
+Breaker is now on.
+Out of patches.
+Camera preventing switch use.
+PAPER WAD
+WARECASING
+BEAKER
+BEVERAGE CONTAINER
+SKULL
+SEVERED LIMB
+AUDIO LOG
+FRAGMENTATION GRENADE
+CONCUSSION BOMB
+EMP GRENADE
+EARTH SHAKER EXPLOSIVE
+LAND MINE
+NITROPACK
+GAS GRENADE
+BERSERK COMBAT BOOSTER
+DETOX UNIVERSAL ANTIDOTE
+GENIUS MIND-ENHANCER
+MEDIPATCH HEALING AGENT
+REFLEX REACTION AID
+SIGHT VISION ENHANCEMENT
+STAMINUP STIMULANT
+SYSTEM ANALYZER
+NAVIGATION AND MAPPING UNIT
+MULTIMEDIA DATA READER
+SENSAROUND MULTI-VIEW UNIT
+TARGET IDENTIFIER
+ENERGY/PROJECTILE SHIELD
+BIOLOGICAL SYSTEMS MONITOR
+HEAD-MOUNTED LANTERN
+ENVIRONMENTAL PROTECTION SUIT
+TURBO MOTION BOOSTER SYSTEM
+JUMP-JET MOTION HARDWARE
+INFRARED NIGHT SIGHT UNIT
+FIRE EXTINGUISHER
+PHONE
+WORKER HELMET
+MARK3 ASSAULT RIFLE
+ER-90 BLASTER
+SV-23 DARTGUN
+AM-27 FLECHETTE
+RW-45 ION BEAM
+TS-04 LASER RAPIER
+LEAD PIPE
+MAGNUM 2100
+SB-20 MAGPULSE
+ML-41 PISTOL
+LG-XX PLASMA RIFLE
+MM-76 RAILGUN
+DC-05 RIOT GUN
+RF-07 SKORPION
+SPARQ BEAM
+DH-07 STUNGUN
+BATTERY PACK
+ILLUDIUM-CADMIUM BATTERY
+DISPOSABLE LOGIC PROBE
+FIRST AID KIT
+Z-44 PLASTIQUE(TM)
+INTERFACE DEMODULATOR
+FLASK
+BITFLAG CHIPSET
+KEYBOARD
+ISOTOPE X-22
+TEST TUBE
+INTERFACE REMODULATOR
+ISOLINEAR CHIPSET
+SB SUPERCHARGED MAGCART
+SV NEEDLE DARTS
+SV TRANQ DARTS
+ML STANDARD ROUNDS
+ML TEFLON COATED ROUNDS
+HOLLOW-TIP 2100 CLIP
+HEAVY SLUG 2100 CLIP
+MARK3 MAGNESIUM-TIP SHELLS
+MARK3 PENETRATOR SHELLS
+AM HORNET CLIP
+AM SPLINTER CLIP
+MM RAIL CLIP
+RF SLAG CLIP
+RF LARGE SLAG CLIP
+SB MAG PULSE CART
+SB SMALL MAG PULSE CART
+STANDARD ACCESS CARD
+PER-1 ACCESS CARD
+GROUP-1 ACCESS CARD
+SCIENCE ACCESS CARD
+ENGINEERING ACCESS CARD
+GROUP-B ACCESS CARD
+COMMAND ACCESS CARD
+PER-5 ACCESS CARD
+MEDICAL ACCESS CARD
+GROUP-3 ACCESS CARD
+GROUP-4 ACCESS CARD
+SEVERED HEAD
+SEVERED HEAD
+SEVERED HEAD
+SEVERED HEAD
+SEVERED HEAD
+SEVERED HEAD
+SEVERED HEAD
+SEVERED HEAD
+SEVERED HEAD
+SEVERED HEAD
+
+
+
+
+
+
+ENERGY MINE
+PER-1 ACCESS CARD
+ISOTOPE Z-33
+GOGGLES HARDWARE
+CHIPTHING HARDWARE
+DC RUBBER SLUGS
+ADMIN ACCESS CARD
+Entering Cyberspace!
+level 1 elevator taken off line - SHODAN security block established 04.NOV.72
+Cannot play games in cyberspace!
+I.C.E. DRILL v
+PULSER v
+CYBERSHIELD v
+TURBO software acquired.
+DECOY software acquired.
+RECALL software acquired.
+"Ping" GAMES software acquired.
+"15" GAMES software acquired.
+"Wing 0" GAMES software acquired.
+"Botbounce" GAMES software acquired.
+"Eel Zapper" GAMES software acquired.
+"Road" GAMES software acquired.
+"TriopToe" GAMES software acquired.
+new DATA object acquired.
+ software acquired.
+Personal integrity restored.
+Cannot use outside of cyberspace.
+Cybershield is always passively active.
+SHODAN security presence controlled by CPU's and maintained by security cameras
+medical security door lock
+Commandos prepare to move to Level 2 core
+Map hardware version doesn't support zoom.
+Security to Level 2 computer nodes
+Bay Door No. 3 unlocked.
+Flight Bay armory unlocked.
+Storage closet unlocked - I.D. Edward Diego.
+Gamma quad in Exec level now property of Edward Diego
+Beta grove elevator unlocked.
+Detention cells unlocked.
+Out of expendable softwares.
+Current level security:
+Mining laser status:
+Lifepod status:
+Station shield status:
+Reactor status:
+Processor nodes:
+Main Program:
+Alpha Grove status:
+Beta Grove status:
+Gamma Grove status:
+Delta Grove status:
+Charging
+ERROR
+Disabled
+Enabled
+Off
+On
+Overload!
+Normal
+Launched
+Preparing laser
+Cultivating virus
+Downloading to earth
+Bridge separation
+Travel to earth
+Cyber Dog
+Cyber Guard
+Cyber Defender
+Cyber Reaver
+Data violation
+Time Until Laser Fires -
+Time Until Download Complete -
+Bridge Antenna in Range in -
+Bridge Separation Countdown -
+Radiation Release Countdown -
+Radiation Released!
+Target Identifier is always passively active.
+NO DAMAGE
+MINOR DAMAGE
+NORMAL DAMAGE
+SEVERE DAMAGE
+MAJOR DAMAGE
+Idle
+Cautious
+Hostile
+Asleep
+MEDI
+STAMINUP
+SIGHT
+GENIUS
+BERSERK
+REFLEX
+Biomonitor Active:
+Heart Rate:
+Patches Active:
+BPM
+DETOX
+Fatigue:
+High!
+Moderate
+Low
+No more of ammo type to load.
+STUNNED
+Decoy already active
+Weapon does not need reloaded.
+LOAD MAGNESIUM
+LOAD PENETRATOR
+LOAD NEEDLE
+LOAD TRANQ
+LOAD HORNET
+LOAD SPLINTER
+LOAD HOLLOW TIP
+LOAD HEAVY SLUG
+LOAD CARTRIDGE
+LOAD STANDARD
+LOAD TEFLON
+LOAD RAIL CLIP
+LOAD RUBBER SLUG
+LOAD SLAG
+LOAD LARGE SLAG
+Escape neurosurgery suite.
+  Keycode is 451.
+Destroy level 
+ nodes.
+  Code is 
+Disengage laser safety override.
+Activate the station energy shield.
+Destroy the mining laser.
+Enable master jettison.
+Diagnose and repair broken relay
+: 428.
+Jettison Beta Grove.
+Destroy the four relay antennae.
+Engage reactor self-destruct.
+Escape on escape pod.
+Access the bridge.
+Destroy SHODAN.
+Biological Systems Monitor
+Sensaround Multi-view Unit
+Head-mounted Lantern
+Energy/Projectile Shield
+Infrared Night Sight Unit
+Multimedia Data Reader
+Turbo Motion Booster System
+Jump-Jet Motion Hardware
+Switched to fragmentation grenade.
+Switched to EMP grenade
+Switched to gas grenade.
+Switched to concussion bomb.
+Swotched to land mine.
+Swotched to nitropack.
+Switched to earth shaker explosive.
+live
+The lever is stuck.
+Envirosuit is always passively active.
+ used.
+Last 
+Cyborg conversion cancelled.  Healing normal.
+Cyborg conversion reactivated.

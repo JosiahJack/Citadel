@@ -226,174 +226,224 @@ public class WeaponFire : MonoBehaviour {
 		WeaponCurrent.a.targetY = (WeaponCurrent.a.targetY * WeaponCurrent.a.reloadLerpValue);
 	}
 
-    void Update() {
-        if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-            if (WeaponsHaveAnyHeat()) HeatBleedOff(); // Slowly cool off any weapons that have been heated from firing
+	void Recoiling() {
+		if (!recoiling) return;
 
-			// Move the weapon transform up and down for reload "animation" and weapon swap
-			int i = Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
-			if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime && i >= 0) {
-				WeaponCurrent.a.reloadLerpValue = ((PauseScript.a.relativeTime - WeaponCurrent.a.lerpStartTime)/Const.a.reloadTime[i]); // percent towards goal time total (both halves of the action)
-				if (WeaponCurrent.a.reloadLerpValue >= 0.5f) {
-					lerpUp = 1;
-					WeaponLerpGetTargetUp();
-					if (WeaponCurrent.a.weaponCurrentPending != -1) {
-						WeaponCurrent.a.weaponCurrent = WeaponCurrent.a.weaponCurrentPending; //Set current weapon 7 slot
-						WeaponCurrent.a.weaponIndex = WeaponCurrent.a.weaponIndexPending;	  //Set current weapon inventory lookup index
-						WeaponCurrent.a.weaponCurrentPending = -1;
-						WeaponCurrent.a.weaponIndexPending = -1;
+		float x = wepView.transform.localPosition.x; // side to side
+		float z = wepView.transform.localPosition.z; // forward and back
+		z = Mathf.Lerp(z,wepViewDefaultLocalPos.z,Time.deltaTime);
+		x = Mathf.Lerp(x,wepViewDefaultLocalPos.x,Time.deltaTime);
+		wepView.transform.localPosition = 
+			new Vector3(x,wepView.transform.localPosition.y,z);
+	}
+
+    void Update() {
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
+
+		if (WeaponsHaveAnyHeat()) HeatBleedOff(); // Slowly cool off any weapons that have been heated from firing
+
+		// Move the weapon transform up and down for reload "animation" and weapon swap
+		int i = Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
+		if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime && i >= 0) {
+			WeaponCurrent.a.reloadLerpValue = ((PauseScript.a.relativeTime - WeaponCurrent.a.lerpStartTime)/Const.a.reloadTime[i]); // percent towards goal time total (both halves of the action)
+			if (WeaponCurrent.a.reloadLerpValue >= 0.5f) {
+				lerpUp = 1;
+				WeaponLerpGetTargetUp();
+				if (WeaponCurrent.a.weaponCurrentPending != -1) {
+					WeaponCurrent.a.weaponCurrent = WeaponCurrent.a.weaponCurrentPending; //Set current weapon 7 slot
+					WeaponCurrent.a.weaponIndex = WeaponCurrent.a.weaponIndexPending;	  //Set current weapon inventory lookup index
+					WeaponCurrent.a.weaponCurrentPending = -1;
+					WeaponCurrent.a.weaponIndexPending = -1;
+				}
+			} else {
+				lerpUp = 2;
+				WeaponLerpGetTargetDown();
+			}
+			Mathf.Clamp(WeaponCurrent.a.targetY, -100f, 100f);
+			wepView.transform.localPosition = new Vector3(wepView.transform.localPosition.x,WeaponCurrent.a.targetY,wepView.transform.localPosition.z);
+		} else {
+			lerpUp = 0;
+			wepView.transform.localPosition = new Vector3(wepView.transform.localPosition.x, wepViewDefaultLocalPos.y, wepView.transform.localPosition.z);
+		}
+
+		if (MouseLookScript.a.inventoryMode) {
+			wepYRot = ((MouseCursor.a.drawTexture.center.x-(Screen.width/2f))/(Screen.width/2f)) * inventoryModeViewRotateMax;
+			wepView.transform.localRotation = Quaternion.Euler(0f,wepYRot,0f);
+		} else {
+			wepView.transform.localRotation = Quaternion.Euler(0f,0f,0f);
+		}
+
+		Recoiling();
+		CheckAttackInput();
+		CheckReloadInput();
+		CheckAmmoChangeInput();
+    }
+
+	void CheckAttackInput() {
+		// Check for other things that must capture and override clicks
+		if (GetInput.a.Attack(true)) {
+			if (MouseLookScript.a.vmailActive) {
+				Inventory.a.DeactivateVMail();
+				MouseLookScript.a.vmailActive = false;
+				waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
+				return;
+			}
+
+			if (MouseLookScript.a.inCyberSpace) {
+				FireCyberWeapon();
+				return;
+			}
+
+			if (MouseLookScript.a.holdingObject
+				&& !MFDManager.a.mouseClickHeldOverGUI) { // !Just clicked
+				if (!GUIState.a.isBlocking) {
+					// Drop it
+					MouseLookScript.a.DropHeldItem ();
+					return;
+				} else {
+					MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex);
+					MouseLookScript.a.ResetHeldItem();
+					MouseLookScript.a.ResetCursor();
+					return;
+				}
+			}
+		}
+
+		int wepdex = Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
+		if (wepdex == -1) return; // No weapon.
+		if (GUIState.a.isBlocking) return;
+		if (MouseLookScript.a.holdingObject) return;
+		if (MFDManager.a.mouseClickHeldOverGUI) return;
+
+		GetWeaponData(wepdex);
+		if (GetInput.a.Attack(Const.a.isFullAutoForWeapon[wepdex])
+			&& waitTilNextFire < PauseScript.a.relativeTime
+			&& (PauseScript.a.relativeTime - energySliderClickedTime) > 0.1f
+			&& WeaponCurrent.a.reloadFinished < PauseScript.a.relativeTime) {
+			StartCoroutine(CheckUIStateAndAttack(wepdex));
+		}
+	}
+
+	IEnumerator CheckUIStateAndAttack(int wepdex) {
+		yield return null; // Ensure next frame
+
+		if (GUIState.a.isBlocking) yield break;
+		if (MouseLookScript.a.holdingObject) yield break;
+		if (MFDManager.a.mouseClickHeldOverGUI) yield break;
+		if (WeaponCurrent.a.reloadFinished >= PauseScript.a.relativeTime) yield break;
+		if (wepdex < 0 || wepdex > 15) yield break;
+		if (PlayerMovement.a.inFullMap) yield break;
+
+		justFired = PauseScript.a.relativeTime; // set justFired so that Music.cs can see it and play corresponding music in a little bit from now or keep playing action music
+		// Check weapon type and check ammo before firing
+		switch (wepdex) {
+			case 1: goto case 15;
+			case 4: goto case 15;
+			case 5: goto case 6;
+			case 6:
+				// Pipe or Laser Rapier, attack without prejudice.
+				// isSilent == false here so play normal SFX.
+				FireWeapon(wepdex, false); 
+				break;
+			case 10: goto case 15;
+			case 14: goto case 15;
+			case 15: 
+				// Energy weapons so check energy level
+				// Even if we have only 1 energy, we still fire with all we've got up to the energy level setting of course
+				if (PlayerEnergy.a.energy > 0
+					|| WeaponCurrent.a.bottomless
+					|| WeaponCurrent.a.redbull) {
+					if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.a.weaponCurrent] > overheatedPercent
+						&& !WeaponCurrent.a.bottomless
+						&& !WeaponCurrent.a.redbull) {
+						Utils.PlayOneShotSavable(SFX,SFXEmpty);
+						waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
+						Const.sprint(Const.a.stringTable[11]);
+					} else {
+						FireWeapon(wepdex, false); // weapon index, isSilent == false so play normal SFX
 					}
 				} else {
-					lerpUp = 2;
-					WeaponLerpGetTargetDown();
+					Const.sprint(Const.a.stringTable[207]); // Not enough energy to fire weapon.
 				}
-				Mathf.Clamp(WeaponCurrent.a.targetY, -100f, 100f);
-				wepView.transform.localPosition = new Vector3(wepView.transform.localPosition.x,WeaponCurrent.a.targetY,wepView.transform.localPosition.z);
+				break;
+			default:
+				// Uses normal ammo, check versus alternate or normal to see if we have ammo then fire
+				if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
+					if (WeaponCurrent.a.currentMagazineAmount2[WeaponCurrent.a.weaponCurrent] > 0
+						|| WeaponCurrent.a.bottomless) {
+						FireWeapon(wepdex, false); // weapon index, isSilent == false so play normal SFX
+					} else {
+						Utils.PlayOneShotSavable(SFX,SFXEmpty);
+						waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
+					}
+				} else {
+					if (WeaponCurrent.a.currentMagazineAmount[WeaponCurrent.a.weaponCurrent] > 0
+						|| WeaponCurrent.a.bottomless) {
+						FireWeapon(wepdex, false); // weapon index, isSilent == false so play normal SFX
+					} else {
+						Utils.PlayOneShotSavable(SFX,SFXEmpty);
+						waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
+					}
+				}
+				break;
+		}
+	}
+
+	void CheckReloadInput() {
+		if (WeaponCurrent.a.reloadFinished >= PauseScript.a.relativeTime) return;
+		if (!GetInput.a.Reload()) return;
+
+		if (Const.a.InputQuickReloadWeapons) {
+			// Press reload once, to do both unload then reload
+			WeaponCurrent.a.Reload();
+			return;
+		}
+
+		// First press reload to unload, then press again to load
+		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
+		if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
+			if (WeaponCurrent.a.currentMagazineAmount2[WeaponCurrent.a.weaponCurrent] <= 0
+				|| Inventory.a.wepAmmoSecondary[wep16index] <= 0) { // True for no wepAmmoSecondary causes Reload to run and display no ammo message.
+				WeaponCurrent.a.Reload();
+				// Debug.Log("Reload step");
 			} else {
-				lerpUp = 0;
-				wepView.transform.localPosition = new Vector3(wepView.transform.localPosition.x, wepViewDefaultLocalPos.y, wepView.transform.localPosition.z);
+				WeaponCurrent.a.Unload(false);
+				// Debug.Log("Unload step");
 			}
-
-			if (MouseLookScript.a.inventoryMode) {
-				wepYRot = ((MouseCursor.a.drawTexture.center.x-(Screen.width/2f))/(Screen.width/2f)) * inventoryModeViewRotateMax;
-				wepView.transform.localRotation = Quaternion.Euler(0f,wepYRot,0f);
+		} else {
+			if (WeaponCurrent.a.currentMagazineAmount[WeaponCurrent.a.weaponCurrent] <= 0
+				|| Inventory.a.wepAmmo[wep16index] <= 0) { // True for no wepAmmo causes Reload to run and display no ammo message.
+				WeaponCurrent.a.Reload();
+				// Debug.Log("Reload step");
 			} else {
-				wepView.transform.localRotation = Quaternion.Euler(0f,0f,0f);
+				WeaponCurrent.a.Unload(false);
+				// Debug.Log("Unload step");
+			}
+		}
+	}
+
+	void CheckAmmoChangeInput() {
+		if (WeaponCurrent.a.reloadFinished >= PauseScript.a.relativeTime) return;
+		if (!GetInput.a.ChangeAmmoType()) return;
+
+		if (Const.a.InputQuickReloadWeapons) {
+			// Press change ammo type button once, to do both unload then reload
+			WeaponCurrent.a.ChangeAmmoType();
+		} else {
+			// First press change ammo type button to unload, then press again to load
+			int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
+			int ammoAvailable = 0;
+			if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
+				ammoAvailable = Inventory.a.wepAmmoSecondary[wep16index];
+			} else {
+				ammoAvailable = Inventory.a.wepAmmo[wep16index];
 			}
 
-			if (recoiling) {
-				float x = wepView.transform.localPosition.x; // side to side
-				float z = wepView.transform.localPosition.z; // forward and back
-				z = Mathf.Lerp(z,wepViewDefaultLocalPos.z,Time.deltaTime);
-				x = Mathf.Lerp(x,wepViewDefaultLocalPos.x,Time.deltaTime);
-				wepView.transform.localPosition = new Vector3(x,wepView.transform.localPosition.y,z);
-			}
-
-			if (GetInput.a.Attack(true)) {
-				if (MouseLookScript.a.vmailActive) {
-					Inventory.a.DeactivateVMail();
-					MouseLookScript.a.vmailActive = false;
-					waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
-					return;
-				}
-
-				if (MouseLookScript.a.inCyberSpace) {
-					FireCyberWeapon();
-					return;
-				}
-
-				if (MouseLookScript.a.holdingObject) {
-					if (!GUIState.a.isBlocking) {
-						// Drop it
-						MouseLookScript.a.DropHeldItem ();
-						return;
-					} else {
-						MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex);
-						MouseLookScript.a.ResetHeldItem();
-						MouseLookScript.a.ResetCursor();
-						return;
-					}
-				}
-			}
-
-            if (!GUIState.a.isBlocking && !MouseLookScript.a.holdingObject) {
-                if (i == -1) return;
-
-                GetWeaponData(i);
-                if (GetInput.a.Attack(Const.a.isFullAutoForWeapon[i]) && waitTilNextFire < PauseScript.a.relativeTime && (PauseScript.a.relativeTime - energySliderClickedTime) > 0.1f && WeaponCurrent.a.reloadFinished < PauseScript.a.relativeTime) {
-					justFired = PauseScript.a.relativeTime; // set justFired so that Music.cs can see it and play corresponding music in a little bit from now or keep playing action music
-                    // Check weapon type and check ammo before firing
-                    if (i == 5 || i == 6) {
-                        // Pipe or Laser Rapier, attack without prejudice
-                        FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
-                    } else {
-                        // Energy weapons so check energy level
-                        if (i == 1 || i == 4 || i == 10 || i == 14 || i == 15) {
-                            // Even if we have only 1 energy, we still fire with all we've got up to the energy level setting of course
-                            if (PlayerEnergy.a.energy > 0 || WeaponCurrent.a.bottomless || WeaponCurrent.a.redbull) {
-								if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.a.weaponCurrent] > overheatedPercent && !WeaponCurrent.a.bottomless && !WeaponCurrent.a.redbull) {
-									Utils.PlayOneShotSavable(SFX,SFXEmpty);
-                                    waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
-                                    Const.sprint(Const.a.stringTable[11]);
-								} else {
-									FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
-								}
-							} else {
-									Const.sprint(Const.a.stringTable[207]); // Not enough energy to fire weapon.
-							}
-                        } else {
-                            // Uses normal ammo, check versus alternate or normal to see if we have ammo then fire
-                            if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
-                                if (WeaponCurrent.a.currentMagazineAmount2[WeaponCurrent.a.weaponCurrent] > 0 || WeaponCurrent.a.bottomless) {
-                                    FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
-                                } else {
-                                    Utils.PlayOneShotSavable(SFX,SFXEmpty);
-                                    waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
-                                }
-                            } else {
-                                if (WeaponCurrent.a.currentMagazineAmount[WeaponCurrent.a.weaponCurrent] > 0 || WeaponCurrent.a.bottomless) {
-                                    FireWeapon(i, false); // weapon index, isSilent == false so play normal SFX
-                                } else {
-                                    Utils.PlayOneShotSavable(SFX,SFXEmpty);
-                                    waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (GetInput.a.Reload() && WeaponCurrent.a.reloadFinished < PauseScript.a.relativeTime) {
-					if (Const.a.InputQuickReloadWeapons) {
-						// Press reload once, to do both unload then reload
-						WeaponCurrent.a.Reload();
-					} else {
-						// First press reload to unload, then press again to load
-						int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (WeaponCurrent.a.weaponIndex);
-						if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
-							if (WeaponCurrent.a.currentMagazineAmount2[WeaponCurrent.a.weaponCurrent] <= 0 || Inventory.a.wepAmmoSecondary[wep16index] <= 0) { // True for no wepAmmoSecondary causes Reload to run and display no ammo message.
-								WeaponCurrent.a.Reload();
-								// Debug.Log("Reload step");
-							} else {
-								WeaponCurrent.a.Unload(false);
-								// Debug.Log("Unload step");
-							}
-						} else {
-							if (WeaponCurrent.a.currentMagazineAmount[WeaponCurrent.a.weaponCurrent] <= 0 || Inventory.a.wepAmmo[wep16index] <= 0) { // True for no wepAmmo causes Reload to run and display no ammo message.
-								WeaponCurrent.a.Reload();
-								// Debug.Log("Reload step");
-							} else {
-								WeaponCurrent.a.Unload(false);
-								// Debug.Log("Unload step");
-							}
-						}
-					}
-                }
-
-				if (GetInput.a.ChangeAmmoType() && WeaponCurrent.a.reloadFinished < PauseScript.a.relativeTime) {
-					if (Const.a.InputQuickReloadWeapons) {
-						// Press change ammo type button once, to do both unload then reload
-						WeaponCurrent.a.ChangeAmmoType();
-					} else {
-						// First press change ammo type button to unload, then press again to load
-						int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (WeaponCurrent.a.weaponIndex);
-						if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
-							if (Inventory.a.wepAmmoSecondary[wep16index] <= 0) {
-								WeaponCurrent.a.ChangeAmmoType();
-							} else {
-								WeaponCurrent.a.Unload(false);
-							}
-						} else {
-							if (Inventory.a.wepAmmo[wep16index] <= 0) {
-								WeaponCurrent.a.ChangeAmmoType();
-							} else {
-								WeaponCurrent.a.Unload(false);
-							}
-						}
-					}
-				}
-            }
-        }
-    }
+			if (ammoAvailable <= 0) WeaponCurrent.a.ChangeAmmoType();
+			else WeaponCurrent.a.Unload(false);
+		}
+	}
 
 	void FireCyberWeapon() {
 		if (cyberWeaponAttackFinished < PauseScript.a.relativeTime) {

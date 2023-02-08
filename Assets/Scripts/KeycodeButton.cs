@@ -53,7 +53,12 @@ public class KeycodeButton : MonoBehaviour {
 		pointerEntered = false;
 	}
 
-	void KeycodeButtonClick () {
+	public void KeycodeButtonClick () {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		KeycodeButtonUse();
+	}
+
+	public void KeycodeButtonUse() {
 		keycodeController.GetComponent<KeypadKeycodeButtons>().Keypress(index);
 	}
 

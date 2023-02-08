@@ -6,17 +6,19 @@ using System;
 using System.Text;
  
 public class INIWorker {
-	private static string path = Path.Combine(Application.streamingAssetsPath, "Config.ini");
-    private static Dictionary<string, Dictionary<string, string>> IniDictionary = new Dictionary<string, Dictionary<string, string>>();
-    private static bool Initialized = false;
-
-    /// Sections list
     public enum Sections : byte {Section01, }
-
-    /// Keys list
     public enum Keys : byte { Key01, Key02, Key03, }
 
+    private static bool Initialized = false;
+	private static string path = 
+        Utils.SafePathCombine(Application.streamingAssetsPath, "Config.ini");
+
+    private static Dictionary<string, Dictionary<string, string>> IniDictionary = 
+        new Dictionary<string, Dictionary<string, string>>();
+
     private static bool FirstRead() {
+		Const.a.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
+        
         if (File.Exists(path)) {
             using (StreamReader sr = new StreamReader(path)) {
                 string line;
@@ -40,7 +42,13 @@ public class INIWorker {
                         theKey = ln[0].Trim();
                         theValue = ln[1].Trim();
                     }
-                    if (theSection == System.String.Empty || theKey == System.String.Empty || theValue == System.String.Empty) continue;
+
+                    if (theSection == System.String.Empty
+                        || theKey == System.String.Empty
+                        || theValue == System.String.Empty) {
+                        continue;
+                    }
+
                     PopulateIni(theSection, theKey, theValue); // Load the data from the ini into the dictionary
                 }
 				Initialized = true;
@@ -51,10 +59,11 @@ public class INIWorker {
  
     private static void PopulateIni(string _Section, string _Key, string _Value) {
         if (IniDictionary.ContainsKey(_Section)) {
-            if (IniDictionary[_Section].ContainsKey(_Key))
+            if (IniDictionary[_Section].ContainsKey(_Key)) {
                 IniDictionary[_Section][_Key] = _Value; // Update existing key with value
-            else
+            } else { 
                 IniDictionary[_Section].Add(_Key, _Value); // Create new key with value
+            }
         } else {
             Dictionary<string, string> neuVal = new Dictionary<string, string>();
             neuVal.Add(_Key.ToString(), _Value);  // Create key|value pair

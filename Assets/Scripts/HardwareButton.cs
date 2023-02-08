@@ -56,14 +56,14 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void ListenForHardwareHotkeys () {
-		if (Inventory.a.hasHardware[6] && GetInput.a.Biomonitor()) BioClick();
-		if (Inventory.a.hasHardware[3] && GetInput.a.Sensaround()) SensaroundClick();
-		if (Inventory.a.hasHardware[5] && GetInput.a.Shield())     ShieldClick();
-		if (Inventory.a.hasHardware[7] && GetInput.a.Lantern())    LanternClick();
-		if (Inventory.a.hasHardware[11]&& GetInput.a.Infrared())   InfraredClick();
-		if (Inventory.a.hasHardware[2] && GetInput.a.Email())      EReaderClick();
-		if (Inventory.a.hasHardware[9] && GetInput.a.Booster())    BoosterClick();
-		if (Inventory.a.hasHardware[10]&& GetInput.a.Jumpjets())   JumpJetsClick();
+		if (Inventory.a.hasHardware[6] && GetInput.a.Biomonitor()) BioAction();
+		if (Inventory.a.hasHardware[3] && GetInput.a.Sensaround()) SensaroundAction();
+		if (Inventory.a.hasHardware[5] && GetInput.a.Shield())     ShieldAction();
+		if (Inventory.a.hasHardware[7] && GetInput.a.Lantern())    LanternAction();
+		if (Inventory.a.hasHardware[11]&& GetInput.a.Infrared())   InfraredAction();
+		if (Inventory.a.hasHardware[2] && GetInput.a.Email())      EReaderAction();
+		if (Inventory.a.hasHardware[9] && GetInput.a.Booster())    BoosterAction();
+		if (Inventory.a.hasHardware[10]&& GetInput.a.Jumpjets())   JumpJetsAction();
 	}
 
 	// 0 = bio, 1 = sen, 2 = lan, 3 = shi, 4 = nig, 5 = ere, 6 = boo, 7 = jum
@@ -93,6 +93,11 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void BioClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		BioAction();
+	}
+
+	public void BioAction() {
 		if (Inventory.a.hardwareVersionSetting[6] == 0 && PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 		if (Inventory.a.hardwareIsActive[6]) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[0]);
@@ -148,8 +153,14 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void SensaroundClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		SensaroundAction();
+	}
+
+	public void SensaroundAction() {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 
+		MFDManager.a.mouseClickHeldOverGUI = true;
 		if (Inventory.a.hardwareIsActive[3]) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[1]);
 			SensaroundOff();
@@ -167,6 +178,11 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void ShieldClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		ShieldAction();
+	}
+
+	public void ShieldAction() {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 		if (Inventory.a.hardwareIsActive[5]) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[3]);
@@ -190,6 +206,11 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void LanternClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		LanternAction();
+	}
+
+	public void LanternAction() {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 		if (Inventory.a.hardwareIsActive[7]) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[2]);
@@ -222,6 +243,11 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void InfraredClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		InfraredAction();
+	}
+
+	public void InfraredAction() {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 		if (Inventory.a.hardwareIsActive[11]) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[4]);
@@ -257,12 +283,23 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void EReaderClick () {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		EReaderAction();
+	}
+
+	public void EReaderAction() {
 		Utils.PlayOneShotSavable(SFX,SFXClip[5]);
 		Inventory.a.hardwareIsActive[2] = true;
 		MFDManager.a.OpenEReaderInItemsTab();
 	}
 
+
 	public void BoosterClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		BoosterAction();
+	}
+
+	public void BoosterAction() {
 		if (Inventory.a.hardwareVersionSetting[6] == 1 && PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 		if (Inventory.a.hardwareIsActive[9]) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[6]);
@@ -280,6 +317,11 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void JumpJetsClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		JumpJetsAction();
+	}
+
+	public void JumpJetsAction() {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 		if (Inventory.a.hardwareIsActive[10]) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[7]);

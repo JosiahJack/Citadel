@@ -60,11 +60,18 @@ public class GrenadeButton : MonoBehaviour {
     }
 
 	void DoubleClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+
 		// Put grenade in the player's hand (cursor)
 		MouseLookScript.a.UseGrenade(useableItemIndex);
 	}
 
 	public void GrenadeInvClick () {
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		GrenadeInvSelect();
+	}
+
+	public void GrenadeInvSelect() {
 		MFDManager.a.SendInfoToItemTab(useableItemIndex);
 		Inventory.a.grenadeCurrent = GrenButtonIndex;  //Set current
 		Inventory.a.grenadeIndex = useableItemIndex;  //Set current

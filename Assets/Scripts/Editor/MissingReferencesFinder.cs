@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Reflection;
 using System.Linq;
+using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -121,6 +122,6 @@ public class MissingReferencesFinder : MonoBehaviour
 	{
 		return go.transform.parent == null
 			? go.name
-				: GetFullPath(go.transform.parent.gameObject) + "/" + go.name;
+				: GetFullPath(go.transform.parent.gameObject) + Path.DirectorySeparatorChar.ToString() + go.name;
 	}
 }

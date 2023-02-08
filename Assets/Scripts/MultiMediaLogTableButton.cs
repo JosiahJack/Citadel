@@ -7,6 +7,7 @@ public class MultiMediaLogTableButton : MonoBehaviour {
 	public int logTableButtonIndex;
 
 	void LogTableButtonClick() {
+		MFDManager.a.mouseClickHeldOverGUI = true;
 		MFDManager.a.OpenLogsLevelFolder(logTableButtonIndex);
 	}
 

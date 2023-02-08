@@ -395,7 +395,7 @@ public class WeaponCurrent : MonoBehaviour {
 		if (wep16index == 5 || wep16index == 6) { Const.sprint(Const.a.stringTable[315],owner); return; } // Do nothing for pipe or rapier.
 
 		if (wep16index == 1 || wep16index == 4 || wep16index == 10 || wep16index == 14 || wep16index == 15) {
-			if (overloadButton.activeInHierarchy) overloadButton.GetComponent<EnergyOverloadButton>().OverloadEnergyClick();
+			if (overloadButton.activeInHierarchy) overloadButton.GetComponent<EnergyOverloadButton>().OverloadButtonAction();
 		} else {
 			if (Inventory.a.wepLoadedWithAlternate[weaponCurrent]) {
 				if (Inventory.a.wepAmmo[wep16index] > 0) {

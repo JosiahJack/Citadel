@@ -63,4 +63,16 @@ public class UIPointerMask : MonoBehaviour {
 		GUIState.a.isBlocking = false;
 		pointerEntered = false;
 	}
+
+	public void OnPointerDown(PointerEventData eventData) {
+		if (EventSystem.current == null) {
+			return; // Ignore system cursor clicks in lieu of the fake cursor.
+		}
+		if (EventSystem.current.currentSelectedGameObject != gameObject) {
+			return;
+		}
+
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		Debug.Log("Mask click");
+	}
 }

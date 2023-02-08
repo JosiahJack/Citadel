@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Globalization;
 using System.Text;
 using UnityEngine;
@@ -15,7 +16,9 @@ using UnityEngine.Rendering;
 // E.g. 0|1|1 and NOT these: |0|1|1| or 0|1|1|.
 public class Utils {
 	public static string splitChar = "|"; // Common delimiter, not a comma as
-										  // text could contain commas.
+										  // text could contain commas.  Used
+										  // for all savefile text.
+
 	public static CultureInfo en_US_Culture = new CultureInfo("en-US");
 
 	private static bool getValparsed;
@@ -51,6 +54,57 @@ public class Utils {
 			array[i] = value; // Reset the list
 		}
 	}
+
+	// Safely combines multiple strings into a path using the operating
+	// system path delimiter or forces forward slashes for Resources.Load due
+	// to all Unity internal asset paths using forward slashes per the docs.
+	//
+	// Protects against the use of slashes by mistake in passed parameters as
+	// Path.Combine is too dumb to handle this properly on all systems.
+    public static string SafePathCombine(string basePath, bool forwardSlashes,
+										 params string[] additional) {
+        int totalLength = 0;
+        for (int i = 0; i < additional.Length; i++) {
+            totalLength += additional[i].Split(pathSplitCharacters).Length;
+        }
+
+        string[] segments = new string[totalLength + 1];
+        segments[0] = basePath;
+        int index = 0;
+        for (int i = 0; i < additional.Length; i++) {
+            string[] split = additional[i].Split(pathSplitCharacters);
+            for (int j = 0; j < split.Length; j++) {
+                index++;
+                segments[index] = split[j];
+            }
+        }
+
+		// Use forward slashes for Resources.Load calls.
+		if (forwardSlashes) {
+			StringBuilder s1 = new StringBuilder();
+			s1.Clear();
+			for (int k = 0; k < segments.Length; k++) {
+				s1.Append(segments[k]);
+				if (k != (segments.Length - 1)) s1.Append('/');
+			}
+
+			Debug.Log("SafePathCombine result with forced forward slashes: "
+					  + s1.ToString());
+			return s1.ToString();
+		}
+
+		// Use operating system path delimiter.
+		Debug.Log("SafePathCombine result: " + Path.Combine(segments));
+        return Path.Combine(segments);
+    }
+
+    public static string SafePathCombine(string basePath,
+										 params string[] additional) {
+
+		return SafePathCombine(basePath,false,additional);
+	}
+
+    static readonly char[] pathSplitCharacters = new char[] { '/', '\\' };
 
 	// Check if particular bit is 1 (ON/TRUE) in binary format of given integer
 	public static bool CheckFlags (int checkInt, int flag) {
