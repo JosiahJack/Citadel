@@ -427,25 +427,27 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 
+
         if (health <= 0f || (inCyberSpace && cyberHealth <= 0f)) {
-			Debug.Log("health <= 0f");
-            if (!deathDone) {
-				Debug.Log("!deathDone");
-
-				UseDeathTargets();
-				if (vaporizeCorpse && !isSecCamera) VaporizeCorpse(dd.attackType == AttackType.EnergyBeam);
-                else if (isObject) {
-					Debug.Log("isObject");
-					ObjectDeath(null);
-				} else if (isScreen) ScreenDeath(backupDeathSound);
-				else if (teleportOnDeath) TeleportAway();
-				else if (isGrenade) GrenadeDeath();
-
-                if (isNPC) NPCDeath(null);
-				deathDone = true;
-            }
+			Death(dd.attackType == AttackType.EnergyBeam);
 		}
 		return take;
+	}
+
+	void Death(bool energyVaporized) {
+		if (!deathDone) {
+			UseDeathTargets();
+			if (vaporizeCorpse && !isSecCamera) VaporizeCorpse(energyVaporized);
+			else if (isObject) {
+				Debug.Log("isObject");
+				ObjectDeath(null);
+			} else if (isScreen) ScreenDeath(backupDeathSound);
+			else if (teleportOnDeath) TeleportAway();
+			else if (isGrenade) GrenadeDeath();
+
+			if (isNPC) NPCDeath(null);
+			deathDone = true;
+		}
 	}
 
 	void VaporizeCorpse(bool energyVaporized) {
@@ -593,6 +595,7 @@ public class HealthManager : MonoBehaviour {
 	void HideSelf() {
 		MeshRenderer mr = GetComponent<MeshRenderer>();
 		if (mr != null) mr.enabled = false;
+		if (rbody != null) rbody.useGravity = false;		
 	}
 
 	void DisableCollision() {

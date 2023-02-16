@@ -31,7 +31,7 @@ public class ConfigToggles : MonoBehaviour {
 			case ConfigToggleType.QuickPickup: self.isOn = Const.a.InputQuickItemPickup; break;
 			case ConfigToggleType.QuickReload: self.isOn = Const.a.InputQuickReloadWeapons; break;
 			case ConfigToggleType.Vsync: self.isOn = Const.a.GraphicsVSync; break;
-			case ConfigToggleType.NoShootMode: self.isOn = Const.a.GraphicsVSync; break;
+			case ConfigToggleType.NoShootMode: self.isOn = Const.a.NoShootMode; break;
 		}
 	}
 

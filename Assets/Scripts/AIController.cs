@@ -330,7 +330,10 @@ public class AIController : MonoBehaviour {
 	void FixedUpdate() {
 		if (PauseScript.a.Paused() || PauseScript.a.MenuActive() || !startInitialized) return; // Don't do any checks or anything else...we're paused!
 
-		if (!rbody.useGravity && Const.a.moveTypeForNPC[index] != AIMoveType.Cyber && Const.a.moveTypeForNPC[index] != AIMoveType.Fly) rbody.useGravity = true; //Debug.Log(gameObject.name + " has rbody.useGravity set to false!");
+		if ((!rbody.useGravity && Const.a.moveTypeForNPC[index] != AIMoveType.Cyber && Const.a.moveTypeForNPC[index] != AIMoveType.Fly)
+			&& !(currentState == AIState.Dead || currentState == AIState.Dying)) {
+			rbody.useGravity = true;
+		}
 
         // Only think every tick seconds to save on CPU and prevent race conditions
         if (tickFinished < PauseScript.a.relativeTime) {
@@ -1057,7 +1060,6 @@ public class AIController : MonoBehaviour {
 				else rbody.useGravity = true; // for avian mutant and zero-g mutant
 			} else {
 				if (healthManager.gibOnDeath) {
-					Debug.Log("NPC dying and set gravity to false");
 					rbody.useGravity = false;
 				} else {
 					rbody.useGravity = true;

@@ -1,7 +1,7 @@
 // Citadel Configuration File
 [Graphics]
-ResolutionWidth = 640
-ResolutionHeight = 480
+ResolutionWidth = 1366
+ResolutionHeight = 768
 Fullscreen = 0
 SSAO = 1
 Bloom = 1

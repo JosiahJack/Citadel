@@ -52,6 +52,12 @@ public class MainMenuHandler : MonoBehaviour {
 	public string presetQuestionLegacy = "CHANGE ALL KEYS TO LEGACY PRESET?";
 	public static MainMenuHandler a;
 	public ConfigKeybindButton[] keybindButtons;
+	public ConfigToggles ctInvertUpDnLook;
+	public ConfigToggles ctInvertUpDnCyberLook;
+	public ConfigToggles ctInvertInventoryCyc;
+	public ConfigToggles ctQuickItemPickUp;
+	public ConfigToggles ctQuickReload;
+	public ConfigToggles ctNoShootMode;
 
 	[HideInInspector] public bool returnToPause = false;
 	[HideInInspector] public bool dataFound = false;
@@ -555,8 +561,8 @@ public class MainMenuHandler : MonoBehaviour {
 				Const.a.InputCodeSettings[37] = 8; // Patch + = i
 				Const.a.InputCodeSettings[38] = 133; // Patch - = ,
 				Const.a.InputCodeSettings[39] = 12; // Full Map = m
-				Const.a.NoShootMode = true;
-				Const.a.InputQuickReloadWeapons = false;
+				Const.a.NoShootMode = false;
+				Const.a.InputQuickReloadWeapons = true;
 				Const.a.InputQuickItemPickup = false;
 				break;
 			case 1: // Legacy SS1
@@ -600,6 +606,9 @@ public class MainMenuHandler : MonoBehaviour {
 				Const.a.InputCodeSettings[37] = 8; // Patch + = i
 				Const.a.InputCodeSettings[38] = 133; // Patch - = ,
 				Const.a.InputCodeSettings[39] = 12; // Full Map = m
+				Const.a.NoShootMode = true;
+				Const.a.InputQuickReloadWeapons = false;
+				Const.a.InputQuickItemPickup = false;
 				break;
 		}
 		presetQuestionValue = -1;	
@@ -607,6 +616,12 @@ public class MainMenuHandler : MonoBehaviour {
 		for (int i=0;i<keybindButtons.Length;i++) {
 			keybindButtons[i].UpdateText();
 		}
+		ctInvertUpDnLook.AlignWithConfigFile();
+		ctInvertUpDnCyberLook.AlignWithConfigFile();
+		ctInvertInventoryCyc.AlignWithConfigFile();
+		ctQuickItemPickUp.AlignWithConfigFile();
+		ctQuickReload.AlignWithConfigFile();
+		ctNoShootMode.AlignWithConfigFile();
 		CancelPresetSet();
 	}
 

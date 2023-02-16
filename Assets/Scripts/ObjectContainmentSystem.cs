@@ -32,6 +32,8 @@ public static class ObjectContainmentSystem {
         //}
 
         for (int i=0; i<FloorChunks.Count;i++) {
+            if (FloorChunks[i] == null) continue;
+
             if (FloorChunks[i].activeInHierarchy) ActiveFloorChunks.Add(FloorChunks[i]);
         }
 

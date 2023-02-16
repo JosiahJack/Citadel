@@ -14,27 +14,30 @@ public class StartMenuButtonHighlight : MonoBehaviour {
 	public Color dark;
 	public Color darkshadow;
 	public Color litshadow;
+	public bool usePointerHighlight = true;
 
 	private EventTrigger evenT;
 	private bool pointerEntered;
 
 	void Awake() {
 		pointerEntered = false;
-		evenT = GetComponent<EventTrigger>();
-		if (evenT == null) evenT = gameObject.AddComponent<EventTrigger>();
-		if (evenT != null) {
-			// Create a new entry for the PointerEnter event
-            EventTrigger.Entry pointerEnter = new EventTrigger.Entry();
-            pointerEnter.eventID = EventTriggerType.PointerEnter;
-            pointerEnter.callback.AddListener((data) => { OnPointerEnterDelegate((PointerEventData)data); });
-            evenT.triggers.Add(pointerEnter);
+		if (usePointerHighlight) {
+			evenT = GetComponent<EventTrigger>();
+			if (evenT == null) evenT = gameObject.AddComponent<EventTrigger>();
+			if (evenT != null) {
+				// Create a new entry for the PointerEnter event
+				EventTrigger.Entry pointerEnter = new EventTrigger.Entry();
+				pointerEnter.eventID = EventTriggerType.PointerEnter;
+				pointerEnter.callback.AddListener((data) => { OnPointerEnterDelegate((PointerEventData)data); });
+				evenT.triggers.Add(pointerEnter);
 
-            // Create a new entry for the PointerExit event
-            EventTrigger.Entry pointerExit = new EventTrigger.Entry();
-            pointerExit.eventID = EventTriggerType.PointerExit;
-            pointerExit.callback.AddListener((data) => { OnPointerExitDelegate((PointerEventData)data); });
-            evenT.triggers.Add(pointerExit);
-		} else Debug.Log("Failed to add EventTrigger to " + gameObject.name);
+				// Create a new entry for the PointerExit event
+				EventTrigger.Entry pointerExit = new EventTrigger.Entry();
+				pointerExit.eventID = EventTriggerType.PointerExit;
+				pointerExit.callback.AddListener((data) => { OnPointerExitDelegate((PointerEventData)data); });
+				evenT.triggers.Add(pointerExit);
+			} else Debug.Log("Failed to add EventTrigger to " + gameObject.name);
+		}
 	}
 
 	void OnEnable() {
