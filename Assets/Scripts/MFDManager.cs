@@ -682,14 +682,20 @@ public class MFDManager : MonoBehaviour  {
 
 	void WeaponButtonsManagerUpdate() {
 		for (int i=0; i<7; i++) {
+			WeaponButton wepbut = wepbutMan.wepButtonsScripts[i];
+			GameObject buttonGO = wepbut.gameObject;
 			if (Inventory.a.weaponInventoryIndices[i] > 0) {
-				if (!wepbutMan.wepButtons[i].activeInHierarchy) wepbutMan.wepButtons[i].SetActive(true);
-				wepbutMan.wepButtonsScripts[i].useableItemIndex = Inventory.a.weaponInventoryIndices[i];
-				if (!wepbutMan.wepCountsText[i].activeInHierarchy) wepbutMan.wepCountsText[i].SetActive(true);
+				if (!buttonGO.activeInHierarchy) buttonGO.SetActive(true);
+				wepbut.useableItemIndex = Inventory.a.weaponInventoryIndices[i];
+				if (!wepbutMan.wepCountsText[i].activeInHierarchy) {
+					wepbutMan.wepCountsText[i].SetActive(true);
+				}
 			} else {
-				if (wepbutMan.wepButtons[i].activeInHierarchy) wepbutMan.wepButtons[i].SetActive(false);
-				wepbutMan.wepButtonsScripts[i].useableItemIndex = -1;
-				if (wepbutMan.wepCountsText[i].activeInHierarchy) wepbutMan.wepCountsText[i].SetActive(false);
+				if (buttonGO.activeInHierarchy) buttonGO.SetActive(false);
+				wepbut.useableItemIndex = -1;
+				if (wepbutMan.wepCountsText[i].activeInHierarchy) {
+					wepbutMan.wepCountsText[i].SetActive(false);
+				}
 			}
 		}
 	}

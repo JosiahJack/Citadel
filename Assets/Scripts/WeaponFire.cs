@@ -122,7 +122,9 @@ public class WeaponFire : MonoBehaviour {
     }
 
     void GetWeaponData(int index) {
-        if (index == -1) return;
+        if (index < 0) return;
+		if (WeaponCurrent.a.weaponCurrent < 0) return;
+
         damageData.isFullAuto = Const.a.isFullAutoForWeapon[index];
         if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
             damageData.damage = Const.a.damagePerHitForWeapon2[index];
@@ -255,6 +257,15 @@ public class WeaponFire : MonoBehaviour {
 					WeaponCurrent.a.weaponIndex = WeaponCurrent.a.weaponIndexPending;	  //Set current weapon inventory lookup index
 					WeaponCurrent.a.weaponCurrentPending = -1;
 					WeaponCurrent.a.weaponIndexPending = -1;
+					if (WeaponCurrent.a.weaponCurrent >= 0) {
+						// Update the ammo icons.
+						WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(WeaponCurrent.a.weaponIndex,Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]);
+						WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(WeaponCurrent.a.weaponIndex,Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]);
+					} else {
+						// Clear the ammo icons.
+						WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(-1,false);
+						WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(-1,false);
+					}
 				}
 			} else {
 				lerpUp = 2;
@@ -400,8 +411,12 @@ public class WeaponFire : MonoBehaviour {
 			return;
 		}
 
+		if (WeaponCurrent.a.weaponCurrent < 0) return;
+
 		// First press reload to unload, then press again to load
 		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
+		if (wep16index < 0) return;
+
 		if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
 			if (WeaponCurrent.a.currentMagazineAmount2[WeaponCurrent.a.weaponCurrent] <= 0
 				|| Inventory.a.wepAmmoSecondary[wep16index] <= 0) { // True for no wepAmmoSecondary causes Reload to run and display no ammo message.

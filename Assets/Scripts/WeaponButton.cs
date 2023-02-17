@@ -9,13 +9,8 @@ public class WeaponButton : MonoBehaviour {
 	public int WepButtonIndex;
 
 	public void WeaponInvClick () {
+		Debug.Log("WeaponInvClick");
 		MFDManager.a.mouseClickHeldOverGUI = true;
-		WeaponInvUse();
-	}
-
-	public void WeaponInvUse() {
-		if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime) return;
-
 		WeaponCurrent.a.WeaponChange(useableItemIndex, WepButtonIndex);
 	}
 

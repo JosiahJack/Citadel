@@ -1282,6 +1282,7 @@ public class Inventory : MonoBehaviour {
     public bool AddWeaponToInventory(int index, int ammo1, int ammo2) {
 		if (index < 0) return false;
 
+		MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
 		MFDManager.a.CenterTabButtonClickSilent (0,true); // Weapons are so important we always switch it.
         for (int i=0;i<7;i++) {
             if (weaponInventoryIndices[i] < 0) {
@@ -1294,9 +1295,10 @@ public class Inventory : MonoBehaviour {
 				wepAmmoSecondary[tempindex] += ammo2;
 				wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent] = false;
 				if (ammo2 > 0) Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent] = true;
-				WeaponButton wepBut = MFDManager.a.wepbutMan.wepButtons[i].GetComponent<WeaponButton>();
+				WeaponButton wepBut = MFDManager.a.wepbutMan.wepButtonsScripts[i];
                 wepBut.useableItemIndex = index;
-				wepBut.WeaponInvUse();
+				WeaponCurrent.a.WeaponChange(wepBut.useableItemIndex,
+											 wepBut.WepButtonIndex);
 				MFDManager.a.SetWepInfo(index);
 				MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.a.currentMagazineAmount[WeaponCurrent.a.weaponCurrent]);
 				MFDManager.a.SendInfoToItemTab(index); // notify item tab we clicked on a weapon

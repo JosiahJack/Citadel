@@ -42,22 +42,24 @@ public class WeaponCurrent : MonoBehaviour {
 
 	[HideInInspector] public Vector3 reloadContainerOrigin; // save
 	[HideInInspector] public bool justChangedWeap = true; // save
-	[HideInInspector] public int weaponCurrent = new int(); // save
-	[HideInInspector] public int weaponIndex = new int(); // save
+	public int weaponCurrent = new int(); // save
+	public int weaponIndex = new int(); // save
 	[HideInInspector] public float[] weaponEnergySetting; // save
 	[HideInInspector] public int[] currentMagazineAmount; // save
 	[HideInInspector] public int[] currentMagazineAmount2; // save
 	[HideInInspector] public int lastIndex = 0; // save
 	private AudioSource SFX;
-	[HideInInspector] public bool bottomless = false; // don't use any ammo (and energy weapons no energy) // save
-	[HideInInspector] public bool redbull = false; // don't use any energy // save
+	[HideInInspector] public bool bottomless = false; // Don't use any ammo and
+													  // energy weapons no
+													  // energy, save
+	[HideInInspector] public bool redbull = false; // No energy usage, save
 	[HideInInspector] public float reloadFinished; // save
 	[HideInInspector] public float reloadContainerDropAmount = 0.66f;
 	[HideInInspector] public float reloadLerpValue; // save
 	[HideInInspector] public float lerpStartTime; // save
 	[HideInInspector] public float targetY; // save
-	[HideInInspector] public int weaponCurrentPending; // save
-	[HideInInspector] public int weaponIndexPending; // save
+	public int weaponCurrentPending; // save
+	public int weaponIndexPending; // save
 
 	public static WeaponCurrent a;
 
@@ -102,16 +104,50 @@ public class WeaponCurrent : MonoBehaviour {
 		if (overloadButton != null) overloadButton.SetActive(false);
 		if (unloadButton != null) unloadButton.SetActive(false);
 		if (loadNormalAmmoButton != null) loadNormalAmmoButton.SetActive(false);
-		if (loadAlternateAmmoButton != null) loadAlternateAmmoButton.SetActive(false);
+		if (loadAlternateAmmoButton != null) {
+			loadAlternateAmmoButton.SetActive(false);
+		}
+	}
+
+	public void RemoveWeapon(int weaponButton7Index) {
+		SetAllViewModelsDeactive();
+		reloadFinished = 0;
+		weaponCurrent = -1;
+		lastIndex = 0;
+		weaponIndex = -1;
+		weaponCurrentPending = 0;
+		weaponIndexPending = MFDManager.a.wepbutMan.wepButtonsScripts[0].useableItemIndex;
+		int tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndexPending);
+		if (tempindex > 0) {
+			reloadFinished = lerpStartTime = PauseScript.a.relativeTime;
+			reloadFinished += Const.a.reloadTime[tempindex];
+			lerpStartTime += (reloadFinished / 2f);
+		} else {
+			reloadFinished = lerpStartTime = PauseScript.a.relativeTime;
+			reloadFinished += Const.a.reloadTime[0];
+			lerpStartTime += (reloadFinished / 2f);
+		}
+
+		 // Zero out the current ammo
+		currentMagazineAmount[weaponButton7Index] = 0;
+		currentMagazineAmount2[weaponButton7Index] = 0;
+		UpdateHUDAmmoCountsEither();
+		MFDManager.a.SetWepInfo(-1);
+		MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
 	}
 
 	public void WeaponChange(int useableItemIndex, int WepButtonIndex) {
+		if (reloadFinished > PauseScript.a.relativeTime) return;
 		if (useableItemIndex == -1 || WepButtonIndex > 6
 			|| WepButtonIndex < 0) {
+			// Clear the ammo icons.
+			ammoIconManLH.SetAmmoIcon(-1,false);
+			ammoIconManRH.SetAmmoIcon(-1,false);
 			Debug.Log("Early exit on WeaponChange() in WeaponCurrent.cs!");
 			return;
 		}
 
+		Debug.Log("WeaponChange");
 		Utils.PlayOneShotSavable(SFX,WeaponChangeSFX);
 		int wep16index =  // Get index into the list of 16 weapons
 			  WeaponFire.Get16WeaponIndexFromConstIndex(useableItemIndex);
@@ -124,27 +160,19 @@ public class WeaponCurrent : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			if (justChangedWeap) {
-				justChangedWeap = false;
-				Inventory.a.UpdateAmmoText();
-				SetAllViewModelsDeactive();
-				UpdateWeaponViewModels();
-				if (weaponCurrent >= 0) {
-					// Update the ammo icons.
-					ammoIconManLH.SetAmmoIcon(weaponIndex,Inventory.a.wepLoadedWithAlternate[weaponCurrent]);
-					ammoIconManRH.SetAmmoIcon(weaponIndex,Inventory.a.wepLoadedWithAlternate[weaponCurrent]);
-				} else {
-					// Clear the ammo icons.
-					ammoIconManLH.SetAmmoIcon(-1,false);
-					ammoIconManRH.SetAmmoIcon(-1,false);
-				}
-			}
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
 
-			if (lastIndex != weaponIndex) {
-				justChangedWeap = true;
-				lastIndex = weaponIndex;
-			}
+		if (justChangedWeap) {
+			justChangedWeap = false;
+			Inventory.a.UpdateAmmoText();
+			SetAllViewModelsDeactive();
+			UpdateWeaponViewModels();
+		}
+
+		if (lastIndex != weaponIndex) {
+			justChangedWeap = true;
+			lastIndex = weaponIndex;
 		}
 	}
 
@@ -519,7 +547,9 @@ public class WeaponCurrent : MonoBehaviour {
 	}
 
 	public void ReloadSecret(bool isSilent) {
-		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (weaponIndex);
+		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndex);
+		if (wep16index < 0) return;
+
 		if (wep16index == 5 || wep16index == 6) {
 			Const.sprint(Const.a.stringTable[315],owner); // Weapon does not need reloaded.
 			return; // do nothing for pipe or rapier
@@ -529,6 +559,8 @@ public class WeaponCurrent : MonoBehaviour {
 			Const.sprint(Const.a.stringTable[538],owner); // We
 			return; // do nothing for energy weapons
 		}
+
+		if (weaponCurrent < 0) return;
 
 		if (Inventory.a.wepLoadedWithAlternate[weaponCurrent]) {
 			if (currentMagazineAmount2[weaponCurrent] == Const.a.magazinePitchCountForWeapon2[wep16index]) {

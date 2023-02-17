@@ -3,12 +3,17 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class WeaponButtonsManager : MonoBehaviour {
-	public GameObject[] wepButtons;
 	public WeaponButton[] wepButtonsScripts;
 	public GameObject[] wepCountsText;
 
 	public void WeaponCycleUp() {
+		if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime) return;
+
+		Debug.Log("WeaponCycleUp");
+
 		int initialIndex = WeaponCurrent.a.weaponCurrent;
+		if (initialIndex < 0) initialIndex = 0;
+		if (initialIndex > 6) initialIndex = 0;
 		int nextIndex = initialIndex + 1; // add 1 to get slot above this
 		if (nextIndex > 6) nextIndex = 0; // wraparound to bottom
 		int countCheck = 0;
@@ -22,11 +27,22 @@ public class WeaponButtonsManager : MonoBehaviour {
 			if (nextIndex > 6) nextIndex = 0;
 			buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);
 		}
-		if (wepButtons[nextIndex].activeSelf && nextIndex != initialIndex) wepButtonsScripts[nextIndex].WeaponInvClick ();
+
+		if (wepButtonsScripts[nextIndex].gameObject.activeSelf
+			&& nextIndex != initialIndex) {
+			WeaponCurrent.a.WeaponChange(wepButtonsScripts[nextIndex].useableItemIndex,
+										 wepButtonsScripts[nextIndex].WepButtonIndex);
+		}
 	}
 
 	public void WeaponCycleDown() {
+		if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime) return;
+
+		Debug.Log("WeaponCycleDown");
+
 		int initialIndex = WeaponCurrent.a.weaponCurrent;
+		if (initialIndex < 0) initialIndex = 0;
+		if (initialIndex > 6) initialIndex = 0;
 		int nextIndex = initialIndex - 1; // add 1 to get slot above this
 		if (nextIndex < 0) nextIndex = 6; // wraparound to top
 		int countCheck = 0;
@@ -40,6 +56,11 @@ public class WeaponButtonsManager : MonoBehaviour {
 			if (nextIndex < 0) nextIndex = 6;
 			buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);
 		}
-		if (wepButtons[nextIndex].activeSelf && nextIndex != initialIndex) wepButtonsScripts[nextIndex].WeaponInvClick ();
+
+		if (wepButtonsScripts[nextIndex].gameObject.activeSelf
+			&& nextIndex != initialIndex) {
+			WeaponCurrent.a.WeaponChange(wepButtonsScripts[nextIndex].useableItemIndex,
+										 wepButtonsScripts[nextIndex].WepButtonIndex);
+		}
 	}
 }

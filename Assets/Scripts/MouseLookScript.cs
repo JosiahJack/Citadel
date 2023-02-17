@@ -499,6 +499,27 @@ public class MouseLookScript : MonoBehaviour {
 		ForceInventoryMode();
 	}
 
+	void RemoveWeapon() {
+		// Take weapon out of inventory, removing weapon, remove weapon and any
+		// other strings I need to CTRL+F my way to this buggy code!
+		WeaponButton wepbut = currentButton.GetComponent<WeaponButton>();
+		int indexPriorToRemoval = wepbut.useableItemIndex;
+		int am1 = WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex];
+		int am2 = WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex];
+		PutObjectInHand(indexPriorToRemoval,-1,am1,am2, true);
+		WeaponCurrent.a.RemoveWeapon(wepbut.WepButtonIndex);
+		Inventory.a.RemoveWeapon(wepbut.WepButtonIndex);
+		// Clear the ammo icons.
+		WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(-1,false);
+		WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(-1,false);
+		wepbut.useableItemIndex = -1;
+		wepbut = MFDManager.a.wepbutMan.wepButtonsScripts[0];
+		WeaponCurrent.a.WeaponChange(wepbut.useableItemIndex,
+									 wepbut.WepButtonIndex);
+		MFDManager.a.SetWepInfo(wepbut.useableItemIndex);
+		MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
+	}
+
 	void InventoryButtonUse() {
 		if (holdingObject) return;
 		if (!GUIState.a.overButton) return;
@@ -509,24 +530,7 @@ public class MouseLookScript : MonoBehaviour {
 
 		int indexPriorToRemoval = -1;
 		switch(GUIState.a.overButtonType) {
-			case ButtonType.Weapon:
-				// Take weapon out of inventory, removing weapon, remove weapon and any other strings I need to CTRL+F my way to this buggy code!
-				WeaponButton wepbut = currentButton.GetComponent<WeaponButton>();
-				indexPriorToRemoval = wepbut.useableItemIndex;
-				int am1 = WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex];
-				int am2 = WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex];
-				WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex] = 0; // zero out the current ammo
-				WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex] = 0; // zero out the current ammo
-				Inventory.a.RemoveWeapon(wepbut.WepButtonIndex);
-				WeaponCurrent.a.SetAllViewModelsDeactive();
-				WeaponCurrent.a.weaponCurrent = -1;
-				wepbut.useableItemIndex = -1;
-				WeaponCurrent.a.weaponIndex = 0;
-				MFDManager.a.wepbutMan.WeaponCycleDown();
-				MFDManager.a.SendInfoToItemTab(WeaponCurrent.a.weaponIndexPending);
-				MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
-				PutObjectInHand(indexPriorToRemoval,-1,am1,am2, true);
-				break;
+			case ButtonType.Weapon: RemoveWeapon(); break;
 			case ButtonType.Grenade:
 				GrenadeButton grenbut = currentButton.GetComponent<GrenadeButton>();
 				indexPriorToRemoval = grenbut.useableItemIndex;
