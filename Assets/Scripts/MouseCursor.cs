@@ -199,6 +199,7 @@ public class MouseCursor : MonoBehaviour {
 	}
 
 	void UpdateEventSystemPointerStatus() {
+		if (PauseScript.a.Paused()) return;
 		if (PauseScript.a.MenuActive()) return;
 
 		PointerEventData pointerData = new PointerEventData(EventSystem.current);

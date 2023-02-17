@@ -46,6 +46,11 @@ public class Config {
 		Const.a.InputQuickItemPickup = AssignConfigBool("Input","QuickItemPickup");
 		Const.a.InputQuickReloadWeapons = AssignConfigBool("Input","QuickReloadWeapons");
 		SetVolume();
+		Const.sprint("Setting screen resolution to "
+				     + Const.a.GraphicsResWidth.ToString()
+				     + ", " + Const.a.GraphicsResHeight.ToString()
+				     + ", Fullscreen: "
+				     + Const.a.GraphicsFullscreen.ToString());
 		Screen.SetResolution(Const.a.GraphicsResWidth,Const.a.GraphicsResHeight,true);
 		Screen.fullScreen = Const.a.GraphicsFullscreen;
 		SetShadows();

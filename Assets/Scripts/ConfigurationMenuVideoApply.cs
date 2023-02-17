@@ -7,7 +7,12 @@ public class ConfigurationMenuVideoApply : MonoBehaviour {
 	public Dropdown resolutionPicker;
 
 	public void OnApplyClick () {
-		Screen.SetResolution(Screen.resolutions[resolutionPicker.value].width,Screen.resolutions[resolutionPicker.value].height,true);
+		int x = Screen.resolutions[resolutionPicker.value].width;
+		int y = Screen.resolutions[resolutionPicker.value].height;
+		Const.sprint("Applying screen resolution as " + x.ToString() + ", "
+				     + y.ToString() + ", Fullscreen: "
+				     + Const.a.GraphicsFullscreen.ToString());
+		Screen.SetResolution(x,y,true);
 		Screen.fullScreen = Const.a.GraphicsFullscreen;
 		Const.a.GraphicsResWidth = Screen.resolutions[resolutionPicker.value].width;
 		Const.a.GraphicsResHeight = Screen.resolutions[resolutionPicker.value].height;

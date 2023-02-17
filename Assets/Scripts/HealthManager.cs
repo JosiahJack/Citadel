@@ -56,7 +56,6 @@ public class HealthManager : MonoBehaviour {
 	private BoxCollider boxCol;
 	private SphereCollider sphereCol;
 	private CapsuleCollider capCol;
-    private Vector3 tempVec;
     private float tempFloat;
 	private float take;
 	[HideInInspector] public SpawnManager spawnMother;  // not used universally
@@ -460,18 +459,19 @@ public class HealthManager : MonoBehaviour {
 		MeshRenderer mr = GetComponent<MeshRenderer>();
 		if (mr != null) mr.enabled = false;
 
-		AIController aic = transform.parent.gameObject.GetComponent<AIController>();
+		GameObject par = transform.parent.gameObject;
+		AIController aic = par.GetComponent<AIController>();
 		if (aic != null) {
 			if (!aic.healthManager.gibOnDeath) { // We are a corpse here.
-				aic.visibleMeshEntity.SetActive(false); // Turn off visible mesh entity from destroyed corpse.
-				aic.deathBurst.SetActive(false); // For any extra effects.  We are totally gone now!
+				aic.visibleMeshEntity.SetActive(false); // Turn off visible
+														// mesh entity from
+														// destroyed corpse.
+				aic.deathBurst.SetActive(false); // For any extra effects.  We
+												 // are totally gone now!
 			}
-			tempVec = aic.searchColliderGO.transform.position;
 			aic.searchColliderGO.SetActive(false);
-		} else {
-			tempVec = transform.position;
 		}
-		CreateDeathEffects(deathFX,tempVec);
+		CreateDeathEffects(deathFX);
 		if (aic != null) aic.gameObject.SetActive(false);
 		DisableCollision();
 	}
@@ -486,12 +486,12 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	void PlayDeathSound(AudioClip deathSound) {
-		if (!actAsCorpseOnly) {
-			if (deathSound != null) {
-				Utils.PlayTempAudio(transform.position,deathSound);
-			} else if (backupDeathSound != null) {
-				Utils.PlayTempAudio(transform.position,backupDeathSound);
-			}
+		if (actAsCorpseOnly) return;
+
+		if (deathSound != null) {
+			Utils.PlayTempAudio(transform.position,deathSound);
+		} else if (backupDeathSound != null) {
+			Utils.PlayTempAudio(transform.position,backupDeathSound);
 		}
 	}
 
@@ -499,11 +499,12 @@ public class HealthManager : MonoBehaviour {
 		if (deathDone) return; // We died the death, no 2nd deaths here.
 
 		deathDone = true; // Mark it so we only die once.
-		CreateDeathEffects(deathFX,transform.position);
+		CreateDeathEffects(deathFX);
 		PlayDeathSound(deathSound); // Play death sound, if present
 		if (spawnMother != null) spawnMother.SpawneeJustDied();
 
-		AIController aic = transform.parent.gameObject.GetComponent<AIController>();
+		GameObject par = transform.parent.gameObject;
+		AIController aic = par.GetComponent<AIController>();
 		if (aic != null) {
 			if (Const.a.typeForNPC[aic.index] == NPCType.Cyber) {
 				aic.gameObject.SetActive(false);
@@ -512,7 +513,7 @@ public class HealthManager : MonoBehaviour {
 	}
 
     public void Gib() {
-		CreateDeathEffects(deathFX,tempVec);
+		CreateDeathEffects(deathFX);
 		if (gibObjects.Length > 0 ) {
 			for (int i = 0; i < gibObjects.Length; i++) {
 				if (gibObjects[i] != null) {
@@ -581,11 +582,17 @@ public class HealthManager : MonoBehaviour {
 		if (gibOnDeath) Gib();
 	}
 
-	void CreateDeathEffects(PoolType fx, Vector3 pos) {
+	void CreateDeathEffects(PoolType fx) {
 		if (fx == PoolType.None) return;
 
 		GameObject explosionEffect = Const.a.GetObjectFromPool(fx);
 		if (explosionEffect == null) return;
+
+		Vector3 pos = transform.position;
+		if (boxCol != null) pos = transform.TransformPoint(boxCol.center);
+		// MeshCollider doesn't have a center, so don't check meshCol here.
+		if (sphereCol != null) pos = transform.TransformPoint(sphereCol.center);
+		if (capCol != null) pos = transform.TransformPoint(capCol.center);
 
  		// Enable death effects (e.g. explosion particle effect)
 		explosionEffect.SetActive(true);
@@ -593,6 +600,8 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	void HideSelf() {
+		if (isScreen) return;
+
 		MeshRenderer mr = GetComponent<MeshRenderer>();
 		if (mr != null) mr.enabled = false;
 		if (rbody != null) rbody.useGravity = false;		
@@ -613,14 +622,20 @@ public class HealthManager : MonoBehaviour {
 		else {
 			DisableCollision();
 			DropSearchables();
-			CreateDeathEffects(deathFX,transform.position);
+			CreateDeathEffects(deathFX);
 		}
 		Debug.Log("ObjectDeath 2");
 		deathDone = true;
-		if (isSecCamera && linkedCameraOverlay != null) linkedCameraOverlay.enabled = false; // disable on automap
-		if (securityAffected != SecurityType.None) LevelManager.a.ReduceCurrentLevelSecurity(securityAffected);
+		if (isSecCamera && linkedCameraOverlay != null) {
+			linkedCameraOverlay.enabled = false; // disable on automap
+		}
+
+		if (securityAffected != SecurityType.None) {
+			LevelManager.a.ReduceCurrentLevelSecurity(securityAffected);
+		}
 		PlayDeathSound(deathSound); // Make some noise
 		if (spawnMother != null) spawnMother.SpawneeJustDied();
+		if (deathFX != PoolType.None) HideSelf();
 	}
 
 	public void HealingBed(float amount,bool flashBed) {

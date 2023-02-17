@@ -433,6 +433,8 @@ public class WeaponFire : MonoBehaviour {
 		} else {
 			// First press change ammo type button to unload, then press again to load
 			int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
+			if (wep16index < 0) return;
+
 			int ammoAvailable = 0;
 			if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
 				ammoAvailable = Inventory.a.wepAmmoSecondary[wep16index];

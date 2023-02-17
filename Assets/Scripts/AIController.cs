@@ -363,7 +363,13 @@ public class AIController : MonoBehaviour {
         // Rotation and Special movement that must be done every FixedUpdate
         if (currentState != AIState.Dead) {
             if (currentState != AIState.Idle) {
-                idealTransformForward = currentDestination - sightPoint.transform.position;
+				if (actAsTurret && enemy != null) {
+					currentDestination = enemy.transform.position;
+					currentDestination.y = enemy.transform.position.y + 0.24f;
+					idealTransformForward = currentDestination - sightPoint.transform.position;
+				} else {
+                	idealTransformForward = currentDestination - sightPoint.transform.position;
+				}
                 if (Const.a.moveTypeForNPC[index] != AIMoveType.Cyber) idealTransformForward.y = 0;
 				idealTransformForward = Vector3.Normalize(idealTransformForward);
 				if (idealTransformForward.sqrMagnitude > Mathf.Epsilon) {

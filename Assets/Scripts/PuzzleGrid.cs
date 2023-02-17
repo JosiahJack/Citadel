@@ -120,6 +120,7 @@ public class PuzzleGrid : MonoBehaviour {
 					case PuzzleGridType.Rook: Rook(index); break;
 					case PuzzleGridType.Bishop: Bishop(index); break;
 					case PuzzleGridType.Pawn: Pawn(index); break;
+					default: Pawn(index); break;
 				}
 			}
 		}
@@ -131,6 +132,7 @@ public class PuzzleGrid : MonoBehaviour {
 	public void OnGridCellHover (int index) {
 		if (MouseLookScript.a.geniusActive) {
 			if (puzzleSolved) return;
+
 			if (cellType[index] == PuzzleCellType.Standard) {
 				if (Const.a.difficultyPuzzle == 1) {
 					HoverKing(index); // Easy puzzle difficulty.  Chose King instead of Pawn to help speed up the puzzle by the antenna trap on Level 7
@@ -142,6 +144,7 @@ public class PuzzleGrid : MonoBehaviour {
 						case PuzzleGridType.Rook: HoverRook(index); break;
 						case PuzzleGridType.Bishop: HoverBishop(index); break;
 						case PuzzleGridType.Pawn: HoverPawn(index); break;
+						default: HoverPawn(index); break;
 					}
 				}
 			}
@@ -167,6 +170,9 @@ public class PuzzleGrid : MonoBehaviour {
 						case HUDColor.Blue:
 							gridCells [i].image.overrideSprite = gridXblue;
 							break;
+						default: 
+							gridCells [i].image.overrideSprite = gridX;
+							break;
 						}
 					} else {
 						if (powered [i]) {
@@ -186,6 +192,9 @@ public class PuzzleGrid : MonoBehaviour {
 								break;
 							case HUDColor.Blue:
 								gridCells [i].image.overrideSprite = gridPlusblue;
+									break;
+							default: 
+								gridCells [i].image.overrideSprite = gridPlus;
 								break;
 							}
 						}
@@ -207,6 +216,9 @@ public class PuzzleGrid : MonoBehaviour {
 						case HUDColor.Blue:
 							gridCells [i].image.overrideSprite = gridSpecialOn0blue;
 							break;
+						default: 
+							gridCells [i].image.overrideSprite = gridSpecialOn0;
+							break;
 						}
 					} else {
 						// Theme dependent
@@ -222,6 +234,9 @@ public class PuzzleGrid : MonoBehaviour {
 							break;
 						case HUDColor.Blue:
 							gridCells [i].image.overrideSprite = gridSpecialblue;
+							break;
+						default: 
+							gridCells [i].image.overrideSprite = gridSpecial;
 							break;
 						}
 					}
@@ -243,6 +258,9 @@ public class PuzzleGrid : MonoBehaviour {
 							break;
 						case HUDColor.Blue:
 							gridCells [i].image.overrideSprite = gridAlwaysOn0blue;
+							break;
+						default: 
+							gridCells [i].image.overrideSprite = gridAlwaysOn0;
 							break;
 						}
 					}

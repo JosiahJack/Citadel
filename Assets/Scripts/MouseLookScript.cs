@@ -118,7 +118,7 @@ public class MouseLookScript : MonoBehaviour {
 
 	void Update() {
 		// Allow quick load straight from the menu or pause.
-		if (Input.GetKeyUp(f9)) Const.a.Load(7,false);
+		if (Input.GetKeyUp(f9)) MainMenuHandler.a.LoadGame(7);
 
         if (PauseScript.a.MenuActive()) {
 			// Ignore mouselook and turn off camera when main menu is up.

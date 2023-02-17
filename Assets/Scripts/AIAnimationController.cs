@@ -175,10 +175,10 @@ public class AIAnimationController : MonoBehaviour {
 			AIController aic = go.GetComponentInChildren<AIController>();
 			if (aic != null) {
 				if (Const.a.moveTypeForNPC[aic.index] != AIMoveType.Cyber && aic.index != 20 && aic.index != 0) {
-					Debug.Log("AIAnimationController.Load failure, aiac == null on" + go.name);
+					Debug.Log("AIAnimationController.Load failure, aiac == null on " + go.name);
 				}
 			} else {
-				Debug.Log("AIAnimationController.Load failure, aiac == null on" + go.name);
+				Debug.Log("AIAnimationController.Load failure, aiac == null on " + go.name);
 			}
 			return index + 3;
 		}

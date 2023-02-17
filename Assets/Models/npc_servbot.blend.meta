@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 1f4328bd025e1154c80877e7f0ad33c5
 ModelImporter:
-  serializedVersion: 19300
+  serializedVersion: 19301
   internalIDToNameTable:
   - first:
       1: 100000
@@ -195,8 +195,8 @@ ModelImporter:
       name: Idle
       takeName: Default Take
       internalID: 0
-      firstFrame: 1
-      lastFrame: 1
+      firstFrame: 0
+      lastFrame: 9
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -348,6 +348,7 @@ ModelImporter:
     importBlendShapes: 0
     importCameras: 0
     importLights: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
