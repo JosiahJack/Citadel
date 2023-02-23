@@ -53,10 +53,10 @@ public class WeaponCurrent : MonoBehaviour {
 													  // energy weapons no
 													  // energy, save
 	[HideInInspector] public bool redbull = false; // No energy usage, save
-	[HideInInspector] public float reloadFinished; // save
+	public float reloadFinished; // save
 	[HideInInspector] public float reloadContainerDropAmount = 0.66f;
-	[HideInInspector] public float reloadLerpValue; // save
-	[HideInInspector] public float lerpStartTime; // save
+	public float reloadLerpValue; // save
+	public float lerpStartTime; // save
 	[HideInInspector] public float targetY; // save
 	public int weaponCurrentPending; // save
 	public int weaponIndexPending; // save
@@ -112,21 +112,40 @@ public class WeaponCurrent : MonoBehaviour {
 	public void RemoveWeapon(int weaponButton7Index) {
 		SetAllViewModelsDeactive();
 		reloadFinished = 0;
-		weaponCurrent = -1;
-		lastIndex = 0;
-		weaponIndex = -1;
-		weaponCurrentPending = 0;
-		weaponIndexPending = MFDManager.a.wepbutMan.wepButtonsScripts[0].useableItemIndex;
-		int tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndexPending);
-		if (tempindex > 0) {
-			reloadFinished = lerpStartTime = PauseScript.a.relativeTime;
-			reloadFinished += Const.a.reloadTime[tempindex];
-			lerpStartTime += (reloadFinished / 2f);
-		} else {
-			reloadFinished = lerpStartTime = PauseScript.a.relativeTime;
-			reloadFinished += Const.a.reloadTime[0];
-			lerpStartTime += (reloadFinished / 2f);
+
+		int initialIndex = WeaponCurrent.a.weaponCurrent;
+		if (initialIndex < 0) initialIndex = 0;
+		if (initialIndex > 6) initialIndex = 0;
+		int nextIndex = initialIndex - 1; // add 1 to get slot above this
+		if (nextIndex < 0) nextIndex = 6; // wraparound to top
+		int countCheck = 0;
+		bool buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);
+		while (buttonNotValid) {
+			countCheck++;
+			if (countCheck > 13) {
+				return; // no weapons!  don't runaway loop
+			}
+			nextIndex--;
+			if (nextIndex < 0) nextIndex = 6;
+			buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);
 		}
+
+		if (MFDManager.a.wepbutMan.wepButtonsScripts[nextIndex].gameObject.activeSelf
+			&& nextIndex != initialIndex) {
+			weaponIndexPending = MFDManager.a.wepbutMan.wepButtonsScripts[nextIndex].useableItemIndex;
+			weaponCurrentPending = MFDManager.a.wepbutMan.wepButtonsScripts[nextIndex].WepButtonIndex;
+		} else {
+			weaponCurrentPending = 0;
+			weaponIndexPending = MFDManager.a.wepbutMan.wepButtonsScripts[0].useableItemIndex;
+		}
+
+		lastIndex = weaponCurrent;
+		weaponCurrent = -1;
+		weaponIndex = -1;
+		int tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndexPending);
+		if (tempindex > 0) tempindex = 0;
+		reloadFinished = PauseScript.a.relativeTime + Const.a.reloadTime[tempindex];
+		lerpStartTime = PauseScript.a.relativeTime;
 
 		 // Zero out the current ammo
 		currentMagazineAmount[weaponButton7Index] = 0;

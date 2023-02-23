@@ -103,11 +103,11 @@ public class HealthManager : MonoBehaviour {
 
 			if (Const.a != null) {
 				if (index > 23) { // 24, 25, 26, 27, 28 are all Cyber enemies
-					if (cyberHealth <= 0) cyberHealth = Const.a.healthForCyberNPC[index];
-					if (maxhealth <= 0) maxhealth = Const.a.healthForCyberNPC[index];
+					if (cyberHealth == -1) cyberHealth = Const.a.healthForCyberNPC[index];
+					if (maxhealth == -1) maxhealth = Const.a.healthForCyberNPC[index];
 				} else {
-					if (health <= 0) health = Const.a.healthForNPC[index]; //leaves possibility of setting health lower than normal, for instance the cortex reaver on level 5
-					if (maxhealth <= 0) maxhealth = Const.a.healthForNPC[index]; // set maxhealth to default healthForNPC, possible to set higher, e.g. for cyborg assassins on level 9 whose health is 3 times normal
+					if (health == -1) health = Const.a.healthForNPC[index]; //leaves possibility of setting health lower than normal, for instance the cortex reaver on level 5
+					if (maxhealth == -1) maxhealth = Const.a.healthForNPC[index]; // set maxhealth to default healthForNPC, possible to set higher, e.g. for cyborg assassins on level 9 whose health is 3 times normal
 				}
 
 				if (Const.a.difficultyCombat == 0) {

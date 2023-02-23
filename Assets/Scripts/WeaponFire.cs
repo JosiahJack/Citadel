@@ -247,7 +247,8 @@ public class WeaponFire : MonoBehaviour {
 
 		// Move the weapon transform up and down for reload "animation" and weapon swap
 		int i = Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
-		if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime && i >= 0) {
+		if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime) {
+			if (i < 0 || i > 15) i = 0;
 			WeaponCurrent.a.reloadLerpValue = ((PauseScript.a.relativeTime - WeaponCurrent.a.lerpStartTime)/Const.a.reloadTime[i]); // percent towards goal time total (both halves of the action)
 			if (WeaponCurrent.a.reloadLerpValue >= 0.5f) {
 				lerpUp = 1;
