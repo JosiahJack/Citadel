@@ -516,8 +516,6 @@ public class MouseLookScript : MonoBehaviour {
 		wepbut = MFDManager.a.wepbutMan.wepButtonsScripts[0];
 		WeaponCurrent.a.WeaponChange(wepbut.useableItemIndex,
 									 wepbut.WepButtonIndex);
-		MFDManager.a.SetWepInfo(wepbut.useableItemIndex);
-		MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
 	}
 
 	void InventoryButtonUse() {

@@ -13,8 +13,7 @@ public class AmmoIconManager : MonoBehaviour {
     public Image icon;
 
     public void SetAmmoIcon (int index, bool alternateAmmo) {
-		if (index >= 36) {
-            switch (index) {
+        switch (index) {
 			case 36:
                 if (alternateAmmo) {
                     icon.overrideSprite = ammIcons[8]; // penetrator, MK3
@@ -109,13 +108,13 @@ public class AmmoIconManager : MonoBehaviour {
                 if (!energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
                 if (!energyOverloadButton.activeSelf) energyOverloadButton.SetActive(true);
                 break;
-            }
-		} else {
-			if (icon.enabled) icon.enabled = false;
-			if (border.enabled) border.enabled = false;
-            if (energySlider.activeSelf) energySlider.SetActive(false);
-            if (energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-            if (energyOverloadButton.activeSelf) energyOverloadButton.SetActive(false);
+            default:
+                if (icon.enabled) icon.enabled = false;
+                if (border.enabled) border.enabled = false;
+                if (energySlider.activeSelf) energySlider.SetActive(false);
+                if (energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+                if (energyOverloadButton.activeSelf) energyOverloadButton.SetActive(false);
+                break;
 		}
 	}
 }

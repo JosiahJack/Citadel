@@ -110,6 +110,41 @@ public class WeaponCurrent : MonoBehaviour {
 	}
 
 	public void RemoveWeapon(int weaponButton7Index) {
+		WeaponButtonsManager wepbutMan = MFDManager.a.wepbutMan;
+		WeaponButton wepbut = wepbutMan.wepButtonsScripts[0];
+		if (weaponButton7Index != weaponCurrent) {
+			if (weaponButton7Index > weaponCurrent) return; // No list shift.
+
+			//int numweps = 0;
+			//for (int i=0;i<7;i++) {
+			//	WeaponButton wepbut = wepbutMan.wepButtonsScripts[i];
+			//	if (wepbut.gameObject.activeSelf) numweps++;
+			//}
+
+			//if (numweps == 1) {
+			//	currentMagazineAmount[weaponButton7Index] = 0; // Zero out ammo
+			//	currentMagazineAmount2[weaponButton7Index] = 0;
+			//	MFDManager.a.SetWepInfo(-1);
+			//	return;
+			//}
+
+			weaponCurrent--;
+
+			//// Shift the indices down on each button from the one above it.
+			//for (int i=weaponButton7Index;i<6;i++) {
+			//	WeaponButton wepbut = wepbutMan.wepButtonsScripts[i];
+			//	WeaponButton wepbutNext = wepbutMan.wepButtonsScripts[i + 1];
+			//	wepbut.useableItemIndex = 
+			//}
+
+			//// Deactivate the topmost button
+			//for (int i=0;i<7;i++) {
+			//	WeaponButton wepbut = wepbutMan.wepButtonsScripts[i];
+			//	if (wepbut.gameObject.activeSelf) numweps++;
+			//}
+			return; // Don't continue down and change the weapon, keep current.
+		}
+
 		SetAllViewModelsDeactive();
 		reloadFinished = 0;
 
@@ -130,25 +165,29 @@ public class WeaponCurrent : MonoBehaviour {
 			buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);
 		}
 
-		if (MFDManager.a.wepbutMan.wepButtonsScripts[nextIndex].gameObject.activeSelf
-			&& nextIndex != initialIndex) {
-			weaponIndexPending = MFDManager.a.wepbutMan.wepButtonsScripts[nextIndex].useableItemIndex;
-			weaponCurrentPending = MFDManager.a.wepbutMan.wepButtonsScripts[nextIndex].WepButtonIndex;
+		wepbut = wepbutMan.wepButtonsScripts[nextIndex];
+		if (!wepbut.gameObject.activeSelf) {
+			wepbut = wepbutMan.wepButtonsScripts[0];
+		}
+
+		if (wepbut.gameObject.activeSelf && nextIndex != initialIndex) {
+			weaponIndexPending = wepbut.useableItemIndex;
+			weaponCurrentPending = wepbut.WepButtonIndex;
 		} else {
 			weaponCurrentPending = 0;
-			weaponIndexPending = MFDManager.a.wepbutMan.wepButtonsScripts[0].useableItemIndex;
+			weaponIndexPending = -1;
 		}
 
 		lastIndex = weaponCurrent;
 		weaponCurrent = -1;
 		weaponIndex = -1;
-		int tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndexPending);
-		if (tempindex > 0) tempindex = 0;
-		reloadFinished = PauseScript.a.relativeTime + Const.a.reloadTime[tempindex];
+		int dex = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndexPending);
+		if (dex > 0) dex = 0;
+		float reloadTime = Const.a.reloadTime[dex];
+		if (weaponIndexPending < 0) reloadTime = 0f;
+		reloadFinished = PauseScript.a.relativeTime + reloadTime;
 		lerpStartTime = PauseScript.a.relativeTime;
-
-		 // Zero out the current ammo
-		currentMagazineAmount[weaponButton7Index] = 0;
+		currentMagazineAmount[weaponButton7Index] = 0; // Zero out ammo
 		currentMagazineAmount2[weaponButton7Index] = 0;
 		UpdateHUDAmmoCountsEither();
 		MFDManager.a.SetWepInfo(-1);
@@ -166,8 +205,9 @@ public class WeaponCurrent : MonoBehaviour {
 			return;
 		}
 
-		Debug.Log("WeaponChange");
 		Utils.PlayOneShotSavable(SFX,WeaponChangeSFX);
+		if (WepButtonIndex == weaponCurrent) return; // Already there!
+
 		int wep16index =  // Get index into the list of 16 weapons
 			  WeaponFire.Get16WeaponIndexFromConstIndex(useableItemIndex);
 		float delay = Const.a.reloadTime[wep16index];
@@ -175,6 +215,7 @@ public class WeaponCurrent : MonoBehaviour {
 		lerpStartTime = PauseScript.a.relativeTime;
 		weaponCurrentPending = WepButtonIndex;
 		weaponIndexPending = useableItemIndex;
+		MFDManager.a.SetWepInfo(-1);
 		UpdateHUDAmmoCountsEither();
 	}
 
@@ -189,250 +230,304 @@ public class WeaponCurrent : MonoBehaviour {
 			UpdateWeaponViewModels();
 		}
 
-		if (lastIndex != weaponIndex) {
+		UpdateAmmoAndLoadButtons();
+
+		if (lastIndex != weaponCurrent) { // Compare weaponCurrent since we
+										  // might have more of the same type.
 			justChangedWeap = true;
-			lastIndex = weaponIndex;
+			lastIndex = weaponCurrent;
 		}
 	}
 
 	public void UpdateWeaponViewModels() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
+			int useableIndex = weaponIndex;
+			if (weaponIndexPending >= 0) useableIndex = -1;
 			switch (weaponIndex) {
-			case 36:
-				if (!ViewModelAssault.activeSelf) ViewModelAssault.SetActive(true);
-				if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
-				if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
-				if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
-				if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
-				if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-				if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
-				if (unloadButton != null) unloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) {
-					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = Const.a.stringTable[539]; // "LOAD MAGNESIUM"
-				}
-				if (loadAlternateAmmoButton != null) {
-					if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
-					loadAlternateAmmoButtonText.text = Const.a.stringTable[540]; // "LOAD PENETRATOR"
-				}
-				break;
-			case 37:
-				if (!ViewModelBlaster.activeSelf) ViewModelBlaster.SetActive(true);
-				if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
-				if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
-				if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
-				if (energySlider != null && !energySlider.activeSelf) energySlider.SetActive(true);
-				if (energyHeatTicks != null && !energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
-				if (overloadButton != null && !overloadButton.activeSelf) overloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
-				if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
-				break;
-			case 38:
-				if (!ViewModelDartgun.activeSelf) ViewModelDartgun.SetActive(true);
-				if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
-				if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
-				if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
-				if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
-				if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-				if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
-				if (unloadButton != null) unloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) {
-					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = Const.a.stringTable[541]; // "LOAD NEEDLE";
-				}
-				if (loadAlternateAmmoButton != null) {
-					if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
-					loadAlternateAmmoButtonText.text = Const.a.stringTable[542]; // "LOAD TRANQ";
-				}
-				break;
-			case 39:
-				ViewModelFlechette.SetActive(true);
-				if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
-				if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
-				if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
-				if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
-				if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-				if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
-				if (unloadButton != null) unloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) {
-					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = Const.a.stringTable[543]; // "LOAD HORNET";
-				}
-				if (loadAlternateAmmoButton != null) {
-					if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
-					loadAlternateAmmoButtonText.text = Const.a.stringTable[544]; // "LOAD SPLINTER";
-				}
-				break;
-			case 40:
-				ViewModelIon.SetActive(true);
-				if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
-				if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
-				if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
-				if (energySlider != null && !energySlider.activeSelf) energySlider.SetActive(true);
-				if (energyHeatTicks != null && !energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
-				if (overloadButton != null && !overloadButton.activeSelf) overloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
-				if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
-				break;
-			case 41:
-				ViewModelRapier.SetActive(true);
-				if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
-				if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
-				if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
-				if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
-				if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-				if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
-				if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
-				if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
-				break;
-			case 42:
-				ViewModelPipe.SetActive(true);
-				if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
-				if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
-				if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
-				if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
-				if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-				if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
-				if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
-				if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
-				break;
-			case 43:
-				ViewModelMagnum.SetActive(true);
-				if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
-				if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
-				if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
-				if (unloadButton != null) unloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) {
-					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = Const.a.stringTable[545]; // "LOAD HOLLOW TIP";
-				}
-				if (loadAlternateAmmoButton != null) {
-					if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
-					loadAlternateAmmoButtonText.text = Const.a.stringTable[546]; // "LOAD HEAVY SLUG";
-				}
-				break;
-			case 44:
-				ViewModelMagpulse.SetActive(true);
-				if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
-				if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
-				if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
-				if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
-				if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-				if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
-				if (unloadButton != null) unloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) {
-					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = Const.a.stringTable[547]; // "LOAD CARTRIDGE";
-				}
-				break;
-			case 45:
-				ViewModelPistol.SetActive(true);
-				if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
-				if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
-				if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
-				if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
-				if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-				if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
-				if (unloadButton != null) unloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) {
-					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = Const.a.stringTable[548]; // "LOAD STANDARD";
-				}
-				if (loadAlternateAmmoButton != null) {
-					if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
-					loadAlternateAmmoButtonText.text = Const.a.stringTable[549]; // "LOAD TEFLON";
-				}
-				break;
-			case 46:
-				ViewModelPlasma.SetActive(true);
-				if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
-				if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
-				if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
-				if (energySlider != null && !energySlider.activeSelf) energySlider.SetActive(true);
-				if (energyHeatTicks != null && !energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
-				if (overloadButton != null && !overloadButton.activeSelf) overloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
-				if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
-				break;
-			case 47:
-				ViewModelRailgun.SetActive(true);
-				if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
-				if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
-				if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
-				if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
-				if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-				if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
-				if (unloadButton != null) unloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) {
-					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = Const.a.stringTable[550]; // "LOAD RAIL CLIP";
-				}
-				break;
-			case 48:
-				ViewModelRiotgun.SetActive(true);
-				if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
-				if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
-				if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
-				if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
-				if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-				if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
-				if (unloadButton != null) unloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) {
-					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = Const.a.stringTable[551]; // "LOAD RUBBER SLUG";
-				}
-				break;
-			case 49:
-				ViewModelSkorpion.SetActive(true);
-				if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
-				if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
-				if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
-				if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
-				if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-				if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
-				if (unloadButton != null) unloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) {
-					if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
-					loadNormalAmmoButtonText.text = Const.a.stringTable[552]; // "LOAD SLAG";
-				}
-				if (loadAlternateAmmoButton != null) {
-					if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
-					loadAlternateAmmoButtonText.text = Const.a.stringTable[553]; // "LOAD LARGE SLAG";
-				}
-				break;
-			case 50:
-				ViewModelSparq.SetActive(true);
-				if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
-				if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
-				if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
-				if (energySlider != null && !energySlider.activeSelf) energySlider.SetActive(true);
-				if (energyHeatTicks != null && !energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
-				if (overloadButton != null && !overloadButton.activeSelf) overloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
-				if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
-				break;
-			case 51:
-				ViewModelStungun.SetActive(true);
-				if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
-				if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
-				if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
-				if (energySlider != null && !energySlider.activeSelf) energySlider.SetActive(true);
-				if (energyHeatTicks != null && !energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
-				if (overloadButton != null && !overloadButton.activeSelf) overloadButton.SetActive(true);
-				if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
-				if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
-				break;
+				case 36:
+					if (!ViewModelAssault.activeSelf) ViewModelAssault.SetActive(true);
+					if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
+					if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
+					if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
+					if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
+					if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+					if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
+					if (unloadButton != null) unloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) {
+						if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
+						loadNormalAmmoButtonText.text = Const.a.stringTable[539]; // "LOAD MAGNESIUM"
+					}
+					if (loadAlternateAmmoButton != null) {
+						if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
+						loadAlternateAmmoButtonText.text = Const.a.stringTable[540]; // "LOAD PENETRATOR"
+					}
+					break;
+				case 37:
+					if (!ViewModelBlaster.activeSelf) ViewModelBlaster.SetActive(true);
+					if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
+					if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
+					if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
+					if (energySlider != null && !energySlider.activeSelf) energySlider.SetActive(true);
+					if (energyHeatTicks != null && !energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
+					if (overloadButton != null && !overloadButton.activeSelf) overloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
+					if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
+					break;
+				case 38:
+					if (!ViewModelDartgun.activeSelf) ViewModelDartgun.SetActive(true);
+					if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
+					if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
+					if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
+					if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
+					if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+					if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
+					if (unloadButton != null) unloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) {
+						if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
+						loadNormalAmmoButtonText.text = Const.a.stringTable[541]; // "LOAD NEEDLE";
+					}
+					if (loadAlternateAmmoButton != null) {
+						if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
+						loadAlternateAmmoButtonText.text = Const.a.stringTable[542]; // "LOAD TRANQ";
+					}
+					break;
+				case 39:
+					ViewModelFlechette.SetActive(true);
+					if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
+					if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
+					if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
+					if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
+					if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+					if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
+					if (unloadButton != null) unloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) {
+						if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
+						loadNormalAmmoButtonText.text = Const.a.stringTable[543]; // "LOAD HORNET";
+					}
+					if (loadAlternateAmmoButton != null) {
+						if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
+						loadAlternateAmmoButtonText.text = Const.a.stringTable[544]; // "LOAD SPLINTER";
+					}
+					break;
+				case 40:
+					ViewModelIon.SetActive(true);
+					if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
+					if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
+					if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
+					if (energySlider != null && !energySlider.activeSelf) energySlider.SetActive(true);
+					if (energyHeatTicks != null && !energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
+					if (overloadButton != null && !overloadButton.activeSelf) overloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
+					if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
+					break;
+				case 41:
+					ViewModelRapier.SetActive(true);
+					if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
+					if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
+					if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
+					if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
+					if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+					if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
+					if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
+					if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
+					break;
+				case 42:
+					ViewModelPipe.SetActive(true);
+					if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
+					if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
+					if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
+					if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
+					if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+					if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
+					if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
+					if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
+					break;
+				case 43:
+					ViewModelMagnum.SetActive(true);
+					if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
+					if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
+					if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
+					if (unloadButton != null) unloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) {
+						if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
+						loadNormalAmmoButtonText.text = Const.a.stringTable[545]; // "LOAD HOLLOW TIP";
+					}
+					if (loadAlternateAmmoButton != null) {
+						if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
+						loadAlternateAmmoButtonText.text = Const.a.stringTable[546]; // "LOAD HEAVY SLUG";
+					}
+					break;
+				case 44:
+					ViewModelMagpulse.SetActive(true);
+					if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
+					if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
+					if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
+					if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
+					if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+					if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
+					if (unloadButton != null) unloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) {
+						if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
+						loadNormalAmmoButtonText.text = Const.a.stringTable[547]; // "LOAD CARTRIDGE";
+					}
+					break;
+				case 45:
+					ViewModelPistol.SetActive(true);
+					if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
+					if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
+					if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
+					if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
+					if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+					if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
+					if (unloadButton != null) unloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) {
+						if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
+						loadNormalAmmoButtonText.text = Const.a.stringTable[548]; // "LOAD STANDARD";
+					}
+					if (loadAlternateAmmoButton != null) {
+						if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
+						loadAlternateAmmoButtonText.text = Const.a.stringTable[549]; // "LOAD TEFLON";
+					}
+					break;
+				case 46:
+					ViewModelPlasma.SetActive(true);
+					if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
+					if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
+					if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
+					if (energySlider != null && !energySlider.activeSelf) energySlider.SetActive(true);
+					if (energyHeatTicks != null && !energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
+					if (overloadButton != null && !overloadButton.activeSelf) overloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
+					if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
+					break;
+				case 47:
+					ViewModelRailgun.SetActive(true);
+					if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
+					if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
+					if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
+					if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
+					if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+					if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
+					if (unloadButton != null) unloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) {
+						if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
+						loadNormalAmmoButtonText.text = Const.a.stringTable[550]; // "LOAD RAIL CLIP";
+					}
+					break;
+				case 48:
+					ViewModelRiotgun.SetActive(true);
+					if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
+					if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
+					if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
+					if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
+					if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+					if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
+					if (unloadButton != null) unloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) {
+						if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
+						loadNormalAmmoButtonText.text = Const.a.stringTable[551]; // "LOAD RUBBER SLUG";
+					}
+					break;
+				case 49:
+					ViewModelSkorpion.SetActive(true);
+					if (!ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(true);
+					if (!ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(true);
+					if (!ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(true);
+					if (energySlider != null && energySlider.activeSelf) energySlider.SetActive(false);
+					if (energyHeatTicks != null && energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
+					if (overloadButton != null && overloadButton.activeSelf) overloadButton.SetActive(false);
+					if (unloadButton != null) unloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) {
+						if (!loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(true);
+						loadNormalAmmoButtonText.text = Const.a.stringTable[552]; // "LOAD SLAG";
+					}
+					if (loadAlternateAmmoButton != null) {
+						if (!loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(true);
+						loadAlternateAmmoButtonText.text = Const.a.stringTable[553]; // "LOAD LARGE SLAG";
+					}
+					break;
+				case 50:
+					ViewModelSparq.SetActive(true);
+					if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
+					if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
+					if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
+					if (energySlider != null && !energySlider.activeSelf) energySlider.SetActive(true);
+					if (energyHeatTicks != null && !energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
+					if (overloadButton != null && !overloadButton.activeSelf) overloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
+					if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
+					break;
+				case 51:
+					ViewModelStungun.SetActive(true);
+					if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
+					if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
+					if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
+					if (energySlider != null && !energySlider.activeSelf) energySlider.SetActive(true);
+					if (energyHeatTicks != null && !energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
+					if (overloadButton != null && !overloadButton.activeSelf) overloadButton.SetActive(true);
+					if (loadNormalAmmoButton != null) { if (loadNormalAmmoButton.activeSelf) loadNormalAmmoButton.SetActive(false); }
+					if (loadAlternateAmmoButton != null) { if (loadAlternateAmmoButton.activeSelf) loadAlternateAmmoButton.SetActive(false); }
+					break;
+				default:
+					if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
+					if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
+					if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
+					if (energySlider != null) energySlider.SetActive(false);
+					if (energyHeatTicks != null) energyHeatTicks.SetActive(false);
+					if (overloadButton != null) overloadButton.SetActive(false);
+					if (unloadButton != null) unloadButton.SetActive(false);
+					if (loadNormalAmmoButton != null) loadNormalAmmoButton.SetActive(false);
+					if (loadAlternateAmmoButton != null) {
+						loadAlternateAmmoButton.SetActive(false);
+					}
+					break;
 			}
+		}
+	}
 
-			if (weaponCurrent >= 0) {
-				if (Inventory.a.wepLoadedWithAlternate[weaponCurrent]) {
-					if (loadNormalAmmoButton != null && loadNormalAmmoButton.GetComponent<Image>().overrideSprite != ammoButtonDeHighlighted) loadNormalAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonDeHighlighted;
-					if (loadAlternateAmmoButton != null && loadAlternateAmmoButton.GetComponent<Image>().overrideSprite != ammoButtonHighlighted) loadAlternateAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonHighlighted;
-				} else {
-					if (loadNormalAmmoButton != null && loadNormalAmmoButton.GetComponent<Image>().overrideSprite != ammoButtonHighlighted) loadNormalAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonHighlighted;
-					if (loadAlternateAmmoButton != null && loadAlternateAmmoButton.GetComponent<Image>().overrideSprite != ammoButtonDeHighlighted) loadAlternateAmmoButton.GetComponent<Image>().overrideSprite = ammoButtonDeHighlighted;
-				}
-				UpdateHUDAmmoCountsEither();
+	void UpdateAmmoAndLoadButtons() {
+		if (weaponCurrent < 0 || weaponCurrentPending >= 0) {
+			if (ammoIndicatorHuns.activeSelf) ammoIndicatorHuns.SetActive(false);
+			if (ammoIndicatorTens.activeSelf) ammoIndicatorTens.SetActive(false);
+			if (ammoIndicatorOnes.activeSelf) ammoIndicatorOnes.SetActive(false);
+			if (energySlider != null) energySlider.SetActive(false);
+			if (energyHeatTicks != null) energyHeatTicks.SetActive(false);
+			if (overloadButton != null) overloadButton.SetActive(false);
+			if (unloadButton != null) unloadButton.SetActive(false);
+			if (loadNormalAmmoButton != null) loadNormalAmmoButton.SetActive(false);
+			if (loadAlternateAmmoButton != null) {
+				loadAlternateAmmoButton.SetActive(false);
+			}
+			return;
+		}
+
+		UpdateHUDAmmoCountsEither();
+		if (loadNormalAmmoButton == null
+			|| loadAlternateAmmoButton == null) {
+			return;
+		}
+
+		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndex);
+		if (wep16index == 1 || wep16index == 4 || wep16index == 10
+			|| wep16index == 14 || wep16index == 15) {
+			return; // Already hidden.
+		}
+
+		Image norm = loadNormalAmmoButton.GetComponent<Image>();
+		Image anorm = loadAlternateAmmoButton.GetComponent<Image>();
+		if (Inventory.a.wepLoadedWithAlternate[weaponCurrent]) {
+			norm.overrideSprite = ammoButtonDeHighlighted;
+			if (currentMagazineAmount2[weaponCurrent] > 0) {
+				anorm.overrideSprite = ammoButtonHighlighted;
+			} else {
+				anorm.overrideSprite = ammoButtonDeHighlighted;
+			}
+		} else {
+			anorm.overrideSprite = ammoButtonDeHighlighted;
+			if (currentMagazineAmount[weaponCurrent] > 0) {
+				norm.overrideSprite = ammoButtonHighlighted;
+			} else {
+				norm.overrideSprite = ammoButtonDeHighlighted;
 			}
 		}
 	}
@@ -468,8 +563,20 @@ public class WeaponCurrent : MonoBehaviour {
 	}
 
 	public void LoadPrimaryAmmoType(bool isSilent) {
+		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndex);
+		if (!Inventory.a.wepLoadedWithAlternate[weaponCurrent]) { // Already loaded with normal.
+			if (currentMagazineAmount[weaponCurrent] == Const.a.magazinePitchCountForWeapon[wep16index]) {
+				Const.sprint(Const.a.stringTable[191],owner); //Current weapon magazine already full.
+				return;
+			}
+			
+			if (currentMagazineAmount[weaponCurrent] == Inventory.a.wepAmmo[wep16index]) {
+				Const.sprint("No more of ammo type to load");
+				return;
+			}
+		}
+
 		Unload(true);
-		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (weaponIndex);
 		Inventory.a.wepLoadedWithAlternate[weaponCurrent] = false;
 
 		// Put bullets into the magazine
@@ -499,8 +606,20 @@ public class WeaponCurrent : MonoBehaviour {
 	}
 
 	public void LoadSecondaryAmmoType(bool isSilent) {
+		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndex);
+		if (Inventory.a.wepLoadedWithAlternate[weaponCurrent]) { // Already loaded with alternate
+			if (currentMagazineAmount2[weaponCurrent] == Const.a.magazinePitchCountForWeapon2[wep16index]) {
+				Const.sprint(Const.a.stringTable[191],owner); //Current weapon magazine already full.
+				return;
+			}
+			
+			if (currentMagazineAmount2[weaponCurrent] == Inventory.a.wepAmmoSecondary[wep16index]) {
+				Const.sprint("No more of ammo type to load");
+				return;
+			}
+		}
+
 		Unload(true);
-		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex (weaponIndex);
 		Inventory.a.wepLoadedWithAlternate[weaponCurrent] = true;
 
 		// Put bullets into the magazine

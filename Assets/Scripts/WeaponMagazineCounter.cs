@@ -43,7 +43,8 @@ public class WeaponMagazineCounter : MonoBehaviour {
 			if (WeaponCurrent.a.weaponIndex == -1
 			    || WeaponCurrent.a.weaponIndex == 41
 				|| WeaponCurrent.a.weaponIndex == 42
-				|| MouseLookScript.a.inCyberSpace) {
+				|| MouseLookScript.a.inCyberSpace
+				|| WeaponCurrent.a.weaponCurrentPending >= 0) {
 					tempis[0] = 10; // blank
 					tempis[1] = 10; // blank
 					tempis[2] = 10; // blank

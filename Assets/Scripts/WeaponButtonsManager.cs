@@ -9,8 +9,6 @@ public class WeaponButtonsManager : MonoBehaviour {
 	public void WeaponCycleUp() {
 		if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime) return;
 
-		Debug.Log("WeaponCycleUp");
-
 		int initialIndex = WeaponCurrent.a.weaponCurrent;
 		if (initialIndex < 0) initialIndex = 0;
 		if (initialIndex > 6) initialIndex = 0;
@@ -37,8 +35,6 @@ public class WeaponButtonsManager : MonoBehaviour {
 
 	public void WeaponCycleDown() {
 		if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime) return;
-
-		Debug.Log("WeaponCycleDown");
 
 		int initialIndex = WeaponCurrent.a.weaponCurrent;
 		if (initialIndex < 0) initialIndex = 0;

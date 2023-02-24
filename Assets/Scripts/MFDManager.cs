@@ -359,7 +359,8 @@ public class MFDManager : MonoBehaviour  {
 			if (wep16index >=0 && wep16index < 16) {
 				if (leftTC.TabManager.WeaponTab.activeInHierarchy) {
 					iconLH.overrideSprite = wepIcons[wep16index];
-					if (Inventory.a.numweapons <= 0) {
+					if (Inventory.a.numweapons <= 0
+						|| WeaponCurrent.a.weaponCurrentPending >= 0) {
 						if (iconLH.enabled) iconLH.enabled = false;
 					} else {
 						if (!iconLH.enabled) iconLH.enabled = true;
@@ -368,7 +369,8 @@ public class MFDManager : MonoBehaviour  {
 
 				if (rightTC.TabManager.WeaponTab.activeInHierarchy) {
 					iconRH.overrideSprite = wepIcons[wep16index];
-					if (Inventory.a.numweapons <= 0) {
+					if (Inventory.a.numweapons <= 0
+						|| WeaponCurrent.a.weaponCurrentPending >= 0) {
 						if (iconRH.enabled) iconRH.enabled = false;
 					} else {
 						if (!iconRH.enabled) iconRH.enabled = true;
@@ -1160,6 +1162,10 @@ public class MFDManager : MonoBehaviour  {
 		if (index >= 0) {
 			weptextRH.text = weptextLH.text = Const.a.useableItemsNameText[index];
 			iconRH.overrideSprite = iconLH.overrideSprite = Const.a.useableItemsIcons[index];
+		} else {
+			weptextRH.text = weptextLH.text = "";
+			iconRH.overrideSprite = Const.a.useableItemsIcons[0]; // Nullsprite
+			iconLH.overrideSprite = Const.a.useableItemsIcons[0]; // Nullsprite
 		}
 	}
 

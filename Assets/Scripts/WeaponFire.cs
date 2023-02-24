@@ -258,15 +258,16 @@ public class WeaponFire : MonoBehaviour {
 					WeaponCurrent.a.weaponIndex = WeaponCurrent.a.weaponIndexPending;	  //Set current weapon inventory lookup index
 					WeaponCurrent.a.weaponCurrentPending = -1;
 					WeaponCurrent.a.weaponIndexPending = -1;
-					if (WeaponCurrent.a.weaponCurrent >= 0) {
+					//if (WeaponCurrent.a.weaponCurrent >= 0) {
 						// Update the ammo icons.
-						WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(WeaponCurrent.a.weaponIndex,Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]);
-						WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(WeaponCurrent.a.weaponIndex,Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]);
-					} else {
+						//WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(WeaponCurrent.a.weaponIndex,Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]);
+						//WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(WeaponCurrent.a.weaponIndex,Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]);
+					//} else {
 						// Clear the ammo icons.
 						WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(-1,false);
 						WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(-1,false);
-					}
+					//}
+					MFDManager.a.SetWepInfo(WeaponCurrent.a.weaponIndex);
 				}
 			} else {
 				lerpUp = 2;

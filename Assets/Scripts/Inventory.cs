@@ -447,13 +447,23 @@ public class Inventory : MonoBehaviour {
 
 			// Weapons
 			if (MFDManager.a.MainTab.activeInHierarchy) {
+				int yellowWep = WeaponCurrent.a.weaponCurrent;
+				int dullYellowWep = -1;
+				if (WeaponCurrent.a.weaponCurrentPending >= 0) {
+					dullYellowWep = WeaponCurrent.a.weaponCurrentPending; // Next
+					yellowWep = -1; // Last wep
+				}
+
 				for (int i=0;i<weaponShotsInventory.Length;i++) {
 					if (weaponButtonText[i].gameObject.activeInHierarchy) {
 						weaponButtonText[i].text = weaponInventoryText[i];
 						weaponShotsInventory[i].text = weaponShotsInventoryText[i];
-						if (i == WeaponCurrent.a.weaponCurrent) {
+						if (i == yellowWep) {
 							weaponButtonText[i].color = Const.a.ssYellowText; // Yellow
 							weaponShotsInventory[i].color = Const.a.ssYellowText; // Yellow
+						} else if (i == dullYellowWep) {
+							weaponButtonText[i].color = Const.a.ssDarkYellowText; // Green
+							weaponShotsInventory[i].color = Const.a.ssDarkYellowText; // Green
 						} else {
 							weaponButtonText[i].color = Const.a.ssGreenText; // Green
 							weaponShotsInventory[i].color = Const.a.ssGreenText; // Green
