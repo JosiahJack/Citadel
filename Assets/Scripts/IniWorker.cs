@@ -6,9 +6,6 @@ using System;
 using System.Text;
  
 public class INIWorker {
-    public enum Sections : byte {Section01, }
-    public enum Keys : byte { Key01, Key02, Key03, }
-
     private static bool Initialized = false;
 	private static string path = 
         Utils.SafePathCombine(Application.streamingAssetsPath, "Config.ini");
@@ -30,7 +27,7 @@ public class INIWorker {
                     line.Trim();
 					chs = line.ToCharArray();
 
-					if (chs.Length < 3) continue;
+					if (chs.Length < 2) continue;
 
                     if (chs[0] == '[' && chs[(chs.Length - 1)] == ']') {
                         theSection = line.Substring(1, line.Length - 2); // Get the section name
@@ -61,13 +58,14 @@ public class INIWorker {
         if (IniDictionary.ContainsKey(_Section)) {
             if (IniDictionary[_Section].ContainsKey(_Key)) {
                 IniDictionary[_Section][_Key] = _Value; // Update existing key with value
-            } else { 
+            } else {
                 IniDictionary[_Section].Add(_Key, _Value); // Create new key with value
             }
         } else {
+            Debug.Log("IniDictionary did not contain section: " + _Section);
             Dictionary<string, string> neuVal = new Dictionary<string, string>();
-            neuVal.Add(_Key.ToString(), _Value);  // Create key|value pair
-            IniDictionary.Add(_Section.ToString(), neuVal); // Add key|value pair to the section inside the dictionary
+            neuVal.Add(_Key, _Value);  // Create key|value pair
+            IniDictionary.Add(_Section, neuVal); // Add key|value pair to the section inside the dictionary
         }
     }
 
@@ -77,36 +75,25 @@ public class INIWorker {
         PopulateIni(_Section, _Key, _Value);
         WriteIni();
     }
-
-    // Write data to INI file. Section and Key bound by enum
-	// USE IT LIKE THIS: IniFile.IniWriteValue("Stats","Time",_inTime.ToString());
-    public static void IniWriteValue(Sections _Section, Keys _Key, string _Value) {
-        IniWriteValue(_Section.ToString(), _Key.ToString(), _Value);
-    }
  
     private static void WriteIni() {
         using (StreamWriter sw = new StreamWriter(path,false,Encoding.ASCII)) {
 			bool init = true;
 			sw.WriteLine("// Citadel Configuration File");
-            foreach (KeyValuePair<string, Dictionary<string, string>> sezioni in IniDictionary) {
+            foreach (KeyValuePair<string, Dictionary<string,
+                     string>> sezioni in IniDictionary) {
 				if (!init) sw.WriteLine(System.String.Empty);
-                sw.WriteLine("[" + sezioni.Key.ToString() + "]");
+                sw.WriteLine("[" + sezioni.Key + "]");
 				init = false;
                 foreach (KeyValuePair<string, string> chiave in sezioni.Value) {
                     // value must be in one line
-                    string vale = chiave.Value.ToString();
+                    string vale = chiave.Value;
                     vale = vale.Replace(Environment.NewLine, " ");
                     vale = vale.Replace("\r\n", " ");
-                    sw.WriteLine(chiave.Key.ToString() + " = " + vale);
+                    sw.WriteLine(chiave.Key + " = " + vale);
                 }
             }
         }
-    }
-
-    // Read data from INI file. Section and Key bound by enum
-    public static string IniReadValue(Sections _Section, Keys _Key) {
-        if (!Initialized) FirstRead();
-        return IniReadValue(_Section.ToString(), _Key.ToString());
     }
 
     // Read data from INI file. Section and Key no in enum.

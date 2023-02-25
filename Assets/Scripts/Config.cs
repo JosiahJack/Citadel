@@ -20,6 +20,7 @@ public class Config {
 		Const.a.GraphicsShadowMode = AssignConfigInt("Graphics", "Shadows");
 		Const.a.GraphicsSSRMode = AssignConfigInt("Graphics", "SSR");
 		Const.a.GraphicsGamma = AssignConfigInt("Graphics","Gamma");
+		Const.a.GraphicsVSync = AssignConfigBool("Graphics","VSync");
 
 		// Audio Configurations
 		Const.a.AudioSpeakerMode = AssignConfigInt("Audio","SpeakerMode");
@@ -72,8 +73,9 @@ public class Config {
 		INIWorker.IniWriteValue("Graphics","FOV",Const.a.GraphicsFOV.ToString());
 		INIWorker.IniWriteValue("Graphics","AA",Const.a.GraphicsAAMode.ToString());
 		INIWorker.IniWriteValue("Graphics","Shadows",Const.a.GraphicsShadowMode.ToString());
-		INIWorker.IniWriteValue("Grpahics","SSR",Const.a.GraphicsSSRMode.ToString());
+		INIWorker.IniWriteValue("Graphics","SSR",Const.a.GraphicsSSRMode.ToString());
 		INIWorker.IniWriteValue("Graphics","Gamma",Const.a.GraphicsGamma.ToString());
+		INIWorker.IniWriteValue("Graphics","VSync",Utils.BoolToString(Const.a.GraphicsVSync));
 		INIWorker.IniWriteValue("Audio","SpeakerMode",Const.a.AudioSpeakerMode.ToString());
 		INIWorker.IniWriteValue("Audio","Reverb",Utils.BoolToString(Const.a.AudioReverb));
 		INIWorker.IniWriteValue("Audio","VolumeMaster",Const.a.AudioVolumeMaster.ToString());

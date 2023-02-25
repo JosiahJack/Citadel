@@ -374,6 +374,10 @@ public class Const : MonoBehaviour {
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
 	}
 
+	public bool RaycastBudgetExceeded() {
+		return (numberOfRaycastsThisFrame > maxRaycastsPerFrame);
+	}
+
 	// From the Unity Documentation on Resources.Load:
 	// Note: All asset names and paths in Unity use forward slashes, paths
 	//       using backslashes will not work.
