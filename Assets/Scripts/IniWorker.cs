@@ -4,7 +4,11 @@ using System.IO;
 using System.Collections.Generic;
 using System;
 using System.Text;
- 
+
+// Initially written by Tito-to
+// Fixes by WizzardMaker.
+// Updated myself for Citadel.  - Josiah
+// Originally sourced here: https://forum.unity.com/threads/read-write-ini-file-o-config-file.244770/ 
 public class INIWorker {
     private static bool Initialized = false;
 	private static string path = 
