@@ -126,9 +126,10 @@ public class MouseLookScript : MonoBehaviour {
 			return;
 		}
 
-		if (!playerCamera.enabled) playerCamera.enabled = true;
 		if (PauseScript.a.Paused()) return;
 		if (PlayerMovement.a.ressurectingFinished > PauseScript.a.relativeTime) return;
+
+		Utils.EnableCamera(playerCamera);
 
 		// Unpaused, normal functions::
 		// ====================================================================

@@ -1166,33 +1166,31 @@ public class Const : MonoBehaviour {
 		return null;
 	}
 
+	void ClearAutomapOverlay(GameObject over) {
+		Image img = over.GetComponent<Image>();
+		Utils.DisableImage(img);
+		Utils.Deactivate(over);
+	}
+
 	public void ClearActiveAutomapOverlays() {
 		for (int i = 0; i < Pool_AutomapCameraOverlays.transform.childCount; i++) {
 			Transform child = Pool_AutomapCameraOverlays.transform.GetChild(i);
-			Image img = child.gameObject.GetComponent<Image>();
-			if (img != null) img.enabled = false;
-			if (child.gameObject.activeSelf == false) child.gameObject.SetActive(false);
+			ClearAutomapOverlay(child.gameObject);
 		}
 
 		for (int i = 0; i < Pool_AutomapMutantOverlays.transform.childCount; i++) {
 			Transform child = Pool_AutomapMutantOverlays.transform.GetChild(i);
-			Image img = child.gameObject.GetComponent<Image>();
-			if (img != null) img.enabled = false;
-			if (child.gameObject.activeSelf == false) child.gameObject.SetActive(false);
+			ClearAutomapOverlay(child.gameObject);
 		}
 
 		for (int i = 0; i < Pool_AutomapCyborgOverlays.transform.childCount; i++) {
 			Transform child = Pool_AutomapCyborgOverlays.transform.GetChild(i);
-			Image img = child.gameObject.GetComponent<Image>();
-			if (img != null) img.enabled = false;
-			if (child.gameObject.activeSelf == false) child.gameObject.SetActive(false);
+			ClearAutomapOverlay(child.gameObject);
 		}
 
 		for (int i = 0; i < Pool_AutomapBotOverlays.transform.childCount; i++) {
 			Transform child = Pool_AutomapBotOverlays.transform.GetChild(i);
-			Image img = child.gameObject.GetComponent<Image>();
-			if (img != null) img.enabled = false;
-			if (child.gameObject.activeSelf == false) child.gameObject.SetActive(false);
+			ClearAutomapOverlay(child.gameObject);
 		}
 	}
 
@@ -1329,6 +1327,7 @@ public class Const : MonoBehaviour {
 			SceneTransitionHandler sth =
 			  newGameIndicator.AddComponent<SceneTransitionHandler>();
 			sth.saveGameIndex = -1;
+			Cursor.lockState = CursorLockMode.None;
 			DontDestroyOnLoad(newGameIndicator); // 4b.2.
 			ReloadScene(sth); // 4b.3.
 		} else { // 4a.
@@ -1348,30 +1347,24 @@ public class Const : MonoBehaviour {
 		GameObject freshGame = GameObject.Find("GameNotYetStarted");
 		if (freshGame != null) Utils.SafeDestroy(freshGame);
 		GameObject saveIndicator = GameObject.Find("NewGameIndicator");
-		if (saveIndicator != null)  Utils.SafeDestroy(saveIndicator);
+		if (saveIndicator != null) Utils.SafeDestroy(saveIndicator);
 		GameObject loadIndicator = GameObject.Find("LoadGameIndicator");
-		if (loadIndicator != null)  Utils.SafeDestroy(loadIndicator);
+		if (loadIndicator != null) Utils.SafeDestroy(loadIndicator);
 		Cursor.visible = true;
-		loadingScreen.SetActive(false);
-		MainMenuHandler.a.IntroVideo.SetActive(false);
-		MainMenuHandler.a.IntroVideoContainer.SetActive(false);
-		PauseScript.a.mainMenu.SetActive(false);
+		Utils.Deactivate(loadingScreen);
+		Utils.Deactivate(MainMenuHandler.a.IntroVideo);
+		Utils.Deactivate(MainMenuHandler.a.IntroVideoContainer);
+		Utils.Deactivate(PauseScript.a.mainMenu);
 		PauseScript.a.PauseDisable();
 		if (PlayerHealth.a != null) {
 			if (PlayerHealth.a.hm != null) PlayerHealth.a.hm.ClearOverlays();
 		}
 
 		if (Const.a.NoShootMode) MouseLookScript.a.ForceInventoryMode();
-
-		loadingScreen.SetActive(false);
-		if (player1Capsule != null) player1Capsule.SetActive(true);
-		else UnityEngine.Debug.Log("BUG: Missing player1Capsule on GoIntoGame");
-		player1CapsuleMainCameragGO.transform.parent.gameObject.SetActive(true);
-		player1CapsuleMainCameragGO.SetActive(true);
-		if (MouseLookScript.a != null) {
-			MouseLookScript.a.playerCamera.enabled = true;
-		}
-
+		Utils.Activate(player1Capsule);
+		Utils.Activate(player1CapsuleMainCameragGO.transform.parent.gameObject);
+		Utils.Activate(player1CapsuleMainCameragGO);
+		Utils.EnableCamera(MouseLookScript.a.playerCamera);
 		WriteDatForIntroPlayed(false);
 		if (loadTimer == null) {
 			sprint(stringTable[197]);
@@ -1386,9 +1379,8 @@ public class Const : MonoBehaviour {
 		GoIntoGame(null);
 	}
 
-
 	public void ShowLoading() {
-		MouseLookScript.a.playerCamera.enabled = false; // Hide world changes.
+		Utils.DisableCamera(MouseLookScript.a.playerCamera); // Hide changes.
 		PauseScript.a.mainMenu.SetActive(false); // Ensure that main menu is 
 												 // off if came from Load page.
  		PauseScript.a.PauseEnable(); // Enable pause to make sure that nothing 

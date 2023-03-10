@@ -44,15 +44,18 @@ public class HardwareButton : MonoBehaviour {
 	private float lanternVersion1Brightness = 2.5f;
 	private float lanternVersion2Brightness = 4;
 	private float lanternVersion3Brightness = 5;
+	private Grayscale gscGun;
+	private Grayscale gscSensaCenter;
+	private Grayscale gscSensaLH;
+	private Grayscale gscSensaRH;
 
 	void Awake () {
 		SFX = GetComponent<AudioSource>();
-		infraredLight.enabled = false;
-		//playerCamera.GetComponent<Grayscale>().enabled = false;
-		gunCamera.GetComponent<Grayscale>().enabled = false;
-		sensaroundCenterCamera.GetComponent<Grayscale>().enabled = false;
-		sensaroundLHCamera.GetComponent<Grayscale>().enabled = false;
-		sensaroundRHCamera.GetComponent<Grayscale>().enabled = false;
+		gscGun = gunCamera.GetComponent<Grayscale>();
+		gscSensaCenter = sensaroundCenterCamera.GetComponent<Grayscale>();
+		gscSensaLH = sensaroundLHCamera.GetComponent<Grayscale>();
+		gscSensaRH = sensaroundRHCamera.GetComponent<Grayscale>();
+		DisableInfrared();
 	}
 
 	public void ListenForHardwareHotkeys () {
@@ -229,8 +232,10 @@ public class HardwareButton : MonoBehaviour {
 		}
 
 		if (Inventory.a.hardwareIsActive[7]) {
+			Utils.EnableLight(headlight);
 			headlight.intensity = brightness; // Set the light intensity per version.
 		} else {
+			Utils.DisableLight(headlight);
 			headlight.intensity = defaultZero; // Turn the light off.
 		}
 	}
@@ -239,6 +244,7 @@ public class HardwareButton : MonoBehaviour {
 	public void LanternOff() {
 		Inventory.a.hardwareIsActive[7] = false;
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[7], Inventory.a.hardwareVersionSetting[7],2);
+		Utils.DisableLight(headlight);
 		headlight.intensity = defaultZero; // Turn the light off.
 	}
 
@@ -257,29 +263,35 @@ public class HardwareButton : MonoBehaviour {
 		Inventory.a.hardwareIsActive[11] = !Inventory.a.hardwareIsActive[11];
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[11], Inventory.a.hardwareVersionSetting[11],4);
 		if (Inventory.a.hardwareIsActive[11]) {
-			infraredLight.enabled = true;
-			//playerCamera.GetComponent<Grayscale>().enabled = true;
-			gunCamera.GetComponent<Grayscale>().enabled = true;
-			sensaroundCenterCamera.GetComponent<Grayscale>().enabled = true;
-			sensaroundLHCamera.GetComponent<Grayscale>().enabled = true;
-			sensaroundRHCamera.GetComponent<Grayscale>().enabled = true;
+			EnableInfrared();
 		} else {
-			infraredLight.enabled = false;
-			//playerCamera.GetComponent<Grayscale>().enabled = false;
-			gunCamera.GetComponent<Grayscale>().enabled = false;
-			sensaroundCenterCamera.GetComponent<Grayscale>().enabled = false;
-			sensaroundLHCamera.GetComponent<Grayscale>().enabled = false;
-			sensaroundRHCamera.GetComponent<Grayscale>().enabled = false;
+			DisableInfrared();
 		}
+	}
+
+	// playerCamera does not get Grayscale as that would be redundant since the
+	// gunCamera gets this and is rendered after playerCamera.
+	void EnableInfrared() {
+		Utils.EnableLight(infraredLight);
+		Utils.EnableGrayscale(gscGun);
+		Utils.EnableGrayscale(gscSensaCenter);
+		Utils.EnableGrayscale(gscSensaLH);
+		Utils.EnableGrayscale(gscSensaRH);
+	}
+
+	void DisableInfrared() {
+		Utils.DisableLight(infraredLight);
+		Utils.DisableGrayscale(gscGun);
+		Utils.DisableGrayscale(gscSensaCenter);
+		Utils.DisableGrayscale(gscSensaLH);
+		Utils.DisableGrayscale(gscSensaRH);
 	}
 
 	// called by PlayerMovement when exhausted energy to < 11f
 	public void InfraredOff() {
 		Inventory.a.hardwareIsActive[11] = false;
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[11], Inventory.a.hardwareVersionSetting[11],4);
-		infraredLight.enabled = false;
-		//playerCamera.GetComponent<Grayscale>().enabled = false;
-		gunCamera.GetComponent<Grayscale>().enabled = false;
+		SetVersionIconForButton(false,Inventory.a.hardwareVersionSetting[11],4);
+		DisableInfrared();
 	}
 
 	public void EReaderClick () {

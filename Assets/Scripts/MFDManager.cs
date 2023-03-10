@@ -96,9 +96,7 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject cyberTimer;
 	public GameObject cyberSprintContainer;
 	public Text cyberSprintText;
-	public GameObject automapFull;
 	public GameObject biograph;
-	public GameObject autoMapCamera;
 
 	// Externally modifiable.
 	// Not intended to be set in inspector, some are not HideInInspector for reference only.
@@ -226,6 +224,50 @@ public class MFDManager : MonoBehaviour  {
 		if (BiomonitorGraphSystem.a != null) BiomonitorGraphSystem.a.ClearGraphs();
 	}
 
+	void WeaponCycleUp() {
+		if (MouseLookScript.a.inCyberSpace) {
+			// There's only two cyberspace weapons, up is down.
+			Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill;
+
+			Utils.PlayOneShotSavable(Inventory.a.SFX,
+									 Inventory.a.SFXChangeWeapon);
+
+			if (Inventory.a.isPulserNotDrill) {
+				Inventory.a.pulserButtonText.Select(true);
+				Inventory.a.drillButtonText.Select(false);
+			} else {
+				Inventory.a.pulserButtonText.Select(false);
+				Inventory.a.drillButtonText.Select(true);
+			}
+		} else {
+			if (Const.a.InputInvertInventoryCycling) {
+				wepbutMan.WeaponCycleDown();
+			} else {
+				wepbutMan.WeaponCycleUp();
+			}
+		}
+	}
+
+	void WeaponCycleDown() {
+			if (MouseLookScript.a.inCyberSpace) {
+				Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill; // There's only two cyberspace weapons, up is down.
+				Utils.PlayOneShotSavable(Inventory.a.SFX,Inventory.a.SFXChangeWeapon);
+				if (Inventory.a.isPulserNotDrill) {
+					Inventory.a.pulserButtonText.Select(true);
+					Inventory.a.drillButtonText.Select(false);
+				} else {
+					Inventory.a.pulserButtonText.Select(false);
+					Inventory.a.drillButtonText.Select(true);
+				}
+			} else {
+				if (Const.a.InputInvertInventoryCycling) {
+					wepbutMan.WeaponCycleUp();
+				} else {
+					wepbutMan.WeaponCycleDown();
+				}
+			}
+	}
+
 	void Update() {
 		// Actions during Pause and Unpause (always)
 		if (FPS.activeInHierarchy) {
@@ -243,138 +285,85 @@ public class MFDManager : MonoBehaviour  {
 		}
 
 		// Unpaused Actions
-		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1)) {
-				mouseClickHeldOverGUI = false;
-			}
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
 
-			HardwareButtonsUpdate();
-			if (logActive) {
-				if (logFinished < PauseScript.a.relativeTime
-				    && logType != AudioLogType.Papers
-					&& logType != AudioLogType.TextOnly) {
-					logActive = false;
-					if (itemTabLH.eReaderSectionsContainer.activeInHierarchy) ReturnToLastTab(true);
-					if (itemTabRH.eReaderSectionsContainer.activeInHierarchy) ReturnToLastTab(false);
-					if (DataReaderContentTab.activeInHierarchy) CenterTabButtonClickSilent(0,true);
-				}
-			}
+		if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1)) {
+			mouseClickHeldOverGUI = false;
+		}
 
-			CenterTabBlink();
-			if (lastEnergy != PlayerEnergy.a.energy) DrawTicks(false);
-			lastEnergy = PlayerEnergy.a.energy;
-			if (lastHealth != PlayerHealth.a.hm.health) DrawTicks(true);
-			lastHealth = PlayerHealth.a.hm.health;
-			BioMonitorGraphUpdate();
-			WeaponButtonsManagerUpdate();
-			if (AutoMapDisplayActive() && !autoMapCamera.activeSelf) {
-				autoMapCamera.SetActive(true);
-			} else if (!AutoMapDisplayActive() && autoMapCamera.activeSelf) {
-				autoMapCamera.SetActive(false);
-			}
+		HardwareButtonsUpdate();
+		LogReaderUpdate();
+		CenterTabBlink();
+		if (lastEnergy != PlayerEnergy.a.energy) DrawTicks(false);
+		lastEnergy = PlayerEnergy.a.energy;
+		if (lastHealth != PlayerHealth.a.hm.health) DrawTicks(true);
+		lastHealth = PlayerHealth.a.hm.health;
+		BioMonitorGraphUpdate();
+		WeaponButtonsManagerUpdate();
+		if (GetInput.a.WeaponCycUp()) WeaponCycleUp();
+		if (GetInput.a.WeaponCycDown()) WeaponCycleDown();
+		if (Input.GetKeyDown(KeyCode.F1)) leftTC.TabButtonAction(0);   // Weapon
+		if (Input.GetKeyDown(KeyCode.F2)) leftTC.TabButtonAction(1);   // Item
+		if (Input.GetKeyDown(KeyCode.F3)) leftTC.TabButtonAction(2);   // Automap
+		// Target tab removed as unnecessary for Citadel.              // Target
+		if (Input.GetKeyDown(KeyCode.F4)) leftTC.TabButtonAction(4);   // Data
 
-			if (GetInput.a.WeaponCycUp()) {
-				if (MouseLookScript.a.inCyberSpace) {
-					Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill; // There's only two cyberspace weapons, up is down.
-					Utils.PlayOneShotSavable(Inventory.a.SFX,Inventory.a.SFXChangeWeapon);
-					if (Inventory.a.isPulserNotDrill) {
-						Inventory.a.pulserButtonText.Select(true);
-						Inventory.a.drillButtonText.Select(false);
-					} else {
-						Inventory.a.pulserButtonText.Select(false);
-						Inventory.a.drillButtonText.Select(true);
-					}
+		if (Input.GetKeyDown(KeyCode.F5)) rightTC.TabButtonAction(0);  // Weapon
+		if (Input.GetKeyDown(KeyCode.F7)) rightTC.TabButtonAction(1);  // Item
+		if (Input.GetKeyDown(KeyCode.F8)) rightTC.TabButtonAction(2);  // Automap
+		// Target tab removed as unnecessary for Citadel.              // Target
+		if (Input.GetKeyDown(KeyCode.F10)) rightTC.TabButtonAction(4); // Data
+
+		if (Input.GetKeyDown(KeyCode.PageUp)) {
+			switch(curCenterTab) {
+				case 0: CenterTabButtonAction(3); break;
+				case 1: CenterTabButtonAction(0); break;
+				case 2: CenterTabButtonAction(1); break;
+				case 3: CenterTabButtonAction(2); break;
+			}
+		}
+		if (Input.GetKeyDown(KeyCode.PageDown)) {
+			switch(curCenterTab) {
+				case 0: CenterTabButtonAction(1); break;
+				case 1: CenterTabButtonAction(2); break;
+				case 2: CenterTabButtonAction(3); break;
+				case 3: CenterTabButtonAction(0); break;
+			}
+		}
+
+		// Handle severing connection with in use keypads, puzzles, etc. when player drifts too far away
+		if (usingObject) {
+			if (Vector3.Distance(playerCapsuleTransform.position, objectInUsePos) > (Const.a.frobDistance + 0.16f)) {
+				if (tetheredPGP != null) ClosePuzzleGrid();
+				if (tetheredPWP != null) ClosePuzzleWire();
+				if (tetheredKeypadElevator != null) CloseElevatorPad();
+				if (tetheredKeypadKeycode != null) CloseKeycodePad();
+				if (tetheredSearchable != null) CloseSearch();
+				if (paperLogInUse) ClosePaperLog();
+			}
+		}
+
+		// Update the weapon icon
+		wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
+		if (wep16index >=0 && wep16index < 16) {
+			if (leftTC.TabManager.WeaponTab.activeInHierarchy) {
+				iconLH.overrideSprite = wepIcons[wep16index];
+				if (Inventory.a.numweapons <= 0
+					|| WeaponCurrent.a.weaponCurrentPending >= 0) {
+					Utils.DisableImage(iconLH);
 				} else {
-					if (Const.a.InputInvertInventoryCycling) {
-						wepbutMan.WeaponCycleDown();
-					} else {
-						wepbutMan.WeaponCycleUp();
-					}
+					Utils.EnableImage(iconLH);
 				}
 			}
 
-			if (GetInput.a.WeaponCycDown()) {
-				if (MouseLookScript.a.inCyberSpace) {
-					Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill; // There's only two cyberspace weapons, up is down.
-					Utils.PlayOneShotSavable(Inventory.a.SFX,Inventory.a.SFXChangeWeapon);
-					if (Inventory.a.isPulserNotDrill) {
-						Inventory.a.pulserButtonText.Select(true);
-						Inventory.a.drillButtonText.Select(false);
-					} else {
-						Inventory.a.pulserButtonText.Select(false);
-						Inventory.a.drillButtonText.Select(true);
-					}
+			if (rightTC.TabManager.WeaponTab.activeInHierarchy) {
+				iconRH.overrideSprite = wepIcons[wep16index];
+				if (Inventory.a.numweapons <= 0
+					|| WeaponCurrent.a.weaponCurrentPending >= 0) {
+					Utils.DisableImage(iconRH);
 				} else {
-					if (Const.a.InputInvertInventoryCycling) {
-						wepbutMan.WeaponCycleUp();
-					} else {
-						wepbutMan.WeaponCycleDown();
-					}
-				}
-			}
-
-			if (Input.GetKeyDown(KeyCode.F1)) leftTC.TabButtonAction(0);   // Weapon
-			if (Input.GetKeyDown(KeyCode.F2)) leftTC.TabButtonAction(1);   // Item
-			if (Input.GetKeyDown(KeyCode.F3)) leftTC.TabButtonAction(2);   // Automap
-			// Target tab removed as unnecessary for Citadel.              // Target
-			if (Input.GetKeyDown(KeyCode.F4)) leftTC.TabButtonAction(4);   // Data
-
-			if (Input.GetKeyDown(KeyCode.F5)) rightTC.TabButtonAction(0);  // Weapon
-			if (Input.GetKeyDown(KeyCode.F7)) rightTC.TabButtonAction(1);  // Item
-			if (Input.GetKeyDown(KeyCode.F8)) rightTC.TabButtonAction(2);  // Automap
-			// Target tab removed as unnecessary for Citadel.              // Target
-			if (Input.GetKeyDown(KeyCode.F10)) rightTC.TabButtonAction(4); // Data
-
-			if (Input.GetKeyDown(KeyCode.PageUp)) {
-				switch(curCenterTab) {
-					case 0: CenterTabButtonAction(3); break;
-					case 1: CenterTabButtonAction(0); break;
-					case 2: CenterTabButtonAction(1); break;
-					case 3: CenterTabButtonAction(2); break;
-				}
-			}
-			if (Input.GetKeyDown(KeyCode.PageDown)) {
-				switch(curCenterTab) {
-					case 0: CenterTabButtonAction(1); break;
-					case 1: CenterTabButtonAction(2); break;
-					case 2: CenterTabButtonAction(3); break;
-					case 3: CenterTabButtonAction(0); break;
-				}
-			}
-
-			// Handle severing connection with in use keypads, puzzles, etc. when player drifts too far away
-			if (usingObject) {
-				if (Vector3.Distance(playerCapsuleTransform.position, objectInUsePos) > (Const.a.frobDistance + 0.16f)) {
-					if (tetheredPGP != null) ClosePuzzleGrid();
-					if (tetheredPWP != null) ClosePuzzleWire();
-					if (tetheredKeypadElevator != null) CloseElevatorPad();
-					if (tetheredKeypadKeycode != null) CloseKeycodePad();
-					if (tetheredSearchable != null) CloseSearch();
-					if (paperLogInUse) ClosePaperLog();
-				}
-			}
-
-			// Update the weapon icon
-			wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
-			if (wep16index >=0 && wep16index < 16) {
-				if (leftTC.TabManager.WeaponTab.activeInHierarchy) {
-					iconLH.overrideSprite = wepIcons[wep16index];
-					if (Inventory.a.numweapons <= 0
-						|| WeaponCurrent.a.weaponCurrentPending >= 0) {
-						if (iconLH.enabled) iconLH.enabled = false;
-					} else {
-						if (!iconLH.enabled) iconLH.enabled = true;
-					}
-				}
-
-				if (rightTC.TabManager.WeaponTab.activeInHierarchy) {
-					iconRH.overrideSprite = wepIcons[wep16index];
-					if (Inventory.a.numweapons <= 0
-						|| WeaponCurrent.a.weaponCurrentPending >= 0) {
-						if (iconRH.enabled) iconRH.enabled = false;
-					} else {
-						if (!iconRH.enabled) iconRH.enabled = true;
-					}
+					Utils.EnableImage(iconRH);
 				}
 			}
 		}
@@ -425,6 +414,26 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
+	void LogReaderUpdate() {
+		if (!logActive) return;
+		if (logFinished >= PauseScript.a.relativeTime) return;
+		if (logType == AudioLogType.Papers) return;
+		if (logType == AudioLogType.TextOnly) return;
+
+		logActive = false;
+		if (itemTabLH.eReaderSectionsContainer.activeInHierarchy) {
+			ReturnToLastTab(true);
+		}
+
+		if (itemTabRH.eReaderSectionsContainer.activeInHierarchy) {
+			ReturnToLastTab(false);
+		}
+
+		if (DataReaderContentTab.activeInHierarchy) {
+			CenterTabButtonClickSilent(0,true);
+		}
+	}
+
 	void CenterTabBlink() {
 		if (centerTabsTickFinished >= Time.time) return;
 
@@ -434,36 +443,26 @@ public class MFDManager : MonoBehaviour  {
 		centerTabsTickFinished = Time.time + centerTabsTickTime;
 	}
 
-	bool AutoMapDisplayActive() { // True if either the full map is displayed or either left or right automap.
-		if (automapFull.activeSelf) return true;
-		if (leftTC.TabManager.AutomapTab.activeSelf) return true;
-		if (rightTC.TabManager.AutomapTab.activeSelf) return true;
-		return false;
-	}
-
-	// Called by PlayerMovement.cs
+	// Called by Automap.cs.  This handles the UI changes to make room.
 	public void AutomapGoFull() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		ctbButtonMain.SetActive(false);
 		ctbButtonHardware.SetActive(false);
 		ctbButtonGeneral.SetActive(false);
 		DisableAllCenterTabs();
-		automapFull.SetActive(true);
-		PlayerMovement.a.inFullMap = true;
 		TabReset(true); // right
 		TabReset(false); // left
 		tabButtonsLHButtons.SetActive(false);
 		tabButtonsRHButtons.SetActive(false);
 	}
 
+	// Handles returning UI back to how it was before clearing the board.
 	public void CloseFullmap() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		ctbButtonMain.SetActive(true);
 		ctbButtonHardware.SetActive(true);
 		ctbButtonGeneral.SetActive(true);
 		CenterTabButtonClickSilent(0,true);
-		automapFull.SetActive(false);
-		PlayerMovement.a.inFullMap = false;
 		TabReset(true); // right
 		TabReset(false); // left
 		ReturnToLastTab(true);
@@ -659,13 +658,18 @@ public class MFDManager : MonoBehaviour  {
 		int step = 0;
 		float checkVal = 0;
 		if (health) {
-			if (MouseLookScript.a.inCyberSpace) checkVal = PlayerHealth.a.hm.cyberHealth;
-			else checkVal = PlayerHealth.a.hm.health;
+			if (MouseLookScript.a.inCyberSpace) {
+				checkVal = PlayerHealth.a.hm.cyberHealth;
+			} else {
+				checkVal = PlayerHealth.a.hm.health;
+			}
 		} else {
 			checkVal = PlayerEnergy.a.energy;
 		}
 
-		if (checkVal > 255f) checkVal = 255f; // Always display ticks properly no matter what crazy value we've been hacked to have.
+		if (checkVal > 255f) checkVal = 255f; // Always display ticks properly
+											  // no matter what crazy value 
+											  // we've been hacked to have.
 		while (step < 256) {
 			if (checkVal < (256 - step)) {
 				tempSpriteIndex++;
@@ -948,6 +952,7 @@ public class MFDManager : MonoBehaviour  {
 			SearchFXLH.SetActive(true);
 		}
 		objectInUsePos = tetherPoint;
+		paperLogInUse = true;
 		usingObject = true;
 		OpenLogTextReader();
 		DataReaderContentTab.SetActive(true);

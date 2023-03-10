@@ -62,7 +62,6 @@ public class INIWorker {
                 IniDictionary[_Section].Add(_Key, _Value); // Create new key with value
             }
         } else {
-            Debug.Log("IniDictionary did not contain section: " + _Section);
             Dictionary<string, string> neuVal = new Dictionary<string, string>();
             neuVal.Add(_Key, _Value);  // Create key|value pair
             IniDictionary.Add(_Section, neuVal); // Add key|value pair to the section inside the dictionary

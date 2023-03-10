@@ -12,109 +12,56 @@ public class AmmoIconManager : MonoBehaviour {
     public Image border;
     public Image icon;
 
-    public void SetAmmoIcon (int index, bool alternateAmmo) {
+    void DisableAll() {
+        Utils.DisableImage(icon);
+        Utils.DisableImage(border);
+        Utils.Deactivate(energySlider);
+        Utils.Deactivate(energyHeatTicks);
+        Utils.Deactivate(energyOverloadButton);
+    }
+
+    void Energy() {
+        Utils.DisableImage(icon);
+        Utils.DisableImage(border);
+        Utils.Activate(energySlider);
+        Utils.Activate(energyHeatTicks);
+        Utils.Activate(energyOverloadButton);
+    }
+
+    void Standard(bool alternateAmmo, int norm, int alt) {
+        Utils.EnableImage(icon);
+        Utils.EnableImage(border);
+        Utils.Deactivate(energySlider);
+        Utils.Deactivate(energyHeatTicks);
+        Utils.Deactivate(energyOverloadButton);
+        if (norm < 0 || norm > ammIcons.Length) norm = 0;
+        if ( alt < 0 ||  alt > ammIcons.Length)  alt = 0;
+        if (alternateAmmo) {
+            icon.overrideSprite = ammIcons[alt];
+        } else {
+            icon.overrideSprite = ammIcons[norm];
+        }
+    }
+
+    public void SetAmmoIcon (int index, bool alt) {
         switch (index) {
-			case 36:
-                if (alternateAmmo) {
-                    icon.overrideSprite = ammIcons[8]; // penetrator, MK3
-				} else {
-                    icon.overrideSprite = ammIcons[7]; // magnesium, MK3
-				}
-				break;
-			case 37:
-				if (icon.enabled) icon.enabled = false;  // Uses energy, blaster
-				if (border.enabled) border.enabled = false;
-                if (!energySlider.activeSelf) energySlider.SetActive(true);
-                if (!energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
-                if (!energyOverloadButton.activeSelf) energyOverloadButton.SetActive(true);
-                break;
-			case 38:
-                if (alternateAmmo) {
-                    icon.overrideSprite = ammIcons[1]; // tranq darts, dartgun
-				} else {
-                    icon.overrideSprite = ammIcons[0]; // needle darts, dartgun
-				}
-				break;
-            case 39:
-                if (alternateAmmo) {
-                    icon.overrideSprite = ammIcons[10]; // splinter, flechette
-				} else {
-                    icon.overrideSprite = ammIcons[9]; // hornet, flechette
-				}
-				break;
-			case 40:
-				if (icon.enabled) icon.enabled = false;  // Uses energy, ion beam
-				if (border.enabled) border.enabled = false;
-                if (!energySlider.activeSelf) energySlider.SetActive(true);
-                if (!energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
-                if (!energyOverloadButton.activeSelf) energyOverloadButton.SetActive(true);
-                break;
-                case 41:
-                icon.enabled = false;  // Rapier, no ammo used
-				border.enabled = false;
-				break;
-			case 42:
-                icon.enabled = false;  // Pipe, no ammo used
-				border.enabled = false;
-				break;
-			case 43:
-                if (alternateAmmo) {
-                    icon.overrideSprite = ammIcons[6]; // slug, magnum
-				} else {
-                    icon.overrideSprite = ammIcons[5]; // hollow, magnum
-				}
-				break;
-			case 44:
-                icon.overrideSprite = ammIcons[11]; // magcart, magpulse
-				break;
-			case 45:
-                if (alternateAmmo) {
-                    icon.overrideSprite = ammIcons[3]; // teflon, pistol
-				} else {
-                    icon.overrideSprite = ammIcons[2]; // standard, pistol
-				}
-				break;
-			case 46:
-                if (icon.enabled) icon.enabled = false;  // Uses energy, plasma rifle
-				if (border.enabled) border.enabled = false;
-                if (!energySlider.activeSelf) energySlider.SetActive(true);
-                if (!energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
-                if (!energyOverloadButton.activeSelf) energyOverloadButton.SetActive(true);
-                break;
-            case 47:
-				icon.overrideSprite = ammIcons[14]; // rail round, railgun
-				break;
-			case 48:
-				icon.overrideSprite = ammIcons[4]; // rubber, riotgun
-				break;
-			case 49:
-                if (alternateAmmo) {
-                    icon.overrideSprite = ammIcons[13]; // large slag, skorpion
-				} else {
-                    icon.overrideSprite = ammIcons[12]; // slag, skorpion
-				}
-				break;
-			case 50:
-                if (icon.enabled) icon.enabled = false;  // Uses energy, sparq beam
-				if (border.enabled) border.enabled = false;
-                if (!energySlider.activeSelf) energySlider.SetActive(true);
-                if (!energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
-                if (!energyOverloadButton.activeSelf) energyOverloadButton.SetActive(true);
-                break;
-            case 51:
-                if (icon.enabled) icon.enabled = false;  // Uses energy, stungun
-				if (border.enabled) border.enabled = false;
-                if (!energySlider.activeSelf) energySlider.SetActive(true);
-                if (!energyHeatTicks.activeSelf) energyHeatTicks.SetActive(true);
-                if (!energyOverloadButton.activeSelf) energyOverloadButton.SetActive(true);
-                break;
-            default:
-                if (icon.enabled) icon.enabled = false;
-                if (border.enabled) border.enabled = false;
-                if (energySlider.activeSelf) energySlider.SetActive(false);
-                if (energyHeatTicks.activeSelf) energyHeatTicks.SetActive(false);
-                if (energyOverloadButton.activeSelf) energyOverloadButton.SetActive(false);
-                break;
+			case 36: Standard(alt,7,8);    break; // MK3 Magnesium, Penetrator
+			case 37: Energy();             break; // Uses energy, Blaster
+			case 38: Standard(alt,0,1);    break; // Dartgun Needle, Tranq
+            case 39: Standard(alt,9,10);   break;//Flechetter Hornette,Splinter
+			case 40: Energy();             break; // Uses energy, Ion Beam
+            case 41: DisableAll();         break; // Rapier, no ammo used
+			case 42: DisableAll();         break; // Pipe, no ammo used
+			case 43: Standard(alt,5,6);    break; // Magnum Hollow, Slug
+			case 44: Standard(false,11,-1);break; // Magpulse Magcart, N/A
+			case 45: Standard(alt,2,3);    break; // Pistorl Standard, Teflon
+			case 46: Energy();             break; // Uses energy, plasma rifle
+            case 47: Standard(false,14,-1);break; // Railgun Rail Round
+			case 48: Standard(false,4,-1); break; // Riotgun Rubber, N/A
+			case 49: Standard(alt,12,13);  break; // Skorpion Slag, Large Slag
+			case 50: Energy();             break; // Uses energy, Sparq Beam
+            case 51: Energy();             break; // Uses energy, Stungun
+            default: DisableAll();         break; // - no weapon -
 		}
 	}
 }

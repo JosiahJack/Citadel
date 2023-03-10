@@ -8,7 +8,7 @@ public class HealthManager : MonoBehaviour {
 
 	// External references, optional
 	/*[DTValidator.Optional] */public SearchableItem searchableItem; // Not used universally.  Some objects can be destroyed but not searched, such as barrels.
-	/*[DTValidator.Optional] */public Image linkedCameraOverlay;
+	/*[DTValidator.Optional] */public Image linkedOverlay;
 	public SecurityType securityAffected; // Not a reference, needs no optional flag, if using DTValidator that is.
 	/*[DTValidator.Optional] */public AudioClip backupDeathSound;
 	/*[DTValidator.Optional] */public GameObject teleportEffect;
@@ -52,10 +52,6 @@ public class HealthManager : MonoBehaviour {
 	[HideInInspector] public bool deathDone = false;
 	[HideInInspector] public AIController aic;
 	private Rigidbody rbody;
-	private MeshCollider meshCol;
-	private BoxCollider boxCol;
-	private SphereCollider sphereCol;
-	private CapsuleCollider capCol;
     private float tempFloat;
 	private float take;
 	[HideInInspector] public SpawnManager spawnMother;  // not used universally
@@ -71,10 +67,6 @@ public class HealthManager : MonoBehaviour {
 		deathDone = false;
 		teleportDone = false;
 		rbody = GetComponent<Rigidbody>();
-		meshCol = GetComponent<MeshCollider>();
-		boxCol = GetComponent<BoxCollider>();
-		sphereCol = GetComponent<SphereCollider>();
-		capCol = GetComponent<CapsuleCollider>();
         attacker = null;
 		tempdd = new DamageData();
 		take = 0;
@@ -97,6 +89,8 @@ public class HealthManager : MonoBehaviour {
 
 	// Put into Start instead of Awake to give Const time to populate from enemy_tables.csv
 	public void Start () {
+		if (startInitialized) return;
+
 		if (isNPC) {
 			aic = GetComponent<AIController>();
 			index = aic.index;
@@ -123,43 +117,37 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	void LinkToAutomapOverlay() {
-		if (isSecCamera && linkedCameraOverlay == null) {
-			Vector3 worldPos = transform.position;
-			Transform prnt = transform.parent;
-			SecurityCameraRotate scr = null;
-			if (prnt != null) scr = prnt.gameObject.GetComponent<SecurityCameraRotate>();
-			if (scr != null) worldPos = scr.transform.position;
-			GameObject overlay = Const.a.GetObjectFromPool(PoolType.AutomapCameraOverlays);
-			if (overlay != null) {
-				overlay.SetActive(true);
-				RectTransform rect = overlay.GetComponent<RectTransform>();
-				linkedCameraOverlay = overlay.GetComponent<Image>();
-				if (linkedCameraOverlay != null) {
-					linkedCameraOverlay.enabled = true;
-					Vector3 tempVec2 = new Vector2(0f,0f);
-					// 436,-367, -0.3 is the center point of the map UI
-					//tempVec2.y = -367 + (((((transform.position.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * -1008f) + Const.a.mapTileMinX)) + 765.9734f + 3.2594f;
-					//tempVec2.x = 436 + (((((transform.position.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * -1008f) + Const.a.mapTileMinY)) + 1130.28443f - 1.4f;
-					tempVec2.y = ( ( (worldPos.z - Const.a.mapWorldMaxE)/
-									(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE) )
-									* 1008f)
-								+ Const.a.mapTileMinX;
-					tempVec2.x = ( ( (worldPos.x - Const.a.mapWorldMaxS)/
-									(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS) )
-									* 1008f)
-								+ Const.a.mapTileMinY;
-					tempVec2.z = -0.03f;
-					rect.anchoredPosition = tempVec2;
-				}
-			}
+		if (health <= 0) return; // Only living gets overlay.
+		if (isNPC && actAsCorpseOnly) return; // Only living gets overlay.
+		if (!isSecCamera && !isNPC) return;
+		if (linkedOverlay != null) return; // Already have an overlay.
 
-			if (linkedCameraOverlay == null) Debug.Log("Security object failed to find Automap overlay!");
-			//else Debug.Log("Security object linked to Automap overlay " + linkedCameraOverlay.name + " at " + linkedCameraOverlay.rectTransform.anchoredPosition.ToString());
+		PoolType pt = PoolType.AutomapCameraOverlays;
+		if (isNPC && aic.index > 0 && aic.index < Const.a.typeForNPC.Length) {
+			switch (Const.a.typeForNPC[aic.index]) {
+				case NPCType.Mutant:       pt = PoolType.AutomapMutantOverlays;
+										   break;
+				case NPCType.Supermutant:  pt = PoolType.AutomapMutantOverlays;
+										   break;
+				case NPCType.Robot:        pt = PoolType.AutomapBotOverlays;
+										   break;
+				case NPCType.Cyborg:       pt = PoolType.AutomapCyborgOverlays;
+										   break;
+				case NPCType.Supercyborg:  pt = PoolType.AutomapCyborgOverlays;
+										   break;
+				case NPCType.MutantCyborg: pt = PoolType.AutomapCyborgOverlays;
+										   break;
+			}
 		}
+
+		Vector3 worldPos = transform.position;
+		linkedOverlay = Automap.a.LinkOverlay(worldPos,transform.parent,pt);
+		Utils.Activate(linkedOverlay.gameObject);
+		Utils.EnableImage(linkedOverlay);
 	}
 
 	void OnEnable() {
-		LinkToAutomapOverlay();
+		Start();
 	}
 
 	public void ClearOverlays() {
@@ -421,7 +409,10 @@ public class HealthManager : MonoBehaviour {
 			if (aic != null) {
 				aic.goIntoPain = true;
 				aic.attacker = attacker;
-				if (linkedTargetID != null) linkedTargetID.SendDamageReceive(take);
+				if (linkedTargetID != null) {
+					linkedTargetID.SendDamageReceive(take);
+				}
+
 				aic.CheckPain(); // setup enemy with NPC
 			}
 		}
@@ -452,36 +443,30 @@ public class HealthManager : MonoBehaviour {
 	void VaporizeCorpse(bool energyVaporized) {
 		deathDone = true;
 		DropSearchables();
-
 		if (deathFX == PoolType.None) deathFX = PoolType.CorpseHit;
 		if (energyVaporized) deathFX = PoolType.Vaporize;
-
 		MeshRenderer mr = GetComponent<MeshRenderer>();
-		if (mr != null) mr.enabled = false;
-
+		Utils.DisableMeshRenderer(mr);
 		GameObject par = transform.parent.gameObject;
 		AIController aic = par.GetComponent<AIController>();
 		if (aic != null) {
 			if (!aic.healthManager.gibOnDeath) { // We are a corpse here.
-				aic.visibleMeshEntity.SetActive(false); // Turn off visible
-														// mesh entity from
-														// destroyed corpse.
-				aic.deathBurst.SetActive(false); // For any extra effects.  We
-												 // are totally gone now!
+				// Turn off visible mesh entity from destroyed corpse.
+				Utils.Deactivate(aic.visibleMeshEntity);
+				Utils.Deactivate(aic.deathBurst); // For any extra effects.
+												  // We are totally gone now!
 			}
-			aic.searchColliderGO.SetActive(false);
+			Utils.Deactivate(aic.searchColliderGO);
+			Utils.Deactivate(aic.gameObject);
 		}
 		CreateDeathEffects(deathFX);
-		if (aic != null) aic.gameObject.SetActive(false);
-		DisableCollision();
+		Utils.DisableCollision(gameObject);
 	}
 
 	public void TeleportAway() {
 		if (!teleportDone) {
 			teleportDone = true;
-			if (teleportEffect != null && !teleportEffect.activeSelf) {
-				teleportEffect.SetActive(true);
-			}
+			Utils.Activate(teleportEffect);
 		}
 	}
 
@@ -502,13 +487,15 @@ public class HealthManager : MonoBehaviour {
 		CreateDeathEffects(deathFX);
 		PlayDeathSound(deathSound); // Play death sound, if present
 		if (spawnMother != null) spawnMother.SpawneeJustDied();
-
 		GameObject par = transform.parent.gameObject;
-		AIController aic = par.GetComponent<AIController>();
-		if (aic != null) {
-			if (Const.a.typeForNPC[aic.index] == NPCType.Cyber) {
-				aic.gameObject.SetActive(false);
-			}
+		if (aic == null) {
+			AIController aic = par.GetComponent<AIController>();
+		}
+
+		if (aic == null) return;
+
+		if (Const.a.typeForNPC[aic.index] == NPCType.Cyber) {
+			Utils.SafeDestroy(aic.gameObject);
 		}
 	}
 
@@ -533,7 +520,7 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 		DropSearchables();
-		DisableCollision();
+		Utils.DisableCollision(gameObject);
 		AIController aic = GetComponent<AIController>();
 		if (aic != null) {
 			if (aic.healthManager.gibOnDeath) { // We are a corpse here.
@@ -578,7 +565,7 @@ public class HealthManager : MonoBehaviour {
 		deathDone = true; // Screens maintain collisions, so not disabling here; also maintain visible mesh, don't turn it off
 		PlayDeathSound(deathSound); // Make some noise
 		ImageSequenceTextureArray ista = GetComponent<ImageSequenceTextureArray>();
-		ista.Destroy();
+		ista.Destroy(); // ista deada nowa
 		if (gibOnDeath) Gib();
 	}
 
@@ -589,9 +576,15 @@ public class HealthManager : MonoBehaviour {
 		if (explosionEffect == null) return;
 
 		Vector3 pos = transform.position;
+		BoxCollider boxCol = GetComponent<BoxCollider>();
 		if (boxCol != null) pos = transform.TransformPoint(boxCol.center);
+
 		// MeshCollider doesn't have a center, so don't check meshCol here.
+
+		SphereCollider sphereCol = GetComponent<SphereCollider>();
 		if (sphereCol != null) pos = transform.TransformPoint(sphereCol.center);
+
+		CapsuleCollider capCol = GetComponent<CapsuleCollider>();
 		if (capCol != null) pos = transform.TransformPoint(capCol.center);
 
  		// Enable death effects (e.g. explosion particle effect)
@@ -603,15 +596,8 @@ public class HealthManager : MonoBehaviour {
 		if (isScreen) return;
 
 		MeshRenderer mr = GetComponent<MeshRenderer>();
-		if (mr != null) mr.enabled = false;
+		Utils.DisableMeshRenderer(mr);
 		if (rbody != null) rbody.useGravity = false;		
-	}
-
-	void DisableCollision() {
-		if (boxCol != null) boxCol.enabled = false;
-		if (meshCol != null) meshCol.enabled = false;
-		if (sphereCol != null) sphereCol.enabled = false;
-		if (capCol != null) capCol.enabled = false;
 	}
 
 	public void ObjectDeath(AudioClip deathSound) {
@@ -620,16 +606,14 @@ public class HealthManager : MonoBehaviour {
 		Debug.Log("ObjectDeath 1");
 		if (gibOnDeath) Gib();
 		else {
-			DisableCollision();
+			Utils.DisableCollision(gameObject);
 			DropSearchables();
 			CreateDeathEffects(deathFX);
 		}
 		Debug.Log("ObjectDeath 2");
 		deathDone = true;
-		if (isSecCamera && linkedCameraOverlay != null) {
-			linkedCameraOverlay.enabled = false; // disable on automap
-		}
-
+		Utils.DisableImage(linkedOverlay); // Disable on automap
+		Utils.Deactivate(linkedOverlay.gameObject);
 		if (securityAffected != SecurityType.None) {
 			LevelManager.a.ReduceCurrentLevelSecurity(securityAffected);
 		}
@@ -666,13 +650,9 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 			if (health > 0) {
-				if (boxCol != null) boxCol.enabled = true;
-				if (meshCol != null) meshCol.enabled = true;
-				if (sphereCol != null) sphereCol.enabled = true;
-				if (capCol != null) capCol.enabled = true;
-				if (isSecCamera) {
-					if (linkedCameraOverlay != null) linkedCameraOverlay.enabled = true; // enable on automap
-				}
+				Utils.EnableCollision(gameObject);
+				Utils.EnableImage(linkedOverlay); // Enable on automap.
+				Utils.Activate(linkedOverlay.gameObject);
 				MeshRenderer mr = GetComponent<MeshRenderer>();
 				if (mr != null) {
 					mr.enabled = true;
@@ -688,14 +668,9 @@ public class HealthManager : MonoBehaviour {
 					}
 				}
 			} else {
-				// Disable collision
-				if (boxCol != null) boxCol.enabled = false;
-				if (meshCol != null) meshCol.enabled = false;
-				if (sphereCol != null) sphereCol.enabled = false;
-				if (capCol != null) capCol.enabled = false;
-				if (isSecCamera) {
-					if (linkedCameraOverlay != null) linkedCameraOverlay.enabled = false; // disable on automap
-				}
+				Utils.DisableCollision(gameObject);
+				Utils.DisableImage(linkedOverlay); // Disable on automap.
+				Utils.Deactivate(linkedOverlay.gameObject);
 				MeshRenderer mr = GetComponent<MeshRenderer>();
 				if (mr != null) {
 					mr.enabled = false;

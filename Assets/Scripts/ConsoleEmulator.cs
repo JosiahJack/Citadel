@@ -98,16 +98,16 @@ public static class ConsoleEmulator {
 				MouseLookScript.a.playerCamera.useOcclusionCulling = true;
 				PlayerMovement.a.CheatNoclip = false;
 				PlayerMovement.a.grounded = false;
-				PlayerMovement.a.capsuleCollider.enabled = true;
-				PlayerMovement.a.leanCapsuleCollider.enabled = true;
+				Utils.EnableCapsuleCollider(PlayerMovement.a.capsuleCollider);
+				Utils.EnableCapsuleCollider(PlayerMovement.a.leanCapsuleCollider);
 				Const.sprint("noclip disabled");
 			} else {
 				MouseLookScript.a.playerCamera.useOcclusionCulling = false;
 				PlayerMovement.a.CheatNoclip = true;
 				PlayerMovement.a.grounded = false;
 				PlayerMovement.a.rbody.useGravity = false;
-				PlayerMovement.a.capsuleCollider.enabled = false;
-				PlayerMovement.a.leanCapsuleCollider.enabled = false;
+				Utils.DisableCapsuleCollider(PlayerMovement.a.capsuleCollider);
+				Utils.DisableCapsuleCollider(PlayerMovement.a.leanCapsuleCollider);
 				Const.sprint("noclip activated!");
 			}
         } else if (ts.Contains("notarget") || ts.Contains("no target")) {
@@ -825,6 +825,12 @@ Master Index
 515 func_forcebridge              23
 516 prop_lift2                    24
 517 func_wall                     25
+518 BulletHoleLarge
+519 BulletHoleScorchLarge
+520 BulletHoleScorchSmall
+521 BulletHoleSmall
+522 BulletHoleTiny
+523 BulletHoleTinySpread
 
 Generic Materials (Const.a.genericMaterials[])
 0  col1                 Dark Gray            In hindsight, maybe I should have named these descriptively.

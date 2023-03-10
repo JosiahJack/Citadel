@@ -11,23 +11,6 @@ using UnityEngine.UI;
 public class PlayerMovement : MonoBehaviour {
 	// External references, required
 	public GameObject cameraObject;
-	public Camera automapCamera;
-	public GameObject automapCanvasGO;
-	public GameObject automapContainerLH;
-	public GameObject automapContainerRH;
-	public GameObject automapTabLH;
-	public GameObject automapTabRH;
-	public Transform automapCameraTransform;
-	public Image[] automapFoWTiles;
-	public RectTransform[] automapFoWTilesRects;
-	public Image automapBaseImage;
-	public Image automapInnerCircle;
-	public Image automapOuterCircle;
-	public Sprite[] automapsBaseImages;
-	public Image[] automapsHazardOverlays;
-	public Transform automapFullPlayerIcon;
-	public Transform automapNormalPlayerIconLH;
-	public Transform automapNormalPlayerIconRH;
 	public Transform cheatG1Spawn;
 	public Transform cheatG2Spawn;
 	public Transform cheatG4Spawn;
@@ -41,35 +24,6 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject cheatL7arsenal;
 	public GameObject cheatL8arsenal;
 	public GameObject cheatL9arsenal;
-	public GameObject levelOverlayContainerR;
-	public GameObject levelOverlayContainer1;
-	public GameObject levelOverlayContainer2;
-	public GameObject levelOverlayContainer3;
-	public GameObject levelOverlayContainer4;
-	public GameObject levelOverlayContainer5;
-	public GameObject levelOverlayContainer6;
-	public GameObject levelOverlayContainer7;
-	public GameObject levelOverlayContainer8;
-	public GameObject levelOverlayContainer9;
-	public GameObject levelOverlayContainerG1;
-	public GameObject levelOverlayContainerG2;
-	public GameObject levelOverlayContainerG4;
-	public Vector2[] automapLevelHomePositions;
-		// R  =  43.97,  85.66
-		// 1  =  -8.53,  85.99
-		// 2  =  10.20,  44.80
-		// 3  =   9.40,  63.83
-		// 4  = -55.65, 116.80
-		// 5  =  -9.40,  71.80
-		// 6  =  29.70,  85.50
-		// 7  =   5.00,  76.55
-		// 8  =  25.10,  84.40
-		// 9  =  39.80,  72.60
-		// 10 = 440.80, 200.60
-		// 11 =  80.16,-196.68
-		// 12 =  99.50, 416.90
-		// 13 =   0.00,   0.00
-	
 	public HardwareButton hwbJumpJets;
 	public TextWarningsManager twm;
 	public CapsuleCollider leanCapsuleCollider;
@@ -87,35 +41,17 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject locationIndicator;
 	public Text locationText;
 	public HealthManager hm;
-	public GameObject poolContainerAutomapBotOverlays;
-	public GameObject poolContainerAutomapMutantOverlays;
-	public GameObject poolContainerAutomapCyborgOverlays;
-
-	public bool[] automapExploredR; // save
-	public bool[] automapExplored1; // save
-	public bool[] automapExplored2; // save
-	public bool[] automapExplored3; // save
-	public bool[] automapExplored4; // save
-	public bool[] automapExplored5; // save
-	public bool[] automapExplored6; // save
-	public bool[] automapExplored7; // save
-	public bool[] automapExplored8; // save
-	public bool[] automapExplored9; // save
-	public bool[] automapExploredG1; // save
-	public bool[] automapExploredG2; // save
-	public bool[] automapExploredG4; // save
-
-	// Internal references
 	public float playerSpeed; // save
 	public float playerSpeedActual;
 	public float playerSpeedHorizontalActual;
-	[HideInInspector] public BodyState bodyState; // save
 	public bool isSprinting = false;
 	public bool grounded = false; // save
+
+	// Internal references
+	[HideInInspector] public BodyState bodyState; // save
 	[HideInInspector] public bool ladderState = false; // save
 	[HideInInspector] public bool gravliftState = false; // save
 	[HideInInspector] public bool inCyberSpace = false; // save
-	[HideInInspector] public bool inFullMap;
 	[HideInInspector] public float walkAcceleration = 2000f;
 	[HideInInspector] public int SFXIndex = -1; // save
 	private float walkDeacceleration = 0.1f; // was 0.30f
@@ -144,20 +80,6 @@ public class PlayerMovement : MonoBehaviour {
 	private float capsuleRadius;
 	private float ladderSpeed = 0.4f;
 	private float fallDamage = 75f;
-	private float automapUpdateFinished; // save
-	private bool[] automapExplored;
-	private float automapZoom0 = 1.2f;
-	private float automapZoom1 = 0.75f;
-	private float automapZoom2 = 0.55f;
-	[HideInInspector] public int currentAutomapZoomLevel = 0;
-		// private float circleInnerRangev1 = 7.679999f; //(2.5f * 2.56f) + 1.28f;
-		// private float circleOuterRangev1 = 11.52f; //(4f * 2.56f) + 1.28f;
-		// private float circleInnerRangev2 = 8.96f; //(3f * 2.56f) + 1.28f;
-		// private float circleOuterRangev2 = 12.8f; //(4.5f * 2.56f) + 1.28f;
-		// private float circleInnerRangev3 = 14.08f; //(5f * 2.56f) + 1.28f;
-		// private float circleOuterRangev3 = 20.48f; //(7.5f * 2.56f) + 1.28f;
-		// private float automapFactorx = 1.25f;
-		// private float automapFactory = 1.135f;
 	[HideInInspector] public bool CheatWallSticky; // save
     [HideInInspector] public bool CheatNoclip; // save
     [HideInInspector] public bool staminupActive = false;
@@ -211,7 +133,6 @@ public class PlayerMovement : MonoBehaviour {
 	private float jumpJetEnergySuckTick = 1f;
 	private Vector3 tempVec;
 	private Vector2 tempVec2;
-	private Vector2 tempVec2b;
 	private float tempFloat;
 	private int tempInt;
 	private float leanSpeed = 70f;
@@ -221,22 +142,12 @@ public class PlayerMovement : MonoBehaviour {
 	private float burstForce = 35f;
 	[HideInInspector] public float doubleJumpFinished; // save
 	private Vector3 playerHome;
-	private Texture2D tempTexture;
 	[HideInInspector] public float turboFinished = 0f; // save
 	[HideInInspector] public float turboCyberTime = 15f;
 	[HideInInspector] public bool inCyberTube = false;
 	private int doubleJumpTicks = 0;
-	private float automapCorrectionX = -0.008f;
-	private float automapCorrectionY = 0.099f;
-	private float automapTileCorrectionX = -516;
-	private float automapTileCorrectionY = -516;
-	private float automapFoWRadius = 30f;
-	private float automapTileBCorrectionX = 0f;
-	private float automapTileBCorrectionY = 0f;
 	private Vector3 tempVecRbody;
-	private float automapPlayerIconZAdjusted;
 	private bool inputtingMovement;
-	private float updateTime;
 
 	public static PlayerMovement a;
 
@@ -244,7 +155,7 @@ public class PlayerMovement : MonoBehaviour {
 		a = this;
 	}
 
-    void Start (){
+    void Start() {
 		currentCrouchRatio = def1;
 		bodyState = BodyState.Standing;
 		cyberDesetup = false;
@@ -273,14 +184,6 @@ public class PlayerMovement : MonoBehaviour {
 		doubleJumpTicks = 0;
 		turboFinished = PauseScript.a.relativeTime;
 		playerHome = transform.localPosition;
-		automapExplored = new bool[4096];
-		automapUpdateFinished = PauseScript.a.relativeTime;
-		if (LevelManager.a != null)
-			SetAutomapExploredReference(LevelManager.a.currentLevel);
-		else
-			SetAutomapExploredReference(1);
-		AutomapZoomAdjust();
-		automapPlayerIconZAdjusted = 0f;
 		ConsoleEmulator.lastCommand = new string[7];
 		ConsoleEmulator.consoleMemdex = 0;
     }
@@ -328,7 +231,7 @@ public class PlayerMovement : MonoBehaviour {
 		if (leanCapsuleCollider.height != capsuleCollider.height) leanCapsuleCollider.height = capsuleCollider.height; // Lean should always match stalk.
 		SetRunningRelForwardsAndSidewaysFlags();
 		playerSpeed = GetBasePlayerSpeed();
-		if (Inventory.a.hasHardware[1]) UpdateAutomap(); // Update the map
+		Automap.a.UpdateAutomap(transform.localPosition); // Update the map
 		ApplyBodyStateLerps(); // Handle body position lerping for smooth transitions
 		Noclip();
 		ApplyGroundFriction();
@@ -450,7 +353,7 @@ public class PlayerMovement : MonoBehaviour {
 	void ApplyGroundFriction() {
 		if (running && isSprinting) return;
 		if (!CheatNoclip) {
-			if (!grounded) return;
+			if (!grounded && !ladderState) return;
 		}
 
 		tempVecRbody = rbody.velocity;
@@ -595,7 +498,10 @@ public class PlayerMovement : MonoBehaviour {
 				Utils.PlayOneShotSavable(SFX,SFXLadder,0.2f);
 				ladderSFXFinished = PauseScript.a.relativeTime + ladderSFXIntervalTime;
 			}
-			rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime * 0.2f, ladderSpeed * relForward * walkAcceleration * Time.deltaTime, 0);
+
+			float ladderSpeedMod = ladderSpeed;
+			if (isSprinting && running) ladderSpeedMod = 1.1f; // Climb fast!
+			rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime * 0.2f, ladderSpeedMod * relForward * walkAcceleration * Time.deltaTime, 0);
 		}
 
 		if (Inventory.a.hardwareIsActive [9] && Inventory.a.hardwareVersionSetting[9] == 0)
@@ -844,11 +750,12 @@ public class PlayerMovement : MonoBehaviour {
 	bool GetSprintInputState() {
 		if (consoleActivated) return false;
 
+		bool conditions = (grounded || CheatNoclip || ladderState);
 		if (GetInput.a.Sprint()) {
-			if (grounded || CheatNoclip) return !(GetInput.a.CapsLockOn());
+			if (conditions) return !(GetInput.a.CapsLockOn());
 			return false;
 		} else {
-			if (grounded || CheatNoclip) return GetInput.a.CapsLockOn();
+			if (conditions) return GetInput.a.CapsLockOn();
 			return false; // Can't sprint in the air.
 		}
 	}
@@ -943,231 +850,6 @@ public class PlayerMovement : MonoBehaviour {
 		t.velocity = tempVecRbody;
 	}
 
-	// AUTOMAP - rather than making yet another singleton Automap.a. because that's annoying
-	// =====================================================================================
-	// Update automap location
-	public void UpdateAutomap () {
-		if (inCyberSpace) return;
-
-		Vector3 playerPosition = transform.localPosition;
-
-		if (Inventory.a.hardwareVersion[1] < 2) {
-			if (poolContainerAutomapBotOverlays.activeSelf) poolContainerAutomapBotOverlays.SetActive(false);
-		} else {
-			if (!poolContainerAutomapBotOverlays.activeSelf) poolContainerAutomapBotOverlays.SetActive(true);
-		}
-
-		if (Inventory.a.hardwareVersion[1] < 3) {
-			if (poolContainerAutomapCyborgOverlays.activeSelf) poolContainerAutomapCyborgOverlays.SetActive(false);
-			if (poolContainerAutomapMutantOverlays.activeSelf) poolContainerAutomapMutantOverlays.SetActive(false);
-		} else {
-			if (!poolContainerAutomapCyborgOverlays.activeSelf) poolContainerAutomapCyborgOverlays.SetActive(true);
-			if (!poolContainerAutomapMutantOverlays.activeSelf) poolContainerAutomapMutantOverlays.SetActive(true);
-		}
-
-		if (automapUpdateFinished < PauseScript.a.relativeTime) {
-			if (!automapBaseImage.enabled) automapBaseImage.enabled = true;
-			if (automapBaseImage.overrideSprite != automapsBaseImages[LevelManager.a.currentLevel]) automapBaseImage.overrideSprite = automapsBaseImages[LevelManager.a.currentLevel];
-			// private float camMaxAmount = 0.2548032f;
-			// private float mapWorldMaxN = 85.83999f;
-			// private float mapWorldMaxS = -78.00001f;
-			// private float mapWorldMaxE = -70.44f;
-			// private float mapWorldMaxW = 93.4f;
-			tempVec.x = (((playerPosition.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * (Const.a.camMaxAmount * 2f)) + (Const.a.camMaxAmount * -1f);
-			tempVec.y = (((playerPosition.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * (Const.a.camMaxAmount * 2f)) + (Const.a.camMaxAmount * -1f);
-			tempVec.z = automapCameraTransform.localPosition.z;
-			tempVec.x = (tempVec.x * -1f) + automapCorrectionX;
-			tempVec.y += automapCorrectionY;
-
-			// private float mapTileMinX = 8; // top left corner
-			// private float mapTileMaxY = -8; // top left corner
-			// private float mapTileMinY = -1016; // bottom right corner
-			// private float mapTileMaxX = 1016; // bottom right corner
-			tempVec2b.x = (((playerPosition.z - Const.a.mapWorldMaxE)/(Const.a.mapWorldMaxW - Const.a.mapWorldMaxE)) * 1008f) + Const.a.mapTileMinX + automapTileBCorrectionX;
-			tempVec2b.y = ((((playerPosition.x - Const.a.mapWorldMaxS)/(Const.a.mapWorldMaxN - Const.a.mapWorldMaxS)) * 1008f) + Const.a.mapTileMinY + automapTileBCorrectionY);
-
-			if (inFullMap) {
-				tempVec2b.x -= automapTileBCorrectionX;
-				tempVec2b.y -= automapTileBCorrectionY;
-				automapFullPlayerIcon.localPosition = tempVec2b;
-				tempVec.x = 0;
-				tempVec.y = 0;
-				automapCameraTransform.localPosition = tempVec; // move the map to center
-			} else {
-				automapCameraTransform.localPosition = tempVec; // move the map to reflect player movement
-			}
-
-			// Update player icon rotation
-			automapPlayerIconZAdjusted = (transform.eulerAngles.y * (-1) + 90); // Rotation is adjusted for player view and direction vs UI space
-			if (Mathf.Abs(automapNormalPlayerIconLH.localRotation.z - automapPlayerIconZAdjusted) > 0.5f) automapNormalPlayerIconLH.localRotation = Quaternion.Euler(0,0,automapPlayerIconZAdjusted);
-			if (Mathf.Abs(automapNormalPlayerIconRH.localRotation.z - automapPlayerIconZAdjusted) > 0.5f) automapNormalPlayerIconRH.localRotation = Quaternion.Euler(0,0,automapPlayerIconZAdjusted);
-			if (Mathf.Abs(automapFullPlayerIcon.localRotation.z - automapPlayerIconZAdjusted) > 0.5f) automapFullPlayerIcon.localRotation = Quaternion.Euler(0,0,automapPlayerIconZAdjusted);
-
-			// Update explored tiles
-			for (int i=0;i<4096;i++) {
-				if (automapExplored[i]) {
-					automapFoWTiles[i].enabled = false;
-				} else {
-					tempVec2.x = automapFoWTilesRects[i].localPosition.x * -1f - automapTileCorrectionX;// - tempVec.x;
-					tempVec2.y = automapFoWTilesRects[i].localPosition.y + automapTileCorrectionY;// - tempVec.y;
-					if (Vector2.Distance(tempVec2,tempVec2b) < automapFoWRadius) {
-						automapExplored[i] = true;
-						SetAutomapTileExplored(LevelManager.a.currentLevel,i);
-						automapFoWTiles[i].enabled = false;
-					} else {
-						automapFoWTiles[i].enabled = true;
-					}
-				}
-			}
-
-			updateTime = 0.2f;
-			if (Inventory.a.hardwareVersion[1] > 1) updateTime = 0.1f;// Display just bot overlays - Handled by AIController since it updates it anyways.
-			if (Inventory.a.hardwareVersion[1] > 2) {
-				updateTime = 0.05f;
-
-				// Display hazards
-				for (int j=0;j<13;j++) {
-					if (j != LevelManager.a.currentLevel) {
-						if (automapsHazardOverlays[j].enabled) automapsHazardOverlays[j].enabled = false;
-					} else {
-						if (!automapsHazardOverlays[j].enabled) automapsHazardOverlays[j].enabled = true;
-					}
-				}
-				// Display cyborg and mutant overlays - Handled by AIController since it updates it anyways.
-			}
-			automapUpdateFinished = PauseScript.a.relativeTime + updateTime;
-		}
-
-		if (Inventory.a.hasHardware[1]) {
-			if (automapTabLH.activeInHierarchy || automapTabRH.activeInHierarchy || inFullMap) {
-				automapCamera.enabled = true;
-				automapCanvasGO.SetActive(true);
-				switch (LevelManager.a.currentLevel) {
-					case 0: if (!levelOverlayContainerR.activeSelf) {levelOverlayContainerR.SetActive(true);}   DeactivateLevelOverlayContainersExcept(0); break;
-					case 1: if (!levelOverlayContainer1.activeSelf) {levelOverlayContainer1.SetActive(true);}   DeactivateLevelOverlayContainersExcept(1); break;
-					case 2: if (!levelOverlayContainer2.activeSelf) {levelOverlayContainer2.SetActive(true);}   DeactivateLevelOverlayContainersExcept(2); break;
-					case 3: if (!levelOverlayContainer3.activeSelf) {levelOverlayContainer3.SetActive(true);}   DeactivateLevelOverlayContainersExcept(3); break;
-					case 4: if (!levelOverlayContainer4.activeSelf) {levelOverlayContainer4.SetActive(true);}   DeactivateLevelOverlayContainersExcept(4); break;
-					case 5: if (!levelOverlayContainer5.activeSelf) {levelOverlayContainer5.SetActive(true);}   DeactivateLevelOverlayContainersExcept(5); break;
-					case 6: if (!levelOverlayContainer6.activeSelf) {levelOverlayContainer6.SetActive(true);}   DeactivateLevelOverlayContainersExcept(6); break;
-					case 7: if (!levelOverlayContainer7.activeSelf) {levelOverlayContainer7.SetActive(true);}   DeactivateLevelOverlayContainersExcept(7); break;
-					case 8: if (!levelOverlayContainer8.activeSelf) {levelOverlayContainer8.SetActive(true);}   DeactivateLevelOverlayContainersExcept(8); break;
-					case 9: if (!levelOverlayContainer9.activeSelf) {levelOverlayContainer9.SetActive(true);}   DeactivateLevelOverlayContainersExcept(9); break;
-					case 10:if (!levelOverlayContainerG1.activeSelf) {levelOverlayContainerG1.SetActive(true);} DeactivateLevelOverlayContainersExcept(10);break;
-					case 11:if (!levelOverlayContainerG2.activeSelf) {levelOverlayContainerG2.SetActive(true);} DeactivateLevelOverlayContainersExcept(11);break;
-					case 12:if (!levelOverlayContainerG4.activeSelf) {levelOverlayContainerG4.SetActive(true);} DeactivateLevelOverlayContainersExcept(12);break;
-				}
-			}
-		} else {
-			automapCamera.enabled = false;
-			automapCanvasGO.SetActive(false);
-		}
-	}
-
-	void DeactivateLevelOverlayContainersExcept(int current) {
-		if (current != 0) {if (levelOverlayContainerR.activeSelf) levelOverlayContainerR.SetActive(false); }
-		if (current != 1) {if (levelOverlayContainer1.activeSelf) levelOverlayContainer1.SetActive(false); }
-		if (current != 2) {if (levelOverlayContainer2.activeSelf) levelOverlayContainer2.SetActive(false); }
-		if (current != 3) {if (levelOverlayContainer3.activeSelf) levelOverlayContainer3.SetActive(false); }
-		if (current != 4) {if (levelOverlayContainer4.activeSelf) levelOverlayContainer4.SetActive(false); }
-		if (current != 5) {if (levelOverlayContainer5.activeSelf) levelOverlayContainer5.SetActive(false); }
-		if (current != 6) {if (levelOverlayContainer6.activeSelf) levelOverlayContainer6.SetActive(false); }
-		if (current != 7) {if (levelOverlayContainer7.activeSelf) levelOverlayContainer7.SetActive(false); }
-		if (current != 8) {if (levelOverlayContainer8.activeSelf) levelOverlayContainer8.SetActive(false); }
-		if (current != 9) {if (levelOverlayContainer9.activeSelf) levelOverlayContainer9.SetActive(false); }
-		if (current != 10){if (levelOverlayContainerG1.activeSelf)levelOverlayContainerG1.SetActive(false);}
-		if (current != 11){if (levelOverlayContainerG2.activeSelf)levelOverlayContainerG2.SetActive(false);}
-		if (current != 12){if (levelOverlayContainerG4.activeSelf)levelOverlayContainerG4.SetActive(false);}
-	}
-
-	public void SetAutomapExploredReference(int currentLevel) {
-		switch(currentLevel) {
-			case 0: for (int i=0;i<4096;i++) { automapExplored[i] = automapExploredR[i]; } break;
-			case 1: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored1[i]; } break;
-			case 2: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored2[i]; } break;
-			case 3: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored3[i]; } break;
-			case 4: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored4[i]; } break;
-			case 5: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored5[i]; } break;
-			case 6: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored6[i]; } break;
-			case 7: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored7[i]; } break;
-			case 8: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored8[i]; } break;
-			case 9: for (int i=0;i<4096;i++) { automapExplored[i] = automapExplored9[i]; } break;
-			case 10:for (int i=0;i<4096;i++) { automapExplored[i] = automapExploredG1[i];} break;
-			case 11:for (int i=0;i<4096;i++) { automapExplored[i] = automapExploredG2[i];} break;
-			case 12:for (int i=0;i<4096;i++) { automapExplored[i] = automapExploredG4[i];} break;
-		}
-	}
-
-	void SetAutomapTileExplored(int currentLevel, int index) {
-		switch(currentLevel) {
-			case 0: automapExploredR[index] = true; break;
-			case 1: automapExplored1[index] = true; break;
-			case 2: automapExplored2[index] = true; break;
-			case 3: automapExplored3[index] = true; break;
-			case 4: automapExplored4[index] = true; break;
-			case 5: automapExplored5[index] = true; break;
-			case 6: automapExplored6[index] = true; break;
-			case 7: automapExplored7[index] = true; break;
-			case 8: automapExplored8[index] = true; break;
-			case 9: automapExplored9[index] = true; break;
-			case 10:automapExploredG1[index]= true; break;
-			case 11:automapExploredG2[index]= true; break;
-			case 12:automapExploredG4[index]= true; break;
-		}
-	}
-
-	public void AutomapZoomOut() {
-		if (Inventory.a.hardwareVersion[1] < 2) {
-			Const.sprint(Const.a.stringTable[465],Const.a.player1); // Map hardware version doesn't support zoom.
-			return;
-		}
-
-		currentAutomapZoomLevel++;
-		if (currentAutomapZoomLevel > 2) {
-			currentAutomapZoomLevel = 2;
-			Const.sprint(Const.a.stringTable[316],Const.a.player1); // zoom at max
-			return;
-		}
-		AutomapZoomAdjust();
-	}
-
-	public void AutomapZoomIn() {
-		if (Inventory.a.hardwareVersion[1] < 2) {
-			Const.sprint(Const.a.stringTable[465],Const.a.player1); // Map hardware version doesn't support zoom.
-			return;
-		}
-
-		currentAutomapZoomLevel--;
-		if (currentAutomapZoomLevel < 0) {
-			currentAutomapZoomLevel = 0;
-			Const.sprint(Const.a.stringTable[317],Const.a.player1); // zoom at min
-			return;
-		}
-		AutomapZoomAdjust();
-	}
-
-	void AutomapZoomAdjust() {
-		Vector3 scaleVec = new Vector3(0f,0f,0f);
-		switch (currentAutomapZoomLevel) {
-			case 0: scaleVec = new Vector3(automapZoom0, automapZoom0, automapZoom0); break;
-			case 1: scaleVec = new Vector3(automapZoom1, automapZoom1, automapZoom1); break;
-			case 2: scaleVec = new Vector3(automapZoom2, automapZoom2, automapZoom2); break;
-		}
-		automapContainerLH.transform.localScale = scaleVec;
-		automapContainerRH.transform.localScale = scaleVec;
-	}
-
-	public void AutomapGoSide() {
-		Const.sprint("Unable to connect to side map, try updating to version 1.10",Const.a.player1); // zoom at max
-	}
-
-	public void AutomapGoFull() {
-		MFDManager.a.AutomapGoFull();
-	}
-	// =====================================================================================
-	// =====================================================================================
-
-
 	// Reset grounded to false when player is mid-air
 	void OnCollisionExit (){
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
@@ -1256,22 +938,20 @@ public class PlayerMovement : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		PlayerMovement pm = go.GetComponent<PlayerMovement>();
-		int j = 0;
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
-		if (pm == null) {
-			Debug.Log("PlayerMovement missing on savetype of Player!  GameObject.name: " + go.name);
-			s1.Append("fbfibbb");
-			for (j=0;j<(4096 * 13);j++) s1.Append("b");
-			s1.Append("bbfffffbffbbifftttbtttu");
-			return Utils.DTypeWordToSaveString(s1.ToString());
-		}
-
-		Debug.Log("Mid Save saved player at " + go.transform.localPosition.ToString());
 		s1.Append(Utils.SaveTransform(go.transform));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRigidbody(go));
 		s1.Append(Utils.splitChar);
+		if (pm == null) {
+			Debug.Log("PlayerMovement missing on savetype of Player!"
+					  + "  GameObject.name: " + go.name);
+
+			s1.Append("fbfibbbbbfffffbffbbifftttbtttfu");
+			return Utils.DTypeWordToSaveString(s1.ToString());
+		}
+
 		s1.Append(Utils.FloatToString(pm.playerSpeed)); // float
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(pm.grounded)); // bool
@@ -1285,21 +965,6 @@ public class PlayerMovement : MonoBehaviour {
 		s1.Append(Utils.BoolToString(pm.gravliftState)); // bool
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(pm.inCyberSpace)); // bool
-		s1.Append(Utils.splitChar);
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExploredR[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored1[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored2[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored3[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored4[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored5[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored6[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored7[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored8[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExplored9[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExploredG1[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExploredG2[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(pm.automapExploredG4[j])); s1.Append(Utils.splitChar); } // bool
-		s1.Append(Utils.UintToString(pm.currentAutomapZoomLevel));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(pm.CheatWallSticky)); // bool
 		s1.Append(Utils.splitChar);
@@ -1337,15 +1002,13 @@ public class PlayerMovement : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpJetEnergySuckTickFinished));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.automapUpdateFinished));
-		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(pm.fatigueWarned));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.turboFinished));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(pm.ressurectingFinished));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(pm.doubleJumpFinished));
-		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.turboFinished));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(pm.SFX.time)); // float
 		s1.Append(Utils.splitChar);
@@ -1356,26 +1019,24 @@ public class PlayerMovement : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PlayerMovement pm = go.GetComponent<PlayerMovement>();
-		int j = 0;
 		if (pm == null) {
 			Debug.Log("PlayerMovement.Load failure, pm == null");
-			return index + 29 + (4096 * 13);
+			return index + 31;
 		}
 
 		if (index < 0) {
 			Debug.Log("PlayerMovement.Load failure, index < 0");
-			return index + 29 + (4096 * 13);
+			return index + 31;
 		}
 
 		if (entries == null) {
 			Debug.Log("PlayerMovement.Load failure, entries == null");
-			return index + 29 + (4096 * 13);
+			return index + 31;
 		}
 
 		float readFloatx, readFloaty, readFloatz;
 		string oldpos = go.transform.localPosition.ToString();
 		index = Utils.LoadTransform(go.transform,ref entries,index);
-		Debug.Log("Mid Load loaded player from " + oldpos + " to " + go.transform.localPosition.ToString());
 		index = Utils.LoadRigidbody(go,ref entries,index);
 		pm.playerSpeed = Utils.GetFloatFromString(entries[index]); index++;
 		pm.grounded = Utils.GetBoolFromString(entries[index]); index++;
@@ -1384,27 +1045,6 @@ public class PlayerMovement : MonoBehaviour {
 		pm.ladderState = Utils.GetBoolFromString(entries[index]); index++;
 		pm.gravliftState = Utils.GetBoolFromString(entries[index]); index++;
 		pm.inCyberSpace = Utils.GetBoolFromString(entries[index]); index++;
-		for (j=0;j<4096;j++) { pm.automapExploredR[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { pm.automapExplored1[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { pm.automapExplored2[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { pm.automapExplored3[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { pm.automapExplored4[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { pm.automapExplored5[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { pm.automapExplored6[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { pm.automapExplored7[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { pm.automapExplored8[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { pm.automapExplored9[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { pm.automapExploredG1[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { pm.automapExploredG2[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { pm.automapExploredG4[j] = entries[index].Equals("1"); index++; }
-		if (LevelManager.a != null) pm.SetAutomapExploredReference(LevelManager.a.currentLevel);
-		else pm.SetAutomapExploredReference(1);
-
-		pm.currentAutomapZoomLevel = Utils.GetIntFromString(entries[index]); index++;
-		if (pm.currentAutomapZoomLevel < 0) pm.currentAutomapZoomLevel = 0;
-		if (pm.currentAutomapZoomLevel > 2) pm.currentAutomapZoomLevel = 2;
-		pm.AutomapZoomAdjust();
-
 		pm.CheatWallSticky = Utils.GetBoolFromString(entries[index]); index++;
 		pm.CheatNoclip = Utils.GetBoolFromString(entries[index]); index++;
 		pm.jumpTime = Utils.GetFloatFromString(entries[index]); index++; // not a timer
@@ -1419,16 +1059,13 @@ public class PlayerMovement : MonoBehaviour {
 		pm.cyberSetup = Utils.GetBoolFromString(entries[index]); index++;
 		pm.cyberDesetup = Utils.GetBoolFromString(entries[index]); index++;
 		pm.oldBodyState = Utils.IntToBodyState(Utils.GetIntFromString(entries[index])); index++;
-		pm.ConsoleDisable();
 		pm.leanTarget = Utils.GetFloatFromString(entries[index]); index++;
 		pm.leanShift = Utils.GetFloatFromString(entries[index]); index++;
 		pm.leanTransform.localRotation = Quaternion.Euler(0, 0, pm.leanTarget);
 		pm.leanTransform.localPosition = new Vector3(pm.leanShift,0,0);
-
 		pm.jumpSFXFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.jumpLandSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.jumpJetEnergySuckTickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		pm.automapUpdateFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.fatigueWarned = Utils.GetBoolFromString(entries[index]); index++;
 		pm.turboFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		pm.ressurectingFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
@@ -1441,6 +1078,7 @@ public class PlayerMovement : MonoBehaviour {
 			pm.SFX.clip = Const.a.sounds[pm.SFXIndex];
 			Utils.PlayOneShotSavable(pm.SFX,Const.a.sounds[pm.SFXIndex]);
 		}
+		pm.ConsoleDisable();
 		return index;
 	}
 }

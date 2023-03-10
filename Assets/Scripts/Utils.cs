@@ -3,7 +3,9 @@ using System.IO;
 using System.Globalization;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 // Globally accessible utility functions for parsing values, generating save
 // strings, converting enumerated and integer values, and other helpful things.
@@ -53,6 +55,167 @@ public class Utils {
 		for (int i=0;i<array.Length;i++) {
 			array[i] = value; // Reset the list
 		}
+	}
+
+	public static void Activate(GameObject go) {
+		if (go == null) return;
+
+		if (!go.activeSelf) go.SetActive(true);
+	}
+
+	public static void Deactivate(GameObject go) {
+		if (go == null) return;
+
+		if (go.activeSelf) go.SetActive(false);
+	}
+
+	public static void EnableImage(Image img) {
+		if (img == null) return;
+
+		if (!img.enabled) img.enabled = true;
+	}
+
+	public static void DisableImage(Image img) {
+		if (img == null) return;
+
+		if (img.enabled) img.enabled = false;
+	}
+
+	public static void EnableMeshRenderer(MeshRenderer mr) {
+		if (mr == null) return;
+
+		if (!mr.enabled) mr.enabled = true;
+	}
+
+	public static void DisableMeshRenderer(MeshRenderer mr) {
+		if (mr == null) return;
+
+		if (mr.enabled) mr.enabled = false;
+	}
+
+	public static void EnableBoxCollider(BoxCollider col) {
+		if (col == null) return;
+
+		if (!col.enabled) col.enabled = true;
+	}
+
+	public static void DisableBoxCollider(BoxCollider col) {
+		if (col == null) return;
+
+		if (col.enabled) col.enabled = false;
+	}
+
+	public static void EnableMeshCollider(MeshCollider col) {
+		if (col == null) return;
+
+		if (!col.enabled) col.enabled = true;
+	}
+
+	public static void DisableMeshCollider(MeshCollider col) {
+		if (col == null) return;
+
+		if (col.enabled) col.enabled = false;
+	}
+
+	public static void EnableCapsuleCollider(CapsuleCollider col) {
+		if (col == null) return;
+
+		if (!col.enabled) col.enabled = true;
+	}
+
+	public static void DisableCapsuleCollider(CapsuleCollider col) {
+		if (col == null) return;
+
+		if (col.enabled) col.enabled = false;
+	}
+
+	public static void EnableSphereCollider(SphereCollider col) {
+		if (col == null) return;
+
+		if (!col.enabled) col.enabled = true;
+	}
+
+	public static void DisableSphereCollider(SphereCollider col) {
+		if (col == null) return;
+
+		if (col.enabled) col.enabled = false;
+	}
+
+	public static void EnableCollision(GameObject go) {
+		BoxCollider bcol = go.GetComponent<BoxCollider>();
+		EnableBoxCollider(bcol);
+		SphereCollider scol = go.GetComponent<SphereCollider>();
+		EnableSphereCollider(scol);
+		CapsuleCollider ccol = go.GetComponent<CapsuleCollider>();
+		EnableCapsuleCollider(ccol);
+		MeshCollider mcol = go.GetComponent<MeshCollider>();
+		EnableMeshCollider(mcol);
+	}
+
+	public static void DisableCollision(GameObject go) {
+		BoxCollider bcol = go.GetComponent<BoxCollider>();
+		DisableBoxCollider(bcol);
+		SphereCollider scol = go.GetComponent<SphereCollider>();
+		DisableSphereCollider(scol);
+		CapsuleCollider ccol = go.GetComponent<CapsuleCollider>();
+		DisableCapsuleCollider(ccol);
+		MeshCollider mcol = go.GetComponent<MeshCollider>();
+		DisableMeshCollider(mcol);
+	}
+
+	public static void EnableNavMeshObstacle(NavMeshObstacle nmo) {
+		if (nmo == null) return;
+
+		if (!nmo.enabled) nmo.enabled = true;
+	}
+
+	public static void DisableNavMeshObstacle(NavMeshObstacle nmo) {
+		if (nmo == null) return;
+
+		if (nmo.enabled) nmo.enabled = false;
+	}
+
+	public static void EnableCamera(Camera cam) {
+		if (cam == null) return;
+
+		if (!cam.enabled) cam.enabled = true;
+	}
+
+	public static void DisableCamera(Camera cam) {
+		if (cam == null) return;
+
+		if (cam.enabled) cam.enabled = false;
+	}
+
+	public static void EnableGrayscale(Grayscale gsc) {
+		if (gsc == null) return;
+
+		if (!gsc.enabled) gsc.enabled = true;
+	}
+
+	public static void DisableGrayscale(Grayscale gsc) {
+		if (gsc == null) return;
+
+		if (gsc.enabled) gsc.enabled = false;
+	}
+
+	public static void EnableLight(Light lit) {
+		if (lit == null) return;
+
+		if (!lit.enabled) lit.enabled = true;
+	}
+
+	public static void DisableLight(Light lit) {
+		if (lit == null) return;
+
+		if (lit.enabled) lit.enabled = false;
+	}
+
+	public static void AssignImageOverride(Image img, Sprite over) {
+		if (img == null) return;
+		if (over == null) return;
+
+		if (img.overrideSprite != over) img.overrideSprite = over;
 	}
 
 	// Safely combines multiple strings into a path using the operating
@@ -799,6 +962,8 @@ public class Utils {
     }
 
 	public static void SafeDestroy(GameObject go, bool immediate) {
+		if (go == null) return;
+
 		if (go.layer == 12) {
 			Debug.Log("Tried to Destroy() layered part of player!");
 			return;
@@ -866,6 +1031,8 @@ public class Utils {
 										Vector3 attackNormal, Vector3 spot) {
 		Rigidbody rbody = go.GetComponent<Rigidbody>();
 		if (rbody == null) return;
+
+		rbody.WakeUp();
 		if (impactVelocity <= 0) return;
 
 		rbody.AddForceAtPosition((attackNormal*impactVelocity*30f),spot);

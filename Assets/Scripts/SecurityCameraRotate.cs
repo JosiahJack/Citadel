@@ -21,7 +21,9 @@ public class SecurityCameraRotate : MonoBehaviour {
 	void Start () {
 		waitingFinished = PauseScript.a.relativeTime;
 		rotatePositive = true;
-		if (this.enabled) active = true; else active = false;
+		if (this.enabled) active = true;
+		else active = false;
+
 		if (mR == null) mR = gameObject.GetComponentInChildren<MeshRenderer>();
 	}
 
@@ -45,21 +47,25 @@ public class SecurityCameraRotate : MonoBehaviour {
 	}
 
 	void RotatePositive () {
-		if (((transform.rotation.eulerAngles.y + 1f) >= endYAngle) && ((transform.rotation.eulerAngles.y - 1f) <= endYAngle)) {
+		if (((transform.rotation.eulerAngles.y + 1f) >= endYAngle)
+			&& ((transform.rotation.eulerAngles.y - 1f) <= endYAngle)) {
 			rotatePositive = false;
 			waitingFinished = PauseScript.a.relativeTime + waitTime;
 			return;
 		}
-		transform.Rotate(new Vector3(0,degreesYPerSecond * tickTime,0),Space.World);
+		transform.Rotate(new Vector3(0,degreesYPerSecond * tickTime,0),
+						 Space.World);
 	}
 
 	void RotateNegative () {
-		if (((transform.rotation.eulerAngles.y + 1f) >= startYAngle) && ((transform.rotation.eulerAngles.y - 1f) <= startYAngle)) {
+		if (((transform.rotation.eulerAngles.y + 1f) >= startYAngle)
+			&& ((transform.rotation.eulerAngles.y - 1f) <= startYAngle)) {
 			rotatePositive = true;
 			waitingFinished = PauseScript.a.relativeTime + waitTime;
 			return;
 		}
-		transform.Rotate(new Vector3(0,degreesYPerSecond * tickTime * -1,0),Space.World);
+		transform.Rotate(new Vector3(0,degreesYPerSecond * tickTime * -1,0),
+						 Space.World);
 	}
 
 	public static string Save(GameObject go) {

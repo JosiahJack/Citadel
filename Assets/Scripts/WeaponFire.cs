@@ -74,7 +74,7 @@ public class WeaponFire : MonoBehaviour {
     private float meleescanDistance = 3.2f;
 	private float overheatedPercent = 80f;
     private float magpulseShotForce = 2.2f;
-    private float stungunShotForce = 2.0f;
+    private float stungunShotForce = 2.2f;
     private float railgunShotForce = 5f;
     private float plasmaShotForce = 1.5f;
 	private float inventoryModeViewRotateMax = 48f;
@@ -346,7 +346,7 @@ public class WeaponFire : MonoBehaviour {
 		if (MFDManager.a.mouseClickHeldOverGUI) yield break;
 		if (WeaponCurrent.a.reloadFinished >= PauseScript.a.relativeTime) yield break;
 		if (wepdex < 0 || wepdex > 15) yield break;
-		if (PlayerMovement.a.inFullMap) yield break;
+		if (Automap.a.inFullMap) yield break;
 
 		justFired = PauseScript.a.relativeTime; // set justFired so that Music.cs can see it and play corresponding music in a little bit from now or keep playing action music
 		// Check weapon type and check ammo before firing
@@ -1018,7 +1018,10 @@ public class WeaponFire : MonoBehaviour {
 
 					if (Inventory.a.hardwareVersion[4] > 3) showHealth = true; // Display enemy health
 				} else {
-					if (noDamageIndicator != null) noDamageIndicator.SetActive(false); // I'm assuming that this will auto deactivate after 1sec, but in case the player is snappy about weapon switching, added this
+					// I'm assuming that this will auto deactivate after 1 sec,
+					// but in case the player is snappy about weapon switching,
+					// added this
+					Utils.Deactivate(noDamageIndicator);
 				}
 			}
 		}
@@ -1026,7 +1029,9 @@ public class WeaponFire : MonoBehaviour {
 		if (uou != null) uou.HitForce(damageData); // knock objects around
 
         // Draw a laser beam for beam weapons
-        if (wep16Index == 1 || wep16Index == 4 || wep16Index == 14) CreateBeamEffects(wep16Index);
+        if (wep16Index == 1 || wep16Index == 4 || wep16Index == 14) {
+			CreateBeamEffects(wep16Index);
+		}
     }
 
 	// TargetIDInstance

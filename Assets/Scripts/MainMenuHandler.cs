@@ -168,9 +168,13 @@ public class MainMenuHandler : MonoBehaviour {
 
 		if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton1)) { // Escape/back button listener
 			if (savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
+				if (currentSaveSlot > 0
+					&& currentSaveSlot < saveNameInputField.Length) {
+					InputField infld = saveNameInputField[currentSaveSlot].GetComponentInChildren<InputField>();
+					if (infld != null) infld.DeactivateInputField();
+				}
 				currentSaveSlot = -1;
 				typingSaveGame = false;
-				saveNameInputField[currentSaveSlot].GetComponentInChildren<InputField>().DeactivateInputField();
 			}
 
 			GoBack();

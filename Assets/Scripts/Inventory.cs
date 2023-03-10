@@ -1298,26 +1298,34 @@ public class Inventory : MonoBehaviour {
             if (weaponInventoryIndices[i] < 0) {
                 weaponInventoryIndices[i] = index;
                 weaponInventoryText[i] = weaponInvTextSource[(index - 36)]; // Yech!
-                WeaponCurrent.a.weaponCurrent = i;
-				WeaponCurrent.a.weaponIndex = index;
+				if (i == 0) {
+                	WeaponCurrent.a.weaponCurrent = i;
+					WeaponCurrent.a.weaponCurrentPending = i;
+					WeaponCurrent.a.weaponIndex = index;
+					WeaponCurrent.a.weaponIndexPending = index;
+					WeaponCurrent.a.justChangedWeap = true;
+				}
 				int tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(index);
 				wepAmmo[tempindex] += ammo1;
 				wepAmmoSecondary[tempindex] += ammo2;
-				wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent] = false;
-				if (ammo2 > 0) Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent] = true;
+				wepLoadedWithAlternate[i] = false;
+				if (ammo2 > 0) Inventory.a.wepLoadedWithAlternate[i] = true;
 				WeaponButton wepBut = MFDManager.a.wepbutMan.wepButtonsScripts[i];
                 wepBut.useableItemIndex = index;
-				WeaponCurrent.a.WeaponChange(wepBut.useableItemIndex,
-											 wepBut.WepButtonIndex);
-				MFDManager.a.SetWepInfo(index);
-				MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.a.currentMagazineAmount[WeaponCurrent.a.weaponCurrent]);
-				MFDManager.a.SendInfoToItemTab(index); // notify item tab we clicked on a weapon
-				Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[33]);
-				WeaponCurrent.a.ReloadSecret(true);
 				WeaponCurrent.a.weaponEnergySetting[i] = Inventory.a.GetDefaultEnergySettingForWeaponFrom16Index(tempindex);
-				MFDManager.a.SendInfoToItemTab(index);
-				MFDManager.a.NotifyToCenterTab(0);
+				if (index == 0) {
+					WeaponCurrent.a.WeaponChange(wepBut.useableItemIndex,
+												wepBut.WepButtonIndex);
+					MFDManager.a.SetWepInfo(index);
+					MFDManager.a.SendInfoToItemTab(index); // notify item tab we clicked on a weapon
+					WeaponCurrent.a.ReloadSecret(true);
+					MFDManager.a.SendInfoToItemTab(index);
+				}
+
+				MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.a.currentMagazineAmount[i]);
 				UpdateAmmoText();
+				Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[33]);
+				MFDManager.a.NotifyToCenterTab(0);
                 return true;
             }
         }

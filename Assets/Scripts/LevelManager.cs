@@ -8,6 +8,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour {
 	public int currentLevel;
@@ -185,8 +186,8 @@ public class LevelManager : MonoBehaviour {
 
 		LoadLevelData(currentLevel);
 		DisableAllNonOccupiedLevels(currentLevel);
-		PlayerMovement.a.SetAutomapExploredReference(levnum);
-		PlayerMovement.a.automapBaseImage.overrideSprite = PlayerMovement.a.automapsBaseImages[levnum];
+		Automap.a.SetAutomapExploredReference(levnum);
+		Automap.a.automapBaseImage.overrideSprite = Automap.a.automapsBaseImages[levnum];
 		Const.a.ClearActiveAutomapOverlays(); // After other levels turned off.
 		ObjectContainmentSystem.UpdateActiveFlooring(); // Update list to only include active.
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
@@ -420,7 +421,7 @@ public class LevelManager : MonoBehaviour {
 						HealthManager hm = compArray[i].transform.GetChild(0).GetComponent<HealthManager>();
 						if (hm == null) Debug.Log("Missing HealthManager on security camera " + compArray[i].gameObject.name);
 						else {
-							UnityEngine.UI.Image overlay = hm.linkedCameraOverlay;
+							UnityEngine.UI.Image overlay = hm.linkedOverlay;
 							if (overlay != null) {
 								GameObject hmGO = overlay.gameObject;
 								hmGO.SetActive(false);
@@ -446,8 +447,12 @@ public class LevelManager : MonoBehaviour {
 									  + "child " + compArray[i].gameObject.name
 									  + " of NPC container " + go.name);
 			} else {
-				if (aic.npcAutomapOverlayImage != null) {
-					aic.npcAutomapOverlayImage.gameObject.SetActive(false);
+				if (aic != null) {
+					if (aic.healthManager != null) {
+						Image over = aic.healthManager.linkedOverlay;
+						Utils.DisableImage(over);
+						Utils.Deactivate(over.gameObject);
+					}
 				}
 			}
 

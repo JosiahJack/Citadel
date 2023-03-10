@@ -54,8 +54,8 @@ public class ForceBridge : MonoBehaviour {
 
 		tickFinished = PauseScript.a.relativeTime + tickTime;
 		if (activated) {
-			if (mr.enabled == false) mr.enabled = true;
-			if (bCol.enabled == false) bCol.enabled = true;
+			Utils.EnableMeshRenderer(mr);
+			Utils.EnableBoxCollider(bCol);
 			if (lerping) {
 				float sx = transform.localScale.x;
 				float sy = transform.localScale.y;
@@ -80,8 +80,8 @@ public class ForceBridge : MonoBehaviour {
 				if (z) sz = Mathf.Lerp(transform.localScale.z,0f,tickTime*2);
 				transform.localScale = new Vector3(sx,sy,sz);
 				if (transform.localScale.x < 0.08f || transform.localScale.y < 0.08f || transform.localScale.z < 0.08f) {
-					if (mr.enabled) mr.enabled = false;
-					if (bCol.enabled) bCol.enabled = false;
+					Utils.DisableMeshRenderer(mr);
+					Utils.DisableBoxCollider(bCol);
 					lerping = false;
 				}
 			}
@@ -122,7 +122,8 @@ public class ForceBridge : MonoBehaviour {
 	public static string Save(GameObject go) {
 		ForceBridge fb = go.GetComponent<ForceBridge>();
 		if (fb == null) {
-			Debug.Log("ForceBridge missing on savetype of ForceBridge!  GameObject.name: " + go.name);
+			Debug.Log("ForceBridge missing on savetype of ForceBridge!"
+					  + "  GameObject.name: " + go.name);
 			return "1|0|0000.00000";
 		}
 

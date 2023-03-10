@@ -169,15 +169,11 @@ public class MouseCursor : MonoBehaviour {
 		}
 
 		if (MouseLookScript.a.inventoryMode) {
-			if (PauseScript.a.MenuActive() || PauseScript.a.Paused()) {
+			#if UNITY_EDITOR
 				Cursor.lockState = CursorLockMode.None;
-			} else {
-				#if UNITY_EDITOR
-					Cursor.lockState = CursorLockMode.None;
-				#else	
-					Cursor.lockState = CursorLockMode.Confined;
-				#endif
-			}
+			#else	
+				Cursor.lockState = CursorLockMode.Confined;
+			#endif
 
 			if (GUIState.a.overButton || GUIState.a.overButtonType != ButtonType.None) {
 				GUIState.a.isBlocking = true;

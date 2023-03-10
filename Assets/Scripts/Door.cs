@@ -332,9 +332,10 @@ public class Door : MonoBehaviour {
 			}
 
 			if (doorOpen == DoorState.Open) {
-				if (nmo.enabled) nmo.enabled = false; // clear path, door is open
+				Utils.DisableNavMeshObstacle(nmo); // Clear path, door is open
 			} else {
-				if (!nmo.enabled) nmo.enabled = true; // door is not opened fully, treat as a closed path
+				Utils.EnableNavMeshObstacle(nmo); // Door is not opened fully,
+												  // treat as a closed path.
 			}
 		} else anim.speed = speedZero;
 	}

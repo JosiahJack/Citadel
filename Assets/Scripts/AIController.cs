@@ -27,8 +27,6 @@ public class AIController : MonoBehaviour {
 	public SkinnedMeshRenderer actualSMR;
 	public GameObject deathBurst;
 	public GameObject sightPoint;
-	public RectTransform npcAutomapOverlay;
-	public Image npcAutomapOverlayImage;
 	public AIState currentState; // save (referenced by int index 0 thru 10)
 	public bool walkPathOnStart = false; // save
     public bool dontLoopWaypoints = false; // save
@@ -70,10 +68,6 @@ public class AIController : MonoBehaviour {
 	[HideInInspector] public float timeTillPainFinished; // save
 	[HideInInspector] public AudioSource SFX;
 	[HideInInspector] public Rigidbody rbody;
-	[HideInInspector] public BoxCollider boxCollider;
-	[HideInInspector] public CapsuleCollider capsuleCollider;
-	[HideInInspector] public SphereCollider sphereCollider;
-	[HideInInspector] public MeshCollider meshCollider;
 	[HideInInspector] public float tickFinished; // save
 	[HideInInspector] public float raycastingTickFinished; // save
 	[HideInInspector] public float huntFinished; // save
@@ -152,7 +146,10 @@ public class AIController : MonoBehaviour {
 	}
 
 	bool IsCyberNPC() {
-		if (healthManager.inCyberSpace) return true;
+		if (healthManager != null) {
+			if (healthManager.inCyberSpace) return true;
+		}
+
 		if (Const.a.moveTypeForNPC[index] == AIMoveType.Cyber) return true;
 		if (Const.a.typeForNPC[index] == NPCType.Cyber) return true;
 		return false;
@@ -176,19 +173,13 @@ public class AIController : MonoBehaviour {
 		}
 
 		healthManager = GetComponent<HealthManager>();
-		boxCollider = GetComponent<BoxCollider>();
-		sphereCollider = GetComponent<SphereCollider>();
-		meshCollider = GetComponent<MeshCollider>();
-		capsuleCollider = GetComponent<CapsuleCollider>();
 		if (visibleMeshEntity != null) {
 			hopAnimator = visibleMeshEntity.GetComponent<Animator>();
 		}
 
-        if (searchColliderGO != null) {
-			if ((!healthManager.gibOnDeath && !healthManager.vaporizeCorpse) 
-				|| index == 2) { // Avian Mutant
-				searchColliderGO.SetActive(false);
-			}
+		if ((!healthManager.gibOnDeath && !healthManager.vaporizeCorpse) 
+			|| index == 2) { // Avian Mutant
+			Utils.Deactivate(searchColliderGO);
 		}
 
 		if (sightPoint == null) sightPoint = gameObject;
@@ -265,36 +256,7 @@ public class AIController : MonoBehaviour {
 		if (!IsCyberNPC()) targetID = Const.GetTargetID(index);
 		else             targetID = Const.GetCyberTargetID(index);
 		
-		CreateAutoMapOverlay();
 		startInitialized = true;
-	}
-
-	void CreateAutoMapOverlay() {
-		if (npcAutomapOverlay != null) return; // Already have an overlay.
-		if (healthManager.actAsCorpseOnly) return; // Only living gets overlay.
-
-		PoolType pt = PoolType.AutomapBotOverlays;
-		switch (Const.a.typeForNPC[index]) {
-			case NPCType.Mutant:       pt = PoolType.AutomapMutantOverlays; break;
-			case NPCType.Supermutant:  pt = PoolType.AutomapMutantOverlays; break;
-			case NPCType.Robot:        pt = PoolType.AutomapBotOverlays;    break;
-			case NPCType.Cyborg:       pt = PoolType.AutomapCyborgOverlays; break;
-			case NPCType.Supercyborg:  pt = PoolType.AutomapCyborgOverlays; break;
-			case NPCType.MutantCyborg: pt = PoolType.AutomapCyborgOverlays; break;
-		}
-
-		GameObject overlay = Const.a.GetObjectFromPool(pt);
-		if (overlay != null) {
-			overlay.SetActive(true);
-			npcAutomapOverlay = overlay.GetComponent<RectTransform>();
-			npcAutomapOverlayImage = overlay.GetComponent<Image>();
-			if (npcAutomapOverlayImage != null) {
-				npcAutomapOverlayImage.enabled = true;
-			}
-		} else {
-			Debug.Log("BUG: Couldn't find automap icon for "
-					  + gameObject.name + " of type " + pt.ToString());
-		}
 	}
 
 	void AI_Face(Vector3 goalLocation) {
@@ -311,10 +273,6 @@ public class AIController : MonoBehaviour {
 		  Const.a.aiTickTime * Const.a.yawSpeedForNPC[index] * Time.deltaTime); 
 	}
 
-	void OnEnable() {
-		CreateAutoMapOverlay();
-	}
-
 	void LateUpdate() {
 		Const.a.numberOfRaycastsThisFrame = 0;
 	}
@@ -323,6 +281,16 @@ public class AIController : MonoBehaviour {
 		if (hm == null) return false;
 		if (IsCyberNPC()) return (hm.cyberHealth > 0);
 		return (hm.health > 0);
+	}
+
+	void EnableAutomapOverlay() {
+		if (healthManager.linkedOverlay == null) return;
+
+		if (healthManager.health > 0) {
+			Utils.EnableImage(healthManager.linkedOverlay);
+		} else {
+			Utils.DisableImage(healthManager.linkedOverlay);
+		}
 	}
 
 	void Update() {
@@ -339,12 +307,7 @@ public class AIController : MonoBehaviour {
 		raycastingTickFinished = PauseScript.a.relativeTime
 								 + Const.a.raycastTick;
 
-		if (npcAutomapOverlayImage != null) {
-			if (healthManager.health > 0
-				&& !npcAutomapOverlayImage.enabled) {
-				npcAutomapOverlayImage.enabled = true;
-			}
-		}
+		EnableAutomapOverlay();
 		inSight = CheckIfPlayerInSight();
 		if (enemy != null && HasHealth(healthManager)) {
 			// Check if enemy health drops to 0
@@ -393,28 +356,14 @@ public class AIController : MonoBehaviour {
         if (tickFinished < PauseScript.a.relativeTime) {
 			tickFinished = PauseScript.a.relativeTime + Const.a.aiTickTime;
 			Think();
-			if (npcAutomapOverlay != null && !IsCyberNPC()
+			if (healthManager.linkedOverlay != null && !IsCyberNPC()
 				&& HasHealth(healthManager) && Inventory.a.hasHardware[1]
 				&& Inventory.a.hardwareVersion[1] > 1) {
-				// 34.16488, -45.08, 0.4855735
-				// x = ((0.6384575295) * 1008f) + 8;
-				// x = 651
-				tempVec2.y = ( ( (transform.position.z - Const.a.mapWorldMaxE)/
-							     (Const.a.mapWorldMaxW - Const.a.mapWorldMaxE) )
-								 * 1008f)
-							  + Const.a.mapTileMinX;
-				tempVec2.x = ( ( (transform.position.x - Const.a.mapWorldMaxS)/
-								 (Const.a.mapWorldMaxN - Const.a.mapWorldMaxS) )
-								 * 1008f)
-							  + Const.a.mapTileMinY;
-				tempVec2.z = -0.03f;
-				npcAutomapOverlay.localPosition = tempVec2;
+				Utils.EnableImage(healthManager.linkedOverlay);
+				tempVec2 = Automap.a.GetMapPos(transform.position);
+				healthManager.linkedOverlay.rectTransform.localPosition = tempVec2;
 			} else {
-				if (npcAutomapOverlayImage != null) {
-					if (npcAutomapOverlayImage.enabled == true) {
-						npcAutomapOverlayImage.enabled = false;
-					} 
-				}
+				Utils.DisableImage(healthManager.linkedOverlay);
 			}
 		}
 
@@ -967,15 +916,15 @@ public class AIController : MonoBehaviour {
 	void MuzzleBurst(int attackNum) {
 		if (attackNum < 1 || attackNum > 3) attackNum = 1;
 		if (index == 18) {
-			if (muzzleBurst != null) muzzleBurst.SetActive(true);
+			Utils.Activate(muzzleBurst); // Also activate this one too
 		}
 
 		switch (attackNum) {
 			case 2:
-				if (muzzleBurst != null) muzzleBurst.SetActive(true);
+				Utils.Activate(muzzleBurst);
 				break;
 			case 3:
-				if (muzzleBurst2 != null) muzzleBurst2.SetActive(true);
+				Utils.Activate(muzzleBurst2);
 				break;
 		}
 	}
@@ -1242,37 +1191,36 @@ public class AIController : MonoBehaviour {
 
 	void DyingSetup() {
 		enemy = null; // Reset for loading from saves
-		if (npcAutomapOverlay != null) {
-			npcAutomapOverlay.gameObject.SetActive(false);
-		}
 
 		if (Const.a.deathBurstTimerForNPC[index] > 0) {
 			deathBurstFinished = PauseScript.a.relativeTime
 				+ Const.a.deathBurstTimerForNPC[index];
 		} else {
-			// Activate any death effects
 			if (!deathBurstDone) {
-				if (deathBurst != null) deathBurst.SetActive(true);
+				Utils.Activate(deathBurst); // Activate death effects
 				deathBurstDone = true;
 			}
 		}
 
 		DeactivateMeleeColliders();
-		if (!healthManager.actAsCorpseOnly) {
-			SFXIndex = Const.a.sfxDeathForNPC[index];
-			Utils.PlayOneShotSavable(SFX,SFXIndex);
-		}
+		if (healthManager != null) {
+			if (!healthManager.actAsCorpseOnly) {
+				Utils.Deactivate(healthManager.linkedOverlay.gameObject);
+				SFXIndex = Const.a.sfxDeathForNPC[index];
+				Utils.PlayOneShotSavable(SFX,SFXIndex);
+			}
 
-		if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly
-			&& (!healthManager.gibOnDeath || index == 2)) { // Avian Mutant
-			if (healthManager.gibOnDeath) rbody.useGravity = false;
-			else rbody.useGravity = true; // Avian Mutant and Zero-G Mutant
-		} else {
-			if (healthManager.gibOnDeath) {
-				rbody.useGravity = false;
+			if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly
+				&& (!healthManager.gibOnDeath || index == 2)) { // Avian Mutant
+				if (healthManager.gibOnDeath) rbody.useGravity = false;
+				else rbody.useGravity = true; // Avian Mutant and Zero-G Mutant
 			} else {
-				rbody.useGravity = true;
-				rbody.isKinematic = true;
+				if (healthManager.gibOnDeath) {
+					rbody.useGravity = false;
+				} else {
+					rbody.useGravity = true;
+					rbody.isKinematic = true;
+				}
 			}
 		}
 
@@ -1286,6 +1234,7 @@ public class AIController : MonoBehaviour {
 		transform.position = new Vector3(transform.position.x,
 										 transform.position.y + 0.04f,
 										 transform.position.z);
+
 		firstSighting = true;
 
 		// Timer for wait until death animation finishes before Dead().
@@ -1317,10 +1266,7 @@ public class AIController : MonoBehaviour {
 		if (deadChecksDone) return;
 
 		currentState = AIState.Dead;
-		if (boxCollider      != null) boxCollider.enabled = false;
-		if (sphereCollider   != null) sphereCollider.enabled = false;
-		if (meshCollider     != null) meshCollider.enabled = false;
-		if (capsuleCollider  != null) capsuleCollider.enabled = false;
+		Utils.DisableCollision(gameObject);
 		if (searchColliderGO != null && (!healthManager.gibOnDeath
 											|| index == 2)) { // Avian Mutant
 			searchColliderGO.SetActive(true);
@@ -1328,28 +1274,17 @@ public class AIController : MonoBehaviour {
 								| RigidbodyConstraints.FreezePositionZ;
 		}
 
-		if (npcAutomapOverlayImage != null) {
-			npcAutomapOverlayImage.enabled = false;
-		}
-
+		Utils.DisableImage(healthManager.linkedOverlay);
 		if (!rbody.freezeRotation) rbody.freezeRotation = true;
 		if (healthManager.gibOnDeath || healthManager.teleportOnDeath
 			|| IsCyberNPC()) {
 			rbody.useGravity = false;
 			if (healthManager.teleportOnDeath) rbody.useGravity = true;
 
-			if (visibleMeshEntity != null) {
-				if (visibleMeshEntity.activeInHierarchy) {
-					visibleMeshEntity.SetActive(false); // Normally just turn
-														// off the main model,
-														// then...
-				}
-			}
-
-			// ...turn on the lovely gibs.
+			// Normally just turn off the main model, then turn on lovely gibs.
+			Utils.Deactivate(visibleMeshEntity);
 			if (healthManager.gibOnDeath) healthManager.Gib();
-			if (healthManager.teleportOnDeath
-				&& !healthManager.teleportDone) {
+			if (healthManager.teleportOnDeath && !healthManager.teleportDone) {
 				healthManager.TeleportAway();
 			}
 		} else rbody.useGravity = true;
@@ -1756,11 +1691,8 @@ public class AIController : MonoBehaviour {
 		aic.SFXIndex = Utils.GetIntFromString(entries[index]); index++;
 		if (aic.healthManager != null) {
 			if (aic.healthManager.health > 0) {
-				if (aic.visibleMeshEntity != null) aic.visibleMeshEntity.SetActive(true);
-				if (aic.boxCollider != null) aic.boxCollider.enabled = true;
-				if (aic.sphereCollider != null) aic.sphereCollider.enabled = true;
-				if (aic.meshCollider != null) aic.meshCollider.enabled = true;
-				if (aic.capsuleCollider != null) aic.capsuleCollider.enabled = true;
+				Utils.Activate(aic.visibleMeshEntity);
+				Utils.EnableCollision(aic.gameObject);
 				if (Const.a.moveTypeForNPC[aic.index] != AIMoveType.Fly) {
 					aic.rbody.useGravity = true;
 					aic.rbody.isKinematic = false;

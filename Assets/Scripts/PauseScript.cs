@@ -55,9 +55,64 @@ public class PauseScript : MonoBehaviour {
 		if (!Paused()) relativeTime = relativeTime + Time.deltaTime;
 	}
 
+/*
+    void FixedUpdate() {
+		Debug.Log("ObjectContainmentSystem active floor chunks: "
+				  + ObjectContainmentSystem.ActiveFloorChunks.Count.ToString());
+
+		GameObject go = null; // Contain the currently checked floor.
+		Rigidbody rb = null; // Contain the currently checked rigidbody.
+		PauseRigidbody pb = null; // Reference to all the rigidbodies each.
+		Vector3 flrPos = null;
+		Vector3 objPos = null;
+		float x, y, z;
+
+        // Iterate through each floor and check for overlapping rigidbodies
+        for (int i=0;i < ObjectContainmentSystem.ActiveFloorChunks.Count;i++) {
+			go = ObjectContainmentSystem.ActiveFloorChunks[i];
+			flrPos = go.transform.position;
+			for (int k=0;k<Const.a.prb.Count;k++) {
+				pb = Const.a.prb[k];
+				if (!pm.gameObject.activeInHierarchy) continue;
+
+				objPos = pb.gameObject.transform.position;
+				if (!PhysObjAffectedByFloor(objPos, flrPos)) continue;
+
+                Rigidbody rb = pb.rbody;
+                if (flrPos.y - objPos.y > 1.28f)  {
+                    // If the rigidbody falls below the barrier height, set its position to the barrier height
+                    rb.position = new Vector3(rb.position.x, barrierHeight, rb.position.z);
+                    // If the rigidbody has a velocity in the downward direction, set its velocity to zero
+                    if (rb.velocity.y < 0f)
+                    {
+                        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+                    }
+				}
+			}
+
+
+
+            Vector3 barrierCenter = new Vector3(barrierPositions[i].x * gridSize + gridSize / 2f, barrierHeight, barrierPositions[i].y * gridSize + gridSize / 2f);
+            float barrierSize = gridSize / 2f;
+            List<Rigidbody> rigidbodiesInBarrier = rigidbodyOctree.GetObjectsInRange(barrierCenter, barrierSize);
+            for (int j = 0; j < rigidbodiesInBarrier.Count; j++)
+            {
+
+            }
+        }
+    }*/
+
+	private bool PhysObjAffectedByFloor(Vector3 objpos, Vector3 floorpos) {
+		if (objpos.x - floorpos.x > 1.28f && objpos.z - floorpos.z > 1.28f) {
+			return true;
+		}
+
+		return false;
+	}
+
 	void CheckForSuperWinCmdKey() {
-		if (   Input.GetKeyDown(KeyCode.LeftCommand)     // Apple
-			|| Input.GetKeyDown(KeyCode.RightCommand)    // Apple
+		if (   Input.GetKeyDown(KeyCode.LeftCommand)     // Apple / Linux
+			|| Input.GetKeyDown(KeyCode.RightCommand)    // Apple / Linux
 			|| Input.GetKeyDown(KeyCode.LeftWindows)     // Windows
 			|| Input.GetKeyDown(KeyCode.RightWindows)) { // Windows
 			PauseEnable();

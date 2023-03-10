@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class PauseRigidbody : MonoBehaviour {
-	private Rigidbody rbody;
+	[HideInInspector] public Rigidbody rbody;
 	private Vector3 previousVelocity;
 	private bool previousUseGravity;
 	private bool previousKinematic;
@@ -13,7 +13,8 @@ public class PauseRigidbody : MonoBehaviour {
 	}
 
 	void Initialize() {
-		rbody = GetComponent<Rigidbody>();
+		if (rbody == null) rbody = GetComponent<Rigidbody>();
+		if (rbody == null) rbody = gameObject.AddComponent<Rigidbody>();
 		if (!Const.a.prb.Contains(this)) Const.a.prb.Add(this);
 		SetPreviousValues();
 	}

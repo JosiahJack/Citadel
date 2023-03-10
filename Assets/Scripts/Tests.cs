@@ -225,7 +225,7 @@ public class Tests : MonoBehaviour {
 					if (BoundsError(script,allGOs[i],0,13,hm.levelIndex,"levelIndex")) { issueCount_HealthManager++; }
 					if (!hm.isObject) { UnityEngine.Debug.Log(script + " is marked as an security camera but isn't also marked as isObject."); issueCount_HealthManager++; }
 					if (hm.isNPC || hm.isPlayer || hm.isIce || hm.isScreen || hm.isGrenade) { UnityEngine.Debug.Log(script + " is marked as an security camera and another object as well."); issueCount_HealthManager++; }
-					// if (hm.linkedCameraOverlay == null) { UnityEngine.Debug.Log(script + " is marked as an security camera and has no linkedCameraOverlay for gameObject " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); issueCount_HealthManager++; }
+					// if (hm.linkedOverlay == null) { UnityEngine.Debug.Log(script + " is marked as an security camera and has no linkedOverlay for gameObject " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); issueCount_HealthManager++; }
 					if (hm.securityAffected == SecurityType.None) { UnityEngine.Debug.Log(script + " is marked as an security camera and securityAffected is marked as None for gameObject " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); issueCount_HealthManager++; }
 				}
 				if (hm.isPlayer) {
