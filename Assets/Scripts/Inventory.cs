@@ -1299,11 +1299,12 @@ public class Inventory : MonoBehaviour {
                 weaponInventoryIndices[i] = index;
                 weaponInventoryText[i] = weaponInvTextSource[(index - 36)]; // Yech!
 				if (i == 0) {
-                	WeaponCurrent.a.weaponCurrent = i;
+                	//WeaponCurrent.a.weaponCurrent = i;
 					WeaponCurrent.a.weaponCurrentPending = i;
-					WeaponCurrent.a.weaponIndex = index;
+					//WeaponCurrent.a.weaponIndex = index;
 					WeaponCurrent.a.weaponIndexPending = index;
 					WeaponCurrent.a.justChangedWeap = true;
+					WeaponCurrent.a.reloadFinished = PauseScript.a.relativeTime + 0.5f;
 				}
 				int tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(index);
 				wepAmmo[tempindex] += ammo1;

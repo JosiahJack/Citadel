@@ -14,6 +14,7 @@ public class EnergyOverloadButton : MonoBehaviour {
     public Text buttonText;
     public Text energySettingText;
     private Image buttonSprite;
+    private float clickFinished;
 
     private void Awake() {
         buttonSprite = GetComponent<Image>();
@@ -31,6 +32,9 @@ public class EnergyOverloadButton : MonoBehaviour {
     }
 
     public void OverloadButtonAction() {
+        if (clickFinished >= Time.time) return;
+
+        clickFinished = Time.time + 0.4f;
         if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.a.weaponCurrent] > 25f) {
             Const.sprint(Const.a.stringTable[12]);
             return;

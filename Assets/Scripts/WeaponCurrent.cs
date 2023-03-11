@@ -276,7 +276,6 @@ public class WeaponCurrent : MonoBehaviour {
 				useableIndex = -1;
 			}
 
-			Debug.Log("setWep = " + setWep.ToString());
 			switch (setWep) {
 				case 36:
 					if (!ViewModelAssault.activeSelf) ViewModelAssault.SetActive(true);

@@ -19,8 +19,8 @@ public class EnergySlider : MonoBehaviour {
 
     public void SetValue(float val) {
 		MFDManager.a.mouseClickHeldOverGUI = true;
-
 		slideS.value = val*100f;
+		Debug.Log("Set energy slider value to " + slideS.value.ToString());
         WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent] = slideS.value;
     }
 }

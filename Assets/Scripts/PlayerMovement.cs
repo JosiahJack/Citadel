@@ -236,28 +236,31 @@ public class PlayerMovement : MonoBehaviour {
 		Noclip();
 		ApplyGroundFriction();
 		bool grav = GetGravity();
-		if (rbody.useGravity != grav) rbody.useGravity = grav; // Avoid useless setting of the rbody.
-		//Noclip();
-		if (!inCyberSpace) {
-			horizontalMovement = GetClampedHorizontalMovement(); // Limit movement speed horizontally for normal movement
-			RigidbodySetVelocityX(rbody, horizontalMovement.x); // Clamp horizontal movement
-			RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG - already passed rbody.velocity.z into the .y of this Vector2
-			verticalMovement = GetClampedVerticalMovement();
-			RigidbodySetVelocityY(rbody, verticalMovement); // Clamp vetical movement
-			Lean();
-			WalkRun();
-			LadderStates();			 
-			Jump();
-			FallDamage();
-			oldVelocity = rbody.velocity;
-			if (!CheatWallSticky || gravliftState) grounded = false; // Automatically set grounded to false to prevent ability to climb any wall
-		} else {
+
+		// Avoid useless setting of the rbody.
+		if (rbody.useGravity != grav) rbody.useGravity = grav;
+
+		if (inCyberSpace) {
 			if (rbody.velocity.magnitude > playerSpeed && !CheatNoclip) {
 				rbody.velocity = rbody.velocity.normalized * playerSpeed;
 			}
 
 			CyberspaceMovement();
+			return;
 		}
+
+		horizontalMovement = GetClampedHorizontalMovement(); // Limit movement speed horizontally for normal movement
+		RigidbodySetVelocityX(rbody, horizontalMovement.x); // Clamp horizontal movement
+		RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG - already passed rbody.velocity.z into the .y of this Vector2
+		verticalMovement = GetClampedVerticalMovement();
+		RigidbodySetVelocityY(rbody, verticalMovement); // Clamp vertical movement
+		Lean();
+		WalkRun();
+		LadderStates();			 
+		Jump();
+		FallDamage();
+		oldVelocity = rbody.velocity;
+		if (!CheatWallSticky || gravliftState) grounded = false; // Automatically set grounded to false to prevent ability to climb any wall
 	}
 
 	float GetBasePlayerSpeed() {
@@ -527,7 +530,7 @@ public class PlayerMovement : MonoBehaviour {
 		} else {
 			// Sprinting in the air
 			if (isSprinting && running) {
-				rbody.AddRelativeForce (relSideways * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
+				rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
 			} else {
 				// Walking in the air, we're floating in the moonlit sky, the people far below are sleeping as we fly
 				rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
@@ -635,8 +638,9 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	float GetClampedVerticalMovement() {
-		float retval = (rbody.velocity.y > maxVerticalSpeed) ? maxVerticalSpeed : rbody.velocity.y;
-		return retval;
+		if (grounded) return 0f; // Prevent inadvertent view bob from floating.
+		if (rbody.velocity.y >= maxVerticalSpeed) return maxVerticalSpeed;
+		return rbody.velocity.y;
 	}
 
 	void FatigueApply() {

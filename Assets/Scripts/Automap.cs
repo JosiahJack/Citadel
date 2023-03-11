@@ -149,7 +149,7 @@ public class Automap : MonoBehaviour {
 			SetAutomapExploredReference(1);
 	}
 
-	public void UpdateAutomap (Vector3 playerPosition) {
+	public void UpdateAutomap(Vector3 playerPosition) {
 		if (PlayerMovement.a.inCyberSpace) return;
 		if (!initialized) Start();
 
@@ -245,10 +245,10 @@ public class Automap : MonoBehaviour {
 					Utils.DisableImage(automapFoWTiles[i]);
 					Utils.Deactivate(automapFoWTiles[i].gameObject);
 				} else {
-					float corr = -1f - automapTileCorrectionX;
-					tempVec2.x = automapFoWTilesRects[i].localPosition.x * corr;
-					corr = automapTileCorrectionY;
-					tempVec2.y = automapFoWTilesRects[i].localPosition.y + corr;
+					tempVec2.x = automapFoWTilesRects[i].localPosition.x * -1f
+								 - automapTileCorrectionX;
+					tempVec2.y = automapFoWTilesRects[i].localPosition.y
+								 + automapTileCorrectionY;
 					if (Vector2.Distance(tempVec2,tempVec2b) < automapFoWRadius) {
 						automapExplored[i] = true;
 						SetAutomapTileExplored(LevelManager.a.currentLevel,i);

@@ -189,14 +189,15 @@ public class WeaponFire : MonoBehaviour {
     }
 
     void HeatBleedOff() {
+		Inventory.a.UpdateAmmoText();
         if (heatTickFinished < PauseScript.a.relativeTime) {
-			Inventory.a.currentEnergyWeaponHeat[0] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[0] < 0f) Inventory.a.currentEnergyWeaponHeat[0] = 0f;
-			Inventory.a.currentEnergyWeaponHeat[1] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[1] < 0f) Inventory.a.currentEnergyWeaponHeat[1] = 0f;
-			Inventory.a.currentEnergyWeaponHeat[2] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[2] < 0f) Inventory.a.currentEnergyWeaponHeat[2] = 0f;
-			Inventory.a.currentEnergyWeaponHeat[3] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[3] < 0f) Inventory.a.currentEnergyWeaponHeat[3] = 0f;
-			Inventory.a.currentEnergyWeaponHeat[4] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[4] < 0f) Inventory.a.currentEnergyWeaponHeat[4] = 0f;
-			Inventory.a.currentEnergyWeaponHeat[5] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[5] < 0f) Inventory.a.currentEnergyWeaponHeat[5] = 0f;
-			Inventory.a.currentEnergyWeaponHeat[6] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[6] < 0f) Inventory.a.currentEnergyWeaponHeat[6] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[0] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[0] <= 0f) Inventory.a.currentEnergyWeaponHeat[0] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[1] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[1] <= 0f) Inventory.a.currentEnergyWeaponHeat[1] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[2] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[2] <= 0f) Inventory.a.currentEnergyWeaponHeat[2] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[3] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[3] <= 0f) Inventory.a.currentEnergyWeaponHeat[3] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[4] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[4] <= 0f) Inventory.a.currentEnergyWeaponHeat[4] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[5] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[5] <= 0f) Inventory.a.currentEnergyWeaponHeat[5] = 0f;
+			Inventory.a.currentEnergyWeaponHeat[6] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[6] <= 0f) Inventory.a.currentEnergyWeaponHeat[6] = 0f;
             if (CurrentWeaponUsesEnergy()) energheatMgr.HeatBleed(Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.a.weaponCurrent]); // update hud heat ticks if current weapon uses energy
             heatTickFinished = PauseScript.a.relativeTime + heatTickTime;
         }
@@ -253,22 +254,7 @@ public class WeaponFire : MonoBehaviour {
 			if (WeaponCurrent.a.reloadLerpValue >= 0.5f) {
 				lerpUp = 1;
 				WeaponLerpGetTargetUp();
-				if (WeaponCurrent.a.weaponCurrentPending != -1) {
-					WeaponCurrent.a.weaponCurrent = WeaponCurrent.a.weaponCurrentPending; //Set current weapon 7 slot
-					WeaponCurrent.a.weaponIndex = WeaponCurrent.a.weaponIndexPending;	  //Set current weapon inventory lookup index
-					WeaponCurrent.a.weaponCurrentPending = -1;
-					WeaponCurrent.a.weaponIndexPending = -1;
-					//if (WeaponCurrent.a.weaponCurrent >= 0) {
-						// Update the ammo icons.
-						//WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(WeaponCurrent.a.weaponIndex,Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]);
-						//WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(WeaponCurrent.a.weaponIndex,Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]);
-					//} else {
-						// Clear the ammo icons.
-						WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(-1,false);
-						WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(-1,false);
-					//}
-					MFDManager.a.SetWepInfo(WeaponCurrent.a.weaponIndex);
-				}
+				CompleteWeaponChange();
 			} else {
 				lerpUp = 2;
 				WeaponLerpGetTargetDown();
@@ -280,18 +266,53 @@ public class WeaponFire : MonoBehaviour {
 			wepView.transform.localPosition = new Vector3(wepView.transform.localPosition.x, wepViewDefaultLocalPos.y, wepView.transform.localPosition.z);
 		}
 
-		if (MouseLookScript.a.inventoryMode) {
-			wepYRot = ((MouseCursor.a.drawTexture.center.x-(Screen.width/2f))/(Screen.width/2f)) * inventoryModeViewRotateMax;
-			wepView.transform.localRotation = Quaternion.Euler(0f,wepYRot,0f);
-		} else {
-			wepView.transform.localRotation = Quaternion.Euler(0f,0f,0f);
-		}
-
+		RotateViewWeapon();
 		Recoiling();
 		CheckAttackInput();
 		CheckReloadInput();
 		CheckAmmoChangeInput();
     }
+
+	void CompleteWeaponChange() {
+		if (WeaponCurrent.a.weaponCurrentPending == -1) return;
+
+		// Set current weapon 7 slot
+		WeaponCurrent.a.weaponCurrent = WeaponCurrent.a.weaponCurrentPending;
+
+		// Set current weapon inventory lookup index
+		WeaponCurrent.a.weaponIndex = WeaponCurrent.a.weaponIndexPending;
+
+		// Reset pending indices now that transition is done
+		WeaponCurrent.a.weaponCurrentPending = -1;
+		WeaponCurrent.a.weaponIndexPending = -1;
+
+		int ind = WeaponCurrent.a.weaponIndex;
+		if (ind >= 0 && ind < 16) {
+			// Update the ammo icons.
+			bool alt = Inventory.a.wepLoadedWithAlternate[ind];
+			WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(ind,alt);
+			WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(ind,alt);
+		} else {
+			// Clear the ammo icons.
+			WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(-1,false);
+			WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(-1,false);
+		}
+
+		MFDManager.a.SetWepInfo(WeaponCurrent.a.weaponIndex);
+	}
+
+	void RotateViewWeapon() {
+		if (MouseLookScript.a.inventoryMode) {
+			float screenHalf = (Screen.width/2f);
+			float cursorX = MouseCursor.a.drawTexture.center.x;
+			float distFromCenter = (cursorX - screenHalf);
+			float percentRotated = (distFromCenter / screenHalf);
+			wepYRot = percentRotated * inventoryModeViewRotateMax;
+			wepView.transform.localRotation = Quaternion.Euler(0f,wepYRot,0f);
+		} else {
+			wepView.transform.localRotation = Quaternion.Euler(0f,0f,0f);
+		}
+	}
 
 	void CheckAttackInput() {
 		// Check for other things that must capture and override clicks
@@ -345,6 +366,7 @@ public class WeaponFire : MonoBehaviour {
 		if (MouseLookScript.a.holdingObject) yield break;
 		if (MFDManager.a.mouseClickHeldOverGUI) yield break;
 		if (WeaponCurrent.a.reloadFinished >= PauseScript.a.relativeTime) yield break;
+		if (waitTilNextFire >= PauseScript.a.relativeTime) yield break;
 		if (wepdex < 0 || wepdex > 15) yield break;
 		if (Automap.a.inFullMap) yield break;
 

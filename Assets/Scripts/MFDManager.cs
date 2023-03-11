@@ -210,7 +210,6 @@ public class MFDManager : MonoBehaviour  {
 		a.highlightTickCount = new int[] {0,0,0,0};
 		a.blinkFinished = blinkTick + PauseScript.a.relativeTime;
 		a.beepFinished = beepTick + PauseScript.a.relativeTime;
-		DisableAllCenterTabs();
 		MainTabButton.image.overrideSprite = MFDSpriteSelected;
 		DisableAllCenterTabs();
 		HardwareTabButton.image.overrideSprite = MFDSprite;
@@ -462,7 +461,7 @@ public class MFDManager : MonoBehaviour  {
 		ctbButtonMain.SetActive(true);
 		ctbButtonHardware.SetActive(true);
 		ctbButtonGeneral.SetActive(true);
-		CenterTabButtonClickSilent(0,true);
+		CenterTabButtonClickSilent(curCenterTab,true);
 		TabReset(true); // right
 		TabReset(false); // left
 		ReturnToLastTab(true);
@@ -613,7 +612,7 @@ public class MFDManager : MonoBehaviour  {
 
 	public void ClosePaperLog() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
-		CenterTabButtonClickSilent(0,false);
+		CenterTabButtonClickSilent(curCenterTab,false);
 	}
 
 	// Updating here so that the graphed values keep updating even when the graph visibility is off.

@@ -124,11 +124,14 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void ActivateSensaroundCenter() {
+		MFDManager.a.DisableAllCenterTabs();
 		if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (true);
 		if (sensaroundCenter != null) sensaroundCenter.SetActive (true);
 	}
 
 	public void ActivateSensaroundSides() {
+		MFDManager.a.TabReset(true); // right
+		MFDManager.a.TabReset(false); // left
 		if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (true);
 		if (sensaroundLH != null) sensaroundLH.SetActive (true);
 		if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (true);
@@ -142,6 +145,11 @@ public class HardwareButton : MonoBehaviour {
 		if (sensaroundLH != null) sensaroundLH.SetActive (false);
 		if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (false);
 		if (sensaroundRH != null) sensaroundRH.SetActive (false);
+		MFDManager.a.CenterTabButtonClickSilent(MFDManager.a.curCenterTab,true);
+		MFDManager.a.TabReset(true); // right
+		MFDManager.a.TabReset(false); // left
+		MFDManager.a.ReturnToLastTab(true);
+		MFDManager.a.ReturnToLastTab(false);
 	}
 
 	public void SensaroundActivate() {
@@ -163,7 +171,6 @@ public class HardwareButton : MonoBehaviour {
 	public void SensaroundAction() {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 
-		MFDManager.a.mouseClickHeldOverGUI = true;
 		if (Inventory.a.hardwareIsActive[3]) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[1]);
 			SensaroundOff();
