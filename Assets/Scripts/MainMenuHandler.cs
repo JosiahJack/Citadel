@@ -175,6 +175,7 @@ public class MainMenuHandler : MonoBehaviour {
 				}
 				currentSaveSlot = -1;
 				typingSaveGame = false;
+				returnToPause = true;
 			}
 
 			GoBack();
@@ -394,6 +395,7 @@ public class MainMenuHandler : MonoBehaviour {
 		if (returnToPause) {
 			PauseScript.a.EnablePauseUI();
 			ResetPages();
+			MouseCursor.a.mainCamera.enabled = true;
 			this.gameObject.SetActive(false);
 			return;
 		}

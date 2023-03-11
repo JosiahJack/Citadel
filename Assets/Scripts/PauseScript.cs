@@ -264,6 +264,10 @@ public class PauseScript : MonoBehaviour {
 	public void EnablePauseUI() {
 		for (int i=0;i<enableUIOnPause.Length;i++) {
 			enableUIOnPause[i].SetActive(true);
+			StartMenuButtonHighlight smbh = 
+				enableUIOnPause[i].GetComponent<StartMenuButtonHighlight>();
+
+			if (smbh != null) smbh.DeHighlight(); // Prevent persisted states.
 		}
 	}
 

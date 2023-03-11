@@ -29,10 +29,10 @@ public class AmmoIconManager : MonoBehaviour {
     }
 
     void Standard(bool alternateAmmo, int norm, int alt) {
-        Utils.EnableImage(icon);
-        Utils.EnableImage(border);
         Utils.Activate(border.gameObject);
         Utils.Activate(icon.gameObject);
+        Utils.EnableImage(icon);
+        Utils.EnableImage(border);
         Utils.Deactivate(energySlider);
         Utils.Deactivate(energyHeatTicks);
         Utils.Deactivate(energyOverloadButton);

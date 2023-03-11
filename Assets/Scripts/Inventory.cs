@@ -1173,6 +1173,14 @@ public class Inventory : MonoBehaviour {
 		if (slot5 != -1) numweapons++;
 		if (slot6 != -1) numweapons++;
 		if (slot7 != -1) numweapons++;
+
+		int ind = WeaponCurrent.a.weaponIndex;
+		if (ind >= 0 && ind < 16) {
+			// Update the ammo icons.
+			bool alt = Inventory.a.wepLoadedWithAlternate[ind];
+			WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(ind,alt);
+			WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(ind,alt);
+		}
 	}
 
 	public string GetTextForWeaponAmmo(int index) {

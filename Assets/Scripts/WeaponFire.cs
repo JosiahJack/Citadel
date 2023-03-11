@@ -57,7 +57,7 @@ public class WeaponFire : MonoBehaviour {
 	public GameObject muzFlashSparq;
 	public GameObject muzFlashStungun;
 	public GameObject wepView; // Recoil the weapon view models
-    [HideInInspector] public bool overloadEnabled; // save
+    public bool overloadEnabled; // save
     [HideInInspector] public float sparqSetting = 50f; // save
     [HideInInspector] public float ionSetting = 100f; // save
     [HideInInspector] public float blasterSetting = 15f; // save
