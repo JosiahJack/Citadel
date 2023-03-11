@@ -333,6 +333,7 @@ public class HealthManager : MonoBehaviour {
 						case 8: absorb = 0.45f; break;
 						case 9: absorb = 0.50f; break;
 					}
+
 					take = (take * (1f - absorb)); // absorb percentage from above table
 					if (take <= 0f) return 0f; // nothing to see here
 				}
@@ -343,6 +344,7 @@ public class HealthManager : MonoBehaviour {
 					empstatic.Flash(2);
 					PlayerEnergy.a.TakeEnergy(11f);
 				}
+
 				if (Inventory.a.hardwareIsActive[5] && Inventory.a.hasHardware[5]) {
 					// Versions of shield protect against 20, 40, 75, 75%'s
 					// Versions of shield thressholds are 0, 10, 15, 30...ooh what's this hang on now...Huh, turns out it absorbs all damage below the thresshold!  Cool!
@@ -376,11 +378,14 @@ public class HealthManager : MonoBehaviour {
 					if (take > 15f) {
 						intensityOfPainFlash = 2; // 2 = heavy
 					}
+
 					if (take > 10f) {
 						intensityOfPainFlash = 1; // 1 = med
 					}
+
 					pstatic.Flash(intensityOfPainFlash);
 				}
+
 				if (dd.ownerIsNPC) justHurtByEnemy = PauseScript.a.relativeTime;
 			}
 		}
@@ -421,6 +426,7 @@ public class HealthManager : MonoBehaviour {
         if (health <= 0f || (inCyberSpace && cyberHealth <= 0f)) {
 			Death(dd.attackType == AttackType.EnergyBeam);
 		}
+
 		return take;
 	}
 
@@ -428,10 +434,8 @@ public class HealthManager : MonoBehaviour {
 		if (!deathDone) {
 			UseDeathTargets();
 			if (vaporizeCorpse && !isSecCamera) VaporizeCorpse(energyVaporized);
-			else if (isObject) {
-				Debug.Log("isObject");
-				ObjectDeath(null);
-			} else if (isScreen) ScreenDeath(backupDeathSound);
+			else if (isObject) ObjectDeath(null);
+			else if (isScreen) ScreenDeath(backupDeathSound);
 			else if (teleportOnDeath) TeleportAway();
 			else if (isGrenade) GrenadeDeath();
 
@@ -603,20 +607,24 @@ public class HealthManager : MonoBehaviour {
 	public void ObjectDeath(AudioClip deathSound) {
 		if (deathDone) return;
 
-		Debug.Log("ObjectDeath 1");
-		if (gibOnDeath) Gib();
-		else {
+		if (gibOnDeath) {
+			Gib();
+		} else {
 			Utils.DisableCollision(gameObject);
 			DropSearchables();
 			CreateDeathEffects(deathFX);
 		}
-		Debug.Log("ObjectDeath 2");
+
 		deathDone = true;
-		Utils.DisableImage(linkedOverlay); // Disable on automap
-		Utils.Deactivate(linkedOverlay.gameObject);
+		if (linkedOverlay != null) {
+			Utils.DisableImage(linkedOverlay); // Disable on automap
+			Utils.Deactivate(linkedOverlay.gameObject);
+		}
+
 		if (securityAffected != SecurityType.None) {
 			LevelManager.a.ReduceCurrentLevelSecurity(securityAffected);
 		}
+
 		PlayDeathSound(deathSound); // Make some noise
 		if (spawnMother != null) spawnMother.SpawneeJustDied();
 		if (deathFX != PoolType.None) HideSelf();
@@ -699,9 +707,7 @@ public class HealthManager : MonoBehaviour {
 		}
 
 		// Handle NPCs
-		if (isNPC) {
-			if (spawnMother != null) spawnMother.AwakeFromLoad(health);
-		}
+		if (spawnMother != null && isNPC) spawnMother.AwakeFromLoad(health);
 
 		// Handle grenades
 		if (isGrenade) {
