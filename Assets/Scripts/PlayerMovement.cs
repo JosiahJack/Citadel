@@ -104,9 +104,7 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector] public bool justJumped = false; // save
 	[HideInInspector] public float fatigueFinished; // save
 	[HideInInspector] public float fatigueFinished2; // save
-	private int defIndex = 0;
 	private int def1 = 1;
-	private int onehundred = 100;
 	public bool running = false;
 	private float relForward = 0f;
 	private float relSideways = 0f;
@@ -369,8 +367,13 @@ public class PlayerMovement : MonoBehaviour {
 			if (Inventory.a.hardwareIsActive[9]) deceleration = walkDeaccelerationBooster;
 			tempVecRbody.y = rbody.velocity.y; // Don't affect gravity and let gravity keep pulling down.
 		}
+
 		tempVecRbody.x = Mathf.SmoothDamp(rbody.velocity.x, 0, ref walkDeaccelerationVolx, deceleration);
 		tempVecRbody.z = Mathf.SmoothDamp(rbody.velocity.z, 0, ref walkDeaccelerationVolz, deceleration);
+		if (inCyberSpace) {
+			tempVecRbody.y = Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVolz, deceleration);
+		}
+
 		rbody.velocity = tempVecRbody;
 	}
 
@@ -522,7 +525,7 @@ public class PlayerMovement : MonoBehaviour {
 		if (grounded || Inventory.a.hardwareIsActive[10]) {
 			// Normal walking
 			rbody.AddRelativeForce(relSideways * walkAcceleration * Time.deltaTime, 0, relForward * walkAcceleration * Time.deltaTime);
-			if (fatigueFinished2 < PauseScript.a.relativeTime && relForward != defIndex) {
+			if (fatigueFinished2 < PauseScript.a.relativeTime && relForward != 0) {
 				fatigueFinished2 = PauseScript.a.relativeTime + fatigueWaneTickSecs;
 				fatigue += isSprinting ? fatiguePerSprintTick : fatiguePerWalkTick;
 				if (staminupActive) fatigue = 0;
@@ -562,7 +565,11 @@ public class PlayerMovement : MonoBehaviour {
 
 		leanTransform.localRotation = Quaternion.Euler(0, 0, 0);
 		leanTransform.localPosition = new Vector3(0,0,0);
-		if (rbody.velocity.magnitude > maxCyberUltimateSpeed) RigidbodySetVelocity(rbody, maxCyberUltimateSpeed); // Limit movement speed in all axes x,y,z in cyberspace
+		if (rbody.velocity.magnitude > maxCyberUltimateSpeed) {
+			// Limit movement speed in all axes x,y,z in cyberspace
+			RigidbodySetVelocity(rbody, maxCyberUltimateSpeed);
+		}
+
 		inputtingMovement = false;
 
 		if (GetInput.a.Forward()) {
@@ -644,25 +651,29 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void FatigueApply() {
-		if (fatigueFinished < PauseScript.a.relativeTime && !inCyberSpace && !CheatNoclip) {
-			fatigueFinished = PauseScript.a.relativeTime + fatigueWaneTickSecs;
-			switch (bodyState) {
-				case BodyState.Standing:    fatigue -= fatigueWanePerTick; break;
-				case BodyState.Crouch:      fatigue -= fatigueWanePerTickCrouched; break;
-				case BodyState.StandingUp:  fatigue -= fatigueWanePerTickCrouched; break;
-				case BodyState.ProningDown: fatigue -= fatigueWanePerTickCrouched; break;
-				case BodyState.Prone:       fatigue -= fatigueWanePerTickProne; break;
-				case BodyState.ProningUp:   fatigue -= fatigueWanePerTickProne; break;
-				default: fatigue -= fatigueWanePerTick; break;
-			}
-			if (fatigue < defIndex) fatigue = defIndex; // clamp at 0
-		}
-		if (fatigue > onehundred) fatigue = onehundred; // clamp at 100 using dummy variables to hang onto the value and not get collected by garbage collector (really?  hey it was back in the old days when we didn't have incremental garbage collector, pre Unity 2019.2 versions
-		if (fatigue > 80 && !fatigueWarned && !inCyberSpace) {
+		if (fatigue > 100f) fatigue = 100f; // Clamp at 100% maximum
+		if (fatigue < 0) fatigue = 0; // Clamp at 0% minimum.
+
+		if (fatigue > 80f && !fatigueWarned && !inCyberSpace) {
 			twm.SendWarning(("Fatigue high"),0.1f,0,HUDColor.White,324);
 			fatigueWarned = true;
 		} else {
 			fatigueWarned = false;
+		}
+
+		if (inCyberSpace) return;
+		if (CheatNoclip) return;
+		if (fatigueFinished >= PauseScript.a.relativeTime) return;
+
+		fatigueFinished = PauseScript.a.relativeTime + fatigueWaneTickSecs;
+		switch (bodyState) {
+			case BodyState.Standing:    fatigue -= fatigueWanePerTick; break;
+			case BodyState.Crouch:      fatigue -= fatigueWanePerTickCrouched; break;
+			case BodyState.StandingUp:  fatigue -= fatigueWanePerTickCrouched; break;
+			case BodyState.ProningDown: fatigue -= fatigueWanePerTickCrouched; break;
+			case BodyState.Prone:       fatigue -= fatigueWanePerTickProne; break;
+			case BodyState.ProningUp:   fatigue -= fatigueWanePerTickProne; break;
+			default: fatigue -= fatigueWanePerTick; break;
 		}
 	}
 

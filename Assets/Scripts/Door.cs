@@ -68,8 +68,11 @@ public class Door : MonoBehaviour {
 	private string loadedClipName;
 	private int loadedClipIndex;
 	private float loadedAnimatorPlaybackTime;
+	private bool initialized = false;
 
 	void Start () {
+		if (initialized) return;
+
 		anim = GetComponent<Animator>();
 		animatorPlaybackTime = 0;
 		if (requiredAccessCard == AccessCardType.None)
@@ -104,6 +107,7 @@ public class Door : MonoBehaviour {
 		}
 		cardUsedMessage = Const.a.stringTable[4];
 		butdoorStillLockedMessage = Const.a.stringTable[5];
+		initialized = true;
 	}
 
 	public void Use (UseData ud) {

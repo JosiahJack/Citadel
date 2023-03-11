@@ -722,7 +722,8 @@ public class HealthManager : MonoBehaviour {
 		if (hm == null) {
 			hm = go.transform.GetChild(0).GetComponent<HealthManager>();
 			if (hm == null) {
-				Debug.Log("HealthManager missing on savetype of HealthManager!  GameObject.name: " + go.name);
+				Debug.Log("HealthManager missing on savetype of HealthManager!"
+						  + "  GameObject.name: " + go.name);
 				return Utils.DTypeWordToSaveString("ffbbbu");
 			}
 		}

@@ -827,15 +827,31 @@ public class MFDManager : MonoBehaviour  {
 		itemTabRH.applyButton.SetActive(false);
 		if (applyButtonReferenceIndex < 0) return;
 
-		if (applyButtonReferenceIndex == 55) {
-			Inventory.a.genButtons[Inventory.a.generalInvCurrent].GetComponent<GeneralInvButton>().DoubleClick();
+		if (applyButtonReferenceIndex == 55 // Health kit was applied
+			|| applyButtonReferenceIndex == 52
+			|| applyButtonReferenceIndex == 53) {
+			// General Inventory
+			// ----------------------------------------------------------------
+			GameObject invbtn = 
+				Inventory.a.genButtons[Inventory.a.generalInvCurrent];
+
+			if (invbtn != null) {
+				invbtn.GetComponent<GeneralInvButton>().DoubleClick();
+			}
+
 			int nextIndex = Inventory.a.generalInvIndex - 1;
 			if (nextIndex < 0) nextIndex = 0;
 			Inventory.a.generalInvIndex = nextIndex;
-			SendInfoToItemTab(Inventory.a.generalInvIndex);  // Health kit was applied, set item tab to next general inv current.
+
+			// Set item tab to next general inv current.
+			SendInfoToItemTab(Inventory.a.generalInvIndex);
 		} else {
+			// Patches
+			// ----------------------------------------------------------------
 			Inventory.a.patchButtonScripts[Inventory.a.patchCurrent].DoubleClick();
-			SendInfoToItemTab(Inventory.a.patchIndex); // Set item tab to next patch.
+
+			// Set item tab to next patch.
+			SendInfoToItemTab(Inventory.a.patchIndex);
 		}
 	}
 
@@ -902,17 +918,28 @@ public class MFDManager : MonoBehaviour  {
 		usingObject = true;
 	}
 
-	public void SendGridPuzzleToDataTab (bool[] states, PuzzleCellType[] types, PuzzleGridType gtype, int start, int end, int width, int height, HUDColor colors, string t1, UseData ud, Vector3 tetherPoint, PuzzleGridPuzzle pgp) {
+	public void SendGridPuzzleToDataTab (bool[] states, PuzzleCellType[] types,
+										 PuzzleGridType gtype, int start,
+										 int end, int width, int height,
+										 HUDColor colors, string t1, 
+										 UseData ud, Vector3 tetherPoint,
+										 PuzzleGridPuzzle pgp) {
 		if (lastDataSideRH) {
 			// Send to RH tab
 			TabReset(true);
-			puzzleGridRH.GetComponent<PuzzleGrid>().SendGrid(states,types,gtype,start,end, width, height,colors,t1,ud,pgp);
+			puzzleGridRH.GetComponent<PuzzleGrid>().SendGrid(states,types,
+															 gtype,start,end,
+															 width,height,
+															 colors,t1,ud,pgp);
 			OpenTab(4,true,TabMSG.GridPuzzle,0,Handedness.RH);
 			SearchFXRH.SetActive(true);
 		} else {
 			// Send to LH tab
 			TabReset(false);
-			puzzleGridLH.GetComponent<PuzzleGrid>().SendGrid(states,types,gtype,start,end, width, height,colors,t1,ud,pgp);
+			puzzleGridLH.GetComponent<PuzzleGrid>().SendGrid(states,types,
+															 gtype,start,end,
+															 width,height,
+															 colors,t1,ud,pgp);
 			OpenTab(4,true,TabMSG.GridPuzzle,0,Handedness.LH);
 			SearchFXLH.SetActive(true);
 		}

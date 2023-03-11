@@ -118,7 +118,14 @@ public class MouseLookScript : MonoBehaviour {
 
 	void Update() {
 		// Allow quick load straight from the menu or pause.
-		if (Input.GetKeyUp(f9)) MainMenuHandler.a.LoadGame(7);
+		if (Input.GetKeyUp(f9)) {
+			if (inCyberSpace) {
+				Const.sprint("Cannot load in cyberspace");
+				return;
+			}
+
+			MainMenuHandler.a.LoadGame(7);
+		}
 
         if (PauseScript.a.MenuActive()) {
 			// Ignore mouselook and turn off camera when main menu is up.
@@ -133,7 +140,14 @@ public class MouseLookScript : MonoBehaviour {
 
 		// Unpaused, normal functions::
 		// ====================================================================
-		if (Input.GetKeyUp(f6)) Const.a.StartSave(7,qsavename);
+		if (Input.GetKeyUp(f6)) {
+			if (inCyberSpace) {
+				Const.sprint("Cannot save in cyberspace");
+				return;
+			}
+
+			Const.a.StartSave(7,qsavename);
+		}
 		if(GetInput.a.ToggleMode()) ToggleInventoryMode(); // Toggle inventory mode<->shoot mode
 		RecoilAndRest(); // Spring Back to Rest from Recoil
 		keyboardTurnSpeed = 15f * Const.a.MouseSensitivity;

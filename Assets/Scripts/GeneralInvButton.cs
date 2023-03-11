@@ -9,7 +9,9 @@ public class GeneralInvButton : MonoBehaviour {
 	private bool reduce = false;
 
     void Start() {
-        GetComponent<Button>().onClick.AddListener(() => { GeneralInvClick(); });
+        GetComponent<Button>().onClick.AddListener(() => {
+			GeneralInvClick();
+		});
     }
 
     void GeneralInvClick() {
@@ -18,51 +20,64 @@ public class GeneralInvButton : MonoBehaviour {
 	}
 
 	public void GeneralInvUse() {
-        Inventory.a.generalInvCurrent = GeneralInvButtonIndex;  //Set current
-		useableItemIndex = Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex];
+        Inventory.a.generalInvCurrent = GeneralInvButtonIndex; //Set current
+		useableItemIndex =
+			Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex];
 		MFDManager.a.SendInfoToItemTab(useableItemIndex);
     }
 
     public void DoubleClick() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
+		GeneralInvApply();
+	}
 
+	void ApplyBattery() {
+		if (PlayerEnergy.a.energy >= 255f) {
+			Const.sprint(Const.a.stringTable[303]);
+			reduce = false;
+		} else {
+			PlayerEnergy.a.GiveEnergy(83f,EnergyType.Battery);
+			reduce = true;
+		}
+	}
+
+	void ApplyIcadBattery() {
+		if (PlayerEnergy.a.energy >= 255f) {
+			Const.sprint(Const.a.stringTable[303]);
+			reduce = false;
+		} else {
+			PlayerEnergy.a.GiveEnergy(255f,EnergyType.Battery);
+			reduce = true;
+		}
+	}
+
+	void ApplyHealthkit() {
+		if (PlayerHealth.a.hm.health >= PlayerHealth.a.hm.maxhealth) {
+			Const.sprint(Const.a.stringTable[304]);
+		} else {
+			PlayerHealth.a.hm.health = PlayerHealth.a.hm.maxhealth;
+			MFDManager.a.DrawTicks(true);
+		}
+		reduce = true;
+	}
+
+	public void GeneralInvApply() {
         reduce = false;
-		useableItemIndex = Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex];
-        if (useableItemIndex == 52 || useableItemIndex == 53 || useableItemIndex == 55) {
-            switch (useableItemIndex) {
-                case 52:
-					if (PlayerEnergy.a.energy >= 255f) {
-						Const.sprint(Const.a.stringTable[303],PlayerReferenceManager.a.playerCapsule);
-						reduce = false;
-					} else {
-						PlayerEnergy.a.GiveEnergy(83f,EnergyType.Battery);
-						reduce = true;
-					}
-                    break;
-                case 53:
-					if (PlayerEnergy.a.energy >= 255f) {
-						Const.sprint(Const.a.stringTable[303],PlayerReferenceManager.a.playerCapsule);
-						reduce = false;
-					} else {
-						PlayerEnergy.a.GiveEnergy(255f,EnergyType.Battery);
-						reduce = true;
-					}
-                    break;
-                case 55:
-					if (PlayerHealth.a.hm.health >= PlayerHealth.a.hm.maxhealth) {
-						Const.sprint(Const.a.stringTable[304],PlayerReferenceManager.a.playerCapsule);
-					} else {
-						PlayerHealth.a.hm.health = PlayerHealth.a.hm.maxhealth;
-						MFDManager.a.DrawTicks(true);
-					}
-                    reduce = true;
-                    break;
-            }
-        } else {
-            MFDManager.a.SendInfoToItemTab(useableItemIndex);
-            MFDManager.a.OpenTab(1, true, TabMSG.None, useableItemIndex, Handedness.LH);
-            Inventory.a.generalInvCurrent = GeneralInvButtonIndex; // Set current.
-        }
+		useableItemIndex =
+			Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex];
+		switch (useableItemIndex) {
+			case 52: ApplyBattery(); break;
+			case 53: ApplyIcadBattery(); break;
+			case 55: ApplyHealthkit(); break;
+			default:
+				MFDManager.a.SendInfoToItemTab(useableItemIndex);
+				MFDManager.a.OpenTab(1,true,TabMSG.None, useableItemIndex,
+									 Handedness.LH);
+
+				// Set current.
+				Inventory.a.generalInvCurrent = GeneralInvButtonIndex;
+				break;
+		}
 
 		if (reduce)  {
 			Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex] = -1;

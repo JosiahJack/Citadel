@@ -76,7 +76,10 @@ public class PuzzleGrid : MonoBehaviour {
 		gameObject.SetActive(false);
 	}
 
-	public void SendGrid(bool[] states, PuzzleCellType[] types, PuzzleGridType gtype, int start, int end, int w, int h, HUDColor colors, string senttarget, UseData ud,PuzzleGridPuzzle pgp) {
+	public void SendGrid(bool[] states, PuzzleCellType[] types,
+						 PuzzleGridType gtype, int start, int end, int w,
+						 int h, HUDColor colors, string senttarget, UseData ud,
+						 PuzzleGridPuzzle pgp) {
 		grid = states;
 		cellType = types;
 		gridType = gtype;
@@ -93,11 +96,12 @@ public class PuzzleGrid : MonoBehaviour {
 		for (int i=0;i<35;i++) {
 			powered[i] = false;
 		}
+
 		EvaluatePuzzle();
 		UpdateCellImages();
 
 		if (udSender.mainIndex == 54 || Const.a.difficultyPuzzle == 0) {
-			PuzzleSolved (true);
+			PuzzleSolved(true);
 		}
 	}
 
@@ -348,10 +352,13 @@ public class PuzzleGrid : MonoBehaviour {
 			progressBar.value = percentProgress;
 		}
 
-		if (powered[outputIndex]) PuzzleSolved(false); // Latched solved state, no else statement to switch solved state back
+		// Latched solved state, no else statement to switch solved state back.
+		if (powered[outputIndex]) PuzzleSolved(false);
 	}
 
 	void PuzzleSolved(bool usedLogicProbe) {
+		if (puzzleSolved) return;
+
 		puzzleSolved = true;
 		outputNode.overrideSprite = nodeOn;
 		Utils.PlayOneShotSavable(audsource,solvedSFX);

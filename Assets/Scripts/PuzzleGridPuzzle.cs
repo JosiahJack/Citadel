@@ -79,8 +79,14 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 		Const.sprint(Const.a.stringTable[190],ud.owner); // Puzzle interface accessed
 		//(bool[] states, PuzzleCellType[] types, PuzzleGridType gtype, int start, int end, HUDColor colors, UseData ud)
 		inUse = true;
-		if (animate && anim != null && !alreadyOpen) { anim.Play("Open"); alreadyOpen = true; }
-		MFDManager.a.SendGridPuzzleToDataTab(grid,cellType,gridType,sourceIndex,outputIndex,width,height,theme,target,ud,transform.position,this);
+		if (animate && anim != null && !alreadyOpen) {
+			anim.Play("Open");
+			alreadyOpen = true;
+		}
+
+		MFDManager.a.SendGridPuzzleToDataTab(grid,cellType,gridType,sourceIndex,
+											 outputIndex,width,height,theme,
+											 target,ud,transform.position,this);
 	}
 
 	public void UseTargets (GameObject owner) {
