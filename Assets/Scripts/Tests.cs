@@ -821,7 +821,7 @@ public class Tests : MonoBehaviour {
 		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
 										  lName);
 
-		Const.a.ConfirmExistsInStreamingAssetsMakeIfNot(lName);
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot(lName);
 		StreamReader sf = new StreamReader(lP);
 		if (sf == null) {
 			UnityEngine.Debug.Log("Save unit test input file path invalid");

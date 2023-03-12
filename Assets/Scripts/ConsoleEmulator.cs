@@ -16,6 +16,7 @@ using UnityEngine;
 public static class ConsoleEmulator {
 	public static string[] lastCommand;
 	public static int consoleMemdex;
+	public static GameObject lastSpawnedGO;
 
 	public static void ConsoleUpdate() {
         if (GetInput.a.Console()) PlayerMovement.a.ToggleConsole();
@@ -265,7 +266,9 @@ public static class ConsoleEmulator {
 			if (val < 438 && val >= 0) {
 				SpawnDynamicObject(val,LevelManager.a.currentLevel,true);
 			}
-        }  else if (ts.Contains("settargetfps")) {
+        } else if (ts.Contains("undo")) {
+			if (lastSpawnedGO != null) Utils.SafeDestroy(lastSpawnedGO);
+        } else if (ts.Contains("settargetfps")) {
 			int val = Utils.GetIntFromString(ts.Split(' ').Last()); // That's a slow line to compute!
 			if (val <= 200 && val > 10) {
 				Const.a.TARGET_FPS = val;
@@ -1015,6 +1018,7 @@ Generic Materials (Const.a.genericMaterials[])
 				}
 			}
 		} else Debug.Log("SpawnDynamicObject failure: go == null at the end");
+		lastSpawnedGO = go;
 		return go;
 	}
 

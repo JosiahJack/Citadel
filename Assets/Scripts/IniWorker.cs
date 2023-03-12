@@ -18,8 +18,7 @@ public class INIWorker {
         new Dictionary<string, Dictionary<string, string>>();
 
     private static bool FirstRead() {
-		Const.a.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
-        
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
         if (File.Exists(path)) {
             using (StreamReader sr = new StreamReader(path)) {
                 string line;

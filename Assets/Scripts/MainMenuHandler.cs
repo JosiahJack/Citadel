@@ -319,7 +319,7 @@ public class MainMenuHandler : MonoBehaviour {
 											savName);
 
 		string retval = "! unknown !";
-		Const.a.ConfirmExistsInStreamingAssetsMakeIfNot(savName);
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot(savName);
 		StreamReader sf = new StreamReader(sP);
 		if (sf == null) return retval;
 

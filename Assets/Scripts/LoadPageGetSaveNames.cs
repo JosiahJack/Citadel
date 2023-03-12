@@ -14,7 +14,7 @@ public class LoadPageGetSaveNames : MonoBehaviour {
 			string savP = Utils.SafePathCombine(Application.streamingAssetsPath,
 												sName);
 
-			Const.a.ConfirmExistsInStreamingAssetsMakeIfNot(sName);
+			Utils.ConfirmExistsInStreamingAssetsMakeIfNot(sName);
 			StreamReader sf = new StreamReader(savP);
 			using (sf) {
 				readline = sf.ReadLine();

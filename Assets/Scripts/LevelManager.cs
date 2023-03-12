@@ -329,7 +329,7 @@ public class LevelManager : MonoBehaviour {
 		string lPath = Utils.SafePathCombine(Application.streamingAssetsPath,
 											 lName);
 
-		if (Const.a != null) Const.a.ConfirmExistsInStreamingAssetsMakeIfNot(lName);
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot(lName);
 		StreamReader sf = new StreamReader(lPath);
 		if (sf == null) {
 			UnityEngine.Debug.Log("Lights input file path invalid");
@@ -450,8 +450,10 @@ public class LevelManager : MonoBehaviour {
 				if (aic != null) {
 					if (aic.healthManager != null) {
 						Image over = aic.healthManager.linkedOverlay;
-						Utils.DisableImage(over);
-						Utils.Deactivate(over.gameObject);
+						if (over != null) {
+							Utils.DisableImage(over);
+							Utils.Deactivate(over.gameObject);
+						}
 					}
 				}
 			}
@@ -471,7 +473,7 @@ public class LevelManager : MonoBehaviour {
 		string dynPath = Utils.SafePathCombine(Application.streamingAssetsPath,
 											   dynName);
 
-		Const.a.ConfirmExistsInStreamingAssetsMakeIfNot(dynName);
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot(dynName);
 		StreamReader sf = new StreamReader(dynPath);
 		if (sf == null) {
 			UnityEngine.Debug.Log("Dynamic objects input file path invalid");

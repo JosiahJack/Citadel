@@ -7,7 +7,7 @@ using UnityEngine.PostProcessing;
 public class Config {
 	public static void LoadConfig() {
 		// The currently used config is always Config.ini.
-		Const.a.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
 
 		// Graphics Configurations
 		Const.a.GraphicsResWidth = AssignConfigInt("Graphics","ResolutionWidth");

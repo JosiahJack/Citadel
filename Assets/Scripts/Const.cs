@@ -378,58 +378,6 @@ public class Const : MonoBehaviour {
 		return (numberOfRaycastsThisFrame > maxRaycastsPerFrame);
 	}
 
-	// From the Unity Documentation on Resources.Load:
-	// Note: All asset names and paths in Unity use forward slashes, paths
-	//       using backslashes will not work.
-	// Using Utils.SafePathCombine with `true` to force / separator.
-	// Removes the file extension as well per the docs.
-	// docs.unity3d.com/2019.4/Documentation/ScriptReference/Resources.Load.html
-	string ResourcesPathCombine(string folderInResources, string fileName) {
-		string fname = Path.GetFileNameWithoutExtension(fileName);
-		return Utils.SafePathCombine(folderInResources,true,fname);
-	}
-
-	public void ConfirmExistsInStreamingAssetsMakeIfNot(string fileName) {
-		if (string.IsNullOrWhiteSpace(fileName)) {
-			UnityEngine.Debug.Log("fileName was null or whitespace passed to "
-								  + "ConfirmExistsInStreamingAssetsMakeIfNot");
-			return;
-		}
-
-		string strmAstPth =
-			Utils.SafePathCombine(Application.streamingAssetsPath,fileName);
-
-		if (File.Exists(strmAstPth)) {
-			return; // Already exists, all good!
-		}
-
-		 // Recreate StreamingAssets if it doesn't exist.
-        if (!Directory.Exists(Application.streamingAssetsPath)) {
-			Directory.CreateDirectory(Application.streamingAssetsPath);
-		}
-
-		string rsrc = ResourcesPathCombine("StreamingAssetsRecovery",fileName);
-		//UnityEngine.Debug.Log("rsrc = " + rsrc);
-        TextAsset resourcesFile = (TextAsset)Resources.Load(rsrc);
-		//UnityEngine.Debug.Log(resourcesFile);
-        if (resourcesFile != null) {
-			// Recreate from Resources/StreamingAssetsRecovery/*
-			File.WriteAllText(strmAstPth, resourcesFile.text, // new, contents
-							  Encoding.ASCII);
-			if (File.Exists(strmAstPth)) {
-				UnityEngine.Debug.Log("File " + strmAstPth
-									       + " recreated");
-			} else {
-				UnityEngine.Debug.Log("File " + strmAstPth
-									       + " failed to be created by "
-										   + "File.WriteAllText!");
-			}
-        } else {
-			UnityEngine.Debug.Log("File " + strmAstPth
-								  + " not found in the Resources folder");
-		}
-	}
-
     public void LoadTextForLanguage(int lang) {
         string readline; // variable to hold each string read in from the file
         int currentline = 0;
@@ -439,7 +387,7 @@ public class Const : MonoBehaviour {
             case 1: tF = "text_espanol.txt"; break; // UPKEEP: Other languages
         }
 
-		ConfirmExistsInStreamingAssetsMakeIfNot(tF);
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot(tF);
 		string fp = Utils.SafePathCombine(Application.streamingAssetsPath,tF);
         StreamReader dataReader = new StreamReader(fp, Encoding.ASCII);
         using (dataReader) {
@@ -560,7 +508,7 @@ public class Const : MonoBehaviour {
 		string readLogText; // loaded into string audioLogSpeech2Text[]
 		string readline; // variable to hold each string read in from the file
 		char logSplitChar = ',';
-		ConfirmExistsInStreamingAssetsMakeIfNot("logs_text.txt");
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("logs_text.txt");
 		string logPath = Utils.SafePathCombine(Application.streamingAssetsPath,
 											   "logs_text.txt");
 		StreamReader dataReader = new StreamReader(logPath,Encoding.ASCII);
@@ -606,7 +554,7 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 		int readInt = 0;
-		ConfirmExistsInStreamingAssetsMakeIfNot("damage_tables.txt");
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("damage_tables.txt");
 		string dtP = Utils.SafePathCombine(Application.streamingAssetsPath,
 										   "damage_tables.txt");
 		StreamReader dataReader = new StreamReader(dtP,Encoding.ASCII);
@@ -644,7 +592,7 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int pagenum = 0;
 		creditsLength = 1;
-		ConfirmExistsInStreamingAssetsMakeIfNot("credits.txt");
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("credits.txt");
 		string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
 										  "credits.txt");
 
@@ -680,7 +628,7 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 
-		ConfirmExistsInStreamingAssetsMakeIfNot("ng.dat");
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("ng.dat");
 		string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
 										  "ng.dat");
 
@@ -824,7 +772,7 @@ public class Const : MonoBehaviour {
 		int readInt = 0;
 		int i = 0;
 		int refIndex = 0;
-		ConfirmExistsInStreamingAssetsMakeIfNot("enemy_tables.csv");
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("enemy_tables.csv");
 		string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
 										  "enemy_tables.csv");
 

@@ -278,6 +278,10 @@ public class WeaponFire : MonoBehaviour {
 
 		// Set current weapon 7 slot
 		WeaponCurrent.a.weaponCurrent = WeaponCurrent.a.weaponCurrentPending;
+        if (CurrentWeaponUsesEnergy()) {
+			// Update hud heat ticks if current weapon uses energy
+			energheatMgr.HeatBleed(Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.a.weaponCurrent]);
+		}
 
 		// Set current weapon inventory lookup index
 		WeaponCurrent.a.weaponIndex = WeaponCurrent.a.weaponIndexPending;

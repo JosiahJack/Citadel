@@ -224,7 +224,7 @@ public class Utils {
 	//
 	// Protects against the use of slashes by mistake in passed parameters as
 	// Path.Combine is too dumb to handle this properly on all systems.
-    public static string SafePathCombine(string basePath, bool forwardSlashes,
+    public static string SafePathCombine(string basePath,
 										 params string[] additional) {
         int totalLength = 0;
         for (int i = 0; i < additional.Length; i++) {
@@ -242,29 +242,61 @@ public class Utils {
             }
         }
 
-		// Use forward slashes for Resources.Load calls.
-		if (forwardSlashes) {
-			StringBuilder s1 = new StringBuilder();
-			s1.Clear();
-			for (int k = 0; k < segments.Length; k++) {
-				s1.Append(segments[k]);
-				if (k != (segments.Length - 1)) s1.Append('/');
-			}
-
-			Debug.Log("SafePathCombine result with forced forward slashes: "
-					  + s1.ToString());
-			return s1.ToString();
-		}
-
-		// Use operating system path delimiter.
-		Debug.Log("SafePathCombine result: " + Path.Combine(segments));
-        return Path.Combine(segments);
+		string combinedPath = Path.Combine(segments);
+		combinedPath = combinedPath.Replace("\\","/"); // Turns out / works on
+													   // Windows so just use
+													   // it for everything.
+		Debug.Log("SafePathCombine result: " + combinedPath);
+        return combinedPath;
     }
 
-    public static string SafePathCombine(string basePath,
-										 params string[] additional) {
+	// From the Unity Documentation on Resources.Load:
+	// Note: All asset names and paths in Unity use forward slashes, paths
+	//       using backslashes will not work.
+	// Using Utils.SafePathCombine to force / separator.
+	// This wrapper needed to remove the file extension per the docs.
+	// docs.unity3d.com/2019.4/Documentation/ScriptReference/Resources.Load.html
+	public static string ResourcesPathCombine(string folderInResources,
+											  string fileName) {
+		string fname = Path.GetFileNameWithoutExtension(fileName);
+		return SafePathCombine(folderInResources,fname);
+	}
 
-		return SafePathCombine(basePath,false,additional);
+	public static void ConfirmExistsInStreamingAssetsMakeIfNot(string fileName) {
+		if (string.IsNullOrWhiteSpace(fileName)) {
+			UnityEngine.Debug.Log("fileName was null or whitespace passed to "
+								  + "ConfirmExistsInStreamingAssetsMakeIfNot");
+			return;
+		}
+
+		string strmAstPth = SafePathCombine(Application.streamingAssetsPath,
+											fileName);
+
+		if (File.Exists(strmAstPth)) {
+			return; // Already exists, all good!
+		}
+
+		 // Recreate StreamingAssets if it doesn't exist.
+        if (!Directory.Exists(Application.streamingAssetsPath)) {
+			Directory.CreateDirectory(Application.streamingAssetsPath);
+		}
+
+		string rsrc = ResourcesPathCombine("StreamingAssetsRecovery",fileName);
+        TextAsset resourcesFile = (TextAsset)Resources.Load(rsrc);
+        if (resourcesFile != null) {
+			// Recreate from Resources/StreamingAssetsRecovery/*
+			File.WriteAllText(strmAstPth, resourcesFile.text, // new, contents
+							  Encoding.ASCII);
+			if (File.Exists(strmAstPth)) {
+				UnityEngine.Debug.Log("File " + strmAstPth + " recreated");
+			} else {
+				UnityEngine.Debug.Log("File " + strmAstPth + " failed to be "
+									  + "created by File.WriteAllText!");
+			}
+        } else {
+			UnityEngine.Debug.Log("File " + strmAstPth + " not found in the "
+								  + "Resources folder");
+		}
 	}
 
     static readonly char[] pathSplitCharacters = new char[] { '/', '\\' };
