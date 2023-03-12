@@ -46,7 +46,6 @@ public class AmmoIconManager : MonoBehaviour {
     }
 
     public void SetAmmoIcon (int index, bool alt) {
-        Debug.Log("Set ammo icon");
         switch (index) {
 			case 36: Standard(alt,7,8);    break; // MK3 Magnesium, Penetrator
 			case 37: Energy();             break; // Uses energy, Blaster
