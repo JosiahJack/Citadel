@@ -1,10 +1,10 @@
 # Citadel
 
 ### News
-Wishing you all a Merry Christmas!!
+We are in Beta now!  There a have already been quite a few bugs reported with
+this public release but here it is: https://github.com/JosiahJack/Citadel/releases/tag/v0.99
 
-Save game system is mostly refactored.  Working through the testing to resolve the last few bugs with it.  Tried to have this ready by today, but alas tis not the season for it yet.
-- Sincerely, Josiah 12/25/2022
+- Sincerely, Josiah 3/12/2022
 
 ### Information
 Version 0.99, as of 12/25/2022

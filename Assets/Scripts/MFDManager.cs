@@ -669,18 +669,29 @@ public class MFDManager : MonoBehaviour  {
 		if (checkVal > 255f) checkVal = 255f; // Always display ticks properly
 											  // no matter what crazy value 
 											  // we've been hacked to have.
-		while (step < 256) {
-			if (checkVal < (256 - step)) {
-				tempSpriteIndex++;
-			}
-			step += 11;
+		//while (step < 256) {
+		//	if (checkVal < (256 - step)) {
+		//		tempSpriteIndex++;
+		//	}
+		//	step += 11;
+		//}
+
+		for (int i=1;i<24;i++) {
+			if (checkVal < (11f * i)) tempSpriteIndex++;
 		}
 
-		if (tempSpriteIndex >= 0 && tempSpriteIndex < 24) {
+		tempSpriteIndex++;
+		if (tempSpriteIndex >= 0 && tempSpriteIndex < 25) {
 			if (health) {
 				tickImageHealth.overrideSprite = tickImages[tempSpriteIndex];
 			} else {
 				tickImageEnergy.overrideSprite = tickImages[tempSpriteIndex];
+			}
+		} else {
+			if (health) {
+				tickImageHealth.overrideSprite = tickImages[24];
+			} else {
+				tickImageEnergy.overrideSprite = tickImages[24];
 			}
 		}
 	}

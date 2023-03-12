@@ -159,6 +159,8 @@ public class PlayerHealth : MonoBehaviour {
 	}
 
 	public void PlayerDeathToMenu() {
+		Const.a.loadingScreen.SetActive(true);
+
 		// Death to Main Menu
 		if (MouseLookScript.a.inventoryMode == false) {
 			MouseLookScript.a.ToggleInventoryMode();

@@ -528,7 +528,6 @@ public class AIController : MonoBehaviour {
 									  currentDestination);
 
 		if (wandering) {
-			Debug.Log("Wandering");
 			if (wanderFinished < PauseScript.a.relativeTime || (dist < 0.64f)) {
 				wanderFinished = PauseScript.a.relativeTime
 								 + UnityEngine.Random.Range(3f,8f);

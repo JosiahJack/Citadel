@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AI;
@@ -246,7 +247,10 @@ public class Utils {
 		combinedPath = combinedPath.Replace("\\","/"); // Turns out / works on
 													   // Windows so just use
 													   // it for everything.
-		Debug.Log("SafePathCombine result: " + combinedPath);
+
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+			Debug.Log("SafePathCombine result: " + combinedPath);
+		}
         return combinedPath;
     }
 
