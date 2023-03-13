@@ -7,9 +7,10 @@ this public release but here it is: https://github.com/JosiahJack/Citadel/releas
 - Sincerely, Josiah 3/12/2022
 
 ### Information
-Version 0.99, as of 12/25/2022
+Version 0.99 (Beta) Released 3/11/2022
+
 Started 7/6/2015
-Released TBD (currently in alpha, no recent builds)
+
 The System Shock Fan Remake.  The goal is to recreate the original closely while enhancing it with 3D models instead of 2D sprites, 3D details to the station in and out, particle effects, and subtle sound effect additions.  After releasing a playable version, focus will shift to making mod and mapping tools.
 
 PLEASE submit bug and feature requests here on this github.
