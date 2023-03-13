@@ -659,8 +659,11 @@ public class HealthManager : MonoBehaviour {
 			}
 			if (health > 0) {
 				Utils.EnableCollision(gameObject);
-				Utils.EnableImage(linkedOverlay); // Enable on automap.
-				Utils.Activate(linkedOverlay.gameObject);
+				if (linkedOverlay != null) {
+					Utils.EnableImage(linkedOverlay); // Enable on automap.
+					Utils.Activate(linkedOverlay.gameObject);
+				}
+
 				MeshRenderer mr = GetComponent<MeshRenderer>();
 				if (mr != null) {
 					mr.enabled = true;
@@ -670,7 +673,10 @@ public class HealthManager : MonoBehaviour {
 						if (!aicP.startInitialized) aicP.Start();
 						if (aicP.healthManager != null) {
 							if (!aicP.healthManager.gibOnDeath) {
-								if (aicP.visibleMeshEntity != null) aicP.visibleMeshEntity.SetActive(true); // We are a corpse, re-enable parent visibleMeshEntity
+								if (aicP.visibleMeshEntity != null) {
+									// We are a corpse, re-enable parent
+									aicP.visibleMeshEntity.SetActive(true);
+								}
 							}
 						}
 					}
