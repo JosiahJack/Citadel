@@ -9,7 +9,7 @@ this public release but here it is: https://github.com/JosiahJack/Citadel/releas
 ### Information
 Version 0.99 (Beta) Released 3/11/2022
 
-Started 7/6/2015
+Started 7/6/2014
 
 The System Shock Fan Remake.  The goal is to recreate the original closely while enhancing it with 3D models instead of 2D sprites, 3D details to the station in and out, particle effects, and subtle sound effect additions.  After releasing a playable version, focus will shift to making mod and mapping tools.
 
@@ -22,6 +22,12 @@ Special thanks to Night Dive Studios for allowing this project to live on (unhin
 
 
 Install Instructions:
+Everything needed to play should be in the zip, though at first launch the path to your original game install .RES files is needed for audio.  If installing a newer version, replace the old version.  Saves should be compatible unless noted in the tag release notes.
+1.  Download the tagged release (preferably latest).
+2.  Extract it to a location of your choosing.  For best results, install in your user directory so that Citadel has read/write access for save files.
+3.  Launch Citadel.exe if on Windows, or Citadelv#.##.x86_64 on Linux (mark as executable if not already).
+
+Dev Play Instructions (In Editor):
 DISCLAIMER: Citadel is in-progress. That means features may be broken, missing, or not in a final state of polish. Also, this means that the game is not in an "installable" state and must be "built" in Unity OR ran inside the Unity editor. Also, the github version is always updated after I get to a reasonable "stopping point" for adding to the game. This means Github is missing certain features that are actually closed in the Issues list on here (I'll change this at some point where I don't close bugs for instance until after the commit is done for that bug.) Continue for your own fun.
 
 1. Download the Github repository (or clone it via git).
