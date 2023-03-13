@@ -235,6 +235,7 @@ public class MainMenuHandler : MonoBehaviour {
 			Const.a.NewGame();
 		}
 
+		MouseCursor.a.mainCamera.enabled = true;
 		this.gameObject.SetActive(false);
 	}
 
@@ -321,15 +322,22 @@ public class MainMenuHandler : MonoBehaviour {
 		string retval = "! unknown !";
 		Utils.ConfirmExistsInStreamingAssetsMakeIfNot(savName);
 		StreamReader sf = new StreamReader(sP);
-		if (sf == null) return retval;
+		if (sf == null) {
+			Debug.Log("GetSaveName error! sf null");
+			return retval;
+		}
 
 		using (sf) {
 			retval = sf.ReadLine();
-			if (retval == null) return "! unknown !"; // just in case
+			if (retval == null) {
+				Debug.Log("GetSaveName error! retval null");
+				return "! unknown !"; // just in case
+			}
 
 			sf.Close();
 		}
 
+		Debug.Log("GetSaveName retval: " + retval);
 		return retval;
 	}
 
@@ -372,6 +380,7 @@ public class MainMenuHandler : MonoBehaviour {
 		Const.a.StartSave(index,savename);
 		Const.sprint(Const.a.stringTable[28] + index.ToString() + "!",Const.a.player1);
 		PauseScript.a.EnablePauseUI();
+		MouseCursor.a.mainCamera.enabled = true;
 		this.gameObject.SetActive(false);
 	}
 

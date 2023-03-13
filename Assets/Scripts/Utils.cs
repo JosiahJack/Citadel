@@ -21,6 +21,7 @@ public class Utils {
 	public static string splitChar = "|"; // Common delimiter, not a comma as
 										  // text could contain commas.  Used
 										  // for all savefile text.
+	public static char splitCharChar = '|';
 
 	public static CultureInfo en_US_Culture = new CultureInfo("en-US");
 

@@ -654,7 +654,6 @@ public class MFDManager : MonoBehaviour  {
 
 	public void DrawTicks(bool health) {
 		tempSpriteIndex = -1;
-		int step = 0;
 		float checkVal = 0;
 		if (health) {
 			if (MouseLookScript.a.inCyberSpace) {
@@ -666,16 +665,9 @@ public class MFDManager : MonoBehaviour  {
 			checkVal = PlayerEnergy.a.energy;
 		}
 
-		if (checkVal > 255f) checkVal = 255f; // Always display ticks properly
-											  // no matter what crazy value 
-											  // we've been hacked to have.
-		//while (step < 256) {
-		//	if (checkVal < (256 - step)) {
-		//		tempSpriteIndex++;
-		//	}
-		//	step += 11;
-		//}
-
+		// Always display ticks properly no matter what crazy value  we've been
+		// hacked to have.
+		if (checkVal > 255f) checkVal = 255f; 
 		for (int i=1;i<24;i++) {
 			if (checkVal < (11f * i)) tempSpriteIndex++;
 		}

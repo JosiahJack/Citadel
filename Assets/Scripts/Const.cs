@@ -1456,12 +1456,13 @@ public class Const : MonoBehaviour {
 			//index = 0; // Uncomment this if we pull in the saveName from this line for something.
 
 			// Read in global time and pause data
-			entries = readFileList[1].Split(Utils.splitChar.ToCharArray()[0]);
+			int splitter = 
+			entries = readFileList[1].Split(Utils.splitCharChar);
 			PauseScript.a.relativeTime = Utils.GetFloatFromString(entries[index]); // the global time from which everything checks it's somethingerotherFinished timer states
 			index = 0; // reset before starting next line
 
 			// Read in global states, difficulties, and quest mission bits.
-			entries = readFileList[2].Split(Utils.splitChar.ToCharArray()[0]);
+			entries = readFileList[2].Split(Utils.splitCharChar);
 			index = LevelManager.Load(LevelManager.a.gameObject,ref entries,index);
 			index = questData.Load(ref entries,index);
 			difficultyCombat = Utils.GetIntFromString(entries[index]); index++;
@@ -1480,7 +1481,7 @@ public class Const : MonoBehaviour {
 			bool[] alreadyLoadedLineFromSaveFile = new bool[numSaveFileLines];
 			Utils.BlankBoolArray(ref alreadyLoadedLineFromSaveFile,false); // Fill with false.
 			for (i = 3; i < numSaveFileLines; i++) {
-				entries = readFileList[i].Split(Utils.splitChar.ToCharArray()[0]);
+				entries = readFileList[i].Split(Utils.splitCharChar);
 				if (entries.Length > 1) {
 					saveFile_Line_SaveID[i] = Utils.GetIntFromString(entries[1]); // int - get saveID from 2nd slot
 					saveFile_Line_IsInstantiated[i] = Utils.GetBoolFromString(entries[2]); // bool - get instantiated from 3rd slot
@@ -1553,7 +1554,7 @@ public class Const : MonoBehaviour {
 												  + saveableGameObjectsInScene[j].name);
 						}
 
-						entries = readFileList[i].Split(Utils.splitChar.ToCharArray()[0]);
+						entries = readFileList[i].Split(Utils.splitCharChar);
 						SaveObject.Load(currentGameObjectInScene,ref entries);
 						alreadyCheckedThisSaveableGameObjectInScene[j] = true; // Huge time saver right here!
 						break;
@@ -1608,7 +1609,7 @@ public class Const : MonoBehaviour {
 			for (i = 3 ; i < numSaveFileLines; i++) {
 				if (alreadyLoadedLineFromSaveFile[i]) continue;
 
-				entries = readFileList[i].Split(Utils.splitChar.ToCharArray()[0]);
+				entries = readFileList[i].Split(Utils.splitCharChar);
 				if (entries.Length > 1) {
 					levID = Utils.GetIntFromString(entries[18]); // int - get the level this was in
 					if (levID < 0 || levID > 13) levID = 1; // Default to med.
