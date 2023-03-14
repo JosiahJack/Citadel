@@ -513,7 +513,7 @@ public class WeaponFire : MonoBehaviour {
 	void FireCyberBeachball(bool isPulser, float shoveForce, int prefabID) {
         // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
         // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
-        GameObject beachball = ConsoleEmulator.SpawnDynamicObject(prefabID);
+        GameObject beachball = ConsoleEmulator.SpawnDynamicObject(prefabID,-1);
         if (beachball != null) {
 			damageData.damage = 10f * Inventory.a.softVersions[0];
 			if (isPulser) damageData.damage = 1f; // Cyberspace enemies don't have much health
@@ -1239,7 +1239,7 @@ public class WeaponFire : MonoBehaviour {
 	void FireBeachball(int index16, float shoveForce, int prefabID) {
         // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
         // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
-        GameObject beachball = ConsoleEmulator.SpawnDynamicObject(prefabID);
+        GameObject beachball = ConsoleEmulator.SpawnDynamicObject(prefabID,1);
         if (beachball != null) {
             damageData.damage = Const.a.damagePerHitForWeapon[index16];
             damageData.owner = playerCapsule;

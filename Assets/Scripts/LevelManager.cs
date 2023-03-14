@@ -501,7 +501,8 @@ public class LevelManager : MonoBehaviour {
 			val = Utils.GetIntFromString(entries[21]); // Master Index
 			GameObject newGO = ConsoleEmulator.SpawnDynamicObject(val,curlevel,
 																  false,
-																  container);
+																  container,
+																  -1);
 			if (newGO != null) SaveObject.Load(newGO,ref entries);
 		}
 	}

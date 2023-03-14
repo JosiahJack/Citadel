@@ -142,8 +142,10 @@ public class HealthManager : MonoBehaviour {
 
 		Vector3 worldPos = transform.position;
 		linkedOverlay = Automap.a.LinkOverlay(worldPos,transform.parent,pt);
-		Utils.Activate(linkedOverlay.gameObject);
-		Utils.EnableImage(linkedOverlay);
+		if (linkedOverlay != null) {
+			Utils.Activate(linkedOverlay.gameObject);
+			Utils.EnableImage(linkedOverlay);
+		}
 	}
 
 	void OnEnable() {

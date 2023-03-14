@@ -1045,7 +1045,7 @@ public class AIController : MonoBehaviour {
 				break;
 		}
 
-		beachball = ConsoleEmulator.SpawnDynamicObject(masterIndex);
+		beachball = ConsoleEmulator.SpawnDynamicObject(masterIndex,-1);
 		if (beachball == null) beachball = Const.a.useableItems[63]; // Frag
 		beachball.tag = "NPC";
 		beachball.layer = 24; // NPCBullet

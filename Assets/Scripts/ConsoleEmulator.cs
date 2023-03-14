@@ -264,7 +264,7 @@ public static class ConsoleEmulator {
 		} else if (ts.Contains("summon_obj")) {
 			int val = Utils.GetIntFromString(ts.Split(' ').Last()); // That's a slow line to compute!
 			if (val < 438 && val >= 0) {
-				SpawnDynamicObject(val,LevelManager.a.currentLevel,true);
+				SpawnDynamicObject(val,LevelManager.a.currentLevel,true,-1);
 			}
         } else if (ts.Contains("undo")) {
 			if (lastSpawnedGO != null) Utils.SafeDestroy(lastSpawnedGO);
@@ -887,7 +887,9 @@ Generic Materials (Const.a.genericMaterials[])
 
 */
 
-	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat, GameObject forcedContainer) {
+	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat,
+												GameObject forcedContainer,
+												int saveID) {
 		if (LevelManager.a == null) {
 			Debug.Log("Missing LevelManager");
 			return null;
@@ -1018,15 +1020,29 @@ Generic Materials (Const.a.genericMaterials[])
 				}
 			}
 		} else Debug.Log("SpawnDynamicObject failure: go == null at the end");
-		lastSpawnedGO = go;
+
+		if (go != null) {
+			lastSpawnedGO = go;
+			if (Application.isPlaying) { // Not called from Test.cs in editor.
+				SaveObject sob = go.GetComponent<SaveObject>();
+				if (sob != null) {
+					if (saveID <= -1) {
+						sob.SaveID = Const.a.nextFreeSaveID;
+						Const.a.nextFreeSaveID++;
+					} else sob.SaveID = saveID;
+				}
+			}
+		}
 		return go;
 	}
 
-	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat) {
-		return SpawnDynamicObject(val, lev, cheat, null);
+	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat,
+												int saveID) {
+		return SpawnDynamicObject(val, lev, cheat, null, saveID);
 	}
 
-	public static GameObject SpawnDynamicObject(int val) {
-		return SpawnDynamicObject(val,LevelManager.a.currentLevel,false, null);
+	public static GameObject SpawnDynamicObject(int val, int saveID) {
+		return SpawnDynamicObject(val,LevelManager.a.currentLevel,false,null,
+								  saveID);
 	}
 }

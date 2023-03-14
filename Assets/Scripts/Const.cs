@@ -252,6 +252,7 @@ public class Const : MonoBehaviour {
 	public GameObject[] doorPrefabs;
 	public Material[] genericMaterials;
 	public GameObject[] ReverbRegister;
+	public int nextFreeSaveID = 2000000;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
 	[HideInInspector] public int AudioSpeakerMode;
@@ -1186,7 +1187,9 @@ public class Const : MonoBehaviour {
 
 		Stopwatch saveTimer = new Stopwatch();
 		saveTimer.Start();
-		string[] saveData = new string[16000]; // Found 2987 saveable objects on main level - should be enough for any instantiated dropped items...maybe
+		string[] saveData = new string[16000]; // Found 4256 saveable objects - 
+											   // so this should be enough for
+											   // instantiated items...maybe.
 		int i,j;
 		int index = 0;
 
@@ -1280,6 +1283,7 @@ public class Const : MonoBehaviour {
 			ReloadScene(sth); // 4b.3.
 		} else { // 4a.
 			//UnityEngine.Debug.Log("freshGame.name: " + freshGame.name);
+			ClearActiveAutomapOverlays();
 			Utils.SafeDestroy(freshGame); // 4a.1. Destroy GameNotYetStarted. Game is started now.
 			GoIntoGame(); // 4a.2. Ok now it's actually started.
 		}
@@ -1417,6 +1421,8 @@ public class Const : MonoBehaviour {
 		loadPercentText.text = "Preparing...";
 		yield return null; // Update progress text.
 
+		// Remove and clear out everything and reset any lists.
+		ClearActiveAutomapOverlays();
 		for (i=0;i<14;i++) {
 			LevelManager.a.UnloadLevelDynamicObjects(i); // Delete them all!
 			LevelManager.a.UnloadLevelNPCs(i); // Delete them all!
@@ -1456,7 +1462,6 @@ public class Const : MonoBehaviour {
 			//index = 0; // Uncomment this if we pull in the saveName from this line for something.
 
 			// Read in global time and pause data
-			int splitter = 
 			entries = readFileList[1].Split(Utils.splitCharChar);
 			PauseScript.a.relativeTime = Utils.GetFloatFromString(entries[index]); // the global time from which everything checks it's somethingerotherFinished timer states
 			index = 0; // reset before starting next line
@@ -1576,16 +1581,19 @@ public class Const : MonoBehaviour {
 			int numberOfMissedObjects = 0;
 			SaveObject sobQuickCheck;
 			for (i=0;i<saveableGameObjectsInScene.Count;i++) {
-				if (alreadyCheckedThisInstantiableGameObjectInScene[i]) continue;
+				if (alreadyCheckedThisInstantiableGameObjectInScene[i]) {
+					continue;
+				}
 
-				string staticResult; // Immutable nonsense so no bother doing outside the loop, blech!
-				sobQuickCheck = saveableGameObjectsInScene[i].GetComponent<SaveObject>();
+				string staticResult; // Immutable nonsense so no bother doing 
+									 // outside the loop, blech!
+				sobQuickCheck =
+					saveableGameObjectsInScene[i].GetComponent<SaveObject>();
+
  				staticResult = "is not static";
 				if (sobQuickCheck != null) {
 					if (!sobQuickCheck.instantiated) staticResult = "is static";
-				}
-				//if (saveableGameObjectsInScene[i].isStatic) staticResult = "is static"; // EDITOR ONLY!!!!!!!!!!
-				
+				}				
 
 				UnityEngine.Debug.Log(saveableGameObjectsInScene[i].name 
 									  + " not loaded during Static Pass and "
@@ -1598,29 +1606,37 @@ public class Const : MonoBehaviour {
 			}
 
 			// LOAD 7d. INSTANTIATE AND LOAD TO INSTANTIATED SAVEABLES
-			// Now time to instantiate anything left that is supposed to be here
+			// Now time to instantiate anything left that's supposed to be here
 			loadUpdateTimer.Start(); // For loading update
-			int constdex = -1;
-			int levID = -1;
-			//int consttable = 0;
-			GameObject instantiatedObject = null;
-			//GameObject prefabReferenceGO = null;
-			//for (i=0;i<instantiatedFound.Count;i++) {
+			int constdex = -1; // To store the index of Master Index table.
+			int levID = -1; // To store the level this was in.
+			int savID = -1; // To store the SaveObject.SaveID.
+			float percLoaded = 0f;
+			GameObject instGO = null;
 			for (i = 3 ; i < numSaveFileLines; i++) {
 				if (alreadyLoadedLineFromSaveFile[i]) continue;
 
 				entries = readFileList[i].Split(Utils.splitCharChar);
 				if (entries.Length > 1) {
-					levID = Utils.GetIntFromString(entries[18]); // int - get the level this was in
+					levID = Utils.GetIntFromString(entries[18]); 
 					if (levID < 0 || levID > 13) levID = 1; // Default to med.
-					constdex = Utils.GetIntFromString(entries[19]); // int - get the index into the Master table of all prefabs
+					constdex = Utils.GetIntFromString(entries[19]);
 					if (constdex < 0 || constdex > 517) continue;
 
-					instantiatedObject = ConsoleEmulator.SpawnDynamicObject(constdex,levID,false,null);
-					SaveObject.Load(instantiatedObject,ref entries); // Load it.
+					savID = Utils.GetIntFromString(entries[1]);
+					instGO = ConsoleEmulator.SpawnDynamicObject(constdex,levID,
+																false,null,
+																savID);
+
+					SaveObject.Load(instGO,ref entries); // Load it.
 				}
 
-				loadPercentText.text = "Loading Dynamic Objects: " + ((float)i/(float)numSaveablesFromSavefile*100f).ToString("0.0") + "% (" + i.ToString() + " / " + numSaveablesFromSavefile.ToString() + ")";
+				percLoaded = ((float)i / (float)numSaveablesFromSavefile*100f);
+				loadPercentText.text = "Loading Dynamic Objects: "
+									   + percLoaded.ToString("0.0")
+									   + "% (" + i.ToString() + " / "
+									   + numSaveablesFromSavefile.ToString()
+									   + ")";
 				if (loadUpdateTimer.ElapsedMilliseconds > 500) {
 					loadUpdateTimer.Reset();
 					loadUpdateTimer.Start();
@@ -1631,7 +1647,6 @@ public class Const : MonoBehaviour {
 			}
 			loadUpdateTimer.Stop();
 		}
-
 
 		loadPercentText.text = "Cleaning Up...";
 		yield return new WaitForSeconds(0.1f);
