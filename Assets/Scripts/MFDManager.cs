@@ -141,6 +141,8 @@ public class MFDManager : MonoBehaviour  {
 		// "ML-41 PISTOL","LG-XX PLASMA RIFLE","MM-76 RAIL GUN","DC-05 RIOT GUN","RF-07 SKORPION","SPARQ BEAM",
 		// "DH-07 STUNGUN"};
 	private int wep16index = 0;
+	[HideInInspector] public LogDataTabContainerManager logDataTabInfoLH;
+	[HideInInspector] public LogDataTabContainerManager logDataTabInfoRH;
 
 	// For health and energy ticks
 	public Sprite[] tickImages;
@@ -216,6 +218,10 @@ public class MFDManager : MonoBehaviour  {
 		GeneralTabButton.image.overrideSprite = MFDSprite;
 		SoftwareTabButton.image.overrideSprite = MFDSprite;
 		curCenterTab = 0;
+		a.logDataTabInfoLH = 
+			audioLogContainerLH.GetComponent<LogDataTabContainerManager>();
+		a.logDataTabInfoRH = 
+			audioLogContainerRH.GetComponent<LogDataTabContainerManager>();
 	}
 
 	void OnEnable() {
@@ -607,7 +613,21 @@ public class MFDManager : MonoBehaviour  {
 		tetheredSearchable = null;
 		searchCloseButtonLH.SetActive(false);
 		searchCloseButtonRH.SetActive(false);
-		RevertDataTabState();
+		if (leftTC.TabManager.DataTab.activeSelf
+			&& searchContainerLH.gameObject.activeSelf) {
+			TabReset(false);
+			logTable.SetActive(false);
+			logLevelsFolder.SetActive(false);
+			logReaderContainer.SetActive(false);
+			ReturnToLastTab(false);
+		}
+
+		if (rightTC.TabManager.DataTab.activeSelf
+			&& searchContainerRH.gameObject.activeSelf) {
+			TabReset(true);
+			ReturnToLastTab(true);
+		}
+		usingObject = false;
 	}
 
 	public void ClosePaperLog() {
@@ -714,16 +734,15 @@ public class MFDManager : MonoBehaviour  {
 		} else {
 			isRH = true;
 		}
-		switch (index) {
-			case 0: isRH = lastWeaponSideRH; break;
-			case 1: isRH = lastItemSideRH; break;
-			case 2: isRH = lastAutomapSideRH; break;
-			case 3: isRH = lastTargetSideRH; break;
-			case 4: isRH = lastDataSideRH; break;
-		}
+		//switch (index) {
+		//	case 0: isRH = lastWeaponSideRH; break;
+		//	case 1: isRH = lastItemSideRH; break;
+		//	case 2: isRH = lastAutomapSideRH; break;
+		//	case 3: isRH = lastTargetSideRH; break;
+		//	case 4: isRH = lastDataSideRH; break;
+		//}
 		if(!isRH) {
 			// LH LEFT HAND MFD
-			leftTC.SetCurrentAsLast();
 			leftTC.TabButtonClickSilent(index,overrideToggling);
 			if (type == TabMSG.Weapon) {
 				TabReset(false);
@@ -732,7 +751,6 @@ public class MFDManager : MonoBehaviour  {
 			if (type == TabMSG.AudioLog) {
 				TabReset(false);
 				audioLogContainerLH.SetActive(true);
-				audioLogContainerLH.GetComponent<LogDataTabContainerManager>().SendLogData(intdata1, false); // true/false for isRH
 			}
 
 			if (type == TabMSG.Keypad) {
@@ -770,12 +788,10 @@ public class MFDManager : MonoBehaviour  {
 			}
 		} else {
 			// RH RIGHT HAND MFD
-			rightTC.SetCurrentAsLast();
 			rightTC.TabButtonClickSilent(index,overrideToggling);
 			if (type == TabMSG.AudioLog) {
 				TabReset(true);
 				audioLogContainerRH.SetActive(true);
-				audioLogContainerRH.GetComponent<LogDataTabContainerManager>().SendLogData(intdata1, true); // true/false for isRH
 			}
 
 			if (type == TabMSG.Keypad) {
@@ -877,6 +893,7 @@ public class MFDManager : MonoBehaviour  {
 					searchContainerRH.customIndex[i] = customIndex[i];
 				}
 			}
+			searchCloseButtonRH.SetActive(true);
 		} else {
 			headerTextLH.SetActive(true);
 			headerText_textLH.enabled = true;
@@ -895,19 +912,21 @@ public class MFDManager : MonoBehaviour  {
 					searchContainerLH.customIndex[i] = customIndex[i];
 				}
 			}
+			searchCloseButtonLH.SetActive(true);
 		}
 	}
 
 	public void SendSearchToDataTab (string name, int contentCount, int[] resultContents, int[] resultsIndices, Vector3 searchPosition, SearchableItem si, bool useFX) {
+		TabReset(true);
+		TabReset(false);
+		Search(true,name,contentCount,resultContents,resultsIndices);
+		Search(false,name,contentCount,resultContents,resultsIndices);
+
 		// Enable search box scaling effect
 		if (lastSearchSideRH) {
-			TabReset(true);
-			Search(true,name,contentCount,resultContents,resultsIndices);
 			OpenTab(4,true,TabMSG.Search,0,Handedness.RH);
 			if (useFX) SearchFXRH.SetActive(true);
 		} else {
-			TabReset(false);
-			Search(false,name,contentCount,resultContents,resultsIndices);
 			OpenTab(4,true,TabMSG.Search,0,Handedness.LH);
 			if (useFX) SearchFXLH.SetActive(true);
 		}
@@ -992,14 +1011,17 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void SendAudioLogToDataTab(int index) {
-		TabReset(lastDataSideRH);
-		if (lastDataSideRH) {
-			// Send to RH tab
+		TabReset(false);
+		OpenTab(4,true,TabMSG.AudioLog,index,Handedness.LH);  // LH
+		if (Const.a.audioLogImagesRefIndicesRH[index] != 0) { // RH, but only
+															  // if has image.
+			Debug.Log("Activating 2nd image for logs");
+			TabReset(true);
 			OpenTab(4,true,TabMSG.AudioLog,index,Handedness.RH);
-		} else {
-			// Send to LH tab
-			OpenTab(4,true,TabMSG.AudioLog,index,Handedness.LH);
 		}
+
+		logDataTabInfoLH.SendLogData(index,false); // false for LH
+		logDataTabInfoRH.SendLogData(index,true);  // true for RH
 		CenterTabButtonClickSilent(4,true);
 		if (tetheredSearchable != null) tetheredSearchable.searchableInUse = false;
 		OpenLogTextReader();
@@ -1027,8 +1049,8 @@ public class MFDManager : MonoBehaviour  {
 		OpenLastMultiMediaTab();
 	}
 
-	public void ClearDataTab() {
-		TabReset(lastDataSideRH);
+	public void ClearDataTab(bool isRH) {
+		TabReset(isRH);
 	}
 
 	public void TurnOffKeypad() {
@@ -1174,6 +1196,7 @@ public class MFDManager : MonoBehaviour  {
 					searchContainerRH.customIndex[i] = -1;
 				}
 			}
+
 			if (headerTextLH.activeSelf) {
 				headerTextLH.SetActive(false);
 				headerText_textLH.enabled = false;
@@ -1188,7 +1211,10 @@ public class MFDManager : MonoBehaviour  {
 					searchContainerLH.customIndex[i] = -1;
 				}
 			}
+
 			tetheredSearchable = null;
+			if (leftTC.curTab == 4) leftTC.ReturnToLastTab();
+			if (rightTC.curTab == 4) rightTC.ReturnToLastTab();
 		}
 	}
 
@@ -1456,7 +1482,7 @@ public class MFDManager : MonoBehaviour  {
 		MFDManager mfd = go.GetComponent<MFDManager>();
 		if (mfd == null) {
 			Debug.Log("MFDManager missing on Player!  GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("bbbbbbbbbufffbbbbbbtbut");
+			return Utils.DTypeWordToSaveString("bbbbbbbbbufffbbbbbbtbutuu");
 		}
 
 		string line = System.String.Empty;
@@ -1488,6 +1514,15 @@ public class MFDManager : MonoBehaviour  {
 		line += Utils.splitChar + Utils.BoolToString(mfd.logActive); // bool
 		line += Utils.splitChar + Utils.IntToString(Utils.GetIntFromAudioLogType(mfd.logType)); // int
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished);
+
+		if (mfd.leftTC != null) {
+			line += Utils.splitChar + Utils.UintToString(mfd.leftTC.curTab);
+		} else line += Utils.splitChar + "0";
+
+		if (mfd.rightTC != null) {
+			line += Utils.splitChar + Utils.UintToString(mfd.rightTC.curTab);
+		} else line += Utils.splitChar + "0";
+
 		return line;
 	}
 
@@ -1495,17 +1530,17 @@ public class MFDManager : MonoBehaviour  {
 		MFDManager mfd = go.GetComponent<MFDManager>();
 		if (mfd == null) {
 			Debug.Log("MFDManager.Load failure, mfd == null");
-			return index + 23;
+			return index + 25;
 		}
 
 		if (index < 0) {
 			Debug.Log("MFDManager.Load failure, index < 0");
-			return index + 23;
+			return index + 25;
 		}
 
 		if (entries == null) {
 			Debug.Log("MFDManager.Load failure, entries == null");
-			return index + 23;
+			return index + 25;
 		}
 
 		float readFloatx, readFloaty, readFloatz;
@@ -1538,6 +1573,18 @@ public class MFDManager : MonoBehaviour  {
 		mfd.logActive = Utils.GetBoolFromString(entries[index]); index++;
 		mfd.logType = Utils.GetAudioLogTypeFromInt(Utils.GetIntFromString(entries[index])); index++;
 		mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		if (mfd.leftTC != null) {
+			mfd.leftTC.curTab = Utils.GetIntFromString(entries[index]); index++;
+			mfd.leftTC.SetCurrentAsLast();
+			mfd.leftTC.ReturnToLastTab();
+		} else index++;
+
+		if (mfd.rightTC != null) {
+			mfd.rightTC.curTab = Utils.GetIntFromString(entries[index]); index++;
+			mfd.rightTC.SetCurrentAsLast();
+			mfd.rightTC.ReturnToLastTab();
+		} else index++;
+
 		return index;
 	}
 }

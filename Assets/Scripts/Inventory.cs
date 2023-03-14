@@ -392,12 +392,14 @@ public class Inventory : MonoBehaviour {
 			}
 
 			if(GetInput.a.RecentLog() && (hasHardware[2] == true)) {
-				if (lastAddedIndex != -1) {
+				if (lastAddedIndex != -1 && !SFXSource.isPlaying) {
 					PlayLog(lastAddedIndex);
 					tempRefIndex = lastAddedIndex;
-					lastAddedIndex = -1;
+					lastAddedIndex = FindNextUnreadLog();
+					if (lastAddedIndex == tempRefIndex) lastAddedIndex = -1;
 				} else {
 					SFXSource.Stop();
+					Const.sprint("Log playback stopped");
 					if (tempRefIndex != -1) lastAddedIndex = tempRefIndex;
 					tempRefIndex = -1;
 				}
@@ -607,6 +609,7 @@ public class Inventory : MonoBehaviour {
 	public void AddHardwareToInventory(int index, int constIndex) {
 		if (index < 0) return;
 
+		Debug.Log("Adding hardware with index: " + index.ToString());
 		int hwversion = MouseLookScript.a.heldObjectCustomIndex;
 		if (hwversion < 1) {
 			Const.sprint("BUG: Hardware picked up has no assigned versioning, defaulting to 1 (value of 0)" );
@@ -785,6 +788,13 @@ public class Inventory : MonoBehaviour {
 		if(SFXSource != null) SFXSource.Stop();
 	}
 
+	private int FindNextUnreadLog() {
+		for (int i=readLog.Length - 1;i>=0;i--) {
+			if (!readLog[i] && hasLog[i]) return i;
+		}
+		return -1;
+	}
+
 	public void PlayLog(int logIndex) {
 		if (logIndex < 0) return;
 
@@ -806,6 +816,7 @@ public class Inventory : MonoBehaviour {
 				case 120: vmailshieldsup.SetActive(true); break;
 			}
 		}
+		Const.sprint("Playing " + Const.a.audiologNames[logIndex]);
 		MFDManager.a.SendAudioLogToDataTab(logIndex);
 	}
 
@@ -1462,6 +1473,17 @@ public class Inventory : MonoBehaviour {
 			MouseLookScript.a.compassContainer.SetActive(true);
 			MouseLookScript.a.automapContainerLH.SetActive(true);
 			MouseLookScript.a.automapContainerRH.SetActive(true);
+			if (inv.hardwareVersion[1] >= 2) MouseLookScript.a.compassMidpoints.SetActive(true);
+			if (inv.hardwareVersion[1] >= 3) {
+				MouseLookScript.a.compassSmallTicks.SetActive(true);
+				MouseLookScript.a.compassLargeTicks.SetActive(true);
+			}
+		} else {
+			MouseLookScript.a.compassContainer.SetActive(false);
+			MouseLookScript.a.automapContainerLH.SetActive(false);
+			MouseLookScript.a.automapContainerRH.SetActive(false);
+			MouseLookScript.a.compassSmallTicks.SetActive(false);
+			MouseLookScript.a.compassLargeTicks.SetActive(false);
 		}
 		for (j=0;j<13;j++) { inv.hardwareVersion[j] = Utils.GetIntFromString(entries[index]); index++; }
 		for (j=0;j<13;j++) { inv.hardwareVersionSetting[j] = Utils.GetIntFromString(entries[index]); index++; }
@@ -1477,7 +1499,9 @@ public class Inventory : MonoBehaviour {
 		for (j=0;j<7;j++) { inv.softVersions[j] = Utils.GetIntFromString(entries[index]); index++; }
 		for (j=0;j<7;j++) { inv.hasSoft[j] = Utils.GetBoolFromString(entries[index]); index++; }
 		inv.emailCurrent = Utils.GetIntFromString(entries[index]); index++;
-		inv.emailIndex = Utils.GetIntFromString(entries[index]); index++;	
+		inv.emailIndex = Utils.GetIntFromString(entries[index]); index++;
+
+
 		return index;
 	}
 }

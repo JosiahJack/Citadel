@@ -36,20 +36,44 @@ public class TabButtons : MonoBehaviour {
 	}
 
 	public void ReturnToLastTab() {
-		if (isRH) {
-			TabButtonClickSilent(2,true); // Force automap for right
-		} else {
-			TabButtonClickSilent(0,true); // Force weapon for left
+		TabButtonClickSilent(lastTab,true);
+	}
+
+	// Only setting these from manual user actions.
+	void SetMFDLasts(int tabNum) {
+		SetCurrentAsLast();
+		switch (tabNum) {
+			case 0: // Weapon
+				MFDManager.a.lastWeaponSideRH = isRH;
+				break;
+			case 1: // Item
+				MFDManager.a.lastItemSideRH = isRH;
+				break;
+			case 2: // Automap
+				MFDManager.a.lastAutomapSideRH = isRH;
+				break;
+			case 3: // Target
+				MFDManager.a.lastTargetSideRH = isRH;
+				break;
+			case 4: // Data
+				if (MFDManager.a.tetheredSearchable != null) {
+					if (isRH) MFDManager.a.lastSearchSideRH = true;
+					else MFDManager.a.lastSearchSideRH = false;
+				}
+				MFDManager.a.lastDataSideRH = isRH;
+				break;
 		}
 	}
 
 	public void TabButtonClick(int tabNum) { // For click events.
 		MFDManager.a.mouseClickHeldOverGUI = true;
+		SetMFDLasts(tabNum);
 		TabButtonAction(tabNum);
 	}
 
 	public void TabButtonAction(int tabNum) { // For keyboard events.
 		Utils.PlayOneShotSavable(TabSFX,TabSFXClip);
+		SetMFDLasts(tabNum);
 		TabButtonClickSilent(tabNum,false);
 	}
 
@@ -77,7 +101,6 @@ public class TabButtons : MonoBehaviour {
 			TargetTabButton.image.overrideSprite = MFDSprite;
 			DataTabButton.image.overrideSprite = MFDSprite;
 			curTab = 0;
-			MFDManager.a.lastWeaponSideRH = isRH;
 			break;
 		case 1:
 			if (curTab == 1) {
@@ -100,7 +123,6 @@ public class TabButtons : MonoBehaviour {
 			TargetTabButton.image.overrideSprite = MFDSprite;
 			DataTabButton.image.overrideSprite = MFDSprite;
 			curTab = 1;
-			MFDManager.a.lastItemSideRH = isRH;
 			break;
 		case 2:
 			if (curTab == 2) {
@@ -123,7 +145,6 @@ public class TabButtons : MonoBehaviour {
 			TargetTabButton.image.overrideSprite = MFDSprite;
 			DataTabButton.image.overrideSprite = MFDSprite;
 			curTab = 2;
-			MFDManager.a.lastAutomapSideRH = isRH;
 			break;
 		case 3:
 			if (curTab == 3) {
@@ -146,7 +167,6 @@ public class TabButtons : MonoBehaviour {
 			AutomapTabButton.image.overrideSprite = MFDSprite;
 			DataTabButton.image.overrideSprite = MFDSprite;
 			curTab = 3;
-			MFDManager.a.lastTargetSideRH = isRH;
 			break;
 		case 4:
 			if (curTab == 4) {
@@ -169,7 +189,6 @@ public class TabButtons : MonoBehaviour {
 			AutomapTabButton.image.overrideSprite = MFDSprite;
 			TargetTabButton.image.overrideSprite = MFDSprite;
 			curTab = 4;
-			MFDManager.a.lastDataSideRH = isRH;
 			break;
 		}
 	}

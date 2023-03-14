@@ -19,9 +19,10 @@ public class LogMoreButton : MonoBehaviour {
 		} else {
 			// CLOSE BUTTON
 			MFDManager.a.ResetMultiMediaTabs();
+			MFDManager.a.ClearDataTab(true);
+			MFDManager.a.ClearDataTab(false);
 			MFDManager.a.leftTC.ReturnToLastTab();
 			MFDManager.a.rightTC.ReturnToLastTab();
-			MFDManager.a.ClearDataTab();
 			MFDManager.a.CenterTabButtonClickSilent(0,true);
 			GetComponent<UIButtonMask>().PtrExit(); // Force mouse cursor out of UI.
 		}
