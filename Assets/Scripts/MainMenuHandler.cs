@@ -219,6 +219,10 @@ public class MainMenuHandler : MonoBehaviour {
 			}
 		}
 
+		Const.a.difficultyCombat = combat.difficultySetting;
+		Const.a.difficultyMission = mission.difficultySetting;
+		Const.a.difficultyPuzzle = puzzle.difficultySetting;
+		Const.a.difficultyCyber = cyber.difficultySetting;
 		NewGameGraphUpdate();
 	}
 

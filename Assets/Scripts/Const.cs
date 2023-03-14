@@ -204,10 +204,10 @@ public class Const : MonoBehaviour {
 	public StatusBarTextDecay statusBar;
    
 	//Config constants
-	[HideInInspector] public int difficultyCombat;
-	[HideInInspector] public int difficultyMission;
-	[HideInInspector] public int difficultyPuzzle;
-	[HideInInspector] public int difficultyCyber;
+	public int difficultyCombat;
+	public int difficultyMission;
+	public int difficultyPuzzle;
+	public int difficultyCyber;
 	[HideInInspector] public string playerName;
 	public AudioSource mainmenuMusic;
 	[HideInInspector] public int GraphicsResWidth;
