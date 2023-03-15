@@ -1,13 +1,13 @@
 # Citadel
 
 ### News
-We are in Beta now!  There a have already been quite a few bugs reported with
-this public release but here it is: https://github.com/JosiahJack/Citadel/releases/tag/v0.99
+We are in Beta now!  Bugs are very likely for the next several patch releases.
+Get the latest here: https://github.com/JosiahJack/Citadel/tags
 
-- Sincerely, Josiah 3/12/2022
+- Sincerely, Josiah 3/14/2022
 
 ### Information
-Version 0.99 (Beta) Released 3/11/2022
+Version 0.99.1 (Beta) 3/14/2023
 
 Started 7/6/2014
 
@@ -23,7 +23,7 @@ Special thanks to Night Dive Studios for allowing this project to live on (unhin
 
 Install Instructions:
 Everything needed to play should be in the zip, though at first launch the path to your original game install .RES files is needed for audio.  If installing a newer version, replace the old version.  Saves should be compatible unless noted in the tag release notes.
-1.  Download the tagged release (preferably latest).
+1.  Download the latest tagged release.
 2.  Extract it to a location of your choosing.  For best results, install in your user directory so that Citadel has read/write access for save files.
 3.  Launch Citadel.exe if on Windows, or Citadelv#.##.x86_64 on Linux (mark as executable if not already).
 
