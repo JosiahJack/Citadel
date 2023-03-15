@@ -67,7 +67,7 @@ public class PlayerMovement : MonoBehaviour {
 	private float maxSprintSpeedFatigued = 5.5f;
 	private float maxVerticalSpeed = 5f;
 	private float boosterSpeedBoost = 0.5f; // ammount to boost by when booster is active
-	private float jumpImpulseTime = 2.0f;
+	private float jumpImpulseTime = 4.0f;
 	private float jumpVelocityBoots = 0.5f;
 	private float jumpVelocity = 1.1f;
 	private float jumpVelocityFatigued = 0.6f;
@@ -93,7 +93,7 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector] public Rigidbody rbody;
 	private float fallDamageSpeed = 11.72f;
 	[HideInInspector] public Vector3 oldVelocity; // save
-	[HideInInspector] public float fatigue; // save
+	public float fatigue; // save
 	private float jumpFatigue = 8.25f;
 	private float fatigueWanePerTick = 1f;
 	private float fatigueWanePerTickCrouched = 2f;
@@ -353,12 +353,10 @@ public class PlayerMovement : MonoBehaviour {
 
 	void ApplyGroundFriction() {
 		if (running && isSprinting) return;
-		if (!CheatNoclip) {
-			if (!grounded && !ladderState) return;
-		}
 
 		tempVecRbody = rbody.velocity;
 		deceleration = walkDeacceleration;
+		if (!grounded && !ladderState && !justJumped) deceleration = deceleration * 1.5f;
 		if (CheatNoclip) {
 			deceleration = 0.05f;
 			// Prevent gravity from affecting and decelerate like a horizontal.
@@ -420,10 +418,14 @@ public class PlayerMovement : MonoBehaviour {
 					doubleJumpFinished = PauseScript.a.relativeTime + Const.a.doubleClickTime;
 					doubleJumpTicks++;
 					justJumped = true;
+					fatigue += jumpFatigue;
+					if (staminupActive) fatigue = 0;
 				} else {
 					if (ladderState) {
 						jumpTime = jumpImpulseTime;
 						justJumped = true;
+						fatigue += jumpFatigue;
+						if (staminupActive) fatigue = 0;
 					}
 				}
 			}
@@ -450,9 +452,9 @@ public class PlayerMovement : MonoBehaviour {
 						rbody.AddForce (new Vector3 (0, jumpVelocityBoots * rbody.mass, 0), ForceMode.Force);  // huhnh!
 						float energysuck = 25f;
 						switch (Inventory.a.hardwareVersion[10]) {
-							case 0: energysuck = 25f; break;
-							case 1: energysuck = 30f; break;
-							case 2: energysuck = 35f; break;
+							case 0: energysuck = 15f; break;
+							case 1: energysuck = 20f; break;
+							case 2: energysuck = 25f; break;
 						}
 						if (jumpJetEnergySuckTickFinished < PauseScript.a.relativeTime) {
 							jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime + jumpJetEnergySuckTick;
@@ -485,8 +487,6 @@ public class PlayerMovement : MonoBehaviour {
 					Utils.PlayOneShotSavable(SFX,SFXJump);
 			}
 			justJumped = false;
-			fatigue += jumpFatigue;
-			if (staminupActive) fatigue = 0;
 		}
 	}
 

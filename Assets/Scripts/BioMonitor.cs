@@ -38,7 +38,7 @@ public class BioMonitor : MonoBehaviour {
 		fatigueDetailText.text = Const.a.stringTable[531];
 		tempStr.Clear();
 		if (PlayerMovement.a.fatigue < 80f) tempStr.Append(Const.a.stringTable[533]); // Moderate
-		if (PlayerMovement.a.fatigue < 30f) tempStr.Append(Const.a.stringTable[534]); // Low
+		else if (PlayerMovement.a.fatigue < 30f) tempStr.Append(Const.a.stringTable[534]); // Low
 		else tempStr.Append(Const.a.stringTable[532]); // High!
 
 		fatigue.text = tempStr.ToString();

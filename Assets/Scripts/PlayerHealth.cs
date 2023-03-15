@@ -81,13 +81,31 @@ public class PlayerHealth : MonoBehaviour {
 		}
 		if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_DETOX)) radiated = 0f;
 		if (radiated > 1f) {
-			if (radiationArea) PlayerMovement.a.twm.SendWarning((Const.a.stringTable[184]),0.1f,-2,HUDColor.White,radiationAreaWarningID); // Radiation area
+			if (radiationArea) {
+				// Radiation area
+				PlayerMovement.a.twm.SendWarning((Const.a.stringTable[184]),
+												  0.1f,-2,HUDColor.White,
+												  radiationAreaWarningID);
+			}
+
 			if (Inventory.a.hasHardware[8]) {
-				// Suit absorbs some radiation, say it.  Envirosuit absorbed ##, Radiation poisoning ## LBP
-				PlayerMovement.a.twm.SendWarning((Const.a.stringTable[280]+radAdjust.ToString()+Const.a.stringTable[281] + Const.a.stringTable[185] + radiated.ToString()+Const.a.stringTable[186]),0.1f,-2,HUDColor.Red,radiationAmountWarningID); // Envirosuit absorbed ##LBP, Radiation poisoning ##LBP
+				// Suit absorbs some radiation, say it.
+				// Envirosuit absorbed ##LBP, Radiation poisoning ##LBP
+				PlayerMovement.a.twm.SendWarning((Const.a.stringTable[280]
+												  + radAdjust.ToString()
+												  + Const.a.stringTable[281]
+												  + Const.a.stringTable[185]
+												  + radiated.ToString()
+												  + Const.a.stringTable[186]),
+												 0.1f,-2,HUDColor.Red,
+												 radiationAmountWarningID);
 			} else {
-				// Radiation poisoning ## LBP
-				PlayerMovement.a.twm.SendWarning((Const.a.stringTable[185]+radiated.ToString()+Const.a.stringTable[186]),0.1f,-2,HUDColor.Red,radiationAmountWarningID); // Radiation poisoning ##LBP
+				// Radiation poisoning ##LBP
+				PlayerMovement.a.twm.SendWarning((Const.a.stringTable[185]
+												  + radiated.ToString()
+												  +Const.a.stringTable[186]),
+												 0.1f,-2,HUDColor.Red,
+												 radiationAmountWarningID);
 			}
 			if (radFXFinished < PauseScript.a.relativeTime) {
 				radiationEffect.SetActive(true);
@@ -185,21 +203,29 @@ public class PlayerHealth : MonoBehaviour {
 		PlayerMovement.a.fatigue = 0f;
 	}
 
+	private float GetRadAdjust(float radiated, float frac, float energCost) {
+		radAdjust = radiated * frac;
+		float diff = radiated - radAdjust;
+		radiated = radAdjust; // After calculating difference.
+		if (diff < 0) diff = 0; // Prevent underflow.
+		return (energCost * diff);
+	}
+
 	public void GiveRadiation (float rad) {
 		if (playerDead) return;
-		if (radiated < rad)
-			radiated = rad;
+
+		if (radiated < rad) radiated = rad;
+		else return;
 
 		// Check for envirosuit and apply reduction based on version
 		if (Inventory.a.hasHardware[8] && PlayerEnergy.a.energy > 0) {
 			radAdjust = radiated;
 			float enerTake = 0.25f;
 			switch (Inventory.a.hardwareVersion[8]) {
-				case 1: radAdjust *= 0.17f; enerTake = 0.25f*(radiated - radAdjust); break;
-				case 2: radAdjust *= 0.15f; enerTake = 0.16f*(radiated - radAdjust); break;
-				case 3: radAdjust *= 0.12f; enerTake = 0.11f*(radiated - radAdjust); break;
+				case 1: enerTake = GetRadAdjust(radiated, 0.17f, 0.25f); break;
+				case 2: enerTake = GetRadAdjust(radiated, 0.15f, 0.16f); break;
+				case 3: enerTake = GetRadAdjust(radiated, 0.12f, 0.11f); break;
 			}
-			radiated *= radAdjust;
 			radAdjust = initialRadiation - radiated;
 			PlayerEnergy.a.TakeEnergy(enerTake);
 		} else {
