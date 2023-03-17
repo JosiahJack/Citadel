@@ -685,8 +685,11 @@ public class HealthManager : MonoBehaviour {
 				}
 			} else {
 				Utils.DisableCollision(gameObject);
-				Utils.DisableImage(linkedOverlay); // Disable on automap.
-				Utils.Deactivate(linkedOverlay.gameObject);
+				if (linkedOverlay != null) {
+					Utils.DisableImage(linkedOverlay); // Disable on automap.
+					Utils.Deactivate(linkedOverlay.gameObject);
+				}
+
 				MeshRenderer mr = GetComponent<MeshRenderer>();
 				if (mr != null) {
 					mr.enabled = false;
