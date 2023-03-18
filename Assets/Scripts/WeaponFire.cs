@@ -1064,6 +1064,8 @@ public class WeaponFire : MonoBehaviour {
 	public bool CreateTargetIDInstance(string message, Transform parent, HealthManager hm, Transform playerCapsuleTransform, float linkDist, bool range, bool health, bool attitude,bool name) {
         GameObject idFrame = Const.a.GetObjectFromPool(PoolType.TargetIDInstances);
         if (idFrame != null) {
+			if (!hm.isNPC) return false; // Don't notify for crates and such.
+
             TargetID tid = idFrame.GetComponent<TargetID>();
 			tid.parent = parent;
 			tid.currentText = message;
