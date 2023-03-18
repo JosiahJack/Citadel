@@ -343,7 +343,7 @@ public class HardwareButton : MonoBehaviour {
 	public void JumpJetsAction() {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 		if (Inventory.a.hardwareIsActive[10]) {
-			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[7]);
+			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[0]);
 		} else {
 			Utils.PlayOneShotSavable(SFX,SFXClip[7]);
 		}
