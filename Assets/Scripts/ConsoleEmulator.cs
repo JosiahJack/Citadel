@@ -31,15 +31,14 @@ public static class ConsoleEmulator {
                 }
 			}
 
-			if (Input.GetKeyDown(KeyCode.UpArrow)) SetToCommandMoreDistant();
-			if (Input.GetKeyDown(KeyCode.DownArrow)) SetToCommandMoreRecent();
+			if (Input.GetKeyUp(KeyCode.UpArrow)) SetToCommandMoreDistant();
+			if (Input.GetKeyUp(KeyCode.DownArrow)) SetToCommandMoreRecent();
 			if ((Input.GetKeyUp(KeyCode.Return)
                   || Input.GetKeyUp(KeyCode.KeypadEnter)
 				  || Input.GetKeyDown(KeyCode.JoystickButton0))
                 && !PauseScript.a.mainMenu.activeSelf == true) {
 
                 string enteredText = PlayerMovement.a.consoleinpFd.text;
-                ShiftLastCommand(enteredText);
                 ConsoleEntry(enteredText);
             }
 		} else {
@@ -91,6 +90,7 @@ public static class ConsoleEmulator {
     }
 
     private static void ConsoleEntry(string entry) {
+        ShiftLastCommand(entry);
 		string ts = entry.ToLower(); // test string = lower case text
 		string tn = entry; // test number = number searching
         if (ts.Contains("noclip") || ts.Contains("idclip")

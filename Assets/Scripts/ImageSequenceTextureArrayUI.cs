@@ -13,6 +13,7 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 	private bool playDone = false;
 	public bool replayOnEnable = false; // True for Vmail
 	public bool playOnMenu = false; // False for Vmail
+	public bool deactivateAtEnd = false;
 	
 	void Awake() {
 		goImage = this.GetComponent<Image>();
@@ -36,8 +37,9 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 	}
 	
 	void Update() {
-		if (!PauseScript.a.Paused()) {
+		if (!PauseScript.a.Paused() || playOnMenu) {
 			if (!PauseScript.a.MenuActive() || playOnMenu) {
+				if (deactivateAtEnd && playDone) gameObject.SetActive(false);
 				if (stopAtEnd && playDone) return;
 
 				if (stopAtEnd && !playDone) {

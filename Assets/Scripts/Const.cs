@@ -1754,9 +1754,11 @@ public class Const : MonoBehaviour {
 
 	public string CreditsStats() {
 		string retval = Const.a.creditsText[0];
+		return retval;
+
 		int index = 0;
 		char[] checkCharacters = retval.ToCharArray();
-		char[] updatedCharacters = new char[checkCharacters.Length + 106];
+		char[] updatedCharacters = new char[checkCharacters.Length];
 		for (int i=0;i<updatedCharacters.Length;i++) {
 			if (checkCharacters[i] == '#') {
 				char[] tempChar = null;
