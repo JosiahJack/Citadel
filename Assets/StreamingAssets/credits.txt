@@ -56,21 +56,12 @@ Williams College, Casual Effects, Unity Technologies,
 Jeff Johnson, WeaverDev
 #
 -Playtesters-
-Rachel Jack
-Kaitlyn Jack
-Rebecca Jack
-William Van De Kieft
-Trae Van Maanen
-RocketMan
-Denhonator
-Kolya
-Dertseha
-JML
-TheMotherload
-SHODAN
-Berathraben
-Tjomo
-Pacmikey
+sverXRazum, Xkilljoy98, Berethraben,
+Rachel Jack, Kaitlyn Jack, Rebecca Jack
+William Van De Kieft, Trae Van Maanen
+RocketMan, Denhonator, Kolya, Dertseha
+JML, TheMotherload, Tjomo, Pacmikey,
+Learonys, sgupta, SHODAN
 #
 ----------------------------------------------------------------------
 Indirect involvment list found...
