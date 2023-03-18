@@ -130,11 +130,11 @@ public static class ConsoleEmulator {
 				Const.sprint("god mode activated!");
 				PlayerMovement.a.hm.god = true;
 			}
-        } else if (ts.Contains("load") && (tn.Contains("0") || ts.Contains("loadr") || ts.Contains("load r")) && !ts.Contains("arsenal"))CheatLoadLevel(0);
-        else if (ts.Contains("load") && tn.Contains("1") && !ts.Contains("arsenal"))  CheatLoadLevel(1);
-		else if (ts.Contains("load") && tn.Contains("2") && !ts.Contains("arsenal"))  CheatLoadLevel(2);
-		else if (ts.Contains("load") && tn.Contains("3") && !ts.Contains("arsenal"))  CheatLoadLevel(3);
-		else if (ts.Contains("load") && tn.Contains("4") && !ts.Contains("arsenal"))  CheatLoadLevel(4);
+        } else if (ts.Contains("load") && (tn.Contains("0") || ts.Contains("loadr") || ts.Contains("load r")) && !ts.Contains("10") && !ts.Contains("arsenal")) CheatLoadLevel(0);
+        else if (ts.Contains("load") && tn.Contains("1") && !ts.Contains("10") && !ts.Contains("11") && !ts.Contains("12") && !ts.Contains("g1") && !ts.Contains("arsenal"))  CheatLoadLevel(1);
+		else if (ts.Contains("load") && tn.Contains("2") && !ts.Contains("12") && !ts.Contains("g2") && !ts.Contains("arsenal"))  CheatLoadLevel(2);
+		else if (ts.Contains("load") && tn.Contains("3") && !ts.Contains("13") && !ts.Contains("g3") && !ts.Contains("arsenal"))  CheatLoadLevel(3);
+		else if (ts.Contains("load") && tn.Contains("4") && !ts.Contains("g4") && !ts.Contains("arsenal"))  CheatLoadLevel(4);
 		else if (ts.Contains("load") && tn.Contains("5") && !ts.Contains("arsenal"))  CheatLoadLevel(5);
 		else if (ts.Contains("load") && tn.Contains("6") && !ts.Contains("arsenal"))  CheatLoadLevel(6);
 		else if (ts.Contains("load") && tn.Contains("7") && !ts.Contains("arsenal"))  CheatLoadLevel(7);
@@ -143,6 +143,9 @@ public static class ConsoleEmulator {
 		else if (ts.Contains("load") && ts.Contains("g1") && !ts.Contains("arsenal")) CheatLoadLevel(10);
         else if (ts.Contains("load") && ts.Contains("g2") && !ts.Contains("arsenal")) CheatLoadLevel(11);
         else if (ts.Contains("load") && ts.Contains("g4") && !ts.Contains("arsenal")) CheatLoadLevel(12);
+		else if (ts.Contains("load") && ts.Contains("10") && !ts.Contains("arsenal")) CheatLoadLevel(10);
+        else if (ts.Contains("load") && ts.Contains("11") && !ts.Contains("arsenal")) CheatLoadLevel(11);
+        else if (ts.Contains("load") && ts.Contains("12") && !ts.Contains("arsenal")) CheatLoadLevel(12);
 		else if (ts.Contains("load") && ts.Contains("g3") && !ts.Contains("arsenal")) {
 			Const.sprint("Gamma grove already jettisoned!  Those poor "
                          + "arrogant people.");
