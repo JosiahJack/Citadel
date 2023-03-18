@@ -572,7 +572,14 @@ public class AIController : MonoBehaviour {
 					rbody.velocity = tempVec;
 				}
 			}
-			return;
+			return; // Still moving to same target destination.
+		}
+
+		if (walkWaypoints.Length < 1) {
+			if (!wandering) {
+				currentState = AIState.Idle; // No wandering, just go to Idle.
+			}
+			return; // No waypoint to visit, wait for wandering timer.
 		}
 
 		// Need new spot to move to
@@ -582,23 +589,20 @@ public class AIController : MonoBehaviour {
 			currentWaypoint = Random.Range(0, walkWaypoints.Length);
 		} else {
 			currentWaypoint++;
-			if ((currentWaypoint >= walkWaypoints.Length)
-				|| (walkWaypoints[currentWaypoint] == null)) {
-				currentWaypoint = 0; // Wrap around.
+		}
 
-				// Stop when reached end of list or out of waypoints.
-				if (dontLoopWaypoints
-					|| walkWaypoints[currentWaypoint] == null) {
-					currentState = AIState.Idle;
-					return;
-				}
+		if (currentWaypoint < 0) currentWaypoint = 0;
+		if ((currentWaypoint >= (walkWaypoints.Length - 1))) {
+			currentWaypoint = 0; // Wrap around.
+
+			// Stop when reached end of list; out of waypoints.
+			if (dontLoopWaypoints) {
+				currentState = AIState.Idle;
+				return;
 			}
 		}
 
-		if (currentWaypoint > walkWaypoints.Length) currentWaypoint = 0;
-		if (currentWaypoint < 0) currentWaypoint = 0;
-
-		if (walkWaypoints[currentWaypoint] == null) return;
+		if (walkWaypoints[currentWaypoint] == null) return; // No gaps allowed.
 
 		currentDestination = walkWaypoints[currentWaypoint].transform.position;
 	}
