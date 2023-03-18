@@ -56,75 +56,8 @@ public class ProjectileEffectImpact : MonoBehaviour {
 					}
 					float dmgFinal = hm.TakeDamage(dd); // send the damageData container to HealthManager of hit object and apply damage
 					if (hm.isNPC || dd.isOtherNPC) Music.a.inCombat = true;
-					float linkDistForTargID = 10f;
-					switch (Inventory.a.hardwareVersion[4]) {
-						case 1: linkDistForTargID = 10f; break;
-						case 2: linkDistForTargID = 15f; break;
-						case 3: linkDistForTargID = 25f; break;
-						case 4: linkDistForTargID = 30f; break;
-					}
-					bool showHealth = false;
-					bool showRange = false;
-					bool showAttitude = false;
-					bool showName = false;
-					if (dmgFinal <= 0 && (hm.isNPC || dd.isOtherNPC)) {
-						if (Inventory.a.hasHardware[4]) {
-							if (Inventory.a.hardwareVersion[4] > 0) {
-								showRange = true; // Display Range
-							}
-
-							if (Inventory.a.hardwareVersion[4] > 1) {
-								showAttitude = true; // Display Attitude
-								showName = true; // Display Name
-							}
-
-							if (Inventory.a.hardwareVersion[4] > 3) {
-								showHealth = true; // Display enemy health
-							}
-						}
-						WeaponFire.a.CreateTargetIDInstance(Const.a.stringTable[511], other.contacts[0].otherCollider.transform,hm,WeaponFire.a.playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
-						if (WeaponFire.a.noDamageIndicator != null) {
-							WeaponFire.a.noDamageIndicator.transform.position = hitPos; // center on what we just shot
-							if (hm.aic != null) {
-								if (hm.aic.index == 14) {
-									// Adjust position for hopper origin since it's special and all melty
-									Vector3 adjustment = hitPos;
-									adjustment.y += 1f;
-									WeaponFire.a.noDamageIndicator.transform.position = adjustment;
-								}
-							}
-							WeaponFire.a.noDamageIndicator.SetActive(true); // do this regardless of target identifier version to show player that hey, it no workie
-						}
-					} else {
-						if (Inventory.a.hasHardware[4]) {
-							if (Inventory.a.hardwareVersion[4] > 0) showRange = true; // Display Range
-							if (Inventory.a.hardwareVersion[4] > 1) {
-								showAttitude = true; // Display Attitude
-								showName = true; // Display Name
-							}
-
-							if (Inventory.a.hardwareVersion[4] > 2) {
-								if (dmgFinal > hm.maxhealth * 0.75f) {
-									// Severe Damage
-									WeaponFire.a.CreateTargetIDInstance(Const.a.stringTable[514], other.contacts[0].otherCollider.transform,hm,WeaponFire.a.playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
-								}
-								if (dmgFinal > hm.maxhealth * 0.50f) {
-									// Major Damage
-									WeaponFire.a.CreateTargetIDInstance(Const.a.stringTable[515], other.contacts[0].otherCollider.transform,hm,WeaponFire.a.playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
-								}
-
-								// Normal Damage
-								if (dmgFinal > hm.maxhealth * 0.25f) WeaponFire.a.CreateTargetIDInstance(Const.a.stringTable[513], other.contacts[0].otherCollider.transform,hm,WeaponFire.a.playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
-
-								// Minor Damage
-								if (dmgFinal > 0f) WeaponFire.a.CreateTargetIDInstance(Const.a.stringTable[512], other.contacts[0].otherCollider.transform,hm,WeaponFire.a.playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
-							}
-
-							if (Inventory.a.hardwareVersion[4] > 3) showHealth = true; // Display enemy health
-						} else {
-							WeaponFire.a.noDamageIndicator.SetActive(false); // I'm assuming that this will auto deactivate after 1sec, but in case the player is snappy about weapon switching, added this
-						}
-					}
+					if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
+					WeaponFire.a.CreateTargetIDInstance(dmgFinal,hm);
 				}
 
 				if (dd.attackType == AttackType.Tranq) {

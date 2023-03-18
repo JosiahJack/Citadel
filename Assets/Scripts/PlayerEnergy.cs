@@ -59,24 +59,20 @@ public class PlayerEnergy : MonoBehaviour {
 
 				// 4 = Target Identifier doesn't take energy
 				if (Inventory.a.hasHardware[4]) {
-					float sensingRange = 10f;
-					switch (Inventory.a.hardwareVersion[4]) {
-						case 1: sensingRange = 10f; break;
-						case 2: sensingRange = 20f; break;
-						case 3: sensingRange = 30f; break;
-						case 4: sensingRange = 40f; break;
-					}
-					if (Inventory.a.hardwareVersion[4] > 3) {
-						if (LevelManager.a.npcsm[LevelManager.a.currentLevel] != null) {
-							int numNPCsOnCurrentLevel = LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs.Length; // very specific variable names are good right
-							if (numNPCsOnCurrentLevel > 0) {
-								for (int i=0;i<numNPCsOnCurrentLevel;i++) {
-									// if NPC is in range....
-									if (Vector3.Distance(LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i].transform.position,transform.position) < sensingRange) {
-										if (LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i].healthManager.health > 0f && !LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i].hasTargetIDAttached) {
-											bool createdAnIDInstance = WeaponFire.a.CreateTargetIDInstance(System.String.Empty,LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i].transform,LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i].healthManager,transform,sensingRange,true,true,true,true);
-											if (!createdAnIDInstance) break;
-										}
+					float dist = TargetID.GetTargetIDSensingRange(false);
+
+					// Automatically lock onto nearby targets.
+					if (LevelManager.a.npcsm[LevelManager.a.currentLevel] != null) {
+						// Very specific variable names are good right ;)
+						int numNPCsOnCurrentLevel = LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs.Length;
+						if (numNPCsOnCurrentLevel > 0) {
+							for (int i=0;i<numNPCsOnCurrentLevel;i++) {
+								AIController aic = LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i];
+								// if NPC is in range....
+								if (Vector3.Distance(aic.transform.position,
+													 transform.position) < dist) {
+									if (!aic.hasTargetIDAttached) {
+										WeaponFire.a.CreateTargetIDInstance(-1f,aic.healthManager);
 									}
 								}
 							}

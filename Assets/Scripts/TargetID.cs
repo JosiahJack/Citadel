@@ -24,7 +24,6 @@ public class TargetID : MonoBehaviour {
 	public TextMesh nameText;
 
     void Start() {
-		lifetimeFinished = PauseScript.a.relativeTime;
 		secondaryDisplayString = System.String.Empty;
 		nameText.text = System.String.Empty;
 		text.text = System.String.Empty;
@@ -62,28 +61,58 @@ public class TargetID : MonoBehaviour {
 		text.text = currentText;
 	}
 
-    void Update() {
-		if ((Vector3.Distance(transform.position,playerCapsuleTransform.position) > playerLinkDistance) || (linkedHM.health <= 0f) || parent == null || playerCapsuleTransform == null) {
-			secondaryText.text = System.String.Empty; // blank out text
-			text.text = System.String.Empty; // blank out text
+	void Deactivate() {
+		secondaryText.text = System.String.Empty; // blank out text
+		text.text = System.String.Empty; // blank out text
+		if (linkedHM != null) {
 			linkedHM.linkedTargetID = null;
 			linkedHM.aic.hasTargetIDAttached = false;
 			linkedHM = null;
-			gameObject.SetActive(false); // put back into pool
 		}
+
+		gameObject.SetActive(false); // put back into pool
+	}
+
+    void Update() {
+		if (linkedHM != null) {
+			if (linkedHM.health <= 0f) { Deactivate(); return; }
+		}
+		if (parent == null) { Deactivate(); return; }
+		if (playerCapsuleTransform == null) { Deactivate(); return; }
+		if ((Vector3.Distance(transform.position,
+							  playerCapsuleTransform.position)
+			> playerLinkDistance)) {
+			Deactivate();
+			return;
+		}
+
+		if (lifetimeFinished < PauseScript.a.relativeTime) {
+			Deactivate();
+			return;
+		}
+
 		if (displayName) {
 			if (nameText != null && linkedHM != null) {
 				if (linkedHM.aic != null) nameText.text = linkedHM.aic.targetID; 
 			}
 		}
+
 		if (displayHealth && linkedHM != null) {
-			secondaryDisplayString = Mathf.Floor(linkedHM.health).ToString("000");
+			secondaryDisplayString = Mathf.Floor(linkedHM.health).ToString();
 		} else {
 			secondaryDisplayString = System.String.Empty;
 		}
-		if (displayRange && linkedHM != null) secondaryDisplayString += (comma + Vector3.Distance(playerCapsuleTransform.position,linkedHM.transform.position).ToString("00.0"), rangeMetersM); 
+
+		if (displayRange && linkedHM != null) {
+			float range = Vector3.Distance(playerCapsuleTransform.position,
+										   linkedHM.transform.position);
+
+			if (displayHealth) secondaryDisplayString += comma;
+			secondaryDisplayString += (range.ToString("0.0") + rangeMetersM);
+		}
+
 		if (displayAttitude && linkedHM != null) {
-				secondaryDisplayString += comma;
+			if (displayRange || displayHealth) secondaryDisplayString += comma;
 			if (linkedHM.aic.asleep) {
 				secondaryDisplayString = (secondaryDisplayString + Const.a.stringTable[519]); // Asleep
 			} else {
@@ -112,4 +141,39 @@ public class TargetID : MonoBehaviour {
 			text.text = currentText;
 		}
     }
+
+	public static float GetTargetIDSensingRange(bool manual) {
+		float sensingRange = 12f;
+		if (manual) {
+			// Get manual lockon distance for frob raytrace.  Less than tether.
+			switch (Inventory.a.hardwareVersion[4]) {
+				case 1: sensingRange = 13f; break;
+				case 2: sensingRange = 13f; break;
+				case 3: sensingRange = 13f; break;
+				case 4: sensingRange = 18f; break;
+			}
+		} else {
+			// Get auto-lock distance.  Less than tether.
+			switch (Inventory.a.hardwareVersion[4]) {
+				case 1: sensingRange = 0f; break; // No auto-lock on v1
+				case 2: sensingRange = 0f; break; // No auto-lock on v2
+				case 3: sensingRange = 13f; break;
+				case 4: sensingRange = 20f; break;
+			}
+		}
+		return sensingRange;
+	}
+
+	// Set to higher than the auto-lock distances above.
+	public static float GetTargetIDTetherRange() {
+		float dist = 15f;
+		switch (Inventory.a.hardwareVersion[4]) {
+			case 1: dist = 15f; break; // Set higher than manual lockons.
+			case 2: dist = 15f; break; // Set higher than manual lockons.
+			case 3: dist = 15f; break;
+			case 4: dist = 22f; break;
+		}
+
+		return dist;
+	}
 }

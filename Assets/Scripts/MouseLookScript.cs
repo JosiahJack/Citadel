@@ -326,10 +326,47 @@ public class MouseLookScript : MonoBehaviour {
 		return successfulRay;
 	}
 
+	bool TargetIDFrob(Vector3 cP) {
+		float dist = TargetID.GetTargetIDSensingRange(true);
+		bool successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cP),
+											 out tempHit,dist,
+											 Const.a.layerMaskPlayerTargetIDFrob);
+
+		// Success here means hit a useable something.
+		// If a ray hits a wall or other unusable something, that's not success
+		if (successfulRay) {
+			successfulRay = (tempHit.collider != null);
+			if (successfulRay) {
+				successfulRay = tempHit.collider.CompareTag("NPC");
+			}
+		}
+
+		if (!successfulRay) return false;
+
+		// Say we can't use enemy and give enemy name.
+		AIController aic = tempHit.collider.gameObject.GetComponent<AIController>();
+		if (aic == null) return false;
+
+		if (Inventory.a.hasHardware[4] && Inventory.a.hardwareVersion[4] > 1) {
+			if (!aic.hasTargetIDAttached) {
+				WeaponFire.a.CreateTargetIDInstance(-1f,aic.healthManager);
+				return true;
+			}
+		}
+
+		// "Can't use <enemy>"
+		Const.sprint(Const.a.stringTable[29]
+						+ Const.a.nameForNPC[aic.index],player);
+
+		return true;
+	}
+
 	void FrobEmptyHanded() {
 		RaycastHit firstHit;
-		cursorPoint = MouseCursor.a.GetCursorScreenPointForRay();
 		float offset = Screen.height * 0.02f;
+		cursorPoint = MouseCursor.a.GetCursorScreenPointForRay();
+		if (TargetIDFrob(cursorPoint)) return;
+
 		bool successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.a.frobDistance,Const.a.layerMaskPlayerFrob); // Separate from below which uses different mask
 		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,playerCamera.ScreenPointToRay(cursorPoint).direction * Const.a.frobDistance, Color.green,1f,true);
 		firstHit = tempHit;
@@ -338,7 +375,8 @@ public class MouseLookScript : MonoBehaviour {
 		if (successfulRay) {
 			successfulRay = (tempHit.collider != null);
 			if (successfulRay) {
-				successfulRay = (tempHit.collider.CompareTag("Usable") || tempHit.collider.CompareTag("Searchable") || tempHit.collider.CompareTag("NPC"));
+				successfulRay = (tempHit.collider.CompareTag("Usable")
+								 || tempHit.collider.CompareTag("Searchable"));
 			}
 		}
 
@@ -424,9 +462,6 @@ public class MouseLookScript : MonoBehaviour {
 			} else if (tempHit.collider.CompareTag("Searchable")) { // Search
 				currentSearchItem = tempHit.collider.gameObject;
 				SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
-			} else if (tempHit.collider.CompareTag("NPC")) { // Say we can't use enemy and give enemy name.
-				AIController aic = tempHit.collider.gameObject.GetComponent<AIController>();
-				if (aic != null) Const.sprint(Const.a.stringTable[29] + Const.a.nameForNPC[aic.index],player); // "Can't use <enemy>"
 			} else {
 				Const.sprint(Const.a.stringTable[29],player); // "Can't use "
 			}

@@ -147,6 +147,7 @@ public class Const : MonoBehaviour {
 
 	// Layer masks
 	[HideInInspector] public int layerMaskPlayerFrob;
+	[HideInInspector] public int layerMaskPlayerTargetIDFrob;
 	[HideInInspector] public int layerMaskPlayerAttack;
 	[HideInInspector] public int layerMaskNPCSight;
 	[HideInInspector] public int layerMaskNPCAttack;
@@ -434,8 +435,10 @@ public class Const : MonoBehaviour {
 		// gratings, X-doors, etc.  Oh and also water...if that were a thing.
 		layerMaskPlayerFrob = LayerMask.GetMask("Default","Geometry","Water",
 												"Corpse","Door","InterDebris",
-												"PhysObjects","Player2","Player3",
-												"Player4","NPC");
+												"PhysObjects","Player2",
+												"Player3","Player4");
+
+		layerMaskPlayerTargetIDFrob = LayerMask.GetMask("NPC");
 
 		layerMaskPlayerAttack = LayerMask.GetMask("Default","Geometry","NPC",
 												  "Bullets","Corpse","Door",

@@ -594,3 +594,4 @@ Cyborg conversion reactivated.
 machine being serviced
 bulb needs replacing
 inactive
+DAMAGED

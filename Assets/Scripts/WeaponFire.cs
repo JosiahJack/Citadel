@@ -897,6 +897,90 @@ public class WeaponFire : MonoBehaviour {
 		// You gotta love maths!  There is a spreadsheet for this (.ods LibreOffice file format, found with src code) that shows the calculations to make this dmg curve. 
 	}
 
+	// TargetID Instance
+	public void CreateTargetIDInstance(float dmgFinal, HealthManager hm) {
+		if (hm == null) return;
+		if (!hm.isNPC) return;
+		if (hm.health <= 0f) return;
+
+		float linkDistForTargID = TargetID.GetTargetIDTetherRange();
+		bool showHealth = false;
+		bool showRange = false;
+		bool showAttitude = false;
+		bool showName = false;
+		if (Inventory.a.hasHardware[4]) {
+			showRange = true;
+			if (Inventory.a.hardwareVersion[4] > 1) {
+				showAttitude = true;
+				showName = true;
+			}
+
+			if (Inventory.a.hardwareVersion[4] > 2) showHealth = true;
+		}
+
+		string damageText = "";
+		if (Inventory.a.hasHardware[4]) {
+			if (Inventory.a.hardwareVersion[4] > 1) {
+				if (dmgFinal > (hm.maxhealth * 0.75f)) {
+					damageText = Const.a.stringTable[514]; // SEVERE DAMAGE
+				} else if (dmgFinal > (hm.maxhealth * 0.50f)) {
+					damageText = Const.a.stringTable[515]; // MAJOR DAMAGE
+				} else if (dmgFinal > (hm.maxhealth * 0.25f)) {
+					damageText = Const.a.stringTable[513]; // NORMAL DAMAGE
+				} else if (dmgFinal > 0f) {
+					damageText = Const.a.stringTable[512]; // MINOR DAMAGE
+				}
+			} else {
+				if (dmgFinal > 0f) {
+					damageText = Const.a.stringTable[596]; // DAMAGED				
+				}
+			}
+		}
+
+        GameObject idFrame = Const.a.GetObjectFromPool(PoolType.TargetIDInstances);
+        if (idFrame == null) return;
+
+		TargetID tid = idFrame.GetComponent<TargetID>();
+		if (tid == null) return;
+
+		// Even when TargetID hardware not acquired, still show no damage/tranq
+		// to show player that hey, it no workie.  No hasHardware[4] check.
+		if (dmgFinal == 0f) {
+ 			damageText = Const.a.stringTable[511]; // NO DAMAGE
+			noDamageIndicator = idFrame;
+			tid.lifetime = 1f;
+			tid.lifetimeFinished = PauseScript.a.relativeTime + tid.lifetime;
+		} else {
+			tid.lifetime = 9999999f;
+			tid.lifetimeFinished = PauseScript.a.relativeTime + tid.lifetime;
+		}
+
+		tid.currentText = damageText;
+		tid.parent = hm.transform;
+
+		// Center on what we just shot
+		Vector3 adjustment = hm.transform.position;
+		if (hm.aic != null) {
+			if (hm.aic.index == 14) {
+				// Adjust position for hopper origin since it's special melty.
+				adjustment.y += 1f;
+			}
+		}
+
+		idFrame.transform.position = adjustment;
+		idFrame.SetActive(true);
+		tid.linkedHM = hm;
+		hm.linkedTargetID = tid;
+		tid.partSys.Play();
+		tid.playerCapsuleTransform = playerCapsule.transform;
+		tid.playerLinkDistance = linkDistForTargID;
+		tid.displayRange = showRange;
+		tid.displayHealth = showHealth;
+		tid.displayAttitude = showAttitude;
+		tid.displayName = showName;
+		tid.linkedHM.aic.hasTargetIDAttached = true;
+	}
+
     // WEAPON FIRING CODE:
     // ==============================================================================================================================
     // Hitscan Weapons
@@ -917,16 +1001,17 @@ public class WeaponFire : MonoBehaviour {
 		// -------------------------------
 		// Using tempHit.transform instead of tempHit.collider.transform to ensure we get overall NPC parent instead of its children.
         damageData.other = tempHit.transform.gameObject;
-        if (tempHit.transform.gameObject.CompareTag("NPC")) {
+		HealthManager hm = damageData.other.GetComponent<HealthManager>();
+        if (damageData.other.CompareTag("NPC")) {
             damageData.isOtherNPC = true;
 			if (damageData.attackType == AttackType.Tranq) {
 				// Using tempHit.transform instead of tempHit.collider.transform to ensure we get overall NPC parent instead of its children.
-				AIController taic = tempHit.transform.gameObject.GetComponent<AIController>();
+				AIController taic = damageData.other.GetComponent<AIController>();
 				if (taic !=null) taic.Tranquilize();
 			}
         } else {
             damageData.isOtherNPC = false;
-			if (tempHit.transform.gameObject.CompareTag("Geometry")) {
+			if (damageData.other.CompareTag("Geometry")) {
 				CreateStandardImpactMarks(wep16Index);
 			}
         }
@@ -949,7 +1034,6 @@ public class WeaponFire : MonoBehaviour {
 		damageData.attackType = Const.a.attackTypeForWeapon[wep16Index];
         damageData.damage = DamageData.GetDamageTakeAmount(damageData);
         damageData.owner = playerCapsule;
-		HealthManager hm = tempHit.transform.gameObject.GetComponent<HealthManager>();
 		damageData.impactVelocity = 1f;
 		if (wep16Index == 12) {
 			damageData.impactVelocity = 150f;
@@ -957,101 +1041,23 @@ public class WeaponFire : MonoBehaviour {
 				if (hm.isObject) damageData.damage *= 10f; // babamm boxes be like, u ded
 			}
 		}
-        if (hm != null && hm.health > 0 && !(wep16Index == 2 && Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent])) {
+
+		GameObject hitGO = tempHit.collider.transform.gameObject;
+        if (hm != null && hm.health > 0 && !(wep16Index == 2
+			&& Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent])) {
 			float dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
 			damageData.impactVelocity += (damageData.damage * 1f);
 			if (wep16Index == 12) damageData.impactVelocity *= 5f;
 			if (!damageData.isOtherNPC || wep16Index == 12) {
-				Utils.ApplyImpactForce(tempHit.collider.transform.gameObject,
-									   damageData.impactVelocity,
+				Utils.ApplyImpactForce(hitGO,damageData.impactVelocity,
 									   damageData.attacknormal,
 									   damageData.hit.point);
 			}
 			if (hm.isNPC) Music.a.inCombat = true;
-			float linkDistForTargID = 10f;
-			switch (Inventory.a.hardwareVersion[4]) {
-				case 1: linkDistForTargID = 10f; break;
-				case 2: linkDistForTargID = 15f; break;
-				case 3: linkDistForTargID = 25f; break;
-				case 4: linkDistForTargID = 30f; break;
-			}
-			bool showHealth = false;
-			bool showRange = false;
-			bool showAttitude = false;
-			bool showName = false;
-			if (dmgFinal <= 0 && hm.isNPC) {
-				if (Inventory.a.hasHardware[4]) {
-					if (Inventory.a.hardwareVersion[4] > 0) showRange = true; // Display Range
-					if (Inventory.a.hardwareVersion[4] > 1) {
-						// Display Attitude
-						showAttitude = true;
-						// Display Name
-						showName = true;
-					}
-
-					if (Inventory.a.hardwareVersion[4] > 3) {
-						// Display enemy health
-						showHealth = true;
-					}
-				}
-				// Using tempHit.transform instead of tempHit.collider.transform so that we get the parent NPC on robots.
-				CreateTargetIDInstance(Const.a.stringTable[511], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
-				if (noDamageIndicator != null) {
-					noDamageIndicator.transform.position = tempHit.transform.position; // center on what we just shot
-					if (hm.aic != null) {
-						if (hm.aic.index == 14) {
-							// Adjust position for hopper origin since it's special and all melty
-							Vector3 adjustment = tempHit.transform.position;
-							adjustment.y += 1f;
-							noDamageIndicator.transform.position = adjustment;
-						}
-					}
-					noDamageIndicator.SetActive(true); // do this regardless of target identifier version to show player that hey, it no workie
-				}
-			} else {
-				if (Inventory.a.hasHardware[4]) {
-					if (Inventory.a.hardwareVersion[4] > 0) {
-						// Display Range
-						showRange = true;
-					}
-
-					if (Inventory.a.hardwareVersion[4] > 1) {
-						// Display Attitude
-						showAttitude = true;
-						// Display Name
-						showName = true;
-					}
-
-					if (Inventory.a.hardwareVersion[4] > 2) {
-						if (dmgFinal > hm.maxhealth * 0.75f) {
-							// Severe Damage
-							CreateTargetIDInstance(Const.a.stringTable[514], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
-						}
-						if (dmgFinal > hm.maxhealth * 0.50f) {
-							// Major Damage
-							CreateTargetIDInstance(Const.a.stringTable[515], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
-						}
-						if (dmgFinal > hm.maxhealth * 0.25f) {
-							// Normal Damage
-							CreateTargetIDInstance(Const.a.stringTable[513], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
-						}
-
-						if (dmgFinal > 0f) {
-							// Minor Damage
-							CreateTargetIDInstance(Const.a.stringTable[512], tempHit.transform,hm,playerCapsule.transform,linkDistForTargID,showRange,showHealth,showAttitude,showName);
-						}
-					}
-
-					if (Inventory.a.hardwareVersion[4] > 3) showHealth = true; // Display enemy health
-				} else {
-					// I'm assuming that this will auto deactivate after 1 sec,
-					// but in case the player is snappy about weapon switching,
-					// added this
-					Utils.Deactivate(noDamageIndicator);
-				}
-			}
+			if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
+			CreateTargetIDInstance(dmgFinal,hm);
 		}
-		UseableObjectUse uou = tempHit.collider.transform.gameObject.GetComponent<UseableObjectUse>();
+		UseableObjectUse uou = hitGO.GetComponent<UseableObjectUse>();
 		if (uou != null) uou.HitForce(damageData); // knock objects around
 
         // Draw a laser beam for beam weapons
@@ -1059,37 +1065,6 @@ public class WeaponFire : MonoBehaviour {
 			CreateBeamEffects(wep16Index);
 		}
     }
-
-	// TargetIDInstance
-	public bool CreateTargetIDInstance(string message, Transform parent, HealthManager hm, Transform playerCapsuleTransform, float linkDist, bool range, bool health, bool attitude,bool name) {
-        GameObject idFrame = Const.a.GetObjectFromPool(PoolType.TargetIDInstances);
-        if (idFrame != null) {
-			if (!hm.isNPC) return false; // Don't notify for crates and such.
-
-            TargetID tid = idFrame.GetComponent<TargetID>();
-			tid.parent = parent;
-			tid.currentText = message;
-			if (message == Const.a.stringTable[511]) {
-				noDamageIndicator = idFrame;
-				tid.lifetime = 1f;
-				tid.lifetimeFinished = PauseScript.a.relativeTime + tid.lifetime;
-			}
-            idFrame.transform.position = parent.position;
-            idFrame.SetActive(true);
-			tid.linkedHM = hm;
-			hm.linkedTargetID = tid;
-			tid.partSys.Play();
-			tid.playerCapsuleTransform = playerCapsuleTransform;
-			tid.playerLinkDistance = linkDist;
-			tid.displayRange = range;
-			tid.displayHealth = health;
-			tid.displayAttitude = attitude;
-			tid.displayName = name;
-			tid.linkedHM.aic.hasTargetIDAttached = true;
-			return true;
-        }
-		return false;
-	}
 
     // Melee weapons
     //----------------------------------------------------------------------------------------------------------
@@ -1126,9 +1101,12 @@ public class WeaponFire : MonoBehaviour {
 			SFX.Play();
 			return;
 		}
+
 		damageData.impactVelocity = damageData.damage * 1.5f;
 		if (!damageData.isOtherNPC || index16 == 12) Utils.ApplyImpactForce(targ, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
-		hm.TakeDamage(damageData); //no need to check if damage was done and if we need noDamageIndicator since melee weapons always do damage against all types
+		float dmgFinal = hm.TakeDamage(damageData); //no need to check if damage was done and if we need noDamageIndicator since melee weapons always do damage against all types
+		if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
+		CreateTargetIDInstance(dmgFinal,hm);
 		if (hm.isNPC) Music.a.inCombat = true;
 		if (!silent) {
 			if ((hm.bloodType == BloodType.Red)
