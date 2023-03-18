@@ -84,6 +84,10 @@ public class TestsEditor : Editor {
 			testScript.SetStaticSaveableIDs();
 		}
 
+		if (GUILayout.Button("Report Max SaveIDs on Static Saveables")) {
+			testScript.ReportMaxSaveableID();
+		}
+
 		//EditorGUILayout.BeginVertical();
         //GUILayout.Space(8f);
         //EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));

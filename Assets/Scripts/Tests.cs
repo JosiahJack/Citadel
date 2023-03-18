@@ -877,6 +877,22 @@ public class Tests : MonoBehaviour {
 		#endif
 	}
 
+	public void ReportMaxSaveableID() {
+		#if UNITY_EDITOR
+			int idInc = 0;
+			SaveObject so;
+			List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+			for (int i=0;i<allParents.Count;i++) {
+				Component[] compArray = allParents[i].GetComponentsInChildren(typeof(SaveObject),true); // find all SaveObject components, including inactive (hence the true here at the end)
+				for (int k=0;k<compArray.Length;k++) {
+					so = compArray[k].gameObject.GetComponent<SaveObject>();
+					if (so.SaveID > idInc) idInc = so.SaveID;
+				}
+			}
+			UnityEngine.Debug.Log("Largest SaveID: " + idInc.ToString());
+		#endif
+	}
+
 	// Before: 15006, After 8000, for some reason it didn't work for all of them.
 	public void RevertAll_m_CastShadows() {
 		//List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
