@@ -761,7 +761,6 @@ public class Inventory : MonoBehaviour {
 
 		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(0,true);
 		grenAmmo[index]++;
-		grenadeCurrent = index;
 		grenadeIndex = useableIndex;
 		Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[34] );
 		MFDManager.a.NotifyToCenterTab(0);
@@ -888,7 +887,6 @@ public class Inventory : MonoBehaviour {
 
 		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(0,true);
 		patchCounts[index]++;
-		patchCurrent = index;
 
 		// Update UI text
 		for (int i = 0; i < 7; i++) {
