@@ -1013,7 +1013,11 @@ Generic Materials (Const.a.genericMaterials[])
 			if (forcedContainer != null) {
 				go.transform.SetParent(forcedContainer.transform);
 			} else {
-				go.transform.SetParent(LevelManager.a.levelScripts[lev].dynamicObjectsContainer.transform);
+				if (lev >= 0) {
+					Level levS = LevelManager.a.levelScripts[lev];
+					GameObject parGO = levS.dynamicObjectsContainer;
+					go.transform.SetParent(parGO.transform);
+				}
 			}
 			if (cheat && (val < 33) && (val > 20)) {
 				UseableObjectUse uo = go.GetComponent<UseableObjectUse>();

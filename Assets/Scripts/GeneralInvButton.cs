@@ -6,6 +6,7 @@ using System.Collections;
 public class GeneralInvButton : MonoBehaviour {
     public int GeneralInvButtonIndex;
     public int useableItemIndex;
+	public GameObject activateButton;
 	private bool reduce = false;
 
     void Start() {
@@ -23,10 +24,17 @@ public class GeneralInvButton : MonoBehaviour {
         Inventory.a.generalInvCurrent = GeneralInvButtonIndex; //Set current
 		useableItemIndex =
 			Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex];
-		MFDManager.a.SendInfoToItemTab(useableItemIndex);
+
+		// Access Cards
+		if (GeneralInvButtonIndex == 0) {
+			MFDManager.a.SendInfoToItemTab(81);
+		} else {
+			MFDManager.a.SendInfoToItemTab(useableItemIndex);
+		}
     }
 
     public void DoubleClick() {
+        Inventory.a.generalInvCurrent = GeneralInvButtonIndex; //Set current
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		GeneralInvApply();
 	}
@@ -62,6 +70,12 @@ public class GeneralInvButton : MonoBehaviour {
 	}
 
 	public void GeneralInvApply() {
+		// Access Cards button
+		if (GeneralInvButtonIndex == 0) {
+			MFDManager.a.SendInfoToItemTab(81);
+			return;
+		}
+
         reduce = false;
 		useableItemIndex =
 			Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex];

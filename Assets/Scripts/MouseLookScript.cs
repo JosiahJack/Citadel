@@ -613,7 +613,16 @@ public class MouseLookScript : MonoBehaviour {
 				PutObjectInHand(indexPriorToRemoval,-1,0,0,true);
 				break;
 			case ButtonType.GeneralInv:
-				GeneralInvButton genbut = currentButton.GetComponent<GeneralInvButton>();
+				GeneralInvButton genbut = 
+					currentButton.GetComponent<GeneralInvButton>();
+
+				// Access Cards button
+				if (genbut.GeneralInvButtonIndex == 0) {
+					MFDManager.a.OpenLastItemSide();
+					MFDManager.a.SendInfoToItemTab(81);
+					return;
+				}
+
 				indexPriorToRemoval = genbut.useableItemIndex;
 				Inventory.a.generalInventoryIndexRef[genbut.GeneralInvButtonIndex] = -1;
 				Inventory.a.generalInvCurrent = -1;
@@ -709,6 +718,7 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	public void AddItemToInventory (int index) {
+		MFDManager.a.mouseClickHeldOverGUI = true; // Prevent gun shooting.
 		if (index < 0) index = 0; // Good check on paper.
 		if (index > 110) index = 94; // Way to get a head.
 

@@ -205,9 +205,12 @@ public class Inventory : MonoBehaviour {
 		// General
 		a.generalInventoryIndexRef = new int[14];
         for (int i = 0; i < a.generalInventoryIndexRef.Length; i++) {
-            a.generalInventoryIndexRef[i] = -1;
+            if (i != 0) a.generalInventoryIndexRef[i] = -1;
+ 			a.genButtons[i].SetActive(false);
         }
         a.generalInvCurrent = a.generalInvIndex = 0;
+        a.generalInventoryIndexRef[0] = 81;
+		a.genButtonsText[0].text = Const.a.stringTable[597]; // ACCESS CARDS
 
 		// Grenades
 		a.grenAmmo = new int[7];
@@ -287,32 +290,64 @@ public class Inventory : MonoBehaviour {
 		}
 	}
 
+	void UpdateGeneralInventory() {
+		for (int i=0; i<14; i++) {
+			if (i != 0) { // Active state of the Access Cards button is below.
+				if (generalInventoryIndexRef[i] > -1) {
+					if (!genButtons[i].activeInHierarchy) genButtons[i].SetActive(true);
+				} else {
+					if (genButtons[i].activeInHierarchy) genButtons[i].SetActive(false);
+				}
+			}
+
+			if (genButtons[i].activeInHierarchy) {
+				GeneralInvButton genbut = genButtons[i].transform.GetComponent<GeneralInvButton>();
+				int referenceIndex = genbut.useableItemIndex;
+				if (referenceIndex > -1) {
+					if (i != 0) { // Access Cards text set in Awake the once.
+						genButtonsText[i].text =
+							Const.a.useableItemsNameText[referenceIndex];
+					}
+				} else {
+					genButtonsText[i].text = string.Empty;
+				}
+
+				if (i == generalInvCurrent) {
+					genButtonsText[i].color = Const.a.ssYellowText; // Yellow
+				} else {
+					genButtonsText[i].color = Const.a.ssGreenText; // Green
+				}
+
+				// Enable Apply button for consumables.
+				if ((referenceIndex >= 14 && referenceIndex < 21) || referenceIndex == 52
+					|| referenceIndex == 53 || referenceIndex == 55) {
+					if (genbut.activateButton != null) {
+						genbut.activateButton.SetActive(true);
+					}
+				} else {
+					if (genbut.activateButton != null) {
+						genbut.activateButton.SetActive(false);
+					}
+				}
+			}
+		}
+
+		// Access Cards button
+		if (genButtons[0].activeSelf) return;
+
+		for (int j = 0; j < a.accessCardsOwned.Length; j++) {
+			if (a.accessCardsOwned[j] != AccessCardType.None) {
+				genButtons[0].SetActive(true);
+				break;
+			}
+		}
+	}
+
 	void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			// General
 			if (MFDManager.a.GeneralTab.activeInHierarchy) {
-				for (int i=0; i<14; i++) {
-					if (generalInventoryIndexRef[i] > -1) {
-						if (!genButtons[i].activeInHierarchy) genButtons[i].SetActive(true);
-					} else {
-						if (genButtons[i].activeInHierarchy) genButtons[i].SetActive(false);
-					}
-
-					if (genButtons[i].activeInHierarchy) {
-						int referenceIndex = genButtons[i].transform.GetComponent<GeneralInvButton>().useableItemIndex;
-						if (referenceIndex > -1) {
-							genButtonsText[i].text = Const.a.useableItemsNameText[referenceIndex];
-						} else {
-							genButtonsText[i].text = string.Empty;
-						}
-
-						if (i == generalInvCurrent) {
-							genButtonsText[i].color = Const.a.ssYellowText; // Yellow
-						} else {
-							genButtonsText[i].color = Const.a.ssGreenText; // Green
-						}
-					}
-				}
+				UpdateGeneralInventory();
 			}
 
 			if (generalInvIndex >= 14 || generalInvIndex < 0) { Debug.Log("generalInvIndex out of bounds at " + generalInvIndex.ToString() + ", reset to 0."); generalInvIndex = 0; }
@@ -593,8 +628,12 @@ public class Inventory : MonoBehaviour {
 						+ AccessCardCodeForType(doorAccessTypeAcquired));
 				}
 
-				MFDManager.a.NotifyToCenterTab(2);
 				MFDManager.a.SendInfoToItemTab(index);
+				MFDManager.a.NotifyToCenterTab(2);
+				if (MouseLookScript.a.firstTimePickup) {
+					MFDManager.a.CenterTabButtonClickSilent(2,true);
+					MouseLookScript.a.firstTimePickup = false;
+				}
 			} else {
 				Const.sprint("BUG: Something went wrong when trying to add that access card.");
 				MFDManager.a.ResetItemTab();
@@ -667,11 +706,10 @@ public class Inventory : MonoBehaviour {
     public bool AddGeneralObjectToInventory(int index) {
 		if (index < 0) return false;
 
-        for (int i=0;i<14;i++) {
+        for (int i=1;i<14;i++) { // Skip index 0, Access Cards button
             if (generalInventoryIndexRef[i] == -1) {
                 generalInventoryIndexRef[i] = index;
 				Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[31] ); // Item added to general inventory
-                generalInvCurrent = i;
 				genButtons[i].transform.GetComponent<GeneralInvButton>().useableItemIndex = index;
 				MFDManager.a.SendInfoToItemTab(index);
 				MFDManager.a.NotifyToCenterTab(2);
@@ -690,7 +728,9 @@ public class Inventory : MonoBehaviour {
 			    genButtons[generalInvCurrent].GetComponent<GeneralInvButton>();
 		if (ginvb!= null) {
 			ginvb.GeneralInvUse();
-			generalInventoryIndexRef[generalInvCurrent] = -1;
+			if (generalInvCurrent != 0) {
+				generalInventoryIndexRef[generalInvCurrent] = -1;
+			}
 		} else Debug.Log("BUG: Current general inv button was null");
 	}
 	//--- End General ---

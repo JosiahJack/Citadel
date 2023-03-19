@@ -1035,12 +1035,16 @@ public class MFDManager : MonoBehaviour  {
 		logType = Const.a.audioLogType[index];
 	}
 
-	public void OpenEReaderInItemsTab() {
+	public void OpenLastItemSide() {
 		if (lastItemSideRH) {
 			OpenTab(1,true,TabMSG.EReader,-1,Handedness.RH);
 		} else {
 			OpenTab(1,true,TabMSG.EReader,-1,Handedness.LH);
 		}
+	}
+
+	public void OpenEReaderInItemsTab() {
+		OpenLastItemSide();
 		CenterTabButtonClickSilent(4,false);
 		if (tetheredSearchable != null) tetheredSearchable.searchableInUse = false;
 		logTable.SetActive(false);

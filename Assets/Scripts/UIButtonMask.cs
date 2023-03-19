@@ -116,7 +116,7 @@ public class UIButtonMask : MonoBehaviour {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		doubleClickTicks++;
 		dbclickFinished = PauseScript.a.relativeTime + doubleClickTime;
-		if (doubleClickTicks == 2) {
+		if (doubleClickTicks == 1) {
 			Debug.Log("Double button click");
 			gameObject.SendMessage("DoubleClick");
 			doubleClickTicks = 0;
