@@ -177,8 +177,10 @@ public class Automap : MonoBehaviour {
 
 		if (automapUpdateFinished < PauseScript.a.relativeTime) {
 			Utils.EnableImage(automapBaseImage);
-			Utils.AssignImageOverride(automapBaseImage,
-				automapsBaseImages[LevelManager.a.currentLevel]);
+			if (LevelManager.a.currentLevel >= 0) {
+				Utils.AssignImageOverride(automapBaseImage,
+					automapsBaseImages[LevelManager.a.currentLevel]);
+			}
 
 			float mapWidth = (Const.a.mapWorldMaxW - Const.a.mapWorldMaxE);
 			float mapHeight = (Const.a.mapWorldMaxN - Const.a.mapWorldMaxS);

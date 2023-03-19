@@ -272,7 +272,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int[] npcCount;
 	[HideInInspector] public int[] audioLogImagesRefIndicesLH;
 	[HideInInspector] public int[] audioLogImagesRefIndicesRH;
-	[HideInInspector] public string versionString = "v0.99"; // Global CITADEL PROJECT VERSION
+	[HideInInspector] public string versionString;
 	[HideInInspector] public bool gameFinished = false; // Global constants
 	[HideInInspector] public float justSavedTimeStamp;
 	[HideInInspector] public float savedReminderTime = 7f; // human short-term memory length
@@ -374,6 +374,10 @@ public class Const : MonoBehaviour {
 		a.LoadItemNamesData();
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
+		a.versionString = "v0.99.2"; // Global CITADEL PROJECT VERSION
+		UnityEngine.Debug.Log("Citadel " + versionString
+							  + ": " + System.Environment.NewLine
+							  + "Start of C# Game Code, Welcome back Hacker!");
 	}
 
 	public bool RaycastBudgetExceeded() {
@@ -1753,9 +1757,7 @@ public class Const : MonoBehaviour {
 	}
 
 	public string CreditsStats() {
-		string retval = Const.a.creditsText[0];
-		return retval;
-
+		string retval = Const.a.creditsText[1];
 		int index = 0;
 		char[] checkCharacters = retval.ToCharArray();
 		char[] updatedCharacters = new char[checkCharacters.Length];
