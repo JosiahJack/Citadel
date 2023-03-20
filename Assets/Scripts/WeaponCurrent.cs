@@ -420,6 +420,7 @@ public class WeaponCurrent : MonoBehaviour {
 
 	public void ChangeAmmoType() {
 		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndex);
+		if (wep16index < 0) return;
 		if (wep16index == 5 || wep16index == 6) { Const.sprint(Const.a.stringTable[315],owner); return; } // Do nothing for pipe or rapier.
 
 		if (wep16index == 1 || wep16index == 4 || wep16index == 10 || wep16index == 14 || wep16index == 15) {

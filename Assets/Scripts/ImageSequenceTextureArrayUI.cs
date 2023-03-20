@@ -21,6 +21,7 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 	
 	void Start () {
 		objects = Resources.LoadAll(resourceFolder, typeof(Sprite)); //Load all textures found on the Sequence folder, that is placed inside the resources folder
+		if (resourceFolder == "AAOutro") Debug.Log("objects.Length: " + objects.Length.ToString());
 		sprites = new Sprite[objects.Length]; //Initialize the array of textures with the same size as the objects array
 
 		//Cast each Object to Texture and store the result inside the Textures array
@@ -30,6 +31,7 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 	}
 
 	void OnEnable() {
+		Start();
 		if (replayOnEnable) {
 			playDone = false;
 			frameCounter = 0;
@@ -47,7 +49,11 @@ public class ImageSequenceTextureArrayUI : MonoBehaviour {
 				} else {
 					StartCoroutine("PlayLoop", frameDelay); // Call the 'PlayLoop' method as a coroutine with a float delay.
 				}
-				goImage.overrideSprite = sprites[frameCounter]; // Set the material's texture to the current value of the frameCounter variable.
+
+				// Set the material's texture to current value of frameCounter.
+				if (frameCounter < sprites.Length && frameCounter >= 0) {
+					goImage.overrideSprite = sprites[frameCounter];
+				}
 			}
 		}
 	}

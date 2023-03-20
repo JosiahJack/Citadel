@@ -50,7 +50,7 @@ public class PlayerMovement : MonoBehaviour {
 	// Internal references
 	[HideInInspector] public BodyState bodyState; // save
 	[HideInInspector] public bool ladderState = false; // save
-	[HideInInspector] public bool gravliftState = false; // save
+	public bool gravliftState = false; // save
 	[HideInInspector] public bool inCyberSpace = false; // save
 	[HideInInspector] public float walkAcceleration = 2000f;
 	[HideInInspector] public int SFXIndex = -1; // save
@@ -397,7 +397,7 @@ public class PlayerMovement : MonoBehaviour {
 		if (inCyberSpace) return false;
 		if (CheatNoclip) return false;
 		if (ladderState) return false;
-		if (gravliftState) return false;
+		//if (gravliftState) return false;
 		if (grounded) return false; // Disables gravity when touching the ground to prevent player sliding down ramps...hacky?
 		return true;
 	}

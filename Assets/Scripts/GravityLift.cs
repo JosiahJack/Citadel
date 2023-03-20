@@ -17,16 +17,31 @@ public class GravityLift : MonoBehaviour {
 		topPoint = new Vector3(0f,boxcol.bounds.max.y,0f);
 	}
 
+	void OnTriggerExit (Collider other) {
+		if (other.gameObject.GetComponent<PlayerMovement>() != null) {
+			PlayerMovement.a.gravliftState = false;
+		}
+	}
+
 	void OnTriggerStay (Collider other) {
 		if (active) {
 			otherRbody = other.gameObject.GetComponent<Rigidbody>();
-			if (otherRbody != null) {
+			if (otherRbody == null) return;
+
+			if (other.gameObject.GetComponent<PlayerMovement>() != null) {
+				PlayerMovement.a.gravliftState = true;
+			}
+
+			float topY = transform.position.y + (boxcol.size.y/2f);
+			float dist = topY - other.gameObject.transform.position.y + 0.48f;
+			if (dist < distancePaddingToTopPoint) {
+				Vector3 force = new Vector3(0f,9.81f-otherRbody.velocity.y,0f);
+				otherRbody.AddForce(force,ForceMode.Acceleration);
+			} else {
 				if (otherRbody.velocity.y < (strength * otherRbody.mass)) {
-					if (Vector3.Distance(topPoint,other.gameObject.transform.position) < ((other.bounds.max.y/2f) + distancePaddingToTopPoint)) {
-						otherRbody.AddForce(new Vector3(0f, (9.83f-(otherRbody.velocity.y)), 0f),ForceMode.Acceleration);
-					} else {
-						otherRbody.AddForce(new Vector3(0f, ((strength * otherRbody.mass)-(otherRbody.velocity.y)), 0f));
-					}
+					float yForce = ((strength * otherRbody.mass)
+									- otherRbody.velocity.y);
+					otherRbody.AddForce(new Vector3(0f,yForce,0f));
 				}
 			}
 		} else {
@@ -34,7 +49,8 @@ public class GravityLift : MonoBehaviour {
 			otherRbody = other.gameObject.GetComponent<Rigidbody>();
 			if (otherRbody != null) {
 				if (otherRbody.velocity.y < offStrengthFactor) {
-					otherRbody.AddForce(new Vector3(0f, ((offStrengthFactor)-otherRbody.velocity.y), 0f));
+					float yForce = ((offStrengthFactor)-otherRbody.velocity.y);
+					otherRbody.AddForce(new Vector3(0f,yForce,0f));
 				}
 			}
 		}
