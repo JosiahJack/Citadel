@@ -75,7 +75,7 @@ public class HealthManager : MonoBehaviour {
 			cyberHealth = 255;
 			maxhealth = 255;
 		}
-		if (isNPC) justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
+		if (isPlayer) justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
 		if (securityAffected != SecurityType.None && LevelManager.a != null) LevelManager.a.RegisterSecurityObject(levelIndex, securityAffected);
 		if (Const.a != null) Const.a.RegisterObjectWithHealth(this);
 		if (gibOnDeath) {

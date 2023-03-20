@@ -800,8 +800,8 @@ public class MouseLookScript : MonoBehaviour {
 				}
 			}
 	    	if (numberFoundContents == 0) {
-				MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
 				currentSearchItem = null;
+				MFDManager.a.ReturnTabsFromSearch();
 			}
 		}
 		firstTimePickup = false;

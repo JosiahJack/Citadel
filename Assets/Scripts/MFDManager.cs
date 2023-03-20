@@ -1182,6 +1182,11 @@ public class MFDManager : MonoBehaviour  {
 		searchItemImagesRH[index].SetActive(false);
 	}
 
+	public void ReturnTabsFromSearch() {
+		if (leftTC.curTab == 4) leftTC.ReturnToLastTab();
+		if (rightTC.curTab == 4) rightTC.ReturnToLastTab();
+	}
+
 	public void NotifySearchThatSearchableWasDestroyed() {
 		if (tetheredSearchable != null) {
 			tetheredSearchable.ResetSearchable(false); // reset the actual object
@@ -1217,8 +1222,7 @@ public class MFDManager : MonoBehaviour  {
 			}
 
 			tetheredSearchable = null;
-			if (leftTC.curTab == 4) leftTC.ReturnToLastTab();
-			if (rightTC.curTab == 4) rightTC.ReturnToLastTab();
+			ReturnTabsFromSearch();
 		}
 	}
 

@@ -157,6 +157,7 @@ public class AIController : MonoBehaviour {
 
 	// Initialization and find components
 	public void Start() {
+		gameObject.layer = 10; // NPC Layer.
         rbody = GetComponent<Rigidbody>();
 		rbody.isKinematic = false;
 		if (index >= 29 || index < 0) {
@@ -1229,12 +1230,12 @@ public class AIController : MonoBehaviour {
 		asleep = false;
 		rbody.constraints = RigidbodyConstraints.None;
 		if (!rbody.freezeRotation) rbody.freezeRotation = true;
-		gameObject.layer = 13; // Change to Corpse layer
+		//gameObject.layer = 13; // Change to Corpse layer
 
 		// Bump it up a hair to prevent corpse falling through the floor
-		transform.position = new Vector3(transform.position.x,
-										 transform.position.y + 0.04f,
-										 transform.position.z);
+		//transform.position = new Vector3(transform.position.x,
+		//								 transform.position.y + 0.04f,
+		//								 transform.position.z);
 
 		firstSighting = true;
 
@@ -1267,7 +1268,10 @@ public class AIController : MonoBehaviour {
 		if (deadChecksDone) return;
 
 		currentState = AIState.Dead;
-		Utils.DisableCollision(gameObject);
+		//Utils.DisableCollision(gameObject);
+		gameObject.layer = 15; // Sky layer only collides with Geometry. This
+							   // prevents the NPC falling out of the world.
+
 		if (searchColliderGO != null && (!healthManager.gibOnDeath
 											|| index == 2)) { // Avian Mutant
 			searchColliderGO.SetActive(true);
@@ -1694,10 +1698,30 @@ public class AIController : MonoBehaviour {
 			if (aic.healthManager.health > 0) {
 				Utils.Activate(aic.visibleMeshEntity);
 				Utils.EnableCollision(aic.gameObject);
+				aic.gameObject.layer = 10; // NPC Layer.
 				if (Const.a.moveTypeForNPC[aic.index] != AIMoveType.Fly) {
 					aic.rbody.useGravity = true;
 					aic.rbody.isKinematic = false;
 				}
+			} else {
+				// Sky layer only collides with Geometry. This prevents the NPC
+				// falling out of the world.
+				aic.gameObject.layer = 15;
+				if (Const.a.moveTypeForNPC[aic.index] != AIMoveType.Fly) {
+					aic.rbody.useGravity = true;
+					aic.rbody.isKinematic = false;
+				}
+
+				if (!aic.rbody.freezeRotation) aic.rbody.freezeRotation = true;
+				if (aic.healthManager.gibOnDeath
+					|| aic.healthManager.teleportOnDeath || aic.IsCyberNPC()) {
+					aic.rbody.useGravity = false;
+					if (aic.healthManager.teleportOnDeath) {
+						aic.rbody.useGravity = true;
+					}
+
+					Utils.Deactivate(aic.visibleMeshEntity);
+				} else aic.rbody.useGravity = true;
 			}
 		}
 

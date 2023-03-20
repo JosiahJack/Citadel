@@ -9,9 +9,9 @@ public class MaterialChanger : MonoBehaviour {
 	public int levelIndex = 0;
 
 	void OnEnable() {
-		ImageSequenceTextureArray ista = GetComponent<ImageSequenceTextureArray>();
-		if (ista != null) ista.enabled = false;
-		StartCoroutine(SetMaterialFromCode(levelIndex));
+		if (alreadyDone) return;
+
+
 	}
 
 	IEnumerator SetMaterialFromCode(int index){
@@ -34,12 +34,11 @@ public class MaterialChanger : MonoBehaviour {
 	}
 
 	public void Targetted (UseData ud) {
-		// if (disableImageSequence) {
-			// ista.enabled = false; // disable automatic texture changing
-			// ista.screenDestroyed = true;
-		// }
-		// alreadyDone = true;
-		// SetMaterialFromCode();
+		if (alreadyDone) return;
+
+		ImageSequenceTextureArray ista = GetComponent<ImageSequenceTextureArray>();
+		alreadyDone = true;
+		StartCoroutine(SetMaterialFromCode(levelIndex));
 	}
 
 	public static string Save(GameObject go) {
@@ -72,6 +71,16 @@ public class MaterialChanger : MonoBehaviour {
 		}
 
 		mch.alreadyDone = Utils.GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
+
+		if (mch.alreadyDone) {
+			ImageSequenceTextureArray ista = mch.GetComponent<ImageSequenceTextureArray>();
+			if (ista != null) ista.enabled = false;
+			mch.StartCoroutine(mch.SetMaterialFromCode(mch.levelIndex));
+		} else {
+			ImageSequenceTextureArray ista = mch.GetComponent<ImageSequenceTextureArray>();
+			if (ista != null) ista.enabled = true;
+			mch.StopCoroutine("SetMaterialFromCode");
+		}
 		return index;
 	}
 }
