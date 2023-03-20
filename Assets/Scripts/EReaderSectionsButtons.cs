@@ -10,6 +10,7 @@ public class EReaderSectionsButtons : MonoBehaviour {
 
 	void OnEnable() {
 		if (Const.a.difficultyMission == 0) ersbh3.gameObject.SetActive(false);
+		else ersbh3.gameObject.SetActive(true);
 	}
 
 	public void OnClick(int index) {

@@ -1692,8 +1692,20 @@ public class Const : MonoBehaviour {
 				if (TargetRegister[i] != null) {
 					numtargetsfound++;
 					tempUD.CopyBitsFromUseData(ud);
-					if (tempUD.GOSetActive && !TargetRegister[i].activeSelf) TargetRegister[i].SetActive(true); //added activeSelf bit to keep from spamming SetActive when running targets through a trigger_multiple
-					if (tempUD.GOSetDeactive && TargetRegister[i].activeSelf) TargetRegister[i].SetActive(false); // diddo for activeSelf to prevent spamming SetActive
+
+					// Added activeSelf bit to keep from spamming SetActive
+					// when running targets through a trigger_multiple
+					if (tempUD.GOSetActive && !TargetRegister[i].activeSelf) {
+						UnityEngine.Debug.Log("GOSetActive on " + targetname);
+						TargetRegister[i].SetActive(true);
+					}
+
+					// Diddo for activeSelf to prevent spamming SetActive.
+					if (tempUD.GOSetDeactive && TargetRegister[i].activeSelf) {
+						UnityEngine.Debug.Log("GOSetDeactive on " + targetname);
+						TargetRegister[i].SetActive(false);
+					}
+
 					if (tempUD.GOToggleActive) TargetRegister[i].SetActive(!TargetRegister[i].activeSelf); // if I abuse this with a trigger_multiple someone should shoot me
 					TargetIO tio = TargetRegister[i].GetComponent<TargetIO>();
 					tio.Targetted(tempUD);

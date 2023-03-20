@@ -1044,7 +1044,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void OpenEReaderInItemsTab() {
-		OpenLastItemSide();
+		OpenTab(1,true,TabMSG.EReader,-1,Handedness.LH);
 		CenterTabButtonClickSilent(4,false);
 		if (tetheredSearchable != null) tetheredSearchable.searchableInUse = false;
 		logTable.SetActive(false);
