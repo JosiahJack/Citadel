@@ -700,6 +700,50 @@ public class Inventory : MonoBehaviour {
 		ActivateHardwareButton(index);
 		MFDManager.a.NotifyToCenterTab(1);
 	}
+
+	// The following utility functions make the code more explicit by removing
+	// magic numbers all over the place and allow for adding index protections.
+	// ------------------------------------------------------------------------
+	// Navunit utility functions. [1]
+	public int NavUnitVersion() {
+		return hardwareVersion[1];
+	}
+
+	// Biomonitor utility functions. [6]
+	public int BioMonitorVersion() {
+		return hardwareVersion[6];
+	}
+
+	public bool BioMonitorActive() {
+		return hasHardware[6] && hardwareIsActive[6];
+	}
+
+	// Booster utility functions. [9]
+	public bool BoosterSetToSkates() {
+		return hardwareVersionSetting[9] == 0;
+	}
+
+	public bool BoosterSetToBoost() {
+		return hardwareVersionSetting[9] >= 1;
+	}
+
+	public bool BoosterActive() {
+		return hasHardware[9] && hardwareIsActive[9];
+	}
+
+	// JumpJets utility functions. [10]
+	public void JumpJetsToggle() {
+		hardwareIsActive[10] = !hardwareIsActive[10];
+	}
+
+	public int JumpJetsVersion() {
+		return hardwareVersion[10];
+	}
+
+	public bool JumpJetsActive() {
+		return hasHardware[10] && hardwareIsActive[10];
+	}
+	// ------------------------------------------------------------------------
 	//--- End Hardware ---
 
 	// General

@@ -146,6 +146,7 @@ public class PlayerMovement : MonoBehaviour {
 	private int doubleJumpTicks = 0;
 	private Vector3 tempVecRbody;
 	private bool inputtingMovement;
+	private float accel;
 
 	public static PlayerMovement a;
 
@@ -268,7 +269,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		float retval = maxWalkSpeed;
 		bonus = 0f;
-		if (Inventory.a.hardwareIsActive[9] && Inventory.a.hasHardware[9]) bonus = boosterSpeedBoost;
+		if (Inventory.a.BoosterActive()) bonus = boosterSpeedBoost;
 		switch (bodyState) {
 			case BodyState.Standing: 		retval = maxWalkSpeed;   break;
 			case BodyState.Crouch: 			retval = maxCrouchSpeed; break;
@@ -280,8 +281,11 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		if (isSprinting && running) {
-			if (fatigue > 80f) retval = maxSprintSpeedFatigued;
-			else retval = maxSprintSpeed;
+			if (fatigue > 80f && !Inventory.a.BoosterActive()) {
+				retval = maxSprintSpeedFatigued;
+			} else {
+				retval = maxSprintSpeed;
+			}
 
 			if (bodyState == BodyState.Standing || bodyState == BodyState.Crouch || bodyState == BodyState.CrouchingDown) {
 				retval -= ((maxWalkSpeed - maxCrouchSpeed)*1.5f);  // Subtract off the difference in speed between walking and crouching from the sprint speed
@@ -356,32 +360,51 @@ public class PlayerMovement : MonoBehaviour {
 
 		tempVecRbody = rbody.velocity;
 		deceleration = walkDeacceleration;
-		if (!grounded && !ladderState && !justJumped) deceleration = deceleration * 1.5f;
+		if (!grounded && !ladderState && !justJumped) {
+			deceleration = deceleration * 1.5f;
+		}
+
 		if (CheatNoclip) {
 			deceleration = 0.05f;
 			// Prevent gravity from affecting and decelerate like a horizontal.
-			tempVecRbody.y = Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVoly, deceleration); 
+			tempVecRbody.y = Mathf.SmoothDamp(rbody.velocity.y,0,
+											  ref walkDeaccelerationVoly,
+											  deceleration); 
 		} else {
-			if (Inventory.a.hardwareIsActive[9]) deceleration = walkDeaccelerationBooster;
-			tempVecRbody.y = rbody.velocity.y; // Don't affect gravity and let gravity keep pulling down.
+			if (Inventory.a.BoosterActive()) {
+				deceleration = walkDeaccelerationBooster;
+			}
+
+			tempVecRbody.y = rbody.velocity.y; // Don't affect gravity and let 
+											   // gravity keep pulling down.
 		}
 
-		tempVecRbody.x = Mathf.SmoothDamp(rbody.velocity.x, 0, ref walkDeaccelerationVolx, deceleration);
-		tempVecRbody.z = Mathf.SmoothDamp(rbody.velocity.z, 0, ref walkDeaccelerationVolz, deceleration);
+		tempVecRbody.x = Mathf.SmoothDamp(rbody.velocity.x,0,
+										  ref walkDeaccelerationVolx,
+										  deceleration);
+
+		tempVecRbody.z = Mathf.SmoothDamp(rbody.velocity.z,0,
+										  ref walkDeaccelerationVolz,
+										  deceleration);
 		if (inCyberSpace) {
-			tempVecRbody.y = Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVolz, deceleration);
+			tempVecRbody.y = Mathf.SmoothDamp(rbody.velocity.y,0,
+											  ref walkDeaccelerationVolz,
+											  deceleration);
 		}
 
 		rbody.velocity = tempVecRbody;
 	}
 
 	void Lean() {
-		if (inCyberSpace) return; // 6dof handled in MouseLookScript for this portion.
+		if (inCyberSpace) return; // 6dof handled in MouseLookScript for this.
 		if (CheatNoclip) return;
 
 		if (GetInput.a.LeanRight()) {
 			leanTarget -= (leanSpeed * Time.deltaTime);
-			if (leanTarget < (leanMaxAngle * -1)) leanTarget = (leanMaxAngle * -1);
+			if (leanTarget < (leanMaxAngle * -1)) {
+				leanTarget = (leanMaxAngle * -1);
+			}
+
 			leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle));
 		}
 		if (GetInput.a.LeanLeft()) {
@@ -404,7 +427,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	// Get input for Jump and set impulse time, removed "&& (ladderState == false)" since I want to be able to jump off a ladder
 	void Jump() {
-		if (CheatNoclip && !Inventory.a.hardwareIsActive[10]) return;
+		if (CheatNoclip && !Inventory.a.JumpJetsActive()) return;
 
 		if (doubleJumpFinished < PauseScript.a.relativeTime) {
 			doubleJumpTicks--;
@@ -413,24 +436,26 @@ public class PlayerMovement : MonoBehaviour {
 
 		if (GetInput.a.Jump()) {
 			if (!justJumped) {
-				if (grounded || gravliftState || Inventory.a.hardwareIsActive[10]) {
+				if (grounded || gravliftState || Inventory.a.JumpJetsActive()) {
 					jumpTime = jumpImpulseTime;
 					doubleJumpFinished = PauseScript.a.relativeTime + Const.a.doubleClickTime;
 					doubleJumpTicks++;
 					justJumped = true;
-					fatigue += jumpFatigue;
-					if (staminupActive) fatigue = 0;
+					if (!Inventory.a.JumpJetsActive()) {
+						fatigue += jumpFatigue;
+					}
 				} else {
 					if (ladderState) {
 						jumpTime = jumpImpulseTime;
 						justJumped = true;
-						fatigue += jumpFatigue;
-						if (staminupActive) fatigue = 0;
+						if (!Inventory.a.JumpJetsActive()) {
+							fatigue += jumpFatigue;
+						}
 					}
 				}
 			}
 
-			if (Inventory.a.hardwareIsActive [9] && Inventory.a.hardwareVersionSetting[9] == 1) {
+			if (Inventory.a.BoosterActive() && Inventory.a.BoosterSetToBoost()) {
 				if (justJumped && doubleJumpTicks == 2) {
 					rbody.AddForce(new Vector3(transform.forward.x * burstForce,transform.forward.y * burstForce,transform.forward.z * burstForce),ForceMode.Impulse); // Booster thrust
 					PlayerEnergy.a.TakeEnergy(22f);
@@ -441,21 +466,26 @@ public class PlayerMovement : MonoBehaviour {
 				}
 			}
 		}
+
+		if (staminupActive) fatigue = 0;
+		
+
 		// Perform Jump
 		while (jumpTime > 0) { // Why ~was~ is this a `while` instead of an `if`??  Because otherwise it don't work, duh!
 			jumpTime -= Time.smoothDeltaTime;
-			if (fatigue > 80 && !(Inventory.a.hardwareIsActive[10])) {
-				rbody.AddForce (new Vector3 (0, jumpVelocityFatigued * rbody.mass, 0), ForceMode.Force);  // huhnh!
+			if (fatigue > 80 && !Inventory.a.JumpJetsActive()) {
+				rbody.AddForce(new Vector3(0,jumpVelocityFatigued * rbody.mass, 0),ForceMode.Force);  // huhnh!
 			} else {
-				if (Inventory.a.hardwareIsActive [10]) {
-					if (PlayerEnergy.a.energy > 11f) {
-						rbody.AddForce (new Vector3 (0, jumpVelocityBoots * rbody.mass, 0), ForceMode.Force);  // huhnh!
-						float energysuck = 25f;
-						switch (Inventory.a.hardwareVersion[10]) {
-							case 0: energysuck = 15f; break;
-							case 1: energysuck = 20f; break;
-							case 2: energysuck = 25f; break;
-						}
+				if (Inventory.a.JumpJetsActive()) {
+					float energysuck = 25f;
+					switch (Inventory.a.JumpJetsVersion()) {
+						case 0: energysuck = 11f; break;
+						case 1: energysuck = 26f; break;
+						case 2: energysuck = 22f; break;
+					}
+
+					if (PlayerEnergy.a.energy >= energysuck) {
+						rbody.AddForce(new Vector3(0,jumpVelocityBoots * rbody.mass,0),ForceMode.Force);  // huhnh!
 						if (jumpJetEnergySuckTickFinished < PauseScript.a.relativeTime) {
 							jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime + jumpJetEnergySuckTick;
 							PlayerEnergy.a.TakeEnergy(energysuck);
@@ -476,7 +506,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		if (jumpTime <= 0) justJumped = false; // for jump jets to work 
 
-		if (justJumped && !(Inventory.a.hardwareIsActive[10])) {
+		if (justJumped && !Inventory.a.JumpJetsActive()) {
 			// Play jump sound
 			if (jumpSFXFinished < PauseScript.a.relativeTime) {
 				jumpSFXFinished = PauseScript.a.relativeTime + jumpSFXIntervalTime;
@@ -494,9 +524,11 @@ public class PlayerMovement : MonoBehaviour {
 		if (CheatNoclip) return;
 		if (!ladderState) return;
 
-		if (grounded || Inventory.a.hardwareIsActive[10]) {
+		if (grounded || Inventory.a.JumpJetsActive()) {
 			// Ladder climb, allow while grounded
-			rbody.AddRelativeForce(relSideways * walkAcceleration * Time.deltaTime, ladderSpeed * relForward * walkAcceleration * Time.deltaTime, 0); // Climbing when touching the ground
+			float bonus = 1f;
+			if (Inventory.a.JumpJetsActive()) bonus = 2f;
+			rbody.AddRelativeForce(relSideways * walkAcceleration * Time.deltaTime,ladderSpeed * relForward * walkAcceleration * Time.deltaTime * bonus, 0); // Climbing when touching the ground
 		} else {
 			// Climbing off the ground
 			if (ladderSFXFinished < PauseScript.a.relativeTime && rbody.velocity.y > ladderSpeed * 0.5f) {
@@ -510,24 +542,29 @@ public class PlayerMovement : MonoBehaviour {
 			rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime * 0.2f, ladderSpeedMod * relForward * walkAcceleration * Time.deltaTime, 0);
 		}
 
-		if (Inventory.a.hardwareIsActive [9] && Inventory.a.hardwareVersionSetting[9] == 0)
+		if (Inventory.a.BoosterActive() && Inventory.a.BoosterSetToSkates()) {
 			deceleration = walkDeaccelerationBooster;
-		else
+		} else {
 			deceleration = walkDeacceleration;
+		}
 
-		RigidbodySetVelocityY(rbody, (Mathf.SmoothDamp(rbody.velocity.y, 0, ref walkDeaccelerationVoly, deceleration))); // Set vertical velocity towards 0 when climbing
+		RigidbodySetVelocityY(rbody,(Mathf.SmoothDamp(rbody.velocity.y,0,ref walkDeaccelerationVoly, deceleration))); // Set vertical velocity towards 0 when climbing
 	}
 
 	void WalkRun() {
 		if (CheatNoclip) return;
 		if (ladderState) return;
 
-		if (grounded || Inventory.a.hardwareIsActive[10]) {
+		if (grounded || Inventory.a.JumpJetsActive()) {
 			// Normal walking
-			rbody.AddRelativeForce(relSideways * walkAcceleration * Time.deltaTime, 0, relForward * walkAcceleration * Time.deltaTime);
+			accel = walkAcceleration * Time.deltaTime;
+			rbody.AddRelativeForce(relSideways * accel,0,relForward * accel);
 			if (fatigueFinished2 < PauseScript.a.relativeTime && relForward != 0) {
 				fatigueFinished2 = PauseScript.a.relativeTime + fatigueWaneTickSecs;
-				fatigue += isSprinting ? fatiguePerSprintTick : fatiguePerWalkTick;
+				if (!Inventory.a.BoosterActive()) {
+					fatigue += isSprinting ?
+									fatiguePerSprintTick : fatiguePerWalkTick;
+				}
 				if (staminupActive) fatigue = 0;
 			}
 		} else {
@@ -662,7 +699,7 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		if (inCyberSpace) return;
-		if (CheatNoclip) return;
+		if (CheatNoclip) { fatigue = 0; return; }
 		if (fatigueFinished >= PauseScript.a.relativeTime) return;
 
 		fatigueFinished = PauseScript.a.relativeTime + fatigueWaneTickSecs;

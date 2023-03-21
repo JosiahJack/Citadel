@@ -161,13 +161,13 @@ public class Automap : MonoBehaviour {
 			Utils.DisableCamera(automapCamera);
 		}
 
-		if (Inventory.a.hardwareVersion[1] < 2) {
+		if (Inventory.a.NavUnitVersion() < 2) {
 			Utils.Deactivate(poolContainerAutomapBotOverlays);
 		} else {
 			Utils.Activate(poolContainerAutomapBotOverlays);
 		}
 
-		if (Inventory.a.hardwareVersion[1] < 3) {
+		if (Inventory.a.NavUnitVersion() < 3) {
 			Utils.Deactivate(poolContainerAutomapCyborgOverlays);
 			Utils.Deactivate(poolContainerAutomapMutantOverlays);
 		} else {
@@ -264,8 +264,8 @@ public class Automap : MonoBehaviour {
 			}
 
 			updateTime = 0.2f;
-			if (Inventory.a.hardwareVersion[1] > 1) updateTime = 0.1f;
-			if (Inventory.a.hardwareVersion[1] > 2) {
+			if (Inventory.a.NavUnitVersion() > 1) updateTime = 0.1f;
+			if (Inventory.a.NavUnitVersion() > 2) {
 				updateTime = 0.05f;
 
 				// Display hazards
@@ -372,7 +372,7 @@ public class Automap : MonoBehaviour {
 	}
 
 	public void AutomapZoomOut() {
-		if (Inventory.a.hardwareVersion[1] < 2) {
+		if (Inventory.a.NavUnitVersion() < 2) {
 			// Map hardware version doesn't support zoom.
 			Const.sprint(Const.a.stringTable[465],Const.a.player1);
 			return;
@@ -390,7 +390,7 @@ public class Automap : MonoBehaviour {
 	}
 
 	public void AutomapZoomIn() {
-		if (Inventory.a.hardwareVersion[1] < 2) {
+		if (Inventory.a.NavUnitVersion() < 2) {
 			// Map hardware version doesn't support zoom.
 			Const.sprint(Const.a.stringTable[465],Const.a.player1);
 			return;

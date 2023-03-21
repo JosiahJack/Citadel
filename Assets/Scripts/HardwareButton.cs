@@ -101,8 +101,12 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void BioAction() {
-		if (Inventory.a.hardwareVersionSetting[6] == 0 && PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
-		if (Inventory.a.hardwareIsActive[6]) {
+		if (Inventory.a.BioMonitorVersion() == 0 && PlayerEnergy.a.energy <= 0) {
+			Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner);
+			return;
+		}
+
+		if (Inventory.a.BioMonitorActive()) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[0]);
 			bioMonitorContainer.SetActive(false);
 			if (BiomonitorGraphSystem.a != null) BiomonitorGraphSystem.a.ClearGraphs();
@@ -112,14 +116,19 @@ public class HardwareButton : MonoBehaviour {
 			bioMonitorContainer.SetActive(true);
 		}
 		Inventory.a.hardwareIsActive[6] = !Inventory.a.hardwareIsActive[6];
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[6], Inventory.a.hardwareVersionSetting[6],0);
+		SetVersionIconForButton(Inventory.a.BioMonitorActive(),
+								Inventory.a.BioMonitorVersion(),0);
 	}
 
 	// called by PlayerEnergy when exhausted energy to 0
 	public void BioOff() {
 		Inventory.a.hardwareIsActive[6] = false;
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[6], Inventory.a.hardwareVersionSetting[6],0);
-		if (BiomonitorGraphSystem.a != null) BiomonitorGraphSystem.a.ClearGraphs();
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[6],
+								Inventory.a.BioMonitorVersion(),0);
+
+		if (BiomonitorGraphSystem.a != null) {
+			BiomonitorGraphSystem.a.ClearGraphs();
+		}
 		bioMonitorContainer.SetActive(false);
 	}
 
@@ -319,20 +328,27 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void BoosterAction() {
-		if (Inventory.a.hardwareVersionSetting[6] == 1 && PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
-		if (Inventory.a.hardwareIsActive[9]) {
+		if (Inventory.a.BoosterSetToBoost() && PlayerEnergy.a.energy <= 0) {
+			Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner);
+			return;
+		}
+
+		if (Inventory.a.BoosterActive()) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[6]);
 		} else {
 			Utils.PlayOneShotSavable(SFX,SFXClip[6]);
 		}
+
 		Inventory.a.hardwareIsActive[9] = !Inventory.a.hardwareIsActive[9];
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[9], Inventory.a.hardwareVersionSetting[9],6);
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[9],
+								Inventory.a.hardwareVersionSetting[9],6);
 	}
 
 	// called by PlayerMovement when exhausted energy to < 11f
 	public void BoosterOff() {
 		Inventory.a.hardwareIsActive[9] = false;
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[9], Inventory.a.hardwareVersionSetting[9],6);
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[9],
+								Inventory.a.hardwareVersionSetting[9],6);
 	}
 
 	public void JumpJetsClick() {
@@ -341,14 +357,20 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void JumpJetsAction() {
-		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
+		if (PlayerEnergy.a.energy <= 0) {
+			Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner);
+			return;
+		}
+
 		if (Inventory.a.hardwareIsActive[10]) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[0]);
 		} else {
 			Utils.PlayOneShotSavable(SFX,SFXClip[7]);
 		}
-		Inventory.a.hardwareIsActive[10] = !Inventory.a.hardwareIsActive[10];
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[10], Inventory.a.hardwareVersionSetting[10],7);
+
+		Inventory.a.JumpJetsToggle();
+		SetVersionIconForButton(Inventory.a.JumpJetsActive(),
+								Inventory.a.JumpJetsVersion(),7);
 	}
 
 	// called by PlayerMovement when exhausted energy to < 11f

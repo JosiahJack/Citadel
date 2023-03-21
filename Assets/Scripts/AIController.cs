@@ -356,7 +356,7 @@ public class AIController : MonoBehaviour {
 			Think();
 			if (healthManager.linkedOverlay != null && !IsCyberNPC()
 				&& HasHealth(healthManager) && Inventory.a.hasHardware[1]
-				&& Inventory.a.hardwareVersion[1] > 1) {
+				&& Inventory.a.NavUnitVersion() > 1) {
 				Utils.EnableImage(healthManager.linkedOverlay);
 				tempVec2 = Automap.a.GetMapPos(transform.position);
 				healthManager.linkedOverlay.rectTransform.localPosition = tempVec2;

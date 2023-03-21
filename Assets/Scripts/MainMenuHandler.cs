@@ -114,9 +114,24 @@ public class MainMenuHandler : MonoBehaviour {
 		MouseLookScript.a.playerCamera.enabled = false; 
 	}
 
-	void OnEnable() { DisableCameraDuringMenu(); }
+	void ReEnableCamera() {
+		if (MouseLookScript.a == null) return;
 
-	void OnDisable() { DisableCameraDuringMenu(); }
+		MouseLookScript.a.playerCamera.enabled = true; 
+	}
+
+	void OnEnable() {
+		Inventory.a.hardwareButtonManager.bioMonitorContainer.SetActive(false);
+		DisableCameraDuringMenu();
+	}
+
+	void OnDisable() {
+		if (Inventory.a.BioMonitorActive()) {
+			Inventory.a.hardwareButtonManager.bioMonitorContainer.SetActive(true);
+		}
+
+		ReEnableCamera();
+	}
 
 	IEnumerator CheckDataFiles () {
 		BackGroundMusic.Stop();
