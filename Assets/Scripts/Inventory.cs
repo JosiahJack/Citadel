@@ -690,13 +690,23 @@ public class Inventory : MonoBehaviour {
 			MouseLookScript.a.hardwareButtons[button8Index].SetActive(true);  // Enable HUD button
 			hardwareButtonManager.SetVersionIconForButton(hardwareIsActive[index],hardwareVersionSetting[index],4);
 			hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
-			Debug.Log("Enabled a hardware button with index of " + button8Index.ToString());
+			Debug.Log("Enabled a hardware button with index of "
+					  + button8Index.ToString());
 		}
+
 		hasHardware[index] = true;
-		hardwareVersion[index] = hwversion;
-		hardwareVersionSetting[index] = hwversion - 1;
-		Const.sprint(Const.a.useableItemsNameText[textIndex] + " v" + hwversion.ToString() );
-		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(1,true);
+		hardwareVersion[index] = hwversion; // One-based.
+		hardwareVersionSetting[index] = hwversion - 1; // Zero-based...hey it
+													   // made sense at some
+													   // point ok!
+
+		Const.sprint(Const.a.useableItemsNameText[textIndex] + " v"
+					 + hwversion.ToString() );
+
+		if (MouseLookScript.a.firstTimePickup) {
+			MFDManager.a.CenterTabButtonClickSilent(1,true);
+		}
+
 		ActivateHardwareButton(index);
 		MFDManager.a.NotifyToCenterTab(1);
 	}
@@ -742,6 +752,23 @@ public class Inventory : MonoBehaviour {
 
 	public bool JumpJetsActive() {
 		return hasHardware[10] && hardwareIsActive[10];
+	}
+
+	// Called by main menu since as this uses OnGUI it draws on top.
+	public void HideBioMonitor() {
+		if (hardwareButtonManager == null) return;
+		if (hardwareButtonManager.bioMonitorContainer == null) return;
+
+		hardwareButtonManager.bioMonitorContainer.SetActive(false);
+	}
+
+	// Called by main menu to restore it to what it was.
+	public void UnHideBioMonitor() {
+		if (!BioMonitorActive()) return; // Wasn't on before.
+		if (hardwareButtonManager == null) return;
+		if (hardwareButtonManager.bioMonitorContainer == null) return;
+
+		hardwareButtonManager.bioMonitorContainer.SetActive(true);
 	}
 	// ------------------------------------------------------------------------
 	//--- End Hardware ---
@@ -911,7 +938,10 @@ public class Inventory : MonoBehaviour {
 	}
 
 	public void AddAudioLogToInventory(int index) {
-		if (index < 0) { Debug.Log("BUG: Audio log picked up has no assigned index (-1)"); return; }
+		if (index < 0) {
+			Debug.Log("BUG: Audio log picked up has no assigned index (-1)");
+			return;
+		}
 
 		if (index == 128) {
 			// Trioptimum Funpack Module discovered!

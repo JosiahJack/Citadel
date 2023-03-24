@@ -101,26 +101,30 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void BioAction() {
-		if (Inventory.a.BioMonitorVersion() == 0 && PlayerEnergy.a.energy <= 0) {
+		if (Inventory.a.BioMonitorVersion() == 0
+			&& PlayerEnergy.a.energy <= 0) {
 			Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner);
 			return;
 		}
 
+		if (BiomonitorGraphSystem.a != null) {
+			BiomonitorGraphSystem.a.ClearGraphs();
+		}
+
 		if (Inventory.a.BioMonitorActive()) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[0]);
-			bioMonitorContainer.SetActive(false);
-			if (BiomonitorGraphSystem.a != null) BiomonitorGraphSystem.a.ClearGraphs();
+			Utils.Deactivate(bioMonitorContainer);
 		} else {
 			Utils.PlayOneShotSavable(SFX,SFXClip[0]);
-			if (BiomonitorGraphSystem.a != null) BiomonitorGraphSystem.a.ClearGraphs();
-			bioMonitorContainer.SetActive(true);
+			Utils.Activate(bioMonitorContainer);
 		}
+
 		Inventory.a.hardwareIsActive[6] = !Inventory.a.hardwareIsActive[6];
 		SetVersionIconForButton(Inventory.a.BioMonitorActive(),
 								Inventory.a.BioMonitorVersion(),0);
 	}
 
-	// called by PlayerEnergy when exhausted energy to 0
+	// Called by PlayerEnergy when exhausted energy to 0 so mustn't play sound.
 	public void BioOff() {
 		Inventory.a.hardwareIsActive[6] = false;
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[6],
@@ -129,13 +133,14 @@ public class HardwareButton : MonoBehaviour {
 		if (BiomonitorGraphSystem.a != null) {
 			BiomonitorGraphSystem.a.ClearGraphs();
 		}
-		bioMonitorContainer.SetActive(false);
+
+		Utils.Deactivate(bioMonitorContainer);
 	}
 
 	public void ActivateSensaroundCenter() {
 		MFDManager.a.DisableAllCenterTabs();
-		if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (true);
-		if (sensaroundCenter != null) sensaroundCenter.SetActive (true);
+		Utils.Activate(sensaroundCenterCamera);
+		Utils.Activate(sensaroundCenter);
 	}
 
 	public void ActivateSensaroundSides() {

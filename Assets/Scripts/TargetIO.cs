@@ -58,6 +58,8 @@ public class TargetIO : MonoBehaviour {
 	public bool branchFlip; // flip logic_branchs
 	public bool branchFlipOnly; // only flip the branch, not flip and fire
 	public bool doorAccessCardOverrideToggle; // set that access card has already been used
+	public bool unlockSwitch; // unlock a ButtonSwitch
+
 	private UseData tempUD;
 
 	void Start() {
@@ -122,7 +124,9 @@ public class TargetIO : MonoBehaviour {
 
 		if (tempUD.doorOpen) {
 			Door dr = GetComponent<Door>();
-			if (dr != null) dr.ForceOpen();
+			if (dr != null) {
+				dr.ForceOpen();
+			}
 			//Debug.Log("opening door!");
 		}
 
@@ -249,6 +253,11 @@ public class TargetIO : MonoBehaviour {
 		if (tempUD.switchLockToggle) {
 			ButtonSwitch btsw = GetComponent<ButtonSwitch>();
 			if (btsw != null) btsw.ToggleLocked();
+		}
+
+		if (tempUD.unlockSwitch) {
+			ButtonSwitch btsw = GetComponent<ButtonSwitch>();
+			if (btsw != null) btsw.locked = false;
 		}
 
 		if (tempUD.lockCodeToScreenMaterialChanger) {
@@ -422,6 +431,7 @@ public class TargetIO : MonoBehaviour {
 		line += Utils.splitChar + Utils.BoolToString(tio.branchFlip);
 		line += Utils.splitChar + Utils.BoolToString(tio.branchFlipOnly);
 		line += Utils.splitChar + Utils.BoolToString(tio.doorAccessCardOverrideToggle);
+		line += Utils.splitChar + Utils.BoolToString(tio.unlockSwitch);
 		return line;
 	}
 
@@ -493,7 +503,8 @@ public class TargetIO : MonoBehaviour {
 		tio.awakeSleepingEnemy = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 		tio.branchFlip = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 		tio.branchFlipOnly = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-		tio.doorAccessCardOverrideToggle = Utils.GetBoolFromString(entries[index]); index++;
+		tio.doorAccessCardOverrideToggle = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
+		tio.unlockSwitch = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 
 		if (instantiated) tio.RegisterToConst();
 		return index;
@@ -560,6 +571,7 @@ public class UseData {
 	public bool branchFlip; // flip logic_branchs
 	public bool branchFlipOnly; // only flip the branch, not flip and fire
 	public bool doorAccessCardOverrideToggle; // set that access card has already been used
+	public bool unlockSwitch; // unlock a ButtonSwitch
 
 	// function for reseting all data if needed
 	public void Reset (UseData ud) {
@@ -619,6 +631,7 @@ public class UseData {
 		branchFlip = tio.branchFlip;
 		branchFlipOnly = tio.branchFlipOnly;
 		doorAccessCardOverrideToggle = tio.doorAccessCardOverrideToggle;
+		unlockSwitch = tio.unlockSwitch;
 		bitsSet = true;
 	}
 
@@ -672,6 +685,7 @@ public class UseData {
 		branchFlip = tio.branchFlip;
 		branchFlipOnly = tio.branchFlipOnly;
 		doorAccessCardOverrideToggle = tio.doorAccessCardOverrideToggle;
+		unlockSwitch = tio.unlockSwitch;
 		bitsSet = true;
 	}
 }

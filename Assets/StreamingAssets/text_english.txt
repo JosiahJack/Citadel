@@ -596,3 +596,7 @@ bulb needs replacing
 inactive
 DAMAGED
 ACCESS CARDS
+Blast door unlocked.
+Armory door unlocked.
+Power routed to door lock.
+Reroute power to remove barrier.

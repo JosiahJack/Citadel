@@ -121,15 +121,12 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	void OnEnable() {
-		Inventory.a.hardwareButtonManager.bioMonitorContainer.SetActive(false);
+		if (Inventory.a != null) Inventory.a.HideBioMonitor();
 		DisableCameraDuringMenu();
 	}
 
 	void OnDisable() {
-		if (Inventory.a.BioMonitorActive()) {
-			Inventory.a.hardwareButtonManager.bioMonitorContainer.SetActive(true);
-		}
-
+		if (Inventory.a != null) Inventory.a.UnHideBioMonitor();
 		ReEnableCamera();
 	}
 

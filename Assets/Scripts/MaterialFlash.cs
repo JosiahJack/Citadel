@@ -9,6 +9,7 @@ public class MaterialFlash : MonoBehaviour {
 	public bool startNormal = true;
 	public bool stopReturnsToNormal = true;
 	public float timeBetweenFlashes = 0.35f;
+	public Light lit;
 	private MeshRenderer meshR;
 	private bool isFlashing = false;
 	private float flashFinished; // Visual only, using Time.time
@@ -25,6 +26,7 @@ public class MaterialFlash : MonoBehaviour {
 		changeDone = false;
 		normal = true;
 		if (!startNormal) {
+			if (lit != null) lit.enabled = true;
 			meshR.material = alternateMat;
 			normal = false;
 		}
@@ -38,15 +40,18 @@ public class MaterialFlash : MonoBehaviour {
 				if (flashFinished < Time.time) {
 					flashFinished = Time.time + timeBetweenFlashes;
 					if (normal) {
+						if (lit != null) lit.enabled = true;
 						meshR.material = alternateMat;
 						normal = !normal;
 					} else {
+						if (lit != null) lit.enabled = false;
 						meshR.material = normalMat;
 						normal = !normal;
 					}
 				}
 			} else {
 				if (stopReturnsToNormal && !changeDone) {
+					if (lit != null) lit.enabled = false;
 					changeDone = true;
 					meshR.material = normalMat;
 				}

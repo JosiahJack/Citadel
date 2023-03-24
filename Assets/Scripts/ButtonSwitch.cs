@@ -78,7 +78,9 @@ public class ButtonSwitch : MonoBehaviour {
 	}
 
 	public void ToggleLocked() {
+		string was = locked.ToString();
 		locked = !locked;
+		Debug.Log("ButtonSwitch was " + was.ToString() + ", now " + locked.ToString());
 	}
 
 	public void UseTargets () {

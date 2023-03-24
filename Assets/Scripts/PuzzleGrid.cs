@@ -286,7 +286,8 @@ public class PuzzleGrid : MonoBehaviour {
 
 		// Reset the power
 		for (int i = 0; i < (width * height); i++) {
-			powered [i] = false;
+			powered[i] = false;
+			if (cellType[i] == PuzzleCellType.And) grid[i] = true;
 		}
 
 		if (grid.Length < 1) return;
@@ -338,7 +339,7 @@ public class PuzzleGrid : MonoBehaviour {
 					if ((grid[movingIndex] || cellType[movingIndex] == PuzzleCellType.Bypass) && poweredCount > 0) powered[movingIndex] = true;
 				}
 			}
-			checkedCells [movingIndex] = true;
+			checkedCells[movingIndex] = true;
 
 			float percentProgress = 0f;
 			// well ok this is kind of dumb but hey, works.  Tried figuring out the pattern for a nested for loop but whatever:
@@ -383,46 +384,78 @@ public class PuzzleGrid : MonoBehaviour {
 	int ReturnCellAbove(int index) {
 		int retval = -1;
 		if (index == -1) return retval;
+
 		bool outOfBounds = ((index-width) < 0) ? true: false;
 		if (!outOfBounds){
 			if (cellType[index-width] != PuzzleCellType.Off)
 				retval = (index-width); // return cell above if not on top row
 		}
+
+		if (cellType[index] == PuzzleCellType.And) {
+			string pwr = "False";
+			if (retval >= 0) pwr = powered[retval].ToString();
+			Debug.Log("AND cell " + index.ToString() + " above powered state " + pwr);
+		}
+
 		return retval;
 	}
 
 	int ReturnCellBelow(int index) {
 		int retval = -1;
 		if (index == -1) return retval;
+
 		bool outOfBounds = ((index+width) > ((width*height)-1)) ? true: false;
 		if (!outOfBounds) {
 			if (cellType[index+width] != PuzzleCellType.Off)
 				retval = (index+width); // return cell below if not on bottom row
 		}
+
+		if (cellType[index] == PuzzleCellType.And) {
+			string pwr = "False";
+			if (retval >= 0) pwr = powered[retval].ToString();
+			Debug.Log("AND cell " + index.ToString() + " below powered state " + pwr);
+		}
+
 		return retval;
 	}
 
 	int ReturnCellToLeft(int index) {
 		int retval = -1;
 		if (index == -1) return retval;
+
 		if (!((index/width) > 0 && (index%width < 1))) {
 			if ((index-1) >= 0) {
 				if (cellType[index-1] != PuzzleCellType.Off)
 					retval = index-1;  // return index to left if not in far left column
 			}
 		}
+
+		if (cellType[index] == PuzzleCellType.And) {
+			string pwr = "False";
+			if (retval >= 0) pwr = powered[retval].ToString();
+			Debug.Log("AND cell " + index.ToString() + " left powered state " + pwr);
+		}
+
 		return retval;
 	}
 
 	int ReturnCellToRight(int index) {
 		int retval = -1;
 		if (index == -1) return retval;
+
 		if (!(((index+1)/width) > 0 && ((index+1)%width < 1))) {
 			if ((index+1) < (width*height)) {
 				if (cellType[index+1] != PuzzleCellType.Off)
 					retval = index+1;  // return index to right if not in far right column
 			}
-		} 
+		}
+
+		if (cellType[index] == PuzzleCellType.And) {
+			string pwr = "False";
+			if (retval >= 0) pwr = powered[retval].ToString();
+			Debug.Log("AND cell " + index.ToString() + " right powered state " + pwr);
+		}
+
 		return retval;
 	}
 

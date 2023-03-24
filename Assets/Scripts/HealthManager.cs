@@ -751,6 +751,23 @@ public class HealthManager : MonoBehaviour {
 		for (int i=0;i<hm.gibObjects.Length; i++) {
 			line += Utils.splitChar + Utils.SaveSubActivatedGOState(hm.gibObjects[i]);
 		}
+
+		if (prefID.constIndex == 526) { // prop_console02
+			if (go.transform.childCount > 0) { // Screen is first child.
+				GameObject child = go.transform.GetChild(0).gameObject; 
+				line += Utils.splitChar + Utils.BoolToString(child.activeSelf);
+
+				ImageSequenceTextureArray ista
+					= child.GetComponent<ImageSequenceTextureArray>();
+
+				if (ista != null) {
+					line += Utils.splitChar + ista.resourceFolder;
+				}
+			} else {
+				line += Utils.splitChar + Utils.BoolToString(true);
+				line += Utils.splitChar + "MedScreen27";
+			}
+		}
 		return line;
 	}
 
@@ -800,6 +817,20 @@ public class HealthManager : MonoBehaviour {
 
 		for (int i=0; i<numChildren; i++) {
 			index = Utils.LoadSubActivatedGOState(hm.gibObjects[i],ref entries,index);
+		}
+
+		if (prefID.constIndex == 526) { // prop_console02
+			if (go.transform.childCount > 0) { // Screen is first child.
+				GameObject child = go.transform.GetChild(0).gameObject;
+				child.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+
+				ImageSequenceTextureArray ista
+					= child.GetComponent<ImageSequenceTextureArray>();
+
+				if (ista != null) {
+					ista.resourceFolder = entries[index]; index++;
+				}
+			}
 		}
 		return index;
 	}

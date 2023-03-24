@@ -442,7 +442,12 @@ public class Const : MonoBehaviour {
 												"PhysObjects","Player2",
 												"Player3","Player4");
 
-		layerMaskPlayerTargetIDFrob = LayerMask.GetMask("NPC");
+		// Must have the geometry and default layers to prevent locking onto
+		// NPCs through walls.
+		layerMaskPlayerTargetIDFrob = LayerMask.GetMask("Default","Geometry",
+														"Corpse","Door",
+														"Player2","Player3",
+														"Player4","NPC");
 
 		layerMaskPlayerAttack = LayerMask.GetMask("Default","Geometry","NPC",
 												  "Bullets","Corpse","Door",

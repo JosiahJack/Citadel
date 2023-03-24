@@ -837,6 +837,9 @@ Master Index
 521 BulletHoleSmall
 522 BulletHoleTiny
 523 BulletHoleTinySpread
+524 func_door_cyber
+525 prop_console01
+526 prop_console02
 
 Generic Materials (Const.a.genericMaterials[])
 0  col1                 Dark Gray            In hindsight, maybe I should have named these descriptively.
@@ -994,8 +997,9 @@ Generic Materials (Const.a.genericMaterials[])
 
 			go = MonoBehaviour.Instantiate(Const.a.projectilesLaunched[val],
 							 spawnPos,Const.a.quaternionIdentity) as GameObject;
-		} else if (val >= 496 && val < 515) {	// [496, 514]
-			val -= 496;
+		} else if ((val >= 496 && val < 515) || val == 524) { // [496, 514],524
+			if (val == 524) val = 19;
+			else val -= 496;
 			if (val > (Const.a.doorPrefabs.Length - 1)) {
 				Debug.Log("SpawnDynamicObject failure: val > (Const.a.doorPrefabs.Length - 1), val: " + val.ToString());
 				return null;

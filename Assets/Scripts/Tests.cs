@@ -58,6 +58,193 @@ public class Tests : MonoBehaviour {
 			}
 		}
 
+		ButtonSwitch bsTemp = null;
+		ChargeStation csTemp = null;
+		CyberAccess caTemp = null;
+		CyberSwitch cswTemp = null;
+		Door drTemp = null;
+		HealthManager hmTemp = null;
+		InteractablePanel ipTemp = null;
+		KeypadElevator keTemp = null;
+		KeypadKeycode kkTemp = null;
+		LogicBranch lbTemp = null;
+		LogicRelay lrTemp = null;
+		LogicTimer ltTemp = null;
+		PuzzleGridPuzzle pgpTemp = null;
+		PuzzleWirePuzzle pwpTemp = null;
+		QuestBitRelay qbrTemp = null;
+		TargetIO tio = null;
+		Trigger trgTemp = null;
+		TriggerCounter trgcTemp = null;
+		HashSet<string> targetNames = new HashSet<string>();
+		for (i=0;i<allGOs.Count;i++) {
+			tio = allGOs[i].GetComponent<TargetIO>();
+			if (tio == null) continue;
+
+			if (!string.IsNullOrWhiteSpace(tio.targetname)) {
+				targetNames.Add(tio.targetname);
+			}
+		}
+
+		HashSet<string> targets = new HashSet<string>();
+		for (int m=0;m<allGOs.Count;m++) {
+			bsTemp = allGOs[m].GetComponent<ButtonSwitch>();
+			if (bsTemp != null) {
+				if (!string.IsNullOrWhiteSpace(bsTemp.target)) {
+					targets.Add(bsTemp.target);
+				}
+			}
+
+			csTemp = allGOs[m].GetComponent<ChargeStation>();
+			if (csTemp != null) {
+				if (!string.IsNullOrWhiteSpace(csTemp.target)) {
+					targets.Add(csTemp.target);	
+				}
+			}
+
+			caTemp = allGOs[m].GetComponent<CyberAccess>();
+			if (caTemp != null) {
+				if (!string.IsNullOrWhiteSpace(caTemp.target)) {
+					targets.Add(caTemp.target);	
+				}
+			}
+
+			cswTemp = allGOs[m].GetComponent<CyberSwitch>();
+			if (cswTemp != null) {
+				if (!string.IsNullOrWhiteSpace(cswTemp.target)) {
+					targets.Add(cswTemp.target);	
+				}
+			}
+
+			drTemp = allGOs[m].GetComponent<Door>();
+			if (drTemp != null) {
+				if (!string.IsNullOrWhiteSpace(drTemp.target)) {
+					targets.Add(drTemp.target);	
+				}
+			}
+
+			hmTemp = allGOs[m].GetComponent<HealthManager>();
+			if (hmTemp != null) {
+				if (!string.IsNullOrWhiteSpace(hmTemp.targetOnDeath)) {
+					targets.Add(hmTemp.targetOnDeath);	
+				}
+			}
+			ipTemp = allGOs[m].GetComponent<InteractablePanel>();
+			if (ipTemp != null) {
+				if (!string.IsNullOrWhiteSpace(ipTemp.target)) {
+					targets.Add(ipTemp.target);	
+				}
+			}
+
+			keTemp = allGOs[m].GetComponent<KeypadElevator>();
+			if (keTemp != null) {
+				if (!string.IsNullOrWhiteSpace(keTemp.lockedTarget)) {
+					targets.Add(keTemp.lockedTarget);	
+				}
+			}
+
+			kkTemp = allGOs[m].GetComponent<KeypadKeycode>();
+			if (kkTemp != null) {
+				if (!string.IsNullOrWhiteSpace(kkTemp.target)) {
+					targets.Add(kkTemp.target);	
+				}
+
+				if (!string.IsNullOrWhiteSpace(kkTemp.lockedTarget)) {
+					targets.Add(kkTemp.lockedTarget);	
+				}
+			}
+
+			lbTemp = allGOs[m].GetComponent<LogicBranch>();
+			if (lbTemp != null) {
+				if (!string.IsNullOrWhiteSpace(lbTemp.target)) {
+					targets.Add(lbTemp.target);	
+				}
+
+				if (!string.IsNullOrWhiteSpace(lbTemp.target2)) {
+					targets.Add(lbTemp.target2);	
+				}
+			}
+
+			lrTemp = allGOs[m].GetComponent<LogicRelay>();
+			if (lrTemp != null) {
+				if (!string.IsNullOrWhiteSpace(lrTemp.target)) {
+					targets.Add(lrTemp.target);	
+				}
+			}
+
+			ltTemp = allGOs[m].GetComponent<LogicTimer>();
+			if (ltTemp != null) {
+				if (!string.IsNullOrWhiteSpace(ltTemp.target)) {
+					targets.Add(ltTemp.target);	
+				}
+			}
+
+			pgpTemp = allGOs[m].GetComponent<PuzzleGridPuzzle>();
+			if (pgpTemp != null) {
+				if (!string.IsNullOrWhiteSpace(pgpTemp.target)) {
+					targets.Add(pgpTemp.target);	
+				}
+			}
+
+			pwpTemp = allGOs[m].GetComponent<PuzzleWirePuzzle>();
+			if (pwpTemp != null) {
+				if (!string.IsNullOrWhiteSpace(pwpTemp.target)) {
+					targets.Add(pwpTemp.target);	
+				}
+			}
+
+			qbrTemp = allGOs[m].GetComponent<QuestBitRelay>();
+			if (qbrTemp != null) {
+				if (!string.IsNullOrWhiteSpace(qbrTemp.target)) {
+					targets.Add(qbrTemp.target);	
+				}
+
+				if (!string.IsNullOrWhiteSpace(qbrTemp.targetIfFalse)) {
+					targets.Add(qbrTemp.targetIfFalse);	
+				}
+			}
+
+			trgTemp = allGOs[m].GetComponent<Trigger>();
+			if (trgTemp != null) {
+				if (!string.IsNullOrWhiteSpace(trgTemp.target)) {
+					targets.Add(trgTemp.target);	
+				}
+			}
+
+			trgcTemp = allGOs[m].GetComponent<TriggerCounter>();
+			if (trgcTemp != null) {
+				if (!string.IsNullOrWhiteSpace(trgcTemp.target)) {
+					targets.Add(trgcTemp.target);	
+				}
+			}
+		}
+
+		HashSet<string> targetsNotInTargetNames =
+			new HashSet<string>(targets);
+
+		targetsNotInTargetNames.ExceptWith(targetNames);
+		int missingTargetsCount = targetsNotInTargetNames.Count;
+
+
+		HashSet<string> targetNamesNotInTargets =
+			new HashSet<string>(targetNames);
+
+		targetNamesNotInTargets.ExceptWith(targets);
+		int missingTargetNamesCount = targetNamesNotInTargets.Count;
+
+
+		IEnumerator<string> notargs = targetsNotInTargetNames.GetEnumerator();
+		while (notargs.MoveNext()) {
+			UnityEngine.Debug.Log("No matching targetName found for target: "
+								  + notargs.Current.ToString());
+		}
+
+		IEnumerator<string> notrigs = targetNamesNotInTargets.GetEnumerator();
+		while (notrigs.MoveNext()) {
+			UnityEngine.Debug.Log("No matching target found for targetName: "
+					  			  + notrigs.Current.ToString());
+		}
+
 		// Declare and initialize cache values for all scripts
 		/* ActivateButton */
 		/* AIAnimationController */ int issueCount_AIAnimationController = 0; int num_AIAnimationController = 0;
@@ -184,7 +371,6 @@ public class Tests : MonoBehaviour {
 
 		// Run through all GameObjects and perform all tests
 		for (i=0;i<allGOs.Count;i++) {
-			
 			script = "AIController";
 			AIController aic = allGOs[i].GetComponent<AIController>();
 			if (aic != null) {
