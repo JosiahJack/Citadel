@@ -254,6 +254,7 @@ public class Const : MonoBehaviour {
 	public Material[] genericMaterials;
 	public GameObject[] ReverbRegister;
 	public int nextFreeSaveID = 2000000;
+	public bool editMode = false;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
 	[HideInInspector] public int AudioSpeakerMode;

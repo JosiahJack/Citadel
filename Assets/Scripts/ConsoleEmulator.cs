@@ -111,6 +111,10 @@ public static class ConsoleEmulator {
 				Utils.DisableCapsuleCollider(PlayerMovement.a.leanCapsuleCollider);
 				Const.sprint("noclip activated!");
 			}
+        } else if (ts.Contains("editmode") || ts.Contains("edit mode")) {
+			Const.a.editMode = !Const.a.editMode;
+			if (Const.a.editMode) Const.sprint("Edit Mode activated! The current level can be shaped to your heart's content!");
+			if (!Const.a.editMode) Const.sprint("Edit Mode deactivated, normal play");
         } else if (ts.Contains("notarget") || ts.Contains("no target")) {
 			if (PlayerMovement.a.Notarget) {
 				PlayerMovement.a.Notarget = false;
@@ -913,18 +917,20 @@ Generic Materials (Const.a.genericMaterials[])
 		if (cheat) spawnPos = PlayerMovement.a.transform.position;
 
 		GameObject go = null;
-		if (val >= 0 && val < 307) {			// [0, 306]
-			if (val > (Const.a.chunkPrefabs.Length - 1)) {
-				Debug.Log("SpawnDynamicObject failure: val > (Const.a.chunkPrefabs.Length - 1), val: " + val.ToString());
-				return null;
-			}
-			if (Const.a.chunkPrefabs[val] == null) {
-				Debug.Log("SpawnDynamicObject failure: Const.a.chunkPrefabs[val] == null, val: " + val.ToString());
-				return null;
-			}
+		if (val >= 0 && val < 307) { // [0, 306]
+			if (Const.a.editMode) {
+				if (val > (Const.a.chunkPrefabs.Length - 1)) {
+					Debug.Log("SpawnDynamicObject failure: val > (Const.a.chunkPrefabs.Length - 1), val: " + val.ToString());
+					return null;
+				}
+				if (Const.a.chunkPrefabs[val] == null) {
+					Debug.Log("SpawnDynamicObject failure: Const.a.chunkPrefabs[val] == null, val: " + val.ToString());
+					return null;
+				}
 
-			go = MonoBehaviour.Instantiate(Const.a.chunkPrefabs[val],spawnPos,
-									  Const.a.quaternionIdentity) as GameObject;
+				go = MonoBehaviour.Instantiate(Const.a.chunkPrefabs[val],spawnPos,
+										Const.a.quaternionIdentity) as GameObject;
+			} else Const.sprint("Indices 0 through 306 not possible when not on edit mode!");
 		} else if (val >= 307 && val < 419) {	// [307, 418]
 			val -= 307;
 			if (val > (Const.a.useableItems.Length - 1)) {

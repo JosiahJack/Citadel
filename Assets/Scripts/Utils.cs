@@ -1100,7 +1100,11 @@ public class Utils {
 					}
 
 					float distPenalty = (radius - hit.distance) / radius;
-					dd.damage *= distPenalty * distPenalty; // Quadratic falloff
+					float saturation = dd.damage * 0.33f; // minimum damage in
+														  // range to feel more
+														  // powerful/useful
+					dd.damage *= distPenalty; // Linear falloff
+					if (dd.damage < saturation) dd.damage = saturation;
 					hm.TakeDamage(dd);
 				}
 
