@@ -349,15 +349,15 @@ public class HealthManager : MonoBehaviour {
 
 				if (Inventory.a.hardwareIsActive[5] && Inventory.a.hasHardware[5]) {
 					// Versions of shield protect against 20, 40, 75, 75%'s
-					// Versions of shield thressholds are 0, 10, 15, 30...ooh what's this hang on now...Huh, turns out it absorbs all damage below the thresshold!  Cool!
+					// Versions of shield thresholds are 0, 10, 15, 30...ooh what's this hang on now...Huh, turns out it absorbs all damage below the thresshold!  Cool!
 					float thresh = 0;
-					float enertake = 0;
 					switch(Inventory.a.hardwareVersion[5]) {
-						case 0: absorb = 0.2f;   thresh = 0f; enertake =  24f; break;
-						case 1: absorb = 0.4f;  thresh = 10f; enertake =  60f; break;
-						case 2: absorb = 0.75f; thresh = 15f; enertake = 105f; break;
-						case 3: absorb = 0.75f; thresh = 30f; enertake =  30f; break;
+						case 0: absorb = 0.2f;   thresh = 0f; break;
+						case 1: absorb = 0.4f;  thresh = 10f; break;
+						case 2: absorb = 0.75f; thresh = 15f; break;
+						case 3: absorb = 0.75f; thresh = 30f; break;
 					}
+
 					if (take < thresh) absorb = 1f; // ah yeah! absorb. it. all.
 					if (absorb > 0) {
 						if (absorb < 1f) absorb = absorb + UnityEngine.Random.Range(-0.08f,0.08f); // +/- 8% variation - this was in the original I swear!  You could theoretically have 83% shielding max.
@@ -367,11 +367,6 @@ public class HealthManager : MonoBehaviour {
 						Utils.PlayOneShotSavable(PlayerHealth.a.SFX,PlayerHealth.a.ShieldClip); // Play shield absorb sound
 						int abs = (int)(absorb * 100f); //  for int display of absorbption percent
 						Const.sprint(Const.a.stringTable[208] + abs.ToString() + Const.a.stringTable[209],dd.other);  // Shield absorbs x% damage
-						if (absorb > 0) {
-							PlayerEnergy.a.TakeEnergy(enertake*absorb);
-							PlayerEnergy.a.drainJPM += (int) enertake;
-							PlayerEnergy.a.tickFinished = PauseScript.a.relativeTime + 0.1f; // So blip registers on biomonitor graph
-						}
 					}
 				}
 				if (take > 0 && ((absorb <0.4f) || Random.Range(0,1f) < 0.5f)) {
