@@ -178,7 +178,9 @@ public class MainMenuHandler : MonoBehaviour {
 			}
 		}
 
-		if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton1)) { // Escape/back button listener
+		if (Input.GetKeyDown(KeyCode.Escape)
+			|| Input.GetKeyDown(KeyCode.JoystickButton1)) { // Escape/back
+															// button listener
 			if (savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
 				if (currentSaveSlot > 0
 					&& currentSaveSlot < saveNameInputField.Length) {
@@ -418,7 +420,7 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 
 		if (returnToPause) {
-			PauseScript.a.EnablePauseUI();
+			PauseScript.a.ExitSaveDialog();
 			ResetPages();
 			MouseCursor.a.mainCamera.enabled = true;
 			this.gameObject.SetActive(false);

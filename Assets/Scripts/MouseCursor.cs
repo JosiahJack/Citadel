@@ -149,8 +149,12 @@ public class MouseCursor : MonoBehaviour {
 		if (liveGrenade && !PauseScript.a.Paused()) GUI.Label(drawTexture,Const.a.stringTable[586],liveGrenadeStyle); // Display "live" next to cursor
 	}
 
-	void Update() { 
-		cursorSize = Screen.width * cursorScreenPercentage;
+	void Update() {
+		if (Const.a.noHUD) {
+			cursorSize = Screen.width * cursorScreenPercentage * 0.1f;// 1 pixel "beauty" cursor.
+		} else {
+			cursorSize = Screen.width * cursorScreenPercentage;
+		}
 		offsetX = cursorSize * halfFactor;
 		offsetY = offsetX;
 		cursorPosition = new Vector2(Input.mousePosition.x,Input.mousePosition.y);

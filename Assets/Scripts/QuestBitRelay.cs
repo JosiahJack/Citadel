@@ -50,6 +50,7 @@ public class QuestBitRelay : MonoBehaviour {
 
 		if (ShieldActivated) {
 			Const.a.questData.ShieldActivated = true;
+			LevelManager.a.exterior_shield.SetActive(true);
 			Debug.Log("Bit set ShieldActivated: "
 					  + Const.a.questData.ShieldActivated.ToString());
 
@@ -248,6 +249,7 @@ public class QuestBitRelay : MonoBehaviour {
 		if (IsotopeInstalled) Const.a.questData.IsotopeInstalled = false;
 		if (ShieldActivated) {
 			Const.a.questData.ShieldActivated = false;
+			LevelManager.a.exterior_shield.SetActive(false);
 			Debug.Log("Bit unset ShieldActivated: "
 					  + Const.a.questData.ShieldActivated.ToString());
 
@@ -296,6 +298,7 @@ public class QuestBitRelay : MonoBehaviour {
 		if (IsotopeInstalled) Const.a.questData.IsotopeInstalled = !Const.a.questData.IsotopeInstalled;
 		if (ShieldActivated) {
 			Const.a.questData.ShieldActivated = !Const.a.questData.ShieldActivated;
+			LevelManager.a.exterior_shield.SetActive(Const.a.questData.ShieldActivated);
 			QuestLogNotesManager.a.checkBoxes[8].isOn = Const.a.questData.ShieldActivated;
 			if (Const.a.questData.ShieldActivated) {
 				QuestLogNotesManager.a.notes[8].SetActive(true);

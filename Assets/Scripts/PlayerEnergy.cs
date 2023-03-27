@@ -48,10 +48,10 @@ public class PlayerEnergy : MonoBehaviour {
 
 				// 3 Drain sensaround
 				if (Inventory.a.hardwareIsActive[3]) {
-					switch (Inventory.a.hardwareVersionSetting[3]) {
-						case 0: tempF = 0.08533f; drainJPM += 50; break; // takes about 300s to drain full energy
-						case 1: tempF = 0.08533f; drainJPM += 50; break; // takes about 300s to drain full energy
-						case 2: tempF = 0.10666f; drainJPM += 64; break; // takes about 240s to drain full energy
+					switch (Inventory.a.hardwareVersion[3]) {
+						case 0: tempF = 0.01535f; drainJPM += 9; break; // takes about 300s to drain full energy
+						case 1: tempF = 0.03413f; drainJPM += 20; break; // takes about 300s to drain full energy
+						case 2: tempF = 0.02559f; drainJPM += 15; break; // takes about 240s to drain full energy
 					}
 					activeEnergyDrainers = true;
 					TakeEnergy(tempF);
@@ -81,11 +81,21 @@ public class PlayerEnergy : MonoBehaviour {
 				}
 
 				// 5 = Energy Shield - handled by HealthManager
+				if (Inventory.a.hardwareIsActive[5]) {
+					switch (Inventory.a.hardwareVersionSetting[5]) {
+						case 0: tempF = 0.04096f; drainJPM += 24; break;
+						case 1: tempF = 0.10239f; drainJPM += 60; break;
+						case 2: tempF = 0.17919f; drainJPM += 105; break;
+						case 3: tempF = 0.05119f; drainJPM += 30; break;
+					}
+					activeEnergyDrainers = true;
+					TakeEnergy(tempF);
+				}
 
 				// 6 = Biomonitor
 				if (Inventory.a.hardwareIsActive[6]) {
 					switch (Inventory.a.hardwareVersionSetting[6]) {
-						case 0: tempF = 0.08533f; drainJPM += 50;  activeEnergyDrainers = true; break; // takes about 300s to drain full energy
+						case 0: tempF = 0.001706f; drainJPM += 1;  activeEnergyDrainers = true; break;
 						case 1: tempF = 0; break; // doesn't take energy
 					}
 					if (tempF > 0) TakeEnergy(tempF);
@@ -94,9 +104,9 @@ public class PlayerEnergy : MonoBehaviour {
 				// 7 = Head Mounted Lantern
 				if (Inventory.a.hardwareIsActive[7]) {
 					switch (Inventory.a.hardwareVersionSetting[7]) {
-						case 0: tempF = 0.1422f; drainJPM += 85; break;// takes about 180s to drain full energy
-						case 1: tempF = 0.21f; drainJPM += 125; break; // takes about 120s to drain full energy
-						case 2: tempF = 0.28f; drainJPM += 170; break; // takes about 90s to drain full energy
+						case 0: tempF = 0.02559f; drainJPM += 15; break;// takes about 180s to drain full energy
+						case 1: tempF = 0.04266f; drainJPM += 25; break; // takes about 120s to drain full energy
+						case 2: tempF = 0.05119f; drainJPM += 30; break; // takes about 90s to drain full energy
 					}
 					activeEnergyDrainers = true;
 					TakeEnergy(tempF);
@@ -106,11 +116,11 @@ public class PlayerEnergy : MonoBehaviour {
 
 				// 9 = Turbo Motion Booster - done in PlayerMovement since we only use energy on boost, no drain with skates
 
-				// 10 Drain jump jet boots - done in PlayerMovement since we only drain while jumping
+				// 10 Jump Jet Boots - done in PlayerMovement since we only drain while jumping
 
 				// 11 Drain nightsight
 				if (Inventory.a.hardwareIsActive [11]) {
-					tempF = 0.21f; drainJPM += 125; // takes about 120s to drain full energy
+					tempF = 0.08533f; drainJPM += 50; // takes about 120s to drain full energy
 					activeEnergyDrainers = true;
 					TakeEnergy(tempF);
 				}

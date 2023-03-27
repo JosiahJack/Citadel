@@ -152,6 +152,10 @@ public class PauseScript : MonoBehaviour {
 			Const.a.psys[k].Pause();
 		}
 
+		for (int k=0;k<Const.a.panimsList.Count;k++) {
+			Const.a.panimsList[k].Pause();
+		}
+
 		for (int u=0;u<ambientRegistry.Count;u++) {
 			if (ambientRegistry[u].SFX != null) ambientRegistry[u].SFX.Pause();
 		}
@@ -178,6 +182,10 @@ public class PauseScript : MonoBehaviour {
 			Const.a.psys[k].UnPause();
 		}
 
+		for (int k=0;k<Const.a.panimsList.Count;k++) {
+			Const.a.panimsList[k].UnPause();
+		}
+
 		for (int u=0;u<ambientRegistry.Count;u++) {
 			if (ambientRegistry[u].SFX != null) ambientRegistry[u].SFX.UnPause();
 		}
@@ -187,6 +195,12 @@ public class PauseScript : MonoBehaviour {
 
 	public void OpenSaveDialog() {
 		if (onSaveDialog) return;
+
+		if (PlayerMovement.a.inCyberSpace) {
+			Const.sprint(Const.a.stringTable[602]); // Cannot save in cyberspace
+			OpenSaveDialogHard();
+			return;
+		}
 
 		DisablePauseUI();
 		if (Const.a.justSavedTimeStamp < Time.time) {
@@ -213,6 +227,10 @@ public class PauseScript : MonoBehaviour {
 	}
 
 	public void SavePause() {
+		if (PlayerMovement.a.inCyberSpace) {
+			Const.sprint(Const.a.stringTable[602]); // Cannot save in cyberspace
+			return;
+		}
 		if (onSaveDialog) return;
 
 		DisablePauseUI();
@@ -267,7 +285,14 @@ public class PauseScript : MonoBehaviour {
 			StartMenuButtonHighlight smbh = 
 				enableUIOnPause[i].GetComponent<StartMenuButtonHighlight>();
 
-			if (smbh != null) smbh.DeHighlight(); // Prevent persisted states.
+			if (smbh != null) {
+				smbh.DeHighlight(); // Prevent persisted states.
+				if (i == 3 && PlayerMovement.a.inCyberSpace) { // Save button
+					smbh.enabled = false;
+				} else {
+					smbh.enabled = true;
+				}
+			}
 		}
 	}
 
@@ -285,6 +310,7 @@ public class PauseScript : MonoBehaviour {
 		MainMenuHandler.a.GoToOptionsSubmenu(true);
 	}
 
+
 	public void TakeScreenshot() {
 		string sname = System.DateTime.UtcNow.ToString("ddMMMyyyy_HH_mm_ss")
 					   + "_" + Const.a.versionString + ".png";
@@ -294,9 +320,15 @@ public class PauseScript : MonoBehaviour {
 		// Check and recreate Screenshots folder if it was deleted.
         if (!Directory.Exists(spath)) Directory.CreateDirectory(spath);
 		spath = Utils.SafePathCombine(spath,sname);
-
 		ScreenCapture.CaptureScreenshot(spath);
+		StartCoroutine(ScreenshotSprint(sname));
+	}
+
+	// Let screenshot save without putting text in it.
+	public IEnumerator ScreenshotSprint(string sname) {
+		yield return new WaitForSeconds(0.1f);
 		Const.sprint("Wrote screenshot " + sname);
+
 	}
 
 	// No need to clear, these are all unsaved and static.

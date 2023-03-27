@@ -328,8 +328,10 @@ public class TargetIO : MonoBehaviour {
 		}
 
 		if (tempUD.radiationTreatment) {
-			PlayerReferenceManager prefman = tempUD.owner.GetComponent<PlayerReferenceManager>();
-			if (prefman != null) prefman.playerRadiationTreatmentFlash.SetActive(true);
+			if (PlayerReferenceManager.a != null) {
+				PlayerReferenceManager.a.playerRadiationTreatmentFlash.SetActive(true);
+				PlayerHealth.a.radiated = 0;
+			}
 		}
 
 		if (tempUD.startFlashingMaterials) {

@@ -5,16 +5,24 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class StartMenuButtonHighlight : MonoBehaviour {
-	/*[DTValidator.Optional] */public MenuArrowKeyControls pageController; //not used on sub-buttons within the start menu page for new game difficulty settings
+	// Page controller not used on sub-buttons within the start menu page for
+	// new game difficulty settings.
+	/*[DTValidator.Optional] */public MenuArrowKeyControls pageController;
 	public int menuItemIndex;
 	public Text text;
 	public Shadow textshadow;
-	/*[DTValidator.Optional] */public Outline outlineGlow; // Only used on the difficulty number buttons, looked odd on the difficulty names.
+
+	// Only used on the difficulty number buttons, looked odd on the difficulty
+	// names.
+	/*[DTValidator.Optional] */public Outline outlineGlow;
 	public Color lit;
 	public Color dark;
 	public Color darkshadow;
 	public Color litshadow;
 	public bool usePointerHighlight = true;
+	public bool darkenInCyberspace = false;
+	public Color darkened;
+	public Color darkenedshadow;
 
 	private EventTrigger evenT;
 	private bool pointerEntered;
@@ -28,13 +36,23 @@ public class StartMenuButtonHighlight : MonoBehaviour {
 				// Create a new entry for the PointerEnter event
 				EventTrigger.Entry pointerEnter = new EventTrigger.Entry();
 				pointerEnter.eventID = EventTriggerType.PointerEnter;
-				pointerEnter.callback.AddListener((data) => { OnPointerEnterDelegate((PointerEventData)data); });
+				pointerEnter.callback.AddListener(
+					(data) => {
+						OnPointerEnterDelegate((PointerEventData)data);
+					}
+				);
+
 				evenT.triggers.Add(pointerEnter);
 
 				// Create a new entry for the PointerExit event
 				EventTrigger.Entry pointerExit = new EventTrigger.Entry();
 				pointerExit.eventID = EventTriggerType.PointerExit;
-				pointerExit.callback.AddListener((data) => { OnPointerExitDelegate((PointerEventData)data); });
+				pointerExit.callback.AddListener(
+					(data) => {
+						OnPointerExitDelegate((PointerEventData)data);
+					}
+				);
+
 				evenT.triggers.Add(pointerExit);
 			} else Debug.Log("Failed to add EventTrigger to " + gameObject.name);
 		}
@@ -42,33 +60,50 @@ public class StartMenuButtonHighlight : MonoBehaviour {
 
 	void OnEnable() {
 		pointerEntered = false;
+		if (darkenInCyberspace && PlayerMovement.a.inCyberSpace) {
+			if (textshadow != null) {
+				textshadow.effectColor = darkenedshadow;
+			}
+
+			if (outlineGlow != null) outlineGlow.enabled = false;
+			if (text != null) text.color = darkened;
+		} else {
+			DeHighlight();
+		}
 	}
 
 	// Handle OnPointerEnter event, replaces OnMouseEnter
-    public void OnPointerEnterDelegate(PointerEventData data) { CursorHighlight(); }
+    public void OnPointerEnterDelegate(PointerEventData data) {
+		CursorHighlight();
+	}
 
 	// Handle OnPointerExit event, replaces OnMouseExit
-    public void OnPointerExitDelegate(PointerEventData data) { CursorDeHighlight(); }
+    public void OnPointerExitDelegate(PointerEventData data) {
+		CursorDeHighlight();
+	}
 
-	public void DeHighlight () {
+	public void DeHighlight() {
+		if (darkenInCyberspace && PlayerMovement.a.inCyberSpace) return;
+
 		if (textshadow != null) {
 			textshadow.effectColor = darkshadow;
-			// textshadow.enabled = true;
 		}
 		if (outlineGlow != null) outlineGlow.enabled = false;
 		if (text != null) text.color = dark;
 	}
 
 	public void Highlight () {
+		if (darkenInCyberspace && PlayerMovement.a.inCyberSpace) return;
+
 		if (textshadow != null) {
 			textshadow.effectColor = litshadow;
-			// textshadow.enabled = false;
 		}
 		if (outlineGlow != null) outlineGlow.enabled = true;
 		if (text != null) text.color = lit;
 	}
 
 	public void CursorHighlight () {
+		if (darkenInCyberspace && PlayerMovement.a.inCyberSpace) return;
 		if (pointerEntered) return;
 
 		Highlight();
@@ -77,6 +112,7 @@ public class StartMenuButtonHighlight : MonoBehaviour {
 	}
 
 	public void CursorDeHighlight () {
+		if (darkenInCyberspace && PlayerMovement.a.inCyberSpace) return;
 		if (!pointerEntered) return;
 
 		DeHighlight();

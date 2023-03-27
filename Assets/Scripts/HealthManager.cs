@@ -752,20 +752,23 @@ public class HealthManager : MonoBehaviour {
 			line += Utils.splitChar + Utils.SaveSubActivatedGOState(hm.gibObjects[i]);
 		}
 
-		if (prefID.constIndex == 526) { // prop_console02
-			if (go.transform.childCount > 0) { // Screen is first child.
-				GameObject child = go.transform.GetChild(0).gameObject; 
-				line += Utils.splitChar + Utils.BoolToString(child.activeSelf);
+		if (prefID != null) {
+			if (prefID.constIndex == 526) { // prop_console02
+				if (go.transform.childCount > 0) { // Screen is first child.
+					GameObject child = go.transform.GetChild(0).gameObject; 
+					line += Utils.splitChar
+							+ Utils.BoolToString(child.activeSelf);
 
-				ImageSequenceTextureArray ista
-					= child.GetComponent<ImageSequenceTextureArray>();
+					ImageSequenceTextureArray ista
+						= child.GetComponent<ImageSequenceTextureArray>();
 
-				if (ista != null) {
-					line += Utils.splitChar + ista.resourceFolder;
+					if (ista != null) {
+						line += Utils.splitChar + ista.resourceFolder;
+					}
+				} else {
+					line += Utils.splitChar + Utils.BoolToString(true);
+					line += Utils.splitChar + "MedScreen27";
 				}
-			} else {
-				line += Utils.splitChar + Utils.BoolToString(true);
-				line += Utils.splitChar + "MedScreen27";
 			}
 		}
 		return line;

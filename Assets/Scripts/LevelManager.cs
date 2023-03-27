@@ -27,6 +27,7 @@ public class LevelManager : MonoBehaviour {
 	public bool superoverride = false;
 	public GameObject saturn;
 	public GameObject exterior;
+	public GameObject exterior_shield;
 	public MeshRenderer skyMR;
 	public bool[] showSkyForLevel;
 	public bool[] showExteriorForLevel;

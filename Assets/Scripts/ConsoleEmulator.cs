@@ -181,6 +181,67 @@ public static class ConsoleEmulator {
 				Const.sprint("bottomlessclip!  Bring it!");
 				WeaponCurrent.a.bottomless = true;
 			}
+        }  else if (ts.Contains("nohud")) { // No HUD
+			if (Const.a.noHUD) {
+				// Normal
+				Const.a.noHUD = false;
+				Const.sprint("HUD reactivated");
+				if (MouseLookScript.a.inventoryMode) {
+					MouseLookScript.a.shootModeButton.SetActive(true);
+				}
+				MFDManager.a.overallLeftMFD.SetActive(true);
+				MFDManager.a.overallRightMFD.SetActive(true);
+				MFDManager.a.overallCenterMFD.SetActive(true);
+				MFDManager.a.overallHardwareButtons.SetActive(true);
+				MFDManager.a.overallHealthTickPanel.SetActive(true);
+				if (!PlayerMovement.a.inCyberSpace) {
+					MFDManager.a.healthIndicator.SetActive(true);
+				} else {
+					MFDManager.a.cyberHealthIndicator.SetActive(true);
+				}
+
+				MFDManager.a.overallEnergyTickPanel.SetActive(true);
+				MFDManager.a.overallEnergyIndicator.SetActive(true);
+				MFDManager.a.overallEnergyDrainText.SetActive(true);
+				MFDManager.a.overallEnergyJPMText.SetActive(true);
+				MFDManager.a.overallTextWarnings.SetActive(true);
+				MFDManager.a.overallMissionTimerT.SetActive(true);
+				MFDManager.a.overallMissionTimer.SetActive(true);
+				if (PlayerMovement.a.inCyberSpace) {
+					MFDManager.a.cyberTimerT.SetActive(true);
+					MFDManager.a.cyberTimer.SetActive(true);
+				}
+				MFDManager.a.TabReset(true);
+				MFDManager.a.TabReset(false);
+				MFDManager.a.ReturnToLastTab(true);
+				MFDManager.a.ReturnToLastTab(false);
+				if (Inventory.a.hasHardware[1]) {
+					MouseLookScript.a.compassContainer.SetActive(true);
+				}
+			} else {
+				// HUDless Screenshot mode!
+				Const.a.noHUD = true;
+				Const.sprint("No HUD! Enjoy the cinematic screenshot "
+							 + "experience!");
+				MouseLookScript.a.shootModeButton.SetActive(false);
+				MFDManager.a.overallLeftMFD.SetActive(false);
+				MFDManager.a.overallRightMFD.SetActive(false);
+				MFDManager.a.overallCenterMFD.SetActive(false);
+				MFDManager.a.overallHardwareButtons.SetActive(false);
+				MFDManager.a.overallHealthTickPanel.SetActive(false);
+				MFDManager.a.healthIndicator.SetActive(false);
+				MFDManager.a.cyberHealthIndicator.SetActive(false);
+				MFDManager.a.overallEnergyTickPanel.SetActive(false);
+				MFDManager.a.overallEnergyIndicator.SetActive(false);
+				MFDManager.a.overallEnergyDrainText.SetActive(false);
+				MFDManager.a.overallEnergyJPMText.SetActive(false);
+				MFDManager.a.overallTextWarnings.SetActive(false);
+				MFDManager.a.overallMissionTimerT.SetActive(false);
+				MFDManager.a.overallMissionTimer.SetActive(false);
+				MFDManager.a.cyberTimerT.SetActive(false);
+				MFDManager.a.cyberTimer.SetActive(false);
+				MouseLookScript.a.compassContainer.SetActive(false);
+			}	
         } else if (ts.Contains("ifeelthepower")
                    || (ts.Contains("i") && ts.Contains("feel")
                        && ts.Contains("the") && ts.Contains("power"))) {
@@ -308,6 +369,11 @@ public static class ConsoleEmulator {
     }
 
     private static void CheatLoadLevel(int lev) {
+		if (PauseScript.a.MenuActive()) {
+			Const.sprint("Cannot load levels while on the menu!");
+			return;
+		}
+
         LevelManager.a.CheatLoadLevel(lev);
     }
 

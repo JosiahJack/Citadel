@@ -344,181 +344,184 @@ public class Inventory : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			// General
-			if (MFDManager.a.GeneralTab.activeInHierarchy) {
-				UpdateGeneralInventory();
-			}
-
-			if (generalInvIndex >= 14 || generalInvIndex < 0) { Debug.Log("generalInvIndex out of bounds at " + generalInvIndex.ToString() + ", reset to 0."); generalInvIndex = 0; }
-			//--- End General ---
-
-			// Grenades
-			if (GetInput.a.Grenade()) {
-				if (MouseLookScript.a.inCyberSpace) {
-					UseCyberspaceItem();
-				} else {
-					if (grenAmmo[grenadeCurrent] > 0) {
-						MouseLookScript.a.UseGrenade(grenadeIndex);
-					} else {
-						Const.sprint(Const.a.stringTable[322] ); // Out of grenades.
-					}
-				}
-			}
-
-			if (GetInput.a.GrenadeCycUp()) {
-				if (MouseLookScript.a.inCyberSpace) {
-					CycleCyberSpaceItemUp();
-				} else {
-					GrenadeCycleUp();
-				}
-			}
-
-			if (GetInput.a.GrenadeCycDown()) {
-				if (MouseLookScript.a.inCyberSpace) {
-					CycleCyberSpaceItemDn();
-				} else {
-					GrenadeCycleDown();
-				}
-			}
-
-			if (MFDManager.a.MainTab.activeInHierarchy) {
-				for (int i=0;i<grenCountsText.Length;i++) {
-					if (grenButtons[i].gameObject.activeInHierarchy) {
-						if (grenCountsLastCount[i] != grenAmmo[i]) {
-							grenCountsText[i].text = grenAmmo[i].ToString();
-							grenCountsLastCount[i] = grenAmmo[i];
-						}
-
-						if (i == grenadeCurrent) {
-							grenInventoryText[i].color = Const.a.ssYellowText; // Yellow
-							grenCountsText[i].color = Const.a.ssYellowText; // Yellow
-						} else {
-							grenInventoryText[i].color = Const.a.ssGreenText; // Green
-							grenCountsText[i].color = Const.a.ssGreenText; // Green
-						}
-					}
-				}
-			}
-			//--- End Grenades ---
-
-			// Hardware
-			if (MFDManager.a.HardwareTab.activeInHierarchy) {
-				for (int i=0;i<hardwareInvText.Length;i++) {
-					if (hardwareInvText[i].gameObject.activeInHierarchy) {
-						hardwareInvText[i].text = Const.a.useableItemsNameText[hardwareInvReferenceIndex[i]];
-						if (i == hardwareInvCurrent) {
-							hardwareInvText[i].color = Const.a.ssYellowText; // Yellow
-						} else {
-							hardwareInvText[i].color = Const.a.ssGreenText; // Green
-						}
-					}
-				}
-			}
-			if (hardwareInvIndex >= 14 || hardwareInvIndex < 0) { Debug.Log("hardwareInvIndex out of bounds at " + hardwareInvIndex.ToString() + ", reset to 0."); hardwareInvIndex = 0; }
-			//--- End Hardware ---
-
-			// Logs
-			if (logPaused) {
-				logPaused = false;
-				if (SFXSource == null) SFXSource = GetComponent<AudioSource>();
-				if (SFXSource == null) Debug.Log("ERROR: Missing SFXSource on Inventory!");
-				else SFXSource.UnPause();
-			}
-
-			if(GetInput.a.RecentLog() && (hasHardware[2] == true)) {
-				if (lastAddedIndex != -1 && !SFXSource.isPlaying) {
-					PlayLog(lastAddedIndex);
-					tempRefIndex = lastAddedIndex;
-					lastAddedIndex = FindNextUnreadLog();
-					if (lastAddedIndex == tempRefIndex) lastAddedIndex = -1;
-				} else {
-					SFXSource.Stop();
-					Const.sprint("Log playback stopped");
-					if (tempRefIndex != -1) lastAddedIndex = tempRefIndex;
-					tempRefIndex = -1;
-				}
-			}
-			//--- End Logs ---
-
-			// Patches
-			if (GetInput.a != null) {
-				if (GetInput.a.Patch()) {
-					if (patchCounts[patchCurrent] > 0) {
-						patchButtonScripts[patchCurrent].PatchUse();
-					} else {
-						Const.sprint(Const.a.stringTable[324] ); // Out of patches.
-					}
-				}
-				if (GetInput.a.PatchCycUp())   PatchCycleUp(true);
-				if (GetInput.a.PatchCycDown()) PatchCycleDown(true);
-			}
-
-			if (MFDManager.a.MainTab.activeInHierarchy) {
-				for (int i = 0; i < patchLastCount.Length; i++) {
-					// Toggle patch button visibility.  Turn on if we have patches of that type.
-					if (patchCounts[i] > 0) {
-						if (!patchButtonScripts[i].gameObject.activeInHierarchy) patchButtonScripts[i].gameObject.SetActive(true);
-					} else {
-						if (patchButtonScripts[i].gameObject.activeInHierarchy) patchButtonScripts[i].gameObject.SetActive(false);
-					}
-
-					// Update text and text color on active buttons.
-					if (patchButtonScripts[i].gameObject.activeInHierarchy) {
-						if (patchLastCount[i] != patchCounts[i]) {
-							patchCountTextObjects[i].text = patchCounts[i].ToString();
-							patchLastCount[i] = patchCounts[i];
-						}
-
-						if (i == patchCurrent) {
-							patchInventoryText[i].color = Const.a.ssYellowText; // Yellow
-							patchCountTextObjects[i].color = Const.a.ssYellowText; // Yellow
-						} else {
-							patchInventoryText[i].color = Const.a.ssGreenText; // Yellow
-							patchCountTextObjects[i].color = Const.a.ssGreenText; // Green
-						}
-					}
-				}
-			}
-			//--- End Patches ---
-
-			// Weapons
-			if (MFDManager.a.MainTab.activeInHierarchy) {
-				int yellowWep = WeaponCurrent.a.weaponCurrent;
-				int dullYellowWep = -1;
-				if (WeaponCurrent.a.weaponCurrentPending >= 0) {
-					dullYellowWep = WeaponCurrent.a.weaponCurrentPending; // Next
-					yellowWep = -1; // Last wep
-				}
-
-				for (int i=0;i<weaponShotsInventory.Length;i++) {
-					if (weaponButtonText[i].gameObject.activeInHierarchy) {
-						weaponButtonText[i].text = weaponInventoryText[i];
-						weaponShotsInventory[i].text = weaponShotsInventoryText[i];
-						if (i == yellowWep) {
-							weaponButtonText[i].color = Const.a.ssYellowText; // Yellow
-							weaponShotsInventory[i].color = Const.a.ssYellowText; // Yellow
-						} else if (i == dullYellowWep) {
-							weaponButtonText[i].color = Const.a.ssDarkYellowText; // Green
-							weaponShotsInventory[i].color = Const.a.ssDarkYellowText; // Green
-						} else {
-							weaponButtonText[i].color = Const.a.ssGreenText; // Green
-							weaponShotsInventory[i].color = Const.a.ssGreenText; // Green
-						}
-					}
-				}
-			}
-			//--- End Weapons ---
-		} else {
-			// Logs pause exceptions.
-			if (!logPaused) {
-				logPaused = true;
-				if (SFXSource == null) SFXSource = GetComponent<AudioSource>();
-				if (SFXSource == null) Debug.Log("ERROR: Missing SFXSource on Inventory!");
-				else SFXSource.Pause();
-			}
-			//--- End Logs ---
+		// Logs pause exceptions.
+		if ((PauseScript.a.Paused() || PauseScript.a.MenuActive())
+			&& !logPaused) {
+			logPaused = true;
+			if (SFXSource == null) SFXSource = GetComponent<AudioSource>();
+			if (SFXSource == null) Debug.Log("ERROR: Missing SFXSource on Inventory!");
+			else SFXSource.Pause();
 		}
+		//--- End Logs ---
+	
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
+
+		// General
+		if (MFDManager.a.GeneralTab.activeInHierarchy) {
+			UpdateGeneralInventory();
+		}
+
+		if (generalInvIndex >= 14 || generalInvIndex < 0) { Debug.Log("generalInvIndex out of bounds at " + generalInvIndex.ToString() + ", reset to 0."); generalInvIndex = 0; }
+		//--- End General ---
+
+		// Grenades
+		if (GetInput.a.Grenade()) {
+			if (MouseLookScript.a.inCyberSpace) {
+				UseCyberspaceItem();
+			} else {
+				if (grenAmmo[grenadeCurrent] > 0) {
+					MouseLookScript.a.UseGrenade(grenadeIndex);
+				} else {
+					Const.sprint(Const.a.stringTable[322] ); // Out of grenades.
+				}
+			}
+		}
+
+		if (GetInput.a.GrenadeCycUp()) {
+			if (MouseLookScript.a.inCyberSpace) {
+				CycleCyberSpaceItemUp();
+			} else {
+				GrenadeCycleUp();
+			}
+		}
+
+		if (GetInput.a.GrenadeCycDown()) {
+			if (MouseLookScript.a.inCyberSpace) {
+				CycleCyberSpaceItemDn();
+			} else {
+				GrenadeCycleDown();
+			}
+		}
+
+		if (MFDManager.a.MainTab.activeInHierarchy) {
+			for (int i=0;i<grenCountsText.Length;i++) {
+				if (grenButtons[i].gameObject.activeInHierarchy) {
+					if (grenCountsLastCount[i] != grenAmmo[i]) {
+						grenCountsText[i].text = grenAmmo[i].ToString();
+						grenCountsLastCount[i] = grenAmmo[i];
+					}
+
+					if (i == grenadeCurrent) {
+						grenInventoryText[i].color = Const.a.ssYellowText; // Yellow
+						grenCountsText[i].color = Const.a.ssYellowText; // Yellow
+					} else {
+						grenInventoryText[i].color = Const.a.ssGreenText; // Green
+						grenCountsText[i].color = Const.a.ssGreenText; // Green
+					}
+				}
+			}
+		}
+		//--- End Grenades ---
+
+		// Hardware
+		if (MFDManager.a.HardwareTab.activeInHierarchy) {
+			for (int i=0;i<hardwareInvText.Length;i++) {
+				if (hardwareInvText[i].gameObject.activeInHierarchy) {
+					hardwareInvText[i].text = Const.a.useableItemsNameText[hardwareInvReferenceIndex[i]];
+					if (i == hardwareInvCurrent) {
+						hardwareInvText[i].color = Const.a.ssYellowText; // Yellow
+					} else {
+						hardwareInvText[i].color = Const.a.ssGreenText; // Green
+					}
+				}
+			}
+		}
+		if (hardwareInvIndex >= 14 || hardwareInvIndex < 0) { Debug.Log("hardwareInvIndex out of bounds at " + hardwareInvIndex.ToString() + ", reset to 0."); hardwareInvIndex = 0; }
+		//--- End Hardware ---
+
+		// Logs
+		if (logPaused) {
+			logPaused = false;
+			if (SFXSource == null) SFXSource = GetComponent<AudioSource>();
+			if (SFXSource == null) Debug.Log("ERROR: Missing SFXSource on Inventory!");
+			else SFXSource.UnPause();
+		}
+
+		if(GetInput.a.RecentLog() && (hasHardware[2] == true)) {
+			if (lastAddedIndex != -1 && !SFXSource.isPlaying) {
+				PlayLog(lastAddedIndex);
+				tempRefIndex = lastAddedIndex;
+				lastAddedIndex = FindNextUnreadLog();
+				if (lastAddedIndex == tempRefIndex) lastAddedIndex = -1;
+			} else {
+				SFXSource.Stop();
+				Const.sprint("Log playback stopped");
+				if (tempRefIndex != -1) lastAddedIndex = tempRefIndex;
+				tempRefIndex = -1;
+			}
+		}
+		//--- End Logs ---
+
+		// Patches
+		if (GetInput.a != null) {
+			if (GetInput.a.Patch()) {
+				if (patchCounts[patchCurrent] > 0) {
+					patchButtonScripts[patchCurrent].PatchUse();
+				} else {
+					Const.sprint(Const.a.stringTable[324] ); // Out of patches.
+				}
+			}
+			if (GetInput.a.PatchCycUp())   PatchCycleUp(true);
+			if (GetInput.a.PatchCycDown()) PatchCycleDown(true);
+		}
+
+		if (MFDManager.a.MainTab.activeInHierarchy) {
+			for (int i = 0; i < patchLastCount.Length; i++) {
+				// Toggle patch button visibility.  Turn on if we have patches of that type.
+				if (patchCounts[i] > 0) {
+					if (!patchButtonScripts[i].gameObject.activeInHierarchy) patchButtonScripts[i].gameObject.SetActive(true);
+				} else {
+					if (patchButtonScripts[i].gameObject.activeInHierarchy) patchButtonScripts[i].gameObject.SetActive(false);
+				}
+
+				// Update text and text color on active buttons.
+				if (patchButtonScripts[i].gameObject.activeInHierarchy) {
+					if (patchLastCount[i] != patchCounts[i]) {
+						patchCountTextObjects[i].text = patchCounts[i].ToString();
+						patchLastCount[i] = patchCounts[i];
+					}
+
+					if (i == patchCurrent) {
+						patchInventoryText[i].color = Const.a.ssYellowText; // Yellow
+						patchCountTextObjects[i].color = Const.a.ssYellowText; // Yellow
+					} else {
+						patchInventoryText[i].color = Const.a.ssGreenText; // Yellow
+						patchCountTextObjects[i].color = Const.a.ssGreenText; // Green
+					}
+				}
+			}
+		}
+		//--- End Patches ---
+
+		// Weapons
+		if (MFDManager.a.MainTab.activeInHierarchy) {
+			UpdateAmmoText();
+			int yellowWep = WeaponCurrent.a.weaponCurrent;
+			int dullYellowWep = -1;
+			if (WeaponCurrent.a.weaponCurrentPending >= 0) {
+				dullYellowWep = WeaponCurrent.a.weaponCurrentPending; // Next
+				yellowWep = -1; // Last wep
+			}
+
+			for (int i=0;i<weaponShotsInventory.Length;i++) {
+				if (weaponButtonText[i].gameObject.activeInHierarchy) {
+					weaponButtonText[i].text = weaponInventoryText[i];
+					weaponShotsInventory[i].text = weaponShotsInventoryText[i];
+					if (i == yellowWep) {
+						weaponButtonText[i].color = Const.a.ssYellowText; // Yellow
+						weaponShotsInventory[i].color = Const.a.ssYellowText; // Yellow
+					} else if (i == dullYellowWep) {
+						weaponButtonText[i].color = Const.a.ssDarkYellowText; // Green
+						weaponShotsInventory[i].color = Const.a.ssDarkYellowText; // Green
+					} else {
+						weaponButtonText[i].color = Const.a.ssGreenText; // Green
+						weaponShotsInventory[i].color = Const.a.ssGreenText; // Green
+					}
+				}
+			}
+		}
+		//--- End Weapons ---
 	}
 
 	// Access Cards
@@ -726,6 +729,11 @@ public class Inventory : MonoBehaviour {
 
 	public bool BioMonitorActive() {
 		return hasHardware[6] && hardwareIsActive[6];
+	}
+
+	// Envirosuit utility functions. [8]
+	public int EnvirosuitVersion() {
+		return hardwareVersion[8];
 	}
 
 	// Booster utility functions. [9]
@@ -1426,40 +1434,34 @@ public class Inventory : MonoBehaviour {
 		MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
 		MFDManager.a.CenterTabButtonClickSilent (0,true); // Weapons are so important we always switch it.
         for (int i=0;i<7;i++) {
-            if (weaponInventoryIndices[i] < 0) {
-                weaponInventoryIndices[i] = index;
-                weaponInventoryText[i] = weaponInvTextSource[(index - 36)]; // Yech!
-				if (i == 0) {
-                	//WeaponCurrent.a.weaponCurrent = i;
-					WeaponCurrent.a.weaponCurrentPending = i;
-					//WeaponCurrent.a.weaponIndex = index;
-					WeaponCurrent.a.weaponIndexPending = index;
-					WeaponCurrent.a.justChangedWeap = true;
-					WeaponCurrent.a.reloadFinished = PauseScript.a.relativeTime + 0.5f;
-				}
-				int tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(index);
-				wepAmmo[tempindex] += ammo1;
-				wepAmmoSecondary[tempindex] += ammo2;
-				wepLoadedWithAlternate[i] = false;
-				if (ammo2 > 0) Inventory.a.wepLoadedWithAlternate[i] = true;
-				WeaponButton wepBut = MFDManager.a.wepbutMan.wepButtonsScripts[i];
-                wepBut.useableItemIndex = index;
-				WeaponCurrent.a.weaponEnergySetting[i] = Inventory.a.GetDefaultEnergySettingForWeaponFrom16Index(tempindex);
-				if (index == 0) {
-					WeaponCurrent.a.WeaponChange(wepBut.useableItemIndex,
-												wepBut.WepButtonIndex);
-					MFDManager.a.SetWepInfo(index);
-					MFDManager.a.SendInfoToItemTab(index); // notify item tab we clicked on a weapon
-					WeaponCurrent.a.ReloadSecret(true);
-					MFDManager.a.SendInfoToItemTab(index);
-				}
+            if (weaponInventoryIndices[i] >= 0) continue;
 
-				MFDManager.a.UpdateHUDAmmoCounts(WeaponCurrent.a.currentMagazineAmount[i]);
-				UpdateAmmoText();
-				Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[33]);
-				MFDManager.a.NotifyToCenterTab(0);
-                return true;
-            }
+			weaponInventoryIndices[i] = index;
+			weaponInventoryText[i] = weaponInvTextSource[(index - 36)]; // Yech!
+			int tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(index);
+			wepAmmo[tempindex] += ammo1;
+			wepAmmoSecondary[tempindex] += ammo2;
+			wepLoadedWithAlternate[i] = false;
+			if (ammo2 > 0) Inventory.a.wepLoadedWithAlternate[i] = true;
+			WeaponButton wepBut = MFDManager.a.wepbutMan.wepButtonsScripts[i];
+			wepBut.useableItemIndex = index;
+			WeaponCurrent.a.weaponEnergySetting[i] = Inventory.a.GetDefaultEnergySettingForWeaponFrom16Index(tempindex);
+			if (i == 0) {
+				WeaponCurrent.a.weaponCurrentPending = i;
+				WeaponCurrent.a.weaponIndexPending = index;
+				WeaponCurrent.a.justChangedWeap = true;
+				WeaponCurrent.a.reloadFinished = PauseScript.a.relativeTime + 0.5f;
+				WeaponCurrent.a.justChangedWeap = true;
+				MFDManager.a.SendInfoToItemTab(index); // notify item tab we clicked on a weapon
+				MFDManager.a.SendInfoToItemTab(index);
+				WeaponCurrent.a.UpdateHUDAmmoCountsEither();
+				WeaponFire.a.CompleteWeaponChange();
+				WeaponCurrent.a.ReloadSecret(true);
+			}
+
+			Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[33]);
+			MFDManager.a.NotifyToCenterTab(0);
+			return true;
         }
 		return false;
     }

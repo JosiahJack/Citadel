@@ -88,6 +88,8 @@ public class MouseLookScript : MonoBehaviour {
 	private float headBobX;
 	private float headBobY;
 	private float headBobZ;
+	private Transform playerCapsuleTransform;
+	private float returnFromCyberspaceFinished;
 
 	public static MouseLookScript a;
 
@@ -114,6 +116,12 @@ public class MouseLookScript : MonoBehaviour {
 		firstTimeSearch = true;
 		inCyberSpace = false;
 		shakeFinished = PauseScript.a.relativeTime;
+		returnFromCyberspaceFinished = 0;
+
+		// PlayerCapsule
+		// -> LeanTransform
+        // -> -> MainCamera: MouseLookScript component.
+		playerCapsuleTransform = transform.parent.transform.parent.transform;
     }
 
 	void Update() {
@@ -182,6 +190,9 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	void Mouselook() {
+		if (returnFromCyberspaceFinished >= Time.time) return; // Not yet.
+
+		returnFromCyberspaceFinished = 0;
 		float deltaX = Input.GetAxisRaw(mouseX) * Const.a.MouseSensitivity * Const.a.GraphicsFOV;
 		float deltaY = Input.GetAxisRaw(mouseY) * Const.a.MouseSensitivity * Const.a.GraphicsFOV;
 		Vector2 rightThumbstick = new Vector2(Input.GetAxisRaw("JoyAxis4"), // Horizontal Left < 0, Right > 0
@@ -193,30 +204,35 @@ public class MouseLookScript : MonoBehaviour {
 		deltaY += rightThumbstick.y;
 		float angX = deltaX * ((Const.a.GraphicsFOV / 2f) / Screen.width / 2f); // deg per screen half / screen
 		float angY = deltaY * ((Const.a.GraphicsFOV / 2f) / Screen.height / 2f);
+
+		// High pass filter to prevent jumpy behavior.
 		if (angX > Const.a.GraphicsFOV) angX = Const.a.GraphicsFOV;
-		if (angY > Const.a.GraphicsFOV) angY = Const.a.GraphicsFOV; // High pass filter to prevent jumpy behavior.
+		if (angY > Const.a.GraphicsFOV) angY = Const.a.GraphicsFOV;
 		
-		if ((inCyberSpace && Const.a.InputInvertCyberspaceLook) || (!inCyberSpace && Const.a.InputInvertLook))
+		if ((inCyberSpace && Const.a.InputInvertCyberspaceLook)
+			|| (!inCyberSpace && Const.a.InputInvertLook))
 			xRotation += angY;
 		else 
 			xRotation -= angY;
 
 		if (inCyberSpace) {
-			xRotation = Clamp0360(xRotation);  // Limit up and down angle to within 360°.
-			if(xRotation > 90f || xRotation < -90f && xRotation > -270f) // More flippideedoo shenanigans.
+			xRotation = Clamp0360(xRotation); // Limit up/down to within 360°.
+
+			// More flippideedoo shenanigans.
+			if(xRotation > 90f || xRotation < -90f && xRotation > -270f)
 				yRotation -= angX;
 			else
 				yRotation += angX;
 
-			 // Do the cyber mouselook.  Everybody now!  Dance the cyber mouselook.
+			// Do the cyber mouselook, everybody now!  Dance the cyber mouselook
 			cyberLookDir = Vector3.Normalize (transform.forward);
 		} else {
-			xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle
+			xRotation = Mathf.Clamp(xRotation, -90f, 90f); // Limit up/down.
 			yRotation += angX;
 		}
 
 		// Apply the normal mouselook
-		transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
+		playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
 		transform.localRotation = Quaternion.Euler(xRotation,0f,0f); // Up down component only applied to camera.  Must be 0 for others or else movement will go in wrong direction!
 		if ((((float)Input.mousePosition.x - ((float)Screen.width * 0.5f)) > 2f) 
 			 || (((float)Input.mousePosition.y - ((float)Screen.height * 0.5f)) > 2f)) {
@@ -228,8 +244,12 @@ public class MouseLookScript : MonoBehaviour {
 		cyberspaceRecallPoint = entryPoint.transform.position;
 		playerRadiationTreatmentFlash.SetActive(true);
 		cyberspaceReturnPoint = PlayerMovement.a.transform.position;
-		cyberspaceReturnCameraLocalRotation = transform.localRotation.eulerAngles;
-		cyberspaceReturnPlayerCapsuleLocalRotation = transform.parent.transform.parent.transform.localRotation.eulerAngles;
+		cyberspaceReturnCameraLocalRotation =
+			transform.localRotation.eulerAngles;
+
+		cyberspaceReturnPlayerCapsuleLocalRotation =
+			playerCapsuleTransform.localRotation.eulerAngles;
+
 		cyberspaceReturnLevel = LevelManager.a.currentLevel;
 		MFDManager.a.EnterCyberspace();
 		LevelManager.a.LoadLevel(13,entryPoint,cyberspaceRecallPoint);
@@ -246,9 +266,24 @@ public class MouseLookScript : MonoBehaviour {
 	public void ExitCyberspace() {
 		playerRadiationTreatmentFlash.SetActive(true);
 		MFDManager.a.ExitCyberspace();
-		LevelManager.a.LoadLevel(cyberspaceReturnLevel,null,cyberspaceReturnPoint);
-		transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(cyberspaceReturnPlayerCapsuleLocalRotation.x, cyberspaceReturnPlayerCapsuleLocalRotation.y, cyberspaceReturnPlayerCapsuleLocalRotation.z); // left right component applied to capsule
-		transform.localRotation = Quaternion.Euler(cyberspaceReturnCameraLocalRotation.x,cyberspaceReturnCameraLocalRotation.y,cyberspaceReturnCameraLocalRotation.z); // Up down component applied to camera
+		LevelManager.a.LoadLevel(cyberspaceReturnLevel,null,
+								 cyberspaceReturnPoint);
+
+		// Left/right component applied to capsule.
+		playerCapsuleTransform.localRotation = Quaternion.Euler(0f,
+			cyberspaceReturnPlayerCapsuleLocalRotation.y,0f);
+
+		transform.localRotation = // Up down component applied to camera
+			Quaternion.Euler(cyberspaceReturnCameraLocalRotation.x,
+							 cyberspaceReturnCameraLocalRotation.y,
+							 cyberspaceReturnCameraLocalRotation.z);
+
+		xRotation = cyberspaceReturnCameraLocalRotation.x;
+		yRotation = cyberspaceReturnPlayerCapsuleLocalRotation.y;
+
+		returnFromCyberspaceFinished = Time.time + 0.1f; // Prevent mouselook
+														 // messing it up.
+
 		PlayerMovement.a.inCyberSpace = false;
 		PlayerMovement.a.rbody.velocity = Const.a.vectorZero;
 		PlayerMovement.a.leanCapsuleCollider.enabled = true;
@@ -285,10 +320,10 @@ public class MouseLookScript : MonoBehaviour {
 	void KeyboardTurn() {
 		if (GetInput.a.TurnLeft()) {
 			yRotation -= keyboardTurnSpeed;
-			transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+			playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
 		} else if (GetInput.a.TurnRight()) {
 			yRotation += keyboardTurnSpeed;
-			transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+			playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
 		}
 	}
 
@@ -555,7 +590,9 @@ public class MouseLookScript : MonoBehaviour {
 		WeaponButton wepbut = currentButton.GetComponent<WeaponButton>();
 		int indexPriorToRemoval = wepbut.useableItemIndex;
 		int am1 = WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex];
+		WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex] = 0;
 		int am2 = WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex];
+		WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex] = 0;
 		PutObjectInHand(indexPriorToRemoval,-1,am1,am2, true);
 		WeaponCurrent.a.RemoveWeapon(wepbut.WepButtonIndex);
 		Inventory.a.RemoveWeapon(wepbut.WepButtonIndex);
@@ -971,7 +1008,8 @@ public class MouseLookScript : MonoBehaviour {
 		MouseCursor.a.cursorPosition.x = (Screen.width / 2);
 		MouseCursor.a.cursorPosition.y = (Screen.height / 2);
 		inventoryMode = true;
-		shootModeButton.SetActive(true);
+		if (!Const.a.noHUD) shootModeButton.SetActive(true);
+		else shootModeButton.SetActive(false);
 	}
 
 	void SearchObject (int index){

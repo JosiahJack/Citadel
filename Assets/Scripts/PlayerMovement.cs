@@ -55,7 +55,7 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector] public float walkAcceleration = 2000f;
 	[HideInInspector] public int SFXIndex = -1; // save
 	private float walkDeacceleration = 0.1f; // was 0.30f
-	private float walkDeaccelerationBooster = 1f; // was 2f, adjusted player physics material to reduce friction for moving up stairs
+	private float walkDeaccelerationBooster = 0.5f; // was 2f, adjusted player physics material to reduce friction for moving up stairs
 	private float deceleration;
 	private float walkAccelAirRatio = 0.75f;
 	private float maxWalkSpeed = 3.2f;
@@ -66,7 +66,7 @@ public class PlayerMovement : MonoBehaviour {
 	private float maxSprintSpeed = 8.8f;
 	private float maxSprintSpeedFatigued = 5.5f;
 	private float maxVerticalSpeed = 5f;
-	private float boosterSpeedBoost = 0.5f; // ammount to boost by when booster is active
+	private float boosterSpeedBoost = 1.2f; // ammount to boost by when booster is active
 	private float jumpImpulseTime = 4.0f;
 	private float jumpVelocityBoots = 0.5f;
 	private float jumpVelocity = 1.1f;
@@ -147,6 +147,8 @@ public class PlayerMovement : MonoBehaviour {
 	private Vector3 tempVecRbody;
 	private bool inputtingMovement;
 	private float accel;
+	private RaycastHit tempHit;
+	private Vector3 floorNormal;
 
 	public static PlayerMovement a;
 
@@ -260,6 +262,31 @@ public class PlayerMovement : MonoBehaviour {
 		FallDamage();
 		oldVelocity = rbody.velocity;
 		if (!CheatWallSticky || gravliftState) grounded = false; // Automatically set grounded to false to prevent ability to climb any wall
+		FeetRayChecks();
+	}
+
+	// Parse surface below to allow for sprinting and staying grounded even if
+	// slightly off the ground for ramp travel improvement.  Also can use for
+	// footstep sounds to parse surface for sound to play.
+	void FeetRayChecks() {
+		floorNormal = Vector3.zero;
+
+		// Using value of 1.06 = (player capsule height / 2) + 0.06 = 1 + 0.06;
+		bool successfulRay = Physics.Raycast(transform.position, Vector3.down,
+											 out tempHit,1.06f,
+											 Const.a.layerMaskPlayerFeet);
+
+		// Success here means hit a useable something.
+		// If a ray hits a wall or other unusable something, that's not success and print "Can't use <something>"
+		if (!successfulRay) return;
+		if (tempHit.collider == null) return;
+
+		GameObject hitGO = tempHit.collider.transform.gameObject;
+		if (hitGO == null) return;
+
+		PrefabIdentifier prefID = hitGO.GetComponent<PrefabIdentifier>();
+		grounded = true;
+		floorNormal = tempHit.normal;
 	}
 
 	float GetBasePlayerSpeed() {
@@ -280,7 +307,7 @@ public class PlayerMovement : MonoBehaviour {
 			case BodyState.ProningUp: 		retval = maxProneSpeed;  break;
 		}
 
-		if (isSprinting && running) {
+		if ((isSprinting || Inventory.a.BoosterActive()) && running) {
 			if (fatigue > 80f && !Inventory.a.BoosterActive()) {
 				retval = maxSprintSpeedFatigued;
 			} else {
@@ -538,7 +565,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 
 			float ladderSpeedMod = ladderSpeed;
-			if (isSprinting && running) ladderSpeedMod = 1.1f; // Climb fast!
+			if (isSprinting && running) ladderSpeedMod = 1.2f; // Climb fast!
 			rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime * 0.2f, ladderSpeedMod * relForward * walkAcceleration * Time.deltaTime, 0);
 		}
 
@@ -569,7 +596,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		} else {
 			// Sprinting in the air
-			if (isSprinting && running) {
+			if ((isSprinting || Inventory.a.BoosterActive()) && running) {
 				rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
 			} else {
 				// Walking in the air, we're floating in the moonlit sky, the people far below are sleeping as we fly
@@ -712,6 +739,7 @@ public class PlayerMovement : MonoBehaviour {
 			case BodyState.ProningUp:   fatigue -= fatigueWanePerTickProne; break;
 			default: fatigue -= fatigueWanePerTick; break;
 		}
+		if (fatigue < 0) fatigue = 0; // Clamp at 0% minimum.
 	}
 
 	void EndCrouchProneTransition() {
@@ -921,7 +949,9 @@ public class PlayerMovement : MonoBehaviour {
 				//if (Vector3.Angle(contact.normal,Vector3.up) < maxSlope) {
 				tempFloat = Vector3.Dot(collision.contacts[tempInt].normal,Vector3.up);
 				//Debug.Log("Contact.normal for player OnCollisionStay is " + ang.ToString());
-				if (tempFloat <= 1 && tempFloat >= 0.35) {
+				float maxSlope = 0.35f;
+				if (Inventory.a.BoosterActive()) maxSlope = 0.7f;
+				if (tempFloat <= 1f && tempFloat >= maxSlope) {
 					grounded = true;
 					return;
 				}

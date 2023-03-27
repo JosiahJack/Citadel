@@ -24,7 +24,7 @@ public class PlayerHealth : MonoBehaviour {
 	private float radiationBleedOffFinished = 0f;
 	private float radiationBleedOffTime = 1.8f;
 	private float radiationReductionAmount = 1f;
-	private float radiationHealthDamageRatio = 0.2f;
+	private float radiationHealthDamageRatio = 0.1f;
 	private int radiationAmountWarningID = 323;
 	private int radiationAreaWarningID = 322;
 	[HideInInspector] public float mediPatchPulseFinished = 0f; // save
@@ -88,18 +88,7 @@ public class PlayerHealth : MonoBehaviour {
 												  radiationAreaWarningID);
 			}
 
-			if (Inventory.a.hasHardware[8]) {
-				// Suit absorbs some radiation, say it.
-				// Envirosuit absorbed ##LBP, Radiation poisoning ##LBP
-				PlayerMovement.a.twm.SendWarning((Const.a.stringTable[280]
-												  + radAdjust.ToString()
-												  + Const.a.stringTable[281]
-												  + Const.a.stringTable[185]
-												  + radiated.ToString()
-												  + Const.a.stringTable[186]),
-												 0.1f,-2,HUDColor.Red,
-												 radiationAmountWarningID);
-			} else {
+			if (!EnvirosuitApply()) {
 				// Radiation poisoning ##LBP
 				PlayerMovement.a.twm.SendWarning((Const.a.stringTable[185]
 												  + radiated.ToString()
@@ -107,6 +96,7 @@ public class PlayerHealth : MonoBehaviour {
 												 0.1f,-2,HUDColor.Red,
 												 radiationAmountWarningID);
 			}
+
 			if (radFXFinished < PauseScript.a.relativeTime) {
 				radiationEffect.SetActive(true);
 				float minT = 0.5f;
@@ -117,13 +107,14 @@ public class PlayerHealth : MonoBehaviour {
 			radiationArea = false;
 			if (radiated < 0) radiated = 0;
 		}
+
 		if (radiationBleedOffFinished < PauseScript.a.relativeTime) {
 			if (!radiationArea) radiated -= radiationReductionAmount;  // Bleed off the radiation over time.
 			if (radiated < 0) radiated = 0;
 			radiationBleedOffFinished = PauseScript.a.relativeTime + radiationBleedOffTime;
 			if (radiated > 0) {
 				if (!hm.god) {
-					hm.health -= radiated*radiationHealthDamageRatio*radiationBleedOffTime; // Apply health at rate of bleedoff time.
+					hm.health -= radiated*radiationHealthDamageRatio; // Apply health at rate of bleedoff time.
 					MFDManager.a.DrawTicks(true);
 				}
 				if (radSoundFinished < PauseScript.a.relativeTime) {
@@ -203,34 +194,54 @@ public class PlayerHealth : MonoBehaviour {
 		PlayerMovement.a.fatigue = 0f;
 	}
 
-	private float GetRadAdjust(float radiated, float frac, float energCost) {
+	// Check for envirosuit and apply reduction based on version
+	bool EnvirosuitApply() {
+		radAdjust = 0f;
+		if (!Inventory.a.hasHardware[8]) return false;
+		if (PlayerEnergy.a.energy <= 0) return false;
+
+		float enerTake = 0f;
+		float frac = 0.12f;
+		float energCost = 0.11f;
+		switch (Inventory.a.hardwareVersion[8]) {
+			case 1: frac = 0.17f; energCost = 0.25f; break;
+			case 2: frac = 0.15f; energCost = 0.16f; break;
+			case 3: frac = 0.12f; energCost = 0.11f; break;
+		}
+
 		radAdjust = radiated * frac;
 		float diff = radiated - radAdjust;
 		radiated = radAdjust; // After calculating difference.
+		if (radiated < 0) radiated = 0;
 		if (diff < 0) diff = 0; // Prevent underflow.
-		return (energCost * diff);
+		enerTake = (energCost * diff);
+		if (enerTake < 0) enerTake = 0;
+		radAdjust = initialRadiation - radiated;
+		if (radAdjust < 0) radAdjust = 0;
+		Debug.Log("Taking energy for envirosuit: " + enerTake.ToString());
+
+		// Suit absorbs some radiation, say it.
+		// Envirosuit absorbed ##LBP, Radiation poisoning ##LBP
+		PlayerMovement.a.twm.SendWarning((Const.a.stringTable[280]
+											+ radAdjust.ToString()
+											+ Const.a.stringTable[281]
+											+ Const.a.stringTable[185]
+											+ radiated.ToString()
+											+ Const.a.stringTable[186]),
+											0.1f,-2,HUDColor.Red,
+											radiationAmountWarningID);
+
+		PlayerEnergy.a.TakeEnergy(enerTake);
+		return true;
 	}
 
-	public void GiveRadiation (float rad) {
+	public void GiveRadiation(float rad) {
 		if (playerDead) return;
 
 		if (radiated < rad) radiated = rad;
 		else return;
 
-		// Check for envirosuit and apply reduction based on version
-		if (Inventory.a.hasHardware[8] && PlayerEnergy.a.energy > 0) {
-			radAdjust = radiated;
-			float enerTake = 0.25f;
-			switch (Inventory.a.hardwareVersion[8]) {
-				case 1: enerTake = GetRadAdjust(radiated, 0.17f, 0.25f); break;
-				case 2: enerTake = GetRadAdjust(radiated, 0.15f, 0.16f); break;
-				case 3: enerTake = GetRadAdjust(radiated, 0.12f, 0.11f); break;
-			}
-			radAdjust = initialRadiation - radiated;
-			PlayerEnergy.a.TakeEnergy(enerTake);
-		} else {
-			radAdjust = 0f;
-		}
+		EnvirosuitApply();
 		initialRadiation = radiated;
 	}
 

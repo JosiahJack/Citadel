@@ -114,6 +114,8 @@ public class QuestBits {
 		RobotSpawnDeactivated = Utils.GetBoolFromString(entries[index]); index++;
 		IsotopeInstalled = Utils.GetBoolFromString(entries[index]); index++;
 		ShieldActivated = Utils.GetBoolFromString(entries[index]); index++;
+		LevelManager.a.exterior_shield.SetActive(ShieldActivated);
+
 		LaserSafetyOverriden = Utils.GetBoolFromString(entries[index]); index++;
 		LaserDestroyed = Utils.GetBoolFromString(entries[index]); index++;
 		BetaGroveCyberUnlocked = Utils.GetBoolFromString(entries[index]); index++;

@@ -152,6 +152,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int layerMaskNPCSight;
 	[HideInInspector] public int layerMaskNPCAttack;
 	[HideInInspector] public int layerMaskNPCCollision;
+	[HideInInspector] public int layerMaskPlayerFeet;
 
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
@@ -255,6 +256,7 @@ public class Const : MonoBehaviour {
 	public GameObject[] ReverbRegister;
 	public int nextFreeSaveID = 2000000;
 	public bool editMode = false;
+	public bool noHUD = false;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
 	[HideInInspector] public int AudioSpeakerMode;
@@ -290,6 +292,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public GameObject player1CapsuleMainCameragGO;
 	[HideInInspector] public List<PauseRigidbody> prb;
 	[HideInInspector] public List<PauseParticleSystem> psys;
+	[HideInInspector] public List<PauseAnimation> panimsList;
 	[HideInInspector] public float playerCameraOffsetY = 0.84f; //Vertical camera offset from player 0,0,0 position (mid-body)
 	[HideInInspector] public Color ssYellowText = new Color(0.8902f, 0.8745f, 0f); // Yellow, e.g. for current inventory text
 	[HideInInspector] public Color ssDarkYellowText = new Color(0.8902f * 0.7f, 0.8745f * 0.7f, 0f); // Dark Yellow, e.g. for changing items transition
@@ -304,7 +307,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public float mapWorldMaxW = 93.4f;
 	[HideInInspector] public float mapTileMinX = 8; // top left corner
 	[HideInInspector] public float mapTileMinY = -1016; // bottom right corner
-	[HideInInspector] public bool decoyActive = false;
+	public bool decoyActive = false;
 	[HideInInspector] public float berserkTime = 20f; //Patch constants
 	[HideInInspector] public float detoxTime = 60f;
 	[HideInInspector] public float geniusTime = 180f;
@@ -454,6 +457,9 @@ public class Const : MonoBehaviour {
 												  "Bullets","Corpse","Door",
 												  "InterDebris","PhysObjects",
 												  "Player2","Player3","Player4");
+
+		layerMaskPlayerFeet = LayerMask.GetMask("Default","Geometry");
+
 		LoadCreditsData();
 		StartCoroutine(InitializeEventSystem());
 		questData = new QuestBits ();
@@ -479,6 +485,9 @@ public class Const : MonoBehaviour {
 		 // P.P.S. PP. That's funny right there.  ...What?  I have kids.
 		PauseParticleSystem[] ppses = FindObjectsOfType<PauseParticleSystem>();
 		for (int i=0;i<ppses.Length;i++) psys.Add(ppses[i]);
+
+		PauseAnimation[] panims = FindObjectsOfType<PauseAnimation>();
+		for (int i=0;i<panims.Length;i++) panimsList.Add(panims[i]);
 
 		ObjectContainmentSystem.FindAllFloorGOs();
 		ObjectContainmentSystem.UpdateActiveFlooring();

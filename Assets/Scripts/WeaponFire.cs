@@ -273,7 +273,7 @@ public class WeaponFire : MonoBehaviour {
 		CheckAmmoChangeInput();
     }
 
-	void CompleteWeaponChange() {
+	public void CompleteWeaponChange() {
 		if (WeaponCurrent.a.weaponCurrentPending == -1) return;
 
 		// Set current weapon 7 slot
@@ -1067,145 +1067,160 @@ public class WeaponFire : MonoBehaviour {
     }
 
     // Melee weapons
-    //----------------------------------------------------------------------------------------------------------
-    // Rapier and pipe.  Need extra code to handle anims for view model and sound for swing-and-a-miss! vs. hit
-	//void ApplyMeleeHit(int index16, GameObject targ, RaycastHit tHit, int numTargets, bool isRapier,bool silent) {
-	void ApplyMeleeHit(int index16, GameObject targ, int numTargets,bool isRapier, bool silent,AudioClip hit, AudioClip miss,AudioClip hitflesh) {
-		if (targ.layer == gameObject.layer) return;
+    //-------------------------------------------------------------------------
+    // Rapier and pipe.  Need extra code to handle anims for view model and
+	// sound for swing-and-a-miss! vs. hit
+	IEnumerator ApplyMeleeHit(int index16, GameObject targ, bool isRapier, 
+							  bool silent,AudioClip hit, AudioClip miss,
+							  AudioClip hitflesh) {
+		if (targ.layer == gameObject.layer) yield break;
+
+		if (isRapier) yield return new WaitForSeconds(0.28f);
+		else yield return new WaitForSeconds(0.15f);
+
 		damageData.other = targ;
-		if (targ.CompareTag("NPC")) {
-			damageData.isOtherNPC = true;
-		} else {
-			damageData.isOtherNPC = false;
-			//CreateStandardImpactMarks(index16);
-		}
-		//damageData.hit = tHit;
+		damageData.isOtherNPC = false;
+		if (targ.CompareTag("NPC")) damageData.isOtherNPC = true;
 		damageData.attacknormal = MouseCursor.a.GetCursorScreenPointForRay();
-		damageData.attacknormal = playerCamera.ScreenPointToRay(damageData.attacknormal).direction;
-		damageData.damage = Const.a.damagePerHitForWeapon[index16]/numTargets; // divide across multiple targets
-		damageData.damage = Const.a.damagePerHitForWeapon[index16]; // divide across multiple targets
+		damageData.attacknormal =
+			playerCamera.ScreenPointToRay(damageData.attacknormal).direction;
+		damageData.damage = Const.a.damagePerHitForWeapon[index16]; 
 		damageData.damage = DamageData.GetDamageTakeAmount(damageData);
 		damageData.offense = Const.a.offenseForWeapon[index16];
 		damageData.penetration = Const.a.penetrationForWeapon[index16];
 		damageData.owner = playerCapsule;
 		if (isRapier) {
 			damageData.attackType = AttackType.MeleeEnergy;
+			if (PlayerEnergy.a.energy < 4f) {
+				// Half pipe
+				damageData.damage = Const.a.damagePerHitForWeapon[6] / 2f;
+			}
 		} else {
 			damageData.attackType = AttackType.Melee;
 		}
+
 		UseableObjectUse uou = targ.GetComponent<UseableObjectUse>();
 		if (uou != null) uou.HitForce(damageData); // knock objects around
 		HealthManager hm = targ.GetComponent<HealthManager>();
 		if (hm == null) {
-			SFX.clip = hit;
-			SFX.Play();
-			return;
+			if (!silent) {
+				Utils.PlayOneShotSavable(SFX,hit);
+				PlayerHealth.a.makingNoise = true;
+				PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime+0.5f;
+			}
+			yield break;
 		}
 
 		damageData.impactVelocity = damageData.damage * 1.5f;
-		if (!damageData.isOtherNPC || index16 == 12) Utils.ApplyImpactForce(targ, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
-		float dmgFinal = hm.TakeDamage(damageData); //no need to check if damage was done and if we need noDamageIndicator since melee weapons always do damage against all types
+		if (!damageData.isOtherNPC || index16 == 12) {
+			if (!isRapier || (isRapier && PlayerEnergy.a.energy >= 4f)) {
+			Utils.ApplyImpactForce(targ, damageData.impactVelocity,
+								   damageData.attacknormal,
+								   damageData.hit.point);
+			}
+		}
+
+		float dmgFinal = hm.TakeDamage(damageData);
 		if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
 		CreateTargetIDInstance(dmgFinal,hm);
 		if (hm.isNPC) Music.a.inCombat = true;
 		if (!silent) {
+			PlayerHealth.a.makingNoise = true;
+			PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime + 0.5f;
 			if ((hm.bloodType == BloodType.Red)
 				|| (hm.bloodType == BloodType.Yellow)
 				|| (hm.bloodType == BloodType.Green)) {
-				SFX.clip = hitflesh;
+				Utils.PlayOneShotSavable(SFX,hitflesh);
+			} else if (isRapier && PlayerEnergy.a.energy < 4f) {
+				Utils.PlayOneShotSavable(SFX,Const.a.sounds[67]);
 			} else {
-				SFX.clip = hit;
+				Utils.PlayOneShotSavable(SFX,hit);
 			}
-			SFX.Play();
 		}
-		return;
+
+		CreateStandardImpactEffects(true);
+		if (isRapier) PlayerEnergy.a.TakeEnergy(3.666f); // 3 hits per tick.
 	}
 
-    void FireRapier(int index16, bool silent) { FireMelee(index16, true, silent, SFXRapierHit, SFXRapierMiss, SFXRapierHit, true); }
-    void FirePipe(int index16, bool silent) { FireMelee(index16, false, silent, SFXPipeHit, SFXPipeMiss, SFXPipeHitFlesh, false); }
+	// These are a bit silly.
+    void FireRapier(int i16, bool sil) {
+		FireMelee(i16,true,sil,SFXRapierHit,SFXRapierMiss,SFXRapierHit,true);
+	}
 
-	void FireMelee(int index16, bool isRapier, bool silent, AudioClip hit, AudioClip miss,AudioClip hitflesh, bool rapier) {
-		bool foundTarg = false;
-		int numtargets = 0;
+    void FirePipe(int i16, bool sil) {
+		FireMelee(i16,false,sil,SFXPipeHit,SFXPipeMiss,SFXPipeHitFlesh,false);
+	}
 
-		// do normal straightline raytrace at center first
+	void FireMelee(int index16, bool isRapier, bool silent, AudioClip hit,
+				   AudioClip miss,AudioClip hitflesh, bool rapier) {
+		// Do normal straightline raytrace at center first.
 		fireDistance = meleescanDistance;
 		if (DidRayHit(index16)) {
-			fireDistance = hitscanDistance; // reset before any returns
+			fireDistance = hitscanDistance; // Reset before any returns.
 			if (rapier) {
 				rapieranim.Play("Attack2");
 			} else {
 				anim.Play("Attack2");
 			}
-			if (!silent) {
-				SFX.clip = hit;
-				if (SFX != null && SFX.clip != null) SFX.Play();
-			}
 
-			CreateStandardImpactEffects(true);
-			PlayerHealth.a.makingNoise = true;
-			PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime + 0.5f;
-			foundTarg = true;
-
-			if (numtargets <= 0) numtargets = 1; //don't divide by 0
 			GameObject hitGO = tempHit.collider.transform.gameObject;
-			ApplyMeleeHit(index16,hitGO,numtargets,isRapier,silent,hit,miss,hitflesh);
+			StartCoroutine(ApplyMeleeHit(index16,hitGO,isRapier,silent,hit,
+										 miss,hitflesh));
+			return;
 		}
 
-		fireDistance = hitscanDistance; //reset in case raycast failed
+		fireDistance = hitscanDistance; // Reset since raycast failed.
 
-		// check all objects we can hurt have HealthManager, that they are in meleescanDistance range, that they are within player facing angle by 60° (±30°)
-		if (!foundTarg) {		
-			for (int i=0;i<Const.a.healthObjectsRegistration.Length;i++) {
-				if (Const.a.healthObjectsRegistration[i] != null) {
-					GameObject ho = Const.a.healthObjectsRegistration[i].gameObject;
-					if (!ho.activeInHierarchy) continue; // Don't hurt deactive objects, like you know, corpse on living entities...at least don't do it again please.
+		// Check all objects we can hurt have HealthManager, that they are in
+		// meleescanDistance range, that they are within player facing angle by
+		// 60° (±30°)	
+		for (int i=0;i<Const.a.healthObjectsRegistration.Length;i++) {
+			if (Const.a.healthObjectsRegistration[i] == null) continue;
 
-					HealthManager hm = ho.GetComponent<HealthManager>();
+			GameObject ho = Const.a.healthObjectsRegistration[i].gameObject;
+			// Don't hurt deactive objects, like you know, corpse on
+			// living entities...at least don't do it again please.
+			if (ho == null) continue;
+			if (!ho.activeInHierarchy) continue;
 
-					if (hm != null && ho != null) {
-						if (Vector3.Distance(ho.transform.position,playerCapsule.transform.position) < meleescanDistance) {
-							MouseLookScript.a.SetCameraFocusPoint();
-							tempVec = MouseLookScript.a.cameraFocusPoint - playerCamera.transform.position;
-							tempVec = tempVec.normalized;
-							Vector3 ang = ho.transform.position - playerCamera.transform.position;
-							ang = ang.normalized;
-							float dot = Vector3.Dot(tempVec,ang);
-							if (dot > 0.666f) {
-								if (rapier) {
-									if (rapieranim != null) rapieranim.Play("Attack2");
-								} else {
-									if (anim != null) anim.Play("Attack2");
-								}
-								if (!silent) {
-									SFX.clip = hit;
-									if (SFX != null && SFX.clip != null) SFX.Play();
-								}
-								CreateStandardImpactEffects(true);
-								numtargets++;
-								if (numtargets <= 0) numtargets = 1; //don't divide by 0
-								ApplyMeleeHit(index16,ho,numtargets,isRapier,silent,hit,miss,hitflesh);
-								PlayerHealth.a.makingNoise = true;
-								PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime + 0.5f;
-								foundTarg = true;
-								break;
-							}
-						}
-					}
-				}
-				i++;
+			HealthManager hm = ho.GetComponent<HealthManager>();
+			if (hm == null) continue;
+			if (Vector3.Distance(ho.transform.position,
+								 playerCapsule.transform.position)
+				>= meleescanDistance) {
+				continue;
 			}
-			if (!foundTarg) {
-				if (!silent) {
-					SFX.clip = miss;
-					if (SFX != null && SFX.clip != null) SFX.Play();
-				}
-				if (rapier) {
-					rapieranim.Play("Attack2");
-				} else {
-					anim.Play("Attack1");
-				}
+
+			MouseLookScript.a.SetCameraFocusPoint();
+			tempVec = MouseLookScript.a.cameraFocusPoint
+						- playerCamera.transform.position;
+
+			tempVec = tempVec.normalized;
+			Vector3 ang = ho.transform.position
+							- playerCamera.transform.position;
+
+			ang = ang.normalized;
+			float dot = Vector3.Dot(tempVec,ang);
+			if (dot <= 0.666f) continue;
+
+			if (rapier) {
+				if (rapieranim != null) rapieranim.Play("Attack2");
+			} else {
+				if (anim != null) anim.Play("Attack2");
 			}
+
+			Debug.Log("Starting ApplyMelee 2");
+			StartCoroutine(ApplyMeleeHit(index16,ho,isRapier,silent,hit,
+											miss,hitflesh));
+			return;
+		}
+
+		// Swing and a miss, steeeerike!!
+		if (!silent) Utils.PlayOneShotSavable(SFX,miss);
+		if (rapier) {
+			rapieranim.Play("Attack2");
+		} else {
+			anim.Play("Attack1");
 		}
 	}
 
@@ -1217,8 +1232,10 @@ public class WeaponFire : MonoBehaviour {
     void FireStungun(int index16) { FireBeachball(index16,stungunShotForce,483); }
 
 	void FireBeachball(int index16, float shoveForce, int prefabID) {
-        // Create and hurl a beachball-like object.  On the developer commentary they said that the projectiles act
-        // like a beachball for collisions with enemies, but act like a baseball for walls/floor to prevent hitting corners
+        // Create and hurl a beachball-like object.  On the developer
+		// commentary they said that the projectiles act like a beachball for
+		// collisions with enemies, but act like a baseball for walls/floor to
+		// prevent hitting corners.
         GameObject beachball = ConsoleEmulator.SpawnDynamicObject(prefabID,1);
         if (beachball != null) {
             damageData.damage = Const.a.damagePerHitForWeapon[index16];
@@ -1234,8 +1251,10 @@ public class WeaponFire : MonoBehaviour {
             beachball.transform.forward = tempVec.normalized;
             beachball.SetActive(true);
             Vector3 shove = beachball.transform.forward * shoveForce;
-            beachball.GetComponent<Rigidbody>().velocity = Const.a.vectorZero; // Prevent random variation from the last shot's velocity
-            beachball.GetComponent<Rigidbody>().AddForce(shove, ForceMode.Impulse);
+
+			// Force starting with zero pior to adding impulse force.
+            beachball.GetComponent<Rigidbody>().velocity = Const.a.vectorZero;
+            beachball.GetComponent<Rigidbody>().AddForce(shove,ForceMode.Impulse);
         }
 	}
 

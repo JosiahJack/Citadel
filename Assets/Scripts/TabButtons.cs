@@ -20,15 +20,19 @@ public class TabButtons : MonoBehaviour {
 	public int lastTab = 0;
 
 	void Start() {
+		TurnAllTabsOff();
+		ItemTabButton.image.overrideSprite = MFDSprite;
+		AutomapTabButton.image.overrideSprite = MFDSprite;
+		TargetTabButton.image.overrideSprite = MFDSprite;
+		DataTabButton.image.overrideSprite = MFDSprite;
+	}
+
+	public void TurnAllTabsOff() {
 		TabManager.WeaponTab.SetActive(false);
 		TabManager.ItemTab.SetActive(false);
 		TabManager.AutomapTab.SetActive(false);
 		TabManager.TargetTab.SetActive(false);
 		TabManager.DataTab.SetActive(false);
-		ItemTabButton.image.overrideSprite = MFDSprite;
-		AutomapTabButton.image.overrideSprite = MFDSprite;
-		TargetTabButton.image.overrideSprite = MFDSprite;
-		DataTabButton.image.overrideSprite = MFDSprite;
 	}
 
 	public void SetCurrentAsLast() {

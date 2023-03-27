@@ -377,7 +377,7 @@ public class AIController : MonoBehaviour {
 										- sightPoint.transform.position;
 
                 if (!IsCyberNPC()) idealTransformForward.y = 0;
-				idealTransformForward = Vector3.Normalize(idealTransformForward);
+				idealTransformForward = idealTransformForward.normalized;
 				if (idealTransformForward.sqrMagnitude > Mathf.Epsilon) {
 					AI_Face(currentDestination);
 				}
@@ -1070,7 +1070,7 @@ public class AIController : MonoBehaviour {
 			if (enemy != null) {
 				Rigidbody rbodyEnemy = enemy.GetComponent<Rigidbody>();
 				if (rbodyEnemy != null) {
-					shove = shove + (rbodyEnemy.velocity);
+					shove = shove + (rbodyEnemy.velocity * 0.5f);
 				}
 			}
 		}
@@ -1346,7 +1346,7 @@ public class AIController : MonoBehaviour {
 		if (Const.a.player1Capsule == null) return false; // No found player
 
 		// Can't see him, he's on notarget.
-		if (Const.a.player1PlayerMovementScript.Notarget) return false;
+		if (PlayerMovement.a.Notarget) return false;
 
 		tempVec = Const.a.player1Capsule.transform.position;
 
@@ -1370,11 +1370,12 @@ public class AIController : MonoBehaviour {
 								(dist + 0.1f),Const.a.layerMaskNPCSight)) {
 				Const.a.numberOfRaycastsThisFrame++;
 				if (tempHit.collider.gameObject == Const.a.player1Capsule) {
-					if (IsCyberNPC()) {
-						Debug.DrawRay(sightPoint.transform.position,
-									  checkline.normalized * 5f,Color.green,1f,
-									  true);
-					}
+					//if (IsCyberNPC()) {
+					//	Debug.Log("Drawing ray from " + sightPoint.transform.position.ToString());
+					//	Debug.DrawRay(sightPoint.transform.position,
+					//				  checkline.normalized * 5f,Color.green,1f,
+					//				  true);
+					//}
 					LOSpossible = true;  // Clear path from enemy to found player
 					SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
 					PlaySightSound();

@@ -126,6 +126,19 @@ public class MFDManager : MonoBehaviour  {
 	public int curCenterTab = 0;
 	public bool mouseClickHeldOverGUI;
 
+	public GameObject overallLeftMFD;
+	public GameObject overallRightMFD;
+	public GameObject overallCenterMFD;
+	public GameObject overallHardwareButtons;
+	public GameObject overallHealthTickPanel;
+	public GameObject overallEnergyTickPanel;
+	public GameObject overallEnergyIndicator;
+	public GameObject overallEnergyDrainText;
+	public GameObject overallEnergyJPMText;
+	public GameObject overallTextWarnings;
+	public GameObject overallMissionTimerT;
+	public GameObject overallMissionTimer;
+
 	// Internal references
 	private bool isRH;
 	private float ecgValue = 0;
@@ -478,6 +491,8 @@ public class MFDManager : MonoBehaviour  {
 	public void EnterCyberspace() {
 		TabReset(true); // right
 		TabReset(false); // left
+		rightTC.TurnAllTabsOff();
+		leftTC.TurnAllTabsOff();
 		ctbButtonMain.SetActive(false);
 		ctbButtonHardware.SetActive(false);
 		ctbButtonGeneral.SetActive(false);
@@ -486,9 +501,9 @@ public class MFDManager : MonoBehaviour  {
 		energyTickPanel.SetActive(false);
 		energyIndicator.SetActive(false);
 		healthIndicator.SetActive(false);
-		cyberHealthIndicator.SetActive(true);
-		cyberTimerT.SetActive(true);
-		cyberTimer.SetActive(true);
+		if (!Const.a.noHUD) cyberHealthIndicator.SetActive(true);
+		if (!Const.a.noHUD) cyberTimerT.SetActive(true);
+		if (!Const.a.noHUD) cyberTimer.SetActive(true);
 		hardwareButtonsContainer.SetActive(false);
 		viewWeaponsContainer.SetActive(false);
 		CyberTimer ct = cyberTimer.GetComponent<CyberTimer>();
@@ -507,14 +522,16 @@ public class MFDManager : MonoBehaviour  {
 		ctbButtonGeneral.SetActive(true);
 		tabButtonsLHButtons.SetActive(true);
 		tabButtonsRHButtons.SetActive(true);
-		energyTickPanel.SetActive(true);
-		energyIndicator.SetActive(true);
-		healthIndicator.SetActive(true);
+		if (!Const.a.noHUD) {
+			energyTickPanel.SetActive(true);
+			energyIndicator.SetActive(true);
+			healthIndicator.SetActive(true);
+			hardwareButtonsContainer.SetActive(true);
+		}
 		cyberHealthIndicator.SetActive(false);
 		cyberSprintContainer.SetActive(false);
 		cyberTimerT.SetActive(false);
 		cyberTimer.SetActive(false);
-		hardwareButtonsContainer.SetActive(true);
 		viewWeaponsContainer.SetActive(true);
 		CenterTabButtonClickSilent(0,true);
 	}

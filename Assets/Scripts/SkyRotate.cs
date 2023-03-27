@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SkyRotate : MonoBehaviour {
-	private float rotateSpeed = 0.015f;
+	public float rotateSpeed = 0.015f;
 	private float timeIncrement = 0.05f;
 	private float nextThink;
 	private Vector3 rot;

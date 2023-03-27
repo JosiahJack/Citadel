@@ -600,3 +600,4 @@ Blast door unlocked.
 Armory door unlocked.
 Power routed to door lock.
 Reroute power to remove barrier.
+Cannot save while in cyberspace.
