@@ -994,8 +994,11 @@ public class AIController : MonoBehaviour {
 				//   isOtherNPC
 				//   armorvalue
 				//   defense
-				damageData.impactVelocity = damageData.damage * 1.5f;
-				if (!tempHit.collider.transform.gameObject.CompareTag("Player")) damageData.impactVelocity *= 0.5f;
+				damageData.impactVelocity = damageData.damage;
+				if (tempHit.collider.transform.gameObject.CompareTag("Player")) {
+					damageData.impactVelocity *= 0.5f;
+				}
+
 				damageData.damage = DamageData.GetDamageTakeAmount(damageData);
 				Utils.ApplyImpactForce(tempHit.collider.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
 				CreateStandardImpactEffects(true);

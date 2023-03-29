@@ -148,7 +148,7 @@ public class PlayerMovement : MonoBehaviour {
 	private bool inputtingMovement;
 	private float accel;
 	private RaycastHit tempHit;
-	private Vector3 floorNormal;
+	private float floorDot;
 
 	public static PlayerMovement a;
 
@@ -194,22 +194,36 @@ public class PlayerMovement : MonoBehaviour {
 		ConsoleEmulator.ConsoleUpdate();
 
 		// Bug Hunter feedback (puts it into their screenshots for me)
-		if (locationIndicator.activeInHierarchy) locationText.text = "location: " +(transform.position.x.ToString("00.00")
-																	 + " " + transform.position.y.ToString("00.00")
-																	 + " " + transform.position.z.ToString("00.00"));
+		if (locationIndicator.activeInHierarchy) {
+			locationText.text = "location: "
+								+ (transform.position.x.ToString("00.00")
+								+ " " + transform.position.y.ToString("00.00")
+								+ " " + transform.position.z.ToString("00.00"));
+		}
 
-		// Prevent falling or movement while menu is up. Force it here in case PauseScript didn't catch it at startup.
-		if (PauseScript.a.mainMenu.activeSelf == true) { rbody.useGravity = false; rbody.Sleep(); return; }
-		if (PauseScript.a.Paused() || (ressurectingFinished >= PauseScript.a.relativeTime)) return;
+		// Prevent falling or movement while menu is up. Force it here in case
+		// PauseScript didn't catch it at startup.
+		if (PauseScript.a.mainMenu.activeSelf == true) {
+			rbody.useGravity = false;
+			rbody.Sleep();
+			return;
+		}
+
+		if (PauseScript.a.Paused()
+			|| (ressurectingFinished >= PauseScript.a.relativeTime)) {
+			return;
+		}
 
 		// Normal play when not paused...
 
-		rbody.WakeUp(); // Force player physics to never sleep.
-		if (rbody.isKinematic) rbody.isKinematic = false; // Allow physics to react and move.
+		rbody.WakeUp(); // Force player physics to never sleep.		
+		if (rbody.isKinematic) rbody.isKinematic = false; // Allow physics.
 		CyberSetup();
 		if (!inCyberSpace) {
 			CyberDestupOrNoclipMaintain();
-		} else PlayerHealth.a.makingNoise = true; // Cyber enemies to look more aware
+		} else {
+			PlayerHealth.a.makingNoise = true; // Cyber enemies more aware.
+		}
 
 		isSprinting = GetSprintInputState();
 		Crouch();
@@ -219,7 +233,8 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		playerSpeedActual = rbody.velocity.magnitude; // Readout for debugging in Inspector.
+		// Readout for debugging in Inspector.
+		playerSpeedActual = rbody.velocity.magnitude;
 		
 		Vector2 hz = new Vector2(rbody.velocity.x, rbody.velocity.z);
 		playerSpeedHorizontalActual = hz.magnitude;
@@ -228,12 +243,20 @@ public class PlayerMovement : MonoBehaviour {
 		if (ressurectingFinished > PauseScript.a.relativeTime) return;
 		if (consoleActivated) return;
 
-		if (capsuleCollider.height != (currentCrouchRatio * 2f)) capsuleCollider.height = currentCrouchRatio * 2f; // Crouch
-		if (leanCapsuleCollider.height != capsuleCollider.height) leanCapsuleCollider.height = capsuleCollider.height; // Lean should always match stalk.
+		// Crouch/Prone by shrinking the capsule height.
+		if (capsuleCollider.height != (currentCrouchRatio * 2f)) {
+			capsuleCollider.height = currentCrouchRatio * 2f;
+		}
+
+		// Lean capsule should always match stalk capsule.
+		if (leanCapsuleCollider.height != capsuleCollider.height) {
+			leanCapsuleCollider.height = capsuleCollider.height;
+		}
+
 		SetRunningRelForwardsAndSidewaysFlags();
 		playerSpeed = GetBasePlayerSpeed();
-		Automap.a.UpdateAutomap(transform.localPosition); // Update the map
-		ApplyBodyStateLerps(); // Handle body position lerping for smooth transitions
+		Automap.a.UpdateAutomap(transform.localPosition); // Update the map.
+		ApplyBodyStateLerps(); // Handle body lerping for smooth transitions.
 		Noclip();
 		ApplyGroundFriction();
 		bool grav = GetGravity();
@@ -250,34 +273,42 @@ public class PlayerMovement : MonoBehaviour {
 			return;
 		}
 
-		horizontalMovement = GetClampedHorizontalMovement(); // Limit movement speed horizontally for normal movement
-		RigidbodySetVelocityX(rbody, horizontalMovement.x); // Clamp horizontal movement
-		RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG - already passed rbody.velocity.z into the .y of this Vector2
+		// Non-cyberspace Normal Movement
+		// --------------------------------------------------------------------
+		// Clamp horizontal movement speed.
+		horizontalMovement = GetClampedHorizontalMovement();
+		RigidbodySetVelocityX(rbody, horizontalMovement.x);
+		RigidbodySetVelocityZ(rbody, horizontalMovement.y); // NOT A BUG:
+															// Already passed
+															// rbody.velocity.z
+															// into the .y of
+															// this Vector2.
+		// Clamp vertical movement speed.
 		verticalMovement = GetClampedVerticalMovement();
-		RigidbodySetVelocityY(rbody, verticalMovement); // Clamp vertical movement
+		RigidbodySetVelocityY(rbody, verticalMovement);
 		Lean();
 		WalkRun();
 		LadderStates();			 
 		Jump();
 		FallDamage();
-		oldVelocity = rbody.velocity;
-		if (!CheatWallSticky || gravliftState) grounded = false; // Automatically set grounded to false to prevent ability to climb any wall
 		FeetRayChecks();
+		oldVelocity = rbody.velocity;
+
+		// Automatically set grounded false, prevents ability to climb any wall
+		if (!CheatWallSticky || gravliftState) grounded = false;
 	}
 
-	// Parse surface below to allow for sprinting and staying grounded even if
-	// slightly off the ground for ramp travel improvement.  Also can use for
-	// footstep sounds to parse surface for sound to play.
+	// Parse surface below to allow for playing different footstep sets for
+	// different types of flooring.
 	void FeetRayChecks() {
-		floorNormal = Vector3.zero;
-
 		// Using value of 1.06 = (player capsule height / 2) + 0.06 = 1 + 0.06;
 		bool successfulRay = Physics.Raycast(transform.position, Vector3.down,
 											 out tempHit,1.06f,
 											 Const.a.layerMaskPlayerFeet);
 
 		// Success here means hit a useable something.
-		// If a ray hits a wall or other unusable something, that's not success and print "Can't use <something>"
+		// If a ray hits a wall or other unusable something, that's not success
+		// and print "Can't use <something>"
 		if (!successfulRay) return;
 		if (tempHit.collider == null) return;
 
@@ -285,14 +316,18 @@ public class PlayerMovement : MonoBehaviour {
 		if (hitGO == null) return;
 
 		PrefabIdentifier prefID = hitGO.GetComponent<PrefabIdentifier>();
-		grounded = true;
-		floorNormal = tempHit.normal;
+
+		// Footsteps...
+
+		// someday?
 	}
 
 	float GetBasePlayerSpeed() {
-		if (CheatNoclip && isSprinting) return maxCyberSpeed * 2.5f; // Cheat speed.
-		if (CheatNoclip) return maxCyberSpeed * 1.5f; // Cheat speed.
-		if (inCyberSpace) return maxCyberSpeed; //Cyber space state
+		// Cheat speeds
+		if (CheatNoclip && isSprinting) return maxCyberSpeed * 2.5f;
+		if (CheatNoclip) return maxCyberSpeed * 1.5f;
+
+		if (inCyberSpace) return maxCyberSpeed; //Cyber space speed
 
 		float retval = maxWalkSpeed;
 		bonus = 0f;
@@ -314,10 +349,20 @@ public class PlayerMovement : MonoBehaviour {
 				retval = maxSprintSpeed;
 			}
 
-			if (bodyState == BodyState.Standing || bodyState == BodyState.Crouch || bodyState == BodyState.CrouchingDown) {
-				retval -= ((maxWalkSpeed - maxCrouchSpeed)*1.5f);  // Subtract off the difference in speed between walking and crouching from the sprint speed
-			} else if (bodyState == BodyState.Prone || bodyState == BodyState.ProningDown || bodyState == BodyState.ProningUp) {
-				retval -= ((maxWalkSpeed - maxProneSpeed)*2f);  // Subtract off the difference in speed between walking and proning from the sprint speed
+			if (bodyState == BodyState.Standing
+				|| bodyState == BodyState.Crouch
+				|| bodyState == BodyState.CrouchingDown) {
+
+				// Subtract off the difference in speed between walking and
+				// crouching from the sprint speed
+				retval -= ((maxWalkSpeed - maxCrouchSpeed)*1.5f);
+			} else if (bodyState == BodyState.Prone
+					   || bodyState == BodyState.ProningDown
+					   || bodyState == BodyState.ProningUp) {
+
+				// Subtract off the difference in speed between walking and
+				// proning from the sprint speed.
+				retval -= ((maxWalkSpeed - maxProneSpeed)*2f);
 			}
 		}
 
@@ -327,20 +372,35 @@ public class PlayerMovement : MonoBehaviour {
 	void ApplyBodyStateLerps() {
 		switch (bodyState) {
 		case BodyState.CrouchingDown:
-			currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
+			currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio,-0.01f,
+												   ref crouchingVelocity,
+												   transitionToCrouchSec);
 			break;
 		case BodyState.StandingUp:
 			lastCrouchRatio = currentCrouchRatio;
-			currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, 1.01f, ref crouchingVelocity, transitionToCrouchSec);
-			LocalPositionSetY (transform, (((currentCrouchRatio - lastCrouchRatio) * capsuleHeight) / 2) + transform.position.y);
+			currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio,1.01f,
+												   ref crouchingVelocity,
+												   transitionToCrouchSec);
+
+			LocalPositionSetY(transform,(((currentCrouchRatio - lastCrouchRatio)
+										  * capsuleHeight) / 2)
+										+ transform.position.y);
 			break;
 		case BodyState.ProningDown:
-			currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, -0.01f, ref crouchingVelocity, transitionToCrouchSec);
+			currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio,-0.01f,
+												  ref crouchingVelocity,
+												  transitionToCrouchSec);
 			break;
 		case BodyState.ProningUp: // Prone to crouch
 			lastCrouchRatio = currentCrouchRatio;
-			currentCrouchRatio = Mathf.SmoothDamp (currentCrouchRatio, 1.01f, ref crouchingVelocity, (transitionToCrouchSec + transitionToProneAdd));
-			LocalPositionSetY (transform, (((currentCrouchRatio - lastCrouchRatio) * capsuleHeight) / 2) + transform.position.y);
+			currentCrouchRatio = Mathf.SmoothDamp(currentCrouchRatio,1.01f,
+												  ref crouchingVelocity,
+												  (transitionToCrouchSec
+												   + transitionToProneAdd));
+
+			LocalPositionSetY(transform,(((currentCrouchRatio - lastCrouchRatio)
+										  * capsuleHeight) / 2)
+										+ transform.position.y);
 			break;
 		}
 	}
@@ -352,32 +412,56 @@ public class PlayerMovement : MonoBehaviour {
 		}
 		relSideways = GetInput.a.StrafeLeft() ? -1f : 0f;
 		if (GetInput.a.StrafeRight()) relSideways = 1f;
-		running = ((relForward != 0) || (relSideways != 0)); // We are mashing a run button down.
+
+		// We are mashing a run button down.
+		running = ((relForward != 0) || (relSideways != 0));
 
 		// Now check for thumbstick/joystick input
-		Vector2 leftThumbstick = new Vector2(Input.GetAxisRaw("JoyAxis1"), // Horizontal Left < 0, Right > 0
-											 Input.GetAxisRaw("JoyAxis2") * -1f); // Vertical Down > 0, Up < 0 Inverted
-		if (leftThumbstick.magnitude < 0.05f) leftThumbstick = Vector2.zero;
-		else leftThumbstick = leftThumbstick.normalized * ((leftThumbstick.magnitude - 0.05f) / (1.0f - 0.05f));
+		Vector2 leftThumbstick = new Vector2(
+			Input.GetAxisRaw("JoyAxis1"), // Horizontal Left < 0, Right > 0
+			Input.GetAxisRaw("JoyAxis2") * -1f // Vertical Down > 0,
+											   //   Up < 0 Inverted
+		); 
+
+		if (leftThumbstick.magnitude < 0.05f) {
+			leftThumbstick = Vector2.zero;
+		} else {
+			leftThumbstick = leftThumbstick.normalized *
+							 ((leftThumbstick.magnitude - 0.05f)
+							  / (1.0f - 0.05f)); // Showing work instead of 0.95
+		}
 
 		relForward += leftThumbstick.y;
 		relSideways += leftThumbstick.x;
 
-		if (relForward > 0) {
-			if (!inCyberSpace) {
-				if (leanTarget > 0) {
-					if (Mathf.Abs(leanTarget - 0) < 0.02f) leanTarget = 0;
-					else leanTarget -= (leanSpeed * Time.deltaTime * relForward);
+		if (relForward <= 0) return; // Don't affect lean moving non-forward.
+		if (inCyberSpace) return; // Don't affect lean transform in cyber.
 
-					if (Mathf.Abs(leanShift - 0) < 0.02f) leanShift = 0;
-					else leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle)) * relForward;
-				} else {
-					if (Mathf.Abs(leanTarget - 0) < 0.02f) leanTarget = 0;
-					else leanTarget += (leanSpeed * Time.deltaTime * relForward);
+		if (leanTarget > 0) {
+			if (Mathf.Abs(leanTarget - 0) < 0.02f) {
+				leanTarget = 0;
+			} else {
+				leanTarget -= (leanSpeed * Time.deltaTime * relForward);
+			}
 
-					if (Mathf.Abs(leanShift - 0) < 0.02f) leanShift = 0;
-					else leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1)) * relForward;
-				}
+			if (Mathf.Abs(leanShift - 0) < 0.02f) {
+				leanShift = 0;
+			} else {
+				leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle))
+							* relForward;
+			}
+		} else {
+			if (Mathf.Abs(leanTarget - 0) < 0.02f) {
+				leanTarget = 0;
+			} else {
+				leanTarget += (leanSpeed * Time.deltaTime * relForward);
+			}
+
+			if (Mathf.Abs(leanShift - 0) < 0.02f) {
+				leanShift = 0;
+			} else {
+				leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1))
+							* relForward;
 			}
 		}
 	}
@@ -387,10 +471,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		tempVecRbody = rbody.velocity;
 		deceleration = walkDeacceleration;
-		if (!grounded && !ladderState && !justJumped) {
-			deceleration = deceleration * 1.5f;
-		}
-
+		if (!grounded && !ladderState && !justJumped) deceleration *= 1.5f;
 		if (CheatNoclip) {
 			deceleration = 0.05f;
 			// Prevent gravity from affecting and decelerate like a horizontal.
@@ -447,8 +528,9 @@ public class PlayerMovement : MonoBehaviour {
 		if (inCyberSpace) return false;
 		if (CheatNoclip) return false;
 		if (ladderState) return false;
-		//if (gravliftState) return false;
-		if (grounded) return false; // Disables gravity when touching the ground to prevent player sliding down ramps...hacky?
+		// Disables gravity when touching steep ground to prevent player
+		// sliding down ramps...hacky?
+		if (floorDot < 0.55) return false;
 		return true;
 	}
 
@@ -538,10 +620,12 @@ public class PlayerMovement : MonoBehaviour {
 			if (jumpSFXFinished < PauseScript.a.relativeTime) {
 				jumpSFXFinished = PauseScript.a.relativeTime + jumpSFXIntervalTime;
 				SFX.pitch = 1f;
-				if (fatigue > 80)
-					Utils.PlayOneShotSavable(SFX,SFXJump,0.5f); // Quietly, we are tired.
-				else
+				if (fatigue > 80) {
+					// Quietly, we are tired.
+					Utils.PlayOneShotSavable(SFX,SFXJump,0.5f);
+				} else {
 					Utils.PlayOneShotSavable(SFX,SFXJump);
+				}
 			}
 			justJumped = false;
 		}
@@ -555,18 +639,30 @@ public class PlayerMovement : MonoBehaviour {
 			// Ladder climb, allow while grounded
 			float bonus = 1f;
 			if (Inventory.a.JumpJetsActive()) bonus = 2f;
-			rbody.AddRelativeForce(relSideways * walkAcceleration * Time.deltaTime,ladderSpeed * relForward * walkAcceleration * Time.deltaTime * bonus, 0); // Climbing when touching the ground
+
+			// Climbing when touching the ground
+			rbody.AddRelativeForce(relSideways * walkAcceleration
+								   * Time.deltaTime,ladderSpeed * relForward
+													* walkAcceleration
+													* Time.deltaTime * bonus,0);
 		} else {
 			// Climbing off the ground
-			if (ladderSFXFinished < PauseScript.a.relativeTime && rbody.velocity.y > ladderSpeed * 0.5f) {
+			if (ladderSFXFinished < PauseScript.a.relativeTime
+				&& rbody.velocity.y > ladderSpeed * 0.5f) {
+
 				SFX.pitch = (UnityEngine.Random.Range(0.8f,1.2f));
 				Utils.PlayOneShotSavable(SFX,SFXLadder,0.2f);
-				ladderSFXFinished = PauseScript.a.relativeTime + ladderSFXIntervalTime;
+				ladderSFXFinished = PauseScript.a.relativeTime
+									+ ladderSFXIntervalTime;
 			}
 
 			float ladderSpeedMod = ladderSpeed;
 			if (isSprinting && running) ladderSpeedMod = 1.2f; // Climb fast!
-			rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime * 0.2f, ladderSpeedMod * relForward * walkAcceleration * Time.deltaTime, 0);
+
+			rbody.AddRelativeForce(relSideways * walkAcceleration
+								   * walkAccelAirRatio * Time.deltaTime * 0.2f,
+								   ladderSpeedMod * relForward
+								   * walkAcceleration * Time.deltaTime, 0);
 		}
 
 		if (Inventory.a.BoosterActive() && Inventory.a.BoosterSetToSkates()) {
@@ -575,8 +671,13 @@ public class PlayerMovement : MonoBehaviour {
 			deceleration = walkDeacceleration;
 		}
 
-		RigidbodySetVelocityY(rbody,(Mathf.SmoothDamp(rbody.velocity.y,0,ref walkDeaccelerationVoly, deceleration))); // Set vertical velocity towards 0 when climbing
+		// Set vertical velocity towards 0 when climbing.
+		RigidbodySetVelocityY(rbody,(Mathf.SmoothDamp(rbody.velocity.y,0,
+													  ref walkDeaccelerationVoly,
+													  deceleration)));
 	}
+
+	private float runTime;
 
 	void WalkRun() {
 		if (CheatNoclip) return;
@@ -585,13 +686,26 @@ public class PlayerMovement : MonoBehaviour {
 		if (grounded || Inventory.a.JumpJetsActive()) {
 			// Normal walking
 			accel = walkAcceleration * Time.deltaTime;
-			rbody.AddRelativeForce(relSideways * accel,0,relForward * accel);
+			//float ang = Vector3.Angle(floorNormal, Vector3.up);
+			float forForce = relForward * accel;
+			float sidForce = relSideways * accel;
+			runTime += Time.deltaTime;
+			if (relForward == 0 && relSideways == 0) runTime = 0;
+
+			if ((runTime > 0.8f || Inventory.a.BoosterActive()) && rbody.velocity.magnitude < playerSpeed) {
+				sidForce += sidForce * ((runTime - 0.8f) / 1f);
+				forForce += forForce * ((runTime - 0.8f) / 1f);
+				Debug.Log("Applying bonus force!");
+			}
+
+			rbody.AddRelativeForce(sidForce,0,forForce);
 			if (fatigueFinished2 < PauseScript.a.relativeTime && relForward != 0) {
 				fatigueFinished2 = PauseScript.a.relativeTime + fatigueWaneTickSecs;
 				if (!Inventory.a.BoosterActive()) {
 					fatigue += isSprinting ?
 									fatiguePerSprintTick : fatiguePerWalkTick;
 				}
+
 				if (staminupActive) fatigue = 0;
 			}
 		} else {
@@ -944,14 +1058,12 @@ public class PlayerMovement : MonoBehaviour {
 	void OnCollisionStay (Collision collision  ){
 		if (!PauseScript.a.Paused() && !inCyberSpace) {
 			tempFloat = 0;
-			//foreach(ContactPoint contact in collision.contacts) {
+			float maxSlope = 0.35f;
 			for(tempInt=0;tempInt<collision.contacts.Length;tempInt++) {
-				//if (Vector3.Angle(contact.normal,Vector3.up) < maxSlope) {
-				tempFloat = Vector3.Dot(collision.contacts[tempInt].normal,Vector3.up);
-				//Debug.Log("Contact.normal for player OnCollisionStay is " + ang.ToString());
-				float maxSlope = 0.35f;
+				floorDot = Vector3.Dot(collision.contacts[tempInt].normal,Vector3.up);
+				maxSlope = 0.35f;
 				if (Inventory.a.BoosterActive()) maxSlope = 0.7f;
-				if (tempFloat <= 1f && tempFloat >= maxSlope) {
+				if (floorDot <= 1f && floorDot >= maxSlope) {
 					grounded = true;
 					return;
 				}

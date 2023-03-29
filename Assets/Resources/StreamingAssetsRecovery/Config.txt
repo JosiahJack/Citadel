@@ -11,8 +11,11 @@ Gamma = 50
 AA = 1
 Shadows = 0
 SSR = 1
+VSync = 0
 
 [Audio]
+VSync = 0
+SSR = 1
 Gamma = 50
 SpeakerMode = 1
 Reverb = 1
@@ -23,6 +26,7 @@ VolumeEffects = 100
 Language = 0
 
 [Input]
+Language = 0
 Forward = w
 Strafe Left = a
 Backpedal = s
@@ -65,7 +69,7 @@ InvertLook = 0
 InvertCyberspaceLook = 0
 InvertInventoryCycling = 0
 QuickItemPickup = 0
-QuickReloadWeapons = 0
+QuickReloadWeapons = 1
 E-reader = 6
 Ammo Type = v
 Unused = !

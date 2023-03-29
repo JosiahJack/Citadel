@@ -182,8 +182,9 @@ public class AIAnimationController : MonoBehaviour {
 							  + "null on " + go.name);
 				}
 			} else {
-				Debug.Log("AIAnimationController.Load failure, aiac == null "
-						  + "on " + go.name);
+				Debug.Log("AIAnimationController.Load failure, aic == null "
+						  + "on " + go.name + " with parent of "
+						  + go.transform.parent.gameObject.name);
 			}
 			return index + 3;
 		}

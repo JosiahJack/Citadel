@@ -442,17 +442,17 @@ public class TargetIO : MonoBehaviour {
 		TargetIO tio = go.GetComponent<TargetIO>();
 		if (tio == null) {
 			Debug.Log("TargetIO.Load failure, tio == null on " + go.name);
-			return index + 51;
+			return index + 52;
 		}
 
 		if (index < 0) {
 			Debug.Log("TargetIO.Load failure, index < 0");
-			return index + 51;
+			return index + 52;
 		}
 
 		if (entries == null) {
 			Debug.Log("TargetIO.Load failure, entries == null");
-			return index + 51;
+			return index + 52;
 		}
 
 		tio.targetname = entries[index]; index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
@@ -506,8 +506,7 @@ public class TargetIO : MonoBehaviour {
 		tio.branchFlip = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 		tio.branchFlipOnly = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 		tio.doorAccessCardOverrideToggle = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-		tio.unlockSwitch = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
+		tio.unlockSwitch = Utils.GetBoolFromString(entries[index]); index++;
 		if (instantiated) tio.RegisterToConst();
 		return index;
 	}
