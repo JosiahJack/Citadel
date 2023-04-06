@@ -99,8 +99,9 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject biograph;
 
 	// Externally modifiable.
-	// Not intended to be set in inspector, some are not HideInInspector for reference only.
-	// Also, don't care about encapsulation - it works, it's good.
+	// Not intended to be set in inspector, some are not HideInInspector for
+	// reference only.  Also, don't care about encapsulation - it works, it's
+	// good.
 	public bool lastWeaponSideRH;
 	public bool lastItemSideRH;
 	public bool lastAutomapSideRH;
@@ -141,18 +142,11 @@ public class MFDManager : MonoBehaviour  {
 
 	// Internal references
 	private bool isRH;
-	private float ecgValue = 0;
-	private float beatShift;
-	private float beatThresh = 0.1f;
-	private float beatVariation = 0.05f;
-	private float freq = 35f;
-	private float graphAdd = 20f;
-	private float fatigueFactor = 0f;
-	private float beatFinished = 0f;
-	// private string[] wepText = new string[]{"MARK3 ASSAULT RIFLE","ER-90 BLASTER","SV-23 DARTGUN"
-		// "AM-27 FLECHETTE","RW-45 ION BEAM","TS-04 LASER RAPIER","LEAD PIPE","MAGNUM 2100","SB-20 MAGPULSE",
-		// "ML-41 PISTOL","LG-XX PLASMA RIFLE","MM-76 RAIL GUN","DC-05 RIOT GUN","RF-07 SKORPION","SPARQ BEAM",
-		// "DH-07 STUNGUN"};
+	// private string[] wepText = new string[]{"MARK3 ASSAULT RIFLE",
+		// "ER-90 BLASTER","SV-23 DARTGUN","AM-27 FLECHETTE","RW-45 ION BEAM",
+		// "TS-04 LASER RAPIER","LEAD PIPE","MAGNUM 2100","SB-20 MAGPULSE",
+		// "ML-41 PISTOL","LG-XX PLASMA RIFLE","MM-76 RAIL GUN",
+		// "DC-05 RIOT GUN","RF-07 SKORPION","SPARQ BEAM","DH-07 STUNGUN"};
 	private int wep16index = 0;
 	[HideInInspector] public LogDataTabContainerManager logDataTabInfoLH;
 	[HideInInspector] public LogDataTabContainerManager logDataTabInfoRH;
@@ -207,13 +201,13 @@ public class MFDManager : MonoBehaviour  {
 		a.logActive = false;
 		a.TabReset(true);
 		a.TabReset(false);
-		a.beatFinished = PauseScript.a.relativeTime + 1.2f;
 		a.DrawTicks(true); // Health
 		a.DrawTicks(false); // Energy
 		a.text = GetComponent<Text> ();
 		a.deltaTime = Time.time;
 		a.count = 0;
-		a.tickFinished = a.centerTabsTickFinished = Time.time + a.tickSecs + UnityEngine.Random.value;
+		a.tickFinished = a.centerTabsTickFinished = Time.time + a.tickSecs
+						 + UnityEngine.Random.value;
 		a.formatToDisplayMS = "{0:0.0}";
 		a.formatToDisplayFPS = "{0:0.0}";
 		a.versionText.text = Const.a.versionString; // CITADEL PROJECT VERSION
@@ -237,11 +231,6 @@ public class MFDManager : MonoBehaviour  {
 			audioLogContainerRH.GetComponent<LogDataTabContainerManager>();
 	}
 
-	void OnEnable() {
-		beatFinished = PauseScript.a.relativeTime + 1.2f;
-		if (BiomonitorGraphSystem.a != null) BiomonitorGraphSystem.a.ClearGraphs();
-	}
-
 	void WeaponCycleUp() {
 		if (MouseLookScript.a.inCyberSpace) {
 			// There's only two cyberspace weapons, up is down.
@@ -258,32 +247,29 @@ public class MFDManager : MonoBehaviour  {
 				Inventory.a.drillButtonText.Select(true);
 			}
 		} else {
-			if (Const.a.InputInvertInventoryCycling) {
-				wepbutMan.WeaponCycleDown();
-			} else {
-				wepbutMan.WeaponCycleUp();
-			}
+			if (Const.a.InputInvertInventoryCycling) wepbutMan.WeaponCycleDown();
+			else wepbutMan.WeaponCycleUp();
 		}
 	}
 
 	void WeaponCycleDown() {
-			if (MouseLookScript.a.inCyberSpace) {
-				Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill; // There's only two cyberspace weapons, up is down.
-				Utils.PlayOneShotSavable(Inventory.a.SFX,Inventory.a.SFXChangeWeapon);
-				if (Inventory.a.isPulserNotDrill) {
-					Inventory.a.pulserButtonText.Select(true);
-					Inventory.a.drillButtonText.Select(false);
-				} else {
-					Inventory.a.pulserButtonText.Select(false);
-					Inventory.a.drillButtonText.Select(true);
-				}
+		if (MouseLookScript.a.inCyberSpace) {
+			// There's only two cyberspace weapons, up is down.
+			Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill;
+			Utils.PlayOneShotSavable(Inventory.a.SFX,
+									 Inventory.a.SFXChangeWeapon);
+
+			if (Inventory.a.isPulserNotDrill) {
+				Inventory.a.pulserButtonText.Select(true);
+				Inventory.a.drillButtonText.Select(false);
 			} else {
-				if (Const.a.InputInvertInventoryCycling) {
-					wepbutMan.WeaponCycleUp();
-				} else {
-					wepbutMan.WeaponCycleDown();
-				}
+				Inventory.a.pulserButtonText.Select(false);
+				Inventory.a.drillButtonText.Select(true);
 			}
+		} else {
+			if (Const.a.InputInvertInventoryCycling) wepbutMan.WeaponCycleUp();
+			else wepbutMan.WeaponCycleDown();
+		}
 	}
 
 	void Update() {
@@ -317,7 +303,6 @@ public class MFDManager : MonoBehaviour  {
 		lastEnergy = PlayerEnergy.a.energy;
 		if (lastHealth != PlayerHealth.a.hm.health) DrawTicks(true);
 		lastHealth = PlayerHealth.a.hm.health;
-		BioMonitorGraphUpdate();
 		WeaponButtonsManagerUpdate();
 		if (GetInput.a.WeaponCycUp()) WeaponCycleUp();
 		if (GetInput.a.WeaponCycDown()) WeaponCycleDown();
@@ -650,43 +635,6 @@ public class MFDManager : MonoBehaviour  {
 	public void ClosePaperLog() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		CenterTabButtonClickSilent(curCenterTab,false);
-	}
-
-	// Updating here so that the graphed values keep updating even when the graph visibility is off.
-	void BioMonitorGraphUpdate() {
-		if (BiomonitorGraphSystem.a == null) return;
-
-		// Energy Usage
-		// --------------------------------------------------------------------
-		BiomonitorGraphSystem.a.Graph(0,((PlayerEnergy.a.drainJPM/449f)*2f)-1f); // Take percentage of max JPM drain per second (449) and apply it to a scale of �1.0
-
-		// Chi Wave
-		// --------------------------------------------------------------------
-		// Different when genius patch active
-		if (PlayerPatch.a.geniusFinishedTime > PauseScript.a.relativeTime) {
-			BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 3f) + UnityEngine.Random.Range(-0.3f,0.3f));
-		} else {
-			BiomonitorGraphSystem.a.Graph(1, Mathf.Sin(PauseScript.a.relativeTime * 1f));
-		}
-
-		// ECG
-		// --------------------------------------------------------------------
-		// Apply percent fatigued to 200bpm max heart rate with baseline 50bpm.
-		fatigueFactor = (((PlayerMovement.a.fatigue / 100f) * 120f) + graphAdd) / 60f;
-		if (beatFinished < PauseScript.a.relativeTime) {
-			beatFinished = PauseScript.a.relativeTime + (1f/fatigueFactor); // Adjust into seconds and add to game timer.
-		}
-
-		// Create shifted sine wave for heart beat.
-		beatShift = (beatFinished - PauseScript.a.relativeTime)/(1f/fatigueFactor);
-		if (beatShift > 0.8f) ecgValue = Mathf.Sin(beatShift * freq);
-		else ecgValue = 0;
-
-		 // Inject variation when beating
-		if (ecgValue > beatThresh || ecgValue < (beatThresh * -1f)) {
-			ecgValue += UnityEngine.Random.Range((beatVariation * -1f),beatVariation);
-		}
-		BiomonitorGraphSystem.a.Graph(2, ecgValue);
 	}
 
 	public void DrawTicks(bool health) {

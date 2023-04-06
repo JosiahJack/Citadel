@@ -420,6 +420,8 @@ public class Const : MonoBehaviour {
         }
     }
 
+
+
 	void Start() {
 		Config.LoadConfig();
 		layerMaskNPCSight = LayerMask.GetMask("Default","Geometry","Corpse",
@@ -1302,6 +1304,7 @@ public class Const : MonoBehaviour {
 			sth.saveGameIndex = -1;
 			Cursor.lockState = CursorLockMode.None;
 			DontDestroyOnLoad(newGameIndicator); // 4b.2.
+			loadingScreen.SetActive(true);
 			ReloadScene(sth); // 4b.3.
 		} else { // 4a.
 			//UnityEngine.Debug.Log("freshGame.name: " + freshGame.name);

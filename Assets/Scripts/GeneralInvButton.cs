@@ -73,6 +73,8 @@ public class GeneralInvButton : MonoBehaviour {
 		// Access Cards button
 		if (GeneralInvButtonIndex == 0) {
 			MFDManager.a.SendInfoToItemTab(81);
+			MFDManager.a.OpenTab(1,true,TabMSG.None, useableItemIndex,
+								 Handedness.LH);
 			return;
 		}
 

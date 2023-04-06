@@ -131,7 +131,6 @@ public class PlayerMovement : MonoBehaviour {
 	private float jumpJetEnergySuckTick = 1f;
 	private Vector3 tempVec;
 	private Vector2 tempVec2;
-	private float tempFloat;
 	private int tempInt;
 	private float leanSpeed = 70f;
 	[HideInInspector] public bool Notarget = false; // for cheat to disable enemy sight checks against this player
@@ -148,7 +147,9 @@ public class PlayerMovement : MonoBehaviour {
 	private bool inputtingMovement;
 	private float accel;
 	private RaycastHit tempHit;
-	private float floorDot;
+	public float floorDot;
+	public Vector3 floorAng;
+	private float slideAngle = 0.9f;
 
 	public static PlayerMovement a;
 
@@ -180,7 +181,6 @@ public class PlayerMovement : MonoBehaviour {
 		jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime;
 		ressurectingFinished = PauseScript.a.relativeTime;
 		tempInt = -1;
-		tempFloat = 0;
 		doubleJumpFinished = PauseScript.a.relativeTime;
 		doubleJumpTicks = 0;
 		turboFinished = PauseScript.a.relativeTime;
@@ -467,7 +467,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void ApplyGroundFriction() {
-		if (running && isSprinting) return;
+		if (isSprinting) return;
 
 		tempVecRbody = rbody.velocity;
 		deceleration = walkDeacceleration;
@@ -528,13 +528,16 @@ public class PlayerMovement : MonoBehaviour {
 		if (inCyberSpace) return false;
 		if (CheatNoclip) return false;
 		if (ladderState) return false;
+		if (isSprinting) return true;
+
 		// Disables gravity when touching steep ground to prevent player
 		// sliding down ramps...hacky?
-		if (floorDot < 0.55) return false;
+		if (grounded && floorDot >= slideAngle) return false;
 		return true;
 	}
 
-	// Get input for Jump and set impulse time, removed "&& (ladderState == false)" since I want to be able to jump off a ladder
+	// Get input for Jump and set impulse time, removed
+	// "&& (ladderState == false)" since I want to be able to jump off a ladder
 	void Jump() {
 		if (CheatNoclip && !Inventory.a.JumpJetsActive()) return;
 
@@ -568,6 +571,7 @@ public class PlayerMovement : MonoBehaviour {
 				if (justJumped && doubleJumpTicks == 2) {
 					rbody.AddForce(new Vector3(transform.forward.x * burstForce,transform.forward.y * burstForce,transform.forward.z * burstForce),ForceMode.Impulse); // Booster thrust
 					PlayerEnergy.a.TakeEnergy(22f);
+					BiomonitorGraphSystem.a.EnergyPulse(22f);
 					justJumped = false;
 					jumpTime = 0;
 					doubleJumpTicks = 0;
@@ -598,6 +602,7 @@ public class PlayerMovement : MonoBehaviour {
 						if (jumpJetEnergySuckTickFinished < PauseScript.a.relativeTime) {
 							jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime + jumpJetEnergySuckTick;
 							PlayerEnergy.a.TakeEnergy(energysuck);
+							BiomonitorGraphSystem.a.EnergyPulse(energysuck);
 						}
 					} else {
 						hwbJumpJets.JumpJetsOff();
@@ -683,39 +688,57 @@ public class PlayerMovement : MonoBehaviour {
 		if (CheatNoclip) return;
 		if (ladderState) return;
 
+		float sidForce = relSideways * walkAcceleration * Time.deltaTime;
+		float forForce = relForward * walkAcceleration * Time.deltaTime;
+		float upForce = 0f;
+		if (floorDot < slideAngle) {// && floorAng.y > 0f) {
+			if (Vector3.Dot(transform.forward,Vector3.up) < 0f) {
+				upForce = forForce * (floorDot/slideAngle);
+				Debug.Log("Applying bonus up force!");
+			}
+		}
+
 		if (grounded || Inventory.a.JumpJetsActive()) {
 			// Normal walking
-			accel = walkAcceleration * Time.deltaTime;
-			//float ang = Vector3.Angle(floorNormal, Vector3.up);
-			float forForce = relForward * accel;
-			float sidForce = relSideways * accel;
 			runTime += Time.deltaTime;
 			if (relForward == 0 && relSideways == 0) runTime = 0;
+			//if ((runTime > 0.8f || Inventory.a.BoosterActive())
+			//	&& rbody.velocity.magnitude < playerSpeed) {
 
-			if ((runTime > 0.8f || Inventory.a.BoosterActive()) && rbody.velocity.magnitude < playerSpeed) {
-				sidForce += sidForce * ((runTime - 0.8f) / 1f);
-				forForce += forForce * ((runTime - 0.8f) / 1f);
-				Debug.Log("Applying bonus force!");
-			}
+			//	sidForce += sidForce * ((runTime - 0.8f) / 1f);
+			//	forForce += forForce * ((runTime - 0.8f) / 1f);
+				//Debug.Log("Applying bonus force!");
+			//}
 
-			rbody.AddRelativeForce(sidForce,0,forForce);
-			if (fatigueFinished2 < PauseScript.a.relativeTime && relForward != 0) {
-				fatigueFinished2 = PauseScript.a.relativeTime + fatigueWaneTickSecs;
+			rbody.AddRelativeForce(sidForce,upForce,forForce);
+			if (fatigueFinished2 < PauseScript.a.relativeTime
+				&& relForward != 0) {
+
+				fatigueFinished2 = PauseScript.a.relativeTime
+								   + fatigueWaneTickSecs;
+
 				if (!Inventory.a.BoosterActive()) {
-					fatigue += isSprinting ?
-									fatiguePerSprintTick : fatiguePerWalkTick;
+					if (isSprinting) fatigue += fatiguePerSprintTick;
+					else fatigue += fatiguePerWalkTick;
 				}
 
 				if (staminupActive) fatigue = 0;
 			}
 		} else {
 			// Sprinting in the air
+			sidForce *= walkAccelAirRatio;
+			forForce *= walkAccelAirRatio;
+			upForce *= walkAccelAirRatio;
+
 			if ((isSprinting || Inventory.a.BoosterActive()) && running) {
-				rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * 0.01f * Time.deltaTime);
-			} else {
-				// Walking in the air, we're floating in the moonlit sky, the people far below are sleeping as we fly
-				rbody.AddRelativeForce(relSideways * walkAcceleration * walkAccelAirRatio * Time.deltaTime, 0, relForward * walkAcceleration * walkAccelAirRatio * Time.deltaTime);
+				sidForce *= 0.01f;
+				upForce *= 0.01f;
+				forForce *= 0.01f;
 			}
+
+			// Walking in the air, we're floating in the moonlit sky, the
+			// people far below are sleeping as we fly!
+			rbody.AddRelativeForce(sidForce,upForce,forForce);
 		}
 	}
 
@@ -1057,9 +1080,9 @@ public class PlayerMovement : MonoBehaviour {
 	// Sets grounded based on normal angle of the impact point (NOTE: This is not the surface normal!)
 	void OnCollisionStay (Collision collision  ){
 		if (!PauseScript.a.Paused() && !inCyberSpace) {
-			tempFloat = 0;
 			float maxSlope = 0.35f;
 			for(tempInt=0;tempInt<collision.contacts.Length;tempInt++) {
+				floorAng = collision.contacts[tempInt].normal;
 				floorDot = Vector3.Dot(collision.contacts[tempInt].normal,Vector3.up);
 				maxSlope = 0.35f;
 				if (Inventory.a.BoosterActive()) maxSlope = 0.7f;

@@ -345,6 +345,7 @@ public class HealthManager : MonoBehaviour {
 					take = 0f; // don't get hurt by magnetic interactions
 					empstatic.Flash(2);
 					PlayerEnergy.a.TakeEnergy(11f);
+					BiomonitorGraphSystem.a.EnergyPulse(11f);
 				}
 
 				if (Inventory.a.hardwareIsActive[5] && Inventory.a.hasHardware[5]) {

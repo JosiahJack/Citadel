@@ -6,7 +6,13 @@ public class GrenadeProximity : MonoBehaviour {
 	public GrenadeActivate ga;
 
 	void OnTriggerEnter(Collider col) {
-		if (col.transform.gameObject.CompareTag("NPC") || col.transform.gameObject.CompareTag("Player")) {
+		if (col.transform.gameObject.CompareTag("Player")) {
+			ga.proxSensed = true;
+		}
+
+		if (!col.transform.gameObject.CompareTag("NPC")) return;
+
+		if (col.transform.gameObject.GetComponent<AIController>() != null) {
 			ga.proxSensed = true;
 		}
 	}

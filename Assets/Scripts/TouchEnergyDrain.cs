@@ -11,10 +11,16 @@ public class TouchEnergyDrain : MonoBehaviour {
 	}
 
 	void  OnCollisionEnter (Collision col) {
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
+
 		if (tickFinished < PauseScript.a.relativeTime) {
 			if (col.gameObject.CompareTag("Player")) {
 				PlayerEnergy pe = col.gameObject.GetComponent<PlayerEnergy>();
-				if (pe != null) pe.TakeEnergy(drainage);
+				if (pe != null) {
+					pe.TakeEnergy(drainage);
+					BiomonitorGraphSystem.a.EnergyPulse(drainage);
+				}
 			}
 			tickFinished = PauseScript.a.relativeTime + tick;
 		}

@@ -153,7 +153,7 @@ public class PlayerEnergy : MonoBehaviour {
 		if (Inventory.a.hardwareIsActive [11]) Inventory.a.hardwareButtonManager.InfraredOff(); // infrared
 	}
 
-    public void TakeEnergy ( float take  ){
+    public void TakeEnergy(float take) {
 		float was = energy;
 		if (energy == 0) return;
 		if (WeaponCurrent.a.redbull) return; // No energy drain!
@@ -167,7 +167,7 @@ public class PlayerEnergy : MonoBehaviour {
 		}
 	}
 
-	public void GiveEnergy (float give, EnergyType type) {
+	public void GiveEnergy(float give, EnergyType type) {
 		energy += give;
 		if (energy > maxenergy) energy = maxenergy;
         if (type == EnergyType.Battery) {

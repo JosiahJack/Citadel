@@ -107,10 +107,6 @@ public class HardwareButton : MonoBehaviour {
 			return;
 		}
 
-		if (BiomonitorGraphSystem.a != null) {
-			BiomonitorGraphSystem.a.ClearGraphs();
-		}
-
 		if (Inventory.a.BioMonitorActive()) {
 			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[0]);
 			Utils.Deactivate(bioMonitorContainer);
