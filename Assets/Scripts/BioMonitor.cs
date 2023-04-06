@@ -37,9 +37,14 @@ public class BioMonitor : MonoBehaviour {
 		bpmText.text = Const.a.stringTable[529];
 		fatigueDetailText.text = Const.a.stringTable[531];
 		tempStr.Clear();
-		if (PlayerMovement.a.fatigue < 80f) tempStr.Append(Const.a.stringTable[533]); // Moderate
-		else if (PlayerMovement.a.fatigue < 30f) tempStr.Append(Const.a.stringTable[534]); // Low
-		else tempStr.Append(Const.a.stringTable[532]); // High!
+		if (PlayerMovement.a.fatigue >= 80f) {
+			tempStr.Append(Const.a.stringTable[532]); // High!
+		} else if (PlayerMovement.a.fatigue < 80f
+				   && PlayerMovement.a.fatigue > 30f) {
+			tempStr.Append(Const.a.stringTable[533]); // Moderate
+		} else {
+			tempStr.Append(Const.a.stringTable[534]); // Low
+		}
 
 		fatigue.text = tempStr.ToString();
 		tempStr.Clear();

@@ -684,10 +684,16 @@ public class WeaponFire : MonoBehaviour {
             if (index == 1 || index == 4 || index == 10 || index == 14 || index == 15) {
                 if (overloadEnabled) {
                     energoverButton.OverloadFired();
-                    if (!WeaponCurrent.a.bottomless && !WeaponCurrent.a.redbull) PlayerEnergy.a.TakeEnergy(Const.a.energyDrainOverloadForWeapon[index]); //take large amount
+                    if (!WeaponCurrent.a.bottomless && !WeaponCurrent.a.redbull) {
+						PlayerEnergy.a.TakeEnergy(Const.a.energyDrainOverloadForWeapon[index]); //take large amount
+						BiomonitorGraphSystem.a.EnergyPulse(Const.a.energyDrainOverloadForWeapon[index]);
+					}
                 } else {
                     float takeEnerg = (WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent] / 100f) * (Const.a.energyDrainHiForWeapon[index] - Const.a.energyDrainLowForWeapon[index]);
-                    if (!WeaponCurrent.a.bottomless && !WeaponCurrent.a.redbull) PlayerEnergy.a.TakeEnergy(takeEnerg);
+                    if (!WeaponCurrent.a.bottomless && !WeaponCurrent.a.redbull) {
+						PlayerEnergy.a.TakeEnergy(takeEnerg);
+						BiomonitorGraphSystem.a.EnergyPulse(takeEnerg);
+					}
                 }
             } else {
                 if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
@@ -1139,7 +1145,10 @@ public class WeaponFire : MonoBehaviour {
 		}
 
 		CreateStandardImpactEffects(true);
-		if (isRapier) PlayerEnergy.a.TakeEnergy(3.666f); // 3 hits per tick.
+		if (isRapier) {
+			PlayerEnergy.a.TakeEnergy(3.666f); // 3 hits per tick.
+			BiomonitorGraphSystem.a.EnergyPulse(3.666f);
+		}
 	}
 
 	// These are a bit silly.

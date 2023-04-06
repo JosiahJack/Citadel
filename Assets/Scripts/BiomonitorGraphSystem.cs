@@ -292,7 +292,7 @@ public class BiomonitorGraphSystem : MonoBehaviour {
                 if (y0 < 0) y0 = 0;
                 currentColors[y0] = ergColor;
                 colorsERG[currentIndex0][y0] = ergColor;
-                if (lastERG - y0 > 2) {
+                if (Mathf.Abs(lastERG - y0) > 2) {
                     dist = lastERG;
                     if (lastERG > y0) {
                         dist = lastERG - 1;
@@ -324,6 +324,26 @@ public class BiomonitorGraphSystem : MonoBehaviour {
                 if (y0 < 0) y0 = 0;
                 currentColors[y0] = chiColor;
                 colorsCHI[currentIndex1][y0] = chiColor;
+                if (Mathf.Abs(lastCHI - y0) > 2) {
+                    dist = lastCHI;
+                    if (lastCHI > y0) {
+                        dist = lastCHI - 1;
+                        down = true;
+                    } else {
+                        dist = lastCHI + 1;
+                        down = false;
+                    }
+
+                    while (dist != y0) {
+                        if (dist > ymax || dist < 0) break;
+
+                        currentColors[dist] = chiColor;
+                        colorsCHI[currentIndex1][dist] = chiColor;
+                        if (down) dist--;
+                        else dist++;
+                    }
+                }
+                lastCHI = y0;
                 if (y0 > 0 && y0 < ymax) { // Increase thickness to 3 pixels
                     currentColors[y0 - 1] = chiColor;
                     currentColors[y0 + 1] = chiColor;
@@ -337,7 +357,7 @@ public class BiomonitorGraphSystem : MonoBehaviour {
                 if (y0 < 0) y0 = 0;
                 currentColors[y0] = ecgColor;
                 colorsECG[currentIndex2][y0] = ecgColor;
-                if (lastECG - y0 > 2) {
+                if (Mathf.Abs(lastECG - y0) > 2) {
                     dist = lastECG;
                     if (lastECG > y0) {
                         dist = lastECG - 1;
