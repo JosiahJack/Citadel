@@ -68,7 +68,7 @@ public class StartMenuButtonHighlight : MonoBehaviour {
 			if (outlineGlow != null) outlineGlow.enabled = false;
 			if (text != null) text.color = darkened;
 		} else {
-			DeHighlight();
+			if (usePointerHighlight) DeHighlight();
 		}
 	}
 

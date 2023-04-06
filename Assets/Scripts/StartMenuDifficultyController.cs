@@ -38,6 +38,9 @@ public class StartMenuDifficultyController : MonoBehaviour {
 	}
 
 	public void HighlightUpdate() {
+		//Debug.Log(gameObject.name + " difficultySetting: "
+		//		  + difficultySetting.ToString());
+
 		switch (difficultySetting) {
 			case 0:
 				ResetHighlights();
