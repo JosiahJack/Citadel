@@ -730,7 +730,7 @@ public class PlayerMovement : MonoBehaviour {
 			forForce *= 2.00f;
 		}
 
-		if (floorDot < 0.98f) {// && floorAng.y > 0f) {
+		if (floorDot < 0.98f) {
 			Vector3 movDir = rbody.velocity;
 			movDir.y = 0;
 			movDir = movDir.normalized;
@@ -743,14 +743,6 @@ public class PlayerMovement : MonoBehaviour {
 			// Normal walking
 			runTime += Time.deltaTime;
 			if (relForward == 0 && relSideways == 0) runTime = 0;
-			//if ((runTime > 0.8f || Inventory.a.BoosterActive())
-			//	&& rbody.velocity.magnitude < playerSpeed) {
-
-			//	sidForce += sidForce * ((runTime - 0.8f) / 1f);
-			//	forForce += forForce * ((runTime - 0.8f) / 1f);
-				//Debug.Log("Applying bonus force!");
-			//}
-
 			rbody.AddRelativeForce(sidForce,upForce,forForce);
 			if (fatigueFinished2 < PauseScript.a.relativeTime
 				&& relForward != 0) {
@@ -770,12 +762,6 @@ public class PlayerMovement : MonoBehaviour {
 			sidForce *= walkAccelAirRatio;
 			forForce *= walkAccelAirRatio;
 			upForce *= walkAccelAirRatio;
-
-			//if ((isSprinting || Inventory.a.BoosterActive()) && running) {
-			//	sidForce *= 0.01f;
-			//	upForce *= 0.01f;
-			//	forForce *= 0.01f;
-			//}
 
 			// Walking in the air, we're floating in the moonlit sky, the
 			// people far below are sleeping as we fly!

@@ -1167,9 +1167,9 @@ public class WeaponFire : MonoBehaviour {
 		if (DidRayHit(index16)) {
 			fireDistance = hitscanDistance; // Reset before any returns.
 			if (rapier) {
-				rapieranim.Play("Attack2");
+				if (rapieranim != null) rapieranim.Play("Attack2");
 			} else {
-				anim.Play("Attack2");
+				if (anim != null) anim.Play("Attack2");
 			}
 
 			GameObject hitGO = tempHit.collider.transform.gameObject;
@@ -1218,7 +1218,6 @@ public class WeaponFire : MonoBehaviour {
 				if (anim != null) anim.Play("Attack2");
 			}
 
-			Debug.Log("Starting ApplyMelee 2");
 			StartCoroutine(ApplyMeleeHit(index16,ho,isRapier,silent,hit,
 											miss,hitflesh));
 			return;
@@ -1227,9 +1226,9 @@ public class WeaponFire : MonoBehaviour {
 		// Swing and a miss, steeeerike!!
 		if (!silent) Utils.PlayOneShotSavable(SFX,miss);
 		if (rapier) {
-			rapieranim.Play("Attack2");
+			if (rapieranim != null) rapieranim.Play("Attack2");
 		} else {
-			anim.Play("Attack1");
+			if (anim != null) anim.Play("Attack1");
 		}
 	}
 
