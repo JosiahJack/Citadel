@@ -1106,12 +1106,15 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	// Sets grounded based on normal angle of the impact point (NOTE: This is not the surface normal!)
-	void OnCollisionStay (Collision collision  ){
+	void OnCollisionStay(Collision collision) {
 		if (!PauseScript.a.Paused() && !inCyberSpace) {
 			float maxSlope = 0.35f;
 			for(tempInt=0;tempInt<collision.contacts.Length;tempInt++) {
+				if (!collision.gameObject.CompareTag("Geometry")) continue;
+
 				floorAng = collision.contacts[tempInt].normal;
-				floorDot = Vector3.Dot(collision.contacts[tempInt].normal,Vector3.up);
+				floorDot = Vector3.Dot(collision.contacts[tempInt].normal,
+									   Vector3.up);
 				maxSlope = 0.35f;
 				if (Inventory.a.BoosterActive()) maxSlope = 0.7f;
 				if (floorDot <= 1f && floorDot >= maxSlope) {
