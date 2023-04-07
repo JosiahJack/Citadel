@@ -746,7 +746,6 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		}
 		transform.localPosition = new Vector3(headBobX,headBobY,headBobZ);
-
 	}
 
 	void AddItemFail(int index) {

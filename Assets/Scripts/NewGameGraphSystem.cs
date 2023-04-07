@@ -43,9 +43,11 @@ public class NewGameGraphSystem : MonoBehaviour {
     private float tick0Finished;
     private float tick1Finished;
     private float tick2Finished;
+    private float tickFinished; // Overall marching.
     private float tick0 = 0.0211f;
     private float tick1 = 0.050f;
     private float tick2 = 0.0104f;
+    private float tick = 0.02f;
     public int currentIndex0 = 0;
     public int currentIndex1 = 0;
     public int currentIndex2 = 0;
@@ -79,6 +81,7 @@ public class NewGameGraphSystem : MonoBehaviour {
         tick0Finished = Time.time + tick0;
         tick1Finished = Time.time + tick1;
         tick2Finished = Time.time + tick2;
+        tickFinished = Time.time + tick;
         currentIndex0 = (int)(graphWidth * UnityEngine.Random.Range(0f,1f));
         currentIndex1 = (int)(graphWidth * UnityEngine.Random.Range(0f,1f));
         currentIndex2 = (int)(graphWidth * UnityEngine.Random.Range(0f,1f));
@@ -102,6 +105,21 @@ public class NewGameGraphSystem : MonoBehaviour {
         currentIndex0 = (int)(graphWidth * UnityEngine.Random.Range(0f,1f));
         currentIndex1 = (int)(graphWidth * UnityEngine.Random.Range(0f,1f));
         currentIndex2 = (int)(graphWidth * UnityEngine.Random.Range(0f,1f));
+    }
+
+    public void IncrementERG() {
+        currentIndex0++;
+        if (currentIndex0 >= graphWidth) currentIndex0 = 0;
+    }
+
+    public void IncrementCHI() {
+        currentIndex1++;
+        if (currentIndex1 >= graphWidth) currentIndex1 = 0;
+    }
+
+    public void IncrementECG() {
+        currentIndex2++;
+        if (currentIndex2 >= graphWidth) currentIndex2 = 0;
     }
 
     public void Update() {
@@ -224,15 +242,12 @@ public class NewGameGraphSystem : MonoBehaviour {
             }
         }
 
-        currentIndex0++;
-        if (currentIndex0 >= graphWidth) currentIndex0 = 0;
-
-        currentIndex1++;
-        if (currentIndex1 >= graphWidth) currentIndex1 = 0;
-
-        currentIndex2++;
-        if (currentIndex2 >= graphWidth) currentIndex2 = 0;
-
+        if (tickFinished < Time.time) {
+            tickFinished = Time.time + tick;
+            IncrementERG();
+            IncrementCHI();
+            IncrementECG();
+        }
         tex.Apply();
         OutputTexture.texture = (Texture)tex;
     }

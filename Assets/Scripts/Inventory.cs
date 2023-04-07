@@ -349,20 +349,47 @@ public class Inventory : MonoBehaviour {
 			&& !logPaused) {
 			logPaused = true;
 			if (SFXSource == null) SFXSource = GetComponent<AudioSource>();
-			if (SFXSource == null) Debug.Log("ERROR: Missing SFXSource on Inventory!");
-			else SFXSource.Pause();
+			if (SFXSource == null) {
+				Debug.Log("ERROR: Missing SFXSource on Inventory!");
+			} else SFXSource.Pause();
 		}
 		//--- End Logs ---
 	
 		if (PauseScript.a.Paused()) return;
 		if (PauseScript.a.MenuActive()) return;
 
+		// Update Senaraound camera positions to match player camer height.
+		Vector3 camPos =
+		  hardwareButtonManager.sensaroundCenterCamera.transform.localPosition;
+
+		camPos.y = MouseLookScript.a.transform.localPosition.y;
+		hardwareButtonManager.sensaroundCenterCamera.transform.localPosition =
+			camPos;
+
+		camPos =
+		  hardwareButtonManager.sensaroundCenterCamera.transform.localPosition;
+
+		camPos.y = MouseLookScript.a.transform.localPosition.y;
+		hardwareButtonManager.sensaroundLHCamera.transform.localPosition =
+			camPos;
+
+		camPos =
+		  hardwareButtonManager.sensaroundCenterCamera.transform.localPosition;
+
+		camPos.y = MouseLookScript.a.transform.localPosition.y;
+		hardwareButtonManager.sensaroundRHCamera.transform.localPosition =
+			camPos;
+
 		// General
 		if (MFDManager.a.GeneralTab.activeInHierarchy) {
 			UpdateGeneralInventory();
 		}
 
-		if (generalInvIndex >= 14 || generalInvIndex < 0) { Debug.Log("generalInvIndex out of bounds at " + generalInvIndex.ToString() + ", reset to 0."); generalInvIndex = 0; }
+		if (generalInvIndex >= 14 || generalInvIndex < 0) {
+			Debug.Log("generalInvIndex out of bounds at "
+					  + generalInvIndex.ToString() + ", reset to 0.");
+			generalInvIndex = 0;
+		}
 		//--- End General ---
 
 		// Grenades

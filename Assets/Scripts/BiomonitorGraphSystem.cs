@@ -41,9 +41,11 @@ public class BiomonitorGraphSystem : MonoBehaviour {
     private float tick0Finished;
     private float tick1Finished;
     private float tick2Finished;
+    private float tickFinished; // Overall marching.
     private float tick0 = 0.0211f;
     private float tick1 = 0.050f;
     private float tick2 = 0.0104f;
+    private float tick = 0.02f;
     public int currentIndex0 = 0;
     public int currentIndex1 = 0;
     public int currentIndex2 = 0;
@@ -82,10 +84,11 @@ public class BiomonitorGraphSystem : MonoBehaviour {
         for (int y=0;y<graphHeight;y++) currentColors[y] = backgroundColor;
 
         ymax = (currentColors.Length - 1);
-		beatFinished = Time.time;
-        tick0Finished = Time.time + tick0;
-        tick1Finished = Time.time + tick1;
-        tick2Finished = Time.time + tick2;
+		beatFinished = PauseScript.a.relativeTime;
+        tick0Finished = PauseScript.a.relativeTime + tick0;
+        tick1Finished = PauseScript.a.relativeTime + tick1;
+        tick2Finished = PauseScript.a.relativeTime + tick2;
+        tickFinished = PauseScript.a.relativeTime + tick;
         currentIndex0 = (int)(graphWidth * UnityEngine.Random.Range(0f,1f));
         currentIndex1 = (int)(graphWidth * UnityEngine.Random.Range(0f,1f));
         currentIndex2 = (int)(graphWidth * UnityEngine.Random.Range(0f,1f));
@@ -143,14 +146,18 @@ public class BiomonitorGraphSystem : MonoBehaviour {
             brainFactor = 0.35f + UnityEngine.Random.Range(-0.3f,0.3f);
         }
 
-		chiValue = Mathf.Sin(Time.time * 10f * brainFactor);
+		chiValue = Mathf.Sin(PauseScript.a.relativeTime * 10f * brainFactor);
 
 		// ECG: Create shifted sine wave for heart beat.
 		// Apply percent fatigued to 200bpm max heart rate with baseline 50bpm.
 		fatigueFactor = ((PlayerMovement.a.fatigue / 100f) * 120f) + graphAdd;
         fatigueFactor = fatigueFactor / 60f;
-		if (beatFinished < Time.time) beatFinished = Time.time + (1f/fatigueFactor);
-		beatShift = (beatFinished - Time.time)/(1f/fatigueFactor);
+		if (beatFinished < PauseScript.a.relativeTime) {
+            beatFinished = PauseScript.a.relativeTime + (1f/fatigueFactor);
+        }
+
+		beatShift = (beatFinished - PauseScript.a.relativeTime)
+                    / (1f/fatigueFactor);
 		if (beatShift > 0.94f) ecgValue = Mathf.Sin(beatShift * freq);
 		else ecgValue = 0;
 
@@ -159,8 +166,8 @@ public class BiomonitorGraphSystem : MonoBehaviour {
 			ecgValue += UnityEngine.Random.Range(-beatVariation,beatVariation);
 		}
 
-        if (tick0Finished < Time.time) {
-            tick0Finished = Time.time + tick0;
+        if (tick0Finished < PauseScript.a.relativeTime) {
+            tick0Finished = PauseScript.a.relativeTime + tick0;
             Push(0,ergValue);
             IncrementERG();
             Push(0,ergValue);
@@ -168,8 +175,8 @@ public class BiomonitorGraphSystem : MonoBehaviour {
             Push(0,ergValue);
         }
 
-        if (tick1Finished < Time.time) {
-            tick1Finished = Time.time + tick1;
+        if (tick1Finished < PauseScript.a.relativeTime) {
+            tick1Finished = PauseScript.a.relativeTime + tick1;
             Push(1,chiValue);
             IncrementCHI();
             Push(1,chiValue);
@@ -179,8 +186,8 @@ public class BiomonitorGraphSystem : MonoBehaviour {
             Push(1,chiValue);
         }
 
-        if (tick2Finished < Time.time) {
-            tick2Finished = Time.time + tick2;
+        if (tick2Finished < PauseScript.a.relativeTime) {
+            tick2Finished = PauseScript.a.relativeTime + tick2;
             Push(2,ecgValue);
             IncrementECG();
             Push(2,ecgValue);
@@ -253,9 +260,13 @@ public class BiomonitorGraphSystem : MonoBehaviour {
             }
         }
 
-        IncrementERG();
-        IncrementCHI();
-        IncrementECG();
+        if (tickFinished < PauseScript.a.relativeTime) {
+            tickFinished = PauseScript.a.relativeTime + tick;
+            IncrementERG();
+            IncrementCHI();
+            IncrementECG();
+        }
+
         tex.Apply();
         OutputTexture.texture = (Texture)tex;
     }
