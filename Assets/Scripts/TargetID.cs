@@ -8,6 +8,8 @@ public class TargetID : MonoBehaviour {
 	public bool useLife;
 	public float lifetime;
 	[HideInInspector] public float lifetimeFinished;
+	[HideInInspector] public float damageTime;
+	[HideInInspector] public float damageTimeFinished;
 	public ParticleSystem partSys;
 	/*[DTValidator.Optional] */public Transform parent;
 	/*[DTValidator.Optional] */public HealthManager linkedHM;
@@ -22,6 +24,7 @@ public class TargetID : MonoBehaviour {
 	public bool displayAttitude = false;
 	public bool displayName = false;
 	public TextMesh nameText;
+	public bool stunned = false;
 
     void Start() {
 		secondaryDisplayString = System.String.Empty;
@@ -33,7 +36,7 @@ public class TargetID : MonoBehaviour {
 		if (parent != null) transform.position = parent.position;
 	}
 
-	public void SendDamageReceive(float damage) {
+	public void SendDamageReceive(float damage, DamageData dd) {
 		if (linkedHM == null || (Inventory.a.hardwareVersion[4] < 3 && (damage > 0f))) return;
 
 		if (damage > linkedHM.maxhealth * 0.75f) {
@@ -57,7 +60,14 @@ public class TargetID : MonoBehaviour {
 
 		currentText = Const.a.stringTable[511]; // NO DAMAGE
 		lifetime = 1f;
+		damageTime = 1f;
 		lifetimeFinished = PauseScript.a.relativeTime + lifetime;
+		damageTimeFinished = PauseScript.a.relativeTime + damageTime;
+		if (dd.attackType == AttackType.Tranq) {
+			damageTimeFinished = PauseScript.a.relativeTime - 1f; // Don't show
+																  // damage for
+																  // tranqs
+		}
 		text.text = currentText;
 	}
 
@@ -76,6 +86,13 @@ public class TargetID : MonoBehaviour {
     void Update() {
 		if (linkedHM != null) {
 			if (linkedHM.health <= 0f) { Deactivate(); return; }
+			if (linkedHM.isNPC && linkedHM.aic != null) {
+				if (linkedHM.aic.tranquilizeFinished > PauseScript.a.relativeTime) {
+					stunned = true;
+				} else {
+					stunned = false;
+				}
+			}
 		}
 		if (parent == null) { Deactivate(); return; }
 		if (playerCapsuleTransform == null) { Deactivate(); return; }
@@ -133,8 +150,17 @@ public class TargetID : MonoBehaviour {
 		if (currentText != System.String.Empty) {
 			if (linkedHM != null) {
 				if (linkedHM.aic != null) {
-					if (linkedHM.aic.tranquilizeFinished > PauseScript.a.relativeTime) {
-						currentText = Const.a.stringTable[536];
+					if (linkedHM.aic.tranquilizeFinished > PauseScript.a.relativeTime
+						&& damageTimeFinished < PauseScript.a.relativeTime) {
+						currentText = Const.a.stringTable[536]; // STUNNED
+					} else {
+						if (damageTimeFinished < PauseScript.a.relativeTime) {
+							currentText = "";
+							if (!Inventory.a.hasHardware[4]) {
+								Deactivate();
+								return;
+							}
+						}
 					}
 				}
 			}

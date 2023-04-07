@@ -908,6 +908,9 @@ public class WeaponFire : MonoBehaviour {
 		if (hm == null) return;
 		if (!hm.isNPC) return;
 		if (hm.health <= 0f) return;
+		if (dmgFinal > 0 && !Inventory.a.hasHardware[4] && dmgFinal != -2f) {
+			return;
+		}
 
 		float linkDistForTargID = TargetID.GetTargetIDTetherRange();
 		bool showHealth = false;
@@ -943,11 +946,14 @@ public class WeaponFire : MonoBehaviour {
 			}
 		}
 
+
         GameObject idFrame = Const.a.GetObjectFromPool(PoolType.TargetIDInstances);
         if (idFrame == null) return;
 
 		TargetID tid = idFrame.GetComponent<TargetID>();
 		if (tid == null) return;
+
+		if (dmgFinal == -2f) damageText = Const.a.stringTable[536]; // STUNNED
 
 		// Even when TargetID hardware not acquired, still show no damage/tranq
 		// to show player that hey, it no workie.  No hasHardware[4] check.
@@ -957,6 +963,7 @@ public class WeaponFire : MonoBehaviour {
 			tid.lifetime = 1f;
 			tid.lifetimeFinished = PauseScript.a.relativeTime + tid.lifetime;
 		} else {
+			tid.damageTime = 1f;
 			tid.lifetime = 9999999f;
 			tid.lifetimeFinished = PauseScript.a.relativeTime + tid.lifetime;
 		}
@@ -1048,10 +1055,12 @@ public class WeaponFire : MonoBehaviour {
 			}
 		}
 
+		float dmgFinal = 0f;
+		bool dartTranq = (wep16Index == 2
+		  && Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]);
 		GameObject hitGO = tempHit.collider.transform.gameObject;
-        if (hm != null && hm.health > 0 && !(wep16Index == 2
-			&& Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent])) {
-			float dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
+        if (hm != null && hm.health > 0 && !dartTranq) {
+			dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
 			damageData.impactVelocity += (damageData.damage * 0.5f);
 			if (wep16Index == 12) damageData.impactVelocity *= 10f;
 			if (!damageData.isOtherNPC || wep16Index == 12) {
@@ -1060,9 +1069,13 @@ public class WeaponFire : MonoBehaviour {
 									   damageData.hit.point);
 			}
 			if (hm.isNPC) Music.a.inCombat = true;
-			if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
-			CreateTargetIDInstance(dmgFinal,hm);
 		}
+
+		if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
+		if (dartTranq) dmgFinal = -2f;
+		if (damageData.attackType == AttackType.Tranq) dmgFinal = -2f;
+		CreateTargetIDInstance(dmgFinal,hm);
+
 		UseableObjectUse uou = hitGO.GetComponent<UseableObjectUse>();
 		if (uou != null) uou.HitForce(damageData); // knock objects around
 

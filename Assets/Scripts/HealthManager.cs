@@ -413,7 +413,7 @@ public class HealthManager : MonoBehaviour {
 				aic.goIntoPain = true;
 				aic.attacker = attacker;
 				if (linkedTargetID != null) {
-					linkedTargetID.SendDamageReceive(take);
+					linkedTargetID.SendDamageReceive(take,dd);
 				}
 
 				aic.CheckPain(); // setup enemy with NPC
