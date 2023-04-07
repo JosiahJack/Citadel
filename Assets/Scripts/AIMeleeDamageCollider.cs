@@ -55,7 +55,7 @@ public class AIMeleeDamageCollider : MonoBehaviour {
 		take = (take / meleeColliderCounter); //split it for multiple tap melee attacks, e.g. double paw swipe
 		ddNPC.damage = take;
 		ddNPC.impactVelocity = ddNPC.damage * 1.5f;
-		Utils.ApplyImpactForce(other.gameObject,ddNPC.impactVelocity,ddNPC.attacknormal,ddNPC.hit.point);
+		//Utils.ApplyImpactForce(other.gameObject,ddNPC.impactVelocity,ddNPC.attacknormal,ddNPC.hit.point);
 		hm.TakeDamage(ddNPC);
 	}
 }

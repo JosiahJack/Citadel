@@ -65,7 +65,7 @@ public class PlayerMovement : MonoBehaviour {
 	private float maxProneSpeed = .5f; //1f
 	private float maxSprintSpeed = 8.8f;
 	private float maxSprintSpeedFatigued = 5.5f;
-	private float maxVerticalSpeed = 5f;
+	private float maxVerticalSpeed = 10f;
 	private float boosterSpeedBoost = 1.2f; // ammount to boost by when booster is active
 	private float jumpImpulseTime = 4.0f;
 	private float jumpVelocityBoots = 0.5f;
@@ -150,6 +150,7 @@ public class PlayerMovement : MonoBehaviour {
 	public float floorDot;
 	public Vector3 floorAng;
 	private float slideAngle = 0.9f;
+	private float gravFinished;
 
 	public static PlayerMovement a;
 
@@ -263,6 +264,8 @@ public class PlayerMovement : MonoBehaviour {
 
 		// Avoid useless setting of the rbody.
 		if (rbody.useGravity != grav) rbody.useGravity = grav;
+		//if (rbody.useGravity != false) rbody.useGravity = false;
+		//if (grav) ApplyGravity();
 
 		if (inCyberSpace) {
 			if (rbody.velocity.magnitude > playerSpeed && !CheatNoclip) {
@@ -466,10 +469,22 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	}
 
+	//void ApplyGravity() {
+	//	if (gravFinished < PauseScript.a.relativeTime) {
+	//		gravFinished = PauseScript.a.relativeTime + 0.05f;
+	//		rbody.AddRelativeForce(Vector3.down * 9.83f * 9.83f);
+	//	}
+	//}
+
 	void ApplyGroundFriction() {
-		if (isSprinting) return;
+		if (isSprinting && !CheatNoclip) return;
 
 		tempVecRbody = rbody.velocity;
+		Vector3 movDir = rbody.velocity;
+		movDir.y = 0;
+		movDir = movDir.normalized;
+		if (Vector3.Dot(movDir,floorAng) < 0f) return;
+
 		deceleration = walkDeacceleration;
 		if (!grounded && !ladderState && !justJumped) deceleration *= 1.5f;
 		if (CheatNoclip) {
@@ -477,7 +492,8 @@ public class PlayerMovement : MonoBehaviour {
 			// Prevent gravity from affecting and decelerate like a horizontal.
 			tempVecRbody.y = Mathf.SmoothDamp(rbody.velocity.y,0,
 											  ref walkDeaccelerationVoly,
-											  deceleration); 
+											  deceleration);
+			if (isSprinting) return;
 		} else {
 			if (Inventory.a.BoosterActive()) {
 				deceleration = walkDeaccelerationBooster;
@@ -553,14 +569,14 @@ public class PlayerMovement : MonoBehaviour {
 					doubleJumpFinished = PauseScript.a.relativeTime + Const.a.doubleClickTime;
 					doubleJumpTicks++;
 					justJumped = true;
-					if (!Inventory.a.JumpJetsActive()) {
+					if (!Inventory.a.JumpJetsActive() && !Inventory.a.BoosterActive()) {
 						fatigue += jumpFatigue;
 					}
 				} else {
 					if (ladderState) {
 						jumpTime = jumpImpulseTime;
 						justJumped = true;
-						if (!Inventory.a.JumpJetsActive()) {
+						if (!Inventory.a.JumpJetsActive() && !Inventory.a.BoosterActive()) {
 							fatigue += jumpFatigue;
 						}
 					}
@@ -569,68 +585,82 @@ public class PlayerMovement : MonoBehaviour {
 
 			if (Inventory.a.BoosterActive() && Inventory.a.BoosterSetToBoost()) {
 				if (justJumped && doubleJumpTicks == 2) {
-					rbody.AddForce(new Vector3(transform.forward.x * burstForce,transform.forward.y * burstForce,transform.forward.z * burstForce),ForceMode.Impulse); // Booster thrust
+					// Booster thrust
+					rbody.AddForce(new Vector3(transform.forward.x * burstForce,
+											   transform.forward.y * burstForce,
+											   transform.forward.z * burstForce),
+											   ForceMode.Impulse);
 					PlayerEnergy.a.TakeEnergy(22f);
-					BiomonitorGraphSystem.a.EnergyPulse(22f);
+					if (BiomonitorGraphSystem.a != null) {
+						BiomonitorGraphSystem.a.EnergyPulse(22f);
+					}
+
 					justJumped = false;
 					jumpTime = 0;
 					doubleJumpTicks = 0;
-					doubleJumpFinished = PauseScript.a.relativeTime - 1f; // Make sure we can't do it again right away.
+
+					// Make sure we can't do it again right away.
+					doubleJumpFinished = PauseScript.a.relativeTime - 1f;
 				}
 			}
 		}
 
 		if (staminupActive) fatigue = 0;
 		
-
 		// Perform Jump
-		while (jumpTime > 0) { // Why ~was~ is this a `while` instead of an `if`??  Because otherwise it don't work, duh!
-			jumpTime -= Time.smoothDeltaTime;
+		float jumpVelocityApply = jumpVelocity * rbody.mass;
+		Vector3 jumpVel = new Vector3 (0,jumpVelocityApply,0);
+		float jumpTimeMod = jumpTime;
+		if (isSprinting) jumpTimeMod *= 0.5f;
+		while (jumpTimeMod > 0) { // Why is this a `while` instead of an `if`??
+							   // Because otherwise it don't work, duh!
+			jumpTimeMod -= Time.smoothDeltaTime;
 			if (fatigue > 80 && !Inventory.a.JumpJetsActive()) {
-				rbody.AddForce(new Vector3(0,jumpVelocityFatigued * rbody.mass, 0),ForceMode.Force);  // huhnh!
-			} else {
-				if (Inventory.a.JumpJetsActive()) {
-					float energysuck = 25f;
-					switch (Inventory.a.JumpJetsVersion()) {
-						case 0: energysuck = 11f; break;
-						case 1: energysuck = 26f; break;
-						case 2: energysuck = 22f; break;
-					}
+				jumpVelocityApply = jumpVelocityFatigued * rbody.mass;
+				jumpVel.y = jumpVelocityApply;
+			}
 
-					if (PlayerEnergy.a.energy >= energysuck) {
-						rbody.AddForce(new Vector3(0,jumpVelocityBoots * rbody.mass,0),ForceMode.Force);  // huhnh!
-						if (jumpJetEnergySuckTickFinished < PauseScript.a.relativeTime) {
-							jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime + jumpJetEnergySuckTick;
-							PlayerEnergy.a.TakeEnergy(energysuck);
-							BiomonitorGraphSystem.a.EnergyPulse(energysuck);
-						}
-					} else {
-						hwbJumpJets.JumpJetsOff();
+			if (Inventory.a.JumpJetsActive()) {
+				float energysuck = 25f;
+				jumpVelocityApply = jumpVelocityBoots * rbody.mass;
+				jumpVel.y = jumpVelocityApply;
+				switch (Inventory.a.JumpJetsVersion()) {
+					case 0: energysuck = 11f; break;
+					case 1: energysuck = 26f; break;
+					case 2: energysuck = 22f; break;
+				}
+
+				if (PlayerEnergy.a.energy >= energysuck) {
+					rbody.AddForce(jumpVel,ForceMode.Force);  // huhnh!
+					if (jumpJetEnergySuckTickFinished < PauseScript.a.relativeTime) {
+						jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime + jumpJetEnergySuckTick;
+						PlayerEnergy.a.TakeEnergy(energysuck);
+						BiomonitorGraphSystem.a.EnergyPulse(energysuck);
 					}
 				} else {
-					if (ladderState) {
-						Vector3 jumpDir = transform.forward * jumpVelocity * rbody.mass;
-						rbody.AddForce (jumpDir, ForceMode.Force);  // jump off ladder in direction of player facing
-					} else {
-						rbody.AddForce (new Vector3 (0, jumpVelocity * rbody.mass, 0), ForceMode.Force);  // huhnh!
-					}
+					hwbJumpJets.JumpJetsOff();
 				}
+			} else {
+				if (ladderState) {
+					// Jump off ladder in direction of player facing.
+					jumpVel = transform.forward * jumpVelocityApply * rbody.mass;
+				}
+
+				rbody.AddForce(jumpVel,ForceMode.Force);  // huhnh!
 			}
 		}
 
-		if (jumpTime <= 0) justJumped = false; // for jump jets to work 
+		if (jumpTimeMod <= 0) justJumped = false; // for jump jets to work 
+		jumpTime = jumpTimeMod;
 
 		if (justJumped && !Inventory.a.JumpJetsActive()) {
 			// Play jump sound
 			if (jumpSFXFinished < PauseScript.a.relativeTime) {
 				jumpSFXFinished = PauseScript.a.relativeTime + jumpSFXIntervalTime;
 				SFX.pitch = 1f;
-				if (fatigue > 80) {
-					// Quietly, we are tired.
-					Utils.PlayOneShotSavable(SFX,SFXJump,0.5f);
-				} else {
-					Utils.PlayOneShotSavable(SFX,SFXJump);
-				}
+				float jumpSFXVolume = 1.0f;
+				if (fatigue > 80) jumpSFXVolume = 0.5f; // Quietly, we tired.
+				Utils.PlayOneShotSavable(SFX,SFXJump,jumpSFXVolume);
 			}
 			justJumped = false;
 		}
@@ -691,10 +721,21 @@ public class PlayerMovement : MonoBehaviour {
 		float sidForce = relSideways * walkAcceleration * Time.deltaTime;
 		float forForce = relForward * walkAcceleration * Time.deltaTime;
 		float upForce = 0f;
-		if (floorDot < slideAngle) {// && floorAng.y > 0f) {
-			if (Vector3.Dot(transform.forward,Vector3.up) < 0f) {
-				upForce = forForce * (floorDot/slideAngle);
-				Debug.Log("Applying bonus up force!");
+		if (rbody.velocity.magnitude < playerSpeed) {
+			upForce = (floorDot - 1.0f)/1.0f * playerSpeed;
+		}
+
+		if (isSprinting) {
+			sidForce *= 1.75f;
+			forForce *= 2.00f;
+		}
+
+		if (floorDot < 0.98f) {// && floorAng.y > 0f) {
+			Vector3 movDir = rbody.velocity;
+			movDir.y = 0;
+			movDir = movDir.normalized;
+			if (Vector3.Dot(movDir,floorAng) < 0f) {
+				if (Inventory.a.BoosterActive()) forForce *= 2f;
 			}
 		}
 
@@ -730,11 +771,11 @@ public class PlayerMovement : MonoBehaviour {
 			forForce *= walkAccelAirRatio;
 			upForce *= walkAccelAirRatio;
 
-			if ((isSprinting || Inventory.a.BoosterActive()) && running) {
-				sidForce *= 0.01f;
-				upForce *= 0.01f;
-				forForce *= 0.01f;
-			}
+			//if ((isSprinting || Inventory.a.BoosterActive()) && running) {
+			//	sidForce *= 0.01f;
+			//	upForce *= 0.01f;
+			//	forForce *= 0.01f;
+			//}
 
 			// Walking in the air, we're floating in the moonlit sky, the
 			// people far below are sleeping as we fly!
@@ -840,13 +881,14 @@ public class PlayerMovement : MonoBehaviour {
 		horizontalMovement = new Vector2(rbody.velocity.x, rbody.velocity.z);
 		if (horizontalMovement.magnitude > playerSpeed) {
 			horizontalMovement = horizontalMovement.normalized;
-			horizontalMovement *= playerSpeed;  // Cap velocity to current max speed.
+			horizontalMovement *= playerSpeed; // Cap velocity to current max.
 		}
 		return horizontalMovement;
 	}
 
 	float GetClampedVerticalMovement() {
-		if (grounded) return 0f; // Prevent inadvertent view bob from floating.
+		if (grounded && !isSprinting) return 0f; // Prevent inadvertent view
+												 // bob from floating.
 		if (rbody.velocity.y >= maxVerticalSpeed) return maxVerticalSpeed;
 		return rbody.velocity.y;
 	}

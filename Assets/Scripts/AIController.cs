@@ -1000,7 +1000,7 @@ public class AIController : MonoBehaviour {
 				}
 
 				damageData.damage = DamageData.GetDamageTakeAmount(damageData);
-				Utils.ApplyImpactForce(tempHit.collider.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
+				//Utils.ApplyImpactForce(tempHit.collider.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
 				CreateStandardImpactEffects(true);
 				tempHM.TakeDamage(damageData);
 			} else {

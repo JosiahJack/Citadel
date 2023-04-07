@@ -115,6 +115,15 @@ public class PlayerEnergy : MonoBehaviour {
 				// 8 Envirosuit - handled by HealthManager for radiation checks
 
 				// 9 = Turbo Motion Booster - done in PlayerMovement since we only use energy on boost, no drain with skates
+				if (Inventory.a.hardwareIsActive[9]) {
+					switch (Inventory.a.hardwareVersionSetting[9]) {
+						case 0: tempF = 0f; break;
+						case 1: tempF = 0.02f; drainJPM += 16; break; // takes about 120s to drain full energy
+						case 2: tempF = 0.015f; drainJPM += 12; break; // takes about 90s to drain full energy
+					}
+					activeEnergyDrainers = true;
+					if (tempF > 0) TakeEnergy(tempF);
+				}
 
 				// 10 Jump Jet Boots - done in PlayerMovement since we only drain while jumping
 

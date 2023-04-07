@@ -1052,8 +1052,8 @@ public class WeaponFire : MonoBehaviour {
         if (hm != null && hm.health > 0 && !(wep16Index == 2
 			&& Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent])) {
 			float dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
-			damageData.impactVelocity += (damageData.damage * 1f);
-			if (wep16Index == 12) damageData.impactVelocity *= 5f;
+			damageData.impactVelocity += (damageData.damage * 0.5f);
+			if (wep16Index == 12) damageData.impactVelocity *= 10f;
 			if (!damageData.isOtherNPC || wep16Index == 12) {
 				Utils.ApplyImpactForce(hitGO,damageData.impactVelocity,
 									   damageData.attacknormal,
