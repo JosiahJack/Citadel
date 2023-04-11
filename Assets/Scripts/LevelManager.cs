@@ -154,8 +154,7 @@ public class LevelManager : MonoBehaviour {
 
 		int lastlev = currentLevel;
 		MFDManager.a.TurnOffElevatorPad();
-		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
-
+		GUIState.a.ClearOverButton();
 		if (targetDestination == null && targetPosition.x == 0 && targetPosition.y == 0 && targetPosition.z == 0) {
 			switch(levnum) {
 				case 0:  targetPosition = elevatorTargetDestinations[25].transform.position; break;

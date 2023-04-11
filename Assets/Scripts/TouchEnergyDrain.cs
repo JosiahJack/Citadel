@@ -19,7 +19,9 @@ public class TouchEnergyDrain : MonoBehaviour {
 				PlayerEnergy pe = col.gameObject.GetComponent<PlayerEnergy>();
 				if (pe != null) {
 					pe.TakeEnergy(drainage);
-					BiomonitorGraphSystem.a.EnergyPulse(drainage);
+					if (BiomonitorGraphSystem.a != null) {
+						BiomonitorGraphSystem.a.EnergyPulse(drainage);
+					}
 				}
 			}
 			tickFinished = PauseScript.a.relativeTime + tick;

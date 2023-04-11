@@ -244,7 +244,7 @@ public class WeaponFire : MonoBehaviour {
 		if (PauseScript.a.Paused()) return;
 		if (PauseScript.a.MenuActive()) return;
 
-		if (WeaponsHaveAnyHeat()) HeatBleedOff(); // Slowly cool off any weapons that have been heated from firing
+		if (WeaponsHaveAnyHeat() || CurrentWeaponUsesEnergy()) HeatBleedOff(); // Slowly cool off any weapons that have been heated from firing
 
 		// Move the weapon transform up and down for reload "animation" and weapon swap
 		int i = Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
@@ -340,7 +340,7 @@ public class WeaponFire : MonoBehaviour {
 					MouseLookScript.a.DropHeldItem ();
 					return;
 				} else {
-					MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex);
+					MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex,MouseLookScript.a.heldObjectCustomIndex);
 					MouseLookScript.a.ResetHeldItem();
 					MouseLookScript.a.ResetCursor();
 					return;
@@ -686,13 +686,17 @@ public class WeaponFire : MonoBehaviour {
                     energoverButton.OverloadFired();
                     if (!WeaponCurrent.a.bottomless && !WeaponCurrent.a.redbull) {
 						PlayerEnergy.a.TakeEnergy(Const.a.energyDrainOverloadForWeapon[index]); //take large amount
-						BiomonitorGraphSystem.a.EnergyPulse(Const.a.energyDrainOverloadForWeapon[index]);
+						if (BiomonitorGraphSystem.a != null) {
+							BiomonitorGraphSystem.a.EnergyPulse(Const.a.energyDrainOverloadForWeapon[index]);
+						}
 					}
                 } else {
                     float takeEnerg = (WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent] / 100f) * (Const.a.energyDrainHiForWeapon[index] - Const.a.energyDrainLowForWeapon[index]);
                     if (!WeaponCurrent.a.bottomless && !WeaponCurrent.a.redbull) {
 						PlayerEnergy.a.TakeEnergy(takeEnerg);
-						BiomonitorGraphSystem.a.EnergyPulse(takeEnerg);
+						if (BiomonitorGraphSystem.a != null) {
+							BiomonitorGraphSystem.a.EnergyPulse(takeEnerg);
+						}
 					}
                 }
             } else {
@@ -1160,7 +1164,9 @@ public class WeaponFire : MonoBehaviour {
 		CreateStandardImpactEffects(true);
 		if (isRapier) {
 			PlayerEnergy.a.TakeEnergy(3.666f); // 3 hits per tick.
-			BiomonitorGraphSystem.a.EnergyPulse(3.666f);
+			if (BiomonitorGraphSystem.a != null) {
+				BiomonitorGraphSystem.a.EnergyPulse(3.666f);
+			}
 		}
 	}
 
@@ -1259,7 +1265,11 @@ public class WeaponFire : MonoBehaviour {
 		// prevent hitting corners.
         GameObject beachball = ConsoleEmulator.SpawnDynamicObject(prefabID,1);
         if (beachball != null) {
-            damageData.damage = Const.a.damagePerHitForWeapon[index16];
+			if (CurrentWeaponUsesEnergy()) {
+                damageData.damage = DamageForPower(index16);
+			} else {
+				damageData.damage = Const.a.damagePerHitForWeapon[index16];
+			}
             damageData.owner = playerCapsule;
             damageData.attackType = Const.a.attackTypeForWeapon[index16];
 			damageData.offense = Const.a.offenseForWeapon[index16];

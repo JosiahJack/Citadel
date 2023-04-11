@@ -16,69 +16,111 @@ public class ProjectileEffectImpact : MonoBehaviour {
     }
 
     void OnCollisionEnter (Collision other) {
-        if (other.gameObject != host) {
-            numHits++;
-            if (numHits >= hitCountBeforeRemoval) {
-                GameObject impact = Const.a.GetObjectFromPool(impactType); // Get an impact effect
-				Vector3 hitPos = other.contacts[0].point; // Enable the impact effect
-                if (impact != null) {
-                    impact.transform.position = hitPos;
-                    impact.SetActive(true);
-                }
+        if (other.gameObject == host) return;
 
-                HealthManager hm = other.contacts[0].otherCollider.gameObject.GetComponent<HealthManager>();
-				if (hm == null) {
-					HealthManagerRelay hmr = other.contacts[0].otherCollider.gameObject.GetComponent<HealthManagerRelay>();
-					if (hmr != null) hm = hmr.healthManagerToRedirectTo; // For hopper joint collisions or other combo-collider setups.
+		numHits++;
+
+		GameObject hitGO = other.contacts[0].otherCollider.gameObject;
+		HealthManager hm = hitGO.GetComponent<HealthManager>();
+		if (hm == null) {
+			// For hopper joint collisions or other combo-collider setups.
+			HealthManagerRelay hmr = hitGO.GetComponent<HealthManagerRelay>();
+			if (hmr != null) hm = hmr.healthManagerToRedirectTo;
+		}
+
+		if (hm != null) {
+			// Get an impact effect
+			GameObject impact = Const.a.GetObjectFromPool(impactType); 
+			Vector3 hitPos = other.contacts[0].point; 
+			if (impact != null) {
+				impact.transform.position = hitPos;
+				impact.SetActive(true); // Enable the impact effect
+			}
+
+			if (hm != null && (hm.health > 0 || hm.cyberHealth > 0)) {
+				dd.other = other.gameObject;
+				if (other.gameObject.CompareTag("NPC")) {
+					dd.isOtherNPC = true;
+				} else {
+					dd.isOtherNPC = false;
+				}
+				// GetDamageTakeAmount expects damageData to already have the
+				// following set:
+				//   damage
+				//   offense
+				//   penetration
+				//   attackType
+				//   berserkActive
+				//   isOtherNPC
+				//   armorvalue
+				//   defense
+				// Most already was when this was launched by AIController or
+				// WeaponFire.
+				dd.damage = DamageData.GetDamageTakeAmount(dd);
+				if (numHits < hitCountBeforeRemoval) {
+					dd.damage = dd.damage * 0.85f; // Lose small amount each hit
 				}
 
-				if (hm != null && (hm.health > 0 || hm.cyberHealth > 0)) {
-					dd.other = other.gameObject;
-					if (other.gameObject.CompareTag("NPC")) {
-						dd.isOtherNPC = true;
+				dd.impactVelocity = dd.damage * 1.5f;
+				if (!hm.inCyberSpace && !host.CompareTag("NPC")) {
+					Utils.ApplyImpactForce(other.gameObject,
+											dd.impactVelocity,
+											dd.attacknormal,dd.hit.point);
+				}
+
+				if (impactType == PoolType.RailgunImpacts) {
+					int mask = Const.a.layerMaskPlayerAttack;
+					if (gameObject.layer != 11) { // Bullet
+						mask = Const.a.layerMaskNPCAttack;
 					} else {
-						dd.isOtherNPC = false;
+						mask = Const.a.layerMaskPlayerAttack;
 					}
-					// GetDamageTakeAmount expects damageData to already have the following set:
-					//   damage
-					//   offense
-					//   penetration
-					//   attackType
-					//   berserkActive
-					//   isOtherNPC
-					//   armorvalue
-					//   defense
-					// Most already was when this was launched by AIController or WeaponFire
-					dd.damage = DamageData.GetDamageTakeAmount(dd);
-					dd.impactVelocity = dd.damage * 1.5f;
-					if (!hm.inCyberSpace && !host.CompareTag("NPC")) {
-						Utils.ApplyImpactForce(other.gameObject, dd.impactVelocity,dd.attacknormal,dd.hit.point);
-					}
-					float dmgFinal = hm.TakeDamage(dd); // send the damageData container to HealthManager of hit object and apply damage
-					if (hm.isNPC || dd.isOtherNPC) Music.a.inCombat = true;
-					if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
-					if (dd.attackType == AttackType.Tranq) dmgFinal = -2f;
-					WeaponFire.a.CreateTargetIDInstance(dmgFinal,hm);
+
+					Utils.ApplyImpactForceSphere(dd,transform.position,3.2f,1f,
+												 mask);
 				}
 
-				if (dd.attackType == AttackType.Tranq) {
-					AIController aic = other.contacts[0].otherCollider.gameObject.GetComponent<AIController>();
+				float dmgFinal = hm.TakeDamage(dd); // Send the damageData
+													// container to
+													// HealthManager of hit
+													// object and damage it.
+
+				if (hm.isNPC || dd.isOtherNPC) Music.a.inCombat = true;
+				if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
+				if (dd.attackType == AttackType.Tranq) dmgFinal = -2f;
+				WeaponFire.a.CreateTargetIDInstance(dmgFinal,hm);
+			}
+
+			if (dd.attackType == AttackType.Tranq) {
+				AIController aic = hitGO.GetComponent<AIController>();
+				if (aic !=null) {
+					aic.Tranquilize();
+				} else {
+					aic = other.gameObject.GetComponent<AIController>();
 					if (aic !=null) aic.Tranquilize();
-					else {
-						aic = other.gameObject.GetComponent<AIController>();
-						if (aic !=null) aic.Tranquilize();
-					}
 				}
-				if (destroyInsteadOfDeactivate) Utils.SafeDestroy(gameObject);
-                else gameObject.SetActive(false); // disable the projectile
-            }
-        }
+			}
+		}
+
+		if (numHits >= hitCountBeforeRemoval) {
+			// Get an impact effect
+			GameObject impact = Const.a.GetObjectFromPool(impactType); 
+			Vector3 hitPos = other.contacts[0].point; 
+			if (impact != null) {
+				impact.transform.position = hitPos;
+				impact.SetActive(true); // Enable the impact effect
+			}
+
+			if (destroyInsteadOfDeactivate) Utils.SafeDestroy(gameObject);
+			else gameObject.SetActive(false); // disable the projectile
+		}
 	}
 
 	public static string Save(GameObject go) {
 		ProjectileEffectImpact pei = go.GetComponent<ProjectileEffectImpact>();
 		if (pei == null) {
-			Debug.Log("ProjectileEffectImpact missing on savetype of Projectile!  GameObject.name: " + go.name);
+			Debug.Log("ProjectileEffectImpact missing on savetype of "
+					  + "Projectile!  GameObject.name: " + go.name);
 			return Utils.DTypeWordToSaveString("uu");
 
 		}
@@ -108,6 +150,12 @@ public class ProjectileEffectImpact : MonoBehaviour {
 		}
 
 		pei.hitCountBeforeRemoval = Utils.GetIntFromString(entries[index]); index++;
+		if (pei.hitCountBeforeRemoval > 1) {
+			Rigidbody rbody = go.GetComponent<Rigidbody>();
+			if (rbody != null) {
+				Debug.Log("plasma shot velocity after load: " + rbody.velocity.ToString());
+			}
+		}
 		pei.numHits = Utils.GetIntFromString(entries[index]); index++;
 		pei.destroyInsteadOfDeactivate = Utils.GetBoolFromString(entries[index]); index++;
 		return index;

@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+// Should only exist on the Item Tab.  When clicked, deletes one useless item
+// from the general inventory, namely the currently highlighted one.
 public class VaporizeButton : MonoBehaviour {
 	public Image ico;
 	public Text ict;
@@ -18,13 +20,19 @@ public class VaporizeButton : MonoBehaviour {
 			// Create a new entry for the PointerEnter event
             EventTrigger.Entry pointerEnter = new EventTrigger.Entry();
             pointerEnter.eventID = EventTriggerType.PointerEnter;
-            pointerEnter.callback.AddListener((data) => { OnPointerEnterDelegate((PointerEventData)data); });
+            pointerEnter.callback.AddListener((data) => {
+				OnPointerEnterDelegate((PointerEventData)data);
+			});
+
             evenT.triggers.Add(pointerEnter);
 
             // Create a new entry for the PointerExit event
             EventTrigger.Entry pointerExit = new EventTrigger.Entry();
             pointerExit.eventID = EventTriggerType.PointerExit;
-            pointerExit.callback.AddListener((data) => { OnPointerExitDelegate((PointerEventData)data); });
+            pointerExit.callback.AddListener((data) => {
+				OnPointerExitDelegate((PointerEventData)data);
+			});
+
             evenT.triggers.Add(pointerExit);
 		} else Debug.Log("Failed to add EventTrigger to " + gameObject.name);
 	}
@@ -50,17 +58,46 @@ public class VaporizeButton : MonoBehaviour {
 	public void PtrExit () {
 		if (!pointerEntered) return;
 
-		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+		GUIState.a.ClearOverButton();
 		pointerEntered = false;
 	}
 
 	public void OnVaporizeClick() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
+		if (Inventory.a == null) return;
 		if (Inventory.a.generalInvCurrent == 0) return; // Access Cards index.
 
-		Inventory.a.generalInventoryIndexRef[Inventory.a.generalInvCurrent] = -1; // Remove item
-		Inventory.a.generalInvCurrent -= 1; // Set selection index up one in the list.
-		if (Inventory.a.generalInvCurrent < 0) Inventory.a.generalInvCurrent = 0; // Bound to lowest.
-		MFDManager.a.SendInfoToItemTab(Inventory.a.generalInventoryIndexRef[Inventory.a.generalInvCurrent]);
+		int cur = Inventory.a.generalInvCurrent;
+		Inventory.a.generalInventoryIndexRef[cur] = -1; // Remove item
+		Inventory.a.generalInvCurrent -= 1;
+		if (Inventory.a.generalInvCurrent < 0) {
+			Inventory.a.generalInvCurrent = 0; // Bound to lowest, but only
+		}									   // since it is Access Cards.
+
+
+		cur = Inventory.a.generalInvCurrent;
+		if (Inventory.a.generalInventoryIndexRef[cur] < 0) {
+			for (int i=13; i >= 0; i--) {
+				if (Inventory.a.generalInventoryIndexRef[i] >= 0) {
+					Inventory.a.generalInvCurrent = i;
+					break; // Found last item in inventory.
+				}
+			}
+		}
+
+		cur = Inventory.a.generalInvCurrent;
+		int indexRef = Inventory.a.generalInventoryIndexRef[cur];
+		if (Inventory.a.generalInvCurrent == 0) {
+			if (Inventory.a.HasAnyAccessCards()) {
+				MFDManager.a.SendInfoToItemTab(indexRef,-1);
+			} else {
+				// If no access cards, reset item tab to show nothing.
+				MFDManager.a.SendInfoToItemTab(-1,-1);
+				PtrExit();
+			}
+		} else {
+			GeneralInvButton genbut = Inventory.a.genButtons[cur].GetComponent<GeneralInvButton>();
+			MFDManager.a.SendInfoToItemTab(indexRef,genbut.customIndex);
+		}
 	}
 }

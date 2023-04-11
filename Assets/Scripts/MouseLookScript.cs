@@ -36,16 +36,17 @@ public class MouseLookScript : MonoBehaviour {
 
     // Internal references
     [HideInInspector] public bool inventoryMode;
-	[HideInInspector] public bool holdingObject;
+	public bool holdingObject;
     [HideInInspector] public Vector2 cursorHotspot;
     [HideInInspector] public Vector3 cameraFocusPoint;
 	[HideInInspector] public GameObject currentButton;
 	[HideInInspector] public GameObject currentSearchItem;
 	[HideInInspector] public Vector3 cyberLookDir;
-    [HideInInspector] public int heldObjectIndex; // save
-	[HideInInspector] public int heldObjectCustomIndex; // save
-	[HideInInspector] public int heldObjectAmmo; // save
-	[HideInInspector] public int heldObjectAmmo2; // save
+    public int heldObjectIndex; // save
+	public int heldObjectCustomIndex; // save
+	public int heldObjectAmmo; // save
+	public int heldObjectAmmo2; // save
+	public bool heldObjectLoadedAlternate; // save
 	[HideInInspector] public bool firstTimePickup;
 	[HideInInspector] public bool firstTimeSearch;
 	[HideInInspector] public bool grenadeActive;
@@ -181,7 +182,7 @@ public class MouseLookScript : MonoBehaviour {
 			} else {
 				//We are holding cursor over the GUI
 				if (holdingObject && !inCyberSpace) {
-					AddItemToInventory(heldObjectIndex);
+					AddItemToInventory(heldObjectIndex,heldObjectCustomIndex);
 					ResetHeldItem();
 					ResetCursor();
 				} else InventoryButtonUse();
@@ -402,11 +403,19 @@ public class MouseLookScript : MonoBehaviour {
 		cursorPoint = MouseCursor.a.GetCursorScreenPointForRay();
 		if (TargetIDFrob(cursorPoint)) return;
 
-		bool successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.a.frobDistance,Const.a.layerMaskPlayerFrob); // Separate from below which uses different mask
-		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,playerCamera.ScreenPointToRay(cursorPoint).direction * Const.a.frobDistance, Color.green,1f,true);
+		Ray castDir = playerCamera.ScreenPointToRay(cursorPoint);
+		bool successfulRay = Physics.Raycast(castDir, out tempHit,
+											 Const.a.frobDistance,
+											 Const.a.layerMaskPlayerFrob);
+
+		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,
+					  playerCamera.ScreenPointToRay(cursorPoint).direction
+					    * Const.a.frobDistance, Color.green,1f,true);
+
 		firstHit = tempHit;
 		// Success here means hit a useable something.
-		// If a ray hits a wall or other unusable something, that's not success and print "Can't use <something>"
+		// If a ray hits a wall or other unusable something,
+		// that's not success and print "Can't use <something>".
 		if (successfulRay) {
 			successfulRay = (tempHit.collider != null);
 			if (successfulRay) {
@@ -424,8 +433,9 @@ public class MouseLookScript : MonoBehaviour {
 		// 8 3 6
 		// 5 1 4
 		// 7 2 9
-		// To kind of walk around the center point to hopefully minimize rays we try.
-		// And tighten our lug nuts properly so the wheels don't fall off this thing.
+		// To kind of walk around the center point to hopefully minimize rays
+		// we try and tighten our lug nuts properly so the wheels don't fall 
+		// off this thing.
 
 		if (!successfulRay) { // Try down
 			cursorPoint.y -= offset;
@@ -461,7 +471,7 @@ public class MouseLookScript : MonoBehaviour {
 			cursorPoint.x += offset;
 			cursorPoint.y += offset;
 		}
-		if (!successfulRay) { // Try up and to the left
+		if (!successfulRay) { // Try up and to the left, cupid shuffle
 			cursorPoint.x -= offset;
 			cursorPoint.y += offset;
 			successfulRay = RayOffset();
@@ -478,7 +488,8 @@ public class MouseLookScript : MonoBehaviour {
 
 		if (!successfulRay) tempHit = firstHit;
 
-		// Okay we've checked first center, then in a box patter of 8, surely we've hit something the player was reasonably aiming at by now.
+		// Okay we've checked first center, then in a box patter of 8, surely
+		// we've hit something the player was reasonably aiming at by now.
 		if (successfulRay) {
 			if (tempHit.collider.CompareTag("Usable")) { // Use
 				UseData ud = new UseData ();
@@ -501,8 +512,13 @@ public class MouseLookScript : MonoBehaviour {
 				Const.sprint(Const.a.stringTable[29],player); // "Can't use "
 			}
 		} else { // Frobbed into empty space, so whatever it is is too far.
-			if (tempHit.collider != null) UseNameSprint(tempHit.collider.gameObject); // This sprints the "Can't use <something>" text.
-			else Const.sprint(Const.a.stringTable[30],player); // You are too far away from that
+			if (tempHit.collider != null) {
+				// Can't use <something>
+				UseNameSprint(tempHit.collider.gameObject);
+			} else {
+				// You are too far away from that
+				Const.sprint(Const.a.stringTable[30],player);
+			}
 		}
 	}
 
@@ -536,39 +552,57 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	bool FrobWithHeldObject() {
-		if (heldObjectIndex < 0) { Debug.Log("BUG: Attempting to frob with held object, but heldObjectIndex < 0."); return false; } // Invalid item will be dropped, wasn't used up.
+		if (heldObjectIndex < 0) {
+			Debug.Log("BUG: Attempting to frob with held object, but "
+					  + "heldObjectIndex < 0.");
+			return false; // Invalid item will be dropped, wasn't used up.
+		}
 
-		if (heldObjectIndex == 54 || heldObjectIndex == 56 || heldObjectIndex == 57 || heldObjectIndex == 61 || heldObjectIndex == 64) {
-			cursorPoint = MouseCursor.a.GetCursorScreenPointForRay();
-			if (Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit, Const.a.frobDistance)) {
-				if (tempHit.collider.CompareTag("Usable")) {
-					UseData ud = new UseData ();
-					ud.owner = player;
-					ud.mainIndex = heldObjectIndex;
-					ud.customIndex = heldObjectCustomIndex;
-					UseHandler uh = tempHit.collider.gameObject.GetComponent<UseHandler>();
-					if (uh != null) {
-						Utils.PlayOneShotSavable(SFXSource,SearchSFX);
-						uh.Use(ud);
-						return true; // Item can get absorbed and not dropped.
-					} else {
-						UseHandlerRelay uhr = tempHit.collider.gameObject.GetComponent<UseHandlerRelay>();
-						if (uhr != null) {
-							Utils.PlayOneShotSavable(SFXSource,SearchSFX);
-							uhr.referenceUseHandler.Use(ud);
-							return true; // Item can get absorbed and not dropped.
-						} else {
-							Debug.Log("BUG: Attempting to use a useable without a UseHandler or UseHandlerRelay!");
-							return false;
-						}
-					}
-				}
-			}
-		} // Cannot notify of attempt to frob with different index since this is how we normally drop items.
-		return false; // Item will be dropped, wasn't used up.
+		bool frobUser = (heldObjectIndex == 54 || heldObjectIndex == 56
+						 || heldObjectIndex == 57 || heldObjectIndex == 61
+						 || heldObjectIndex == 64 || heldObjectIndex == 92
+						 || heldObjectIndex == 93 || heldObjectIndex == 94);
+
+		if (!frobUser) return false;
+
+		cursorPoint = MouseCursor.a.GetCursorScreenPointForRay();
+		if (!Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint),
+							 out tempHit, Const.a.frobDistance)) {
+			return false; // Can't use it on something, go ahead and drop it.
+		}
+
+		// Cannot notify of attempt to frob with different index since this is
+		// how we normally drop items.
+		GameObject go = tempHit.collider.gameObject;
+		if (go == null) return false;
+		if (!tempHit.collider.CompareTag("Usable")) return false;
+
+		UseData ud = new UseData();
+		ud.owner = player;
+		ud.mainIndex = heldObjectIndex;
+		ud.customIndex = heldObjectCustomIndex;
+		UseHandler uh = go.GetComponent<UseHandler>();
+		if (uh == null) {
+			Utils.PlayOneShotSavable(SFXSource,SearchSFX);
+			uh.Use(ud);
+			return true; // Item can get absorbed, not dropped.
+		}
+
+		UseHandlerRelay uhr = go.GetComponent<UseHandlerRelay>();
+		if (uhr != null) {
+			Utils.PlayOneShotSavable(SFXSource,SearchSFX);
+			uhr.referenceUseHandler.Use(ud);
+			return true; // Item can get absorbed, not dropped.
+		}
+
+		Debug.Log("BUG: Attempting to frob use a useable without a UseHandler "
+				  + "or UseHandlerRelay!");
+
+		return false;
 	}
 
-	void PutObjectInHand(int useableConstdex, int customIndex, int ammo1, int ammo2, bool fromButton) {
+	void PutObjectInHand(int useableConstdex, int customIndex, int ammo1,
+						 int ammo2, bool loadedAlt, bool fromButton) {
 		if (useableConstdex < 0) return;
 
 		holdingObject = true;
@@ -576,11 +610,12 @@ public class MouseLookScript : MonoBehaviour {
 		heldObjectCustomIndex = customIndex;
 		heldObjectAmmo = ammo1;
 		heldObjectAmmo2 = ammo2;
+		heldObjectLoadedAlternate = loadedAlt;
 		if (useableConstdex >= 0 && useableConstdex < Const.a.useableItemsFrobIcons.Length) {
 			cursorTexture = Const.a.useableItemsFrobIcons[useableConstdex];
 		}
 		MouseCursor.a.cursorImage = cursorTexture;
-		if (fromButton) GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+		if (fromButton) GUIState.a.ClearOverButton();
 		ForceInventoryMode();
 	}
 
@@ -593,7 +628,9 @@ public class MouseLookScript : MonoBehaviour {
 		WeaponCurrent.a.currentMagazineAmount[wepbut.WepButtonIndex] = 0;
 		int am2 = WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex];
 		WeaponCurrent.a.currentMagazineAmount2[wepbut.WepButtonIndex] = 0;
-		PutObjectInHand(indexPriorToRemoval,-1,am1,am2, true);
+		bool loadAlt = false;
+		if (am2 > 0) loadAlt = true;
+		PutObjectInHand(indexPriorToRemoval,-1,am1,am2,loadAlt,true);
 		WeaponCurrent.a.RemoveWeapon(wepbut.WepButtonIndex);
 		Inventory.a.RemoveWeapon(wepbut.WepButtonIndex);
 		// Clear the ammo icons.
@@ -605,6 +642,8 @@ public class MouseLookScript : MonoBehaviour {
 									 wepbut.WepButtonIndex);
 	}
 
+	// Because Unity does not see fit for their Button class to support right
+	// click behavior...or any other reasonable mouse button interaction.
 	void InventoryButtonUse() {
 		if (holdingObject) return;
 		if (!GUIState.a.overButton) return;
@@ -628,10 +667,10 @@ public class MouseLookScript : MonoBehaviour {
 					for (int i = 0; i < 7; i++) {
 						if (Inventory.a.grenAmmo[i] > 0) Inventory.a.grenadeCurrent = i;
 					}
-					MFDManager.a.SendInfoToItemTab(Inventory.a.grenadeCurrent);
+					MFDManager.a.SendInfoToItemTab(Inventory.a.grenadeCurrent,-1);
 					if (Inventory.a.grenadeCurrent < 0) Inventory.a.grenadeCurrent = 0;
 				}
-				PutObjectInHand(indexPriorToRemoval,-1,0,0,true);
+				PutObjectInHand(indexPriorToRemoval,-1,0,0,false,true);
 				break;
 			case ButtonType.Patch:
 				PatchButton patbut = currentButton.GetComponent<PatchButton>();
@@ -640,14 +679,14 @@ public class MouseLookScript : MonoBehaviour {
 				if (Inventory.a.patchCounts[patbut.PatchButtonIndex] <= 0) {
 					Inventory.a.patchCounts[patbut.PatchButtonIndex] = 0;
 					Inventory.a.patchCurrent = -1;
-					GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+					GUIState.a.ClearOverButton();
 					for (int i = 0; i < 7; i++) {
 						if (Inventory.a.patchCounts[i] > 0) Inventory.a.patchCurrent = i;
 					}
-					MFDManager.a.SendInfoToItemTab(Inventory.a.patchCurrent);
+					MFDManager.a.SendInfoToItemTab(Inventory.a.patchCurrent,-1);
 					if (Inventory.a.patchCurrent < 0) Inventory.a.patchCurrent = 0;
 				}
-				PutObjectInHand(indexPriorToRemoval,-1,0,0,true);
+				PutObjectInHand(indexPriorToRemoval,-1,0,0,false,true);
 				break;
 			case ButtonType.GeneralInv:
 				GeneralInvButton genbut = 
@@ -656,7 +695,7 @@ public class MouseLookScript : MonoBehaviour {
 				// Access Cards button
 				if (genbut.GeneralInvButtonIndex == 0) {
 					MFDManager.a.OpenLastItemSide();
-					MFDManager.a.SendInfoToItemTab(81);
+					MFDManager.a.SendInfoToItemTab(81,-1);
 					return;
 				}
 
@@ -669,8 +708,8 @@ public class MouseLookScript : MonoBehaviour {
 				int referenceIndex = -1;
 				if (Inventory.a.generalInvCurrent >= 0) referenceIndex = Inventory.a.genButtons[Inventory.a.generalInvCurrent].transform.GetComponent<GeneralInvButton>().useableItemIndex;
 				if (referenceIndex < 0 || referenceIndex > 110) MFDManager.a.ResetItemTab();
-				else MFDManager.a.SendInfoToItemTab(referenceIndex);
-				PutObjectInHand(indexPriorToRemoval,-1,0,0,true);
+				else MFDManager.a.SendInfoToItemTab(referenceIndex,genbut.customIndex);
+				PutObjectInHand(indexPriorToRemoval,-1,0,0,false,true);
 				break;
 			case ButtonType.Search:
 				Debug.Log("InventoryButtonUse right clicked a Search button.");
@@ -689,10 +728,10 @@ public class MouseLookScript : MonoBehaviour {
 				sebut.customIndex[tempButtonindex] = -1;
 				MFDManager.a.DisableSearchItemImage(tempButtonindex);
 				sebut.CheckForEmpty();
-				GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+				GUIState.a.ClearOverButton();
 				if (Const.a.InputQuickItemPickup) {
 					Debug.Log("Quick item pickup from search!");
-					AddItemToInventory(heldObjectIndex);
+					AddItemToInventory(heldObjectIndex,heldObjectCustomIndex);
 					ResetHeldItem();
 					ResetCursor();
 				} else {
@@ -713,6 +752,16 @@ public class MouseLookScript : MonoBehaviour {
 					else
 						puzzleWire.ClickLHNode(wpuib.buttonIndex);
 				}
+				break;
+			case ButtonType.Vaporize:
+				VaporizeButton vapB = currentButton.GetComponent<VaporizeButton>();
+				if (vapB != null) {
+					vapB.OnVaporizeClick();
+				}
+				break;
+			case ButtonType.ShootMode:
+				MouseLookScript.a.ForceShootMode();
+				GUIState.a.ClearOverButton();
 				break;
 		}
 	}
@@ -753,7 +802,7 @@ public class MouseLookScript : MonoBehaviour {
 		Const.sprint(Const.a.stringTable[32] + Const.a.useableItemsNameText[index] + Const.a.stringTable[318],player); // Inventory full.
 	}
 
-	public void AddItemToInventory (int index) {
+	public void AddItemToInventory(int index, int customIndex) {
 		MFDManager.a.mouseClickHeldOverGUI = true; // Prevent gun shooting.
 		if (index < 0) index = 0; // Good check on paper.
 		if (index > 110) index = 94; // Way to get a head.
@@ -765,14 +814,15 @@ public class MouseLookScript : MonoBehaviour {
              || (index >= 52 && index < 59)
              || (index >= 61 && index <= 64)
              || (index >= 92 && index <= 101)) {
-			if (!Inventory.a.AddGeneralObjectToInventory(index)) {
+			if (!Inventory.a.AddGeneralObjectToInventory(index,customIndex)) {
 				AddItemFail(index);
 			}
 		} else if (index == 6) {
 			Inventory.a.AddAudioLogToInventory(heldObjectCustomIndex);
 		} else if (index >= 36 && index <= 51) {
 			if (!Inventory.a.AddWeaponToInventory(index,heldObjectAmmo,
-												        heldObjectAmmo2)) {
+												  heldObjectAmmo2,
+												  heldObjectLoadedAlternate)) {
 				AddItemFail(index);
 			}
 		} else if (index == 34 || index == 81 || (index >= 83 && index <= 91) || index == 110) {
@@ -852,68 +902,46 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
 		if (!grenadeActive) heldObject = Const.a.useableItems[heldObjectIndex]; // heldObject is set by UseGrenade() so don't override here.
-		if (heldObject != null) {
-			GameObject tossObject = null;
-			bool freeObjectInPoolFound = false;
-			GameObject levelDynamicContainer = LevelManager.a.GetCurrentDynamicContainer();
+		if (heldObject == null) {
+			Const.sprint("BUG: Object "+heldObjectIndex.ToString()+" not assigned, vaporized.",player);
+			ResetHeldItem();
+			ResetCursor();
+			return;
+		}
 
-			// Find any free inactive objects within the level's Levelnumber.Dynamic container and activate those before instantiating
-			if (!grenadeActive) {
-				if (levelDynamicContainer != null) {
-					for (int i=0;i<levelDynamicContainer.transform.childCount;i++) {
-						Transform tr = levelDynamicContainer.transform.GetChild(i);
-						GameObject go = tr.gameObject;
-						UseableObjectUse reference = go.GetComponent<UseableObjectUse>();
-						if (reference != null) {
-							if (reference.useableItemIndex == heldObjectIndex && go.activeSelf == false) {
-								reference.customIndex = heldObjectCustomIndex;
-								tossObject = go;
-								freeObjectInPoolFound = true;
-								break;
-							}
+		GameObject tossObject = null;
+		bool freeObjectInPoolFound = false;
+		GameObject levelDynamicContainer = LevelManager.a.GetCurrentDynamicContainer();
+
+		// Find any free inactive objects within the level's Levelnumber.Dynamic container and activate those before instantiating
+		if (!grenadeActive) {
+			if (levelDynamicContainer != null) {
+				for (int i=0;i<levelDynamicContainer.transform.childCount;i++) {
+					Transform tr = levelDynamicContainer.transform.GetChild(i);
+					GameObject go = tr.gameObject;
+					UseableObjectUse reference = go.GetComponent<UseableObjectUse>();
+					if (reference != null) {
+						if (reference.useableItemIndex == heldObjectIndex && go.activeSelf == false) {
+							reference.customIndex = heldObjectCustomIndex;
+							tossObject = go;
+							freeObjectInPoolFound = true;
+							break;
 						}
 					}
 				}
+			}
 
-				if (freeObjectInPoolFound) {
-					if (tossObject == null) {
-						Const.sprint("BUG: Failed to get freeObjectInPool for object being dropped!",player);
-						ResetHeldItem();
-						ResetCursor();
-						return;
-					} else {
-						tossObject.transform.position = (transform.position + (transform.forward * tossOffset));
-					}
+			if (freeObjectInPoolFound) {
+				if (tossObject == null) {
+					Const.sprint("BUG: Failed to get freeObjectInPool for object being dropped!",player);
+					ResetHeldItem();
+					ResetCursor();
+					return;
 				} else {
-					// Debug.Log("WARNING: Failed to get freeObjectInPool for object " + heldObject.ToString() + "being dropped! MouseLookScript DropHeldItem.",player);
-					tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Const.a.quaternionIdentity) as GameObject;  //effect
-					if (tossObject == null) {
-						Const.sprint("BUG: Failed to instantiate object being dropped!",player);
-						ResetHeldItem();
-						ResetCursor();
-						return;
-					}
+					tossObject.transform.position = (transform.position + (transform.forward * tossOffset));
 				}
-				if (tossObject.activeSelf != true) tossObject.SetActive(true);
-				if (levelDynamicContainer != null) {
-					tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-				}
-
-				Vector3 tossDir = MouseCursor.a.GetCursorScreenPointForRay();
-				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
-				Rigidbody rbody = tossObject.GetComponent<Rigidbody>();
-				if (rbody != null) {
-					rbody.isKinematic = false;
-					rbody.useGravity = true;
-					rbody.velocity = tossDir * tossForce;
-				}
-				tossObject.GetComponent<UseableObjectUse>().customIndex = heldObjectCustomIndex;
-				tossObject.GetComponent<UseableObjectUse>().ammo = heldObjectAmmo;
-				tossObject.GetComponent<UseableObjectUse>().ammo2 = heldObjectAmmo2;
-
 			} else {
-				// Throw an active grenade
-				grenadeActive = false;
+				// Debug.Log("WARNING: Failed to get freeObjectInPool for object " + heldObject.ToString() + "being dropped! MouseLookScript DropHeldItem.",player);
 				tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Const.a.quaternionIdentity) as GameObject;  //effect
 				if (tossObject == null) {
 					Const.sprint("BUG: Failed to instantiate object being dropped!",player);
@@ -921,25 +949,52 @@ public class MouseLookScript : MonoBehaviour {
 					ResetCursor();
 					return;
 				}
-
-				if (levelDynamicContainer != null){
-					tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-				}
-				tossObject.layer = 11; // Set to player bullets layer to prevent collision and still be visible.
-				Vector3 tossDir = MouseCursor.a.GetCursorScreenPointForRay();
-				tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
-				Rigidbody rbody = tossObject.GetComponent<Rigidbody>();
-				if (rbody != null) {
-					rbody.isKinematic = false;
-					rbody.useGravity = true;
-					rbody.velocity = tossDir * tossForce;
-				}
-				GrenadeActivate ga = tossObject.GetComponent<GrenadeActivate>();
-				if (ga != null) ga.Activate(); // Time to boom!
-				MouseCursor.a.liveGrenade = false;
 			}
+			if (tossObject.activeSelf != true) tossObject.SetActive(true);
+			if (levelDynamicContainer != null) {
+				tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+			}
+
+			Vector3 tossDir = MouseCursor.a.GetCursorScreenPointForRay();
+			tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
+			Rigidbody rbody = tossObject.GetComponent<Rigidbody>();
+			if (rbody != null) {
+				rbody.isKinematic = false;
+				rbody.useGravity = true;
+				rbody.velocity = tossDir * tossForce;
+			}
+
+			UseableObjectUse uou = tossObject.GetComponent<UseableObjectUse>();
+			uou.customIndex = heldObjectCustomIndex;
+			uou.ammo = heldObjectAmmo;
+			uou.ammo2 = heldObjectAmmo2;
+			uou.heldObjectLoadedAlternate = heldObjectLoadedAlternate;
 		} else {
-			Const.sprint("BUG: Object "+heldObjectIndex.ToString()+" not assigned, vaporized.",player);
+			// Throw an active grenade
+			grenadeActive = false;
+			tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Const.a.quaternionIdentity) as GameObject;  //effect
+			if (tossObject == null) {
+				Const.sprint("BUG: Failed to instantiate object being dropped!",player);
+				ResetHeldItem();
+				ResetCursor();
+				return;
+			}
+
+			if (levelDynamicContainer != null){
+				tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+			}
+			tossObject.layer = 11; // Set to player bullets layer to prevent collision and still be visible.
+			Vector3 tossDir = MouseCursor.a.GetCursorScreenPointForRay();
+			tossDir = playerCamera.ScreenPointToRay(tossDir).direction;
+			Rigidbody rbody = tossObject.GetComponent<Rigidbody>();
+			if (rbody != null) {
+				rbody.isKinematic = false;
+				rbody.useGravity = true;
+				rbody.velocity = tossDir * tossForce;
+			}
+			GrenadeActivate ga = tossObject.GetComponent<GrenadeActivate>();
+			if (ga != null) ga.Activate(); // Time to boom!
+			MouseCursor.a.liveGrenade = false;
 		}
 		ResetHeldItem();
 		ResetCursor();
@@ -950,6 +1005,7 @@ public class MouseLookScript : MonoBehaviour {
 		heldObjectCustomIndex = -1;
 		heldObjectAmmo = 0;
 		heldObjectAmmo2 = 0;
+		heldObjectLoadedAlternate = false;
 		holdingObject = false;
 		MouseCursor.a.justDroppedItemInHelper = true;
 	}
@@ -972,9 +1028,7 @@ public class MouseLookScript : MonoBehaviour {
 	public void ForceShootMode() {
 		if (Const.a.NoShootMode) return; // We are being like the original now!
 
-		GUIState.a.isBlocking = false;
-		GUIState.a.overButton = false;
-		GUIState.a.overButtonType = ButtonType.None;
+		GUIState.a.ClearOverButton();
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
 		inventoryMode = false;
@@ -988,9 +1042,7 @@ public class MouseLookScript : MonoBehaviour {
 	public void ForceInventoryMode() {
 		if (inventoryMode) return;
 
-		GUIState.a.isBlocking = false;
-		GUIState.a.overButton = false;
-		GUIState.a.overButtonType = ButtonType.None;
+		GUIState.a.ClearOverButton();
 		if (PauseScript.a.MenuActive() || PauseScript.a.Paused()) {
 			Cursor.lockState = CursorLockMode.None;
 		} else {
@@ -1078,7 +1130,7 @@ public class MouseLookScript : MonoBehaviour {
 			case 13: heldObject = Const.a.useableItems[97]; Inventory.a.RemoveGrenade(2); break; // Gas
 		}
 		MFDManager.a.ResetItemTab();
-		PutObjectInHand(index,-1,0,0,true);
+		PutObjectInHand(index,-1,0,0,false,true);
 	}
 
 	public void ScreenShake (float force) {
@@ -1103,6 +1155,7 @@ public class MouseLookScript : MonoBehaviour {
 		line += Utils.splitChar + ml.heldObjectCustomIndex.ToString(); // int
 		line += Utils.splitChar + ml.heldObjectAmmo.ToString(); // int
 		line += Utils.splitChar + ml.heldObjectAmmo2.ToString(); // int
+		line += Utils.splitChar + Utils.BoolToString(ml.heldObjectLoadedAlternate); // bool
 		line += Utils.splitChar + Utils.BoolToString(ml.firstTimePickup); // bool
 		line += Utils.splitChar + Utils.BoolToString(ml.firstTimeSearch); // bool
 		line += Utils.splitChar + Utils.BoolToString(ml.grenadeActive); // bool
@@ -1154,6 +1207,7 @@ public class MouseLookScript : MonoBehaviour {
 		ml.heldObjectCustomIndex = Utils.GetIntFromString(entries[index]); index++;
 		ml.heldObjectAmmo = Utils.GetIntFromString(entries[index]); index++;
 		ml.heldObjectAmmo2 = Utils.GetIntFromString(entries[index]); index++;
+		ml.heldObjectLoadedAlternate = Utils.GetBoolFromString(entries[index]); index++;
 		ml.firstTimePickup = Utils.GetBoolFromString(entries[index]); index++;
 		ml.firstTimeSearch = Utils.GetBoolFromString(entries[index]); index++;
 		ml.grenadeActive = Utils.GetBoolFromString(entries[index]); index++;

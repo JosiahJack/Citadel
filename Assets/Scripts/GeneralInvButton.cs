@@ -6,6 +6,7 @@ using System.Collections;
 public class GeneralInvButton : MonoBehaviour {
     public int GeneralInvButtonIndex;
     public int useableItemIndex;
+	public int customIndex;
 	public GameObject activateButton;
 	private bool reduce = false;
 
@@ -27,9 +28,9 @@ public class GeneralInvButton : MonoBehaviour {
 
 		// Access Cards
 		if (GeneralInvButtonIndex == 0) {
-			MFDManager.a.SendInfoToItemTab(81);
+			MFDManager.a.SendInfoToItemTab(81,-1);
 		} else {
-			MFDManager.a.SendInfoToItemTab(useableItemIndex);
+			MFDManager.a.SendInfoToItemTab(useableItemIndex,customIndex);
 		}
     }
 
@@ -72,7 +73,7 @@ public class GeneralInvButton : MonoBehaviour {
 	public void GeneralInvApply() {
 		// Access Cards button
 		if (GeneralInvButtonIndex == 0) {
-			MFDManager.a.SendInfoToItemTab(81);
+			MFDManager.a.SendInfoToItemTab(81,-1);
 			MFDManager.a.OpenTab(1,true,TabMSG.None, useableItemIndex,
 								 Handedness.LH);
 			return;
@@ -86,7 +87,7 @@ public class GeneralInvButton : MonoBehaviour {
 			case 53: ApplyIcadBattery(); break;
 			case 55: ApplyHealthkit(); break;
 			default:
-				MFDManager.a.SendInfoToItemTab(useableItemIndex);
+				MFDManager.a.SendInfoToItemTab(useableItemIndex,customIndex);
 				MFDManager.a.OpenTab(1,true,TabMSG.None, useableItemIndex,
 									 Handedness.LH);
 
@@ -97,7 +98,7 @@ public class GeneralInvButton : MonoBehaviour {
 
 		if (reduce)  {
 			Inventory.a.generalInventoryIndexRef[GeneralInvButtonIndex] = -1;
-			GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+			GUIState.a.ClearOverButton();
 		}
 	}
 }

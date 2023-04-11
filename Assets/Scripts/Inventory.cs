@@ -556,6 +556,29 @@ public class Inventory : MonoBehaviour {
 		hwButtons[index].SetActive(true);
 	}
 
+	public bool HasAnyAccessCards() {
+		if (HasAccessCard(AccessCardType.Standard)) return true;
+		if (HasAccessCard(AccessCardType.Medical)) return true;
+		if (HasAccessCard(AccessCardType.Science)) return true;
+		if (HasAccessCard(AccessCardType.Admin)) return true;
+		if (HasAccessCard(AccessCardType.Group1)) return true;
+		if (HasAccessCard(AccessCardType.Group2)) return true;
+		if (HasAccessCard(AccessCardType.Group3)) return true;
+		if (HasAccessCard(AccessCardType.Group4)) return true;
+		if (HasAccessCard(AccessCardType.GroupA)) return true;
+		if (HasAccessCard(AccessCardType.GroupB)) return true;
+		if (HasAccessCard(AccessCardType.Storage)) return true;
+		if (HasAccessCard(AccessCardType.Engineering)) return true;
+		if (HasAccessCard(AccessCardType.Maintenance)) return true;
+		if (HasAccessCard(AccessCardType.Security)) return true;
+		if (HasAccessCard(AccessCardType.Per1)) return true;
+		if (HasAccessCard(AccessCardType.Per2)) return true;
+		if (HasAccessCard(AccessCardType.Per3)) return true;
+		if (HasAccessCard(AccessCardType.Per4)) return true;
+		if (HasAccessCard(AccessCardType.Per5)) return true;
+		return false;
+	}
+
 	public bool HasAccessCard(AccessCardType card) {
 		for (int i=0;i<accessCardsOwned.Length;i++) {
 			if (accessCardsOwned[i] == card) return true;
@@ -658,7 +681,7 @@ public class Inventory : MonoBehaviour {
 						+ AccessCardCodeForType(doorAccessTypeAcquired));
 				}
 
-				MFDManager.a.SendInfoToItemTab(index);
+				MFDManager.a.SendInfoToItemTab(index,-1);
 				MFDManager.a.NotifyToCenterTab(2);
 				if (MouseLookScript.a.firstTimePickup) {
 					MFDManager.a.CenterTabButtonClickSilent(2,true);
@@ -685,7 +708,7 @@ public class Inventory : MonoBehaviour {
 			hwversion = 1;
 		}
 
-		MFDManager.a.SendInfoToItemTab(constIndex);
+		MFDManager.a.SendInfoToItemTab(constIndex,-1);
 		if (hwversion <= hardwareVersion[index]) { Const.sprint(Const.a.stringTable[46] ); return; }
 
 		int textIndex = 21;
@@ -809,22 +832,35 @@ public class Inventory : MonoBehaviour {
 	//--- End Hardware ---
 
 	// General
-    public bool AddGeneralObjectToInventory(int index) {
+    public bool AddGeneralObjectToInventory(int index, int customIndex) {
 		if (index < 0) return false;
 
         for (int i=1;i<14;i++) { // Skip index 0, Access Cards button
-            if (generalInventoryIndexRef[i] == -1) {
-                generalInventoryIndexRef[i] = index;
-				Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[31] ); // Item added to general inventory
-				genButtons[i].transform.GetComponent<GeneralInvButton>().useableItemIndex = index;
-				MFDManager.a.SendInfoToItemTab(index);
-				MFDManager.a.NotifyToCenterTab(2);
-				if (MouseLookScript.a.firstTimePickup) {
-					MFDManager.a.CenterTabButtonClickSilent(2,true);
-					MouseLookScript.a.firstTimePickup = false;
-				}
-				return true;
-            }
+            if (generalInventoryIndexRef[i] != -1) continue;
+
+			if (!HasAnyAccessCards() && generalInvCurrent == 0) { // Nothing.
+				generalInvCurrent = i; // Set to 1 (ideally).
+			}
+
+			generalInventoryIndexRef[i] = index;
+
+			// Item added to general inventory
+			Const.sprint(Const.a.useableItemsNameText[index]
+						 + Const.a.stringTable[31]);
+
+			GeneralInvButton gv = genButtons[i].GetComponent<GeneralInvButton>();
+			if (gv != null) gv.useableItemIndex = index;
+			if (Inventory.a.generalInvCurrent == i) { // Only if current.
+				MFDManager.a.SendInfoToItemTab(index,customIndex);
+			}
+
+			MFDManager.a.NotifyToCenterTab(2);
+			if (MouseLookScript.a.firstTimePickup) {
+				MFDManager.a.CenterTabButtonClickSilent(2,true);
+				MouseLookScript.a.firstTimePickup = false;
+			}
+
+			return true;
         }
 		return false;
     }
@@ -910,7 +946,7 @@ public class Inventory : MonoBehaviour {
 		grenadeIndex = useableIndex;
 		Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[34] );
 		MFDManager.a.NotifyToCenterTab(0);
-		MFDManager.a.SendInfoToItemTab(useableIndex);
+		MFDManager.a.SendInfoToItemTab(useableIndex,-1);
     }
 
 	public void RemoveGrenade(int index) {
@@ -981,18 +1017,25 @@ public class Inventory : MonoBehaviour {
 		if (index == 128) {
 			// Trioptimum Funpack Module discovered!
 			// UPDATE: Create minigames
-			Const.sprint(Const.a.stringTable[309] );
+			Const.sprint(Const.a.stringTable[309]);
 			return;
 		}
+
 		hasLog[index] = true;
 		lastAddedIndex = index;
 		numLogsFromLevel[Const.a.audioLogLevelFound[index]]++;
 		MouseLookScript.a.logContentsManager.InitializeLogsFromLevelIntoFolder();
-		MFDManager.a.SendInfoToItemTab(6);
-		if (Inventory.a.hasHardware[2] == true) {
-			Const.sprint(Const.a.stringTable[36] + Const.a.audiologNames[index] + Const.a.stringTable[37] + Const.a.InputValues[Const.a.InputCodeSettings[15]] + Const.a.stringTable[38]); // Audio log ## picked up.  Press '##' to play back.
+		MFDManager.a.SendInfoToItemTab(6,-1);
+		if (hasHardware[2] == true) {
+			// Audio log ## picked up.  Press '##' to play back.
+			Const.sprint(Const.a.stringTable[36] + Const.a.audiologNames[index]
+						 + Const.a.stringTable[37]
+						 + Const.a.InputValues[Const.a.InputCodeSettings[15]]
+						 + Const.a.stringTable[38]);
 		} else {
-			Const.sprint(Const.a.stringTable[36] + Const.a.audiologNames[index] + Const.a.stringTable[310]); // Audio log ## picked up.  Proper hardware not detected to play.
+			// Audio log ## picked up.  Proper hardware not detected to play.
+			Const.sprint(Const.a.stringTable[36] + Const.a.audiologNames[index]
+						 + Const.a.stringTable[310]);
 		}
 	}
 	//--- End Logs ---
@@ -1043,7 +1086,7 @@ public class Inventory : MonoBehaviour {
 			if (i == index) patchCountTextObjects[i].color = Const.a.ssYellowText; // Yellow
 			else  patchCountTextObjects[i].color = Const.a.ssGreenText; // Green
 		}
-		MFDManager.a.SendInfoToItemTab(constIndex);
+		MFDManager.a.SendInfoToItemTab(constIndex,-1);
 		MFDManager.a.NotifyToCenterTab(0);
 		Const.sprint(Const.a.useableItemsNameText[constIndex] + Const.a.stringTable[35] );
     }
@@ -1335,7 +1378,7 @@ public class Inventory : MonoBehaviour {
 		int ind = WeaponCurrent.a.weaponIndex;
 		if (ind >= 0 && ind < 16) {
 			// Update the ammo icons.
-			bool alt = Inventory.a.wepLoadedWithAlternate[ind];
+			bool alt = wepLoadedWithAlternate[ind];
 			WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(ind,alt);
 			WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(ind,alt);
 		}
@@ -1452,10 +1495,11 @@ public class Inventory : MonoBehaviour {
 		else			 wepAmmo[index]          += amount;
 		Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[33]); // Item added to weapon inventory
 		MFDManager.a.NotifyToCenterTab(0);
-		MFDManager.a.SendInfoToItemTab(constIndex);
+		MFDManager.a.SendInfoToItemTab(constIndex,-1);
 	}
 
-    public bool AddWeaponToInventory(int index, int ammo1, int ammo2) {
+    public bool AddWeaponToInventory(int index, int ammo1, int ammo2,
+									 bool loadedAlt) {
 		if (index < 0) return false;
 
 		MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
@@ -1465,28 +1509,38 @@ public class Inventory : MonoBehaviour {
 
 			weaponInventoryIndices[i] = index;
 			weaponInventoryText[i] = weaponInvTextSource[(index - 36)]; // Yech!
-			int tempindex = WeaponFire.Get16WeaponIndexFromConstIndex(index);
-			wepAmmo[tempindex] += ammo1;
-			wepAmmoSecondary[tempindex] += ammo2;
-			wepLoadedWithAlternate[i] = false;
-			if (ammo2 > 0) Inventory.a.wepLoadedWithAlternate[i] = true;
+			int index16 = WeaponFire.Get16WeaponIndexFromConstIndex(index);
 			WeaponButton wepBut = MFDManager.a.wepbutMan.wepButtonsScripts[i];
 			wepBut.useableItemIndex = index;
-			WeaponCurrent.a.weaponEnergySetting[i] = Inventory.a.GetDefaultEnergySettingForWeaponFrom16Index(tempindex);
+			WeaponCurrent.a.weaponEnergySetting[i] =
+				GetDefaultEnergySettingForWeaponFrom16Index(index16);
+
 			if (i == 0) {
 				WeaponCurrent.a.weaponCurrentPending = i;
 				WeaponCurrent.a.weaponIndexPending = index;
 				WeaponCurrent.a.justChangedWeap = true;
 				WeaponCurrent.a.reloadFinished = PauseScript.a.relativeTime + 0.5f;
 				WeaponCurrent.a.justChangedWeap = true;
-				MFDManager.a.SendInfoToItemTab(index); // notify item tab we clicked on a weapon
-				MFDManager.a.SendInfoToItemTab(index);
+				MFDManager.a.SendInfoToItemTab(index,-1); // notify item tab we clicked on a weapon
+				MFDManager.a.SendInfoToItemTab(index,-1);
 				WeaponCurrent.a.UpdateHUDAmmoCountsEither();
 				WeaponFire.a.CompleteWeaponChange();
-				WeaponCurrent.a.ReloadSecret(true);
 			}
 
-			Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[33]);
+			if (loadedAlt && ammo2 > 0) {
+				WeaponCurrent.a.currentMagazineAmount2[i] = ammo2;
+				if (ammo1 > 0) wepAmmo[index16] += ammo1;
+				wepLoadedWithAlternate[i] = true;
+			} else {
+				WeaponCurrent.a.currentMagazineAmount[i] = ammo1;
+				if (ammo2 > 0) wepAmmoSecondary[index16] += ammo2;
+				wepLoadedWithAlternate[i] = false;
+
+			}
+
+			Const.sprint(Const.a.useableItemsNameText[index]
+						 + Const.a.stringTable[33]);
+
 			MFDManager.a.NotifyToCenterTab(0);
 			return true;
         }
@@ -1610,7 +1664,7 @@ public class Inventory : MonoBehaviour {
 		inv.lastAddedIndex = Utils.GetIntFromString(entries[index]); index++;
 		inv.beepDone = Utils.GetBoolFromString(entries[index]); index++;
 		for (j=0;j<13;j++) { inv.hasHardware[j] = Utils.GetBoolFromString(entries[index]); index++; }
-		if (Inventory.a.hasHardware[1]) {
+		if (Inventory.a.hasHardware[1]) { // Explicitly check the primary instance.
 			MouseLookScript.a.compassContainer.SetActive(true);
 			MouseLookScript.a.automapContainerLH.SetActive(true);
 			MouseLookScript.a.automapContainerRH.SetActive(true);

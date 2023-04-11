@@ -55,7 +55,7 @@ public class GrenadeButton : MonoBehaviour {
 	public void PtrExit () {
 		if (!pointerEntered) return;
 
-		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+		GUIState.a.ClearOverButton();
 		pointerEntered = false;
     }
 
@@ -72,7 +72,7 @@ public class GrenadeButton : MonoBehaviour {
 	}
 
 	public void GrenadeInvSelect() {
-		MFDManager.a.SendInfoToItemTab(useableItemIndex);
+		MFDManager.a.SendInfoToItemTab(useableItemIndex,-1);
 		Inventory.a.grenadeCurrent = GrenButtonIndex;  //Set current
 		Inventory.a.grenadeIndex = useableItemIndex;  //Set current
 		Utils.PlayOneShotSavable(SFX,SFXClick);

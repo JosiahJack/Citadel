@@ -55,13 +55,46 @@ public class BioMonitor : MonoBehaviour {
 		if (Inventory.a.BioMonitorVersion() > 1
 			&& Utils.CheckFlags(PlayerPatch.a.patchActive, 127)) {
 			patchesActiveText.text = Const.a.stringTable[528];
-			if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_MEDI)) tempStr.Append(Const.a.stringTable[520]);
-			if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_STAMINUP)) tempStr.Append(Const.a.stringTable[521]);
-			if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_SIGHT)) tempStr.Append(Const.a.stringTable[522]);
-			if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_GENIUS)) tempStr.Append(Const.a.stringTable[523]);
-			if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_BERSERK)) tempStr.Append(Const.a.stringTable[524]);
-			if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_REFLEX)) tempStr.Append(Const.a.stringTable[525]);
-			if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_DETOX)) tempStr.Append(Const.a.stringTable[530]);
+			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
+								 PlayerPatch.a.PATCH_MEDI)) {
+
+				tempStr.Append(Const.a.stringTable[520]); tempStr.Append(" ");
+			}
+			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
+								 PlayerPatch.a.PATCH_STAMINUP)) {
+
+				tempStr.Append(Const.a.stringTable[521]); tempStr.Append(" ");
+			}
+			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
+								 PlayerPatch.a.PATCH_SIGHT)) {
+
+				tempStr.Append(Const.a.stringTable[522]); tempStr.Append(" ");
+			}
+
+			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
+								 PlayerPatch.a.PATCH_GENIUS)) {
+
+				tempStr.Append(Const.a.stringTable[523]); tempStr.Append(" ");
+			}
+
+			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
+								 PlayerPatch.a.PATCH_BERSERK)) {
+
+				tempStr.Append(Const.a.stringTable[524]); tempStr.Append(" ");
+			}
+
+			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
+								 PlayerPatch.a.PATCH_REFLEX)) {
+
+				tempStr.Append(Const.a.stringTable[525]); tempStr.Append(" ");
+			}
+
+			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
+								 PlayerPatch.a.PATCH_DETOX)) {
+
+				tempStr.Append(Const.a.stringTable[530]);
+			}
+
 			patchEffects.text = tempStr.ToString();
 		} else {
 			patchesActiveText.text = System.String.Empty;

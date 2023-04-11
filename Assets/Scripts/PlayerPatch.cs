@@ -157,7 +157,7 @@ public class PlayerPatch : MonoBehaviour {
 			Const.sprint((Const.a.useableItemsNameText[index] + Const.a.stringTable[589]),MouseLookScript.a.player);
 		}
 		Utils.PlayOneShotSavable(SFX,patchUseSFX);
-		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+		GUIState.a.ClearOverButton();
 	}
 
 	void Update() {

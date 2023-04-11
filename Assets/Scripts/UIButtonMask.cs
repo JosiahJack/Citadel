@@ -97,7 +97,7 @@ public class UIButtonMask : MonoBehaviour {
 	public void PtrExit () {
 		if (!pointerEntered) return;
 
-		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+		GUIState.a.ClearOverButton();
 		doubleClickTicks = 0;
 		if (toolTipLingdex >= 0) {
 			MouseCursor.a.toolTip = string.Empty;

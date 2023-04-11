@@ -37,13 +37,46 @@ public class ItemTabManager : MonoBehaviour {
 			Const.a.useableItemsNameText[23];
 	}
 
-	public void SendItemDataToItemTab(int constIndex) {
+	public void SendItemDataToItemTab(int constIndex, int customIndex) {
 		Reset();
 		if (constIndex < 0) return;
 
-		if (Const.a.useableItemsIcons[constIndex] != null) {
-			iconManager.GetComponent<Image>().overrideSprite =
-				Const.a.useableItemsIcons[constIndex]; //datareader
+		if (constIndex == 92 || constIndex == 93 || constIndex == 94) { // Head
+			int ind = 37; // Generic indeterminate head.
+			switch(customIndex) {
+				case 1: ind = 11; break; // Abe Ghiran
+				case 2: ind = 32; break; // Mira Stackhouse
+				case 3: ind =  1; break; // Baerga
+				case 4: ind =  7; break; // D'Arcy
+				case 5: ind =  9; break; // Diego (hope a mod uses this!)
+				case 6: ind = 10; break; // Engle
+				case 7: ind = 12; break; // Grossman
+				case 8: ind = 13; break; // Hessman
+				case 9: ind = 14; break; // Honig
+				case 10: ind = 15; break; // Kell
+				case 11: ind = 17; break; // Lansing (hope a mod uses this too!)
+				case 12: ind = 25; break; // MacLeod
+				case 13: ind = 27; break; // Parovski
+				case 14: ind = 28; break; // Schuler unit
+				case 15: ind = 31; break; // SHODAN (mods can be weird lol)
+				case 16: ind = 33; break; // Stannek
+				case 17: ind = 35; break; // Voyage of the Don Travers
+				case 18: ind = 36; break; // Wong
+				default: ind = 37; break; // You're not Wong there
+			}
+
+			if (ind >= 0 && ind < 38) {
+				iconManager.GetComponent<Image>().overrideSprite =
+					Const.a.logImages[ind];
+			} else {
+				iconManager.GetComponent<Image>().overrideSprite =
+					Const.a.logImages[0];
+			}
+		} else {
+			if (Const.a.useableItemsIcons[constIndex] != null) {
+				iconManager.GetComponent<Image>().overrideSprite =
+					Const.a.useableItemsIcons[constIndex]; //datareader
+			}
 		}
 
 		textManager.GetComponent<Text>().text = 
@@ -82,8 +115,7 @@ public class ItemTabManager : MonoBehaviour {
 
 		// Enable Vaporize button for junk.
 		if (constIndex < 6 || constIndex == 33 || constIndex == 35
-			|| constIndex == 58 || constIndex == 62
-			|| (constIndex > 91 && constIndex < 95)) {
+			|| constIndex == 58 || constIndex == 62) {
 			vaporizeButton.SetActive(true);
 		} else {
 			vaporizeButton.SetActive(false);

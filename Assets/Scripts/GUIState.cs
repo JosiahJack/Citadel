@@ -3,6 +3,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Prevents shooting through the UI when using the UI on the HUD.
+// Handles data about what is under the cursor for different button
+// interactions such as right clicking as parsed by MouseLookScript.
 public class GUIState : MonoBehaviour {
 	[SerializeField] public bool isBlocking = false;
 	public static GUIState a;
@@ -12,17 +15,22 @@ public class GUIState : MonoBehaviour {
 
 	void Awake() {
 		a = this;
-		a.currentButton = null;
-		a.overButton = false;
-		a.overButtonType = ButtonType.None;
-		a.isBlocking = false;
+		a.ClearOverButton();
 	}
 
-	public void PtrHandler (bool block, bool overState, ButtonType overType,GameObject button) {
+	public void PtrHandler(bool block, bool overState, ButtonType overType,
+						   GameObject button) {
 		isBlocking = block;
 		overButton = overState;
 		overButtonType = overType;
 		currentButton = button;
+	}
+
+	public void ClearOverButton() {
+		currentButton = null;
+		overButton = false;
+		overButtonType = ButtonType.None;
+		isBlocking = false;
 	}
 
 	public static string Save(GameObject go) {
@@ -33,8 +41,8 @@ public class GUIState : MonoBehaviour {
 		}
 
 		string line = System.String.Empty;
-		line = Utils.UintToString(Utils.ButtonTypeToInt(guis.overButtonType)); // int
-		line += Utils.splitChar + Utils.BoolToString(guis.overButton); // bool
+		line = Utils.UintToString(Utils.ButtonTypeToInt(guis.overButtonType));
+		line += Utils.splitChar + Utils.BoolToString(guis.overButton);
 		return line;
 	}
 

@@ -39,7 +39,7 @@ public class SoftwareInvButton : MonoBehaviour {
 					// Turbo
 					if (MouseLookScript.a.inCyberSpace) {
 						Inventory.a.UseTurbo();
-						GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+						GUIState.a.ClearOverButton();
 					} else {
 						Const.sprint(Const.a.stringTable[460],Const.a.player1);
 					}
@@ -48,7 +48,7 @@ public class SoftwareInvButton : MonoBehaviour {
 					// Decoy
 					if (MouseLookScript.a.inCyberSpace) {
 						Inventory.a.UseDecoy();
-						GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+						GUIState.a.ClearOverButton();
 					} else {
 						Const.sprint(Const.a.stringTable[460],Const.a.player1);
 					}
@@ -57,7 +57,7 @@ public class SoftwareInvButton : MonoBehaviour {
 					// Recall
 					if (MouseLookScript.a.inCyberSpace) {
 						Inventory.a.UseRecall();
-						GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+						GUIState.a.ClearOverButton();
 					} else {
 						Const.sprint(Const.a.stringTable[460],Const.a.player1);
 					}

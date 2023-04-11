@@ -21,6 +21,7 @@ public static class ConsoleEmulator {
 	public static void ConsoleUpdate() {
         if (GetInput.a.Console()) PlayerMovement.a.ToggleConsole();
 		if (PlayerMovement.a.consoleActivated) {
+
 			if (!String.IsNullOrEmpty(PlayerMovement.a.consoleentryText.text)) {
 				if (PlayerMovement.a.consoleplaceholderText.activeSelf) {
                     PlayerMovement.a.consoleplaceholderText.SetActive(false);
@@ -38,9 +39,18 @@ public static class ConsoleEmulator {
 				  || Input.GetKeyDown(KeyCode.JoystickButton0))
                 && !PauseScript.a.mainMenu.activeSelf == true) {
 
-                string enteredText = PlayerMovement.a.consoleinpFd.text;
+          	    string enteredText = PlayerMovement.a.consoleinpFd.text;
                 ConsoleEntry(enteredText);
             }
+
+			if (Input.GetKeyDown(KeyCode.LeftControl) ||
+				Input.GetKeyDown(KeyCode.RightControl)) {
+
+				if (Input.GetKeyUp(KeyCode.U)) {
+					PlayerMovement.a.consoleinpFd.text = "";
+				}
+			}
+
 		} else {
 			if (PlayerMovement.a.consoleplaceholderText.activeSelf) {
                 PlayerMovement.a.consoleplaceholderText.SetActive(false);
@@ -49,36 +59,46 @@ public static class ConsoleEmulator {
 	}
 
     private static void SetToCommandMoreDistant() {
-        if (string.IsNullOrWhiteSpace(lastCommand[0])) return; // No entries.
+		string val = PlayerMovement.a.lastCommand0;
+		switch(consoleMemdex) {
+			case 0: val = PlayerMovement.a.lastCommand0; break;
+			case 1: val = PlayerMovement.a.lastCommand1; break;
+			case 2: val = PlayerMovement.a.lastCommand2; break;
+			case 3: val = PlayerMovement.a.lastCommand3; break;
+			case 4: val = PlayerMovement.a.lastCommand4; break;
+			case 5: val = PlayerMovement.a.lastCommand5; break;
+			case 6: val = PlayerMovement.a.lastCommand6; break;
+		}
 
-        string currentText = PlayerMovement.a.consoleentryText.text;
-        if (string.IsNullOrWhiteSpace(PlayerMovement.a.consoleentryText.text)
-            && currentText != lastCommand[0]) {
-            PlayerMovement.a.consoleentryText.text = lastCommand[0];
-            return;
-        }
+        if (string.IsNullOrWhiteSpace(val)) return;
 
+        PlayerMovement.a.consoleinpFd.text = val;
         consoleMemdex++;
         if (consoleMemdex > 6) consoleMemdex = 6;
-        if (string.IsNullOrWhiteSpace(lastCommand[consoleMemdex])) return;
-
-        PlayerMovement.a.consoleentryText.text = lastCommand[consoleMemdex];
     }
 
     private static void SetToCommandMoreRecent() {
-        if (string.IsNullOrWhiteSpace(lastCommand[0])) return; // No entries.
-        if (string.IsNullOrWhiteSpace(PlayerMovement.a.consoleentryText.text)) {
-            return;
-        }
+		if (consoleMemdex <= 0) return;
 
+		string val = PlayerMovement.a.lastCommand0;
+		switch(consoleMemdex) {
+			case 0: val = PlayerMovement.a.lastCommand0; break;
+			case 1: val = PlayerMovement.a.lastCommand1; break;
+			case 2: val = PlayerMovement.a.lastCommand2; break;
+			case 3: val = PlayerMovement.a.lastCommand3; break;
+			case 4: val = PlayerMovement.a.lastCommand4; break;
+			case 5: val = PlayerMovement.a.lastCommand5; break;
+			case 6: val = PlayerMovement.a.lastCommand6; break;
+		}
+        if (string.IsNullOrWhiteSpace(val)) { consoleMemdex = 0; return; }
+
+        PlayerMovement.a.consoleinpFd.text = val;
         consoleMemdex--;
         if (consoleMemdex < 0) consoleMemdex = 0;
-        PlayerMovement.a.consoleentryText.text = lastCommand[consoleMemdex];
     }
 
     private static void ShiftLastCommand(string entry) {
         if (string.IsNullOrWhiteSpace(entry)) return; // Only remember real cmd.
-        if (lastCommand[0] == entry) return; // Only remember unique cmds.
 
         lastCommand[6] = lastCommand[5];
         lastCommand[5] = lastCommand[4];
@@ -91,6 +111,7 @@ public static class ConsoleEmulator {
 
     private static void ConsoleEntry(string entry) {
         ShiftLastCommand(entry);
+		consoleMemdex = 0;
 		string ts = entry.ToLower(); // test string = lower case text
 		string tn = entry; // test number = number searching
         if (ts.Contains("noclip") || ts.Contains("idclip")

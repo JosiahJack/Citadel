@@ -113,39 +113,12 @@ public class WeaponCurrent : MonoBehaviour {
 		if (weaponButton7Index != weaponCurrent) {
 			if (weaponButton7Index > weaponCurrent) return; // No list shift.
 
-			//int numweps = 0;
-			//for (int i=0;i<7;i++) {
-			//	WeaponButton wepbut = wepbutMan.wepButtonsScripts[i];
-			//	if (wepbut.gameObject.activeSelf) numweps++;
-			//}
-
-			//if (numweps == 1) {
-			//	currentMagazineAmount[weaponButton7Index] = 0; // Zero out ammo
-			//	currentMagazineAmount2[weaponButton7Index] = 0;
-			//	MFDManager.a.SetWepInfo(-1);
-			//	return;
-			//}
-
 			weaponCurrent--;
-
-			//// Shift the indices down on each button from the one above it.
-			//for (int i=weaponButton7Index;i<6;i++) {
-			//	WeaponButton wepbut = wepbutMan.wepButtonsScripts[i];
-			//	WeaponButton wepbutNext = wepbutMan.wepButtonsScripts[i + 1];
-			//	wepbut.useableItemIndex = 
-			//}
-
-			//// Deactivate the topmost button
-			//for (int i=0;i<7;i++) {
-			//	WeaponButton wepbut = wepbutMan.wepButtonsScripts[i];
-			//	if (wepbut.gameObject.activeSelf) numweps++;
-			//}
 			return; // Don't continue down and change the weapon, keep current.
 		}
 
 		SetAllViewModelsDeactive();
 		reloadFinished = 0;
-
 		int initialIndex = WeaponCurrent.a.weaponCurrent;
 		if (initialIndex < 0) initialIndex = 0;
 		if (initialIndex > 6) initialIndex = 0;
@@ -155,9 +128,8 @@ public class WeaponCurrent : MonoBehaviour {
 		bool buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);
 		while (buttonNotValid) {
 			countCheck++;
-			if (countCheck > 13) {
-				return; // no weapons!  don't runaway loop
-			}
+			if (countCheck > 13) return; // no weapons!  don't runaway loop
+
 			nextIndex--;
 			if (nextIndex < 0) nextIndex = 6;
 			buttonNotValid = (Inventory.a.weaponInventoryIndices[nextIndex] == -1);

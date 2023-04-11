@@ -232,7 +232,9 @@ public class PlayerHealth : MonoBehaviour {
 											radiationAmountWarningID);
 
 		PlayerEnergy.a.TakeEnergy(enerTake);
-		BiomonitorGraphSystem.a.EnergyPulse(enerTake);
+		if (BiomonitorGraphSystem.a != null) {
+			BiomonitorGraphSystem.a.EnergyPulse(enerTake);
+		}
 		return true;
 	}
 

@@ -45,9 +45,12 @@ public class InteractablePanel : MonoBehaviour {
 				return; // do nothing already done here
 			}
 
-			// was player holding correct item in their hand when they used us?
-			if (ud.mainIndex == requiredIndex) {
-				if (installed) {
+			// Was player holding correct item in their hand when they used us?
+			if (ud.mainIndex == requiredIndex && (requiredIndex != 92
+												  || (requiredIndex == 92
+												  && ud.customIndex == 1))) {
+												     // Abe Ghiran's head.
+				if (installed) { 					 // ... is big
 					Utils.PlayOneShotSavable(SFX,SFXAlreadyInstalled);
 					return; // do nothing already done here
 				}

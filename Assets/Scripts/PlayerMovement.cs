@@ -46,6 +46,14 @@ public class PlayerMovement : MonoBehaviour {
 	public float playerSpeedHorizontalActual;
 	public bool isSprinting = false;
 	public bool grounded = false; // save
+	public string lastCommand0;
+	public string lastCommand1;
+	public string lastCommand2;
+	public string lastCommand3;
+	public string lastCommand4;
+	public string lastCommand5;
+	public string lastCommand6;
+	public int consoleMemdex;
 
 	// Internal references
 	[HideInInspector] public BodyState bodyState; // save
@@ -187,11 +195,19 @@ public class PlayerMovement : MonoBehaviour {
 		turboFinished = PauseScript.a.relativeTime;
 		playerHome = transform.localPosition;
 		ConsoleEmulator.lastCommand = new string[7];
-		ConsoleEmulator.consoleMemdex = 0;
+		ConsoleEmulator.consoleMemdex = consoleMemdex = 0;
     }
 
 	void Update() {
 		// Always allowed items, even when paused...
+		lastCommand0 = ConsoleEmulator.lastCommand[0];
+		lastCommand1 = ConsoleEmulator.lastCommand[1];
+		lastCommand2 = ConsoleEmulator.lastCommand[2];
+		lastCommand3 = ConsoleEmulator.lastCommand[3];
+		lastCommand4 = ConsoleEmulator.lastCommand[4];
+		lastCommand5 = ConsoleEmulator.lastCommand[5];
+		lastCommand6 = ConsoleEmulator.lastCommand[6];
+		consoleMemdex = ConsoleEmulator.consoleMemdex;
 		ConsoleEmulator.ConsoleUpdate();
 
 		// Bug Hunter feedback (puts it into their screenshots for me)
@@ -477,13 +493,13 @@ public class PlayerMovement : MonoBehaviour {
 	//}
 
 	void ApplyGroundFriction() {
-		if (isSprinting && !CheatNoclip) return;
+		if (isSprinting && running && !CheatNoclip) return;
 
 		tempVecRbody = rbody.velocity;
 		Vector3 movDir = rbody.velocity;
 		movDir.y = 0;
 		movDir = movDir.normalized;
-		if (Vector3.Dot(movDir,floorAng) < 0f) return;
+		if (Vector3.Dot(movDir,floorAng) < 0f && running) return;
 
 		deceleration = walkDeacceleration;
 		if (!grounded && !ladderState && !justJumped) deceleration *= 1.5f;
@@ -635,7 +651,9 @@ public class PlayerMovement : MonoBehaviour {
 					if (jumpJetEnergySuckTickFinished < PauseScript.a.relativeTime) {
 						jumpJetEnergySuckTickFinished = PauseScript.a.relativeTime + jumpJetEnergySuckTick;
 						PlayerEnergy.a.TakeEnergy(energysuck);
-						BiomonitorGraphSystem.a.EnergyPulse(energysuck);
+						if (BiomonitorGraphSystem.a != null) {
+							BiomonitorGraphSystem.a.EnergyPulse(energysuck);
+						}
 					}
 				} else {
 					hwbJumpJets.JumpJetsOff();
@@ -730,10 +748,10 @@ public class PlayerMovement : MonoBehaviour {
 			forForce *= 2.00f;
 		}
 
+		Vector3 movDir = rbody.velocity;
+		movDir.y = 0;
+		movDir = movDir.normalized;
 		if (floorDot < 0.98f) {
-			Vector3 movDir = rbody.velocity;
-			movDir.y = 0;
-			movDir = movDir.normalized;
 			if (Vector3.Dot(movDir,floorAng) < 0f) {
 				if (Inventory.a.BoosterActive()) forForce *= 2f;
 			}
@@ -744,8 +762,12 @@ public class PlayerMovement : MonoBehaviour {
 			runTime += Time.deltaTime;
 			if (relForward == 0 && relSideways == 0) runTime = 0;
 			rbody.AddRelativeForce(sidForce,upForce,forForce);
+			movDir = rbody.velocity; // Updated after force add.
+			movDir.y = 0;
+			movDir = movDir.normalized;
 			if (fatigueFinished2 < PauseScript.a.relativeTime
-				&& relForward != 0) {
+				&& movDir.sqrMagnitude > 0f && grounded
+				&& (relForward != 0 || relSideways != 0)) {
 
 				fatigueFinished2 = PauseScript.a.relativeTime
 								   + fatigueWaneTickSecs;
@@ -1160,7 +1182,7 @@ public class PlayerMovement : MonoBehaviour {
 		consolebg.enabled = false;
 		consoleentryText.text = "";
 		consoleentryText.enabled = false;
-		ConsoleEmulator.consoleMemdex = 0;
+		ConsoleEmulator.consoleMemdex = consoleMemdex = 0;
 	}
 
 	void ConsoleEnable() {
@@ -1171,7 +1193,7 @@ public class PlayerMovement : MonoBehaviour {
 		consoleinpFd.ActivateInputField();
 		consolebg.enabled = true;
 		consoleentryText.enabled = true;
-		ConsoleEmulator.consoleMemdex = 0;
+		ConsoleEmulator.consoleMemdex = consoleMemdex = 0;
 	}
 
     public void ToggleConsole() {

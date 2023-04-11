@@ -259,7 +259,7 @@ public class MouseCursor : MonoBehaviour {
 			} else {
 				if (inventoryAddHelper.activeInHierarchy) inventoryAddHelper.SetActive(false);
 				if (justDroppedItemInHelper) {
-					GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+					GUIState.a.ClearOverButton();
 					justDroppedItemInHelper = false; // only disable blocking state once, not constantly
 				}
 			}
@@ -267,7 +267,7 @@ public class MouseCursor : MonoBehaviour {
 			if (justDroppedItemInHelper) {
 				justDroppedItemInHelper = false; // only disable blocking state once, not constantly
 				inventoryAddHelper.SetActive(false);
-				GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+				GUIState.a.ClearOverButton();
 			}
 		}
 	}

@@ -36,7 +36,7 @@ public class SearchButton : MonoBehaviour {
 			contents[0] = -1;
 			customIndex[0] = -1;
 			if (Const.a.InputQuickItemPickup) {
-				MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex);
+				MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex,MouseLookScript.a.heldObjectCustomIndex);
 				MouseLookScript.a.ResetHeldItem();
 				MouseLookScript.a.ResetCursor();
 				MouseLookScript.a.holdingObject = false;
@@ -57,7 +57,7 @@ public class SearchButton : MonoBehaviour {
 			contents[1] = -1;
 			customIndex[1] = -1;
 			if (Const.a.InputQuickItemPickup) {
-				MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex);
+				MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex,MouseLookScript.a.heldObjectCustomIndex);
 				MouseLookScript.a.ResetHeldItem();
 				MouseLookScript.a.ResetCursor();
 				MouseLookScript.a.holdingObject = false;
@@ -78,7 +78,7 @@ public class SearchButton : MonoBehaviour {
 			contents[2] = -1;
 			customIndex[2] = -1;
 			if (Const.a.InputQuickItemPickup) {
-				MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex);
+				MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex,MouseLookScript.a.heldObjectCustomIndex);
 				MouseLookScript.a.ResetHeldItem();
 				MouseLookScript.a.ResetCursor();
 				MouseLookScript.a.holdingObject = false;
@@ -99,7 +99,7 @@ public class SearchButton : MonoBehaviour {
 			contents[3] = -1;
 			customIndex[3] = -1;
 			if (Const.a.InputQuickItemPickup) {
-				MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex);
+				MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex,MouseLookScript.a.heldObjectCustomIndex);
 				MouseLookScript.a.ResetHeldItem();
 				MouseLookScript.a.ResetCursor();
 				MouseLookScript.a.holdingObject = false;
@@ -108,6 +108,6 @@ public class SearchButton : MonoBehaviour {
 			CheckForEmpty();
 			break;
 		}
-		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+		GUIState.a.ClearOverButton();
 	}
 }

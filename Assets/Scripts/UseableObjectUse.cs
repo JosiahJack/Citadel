@@ -6,6 +6,7 @@ public class UseableObjectUse : MonoBehaviour {
 	public int customIndex = -1;
 	public int ammo = 0;
 	public int ammo2 = 0;
+	public bool heldObjectLoadedAlternate = false;
 	private Texture2D tex;
 
 	void Awake() {
@@ -41,8 +42,9 @@ public class UseableObjectUse : MonoBehaviour {
 		MouseLookScript.a.heldObjectCustomIndex = customIndex;
 		MouseLookScript.a.heldObjectAmmo = ammo;
 		MouseLookScript.a.heldObjectAmmo2 = ammo2;
+		MouseLookScript.a.heldObjectLoadedAlternate = heldObjectLoadedAlternate;
 		if (Const.a.InputQuickItemPickup) {
-			MouseLookScript.a.AddItemToInventory(useableItemIndex);
+			MouseLookScript.a.AddItemToInventory(useableItemIndex,customIndex);
 			MouseLookScript.a.ResetHeldItem();
 			MouseLookScript.a.ResetCursor();
 		} else {
@@ -70,6 +72,7 @@ public class UseableObjectUse : MonoBehaviour {
 		line += Utils.splitChar + Utils.UintToString(uou.customIndex); // int - special reference like audiolog message
 		line += Utils.splitChar + Utils.UintToString(uou.ammo); // int - how much normal ammo is on the weapon
 		line += Utils.splitChar + Utils.UintToString(uou.ammo2); //int - alternate ammo type, e.g. Penetrator or Teflon
+		line += Utils.splitChar + Utils.BoolToString(uou.heldObjectLoadedAlternate); //int - alternate ammo type, e.g. Penetrator or Teflon
 		if (uou.useableItemIndex == 35) { // Worker Helmet with its two flaps.
 			line += Utils.splitChar + Utils.SaveTransform(go.transform.GetChild(0));
 			line += Utils.splitChar + Utils.SaveTransform(go.transform.GetChild(1));
@@ -98,6 +101,7 @@ public class UseableObjectUse : MonoBehaviour {
 		uou.customIndex = Utils.GetIntFromString(entries[index]); index++;
 		uou.ammo = Utils.GetIntFromString(entries[index]); index++;
 		uou.ammo2 = Utils.GetIntFromString(entries[index]); index++;
+		uou.heldObjectLoadedAlternate = Utils.GetBoolFromString(entries[index]); index++;
 		if (uou.useableItemIndex == 35) { // Worker Helmet with its two flaps.
 			Transform tr_child1 = go.transform.GetChild(0);
 			Transform tr_child2 = go.transform.GetChild(1);

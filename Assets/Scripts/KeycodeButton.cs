@@ -49,7 +49,7 @@ public class KeycodeButton : MonoBehaviour {
 	public void PtrExit () {
 		if (!pointerEntered) return;
 
-		GUIState.a.PtrHandler(false,false,ButtonType.None,null);
+		GUIState.a.ClearOverButton();
 		pointerEntered = false;
 	}
 
