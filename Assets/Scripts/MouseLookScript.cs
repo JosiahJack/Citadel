@@ -595,8 +595,8 @@ public class MouseLookScript : MonoBehaviour {
 			return true; // Item can get absorbed, not dropped.
 		}
 
-		Debug.Log("BUG: Attempting to frob use a useable without a UseHandler "
-				  + "or UseHandlerRelay!");
+		Debug.Log("BUG: Attempting to frob use a useable " + go.name
+				  + " without a UseHandler or UseHandlerRelay!");
 
 		return false;
 	}

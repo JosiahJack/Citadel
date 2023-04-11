@@ -849,7 +849,11 @@ public class Inventory : MonoBehaviour {
 						 + Const.a.stringTable[31]);
 
 			GeneralInvButton gv = genButtons[i].GetComponent<GeneralInvButton>();
-			if (gv != null) gv.useableItemIndex = index;
+			if (gv != null) {
+				gv.useableItemIndex = index;
+				gv.customIndex = customIndex;
+			}
+
 			if (Inventory.a.generalInvCurrent == i) { // Only if current.
 				MFDManager.a.SendInfoToItemTab(index,customIndex);
 			}
