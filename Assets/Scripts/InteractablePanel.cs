@@ -55,7 +55,7 @@ public class InteractablePanel : MonoBehaviour {
 					return; // do nothing already done here
 				}
 				installed = true;
-				installationItem.SetActive(true);
+				if (installationItem != null) installationItem.SetActive(true);
 				Utils.PlayOneShotSavable(SFX,SFXInstallation);
 				Const.sprintByIndexOrOverride (installedMessageLingdex, installedMessage,ud.owner);
 				// any extra effect objects?  activate them here...good for sparks or turning on any extra bits and bobs
@@ -79,7 +79,7 @@ public class InteractablePanel : MonoBehaviour {
 				Const.a.UseTargets(ud,target);
 			} else {
 				Utils.PlayOneShotSavable(SFX,SFXFail); // aaaahhh!! Try again
-				Const.sprintByIndexOrOverride (wrongItemMessageLingdex, wrongItemMessage,ud.owner);
+				Const.sprintByIndexOrOverride(wrongItemMessageLingdex, wrongItemMessage,ud.owner);
 			}
 		} else {
 			open = true;

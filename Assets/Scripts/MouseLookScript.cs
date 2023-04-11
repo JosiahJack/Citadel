@@ -582,7 +582,7 @@ public class MouseLookScript : MonoBehaviour {
 		ud.mainIndex = heldObjectIndex;
 		ud.customIndex = heldObjectCustomIndex;
 		UseHandler uh = go.GetComponent<UseHandler>();
-		if (uh == null) {
+		if (uh != null) {
 			Utils.PlayOneShotSavable(SFXSource,SearchSFX);
 			uh.Use(ud);
 			return true; // Item can get absorbed, not dropped.
@@ -653,6 +653,7 @@ public class MouseLookScript : MonoBehaviour {
 		Debug.Log("InventoryButtonUse entered successfully");
 
 		int indexPriorToRemoval = -1;
+		int customIndexPrior = -1;
 		switch(GUIState.a.overButtonType) {
 			case ButtonType.Weapon: RemoveWeapon(); break;
 			case ButtonType.Grenade:
@@ -700,16 +701,25 @@ public class MouseLookScript : MonoBehaviour {
 				}
 
 				indexPriorToRemoval = genbut.useableItemIndex;
+				customIndexPrior = genbut.customIndex;
 				Inventory.a.generalInventoryIndexRef[genbut.GeneralInvButtonIndex] = -1;
 				Inventory.a.generalInvCurrent = -1;
 				for (int i = 0; i < 7; i++) {
-					if (Inventory.a.generalInventoryIndexRef[i] >= 0) Inventory.a.generalInvCurrent = i;
+					if (Inventory.a.generalInventoryIndexRef[i] >= 0) {
+						Inventory.a.generalInvCurrent = i;
+					}
 				}
 				int referenceIndex = -1;
-				if (Inventory.a.generalInvCurrent >= 0) referenceIndex = Inventory.a.genButtons[Inventory.a.generalInvCurrent].transform.GetComponent<GeneralInvButton>().useableItemIndex;
-				if (referenceIndex < 0 || referenceIndex > 110) MFDManager.a.ResetItemTab();
-				else MFDManager.a.SendInfoToItemTab(referenceIndex,genbut.customIndex);
-				PutObjectInHand(indexPriorToRemoval,-1,0,0,false,true);
+				if (Inventory.a.generalInvCurrent >= 0) {
+					referenceIndex = Inventory.a.genButtons[Inventory.a.generalInvCurrent].transform.GetComponent<GeneralInvButton>().useableItemIndex;
+				}
+
+				if (referenceIndex < 0 || referenceIndex > 110) {
+					MFDManager.a.ResetItemTab();
+				} else {
+					MFDManager.a.SendInfoToItemTab(referenceIndex,genbut.customIndex);
+				}
+				PutObjectInHand(indexPriorToRemoval,customIndexPrior,0,0,false,true);
 				break;
 			case ButtonType.Search:
 				Debug.Log("InventoryButtonUse right clicked a Search button.");
