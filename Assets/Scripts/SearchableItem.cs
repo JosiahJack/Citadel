@@ -163,6 +163,7 @@ public class SearchableItem : MonoBehaviour {
 			if (MFDManager.a.tetheredSearchable != se) {
 				if (MFDManager.a.tetheredSearchable != null) {
 					MFDManager.a.tetheredSearchable.ResetSearchable(false);
+					MFDManager.a.tetheredSearchable = null;
 				}
 			}
 			MFDManager.a.tetheredSearchable = se;

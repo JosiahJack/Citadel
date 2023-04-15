@@ -338,12 +338,35 @@ public class MFDManager : MonoBehaviour  {
 		// Handle severing connection with in use keypads, puzzles, etc. when player drifts too far away
 		if (usingObject) {
 			if (Vector3.Distance(playerCapsuleTransform.position, objectInUsePos) > (Const.a.frobDistance + 0.16f)) {
-				if (tetheredPGP != null) ClosePuzzleGrid();
-				if (tetheredPWP != null) ClosePuzzleWire();
-				if (tetheredKeypadElevator != null) CloseElevatorPad();
-				if (tetheredKeypadKeycode != null) CloseKeycodePad();
-				if (tetheredSearchable != null) CloseSearch();
-				if (paperLogInUse) ClosePaperLog();
+				if (tetheredPGP != null) {
+					ClosePuzzleGrid();
+					tetheredPGP = null;
+				}
+
+				if (tetheredPWP != null) {
+					ClosePuzzleWire();
+					tetheredPWP = null;
+				}
+
+				if (tetheredKeypadElevator != null) {
+					CloseElevatorPad();
+					tetheredKeypadElevator = null;
+				}
+
+				if (tetheredKeypadKeycode != null) {
+					CloseKeycodePad();
+					tetheredKeypadKeycode = null;
+				}
+
+				if (tetheredSearchable != null) {
+					CloseSearch();
+					tetheredSearchable = null;
+				}
+
+				if (paperLogInUse) {
+					ClosePaperLog();
+					paperLogInUse = false;
+				}
 			}
 		}
 
@@ -899,6 +922,7 @@ public class MFDManager : MonoBehaviour  {
 		if (tetheredSearchable != si) {
 			if (tetheredSearchable != null) {
 				tetheredSearchable.ResetSearchable(false);
+				tetheredSearchable = null;
 			}
 		}
 		tetheredSearchable = si;
