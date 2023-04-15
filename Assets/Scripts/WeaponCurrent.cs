@@ -356,6 +356,8 @@ public class WeaponCurrent : MonoBehaviour {
 			Utils.Deactivate(unloadButton);
 			Utils.Deactivate(loadNormalAmmoButton);
 			Utils.Deactivate(loadAlternateAmmoButton);
+			ammoIconManLH.SetAmmoIcon(-1,false);
+			ammoIconManRH.SetAmmoIcon(-1,false);
 			return;
 		}
 
@@ -374,6 +376,8 @@ public class WeaponCurrent : MonoBehaviour {
 		Image norm = loadNormalAmmoButton.GetComponent<Image>();
 		Image anorm = loadAlternateAmmoButton.GetComponent<Image>();
 		if (Inventory.a.wepLoadedWithAlternate[weaponCurrent]) {
+			ammoIconManLH.SetAmmoIcon(weaponIndex,true);
+			ammoIconManRH.SetAmmoIcon(weaponIndex,true);
 			norm.overrideSprite = ammoButtonDeHighlighted;
 			if (currentMagazineAmount2[weaponCurrent] > 0) {
 				anorm.overrideSprite = ammoButtonHighlighted;
@@ -381,6 +385,8 @@ public class WeaponCurrent : MonoBehaviour {
 				anorm.overrideSprite = ammoButtonDeHighlighted;
 			}
 		} else {
+			ammoIconManLH.SetAmmoIcon(weaponIndex,false);
+			ammoIconManRH.SetAmmoIcon(weaponIndex,false);
 			anorm.overrideSprite = ammoButtonDeHighlighted;
 			if (currentMagazineAmount[weaponCurrent] > 0) {
 				norm.overrideSprite = ammoButtonHighlighted;
@@ -388,6 +394,7 @@ public class WeaponCurrent : MonoBehaviour {
 				norm.overrideSprite = ammoButtonDeHighlighted;
 			}
 		}
+
 	}
 
 	public void ChangeAmmoType() {

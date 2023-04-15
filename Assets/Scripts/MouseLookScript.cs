@@ -91,6 +91,7 @@ public class MouseLookScript : MonoBehaviour {
 	private float headBobZ;
 	private Transform playerCapsuleTransform;
 	private float returnFromCyberspaceFinished;
+	private float dropFinished;
 
 	public static MouseLookScript a;
 
@@ -118,6 +119,7 @@ public class MouseLookScript : MonoBehaviour {
 		inCyberSpace = false;
 		shakeFinished = PauseScript.a.relativeTime;
 		returnFromCyberspaceFinished = 0;
+		dropFinished = 0;
 
 		// PlayerCapsule
 		// -> LeanTransform
@@ -175,10 +177,12 @@ public class MouseLookScript : MonoBehaviour {
 			if (vmailActive && !inCyberSpace) { Inventory.a.DeactivateVMail(); vmailActive = false; return; }
 
 			if (!GUIState.a.isBlocking && !inCyberSpace) {
-				currentButton = null; // Force this to reset.
-				if (holdingObject) {
-					if (!FrobWithHeldObject()) DropHeldItem();
-				} else FrobEmptyHanded();
+				if (dropFinished < Time.time) {
+					currentButton = null; // Force this to reset.
+					if (holdingObject) {
+						if (!FrobWithHeldObject()) DropHeldItem();
+					} else FrobEmptyHanded();
+				}
 			} else {
 				//We are holding cursor over the GUI
 				if (holdingObject && !inCyberSpace) {
@@ -770,7 +774,7 @@ public class MouseLookScript : MonoBehaviour {
 				}
 				break;
 			case ButtonType.ShootMode:
-				MouseLookScript.a.ForceShootMode();
+				ForceShootMode();
 				GUIState.a.ClearOverButton();
 				break;
 		}
@@ -904,6 +908,7 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	public void DropHeldItem() {
+		dropFinished = Time.time + 0.2f; // Prevent immediate regrab at high fps
 		if (heldObjectIndex < 0 || heldObjectIndex > 110) { 
 			Debug.Log("BUG: Attempted to DropHeldItem with index out of bounds (<0 or >110) and heldObjectIndex = " + heldObjectIndex.ToString(),player);
 			ResetHeldItem();

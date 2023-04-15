@@ -145,6 +145,7 @@ public class HealthManager : MonoBehaviour {
 		if (linkedOverlay != null) {
 			Utils.Activate(linkedOverlay.gameObject);
 			Utils.EnableImage(linkedOverlay);
+			Debug.Log("Enabled camera overlay on " + transform.parent.gameObject.name);
 		}
 	}
 

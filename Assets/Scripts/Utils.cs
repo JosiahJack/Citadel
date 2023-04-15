@@ -1092,14 +1092,26 @@ public class Utils {
 			dd.impactVelocity = dd.damage * impactScale;
 			Vector3 dir = go.transform.position - centerPoint;
 			RaycastHit hit;
-			if (Physics.Raycast(centerPoint,dir,out hit,radius + 0.02f,mask)) {
+			Debug.Log("ApplyImpactForceSphere checking for rayhit");
+			float dist = Vector3.Distance(centerPoint, go.transform.position);
+			bool success = (dist < 1.5f); // So close we should just shove it.
+			bool applyImpact = false;
+			if (!success) {
+				success = Physics.Raycast(centerPoint,dir,out hit,
+										  radius + 0.02f,mask);
+				dist = hit.distance;
+				applyImpact = (hit.collider == colliders[i]
+							   || hit.rigidbody == rbody);
+			} else applyImpact = true;
+
+			if (success) {
 				hm = go.GetComponent<HealthManager>();
 				if (hm != null) {
 					if (hm.isPlayer) {
 						dd.damage = dd.damage * 0.5f; // give em a chance mate
 					}
 
-					float distPenalty = (radius - hit.distance) / radius;
+					float distPenalty = (radius - dist) / radius;
 					float saturation = dd.damage * 0.33f; // minimum damage in
 														  // range to feel more
 														  // powerful/useful
@@ -1108,7 +1120,7 @@ public class Utils {
 					hm.TakeDamage(dd);
 				}
 
-				if (hit.collider == colliders[i] || hit.rigidbody == rbody) {
+				if (applyImpact) {
 					rbody.AddExplosionForce(dd.impactVelocity,centerPoint,radius,1f);
 				}
 			}

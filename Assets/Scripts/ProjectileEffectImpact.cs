@@ -19,6 +19,30 @@ public class ProjectileEffectImpact : MonoBehaviour {
         if (other.gameObject == host) return;
 
 		numHits++;
+		dd.other = other.gameObject;
+		dd.isOtherNPC = false;
+		// GetDamageTakeAmount expects damageData to already have the
+		// following set:
+		//   damage
+		//   offense
+		//   penetration
+		//   attackType
+		//   berserkActive
+		//   isOtherNPC
+		//   armorvalue
+		//   defense
+		// Most already was when launched by AIController or WeaponFire.
+		dd.damage = DamageData.GetDamageTakeAmount(dd);
+		if (impactType == PoolType.RailgunImpacts) {
+			int mask = Const.a.layerMaskPlayerAttack;
+			if (gameObject.layer != 11) { // Bullet
+				mask = Const.a.layerMaskNPCAttack;
+			} else {
+				mask = Const.a.layerMaskPlayerAttack;
+			}
+
+			Utils.ApplyImpactForceSphere(dd,transform.position,3.2f,1f,mask);
+		}
 
 		GameObject hitGO = other.contacts[0].otherCollider.gameObject;
 		HealthManager hm = hitGO.GetComponent<HealthManager>();
@@ -38,25 +62,9 @@ public class ProjectileEffectImpact : MonoBehaviour {
 			}
 
 			if (hm != null && (hm.health > 0 || hm.cyberHealth > 0)) {
-				dd.other = other.gameObject;
-				if (other.gameObject.CompareTag("NPC")) {
-					dd.isOtherNPC = true;
-				} else {
-					dd.isOtherNPC = false;
-				}
-				// GetDamageTakeAmount expects damageData to already have the
-				// following set:
-				//   damage
-				//   offense
-				//   penetration
-				//   attackType
-				//   berserkActive
-				//   isOtherNPC
-				//   armorvalue
-				//   defense
-				// Most already was when this was launched by AIController or
-				// WeaponFire.
-				dd.damage = DamageData.GetDamageTakeAmount(dd);
+				if (other.gameObject.CompareTag("NPC")) dd.isOtherNPC = true;
+
+
 				if (numHits < hitCountBeforeRemoval) {
 					dd.damage = dd.damage * 0.85f; // Lose small amount each hit
 				}
@@ -66,18 +74,6 @@ public class ProjectileEffectImpact : MonoBehaviour {
 					Utils.ApplyImpactForce(other.gameObject,
 											dd.impactVelocity,
 											dd.attacknormal,dd.hit.point);
-				}
-
-				if (impactType == PoolType.RailgunImpacts) {
-					int mask = Const.a.layerMaskPlayerAttack;
-					if (gameObject.layer != 11) { // Bullet
-						mask = Const.a.layerMaskNPCAttack;
-					} else {
-						mask = Const.a.layerMaskPlayerAttack;
-					}
-
-					Utils.ApplyImpactForceSphere(dd,transform.position,3.2f,1f,
-												 mask);
 				}
 
 				float dmgFinal = hm.TakeDamage(dd); // Send the damageData
@@ -93,7 +89,7 @@ public class ProjectileEffectImpact : MonoBehaviour {
 
 			if (dd.attackType == AttackType.Tranq) {
 				AIController aic = hitGO.GetComponent<AIController>();
-				if (aic !=null) {
+				if (aic != null) {
 					aic.Tranquilize();
 				} else {
 					aic = other.gameObject.GetComponent<AIController>();

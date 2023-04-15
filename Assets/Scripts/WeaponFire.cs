@@ -280,7 +280,8 @@ public class WeaponFire : MonoBehaviour {
 		WeaponCurrent.a.weaponCurrent = WeaponCurrent.a.weaponCurrentPending;
         if (CurrentWeaponUsesEnergy()) {
 			// Update hud heat ticks if current weapon uses energy
-			energheatMgr.HeatBleed(Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.a.weaponCurrent]);
+			int iC = WeaponCurrent.a.weaponCurrent;
+			energheatMgr.HeatBleed(Inventory.a.currentEnergyWeaponHeat[iC]);
 		}
 
 		// Set current weapon inventory lookup index
@@ -290,18 +291,13 @@ public class WeaponFire : MonoBehaviour {
 		WeaponCurrent.a.weaponCurrentPending = -1;
 		WeaponCurrent.a.weaponIndexPending = -1;
 
+		// Update the ammo icons.
 		int ind = WeaponCurrent.a.weaponIndex;
-		if (ind >= 0 && ind < 16) {
-			// Update the ammo icons.
-			bool alt = Inventory.a.wepLoadedWithAlternate[ind];
-			WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(ind,alt);
-			WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(ind,alt);
-		} else {
-			// Clear the ammo icons.
-			WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(-1,false);
-			WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(-1,false);
-		}
-
+		Debug.Log("ind at CompleteWeaponChange was: " + ind.ToString());
+		bool alt = false;
+		if (ind >= 0 && ind < 16) alt = Inventory.a.wepLoadedWithAlternate[ind];
+		WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(ind,alt);
+		WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(ind,alt);
 		MFDManager.a.SetWepInfo(WeaponCurrent.a.weaponIndex);
 	}
 

@@ -611,6 +611,7 @@ public class MFDManager : MonoBehaviour  {
 
 	public void CloseSearch() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
+		GUIState.a.ClearOverButton();
 		if (tetheredSearchable != null) tetheredSearchable.ResetSearchable(false);
 		tetheredSearchable = null;
 		searchCloseButtonLH.SetActive(false);

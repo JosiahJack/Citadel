@@ -44,29 +44,32 @@ public class GeneralInvButton : MonoBehaviour {
 		if (PlayerEnergy.a.energy >= 255f) {
 			Const.sprint(Const.a.stringTable[303]);
 			reduce = false;
-		} else {
-			PlayerEnergy.a.GiveEnergy(83f,EnergyType.Battery);
-			reduce = true;
 		}
+
+		PlayerEnergy.a.GiveEnergy(83f,EnergyType.Battery);
+		reduce = true;
 	}
 
 	void ApplyIcadBattery() {
 		if (PlayerEnergy.a.energy >= 255f) {
 			Const.sprint(Const.a.stringTable[303]);
 			reduce = false;
-		} else {
-			PlayerEnergy.a.GiveEnergy(255f,EnergyType.Battery);
-			reduce = true;
+			return;
 		}
+
+		PlayerEnergy.a.GiveEnergy(255f,EnergyType.Battery);
+		reduce = true;
 	}
 
 	void ApplyHealthkit() {
 		if (PlayerHealth.a.hm.health >= PlayerHealth.a.hm.maxhealth) {
 			Const.sprint(Const.a.stringTable[304]);
-		} else {
-			PlayerHealth.a.hm.health = PlayerHealth.a.hm.maxhealth;
-			MFDManager.a.DrawTicks(true);
+			reduce = false;
+			return;
 		}
+
+		PlayerHealth.a.hm.health = PlayerHealth.a.hm.maxhealth;
+		MFDManager.a.DrawTicks(true);
 		reduce = true;
 	}
 
