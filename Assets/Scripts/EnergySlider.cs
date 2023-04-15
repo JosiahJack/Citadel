@@ -10,12 +10,13 @@ public class EnergySlider : MonoBehaviour {
         slideS = GetComponent<Slider>();
 	}
 
-	void OnEnable () {
-		if (WeaponCurrent.a.weaponCurrent != -1)
+	void Update () {
+		if (WeaponCurrent.a.weaponCurrent != -1) {
 			slideS.value =
 			  WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent];
-		else
+		} else {
 			slideS.value = 0;
+		}
 	}
 
     public void SetValue(float val) {

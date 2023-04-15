@@ -7,7 +7,7 @@ Get the latest here: https://github.com/JosiahJack/Citadel/tags
 - Sincerely, Josiah 3/14/2022
 
 ### Information
-Version 0.99.1 (Beta) 3/14/2023
+Version 0.99.3 (Beta) 4/15/2023
 
 Started 7/6/2014
 
