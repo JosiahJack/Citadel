@@ -1,5 +1,7 @@
 # Citadel
 
+![DownloadsTotal](https://img.shields.io/github/downloads/JosiahJack/Citadel/total?color=teal&label=Downloads)
+
 ### News
 We are in Beta now!  Bugs are very likely for the next several patch releases.
 Get the latest here: https://github.com/JosiahJack/Citadel/tags
