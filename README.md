@@ -1,6 +1,7 @@
 # Citadel
 
 ![DownloadsTotal](https://img.shields.io/github/downloads/JosiahJack/Citadel/total?color=teal&label=Downloads)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FJosiahJack%2FCitadel&count_bg=%23336B6A&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Page+Hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 ### News
 We are in Beta now!  Bugs are very likely for the next several patch releases.
@@ -9,7 +10,7 @@ Get the latest here: https://github.com/JosiahJack/Citadel/tags
 - Sincerely, Josiah 3/14/2022
 
 ### Information
-Version 0.99.3 (Beta) 4/15/2023
+![tag](https://img.shields.io/github/v/tag/JosiahJack/Citadel?label=Latest%20Release)
 
 Started 7/6/2014
 
