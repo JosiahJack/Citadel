@@ -23,10 +23,9 @@ If you would like to join and aid in any capacity, please email Josiah Jack, the
 Special thanks to Looking Glass Studios and Origin Games for the original 1994 product. 
 Special thanks to Night Dive Studios for allowing this project to live on (unhindered).
 
-Install Instructions:
-Everything needed to play should be in the zip, though at first launch the path to your original game install .RES files is needed for audio.  If installing a newer version, replace the old version.  Saves should be compatible unless noted in the tag release notes.
+>DISCLAIMER: Citadel is in-progress. That means features may be broken, missing, or not in a final state of polish.
 
-System Requirements:
+### System Requirements:
 - Vulkan, Direct3D11 or higher, or OpenGL 3.0 support or higher.  On systems that do not support Vulkan, it may be necessary to force the game to launch in OpenGL with argument `-force-glcore`.
 - Windows 7 or higher, MacOS 10.12 or newer, Linux Ubuntu 16.04 and newer or CentOS 7 and newer.
 - At least 1GB video RAM
@@ -35,19 +34,22 @@ System Requirements:
 - At least 3 CPU threads
 - X11 on Linux systems
 
+### Install Instructions:
+Everything needed to play should be in the zip, though at first launch the path to your original game install .RES files is needed for audio.  If installing a newer version, replace the old version.  Saves should be compatible unless noted in the tag release notes.
+
 1.  Download the latest tagged release.
 2.  Extract it to a location of your choosing.  For best results, install in your user directory so that Citadel has read/write access for save files.
 3.  Launch Citadel.exe if on Windows, or Citadelv#.##.x86_64 on Linux (mark as executable if not already).
 
-Dev Play Instructions (In Editor):
-DISCLAIMER: Citadel is in-progress. That means features may be broken, missing, or not in a final state of polish.
+---
 
-Dependencies for building yourself:
+### Developer Dependencies:
 - Must have [Blender 2.79b](https://download.blender.org/release/Blender2.79/) or later installed and on your system path (happens as a part of the install msi on Windows systems, symlink in /usr/bin/ on Linux can be manually created).  This is for Unity to be able to import .blend files as .FBX by running blender in the background when first loading the project.
 - Must have [Texture2DArray Importer v1.5.0](https://github.com/pschraut/UnityTexture2DArrayImportPipeline) in order for level geometry to display properly as they use a single material with array texture lookup for a substantial performance gain.
 - Texture arrays require Vulkan, Direct3D11+, or OpenGL 3.0 support or higher.  To support building all api's, the dev packages for each will need installed.
 - To support launching editor as OpenGL only on older systems that do not have Vulkan by default, add `-force-glcore` comand argument when launching the editor.
 
+### Dev Play Instructions (In Editor):
 
 1. Download the Github repository (or clone it via git).
 2. Install UnityVersion2019.4.35f1 Personal: https://unity3d.com/get-unity/download/archive
