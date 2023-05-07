@@ -1,6 +1,6 @@
 # Citadel
 
-![DownloadsTotal](https://img.shields.io/github/downloads/JosiahJack/Citadel/total?color=teal&label=Downloads)
+[![DownloadsTotal](https://img.shields.io/github/downloads/JosiahJack/Citadel/total?color=teal&label=Downloads)](https://github.com/JosiahJack/Citadel/releases)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FJosiahJack%2FCitadel&count_bg=%23336B6A&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Page+Hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 ### News
@@ -10,7 +10,7 @@ Get the latest here: https://github.com/JosiahJack/Citadel/tags
 - Sincerely, Josiah 3/14/2022
 
 ### Information
-![tag](https://img.shields.io/github/v/tag/JosiahJack/Citadel?label=Latest%20Release)
+[![tag](https://img.shields.io/github/v/tag/JosiahJack/Citadel?label=Latest%20Release)](https://github.com/JosiahJack/Citadel/releases)
 
 Started 7/6/2014
 
@@ -59,3 +59,11 @@ Everything needed to play should be in the zip, though at first launch the path 
 6. Select the top folder where you extracted the game files. It must be only one level above the Assets folder, e.g. Citadel-v0.1/Assets.
 7. Wait as Unity loads in the project and reimports all assets and auto-compiles the script code (may take an hour for the very first time).
 8. Either A. Click the play button at the top of the screen (it's a triangle), or B. In the top menu bar go to File->Build & Run.
+
+---
+
+### Cyberspace Jump Points
+
+- Dev Log: https://www.systemshock.org/index.php?topic=6977.0
+- InsieDB page: https://www.indiedb.com/games/citadel
+- Discord: https://discord.gg/mrmkMCD
