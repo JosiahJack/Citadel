@@ -31,7 +31,12 @@ Everything needed to play should be in the zip, though at first launch the path 
 3.  Launch Citadel.exe if on Windows, or Citadelv#.##.x86_64 on Linux (mark as executable if not already).
 
 Dev Play Instructions (In Editor):
-DISCLAIMER: Citadel is in-progress. That means features may be broken, missing, or not in a final state of polish. Also, this means that the game is not in an "installable" state and must be "built" in Unity OR ran inside the Unity editor. Also, the github version is always updated after I get to a reasonable "stopping point" for adding to the game. This means Github is missing certain features that are actually closed in the Issues list on here (I'll change this at some point where I don't close bugs for instance until after the commit is done for that bug.) Continue for your own fun.
+DISCLAIMER: Citadel is in-progress. That means features may be broken, missing, or not in a final state of polish.
+
+Dependencies for building yourself:
+- Must have [Blender 2.79b](https://download.blender.org/release/Blender2.79/) or later installed and on your system path (happens as a part of the install msi on Windows systems, symlink in /usr/bin/ on Linux can be manually created).  This is for Unity to be able to import .blend files as .FBX by running blender in the background when first loading the project.
+- Must have [Texture2DArray Importer v1.5.0](https://github.com/pschraut/UnityTexture2DArrayImportPipeline) in order for level geometry to display properly as they use a single material with array texture lookup for a substantial performance gain.
+
 
 1. Download the Github repository (or clone it via git).
 2. Install UnityVersion2019.4.35f1 Personal: https://unity3d.com/get-unity/download/archive
