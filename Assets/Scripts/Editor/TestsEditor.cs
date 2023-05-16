@@ -4,11 +4,11 @@ using UnityEngine;
 using UnityEditor;
 
 // Helper script to put a button in the inspector for me to click and run tests.
-[CustomEditor(typeof(Tests))]
+[CustomEditor(typeof(CitadelTests))]
 public class TestsEditor : Editor {
 	public override void OnInspectorGUI() {
 		base.OnInspectorGUI();
-		Tests testScript = (Tests)target;
+		CitadelTests testScript = (CitadelTests)target;
 		//if (GUILayout.Button("Run Unit Tests")) {
 		//	testScript.RunUnits();
 		//}
