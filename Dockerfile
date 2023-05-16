@@ -5,3 +5,5 @@ FROM $GAME_CI_UNITY_EDITOR_IMAGE
 
 RUN apt-get update && \
     apt-get install -y blender
+    apt-get install libvulkan-dev
+    
