@@ -4,12 +4,10 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    name: Citadel Run Tests ${{ matrix.plans.targetPlatform }}
+    name: Citadel Run Tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        plans: [ {targetPlatform: StandaloneOSX, dockerImage: mac-mono}, {targetPlatform: StandaloneWindows64, dockerImage: windows-mono}, {targetPlatform: StandaloneLinux64, dockerImage: linux-il2cpp} ] 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
