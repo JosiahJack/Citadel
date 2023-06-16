@@ -122,7 +122,6 @@ public class HealthManager : MonoBehaviour {
 		if (!isSecCamera && !isNPC) return;
 		if (linkedOverlay != null) return; // Already have an overlay.
 		
-		
 		PoolType pt = PoolType.AutomapCameraOverlays;
 		if (isNPC && aic.index > 0 && aic.index < Const.a.typeForNPC.Length) {
 			switch (Const.a.typeForNPC[aic.index]) {
@@ -142,11 +141,21 @@ public class HealthManager : MonoBehaviour {
 		}
 
 		Vector3 worldPos = transform.position;
-		linkedOverlay = Automap.a.LinkOverlay(worldPos,transform.parent,pt);
+		if (Automap.a == null) {
+			linkedOverlay = null;
+		} else {
+			linkedOverlay = Automap.a.LinkOverlay(worldPos,transform.parent,pt);
+		}
+		
 		if (linkedOverlay != null) {
 			Utils.Activate(linkedOverlay.gameObject);
 			Utils.EnableImage(linkedOverlay);
-			Debug.Log("Enabled camera overlay on " + transform.parent.gameObject.name);
+			if (transform.parent != null) {
+				if (transform.parent.gameObject != null) {
+					Debug.Log("Enabled camera overlay on "
+				  		      + transform.parent.gameObject.name);
+				}
+			}		
 		}
 	}
 
