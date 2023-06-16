@@ -118,10 +118,11 @@ public class HealthManager : MonoBehaviour {
 
 	void LinkToAutomapOverlay() {
 		if (health <= 0) return; // Only living gets overlay.
-		if (isNPC && actAsCorpseOnly) return; // Only living gets overlay.
+		if (isNPC && (actAsCorpseOnly || aic == null)) return; // Only living gets overlay.
 		if (!isSecCamera && !isNPC) return;
 		if (linkedOverlay != null) return; // Already have an overlay.
-
+		
+		
 		PoolType pt = PoolType.AutomapCameraOverlays;
 		if (isNPC && aic.index > 0 && aic.index < Const.a.typeForNPC.Length) {
 			switch (Const.a.typeForNPC[aic.index]) {
