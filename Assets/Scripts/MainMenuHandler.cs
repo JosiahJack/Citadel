@@ -174,7 +174,7 @@ public class MainMenuHandler : MonoBehaviour {
 			if (savePage.activeInHierarchy && !newgamePage.activeInHierarchy) {
 				if (currentSaveSlot > 0
 					&& currentSaveSlot < saveNameInputField.Length) {
-					InputField infld = saveNameInputField[currentSaveSlot].GetComponentInChildren<InputField>();
+					InputField infld = saveNameInputField[currentSaveSlot];
 					if (infld != null) infld.DeactivateInputField();
 				}
 				currentSaveSlot = -1;
@@ -207,7 +207,8 @@ public class MainMenuHandler : MonoBehaviour {
 			&& !newgamePage.activeInHierarchy) {
 			if (currentSaveSlot < 0) return;
 
-			string sname = saveNameInputField[currentSaveSlot].GetComponentInChildren<InputField>().text;
+			InputField infldTemp = saveNameInputField[currentSaveSlot];
+			string sname = infldTemp.text;
 			if (!string.IsNullOrEmpty(sname)) {
 				if (sname == "- unused -") sname = "Savegame: - unused - "
 												   + currentSaveSlot.ToString();
@@ -232,7 +233,7 @@ public class MainMenuHandler : MonoBehaviour {
 	public void StartGame (bool isNew) {
 		Utils.PlayOneShotSavable(StartSFX,StartGameSFX);
 		if (isNew) {
-			string pname = newgamePage.GetComponentInChildren<InputField>().text;
+			string pname = newgamePage.GetComponentInChildren<InputField>(true).text;
 			if (string.IsNullOrWhiteSpace(pname)) pname = "Hacker";
 			Const.a.playerName = pname;
 			Const.a.difficultyCombat = combat.difficultySetting;

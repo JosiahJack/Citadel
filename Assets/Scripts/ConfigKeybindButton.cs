@@ -34,7 +34,7 @@ public class ConfigKeybindButton : MonoBehaviour {
 			Debug.Log("BUG: ConfigKeybindButton missing component for self.");
 		}
 
-		if (selfText == null) selfText = GetComponentInChildren<Text>();
+		if (selfText == null) selfText = GetComponentInChildren<Text>(true);
 
 		UpdateText();
 	}
@@ -43,7 +43,7 @@ public class ConfigKeybindButton : MonoBehaviour {
 		if (MainMenuHandler.a.PresetConfirmDialog.activeSelf) return;
 
 		if (!enterMode) {
-			self.GetComponentInChildren<Text>().text = "...";
+			self.GetComponentInChildren<Text>(true).text = "...";
 			enterMode = true;
 		}
 	}

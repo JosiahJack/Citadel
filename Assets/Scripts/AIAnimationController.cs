@@ -26,7 +26,7 @@ public class AIAnimationController : MonoBehaviour {
 
 	void Start () {
 		anim = GetComponent<Animator>();
-		smR = GetComponentInChildren<SkinnedMeshRenderer>();
+		smR = GetComponentInChildren<SkinnedMeshRenderer>(true);
 		if (smR != null) checkVisWithSMR = true;
 		else checkVisWithSMR = false;
 
@@ -153,7 +153,7 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	public static string Save(GameObject go) {
-		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>();
+		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>(true);
 		// No debug warn, cyber enemies don't have one.
 		if (aiac == null) return Utils.DTypeWordToSaveString("fbf");
 
@@ -172,14 +172,15 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
-		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>();
+		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>(true);
 		if (aiac == null) {
-			AIController aic = go.GetComponentInChildren<AIController>();
+			AIController aic = go.GetComponentInChildren<AIController>(true);
 			if (aic != null) {
 				if (Const.a.moveTypeForNPC[aic.index] != AIMoveType.Cyber
 					&& aic.index != 20 && aic.index != 0) {
 					Debug.Log("AIAnimationController.Load failure, aiac == "
-							  + "null on " + go.name);
+							  + "null on " + go.name + " at location "
+							  + go.transform.localPosition.ToString());
 				}
 			} else {
 				Debug.Log("AIAnimationController.Load failure, aic == null "

@@ -64,6 +64,8 @@ public class HealthManager : MonoBehaviour {
 	[HideInInspector] public bool startInitialized = false;
 
 	public void Awake () {
+		if (awakeInitialized) return;
+
 		deathDone = false;
 		teleportDone = false;
 		rbody = GetComponent<Rigidbody>();
@@ -96,7 +98,7 @@ public class HealthManager : MonoBehaviour {
 			index = aic.index;
 
 			if (Const.a != null) {
-				if (index > 23) { // 24, 25, 26, 27, 28 are all Cyber enemies
+				if (IsCyberEntity()) {
 					if (cyberHealth == -1) cyberHealth = Const.a.healthForCyberNPC[index];
 					if (maxhealth == -1) maxhealth = Const.a.healthForCyberNPC[index];
 				} else {
@@ -117,8 +119,6 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	void LinkToAutomapOverlay() {
-		if (health <= 0) return; // Only living gets overlay.
-		if (isNPC && actAsCorpseOnly) return; // Only living gets overlay.
 		if (!isSecCamera && !isNPC) return;
 		if (linkedOverlay != null) return; // Already have an overlay.
 
@@ -140,17 +140,36 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 
-		Vector3 worldPos = transform.position;
-		linkedOverlay = Automap.a.LinkOverlay(worldPos,transform.parent,pt);
+		GameObject overlay = Const.a.GetObjectFromPool(pt);
+		if (overlay != null) {
+			linkedOverlay = overlay.GetComponent<Image>();
+			if (isSecCamera) Debug.Log("Security camera automap overlay set");
+		} else {
+			Debug.Log("BUG: No automap icon type " + pt.ToString());
+		}
+
+		UpdateLinkedOverlay();
+	}
+
+	public void UpdateLinkedOverlay() {
+		if (!isSecCamera && !isNPC) return;
+		if (IsCyberEntity()) return;
+		if (isNPC && Inventory.a.NavUnitVersion() <= 1) return;
+
+		Automap.a.TurnOnLinkedOverlay(linkedOverlay,health,gameObject,isNPC);
+		Automap.a.SetLinkedOverlayPos(linkedOverlay,health,gameObject);
+	}
+
+	void OnDisable() {
 		if (linkedOverlay != null) {
-			Utils.Activate(linkedOverlay.gameObject);
-			Utils.EnableImage(linkedOverlay);
-			Debug.Log("Enabled camera overlay on " + transform.parent.gameObject.name);
+			Utils.Deactivate(linkedOverlay.gameObject);
+			Utils.DisableImage(linkedOverlay);
 		}
 	}
 
 	void OnEnable() {
 		Start();
+		UpdateLinkedOverlay();
 	}
 
 	public void ClearOverlays() {
@@ -308,7 +327,7 @@ public class HealthManager : MonoBehaviour {
 		if (god) return 0; // untouchable!
 
         tempFloat = health;
-		if (inCyberSpace || index > 23) {
+		if (IsCyberEntity()) {
 			tempFloat = cyberHealth;
 			if (dd.attackType == AttackType.Drill && isNPC) return 0; // Drill can't hurt NPC's
 			if (dd.attackType != AttackType.Drill && isIce) return 0; // Pulser can't hurt Ice
@@ -392,7 +411,7 @@ public class HealthManager : MonoBehaviour {
 		}
 
 		// Do the damage, that's right do. your. worst!
-		if (inCyberSpace || index > 23) {
+		if (IsCyberEntity()) {
 			cyberHealth -= take;
 			if (isPlayer) {
 				MFDManager.a.DrawTicks(true);
@@ -410,7 +429,7 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 		attacker = dd.owner;
-		if (isNPC && (health > 0f || (index > 23 && cyberHealth > 0f))) {
+		if (isNPC && (health > 0f || (IsCyberEntity() && cyberHealth > 0f))) {
 			AIController aic = GetComponent<AIController>();
 			if (aic != null) {
 				aic.goIntoPain = true;
@@ -424,7 +443,7 @@ public class HealthManager : MonoBehaviour {
 		}
 
 
-        if (health <= 0f || (inCyberSpace && cyberHealth <= 0f)) {
+        if (health <= 0f || (IsCyberEntity() && cyberHealth <= 0f)) {
 			Death(dd.attackType == AttackType.EnergyBeam);
 		}
 
@@ -650,21 +669,22 @@ public class HealthManager : MonoBehaviour {
 					if (gibObjects[0] != null) {
 						for (int i=0;i<gibcnt;i++) {
 							if (health > 0) {
-								if (gibObjects[i].activeSelf) gibObjects[i].SetActive(false);
+								if (gibObjects[i].activeSelf) {
+									gibObjects[i].SetActive(false);
+								}
 							} else {
-								if (!gibObjects[i].activeSelf) gibObjects[i].SetActive(true);
+								if (!gibObjects[i].activeSelf) {
+									gibObjects[i].SetActive(true);
+								}
 							}
 						}
 					}
 				}
 			}
+
+			UpdateLinkedOverlay();
 			if (health > 0) {
 				Utils.EnableCollision(gameObject);
-				if (linkedOverlay != null) {
-					Utils.EnableImage(linkedOverlay); // Enable on automap.
-					Utils.Activate(linkedOverlay.gameObject);
-				}
-
 				MeshRenderer mr = GetComponent<MeshRenderer>();
 				if (mr != null) {
 					mr.enabled = true;
@@ -724,6 +744,10 @@ public class HealthManager : MonoBehaviour {
 			GrenadeActivate ga = GetComponent<GrenadeActivate>();
 			if (ga != null) ga.AwakeFromLoad(health);
 		}
+	}
+
+	public bool IsCyberEntity() { // 24, 25, 26, 27, 28 are all Cyber enemies
+		return (index > 23 || cyberHealth > 0f || inCyberSpace);
 	}
 
 	// Generic health info string

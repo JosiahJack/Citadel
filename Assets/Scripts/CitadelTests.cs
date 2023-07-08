@@ -49,8 +49,8 @@ public class CitadelTests : MonoBehaviour {
 	public void SetupLists() {
 		int i=0;
 		int k=0;
-		allGOs = new List<GameObject>();
-		allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+		List<GameObject> allGOs = new List<GameObject>();
+		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
 		for (i=0;i<allParents.Count;i++) {
 			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(Transform),true);
 			for (k=0;k<compArray.Length;k++) {
@@ -466,7 +466,7 @@ public class CitadelTests : MonoBehaviour {
 			ElevatorButton evb = allGOs[i].GetComponent<ElevatorButton>();
 			if (evb != null) {
 				num_ElevatorButton++;
-				if (evb.GetComponentInChildren<Text>() == null) { UnityEngine.Debug.Log(script + " is missing childText Text component."); issueCount_ElevatorButton++; }
+				if (evb.GetComponentInChildren<Text>(true) == null) { UnityEngine.Debug.Log(script + " is missing childText Text component."); issueCount_ElevatorButton++; }
 			}
 
 			script = "MouseLookScript";

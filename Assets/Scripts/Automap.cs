@@ -54,7 +54,7 @@ public class Automap : MonoBehaviour {
 
 	[HideInInspector] public bool inFullMap;
 	[HideInInspector] public int currentAutomapZoomLevel = 0;
-	private float automapUpdateFinished; // save
+	public float automapUpdateFinished; // save
 	private bool[] automapExplored;
 	private float automapZoom0 = 1.2f;
 	private float automapZoom1 = 0.75f;
@@ -460,24 +460,38 @@ public class Automap : MonoBehaviour {
 		return tempVec;
 	}
 
-	public Image LinkOverlay(Vector3 worldPos, Transform prnt, PoolType type) {
+	public void TurnOnLinkedOverlay(Image over, float health, GameObject go,
+									bool isNPC) {
+		if (over == null) return;
+
+		if (health > 0 && ((isNPC && Inventory.a.NavUnitVersion() > 1)
+						   || !isNPC)) {
+
+			Utils.EnableImage(over); // Enable on automap.
+			Utils.Activate(over.gameObject);
+		} else {
+			Utils.Deactivate(over.gameObject);
+			Utils.DisableImage(over);
+		}
+	}
+
+	public void SetLinkedOverlayPos(Image over, float health, GameObject go) {
+		if (over == null) return;
+		if (go == null) return;
+		if (!go.activeInHierarchy) return;
+		if (health <= 0) return;
+
+		Transform tr = go.transform;
+		Vector3 worldPos = tr.position;
 		SecurityCameraRotate scr = null;
-		if (prnt != null) scr = prnt.gameObject.GetComponent<SecurityCameraRotate>();
-		if (scr != null) worldPos = scr.transform.position;
-		GameObject overlay = Const.a.GetObjectFromPool(type);
-		if (overlay != null) {
-			Utils.Activate(overlay);
-			Image over = overlay.GetComponent<Image>();
-			if (over != null) {
-				Utils.EnableImage(over);
-				over.rectTransform.anchoredPosition = GetMapPos(worldPos);
-				return over;
-			} else {
-				Debug.Log("BUG: No automap icon type " + type.ToString());
-			}
+		Transform par = tr.parent;
+		if (par != null) {
+			GameObject parGo = par.gameObject;
+			if (parGo != null) scr = parGo.GetComponent<SecurityCameraRotate>();
 		}
 
-		return null;
+		if (scr != null) worldPos = scr.transform.position;
+		over.rectTransform.anchoredPosition = GetMapPos(worldPos);
 	}
 
 	public static string Save(GameObject go) {

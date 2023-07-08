@@ -28,7 +28,7 @@ public class ElevatorButton : MonoBehaviour {
 	private string levC = "C";
 
 	void Awake() {
-		childText = GetComponentInChildren<Text>();
+		childText = GetComponentInChildren<Text>(true);
 		doorOpen = false;
 	}
 

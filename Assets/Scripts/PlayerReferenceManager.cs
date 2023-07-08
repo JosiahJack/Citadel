@@ -51,6 +51,7 @@ public class PlayerReferenceManager : MonoBehaviour {
         s1.Append(Utils.splitChar); s1.Append(WeaponCurrent.Save(PRman.playerInventory));
         s1.Append(Utils.splitChar); s1.Append(WeaponFire.Save(PRman.playerCapsuleMainCameraGunCamera));
         s1.Append(Utils.splitChar); s1.Append(MFDManager.Save(PRman.playerMFDManager));
+        s1.Append(Utils.splitChar); s1.Append(Automap.Save(PRman.playerMFDManager));
 		return s1.ToString();
 	}
 
@@ -70,6 +71,7 @@ public class PlayerReferenceManager : MonoBehaviour {
 		index = WeaponCurrent.Load(PRman.playerInventory,ref entries,index);
 		index = WeaponFire.Load(PRman.playerCapsuleMainCameraGunCamera,ref entries,index);
 		index = MFDManager.Load(PRman.playerMFDManager,ref entries,index);
+		index = Automap.Load(PRman.playerMFDManager,ref entries,index);
 		if (BiomonitorGraphSystem.a != null) {
 			BiomonitorGraphSystem.a.ClearGraphs();
 		}

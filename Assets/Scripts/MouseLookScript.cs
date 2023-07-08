@@ -530,7 +530,7 @@ public class MouseLookScript : MonoBehaviour {
 		UseName un = go.GetComponent<UseName>();
 		PrefabIdentifier pid = go.GetComponent<PrefabIdentifier>();
 		if (un == null) un = go.transform.parent.gameObject.GetComponent<UseName>(); // Ok, maybe the parent has it.
-		if (un == null) un = go.GetComponentInChildren<UseName>(); // Ok...so maybe a child has UseName on it, find it in the children.
+		if (un == null) un = go.GetComponentInChildren<UseName>(true); // Ok...so maybe a child has UseName on it, find it in the children.
 		if (un != null) {
 			// Exceptions
 			if (pid != null) {
@@ -726,8 +726,6 @@ public class MouseLookScript : MonoBehaviour {
 				PutObjectInHand(indexPriorToRemoval,customIndexPrior,0,0,false,true);
 				break;
 			case ButtonType.Search:
-				Debug.Log("InventoryButtonUse right clicked a Search button.");
-
 				SearchButton sebut = currentButton.GetComponentInParent<SearchButton>();
 				int tempButtonindex = currentButton.GetComponent<SearchContainerButton>().refIndex;
 				cursorTexture = Const.a.useableItemsFrobIcons[sebut.contents[tempButtonindex]];
@@ -744,7 +742,6 @@ public class MouseLookScript : MonoBehaviour {
 				sebut.CheckForEmpty();
 				GUIState.a.ClearOverButton();
 				if (Const.a.InputQuickItemPickup) {
-					Debug.Log("Quick item pickup from search!");
 					AddItemToInventory(heldObjectIndex,heldObjectCustomIndex);
 					ResetHeldItem();
 					ResetCursor();
