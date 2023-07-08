@@ -248,10 +248,6 @@ public class Utils {
 		combinedPath = combinedPath.Replace("\\","/"); // Turns out / works on
 													   // Windows so just use
 													   // it for everything.
-
-		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-			Debug.Log("SafePathCombine result: " + combinedPath);
-		}
         return combinedPath;
     }
 
