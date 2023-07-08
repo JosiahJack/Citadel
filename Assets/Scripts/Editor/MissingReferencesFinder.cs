@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
+
+using System.Collections;
 using System.Reflection;
 using System.Linq;
 using System.IO;
@@ -125,3 +127,5 @@ public class MissingReferencesFinder : MonoBehaviour
 				: GetFullPath(go.transform.parent.gameObject) + Path.DirectorySeparatorChar.ToString() + go.name;
 	}
 }
+
+#endif

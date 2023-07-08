@@ -1,13 +1,13 @@
+#if UNITY_EDITOR
+
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.PostProcessing;
 
-namespace UnityEditor.PostProcessing
-{
+namespace UnityEditor.PostProcessing {
     using HistogramMode = PostProcessingProfile.MonitorSettings.HistogramMode;
 
-    public class HistogramMonitor : PostProcessingMonitor
-    {
+    public class HistogramMonitor : PostProcessingMonitor {
         static GUIContent s_MonitorTitle = new GUIContent("Histogram");
 
         ComputeShader m_ComputeShader;
@@ -16,13 +16,11 @@ namespace UnityEditor.PostProcessing
         RenderTexture m_HistogramTexture;
         Rect m_MonitorAreaRect;
 
-        public HistogramMonitor()
-        {
+        public HistogramMonitor() {
             m_ComputeShader = EditorResources.Load<ComputeShader>("Monitors/HistogramCompute.compute");
         }
 
-        public override void Dispose()
-        {
+        public override void Dispose() {
             GraphicsUtils.Destroy(m_Material);
             GraphicsUtils.Destroy(m_HistogramTexture);
 
@@ -34,18 +32,15 @@ namespace UnityEditor.PostProcessing
             m_Buffer = null;
         }
 
-        public override bool IsSupported()
-        {
+        public override bool IsSupported() {
             return m_ComputeShader != null && GraphicsUtils.supportsDX11;
         }
 
-        public override GUIContent GetMonitorTitle()
-        {
+        public override GUIContent GetMonitorTitle() {
             return s_MonitorTitle;
         }
 
-        public override void OnMonitorSettings()
-        {
+        public override void OnMonitorSettings() {
             EditorGUI.BeginChangeCheck();
 
             bool refreshOnPlay = m_MonitorSettings.refreshOnPlay;
@@ -63,10 +58,8 @@ namespace UnityEditor.PostProcessing
             }
         }
 
-        public override void OnMonitorGUI(Rect r)
-        {
-            if (Event.current.type == EventType.Repaint)
-            {
+        public override void OnMonitorGUI(Rect r) {
+            if (Event.current.type == EventType.Repaint) {
                 // If m_MonitorAreaRect isn't set the preview was just opened so refresh the render to get the histogram data
                 if (Mathf.Approximately(m_MonitorAreaRect.width, 0) && Mathf.Approximately(m_MonitorAreaRect.height, 0))
                     InternalEditorUtility.RepaintAllViews();
@@ -85,16 +78,14 @@ namespace UnityEditor.PostProcessing
                         width, height
                         );
 
-                if (m_HistogramTexture != null)
-                {
+                if (m_HistogramTexture != null) {
                     Graphics.DrawTexture(m_MonitorAreaRect, m_HistogramTexture);
 
                     var color = Color.white;
                     const float kTickSize = 5f;
 
                     // Rect, lines & ticks points
-                    if (m_MonitorSettings.histogramMode == HistogramMode.RGBSplit)
-                    {
+                    if (m_MonitorSettings.histogramMode == HistogramMode.RGBSplit) {
                         //  A B C D E
                         //  N       F
                         //  M       G
@@ -158,9 +149,7 @@ namespace UnityEditor.PostProcessing
                         GUI.Label(new Rect(L.x - 15f, L.y + kTickSize - 4f, 30f, 30f), "0.0", FxStyles.tickStyleCenter);
                         GUI.Label(new Rect(J.x - 15f, J.y + kTickSize - 4f, 30f, 30f), "0.5", FxStyles.tickStyleCenter);
                         GUI.Label(new Rect(H.x - 15f, H.y + kTickSize - 4f, 30f, 30f), "1.0", FxStyles.tickStyleCenter);
-                    }
-                    else
-                    {
+                    } else {
                         //  A B C D E
                         //  P       F
                         //  O       G
@@ -238,8 +227,7 @@ namespace UnityEditor.PostProcessing
             }
         }
 
-        public override void OnFrameData(RenderTexture source)
-        {
+        public override void OnFrameData(RenderTexture source) {
             if (Application.isPlaying && !m_MonitorSettings.refreshOnPlay)
                 return;
 
@@ -257,35 +245,28 @@ namespace UnityEditor.PostProcessing
             RenderTexture.ReleaseTemporary(rt);
         }
 
-        void CreateBuffer(int width, int height)
-        {
+        void CreateBuffer(int width, int height) {
             m_Buffer = new ComputeBuffer(width * height, sizeof(uint) << 2);
         }
 
-        void ComputeHistogram(RenderTexture source)
-        {
-            if (m_Buffer == null)
-            {
+        void ComputeHistogram(RenderTexture source) {
+            if (m_Buffer == null) {
                 CreateBuffer(256, 1);
-            }
-            else if (m_Buffer.count != 256)
-            {
+            } else if (m_Buffer.count != 256) {
                 m_Buffer.Release();
                 CreateBuffer(256, 1);
             }
 
-            if (m_Material == null)
-            {
+            if (m_Material == null) {
                 m_Material = new Material(Shader.Find("Hidden/Post FX/Monitors/Histogram Render")) { hideFlags = HideFlags.DontSave };
             }
 
             var channels = Vector4.zero;
-            switch (m_MonitorSettings.histogramMode)
-            {
-                case HistogramMode.Red: channels.x = 1f; break;
-                case HistogramMode.Green: channels.y = 1f; break;
-                case HistogramMode.Blue: channels.z = 1f; break;
-                case HistogramMode.Luminance: channels.w = 1f; break;
+            switch (m_MonitorSettings.histogramMode) {
+                case HistogramMode.Red:       channels.x = 1f;   break;
+                case HistogramMode.Green:     channels.y = 1f;   break;
+                case HistogramMode.Blue:      channels.z = 1f;   break;
+                case HistogramMode.Luminance: channels.w = 1f;   break;
                 default: channels = new Vector4(1f, 1f, 1f, 0f); break;
             }
 
@@ -307,15 +288,20 @@ namespace UnityEditor.PostProcessing
             cs.SetBuffer(kernel, "_Histogram", m_Buffer);
             cs.Dispatch(kernel, 1, 1, 1);
 
-            if (m_HistogramTexture == null || m_HistogramTexture.width != source.width || m_HistogramTexture.height != source.height)
-            {
+            if (m_HistogramTexture == null
+                || m_HistogramTexture.width != source.width
+                || m_HistogramTexture.height != source.height) {
+
                 GraphicsUtils.Destroy(m_HistogramTexture);
-                m_HistogramTexture = new RenderTexture(source.width, source.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear)
-                {
-                    hideFlags = HideFlags.DontSave,
-                    wrapMode = TextureWrapMode.Clamp,
-                    filterMode = FilterMode.Bilinear
-                };
+                m_HistogramTexture = new RenderTexture(source.width,
+                                            source.height, 0,
+                                            RenderTextureFormat.ARGB32,
+                                            RenderTextureReadWrite.Linear) {
+
+                                            hideFlags = HideFlags.DontSave,
+                                            wrapMode = TextureWrapMode.Clamp,
+                                            filterMode = FilterMode.Bilinear
+                                        };
             }
 
             m_Material.SetBuffer("_Histogram", m_Buffer);
@@ -336,3 +322,5 @@ namespace UnityEditor.PostProcessing
         }
     }
 }
+
+#endif

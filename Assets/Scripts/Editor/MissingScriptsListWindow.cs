@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-
-namespace plyoung
-{
-	public class MissingScriptsListWindow : EditorWindow
-	{
+namespace plyoung {
+	public class MissingScriptsListWindow : EditorWindow {
 		private static readonly GUIContent GC_Find = new GUIContent("Find");
 		private static readonly GUIContent[] GC_Opt = new[] { new GUIContent("In Open Scene(s)"), new GUIContent("On Prefabs") };
 		private static readonly GUIContent GC_Close = new GUIContent("Close");
@@ -112,7 +111,7 @@ namespace plyoung
 			// sort by path
 			entries.Sort((a, b) => a.path.text.CompareTo(b.path.text));
 		}
-
-		// ------------------------------------------------------------------------------------------------------------------
 	}
 }
+
+#endif

@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using UnityEngine;
 
 namespace UnityEditor.PostProcessing
@@ -56,3 +58,5 @@ namespace UnityEditor.PostProcessing
         }
     }
 }
+
+#endif
