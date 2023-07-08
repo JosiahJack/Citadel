@@ -33,7 +33,6 @@ public class AmmoIconManager : MonoBehaviour {
         Utils.Activate(icon.gameObject);
         Utils.EnableImage(icon);
         Utils.EnableImage(border);
-        Debug.Log("Standard ammo indicator enable, icon: " + icon.enabled.ToString() + ", border: " + border.enabled.ToString());
         Utils.Deactivate(energySlider);
         Utils.Deactivate(energyHeatTicks);
         Utils.Deactivate(energyOverloadButton);
@@ -47,7 +46,6 @@ public class AmmoIconManager : MonoBehaviour {
     }
 
     public void SetAmmoIcon(int index, bool alt) {
-        Debug.Log("SetAmmoIcon");
         switch (index) {
 			case 36: Standard(alt,7,8);    break; // MK3 Magnesium, Penetrator
 			case 37: Energy();             break; // Uses energy, Blaster

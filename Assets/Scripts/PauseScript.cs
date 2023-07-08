@@ -20,7 +20,7 @@ public class PauseScript : MonoBehaviour {
 	private bool previousInvMode = false;
 	private Texture2D previousCursorImage;
 	[HideInInspector] public bool onSaveDialog = false;
-	[HideInInspector] public float relativeTime;
+	public float relativeTime;
 	[HideInInspector] public List<AmbientRegistration> ambientRegistry;
 	private bool menuActive = true; // Store the state of the main menu gameobject active state
 									// so that we don't have to do a gameobject engine call more

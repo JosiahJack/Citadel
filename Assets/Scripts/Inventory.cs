@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Inventory : MonoBehaviour {
 	// Access Cards
@@ -445,7 +447,9 @@ public class Inventory : MonoBehaviour {
 		if (MFDManager.a.HardwareTab.activeInHierarchy) {
 			for (int i=0;i<hardwareInvText.Length;i++) {
 				if (hardwareInvText[i].gameObject.activeInHierarchy) {
-					hardwareInvText[i].text = Const.a.useableItemsNameText[hardwareInvReferenceIndex[i]];
+					hardwareInvText[i].text = 
+					  Const.a.useableItemsNameText[hardwareInvReferenceIndex[i]]
+					  + " v" + hardwareVersion[i].ToString();
 					if (i == hardwareInvCurrent) {
 						hardwareInvText[i].color = Const.a.ssYellowText; // Yellow
 					} else {
@@ -701,7 +705,6 @@ public class Inventory : MonoBehaviour {
 	public void AddHardwareToInventory(int index, int constIndex) {
 		if (index < 0) return;
 
-		Debug.Log("Adding hardware with index: " + index.ToString());
 		int hwversion = MouseLookScript.a.heldObjectCustomIndex;
 		if (hwversion < 1) {
 			Const.sprint("BUG: Hardware picked up has no assigned versioning, defaulting to 1 (value of 0)" );
@@ -725,6 +728,30 @@ public class Inventory : MonoBehaviour {
 					MouseLookScript.a.compassLargeTicks.SetActive(true);
 				}
 				MFDManager.a.OpenTab(2,true,TabMSG.None,0,Handedness.RH);
+
+				// Go through all HealthManagers in the game and initialize the
+				// linked overlays now.
+				int i,k;
+				List<GameObject> hmGOs = new List<GameObject>();
+				List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+				for (i=0;i<allParents.Count;i++) {
+					Component[] compArray = allParents[i].GetComponentsInChildren(typeof(HealthManager),true); // find all SaveObject components, including inactive (hence the true here at the end)
+					for (k=0;k<compArray.Length;k++) {
+						hmGOs.Add(compArray[k].gameObject); //add the gameObject associated with all SaveObject components in the scene
+					}
+				}
+
+				for (i=0;i<hmGOs.Count;i++) {
+					if (hmGOs[i] == null) continue;
+
+					HealthManager hm = hmGOs[i].GetComponent<HealthManager>();
+					if (hm == null) continue;
+
+					if ((hm.isNPC || hm.isSecCamera)) {
+						hm.Awake(); // Set up slots.
+						hm.Start(); // Setup overlay.
+					}
+				}
 				break;
 			case 2: textIndex = 23; button8Index = 5; break; // Datareader
 			case 3: textIndex = 24; button8Index = 1; break; // Sensaround
@@ -743,8 +770,8 @@ public class Inventory : MonoBehaviour {
 			MouseLookScript.a.hardwareButtons[button8Index].SetActive(true);  // Enable HUD button
 			hardwareButtonManager.SetVersionIconForButton(hardwareIsActive[index],hardwareVersionSetting[index],4);
 			hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
-			Debug.Log("Enabled a hardware button with index of "
-					  + button8Index.ToString());
+			//Debug.Log("Enabled a hardware button with index of "
+			//		  + button8Index.ToString());
 		}
 
 		hasHardware[index] = true;

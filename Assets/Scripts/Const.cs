@@ -378,7 +378,7 @@ public class Const : MonoBehaviour {
 		a.LoadItemNamesData();
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
-		a.versionString = "v0.99.3"; // Global CITADEL PROJECT VERSION
+		a.versionString = "v0.99.4"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
 							  + "Start of C# Game Code, Welcome back Hacker!");
@@ -1435,7 +1435,7 @@ public class Const : MonoBehaviour {
 		Stopwatch loadTimer = new Stopwatch();
 		Stopwatch loadUpdateTimer = new Stopwatch(); // For loading % indicator.
 		loadTimer.Start();
-		UnityEngine.Debug.Log("Start of Load with player at " + PlayerMovement.a.transform.localPosition.ToString());
+		//UnityEngine.Debug.Log("Start of Load with player at " + PlayerMovement.a.transform.localPosition.ToString());
 		yield return null; // Update the view to show ShowLoading changes.
 
 		string readline; 					// Initialize temporary variables.

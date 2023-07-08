@@ -412,8 +412,12 @@ public class LevelManager : MonoBehaviour {
 		Component[] compArray = go.GetComponentsInChildren(typeof(SaveObject),true);
 		for (int i=0;i<compArray.Length;i++) {
 			PrefabIdentifier pid = compArray[i].gameObject.GetComponent<PrefabIdentifier>();
-			if (pid == null) Debug.Log("SaveObject on a GameObject " + gameObject.name + " missing companion PrefabIdentifier component");
-			else {
+			if (pid == null) {
+				if (gameObject != LevelManager.a.gameObject) {
+					Debug.Log("SaveObject on a GameObject " + gameObject.name
+							  + " missing companion PrefabIdentifier component");
+				}
+			} else {
 				if (pid.constIndex == 517) { // func_wall has SaveObject on first child mover_target so destroy the parent instead
 					DestroyImmediate(compArray[i].gameObject.transform.parent.gameObject);
 				} else {

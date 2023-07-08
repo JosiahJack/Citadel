@@ -57,7 +57,7 @@ public class SaveObject : MonoBehaviour {
 		}
 
 		if (instantiated) {
-			SaveObject[] sos = GetComponentsInChildren<SaveObject>();
+			SaveObject[] sos = GetComponentsInChildren<SaveObject>(true);
 			if (sos.Length > 0) {
 				if (!(sos.Length == 1 && sos[0] == this)) {
 					PrefabIdentifier prefID = GetComponent<PrefabIdentifier>();

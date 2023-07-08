@@ -284,7 +284,7 @@ public class AIController : MonoBehaviour {
 	void EnableAutomapOverlay() {
 		if (healthManager.linkedOverlay == null) return;
 
-		if (healthManager.health > 0) {
+		if (healthManager.health > 0 && gameObject.activeInHierarchy) {
 			Utils.EnableImage(healthManager.linkedOverlay);
 		} else {
 			Utils.DisableImage(healthManager.linkedOverlay);
@@ -354,14 +354,19 @@ public class AIController : MonoBehaviour {
         if (tickFinished < PauseScript.a.relativeTime) {
 			tickFinished = PauseScript.a.relativeTime + Const.a.aiTickTime;
 			Think();
-			if (healthManager.linkedOverlay != null && !IsCyberNPC()
-				&& HasHealth(healthManager) && Inventory.a.hasHardware[1]
-				&& Inventory.a.NavUnitVersion() > 1) {
-				Utils.EnableImage(healthManager.linkedOverlay);
-				tempVec2 = Automap.a.GetMapPos(transform.position);
-				healthManager.linkedOverlay.rectTransform.localPosition = tempVec2;
-			} else {
-				Utils.DisableImage(healthManager.linkedOverlay);
+			if (healthManager.linkedOverlay != null) {
+				if (!IsCyberNPC()
+					//&& healthManager.health > 0 // Only health, not cyber.
+					&& Inventory.a.hasHardware[1]
+					&& Inventory.a.NavUnitVersion() > 1) {
+
+					//Utils.EnableImage(healthManager.linkedOverlay);
+					//tempVec2 = Automap.a.GetMapPos(transform.position);
+					//healthManager.linkedOverlay.rectTransform.localPosition = tempVec2;
+					healthManager.UpdateLinkedOverlay();
+				} else {
+					Utils.DisableImage(healthManager.linkedOverlay);
+				}
 			}
 		}
 

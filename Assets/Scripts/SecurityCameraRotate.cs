@@ -24,7 +24,9 @@ public class SecurityCameraRotate : MonoBehaviour {
 		if (this.enabled) active = true;
 		else active = false;
 
-		if (mR == null) mR = gameObject.GetComponentInChildren<MeshRenderer>();
+		if (mR == null) {
+			mR = gameObject.GetComponentInChildren<MeshRenderer>(true);
+		}
 	}
 
 	void Update() {
@@ -32,7 +34,7 @@ public class SecurityCameraRotate : MonoBehaviour {
 			if (mR != null) {
 				if (!mR.isVisible) return;
 			} else {
-				mR = gameObject.GetComponentInChildren<MeshRenderer>();
+				mR = gameObject.GetComponentInChildren<MeshRenderer>(true);
 				return;
 			}
 
