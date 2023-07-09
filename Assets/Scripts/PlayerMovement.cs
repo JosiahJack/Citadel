@@ -1132,8 +1132,6 @@ public class PlayerMovement : MonoBehaviour {
 		if (!PauseScript.a.Paused() && !inCyberSpace) {
 			float maxSlope = 0.35f;
 			for(tempInt=0;tempInt<collision.contacts.Length;tempInt++) {
-				if (!collision.gameObject.CompareTag("Geometry")) continue;
-
 				floorAng = collision.contacts[tempInt].normal;
 				floorDot = Vector3.Dot(collision.contacts[tempInt].normal,
 									   Vector3.up);
