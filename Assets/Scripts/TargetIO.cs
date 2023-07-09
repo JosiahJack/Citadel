@@ -59,6 +59,7 @@ public class TargetIO : MonoBehaviour {
 	public bool branchFlipOnly; // only flip the branch, not flip and fire
 	public bool doorAccessCardOverrideToggle; // set that access card has already been used
 	public bool unlockSwitch; // unlock a ButtonSwitch
+	public bool lockElevatorPad; // lock elevator keypad
 
 	private UseData tempUD;
 
@@ -371,6 +372,11 @@ public class TargetIO : MonoBehaviour {
 			AIController aic = GetComponent<AIController>();
 			if (aic != null) aic.AwakeFromSleep(tempUD);
 		}
+
+		if (tempUD.lockElevatorPad) {
+			KeypadElevator kelv = GetComponent<KeypadElevator>();
+			if (kelv != null) kelv.locked = true;
+		}
 	}
 
 	// Save searchable data
@@ -378,7 +384,7 @@ public class TargetIO : MonoBehaviour {
 		TargetIO tio = go.GetComponent<TargetIO>();
 		if (tio == null) {
 			Debug.Log("TargetIO missing!  GameObject.name: " + go.name);
-			return "unknown_name_and_number|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+			return "unknown_name_and_number|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
 		}
 
 		string line = System.String.Empty;
@@ -434,6 +440,7 @@ public class TargetIO : MonoBehaviour {
 		line += Utils.splitChar + Utils.BoolToString(tio.branchFlipOnly);
 		line += Utils.splitChar + Utils.BoolToString(tio.doorAccessCardOverrideToggle);
 		line += Utils.splitChar + Utils.BoolToString(tio.unlockSwitch);
+		line += Utils.splitChar + Utils.BoolToString(tio.lockElevatorPad);
 		return line;
 	}
 
@@ -442,17 +449,17 @@ public class TargetIO : MonoBehaviour {
 		TargetIO tio = go.GetComponent<TargetIO>();
 		if (tio == null) {
 			Debug.Log("TargetIO.Load failure, tio == null on " + go.name);
-			return index + 52;
+			return index + 53;
 		}
 
 		if (index < 0) {
 			Debug.Log("TargetIO.Load failure, index < 0");
-			return index + 52;
+			return index + 53;
 		}
 
 		if (entries == null) {
 			Debug.Log("TargetIO.Load failure, entries == null");
-			return index + 52;
+			return index + 53;
 		}
 
 		tio.targetname = entries[index]; index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
@@ -507,6 +514,7 @@ public class TargetIO : MonoBehaviour {
 		tio.branchFlipOnly = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 		tio.doorAccessCardOverrideToggle = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 		tio.unlockSwitch = Utils.GetBoolFromString(entries[index]); index++;
+		tio.lockElevatorPad = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 		if (instantiated) tio.RegisterToConst();
 		return index;
 	}
@@ -573,6 +581,7 @@ public class UseData {
 	public bool branchFlipOnly; // only flip the branch, not flip and fire
 	public bool doorAccessCardOverrideToggle; // set that access card has already been used
 	public bool unlockSwitch; // unlock a ButtonSwitch
+	public bool lockElevatorPad; // lock elevator pad
 
 	// function for reseting all data if needed
 	public void Reset (UseData ud) {
@@ -633,6 +642,7 @@ public class UseData {
 		branchFlipOnly = tio.branchFlipOnly;
 		doorAccessCardOverrideToggle = tio.doorAccessCardOverrideToggle;
 		unlockSwitch = tio.unlockSwitch;
+		lockElevatorPad = tio.lockElevatorPad;
 		bitsSet = true;
 	}
 
@@ -687,6 +697,7 @@ public class UseData {
 		branchFlipOnly = tio.branchFlipOnly;
 		doorAccessCardOverrideToggle = tio.doorAccessCardOverrideToggle;
 		unlockSwitch = tio.unlockSwitch;
+		lockElevatorPad = tio.lockElevatorPad;
 		bitsSet = true;
 	}
 }
