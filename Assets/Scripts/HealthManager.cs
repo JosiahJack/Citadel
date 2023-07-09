@@ -143,7 +143,6 @@ public class HealthManager : MonoBehaviour {
 		GameObject overlay = Const.a.GetObjectFromPool(pt);
 		if (overlay != null) {
 			linkedOverlay = overlay.GetComponent<Image>();
-			if (isSecCamera) Debug.Log("Security camera automap overlay set");
 		} else {
 			Debug.Log("BUG: No automap icon type " + pt.ToString());
 		}
