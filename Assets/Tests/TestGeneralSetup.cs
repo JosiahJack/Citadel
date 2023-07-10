@@ -30,19 +30,29 @@ namespace Tests {
             // Use yield to skip a frame.
             GameObject go = GameObject.Find("GlobalConsts");
             if (go != null) tester = go.GetComponent<CitadelTests>();
-            Assert.That(tester != null,"Unable to find CitadelTests attached to a GameObject GlobalConsts in scene");
+            string msg = "Unable to find CitadelTests attached to a GameObject"
+                         + "with name GlobalConsts in scene";
+            Assert.That(tester != null,msg);
+
             int i=0;
             int k=0;
             allGOs = new List<GameObject>();
             //Scene citmain = SceneManager.GetActiveScene();
             Scene citmain = SceneManager.GetSceneByName("CitadelScene");
-            Assert.That(citmain.name == "CitadelScene","Not testing main Citadel scene, instead testing: " + citmain.name);
+            msg = "Not testing main Citadel scene, instead testing: ";
+            Assert.That(citmain.name == "CitadelScene",msg + citmain.name);
+
             allParents = citmain.GetRootGameObjects().ToList();
-            Assert.That(allParents.Count > 1,"Failed to populate allParents:" + allParents.Count.ToString());
+            msg = "Failed to populate allParents: ";
+            Assert.That(allParents.Count > 1,msg + allParents.Count.ToString());
+
             for (i=0;i<allParents.Count;i++) {
-                Component[] compArray = allParents[i].GetComponentsInChildren(typeof(Transform),true);
+                Component[] compArray =
+                  allParents[i].GetComponentsInChildren(typeof(Transform),true);
+
                 for (k=0;k<compArray.Length;k++) {
-                    allGOs.Add(compArray[k].gameObject); // Add to full list, separate so we don't infinite loop
+                    // Add to full list, separate so we don't infinite loop
+                    allGOs.Add(compArray[k].gameObject);
                 }
             }
             acquiredGOs = true;
@@ -51,8 +61,10 @@ namespace Tests {
         [Test]
         public void TargetnamesTargetted() {
             RunBeforeAnyTests();
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+
             int i;
-            Assert.That(allGOs.Count > 1,"TestSetup.RunBeforeAnyTests failed to populate allGOs:" + allGOs.Count.ToString());
             ButtonSwitch bsTemp = null;
             ChargeStation csTemp = null;
             CyberAccess caTemp = null;
@@ -228,39 +240,47 @@ namespace Tests {
             int missingTargetNamesCount = targetNamesNotInTargets.Count;
 
 
-            IEnumerator<string> notargs = targetsNotInTargetNames.GetEnumerator();
-            while (notargs.MoveNext()) {
-                Assert.That(false,"No matching targetName found for target: "
-                                    + notargs.Current.ToString());
+            IEnumerator<string> notar = targetsNotInTargetNames.GetEnumerator();
+            msg = "No matching targetName found for target: ";
+            while (notar.MoveNext()) {
+                Assert.That(false,msg + notar.Current.ToString());
             }
 
-            IEnumerator<string> notrigs = targetNamesNotInTargets.GetEnumerator();
-            while (notrigs.MoveNext()) {
-                Assert.That(false,"No matching target found for targetName: "
-                                    + notrigs.Current.ToString());
+            IEnumerator<string> notrg = targetNamesNotInTargets.GetEnumerator();
+            msg = "No matching target found for targetName: ";
+            while (notrg.MoveNext()) {
+                Assert.That(false,msg + notrg.Current.ToString());
             }
         }
 
         [Test]
         public void AIControllersSetupProperly() {
             RunBeforeAnyTests();
-            Assert.That(allGOs.Count > 1,"TestSetup.RunBeforeAnyTests failed to populate allGOs:" + allGOs.Count.ToString());
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+
 		    string script = "AIController";
+            bool check = true;
 
             // Run through all GameObjects and perform all tests
             for (int i=0;i<allGOs.Count;i++) {
                 AIController aic = allGOs[i].GetComponent<AIController>();
-                if (aic != null) {
-                    BoundsError(script,allGOs[i],0,28,aic.index,"index");
-                    MissingComponent(script,allGOs[i],typeof(Rigidbody));
-                    MissingComponent(script,allGOs[i],typeof(HealthManager));
-                    if (aic.walkPathOnStart) {
-                        Assert.That(!(aic.walkWaypoints.Length < 1),script + " missing any walkWaypoints but walkPathOnStart is true.");
-                        if (aic.walkWaypoints.Length > 0) {
-                            for (int k=0;k<aic.walkWaypoints.Length;k++) {
-                                Assert.That(aic.walkWaypoints[k] != null,script + " missing walkWaypoints["+k.ToString()+"].");
-                            }
-                        }
+                if (aic == null) continue;
+
+                BoundsError(script,allGOs[i],0,28,aic.index,"index");
+                MissingComponent(script,allGOs[i],typeof(Rigidbody));
+                MissingComponent(script,allGOs[i],typeof(HealthManager));
+                if (!aic.walkPathOnStart) continue; // Only path checks next...
+
+                msg = "missing walkWaypoints but walkPathOnStart is true";
+                check = !(aic.walkWaypoints.Length < 1);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                if (aic.walkWaypoints.Length > 0) {
+                    for (int k=0;k<aic.walkWaypoints.Length;k++) {
+                        msg = "missing walkWaypoints[" + k.ToString() + "].";
+                        check = aic.walkWaypoints[k] != null;
+                        Assert.That(check,FailMessage(script,allGOs[i],msg));
                     }
                 }
             }
@@ -269,7 +289,8 @@ namespace Tests {
         [Test]
         public void AIAnimationControllersSetupProperly() {
             RunBeforeAnyTests();
-            Assert.That(allGOs.Count > 1,"TestSetup.RunBeforeAnyTests failed to populate allGOs:" + allGOs.Count.ToString());
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
 		    string script = "AIAnimationController";
 
             // Run through all GameObjects and perform all tests
@@ -277,22 +298,23 @@ namespace Tests {
                 AIAnimationController aiac =
                     allGOs[i].GetComponent<AIAnimationController>();
 
-                if (aiac != null) {
-                    BoundsError(script,allGOs[i],0,10,
-                                aiac.minWalkSpeedToAnimate,
-                                "minWalkSpeedToAnimate");
+                if (aiac == null) continue;
 
-                    MissingComponent(script,allGOs[i],typeof(Animator));
-                    MissingReference(script,allGOs[i],aiac.aic,"aic");
-                }
+                BoundsError(script,allGOs[i],0,10,aiac.minWalkSpeedToAnimate,
+                            "minWalkSpeedToAnimate");
+
+                MissingComponent(script,allGOs[i],typeof(Animator));
+                MissingReference(script,allGOs[i],aiac.aic,"aic");
             }
         }
 
         [Test]
         public void HealthManagersSetupProperly() {
             RunBeforeAnyTests();
-            Assert.That(allGOs.Count > 1,"TestSetup.RunBeforeAnyTests failed to populate allGOs:" + allGOs.Count.ToString());
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
 		    string script = "HealthManager";
+            bool check = true;
 
             // Run through all GameObjects and perform all tests
             for (int i=0;i<allGOs.Count;i++) {
@@ -301,19 +323,19 @@ namespace Tests {
 
                 if (hm.isNPC) {
                     MissingComponent(script,allGOs[i],typeof(AIController));
-                    Assert.That(!(hm.isSecCamera || hm.isPlayer || hm.isObject
-                                  || hm.isIce || hm.isScreen || hm.isGrenade),
-                                FailMessage(script,allGOs[i], "not marked only"
-                                                             + " as an NPC"));
-                    Assert.That(!(hm.teleportOnDeath
-                                  && hm.teleportEffect == null),
-                                FailMessage(script,allGOs[i], "teleportOnDeath"
-                                + " set but is missing teleportEffect"));
+                    msg = "not marked only as an NPC";
+                    check = !(hm.isSecCamera || hm.isPlayer || hm.isObject
+                              || hm.isIce || hm.isScreen || hm.isGrenade);
+
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                    msg = "teleportOnDeath set but is missing teleportEffect";
+                    check = !(hm.teleportOnDeath && hm.teleportEffect == null);
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 } else {
-                    Assert.That(!hm.teleportOnDeath,
-                                FailMessage(script,allGOs[i],"teleportOnDeath"
-                                                             + " set but not "
-                                                             + "marked NPC"));
+                    msg = "teleportOnDeath set but not marked isNPC";
+                    check = !hm.teleportOnDeath;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
 
                 if (hm.isSecCamera) {
@@ -341,36 +363,73 @@ namespace Tests {
                 }
 
                 if (hm.isPlayer) {
-                    Assert.That(!(hm.isNPC || hm.isSecCamera || hm.isObject
-                                  || hm.isIce || hm.isScreen || hm.isGrenade),
-                                FailMessage(script,allGOs[i],"marked as player"
-                                                             + " and another "
-                                                             + "object as "
-                                                             + "well."));
+                    msg = "marked as isPlayer and another object as well";
+                    check = !(hm.isNPC || hm.isSecCamera || hm.isObject
+                              || hm.isIce || hm.isScreen || hm.isGrenade);
+
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
 
                 if (hm.isGrenade) {
                     MissingComponent(script,allGOs[i],typeof(GrenadeActivate));
-                    Assert.That(!(hm.isNPC || hm.isSecCamera || hm.isObject || hm.isIce || hm.isScreen || hm.isPlayer),script + " is marked as a grenade and another object as well.");
+                    msg = "marked as grenade and another object as well";
+                    check = !(hm.isNPC || hm.isSecCamera || hm.isObject
+                              || hm.isIce || hm.isScreen || hm.isPlayer);
+
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
 
                 if (hm.isObject) {
-                    Assert.That(!(hm.isNPC || hm.isGrenade || hm.isIce || hm.isScreen || hm.isPlayer),script + " is marked as an object and another object as well."); // Can also be security camera (isSecCamera)
+                    msg = "marked as isObject and another object as well";
+
+                    // Exception: security camera (isSecCamera) + isObject
+                    check = !(hm.isNPC || hm.isGrenade || hm.isIce
+                              || hm.isScreen || hm.isPlayer);
+
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
 
                 if (hm.isScreen) {
-                    Assert.That(!(hm.backupDeathSound == null),script + " missing backupDeathSound when isScreen on gameObject " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
-                    MissingComponent(script,allGOs[i],typeof(ImageSequenceTextureArray));
-                    Assert.That(!(hm.isNPC || hm.isSecCamera || hm.isGrenade || hm.isIce || hm.isObject || hm.isPlayer),script + " is marked as a screen and another object as well.");
+                    msg = "missing backupDeathSound when isScreen";
+                    check = !(hm.backupDeathSound == null);
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                    MissingComponent(script,allGOs[i],
+                                     typeof(ImageSequenceTextureArray));
+
+                    msg = "marked as a screen and another object as well";
+                    check = !(hm.isNPC || hm.isSecCamera || hm.isGrenade
+                              || hm.isIce || hm.isObject || hm.isPlayer);
+
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
                 if (hm.gibOnDeath) {
-                    Assert.That(!(hm.gibObjects.Length < 1 && !hm.dropItemsOnGib),script + " no gibObjects when gibOnDeath is true on gameObject " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
+                    msg = "no gibObjects when gibOnDeath is true";
+                    check = !(hm.gibObjects.Length < 1 && !hm.dropItemsOnGib);
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                    // Exception for dropItemsOnGib since some objects need to
+                    // drop their searchables.
                     for (int k=0;k<hm.gibObjects.Length;k++) {
-                        Assert.That(!(hm.gibObjects[k] == null && !hm.dropItemsOnGib),script + "missing gibObjects["+k.ToString()+"].");
-                    } // Exception for dropItemsOnGib since some objects need to drop their searchables.
-                    Assert.That(!(hm.gibsGetVelocity && hm.gibVelocityBoost.magnitude < Mathf.Epsilon),script + " has gibsGetVelocity set to true but it's gibVelocityBoost is zero.");
+                        msg = "missing gibObjects["+k.ToString()+"].";
+                        check = !(hm.gibObjects[k] == null
+                                  && !hm.dropItemsOnGib);
+
+                        Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    }
+
+                    msg = " has gibsGetVelocity set to true but it's "
+                          + "gibVelocityBoost is zero";
+                    check = !(hm.gibsGetVelocity
+                              && hm.gibVelocityBoost.magnitude < Mathf.Epsilon);
+
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 } else {
-                    Assert.That(!(hm.gibsGetVelocity),script + " has gibsGetVelocity set to true but isn't also set to gibOnDeath.");
+                    msg = " has gibsGetVelocity set to true but isn't also set"
+                          + " to gibOnDeath.";
+
+                    Assert.That(!(hm.gibsGetVelocity),
+                                  FailMessage(script,allGOs[i],msg));
                 }
 
                 if (!string.IsNullOrWhiteSpace(hm.targetOnDeath)) { 
@@ -383,7 +442,10 @@ namespace Tests {
                             numtargetsfound++;
                         }
                     }
-                    Assert.That(numtargetsfound > 0,script + " has no matching targets for " + hm.targetOnDeath + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
+
+                    msg = " has no matching targets for " + hm.targetOnDeath;
+                    check = numtargetsfound > 0;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
             }
         }
@@ -391,17 +453,18 @@ namespace Tests {
         [Test]
         public void ElevatorButtonsSetupProperly() {
             RunBeforeAnyTests();
-            Assert.That(allGOs.Count > 1,"TestSetup.RunBeforeAnyTests failed to populate allGOs:" + allGOs.Count.ToString());
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
 		    string script = "ElevatorButton";
 
             // Run through all GameObjects and perform all tests
             for (int i=0;i<allGOs.Count;i++) {
-                ElevatorButton evb = allGOs[i].GetComponent<ElevatorButton>();
-                if (evb == null) continue;
+                ElevatorButton eb = allGOs[i].GetComponent<ElevatorButton>();
+                if (eb == null) continue;
 
-                Assert.That(!(evb.GetComponentInChildren<Text>(true) == null),
-                            FailMessage(script,allGOs[i],"missing childText "
-                                                         + "Text component"));
+                msg = "missing childText Text component";
+                Assert.That(!(eb.GetComponentInChildren<Text>(true) == null),
+                            FailMessage(script,allGOs[i],msg));
             }
         }
 
