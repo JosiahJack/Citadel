@@ -11,18 +11,15 @@ public class TestsEditor : Editor {
 	public override void OnInspectorGUI() {
 		base.OnInspectorGUI();
 		CitadelTests testScript = (CitadelTests)target;
-		//if (GUILayout.Button("Run Unit Tests")) {
-		//	testScript.RunUnits();
+		//if (GUILayout.Button(testScript.buttonLabel)) {
+		//	testScript.Run();
 		//}
-		if (GUILayout.Button(testScript.buttonLabel)) {
-			testScript.Run();
-		}
 
-		EditorGUILayout.BeginVertical();
-        GUILayout.Space(8f);
-        EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
-        GUILayout.Space(8f);
-		EditorGUILayout.EndVertical();
+		//EditorGUILayout.BeginVertical();
+        //GUILayout.Space(8f);
+        //EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
+        //GUILayout.Space(8f);
+		//EditorGUILayout.EndVertical();
 
 		if (GUILayout.Button("Output All Lights to File")) {
 			testScript.GenerateLightsDataFile();
