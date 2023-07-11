@@ -22,26 +22,46 @@ namespace Tests {
         public List<GameObject> allGOs;
         private List<GameObject> allParents;
         private bool acquiredGOs;
+        private bool sceneLoaded;
+
+        // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you
+        // can use `yield return null;` to skip a frame.
+        //[UnityTest]
+        //public IEnumerator TestGeneralSetupWithEnumeratorPasses() {
+            //// Use the Assert class to test conditions.
+            //// Use yield to skip a frame.
+        //    yield return null;
+        //}
 
         public void RunBeforeAnyTests() {
+            if (sceneLoaded) return;
+
+            Scene citmain = SceneManager.GetSceneByName("CitadelScene");
+            if (citmain.name != "CitadelScene") {
+                EditorSceneManager.OpenScene("Assets/Scenes/CitadelScene.unity",
+                                             OpenSceneMode.Single);
+            }
+        }
+
+        public void SetupTests() {
             if (acquiredGOs && allGOs != null && tester != null) return;
+
+            Scene citmain = SceneManager.GetSceneByName("CitadelScene");
+            string msg = "Not testing main Citadel scene, instead testing: ";
+            Assert.That(citmain.name == "CitadelScene",msg + citmain.name);
 
             // Use the Assert class to test conditions.
             // Use yield to skip a frame.
             GameObject go = GameObject.Find("GlobalConsts");
             if (go != null) tester = go.GetComponent<CitadelTests>();
-            string msg = "Unable to find CitadelTests attached to a GameObject"
-                         + "with name GlobalConsts in scene";
+            msg = "Unable to find CitadelTests attached to a GameObject with "
+                  + "name GlobalConsts in scene";
+
             Assert.That(tester != null,msg);
 
             int i=0;
             int k=0;
             allGOs = new List<GameObject>();
-            //Scene citmain = SceneManager.GetActiveScene();
-            Scene citmain = SceneManager.GetSceneByName("CitadelScene");
-            msg = "Not testing main Citadel scene, instead testing: ";
-            Assert.That(citmain.name == "CitadelScene",msg + citmain.name);
-
             allParents = citmain.GetRootGameObjects().ToList();
             msg = "Failed to populate allParents: ";
             Assert.That(allParents.Count > 1,msg + allParents.Count.ToString());
@@ -58,9 +78,17 @@ namespace Tests {
             acquiredGOs = true;
         }
 
-        [Test]
-        public void TargetnamesTargetted() {
+        private bool SceneLoaded() {
+            Scene citmain = SceneManager.GetSceneByName("CitadelScene");
+            if (citmain.name != "CitadelScene") return false;
+            return true;
+        }
+
+        [UnityTest]
+        public IEnumerator TargetnamesTargetted() {
             RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+
             string msg = "RunBeforeAnyTests failed to populate allGOs: ";
             Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
 
@@ -253,9 +281,12 @@ namespace Tests {
             }
         }
 
-        [Test]
-        public void AIControllersSetupProperly() {
+        [UnityTest]
+        public IEnumerator AIControllersSetupProperly() {
             RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
             string msg = "RunBeforeAnyTests failed to populate allGOs: ";
             Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
 
@@ -286,9 +317,12 @@ namespace Tests {
             }
         }
 
-        [Test]
-        public void AIAnimationControllersSetupProperly() {
+        [UnityTest]
+        public IEnumerator AIAnimationControllersSetupProperly() {
             RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
             string msg = "RunBeforeAnyTests failed to populate allGOs: ";
             Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
 		    string script = "AIAnimationController";
@@ -308,9 +342,12 @@ namespace Tests {
             }
         }
 
-        [Test]
-        public void HealthManagersSetupProperly() {
+        [UnityTest]
+        public IEnumerator HealthManagersSetupProperly() {
             RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
             string msg = "RunBeforeAnyTests failed to populate allGOs: ";
             Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
 		    string script = "HealthManager";
@@ -342,24 +379,18 @@ namespace Tests {
                     BoundsError(script,allGOs[i],0,13,hm.levelIndex,
                                 "levelIndex");
 
-                    Assert.That(hm.isObject,FailMessage(script,allGOs[i],
-                                            "marked as security camera but"
-                                            + " isn't also isObject"));
+                    msg = "marked security camera but isn't also isObject";
+                    Assert.That(hm.isObject,FailMessage(script,allGOs[i],msg));
 
-                    Assert.That(!(hm.isNPC || hm.isPlayer || hm.isIce
-                                  || hm.isScreen || hm.isGrenade),
-                                FailMessage(script,allGOs[i],"marked as "
-                                                             + "security "
-                                                             + "camera and "
-                                                             + "another object"
-                                                             + " as well."));
+                    msg = "marked security camera and another object as well";
+                    check = !(hm.isNPC || hm.isPlayer || hm.isIce
+                              || hm.isScreen || hm.isGrenade);
 
-                    Assert.That(!(hm.securityAffected == SecurityType.None),
-                                script + " is marked as an security camera and"
-                                + " securityAffected is marked as None for "
-                                + "gameObject " + allGOs[i].name
-                                + " with parent of "
-                                + allGOs[i].transform.parent.name);
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                    msg = "marked security and securityAffected is None";
+                    check = !(hm.securityAffected == SecurityType.None);
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
 
                 if (hm.isPlayer) {
@@ -450,12 +481,16 @@ namespace Tests {
             }
         }
 
-        [Test]
-        public void ElevatorButtonsSetupProperly() {
+        [UnityTest]
+        public IEnumerator ElevatorButtonsSetupProperly() {
             RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
             string msg = "RunBeforeAnyTests failed to populate allGOs: ";
             Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
 		    string script = "ElevatorButton";
+            bool check = true;
 
             // Run through all GameObjects and perform all tests
             for (int i=0;i<allGOs.Count;i++) {
@@ -463,19 +498,106 @@ namespace Tests {
                 if (eb == null) continue;
 
                 msg = "missing childText Text component";
-                Assert.That(!(eb.GetComponentInChildren<Text>(true) == null),
-                            FailMessage(script,allGOs[i],msg));
+                check = !(eb.GetComponentInChildren<Text>(true) == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
             }
         }
 
-        // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you
-        // can use `yield return null;` to skip a frame.
-        //[UnityTest]
-        //public IEnumerator TestGeneralSetupWithEnumeratorPasses() {
-            //// Use the Assert class to test conditions.
-            //// Use yield to skip a frame.
-        //    yield return null;
-        //}
+        [UnityTest]
+        public IEnumerator MouseLookScriptSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "MouseLookScript";
+            bool check = true;
+            int num_MouseLookScript = 0;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+			    MouseLookScript mls = allGOs[i].GetComponent<MouseLookScript>();
+			    if (mls == null) continue;
+
+                num_MouseLookScript++;
+                msg = "has more than one instance";
+                check = !(num_MouseLookScript > 1);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing player";
+                check = !(mls.player == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing canvasContainer";
+                check = !(mls.canvasContainer == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing compassContainer";
+                check = !(mls.compassContainer == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing automapContainerLH";
+                check = !(mls.automapContainerLH == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing automapContainerRH";
+                check = !(mls.automapContainerRH == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing compassMidpoints";
+                check = !(mls.compassMidpoints == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing compassLargeTicks";
+                check = !(mls.compassLargeTicks == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing compassSmallTicks";
+                check = !(mls.compassSmallTicks == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing tabControl";
+                check = !(mls.tabControl == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing dataTabNoItemsText";
+                check = !(mls.dataTabNoItemsText == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing logContentsManager";
+                check = !(mls.logContentsManager == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing SFXSource";
+                check = !(mls.SFXSource == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing hardwareButtons";
+                check = !(mls.hardwareButtons == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing puzzleWire";
+                check = !(mls.puzzleWire == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing puzzleGrid";
+                check = !(mls.puzzleGrid == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing shootModeButton";
+                check = !(mls.shootModeButton == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing hm";
+                check = !(mls.hm == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "missing playerRadiationTreatmentFlash";
+                check = !(mls.playerRadiationTreatmentFlash == null);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+            }
+        }
 
         private string FailMessage(string className, GameObject go,
                                    string msg) {

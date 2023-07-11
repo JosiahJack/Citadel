@@ -63,45 +63,9 @@ public class CitadelTests : MonoBehaviour {
 		#if UNITY_EDITOR
 		Stopwatch testTimer = new Stopwatch();
 		testTimer.Start();
-		int i=0;
-		int k=0;
-		string script = "null";
 
 		// Run through all GameObjects and perform all tests
 		/*for (i=0;i<allGOs.Count;i++) {
-
-
-			script = "ElevatorButton";
-			ElevatorButton evb = allGOs[i].GetComponent<ElevatorButton>();
-			if (evb != null) {
-				if (evb.GetComponentInChildren<Text>(true) == null) { UnityEngine.Debug.Log(script + " is missing childText Text component."); issueCount_ElevatorButton++; }
-			}
-
-			script = "MouseLookScript";
-			MouseLookScript mls = allGOs[i].GetComponent<MouseLookScript>();
-			if (mls != null) {
-				if (num_MouseLookScript > 1) { UnityEngine.Debug.Log(script + " has more than one instance!!"); issueCount_MouseLookScript++; }
-				if (mls.player == null) { UnityEngine.Debug.Log(script + " is missing player."); issueCount_MouseLookScript++; }
-				if (mls.canvasContainer == null) { UnityEngine.Debug.Log(script + " is missing canvasContainer."); issueCount_MouseLookScript++; }
-				if (mls.compassContainer == null) { UnityEngine.Debug.Log(script + " is missing compassContainer."); issueCount_MouseLookScript++; }
-				if (mls.automapContainerLH == null) { UnityEngine.Debug.Log(script + " is missing automapContainerLH."); issueCount_MouseLookScript++; }
-				if (mls.automapContainerRH == null) { UnityEngine.Debug.Log(script + " is missing automapContainerRH."); issueCount_MouseLookScript++; }
-				if (mls.compassMidpoints == null) { UnityEngine.Debug.Log(script + " is missing compassMidpoints."); issueCount_MouseLookScript++; }
-				if (mls.compassLargeTicks == null) { UnityEngine.Debug.Log(script + " is missing compassLargeTicks."); issueCount_MouseLookScript++; }
-				if (mls.compassSmallTicks == null) { UnityEngine.Debug.Log(script + " is missing compassSmallTicks."); issueCount_MouseLookScript++; }
-				if (mls.tabControl == null) { UnityEngine.Debug.Log(script +  " is missing tabControl."); issueCount_MouseLookScript++; }
-				if (mls.dataTabNoItemsText == null) { UnityEngine.Debug.Log(script + " is missing dataTabNoItemsText."); issueCount_MouseLookScript++; }
-				if (mls.logContentsManager == null) { UnityEngine.Debug.Log(script + " is missing logContentsManager."); issueCount_MouseLookScript++; }
-				if (mls.SFXSource == null) { UnityEngine.Debug.Log(script + " is missing SFXSource."); issueCount_MouseLookScript++; }
-				if (mls.hardwareButtons == null) { UnityEngine.Debug.Log(script + " is missing hardwareButtons."); issueCount_MouseLookScript++; }
-				if (mls.puzzleWire == null) { UnityEngine.Debug.Log(script + " is missing puzzleWire."); issueCount_MouseLookScript++; }
-				if (mls.puzzleGrid == null) { UnityEngine.Debug.Log(script + " is missing puzzleGrid."); issueCount_MouseLookScript++; }
-				if (mls.shootModeButton == null) { UnityEngine.Debug.Log(script + " is missing shootModeButton."); issueCount_MouseLookScript++; }
-				if (mls.hm == null) { UnityEngine.Debug.Log(script + " is missing hm."); issueCount_MouseLookScript++; }
-				if (mls.playerRadiationTreatmentFlash == null) { UnityEngine.Debug.Log(script + " is missing playerRadiationTreatmentFlash."); issueCount_MouseLookScript++; }
-
-			}
-
 			script = "SearchableItem";
 			SearchableItem sitem = allGOs[i].GetComponent<SearchableItem>();
 			if (sitem != null) {
