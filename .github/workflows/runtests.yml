@@ -22,7 +22,7 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          customImage: josiahjack/citadel-ci:ubuntu-2019.4.35f1-limux-il2cpp-1
+          customImage: josiahjack/citadel-ci:ubuntu-2019.4.35f1-linux-il2cpp-1
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
         if: always()
