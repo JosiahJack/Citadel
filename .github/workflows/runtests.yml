@@ -14,8 +14,8 @@ jobs:
       - name: Run custom image build for docker setup
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          chmod +x ./build.sh
-          ./build.sh
+          chmod +x ./build_unittest_docker.sh
+          ./build_unittest_docker.sh
       - name: Unit Tests
         uses: game-ci/unity-test-runner@v2
         env:
