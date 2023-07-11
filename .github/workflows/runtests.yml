@@ -23,7 +23,6 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          customParameters: '-openfile Assets/Scenes/CitadelScene.unity'
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
         if: always()
