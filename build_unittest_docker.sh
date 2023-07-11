@@ -6,7 +6,8 @@ UNITY_VERSION=2019.4.35f1
 GAME_CI_VERSION=1 # https://github.com/game-ci/docker/releases
 MY_USERNAME=josiahjack
 
-declare -a components=("linux-il2cpp" "mac-mono" "windows-mono")
+# Just Linux image for unit test runner
+declare -a components=("linux-il2cpp")
 
 for component in "${components[@]}"
 do
