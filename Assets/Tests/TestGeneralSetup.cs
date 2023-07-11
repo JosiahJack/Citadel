@@ -522,82 +522,234 @@ namespace Tests {
 
                 num_MouseLookScript++;
                 msg = "has more than one instance";
-                check = !(num_MouseLookScript > 1);
+                check = (num_MouseLookScript == 1);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+                if (!check) continue;
+
+                MissingReference(script,allGOs[i],mls.player,"player");
+                MissingReference(script,allGOs[i],mls.canvasContainer,
+                                 "canvasContainer");
+
+                MissingReference(script,allGOs[i],mls.compassContainer,
+                                 "compassContainer");
+
+                MissingReference(script,allGOs[i],mls.automapContainerLH,
+                                 "automapContainerLH");
+
+                MissingReference(script,allGOs[i],mls.automapContainerRH,
+                                 "automapContainerRH");
+
+                MissingReference(script,allGOs[i],mls.compassMidpoints,
+                                 "compassMidpoints");
+
+                MissingReference(script,allGOs[i],mls.compassLargeTicks,
+                                 "compassLargeTicks");
+
+                MissingReference(script,allGOs[i],mls.compassSmallTicks,
+                                 "compassSmallTicks");
+
+                MissingReference(script,allGOs[i],mls.dataTabNoItemsText,
+                                 "dataTabNoItemsText");
+
+                MissingReference(script,allGOs[i],mls.logContentsManager,
+                                 "logContentsManager");
+
+                MissingReference(script,allGOs[i],mls.SFXSource,"SFXSource");
+                MissingReference(script,allGOs[i],mls.hardwareButtons,
+                                 "hardwareButtons");
+
+                MissingReference(script,allGOs[i],mls.puzzleWire,"puzzleWire");
+                MissingReference(script,allGOs[i],mls.puzzleGrid,"puzzleGrid");
+                MissingReference(script,allGOs[i],mls.shootModeButton,
+                                 "shootModeButton");
+
+                MissingReference(script,allGOs[i],mls.hm,"hm");
+                MissingReference(script,allGOs[i],
+                                 mls.playerRadiationTreatmentFlash,
+                                 "playerRadiationTreatmentFlash");
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator SearchableItemsSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "SearchableItem";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+                SearchableItem sitem = allGOs[i].GetComponent<SearchableItem>();
+                if (sitem == null) continue;
+
+                
+                for (int k=0;k<4;k++) {
+                    check = !(sitem.contents[k] < -1
+                              || sitem.contents[k] > 110);
+                    msg = "invalid contents index of "
+                          + sitem.contents[k].ToString()
+                          + " for content " + k.ToString();
+
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                }
+
+                for (int k=0;k<4;k++) {
+                    check = !(sitem.customIndex[k] < -1
+                              || sitem.customIndex[k] > 110);
+                    msg = "invalid customIndex of "
+                          + sitem.customIndex[k].ToString()
+                          + " for content " + k.ToString();
+
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                }
+
+                msg = "has empty objectName";
+                check = (!string.IsNullOrWhiteSpace(sitem.objectName));
                 Assert.That(check,FailMessage(script,allGOs[i],msg));
 
-                msg = "missing player";
-                check = !(mls.player == null);
+                if (!sitem.generateContents) continue;
+
+                // All of the following only apply when randomly generating.
+                msg = "set to generate contents but randomItem list empty";
+                check = !(sitem.randomItem.Length <= 0);
                 Assert.That(check,FailMessage(script,allGOs[i],msg));
 
-                msg = "missing canvasContainer";
-                check = !(mls.canvasContainer == null);
+                msg = "randomItem, randomItemCustomIndex list lengths differ";
+                check = sitem.randomItem.Length ==
+                            sitem.randomItemCustomIndex.Length;
+
                 Assert.That(check,FailMessage(script,allGOs[i],msg));
 
-                msg = "missing compassContainer";
-                check = !(mls.compassContainer == null);
+                msg = "randomItem, randomItemDropChance list lengths differ";
+                check = sitem.randomItem.Length ==
+                            sitem.randomItemDropChance.Length;
+
                 Assert.That(check,FailMessage(script,allGOs[i],msg));
 
-                msg = "missing automapContainerLH";
-                check = !(mls.automapContainerLH == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
+                msg = "too many maxRandomItems of "
+                      + sitem.maxRandomItems.ToString();
 
-                msg = "missing automapContainerRH";
-                check = !(mls.automapContainerRH == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing compassMidpoints";
-                check = !(mls.compassMidpoints == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing compassLargeTicks";
-                check = !(mls.compassLargeTicks == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing compassSmallTicks";
-                check = !(mls.compassSmallTicks == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing tabControl";
-                check = !(mls.tabControl == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing dataTabNoItemsText";
-                check = !(mls.dataTabNoItemsText == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing logContentsManager";
-                check = !(mls.logContentsManager == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing SFXSource";
-                check = !(mls.SFXSource == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing hardwareButtons";
-                check = !(mls.hardwareButtons == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing puzzleWire";
-                check = !(mls.puzzleWire == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing puzzleGrid";
-                check = !(mls.puzzleGrid == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing shootModeButton";
-                check = !(mls.shootModeButton == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing hm";
-                check = !(mls.hm == null);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "missing playerRadiationTreatmentFlash";
-                check = !(mls.playerRadiationTreatmentFlash == null);
+                check = !(sitem.maxRandomItems > 4);
                 Assert.That(check,FailMessage(script,allGOs[i],msg));
             }
         }
+
+        [UnityTest]
+        public IEnumerator ButtonSwitchesSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "ButtonSwitch";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+                ButtonSwitch bsw = allGOs[i].GetComponent<ButtonSwitch>();
+                if (bsw == null) continue;
+
+                if (string.IsNullOrWhiteSpace(bsw.target) && !bsw.locked) {
+                    msg = "has no target";
+                    check = false;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                } else {
+                    float numtargetsfound = 0;
+                    for (int m=0;m<allGOs.Count;m++) {
+                        TargetIO tio = allGOs[m].GetComponent<TargetIO>();
+                        if (tio == null) continue;
+
+                        if (tio.targetname == bsw.target) numtargetsfound++;
+                    }
+
+                    msg = "has no matching targets for " + bsw.target;
+                    check = numtargetsfound >= 1;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                }
+
+                if (bsw.changeMatOnActive || bsw.blinkWhenActive) {
+                    MissingComponent(script,allGOs[i],typeof(MeshRenderer));
+                    MissingReference(script,allGOs[i],bsw.mainSwitchMaterial,
+                                     "mainSwitchMaterial");
+
+                    MissingReference(script,allGOs[i],
+                                     bsw.alternateSwitchMaterial,
+                                     "alternateSwitchMaterial");
+                }
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator ChargeStationsSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "ChargeStation";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+                ChargeStation chst = allGOs[i].GetComponent<ChargeStation>();
+                if (chst == null) continue;
+
+                if (string.IsNullOrWhiteSpace(chst.target)) continue;
+
+                int numtargetsfound = 0;
+                for (int m=0;m<allGOs.Count;m++) {
+                    TargetIO tio = allGOs[m].GetComponent<TargetIO>();
+                    if (tio == null) continue;
+
+                    if (tio.targetname == chst.target) numtargetsfound++;
+                }
+
+                msg = "no matching targets for " + chst.target;
+                check = numtargetsfound > 0;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator CyberAccessesSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "CyberAccess";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+                CyberAccess cyba = allGOs[i].GetComponent<CyberAccess>();
+                if (cyba == null) continue;
+
+                if (string.IsNullOrWhiteSpace(cyba.target)) continue;
+
+                float numtargetsfound = 0;
+                for (int m=0;m<allGOs.Count;m++) {
+                    TargetIO tio = allGOs[m].GetComponent<TargetIO>();
+                    if (tio == null) continue;
+
+                    if (tio.targetname == cyba.target) numtargetsfound++;
+                }
+
+                msg = "no matching targets for " + cyba.target;
+                check = numtargetsfound > 0;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+            }
+        }
+
+        // Utility Functions for messages and common checks
+        // --------------------------------------------------------------------
 
         private string FailMessage(string className, GameObject go,
                                    string msg) {
@@ -609,6 +761,39 @@ namespace Tests {
 
             return ("BUG: " + className + " " + msg + " on GameObject " + self
                     + " with parent of " + parent);
+        }
+
+        private bool MissingReference(string className, GameObject go,
+                                      GameObject[] elms, string variableName) {
+            if (elms == null) {
+                string msg = "missing reference " + elms.ToString() + "("
+                             + variableName + ")";
+
+                Assert.That(false,FailMessage(className,go,msg));
+                return true;
+            } else return false;
+        }
+
+        private bool MissingReference(string className, GameObject go,
+                                      GameObject elem, string variableName) {
+            if (elem == null) {
+                string msg = "missing reference " + elem.ToString() + "("
+                             + variableName + ")";
+
+                Assert.That(false,FailMessage(className,go,msg));
+                return true;
+            } else return false;
+        }
+
+        private bool MissingReference(string className, GameObject go,
+                                      Material mat, string variableName) {
+            if (mat == null) {
+                string msg = "missing reference " + mat.ToString() + "("
+                             + variableName + ")";
+
+                Assert.That(false,FailMessage(className,go,msg));
+                return true;
+            } else return false;
         }
 
         private bool MissingReference(string className, GameObject go,
