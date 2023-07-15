@@ -21,6 +21,7 @@ namespace Tests {
         public CitadelTests tester;
         public List<GameObject> allGOs;
         private List<GameObject> allParents;
+        private List<TargetIO> allTIOs;
         private bool acquiredGOs;
         private bool sceneLoaded;
 
@@ -301,6 +302,7 @@ namespace Tests {
                 BoundsError(script,allGOs[i],0,28,aic.index,"index");
                 MissingComponent(script,allGOs[i],typeof(Rigidbody));
                 MissingComponent(script,allGOs[i],typeof(HealthManager));
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
                 if (!aic.walkPathOnStart) continue; // Only path checks next...
 
                 msg = "missing walkWaypoints but walkPathOnStart is true";
@@ -459,23 +461,7 @@ namespace Tests {
                     msg = " has gibsGetVelocity set to true but isn't also set"
                           + " to gibOnDeath.";
 
-                    Assert.That(!(hm.gibsGetVelocity),
-                                  FailMessage(script,allGOs[i],msg));
-                }
-
-                if (!string.IsNullOrWhiteSpace(hm.targetOnDeath)) { 
-                    float numtargetsfound = 0;
-                    for (int m=0;m<allGOs.Count;m++) {
-                        TargetIO tioTemp = allGOs[m].GetComponent<TargetIO>();
-                        if (tioTemp == null) continue;
-
-                        if (tioTemp.targetname == hm.targetOnDeath) {
-                            numtargetsfound++;
-                        }
-                    }
-
-                    msg = " has no matching targets for " + hm.targetOnDeath;
-                    check = numtargetsfound > 0;
+                    check = !hm.gibsGetVelocity;
                     Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
             }
@@ -586,7 +572,6 @@ namespace Tests {
                 SearchableItem sitem = allGOs[i].GetComponent<SearchableItem>();
                 if (sitem == null) continue;
 
-                
                 for (int k=0;k<4;k++) {
                     check = !(sitem.contents[k] < -1
                               || sitem.contents[k] > 110);
@@ -654,21 +639,10 @@ namespace Tests {
                 ButtonSwitch bsw = allGOs[i].GetComponent<ButtonSwitch>();
                 if (bsw == null) continue;
 
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
                 if (string.IsNullOrWhiteSpace(bsw.target) && !bsw.locked) {
                     msg = "has no target";
                     check = false;
-                    Assert.That(check,FailMessage(script,allGOs[i],msg));
-                } else {
-                    float numtargetsfound = 0;
-                    for (int m=0;m<allGOs.Count;m++) {
-                        TargetIO tio = allGOs[m].GetComponent<TargetIO>();
-                        if (tio == null) continue;
-
-                        if (tio.targetname == bsw.target) numtargetsfound++;
-                    }
-
-                    msg = "has no matching targets for " + bsw.target;
-                    check = numtargetsfound >= 1;
                     Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
 
@@ -700,18 +674,25 @@ namespace Tests {
                 ChargeStation chst = allGOs[i].GetComponent<ChargeStation>();
                 if (chst == null) continue;
 
-                if (string.IsNullOrWhiteSpace(chst.target)) continue;
-
-                int numtargetsfound = 0;
-                for (int m=0;m<allGOs.Count;m++) {
-                    TargetIO tio = allGOs[m].GetComponent<TargetIO>();
-                    if (tio == null) continue;
-
-                    if (tio.targetname == chst.target) numtargetsfound++;
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+                if (chst.requireReset) {
+                    msg = "no resetTime set";
+                    check = chst.resetTime > 0.01f;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
 
-                msg = "no matching targets for " + chst.target;
-                check = numtargetsfound > 0;
+                msg = "unstranslated string rechargeMsg";
+                check = string.IsNullOrWhiteSpace(chst.rechargeMsg);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "unstranslated string usedMsg";
+                check = string.IsNullOrWhiteSpace(chst.usedMsg);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "charge station amount " + chst.amount.ToString()
+                      + "too low to detect, less than 11.0";
+
+                check = chst.amount >= 11f;
                 Assert.That(check,FailMessage(script,allGOs[i],msg));
             }
         }
@@ -725,25 +706,172 @@ namespace Tests {
             string msg = "RunBeforeAnyTests failed to populate allGOs: ";
             Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
 		    string script = "CyberAccess";
-            bool check = true;
 
             // Run through all GameObjects and perform all tests
             for (int i=0;i<allGOs.Count;i++) {
                 CyberAccess cyba = allGOs[i].GetComponent<CyberAccess>();
                 if (cyba == null) continue;
 
-                if (string.IsNullOrWhiteSpace(cyba.target)) continue;
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+                MissingReference(script,allGOs[i],cyba.entryPosition,
+                                 "entryPosition");
+            }
+        }
 
-                float numtargetsfound = 0;
-                for (int m=0;m<allGOs.Count;m++) {
-                    TargetIO tio = allGOs[m].GetComponent<TargetIO>();
-                    if (tio == null) continue;
+        [UnityTest]
+        public IEnumerator CyberSwitchSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
 
-                    if (tio.targetname == cyba.target) numtargetsfound++;
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "CyberSwitch";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+                CyberSwitch cybsw = allGOs[i].GetComponent<CyberSwitch>();
+                if (cybsw == null) continue;
+
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+                msg = "has no target";
+                check = !string.IsNullOrWhiteSpace(cybsw.target);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator DoorsSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "Door";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+                Door dor = allGOs[i].GetComponent<Door>();
+                if (dor == null) continue;
+
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+                msg = "set to ajar but no ajar percent";
+                check = dor.ajar && dor.ajarPercentage > 0f
+                                 && dor.ajarPercentage < 1f;
+
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "marked as keycard already used before game starts!";
+                check = !dor.accessCardUsedByPlayer;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "untranslated string lockedMessage";
+                check = string.IsNullOrWhiteSpace(dor.lockedMessage);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "door toggles lasers but has none assigned";
+                check = dor.toggleLasers && dor.laserLines.Length > 0;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator InteractablePanelsSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "InteractablePanel";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+			    InteractablePanel intap =
+                    allGOs[i].GetComponent<InteractablePanel>();
+
+			    if (intap == null) continue;
+
+                MissingComponent(script,allGOs[i],typeof(AudioSource));
+
+                msg = "panel starts open before game start";
+                check = !intap.open;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "panel starts installed before game start";
+                check = !intap.installed;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                if (intap.requiredIndex > -1) {
+                    MissingComponent(script,allGOs[i],typeof(Animator));
+
+                    msg = "panel missing openMessageLingdex";
+                    check = intap.openMessageLingdex >= 0;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                    msg = "panel missing installedMessageLingdex";
+                    check = intap.installedMessageLingdex >= 0;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                    msg = "panel missing wrongItemMessageLingdex";
+                    check = intap.wrongItemMessageLingdex >= 0;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                    msg = "panel missing alreadyInstalledMessageLingdex";
+                    check = intap.alreadyInstalledMessageLingdex >= 0;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                }
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator FuncWallsSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "FuncWall";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+                FuncWall fw = allGOs[i].GetComponent<FuncWall>();
+                if (fw == null) continue;
+
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+
+                msg = "no speed set, was " + fw.speed.ToString();
+                check = fw.speed > 0;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                MissingReference(script,allGOs[i],fw.targetPosition,
+                                 "targetPosition");                
+
+                if (fw.targetPosition != null) {
+                    Vector3 pos = fw.targetPosition.transform.localPosition;
+
+                    msg = "targetPosition.x nonzero at " + pos.x.ToString();
+                    check = pos.x == 0;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                    msg = "targetPosition.z nonzero at " + pos.z.ToString();
+                    check = pos.z == 0;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                    msg = "targetPosition.y zero (" + pos.y.ToString() + ")";
+                    check = pos.y != 0;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
 
-                msg = "no matching targets for " + cyba.target;
-                check = numtargetsfound > 0;
+                msg = "no chunks assigned";
+                check = fw.chunkIDs.Length > 0;
                 Assert.That(check,FailMessage(script,allGOs[i],msg));
             }
         }
@@ -751,13 +879,24 @@ namespace Tests {
         // Utility Functions for messages and common checks
         // --------------------------------------------------------------------
 
-        private string FailMessage(string className, GameObject go,
-                                   string msg) {
+        private string ParentChain(GameObject go) {
+            if (go.transform.parent == null) return "none";
 
+            StringBuilder s1 = new StringBuilder();
+            s1.Clear();
+            Transform tr = go.transform;
+            while(tr.parent != null) {
+                s1.Insert(0,"->");
+                s1.Insert(0,tr.parent.name);
+                tr = tr.parent;
+            }
+
+            return s1.ToString();
+        }
+
+        private string FailMessage(string className,GameObject go,string msg) {
             string self = (go != null) ? go.name : "errname";
-            string parent;
-            if (go.transform.parent != null) parent = go.transform.parent.name;
-            else parent = "none";
+            string parent = ParentChain(go);
 
             return ("BUG: " + className + " " + msg + " on GameObject " + self
                     + " with parent of " + parent);

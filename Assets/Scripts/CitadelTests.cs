@@ -66,57 +66,6 @@ public class CitadelTests : MonoBehaviour {
 
 		// Run through all GameObjects and perform all tests
 		/*for (i=0;i<allGOs.Count;i++) {
-			script = "CyberSwitch";
-			CyberSwitch cybsw = allGOs[i].GetComponent<CyberSwitch>();
-			if (cybsw != null) {
-				if (string.IsNullOrWhiteSpace(cybsw.target)) { 
-					UnityEngine.Debug.Log(script + " has no target on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
-				} else {
-					float numtargetsfound = 0;
-					for (int m=0;m<allGOs.Count;m++) {
-						TargetIO tioTemp = allGOs[m].GetComponent<TargetIO>();
-						if (tioTemp != null) {
-							if (tioTemp.targetname == cybsw.target) numtargetsfound++;
-						}
-					}
-					if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + cybsw.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
-				}
-			}
-
-			script = "Door";
-			Door dor = allGOs[i].GetComponent<Door>();
-			if (dor != null) {
-				if (string.IsNullOrWhiteSpace(dor.target)) { 
-					//UnityEngine.Debug.Log(script + " has no target on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
-				} else {
-					float numtargetsfound = 0;
-					for (int m=0;m<allGOs.Count;m++) {
-						TargetIO tioTemp = allGOs[m].GetComponent<TargetIO>();
-						if (tioTemp != null) {
-							if (tioTemp.targetname == dor.target) numtargetsfound++;
-						}
-					}
-					if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + dor.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
-				}
-			}
-
-			script = "InteractablePanel";
-			InteractablePanel intap = allGOs[i].GetComponent<InteractablePanel>();
-			if (intap != null) {
-				if (string.IsNullOrWhiteSpace(intap.target)) { 
-					//UnityEngine.Debug.Log(script + " has no target on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
-				} else {
-					float numtargetsfound = 0;
-					for (int m=0;m<allGOs.Count;m++) {
-						TargetIO tioTemp = allGOs[m].GetComponent<TargetIO>();
-						if (tioTemp != null) {
-							if (tioTemp.targetname == intap.target) numtargetsfound++;
-						}
-					}
-					if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + intap.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
-				}
-			}
-
 			script = "KeypadKeycode";
 			KeypadKeycode keyco = allGOs[i].GetComponent<KeypadKeycode>();
 			if (keyco != null) {
