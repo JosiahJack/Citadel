@@ -61,7 +61,7 @@ Rachel Jack, Kaitlyn Jack, Rebecca Jack
 William Van De Kieft, Trae Van Maanen
 RocketMan, Denhonator, Kolya, Dertseha
 JML, TheMotherload, Tjomo, Pacmikey,
-Learonys, sgupta, SHODAN
+Learonys, sgupta, Merudiana, SHODAN
 #
 ----------------------------------------------------------------------
 Indirect involvment list found...

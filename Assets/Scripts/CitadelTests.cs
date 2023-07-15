@@ -66,43 +66,6 @@ public class CitadelTests : MonoBehaviour {
 
 		// Run through all GameObjects and perform all tests
 		/*for (i=0;i<allGOs.Count;i++) {
-			script = "KeypadKeycode";
-			KeypadKeycode keyco = allGOs[i].GetComponent<KeypadKeycode>();
-			if (keyco != null) {
-				if (string.IsNullOrWhiteSpace(keyco.target)) { 
-					UnityEngine.Debug.Log(script + " has no target on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
-				} else {
-					float numtargetsfound = 0;
-					for (int m=0;m<allGOs.Count;m++) {
-						TargetIO tioTemp = allGOs[m].GetComponent<TargetIO>();
-						if (tioTemp != null) {
-							if (tioTemp.targetname == keyco.target) numtargetsfound++;
-						}
-					}
-					if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + keyco.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
-				}
-			}
-
-			script = "LogicBranch";
-			LogicBranch logb = allGOs[i].GetComponent<LogicBranch>();
-			if (logb != null) {
-				if (string.IsNullOrWhiteSpace(logb.target)) { 
-					UnityEngine.Debug.Log(script + " has no target on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
-				} else {
-					float numtargetsfound = 0;
-					for (int m=0;m<allGOs.Count;m++) {
-						TargetIO tioTemp = allGOs[m].GetComponent<TargetIO>();
-						if (tioTemp != null) {
-							if (tioTemp.targetname == logb.target) numtargetsfound++;
-							if (!string.IsNullOrWhiteSpace(logb.target2)) {
-								if (tioTemp.targetname == logb.target2) numtargetsfound++;
-							}
-						}
-					}
-					if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + logb.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
-				}
-			}
-
 			script = "LogicRelay";
 			LogicRelay leray = allGOs[i].GetComponent<LogicRelay>();
 			if (leray != null) {

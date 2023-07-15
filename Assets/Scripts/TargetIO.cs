@@ -513,7 +513,7 @@ public class TargetIO : MonoBehaviour {
 		tio.branchFlip = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 		tio.branchFlipOnly = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 		tio.doorAccessCardOverrideToggle = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-		tio.unlockSwitch = Utils.GetBoolFromString(entries[index]); index++;
+		tio.unlockSwitch = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 		tio.lockElevatorPad = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 		if (instantiated) tio.RegisterToConst();
 		return index;

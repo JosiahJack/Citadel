@@ -768,7 +768,7 @@ public class HealthManager : MonoBehaviour {
 		line += Utils.splitChar + Utils.FloatToString(hm.cyberHealth); // how much health we have
 		line += Utils.splitChar + Utils.BoolToString(hm.deathDone); // bool - are we dead yet?
 		line += Utils.splitChar + Utils.BoolToString(hm.god); // are we invincible? - we can save cheats?? OH WOW!
-		line += Utils.splitChar + Utils.BoolToString(hm.teleportDone); // did we already teleport?
+		line += Utils.splitChar + Utils.BoolToString(hm.teleportDone); // did we already teleport? teleportOnDeath
 		line += Utils.splitChar + Utils.UintToString(hm.gibObjects.Length);
 		for (int i=0;i<hm.gibObjects.Length; i++) {
 			line += Utils.splitChar + Utils.SaveSubActivatedGOState(hm.gibObjects[i]);
@@ -793,6 +793,8 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 		}
+
+		line += Utils.splitChar + Utils.BoolToString(hm.teleportOnDeath); // did we already teleport?
 		return line;
 	}
 
@@ -805,30 +807,30 @@ public class HealthManager : MonoBehaviour {
 
 		if (hm == null) {
 			Debug.Log("HealthManager.Load failure, hm == null");
-			return index + 6;
+			return index + 7;
 		}
 
 		if (index < 0) {
 			Debug.Log("HealthManager.Load failure, index < 0");
-			return index + 6;
+			return index + 7;
 		}
 
 		if (entries == null) {
 			Debug.Log("HealthManager.Load failure, entries == null");
-			return index + 6;
+			return index + 7;
 		}
 
 		if (!hm.awakeInitialized) hm.Awake();
 		if (!hm.startInitialized) hm.Start();
-		hm.health = Utils.GetFloatFromString(entries[index]); index++; // how much health we have
-		hm.cyberHealth = Utils.GetFloatFromString(entries[index]); index++;
-		hm.deathDone = Utils.GetBoolFromString(entries[index]); index++; // bool - are we dead yet?
-		hm.god = Utils.GetBoolFromString(entries[index]); index++; // are we invincible? - we can save cheats?? OH WOW!
-		hm.teleportDone = Utils.GetBoolFromString(entries[index]); index++; // did we already teleport?
+		hm.health = Utils.GetFloatFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index; // how much health we have
+		hm.cyberHealth = Utils.GetFloatFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
+		hm.deathDone = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index; // bool - are we dead yet?
+		hm.god = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index; // are we invincible? - we can save cheats?? OH WOW!
+		hm.teleportDone = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index; // did we already teleport?
 		hm.AwakeFromLoad();
 
 		int numChildren = hm.gibObjects.Length;
-		int numChildrenFromSave = Utils.GetIntFromString(entries[index]); index++;
+		int numChildrenFromSave = Utils.GetIntFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 
 		if (numChildren != numChildrenFromSave) {
 			Debug.Log("BUG: HealthManager gibObjects.Length("
@@ -841,22 +843,23 @@ public class HealthManager : MonoBehaviour {
 		if (numChildren == 0) return index;
 
 		for (int i=0; i<numChildren; i++) {
-			index = Utils.LoadSubActivatedGOState(hm.gibObjects[i],ref entries,index);
+			index = Utils.LoadSubActivatedGOState(hm.gibObjects[i],ref entries,index); if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 		}
 
 		if (prefID.constIndex == 526) { // prop_console02
 			if (go.transform.childCount > 0) { // Screen is first child.
 				GameObject child = go.transform.GetChild(0).gameObject;
-				child.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+				child.SetActive(Utils.GetBoolFromString(entries[index])); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 
 				ImageSequenceTextureArray ista
 					= child.GetComponent<ImageSequenceTextureArray>();
 
 				if (ista != null) {
-					ista.resourceFolder = entries[index]; index++;
+					ista.resourceFolder = entries[index]; index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 				}
 			}
 		}
+		hm.teleportOnDeath = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index; // did we already teleport?
 		return index;
 	}
 }

@@ -368,9 +368,11 @@ namespace Tests {
 
                     Assert.That(check,FailMessage(script,allGOs[i],msg));
 
-                    msg = "teleportOnDeath set but is missing teleportEffect";
-                    check = !(hm.teleportOnDeath && hm.teleportEffect == null);
-                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    if (hm.teleportOnDeath) {
+                        msg = "teleportOnDeath set but is missing teleportEffect";
+                        check = hm.teleportEffect != null;
+                        Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    }
                 } else {
                     msg = "teleportOnDeath set but not marked isNPC";
                     check = !hm.teleportOnDeath;
@@ -759,11 +761,11 @@ namespace Tests {
                 if (dor == null) continue;
 
                 MissingComponent(script,allGOs[i],typeof(TargetIO));
-                msg = "set to ajar but no ajar percent";
-                check = dor.ajar && dor.ajarPercentage > 0f
-                                 && dor.ajarPercentage < 1f;
-
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
+                if (dor.ajar) {
+                    msg = "set to ajar but no ajar percent";
+                    check = dor.ajarPercentage > 0f && dor.ajarPercentage < 1f;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                }
 
                 msg = "marked as keycard already used before game starts!";
                 check = !dor.accessCardUsedByPlayer;
@@ -773,9 +775,11 @@ namespace Tests {
                 check = string.IsNullOrWhiteSpace(dor.lockedMessage);
                 Assert.That(check,FailMessage(script,allGOs[i],msg));
 
-                msg = "door toggles lasers but has none assigned";
-                check = dor.toggleLasers && dor.laserLines.Length > 0;
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
+                if (dor.toggleLasers) {
+                    msg = "door toggles lasers but has none assigned";
+                    check = dor.laserLines.Length > 0;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                }
             }
         }
 
@@ -799,28 +803,36 @@ namespace Tests {
 
                 MissingComponent(script,allGOs[i],typeof(AudioSource));
 
-                msg = "panel starts open before game start";
-                check = !intap.open;
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "panel starts installed before game start";
-                check = !intap.installed;
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
+                // Don't need to check for these 2 as it is used for the relay
+                // panels on level 3 to display messages about systems.
+                //msg = "panel starts open before game start";
+                //check = !intap.open;
+                //Assert.That(check,FailMessage(script,allGOs[i],msg));
+                //
+                //msg = "panel starts installed before game start";
+                //check = !intap.installed;
+                //Assert.That(check,FailMessage(script,allGOs[i],msg));
 
                 if (intap.requiredIndex > -1) {
-                    MissingComponent(script,allGOs[i],typeof(Animator));
+                    if (!intap.open) {
+                        MissingComponent(script,allGOs[i],typeof(Animator));
 
-                    msg = "panel missing openMessageLingdex";
-                    check = intap.openMessageLingdex >= 0;
-                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                        msg = "panel missing openMessageLingdex";
+                        check = intap.openMessageLingdex >= 0;
+                        Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    }
 
-                    msg = "panel missing installedMessageLingdex";
-                    check = intap.installedMessageLingdex >= 0;
-                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    if (!intap.installed) {
+                        msg = "panel missing installedMessageLingdex";
+                        check = intap.installedMessageLingdex >= 0;
+                        Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    }
 
-                    msg = "panel missing wrongItemMessageLingdex";
-                    check = intap.wrongItemMessageLingdex >= 0;
-                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    if (!intap.installed) {
+                        msg = "panel missing wrongItemMessageLingdex";
+                        check = intap.wrongItemMessageLingdex >= 0;
+                        Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    }
 
                     msg = "panel missing alreadyInstalledMessageLingdex";
                     check = intap.alreadyInstalledMessageLingdex >= 0;
@@ -876,6 +888,70 @@ namespace Tests {
             }
         }
 
+        [UnityTest]
+        public IEnumerator KeypadKeycodesSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "KeypadKeycode";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+                KeypadKeycode keyco = allGOs[i].GetComponent<KeypadKeycode>();
+                if (keyco == null) continue;
+
+
+                msg = "no target for keycode keypad";
+                check = !string.IsNullOrWhiteSpace(keyco.target);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+                MissingComponent(script,allGOs[i],typeof(AudioSource));
+
+                msg = "untranslated string successMessage";
+                check = string.IsNullOrWhiteSpace(keyco.successMessage);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "untranslated string lockedMessage";
+                check = string.IsNullOrWhiteSpace(keyco.lockedMessage);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator LogicBranchesSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "LogicBranch";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+			LogicBranch logb = allGOs[i].GetComponent<LogicBranch>();
+			    if (logb == null) continue;
+
+				msg = "no target";
+                check = !string.IsNullOrWhiteSpace(logb.target);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+
+                TargetIO tio = allGOs[i].GetComponent<TargetIO>();
+                if ((!logb.relayEnabled
+                    || logb.autoFlipOnTarget) && tio != null) {
+
+                    msg = "no targetname when not enabled";
+                    check = !string.IsNullOrWhiteSpace(tio.targetname);
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                }
+            }
+        }
         // Utility Functions for messages and common checks
         // --------------------------------------------------------------------
 
