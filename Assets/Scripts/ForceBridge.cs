@@ -31,8 +31,13 @@ public class ForceBridge : MonoBehaviour {
 		lerping = false;
 		tickTime = 0.05f;
 		tickFinished = PauseScript.a.relativeTime + tickTime + Random.value;
-		if (activated) Activate(true,true);
-		else Deactivate(true, true);
+		if (activated) {
+			activated = true;
+			lerping = true;
+		} else {
+			activated = false;
+			lerping = true;
+		}
 
 		SetColorMaterial();
 	}
@@ -88,8 +93,8 @@ public class ForceBridge : MonoBehaviour {
 		}
     }
 
-	public void Activate(bool forceIt, bool isSilent) {
-		if (activated && !forceIt) return; // already there
+	public void Activate(bool isSilent) {
+		if (activated) return; // already there
 
 		if (!isSilent) Utils.PlayOneShotSavable(SFX,SFXBridgeChange);
 		activated = true;
@@ -103,8 +108,8 @@ public class ForceBridge : MonoBehaviour {
 		transform.localScale = new Vector3(sx,sy,sz);
 	}
 
-	public void Deactivate(bool forceIt, bool isSilent) {
-		if (!activated && !forceIt) return; // already there
+	public void Deactivate(bool isSilent) {
+		if (!activated) return; // already there
 
 		if (!isSilent) Utils.PlayOneShotSavable(SFX,SFXBridgeChange);
 		activated = false;
@@ -113,9 +118,9 @@ public class ForceBridge : MonoBehaviour {
 
 	public void Toggle() {
 		if (activated) {
-			Deactivate(false, false);
+			Deactivate(false);
 		} else {
-			Activate(false,false);
+			Activate(false);
 		}
 	}
 
@@ -167,6 +172,7 @@ public class ForceBridge : MonoBehaviour {
 		fb.activatedScaleX = Utils.GetFloatFromString(entries[index]); index++;
 		fb.activatedScaleY = Utils.GetFloatFromString(entries[index]); index++;
 		fb.activatedScaleZ = Utils.GetFloatFromString(entries[index]); index++;
+		fb.transform.localScale = new Vector3(fb.activatedScaleX,fb.activatedScaleY,fb.activatedScaleZ);
 		fb.fieldColor = Utils.GetForceFieldColorFromInt(Utils.GetIntFromString(entries[index])); index++;
 		fb.Start();
 		return index;
