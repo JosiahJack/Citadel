@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class PlayerHealth : MonoBehaviour {
 	// External references, required
@@ -255,49 +256,106 @@ public class PlayerHealth : MonoBehaviour {
 			return "0000.00000|0000.00000|0|0|0000.00000|-1|0|211.00000|0000.00000|0000.00000|0000.00000";
 		}
 
-		string line = System.String.Empty;
-		line = Utils.FloatToString(ph.radiated); // float
-		line += Utils.splitChar + Utils.FloatToString(ph.timer); // float, not relative timer
-		line += Utils.splitChar + Utils.BoolToString(ph.playerDead); // bool
-		line += Utils.splitChar + Utils.BoolToString(ph.radiationArea); // bool
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ph.mediPatchPulseFinished); // float
-		line += Utils.splitChar + ph.mediPatchPulseCount.ToString(); // int
-		line += Utils.splitChar + Utils.BoolToString(ph.makingNoise); // bool
-		line += Utils.splitChar + Utils.FloatToString(ph.lastHealth); // float
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ph.painSoundFinished); // float
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ph.radSoundFinished); // float
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ph.radFXFinished); // float
-		return line;
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(Utils.FloatToString(ph.radiated,"radiated"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ph.timer,"timer")); // not relative timer
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ph.playerDead,"playerDead"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ph.radiationArea,"radiationArea"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(ph.mediPatchPulseFinished,
+				 									"mediPatchPulseFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(ph.mediPatchPulseCount,
+									"mediPatchPulseCount"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ph.makingNoise,"makingNoise"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ph.lastHealth,"lastHealth"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(ph.painSoundFinished,
+													 "painSoundFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(ph.radSoundFinished,
+													 "radSoundFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(ph.radFXFinished,
+													 "radFXFinished"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PlayerHealth ph = go.GetComponent<PlayerHealth>();
 		if (ph == null) {
-			Debug.Log("PlayerHealth.Load failure, ph == null");
+			Debug.Log("PlayerHealth.Load failure, ph == null, "
+					  + SaveObject.currentObjectInfo);
+
 			return index + 11;
 		}
 
 		if (index < 0) {
-			Debug.Log("PlayerHealth.Load failure, index < 0");
+			Debug.Log("PlayerHealth.Load failure, index < 0, "
+					  + SaveObject.currentObjectInfo);
+
 			return index + 11;
 		}
 
 		if (entries == null) {
-			Debug.Log("PlayerHealth.Load failure, entries == null");
+			Debug.Log("PlayerHealth.Load failure, entries == null, "
+					  + SaveObject.currentObjectInfo);
+
 			return index + 11;
 		}
 
-		ph.radiated = Utils.GetFloatFromString(entries[index]); index++;
-		ph.timer = Utils.GetFloatFromString(entries[index]); index++; // Not relative time
-		ph.playerDead = Utils.GetBoolFromString(entries[index]); index++;
-		ph.radiationArea = Utils.GetBoolFromString(entries[index]); index++;
-		ph.mediPatchPulseFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		ph.mediPatchPulseCount = Utils.GetIntFromString(entries[index] ); index++;
-		ph.makingNoise = Utils.GetBoolFromString(entries[index]); index++;
-		ph.lastHealth = Utils.GetFloatFromString(entries[index]); index++;
-		ph.painSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		ph.radSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		ph.radFXFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		ph.radiated = Utils.GetFloatFromString(entries[index],"radiated");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		// Not relative time
+		ph.timer = Utils.GetFloatFromString(entries[index],"timer");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ph.playerDead = Utils.GetBoolFromString(entries[index],"playerDead");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ph.radiationArea = Utils.GetBoolFromString(entries[index],
+												   "radiationArea");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+
+		ph.mediPatchPulseFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "mediPatchPulseFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+
+		ph.mediPatchPulseCount = Utils.GetIntFromString(entries[index],
+														"mediPatchPulseCount");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+
+		ph.makingNoise = Utils.GetBoolFromString(entries[index],"makingNoise");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		ph.lastHealth = Utils.GetFloatFromString(entries[index],"lastHealth");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ph.painSoundFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "painSoundFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+
+		ph.radSoundFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "radSoundFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+
+		ph.radFXFinished = Utils.LoadRelativeTimeDifferential(entries[index],
+															  "radFXFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 		return index;
 	}
 }

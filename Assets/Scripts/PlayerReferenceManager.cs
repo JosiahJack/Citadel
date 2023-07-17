@@ -59,19 +59,45 @@ public class PlayerReferenceManager : MonoBehaviour {
 											 ref string[] entries,int index,
 						   					 PrefabIdentifier prefID) {
 		PlayerReferenceManager PRman = currentPlayer.GetComponent<PlayerReferenceManager>();
-		Const.a.playerName = entries[index]; index++; 
+		Const.a.playerName = entries[index]; index++;
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		index = PlayerHealth.Load(PRman.playerCapsule,ref entries,index);
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		index = PlayerEnergy.Load(PRman.playerCapsule,ref entries,index);
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		index = PlayerMovement.Load(PRman.playerCapsule,ref entries,index);
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		index = PlayerPatch.Load(PRman.playerCapsule,ref entries,index);
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		index = MouseLookScript.Load(PRman.playerCapsuleMainCamera,ref entries,index);
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		index = HealthManager.Load(PRman.playerCapsule,ref entries,index,prefID);
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		index = GUIState.Load(PRman.playerCanvas,ref entries,index);
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		index = Inventory.Load(PRman.playerInventory,ref entries,index);
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		index = WeaponCurrent.Load(PRman.playerInventory,ref entries,index);
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		index = WeaponFire.Load(PRman.playerCapsuleMainCameraGunCamera,ref entries,index);
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		index = MFDManager.Load(PRman.playerMFDManager,ref entries,index);
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		index = Automap.Load(PRman.playerMFDManager,ref entries,index);
+		SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		if (BiomonitorGraphSystem.a != null) {
 			BiomonitorGraphSystem.a.ClearGraphs();
 		}

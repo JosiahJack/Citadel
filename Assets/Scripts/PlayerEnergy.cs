@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Text;
 
 public class PlayerEnergy : MonoBehaviour {
 	// External references
@@ -190,35 +191,50 @@ public class PlayerEnergy : MonoBehaviour {
 	public static string Save(GameObject go) {
 		PlayerEnergy pe = go.GetComponent<PlayerEnergy>();
 		if (pe == null) {
-			Debug.Log("PlayerEnergy missing on savetype of Player!  GameObject.name: " + go.name);
+			Debug.Log("PlayerEnergy missing on savetype of Player!  "
+					  + "GameObject.name: " + go.name);
+
 			return "0000.00000|0000.00000";
 		}
 
-		string line = System.String.Empty;
-		line = Utils.FloatToString(pe.energy); // float
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(pe.tickFinished); // float
-		return line;
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(Utils.FloatToString(pe.energy,"energy"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(pe.tickFinished,
+													 "tickFinished"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PlayerEnergy pe = go.GetComponent<PlayerEnergy>();
 		if (pe == null) {
-			Debug.Log("PlayerEnergy.Load failure, pe == null");
+			Debug.Log("PlayerEnergy.Load failure, pe == null, "
+					  + SaveObject.currentObjectInfo);
+
 			return index + 2;
 		}
 
 		if (index < 0) {
-			Debug.Log("PlayerEnergy.Load failure, index < 0");
+			Debug.Log("PlayerEnergy.Load failure, index < 0, "
+					  + SaveObject.currentObjectInfo);
+
 			return index + 2;
 		}
 
 		if (entries == null) {
-			Debug.Log("PlayerEnergy.Load failure, entries == null");
+			Debug.Log("PlayerEnergy.Load failure, entries == null, "
+					  + SaveObject.currentObjectInfo);
+
 			return index + 2;
 		}
 
-		pe.energy = Utils.GetFloatFromString(entries[index]); index++;
-		pe.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		pe.energy = Utils.GetFloatFromString(entries[index],"energy");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pe.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],
+															 "tickFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 		return index;
 	}
 }

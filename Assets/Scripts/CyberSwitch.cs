@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class CyberSwitch : MonoBehaviour {
@@ -59,20 +60,25 @@ public class CyberSwitch : MonoBehaviour {
 		CyberSwitch cs = go.GetComponent<CyberSwitch>();
 		if (cs == null) {
 			Debug.Log("CyberSwitch missing on savetype of CyberSwitch!  GameObject.name: " + go.name);
-			return "0|-1|BUG|BUG";
+			return Utils.DTypeWordToSaveString("bussbbffbbbu");
 		}
 
-		string line = System.String.Empty;
-		line = Utils.BoolToString(cs.active);
-		line += Utils.splitChar + Utils.UintToString(cs.textIndex);
-		line += Utils.splitChar + cs.target;
-		line += Utils.splitChar + cs.argvalue;
-		line += Utils.splitChar + Utils.BoolToString(cs.iceActive);
-		line += Utils.splitChar + Utils.BoolToString(cs.iceNode.activeSelf);
-		if (cs.iceActive) {
-			line += Utils.splitChar + HealthManager.Save(cs.iceNode,prefID);
-		}
-		return line;
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(Utils.BoolToString(cs.active,"CyberSwitch.active"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(cs.textIndex,"textIndex"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(cs.target,"target"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(cs.argvalue,"argvalue"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(cs.iceActive,"iceActive"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(cs.iceNode.activeSelf,"iceNode.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(HealthManager.Save(cs.iceNode,prefID));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index,
@@ -80,28 +86,26 @@ public class CyberSwitch : MonoBehaviour {
 		CyberSwitch cs = go.GetComponent<CyberSwitch>();
 		if (cs == null) {
 			Debug.Log("CyberSwitch.Load failure, cs == null");
-			return index + 4;
+			return index + 13;
 		}
 
 		if (index < 0) {
 			Debug.Log("CyberSwitch.Load failure, index < 0");
-			return index + 4;
+			return index + 13;
 		}
 
 		if (entries == null) {
 			Debug.Log("CyberSwitch.Load failure, entries == null");
-			return index + 4;
+			return index + 13;
 		}
 
-		cs.active = Utils.GetBoolFromString(entries[index]); index++;
-		cs.textIndex = Utils.GetIntFromString(entries[index]); index++;
-		cs.target = entries[index]; index++;
-		cs.argvalue = entries[index]; index++;
-		cs.iceActive = Utils.GetBoolFromString(entries[index]); index++;
-		cs.iceNode.SetActive(Utils.GetBoolFromString(entries[index])); index++;
-		if (cs.iceActive) {
-			index = HealthManager.Load(cs.iceNode,ref entries,index,prefID);
-		}
+		cs.active = Utils.GetBoolFromString(entries[index],"CyberSwitch.active"); index++;
+		cs.textIndex = Utils.GetIntFromString(entries[index],"textIndex"); index++;
+		cs.target = Utils.LoadString(entries[index],"target"); index++;
+		cs.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
+		cs.iceActive = Utils.GetBoolFromString(entries[index],"iceActive"); index++;
+		cs.iceNode.SetActive(Utils.GetBoolFromString(entries[index],"iceNode.activeSelf")); index++;
+		index = HealthManager.Load(cs.iceNode,ref entries,index,prefID);
 		cs.Initialize(cs.active,cs.iceActive);
 		return index;
 	}

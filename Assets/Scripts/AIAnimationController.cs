@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class AIAnimationController : MonoBehaviour {
@@ -157,22 +158,39 @@ public class AIAnimationController : MonoBehaviour {
 		// No debug warn, cyber enemies don't have one.
 		if (aiac == null) return Utils.DTypeWordToSaveString("fbf");
 
-		string line = System.String.Empty;
-		line = Utils.FloatToString(aiac.currentClipPercentage);
-		line += Utils.splitChar + Utils.BoolToString(aiac.dying);
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(aiac.animSwapFinished);
-		line += Utils.splitChar + Utils.BoolToString(aiac.useDeadAnimForDeath);
-		line += Utils.splitChar + Utils.BoolToString(aiac.playDeathAnim);
-		line += Utils.splitChar + Utils.BoolToString(aiac.playDyingAnim);
-		line += Utils.splitChar + Utils.FloatToString(aiac.minWalkSpeedToAnimate);
-		if (aiac.anim != null) line += Utils.splitChar + Utils.FloatToString(aiac.anim.speed);
-		else line += Utils.splitChar + Utils.FloatToString(1.0f);
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(Utils.FloatToString(aiac.currentClipPercentage,
+									  "currentClipPercentage"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aiac.dying,"dying"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aiac.animSwapFinished,
+													 "animSwapFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aiac.useDeadAnimForDeath,
+									 "useDeadAnimForDeath"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aiac.playDeathAnim,"playDeathAnim"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aiac.playDyingAnim,"playDyingAnim"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aiac.minWalkSpeedToAnimate,
+									  "minWalkSpeedToAnimate"));
+		s1.Append(Utils.splitChar);
+		if (aiac.anim != null) {
+			s1.Append(Utils.FloatToString(aiac.anim.speed,"anim.speed"));
+		} else {
+			s1.Append(Utils.FloatToString(1.0f,"anim.speed"));
+		}
 
-		return line;
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
-		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>(true);
+		AIAnimationController aiac =
+						go.GetComponentInChildren<AIAnimationController>(true);
+
 		if (aiac == null) {
 			AIController aic = go.GetComponentInChildren<AIController>(true);
 			if (aic != null) {
@@ -200,18 +218,42 @@ public class AIAnimationController : MonoBehaviour {
 			return index + 3;
 		}
 
-		aiac.currentClipPercentage = Utils.GetFloatFromString(entries[index]); index++;
-		aiac.dying = Utils.GetBoolFromString(entries[index]); index++;
-		aiac.animSwapFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		aiac.useDeadAnimForDeath = Utils.GetBoolFromString(entries[index]); index++;
-		aiac.playDeathAnim = Utils.GetBoolFromString(entries[index]); index++;
-		aiac.playDyingAnim = Utils.GetBoolFromString(entries[index]); index++;
-		aiac.minWalkSpeedToAnimate = Utils.GetFloatFromString(entries[index]); index++;
+		aiac.currentClipPercentage = Utils.GetFloatFromString(entries[index],
+													  "currentClipPercentage");
+		index++;
+
+		aiac.dying = Utils.GetBoolFromString(entries[index],"dying");
+		index++;
+
+		aiac.animSwapFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "animSwapFinished");
+		index++;
+
+		aiac.useDeadAnimForDeath = Utils.GetBoolFromString(entries[index],
+														"useDeadAnimForDeath");
+		index++;
+
+		aiac.playDeathAnim = Utils.GetBoolFromString(entries[index],
+													 "playDeathAnim");
+		index++;
+
+		aiac.playDyingAnim = Utils.GetBoolFromString(entries[index],
+													 "playDyingAnim");
+		index++;
+
+		aiac.minWalkSpeedToAnimate = Utils.GetFloatFromString(entries[index],
+													  "minWalkSpeedToAnimate");
+		index++;
+
 		if (!aiac.aic.ai_dead) {
-			float setSpeed = Utils.GetFloatFromString(entries[index]); index++;
+			float setSpeed = Utils.GetFloatFromString(entries[index],
+													  "anim.speed");
+
 			if (setSpeed < 0f || setSpeed > 100f) setSpeed = 1f;
 			if (aiac.anim != null) aiac.anim.speed = setSpeed;
 		}
+		index++;
 		return index;
 	}
 }

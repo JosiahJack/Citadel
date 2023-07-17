@@ -419,18 +419,51 @@ public class Utils {
 		return val.ToString();
 	}
 
+	public static string IntToString(int val, string name) {
+		return name + ":" + val.ToString();
+	}
+
 	public static string UintToString(int val) {
 		if (val < 0) return "-1";
 		return val.ToString();
+	}
+
+	public static string UintToString(int val, string name) {
+		if (val < 0) return name + ":-1";
+		return name + ":" + val.ToString();
 	}
 
 	public static bool GetBoolFromString(string val) {
 		return val.Equals("1");
 	}
 
+	public static bool GetBoolFromString(string val, string name) {
+		string[] splits = val.Split(':');
+		if (splits.Length < 2) return GetBoolFromString(val);
+
+		string nameReceived = splits[0];
+		string valueReceived = splits[1];
+		if (nameReceived != name) {
+			UnityEngine.Debug.Log("BUG: Attempting to parse " + nameReceived
+								  + " when wanting bool named " + name
+								  + ", returning false as fallback on "
+								  + SaveObject.currentObjectInfo + " ["
+								  + SaveObject.currentSaveEntriesIndex + "]");
+
+			return false;
+		}
+
+		return valueReceived.Equals("1");
+	}
+
 	public static string BoolToString(bool inputValue) {
 		if (inputValue) return "1";
 		return "0";
+	}
+
+	public static string BoolToString(bool inputValue, string name) {
+		if (inputValue) return name + ":1";
+		return name + ":0";
 	}
 
 	public static int GetIntFromString(string val) {
@@ -440,7 +473,39 @@ public class Utils {
                                       out getValreadInt);
 		if (!getValparsed) {
 			UnityEngine.Debug.Log("BUG: Could not parse int from: " + val
-                                  + ", returning 0 as a fallback");
+                                  + ", returning 0 as a fallback on "
+								  + SaveObject.currentObjectInfo + " ["
+								  + SaveObject.currentSaveEntriesIndex + "]");
+			return 0;
+		}
+
+		return getValreadInt;
+	}
+
+	public static int GetIntFromString(string val, string name) {
+		string[] splits = val.Split(':');
+		if (splits.Length < 2) return GetIntFromString(val);
+
+		string nameReceived = splits[0];
+		string valueReceived = splits[1];
+		if (nameReceived != name) {
+			UnityEngine.Debug.Log("BUG: Attempting to parse " + nameReceived
+								  + " when wanting int named " + name
+								  + ", returning 0 as fallback on "
+								  + SaveObject.currentObjectInfo + " ["
+								  + SaveObject.currentSaveEntriesIndex + "]");
+
+			return 0;
+		}
+
+		getValparsed = Int32.TryParse(valueReceived,NumberStyles.Integer,
+									  en_US_Culture,out getValreadInt);
+		if (!getValparsed) {
+			UnityEngine.Debug.Log("BUG: Could not parse int from: "
+								  + valueReceived + " for variable named "
+								  + name + ", returning 0 as a fallback on "
+								  + SaveObject.currentObjectInfo + " ["
+								  + SaveObject.currentSaveEntriesIndex + "]");
 			return 0;
 		}
 
@@ -452,7 +517,39 @@ public class Utils {
                                        out getValreadFloat);
 		if (!getValparsed) {
 			UnityEngine.Debug.Log("BUG: Could not parse float from: " + val
-                                  + ", returning 0.0 as fallback");
+                                  + ", returning 0.0 as fallback on "
+								  + SaveObject.currentObjectInfo + " ["
+								  + SaveObject.currentSaveEntriesIndex + "]");
+			return 0.0f;
+		}
+		return getValreadFloat;
+	}
+
+	public static float GetFloatFromString(string val, string name) {
+		string[] splits = val.Split(':');
+		if (splits.Length < 2) return GetFloatFromString(val);
+
+		string nameReceived = splits[0];
+		string valueReceived = splits[1];
+		if (nameReceived != name) {
+			UnityEngine.Debug.Log("BUG: Attempting to parse " + nameReceived
+								  + " when wanting float named " + name
+								  + ", returning 0.0 as fallback on "
+								  + SaveObject.currentObjectInfo + " ["
+								  + SaveObject.currentSaveEntriesIndex + "]");
+
+			return 0.0f;
+		}
+
+		getValparsed = Single.TryParse(valueReceived, NumberStyles.Float,
+									   en_US_Culture, out getValreadFloat);
+
+		if (!getValparsed) {
+			UnityEngine.Debug.Log("BUG: Could not parse float from: "
+								  + valueReceived + " for variable named "
+								  + name + ", returning 0.0 as fallback on "
+								  + SaveObject.currentObjectInfo + " ["
+								  + SaveObject.currentSaveEntriesIndex + "]");
 			return 0.0f;
 		}
 		return getValreadFloat;
@@ -462,6 +559,40 @@ public class Utils {
     // guarantee . is used as a separator rather than , for all regions.
 	public static string FloatToString(float val) {
 		return val.ToString("0000.00000", CultureInfo.InvariantCulture); 
+	}
+
+	public static string FloatToString(float val, string name) {
+		return name + ":" + val.ToString("0000.00000",
+										 CultureInfo.InvariantCulture); 
+	}
+
+	public static string SaveString(string val, string name) {
+		return name + ":" + val;
+	}
+
+	public static string LoadString(string val, string name) {
+		string[] splits = val.Split(':');
+		if (splits.Length < 2) return val;
+
+		string nameReceived = splits[0];
+		string valueReceived = splits[1];
+		if (splits.Length > 2) {
+			for (int i=2;i<splits.Length;i++) {
+				valueReceived += splits[i]; // Stitch together remaining colons
+			}
+		}
+
+		if (nameReceived != name) {
+			UnityEngine.Debug.Log("BUG: Attempting to parse " + nameReceived
+								  + " when wanting string named " + name
+								  + ", returning 'unknown' as fallback on "
+								  + SaveObject.currentObjectInfo + " ["
+								  + SaveObject.currentSaveEntriesIndex + "]");
+
+			return "unknown";
+		}
+
+		return valueReceived;
 	}
 
 	public static string Vector3ToString(Vector3 vec) {
@@ -727,53 +858,70 @@ public class Utils {
 
     public static string SaveTransform(Transform tr) {
 		if (tr == null) {
-			Debug.Log("Transform null while trying to save!");
+			Debug.Log("Transform null while trying to save! "
+					  + SaveObject.currentObjectInfo);
+
 			return DTypeWordToSaveString("ffffffffff");
 		}
 
         StringBuilder s1 = new StringBuilder();
         s1.Clear();
-        s1.Append(FloatToString(tr.localPosition.x));
+        s1.Append(FloatToString(tr.localPosition.x,"localPosition.x"));
         s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localPosition.y));
+        s1.Append(FloatToString(tr.localPosition.y,"localPosition.y"));
         s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localPosition.z));
+        s1.Append(FloatToString(tr.localPosition.z,"localPosition.z"));
         s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localRotation.x));
+        s1.Append(FloatToString(tr.localRotation.x,"localRotation.x"));
         s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localRotation.y));
+        s1.Append(FloatToString(tr.localRotation.y,"localRotation.y"));
         s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localRotation.z));
+        s1.Append(FloatToString(tr.localRotation.z,"localRotation.z"));
         s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localRotation.w));
+        s1.Append(FloatToString(tr.localRotation.w,"localRotation.w"));
         s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localScale.x));
+        s1.Append(FloatToString(tr.localScale.x,"localScale.x"));
         s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localScale.y));
+        s1.Append(FloatToString(tr.localScale.y,"localScale.y"));
         s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localScale.z));
+        s1.Append(FloatToString(tr.localScale.z,"localScale.z"));
         return s1.ToString();
     }
 
 	public static int LoadTransform(Transform tr, ref string[] entries,
 									 int index) {
 		if (tr == null) {
-			Debug.Log("Transform null while trying to load!");
+			Debug.Log("Transform null while trying to load! "
+					  + SaveObject.currentObjectInfo);
 			return index + 10;
 		}
 
 		// Get position
-		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index],"localPosition.x");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		readFloaty = Utils.GetFloatFromString(entries[index],"localPosition.y");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		readFloatz = Utils.GetFloatFromString(entries[index],"localPosition.z");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		if (tr.localPosition != tempvec) tr.localPosition = tempvec;
 
 		// Get rotation
-		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
-		readFloatw = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index],"localRotation.x");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		readFloaty = Utils.GetFloatFromString(entries[index],"localRotation.y");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		readFloatz = Utils.GetFloatFromString(entries[index],"localRotation.z");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		readFloatw = Utils.GetFloatFromString(entries[index],"localRotation.w");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
 		tr.localRotation = tempquat;
 
@@ -781,9 +929,15 @@ public class Utils {
 		// position and the local is what is saved and loaded here.
 
 		// Get scale
-		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index],"localScale.x");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		readFloaty = Utils.GetFloatFromString(entries[index],"localScale.y");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		readFloatz = Utils.GetFloatFromString(entries[index],"localScale.z");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		tr.localScale = tempvec;
 		return index; // Carry on with current index read.
@@ -797,13 +951,13 @@ public class Utils {
 
         StringBuilder s1 = new StringBuilder();
         s1.Clear();
-        s1.Append(FloatToString(rbody.velocity.x));
+        s1.Append(FloatToString(rbody.velocity.x,"velocity.x"));
         s1.Append(splitChar);
-        s1.Append(FloatToString(rbody.velocity.y));
+        s1.Append(FloatToString(rbody.velocity.y,"velocity.y"));
         s1.Append(splitChar);
-        s1.Append(FloatToString(rbody.velocity.z));
+        s1.Append(FloatToString(rbody.velocity.z,"velocity.z"));
         s1.Append(splitChar);
-        s1.Append(BoolToString(rbody.isKinematic));
+        s1.Append(BoolToString(rbody.isKinematic,"isKinematic"));
         return s1.ToString();
     }
 
@@ -815,16 +969,31 @@ public class Utils {
 		}
 
 		// Get rigidbody velocity
-		readFloatx = GetFloatFromString(entries[index]); index++;
-		readFloaty = GetFloatFromString(entries[index]); index++;
-		readFloatz = GetFloatFromString(entries[index]); index++;
+		readFloatx = GetFloatFromString(entries[index],"velocity.x");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		readFloaty = GetFloatFromString(entries[index],"velocity.y");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		readFloatz = GetFloatFromString(entries[index],"velocity.z");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		rbody.velocity = tempvec;
 		CollisionDetectionMode oldCollision = rbody.collisionDetectionMode;
-		rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-		rbody.isKinematic = GetBoolFromString(entries[index]); index++;
+		rbody.collisionDetectionMode =
+			CollisionDetectionMode.ContinuousSpeculative;
+
+		rbody.isKinematic = GetBoolFromString(entries[index],"isKinematic");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		if (!rbody.isKinematic) rbody.collisionDetectionMode = oldCollision;
-		if (rbody.collisionDetectionMode != oldCollision) Debug.Log("Collision mode changed on " + go.name + " from " + oldCollision.ToString() + " to " + rbody.collisionDetectionMode.ToString());
+		if (rbody.collisionDetectionMode != oldCollision) {
+			Debug.Log("Collision mode changed on " + go.name + " from "
+					  + oldCollision.ToString() + " to "
+					  + rbody.collisionDetectionMode.ToString());
+		}
+
 		return index; // Carry on with current index read.
 	}
 
@@ -837,10 +1006,15 @@ public class Utils {
 	}
 
 	public static int LoadSubActivatedGOState(GameObject subGO,
-											  ref string[] entries, int index) {
+											 ref string[] entries, int index) {
+
 		index = Utils.LoadTransform(subGO.transform,ref entries,index); // 10
 		index = Utils.LoadRigidbody(subGO,ref entries,index); // 4
-		subGO.SetActive(Utils.GetBoolFromString(entries[index])); index++; // 10+4+1=15
+
+		subGO.SetActive(Utils.GetBoolFromString(entries[index]));
+
+		// 10+4+1=15
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 		return index;
 	}
 
@@ -853,28 +1027,31 @@ public class Utils {
 		Camera cm = go.GetComponent<Camera>();
         Grayscale gsc = go.GetComponent<Grayscale>();
 		if (cm == null) {
-			Debug.Log("Camera missing on savetype of Camera!  GameObject.name: " + go.name);
-			return DTypeWordToSaveString("bbfb");
+			Debug.Log("Camera missing on savetype of Camera! GameObject.name: "
+					  + go.name);
+
+			return DTypeWordToSaveString("bb");
 		}
 
 		string line = System.String.Empty;
-        line = BoolToString(cm.enabled); // bool
-        if (gsc != null) line += splitChar + BoolToString(gsc.enabled);
-        else line += splitChar + "0";
-		// 4
+        line = BoolToString(cm.enabled,"Camera.enabled"); // bool
+		line += splitChar;
+        if (gsc != null) line += BoolToString(gsc.enabled,"Grayscale.enabled");
+        else line += "0";
 		return line;
 	}
 
 	public static int LoadCamera(GameObject go, ref string[] entries, int index) {
 		Camera cm = go.GetComponent<Camera>();
 		Grayscale gsc = go.GetComponent<Grayscale>();
-		if (cm == null || index < 0 || entries == null) return index + 4;
+		if (cm == null || index < 0 || entries == null) return index + 2;
 
-		cm.enabled = GetBoolFromString(entries[index]); index++;
+		cm.enabled = GetBoolFromString(entries[index],"Camera.enabled");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 		if (gsc != null) {
-			gsc.enabled = GetBoolFromString(entries[index]); index++;
-		} else index++;
-
+			gsc.enabled = GetBoolFromString(entries[index],"Grayscale.enabled");
+		}
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 		return index;
 	}
 
@@ -985,8 +1162,45 @@ public class Utils {
         return FloatToString(val);
     }
 
+    public static string SaveRelativeTimeDifferential(float timerValue,
+													  string name) {
+
+        if (PauseScript.a == null) return "0000.00000";
+
+
+        float val = timerValue - PauseScript.a.relativeTime; // Remove current
+                                                             // instance's
+                                                             // relative time.
+        return FloatToString(val,name);
+    }
+
     public static float LoadRelativeTimeDifferential(string savedTimer) {
         float val = GetFloatFromString(savedTimer);
+        if (PauseScript.a == null) return val;
+        return PauseScript.a.relativeTime + val; // Add current instance's
+                                                 // relative time to get same
+                                                 // timer in context of current
+                                                 // time.  See above notes.
+    }
+
+    public static float LoadRelativeTimeDifferential(string savedTimer,
+													 string name) {
+		string[] splits = savedTimer.Split(':');
+		if (splits.Length < 2) return LoadRelativeTimeDifferential(savedTimer);
+
+		string nameReceived = splits[0];
+		string valueReceived = splits[1];
+		if (nameReceived != name) {
+			UnityEngine.Debug.Log("BUG: Attempting to parse " + nameReceived
+								  + " when wanting timer named " + name
+								  + ", returning 0.0 as fallback on "
+								  + SaveObject.currentObjectInfo + " ["
+								  + SaveObject.currentSaveEntriesIndex + "]");
+
+			return 0.0f;
+		}
+
+        float val = GetFloatFromString(valueReceived);
         if (PauseScript.a == null) return val;
         return PauseScript.a.relativeTime + val; // Add current instance's
                                                  // relative time to get same
@@ -1136,12 +1350,18 @@ public class Utils {
 
 	public static bool IndexEntriesOk(int index, ref string[] entries, GameObject go) {
 		if (index < 0) {
-			Debug.Log("Index less than zero when loading " + go.name);
+			Debug.Log("Index less than zero when loading " + go.name
+					  + SaveObject.currentObjectInfo + " ["
+					  + SaveObject.currentSaveEntriesIndex + "]");
 			return false;
 		}
 
 		if (index >= entries.Length) {
-			Debug.Log("Index too large at " + index.ToString() + " when loading " + go.name + ", entries size: " + entries.Length.ToString());
+			Debug.Log("Index too large at " + index.ToString()
+					  + " when loading " + go.name + ", entries size: "
+					  + entries.Length.ToString() + ", "
+					  + SaveObject.currentObjectInfo + " ["
+					  + SaveObject.currentSaveEntriesIndex + "]");
 			return false;
 		}
 		return true;

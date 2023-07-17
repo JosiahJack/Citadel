@@ -74,7 +74,7 @@ public class SecurityCameraRotate : MonoBehaviour {
 		SecurityCameraRotate scr = go.GetComponent<SecurityCameraRotate>();
 		if (scr == null) { // No selective catalytic reduction.  Consult your engine manual for further diagnosis.
 			UnityEngine.Debug.Log("SecurityCameraRotate missing on savetype of SecurityCamera!  GameObject.name: " + go.name);
-			return "0000.00000";
+			return "0000.00000|0";
 		}
 
 		string line = System.String.Empty;
@@ -87,17 +87,17 @@ public class SecurityCameraRotate : MonoBehaviour {
 		SecurityCameraRotate scr = go.GetComponent<SecurityCameraRotate>();
 		if (scr == null) {
 			Debug.Log("SecurityCameraRotate.Load failure, scr == null");
-			return index + 1;
+			return index + 2;
 		}
 
 		if (index < 0) {
 			Debug.Log("SecurityCameraRotate.Load failure, index < 0");
-			return index + 1;
+			return index + 2;
 		}
 
 		if (entries == null) {
 			Debug.Log("SecurityCameraRotate.Load failure, entries == null");
-			return index + 1;
+			return index + 2;
 		}
 
 		scr.waitingFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;

@@ -60,12 +60,22 @@ public class BerserkEffect : UnityStandardAssets.ImageEffects.ImageEffectBase {
 	public static string Save(GameObject go) {
 		BerserkEffect bzk = go.GetComponent<BerserkEffect>();
 		 // No warn, only placed on GunCamera to avoid duplicate application.
-		if (bzk == null) return Utils.DTypeWordToSaveString("bf");
+		if (bzk == null) {
+			Debug.Log("BerserkEffect missing on savetype of Player!  "
+					  + "GameObject.name: " + go.name + ", "
+					  + SaveObject.currentObjectInfo);
+
+			return Utils.DTypeWordToSaveString("bf");
+		}
 
 		string line = System.String.Empty;
-		line = Utils.BoolToString(bzk.enabled);
-		line += Utils.splitChar + Utils.FloatToString(bzk.hithreshold);
-		line += Utils.splitChar + Utils.FloatToString(bzk.effectStrength);
+		line = Utils.BoolToString(bzk.enabled,"BerserkEffect.enabled");
+		line += Utils.splitChar;
+		line += Utils.FloatToString(bzk.hithreshold,
+									"BerserkEffect.hithreshold");
+		line += Utils.splitChar;
+		line += Utils.FloatToString(bzk.effectStrength,
+									"BerserkEffect.effectStrength");
 		return line;
 	}
 
@@ -86,9 +96,18 @@ public class BerserkEffect : UnityStandardAssets.ImageEffects.ImageEffectBase {
 			return index + 3;
 		}
 
-		bzk.enabled = Utils.GetBoolFromString(entries[index]); index++;
-		bzk.hithreshold = Utils.GetFloatFromString(entries[index]); index++;
-		bzk.effectStrength = Utils.GetFloatFromString(entries[index]); index++;
+		bzk.enabled = Utils.GetBoolFromString(entries[index],
+											  "BerserkEffect.enabled");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		bzk.hithreshold = Utils.GetFloatFromString(entries[index],
+												  "BerserkEffect.hithreshold");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		bzk.effectStrength = Utils.GetFloatFromString(entries[index],
+											   "BerserkEffect.effectStrength");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		return index;
 	}
 }

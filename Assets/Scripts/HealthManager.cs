@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -763,39 +764,56 @@ public class HealthManager : MonoBehaviour {
 
 		if (!hm.awakeInitialized) hm.Awake();
 		if (!hm.startInitialized) hm.Start();
-		string line = System.String.Empty;
-		line = Utils.FloatToString(hm.health); // how much health we have
-		line += Utils.splitChar + Utils.FloatToString(hm.cyberHealth); // how much health we have
-		line += Utils.splitChar + Utils.BoolToString(hm.deathDone); // bool - are we dead yet?
-		line += Utils.splitChar + Utils.BoolToString(hm.god); // are we invincible? - we can save cheats?? OH WOW!
-		line += Utils.splitChar + Utils.BoolToString(hm.teleportDone); // did we already teleport? teleportOnDeath
-		line += Utils.splitChar + Utils.UintToString(hm.gibObjects.Length);
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(Utils.FloatToString(hm.health,"health"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(hm.cyberHealth,"cyberHealth"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(hm.deathDone,"deathDone")); // Dead yet?
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(hm.god,"godmode")); // Are we invincible? 
+														 // We can save cheats?
+														 // OH WOW!
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(hm.teleportDone,"teleportDone"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(hm.gibObjects.Length,"gibObjects.Length"));
 		for (int i=0;i<hm.gibObjects.Length; i++) {
-			line += Utils.splitChar + Utils.SaveSubActivatedGOState(hm.gibObjects[i]);
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.SaveSubActivatedGOState(hm.gibObjects[i]));
 		}
 
 		if (prefID != null) {
 			if (prefID.constIndex == 526) { // prop_console02
 				if (go.transform.childCount > 0) { // Screen is first child.
 					GameObject child = go.transform.GetChild(0).gameObject; 
-					line += Utils.splitChar
-							+ Utils.BoolToString(child.activeSelf);
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.BoolToString(child.activeSelf,
+												 "child.activeSelf"));
 
 					ImageSequenceTextureArray ista
 						= child.GetComponent<ImageSequenceTextureArray>();
 
 					if (ista != null) {
-						line += Utils.splitChar + ista.resourceFolder;
+						s1.Append(Utils.splitChar);
+						s1.Append(Utils.SaveString(ista.resourceFolder,
+												   "resourceFolder"));
 					}
 				} else {
-					line += Utils.splitChar + Utils.BoolToString(true);
-					line += Utils.splitChar + "MedScreen27";
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.BoolToString(true,"child.activeSelf"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.SaveString("MedScreen27","resourceFolder"));
 				}
 			}
 		}
 
-		line += Utils.splitChar + Utils.BoolToString(hm.teleportOnDeath); // did we already teleport?
-		return line;
+		s1.Append(Utils.splitChar);
+
+		// Did we already teleport?
+		s1.Append(Utils.BoolToString(hm.teleportOnDeath,"teleportOnDeath"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index,
@@ -822,15 +840,34 @@ public class HealthManager : MonoBehaviour {
 
 		if (!hm.awakeInitialized) hm.Awake();
 		if (!hm.startInitialized) hm.Start();
-		hm.health = Utils.GetFloatFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index; // how much health we have
-		hm.cyberHealth = Utils.GetFloatFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-		hm.deathDone = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index; // bool - are we dead yet?
-		hm.god = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index; // are we invincible? - we can save cheats?? OH WOW!
-		hm.teleportDone = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index; // did we already teleport?
+		hm.health = Utils.GetFloatFromString(entries[index],"health");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
+
+		hm.cyberHealth = Utils.GetFloatFromString(entries[index],"cyberHealth");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
+
+		hm.deathDone = Utils.GetBoolFromString(entries[index],"deathDone");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
+
+		hm.god = Utils.GetBoolFromString(entries[index],"godmode");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
+
+		hm.teleportDone = Utils.GetBoolFromString(entries[index],
+												  "teleportDone");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
+
 		hm.AwakeFromLoad();
 
 		int numChildren = hm.gibObjects.Length;
-		int numChildrenFromSave = Utils.GetIntFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
+		int numChildrenFromSave = Utils.GetIntFromString(entries[index],
+														  "gibObjects.Length");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 
 		if (numChildren != numChildrenFromSave) {
 			Debug.Log("BUG: HealthManager gibObjects.Length("
@@ -840,26 +877,45 @@ public class HealthManager : MonoBehaviour {
 			return index;
 		}
 
-		if (numChildren == 0) return index;
+		if (numChildren > 0) {
+			for (int i=0; i<numChildren; i++) {
+				index = Utils.LoadSubActivatedGOState(hm.gibObjects[i],
+													  ref entries,index);
 
-		for (int i=0; i<numChildren; i++) {
-			index = Utils.LoadSubActivatedGOState(hm.gibObjects[i],ref entries,index); if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-		}
-
-		if (prefID.constIndex == 526) { // prop_console02
-			if (go.transform.childCount > 0) { // Screen is first child.
-				GameObject child = go.transform.GetChild(0).gameObject;
-				child.SetActive(Utils.GetBoolFromString(entries[index])); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-				ImageSequenceTextureArray ista
-					= child.GetComponent<ImageSequenceTextureArray>();
-
-				if (ista != null) {
-					ista.resourceFolder = entries[index]; index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-				}
+				if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
 			}
 		}
-		hm.teleportOnDeath = Utils.GetBoolFromString(entries[index]); index++; if (!Utils.IndexEntriesOk(index,ref entries,go)) return index; // did we already teleport?
+
+		if (prefID != null) {
+			if (prefID.constIndex == 526) { // prop_console02
+				if (go.transform.childCount > 0) { // Screen is first child.
+					GameObject child = go.transform.GetChild(0).gameObject;
+					child.SetActive(Utils.GetBoolFromString(entries[index],
+														"child.activeSelf"));
+					index++;
+					if (!Utils.IndexEntriesOk(index,ref entries,go)) {
+						return index;
+					}
+
+					ImageSequenceTextureArray ista
+						= child.GetComponent<ImageSequenceTextureArray>();
+
+					if (ista != null) {
+						ista.resourceFolder =
+							Utils.LoadString(entries[index],
+												"resourceFolder");
+						index++;
+						if (!Utils.IndexEntriesOk(index,ref entries,go)) {
+							return index;
+						}
+					}
+				}
+			}	
+		}
+
+		hm.teleportOnDeath = Utils.GetBoolFromString(entries[index],
+													 "teleportOnDeath");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 		return index;
 	}
 }

@@ -1446,6 +1446,9 @@ public class Const : MonoBehaviour {
 		loadPercentText.text = "Preparing...";
 		yield return null; // Update progress text.
 
+		SaveObject.currentSaveEntriesIndex = "_";
+		SaveObject.currentObjectInfo = "Start of Load...";
+
 		// Remove and clear out everything and reset any lists.
 		ClearActiveAutomapOverlays();
 		for (i=0;i<14;i++) {
@@ -1585,7 +1588,7 @@ public class Const : MonoBehaviour {
 						}
 
 						entries = readFileList[i].Split(Utils.splitCharChar);
-						SaveObject.Load(currentGameObjectInScene,ref entries);
+						SaveObject.Load(currentGameObjectInScene,ref entries,i);
 						alreadyCheckedThisSaveableGameObjectInScene[j] = true; // Huge time saver right here!
 						break;
 					}
@@ -1653,7 +1656,7 @@ public class Const : MonoBehaviour {
 																false,null,
 																savID);
 
-					SaveObject.Load(instGO,ref entries); // Load it.
+					SaveObject.Load(instGO,ref entries,i); // Load it.
 				}
 
 				percLoaded = ((float)i / (float)numSaveablesFromSavefile*100f);

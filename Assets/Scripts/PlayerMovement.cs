@@ -1214,138 +1214,246 @@ public class PlayerMovement : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		if (pm == null) {
 			Debug.Log("PlayerMovement missing on savetype of Player!"
-					  + "  GameObject.name: " + go.name);
+					  + "GameObject.name: " + go.name + ", "
+					  + SaveObject.currentObjectInfo + " ["
+					  + SaveObject.currentSaveEntriesIndex + "]");
 
 			s1.Append("fbfibbbbbfffffbffbbifftttbtttfu");
 			return Utils.DTypeWordToSaveString(s1.ToString());
 		}
 
-		s1.Append(Utils.FloatToString(pm.playerSpeed)); // float
+		s1.Append(Utils.FloatToString(pm.playerSpeed,"playerSpeed"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(pm.grounded)); // bool
+		s1.Append(Utils.BoolToString(pm.grounded,"grounded"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(pm.currentCrouchRatio)); // float
+		s1.Append(Utils.FloatToString(pm.currentCrouchRatio,
+									  "currentCrouchRatio")); 
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.UintToString(Utils.BodyStateToInt(pm.bodyState)));
+		s1.Append(Utils.UintToString(Utils.BodyStateToInt(pm.bodyState),
+									 "bodyState"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(pm.ladderState)); // bool
+		s1.Append(Utils.BoolToString(pm.ladderState,"ladderState"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(pm.gravliftState)); // bool
+		s1.Append(Utils.BoolToString(pm.gravliftState,"gravliftState"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(pm.inCyberSpace)); // bool
+		s1.Append(Utils.BoolToString(pm.inCyberSpace,"inCyberSpace"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(pm.CheatWallSticky)); // bool
+		s1.Append(Utils.BoolToString(pm.CheatWallSticky,"CheatWallSticky"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(pm.CheatNoclip)); // bool
+		s1.Append(Utils.BoolToString(pm.CheatNoclip,"CheatNoclip"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(pm.jumpTime)); // float, not a timer
+		s1.Append(Utils.FloatToString(pm.jumpTime,"jumpTime")); // not a timer
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(pm.oldVelocity.x));
+		s1.Append(Utils.FloatToString(pm.oldVelocity.x,"oldVelocity.x"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(pm.oldVelocity.y));
+		s1.Append(Utils.FloatToString(pm.oldVelocity.y,"oldVelocity.y"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(pm.oldVelocity.z)); // Vector3 (float|float|float)
+		s1.Append(Utils.FloatToString(pm.oldVelocity.z,"oldVelocity.z"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(pm.fatigue)); // float
+		s1.Append(Utils.FloatToString(pm.fatigue,"fatigue"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(pm.justJumped)); // bool
+		s1.Append(Utils.BoolToString(pm.justJumped,"justJumped"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.fatigueFinished)); // float
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.fatigueFinished,
+													 "fatigueFinished"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.fatigueFinished2)); // float
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.fatigueFinished2,
+													 "fatigueFinished2"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(pm.cyberSetup)); // bool
+		s1.Append(Utils.BoolToString(pm.cyberSetup,"cyberSetup"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(pm.cyberDesetup)); // bool
+		s1.Append(Utils.BoolToString(pm.cyberDesetup,"cyberDesetup"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.UintToString(Utils.BodyStateToInt(pm.oldBodyState)));
+		s1.Append(Utils.UintToString(Utils.BodyStateToInt(pm.oldBodyState),
+									 "oldBodyState"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(pm.leanTarget)); // float
+		s1.Append(Utils.FloatToString(pm.leanTarget,"leanTarget"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(pm.leanShift));
+		s1.Append(Utils.FloatToString(pm.leanShift,"leanShift"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpSFXFinished));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpSFXFinished,
+													 "jumpSFXFinished"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpLandSoundFinished));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpLandSoundFinished,
+													 "jumpLandSoundFinished"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.jumpJetEnergySuckTickFinished));
+		s1.Append(Utils.SaveRelativeTimeDifferential(
+											pm.jumpJetEnergySuckTickFinished,
+											"jumpJetEnergySuckTickFinished"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(pm.fatigueWarned));
+		s1.Append(Utils.BoolToString(pm.fatigueWarned,"fatigueWarned"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.turboFinished));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.turboFinished,
+													 "turboFinished"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.ressurectingFinished));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.ressurectingFinished,
+													 "ressurectingFinished"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pm.doubleJumpFinished));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pm.doubleJumpFinished,
+													 "doubleJumpFinished"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(pm.SFX.time)); // float
+		s1.Append(Utils.FloatToString(pm.SFX.time,"SFX.time"));
 		s1.Append(Utils.splitChar);
-		if (!pm.SFX.isPlaying) pm.SFXIndex = -1; // Safely can set to null, not playing a sound.
-		s1.Append(Utils.UintToString(pm.SFXIndex));
+		if (!pm.SFX.isPlaying) pm.SFXIndex = -1; // Safely can set to null, not
+												 // playing a sound.
+
+		s1.Append(Utils.UintToString(pm.SFXIndex,"SFXIndex"));
 		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PlayerMovement pm = go.GetComponent<PlayerMovement>();
 		if (pm == null) {
-			Debug.Log("PlayerMovement.Load failure, pm == null");
-			return index + 31;
+			Debug.Log("PlayerMovement.Load failure, pm == null, "
+					  + SaveObject.currentObjectInfo);
+
+			return index + 10 + 4 + 31;
 		}
 
 		if (index < 0) {
-			Debug.Log("PlayerMovement.Load failure, index < 0");
-			return index + 31;
+			Debug.Log("PlayerMovement.Load failure, index < 0, "
+					  + SaveObject.currentObjectInfo);
+
+			return index + 10 + 4 + 31;
 		}
 
 		if (entries == null) {
-			Debug.Log("PlayerMovement.Load failure, entries == null");
-			return index + 31;
+			Debug.Log("PlayerMovement.Load failure, entries == null, "
+					  + SaveObject.currentObjectInfo);
+
+			return index + 10 + 4 + 31;
 		}
 
 		float readFloatx, readFloaty, readFloatz;
 		string oldpos = go.transform.localPosition.ToString();
 		index = Utils.LoadTransform(go.transform,ref entries,index);
 		index = Utils.LoadRigidbody(go,ref entries,index);
-		pm.playerSpeed = Utils.GetFloatFromString(entries[index]); index++;
-		pm.grounded = Utils.GetBoolFromString(entries[index]); index++;
-		pm.currentCrouchRatio = Utils.GetFloatFromString(entries[index]); index++;
-		pm.bodyState = Utils.IntToBodyState(Utils.GetIntFromString(entries[index])); index++;
-		pm.ladderState = Utils.GetBoolFromString(entries[index]); index++;
-		pm.gravliftState = Utils.GetBoolFromString(entries[index]); index++;
-		pm.inCyberSpace = Utils.GetBoolFromString(entries[index]); index++;
-		pm.CheatWallSticky = Utils.GetBoolFromString(entries[index]); index++;
-		pm.CheatNoclip = Utils.GetBoolFromString(entries[index]); index++;
-		pm.jumpTime = Utils.GetFloatFromString(entries[index]); index++; // not a timer
-		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+
+		pm.playerSpeed = Utils.GetFloatFromString(entries[index],
+												  "playerSpeed");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.grounded = Utils.GetBoolFromString(entries[index],"grounded");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.currentCrouchRatio = Utils.GetFloatFromString(entries[index],
+														 "currentCrouchRatio");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.bodyState =
+			Utils.IntToBodyState(Utils.GetIntFromString(entries[index],
+														"bodyState"));
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.ladderState = Utils.GetBoolFromString(entries[index],"ladderState");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.gravliftState = Utils.GetBoolFromString(entries[index],
+												   "gravliftState");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.inCyberSpace = Utils.GetBoolFromString(entries[index],
+												  "inCyberSpace");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.CheatWallSticky = Utils.GetBoolFromString(entries[index],
+													 "CheatWallSticky");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.CheatNoclip = Utils.GetBoolFromString(entries[index],"CheatNoclip");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		// Not a timer.
+		pm.jumpTime = Utils.GetFloatFromString(entries[index],"jumpTime");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		readFloatx = Utils.GetFloatFromString(entries[index],"oldVelocity.x");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		readFloaty = Utils.GetFloatFromString(entries[index],"oldVelocity.y");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		readFloatz = Utils.GetFloatFromString(entries[index],"oldVelocity.z");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 		pm.oldVelocity = new Vector3(readFloatx,readFloaty,readFloatz);
-		pm.fatigue = Utils.GetFloatFromString(entries[index]); index++;
-		pm.justJumped = Utils.GetBoolFromString(entries[index]); index++;
-		pm.fatigueFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		pm.fatigueFinished2 = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		pm.cyberSetup = Utils.GetBoolFromString(entries[index]); index++;
-		pm.cyberDesetup = Utils.GetBoolFromString(entries[index]); index++;
-		pm.oldBodyState = Utils.IntToBodyState(Utils.GetIntFromString(entries[index])); index++;
-		pm.leanTarget = Utils.GetFloatFromString(entries[index]); index++;
-		pm.leanShift = Utils.GetFloatFromString(entries[index]); index++;
+
+		pm.fatigue = Utils.GetFloatFromString(entries[index],"fatigue");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.justJumped = Utils.GetBoolFromString(entries[index],"justJumped");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.fatigueFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "fatigueFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.fatigueFinished2 =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "fatigueFinished2");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.cyberSetup = Utils.GetBoolFromString(entries[index],"cyberSetup");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.cyberDesetup = Utils.GetBoolFromString(entries[index],
+												  "cyberDesetup");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.oldBodyState =
+			Utils.IntToBodyState(Utils.GetIntFromString(entries[index],
+														"oldBodyState"));
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.leanTarget = Utils.GetFloatFromString(entries[index],"leanTarget");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		pm.leanShift = Utils.GetFloatFromString(entries[index],"leanShift");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 		pm.leanTransform.localRotation = Quaternion.Euler(0, 0, pm.leanTarget);
 		pm.leanTransform.localPosition = new Vector3(pm.leanShift,0,0);
-		pm.jumpSFXFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		pm.jumpLandSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		pm.jumpJetEnergySuckTickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		pm.fatigueWarned = Utils.GetBoolFromString(entries[index]); index++;
-		pm.turboFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		pm.ressurectingFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		pm.doubleJumpFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		float sfxTime = Utils.GetFloatFromString(entries[index]); index++;
-		pm.SFXIndex = Utils.GetIntFromString(entries[index]); index++;
+
+		pm.jumpSFXFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "jumpSFXFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.jumpLandSoundFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "jumpLandSoundFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.jumpJetEnergySuckTickFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											  "jumpJetEnergySuckTickFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.fatigueWarned = Utils.GetBoolFromString(entries[index],
+												   "fatigueWarned");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.turboFinished = Utils.LoadRelativeTimeDifferential(entries[index],
+															  "turboFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.ressurectingFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "ressurectingFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		pm.doubleJumpFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "doubleJumpFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		float sfxTime = Utils.GetFloatFromString(entries[index],"SFX.time");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		pm.SFXIndex = Utils.GetIntFromString(entries[index],"SFXIndex");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 		pm.ladderSFXFinished = 0;
 		if (pm.SFXIndex >= 0) {
 			pm.SFX.time = sfxTime;
 			pm.SFX.clip = Const.a.sounds[pm.SFXIndex];
 			Utils.PlayOneShotSavable(pm.SFX,Const.a.sounds[pm.SFXIndex]);
 		}
+
 		pm.ConsoleDisable();
 		return index;
 	}

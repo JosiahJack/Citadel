@@ -507,7 +507,7 @@ public class LevelManager : MonoBehaviour {
 																  false,
 																  container,
 																  -1);
-			if (newGO != null) SaveObject.Load(newGO,ref entries);
+			if (newGO != null) SaveObject.Load(newGO,ref entries,-2);
 		}
 	}
 

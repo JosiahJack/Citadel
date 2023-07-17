@@ -1267,6 +1267,7 @@ public class AIController : MonoBehaviour {
 			ai_dying = false;
 			currentState = AIState.Dead;
 		}
+		if (index == 0 || index == 14) Utils.Deactivate(visibleMeshEntity); // Autobomb
 	}
 
 	void Dead() {
@@ -1300,8 +1301,13 @@ public class AIController : MonoBehaviour {
 			if (healthManager.teleportOnDeath && !healthManager.teleportDone) {
 				healthManager.TeleportAway();
 			}
-		} else rbody.useGravity = true;
+		} else {
+			if (index != 14) { // Hopper turns itself off.
+				rbody.useGravity = true;
+			}
+		}
 
+		if (index == 0) Utils.Deactivate(visibleMeshEntity); // Autobomb
 		deadChecksDone = true;
 	}
 
@@ -1495,96 +1501,179 @@ public class AIController : MonoBehaviour {
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		if (!aic.startInitialized) aic.Start();
-		s1.Append(Utils.UintToString(aic.index)); // int
-		s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(Utils.AIStateToInt(aic.currentState)));
+		s1.Append(Utils.UintToString(aic.index,"AIController.index"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(Utils.AIStateToInt(aic.currentState),
+														"currentState"));
 		s1.Append(Utils.splitChar);
 		if (aic.enemy != null) s1.Append("1"); // enemID (savefile variable only)
 		else s1.Append("-1");
 
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.walkPathOnStart));
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.dontLoopWaypoints));
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.visitWaypointsRandomly));
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.actAsTurret));
-		s1.Append(Utils.splitChar); s1.Append(aic.targetID);
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.hasTargetIDAttached));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.idleTime));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack1SoundTime));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack2SoundTime));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack3SoundTime));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.gracePeriodFinished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.meleeDamageFinished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.inSight)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.infront)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.inProjFOV)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.LOSpossible)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.goIntoPain)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.rangeToEnemy));
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.firstSighting)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.dyingSetup)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.ai_dying)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.ai_dead)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(aic.currentWaypoint)); // int
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.currentDestination.x));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.currentDestination.y));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.currentDestination.z));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.timeTillEnemyChangeFinished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.timeTillDeadFinished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.timeTillPainFinished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.tickFinished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.raycastingTickFinished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.huntFinished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.hadEnemy)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.lastKnownEnemyPos.x));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.lastKnownEnemyPos.y));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.lastKnownEnemyPos.z));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.tempVec.x));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.tempVec.y));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.tempVec.z));
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.shotFired)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.randomWaitForNextAttack1Finished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.randomWaitForNextAttack2Finished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.randomWaitForNextAttack3Finished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.idealTransformForward.x));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.idealTransformForward.y));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.idealTransformForward.z));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.idealPos.x));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.idealPos.y));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.idealPos.z));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.attackFinished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack2Finished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack3Finished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.targettingPosition.x));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.targettingPosition.y));
-		s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(aic.targettingPosition.z));
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.deathBurstFinished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.deathBurstDone)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.walkPathOnStart,"walkPathOnStart"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.dontLoopWaypoints,"dontLoopWaypoints"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.visitWaypointsRandomly,"visitWaypointsRandomly"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.actAsTurret,"actAsTurret"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(aic.targetID,"targetID"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.hasTargetIDAttached));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.idleTime));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack1SoundTime));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack2SoundTime));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack3SoundTime));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.gracePeriodFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.meleeDamageFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.inSight));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.infront));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.inProjFOV));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.LOSpossible)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.goIntoPain)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.rangeToEnemy));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.firstSighting)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.dyingSetup)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.ai_dying)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.ai_dead)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(aic.currentWaypoint)); // int
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.currentDestination.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.currentDestination.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.currentDestination.z));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.timeTillEnemyChangeFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.timeTillDeadFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.timeTillPainFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.tickFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.raycastingTickFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.huntFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.hadEnemy)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.lastKnownEnemyPos.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.lastKnownEnemyPos.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.lastKnownEnemyPos.z));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.tempVec.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.tempVec.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.tempVec.z));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.shotFired)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.randomWaitForNextAttack1Finished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.randomWaitForNextAttack2Finished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.randomWaitForNextAttack3Finished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.idealTransformForward.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.idealTransformForward.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.idealTransformForward.z));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.idealPos.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.idealPos.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.idealPos.z));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.attackFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack2Finished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack3Finished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.targettingPosition.x));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.targettingPosition.y));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(aic.targettingPosition.z));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.deathBurstFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.deathBurstDone)); // bool
 		if (aic.deathBurst != null) {
-			s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.deathBurst.activeSelf));
-			s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(aic.deathBurst.transform.childCount));
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.BoolToString(aic.deathBurst.activeSelf));
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.UintToString(aic.deathBurst.transform.childCount));
 			for (int i=0;i<aic.deathBurst.transform.childCount;i++) {
 				Transform childTR = aic.deathBurst.transform.GetChild(i);
-				s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(childTR.gameObject.activeSelf));
+				s1.Append(Utils.splitChar);
+				s1.Append(Utils.BoolToString(childTR.gameObject.activeSelf));
 				for (int j=0;j<childTR.childCount;j++) {
-					s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(childTR.transform.GetChild(j).gameObject.activeSelf));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.BoolToString(childTR.transform.GetChild(j).gameObject.activeSelf));
 				}
 			}
 		}
 
+		s1.Append(Utils.splitChar);
 		if (aic.visibleMeshEntity != null) {
-			s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.visibleMeshEntity.activeSelf));
+			s1.Append(Utils.BoolToString(aic.visibleMeshEntity.activeSelf,
+										 "visibleMeshEntity.activeSelf"));
+		} else {
+			s1.Append(Utils.BoolToString(false,
+										 "visibleMeshEntity.activeSelf"));
 		}
 
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.asleep)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.tranquilizeFinished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.hopDone)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.wandering)); // bool
-		s1.Append(Utils.splitChar); s1.Append(Utils.SaveRelativeTimeDifferential(aic.wanderFinished));
-		s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(aic.SFXIndex));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.asleep)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.tranquilizeFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.hopDone)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.wandering)); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.wanderFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(aic.SFXIndex));
 		if (aic.searchColliderGO != null) {
-			s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(aic.searchColliderGO.activeSelf));
-			s1.Append(Utils.splitChar); s1.Append(SearchableItem.Save(aic.searchColliderGO,prefID));
-            if (!aic.healthManager.gibOnDeath || prefID.constIndex == 421 /* avian mutant */) { // Weird exclusion for hopper to not check  && !healthManager.vaporizeCorpse
-				s1.Append(Utils.splitChar); s1.Append(HealthManager.Save(aic.searchColliderGO,prefID));
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.BoolToString(aic.searchColliderGO.activeSelf,
+										 "searchColliderGO.activeSelf"));
+			s1.Append(Utils.splitChar);
+			s1.Append(SearchableItem.Save(aic.searchColliderGO,prefID));
+
+			// Weird exclusion for hopper to not check 
+			// && !healthManager.vaporizeCorpse
+            if (!aic.healthManager.gibOnDeath
+				|| prefID.constIndex == 421 /* avian mutant */) {
+
+				s1.Append(Utils.splitChar);
+				s1.Append(HealthManager.Save(aic.searchColliderGO,prefID));
 			}
 		}
 		return s1.ToString();
@@ -1610,18 +1699,20 @@ public class AIController : MonoBehaviour {
 
 		aic.Start();
 		float readFloatx, readFloaty, readFloatz;
-		aic.index = Utils.GetIntFromString(entries[index]); index++; // int - NPC const lookup table index for instantiating
+		aic.index = Utils.GetIntFromString(entries[index],"AIController.index");
+		index++;
+
 		int state = Utils.GetIntFromString(entries[index]); index++;
 		aic.currentState = Utils.GetAIStateFromInt(state);
 		int enemIDRead = Utils.GetIntFromString(entries[index]); index++;
 		if (enemIDRead >= 0) aic.enemy = Const.a.player1Capsule;
 		else aic.enemy = null;
 
-		aic.walkPathOnStart = Utils.GetBoolFromString(entries[index]); index++;
-		aic.dontLoopWaypoints = Utils.GetBoolFromString(entries[index]); index++;
-		aic.visitWaypointsRandomly = Utils.GetBoolFromString(entries[index]); index++;
-		aic.actAsTurret = Utils.GetBoolFromString(entries[index]); index++;
-		aic.targetID = entries[index]; index++;
+		aic.walkPathOnStart = Utils.GetBoolFromString(entries[index],"walkPathOnStart"); index++;
+		aic.dontLoopWaypoints = Utils.GetBoolFromString(entries[index],"dontLoopWaypoints"); index++;
+		aic.visitWaypointsRandomly = Utils.GetBoolFromString(entries[index],"visitWaypointsRandomly"); index++;
+		aic.actAsTurret = Utils.GetBoolFromString(entries[index],"actAsTurret"); index++;
+		aic.targetID = Utils.LoadString(entries[index],"targetID"); index++;
 		aic.hasTargetIDAttached = Utils.GetBoolFromString(entries[index]); index++;
 		aic.idleTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		aic.attack1SoundTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
@@ -1694,8 +1785,10 @@ public class AIController : MonoBehaviour {
 		}
 
 		if (aic.visibleMeshEntity != null) {
-			aic.visibleMeshEntity.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+			aic.visibleMeshEntity.SetActive(Utils.GetBoolFromString(entries[index],
+											"visibleMeshEntity.activeSelf"));
 		}
+		index++;
 
 		aic.asleep = Utils.GetBoolFromString(entries[index]); index++; // bool - are we sleepnir? vague reference alert
 		aic.tranquilizeFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
@@ -1735,9 +1828,18 @@ public class AIController : MonoBehaviour {
 		}
 
 		if (aic.searchColliderGO != null) {
-			aic.searchColliderGO.SetActive(Utils.GetBoolFromString(entries[index])); index++;
-			index = SearchableItem.Load(aic.searchColliderGO,ref entries,index,prefID);
-			if (!aic.healthManager.gibOnDeath) index = HealthManager.Load(aic.searchColliderGO,ref entries,index,prefID);
+			aic.searchColliderGO.SetActive(Utils.GetBoolFromString(entries[index],
+										   "searchColliderGO.activeSelf"));
+			index++;
+			index = SearchableItem.Load(aic.searchColliderGO, ref entries,
+										index,prefID);
+
+			if (!aic.healthManager.gibOnDeath
+				|| prefID.constIndex == 421 /* avian mutant */) {
+
+				index = HealthManager.Load(aic.searchColliderGO, ref entries,
+										   index,prefID);
+			}
 		}
 
 		if (aic.currentState == AIState.Attack1) {

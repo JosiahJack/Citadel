@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Collections;
 using System.Runtime.InteropServices;
+using System.Text;
 
 public class MouseLookScript : MonoBehaviour {
     // External references
@@ -1155,99 +1156,246 @@ public class MouseLookScript : MonoBehaviour {
 		MouseLookScript ml = go.GetComponent<MouseLookScript>();
 		if (ml == null) {
 			Debug.Log("MouseLook missing on savetype of Player!  GameObject.name: " + go.name);
-			return "0|0|0|0|-1|-1|0|0|0|0|0|0|0000.00000|0|0000.00000|0|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|1";
+			return Utils.DTypeWordToSaveString("bbbbuuuubbbbbfbfbffffffffffffu");;
 		}
 
-		string line = System.String.Empty;
-		line = Utils.BoolToString(ml.gameObject.activeSelf); // bool
-		line += Utils.splitChar + Utils.BoolToString(ml.playerCamera.enabled); // bool
-		line += Utils.splitChar + Utils.BoolToString(ml.inventoryMode); // bool
-		line += Utils.splitChar + Utils.BoolToString(ml.holdingObject); // bool
-		line += Utils.splitChar + ml.heldObjectIndex.ToString(); // int
-		line += Utils.splitChar + ml.heldObjectCustomIndex.ToString(); // int
-		line += Utils.splitChar + ml.heldObjectAmmo.ToString(); // int
-		line += Utils.splitChar + ml.heldObjectAmmo2.ToString(); // int
-		line += Utils.splitChar + Utils.BoolToString(ml.heldObjectLoadedAlternate); // bool
-		line += Utils.splitChar + Utils.BoolToString(ml.firstTimePickup); // bool
-		line += Utils.splitChar + Utils.BoolToString(ml.firstTimeSearch); // bool
-		line += Utils.splitChar + Utils.BoolToString(ml.grenadeActive); // bool
-		line += Utils.splitChar + Utils.BoolToString(ml.inCyberSpace); // bool
-		line += Utils.splitChar + Utils.FloatToString(ml.yRotation); // float
-		line += Utils.splitChar + Utils.BoolToString(ml.geniusActive); // bool
-		line += Utils.splitChar + Utils.FloatToString(ml.xRotation); // float
-		line += Utils.splitChar + Utils.BoolToString(ml.vmailActive); // bool
-		line += Utils.splitChar + Utils.FloatToString(ml.cyberspaceReturnPoint.x) + Utils.splitChar
-						 	    + Utils.FloatToString(ml.cyberspaceReturnPoint.y) + Utils.splitChar
-						  	    + Utils.FloatToString(ml.cyberspaceReturnPoint.z);
-		line += Utils.splitChar + Utils.FloatToString(ml.cyberspaceReturnCameraLocalRotation.x) + Utils.splitChar
-								+ Utils.FloatToString(ml.cyberspaceReturnCameraLocalRotation.y) + Utils.splitChar
-						  		+ Utils.FloatToString(ml.cyberspaceReturnCameraLocalRotation.z);
-		line += Utils.splitChar + Utils.FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.x) + Utils.splitChar
-						  		+ Utils.FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.y) + Utils.splitChar
-						  		+ Utils.FloatToString(ml.cyberspaceReturnPlayerCapsuleLocalRotation.z);
-		line += Utils.splitChar + Utils.FloatToString(ml.cyberspaceRecallPoint.x) + Utils.splitChar
-						  		+ Utils.FloatToString(ml.cyberspaceRecallPoint.y) + Utils.splitChar
-						  		+ Utils.FloatToString(ml.cyberspaceRecallPoint.z); // Vector3 (float|float|float)
-		line += Utils.splitChar + ml.cyberspaceReturnLevel.ToString(); // int
-		return line;
+        StringBuilder s1 = new StringBuilder();
+        s1.Clear();
+		s1.Append(Utils.BoolToString(ml.gameObject.activeSelf,
+									 "MouseLookScript.gameObject.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ml.playerCamera.enabled,
+									 "playerCamera.enabled"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ml.inventoryMode,"inventoryMode"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ml.holdingObject,"holdingObject"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(ml.heldObjectIndex,"heldObjectIndex"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(ml.heldObjectCustomIndex,
+									 "heldObjectCustomIndex"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(ml.heldObjectAmmo,"heldObjectAmmo"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(ml.heldObjectAmmo2,"heldObjectAmmo2"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ml.heldObjectLoadedAlternate,
+									 "heldObjectLoadedAlternate"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ml.firstTimePickup,"firstTimePickup"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ml.firstTimeSearch,"firstTimeSearch"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ml.grenadeActive,"grenadeActive"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ml.inCyberSpace,"inCyberSpace"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ml.yRotation,"yRotation"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ml.geniusActive,"geniusActive"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ml.xRotation,"xRotation"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ml.vmailActive,"vmailActive"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ml.cyberspaceReturnPoint.x,
+									  "cyberspaceReturnPoint.x"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ml.cyberspaceReturnPoint.y,
+									  "cyberspaceReturnPoint.y"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ml.cyberspaceReturnPoint.z,
+									  "cyberspaceReturnPoint.z"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ml.cyberspaceReturnCameraLocalRotation.x,
+									 "cyberspaceReturnCameraLocalRotation.x"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ml.cyberspaceReturnCameraLocalRotation.y,
+									 "cyberspaceReturnCameraLocalRotation.y"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ml.cyberspaceReturnCameraLocalRotation.z,
+									 "cyberspaceReturnCameraLocalRotation.z"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(
+							ml.cyberspaceReturnPlayerCapsuleLocalRotation.x,
+							"cyberspaceReturnPlayerCapsuleLocalRotation.x"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(
+							ml.cyberspaceReturnPlayerCapsuleLocalRotation.y,
+							"cyberspaceReturnPlayerCapsuleLocalRotation.y"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(
+							ml.cyberspaceReturnPlayerCapsuleLocalRotation.z,
+							"cyberspaceReturnPlayerCapsuleLocalRotation.z"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ml.cyberspaceRecallPoint.x,
+									  "cyberspaceRecallPoint.x"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ml.cyberspaceRecallPoint.y,
+									  "cyberspaceRecallPoint.y"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(ml.cyberspaceRecallPoint.z,
+									  "cyberspaceRecallPoint.z"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(ml.cyberspaceReturnLevel,
+									 "cyberspaceReturnLevel"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		MouseLookScript ml = go.GetComponent<MouseLookScript>();
 		if (ml == null) {
 			Debug.Log("MouseLookScript.Load failure, ml == null");
-			return index + 27;
+			return index + 30;
 		}
 
 		if (index < 0) {
 			Debug.Log("MouseLookScript.Load failure, index < 0");
-			return index + 27;
+			return index + 30;
 		}
 
 		if (entries == null) {
 			Debug.Log("MouseLookScript.Load failure, entries == null");
-			return index + 27;
+			return index + 30;
 		}
 
 		float readFloatx, readFloaty, readFloatz;
-		ml.gameObject.SetActive(Utils.GetBoolFromString(entries[index])); index++;
-		ml.playerCamera.enabled = Utils.GetBoolFromString(entries[index]); index++;
-		ml.inventoryMode = !Utils.GetBoolFromString(entries[index]); index++; // take opposite because we are about to opposite again
-		ml.ToggleInventoryMode(); // correctly set cursor lock state, and opposite again, now it is what was saved
-		ml.holdingObject = Utils.GetBoolFromString(entries[index]); index++;
-		ml.heldObjectIndex = Utils.GetIntFromString(entries[index]); index++;
-		ml.heldObjectCustomIndex = Utils.GetIntFromString(entries[index]); index++;
-		ml.heldObjectAmmo = Utils.GetIntFromString(entries[index]); index++;
-		ml.heldObjectAmmo2 = Utils.GetIntFromString(entries[index]); index++;
-		ml.heldObjectLoadedAlternate = Utils.GetBoolFromString(entries[index]); index++;
-		ml.firstTimePickup = Utils.GetBoolFromString(entries[index]); index++;
-		ml.firstTimeSearch = Utils.GetBoolFromString(entries[index]); index++;
-		ml.grenadeActive = Utils.GetBoolFromString(entries[index]); index++;
-		ml.inCyberSpace = Utils.GetBoolFromString(entries[index]); index++;
-		ml.yRotation = Utils.GetFloatFromString(entries[index]); index++;
-		ml.geniusActive = Utils.GetBoolFromString(entries[index]); index++;
-		ml.xRotation = Utils.GetFloatFromString(entries[index]); index++;
-		ml.vmailActive = Utils.GetBoolFromString(entries[index]); index++;
-		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
-		ml.cyberspaceReturnPoint = new Vector3(readFloatx,readFloaty,readFloatz);
-		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
-		ml.cyberspaceReturnCameraLocalRotation = new Vector3(readFloatx,readFloaty,readFloatz);
-		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
-		ml.cyberspaceReturnPlayerCapsuleLocalRotation = new Vector3(readFloatx,readFloaty,readFloatz); // Euler Angles, only 3
-		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
-		ml.cyberspaceRecallPoint = new Vector3(readFloatx,readFloaty,readFloatz);
-		ml.cyberspaceReturnLevel = Utils.GetIntFromString(entries[index]); index++;
-		ml.currentSearchItem = null; // Prevent picking up first item immediately. Not currently possible to save references.
-		ml.transform.parent.transform.parent.transform.localRotation = Quaternion.Euler(0f, ml.yRotation, 0f); // left right component applied to capsule
-		ml.transform.localRotation = Quaternion.Euler(ml.xRotation,0f,0f); // Up down component only applied to camera
+		ml.gameObject.SetActive(Utils.GetBoolFromString(entries[index],
+								"MouseLookScript.gameObject.activeSelf"));
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.playerCamera.enabled = Utils.GetBoolFromString(entries[index],
+													   "playerCamera.enabled");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		// Take opposite because we are about to opposite again...
+		ml.inventoryMode = !Utils.GetBoolFromString(entries[index],
+													"inventoryMode");
+		// ...correctly set cursor lock state, and opposite again, now it is
+		// what was saved
+		ml.ToggleInventoryMode();
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.holdingObject = Utils.GetBoolFromString(entries[index],
+												   "holdingObject");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.heldObjectIndex = Utils.GetIntFromString(entries[index],
+													"heldObjectIndex");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.heldObjectCustomIndex = Utils.GetIntFromString(entries[index],
+													  "heldObjectCustomIndex");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.heldObjectAmmo = Utils.GetIntFromString(entries[index],
+												   "heldObjectAmmo");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.heldObjectAmmo2 = Utils.GetIntFromString(entries[index],
+													"heldObjectAmmo2");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.heldObjectLoadedAlternate = Utils.GetBoolFromString(entries[index],
+												  "heldObjectLoadedAlternate");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.firstTimePickup = Utils.GetBoolFromString(entries[index],
+													 "firstTimePickup");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.firstTimeSearch = Utils.GetBoolFromString(entries[index],
+													 "firstTimeSearch");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.grenadeActive = Utils.GetBoolFromString(entries[index],
+												   "grenadeActive");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.inCyberSpace = Utils.GetBoolFromString(entries[index],
+												  "inCyberSpace");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.yRotation = Utils.GetFloatFromString(entries[index],"yRotation");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.geniusActive = Utils.GetBoolFromString(entries[index],
+												  "geniusActive");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.xRotation = Utils.GetFloatFromString(entries[index],"xRotation");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.vmailActive = Utils.GetBoolFromString(entries[index],"vmailActive");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		readFloatx = Utils.GetFloatFromString(entries[index],
+											  "cyberspaceReturnPoint.x");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		readFloaty = Utils.GetFloatFromString(entries[index],
+											  "cyberspaceReturnPoint.y");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		readFloatz = Utils.GetFloatFromString(entries[index],
+											  "cyberspaceReturnPoint.z");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		ml.cyberspaceReturnPoint = new Vector3(readFloatx,readFloaty,
+											   readFloatz);
+
+		readFloatx = Utils.GetFloatFromString(entries[index],
+									  "cyberspaceReturnCameraLocalRotation.x");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		readFloaty = Utils.GetFloatFromString(entries[index],
+									  "cyberspaceReturnCameraLocalRotation.y");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		readFloatz = Utils.GetFloatFromString(entries[index],
+									  "cyberspaceReturnCameraLocalRotation.z");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		ml.cyberspaceReturnCameraLocalRotation = new Vector3(readFloatx,
+															 readFloaty,
+															 readFloatz);
+
+		 // Euler Angles, only 3
+		readFloatx = Utils.GetFloatFromString(entries[index],
+							   "cyberspaceReturnPlayerCapsuleLocalRotation.x");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		readFloaty = Utils.GetFloatFromString(entries[index],
+							   "cyberspaceReturnPlayerCapsuleLocalRotation.y");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		readFloatz = Utils.GetFloatFromString(entries[index],
+							   "cyberspaceReturnPlayerCapsuleLocalRotation.z");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		ml.cyberspaceReturnPlayerCapsuleLocalRotation = new Vector3(readFloatx,
+																	readFloaty,
+																	readFloatz);
+
+		readFloatx = Utils.GetFloatFromString(entries[index],
+											  "cyberspaceRecallPoint.x");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		readFloaty = Utils.GetFloatFromString(entries[index],
+											  "cyberspaceRecallPoint.y");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		readFloatz = Utils.GetFloatFromString(entries[index],
+											  "cyberspaceRecallPoint.z");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		ml.cyberspaceRecallPoint = new Vector3(readFloatx,readFloaty,
+											   readFloatz);
+
+		ml.cyberspaceReturnLevel = Utils.GetIntFromString(entries[index],
+													  "cyberspaceReturnLevel");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		// Prevent picking up first item immediately. Not currently possible to
+		// save references (without a lot of work, aherm).
+		ml.currentSearchItem = null;
+
+		// Left/Right component applied to capsule.
+		Transform capsuleTr = ml.transform.parent.transform.parent.transform;
+		capsuleTr.localRotation = Quaternion.Euler(0f, ml.yRotation, 0f);
+
+		// Up/Down component only applied to camera.
+		Transform cameraTr = ml.transform;
+		cameraTr.localRotation = Quaternion.Euler(ml.xRotation,0f,0f);
 		return index;
 	}
 }
