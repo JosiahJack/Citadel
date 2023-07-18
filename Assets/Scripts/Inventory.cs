@@ -1727,44 +1727,21 @@ public class Inventory : MonoBehaviour {
 		inv.generalInvCurrent = Utils.GetIntFromString(entries[index],"generalInvCurrent"); index++;
 		inv.generalInvIndex = Utils.GetIntFromString(entries[index],"generalInvIndex"); index++;
 
-		for (int i=0; i<14; i++) {
-			if (i != 0) { // Active state of the Access Cards button is below.
-				if (inv.generalInventoryIndexRef[i] > -1) {
-					if (!inv.genButtons[i].activeInHierarchy) inv.genButtons[i].SetActive(true);
-				} else {
-					if (inv.genButtons[i].activeInHierarchy) inv.genButtons[i].SetActive(false);
-				}
+		for (int i=1; i<14; i++) {
+			GeneralInvButton genbut = inv.genButtons[i].transform.GetComponent<GeneralInvButton>();
+			genbut.useableItemIndex = inv.generalInventoryIndexRef[i];
+			int referenceIndex = genbut.useableItemIndex;
+			if (inv.generalInventoryIndexRef[i] > -1) {
+				inv.genButtonsText[i].text =
+				  Const.a.useableItemsNameText[inv.generalInventoryIndexRef[i]];
+			} else {
+				inv.genButtonsText[i].text = string.Empty;
 			}
 
-			if (inv.genButtons[i].activeInHierarchy) {
-				GeneralInvButton genbut = inv.genButtons[i].transform.GetComponent<GeneralInvButton>();
-				int referenceIndex = genbut.useableItemIndex;
-				if (referenceIndex > -1) {
-					if (i != 0) { // Access Cards text set in Awake the once.
-						inv.genButtonsText[i].text =
-							Const.a.useableItemsNameText[referenceIndex];
-					}
-				} else {
-					inv.genButtonsText[i].text = string.Empty;
-				}
-
-				if (i == inv.generalInvCurrent) {
-					inv.genButtonsText[i].color = Const.a.ssYellowText; // Yellow
-				} else {
-					inv.genButtonsText[i].color = Const.a.ssGreenText; // Green
-				}
-
-				// Enable Apply button for consumables.
-				if ((referenceIndex >= 14 && referenceIndex < 21) || referenceIndex == 52
-					|| referenceIndex == 53 || referenceIndex == 55) {
-					if (genbut.activateButton != null) {
-						genbut.activateButton.SetActive(true);
-					}
-				} else {
-					if (genbut.activateButton != null) {
-						genbut.activateButton.SetActive(false);
-					}
-				}
+			if (i == inv.generalInvCurrent) {
+				inv.genButtonsText[i].color = Const.a.ssYellowText; // Yellow
+			} else {
+				inv.genButtonsText[i].color = Const.a.ssGreenText; // Green
 			}
 		}
 		inv.currentCyberItem = Utils.GetIntFromString(entries[index]); index++;
