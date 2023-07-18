@@ -1506,8 +1506,10 @@ public class AIController : MonoBehaviour {
 		s1.Append(Utils.UintToString(Utils.AIStateToInt(aic.currentState),
 														"currentState"));
 		s1.Append(Utils.splitChar);
-		if (aic.enemy != null) s1.Append("1"); // enemID (savefile variable only)
-		else s1.Append("-1");
+
+		//UPDATE: For coop, pick one of 1,2,3,4
+		if (aic.enemy != null) s1.Append("enemID:1"); // enemID (savefile variable only)
+		else s1.Append("enemID:-1");
 
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(aic.walkPathOnStart,"walkPathOnStart"));
@@ -1702,9 +1704,9 @@ public class AIController : MonoBehaviour {
 		aic.index = Utils.GetIntFromString(entries[index],"AIController.index");
 		index++;
 
-		int state = Utils.GetIntFromString(entries[index]); index++;
+		int state = Utils.GetIntFromString(entries[index],"currentState"); index++;
 		aic.currentState = Utils.GetAIStateFromInt(state);
-		int enemIDRead = Utils.GetIntFromString(entries[index]); index++;
+		int enemIDRead = Utils.GetIntFromString(entries[index],"enemID"); index++;
 		if (enemIDRead >= 0) aic.enemy = Const.a.player1Capsule;
 		else aic.enemy = null;
 

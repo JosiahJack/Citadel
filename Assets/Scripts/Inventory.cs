@@ -1644,9 +1644,9 @@ public class Inventory : MonoBehaviour {
 		line += Utils.splitChar + Utils.UintToString(inv.hardwareInvIndex); // int
 		for (j=0;j<13;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hardwareIsActive[j]); } // bool
 		for (j=0;j<32;j++) { line += Utils.splitChar + Utils.IntToString(Utils.AccessCardTypeToInt(inv.accessCardsOwned[j])); } // int
-		for (j=0;j<14;j++) { line += Utils.splitChar + Utils.UintToString(inv.generalInventoryIndexRef[j]); } // int
-		line += Utils.splitChar + Utils.UintToString(inv.generalInvCurrent); // int
-		line += Utils.splitChar + Utils.UintToString(inv.generalInvIndex); // int
+		for (j=0;j<14;j++) { line += Utils.splitChar + Utils.UintToString(inv.generalInventoryIndexRef[j],"generalInventoryIndexRef[" + j.ToString() + "]"); } // int
+		line += Utils.splitChar + Utils.UintToString(inv.generalInvCurrent,"generalInvCurrent"); // int
+		line += Utils.splitChar + Utils.UintToString(inv.generalInvIndex,"generalInvIndex"); // int
 		line += Utils.splitChar + Utils.UintToString(inv.currentCyberItem); // int
 		line += Utils.splitChar + Utils.BoolToString(inv.isPulserNotDrill); // bool
 		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.UintToString(inv.softVersions[j]); } // int 
@@ -1681,6 +1681,12 @@ public class Inventory : MonoBehaviour {
 		for (j=0;j<16;j++) { inv.wepAmmoSecondary[j] = Utils.GetIntFromString(entries[index] ); index++; }
 		for (j=0;j<7;j++) { inv.currentEnergyWeaponHeat[j] = Utils.GetFloatFromString(entries[index]); index++; }
 		for (j=0;j<7;j++) { inv.wepLoadedWithAlternate[j] = Utils.GetBoolFromString(entries[index]); index++; }
+        for (int i=0;i<7;i++) {
+			if (inv.weaponInventoryIndices[i] < 0) continue;
+
+			inv.weaponInventoryText[i] = inv.weaponInvTextSource[(inv.weaponInventoryIndices[i] - 36)]; // Yech!
+		}
+
 		inv.grenadeCurrent = Utils.GetIntFromString(entries[index]); index++;
 		inv.grenadeIndex = Utils.GetIntFromString(entries[index]); index++;
 		inv.nitroTimeSetting = Utils.GetFloatFromString(entries[index]); index++;
@@ -1717,9 +1723,50 @@ public class Inventory : MonoBehaviour {
 		inv.hardwareInvIndex = Utils.GetIntFromString(entries[index]); index++;
 		for (j=0;j<13;j++) { inv.hardwareIsActive[j] = Utils.GetBoolFromString(entries[index]); index++; }
 		for (j=0;j<32;j++) { inv.accessCardsOwned[j] = Utils.IntToAccessCardType(Utils.GetIntFromString(entries[index])); index++; }
-		for (j=0;j<14;j++) { inv.generalInventoryIndexRef[j] = Utils.GetIntFromString(entries[index]); index++; }
-		inv.generalInvCurrent = Utils.GetIntFromString(entries[index]); index++;
-		inv.generalInvIndex = Utils.GetIntFromString(entries[index]); index++;
+		for (j=0;j<14;j++) { inv.generalInventoryIndexRef[j] = Utils.GetIntFromString(entries[index],"generalInventoryIndexRef[" + j.ToString() + "]"); index++; }
+		inv.generalInvCurrent = Utils.GetIntFromString(entries[index],"generalInvCurrent"); index++;
+		inv.generalInvIndex = Utils.GetIntFromString(entries[index],"generalInvIndex"); index++;
+
+		for (int i=0; i<14; i++) {
+			if (i != 0) { // Active state of the Access Cards button is below.
+				if (inv.generalInventoryIndexRef[i] > -1) {
+					if (!inv.genButtons[i].activeInHierarchy) inv.genButtons[i].SetActive(true);
+				} else {
+					if (inv.genButtons[i].activeInHierarchy) inv.genButtons[i].SetActive(false);
+				}
+			}
+
+			if (inv.genButtons[i].activeInHierarchy) {
+				GeneralInvButton genbut = inv.genButtons[i].transform.GetComponent<GeneralInvButton>();
+				int referenceIndex = genbut.useableItemIndex;
+				if (referenceIndex > -1) {
+					if (i != 0) { // Access Cards text set in Awake the once.
+						inv.genButtonsText[i].text =
+							Const.a.useableItemsNameText[referenceIndex];
+					}
+				} else {
+					inv.genButtonsText[i].text = string.Empty;
+				}
+
+				if (i == inv.generalInvCurrent) {
+					inv.genButtonsText[i].color = Const.a.ssYellowText; // Yellow
+				} else {
+					inv.genButtonsText[i].color = Const.a.ssGreenText; // Green
+				}
+
+				// Enable Apply button for consumables.
+				if ((referenceIndex >= 14 && referenceIndex < 21) || referenceIndex == 52
+					|| referenceIndex == 53 || referenceIndex == 55) {
+					if (genbut.activateButton != null) {
+						genbut.activateButton.SetActive(true);
+					}
+				} else {
+					if (genbut.activateButton != null) {
+						genbut.activateButton.SetActive(false);
+					}
+				}
+			}
+		}
 		inv.currentCyberItem = Utils.GetIntFromString(entries[index]); index++;
 		inv.isPulserNotDrill = Utils.GetBoolFromString(entries[index]); index++;
 		for (j=0;j<7;j++) { inv.softVersions[j] = Utils.GetIntFromString(entries[index]); index++; }

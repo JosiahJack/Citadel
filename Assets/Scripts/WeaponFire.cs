@@ -293,7 +293,6 @@ public class WeaponFire : MonoBehaviour {
 
 		// Update the ammo icons.
 		int ind = WeaponCurrent.a.weaponIndex;
-		Debug.Log("ind at CompleteWeaponChange was: " + ind.ToString());
 		bool alt = false;
 		if (ind >= 0 && ind < 16) alt = Inventory.a.wepLoadedWithAlternate[ind];
 		WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(ind,alt);
