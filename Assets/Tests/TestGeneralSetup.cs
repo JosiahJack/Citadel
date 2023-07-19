@@ -952,6 +952,66 @@ namespace Tests {
                 }
             }
         }
+
+        [UnityTest]
+        public IEnumerator LogicRelaysSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "LogicRelay";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+			    LogicRelay leray = allGOs[i].GetComponent<LogicRelay>();
+			    if (leray == null) continue;
+
+				msg = "no target";
+                check = !string.IsNullOrWhiteSpace(leray.target);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+				msg = "no targetname";
+                TargetIO tio = allGOs[i].GetComponent<TargetIO>();
+                if (tio != null) {
+                    check = !string.IsNullOrWhiteSpace(tio.targetname);
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                }
+			}
+        }
+
+        [UnityTest]
+        public IEnumerator LogicTimersSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "LogicTimer";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+                LogicTimer limer = allGOs[i].GetComponent<LogicTimer>();
+                if (limer == null) continue;
+
+                if (string.IsNullOrWhiteSpace(limer.target)) { 
+                    UnityEngine.Debug.Log(script + " has no target on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
+                } else {
+                    float numtargetsfound = 0;
+                    for (int m=0;m<allGOs.Count;m++) {
+                        TargetIO tioTemp = allGOs[m].GetComponent<TargetIO>();
+                        if (tioTemp != null) {
+                            if (tioTemp.targetname == limer.target) numtargetsfound++;
+                        }
+                    }
+                    if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + limer.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
+                }
+			}
+        }
         // Utility Functions for messages and common checks
         // --------------------------------------------------------------------
 

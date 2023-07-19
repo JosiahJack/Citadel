@@ -420,8 +420,6 @@ public class Const : MonoBehaviour {
         }
     }
 
-
-
 	void Start() {
 		Config.LoadConfig();
 		layerMaskNPCSight = LayerMask.GetMask("Default","Geometry","Corpse",
