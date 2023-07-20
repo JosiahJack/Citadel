@@ -578,7 +578,9 @@ public class PlayerMovement : MonoBehaviour {
 			if (doubleJumpTicks < 0) doubleJumpTicks = 0;
 		}
 
-		if (GetInput.a.Jump()) {
+		if ((!gravliftState && GetInput.a.Jump())
+			|| gravliftState && GetInput.a.JumpDown()) {
+
 			if (!justJumped) {
 				if (grounded || gravliftState || Inventory.a.JumpJetsActive()) {
 					jumpTime = jumpImpulseTime;
