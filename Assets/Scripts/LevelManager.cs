@@ -100,29 +100,28 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public bool RessurectPlayer() {
-		if (ressurectionActive[currentLevel]) {
-			if (currentLevel == 10 ||currentLevel == 11 ||currentLevel == 12) {
-				LoadLevel(6,ressurectionLocation[currentLevel].gameObject,
-						  ressurectionLocation[currentLevel].position);
+		if (!ressurectionActive[currentLevel]) return false;
 
-				ressurectionBayDoor[6].ForceClose();
-			} else {
-				if (currentLevel <= 7 && currentLevel >= 0) {
-					ressurectionBayDoor[currentLevel].ForceClose();
-				}
+		if (currentLevel == 10 ||currentLevel == 11 ||currentLevel == 12) {
+			LoadLevel(6,ressurectionLocation[currentLevel].gameObject,
+						ressurectionLocation[currentLevel].position);
 
-				TeleportToRessurectionChamber();
+			ressurectionBayDoor[6].ForceClose();
+		} else {
+			if (currentLevel <= 7 && currentLevel >= 0) {
+				ressurectionBayDoor[currentLevel].ForceClose();
 			}
 
-			// Activate death screen and readouts for
-			// "BRAIN ACTIVITY SATISFACTORY..."            ya debatable right
-			// etc. etc.
-			PlayerReferenceManager.a.playerDeathRessurectEffect.SetActive(true);
-			Music.a.PlayTrack(currentLevel,TrackType.Revive,MusicType.Override);
-			PlayerMovement.a.ressurectingFinished = PauseScript.a.relativeTime + 3f;
-			return true;
+			TeleportToRessurectionChamber();
 		}
-		return false;
+
+		// Activate death screen and readouts for
+		// "BRAIN ACTIVITY SATISFACTORY..."            ya debatable right
+		// etc. etc.
+		PlayerReferenceManager.a.playerDeathRessurectEffect.SetActive(true);
+		Music.a.PlayTrack(currentLevel,TrackType.Revive,MusicType.Override);
+		PlayerMovement.a.ressurectingFinished = PauseScript.a.relativeTime + 3f;
+		return true;
 	}
 
 	// Make sure that unneeded objects are unloaded

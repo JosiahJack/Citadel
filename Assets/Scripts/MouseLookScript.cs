@@ -403,6 +403,8 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	void FrobEmptyHanded() {
+		if (holdingObject) return;
+
 		RaycastHit firstHit;
 		float offset = Screen.height * 0.02f;
 		cursorPoint = MouseCursor.a.GetCursorScreenPointForRay();

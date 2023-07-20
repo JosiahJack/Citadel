@@ -66,40 +66,6 @@ public class CitadelTests : MonoBehaviour {
 
 		// Run through all GameObjects and perform all tests
 		/*for (i=0;i<allGOs.Count;i++) {
-			script = "LogicRelay";
-			LogicRelay leray = allGOs[i].GetComponent<LogicRelay>();
-			if (leray != null) {
-				if (string.IsNullOrWhiteSpace(leray.target)) { 
-					UnityEngine.Debug.Log(script + " has no target on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
-				} else {
-					float numtargetsfound = 0;
-					for (int m=0;m<allGOs.Count;m++) {
-						TargetIO tioTemp = allGOs[m].GetComponent<TargetIO>();
-						if (tioTemp != null) {
-							if (tioTemp.targetname == leray.target) numtargetsfound++;
-						}
-					}
-					if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + leray.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
-				}
-			}
-
-			script = "LogicTimer";
-			LogicTimer limer = allGOs[i].GetComponent<LogicTimer>();
-			if (limer != null) {
-				if (string.IsNullOrWhiteSpace(limer.target)) { 
-					UnityEngine.Debug.Log(script + " has no target on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
-				} else {
-					float numtargetsfound = 0;
-					for (int m=0;m<allGOs.Count;m++) {
-						TargetIO tioTemp = allGOs[m].GetComponent<TargetIO>();
-						if (tioTemp != null) {
-							if (tioTemp.targetname == limer.target) numtargetsfound++;
-						}
-					}
-					if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + limer.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
-				}
-			}
-
 			script = "PuzzleGridPuzzle";
 			PuzzleGridPuzzle puzg = allGOs[i].GetComponent<PuzzleGridPuzzle>();
 			if (puzg != null) {
