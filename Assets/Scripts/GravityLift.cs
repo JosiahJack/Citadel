@@ -17,43 +17,53 @@ public class GravityLift : MonoBehaviour {
 		topPoint = new Vector3(0f,boxcol.bounds.max.y,0f);
 	}
 
-	void OnTriggerExit (Collider other) {
+	void OnTriggerExit(Collider other) {
 		if (other.gameObject.GetComponent<PlayerMovement>() != null) {
 			PlayerMovement.a.gravliftState = false;
 		}
 	}
 
-	void OnTriggerStay (Collider other) {
-		if (active) {
-			otherRbody = other.gameObject.GetComponent<Rigidbody>();
-			if (otherRbody == null) return;
+	void OnForce(Collider other) {
+		if (other.gameObject.GetComponent<PlayerMovement>() != null) {
+			PlayerMovement.a.gravliftState = true;
+		}
 
-			if (other.gameObject.GetComponent<PlayerMovement>() != null) {
-				PlayerMovement.a.gravliftState = true;
-			}
+		float topY = transform.position.y + (boxcol.size.y/2f);
+		float dist = topY - other.gameObject.transform.position.y + 0.48f;
+		float velY = otherRbody.velocity.y;
+		if (otherRbody.velocity.y < 0f) velY = 0f; // Saturate at bottom end.
 
-			float topY = transform.position.y + (boxcol.size.y/2f);
-			float dist = topY - other.gameObject.transform.position.y + 0.48f;
-			if (dist < distancePaddingToTopPoint) {
-				Vector3 force = new Vector3(0f,9.81f-otherRbody.velocity.y,0f);
-				otherRbody.AddForce(force,ForceMode.Acceleration);
-			} else {
-				if (otherRbody.velocity.y < (strength * otherRbody.mass)) {
-					float yForce = ((strength * otherRbody.mass)
-									- otherRbody.velocity.y);
-					otherRbody.AddForce(new Vector3(0f,yForce,0f));
-				}
-			}
+		if (dist < distancePaddingToTopPoint) {
+			Vector3 force = new Vector3(0f,9.81f - velY,0f);
+			otherRbody.AddForce(force,ForceMode.Acceleration);
 		} else {
-			// apply weak force for inactive state - applies some force for gentle descent, never really off completely
-			otherRbody = other.gameObject.GetComponent<Rigidbody>();
-			if (otherRbody != null) {
-				if (otherRbody.velocity.y < offStrengthFactor) {
-					float yForce = ((offStrengthFactor)-otherRbody.velocity.y);
-					otherRbody.AddForce(new Vector3(0f,yForce,0f));
-				}
+			if (otherRbody.velocity.y < (strength * otherRbody.mass)) {
+				float yForce = ((strength * otherRbody.mass)
+								- otherRbody.velocity.y);
+				otherRbody.AddForce(new Vector3(0f,yForce,0f));
 			}
 		}
+	}
+
+	void OffForce(Collider other) {
+		// Apply weak force for inactive state - applies some force for gentle
+		// descent, never really off completely.
+		if (other.gameObject.GetComponent<PlayerMovement>() != null) {
+			PlayerMovement.a.gravliftState = true;
+		}
+
+		if (otherRbody.velocity.y < offStrengthFactor) {
+			float yForce = ((offStrengthFactor)-otherRbody.velocity.y);
+			otherRbody.AddForce(new Vector3(0f,yForce,0f));
+		}
+	}
+
+	void OnTriggerStay(Collider other) {
+		otherRbody = other.gameObject.GetComponent<Rigidbody>();
+		if (otherRbody == null) return; // Not a physical object.
+
+		if (active) OnForce(other);
+		else OffForce(other);
 	}
 
 	public void Toggle() {
