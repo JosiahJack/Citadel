@@ -1298,6 +1298,7 @@ namespace Tests {
 			                     "fatigueDetailText");
 			                     
 			    MissingReference(script,allGOs[i],bio.fatigue,"fatigue");
+            }
         }
 
         [UnityTest]
