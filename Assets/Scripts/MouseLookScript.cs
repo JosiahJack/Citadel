@@ -93,6 +93,7 @@ public class MouseLookScript : MonoBehaviour {
 	private Transform playerCapsuleTransform;
 	private float returnFromCyberspaceFinished;
 	private float dropFinished;
+	private float randomShakeFinished;
 
 	public static MouseLookScript a;
 
@@ -126,6 +127,8 @@ public class MouseLookScript : MonoBehaviour {
 		// -> LeanTransform
         // -> -> MainCamera: MouseLookScript component.
 		playerCapsuleTransform = transform.parent.transform.parent.transform;
+
+		randomShakeFinished = PauseScript.a.relativeTime;
     }
 
 	void Update() {
@@ -161,6 +164,17 @@ public class MouseLookScript : MonoBehaviour {
 			Const.a.StartSave(7,qsavename);
 		}
 		if(GetInput.a.ToggleMode()) ToggleInventoryMode(); // Toggle inventory mode<->shoot mode
+
+		if (Const.a.questData.SelfDestructActivated
+			&& LevelManager.a.currentLevel != 13
+			&& LevelManager.a.currentLevel != 9) {
+
+			if (randomShakeFinished < PauseScript.a.relativeTime) {
+				randomShakeFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(10f,20f);
+				ScreenShake(3f);
+			}
+		}
+
 		RecoilAndRest(); // Spring Back to Rest from Recoil
 		keyboardTurnSpeed = 15f * Const.a.MouseSensitivity;
 		KeyboardTurn();
