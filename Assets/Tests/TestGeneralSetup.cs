@@ -1189,6 +1189,7 @@ namespace Tests {
             string msg = "RunBeforeAnyTests failed to populate allGOs: ";
             Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
 		    string script = "Trigger";
+		    bool check = true;
 
             // Run through all GameObjects and perform all tests
             for (int i=0;i<allGOs.Count;i++) {
@@ -1201,6 +1202,102 @@ namespace Tests {
 
                 MissingComponent(script,allGOs[i],typeof(TargetIO));
 			}
+        }
+        
+        [UnityTest]
+        public IEnumerator TriggerCountersSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "TriggerCounter";
+		    bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+			    TriggerCounter trigc = allGOs[i].GetComponent<TriggerCounter>();
+		    	if (trigc == null) continue;
+		    	
+				msg = "no target";
+                check = !string.IsNullOrWhiteSpace(trigc.target);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+                
+                msg = "count not set, was " +trigc.countToTrigger.ToString();
+                check = trigc.countToTrigger > 1;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+			}
+        }
+        
+        [UnityTest]
+        public IEnumerator MeshRenderersSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+            bool check = true;
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "MeshRenderer";
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+		    	MeshRenderer mrend = allGOs[i].GetComponent<MeshRenderer>();
+		    	if (mrend == null) continue;
+			
+				msg = "has 0 materials";
+                check = (mrend.sharedMaterials.Length >= 1);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+				if (mrend.sharedMaterials.Length > 0) {
+					for (int j=0; j < mrend.sharedMaterials.Length;j++) {
+					    msg = "has missing material " + j.ToString();
+                        check = (mrend.sharedMaterials[j] != null);
+                        Assert.That(check,FailMessage(script,allGOs[i],msg));
+					}
+				}
+			}
+        }
+        
+        [UnityTest]
+        public IEnumerator BioMonitorSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "BioMonitor";
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+		    	BioMonitor bio = allGOs[i].GetComponent<BioMonitor>();
+		    	if (bio == null) continue;
+			
+			    MissingReference(script,allGOs[i],bio.heartRate,"heartRate");
+			    
+			    MissingReference(script,allGOs[i],bio.patchEffects,
+			                     "patchEffects");
+			                     
+			    MissingReference(script,allGOs[i],bio.heartRateText,
+			                     "heartRateText");
+			                     
+			    MissingReference(script,allGOs[i],bio.header,"header");
+			    
+			    MissingReference(script,allGOs[i],bio.patchesActiveText,
+			                     "patchesActiveText");
+			                     
+			    MissingReference(script,allGOs[i],bio.bpmText,"bpmText");
+			    
+			    MissingReference(script,allGOs[i],bio.heartRate,"heartRate");
+			    
+			    MissingReference(script,allGOs[i],bio.fatigueDetailText,
+			                     "fatigueDetailText");
+			                     
+			    MissingReference(script,allGOs[i],bio.fatigue,"fatigue");
         }
 
         [UnityTest]
