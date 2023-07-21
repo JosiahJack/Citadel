@@ -172,6 +172,7 @@ public class MouseLookScript : MonoBehaviour {
 			if (randomShakeFinished < PauseScript.a.relativeTime) {
 				randomShakeFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(10f,20f);
 				ScreenShake(3f);
+				Utils.PlayOneShotSavable(SFXSource,104); // klaxon
 			}
 		}
 

@@ -7,6 +7,8 @@ public class LogicRelay : MonoBehaviour {
 	public bool thisTioOverridesSender = true;
 	public float delay = 0f;
 	public bool relayEnabled = true; // save
+	public bool onceEver = false; // save
+	[HideInInspector] public bool alreadyDone = false; // save
 	private UseData tempUd;
 
 	public void Targetted (UseData ud) {
@@ -30,6 +32,8 @@ public class LogicRelay : MonoBehaviour {
 			return; // no target, do nothing
 		}
 
+		if (onceEver && alreadyDone) return;
+
 		ud.argvalue = argvalue;
 		if (thisTioOverridesSender) {
 			TargetIO tio = GetComponent<TargetIO>();
@@ -40,6 +44,7 @@ public class LogicRelay : MonoBehaviour {
 			}
 		}
 		Const.a.UseTargets(ud,target);
+		if (onceEver) alreadyDone = true;
 	}
 
 	// This is only here because I added this functionality to trigger_relay in
@@ -58,7 +63,14 @@ public class LogicRelay : MonoBehaviour {
 		}
 
 		string line = System.String.Empty;
-		line = Utils.BoolToString(lr.relayEnabled); // bool - is this enabled, Sherlock?
+		line = Utils.SaveString(lr.target,"target");
+		line += Utils.splitChar + Utils.SaveString(lr.argvalue,"argvalue");
+		line += Utils.splitChar + Utils.BoolToString(lr.relayEnabled,
+													 "relayEnabled");
+
+		line += Utils.splitChar + Utils.BoolToString(lr.onceEver,"onceEver");
+		line += Utils.splitChar + Utils.BoolToString(lr.alreadyDone,
+													 "alreadyDone");
 		return line;
 	}
 
@@ -79,7 +91,20 @@ public class LogicRelay : MonoBehaviour {
 			return index + 1;
 		}
 
-		lr.relayEnabled = Utils.GetBoolFromString(entries[index]); index++; // bool - is this enabled
+		lr.target = Utils.LoadString(entries[index],"target");
+		index++;
+
+		lr.argvalue = Utils.LoadString(entries[index],"argvalue");
+		index++;
+
+		lr.relayEnabled = Utils.GetBoolFromString(entries[index],"relayEnabled");
+		index++;
+
+		lr.onceEver = Utils.GetBoolFromString(entries[index],"onceEver");
+		index++;
+
+		lr.alreadyDone = Utils.GetBoolFromString(entries[index],"alreadyDone");
+		index++;
 		return index;
 	}
 }
