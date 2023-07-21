@@ -104,9 +104,18 @@ public class InteractablePanel : MonoBehaviour {
 			line += Utils.splitChar + Utils.SaveSubActivatedGOState(ip.effects[i]);
 		}
 
-		DelayedSpawn despawner = ip.installationItem.GetComponent<DelayedSpawn>();
-		if (despawner != null) { // plastique
-			line += Utils.splitChar + DelayedSpawn.Save(ip.installationItem);
+		if (ip.installationItem != null) {
+			DelayedSpawn despawner = ip.installationItem.GetComponent<DelayedSpawn>();
+			if (despawner != null) { // plastique
+				line += Utils.splitChar + DelayedSpawn.Save(ip.installationItem);
+				Transform childTr = ip.installationItem.transform.GetChild(0);
+				if (childTr != null) {
+					DelayedSpawn despawner2 = childTr.gameObject.GetComponent<DelayedSpawn>();
+					if (despawner2 != null) { // plastique
+						line += Utils.splitChar + DelayedSpawn.Save(childTr.gameObject);
+					}
+				}
+			}
 		}
 
 		return line;
@@ -136,9 +145,18 @@ public class InteractablePanel : MonoBehaviour {
 			index = Utils.LoadSubActivatedGOState(ip.effects[i],ref entries,index);
 		}
 
-		DelayedSpawn despawner = ip.installationItem.GetComponent<DelayedSpawn>();
-		if (despawner != null) { // plastique
-			index = DelayedSpawn.Load(ip.installationItem,ref entries,index);
+		if (ip.installationItem != null) {
+			DelayedSpawn despawner = ip.installationItem.GetComponent<DelayedSpawn>();
+			if (despawner != null) { // plastique
+				index = DelayedSpawn.Load(ip.installationItem,ref entries,index);
+				Transform childTr = ip.installationItem.transform.GetChild(0);
+				if (childTr != null) {
+					DelayedSpawn despawner2 = childTr.gameObject.GetComponent<DelayedSpawn>();
+					if (despawner2 != null) { // plastique
+						index = DelayedSpawn.Load(childTr.gameObject,ref entries,index);
+					}
+				}
+			}
 		}
 
 		return index;
