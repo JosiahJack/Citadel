@@ -66,57 +66,6 @@ public class CitadelTests : MonoBehaviour {
 
 		// Run through all GameObjects and perform all tests
 		/*for (i=0;i<allGOs.Count;i++) {
-			script = "PuzzleGridPuzzle";
-			PuzzleGridPuzzle puzg = allGOs[i].GetComponent<PuzzleGridPuzzle>();
-			if (puzg != null) {
-				if (string.IsNullOrWhiteSpace(puzg.target)) { 
-					UnityEngine.Debug.Log(script + " has no target on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
-				} else {
-					float numtargetsfound = 0;
-					for (int m=0;m<allGOs.Count;m++) {
-						TargetIO tioTemp = allGOs[m].GetComponent<TargetIO>();
-						if (tioTemp != null) {
-							if (tioTemp.targetname == puzg.target) numtargetsfound++;
-						}
-					}
-					if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + puzg.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
-				}
-			}
-
-			script = "PuzzleWirePuzzle";
-			PuzzleWirePuzzle puzw = allGOs[i].GetComponent<PuzzleWirePuzzle>();
-			if (puzw != null) {
-				if (string.IsNullOrWhiteSpace(puzw.target)) { 
-					UnityEngine.Debug.Log(script + " has no target on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
-				} else {
-					float numtargetsfound = 0;
-					for (int m=0;m<allGOs.Count;m++) {
-						TargetIO tioTemp = allGOs[m].GetComponent<TargetIO>();
-						if (tioTemp != null) {
-							if (tioTemp.targetname == puzw.target) numtargetsfound++;
-						}
-					}
-					if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + puzw.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
-				}
-			}
-
-			script = "QuestBitRelay";
-			QuestBitRelay qbr = allGOs[i].GetComponent<QuestBitRelay>();
-			if (qbr != null) {
-				if (string.IsNullOrWhiteSpace(qbr.target)) { 
-					//UnityEngine.Debug.Log(script + " has no target on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name);
-				} else {
-					float numtargetsfound = 0;
-					for (int m=0;m<allGOs.Count;m++) {
-						TargetIO tioTemp = allGOs[m].GetComponent<TargetIO>();
-						if (tioTemp != null) {
-							if (tioTemp.targetname == qbr.target) numtargetsfound++;
-						}
-					}
-					if (numtargetsfound < 1) { UnityEngine.Debug.Log(script + " has no matching targets for " + qbr.target + " on " + allGOs[i].name + " with parent of " + allGOs[i].transform.parent.name); }
-				}
-			}
-
 			script = "Trigger";
 			Trigger trig = allGOs[i].GetComponent<Trigger>();
 			if (trig != null) {

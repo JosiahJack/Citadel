@@ -1005,14 +1005,179 @@ namespace Tests {
                 Assert.That(check,FailMessage(script,allGOs[i],msg));
 
                 MissingComponent(script,allGOs[i],typeof(TargetIO));
+                if (!limer.active) {
+                    msg = "no targetname for inactive timer";
+                    TargetIO tio = allGOs[i].GetComponent<TargetIO>();
+                    if (tio != null) {
+                        check = !string.IsNullOrWhiteSpace(tio.targetname);
+                        Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    }
+                }
 
-				msg = "no targetname";
-                TargetIO tio = allGOs[i].GetComponent<TargetIO>();
-                if (tio != null) {
-                    check = !string.IsNullOrWhiteSpace(tio.targetname);
+ 				msg = "no timer value";
+                check = limer.timeInterval > 0f;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                if (limer.useRandomTimes) {
+                    msg = "randomMin is not less than randomMax";
+                    check = limer.randomMin < limer.randomMax;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                    msg = "randomMin is negative";
+                    check = limer.randomMin >= 0f;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                    msg = "randomMax is zero or negative";
+                    check = limer.randomMax > 0f;
                     Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
 			}
+        }
+
+        [UnityTest]
+        public IEnumerator PuzzleGridPuzzlesSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "PuzzleGridPuzzle";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+			PuzzleGridPuzzle puzg = allGOs[i].GetComponent<PuzzleGridPuzzle>();
+			    if (puzg == null) continue;
+
+                msg = "no target";
+                check = !string.IsNullOrWhiteSpace(puzg.target);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+
+                msg = "no grid[]";
+                check = puzg.grid.Length > 0;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "no cellType[]";
+                check = puzg.cellType.Length > 0;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "puzzle solved before game start";
+                check = !puzg.puzzleSolved;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+			}
+        }
+
+        [UnityTest]
+        public IEnumerator PuzzleWirePuzzlesSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "PuzzleWirePuzzle";
+            bool check = true;
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+			PuzzleWirePuzzle puzw = allGOs[i].GetComponent<PuzzleWirePuzzle>();
+			    if (puzw == null) continue;
+
+                msg = "no target";
+                check = !string.IsNullOrWhiteSpace(puzw.target);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+
+                msg = "no wiresOn[]";
+                check = puzw.wiresOn.Length > 0;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "no rowsActive[]";
+                check = puzw.rowsActive.Length > 0;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "no currentPositionsLeft[]";
+                check = puzw.currentPositionsLeft.Length > 0;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "no currentPositionsRight[]";
+                check = puzw.currentPositionsRight.Length > 0;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "no solutionPositionsLeft[]";
+                check = puzw.solutionPositionsLeft.Length > 0;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "no solutionPositionsRight[]";
+                check = puzw.solutionPositionsRight.Length > 0;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                int k = 0;
+                int j = 0;
+
+                // Check that wires aren't shared for left side:
+                for (k=0;k<puzw.currentPositionsLeft.Length;k++) {
+                    for (j=0;j<puzw.currentPositionsLeft.Length;j++) {
+                        if (k == j) continue;
+                        if (!puzw.wiresOn[k] || !puzw.wiresOn[j]) continue;
+
+                        msg = "puzzle left position " + k.ToString()
+                              + " shared with position " + j.ToString();
+
+                        check = puzw.currentPositionsLeft[k]
+                                != puzw.currentPositionsLeft[j];
+
+                        Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    }
+                }
+
+                // Check that wires aren't shared for right side:
+                for (k=0;k<puzw.currentPositionsRight.Length;k++) {
+                    for (j=0;j<puzw.currentPositionsRight.Length;j++) {
+                        if (k == j) continue;
+                        if (!puzw.wiresOn[k] || !puzw.wiresOn[j]) continue;
+
+                        msg = "puzzle left position " + k.ToString()
+                              + " shared with position " + j.ToString();
+
+                        check = puzw.currentPositionsRight[k]
+                                != puzw.currentPositionsRight[j];
+
+                        Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    }
+                }
+
+                msg = "puzzle solved before game start";
+                check = !puzw.puzzleSolved;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                msg = "puzzle in use before game start";
+                check = !puzw.inUse;
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+			}
+        }
+
+        [UnityTest]
+        public IEnumerator QuestBitRelaysSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "QuestBitRelay";
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+			    QuestBitRelay qbr = allGOs[i].GetComponent<QuestBitRelay>();
+			    if (qbr == null) continue;
+
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+            }
         }
 
         [UnityTest]
@@ -1023,18 +1188,17 @@ namespace Tests {
 
             string msg = "RunBeforeAnyTests failed to populate allGOs: ";
             Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
-		    string script = "LogicTimer";
-            bool check = true;
 
             // Run through all GameObjects and perform all tests
-            for (int i=0;i<allGOs.Count;i++) {
-                TargetIO tio = allGOs[i].GetComponent<TargetIO>();
-                if (tio == null) continue;
+            //for (int i=0;i<allGOs.Count;i++) {
+            //    TargetIO tio = allGOs[i].GetComponent<TargetIO>();
+            //    if (tio == null) continue;
 
- 				if (tio.radiationTreatment) {
-                    UnityEngine.Debug.Log(allGOs[i].name + " radiation treatment");
-                }
-			}
+ 			//	if (tio.radiationTreatment) {
+            //        UnityEngine.Debug.Log(allGOs[i].name
+            //                              + " radiation treatment");
+            //    }
+			//}
         }
 
         // Utility Functions for messages and common checks
