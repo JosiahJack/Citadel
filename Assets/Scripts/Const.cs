@@ -153,6 +153,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int layerMaskNPCAttack;
 	[HideInInspector] public int layerMaskNPCCollision;
 	[HideInInspector] public int layerMaskPlayerFeet;
+	[HideInInspector] public int layerMaskExplosion;
 
 	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
@@ -457,6 +458,13 @@ public class Const : MonoBehaviour {
 												  "Bullets","Corpse","Door",
 												  "InterDebris","PhysObjects",
 												  "Player2","Player3","Player4");
+			
+		layerMaskExplosion = LayerMask.GetMask("Default","Geometry","NPC",
+												  "Bullets","Corpse","Door",
+												  "InterDebris","PhysObjects",
+												  "Player2","Player3","Player4",
+											  	  "Player");
+			
 
 		layerMaskPlayerFeet = LayerMask.GetMask("Default","Geometry");
 
