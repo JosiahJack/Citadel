@@ -1179,6 +1179,29 @@ namespace Tests {
                 MissingComponent(script,allGOs[i],typeof(TargetIO));
             }
         }
+        
+        [UnityTest]
+        public IEnumerator TriggersSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+		    string script = "Trigger";
+
+            // Run through all GameObjects and perform all tests
+            for (int i=0;i<allGOs.Count;i++) {
+			    Trigger trig = allGOs[i].GetComponent<Trigger>();
+			    if (trig == null) continue;
+			    
+				msg = "no target";
+                check = !string.IsNullOrWhiteSpace(trig.target);
+                Assert.That(check,FailMessage(script,allGOs[i],msg));
+
+                MissingComponent(script,allGOs[i],typeof(TargetIO));
+			}
+        }
 
         [UnityTest]
         public IEnumerator DiagnosticReport() {
