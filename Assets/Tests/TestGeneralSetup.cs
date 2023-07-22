@@ -316,6 +316,12 @@ namespace Tests {
                         Assert.That(check,FailMessage(script,allGOs[i],msg));
                     }
                 }
+
+                if (aic.searchColliderGO != null) {
+                    msg = "search layer not Corpse";
+                    check = aic.searchColliderGO.layer == 13; // Corpse
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                }
             }
         }
 

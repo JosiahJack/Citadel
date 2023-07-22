@@ -1277,10 +1277,7 @@ public class AIController : MonoBehaviour {
 		if (deadChecksDone) return;
 
 		currentState = AIState.Dead;
-		//Utils.DisableCollision(gameObject);
-		gameObject.layer = 15; // Sky layer only collides with Geometry. This
-							   // prevents the NPC falling out of the world.
-
+		gameObject.layer = 13; // Corpse layer
 		if (searchColliderGO != null && (!healthManager.gibOnDeath
 											|| index == 2)) { // Avian Mutant
 			searchColliderGO.SetActive(true);
