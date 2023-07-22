@@ -19,7 +19,7 @@ jobs:
           ./build_unittest_docker.sh
       - uses: actions/cache@v3
         with:
-          path: /github/workspace/Library
+          path: Library
           key: Library-Citadel
           restore-keys: |
             Library-
@@ -30,7 +30,6 @@ jobs:
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           customImage: josiahjack/citadel-ci:ubuntu-2019.4.35f1-linux-il2cpp-1
-          projectPath: /github/workspace
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
         if: always()
