@@ -780,7 +780,7 @@ public class HealthManager : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(hm.teleportDone,"teleportDone"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveString(hm.targetOnDeath,"targetOnDeath");)
+		s1.Append(Utils.SaveString(hm.targetOnDeath,"targetOnDeath"));
 		if (!string.IsNullOrWhiteSpace(hm.targetOnDeath)) {
 		    s1.Append(Utils.splitChar);
 		    s1.Append(TargetIO.Save(go));
