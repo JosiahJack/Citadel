@@ -766,6 +766,8 @@ public class HealthManager : MonoBehaviour {
 		if (!hm.startInitialized) hm.Start();
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
+		s1.Append(Utils.UintToString(hm.levelIndex,"levelIndex"));
+		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(hm.health,"health"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(hm.cyberHealth,"cyberHealth"));
@@ -838,6 +840,9 @@ public class HealthManager : MonoBehaviour {
 			return index + 7;
 		}
 
+        hm.levelIndex = Utils.GetIntFromString(entries[index],"levelIndex");
+        index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+        
 		if (!hm.awakeInitialized) hm.Awake();
 		if (!hm.startInitialized) hm.Start();
 		hm.health = Utils.GetFloatFromString(entries[index],"health");
