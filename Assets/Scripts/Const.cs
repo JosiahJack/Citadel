@@ -1786,11 +1786,11 @@ public class Const : MonoBehaviour {
 
 		if (effectIsWorldwide) {
 			// The whole station is a shakin' and a movin'!
-			MouseLookScript.a.ScreenShake(force);
+			MouseLookScript.a.ScreenShake(force,1f);
 		} else {
 			// check if player is close enough and shake em' up!
 			if (Vector3.Distance(transform.position,player1Capsule.transform.position) < distance) {
-				MouseLookScript.a.ScreenShake(force);
+				MouseLookScript.a.ScreenShake(force,1f);
 			}
 		}
 	}

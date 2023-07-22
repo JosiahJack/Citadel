@@ -171,8 +171,10 @@ public class MouseLookScript : MonoBehaviour {
 
 			if (randomShakeFinished < PauseScript.a.relativeTime) {
 				randomShakeFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(10f,20f);
-				ScreenShake(3f);
-				Utils.PlayOneShotSavable(SFXSource,104); // klaxon
+				ScreenShake(3f,2f);
+				if (UnityEngine.Random.Range(0f,1f) < 0.5f) {
+					Utils.PlayOneShotSavable(SFXSource,104); // klaxon
+				}
 			}
 		}
 
@@ -1163,8 +1165,8 @@ public class MouseLookScript : MonoBehaviour {
 		PutObjectInHand(index,-1,0,0,false,true);
 	}
 
-	public void ScreenShake (float force) {
-		shakeFinished = PauseScript.a.relativeTime + 1f;
+	public void ScreenShake (float force, float duration) {
+		shakeFinished = PauseScript.a.relativeTime + duration;
 		if (force < 0.48f) shakeForce = force;
 		else shakeForce = 0.48f;
 	}
