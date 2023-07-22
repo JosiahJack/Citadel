@@ -780,7 +780,15 @@ public class HealthManager : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(hm.teleportDone,"teleportDone"));
 		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(hm.targetOnDeath,"targetOnDeath");)
+		if (!string.IsNullOrWhiteSpace(hm.targetOnDeath)) {
+		    s1.Append(Utils.splitChar);
+		    s1.Append(TargetIO.Save(go));
+		}
+		
+		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(hm.gibObjects.Length,"gibObjects.Length"));
+
 		for (int i=0;i<hm.gibObjects.Length; i++) {
 			s1.Append(Utils.splitChar);
 			s1.Append(Utils.SaveSubActivatedGOState(hm.gibObjects[i]));
@@ -865,7 +873,16 @@ public class HealthManager : MonoBehaviour {
 												  "teleportDone");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
+		
+        hm.targetOnDeath = Utils.LoadString(entries[index],"targetOnDeath");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
+		if (!string.IsNullOrWhiteSpace(hm.targetOnDeath)) {
+		    index = TargetIO.Load(go,ref entries,index,true);
+		    SaveObject.currentSaveEntriesIndex = index.ToString();
+	    	if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
+		}
+		
 		hm.AwakeFromLoad();
 
 		int numChildren = hm.gibObjects.Length;
