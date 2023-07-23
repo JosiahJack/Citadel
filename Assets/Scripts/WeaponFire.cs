@@ -1095,7 +1095,7 @@ public class WeaponFire : MonoBehaviour {
         damageData.owner = playerCapsule;
 		damageData.impactVelocity = 1f;
 		if (wep16Index == 12) {
-			damageData.impactVelocity = 150f;
+			damageData.impactVelocity = 300f;
 			if (hm != null) {
 				if (hm.isObject) damageData.damage *= 10f; // babamm boxes be like, u ded
 			}
@@ -1108,7 +1108,6 @@ public class WeaponFire : MonoBehaviour {
         if (hm != null && hm.health > 0 && !dartTranq) {
 			dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
 			damageData.impactVelocity += (damageData.damage * 0.5f);
-			if (wep16Index == 12) damageData.impactVelocity *= 10f;
 			if (!damageData.isOtherNPC || wep16Index == 12) {
 				Utils.ApplyImpactForce(hitGO,damageData.impactVelocity,
 									   damageData.attacknormal,
