@@ -47,7 +47,7 @@ namespace Tests {
             lev.CyborgConversionToggleForCurrentLevel();
             check = lev.ressurectionActive[6] != prev
                     && lev.ressurectionActive[6]
-                    && lev.ressurectionActive[10
+                    && lev.ressurectionActive[10]
                     && lev.ressurectionActive[11]
                     && lev.ressurectionActive[12];
             msg = "Executive and Groves cyborg conversion failed to activate";
@@ -57,7 +57,7 @@ namespace Tests {
             lev.CyborgConversionToggleForCurrentLevel();
             check = lev.ressurectionActive[12] != prev
                     && !lev.ressurectionActive[6]
-                    && !lev.ressurectionActive[10
+                    && !lev.ressurectionActive[10]
                     && !lev.ressurectionActive[11]
                     && !lev.ressurectionActive[12];
             msg = "Executive and Groves cyborg conversion failed to deactivate";
