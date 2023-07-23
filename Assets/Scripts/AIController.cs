@@ -1421,15 +1421,14 @@ public class AIController : MonoBehaviour {
 
 		tempVec = Const.a.player1Capsule.transform.position;
 
-		// Get vector line made from enemy to found player
-		Vector3 checkline = tempVec - sightPoint.transform.position;
-
 		// Get distance between enemy and found player
 		float dist = Vector3.Distance(tempVec,sightPoint.transform.position);
 
 		// Don't waste time raycasting if we won't be able to see them anyway.
 		if (dist > Const.a.sightRangeForNPC[index]) return false;
 
+		// Get vector line made from enemy to found player
+		Vector3 checkline = tempVec - sightPoint.transform.position;
 		float angle = Vector3.Angle(checkline,sightPoint.transform.forward);
 		if (angle < (Const.a.fovForNPC[index] * 0.5f)) {
 			// Check for line of sight
@@ -1441,12 +1440,12 @@ public class AIController : MonoBehaviour {
 								(dist + 0.1f),Const.a.layerMaskNPCSight)) {
 				Const.a.numberOfRaycastsThisFrame++;
 				if (tempHit.collider.gameObject == Const.a.player1Capsule) {
-					//if (IsCyberNPC()) {
-					//	Debug.Log("Drawing ray from " + sightPoint.transform.position.ToString());
-					//	Debug.DrawRay(sightPoint.transform.position,
-					//				  checkline.normalized * 5f,Color.green,1f,
-					//				  true);
-					//}
+					if (IsCyberNPC()) {
+						Debug.Log("Drawing ray from " + sightPoint.transform.position.ToString());
+						Debug.DrawRay(sightPoint.transform.position,
+									  checkline.normalized * 5f,Color.green,1f,
+									  true);
+					}
 					LOSpossible = true;  // Clear path from enemy to found player
 					SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
 					PlaySightSound();

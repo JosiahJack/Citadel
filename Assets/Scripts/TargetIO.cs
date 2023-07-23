@@ -64,8 +64,11 @@ public class TargetIO : MonoBehaviour {
 	public bool alreadyDisabledThisGOOnceEver = false;
 
 	private UseData tempUD;
+	private bool startInitialized = false;
 
-	void Start() {
+	public void Start() {
+		if (startInitialized) return;
+
 		if (!string.IsNullOrWhiteSpace(targetname)) {
 			RegisterToConst();
 			if (disableThisGOOnAwake && !alreadyDisabledThisGOOnceEver) {
@@ -83,6 +86,7 @@ public class TargetIO : MonoBehaviour {
 								  + "TargetIO.cs");
 					}
 				}
+				Debug.Log("Set GO to inactive on Start()");
 				this.gameObject.SetActive(false);
 			}
 		} else {
@@ -91,6 +95,7 @@ public class TargetIO : MonoBehaviour {
 						  + "TargetIO.cs attached but no valid targetname!");
 			}
 		}
+		startInitialized = true;
 	}
 
 	public void RegisterToConst() {
@@ -510,6 +515,9 @@ public class TargetIO : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(tio.alreadyDisabledThisGOOnceEver,
 									 "alreadyDisabledThisGOOnceEver"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(tio.gameObject.activeInHierarchy,
+									 "gameObject.activeInHierarchy"));
 		return s1.ToString();
 	}
 
@@ -757,10 +765,14 @@ public class TargetIO : MonoBehaviour {
 		tio.alreadyDisabledThisGOOnceEver =
 			Utils.GetBoolFromString(entries[index],
 								    "alreadyDisabledThisGOOnceEver");
-
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
-		if (instantiated) tio.RegisterToConst();
+		bool wasActive = Utils.GetBoolFromString(entries[index],
+											   "gameObject.activeInHierarchy");
+
+		tio.Start();
+		if (wasActive) Utils.Activate(tio.gameObject);
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 		return index;
 	}
 }
