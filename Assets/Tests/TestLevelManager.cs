@@ -25,13 +25,13 @@ namespace Tests {
             Const.a = con;
             GameObject camGO = new GameObject();
             Const.a.player1CapsuleMainCameragGO = camGO;
-            Camera cam = camGO.AddCompenent<Camera>();
+            Camera cam = camGO.AddComponent<Camera>();
             cam.useOcclusionCulling = true;
             lev.currentLevel = -1; // Test area
             lev.Awake();
             
             bool check = cam.useOcclusionCulling == false;
-            string msg = "Wrong camera culling settin for test area";
+            string msg = "Wrong camera culling setting for test area";
             Assert.That(check,msg);
         }
     }
