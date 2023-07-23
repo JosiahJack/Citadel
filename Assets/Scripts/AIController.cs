@@ -741,6 +741,10 @@ public class AIController : MonoBehaviour {
 			} else if (diff >= 3) { // Good memory on hard.
 				huntFinished += (Const.a.huntTimeForNPC[index] * 2.00f); 
 			}
+			
+			if (index == 28) { // SHODAN
+			    huntFinished += (Const.a.huntTimeForNPC[index] * 9999f); 
+			}
 
 			near = Const.a.rangeForNPC[index]  * Const.a.rangeForNPC[index];
 			mid  = Const.a.rangeForNPC2[index] * Const.a.rangeForNPC2[index];
@@ -1313,7 +1317,7 @@ public class AIController : MonoBehaviour {
 	bool CheckIfEnemyInSight() {
 	    int diff = Const.a.difficultyCombat;
 		if (IsCyberNPC()) diff = Consf.a.difficultyCyber;
-        if (diff == 0) return false;
+        if (diff == 0 && index != 28) return false;
         
 		if (PlayerMovement.a.Notarget) {
 			enemy = null; // Force forget when using Notarget cheat.
@@ -1354,7 +1358,7 @@ public class AIController : MonoBehaviour {
 	bool CheckIfPlayerInSight() {
 	    int diff = Const.a.difficultyCombat;
 		if (IsCyberNPC()) diff = Consf.a.difficultyCyber;
-        if (diff == 0) return false;
+        if (diff == 0 && index != 28) return false;
 		if (enemy != null) return CheckIfEnemyInSight();
 
 		LOSpossible = false; // Reset line of sight value. Doing this after 
