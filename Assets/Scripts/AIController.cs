@@ -734,9 +734,11 @@ public class AIController : MonoBehaviour {
 
 			shotFired = false;
 			huntFinished = PauseScript.a.relativeTime;
-			if (Const.a.difficultyCombat <= 1) { // More forgetful on easy.
+			int diff = Const.a.difficultyCombat;
+			if (IsCyberNPC()) diff = Consf.a.difficultyCyber;
+			if (diff <= 1) { // More forgetful on easy.
 				huntFinished += (Const.a.huntTimeForNPC[index] * 0.75f);
-			} else if (Const.a.difficultyCombat >= 3) { // Good memory on hard.
+			} else if (diff >= 3) { // Good memory on hard.
 				huntFinished += (Const.a.huntTimeForNPC[index] * 2.00f); 
 			}
 
@@ -1309,7 +1311,10 @@ public class AIController : MonoBehaviour {
 	}
 
 	bool CheckIfEnemyInSight() {
-        if (Const.a.difficultyCombat == 0) return false;
+	    int diff = Const.a.difficultyCombat;
+		if (IsCyberNPC()) diff = Consf.a.difficultyCyber;
+        if (diff == 0) return false;
+        
 		if (PlayerMovement.a.Notarget) {
 			enemy = null; // Force forget when using Notarget cheat.
 			LOSpossible = false;
@@ -1347,7 +1352,9 @@ public class AIController : MonoBehaviour {
 	}
 
 	bool CheckIfPlayerInSight() {
-        if (Const.a.difficultyCombat == 0) return false;
+	    int diff = Const.a.difficultyCombat;
+		if (IsCyberNPC()) diff = Consf.a.difficultyCyber;
+        if (diff == 0) return false;
 		if (enemy != null) return CheckIfEnemyInSight();
 
 		LOSpossible = false; // Reset line of sight value. Doing this after 
