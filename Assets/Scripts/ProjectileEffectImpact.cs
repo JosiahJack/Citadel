@@ -70,6 +70,10 @@ public class ProjectileEffectImpact : MonoBehaviour {
 				}
 
 				dd.impactVelocity = dd.damage * 1.5f;
+				if (numHits > 0) {
+				    dd.impactVelocity = dd.impactVelocity / 3f;
+				}
+				
 				if (!hm.inCyberSpace && !host.CompareTag("NPC")) {
 					Utils.ApplyImpactForce(other.gameObject,
 											dd.impactVelocity,
