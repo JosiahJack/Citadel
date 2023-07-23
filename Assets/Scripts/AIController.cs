@@ -360,9 +360,6 @@ public class AIController : MonoBehaviour {
 					&& Inventory.a.hasHardware[1]
 					&& Inventory.a.NavUnitVersion() > 1) {
 
-					//Utils.EnableImage(healthManager.linkedOverlay);
-					//tempVec2 = Automap.a.GetMapPos(transform.position);
-					//healthManager.linkedOverlay.rectTransform.localPosition = tempVec2;
 					healthManager.UpdateLinkedOverlay();
 				} else {
 					Utils.DisableImage(healthManager.linkedOverlay);
@@ -458,7 +455,10 @@ public class AIController : MonoBehaviour {
 			}
 			float distT = (distUp + distDn);
 			float yHeight = Const.a.flightHeightForNPC[index];
-			if (Const.a.flightHeightIsPercentageForNPC[index]) yHeight *= distT;
+			if (Const.a.flightHeightIsPercentageForNPC[index]) {
+				yHeight *= distT;
+			}
+
 			idealPos = floorPoint + new Vector3(0,yHeight, 0);
 		}
 
@@ -707,8 +707,8 @@ public class AIController : MonoBehaviour {
 	void RunMove() {
 		if (actAsTurret) return;
 
-		tempVec = (sightPoint.transform.forward * Const.a.runSpeedForNPC[index]);
-		if (rbody.useGravity) tempVec.y = rbody.velocity.y; // Preserve gravity.
+		tempVec = sightPoint.transform.forward * Const.a.runSpeedForNPC[index];
+		if (rbody.useGravity) tempVec.y = rbody.velocity.y; // Keep gravity.
 		rbody.velocity = tempVec;
 	}
 
@@ -765,7 +765,7 @@ public class AIController : MonoBehaviour {
 				&& (rangeToEnemy > (stopDistance * stopDistance))) {
 				if (WithinAngleToTarget()) {
 					if (Const.a.hopsOnMoveForNPC[index]) HopMove();
-					else                                 RunMove(); // <<<<<
+					else                                 RunMove(); // <<<<<RUN
 				}
 				
 			}
@@ -775,8 +775,7 @@ public class AIController : MonoBehaviour {
             } else {
                 enemy = null;
 				enemyHM = null;
-				wandering = true; // Magically look like we are still searching
-								  // maybe?  Sometimes!
+				wandering = true; // Sometimes look like we are still searching
 				wanderFinished = PauseScript.a.relativeTime - 1f;
                 currentState = AIState.Walk;
                 return;
@@ -793,66 +792,93 @@ public class AIController : MonoBehaviour {
 		}
 
 		// Destination is still far enough away and within angle, then move.
-		if ((Const.a.moveTypeForNPC[index] != AIMoveType.None)
-			&& ((sightPoint.transform.position - currentDestination).sqrMagnitude > (stopDistance * stopDistance))) {
-			if (WithinAngleToTarget() && !actAsTurret && Const.a.runSpeedForNPC[index] > 0) rbody.velocity = (sightPoint.transform.forward * Const.a.runSpeedForNPC[index]);
-		}
+		if (Const.a.moveTypeForNPC[index] == AIMoveType.None) return;
+		if (actAsTurret) return; // Enemy marked to not move (e.g. on pillar).
+		if (Const.a.runSpeedForNPC[index] <= 0) return; // Enemy doesn't move.
+
+		Transform eyeTr = sightPoint.transform;
+		Vector3 eyePos = eyeTr.position;
+		float sqrDist = (eyePos - currentDestination).sqrMagnitude;
+		if (sqrDist <= (stopDistance * stopDistance)) return; // At stop point.
+		if (!WithinAngleToTarget()) return;
+
+		rbody.velocity = (eyeTr.forward * Const.a.runSpeedForNPC[index]);
     }
 
-	// Commonized function to remove previous boilerplate code from all 3 attack functions below.
-	// Applies movement towards the enemy while attacking, assumes that we were already facing enemy within the attack angle.
+	// Commonized function to remove previous boilerplate code from all 3
+	// attack functions below.  Applies movement towards the enemy while
+	// attacking, assumes we were already facing enemy within attack angle.
 	void ApplyAttackMovement(float speedToApply) {
 		if (actAsTurret) {
 			currentDestination = sightPoint.transform.position;
 			return;
 		}
-		if (speedToApply <= 0) return;
 
-		if (Vector3.Distance(sightPoint.transform.position, currentDestination) > stopDistance && tranquilizeFinished < PauseScript.a.relativeTime) {
-			if (WithinAngleToTarget()) rbody.AddForce(transform.forward * speedToApply);
-		}
-        currentDestination = enemy.transform.position; // Attack3 used targettingPosition but it is so rare I decided to use the known working method from Attack1 and Attack2.
+		if (speedToApply <= 0) return;
+		if (tranquilizeFinished >= PauseScript.a.relativeTime) return;
+
+		// Attack3 used targettingPosition but it is so rare I decided to use
+		// the known working method from Attack1 and Attack2.
+        currentDestination = enemy.transform.position;
+		Vector3 eyePos = sightPoint.transform.position;
+		float sqrDist = (eyePos - currentDestination).sqrMagnitude;
+		if (sqrDist <= (stopDistance * stopDistance)) return; // At stop point.
+		if (!WithinAngleToTarget()) return; // Still turning to face.
+
+		rbody.AddForce(transform.forward * speedToApply);
 	}
 
-	// attackNum corresponds to the attack used so correct lookup tables can be used.
+	// attackNum corresponds to attack used so right lookup tables can be used.
 	// attackNum of 1 = Attack1, 2 = Attack2, 3 = Attack3
 	void Transition_AttackToRun(int attackNum) {
+		DeactivateMeleeColliders();
+		goIntoPain = false; // Prevent doing pain immediately after attack.
+		currentState = AIState.Run; // Done with attack.
 		if (attackNum < 1 || attackNum > 3) attackNum = 1;
+		float now = PauseScript.a.relativeTime;
 		switch (attackNum) {
 			case 1: // Attack1
-				if (Random.Range(0f,1f) < Const.a.timeAttack1WaitChanceForNPC[index]) {
-					randomWaitForNextAttack1Finished = PauseScript.a.relativeTime + Random.Range(Const.a.timeAttack1WaitMinForNPC[index],Const.a.timeAttack1WaitMaxForNPC[index]);
+				float perc1Chance = Const.a.timeAttack1WaitChanceForNPC[index];
+				if (Random.Range(0f,1f) < perc1Chance) {
+					float min1 = Const.a.timeAttack1WaitMinForNPC[index];
+					float max1 = Const.a.timeAttack1WaitMaxForNPC[index];
+					float wait1 = Random.Range(min1,max1);
+					randomWaitForNextAttack1Finished = now + wait1;
 				} else {
-					randomWaitForNextAttack1Finished = PauseScript.a.relativeTime;
+					randomWaitForNextAttack1Finished = now;
 				}
 				break;
 			case 2: // Attack2
-				if (Random.Range(0f,1f) < Const.a.timeAttack2WaitChanceForNPC[index]) {
-					randomWaitForNextAttack2Finished = PauseScript.a.relativeTime + Random.Range(Const.a.timeAttack2WaitMinForNPC[index],Const.a.timeAttack2WaitMaxForNPC[index]);
+				float perc2Chance = Const.a.timeAttack2WaitChanceForNPC[index];
+				if (Random.Range(0f,1f) < perc2Chance) {
+					float min2 = Const.a.timeAttack2WaitMinForNPC[index];
+					float max2 = Const.a.timeAttack2WaitMaxForNPC[index];
+					float wait2 = Random.Range(min2,max2);
+					randomWaitForNextAttack2Finished = now + wait2;
 				} else {
-					randomWaitForNextAttack2Finished = PauseScript.a.relativeTime;
+					randomWaitForNextAttack2Finished = now;
 				}
 				break;
 			case 3: // Attack3
-				if (Random.Range(0f,1f) < Const.a.timeAttack3WaitChanceForNPC[index]) {
-					randomWaitForNextAttack3Finished = PauseScript.a.relativeTime + Random.Range(Const.a.timeAttack3WaitMinForNPC[index],Const.a.timeAttack3WaitMaxForNPC[index]);
+				float perc3Chance = Const.a.timeAttack3WaitChanceForNPC[index];
+				if (Random.Range(0f,1f) < perc3Chance) {
+					float min3 = Const.a.timeAttack3WaitMinForNPC[index];
+					float max3 = Const.a.timeAttack3WaitMaxForNPC[index];
+					float wait3 = Random.Range(min3,max3);
+					randomWaitForNextAttack3Finished = now + wait3;
 				} else {
-					randomWaitForNextAttack3Finished = PauseScript.a.relativeTime;
+					randomWaitForNextAttack3Finished = now;
 				}
 				break;
-			// Any other values are Unknown, do nothing with the timers.
 		}
-
-		DeactivateMeleeColliders();
-		goIntoPain = false; // Prevent going into pain immediately after an attack.
-		currentState = AIState.Run;
-		return; // Done with attack.
 	}
 
     bool WithinAngleToTarget () {
-		if (idealTransformForward.sqrMagnitude > Mathf.Epsilon) {
-			if (Quaternion.Angle(transform.rotation, Quaternion.LookRotation(idealTransformForward)) < Const.a.fovStartMovementForNPC[index]) return true;
-		}
+		if (idealTransformForward.sqrMagnitude <= Mathf.Epsilon) return false;
+
+		Quaternion lookRot = Quaternion.LookRotation(idealTransformForward);
+		float fovMov = Const.a.fovStartMovementForNPC[index];
+		if (Quaternion.Angle(transform.rotation,lookRot) < fovMov) return true;
         return false;
     }
 
@@ -861,18 +887,24 @@ public class AIController : MonoBehaviour {
 		Vector3 startPos = sightPoint.transform.position;
 		switch (attackNum) {
 			case 2:
-				if (gunPoint != null) startPos = gunPoint.transform.position;
-				else if (gunPoint2 != null) startPos = gunPoint2.transform.position;
+				if (gunPoint != null) {
+					startPos = gunPoint.transform.position;
+				} else if (gunPoint2 != null) {
+					startPos = gunPoint2.transform.position;
+				}
 				break;
 			case 3:
-				if (gunPoint2 != null) startPos = gunPoint2.transform.position;
-				else if (gunPoint != null) startPos = gunPoint.transform.position;
+				if (gunPoint2 != null) {
+					startPos = gunPoint2.transform.position;
+				} else if (gunPoint != null) {
+					startPos = gunPoint.transform.position;
+				}
 				break;
 		}
 		return startPos;
 	}
 
-	// Returns unit vector pointing from starting point of the attack towards the enemy.
+	// Returns unit vector pointing from starting point of attack towards enemy.
 	Vector3 GetDirectionRayToEnemy(Vector3 targPos, int attackNum) {
 		if (attackNum < 1 || attackNum > 3) attackNum = 1;
 		switch (attackNum) {
@@ -904,35 +936,34 @@ public class AIController : MonoBehaviour {
 	}
 
     void CreateStandardImpactEffects(bool useBlood) {
-        // Determine blood type of hit target and spawn corresponding blood particle effect from the Const.Pool
+        // Determine blood type of hit target and spawn corresponding blood
+		// particle effect from the Const.Pool
+		float offset = 0f;
+		GameObject impact = null;
         if (useBlood) {
-            GameObject impact = Const.a.GetImpactType(tempHM);
-            if (impact != null) {
-                impact.transform.position = tempHit.point + (tempHit.normal*0.08f);
-                impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
-                impact.SetActive(true);
-            }
-        } else {
-			GameObject impact = Const.a.GetObjectFromPool(PoolType.SparksSmall); //Didn't hit an object with a HealthManager script, use sparks
-			if (impact != null) {
-				impact.transform.position = tempHit.point + tempHit.normal;
-				impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
-				impact.SetActive(true);
-			}
-        }
-    }
-
-	// Activates a GameObject that has automatically playing particle effects, lights, etc.
-	// The muzzle bursts are all set up to deactivate on their own; no need to check them later.
-	// attackNum corresponds to the attack used so correct lookup tables can be used.
-	// attackNum of 1 = Attack1, 2 = Attack2, 3 = Attack3
-	void MuzzleBurst(int attackNum) {
-		if (attackNum < 1 || attackNum > 3) attackNum = 1;
-		if (index == 18) {
-			Utils.Activate(muzzleBurst); // Also activate this one too
+			offset = 0.08f;
+            impact = Const.a.GetImpactType(tempHM); // Returns blood type.
+        } else { // Didn't hit object with a HealthManager script, use sparks.
+			impact = Const.a.GetObjectFromPool(PoolType.SparksSmall); 
 		}
 
-		switch (attackNum) {
+		if (impact == null) return;
+
+		impact.transform.position = tempHit.point + (tempHit.normal * offset);
+		impact.transform.rotation = Quaternion.FromToRotation(Vector3.up,
+															  tempHit.normal);
+		impact.SetActive(true);
+    }
+
+	// Activates a GameObject that has automatically playing particle effects,
+	// lights, etc.  The muzzle bursts are all set up to deactivate on their
+	// own; no need to check them later.  attackNum corresponds to the attack
+	// used so correct lookup tables can be used.  attackNum of 1 = Attack1,
+	// 2 = Attack2, 3 = Attack3
+	void MuzzleBurst(int attackNum) {
+		if (attackNum < 1 || attackNum > 3) attackNum = 1;
+		if (index == 18) Utils.Activate(muzzleBurst); // Activate this one too.
+		switch (attackNum) { // No muzzle burst for Attack1 melee.
 			case 2:
 				Utils.Activate(muzzleBurst);
 				break;
@@ -942,52 +973,74 @@ public class AIController : MonoBehaviour {
 		}
 	}
 
-	// Does the raycast and sets tempHit for the hit data and tempHM for the hit object's HealthManager.
-	// Returns true if it actually hit something.
+	// Does the raycast and sets tempHit for the hit data and tempHM for the
+	// hit object's HealthManager.  Returns true if it actually hit something.
     bool DidRayHit(int attackNum) {
 		if (attackNum < 1 || attackNum > 3) attackNum = 1;
 		tempVec = GetDirectionRayToEnemy(targettingPosition,attackNum);
-		if (Physics.Raycast(GetAttackStartPoint(attackNum), tempVec, out tempHit, GetRangeForAttack(attackNum),Const.a.layerMaskNPCAttack)) {
-			Const.a.numberOfRaycastsThisFrame++;
+		Vector3 pos = GetAttackStartPoint(attackNum);
+		float range = GetRangeForAttack(attackNum);
+		int mask = Const.a.layerMaskNPCAttack;
+		if (!Physics.Raycast(pos,tempVec,out tempHit,range,mask)) return false;
 
-			tempHM = tempHit.collider.transform.gameObject.GetComponent<HealthManager>(); // Thanks andeeeeeee!!
-			if (tempHM == null) tempHM = tempHit.transform.gameObject.GetComponent<HealthManager>();
+		Const.a.numberOfRaycastsThisFrame++;
+		GameObject colGO =
+			tempHit.collider.transform.gameObject; // Thanks andeeee!!
 
-			return true; // True indicates we hit something, not that we hit something that can be hurt.  We need to know to apply spark impact effects still on walls and such.
-		}
-        return false;
+		GameObject hitGO = tempHit.transform.gameObject;
+		tempHM = colGO.GetComponent<HealthManager>(); 
+		if (tempHM == null) tempHM = hitGO.GetComponent<HealthManager>();
+		return true;
     }
+
+	void MakeLaserEffect(int attackNum) {
+		bool hasLaser = false;
+		switch(attackNum) {
+			case 1: hasLaser = Const.a.hasLaserOnAttack1ForNPC[index]; break;
+			case 2: hasLaser = Const.a.hasLaserOnAttack2ForNPC[index]; break;
+			case 3: hasLaser = Const.a.hasLaserOnAttack3ForNPC[index]; break;
+		}
+
+		if (!hasLaser) return;
+
+		GameObject laz = Instantiate(Const.a.useableItems[101],
+									 transform.position,
+									 Const.a.quaternionIdentity) as GameObject;
+
+		if (laz == null) return; // No laser!
+
+		GameObject dCont = LevelManager.a.GetCurrentDynamicContainer();
+		if (dCont != null) {
+			laz.transform.SetParent(dCont.transform,true);
+		}
+
+		LaserDrawing ldraw = laz.GetComponent<LaserDrawing>();
+		ldraw.startPoint = sightPoint.transform.position;
+		ldraw.endPoint = tempHit.point;
+		Utils.Activate(laz);
+	}
 
 	// Used for attack type of AttackType.Projectile.
 	// Does a raycast and then applies attack instantly.
 	// Also turns on laser effect if used.
-	// attackNum corresponds to the attack used so correct lookup tables can be used.
+	// attackNum corresponds to attack used so right lookup tables can be used.
 	// attackNum of 1 = Attack1, 2 = Attack2, 3 = Attack3
-	// Attack1 is typically Melee, Attack2 is typically a gun from gunPoint, Attack2 could be a gun or grenade from gunPoint2 (2 as in 2nd gun attack, NOT Attack2).
+	// Attack1 is typically Melee, Attack2 is typically a gun from gunPoint,
+	// Attack2 could be a gun or grenade from gunPoint2 (2 as in 2nd gun
+	// attack, NOT Attack2).
 	void ProjectileRaycast(int attackNum) {
 		if (attackNum < 1 || attackNum > 3) attackNum = 1;
 		MuzzleBurst(attackNum);
 		if (DidRayHit(attackNum)) {
-			if ((attackNum == 1 && Const.a.hasLaserOnAttack1ForNPC[index]) || (attackNum == 2 && Const.a.hasLaserOnAttack2ForNPC[index]) || (attackNum == 3 && Const.a.hasLaserOnAttack3ForNPC[index])) {
-				GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
-				if (dynamicObjectsContainer == null) return; // Didn't find current level.
-				GameObject lasertracer = Instantiate(Const.a.useableItems[101],transform.position,Const.a.quaternionIdentity) as GameObject;
-				if (lasertracer != null) {
-					lasertracer.transform.SetParent(dynamicObjectsContainer.transform,true);
-					lasertracer.GetComponent<LaserDrawing>().startPoint = sightPoint.transform.position;
-					lasertracer.GetComponent<LaserDrawing>().endPoint = tempHit.point;
-					lasertracer.SetActive(true);
-				}
-			}
-
+			MakeLaserEffect(attackNum);
 			if (tempHM != null) {
-				// DamageData.SetNPCData sets:
-				//   owner
-				//   damage
-				//   penetration
-				//   offense
+				// SetNPCData sets: owner, damage, penetration, offense
 				damageData = DamageData.SetNPCData(index,attackNum,gameObject);
-				damageData.other = tempHit.transform.gameObject; // Using tempHit.transform instead of tempHit.collider.transform to get overall parent of another NPC or of the player
+
+				// Using tempHit.transform instead of
+				// tempHit.collider.transform to get overall parent of another
+				// NPC or of the player.
+				damageData.other = tempHit.transform.gameObject;
 				if (tempHit.transform.gameObject.CompareTag("NPC")) {
 					damageData.isOtherNPC = true;
 				} else {
@@ -996,22 +1049,13 @@ public class AIController : MonoBehaviour {
 				damageData.hit = tempHit;
 				damageData.attacknormal = tempVec;
 				damageData.attackType = AttackType.Projectile;
-				// GetDamageTakeAmount expects damageData to already have the following set:
-				//   damage
-				//   offense
-				//   penetration
-				//   attackType
-				//   berserkActive
-				//   isOtherNPC
-				//   armorvalue
-				//   defense
-				damageData.impactVelocity = damageData.damage;
-				if (tempHit.collider.transform.gameObject.CompareTag("Player")) {
-					damageData.impactVelocity *= 0.5f;
-				}
 
+				// GetDamageTakeAmount expects damageData to already have the
+				// following set: damage, offense, penetration, attackType,
+				//   berserkActive, isOtherNPC, armorvalue, defense
+				damageData.impactVelocity = damageData.damage;
+				if (tempHM.isPlayer) damageData.impactVelocity *= 0.5f;
 				damageData.damage = DamageData.GetDamageTakeAmount(damageData);
-				//Utils.ApplyImpactForce(tempHit.collider.transform.gameObject, damageData.impactVelocity,damageData.attacknormal,damageData.hit.point);
 				CreateStandardImpactEffects(true);
 				tempHM.TakeDamage(damageData);
 			} else {
@@ -1030,11 +1074,7 @@ public class AIController : MonoBehaviour {
 		MuzzleBurst(attackNum);
 		tempVec = GetDirectionRayToEnemy(targettingPosition, attackNum);
 		Vector3 startPos = GetAttackStartPoint(attackNum);
-		// DamageData.SetNPCData sets:
-		//	 owner
-		//   damage
-		//   penetration
-		//   offense
+		// SetNPCData sets: owner, damage, penetration, offense
 		damageData = DamageData.SetNPCData(index,attackNum,gameObject);
 		damageData.attacknormal = tempVec;
 		damageData.attackType = AttackType.ProjectileLaunched;
@@ -1076,7 +1116,7 @@ public class AIController : MonoBehaviour {
 		}
 		beachball.transform.position = startPos;
 		beachball.transform.forward = tempVec.normalized;
-		beachball.SetActive(true);
+		Utils.Activate(beachball);
 		GrenadeActivate ga = beachball.GetComponent<GrenadeActivate>();
 		if (ga != null) ga.Activate();
 		Vector3 shove = (beachball.transform.forward * launchSpeed);
@@ -1273,7 +1313,15 @@ public class AIController : MonoBehaviour {
 			ai_dying = false;
 			currentState = AIState.Dead;
 		}
-		if (index == 0 || index == 14) Utils.Deactivate(visibleMeshEntity); // Autobomb
+
+		if (index == 0 || index == 14) { // Autobomb
+			Utils.Deactivate(visibleMeshEntity);
+		}
+	}
+
+	IEnumerator DisableCollisionOneFrameLater() {
+		yield return null;
+		Utils.DisableCollision(gameObject);
 	}
 
 	void Dead() {
@@ -1305,6 +1353,7 @@ public class AIController : MonoBehaviour {
 				healthManager.TeleportAway();
 			}
 		} else {
+			StartCoroutine(DisableCollisionOneFrameLater());
 			if (index != 14) { // Hopper turns itself off.
 				rbody.useGravity = true;
 			}
@@ -1863,4 +1912,4 @@ public class AIController : MonoBehaviour {
 		}
 		return index;
 	}
-}
+} // 1892

@@ -1780,6 +1780,7 @@ public class MFDManager : MonoBehaviour  {
 			mfd.rightTC.ReturnToLastTab();
 		} else index++;
 
+		mfd.SetWepInfo(WeaponCurrent.a.weaponIndex);
 		return index;
 	}
 }

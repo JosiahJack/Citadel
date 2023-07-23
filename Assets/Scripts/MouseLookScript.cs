@@ -385,6 +385,8 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	bool TargetIDFrob(Vector3 cP) {
+		if (inCyberSpace) return false;
+
 		float dist = TargetID.GetTargetIDSensingRange(true);
 		bool successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cP),
 											 out tempHit,dist,
@@ -404,6 +406,13 @@ public class MouseLookScript : MonoBehaviour {
 		// Say we can't use enemy and give enemy name.
 		AIController aic = tempHit.collider.gameObject.GetComponent<AIController>();
 		if (aic == null) return false;
+
+		HealthManager hm = tempHit.collider.gameObject.GetComponent<HealthManager>();
+		if (hm.health <= 0 && aic.searchColliderGO != null) {
+			currentSearchItem = aic.searchColliderGO;
+			SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
+			return true; // True = do and check nothing further this frob.
+		}
 
 		if (Inventory.a.hasHardware[4] && Inventory.a.hardwareVersion[4] > 1) {
 			if (!aic.hasTargetIDAttached) {

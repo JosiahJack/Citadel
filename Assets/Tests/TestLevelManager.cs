@@ -20,7 +20,8 @@ namespace Tests {
     public class TestLevelManager {
         [Test]
         public void CyborgConversionToggle() {
-            LevelManager lev = new LevelManager();
+            GameObject go = new GameObject();
+            LevelManager lev = go.AddComponent<LevelManager>();
             lev.ressurectionActive = new bool[14];
             for (int i=0; i<14; i++) lev.ressurectionActive[i] = false;
             lev.currentLevel = -1; // Test area

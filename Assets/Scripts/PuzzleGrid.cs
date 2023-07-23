@@ -54,6 +54,7 @@ public class PuzzleGrid : MonoBehaviour {
 	private UseData udSender;
 	private string target;
 	private string argvalue;
+	private bool[] checkedCells;
 
 	void Awake () {
 		puzzleSolved = false;
@@ -275,9 +276,50 @@ public class PuzzleGrid : MonoBehaviour {
 		}
 	}
 
+	private void CheckCellForPower(int movingIndex) {
+		int cellAbove;
+		int cellBelow;
+		int cellLeft;
+		int cellRight;
+		cellAbove = ReturnCellAbove(movingIndex);
+		cellBelow = ReturnCellBelow(movingIndex);
+		cellLeft = ReturnCellToLeft(movingIndex);
+		cellRight = ReturnCellToRight(movingIndex);
+		int poweredCount = 0;
+		if (cellAbove != -1) {
+			if (powered[cellAbove])
+				poweredCount++;
+		}
+
+		if (cellBelow != -1) {
+			if (powered[cellBelow])
+				poweredCount++;
+		}
+
+		if (cellLeft != -1) {
+			if (powered[cellLeft])
+				poweredCount++;
+		}
+
+		if (cellRight != -1) {
+			if (powered[cellRight])
+				poweredCount++;
+		}
+
+		if (cellType[movingIndex] == PuzzleCellType.And) {
+			if (poweredCount > 1) powered[movingIndex] = true;
+		} else {
+			if (cellType[movingIndex] == PuzzleCellType.Standard || cellType[movingIndex] == PuzzleCellType.Bypass) {
+				if ((grid[movingIndex] || cellType[movingIndex] == PuzzleCellType.Bypass) && poweredCount > 0) powered[movingIndex] = true;
+			}
+		}
+
+		checkedCells[movingIndex] = true;
+	}
+
 	public void EvaluatePuzzle() {
 		List<int> queue = new List<int> ();
-		bool[] checkedCells = new bool[width * height];
+		checkedCells = new bool[width * height];
 		int cellAbove;
 		int cellBelow;
 		int cellLeft;
@@ -307,31 +349,55 @@ public class PuzzleGrid : MonoBehaviour {
 			cellBelow = ReturnCellBelow(movingIndex);
 			cellLeft = ReturnCellToLeft(movingIndex);
 			cellRight = ReturnCellToRight(movingIndex);
-			if (cellAbove != -1 && !checkedCells[cellAbove] && grid[cellAbove])
+
+
+
+			if (cellAbove != -1 && !checkedCells[cellAbove] && grid[cellAbove]) {
 				queue.Add(cellAbove);
-			if (cellBelow != -1 && !checkedCells[cellBelow] && grid[cellBelow])
+				if (cellType[movingIndex] == PuzzleCellType.And) {
+					CheckCellForPower(cellAbove);
+				}
+			}
+
+			if (cellBelow != -1 && !checkedCells[cellBelow] && grid[cellBelow]) {
 				queue.Add(cellBelow);
-			if (cellLeft != -1 && !checkedCells[cellLeft] && grid[cellLeft])
+				if (cellType[movingIndex] == PuzzleCellType.And) {
+					CheckCellForPower(cellBelow);
+				}
+			}
+
+			if (cellLeft != -1 && !checkedCells[cellLeft] && grid[cellLeft]) {
 				queue.Add(cellLeft);
-			if (cellRight != -1 && !checkedCells[cellRight] && grid[cellRight])
+				if (cellType[movingIndex] == PuzzleCellType.And) {
+					CheckCellForPower(cellLeft);
+				}
+			}
+
+			if (cellRight != -1 && !checkedCells[cellRight] && grid[cellRight]) {
 				queue.Add(cellRight);
+			}
+
 			int poweredCount = 0;
 			if (cellAbove != -1) {
 				if (powered[cellAbove])
 					poweredCount++;
 			}
+
 			if (cellBelow != -1) {
 				if (powered[cellBelow])
 					poweredCount++;
 			}
+
 			if (cellLeft != -1) {
 				if (powered[cellLeft])
 					poweredCount++;
 			}
+
 			if (cellRight != -1) {
 				if (powered[cellRight])
 					poweredCount++;
 			}
+
 			if (cellType[movingIndex] == PuzzleCellType.And) {
 				if (poweredCount > 1) powered[movingIndex] = true;
 			} else {
@@ -339,6 +405,7 @@ public class PuzzleGrid : MonoBehaviour {
 					if ((grid[movingIndex] || cellType[movingIndex] == PuzzleCellType.Bypass) && poweredCount > 0) powered[movingIndex] = true;
 				}
 			}
+
 			checkedCells[movingIndex] = true;
 
 			float percentProgress = 0f;

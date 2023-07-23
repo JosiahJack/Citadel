@@ -1406,6 +1406,9 @@ public class Inventory : MonoBehaviour {
 		if (slot6 != -1) numweapons++;
 		if (slot7 != -1) numweapons++;
 
+		if (WeaponCurrent.a.weaponCurrent < 0) return;
+		if (WeaponCurrent.a.weaponCurrent > 7) return;
+
 		MFDManager.a.SetAmmoIcons(WeaponCurrent.a.weaponIndex,
 						wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]); 
 	}

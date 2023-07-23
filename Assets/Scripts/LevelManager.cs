@@ -74,7 +74,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void CyborgConversionToggleForCurrentLevel() {
-	    if (currentLevel < 0 || currentLevel > 13) return;
+	    if (currentLevel < 0 || currentLevel >= 13) return;
 	    
 		if (currentLevel == 6) {
 			if (ressurectionActive[currentLevel]) {
@@ -93,14 +93,6 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 
-	void TeleportToRessurectionChamber() {
-		if (currentLevel == 13) return;
-
-		Transform plyr = PlayerReferenceManager.a.playerCapsule.transform;
-		Vector3 spot = ressurectionLocation[currentLevel].position;
-		plyr.position = transform.TransformPoint(spot);
-	}
-
 	public bool RessurectPlayer() {
 		if (!ressurectionActive[currentLevel]) return false;
 
@@ -114,7 +106,11 @@ public class LevelManager : MonoBehaviour {
 				ressurectionBayDoor[currentLevel].ForceClose();
 			}
 
-			TeleportToRessurectionChamber();
+			if (currentLevel >= 0 || currentLevel < 13) {
+				Transform plyr = PlayerReferenceManager.a.playerCapsule.transform;
+				Vector3 spot = ressurectionLocation[currentLevel].position;
+				plyr.position = transform.TransformPoint(spot);
+			}
 		}
 
 		// Activate death screen and readouts for
@@ -288,7 +284,7 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 
-	bool PosWithinLeafBounds(Vector3 pos, BoxCollider b) {
+	public bool PosWithinLeafBounds(Vector3 pos, BoxCollider b) {
 		if (b == null) { Debug.Log("BUG: null BoxCollider passed to PosWithinLeafBounds!"); return false; }
 
 		float xMax = b.bounds.max.x;

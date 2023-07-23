@@ -521,7 +521,12 @@ public class HealthManager : MonoBehaviour {
 		if (Const.a.typeForNPC[aic.index] == NPCType.Cyber) {
 			Utils.SafeDestroy(aic.gameObject);
 		} else {
-			Utils.DisableCollision(gameObject);
+			gameObject.layer = 13; // Corpse layer
+
+			// Ok.  We've been through this.  Must keep the parent collider on
+			// in order to prevent NPC's randomly falling through the floor
+			// when killed because Unity's physics are junk.
+			//Utils.DisableCollision(gameObject);
 		}
 	}
 
