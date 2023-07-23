@@ -365,6 +365,14 @@ public static class ConsoleEmulator {
 			}
         } else if (ts.Contains("shake")) {
 			Const.a.Shake(true,-1,-1);
+        } else if (ts.Contains("tired") || ts.Contains("staminup")) {
+            if (PlayerMovement.a.FatigueCheat) {
+                Const.sprint("Fatigue returned to normal");
+                PlayerMovement.a.FatigueCheat = false;
+            } else {
+                Const.sprint("Stamin-Up! Fatigue no longer affects you!");
+                PlayerMovement.a.FatigueCheat = true;
+            }
         } else if (ts.Contains("const.")) {
 			string numGet = Regex.Match(ts, @"\d+").Value;
 			int numGot = Int32.Parse(numGet);
