@@ -74,6 +74,8 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void CyborgConversionToggleForCurrentLevel() {
+	    if (currentLevel < 0 || currentLevel > 13) return;
+	    
 		if (currentLevel == 6) {
 			if (ressurectionActive[currentLevel]) {
 				ressurectionActive[currentLevel] = false;
