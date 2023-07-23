@@ -18,8 +18,8 @@ using UnityEditor.SceneManagement;
 
 namespace Tests {
     public class TestLevelManager {
-        [UnityTest]
-        public IEnumerator CyborgConversionToggle() {
+        [Test]
+        public void CyborgConversionToggle() {
             LevelManager lev = new LevelManager();
             lev.ressurectionActive = new bool[14];
             for (int i=0; i<14; i++) lev.ressurectionActive[i] = false;
