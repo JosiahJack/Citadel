@@ -1457,6 +1457,8 @@ public class Const : MonoBehaviour {
 
 		// Remove and clear out everything and reset any lists.
 		ClearActiveAutomapOverlays();
+		ClearTargetRegister();
+		ClearTargetnameRegister();
 		for (i=0;i<14;i++) {
 			LevelManager.a.UnloadLevelDynamicObjects(i); // Delete them all!
 			LevelManager.a.UnloadLevelNPCs(i); // Delete them all!
@@ -1750,6 +1752,18 @@ public class Const : MonoBehaviour {
 				TargetnameRegister[i] = tn;
 				return; // Ok, gameobject added to the register.
 			}
+		}
+	}
+
+	public void ClearTargetRegister () {
+		for (int i=0;i<TargetRegister.Length;i++) {
+			TargetRegister[i] = null;
+		}
+	}
+
+	public void ClearTargetnameRegister () {
+		for (int i=0;i<TargetnameRegister.Length;i++) {
+			TargetnameRegister[i] = null;
 		}
 	}
 

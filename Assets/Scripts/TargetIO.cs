@@ -61,13 +61,14 @@ public class TargetIO : MonoBehaviour {
 	public bool doorAccessCardOverrideToggle; // set that access card has already been used
 	public bool unlockSwitch; // unlock a ButtonSwitch
 	public bool lockElevatorPad; // lock elevator keypad
+	public bool alreadyDisabledThisGOOnceEver = false;
 
 	private UseData tempUD;
 
 	void Start() {
 		if (!string.IsNullOrWhiteSpace(targetname)) {
 			RegisterToConst();
-			if (disableThisGOOnAwake) {
+			if (disableThisGOOnAwake && !alreadyDisabledThisGOOnceEver) {
 				SaveObject so = GetComponent<SaveObject>();
 				if (so == null) {
 					gameObject.AddComponent(typeof(SaveObject));
@@ -85,7 +86,10 @@ public class TargetIO : MonoBehaviour {
 				this.gameObject.SetActive(false);
 			}
 		} else {
-			if (disableThisGOOnAwake) Debug.Log("BUG: Trying to disable a gameObject with a TargetIO.cs attached but no valid targetname!");
+			if (disableThisGOOnAwake && !alreadyDisabledThisGOOnceEver) {
+				Debug.Log("BUG: Trying to disable a gameObject with a "
+						  + "TargetIO.cs attached but no valid targetname!");
+			}
 		}
 	}
 
@@ -503,6 +507,9 @@ public class TargetIO : MonoBehaviour {
 		s1.Append(Utils.BoolToString(tio.unlockSwitch,"unlockSwitch"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(tio.lockElevatorPad,"lockElevatorPad"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(tio.alreadyDisabledThisGOOnceEver,
+									 "alreadyDisabledThisGOOnceEver"));
 		return s1.ToString();
 	}
 
@@ -746,6 +753,13 @@ public class TargetIO : MonoBehaviour {
 
 		tio.lockElevatorPad = Utils.GetBoolFromString(entries[index],"lockElevatorPad");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		tio.alreadyDisabledThisGOOnceEver =
+			Utils.GetBoolFromString(entries[index],
+								    "alreadyDisabledThisGOOnceEver");
+
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
 		if (instantiated) tio.RegisterToConst();
 		return index;
 	}
