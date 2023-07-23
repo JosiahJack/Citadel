@@ -1,6 +1,5 @@
 name: Fresh Build
 on:
-  # Manual runs only.
   workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened]
