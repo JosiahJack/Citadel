@@ -19,19 +19,48 @@ using UnityEditor.SceneManagement;
 namespace Tests {
     public class TestLevelManager {
         [UnityTest]
-        public IEnumerator TestAwakeWhiteroom() {
+        public IEnumerator CyborgConversionToggle() {
             LevelManager lev = new LevelManager();
-            Const con = new Const();
-            Const.a = con;
-            GameObject camGO = new GameObject();
-            Const.a.player1CapsuleMainCameragGO = camGO;
-            Camera cam = camGO.AddComponent<Camera>();
-            cam.useOcclusionCulling = true;
+            lev.ressurectionActive = new bool[14];
+            for (int i=0; i<14; i++) lev.ressurectionActive[i] = false;
             lev.currentLevel = -1; // Test area
-            lev.Awake();
+            lev.CyborgConversionToggleForCurrentLevel();
+            lev.currentLevel = 0;
+            bool prev = lev.ressurectionActive[0];
+            lev.CyborgConversionToggleForCurrentLevel();
+            // Should have early exited else will give oob exception.
             
-            bool check = cam.useOcclusionCulling == false;
-            string msg = "Wrong camera culling setting for test area";
+            bool check = lev.ressurectionActive[0] != prev
+                         && lev.ressurectionActive[0];
+            string msg = "Reactor cyborg conversion failed to toggle";
+            
+            prev = lev.ressurectionActive[1];
+            lev.currentLevel = 1;
+            lev.CyborgConversionToggleForCurrentLevel();
+            check = lev.ressurectionActive[1] != prev
+                    && lev.ressurectionActive[1];
+            msg = "Medical cyborg conversion failed to toggle";
+            Assert.That(check,msg);
+            
+            prev = lev.ressurectionActive[6];
+            lev.currentLevel = 6;
+            lev.CyborgConversionToggleForCurrentLevel();
+            check = lev.ressurectionActive[6] != prev
+                    && lev.ressurectionActive[6]
+                    && lev.ressurectionActive[10
+                    && lev.ressurectionActive[11]
+                    && lev.ressurectionActive[12];
+            msg = "Executive and Groves cyborg conversion failed to activate";
+            Assert.That(check,msg);
+            
+            prev = lev.ressurectionActive[12];
+            lev.CyborgConversionToggleForCurrentLevel();
+            check = lev.ressurectionActive[12] != prev
+                    && !lev.ressurectionActive[6]
+                    && !lev.ressurectionActive[10
+                    && !lev.ressurectionActive[11]
+                    && !lev.ressurectionActive[12];
+            msg = "Executive and Groves cyborg conversion failed to deactivate";
             Assert.That(check,msg);
         }
     }
