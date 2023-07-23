@@ -7,7 +7,7 @@ public class WeaponButtonsManager : MonoBehaviour {
 	public GameObject[] wepCountsText;
 
 	public void WeaponCycleUp() {
-		if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime) return;
+		if (WeaponFire.a.reloadFinished > PauseScript.a.relativeTime) return;
 
 		int initialIndex = WeaponCurrent.a.weaponCurrent;
 		if (initialIndex < 0) initialIndex = 0;
@@ -34,7 +34,7 @@ public class WeaponButtonsManager : MonoBehaviour {
 	}
 
 	public void WeaponCycleDown() {
-		if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime) return;
+		if (WeaponFire.a.reloadFinished > PauseScript.a.relativeTime) return;
 
 		int initialIndex = WeaponCurrent.a.weaponCurrent;
 		if (initialIndex < 0) initialIndex = 0;

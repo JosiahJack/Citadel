@@ -520,6 +520,8 @@ public class HealthManager : MonoBehaviour {
 
 		if (Const.a.typeForNPC[aic.index] == NPCType.Cyber) {
 			Utils.SafeDestroy(aic.gameObject);
+		} else {
+			Utils.DisableCollision(gameObject);
 		}
 	}
 

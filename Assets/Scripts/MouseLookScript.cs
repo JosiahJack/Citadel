@@ -91,9 +91,9 @@ public class MouseLookScript : MonoBehaviour {
 	private float headBobY;
 	private float headBobZ;
 	private Transform playerCapsuleTransform;
-	private float returnFromCyberspaceFinished;
+	[HideInInspector] public float returnFromCyberspaceFinished;
 	private float dropFinished;
-	private float randomShakeFinished;
+	[HideInInspector] public float randomShakeFinished;
 
 	public static MouseLookScript a;
 
@@ -657,9 +657,8 @@ public class MouseLookScript : MonoBehaviour {
 		PutObjectInHand(indexPriorToRemoval,-1,am1,am2,loadAlt,true);
 		WeaponCurrent.a.RemoveWeapon(wepbut.WepButtonIndex);
 		Inventory.a.RemoveWeapon(wepbut.WepButtonIndex);
-		// Clear the ammo icons.
-		WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(-1,false);
-		WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(-1,false);
+		MFDManager.a.SetAmmoIcons(-1,false) ; // Clear the ammo icons.
+		MFDManager.a.HideAmmoAndEnergyItems();
 		wepbut.useableItemIndex = -1;
 		wepbut = MFDManager.a.wepbutMan.wepButtonsScripts[0];
 		WeaponCurrent.a.WeaponChange(wepbut.useableItemIndex,
@@ -1259,6 +1258,15 @@ public class MouseLookScript : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(ml.cyberspaceReturnLevel,
 									 "cyberspaceReturnLevel"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(
+				  ml.returnFromCyberspaceFinished,
+				  "returnFromCyberspaceFinished"));
+
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(ml.randomShakeFinished,
+													 "randomShakeFinished"));
+
 		return s1.ToString();
 	}
 
@@ -1402,6 +1410,16 @@ public class MouseLookScript : MonoBehaviour {
 
 		ml.cyberspaceReturnLevel = Utils.GetIntFromString(entries[index],
 													  "cyberspaceReturnLevel");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.returnFromCyberspaceFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "returnFromCyberspaceFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.randomShakeFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "randomShakeFinished");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
 		// Prevent picking up first item immediately. Not currently possible to

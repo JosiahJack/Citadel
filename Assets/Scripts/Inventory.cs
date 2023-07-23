@@ -1390,13 +1390,13 @@ public class Inventory : MonoBehaviour {
 		for (int i=0;i<weaponShotsInventoryText.Length;i++) {
 			weaponShotsInventoryText[i] = GetTextForWeaponAmmo(i);
 		}
-		int slot1 = weaponInventoryIndices [0];
-		int slot2 = weaponInventoryIndices [1];
-		int slot3 = weaponInventoryIndices [2];
-		int slot4 = weaponInventoryIndices [3];
-		int slot5 = weaponInventoryIndices [4];
-		int slot6 = weaponInventoryIndices [5];
-		int slot7 = weaponInventoryIndices [6];
+		int slot1 = weaponInventoryIndices[0];
+		int slot2 = weaponInventoryIndices[1];
+		int slot3 = weaponInventoryIndices[2];
+		int slot4 = weaponInventoryIndices[3];
+		int slot5 = weaponInventoryIndices[4];
+		int slot6 = weaponInventoryIndices[5];
+		int slot7 = weaponInventoryIndices[6];
 		numweapons = 0;
 		if (slot1 != -1) numweapons++;
 		if (slot2 != -1) numweapons++;
@@ -1406,13 +1406,8 @@ public class Inventory : MonoBehaviour {
 		if (slot6 != -1) numweapons++;
 		if (slot7 != -1) numweapons++;
 
-		int ind = WeaponCurrent.a.weaponIndex;
-		if (ind >= 0 && ind < 16) {
-			// Update the ammo icons.
-			bool alt = wepLoadedWithAlternate[ind];
-			WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(ind,alt);
-			WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(ind,alt);
-		}
+		MFDManager.a.SetAmmoIcons(WeaponCurrent.a.weaponIndex,
+						wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]); 
 	}
 
 	public string GetTextForWeaponAmmo(int index) {
@@ -1543,18 +1538,21 @@ public class Inventory : MonoBehaviour {
 			int index16 = WeaponFire.Get16WeaponIndexFromConstIndex(index);
 			WeaponButton wepBut = MFDManager.a.wepbutMan.wepButtonsScripts[i];
 			wepBut.useableItemIndex = index;
-			WeaponCurrent.a.weaponEnergySetting[i] =
-				GetDefaultEnergySettingForWeaponFrom16Index(index16);
-
+			float egSet = GetDefaultEnergySettingForWeaponFrom16Index(index16);
+			WeaponCurrent.a.weaponEnergySetting[i] = egSet;
 			if (i == 0) {
 				WeaponCurrent.a.weaponCurrentPending = i;
 				WeaponCurrent.a.weaponIndexPending = index;
-				WeaponCurrent.a.justChangedWeap = true;
-				WeaponCurrent.a.reloadFinished = PauseScript.a.relativeTime + 0.5f;
+				WeaponFire.a.StartWeaponDip(0.5f);
+
+				// Pop it back to start to be sure
+				WeaponFire.a.reloadContainer.localPosition =
+					WeaponFire.a.reloadContainerHome;
+
 				WeaponCurrent.a.justChangedWeap = true;
 				MFDManager.a.SendInfoToItemTab(index,-1); // notify item tab we clicked on a weapon
 				MFDManager.a.SendInfoToItemTab(index,-1);
-				WeaponCurrent.a.UpdateHUDAmmoCountsEither();
+				MFDManager.a.UpdateHUDAmmoCountsEither();
 				WeaponFire.a.CompleteWeaponChange();
 			}
 

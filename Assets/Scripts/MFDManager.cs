@@ -178,6 +178,34 @@ public class MFDManager : MonoBehaviour  {
 	public Text fpsText;
 	public Text versionText;
 
+	public AmmoIconManager ammoIconManLH;
+	public AmmoIconManager ammoIconManRH;
+	public GameObject ammoIndicatorHunsLH;
+	public GameObject ammoIndicatorTensLH;
+	public GameObject ammoIndicatorOnesLH;
+	public GameObject overloadButtonLH;
+	public GameObject unloadButtonLH;
+	public GameObject loadNormalAmmoButtonLH;
+	public Text loadNormalAmmoButtonTextLH;
+	public GameObject loadAlternateAmmoButtonLH;
+	public Text loadAlternateAmmoButtonTextLH;
+	public GameObject energySliderLH;
+	public GameObject energyHeatTicksLH;
+
+	public GameObject ammoIndicatorHunsRH;
+	public GameObject ammoIndicatorTensRH;
+	public GameObject ammoIndicatorOnesRH;
+	public GameObject overloadButtonRH;
+	public GameObject unloadButtonRH;
+	public GameObject loadNormalAmmoButtonRH;
+	public Text loadNormalAmmoButtonTextRH;
+	public GameObject loadAlternateAmmoButtonRH;
+	public Text loadAlternateAmmoButtonTextRH;
+	public GameObject energySliderRH;
+	public GameObject energyHeatTicksRH;
+
+	public Sprite ammoButtonHighlighted;
+	public Sprite ammoButtonDeHighlighted;
 
 	// Center Tabs
 	private float centerTabsTickTime = 0.5f;
@@ -304,6 +332,7 @@ public class MFDManager : MonoBehaviour  {
 		if (lastHealth != PlayerHealth.a.hm.health) DrawTicks(true);
 		lastHealth = PlayerHealth.a.hm.health;
 		WeaponButtonsManagerUpdate();
+		UpdateAmmoAndLoadButtons();
 		if (GetInput.a.WeaponCycUp()) WeaponCycleUp();
 		if (GetInput.a.WeaponCycDown()) WeaponCycleDown();
 		if (Input.GetKeyDown(KeyCode.F1)) leftTC.TabButtonAction(0);   // Weapon
@@ -1214,6 +1243,174 @@ public class MFDManager : MonoBehaviour  {
 			tetheredSearchable = null;
 			ReturnTabsFromSearch();
 		}
+	}
+
+
+	public void ShowAmmoItems(int normdex, int altdex) {
+		Utils.Activate(ammoIndicatorHunsLH);
+		Utils.Activate(ammoIndicatorTensLH);
+		Utils.Activate(ammoIndicatorOnesLH);
+		Utils.Activate(unloadButtonLH);
+		Utils.Activate(loadNormalAmmoButtonLH);
+		Utils.Activate(loadAlternateAmmoButtonLH);
+		Utils.Deactivate(energySliderLH);
+		Utils.Deactivate(energyHeatTicksLH);
+		Utils.Deactivate(overloadButtonLH);
+		if (loadNormalAmmoButtonTextLH != null) {
+			if (normdex > 0 && normdex < Const.a.stringTable.Length) {
+				loadNormalAmmoButtonTextLH.text = Const.a.stringTable[normdex];
+			} else {
+				loadNormalAmmoButtonTextLH.text = "";
+			}
+		}
+
+		if (loadAlternateAmmoButtonTextLH != null) {
+			if (altdex > 0 && altdex < Const.a.stringTable.Length) {
+				loadAlternateAmmoButtonTextLH.text = Const.a.stringTable[altdex];
+			} else {
+				loadAlternateAmmoButtonTextLH.text = "";
+			}
+		}
+
+		Utils.Activate(ammoIndicatorHunsRH);
+		Utils.Activate(ammoIndicatorTensRH);
+		Utils.Activate(ammoIndicatorOnesRH);
+		Utils.Activate(unloadButtonRH);
+		Utils.Activate(loadNormalAmmoButtonRH);
+		Utils.Activate(loadAlternateAmmoButtonRH);
+		Utils.Deactivate(energySliderRH);
+		Utils.Deactivate(energyHeatTicksRH);
+		Utils.Deactivate(overloadButtonRH);
+		if (loadNormalAmmoButtonTextRH != null) {
+			if (normdex > 0 && normdex < Const.a.stringTable.Length) {
+				loadNormalAmmoButtonTextRH.text = Const.a.stringTable[normdex];
+			} else {
+				loadNormalAmmoButtonTextRH.text = "";
+			}
+		}
+
+		if (loadAlternateAmmoButtonTextRH != null) {
+			if (altdex > 0 && altdex < Const.a.stringTable.Length) {
+				loadAlternateAmmoButtonTextRH.text = Const.a.stringTable[altdex];
+			} else {
+				loadAlternateAmmoButtonTextRH.text = "";
+			}
+		}
+	}
+
+	public void ShowEnergyItems() {
+		Utils.Activate(energySliderLH);
+		Utils.Activate(energyHeatTicksLH);
+		Utils.Activate(overloadButtonLH);
+		Utils.Deactivate(ammoIndicatorHunsLH);
+		Utils.Deactivate(ammoIndicatorTensLH);
+		Utils.Deactivate(ammoIndicatorOnesLH);
+		Utils.Deactivate(loadNormalAmmoButtonLH);
+		Utils.Deactivate(loadAlternateAmmoButtonLH);
+		Utils.Deactivate(unloadButtonLH);
+
+		Utils.Activate(energySliderRH);
+		Utils.Activate(energyHeatTicksRH);
+		Utils.Activate(overloadButtonRH);
+		Utils.Deactivate(ammoIndicatorHunsRH);
+		Utils.Deactivate(ammoIndicatorTensRH);
+		Utils.Deactivate(ammoIndicatorOnesRH);
+		Utils.Deactivate(loadNormalAmmoButtonRH);
+		Utils.Deactivate(loadAlternateAmmoButtonRH);
+		Utils.Deactivate(unloadButtonRH);
+	}
+
+	public void HideAmmoAndEnergyItems() {
+		Utils.Deactivate(ammoIndicatorHunsLH);
+		Utils.Deactivate(ammoIndicatorTensLH);
+		Utils.Deactivate(ammoIndicatorOnesLH);
+		Utils.Deactivate(loadNormalAmmoButtonLH);
+		Utils.Deactivate(loadAlternateAmmoButtonLH);
+		Utils.Deactivate(energySliderLH);
+		Utils.Deactivate(energyHeatTicksLH);
+		Utils.Deactivate(overloadButtonLH);
+		Utils.Deactivate(unloadButtonLH);
+
+		Utils.Deactivate(ammoIndicatorHunsRH);
+		Utils.Deactivate(ammoIndicatorTensRH);
+		Utils.Deactivate(ammoIndicatorOnesRH);
+		Utils.Deactivate(loadNormalAmmoButtonRH);
+		Utils.Deactivate(loadAlternateAmmoButtonRH);
+		Utils.Deactivate(energySliderRH);
+		Utils.Deactivate(energyHeatTicksRH);
+		Utils.Deactivate(overloadButtonRH);
+		Utils.Deactivate(unloadButtonRH);
+	}
+
+	public void HideAlternateAmmoButton() {
+		Utils.Deactivate(loadAlternateAmmoButtonRH);
+		Utils.Deactivate(loadAlternateAmmoButtonRH);
+	}
+
+	public void SetAmmoIcons(int index, bool alt) {
+		ammoIconManLH.SetAmmoIcon(-1,alt);
+		ammoIconManRH.SetAmmoIcon(-1,alt);
+	}
+
+	void ChangeAmmoButtons(GameObject loadNormalAmmoButton,
+						   GameObject loadAlternateAmmoButton) {
+
+		if (loadNormalAmmoButton == null || loadAlternateAmmoButton == null) {
+			return;
+		}
+
+		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(
+							WeaponCurrent.a.weaponIndex);
+
+		if (wep16index == 1 || wep16index == 4 || wep16index == 10
+			|| wep16index == 14 || wep16index == 15) {
+
+			return; // Already hidden.
+		}
+
+		Image norm = loadNormalAmmoButton.GetComponent<Image>();
+		Image anorm = loadAlternateAmmoButton.GetComponent<Image>();
+		if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
+			SetAmmoIcons(WeaponCurrent.a.weaponIndex,true);
+			norm.overrideSprite = ammoButtonDeHighlighted;
+			if (WeaponCurrent.a.currentMagazineAmount2[WeaponCurrent.a.weaponCurrent] > 0) {
+				anorm.overrideSprite = ammoButtonHighlighted;
+			} else {
+				anorm.overrideSprite = ammoButtonDeHighlighted;
+			}
+		} else {
+			SetAmmoIcons(WeaponCurrent.a.weaponIndex,false);
+			anorm.overrideSprite = ammoButtonDeHighlighted;
+			if (WeaponCurrent.a.currentMagazineAmount[WeaponCurrent.a.weaponCurrent] > 0) {
+				norm.overrideSprite = ammoButtonHighlighted;
+			} else {
+				norm.overrideSprite = ammoButtonDeHighlighted;
+			}
+		}
+	}
+
+	public void UpdateHUDAmmoCountsEither() {
+		if (WeaponCurrent.a.weaponCurrent >= 0) {
+			if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
+				UpdateHUDAmmoCounts(WeaponCurrent.a.currentMagazineAmount2[WeaponCurrent.a.weaponCurrent]);
+			} else {
+				UpdateHUDAmmoCounts(WeaponCurrent.a.currentMagazineAmount[WeaponCurrent.a.weaponCurrent]);
+			}
+		}
+	}
+
+	void UpdateAmmoAndLoadButtons() {
+		if (WeaponCurrent.a.weaponCurrent < 0
+			|| WeaponCurrent.a.weaponCurrentPending >= 0) {
+
+			HideAmmoAndEnergyItems();
+			SetAmmoIcons(-1,false);
+			return;
+		}
+
+		UpdateHUDAmmoCountsEither();
+		ChangeAmmoButtons(loadNormalAmmoButtonLH,loadAlternateAmmoButtonLH);
+		ChangeAmmoButtons(loadNormalAmmoButtonRH,loadAlternateAmmoButtonRH);
 	}
 
 	public void SetWepInfo(int index) {

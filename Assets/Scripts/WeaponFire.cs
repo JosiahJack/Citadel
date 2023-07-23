@@ -56,17 +56,29 @@ public class WeaponFire : MonoBehaviour {
 	public GameObject muzFlashSkorpion;
 	public GameObject muzFlashSparq;
 	public GameObject muzFlashStungun;
-	public GameObject wepView; // Recoil the weapon view models
+	public Transform reloadContainer; // Recoil the weapon view models
     public bool overloadEnabled; // save
+	public float reloadFinished; // save
+	public float lerpStartTime; // save
+	public float reloadLerpValue; // save
+
+    [HideInInspector] public DamageData damageData;
+    [HideInInspector] public float waitTilNextFire = 0f; // save
     [HideInInspector] public float sparqSetting = 50f; // save
     [HideInInspector] public float ionSetting = 100f; // save
     [HideInInspector] public float blasterSetting = 15f; // save
     [HideInInspector] public float plasmaSetting = 40f; // save
     [HideInInspector] public float stungunSetting = 20f;  // save
+	[HideInInspector] public Vector3 reloadContainerHome;
+	[HideInInspector] public bool recoiling; // save
+	[HideInInspector] public int lerpUp = 0; // 0 = not lerping, 1 = up, 2 = dn
+	[HideInInspector] public float justFired; // save
+	[HideInInspector] public float energySliderClickedTime; // save
+	[HideInInspector] public float cyberWeaponAttackFinished; // save
+	[HideInInspector] public float reloadContainerDropAmount = 0.66f;
+	[HideInInspector] public float targetY; // save
 
 	// Internal references
-    [HideInInspector] public DamageData damageData;
-    [HideInInspector] public float waitTilNextFire = 0f; // save
     private float hitOffset = 0f;
     private float verticalOffset = -0.2f; // For laser beams
     private float fireDistance = 200f;
@@ -86,15 +98,12 @@ public class WeaponFire : MonoBehaviour {
     private float retval;
     private float heatTickFinished;
     private float heatTickTime = 0.50f;
-	private float[] driftForWeapon = new float[16]{5f,0f,15f,50f,0f,0f,0f,8f,3f,3f,3f,12f,10f,30f,0f,3f}; // Not needed on Const as this only exists in one unique place on the player.
-	private Vector3 wepViewDefaultLocalPos;
-	[HideInInspector] public bool recoiling; // save
-	[HideInInspector] public int lerpUp = 0; // 0 = not lerping, 1 = up, 2 = down
-	[HideInInspector] public float justFired; // save
-	[HideInInspector] public float energySliderClickedTime; // save
 	private Rigidbody playercapRbody;
-	[HideInInspector] public float cyberWeaponAttackFinished; // save
 	private float wepYRot;
+
+	// Not needed on Const as this only exists in one unique place on player.
+	private float[] driftForWeapon = new float[16]{5f,0f,15f,50f,0f,0f,0f,8f,
+												   3f,3f,3f,12f,10f,30f,0f,3f};
 
 	// Singleton instance
 	public static WeaponFire a;
@@ -108,8 +117,12 @@ public class WeaponFire : MonoBehaviour {
         tempHit = new RaycastHit();
         tempVec = new Vector3(0f, 0f, 0f);
         heatTickFinished = PauseScript.a.relativeTime + heatTickTime;
-		wepViewDefaultLocalPos = wepView.transform.localPosition;
-		justFired = (PauseScript.a.relativeTime - 31f); // set less than 30s before PauseScript.a.relativeTime to guarantee we don't immediately play action music
+		reloadContainerHome = reloadContainer.localPosition;
+
+		// Set less than 30s before PauseScript.a.relativeTime to guarantee we
+		// don't immediately play action music.
+		justFired = (PauseScript.a.relativeTime - 31f);
+
 		energySliderClickedTime = PauseScript.a.relativeTime;
 		playercapRbody = playerCapsule.GetComponent<Rigidbody>();
 		cyberWeaponAttackFinished = PauseScript.a.relativeTime;
@@ -119,6 +132,9 @@ public class WeaponFire : MonoBehaviour {
 		blasterSetting = 15f;
 		plasmaSetting = 40f;
 		stungunSetting = 20f;
+		reloadLerpValue = 0;
+		reloadFinished = PauseScript.a.relativeTime;
+		lerpStartTime = PauseScript.a.relativeTime;
     }
 
     void GetWeaponData(int index) {
@@ -127,23 +143,31 @@ public class WeaponFire : MonoBehaviour {
 
         damageData.isFullAuto = Const.a.isFullAutoForWeapon[index];
         if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
+			// Alternate (2)
             damageData.damage = Const.a.damagePerHitForWeapon2[index];
-            damageData.delayBetweenShots = Const.a.delayBetweenShotsForWeapon2[index];
+            damageData.delayBetweenShots = 
+				Const.a.delayBetweenShotsForWeapon2[index];
+
             damageData.penetration = Const.a.penetrationForWeapon2[index];
             damageData.offense = Const.a.offenseForWeapon2[index];
         } else {
+			// Normal
             damageData.damage = Const.a.damagePerHitForWeapon[index];
-            damageData.delayBetweenShots = Const.a.delayBetweenShotsForWeapon[index];
+            damageData.delayBetweenShots =
+				Const.a.delayBetweenShotsForWeapon[index];
+
             damageData.penetration = Const.a.penetrationForWeapon[index];
             damageData.offense = Const.a.offenseForWeapon[index];
         }
+
         damageData.damageOverload = Const.a.damageOverloadForWeapon[index];
         damageData.energyDrainLow = Const.a.energyDrainLowForWeapon[index];
         damageData.energyDrainHi = Const.a.energyDrainHiForWeapon[index];
         damageData.energyDrainOver = Const.a.energyDrainOverloadForWeapon[index];
         damageData.range = Const.a.rangeForWeapon[index];
         damageData.attackType = Const.a.attackTypeForWeapon[index];
-        damageData.berserkActive = (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_BERSERK));
+        damageData.berserkActive = (Utils.CheckFlags(PlayerPatch.a.patchActive,
+												 PlayerPatch.a.PATCH_BERSERK));
     }
 
     public static int Get16WeaponIndexFromConstIndex(int index) {
@@ -189,7 +213,6 @@ public class WeaponFire : MonoBehaviour {
     }
 
     void HeatBleedOff() {
-		Inventory.a.UpdateAmmoText();
         if (heatTickFinished < PauseScript.a.relativeTime) {
 			Inventory.a.currentEnergyWeaponHeat[0] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[0] <= 0f) Inventory.a.currentEnergyWeaponHeat[0] = 0f;
 			Inventory.a.currentEnergyWeaponHeat[1] -= 10f; if (Inventory.a.currentEnergyWeaponHeat[1] <= 0f) Inventory.a.currentEnergyWeaponHeat[1] = 0f;
@@ -209,49 +232,49 @@ public class WeaponFire : MonoBehaviour {
 		if (strength <= 0f) return;
 		if (PlayerMovement.a.fatigue > 80) strength = strength * 2f;
 		strength = strength * 0.25f;
-		Vector3 wepJoltPosition = new Vector3(wepView.transform.localPosition.x - (strength * 0.5f * Random.Range(-1f,1f)), wepView.transform.localPosition.y, (wepViewDefaultLocalPos.z - strength));
+		Vector3 wepJoltPosition = new Vector3(reloadContainer.localPosition.x - (strength * 0.5f * Random.Range(-1f,1f)), reloadContainer.localPosition.y, (reloadContainerHome.z - strength));
 		if (wepJoltPosition.x > 999f) wepJoltPosition.x = 0;
 		if (wepJoltPosition.y > 999f) wepJoltPosition.y = 0;
 		if (wepJoltPosition.z > 999f) wepJoltPosition.z = 0;
-		wepView.transform.localPosition = wepJoltPosition;
+		reloadContainer.localPosition = wepJoltPosition;
 		recoiling = true;
 	}
 
 	void WeaponLerpGetTargetUp() {
-		WeaponCurrent.a.reloadLerpValue = (0.5f- (1 - WeaponCurrent.a.reloadLerpValue))/0.5f; // percentage of this half of the trip
-		WeaponCurrent.a.targetY = (-1 * WeaponCurrent.a.reloadContainerDropAmount * (1 - WeaponCurrent.a.reloadLerpValue));
-		if (WeaponCurrent.a.targetY > wepViewDefaultLocalPos.y) WeaponCurrent.a.targetY = wepViewDefaultLocalPos.y;
+		// Percentage of this half of the trip.
+		reloadLerpValue = (0.5f - (1 - reloadLerpValue))/0.5f;
+		targetY = (-1 * reloadContainerDropAmount * (1 - reloadLerpValue));
+		if (targetY > reloadContainerHome.y) targetY = reloadContainerHome.y;
 	}
 
 	void WeaponLerpGetTargetDown() {
-		WeaponCurrent.a.targetY = (WeaponCurrent.a.reloadContainerOrigin.y - WeaponCurrent.a.reloadContainerDropAmount);
-		WeaponCurrent.a.reloadLerpValue = WeaponCurrent.a.reloadLerpValue/0.5f; // percentage of this half of the trip
-		WeaponCurrent.a.targetY = (WeaponCurrent.a.targetY * WeaponCurrent.a.reloadLerpValue);
+		// Percentage of this half of the trip.
+		reloadLerpValue = reloadLerpValue/0.5f;
+		targetY = reloadContainerHome.y - reloadContainerDropAmount;
+		targetY *= reloadLerpValue;
 	}
 
 	void Recoiling() {
 		if (!recoiling) return;
 
-		float x = wepView.transform.localPosition.x; // side to side
-		float z = wepView.transform.localPosition.z; // forward and back
-		z = Mathf.Lerp(z,wepViewDefaultLocalPos.z,Time.deltaTime);
-		x = Mathf.Lerp(x,wepViewDefaultLocalPos.x,Time.deltaTime);
-		wepView.transform.localPosition = 
-			new Vector3(x,wepView.transform.localPosition.y,z);
+		float x = reloadContainer.localPosition.x; // side to side
+		float z = reloadContainer.localPosition.z; // forward and back
+		z = Mathf.Lerp(z,reloadContainerHome.z,Time.deltaTime);
+		x = Mathf.Lerp(x,reloadContainerHome.x,Time.deltaTime);
+		reloadContainer.localPosition = 
+			new Vector3(x,reloadContainer.localPosition.y,z);
 	}
 
-    void Update() {
-		if (PauseScript.a.Paused()) return;
-		if (PauseScript.a.MenuActive()) return;
-
-		if (WeaponsHaveAnyHeat() || CurrentWeaponUsesEnergy()) HeatBleedOff(); // Slowly cool off any weapons that have been heated from firing
-
-		// Move the weapon transform up and down for reload "animation" and weapon swap
+	void UpdateWeaponReloadDip() {
+		// Move weapon transform up/down for reload "animation" & weapon swap.
 		int i = Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
-		if (WeaponCurrent.a.reloadFinished > PauseScript.a.relativeTime) {
-			if (i < 0 || i > 15) i = 0;
-			WeaponCurrent.a.reloadLerpValue = ((PauseScript.a.relativeTime - WeaponCurrent.a.lerpStartTime)/Const.a.reloadTime[i]); // percent towards goal time total (both halves of the action)
-			if (WeaponCurrent.a.reloadLerpValue >= 0.5f) {
+		if (i < 0 || i > 15) i = 0;
+		if (reloadFinished > PauseScript.a.relativeTime) {
+			float elapsed = (PauseScript.a.relativeTime - lerpStartTime);
+
+			// Percent towards goal time total (both halves of the action).
+			reloadLerpValue = (elapsed/Const.a.reloadTime[i]);
+			if (reloadLerpValue >= 0.5f) { // Flip back to lerp up.
 				lerpUp = 1;
 				WeaponLerpGetTargetUp();
 				CompleteWeaponChange();
@@ -259,13 +282,31 @@ public class WeaponFire : MonoBehaviour {
 				lerpUp = 2;
 				WeaponLerpGetTargetDown();
 			}
-			Mathf.Clamp(WeaponCurrent.a.targetY, -100f, 100f);
-			wepView.transform.localPosition = new Vector3(wepView.transform.localPosition.x,WeaponCurrent.a.targetY,wepView.transform.localPosition.z);
+
+			Mathf.Clamp(targetY, -100f, 100f);
+			Vector3 pos = new Vector3(reloadContainer.localPosition.x,
+									  targetY,
+									  reloadContainer.localPosition.z);
+
+			reloadContainer.localPosition = pos;
 		} else {
 			lerpUp = 0;
-			wepView.transform.localPosition = new Vector3(wepView.transform.localPosition.x, wepViewDefaultLocalPos.y, wepView.transform.localPosition.z);
-		}
+			Vector3 pos = new Vector3(reloadContainer.localPosition.x,
+									  reloadContainerHome.y,
+									  reloadContainer.localPosition.z);
 
+			reloadContainer.localPosition = pos;
+		}
+	}
+
+    void Update() {
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
+
+		// Slowly cool off any weapons that have been heated from firing
+		if (WeaponsHaveAnyHeat() || CurrentWeaponUsesEnergy()) HeatBleedOff();
+
+		UpdateWeaponReloadDip();
 		RotateViewWeapon();
 		Recoiling();
 		CheckAttackInput();
@@ -295,9 +336,14 @@ public class WeaponFire : MonoBehaviour {
 		int ind = WeaponCurrent.a.weaponIndex;
 		bool alt = false;
 		if (ind >= 0 && ind < 16) alt = Inventory.a.wepLoadedWithAlternate[ind];
-		WeaponCurrent.a.ammoIconManLH.SetAmmoIcon(ind,alt);
-		WeaponCurrent.a.ammoIconManRH.SetAmmoIcon(ind,alt);
+		MFDManager.a.SetAmmoIcons(ind,alt);
 		MFDManager.a.SetWepInfo(WeaponCurrent.a.weaponIndex);
+	}
+
+	public void StartWeaponDip(float delay) {
+		if (delay < 0) delay = 0;
+		reloadFinished = PauseScript.a.relativeTime + delay;
+		lerpStartTime = PauseScript.a.relativeTime;
 	}
 
 	void RotateViewWeapon() {
@@ -307,9 +353,9 @@ public class WeaponFire : MonoBehaviour {
 			float distFromCenter = (cursorX - screenHalf);
 			float percentRotated = (distFromCenter / screenHalf);
 			wepYRot = percentRotated * inventoryModeViewRotateMax;
-			wepView.transform.localRotation = Quaternion.Euler(0f,wepYRot,0f);
+			reloadContainer.localRotation = Quaternion.Euler(0f,wepYRot,0f);
 		} else {
-			wepView.transform.localRotation = Quaternion.Euler(0f,0f,0f);
+			reloadContainer.localRotation = Quaternion.Euler(0f,0f,0f);
 		}
 	}
 
@@ -353,7 +399,7 @@ public class WeaponFire : MonoBehaviour {
 		if (GetInput.a.Attack(Const.a.isFullAutoForWeapon[wepdex])
 			&& waitTilNextFire < PauseScript.a.relativeTime
 			&& (PauseScript.a.relativeTime - energySliderClickedTime) > 0.1f
-			&& WeaponCurrent.a.reloadFinished < PauseScript.a.relativeTime) {
+			&& reloadFinished < PauseScript.a.relativeTime) {
 			StartCoroutine(CheckUIStateAndAttack(wepdex));
 		}
 	}
@@ -364,7 +410,7 @@ public class WeaponFire : MonoBehaviour {
 		if (GUIState.a.isBlocking) yield break;
 		if (MouseLookScript.a.holdingObject) yield break;
 		if (MFDManager.a.mouseClickHeldOverGUI) yield break;
-		if (WeaponCurrent.a.reloadFinished >= PauseScript.a.relativeTime) yield break;
+		if (reloadFinished >= PauseScript.a.relativeTime) yield break;
 		if (waitTilNextFire >= PauseScript.a.relativeTime) yield break;
 		if (wepdex < 0 || wepdex > 15) yield break;
 		if (Automap.a.inFullMap) yield break;
@@ -425,7 +471,7 @@ public class WeaponFire : MonoBehaviour {
 	}
 
 	void CheckReloadInput() {
-		if (WeaponCurrent.a.reloadFinished >= PauseScript.a.relativeTime) return;
+		if (reloadFinished >= PauseScript.a.relativeTime) return;
 		if (!GetInput.a.Reload()) return;
 
 		if (Const.a.InputQuickReloadWeapons) {
@@ -462,14 +508,14 @@ public class WeaponFire : MonoBehaviour {
 	}
 
 	void CheckAmmoChangeInput() {
-		if (WeaponCurrent.a.reloadFinished >= PauseScript.a.relativeTime) return;
+		if (reloadFinished >= PauseScript.a.relativeTime) return;
 		if (!GetInput.a.ChangeAmmoType()) return;
 
 		if (Const.a.InputQuickReloadWeapons) {
-			// Press change ammo type button once, to do both unload then reload
+			// Press change ammo type button once, to both unload then reload.
 			WeaponCurrent.a.ChangeAmmoType();
 		} else {
-			// First press change ammo type button to unload, then press again to load
+			// First press ammo type button to unload, then again to load.
 			int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
 			if (wep16index < 0) return;
 
@@ -710,6 +756,7 @@ public class WeaponFire : MonoBehaviour {
         } else {
             waitTilNextFire = PauseScript.a.relativeTime + Const.a.delayBetweenShotsForWeapon[index];
         }
+
 		Inventory.a.UpdateAmmoText();
     }
 
@@ -1298,20 +1345,25 @@ public class WeaponFire : MonoBehaviour {
 		}
 
 		string line = System.String.Empty;
-		line = Utils.SaveRelativeTimeDifferential(wf.waitTilNextFire); // float
-		line += Utils.splitChar + Utils.BoolToString(wf.overloadEnabled); // bool
-		line += Utils.splitChar + Utils.FloatToString(wf.sparqSetting); // float
-		line += Utils.splitChar + Utils.FloatToString(wf.ionSetting); // float
-		line += Utils.splitChar + Utils.FloatToString(wf.blasterSetting); // float
-		line += Utils.splitChar + Utils.FloatToString(wf.plasmaSetting); // float
-		line += Utils.splitChar + Utils.FloatToString(wf.stungunSetting); // float
-		line += Utils.splitChar + Utils.BoolToString(wf.recoiling); // bool
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.justFired); // float
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.energySliderClickedTime); // float
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.cyberWeaponAttackFinished); // float
-		line += Utils.splitChar + Utils.BoolToString(wf.gunCamera.enabled); // bool
+		line = Utils.SaveRelativeTimeDifferential(wf.waitTilNextFire,"waitTilNextFire");
+		line += Utils.splitChar + Utils.BoolToString(wf.overloadEnabled,"overloadEnabled");
+		line += Utils.splitChar + Utils.FloatToString(wf.sparqSetting,"sparqSetting");
+		line += Utils.splitChar + Utils.FloatToString(wf.ionSetting,"ionSetting");
+		line += Utils.splitChar + Utils.FloatToString(wf.blasterSetting,"blasterSetting");
+		line += Utils.splitChar + Utils.FloatToString(wf.plasmaSetting,"plasmaSetting");
+		line += Utils.splitChar + Utils.FloatToString(wf.stungunSetting,"stungunSetting");
+		line += Utils.splitChar + Utils.BoolToString(wf.recoiling,"recoiling");
+		line += Utils.splitChar + Utils.FloatToString(wf.reloadLerpValue,"reloadLerpValue");
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.reloadFinished,"reloadFinished");
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.lerpStartTime,"lerpStartTime");
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.justFired,"justFired");
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.energySliderClickedTime,"energySliderClickedTime");
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.cyberWeaponAttackFinished,"cyberWeaponAttackFinished");
+		line += Utils.splitChar + Utils.BoolToString(wf.gunCamera.enabled,"gunCamera");
 		line += Utils.splitChar + BerserkEffect.Save(go);
 		line += Utils.splitChar + Utils.SaveCamera(go); // Grayscale saved here
+		line += Utils.splitChar + Utils.SaveTransform(wf.reloadContainer.transform);
+		line += Utils.splitChar + Utils.FloatToString(wf.targetY,"targetY");
 		return line;
 	}
 
@@ -1332,20 +1384,25 @@ public class WeaponFire : MonoBehaviour {
 			return index + 11;
 		}
 
-		wf.waitTilNextFire = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		wf.overloadEnabled = Utils.GetBoolFromString(entries[index]); index++;
-		wf.sparqSetting = Utils.GetFloatFromString(entries[index]); index++;
-		wf.ionSetting = Utils.GetFloatFromString(entries[index]); index++;
-		wf.blasterSetting = Utils.GetFloatFromString(entries[index]); index++;
-		wf.plasmaSetting = Utils.GetFloatFromString(entries[index]); index++;
-		wf.stungunSetting = Utils.GetFloatFromString(entries[index]); index++;
-		wf.recoiling = Utils.GetBoolFromString(entries[index]); index++;
-		wf.justFired = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		wf.energySliderClickedTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		wf.cyberWeaponAttackFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		wf.gunCamera.enabled = Utils.GetBoolFromString(entries[index]); index++;
+		wf.waitTilNextFire = Utils.LoadRelativeTimeDifferential(entries[index],"waitTilNextFire"); index++;
+		wf.overloadEnabled = Utils.GetBoolFromString(entries[index],"overloadEnabled"); index++;
+		wf.sparqSetting = Utils.GetFloatFromString(entries[index],"sparqSetting"); index++;
+		wf.ionSetting = Utils.GetFloatFromString(entries[index],"ionSetting"); index++;
+		wf.blasterSetting = Utils.GetFloatFromString(entries[index],"blasterSetting"); index++;
+		wf.plasmaSetting = Utils.GetFloatFromString(entries[index],"plasmaSetting"); index++;
+		wf.stungunSetting = Utils.GetFloatFromString(entries[index],"stungunSetting"); index++;
+		wf.recoiling = Utils.GetBoolFromString(entries[index],"recoiling"); index++;
+		wf.reloadLerpValue = Utils.GetFloatFromString(entries[index],"reloadLerpValue"); index++;
+		wf.reloadFinished = Utils.LoadRelativeTimeDifferential(entries[index],"reloadFinished"); index++;
+		wf.lerpStartTime = Utils.LoadRelativeTimeDifferential(entries[index],"lerpStartTime"); index++;
+		wf.justFired = Utils.LoadRelativeTimeDifferential(entries[index],"justFired"); index++;
+		wf.energySliderClickedTime = Utils.LoadRelativeTimeDifferential(entries[index],"energySliderClickedTime"); index++;
+		wf.cyberWeaponAttackFinished = Utils.LoadRelativeTimeDifferential(entries[index],"cyberWeaponAttackFinished"); index++;
+		wf.gunCamera.enabled = Utils.GetBoolFromString(entries[index],"gunCamera"); index++;
 		index = BerserkEffect.Load(go,ref entries,index);
 		index = Utils.LoadCamera(go,ref entries,index); // Grayscale loaded here
+		index = Utils.LoadTransform(wf.reloadContainer.transform,ref entries,index);
+		wf.targetY = Utils.GetFloatFromString(entries[index],"targetY"); index++;
 		return index;
 	}
 }
