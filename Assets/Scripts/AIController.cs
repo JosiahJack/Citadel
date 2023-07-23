@@ -735,7 +735,7 @@ public class AIController : MonoBehaviour {
 			shotFired = false;
 			huntFinished = PauseScript.a.relativeTime;
 			int diff = Const.a.difficultyCombat;
-			if (IsCyberNPC()) diff = Consf.a.difficultyCyber;
+			if (IsCyberNPC()) diff = Const.a.difficultyCyber;
 			if (diff <= 1) { // More forgetful on easy.
 				huntFinished += (Const.a.huntTimeForNPC[index] * 0.75f);
 			} else if (diff >= 3) { // Good memory on hard.
@@ -1316,7 +1316,7 @@ public class AIController : MonoBehaviour {
 
 	bool CheckIfEnemyInSight() {
 	    int diff = Const.a.difficultyCombat;
-		if (IsCyberNPC()) diff = Consf.a.difficultyCyber;
+		if (IsCyberNPC()) diff = Const.a.difficultyCyber;
         if (diff == 0 && index != 28) return false;
         
 		if (PlayerMovement.a.Notarget) {
@@ -1357,7 +1357,7 @@ public class AIController : MonoBehaviour {
 
 	bool CheckIfPlayerInSight() {
 	    int diff = Const.a.difficultyCombat;
-		if (IsCyberNPC()) diff = Consf.a.difficultyCyber;
+		if (IsCyberNPC()) diff = Const.a.difficultyCyber;
         if (diff == 0 && index != 28) return false;
 		if (enemy != null) return CheckIfEnemyInSight();
 
