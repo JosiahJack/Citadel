@@ -54,6 +54,7 @@ public class PlayerMovement : MonoBehaviour {
 	public string lastCommand5;
 	public string lastCommand6;
 	public int consoleMemdex;
+	[HideInInspector] public bool FatigueCheat;
 
 	// Internal references
 	[HideInInspector] public BodyState bodyState; // save
@@ -102,7 +103,7 @@ public class PlayerMovement : MonoBehaviour {
 	private float fallDamageSpeed = 11.72f;
 	[HideInInspector] public Vector3 oldVelocity; // save
 	public float fatigue; // save
-	private float jumpFatigue = 8.25f;
+	private float jumpFatigue = 7.0f;
 	private float fatigueWanePerTick = 1f;
 	private float fatigueWanePerTickCrouched = 2f;
 	private float fatigueWanePerTickProne = 3.5f;
@@ -196,6 +197,7 @@ public class PlayerMovement : MonoBehaviour {
 		playerHome = transform.localPosition;
 		ConsoleEmulator.lastCommand = new string[7];
 		ConsoleEmulator.consoleMemdex = consoleMemdex = 0;
+		FatigueCheat = false;
     }
 
 	void Update() {
@@ -623,7 +625,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 
-		if (staminupActive) fatigue = 0;
+		if (staminupActive || FatigueCheat) fatigue = 0;
 		
 		// Perform Jump
 		float jumpVelocityApply = jumpVelocity * rbody.mass;
@@ -779,7 +781,7 @@ public class PlayerMovement : MonoBehaviour {
 					else fatigue += fatiguePerWalkTick;
 				}
 
-				if (staminupActive) fatigue = 0;
+				if (staminupActive || FatigueCheat) fatigue = 0;
 			}
 		} else {
 			// Sprinting in the air
@@ -915,7 +917,7 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		if (inCyberSpace) return;
-		if (CheatNoclip) { fatigue = 0; return; }
+		if (CheatNoclip || FatigueCheat) { fatigue = 0; return; }
 		if (fatigueFinished >= PauseScript.a.relativeTime) return;
 
 		fatigueFinished = PauseScript.a.relativeTime + fatigueWaneTickSecs;
