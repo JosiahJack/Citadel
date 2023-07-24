@@ -17,6 +17,7 @@ public class AIAnimationController : MonoBehaviour {
 	[HideInInspector] public float currentClipPercentage; // save
 	[HideInInspector] public bool dying; // save
 	[HideInInspector] public float animSwapFinished; // save
+	[HideInInspector] public string clipName;
 
 	// Derived or temporary variables, unsaved
 	[HideInInspector] public Animator anim;
@@ -26,13 +27,11 @@ public class AIAnimationController : MonoBehaviour {
 	private bool pauseStateUpdated = false;
 
 	void Start () {
+	    animSwapFinished = PauseScript.a.relativeTime;
 		anim = GetComponent<Animator>();
 		smR = GetComponentInChildren<SkinnedMeshRenderer>(true);
 		if (smR != null) checkVisWithSMR = true;
 		else checkVisWithSMR = false;
-
-		animSwapFinished = PauseScript.a.relativeTime;
-		currentClipPercentage = 0;
 	}
 
 	void Update() {
@@ -83,15 +82,20 @@ public class AIAnimationController : MonoBehaviour {
 			if (anim.speed > 0) anim.speed = 0;
 		} else {
 			if (anim.speed != 1f) anim.speed = 1f;
-			if (UnityEngine.Random.Range(0,1f) < 0.5f) anim.Play("Idle");
+			if (UnityEngine.Random.Range(0,1f) < 0.5f) {
+			    anim.Play("Idle");
+			    clipName = "Idle";
+			}
 		}
 	}
 
 	void Run () {
 		if (aic.actAsTurret) {
 			anim.Play("Idle");
+			clipName = "Idle";
 		} else {
 			anim.Play("Run");
+			clipName = "Run";
 		}
 	}
 
@@ -100,37 +104,47 @@ public class AIAnimationController : MonoBehaviour {
 			(minWalkSpeedToAnimate * minWalkSpeedToAnimate)) {
 			if (aic.actAsTurret) {
 				anim.Play("Idle");
+				clipName = "Idle";
 			} else {
 				anim.Play("Walk");
+				clipName = "Walk";
 			}
 		} else {
 			 // Prevent flickering by using a delay timer.
 			if (animSwapFinished < PauseScript.a.relativeTime) {
 				animSwapFinished = PauseScript.a.relativeTime + 0.5f;
 				anim.Play("Idle");
+				clipName = "Idle";
 			}
 		}
 	}
 
 	void Attack1 () {
 		anim.Play("Attack1");
+		clipName = "Attack1";
 	}
 
 	void Attack2 () {
 		anim.Play("Attack2");
+		clipName = "Attack2";
 	}
 
 	void Attack3 () {
 		anim.Play("Attack3");
+		clipName = "Attack3";
 	}
 
 	void Pain () {
 		anim.Play("Pain");
+		clipName = "Pain";
 	}
 
 	void Dying () {
 		dying = true;
-		if (playDyingAnim) anim.Play("Death");
+		if (playDyingAnim) {
+		    anim.Play("Death");
+		    clipName = "Death";
+		}
 		if (currentClipPercentage > 0.99f) dying = false;
 	}
 
@@ -138,8 +152,10 @@ public class AIAnimationController : MonoBehaviour {
 		if (playDeathAnim) {
 			if (useDeadAnimForDeath) {
 				anim.Play("Dead",0,1.0f);
+				clipName = "Dead";
 			} else {
 				anim.Play("Death",0,1.0f);
+				clipName = "Death";
 			}
 		}
 		if (anim.speed > 0f) anim.speed = 0f;
@@ -147,10 +163,19 @@ public class AIAnimationController : MonoBehaviour {
 
 	void Inspect () {
 		anim.Play("Inspect");
+		clipName = "Inspect";
 	}
 
 	void Interacting () {
 		anim.Play("Interact");
+		clipName = "Interact";
+	}
+	
+	public void SetAnimFromLoad(string n, int i, float t) {
+		firstUpdateAfterLoad = true;
+		loadedClipName = n;
+		loadedClipIndex = i;
+		loadedAnimatorPlaybackTime = t;
 	}
 
 	public static string Save(GameObject go) {
@@ -160,6 +185,8 @@ public class AIAnimationController : MonoBehaviour {
 
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
+		s1.Append(Utils.SaveString(clipName,"clipName"));
+		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(aiac.currentClipPercentage,
 									  "currentClipPercentage"));
 		s1.Append(Utils.splitChar);
@@ -217,7 +244,10 @@ public class AIAnimationController : MonoBehaviour {
 			Debug.Log("AIAnimationController.Load failure, entries == null");
 			return index + 3;
 		}
-
+		
+        aiac.clipName = Utils.LoadString(entries[index],"clipName");
+		index++;
+		
 		aiac.currentClipPercentage = Utils.GetFloatFromString(entries[index],
 													  "currentClipPercentage");
 		index++;
@@ -253,6 +283,7 @@ public class AIAnimationController : MonoBehaviour {
 			if (setSpeed < 0f || setSpeed > 100f) setSpeed = 1f;
 			if (aiac.anim != null) aiac.anim.speed = setSpeed;
 		}
+		aiac.SetAnimFromLoad(aiac.clipName,0,aiac.currentClipPercentage);
 		index++;
 		return index;
 	}
