@@ -34,6 +34,30 @@ public class PlayerEnergy : MonoBehaviour {
 		energy = 54f; //max is 255 
 		tickFinished = PauseScript.a.relativeTime + tick + Random.value; // random offset seed to prevent ticks lining up and causing frame hiccups
     }
+    
+    void TargetIdentifierSenseTargets() {
+		// Automatically lock onto nearby targets.
+		if (LevelManager.a.npcsm[LevelManager.a.currentLevel] == null) return;
+		
+		// Very specific variable names are good right ;)
+		int lev = LevelManager.a.currentLevel;
+		int numNPCs = LevelManager.a.npcsm[lev].childrenNPCsAICs.Length;
+		if (numNPCs <= 0) return;
+		
+		for (int i=0;i<numNPCs;i++) {
+			AIController aic = LevelManager.a.npcsm[lev].childrenNPCsAICs[i];
+            if (!aic.gameObject.activeInHierarchy) continue;
+            if (aic.healthManager.health <= 0) continue;
+            if (aic.hasTargetIDAttached) continue;
+            
+			// if NPC is in range....
+			float far = Vector3.Distance(aic.transform.position,
+			                             transform.position);
+			if (far > TargetID.GetTargetIDSensingRange(false)) continue;
+			
+			WeaponFire.a.CreateTargetIDInstance(-1f,aic.healthManager);
+		}
+    }
 
 	void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
@@ -60,25 +84,7 @@ public class PlayerEnergy : MonoBehaviour {
 
 				// 4 = Target Identifier doesn't take energy
 				if (Inventory.a.hasHardware[4]) {
-					float dist = TargetID.GetTargetIDSensingRange(false);
-
-					// Automatically lock onto nearby targets.
-					if (LevelManager.a.npcsm[LevelManager.a.currentLevel] != null) {
-						// Very specific variable names are good right ;)
-						int numNPCsOnCurrentLevel = LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs.Length;
-						if (numNPCsOnCurrentLevel > 0) {
-							for (int i=0;i<numNPCsOnCurrentLevel;i++) {
-								AIController aic = LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i];
-								// if NPC is in range....
-								if (Vector3.Distance(aic.transform.position,
-													 transform.position) < dist) {
-									if (!aic.hasTargetIDAttached) {
-										WeaponFire.a.CreateTargetIDInstance(-1f,aic.healthManager);
-									}
-								}
-							}
-						}
-					}
+				    TargetIdentifierSenseTargets();
 				}
 
 				// 5 = Energy Shield - handled by HealthManager
