@@ -25,13 +25,23 @@ public class AIAnimationController : MonoBehaviour {
 	private AnimatorStateInfo anstinfo;
 	private bool checkVisWithSMR = false;
 	private bool pauseStateUpdated = false;
+	private bool firstUpdateAfterLoad = false;
+	private string loadedClipName;
+	private int loadedClipIndex;
+	private float loadedAnimatorPlaybackTime;
+	private float loadedSetSpeed;
+	private bool initialized = false;
 
 	void Start () {
+	    if (initialized) return;
+	    
 	    animSwapFinished = PauseScript.a.relativeTime;
 		anim = GetComponent<Animator>();
 		smR = GetComponentInChildren<SkinnedMeshRenderer>(true);
 		if (smR != null) checkVisWithSMR = true;
 		else checkVisWithSMR = false;
+		
+		initialized = true;
 	}
 
 	void Update() {
@@ -53,6 +63,9 @@ public class AIAnimationController : MonoBehaviour {
 				if (!smR.isVisible) return;
 			}
 		}
+		
+		if (firstUpdateAfterLoad) { SetAnimAfterLoad(); return; }
+		
 		if (dying) {
 			anstinfo = anim.GetCurrentAnimatorStateInfo(0);
 			currentClipPercentage = anstinfo.normalizedTime % 1;
@@ -171,11 +184,18 @@ public class AIAnimationController : MonoBehaviour {
 		clipName = "Interact";
 	}
 	
-	public void SetAnimFromLoad(string n, int i, float t) {
+	void SetAnimAfterLoad() {
+		firstUpdateAfterLoad = false;
+		anim.speed = loadedSetSpeed;
+		anim.Play(loadedClipName,loadedClipIndex,loadedAnimatorPlaybackTime);
+	}
+	
+	public void SetAnimFromLoad(string n, int i, float t, float sp) {
 		firstUpdateAfterLoad = true;
 		loadedClipName = n;
 		loadedClipIndex = i;
 		loadedAnimatorPlaybackTime = t;
+		loadedSetSpeed = sp;
 	}
 
 	public static string Save(GameObject go) {
@@ -281,9 +301,8 @@ public class AIAnimationController : MonoBehaviour {
 													  "anim.speed");
 
 			if (setSpeed < 0f || setSpeed > 100f) setSpeed = 1f;
-			if (aiac.anim != null) aiac.anim.speed = setSpeed;
 		}
-		aiac.SetAnimFromLoad(aiac.clipName,0,aiac.currentClipPercentage);
+		aiac.SetAnimFromLoad(aiac.clipName,0,aiac.currentClipPercentage,setSpeed);
 		index++;
 		return index;
 	}
