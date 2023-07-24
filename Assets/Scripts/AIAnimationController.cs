@@ -205,7 +205,7 @@ public class AIAnimationController : MonoBehaviour {
 
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
-		s1.Append(Utils.SaveString(clipName,"clipName"));
+		s1.Append(Utils.SaveString(aiac.clipName,"clipName"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(aiac.currentClipPercentage,
 									  "currentClipPercentage"));
@@ -296,10 +296,9 @@ public class AIAnimationController : MonoBehaviour {
 													  "minWalkSpeedToAnimate");
 		index++;
 
+        float setSpeed = 1f;
 		if (!aiac.aic.ai_dead) {
-			float setSpeed = Utils.GetFloatFromString(entries[index],
-													  "anim.speed");
-
+			setSpeed = Utils.GetFloatFromString(entries[index],"anim.speed");
 			if (setSpeed < 0f || setSpeed > 100f) setSpeed = 1f;
 		}
 		aiac.SetAnimFromLoad(aiac.clipName,0,aiac.currentClipPercentage,setSpeed);
