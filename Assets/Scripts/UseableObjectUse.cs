@@ -34,6 +34,11 @@ public class UseableObjectUse : MonoBehaviour {
 
 	// Was GameObject owner as arguments, now UseData to hold more info.
 	public void Use (UseData ud) {
+	    if (MouseLookScript.a.holdingObject) {
+	        MouseLookScript.a.DropHeldItem();
+	        return;
+	    }
+	    
 		if (useableItemIndex < 0) Debug.Log("BUG: Useable index less than 0!");
 		tex = Const.a.useableItemsFrobIcons[useableItemIndex];
 		if (tex != null) MouseCursor.a.cursorImage = tex; // Set cursor to this object
