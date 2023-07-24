@@ -3,6 +3,9 @@
 [![DownloadsTotal](https://img.shields.io/github/downloads/JosiahJack/Citadel/total?color=teal&label=Downloads)](https://github.com/JosiahJack/Citadel/releases)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FJosiahJack%2FCitadel&count_bg=%23336B6A&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Page+Hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
+[![Build](https://github.com/JosiahJack/Citadel/actions/workflows/main.yml/badge.svg)](https://github.com/JosiahJack/Citadel/actions/workflows/main.yml)
+[![Tests](https://github.com/JosiahJack/Citadel/actions/workflows/runtests.yml/badge.svg?branch=master)](https://github.com/JosiahJack/Citadel/actions/workflows/runtests.yml)
+
 ### News
 We are in Beta now!  Bugs are very likely for the next several patch releases.
 Get the latest here: https://github.com/JosiahJack/Citadel/tags
