@@ -1426,6 +1426,8 @@ public class AIController : MonoBehaviour {
 
 		// Don't waste time raycasting if we won't be able to see them anyway.
 		if (dist > Const.a.sightRangeForNPC[index]) return false;
+        
+        if (IsCyberNPC()) return true;
 
 		// Get vector line made from enemy to found player
 		Vector3 checkline = tempVec - sightPoint.transform.position;
@@ -1516,6 +1518,12 @@ public class AIController : MonoBehaviour {
 	}
 	
 	void enemyInFrontChecks(GameObject target) {
+	    if (IsCyberNPC()) {
+	        infront = true;
+	        inProjFOV = true;
+	        return;
+	    }
+	    
 		if (target == null) {
 			infront = false;
 			inProjFOV = false;
