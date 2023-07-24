@@ -77,7 +77,7 @@ public class PlayerMovement : MonoBehaviour {
 	private float maxVerticalSpeed = 10f;
 	private float boosterSpeedBoost = 1.2f; // ammount to boost by when booster is active
 	private float jumpImpulseTime = 4.0f;
-	private float jumpVelocityBoots = 0.5f;
+	private float jumpVelocityBoots = 0.45f;
 	private float jumpVelocity = 1.1f;
 	private float jumpVelocityFatigued = 0.6f;
 	private float crouchRatio = 0.6f;
