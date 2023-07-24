@@ -1008,16 +1008,19 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void SendPaperLogToDataTab(int index,Vector3 tetherPoint) {
-		TabReset(lastDataSideRH);
-		if (lastDataSideRH) {
-			// Send to RH tab
-			OpenTab(4,true,TabMSG.AudioLog,index,Handedness.RH);
-			SearchFXRH.SetActive(true);
-		} else {
-			// Send to LH tab
+		if (Const.a.audioLogImagesRefIndicesLH[index] != 0) { // LH, but only
+															  // if has image.
+			TabReset(false);
 			OpenTab(4,true,TabMSG.AudioLog,index,Handedness.LH);
-			SearchFXLH.SetActive(true);
 		}
+		if (Const.a.audioLogImagesRefIndicesRH[index] != 0) { // RH, but only
+															  // if has image.
+			TabReset(true);
+			OpenTab(4,true,TabMSG.AudioLog,index,Handedness.RH);
+		}
+		
+		logDataTabInfoLH.SendLogData(index,false); // false for LH
+		logDataTabInfoRH.SendLogData(index,true);  // true for RH
 		objectInUsePos = tetherPoint;
 		paperLogInUse = true;
 		usingObject = true;
