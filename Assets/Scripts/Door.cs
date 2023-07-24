@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class Door : MonoBehaviour {
 	public string target;
@@ -273,6 +274,12 @@ public class Door : MonoBehaviour {
 		}
 	}
 
+	void DeactivateLasers() {
+		for (int i=defIndex;i<laserLines.Length;i++) {
+			if (laserLines[i].activeSelf) laserLines[i].SetActive(false);
+		}
+	}
+
 	void OpenDoor() {
 		anim.speed = defaultSpeed;
 		doorOpen = DoorState.Opening;
@@ -280,11 +287,8 @@ public class Door : MonoBehaviour {
 		anim.Play(openClipName);
 		Utils.PlayOneShotSavable(SFX,SFXClip);
 		if (toggleLasers) {
-			for (int i=defIndex;i<laserLines.Length;i++) {
-				if (laserLines[i].activeSelf) laserLines[i].SetActive(false);
-			}
-
-			lasersFinished = Mathf.Infinity;
+			DeactivateLasers();
+			lasersFinished = 0; // Checked explicitly for non-zero elsewhere.
 		}
 
 		SetCollisionLayer(19); // InterDebris
@@ -336,6 +340,12 @@ public class Door : MonoBehaviour {
 		anim.speed = speedZero;
 	}
 
+	void ActivateLasers() {
+		for (int i=defIndex;i<laserLines.Length;i++) {
+			if (!laserLines[i].activeSelf) laserLines[i].SetActive(true);
+		}
+	}
+
 	void Update() {
 		if (PauseScript.a.Paused()) { anim.speed = speedZero; return; }
 		if (PauseScript.a.MenuActive()) { anim.speed = speedZero; return; }
@@ -350,10 +360,12 @@ public class Door : MonoBehaviour {
 			animatorPlaybackTime = asi.normalizedTime;
 			if (doorOpen == DoorState.Closing && animatorPlaybackTime > 0.95f) {
 				doorOpen = DoorState.Closed; // Door is closed
+				ActivateLasers();
 			}
 
 			if (doorOpen == DoorState.Opening && animatorPlaybackTime > 0.95f) {
 				doorOpen = DoorState.Open; // Door is open
+				DeactivateLasers();
 			}
 		}
 
@@ -366,9 +378,7 @@ public class Door : MonoBehaviour {
 		if (toggleLasers && lasersFinished > 0 
 			&& lasersFinished < PauseScript.a.relativeTime) {
 
-			for (int i=defIndex;i<laserLines.Length;i++) {
-				if (!laserLines[i].activeSelf) laserLines[i].SetActive(true);
-			}
+			ActivateLasers();
 			lasersFinished = 0;
 		}
 
@@ -426,26 +436,63 @@ public class Door : MonoBehaviour {
 			return "0|0|0|0000.00000|0000.00000|0000.00000|0|0|2|0000.00000";
 		}
 
-		string line = System.String.Empty;
-		line = Utils.BoolToString(dr.targetAlreadyDone); // bool - have we already ran targets
-		line += Utils.splitChar + Utils.BoolToString(dr.locked); // bool - is this locked?
-		line += Utils.splitChar + Utils.BoolToString(dr.ajar); // bool - is this locked?
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(dr.useFinished); // float
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(dr.waitBeforeClose); // float
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(dr.lasersFinished); // float
-		line += Utils.splitChar + Utils.BoolToString(dr.blocked); // bool - is the door blocked currently?
-		line += Utils.splitChar + Utils.BoolToString(dr.accessCardUsedByPlayer); // bool - is the door blocked currently?
-		switch (dr.doorOpen) {
-			case DoorState.Closed: line += Utils.splitChar + "0"; break;
-			case DoorState.Open: line += Utils.splitChar + "1"; break;
-			case DoorState.Closing: line += Utils.splitChar + "2"; break;
-			case DoorState.Opening: line += Utils.splitChar + "3"; break;
-		}
-		line += Utils.splitChar + Utils.FloatToString(dr.animatorPlaybackTime); // float - current animation time
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(dr.target);
+		s1.Append(Utils.splitChar);
+		s1.Append(dr.argvalue);
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(dr.onlyTargetOnce));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(dr.targetAlreadyDone));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(dr.delay));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(dr.locked));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(dr.securityThreshhold));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(dr.stayOpen));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(dr.startOpen));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(dr.ajar));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(dr.ajarPercentage));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(dr.useTimeDelay));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(dr.lockedMessageLingdex));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(dr.blocked));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(dr.useFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(dr.waitBeforeClose));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.AccessCardTypeToInt(dr.requiredAccessCard));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(dr.timeBeforeLasersOn));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(dr.lasersFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(dr.accessCardUsedByPlayer));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(dr.toggleLasers));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(dr.targettingOnlyUnlocks));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(dr.changeLayerOnOpenClose));
+		s1.Append(Utils.splitChar);
+		s1.Append(DoorStateToInt(dr.doorOpen));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(dr.animatorPlaybackTime));
 		if (prefID.constIndex == 500) { // doorE
-			line += Utils.splitChar + Utils.SaveTransform(go.transform.parent.transform);
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.SaveTransform(go.transform.parent.transform));
 		}
-		return line;
+
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index,
@@ -466,21 +513,30 @@ public class Door : MonoBehaviour {
 			return index + 10;
 		}
 
-		dr.targetAlreadyDone = Utils.GetBoolFromString(entries[index]); index++; // bool - have we already ran targets
-		dr.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - is this locked?
-		dr.ajar = Utils.GetBoolFromString(entries[index]); index++; // bool - is this ajar?
+		dr.target = entries[index]; index++;
+		dr.argvalue = entries[index]; index++;
+		dr.onlyTargetOnce = Utils.GetBoolFromString(entries[index]); index++;
+		dr.targetAlreadyDone = Utils.GetBoolFromString(entries[index]); index++;
+		dr.delay = Utils.GetFloatFromString(entries[index]); index++;
+		dr.locked = Utils.GetBoolFromString(entries[index]); index++;
+		dr.securityThreshhold = Utils.GetIntFromString(entries[index]); index++;
+		dr.stayOpen = Utils.GetBoolFromString(entries[index]); index++;
+		dr.startOpen = Utils.GetBoolFromString(entries[index]); index++;
+		dr.ajar = Utils.GetBoolFromString(entries[index]); index++;
+		dr.ajarPercentage = Utils.GetFloatFromString(entries[index]); index++;
+		dr.useTimeDelay = Utils.GetFloatFromString(entries[index]); index++;
+		dr.lockedMessageLingdex = Utils.GetIntFromString(entries[index]); index++;
+		dr.blocked = Utils.GetBoolFromString(entries[index]); index++;
 		dr.useFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		dr.waitBeforeClose = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		dr.requiredAccessCard = Utils.IntToAccessCardType(Utils.GetIntFromString(entries[index])); index++;
+		dr.timeBeforeLasersOn = Utils.GetFloatFromString(entries[index]); index++;
 		dr.lasersFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		dr.blocked = Utils.GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
-		dr.accessCardUsedByPlayer = Utils.GetBoolFromString(entries[index]); index++; // bool - is the door blocked currently?
-		int state = Utils.GetIntFromString(entries[index]); index++;
-		switch (state) {
-			case 0: dr.doorOpen = DoorState.Closed; break;
-			case 1: dr.doorOpen = DoorState.Open; break;
-			case 2: dr.doorOpen = DoorState.Closing; break;
-			case 3: dr.doorOpen = DoorState.Opening; break;
-		}
+		dr.accessCardUsedByPlayer = Utils.GetBoolFromString(entries[index]); index++;
+		dr.toggleLasers = Utils.GetBoolFromString(entries[index]); index++;
+		dr.targettingOnlyUnlocks = Utils.GetBoolFromString(entries[index]); index++;
+		dr.changeLayerOnOpenClose = Utils.GetBoolFromString(entries[index]); index++;
+		dr.doorOpen = IntToDoorState(Utils.GetIntFromString(entries[index])); index++;
 		dr.animatorPlaybackTime = Utils.GetFloatFromString(entries[index]); index++;
 		dr.SetAnimFromLoad(dr.GetClipName(),0,dr.animatorPlaybackTime);
 		if (prefID.constIndex == 500) { // doorE
@@ -488,5 +544,25 @@ public class Door : MonoBehaviour {
 			index = Utils.LoadTransform(parentTR,ref entries,index);
 		}
 		return index;
+	}
+
+	public static int DoorStateToInt(DoorState state) {
+		switch (state) {
+			case DoorState.Closed:  return 0;
+			case DoorState.Open:    return 1;
+			case DoorState.Closing: return 2;
+			case DoorState.Opening: return 3;
+		}
+		return 0;
+	}
+
+	public static DoorState IntToDoorState(int state) {
+		switch (state) {
+			case 0: return DoorState.Closed;
+			case 1: return DoorState.Open;
+			case 2: return DoorState.Closing;
+			case 3: return DoorState.Opening;
+		}
+		return DoorState.Closed;
 	}
 }
