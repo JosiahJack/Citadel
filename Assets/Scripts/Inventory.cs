@@ -975,7 +975,7 @@ public class Inventory : MonoBehaviour {
 		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(0,true);
 		grenAmmo[index]++;
 		grenadeIndex = useableIndex;
-		Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[34] );
+		Const.sprint(Const.a.useableItemsNameText[useableIndex] + Const.a.stringTable[34] );
 		MFDManager.a.NotifyToCenterTab(0);
 		MFDManager.a.SendInfoToItemTab(useableIndex,-1);
     }
@@ -1522,7 +1522,7 @@ public class Inventory : MonoBehaviour {
 		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent (0,true);
 		if (isSecondary) wepAmmoSecondary[index] += amount;
 		else			 wepAmmo[index]          += amount;
-		Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[33]); // Item added to weapon inventory
+		Const.sprint(Const.a.useableItemsNameText[constIndex] + Const.a.stringTable[609]); // Item added to ammo
 		MFDManager.a.NotifyToCenterTab(0);
 		MFDManager.a.SendInfoToItemTab(constIndex,-1);
 	}

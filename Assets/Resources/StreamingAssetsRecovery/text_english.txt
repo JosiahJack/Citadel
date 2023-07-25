@@ -607,3 +607,4 @@ Panel already has item installed
 Plastique activated! T-minus 15 seconds!
 All relays functioning correctly.
 Access panel unlocked
+Enter first 3 digits on panel above.
