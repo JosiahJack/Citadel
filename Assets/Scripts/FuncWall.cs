@@ -158,14 +158,14 @@ public class FuncWall : MonoBehaviour {
 		// prior to that function calling this function, so only save the
 		// parent transform here.
 		line += Utils.splitChar + Utils.SaveTransform(go.transform.parent.transform);
+		Transform info_target = go.transform.parent.transform.GetChild(1);
+		line += Utils.splitChar + Utils.SaveTransform(info_target);
+		line += Utils.splitChar + Utils.SaveAudioSource(go);
 		line += Utils.splitChar + Utils.UintToString(fw.chunkIDs.Length);
 		for (int i=0;i<go.transform.childCount; i++) {
 			line += Utils.splitChar + Utils.UintToString(fw.chunkIDs[i]);
 			line += Utils.splitChar + Utils.SaveChildGOState(go,i);
 		}
-		Transform info_target = go.transform.parent.transform.GetChild(1);
-		line += Utils.splitChar + Utils.SaveTransform(info_target);
-		line += Utils.splitChar + Utils.SaveAudioSource(go);
 		return line;
 	}
 
@@ -209,6 +209,10 @@ public class FuncWall : MonoBehaviour {
 		fw.startTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		Transform parentTR = go.transform.parent.transform;
 		index = Utils.LoadTransform(parentTR,ref entries,index);
+		Transform info_target = go.transform.parent.transform.GetChild(1);
+		index = Utils.LoadTransform(info_target,ref entries,index);
+		index = Utils.LoadAudioSource(go,ref entries,index);
+		fw.transform.localPosition = new Vector3(0f,0f,0f);
 		int numChildren = Utils.GetIntFromString(entries[index]); index++;
 		fw.chunkIDs = new int[numChildren];
 		int chunkdex = 0;
@@ -231,9 +235,6 @@ public class FuncWall : MonoBehaviour {
 			childGO.layer = 18; // Door
 			index = Utils.LoadSubActivatedGOState(childGO,ref entries,index);
 		}
-		Transform info_target = go.transform.parent.transform.GetChild(1);
-		index = Utils.LoadTransform(info_target,ref entries,index);
-		index = Utils.LoadAudioSource(go,ref entries,index);
 		fw.Initialize();
 
 		return index;
