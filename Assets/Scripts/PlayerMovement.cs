@@ -495,7 +495,14 @@ public class PlayerMovement : MonoBehaviour {
 	//}
 
 	void ApplyGroundFriction() {
-		if (isSprinting && running && !CheatNoclip) return;
+	    if (!CheatNoclip) {
+	    	if (isSprinting && running) return;
+	    } else {
+	        if (isSprinting) {
+	            if (GetInput.a.SwimUp()) return;
+	            if (GetInput.a.SwimDn()) return;
+	        }
+	    }
 
 		tempVecRbody = rbody.velocity;
 		Vector3 movDir = rbody.velocity;
