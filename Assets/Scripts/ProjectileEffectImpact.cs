@@ -80,6 +80,7 @@ public class ProjectileEffectImpact : MonoBehaviour {
 											dd.attacknormal,dd.hit.point);
 				}
 
+				Debug.Log("PEI damaging by: " + dd.damage.ToString());
 				float dmgFinal = hm.TakeDamage(dd); // Send the damageData
 													// container to
 													// HealthManager of hit

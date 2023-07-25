@@ -1301,6 +1301,10 @@ public class AIController : MonoBehaviour {
 			actualSMR.material = deathMaterial;
 		}
 
+		if (index == 9 || index == 20) {
+			rbody.velocity = new Vector3(0f,rbody.velocity.z,0f);
+		}
+
 		dyingSetup = true;
 	}
 
