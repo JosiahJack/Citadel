@@ -495,14 +495,16 @@ public class PlayerMovement : MonoBehaviour {
 	//}
 
 	void ApplyGroundFriction() {
-	    if (!CheatNoclip) {
-	    	if (isSprinting && running) return;
-	    } else {
-	        if (isSprinting) {
-	            if (GetInput.a.SwimUp()) return;
-	            if (GetInput.a.SwimDn()) return;
-	        }
-	    }
+		if (running) {
+			if (!CheatNoclip) {
+				if (isSprinting) return;
+			} else {
+				if (isSprinting) {
+					if (GetInput.a.SwimUp()) return;
+					if (GetInput.a.SwimDn()) return;
+				}
+			}
+		}
 
 		tempVecRbody = rbody.velocity;
 		Vector3 movDir = rbody.velocity;
@@ -518,7 +520,7 @@ public class PlayerMovement : MonoBehaviour {
 			tempVecRbody.y = Mathf.SmoothDamp(rbody.velocity.y,0,
 											  ref walkDeaccelerationVoly,
 											  deceleration);
-			if (isSprinting) return;
+			if (isSprinting && running) return;
 		} else {
 			if (Inventory.a.BoosterActive()) {
 				deceleration = walkDeaccelerationBooster;

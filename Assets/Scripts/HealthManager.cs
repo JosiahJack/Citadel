@@ -412,7 +412,11 @@ public class HealthManager : MonoBehaviour {
 
 		// Do the damage, that's right do. your. worst!
 		if (IsCyberEntity()) {
+			float cybbefore = cyberHealth;
 			cyberHealth -= take;
+			Debug.Log("Cyber entity's health was: " + cybbefore.ToString()
+					  + " is now: " + cyberHealth.ToString());
+
 			if (isPlayer) {
 				MFDManager.a.DrawTicks(true);
 				if (cyberHealth <= 0) {
@@ -421,13 +425,23 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 		} else {
+			float before = health;
 			take = ApplyAttackTypeAdjustments(take,dd); // Apply critical based on AttackType
-			health -= take; //was directly dd.damage but changed since we are check for extra things in case GetDamageTakeAmount wasn't called on dd.damage beforehand (e.g. player fall damage, internal to player only, need to protect against shield, etc, JJ 9/5/19)
+
+			// Was directly dd.damage but changed since we are check for extra
+			// things in case GetDamageTakeAmount wasn't called on dd.damage
+			// beforehand (e.g. player fall damage, internal to player only,
+			// need to protect against shield, etc, JJ 9/5/19).
+			health -= take;
+			Debug.Log("Non-cyber entity's health was: " + before.ToString()
+					  + " is now: " + health.ToString());
+
 			if (isPlayer) {
 				MFDManager.a.DrawTicks(true);
 				Music.a.inCombat = true;
 			}
 		}
+
 		attacker = dd.owner;
 		if (isNPC && (health > 0f || (IsCyberEntity() && cyberHealth > 0f))) {
 			AIController aic = GetComponent<AIController>();
@@ -442,9 +456,14 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 
-
-        if (health <= 0f || (IsCyberEntity() && cyberHealth <= 0f)) {
-			Death(dd.attackType == AttackType.EnergyBeam);
+		if (IsCyberEntity()) {
+			if (cyberHealth <= 0f) {
+				Death(dd.attackType == AttackType.EnergyBeam);
+			}
+		} else {
+			if (health <= 0f) {
+				Death(dd.attackType == AttackType.EnergyBeam);
+			}
 		}
 
 		return take;
