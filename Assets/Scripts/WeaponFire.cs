@@ -1227,9 +1227,15 @@ public class WeaponFire : MonoBehaviour {
 		if (DidRayHit(index16)) {
 			fireDistance = hitscanDistance; // Reset before any returns.
 			if (rapier) {
-				if (rapieranim != null) rapieranim.Play("Attack2");
+				if (rapieranim != null) {
+					rapieranim.Play("Attack2");
+					//rapieranim.Play("Attack2",-1,float.NegativeInfinity);
+				}
 			} else {
-				if (anim != null) anim.Play("Attack2");
+				if (anim != null) {
+					anim.Play("Attack2");
+					//anim.Play("Attack2",-1,float.NegativeInfinity);
+				}
 			}
 
 			GameObject hitGO = tempHit.collider.transform.gameObject;
