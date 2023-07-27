@@ -71,12 +71,24 @@ namespace Tests {
         }
 
         private bool SceneLoaded() {
-            Scene citmain = SceneManager.GetSceneByName("CitadelScene");
-            if (citmain == null) return false;
-            if (citmain.name != "CitadelScene") return false;
+            return sceneLoaded;
+            //Scene citmain = SceneManager.GetSceneByName("CitadelScene");
+            //if (citmain == null) return false;
+            //if (citmain.name != "CitadelScene") return false;
 
-            SceneManager.SetActiveScene(citmain);
-            return true;
+            //SceneManager.SetActiveScene(citmain);
+            //return true;
+        }
+
+        // Custom method to be called when a scene is loaded
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+            if (scene.name == "CitadelScene") {
+                // Unsubscribe from the event to avoid handling it multiple times
+                SceneManager.sceneLoaded -= OnSceneLoaded;
+
+                // Set the flag to indicate that the scene is loaded
+                sceneLoaded = true;
+            }
         }
 
         [UnityTest]
