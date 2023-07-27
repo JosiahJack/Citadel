@@ -20,10 +20,18 @@ namespace Tests {
     public class TestSaveLoad {
         private bool sceneLoaded = false;
 
+        private IEnumerator LoadSceneAsync(string sceneName) {
+            var asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+            while (!asyncLoad.isDone) {
+                yield return null;
+            }
+        }
+
         public void RunBeforeAnyTests() {
             if (sceneLoaded) return;
 
-            SceneManager.LoadSceneAsync("CitadelScene");
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            LoadSceneAsync("CitadelScene");
         }
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
