@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class Inventory : MonoBehaviour {
 	// Access Cards
-	[HideInInspector] public AccessCardType[] accessCardsOwned; // save
+	public AccessCardType[] accessCardsOwned; // save
 	private AccessCardType doorAccessTypeAcquired;
 
 	// Hardware

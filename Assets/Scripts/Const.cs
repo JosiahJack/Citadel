@@ -379,7 +379,7 @@ public class Const : MonoBehaviour {
 		a.LoadItemNamesData();
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
-		a.versionString = "v0.99.4"; // Global CITADEL PROJECT VERSION
+		a.versionString = "v0.99.5"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
 							  + "Start of C# Game Code, Welcome back Hacker!");
@@ -1701,46 +1701,67 @@ public class Const : MonoBehaviour {
 			}
 		}
 
-		for (int i=0;i<healthObjectsRegistration.Length;i++) {
+		int len = healthObjectsRegistration.Length;
+		for (int i=0;i<len;i++) {
 			if (healthObjectsRegistration[i] == null) {
 				healthObjectsRegistration[i] = hm;
 				return;
 			}
-			if (i == (healthObjectsRegistration.Length - 1)) UnityEngine.Debug.Log("WARNING: Could not register object with health.  Hit limit of " + healthObjectsRegistration.Length.ToString() + ".");
+
+			if (i == (len - 1)) {
+				string msg = "WARNING: Could not register object with health. "
+							 + " Hit limit of ";
+
+				UnityEngine.Debug.Log(msg + len.ToString());
+			}
 		}
 	}
 
 	public void UseTargets (UseData ud, string targetname) {
-		if (string.IsNullOrWhiteSpace(targetname)) return; // First check if targetname is valid.  This is fine if not, some triggers we just want to play the trigger's SFX and do nothing else.
+		// First check if targetname is valid.  This is fine if not, some
+		// triggers we just want to play the trigger's SFX and do nothing else.
+		if (string.IsNullOrWhiteSpace(targetname)) return;
 
 		UseData tempUD = new UseData();
 		float numtargetsfound = 0;
-		// Find each gameobject with matching targetname in the register, then call Use for each
+		// Find each gameobject with matching targetname in the register, then
+		// call Use for each.
 		for (int i=0;i<TargetRegister.Length;i++) {
-			if (TargetnameRegister[i] == targetname) {
-				if (TargetRegister[i] != null) {
-					numtargetsfound++;
-					tempUD.CopyBitsFromUseData(ud);
+			if (TargetnameRegister.Length < 1) return;
+			if (TargetnameRegister[i] != targetname) continue;
 
-					// Added activeSelf bit to keep from spamming SetActive
-					// when running targets through a trigger_multiple
-					if (tempUD.GOSetActive && !TargetRegister[i].activeSelf) {
-						UnityEngine.Debug.Log("GOSetActive on " + targetname);
-						TargetRegister[i].SetActive(true);
-					}
+			if (TargetRegister[i] != null) {
+				numtargetsfound++;
+				tempUD.CopyBitsFromUseData(ud);
 
-					// Diddo for activeSelf to prevent spamming SetActive.
-					if (tempUD.GOSetDeactive && TargetRegister[i].activeSelf) {
-						UnityEngine.Debug.Log("GOSetDeactive on " + targetname);
-						TargetRegister[i].SetActive(false);
-					}
+				UnityEngine.Debug.Log("Running targets for " + targetname);
 
-					if (tempUD.GOToggleActive) TargetRegister[i].SetActive(!TargetRegister[i].activeSelf); // if I abuse this with a trigger_multiple someone should shoot me
-					TargetIO tio = TargetRegister[i].GetComponent<TargetIO>();
-					tio.Targetted(tempUD);
-				} else {
-					UnityEngine.Debug.Log("WARNING: null TargetRegister GameObject linked to targetname of " + targetname + ". Could not run Targetted.");
+				// Added activeSelf bit to keep from spamming SetActive
+				// when running targets through a trigger_multiple
+				if (tempUD.GOSetActive && !TargetRegister[i].activeSelf) {
+					UnityEngine.Debug.Log("GOSetActive on " + targetname);
+					TargetRegister[i].SetActive(true);
 				}
+
+				// Diddo for activeSelf to prevent spamming SetActive.
+				if (tempUD.GOSetDeactive && TargetRegister[i].activeSelf) {
+					UnityEngine.Debug.Log("GOSetDeactive on " + targetname);
+					TargetRegister[i].SetActive(false);
+				}
+
+				if (tempUD.GOToggleActive) {
+					// If I abuse this with a trigger_multiple someone should
+					// shoot me.
+					TargetRegister[i].SetActive(!TargetRegister[i].activeSelf);
+				}
+
+				TargetIO tio = TargetRegister[i].GetComponent<TargetIO>();
+				tio.Targetted(tempUD);
+			} else {
+				UnityEngine.Debug.Log("WARNING: null TargetRegister GameObject"
+									  + " linked to targetname of "
+									  + targetname + ". Could not run "
+									  + "Targetted.");
 			}
 		}
 	}
