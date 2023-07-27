@@ -227,7 +227,7 @@ public class ButtonSwitch : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		
 		s1.Append(Utils.UintToString(bs.lockedMessageLingdex,
-		                             "lockedMessageLingdex");
+		                             "lockedMessageLingdex"));
 		s1.Append(Utils.splitChar);
 		
 		s1.Append(Utils.BoolToString(bs.active,"active"));
@@ -262,7 +262,8 @@ public class ButtonSwitch : MonoBehaviour {
 			return index + 16;
 		}
 
-		bs.securityThreshhold = Utils.GetIntFromString(entries[index],"securityThreshhold");
+		bs.securityThreshhold = Utils.GetIntFromString(entries[index],
+		                                               "securityThreshhold");
 		index++;
 		
 		bs.target = Utils.LoadString(entries[index],"target");
@@ -314,7 +315,7 @@ public class ButtonSwitch : MonoBehaviour {
 		index++;
 		
 		if (bs.active) {
-		    if ((bs.tickFinished - PauseScript.a.relativeTime) > 1.5f)) {
+		    if ((bs.tickFinished - PauseScript.a.relativeTime) > 1.5f) {
 			    bs.tickFinished = PauseScript.a.relativeTime + 1.5f;
 		    }
 		} else {
