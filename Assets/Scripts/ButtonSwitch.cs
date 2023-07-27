@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class ButtonSwitch : MonoBehaviour {
 	// Individually set values per prefab isntance within the scene
-	public int securityThreshhold = 100;  // save, If security level is not <= this level (100), this is unusable until security falls.
+	public int securityThreshhold = 100;  // save, If security level is 
+	                                      // not <= this level (100), this is
+	                                      // unusable until security falls.
 	public string target; // save
 	public string argvalue; // save
 	public string message; // save
@@ -19,13 +22,15 @@ public class ButtonSwitch : MonoBehaviour {
 	public int lockedMessageLingdex = 193; // save
 	public bool active; // save
 
-	// External references, optional depending on (changeMatOnActive || blinkWhenActive)
+	// External references, optional depending on (changeMatOnActive
+	// || blinkWhenActive)
 	/*[DTValidator.Optional] */public Material mainSwitchMaterial;
 	/*[DTValidator.Optional] */public Material alternateSwitchMaterial;
 
 	// Internal references
 	private AudioSource SFXSource;
-	private MeshRenderer mRenderer; // Optional depending on (changeMatOnActive || blinkWhenActive)
+	private MeshRenderer mRenderer; // Optional depending on (changeMatOnActive
+	                                // || blinkWhenActive)
 	private Animator anim;
 	private GameObject player; // Set on use, no need for initialization check.
 	private float tickTime = 1.5f;
@@ -40,30 +45,40 @@ public class ButtonSwitch : MonoBehaviour {
 		if (awakeInitialized) return;
 
 		SFXSource = GetComponent<AudioSource>();
-		if (SFXSource == null) Debug.Log("BUG: ButtonSwitch missing component for SFXSource");
-		else SFXSource.playOnAwake = false;
+		if (SFXSource == null) {
+		    Debug.Log("BUG: ButtonSwitch missing component for SFXSource");
+		} else SFXSource.playOnAwake = false;
+		
 		mRenderer = GetComponent<MeshRenderer>();
 		delayFinished = 0; // prevent using targets on awake
 		if (animateModel) anim = GetComponent<Animator>();
-		if (active) tickFinished = PauseScript.a.relativeTime + 1.5f + Random.value;
+		if (active) {
+		    tickFinished = PauseScript.a.relativeTime + 1.5f + Random.value;
+		}
+		
 		awakeInitialized = true;
 	}
 
 	public void Use (UseData ud) {
-		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
+	    if (LevelManager.a.superoverride || Const.a.difficultyMission == 0) {
+	        locked = false; // SHODAN can go anywhere!  Full security override!
+	    } else if (LevelManager.a.GetCurrentLevelSecurity()
+	               > securityThreshhold) {
+	                   
 			MFDManager.a.BlockedBySecurity(transform.position,ud);
 			return;
 		}
 
-		if (LevelManager.a.superoverride || Const.a.difficultyMission == 0) locked = false; // SHODAN can go anywhere!  Full security override!
-
 		if (locked) {
-			Const.sprintByIndexOrOverride (lockedMessageLingdex, lockedMessage,ud.owner);
+			Const.sprintByIndexOrOverride(lockedMessageLingdex,
+			                              lockedMessage,ud.owner);
+			                              
 			Utils.PlayOneShotSavable(SFXSource,SFXLocked);
 			return;
 		}
 
-		player = ud.owner;  // set playerCamera to owner of the input (always should be the player camera)
+        // Set playerCamera to owner of the input (always should be the camera)
+		player = ud.owner;
 		Utils.PlayOneShotSavable(SFXSource,SFX);
 		Const.sprintByIndexOrOverride (messageIndex, message,ud.owner);
 		if (delay > 0) {
@@ -74,13 +89,14 @@ public class ButtonSwitch : MonoBehaviour {
 	}
 
 	public void Targetted (UseData ud) {
-		if (ud.owner != player) Use(ud); // Prevents runaway circular targetting of self with this if statement.
+		Use(ud);
 	}
 
 	public void ToggleLocked() {
 		string was = locked.ToString();
 		locked = !locked;
-		Debug.Log("ButtonSwitch was " + was.ToString() + ", now " + locked.ToString());
+		Debug.Log("ButtonSwitch was " + was.ToString() + ", now "
+		          + locked.ToString());
 	}
 
 	public void UseTargets () {
@@ -91,7 +107,9 @@ public class ButtonSwitch : MonoBehaviour {
 		if (tio != null) {
 			ud.SetBits(tio);
 		} else {
-			Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
+			Debug.Log("BUG: no TargetIO.cs found on an object with a "
+			          + "ButtonSwitch.cs script!  Trying to call UseTargets "
+			          + "without parameters!");
 		}
 		Const.a.UseTargets(ud,target);
 
@@ -125,19 +143,25 @@ public class ButtonSwitch : MonoBehaviour {
 	public void SetMaterialToAlternate() {
 		if (!blinkWhenActive) return;
 
-		if (mRenderer.material != alternateSwitchMaterial) mRenderer.material = alternateSwitchMaterial;
+		if (mRenderer.material != alternateSwitchMaterial) {
+		    mRenderer.material = alternateSwitchMaterial;
+		}
 	}
 
 	public void SetMaterialToNormal() {
 		if (!blinkWhenActive) return;
 
-		if (mRenderer.material != mainSwitchMaterial) mRenderer.material = mainSwitchMaterial;
+		if (mRenderer.material != mainSwitchMaterial) {
+		    mRenderer.material = mainSwitchMaterial;
+		}
 	}
 
 	void Update() {
-		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return; // Don't do any checks or anything else...we're paused!
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return;
 
-		if ((delayFinished < PauseScript.a.relativeTime) && delayFinished != 0) {
+		if ((delayFinished < PauseScript.a.relativeTime)
+		    && delayFinished != 0) {
+
 			delayFinished = 0;
 			UseTargets();
 		}
@@ -160,27 +184,64 @@ public class ButtonSwitch : MonoBehaviour {
 	public static string Save(GameObject go) {
 		ButtonSwitch bs = go.GetComponent<ButtonSwitch>();
 		if (bs == null) { // bs?  null??  that's bs
-			Debug.Log("ButtonSwitch missing on savetype of ButtonSwitch!  GameObject.name: " + go.name);
+			Debug.Log("ButtonSwitch missing on savetype of ButtonSwitch!  "
+			          + "GameObject.name: " + go.name);
 			return Utils.DTypeWordToSaveString("usssufbbbbsubbff");
 		}
 
 		string line = System.String.Empty;
-		line = Utils.UintToString(bs.securityThreshhold);
-		line += Utils.splitChar + bs.target;
-		line += Utils.splitChar + bs.argvalue;
-		line += Utils.splitChar + bs.message;
-		line += Utils.splitChar + Utils.UintToString(bs.messageIndex);
-		line += Utils.splitChar + Utils.FloatToString(bs.delay);
-		line += Utils.splitChar + Utils.BoolToString(bs.blinkWhenActive);
-		line += Utils.splitChar + Utils.BoolToString(bs.changeMatOnActive);
-		line += Utils.splitChar + Utils.BoolToString(bs.animateModel);
-		line += Utils.splitChar + Utils.BoolToString(bs.locked); // bool - is this switch locked
-		line += Utils.splitChar + bs.lockedMessage;
-		line += Utils.splitChar + Utils.UintToString(bs.lockedMessageLingdex);
-		line += Utils.splitChar + Utils.BoolToString(bs.active); // bool - is the switch flashing?
-		line += Utils.splitChar + Utils.BoolToString(bs.alternateOn); // bool - is the flashing material on?
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(bs.delayFinished); // float - time before firing targets
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(bs.tickFinished); // float - time before firing targets
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(Utils.UintToString(bs.securityThreshhold,
+		                             "securityThreshhold"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.SaveString(bs.target,"target"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.SaveString(bs.argvalue,"argvalue"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.SaveString(bs.message,"message"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.UintToString(bs.messageIndex,"messageIndex"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.FloatToString(bs.delay,"delay"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.BoolToString(bs.blinkWhenActive,"blinkWhenActive"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.BoolToString(bs.changeMatOnActive,"changeMatOnActive"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.BoolToString(bs.animateModel,"animateModel"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.BoolToString(bs.locked,"locked"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.SaveString(bs.lockedMessage,"lockedMessage"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.UintToString(bs.lockedMessageLingdex,
+		                             "lockedMessageLingdex");
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.BoolToString(bs.active,"active"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.BoolToString(bs.alternateOn,"alternateOn"));
+		s1.Append(Utils.splitChar);
+		
+		s1.Append(Utils.SaveRelativeTimeDifferential(bs.delayFinished,
+		                                             "delayFinished"));
+	    s1.Append(Utils.splitChar);
+	    
+		s1.Append(Utils.SaveRelativeTimeDifferential(bs.tickFinished,
+		                                             "tickFinished"));
 		return line;
 	}
 
@@ -201,26 +262,63 @@ public class ButtonSwitch : MonoBehaviour {
 			return index + 16;
 		}
 
-		bs.securityThreshhold = Utils.GetIntFromString(entries[index]); index++;
-		bs.target = entries[index]; index++;
-		bs.argvalue = entries[index]; index++;
-		bs.message = entries[index]; index++;
-		bs.messageIndex = Utils.GetIntFromString(entries[index]); index++;
-		bs.delay = Utils.GetFloatFromString(entries[index]); index++;
-		bs.blinkWhenActive = Utils.GetBoolFromString(entries[index]); index++;
-		bs.changeMatOnActive = Utils.GetBoolFromString(entries[index]); index++;
-		bs.animateModel = Utils.GetBoolFromString(entries[index]); index++;
-		bs.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - is this switch locked
-		bs.lockedMessage = entries[index]; index++;
-		bs.lockedMessageLingdex = Utils.GetIntFromString(entries[index]); index++;
-		bs.active = Utils.GetBoolFromString(entries[index]); index++; // bool - is the switch flashing?
-		bs.alternateOn = Utils.GetBoolFromString(entries[index]); index++; // bool - is the flashing material on?
-		bs.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before firing targets
-		bs.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before thinking
-		if (bs.active && ((bs.tickFinished - PauseScript.a.relativeTime) > 1.5f)) {
-			bs.tickFinished = PauseScript.a.relativeTime + 1.5f;
+		bs.securityThreshhold = Utils.GetIntFromString(entries[index],"securityThreshhold");
+		index++;
+		
+		bs.target = Utils.LoadString(entries[index],"target");
+		index++;
+		
+		bs.argvalue = Utils.LoadString(entries[index],"argvalue");
+		index++;
+		
+		bs.message = Utils.LoadString(entries[index],"message");
+		index++;
+		
+		bs.messageIndex = Utils.GetIntFromString(entries[index],"messageIndex");
+		index++;
+		
+		bs.delay = Utils.GetFloatFromString(entries[index],"delay");
+		index++;
+		
+		bs.blinkWhenActive = Utils.GetBoolFromString(entries[index],"blinkWhenActive");
+		index++;
+		
+		bs.changeMatOnActive = Utils.GetBoolFromString(entries[index],"changeMatOnActive");
+		index++;
+		
+		bs.animateModel = Utils.GetBoolFromString(entries[index],"animateModel");
+		index++;
+		
+		bs.locked = Utils.GetBoolFromString(entries[index],"locked");
+		index++;
+		
+		bs.lockedMessage = Utils.LoadString(entries[index],"lockedMessage");
+		index++;
+		
+		bs.lockedMessageLingdex = Utils.GetIntFromString(entries[index],
+		                                               "lockedMessageLingdex");
+		index++;
+		
+		bs.active = Utils.GetBoolFromString(entries[index]),"active";
+		index++;
+		
+		bs.alternateOn = Utils.GetBoolFromString(entries[index],"alternateOn");
+		index++;
+		
+		bs.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index],
+		                                                      "delayFinished");
+		index++;
+		
+		bs.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],
+		                                                     "tickFinished");
+		index++;
+		
+		if (bs.active) {
+		    if ((bs.tickFinished - PauseScript.a.relativeTime) > 1.5f)) {
+			    bs.tickFinished = PauseScript.a.relativeTime + 1.5f;
+		    }
 		} else {
-			if (bs.blinkWhenActive && !bs.active) {
+			if (bs.blinkWhenActive) {
 				bs.Awake();
 				bs.SetMaterialToNormal();
 			}
