@@ -300,7 +300,7 @@ public class ButtonSwitch : MonoBehaviour {
 		                                               "lockedMessageLingdex");
 		index++;
 		
-		bs.active = Utils.GetBoolFromString(entries[index]),"active");
+		bs.active = Utils.GetBoolFromString(entries[index],"active");
 		index++;
 		
 		bs.alternateOn = Utils.GetBoolFromString(entries[index],"alternateOn");
