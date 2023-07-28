@@ -77,11 +77,11 @@ public class QuestBits {
 		s1.Clear();
 		s1.Append(Utils.IntToString(lev1SecCode,"lev1SecCode"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.IntToString(lev2SecCode,"lev2SecCode");
+		s1.Append(Utils.IntToString(lev2SecCode,"lev2SecCode"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.IntToString(lev3SecCode,"lev3SecCode");
+		s1.Append(Utils.IntToString(lev3SecCode,"lev3SecCode"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.IntToString(lev4SecCode,"lev4SecCode")a;
+		s1.Append(Utils.IntToString(lev4SecCode,"lev4SecCode"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(lev5SecCode,"lev5SecCode"));
 		s1.Append(Utils.splitChar);
