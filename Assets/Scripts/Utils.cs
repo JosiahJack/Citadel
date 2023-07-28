@@ -1413,5 +1413,3 @@ public class Utils {
         return logFilePath;
     }
 }
-
-}
