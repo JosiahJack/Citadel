@@ -545,30 +545,43 @@ public class LevelManager : MonoBehaviour {
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear(); // keep reusing s1
 		// Global states and Difficulties
-		s1.Append(Utils.UintToString(LevelManager.a.currentLevel)); // int
+		s1.Append(Utils.UintToString(LevelManager.a.currentLevel,
+								     "currentLevel"));
 		s1.Append(Utils.splitChar);
 		for (i=0;i<14;i++) {
-			s1.Append(Utils.UintToString(LevelManager.a.levelSecurity[i])); // int
+			s1.Append(Utils.UintToString(LevelManager.a.levelSecurity[i],
+										 "levelSecurity["+i.ToString()+"]"));
 			s1.Append(Utils.splitChar);
 		}
 
 		for (i=0;i<14;i++) {
-			s1.Append(Utils.UintToString(LevelManager.a.levelCameraDestroyedCount[i])); // int
+			s1.Append(Utils.UintToString(
+				LevelManager.a.levelCameraDestroyedCount[i],
+				"levelCameraDestroyedCount["+i.ToString()+"]"
+			));
 			s1.Append(Utils.splitChar);
 		}
 
 		for (i=0;i<14;i++) {
-			s1.Append(Utils.UintToString(LevelManager.a.levelSmallNodeDestroyedCount[i])); // int
+			s1.Append(Utils.UintToString(
+				LevelManager.a.levelSmallNodeDestroyedCount[i],
+				"levelSmallNodeDestroyedCount["+i.ToString()+"]"
+			));
 			s1.Append(Utils.splitChar);
 		}
 
 		for (i=0;i<14;i++) {
-			s1.Append(Utils.UintToString(LevelManager.a.levelLargeNodeDestroyedCount[i])); // int
+			s1.Append(Utils.UintToString(
+				LevelManager.a.levelLargeNodeDestroyedCount[i],
+				"levelLargeNodeDestroyedCount["+i.ToString()+"]"
+			));
 			s1.Append(Utils.splitChar);
 		}
 
 		for (i=0;i<13;i++) {
-			s1.Append(Utils.BoolToString(LevelManager.a.ressurectionActive[i]));
+			s1.Append(Utils.BoolToString(LevelManager.a.ressurectionActive[i],
+									  "ressurectionActive["+i.ToString()+"]"));
+
 			s1.Append(Utils.splitChar);
 		}
 		s1.Append(Utils.BoolToString(LevelManager.a.ressurectionActive[13]));
@@ -596,19 +609,38 @@ public class LevelManager : MonoBehaviour {
 		int levelNum = Utils.GetIntFromString(entries[index]); index++;
 		LevelManager.a.LoadLevelFromSave(levelNum);
 		for (i=0;i<14;i++) {
-			LevelManager.a.levelSecurity[i] = Utils.GetIntFromString(entries[index]); index++;
+			LevelManager.a.levelSecurity[i] = 
+				Utils.GetIntFromString(entries[index],
+									   "levelSecurity[" + i.ToString() + "]");
+
+			index++;
 		}
 		for (i=0;i<14;i++) {
-			LevelManager.a.levelCameraDestroyedCount[i] = Utils.GetIntFromString(entries[index]); index++;
+			LevelManager.a.levelCameraDestroyedCount[i] =
+				Utils.GetIntFromString(entries[index],
+									   "levelCameraDestroyedCount["
+									   + i.ToString() + "]");
+			index++;
 		}
 		for (i=0;i<14;i++) {
-			LevelManager.a.levelSmallNodeDestroyedCount[i] = Utils.GetIntFromString(entries[index]); index++;
+			LevelManager.a.levelSmallNodeDestroyedCount[i] =
+				Utils.GetIntFromString(entries[index],
+									   "levelSmallNodeDestroyedCount["
+									   + i.ToString() + "]");
+			index++;
 		}
 		for (i=0;i<14;i++) {
-			LevelManager.a.levelLargeNodeDestroyedCount[i] = Utils.GetIntFromString(entries[index]); index++;
+			LevelManager.a.levelLargeNodeDestroyedCount[i] =
+				Utils.GetIntFromString(entries[index],
+									   "levelLargeNodeDestroyedCount["
+									   + i.ToString() + "]");
+			index++;
 		}
 		for (i=0;i<14;i++) {
-			LevelManager.a.ressurectionActive[i] = Utils.GetBoolFromString(entries[index]); index++;
+			LevelManager.a.ressurectionActive[i] =
+				Utils.GetBoolFromString(entries[index],"ressurectionActive["
+													   + i.ToString() + "]");
+			index++;
 		}
 		return index;
 	}

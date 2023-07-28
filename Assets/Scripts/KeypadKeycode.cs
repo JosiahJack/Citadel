@@ -231,6 +231,8 @@ public class KeypadKeycode : MonoBehaviour {
 		    MFDManager.a.SendKeypadKeycodeToDataTab(kk.keycode,
 		                                            kk.transform.position,kk,
 		                                            kk.solved);
+		} else {
+		    MFDManager.a.SendKeypadKeycodeToDataTab(-1,Vector3.zero,null,false);
 		}
 		return index;
 	}

@@ -1117,12 +1117,38 @@ public class MFDManager : MonoBehaviour  {
 		usingObject = true;
 	}
 
-	public void SendKeypadKeycodeToDataTab(int keycode, Vector3 tetherPoint, KeypadKeycode keypad, bool alreadySolved) {
+	public void SendKeypadKeycodeToDataTab(int keycode, Vector3 tetherPoint,
+										   KeypadKeycode keypad,
+										   bool alreadySolved) {
+		if (keycode < 0 || keypad == null) {
+			KeypadKeycodeButtons kkbRH =
+				keycodeUIControlRH.GetComponent<KeypadKeycodeButtons>();
+
+			kkbRH.keycode = 0;
+			kkbRH.keypad = null;
+			kkbRH.ResetEntry();
+			kkbRH.done = false;
+			kkbRH.currentEntry = 0;
+
+
+			KeypadKeycodeButtons kkbLH =
+				keycodeUIControlLH.GetComponent<KeypadKeycodeButtons>();
+
+			kkbLH.keycode = 0;
+			kkbLH.keypad = null;
+			kkbLH.ResetEntry();
+			kkbLH.done = false;
+			kkbLH.currentEntry = 0;
+			return;
+		}
+
 		TabReset(lastDataSideRH);
+
 		if (lastDataSideRH) {
 			OpenTab(4,true,TabMSG.Keypad,0,Handedness.RH);
 			keycodeUIControlRH.SetActive(true);
-			KeypadKeycodeButtons kkb = keycodeUIControlRH.GetComponent<KeypadKeycodeButtons>();
+			KeypadKeycodeButtons kkb =
+				keycodeUIControlRH.GetComponent<KeypadKeycodeButtons>();
 			kkb.keycode = keycode;
 			kkb.keypad = keypad;
 			kkb.ResetEntry();
@@ -1133,7 +1159,8 @@ public class MFDManager : MonoBehaviour  {
 		} else {
 			OpenTab(4,true,TabMSG.Keypad,0,Handedness.LH);
 			keycodeUIControlLH.SetActive(true);
-			KeypadKeycodeButtons kkb = keycodeUIControlLH.GetComponent<KeypadKeycodeButtons>();
+			KeypadKeycodeButtons kkb =
+					keycodeUIControlLH.GetComponent<KeypadKeycodeButtons>();
 			kkb.keycode = keycode;
 			kkb.keypad = keypad;
 			kkb.ResetEntry();
