@@ -70,5 +70,23 @@ namespace Tests {
             msg = "MainMenuHandler.a was null";
             Assert.That(check,msg);
         }
+        
+        [UnityTest]
+        public IEnumerator SaveLoadSimple() {
+            RunBeforeAnyTests();
+            yield return new WaitUntil(() => sceneLoaded);
+
+            yield return new WaitForSeconds(2f);
+
+            bool check = MainMenuHandler.a != null;
+            string msg = "MainMenuHandler.a was null";
+            Assert.That(check,msg);
+            
+            MainMenuHandler.a.StartGame(true);
+            yield return new WaitForSeconds(5f);
+            MainMenuHandler.a.SaveGame(7,"quicksave");
+            yield return new WaitForSeconds(5f);
+            MainMenuHandler.a.LoadGame(7);
+        }
     }
 }
