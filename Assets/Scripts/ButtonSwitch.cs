@@ -189,7 +189,6 @@ public class ButtonSwitch : MonoBehaviour {
 			return Utils.DTypeWordToSaveString("usssufbbbbsubbff");
 		}
 
-		string line = System.String.Empty;
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.UintToString(bs.securityThreshhold,
@@ -242,7 +241,7 @@ public class ButtonSwitch : MonoBehaviour {
 	    
 		s1.Append(Utils.SaveRelativeTimeDifferential(bs.tickFinished,
 		                                             "tickFinished"));
-		return line;
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
