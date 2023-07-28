@@ -75,64 +75,175 @@ public class QuestBits {
 	public string Save() {
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
-		s1.Append(lev1SecCode.ToString()); s1.Append(Utils.splitChar);
-		s1.Append(lev2SecCode.ToString()); s1.Append(Utils.splitChar);
-		s1.Append(lev3SecCode.ToString()); s1.Append(Utils.splitChar);
-		s1.Append(lev4SecCode.ToString()); s1.Append(Utils.splitChar);
-		s1.Append(lev5SecCode.ToString()); s1.Append(Utils.splitChar);
-		s1.Append(lev6SecCode.ToString()); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(RobotSpawnDeactivated)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(IsotopeInstalled)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(ShieldActivated)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(LaserSafetyOverriden)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(LaserDestroyed)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(BetaGroveCyberUnlocked)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(GroveAlphaJettisonEnabled)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(GroveBetaJettisonEnabled)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(GroveDeltaJettisonEnabled)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(MasterJettisonBroken)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(Relay428Fixed)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(MasterJettisonEnabled)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(BetaGroveJettisoned)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(AntennaNorthDestroyed)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(AntennaSouthDestroyed)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(AntennaEastDestroyed)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(AntennaWestDestroyed)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(SelfDestructActivated)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(BridgeSeparated)); s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(IsolinearChipsetInstalled));
+		s1.Append(Utils.IntToString(lev1SecCode,"lev1SecCode"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(lev2SecCode,"lev2SecCode");
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(lev3SecCode,"lev3SecCode");
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(lev4SecCode,"lev4SecCode")a;
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(lev5SecCode,"lev5SecCode"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(lev6SecCode,"lev6SecCode"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(RobotSpawnDeactivated,
+		                             "RobotSpawnDeactivated"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(IsotopeInstalled,"IsotopeInstalled"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ShieldActivated,"ShieldActivated"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(LaserSafetyOverriden,
+		                             "LaserSafetyOverriden"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(LaserDestroyed,"LaserDestroyed"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(BetaGroveCyberUnlocked,
+		                             "BetaGroveCyberUnlocked"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(GroveAlphaJettisonEnabled,
+		                             "GroveAlphaJettisonEnabled"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(GroveBetaJettisonEnabled,
+		                             "GroveBetaJettisonEnabled"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(GroveDeltaJettisonEnabled,
+		                             "GroveDeltaJettisonEnabled"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(MasterJettisonBroken,
+		                             "MasterJettisonBroken"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(Relay428Fixed,"Relay428Fixed"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(MasterJettisonEnabled,
+		                             "MasterJettisonEnabled"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(BetaGroveJettisoned,
+		                             "BetaGroveJettisoned"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(AntennaNorthDestroyed,
+		                             "AntennaNorthDestroyed"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(AntennaSouthDestroyed,
+		                             "AntennaSouthDestroyed"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(AntennaEastDestroyed,
+		                             "AntennaEastDestroyed"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(AntennaWestDestroyed,
+		                             "AntennaWestDestroyed"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(SelfDestructActivated,
+		                             "SelfDestructActivated"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(BridgeSeparated,"BridgeSeparated"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(IsolinearChipsetInstalled,
+		                             "IsolinearChipsetInstalled"));
 		return s1.ToString();
 	}
 
 	public int Load(ref string[] entries, int index) {
-		lev1SecCode = Utils.GetIntFromString(entries[index]); index++;
-		lev2SecCode = Utils.GetIntFromString(entries[index]); index++;
-		lev3SecCode = Utils.GetIntFromString(entries[index]); index++;
-		lev4SecCode = Utils.GetIntFromString(entries[index]); index++;
-		lev5SecCode = Utils.GetIntFromString(entries[index]); index++;
-		lev6SecCode = Utils.GetIntFromString(entries[index]); index++;
-		RobotSpawnDeactivated = Utils.GetBoolFromString(entries[index]); index++;
-		IsotopeInstalled = Utils.GetBoolFromString(entries[index]); index++;
-		ShieldActivated = Utils.GetBoolFromString(entries[index]); index++;
+		lev1SecCode = Utils.GetIntFromString(entries[index],"lev1SecCode");
+		index++;
+
+		lev2SecCode = Utils.GetIntFromString(entries[index],"lev2SecCode");
+		index++;
+
+		lev3SecCode = Utils.GetIntFromString(entries[index],"lev3SecCode");
+		index++;
+
+		lev4SecCode = Utils.GetIntFromString(entries[index],"lev4SecCode");
+		index++;
+
+		lev5SecCode = Utils.GetIntFromString(entries[index],"lev5SecCode");
+		index++;
+
+		lev6SecCode = Utils.GetIntFromString(entries[index],"lev6SecCode");
+		index++;
+
+		RobotSpawnDeactivated = Utils.GetBoolFromString(entries[index],
+		                                                "RobotSpawnDeactivated");
+		index++;
+
+		IsotopeInstalled = Utils.GetBoolFromString(entries[index],
+		                                           "IsotopeInstalled");
+		index++;
+
+		ShieldActivated = Utils.GetBoolFromString(entries[index],
+		                                          "ShieldActivated");
+		index++;
 		LevelManager.a.exterior_shield.SetActive(ShieldActivated);
 
-		LaserSafetyOverriden = Utils.GetBoolFromString(entries[index]); index++;
-		LaserDestroyed = Utils.GetBoolFromString(entries[index]); index++;
-		BetaGroveCyberUnlocked = Utils.GetBoolFromString(entries[index]); index++;
-		GroveAlphaJettisonEnabled = Utils.GetBoolFromString(entries[index]); index++;
-		GroveBetaJettisonEnabled = Utils.GetBoolFromString(entries[index]); index++;
-		GroveDeltaJettisonEnabled = Utils.GetBoolFromString(entries[index]); index++;
-		MasterJettisonBroken = Utils.GetBoolFromString(entries[index]); index++;
-		Relay428Fixed = Utils.GetBoolFromString(entries[index]); index++;
-		MasterJettisonEnabled = Utils.GetBoolFromString(entries[index]); index++;
-		BetaGroveJettisoned = Utils.GetBoolFromString(entries[index]); index++;
-		AntennaNorthDestroyed = Utils.GetBoolFromString(entries[index]); index++;
-		AntennaSouthDestroyed = Utils.GetBoolFromString(entries[index]); index++;
-		AntennaEastDestroyed = Utils.GetBoolFromString(entries[index]); index++;
-		AntennaWestDestroyed = Utils.GetBoolFromString(entries[index]); index++;
-		SelfDestructActivated = Utils.GetBoolFromString(entries[index]); index++;
-		BridgeSeparated = Utils.GetBoolFromString(entries[index]); index++;
-		IsolinearChipsetInstalled = Utils.GetBoolFromString(entries[index]); index++;
+		LaserSafetyOverriden = Utils.GetBoolFromString(entries[index],
+		                                               "LaserSafetyOverriden");
+		index++;
+
+		LaserDestroyed = Utils.GetBoolFromString(entries[index],
+		                                         "LaserDestroyed");
+		index++;
+
+		BetaGroveCyberUnlocked = Utils.GetBoolFromString(entries[index],
+		                                                 "BetaGroveCyberUnlocked");
+		index++;
+
+		GroveAlphaJettisonEnabled = Utils.GetBoolFromString(entries[index],
+		                                          "GroveAlphaJettisonEnabled");
+		index++;
+
+		GroveBetaJettisonEnabled = Utils.GetBoolFromString(entries[index],
+		                                          "GroveBetaJettisonEnabled");
+		index++;
+
+		GroveDeltaJettisonEnabled = Utils.GetBoolFromString(entries[index],
+		                                          "GroveDeltaJettisonEnabled");
+		index++;
+
+		MasterJettisonBroken = Utils.GetBoolFromString(entries[index],
+		                                               "MasterJettisonBroken");
+		index++;
+
+		Relay428Fixed = Utils.GetBoolFromString(entries[index],
+		                                        "Relay428Fixed");
+		index++;
+
+		MasterJettisonEnabled = Utils.GetBoolFromString(entries[index],
+		                                              "MasterJettisonEnabled");
+		index++;
+
+		BetaGroveJettisoned = Utils.GetBoolFromString(entries[index],
+		                                              "BetaGroveJettisoned");
+		index++;
+
+		AntennaNorthDestroyed = Utils.GetBoolFromString(entries[index],
+		                                              "AntennaNorthDestroyed");
+		index++;
+
+		AntennaSouthDestroyed = Utils.GetBoolFromString(entries[index],
+		                                              "AntennaSouthDestroyed");
+		index++;
+
+		AntennaEastDestroyed = Utils.GetBoolFromString(entries[index],
+		                                               "AntennaEastDestroyed");
+		index++;
+
+		AntennaWestDestroyed = Utils.GetBoolFromString(entries[index],
+		                                               "AntennaWestDestroyed");
+		index++;
+
+		SelfDestructActivated = Utils.GetBoolFromString(entries[index],
+		                                              "SelfDestructActivated");
+		index++;
+
+		BridgeSeparated = Utils.GetBoolFromString(entries[index],
+		                                          "BridgeSeparated");
+		index++;
+
+		IsolinearChipsetInstalled = Utils.GetBoolFromString(entries[index],
+		                                          "IsolinearChipsetInstalled");
+		index++;
+
 		return index;
 	}
 
