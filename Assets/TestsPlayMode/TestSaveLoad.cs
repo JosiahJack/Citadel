@@ -20,18 +20,18 @@ namespace Tests {
     public class TestSaveLoad {
         private bool sceneLoaded = false;
 
-        private IEnumerator LoadSceneAsync(string sceneName) {
-            var asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-            while (!asyncLoad.isDone) {
-                yield return null;
-            }
-        }
+        //private IEnumerator LoadSceneAsync(string sceneName) {
+        //    var asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        //    while (!asyncLoad.isDone) {
+        //        yield return null;
+        //    }
+        //}
 
         public void RunBeforeAnyTests() {
             if (sceneLoaded) return;
 
             SceneManager.sceneLoaded += OnSceneLoaded;
-            LoadSceneAsync("CitadelScene");
+            SceneManager.LoadScene("CitadelScene");
         }
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
@@ -66,8 +66,8 @@ namespace Tests {
             msg = "Automap.a was null";
             Assert.That(check,msg);
 
-            check = BiomonitorGraphSystem.a != null;
-            msg = "BiomonitorGraphSystem.a was null";
+            check = MainMenuHandler.a != null;
+            msg = "MainMenuHandler.a was null";
             Assert.That(check,msg);
         }
     }
