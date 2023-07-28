@@ -1366,4 +1366,52 @@ public class Utils {
 		}
 		return true;
 	}
+
+    public static void CopyLogFiles(bool prev) {
+        #if UNITY_EDITOR
+            if (prev) return; // Just the one log in Editor (e.g. tests)
+        #endif
+        
+        string logFilePath = GetLogFilePath(prev);
+        string logname = "/Player.log";
+        if (prev) logname = "/Player-prev.log";
+        string destinationPath = Application.streamingAssetsPath + logname;
+
+        if (File.Exists(logFilePath)) {
+            // Delete the existing destination log file if it already exists
+            if (File.Exists(destinationPath)) {
+                File.Delete(destinationPath);
+            }
+
+            // Copy the log file to the StreamingAssets folder
+            File.Copy(logFilePath, destinationPath);
+            Debug.Log("Log file copied to StreamingAssets folder.");
+        } else {
+            Debug.LogWarning("Log file not found, hmmm");
+        }
+    }
+
+    private static string GetLogFilePath(bool prev) {
+        string logFilePath = "";
+        string logname = "/Player.log";
+        if (prev) logname = "/Player-prev.log";
+
+        #if UNITY_EDITOR
+            // Editor log file path
+            logFilePath = Application.consoleLogPath;
+        #elif UNITY_ANDROID
+            // Android log file path
+            logFilePath = Application.persistentDataPath + logname;
+        #elif UNITY_IOS
+            // iOS log file path
+            logFilePath = Application.temporaryCachePath + logname;
+        #else
+            // Standalone platforms (Windows, macOS, etc.)
+            logFilePath = Application.persistentDataPath + logname;
+        #endif
+
+        return logFilePath;
+    }
+}
+
 }
