@@ -161,7 +161,7 @@ public class KeypadKeycode : MonoBehaviour {
 		s1.Append(Utils.BoolToString(kk.useQuestKeycode1,"useQuestKeycode1"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(kk.useQuestKeycode1,"useQuestKeycode2"));
-		return s1.ToString;
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
