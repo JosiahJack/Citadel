@@ -44,3 +44,4 @@ jobs:
           path: |
             artifacts
             Assets/StreamingAssets/sav7.txt
+            Assets/StreamingAssets/Player.log
