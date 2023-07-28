@@ -1235,19 +1235,23 @@ public class Const : MonoBehaviour {
 		}
 
 		saveData[index] = savename; index++;
-		saveData[index] = Utils.FloatToString(PauseScript.a.relativeTime); index++; // float - pausable game time
+		saveData[index] = Utils.FloatToString(PauseScript.a.relativeTime,
+		                                      "GameTime");
+		index++; // float - pausable game time
+		
 		s1.Append(LevelManager.Save(LevelManager.a.gameObject));
 		s1.Append(Utils.splitChar);
 		s1.Append(questData.Save());
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.UintToString(difficultyCombat));
+		s1.Append(Utils.UintToString(difficultyCombat,"difficultyCombat"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.UintToString(difficultyMission));
+		s1.Append(Utils.UintToString(difficultyMission,"difficultyMission"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.UintToString(difficultyPuzzle));
+		s1.Append(Utils.UintToString(difficultyPuzzle,"difficultyPuzzle"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.UintToString(difficultyCyber));
+		s1.Append(Utils.UintToString(difficultyCyber,"difficultyCyber"));
 		saveData[index] = s1.ToString(); index++;
+		
 		s1.Clear();
 
 		// Save all the objects data
@@ -1499,17 +1503,32 @@ public class Const : MonoBehaviour {
 
 			// Read in global time and pause data
 			entries = readFileList[1].Split(Utils.splitCharChar);
-			PauseScript.a.relativeTime = Utils.GetFloatFromString(entries[index]); // the global time from which everything checks it's somethingerotherFinished timer states
+			
+			// The global time from which everything checks it's
+			// somethingerotherFinished timer states.
+			PauseScript.a.relativeTime =
+			    Utils.GetFloatFromString(entries[index],"GameTime");
 			index = 0; // reset before starting next line
 
 			// Read in global states, difficulties, and quest mission bits.
 			entries = readFileList[2].Split(Utils.splitCharChar);
 			index = LevelManager.Load(LevelManager.a.gameObject,ref entries,index);
 			index = questData.Load(ref entries,index);
-			difficultyCombat = Utils.GetIntFromString(entries[index]); index++;
-			difficultyMission = Utils.GetIntFromString(entries[index]); index++;
-			difficultyPuzzle = Utils.GetIntFromString(entries[index]); index++;
-			difficultyCyber = Utils.GetIntFromString(entries[index]); index++;
+			difficultyCombat = Utils.GetIntFromString(entries[index],
+			                                          "difficultyCombat");
+			index++;
+			
+			difficultyMission = Utils.GetIntFromString(entries[index],
+			                                           "difficultyMission");
+			index++;
+			
+			difficultyPuzzle = Utils.GetIntFromString(entries[index],
+			                                          "difficultyPuzzle");
+			index++;
+			
+			difficultyCyber = Utils.GetIntFromString(entries[index],
+			                                         "difficultyCyber");
+			index++;
 
 			loadPercentText.text = "Preprocess Save File...";
 			yield return null;
