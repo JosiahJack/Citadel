@@ -1461,8 +1461,6 @@ public class Const : MonoBehaviour {
 
 		// Remove and clear out everything and reset any lists.
 		ClearActiveAutomapOverlays();
-		ClearTargetRegister();
-		ClearTargetnameRegister();
 		for (i=0;i<14;i++) {
 			LevelManager.a.UnloadLevelDynamicObjects(i); // Delete them all!
 			LevelManager.a.UnloadLevelNPCs(i); // Delete them all!
@@ -1745,8 +1743,13 @@ public class Const : MonoBehaviour {
 		float numtargetsfound = 0;
 		// Find each gameobject with matching targetname in the register, then
 		// call Use for each.
+		bool succeeded = false;
 		for (int i=0;i<TargetRegister.Length;i++) {
-			if (TargetnameRegister.Length < 1) return;
+			if (TargetnameRegister.Length < 1) {
+				UnityEngine.Debug.LogError("NO TARGETNAMES IN "
+										   + "TargetnameRegister!!!");
+				return;
+			}
 			if (TargetnameRegister[i] != targetname) continue;
 
 			if (TargetRegister[i] != null) {
@@ -1760,31 +1763,41 @@ public class Const : MonoBehaviour {
 				if (tempUD.GOSetActive && !TargetRegister[i].activeSelf) {
 					UnityEngine.Debug.Log("GOSetActive on " + targetname);
 					TargetRegister[i].SetActive(true);
+					succeeded = true;
 				}
 
 				// Diddo for activeSelf to prevent spamming SetActive.
 				if (tempUD.GOSetDeactive && TargetRegister[i].activeSelf) {
 					UnityEngine.Debug.Log("GOSetDeactive on " + targetname);
 					TargetRegister[i].SetActive(false);
+					succeeded = true;
 				}
 
 				if (tempUD.GOToggleActive) {
 					// If I abuse this with a trigger_multiple someone should
 					// shoot me.
 					TargetRegister[i].SetActive(!TargetRegister[i].activeSelf);
+					succeeded = true;
 				}
 
 				TargetIO tio = TargetRegister[i].GetComponent<TargetIO>();
 				tio.Targetted(tempUD);
+				succeeded = true;
 			} else {
-				UnityEngine.Debug.Log("WARNING: null TargetRegister GameObject"
-									  + " linked to targetname of "
+				UnityEngine.Debug.LogError("null TargetRegister "
+									  + "GameObject[] linked to targetname of "
 									  + targetname + ". Could not run "
 									  + "Targetted.");
 			}
 		}
+
+		if (!succeeded) {
+			UnityEngine.Debug.LogWarning("Failed to find a matching targetname"
+										 + " for " + targetname);
+		}
 	}
 
+	// Should ONLY come from a TargetIO
 	public void AddToTargetRegister (GameObject go, string tn) {
 		for (int i=0;i<TargetRegister.Length;i++) {
 			if (TargetRegister[i] == null) {
@@ -1792,18 +1805,6 @@ public class Const : MonoBehaviour {
 				TargetnameRegister[i] = tn;
 				return; // Ok, gameobject added to the register.
 			}
-		}
-	}
-
-	public void ClearTargetRegister () {
-		for (int i=0;i<TargetRegister.Length;i++) {
-			TargetRegister[i] = null;
-		}
-	}
-
-	public void ClearTargetnameRegister () {
-		for (int i=0;i<TargetnameRegister.Length;i++) {
-			TargetnameRegister[i] = null;
 		}
 	}
 

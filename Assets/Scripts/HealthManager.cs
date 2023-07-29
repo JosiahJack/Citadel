@@ -772,8 +772,10 @@ public class HealthManager : MonoBehaviour {
 		}
 	}
 
-	public bool IsCyberEntity() { // 24, 25, 26, 27, 28 are all Cyber enemies
-		return (index > 23 || cyberHealth > 0f || inCyberSpace);
+	public bool IsCyberEntity() { 
+		if (inCyberSpace) return true;
+		if (!isPlayer && cyberHealth > 0f) return true;
+		return (index > 23 && isNPC); // 24, 25, 26, 27, 28 are Cyber enemies
 	}
 
 	// Generic health info string

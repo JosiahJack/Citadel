@@ -606,7 +606,9 @@ public class LevelManager : MonoBehaviour {
 		}
 
 		int i = 0;
-		int levelNum = Utils.GetIntFromString(entries[index]); index++;
+		int levelNum = Utils.GetIntFromString(entries[index],"currentLevel");
+		index++;
+
 		LevelManager.a.LoadLevelFromSave(levelNum);
 		for (i=0;i<14;i++) {
 			LevelManager.a.levelSecurity[i] = 

@@ -1393,8 +1393,12 @@ public class Utils {
 
     private static string GetLogFilePath(bool prev) {
         string logFilePath = "";
-        string logname = "/Player.log";
-        if (prev) logname = "/Player-prev.log";
+		#if UNITY_EDITOR
+			// Editor log doesn't need specified.
+		#else
+			string logname = "/Player.log";
+			if (prev) logname = "/Player-prev.log";
+		#endif
 
         #if UNITY_EDITOR
             // Editor log file path

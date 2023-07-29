@@ -81,7 +81,7 @@ public class ButtonSwitch : MonoBehaviour {
 		player = ud.owner;
 		Utils.PlayOneShotSavable(SFXSource,SFX);
 		Const.sprintByIndexOrOverride (messageIndex, message,ud.owner);
-		if (delay > 0) {
+		if (delay > 0f) {
 			delayFinished = PauseScript.a.relativeTime + delay;
 		} else {
 			UseTargets();

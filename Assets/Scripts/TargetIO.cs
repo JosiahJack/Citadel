@@ -67,10 +67,10 @@ public class TargetIO : MonoBehaviour {
 	private bool startInitialized = false;
 
 	public void Start() {
+		Const.a.AddToTargetRegister(this.gameObject, targetname); // Always
 		if (startInitialized) return;
 
 		if (!string.IsNullOrWhiteSpace(targetname)) {
-			RegisterToConst();
 			if (disableThisGOOnAwake && !alreadyDisabledThisGOOnceEver) {
 				SaveObject so = GetComponent<SaveObject>();
 				if (so == null) {
@@ -86,7 +86,6 @@ public class TargetIO : MonoBehaviour {
 								  + "TargetIO.cs");
 					}
 				}
-				Debug.Log("Set GO to inactive on Start()");
 				this.gameObject.SetActive(false);
 			}
 		} else {
@@ -96,10 +95,6 @@ public class TargetIO : MonoBehaviour {
 			}
 		}
 		startInitialized = true;
-	}
-
-	public void RegisterToConst() {
-		Const.a.AddToTargetRegister(this.gameObject, targetname);
 	}
 
 	// comes from Const.a.UseTargets - already checked that target matched targetname of this interaction
