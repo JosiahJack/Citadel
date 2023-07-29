@@ -1799,13 +1799,28 @@ public class Const : MonoBehaviour {
 
 	// Should ONLY come from a TargetIO
 	public void AddToTargetRegister (GameObject go, string tn) {
-		for (int i=0;i<TargetRegister.Length;i++) {
-			if (TargetRegister[i] == null) {
-				TargetRegister[i] = go;
-				TargetnameRegister[i] = tn;
-				return; // Ok, gameobject added to the register.
-			}
-		}
+	    int i = 0;
+	    for (i=0;i<TargetRegister.Length; i++) {
+	        if (TargetRegister[i] == null) continue;
+	        if (TargetRegister[i] != go) continue;
+	        
+	        // go is in registry already
+            if (TargetnameRegister[i] == tn) {
+                return; // Already in register, name and object.
+            } else {
+                TargetnameRegister[i] = tn; // Fix up partial registry.
+                return; // Ok it's good now.
+            }
+	    }
+	    
+	    // GameObject isn't registry, add fresh.
+		for (i=0;i<TargetRegister.Length;i++) {
+			if (TargetRegister[i] != null) continue;
+			
+			TargetRegister[i] = go;
+			TargetnameRegister[i] = tn;
+			return; // Ok, gameobject added to the register.
+	    }
 	}
 
 	public void ReverbOn() {
