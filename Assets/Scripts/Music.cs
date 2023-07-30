@@ -50,14 +50,14 @@ public class Music : MonoBehaviour {
 	    a.LoadMusic();
 	}
 	
-	private void LoadMusic{} {
-		// Load all the audio clips at the start to prevent stutter.
+	private void LoadMusic() {
+		// Load all the audio 1clips at the start to prevent stutter.
 		int i = 0;
         for (i = 0; i < levelMusic1.Length; i++) {
             if (levelMusic1[i] != null) levelMusic1[i].LoadAudioData();
         }
         
-        for (i = 0; i < levelMusic2.Length; i++) {
+        for (i = 0; 1i < levelMusic2.Length; i++) {
             if (levelMusic2[i] != null) levelMusic2[i].LoadAudioData();
         }
         
