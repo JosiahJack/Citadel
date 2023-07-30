@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class FuncWall : MonoBehaviour {
@@ -22,7 +23,7 @@ public class FuncWall : MonoBehaviour {
 	private float dist;         // Only ever used right away, not saved.
 	private float distanceLeft; // Only ever used right away, not saved.
 
-	public void Awake () {
+	public void Awake() {
 		currentState = startState; // set door position to picked state
 		startPosition = transform.position;
 		rbody = GetComponent<Rigidbody>();
@@ -57,6 +58,22 @@ public class FuncWall : MonoBehaviour {
 			#endif
 			childGO.layer = 18; // Door
 		}
+	}
+
+	public void InitializeFromLoad() {
+		//if (currentState == FuncStates.AjarMovingStart
+		//	|| currentState == FuncStates.AjarMovingTarget) {
+		//	tempVec = (transform.position - targetPosition.transform.position);
+		//	distanceLeft = Vector3.Distance(transform.position,
+		//									targetPosition.transform.position);
+		//	tempVec = (tempVec.normalized * (distanceLeft * percentAjar * -1));
+		//	tempVec += transform.position;
+		//	transform.position = tempVec;
+		//}
+		rbody.isKinematic = true;
+		rbody.useGravity = false;
+		rbody.collisionDetectionMode =
+		  CollisionDetectionMode.ContinuousSpeculative;
 	}
 
 	public void Targetted (UseData ud) {
@@ -143,44 +160,66 @@ public class FuncWall : MonoBehaviour {
 		if (fw == null) {
 			Debug.Log("FuncWall missing on savetype of FuncWall!  "
 					  + "GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("uufffffffffffffff");
+			return Utils.DTypeWordToSaveString("uubfffffffffffffff");
 		}
 
-		string line = System.String.Empty;
-		line = Utils.IntToString(Utils.FuncStatesToInt(fw.currentState));
-		line += Utils.splitChar + Utils.IntToString(Utils.FuncStatesToInt(fw.startState));
-		line += Utils.splitChar + Utils.Vector3ToString(fw.startPosition);
-		line += Utils.splitChar + Utils.FloatToString(fw.speed);
-		line += Utils.splitChar + Utils.FloatToString(fw.percentAjar);
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(fw.startTime);
+		fw.Awake();
+
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(Utils.IntToString(Utils.FuncStatesToInt(fw.currentState),
+													 "FuncWall.currentState"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(Utils.FuncStatesToInt(fw.startState),
+														  "startState"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(fw.stopSoundPlayed,"stopSoundPlayed"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.Vector3ToString(fw.startPosition));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(fw.speed,"speed"));
+		s1.Append(Utils.splitChar );
+		s1.Append(Utils.FloatToString(fw.percentAjar,"percentAjar"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(fw.startTime,"startTime"));
 
 		// The mover_target transform and position was saved by SaveObject.Save
 		// prior to that function calling this function, so only save the
 		// parent transform here.
-		line += Utils.splitChar + Utils.SaveTransform(go.transform.parent.transform);
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveTransform(go.transform.parent.transform));
 		Transform info_target = go.transform.parent.transform.GetChild(1);
-		line += Utils.splitChar + Utils.SaveTransform(info_target);
-		line += Utils.splitChar + Utils.SaveAudioSource(go);
-		line += Utils.splitChar + Utils.UintToString(fw.chunkIDs.Length);
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveTransform(info_target));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveAudioSource(go));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(fw.chunkIDs.Length,"chunkIDs.Length"));
+
 		for (int i=0;i<go.transform.childCount; i++) {
-			line += Utils.splitChar + Utils.UintToString(fw.chunkIDs[i]);
-			line += Utils.splitChar + Utils.SaveChildGOState(go,i);
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.UintToString(fw.chunkIDs[i],"chunkIDs["
+														+ i.ToString() + "]"));
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.SaveChildGOState(go,i));
 		}
-		return line;
+		return s1.ToString();
 	}
 
 	// Load data to a freshly instantiated blank func_wall prefab.
 	// Prefab hierarchy is assumed to be in this structure:
-	// func_wall             This is the main parent which is merely a container
-	// ->mover_target        This is the GameObject with FuncWall as a component.
-	// ->->chunk_somechunk   These are the walls or floors that comprise the
-	// ->->chunk_somechunk2    visible and physical collisions.  These will not
-	// ->->chunk_somechunk3    exist yet on a freshly instantiated prefab.
+	// func_wall            This is the main parent which is merely a container
+	// ->mover_target       This is the GameObject with FuncWall as a component
+	// ->->chunk_somechunk  These are the walls or floors that comprise the
+	// ->->chunk_somechunk2   visible and physical collisions.  These will not
+	// ->->chunk_somechunk3   exist yet on a freshly instantiated prefab.
 	// ->->etc. etc.
 	// ->info_target         This is a relative offset position creator
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		float readFloatx, readFloaty, readFloatz;
-		FuncWall fw = go.GetComponent<FuncWall>(); // Fairweather we are having. Vague Quake mapper reference
+		FuncWall fw = go.GetComponent<FuncWall>(); // Fairweather we are
+												   // having. Vague Quake
+												   // mapper reference.
 		if (fw == null) {
 			Debug.Log("FuncWall.Load failure, fw == null on " + go.name);
 			return index + 17;
@@ -196,38 +235,64 @@ public class FuncWall : MonoBehaviour {
 			return index + 17;
 		}
 
-		int state = Utils.GetIntFromString(entries[index]); index++;
+		int state = Utils.GetIntFromString(entries[index],
+										   "FuncWall.currentState");
+		index++;
+
 		fw.currentState = Utils.GetFuncStatesFromInt(state);
-		state = Utils.GetIntFromString(entries[index]); index++;
+		state = Utils.GetIntFromString(entries[index],"startState");
+		index++;
+
+		fw.stopSoundPlayed = Utils.GetBoolFromString(entries[index],
+													 "stopSoundPlayed");
+		index++;
+
 		fw.startState = Utils.GetFuncStatesFromInt(state);
 		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
 		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
 		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
 		fw.startPosition = new Vector3(readFloatx,readFloaty,readFloatz);
-		fw.speed = Utils.GetFloatFromString(entries[index]); index++;
-		fw.percentAjar = Utils.GetFloatFromString(entries[index]); index++;
-		fw.startTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+
+		fw.speed = Utils.GetFloatFromString(entries[index],"speed");
+		index++;
+
+		fw.percentAjar = Utils.GetFloatFromString(entries[index],"percentAjar");
+		index++;
+
+		fw.startTime = Utils.LoadRelativeTimeDifferential(entries[index],
+														  "startTime");
+		index++;
+
 		Transform parentTR = go.transform.parent.transform;
 		index = Utils.LoadTransform(parentTR,ref entries,index);
+
 		Transform info_target = go.transform.parent.transform.GetChild(1);
 		index = Utils.LoadTransform(info_target,ref entries,index);
+
 		index = Utils.LoadAudioSource(go,ref entries,index);
+
 		fw.transform.localPosition = new Vector3(0f,0f,0f);
-		int numChildren = Utils.GetIntFromString(entries[index]); index++;
+		int numChildren = Utils.GetIntFromString(entries[index],
+												 "chunkIDs.Length");
+		index++;
 		fw.chunkIDs = new int[numChildren];
+
 		int chunkdex = 0;
 		for (int i=0; i<numChildren; i++) {
 			// Get the index of the chunk prefab
-			chunkdex = Utils.GetIntFromString(entries[index]); index++;
+			chunkdex = Utils.GetIntFromString(entries[index],"chunkIDs["
+															 + i.ToString()
+															 + "]");
+			index++;
 			fw.chunkIDs[i] = chunkdex;
 
 			// Assumption here is that we are loading to a freshly instantiated
 			// func_wall prefab and that there are no children chunks on the
 			// mover_target GameObject yet.
 			GameObject childGO = Instantiate(Const.a.chunkPrefabs[chunkdex],
-						go.transform.localPosition, // 0's, transform loaded below
+						go.transform.localPosition, // 0's, transform is below
 						Const.a.quaternionIdentity) as GameObject;
-			childGO.transform.SetParent(go.transform); // Always set parent prior
+			childGO.transform.SetParent(go.transform); // Set parent prior
 													   // to loading transform.
 			#if UNITY_EDITOR
 				childGO.isStatic = false; // EDITOR ONLY!!!!!!!!!!!!
@@ -235,7 +300,7 @@ public class FuncWall : MonoBehaviour {
 			childGO.layer = 18; // Door
 			index = Utils.LoadSubActivatedGOState(childGO,ref entries,index);
 		}
-		fw.Initialize();
+		fw.InitializeFromLoad();
 
 		return index;
 	}
