@@ -47,6 +47,65 @@ public class Music : MonoBehaviour {
 		a.inZone = false;
 		a.rand = 0;
 		a.combatImpulseFinished = PauseScript.a.relativeTime + 5f;
+	    a.LoadMusic();
+	}
+	
+	private void LoadMusic{} {
+		// Load all the audio clips at the start to prevent stutter.
+		int i = 0;
+        for (i = 0; i < levelMusic1.Length; i++) {
+            if (levelMusic1[i] != null) levelMusic1[i].LoadAudioData();
+        }
+        
+        for (i = 0; i < levelMusic2.Length; i++) {
+            if (levelMusic2[i] != null) levelMusic2[i].LoadAudioData();
+        }
+        
+        for (i = 0; i < levelMusicReactor.Length; i++) {
+            if (levelMusicReactor[i] != null) {
+                levelMusicReactor[i].LoadAudioData();
+            }
+        }
+        
+        for (i = 0; i < levelMusic6.Length; i++) {
+            if (levelMusic6[i] != null) levelMusic6[i].LoadAudioData();
+        }
+        
+        for (i = 0; i < levelMusicGroves.Length; i++) {
+            if (levelMusicGroves[i] != null) {
+                levelMusicGroves[i].LoadAudioData();
+            }
+        }
+        
+        for (i = 0; i < levelMusic8.Length; i++) {
+            if (levelMusic8[i] != null) levelMusic8[i].LoadAudioData();
+        }
+        
+        for (i = 0; i < levelMusicRevive.Length; i++) {
+            if (levelMusicRevive[i] != null) {
+                levelMusicRevive[i].LoadAudioData();
+            }
+        }
+        
+        for (i = 0; i < levelMusicDeath.Length; i++) {
+            if (levelMusicDeath[i] != null) levelMusicDeath[i].LoadAudioData();
+        }
+        
+        for (i = 0; i < levelMusicCyber.Length; i++) {
+            if (levelMusicCyber[i] != null) levelMusicCyber[i].LoadAudioData();
+        }
+        
+        for (i = 0; i < levelMusicElevator.Length; i++) {
+            if (levelMusicElevator[i] != null) {
+                levelMusicElevator[i].LoadAudioData();
+            }
+        }
+        
+        for (i = 0; i < levelMusicDistortion.Length; i++) {
+            if (levelMusicDistortion[i] != null) {
+                levelMusicDistortion[i].LoadAudioData();
+            }
+        }
 	}
 
 	public void PlayTrack(int levnum, TrackType ttype, MusicType mtype) {
