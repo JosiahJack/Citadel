@@ -24,7 +24,7 @@ public class WeaponMagazineCounter : MonoBehaviour {
 			tempi /= 10;
 			tempis[1] = tempi % 10; // tens
 		}
-		if (newamount> 99) {
+		if (newamount > 99) {
 			tempi /= 10;
 			tempis[0] = tempi % 10; // huns
 		}
@@ -35,30 +35,31 @@ public class WeaponMagazineCounter : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			int index = WeaponCurrent.a.weaponCurrent; // 0 to 6, 
-			// Changed from this: WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex); 0 to 15
-			if (index < 0) return;
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return;
+		
+		int index = WeaponCurrent.a.weaponCurrent; // 0 to 6, 7 slots
+		// Changed from this:
+		// Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex); 0 to 15
+		if (index < 0) return;
 
-			if (WeaponCurrent.a.weaponIndex == -1
-			    || WeaponCurrent.a.weaponIndex == 41
-				|| WeaponCurrent.a.weaponIndex == 42
-				|| MouseLookScript.a.inCyberSpace
-				|| WeaponCurrent.a.weaponCurrentPending >= 0) {
-					tempis[0] = 10; // blank
-					tempis[1] = 10; // blank
-					tempis[2] = 10; // blank
-					onesIndicator.overrideSprite = indicatorSprites[tempis[2]];
-					tensIndicator.overrideSprite = indicatorSprites[tempis[1]];
-					hunsIndicator.overrideSprite = indicatorSprites[tempis[0]];
-					return;
-			}
+		if (WeaponCurrent.a.weaponIndex == -1
+		    || WeaponCurrent.a.weaponIndex == 41
+			|| WeaponCurrent.a.weaponIndex == 42
+			|| MouseLookScript.a.inCyberSpace
+			|| WeaponCurrent.a.weaponCurrentPending >= 0) {
+				tempis[0] = 10; // blank
+				tempis[1] = 10; // blank
+				tempis[2] = 10; // blank
+				onesIndicator.overrideSprite = indicatorSprites[tempis[2]];
+				tensIndicator.overrideSprite = indicatorSprites[tempis[1]];
+				hunsIndicator.overrideSprite = indicatorSprites[tempis[0]];
+				return;
+		}
 
-			if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
-				UpdateDigits(WeaponCurrent.a.currentMagazineAmount2[index]);
-			} else {
-				UpdateDigits(WeaponCurrent.a.currentMagazineAmount[index]);
-			}
+		if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
+			UpdateDigits(WeaponCurrent.a.currentMagazineAmount2[index]);
+		} else {
+			UpdateDigits(WeaponCurrent.a.currentMagazineAmount[index]);
 		}
 	}
 }
