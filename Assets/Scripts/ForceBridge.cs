@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class ForceBridge : MonoBehaviour {
@@ -21,7 +22,7 @@ public class ForceBridge : MonoBehaviour {
 	private AudioSource SFX;
 	private float tickTime = 0.05f;
 
-	void Start() {
+	public void Start() {
 		activatedScaleX = transform.localScale.x;
 		activatedScaleY = transform.localScale.y;
 		activatedScaleZ = transform.localScale.z;
@@ -39,6 +40,14 @@ public class ForceBridge : MonoBehaviour {
 			lerping = true;
 		}
 
+		SetColorMaterial();
+	}
+
+	public void InitializeFromLoad() {
+		mr = GetComponent<MeshRenderer>();
+		bCol = GetComponent<BoxCollider>();
+		SFX = GetComponent<AudioSource>();
+		tickTime = 0.05f;
 		SetColorMaterial();
 	}
 
@@ -132,18 +141,31 @@ public class ForceBridge : MonoBehaviour {
 			return "1|0|0000.00000";
 		}
 
-		string line = System.String.Empty;
-		line = Utils.BoolToString(fb.activated); // bool - is the bridge on?
-		line += Utils.splitChar + Utils.BoolToString(fb.lerping); // bool - are we currently lerping one way or tother
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(fb.tickFinished); // float - time before firing targets
-		line += Utils.splitChar + Utils.BoolToString(fb.x); // bool - direction(s) to expand in
-		line += Utils.splitChar + Utils.BoolToString(fb.y);
-		line += Utils.splitChar + Utils.BoolToString(fb.z);
-		line += Utils.splitChar + Utils.FloatToString(fb.activatedScaleX); // Current lerped value for expansion
-		line += Utils.splitChar + Utils.FloatToString(fb.activatedScaleY);
-		line += Utils.splitChar + Utils.FloatToString(fb.activatedScaleZ);
-		line += Utils.splitChar + Utils.IntToString(Utils.ForceFieldColorToInt(fb.fieldColor));
-		return line;
+		fb.Start();
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(Utils.BoolToString(fb.activated,"ForceBridge.activated"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(fb.lerping,"lerping"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(fb.tickFinished,
+													 "tickFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(fb.x,"x"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(fb.y,"y"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(fb.z,"z"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(fb.activatedScaleX));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(fb.activatedScaleY));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(fb.activatedScaleZ));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(Utils.ForceFieldColorToInt(fb.fieldColor),
+															   "fieldColor"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
@@ -163,18 +185,33 @@ public class ForceBridge : MonoBehaviour {
 			return index + 3;
 		}
 
-		fb.activated = Utils.GetBoolFromString(entries[index]); index++; // bool - is the bridge on?
-		fb.lerping = Utils.GetBoolFromString(entries[index]); index++; // bool - are we currently lerping one way or tother
-		fb.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before thinking
-		fb.x = Utils.GetBoolFromString(entries[index]); index++; // bool - direction(s) to expand in
-		fb.y = Utils.GetBoolFromString(entries[index]); index++;
-		fb.z = Utils.GetBoolFromString(entries[index]); index++;
+		fb.activated = Utils.GetBoolFromString(entries[index],"ForceBridge.activated");
+		index++;
+
+		fb.lerping = Utils.GetBoolFromString(entries[index],"lerping");
+		index++;
+
+		fb.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],
+															 "tickFinished");
+		index++;
+
+		fb.x = Utils.GetBoolFromString(entries[index],"x"); index++;
+		fb.y = Utils.GetBoolFromString(entries[index],"y"); index++;
+		fb.z = Utils.GetBoolFromString(entries[index],"z"); index++;
+
 		fb.activatedScaleX = Utils.GetFloatFromString(entries[index]); index++;
 		fb.activatedScaleY = Utils.GetFloatFromString(entries[index]); index++;
 		fb.activatedScaleZ = Utils.GetFloatFromString(entries[index]); index++;
-		fb.transform.localScale = new Vector3(fb.activatedScaleX,fb.activatedScaleY,fb.activatedScaleZ);
-		fb.fieldColor = Utils.GetForceFieldColorFromInt(Utils.GetIntFromString(entries[index])); index++;
-		fb.Start();
+
+		fb.transform.localScale = new Vector3(fb.activatedScaleX,
+											  fb.activatedScaleY,
+											  fb.activatedScaleZ);
+
+		fb.fieldColor = Utils.GetForceFieldColorFromInt(
+						  Utils.GetIntFromString(entries[index],"fieldColor"));
+		index++;
+
+		fb.InitializeFromLoad();
 		return index;
 	}
 }
