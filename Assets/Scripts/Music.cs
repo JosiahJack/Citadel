@@ -57,7 +57,7 @@ public class Music : MonoBehaviour {
             if (levelMusic1[i] != null) levelMusic1[i].LoadAudioData();
         }
         
-        for (i = 0; 1i < levelMusic2.Length; i++) {
+        for (i = 0; i < levelMusic2.Length; i++) {
             if (levelMusic2[i] != null) levelMusic2[i].LoadAudioData();
         }
         
