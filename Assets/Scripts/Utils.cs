@@ -946,7 +946,8 @@ public class Utils {
     public static string SaveRigidbody(GameObject go) {
 		Rigidbody rbody = go.GetComponent<Rigidbody>();
 		if (rbody == null) {
-			return DTypeWordToSaveString("fff1"); // No warn, normal scenario.
+		    return "";
+			//return DTypeWordToSaveString("fff1"); // No warn, normal scenario.
 		}
 
         StringBuilder s1 = new StringBuilder();
@@ -965,7 +966,7 @@ public class Utils {
 									 int index) {
 		Rigidbody rbody = go.GetComponent<Rigidbody>();
 		if (rbody == null) {
-			return index + 4; // No warn, normal scenario.
+			return index;// + 4; // No warn, normal scenario.
 		}
 
 		// Get rigidbody velocity
