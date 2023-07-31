@@ -273,9 +273,7 @@ public class Utils {
 		string strmAstPth = SafePathCombine(Application.streamingAssetsPath,
 											fileName);
 
-		if (File.Exists(strmAstPth)) {
-			return; // Already exists, all good!
-		}
+		if (File.Exists(strmAstPth)) return; // Already exists, all good!
 
 		 // Recreate StreamingAssets if it doesn't exist.
         if (!Directory.Exists(Application.streamingAssetsPath)) {
@@ -897,29 +895,29 @@ public class Utils {
 		}
 
 		// Get position
-		readFloatx = Utils.GetFloatFromString(entries[index],"localPosition.x");
+		readFloatx = GetFloatFromString(entries[index],"localPosition.x");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
-		readFloaty = Utils.GetFloatFromString(entries[index],"localPosition.y");
+		readFloaty = GetFloatFromString(entries[index],"localPosition.y");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
-		readFloatz = Utils.GetFloatFromString(entries[index],"localPosition.z");
+		readFloatz = GetFloatFromString(entries[index],"localPosition.z");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		if (tr.localPosition != tempvec) tr.localPosition = tempvec;
 
 		// Get rotation
-		readFloatx = Utils.GetFloatFromString(entries[index],"localRotation.x");
+		readFloatx = GetFloatFromString(entries[index],"localRotation.x");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
-		readFloaty = Utils.GetFloatFromString(entries[index],"localRotation.y");
+		readFloaty = GetFloatFromString(entries[index],"localRotation.y");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
-		readFloatz = Utils.GetFloatFromString(entries[index],"localRotation.z");
+		readFloatz = GetFloatFromString(entries[index],"localRotation.z");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
-		readFloatw = Utils.GetFloatFromString(entries[index],"localRotation.w");
+		readFloatw = GetFloatFromString(entries[index],"localRotation.w");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
 		tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
@@ -929,13 +927,13 @@ public class Utils {
 		// position and the local is what is saved and loaded here.
 
 		// Get scale
-		readFloatx = Utils.GetFloatFromString(entries[index],"localScale.x");
+		readFloatx = GetFloatFromString(entries[index],"localScale.x");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
-		readFloaty = Utils.GetFloatFromString(entries[index],"localScale.y");
+		readFloaty = GetFloatFromString(entries[index],"localScale.y");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
-		readFloatz = Utils.GetFloatFromString(entries[index],"localScale.z");
+		readFloatz = GetFloatFromString(entries[index],"localScale.z");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
@@ -986,8 +984,9 @@ public class Utils {
 			CollisionDetectionMode.ContinuousSpeculative;
 
 		rbody.isKinematic = GetBoolFromString(entries[index],"isKinematic");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
+		index++;
+		
+		SaveObject.currentSaveEntriesIndex = index.ToString();
 		if (!rbody.isKinematic) rbody.collisionDetectionMode = oldCollision;
 		if (rbody.collisionDetectionMode != oldCollision) {
 			Debug.Log("Collision mode changed on " + go.name + " from "
@@ -999,20 +998,23 @@ public class Utils {
 	}
 
 	public static string SaveSubActivatedGOState(GameObject subGO) {
-		string line = System.String.Empty;
-		line = Utils.SaveTransform(subGO.transform);
-		line += Utils.splitChar + Utils.SaveRigidbody(subGO);
-		line += Utils.splitChar + Utils.BoolToString(subGO.activeSelf);
-		return line;
+		StringBuilder s1 = new StringBuilder();
+        s1.Clear();
+        s1.Append(SaveTransform(subGO.transform));
+		s1.Append(splitChar);
+		s1.AppendSaveRigidbody(subGO);
+		s1.Append(splitChar);
+		s1.Append(BoolToString(subGO.activeSelf,"subGO.activeSelf");
+		return s1.ToString();
 	}
 
 	public static int LoadSubActivatedGOState(GameObject subGO,
 											 ref string[] entries, int index) {
 
-		index = Utils.LoadTransform(subGO.transform,ref entries,index); // 10
-		index = Utils.LoadRigidbody(subGO,ref entries,index); // 4
+		index = LoadTransform(subGO.transform,ref entries,index); // 10
+		index = LoadRigidbody(subGO,ref entries,index); // 4
 
-		subGO.SetActive(Utils.GetBoolFromString(entries[index]));
+		subGO.SetActive(GetBoolFromString(entries[index],"subGO.activeSelf"));
 
 		// 10+4+1=15
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
@@ -1031,18 +1033,18 @@ public class Utils {
 			Debug.Log("Camera missing on savetype of Camera! GameObject.name: "
 					  + go.name);
 
-			return DTypeWordToSaveString("bb");
+			return "Camera.enabled:0|Grayscale.enabled:0";
 		}
 
 		string line = System.String.Empty;
         line = BoolToString(cm.enabled,"Camera.enabled"); // bool
 		line += splitChar;
         if (gsc != null) line += BoolToString(gsc.enabled,"Grayscale.enabled");
-        else line += "0";
+        else line += "Grayscale.enabled:0";
 		return line;
 	}
 
-	public static int LoadCamera(GameObject go, ref string[] entries, int index) {
+	public static int LoadCamera(GameObject go,ref string[] entries,int index) {
 		Camera cm = go.GetComponent<Camera>();
 		Grayscale gsc = go.GetComponent<Grayscale>();
 		if (cm == null || index < 0 || entries == null) return index + 2;
@@ -1084,19 +1086,18 @@ public class Utils {
 		PlayOneShotSavable(SFX,fxclip,0);
 	}
 
-	public static void PlayOneShotSavable(AudioSource SFX, int fxclip) {
-		if (fxclip < 0) return;
-		if (fxclip >= Const.a.sounds.Length) return;
+	public static void PlayOneShotSavable(AudioSource SFX, int fx) {
+		if (fx < 0) return;
+		if (fx >= Const.a.sounds.Length) return;
 
 		PlayOneShotSavable(SFX,Const.a.sounds[fxclip],0);
 	}
 
-	public static void PlayOneShotSavable(AudioSource SFX, int fxclip,
-										  float vol) {
-		if (fxclip < 0) return;
-		if (fxclip >= Const.a.sounds.Length) return;
+	public static void PlayOneShotSavable(AudioSource SFX, int fx, float vol) {
+		if (fx < 0) return;
+		if (fx >= Const.a.sounds.Length) return;
 
-		PlayOneShotSavable(SFX,Const.a.sounds[fxclip],vol);
+		PlayOneShotSavable(SFX,Const.a.sounds[fx],vol);
 	}
 
 	public static void PlaySavable(AudioSource SFX, AudioClip fxclip) {
@@ -1115,21 +1116,29 @@ public class Utils {
 		}
 
 		string line = System.String.Empty;
-        line = BoolToString(aus.enabled);
-		line += splitChar + FloatToString(aus.time);
-		if (aus.clip == null) line += splitChar + "none";
-		else line += splitChar + aus.clip.name;
+        line = BoolToString(aus.enabled,"AudioSource.enabled");
+		line += splitChar + FloatToString(aus.time,"time");
+		if (aus.clip == null) {
+		    line += splitChar + SaveString("none","clip.name");
+		} else line += splitChar + SaveString(aus.clip.name,"clip.name");
 
 		return line;
 	}
 
-	public static int LoadAudioSource(GameObject go, ref string[] entries, int index) {
+	public static int LoadAudioSource(GameObject go, ref string[] entries,
+	                                  int index) {
+	                                      
 		AudioSource aus = go.GetComponent<AudioSource>();
 		if (aus == null || index < 0 || entries == null) return index + 3;
 
-		aus.enabled = GetBoolFromString(entries[index]); index++;
-		aus.time = GetFloatFromString(entries[index]); index++;
+		aus.enabled = GetBoolFromString(entries[index],"AudioSource.enabled");
 		index++;
+		
+		aus.time = GetFloatFromString(entries[index],"time");
+		index++;
+		
+		// clip.name skipped, present for debugging
+		index++; 
 		return index;
 	}
 
