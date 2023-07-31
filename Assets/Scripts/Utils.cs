@@ -1004,7 +1004,7 @@ public class Utils {
 		s1.Append(splitChar);
 		s1.AppendSaveRigidbody(subGO);
 		s1.Append(splitChar);
-		s1.Append(BoolToString(subGO.activeSelf,"subGO.activeSelf");
+		s1.Append(BoolToString(subGO.activeSelf,"subGO.activeSelf"));
 		return s1.ToString();
 	}
 
