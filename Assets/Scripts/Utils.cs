@@ -1002,7 +1002,7 @@ public class Utils {
         s1.Clear();
         s1.Append(SaveTransform(subGO.transform));
 		s1.Append(splitChar);
-		s1.Append(SaveRigidbody(subGO);
+		s1.Append(SaveRigidbody(subGO));
 		s1.Append(splitChar);
 		s1.Append(BoolToString(subGO.activeSelf,"subGO.activeSelf"));
 		return s1.ToString();
@@ -1090,7 +1090,7 @@ public class Utils {
 		if (fx < 0) return;
 		if (fx >= Const.a.sounds.Length) return;
 
-		PlayOneShotSavable(SFX,Const.a.sounds[fxclip],0);
+		PlayOneShotSavable(SFX,Const.a.sounds[fx],0);
 	}
 
 	public static void PlayOneShotSavable(AudioSource SFX, int fx, float vol) {
