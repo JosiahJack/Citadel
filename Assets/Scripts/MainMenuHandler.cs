@@ -45,7 +45,6 @@ public class MainMenuHandler : MonoBehaviour {
 	public GameObject IntroVideo;
 	public GameObject IntroVideoContainer;
 	public bool inCutscene = false;
-	public AudioSource introSFX;
 	public GameObject PresetConfirmDialog;
 	public Text presetQuestionText;
 	public string presetQuestionDefault = "RESET ALL KEYS TO DEFAULT?";

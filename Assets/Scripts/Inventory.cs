@@ -1012,6 +1012,8 @@ public class Inventory : MonoBehaviour {
 
 		SFXClip = null;
 		SFXSource.Stop();
+		if (!Inventory.a.hasHardware[2]) return;
+
 		if (Const.a.audioLogs != null) SFXClip = Const.a.audioLogs[logIndex];
 		Utils.PlayOneShotSavable(SFXSource,SFXClip); // Play the log audio
 		if (!readLog[logIndex]) QuestLogNotesManager.a.LogAdded(logIndex);
