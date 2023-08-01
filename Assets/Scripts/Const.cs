@@ -1251,7 +1251,7 @@ public class Const : MonoBehaviour {
 		s1.Append(Utils.FloatToString(PauseScript.a.relativeTime,"GameTime"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(PauseScript.a.absoluteTime,
-		                              "TotalPlayTime");
+		                              "TotalPlayTime"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(kills,"kills"));
 		s1.Append(Utils.splitChar);
@@ -1263,7 +1263,7 @@ public class Const : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(damageDealt,"damageDealt"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.IntToString(damageReceived,"damageReceived"));
+		s1.Append(Utils.FloatToString(damageReceived,"damageReceived"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(savesScummed,"savesScummed"));
 		saveData[index] = s1.ToString();
@@ -1943,7 +1943,7 @@ public class Const : MonoBehaviour {
         secs = Mathf.Floor(PauseScript.a.relativeTime / 3600f);
         if (!isFinal) { // Report score if no deaths.
             score = victories * 10000f;
-            score -= min(score * 0.666f,secs * 100f);
+            score -= Mathf.Min(score * 0.666f,secs * 100f);
             score *= ((stupid + 1f) / 37f);
             if (stupid > 35f) score += 2222222f; // secret kevin bonus
             return Mathf.Floor(score);
@@ -1951,10 +1951,10 @@ public class Const : MonoBehaviour {
         
         // Death is 10 anti-kills, but you always keep at least a third of your
         // kills.
-        float deathPenalty = PlaterHealth.a.ressurections * 10f;
+        float deathPenalty = PlayerHealth.a.ressurections * 10f;
         score = victories - Mathf.Min(deathPenalty,victories * 0.666f);
         score *= 10000f;
-        score -= min(score * 0.666f,secs * 100f);
+        score -= Mathf.Min(score * 0.666f,secs * 100f);
         score *= ((stupid + 1f) / 37f); // 9 * 4 + 1 is best difficulty factor
         if (stupid > 35f) score += 2222222f; // secret kevin bonus
         return Mathf.Floor(score);

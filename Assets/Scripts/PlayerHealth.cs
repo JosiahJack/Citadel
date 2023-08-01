@@ -287,10 +287,9 @@ public class PlayerHealth : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(ph.radFXFinished,
 													 "radFXFinished"));
-		s1,Append(Utils.splitChar);
+		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(ph.deaths,"deaths"));
-		
-		s1,Append(Utils.splitChar);
+		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(ph.ressurections,"ressurections"));
 		
 		return s1.ToString();
