@@ -41,7 +41,7 @@ public class PauseScript : MonoBehaviour {
 	public bool MenuActive() { return menuActive; }
 
 	void Update() {
-	    absoluteTime += Time.deltaTime;
+	    if (relativeTime > 0f) absoluteTime += Time.deltaTime;
 		if (Input.GetKeyDown(KeyCode.F12)) TakeScreenshot();
 
 		menuActive = mainMenu.activeSelf;
