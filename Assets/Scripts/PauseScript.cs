@@ -21,10 +21,13 @@ public class PauseScript : MonoBehaviour {
 	private Texture2D previousCursorImage;
 	[HideInInspector] public bool onSaveDialog = false;
 	public float relativeTime;
+	public float absoluteTime;
 	[HideInInspector] public List<AmbientRegistration> ambientRegistry;
-	private bool menuActive = true; // Store the state of the main menu gameobject active state
-									// so that we don't have to do a gameobject engine call more
-									// than once on every Update all over the code.
+	private bool menuActive = true; // Store the state of the main menu
+	                                // gameobject active state so that we don't
+									// have to do a gameobject engine call more
+									// than once on every Update all over the
+									// code.
 
 	public static PauseScript a;
 
@@ -38,6 +41,7 @@ public class PauseScript : MonoBehaviour {
 	public bool MenuActive() { return menuActive; }
 
 	void Update() {
+	    absoluteTime += Time.deltaTime;
 		if (Input.GetKeyDown(KeyCode.F12)) TakeScreenshot();
 
 		menuActive = mainMenu.activeSelf;
@@ -48,11 +52,15 @@ public class PauseScript : MonoBehaviour {
 				else
 					PauseToggle();
 			}
-			if (Input.GetKeyDown(KeyCode.Home) || Input.GetKeyDown(KeyCode.Menu)) PauseEnable();
+			if (Input.GetKeyDown(KeyCode.Home)
+			    || Input.GetKeyDown(KeyCode.Menu)) {
+			        
+			    PauseEnable();
+			}
 			CheckForSuperWinCmdKey();
 		}
 
-		if (!Paused()) relativeTime = relativeTime + Time.deltaTime;
+		if (!Paused()) relativeTime += Time.deltaTime;
 	}
 
 /*
