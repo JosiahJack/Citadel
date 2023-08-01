@@ -1020,6 +1020,7 @@ public class MouseLookScript : MonoBehaviour {
 				return;
 			}
 
+            Const.a.grenadesThrown++;
 			if (levelDynamicContainer != null){
 				tossObject.transform.SetParent(levelDynamicContainer.transform,true);
 			}
