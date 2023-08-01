@@ -414,15 +414,17 @@ public class HealthManager : MonoBehaviour {
 		if (IsCyberEntity()) {
 			float cybbefore = cyberHealth;
 			cyberHealth -= take;
-			Debug.Log("Cyber entity's health was: " + cybbefore.ToString()
-					  + " is now: " + cyberHealth.ToString());
-
 			if (isPlayer) {
+			    Const.a.damageReceived += take;
 				MFDManager.a.DrawTicks(true);
 				if (cyberHealth <= 0) {
 					MouseLookScript.a.ExitCyberspace();
 					return 0f;
 				}
+			}
+			
+			if (dd.owner.CompareTag("Player")) {
+			    Const.a.damageDealt += take;
 			}
 		} else {
 			float before = health;
@@ -433,12 +435,14 @@ public class HealthManager : MonoBehaviour {
 			// beforehand (e.g. player fall damage, internal to player only,
 			// need to protect against shield, etc, JJ 9/5/19).
 			health -= take;
-			Debug.Log("Non-cyber entity's health was: " + before.ToString()
-					  + " is now: " + health.ToString());
-
 			if (isPlayer) {
+			    Const.a.damageReceived += take;
 				MFDManager.a.DrawTicks(true);
 				Music.a.inCombat = true;
+			}
+			
+			if (dd.owner.CompareTag("Player")) {
+			    Const.a.damageDealt += take;
 			}
 		}
 
