@@ -481,6 +481,7 @@ public class HealthManager : MonoBehaviour {
 			else if (isGrenade) GrenadeDeath();
 
 			if (isNPC) NPCDeath(null);
+			if (isPlayer) PlayerHealth.a.deaths++;
 			deathDone = true;
 		}
 	}
