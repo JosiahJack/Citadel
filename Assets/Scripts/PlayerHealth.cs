@@ -39,7 +39,9 @@ public class PlayerHealth : MonoBehaviour {
 	private float radAdjust;
 	private float initialRadiation;
 	[HideInInspector] public float noiseFinished;
-
+	[HideInInspector] public int deaths = 0;
+	[HideInInspector] public int ressurections = 0;
+	
 	public static PlayerHealth a;
 
 	void Awake() {
@@ -133,7 +135,7 @@ public class PlayerHealth : MonoBehaviour {
 		lastHealth = hm.health;
 	}
 	
-	void PlayerDying (){
+	void PlayerDying() {
 		timer += Time.deltaTime;
 		makingNoise = false;
 		MFDManager.a.DrawTicks(true);
@@ -143,7 +145,7 @@ public class PlayerHealth : MonoBehaviour {
 		}
 	}
 	
-	void PlayerDead (){
+	void PlayerDead() {
 		if (MouseLookScript.a.heldObjectIndex != -1) {
 			MouseLookScript.a.DropHeldItem();
 			MouseLookScript.a.ForceInventoryMode();
@@ -159,6 +161,7 @@ public class PlayerHealth : MonoBehaviour {
 	public void PlayerRessurect() {
 		bool ressurected = LevelManager.a.RessurectPlayer();
 		if (!ressurected) Debug.Log("ERROR: failed to ressurect player!");
+		ressurections++;
 		hm.health = 211f;
 		MFDManager.a.DrawTicks(true);
 		radiationArea = false;
@@ -253,7 +256,7 @@ public class PlayerHealth : MonoBehaviour {
 		PlayerHealth ph = go.GetComponent<PlayerHealth>();
 		if (ph == null) {
 			Debug.Log("PlayerHealth missing on savetype of Player!  GameObject.name: " + go.name);
-			return "0000.00000|0000.00000|0|0|0000.00000|-1|0|211.00000|0000.00000|0000.00000|0000.00000";
+			return "0000.00000|0000.00000|0|0|0000.00000|-1|0|211.00000|0000.00000|0000.00000|0000.00000|0|0";
 		}
 
 		StringBuilder s1 = new StringBuilder();
@@ -284,6 +287,12 @@ public class PlayerHealth : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(ph.radFXFinished,
 													 "radFXFinished"));
+		s1,Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(ph.deaths,"deaths"));
+		
+		s1,Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(ph.ressurections,"ressurections"));
+		
 		return s1.ToString();
 	}
 
@@ -293,21 +302,21 @@ public class PlayerHealth : MonoBehaviour {
 			Debug.Log("PlayerHealth.Load failure, ph == null, "
 					  + SaveObject.currentObjectInfo);
 
-			return index + 11;
+			return index + 13;
 		}
 
 		if (index < 0) {
 			Debug.Log("PlayerHealth.Load failure, index < 0, "
 					  + SaveObject.currentObjectInfo);
 
-			return index + 11;
+			return index + 13;
 		}
 
 		if (entries == null) {
 			Debug.Log("PlayerHealth.Load failure, entries == null, "
 					  + SaveObject.currentObjectInfo);
 
-			return index + 11;
+			return index + 13;
 		}
 
 		ph.radiated = Utils.GetFloatFromString(entries[index],"radiated");
@@ -355,7 +364,15 @@ public class PlayerHealth : MonoBehaviour {
 
 		ph.radFXFinished = Utils.LoadRelativeTimeDifferential(entries[index],
 															  "radFXFinished");
+	    index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+	    
+		ph.deaths = Utils.GetIntFromString(entries[index],"deaths");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		
+		ph.ressurections = Utils.GetIntFromString(entries[index],
+		                                          "ressurections");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		
 		return index;
 	}
 }
