@@ -1234,9 +1234,14 @@ public class Const : MonoBehaviour {
 			savename = "Unnamed " + Utils.UintToString(saveFileIndex); // int
 		}
 
-		saveData[index] = savename; index++;
+		saveData[index] = savename;
+		index++;
+		
 		saveData[index] = Utils.FloatToString(PauseScript.a.relativeTime,
-		                                      "GameTime");
+		                                      "GameTime")
+		                  + Utils.splitChar
+		                  + Utils.FloatToString(PauseScript.a.absoluteTime,
+		                                        "TotalPlayTime");
 		index++; // float - pausable game time
 		
 		s1.Append(LevelManager.Save(LevelManager.a.gameObject));
@@ -1506,6 +1511,10 @@ public class Const : MonoBehaviour {
 			// somethingerotherFinished timer states.
 			PauseScript.a.relativeTime =
 			    Utils.GetFloatFromString(entries[index],"GameTime");
+			index++;
+			
+			PauseScript.a.absoluteTime =
+			    Utils.GetFloatFromString(entries[index],"TotalPlayTime");
 			index = 0; // reset before starting next line
 
 			// Read in global states, difficulties, and quest mission bits.
@@ -1865,7 +1874,63 @@ public class Const : MonoBehaviour {
 		}
 	}
 
+
+Total Time (with reload from deaths): #h #m #s
+Kills: 0000
+Kills in Cyberspace: 0000
+Score Subtotal: 0000000000000000
+Deaths: 0000
+Ressurections: 0000
+Difficulty Index: 00
+Final Score: 0000000000000000
+
+Shots Fired: 0000
+Grenades Thrown: 0000
+Damage Dealt: 0000000000000000
+Damage Received: 0000000000000000
+Saves Scummed: 0000
+
+
+Click to continue...
+
 	public string CreditsStats() {
+	    StringBuilder s1 = new StringBuilder();
+	    s1.Clear();
+	    s1.Append("======================================================================");
+        s1.Append("\n");
+	    s1.Append("CITADEL");
+	    s1.Append("\n");
+	    s1.Append("======================================================================");
+	    s1.Append("\n");
+	    s1.Append("CONGRATULATIONS!");
+	    s1.Append("\n");
+	    string hours, minutes, secs;
+	    float t = PauseScript.a.relativeTime;
+		float tb = (Mathf.Floor(t/3600f));
+        hours = tb.ToString("0");
+        t = t - (tb * 3600f);
+        tb = Mathf.Floor(t / 60f); 
+        minutes = tb.ToString("00");
+        t = t - (tb * 60f);
+        secs = t.ToString("00.000");
+	    s1.Append("Straight Time: " + hours + "h" + minutes + "m" + secs + "s");
+	    s1.Append("\n");
+	    t = PauseScript.a.relativeTime;
+		tb = (Mathf.Floor(t/3600f));
+        hours = tb.ToString("0");
+        t = t - (tb * 3600f);
+        tb = Mathf.Floor(t / 60f); 
+        minutes = tb.ToString("00");
+        t = t - (tb * 60f);
+        secs = t.ToString("00.000"); 
+        s1.Append("Total Time (with reload from deaths): ")
+	    s1.Append("\n");
+	    s1.Append("\n");
+	    s1.Append("\n");
+	    s1.Append("\n");
+	    s1.Append("\n");
+	    
+	    
 		string retval = Const.a.creditsText[1];
 		int index = 0;
 		char[] checkCharacters = retval.ToCharArray();
