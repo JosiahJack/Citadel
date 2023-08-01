@@ -1255,10 +1255,20 @@ public class Const : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(kills,"kills"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.IntToString(cyberkills,"cyberkills"));
+		s1.Append(Utils.IntToString(kills,"cyberkills"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(shotsFired,"shotsFired"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(grenadesThrown,"grenadesThrown"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(damageDealt,"damageDealt"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(damageReceived,"damageReceived"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(savesScummed,"savesScummed"));
 		saveData[index] = s1.ToString();
 		index++; // float - pausable game time
-		
+
 		s1.Clear();
 		s1.Append(LevelManager.Save(LevelManager.a.gameObject));
 		s1.Append(Utils.splitChar);
@@ -1533,12 +1543,29 @@ public class Const : MonoBehaviour {
 			    Utils.GetFloatFromString(entries[index],"TotalPlayTime");
 			index++;
 			
-			kills = Utils.GetIntFromString(ebtries[index],"kills");
+			kills = Utils.GetIntFromString(entries[index],"kills");
 			index++;
 			
-			cyberkills = Utils.GetIntFromString(ebtries[index],"cyberkills");
+			cyberkills = Utils.GetIntFromString(entries[index],"cyberkills");
 			index++;
 			
+			shotsFired = Utils.GetIntFromString(entries[index],"shotsFired");
+			index++;
+			
+			grenadesThrown = Utils.GetIntFromString(entries[index],"grenadesThrown");
+			index++;
+			
+			damageDealt = Utils.GetFloatFromString(entries[index],"damageDealt");
+			index++;
+			
+			damageReceived = Utils.GetFloatFromString(entries[index],
+			                                          "damageReceived");
+			index++;
+			
+			// 1+, you're doin' it now!
+			savesScummed = 1 + Utils.GetIntFromString(entries[index],
+			                                          "savesScummed");
+			index++; // In case of more.
 			index = 0; // reset before starting next line
 
 			// Read in global states, difficulties, and quest mission bits.
