@@ -335,7 +335,16 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int maxRaycastsPerFrame = 20;
 	[HideInInspector] public float raycastTick = 0.2f;
 	[HideInInspector] public float aiTickTime = 0.1f;
-
+	
+	// Credit stats
+	[HideInInspector] public int kills = 0;
+	[HideInInspector] public int cyberkills = 0;
+	[HideInInspector] public int shotsFired = 0;
+	[HideInInspector] public int grenadesThrown = 0;
+	[HideInInspector] public float damageDealt = 0f;
+	[HideInInspector] public float damageReceived = 0f;
+	[HideInInspector] public int savesScummed = 0;
+	
 	// Private CONSTANTS
 	[HideInInspector] public int TARGET_FPS = 60;
 	private StringBuilder s1;
@@ -1237,13 +1246,20 @@ public class Const : MonoBehaviour {
 		saveData[index] = savename;
 		index++;
 		
-		saveData[index] = Utils.FloatToString(PauseScript.a.relativeTime,
-		                                      "GameTime")
-		                  + Utils.splitChar
-		                  + Utils.FloatToString(PauseScript.a.absoluteTime,
-		                                        "TotalPlayTime");
+		// Credit Stats and Times
+		s1.Clear();
+		s1.Append(Utils.FloatToString(PauseScript.a.relativeTime,"GameTime"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(PauseScript.a.absoluteTime,
+		                              "TotalPlayTime");
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(kills,"kills"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(cyberkills,"cyberkills"));
+		saveData[index] = s1.ToString();
 		index++; // float - pausable game time
 		
+		s1.Clear();
 		s1.Append(LevelManager.Save(LevelManager.a.gameObject));
 		s1.Append(Utils.splitChar);
 		s1.Append(questData.Save());
@@ -1504,7 +1520,7 @@ public class Const : MonoBehaviour {
 			// readFileList[0] == saveName;  Not important, we are loading already now
 			//index = 0; // Uncomment this if we pull in the saveName from this line for something.
 
-			// Read in global time and pause data
+			// Read in global time, pause data, credit stats
 			entries = readFileList[1].Split(Utils.splitCharChar);
 			
 			// The global time from which everything checks it's
@@ -1515,6 +1531,14 @@ public class Const : MonoBehaviour {
 			
 			PauseScript.a.absoluteTime =
 			    Utils.GetFloatFromString(entries[index],"TotalPlayTime");
+			index++;
+			
+			kills = Utils.GetIntFromString(ebtries[index],"kills");
+			index++;
+			
+			cyberkills = Utils.GetIntFromString(ebtries[index],"cyberkills");
+			index++;
+			
 			index = 0; // reset before starting next line
 
 			// Read in global states, difficulties, and quest mission bits.
@@ -1873,25 +1897,41 @@ public class Const : MonoBehaviour {
 			}
 		}
 	}
-
-
-Total Time (with reload from deaths): #h #m #s
-Kills: 0000
-Kills in Cyberspace: 0000
-Score Subtotal: 0000000000000000
-Deaths: 0000
-Ressurections: 0000
-Difficulty Index: 00
-Final Score: 0000000000000000
-
-Shots Fired: 0000
-Grenades Thrown: 0000
-Damage Dealt: 0000000000000000
-Damage Received: 0000000000000000
-Saves Scummed: 0000
-
-
-Click to continue...
+	
+	public float DifficultyIndex() {
+	    float stupid = 0f;
+	    stupid += (difficultyCombat * difficultyCombat);
+        stupid += (difficultyPuzzle * difficultyPuzzle);
+        stupid += (difficultyMission * difficultyMission);
+        stupid += (difficultyCyber * difficultyCyber);
+        return stupid;
+	}
+	
+	public float GetScore(bool isFinal) {
+        float stupid = DifficultyIndex();
+        float score = 0f;
+        float victories = (float)(kills + cyberkills);
+        float secs = 0f;
+        
+        secs = Mathf.Floor(PauseScript.a.relativeTime / 3600f);
+        if (!isFinal) { // Report score if no deaths.
+            score = victories * 10000f;
+            score -= min(score * 0.666f,secs * 100f);
+            score *= ((stupid + 1f) / 37f);
+            if (stupid > 35f) score += 2222222f; // secret kevin bonus
+            return Mathf.Floor(score);
+        }
+        
+        // Death is 10 anti-kills, but you always keep at least a third of your
+        // kills.
+        float deathPenalty = PlaterHealth.a.ressurections * 10f;
+        score = victories - Mathf.Min(deathPenalty,victories * 0.666f);
+        score *= 10000f;
+        score -= min(score * 0.666f,secs * 100f);
+        score *= ((stupid + 1f) / 37f); // 9 * 4 + 1 is best difficulty factor
+        if (stupid > 35f) score += 2222222f; // secret kevin bonus
+        return Mathf.Floor(score);
+	}
 
 	public string CreditsStats() {
 	    StringBuilder s1 = new StringBuilder();
@@ -1904,6 +1944,7 @@ Click to continue...
 	    s1.Append("\n");
 	    s1.Append("CONGRATULATIONS!");
 	    s1.Append("\n");
+	    
 	    string hours, minutes, secs;
 	    float t = PauseScript.a.relativeTime;
 		float tb = (Mathf.Floor(t/3600f));
@@ -1913,9 +1954,12 @@ Click to continue...
         minutes = tb.ToString("00");
         t = t - (tb * 60f);
         secs = t.ToString("00.000");
-	    s1.Append("Straight Time: " + hours + "h" + minutes + "m" + secs + "s");
+	    s1.Append("Straight Time: " + hours + "h " + minutes + "m " + secs
+	              + "s");
+	              
 	    s1.Append("\n");
-	    t = PauseScript.a.relativeTime;
+	    
+	    t = PauseScript.a.absoluteTime;
 		tb = (Mathf.Floor(t/3600f));
         hours = tb.ToString("0");
         t = t - (tb * 3600f);
@@ -1923,47 +1967,42 @@ Click to continue...
         minutes = tb.ToString("00");
         t = t - (tb * 60f);
         secs = t.ToString("00.000"); 
-        s1.Append("Total Time (with reload from deaths): ")
-	    s1.Append("\n");
-	    s1.Append("\n");
-	    s1.Append("\n");
-	    s1.Append("\n");
+        s1.Append("Total Time (with reload from deaths): ");
 	    s1.Append("\n");
 	    
+	    s1.Append("Kills: " + kills.ToString());
+	    s1.Append("\n");
+	    s1.Append("Kills in Cyberspace: " + cyberkills.ToString());
+	    s1.Append("\n");
 	    
-		string retval = Const.a.creditsText[1];
-		int index = 0;
-		char[] checkCharacters = retval.ToCharArray();
-		char[] updatedCharacters = new char[checkCharacters.Length];
-		for (int i=0;i<updatedCharacters.Length;i++) {
-			if (checkCharacters[i] == '#') {
-				char[] tempChar = null;
-				switch(index) {
-					case 0: // Straight Time: #h
-						tempChar = new char[2];
-						float t = PauseScript.a.relativeTime;
-						t = Mathf.Floor(t/3600f); // hours
-						string s_t = t.ToString("00");
-						char[] s_t_c = s_t.ToCharArray();
-						tempChar[0] = s_t_c[0];
-						tempChar[1] = s_t_c[1];
-						break;
-
-				}
-				if (tempChar != null) {
-					for (int j=0;j<tempChar.Length;j++) {
-						updatedCharacters[i] = tempChar[j];
-						i++;
-					}
-				} else {
-					updatedCharacters[i] = checkCharacters[i];
-				}
-				index++;
-			} else {
-				updatedCharacters[i] = checkCharacters[i];
-			}
-		}
-
-		return retval;
+	    s1.Append("Score Subtotal: " + GetScore(false).ToString("0"));
+	    s1.Append("\n");
+	    s1.Append("Deaths: " + PlayerHealth.a.deaths.ToString());
+	    s1.Append("\n");
+	    s1.Append("Ressurections: " + PlayerHealth.a.ressurections.ToString());
+	    s1.Append("\n");
+	    s1.Append("Combat: " + difficultyCombat.ToString()
+	              + " | Puzzle: " + difficultyPuzzle.ToString()
+	              + " | Mission: " + difficultyMission.ToString()
+	              + " | Cyber: " + difficultyCyber.ToString());
+	    s1.Append("\n");
+	    s1.Append("Difficulty Index: " + DifficultyIndex().ToString());
+	    s1.Append("\n");
+	    s1.Append("Final Score: " + GetScore(true));
+	    s1.Append("\n");
+	    s1.Append("\n");
+	    s1.Append("Shots Fired: " + shotsFired.ToString());
+	    s1.Append("\n");
+	    s1.Append("Grenades Thrown: " + grenadesThrown.ToString());
+	    s1.Append("\n");
+	    s1.Append("Damage Dealt: " + damageDealt.ToString());
+	    s1.Append("\n");
+	    s1.Append("Damage Received: " + damageReceived.ToString());
+	    s1.Append("\n");
+	    s1.Append("Saves Scummed: " + savesScummed.ToString());
+	    s1.Append("\n");
+	    s1.Append("\n");
+	    s1.Append("Click to continue...");
+		return s1.ToString();
 	}
 }
