@@ -8,22 +8,25 @@ public class CreditsScroll : MonoBehaviour {
 	private bool bottom = false;
 	public int pagenum = 0;
 	public GameObject exitVideo;
+	private float vidFinished;
 
     void OnEnable() {
 		bottom = false;
 		pagenum = 0;
 		creditsText.text = Const.a.creditsText[pagenum];
 		exitVideo.SetActive(true);
+		vidFinished = Time.time + 37.2f;
 		if (Const.a.gameFinished) Const.a.creditsText[1] = Const.a.CreditsStats(); // Get player stats for finishing the game
     }
 
 	void Update() {
-		// Escape/back button listener
+		if (vidFinished < Time.time) Utils.Deactivate(exitVideo);
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			if (exitVideo.activeSelf) {
-				exitVideo.SetActive(false);
+				Utils.Deactivate(exitVideo);
 				return;
 			}
+			
 			MainMenuHandler.a.GoBack();
 		}
 
@@ -33,7 +36,8 @@ public class CreditsScroll : MonoBehaviour {
 			if (!bottom) {
 				pagenum++;
 				if (!Const.a.gameFinished) {
-					if (pagenum == 1) pagenum++; // skip stats when playing from main menu
+					if (pagenum == 1) pagenum++; // Skip stats when playing
+					                             // from main menu.
 				}
 				if (pagenum >= Const.a.creditsLength) {
 					bottom = true;
