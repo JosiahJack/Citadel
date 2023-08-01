@@ -458,10 +458,12 @@ public class HealthManager : MonoBehaviour {
 
 		if (IsCyberEntity()) {
 			if (cyberHealth <= 0f) {
+			    Const.a.cyberkills++;
 				Death(dd.attackType == AttackType.EnergyBeam);
 			}
 		} else {
 			if (health <= 0f) {
+			    Const.a.kills++;
 				Death(dd.attackType == AttackType.EnergyBeam);
 			}
 		}
