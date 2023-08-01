@@ -536,6 +536,7 @@ public class WeaponFire : MonoBehaviour {
 			if (Inventory.a.isPulserNotDrill) {
 				if (Inventory.a.hasSoft[1]) {
 					// Fire pulser
+					Const.a.shotsFired++;
 					if (Inventory.a.hasSoft[1]) FireCyberBeachball(true,railgunShotForce,492);
 					if (SFXPulserFire != null) { SFX.clip = SFXPulserFire; SFX.Play(); }
 					cyberWeaponAttackFinished = PauseScript.a.relativeTime + 0.08f;
@@ -543,6 +544,7 @@ public class WeaponFire : MonoBehaviour {
 			} else {
 				if (Inventory.a.hasSoft[0]) {
 					// Fire I.C.E. drill
+					Const.a.shotsFired++;
 					if (Inventory.a.hasSoft[0]) FireCyberBeachball(false,plasmaShotForce,495);
 					if (SFXDrillFire != null) { SFX.clip = SFXDrillFire; SFX.Play(); }
 					cyberWeaponAttackFinished = PauseScript.a.relativeTime + 0.5f;
@@ -718,6 +720,7 @@ public class WeaponFire : MonoBehaviour {
         // no weapons subtract more than 1 at a time in a shot except for energy weapons, subtracting 1
         // Check weapon type before subtracting ammo or energy
         if (index == 5 || index == 6) {
+            // Melee don't count towards Const.a.shotsFired
             // Pipe or Laser Rapier
             // ammo is already 0, do nothing.  This is here to prevent subtracting ammo on the first slot of .wepAmmo[index] on the last else clause below
         } else {
@@ -747,6 +750,8 @@ public class WeaponFire : MonoBehaviour {
                     if (!WeaponCurrent.a.bottomless) WeaponCurrent.a.currentMagazineAmount[WeaponCurrent.a.weaponCurrent]--; // Take ammo away
                 }
             }
+            
+            Const.a.shotsFired++;
         }
 
 		Recoil(index);
