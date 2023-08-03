@@ -63,9 +63,9 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public float[] damageForNPC; // Primary attack damage
 	[HideInInspector] public float[] damageForNPC2; // Secondary attack damage
 	[HideInInspector] public float[] damageForNPC3; // Grenade attack damage
-	[HideInInspector] public float[] rangeForNPC; // Primary attack range
-	[HideInInspector] public float[] rangeForNPC2; // Secondary attack range
-	[HideInInspector] public float[] rangeForNPC3; // Grenade throw range
+	public float[] rangeForNPC; // Primary attack range
+	public float[] rangeForNPC2; // Secondary attack range
+	public float[] rangeForNPC3; // Grenade throw range
 	[HideInInspector] public float[] healthForNPC;
 	[HideInInspector] public float[] healthForCyberNPC;
 	[HideInInspector] public PerceptionLevel[] perceptionForNPC;
@@ -1969,7 +1969,7 @@ public class Const : MonoBehaviour {
 	    s1.Append("\n");
 	    s1.Append("======================================================================");
 	    s1.Append("\n");
-	    s1.Append("CONGRATULATIONS!");
+	    s1.Append("CONGRATULATIONS " + playerName);
 	    s1.Append("\n");
 	    
 	    string hours, minutes, secs;

@@ -559,7 +559,11 @@ public class WeaponFire : MonoBehaviour {
         GameObject beachball = ConsoleEmulator.SpawnDynamicObject(prefabID,-1);
         if (beachball != null) {
 			damageData.damage = 10f * Inventory.a.softVersions[0];
-			if (isPulser) damageData.damage = 1f * Inventory.a.softVersions[1]; // Cyberspace enemies don't have much health
+			if (isPulser) {
+				// Cyberspace enemies don't have much health.
+				damageData.damage = 1f + (0.25f * Inventory.a.softVersions[1]);
+			}
+
             damageData.owner = playerCapsule;
             damageData.attackType = AttackType.ProjectileLaunched;
 			if (!isPulser) damageData.attackType = AttackType.Drill;

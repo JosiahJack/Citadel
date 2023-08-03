@@ -742,7 +742,7 @@ public class AIController : MonoBehaviour {
 				huntFinished += (Const.a.huntTimeForNPC[index] * 2.00f); 
 			}
 			
-			if (index == 28) { // SHODAN
+			if (IsCyberNPC()) {
 			    huntFinished += (Const.a.huntTimeForNPC[index] * 9999f); 
 			}
 
@@ -1123,7 +1123,7 @@ public class AIController : MonoBehaviour {
 		if (IsCyberNPC()) {
 			if (enemy != null) {
 				Rigidbody rbodyEnemy = enemy.GetComponent<Rigidbody>();
-				if (rbodyEnemy != null) {
+				if (rbodyEnemy != null && UnityEngine.Random.Range(0f,1f) < 0.5f) {
 					shove = shove + (rbodyEnemy.velocity * 0.5f);
 				}
 			}
@@ -1379,6 +1379,7 @@ public class AIController : MonoBehaviour {
 		}
 
 		if (IsCyberNPC() && Const.a.decoyActive) {
+			Debug.Log("Decoy forget!");
 			LOSpossible = false; // Silly decoy hack to prevent seeing player.
 			return false;
 		}
@@ -1417,7 +1418,10 @@ public class AIController : MonoBehaviour {
 		LOSpossible = false; // Reset line of sight value. Doing this after 
 							 // CheckIfEnemyInSight so it doesn't break it.
 
-		if (IsCyberNPC() && Const.a.decoyActive) return false;
+		if (IsCyberNPC() && Const.a.decoyActive) {
+			Debug.Log("Decoy forget!");
+			return false;
+		}
 		if (Const.a.player1Capsule == null) return false; // No found player
 
 		// Can't see him, he's on notarget.
@@ -1431,7 +1435,11 @@ public class AIController : MonoBehaviour {
 		// Don't waste time raycasting if we won't be able to see them anyway.
 		if (dist > Const.a.sightRangeForNPC[index]) return false;
         
-        if (IsCyberNPC()) return true;
+        if (IsCyberNPC()) {
+			SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
+			PlaySightSound();
+			return true;
+		}
 
 		// Get vector line made from enemy to found player
 		Vector3 checkline = tempVec - sightPoint.transform.position;

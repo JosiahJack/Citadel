@@ -9,19 +9,66 @@ public class CreditsScroll : MonoBehaviour {
 	public int pagenum = 0;
 	public GameObject exitVideo;
 	private float vidFinished;
+	public GameObject endVideoTextGO1;
+	public GameObject endVideoTextGO2;
+	public GameObject endVideoTextGO3;
+	public Text endVideoText1;
+	public Text endVideoText2;
+	public Text endVideoText3;
+	private float vidLength = 37.2f;
+	private float vidStartTime;
 
     void OnEnable() {
 		bottom = false;
 		pagenum = 0;
 		creditsText.text = Const.a.creditsText[pagenum];
-		exitVideo.SetActive(true);
-		vidFinished = Time.time + 37.2f;
-		if (Const.a.gameFinished) Const.a.creditsText[1] = Const.a.CreditsStats(); // Get player stats for finishing the game
+		Utils.Activate(exitVideo);
+		Utils.Activate(endVideoTextGO1);
+		endVideoText1.text = Const.a.stringTable[610];
+		endVideoText2.text = Const.a.stringTable[611];
+		endVideoText3.text = Const.a.stringTable[612];
+		Utils.Deactivate(endVideoTextGO2);
+		Utils.Deactivate(endVideoTextGO3);
+		vidFinished = Time.time + vidLength;
+		vidStartTime = Time.time;
+		if (Const.a.gameFinished) {
+			// Get player stats for finishing the game!
+			Const.a.creditsText[1] = Const.a.CreditsStats();
+		}
     }
 
 	void Update() {
-		if (vidFinished < Time.time) Utils.Deactivate(exitVideo);
-		if (Input.GetKeyDown(KeyCode.Escape)) {
+		if (vidFinished > 0 && (Time.time - vidStartTime) > 7f
+			&& endVideoTextGO1.activeSelf && !endVideoTextGO2.activeSelf) {
+
+			Utils.Activate(endVideoTextGO2);
+			Utils.Deactivate(endVideoTextGO1);
+		}
+
+		if (vidFinished > 0 && (Time.time - vidStartTime) > 11f
+			&& endVideoTextGO2.activeSelf && !endVideoTextGO3.activeSelf) {
+
+			Utils.Activate(endVideoTextGO3);
+			Utils.Deactivate(endVideoTextGO2);
+		}
+
+		if (vidFinished > 0 && (Time.time - vidStartTime) > 13f
+			&& endVideoTextGO3.activeSelf) {
+
+			Utils.Deactivate(endVideoTextGO3);
+		}
+
+		if (vidFinished < Time.time && exitVideo.activeSelf
+			&& vidFinished > 0) {
+
+			vidFinished = 0;
+			Utils.Deactivate(exitVideo);
+			Utils.Deactivate(endVideoTextGO1);
+			Utils.Deactivate(endVideoTextGO2);
+			Utils.Deactivate(endVideoTextGO3);
+		}
+
+		if (Input.GetKeyUp(KeyCode.Escape)) {
 			if (exitVideo.activeSelf) {
 				Utils.Deactivate(exitVideo);
 				return;

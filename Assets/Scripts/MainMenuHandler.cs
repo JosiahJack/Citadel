@@ -57,6 +57,36 @@ public class MainMenuHandler : MonoBehaviour {
 	public ConfigToggles ctQuickItemPickUp;
 	public ConfigToggles ctQuickReload;
 	public ConfigToggles ctNoShootMode;
+	public GameObject introVideoTextGO1;
+	public GameObject introVideoTextGO2;
+	public GameObject introVideoTextGO3;
+	public GameObject introVideoTextGO4;
+	public GameObject introVideoTextGO5;
+	public GameObject introVideoTextGO6;
+	public GameObject introVideoTextGO7;
+	public GameObject introVideoTextGO8;
+	public GameObject introVideoTextGO9;
+	public GameObject introVideoTextGO10;
+	public GameObject introVideoTextGO11;
+	public GameObject introVideoTextGO12;
+	public GameObject introVideoTextGO13;
+	public GameObject introVideoTextGO14;
+	public GameObject introVideoTextGO15;
+	public Text introVideoText1;
+	public Text introVideoText2;
+	public Text introVideoText3;
+	public Text introVideoText4;
+	public Text introVideoText5;
+	public Text introVideoText6;
+	public Text introVideoText7;
+	public Text introVideoText8;
+	public Text introVideoText9;
+	public Text introVideoText10;
+	public Text introVideoText11;
+	public Text introVideoText12;
+	public Text introVideoText13;
+	public Text introVideoText14;
+	public Text introVideoText15;
 
 	[HideInInspector] public bool returnToPause = false;
 	[HideInInspector] public bool dataFound = false;
@@ -69,6 +99,9 @@ public class MainMenuHandler : MonoBehaviour {
 	private int presetQuestionValue = -1;
 	private LoadPageGetSaveNames lpgsn_load;
 	private LoadPageGetSaveNames lpgsn_save;
+	private float vidFinished;
+	private float vidLength = 117.5f;
+	private float vidStartTime;
 
 	void Awake() {
 		a = this;
@@ -112,6 +145,42 @@ public class MainMenuHandler : MonoBehaviour {
 	void OnEnable() {
 		if (Inventory.a != null) Inventory.a.HideBioMonitor();
 		DisableCameraDuringMenu();
+		if (IntroVideoContainer.activeSelf) {
+			vidFinished = Time.time + vidLength;
+			vidStartTime = Time.time;
+
+			// Setup text.
+			introVideoText1.text = Const.a.stringTable[613];
+			introVideoText2.text = Const.a.stringTable[614];
+			introVideoText3.text = Const.a.stringTable[615];
+			introVideoText4.text = Const.a.stringTable[616];
+			introVideoText5.text = Const.a.stringTable[617];
+			introVideoText6.text = Const.a.stringTable[618];
+			introVideoText7.text = Const.a.stringTable[619];
+			introVideoText8.text = Const.a.stringTable[620];
+			introVideoText9.text = Const.a.stringTable[621];
+			introVideoText10.text = Const.a.stringTable[622];
+			introVideoText11.text = Const.a.stringTable[623];
+			introVideoText12.text = Const.a.stringTable[624];
+			introVideoText13.text = Const.a.stringTable[625];
+			introVideoText14.text = Const.a.stringTable[626];
+			introVideoText15.text = Const.a.stringTable[627];
+			Utils.Activate(introVideoTextGO1);
+			Utils.Deactivate(introVideoTextGO2);
+			Utils.Deactivate(introVideoTextGO3);
+			Utils.Deactivate(introVideoTextGO4);
+			Utils.Deactivate(introVideoTextGO5);
+			Utils.Deactivate(introVideoTextGO6);
+			Utils.Deactivate(introVideoTextGO7);
+			Utils.Deactivate(introVideoTextGO8);
+			Utils.Deactivate(introVideoTextGO9);
+			Utils.Deactivate(introVideoTextGO10);
+			Utils.Deactivate(introVideoTextGO11);
+			Utils.Deactivate(introVideoTextGO12);
+			Utils.Deactivate(introVideoTextGO13);
+			Utils.Deactivate(introVideoTextGO14);
+			Utils.Deactivate(introVideoTextGO15);
+		}
 	}
 
 	void OnDisable() {
@@ -185,7 +254,148 @@ public class MainMenuHandler : MonoBehaviour {
 			return;
 		}
 
-		if (!IntroVideoContainer.activeSelf) {
+		if (IntroVideoContainer.activeSelf) {
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 7f
+				&& introVideoTextGO1.activeSelf
+				&& !introVideoTextGO2.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO1);
+				Utils.Activate(introVideoTextGO2);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 11f
+				&& introVideoTextGO2.activeSelf
+				&& !introVideoTextGO3.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO2);
+				Utils.Activate(introVideoTextGO3);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 13f
+				&& introVideoTextGO3.activeSelf
+				&& !introVideoTextGO4.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO3);
+				Utils.Activate(introVideoTextGO4);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 20f
+				&& introVideoTextGO4.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO4);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 29f
+				&& introVideoTextGO4.activeSelf
+				&& !introVideoTextGO5.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO4);
+				Utils.Activate(introVideoTextGO5);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 36f
+				&&  introVideoTextGO5.activeSelf
+				&& !introVideoTextGO6.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO5);
+				Utils.Activate(  introVideoTextGO6);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 44f
+				&&  introVideoTextGO6.activeSelf
+				&& !introVideoTextGO7.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO6);
+				Utils.Activate(  introVideoTextGO7);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 56f
+				&&  introVideoTextGO7.activeSelf
+				&& !introVideoTextGO8.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO7);
+				Utils.Activate(  introVideoTextGO8);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 62f
+				&&  introVideoTextGO8.activeSelf
+				&& !introVideoTextGO9.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO8);
+				Utils.Activate(  introVideoTextGO9);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 73f
+				&&  introVideoTextGO9.activeSelf
+				&& !introVideoTextGO10.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO9);
+				Utils.Activate(  introVideoTextGO10);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 76f
+				&&  introVideoTextGO10.activeSelf
+				&& !introVideoTextGO11.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO10);
+				Utils.Activate(  introVideoTextGO11);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 83f
+				&&  introVideoTextGO11.activeSelf
+				&& !introVideoTextGO12.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO11);
+				Utils.Activate(  introVideoTextGO12);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 90f
+				&&  introVideoTextGO12.activeSelf
+				&& !introVideoTextGO13.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO12);
+				Utils.Activate(  introVideoTextGO13);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 99f
+				&&  introVideoTextGO13.activeSelf
+				&& !introVideoTextGO14.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO13);
+				Utils.Activate(  introVideoTextGO14);
+			}
+
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 105f
+				&&  introVideoTextGO14.activeSelf
+				&& !introVideoTextGO15.activeSelf) {
+
+				Utils.Deactivate(introVideoTextGO14);
+				Utils.Activate(  introVideoTextGO15);
+			}
+
+
+			if (vidFinished < Time.time && IntroVideoContainer.activeSelf
+				&& vidFinished > 0) {
+
+				vidFinished = 0;
+				Utils.Deactivate(IntroVideoContainer);
+				Utils.Deactivate(introVideoTextGO1);
+				Utils.Deactivate(introVideoTextGO2);
+				Utils.Deactivate(introVideoTextGO3);
+				Utils.Deactivate(introVideoTextGO4);
+				Utils.Deactivate(introVideoTextGO5);
+				Utils.Deactivate(introVideoTextGO6);
+				Utils.Deactivate(introVideoTextGO7);
+				Utils.Deactivate(introVideoTextGO8);
+				Utils.Deactivate(introVideoTextGO9);
+				Utils.Deactivate(introVideoTextGO10);
+				Utils.Deactivate(introVideoTextGO11);
+				Utils.Deactivate(introVideoTextGO12);
+				Utils.Deactivate(introVideoTextGO13);
+				Utils.Deactivate(introVideoTextGO14);
+				Utils.Deactivate(introVideoTextGO15);
+			}
+		} else {
 			if (!BackGroundMusic.isPlaying
 				&& !saltTheFries.activeInHierarchy
 				&& gameObject.activeSelf) {
@@ -193,8 +403,13 @@ public class MainMenuHandler : MonoBehaviour {
 			}
 		}
 
+		// Qmaster's cheat
 		if (   (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P))
 			|| (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P))) {
+			if (string.IsNullOrWhiteSpace(Const.a.playerName)) {
+				Const.a.playerName = "Qmaster";
+			}
+
 			StartGame(true);
 			return;
 		}
@@ -381,6 +596,7 @@ public class MainMenuHandler : MonoBehaviour {
 			PauseScript.a.ExitSaveDialog();
 			ResetPages();
 			MouseCursor.a.mainCamera.enabled = true;
+			returnToPause = false;
 			this.gameObject.SetActive(false);
 			return;
 		}
@@ -485,6 +701,40 @@ public class MainMenuHandler : MonoBehaviour {
 		IntroVideo.SetActive(true);
 		inCutscene = true;
 		BackGroundMusic.Stop();
+		vidFinished = Time.time + vidLength;
+		vidStartTime = Time.time;
+
+		// Setup text.
+		introVideoText1.text = Const.a.stringTable[613];
+		introVideoText2.text = Const.a.stringTable[614];
+		introVideoText3.text = Const.a.stringTable[615];
+		introVideoText4.text = Const.a.stringTable[616];
+		introVideoText5.text = Const.a.stringTable[617];
+		introVideoText6.text = Const.a.stringTable[618];
+		introVideoText7.text = Const.a.stringTable[619];
+		introVideoText8.text = Const.a.stringTable[620];
+		introVideoText9.text = Const.a.stringTable[621];
+		introVideoText10.text = Const.a.stringTable[622];
+		introVideoText11.text = Const.a.stringTable[623];
+		introVideoText12.text = Const.a.stringTable[624];
+		introVideoText13.text = Const.a.stringTable[625];
+		introVideoText14.text = Const.a.stringTable[626];
+		introVideoText15.text = Const.a.stringTable[627];
+		Utils.Activate(introVideoTextGO1);
+		Utils.Deactivate(introVideoTextGO2);
+		Utils.Deactivate(introVideoTextGO3);
+		Utils.Deactivate(introVideoTextGO4);
+		Utils.Deactivate(introVideoTextGO5);
+		Utils.Deactivate(introVideoTextGO6);
+		Utils.Deactivate(introVideoTextGO7);
+		Utils.Deactivate(introVideoTextGO8);
+		Utils.Deactivate(introVideoTextGO9);
+		Utils.Deactivate(introVideoTextGO10);
+		Utils.Deactivate(introVideoTextGO11);
+		Utils.Deactivate(introVideoTextGO12);
+		Utils.Deactivate(introVideoTextGO13);
+		Utils.Deactivate(introVideoTextGO14);
+		Utils.Deactivate(introVideoTextGO15);
 	}
 
 	public void PlayCredits () {
