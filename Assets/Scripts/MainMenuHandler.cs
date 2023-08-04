@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.Video;
 using System.IO;
 using System.Collections;
 using SimpleFileBrowser;
@@ -87,6 +88,7 @@ public class MainMenuHandler : MonoBehaviour {
 	public Text introVideoText13;
 	public Text introVideoText14;
 	public Text introVideoText15;
+	public VideoPlayer introPlayer;
 
 	[HideInInspector] public bool returnToPause = false;
 	[HideInInspector] public bool dataFound = false;
@@ -693,6 +695,8 @@ public class MainMenuHandler : MonoBehaviour {
 		Const.a.WriteDatForIntroPlayed(false);
 		IntroVideoContainer.SetActive(true);
 		IntroVideo.SetActive(true);
+		introPlayer.url = Application.streamingAssetsPath + "/intro.webm";
+		introPlayer.Play();
 		inCutscene = true;
 		BackGroundMusic.Stop();
 		vidFinished = Time.time + vidLength;

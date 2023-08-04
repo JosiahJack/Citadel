@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class CreditsScroll : MonoBehaviour {
 	public Text creditsText;
@@ -15,6 +16,8 @@ public class CreditsScroll : MonoBehaviour {
 	public Text endVideoText1;
 	public Text endVideoText2;
 	public Text endVideoText3;
+	public VideoPlayer outroPlayer;
+
 	private float vidLength = 37.2f;
 	private float vidStartTime;
 
@@ -24,6 +27,8 @@ public class CreditsScroll : MonoBehaviour {
 		creditsText.text = Const.a.creditsText[pagenum];
 		Utils.Activate(exitVideo);
 		Utils.Activate(endVideoTextGO1);
+		outroPlayer.url = Application.streamingAssetsPath + "/outro.webm";
+		outroPlayer.Play();
 		endVideoText1.text = Const.a.stringTable[610];
 		endVideoText2.text = Const.a.stringTable[611];
 		endVideoText3.text = Const.a.stringTable[612];

@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Video;
 
 public class Inventory : MonoBehaviour {
 	// Access Cards
@@ -48,6 +49,12 @@ public class Inventory : MonoBehaviour {
 	public GameObject vmailgenstatus;
 	public GameObject vmaillaserdest;
 	public GameObject vmailshieldsup;
+	public VideoPlayer vmailbetajetVideo;
+	public VideoPlayer vmailbridgesepVideo;
+	public VideoPlayer vmailcitadestructVideo;
+	public VideoPlayer vmailgenstatusVideo;
+	public VideoPlayer vmaillaserdestVideo;
+	public VideoPlayer vmailshieldsupVideo;
 	public AudioSource SFXSource;
 	[HideInInspector] public bool[] hasLog; // save
 	[HideInInspector] public bool[] readLog; // save
@@ -1022,12 +1029,36 @@ public class Inventory : MonoBehaviour {
 			MouseLookScript.a.vmailActive = true; // allow click to end
 			MouseLookScript.a.ForceInventoryMode();
 			switch (logIndex) {
-				case 119: vmailbetajet.SetActive(true); break;
-				case 116: vmailbridgesep.SetActive(true); break;
-				case 117: vmailcitadestruct.SetActive(true); break;
-				case 110: vmailgenstatus.SetActive(true); break;
-				case 114: vmaillaserdest.SetActive(true); break;
-				case 120: vmailshieldsup.SetActive(true); break;
+				case 119:
+					vmailbetajet.SetActive(true);
+					vmailbetajetVideo.url = Application.streamingAssetsPath + "/betajet.webm";
+					vmailbetajetVideo.Play();
+					break;
+				case 116:
+					vmailbridgesep.SetActive(true);
+					vmailbridgesepVideo.url = Application.streamingAssetsPath + "/bridgesep.webm";
+					vmailbridgesepVideo.Play();
+					break;
+				case 117:
+					vmailcitadestruct.SetActive(true);
+					vmailcitadestructVideo.url = Application.streamingAssetsPath + "/citadestruct.webm";
+					vmailcitadestructVideo.Play();
+					break;
+				case 110:
+					vmailgenstatus.SetActive(true);
+					vmailgenstatusVideo.url = Application.streamingAssetsPath + "/genstatus.webm";
+					vmailgenstatusVideo.Play();
+					break;
+				case 114:
+					vmaillaserdest.SetActive(true);
+					vmaillaserdestVideo.url = Application.streamingAssetsPath + "/laserdest.webm";
+					vmaillaserdestVideo.Play();
+					break;
+				case 120:
+					vmailshieldsup.SetActive(true);
+					vmailshieldsupVideo.url = Application.streamingAssetsPath + "/shieldsup.webm";
+					vmailshieldsupVideo.Play();
+					break;
 			}
 		}
 		Const.sprint("Playing " + Const.a.audiologNames[logIndex]);
