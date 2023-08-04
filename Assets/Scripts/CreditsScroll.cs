@@ -52,7 +52,7 @@ public class CreditsScroll : MonoBehaviour {
 			Utils.Deactivate(endVideoTextGO2);
 		}
 
-		if (vidFinished > 0 && (Time.time - vidStartTime) > 13f
+		if (vidFinished > 0 && (Time.time - vidStartTime) > 14f
 			&& endVideoTextGO3.activeSelf) {
 
 			Utils.Deactivate(endVideoTextGO3);

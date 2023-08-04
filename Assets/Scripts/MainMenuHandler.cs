@@ -255,7 +255,7 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 
 		if (IntroVideoContainer.activeSelf) {
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 7f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 6.7f
 				&& introVideoTextGO1.activeSelf
 				&& !introVideoTextGO2.activeSelf) {
 
@@ -263,7 +263,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(introVideoTextGO2);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 11f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 9.9f
 				&& introVideoTextGO2.activeSelf
 				&& !introVideoTextGO3.activeSelf) {
 
@@ -271,7 +271,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(introVideoTextGO3);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 13f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 19.2f
 				&& introVideoTextGO3.activeSelf
 				&& !introVideoTextGO4.activeSelf) {
 
@@ -279,13 +279,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(introVideoTextGO4);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 20f
-				&& introVideoTextGO4.activeSelf) {
-
-				Utils.Deactivate(introVideoTextGO4);
-			}
-
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 29f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 30.7f
 				&& introVideoTextGO4.activeSelf
 				&& !introVideoTextGO5.activeSelf) {
 
@@ -293,7 +287,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(introVideoTextGO5);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 36f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 37.9f
 				&&  introVideoTextGO5.activeSelf
 				&& !introVideoTextGO6.activeSelf) {
 
@@ -301,7 +295,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(  introVideoTextGO6);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 44f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 43.7f
 				&&  introVideoTextGO6.activeSelf
 				&& !introVideoTextGO7.activeSelf) {
 
@@ -309,7 +303,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(  introVideoTextGO7);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 56f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 48.1f
 				&&  introVideoTextGO7.activeSelf
 				&& !introVideoTextGO8.activeSelf) {
 
@@ -317,7 +311,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(  introVideoTextGO8);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 62f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 59.3f
 				&&  introVideoTextGO8.activeSelf
 				&& !introVideoTextGO9.activeSelf) {
 
@@ -325,7 +319,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(  introVideoTextGO9);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 73f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 69.1f
 				&&  introVideoTextGO9.activeSelf
 				&& !introVideoTextGO10.activeSelf) {
 
@@ -333,7 +327,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(  introVideoTextGO10);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 76f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 74.5f
 				&&  introVideoTextGO10.activeSelf
 				&& !introVideoTextGO11.activeSelf) {
 
@@ -341,7 +335,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(  introVideoTextGO11);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 83f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 81.2f
 				&&  introVideoTextGO11.activeSelf
 				&& !introVideoTextGO12.activeSelf) {
 
@@ -349,7 +343,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(  introVideoTextGO12);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 90f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 89.2f
 				&&  introVideoTextGO12.activeSelf
 				&& !introVideoTextGO13.activeSelf) {
 
@@ -357,7 +351,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(  introVideoTextGO13);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 99f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 98.4f
 				&&  introVideoTextGO13.activeSelf
 				&& !introVideoTextGO14.activeSelf) {
 
@@ -365,7 +359,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Activate(  introVideoTextGO14);
 			}
 
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 105f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 105.0f
 				&&  introVideoTextGO14.activeSelf
 				&& !introVideoTextGO15.activeSelf) {
 
