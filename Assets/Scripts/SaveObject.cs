@@ -209,6 +209,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.DelayedSpawn:             s1.Append(DelayedSpawn.Save(go)); break;
 			case SaveableType.SecurityCamera:   s1.Append(SecurityCameraRotate.Save(go)); s1.Append(Utils.splitChar);
 													   s1.Append(HealthManager.Save(go.transform.GetChild(0).gameObject,prefID)); s1.Append(Utils.splitChar);
+													        s1.Append(TargetIO.Save(go.transform.GetChild(0).gameObject)); s1.Append(Utils.splitChar);
 													           s1.Append(Utils.SaveTransform(go.transform.GetChild(0))); break;
 			case SaveableType.Trigger:                       s1.Append(Trigger.Save(go)); s1.Append(Utils.splitChar);
 													        s1.Append(TargetIO.Save(go)); break;
@@ -368,6 +369,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.DelayedSpawn:           index =           DelayedSpawn.Load(go,ref entries,index); currentSaveEntriesIndex = index.ToString(); break;
 			case SaveableType.SecurityCamera:         index =   SecurityCameraRotate.Load(go,ref entries,index); currentSaveEntriesIndex = index.ToString();
 													  index =          HealthManager.Load(go.transform.GetChild(0).gameObject,ref entries,index,prefID); currentSaveEntriesIndex = index.ToString();
+													  index =               TargetIO.Load(go.transform.GetChild(0).gameObject,ref entries,index,prefID); currentSaveEntriesIndex = index.ToString();
 													  index =                  Utils.LoadTransform(go.transform.GetChild(0),ref entries,index); currentSaveEntriesIndex = index.ToString(); break;
 			case SaveableType.Trigger:                index =                Trigger.Load(go,ref entries,index); currentSaveEntriesIndex = index.ToString();
 													  index =               TargetIO.Load(go,ref entries,index,true); currentSaveEntriesIndex = index.ToString(); break;

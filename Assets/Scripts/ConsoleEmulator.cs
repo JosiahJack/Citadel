@@ -156,7 +156,7 @@ public static class ConsoleEmulator {
 				PlayerMovement.a.hm.god = true;
 			}
         } else if (ts.Contains("load") && (tn.Contains("0") || ts.Contains("loadr") || ts.Contains("load r")) && !ts.Contains("10") && !ts.Contains("arsenal")) CheatLoadLevel(0);
-        else if (ts.Contains("load") && tn.Contains("1") && !ts.Contains("10") && !ts.Contains("11") && !ts.Contains("12") && !ts.Contains("g1") && !ts.Contains("arsenal"))  CheatLoadLevel(1);
+        else if (ts.Contains("load") && tn.Contains("1") && !ts.Contains("10") && !ts.Contains("11") && !ts.Contains("12")  && !ts.Contains("13") && !ts.Contains("g1") && !ts.Contains("arsenal"))  CheatLoadLevel(1);
 		else if (ts.Contains("load") && tn.Contains("2") && !ts.Contains("12") && !ts.Contains("g2") && !ts.Contains("arsenal"))  CheatLoadLevel(2);
 		else if (ts.Contains("load") && tn.Contains("3") && !ts.Contains("13") && !ts.Contains("g3") && !ts.Contains("arsenal"))  CheatLoadLevel(3);
 		else if (ts.Contains("load") && tn.Contains("4") && !ts.Contains("g4") && !ts.Contains("arsenal"))  CheatLoadLevel(4);

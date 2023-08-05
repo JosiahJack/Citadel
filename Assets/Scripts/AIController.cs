@@ -376,7 +376,7 @@ public class AIController : MonoBehaviour {
 					currentDestination.y = enemy.transform.position.y + 0.24f;
 				}
 
-				if (IsCyberNPC()) {
+				if (IsCyberNPC() && enemy != null) {
 					currentDestination = enemy.transform.position;
 				}
 
@@ -624,6 +624,7 @@ public class AIController : MonoBehaviour {
 	bool CanAttack1(float dist) {
     	if (rangeToEnemy >= dist) return false;
 		if (Const.a.attackTypeForNPC[index] == AttackType.None) return false;
+		if (IsCyberNPC()) return true;
 		if (!infront) return false;
 		if (randomWaitForNextAttack1Finished >= PauseScript.a.relativeTime) {
 			return false;
@@ -635,6 +636,7 @@ public class AIController : MonoBehaviour {
 	bool CanAttack2(float dist) {
     	if (rangeToEnemy >= dist) return false;
 		if (Const.a.attackTypeForNPC2[index] == AttackType.None) return false;
+		if (IsCyberNPC()) return true;
 		if (!infront) return false;
 		if (!inProjFOV) return false;
 		if (randomWaitForNextAttack2Finished >= PauseScript.a.relativeTime) {
@@ -647,6 +649,7 @@ public class AIController : MonoBehaviour {
 	bool CanAttack3(float dist) {
     	if (rangeToEnemy >= dist) return false;
 		if (Const.a.attackTypeForNPC3[index] == AttackType.None) return false;
+		if (IsCyberNPC()) return true;
 		if (!infront) return false;
 		if (!inProjFOV) return false;
 		if (randomWaitForNextAttack3Finished >= PauseScript.a.relativeTime) {
@@ -724,9 +727,12 @@ public class AIController : MonoBehaviour {
 		if (CheckPain()) return; // Go into pain just hurt
 		if (asleep) return;
 		if (enemy == null) { currentState = AIState.Idle; return; }
-		if (tranquilizeFinished >= PauseScript.a.relativeTime) return;
+		if (tranquilizeFinished >= PauseScript.a.relativeTime
+			&& !IsCyberNPC()) {
+			return;
+		}
 
-        if (inSight) {
+        if (inSight || IsCyberNPC()) {
 			if (enemy != null) {
 				targettingPosition = enemy.transform.position;
 				currentDestination = enemy.transform.position;
@@ -1542,17 +1548,17 @@ public class AIController : MonoBehaviour {
 	}
 	
 	void enemyInFrontChecks(GameObject target) {
-	    if (IsCyberNPC()) {
-	        infront = true;
-	        inProjFOV = true;
-	        return;
-	    }
-	    
 		if (target == null) {
 			infront = false;
 			inProjFOV = false;
 			return;
 		}
+
+	    if (IsCyberNPC()) {
+	        infront = true;
+	        inProjFOV = true;
+	        return;
+	    }
 
         infrontVec = target.transform.position;
 		infrontVec.y = sightPoint.transform.position.y; // Ignore height delta.

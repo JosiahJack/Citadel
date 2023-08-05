@@ -74,13 +74,11 @@ public class ProjectileEffectImpact : MonoBehaviour {
 				    dd.impactVelocity = dd.impactVelocity / 3f;
 				}
 				
-				if (!hm.inCyberSpace && !host.CompareTag("NPC")) {
-					Utils.ApplyImpactForce(other.gameObject,
-											dd.impactVelocity,
-											dd.attacknormal,dd.hit.point);
+				if (LevelManager.a.currentLevel != 13 && !host.CompareTag("NPC")) {
+					Utils.ApplyImpactForce(other.gameObject,dd.impactVelocity,
+										   dd.attacknormal,dd.hit.point);
 				}
 
-				Debug.Log("PEI damaging by: " + dd.damage.ToString());
 				float dmgFinal = hm.TakeDamage(dd); // Send the damageData
 													// container to
 													// HealthManager of hit
