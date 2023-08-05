@@ -450,7 +450,10 @@ public class HealthManager : MonoBehaviour {
 		if (isNPC && (health > 0f || (IsCyberEntity() && cyberHealth > 0f))) {
 			AIController aic = GetComponent<AIController>();
 			if (aic != null) {
-				aic.goIntoPain = true;
+				if (Const.a.timeBetweenPainForNPC[aic.index] > 0) {
+					aic.goIntoPain = true;
+				}
+
 				aic.attacker = attacker;
 				if (linkedTargetID != null) {
 					linkedTargetID.SendDamageReceive(take,dd);

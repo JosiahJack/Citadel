@@ -145,7 +145,7 @@ public class AIController : MonoBehaviour {
 		}
 	}
 
-	bool IsCyberNPC() {
+	public bool IsCyberNPC() {
 		if (healthManager != null) {
 			if (healthManager.inCyberSpace) return true;
 		}
@@ -169,6 +169,7 @@ public class AIController : MonoBehaviour {
 
 		if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly || IsCyberNPC()) {
 			rbody.useGravity = false;
+			rbody.isKinematic = false;
 		} else {
 			rbody.useGravity = true;
 		}
@@ -375,12 +376,18 @@ public class AIController : MonoBehaviour {
 					currentDestination.y = enemy.transform.position.y + 0.24f;
 				}
 
+				if (IsCyberNPC()) {
+					currentDestination = enemy.transform.position;
+				}
+
                 idealTransformForward = currentDestination
 										- sightPoint.transform.position;
 
                 if (!IsCyberNPC()) idealTransformForward.y = 0;
 				idealTransformForward = idealTransformForward.normalized;
-				if (idealTransformForward.sqrMagnitude > Mathf.Epsilon) {
+				if (idealTransformForward.sqrMagnitude > Mathf.Epsilon
+					|| IsCyberNPC()) {
+
 					AI_Face(currentDestination);
 				}
             }
@@ -474,9 +481,10 @@ public class AIController : MonoBehaviour {
 
 	public bool CheckPain() {
 		if (asleep) return false;
+		if (Const.a.timeBetweenPainForNPC[index] <= 0) return false;
 
 		if (goIntoPain && timeTillPainFinished < PauseScript.a.relativeTime) {
-			if (!IsCyberNPC()) currentState = AIState.Pain;
+			currentState = AIState.Pain;
 			if (attacker != null) {
 				if (timeTillEnemyChangeFinished < PauseScript.a.relativeTime) {
 					timeTillEnemyChangeFinished = PauseScript.a.relativeTime
@@ -784,11 +792,15 @@ public class AIController : MonoBehaviour {
 	}
 
     void Hunt() {
-		if (NavMesh.CalculatePath(sightPoint.transform.position,
-								  enemy.transform.position,0,searchPath)) {
-			currentDestination = searchPath.corners[0];
+		if (IsCyberNPC()) {
+			currentDestination = enemy.transform.position; // See through walls
 		} else {
-			currentDestination = lastKnownEnemyPos;
+			if (NavMesh.CalculatePath(sightPoint.transform.position,
+									enemy.transform.position,0,searchPath)) {
+				currentDestination = searchPath.corners[0];
+			} else {
+				currentDestination = lastKnownEnemyPos;
+			}
 		}
 
 		// Destination is still far enough away and within angle, then move.
@@ -1124,7 +1136,7 @@ public class AIController : MonoBehaviour {
 			if (enemy != null) {
 				Rigidbody rbodyEnemy = enemy.GetComponent<Rigidbody>();
 				if (rbodyEnemy != null && UnityEngine.Random.Range(0f,1f) < 0.5f) {
-					shove = shove + (rbodyEnemy.velocity * 0.5f);
+					shove = shove + (rbodyEnemy.velocity * 0.2f);
 				}
 			}
 		}
@@ -1879,7 +1891,9 @@ public class AIController : MonoBehaviour {
 				Utils.Activate(aic.visibleMeshEntity);
 				Utils.EnableCollision(aic.gameObject);
 				aic.gameObject.layer = 10; // NPC Layer.
-				if (Const.a.moveTypeForNPC[aic.index] != AIMoveType.Fly) {
+				if (Const.a.moveTypeForNPC[aic.index] != AIMoveType.Fly
+					&& !aic.IsCyberNPC()) {
+
 					aic.rbody.useGravity = true;
 					aic.rbody.isKinematic = false;
 				}
@@ -1902,6 +1916,11 @@ public class AIController : MonoBehaviour {
 
 					Utils.Deactivate(aic.visibleMeshEntity);
 				} else aic.rbody.useGravity = true;
+			}
+
+			if (aic.IsCyberNPC()) {
+				aic.rbody.useGravity = false;
+				aic.rbody.isKinematic = false;
 			}
 		}
 

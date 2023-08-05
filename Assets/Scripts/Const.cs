@@ -80,7 +80,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public float[] distToSeeBehindForNPC;
 	[HideInInspector] public float[] sightRangeForNPC;
 	[HideInInspector] public float[] walkSpeedForNPC;
-	[HideInInspector] public float[] runSpeedForNPC;
+	public float[] runSpeedForNPC;
 	[HideInInspector] public float[] attack1SpeedForNPC;
 	[HideInInspector] public float[] attack2SpeedForNPC;
 	[HideInInspector] public float[] attack3SpeedForNPC;
