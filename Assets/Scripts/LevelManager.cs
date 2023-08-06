@@ -234,6 +234,48 @@ public class LevelManager : MonoBehaviour {
         return npcContainers[index];
 	}
 
+	public int GetInstantiateParent(GameObject go, bool isNPC,
+									PrefabIdentifier prefID) {
+
+		Transform parTr = go.transform.parent;
+		if (parTr == null) return -1;
+
+		GameObject par = parTr.gameObject;
+		// func_wall exception.
+		if (prefID.constIndex == 517) {
+			Transform parpar = par.transform.parent;
+			if (parpar != null) par = par.transform.parent.gameObject;
+		}
+
+		if (par == null) return -1;
+
+		for (int i=0; i < 14; i++) {
+			if (isNPC && par == npcContainers[i]) return i;
+			else if (par == levelScripts[i].dynamicObjectsContainer) return i;
+		}
+
+		return -1;
+	}
+
+	public void SetInstantiateParent(int lev, GameObject go, bool isNPC) {
+		if (lev < 0) return;
+		if (lev > 13) return;
+
+		Transform par = null;
+		if (isNPC) {
+			GameObject parNPC = GetRequestedLevelNPCContainer(lev);
+			if (parNPC != null) par = parNPC.transform;
+		} else {
+			GameObject parDyn = GetRequestedLevelDynamicContainer(lev);
+			if (parDyn != null) par = parDyn.transform;
+		}
+
+		if (par == null) return;
+		if (go.transform.parent == par) return;
+
+		go.transform.SetParent(par);
+	}
+
 	public int GetCurrentLevelSecurity() {
 		if (currentLevel == -1) return 0;
 		if (superoverride) return 0; // tee hee we are SHODAN, no security blocks in place

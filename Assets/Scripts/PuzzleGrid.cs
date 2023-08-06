@@ -461,7 +461,6 @@ public class PuzzleGrid : MonoBehaviour {
 		if (cellType[index] == PuzzleCellType.And) {
 			string pwr = "False";
 			if (retval >= 0) pwr = powered[retval].ToString();
-			Debug.Log("AND cell " + index.ToString() + " above powered state " + pwr);
 		}
 
 		return retval;
@@ -480,7 +479,6 @@ public class PuzzleGrid : MonoBehaviour {
 		if (cellType[index] == PuzzleCellType.And) {
 			string pwr = "False";
 			if (retval >= 0) pwr = powered[retval].ToString();
-			Debug.Log("AND cell " + index.ToString() + " below powered state " + pwr);
 		}
 
 		return retval;
@@ -500,7 +498,6 @@ public class PuzzleGrid : MonoBehaviour {
 		if (cellType[index] == PuzzleCellType.And) {
 			string pwr = "False";
 			if (retval >= 0) pwr = powered[retval].ToString();
-			Debug.Log("AND cell " + index.ToString() + " left powered state " + pwr);
 		}
 
 		return retval;
@@ -520,7 +517,6 @@ public class PuzzleGrid : MonoBehaviour {
 		if (cellType[index] == PuzzleCellType.And) {
 			string pwr = "False";
 			if (retval >= 0) pwr = powered[retval].ToString();
-			Debug.Log("AND cell " + index.ToString() + " right powered state " + pwr);
 		}
 
 		return retval;

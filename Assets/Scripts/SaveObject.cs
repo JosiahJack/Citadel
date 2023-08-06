@@ -118,40 +118,31 @@ public class SaveObject : MonoBehaviour {
 		s1.Clear();
 		// Start Saving
 		// --------------------------------------------------------------------
-		s1.Append(so.saveableType); s1.Append(Utils.splitChar);					    // 0
-		s1.Append(so.SaveID.ToString()); s1.Append(Utils.splitChar);				// 1
-		s1.Append(Utils.BoolToString(so.instantiated)); s1.Append(Utils.splitChar); // 2
-		s1.Append(Utils.BoolToString(go.activeSelf));  s1.Append(Utils.splitChar);  // 3
-		s1.Append(Utils.SaveTransform(go.transform)); s1.Append(Utils.splitChar);	// 4,5,6,7,8,9,10,11,12,13
-		s1.Append(Utils.SaveRigidbody(go)); s1.Append(Utils.splitChar);			    // 14,15,16,17
-		int levelID = 1;
-		if (so.instantiated) {
-			GameObject par = null;
-			if (go.transform.parent != null) {
-				par = go.transform.parent.gameObject;
-				if (prefID.constIndex == 517) par = par.transform.parent.gameObject; // func_wall exception.
-			}
+		s1.Append(Utils.SaveString(so.saveableType,"saveableType"));   // 0
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(so.SaveID,"SaveID"));                               // 1
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(so.instantiated,"instantiated")); // 2
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(go.activeSelf,"go.activeSelf"));  // 3
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveTransform(go.transform)); // 4,5,6,7,8,9,10,11,12,
+													  // 13
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRigidbody(go));           // 14,15,16,17
+		s1.Append(Utils.splitChar);
 
-			if (par != null) {
-				for (int i=0; i < 14; i++) {
-					if (so.saveType == SaveableType.NPC) {
-						if (par == LevelManager.a.npcContainers[i]) {
-							levelID = i;
-							break;
-						}
-					} else {
-						if (par == LevelManager.a.levelScripts[i].dynamicObjectsContainer) {
-							levelID = i;
-							break;
-						}
-					}
-				}
-			}
+		int levelID = 1;
+		bool isNPC = (so.saveType == SaveableType.NPC);
+		if (so.instantiated) {
+			levelID = LevelManager.a.GetInstantiateParent(go,isNPC,prefID);
 		}
 
-		s1.Append(levelID.ToString()); s1.Append(Utils.splitChar);					// 18
+		s1.Append(Utils.UintToString(levelID,"levelID"));     // 18
+		s1.Append(Utils.splitChar);
+
 		if (prefID != null) {
-			s1.Append(Utils.UintToString(prefID.constIndex));                       // 19
+			s1.Append(Utils.UintToString(prefID.constIndex)); // 19
 			s1.Append(Utils.splitChar);
 		} else s1.Append("307" + Utils.splitChar);
 
@@ -248,49 +239,45 @@ public class SaveObject : MonoBehaviour {
 
 		// Start Loading
 		// --------------------------------------------------------------------
-		// saveableType; index++;     // 0
-		// SaveID; index++;           // 1
-		// instantiated; index++;     // 2
-		int index = 3;
-		currentSaveEntriesIndex = index.ToString();
-
-		bool setToActive = Utils.GetBoolFromString(entries[index]); index++;
-		currentSaveEntriesIndex = index.ToString();
-
-		// Set active state of GameObject in Hierarchy
-		if (setToActive) {
-			if (!go.activeSelf) go.SetActive(true);
-		} else {
-			if (go.activeSelf) go.SetActive(false);
-		}
-
-		if (entries[0] != so.saveableType) {
+		int index = 0;
+		string savTypeFromLoad = Utils.LoadString(entries[index],
+												  "saveableType"); // 0
+		if (savTypeFromLoad != so.saveableType) {
 			Debug.Log("Saveable type mismatch.  Save data has type "
-					  + entries[0] + " but object named " + go.name + " is "
-					  + so.saveableType.ToString()); return index + 19;
+					  + savTypeFromLoad + " but object named " + go.name
+					  + " is " + so.saveableType.ToString());
+
+			return index + 19;
 		}
+		index++; currentSaveEntriesIndex = index.ToString();
+
+		// SaveID;                                                 // 1
+		index++; currentSaveEntriesIndex = index.ToString();
+
+		// instantiated;                                           // 2
+		index++; currentSaveEntriesIndex = index.ToString();
+
+		bool setToActive = Utils.GetBoolFromString(entries[index], // 3
+												   "go.activeSelf");
+		go.SetActive(setToActive); // Set active state in Hierarchy
+		index++; currentSaveEntriesIndex = index.ToString();
 
 		// Set parent prior to setting localPosition, localRotation, localScale
 		// so that the relative positioning is correct.
-		int levelID = Utils.GetIntFromString(entries[18]);
-		if (levelID >= 0 && levelID <= 13 && so.instantiated) {
-			if (so.saveType == SaveableType.NPC) {
-				Transform curLevNPCContainer = LevelManager.a.GetRequestedLevelNPCContainer(levelID).transform;
-			 	if (go.transform.parent != curLevNPCContainer) {
-					go.transform.SetParent(curLevNPCContainer);
-				}
-			} else {
-				Transform curLevDynContainer = LevelManager.a.GetRequestedLevelDynamicContainer(levelID).transform;
-				if (go.transform.parent != curLevDynContainer) {
-					go.transform.SetParent(curLevDynContainer);
-				}
-			}
+		int levelID = Utils.GetIntFromString(entries[18],"levelID"); // 18
+		if (so.instantiated) {
+			bool isNPC = (so.saveType == SaveableType.NPC);
+			LevelManager.a.SetInstantiateParent(levelID,go,isNPC);
 		}
 
-		index = Utils.LoadTransform(go.transform,ref entries,index);
+		index = Utils.LoadTransform(go.transform,ref entries,index); // 4,5,6,
+																	 // 7,8,9,
+																	 // 10,11,
+																	 // 12,13
 		currentSaveEntriesIndex = index.ToString();
 
-		index = Utils.LoadRigidbody(go,ref entries,index);
+		index = Utils.LoadRigidbody(go,ref entries,index);           // 14,15,
+																	 // 16,17
 		currentSaveEntriesIndex = index.ToString();
 
 		index++; // Already loaded index 18 for levelID.

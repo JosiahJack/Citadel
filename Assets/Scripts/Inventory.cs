@@ -1716,9 +1716,15 @@ public class Inventory : MonoBehaviour {
 		for (j=0;j<7;j++) { inv.currentEnergyWeaponHeat[j] = Utils.GetFloatFromString(entries[index]); index++; }
 		for (j=0;j<7;j++) { inv.wepLoadedWithAlternate[j] = Utils.GetBoolFromString(entries[index]); index++; }
         for (int i=0;i<7;i++) {
-			if (inv.weaponInventoryIndices[i] < 0) continue;
+			int dex = inv.weaponInventoryIndices[i];
+			if (dex < 0) continue;
 
-			inv.weaponInventoryText[i] = inv.weaponInvTextSource[(inv.weaponInventoryIndices[i] - 36)]; // Yech!
+			int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(dex);
+			if (wep16index < 0 || wep16index > inv.weaponInvTextSource.Length) {
+				continue;
+			}
+
+			inv.weaponInventoryText[i] = inv.weaponInvTextSource[wep16index];
 		}
 
 		inv.grenadeCurrent = Utils.GetIntFromString(entries[index]); index++;

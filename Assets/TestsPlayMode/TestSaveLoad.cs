@@ -87,6 +87,7 @@ namespace Tests {
             MainMenuHandler.a.SaveGame(7,"quicksave");
             yield return new WaitForSeconds(5f);
             MainMenuHandler.a.LoadGame(7);
+            yield return new WaitForSeconds(10f);
             Utils.CopyLogFiles(false);
         }
     }

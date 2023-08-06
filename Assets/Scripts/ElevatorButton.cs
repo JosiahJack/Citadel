@@ -38,22 +38,34 @@ public class ElevatorButton : MonoBehaviour {
 
 	public void ElevButtonClick () {
 		MFDManager.a.mouseClickHeldOverGUI = true;
-		if (Vector3.Distance(MFDManager.a.objectInUsePos,MFDManager.a.playerCapsuleTransform.position) > Const.a.elevatorPadUseDistance || MFDManager.a.linkedElevatorDoor == null) {
-			Const.sprint(Const.a.stringTable[6]);
-		} else {
-			if (MFDManager.a.linkedElevatorDoor.doorOpen != DoorState.Closed) {
-				Const.sprint(Const.a.stringTable[7]);
+
+		if (MFDManager.a.linkedElevatorDoor == null) {
+			Const.sprint(Const.a.stringTable[6]); // Too far away from that.
+			return;
+		}
+
+		bool dC = MFDManager.a.linkedElevatorDoor.doorOpen == DoorState.Closed;
+		Vector3 plyPos = MFDManager.a.playerCapsuleTransform.position;
+		float dist = Vector3.Distance(MFDManager.a.objectInUsePos,plyPos);
+		if (dist > Const.a.elevatorPadUseDistance && !dC) {
+			Const.sprint(Const.a.stringTable[6]); // Too far away from that.
+			return;
+		}
+
+		if (!dC) {
+			Const.sprint(Const.a.stringTable[7]); // Door not closed.
+			return;
+		}
+
+		if (floorAccessible) {
+			if (targetDestination == null) {
+				LevelManager.a.LoadLevel(levelIndex,null,Vector3.zero);
 			} else {
-				if (floorAccessible) {
-					if (targetDestination == null) {
-						LevelManager.a.LoadLevel(levelIndex,null,Vector3.zero);
-					} else {
-						LevelManager.a.LoadLevel(levelIndex,targetDestination,targetDestination.transform.position);
-					}
-				} else {
-					Const.sprint(Const.a.stringTable[8]);
-				}
+				LevelManager.a.LoadLevel(levelIndex,targetDestination,
+										 targetDestination.transform.position);
 			}
+		} else {
+			Const.sprint(Const.a.stringTable[8]);
 		}
 	}
 

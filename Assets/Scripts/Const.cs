@@ -1259,7 +1259,7 @@ public class Const : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(shotsFired,"shotsFired"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(grenadesThrown,"grenadesThrown"));
+		s1.Append(Utils.IntToString(grenadesThrown,"grenadesThrown"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(damageDealt,"damageDealt"));
 		s1.Append(Utils.splitChar);
@@ -1597,13 +1597,19 @@ public class Const : MonoBehaviour {
 			int[] saveFile_Line_SaveID = new int[numSaveFileLines];
 			bool[] saveFile_Line_IsInstantiated = new bool[numSaveFileLines];
 			bool[] alreadyLoadedLineFromSaveFile = new bool[numSaveFileLines];
-			Utils.BlankBoolArray(ref alreadyLoadedLineFromSaveFile,false); // Fill with false.
+
+			// Fill with false.
+			Utils.BlankBoolArray(ref alreadyLoadedLineFromSaveFile,false);
+
 			for (i = 3; i < numSaveFileLines; i++) {
 				entries = readFileList[i].Split(Utils.splitCharChar);
-				if (entries.Length > 1) {
-					saveFile_Line_SaveID[i] = Utils.GetIntFromString(entries[1]); // int - get saveID from 2nd slot
-					saveFile_Line_IsInstantiated[i] = Utils.GetBoolFromString(entries[2]); // bool - get instantiated from 3rd slot
-				}
+				if (entries.Length < 1)  continue;
+
+				saveFile_Line_SaveID[i] = Utils.GetIntFromString(entries[1],
+																 "SaveID");
+
+				saveFile_Line_IsInstantiated[i] = Utils.GetBoolFromString(
+													entries[2],"instantiated");
 			}
 
 			loadPercentText.text = "Preprocess Arrays...   ";

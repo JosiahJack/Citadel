@@ -437,11 +437,14 @@ public class AIController : MonoBehaviour {
 	}
 
 	void FlierMoveToHoverHeight() {
+		if (Const.a.runSpeedForNPC[index] <= 0) return;
+
 		float distUp = 0;
 		float distDn = 0;
 		Vector3 floorPoint = new Vector3();
 		floorPoint = Const.a.vectorZero;
-		if (!Const.a.RaycastBudgetExceeded()) {
+		if (enemy != null) idealPos.y = enemy.transform.position.y + 0.24f;
+		else if (!Const.a.RaycastBudgetExceeded()) {
 			if (Physics.Raycast(sightPoint.transform.position,
 								sightPoint.transform.up * -1,out tempHit,
 								Const.a.sightRangeForNPC[index],
@@ -460,6 +463,7 @@ public class AIController : MonoBehaviour {
 				distUp = Vector3.Distance(sightPoint.transform.position,
 										  tempHit.point);
 			}
+
 			float distT = (distUp + distDn);
 			float yHeight = Const.a.flightHeightForNPC[index];
 			if (Const.a.flightHeightIsPercentageForNPC[index]) {
@@ -469,14 +473,12 @@ public class AIController : MonoBehaviour {
 			idealPos = floorPoint + new Vector3(0,yHeight, 0);
 		}
 
-		if (enemy != null) idealPos.y = enemy.transform.position.y + 0.24f;
-		if (idealPos != transform.position) {
-			if (Const.a.runSpeedForNPC[index] > 0) {
-				float spd = Const.a.runSpeedForNPC[index] * Time.deltaTime;
-				transform.position = Vector3.MoveTowards(transform.position,
-														 idealPos,spd);
-			}
-		}
+		float dist = Mathf.Abs(idealPos.y - transform.position.y);
+		if (dist < 0.16f) return; // Close enuff
+
+		float spd = Const.a.runSpeedForNPC[index] * Time.deltaTime;
+		transform.position = Vector3.MoveTowards(transform.position,idealPos,
+												 spd);
 	}
 
 	public bool CheckPain() {

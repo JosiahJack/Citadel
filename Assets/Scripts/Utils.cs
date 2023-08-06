@@ -944,8 +944,7 @@ public class Utils {
     public static string SaveRigidbody(GameObject go) {
 		Rigidbody rbody = go.GetComponent<Rigidbody>();
 		if (rbody == null) {
-		    return "";
-			//return DTypeWordToSaveString("fff1"); // No warn, normal scenario.
+		    return "velocity.x:0|velocity.y:0|velocity.z:0|isKinematic:1";
 		}
 
         StringBuilder s1 = new StringBuilder();
