@@ -94,7 +94,8 @@ public class MouseLookScript : MonoBehaviour {
 	[HideInInspector] public float returnFromCyberspaceFinished;
 	private float dropFinished;
 	[HideInInspector] public float randomShakeFinished;
-
+	[HideInInspector] public float randomKlaxonFinished;
+    
 	public static MouseLookScript a;
 
 	void Awake() {
@@ -129,6 +130,7 @@ public class MouseLookScript : MonoBehaviour {
 		playerCapsuleTransform = transform.parent.transform.parent.transform;
 
 		randomShakeFinished = PauseScript.a.relativeTime;
+		randomKlaxonFinished = PauseScript.a.relativeTime;
     }
 
 	void Update() {
@@ -170,11 +172,16 @@ public class MouseLookScript : MonoBehaviour {
 			&& LevelManager.a.currentLevel != 9) {
 
 			if (randomShakeFinished < PauseScript.a.relativeTime) {
-				randomShakeFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(10f,20f);
+				randomShakeFinished = PauseScript.a.relativeTime
+				                      + UnityEngine.Random.Range(6f,20f);
 				ScreenShake(3f,2f);
-				if (UnityEngine.Random.Range(0f,1f) < 0.5f) {
-					Utils.PlayOneShotSavable(SFXSource,104); // klaxon
-				}
+			}
+			
+			if (randomKlaxonFinished < PauseScript.a.relativeTime) {
+				randomKlaxonFinished = PauseScript.a.relativeTime
+				                       + UnityEngine.Random.Range(15f,20f);
+
+				Utils.PlayOneShotSavable(SFXSource,104); // klaxon
 			}
 		}
 
@@ -1186,7 +1193,7 @@ public class MouseLookScript : MonoBehaviour {
 		MouseLookScript ml = go.GetComponent<MouseLookScript>();
 		if (ml == null) {
 			Debug.Log("MouseLook missing on savetype of Player!  GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("bbbbuuuubbbbbfbfbffffffffffffu");;
+			return Utils.DTypeWordToSaveString("bbbbuuuubbbbbfbfbffffffffffffufff");
 		}
 
         StringBuilder s1 = new StringBuilder();
@@ -1278,7 +1285,9 @@ public class MouseLookScript : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(ml.randomShakeFinished,
 													 "randomShakeFinished"));
-
+        s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(ml.randomKlaxonFinished,
+													 "randomKlaxonFinished"));
 		return s1.ToString();
 	}
 
@@ -1286,17 +1295,17 @@ public class MouseLookScript : MonoBehaviour {
 		MouseLookScript ml = go.GetComponent<MouseLookScript>();
 		if (ml == null) {
 			Debug.Log("MouseLookScript.Load failure, ml == null");
-			return index + 30;
+			return index + 3003;
 		}
 
 		if (index < 0) {
 			Debug.Log("MouseLookScript.Load failure, index < 0");
-			return index + 30;
+			return index + 33;
 		}
 
 		if (entries == null) {
 			Debug.Log("MouseLookScript.Load failure, entries == null");
-			return index + 30;
+			return index + 33;
 		}
 
 		float readFloatx, readFloaty, readFloatz;
@@ -1432,6 +1441,11 @@ public class MouseLookScript : MonoBehaviour {
 		ml.randomShakeFinished =
 			Utils.LoadRelativeTimeDifferential(entries[index],
 											   "randomShakeFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		
+		ml.randomKlaxonFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],
+											   "randomKlaxonFinished");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
 		// Prevent picking up first item immediately. Not currently possible to
