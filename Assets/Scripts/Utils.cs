@@ -442,7 +442,7 @@ public class Utils {
 		string nameReceived = splits[0];
 		string valueReceived = splits[1];
 		if (nameReceived != name) {
-			UnityEngine.Debug.Log("BUG: Attempting to parse " + nameReceived
+			UnityEngine.Debug.LogError("BUG: Attempting to parse " + val
 								  + " when wanting bool named " + name
 								  + ", returning false as fallback on "
 								  + SaveObject.currentObjectInfo + " ["
@@ -470,10 +470,10 @@ public class Utils {
 		getValparsed = Int32.TryParse(val, NumberStyles.Integer, en_US_Culture,
                                       out getValreadInt);
 		if (!getValparsed) {
-			UnityEngine.Debug.Log("BUG: Could not parse int from: " + val
-                                  + ", returning 0 as a fallback on "
-								  + SaveObject.currentObjectInfo + " ["
-								  + SaveObject.currentSaveEntriesIndex + "]");
+			UnityEngine.Debug.LogError("BUG: Could not parse int from: " + val
+                                   + ", returning 0 as a fallback on "
+								   + SaveObject.currentObjectInfo + " ["
+								   + SaveObject.currentSaveEntriesIndex + "]");
 			return 0;
 		}
 
@@ -487,11 +487,11 @@ public class Utils {
 		string nameReceived = splits[0];
 		string valueReceived = splits[1];
 		if (nameReceived != name) {
-			UnityEngine.Debug.Log("BUG: Attempting to parse " + nameReceived
-								  + " when wanting int named " + name
-								  + ", returning 0 as fallback on "
-								  + SaveObject.currentObjectInfo + " ["
-								  + SaveObject.currentSaveEntriesIndex + "]");
+			UnityEngine.Debug.LogError("BUG: Attempting to parse " + val
+								   + " when wanting int named " + name
+								   + ", returning 0 as fallback on "
+								   + SaveObject.currentObjectInfo + " ["
+								   + SaveObject.currentSaveEntriesIndex + "]");
 
 			return 0;
 		}
@@ -499,11 +499,11 @@ public class Utils {
 		getValparsed = Int32.TryParse(valueReceived,NumberStyles.Integer,
 									  en_US_Culture,out getValreadInt);
 		if (!getValparsed) {
-			UnityEngine.Debug.Log("BUG: Could not parse int from: "
-								  + valueReceived + " for variable named "
-								  + name + ", returning 0 as a fallback on "
-								  + SaveObject.currentObjectInfo + " ["
-								  + SaveObject.currentSaveEntriesIndex + "]");
+			UnityEngine.Debug.LogError("BUG: Could not parse int from: "
+								   + val + " for variable named "
+							 	   + name + ", returning 0 as a fallback on "
+							 	   + SaveObject.currentObjectInfo + " ["
+								   + SaveObject.currentSaveEntriesIndex + "]");
 			return 0;
 		}
 
@@ -514,10 +514,10 @@ public class Utils {
 		getValparsed = Single.TryParse(val, NumberStyles.Float, en_US_Culture,
                                        out getValreadFloat);
 		if (!getValparsed) {
-			UnityEngine.Debug.Log("BUG: Could not parse float from: " + val
-                                  + ", returning 0.0 as fallback on "
-								  + SaveObject.currentObjectInfo + " ["
-								  + SaveObject.currentSaveEntriesIndex + "]");
+			UnityEngine.Debug.LogError("BUG: Could not parse float from: "
+                                   + val + ", returning 0.0 as fallback on "
+							   	   + SaveObject.currentObjectInfo + " ["
+								   + SaveObject.currentSaveEntriesIndex + "]");
 			return 0.0f;
 		}
 		return getValreadFloat;
@@ -530,7 +530,7 @@ public class Utils {
 		string nameReceived = splits[0];
 		string valueReceived = splits[1];
 		if (nameReceived != name) {
-			UnityEngine.Debug.Log("BUG: Attempting to parse " + nameReceived
+			UnityEngine.Debug.LogError("BUG: Attempting to parse " + val
 								  + " when wanting float named " + name
 								  + ", returning 0.0 as fallback on "
 								  + SaveObject.currentObjectInfo + " ["
@@ -543,8 +543,8 @@ public class Utils {
 									   en_US_Culture, out getValreadFloat);
 
 		if (!getValparsed) {
-			UnityEngine.Debug.Log("BUG: Could not parse float from: "
-								  + valueReceived + " for variable named "
+			UnityEngine.Debug.LogError("BUG: Could not parse float from: "
+								  + val + " for variable named "
 								  + name + ", returning 0.0 as fallback on "
 								  + SaveObject.currentObjectInfo + " ["
 								  + SaveObject.currentSaveEntriesIndex + "]");
@@ -581,7 +581,7 @@ public class Utils {
 		}
 
 		if (nameReceived != name) {
-			UnityEngine.Debug.Log("BUG: Attempting to parse " + nameReceived
+			UnityEngine.Debug.LogError("BUG: Attempting to parse " + val
 								  + " when wanting string named " + name
 								  + ", returning 'unknown' as fallback on "
 								  + SaveObject.currentObjectInfo + " ["
@@ -963,7 +963,7 @@ public class Utils {
 									 int index) {
 		Rigidbody rbody = go.GetComponent<Rigidbody>();
 		if (rbody == null) {
-			return index;// + 4; // No warn, normal scenario.
+			return index + 4; // No warn, normal scenario.
 		}
 
 		// Get rigidbody velocity
@@ -1200,7 +1200,7 @@ public class Utils {
 		string nameReceived = splits[0];
 		string valueReceived = splits[1];
 		if (nameReceived != name) {
-			UnityEngine.Debug.Log("BUG: Attempting to parse " + nameReceived
+			UnityEngine.Debug.LogError("BUG: Attempting to parse " + savedTimer
 								  + " when wanting timer named " + name
 								  + ", returning 0.0 as fallback on "
 								  + SaveObject.currentObjectInfo + " ["
