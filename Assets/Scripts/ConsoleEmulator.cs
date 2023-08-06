@@ -120,8 +120,12 @@ public static class ConsoleEmulator {
 				MouseLookScript.a.playerCamera.useOcclusionCulling = true;
 				PlayerMovement.a.CheatNoclip = false;
 				PlayerMovement.a.grounded = false;
-				Utils.EnableCapsuleCollider(PlayerMovement.a.capsuleCollider);
-				Utils.EnableCapsuleCollider(PlayerMovement.a.leanCapsuleCollider);
+				if (PlayerMovement.a.inCyberSpace) {
+				    Utils.EnableSphereCollider(PlayerMovement.a.cyberCollider);
+				} else {
+				    Utils.EnableCapsuleCollider(PlayerMovement.a.capsuleCollider);
+				    Utils.EnableCapsuleCollider(PlayerMovement.a.leanCapsuleCollider);
+				}
 				Const.sprint("noclip disabled");
 			} else {
 				MouseLookScript.a.playerCamera.useOcclusionCulling = false;
@@ -130,6 +134,7 @@ public static class ConsoleEmulator {
 				PlayerMovement.a.rbody.useGravity = false;
 				Utils.DisableCapsuleCollider(PlayerMovement.a.capsuleCollider);
 				Utils.DisableCapsuleCollider(PlayerMovement.a.leanCapsuleCollider);
+				Utils.DisableSphereCollider(PlayerMovement.a.cyberCollider);
 				Const.sprint("noclip activated!");
 			}
         } else if (ts.Contains("editmode") || ts.Contains("edit mode")) {
