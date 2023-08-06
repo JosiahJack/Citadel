@@ -1340,7 +1340,8 @@ public class AIController : MonoBehaviour {
 			currentState = AIState.Dead;
 		}
 
-		if (index == 0 || index == 14) { // Autobomb
+		if (index == 0 || index == 14 // Autobomb, hopper
+		    || healthManager.teleportOnDeath) {
 			Utils.Deactivate(visibleMeshEntity);
 		}
 	}
@@ -1385,7 +1386,10 @@ public class AIController : MonoBehaviour {
 			}
 		}
 
-		if (index == 0) Utils.Deactivate(visibleMeshEntity); // Autobomb
+		if (index == 0 || healthManager.teleportOnDeath) {
+		    Utils.Deactivate(visibleMeshEntity); // Autobomb
+		}
+		
 		deadChecksDone = true;
 	}
 
