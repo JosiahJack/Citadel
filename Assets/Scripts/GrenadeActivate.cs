@@ -97,6 +97,7 @@ public class GrenadeActivate : MonoBehaviour {
 		dd.penetration = penetration;
 		dd.offense = offense;
 		dd.impactVelocity = damage * 1.5f;
+		if (!IsNPCMine()) dd.owner = Const.a.player1Capsule;
 		int mask = Const.a.layerMaskExplosion;
 		Utils.ApplyImpactForceSphere(dd,transform.position,nearradius,1.0f,mask);
 		GameObject explosionEffect = Const.a.GetObjectFromPool(explosionType);
