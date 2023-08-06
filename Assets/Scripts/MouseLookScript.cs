@@ -1012,6 +1012,7 @@ public class MouseLookScript : MonoBehaviour {
 		} else {
 			// Throw an active grenade
 			grenadeActive = false;
+			MFDManager.a.mouseClickHeldOverGUI = true; // Prevent shooting it.
 			tossObject = Instantiate(heldObject,(transform.position + (transform.forward * tossOffset)),Const.a.quaternionIdentity) as GameObject;  //effect
 			if (tossObject == null) {
 				Const.sprint("BUG: Failed to instantiate object being dropped!",player);
