@@ -1737,12 +1737,12 @@ public class Const : MonoBehaviour {
 
 				entries = readFileList[i].Split(Utils.splitCharChar);
 				if (entries.Length > 1) {
-					levID = Utils.GetIntFromString(entries[18]); 
+					levID = Utils.GetIntFromString(entries[18],"levelID"); 
 					if (levID < 0 || levID > 13) levID = 1; // Default to med.
-					constdex = Utils.GetIntFromString(entries[19]);
+					constdex = Utils.GetIntFromString(entries[19],"constIndex");
 					if (constdex < 0 || constdex > 517) continue;
 
-					savID = Utils.GetIntFromString(entries[1]);
+					savID = Utils.GetIntFromString(entries[1],"SaveID");
 					instGO = ConsoleEmulator.SpawnDynamicObject(constdex,levID,
 																false,null,
 																savID);

@@ -142,7 +142,7 @@ public class SaveObject : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 
 		if (prefID != null) {
-			s1.Append(Utils.UintToString(prefID.constIndex)); // 19
+			s1.Append(Utils.UintToString(prefID.constIndex,"constIndex")); // 19
 			s1.Append(Utils.splitChar);
 		} else s1.Append("307" + Utils.splitChar);
 
