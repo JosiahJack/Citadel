@@ -119,7 +119,7 @@ public class PlayerMovement : MonoBehaviour {
 	private float relSideways = 0f;
 	[HideInInspector] public bool cyberSetup = false; // save
 	[HideInInspector] public bool cyberDesetup = false; // save
-	private SphereCollider cyberCollider;
+	[HideInInspector] public SphereCollider cyberCollider;
 	[HideInInspector] public CapsuleCollider capsuleCollider;
 	[HideInInspector] public BodyState oldBodyState; // save
 	public float bonus;
