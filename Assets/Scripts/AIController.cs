@@ -443,8 +443,10 @@ public class AIController : MonoBehaviour {
 		float distDn = 0;
 		Vector3 floorPoint = new Vector3();
 		floorPoint = Const.a.vectorZero;
-		if (enemy != null) idealPos.y = enemy.transform.position.y + 0.24f;
-		else if (!Const.a.RaycastBudgetExceeded()) {
+		if (enemy != null) {
+		    idealPos = transform.position; // Where it's at
+		    idealPos.y = enemy.transform.position.y + 0.24f; // Player eye height.
+		} else if (!Const.a.RaycastBudgetExceeded()) {
 			if (Physics.Raycast(sightPoint.transform.position,
 								sightPoint.transform.up * -1,out tempHit,
 								Const.a.sightRangeForNPC[index],
