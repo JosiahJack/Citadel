@@ -94,7 +94,7 @@ namespace Tests {
 				    typeof(Email),includeInactive
 				);
 
-				for (k=0;k<compArray.Length;k++) {
+				for (int k=0;k<compArray.Length;k++) {
 				    // Add the gameObject associated with all Email
 				    // components in the scene.
 					emGOs.Add(compArray[k].gameObject);
@@ -119,9 +119,9 @@ namespace Tests {
 
                 check = false;
                 for (int j=0;j<emGOs.Count;i++) {
-			    	if (emGOs[i] == null) continue;
+			    	if (emGOs[j] == null) continue;
 			    	
-			    	Email em = emGOs[i].GetComponent<Email>();
+			    	Email em = emGOs[j].GetComponent<Email>();
     				if (em == null) continue;
 
                     if (em.emailIndex == i) check = true;
