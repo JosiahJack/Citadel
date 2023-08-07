@@ -1481,7 +1481,7 @@ public class Const : MonoBehaviour {
 
 		string readline; 					// Initialize temporary variables.
 		int numSaveablesFromSavefile = 0;
-		int i,j;
+		int i,j,k;
 		GameObject currentGameObjectInScene = null;
 		List<GameObject> saveableGameObjectsInScene = new List<GameObject>();
 		loadPercentText.text = "Preparing...";
@@ -1769,6 +1769,40 @@ public class Const : MonoBehaviour {
 			// LOAD 8.  Repopulate registries as needed that were on Awake.
 			for (i = 0; i < LevelManager.a.npcsm.Length; i++ ) {
 				LevelManager.a.npcsm[i].RepopulateChildList();
+			}
+			
+			if (Inventory.a.hasHardware[1]) {
+		        // Go through all HealthManagers in the game and initialize the
+				// linked overlays now for Automap.  Done after instantiation.
+				List<GameObject> hmGOs = new List<GameObject>();
+				List<GameObject> allParents =
+				  SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+				
+				// Find all HealthManager components.
+                bool includeInactive = true;
+				for (i=0;i<allParents.Count;i++) {
+					Component[] compArray =
+					    allParents[i].GetComponentsInChildren(
+					        typeof(HealthManager),includeInactive);
+	
+					for (k=0;k<compArray.Length;k++) {
+					    // Add the gameObject associated with all HealthManager
+					    // components in the scene.
+						hmGOs.Add(compArray[k].gameObject);
+					}
+				}
+
+				for (i=0;i<hmGOs.Count;i++) {
+					if (hmGOs[i] == null) continue;
+
+					HealthManager hm = hmGOs[i].GetComponent<HealthManager>();
+					if (hm == null) continue;
+
+					if ((hm.isNPC || hm.isSecCamera)) {
+						hm.Awake(); // Set up slots.
+						hm.Start(); // Setup overlay.
+					}
+				}
 			}
 		}
 
