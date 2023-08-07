@@ -73,10 +73,24 @@ namespace Tests {
 
             yield return new WaitForSeconds(2f);
             
-            for (int i=0; i< Const.a.audioLogType.Length;i++) {
-                //bool check = Const.a != null;
-                //string msg = "Const.a was null";
-                //Assert.That(check,msg);
+            bool check = Const.a.audioLogType.Length == Const.a.audioLogs.Length;
+            string msg = "Const.a.audioLogType length of "
+                         + Const.a.audioLogType.length.ToString()
+                         + "not equal to Const.a.audioLogs length of "
+                         + Const.a.audioLogs.Length.ToString();
+            Assert.That(check,msg);
+            
+            //for (int i=0; i< Const.a.audioLogType.Length;i++) {
+            for (int i=0; i< Const.a.audioLogs.Length;i++) {
+                if (Const.a.audioLogType[i] == AudioLogType.TextOnly) continue;
+                if (Const.a.audioLogType[i] == AudioLogType.Papers) continue;
+                if (Const.a.audioLogType[i] == AudioLogType.Vmail) continue;
+                
+                // Only normal and emails have .wav files
+                // 6 is a known TextOnly and has null.wav assigned to it.
+                check = Const.a.audioLogs[i] != Const.a.audioLogs[6];
+                msg = "audioLogs " + i.ToString() + "using null.wav";
+                Assert.That(check,msg);
             }
         }
     }
