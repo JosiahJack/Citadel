@@ -1813,7 +1813,7 @@ public class Inventory : MonoBehaviour {
 
 
 		for (j=0;j<32;j++) { inv.accessCardsOwned[j] = Utils.IntToAccessCardType(Utils.GetIntFromString(entries[index])); index++; }
-		for (j=0;j<14;j++) { invqq.generalInventoryIndexRef[j] = Utils.GetIntFromString(entries[index],"generalInventoryIndexRef[" + j.ToString() + "]"); index++; }
+		for (j=0;j<14;j++) { inv.generalInventoryIndexRef[j] = Utils.GetIntFromString(entries[index],"generalInventoryIndexRef[" + j.ToString() + "]"); index++; }
 		inv.generalInvCurrent = Utils.GetIntFromString(entries[index],"generalInvCurrent"); index++;
 		inv.generalInvIndex = Utils.GetIntFromString(entries[index],"generalInvIndex"); index++;
 
