@@ -89,6 +89,9 @@ namespace Tests {
                 // 94 needs shodan_enjoyyourvictory.wav
                 if (i == 94) continue;
                 
+                // 96 needs shodan_youdestroyedmystation.wav
+                if (i == 96) continue;
+                
                 // Only normal and emails have .wav files
                 // 6 is a known TextOnly and has null.wav assigned to it.
                 check = Const.a.audioLogs[i] != Const.a.audioLogs[6];
