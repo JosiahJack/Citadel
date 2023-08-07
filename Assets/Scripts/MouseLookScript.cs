@@ -889,18 +889,18 @@ public class MouseLookScript : MonoBehaviour {
 				case 18: Inventory.a.AddPatchToInventory(4,index); break;
 				case 19: Inventory.a.AddPatchToInventory(1,index); break;
 				case 20: Inventory.a.AddPatchToInventory(0,index); break;
-				case 21: Inventory.a.AddHardwareToInventory(0,index); break;
-				case 22: Inventory.a.AddHardwareToInventory(1,index); break;
-				case 23: Inventory.a.AddHardwareToInventory(2,index); break;
-				case 24: Inventory.a.AddHardwareToInventory(3,index); break;
-				case 25: Inventory.a.AddHardwareToInventory(4,index); break;
-				case 26: Inventory.a.AddHardwareToInventory(5,index); break;
-				case 27: Inventory.a.AddHardwareToInventory(6,index); break;
-				case 28: Inventory.a.AddHardwareToInventory(7,index); break;
-				case 29: Inventory.a.AddHardwareToInventory(8,index); break;
-				case 30: Inventory.a.AddHardwareToInventory(9,index); break;
-				case 31: Inventory.a.AddHardwareToInventory(10,index); break;
-				case 32: Inventory.a.AddHardwareToInventory(11,index); break;
+				case 21: Inventory.a.AddHardwareToInventory(0,index,customIndex,true); break;
+				case 22: Inventory.a.AddHardwareToInventory(1,index,customIndex,true); break;
+				case 23: Inventory.a.AddHardwareToInventory(2,index,customIndex,true); break;
+				case 24: Inventory.a.AddHardwareToInventory(3,index,customIndex,true); break;
+				case 25: Inventory.a.AddHardwareToInventory(4,index,customIndex,true); break;
+				case 26: Inventory.a.AddHardwareToInventory(5,index,customIndex,true); break;
+				case 27: Inventory.a.AddHardwareToInventory(6,index,customIndex,true); break;
+				case 28: Inventory.a.AddHardwareToInventory(7,index,customIndex,true); break;
+				case 29: Inventory.a.AddHardwareToInventory(8,index,customIndex,true); break;
+				case 30: Inventory.a.AddHardwareToInventory(9,index,customIndex,true); break;
+				case 31: Inventory.a.AddHardwareToInventory(10,index,customIndex,true); break;
+				case 32: Inventory.a.AddHardwareToInventory(11,index,customIndex,true); break;
 				case 60: Inventory.a.AddAmmoToInventory(12,index, Const.a.magazinePitchCountForWeapon[12], false); break; // rubber slugs
 				case 65: Inventory.a.AddAmmoToInventory(8,index, Const.a.magazinePitchCountForWeapon2[8], true); break; // magpulse cartridge super
 				case 66: Inventory.a.AddAmmoToInventory(2,index, Const.a.magazinePitchCountForWeapon[2], false); break; // needle darts
