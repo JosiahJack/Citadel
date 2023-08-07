@@ -62,14 +62,72 @@ namespace Tests {
                 if (Const.a.audioLogType[i] == AudioLogType.TextOnly) continue;
                 if (Const.a.audioLogType[i] == AudioLogType.Papers) continue;
                 if (Const.a.audioLogType[i] == AudioLogType.Vmail) continue;
-                
-                // Just plain missing Rebecca 5 and 6!!
-                if (i == 97 || i > 98) continue;
-                
+
                 // Only normal and emails have .wav files
                 // 6 is a known TextOnly and has null.wav assigned to it.
                 check = Const.a.audioLogs[i] != Const.a.audioLogs[6];
                 msg = "audioLogs " + i.ToString() + " using null.wav";
+                Assert.That(check,msg);
+            }
+        }
+        
+        // Find all info_e ails and confirm all emails are present in scene.
+        [UnityTest]
+        public IEnumerator EmailsSetupProperly() {
+            RunBeforeAnyTests();
+            yield return new WaitUntil(() => sceneLoaded);
+
+            yield return new WaitForSeconds(2f);
+            
+            string msg;
+            bool check = true;
+            int i = 0;
+            
+            List<GameObject> emGOs = new List<GameObject>();
+			List<GameObject> allParents =
+			  SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+			
+			// Find all HealthManager components.
+            bool includeInactive = true;
+			for (i=0;i<allParents.Count;i++) {
+				Component[] compArray = allParents[i].GetComponentsInChildren(
+				    typeof(Email),includeInactive
+				);
+
+				for (k=0;k<compArray.Length;k++) {
+				    // Add the gameObject associated with all Email
+				    // components in the scene.
+					emGOs.Add(compArray[k].gameObject);
+				}
+			}
+			
+			for (i=0;i<emGOs.Count;i++) {
+				if (emGOs[i] == null) continue;
+
+				Email em = emGOs[i].GetComponent<Email>();
+				if (em == null) continue;
+
+
+                check = em.emailIndex >= 0;
+                msg = "Bad Email.emailIndex " + em.emailIndex.ToString();
+                Assert.That(check,msg);
+			}
+            
+            for (i=0; i< Const.a.audioLogs.Length;i++) {
+                if (Const.a.audioLogType[i] == AudioLogType.TextOnly) continue;
+                if (Const.a.audioLogType[i] == AudioLogType.Papers) continue;
+
+                check = false;
+                for (int j=0;j<emGOs.Count;i++) {
+			    	if (emGOs[i] == null) continue;
+			    	
+			    	Email em = emGOs[i].GetComponent<Email>();
+    				if (em == null) continue;
+
+                    if (em.emailIndex == i) check = true;
+                }
+                
+                msg = "Could not find info_email in scene for " + i.ToString();
                 Assert.That(check,msg);
             }
         }
