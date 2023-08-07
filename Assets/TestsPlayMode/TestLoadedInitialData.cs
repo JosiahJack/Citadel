@@ -75,7 +75,7 @@ namespace Tests {
             
             bool check = Const.a.audioLogType.Length == Const.a.audioLogs.Length;
             string msg = "Const.a.audioLogType length of "
-                         + Const.a.audioLogType.length.ToString()
+                         + Const.a.audioLogType.Length.ToString()
                          + "not equal to Const.a.audioLogs length of "
                          + Const.a.audioLogs.Length.ToString();
             Assert.That(check,msg);
