@@ -736,58 +736,7 @@ public class AIController : MonoBehaviour {
 			return;
 		}
 
-        if (inSight || IsCyberNPC()) {
-			if (enemy != null) {
-				targettingPosition = enemy.transform.position;
-				currentDestination = enemy.transform.position;
-				lastKnownEnemyPos = enemy.transform.position;
-				if (IsCyberNPC()) {
-					targettingPosition =
-						PlayerMovement.a.cameraObject.transform.position;
-				}
-			}
-
-            huntFinished = PauseScript.a.relativeTime
-						   + Const.a.huntTimeForNPC[index];
-
-			shotFired = false;
-			huntFinished = PauseScript.a.relativeTime;
-			int diff = Const.a.difficultyCombat;
-			if (IsCyberNPC()) diff = Const.a.difficultyCyber;
-			if (diff <= 1) { // More forgetful on easy.
-				huntFinished += (Const.a.huntTimeForNPC[index] * 0.75f);
-			} else if (diff >= 3) { // Good memory on hard.
-				huntFinished += (Const.a.huntTimeForNPC[index] * 2.00f); 
-			}
-			
-			if (IsCyberNPC()) {
-			    huntFinished += (Const.a.huntTimeForNPC[index] * 9999f); 
-			}
-
-			near = Const.a.rangeForNPC[index]  * Const.a.rangeForNPC[index];
-			mid  = Const.a.rangeForNPC2[index] * Const.a.rangeForNPC2[index];
-			far  = Const.a.rangeForNPC3[index] * Const.a.rangeForNPC3[index];
-            if (CanAttack1(near)) {
-				StartAttack1();
-				return;
-            } else if (CanAttack2(mid)) {
-				StartAttack2();
-				return;
-			} else if (CanAttack3(far)) {
-				StartAttack3();
-				return;
-			}
-
-			// Enemy still far away and turned to within angle, then move
-			if ((Const.a.moveTypeForNPC[index] != AIMoveType.None)
-				&& (rangeToEnemy > (stopDistance * stopDistance))) {
-				if (WithinAngleToTarget()) {
-					if (Const.a.hopsOnMoveForNPC[index]) HopMove();
-					else                                 RunMove(); // <<<<<RUN
-				}
-				
-			}
-        } else {
+        if (!inSight) {
             if (huntFinished > PauseScript.a.relativeTime) {
                 Hunt();
             } else {
@@ -796,8 +745,54 @@ public class AIController : MonoBehaviour {
 				wandering = true; // Sometimes look like we are still searching
 				wanderFinished = PauseScript.a.relativeTime - 1f;
                 currentState = AIState.Walk;
-                return;
             }
+            return;
+        }
+        
+		if (enemy != null) {
+			targettingPosition = enemy.transform.position;
+			currentDestination = enemy.transform.position;
+			lastKnownEnemyPos = enemy.transform.position;
+			if (IsCyberNPC()) {
+			    Tansform enemTr = PlayerMovement.a.cameraObject.transform;
+				targettingPosition = enemTr.position;
+			}
+		}
+
+		shotFired = false;
+		huntFinished = PauseScript.a.relativeTime;
+		int diff = Const.a.difficultyCombat;
+		if (IsCyberNPC()) diff = Const.a.difficultyCyber;
+		if (diff <= 1) { // More forgetful on easy.
+			huntFinished += (Const.a.huntTimeForNPC[index] * 0.75f);
+		} else if (diff >= 3) { // Good memory on hard.
+			huntFinished += (Const.a.huntTimeForNPC[index] * 2.00f); 
+		} else {
+		    huntFinished += Const.a.huntTimeForNPC[index];
+		}
+
+		near = Const.a.rangeForNPC[index]  * Const.a.rangeForNPC[index];
+		mid  = Const.a.rangeForNPC2[index] * Const.a.rangeForNPC2[index];
+		far  = Const.a.rangeForNPC3[index] * Const.a.rangeForNPC3[index];
+        if (CanAttack1(near)) {
+			StartAttack1();
+			return;
+        } else if (CanAttack2(mid)) {
+			StartAttack2();
+			return;
+		} else if (CanAttack3(far)) {
+			StartAttack3();
+			return;
+		}
+
+		// Enemy still far away and turned to within angle, then move
+		if ((Const.a.moveTypeForNPC[index] != AIMoveType.None)
+			&& (rangeToEnemy > (stopDistance * stopDistance))) {
+			if (WithinAngleToTarget()) {
+				if (Const.a.hopsOnMoveForNPC[index]) HopMove();
+				else                                 RunMove(); // <<<<<RUN
+			}
+			
 		}
 	}
 
