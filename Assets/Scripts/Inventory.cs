@@ -1800,13 +1800,15 @@ public class Inventory : MonoBehaviour {
     		
     		if (button8Index >= 0 && button8Index < 8) {
     			MouseLookScript.a.hardwareButtons[button8Index].SetActive(true);
-    			hardwareButtonManager.SetVersionIconForButton(
-    			    hardwareIsActive[j],hardwareVersionSetting[j],4);
+    			Inventory.a.hardwareButtonManager.SetVersionIconForButton(
+    			    Inventory.a.hardwareIsActive[j],
+    			    Inventory.a.hardwareVersionSetting[j],4
+    			);
 
-    			hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
+    			Inventory.a.hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
     		}
     		
-    		ActivateHardwareButton(j);
+    		Inventory.a.ActivateHardwareButton(j);
 	    }
 
 
