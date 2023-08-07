@@ -53,16 +53,16 @@ public class ConfigurationMenuVideo : MonoBehaviour {
 		int[] uniqueResolutionWidths = new int[50];
 		int[] uniqueResolutionHeights = new int[50];
 		int[] refreshRates = new int[50];
-		int maxRefreshRate = 30;
-		for (int i = 0; i < resolutions.Length; i++) {
-			if (resolutions[i].refreshRate > maxRefreshRate) {
-				maxRefreshRate = resolutions[i].refreshRate;
-			}
-		}
+		int maxRefreshRate = 48;
+// 		for (int i = 0; i < resolutions.Length; i++) {
+// 			if (resolutions[i].refreshRate > maxRefreshRate) {
+// 				maxRefreshRate = resolutions[i].refreshRate;
+// 			}
+// 		}
 
 		List<Resolution> uniqueResolutionsList = new List<Resolution>();
 		for (int i = 0; i < resolutions.Length; i++) {
-			if (resolutions[i].refreshRate == maxRefreshRate) {
+			if (resolutions[i].refreshRate >= maxRefreshRate) {
 				uniqueResolutionsList.Add(resolutions[i]);
 			}
 		}
