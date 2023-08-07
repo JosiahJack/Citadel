@@ -118,7 +118,7 @@ namespace Tests {
                 if (Const.a.audioLogType[i] == AudioLogType.Papers) continue;
 
                 check = false;
-                for (int j=0;j<emGOs.Count;i++) {
+                for (int j=0;j<emGOs.Count;j++) {
 			    	if (emGOs[j] == null) continue;
 			    	
 			    	Email em = emGOs[j].GetComponent<Email>();
