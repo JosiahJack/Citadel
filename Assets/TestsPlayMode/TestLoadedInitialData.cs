@@ -43,29 +43,6 @@ namespace Tests {
             }
         }
 
-
-				//readline = dataReader.ReadLine();
-				//if (readline == null) continue; // just in case
-				//string[] entries = readline.Split(logSplitChar);
-				//readIndexOfLog = Utils.GetIntFromString(entries[i]); i++;
-				//readLogImageLHIndex = Utils.GetIntFromString(entries[i]); i++;
-				//readLogImageRHIndex = Utils.GetIntFromString(entries[i]); i++;
-				//audioLogImagesRefIndicesLH[readIndexOfLog] = readLogImageLHIndex;
-				//audioLogImagesRefIndicesRH[readIndexOfLog] = readLogImageRHIndex;
-				//audiologNames[readIndexOfLog] = entries[i]; i++;
-				//audiologSenders[readIndexOfLog] = entries[i]; i++;
-				//audiologSubjects[readIndexOfLog] = entries[i]; i++;
-				//audioLogType[readIndexOfLog] = Utils.GetAudioLogTypeFromInt(Utils.GetIntFromString(entries[i])); i++;
-				//audioLogLevelFound[readIndexOfLog] = Utils.GetIntFromString(entries[i]); i++;
-				//readLogText = entries[i]; i++;
-				//// handle extra commas within the body text and append remaining portions of the line
-				//if (entries.Length > 8) {
-				//	for (int j=9;j<entries.Length;j++) {
-				//		readLogText = (readLogText +"," + entries[j]);  // combine remaining portions of text after other commas and add comma back
-				//	}
-				//}
-				//audioLogSpeech2Text[readIndexOfLog] = readLogText;
-
         [UnityTest]
         public IEnumerator CheckLogsLoadedHaveAssignedAudio() {
             RunBeforeAnyTests();
@@ -85,12 +62,6 @@ namespace Tests {
                 if (Const.a.audioLogType[i] == AudioLogType.TextOnly) continue;
                 if (Const.a.audioLogType[i] == AudioLogType.Papers) continue;
                 if (Const.a.audioLogType[i] == AudioLogType.Vmail) continue;
-                
-                // 94 needs shodan_enjoyyourvictory.wav
-                if (i == 94) continue;
-                
-                // 96 needs shodan_youdestroyedmystation.wav
-                if (i == 96) continue;
                 
                 // Just plain missing Rebecca 5 and 6!!
                 if (i == 97 || i > 98) continue;
