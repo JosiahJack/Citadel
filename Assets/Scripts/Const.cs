@@ -1765,6 +1765,11 @@ public class Const : MonoBehaviour {
 				}
 			}
 			loadUpdateTimer.Stop();
+
+			// LOAD 8.  Repopulate registries as needed that were on Awake.
+			for (i = 0; i < LevelManager.a.npcsm.Length; i++ ) {
+				LevelManager.a.npcsm[i].RepopulateChildList();
+			}
 		}
 
 		loadPercentText.text = "Cleaning Up...";
