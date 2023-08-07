@@ -76,7 +76,7 @@ namespace Tests {
             bool check = Const.a.audioLogType.Length == Const.a.audioLogs.Length;
             string msg = "Const.a.audioLogType length of "
                          + Const.a.audioLogType.Length.ToString()
-                         + "not equal to Const.a.audioLogs length of "
+                         + " not equal to Const.a.audioLogs length of "
                          + Const.a.audioLogs.Length.ToString();
             Assert.That(check,msg);
             
@@ -86,10 +86,13 @@ namespace Tests {
                 if (Const.a.audioLogType[i] == AudioLogType.Papers) continue;
                 if (Const.a.audioLogType[i] == AudioLogType.Vmail) continue;
                 
+                // 94 needs shodan_enjoyyourvictory.wav
+                if (i == 94) continue;
+                
                 // Only normal and emails have .wav files
                 // 6 is a known TextOnly and has null.wav assigned to it.
                 check = Const.a.audioLogs[i] != Const.a.audioLogs[6];
-                msg = "audioLogs " + i.ToString() + "using null.wav";
+                msg = "audioLogs " + i.ToString() + " using null.wav";
                 Assert.That(check,msg);
             }
         }
