@@ -709,32 +709,44 @@ public class Inventory : MonoBehaviour {
 	// Hardware
 	// index [0,11]: Reference into the list of just hardwares.
 	// constIndex [0,102]: Reference into the Const.cs global item lists.
-	public void AddHardwareToInventory(int index, int constIndex) {
+	// overt = update HUD in response to player action, else silent add.
+	public void AddHardwareToInventory(int index, int constIndex,
+	                                   int hwversion, bool overt) {
 		if (index < 0) return;
 
-		int hwversion = MouseLookScript.a.heldObjectCustomIndex;
 		if (hwversion < 1) {
-			Const.sprint("BUG: Hardware picked up has no assigned versioning, defaulting to 1 (value of 0)" );
+			Const.sprint("BUG: Adding hardware with no version, using 0 (v1)");
 			hwversion = 1;
 		}
 
-		MFDManager.a.SendInfoToItemTab(constIndex,-1);
-		if (hwversion <= hardwareVersion[index]) { Const.sprint(Const.a.stringTable[46] ); return; }
+		if (overt) MFDManager.a.SendInfoToItemTab(constIndex,-1);
+		if (hwversion <= hardwareVersion[index] && overt) {
+		    Const.sprint(Const.a.stringTable[46] );
+		    return;
+		}
 
 		int textIndex = 21;
 		int button8Index = -1;
 		switch(index) {
 			case 0: textIndex = 21; break; // System Analyzer
-			case 1: textIndex = 22; // Navigation Unit
-				MouseLookScript.a.compassContainer.SetActive(true); // Turn on HUD compass
+			case 1: // Navigation Unit
+			    textIndex = 22;
+			    // Turn on HUD compass
+				MouseLookScript.a.compassContainer.SetActive(true);
 				MouseLookScript.a.automapContainerLH.SetActive(true);
 				MouseLookScript.a.automapContainerRH.SetActive(true);
-				if (hwversion >= 2) MouseLookScript.a.compassMidpoints.SetActive(true);
+				if (hwversion >= 2) {
+				    MouseLookScript.a.compassMidpoints.SetActive(true);
+				}
+				
 				if (hwversion >= 3) {
 					MouseLookScript.a.compassSmallTicks.SetActive(true);
 					MouseLookScript.a.compassLargeTicks.SetActive(true);
 				}
-				MFDManager.a.OpenTab(2,true,TabMSG.None,0,Handedness.RH);
+				
+				if (overt) {
+				    MFDManager.a.OpenTab(2,true,TabMSG.None,0,Handedness.RH);
+				}
 
 				// Go through all HealthManagers in the game and initialize the
 				// linked overlays now.
@@ -742,9 +754,9 @@ public class Inventory : MonoBehaviour {
 				List<GameObject> hmGOs = new List<GameObject>();
 				List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
 				for (i=0;i<allParents.Count;i++) {
-					Component[] compArray = allParents[i].GetComponentsInChildren(typeof(HealthManager),true); // find all SaveObject components, including inactive (hence the true here at the end)
+					Component[] compArray = allParents[i].GetComponentsInChildren(typeof(HealthManager),true); // find all HealthManager components, including inactive (hence the true here at the end)
 					for (k=0;k<compArray.Length;k++) {
-						hmGOs.Add(compArray[k].gameObject); //add the gameObject associated with all SaveObject components in the scene
+						hmGOs.Add(compArray[k].gameObject); //add the gameObject associated with all HealthManager components in the scene
 					}
 				}
 
@@ -771,31 +783,32 @@ public class Inventory : MonoBehaviour {
 			case 10:textIndex = 31; button8Index = 7; break; // Jump Jet Boots
 			case 11:textIndex = 32; button8Index = 4; break; // Infrared Night Vision Enhancement
 		}
+		
 		hardwareInvIndex = index;
-
-		if (button8Index >= 0 && button8Index < 8) {
-			MouseLookScript.a.hardwareButtons[button8Index].SetActive(true);  // Enable HUD button
-			hardwareButtonManager.SetVersionIconForButton(hardwareIsActive[index],hardwareVersionSetting[index],4);
-			hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
-			//Debug.Log("Enabled a hardware button with index of "
-			//		  + button8Index.ToString());
-		}
-
 		hasHardware[index] = true;
 		hardwareVersion[index] = hwversion; // One-based.
 		hardwareVersionSetting[index] = hwversion - 1; // Zero-based...hey it
 													   // made sense at some
 													   // point ok!
+		// Enable HUD button
+		if (button8Index >= 0 && button8Index < 8) {
+			MouseLookScript.a.hardwareButtons[button8Index].SetActive(true);
+			hardwareButtonManager.SetVersionIconForButton(hardwareIsActive[index],
+			                                  hardwareVersionSetting[index],4);
+			hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
+		}
 
-		Const.sprint(Const.a.useableItemsNameText[textIndex] + " v"
-					 + hwversion.ToString() );
+		if (overt) {
+		    Const.sprint(Const.a.useableItemsNameText[textIndex] + " v"
+					     + hwversion.ToString() );
+		}
 
-		if (MouseLookScript.a.firstTimePickup) {
+		if (MouseLookScript.a.firstTimePickup && overt) {
 			MFDManager.a.CenterTabButtonClickSilent(1,true);
 		}
 
 		ActivateHardwareButton(index);
-		MFDManager.a.NotifyToCenterTab(1);
+		if (overt) MFDManager.a.NotifyToCenterTab(1);
 	}
 
 	// The following utility functions make the code more explicit by removing
@@ -1741,11 +1754,19 @@ public class Inventory : MonoBehaviour {
 		inv.lastAddedIndex = Utils.GetIntFromString(entries[index]); index++;
 		inv.beepDone = Utils.GetBoolFromString(entries[index]); index++;
 		for (j=0;j<13;j++) { inv.hasHardware[j] = Utils.GetBoolFromString(entries[index]); index++; }
-		if (Inventory.a.hasHardware[1]) { // Explicitly check the primary instance.
+		for (j=0;j<13;j++) { inv.hardwareVersion[j] = Utils.GetIntFromString(entries[index]); index++; }
+		for (j=0;j<13;j++) { inv.hardwareVersionSetting[j] = Utils.GetIntFromString(entries[index]); index++; }
+		inv.hardwareInvCurrent = Utils.GetIntFromString(entries[index]); index++;
+		inv.hardwareInvIndex = Utils.GetIntFromString(entries[index]); index++;
+		for (j=0;j<13;j++) { inv.hardwareIsActive[j] = Utils.GetBoolFromString(entries[index]); index++; }
+        if (Inventory.a.hasHardware[1]) { // Explicitly check primary instance.
 			MouseLookScript.a.compassContainer.SetActive(true);
 			MouseLookScript.a.automapContainerLH.SetActive(true);
 			MouseLookScript.a.automapContainerRH.SetActive(true);
-			if (inv.hardwareVersion[1] >= 2) MouseLookScript.a.compassMidpoints.SetActive(true);
+			if (inv.hardwareVersion[1] >= 2) {
+			    MouseLookScript.a.compassMidpoints.SetActive(true);
+			}
+
 			if (inv.hardwareVersion[1] >= 3) {
 				MouseLookScript.a.compassSmallTicks.SetActive(true);
 				MouseLookScript.a.compassLargeTicks.SetActive(true);
@@ -1757,13 +1778,40 @@ public class Inventory : MonoBehaviour {
 			MouseLookScript.a.compassSmallTicks.SetActive(false);
 			MouseLookScript.a.compassLargeTicks.SetActive(false);
 		}
-		for (j=0;j<13;j++) { inv.hardwareVersion[j] = Utils.GetIntFromString(entries[index]); index++; }
-		for (j=0;j<13;j++) { inv.hardwareVersionSetting[j] = Utils.GetIntFromString(entries[index]); index++; }
-		inv.hardwareInvCurrent = Utils.GetIntFromString(entries[index]); index++;
-		inv.hardwareInvIndex = Utils.GetIntFromString(entries[index]); index++;
-		for (j=0;j<13;j++) { inv.hardwareIsActive[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		
+	    for (j=0;j<12;j++) {
+	        if (!Inventory.a.hasHardware[j]) continue;
+	        
+    		int button8Index = -1;
+    		switch(j) {
+    			// 0 System Analyzer
+    			// 1 Navigation Unit (done above just for the else.
+    			case 2: button8Index = 5; break; // Datareader
+    			case 3: button8Index = 1; break; // Sensaround
+    			// 4 Target Identifier
+    			case 5: button8Index = 3; break; // Energy Shield
+    			case 6: button8Index = 0; break; // Biomonitor
+    			case 7: button8Index = 2; break; // Head Mounted Lantern
+    			// 8 Envirosuit
+    			case 9: button8Index = 6; break; // Turbo Motion Booster
+    			case 10:button8Index = 7; break; // Jump Jet Boots
+    			case 11:button8Index = 4; break; // Infrared Night Vision Enhancement
+    		}
+    		
+    		if (button8Index >= 0 && button8Index < 8) {
+    			MouseLookScript.a.hardwareButtons[button8Index].SetActive(true);
+    			hardwareButtonManager.SetVersionIconForButton(
+    			    hardwareIsActive[j],hardwareVersionSetting[j],4);
+
+    			hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
+    		}
+    		
+    		ActivateHardwareButton(j);
+	    }
+
+
 		for (j=0;j<32;j++) { inv.accessCardsOwned[j] = Utils.IntToAccessCardType(Utils.GetIntFromString(entries[index])); index++; }
-		for (j=0;j<14;j++) { inv.generalInventoryIndexRef[j] = Utils.GetIntFromString(entries[index],"generalInventoryIndexRef[" + j.ToString() + "]"); index++; }
+		for (j=0;j<14;j++) { invqq.generalInventoryIndexRef[j] = Utils.GetIntFromString(entries[index],"generalInventoryIndexRef[" + j.ToString() + "]"); index++; }
 		inv.generalInvCurrent = Utils.GetIntFromString(entries[index],"generalInvCurrent"); index++;
 		inv.generalInvIndex = Utils.GetIntFromString(entries[index],"generalInvIndex"); index++;
 
