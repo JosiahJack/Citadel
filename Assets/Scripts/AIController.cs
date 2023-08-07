@@ -754,7 +754,7 @@ public class AIController : MonoBehaviour {
 			currentDestination = enemy.transform.position;
 			lastKnownEnemyPos = enemy.transform.position;
 			if (IsCyberNPC()) {
-			    Tansform enemTr = PlayerMovement.a.cameraObject.transform;
+			    Transform enemTr = PlayerMovement.a.cameraObject.transform;
 				targettingPosition = enemTr.position;
 			}
 		}
