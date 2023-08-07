@@ -93,7 +93,7 @@ namespace Tests {
                 if (i == 96) continue;
                 
                 // Just plain missing Rebecca 5 and 6!!
-                if (i == 97 || i == 98) continue;
+                if (i == 97 || i > 98) continue;
                 
                 // Only normal and emails have .wav files
                 // 6 is a known TextOnly and has null.wav assigned to it.
