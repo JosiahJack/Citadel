@@ -41,6 +41,7 @@ public class MainMenuHandler : MonoBehaviour {
 	public Text[] loadButtonText;
 	public int currentSaveSlot = -1;
 	public AudioClip titleMusic;
+	public AudioClip deathMusic;
 	public AudioClip creditsMusic;
 	public CreditsScroll credScrollManager;
 	public GameObject IntroVideo;
@@ -111,6 +112,7 @@ public class MainMenuHandler : MonoBehaviour {
 	private LoadPageGetSaveNames lpgsn_save;
 	private float vidFinished;
 	private float vidLength = 117.5f;
+	private float deathvidLength = 16.8f;
 	private float vidStartTime;
 
 	void Awake() {
@@ -228,6 +230,7 @@ public class MainMenuHandler : MonoBehaviour {
 		inCutscene = false;
 		DeathVideo.SetActive(false);
 		DeathVideoContainer.SetActive(false);
+		BackGroundMusic.clip = titleMusic;
 		if (gameObject.activeSelf) BackGroundMusic.Play();
 	}
 
@@ -413,7 +416,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Deactivate(introVideoTextGO15);
 			}
 		} else if (DeathVideoContainer.activeSelf) {
-			if (vidFinished > 0 && (Time.time - vidStartTime) > 5.9f
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 5.53f
 				&& deathVideoTextGO1.activeSelf
 				&& !deathVideoTextGO2.activeSelf) {
 
@@ -433,7 +436,8 @@ public class MainMenuHandler : MonoBehaviour {
 			if (!BackGroundMusic.isPlaying
 				&& !saltTheFries.activeInHierarchy
 				&& gameObject.activeSelf) {
-				BackGroundMusic.Play();
+				BackGroundMusic.clip = titleMusic;
+				if (gameObject.activeSelf) BackGroundMusic.Play();
 			}
 		}
 
@@ -738,6 +742,10 @@ public class MainMenuHandler : MonoBehaviour {
 		deathVideoText2.text = Const.a.stringTable[629];
 		Utils.Activate(deathVideoTextGO1);
 		Utils.Deactivate(deathVideoTextGO2);
+		BackGroundMusic.clip = deathMusic;
+		if (gameObject.activeSelf) BackGroundMusic.Play();
+		vidFinished = Time.time + deathvidLength;
+		vidStartTime = Time.time;
 	}
 
 	public void PlayIntro() {
