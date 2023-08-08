@@ -189,6 +189,7 @@ public class PlayerHealth : MonoBehaviour {
 		PauseScript.a.mainMenu.SetActive(true);
 		MainMenuHandler.a.returnToPause = false;
 		MainMenuHandler.a.GoToFrontPage();
+		MainMenuHandler.a.PlayDeathVideo();
 		hm.health = 211f;
 		MFDManager.a.DrawTicks(true);
 		radiationArea = false;

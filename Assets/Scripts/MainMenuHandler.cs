@@ -90,6 +90,14 @@ public class MainMenuHandler : MonoBehaviour {
 	public Text introVideoText15;
 	public VideoPlayer introPlayer;
 
+	public GameObject DeathVideo;
+	public GameObject DeathVideoContainer;
+	public VideoPlayer deathPlayer;
+	public GameObject deathVideoTextGO1;
+	public GameObject deathVideoTextGO2;
+	public Text deathVideoText1;
+	public Text deathVideoText2;
+
 	[HideInInspector] public bool returnToPause = false;
 	[HideInInspector] public bool dataFound = false;
 	private enum Pages : byte {fp,sp,mp,np,lp,op,sv,cd};
@@ -216,6 +224,13 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 	}
 
+	void LeaveDeathCutscene() {
+		inCutscene = false;
+		DeathVideo.SetActive(false);
+		DeathVideoContainer.SetActive(false);
+		if (gameObject.activeSelf) BackGroundMusic.Play();
+	}
+
 	void LeaveIntroCutscene() {
 		inCutscene = false;
 		IntroVideo.SetActive(false);
@@ -231,9 +246,15 @@ public class MainMenuHandler : MonoBehaviour {
 			|| Input.GetKeyDown(KeyCode.JoystickButton0)
 			|| Input.GetKeyDown(KeyCode.JoystickButton1)
 			|| Input.anyKey) {
-			if ((inCutscene || IntroVideoContainer.activeSelf)
+			if ((inCutscene || IntroVideoContainer.activeSelf
+				|| DeathVideoContainer.activeSelf)
 				&& !CouldNotFindDialogue.activeSelf) {
-				LeaveIntroCutscene();
+				if (IntroVideoContainer.activeSelf) {
+					LeaveIntroCutscene();
+				} else if (DeathVideoContainer.activeSelf) {
+					LeaveDeathCutscene();
+				}
+
 				return;
 			}
 		}
@@ -390,6 +411,23 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Deactivate(introVideoTextGO13);
 				Utils.Deactivate(introVideoTextGO14);
 				Utils.Deactivate(introVideoTextGO15);
+			}
+		} else if (DeathVideoContainer.activeSelf) {
+			if (vidFinished > 0 && (Time.time - vidStartTime) > 5.9f
+				&& deathVideoTextGO1.activeSelf
+				&& !deathVideoTextGO2.activeSelf) {
+
+				Utils.Deactivate(deathVideoTextGO1);
+				Utils.Activate(deathVideoTextGO2);
+			}
+
+			if (vidFinished < Time.time && DeathVideoContainer.activeSelf
+				&& vidFinished > 0) {
+
+				vidFinished = 0;
+				Utils.Deactivate(DeathVideoContainer);
+				Utils.Deactivate(deathVideoTextGO1);
+				Utils.Deactivate(deathVideoTextGO2);
 			}
 		} else {
 			if (!BackGroundMusic.isPlaying
@@ -689,6 +727,17 @@ public class MainMenuHandler : MonoBehaviour {
 		Config.SetVolume(); // probably not needed here, but just in case
 		GoToFrontPage();
 		PlayIntro();
+	}
+
+	public void PlayDeathVideo() {
+		DeathVideoContainer.SetActive(true);
+		DeathVideo.SetActive(true);
+		deathPlayer.url = Application.streamingAssetsPath + "/death.webm";
+		deathPlayer.Play();
+		deathVideoText1.text = Const.a.stringTable[628];
+		deathVideoText2.text = Const.a.stringTable[629];
+		Utils.Activate(deathVideoTextGO1);
+		Utils.Deactivate(deathVideoTextGO2);
 	}
 
 	public void PlayIntro() {
