@@ -38,7 +38,7 @@ public enum TrackType : byte {None,Walking,Combat,MutantNear,CyborgNear,
 public enum BloodType : byte {None,Red,Yellow,Green,Robot,Leaf,Mutation,
                               GrayMutation};
 public enum SecurityType : byte {None,Camera,NodeSmall,NodeLarge};
-public enum AudioLogType : byte {TextOnly,Normal,Email,Papers,Vmail};
+public enum AudioLogType : byte {TextOnly,Normal,Email,Papers,Vmail,Game};
 public enum EnergyType : byte {Battery,ChargeStation};
 
 // Pool references

@@ -441,8 +441,8 @@ public class HealthManager : MonoBehaviour {
 				Music.a.inCombat = true;
 			}
 			
-			if (dd.owner.CompareTag("Player")) {
-			    Const.a.damageDealt += take;
+			if (dd.owner != null) {
+				if (dd.owner.CompareTag("Player")) Const.a.damageDealt += take;
 			}
 		}
 

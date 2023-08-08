@@ -728,6 +728,7 @@ public class Utils {
 			case 2: return AudioLogType.Email;
 			case 3: return AudioLogType.Papers;
 			case 4: return AudioLogType.Vmail;
+			case 5: return AudioLogType.Game;
 		}
 		return AudioLogType.Normal;
 	}
@@ -739,6 +740,7 @@ public class Utils {
 			case AudioLogType.Email:    return 2;
 			case AudioLogType.Papers:   return 3;
 			case AudioLogType.Vmail:    return 4;
+			case AudioLogType.Game:     return 5;
 		}
 		return 1;
 	}

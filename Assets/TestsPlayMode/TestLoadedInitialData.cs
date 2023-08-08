@@ -62,6 +62,7 @@ namespace Tests {
                 if (Const.a.audioLogType[i] == AudioLogType.TextOnly) continue;
                 if (Const.a.audioLogType[i] == AudioLogType.Papers) continue;
                 if (Const.a.audioLogType[i] == AudioLogType.Vmail) continue;
+                if (Const.a.audioLogType[i] == AudioLogType.Game) continue;
 
                 // Only normal and emails have .wav files
                 // 6 is a known TextOnly and has null.wav assigned to it.
@@ -82,6 +83,7 @@ namespace Tests {
             string msg;
             bool check = true;
             int i = 0;
+            int iter = 0;
             
             List<GameObject> emGOs = new List<GameObject>();
 			List<GameObject> allParents =
@@ -89,6 +91,7 @@ namespace Tests {
 			
 			// Find all HealthManager components.
             bool includeInactive = true;
+            iter = 0;
 			for (i=0;i<allParents.Count;i++) {
 				Component[] compArray = allParents[i].GetComponentsInChildren(
 				    typeof(Email),includeInactive
@@ -99,8 +102,11 @@ namespace Tests {
 				    // components in the scene.
 					emGOs.Add(compArray[k].gameObject);
 				}
+                iter++;
+                if (iter > 10000) break;
 			}
 			
+            iter = 0;
 			for (i=0;i<emGOs.Count;i++) {
 				if (emGOs[i] == null) continue;
 
@@ -111,11 +117,14 @@ namespace Tests {
                 check = em.emailIndex >= 0;
                 msg = "Bad Email.emailIndex " + em.emailIndex.ToString();
                 Assert.That(check,msg);
+                iter++;
+                if (iter > 10000) break;
 			}
             
+            iter = 0;
             for (i=0; i< Const.a.audioLogs.Length;i++) {
-                if (Const.a.audioLogType[i] == AudioLogType.TextOnly) continue;
-                if (Const.a.audioLogType[i] == AudioLogType.Papers) continue;
+                if (Const.a.audioLogType[i] != AudioLogType.Email
+                    && Const.a.audioLogType[i] != AudioLogType.Vmail) continue;
 
                 check = false;
                 for (int j=0;j<emGOs.Count;j++) {
@@ -124,11 +133,15 @@ namespace Tests {
 			    	Email em = emGOs[j].GetComponent<Email>();
     				if (em == null) continue;
 
-                    if (em.emailIndex == i) check = true;
+                    if (em.emailIndex == i) {
+                        check = true;
+                    }
                 }
                 
                 msg = "Could not find info_email in scene for " + i.ToString();
                 Assert.That(check,msg);
+                iter++;
+                if (iter > 10000) break;
             }
         }
     }
