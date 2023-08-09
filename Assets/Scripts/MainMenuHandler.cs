@@ -431,6 +431,8 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Deactivate(DeathVideoContainer);
 				Utils.Deactivate(deathVideoTextGO1);
 				Utils.Deactivate(deathVideoTextGO2);
+				BackGroundMusic.clip = titleMusic;
+				if (gameObject.activeSelf) BackGroundMusic.Play();
 			}
 		} else {
 			if (!BackGroundMusic.isPlaying
@@ -743,7 +745,8 @@ public class MainMenuHandler : MonoBehaviour {
 		Utils.Activate(deathVideoTextGO1);
 		Utils.Deactivate(deathVideoTextGO2);
 		BackGroundMusic.clip = deathMusic;
-		if (gameObject.activeSelf) BackGroundMusic.Play();
+		gameObject.SetActive(true);
+		BackGroundMusic.Play();
 		vidFinished = Time.time + deathvidLength;
 		vidStartTime = Time.time;
 	}
