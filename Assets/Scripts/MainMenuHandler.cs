@@ -740,6 +740,7 @@ public class MainMenuHandler : MonoBehaviour {
 		DeathVideo.SetActive(true);
 		deathPlayer.url = Application.streamingAssetsPath + "/death.webm";
 		deathPlayer.Play();
+		deathPlayer.SetDirectAudioVolume(0,0.3f);
 		deathVideoText1.text = Const.a.stringTable[628];
 		deathVideoText2.text = Const.a.stringTable[629];
 		Utils.Activate(deathVideoTextGO1);
