@@ -1308,6 +1308,46 @@ namespace Tests {
         }
 
         [UnityTest]
+        public IEnumerator DetermineIfAllSaveIDsAreUnique() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
+
+            SaveObject so;
+            List<GameObject> allParents =
+                SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+
+            List<int> saveIDsFound = new List<int>();
+            for (int i=0;i<allParents.Count;i++) {
+                // find all SaveObject components, including inactive
+                // (hence the true at the end)
+                Component[] compArray = 
+                    allParents[i].GetComponentsInChildren(typeof(SaveObject),
+                                                        true);
+
+                for (int k=0;k<compArray.Length;k++) {
+                    so = compArray[k].gameObject.GetComponent<SaveObject>();
+                    saveIDsFound.Add(so.SaveID);
+                }
+            }
+
+            // Check for duplicate SaveIDs
+            List<int> duplicateSaveIDs = saveIDsFound
+                .GroupBy(id => id)
+                .Where(group => group.Count() > 1)
+                .Select(group => group.Key)
+                .ToList();
+
+            // Assert that there are no duplicate SaveIDs
+            Assert.That(duplicateSaveIDs.Count == 0,
+                        "Duplicate SaveIDs found: "
+                        + string.Join(", ", duplicateSaveIDs));
+        }
+
+        [UnityTest]
         public IEnumerator DiagnosticReport() {
             RunBeforeAnyTests();
             yield return new WaitWhile(() => SceneLoaded() == false);
