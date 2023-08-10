@@ -1127,7 +1127,6 @@ public class MFDManager : MonoBehaviour  {
 			kkbRH.keycode = 0;
 			kkbRH.keypad = null;
 			kkbRH.ResetEntry();
-			kkbRH.done = false;
 			kkbRH.currentEntry = 0;
 
 
@@ -1137,7 +1136,6 @@ public class MFDManager : MonoBehaviour  {
 			kkbLH.keycode = 0;
 			kkbLH.keypad = null;
 			kkbLH.ResetEntry();
-			kkbLH.done = false;
 			kkbLH.currentEntry = 0;
 			return;
 		}
@@ -1152,7 +1150,6 @@ public class MFDManager : MonoBehaviour  {
 			kkb.keycode = keycode;
 			kkb.keypad = keypad;
 			kkb.ResetEntry();
-			kkb.done = alreadySolved;
 			if (Const.a.difficultyMission <= 1) {
 				kkb.currentEntry = keycode;
 			}
@@ -1164,11 +1161,11 @@ public class MFDManager : MonoBehaviour  {
 			kkb.keycode = keycode;
 			kkb.keypad = keypad;
 			kkb.ResetEntry();
-			kkb.done = alreadySolved;
 			if (Const.a.difficultyMission <= 1) {
 				kkb.currentEntry = keycode;
 			}
 		}
+
 		objectInUsePos = tetherPoint;
 		tetheredKeypadKeycode = keypad;
 		usingObject = true;

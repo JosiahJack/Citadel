@@ -17,14 +17,10 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 	private int entryTens;
 	private int entryHuns;
 	private AudioSource SFXSource;
-	private bool sfxPlayed;
-	public bool done;
 
 	void Awake () {
 		ResetEntry();
 		SFXSource = GetComponent<AudioSource>();
-		sfxPlayed = false;
-		done = false;
 	}
 
 	public void ResetEntry() {
@@ -40,7 +36,8 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 	}
 
 	void KeypressAction(int button) { // Wrapper for non-click events.
-		if (done) return;
+		if (keypad == null) return;
+		if (keypad.solved) return;
 		
 		Utils.PlayOneShotSavable(SFXSource,SFX);
 		// Digit key pressed 0 thru 9
@@ -55,14 +52,12 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 				entryHuns = -1;
 				currentEntry = (entryOnes + (entryTens * 10));
 				return;
-			}
-			if (entryTens != -1) {
+			} else if (entryTens != -1) {
 				entryOnes = entryTens;
 				entryTens = -1;
 				currentEntry = entryOnes;
 				return;
-			}
-			if (entryOnes != -1) {
+			} else if (entryOnes != -1) {
 				entryOnes = -1;
 				currentEntry = -1;
 				return;
@@ -100,45 +95,43 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 			entryTens = entryOnes;
 			entryOnes = value;
 			currentEntry = (entryOnes + (entryTens * 10) + (entryHuns * 100));
-			sfxPlayed = false;
 			return;
 		}
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			digit1s.digitIndex = entryOnes;
-			digit10s.digitIndex = entryTens;
-			digit100s.digitIndex = entryHuns;
-			if (done) return;
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive())  return;
+		if (keypad == null) return;
 
-			if (GetInput.a.Numpad0()) { KeypressAction(0); }
-			if (GetInput.a.Numpad1()) { KeypressAction(1); }
-			if (GetInput.a.Numpad2()) { KeypressAction(2); }
-			if (GetInput.a.Numpad3()) { KeypressAction(3); }
-			if (GetInput.a.Numpad4()) { KeypressAction(4); }
-			if (GetInput.a.Numpad5()) { KeypressAction(5); }
-			if (GetInput.a.Numpad6()) { KeypressAction(6); }
-			if (GetInput.a.Numpad7()) { KeypressAction(7); }
-			if (GetInput.a.Numpad8()) { KeypressAction(8); }
-			if (GetInput.a.Numpad9()) { KeypressAction(9); }
-			if (GetInput.a.NumpadMinus()) { KeypressAction(10); }
-			if (GetInput.a.NumpadPeriod()) { KeypressAction(11); }
-			if (GetInput.a.Backspace()) { KeypressAction(10); }
+		digit1s.digitIndex = entryOnes;
+		digit10s.digitIndex = entryTens;
+		digit100s.digitIndex = entryHuns;
+		if (keypad.solved) return;
 
-			if (currentEntry == keycode) {
-				if ((entryHuns != -1) && sfxPlayed == false) {
-					Utils.PlayOneShotSavable(SFXSource,SFX_Success);
-					sfxPlayed = true;  // prevent play sfx every frame once 3 digits have been entered
-				}
-				keypad.UseTargets();
-				keypad.solved = true;
-				done = true;
-			} else {
-				if ((entryHuns != -1) && sfxPlayed == false) {
-					Utils.PlayOneShotSavable(SFXSource,SFX_Incorrect);
-					sfxPlayed = true;  // prevent play sfx every frame once 3 digits have been entered
-				}
+		if (GetInput.a.Numpad0()) { KeypressAction(0); }
+		if (GetInput.a.Numpad1()) { KeypressAction(1); }
+		if (GetInput.a.Numpad2()) { KeypressAction(2); }
+		if (GetInput.a.Numpad3()) { KeypressAction(3); }
+		if (GetInput.a.Numpad4()) { KeypressAction(4); }
+		if (GetInput.a.Numpad5()) { KeypressAction(5); }
+		if (GetInput.a.Numpad6()) { KeypressAction(6); }
+		if (GetInput.a.Numpad7()) { KeypressAction(7); }
+		if (GetInput.a.Numpad8()) { KeypressAction(8); }
+		if (GetInput.a.Numpad9()) { KeypressAction(9); }
+		if (GetInput.a.NumpadMinus()) { KeypressAction(10); }
+		if (GetInput.a.NumpadPeriod()) { KeypressAction(11); }
+		if (GetInput.a.Backspace()) { KeypressAction(10); }
+
+		if (currentEntry == keycode) {
+			if ((entryHuns != -1)) {
+				Utils.PlayOneShotSavable(SFXSource,SFX_Success);
+			}
+			keypad.UseTargets();
+			keypad.solved = true;
+		} else {
+			if ((entryHuns != -1)) {
+				Utils.PlayOneShotSavable(SFXSource,SFX_Incorrect);
 			}
 		}
 	}

@@ -22,18 +22,20 @@ public class FuncWall : MonoBehaviour {
 	private Vector3 tempVec;
 	private float dist;         // Only ever used right away, not saved.
 	private float distanceLeft; // Only ever used right away, not saved.
+	private bool initialized = false;
 
 	public void Awake() {
-		currentState = startState; // set door position to picked state
-		startPosition = transform.position;
 		rbody = GetComponent<Rigidbody>();
 		SFXSource = GetComponent<AudioSource>();
 		Initialize();
-		dist = distanceLeft = 0;
-		startTime = PauseScript.a.relativeTime;
 	}
 
 	public void Initialize() {
+		if (initialized) return;
+
+		startTime = PauseScript.a.relativeTime;
+		currentState = startState; // set door position to picked state
+		startPosition = transform.position;
 		stopSoundPlayed = false;
 		if (currentState == FuncStates.AjarMovingStart
 			|| currentState == FuncStates.AjarMovingTarget) {
@@ -58,6 +60,9 @@ public class FuncWall : MonoBehaviour {
 			#endif
 			childGO.layer = 18; // Door
 		}
+
+		dist = distanceLeft = 0;
+		initialized = true;
 	}
 
 	public void InitializeFromLoad() {
@@ -74,6 +79,16 @@ public class FuncWall : MonoBehaviour {
 		rbody.useGravity = false;
 		rbody.collisionDetectionMode =
 		  CollisionDetectionMode.ContinuousSpeculative;
+
+		if (currentState == FuncStates.AjarMovingStart
+			|| currentState == FuncStates.AjarMovingTarget) {
+			tempVec = (transform.position - targetPosition.transform.position);
+			distanceLeft = Vector3.Distance(transform.position,
+											targetPosition.transform.position);
+			tempVec = (tempVec.normalized * (distanceLeft * percentAjar * -1));
+			tempVec += transform.position;
+			transform.position = tempVec;
+		}
 	}
 
 	public void Targetted (UseData ud) {
