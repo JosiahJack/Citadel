@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System;
 using UnityEngine;
 
 public class FuncWall : MonoBehaviour {
@@ -44,10 +45,17 @@ public class FuncWall : MonoBehaviour {
 			distanceLeft = Vector3.Distance(transform.position,
 											targetPosition.transform.position);
 
-			tempVec = (tempVec.normalized * (distanceLeft * percentAjar * -1));
+			tempVec = -tempVec.normalized;
+			if (currentState == FuncStates.AjarMovingStart) {
+				tempVec *= (distanceLeft * (1f - percentAjar));
+			} else {
+				tempVec *= (distanceLeft * percentAjar);
+			}
+
 			tempVec += transform.position;
 			transform.position = tempVec;
 		}
+
 		rbody.isKinematic = true;
 		rbody.useGravity = false;
 		rbody.collisionDetectionMode =
@@ -68,6 +76,8 @@ public class FuncWall : MonoBehaviour {
 	}
 
 	public void InitializeFromLoad() {
+		rbody = GetComponent<Rigidbody>();
+		SFXSource = GetComponent<AudioSource>();
 		rbody.isKinematic = true;
 		rbody.useGravity = false;
 		rbody.collisionDetectionMode =
@@ -77,9 +87,29 @@ public class FuncWall : MonoBehaviour {
 		float distTotal = Vector3.Distance(startPosition,
 										   targetPosition.transform.position);
 
-		tempVec = (tempVec.normalized * (distTotal * percentMoved * -1));
+		tempVec = -tempVec.normalized;
+		if (currentState == FuncStates.AjarMovingTarget) {
+			tempVec *= (distTotal * percentAjar);
+		} else if (currentState == FuncStates.AjarMovingStart) {
+			tempVec *= (distTotal * (1f - percentAjar));
+		} else if (currentState == FuncStates.MovingStart) {
+			tempVec *= (distTotal * (1f - percentMoved));
+		} else {
+			tempVec *= (distTotal * percentMoved);
+		}
+
+		if (tempVec.x >  10000f) tempVec.x =  10000f;
+		if (tempVec.x < -10000f) tempVec.x = -10000f;
+		if (float.IsNaN(tempVec.x)) tempVec.x = 0f;
+		if (tempVec.y >  10000f) tempVec.y =  10000f;
+		if (tempVec.y < -10000f) tempVec.y = -10000f;
+		if (float.IsNaN(tempVec.y)) tempVec.y = 0f;
+		if (tempVec.z >  10000f) tempVec.z =  10000f;
+		if (tempVec.z < -10000f) tempVec.z = -10000f;
+		if (float.IsNaN(tempVec.z)) tempVec.z = 0f;
 		tempVec += transform.position;
 		transform.position = tempVec;
+		initialized = true;
 	}
 
 	public void Targetted (UseData ud) {
