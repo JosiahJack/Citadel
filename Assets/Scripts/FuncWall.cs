@@ -9,6 +9,7 @@ public class FuncWall : MonoBehaviour {
 	public GameObject targetPosition;
 	public FuncStates startState; // save
 	public float percentAjar = 0; // save
+	public float percentMoved = 0; // save
 	public AudioClip SFXMoving;
 	public AudioClip SFXStop;
 	private AudioSource SFXSource;
@@ -42,6 +43,7 @@ public class FuncWall : MonoBehaviour {
 			tempVec = (transform.position - targetPosition.transform.position);
 			distanceLeft = Vector3.Distance(transform.position,
 											targetPosition.transform.position);
+
 			tempVec = (tempVec.normalized * (distanceLeft * percentAjar * -1));
 			tempVec += transform.position;
 			transform.position = tempVec;
@@ -66,29 +68,18 @@ public class FuncWall : MonoBehaviour {
 	}
 
 	public void InitializeFromLoad() {
-		//if (currentState == FuncStates.AjarMovingStart
-		//	|| currentState == FuncStates.AjarMovingTarget) {
-		//	tempVec = (transform.position - targetPosition.transform.position);
-		//	distanceLeft = Vector3.Distance(transform.position,
-		//									targetPosition.transform.position);
-		//	tempVec = (tempVec.normalized * (distanceLeft * percentAjar * -1));
-		//	tempVec += transform.position;
-		//	transform.position = tempVec;
-		//}
 		rbody.isKinematic = true;
 		rbody.useGravity = false;
 		rbody.collisionDetectionMode =
 		  CollisionDetectionMode.ContinuousSpeculative;
 
-		if (currentState == FuncStates.AjarMovingStart
-			|| currentState == FuncStates.AjarMovingTarget) {
-			tempVec = (transform.position - targetPosition.transform.position);
-			distanceLeft = Vector3.Distance(transform.position,
-											targetPosition.transform.position);
-			tempVec = (tempVec.normalized * (distanceLeft * percentAjar * -1));
-			tempVec += transform.position;
-			transform.position = tempVec;
-		}
+		tempVec = (transform.position - targetPosition.transform.position);
+		float distTotal = Vector3.Distance(startPosition,
+										   targetPosition.transform.position);
+
+		tempVec = (tempVec.normalized * (distTotal * percentMoved * -1));
+		tempVec += transform.position;
+		transform.position = tempVec;
 	}
 
 	public void Targetted (UseData ud) {
@@ -128,6 +119,8 @@ public class FuncWall : MonoBehaviour {
 		tempVec = (tempVec * dist * -1) + transform.position; // Absolute
 		rbody.MovePosition(tempVec);
 		distanceLeft = Vector3.Distance(transform.position, goalPosition);
+		float distTotal = Vector3.Distance(startPosition, goalPosition);
+		percentMoved = (distTotal - distanceLeft) / distTotal;
 		if (distanceLeft <= 0.04f || startTime < PauseScript.a.relativeTime) {
 			currentState = newState;
 			if (SFXSource != null) {
@@ -195,6 +188,8 @@ public class FuncWall : MonoBehaviour {
 		s1.Append(Utils.FloatToString(fw.speed,"speed"));
 		s1.Append(Utils.splitChar );
 		s1.Append(Utils.FloatToString(fw.percentAjar,"percentAjar"));
+		s1.Append(Utils.splitChar );
+		s1.Append(Utils.FloatToString(fw.percentMoved,"percentMoved"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(fw.startTime,"startTime"));
 
@@ -272,6 +267,9 @@ public class FuncWall : MonoBehaviour {
 		index++;
 
 		fw.percentAjar = Utils.GetFloatFromString(entries[index],"percentAjar");
+		index++;
+
+		fw.percentMoved = Utils.GetFloatFromString(entries[index],"percentMoved");
 		index++;
 
 		fw.startTime = Utils.LoadRelativeTimeDifferential(entries[index],
