@@ -1784,6 +1784,9 @@ public class MFDManager : MonoBehaviour  {
 		line += Utils.splitChar;
 		line += Utils.BoolToString(mfd.rightTC.TabManager.DataTab.activeSelf,
 								   "rightTC.TabManager.DataTab.activeSelf");
+
+		line += Utils.splitChar;
+		line += Utils.UintToString(mfd.curCenterTab,"curCenterTab");
 		return line;
 	}
 
@@ -1897,6 +1900,11 @@ public class MFDManager : MonoBehaviour  {
 		mfd.rightTC.TabManager.AutomapTab.SetActive(amapTabActiveRH);
 		mfd.rightTC.TabManager.TargetTab.SetActive(targTabActiveRH);
 		mfd.rightTC.TabManager.DataTab.SetActive(dataTabActiveRH);
+
+		mfd.curCenterTab = Utils.GetIntFromString(entries[index],
+												  "curCenterTab");
+		mfd.CenterTabButtonClickSilent(mfd.curCenterTab,true);
+		index++;
 
 		mfd.SetWepInfo(WeaponCurrent.a.weaponIndex);
 		return index;
