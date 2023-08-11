@@ -8,6 +8,7 @@ public class FuncWall : MonoBehaviour {
 	// Externally set in inspector per instance
 	public float speed = 0.64f; // save
 	public GameObject targetPosition;
+	public float targetPositionY;
 	public FuncStates startState; // save
 	public float percentAjar = 0; // save
 	public float percentMoved = 0; // save
@@ -27,6 +28,7 @@ public class FuncWall : MonoBehaviour {
 	private bool initialized = false;
 
 	public void Awake() {
+		targetPositionY = targetPosition.transform.localPosition.y;
 		rbody = GetComponent<Rigidbody>();
 		SFXSource = GetComponent<AudioSource>();
 		Initialize();
@@ -83,6 +85,7 @@ public class FuncWall : MonoBehaviour {
 		rbody.collisionDetectionMode =
 		  CollisionDetectionMode.ContinuousSpeculative;
 
+		targetPositionY = targetPosition.transform.localPosition.y;
 		tempVec = (transform.position - targetPosition.transform.position);
 		float distTotal = Vector3.Distance(startPosition,
 										   targetPosition.transform.position);
@@ -149,8 +152,11 @@ public class FuncWall : MonoBehaviour {
 		tempVec = (tempVec * dist * -1) + transform.position; // Absolute
 		rbody.MovePosition(tempVec);
 		distanceLeft = Vector3.Distance(transform.position, goalPosition);
-		float distTotal = Vector3.Distance(startPosition, goalPosition);
+		float distTotal = Mathf.Abs(targetPositionY);
 		percentMoved = (distTotal - distanceLeft) / distTotal;
+		if (float.IsNaN(percentMoved)) percentMoved = 0f;
+		if (percentMoved > 1.0f) percentMoved = 1.0f;
+		if (percentMoved < 0f) percentMoved = 0f;
 		if (distanceLeft <= 0.04f || startTime < PauseScript.a.relativeTime) {
 			currentState = newState;
 			if (SFXSource != null) {

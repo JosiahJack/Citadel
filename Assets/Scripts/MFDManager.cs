@@ -1745,6 +1745,45 @@ public class MFDManager : MonoBehaviour  {
 			line += Utils.splitChar + Utils.UintToString(mfd.rightTC.curTab);
 		} else line += Utils.splitChar + "0";
 
+		line += Utils.splitChar;
+		line += Utils.BoolToString(mfd.leftTC.TabManager.WeaponTab.activeSelf,
+								   "leftTC.TabManager.WeaponTab.activeSelf");
+
+		line += Utils.splitChar;
+		line += Utils.BoolToString(mfd.leftTC.TabManager.ItemTab.activeSelf,
+								   "leftTC.TabManager.ItemTab.activeSelf");
+
+		line += Utils.splitChar;
+		line += Utils.BoolToString(mfd.leftTC.TabManager.AutomapTab.activeSelf,
+								   "leftTC.TabManager.AutomapTab.activeSelf");
+
+		line += Utils.splitChar;
+		line += Utils.BoolToString(mfd.leftTC.TabManager.TargetTab.activeSelf,
+								   "leftTC.TabManager.TargetTab.activeSelf");
+
+		line += Utils.splitChar;
+		line += Utils.BoolToString(mfd.leftTC.TabManager.DataTab.activeSelf,
+								   "leftTC.TabManager.DataTab.activeSelf");
+
+		line += Utils.splitChar;
+		line += Utils.BoolToString(mfd.rightTC.TabManager.WeaponTab.activeSelf,
+								   "rightTC.TabManager.WeaponTab.activeSelf");
+
+		line += Utils.splitChar;
+		line += Utils.BoolToString(mfd.rightTC.TabManager.ItemTab.activeSelf,
+								   "rightTC.TabManager.ItemTab.activeSelf");
+
+		line += Utils.splitChar;
+		line += Utils.BoolToString(mfd.rightTC.TabManager.AutomapTab.activeSelf,
+								   "rightTC.TabManager.AutomapTab.activeSelf");
+
+		line += Utils.splitChar;
+		line += Utils.BoolToString(mfd.rightTC.TabManager.TargetTab.activeSelf,
+								   "rightTC.TabManager.TargetTab.activeSelf");
+
+		line += Utils.splitChar;
+		line += Utils.BoolToString(mfd.rightTC.TabManager.DataTab.activeSelf,
+								   "rightTC.TabManager.DataTab.activeSelf");
 		return line;
 	}
 
@@ -1806,6 +1845,58 @@ public class MFDManager : MonoBehaviour  {
 			mfd.rightTC.SetCurrentAsLast();
 			mfd.rightTC.ReturnToLastTab();
 		} else index++;
+
+		bool wepTabActiveLH = Utils.GetBoolFromString(entries[index],
+									"leftTC.TabManager.WeaponTab.activeSelf");
+		index++;
+
+		bool itemTabActiveLH = Utils.GetBoolFromString(entries[index],
+									"leftTC.TabManager.ItemTab.activeSelf");
+		index++;
+
+		bool amapTabActiveLH = Utils.GetBoolFromString(entries[index],
+									"leftTC.TabManager.AutomapTab.activeSelf");
+		index++;
+
+		bool targTabActiveLH = Utils.GetBoolFromString(entries[index],
+									"leftTC.TabManager.TargetTab.activeSelf");
+		index++;
+
+		bool dataTabActiveLH = Utils.GetBoolFromString(entries[index],
+									"leftTC.TabManager.DataTab.activeSelf");
+		index++;
+		mfd.leftTC.TabManager.WeaponTab.SetActive(wepTabActiveLH);
+		mfd.leftTC.TabManager.ItemTab.SetActive(itemTabActiveLH);
+		mfd.leftTC.TabManager.AutomapTab.SetActive(amapTabActiveLH);
+		mfd.leftTC.TabManager.TargetTab.SetActive(targTabActiveLH);
+		mfd.leftTC.TabManager.DataTab.SetActive(dataTabActiveLH);
+
+
+
+		bool wepTabActiveRH = Utils.GetBoolFromString(entries[index],
+									"rightTC.TabManager.WeaponTab.activeSelf");
+		index++;
+
+		bool itemTabActiveRH = Utils.GetBoolFromString(entries[index],
+									"rightTC.TabManager.ItemTab.activeSelf");
+		index++;
+
+		bool amapTabActiveRH = Utils.GetBoolFromString(entries[index],
+									"rightTC.TabManager.AutomapTab.activeSelf");
+		index++;
+
+		bool targTabActiveRH = Utils.GetBoolFromString(entries[index],
+									"rightTC.TabManager.TargetTab.activeSelf");
+		index++;
+
+		bool dataTabActiveRH = Utils.GetBoolFromString(entries[index],
+										"rightTC.TabManager.DataTab.activeSelf");
+		index++;
+		mfd.rightTC.TabManager.WeaponTab.SetActive(wepTabActiveRH);
+		mfd.rightTC.TabManager.ItemTab.SetActive(itemTabActiveRH);
+		mfd.rightTC.TabManager.AutomapTab.SetActive(amapTabActiveRH);
+		mfd.rightTC.TabManager.TargetTab.SetActive(targTabActiveRH);
+		mfd.rightTC.TabManager.DataTab.SetActive(dataTabActiveRH);
 
 		mfd.SetWepInfo(WeaponCurrent.a.weaponIndex);
 		return index;
