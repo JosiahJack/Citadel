@@ -196,6 +196,10 @@ public class PlayerPatch : MonoBehaviour {
 						Time.timeScale = Const.a.reflexTimeScale;
 					}
 				}
+			} else {
+			    if (Time.timeScale != Const.a.defaultTimeScale) {
+					Time.timeScale = Const.a.defaultTimeScale;
+				} 
 			}
 
 			// ================================== BERSERK PATCH =======================
