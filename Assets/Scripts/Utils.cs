@@ -1297,8 +1297,7 @@ public class Utils {
 	}
 
 	public static void ApplyImpactForceSphere(DamageData dd,Vector3 centerPoint,
-											  float radius,float impactScale,
-											  int mask) {
+											  float radius,float impactScale) {
 		HealthManager hm = null;
 		Collider[] colliders = Physics.OverlapSphere(centerPoint,radius);
 		int i = 0;
@@ -1313,13 +1312,13 @@ public class Utils {
 			dd.impactVelocity = dd.damage * impactScale;
 			Vector3 dir = go.transform.position - centerPoint;
 			RaycastHit hit;
-			Debug.Log("ApplyImpactForceSphere checking for rayhit");
 			float dist = Vector3.Distance(centerPoint, go.transform.position);
 			bool success = (dist < 1.5f); // So close we should just shove it.
 			bool applyImpact = false;
 			if (!success) {
 				success = Physics.Raycast(centerPoint,dir,out hit,
-										  radius + 0.02f,mask);
+										  radius + 0.02f,
+										  Const.a.layerMaskExplosion);
 				dist = hit.distance;
 				applyImpact = (hit.collider == colliders[i]
 							   || hit.rigidbody == rbody);

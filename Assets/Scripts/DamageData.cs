@@ -93,12 +93,16 @@ public class DamageData {
 	}
 
 	// ========================DAMAGE SYSTEM===========================
-	// 0. First checks against whether the entity is damageable (i.e. not the world) - handled by Physics Layers.
+	// 0. First checks against whether the entity is damageable (i.e. not the
+	//    world) - handled by Physics Layers.
 	// 1. Armor Absorption (see ICE Breaker Guide for all of 4 these)
-	// 2. Weapon Vulnerabilities based on attack type and the a_att_type bits stored in the npc
-	// 3. Critical Hits, chance for critical hit damage based on defense and offense of attack and target
+	// 2. Weapon Vulnerabilities based on attack type and the a_att_type bits
+	//    stored in the npc.
+	// 3. Critical Hits, chance for critical hit damage based on defense and
+	//    offense of attack and target.
 	// 4. Random Factor, +/- 10% damage for randomness
-	// 5. Apply Velocity for damage, this is after all the above because otherwise the damage multipliers wouldn't affect velocity
+	// 5. Apply Velocity for damage, this is after all the above because
+	//    otherwise the damage multipliers wouldn't affect velocity.
 	// 6. Berserk Damage Increase
 	// 7. Return the damage to original TakeDamage() function
 	public static float GetDamageTakeAmount (DamageData dd) {
@@ -119,27 +123,40 @@ public class DamageData {
  		// 1. Armor Absorption (NPC armor, not player)
 		take = (o_armorvalue > a_penetration ? a_damage - a_penetration : a_damage);
 
-		// 2. Weapon Vulnerabilities - handled by HealthManager.
+		// 2. Weapon Vulnerabilities
+		//    Handled by HealthManager.
 
 		// 3. Critical Hits (NPCs only)
 		if (o_isnpc) {
 			crit = (a_offense - o_defense);
 			if (crit > 0) {
-				// 71% success with 5/6  5 = f, 6 = max offense or defense value
+				// 71% success with 5/6  5 = f, 6 = max offense or defense.
 				// 62% success with 4/6
 				// 50% success with 3/6
 				// 24% success with 2/6
 				// 10% success with 1/6
 				// chance of f/6 = 5/6|4/6|3/6|2/6|1/6 = .833|.666|.5|.333|.166
-				if ((Random.Range(0f,1f) < (crit/6)) && (Random.Range(0f,1f) < 0.2f)) take += crit * take; // SUCCESS! Maximum extra is 5X + 1X Damage.
+				if ((Random.Range(0f,1f) < (crit/6))
+					&& (Random.Range(0f,1f) < 0.2f)) {
+
+					// SUCCESS! Maximum extra is 5X + 1X Damage.
+					take += crit * take;
+				}
 			}
 		}
 
 		// 4. Random Factor +/- 10% (aka 0.10 damage).
 		take *= Random.Range(0.9f,1.1f);
 
-		// 5. Apply Impact Velocity for Damage - handled by HealthManager.
-		if (a_berserk) take *= Const.a.berserkDamageMultiplier; // 6. Berserk Damage Increase.
-		return take; // 7. Return the Damage.
+		// 5. Apply Impact Velocity for Damage
+		//    Handled by HealthManager.
+
+		// 6. Berserk Damage Increase.
+		if (a_berserk) {
+			take *= Const.a.berserkDamageMultiplier;
+		}
+
+		// 7. Return the Damage.
+		return take;
 	}
 }

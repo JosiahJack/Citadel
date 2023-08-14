@@ -34,14 +34,7 @@ public class ProjectileEffectImpact : MonoBehaviour {
 		// Most already was when launched by AIController or WeaponFire.
 		dd.damage = DamageData.GetDamageTakeAmount(dd);
 		if (impactType == PoolType.RailgunImpacts) {
-			int mask = Const.a.layerMaskPlayerAttack;
-			if (gameObject.layer != 11) { // Bullet
-				mask = Const.a.layerMaskNPCAttack;
-			} else {
-				mask = Const.a.layerMaskPlayerAttack;
-			}
-
-			Utils.ApplyImpactForceSphere(dd,transform.position,3.2f,1f,mask);
+			Utils.ApplyImpactForceSphere(dd,transform.position,3.2f,1f);
 		}
 
 		GameObject hitGO = other.contacts[0].otherCollider.gameObject;

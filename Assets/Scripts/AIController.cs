@@ -1189,9 +1189,9 @@ public class AIController : MonoBehaviour {
 		dd.other = gameObject;
 		dd.damage = take;
 		Utils.ApplyImpactForceSphere(dd,sightPoint.transform.position,
-									 Const.a.attack3RadiusForNPC[index],1.5f,
-									 Const.a.layerMaskNPCAttack);
-		healthManager.TakeDamage(dd);
+									 Const.a.attack3RadiusForNPC[index],1.5f);
+
+		healthManager.TakeDamage(dd); // Self destruct.
 	}
 
 	// Attack type determines raycast or launched object.  Checked for None

@@ -20,26 +20,23 @@ public class ForceBridge : MonoBehaviour {
 	private MeshRenderer mr;
 	private BoxCollider bCol;
 	private AudioSource SFX;
-	private float tickTime = 0.05f;
+	private static float tickTime = 0.05f;
+	private bool initialized = false;
 
 	public void Start() {
-		activatedScaleX = transform.localScale.x;
-		activatedScaleY = transform.localScale.y;
-		activatedScaleZ = transform.localScale.z;
+		if (!initialized) {
+			activatedScaleX = transform.localScale.x;
+			activatedScaleY = transform.localScale.y;
+			activatedScaleZ = transform.localScale.z;
+			tickFinished = PauseScript.a.relativeTime + tickTime + Random.value;
+			lerping = true;
+		}
+		if (activatedScaleX < 0.24f && x) activatedScaleX = 2.56f;
+		if (activatedScaleY < 0.24f && y) activatedScaleY = 2.56f;
+		if (activatedScaleZ < 0.24f && z) activatedScaleZ = 2.56f;
 		mr = GetComponent<MeshRenderer>();
 		bCol = GetComponent<BoxCollider>();
 		SFX = GetComponent<AudioSource>();
-		lerping = false;
-		tickTime = 0.05f;
-		tickFinished = PauseScript.a.relativeTime + tickTime + Random.value;
-		if (activated) {
-			activated = true;
-			lerping = true;
-		} else {
-			activated = false;
-			lerping = true;
-		}
-
 		SetColorMaterial();
 	}
 
@@ -47,8 +44,8 @@ public class ForceBridge : MonoBehaviour {
 		mr = GetComponent<MeshRenderer>();
 		bCol = GetComponent<BoxCollider>();
 		SFX = GetComponent<AudioSource>();
-		tickTime = 0.05f;
 		SetColorMaterial();
+		initialized = true;
 	}
 
 	public void SetColorMaterial() {
@@ -203,9 +200,11 @@ public class ForceBridge : MonoBehaviour {
 		fb.activatedScaleY = Utils.GetFloatFromString(entries[index]); index++;
 		fb.activatedScaleZ = Utils.GetFloatFromString(entries[index]); index++;
 
-		fb.transform.localScale = new Vector3(fb.activatedScaleX,
-											  fb.activatedScaleY,
-											  fb.activatedScaleZ);
+		if (fb.activated) {
+			fb.transform.localScale = new Vector3(fb.activatedScaleX,
+												fb.activatedScaleY,
+												fb.activatedScaleZ);
+		}
 
 		fb.fieldColor = Utils.GetForceFieldColorFromInt(
 						  Utils.GetIntFromString(entries[index],"fieldColor"));
