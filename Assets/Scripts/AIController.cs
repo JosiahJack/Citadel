@@ -14,7 +14,7 @@ public class AIController : MonoBehaviour {
 
 	// External manually assigned references, but ok if not assigned
     public GameObject searchColliderGO;
-	public LightningBoltScript laserLightning;
+	public LineRenderer laserLightning;
 	public Transform[] walkWaypoints; // point(s) for NPC to walk to when
 									  // roaming or patrolling
 	public GameObject[] meleeDamageColliders; // Used by avian mutant lunge
@@ -1037,6 +1037,28 @@ public class AIController : MonoBehaviour {
 		Utils.Activate(laz);
 	}
 
+	void PositionTargettingLaser() {
+		if (laserLightning == null) return;
+		if (!laserLightning.enabled) return;
+
+		Vector3[] pts = new Vector3[] {
+			sightPoint.transform.position,
+			enemy.transform.position
+		};
+
+		laserLightning.SetPositions(pts);
+	}
+
+	void MakeTargettingLaser() {
+		if (index != 8) return; // Cyborg Elite only.
+		if (laserLightning == null) return;
+
+		laserLightning.startWidth = 0.1f;
+		laserLightning.endWidth = 0.15f;
+        laserLightning.enabled = true;
+		PositionTargettingLaser();
+	}
+
 	// Used for attack type of AttackType.Projectile.
 	// Does a raycast and then applies attack instantly.
 	// Also turns on laser effect if used.
@@ -1050,6 +1072,7 @@ public class AIController : MonoBehaviour {
 		MuzzleBurst(attackNum);
 		if (DidRayHit(attackNum)) {
 			MakeLaserEffect(attackNum);
+			if (attackNum == 3) MakeTargettingLaser();
 			if (tempHM != null) {
 				// SetNPCData sets: owner, damage, penetration, offense
 				damageData = DamageData.SetNPCData(index,attackNum,gameObject);
@@ -1248,6 +1271,9 @@ public class AIController : MonoBehaviour {
 				AIAttack(Const.a.attackTypeForNPC3[index],3);
             }
         }
+
+		PositionTargettingLaser();
+
         if (attackFinished < PauseScript.a.relativeTime) {
 			Transition_AttackToRun(3); // Handle exiting this state.
 		}

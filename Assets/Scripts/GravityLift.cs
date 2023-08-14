@@ -9,6 +9,7 @@ public class GravityLift : MonoBehaviour {
 	public float distancePaddingToTopPoint = 0.32f; // Add half the player's capsule height(1f) to the top extent of the box collider
 	public bool active = true;
 	public Vector3 topPoint;
+	public float initialBurstFinished;
 	private BoxCollider boxcol;
 
 	void Awake() {
@@ -23,7 +24,7 @@ public class GravityLift : MonoBehaviour {
 		}
 	}
 
-	void OnForce(Collider other) {
+	void OnForce(Collider other, bool initial) {
 		if (other.gameObject.GetComponent<PlayerMovement>() != null) {
 			PlayerMovement.a.gravliftState = true;
 		}
@@ -40,12 +41,19 @@ public class GravityLift : MonoBehaviour {
 			if (otherRbody.velocity.y < (strength * otherRbody.mass)) {
 				float yForce = ((strength * otherRbody.mass)
 								- otherRbody.velocity.y);
+
+				if (initial
+					|| initialBurstFinished > PauseScript.a.relativeTime) {
+
+					yForce *= 2f;
+				}
+
 				otherRbody.AddForce(new Vector3(0f,yForce,0f));
 			}
 		}
 	}
 
-	void OffForce(Collider other) {
+	void OffForce(Collider other, bool initial) {
 		// Apply weak force for inactive state - applies some force for gentle
 		// descent, never really off completely.
 		if (other.gameObject.GetComponent<PlayerMovement>() != null) {
@@ -54,16 +62,31 @@ public class GravityLift : MonoBehaviour {
 
 		if (otherRbody.velocity.y < offStrengthFactor) {
 			float yForce = ((offStrengthFactor)-otherRbody.velocity.y);
+			if (initial
+				|| initialBurstFinished > PauseScript.a.relativeTime) {
+
+				yForce *= 2f;
+			}
+
 			otherRbody.AddForce(new Vector3(0f,yForce,0f));
 		}
+	}
+
+	void OnTriggerEnter(Collider other) {
+		otherRbody = other.gameObject.GetComponent<Rigidbody>();
+		if (otherRbody == null) return; // Not a physical object.
+
+		initialBurstFinished = PauseScript.a.relativeTime + 1.0f;
+		if (active) OnForce(other,true);
+		else OffForce(other,true);
 	}
 
 	void OnTriggerStay(Collider other) {
 		otherRbody = other.gameObject.GetComponent<Rigidbody>();
 		if (otherRbody == null) return; // Not a physical object.
 
-		if (active) OnForce(other);
-		else OffForce(other);
+		if (active) OnForce(other,false);
+		else OffForce(other,false);
 	}
 
 	public void Toggle() {
@@ -79,6 +102,8 @@ public class GravityLift : MonoBehaviour {
 
 		string line = System.String.Empty;
 		line = Utils.BoolToString(gl.active); // bool - is this gravlift on?
+		line += Utils.splitChar;
+		line += Utils.SaveRelativeTimeDifferential(gl.initialBurstFinished);
 		return line;
 	}
 
@@ -100,6 +125,7 @@ public class GravityLift : MonoBehaviour {
 		}
 
 		gl.active = Utils.GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
+		gl.initialBurstFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
 		return index;
 	}
 }

@@ -966,6 +966,7 @@ public class WeaponFire : MonoBehaviour {
 		if (dmgFinal > 0 && !Inventory.a.hasHardware[4] && dmgFinal != -2f) {
 			return;
 		}
+		if (hm.linkedTargetID != null) return; // Already has a TargetID on it.
 
 		float linkDistForTargID = TargetID.GetTargetIDTetherRange();
 		bool showHealth = false;
@@ -1027,19 +1028,69 @@ public class WeaponFire : MonoBehaviour {
 		tid.parent = hm.transform;
 
 		// Center on what we just shot
-		Vector3 adjustment = hm.transform.position;
+		float yOfs = 0f;
+		float xSize = 1.2f;
+		float ySize = 2f;
+		float textname_Ofs = 1.28f; // e.g. HOPPER5
 		if (hm.aic != null) {
-			if (hm.aic.index == 14) {
-				// Adjust position for hopper origin since it's special melty.
-				adjustment.y += 1f;
+			switch(hm.aic.index) {
+				case 0: yOfs = 0.5f; ySize = 1.0f; break; // Autobomb
+				case 1: /* GOOD */ break; // Cyborg Assassin
+				case 2: yOfs = -0.1f; ySize = 1.4f; xSize = 1.4f; textname_Ofs = 0.76f; break; // Avian Mutant
+				case 3: /* GOOD */ break; // Exec-Bot
+				case 4: /* GOOD */ break; // Cyborg Drone
+				case 5: yOfs = 0.15f; ySize = 3f; xSize = 2.8f; textname_Ofs = 2.14f; break; // Cortex Reaver
+				case 6: /* GOOD */ break; // Cyborg Warrior
+				case 7: /* GOOD */ break; // Cyborg Enforcer
+				case 8: yOfs = 0.05f; ySize = 2.3f; textname_Ofs = 1.48f;  break; // Cyborg Elite Guard
+				case 9: ySize = 2.3f; textname_Ofs = 1.36f; break; // Cyborg of Edward Diego
+				case 10: yOfs = -0.1f; ySize = 1.8f; xSize = 1.4f; textname_Ofs = 0.92f; break; // Sec-1 Bot
+				case 11: yOfs = 0.04f; ySize = 2.4f; xSize = 2.4f; textname_Ofs = 1.51f; break; // Sec-2 Bot
+				case 12: yOfs = -0.2f; ySize = 1.6f; xSize = 1.6f; textname_Ofs = 0.68f; break; // Maintenance Robot
+				case 13: yOfs = 0.05f; ySize = 2.5f; xSize = 1.6f; textname_Ofs = 1.58f; break; // Mutant Cyborg
+				case 14: yOfs = 0.5f; ySize = 2.3f; textname_Ofs = 2.5f; break; // Hopper
+				case 15: /* GOOD */ break; // Humanoid Mutant
+				case 16: yOfs = 0.12f; ySize = 0.8f; xSize = 1.8f; textname_Ofs = 0.7f; break; // Invisible Mutant
+				case 17: /* GOOD */ break; // Virus Mutant
+				case 18: yOfs = -0.22f; ySize = 1.5f; textname_Ofs = 0.63f; break; // Servbot
+				case 19: yOfs = 0.2f; ySize = 1f; xSize = 1.55f; textname_Ofs = 0.92f;  break; // Flier Bot
+				case 20: ySize = 1.1f;  xSize = 1.1f; textname_Ofs = 0.74f; break; // Zero-G Mutant
+				case 21: yOfs = -0.25f; ySize = 1.5f; textname_Ofs = 0.53f; xSize = 2f; break; // Gorilla Tiger Mutant
+				case 22: yOfs = -0.7f; ySize = 1f; textname_Ofs = 0f; break; // Repair Bot
+				case 23: yOfs = -0.24f; ySize = 1.4f; textname_Ofs = 0.58f; break; // Plant Mutant
 			}
 		}
 
-		idFrame.transform.position = adjustment;
+		// Set after setting textname_Ofs so all 3 can adapt to size.
+		float textdmg_Ofs = textname_Ofs - 0.18f; // def: 1.1f, e.g. MINOR
+		float textnum_Ofs = textname_Ofs - 0.09f; // def: 1.19f, e.g. 3.8M Idle
+
+		idFrame.transform.position = hm.transform.position;
 		idFrame.SetActive(true);
 		tid.linkedHM = hm;
 		hm.linkedTargetID = tid;
 		tid.partSys.Play();
+
+		//tid.partSys.
+		ParticleSystemRenderer rd =
+			tid.partSys.GetComponent<ParticleSystemRenderer>();
+
+		rd.pivot = new Vector3(0f,yOfs,0f);
+
+		ParticleSystem.MainModule pm = tid.partSys.main;
+		pm.startSizeX = xSize;
+		pm.startSizeY = ySize;
+		pm.startSizeZ = xSize;
+
+		RectTransform rt = tid.nameText.GetComponent<RectTransform>();
+		rt.anchoredPosition = new Vector2(0f,textname_Ofs);
+
+		RectTransform rtnums = tid.secondaryText.GetComponent<RectTransform>();
+		rtnums.anchoredPosition = new Vector2(0f,textnum_Ofs);
+
+		RectTransform rtdmg = tid.text.GetComponent<RectTransform>();
+		rtdmg.anchoredPosition = new Vector2(0f,textdmg_Ofs);
+
 		tid.playerCapsuleTransform = playerCapsule.transform;
 		tid.playerLinkDistance = linkDistForTargID;
 		tid.displayRange = showRange;
