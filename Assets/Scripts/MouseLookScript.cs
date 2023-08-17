@@ -42,7 +42,6 @@ public class MouseLookScript : MonoBehaviour {
     [HideInInspector] public Vector3 cameraFocusPoint;
 	[HideInInspector] public GameObject currentButton;
 	[HideInInspector] public GameObject currentSearchItem;
-	[HideInInspector] public Vector3 cyberLookDir;
     public int heldObjectIndex; // save
 	public int heldObjectCustomIndex; // save
 	public int heldObjectAmmo; // save
@@ -115,7 +114,6 @@ public class MouseLookScript : MonoBehaviour {
 		grenadeActive = false;
 		yRotation = 0;
 		xRotation = 0;
-		cyberLookDir = Const.a.vectorZero;
 		canvasContainer.SetActive(true); // Enable UI.
 		firstTimePickup = true;
 		firstTimeSearch = true;
@@ -151,7 +149,11 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
 		if (PauseScript.a.Paused()) return;
-		if (PlayerMovement.a.ressurectingFinished > PauseScript.a.relativeTime) return;
+		if (PlayerMovement.a.ressurectingFinished
+			> PauseScript.a.relativeTime) {
+
+			return;
+		}
 
 		Utils.EnableCamera(playerCamera);
 
@@ -190,11 +192,17 @@ public class MouseLookScript : MonoBehaviour {
 		KeyboardTurn();
 		KeyboardLookUpDn();
 		if (inCyberSpace) { // Barrel roll!
-			if (GetInput.a.LeanLeft()) transform.RotateAround(transform.position,transform.forward,cyberSpinSensitivity * Time.deltaTime * -1f);
-			if (GetInput.a.LeanRight()) transform.RotateAround(transform.position,transform.forward,cyberSpinSensitivity * Time.deltaTime);
+			if (GetInput.a.LeanLeft()) {
+				playerCapsuleTransform.RotateAround(playerCapsuleTransform.transform.position, playerCapsuleTransform.transform.forward,cyberSpinSensitivity * Time.deltaTime * 100f);
+			}
+
+			if (GetInput.a.LeanRight()) {
+				playerCapsuleTransform.RotateAround(playerCapsuleTransform.transform.position, playerCapsuleTransform.transform.forward,cyberSpinSensitivity * Time.deltaTime * -1f * 100f);
+			}
 		} else {
 			if (compassContainer.activeInHierarchy) compassContainer.transform.rotation = Quaternion.Euler(0f, -yRotation + 180f, 0f); // Update automap player icon orientation.
 		}
+
 		if (!inventoryMode) Mouselook(); // Only do mouselook in Shoot Mode.
 
 		// Frob what is under our cursor.
@@ -238,35 +246,36 @@ public class MouseLookScript : MonoBehaviour {
 		// High pass filter to prevent jumpy behavior.
 		if (angX > Const.a.GraphicsFOV) angX = Const.a.GraphicsFOV;
 		if (angY > Const.a.GraphicsFOV) angY = Const.a.GraphicsFOV;
-		
-		if ((inCyberSpace && Const.a.InputInvertCyberspaceLook)
-			|| (!inCyberSpace && Const.a.InputInvertLook))
-			xRotation += angY;
-		else 
-			xRotation -= angY;
 
 		if (inCyberSpace) {
+			// CYBER MOUSE LOOK
+			// ----------------------------------------------------------------
+			if (Const.a.InputInvertCyberspaceLook) xRotation = -angY;
+			else xRotation = angY;
+
 			xRotation = Clamp0360(xRotation); // Limit up/down to within 360°.
-
-			// More flippideedoo shenanigans.
-			if(xRotation > 90f || xRotation < -90f && xRotation > -270f)
-				yRotation -= angX;
-			else
-				yRotation += angX;
-
-			// Do the cyber mouselook, everybody now!  Dance the cyber mouselook
-			cyberLookDir = Vector3.Normalize (transform.forward);
+			yRotation = angX;
+			playerCapsuleTransform.RotateAround(playerCapsuleTransform.transform.position, playerCapsuleTransform.transform.up,yRotation);
+			playerCapsuleTransform.RotateAround(playerCapsuleTransform.transform.position, playerCapsuleTransform.transform.right,-xRotation);
 		} else {
+			// NORMAL MOUSE LOOK
+			// ----------------------------------------------------------------
+			if (Const.a.InputInvertLook) xRotation += angY;
+			else xRotation -= angY;
+
 			xRotation = Mathf.Clamp(xRotation, -90f, 90f); // Limit up/down.
 			yRotation += angX;
-		}
 
-		// Apply the normal mouselook
-		playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
-		transform.localRotation = Quaternion.Euler(xRotation,0f,0f); // Up down component only applied to camera.  Must be 0 for others or else movement will go in wrong direction!
-		if ((((float)Input.mousePosition.x - ((float)Screen.width * 0.5f)) > 2f) 
-			 || (((float)Input.mousePosition.y - ((float)Screen.height * 0.5f)) > 2f)) {
-			MouseCursor.SetCursorPosInternal((int)(Screen.width * 0.5f),(int)(Screen.height * 0.5f));
+			// Apply the normal mouselook
+			playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
+			transform.localRotation = Quaternion.Euler(xRotation,0f,0f); // Up down component only applied to camera.  Must be 0 for others or else movement will go in wrong direction!
+			float xCenter = (float)Screen.width * 0.5f;
+			float yCenter = (float)Screen.height * 0.5f;
+			float xOffset = ((float)Input.mousePosition.x - xCenter);
+			float yOffset = ((float)Input.mousePosition.y - yCenter);
+			if (xOffset > 2f || yOffset > 2f) {
+				MouseCursor.SetCursorPosInternal((int)xCenter,(int)yCenter);
+			}
 		}
 	}
 

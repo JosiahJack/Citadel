@@ -50,7 +50,7 @@ public class AIController : MonoBehaviour {
     [HideInInspector] public bool inProjFOV; // save
     [HideInInspector] public bool LOSpossible; // save
     [HideInInspector] public bool goIntoPain = false; // save
-	[HideInInspector] public float rangeToEnemy = 999f; // save
+	public float rangeToEnemy = 999f; // save
 	[HideInInspector] public GameObject attacker;
 	[HideInInspector] public bool firstSighting; // save
 	[HideInInspector] public bool dyingSetup; // save
@@ -267,9 +267,15 @@ public class AIController : MonoBehaviour {
 		if (faceVec == Vector3.up) return; // Up results in no Y rotation.
 
 		// Rotate as fast as we can towards facing the goal location.
-		lookRot = Quaternion.LookRotation(faceVec,Vector3.up);
-		transform.rotation = Quaternion.Slerp(transform.rotation,lookRot,
-		  Const.a.aiTickTime * Const.a.yawSpeedForNPC[index] * Time.deltaTime); 
+		Vector3 up = Vector3.up;
+		if (IsCyberNPC() && enemy != null) {
+			up = enemy.transform.up;
+			transform.rotation = enemy.transform.rotation;
+		}
+		lookRot = Quaternion.LookRotation(faceVec,up);
+		transform.rotation =
+			Quaternion.Slerp(transform.rotation,lookRot,Const.a.aiTickTime
+							 * Const.a.yawSpeedForNPC[index] * Time.deltaTime); 
 	}
 
 	void LateUpdate() {
@@ -484,6 +490,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	public bool CheckPain() {
+		if (IsCyberNPC()) return false;
 		if (asleep) return false;
 		if (Const.a.timeBetweenPainForNPC[index] <= 0) return false;
 
@@ -731,6 +738,7 @@ public class AIController : MonoBehaviour {
 		if (CheckPain()) return; // Go into pain just hurt
 		if (asleep) return;
 		if (enemy == null) { currentState = AIState.Idle; return; }
+
 		if (tranquilizeFinished >= PauseScript.a.relativeTime
 			&& !IsCyberNPC()) {
 			return;
@@ -774,6 +782,7 @@ public class AIController : MonoBehaviour {
 		near = Const.a.rangeForNPC[index]  * Const.a.rangeForNPC[index];
 		mid  = Const.a.rangeForNPC2[index] * Const.a.rangeForNPC2[index];
 		far  = Const.a.rangeForNPC3[index] * Const.a.rangeForNPC3[index];
+		Debug.Log("Checkattack");
         if (CanAttack1(near)) {
 			StartAttack1();
 			return;
@@ -891,6 +900,7 @@ public class AIController : MonoBehaviour {
 	}
 
     bool WithinAngleToTarget () {
+		if (IsCyberNPC()) return true;
 		if (idealTransformForward.sqrMagnitude <= Mathf.Epsilon) return false;
 
 		Quaternion lookRot = Quaternion.LookRotation(idealTransformForward);
@@ -918,6 +928,7 @@ public class AIController : MonoBehaviour {
 				}
 				break;
 		}
+
 		return startPos;
 	}
 
@@ -1114,6 +1125,7 @@ public class AIController : MonoBehaviour {
 		MuzzleBurst(attackNum);
 		tempVec = GetDirectionRayToEnemy(targettingPosition, attackNum);
 		Vector3 startPos = GetAttackStartPoint(attackNum);
+
 		// SetNPCData sets: owner, damage, penetration, offense
 		damageData = DamageData.SetNPCData(index,attackNum,gameObject);
 		damageData.attacknormal = tempVec;
@@ -1160,18 +1172,18 @@ public class AIController : MonoBehaviour {
 		GrenadeActivate ga = beachball.GetComponent<GrenadeActivate>();
 		if (ga != null) ga.Activate();
 		Vector3 shove = (beachball.transform.forward * launchSpeed);
-		if (IsCyberNPC()) {
-			if (enemy != null) {
-				Rigidbody rbodyEnemy = enemy.GetComponent<Rigidbody>();
-				if (rbodyEnemy != null && UnityEngine.Random.Range(0f,1f) < 0.5f) {
-					shove = shove + (rbodyEnemy.velocity * 0.2f);
-				}
-			}
-		}
+		//if (IsCyberNPC()) {
+		//	if (enemy != null) {
+		//		Rigidbody rbodyEnemy = enemy.GetComponent<Rigidbody>();
+		//		if (rbodyEnemy != null && UnityEngine.Random.Range(0f,1f) < 0.5f) {
+		//			shove = shove + (rbodyEnemy.velocity * 0.2f);
+		//		}
+		//	}
+		//}
 
 		// Add in the enemy's velocity to the projectile (in case they are
 		// riding on a moving platform or something - wait I don't have those!)
-		shove += rbody.velocity;
+		if (!IsCyberNPC()) shove += rbody.velocity;
 
 		// Ensure no velocity to start with.
 		beachball.GetComponent<Rigidbody>().velocity = Const.a.vectorZero;
@@ -1426,7 +1438,7 @@ public class AIController : MonoBehaviour {
 		}
 
 		if (IsCyberNPC() && Const.a.decoyActive) {
-			Debug.Log("Decoy forget!");
+			//Debug.Log("Decoy forget!");
 			LOSpossible = false; // Silly decoy hack to prevent seeing player.
 			return false;
 		}
@@ -1435,7 +1447,13 @@ public class AIController : MonoBehaviour {
 		float dist = Vector3.Distance(enemy.transform.position,
 									  sightPoint.transform.position);
 
-		if (dist > Const.a.sightRangeForNPC[index]) return false;
+		if (dist > Const.a.sightRangeForNPC[index]) {
+			//Debug.Log("Distance to enemy is too far to see");
+			return false;
+		}
+
+		if (IsCyberNPC()) return true;
+
 		if (Const.a.numberOfRaycastsThisFrame > Const.a.maxRaycastsPerFrame) {
 			return inSight; // Zero order hold last until next actual update.
 		}
@@ -1453,6 +1471,8 @@ public class AIController : MonoBehaviour {
         }
 
         LOSpossible = false;
+		//Debug.Log("Can't see current enemy after raycasting");
+
         return false;
 	}
 
@@ -1466,7 +1486,7 @@ public class AIController : MonoBehaviour {
 							 // CheckIfEnemyInSight so it doesn't break it.
 
 		if (IsCyberNPC() && Const.a.decoyActive) {
-			Debug.Log("Decoy forget!");
+			//Debug.Log("Decoy forget!");
 			return false;
 		}
 		if (Const.a.player1Capsule == null) return false; // No found player
@@ -1501,12 +1521,12 @@ public class AIController : MonoBehaviour {
 								(dist + 0.1f),Const.a.layerMaskNPCSight)) {
 				Const.a.numberOfRaycastsThisFrame++;
 				if (tempHit.collider.gameObject == Const.a.player1Capsule) {
-					if (IsCyberNPC()) {
-						Debug.Log("Drawing ray from " + sightPoint.transform.position.ToString());
-						Debug.DrawRay(sightPoint.transform.position,
-									  checkline.normalized * 5f,Color.green,1f,
-									  true);
-					}
+					//if (IsCyberNPC()) {
+						//Debug.Log("Drawing ray from " + sightPoint.transform.position.ToString());
+						//Debug.DrawRay(sightPoint.transform.position,
+						//			  checkline.normalized * 5f,Color.green,1f,
+						//			  true);
+					//}
 					LOSpossible = true;  // Clear path from enemy to found player
 					SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
 					PlaySightSound();

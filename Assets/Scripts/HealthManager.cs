@@ -423,8 +423,12 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 			
-			if (dd.owner.CompareTag("Player")) {
-			    Const.a.damageDealt += take;
+			if (dd != null) {
+				if (dd.owner != null) {
+					if (dd.owner.CompareTag("Player")) {
+						Const.a.damageDealt += take;
+					}
+				}
 			}
 		} else {
 			float before = health;
