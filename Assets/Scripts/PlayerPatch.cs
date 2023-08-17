@@ -117,10 +117,10 @@ public class PlayerPatch : MonoBehaviour {
 			if (Inventory.a.patchCounts[4] <= 0) { depleted = true; }
 			Time.timeScale = Const.a.reflexTimeScale;
 			if (!(Utils.CheckFlags(patchActive, PATCH_REFLEX))) patchActive += PATCH_REFLEX;
-			if (reflexFinishedTime > PauseScript.a.relativeTime) {
+			if (reflexFinishedTime > Time.realtimeSinceStartup ) {
 				reflexFinishedTime += Const.a.reflexTime; // reflex effect stacks
 			} else {
-				reflexFinishedTime = PauseScript.a.relativeTime + Const.a.reflexTime;
+				reflexFinishedTime = Time.realtimeSinceStartup + Const.a.reflexTime;
 			}
 			break;
 		case 19:
@@ -348,8 +348,9 @@ public class PlayerPatch : MonoBehaviour {
 		s1.Append(Utils.SaveRelativeTimeDifferential(pp.mediFinishedTime,
 													 "mediFinishedTime"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pp.reflexFinishedTime,
-													 "reflexFinishedTime"));
+		s1.Append(Utils.FloatToString(pp.reflexFinishedTime
+		                              - Time.realtimeSinceStartup,
+									  "reflexFinishedTime"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(pp.sightFinishedTime,
 													 "sightFinishedTime"));
@@ -427,9 +428,9 @@ public class PlayerPatch : MonoBehaviour {
 											   "mediFinishedTime");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
-		pp.reflexFinishedTime =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "reflexFinishedTime");
+		pp.reflexFinishedTime = Utils.GetFloatFromString(entries[index],
+		                                                 "reflexFinishedTime");
+		pp.reflexFinishedTime += Time.realtimeSinceStartup;
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
 		pp.sightFinishedTime =
