@@ -1942,7 +1942,9 @@ public class AIController : MonoBehaviour {
 		aic.wanderFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
 		aic.SFXIndex = Utils.GetIntFromString(entries[index]); index++;
 		if (aic.healthManager != null) {
-			if (aic.healthManager.health > 0) {
+			if ((aic.healthManager.health > 0 && !aic.IsCyberNPC())
+				|| (aic.healthManager.cyberHealth > 0 && aic.IsCyberNPC())) {
+
 				Utils.Activate(aic.visibleMeshEntity);
 				Utils.EnableCollision(aic.gameObject);
 				aic.gameObject.layer = 10; // NPC Layer.

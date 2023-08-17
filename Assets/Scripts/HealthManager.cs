@@ -723,7 +723,9 @@ public class HealthManager : MonoBehaviour {
 			}
 
 			UpdateLinkedOverlay();
-			if (health > 0) {
+			if ((health > 0 && !IsCyberEntity())
+				|| (cyberHealth > 0 && IsCyberEntity())) {
+
 				Utils.EnableCollision(gameObject);
 				MeshRenderer mr = GetComponent<MeshRenderer>();
 				if (mr != null) {
