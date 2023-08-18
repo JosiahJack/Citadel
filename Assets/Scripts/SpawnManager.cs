@@ -5,7 +5,6 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour {
 	public int index;
 	public int numberToSpawn = 1;
-	/*[DTValidator.Optional] */public GameObject[] activeSpawned;
 	public int numberActive; // save
 	public bool active = false; // save
 	public Transform[] spawnLocations;
@@ -19,14 +18,16 @@ public class SpawnManager : MonoBehaviour {
 	public float delayFinished; // save
 
 	void Start() {
-		if (activeSpawned.Length > 0) {
-			for (int i=0;i<activeSpawned.Length;i++) {
-				numberActive++;
-			}
-		}
 		delayFinished = PauseScript.a.relativeTime;
-		if (Const.a.difficultyCombat == 1) numberToSpawn = (int) Mathf.Floor(numberToSpawn*0.5f);
-		if (Const.a.difficultyCombat == 3) numberToSpawn = (int) Mathf.Floor(numberToSpawn*1.5f);
+		if (Const.a.difficultyCombat == 1) {
+			numberToSpawn = (int) Mathf.Floor(numberToSpawn*0.5f);
+			if (numberToSpawn < 1) numberToSpawn = 1;
+		}
+
+		if (Const.a.difficultyCombat == 3) {
+			numberToSpawn = (int) Mathf.Floor(numberToSpawn*1.5f);
+			if (numberToSpawn < 1) numberToSpawn = 1;
+		}
 	}
 
 	public void Activate(bool alertEnemies) {
@@ -36,20 +37,39 @@ public class SpawnManager : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			if (active) {
-				if (numberActive < numberToSpawn) {
-					if (spawnAllAtOnce) {
-						Spawn(index); //spawn don't wait
-					} else {
-						if (delayFinished < PauseScript.a.relativeTime) {
-							delayFinished = PauseScript.a.relativeTime + Random.Range(minDelayBetweenSpawns,maxDelayBetweenSpawns);
-							Spawn(index); // spawn then wait randomized amount of time
-						}
-					}
-				}
-			}
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
+		if (!active) return;
+
+		if (LevelManager.a.npcsm[LevelManager.a.currentLevel] == null) return;
+
+		int numNPCs = LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs.Length;
+		if (numNPCs <= 0) return;
+		
+		numberActive = 0;
+		for (int i=0;i<numNPCs;i++) {
+			AIController aic = LevelManager.a.npcsm[LevelManager.a.currentLevel].childrenNPCsAICs[i];
+            if (!aic.gameObject.activeInHierarchy) continue;
+            if (aic.healthManager.health <= 0) continue;
+            if (aic.index != index) return; // Not one of us.
+            
+			numberActive++;
 		}
+
+		if (numberActive >= numberToSpawn) return;
+
+		if (spawnAllAtOnce) {
+			Spawn(index); //spawn don't wait
+			return;
+		}
+
+		if (delayFinished >= PauseScript.a.relativeTime) return; // Not yet.
+
+		delayFinished = PauseScript.a.relativeTime
+						+ Random.Range(minDelayBetweenSpawns,
+									   maxDelayBetweenSpawns);
+
+		Spawn(index); // spawn then wait randomized amount of time
 	}
 
 	void Spawn(int index) {
@@ -58,25 +78,11 @@ public class SpawnManager : MonoBehaviour {
 		dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
         if (dynamicObjectsContainer == null) return; //didn't find current level, can't spawn
 		Debug.Log("Found dynamic object container for spawning new enemy");
-		if (NPCSpawner) {
-			GameObject spawnee = (GameObject) Instantiate(Const.a.npcPrefabs[index], new Vector3(0,0,0),  Const.a.quaternionIdentity);
-			if (spawnee !=null) {
-				spawnee.GetComponent<HealthManager>().spawnMother = this;
-				spawnee.transform.position = GetRandomLocation();
-				if (spawnee.transform.position.x == 0 && spawnee.transform.position.y == 0  && spawnee.transform.position.z == 0 ) Debug.Log("BUG: Spawned enemy at 0 0 0!");
-				if (alertEnemiesOnAwake) {
-					AIController aic = spawnee.GetComponent<AIController>();
-					if (aic != null) aic.enemy = Const.a.player1;
-				}
-				numberActive++;
-				Debug.Log("Number spawned enemies: " + numberActive.ToString());
-				SaveObject so = spawnee.GetComponent<SaveObject>();
-				if (so != null) {
-					so.Start();
-				}
-			}
-		}
+		GameObject instGO = ConsoleEmulator.SpawnDynamicObject(index,LevelManager.a.currentLevel,
+													false,null,-1);
 
+		if (instGO == null) Debug.Log("BUG: Could not spawn NPC index "
+									  + index.ToString());
 	}
 
 	public void SpawneeJustDied() {

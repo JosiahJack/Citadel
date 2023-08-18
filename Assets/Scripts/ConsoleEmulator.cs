@@ -1057,19 +1057,32 @@ Generic Materials (Const.a.genericMaterials[])
 
 			go = MonoBehaviour.Instantiate(Const.a.npcPrefabs[val],spawnPos,
 									  Const.a.quaternionIdentity) as GameObject;
+
+			LevelManager.a.npcsm[LevelManager.a.currentLevel].RepopulateChildList();
 		} else if (val >= 448 && val < 458) {	// [448, 457]
 			val -= 448;
 			if (val > (Const.a.cyberItemPrefabs.Length - 1)) {
-				Debug.Log("SpawnDynamicObject failure: val > (Const.a.cyberItemPrefabs.Length - 1), val: " + val.ToString());
+				Debug.Log("SpawnDynamicObject failure: val > "
+						  + "(Const.a.cyberItemPrefabs.Length - 1), val: "
+						  + val.ToString());
+
 				return null;
 			}
 			if (Const.a.cyberItemPrefabs[val] == null) {
-				Debug.Log("SpawnDynamicObject failure: Const.a.cyberItemPrefabs[val] == null, val: " + val.ToString());
+				Debug.Log("SpawnDynamicObject failure: "
+						  + "Const.a.cyberItemPrefabs[val] == null, val: "
+						  + val.ToString());
+
 				return null;
 			}
 
 			go = MonoBehaviour.Instantiate(Const.a.cyberItemPrefabs[val],
-							 spawnPos,Const.a.quaternionIdentity) as GameObject;
+							spawnPos,Const.a.quaternionIdentity) as GameObject;
+
+			GameObject parGO = LevelManager.a.GetRequestedLevelNPCContainer(
+								LevelManager.a.currentLevel);
+
+			go.transform.SetParent(parGO.transform);
 		} else if ((val >= 458 && val < 481) 	// [458, 480], [515, 517]
 				   || val == 515
 				   || val == 516
