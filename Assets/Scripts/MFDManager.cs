@@ -1326,6 +1326,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void ShowEnergyItems() {
+		Debug.Log("ShowEnergyItems");
 		Utils.Activate(energySliderLH);
 		Utils.Activate(energyHeatTicksLH);
 		Utils.Activate(overloadButtonLH);
@@ -1348,6 +1349,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void HideAmmoAndEnergyItems() {
+		Debug.Log("HideAmmoAndEnergyItems");
 		Utils.Deactivate(ammoIndicatorHunsLH);
 		Utils.Deactivate(ammoIndicatorTensLH);
 		Utils.Deactivate(ammoIndicatorOnesLH);

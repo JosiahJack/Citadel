@@ -132,6 +132,7 @@ public class WeaponCurrent : MonoBehaviour {
 		}
 
 		lastIndex = weaponCurrent;
+		justChangedWeap = true;
 		weaponCurrent = -1;
 		weaponIndex = -1;
 		WeaponFire.a.StartWeaponDip(0);
@@ -171,96 +172,93 @@ public class WeaponCurrent : MonoBehaviour {
 			justChangedWeap = false;
 			MFDManager.a.HideAmmoAndEnergyItems();
 			MFDManager.a.SetAmmoIcons(-1,false); // Clear it.
-			SetAllViewModelsDeactive();
 			UpdateWeaponViewModels();
 		}
 
 		// Compare weaponCurrent since we might have more of the same type.
-		if (lastIndex != weaponCurrent) { 
-			justChangedWeap = true;
-			lastIndex = weaponCurrent;
-		}
+		if (lastIndex != weaponCurrent) lastIndex = weaponCurrent;
 	}
 
 	public void UpdateWeaponViewModels() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			int useableIndex = weaponIndex;
-			int setWep = weaponIndex;
-			if (weaponIndexPending >= 0) {
-				setWep = weaponIndexPending;
-				useableIndex = -1;
-			}
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
 
-			switch (setWep) {
-				case 36: // "LOAD MAGNESIUM", "LOAD PENETRATOR"
-					MFDManager.a.ShowAmmoItems(539,540);
-					Utils.Activate(ViewModelAssault);
-					break;
-				case 37:
-					MFDManager.a.ShowEnergyItems();
-					Utils.Activate(ViewModelBlaster);
-					break;
-				case 38: // "LOAD NEEDLE", "LOAD TRANQ"
-					MFDManager.a.ShowAmmoItems(541,542);
-					Utils.Activate(ViewModelDartgun);
-					break;
-				case 39: // "LOAD HORNET", "LOAD SPLINTER"
-					MFDManager.a.ShowAmmoItems(543,544);
-					Utils.Activate(ViewModelFlechette);
-					break;
-				case 40:
-					MFDManager.a.ShowEnergyItems();
-					Utils.Activate(ViewModelIon);
-					break;
-				case 41:
-					Utils.Activate(ViewModelRapier);
-					MFDManager.a.HideAmmoAndEnergyItems();
-					break;
-				case 42:
-					Utils.Activate(ViewModelPipe);
-					MFDManager.a.HideAmmoAndEnergyItems();
-					break;
-				case 43: // "LOAD HOLLOW TIP", "LOAD HEAVY SLUG"
-					MFDManager.a.ShowAmmoItems(545,546);
-					Utils.Activate(ViewModelMagnum);
-					break;
-				case 44: // "LOAD CARTRIDGE"
-					MFDManager.a.ShowAmmoItems(547,-1);
-					Utils.Activate(ViewModelMagpulse);
-					MFDManager.a.HideAlternateAmmoButton();
-					break;
-				case 45: // "LOAD STANDARD", "LOAD TEFLON"
-					MFDManager.a.ShowAmmoItems(548,549);
-					Utils.Activate(ViewModelPistol);
-					break;
-				case 46:
-					MFDManager.a.ShowEnergyItems();
-					Utils.Activate(ViewModelPlasma);
-					break;
-				case 47: // "LOAD RAIL CLIP"
-					MFDManager.a.ShowAmmoItems(550,-1);
-					Utils.Activate(ViewModelRailgun);
-					MFDManager.a.HideAlternateAmmoButton();
-					break;
-				case 48:  // "LOAD RUBBER SLUG"
-					MFDManager.a.ShowAmmoItems(551,-1);
-					Utils.Activate(ViewModelRiotgun);
-					MFDManager.a.HideAlternateAmmoButton();
-					break;
-				case 49: // "LOAD SLAG", "LOAD LARGE SLAG"
-					MFDManager.a.ShowAmmoItems(552,553);
-					Utils.Activate(ViewModelSkorpion);
-					break;
-				case 50:
-					MFDManager.a.ShowEnergyItems();
-					Utils.Activate(ViewModelSparq);
-					break;
-				case 51:
-					MFDManager.a.ShowEnergyItems();
-					Utils.Activate(ViewModelStungun);
-					break;
-				default: MFDManager.a.HideAmmoAndEnergyItems(); break;
-			}
+		int useableIndex = weaponIndex;
+		int setWep = weaponIndex;
+		if (weaponIndexPending >= 0) {
+			setWep = weaponIndexPending;
+			useableIndex = -1;
+		}
+
+		SetAllViewModelsDeactive();
+		switch (setWep) {
+			case 36: // "LOAD MAGNESIUM", "LOAD PENETRATOR"
+				MFDManager.a.ShowAmmoItems(539,540);
+				Utils.Activate(ViewModelAssault);
+				break;
+			case 37:
+				MFDManager.a.ShowEnergyItems();
+				Utils.Activate(ViewModelBlaster);
+				break;
+			case 38: // "LOAD NEEDLE", "LOAD TRANQ"
+				MFDManager.a.ShowAmmoItems(541,542);
+				Utils.Activate(ViewModelDartgun);
+				break;
+			case 39: // "LOAD HORNET", "LOAD SPLINTER"
+				MFDManager.a.ShowAmmoItems(543,544);
+				Utils.Activate(ViewModelFlechette);
+				break;
+			case 40:
+				MFDManager.a.ShowEnergyItems();
+				Utils.Activate(ViewModelIon);
+				break;
+			case 41:
+				Utils.Activate(ViewModelRapier);
+				MFDManager.a.HideAmmoAndEnergyItems();
+				break;
+			case 42:
+				Utils.Activate(ViewModelPipe);
+				MFDManager.a.HideAmmoAndEnergyItems();
+				break;
+			case 43: // "LOAD HOLLOW TIP", "LOAD HEAVY SLUG"
+				MFDManager.a.ShowAmmoItems(545,546);
+				Utils.Activate(ViewModelMagnum);
+				break;
+			case 44: // "LOAD CARTRIDGE"
+				MFDManager.a.ShowAmmoItems(547,-1);
+				Utils.Activate(ViewModelMagpulse);
+				MFDManager.a.HideAlternateAmmoButton();
+				break;
+			case 45: // "LOAD STANDARD", "LOAD TEFLON"
+				MFDManager.a.ShowAmmoItems(548,549);
+				Utils.Activate(ViewModelPistol);
+				break;
+			case 46:
+				MFDManager.a.ShowEnergyItems();
+				Utils.Activate(ViewModelPlasma);
+				break;
+			case 47: // "LOAD RAIL CLIP"
+				MFDManager.a.ShowAmmoItems(550,-1);
+				Utils.Activate(ViewModelRailgun);
+				MFDManager.a.HideAlternateAmmoButton();
+				break;
+			case 48:  // "LOAD RUBBER SLUG"
+				MFDManager.a.ShowAmmoItems(551,-1);
+				Utils.Activate(ViewModelRiotgun);
+				MFDManager.a.HideAlternateAmmoButton();
+				break;
+			case 49: // "LOAD SLAG", "LOAD LARGE SLAG"
+				MFDManager.a.ShowAmmoItems(552,553);
+				Utils.Activate(ViewModelSkorpion);
+				break;
+			case 50:
+				MFDManager.a.ShowEnergyItems();
+				Utils.Activate(ViewModelSparq);
+				break;
+			case 51:
+				MFDManager.a.ShowEnergyItems();
+				Utils.Activate(ViewModelStungun);
+				break;
 		}
 	}
 

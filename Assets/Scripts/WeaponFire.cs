@@ -273,7 +273,7 @@ public class WeaponFire : MonoBehaviour {
 			float elapsed = (PauseScript.a.relativeTime - lerpStartTime);
 
 			// Percent towards goal time total (both halves of the action).
-			reloadLerpValue = (elapsed/Const.a.reloadTime[i]);
+			reloadLerpValue = (elapsed/(reloadFinished-lerpStartTime));//Const.a.reloadTime[i]);
 			if (reloadLerpValue >= 0.5f) { // Flip back to lerp up.
 				lerpUp = 1;
 				WeaponLerpGetTargetUp();
@@ -338,6 +338,7 @@ public class WeaponFire : MonoBehaviour {
 		if (ind >= 0 && ind < 16) alt = Inventory.a.wepLoadedWithAlternate[ind];
 		MFDManager.a.SetAmmoIcons(ind,alt);
 		MFDManager.a.SetWepInfo(WeaponCurrent.a.weaponIndex);
+		WeaponCurrent.a.UpdateWeaponViewModels();
 	}
 
 	public void StartWeaponDip(float delay) {

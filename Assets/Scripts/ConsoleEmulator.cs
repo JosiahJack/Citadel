@@ -1000,6 +1000,7 @@ Generic Materials (Const.a.genericMaterials[])
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat,
 												GameObject forcedContainer,
 												int saveID) {
+		int initialIndex = val;
 		if (LevelManager.a == null) {
 			Debug.Log("Missing LevelManager");
 			return null;
@@ -1078,11 +1079,6 @@ Generic Materials (Const.a.genericMaterials[])
 
 			go = MonoBehaviour.Instantiate(Const.a.cyberItemPrefabs[val],
 							spawnPos,Const.a.quaternionIdentity) as GameObject;
-
-			GameObject parGO = LevelManager.a.GetRequestedLevelNPCContainer(
-								LevelManager.a.currentLevel);
-
-			go.transform.SetParent(parGO.transform);
 		} else if ((val >= 458 && val < 481) 	// [458, 480], [515, 517]
 				   || val == 515
 				   || val == 516
@@ -1139,6 +1135,11 @@ Generic Materials (Const.a.genericMaterials[])
 				if (lev >= 0) {
 					Level levS = LevelManager.a.levelScripts[lev];
 					GameObject parGO = levS.dynamicObjectsContainer;
+					if (initialIndex >= 419 && initialIndex < 448) {
+						parGO = LevelManager.a.GetRequestedLevelNPCContainer(
+							LevelManager.a.currentLevel);
+					}
+
 					go.transform.SetParent(parGO.transform);
 				}
 			}

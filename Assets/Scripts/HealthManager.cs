@@ -55,7 +55,6 @@ public class HealthManager : MonoBehaviour {
 	private Rigidbody rbody;
     private float tempFloat;
 	private float take;
-	[HideInInspector] public SpawnManager spawnMother;  // not used universally
 	[HideInInspector] public bool god = false; // is this entity invincible? used for player cheat
 	private DamageData tempdd;
 	private Rigidbody gibrbody;
@@ -543,7 +542,6 @@ public class HealthManager : MonoBehaviour {
 		deathDone = true; // Mark it so we only die once.
 		CreateDeathEffects(deathFX);
 		PlayDeathSound(deathSound); // Play death sound, if present
-		if (spawnMother != null) spawnMother.SpawneeJustDied();
 		GameObject par = transform.parent.gameObject;
 		if (aic == null) {
 			AIController aic = par.GetComponent<AIController>();
@@ -686,7 +684,6 @@ public class HealthManager : MonoBehaviour {
 		}
 
 		PlayDeathSound(deathSound); // Make some noise
-		if (spawnMother != null) spawnMother.SpawneeJustDied();
 		if (deathFX != PoolType.None) HideSelf();
 	}
 
@@ -777,9 +774,6 @@ public class HealthManager : MonoBehaviour {
 				}
 			}
 		}
-
-		// Handle NPCs
-		if (spawnMother != null && isNPC) spawnMother.AwakeFromLoad(health);
 
 		// Handle grenades
 		if (isGrenade) {

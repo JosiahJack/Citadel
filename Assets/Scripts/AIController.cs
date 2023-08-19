@@ -1577,7 +1577,7 @@ public class AIController : MonoBehaviour {
 		return false;
 	}
 
-	void SetEnemy(GameObject enemSent,Transform targettingPosSent) {
+	public void SetEnemy(GameObject enemSent,Transform targettingPosSent) {
 		if (enemSent == null) return;
 
 		enemy = enemSent;
