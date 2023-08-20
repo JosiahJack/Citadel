@@ -29,6 +29,9 @@ public class ForceBridge : MonoBehaviour {
 			lerping = true;
 		}
 
+		if (activatedScaleX <= 0.02f) activatedScaleX = 2.56f;
+		if (activatedScaleY <= 0.02f) activatedScaleY = 0.08f;
+		if (activatedScaleZ <= 0.02f) activatedScaleZ = 2.56f;
 		mr = GetComponent<MeshRenderer>();
 		bCol = GetComponent<BoxCollider>();
 		SFX = GetComponent<AudioSource>();
