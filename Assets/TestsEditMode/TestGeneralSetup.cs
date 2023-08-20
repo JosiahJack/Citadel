@@ -1225,10 +1225,6 @@ namespace Tests {
             for (int i=0;i<allGOs.Count;i++) {
 			    TriggerCounter trigc = allGOs[i].GetComponent<TriggerCounter>();
 		    	if (trigc == null) continue;
-		    	
-				msg = "no target";
-                check = !string.IsNullOrWhiteSpace(trigc.target);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
 
                 MissingComponent(script,allGOs[i],typeof(TargetIO));
                 

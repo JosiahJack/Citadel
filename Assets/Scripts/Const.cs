@@ -1831,11 +1831,12 @@ public class Const : MonoBehaviour {
 		}
 	}
 
-	public void UseTargets (GameObject go, UseData ud, string targetname) {
+	public void UseTargets(GameObject go, UseData ud, string targetname) {
 		if (go != null) {
-			TargetIO tio = GetComponent<TargetIO>();
+			TargetIO tio = go.GetComponent<TargetIO>();
 			if (tio != null) {
 				ud.SetBits(tio);
+				UnityEngine.Debug.Log("SetBits for tio on " + go.name);
 			} else {
 				UnityEngine.Debug.Log("BUG: no TargetIO.cs found on " + go.name
 						+ ".  Trying to call UseTargets without parameters!");
