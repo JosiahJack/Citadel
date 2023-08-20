@@ -186,8 +186,6 @@ public class SaveObject : MonoBehaviour {
 													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.TGravity:                  s1.Append(GravityLift.Save(go)); s1.Append(Utils.splitChar);
 													        s1.Append(TargetIO.Save(go)); break;
-			case SaveableType.MChanger:              s1.Append(MaterialChanger.Save(go)); s1.Append(Utils.splitChar);
-													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.GravPad:                s1.Append(TextureChanger.Save(go)); s1.Append(Utils.splitChar);
 													        s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.ChargeStation:           s1.Append(ChargeStation.Save(go)); break;
@@ -341,8 +339,6 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.TCounter:               index =         TriggerCounter.Load(go,ref entries,index); currentSaveEntriesIndex = index.ToString();
 													  index =               TargetIO.Load(go,ref entries,index,true); currentSaveEntriesIndex = index.ToString(); break;
 			case SaveableType.TGravity:               index =            GravityLift.Load(go,ref entries,index); currentSaveEntriesIndex = index.ToString();
-													  index =               TargetIO.Load(go,ref entries,index,true); currentSaveEntriesIndex = index.ToString(); break;
-			case SaveableType.MChanger:               index =        MaterialChanger.Load(go,ref entries,index); currentSaveEntriesIndex = index.ToString();
 													  index =               TargetIO.Load(go,ref entries,index,true); currentSaveEntriesIndex = index.ToString(); break;
 			case SaveableType.GravPad:                index =         TextureChanger.Load(go,ref entries,index); currentSaveEntriesIndex = index.ToString();
 													  index =               TargetIO.Load(go,ref entries,index,true); currentSaveEntriesIndex = index.ToString(); break;
