@@ -15,17 +15,17 @@ public class AmmoIconManager : MonoBehaviour {
     void DisableAll() {
         Utils.DisableImage(icon);
         Utils.DisableImage(border);
-        Utils.Deactivate(energySlider);
-        Utils.Deactivate(energyHeatTicks);
-        Utils.Deactivate(energyOverloadButton);
+        //Utils.Deactivate(energySlider);
+        //Utils.Deactivate(energyHeatTicks);
+        //Utils.Deactivate(energyOverloadButton);
     }
 
     void Energy() {
         Utils.DisableImage(icon);
         Utils.DisableImage(border);
-        Utils.Activate(energySlider);
-        Utils.Activate(energyHeatTicks);
-        Utils.Activate(energyOverloadButton);
+        //Utils.Activate(energySlider);
+        //Utils.Activate(energyHeatTicks);
+        //Utils.Activate(energyOverloadButton);
     }
 
     void Standard(bool alternateAmmo, int norm, int alt) {
@@ -33,9 +33,9 @@ public class AmmoIconManager : MonoBehaviour {
         Utils.Activate(icon.gameObject);
         Utils.EnableImage(icon);
         Utils.EnableImage(border);
-        Utils.Deactivate(energySlider);
-        Utils.Deactivate(energyHeatTicks);
-        Utils.Deactivate(energyOverloadButton);
+        //Utils.Deactivate(energySlider);
+        //Utils.Deactivate(energyHeatTicks);
+        //Utils.Deactivate(energyOverloadButton);
         if (norm < 0 || norm > ammIcons.Length) norm = 0;
         if ( alt < 0 ||  alt > ammIcons.Length)  alt = 0;
         if (alternateAmmo) {

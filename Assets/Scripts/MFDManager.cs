@@ -1382,8 +1382,8 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void SetAmmoIcons(int index, bool alt) {
-		ammoIconManLH.SetAmmoIcon(-1,alt);
-		ammoIconManRH.SetAmmoIcon(-1,alt);
+		ammoIconManLH.SetAmmoIcon(index,alt);
+		ammoIconManRH.SetAmmoIcon(index,alt);
 	}
 
 	void ChangeAmmoButtons(GameObject loadNormalAmmoButton,
