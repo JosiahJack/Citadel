@@ -141,7 +141,7 @@ public class KeypadKeycode : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(kk.useQuestKeycode1,"useQuestKeycode1"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(kk.useQuestKeycode1,"useQuestKeycode2"));
+		s1.Append(Utils.BoolToString(kk.useQuestKeycode2,"useQuestKeycode2"));
 		return s1.ToString();
 	}
 

@@ -303,17 +303,15 @@ public class ButtonSwitch : MonoBehaviour {
 		bs.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],
 		                                                     "tickFinished");
 		index++;
-		
-		if (bs.active) {
-		    if ((bs.tickFinished - PauseScript.a.relativeTime) > 1.5f) {
-			    bs.tickFinished = PauseScript.a.relativeTime + 1.5f;
-		    }
-		} else {
-			if (bs.blinkWhenActive) {
-				bs.Awake();
-				bs.SetMaterialToNormal();
-			}
+
+		if ((bs.tickFinished - PauseScript.a.relativeTime) > bs.tickTime) {
+			bs.tickFinished = PauseScript.a.relativeTime + bs.tickTime;
 		}
+
+		if ((bs.delayFinished - PauseScript.a.relativeTime) > bs.delay) {
+			bs.delayFinished = PauseScript.a.relativeTime + bs.delay;
+		}
+
 		return index;
 	}
 }

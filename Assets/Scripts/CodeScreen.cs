@@ -15,6 +15,11 @@ public class CodeScreen : MonoBehaviour {
     void Update() {
         if (PauseScript.a.Paused()) return;
 		if (PauseScript.a.MenuActive()) return;
+
+		if (tickFinished - PauseScript.a.relativeTime > 0.3f) {
+			tickFinished = PauseScript.a.relativeTime + 0.3f;
+		}
+
         if (tickFinished > PauseScript.a.relativeTime) return;
         
         tickFinished = PauseScript.a.relativeTime + 0.3f;

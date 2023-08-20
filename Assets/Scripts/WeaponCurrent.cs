@@ -170,7 +170,6 @@ public class WeaponCurrent : MonoBehaviour {
 
 		if (justChangedWeap) {
 			justChangedWeap = false;
-			MFDManager.a.HideAmmoAndEnergyItems();
 			MFDManager.a.SetAmmoIcons(-1,false); // Clear it.
 			UpdateWeaponViewModels();
 		}
@@ -190,6 +189,7 @@ public class WeaponCurrent : MonoBehaviour {
 			useableIndex = -1;
 		}
 
+		MFDManager.a.HideAmmoAndEnergyItems();
 		SetAllViewModelsDeactive();
 		switch (setWep) {
 			case 36: // "LOAD MAGNESIUM", "LOAD PENETRATOR"
@@ -214,11 +214,9 @@ public class WeaponCurrent : MonoBehaviour {
 				break;
 			case 41:
 				Utils.Activate(ViewModelRapier);
-				MFDManager.a.HideAmmoAndEnergyItems();
 				break;
 			case 42:
 				Utils.Activate(ViewModelPipe);
-				MFDManager.a.HideAmmoAndEnergyItems();
 				break;
 			case 43: // "LOAD HOLLOW TIP", "LOAD HEAVY SLUG"
 				MFDManager.a.ShowAmmoItems(545,546);

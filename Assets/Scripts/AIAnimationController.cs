@@ -41,6 +41,23 @@ public class AIAnimationController : MonoBehaviour {
 		if (smR != null) checkVisWithSMR = true;
 		else checkVisWithSMR = false;
 		
+		switch (aic.currentState) {
+			case AIState.Idle: 		clipName = "Idle";	  break;
+			case AIState.Walk:	 	clipName = "Walk"; 	  break;
+			case AIState.Run: 		clipName = "Run";	  break;
+			case AIState.Attack1: 	clipName = "Attack1"; break;
+			case AIState.Attack2: 	clipName = "Attack2"; break;
+			case AIState.Attack3: 	clipName = "Attack3"; break;
+			case AIState.Pain: 		clipName = "Pain";	break;
+			case AIState.Dying: 	clipName = "Death";	break;
+			case AIState.Dead:
+				if (useDeadAnimForDeath) clipName = "Dead";
+				else clipName = "Death";
+
+				break;
+			default: 				clipName = "Idle";	break;
+		}
+		
 		initialized = true;
 	}
 
@@ -188,6 +205,7 @@ public class AIAnimationController : MonoBehaviour {
 	void SetAnimAfterLoad() {
 		firstUpdateAfterLoad = false;
 		anim.speed = loadedSetSpeed;
+		if (string.IsNullOrWhiteSpace(loadedClipName)) loadedClipName = "Idle";
 		anim.Play(loadedClipName,loadedClipIndex,loadedAnimatorPlaybackTime);
 	}
 	

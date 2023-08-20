@@ -333,6 +333,13 @@ public class MFDManager : MonoBehaviour  {
 		lastHealth = PlayerHealth.a.hm.health;
 		WeaponButtonsManagerUpdate();
 		UpdateAmmoAndLoadButtons();
+		switch (WeaponCurrent.a.weaponCurrent) {
+			case 37: ShowEnergyItems(); break;
+			case 40: ShowEnergyItems(); break;
+			case 46: ShowEnergyItems(); break;
+			case 50: ShowEnergyItems(); break;
+			case 51: ShowEnergyItems(); break;
+		}
 		if (GetInput.a.WeaponCycUp()) WeaponCycleUp();
 		if (GetInput.a.WeaponCycDown()) WeaponCycleDown();
 		if (Input.GetKeyDown(KeyCode.F1)) leftTC.TabButtonAction(0);   // Weapon
@@ -1326,7 +1333,6 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void ShowEnergyItems() {
-		Debug.Log("ShowEnergyItems");
 		Utils.Activate(energySliderLH);
 		Utils.Activate(energyHeatTicksLH);
 		Utils.Activate(overloadButtonLH);
@@ -1349,7 +1355,6 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void HideAmmoAndEnergyItems() {
-		Debug.Log("HideAmmoAndEnergyItems");
 		Utils.Deactivate(ammoIndicatorHunsLH);
 		Utils.Deactivate(ammoIndicatorTensLH);
 		Utils.Deactivate(ammoIndicatorOnesLH);
@@ -1432,8 +1437,6 @@ public class MFDManager : MonoBehaviour  {
 		if (WeaponCurrent.a.weaponCurrent < 0
 			|| WeaponCurrent.a.weaponCurrentPending >= 0) {
 
-			HideAmmoAndEnergyItems();
-			SetAmmoIcons(-1,false);
 			return;
 		}
 

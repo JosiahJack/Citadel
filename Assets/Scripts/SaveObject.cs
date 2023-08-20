@@ -154,7 +154,8 @@ public class SaveObject : MonoBehaviour {
 													    s1.Append(AIController.Save(go,prefID)); s1.Append(Utils.splitChar); // Handles SearchableDestructable for corpse child
 										       s1.Append(AIAnimationController.Save(go)); s1.Append(Utils.splitChar);
 													        s1.Append(TargetIO.Save(go)); break;
-			case SaveableType.Destructable:            s1.Append(HealthManager.Save(go,prefID)); break;
+			case SaveableType.Destructable:            s1.Append(HealthManager.Save(go,prefID)); s1.Append(Utils.splitChar);
+		        											s1.Append(TargetIO.Save(go)); break;
 			case SaveableType.SearchableStatic:       s1.Append(SearchableItem.Save(go,prefID)); break;
 			case SaveableType.SearchableDestructable: s1.Append(SearchableItem.Save(go,prefID)); s1.Append(Utils.splitChar);
                                                        s1.Append(HealthManager.Save(go,prefID)); break;
