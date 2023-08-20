@@ -29,6 +29,10 @@ public class SpawnManager : MonoBehaviour {
 			numberToSpawn = (int) Mathf.Floor(numberToSpawn*1.5f);
 			if (numberToSpawn < 1) numberToSpawn = 1;
 		}
+
+		if (Const.a.difficultyCombat > 3) {
+			numberToSpawn = (int) Mathf.Floor(numberToSpawn*5f); // Hehe :)
+		}
 	}
 
 	public void Activate(bool alertEnemies) {
@@ -87,9 +91,7 @@ public class SpawnManager : MonoBehaviour {
 
 		Debug.Log("Found dynamic object container for spawning new enemy");
 		Vector3 spot = GetRandomLocation();
-		if (spot.x == 0 && spot.y == 0 && spot.z == 0) {
-			return;//spot = transform.position;
-		}
+		if (spot.x == 0 && spot.y == 0 && spot.z == 0) return;
 
 		GameObject instGO = ConsoleEmulator.SpawnDynamicObject(
 			index,LevelManager.a.currentLevel,false,null,-1
@@ -99,10 +101,13 @@ public class SpawnManager : MonoBehaviour {
 			Debug.Log("BUG: Could not spawn NPC index " + index.ToString());
 		} else {
 			instGO.transform.position = spot;
-			if (!alertEnemiesOnAwake) return;
-
 			AIController aic = instGO.GetComponent<AIController>();
 			if (aic == null) return;
+
+			if (!alertEnemiesOnAwake) {
+				if (aic.index != 14) aic.wandering = true;
+				return;
+			}
 
 			aic.SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
 		}

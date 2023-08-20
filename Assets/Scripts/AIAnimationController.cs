@@ -66,27 +66,28 @@ public class AIAnimationController : MonoBehaviour {
 		
 		if (firstUpdateAfterLoad) { SetAnimAfterLoad(); return; }
 		
-		if (dying) {
+		if (dying || aic.healthManager.health <= 0) {
+			aic.asleep = false;
 			anstinfo = anim.GetCurrentAnimatorStateInfo(0);
 			currentClipPercentage = anstinfo.normalizedTime % 1;
 			Dying();
-		} else {
-			if (aic.asleep) {
-				Idle();
-				return;
-			}
-			switch (aic.currentState) {
-				case AIState.Idle: 		Idle(); 	break;
-				case AIState.Walk:	 	Walk(); 	break;
-				case AIState.Run: 		Run(); 		break;
-				case AIState.Attack1: 	Attack1(); 	break;
-				case AIState.Attack2: 	Attack2(); 	break;
-				case AIState.Attack3: 	Attack3(); 	break;
-				case AIState.Pain: 		Pain();		break;
-				case AIState.Dying: 	Dying(); 	break;
-				case AIState.Dead:		Dead();		break;
-				default: 				Idle(); 	break;
-			}
+			return;
+		} else if (aic.asleep) {
+			Idle();
+			return;
+		}
+
+		switch (aic.currentState) {
+			case AIState.Idle: 		Idle(); 	break;
+			case AIState.Walk:	 	Walk(); 	break;
+			case AIState.Run: 		Run(); 		break;
+			case AIState.Attack1: 	Attack1(); 	break;
+			case AIState.Attack2: 	Attack2(); 	break;
+			case AIState.Attack3: 	Attack3(); 	break;
+			case AIState.Pain: 		Pain();		break;
+			case AIState.Dying: 	Dying(); 	break;
+			case AIState.Dead:		Dead();		break;
+			default: 				Idle(); 	break;
 		}
 	}
 
