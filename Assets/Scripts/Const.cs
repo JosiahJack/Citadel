@@ -480,14 +480,6 @@ public class Const : MonoBehaviour {
 		LoadCreditsData();
 		StartCoroutine(InitializeEventSystem());
 		questData = new QuestBits ();
-		// Integer overload is maximum exclusive.  Confirmed maximum return
-		// value is 9 and not 10.
-		questData.lev1SecCode = UnityEngine.Random.Range(0,10); 
-		questData.lev2SecCode = UnityEngine.Random.Range(0,10);
-		questData.lev3SecCode = UnityEngine.Random.Range(0,10);
-		questData.lev4SecCode = UnityEngine.Random.Range(0,10);
-		questData.lev5SecCode = UnityEngine.Random.Range(0,10);
-		questData.lev6SecCode = UnityEngine.Random.Range(0,10);
 		if (mainFont1 != null) { // Ensure text is crisp and readable.
 			mainFont1.material.mainTexture.filterMode = FilterMode.Point;
 		}
