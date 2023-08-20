@@ -14,9 +14,9 @@ public class ForceBridge : MonoBehaviour {
 	[HideInInspector] public bool lerping; // save
 	[HideInInspector] public float tickFinished; // save
 
-	[HideInInspector] public float activatedScaleX; // save
-	[HideInInspector] public float activatedScaleY; // save
-	[HideInInspector] public float activatedScaleZ; // save
+	public float activatedScaleX; // save
+	public float activatedScaleY; // save
+	public float activatedScaleZ; // save
 	private MeshRenderer mr;
 	private BoxCollider bCol;
 	private AudioSource SFX;
@@ -25,15 +25,10 @@ public class ForceBridge : MonoBehaviour {
 
 	public void Start() {
 		if (!initialized) {
-			activatedScaleX = transform.localScale.x;
-			activatedScaleY = transform.localScale.y;
-			activatedScaleZ = transform.localScale.z;
 			tickFinished = PauseScript.a.relativeTime + tickTime + Random.value;
 			lerping = true;
 		}
-		if (activatedScaleX < 0.24f && x) activatedScaleX = 2.56f;
-		if (activatedScaleY < 0.24f && y) activatedScaleY = 2.56f;
-		if (activatedScaleZ < 0.24f && z) activatedScaleZ = 2.56f;
+
 		mr = GetComponent<MeshRenderer>();
 		bCol = GetComponent<BoxCollider>();
 		SFX = GetComponent<AudioSource>();
