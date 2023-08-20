@@ -8,6 +8,12 @@ public class QuestBits {
 	public int lev4SecCode = -1;
 	public int lev5SecCode = -1;
 	public int lev6SecCode = -1;
+	public bool lev1SecCodeLocked = false;
+	public bool lev2SecCodeLocked = false;
+	public bool lev3SecCodeLocked = false;
+	public bool lev4SecCodeLocked = false;
+	public bool lev5SecCodeLocked = false;
+	public bool lev6SecCodeLocked = false;
 	public bool RobotSpawnDeactivated;
 	public bool IsotopeInstalled;
 	public bool ShieldActivated;
@@ -87,6 +93,18 @@ public class QuestBits {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(lev6SecCode,"lev6SecCode"));
 		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(lev1SecCodeLocked,"lev1SecCodeLocked"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(lev2SecCodeLocked,"lev2SecCodeLocked"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(lev3SecCodeLocked,"lev3SecCodeLocked"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(lev4SecCodeLocked,"lev4SecCodeLocked"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(lev5SecCodeLocked,"lev5SecCodeLocked"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(lev6SecCodeLocked,"lev6SecCodeLocked"));
+		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(RobotSpawnDeactivated,
 		                             "RobotSpawnDeactivated"));
 		s1.Append(Utils.splitChar);
@@ -161,6 +179,30 @@ public class QuestBits {
 		index++;
 
 		lev6SecCode = Utils.GetIntFromString(entries[index],"lev6SecCode");
+		index++;
+		
+		lev1SecCodeLocked = Utils.GetBoolFromString(entries[index],
+		                                            "lev1SecCodeLocked");
+		index++;
+
+		lev2SecCodeLocked = Utils.GetBoolFromString(entries[index],
+		                                            "lev2SecCodeLocked");
+		index++;
+
+		lev3SecCodeLocked = Utils.GetBoolFromString(entries[index],
+		                                            "lev3SecCodeLocked");
+		index++;
+
+		lev4SecCodeLocked = Utils.GetBoolFromString(entries[index],
+		                                            "lev4SecCodeLocked");
+		index++;
+
+		lev5SecCodeLocked = Utils.GetBoolFromString(entries[index],
+		                                            "lev5SecCodeLocked");
+		index++;
+
+		lev6SecCodeLocked = Utils.GetBoolFromString(entries[index],
+		                                            "lev6SecCodeLocked");
 		index++;
 
 		RobotSpawnDeactivated = Utils.GetBoolFromString(entries[index],
