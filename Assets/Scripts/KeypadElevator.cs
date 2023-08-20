@@ -3,25 +3,33 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class KeypadElevator : MonoBehaviour {
-	public int securityThreshhold = 100; // if security level is not below this level, this is unusable
-	/*[DTValidator.Optional] */public GameObject[] targetDestination; // set by ElevatorKeypad.cs in Use(), which actually gets it from ElevatorButton.cs
 	public Door linkedDoor;
+	public AudioClip SFX;
+	public GameObject[] targetDestination; // Set by ElevatorKeypad.cs in Use()
+										   // which actually gets it from
+										   // ElevatorButton.cs.
+
+	public int securityThreshhold = 100; // If security level is not below this
+										 // level, this is unusable.
 	public bool[] buttonsEnabled;
 	public bool[] buttonsDarkened;
 	public string[] buttonText;
 	public int currentFloor;
-	public AudioClip SFX;
-	private AudioSource SFXSource;
 	public bool padInUse; // save
 	public bool locked = false; // save
 	public string lockedTarget;
 	public string argvalue;
 	public string lockedMessage;
 
+	private AudioSource SFXSource;
+
 	void Start () {
 		padInUse = false;
 		SFXSource = GetComponent<AudioSource>();
-		if (linkedDoor == null) Debug.Log("BUG: no linked Door for KeypadElevator at location: " + transform.position.ToString());
+		if (linkedDoor == null) {
+			Debug.Log("BUG: no linked Door for KeypadElevator at location: "
+					  + transform.position.ToString());
+		}
 	}
 
 	public void Use (UseData ud) {
@@ -36,23 +44,21 @@ public class KeypadElevator : MonoBehaviour {
 		}
 
 		if (locked) {
+			// Target something because we are locked like a Vox message to say
+			// hey we are locked, e.g. "Non emergency life pods disabled."
 			Const.sprint(lockedMessage,ud.owner);
-			if (!string.IsNullOrWhiteSpace(lockedTarget)) {
-				ud.argvalue = argvalue;
-				TargetIO tio = GetComponent<TargetIO>();
-				if (tio != null) {
-					ud.SetBits(tio);
-				} else {
-					Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
-				}
-				Const.a.UseTargets(ud,lockedTarget); //target something because we are locked like a Vox message to say hey we are locked, e.g. "Non emergency life pods disabled."
-			}
+			ud.argvalue = argvalue;
+			Const.a.UseTargets(gameObject,ud,lockedTarget);
 			return;
 		}
 
 		padInUse = true;
 		Utils.PlayOneShotSavable(SFXSource,SFX);
-		MFDManager.a.SendElevatorKeypadToDataTab(this,buttonsEnabled,buttonsDarkened,buttonText,targetDestination,transform.position,linkedDoor,currentFloor);
+		MFDManager.a.SendElevatorKeypadToDataTab(this,buttonsEnabled,
+												 buttonsDarkened,buttonText,
+												 targetDestination,
+												 transform.position,linkedDoor,
+												 currentFloor);
 	}
 
 	public void SendDataBackToPanel() {
@@ -62,13 +68,16 @@ public class KeypadElevator : MonoBehaviour {
 	public static string Save(GameObject go) {
 		KeypadElevator ke = go.GetComponent<KeypadElevator>();
 		if (ke == null) {
-			Debug.Log("KeypadElevator missing on savetype of KeypadElevator!  GameObject.name: " + go.name);
+			Debug.Log("KeypadElevator missing on savetype of KeypadElevator! "
+					  + " GameObject.name: " + go.name);
+
 			return "0|0";
 		}
 
 		string line = System.String.Empty;
-		line = Utils.BoolToString(ke.padInUse); // bool - is the pad being used by a player
-		line += Utils.splitChar + Utils.BoolToString(ke.locked); // bool - locked?
+		line = Utils.BoolToString(ke.padInUse,"KeypadElevator.padInUse");
+		line += Utils.splitChar;
+		line += Utils.BoolToString(ke.locked,"locked");
 		return line;
 	}
 
@@ -89,8 +98,11 @@ public class KeypadElevator : MonoBehaviour {
 			return index + 2;
 		}
 
-		ke.padInUse = Utils.GetBoolFromString(entries[index]); index++; // bool - is the pad being used by a player
-		ke.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - locked?
+		ke.padInUse = Utils.GetBoolFromString(entries[index],
+											  "KeypadElevator.padInUse");
+		index++;
+
+		ke.locked = Utils.GetBoolFromString(entries[index],"locked"); index++;
 		return index;
 	}
 }

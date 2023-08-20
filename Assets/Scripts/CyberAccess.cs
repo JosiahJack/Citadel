@@ -8,20 +8,8 @@ public class CyberAccess : MonoBehaviour {
 	public GameObject entryPosition;
 
     public void Use (UseData ud) {
-		if (!string.IsNullOrEmpty(target)) {
-			ud.argvalue = argvalue;
-			TargetIO tio = GetComponent<TargetIO>();
-			if (tio != null) {
-				ud.SetBits(tio);
-			} else {
-				Debug.Log("BUG: no TargetIO.cs found on an object with a "
-						  + "CyberAccess.cs script!  Trying to call UseTargets"
-						  + " without parameters!");
-			}
-
-			Const.a.UseTargets(ud,target);
-		}
-
+		ud.argvalue = argvalue;
+		Const.a.UseTargets(gameObject,ud,target);
 		Const.sprint(Const.a.stringTable[441]); // Entering Cyberspace!
 		MouseLookScript.a.EnterCyberspace(entryPosition);
 	}

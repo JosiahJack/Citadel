@@ -80,32 +80,37 @@ public class PuzzleWirePuzzle : MonoBehaviour {
 		if (tio != null) {
 			ud.SetBits(tio);
 		} else {
-			Debug.Log("BUG: no TargetIO.cs found on an object with a PuzzleGridPuzzle.cs script!  Trying to call Use without parameters!");
+			Debug.Log("BUG: no TargetIO.cs found on an object with a "
+					  + "PuzzleGridPuzzle.cs script!  Trying to call Use "
+					  + "without parameters!");
 		}
 
-		Const.sprint(Const.a.stringTable[190],ud.owner); //Puzzle interface accessed
+		Const.sprint(Const.a.stringTable[190],ud.owner); //Puzzle accessed
 		inUse = true;
-		MFDManager.a.SendWirePuzzleToDataTab(wiresOn, rowsActive, currentPositionsLeft, currentPositionsRight, solutionPositionsLeft, solutionPositionsRight, theme, wireColors, target, argvalue, ud,transform.position,this);
+		MFDManager.a.SendWirePuzzleToDataTab(wiresOn,rowsActive,
+											 currentPositionsLeft,
+											 currentPositionsRight,
+											 solutionPositionsLeft,
+											 solutionPositionsRight,theme,
+											 wireColors,target,argvalue,ud,
+											 transform.position,this);
 	}
 
 	public void UseTargets (GameObject owner) {
 		UseData ud = new UseData();
 		ud.owner = owner;
 		ud.argvalue = argvalue;
-		TargetIO tio = GetComponent<TargetIO>();
-		if (tio != null) {
-			ud.SetBits(tio);
-		} else {
-			Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
-		}
-		Const.a.UseTargets(ud,target);
-		Const.sprintByIndexOrOverride (successMessageLingdex, successMessage,ud.owner);
+		Const.a.UseTargets(gameObject,ud,target);
+		Const.sprintByIndexOrOverride(successMessageLingdex,
+									  successMessage,ud.owner);
 	}
 
 	public static string Save(GameObject go) {
 		PuzzleWirePuzzle pwp = go.GetComponent<PuzzleWirePuzzle>();
 		if (pwp == null) {
-			Debug.Log("PuzzleWirePuzzle missing on savetype of PuzzleWire!  GameObject.name: " + go.name);
+			Debug.Log("PuzzleWirePuzzle missing on savetype of PuzzleWire!  "
+					  + "GameObject.name: " + go.name);
+
 			return "0|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0";
 		}
 

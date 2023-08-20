@@ -12,8 +12,6 @@ public class TriggerCounter : MonoBehaviour {
 
 	public void Targetted (UseData ud) {
 		counter++;
-		//owner = ud.owner;  Nope, last targetter becomes the owner
-		// Debug.Log("Trigger_counter count at " + counter.ToString() + ", with targetname of " + GetComponent<TargetIO>().targetname);
 		if (counter == countToTrigger) {
 			if (delay <=0) {
 				Target (ud);
@@ -22,24 +20,13 @@ public class TriggerCounter : MonoBehaviour {
 			}
 
 			//!dontReset == reset, bleh double negatives why'd I do that
-			if (!dontReset) {
-				counter = 0; 
-			}
+			if (!dontReset) counter = 0;
 		}
 	}
 
 	void Target(UseData ud) {
 		ud.argvalue = argvalue;
-		TargetIO tio = GetComponent<TargetIO>();
-		if (tio != null) {
-			ud.SetBits(tio);
-			//Debug.Log("Set tio bits in Target on TriggerCounter.cs");
-			//if (tio.targetname == "lev1count1") Debug.Log("tio.lockCodeToScreenMaterialChanger = " + ud.lockCodeToScreenMaterialChanger.ToString());
-		} else {
-			Debug.Log("BUG: no TargetIO.cs found on an object with a TriggerCounter.cs script!  Trying to call UseTargets without parameters!");
-		}
-		Const.a.UseTargets(ud,target);
-		//Debug.Log("Trigger_counter fired normally");
+		Const.a.UseTargets(gameObject,ud,target);
 	}
 
     IEnumerator DelayedTarget(UseData ud) {
@@ -50,7 +37,8 @@ public class TriggerCounter : MonoBehaviour {
 	public static string Save(GameObject go) {
 		TriggerCounter tc = go.GetComponent<TriggerCounter>();
 		if (tc == null) {
-			Debug.Log("TriggerCounter missing on savetype of TriggerCounter!  GameObject.name: " + go.name);
+			Debug.LogError("TriggerCounter missing on savetype of "
+					       + "TriggerCounter!  GameObject.name: " + go.name);
 			return "0";
 		}
 
@@ -62,21 +50,21 @@ public class TriggerCounter : MonoBehaviour {
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		TriggerCounter tc = go.GetComponent<TriggerCounter>();
 		if (tc == null) {
-			Debug.Log("TriggerCounter.Load failure, tc == null");
+			Debug.LogError("TriggerCounter.Load failure, tc == null");
 			return index + 1;
 		}
 
 		if (index < 0) {
-			Debug.Log("TriggerCounter.Load failure, index < 0");
+			Debug.LogError("TriggerCounter.Load failure, index < 0");
 			return index + 1;
 		}
 
 		if (entries == null) {
-			Debug.Log("TriggerCounter.Load failure, entries == null");
+			Debug.LogError("TriggerCounter.Load failure, entries == null");
 			return index + 1;
 		}
 
-		tc.counter = Utils.GetIntFromString(entries[index]); index++; // int - how many counts we have
+		tc.counter = Utils.GetIntFromString(entries[index]); index++;
 		return index;
 	}
 }

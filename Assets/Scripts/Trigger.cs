@@ -23,14 +23,7 @@ public class Trigger : MonoBehaviour {
 		UseData ud = new UseData();
 		ud.owner = activator;
 		ud.argvalue = argvalue;
-		TargetIO tio = GetComponent<TargetIO>();
-		if (tio != null) {
-			ud.SetBits(tio);
-		} else {
-			Debug.Log("BUG: no TargetIO.cs found on an object with a ButtonSwitch.cs script!  Trying to call UseTargets without parameters!");
-		}
-
-		Const.a.UseTargets(ud,target);
+		Const.a.UseTargets(gameObject,ud,target);
 	}
 
 	void TriggerTripped (Collider col, bool initialEntry) {

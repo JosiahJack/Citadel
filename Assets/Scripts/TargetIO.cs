@@ -97,7 +97,8 @@ public class TargetIO : MonoBehaviour {
 		startInitialized = true;
 	}
 
-	// comes from Const.a.UseTargets - already checked that target matched targetname of this interaction
+	// Comes from Const.a.UseTargets - already checked that target matched
+	// targetname of this interaction.
 	public void Targetted(UseData ud) {
 		tempUD = ud; // prevent overwrites in the stack
 		//Debug.Log("Entering Targetted() on a TargetIO.cs script, with targetname: " + targetname);
@@ -264,47 +265,6 @@ public class TargetIO : MonoBehaviour {
 		if (tempUD.unlockSwitch) {
 			ButtonSwitch btsw = GetComponent<ButtonSwitch>();
 			if (btsw != null) btsw.locked = false;
-		}
-
-		if (tempUD.lockCodeToScreenMaterialChanger) {
-			switch (LevelManager.a.currentLevel) {
-    			case 1:
-    			    if (Const.a.questData.lev1SecCodeLocked) return;
-    			    
-    			    Const.a.questData.lev1SecCodeLocked = true;
-    			    Const.a.questData.lev1SecCode = UnityEngine.Random.Range(0,10);
-    			    break;
-    			case 2:
-    		    	if (Const.a.questData.lev2SecCodeLocked) return;
-    			    
-    			    Const.a.questData.lev2SecCodeLocked = true;
-    			    Const.a.questData.lev2SecCode = UnityEngine.Random.Range(0,10);
-    			    break;
-    			case 3:
-    		    	if (Const.a.questData.lev3SecCodeLocked) return;
-    			    
-    			    Const.a.questData.lev3SecCodeLocked = true;
-    			    Const.a.questData.lev3SecCode = UnityEngine.Random.Range(0,10);
-    			    break;
-    			case 4:
-    			    if (Const.a.questData.lev4SecCodeLocked) return;
-    			    
-    			    Const.a.questData.lev4SecCodeLocked = true;
-    			    Const.a.questData.lev4SecCode = UnityEngine.Random.Range(0,10);
-    			    break;
-    			case 5:
-    			    if (Const.a.questData.lev5SecCodeLocked) return;
-    			    
-    			    Const.a.questData.lev5SecCodeLocked = true;
-    			    Const.a.questData.lev5SecCode = UnityEngine.Random.Range(0,10);
-    			    break;
-    			case 6:
-    			if (Const.a.questData.lev6SecCodeLocked) return;
-    			    
-    			    Const.a.questData.lev6SecCodeLocked = true;
-    			    Const.a.questData.lev6SecCode = UnityEngine.Random.Range(0,10);
-    			    break;
-    		}
 		}
 
 		if (tempUD.spawnerActivate) {

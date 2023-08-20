@@ -27,11 +27,6 @@ public class LogicRelay : MonoBehaviour {
     }
 
 	void RunTargets(UseData ud) {
-		if (target == null || target == "" || target == " " || target == "  ") {
-			Debug.Log("WARNING: logic relay attempting to target nothing");
-			return; // no target, do nothing
-		}
-
 		if (onceEver && alreadyDone) return;
 
 		ud.argvalue = argvalue;
@@ -40,10 +35,13 @@ public class LogicRelay : MonoBehaviour {
 			if (tio != null) {
 				ud.SetBits(tio);
 			} else {
-				Debug.Log("BUG: no TargetIO.cs found on an object with a LogicRelay.cs script!  Trying to call UseTargets without parameters!");
+				Debug.Log("BUG: no TargetIO.cs found on an object with a "
+						  + "LogicRelay.cs script!  Trying to call UseTargets"
+						  + " without parameters!");
 			}
 		}
-		Const.a.UseTargets(ud,target);
+
+		Const.a.UseTargets(null,ud,target);
 		if (onceEver) alreadyDone = true;
 	}
 

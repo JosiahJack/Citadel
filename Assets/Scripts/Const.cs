@@ -1831,8 +1831,72 @@ public class Const : MonoBehaviour {
 		}
 	}
 
-	public void UseTargets (UseData ud, string targetname) {
-		// First check if targetname is valid.  This is fine if not, some
+	public void UseTargets (GameObject go, UseData ud, string targetname) {
+		if (go != null) {
+			TargetIO tio = GetComponent<TargetIO>();
+			if (tio != null) {
+				ud.SetBits(tio);
+			} else {
+				UnityEngine.Debug.Log("BUG: no TargetIO.cs found on " + go.name
+						+ ".  Trying to call UseTargets without parameters!");
+			}
+		}
+		// Called by something's Use()
+
+		// First do things that don't actually need any other named object.
+		if (ud.lockCodeToScreenMaterialChanger) {
+			switch (LevelManager.a.currentLevel) {
+				case 1:
+					if (Const.a.questData.lev1SecCodeLocked) return;
+					
+					Const.a.questData.lev1SecCodeLocked = true;
+					Const.a.questData.lev1SecCode =
+						UnityEngine.Random.Range(0,10);
+					break;
+				case 2:
+					if (Const.a.questData.lev2SecCodeLocked) return;
+					
+					Const.a.questData.lev2SecCodeLocked = true;
+					Const.a.questData.lev2SecCode =
+						UnityEngine.Random.Range(0,10);
+
+					break;
+				case 3:
+					if (Const.a.questData.lev3SecCodeLocked) return;
+					
+					Const.a.questData.lev3SecCodeLocked = true;
+					Const.a.questData.lev3SecCode =
+						UnityEngine.Random.Range(0,10);
+
+					break;
+				case 4:
+					if (Const.a.questData.lev4SecCodeLocked) return;
+					
+					Const.a.questData.lev4SecCodeLocked = true;
+					Const.a.questData.lev4SecCode =
+						UnityEngine.Random.Range(0,10);
+
+					break;
+				case 5:
+					if (Const.a.questData.lev5SecCodeLocked) return;
+					
+					Const.a.questData.lev5SecCodeLocked = true;
+					Const.a.questData.lev5SecCode =
+						UnityEngine.Random.Range(0,10);
+
+					break;
+				case 6:
+				if (Const.a.questData.lev6SecCodeLocked) return;
+					
+					Const.a.questData.lev6SecCodeLocked = true;
+					Const.a.questData.lev6SecCode =
+						UnityEngine.Random.Range(0,10);
+
+					break;
+			}
+		}
+
+		// Next check if targetname is valid.  This is fine if not, some
 		// triggers we just want to play the trigger's SFX and do nothing else.
 		if (string.IsNullOrWhiteSpace(targetname)) return;
 
@@ -1847,6 +1911,7 @@ public class Const : MonoBehaviour {
 										   + "TargetnameRegister!!!");
 				return;
 			}
+
 			if (TargetnameRegister[i] != targetname) continue;
 
 			if (TargetRegister[i] != null) {

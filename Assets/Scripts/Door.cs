@@ -151,34 +151,10 @@ public class Door : MonoBehaviour {
 					accessCardUsedByPlayer = true;
 				}
 
-				if (!string.IsNullOrWhiteSpace(target)) {
-					if (onlyTargetOnce && !targetAlreadyDone) {
-						targetAlreadyDone = true;
-						ud.argvalue = argvalue;
-						TargetIO tio = GetComponent<TargetIO>();
-						if (tio != null) {
-							ud.SetBits(tio);
-						} else {
-							Debug.Log("BUG: no TargetIO.cs found on an "
-										+ "object with a Door.cs script!  "
-										+ "Trying to call UseTargets without"
-										+ " parameters!");
-						}
-						Const.a.UseTargets(ud,target);
-					} else {
-						targetAlreadyDone = true;
-						ud.argvalue = argvalue;
-						TargetIO tio = GetComponent<TargetIO>();
-						if (tio != null) {
-							ud.SetBits(tio);
-						} else {
-							Debug.Log("BUG: no TargetIO.cs found on an "
-										+ "object with a Door.cs script!  "
-										+ "Trying to call UseTargets without"
-										+ " parameters!");
-						}
-						Const.a.UseTargets(ud,target);
-					}
+				if ((onlyTargetOnce && !targetAlreadyDone) || !onlyTargetOnce) {
+					targetAlreadyDone = true;
+					ud.argvalue = argvalue;
+					Const.a.UseTargets(gameObject,ud,target);
 				}
 
 				if (ajar) {

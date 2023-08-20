@@ -445,7 +445,7 @@ public class PuzzleGrid : MonoBehaviour {
 			MouseLookScript.a.ResetCursor();
 		}
 		
-		Const.a.UseTargets(udSender,target);
+		Const.a.UseTargets(null,udSender,target);
 	}
 
 	int ReturnCellAbove(int index) {

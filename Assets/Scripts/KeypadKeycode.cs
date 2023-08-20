@@ -41,22 +41,11 @@ public class KeypadKeycode : MonoBehaviour {
 		if (locked) {
 			Const.sprintByIndexOrOverride(lockedMessageLingdex,
 			                              lockedMessage,ud.owner);
-			
-			if (!string.IsNullOrWhiteSpace(lockedTarget)) {
-				ud.argvalue = argvalue;
-				TargetIO tio = GetComponent<TargetIO>();
-				if (tio != null) {
-					ud.SetBits(tio);
-				} else {
-					Debug.Log("BUG: no TargetIO.cs found on an object with a "
-					          + "ButtonSwitch.cs script!  Trying to call "
-					          + "UseTargets without parameters!");
-				}
-				
-				// Target something because we are locked like a Vox message to
-				// say we're locked, e.g. "Non emergency life pods disabled."
-				Const.a.UseTargets(ud,lockedTarget); 
-			}
+
+			// Target something because we are locked like a Vox message to
+			// say we're locked, e.g. "Non emergency life pods disabled."
+			ud.argvalue = argvalue;
+			Const.a.UseTargets(gameObject,ud,lockedTarget); 
 			return;
 		}
 
@@ -109,15 +98,7 @@ public class KeypadKeycode : MonoBehaviour {
 		UseData ud = new UseData();
 		ud.owner = playerCamera;
 		ud.argvalue = argvalue;
-		TargetIO tio = GetComponent<TargetIO>();
-		if (tio != null) {
-			ud.SetBits(tio);
-		} else {
-			Debug.Log("BUG: no TargetIO.cs found on an object with a "
-			          + "KeypadKeycode.cs script!  Trying to call UseTargets "
-			          + "without parameters!");
-		}
-		Const.a.UseTargets(ud,target);
+		Const.a.UseTargets(gameObject,ud,target);
 		Const.sprintByIndexOrOverride(successMessageLingdex,successMessage,
 		                              ud.owner);
 	}

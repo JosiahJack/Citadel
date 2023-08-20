@@ -35,28 +35,24 @@ public class ChargeStation : MonoBehaviour {
 			} else {
 				PlayerEnergy.a.GiveEnergy(amount, EnergyType.ChargeStation);
 			}
+
 			if (damageOnUse > 0f) {
 				DamageData dd = new DamageData();
-				dd.damage = damageOnUse;
-				if (PlayerHealth.a.hm.health <= dd.damage) dd.damage = PlayerHealth.a.hm.health - 1; // Don't ever kill the player from this, way too cheap
-				if (PlayerHealth.a.hm.god) dd.damage = 0;
-				// No impact force here, it's a zap.
-				if (dd.damage > 0) PlayerHealth.a.hm.TakeDamage(dd);  // Ouch, it zapped me...that really hurt Charlie, that hurt my finger, owhow, OW! ow, hahahow ow! OWW!  Charlie zapped my finger (it helps if you use a British accent)
+
+				// Don't ever kill the player from this, way too cheap.
+				dd.damage = Mathf.Min(damageOnUse,PlayerHealth.a.hm.health - 1);
+
+				// No impact force here, it's a zap.  Ouch, it zapped me...that
+				// really hurt Chargie, that hurt my finger, owhow, OW! ow,
+				// hahahow ow! OWW!  Chargie zapped my finger (it helps if you
+				// use a British accent and refer to Charlie Bit My Finger).
+				if (dd.damage > 0) PlayerHealth.a.hm.TakeDamage(dd);
 			}
+
 			Const.sprintByIndexOrOverride (usedMsgLingdex, usedMsg,ud.owner);
 			if (requireReset) nextthink = PauseScript.a.relativeTime + resetTime;
-			if (!string.IsNullOrWhiteSpace(target)) {
-				ud.argvalue = argvalue;
-				TargetIO tio = GetComponent<TargetIO>();
-				if (tio != null) {
-					ud.SetBits(tio);
-				} else {
-					Debug.Log("BUG: no TargetIO.cs found on an object with a "
-							  + "ChargeStation.cs script!  Trying to call "
-							  + "UseTargets without parameters!");
-				}
-				Const.a.UseTargets(ud,target);
-			}
+			ud.argvalue = argvalue;
+			Const.a.UseTargets(gameObject,ud,target);
 		} else {
 			Const.sprintByIndexOrOverride (rechargeMsgLingdex, rechargeMsg,ud.owner);
 		}

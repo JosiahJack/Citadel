@@ -178,17 +178,9 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	void UseDeathTargets() {
-		if (!string.IsNullOrWhiteSpace(targetOnDeath)) {
-			UseData ud = new UseData();
-			ud.argvalue = argvalue;
-			TargetIO tio = GetComponent<TargetIO>();
-			if (tio != null) {
-				ud.SetBits(tio);
-			} else {
-				Debug.Log("BUG: no TargetIO.cs found on a gameobject with a HealthManager.cs script!  Trying to call UseTargets without parameters!");
-			}
-			Const.a.UseTargets(ud,targetOnDeath);
-		}
+		UseData ud = new UseData();
+		ud.argvalue = argvalue;
+		Const.a.UseTargets(gameObject,ud,targetOnDeath);
 	}
 
 	void InitializeCorpseOnly() {

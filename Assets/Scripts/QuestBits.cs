@@ -292,6 +292,6 @@ public class QuestBits {
 	private void RunTargets(UseData ud, TargetIO tio, string target, string argvalue) {
 		ud.argvalue = argvalue; // grr, arg! (Mutant Enemy reference alert)
 		ud.SetBits(tio);
-		Const.a.UseTargets(ud,target);
+		Const.a.UseTargets(null,ud,target);
 	}
 }
