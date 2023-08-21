@@ -1,0 +1,50 @@
+name: Citadel Build A - Experimental
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    name: Citadel Build Android Experimental
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Mark Library folder to be preserved
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-Android
+          restore-keys: |
+            Library-
+            
+      #- name: Run custom image build
+      #  run: |
+      #    echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      #    chmod +x ./build_a.sh
+      #    ./build_a.sh
+      
+      - name: Download custom Docker image
+        run: |
+          echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker pull josiahjack/citadel-ci:ubuntu-2019.4.35f1-android-2.0.0
+
+      - name: Build game
+        id: build
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: Android
+          versioning: Semantic
+          customImage: josiahjack/citadel-ci:ubuntu-2019.4.35f1-android-2.0.0
+          allowDirtyBuild: true
+
+      - name: Upload built files
+        uses: actions/upload-artifact@v3
+        with:
+          name: Citadel_DevBuild_AndroidExperimental
+          path: build/Android
+          if-no-files-found: error
