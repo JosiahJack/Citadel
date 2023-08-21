@@ -178,6 +178,8 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	void UseDeathTargets() {
+		if (isPlayer) return; // Player death does nothing.
+
 		UseData ud = new UseData();
 		ud.argvalue = argvalue;
 		Const.a.UseTargets(gameObject,ud,targetOnDeath);
@@ -687,6 +689,15 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	public void AwakeFromLoad() {
+		if (awakeInitialized) {
+			if (securityAffected != SecurityType.None
+				&& LevelManager.a != null) {
+
+				LevelManager.a.RegisterSecurityObject(levelIndex,
+													  securityAffected);
+			}
+		}
+
 		if (!awakeInitialized) { Awake(); }
 		if (!startInitialized) { Start(); }
 
