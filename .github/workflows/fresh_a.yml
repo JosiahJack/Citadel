@@ -13,7 +13,7 @@ jobs:
       - name: Run custom image build
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          chmod +x ./build.sh
+          chmod +x ./build_a.sh
           ./build.sh
       - name: Build game
         uses: game-ci/unity-builder@v2
