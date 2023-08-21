@@ -206,6 +206,7 @@ public class AIAnimationController : MonoBehaviour {
 		firstUpdateAfterLoad = false;
 		anim.speed = loadedSetSpeed;
 		if (string.IsNullOrWhiteSpace(loadedClipName)) loadedClipName = "Idle";
+		if (loadedClipIndex < 0) loadedClipIndex = 0;
 		anim.Play(loadedClipName,loadedClipIndex,loadedAnimatorPlaybackTime);
 	}
 	
