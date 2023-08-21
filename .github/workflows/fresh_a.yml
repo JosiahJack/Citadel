@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    name: Citadel Build A ${{ matrix.plans.targetPlatform }}
+    name: Citadel Build Android Experimental
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
