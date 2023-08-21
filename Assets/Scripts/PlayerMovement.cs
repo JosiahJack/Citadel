@@ -1030,7 +1030,9 @@ public class PlayerMovement : MonoBehaviour {
 	bool GetSprintInputState() {
 		if (consoleActivated) return false;
 
-		bool conditions = (grounded || CheatNoclip || ladderState);
+		bool conditions = (grounded || CheatNoclip || ladderState
+						   || gravliftState);
+
 		if (GetInput.a.Sprint()) {
 			if (conditions) return !(GetInput.a.CapsLockOn());
 			return false;
