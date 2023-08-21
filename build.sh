@@ -6,7 +6,7 @@ UNITY_VERSION=2019.4.35f1
 GAME_CI_VERSION=1 # https://github.com/game-ci/docker/releases
 MY_USERNAME=josiahjack
 
-declare -a components=("linux-il2cpp" "mac-mono" "windows-mono")
+declare -a components=("android-2.0.0") #"linux-il2cpp" "mac-mono" "windows-mono")
 
 for component in "${components[@]}"
 do
@@ -15,5 +15,5 @@ do
   docker build --build-arg GAME_CI_UNITY_EDITOR_IMAGE=${GAME_CI_UNITY_EDITOR_IMAGE} . -t ${IMAGE_TO_PUBLISH}
 # uncomment the following to publish the built images to docker 
 # Do this whenever Unity version or host docker hub account changes
- # docker push ${IMAGE_TO_PUBLISH}
+  docker push ${IMAGE_TO_PUBLISH}
 done
