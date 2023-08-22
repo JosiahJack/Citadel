@@ -593,6 +593,21 @@ public class AIController : MonoBehaviour {
 					tempVec = (sightPoint.transform.forward
 							   * Const.a.walkSpeedForNPC[index]);
 
+					if (Const.a.numberOfRaycastsThisFrame
+						  <= Const.a.maxRaycastsPerFrame
+						&& Const.a.moveTypeForNPC[index] != AIMoveType.Fly) {
+
+						Vector3 checkPos = sightPoint.transform.position
+										   + (tempVec.normalized * 0.48f);
+
+						int mk = Const.a.layerMaskNPCCollision;
+						if (!Physics.Raycast(checkPos,Vector3.down,2.56f,mk)) {
+							Const.a.numberOfRaycastsThisFrame++;
+							tempVec.x = 0f;
+							tempVec.z = 0f;
+						}
+					}
+
 					tempVec.y = rbody.velocity.y; // Carry across gravity.
 					rbody.velocity = tempVec;
 				}
