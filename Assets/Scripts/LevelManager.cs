@@ -365,11 +365,11 @@ public class LevelManager : MonoBehaviour {
 		string lName = "CitadelScene_lights_level" + curlevel.ToString()
 						  + ".dat";
 
-		string lPath = Utils.SafePathCombine(Application.streamingAssetsPath,
-											 lName);
+		//string lPath = Utils.SafePathCombine(Application.streamingAssetsPath,
+		//									 lName);
 
 		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot(lName);
-		StreamReader sf = Utils.ReadStreamingAsset(lPath);
+		StreamReader sf = Utils.ReadStreamingAsset(lName);
 		//StreamReader sf = new StreamReader(lPath);
 		if (sf == null) {
 			UnityEngine.Debug.Log("Lights input file path invalid");
