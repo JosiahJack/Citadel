@@ -1778,9 +1778,15 @@ public class Inventory : MonoBehaviour {
 			MouseLookScript.a.compassSmallTicks.SetActive(false);
 			MouseLookScript.a.compassLargeTicks.SetActive(false);
 		}
+
+		if (inv.BioMonitorActive()) {
+			Utils.Deactivate(inv.hardwareButtonManager.bioMonitorContainer);
+		} else {
+			Utils.Activate(inv.hardwareButtonManager.bioMonitorContainer);
+		}
 		
 	    for (j=0;j<12;j++) {
-	        if (!Inventory.a.hasHardware[j]) continue;
+	        if (!inv.hasHardware[j]) continue;
 	        
     		int button8Index = -1;
     		switch(j) {
@@ -1800,17 +1806,16 @@ public class Inventory : MonoBehaviour {
     		
     		if (button8Index >= 0 && button8Index < 8) {
     			MouseLookScript.a.hardwareButtons[button8Index].SetActive(true);
-    			Inventory.a.hardwareButtonManager.SetVersionIconForButton(
-    			    Inventory.a.hardwareIsActive[j],
-    			    Inventory.a.hardwareVersionSetting[j],4
+    			inv.hardwareButtonManager.SetVersionIconForButton(
+    			    inv.hardwareIsActive[j],
+    			    inv.hardwareVersionSetting[j],4
     			);
 
-    			Inventory.a.hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
+    			inv.hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
     		}
     		
-    		Inventory.a.ActivateHardwareButton(j);
+    		inv.ActivateHardwareButton(j);
 	    }
-
 
 		for (j=0;j<32;j++) { inv.accessCardsOwned[j] = Utils.IntToAccessCardType(Utils.GetIntFromString(entries[index])); index++; }
 		for (j=0;j<14;j++) { inv.generalInventoryIndexRef[j] = Utils.GetIntFromString(entries[index],"generalInventoryIndexRef[" + j.ToString() + "]"); index++; }
@@ -1840,7 +1845,6 @@ public class Inventory : MonoBehaviour {
 		for (j=0;j<7;j++) { inv.hasSoft[j] = Utils.GetBoolFromString(entries[index]); index++; }
 		inv.emailCurrent = Utils.GetIntFromString(entries[index]); index++;
 		inv.emailIndex = Utils.GetIntFromString(entries[index]); index++;
-
 
 		return index;
 	}

@@ -4,6 +4,13 @@ using UnityEngine;
 
 // Master input handling functions from configuration
 public class GetInput : MonoBehaviour {
+	public UIButtonMask wButton;
+	public UIButtonMask aButton;
+	public UIButtonMask sButton;
+	public UIButtonMask dButton;
+	public UIButtonMask spaceButton;
+	public UIButtonMask mousePad;
+	public GameObject touchablesContainer;
 	public static GetInput a;
 	[HideInInspector] public bool isCapsLockOn;
 	private bool lastjoy3 = false;
@@ -11,10 +18,15 @@ public class GetInput : MonoBehaviour {
 	void Awake() {
 		a = this;
 		isCapsLockOn = false;
+		if (Application.platform != RuntimePlatform.Android) {
+			touchablesContainer.SetActive(false);
+		} else {
+			touchablesContainer.SetActive(true);
+		}
 	}
 
-	// Used for testing with a DualShock PlayStation 4 remote aka the DS4 for the PS4.
 	//void Update() {
+	//	// Used for testing with a DualShock PlayStation 4 remote aka the DS4 for the PS4.
 	//	if (Input.GetKeyDown(KeyCode.JoystickButton0 )) Debug.Log("JoystickButton0 pressed"); // X (A)
 	//	if (Input.GetKeyDown(KeyCode.JoystickButton1 )) Debug.Log("JoystickButton1 pressed"); // Circle (B)
 	//	if (Input.GetKeyDown(KeyCode.JoystickButton2 )) Debug.Log("JoystickButton2 pressed"); // Square (X)
@@ -44,11 +56,67 @@ public class GetInput : MonoBehaviour {
 	//	if (Input.GetAxisRaw("JoyAxis8") < 0) Debug.Log("JoyAxis8 negative"); // D-Pad Up
 	//}
 
-	public bool Forward() 		{ if (Const.a.InputCodeSettings[0] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[0] == 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[0]])) return true; else return false; }
-	public bool StrafeLeft()	{ if (Const.a.InputCodeSettings[1] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[1] == 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[1]])) return true; else return false; }
-	public bool Backpedal()		{ if (Const.a.InputCodeSettings[2] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[2] == 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[2]])) return true; else return false; }
-	public bool StrafeRight()	{ if (Const.a.InputCodeSettings[3] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[3] == 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[3]])) return true; else return false; }
-	public bool Jump()			{ if (Input.GetKey(KeyCode.JoystickButton0)) return true; if (Const.a.InputCodeSettings[4] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[4] == 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
+	public bool Forward() {
+		if (Const.a.InputCodeSettings[0] == 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[0] == 154) return MouseWheelDn();
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[0]])) {
+			return true;
+		}
+
+		if (wButton.held) return true;
+		return false;
+	}
+
+	public bool StrafeLeft() {
+		if (Const.a.InputCodeSettings[1] == 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[1] == 154) return MouseWheelDn();
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[1]])) {
+			return true;
+		}
+
+		if (aButton.held) return true;
+		return false;
+	}
+
+	public bool Backpedal() {
+		if (Const.a.InputCodeSettings[2] == 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[2] == 154) return MouseWheelDn();
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[2]])) {
+			return true;
+		}
+
+		if (sButton.held) return true;
+		return false;
+	}
+
+	public bool StrafeRight() {
+		if (Const.a.InputCodeSettings[3] == 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[3] == 154) return MouseWheelDn();
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[3]])) {
+			return true;
+		}
+
+		if (dButton.held) return true;
+		return false;
+	}
+
+	public bool Jump() {
+		if (Input.GetKey(KeyCode.JoystickButton0)) return true;
+		if (Const.a.InputCodeSettings[4] == 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[4] == 154) return MouseWheelDn();
+		if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[4]])) {
+			return true;
+		}
+
+		if (spaceButton.held) return true;
+		return false;
+	}
+
+	public bool MousePadTouched() {
+		if (mousePad.held) return true;
+		return false;
+	}
+
 	public bool JumpDown()			{ if (Input.GetKeyDown(KeyCode.JoystickButton0)) return true; if (Const.a.InputCodeSettings[4] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[4] == 154) return MouseWheelDn(); if (    Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
 	public bool Crouch()		{ if (Input.GetKeyDown(KeyCode.JoystickButton1)) return true; if (Const.a.InputCodeSettings[5] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[5] == 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[5]])) return true; else return false; }
 	public bool Prone()			{

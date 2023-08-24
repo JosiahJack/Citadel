@@ -31,7 +31,7 @@ public class Config {
 		Const.a.AudioVolumeEffects = AssignConfigInt("Audio","VolumeEffects");
 		Const.a.AudioLanguage = AssignConfigInt("Audio","Language");  // defaults to 0 = english
 
-		Const.a.MouseSensitivity = ((AssignConfigInt("Input","MouseSensitivity")/100f) * 2f) + 0.01f;;
+		Const.a.MouseSensitivity = ((AssignConfigInt("Input","MouseSensitivity")/100f) * 2f) + 0.01f;
 
 		string inputCapture;
 		// Input Configurations

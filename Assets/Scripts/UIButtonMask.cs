@@ -9,6 +9,7 @@ public class UIButtonMask : MonoBehaviour {
 	public bool doubleClickEnabled = false;
 	public int toolTipLingdex = -1;
 	public Handedness toolTipType;
+	public bool held;
 
 	private float doubleClickTime;
 	private float dbclickFinished;
@@ -43,6 +44,16 @@ public class UIButtonMask : MonoBehaviour {
             pointerExit.eventID = EventTriggerType.PointerExit;
             pointerExit.callback.AddListener((data) => { OnPointerExitDelegate((PointerEventData)data); });
             evenT.triggers.Add(pointerExit);
+
+            EventTrigger.Entry pointerDown = new EventTrigger.Entry();
+            pointerDown.eventID = EventTriggerType.PointerDown;
+            pointerDown.callback.AddListener((data) => { OnPointerDownDelegate((PointerEventData)data); });
+            evenT.triggers.Add(pointerDown);
+
+            EventTrigger.Entry pointerUp = new EventTrigger.Entry();
+            pointerUp.eventID = EventTriggerType.PointerUp;
+            pointerUp.callback.AddListener((data) => { OnPointerUpDelegate((PointerEventData)data); });
+            evenT.triggers.Add(pointerUp);
 		} else Debug.Log("Failed to add EventTrigger to " + gameObject.name);
 
 		if (doubleClickEnabled) {
@@ -55,6 +66,7 @@ public class UIButtonMask : MonoBehaviour {
 
 	void OnEnable() {
 		pointerEntered = false;
+		held = false;
 	}
 
 	void Update() {
@@ -75,6 +87,14 @@ public class UIButtonMask : MonoBehaviour {
 
 	// Handle OnPointerExit event, replaces OnMouseExit
     public void OnPointerExitDelegate(PointerEventData data) { PtrExit(); }
+
+	public void OnPointerDownDelegate(PointerEventData data) { held = true;	}
+
+	public void OnPointerUpDelegate(PointerEventData data) { held = false; }
+
+	void OnDisable() {
+		held = false;
+	}
 
 	// Old Unity UI system
 	//public void OnMouseEnter() { PtrEnter(); }

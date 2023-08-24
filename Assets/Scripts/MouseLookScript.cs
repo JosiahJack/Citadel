@@ -89,11 +89,19 @@ public class MouseLookScript : MonoBehaviour {
 	private float headBobX;
 	private float headBobY;
 	private float headBobZ;
+	private float rotSpeedX = 0f;
+	private float rotSpeedY = 0f;
 	private Transform playerCapsuleTransform;
 	[HideInInspector] public float returnFromCyberspaceFinished;
 	private float dropFinished;
 	[HideInInspector] public float randomShakeFinished;
 	[HideInInspector] public float randomKlaxonFinished;
+	public Vector2 debugRT;
+	public Vector2 debugAng;
+	public float joyXStartTime;
+	public float joyYStartTime;
+	public float joyXSignLast;
+	public float joyYSignLast;
     
 	public static MouseLookScript a;
 
@@ -231,22 +239,67 @@ public class MouseLookScript : MonoBehaviour {
 		if (returnFromCyberspaceFinished >= Time.time) return; // Not yet.
 
 		returnFromCyberspaceFinished = 0;
+
+		// PROCESS INPUT SIGNALS
+		// ----------------------------------------------------------------
+		float angX = 0f; // Angle change for X.
+		float angY = 0f; // Angle change for Y.
+		// Handle mouse input from a standard mouse.
 		float deltaX = Input.GetAxisRaw(mouseX) * Const.a.MouseSensitivity * Const.a.GraphicsFOV;
 		float deltaY = Input.GetAxisRaw(mouseY) * Const.a.MouseSensitivity * Const.a.GraphicsFOV;
+
+		// Handle thumbstick input from a controller.
 		Vector2 rightThumbstick = new Vector2(Input.GetAxisRaw("JoyAxis4"), // Horizontal Left < 0, Right > 0
 											  Input.GetAxisRaw("JoyAxis5") * -1f); // Vertical Down > 0, Up < 0 Inverted
-		Vector2 debugRT = rightThumbstick;
-		if (rightThumbstick.magnitude < 0.05f) rightThumbstick = Vector2.zero;
-		rightThumbstick = rightThumbstick.normalized * ((rightThumbstick.magnitude - 0.05f) / (1.0f - 0.05f)) * Const.a.MouseSensitivity * Const.a.GraphicsFOV * 20f;
-		deltaX += rightThumbstick.x;
-		deltaY += rightThumbstick.y;
-		float angX = deltaX * ((Const.a.GraphicsFOV / 2f) / Screen.width / 2f); // deg per screen half / screen
-		float angY = deltaY * ((Const.a.GraphicsFOV / 2f) / Screen.height / 2f);
+		// X
+		float signX = rightThumbstick.x > 0.0f ? 1.0f
+					  : rightThumbstick.x < 0.0f ? -1.0f : 0f;
+		if (signX != joyXSignLast) {
+			joyXStartTime = Time.time; // Zero crossing.
+			rotSpeedX = 0f; // Reset integrator windup.
+		}
+
+		joyXSignLast = signX;
+		rightThumbstick.x *= Const.a.MouseSensitivity * 20f;
+		rotSpeedX += rightThumbstick.x; // Integrate to give fine initial.
+		if (rightThumbstick.x == 0f) rotSpeedX = 0f;
+		if (rotSpeedX != 0f) deltaX = rotSpeedX;
+
+		// Y
+		float signY = rightThumbstick.y > 0.0f ? 1.0f
+					  : rightThumbstick.y < 0.0f ? -1.0f : 0f;
+		if (signY != joyYSignLast) {
+			joyYStartTime = Time.time; // Zero crossing.
+			rotSpeedY = 0f; // Reset integrator windup.
+		}
+
+		joyYSignLast = signY;
+		rightThumbstick.y *= Const.a.MouseSensitivity * 20f;
+		rotSpeedY += rightThumbstick.y; // Integrate to give fine initial.
+		if (rightThumbstick.y == 0) rotSpeedY = 0f;
+		if (rotSpeedY != 0f) deltaY = rotSpeedY;
+
+		// Apply input delta from mouse or controller to angles.
+		if (signX != 0f || signY != 0f) {
+			// Using controller, use integrated deltas.
+			angX = deltaX;
+			angY = deltaY;
+		} else {
+			// Using mouse, map input to deg per screen half / screen.
+			angX = deltaX * ((Const.a.GraphicsFOV / 2f) / Screen.width / 2f);
+			angY = deltaY * ((Const.a.GraphicsFOV / 2f) / Screen.height / 2f);
+		}
+
+		// For my inspector viewing pleasure.
+		debugRT = new Vector2(deltaX,deltaY);
+		debugAng = new Vector2(angX,angY);
 
 		// High pass filter to prevent jumpy behavior.
 		if (angX > Const.a.GraphicsFOV) angX = Const.a.GraphicsFOV;
 		if (angY > Const.a.GraphicsFOV) angY = Const.a.GraphicsFOV;
 
+		// APPLY MOUSE LOOK
+		// --------------------------------------------------------------------
 		if (inCyberSpace) {
 			// CYBER MOUSE LOOK
 			// ----------------------------------------------------------------

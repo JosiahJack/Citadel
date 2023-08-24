@@ -115,8 +115,8 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector] public float fatigueFinished2; // save
 	private int def1 = 1;
 	public bool running = false;
-	private float relForward = 0f;
-	private float relSideways = 0f;
+	public float relForward = 0f;
+	public float relSideways = 0f;
 	[HideInInspector] public bool cyberSetup = false; // save
 	[HideInInspector] public bool cyberDesetup = false; // save
 	[HideInInspector] public SphereCollider cyberCollider;
@@ -431,11 +431,9 @@ public class PlayerMovement : MonoBehaviour {
 		if (GetInput.a.Forward()) {
 			relForward = 1f;
 		}
+
 		relSideways = GetInput.a.StrafeLeft() ? -1f : 0f;
 		if (GetInput.a.StrafeRight()) relSideways = 1f;
-
-		// We are mashing a run button down.
-		running = ((relForward != 0) || (relSideways != 0));
 
 		// Now check for thumbstick/joystick input
 		Vector2 leftThumbstick = new Vector2(
@@ -444,45 +442,42 @@ public class PlayerMovement : MonoBehaviour {
 											   //   Up < 0 Inverted
 		); 
 
-		if (leftThumbstick.magnitude < 0.05f) {
-			leftThumbstick = Vector2.zero;
-		} else {
-			leftThumbstick = leftThumbstick.normalized *
-							 ((leftThumbstick.magnitude - 0.05f)
-							  / (1.0f - 0.05f)); // Showing work instead of 0.95
-		}
-
 		relForward += leftThumbstick.y;
 		relSideways += leftThumbstick.x;
 
-		if (relForward <= 0) return; // Don't affect lean moving non-forward.
+		// We are mashing a run button down.
+		running = ((relForward != 0) || (relSideways != 0));
+
+		float leanReset = relForward > 0.0f ? 1f : relForward < 0.0f ? -1f : 0f;
+
+		if (leanReset == 0) return; // Don't affect lean moving non-forward.
 		if (inCyberSpace) return; // Don't affect lean transform in cyber.
 
 		if (leanTarget > 0) {
 			if (Mathf.Abs(leanTarget - 0) < 0.02f) {
 				leanTarget = 0;
 			} else {
-				leanTarget -= (leanSpeed * Time.deltaTime * relForward);
+				leanTarget -= (leanSpeed * Time.deltaTime * leanReset);
 			}
 
 			if (Mathf.Abs(leanShift - 0) < 0.02f) {
 				leanShift = 0;
 			} else {
 				leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle))
-							* relForward;
+							* leanReset;
 			}
 		} else {
 			if (Mathf.Abs(leanTarget - 0) < 0.02f) {
 				leanTarget = 0;
 			} else {
-				leanTarget += (leanSpeed * Time.deltaTime * relForward);
+				leanTarget += (leanSpeed * Time.deltaTime * leanReset);
 			}
 
 			if (Mathf.Abs(leanShift - 0) < 0.02f) {
 				leanShift = 0;
 			} else {
 				leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1))
-							* relForward;
+							* leanReset;
 			}
 		}
 	}
