@@ -184,6 +184,8 @@ public class GetInput : MonoBehaviour {
 	public bool Booster()		{ if (Const.a.InputCodeSettings[22]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[22]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[22]]))return true; else return false; }
 	public bool Jumpjets()		{ if (Const.a.InputCodeSettings[23]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[23]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[23]]))return true; else return false; }
 	public bool Attack(bool isFullAuto) {
+	    if (lmbButton.held) return true;
+	    
 		if (Const.a.InputCodeSettings[24] == 153) return MouseWheelUp();
 		if (Const.a.InputCodeSettings[24] == 154) return MouseWheelDn();
 		if (isFullAuto) {
@@ -214,7 +216,7 @@ public class GetInput : MonoBehaviour {
 			return true;
 		}
 
-		if (rmbButton.justHeld) return true;
+		if (rmbButton.held) return true;
 		return false;
 	}
 
