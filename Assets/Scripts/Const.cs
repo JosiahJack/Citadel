@@ -407,9 +407,7 @@ public class Const : MonoBehaviour {
             case 1: tF = "text_espanol.txt"; break; // UPKEEP: Other languages
         }
 
-		Utils.ConfirmExistsInStreamingAssetsMakeIfNot(tF);
-		string fp = Utils.SafePathCombine(Application.streamingAssetsPath,tF);
-        StreamReader dataReader = new StreamReader(fp, Encoding.ASCII);
+        StreamReader dataReader = Utils.ReadStreamingAsset(tF);
         using (dataReader) {
             do {
                 // Read the next line
@@ -540,10 +538,11 @@ public class Const : MonoBehaviour {
 		string readLogText; // loaded into string audioLogSpeech2Text[]
 		string readline; // variable to hold each string read in from the file
 		char logSplitChar = ',';
-		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("logs_text.txt");
-		string logPath = Utils.SafePathCombine(Application.streamingAssetsPath,
-											   "logs_text.txt");
-		StreamReader dataReader = new StreamReader(logPath,Encoding.ASCII);
+		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot("logs_text.txt");
+		//string logPath = Utils.SafePathCombine(Application.streamingAssetsPath,
+		//									   "logs_text.txt");
+		//StreamReader dataReader = new StreamReader(logPath,Encoding.ASCII);
+		StreamReader dataReader = Utils.ReadStreamingAsset("logs_text.txt");
 		using (dataReader) {
 			do {
 				int i = 0;
@@ -586,10 +585,11 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 		int readInt = 0;
-		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("damage_tables.txt");
-		string dtP = Utils.SafePathCombine(Application.streamingAssetsPath,
-										   "damage_tables.txt");
-		StreamReader dataReader = new StreamReader(dtP,Encoding.ASCII);
+		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot("damage_tables.txt");
+		//string dtP = Utils.SafePathCombine(Application.streamingAssetsPath,
+		//								   "damage_tables.txt");
+		//StreamReader dataReader = new StreamReader(dtP,Encoding.ASCII);
+		StreamReader dataReader = Utils.ReadStreamingAsset("damage_tables.txt");
 		using (dataReader) {
 			do {
 				int i = 0;
@@ -624,11 +624,12 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int pagenum = 0;
 		creditsLength = 1;
-		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("credits.txt");
-		string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
-										  "credits.txt");
+		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot("credits.txt");
+		//string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
+		//								  "credits.txt");
 
-		StreamReader dataReader = new StreamReader(dr,Encoding.ASCII);
+		//StreamReader dataReader = new StreamReader(dr,Encoding.ASCII);
+		StreamReader dataReader = Utils.ReadStreamingAsset("credits.txt");
 		using (dataReader) {
 			do {
 				// Read the next line
@@ -804,11 +805,12 @@ public class Const : MonoBehaviour {
 		int readInt = 0;
 		int i = 0;
 		int refIndex = 0;
-		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("enemy_tables.csv");
-		string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
-										  "enemy_tables.csv");
+		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot("enemy_tables.csv");
+		//string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
+		//								  "enemy_tables.csv");
 
-		StreamReader dataReader = new StreamReader(dr,Encoding.ASCII);
+		//StreamReader dataReader = new StreamReader(dr,Encoding.ASCII);
+		StreamReader dataReader = Utils.ReadStreamingAsset("enemy_tables.csv");
 		using (dataReader) {
 			do {
 				i = 0;
@@ -1499,9 +1501,10 @@ public class Const : MonoBehaviour {
 		string[] entries = new string[2048]; // Holds pipe | delimited strings
 											 // on individual lines.
 		string lName = "sav" + saveFileIndex.ToString() + ".txt";
-		string lPath = Utils.SafePathCombine(Application.streamingAssetsPath,
-											 lName);
-		StreamReader sr = new StreamReader(lPath);
+		//string lPath = Utils.SafePathCombine(Application.streamingAssetsPath,
+		//									 lName);
+		//StreamReader sr = new StreamReader(lPath);
+		StreamReader sr = Utils.ReadStreamingAsset(lName);
 		if (sr != null) {
 			// Read the file into a list, line by line
 			using (sr) {
