@@ -368,8 +368,9 @@ public class LevelManager : MonoBehaviour {
 		string lPath = Utils.SafePathCombine(Application.streamingAssetsPath,
 											 lName);
 
-		Utils.ConfirmExistsInStreamingAssetsMakeIfNot(lName);
-		StreamReader sf = new StreamReader(lPath);
+		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot(lName);
+		StreamReader sf = Utils.ReadStreamingAsset(lPath);
+		//StreamReader sf = new StreamReader(lPath);
 		if (sf == null) {
 			UnityEngine.Debug.Log("Lights input file path invalid");
 			return;
