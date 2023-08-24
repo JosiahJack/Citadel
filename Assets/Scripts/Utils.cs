@@ -258,7 +258,7 @@ public class Utils {
             WWW reader = new WWW(fPath);
             while (!reader.isDone) { }
             MemoryStream memStr = new MemoryStream(Encoding.ASCII.GetBytes(reader.text));
-            dataReader = new StreamReader(memStr,Encoding.ASCII));
+            dataReader = new StreamReader(memStr,Encoding.ASCII);
         } else {
             Utils.ConfirmExistsInStreamingAssetsMakeIfNot(fName);
 		    dataReader = new StreamReader(fPath, Encoding.ASCII);
