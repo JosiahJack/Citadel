@@ -198,6 +198,9 @@ public class PlayerMovement : MonoBehaviour {
 		ConsoleEmulator.lastCommand = new string[7];
 		ConsoleEmulator.consoleMemdex = consoleMemdex = 0;
 		FatigueCheat = false;
+		if (Application.platform == RuntimePlatform.Android) {
+		    fpsCounter.SetActive(true);
+		}
     }
 
 	void Update() {
