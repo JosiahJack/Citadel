@@ -250,6 +250,22 @@ public class Utils {
 													   // it for everything.
         return combinedPath;
     }
+    
+    public static StreamReader ReadStreamingAsset(string fName) {
+        StreamReader dataReader;
+        string fPath = SafePathCombine(Application.streamingAssetsPath,fName);
+        if (Application.platform == RuntimePlatform.Android) {
+            WWW reader = new WWW(fPath);
+            while (!reader.isDone) { }
+            MemoryStream memStr = new MemoryStream(Encoding.ASCII.GetBytes(reader.text));
+            dataReader = new StreamReader(memStr,Encoding.ASCII));
+        } else {
+            Utils.ConfirmExistsInStreamingAssetsMakeIfNot(fName);
+		    dataReader = new StreamReader(fPath, Encoding.ASCII);
+        }
+        
+        return dataReader;
+    }
 
 	// From the Unity Documentation on Resources.Load:
 	// Note: All asset names and paths in Unity use forward slashes, paths
