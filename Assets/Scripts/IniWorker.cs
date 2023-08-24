@@ -11,14 +11,19 @@ using System.Text;
 // Originally sourced here: https://forum.unity.com/threads/read-write-ini-file-o-config-file.244770/ 
 public class INIWorker {
     private static bool Initialized = false;
-	private static string path = 
-        Utils.SafePathCombine(Application.streamingAssetsPath, "Config.ini");
+	private static string path;
 
     private static Dictionary<string, Dictionary<string, string>> IniDictionary = 
         new Dictionary<string, Dictionary<string, string>>();
 
     private static bool FirstRead() {
-		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
+		if (Application.platform == RuntimePlatform.Android) {
+			path = Utils.SafePathCombine(Application.persistentDataPath,"Config.ini");
+		} else {
+		    Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
+            path = Utils.SafePathCombine(Application.streamingAssetsPath,"Config.ini");
+        }
+
         if (File.Exists(path)) {
             using (StreamReader sr = new StreamReader(path)) {
                 string line;
@@ -79,6 +84,13 @@ public class INIWorker {
     }
  
     private static void WriteIni() {
+		if (Application.platform == RuntimePlatform.Android) {
+			path = Utils.SafePathCombine(Application.persistentDataPath,"Config.ini");
+		} else {
+		    Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
+            path = Utils.SafePathCombine(Application.streamingAssetsPath,"Config.ini");
+        }
+
         using (StreamWriter sw = new StreamWriter(path,false,Encoding.ASCII)) {
 			bool init = true;
 			sw.WriteLine("// Citadel Configuration File");

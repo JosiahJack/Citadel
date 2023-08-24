@@ -10,6 +10,8 @@ public class UIButtonMask : MonoBehaviour {
 	public int toolTipLingdex = -1;
 	public Handedness toolTipType;
 	public bool held;
+	public bool justHeld;
+	public bool ignoreOverButton = false;
 
 	private float doubleClickTime;
 	private float dbclickFinished;
@@ -67,6 +69,7 @@ public class UIButtonMask : MonoBehaviour {
 	void OnEnable() {
 		pointerEntered = false;
 		held = false;
+		justHeld = false;
 	}
 
 	void Update() {
@@ -80,6 +83,10 @@ public class UIButtonMask : MonoBehaviour {
 		}
 	}
 
+	void LateUpdate() {
+		justHeld = false;
+	}
+
 	// These interface with the EventTrigger system and call the real meat and potatoes below.
 
 	// Handle OnPointerEnter event, replaces OnMouseEnter
@@ -88,12 +95,16 @@ public class UIButtonMask : MonoBehaviour {
 	// Handle OnPointerExit event, replaces OnMouseExit
     public void OnPointerExitDelegate(PointerEventData data) { PtrExit(); }
 
-	public void OnPointerDownDelegate(PointerEventData data) { held = true;	}
+	public void OnPointerDownDelegate(PointerEventData data) {
+		held = true;
+		justHeld = true;
+	}
 
 	public void OnPointerUpDelegate(PointerEventData data) { held = false; }
 
 	void OnDisable() {
 		held = false;
+		justHeld = false;
 	}
 
 	// Old Unity UI system
@@ -101,6 +112,7 @@ public class UIButtonMask : MonoBehaviour {
 	//public void OnMouseExit() { PtrExit(); }
 
 	public void PtrEnter () {
+		if (ignoreOverButton) return;
 		if (pointerEntered) return;
 
 		GUIState.a.PtrHandler(true,true,overButtonType,gameObject);
@@ -115,6 +127,7 @@ public class UIButtonMask : MonoBehaviour {
     }
 
 	public void PtrExit () {
+		if (ignoreOverButton) return;
 		if (!pointerEntered) return;
 
 		GUIState.a.ClearOverButton();

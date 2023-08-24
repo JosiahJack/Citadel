@@ -9,7 +9,13 @@ public class GetInput : MonoBehaviour {
 	public UIButtonMask sButton;
 	public UIButtonMask dButton;
 	public UIButtonMask spaceButton;
-	public UIButtonMask mousePad;
+	public UIButtonMask leftButton;
+	public UIButtonMask rightButton;
+	public UIButtonMask upButton;
+	public UIButtonMask downButton;
+	public UIButtonMask lmbButton;
+	public UIButtonMask rmbButton;
+	public UIButtonMask consoleButton;
 	public GameObject touchablesContainer;
 	public static GetInput a;
 	[HideInInspector] public bool isCapsLockOn;
@@ -19,7 +25,7 @@ public class GetInput : MonoBehaviour {
 		a = this;
 		isCapsLockOn = false;
 		if (Application.platform != RuntimePlatform.Android) {
-			touchablesContainer.SetActive(false);
+			//touchablesContainer.SetActive(false);
 		} else {
 			touchablesContainer.SetActive(true);
 		}
@@ -112,11 +118,6 @@ public class GetInput : MonoBehaviour {
 		return false;
 	}
 
-	public bool MousePadTouched() {
-		if (mousePad.held) return true;
-		return false;
-	}
-
 	public bool JumpDown()			{ if (Input.GetKeyDown(KeyCode.JoystickButton0)) return true; if (Const.a.InputCodeSettings[4] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[4] == 154) return MouseWheelDn(); if (    Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[4]])) return true; else return false; }
 	public bool Crouch()		{ if (Input.GetKeyDown(KeyCode.JoystickButton1)) return true; if (Const.a.InputCodeSettings[5] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[5] == 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[5]])) return true; else return false; }
 	public bool Prone()			{
@@ -129,10 +130,50 @@ public class GetInput : MonoBehaviour {
 	public bool LeanLeft()		{ if ((Input.GetAxisRaw("JoyAxis3") > 0) && (Input.GetAxisRaw("JoyAxis6") < 0.05f)) return true; if (Const.a.InputCodeSettings[7] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[7] == 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[7]])) return true; else return false; }
 	public bool LeanRight()		{ if ((Input.GetAxisRaw("JoyAxis6") > 0) && (Input.GetAxisRaw("JoyAxis3") < 0.05f)) return true; if (Const.a.InputCodeSettings[8] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[8] == 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[8]])) return true; else return false; }
 	public bool Sprint()		{ if (Input.GetKey(KeyCode.JoystickButton9)) return true; if (Const.a.InputCodeSettings[9] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[9] == 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[9]])) return true; else return false; }
-	public bool TurnLeft()		{ if (Const.a.InputCodeSettings[11]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[11]== 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[11]]))return true; else return false; }
-	public bool TurnRight()		{ if (Const.a.InputCodeSettings[12]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[12]== 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[12]]))return true; else return false; }
-	public bool LookUp()		{ if (Const.a.InputCodeSettings[13]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[13]== 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[13]]))return true; else return false; }
-	public bool LookDown()		{ if (Const.a.InputCodeSettings[14]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[14]== 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[14]]))return true; else return false; }
+	public bool TurnLeft() {
+		if (Const.a.InputCodeSettings[11]== 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[11]== 154) return MouseWheelDn();
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[11]])) {
+			return true;
+		}
+
+		if (leftButton.held) return true;
+		return false;
+	}
+
+	public bool TurnRight() {
+		if (Const.a.InputCodeSettings[12]== 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[12]== 154) return MouseWheelDn();
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[12]])) {
+			return true;
+		}
+
+		if (rightButton.held) return true;
+		return false;
+	}
+
+	public bool LookUp() {
+		if (Const.a.InputCodeSettings[13]== 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[13]== 154) return MouseWheelDn();
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[13]])) {
+			return true;
+		}
+
+		if (upButton.held) return true;
+		return false;
+	}
+
+	public bool LookDown() {
+		if (Const.a.InputCodeSettings[14]== 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[14]== 154) return MouseWheelDn();
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[14]])) {
+			return true;
+		}
+
+		if (downButton.held) return true;
+		return false;
+	}
+
 	public bool RecentLog()		{ if (Const.a.InputCodeSettings[15]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[15]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[15]]))return true; else return false; }
 	public bool Biomonitor()	{ if (Const.a.InputCodeSettings[16]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[16]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[16]]))return true; else return false; }
 	public bool Sensaround()	{ if (Const.a.InputCodeSettings[17]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[17]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[17]]))return true; else return false; }
@@ -147,13 +188,36 @@ public class GetInput : MonoBehaviour {
 		if (Const.a.InputCodeSettings[24] == 154) return MouseWheelDn();
 		if (isFullAuto) {
 			if (Input.GetKey(KeyCode.JoystickButton5)) return true;
-			if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[24]])) return true; else return false;
+			if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[24]])) {
+				return true;
+			} else {
+				if (lmbButton.held) return true;
+				return false;
+			}
 		} else {
 			if (Input.GetKeyDown(KeyCode.JoystickButton5)) return true;
-			if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[24]])) return true; else return false;
+			if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[24]])) {
+				return true;
+			} else {
+				if (lmbButton.justHeld) return true;
+				return false;
+			}
 		}
+
+
 	}
-	public bool Use()			{ if (Input.GetKeyDown(KeyCode.JoystickButton4)) return true; if (Const.a.InputCodeSettings[25]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[25]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[25]])) return true; else return false; }
+	public bool Use() {
+		if (Input.GetKeyDown(KeyCode.JoystickButton4)) return true;
+		if (Const.a.InputCodeSettings[25]== 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[25]== 154) return MouseWheelDn();
+		if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[25]])) {
+			return true;
+		}
+
+		if (rmbButton.justHeld) return true;
+		return false;
+	}
+
 	public bool Menu()			{ if (Input.GetKeyDown(KeyCode.JoystickButton7) || Input.GetKeyDown(KeyCode.JoystickButton8)) return true; if (Const.a.InputCodeSettings[26]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[26]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[26]])) return true; else return false; }
 	public bool ToggleMode()	{ if (Input.GetAxisRaw("JoyAxis7") < 0) return true; if (Const.a.InputCodeSettings[27]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[27]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[27]])) return true; else return false; }
 	public bool Reload()		{ if (Input.GetKeyDown(KeyCode.JoystickButton2)) return true; if (Const.a.InputCodeSettings[28]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[28]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[28]])) return true; else return false; }
@@ -170,7 +234,17 @@ public class GetInput : MonoBehaviour {
     public bool SwimUp()		{ if (Const.a.InputCodeSettings[40]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[40]== 154) return MouseWheelDn(); if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[40]])) return true; else return false; }
     public bool SwimDn()		{ if (Const.a.InputCodeSettings[41]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[41]== 154) return MouseWheelDn(); if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[41]])) return true; else return false; }
     // public bool SwapAmmoType()	{ if (Const.a.InputCodeSettings[42]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[42]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[42]])) return true; else return false; }
-    public bool Console()		{ if (Const.a.InputCodeSettings[43]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[43]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[43]]) || Input.GetKeyDown(KeyCode.Caret)) return true; else return false; } // UPDATE should replace the 94 check here with a system to handle Shift+6 binding to set directly?
+    public bool Console() {
+		if (Const.a.InputCodeSettings[43]== 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[43]== 154) return MouseWheelDn();
+		if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[43]])
+			|| Input.GetKeyDown(KeyCode.Caret)) {
+			return true;
+		}
+
+		if (consoleButton.justHeld) return true;
+		return false;
+	} // UPDATE should replace the 94 check here with a system to handle Shift+6 binding to set directly?
 
 	public bool Numpad0()		{ if (Input.GetKeyDown(KeyCode.Keypad0)) return true; else return false; }
 	public bool Numpad1()		{ if (Input.GetKeyDown(KeyCode.Keypad1)) return true; else return false; }
