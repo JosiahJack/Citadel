@@ -514,11 +514,12 @@ public class LevelManager : MonoBehaviour {
 		string dynName = "CitadelScene_dynamics_level" + curlevel.ToString()
 						 + ".dat";
 
-		string dynPath = Utils.SafePathCombine(Application.streamingAssetsPath,
-											   dynName);
+		//string dynPath = Utils.SafePathCombine(Application.streamingAssetsPath,
+		//									   dynName);
 
-		Utils.ConfirmExistsInStreamingAssetsMakeIfNot(dynName);
-		StreamReader sf = new StreamReader(dynPath);
+		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot(dynName);
+		//StreamReader sf = new StreamReader(dynPath);
+		StreamReader sf = Utils.ReadStreamingAsset(dynName);
 		if (sf == null) {
 			UnityEngine.Debug.Log("Dynamic objects input file path invalid");
 			return;
