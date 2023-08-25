@@ -109,6 +109,13 @@ public static class ConsoleEmulator {
         lastCommand[0] = entry;
     }
 
+	public static void ConsoleEntryEnter() {
+		string enteredText = PlayerMovement.a.consoleinpFd.text;
+		if (String.IsNullOrEmpty(enteredText)) return;
+
+		ConsoleEntry(enteredText);
+	}
+
     private static void ConsoleEntry(string entry) {
         ShiftLastCommand(entry);
 		consoleMemdex = 0;

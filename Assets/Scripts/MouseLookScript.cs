@@ -115,7 +115,11 @@ public class MouseLookScript : MonoBehaviour {
 		ResetHeldItem();
 		Cursor.lockState = CursorLockMode.None;
 		inventoryMode = false; // Start with inventory mode turned off.
-		shootModeButton.SetActive(false);
+		if (Application.platform == RuntimePlatform.Android) {
+			shootModeButton.SetActive(true);
+		} else {
+			shootModeButton.SetActive(false);
+		}
 		cameraDistances = new float[32];
 		SetCameraCullDistances();
 		playerCamera.depthTextureMode = DepthTextureMode.Depth;
@@ -175,7 +179,9 @@ public class MouseLookScript : MonoBehaviour {
 
 			Const.a.StartSave(7,qsavename);
 		}
-		if(GetInput.a.ToggleMode()) ToggleInventoryMode(); // Toggle inventory mode<->shoot mode
+
+		// Toggle inventory mode<->shoot mode
+		if(GetInput.a.ToggleMode()) ToggleInventoryMode();
 
 		if (Const.a.questData.SelfDestructActivated
 			&& LevelManager.a.currentLevel != 13
@@ -212,26 +218,29 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
 		if (!inventoryMode) Mouselook(); // Only do mouselook in Shoot Mode.
+		if(GetInput.a.Use()) Frob(); // Frob what is under our cursor.
+	}
 
-		// Frob what is under our cursor.
-		if(GetInput.a.Use()) {
-			if (vmailActive && !inCyberSpace) { Inventory.a.DeactivateVMail(); vmailActive = false; return; }
+	public void Frob() {
+		if (vmailActive && !inCyberSpace) {
+			Inventory.a.DeactivateVMail(); vmailActive = false;
+			return;
+		}
 
-			if (!GUIState.a.isBlocking && !inCyberSpace) {
-				if (dropFinished < Time.time) {
-					currentButton = null; // Force this to reset.
-					if (holdingObject) {
-						if (!FrobWithHeldObject()) DropHeldItem();
-					} else FrobEmptyHanded();
-				}
-			} else {
-				//We are holding cursor over the GUI
-				if (holdingObject && !inCyberSpace) {
-					AddItemToInventory(heldObjectIndex,heldObjectCustomIndex);
-					ResetHeldItem();
-					ResetCursor();
-				} else InventoryButtonUse();
+		if (!GUIState.a.isBlocking && !inCyberSpace) {
+			if (dropFinished < Time.time) {
+				currentButton = null; // Force this to reset.
+				if (holdingObject) {
+					if (!FrobWithHeldObject()) DropHeldItem();
+				} else FrobEmptyHanded();
 			}
+		} else {
+			//We are holding cursor over the GUI
+			if (holdingObject && !inCyberSpace) {
+				AddItemToInventory(heldObjectIndex,heldObjectCustomIndex);
+				ResetHeldItem();
+				ResetCursor();
+			} else InventoryButtonUse();
 		}
 	}
 

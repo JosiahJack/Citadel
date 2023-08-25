@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour {
     public InputField consoleinpFd;
     public GameObject consoleplaceholderText;
 	public GameObject consoleTitle;
+	public GameObject consoleEntryButton;
 	public Text consoleentryText;
 	public Transform leanTransform;
 	public AudioSource SFX;
@@ -1187,6 +1188,7 @@ public class PlayerMovement : MonoBehaviour {
 	public void ConsoleDisable() { // Note this is called during Load from a save.
 		consoleActivated = false;
 		consoleplaceholderText.SetActive(false);
+		consoleEntryButton.SetActive(false);
 		consoleTitle.SetActive(false);
 		consoleinpFd.DeactivateInputField();
 		consoleinpFd.enabled = false;
@@ -1199,6 +1201,9 @@ public class PlayerMovement : MonoBehaviour {
 	void ConsoleEnable() {
 		consoleActivated = true;
 		consoleplaceholderText.SetActive(true);
+		if (Application.platform == RuntimePlatform.Android) {
+			consoleEntryButton.SetActive(true);
+		}
 		consoleTitle.SetActive(true);
 		consoleinpFd.enabled = true;
 		consoleinpFd.ActivateInputField();

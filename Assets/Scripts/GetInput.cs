@@ -14,7 +14,6 @@ public class GetInput : MonoBehaviour {
 	public UIButtonMask upButton;
 	public UIButtonMask downButton;
 	public UIButtonMask lmbButton;
-	public UIButtonMask rmbButton;
 	public UIButtonMask consoleButton;
 	public GameObject touchablesContainer;
 	public static GetInput a;
@@ -25,7 +24,7 @@ public class GetInput : MonoBehaviour {
 		a = this;
 		isCapsLockOn = false;
 		if (Application.platform != RuntimePlatform.Android) {
-			//touchablesContainer.SetActive(false);
+			touchablesContainer.SetActive(false);
 		} else {
 			touchablesContainer.SetActive(true);
 		}
@@ -134,10 +133,14 @@ public class GetInput : MonoBehaviour {
 		if (Const.a.InputCodeSettings[11]== 153) return MouseWheelUp();
 		if (Const.a.InputCodeSettings[11]== 154) return MouseWheelDn();
 		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[11]])) {
+			Const.sprint("Left turn keyboard key held");
 			return true;
 		}
 
-		if (leftButton.held) return true;
+		if (leftButton.held) {
+			Const.sprint("Left turn touch held");
+			return true;
+		}
 		return false;
 	}
 
@@ -145,10 +148,14 @@ public class GetInput : MonoBehaviour {
 		if (Const.a.InputCodeSettings[12]== 153) return MouseWheelUp();
 		if (Const.a.InputCodeSettings[12]== 154) return MouseWheelDn();
 		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[12]])) {
+			Const.sprint("Right turn keyboard key held");
 			return true;
 		}
 
-		if (rightButton.held) return true;
+		if (rightButton.held) {
+			Const.sprint("Right turn touch held");
+			return true;
+		}
 		return false;
 	}
 
@@ -156,10 +163,14 @@ public class GetInput : MonoBehaviour {
 		if (Const.a.InputCodeSettings[13]== 153) return MouseWheelUp();
 		if (Const.a.InputCodeSettings[13]== 154) return MouseWheelDn();
 		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[13]])) {
+			Const.sprint("Up turn keyboard key held");
 			return true;
 		}
 
-		if (upButton.held) return true;
+		if (upButton.held) {
+			Const.sprint("Up turn touch held");
+			return true;
+		}
 		return false;
 	}
 
@@ -167,10 +178,14 @@ public class GetInput : MonoBehaviour {
 		if (Const.a.InputCodeSettings[14]== 153) return MouseWheelUp();
 		if (Const.a.InputCodeSettings[14]== 154) return MouseWheelDn();
 		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[14]])) {
+			Const.sprint("Down turn keyboard key held");
 			return true;
 		}
 
-		if (downButton.held) return true;
+		if (downButton.held) {
+			Const.sprint("Down turn touch held");
+			return true;
+		}
 		return false;
 	}
 
@@ -216,7 +231,6 @@ public class GetInput : MonoBehaviour {
 			return true;
 		}
 
-		if (rmbButton.held) return true;
 		return false;
 	}
 

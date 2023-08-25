@@ -63,6 +63,10 @@ public class PauseScript : MonoBehaviour {
 		if (!Paused()) relativeTime += Time.deltaTime;
 	}
 
+	public void ConsoleEntryEnterDelegate() {
+		ConsoleEmulator.ConsoleEntryEnter();
+	}
+
 /*
     void FixedUpdate() {
 		Debug.Log("ObjectContainmentSystem active floor chunks: "
