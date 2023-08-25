@@ -6,6 +6,63 @@ using UnityEngine.PostProcessing;
 // Handles configuration parsing for user settings.
 public class Config {
 	public static void LoadConfig() {
+	    if (Application.platform == RuntimePlatform.Android) {
+	        // Graphics Configurations
+    		Const.a.GraphicsResWidth = Screen.width; //AssignConfigInt("Graphics","ResolutionWidth");
+    		Const.a.GraphicsResHeight = Screen.height; //AssignConfigInt("Graphics","ResolutionHeight");
+    		Const.a.GraphicsFullscreen = true; //AssignConfigBool("Graphics","Fullscreen");
+    		Const.a.GraphicsSSAO = true; //AssignConfigBool("Graphics","SSAO");
+    		Const.a.GraphicsBloom = true; //AssignConfigBool("Graphics","Bloom");
+    		Const.a.GraphicsFOV = 65; //AssignConfigInt("Graphics","FOV");
+    		Const.a.GraphicsAAMode = 5; //AssignConfigInt("Graphics","AA");
+    		Const.a.GraphicsShadowMode = 2; //AssignConfigInt("Graphics", "Shadows");
+    		Const.a.GraphicsSSRMode = 2; //AssignConfigInt("Graphics", "SSR");
+    		Const.a.GraphicsGamma = 50; //AssignConfigInt("Graphics","Gamma");
+    		Const.a.GraphicsVSync = false; //AssignConfigBool("Graphics","VSync");
+    
+    		// Audio Configurations
+    		Const.a.AudioSpeakerMode = 1; //AssignConfigInt("Audio","SpeakerMode");
+    		Const.a.AudioReverb = true; //AssignConfigBool("Audio","Reverb");
+    		Const.a.AudioVolumeMaster = 100; //AssignConfigInt("Audio","VolumeMaster");
+    		Const.a.AudioVolumeMusic = 20; //AssignConfigInt("Audio","VolumeMusic");
+    		Const.a.AudioVolumeMessage = 100; //AssignConfigInt("Audio","VolumeMessage");
+    		Const.a.AudioVolumeEffects = 100; //AssignConfigInt("Audio","VolumeEffects");
+    		Const.a.AudioLanguage = 0; //AssignConfigInt("Audio","Language");  // defaults to 0 = english
+    
+    		Const.a.MouseSensitivity = 20; // ((AssignConfigInt("Input","MouseSensitivity")/100f) * 2f) + 0.01f;
+    
+    //		string inputCapture;
+    		// Input Configurations
+    // 		for (int i=0;i<40;i++) {
+    // 			inputCapture = INIWorker.IniReadValue("Input",Const.a.InputCodes[i]);
+    // 			for (int j=0;j<159;j++) {
+    // 				if (Const.a.InputValues[j] == inputCapture) Const.a.InputCodeSettings[i] = j;
+    // 			}
+    // 		}
+     		Const.a.InputInvertLook = false; //AssignConfigBool("Input","InvertLook");
+    		Const.a.InputInvertCyberspaceLook = false; //AssignConfigBool("Input","InvertCyberspaceLook");
+    		Const.a.InputInvertInventoryCycling = false; //AssignConfigBool("Input","InvertInventoryCycling");
+    		Const.a.InputQuickItemPickup = true; //AssignConfigBool("Input","QuickItemPickup");
+    		Const.a.InputQuickReloadWeapons = true; //AssignConfigBool("Input","QuickReloadWeapons");
+    		SetVolume();
+    		Const.sprint("Setting screen resolution to "
+    				     + Const.a.GraphicsResWidth.ToString()
+    				     + ", " + Const.a.GraphicsResHeight.ToString()
+    				     + ", Fullscreen: "
+    				     + Const.a.GraphicsFullscreen.ToString());
+    		//Screen.SetResolution(Const.a.GraphicsResWidth,Const.a.GraphicsResHeight,true);
+    		//Screen.fullScreen = Const.a.GraphicsFullscreen;
+    		SetShadows();
+    		SetBloom();
+    		SetSSR();
+    		SetBrightness();
+    		SetSSAO();
+    		SetFOV();
+    		SetAA();
+    		SetVSync();
+	        return;
+	    }
+	    
 		// The currently used config is always Config.ini.
 		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
 
