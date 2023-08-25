@@ -1288,8 +1288,14 @@ public class Const : MonoBehaviour {
 
 		// Write to file
 		string sName = "sav" + saveFileIndex.ToString() + ".txt";
-		string sPath = Utils.SafePathCombine(Application.streamingAssetsPath,
-											 sName);
+		string sPath;
+		if (Application.platform == RuntimePlatform.Android) {
+            sPath = Utils.SafePathCombine(Application.persistentDataPath,
+										  sName);
+		} else {
+		    sPath = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  sName);
+		}
 
 		StreamWriter sw = new StreamWriter(sPath,false,Encoding.ASCII);
 		if (sw != null) {
@@ -1501,10 +1507,16 @@ public class Const : MonoBehaviour {
 		string[] entries = new string[2048]; // Holds pipe | delimited strings
 											 // on individual lines.
 		string lName = "sav" + saveFileIndex.ToString() + ".txt";
-		//string lPath = Utils.SafePathCombine(Application.streamingAssetsPath,
-		//									 lName);
-		//StreamReader sr = new StreamReader(lPath);
-		StreamReader sr = Utils.ReadStreamingAsset(lName);
+		StreamReader sr;
+		if (Application.platform == RuntimePlatform.Android) {
+		    string fPath = Utils.SafePathCombine(Application.persistentDataPath,
+										  lName);
+										  
+		    sr = new StreamReader(fPath, Encoding.ASCII);
+		} else {
+		    sr = Utils.ReadStreamingAsset(lName);
+		}
+		
 		if (sr != null) {
 			// Read the file into a list, line by line
 			using (sr) {
