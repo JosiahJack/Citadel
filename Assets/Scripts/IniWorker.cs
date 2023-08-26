@@ -18,6 +18,7 @@ public class INIWorker {
 
     private static bool FirstRead() {
 		if (Application.platform == RuntimePlatform.Android) {
+		    return;
 			Utils.ConfirmExistsInPersistentDataMakeIfNot("Config.ini");
 			path = Utils.SafePathCombine(Application.persistentDataPath,"Config.ini");
 		} else {
