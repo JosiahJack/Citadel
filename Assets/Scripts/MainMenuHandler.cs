@@ -128,8 +128,15 @@ public class MainMenuHandler : MonoBehaviour {
 		FileBrowser.SetDefaultFilter( ".RES" );
 		Config.SetVolume();
 		StartCoroutine(CheckDataFiles());
-		string indn = Utils.SafePathCombine(Application.streamingAssetsPath,
-											"introdone.dat");
+		string indn;
+		if (Application.platform == RuntimePlatform.Android) {
+			indn = Utils.SafePathCombine(Application.persistentDataPath,
+										 "introdone.dat");
+		} else {
+			indn = Utils.SafePathCombine(Application.streamingAssetsPath,
+										 "introdone.dat");
+		}
+
 		if (System.IO.File.Exists(indn)) {
 			IntroVideo.SetActive(false);	
 			IntroVideoContainer.SetActive(false);
@@ -687,21 +694,29 @@ public class MainMenuHandler : MonoBehaviour {
 	// Linked in Inspector to dataPathInputText.
 	public void CopyFromPath() {
 		// Copy CITALOG.RES and CITBARK.RES from data path if they exist
-		string alogPath = Utils.SafePathCombine(dataPathInputText.text,
-												"CITALOG.RES");
-
-		string barkPath = Utils.SafePathCombine(dataPathInputText.text,
-												"CITBARK.RES");
+		string alogPath,barkPath;
+		alogPath = Utils.SafePathCombine(dataPathInputText.text,"CITALOG.RES");
+		barkPath = Utils.SafePathCombine(dataPathInputText.text,"CITBARK.RES");
 
 		// Must have both to get audio logs and SHODAN barks.
 		if (File.Exists(alogPath) && File.Exists(barkPath)) {
 			dataFound = true;
-			string alogStrmPath =
-				Utils.SafePathCombine(Application.streamingAssetsPath,
-									  "CITALOG.RES");
-			string barkStrmPath =
-				Utils.SafePathCombine(Application.streamingAssetsPath,
-									  "CITBARK.RES");
+			string alogStrmPath,barkStrmPath;
+			if (Application.platform == RuntimePlatform.Android) {
+				alogStrmPath =
+					Utils.SafePathCombine(Application.persistentDataPath,
+									      "CITALOG.RES");
+				barkStrmPath =
+					Utils.SafePathCombine(Application.persistentDataPath,
+									      "CITBARK.RES");
+			} else {
+				alogStrmPath =
+					Utils.SafePathCombine(Application.streamingAssetsPath,
+									     "CITBARK.RES");
+				barkStrmPath =
+					Utils.SafePathCombine(Application.streamingAssetsPath,
+									      "CITBARK.RES");
+			}
 
 			// Set overwrite to true in case we have 1 and not the other.
 			// from, to

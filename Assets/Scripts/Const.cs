@@ -660,10 +660,16 @@ public class Const : MonoBehaviour {
 	private void CheckIfNewGame () {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
-
-		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("ng.dat");
-		string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
-										  "ng.dat");
+		string dr;
+		if (Application.platform == RuntimePlatform.Android) {
+			Utils.ConfirmExistsInPersistentDataMakeIfNot("ng.dat");
+			dr = Utils.SafePathCombine(Application.persistentDataPath,
+										      "ng.dat");
+		} else {
+			Utils.ConfirmExistsInStreamingAssetsMakeIfNot("ng.dat");
+			dr = Utils.SafePathCombine(Application.streamingAssetsPath,
+										      "ng.dat");
+		}
 
 		if (!File.Exists(dr)) {
 			UnityEngine.Debug.Log("ng.dat not found nor recreated");

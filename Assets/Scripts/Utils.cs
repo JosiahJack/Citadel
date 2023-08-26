@@ -314,6 +314,36 @@ public class Utils {
 		}
 	}
 
+	public static void ConfirmExistsInPersistentDataMakeIfNot(string fileName) {
+		if (string.IsNullOrWhiteSpace(fileName)) {
+			UnityEngine.Debug.Log("fileName was null or whitespace passed to "
+								  + "ConfirmExistsInPersistentDataMakeIfNot");
+			return;
+		}
+
+		string persDatPth = SafePathCombine(Application.persistentDataPath,
+											fileName);
+
+		if (File.Exists(persDatPth)) return; // Already exists, all good!
+
+		string rsrc = ResourcesPathCombine("StreamingAssetsRecovery",fileName);
+        TextAsset resourcesFile = (TextAsset)Resources.Load(rsrc);
+        if (resourcesFile != null) {
+			// Recreate from Resources/StreamingAssetsRecovery/*
+			File.WriteAllText(persDatPth, resourcesFile.text, // new, contents
+							  Encoding.ASCII);
+			if (File.Exists(persDatPth)) {
+				UnityEngine.Debug.Log("File " + persDatPth + " recreated");
+			} else {
+				UnityEngine.Debug.Log("File " + persDatPth + " failed to be "
+									  + "created by File.WriteAllText!");
+			}
+        } else {
+			UnityEngine.Debug.Log("File " + persDatPth + " not found in the "
+								  + "Resources folder");
+		}
+	}
+
     static readonly char[] pathSplitCharacters = new char[] { '/', '\\' };
 
 	// Check if particular bit is 1 (ON/TRUE) in binary format of given integer
