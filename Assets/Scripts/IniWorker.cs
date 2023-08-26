@@ -18,9 +18,9 @@ public class INIWorker {
 
     private static bool FirstRead() {
 		if (Application.platform == RuntimePlatform.Android) {
-		    return;
-			Utils.ConfirmExistsInPersistentDataMakeIfNot("Config.ini");
-			path = Utils.SafePathCombine(Application.persistentDataPath,"Config.ini");
+		    return false;
+			//Utils.ConfirmExistsInPersistentDataMakeIfNot("Config.ini");
+			//path = Utils.SafePathCombine(Application.persistentDataPath,"Config.ini");
 		} else {
 		    Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
             path = Utils.SafePathCombine(Application.streamingAssetsPath,"Config.ini");
