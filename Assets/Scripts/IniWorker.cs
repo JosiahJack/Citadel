@@ -86,13 +86,52 @@ public class INIWorker {
  
     private static void WriteIni() {
 		if (Application.platform == RuntimePlatform.Android) {
-			Utils.ConfirmExistsInPersistentDataMakeIfNot("Config.ini");
-			path = Utils.SafePathCombine(Application.persistentDataPath,"Config.ini");
-		} else {
-		    Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
-            path = Utils.SafePathCombine(Application.streamingAssetsPath,"Config.ini");
-        }
+			string fileName = "Config.ini";
 
+            // Launch SAF intent to get a writable URI
+            AndroidJavaObject context = new AndroidJavaClass(
+                "com.trioptimum.citadel.UnityPlayer").GetStatic<AndroidJavaObject>(
+                    "currentActivity");
+                    
+            AndroidJavaObject intent = new AndroidJavaObject("android.content.Intent",
+                "android.intent.action.CREATE_DOCUMENT");
+                
+            intent.Call<AndroidJavaObject>("setType", "text/plain");
+            intent.Call<AndroidJavaObject>("putExtra","android.intent.extra.TITLE",
+                                           fileName);
+    
+            AndroidJavaObject uri = context.Call<AndroidJavaObject>("startActivityForResult",
+                intent, 0, null);
+    
+            // Get a stream to the chosen URI and write the content
+            using (AndroidJavaObject outputStream = context.Call<AndroidJavaObject>(
+                "getContentResolver").Call<AndroidJavaObject>("openOutputStream", uri)) {
+                using (StreamWriter sw = new StreamWriter(
+                                            new AndroidJavaObject(
+                                                "java.io.FileOutputStream",
+                                                outputStream),
+                                                new System.Text.UTF8Encoding())) {
+                    bool init = true;
+                    sw.WriteLine("// Citadel Configuration File");
+                    foreach (KeyValuePair<string, Dictionary<string,
+                             string>> sezioni in IniDictionary) {
+                        if (!init) sw.WriteLine(System.String.Empty);
+                        sw.WriteLine("[" + sezioni.Key + "]");
+                        init = false;
+                        foreach (KeyValuePair<string, string> chiave in sezioni.Value) {
+                            string vale = chiave.Value;
+                            vale = vale.Replace(Environment.NewLine, " ");
+                            vale = vale.Replace("\r\n", " ");
+                            sw.WriteLine(chiave.Key + " = " + vale);
+                        }
+                    }
+                }
+            }
+            return;
+		}
+		
+		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
+        path = Utils.SafePathCombine(Application.streamingAssetsPath,"Config.ini");
         using (StreamWriter sw = new StreamWriter(path,false,Encoding.ASCII)) {
 			bool init = true;
 			sw.WriteLine("// Citadel Configuration File");
