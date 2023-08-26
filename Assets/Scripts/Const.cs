@@ -1209,15 +1209,14 @@ public class Const : MonoBehaviour {
 	// plenty fast enough.
 	public void StartSave(int index, string savename) {
 		if (PlayerHealth.a.hm.health < 1.0f) return; // Can't save while dead!
-
+        if (Application.platform == RuntimePlatform.Android) return;
+	    
 		StartCoroutine(SaveRoutine(index,savename));
 	}
 
 	// Save the Game
 	// ========================================================================
 	public IEnumerator SaveRoutine(int saveFileIndex,string savename) {
-	    if (Application.platform == RuntimePlatform.Android) return;
-	    
 		sprint(stringTable[194]); // Indicate we are saving "Saving..."
 		yield return null; // Update to show this sprint.
 
