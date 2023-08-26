@@ -388,7 +388,7 @@ public class Const : MonoBehaviour {
 		a.LoadItemNamesData();
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
-		a.versionString = "v0.99.5"; // Global CITADEL PROJECT VERSION
+		a.versionString = "v0.99.6"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
 							  + "Start of C# Game Code, Welcome back Hacker!");
@@ -519,13 +519,12 @@ public class Const : MonoBehaviour {
 			PauseScript.a.mainMenu.SetActive(false);
 			SceneTransitionHandler sth = loadGameIndicator.GetComponent<SceneTransitionHandler>();
 			sth.Load();
-		} else if (newGameIndicator != null) {
+		} else if (newGameIndicator != null || Application.platform == RuntimePlatform.Android) {
 			UnityEngine.Debug.Log("newGameIndicator.name: " + newGameIndicator.name);
 			Utils.SafeDestroy(newGameIndicator);
 			GoIntoGame();				  // Start of the game!!
 		}
 	}
-
 
 	IEnumerator InitializeEventSystem () {
 		yield return new WaitForSeconds(1f);
@@ -662,9 +661,8 @@ public class Const : MonoBehaviour {
 		int currentline = 0;
 		string dr;
 		if (Application.platform == RuntimePlatform.Android) {
-			Utils.ConfirmExistsInPersistentDataMakeIfNot("ng.dat");
-			dr = Utils.SafePathCombine(Application.persistentDataPath,
-										      "ng.dat");
+		    a.introNotPlayed = false;
+			return;
 		} else {
 			Utils.ConfirmExistsInStreamingAssetsMakeIfNot("ng.dat");
 			dr = Utils.SafePathCombine(Application.streamingAssetsPath,
@@ -693,6 +691,8 @@ public class Const : MonoBehaviour {
 	}
 
 	public void WriteDatForIntroPlayed(bool setIntroNotPlayed) {
+	    if (Application.platform == RuntimePlatform.Android) return;
+	    
 		// Write bit to file
 		// No need to confirm it exists as StreamWriter will make it if not.
 		string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
@@ -811,11 +811,6 @@ public class Const : MonoBehaviour {
 		int readInt = 0;
 		int i = 0;
 		int refIndex = 0;
-		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot("enemy_tables.csv");
-		//string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
-		//								  "enemy_tables.csv");
-
-		//StreamReader dataReader = new StreamReader(dr,Encoding.ASCII);
 		StreamReader dataReader = Utils.ReadStreamingAsset("enemy_tables.csv");
 		using (dataReader) {
 			do {
@@ -1221,6 +1216,8 @@ public class Const : MonoBehaviour {
 	// Save the Game
 	// ========================================================================
 	public IEnumerator SaveRoutine(int saveFileIndex,string savename) {
+	    if (Application.platform == RuntimePlatform.Android) return;
+	    
 		sprint(stringTable[194]); // Indicate we are saving "Saving..."
 		yield return null; // Update to show this sprint.
 
@@ -1295,14 +1292,7 @@ public class Const : MonoBehaviour {
 		// Write to file
 		string sName = "sav" + saveFileIndex.ToString() + ".txt";
 		string sPath;
-		if (Application.platform == RuntimePlatform.Android) {
-            sPath = Utils.SafePathCombine(Application.persistentDataPath,
-										  sName);
-		} else {
-		    sPath = Utils.SafePathCombine(Application.streamingAssetsPath,
-										  sName);
-		}
-
+		sPath = Utils.SafePathCombine(Application.streamingAssetsPath,sName);
 		StreamWriter sw = new StreamWriter(sPath,false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
@@ -1450,6 +1440,7 @@ public class Const : MonoBehaviour {
 	//    c. Load to static saveable objects.
 	//    d. Iterate over dynamic object containers instantiating from save.
 	public void Load(int saveFileIndex, bool actual) {
+	    if (Application.platform == RuntimePlatform.Android) return;
 		ShowLoading();
 		//if (!actual) {
 		//	UnityEngine.Debug.Log("Initial Load() with saveFileIndex of " 
