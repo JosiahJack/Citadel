@@ -43,7 +43,7 @@ jobs:
           versioning: Semantic
           customImage: josiahjack/citadel-ci:ubuntu-2019.4.35f1-android-2.0.0
           allowDirtyBuild: true
-          buildMethod: EditorNamespace.BuildScript
+          buildMethod: BuildScript.Build
       - name: Upload built files
         uses: actions/upload-artifact@v3
         with:
