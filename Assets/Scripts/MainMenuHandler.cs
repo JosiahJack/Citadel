@@ -130,7 +130,7 @@ public class MainMenuHandler : MonoBehaviour {
 			dataFound = true;
 			Config.SetVolume();
 			GoToFrontPage();
-			IntroVideo.SetActive(true);
+			IntroVideo.SetActive(false);
 			return;
 		}
 		FileBrowser.SetFilters(false,new FileBrowser.Filter("SHOCK RES Files",
