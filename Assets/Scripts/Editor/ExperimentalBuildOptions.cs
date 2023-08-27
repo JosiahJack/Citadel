@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEngine;
 
 public static class ExperimentalBuildOptions {
     [MenuItem("Custom/Set Texture Resolution Half")]
