@@ -3,130 +3,131 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 
-    public static class BuildScript {
-        private static readonly string Eol = Environment.NewLine;
-        private static readonly string[] Secrets = {
-          "androidKeystorePass",
-          "androidKeyaliasName",
-          "androidKeyaliasPass"
-        };
+public static class BuildScript {
+    private static readonly string Eol = Environment.NewLine;
+    private static readonly string[] Secrets = {
+      "androidKeystorePass",
+      "androidKeyaliasName",
+      "androidKeyaliasPass"
+    };
 
-        public static void Build() {
-            ExperimentalBuildOptions.SetTextureResolutionHalf();
-            // Gather values from args
-            Dictionary<string, string> options = GetValidatedOptions();
+    public static void CustomBuild() {
+        ExperimentalBuildOptions.SetTextureResolutionHalf();
+        // Gather values from args
+        Dictionary<string, string> options = GetValidatedOptions();
 
-            // Set version for this build
-            PlayerSettings.bundleVersion = options["buildVersion"];
-            PlayerSettings.macOS.buildNumber = options["buildVersion"];
-            PlayerSettings.Android.bundleVersionCode = int.Parse(options["androidVersionCode"]);
+        // Set version for this build
+        PlayerSettings.bundleVersion = options["buildVersion"];
+        PlayerSettings.macOS.buildNumber = options["buildVersion"];
+        PlayerSettings.Android.bundleVersionCode = int.Parse(options["androidVersionCode"]);
 
-            // Apply build target
-            var buildTarget = (BuildTarget) Enum.Parse(typeof(BuildTarget), options["buildTarget"]);
-            switch (buildTarget) {
-                case BuildTarget.Android: {
-                    EditorUserBuildSettings.buildAppBundle = options["customBuildPath"].EndsWith(".aab");
-                    if (options.TryGetValue("androidKeystoreName", out string keystoreName)
-                        && !string.IsNullOrEmpty(keystoreName)) {
-                      
-                      PlayerSettings.Android.useCustomKeystore = true;
-                      PlayerSettings.Android.keystoreName = keystoreName;
-                    }
-                    if (options.TryGetValue("androidKeystorePass", out string keystorePass) &&
-                        !string.IsNullOrEmpty(keystorePass))
-                        PlayerSettings.Android.keystorePass = keystorePass;
+        // Apply build target
+        var buildTarget = (BuildTarget) Enum.Parse(typeof(BuildTarget), options["buildTarget"]);
+        switch (buildTarget) {
+            case BuildTarget.Android: {
+                EditorUserBuildSettings.buildAppBundle = options["customBuildPath"].EndsWith(".aab");
+                if (options.TryGetValue("androidKeystoreName", out string keystoreName)
+                    && !string.IsNullOrEmpty(keystoreName)) {
                   
-                    if (options.TryGetValue("androidKeyaliasName", out string keyaliasName) &&
-                        !string.IsNullOrEmpty(keyaliasName))
-                        PlayerSettings.Android.keyaliasName = keyaliasName;
-                  
-                    if (options.TryGetValue("androidKeyaliasPass", out string keyaliasPass) &&
-                        !string.IsNullOrEmpty(keyaliasPass))
-                        PlayerSettings.Android.keyaliasPass = keyaliasPass;
-                  
-                    if (options.TryGetValue("androidTargetSdkVersion", out string androidTargetSdkVersion) &&
-                        !string.IsNullOrEmpty(androidTargetSdkVersion)) {
-                        var targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
-                        try {
-                            targetSdkVersion =
-                                (AndroidSdkVersions) Enum.Parse(typeof(AndroidSdkVersions), androidTargetSdkVersion);
-                        }
-                        catch
-                        {
-                            UnityEngine.Debug.Log("Failed to parse androidTargetSdkVersion! Fallback to AndroidApiLevelAuto");
-                        }
-
-                        PlayerSettings.Android.targetSdkVersion = targetSdkVersion;
-                    }
-
-                    break;
+                  PlayerSettings.Android.useCustomKeystore = true;
+                  PlayerSettings.Android.keystoreName = keystoreName;
                 }
-                case BuildTarget.StandaloneOSX:
-                    PlayerSettings.SetScriptingBackend(BuildTargetGroup.Standalone, ScriptingImplementation.Mono2x);
-                    break;
+                if (options.TryGetValue("androidKeystorePass", out string keystorePass) &&
+                    !string.IsNullOrEmpty(keystorePass))
+                    PlayerSettings.Android.keystorePass = keystorePass;
+              
+                if (options.TryGetValue("androidKeyaliasName", out string keyaliasName) &&
+                    !string.IsNullOrEmpty(keyaliasName))
+                    PlayerSettings.Android.keyaliasName = keyaliasName;
+              
+                if (options.TryGetValue("androidKeyaliasPass", out string keyaliasPass) &&
+                    !string.IsNullOrEmpty(keyaliasPass))
+                    PlayerSettings.Android.keyaliasPass = keyaliasPass;
+              
+                if (options.TryGetValue("androidTargetSdkVersion", out string androidTargetSdkVersion) &&
+                    !string.IsNullOrEmpty(androidTargetSdkVersion)) {
+                    var targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
+                    try {
+                        targetSdkVersion =
+                            (AndroidSdkVersions) Enum.Parse(typeof(AndroidSdkVersions), androidTargetSdkVersion);
+                    }
+                    catch
+                    {
+                        UnityEngine.Debug.Log("Failed to parse androidTargetSdkVersion! Fallback to AndroidApiLevelAuto");
+                    }
+
+                    PlayerSettings.Android.targetSdkVersion = targetSdkVersion;
+                }
+
+                break;
             }
-
-            // Determine subtarget
-            int buildSubtarget = 0;
-
-            // Custom build
-            Build(buildTarget, buildSubtarget, options["customBuildPath"]);
+            case BuildTarget.StandaloneOSX:
+                PlayerSettings.SetScriptingBackend(BuildTargetGroup.Standalone, ScriptingImplementation.Mono2x);
+                break;
         }
 
-        private static Dictionary<string, string> GetValidatedOptions()
+        // Determine subtarget
+        int buildSubtarget = 0;
+
+        // Custom build
+        Build(buildTarget, buildSubtarget, options["customBuildPath"]);
+    }
+
+    private static Dictionary<string, string> GetValidatedOptions()
+    {
+        ParseCommandLineArguments(out Dictionary<string, string> validatedOptions);
+
+        if (!validatedOptions.TryGetValue("projectPath", out string _))
         {
-            ParseCommandLineArguments(out Dictionary<string, string> validatedOptions);
-
-            if (!validatedOptions.TryGetValue("projectPath", out string _))
-            {
-                Console.WriteLine("Missing argument -projectPath");
-                EditorApplication.Exit(110);
-            }
-
-            if (!validatedOptions.TryGetValue("buildTarget", out string buildTarget))
-            {
-                Console.WriteLine("Missing argument -buildTarget");
-                EditorApplication.Exit(120);
-            }
-
-            if (!Enum.IsDefined(typeof(BuildTarget), buildTarget ?? string.Empty))
-            {
-                Console.WriteLine($"{buildTarget} is not a defined {nameof(BuildTarget)}");
-                EditorApplication.Exit(121);
-            }
-
-            if (!validatedOptions.TryGetValue("customBuildPath", out string _))
-            {
-                Console.WriteLine("Missing argument -customBuildPath");
-                EditorApplication.Exit(130);
-            }
-
-            const string defaultCustomBuildName = "TestBuild";
-            if (!validatedOptions.TryGetValue("customBuildName", out string customBuildName))
-            {
-                Console.WriteLine($"Missing argument -customBuildName, defaulting to {defaultCustomBuildName}.");
-                validatedOptions.Add("customBuildName", defaultCustomBuildName);
-            }
-            else if (customBuildName == "")
-            {
-                Console.WriteLine($"Invalid argument -customBuildName, defaulting to {defaultCustomBuildName}.");
-                validatedOptions.Add("customBuildName", defaultCustomBuildName);
-            }
-
-            return validatedOptions;
+            Console.WriteLine("Missing argument -projectPath");
+            EditorApplication.Exit(110);
         }
 
-        private static void ParseCommandLineArguments(out Dictionary<string, string> providedArguments)
+        if (!validatedOptions.TryGetValue("buildTarget", out string buildTarget))
         {
-            providedArguments = new Dictionary<string, string>();
-            string[] args = Environment.GetCommandLineArgs();
+            Console.WriteLine("Missing argument -buildTarget");
+            EditorApplication.Exit(120);
+        }
 
-            Console.WriteLine(
-                $"{Eol}" +
-                $"###########################{Eol}" +
-                $"#    Parsing settings     #{Eol}" +
+        if (!Enum.IsDefined(typeof(BuildTarget), buildTarget ?? string.Empty))
+        {
+            Console.WriteLine($"{buildTarget} is not a defined {nameof(BuildTarget)}");
+            EditorApplication.Exit(121);
+        }
+
+        if (!validatedOptions.TryGetValue("customBuildPath", out string _))
+        {
+            Console.WriteLine("Missing argument -customBuildPath");
+            EditorApplication.Exit(130);
+        }
+
+        const string defaultCustomBuildName = "TestBuild";
+        if (!validatedOptions.TryGetValue("customBuildName", out string customBuildName))
+        {
+            Console.WriteLine($"Missing argument -customBuildName, defaulting to {defaultCustomBuildName}.");
+            validatedOptions.Add("customBuildName", defaultCustomBuildName);
+        }
+        else if (customBuildName == "")
+        {
+            Console.WriteLine($"Invalid argument -customBuildName, defaulting to {defaultCustomBuildName}.");
+            validatedOptions.Add("customBuildName", defaultCustomBuildName);
+        }
+
+        return validatedOptions;
+    }
+
+    private static void ParseCommandLineArguments(out Dictionary<string, string> providedArguments)
+    {
+        providedArguments = new Dictionary<string, string>();
+        string[] args = Environment.GetCommandLineArgs();
+
+        Console.WriteLine(
+            $"{Eol}" +
+            $"###########################{Eol}" +
+            $"#    Parsing settings     #{Eol}" +
                 $"###########################{Eol}" +
                 $"{Eol}"
             );
