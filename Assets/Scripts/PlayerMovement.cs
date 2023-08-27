@@ -131,7 +131,7 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector] public float leanTarget = 0f; // save
 	[HideInInspector] public float leanShift = 0f; // save
 	private float leanMaxAngle = 35f;
-	private float leanMaxShift = 0.48f;
+	private float leanMaxShift = 0.8f;
 	[HideInInspector] public float jumpSFXFinished; // save
 	[HideInInspector] public float ladderSFXFinished;
 	private float ladderSFXIntervalTime = 1f;
@@ -452,33 +452,37 @@ public class PlayerMovement : MonoBehaviour {
 		// We are mashing a run button down.
 		running = ((relForward != 0) || (relSideways != 0));
 
-		float leanReset = relForward > 0.0f ? 1f : relForward < 0.0f ? -1f : 0f;
+		float leanReset = relForward != 0.0f ? 1f : 0f;
 
 		if (leanReset == 0) return; // Don't affect lean moving non-forward.
 		if (inCyberSpace) return; // Don't affect lean transform in cyber.
 
 		if (leanTarget > 0) {
-			if (Mathf.Abs(leanTarget - 0) < 0.02f) {
+			if (Mathf.Abs(leanTarget - 0) < 0.05f) {
+				leanShift = 0;
 				leanTarget = 0;
 			} else {
 				leanTarget -= (leanSpeed * Time.deltaTime * leanReset);
 			}
 
-			if (Mathf.Abs(leanShift - 0) < 0.02f) {
+			if (Mathf.Abs(leanShift - 0) < 0.05f) {
 				leanShift = 0;
+				leanTarget = 0;
 			} else {
 				leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle))
 							* leanReset;
 			}
 		} else {
-			if (Mathf.Abs(leanTarget - 0) < 0.02f) {
+			if (Mathf.Abs(leanTarget - 0) < 0.05f) {
+				leanShift = 0;
 				leanTarget = 0;
 			} else {
 				leanTarget += (leanSpeed * Time.deltaTime * leanReset);
 			}
 
-			if (Mathf.Abs(leanShift - 0) < 0.02f) {
+			if (Mathf.Abs(leanShift - 0) < 0.05f) {
 				leanShift = 0;
+				leanTarget = 0;
 			} else {
 				leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1))
 							* leanReset;
@@ -550,7 +554,10 @@ public class PlayerMovement : MonoBehaviour {
 		if (CheatNoclip) return;
 
 		if (GetInput.a.LeanRight()) {
-			leanTarget -= (leanSpeed * Time.deltaTime);
+			float trigFrac = Input.GetAxisRaw("JoyAxis3"); // L2
+			float spd = leanSpeed;
+			if (trigFrac > 0) spd *= trigFrac;
+			leanTarget -= (spd * Time.deltaTime);
 			if (leanTarget < (leanMaxAngle * -1)) {
 				leanTarget = (leanMaxAngle * -1);
 			}
@@ -558,7 +565,10 @@ public class PlayerMovement : MonoBehaviour {
 			leanShift = -1 * (leanMaxShift * (leanTarget/leanMaxAngle));
 		}
 		if (GetInput.a.LeanLeft()) {
-			leanTarget += (leanSpeed * Time.deltaTime);
+			float trigFrac = Input.GetAxisRaw("JoyAxis6"); // R2
+			float spd = leanSpeed;
+			if (trigFrac > 0) spd *= trigFrac;
+			leanTarget += (spd * Time.deltaTime);
 			if (leanTarget > leanMaxAngle) leanTarget = leanMaxAngle;
 			leanShift = leanMaxShift * (leanTarget/(leanMaxAngle * -1));
 		}

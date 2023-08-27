@@ -123,29 +123,28 @@ public class MainMenuHandler : MonoBehaviour {
 		ResetPages();
 		dataFound = false;
 		inCutscene = false;
-		FileBrowser.SetFilters(false,new FileBrowser.Filter("SHOCK RES Files",
-															".RES", ".res"));
-		FileBrowser.SetDefaultFilter( ".RES" );
+		lpgsn_load = loadPage.GetComponent<LoadPageGetSaveNames>();
+		lpgsn_save = savePage.GetComponent<LoadPageGetSaveNames>();
 		Config.SetVolume();
-		StartCoroutine(CheckDataFiles());
-		string indn;
 		if (Application.platform == RuntimePlatform.Android) {
-			indn = Utils.SafePathCombine(Application.persistentDataPath,
-										 "introdone.dat");
-		} else {
-			indn = Utils.SafePathCombine(Application.streamingAssetsPath,
-										 "introdone.dat");
+			dataFound = true;
+			Config.SetVolume();
+			GoToFrontPage();
+			IntroVideo.SetActive(true);
+			return;
 		}
-
+		FileBrowser.SetFilters(false,new FileBrowser.Filter("SHOCK RES Files",
+															".RES",".res"));
+		FileBrowser.SetDefaultFilter( ".RES" );
+		StartCoroutine(CheckDataFiles());
+		string indn = Utils.SafePathCombine(Application.streamingAssetsPath,
+										    "introdone.dat");
 		if (System.IO.File.Exists(indn)) {
 			IntroVideo.SetActive(false);	
 			IntroVideoContainer.SetActive(false);
 		} else {
 			System.IO.File.Create(indn);
 		}
-
-		lpgsn_load = loadPage.GetComponent<LoadPageGetSaveNames>();
-		lpgsn_save = savePage.GetComponent<LoadPageGetSaveNames>();
 	}
 
 	// Improve menu performance.
@@ -678,16 +677,17 @@ public class MainMenuHandler : MonoBehaviour {
 	IEnumerator ShowSelectPathCoroutine () {
 		// Show a select path dialog and wait for a response from user
 		// Path folder: folder, Allow multiple selection: false
-		// Initial path: default (Documents), Title: "Load File", submit button text: "Load"
-		yield return FileBrowser.WaitForLoadDialog(true, false, System.String.Empty, "Select Path", "Select");
-
+		// Initial path: default (Documents), Title: "Load File", submit button
+		// text: "Load"
+		yield return FileBrowser.WaitForLoadDialog(true,false,
+												   System.String.Empty,
+												   "Select Path","Select");
 		// Dialog is closed
-		// Print whether the user has selected a folder path or cancelled the operation (FileBrowser.Success)
-		//Debug.Log(FileBrowser.Success);
-
+		// Print whether the user has selected a folder path or cancelled the
+		// operation (FileBrowser.Success).
 		if (FileBrowser.Success) {
-			dataPathInputText.text = FileBrowser.Result[0]; // Set the folder path only, e.g. C:\SHOCK\RES\DATA
-			//Debug.Log("Found filepath for .RES files: " + FileBrowser.Result[0]);
+			// Set the folder path only, e.g. C:\SHOCK\RES\DATA
+			dataPathInputText.text = FileBrowser.Result[0];
 		}
 	}
 

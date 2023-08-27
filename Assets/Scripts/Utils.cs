@@ -250,7 +250,8 @@ public class Utils {
 													   // it for everything.
         return combinedPath;
     }
-    
+
+    #pragma warning disable 618
     public static StreamReader ReadStreamingAsset(string fName) {
         StreamReader dataReader;
         string fPath = SafePathCombine(Application.streamingAssetsPath,fName);
@@ -266,6 +267,7 @@ public class Utils {
         
         return dataReader;
     }
+	#pragma warning restore 618
 
 	// From the Unity Documentation on Resources.Load:
 	// Note: All asset names and paths in Unity use forward slashes, paths

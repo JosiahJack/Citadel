@@ -14,9 +14,9 @@ public class Config {
     		Const.a.GraphicsSSAO = true; //AssignConfigBool("Graphics","SSAO");
     		Const.a.GraphicsBloom = true; //AssignConfigBool("Graphics","Bloom");
     		Const.a.GraphicsFOV = 65; //AssignConfigInt("Graphics","FOV");
-    		Const.a.GraphicsAAMode = 5; //AssignConfigInt("Graphics","AA");
-    		Const.a.GraphicsShadowMode = 2; //AssignConfigInt("Graphics", "Shadows");
-    		Const.a.GraphicsSSRMode = 2; //AssignConfigInt("Graphics", "SSR");
+    		Const.a.GraphicsAAMode = 1; //AssignConfigInt("Graphics","AA");
+    		Const.a.GraphicsShadowMode = 0; //AssignConfigInt("Graphics", "Shadows");
+    		Const.a.GraphicsSSRMode = 1; //AssignConfigInt("Graphics", "SSR");
     		Const.a.GraphicsGamma = 50; //AssignConfigInt("Graphics","Gamma");
     		Const.a.GraphicsVSync = false; //AssignConfigBool("Graphics","VSync");
     

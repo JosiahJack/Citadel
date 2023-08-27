@@ -207,14 +207,26 @@ public class MouseLookScript : MonoBehaviour {
 		KeyboardLookUpDn();
 		if (inCyberSpace) { // Barrel roll!
 			if (GetInput.a.LeanLeft()) {
-				playerCapsuleTransform.RotateAround(playerCapsuleTransform.transform.position, playerCapsuleTransform.transform.forward,cyberSpinSensitivity * Time.deltaTime * 100f);
+				playerCapsuleTransform.RotateAround(
+					playerCapsuleTransform.transform.position,
+					playerCapsuleTransform.transform.forward,
+					cyberSpinSensitivity * Time.deltaTime * 100f
+				);
 			}
 
 			if (GetInput.a.LeanRight()) {
-				playerCapsuleTransform.RotateAround(playerCapsuleTransform.transform.position, playerCapsuleTransform.transform.forward,cyberSpinSensitivity * Time.deltaTime * -1f * 100f);
+				playerCapsuleTransform.RotateAround(
+					playerCapsuleTransform.transform.position,
+					playerCapsuleTransform.transform.forward,
+					cyberSpinSensitivity * Time.deltaTime * -1f * 100f
+				);
 			}
 		} else {
-			if (compassContainer.activeInHierarchy) compassContainer.transform.rotation = Quaternion.Euler(0f, -yRotation + 180f, 0f); // Update automap player icon orientation.
+			if (compassContainer.activeInHierarchy) {
+				// Update automap player icon orientation.
+				compassContainer.transform.rotation =
+					Quaternion.Euler(0f, -yRotation + 180f, 0f);
+			}
 		}
 
 		if (!inventoryMode) Mouselook(); // Only do mouselook in Shoot Mode.
@@ -330,7 +342,22 @@ public class MouseLookScript : MonoBehaviour {
 
 			// Apply the normal mouselook
 			playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
-			transform.localRotation = Quaternion.Euler(xRotation,0f,0f); // Up down component only applied to camera.  Must be 0 for others or else movement will go in wrong direction!
+
+			// Up down component only applied to camera.  Must be 0 for others
+			// or else movement will go in wrong direction!  Preserve z value
+			// for lean head adjust since real life leaning you keep your head
+			// more or less level while your body tilts out.
+			float zRot = PlayerMovement.a.leanTransform.localEulerAngles.z;
+			zRot *= 0.5f;
+			if (PlayerMovement.a.leanTransform.localEulerAngles.z < 0f) {
+				zRot = 0f;//Mathf.Abs(zRot) * -1f;
+			} else {
+				zRot = 0f;//Mathf.Abs(zRot) * -1f;
+			}
+
+			Debug.Log("zRot: " + zRot.ToString());
+			transform.localRotation = Quaternion.Euler(xRotation,0f,zRot);
+
 			float xCenter = (float)Screen.width * 0.5f;
 			float yCenter = (float)Screen.height * 0.5f;
 			float xOffset = ((float)Input.mousePosition.x - xCenter);
@@ -437,7 +464,8 @@ public class MouseLookScript : MonoBehaviour {
 				xRotation += keyboardTurnSpeed;
 
 			if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle.
-			transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+			transform.localRotation = Quaternion.Euler(xRotation,0f,
+													   transform.localRotation.z);
 		} else if (GetInput.a.LookUp()) {
 			if ((inCyberSpace && Const.a.InputInvertCyberspaceLook) || (!inCyberSpace && Const.a.InputInvertLook))
 				xRotation += keyboardTurnSpeed;
@@ -445,7 +473,8 @@ public class MouseLookScript : MonoBehaviour {
 				xRotation -= keyboardTurnSpeed;
 
 			if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle.
-			transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+			transform.localRotation = Quaternion.Euler(xRotation, 0f,
+													   transform.localRotation.z);
 		}
 	}
 

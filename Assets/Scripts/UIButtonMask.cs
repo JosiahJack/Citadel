@@ -73,12 +73,26 @@ public class UIButtonMask : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
-			if (doubleClickEnabled) {
-				if (dbclickFinished < PauseScript.a.relativeTime) {
-					doubleClickTicks--;
-					if (doubleClickTicks < 0) doubleClickTicks = 0;
-				}
+		if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
+
+		if (Input.touchCount <= 0
+			&& (Application.platform == RuntimePlatform.Android)) {
+
+			justHeld = false;
+			held = false;
+			GUIState.a.ClearOverButton();
+			doubleClickTicks = 0;
+			if (toolTipLingdex >= 0) {
+				MouseCursor.a.toolTip = string.Empty;
+			}
+			pointerEntered = false;
+		}
+
+		if (doubleClickEnabled) {
+			if (dbclickFinished < PauseScript.a.relativeTime) {
+				doubleClickTicks--;
+				if (doubleClickTicks < 0) doubleClickTicks = 0;
 			}
 		}
 	}

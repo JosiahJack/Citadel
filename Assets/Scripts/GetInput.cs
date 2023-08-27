@@ -109,7 +109,7 @@ public class GetInput : MonoBehaviour {
 		if (Input.GetKey(KeyCode.JoystickButton0)) return true;
 		if (Const.a.InputCodeSettings[4] == 153) return MouseWheelUp();
 		if (Const.a.InputCodeSettings[4] == 154) return MouseWheelDn();
-		if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[4]])) {
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[4]])) {
 			return true;
 		}
 
@@ -126,21 +126,46 @@ public class GetInput : MonoBehaviour {
 		lastjoy3 = false;
 		if (Const.a.InputCodeSettings[6] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[6] == 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[6]])) return true; else return false;
 	}
-	public bool LeanLeft()		{ if ((Input.GetAxisRaw("JoyAxis3") > 0) && (Input.GetAxisRaw("JoyAxis6") < 0.05f)) return true; if (Const.a.InputCodeSettings[7] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[7] == 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[7]])) return true; else return false; }
-	public bool LeanRight()		{ if ((Input.GetAxisRaw("JoyAxis6") > 0) && (Input.GetAxisRaw("JoyAxis3") < 0.05f)) return true; if (Const.a.InputCodeSettings[8] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[8] == 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[8]])) return true; else return false; }
+	public bool LeanLeft() {
+		if ((Input.GetAxisRaw("JoyAxis3") > 0)
+			&& (Input.GetAxisRaw("JoyAxis6") < 0.05f)) {
+			
+			return true;
+		}
+
+		if (Const.a.InputCodeSettings[7] == 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[7] == 154) return MouseWheelDn();
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[7]])) {
+			return true;
+		}
+		return false;
+	}
+
+	public bool LeanRight() {
+		if ((Input.GetAxisRaw("JoyAxis6") > 0)
+			&& (Input.GetAxisRaw("JoyAxis3") < 0.05f)) {
+
+			return true;
+		}
+
+		if (Const.a.InputCodeSettings[8] == 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[8] == 154) return MouseWheelDn();
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[8]])) {
+			return true;
+		}
+
+		return false;
+	}
+
 	public bool Sprint()		{ if (Input.GetKey(KeyCode.JoystickButton9)) return true; if (Const.a.InputCodeSettings[9] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[9] == 154) return MouseWheelDn(); if (    Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[9]])) return true; else return false; }
 	public bool TurnLeft() {
 		if (Const.a.InputCodeSettings[11]== 153) return MouseWheelUp();
 		if (Const.a.InputCodeSettings[11]== 154) return MouseWheelDn();
 		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[11]])) {
-			Const.sprint("Left turn keyboard key held");
 			return true;
 		}
 
-		if (leftButton.held) {
-			Const.sprint("Left turn touch held");
-			return true;
-		}
+		if (leftButton.held) return true;
 		return false;
 	}
 
@@ -148,14 +173,10 @@ public class GetInput : MonoBehaviour {
 		if (Const.a.InputCodeSettings[12]== 153) return MouseWheelUp();
 		if (Const.a.InputCodeSettings[12]== 154) return MouseWheelDn();
 		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[12]])) {
-			Const.sprint("Right turn keyboard key held");
 			return true;
 		}
 
-		if (rightButton.held) {
-			Const.sprint("Right turn touch held");
-			return true;
-		}
+		if (rightButton.held) return true;
 		return false;
 	}
 
@@ -163,14 +184,10 @@ public class GetInput : MonoBehaviour {
 		if (Const.a.InputCodeSettings[13]== 153) return MouseWheelUp();
 		if (Const.a.InputCodeSettings[13]== 154) return MouseWheelDn();
 		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[13]])) {
-			Const.sprint("Up turn keyboard key held");
 			return true;
 		}
 
-		if (upButton.held) {
-			Const.sprint("Up turn touch held");
-			return true;
-		}
+		if (upButton.held) return true;
 		return false;
 	}
 
@@ -178,14 +195,10 @@ public class GetInput : MonoBehaviour {
 		if (Const.a.InputCodeSettings[14]== 153) return MouseWheelUp();
 		if (Const.a.InputCodeSettings[14]== 154) return MouseWheelDn();
 		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[14]])) {
-			Const.sprint("Down turn keyboard key held");
 			return true;
 		}
 
-		if (downButton.held) {
-			Const.sprint("Down turn touch held");
-			return true;
-		}
+		if (downButton.held) return true;
 		return false;
 	}
 
@@ -224,6 +237,11 @@ public class GetInput : MonoBehaviour {
 
 	}
 	public bool Use() {
+		if ((Application.platform == RuntimePlatform.Android)
+			&& Input.touchCount > 0) {
+			return true;
+		}
+
 		if (Input.GetKeyDown(KeyCode.JoystickButton4)) return true;
 		if (Const.a.InputCodeSettings[25]== 153) return MouseWheelUp();
 		if (Const.a.InputCodeSettings[25]== 154) return MouseWheelDn();
