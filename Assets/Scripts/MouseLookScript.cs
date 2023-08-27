@@ -184,18 +184,18 @@ public class MouseLookScript : MonoBehaviour {
 		if(GetInput.a.ToggleMode()) ToggleInventoryMode();
 
 		if (Const.a.questData.SelfDestructActivated
-			&& LevelManager.a.currentLevel != 13
-			&& LevelManager.a.currentLevel != 9) {
+			&& LevelManager.a.currentLevel != 13   // Not Cyberspace
+			&& LevelManager.a.currentLevel != 9) { // Not the bridge, separated
 
 			if (randomShakeFinished < PauseScript.a.relativeTime) {
 				randomShakeFinished = PauseScript.a.relativeTime
-				                      + UnityEngine.Random.Range(6f,20f);
+				                      + UnityEngine.Random.Range(5f,20f);
 				ScreenShake(3f,2f);
 			}
 			
 			if (randomKlaxonFinished < PauseScript.a.relativeTime) {
 				randomKlaxonFinished = PauseScript.a.relativeTime
-				                       + UnityEngine.Random.Range(15f,20f);
+				                       + UnityEngine.Random.Range(10f,20f);
 
 				Utils.PlayOneShotSavable(SFXSource,104); // klaxon
 			}
@@ -203,6 +203,9 @@ public class MouseLookScript : MonoBehaviour {
 
 		RecoilAndRest(); // Spring Back to Rest from Recoil
 		keyboardTurnSpeed = 15f * Const.a.MouseSensitivity;
+		if (Application.platform == RuntimePlatform.Android) {
+			if (Const.a.MouseSensitivity == 100f) Const.a.MouseSensitivity = 20f;
+		} 
 		KeyboardTurn();
 		KeyboardLookUpDn();
 		if (inCyberSpace) { // Barrel roll!
@@ -323,41 +326,36 @@ public class MouseLookScript : MonoBehaviour {
 		// --------------------------------------------------------------------
 		if (inCyberSpace) {
 			// CYBER MOUSE LOOK
-			// ----------------------------------------------------------------
 			if (Const.a.InputInvertCyberspaceLook) xRotation = -angY;
 			else xRotation = angY;
 
 			xRotation = Clamp0360(xRotation); // Limit up/down to within 360°.
 			yRotation = angX;
-			playerCapsuleTransform.RotateAround(playerCapsuleTransform.transform.position, playerCapsuleTransform.transform.up,yRotation);
-			playerCapsuleTransform.RotateAround(playerCapsuleTransform.transform.position, playerCapsuleTransform.transform.right,-xRotation);
+			playerCapsuleTransform.RotateAround(
+				playerCapsuleTransform.transform.position,
+				playerCapsuleTransform.transform.up,yRotation
+			);
+
+			playerCapsuleTransform.RotateAround(
+				playerCapsuleTransform.transform.position,
+				playerCapsuleTransform.transform.right,-xRotation
+			);
 		} else {
 			// NORMAL MOUSE LOOK
-			// ----------------------------------------------------------------
 			if (Const.a.InputInvertLook) xRotation += angY;
 			else xRotation -= angY;
 
 			xRotation = Mathf.Clamp(xRotation, -90f, 90f); // Limit up/down.
 			yRotation += angX;
 
-			// Apply the normal mouselook
-			playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f); // left right component applied to capsule
+			// Apply the mouselook. Left/Right component applied to capsule.
+			playerCapsuleTransform.localRotation = Quaternion.Euler(0f,
+																	yRotation,
+																	0f);
 
 			// Up down component only applied to camera.  Must be 0 for others
-			// or else movement will go in wrong direction!  Preserve z value
-			// for lean head adjust since real life leaning you keep your head
-			// more or less level while your body tilts out.
-			float zRot = PlayerMovement.a.leanTransform.localEulerAngles.z;
-			zRot *= 0.5f;
-			if (PlayerMovement.a.leanTransform.localEulerAngles.z < 0f) {
-				zRot = 0f;//Mathf.Abs(zRot) * -1f;
-			} else {
-				zRot = 0f;//Mathf.Abs(zRot) * -1f;
-			}
-
-			Debug.Log("zRot: " + zRot.ToString());
-			transform.localRotation = Quaternion.Euler(xRotation,0f,zRot);
-
+			// or else movement will go in wrong direction!
+			transform.localRotation = Quaternion.Euler(xRotation,0f,0f);
 			float xCenter = (float)Screen.width * 0.5f;
 			float yCenter = (float)Screen.height * 0.5f;
 			float xOffset = ((float)Input.mousePosition.x - xCenter);
@@ -411,7 +409,6 @@ public class MouseLookScript : MonoBehaviour {
 
 		returnFromCyberspaceFinished = Time.time + 0.1f; // Prevent mouselook
 														 // messing it up.
-
 		PlayerMovement.a.inCyberSpace = false;
 		PlayerMovement.a.rbody.velocity = Const.a.vectorZero;
 		PlayerMovement.a.leanCapsuleCollider.enabled = true;
@@ -754,6 +751,7 @@ public class MouseLookScript : MonoBehaviour {
 		if (useableConstdex >= 0 && useableConstdex < Const.a.useableItemsFrobIcons.Length) {
 			cursorTexture = Const.a.useableItemsFrobIcons[useableConstdex];
 		}
+
 		MouseCursor.a.cursorImage = cursorTexture;
 		if (fromButton) GUIState.a.ClearOverButton();
 		ForceInventoryMode();

@@ -13,6 +13,8 @@ public class GetInput : MonoBehaviour {
 	public UIButtonMask rightButton;
 	public UIButtonMask upButton;
 	public UIButtonMask downButton;
+	public UIButtonMask swimUpButton;
+	public UIButtonMask swimDownButton;
 	public UIButtonMask lmbButton;
 	public UIButtonMask consoleButton;
 	public GameObject touchablesContainer;
@@ -265,8 +267,28 @@ public class GetInput : MonoBehaviour {
 	public bool PatchCycUp()	{ if (Const.a.InputCodeSettings[37]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[37]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[37]])) return true; else return false; }
 	public bool PatchCycDown()	{ if (Const.a.InputCodeSettings[38]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[38]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[38]])) return true; else return false; }
 	public bool Map()			{ if (Input.GetAxisRaw("JoyAxis8") > 0) return true; if (Const.a.InputCodeSettings[39]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[39]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[39]])) return true; else return false; }
-    public bool SwimUp()		{ if (Const.a.InputCodeSettings[40]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[40]== 154) return MouseWheelDn(); if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[40]])) return true; else return false; }
-    public bool SwimDn()		{ if (Const.a.InputCodeSettings[41]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[41]== 154) return MouseWheelDn(); if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[41]])) return true; else return false; }
+    public bool SwimUp() {
+		if (Const.a.InputCodeSettings[40]== 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[40]== 154) return MouseWheelDn();
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[40]])) {
+			return true;
+		}
+
+		if (swimUpButton.held) return true;
+		return false;
+	}
+
+    public bool SwimDn() {
+		if (Const.a.InputCodeSettings[41]== 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[41]== 154) return MouseWheelDn();
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[41]])) {
+			return true;
+		}
+
+		if (swimDownButton.held) return true;
+		return false;
+	}
+
     // public bool SwapAmmoType()	{ if (Const.a.InputCodeSettings[42]== 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[42]== 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[42]])) return true; else return false; }
     public bool Console() {
 		if (Const.a.InputCodeSettings[43]== 153) return MouseWheelUp();
