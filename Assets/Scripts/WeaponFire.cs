@@ -396,12 +396,18 @@ public class WeaponFire : MonoBehaviour {
 		if (MouseLookScript.a.holdingObject) return;
 		if (MFDManager.a.mouseClickHeldOverGUI) return;
 
-		GetWeaponData(wepdex);
-		if (GetInput.a.Attack(Const.a.isFullAutoForWeapon[wepdex])
+		StartNormalAttack(wepdex);
+	}
+
+	public void StartNormalAttack(int wep16Index) {
+		if (wep16Index < 0 || wep16Index > 15) return;
+
+		GetWeaponData(wep16Index);
+		if (GetInput.a.Attack(Const.a.isFullAutoForWeapon[wep16Index])
 			&& waitTilNextFire < PauseScript.a.relativeTime
 			&& (PauseScript.a.relativeTime - energySliderClickedTime) > 0.1f
 			&& reloadFinished < PauseScript.a.relativeTime) {
-			StartCoroutine(CheckUIStateAndAttack(wepdex));
+			StartCoroutine(CheckUIStateAndAttack(wep16Index));
 		}
 	}
 
@@ -532,7 +538,7 @@ public class WeaponFire : MonoBehaviour {
 		}
 	}
 
-	void FireCyberWeapon() {
+	public void FireCyberWeapon() {
 		if (cyberWeaponAttackFinished < PauseScript.a.relativeTime) {
 			if (Inventory.a.isPulserNotDrill) {
 				if (Inventory.a.hasSoft[1]) {

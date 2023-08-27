@@ -489,6 +489,13 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	bool TargetIDFrob(Vector3 cP) {
+		if (Application.platform == RuntimePlatform.Android) {
+			if (MouseLookScript.a.inCyberSpace) {
+				WeaponFire.a.FireCyberWeapon();
+				return true;
+			}
+		}
+
 		if (inCyberSpace) return false;
 
 		float dist = TargetID.GetTargetIDSensingRange(true);
@@ -521,14 +528,23 @@ public class MouseLookScript : MonoBehaviour {
 		if (Inventory.a.hasHardware[4] && Inventory.a.hardwareVersion[4] > 1) {
 			if (!aic.hasTargetIDAttached) {
 				WeaponFire.a.CreateTargetIDInstance(-1f,aic.healthManager);
-				return true;
+				if (Application.platform != RuntimePlatform.Android) {
+					return true;
+				}
 			}
 		}
 
-		// "Can't use <enemy>"
-		Const.sprint(Const.a.stringTable[29]
-						+ Const.a.nameForNPC[aic.index],player);
+		if (Application.platform == RuntimePlatform.Android) {
+			// Cyber handled just above, normal fire condition only here.
+			int constDex = WeaponCurrent.a.weaponIndex;
+			int wepdex = WeaponFire.Get16WeaponIndexFromConstIndex(constDex);
+			WeaponFire.a.StartNormalAttack(wepdex);
+			return true;
+		}
 
+		// "Can't use <enemy>"
+		Const.sprint(Const.a.stringTable[29] + Const.a.nameForNPC[aic.index],
+					 player);
 		return true;
 	}
 
