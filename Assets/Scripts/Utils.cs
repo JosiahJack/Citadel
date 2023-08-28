@@ -1373,7 +1373,7 @@ public class Utils {
 			} else applyImpact = true;
 
 			if (success) {
-				hm = go.GetComponent<HealthManager>();
+				hm = Utils.GetMainHealthManager(go);
 				if (hm != null) {
 					if (hm.isPlayer) {
 						dd.damage = dd.damage * 0.5f; // give em a chance mate
@@ -1423,6 +1423,48 @@ public class Utils {
 			return false;
 		}
 		return true;
+	}
+
+	public static HealthManager GetMainHealthManager(GameObject go) {
+		if (go == null) return null;
+
+		HealthManager retval = null;
+		retval = go.GetComponent<HealthManager>();
+		if (retval != null) return retval;
+
+		// For hopper joint collisions or other combo-collider setups.
+		HealthManagerRelay hmr = go.GetComponent<HealthManagerRelay>();
+		if (hmr != null) retval = hmr.healthManagerToRedirectTo;
+		return retval;
+	}
+
+	public static HealthManager GetMainHealthManager(RaycastHit hit) {
+		if (hit.collider == null && hit.transform == null) return null;
+
+		HealthManager retval = null;
+		HealthManagerRelay hmr = null;
+		GameObject colGO = null;
+		GameObject hitGO = null;
+
+		// Check compound collider's main parent first.  Thanks andeeee!!
+		if (hit.collider != null) colGO = hit.collider.transform.gameObject;
+
+		if (colGO != null) hmr = colGO.GetComponent<HealthManagerRelay>();
+		hitGO = hit.transform.gameObject; // The actual hit object.
+		if (colGO != null) retval = colGO.GetComponent<HealthManager>();
+		if (retval != null) return retval;
+		if (hitGO == null) return null;
+
+		retval = hitGO.GetComponent<HealthManager>();
+		if (retval == null) {
+			// For hopper joint collisions or other combo-collider setups.
+			if (hmr == null) hmr = colGO.GetComponent<HealthManagerRelay>();
+			if (hmr != null) {
+				retval = hmr.healthManagerToRedirectTo;
+			}
+		}
+
+		return retval;
 	}
 
     public static void CopyLogFiles(bool prev) {

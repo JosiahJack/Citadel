@@ -344,7 +344,9 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public float damageDealt = 0f;
 	[HideInInspector] public float damageReceived = 0f;
 	[HideInInspector] public int savesScummed = 0;
-	
+
+	public static RaycastHit hitNull;	
+
 	// Private CONSTANTS
 	[HideInInspector] public int TARGET_FPS = 60;
 	private StringBuilder s1;
@@ -1818,6 +1820,8 @@ public class Const : MonoBehaviour {
 	}
 
 	public void RegisterObjectWithHealth(HealthManager hm) {
+		if (hm == null) return;
+
 		for (int i=0;i<healthObjectsRegistration.Length;i++) {
 			if (healthObjectsRegistration[i] != null) {
 				if (healthObjectsRegistration[i] == hm) {

@@ -19,7 +19,7 @@ public class TeleportTouch : MonoBehaviour {
 		if (col.gameObject == null) return;
 
 		if (col.gameObject.CompareTag("Player")) {
-			HealthManager hm = col.gameObject.GetComponent<HealthManager>();
+			HealthManager hm = Utils.GetMainHealthManager(col.gameObject);
 			if (hm != null) {
 				if (hm.health > 0f && justUsed < PauseScript.a.relativeTime) {
 					if (teleportFX != null) teleportFX.SetActive(true);

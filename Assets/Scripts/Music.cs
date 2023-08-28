@@ -21,7 +21,6 @@ public class Music : MonoBehaviour {
 	private float clipOverlayLength;
 	private float clipOverlayFinished;
 	public GameObject mainMenu;
-	public HealthManager hm;
 
 	private AudioClip tempC;
 	private AudioClip curC;

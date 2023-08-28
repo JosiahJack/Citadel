@@ -43,7 +43,7 @@ public class AIMeleeDamageCollider : MonoBehaviour {
 
 		// Make sure we aren't hitting the lean transform by accident...target
 		// the actual player capsule with its health manager.
-		HealthManager hm = other.GetComponent<HealthManager>();
+		HealthManager hm = Utils.GetMainHealthManager(other.gameObject);
 		if (hm == null) return;
 
 		ownerAIC.meleeDamageFinished = PauseScript.a.relativeTime + Const.a.timeToActualAttack1ForNPC[index];

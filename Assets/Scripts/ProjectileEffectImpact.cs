@@ -38,13 +38,7 @@ public class ProjectileEffectImpact : MonoBehaviour {
 		}
 
 		GameObject hitGO = other.contacts[0].otherCollider.gameObject;
-		HealthManager hm = hitGO.GetComponent<HealthManager>();
-		if (hm == null) {
-			// For hopper joint collisions or other combo-collider setups.
-			HealthManagerRelay hmr = hitGO.GetComponent<HealthManagerRelay>();
-			if (hmr != null) hm = hmr.healthManagerToRedirectTo;
-		}
-
+		HealthManager hm = Utils.GetMainHealthManager(hitGO);
 		if (hm != null) {
 			// Get an impact effect
 			GameObject impact = Const.a.GetObjectFromPool(impactType); 

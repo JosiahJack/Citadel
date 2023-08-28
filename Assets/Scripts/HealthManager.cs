@@ -793,14 +793,18 @@ public class HealthManager : MonoBehaviour {
 
 	// Generic health info string
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
-		HealthManager hm = go.GetComponent<HealthManager>();
+		HealthManager hm = go.GetComponent<HealthManager>(); // Savetype = hm.
 		if (hm == null) {
-			hm = go.transform.GetChild(0).GetComponent<HealthManager>();
-			if (hm == null) {
-				Debug.Log("HealthManager missing on savetype of HealthManager!"
-						  + "  GameObject.name: " + go.name);
-				return Utils.DTypeWordToSaveString("ffbbbu");
+			Transform childTr = go.transform.GetChild(0);
+			if (childTr != null) {
+				hm = Utils.GetMainHealthManager(childTr.gameObject);
 			}
+		}
+
+		if (hm == null) {
+			Debug.Log("HealthManager missing on savetype of HealthManager!"
+						+ "  GameObject.name: " + go.name);
+			return Utils.DTypeWordToSaveString("ffbbbu");
 		}
 
 		if (!hm.awakeInitialized) hm.Awake();
@@ -869,9 +873,13 @@ public class HealthManager : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   PrefabIdentifier prefID) {
-		HealthManager hm= go.GetComponent<HealthManager>();
+
+		HealthManager hm = go.GetComponent<HealthManager>(); // SaveType = hm.
 		if (hm == null) {
-			hm = go.transform.GetChild(0).GetComponent<HealthManager>();
+			Transform childTr = go.transform.GetChild(0);
+			if (childTr != null) {
+				hm = Utils.GetMainHealthManager(childTr.gameObject);
+			}
 		}
 
 		if (hm == null) {

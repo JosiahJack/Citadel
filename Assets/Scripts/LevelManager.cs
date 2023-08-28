@@ -462,9 +462,15 @@ public class LevelManager : MonoBehaviour {
 					DestroyImmediate(compArray[i].gameObject.transform.parent.gameObject);
 				} else {
 					if (pid.constIndex == 477) {
-						HealthManager hm = compArray[i].transform.GetChild(0).GetComponent<HealthManager>();
-						if (hm == null) Debug.Log("Missing HealthManager on security camera " + compArray[i].gameObject.name);
-						else {
+						GameObject cgo =
+							compArray[i].transform.GetChild(0).gameObject;
+
+						HealthManager hm = Utils.GetMainHealthManager(cgo);
+						if (hm == null) {
+							Debug.Log("Missing HealthManager on security "
+									  + "camera "
+									  + compArray[i].gameObject.name);
+						} else {
 							UnityEngine.UI.Image overlay = hm.linkedOverlay;
 							if (overlay != null) {
 								GameObject hmGO = overlay.gameObject;

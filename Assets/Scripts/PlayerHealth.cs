@@ -50,7 +50,11 @@ public class PlayerHealth : MonoBehaviour {
 
 	void Start () {
 		hm = GetComponent<HealthManager>();
-		if (hm == null) Debug.Log("BUG: No HealthManager script found on player (sent from PlayerHealth.Awake)");
+		if (hm == null) {
+			Debug.LogError("BUG: No HealthManager script found on player (sent"
+					  	   + " from PlayerHealth.Awake)");
+		}
+
 		painSoundFinished = PauseScript.a.relativeTime;
 		radSoundFinished = PauseScript.a.relativeTime;
 		radFXFinished = PauseScript.a.relativeTime;

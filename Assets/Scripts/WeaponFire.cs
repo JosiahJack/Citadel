@@ -93,7 +93,6 @@ public class WeaponFire : MonoBehaviour {
     private float clipEnd;
     private RaycastHit tempHit;
     private Vector3 tempVec;
-    private bool useBlood;
     private HealthManager tempHM;
     private float retval;
     private float heatTickFinished;
@@ -766,30 +765,37 @@ public class WeaponFire : MonoBehaviour {
         }
 
 		Recoil(index);
-        if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent] || overloadEnabled) {
+        if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]
+			|| overloadEnabled) {
+
             overloadEnabled = false;
-            waitTilNextFire = PauseScript.a.relativeTime + Const.a.delayBetweenShotsForWeapon2[index];
+            waitTilNextFire = PauseScript.a.relativeTime
+							  + Const.a.delayBetweenShotsForWeapon2[index];
         } else {
-            waitTilNextFire = PauseScript.a.relativeTime + Const.a.delayBetweenShotsForWeapon[index];
+            waitTilNextFire = PauseScript.a.relativeTime
+							  + Const.a.delayBetweenShotsForWeapon[index];
         }
 
 		Inventory.a.UpdateAmmoText();
     }
 
     bool DidRayHit(int wep16Index) {
+		tempHM = null;
         tempHit = new RaycastHit();
 		tempVec = MouseCursor.a.GetCursorScreenPointForRay();
-		tempVec.x += UnityEngine.Random.Range(-driftForWeapon[wep16Index],driftForWeapon[wep16Index]);
-		tempVec.y += UnityEngine.Random.Range(-driftForWeapon[wep16Index],driftForWeapon[wep16Index]);
-        if (Physics.Raycast(playerCamera.ScreenPointToRay(tempVec), out tempHit, fireDistance,Const.a.layerMaskPlayerAttack)) {
-			tempHM = tempHit.collider.transform.gameObject.GetComponent<HealthManager>(); // Thanks andeeeeeee!!
-			if (tempHM == null) tempHM = tempHit.transform.gameObject.GetComponent<HealthManager>();
-			
-            if (tempHM != null) {
-                useBlood = true;
-            }
+		tempVec.x += UnityEngine.Random.Range(-driftForWeapon[wep16Index],
+											  driftForWeapon[wep16Index]);
+
+		tempVec.y += UnityEngine.Random.Range(-driftForWeapon[wep16Index],
+											  driftForWeapon[wep16Index]);
+
+        if (Physics.Raycast(playerCamera.ScreenPointToRay(tempVec),out tempHit,
+							fireDistance,Const.a.layerMaskPlayerAttack)) {
+
+			tempHM = Utils.GetMainHealthManager(tempHit);
             return true;
         }
+
         return false;
     }
 
@@ -879,9 +885,9 @@ public class WeaponFire : MonoBehaviour {
 		}
 	}
 
-    void CreateStandardImpactEffects(bool onlyBloodIfHitHasHM) {
+    void CreateStandardImpactEffects() {
         // Determine blood type of hit target and spawn corresponding blood particle effect from the Const.Pool
-        if (useBlood) {
+        if (tempHM != null) {
             GameObject impact = Const.a.GetImpactType(tempHM);
             if (impact != null) {
                 tempVec = tempHit.normal * hitOffset;
@@ -890,14 +896,12 @@ public class WeaponFire : MonoBehaviour {
             }
         } else {
             // Allow for skipping adding sparks after special override impact effects per attack functions below
-            if (!onlyBloodIfHitHasHM) {
-                GameObject impact = Const.a.GetObjectFromPool(PoolType.SparksSmall); //Didn't hit an object with a HealthManager script, use sparks
-                if (impact != null) {
-                    tempVec = tempHit.normal * hitOffset;
-					impact.transform.SetPositionAndRotation(tempHit.point + tempVec,Quaternion.FromToRotation(Vector3.up, tempHit.normal));
-                    impact.SetActive(true);
-                }
-            }
+			GameObject impact = Const.a.GetObjectFromPool(PoolType.SparksSmall); //Didn't hit an object with a HealthManager script, use sparks
+			if (impact != null) {
+				tempVec = tempHit.normal * hitOffset;
+				impact.transform.SetPositionAndRotation(tempHit.point + tempVec,Quaternion.FromToRotation(Vector3.up, tempHit.normal));
+				impact.SetActive(true);
+			}
         }
     }
 
@@ -1113,21 +1117,26 @@ public class WeaponFire : MonoBehaviour {
     //----------------------------------------------------------------------------------------------------------
     // Guns and laser beams, used by most weapons
     void HitScanFire(int wep16Index) {
-		//damageData.ResetDamageData(damageData);
+        damageData.other = tempHit.transform.gameObject;
+		tempHM = Utils.GetMainHealthManager(tempHit);
+		if (damageData.other != tempHM.gameObject) {
+			damageData.other = tempHM.gameObject;
+		}
+
         if (wep16Index == 1 || wep16Index == 4 || wep16Index == 14) {
             CreateBeamImpactEffects(wep16Index); // laser burst effect overrides standard blood spurts/robot sparks
         } else {
-            CreateStandardImpactEffects(false); // standard blood spurts/robot sparks
+            CreateStandardImpactEffects(); // standard blood spurts/robot sparks
 
 			// the only exception
-			if (wep16Index == 2 && Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) damageData.attackType = AttackType.Tranq; // tranquilize the untranquil....yes
+			if (wep16Index == 2 && Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
+				damageData.attackType = AttackType.Tranq; // tranquilize the untranquil....yes
+			}
         }
 
         // Fill the damageData container
 		// -------------------------------
 		// Using tempHit.transform instead of tempHit.collider.transform to ensure we get overall NPC parent instead of its children.
-        damageData.other = tempHit.transform.gameObject;
-		HealthManager hm = damageData.other.GetComponent<HealthManager>();
         if (damageData.other.CompareTag("NPC")) {
             damageData.isOtherNPC = true;
 			if (damageData.attackType == AttackType.Tranq) {
@@ -1163,8 +1172,8 @@ public class WeaponFire : MonoBehaviour {
 		damageData.impactVelocity = 1f;
 		if (wep16Index == 12) {
 			damageData.impactVelocity = 300f;
-			if (hm != null) {
-				if (hm.isObject) damageData.damage *= 10f; // babamm boxes be like, u ded
+			if (tempHM != null) { // babamm boxes be like, u ded
+				if (tempHM.isObject) damageData.damage *= 10f;
 			}
 		}
 
@@ -1172,21 +1181,21 @@ public class WeaponFire : MonoBehaviour {
 		bool dartTranq = (wep16Index == 2
 		  && Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]);
 		GameObject hitGO = tempHit.collider.transform.gameObject;
-        if (hm != null && hm.health > 0 && !dartTranq) {
-			dmgFinal = hm.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
+        if (tempHM != null && tempHM.health > 0 && !dartTranq) {
+			dmgFinal = tempHM.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
 			damageData.impactVelocity += (damageData.damage * 0.5f);
 			if (!damageData.isOtherNPC || wep16Index == 12) {
 				Utils.ApplyImpactForce(hitGO,damageData.impactVelocity,
 									   damageData.attacknormal,
 									   damageData.hit.point);
 			}
-			if (hm.isNPC) Music.a.inCombat = true;
+			if (tempHM.isNPC) Music.a.inCombat = true;
 		}
 
 		if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
 		if (dartTranq) dmgFinal = -2f;
 		if (damageData.attackType == AttackType.Tranq) dmgFinal = -2f;
-		CreateTargetIDInstance(dmgFinal,hm);
+		CreateTargetIDInstance(dmgFinal,tempHM);
 
 		UseableObjectUse uou = hitGO.GetComponent<UseableObjectUse>();
 		if (uou != null) uou.HitForce(damageData); // knock objects around
@@ -1232,8 +1241,13 @@ public class WeaponFire : MonoBehaviour {
 
 		UseableObjectUse uou = targ.GetComponent<UseableObjectUse>();
 		if (uou != null) uou.HitForce(damageData); // knock objects around
-		HealthManager hm = targ.GetComponent<HealthManager>();
-		if (hm == null) {
+		tempHM = Utils.GetMainHealthManager(targ);
+		if (damageData.other != tempHM.gameObject) {
+			damageData.other = tempHM.gameObject;
+		}
+
+		CreateStandardImpactEffects();
+		if (tempHM == null) {
 			if (!silent) {
 				Utils.PlayOneShotSavable(SFX,hit);
 				PlayerHealth.a.makingNoise = true;
@@ -1251,16 +1265,16 @@ public class WeaponFire : MonoBehaviour {
 			}
 		}
 
-		float dmgFinal = hm.TakeDamage(damageData);
+		float dmgFinal = tempHM.TakeDamage(damageData);
 		if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
-		CreateTargetIDInstance(dmgFinal,hm);
-		if (hm.isNPC) Music.a.inCombat = true;
+		CreateTargetIDInstance(dmgFinal,tempHM);
+		if (tempHM.isNPC) Music.a.inCombat = true;
 		if (!silent) {
 			PlayerHealth.a.makingNoise = true;
 			PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime + 0.5f;
-			if ((hm.bloodType == BloodType.Red)
-				|| (hm.bloodType == BloodType.Yellow)
-				|| (hm.bloodType == BloodType.Green)) {
+			if ((tempHM.bloodType == BloodType.Red)
+				|| (tempHM.bloodType == BloodType.Yellow)
+				|| (tempHM.bloodType == BloodType.Green)) {
 				Utils.PlayOneShotSavable(SFX,hitflesh);
 			} else if (isRapier && PlayerEnergy.a.energy < 4f) {
 				Utils.PlayOneShotSavable(SFX,Const.a.sounds[67]);
@@ -1269,7 +1283,6 @@ public class WeaponFire : MonoBehaviour {
 			}
 		}
 
-		CreateStandardImpactEffects(true);
 		if (isRapier) {
 			PlayerEnergy.a.TakeEnergy(3.666f); // 3 hits per tick.
 			if (BiomonitorGraphSystem.a != null) {
@@ -1319,17 +1332,16 @@ public class WeaponFire : MonoBehaviour {
 		for (int i=0;i<Const.a.healthObjectsRegistration.Length;i++) {
 			if (Const.a.healthObjectsRegistration[i] == null) continue;
 
-			GameObject ho = Const.a.healthObjectsRegistration[i].gameObject;
+			HealthManager hm = Const.a.healthObjectsRegistration[i];
 			// Don't hurt deactive objects, like you know, corpse on
 			// living entities...at least don't do it again please.
-			if (ho == null) continue;
-			if (!ho.activeInHierarchy) continue;
-
-			HealthManager hm = ho.GetComponent<HealthManager>();
 			if (hm == null) continue;
-			if (Vector3.Distance(ho.transform.position,
+			if (!hm.gameObject.activeInHierarchy) continue;
+
+			if (Vector3.Distance(hm.transform.position,
 								 playerCapsule.transform.position)
 				>= meleescanDistance) {
+
 				continue;
 			}
 
@@ -1338,7 +1350,7 @@ public class WeaponFire : MonoBehaviour {
 						- playerCamera.transform.position;
 
 			tempVec = tempVec.normalized;
-			Vector3 ang = ho.transform.position
+			Vector3 ang = hm.transform.position
 							- playerCamera.transform.position;
 
 			ang = ang.normalized;
@@ -1351,8 +1363,8 @@ public class WeaponFire : MonoBehaviour {
 				if (anim != null) anim.Play("Attack2");
 			}
 
-			StartCoroutine(ApplyMeleeHit(index16,ho,isRapier,silent,hit,
-											miss,hitflesh));
+			StartCoroutine(ApplyMeleeHit(index16,hm.gameObject,isRapier,silent,
+										 hit,miss,hitflesh));
 			return;
 		}
 

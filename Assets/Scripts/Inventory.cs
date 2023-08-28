@@ -763,12 +763,12 @@ public class Inventory : MonoBehaviour {
 				for (i=0;i<hmGOs.Count;i++) {
 					if (hmGOs[i] == null) continue;
 
-					HealthManager hm = hmGOs[i].GetComponent<HealthManager>();
-					if (hm == null) continue;
+					HealthManager hmT = hmGOs[i].GetComponent<HealthManager>();
+					if (hmT == null) continue;
 
-					if ((hm.isNPC || hm.isSecCamera)) {
-						hm.Awake(); // Set up slots.
-						hm.Start(); // Setup overlay.
+					if ((hmT.isNPC || hmT.isSecCamera)) {
+						hmT.Awake(); // Set up slots.
+						hmT.Start(); // Setup overlay.
 					}
 				}
 				break;

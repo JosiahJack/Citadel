@@ -30,7 +30,7 @@ public class Trigger : MonoBehaviour {
 		if (col == null) Debug.Log("BUG: TriggerTripped was fed a null col!");
 
 		if (col.gameObject.CompareTag("Player")) {
-			HealthManager hm = col.gameObject.GetComponent<HealthManager>();
+			HealthManager hm = Utils.GetMainHealthManager(col.gameObject);
 			if (hm != null) {
 				if (hm.health > 0f && hm.isPlayer) {
 					if (recentMostActivator != null) {

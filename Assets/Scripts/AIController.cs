@@ -316,7 +316,7 @@ public class AIController : MonoBehaviour {
 		inSight = CheckIfPlayerInSight();
 		if (enemy != null && HasHealth(healthManager)) {
 			// Check if enemy health drops to 0
-			if (enemyHM == null) enemyHM = enemy.GetComponent<HealthManager>();
+			if (enemyHM == null) enemyHM = Utils.GetMainHealthManager(enemy);
 			if (enemyHM != null) {
 				if (!HasHealth(enemyHM)) {
 					if (IsCyberNPC()) {
@@ -326,7 +326,7 @@ public class AIController : MonoBehaviour {
 						wandering = true;
 						currentState = AIState.Walk;
 					}
-					enemy = null;
+					enemy = null; // Forget the enemy.
 					enemyHM = null;
 				}
 			}
@@ -502,7 +502,7 @@ public class AIController : MonoBehaviour {
 						+ Const.a.timeToChangeEnemyForNPC[index];
 					enemy = attacker; // Switch to whoever just attacked us
 					if (enemy != null) {
-						enemyHM = enemy.GetComponent<HealthManager>();
+						enemyHM = Utils.GetMainHealthManager(enemy);
 						lastKnownEnemyPos = enemy.transform.position;
 						currentDestination = enemy.transform.position;
 					}
@@ -978,12 +978,12 @@ public class AIController : MonoBehaviour {
 		return range;
 	}
 
-    void CreateStandardImpactEffects(bool useBlood) {
+    void CreateStandardImpactEffects() {
         // Determine blood type of hit target and spawn corresponding blood
 		// particle effect from the Const.Pool
 		float offset = 0f;
 		GameObject impact = null;
-        if (useBlood) {
+        if (tempHM != null) {
 			offset = 0.08f;
             impact = Const.a.GetImpactType(tempHM); // Returns blood type.
         } else { // Didn't hit object with a HealthManager script, use sparks.
@@ -1019,6 +1019,7 @@ public class AIController : MonoBehaviour {
 	// Does the raycast and sets tempHit for the hit data and tempHM for the
 	// hit object's HealthManager.  Returns true if it actually hit something.
     bool DidRayHit(int attackNum) {
+		tempHM = null;
 		if (attackNum < 1 || attackNum > 3) attackNum = 1;
 		tempVec = GetDirectionRayToEnemy(targettingPosition,attackNum);
 		Vector3 pos = GetAttackStartPoint(attackNum);
@@ -1027,12 +1028,7 @@ public class AIController : MonoBehaviour {
 		if (!Physics.Raycast(pos,tempVec,out tempHit,range,mask)) return false;
 
 		Const.a.numberOfRaycastsThisFrame++;
-		GameObject colGO =
-			tempHit.collider.transform.gameObject; // Thanks andeeee!!
-
-		GameObject hitGO = tempHit.transform.gameObject;
-		tempHM = colGO.GetComponent<HealthManager>(); 
-		if (tempHM == null) tempHM = hitGO.GetComponent<HealthManager>();
+		tempHM = Utils.GetMainHealthManager(tempHit);
 		return true;
     }
 
@@ -1122,11 +1118,10 @@ public class AIController : MonoBehaviour {
 				damageData.impactVelocity = damageData.damage;
 				if (tempHM.isPlayer) damageData.impactVelocity *= 0.5f;
 				damageData.damage = DamageData.GetDamageTakeAmount(damageData);
-				CreateStandardImpactEffects(true);
 				tempHM.TakeDamage(damageData);
-			} else {
-				CreateStandardImpactEffects(false);
 			}
+
+			CreateStandardImpactEffects();
 		}
 	}
 
@@ -1596,7 +1591,7 @@ public class AIController : MonoBehaviour {
 		if (enemSent == null) return;
 
 		enemy = enemSent;
-		enemyHM = enemSent.GetComponent<HealthManager>();
+		enemyHM = Utils.GetMainHealthManager(enemSent);
 		lastKnownEnemyPos = enemy.transform.position;
 		targettingPosition = targettingPosSent.position;
 	}
@@ -1641,7 +1636,7 @@ public class AIController : MonoBehaviour {
 
 	public void Alert(UseData ud) {
 		enemy = Const.a.player1Capsule;
-		if (enemy != null) enemyHM = enemy.GetComponent<HealthManager>();
+		if (enemy != null) enemyHM = Utils.GetMainHealthManager(enemy);
 	}
 
 	public void AwakeFromSleep(UseData ud) {

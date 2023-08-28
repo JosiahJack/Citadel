@@ -120,6 +120,7 @@ public class MouseLookScript : MonoBehaviour {
 		} else {
 			shootModeButton.SetActive(false);
 		}
+
 		cameraDistances = new float[32];
 		SetCameraCullDistances();
 		playerCamera.depthTextureMode = DepthTextureMode.Depth;
@@ -518,11 +519,13 @@ public class MouseLookScript : MonoBehaviour {
 		AIController aic = tempHit.collider.gameObject.GetComponent<AIController>();
 		if (aic == null) return false;
 
-		HealthManager hm = tempHit.collider.gameObject.GetComponent<HealthManager>();
-		if (hm.health <= 0 && aic.searchColliderGO != null) {
-			currentSearchItem = aic.searchColliderGO;
-			SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
-			return true; // True = do and check nothing further this frob.
+		HealthManager hm = Utils.GetMainHealthManager(tempHit);
+		if (hm != null) {
+			if (hm.health <= 0 && aic.searchColliderGO != null) {
+				currentSearchItem = aic.searchColliderGO;
+				SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
+				return true; // True = do and check nothing further this frob.
+			}
 		}
 
 		if (Inventory.a.hasHardware[4] && Inventory.a.hardwareVersion[4] > 1) {
@@ -545,6 +548,7 @@ public class MouseLookScript : MonoBehaviour {
 		// "Can't use <enemy>"
 		Const.sprint(Const.a.stringTable[29] + Const.a.nameForNPC[aic.index],
 					 player);
+
 		return true;
 	}
 
@@ -1195,7 +1199,12 @@ public class MouseLookScript : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
 		inventoryMode = false;
-		shootModeButton.SetActive(false);
+		if (Application.platform == RuntimePlatform.Android) {
+			shootModeButton.SetActive(true);
+		} else {
+			shootModeButton.SetActive(false);
+		}
+
 		if (vmailActive) {
 			Inventory.a.DeactivateVMail();
 			vmailActive = false;
