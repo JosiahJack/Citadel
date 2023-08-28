@@ -1119,8 +1119,10 @@ public class WeaponFire : MonoBehaviour {
     void HitScanFire(int wep16Index) {
         damageData.other = tempHit.transform.gameObject;
 		tempHM = Utils.GetMainHealthManager(tempHit);
-		if (damageData.other != tempHM.gameObject) {
-			damageData.other = tempHM.gameObject;
+		if (tempHM != null) {
+			if (damageData.other != tempHM.gameObject) {
+				damageData.other = tempHM.gameObject;
+			}
 		}
 
         if (wep16Index == 1 || wep16Index == 4 || wep16Index == 14) {
@@ -1242,8 +1244,10 @@ public class WeaponFire : MonoBehaviour {
 		UseableObjectUse uou = targ.GetComponent<UseableObjectUse>();
 		if (uou != null) uou.HitForce(damageData); // knock objects around
 		tempHM = Utils.GetMainHealthManager(targ);
-		if (damageData.other != tempHM.gameObject) {
-			damageData.other = tempHM.gameObject;
+		if (tempHM != null) {
+			if (damageData.other != tempHM.gameObject) {
+				damageData.other = tempHM.gameObject;
+			}
 		}
 
 		CreateStandardImpactEffects();
