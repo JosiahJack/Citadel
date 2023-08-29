@@ -16,9 +16,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: Library
-          key: Library-Android
+          key: Library-Android-Experimental
           restore-keys: |
-            Library-
+            Library-Android
             
       #- name: Run custom image build
       #  run: |
@@ -33,7 +33,7 @@ jobs:
 
       - name: Build game
         id: build
-        uses: game-ci/unity-builder@v2
+        uses: game-ci/unity-builder@v3
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -43,9 +43,11 @@ jobs:
           versioning: Semantic
           customImage: josiahjack/citadel-ci:ubuntu-2019.4.35f1-android-2.0.0
           allowDirtyBuild: true
+          androidTargetSdkVersion: 30
+          androidSymbolType: 'debugging'
       - name: Upload built files
         uses: actions/upload-artifact@v3
         with:
           name: Citadel_DevBuild_AndroidExperimental
-          path: build/Android
+          path: build/Android/*.apk
           if-no-files-found: error
