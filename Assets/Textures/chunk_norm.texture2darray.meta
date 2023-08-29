@@ -10,9 +10,9 @@ ScriptedImporter:
   script: {fileID: 11500000, guid: fff0fc64c42275f4191b5fbb23975176, type: 3}
   wrapMode: 0
   filterMode: 0
-  anisoLevel: 0
+  anisoLevel: 2
   isReadable: 0
-  isLinear: 1
+  isLinear: 0
   textures:
   - {fileID: 2800000, guid: 4175c8d701235614b808507c02831a71, type: 3}
   - {fileID: 2800000, guid: 4175c8d701235614b808507c02831a71, type: 3}
