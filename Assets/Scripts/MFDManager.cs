@@ -525,6 +525,8 @@ public class MFDManager : MonoBehaviour  {
 		ctbButtonHardware.SetActive(true);
 		ctbButtonGeneral.SetActive(true);
 		CenterTabButtonClickSilent(curCenterTab,true);
+		tabButtonsLHButtons.SetActive(true);
+		tabButtonsRHButtons.SetActive(true);
 		TabReset(true); // right
 		TabReset(false); // left
 		ReturnToLastTab(true);
