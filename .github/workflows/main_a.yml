@@ -49,5 +49,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Citadel_DevBuild_AndroidExperimental
-          path: build/Android/*.apk
+          path: |
+            build/Android/*.apk
+            Library
           if-no-files-found: error
