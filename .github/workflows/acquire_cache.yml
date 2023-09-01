@@ -1,0 +1,32 @@
+name: Acquire Citadel Actions Cache
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    name: Acquire Citadel Actions Cache
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false 
+    steps:
+      - name: Delete huge unnecessary tools folder
+        run: rm -rf /opt/hostedtoolcache
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Mark Library folder to be preserved
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-Android-Experimental
+          restore-keys: |
+            Library-Android
+      - name: Download custom Docker image
+        run: |
+          echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker pull josiahjack/citadel-ci:ubuntu-2019.4.35f1-android-2.0.0
+      - name: Upload built files
+        uses: actions/upload-artifact@v3
+        with:
+          name: Citadel_DevBuild_AndroidExperimental
+          path: |
+            Library
+          if-no-files-found: error
