@@ -35,3 +35,6 @@ Assets/StreamingAssets/Player.log.meta
 blender
 !BuildTools/*
 ![Ll]ibrary/PackageCache/com.oddworm.texture2darrayimportpipeline@4befff7b72/*
+![Ll]ibrary/BuildSettings.asset
+![Ll]ibrary/EditorUserBuildSettings.asset
+![Ll]ibrary/EditorSnapSettings.asset
