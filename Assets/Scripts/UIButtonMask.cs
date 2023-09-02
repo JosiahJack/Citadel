@@ -21,16 +21,19 @@ public class UIButtonMask : MonoBehaviour {
 	private bool pointerEntered;
 
 	void Start() { // Start for the PauseScript.a and MouseScript.a references.
-		rect = GetComponent<RectTransform>(); // Create box collider for cursor entry detection.
-		pointerEntered = false;
+		rect = GetComponent<RectTransform>(); // Create box collider for entry
+											  // detection.
+
 		boxCol = gameObject.AddComponent<BoxCollider>();
 		float width = rect.sizeDelta.x * rect.localScale.x;
 		float height = rect.sizeDelta.y * rect.localScale.y;
-		if (width < 0) width *= -1f;
-		if (height < 0) height *= -1f; // Cannot have negative size on box colliders.
-		boxCol.size = new Vector3(width,height,1f);
-		MouseCursor.a.RegisterRaycastRect(gameObject,GetComponent<RectTransform>());
 
+        // Cannot have negative size on box colliders.
+		if (width < 0) width = Mathf.Abs(width);
+		if (height < 0) height = Mathf.Abs(height);
+		boxCol.size = new Vector3(width,height,1f);
+		MouseCursor.a.RegisterRaycastRect(gameObject,
+										  GetComponent<RectTransform>());
 		pointerEntered = false;
 		evenT = GetComponent<EventTrigger>();
 		if (evenT == null) evenT = gameObject.AddComponent<EventTrigger>();

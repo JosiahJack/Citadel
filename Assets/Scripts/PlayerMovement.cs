@@ -444,10 +444,11 @@ public class PlayerMovement : MonoBehaviour {
 			Input.GetAxisRaw("JoyAxis1"), // Horizontal Left < 0, Right > 0
 			Input.GetAxisRaw("JoyAxis2") * -1f // Vertical Down > 0,
 											   //   Up < 0 Inverted
-		); 
+		);
 
-		relForward += leftThumbstick.y;
-		relSideways += leftThumbstick.x;
+		Vector2 leftTouchstick = GetInput.a.leftTS.Coordinate();
+		relForward += leftThumbstick.y + leftTouchstick.y;
+		relSideways += leftThumbstick.x + leftTouchstick.x;
 
 		// We are mashing a run button down.
 		running = ((relForward != 0) || (relSideways != 0));

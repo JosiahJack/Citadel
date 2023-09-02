@@ -1,18 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 // Master input handling functions from configuration
 public class GetInput : MonoBehaviour {
-	public UIButtonMask wButton;
-	public UIButtonMask aButton;
-	public UIButtonMask sButton;
-	public UIButtonMask dButton;
+	public MobileInputController leftTS;
+	public MobileInputController rightTS;
 	public UIButtonMask spaceButton;
-	public UIButtonMask leftButton;
-	public UIButtonMask rightButton;
-	public UIButtonMask upButton;
-	public UIButtonMask downButton;
 	public UIButtonMask swimUpButton;
 	public UIButtonMask swimDownButton;
 	public UIButtonMask lmbButton;
@@ -21,15 +16,23 @@ public class GetInput : MonoBehaviour {
 	public static GetInput a;
 	[HideInInspector] public bool isCapsLockOn;
 	private bool lastjoy3 = false;
+	private bool lastUse = false;
+	private Vector2 LTSCenter;
+	public float LTSRadius;
 
 	void Awake() {
 		a = this;
 		isCapsLockOn = false;
 		if (Application.platform != RuntimePlatform.Android) {
-			touchablesContainer.SetActive(false);
+			//touchablesContainer.SetActive(false);
 		} else {
 			touchablesContainer.SetActive(true);
 		}
+
+		//RectTransform rt = LTSCircle.rectTransform;
+		//Rect rect = LTSCircle.rectTransform.rect;
+		//LTSCenter =LTSCircle.transform.position;//rt.TransformPoint(rect.center);
+		//LTSRadius = rect.width;
 	}
 
 	//void Update() {
@@ -70,7 +73,6 @@ public class GetInput : MonoBehaviour {
 			return true;
 		}
 
-		if (wButton.held) return true;
 		return false;
 	}
 
@@ -81,7 +83,6 @@ public class GetInput : MonoBehaviour {
 			return true;
 		}
 
-		if (aButton.held) return true;
 		return false;
 	}
 
@@ -92,7 +93,6 @@ public class GetInput : MonoBehaviour {
 			return true;
 		}
 
-		if (sButton.held) return true;
 		return false;
 	}
 
@@ -103,7 +103,6 @@ public class GetInput : MonoBehaviour {
 			return true;
 		}
 
-		if (dButton.held) return true;
 		return false;
 	}
 
@@ -126,8 +125,15 @@ public class GetInput : MonoBehaviour {
 			lastjoy3 = true; return true;
 		}
 		lastjoy3 = false;
-		if (Const.a.InputCodeSettings[6] == 153) return MouseWheelUp(); if (Const.a.InputCodeSettings[6] == 154) return MouseWheelDn(); if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[6]])) return true; else return false;
+		if (Const.a.InputCodeSettings[6] == 153) return MouseWheelUp();
+		if (Const.a.InputCodeSettings[6] == 154) return MouseWheelDn();
+		if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[6]])) {
+			return true;
+		}
+
+		return false;
 	}
+
 	public bool LeanLeft() {
 		if ((Input.GetAxisRaw("JoyAxis3") > 0)
 			&& (Input.GetAxisRaw("JoyAxis6") < 0.05f)) {
@@ -167,7 +173,6 @@ public class GetInput : MonoBehaviour {
 			return true;
 		}
 
-		if (leftButton.held) return true;
 		return false;
 	}
 
@@ -178,7 +183,6 @@ public class GetInput : MonoBehaviour {
 			return true;
 		}
 
-		if (rightButton.held) return true;
 		return false;
 	}
 
@@ -189,7 +193,6 @@ public class GetInput : MonoBehaviour {
 			return true;
 		}
 
-		if (upButton.held) return true;
 		return false;
 	}
 
@@ -200,7 +203,6 @@ public class GetInput : MonoBehaviour {
 			return true;
 		}
 
-		if (downButton.held) return true;
 		return false;
 	}
 
@@ -238,10 +240,17 @@ public class GetInput : MonoBehaviour {
 
 
 	}
+
 	public bool Use() {
-		if ((Application.platform == RuntimePlatform.Android)
-			&& Input.touchCount > 0) {
-			return true;
+		if (Application.platform == RuntimePlatform.Android) {
+			if (Input.touchCount > 0) {
+				if (!lastUse) {
+					lastUse = true;
+					return true;
+				}
+			} else {
+				lastUse = false;
+			}
 		}
 
 		if (Input.GetKeyDown(KeyCode.JoystickButton4)) return true;

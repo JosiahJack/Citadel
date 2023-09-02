@@ -116,6 +116,7 @@ public class MouseLookScript : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.None;
 		inventoryMode = false; // Start with inventory mode turned off.
 		if (Application.platform == RuntimePlatform.Android) {
+			inventoryMode = true;
 			shootModeButton.SetActive(true);
 		} else {
 			shootModeButton.SetActive(false);
@@ -260,7 +261,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 	}
 
-	void Mouselook() {
+	public void Mouselook() {
 		if (returnFromCyberspaceFinished >= Time.time) return; // Not yet.
 
 		returnFromCyberspaceFinished = 0;
@@ -276,6 +277,12 @@ public class MouseLookScript : MonoBehaviour {
 		// Handle thumbstick input from a controller.
 		Vector2 rightThumbstick = new Vector2(Input.GetAxisRaw("JoyAxis4"), // Horizontal Left < 0, Right > 0
 											  Input.GetAxisRaw("JoyAxis5") * -1f); // Vertical Down > 0, Up < 0 Inverted
+
+		Vector2 rightTouchstick = GetInput.a.rightTS.Coordinate();
+		rightThumbstick += rightTouchstick;
+
+		Debug.Log("rightThumbstick: " + rightThumbstick.ToString());
+
 		// X
 		float signX = rightThumbstick.x > 0.0f ? 1.0f
 					  : rightThumbstick.x < 0.0f ? -1.0f : 0f;
