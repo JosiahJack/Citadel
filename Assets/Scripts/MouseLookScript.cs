@@ -116,7 +116,7 @@ public class MouseLookScript : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.None;
 		inventoryMode = false; // Start with inventory mode turned off.
 		if (Application.platform == RuntimePlatform.Android) {
-			inventoryMode = true;
+			ForceInventoryMode();
 			shootModeButton.SetActive(true);
 		} else {
 			shootModeButton.SetActive(false);
@@ -210,6 +210,7 @@ public class MouseLookScript : MonoBehaviour {
 		} 
 		KeyboardTurn();
 		KeyboardLookUpDn();
+		TouchLook();
 		if (inCyberSpace) { // Barrel roll!
 			if (GetInput.a.LeanLeft()) {
 				playerCapsuleTransform.RotateAround(
@@ -277,12 +278,6 @@ public class MouseLookScript : MonoBehaviour {
 		// Handle thumbstick input from a controller.
 		Vector2 rightThumbstick = new Vector2(Input.GetAxisRaw("JoyAxis4"), // Horizontal Left < 0, Right > 0
 											  Input.GetAxisRaw("JoyAxis5") * -1f); // Vertical Down > 0, Up < 0 Inverted
-
-		Vector2 rightTouchstick = GetInput.a.rightTS.Coordinate();
-		rightThumbstick += rightTouchstick;
-
-		Debug.Log("rightThumbstick: " + rightThumbstick.ToString());
-
 		// X
 		float signX = rightThumbstick.x > 0.0f ? 1.0f
 					  : rightThumbstick.x < 0.0f ? -1.0f : 0f;
@@ -449,6 +444,37 @@ public class MouseLookScript : MonoBehaviour {
 		}
 		playerCamera.layerCullDistances = cameraDistances; // Cull anything beyond 79f except for sky layer.
 	}
+	
+	void TouchLook() {
+	    Vector2 rightTouchstick = GetInput.a.rightTS.Coordinate();
+	    if (rightTouchstick.x < 0f {
+			yRotation -= keyboardTurnSpeed * rightTouchstick.x;
+			playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+		} else if (rightTouchstick.x > 0f {
+			yRotation += keyboardTurnSpeed * rightTouchstick.x;
+			playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+		}
+		
+		if (rightTouchstick.y < 0f {
+			if ((inCyberSpace && Const.a.InputInvertCyberspaceLook) || (!inCyberSpace && Const.a.InputInvertLook))
+				xRotation -= keyboardTurnSpeed;
+			else
+				xRotation += keyboardTurnSpeed;
+
+			if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle.
+			transform.localRotation = Quaternion.Euler(xRotation,0f,
+													   transform.localRotation.z);
+		} else if (rightTouchstick.y > 0f {
+			if ((inCyberSpace && Const.a.InputInvertCyberspaceLook) || (!inCyberSpace && Const.a.InputInvertLook))
+				xRotation += keyboardTurnSpeed * rightTouchstick.y;
+			else
+				xRotation -= keyboardTurnSpeed * rightTouchstick.y;
+
+			if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle.
+			transform.localRotation = Quaternion.Euler(xRotation, 0f,
+													   transform.localRotation.z);
+		}
+	}
 
 	void KeyboardTurn() {
 		if (GetInput.a.TurnLeft()) {
@@ -458,6 +484,8 @@ public class MouseLookScript : MonoBehaviour {
 			yRotation += keyboardTurnSpeed;
 			playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
 		}
+		
+		Vector2 rightTouchstick = GetInput.a.rightTS.Coordinate();
 	}
 
 	void KeyboardLookUpDn() {
