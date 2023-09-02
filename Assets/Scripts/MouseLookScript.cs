@@ -447,15 +447,15 @@ public class MouseLookScript : MonoBehaviour {
 	
 	void TouchLook() {
 	    Vector2 rightTouchstick = GetInput.a.rightTS.Coordinate();
-	    if (rightTouchstick.x < 0f {
+	    if (rightTouchstick.x < 0f) {
 			yRotation -= keyboardTurnSpeed * rightTouchstick.x;
 			playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
-		} else if (rightTouchstick.x > 0f {
+		} else if (rightTouchstick.x > 0f) {
 			yRotation += keyboardTurnSpeed * rightTouchstick.x;
 			playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
 		}
 		
-		if (rightTouchstick.y < 0f {
+		if (rightTouchstick.y < 0f) {
 			if ((inCyberSpace && Const.a.InputInvertCyberspaceLook) || (!inCyberSpace && Const.a.InputInvertLook))
 				xRotation -= keyboardTurnSpeed;
 			else
@@ -464,7 +464,7 @@ public class MouseLookScript : MonoBehaviour {
 			if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle.
 			transform.localRotation = Quaternion.Euler(xRotation,0f,
 													   transform.localRotation.z);
-		} else if (rightTouchstick.y > 0f {
+		} else if (rightTouchstick.y > 0f) {
 			if ((inCyberSpace && Const.a.InputInvertCyberspaceLook) || (!inCyberSpace && Const.a.InputInvertLook))
 				xRotation += keyboardTurnSpeed * rightTouchstick.y;
 			else
