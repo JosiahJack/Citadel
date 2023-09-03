@@ -280,12 +280,19 @@ public class Config {
 		ssr.reflection.blendType = ScreenSpaceReflectionModel.SSRReflectionBlendType.Additive;
 		ssr.reflection.reflectionQuality = preset;
 		ssr.reflection.maxDistance = 100f;
-		ssr.reflection.iterationCount = 256;
-		ssr.reflection.stepSize = 12;
+		if (preset == ScreenSpaceReflectionModel.SSRResolution.High) {
+			ssr.intensity.reflectionMultiplier = 0.451f;
+			ssr.reflection.iterationCount = 1024;
+			ssr.reflection.stepSize = 1;
+		} else {
+			ssr.intensity.reflectionMultiplier = 0.300f;
+			ssr.reflection.iterationCount = 512;
+			ssr.reflection.stepSize = 6;
+		}
+
 		ssr.reflection.widthModifier = 0.5f;
 		ssr.reflection.reflectionBlur = 1.0f;
 		ssr.reflection.reflectBackfaces = false;
-		ssr.intensity.reflectionMultiplier = 0.25f;
 		ssr.intensity.fadeDistance = 100f;
 		ssr.intensity.fresnelFade = 1.0f;
 		ssr.intensity.fresnelFadePower = 1.0f;

@@ -37,6 +37,8 @@ public class LevelManager : MonoBehaviour {
 	public GameObject[] lightContainers;
 	public GameObject[] npcContainers;
 	public GameObject[] elevatorTargetDestinations;
+	public Material rtxEmissive;
+	public Mesh sphereMesh;
 
 	private bool getValparsed;
 	private bool[] levelDataLoaded;
@@ -444,6 +446,24 @@ public class LevelManager : MonoBehaviour {
 			lit.shadowNormalBias = Utils.GetFloatFromString(entries[index]); index++;
 			lit.shadowNearPlane = Utils.GetFloatFromString(entries[index]); index++;
 			lit.cullingMask = Utils.GetIntFromString(entries[index]); index++;
+
+			//GameObject rtxSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			//rtxSphere.name = "Sphere" + i.ToString();
+			//Transform sprTr = rtxSphere.transform;
+			//sprTr.SetParent(tr);
+			//sprTr.localPosition = Vector3.zero;
+			//sprTr.localRotation = Const.a.quaternionIdentity;
+			//float sprScale = 0.1f * (lit.intensity / 5.5f);
+			//sprTr.localScale = new Vector3(readFloatx,readFloaty,readFloatz);
+			//rtxSphere.layer = 1; // TransparentFX
+			//MeshRenderer mr = rtxSphere.GetComponent<MeshRenderer>();
+			//if (mr == null) mr = rtxSphere.AddComponent<MeshRenderer>();
+			//mr.sharedMaterial = rtxEmissive;
+			//MeshFilter mf = rtxSphere.GetComponent<MeshFilter>();
+			//if (mf == null) mf = rtxSphere.AddComponent<MeshFilter>();
+			//mf.mesh = sphereMesh;
+			//SphereCollider sprCol = rtxSphere.GetComponent<SphereCollider>();
+			//if (sprCol != null) sprCol.enabled = false;
 		}
 	}
 
