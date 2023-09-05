@@ -32,11 +32,6 @@ Assets/StreamingAssets/CITBARK.RES.meta
 Assets/StreamingAssets/Player.log
 Assets/StreamingAssets/Player.log.meta
 
-Assets/Scripts/SEGI/*
-Assets/Scripts/SEGI.meta
-
-blender
-!BuildTools/*
 ![Ll]ibrary/PackageCache/com.oddworm.texture2darrayimportpipeline@4befff7b72/*
 ![Ll]ibrary/BuildSettings.asset
 ![Ll]ibrary/EditorUserBuildSettings.asset
