@@ -726,9 +726,9 @@ Master Index
 299 chunk_stor1_6_slice128_uprh
 300 chunk_stor1_6_slice192lh
 301 chunk_stor1_6_slice192rh
-302 chunk_stor1_7
-303 chunk_stor1_7_slice45
-304 chunk_stor1_7d
+302 chunk_stor1_7                223
+303 chunk_stor1_7_slice45        223
+304 chunk_stor1_7d               224
 305 chunk_teleporter
 306 chunk_white                 Const.a.useableItems
 307 item_paper_wad              0
