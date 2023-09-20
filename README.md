@@ -15,7 +15,7 @@ Get the latest here: https://github.com/JosiahJack/Citadel/tags
 ### Information
 [![tag](https://img.shields.io/github/v/tag/JosiahJack/Citadel?label=Latest%20Release)](https://github.com/JosiahJack/Citadel/releases)
 
-Started 7/6/2014
+Started ~7/06/2014~ 1/03/2013 (found my old hard drive!)
 
 The System Shock Fan Remake.  The goal is to recreate the original closely while enhancing it with 3D models instead of 2D sprites, 3D details to the station in and out, particle effects, and subtle sound effect additions.  After releasing a playable version, focus will shift to making mod and mapping tools.
 
@@ -35,7 +35,7 @@ Special thanks to Night Dive Studios for allowing this project to live on (unhin
 - At least 3GB RAM
 - At least 1.4GB hard drive space
 - At least 3 CPU threads
-- X11 on Linux systems
+- X11 on Linux systems (might work on Wayland but untested)
 
 ### Install Instructions:
 Everything needed to play should be in the zip, though at first launch the path to your original game install .RES files is needed for audio.  If installing a newer version, replace the old version.  Saves should be compatible unless noted in the tag release notes.
