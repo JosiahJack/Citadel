@@ -19,6 +19,7 @@ public class UIButtonMask : MonoBehaviour {
 	private RectTransform rect;
 	private EventTrigger evenT;
 	private bool pointerEntered;
+	private float tapFinished;
 
 	void Start() { // Start for the PauseScript.a and MouseScript.a references.
 		rect = GetComponent<RectTransform>(); // Create box collider for entry
@@ -67,9 +68,12 @@ public class UIButtonMask : MonoBehaviour {
 			doubleClickTicks = 0;
 			GetComponent<Button>().onClick.AddListener(() => { UiButtonMaskClick(); });
 		}
+
+		tapFinished = Time.time;
 	}
 
 	void OnEnable() {
+		tapFinished = Time.time;
 		pointerEntered = false;
 		held = false;
 		justHeld = false;
@@ -92,16 +96,14 @@ public class UIButtonMask : MonoBehaviour {
 			pointerEntered = false;
 		}
 
+		if (tapFinished < Time.time) justHeld = false;
+
 		if (doubleClickEnabled) {
 			if (dbclickFinished < PauseScript.a.relativeTime) {
 				doubleClickTicks--;
 				if (doubleClickTicks < 0) doubleClickTicks = 0;
 			}
 		}
-	}
-
-	void LateUpdate() {
-		justHeld = false;
 	}
 
 	// These interface with the EventTrigger system and call the real meat and potatoes below.
@@ -115,6 +117,7 @@ public class UIButtonMask : MonoBehaviour {
 	public void OnPointerDownDelegate(PointerEventData data) {
 		held = true;
 		justHeld = true;
+		tapFinished = Time.time + 0.1f;
 	}
 
 	public void OnPointerUpDelegate(PointerEventData data) { held = false; }
@@ -153,6 +156,7 @@ public class UIButtonMask : MonoBehaviour {
 			MouseCursor.a.toolTip = string.Empty;
 		}
 		pointerEntered = false;
+		justHeld = false;
     }
 
 	void UiButtonMaskClick () {

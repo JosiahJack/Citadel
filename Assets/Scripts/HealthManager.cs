@@ -593,20 +593,18 @@ public class HealthManager : MonoBehaviour {
 		MFDManager.a.NotifySearchThatSearchableWasDestroyed();
 		GameObject levelDynamicContainer = LevelManager.a.GetCurrentDynamicContainer();
 		for (int i=0;i<4;i++) {
-			if (searchableItem.contents[i] >= 0) {
-				GameObject tossObject = Instantiate(Const.a.useableItems[searchableItem.contents[i]],transform.position,Const.a.quaternionIdentity) as GameObject;
-				if (tossObject != null) {
-					if (tossObject.activeSelf != true) tossObject.SetActive(true);
-					if (levelDynamicContainer != null) {
-						tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-					}
-					tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
-				} else {
-					Const.sprint("BUG: Failed to instantiate object being dropped on gib.");
-				}
-				searchableItem.contents[i] = -1;
-				searchableItem.customIndex[i] = -1;
+			if (searchableItem.contents[i] < 0) continue;
+
+			GameObject tossObject = Instantiate(Const.a.useableItems[searchableItem.contents[i]],transform.position,Const.a.quaternionIdentity) as GameObject;
+			if (tossObject != null) {
+				if (tossObject.activeSelf != true) tossObject.SetActive(true);
+				tossObject.transform.SetParent(levelDynamicContainer.transform,true);
+				tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
+			} else {
+				Const.sprint("BUG: Failed to instantiate object being dropped on gib.");
 			}
+			searchableItem.contents[i] = -1;
+			searchableItem.customIndex[i] = -1;
 		}
 	}
 

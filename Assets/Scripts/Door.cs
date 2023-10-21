@@ -280,8 +280,6 @@ public class Door : MonoBehaviour {
 		}
 
 		dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
-		// If can't find current level, go ahead. Ghost my day!
-        if (dynamicObjectsContainer == null) return;
 
 		// Horrible hack to keep objects that have their physics sleeping from
 		// ghosting through the door as it closes.  Unity physics sucks.

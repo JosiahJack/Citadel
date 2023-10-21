@@ -1115,18 +1115,16 @@ public class MouseLookScript : MonoBehaviour {
 
 		// Find any free inactive objects within the level's Levelnumber.Dynamic container and activate those before instantiating
 		if (!grenadeActive) {
-			if (levelDynamicContainer != null) {
-				for (int i=0;i<levelDynamicContainer.transform.childCount;i++) {
-					Transform tr = levelDynamicContainer.transform.GetChild(i);
-					GameObject go = tr.gameObject;
-					UseableObjectUse reference = go.GetComponent<UseableObjectUse>();
-					if (reference != null) {
-						if (reference.useableItemIndex == heldObjectIndex && go.activeSelf == false) {
-							reference.customIndex = heldObjectCustomIndex;
-							tossObject = go;
-							freeObjectInPoolFound = true;
-							break;
-						}
+			for (int i=0;i<levelDynamicContainer.transform.childCount;i++) {
+				Transform tr = levelDynamicContainer.transform.GetChild(i);
+				GameObject go = tr.gameObject;
+				UseableObjectUse reference = go.GetComponent<UseableObjectUse>();
+				if (reference != null) {
+					if (reference.useableItemIndex == heldObjectIndex && go.activeSelf == false) {
+						reference.customIndex = heldObjectCustomIndex;
+						tossObject = go;
+						freeObjectInPoolFound = true;
+						break;
 					}
 				}
 			}

@@ -219,8 +219,11 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 
-	public GameObject GetCurrentDynamicContainer() {
-		if (currentLevel < 0 || currentLevel > 13) return levelScripts[1].dynamicObjectsContainer;
+	public GameObject GetCurrentDynamicContainer() { // Does not return null
+		if (currentLevel < 0 || currentLevel > 13) {
+			return levelScripts[1].dynamicObjectsContainer;
+		}
+
         return levelScripts[currentLevel].dynamicObjectsContainer;
 	}
 

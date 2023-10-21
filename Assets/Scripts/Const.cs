@@ -188,12 +188,6 @@ public class Const : MonoBehaviour {
 	public GameObject Pool_MutationBurst;
 	public GameObject Pool_GraytationBurst;
 	public GameObject Pool_BarrelExplosions;
-	public GameObject Pool_BulletHoleLarge;
-	public GameObject Pool_BulletHoleScorchLarge;
-	public GameObject Pool_BulletHoleScorchSmall;
-	public GameObject Pool_BulletHoleSmall;
-	public GameObject Pool_BulletHoleTiny;
-	public GameObject Pool_BulletHoleTinySpread;
 	public GameObject Pool_CyberDissolve;
 	public GameObject Pool_TargetIDInstances;
 	public GameObject Pool_AutomapBotOverlays;
@@ -1090,30 +1084,6 @@ public class Const : MonoBehaviour {
 		case PoolType.BarrelExplosions:
 			poolContainer = Pool_BarrelExplosions;
 			poolName = "BarrelExplosions ";
-			break;
-		case PoolType.BulletHoleLarge:
-			poolContainer = Pool_BulletHoleLarge;
-			poolName = "BulletHoleLarge ";
-			break;
-		case PoolType.BulletHoleScorchLarge:
-			poolContainer = Pool_BulletHoleScorchLarge;
-			poolName = "BulletHoleScorchLarge ";
-			break;
-		case PoolType.BulletHoleScorchSmall:
-			poolContainer = Pool_BulletHoleScorchSmall;
-			poolName = "BulletHoleScorchSmall ";
-			break;
-		case PoolType.BulletHoleSmall:
-			poolContainer = Pool_BulletHoleSmall;
-			poolName = "BulletHoleSmall ";
-			break;
-		case PoolType.BulletHoleTiny:
-			poolContainer = Pool_BulletHoleTiny;
-			poolName = "BulletHoleTiny ";
-			break;
-		case PoolType.BulletHoleTinySpread:
-			poolContainer = Pool_BulletHoleTinySpread;
-			poolName = "BulletHoleTinySpread ";
 			break;
 		case PoolType.CyberDissolve:
 			poolContainer = Pool_CyberDissolve;

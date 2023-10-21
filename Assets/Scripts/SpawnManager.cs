@@ -84,12 +84,9 @@ public class SpawnManager : MonoBehaviour {
 
 	void Spawn(int index) {
 		if (Const.a.difficultyCombat == 0) return; // Not on combat diff 0
-		Debug.Log("Spawning new enemy...");
-		dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
-        if (dynamicObjectsContainer == null) return; // Didn't find current 
-													 // level, can't spawn.
 
-		Debug.Log("Found dynamic object container for spawning new enemy");
+		Debug.Log("Spawning new enemy " + index.ToString());
+		dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
 		Vector3 spot = GetRandomLocation();
 		if (spot.x == 0 && spot.y == 0 && spot.z == 0) return;
 

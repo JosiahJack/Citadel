@@ -809,80 +809,41 @@ public class WeaponFire : MonoBehaviour {
 		if (hitGO.GetComponent<Animator>() != null) return; // don't create bullet holes on objects that animate
 		if (hitGO.GetComponent<Animation>() != null) return; // don't create bullet holes on objects that animate
 		if (hitGO.GetComponent<Door>() != null) return; // don't create bullet holes on doors, makes them ghost and flicker through walls
-		//Debug.Log("Generating standard impact marks");
+
 		// Add bullethole
 		tempVec = tempHit.normal * 0.16f;
-		GameObject holetype = bulletHoleSmall;
-		PoolType constHoleType = PoolType.BulletHoleTiny;
+		GameObject holetype = Const.a.miscellaneousPrefabs[30];
 		switch(wep16index) {
-			case 0: holetype = bulletHoleLarge;
-					constHoleType = PoolType.BulletHoleLarge;
-					break;
-			case 1: holetype = bulletHoleScorchSmall;
-					constHoleType = PoolType.BulletHoleScorchSmall;
-					break;
-			case 2: holetype = bulletHoleTiny;
-					constHoleType = PoolType.BulletHoleTiny;
-					break;
-			case 3: holetype = bulletHoleSmall;
-					constHoleType = PoolType.BulletHoleSmall;
-					break;
-			case 4: holetype = bulletHoleScorchLarge;
-					constHoleType = PoolType.BulletHoleScorchLarge;
-					break;
-			case 5: holetype = bulletHoleScorchSmall;
-					constHoleType = PoolType.BulletHoleScorchSmall;
-					break;
-			case 6: return; // no impact marks for lead pipe
-			case 7: holetype = bulletHoleLarge;
-					constHoleType = PoolType.BulletHoleLarge;
-					break;
-			case 8: holetype = bulletHoleScorchLarge;
-					constHoleType = PoolType.BulletHoleScorchLarge;
-					break;
-			case 9: holetype = bulletHoleSmall;
-					constHoleType = PoolType.BulletHoleSmall;
-					break;
-			case 10: holetype = bulletHoleScorchLarge;
-					constHoleType = PoolType.BulletHoleScorchLarge;
-					break;
-			case 11: holetype = bulletHoleScorchLarge;
-					constHoleType = PoolType.BulletHoleScorchLarge;
-					break;
-			case 12: holetype = bulletHoleSpread;
-					constHoleType = PoolType.BulletHoleTinySpread;
-					break;
-			case 13: holetype = bulletHoleLarge;
-					constHoleType = PoolType.BulletHoleLarge;
-					break;
-			case 14: holetype = bulletHoleScorchSmall;
-					constHoleType = PoolType.BulletHoleScorchSmall;
-					break;
-			case 15: holetype = bulletHoleScorchSmall;
-					constHoleType = PoolType.BulletHoleScorchSmall;
-					break;
+			case 0: holetype = Const.a.miscellaneousPrefabs[26]; break;
+			case 1: holetype = Const.a.miscellaneousPrefabs[28]; break;
+			case 2: holetype = Const.a.miscellaneousPrefabs[30]; break;
+			case 3: holetype = Const.a.miscellaneousPrefabs[29]; break;
+			case 4: holetype = Const.a.miscellaneousPrefabs[27]; break;
+			case 5: holetype = Const.a.miscellaneousPrefabs[28]; break;
+			case 6: return; // UPDATE: No impact marks for lead pipe yet.
+			case 7: holetype = Const.a.miscellaneousPrefabs[26]; break;
+			case 8: holetype = Const.a.miscellaneousPrefabs[27]; break;
+			case 9: holetype = Const.a.miscellaneousPrefabs[29]; break;
+			case 10: holetype = Const.a.miscellaneousPrefabs[27]; break;
+			case 11: holetype = Const.a.miscellaneousPrefabs[27]; break;
+			case 12: holetype = Const.a.miscellaneousPrefabs[31]; break;
+			case 13: holetype = Const.a.miscellaneousPrefabs[26]; break;
+			case 14: holetype = Const.a.miscellaneousPrefabs[28]; break;
+			case 15: holetype = Const.a.miscellaneousPrefabs[28]; break;
 		}
 
-		if (holetype != null) {
-			GameObject impactMark = Const.a.GetObjectFromPool(constHoleType);
-			if (impactMark == null) {
-				impactMark = (GameObject)Instantiate(holetype, (tempHit.point + tempVec),
-													 Quaternion.LookRotation(tempHit.normal*-1,Vector3.up),
-													 hitGO.transform);
+		if (holetype == null) return;
 
-				// No need to get SaveObject to set `instantiated` bit since the prefab already has it set as it is never not considered an instantiated object.
-				if (impactMark == null) {
-					Debug.Log("BUG: Couldn't find pool object or instantiate holetype for CreateStandardImpactMarks");
-					return;
-				}
-			}
-			int rint = Random.Range(0,3);
-			Quaternion roll = impactMark.transform.localRotation;
-			roll *= Quaternion.Euler(0f,0f,rint * 90f);
-			impactMark.transform.localRotation = roll;
-			GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
-			if (dynamicObjectsContainer != null) impactMark.transform.parent = dynamicObjectsContainer.transform;
-		}
+		GameObject impactMark = (GameObject)Instantiate(holetype,
+			(tempHit.point + tempVec),
+			Quaternion.LookRotation(tempHit.normal*-1,Vector3.up),
+			hitGO.transform);
+
+		Quaternion roll = impactMark.transform.localRotation;
+		roll *= Quaternion.Euler(0f,0f,Random.Range(0,3) * 90f);
+		impactMark.transform.localRotation = roll;
+		GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
+		impactMark.transform.parent = dynamicObjectsContainer.transform;
 	}
 
     void CreateStandardImpactEffects() {
@@ -934,7 +895,6 @@ public class WeaponFire : MonoBehaviour {
         }
 
 		GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
-		if (dynamicObjectsContainer == null) return; //didn't find current level
 		GameObject lasertracer = Instantiate(Const.a.useableItems[laserIndex],transform.position,Const.a.quaternionIdentity) as GameObject;
 		// Temporary object only, no need to save or mark as instantiated.
 		if (lasertracer != null) {

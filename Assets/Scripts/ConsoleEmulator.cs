@@ -942,13 +942,13 @@ Master Index
 515 func_forcebridge              23
 516 prop_lift2                    24
 517 func_wall                     25
-518 BulletHoleLarge
-519 BulletHoleScorchLarge
-520 BulletHoleScorchSmall
-521 BulletHoleSmall
-522 BulletHoleTiny
-523 BulletHoleTinySpread
-524 func_door_cyber
+518 BulletHoleLarge               26
+519 BulletHoleScorchLarge         27
+520 BulletHoleScorchSmall         28
+521 BulletHoleSmall               29
+522 BulletHoleTiny                30
+523 BulletHoleTinySpread          31
+524 func_door_cyber           19
 525 prop_console01
 526 prop_console02
 
@@ -1086,13 +1086,9 @@ Generic Materials (Const.a.genericMaterials[])
 
 			go = MonoBehaviour.Instantiate(Const.a.cyberItemPrefabs[val],
 							spawnPos,Const.a.quaternionIdentity) as GameObject;
-		} else if ((val >= 458 && val < 481) 	// [458, 480], [515, 517]
-				   || val == 515
-				   || val == 516
-				   || val == 517) {
-			if (val == 515) val = 23; // func_forcebridge out of order exception.
-			else if (val == 516) val = 24; // prop_lift2 out of order exception.
-			else if (val == 517) val = 25; // func_wall out of order exception.
+		} else if ((val >= 458 && val < 481) 	// [458, 480], [515, 523]
+				   || (val >= 515 && val <= 523)) {
+			if (val >= 515 && val <= 523) val -= 492; // order exceptions
 			else val -= 458;
 
 			if (val > (Const.a.miscellaneousPrefabs.Length - 1)) {
@@ -1120,7 +1116,7 @@ Generic Materials (Const.a.genericMaterials[])
 			go = MonoBehaviour.Instantiate(Const.a.projectilesLaunched[val],
 							 spawnPos,Const.a.quaternionIdentity) as GameObject;
 		} else if ((val >= 496 && val < 515) || val == 524) { // [496, 514],524
-			if (val == 524) val = 19;
+			if (val == 524) val = 19; // func_door_cyber
 			else val -= 496;
 			if (val > (Const.a.doorPrefabs.Length - 1)) {
 				Debug.Log("SpawnDynamicObject failure: val > (Const.a.doorPrefabs.Length - 1), val: " + val.ToString());

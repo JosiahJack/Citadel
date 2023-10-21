@@ -1049,10 +1049,7 @@ public class AIController : MonoBehaviour {
 		if (laz == null) return; // No laser!
 
 		GameObject dCont = LevelManager.a.GetCurrentDynamicContainer();
-		if (dCont != null) {
-			laz.transform.SetParent(dCont.transform,true);
-		}
-
+		laz.transform.SetParent(dCont.transform,true);
 		LaserDrawing ldraw = laz.GetComponent<LaserDrawing>();
 		ldraw.startPoint = sightPoint.transform.position;
 		ldraw.endPoint = tempHit.point;
