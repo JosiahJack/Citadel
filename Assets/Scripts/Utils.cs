@@ -252,8 +252,8 @@ public class Utils {
     }
 
     #pragma warning disable 618
-    public static StreamReader ReadStreamingAsset(string fName) {
-        StreamReader dataReader;
+	public static StreamReader ReadStreamingAsset(string fName) {
+		StreamReader dataReader;
         string fPath = SafePathCombine(Application.streamingAssetsPath,fName);
         if (Application.platform == RuntimePlatform.Android) {
             WWW reader = new WWW(fPath);
@@ -266,7 +266,7 @@ public class Utils {
         }
         
         return dataReader;
-    }
+	}
 	#pragma warning restore 618
 
 	// From the Unity Documentation on Resources.Load:

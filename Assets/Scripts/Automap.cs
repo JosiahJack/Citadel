@@ -34,7 +34,7 @@ public class Automap : MonoBehaviour {
 	public GameObject levelOverlayContainerG1;
 	public GameObject levelOverlayContainerG2;
 	public GameObject levelOverlayContainerG4;
-	public Vector2[] automapLevelHomePositions;
+	//public Vector2[] automapLevelHomePositions;
 	public GameObject poolContainerAutomapBotOverlays;
 	public GameObject poolContainerAutomapMutantOverlays;
 	public GameObject poolContainerAutomapCyborgOverlays;
@@ -127,20 +127,20 @@ public class Automap : MonoBehaviour {
 			automapExploredG4[i] = false;
 		}
 
-		automapLevelHomePositions[0] =  new Vector2(  43.97f,  85.66f); // R
-		automapLevelHomePositions[1] =  new Vector2(  -8.53f,  85.99f);
-		automapLevelHomePositions[2] =  new Vector2(  10.20f,  44.80f);
-		automapLevelHomePositions[3] =  new Vector2(   9.40f,  63.83f);
-		automapLevelHomePositions[4] =  new Vector2( -55.65f, 116.80f);
-		automapLevelHomePositions[5] =  new Vector2(  -9.40f,  71.80f);
-		automapLevelHomePositions[6] =  new Vector2(  29.70f,  85.50f);
-		automapLevelHomePositions[7] =  new Vector2(   5.00f,  76.55f);
-		automapLevelHomePositions[8] =  new Vector2(  25.10f,  84.40f);
-		automapLevelHomePositions[9] =  new Vector2(  39.80f,  72.60f);
-		automapLevelHomePositions[10] = new Vector2( 440.80f, 200.60f); // G1
-		automapLevelHomePositions[11] = new Vector2(  80.16f,-196.68f); // G2
-		automapLevelHomePositions[12] = new Vector2(  99.50f, 416.90f); // G4
-		automapLevelHomePositions[13] = new Vector2(   0.00f,   0.00f);
+		//automapLevelHomePositions[0] =  new Vector2(  43.97f,  85.66f); // R
+		//automapLevelHomePositions[1] =  new Vector2(  -8.53f,  85.99f);
+		//automapLevelHomePositions[2] =  new Vector2(  10.20f,  44.80f);
+		//automapLevelHomePositions[3] =  new Vector2(   9.40f,  63.83f);
+		//automapLevelHomePositions[4] =  new Vector2( -55.65f, 116.80f);
+		//automapLevelHomePositions[5] =  new Vector2(  -9.40f,  71.80f);
+		//automapLevelHomePositions[6] =  new Vector2(  29.70f,  85.50f);
+		//automapLevelHomePositions[7] =  new Vector2(   5.00f,  76.55f);
+		//automapLevelHomePositions[8] =  new Vector2(  25.10f,  84.40f);
+		//automapLevelHomePositions[9] =  new Vector2(  39.80f,  72.60f);
+		//automapLevelHomePositions[10] = new Vector2( 440.80f, 200.60f); // G1
+		//automapLevelHomePositions[11] = new Vector2(  80.16f,-196.68f); // G2
+		//automapLevelHomePositions[12] = new Vector2(  99.50f, 416.90f); // G4
+		//automapLevelHomePositions[13] = new Vector2(   0.00f,   0.00f);
 		initialized = true;
 
 		if (LevelManager.a != null)

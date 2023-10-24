@@ -14,6 +14,7 @@ public class Music : MonoBehaviour {
 	public AudioClip[] levelMusicCyber;
 	public AudioClip[] levelMusicElevator;
 	public AudioClip[] levelMusicDistortion;
+
 	public AudioSource SFXMain;
 	public AudioSource SFXOverlay;
 	private float clipFinished;
@@ -48,8 +49,49 @@ public class Music : MonoBehaviour {
 		a.combatImpulseFinished = PauseScript.a.relativeTime + 5f;
 	    a.LoadMusic();
 	}
+
+	//IEnumerator GetAudioClip(string fileName,List<AudioClip> audioClips) {
+    //    UnityWebRequest webRequest = UnityWebRequestMultimedia.GetAudioClip(
+    //        filePath+"/"+fileName,AudioType.MPEG);
+         
+    //    yield return webRequest.SendWebRequest();
+ 
+    //    if(webRequest.isNetworkError)
+    //    {
+    //        Debug.Log(webRequest.error);
+    //    }
+    //    else
+    //    {
+    //        AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
+    //        clip.name = fileName;
+    //        audioClips.Add(clip);
+ 
+    //    }
+    //}
 	
 	private void LoadMusic() {
+        //string fPath = SafePathCombine(Application.streamingAssetsPath,fName);
+
+        //UnityWebRequest webRequest = UnityWebRequestMultimedia.GetAudioClip(
+        //    filePath+"/"+fileName,AudioType.MPEG);
+         
+        //yield return webRequest.SendWebRequest();
+ 
+        //if(webRequest.isNetworkError)
+        //{
+        //    Debug.Log(webRequest.error);
+        //}
+        //else
+        //{
+        //    AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
+        //    clip.name = fileName;
+        //    audioClips.Add(clip);
+ 
+        //}
+
+
+        //if (File.Exists(alogPath)) levelMusic1[0] = 
+
 		// Load all the audio 1clips at the start to prevent stutter.
 		int i = 0;
         for (i = 0; i < levelMusic1.Length; i++) {

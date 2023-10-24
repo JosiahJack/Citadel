@@ -227,6 +227,14 @@ public class LevelManager : MonoBehaviour {
         return levelScripts[currentLevel].dynamicObjectsContainer;
 	}
 
+	public GameObject GetCurrentGeometryContainer() { // Does not return null
+		if (currentLevel < 0 || currentLevel > 13) {
+			return levelScripts[1].geometryContainer;
+		}
+
+        return levelScripts[currentLevel].geometryContainer;
+	}
+
 	public GameObject GetRequestedLevelDynamicContainer(int index) {
 		if (index < 0 || index > 13) return levelScripts[1].dynamicObjectsContainer; // Default to Medical level
 
@@ -367,15 +375,8 @@ public class LevelManager : MonoBehaviour {
 		if (curlevel > (lightContainers.Length - 1)) return;
 		if (curlevel < 0) return;
 
-		string lName = "CitadelScene_lights_level" + curlevel.ToString()
-						  + ".dat";
-
-		//string lPath = Utils.SafePathCombine(Application.streamingAssetsPath,
-		//									 lName);
-
-		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot(lName);
+		string lName = "CitadelScene_lights_level"+curlevel.ToString()+".dat";
 		StreamReader sf = Utils.ReadStreamingAsset(lName);
-		//StreamReader sf = new StreamReader(lPath);
 		if (sf == null) {
 			UnityEngine.Debug.Log("Lights input file path invalid");
 			return;

@@ -533,10 +533,6 @@ public class Const : MonoBehaviour {
 		string readLogText; // loaded into string audioLogSpeech2Text[]
 		string readline; // variable to hold each string read in from the file
 		char logSplitChar = ',';
-		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot("logs_text.txt");
-		//string logPath = Utils.SafePathCombine(Application.streamingAssetsPath,
-		//									   "logs_text.txt");
-		//StreamReader dataReader = new StreamReader(logPath,Encoding.ASCII);
 		StreamReader dataReader = Utils.ReadStreamingAsset("logs_text.txt");
 		using (dataReader) {
 			do {
@@ -580,10 +576,6 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int currentline = 0;
 		int readInt = 0;
-		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot("damage_tables.txt");
-		//string dtP = Utils.SafePathCombine(Application.streamingAssetsPath,
-		//								   "damage_tables.txt");
-		//StreamReader dataReader = new StreamReader(dtP,Encoding.ASCII);
 		StreamReader dataReader = Utils.ReadStreamingAsset("damage_tables.txt");
 		using (dataReader) {
 			do {
