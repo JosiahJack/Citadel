@@ -7,9 +7,15 @@ public static class DynamicCulling {
     static int raynum; // 0 to 251 for which ray at the moment.
     static bool[] worldCellOpen = new bool [64 * 64];
     static Vector3[] worldCells = new Vector3 [64 * 64];
+    static List<GameObject>[] cells = new List<GameObject>[64 * 64];
+    static bool[] isDirty = new bool[64 * 64];
+    static int lastPlayerCell = 0;
+    static List<MeshRenderer> meshes;
 
     // Standard culling: 2.21ms to 2.44ms at game start, no camera motion.
     // Plus CullResultsCreateShared: 0.20ms to 0.34ms
+
+    // Plain radius based culling (this first iteration): 
 
     public static bool EulerAnglesWithin90(Vector3 angs) {
         if (angs.x % 90 >= 0.05f) return false;
@@ -21,6 +27,11 @@ public static class DynamicCulling {
     public static void Cull_Init() {
         List<GameObject> orthogonalChunks = new List<GameObject>();
         orthogonalChunks.Clear();
+
+        for (int i=0;i<4096;i++) {
+            cells[i] = new List<GameObject>();
+            cells[i].Clear();
+        }
 
         // Determine open world cells at game start.
 		GameObject dCont = LevelManager.a.GetCurrentGeometryContainer();
@@ -43,6 +54,11 @@ public static class DynamicCulling {
                     orthogonalChunks.Add(childGO);   
                 }
             }
+
+            Component[] compArray = childGO.GetComponentsInChildren(
+								    typeof(MeshRenderer),true);
+
+			foreach (MeshRenderer mr in compArray) meshes.Add(mr);
         }
 
         // Find a reference point from which to build the grid.  Any orthogonal
@@ -88,9 +104,35 @@ public static class DynamicCulling {
             if (breakx) break;
         }
 
+        // Now go through every chunk and assign to a particular cell list.
+        bool[] alreadyInAtLeastOneList = new bool[count];
+        for (int i=0;i<4096;i++) {
+            isDirty[i] = true;
+            for (int c=0;c<count;c++) {
+                if (alreadyInAtLeastOneList[c]) continue;
+
+                childGO = container.GetChild(c).gameObject;
+                pos = childGO.transform.localPosition;
+                pos2d.x = pos.x;
+                pos2d.y = pos.z;
+                pos2dcurrent.x = worldCells[i].x;
+                pos2dcurrent.y = worldCells[i].z;
+                if (Vector2.Distance(pos2d,pos2dcurrent) >= 1.28f) continue;
+
+                cells[i].Add(childGO);
+                alreadyInAtLeastOneList[c] = true;
+                Component[] compArray = childGO.GetComponentsInChildren(
+                                        typeof(MeshRenderer),true);
+
+                foreach (MeshRenderer mr in compArray) mr.enabled = false;
+            }
+        }
     }
     
     public static void Cull() {
+        //DetermineVisibleCells();
+        //ToggleVisibility();
+
         Vector3 pos = PlayerMovement.a.transform.position;
         int playerCell = 0;
         // Find player cell
@@ -100,6 +142,10 @@ public static class DynamicCulling {
             }
         }
 
+        if (lastPlayerCell != playerCell) {
+            for (int i=0;i<4096;i++) isDirty[i] = true; // TODO use vis!
+        }
+
         // Determine visibility of world cells by casting up to 252 rays along
         // fixed integer angles based on going to center of each cell along
         // world bounds, using open worldCellOpen status found previously.
@@ -107,17 +153,16 @@ public static class DynamicCulling {
 
         // Iterate over all level chunks and adjust their visibility based on
         // afore raycasting results.
-		GameObject dCont = LevelManager.a.GetCurrentGeometryContainer();
-        Transform container = dCont.transform;
-        int count = container.childCount;
-        Vector2 pos2d = new Vector2(0f,0f);
+        int count = meshes.Count;
+        Vector2 pos2d = new Vector2(0f,0f);neVisibleCells();
+        //ToggleVisibility();322222
         bool visible = false;
         GameObject childGO = null;
         for (int i=0; i < count; i++) {
             visible = false;
-			childGO = container.GetChild(i).gameObject;
-            pos = childGO.transform.localPosition;
+            pos = meshes[i].transform.localPosition;
             for (int c=0;c<4096;c++) {
+                if (!isDirty[c]) continue;
                 if (Vector3.Distance(pos,worldCells[c]) >= 0.16f) continue;
 
                 if (Vector3.Distance(worldCells[c],worldCells[playerCell]) < 10.86f) { // 3 cell radius
@@ -125,7 +170,7 @@ public static class DynamicCulling {
                 }
             }
 
-            childGO.GetComponent<MeshRenderer>().enabled = visible;
+            meshes[i].enabled = visible;
         }
     }
 }
