@@ -71,7 +71,10 @@ public class ProjectileEffectImpact : MonoBehaviour {
 													// HealthManager of hit
 													// object and damage it.
 
-				if (hm.isNPC || dd.isOtherNPC) Music.a.inCombat = true;
+				if ((hm.isNPC && !hm.aic.asleep) || dd.isOtherNPC) {
+					Music.a.inCombat = true;
+				}
+
 				if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
 				if (dd.attackType == AttackType.Tranq) dmgFinal = -2f;
 				WeaponFire.a.CreateTargetIDInstance(dmgFinal,hm);

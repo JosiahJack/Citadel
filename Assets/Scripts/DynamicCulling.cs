@@ -25,6 +25,7 @@ public static class DynamicCulling {
     }
 
     public static void Cull_Init() {
+        return;
         List<GameObject> orthogonalChunks = new List<GameObject>();
         orthogonalChunks.Clear();
 
@@ -124,12 +125,17 @@ public static class DynamicCulling {
                 Component[] compArray = childGO.GetComponentsInChildren(
                                         typeof(MeshRenderer),true);
 
-                foreach (MeshRenderer mr in compArray) mr.enabled = false;
+                foreach (MeshRenderer mr in compArray) {
+                    meshes.Add(mr);
+                    mr.enabled = false;
+                }
             }
         }
     }
     
     public static void Cull() {
+        return;
+
         //DetermineVisibleCells();
         //ToggleVisibility();
 
@@ -154,8 +160,7 @@ public static class DynamicCulling {
         // Iterate over all level chunks and adjust their visibility based on
         // afore raycasting results.
         int count = meshes.Count;
-        Vector2 pos2d = new Vector2(0f,0f);neVisibleCells();
-        //ToggleVisibility();322222
+        Vector2 pos2d = new Vector2(0f,0f);
         bool visible = false;
         GameObject childGO = null;
         for (int i=0; i < count; i++) {

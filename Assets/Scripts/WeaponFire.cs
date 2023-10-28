@@ -1151,7 +1151,7 @@ public class WeaponFire : MonoBehaviour {
 									   damageData.attacknormal,
 									   damageData.hit.point);
 			}
-			if (tempHM.isNPC) Music.a.inCombat = true;
+			if (tempHM.isNPC && !tempHM.aic.asleep) Music.a.inCombat = true;
 		}
 
 		if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
@@ -1232,7 +1232,7 @@ public class WeaponFire : MonoBehaviour {
 		float dmgFinal = tempHM.TakeDamage(damageData);
 		if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
 		CreateTargetIDInstance(dmgFinal,tempHM);
-		if (tempHM.isNPC) Music.a.inCombat = true;
+		if (tempHM.isNPC && !tempHM.aic.asleep) Music.a.inCombat = true;
 		if (!silent) {
 			PlayerHealth.a.makingNoise = true;
 			PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime + 0.5f;
