@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Globalization;
 using UnityEngine;
 using UnityEngine.PostProcessing;
@@ -155,6 +156,7 @@ public class Config {
 		SetFOV();
 		SetAA();
 		SetVSync();
+		MainMenuHandler.a.RenderConfigView();
 	}
 
 	public static void SetVolume() {

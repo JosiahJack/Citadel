@@ -12,6 +12,7 @@ public class MouseCursor : MonoBehaviour {
 	private Camera uiCameraCam;
 	public bool liveGrenade = false;
 	public string toolTip = "";
+	public bool toolTipHasText = false;
 	public Camera mainCamera;
 	public RectTransform centerMFDPanel;
 	public GameObject inventoryAddHelper;
@@ -106,7 +107,7 @@ public class MouseCursor : MonoBehaviour {
 			drawTexture.Set((Screen.width * halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize - offsetY, cursorSize, cursorSize);
         }
 
-		if (!string.IsNullOrWhiteSpace(toolTip) && toolTip != nullStr && !PauseScript.a.Paused() && (MouseLookScript.a.inventoryMode || liveGrenade)) {
+		if (toolTipHasText && toolTip != nullStr && !PauseScript.a.Paused() && (MouseLookScript.a.inventoryMode || liveGrenade)) {
 			switch(toolTipType) {
 				case Handedness.LH: GUI.Label(drawTexture,toolTip,toolTipStyleLH); tempTexture = cursorLHTexture; break;
 				case Handedness.RH: GUI.Label(drawTexture,toolTip,toolTipStyleRH); tempTexture = cursorRHTexture; break;

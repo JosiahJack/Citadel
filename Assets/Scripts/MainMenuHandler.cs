@@ -99,6 +99,19 @@ public class MainMenuHandler : MonoBehaviour {
 	public Text deathVideoText1;
 	public Text deathVideoText2;
 
+	public GameObject GraphicsTab;
+	public GameObject InputTab;
+	public GameObject AudioTab;
+	public Image GraphicsTabButtonImage;
+	public Image InputTabButtonImage;
+	public Image AudioTabButtonImage;
+	public Text GraphicsTabButtonText;
+	public Text InputTabButtonText;
+	public Text AudioTabButtonText;
+	public Sprite OptionsTabDehilited;
+	public Sprite OptionsTabHilited;
+	public Camera configCamera;
+
 	[HideInInspector] public bool returnToPause = false;
 	[HideInInspector] public bool dataFound = false;
 	private enum Pages : byte {fp,sp,mp,np,lp,op,sv,cd};
@@ -518,33 +531,84 @@ public class MainMenuHandler : MonoBehaviour {
 		creditsPage.SetActive(false);
 	}
 
-	public void GoToFrontPage () {
+	public void GoToFrontPage() {
 		ResetPages();
 		frontPage.SetActive(true);
 		currentPage = Pages.fp;
 	}
 
-	public void GoToSingleplayerSubmenu () {
+	public void GoToSingleplayerSubmenu() {
 		ResetPages();
 		singleplayerPage.SetActive(true);
 		currentPage = Pages.sp;
 	}
 
-	public void GoToMultiplayerSubmenu () {
+	public void GoToMultiplayerSubmenu() {
 		ResetPages();
 		multiplayerPage.SetActive(true);
 		currentPage = Pages.mp;
 	}
 
-	public void GoToOptionsSubmenu (bool accessedFromPause) {
+	public void GoToOptionsSubmenu(bool accessedFromPause) {
 		ResetPages();
 		if (accessedFromPause) IntroVideoContainer.SetActive(false);
 		optionsPage.SetActive(true);
+		SetOptionsTabGraphics();
 		currentPage = Pages.op;
 		returnToPause = accessedFromPause;
 	}
 
-	public void GoToNewGameSubmenu () {
+	public void SetOptionsTabGraphics() {
+		GraphicsTab.SetActive(true);
+		InputTab.SetActive(false);
+		AudioTab.SetActive(false);
+		GraphicsTabButtonImage.overrideSprite = OptionsTabHilited;
+		InputTabButtonImage.overrideSprite = OptionsTabDehilited;
+		AudioTabButtonImage.overrideSprite = OptionsTabDehilited;
+		GraphicsTabButtonText.color = Const.a.ssYellowText;
+		InputTabButtonText.color = Const.a.ssGreenText;
+		AudioTabButtonText.color = Const.a.ssGreenText;
+	}
+
+	public void SetOptionsTabInput() {
+		GraphicsTab.SetActive(false);
+		InputTab.SetActive(true);
+		AudioTab.SetActive(false);
+		GraphicsTabButtonImage.overrideSprite = OptionsTabDehilited;
+		InputTabButtonImage.overrideSprite = OptionsTabHilited;
+		AudioTabButtonImage.overrideSprite = OptionsTabDehilited;
+		GraphicsTabButtonText.color = Const.a.ssGreenText;
+		InputTabButtonText.color = Const.a.ssYellowText;
+		AudioTabButtonText.color = Const.a.ssGreenText;
+	}
+
+	public void SetOptionsTabAudio() {
+		GraphicsTab.SetActive(false);
+		InputTab.SetActive(false);
+		AudioTab.SetActive(true);
+		GraphicsTabButtonImage.overrideSprite = OptionsTabDehilited;
+		InputTabButtonImage.overrideSprite = OptionsTabDehilited;
+		AudioTabButtonImage.overrideSprite = OptionsTabHilited;
+		GraphicsTabButtonText.color = Const.a.ssGreenText;
+		InputTabButtonText.color = Const.a.ssGreenText;
+		AudioTabButtonText.color = Const.a.ssYellowText;
+	}
+
+	public IEnumerator RenderConfigViewDelay() {
+		yield return null;
+		if (!optionsPage.activeInHierarchy) yield break;
+		if (!GraphicsTab.activeInHierarchy) yield break;
+
+		configCamera.targetTexture.width = Screen.width;
+		configCamera.targetTexture.height = Screen.height;
+		configCamera.Render();
+	}
+
+	public void RenderConfigView() {
+		StartCoroutine(RenderConfigViewDelay());
+	}
+
+	public void GoToNewGameSubmenu() {
 		ResetPages();
 		newgamePage.SetActive(true);
 		newgameInputText.ActivateInputField();

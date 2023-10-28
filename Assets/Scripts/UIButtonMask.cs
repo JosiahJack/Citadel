@@ -92,6 +92,7 @@ public class UIButtonMask : MonoBehaviour {
 			doubleClickTicks = 0;
 			if (toolTipLingdex >= 0) {
 				MouseCursor.a.toolTip = string.Empty;
+				MouseCursor.a.toolTipHasText = false;
 			}
 			pointerEntered = false;
 		}
@@ -141,6 +142,7 @@ public class UIButtonMask : MonoBehaviour {
 
 		if (toolTipLingdex >= 0) {
 			MouseCursor.a.toolTip = Const.a.stringTable[toolTipLingdex];
+			MouseCursor.a.toolTipHasText = true;
 			MouseCursor.a.toolTipType = toolTipType;
 		}
 		pointerEntered = true;
@@ -154,6 +156,7 @@ public class UIButtonMask : MonoBehaviour {
 		doubleClickTicks = 0;
 		if (toolTipLingdex >= 0) {
 			MouseCursor.a.toolTip = string.Empty;
+			MouseCursor.a.toolTipHasText = false;
 		}
 		pointerEntered = false;
 		justHeld = false;
