@@ -72,13 +72,13 @@ public class Utils {
 	}
 
 	public static void EnableImage(Image img) {
-		if (img == null) return;
+		//if (img == null) return;
 
 		if (!img.enabled) img.enabled = true;
 	}
 
 	public static void DisableImage(Image img) {
-		if (img == null) return;
+		//if (img == null) return;
 
 		if (img.enabled) img.enabled = false;
 	}

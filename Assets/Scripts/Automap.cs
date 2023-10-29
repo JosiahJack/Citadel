@@ -81,6 +81,7 @@ public class Automap : MonoBehaviour {
 	private Vector2 tempVec2b;
 	private Transform automapCameraTransform;
 	private RectTransform[] automapFoWTilesRects;
+	private Vector2[] automapFoWTilesRectsPos;
 	private bool initialized = false;
 
 	public static Automap a;
@@ -110,8 +111,11 @@ public class Automap : MonoBehaviour {
 		automapExploredG2 = new bool[4096];
 		automapExploredG4 = new bool[4096];
 		automapFoWTilesRects = new RectTransform[automapFoWTiles.Length];
+		automapFoWTilesRectsPos = new Vector2[automapFoWTiles.Length];
 		for (int i=0;i<automapFoWTiles.Length;i++) {
 			automapFoWTilesRects[i] = automapFoWTiles[i].rectTransform;
+			automapFoWTilesRectsPos[i].x = automapFoWTilesRects[i].localPosition.x;
+			automapFoWTilesRectsPos[i].y = automapFoWTilesRects[i].localPosition.y;
 			automapExploredR[i] = false;
 			automapExplored1[i] = false;
 			automapExplored2[i] = false;
@@ -247,18 +251,22 @@ public class Automap : MonoBehaviour {
 					Utils.DisableImage(automapFoWTiles[i]);
 					Utils.Deactivate(automapFoWTiles[i].gameObject);
 				} else {
-					tempVec2.x = automapFoWTilesRects[i].localPosition.x * -1f
+					tempVec2.x = automapFoWTilesRectsPos[i].x * -1f
 								 - automapTileCorrectionX;
-					tempVec2.y = automapFoWTilesRects[i].localPosition.y
+
+					tempVec2.y = automapFoWTilesRectsPos[i].y
 								 + automapTileCorrectionY;
+
 					if (Vector2.Distance(tempVec2,tempVec2b) < automapFoWRadius) {
 						automapExplored[i] = true;
 						SetAutomapTileExplored(LevelManager.a.currentLevel,i);
 						Utils.DisableImage(automapFoWTiles[i]);
 						Utils.Deactivate(automapFoWTiles[i].gameObject);
 					} else {
-						Utils.EnableImage(automapFoWTiles[i]);
-						Utils.Activate(automapFoWTiles[i].gameObject);
+						//Utils.EnableImage(automapFoWTiles[i]);
+						automapFoWTiles[i].enabled = true;
+						//Utils.Activate(automapFoWTiles[i].gameObject);
+						automapFoWTiles[i].gameObject.SetActive(true);
 					}
 				}
 			}

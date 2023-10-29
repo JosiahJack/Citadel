@@ -146,13 +146,13 @@ public class AIController : MonoBehaviour {
 	}
 
 	public bool IsCyberNPC() {
-		if (healthManager != null) {
-			if (healthManager.inCyberSpace) return true;
-		}
+		//if (healthManager != null) {
+		//	if (healthManager.inCyberSpace) return true;
+		//}
 
-		if (Const.a.moveTypeForNPC[index] == AIMoveType.Cyber) return true;
-		if (Const.a.typeForNPC[index] == NPCType.Cyber) return true;
-		return false;
+		//if (Const.a.moveTypeForNPC[index] == AIMoveType.Cyber) return true;
+		return (Const.a.typeForNPC[index] == NPCType.Cyber);
+		//return false;
 	}
 
 	// Initialization and find components
@@ -261,8 +261,9 @@ public class AIController : MonoBehaviour {
 	void AI_Face(Vector3 goalLocation) {
 		if (asleep) return;
 
-		faceVec = (goalLocation - transform.position).normalized;
+		faceVec = goalLocation - transform.position;
 		faceVec.y = 0f;
+		faceVec = faceVec.normalized;
 		if (faceVec.sqrMagnitude <= 0) return; // Avoid zero quat error.
 		if (faceVec == Vector3.up) return; // Up results in no Y rotation.
 

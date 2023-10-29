@@ -124,7 +124,6 @@ public class MouseLookScript : MonoBehaviour {
 
 		cameraDistances = new float[32];
 		SetCameraCullDistances();
-		DynamicCulling.Cull_Init();
 		playerCamera.depthTextureMode = DepthTextureMode.Depth;
 		grenadeActive = false;
 		yRotation = 0;
@@ -204,7 +203,7 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		}
 
-		DynamicCulling.Cull(); // Update dynamic culling system.
+		DynamicCulling.a.Cull(); // Update dynamic culling system.
 		RecoilAndRest(); // Spring Back to Rest from Recoil
 		keyboardTurnSpeed = 15f * Const.a.MouseSensitivity;
 		if (Application.platform == RuntimePlatform.Android) {

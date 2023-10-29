@@ -253,6 +253,7 @@ public class PlayerMovement : MonoBehaviour {
 		Prone();
 		EndCrouchProneTransition();
 		FatigueApply(); // Here fatigue me out, except in cyberspace
+		Automap.a.UpdateAutomap(transform.localPosition); // Update the map.
 	}
 
 	void FixedUpdate() {
@@ -278,7 +279,6 @@ public class PlayerMovement : MonoBehaviour {
 
 		SetRunningRelForwardsAndSidewaysFlags();
 		playerSpeed = GetBasePlayerSpeed();
-		Automap.a.UpdateAutomap(transform.localPosition); // Update the map.
 		ApplyBodyStateLerps(); // Handle body lerping for smooth transitions.
 		Noclip();
 		ApplyGroundFriction();
