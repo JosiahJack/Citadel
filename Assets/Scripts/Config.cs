@@ -156,7 +156,7 @@ public class Config {
 		SetFOV();
 		SetAA();
 		SetVSync();
-		MainMenuHandler.a.RenderConfigView();
+		if (MainMenuHandler.a != null) MainMenuHandler.a.RenderConfigView();
 	}
 
 	public static void SetVolume() {

@@ -497,6 +497,7 @@ public class MainMenuHandler : MonoBehaviour {
 			}
 		}
 
+		UpdateConfigTabTextColor();
 		Const.a.difficultyCombat = combat.difficultySetting;
 		Const.a.difficultyMission = mission.difficultySetting;
 		Const.a.difficultyPuzzle = puzzle.difficultySetting;
@@ -556,6 +557,7 @@ public class MainMenuHandler : MonoBehaviour {
 		SetOptionsTabGraphics();
 		currentPage = Pages.op;
 		returnToPause = accessedFromPause;
+		RenderConfigView();
 	}
 
 	public void SetOptionsTabGraphics() {
@@ -565,9 +567,7 @@ public class MainMenuHandler : MonoBehaviour {
 		GraphicsTabButtonImage.overrideSprite = OptionsTabHilited;
 		InputTabButtonImage.overrideSprite = OptionsTabDehilited;
 		AudioTabButtonImage.overrideSprite = OptionsTabDehilited;
-		GraphicsTabButtonText.color = Const.a.ssYellowText;
-		InputTabButtonText.color = Const.a.ssGreenText;
-		AudioTabButtonText.color = Const.a.ssGreenText;
+		UpdateConfigTabTextColor();
 	}
 
 	public void SetOptionsTabInput() {
@@ -577,9 +577,7 @@ public class MainMenuHandler : MonoBehaviour {
 		GraphicsTabButtonImage.overrideSprite = OptionsTabDehilited;
 		InputTabButtonImage.overrideSprite = OptionsTabHilited;
 		AudioTabButtonImage.overrideSprite = OptionsTabDehilited;
-		GraphicsTabButtonText.color = Const.a.ssGreenText;
-		InputTabButtonText.color = Const.a.ssYellowText;
-		AudioTabButtonText.color = Const.a.ssGreenText;
+		UpdateConfigTabTextColor();
 	}
 
 	public void SetOptionsTabAudio() {
@@ -589,9 +587,23 @@ public class MainMenuHandler : MonoBehaviour {
 		GraphicsTabButtonImage.overrideSprite = OptionsTabDehilited;
 		InputTabButtonImage.overrideSprite = OptionsTabDehilited;
 		AudioTabButtonImage.overrideSprite = OptionsTabHilited;
-		GraphicsTabButtonText.color = Const.a.ssGreenText;
-		InputTabButtonText.color = Const.a.ssGreenText;
-		AudioTabButtonText.color = Const.a.ssYellowText;
+		UpdateConfigTabTextColor();
+	}
+
+	void UpdateConfigTabTextColor() {
+		if (GraphicsTab.activeInHierarchy) {
+			GraphicsTabButtonText.color = Const.a.ssYellowText;
+			InputTabButtonText.color = Const.a.ssGreenText;
+			AudioTabButtonText.color = Const.a.ssGreenText;
+		} else if (InputTab.activeInHierarchy) {
+			GraphicsTabButtonText.color = Const.a.ssGreenText;
+			InputTabButtonText.color = Const.a.ssYellowText;
+			AudioTabButtonText.color = Const.a.ssGreenText;
+		} else if (AudioTab.activeInHierarchy) {
+			GraphicsTabButtonText.color = Const.a.ssGreenText;
+			InputTabButtonText.color = Const.a.ssGreenText;
+			AudioTabButtonText.color = Const.a.ssYellowText;
+		}
 	}
 
 	public IEnumerator RenderConfigViewDelay() {
@@ -599,9 +611,15 @@ public class MainMenuHandler : MonoBehaviour {
 		if (!optionsPage.activeInHierarchy) yield break;
 		if (!GraphicsTab.activeInHierarchy) yield break;
 
+		//RenderTexture rtnew = new RenderTexture(Screen.width,Screen.height,24,
+												//RenderTextureFormat.ARGB32);
+		//rtnew.Create();
+		configCamera.targetTexture.Release();
 		configCamera.targetTexture.width = Screen.width;
 		configCamera.targetTexture.height = Screen.height;
+		//configCamera.targetTexture = rtnew;
 		configCamera.Render();
+		//rtnew.Release();
 	}
 
 	public void RenderConfigView() {
