@@ -85,22 +85,36 @@ public class DynamicCulling : MonoBehaviour {
             for (int y=0; y<64; y++) {
                 breaky = false;
                 pos2dcurrent.y = worldMin.z + (CELLX * (float)y);
-                for (int i=0; i < orthogonalChunks.Count; i++) {
-                    childGO = orthogonalChunks[i].gameObject;
+                for (int i=0; i < chunks.Count; i++) {
+                    childGO = chunks[i].gameObject;
                     pos = childGO.transform.position;
                     pos2d.x = pos.x;
                     pos2d.y = pos.z;
                     if (Vector2.Distance(pos2d,pos2dcurrent) < 0.64f) {
                         worldCellOpen[x,y] = true;
                         worldCellPositions[x,y] = pos;
-                        debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        debugCubes[x,y].transform.position = pos;
                         breakx = breaky = true; break;
                     }
                 }
                 if (breaky) continue;
             }
             if (breakx) continue;
+        }
+
+        for (int x=0; x<64; x++) {
+            for (int y=0; y<64; y++) {
+                if (worldCellOpen[x,y]) {
+                    debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    debugCubes[x,y].transform.position = worldCellPositions[x,y];
+                    MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+                    mr.material = Const.a.genericMaterials[9]; // Green forcefield
+                } else {
+                    debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    debugCubes[x,y].transform.position = worldCellPositions[x,y];
+                    MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+                    mr.material = Const.a.genericMaterials[3]; // Red forcefield
+                }
+            }
         }
     }
 
@@ -129,23 +143,25 @@ public class DynamicCulling : MonoBehaviour {
         Vector2 pos2dcurrent = new Vector2(0f,0f);
         for (int x=0;x<64;x++) {
             for (int y=0;y<64;y++) {
-                for (int c=0;c<chunkCount;c++) {
-                    if (alreadyInAtLeastOneList[c]) continue;
+                if (worldCellOpen[x,y]) {
+                    for (int c=0;c<chunkCount;c++) {
+                        if (alreadyInAtLeastOneList[c]) continue;
 
-                    childGO = container.GetChild(c).gameObject;
-                    pos = childGO.transform.position;
-                    pos2d.x = pos.x;
-                    pos2d.y = pos.z;
-                    pos2dcurrent.x = worldCellPositions[x,y].x;
-                    pos2dcurrent.y = worldCellPositions[x,y].z;
-                    if (Vector2.Distance(pos2d,pos2dcurrent) >= 1.28f) continue;
+                        childGO = container.GetChild(c).gameObject;
+                        pos = childGO.transform.position;
+                        pos2d.x = pos.x;
+                        pos2d.y = pos.z;
+                        pos2dcurrent.x = worldCellPositions[x,y].x;
+                        pos2dcurrent.y = worldCellPositions[x,y].z;
+                        if (Vector2.Distance(pos2d,pos2dcurrent) >= 1.28f) continue;
 
-                    cellLists[x,y].Add(childGO);
-                    alreadyInAtLeastOneList[c] = true;
-                    Component[] compArray = childGO.GetComponentsInChildren(
-                                              typeof(MeshRenderer),true);
+                        cellLists[x,y].Add(childGO);
+                        alreadyInAtLeastOneList[c] = true;
+                        Component[] compArray = childGO.GetComponentsInChildren(
+                                                typeof(MeshRenderer),true);
 
-                    foreach (MeshRenderer mr in compArray) cellListsMR[x,y].Add(mr);
+                        foreach (MeshRenderer mr in compArray) cellListsMR[x,y].Add(mr);
+                    }
                 }
             }
         }
@@ -208,28 +224,32 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void BresenhamSightCast(int x,int y,int x2, int y2) {
+        Debug.Log("BresenhamSightCast(" + x.ToString() + "," + y.ToString() + "," + x2.ToString() + "," + y2.ToString() + ")");
         int curx = x;
         int cury = y;
         int w = x2 - x;
         int h = y2 - y;
-        int dx1 = Math.Sign(w), dy1 = Math.Sign(h), dx2 = Math.Sign(w), dy2 = 0;
+        int dx1 = Math.Sign(w);
+        int dy1 = Math.Sign(h);
+        int dx2 = Math.Sign(w);
+        int dy2 = 0;
         int longest = Math.Abs(w);
         int shortest = Math.Abs(h);
         if (!(longest>shortest)) {
             longest = Math.Abs(h);
             shortest = Math.Abs(w);
-            if (h<0) dy2 = -1 ; else if (h>0) dy2 = 1;
-            dx2 = 0 ;
+            dy2 = Math.Sign(h);
+            dx2 = 0;
         }
         int numerator = longest >> 1;
         for (int i=0;i<=longest;i++) {
             if (worldCellOpen[x,y]) {
-                bool last = worldCellVisible[x,y];
-                worldCellVisible[x,y] = true;
-                if (last != worldCellVisible[x,y]) {
+                bool last = worldCellVisible[curx,cury];
+                worldCellVisible[curx,cury] = true;
+                if (last != worldCellVisible[curx,cury]) {
                     worldCellDirty[playerCellX,playerCellY] = true;
                 }
-            } //else return; // Hit wall, end of cast!
+            } else return; // Hit wall, end of cast!
 
             numerator += shortest;
             if (!(numerator<longest)) {
@@ -266,6 +286,18 @@ public class DynamicCulling : MonoBehaviour {
                     } else {
                         cellContents[i].enabled = false;
                     }
+                }
+            }
+        }
+
+        for (int x=0; x<64; x++) {
+            for (int y=0; y<64; y++) {
+                if (worldCellVisible[x,y]) {
+                    MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+                    mr.material = Const.a.genericMaterials[8]; // Blue forcefield
+                } else {
+                    MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+                    mr.material = Const.a.genericMaterials[9]; // Green forcefield
                 }
             }
         }
