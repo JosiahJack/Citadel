@@ -6,7 +6,6 @@ using UnityEngine;
 public class DynamicCulling : MonoBehaviour {
     const int WORLDX = 64;
     const int ARRSIZE = WORLDX * WORLDX;
-    const float CELLX = 2.56f;
     const float CELLXHALF = 1.28f;
     public bool[,] worldCellOpen = new bool [WORLDX,WORLDX];
     public bool[,] worldCellVisible = new bool [WORLDX,WORLDX];
@@ -81,10 +80,10 @@ public class DynamicCulling : MonoBehaviour {
         Vector3 pos;
         for (int x=0; x<64; x++) {
             breakx = false;
-            pos2dcurrent.x = worldMin.x + (CELLX * (float)x);
+            pos2dcurrent.x = worldMin.x + (2.56f * (float)x);
             for (int y=0; y<64; y++) {
                 breaky = false;
-                pos2dcurrent.y = worldMin.z + (CELLX * (float)y);
+                pos2dcurrent.y = worldMin.z + (2.56f * (float)y);
                 for (int i=0; i < chunks.Count; i++) {
                     childGO = chunks[i].gameObject;
                     pos = childGO.transform.position;
@@ -103,17 +102,13 @@ public class DynamicCulling : MonoBehaviour {
 
         for (int x=0; x<64; x++) {
             for (int y=0; y<64; y++) {
-                if (worldCellOpen[x,y]) {
-                    debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    debugCubes[x,y].transform.position = worldCellPositions[x,y];
-                    MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
-                    mr.material = Const.a.genericMaterials[9]; // Green forcefield
-                } else {
-                    debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    debugCubes[x,y].transform.position = worldCellPositions[x,y];
-                    MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
-                    mr.material = Const.a.genericMaterials[3]; // Red forcefield
-                }
+                if (worldCellOpen[x,y]) continue;
+
+                worldCellPositions[x,y] = new Vector3(
+                    worldMin.x + ((float)x * 2.56f)/* - (15f * 2.56f)*/,
+                    -43.52f,
+                    worldMin.z + ((float)y * 2.56f)
+                );
             }
         }
     }
@@ -165,6 +160,23 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
         }
+
+//         for (int x=0; x<64; x++) {
+//             for (int y=0; y<64; y++) {
+//                 if (worldCellOpen[x,y]) {
+//                     debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+//                     debugCubes[x,y].transform.position = worldCellPositions[x,y];
+//                     MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+//                     mr.material = Const.a.genericMaterials[9]; // Green forcefield
+//                 } else {
+//                     Debug.Log("Placing red cube at " + worldCellPositions[x,y].ToString());
+//                     debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+//                     debugCubes[x,y].transform.position = worldCellPositions[x,y];
+//                     MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+//                     mr.material = Const.a.genericMaterials[5]; // Red forcefield
+//                 }
+//             }
+//         }
     }
 
     void FindPlayerCell() {
@@ -223,54 +235,86 @@ public class DynamicCulling : MonoBehaviour {
         return true;
     }
 
-    public void BresenhamSightCast(int x,int y,int x2, int y2) {
-        Debug.Log("BresenhamSightCast(" + x.ToString() + "," + y.ToString() + "," + x2.ToString() + "," + y2.ToString() + ")");
-        int curx = x;
-        int cury = y;
-        int w = x2 - x;
-        int h = y2 - y;
-        int dx1 = Math.Sign(w);
-        int dy1 = Math.Sign(h);
-        int dx2 = Math.Sign(w);
-        int dy2 = 0;
-        int longest = Math.Abs(w);
-        int shortest = Math.Abs(h);
-        if (!(longest>shortest)) {
-            longest = Math.Abs(h);
-            shortest = Math.Abs(w);
-            dy2 = Math.Sign(h);
-            dx2 = 0;
-        }
-        int numerator = longest >> 1;
-        for (int i=0;i<=longest;i++) {
-            if (worldCellOpen[x,y]) {
-                bool last = worldCellVisible[curx,cury];
-                worldCellVisible[curx,cury] = true;
-                if (last != worldCellVisible[curx,cury]) {
-                    worldCellDirty[playerCellX,playerCellY] = true;
-                }
-            } else return; // Hit wall, end of cast!
+    // From Bob Nystrom, https://github.com/munificent/fov, converted to C#.
+    // Aaand de-OOP'ed of course for performance.
+    // https://journal.stuffwithstuff.com/2015/09/07/what-the-hero-sees/
+    // =====================================================================
 
-            numerator += shortest;
-            if (!(numerator<longest)) {
-                numerator -= longest;
-                curx += dx1;
-                cury += dy1;
-            } else {
-                curx += dx2;
-                cury += dy2;
+    public Vector2Int TransformOctant(int row, int col, int octant) {
+        switch (octant) {
+            case 0: return new Vector2Int( col, -row);
+            case 1: return new Vector2Int( row, -col);
+            case 2: return new Vector2Int( row,  col);
+            case 3: return new Vector2Int( col,  row);
+            case 4: return new Vector2Int(-col,  row);
+            case 5: return new Vector2Int(-row,  col);
+            case 6: return new Vector2Int(-row, -col);
+            case 7: return new Vector2Int(-col, -row);
+        }
+
+        return new Vector2Int(col,row);
+    }
+
+    public void RefreshOctant(int octant) {
+        Vector2Int start = new Vector2Int(playerCellX,playerCellY);
+        List<Shadow> shadows = new List<Shadow>();
+        bool fullShadow = false;
+        bool visible = true;
+        Vector2Int pos = new Vector2Int(0,0);
+        for (int row = 1; row < 64; row++) {
+            pos = (start + TransformOctant(row,0,octant));
+            if (pos.x >= 64 || pos.y >= 64 || pos.x < 0 || pos.y < 0) break;
+
+            for (int col = 0; col <= row; col++) {
+                pos = start + TransformOctant(row,col,octant);
+                if (pos.x >= 64 || pos.y >= 64 || pos.x < 0 || pos.y < 0) break;
+
+                if (fullShadow) {
+                    worldCellVisible[pos.x,pos.y] = false;
+                } else {
+                    Shadow projection = ProjectTile(row, col);
+                    visible = true;
+                    for (int i=0;i< shadows.Count;i++) {
+                        if (shadows[i].start <= projection.start
+                            && shadows[i].end >= projection.end) {
+
+                            visible = false;
+                        }
+                    }
+
+                    worldCellVisible[pos.x,pos.y] = visible;
+                    if (visible && !worldCellOpen[pos.x,pos.y]) {
+                        shadows.Add(projection);
+                        fullShadow = (shadows.Count == 1
+                                      && shadows[0].start == 0
+                                      && shadows[0].end == 1);
+                    }
+                }
             }
         }
     }
 
+    public Shadow ProjectTile(int row, int col) {
+        int topLeft = col / (row + 2);
+        int bottomRight = (col + 1) / (row + 1);
+        Shadow newshad = new Shadow();
+        newshad.start = topLeft;
+        newshad.end = bottomRight;
+        return newshad;
+    }
+
+    public struct Shadow {
+        public int start;
+        public int end;
+    }
+
+    // =====================================================================
+
     void DetermineVisibleCells() {
         MarkAllNonVisible();
+        for (int octant=0;octant<8;octant++) RefreshOctant(octant);
         worldCellVisible[playerCellX,playerCellY] = true;
         worldCellDirty[playerCellX,playerCellY] = true;
-        for (int x=0;x<64;x++) BresenhamSightCast(playerCellX,playerCellY,x,0);
-        for (int x=0;x<64;x++) BresenhamSightCast(playerCellX,playerCellY,x,63);
-        for (int y=0;y<64;y++) BresenhamSightCast(playerCellX,playerCellY,0,y);
-        for (int y=0;y<64;y++) BresenhamSightCast(playerCellX,playerCellY,63,y);
     }
 
     void ToggleVisibility() {
@@ -290,17 +334,17 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
 
-        for (int x=0; x<64; x++) {
-            for (int y=0; y<64; y++) {
-                if (worldCellVisible[x,y]) {
-                    MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
-                    mr.material = Const.a.genericMaterials[8]; // Blue forcefield
-                } else {
-                    MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
-                    mr.material = Const.a.genericMaterials[9]; // Green forcefield
-                }
-            }
-        }
+//         for (int x=0; x<64; x++) {
+//             for (int y=0; y<64; y++) {
+//                 if (worldCellVisible[x,y]) {
+//                     MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+//                     mr.material = Const.a.genericMaterials[8]; // Blue forcefield
+//                 } else {
+//                     MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+//                     mr.material = Const.a.genericMaterials[9]; // Green forcefield
+//                 }
+//             }
+//         }
     }
 
     public void Cull() {
