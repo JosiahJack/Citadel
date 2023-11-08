@@ -229,6 +229,15 @@ public class DynamicCulling : MonoBehaviour {
         worldCellDirty[playerCellX,playerCellY] = true;
         int x,y;
         bool currentVisible = false; // Mark if twere open if visible.
+
+        // [ ] = cell, empty means not checked
+        // [1] = starting point or last loop's current, assumed visible.
+        // [2] = current
+        // [3] = neighbors we should be able to see if [2] could be.
+
+        // [ ][3]
+        // [1][2]
+        // [ ][3]
         for (x=playerCellX + 1;x<64;x++) { // Right
             currentVisible = false;
             if (worldCellVisible[x - 1,playerCellY]) {
@@ -242,6 +251,9 @@ public class DynamicCulling : MonoBehaviour {
             } else break;
         }
 
+        // [3][ ]
+        // [2][1]
+        // [3][ ]
         for (x=playerCellX - 1;x>=0;x--) { // Left
             currentVisible = false;
             if (worldCellVisible[x + 1,playerCellY]) {
@@ -255,6 +267,8 @@ public class DynamicCulling : MonoBehaviour {
             } else break;
         }
 
+        // [3][2][3]
+        // [ ][1][ ]
         for (y=playerCellY + 1;y<64;y++) { // Up
             currentVisible = false;
             if (worldCellVisible[playerCellX,y - 1]) {
@@ -268,6 +282,8 @@ public class DynamicCulling : MonoBehaviour {
             } else break;
         }
 
+        // [ ][1][ ]
+        // [3][2][3]
         for (y=playerCellY - 1;y<64;y--) { // Down
             currentVisible = false;
             if (worldCellVisible[playerCellX,y + 1]) {
@@ -281,6 +297,8 @@ public class DynamicCulling : MonoBehaviour {
             } else break;
         }
 
+        // [3][2]
+        // [1][3]
         x = playerCellX + 1;
         y = playerCellY + 1;
         for (int iter=0;iter<64;iter++) { // Up to Right
@@ -300,6 +318,8 @@ public class DynamicCulling : MonoBehaviour {
             } else break;
         }
 
+        // [2][3]
+        // [3][1]
         x = playerCellX - 1;
         y = playerCellY + 1;
         for (int iter=0;iter<64;iter++) { // Up to Left
@@ -319,6 +339,8 @@ public class DynamicCulling : MonoBehaviour {
             } else break;
         }
 
+        // [3][1]
+        // [2][3]
         x = playerCellX - 1;
         y = playerCellY - 1;
         for (int iter=0;iter<64;iter++) { // Down to Left
@@ -338,6 +360,8 @@ public class DynamicCulling : MonoBehaviour {
             } else break;
         }
 
+        // [1][3]
+        // [3][2]
         x = playerCellX + 1;
         y = playerCellY - 1;
         for (int iter=0;iter<64;iter++) { // Down to Right
@@ -356,6 +380,45 @@ public class DynamicCulling : MonoBehaviour {
                 MarkVisible(x,y + 1);
             } else break;
         }
+
+        // [ ][2]
+        // [ ][ ]
+        // [1][ ]
+        x = playerCellX + 1;
+        y = playerCellY + 2;
+        for (int iter=0;iter<64;iter++) { // Up to Right 2x3
+            currentVisible = false;
+            if (   worldCellVisible[x - 1,y]        /* {current} */
+                || worldCellVisible[x - 1,y - 1] || worldCellVisible[x,y - 1]) {
+
+                MarkVisible(x,y);
+                currentVisible = true;
+                }
+
+                x++;
+                y++;
+                if (currentVisible) {
+                    MarkVisible(x - 1,y);
+                    MarkVisible(x,y - 1);
+                } else break;
+        }
+
+        // [ ][ ][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][ ][ ][6]
+        // [7][ ][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][ ][6][ ]
+        // [ ][7][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][6][ ][ ]
+        // [ ][ ][7][ ][ ][ ][ ][4][ ][ ][ ][ ][6][ ][ ][ ]
+        // [ ][ ][ ][7][ ][ ][ ][4][ ][ ][ ][6][ ][ ][ ][ ]
+        // [ ][ ][ ][ ][7][ ][ ][4][ ][ ][6][ ][ ][ ][ ][ ]
+        // [ ][ ][ ][ ][ ][7][ ][4][ ][6][ ][ ][ ][ ][ ][ ]
+        // [ ][ ][ ][ ][ ][ ][7][4][6][ ][ ][ ][ ][ ][ ][ ]
+        // [3][3][3][3][3][3][3][1][2][2][2][2][2][2][2][2]
+        // [ ][ ][ ][ ][ ][ ][8][5][9][ ][ ][ ][ ][ ][ ][ ]
+        // [ ][ ][ ][ ][ ][8][ ][5][ ][9][ ][ ][ ][ ][ ][ ]
+        // [ ][ ][ ][ ][8][ ][ ][5][ ][ ][9][ ][ ][ ][ ][ ]
+        // [ ][ ][ ][8][ ][ ][ ][5][ ][ ][ ][9][ ][ ][ ][ ]
+        // [ ][ ][8][ ][ ][ ][ ][5][ ][ ][ ][ ][9][ ][ ][ ]
+        // [ ][8][ ][ ][ ][ ][ ][5][ ][ ][ ][ ][ ][9][ ][ ]
+        // [8][ ][ ][ ][ ][ ][ ][5][ ][ ][ ][ ][ ][ ][9][ ]
     }
 
     void ToggleVisibility() {
