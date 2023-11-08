@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using ShadowsIn2D.Visibility;
 
 public class DynamicCulling : MonoBehaviour {
     const int WORLDX = 64;
@@ -161,23 +160,6 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
         }
-
-//         for (int x=0; x<64; x++) {
-//             for (int y=0; y<64; y++) {
-//                 if (worldCellOpen[x,y]) {
-//                     debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
-//                     debugCubes[x,y].transform.position = worldCellPositions[x,y];
-//                     MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
-//                     mr.material = Const.a.genericMaterials[9]; // Green forcefield
-//                 } else {
-//                     Debug.Log("Placing red cube at " + worldCellPositions[x,y].ToString());
-//                     debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
-//                     debugCubes[x,y].transform.position = worldCellPositions[x,y];
-//                     MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
-//                     mr.material = Const.a.genericMaterials[5]; // Red forcefield
-//                 }
-//             }
-//         }
     }
 
     void FindPlayerCell() {
@@ -198,13 +180,14 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     void MarkAllNonVisible() {
-//         bool last = false;
+        bool last = false;
         for (int x=0;x<64;x++) {
             for (int y=0;y<64;y++) {
+                last = worldCellVisible[x,y];
                 worldCellVisible[x,y] = false;
-//                 if (last != worldCellVisible[x,y]) {
-//                     worldCellDirty[playerCellX,playerCellY] = true;
-//                 }
+                if (last != worldCellVisible[x,y]) {
+                    worldCellDirty[playerCellX,playerCellY] = true;
+                }
             }
         }
     }
@@ -236,148 +219,143 @@ public class DynamicCulling : MonoBehaviour {
         return true;
     }
 
-    // From Bob Nystrom, https://github.com/munificent/fov, converted to C#.
-    // Aaand de-OOP'ed of course for performance.
-    // https://journal.stuffwithstuff.com/2015/09/07/what-the-hero-sees/
-    // =====================================================================
-
-//     public Vector2Int TransformOctant(int row, int col, int octant) {
-//         switch (octant) {
-//             case 0: return new Vector2Int( col, -row);
-//             case 1: return new Vector2Int( row, -col);
-//             case 2: return new Vector2Int( row,  col);
-//             case 3: return new Vector2Int( col,  row);
-//             case 4: return new Vector2Int(-col,  row);
-//             case 5: return new Vector2Int(-row,  col);
-//             case 6: return new Vector2Int(-row, -col);
-//             case 7: return new Vector2Int(-col, -row);
-//         }
-//
-//         return new Vector2Int(col,row);
-//     }
-
-//     public void RefreshOctant(int octant) {
-//         Vector2Int start = new Vector2Int(playerCellX,playerCellY);
-// //         List<Shadow> shadows = new List<Shadow>();
-// //         bool fullShadow = false;
-//         bool visible = true;
-//         Vector2Int pos = new Vector2Int(0,0);
-//         for (int row = 1; row < 64; row++) {
-//             pos = (start + TransformOctant(row,0,octant));
-//             if (pos.x >= 64 || pos.y >= 64 || pos.x < 0 || pos.y < 0) break;
-//
-//             for (int col = 0; col <= row; col++) {
-//                 pos = start + TransformOctant(row,col,octant);
-//                 if (pos.x >= 64 || pos.y >= 64 || pos.x < 0 || pos.y < 0) break;
-//
-//                 visible = true;
-//
-//                 int lastrow = row - 1;
-//                 if (!(lastrow >= 64 || lastrow < 3)) {
-//                     int leftone = pos.x - 1;
-//                     bool leftoneOpen = true;
-//                     if (leftone < 0) leftoneOpen = worldCellVisible[63,lastrow];
-//                     else if (leftone >= 64) leftoneOpen = worldCellVisible[0,lastrow];
-//                     else leftoneOpen = worldCellVisible[leftone,lastrow];
-//
-//                     int rightone = pos.x + 1;
-//                     bool rightoneOpen = true;
-//                     if (rightone < 0) rightoneOpen = worldCellVisible[63,lastrow];
-//                     else if (rightone >= 64) rightoneOpen = worldCellVisible[0,lastrow];
-//                     else rightoneOpen = worldCellVisible[rightone,lastrow];
-//
-//                     if (!leftoneOpen && !worldCellVisible[pos.x,lastrow] && !rightoneOpen) {
-//                         visible = false;
-//                     }
-//                 }
-//                 worldCellVisible[pos.x,pos.y] = visible;
-
-//                 if (fullShadow) {
-//                     worldCellVisible[pos.x,pos.y] = false;
-//                 } else {
-//                     int topLeft = col / (row + 2);
-//                     int bottomRight = (col + 1) / (row + 1);
-//                     Shadow projection = new Shadow();
-//                     projection.start = topLeft;
-//                     projection.end = bottomRight;
-//                     for (int i=0;i< shadows.Count;i++) {
-//                         if (shadows[i].start <= topLeft && shadows[i].end >= bottomRight) {
-//
-//                             visible = false;
-//                         }
-//                     }
-//
-//                     worldCellVisible[pos.x,pos.y] = visible;
-//                     if (visible && !worldCellOpen[pos.x,pos.y]) {
-//                         AddShadow(shadows,projection);
-//                         fullShadow = (shadows.Count == 1
-//                                       && shadows[0].start == 0
-//                                       && shadows[0].end == 1);
-//                     }
-//                 }
-//             }
-//         }
-//     }
-
-//     void AddShadow(List<Shadow> list, Shadow shadow) {
-//         int index = 0;
-//         for (; index < list.Count; index++) {
-//             if (list[index].start >= shadow.start) break;
-//         }
-//
-//         Shadow overlappingPrevious = null;
-//         if (index > 0 && list[index - 1].end > shadow.start) {
-//             overlappingPrevious = list[index - 1];
-//         }
-//
-//         Shadow overlappingNext = null;
-//         if (index < list.Count && list[index].start < shadow.end) {
-//             overlappingNext = list[index];
-//         }
-//
-//         if (overlappingNext != null) {
-//             if (overlappingPrevious != null) {
-//                 overlappingPrevious.end = overlappingNext.end;
-//                 list.RemoveAt(index);
-//             } else {
-//                 overlappingNext.start = shadow.start;
-//             }
-//         } else {
-//             if (overlappingPrevious != null) overlappingPrevious.end = shadow.end;
-//             else list.Insert(index,shadow);
-//         }
-//     }
-//
-//     public class Shadow {
-//         public int start;
-//         public int end;
-//     }
-
-    // =====================================================================
+    void MarkVisible(int x, int y) {
+        if (worldCellOpen[x,y]) worldCellVisible[x,y] = true;
+    }
 
     void DetermineVisibleCells() {
         MarkAllNonVisible();
-
-        Vector2 playerPos = new Vector2((float)playerCellX,(float)playerCellY);
-        VisibilityComputer visibility = new VisibilityComputer(playerPos);
-        for (int x=0; x<64; x++) {
-            for (int y=0; y<64; y++) {
-                if (worldCellOpen[x,y]) continue;
-
-                visibility.AddSquareOccluder(new Vector2((float)x,(float)y));
-            }
-        }
-
-        List<Vector2> encounters = visibility.Compute();
-
-
-
-
-        // Check overlaps
-
-
         worldCellVisible[playerCellX,playerCellY] = true;
         worldCellDirty[playerCellX,playerCellY] = true;
+        int x,y;
+        bool currentVisible = false; // Mark if twere open if visible.
+        for (x=playerCellX + 1;x<64;x++) { // Right
+            currentVisible = false;
+            if (worldCellVisible[x - 1,playerCellY]) {
+                MarkVisible(x,playerCellY);
+                currentVisible = true;
+            }
+
+            if (currentVisible) {
+                MarkVisible(x,playerCellY + 1);
+                MarkVisible(x,playerCellY - 1);
+            } else break;
+        }
+
+        for (x=playerCellX - 1;x>=0;x--) { // Left
+            currentVisible = false;
+            if (worldCellVisible[x + 1,playerCellY]) {
+                MarkVisible(x,playerCellY);
+                currentVisible = true;
+            }
+
+            if (currentVisible) {
+                MarkVisible(x,playerCellY + 1);
+                MarkVisible(x,playerCellY - 1);
+            } else break;
+        }
+
+        for (y=playerCellY + 1;y<64;y++) { // Up
+            currentVisible = false;
+            if (worldCellVisible[playerCellX,y - 1]) {
+                MarkVisible(playerCellX,y);
+                currentVisible = true;
+            }
+
+            if (currentVisible) {
+                MarkVisible(playerCellX + 1,y);
+                MarkVisible(playerCellX - 1,y);
+            } else break;
+        }
+
+        for (y=playerCellY - 1;y<64;y--) { // Down
+            currentVisible = false;
+            if (worldCellVisible[playerCellX,y + 1]) {
+                MarkVisible(playerCellX,y);
+                currentVisible = true;
+            }
+
+            if (currentVisible) {
+                MarkVisible(playerCellX + 1,y);
+                MarkVisible(playerCellX - 1,y);
+            } else break;
+        }
+
+        x = playerCellX + 1;
+        y = playerCellY + 1;
+        for (int iter=0;iter<64;iter++) { // Up to Right
+            currentVisible = false;
+            if (   worldCellVisible[x - 1,y]        /* {current} */
+                || worldCellVisible[x - 1,y - 1] || worldCellVisible[x,y - 1]) {
+
+                MarkVisible(x,y);
+                currentVisible = true;
+            }
+
+            x++;
+            y++;
+            if (currentVisible) {
+                MarkVisible(x - 1,y);
+                MarkVisible(x,y - 1);
+            } else break;
+        }
+
+        x = playerCellX - 1;
+        y = playerCellY + 1;
+        for (int iter=0;iter<64;iter++) { // Up to Left
+            currentVisible = false;
+            if (/* {current} */                 worldCellVisible[x + 1,y]
+                || worldCellVisible[x,y - 1] || worldCellVisible[x + 1,y - 1]) {
+
+                MarkVisible(x,y);
+                currentVisible = true;
+            }
+
+            x--;
+            y++;
+            if (currentVisible) {
+                MarkVisible(x + 1,y);
+                MarkVisible(x,y - 1);
+            } else break;
+        }
+
+        x = playerCellX - 1;
+        y = playerCellY - 1;
+        for (int iter=0;iter<64;iter++) { // Down to Left
+            currentVisible = false;
+            if (worldCellVisible[x,y + 1] || worldCellVisible[x + 1,y + 1]
+                /* {current} */           || worldCellVisible[x + 1,y]) {
+
+                MarkVisible(x,y);
+                currentVisible = true;
+            }
+
+            x--;
+            y--;
+            if (currentVisible) {
+                MarkVisible(x,y + 1);
+                MarkVisible(x + 1,y);
+            } else break;
+        }
+
+        x = playerCellX + 1;
+        y = playerCellY - 1;
+        for (int iter=0;iter<64;iter++) { // Down to Right
+            currentVisible = false;
+            if (   worldCellVisible[x - 1,y + 1] || worldCellVisible[x,y + 1]
+                || worldCellVisible[x - 1,y]          /* {current} */        ) {
+
+                MarkVisible(x,y);
+                currentVisible = true;
+            }
+
+            x++;
+            y--;
+            if (currentVisible) {
+                MarkVisible(x - 1,y);
+                MarkVisible(x,y + 1);
+            } else break;
+        }
     }
 
     void ToggleVisibility() {
@@ -396,18 +374,6 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
         }
-
-//         for (int x=0; x<64; x++) {
-//             for (int y=0; y<64; y++) {
-//                 if (worldCellVisible[x,y]) {
-//                     MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
-//                     mr.material = Const.a.genericMaterials[8]; // Blue forcefield
-//                 } else {
-//                     MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
-//                     mr.material = Const.a.genericMaterials[9]; // Green forcefield
-//                 }
-//             }
-//         }
     }
 
     public void Cull() {
@@ -418,3 +384,4 @@ public class DynamicCulling : MonoBehaviour {
         started = true;
     }
 }
+
