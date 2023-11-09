@@ -410,8 +410,6 @@ public class DynamicCulling : MonoBehaviour {
     private void CastRay(int x1, int y1, int x2, int y2) {
         int deltaX = x2 - x1;
         int deltaY = y2 - y1;
-        Vector2 slopef = new Vector2((float)deltaX,(float)deltaY).normalized;
-        Vector2Int slope = new Vector2Int((int)slopef.x,(int)slopef.y);
         int majorAxisSteps = Mathf.Abs(deltaX) > Mathf.Abs(deltaY) ?
                              Mathf.Abs(deltaX) : Mathf.Abs(deltaY);
 
@@ -419,31 +417,13 @@ public class DynamicCulling : MonoBehaviour {
         float yIncrement = (float)deltaY / majorAxisSteps;
         int x = x1;
         int y = y1;
-
-        // Define the radius of the ray (3 cells wide)
-        float radius = 0.707106f;   // Distance from grid cell center to vertex.
-        bool visibleLast = true;  // Assume starting point is player's cell.
-        bool visibleLastLeft = true;  // Similarly, any cells next to player
-        bool visibleLastRight = true; // are potentially visible.
-        int leftX, leftY, rightX, rightY;
-        // Left and right here are from the perspective of player looking down
-        // the ray.  Taking perpendicular step of length radius for these.
+        bool visibleLast = true; // Assume starting point is player's cell.
         for (int step = 0; step <= majorAxisSteps; step++) {
+
             if (x >= 0 && x < 64 && y >= 0 && y < 64) {
-                if (visibleLast || visibleLastLeft || visibleLastRight) {
+                if (visibleLast) {
                     MarkVisible(x, y);
                     visibleLast = worldCellVisible[x,y];
-
-                    leftX = x1 - slope.y;  // Perpendicular = 1/slope
-                    leftY = y1 + slope.x;  //   so use the flipped deltas.
-                    rightX = x1 + slope.y; // Right hand perpendicular is
-                    rightY = y1 - slope.x; //   flipped signs of the above.
-                    if (leftX  < 0 || leftX  > 63) leftX  = x1;
-                    if (rightX < 0 || rightX > 63) rightX = x1;
-                    if (leftY  < 0 || leftY  > 63) leftY  = y1;
-                    if (rightY < 0 || rightY > 63) rightY = y1;
-                    visibleLastLeft = worldCellOpen[leftX,leftY];
-                    visibleLastRight = worldCellOpen[rightX,rightY];
                 } else break;
             }
             x += Mathf.RoundToInt(xIncrement);
