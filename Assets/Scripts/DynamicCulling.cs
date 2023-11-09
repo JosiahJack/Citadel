@@ -232,9 +232,44 @@ public class DynamicCulling : MonoBehaviour {
         bool currentVisible = false; // Mark if twere open if visible.
 
         for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,0);
+
         for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
+
         for (y=0;y<64;y++) CastRay(playerCellX,playerCellY,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
+
         for (y=0;y<64;y++) CastRay(playerCellX,playerCellY,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
         if (true) return;
 
         // [ ] = cell, empty means not checked
