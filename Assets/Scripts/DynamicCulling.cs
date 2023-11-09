@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DynamicCulling : MonoBehaviour {
+    public bool enabled = false;
     const int WORLDX = 64;
     const int ARRSIZE = WORLDX * WORLDX;
     const float CELLXHALF = 1.28f;
@@ -230,6 +231,12 @@ public class DynamicCulling : MonoBehaviour {
         int x,y;
         bool currentVisible = false; // Mark if twere open if visible.
 
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,63);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY,63,y);
+        if (true) return;
+
         // [ ] = cell, empty means not checked
         // [1] = starting point or last loop's current, assumed visible.
         // [2] = current
@@ -381,28 +388,6 @@ public class DynamicCulling : MonoBehaviour {
             } else break;
         }
 
-        // [ ][2]
-        // [ ][ ]
-        // [1][ ]
-        x = playerCellX + 1;
-        y = playerCellY + 2;
-        for (int iter=0;iter<64;iter++) { // Up to Right 2x3
-            currentVisible = false;
-            if (   worldCellVisible[x - 1,y]        /* {current} */
-                || worldCellVisible[x - 1,y - 1] || worldCellVisible[x,y - 1]) {
-
-                MarkVisible(x,y);
-                currentVisible = true;
-                }
-
-                x++;
-                y++;
-                if (currentVisible) {
-                    MarkVisible(x - 1,y);
-                    MarkVisible(x,y - 1);
-                } else break;
-        }
-
         // [ ][ ][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][ ][ ][6]
         // [7][ ][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][ ][6][ ]
         // [ ][7][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][6][ ][ ]
@@ -419,6 +404,51 @@ public class DynamicCulling : MonoBehaviour {
         // [ ][ ][8][ ][ ][ ][ ][5][ ][ ][ ][ ][9][ ][ ][ ]
         // [ ][8][ ][ ][ ][ ][ ][5][ ][ ][ ][ ][ ][9][ ][ ]
         // [8][ ][ ][ ][ ][ ][ ][5][ ][ ][ ][ ][ ][ ][9][ ]
+    }
+
+    // x1,y1 = playerCellX,playerCellY
+    private void CastRay(int x1, int y1, int x2, int y2) {
+        int deltaX = x2 - x1;
+        int deltaY = y2 - y1;
+        Vector2 slopef = new Vector2((float)deltaX,(float)deltaY).normalized;
+        Vector2Int slope = new Vector2Int((int)slopef.x,(int)slopef.y);
+        int majorAxisSteps = Mathf.Abs(deltaX) > Mathf.Abs(deltaY) ?
+                             Mathf.Abs(deltaX) : Mathf.Abs(deltaY);
+
+        float xIncrement = (float)deltaX / majorAxisSteps;
+        float yIncrement = (float)deltaY / majorAxisSteps;
+        int x = x1;
+        int y = y1;
+
+        // Define the radius of the ray (3 cells wide)
+        float radius = 0.707106f;   // Distance from grid cell center to vertex.
+        bool visibleLast = true;  // Assume starting point is player's cell.
+        bool visibleLastLeft = true;  // Similarly, any cells next to player
+        bool visibleLastRight = true; // are potentially visible.
+        int leftX, leftY, rightX, rightY;
+        // Left and right here are from the perspective of player looking down
+        // the ray.  Taking perpendicular step of length radius for these.
+        for (int step = 0; step <= majorAxisSteps; step++) {
+            if (x >= 0 && x < 64 && y >= 0 && y < 64) {
+                if (visibleLast || visibleLastLeft || visibleLastRight) {
+                    MarkVisible(x, y);
+                    visibleLast = worldCellVisible[x,y];
+
+                    leftX = x1 - slope.y;  // Perpendicular = 1/slope
+                    leftY = y1 + slope.x;  //   so use the flipped deltas.
+                    rightX = x1 + slope.y; // Right hand perpendicular is
+                    rightY = y1 - slope.x; //   flipped signs of the above.
+                    if (leftX  < 0 || leftX  > 63) leftX  = x1;
+                    if (rightX < 0 || rightX > 63) rightX = x1;
+                    if (leftY  < 0 || leftY  > 63) leftY  = y1;
+                    if (rightY < 0 || rightY > 63) rightY = y1;
+                    visibleLastLeft = worldCellOpen[leftX,leftY];
+                    visibleLastRight = worldCellOpen[rightX,rightY];
+                } else break;
+            }
+            x += Mathf.RoundToInt(xIncrement);
+            y += Mathf.RoundToInt(yIncrement);
+        }
     }
 
     void ToggleVisibility() {
@@ -441,6 +471,8 @@ public class DynamicCulling : MonoBehaviour {
 
     public void Cull() {
         if (!UpdatedPlayerCell() && started) return;
+
+        if (!enabled) return;
 
         DetermineVisibleCells(); // Reevaluate visible cells from new pos.
         ToggleVisibility(); // Update all cells marked as dirty.
