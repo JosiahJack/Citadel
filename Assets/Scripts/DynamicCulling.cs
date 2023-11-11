@@ -454,15 +454,16 @@ public class DynamicCulling : MonoBehaviour {
         int y = y1;
         bool visibleLast = true; // Assume starting point is player's cell.
         for (int step = 0; step <= majorAxisSteps; step++) {
-
-            if (x >= 0 && x < 64 && y >= 0 && y < 64) {
+            int xint = Mathf.Floor(x);
+            int yint = Mathf.Floor(y);
+            if (xint >= 0 && xint < 64 && yint >= 0 && yint < 64) {
                 if (visibleLast) {
-                    MarkVisible(x, y);
-                    visibleLast = worldCellVisible[x,y];
+                    MarkVisible(xint,yint);
+                    visibleLast = worldCellVisible[xint,yint];
                 } else break;
             }
-            x += Mathf.RoundToInt(xIncrement);
-            y += Mathf.RoundToInt(yIncrement);
+            x += xIncrement;
+            y += yIncrement;
         }
     }
 
