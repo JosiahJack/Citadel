@@ -232,45 +232,44 @@ public class DynamicCulling : MonoBehaviour {
         bool currentVisible = false; // Mark if twere open if visible.
 
         for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,0);
 
         for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
 
         for (y=0;y<64;y++) CastRay(playerCellX,playerCellY,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
 
         for (y=0;y<64;y++) CastRay(playerCellX,playerCellY,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
-        if (true) return;
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
 
         // [ ] = cell, empty means not checked
         // [1] = starting point or last loop's current, assumed visible.
@@ -338,6 +337,7 @@ public class DynamicCulling : MonoBehaviour {
                 MarkVisible(playerCellX - 1,y);
             } else break;
         }
+        if (true) return;
 
         // [3][2]
         // [1][3]
@@ -445,17 +445,17 @@ public class DynamicCulling : MonoBehaviour {
     private void CastRay(int x1, int y1, int x2, int y2) {
         int deltaX = x2 - x1;
         int deltaY = y2 - y1;
-        int majorAxisSteps = Mathf.Abs(deltaX) > Mathf.Abs(deltaY) ?
-                             Mathf.Abs(deltaX) : Mathf.Abs(deltaY);
-
+        int absdx = deltaX & 0x7FFFFFFF;
+        int absdy = deltaY & 0x7FFFFFFF;
+        int majorAxisSteps = absdx > absdy ? absdx : absdy;
         float xIncrement = (float)deltaX / majorAxisSteps;
         float yIncrement = (float)deltaY / majorAxisSteps;
-        int x = x1;
-        int y = y1;
+        float x = x1;
+        float y = y1;
         bool visibleLast = true; // Assume starting point is player's cell.
         for (int step = 0; step <= majorAxisSteps; step++) {
-            int xint = Mathf.Floor(x);
-            int yint = Mathf.Floor(y);
+            int xint = (int)x;
+            int yint = (int)y;
             if (xint >= 0 && xint < 64 && yint >= 0 && yint < 64) {
                 if (visibleLast) {
                     MarkVisible(xint,yint);
