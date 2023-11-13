@@ -307,14 +307,19 @@ public class DynamicCulling : MonoBehaviour {
             } else break;
         }
 
+        bool diagonal = false;
+
         // [3][2]
         // [1][3]
         x = playerCellX + 1;
         y = playerCellY + 1;
         for (int iter=0;iter<64;iter++) { // Up to Right
             currentVisible = false;
+            diagonal = worldCellVisible[x - 1,y -1] &&
+                (worldCellVisible[x - 1,y] || worldCellVisible[x,y - 1]);
+
             if (   worldCellVisible[x - 1,y]        /* {current} */
-                || worldCellVisible[x - 1,y - 1] || worldCellVisible[x,y - 1]) {
+                || diagonal                 || worldCellVisible[x,y - 1]) {
 
                 MarkVisible(x,y);
                 currentVisible = true;
@@ -335,8 +340,11 @@ public class DynamicCulling : MonoBehaviour {
         y = playerCellY + 1;
         for (int iter=0;iter<64;iter++) { // Up to Left
             currentVisible = false;
+            diagonal = worldCellVisible[x + 1,y - 1] &&
+                (worldCellVisible[x,y - 1] || worldCellVisible[x + 1,y]);
+
             if (/* {current} */                 worldCellVisible[x + 1,y]
-                || worldCellVisible[x,y - 1] || worldCellVisible[x + 1,y - 1]) {
+                || worldCellVisible[x,y - 1] || diagonal                  ) {
 
                 MarkVisible(x,y);
                 currentVisible = true;
@@ -357,8 +365,11 @@ public class DynamicCulling : MonoBehaviour {
         y = playerCellY - 1;
         for (int iter=0;iter<64;iter++) { // Down to Left
             currentVisible = false;
-            if (worldCellVisible[x,y + 1] || worldCellVisible[x + 1,y + 1]
-                /* {current} */           || worldCellVisible[x + 1,y]) {
+            diagonal = worldCellVisible[x + 1,y + 1] &&
+                (worldCellVisible[x,y + 1] || worldCellVisible[x + 1,y]);
+
+                if (worldCellVisible[x,y + 1] || diagonal
+                /* {current} */               || worldCellVisible[x + 1,y]) {
 
                 MarkVisible(x,y);
                 currentVisible = true;
@@ -379,6 +390,9 @@ public class DynamicCulling : MonoBehaviour {
         y = playerCellY - 1;
         for (int iter=0;iter<64;iter++) { // Down to Right
             currentVisible = false;
+            diagonal = worldCellVisible[x - 1,y - 1] &&
+                (worldCellVisible[x - 1,y] || worldCellVisible[x,y + 1]);
+
             if (   worldCellVisible[x - 1,y + 1] || worldCellVisible[x,y + 1]
                 || worldCellVisible[x - 1,y]          /* {current} */        ) {
 
