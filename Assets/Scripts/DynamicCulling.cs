@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DynamicCulling : MonoBehaviour {
-    public bool enabled = false;
+    public bool cullEnabled = false;
     const int WORLDX = 64;
     const int ARRSIZE = WORLDX * WORLDX;
     const float CELLXHALF = 1.28f;
@@ -220,8 +220,11 @@ public class DynamicCulling : MonoBehaviour {
         return true;
     }
 
-    void MarkVisible(int x, int y) {
-        if (worldCellOpen[x,y]) worldCellVisible[x,y] = true;
+    bool MarkVisible(int x, int y) {
+        if (worldCellOpen[x,y]) {
+            worldCellVisible[x,y] = true;
+            return true;
+        } else return false;
     }
 
     void DetermineVisibleCells() {
@@ -231,45 +234,11 @@ public class DynamicCulling : MonoBehaviour {
         int x,y;
         bool currentVisible = false; // Mark if twere open if visible.
 
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,0);
-
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
-
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
-
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
+        // Skip 0 and 63 corners since 45deg rays below get them.
+        for (x=1;x<63;x++) CastRay(x,0);
+        for (x=1;x<63;x++) CastRay(x,63);
+        for (y=1;y<63;y++) CastRay(0,y);
+        for (y=1;y<63;y++) CastRay(63,y);
 
         // [ ] = cell, empty means not checked
         // [1] = starting point or last loop's current, assumed visible.
@@ -337,7 +306,6 @@ public class DynamicCulling : MonoBehaviour {
                 MarkVisible(playerCellX - 1,y);
             } else break;
         }
-        if (true) return;
 
         // [3][2]
         // [1][3]
@@ -354,6 +322,7 @@ public class DynamicCulling : MonoBehaviour {
 
             x++;
             y++;
+            if (x > 63 || y > 63) break;
             if (currentVisible) {
                 MarkVisible(x - 1,y);
                 MarkVisible(x,y - 1);
@@ -375,6 +344,7 @@ public class DynamicCulling : MonoBehaviour {
 
             x--;
             y++;
+            if (x < 0 || y > 63) break;
             if (currentVisible) {
                 MarkVisible(x + 1,y);
                 MarkVisible(x,y - 1);
@@ -396,6 +366,7 @@ public class DynamicCulling : MonoBehaviour {
 
             x--;
             y--;
+            if (x < 0 || y < 0) break;
             if (currentVisible) {
                 MarkVisible(x,y + 1);
                 MarkVisible(x + 1,y);
@@ -417,6 +388,7 @@ public class DynamicCulling : MonoBehaviour {
 
             x++;
             y--;
+            if (x > 63 || y < 0) break;
             if (currentVisible) {
                 MarkVisible(x - 1,y);
                 MarkVisible(x,y + 1);
@@ -442,28 +414,27 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     // x1,y1 = playerCellX,playerCellY
-    private void CastRay(int x1, int y1, int x2, int y2) {
-        int deltaX = x2 - x1;
-        int deltaY = y2 - y1;
-        int absdx = deltaX & 0x7FFFFFFF;
-        int absdy = deltaY & 0x7FFFFFFF;
-        int majorAxisSteps = absdx > absdy ? absdx : absdy;
+    private void CastRay(int x2, int y2) {
+        int deltaX = x2 - playerCellX;
+        int deltaY = y2 - playerCellY;
+        float absdx = Mathf.Abs(deltaX);
+        float absdy = Mathf.Abs(deltaY);
+        float majorAxisSteps = absdx > absdy ? absdx : absdy;
         float xIncrement = (float)deltaX / majorAxisSteps;
         float yIncrement = (float)deltaY / majorAxisSteps;
-        float x = x1;
-        float y = y1;
+        float x = (float)playerCellX;
+        float y = (float)playerCellY;
         bool visibleLast = true; // Assume starting point is player's cell.
-        for (int step = 0; step <= majorAxisSteps; step++) {
+        for (float step = 0; step <= majorAxisSteps; step+=majorAxisSteps) {
             int xint = (int)x;
             int yint = (int)y;
-            if (xint >= 0 && xint < 64 && yint >= 0 && yint < 64) {
-                if (visibleLast) {
-                    MarkVisible(xint,yint);
-                    visibleLast = worldCellVisible[xint,yint];
-                } else break;
-            }
+            if (visibleLast) visibleLast = MarkVisible(xint,yint);
+            else break;
+
             x += xIncrement;
+            if (x < 0f || x > 63f) break;
             y += yIncrement;
+            if (y < 0f || y > 63f) break;
         }
     }
 
@@ -488,7 +459,7 @@ public class DynamicCulling : MonoBehaviour {
     public void Cull() {
         if (!UpdatedPlayerCell() && started) return;
 
-        if (!enabled) return;
+        if (!cullEnabled) return;
 
         DetermineVisibleCells(); // Reevaluate visible cells from new pos.
         ToggleVisibility(); // Update all cells marked as dirty.
