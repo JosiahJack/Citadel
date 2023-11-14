@@ -15,6 +15,7 @@ public class DynamicCulling : MonoBehaviour {
     public GameObject[,] debugCubes = new GameObject[WORLDX,WORLDX];
     public List<MeshRenderer>[,] cellListsMR = new List<MeshRenderer>[WORLDX,WORLDX];
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
+    public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();
     public bool[,] worldCellDirty = new bool[WORLDX,WORLDX];
     public int playerCellX = 0;
     public int playerCellY = 0;
@@ -50,6 +51,8 @@ public class DynamicCulling : MonoBehaviour {
         worldCellPositions = new Vector3 [WORLDX,WORLDX];
         dynamicMeshes = new List<MeshRenderer>();
         dynamicMeshes.Clear();
+        dynamicMeshCoords = new List<Vector2Int>();
+        dynamicMeshCoords.Clear();
         for (int x=0;x<64;x++) {
             for (int y=0;y<64;y++) {
                 cellLists[x,y] = new List<GameObject>();
@@ -200,50 +203,63 @@ public class DynamicCulling : MonoBehaviour {
     public void FindDynamicMeshes() {
         GameObject container = LevelManager.a.GetCurrentDynamicContainer();
         Component[] compArray = childGO.GetComponentsInChildren(typeof(MeshRenderer),true);
-        foreach (MeshRenderer mr in compArray) dynamicMeshes.Add(mr);
+        foreach (MeshRenderer mr in compArray) {
+            dynamicMeshes.Add(mr);
+            dynamicMeshCoords.Add(Vector2Int.zero);
+        }
     }
 
-    public void UpdateDynamicMeshes() {
-        for (int i=0;i<dynamicMeshes.Count;i++) {
-            Vector3 pos = dynamicMeshes[i].transform.position;
-            for (int x=0;x<64;x++) {
-                for (int y=0;y<64;y++) {
-                    if (Vector3.Distance(pos,worldCellPositions[x,y]) < 1.28f) {
-                        playerCellX = x;
-                        playerCellY = y;
-                        return;
-                    }
+    public void PutDynamicMeshInCell(int index) {
+        Vector3 pos = dynamicMeshes[index].transform.position;
+        for (int x=0;x<64;x++) {
+            for (int y=0;y<64;y++) {
+                if (Vector3.Distance(pos,worldCellPositions[x,y]) < 1.28f) {
+                    dynamicMeshCoords[index] = new Vector2Int(x,y);
+                    return;
                 }
             }
         }
     }
 
-    public void UpdatedDynamicMesh(Vector3 pos) {
-        float deltaX = pos.x - worldCellPositions[playerCellX,playerCellY].x;
-        float deltaY = pos.z - worldCellPositions[playerCellX,playerCellY].z;
-        int lastX = playerCellX;
-        int lastY = playerCellY;
-        if (deltaX > 2.56f || deltaY > 2.56f
-            || deltaX < -2.56f || deltaY < -2.56f) {
-            FindPlayerCell();
-            Debug.Log("Innaccuracy, correcting player location via brute "
-                      + "force.");
-
-            if (playerCellX == lastX && playerCellY == lastY) return false;
-            return true;
+    public void PutDynamicMeshesInCells() {
+        for (int i=0;i<dynamicMeshes.Count;i++) {
+            PutDynamicMeshInCell(i);
         }
+    }
 
+    public void UpdateDynamicMeshes() {
+        int x,y,lastX,lastY;
+        Vector3 pos;
+        float deltaX,deltaY;
 
-        if (deltaX > CELLXHALF) playerCellX++;
-        else if (deltaX < -CELLXHALF) playerCellX--;
-        if (playerCellX < 0) playerCellX = 0;
-        if (playerCellX > 63) playerCellX = 63;
-        if (deltaY > CELLXHALF) playerCellY++;
-        else if (deltaY < -CELLXHALF) playerCellY--;
-        if (playerCellY < 0) playerCellY = 0;
-        if (playerCellY > 63) playerCellY = 63;
-        if (playerCellX == lastX && playerCellY == lastY) return false;
-        return true;
+        for (int i=0;i<dynamicMeshes.Count;i++) {
+            x = dynamicMeshCoords[i].x;
+            y = dynamicMeshCoords[i].y;
+            Vector3 pos = dynamicMeshes[i].transform.position;
+            deltaX = pos.x -
+            worldCellPositions[x,y].x;
+            deltaY = pos.z -
+            worldCellPositions[x,y].z;
+            lastX = x;
+            lastY = y;
+            if (deltaX > 2.56f || deltaY > 2.56f
+                || deltaX < -2.56f || deltaY < -2.56f) {
+                PutDynamicMeshInCell(i);
+                return;
+            }
+
+            if (deltaX > CELLXHALF) x++;
+            else if (deltaX < -CELLXHALF) x--;
+
+            if (x < 0) x = 0;
+            if (x > 63) x = 63;
+            if (deltaY > CELLXHALF) y++;
+            else if (deltaY < -CELLXHALF) y--;
+
+            if (y < 0) y = 0;
+            if (y > 63) y = 63;
+            return;
+        }
     }
 
     public void Cull_Init() {
@@ -253,6 +269,7 @@ public class DynamicCulling : MonoBehaviour {
         FindOpenCellsAndPositions(orthogonalChunks);
         PutChunksInCells();
         FindDynamicMeshes();
+        PutDynamicMeshesInCells();
         FindPlayerCell();
         DetermineVisibleCells(); // Reevaluate visible cells from new pos.
         ToggleVisibility(); // Update all cells marked as dirty.
@@ -657,6 +674,9 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void Cull() {
+        UpdateDynamicMeshes();
+
+        // Now handle player position updating PVS
         if (!UpdatedPlayerCell()) return;
         if (!cullEnabled) return;
 
