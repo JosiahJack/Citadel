@@ -44,12 +44,17 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     void ClearCellList() {
+        worldCellVisible = new bool [WORLDX,WORLDX];
+        worldCellOpen = new bool [WORLDX,WORLDX];
+        worldCellPositions = new Vector3 [WORLDX,WORLDX];
         for (int x=0;x<64;x++) {
             for (int y=0;y<64;y++) {
                 cellLists[x,y] = new List<GameObject>();
                 cellLists[x,y].Clear();
                 cellListsMR[x,y] = new List<MeshRenderer>();
                 cellListsMR[x,y].Clear();
+                worldCellVisible[x,y] = false;
+                worldCellOpen[x,y] = false;
             }
         }
     }
@@ -385,7 +390,7 @@ public class DynamicCulling : MonoBehaviour {
         // [ ][1][ ]
         // [3][2][3]
         if (playerCellY > 0) {
-            for (y=playerCellY - 1;y<63;y--) { // Down
+            for (y=playerCellY - 1;y>=0;y--) { // Down
                 currentVisible = false;
                 if (worldCellVisible[playerCellX,y + 1]) {
                     MarkVisible(playerCellX,y);
@@ -399,7 +404,7 @@ public class DynamicCulling : MonoBehaviour {
             }
 
             if (playerCellX > 0) {
-                for (y=playerCellY - 1;y<63;y--) { // Down, left neighbor
+                for (y=playerCellY - 1;y>=0;y--) { // Down, left neighbor
                     currentVisible = false;
                     if (worldCellVisible[playerCellX - 1,y + 1]) {
                         MarkVisible(playerCellX - 1,y);
@@ -409,7 +414,7 @@ public class DynamicCulling : MonoBehaviour {
             }
 
             if (playerCellX < 63) {
-                for (y=playerCellY - 1;y<63;y--) { // Down, right neighbor
+                for (y=playerCellY - 1;y>=0;y--) { // Down, right neighbor
                     currentVisible = false;
                     if (worldCellVisible[playerCellX + 1,y + 1]) {
                         MarkVisible(playerCellX + 1,y);
