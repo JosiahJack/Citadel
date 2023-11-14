@@ -158,6 +158,22 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
         }
+
+         for (int x=0; x<64; x++) {
+             for (int y=0; y<64; y++) {
+                 if (worldCellOpen[x,y]) {
+                     debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                     debugCubes[x,y].transform.position = worldCellPositions[x,y];
+                     MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+                     mr.material = Const.a.genericMaterials[9]; // Green
+                 } else {
+                     debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                     debugCubes[x,y].transform.position = worldCellPositions[x,y];
+                     MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+                     mr.material = Const.a.genericMaterials[5]; // Red
+                 }
+             }
+         }
     }
 
     void MarkAllNonVisible() {
@@ -256,63 +272,151 @@ public class DynamicCulling : MonoBehaviour {
         // [ ][3]
         // [1][2]
         // [ ][3]
-        for (x=playerCellX + 1;x<64;x++) { // Right
-            currentVisible = false;
-            if (worldCellVisible[x - 1,playerCellY]) {
-                MarkVisible(x,playerCellY);
-                currentVisible = true;
+        if (playerCellX < 63) {
+            for (x=playerCellX + 1;x<64;x++) { // Right
+                currentVisible = false;
+                if (worldCellVisible[x - 1,playerCellY]) {
+                    MarkVisible(x,playerCellY);
+                    currentVisible = true;
+                }
+
+                if (currentVisible) {
+                    MarkVisible(x,playerCellY + 1);
+                    MarkVisible(x,playerCellY - 1);
+                } else break;
             }
 
-            if (currentVisible) {
-                MarkVisible(x,playerCellY + 1);
-                MarkVisible(x,playerCellY - 1);
-            } else break;
+            if (playerCellY > 0) {
+                for (x=playerCellX + 1;x<64;x++) { // Right, South neighbor
+                    currentVisible = false;
+                    if (worldCellVisible[x - 1,playerCellY - 1]) {
+                        MarkVisible(x,playerCellY - 1);
+                        currentVisible = true;
+                    }
+                }
+            }
+
+            if (playerCellY < 63) {
+                for (x=playerCellX + 1;x<64;x++) { // Right, North neighbor
+                    currentVisible = false;
+                    if (worldCellVisible[x - 1,playerCellY + 1]) {
+                        MarkVisible(x,playerCellY + 1);
+                        currentVisible = true;
+                    }
+                }
+            }
         }
 
         // [3][ ]
         // [2][1]
         // [3][ ]
-        for (x=playerCellX - 1;x>=0;x--) { // Left
-            currentVisible = false;
-            if (worldCellVisible[x + 1,playerCellY]) {
-                MarkVisible(x,playerCellY);
-                currentVisible = true;
+        if (playerCellX > 0) {
+            for (x=playerCellX - 1;x>=0;x--) { // Left
+                currentVisible = false;
+                if (worldCellVisible[x + 1,playerCellY]) {
+                    MarkVisible(x,playerCellY);
+                    currentVisible = true;
+                }
+
+                if (currentVisible) {
+                    MarkVisible(x,playerCellY + 1);
+                    MarkVisible(x,playerCellY - 1);
+                } else break;
             }
 
-            if (currentVisible) {
-                MarkVisible(x,playerCellY + 1);
-                MarkVisible(x,playerCellY - 1);
-            } else break;
+            if (playerCellY > 0) {
+                for (x=playerCellX - 1;x>=0;x--) { // Left, South neighbor
+                    currentVisible = false;
+                    if (worldCellVisible[x + 1,playerCellY - 1]) {
+                        MarkVisible(x,playerCellY - 1);
+                        currentVisible = true;
+                    }
+                }
+            }
+
+            if (playerCellY < 63) {
+                for (x=playerCellX - 1;x>=0;x--) { // Left, North neighbor
+                    currentVisible = false;
+                    if (worldCellVisible[x + 1,playerCellY + 1]) {
+                        MarkVisible(x,playerCellY + 1);
+                        currentVisible = true;
+                    }
+                }
+            }
         }
 
         // [3][2][3]
         // [ ][1][ ]
-        for (y=playerCellY + 1;y<64;y++) { // Up
-            currentVisible = false;
-            if (worldCellVisible[playerCellX,y - 1]) {
-                MarkVisible(playerCellX,y);
-                currentVisible = true;
+        if (playerCellY < 63) {
+            for (y=playerCellY + 1;y<64;y++) { // Up
+                currentVisible = false;
+                if (worldCellVisible[playerCellX,y - 1]) {
+                    MarkVisible(playerCellX,y);
+                    currentVisible = true;
+                }
+
+                if (currentVisible) {
+                    MarkVisible(playerCellX + 1,y);
+                    MarkVisible(playerCellX - 1,y);
+                } else break;
             }
 
-            if (currentVisible) {
-                MarkVisible(playerCellX + 1,y);
-                MarkVisible(playerCellX - 1,y);
-            } else break;
+            if (playerCellX < 63) {
+                for (y=playerCellY + 1;y<63;y++) { // Up, right neighbor
+                    currentVisible = false;
+                    if (worldCellVisible[playerCellX + 1,y - 1]) {
+                        MarkVisible(playerCellX + 1,y);
+                        currentVisible = true;
+                    }
+                }
+            }
+
+            if (playerCellX > 0) {
+                for (y=playerCellY + 1;y<63;y++) { // Up, left neighbor
+                    currentVisible = false;
+                    if (worldCellVisible[playerCellX - 1,y - 1]) {
+                        MarkVisible(playerCellX - 1,y);
+                        currentVisible = true;
+                    }
+                }
+            }
         }
 
         // [ ][1][ ]
         // [3][2][3]
-        for (y=playerCellY - 1;y<64;y--) { // Down
-            currentVisible = false;
-            if (worldCellVisible[playerCellX,y + 1]) {
-                MarkVisible(playerCellX,y);
-                currentVisible = true;
+        if (playerCellY > 0) {
+            for (y=playerCellY - 1;y<63;y--) { // Down
+                currentVisible = false;
+                if (worldCellVisible[playerCellX,y + 1]) {
+                    MarkVisible(playerCellX,y);
+                    currentVisible = true;
+                }
+
+                if (currentVisible) {
+                    MarkVisible(playerCellX + 1,y);
+                    MarkVisible(playerCellX - 1,y);
+                } else break;
             }
 
-            if (currentVisible) {
-                MarkVisible(playerCellX + 1,y);
-                MarkVisible(playerCellX - 1,y);
-            } else break;
+            if (playerCellX > 0) {
+                for (y=playerCellY - 1;y<63;y--) { // Down, left neighbor
+                    currentVisible = false;
+                    if (worldCellVisible[playerCellX - 1,y + 1]) {
+                        MarkVisible(playerCellX - 1,y);
+                        currentVisible = true;
+                    }
+                }
+            }
+
+            if (playerCellX < 63) {
+                for (y=playerCellY - 1;y<63;y--) { // Down, right neighbor
+                    currentVisible = false;
+                    if (worldCellVisible[playerCellX + 1,y + 1]) {
+                        MarkVisible(playerCellX + 1,y);
+                        currentVisible = true;
+                    }
+                }
+            }
         }
 
         bool diagonal = false;
@@ -476,6 +580,22 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
         }
+
+        MeshRenderer mr = null;
+        for (int x=0; x<64; x++) {
+            for (int y=0; y<64; y++) {
+                if (worldCellVisible[x,y]) {
+                    mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+                    mr.material = Const.a.genericMaterials[8]; // Blue forcefield
+                } else {
+                    mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+                    mr.material = Const.a.genericMaterials[9]; // Green forcefield
+                }
+            }
+        }
+
+        mr = debugCubes[playerCellX,playerCellY].GetComponent<MeshRenderer>();
+        mr.material = Const.a.genericMaterials[12]; // Indigo forcefield
     }
 
     public void Cull() {
