@@ -15,7 +15,6 @@ public class DynamicCulling : MonoBehaviour {
     public GameObject[,] debugCubes = new GameObject[WORLDX,WORLDX];
     public List<MeshRenderer>[,] cellListsMR = new List<MeshRenderer>[WORLDX,WORLDX];
     public bool[,] worldCellDirty = new bool[WORLDX,WORLDX];
-    public bool playerCellChanged;
     public int playerCellX = 0;
     public int playerCellY = 0;
     public float deltaX = 0.0f;
@@ -23,7 +22,6 @@ public class DynamicCulling : MonoBehaviour {
     public Vector3 worldMax;
     public Vector3 worldMin;
     public List<GameObject> orthogonalChunks;
-    public bool started = false;
 
     public static DynamicCulling a;
 
@@ -36,7 +34,6 @@ public class DynamicCulling : MonoBehaviour {
     void Awake() {
         a = this;
         a.Cull_Init();
-        a.started = false;
     }
 
     public bool EulerAnglesWithin90(Vector3 angs) {
@@ -163,23 +160,6 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
-    void FindPlayerCell() {
-        playerCellX = 0;
-        playerCellY = 0;
-        Vector3 pos = PlayerMovement.a.transform.position;
-        for (int x=0;x<64;x++) {
-            for (int y=0;y<64;y++) {
-                if (Vector3.Distance(pos,worldCellPositions[x,y]) < 1.28f) {
-                    playerCellX = x;
-                    playerCellY = y;
-                    return;
-                }
-            }
-        }
-
-        playerCellChanged = true;
-    }
-
     void MarkAllNonVisible() {
         bool last = false;
         for (int x=0;x<64;x++) {
@@ -200,6 +180,23 @@ public class DynamicCulling : MonoBehaviour {
         FindOpenCellsAndPositions(orthogonalChunks);
         PutChunksInCells();
         FindPlayerCell();
+        DetermineVisibleCells(); // Reevaluate visible cells from new pos.
+        ToggleVisibility(); // Update all cells marked as dirty.
+    }
+
+    void FindPlayerCell() {
+        playerCellX = 0;
+        playerCellY = 0;
+        Vector3 pos = PlayerMovement.a.transform.position;
+        for (int x=0;x<64;x++) {
+            for (int y=0;y<64;y++) {
+                if (Vector3.Distance(pos,worldCellPositions[x,y]) < 1.28f) {
+                    playerCellX = x;
+                    playerCellY = y;
+                    return;
+                }
+            }
+        }
     }
 
     bool UpdatedPlayerCell() {
@@ -208,6 +205,17 @@ public class DynamicCulling : MonoBehaviour {
         deltaY = pos.z - worldCellPositions[playerCellX,playerCellY].z;
         int lastX = playerCellX;
         int lastY = playerCellY;
+        if (deltaX > 2.56f || deltaY > 2.56f
+            || deltaX < -2.56f || deltaY < -2.56f) {
+            FindPlayerCell();
+            Debug.Log("Innaccuracy, correcting player location via brute "
+                      + "force.");
+
+            if (playerCellX == lastX && playerCellY == lastY) return false;
+            return true;
+        }
+
+
         if (deltaX > CELLXHALF) playerCellX++;
         else if (deltaX < -CELLXHALF) playerCellX--;
         if (playerCellX < 0) playerCellX = 0;
@@ -471,13 +479,11 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void Cull() {
-        if (!UpdatedPlayerCell() && started) return;
-
+        if (!UpdatedPlayerCell()) return;
         if (!cullEnabled) return;
 
         DetermineVisibleCells(); // Reevaluate visible cells from new pos.
         ToggleVisibility(); // Update all cells marked as dirty.
-        started = true;
     }
 }
 

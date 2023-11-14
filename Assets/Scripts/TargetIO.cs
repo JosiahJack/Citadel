@@ -74,6 +74,10 @@ public class TargetIO : MonoBehaviour {
 			if (disableThisGOOnAwake && !alreadyDisabledThisGOOnceEver) {
 				SaveObject so = GetComponent<SaveObject>();
 				if (so == null) {
+					Debug.Log("Adding SaveObject to a "
+							  + "disabled on awake gameobject with "
+							  + "TargetIO.cs");
+
 					gameObject.AddComponent(typeof(SaveObject));
 					so = GetComponent<SaveObject>();
 					if (so != null) {

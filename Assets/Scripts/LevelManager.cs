@@ -193,6 +193,7 @@ public class LevelManager : MonoBehaviour {
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
 		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) AutoSplitterData.missionSplitID++; // 1 - Medical split - we are now on level 2
+		DynamicCulling.a.Cull_Init();
 		System.GC.Collect();
 	}
 

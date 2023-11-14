@@ -1529,12 +1529,6 @@ public class AIController : MonoBehaviour {
 								(dist + 0.1f),Const.a.layerMaskNPCSight)) {
 				Const.a.numberOfRaycastsThisFrame++;
 				if (tempHit.collider.gameObject == Const.a.player1Capsule) {
-					//if (IsCyberNPC()) {
-						//Debug.Log("Drawing ray from " + sightPoint.transform.position.ToString());
-						//Debug.DrawRay(sightPoint.transform.position,
-						//			  checkline.normalized * 5f,Color.green,1f,
-						//			  true);
-					//}
 					LOSpossible = true;  // Clear path from enemy to found player
 					SetEnemy(Const.a.player1Capsule,Const.a.player1TargettingPos);
 					PlaySightSound();
