@@ -164,21 +164,21 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
 
-         for (int x=0; x<64; x++) {
-             for (int y=0; y<64; y++) {
-                 if (worldCellOpen[x,y]) {
-                     debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                     debugCubes[x,y].transform.position = worldCellPositions[x,y];
-                     MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
-                     mr.material = Const.a.genericMaterials[9]; // Green
-                 } else {
-                     debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                     debugCubes[x,y].transform.position = worldCellPositions[x,y];
-                     MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
-                     mr.material = Const.a.genericMaterials[5]; // Red
-                 }
-             }
-         }
+         // for (int x=0; x<64; x++) {
+         //     for (int y=0; y<64; y++) {
+         //         if (worldCellOpen[x,y]) {
+         //             debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+         //             debugCubes[x,y].transform.position = worldCellPositions[x,y];
+         //             MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+         //             mr.material = Const.a.genericMaterials[9]; // Green
+         //         } else {
+         //             debugCubes[x,y] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+         //             debugCubes[x,y].transform.position = worldCellPositions[x,y];
+         //             MeshRenderer mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+         //             mr.material = Const.a.genericMaterials[5]; // Red
+         //         }
+         //     }
+         // }
     }
 
     void MarkAllNonVisible() {
@@ -586,21 +586,21 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
 
-        MeshRenderer mr = null;
-        for (int x=0; x<64; x++) {
-            for (int y=0; y<64; y++) {
-                if (worldCellVisible[x,y]) {
-                    mr = debugCubes[x,y].GetComponent<MeshRenderer>();
-                    mr.material = Const.a.genericMaterials[8]; // Blue forcefield
-                } else {
-                    mr = debugCubes[x,y].GetComponent<MeshRenderer>();
-                    mr.material = Const.a.genericMaterials[9]; // Green forcefield
-                }
-            }
-        }
-
-        mr = debugCubes[playerCellX,playerCellY].GetComponent<MeshRenderer>();
-        mr.material = Const.a.genericMaterials[12]; // Indigo forcefield
+        // MeshRenderer mr = null;
+        // for (int x=0; x<64; x++) {
+        //     for (int y=0; y<64; y++) {
+        //         if (worldCellVisible[x,y]) {
+        //             mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+        //             mr.material = Const.a.genericMaterials[8]; // Blue forcefield
+        //         } else {
+        //             mr = debugCubes[x,y].GetComponent<MeshRenderer>();
+        //             mr.material = Const.a.genericMaterials[9]; // Green forcefield
+        //         }
+        //     }
+        // }
+        //
+        // mr = debugCubes[playerCellX,playerCellY].GetComponent<MeshRenderer>();
+        // mr.material = Const.a.genericMaterials[12]; // Indigo forcefield
     }
 
     public void Cull() {
