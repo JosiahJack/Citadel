@@ -14,6 +14,7 @@ public class DynamicCulling : MonoBehaviour {
     public List<GameObject>[,] cellLists = new List<GameObject>[WORLDX,WORLDX];
     public GameObject[,] debugCubes = new GameObject[WORLDX,WORLDX];
     public List<MeshRenderer>[,] cellListsMR = new List<MeshRenderer>[WORLDX,WORLDX];
+    public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
     public bool[,] worldCellDirty = new bool[WORLDX,WORLDX];
     public int playerCellX = 0;
     public int playerCellY = 0;
@@ -47,6 +48,8 @@ public class DynamicCulling : MonoBehaviour {
         worldCellVisible = new bool [WORLDX,WORLDX];
         worldCellOpen = new bool [WORLDX,WORLDX];
         worldCellPositions = new Vector3 [WORLDX,WORLDX];
+        dynamicMeshes = new List<MeshRenderer>();
+        dynamicMeshes.Clear();
         for (int x=0;x<64;x++) {
             for (int y=0;y<64;y++) {
                 cellLists[x,y] = new List<GameObject>();
@@ -194,12 +197,62 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
+    public void FindDynamicMeshes() {
+        GameObject container = LevelManager.a.GetCurrentDynamicContainer();
+        Component[] compArray = childGO.GetComponentsInChildren(typeof(MeshRenderer),true);
+        foreach (MeshRenderer mr in compArray) dynamicMeshes.Add(mr);
+    }
+
+    public void UpdateDynamicMeshes() {
+        for (int i=0;i<dynamicMeshes.Count;i++) {
+            Vector3 pos = dynamicMeshes[i].transform.position;
+            for (int x=0;x<64;x++) {
+                for (int y=0;y<64;y++) {
+                    if (Vector3.Distance(pos,worldCellPositions[x,y]) < 1.28f) {
+                        playerCellX = x;
+                        playerCellY = y;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    public void UpdatedDynamicMesh(Vector3 pos) {
+        float deltaX = pos.x - worldCellPositions[playerCellX,playerCellY].x;
+        float deltaY = pos.z - worldCellPositions[playerCellX,playerCellY].z;
+        int lastX = playerCellX;
+        int lastY = playerCellY;
+        if (deltaX > 2.56f || deltaY > 2.56f
+            || deltaX < -2.56f || deltaY < -2.56f) {
+            FindPlayerCell();
+            Debug.Log("Innaccuracy, correcting player location via brute "
+                      + "force.");
+
+            if (playerCellX == lastX && playerCellY == lastY) return false;
+            return true;
+        }
+
+
+        if (deltaX > CELLXHALF) playerCellX++;
+        else if (deltaX < -CELLXHALF) playerCellX--;
+        if (playerCellX < 0) playerCellX = 0;
+        if (playerCellX > 63) playerCellX = 63;
+        if (deltaY > CELLXHALF) playerCellY++;
+        else if (deltaY < -CELLXHALF) playerCellY--;
+        if (playerCellY < 0) playerCellY = 0;
+        if (playerCellY > 63) playerCellY = 63;
+        if (playerCellX == lastX && playerCellY == lastY) return false;
+        return true;
+    }
+
     public void Cull_Init() {
         ClearCellList();
         FindOrthogonalChunks(LevelManager.a.GetCurrentGeometryContainer());
         FindWorldExtents(orthogonalChunks);
         FindOpenCellsAndPositions(orthogonalChunks);
         PutChunksInCells();
+        FindDynamicMeshes();
         FindPlayerCell();
         DetermineVisibleCells(); // Reevaluate visible cells from new pos.
         ToggleVisibility(); // Update all cells marked as dirty.
