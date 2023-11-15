@@ -151,7 +151,6 @@ public class LevelManager : MonoBehaviour {
 		// NOTE: Check this first since the button for the current level has a null destination.  This is fine and expected.
 		if (currentLevel == levnum) { Const.sprint(Const.a.stringTable[9]); return; } //Already there
 
-		int lastlev = currentLevel;
 		MFDManager.a.TurnOffElevatorPad();
 		GUIState.a.ClearOverButton();
 		if (targetDestination == null && targetPosition.x == 0 && targetPosition.y == 0 && targetPosition.z == 0) {
@@ -175,43 +174,40 @@ public class LevelManager : MonoBehaviour {
 		if (targetDestination != null) PlayerReferenceManager.a.playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
 		else if (targetPosition != null) PlayerReferenceManager.a.playerCapsule.transform.position = targetPosition; // Return to level from cyberspace.
 
+		currentLevel = levnum; // Set current level to be the new level
+		DisableAllNonOccupiedLevelsExcept(currentLevel);
+		levels[levnum].SetActive(true); // enable new level
+		PlayerReferenceManager.a.playerCurrentLevel = levnum;
+		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) AutoSplitterData.missionSplitID++; // 1 - Medical split - we are now on level 2
+		PostLoadLevelSetupSystems();
+	}
+
+	public void LoadLevelFromSave (int levnum) {
+		LoadLevelData(levnum); // Let this function check and load data if it isn't yet.
+		currentLevel = levnum; // Set current level to be the new level
+		DisableAllNonOccupiedLevelsExcept(currentLevel);
+		levels[currentLevel].SetActive(true); // Load new level
+		PostLoadLevelSetupSystems();
+	}
+
+	private void PostLoadLevelSetupSystems() {
 		Music.a.inCombat = false;
 		Music.a.SFXMain.Stop();
 		Music.a.SFXOverlay.Stop();
 		Music.a.levelEntry = true;
-		levels[levnum].SetActive(true); // enable new level
-		PlayerReferenceManager.a.playerCurrentLevel = levnum;
-		currentLevel = levnum; // Set current level to be the new level
-
 		LoadLevelData(currentLevel);
-		DisableAllNonOccupiedLevels(currentLevel);
-		Automap.a.SetAutomapExploredReference(levnum);
-		Automap.a.automapBaseImage.overrideSprite = Automap.a.automapsBaseImages[levnum];
+		Automap.a.SetAutomapExploredReference(currentLevel);
+		Automap.a.automapBaseImage.overrideSprite = Automap.a.automapsBaseImages[currentLevel];
 		Const.a.ClearActiveAutomapOverlays(); // After other levels turned off.
 		ObjectContainmentSystem.UpdateActiveFlooring(); // Update list to only include active.
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
-		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) AutoSplitterData.missionSplitID++; // 1 - Medical split - we are now on level 2
 		DynamicCulling.a.Cull_Init();
 		System.GC.Collect();
 	}
 
-	public void LoadLevelFromSave (int levnum) {
-		LoadLevelData(levnum); // Let this function check and load data if it isn't yet.
-		if (currentLevel == levnum) return;
-
-		int lastlev = currentLevel;
-		Music.a.inCombat = false;
-		Music.a.SFXMain.Stop();
-		Music.a.SFXOverlay.Stop();
-		levels[currentLevel].SetActive(false); // Unload current level	
-		levels[levnum].SetActive(true); // Load new level
-		currentLevel = levnum; // Set current level to be the new level
-		System.GC.Collect();
-	}
-
-	public void DisableAllNonOccupiedLevels(int occupiedLevel) {
+	public void DisableAllNonOccupiedLevelsExcept(int occupiedLevel) {
 		for (int i=0;i<levels.Length;i++) {
 			if (i == occupiedLevel) continue;
 

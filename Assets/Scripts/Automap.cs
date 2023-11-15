@@ -69,8 +69,8 @@ public class Automap : MonoBehaviour {
 	// private float automapFactory = 1.135f;
 	private float automapCorrectionX = -0.008f;
 	private float automapCorrectionY = 0.099f;
-	private float automapTileCorrectionX = -516;
-	private float automapTileCorrectionY = -516;
+	private float automapTileCorrectionX = -516f;
+	private float automapTileCorrectionY = -516f;
 	private float automapFoWRadius = 30f;
 	private float automapTileBCorrectionX = 0f;
 	private float automapTileBCorrectionY = 0f;
@@ -179,7 +179,7 @@ public class Automap : MonoBehaviour {
 			Utils.Activate(poolContainerAutomapMutantOverlays);
 		}
 
-		if (automapUpdateFinished < PauseScript.a.relativeTime) {
+		//if (automapUpdateFinished < PauseScript.a.relativeTime) {
 			Utils.EnableImage(automapBaseImage);
 			if (LevelManager.a.currentLevel >= 0) {
 				Utils.AssignImageOverride(automapBaseImage,
@@ -245,30 +245,27 @@ public class Automap : MonoBehaviour {
 				automapFullPlayerIcon.localRotation = icoQ;
 			}
 
+			float radiusSquared = automapFoWRadius * automapFoWRadius;
+			Vector2 plyrPos = tempVec2b;
 			// Update explored tiles
 			for (int i=0;i<4096;i++) {
-				if (automapExplored[i]) {
-					Utils.DisableImage(automapFoWTiles[i]);
-					Utils.Deactivate(automapFoWTiles[i].gameObject);
-				} else {
-					tempVec2.x = automapFoWTilesRectsPos[i].x * -1f
+				// if (automapExplored[i]) {
+				// 	Utils.DisableImage(automapFoWTiles[i]);
+				// 	Utils.Deactivate(automapFoWTiles[i].gameObject);
+				// } else {
+					tempVec2b.x = automapFoWTilesRectsPos[i].x * -1f
 								 - automapTileCorrectionX;
 
-					tempVec2.y = automapFoWTilesRectsPos[i].y
+					tempVec2b.y = automapFoWTilesRectsPos[i].y
 								 + automapTileCorrectionY;
 
-					if (Vector2.Distance(tempVec2,tempVec2b) < automapFoWRadius) {
+					if ((tempVec2b - plyrPos).sqrMagnitude < radiusSquared) {
 						automapExplored[i] = true;
 						SetAutomapTileExplored(LevelManager.a.currentLevel,i);
 						Utils.DisableImage(automapFoWTiles[i]);
 						Utils.Deactivate(automapFoWTiles[i].gameObject);
-					} else {
-						//Utils.EnableImage(automapFoWTiles[i]);
-						automapFoWTiles[i].enabled = true;
-						//Utils.Activate(automapFoWTiles[i].gameObject);
-						automapFoWTiles[i].gameObject.SetActive(true);
 					}
-				}
+				//}
 			}
 
 			updateTime = 0.2f;
@@ -290,8 +287,8 @@ public class Automap : MonoBehaviour {
 				// Display cyborg and mutant overlays - Handled by AIController
 				// since it updates it anyways.
 			}
-			automapUpdateFinished = PauseScript.a.relativeTime + updateTime;
-		}
+			//automapUpdateFinished = PauseScript.a.relativeTime + updateTime;
+		//}
 
 		SetAutomapActiveState();
 	}
@@ -357,6 +354,16 @@ public class Automap : MonoBehaviour {
 			case 10:for (int i=0;i<4096;i++) { automapExplored[i] = automapExploredG1[i];} break;
 			case 11:for (int i=0;i<4096;i++) { automapExplored[i] = automapExploredG2[i];} break;
 			case 12:for (int i=0;i<4096;i++) { automapExplored[i] = automapExploredG4[i];} break;
+		}
+
+		for (int i=0;i<4096;i++) {
+			if (automapExplored[i]) {
+				Utils.DisableImage(automapFoWTiles[i]);
+				Utils.Deactivate(automapFoWTiles[i].gameObject);
+			} else {
+				automapFoWTiles[i].enabled = true;
+				automapFoWTiles[i].gameObject.SetActive(true);
+			}
 		}
 	}
 

@@ -203,8 +203,14 @@ public class DynamicCulling : MonoBehaviour {
     public void FindDynamicMeshes() {
         GameObject container = LevelManager.a.GetCurrentDynamicContainer();
         Component[] compArray = container.GetComponentsInChildren(typeof(MeshRenderer),true);
-        foreach (MeshRenderer mr in compArray) {
-            if (mr.transform.parent != container.transform) return;
+        Debug.Log("MeshRenderer compArray size: " + compArray.Length.ToString());
+        int count = container.transform.childCount;
+        // foreach (MeshRenderer mr in compArray) {
+            // if (mr.transform.parent != container.transform) return;
+        MeshRenderer mr = null;
+        for (int i=0;i<count;i++) {
+            mr = container.transform.GetChild(i).GetComponent<MeshRenderer>();
+            if (mr == null) continue;
 
             dynamicMeshes.Add(mr);
             dynamicMeshCoords.Add(Vector2Int.zero);
@@ -234,7 +240,7 @@ public class DynamicCulling : MonoBehaviour {
         Vector3 pos;
         float deltaX,deltaY;
 
-        for (int i=0;i<dynamicMeshes.Count;i++) {
+        for (int i=0;i < dynamicMeshes.Count; i++) {
             x = dynamicMeshCoords[i].x;
             y = dynamicMeshCoords[i].y;
             pos = dynamicMeshes[i].transform.position;
@@ -242,11 +248,11 @@ public class DynamicCulling : MonoBehaviour {
             deltaY = pos.z - worldCellPositions[x,y].z;
             lastX = x;
             lastY = y;
-            if (deltaX > 2.56f || deltaY > 2.56f
-                || deltaX < -2.56f || deltaY < -2.56f) {
-                PutDynamicMeshInCell(i);
-                return;
-            }
+            // if (deltaX > 2.56f || deltaY > 2.56f
+            //     || deltaX < -2.56f || deltaY < -2.56f) {
+            //     PutDynamicMeshInCell(i);
+            //     return;
+            // }
 
             if (deltaX > CELLXHALF) x++;
             else if (deltaX < -CELLXHALF) x--;
@@ -259,7 +265,6 @@ public class DynamicCulling : MonoBehaviour {
             if (y < 0) y = 0;
             if (y > 63) y = 63;
             dynamicMeshCoords[i] = new Vector2Int(x,y);
-            return;
         }
     }
 
@@ -647,7 +652,8 @@ public class DynamicCulling : MonoBehaviour {
 
                 worldCellDirty[x,y] = false;
                 List<MeshRenderer> cellContents = cellListsMR[x,y];
-                for (int i=0;i<cellContents.Count;i++) {
+                int count = cellContents.Count;
+                for (int i=0;i<count;i++) {
                     if (worldCellVisible[x,y]) {
                         cellContents[i].enabled = true;
                     } else {
@@ -683,7 +689,6 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void Cull() {
-        UpdateDynamicMeshes();
         if (!cullEnabled) return;
 
         // Now handle player position updating PVS
