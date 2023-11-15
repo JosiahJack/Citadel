@@ -202,8 +202,10 @@ public class DynamicCulling : MonoBehaviour {
 
     public void FindDynamicMeshes() {
         GameObject container = LevelManager.a.GetCurrentDynamicContainer();
-        Component[] compArray = childGO.GetComponentsInChildren(typeof(MeshRenderer),true);
+        Component[] compArray = container.GetComponentsInChildren(typeof(MeshRenderer),true);
         foreach (MeshRenderer mr in compArray) {
+            if (mr.transform.parent != container.transform) return;
+
             dynamicMeshes.Add(mr);
             dynamicMeshCoords.Add(Vector2Int.zero);
         }
@@ -235,11 +237,9 @@ public class DynamicCulling : MonoBehaviour {
         for (int i=0;i<dynamicMeshes.Count;i++) {
             x = dynamicMeshCoords[i].x;
             y = dynamicMeshCoords[i].y;
-            Vector3 pos = dynamicMeshes[i].transform.position;
-            deltaX = pos.x -
-            worldCellPositions[x,y].x;
-            deltaY = pos.z -
-            worldCellPositions[x,y].z;
+            pos = dynamicMeshes[i].transform.position;
+            deltaX = pos.x - worldCellPositions[x,y].x;
+            deltaY = pos.z - worldCellPositions[x,y].z;
             lastX = x;
             lastY = y;
             if (deltaX > 2.56f || deltaY > 2.56f
@@ -258,6 +258,7 @@ public class DynamicCulling : MonoBehaviour {
 
             if (y < 0) y = 0;
             if (y > 63) y = 63;
+            dynamicMeshCoords[i] = new Vector2Int(x,y);
             return;
         }
     }
@@ -673,15 +674,28 @@ public class DynamicCulling : MonoBehaviour {
         // mr.material = Const.a.genericMaterials[12]; // Indigo forcefield
     }
 
+    public void ToggleDynamicMeshesVisibility() {
+        for (int i=0;i<dynamicMeshes.Count;i++) {
+            if (worldCellVisible[dynamicMeshCoords[i].x,dynamicMeshCoords[i].y]) {
+                dynamicMeshes[i].enabled = true;
+            } else dynamicMeshes[i].enabled = false;
+        }
+    }
+
     public void Cull() {
         UpdateDynamicMeshes();
-
-        // Now handle player position updating PVS
-        if (!UpdatedPlayerCell()) return;
         if (!cullEnabled) return;
 
-        DetermineVisibleCells(); // Reevaluate visible cells from new pos.
-        ToggleVisibility(); // Update all cells marked as dirty.
+        // Now handle player position updating PVS
+        if (UpdatedPlayerCell()) {
+            Automap.a.UpdateAutomap(PlayerMovement.a.transform.localPosition); // Update the map.
+            DetermineVisibleCells(); // Reevaluate visible cells from new pos.
+            ToggleVisibility(); // Update all cells marked as dirty.
+        }
+
+        // Update dynamic meshes after PVS has been updated, if player moved.
+        UpdateDynamicMeshes(); // Always check all of them because any can move.
+        ToggleDynamicMeshesVisibility(); // Now turn them on or off.
     }
 }
 
