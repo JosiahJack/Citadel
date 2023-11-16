@@ -36,6 +36,7 @@ public class AIController : MonoBehaviour {
 								// maintenance and recharge bays.
 	public bool wandering; // save
 	public bool actAsTurret = false; // save
+	public bool withinPVS = false; // True when the enemy is in visible cell.
 
 	// Internal, keeping exposed in inspector for troubleshooting.
 	public GameObject enemy; // save (referenced by int index enemIDRead)
@@ -402,6 +403,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	void Think() {
+		if (!DynamicCulling.a.cullEnabled) withinPVS = true;
 		if (dyingSetup && deathBurstFinished < PauseScript.a.relativeTime
 			&& !deathBurstDone) {
 			// Activate any death effects
@@ -440,7 +442,7 @@ public class AIController : MonoBehaviour {
 		if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly
 			&& tranquilizeFinished < PauseScript.a.relativeTime) {
 			FlierMoveToHoverHeight();
-		}	
+		}
 	}
 
 	void FlierMoveToHoverHeight() {
@@ -1436,9 +1438,14 @@ public class AIController : MonoBehaviour {
 
 	bool CheckIfEnemyInSight() {
 	    int diff = Const.a.difficultyCombat;
-		if (IsCyberNPC()) diff = Const.a.difficultyCyber;
+		if (IsCyberNPC()) {
+			diff = Const.a.difficultyCyber;
+		} else {
+			if (!withinPVS) return false;
+		}
+
         if (diff == 0 && index != 28) return false;
-        
+
 		if (PlayerMovement.a.Notarget) {
 			enemy = null; // Force forget when using Notarget cheat.
 			LOSpossible = false;
@@ -1486,7 +1493,12 @@ public class AIController : MonoBehaviour {
 
 	bool CheckIfPlayerInSight() {
 	    int diff = Const.a.difficultyCombat;
-		if (IsCyberNPC()) diff = Const.a.difficultyCyber;
+		if (IsCyberNPC()) {
+			diff = Const.a.difficultyCyber;
+		} else {
+			if (!withinPVS) return false;
+		}
+
         if (diff == 0 && index != 28) return false;
 		if (enemy != null) return CheckIfEnemyInSight();
 

@@ -253,6 +253,7 @@ public class PlayerMovement : MonoBehaviour {
 		Prone();
 		EndCrouchProneTransition();
 		FatigueApply(); // Here fatigue me out, except in cyberspace
+		Automap.a.UpdateAutomap(transform.localPosition); // Update the map.
 	}
 
 	void FixedUpdate() {
