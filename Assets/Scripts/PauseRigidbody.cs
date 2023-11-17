@@ -8,7 +8,7 @@ public class PauseRigidbody : MonoBehaviour {
 	private bool previousKinematic;
 	private CollisionDetectionMode previouscolDetMode;
 
-	void Awake () {
+	void Awake() {
 		Initialize();
 	}
 
@@ -26,11 +26,12 @@ public class PauseRigidbody : MonoBehaviour {
 		previouscolDetMode = rbody.collisionDetectionMode;
 	}
 
-	void OnEnable () {
+	void OnEnable() {
 		if (rbody == null) Initialize();
+		if (PauseScript.a.MenuActive()) Pause();
 	}
 		
-	public void Pause () {
+	public void Pause() {
 		if (rbody != null) {
 			SetPreviousValues();
 			rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
@@ -39,7 +40,7 @@ public class PauseRigidbody : MonoBehaviour {
 		}
 	}
 
-	public void UnPause () {
+	public void UnPause() {
 		if (rbody != null) {
 			rbody.isKinematic = previousKinematic;
 			rbody.useGravity = previousUseGravity;

@@ -26,8 +26,9 @@ public class DynamicCulling : MonoBehaviour {
     public List<GameObject> orthogonalChunks;
 
     public List<Transform> npcTransforms;
-    public List<AIController> npcAICs;
+    public List<AIController> npcAICs = new List<AIController>();
     public List<Vector2Int> npcCoords = new List<Vector2Int>();
+    public SkinnedMeshRenderer[] npcSMRs;
 
     public static DynamicCulling a;
 
@@ -225,6 +226,7 @@ public class DynamicCulling : MonoBehaviour {
         Component[] compArray = container.GetComponentsInChildren(typeof(AIController),true);
         int count = container.transform.childCount;
         AIController aic = null;
+        npcSMRs = new SkinnedMeshRenderer[count];
         for (int i=0;i<count;i++) {
             aic = container.transform.GetChild(i).GetComponent<AIController>();
             if (aic == null) continue;
@@ -232,6 +234,8 @@ public class DynamicCulling : MonoBehaviour {
             npcAICs.Add(aic);
             npcTransforms.Add(container.transform.GetChild(i));
             npcCoords.Add(Vector2Int.zero);
+            SkinnedMeshRenderer smr = GetComponentInChildren<SkinnedMeshRenderer>(true);
+            if (smr != null) npcSMRs[i] = smr;
         }
     }
 
@@ -668,7 +672,6 @@ public class DynamicCulling : MonoBehaviour {
         // [8][ ][ ][ ][ ][ ][ ][5][ ][ ][ ][ ][ ][ ][9][ ]
     }
 
-    // x1,y1 = playerCellX,playerCellY
     private void CastRay(int x2, int y2) {
         int deltaX = x2 - playerCellX;
         int deltaY = y2 - playerCellY;
@@ -680,7 +683,7 @@ public class DynamicCulling : MonoBehaviour {
         float x = (float)playerCellX;
         float y = (float)playerCellY;
         bool visibleLast = true; // Assume starting point is player's cell.
-        for (float step = 0; step <= majorAxisSteps; step+=majorAxisSteps) {
+        for (float step = 0; step <= majorAxisSteps; step+=1f) {
             int xint = (int)x;
             int yint = (int)y;
             if (visibleLast) visibleLast = MarkVisible(xint,yint);
@@ -768,11 +771,16 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
+     // Avoid NPC doing raycasts when not in player's PVS.  Symmetrical vision.
     public void ToggleNPCPVS() {
         for (int i=0;i<npcAICs.Count;i++) {
             if (worldCellVisible[npcCoords[i].x,npcCoords[i].y]) {
                 npcAICs[i].withinPVS = true;
-            } else npcAICs[i].withinPVS = false;
+                if (npcSMRs[i] != null) npcSMRs[i].enabled = true;
+            } else {
+                npcAICs[i].withinPVS = false;
+                if (npcSMRs[i] != null) npcSMRs[i].enabled = false;
+            }
         }
     }
 

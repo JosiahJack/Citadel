@@ -179,7 +179,7 @@ public class Automap : MonoBehaviour {
 			Utils.Activate(poolContainerAutomapMutantOverlays);
 		}
 
-		//if (automapUpdateFinished < PauseScript.a.relativeTime) {
+		if (automapUpdateFinished < PauseScript.a.relativeTime) {
 			Utils.EnableImage(automapBaseImage);
 			if (LevelManager.a.currentLevel >= 0) {
 				Utils.AssignImageOverride(automapBaseImage,
@@ -287,8 +287,8 @@ public class Automap : MonoBehaviour {
 				// Display cyborg and mutant overlays - Handled by AIController
 				// since it updates it anyways.
 			}
-			//automapUpdateFinished = PauseScript.a.relativeTime + updateTime;
-		//}
+			automapUpdateFinished = PauseScript.a.relativeTime + updateTime;
+		}
 
 		SetAutomapActiveState();
 	}
