@@ -290,7 +290,9 @@ public class DynamicCulling : MonoBehaviour {
                 dynamicMeshes.RemoveAt(i);
                 goto label_iterate_mesh_renderers; // Start over
             }
+        }
 
+        for (int i=0;i < count; i++) {
             x = dynamicMeshCoords[i].x;
             y = dynamicMeshCoords[i].y;
             pos = dynamicMeshes[i].transform.position;
@@ -298,12 +300,6 @@ public class DynamicCulling : MonoBehaviour {
             deltaY = pos.z - worldCellPositions[x,y].z;
             lastX = x;
             lastY = y;
-            // if (deltaX > 2.56f || deltaY > 2.56f
-            //     || deltaX < -2.56f || deltaY < -2.56f) {
-            //     PutDynamicMeshInCell(i);
-            //     return;
-            // }
-
             if (deltaX > CELLXHALF) x++;
             else if (deltaX < -CELLXHALF) x--;
 

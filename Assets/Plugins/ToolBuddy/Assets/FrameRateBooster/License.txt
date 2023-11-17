@@ -1,0 +1,5 @@
+Asset is governed by the Asset Store EULA; however, the following third party components are governed by the licenses indicated below:
+
+==== Cecil ====
+MIT License
+Full license is available at the following file: ToolBuddy/Dependencies/Mono.Cecil.0.10.3/LICENSE.txt

@@ -259,7 +259,9 @@ public class Automap : MonoBehaviour {
 					tempVec2b.y = automapFoWTilesRectsPos[i].y
 								 + automapTileCorrectionY;
 
-					if ((tempVec2b - plyrPos).sqrMagnitude < radiusSquared) {
+					tempVec2b.x -= plyrPos.x;
+					tempVec2b.y -= plyrPos.y;
+					if (tempVec2b.sqrMagnitude < radiusSquared) {
 						automapExplored[i] = true;
 						SetAutomapTileExplored(LevelManager.a.currentLevel,i);
 						Utils.DisableImage(automapFoWTiles[i]);
