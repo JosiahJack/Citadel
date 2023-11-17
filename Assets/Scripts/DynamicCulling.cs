@@ -792,6 +792,7 @@ public class DynamicCulling : MonoBehaviour {
             DetermineVisibleCells(); // Reevaluate visible cells from new pos.
             ToggleVisibility(); // Update all cells marked as dirty.
             UpdateNPCPVS();
+            ToggleNPCPVS();
         }
 
         // Update dynamic meshes after PVS has been updated, if player moved.
