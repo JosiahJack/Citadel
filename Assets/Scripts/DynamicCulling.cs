@@ -381,10 +381,16 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     void DetermineVisibleCells() {
-        MarkAllNonVisible();
-        worldCellVisible[playerCellX,playerCellY] = true;
-        worldCellDirty[playerCellX,playerCellY] = true;
+        //MarkAllNonVisible();
+        bool[,] vis = new bool[64,64];
         int x,y;
+        for (x=0;x<64;x++) {
+            for (y=0;y<64;y++) vis[x,y] = false;
+        }
+
+        worldCellVisible[playerCellX,playerCellY] = true;
+        vis[playerCellX,playerCellY] = true;
+        worldCellDirty[playerCellX,playerCellY] = true;
         bool currentVisible = false; // Mark if twere open if visible.
 
         // Skip 0 and 63 corners since 45deg rays below get them.
@@ -404,22 +410,22 @@ public class DynamicCulling : MonoBehaviour {
         if (playerCellX < 63) {
             for (x=playerCellX + 1;x<64;x++) { // Right
                 currentVisible = false;
-                if (worldCellVisible[x - 1,playerCellY]) {
-                    MarkVisible(x,playerCellY);
+                if (vis[x - 1,playerCellY]) {
+                    if (worldCellOpen[x,playerCellY]) vis[x,playerCellY] = true;
                     currentVisible = true;
                 }
 
                 if (currentVisible) {
-                    MarkVisible(x,playerCellY + 1);
-                    MarkVisible(x,playerCellY - 1);
+                    if (worldCellOpen[x,playerCellY + 1]) vis[x,playerCellY + 1] = true;
+                    if (worldCellOpen[x,playerCellY - 1]) vis[x,playerCellY - 1] = true;
                 } else break;
             }
 
             if (playerCellY > 0) {
                 for (x=playerCellX + 1;x<64;x++) { // Right, South neighbor
                     currentVisible = false;
-                    if (worldCellVisible[x - 1,playerCellY - 1]) {
-                        MarkVisible(x,playerCellY - 1);
+                    if (vis[x - 1,playerCellY - 1]) {
+                        if (worldCellOpen[x,playerCellY - 1]) vis[x,playerCellY - 1] = true;
                         currentVisible = true;
                     }
                 }
@@ -428,8 +434,8 @@ public class DynamicCulling : MonoBehaviour {
             if (playerCellY < 63) {
                 for (x=playerCellX + 1;x<64;x++) { // Right, North neighbor
                     currentVisible = false;
-                    if (worldCellVisible[x - 1,playerCellY + 1]) {
-                        MarkVisible(x,playerCellY + 1);
+                    if (vis[x - 1,playerCellY + 1]) {
+                        if (worldCellOpen[x,playerCellY + 1]) vis[x,playerCellY + 1] = true;
                         currentVisible = true;
                     }
                 }
@@ -443,13 +449,13 @@ public class DynamicCulling : MonoBehaviour {
             for (x=playerCellX - 1;x>=0;x--) { // Left
                 currentVisible = false;
                 if (worldCellVisible[x + 1,playerCellY]) {
-                    MarkVisible(x,playerCellY);
+                    if (worldCellOpen[x,playerCellY]) vis[x,playerCellY] = true;
                     currentVisible = true;
                 }
 
                 if (currentVisible) {
-                    MarkVisible(x,playerCellY + 1);
-                    MarkVisible(x,playerCellY - 1);
+                    if (worldCellOpen[x,playerCellY + 1]) vis[x,playerCellY + 1] = true;
+                    if (worldCellOpen[x,playerCellY - 1]) vis[x,playerCellY - 1] = true;
                 } else break;
             }
 
@@ -457,7 +463,7 @@ public class DynamicCulling : MonoBehaviour {
                 for (x=playerCellX - 1;x>=0;x--) { // Left, South neighbor
                     currentVisible = false;
                     if (worldCellVisible[x + 1,playerCellY - 1]) {
-                        MarkVisible(x,playerCellY - 1);
+                        if (worldCellOpen[x,playerCellY - 1]) vis[x,playerCellY - 1] = true;
                         currentVisible = true;
                     }
                 }
@@ -467,7 +473,7 @@ public class DynamicCulling : MonoBehaviour {
                 for (x=playerCellX - 1;x>=0;x--) { // Left, North neighbor
                     currentVisible = false;
                     if (worldCellVisible[x + 1,playerCellY + 1]) {
-                        MarkVisible(x,playerCellY + 1);
+                        if (worldCellOpen[x,playerCellY + 1]) vis[x,playerCellY + 1] = true;
                         currentVisible = true;
                     }
                 }
@@ -480,13 +486,13 @@ public class DynamicCulling : MonoBehaviour {
             for (y=playerCellY + 1;y<64;y++) { // Up
                 currentVisible = false;
                 if (worldCellVisible[playerCellX,y - 1]) {
-                    MarkVisible(playerCellX,y);
+                    if (worldCellOpen[playerCellX,y]) vis[playerCellX,y] = true;
                     currentVisible = true;
                 }
 
                 if (currentVisible) {
-                    MarkVisible(playerCellX + 1,y);
-                    MarkVisible(playerCellX - 1,y);
+                    if (worldCellOpen[playerCellX + 1,y]) vis[playerCellX + 1,y] = true;
+                    if (worldCellOpen[playerCellX - 1,y]) vis[playerCellX - 1,y] = true;
                 } else break;
             }
 
@@ -494,7 +500,7 @@ public class DynamicCulling : MonoBehaviour {
                 for (y=playerCellY + 1;y<63;y++) { // Up, right neighbor
                     currentVisible = false;
                     if (worldCellVisible[playerCellX + 1,y - 1]) {
-                        MarkVisible(playerCellX + 1,y);
+                        if (worldCellOpen[playerCellX + 1,y]) vis[playerCellX + 1,y] = true;
                         currentVisible = true;
                     }
                 }
@@ -504,7 +510,7 @@ public class DynamicCulling : MonoBehaviour {
                 for (y=playerCellY + 1;y<63;y++) { // Up, left neighbor
                     currentVisible = false;
                     if (worldCellVisible[playerCellX - 1,y - 1]) {
-                        MarkVisible(playerCellX - 1,y);
+                        if (worldCellOpen[playerCellX - 1,y]) vis[playerCellX - 1,y] = true;
                         currentVisible = true;
                     }
                 }
@@ -517,13 +523,13 @@ public class DynamicCulling : MonoBehaviour {
             for (y=playerCellY - 1;y>=0;y--) { // Down
                 currentVisible = false;
                 if (worldCellVisible[playerCellX,y + 1]) {
-                    MarkVisible(playerCellX,y);
+                    if (worldCellOpen[playerCellX,y]) vis[playerCellX,y] = true;
                     currentVisible = true;
                 }
 
                 if (currentVisible) {
-                    MarkVisible(playerCellX + 1,y);
-                    MarkVisible(playerCellX - 1,y);
+                    if (worldCellOpen[playerCellX + 1,y]) vis[playerCellX + 1,y] = true;
+                    if (worldCellOpen[playerCellX - 1,y]) vis[playerCellX - 1,y] = true;
                 } else break;
             }
 
@@ -531,7 +537,7 @@ public class DynamicCulling : MonoBehaviour {
                 for (y=playerCellY - 1;y>=0;y--) { // Down, left neighbor
                     currentVisible = false;
                     if (worldCellVisible[playerCellX - 1,y + 1]) {
-                        MarkVisible(playerCellX - 1,y);
+                        if (worldCellOpen[playerCellX - 1,y]) vis[playerCellX - 1,y] = true;
                         currentVisible = true;
                     }
                 }
@@ -541,7 +547,7 @@ public class DynamicCulling : MonoBehaviour {
                 for (y=playerCellY - 1;y>=0;y--) { // Down, right neighbor
                     currentVisible = false;
                     if (worldCellVisible[playerCellX + 1,y + 1]) {
-                        MarkVisible(playerCellX + 1,y);
+                        if (worldCellOpen[playerCellX + 1,y]) vis[playerCellX + 1,y] = true;
                         currentVisible = true;
                     }
                 }
@@ -562,7 +568,7 @@ public class DynamicCulling : MonoBehaviour {
             if (   worldCellVisible[x - 1,y]        /* {current} */
                 || diagonal                 || worldCellVisible[x,y - 1]) {
 
-                MarkVisible(x,y);
+                if (worldCellOpen[x,y]) vis[x,y] = true;
                 currentVisible = true;
             }
 
@@ -570,8 +576,8 @@ public class DynamicCulling : MonoBehaviour {
             y++;
             if (x > 63 || y > 63) break;
             if (currentVisible) {
-                MarkVisible(x - 1,y);
-                MarkVisible(x,y - 1);
+                if (worldCellOpen[x - 1,y]) vis[x - 1,y] = true;
+                if (worldCellOpen[x,y - 1]) vis[x,y - 1] = true;
             } else break;
         }
 
@@ -587,7 +593,7 @@ public class DynamicCulling : MonoBehaviour {
             if (/* {current} */                 worldCellVisible[x + 1,y]
                 || worldCellVisible[x,y - 1] || diagonal                  ) {
 
-                MarkVisible(x,y);
+                if (worldCellOpen[x,y]) vis[x,y] = true;
                 currentVisible = true;
             }
 
@@ -595,8 +601,8 @@ public class DynamicCulling : MonoBehaviour {
             y++;
             if (x < 0 || y > 63) break;
             if (currentVisible) {
-                MarkVisible(x + 1,y);
-                MarkVisible(x,y - 1);
+                if (worldCellOpen[x + 1,y]) vis[x + 1,y] = true;
+                if (worldCellOpen[x,y - 1]) vis[x,y - 1] = true;
             } else break;
         }
 
@@ -612,7 +618,7 @@ public class DynamicCulling : MonoBehaviour {
                 if (worldCellVisible[x,y + 1] || diagonal
                 /* {current} */               || worldCellVisible[x + 1,y]) {
 
-                MarkVisible(x,y);
+                if (worldCellOpen[x,y]) vis[x,y] = true;
                 currentVisible = true;
             }
 
@@ -620,8 +626,8 @@ public class DynamicCulling : MonoBehaviour {
             y--;
             if (x < 0 || y < 0) break;
             if (currentVisible) {
-                MarkVisible(x,y + 1);
-                MarkVisible(x + 1,y);
+                if (worldCellOpen[x,y + 1]) vis[x,y + 1] = true;
+                if (worldCellOpen[x + 1,y]) vis[x + 1,y] = true;
             } else break;
         }
 
@@ -637,7 +643,7 @@ public class DynamicCulling : MonoBehaviour {
             if (   diagonal                  || worldCellVisible[x,y + 1]
                 || worldCellVisible[x - 1,y]      /* {current} */        ) {
 
-                MarkVisible(x,y);
+                if (worldCellOpen[x,y]) vis[x,y] = true;
                 currentVisible = true;
             }
 
@@ -645,9 +651,19 @@ public class DynamicCulling : MonoBehaviour {
             y--;
             if (x > 63 || y < 0) break;
             if (currentVisible) {
-                MarkVisible(x - 1,y);
-                MarkVisible(x,y + 1);
+                if (worldCellOpen[x - 1,y]) vis[x - 1,y] = true;
+                if (worldCellOpen[x,y + 1]) vis[x,y + 1] = true;
             } else break;
+        }
+
+        for (x=0;x<64;x++) {
+            for (y=0;y<64;y++) {
+                // if (vis[x,y] != worldCellVisible[x,y]) {
+                //     worldCellDirty[x,y] = true;
+                // }
+
+                worldCellVisible[x,y] = vis[x,y];
+            }
         }
 
         // [ ][ ][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][ ][ ][6]
@@ -793,7 +809,19 @@ public class DynamicCulling : MonoBehaviour {
 
         // Now handle player position updating PVS
         if (UpdatedPlayerCell()) {
+            bool[,] last = new bool[64,64];
+            int x,y;
+            for (x=0;x<64;x++) {
+                for (y=0;y<64;y++) last[x,y] = worldCellVisible[x,y];
+            }
             DetermineVisibleCells(); // Reevaluate visible cells from new pos.
+            for (x=0;x<64;x++) {
+                for (y=0;y<64;y++) {
+                    if (last[x,y] != worldCellVisible[x,y]) {
+                        worldCellDirty[x,y] = true;
+                    }
+                }
+            }
             ToggleVisibility(); // Update all cells marked as dirty.
             UpdateNPCPVS();
             ToggleNPCPVS();
