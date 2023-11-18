@@ -16,7 +16,7 @@ public class DynamicCulling : MonoBehaviour {
     public List<MeshRenderer>[,] cellListsMR = new List<MeshRenderer>[WORLDX,WORLDX];
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
     public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();
-    public bool[,] worldCellDirty = new bool[WORLDX,WORLDX];
+    public bool[,] worldCellLastVisible = new bool[WORLDX,WORLDX];
     public int playerCellX = 0;
     public int playerCellY = 0;
     public float deltaX = 0.0f;
@@ -192,25 +192,10 @@ public class DynamicCulling : MonoBehaviour {
          // }
     }
 
-    void MarkAllNonVisible() {
-        bool last = false;
-        for (int x=0;x<64;x++) {
-            for (int y=0;y<64;y++) {
-                last = worldCellVisible[x,y];
-                worldCellVisible[x,y] = false;
-                if (last != worldCellVisible[x,y]) {
-                    worldCellDirty[playerCellX,playerCellY] = true;
-                }
-            }
-        }
-    }
-
     public void FindDynamicMeshes() {
         GameObject container = LevelManager.a.GetCurrentDynamicContainer();
         Component[] compArray = container.GetComponentsInChildren(typeof(MeshRenderer),true);
         int count = container.transform.childCount;
-        // foreach (MeshRenderer mr in compArray) {
-            // if (mr.transform.parent != container.transform) return;
         MeshRenderer mr = null;
         for (int i=0;i<count;i++) {
             mr = container.transform.GetChild(i).GetComponent<MeshRenderer>();
@@ -326,6 +311,10 @@ public class DynamicCulling : MonoBehaviour {
         PutNPCsInCells();
         FindPlayerCell();
         DetermineVisibleCells(); // Reevaluate visible cells from new pos.
+        int x,y;
+        for (x=0;x<64;x++) {
+            for (y=0;y<64;y++) worldCellLastVisible[x,y] = !worldCellVisible[x,y];
+        }
         ToggleVisibility(); // Update all cells marked as dirty.
     }
 
@@ -381,7 +370,6 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     void DetermineVisibleCells() {
-        //MarkAllNonVisible();
         bool[,] vis = new bool[64,64];
         int x,y;
         for (x=0;x<64;x++) {
@@ -390,7 +378,6 @@ public class DynamicCulling : MonoBehaviour {
 
         worldCellVisible[playerCellX,playerCellY] = true;
         vis[playerCellX,playerCellY] = true;
-        worldCellDirty[playerCellX,playerCellY] = true;
         bool currentVisible = false; // Mark if twere open if visible.
 
         // Skip 0 and 63 corners since 45deg rays below get them.
@@ -658,10 +645,6 @@ public class DynamicCulling : MonoBehaviour {
 
         for (x=0;x<64;x++) {
             for (y=0;y<64;y++) {
-                // if (vis[x,y] != worldCellVisible[x,y]) {
-                //     worldCellDirty[x,y] = true;
-                // }
-
                 worldCellVisible[x,y] = vis[x,y];
             }
         }
@@ -709,11 +692,11 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     void ToggleVisibility() {
+        worldCellLastVisible[playerCellX,playerCellY] = worldCellVisible[playerCellX,playerCellY] = true;
         for (int x=0;x<64;x++) {
             for (int y=0;y<64;y++) {
-                //if (!worldCellDirty[x,y]) continue;
+                if (worldCellLastVisible[x,y] == worldCellVisible[x,y]) continue;
 
-                worldCellDirty[x,y] = false;
                 List<MeshRenderer> cellContents = cellListsMR[x,y];
                 int count = cellContents.Count;
                 for (int i=0;i<count;i++) {
@@ -809,19 +792,12 @@ public class DynamicCulling : MonoBehaviour {
 
         // Now handle player position updating PVS
         if (UpdatedPlayerCell()) {
-            bool[,] last = new bool[64,64];
             int x,y;
             for (x=0;x<64;x++) {
-                for (y=0;y<64;y++) last[x,y] = worldCellVisible[x,y];
+                for (y=0;y<64;y++) worldCellLastVisible[x,y] = worldCellVisible[x,y];
             }
+
             DetermineVisibleCells(); // Reevaluate visible cells from new pos.
-            for (x=0;x<64;x++) {
-                for (y=0;y<64;y++) {
-                    if (last[x,y] != worldCellVisible[x,y]) {
-                        worldCellDirty[x,y] = true;
-                    }
-                }
-            }
             ToggleVisibility(); // Update all cells marked as dirty.
             UpdateNPCPVS();
             ToggleNPCPVS();

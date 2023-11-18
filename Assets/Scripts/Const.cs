@@ -232,8 +232,8 @@ public class Const : MonoBehaviour {
 
     public Font mainFont1; // Used to force Point filter mode.
 	public Font mainFont2; // Used to force Point filter mode.
-	/*[DTValidator.Optional] */public GameObject[] TargetRegister; // Doesn't need to be full, available space for maps and mods made by the community to use tons of objects
-	public string[] TargetnameRegister;
+	/*[DTValidator.Optional] */public List<GameObject> TargetRegister; // Doesn't need to be full, available space for maps and mods made by the community to use tons of objects
+	public List<string> TargetnameRegister;
     public string[] stringTable;
 	public float[] reloadTime;
 
@@ -384,6 +384,8 @@ public class Const : MonoBehaviour {
 		a.LoadItemNamesData();
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
+		a.TargetRegister = new List<GameObject>();
+		a.TargetnameRegister = new List<string>();
 		a.versionString = "v0.99.6"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
@@ -1808,6 +1810,48 @@ public class Const : MonoBehaviour {
 		}
 	}
 
+	private void LockCPUScreenCode() {
+		switch (LevelManager.a.currentLevel) {
+			case 1:
+				if (Const.a.questData.lev1SecCodeLocked) return;
+
+				Const.a.questData.lev1SecCodeLocked = true;
+				Const.a.questData.lev1SecCode = UnityEngine.Random.Range(0,10);
+			break;
+			case 2:
+				if (Const.a.questData.lev2SecCodeLocked) return;
+
+				Const.a.questData.lev2SecCodeLocked = true;
+				Const.a.questData.lev2SecCode = UnityEngine.Random.Range(0,10);
+				break;
+			case 3:
+				if (Const.a.questData.lev3SecCodeLocked) return;
+
+				Const.a.questData.lev3SecCodeLocked = true;
+				Const.a.questData.lev3SecCode = UnityEngine.Random.Range(0,10);
+				break;
+			case 4:
+				if (Const.a.questData.lev4SecCodeLocked) return;
+
+				Const.a.questData.lev4SecCodeLocked = true;
+				Const.a.questData.lev4SecCode = UnityEngine.Random.Range(0,10);
+				break;
+			case 5:
+				if (Const.a.questData.lev5SecCodeLocked) return;
+
+				Const.a.questData.lev5SecCodeLocked = true;
+				Const.a.questData.lev5SecCode = UnityEngine.Random.Range(0,10);
+				break;
+			case 6:
+				if (Const.a.questData.lev6SecCodeLocked) return;
+
+				Const.a.questData.lev6SecCodeLocked = true;
+				Const.a.questData.lev6SecCode = UnityEngine.Random.Range(0,10);
+				break;
+		}
+	}
+
+	// Called by something's Use()
 	public void UseTargets(GameObject go, UseData ud, string targetname) {
 		if (go != null) {
 			TargetIO tio = go.GetComponent<TargetIO>();
@@ -1818,60 +1862,9 @@ public class Const : MonoBehaviour {
 						+ ".  Trying to call UseTargets without parameters!");
 			}
 		}
-		// Called by something's Use()
 
 		// First do things that don't actually need any other named object.
-		if (ud.lockCodeToScreenMaterialChanger) {
-			switch (LevelManager.a.currentLevel) {
-				case 1:
-					if (Const.a.questData.lev1SecCodeLocked) return;
-					
-					Const.a.questData.lev1SecCodeLocked = true;
-					Const.a.questData.lev1SecCode =
-						UnityEngine.Random.Range(0,10);
-					break;
-				case 2:
-					if (Const.a.questData.lev2SecCodeLocked) return;
-					
-					Const.a.questData.lev2SecCodeLocked = true;
-					Const.a.questData.lev2SecCode =
-						UnityEngine.Random.Range(0,10);
-
-					break;
-				case 3:
-					if (Const.a.questData.lev3SecCodeLocked) return;
-					
-					Const.a.questData.lev3SecCodeLocked = true;
-					Const.a.questData.lev3SecCode =
-						UnityEngine.Random.Range(0,10);
-
-					break;
-				case 4:
-					if (Const.a.questData.lev4SecCodeLocked) return;
-					
-					Const.a.questData.lev4SecCodeLocked = true;
-					Const.a.questData.lev4SecCode =
-						UnityEngine.Random.Range(0,10);
-
-					break;
-				case 5:
-					if (Const.a.questData.lev5SecCodeLocked) return;
-					
-					Const.a.questData.lev5SecCodeLocked = true;
-					Const.a.questData.lev5SecCode =
-						UnityEngine.Random.Range(0,10);
-
-					break;
-				case 6:
-				if (Const.a.questData.lev6SecCodeLocked) return;
-					
-					Const.a.questData.lev6SecCodeLocked = true;
-					Const.a.questData.lev6SecCode =
-						UnityEngine.Random.Range(0,10);
-
-					break;
-			}
-		}
+		if (ud.lockCodeToScreenMaterialChanger) LockCPUScreenCode();
 
 		// Next check if targetname is valid.  This is fine if not, some
 		// triggers we just want to play the trigger's SFX and do nothing else.
@@ -1882,8 +1875,8 @@ public class Const : MonoBehaviour {
 		// Find each gameobject with matching targetname in the register, then
 		// call Use for each.
 		bool succeeded = false;
-		for (int i=0;i<TargetRegister.Length;i++) {
-			if (TargetnameRegister.Length < 1) {
+		for (int i=0;i<TargetRegister.Count;i++) {
+			if (TargetnameRegister.Count < 1) {
 				UnityEngine.Debug.LogError("NO TARGETNAMES IN "
 										   + "TargetnameRegister!!!");
 				return;
@@ -1938,12 +1931,13 @@ public class Const : MonoBehaviour {
 
 	// Should ONLY come from a TargetIO
 	public void AddToTargetRegister (GameObject go, string tn) {
-	    int i = 0;
-	    for (i=0;i<TargetRegister.Length; i++) {
+		int i = 0;
+	    for (i=0;i<TargetRegister.Count; i++) {
 	        if (TargetRegister[i] == null) continue;
-	        if (TargetRegister[i] != go) continue;
+	        if (TargetRegister[i] != go) continue; // Key check for whole loop.
 	        
-	        // go is in registry already
+	        // GameObject go is in registry already
+
             if (TargetnameRegister[i] == tn) {
                 return; // Already in register, name and object.
             } else {
@@ -1952,14 +1946,9 @@ public class Const : MonoBehaviour {
             }
 	    }
 	    
-	    // GameObject isn't registry, add fresh.
-		for (i=0;i<TargetRegister.Length;i++) {
-			if (TargetRegister[i] != null) continue;
-			
-			TargetRegister[i] = go;
-			TargetnameRegister[i] = tn;
-			return; // Ok, gameobject added to the register.
-	    }
+	    // GameObject isn't in registry, add fresh.
+	    TargetRegister.Add(go);
+		TargetnameRegister.Add(tn);
 	}
 
 	public void ReverbOn() {

@@ -800,7 +800,6 @@ public class AIController : MonoBehaviour {
 		near = Const.a.rangeForNPC[index]  * Const.a.rangeForNPC[index];
 		mid  = Const.a.rangeForNPC2[index] * Const.a.rangeForNPC2[index];
 		far  = Const.a.rangeForNPC3[index] * Const.a.rangeForNPC3[index];
-		Debug.Log("Checkattack");
         if (CanAttack1(near)) {
 			StartAttack1();
 			return;
