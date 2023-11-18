@@ -362,16 +362,57 @@ public class DynamicCulling : MonoBehaviour {
         return true;
     }
 
+    bool XYPairInBounds(int x, int y) {
+        return (x < 64 && y < 64 && x >= 0 && y >= 0);
+    }
+
+    bool IsOpen(int x, int y) {
+        if (!XYPairInBounds(x,y)) return false;
+        return worldCellOpen[x,y];
+    }
+
     void DetermineVisibleCells() {
         bool[,] vis = new bool[64,64];
-        int x,y;
+        int x,y,xofs,yofs;
         for (x=0;x<64;x++) {
             for (y=0;y<64;y++) vis[x,y] = false;
         }
 
         worldCellVisible[playerCellX,playerCellY] = true;
         vis[playerCellX,playerCellY] = true;
-        bool currentVisible = false; // Mark if twere open if visible.
+        bool currentVisible = true; // Mark if twere open if visible.
+
+        x = playerCellX + 1;
+        y = playerCellY;
+        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+
+        x = playerCellX + 1;
+        y = playerCellY + 1;
+        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+
+        x = playerCellX;
+        y = playerCellY + 1;
+        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+
+        x = playerCellX - 1;
+        y = playerCellY + 1;
+        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+
+        x = playerCellX - 1;
+        y = playerCellY;
+        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+
+        x = playerCellX - 1;
+        y = playerCellY - 1;
+        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+
+        x = playerCellX;
+        y = playerCellY - 1;
+        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+
+        x = playerCellX + 1;
+        y = playerCellY - 1;
+        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
 
         // Skip 0 and 63 corners since 45deg rays below get them.
         for (x=1;x<63;x++) CastRay(x,0);
@@ -392,21 +433,25 @@ public class DynamicCulling : MonoBehaviour {
                 currentVisible = false;
                 if (vis[x - 1,playerCellY]) {
                     if (worldCellOpen[x,playerCellY]) vis[x,playerCellY] = true;
-                    currentVisible = true;
+                    currentVisible = true; // Would be if twas open.
                 }
 
-                if (currentVisible) {
-                    if (worldCellOpen[x,playerCellY + 1]) vis[x,playerCellY + 1] = true;
-                    if (worldCellOpen[x,playerCellY - 1]) vis[x,playerCellY - 1] = true;
-                } else break;
+                if (!currentVisible) break; // Hit wall!
+
+                vis[x,playerCellY + 1] = IsOpen(x,playerCellY + 1);
+                vis[x,playerCellY - 1] = IsOpen(x,playerCellY - 1);
             }
 
             if (playerCellY > 0) {
                 for (x=playerCellX + 1;x<64;x++) { // Right, South neighbor
                     currentVisible = false;
-                    if (vis[x - 1,playerCellY - 1]) {
-                        if (worldCellOpen[x,playerCellY - 1]) vis[x,playerCellY - 1] = true;
-                        currentVisible = true;
+                    xofs = x - 1;
+                    yofs = playerCellY - 1;
+                    if (XYPairInBounds(xofs,yofs)) {
+                        if (vis[xofs,yofs]) {
+                            vis[x,yofs] = IsOpen(x,yofs);
+                            currentVisible = true; // Would be if twas open.
+                        }
                     }
                 }
             }
@@ -414,9 +459,13 @@ public class DynamicCulling : MonoBehaviour {
             if (playerCellY < 63) {
                 for (x=playerCellX + 1;x<64;x++) { // Right, North neighbor
                     currentVisible = false;
-                    if (vis[x - 1,playerCellY + 1]) {
-                        if (worldCellOpen[x,playerCellY + 1]) vis[x,playerCellY + 1] = true;
-                        currentVisible = true;
+                    xofs = x - 1;
+                    yofs = playerCellY + 1;
+                    if (XYPairInBounds(xofs,yofs)) {
+                        if (vis[xofs,yofs]) {
+                            vis[x,yofs] = IsOpen(x,yofs);
+                            currentVisible = true; // Would be if twas open.
+                        }
                     }
                 }
             }
@@ -428,23 +477,27 @@ public class DynamicCulling : MonoBehaviour {
         if (playerCellX > 0) {
             for (x=playerCellX - 1;x>=0;x--) { // Left
                 currentVisible = false;
-                if (worldCellVisible[x + 1,playerCellY]) {
+                if (vis[x + 1,playerCellY]) {
                     if (worldCellOpen[x,playerCellY]) vis[x,playerCellY] = true;
-                    currentVisible = true;
+                    currentVisible = true; // Would be if twas open.
                 }
 
-                if (currentVisible) {
-                    if (worldCellOpen[x,playerCellY + 1]) vis[x,playerCellY + 1] = true;
-                    if (worldCellOpen[x,playerCellY - 1]) vis[x,playerCellY - 1] = true;
-                } else break;
+                if (!currentVisible) break; // Hit wall!
+
+                vis[x,playerCellY + 1] = IsOpen(x,playerCellY + 1);
+                vis[x,playerCellY - 1] = IsOpen(x,playerCellY - 1);
             }
 
             if (playerCellY > 0) {
                 for (x=playerCellX - 1;x>=0;x--) { // Left, South neighbor
                     currentVisible = false;
-                    if (worldCellVisible[x + 1,playerCellY - 1]) {
-                        if (worldCellOpen[x,playerCellY - 1]) vis[x,playerCellY - 1] = true;
-                        currentVisible = true;
+                    xofs = x + 1;
+                    yofs = playerCellY - 1;
+                    if (XYPairInBounds(xofs,yofs)) {
+                        if (vis[xofs,yofs]) {
+                            vis[x,yofs] = IsOpen(x,yofs);
+                            currentVisible = true; // Would be if twas open.
+                        }
                     }
                 }
             }
@@ -452,9 +505,13 @@ public class DynamicCulling : MonoBehaviour {
             if (playerCellY < 63) {
                 for (x=playerCellX - 1;x>=0;x--) { // Left, North neighbor
                     currentVisible = false;
-                    if (worldCellVisible[x + 1,playerCellY + 1]) {
-                        if (worldCellOpen[x,playerCellY + 1]) vis[x,playerCellY + 1] = true;
-                        currentVisible = true;
+                    xofs = x + 1;
+                    yofs = playerCellY + 1;
+                    if (XYPairInBounds(xofs,yofs)) {
+                        if (vis[xofs,yofs]) {
+                            vis[x,yofs] = IsOpen(x,yofs);
+                            currentVisible = true; // Would be if twas open.
+                        }
                     }
                 }
             }
@@ -465,23 +522,27 @@ public class DynamicCulling : MonoBehaviour {
         if (playerCellY < 63) {
             for (y=playerCellY + 1;y<64;y++) { // Up
                 currentVisible = false;
-                if (worldCellVisible[playerCellX,y - 1]) {
+                if (vis[playerCellX,y - 1]) {
                     if (worldCellOpen[playerCellX,y]) vis[playerCellX,y] = true;
-                    currentVisible = true;
+                    currentVisible = true; // Would be if twas open.
                 }
 
-                if (currentVisible) {
-                    if (worldCellOpen[playerCellX + 1,y]) vis[playerCellX + 1,y] = true;
-                    if (worldCellOpen[playerCellX - 1,y]) vis[playerCellX - 1,y] = true;
-                } else break;
+                if (!currentVisible) break; // Hit wall!
+
+                vis[playerCellX + 1,y] = IsOpen(playerCellX + 1,y);
+                vis[playerCellX - 1,y] = IsOpen(playerCellX - 1,y);
             }
 
             if (playerCellX < 63) {
                 for (y=playerCellY + 1;y<63;y++) { // Up, right neighbor
                     currentVisible = false;
-                    if (worldCellVisible[playerCellX + 1,y - 1]) {
-                        if (worldCellOpen[playerCellX + 1,y]) vis[playerCellX + 1,y] = true;
-                        currentVisible = true;
+                    xofs = playerCellX + 1;
+                    yofs = y - 1;
+                    if (XYPairInBounds(xofs,yofs)) {
+                        if (vis[xofs,yofs]) {
+                            vis[xofs,y] = IsOpen(xofs,y);
+                            currentVisible = true; // Would be if twas open.
+                        }
                     }
                 }
             }
@@ -489,9 +550,13 @@ public class DynamicCulling : MonoBehaviour {
             if (playerCellX > 0) {
                 for (y=playerCellY + 1;y<63;y++) { // Up, left neighbor
                     currentVisible = false;
-                    if (worldCellVisible[playerCellX - 1,y - 1]) {
-                        if (worldCellOpen[playerCellX - 1,y]) vis[playerCellX - 1,y] = true;
-                        currentVisible = true;
+                    xofs = playerCellX - 1;
+                    yofs = y - 1;
+                    if (XYPairInBounds(xofs,yofs)) {
+                        if (vis[xofs,yofs]) {
+                            vis[xofs,y] = IsOpen(xofs,y);
+                            currentVisible = true; // Would be if twas open.
+                        }
                     }
                 }
             }
@@ -502,23 +567,27 @@ public class DynamicCulling : MonoBehaviour {
         if (playerCellY > 0) {
             for (y=playerCellY - 1;y>=0;y--) { // Down
                 currentVisible = false;
-                if (worldCellVisible[playerCellX,y + 1]) {
+                if (vis[playerCellX,y + 1]) {
                     if (worldCellOpen[playerCellX,y]) vis[playerCellX,y] = true;
-                    currentVisible = true;
+                    currentVisible = true; // Would be if twas open.
                 }
 
-                if (currentVisible) {
-                    if (worldCellOpen[playerCellX + 1,y]) vis[playerCellX + 1,y] = true;
-                    if (worldCellOpen[playerCellX - 1,y]) vis[playerCellX - 1,y] = true;
-                } else break;
+                if (!currentVisible) break; // Hit wall!
+
+                vis[playerCellX + 1,y] = IsOpen(playerCellX + 1,y);
+                vis[playerCellX - 1,y] = IsOpen(playerCellX - 1,y);
             }
 
             if (playerCellX > 0) {
                 for (y=playerCellY - 1;y>=0;y--) { // Down, left neighbor
                     currentVisible = false;
-                    if (worldCellVisible[playerCellX - 1,y + 1]) {
-                        if (worldCellOpen[playerCellX - 1,y]) vis[playerCellX - 1,y] = true;
-                        currentVisible = true;
+                    xofs = playerCellX - 1;
+                    yofs = y + 1;
+                    if (XYPairInBounds(xofs,yofs)) {
+                        if (vis[xofs,yofs]) {
+                            vis[xofs,y] = IsOpen(xofs,y);
+                            currentVisible = true; // Would be if twas open.
+                        }
                     }
                 }
             }
@@ -526,9 +595,13 @@ public class DynamicCulling : MonoBehaviour {
             if (playerCellX < 63) {
                 for (y=playerCellY - 1;y>=0;y--) { // Down, right neighbor
                     currentVisible = false;
-                    if (worldCellVisible[playerCellX + 1,y + 1]) {
-                        if (worldCellOpen[playerCellX + 1,y]) vis[playerCellX + 1,y] = true;
-                        currentVisible = true;
+                    xofs = playerCellX + 1;
+                    yofs = y + 1;
+                    if (XYPairInBounds(xofs,yofs)) {
+                        if (vis[xofs,yofs]) {
+                            vis[xofs,y] = IsOpen(xofs,y);
+                            currentVisible = true; // Would be if twas open.
+                        }
                     }
                 }
             }
@@ -542,23 +615,25 @@ public class DynamicCulling : MonoBehaviour {
         y = playerCellY + 1;
         for (int iter=0;iter<64;iter++) { // Up to Right
             currentVisible = false;
-            diagonal = worldCellVisible[x - 1,y -1] &&
-                (worldCellVisible[x - 1,y] || worldCellVisible[x,y - 1]);
+            diagonal = vis[x - 1,y -1] && (vis[x - 1,y] || vis[x,y - 1]);
+            if (   vis[x - 1,y]   /* {current} */
+                || diagonal    || vis[x,y - 1]   ) {
 
-            if (   worldCellVisible[x - 1,y]        /* {current} */
-                || diagonal                 || worldCellVisible[x,y - 1]) {
-
-                if (worldCellOpen[x,y]) vis[x,y] = true;
-                currentVisible = true;
+                // [2]
+                vis[x,y] = IsOpen(x,y);
+                currentVisible = true; // Would be if twas open.
             }
 
             x++;
             y++;
             if (x > 63 || y > 63) break;
-            if (currentVisible) {
-                if (worldCellOpen[x - 1,y]) vis[x - 1,y] = true;
-                if (worldCellOpen[x,y - 1]) vis[x,y - 1] = true;
-            } else break;
+            if (!currentVisible) break; // Hit wall!
+
+            // [3]
+            vis[x - 1,y] = IsOpen(x - 1,y); // [X][2] X marks the spot.
+                                            // [1][3]
+            vis[x,y - 1] = IsOpen(x,y - 1); // [3][2] X marks the spot.
+                                            // [1][X]
         }
 
         // [2][3]
@@ -567,23 +642,25 @@ public class DynamicCulling : MonoBehaviour {
         y = playerCellY + 1;
         for (int iter=0;iter<64;iter++) { // Up to Left
             currentVisible = false;
-            diagonal = worldCellVisible[x + 1,y - 1] &&
-                (worldCellVisible[x,y - 1] || worldCellVisible[x + 1,y]);
+            diagonal = vis[x + 1,y - 1] && (vis[x,y - 1] || vis[x + 1,y]);
+            if (/* {current} */    vis[x + 1,y]
+                || vis[x,y - 1] || diagonal    ) {
 
-            if (/* {current} */                 worldCellVisible[x + 1,y]
-                || worldCellVisible[x,y - 1] || diagonal                  ) {
-
-                if (worldCellOpen[x,y]) vis[x,y] = true;
-                currentVisible = true;
+                // [2]
+                vis[x,y] = IsOpen(x,y);
+                currentVisible = true; // Would be if twas open.
             }
 
             x--;
             y++;
             if (x < 0 || y > 63) break;
-            if (currentVisible) {
-                if (worldCellOpen[x + 1,y]) vis[x + 1,y] = true;
-                if (worldCellOpen[x,y - 1]) vis[x,y - 1] = true;
-            } else break;
+            if (!currentVisible) break; // Hit wall!
+
+            // [3]
+            vis[x + 1,y] = IsOpen(x + 1,y); // [2][X] X marks the spot.
+                                            // [3][1]
+            vis[x,y - 1] = IsOpen(x,y - 1); // [2][3] X marks the spot.
+                                            // [X][1]
         }
 
         // [3][1]
@@ -592,23 +669,25 @@ public class DynamicCulling : MonoBehaviour {
         y = playerCellY - 1;
         for (int iter=0;iter<64;iter++) { // Down to Left
             currentVisible = false;
-            diagonal = worldCellVisible[x + 1,y + 1] &&
-                (worldCellVisible[x,y + 1] || worldCellVisible[x + 1,y]);
+            diagonal = vis[x + 1,y + 1] && (vis[x,y + 1] || vis[x + 1,y]);
+                if (    vis[x,y + 1] || diagonal
+                    /* {current} */  || vis[x + 1,y]) {
 
-                if (worldCellVisible[x,y + 1] || diagonal
-                /* {current} */               || worldCellVisible[x + 1,y]) {
-
-                if (worldCellOpen[x,y]) vis[x,y] = true;
-                currentVisible = true;
+                // [2]
+                vis[x,y] = IsOpen(x,y);
+                currentVisible = true; // Would be if twas open.
             }
 
             x--;
             y--;
             if (x < 0 || y < 0) break;
-            if (currentVisible) {
-                if (worldCellOpen[x,y + 1]) vis[x,y + 1] = true;
-                if (worldCellOpen[x + 1,y]) vis[x + 1,y] = true;
-            } else break;
+            if (!currentVisible) break; // Hit wall!
+
+            // [3]
+            vis[x,y + 1] = IsOpen(x,y + 1); // [X][1] X marks the spot.
+                                            // [2][3]
+            vis[x + 1,y] = IsOpen(x + 1,y); // [3][1] X marks the spot.
+                                            // [2][X]
         }
 
         // [1][3]
@@ -617,23 +696,25 @@ public class DynamicCulling : MonoBehaviour {
         y = playerCellY - 1;
         for (int iter=0;iter<64;iter++) { // Down to Right
             currentVisible = false;
-            diagonal = worldCellVisible[x - 1,y + 1] &&
-                (worldCellVisible[x - 1,y] || worldCellVisible[x,y + 1]);
+            diagonal = vis[x - 1,y + 1] && (vis[x - 1,y] || vis[x,y + 1]);
+            if (   diagonal     || vis[x,y + 1]
+                || vis[x - 1,y]   /* {current} */) {
 
-            if (   diagonal                  || worldCellVisible[x,y + 1]
-                || worldCellVisible[x - 1,y]      /* {current} */        ) {
-
-                if (worldCellOpen[x,y]) vis[x,y] = true;
-                currentVisible = true;
+                // [2]
+                vis[x,y] = IsOpen(x,y);
+                currentVisible = true; // Would be if twas open.
             }
 
             x++;
             y--;
             if (x > 63 || y < 0) break;
-            if (currentVisible) {
-                if (worldCellOpen[x - 1,y]) vis[x - 1,y] = true;
-                if (worldCellOpen[x,y + 1]) vis[x,y + 1] = true;
-            } else break;
+            if (!currentVisible) break; // Hit wall!
+
+            // [3]
+            vis[x - 1,y] = IsOpen(x - 1,y); // [1][3] X marks the spot.
+                                            // [X][2]
+            vis[x,y + 1] = IsOpen(x,y + 1); // [1][X] X marks the spot.
+                                            // [3][2]
         }
 
         for (x=0;x<64;x++) {
@@ -642,6 +723,7 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
 
+        // Pattern of custom axial rays, 3 wide each (center only shown).
         // [ ][ ][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][ ][ ][6]
         // [7][ ][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][ ][6][ ]
         // [ ][7][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][6][ ][ ]
@@ -649,9 +731,9 @@ public class DynamicCulling : MonoBehaviour {
         // [ ][ ][ ][7][ ][ ][ ][4][ ][ ][ ][6][ ][ ][ ][ ]
         // [ ][ ][ ][ ][7][ ][ ][4][ ][ ][6][ ][ ][ ][ ][ ]
         // [ ][ ][ ][ ][ ][7][ ][4][ ][6][ ][ ][ ][ ][ ][ ]
-        // [ ][ ][ ][ ][ ][ ][7][4][6][ ][ ][ ][ ][ ][ ][ ]
-        // [3][3][3][3][3][3][3][1][2][2][2][2][2][2][2][2]
-        // [ ][ ][ ][ ][ ][ ][8][5][9][ ][ ][ ][ ][ ][ ][ ]
+        // [ ][ ][ ][ ][ ][ ][1][1][1][ ][ ][ ][ ][ ][ ][ ]
+        // [3][3][3][3][3][3][1][0][1][2][2][2][2][2][2][2]
+        // [ ][ ][ ][ ][ ][ ][1][1][1][ ][ ][ ][ ][ ][ ][ ]
         // [ ][ ][ ][ ][ ][8][ ][5][ ][9][ ][ ][ ][ ][ ][ ]
         // [ ][ ][ ][ ][8][ ][ ][5][ ][ ][9][ ][ ][ ][ ][ ]
         // [ ][ ][ ][8][ ][ ][ ][5][ ][ ][ ][9][ ][ ][ ][ ]
@@ -674,10 +756,35 @@ public class DynamicCulling : MonoBehaviour {
         for (float step = 0; step <= majorAxisSteps; step+=1f) {
             int xint = (int)x;
             int yint = (int)y;
+            int xrint = (int)Mathf.Ceil(x);
+            int yrint = (int)Mathf.Ceil(y);
             if (visibleLast) {
-                if (worldCellOpen[x,y]) {
-                    worldCellVisible[x,y] = true;
+                if (worldCellOpen[xint,yint]) {
+                    worldCellVisible[xint,yint] = true;
                     visibleLast = true;
+                }
+
+                bool xroundThreshMet = (xrint != xint);
+                bool yroundThreshMet = (yrint != yint);
+                if (xroundThreshMet) {
+                    if (worldCellOpen[xrint,yint]) {
+                        worldCellVisible[xrint,yint] = true;
+                        visibleLast = true;
+                    }
+                }
+
+                if (yroundThreshMet) {
+                    if (worldCellOpen[xint,yrint]) {
+                        worldCellVisible[xint,yrint] = true;
+                        visibleLast = true;
+                    }
+                }
+
+                if (xroundThreshMet && yroundThreshMet) {
+                    if (worldCellOpen[xrint,yrint]) {
+                        worldCellVisible[xrint,yrint] = true;
+                        visibleLast = true;
+                    }
                 }
             } else break;
 
