@@ -362,13 +362,6 @@ public class DynamicCulling : MonoBehaviour {
         return true;
     }
 
-    bool MarkVisible(int x, int y) {
-        if (worldCellOpen[x,y]) {
-            worldCellVisible[x,y] = true;
-            return true;
-        } else return false;
-    }
-
     void DetermineVisibleCells() {
         bool[,] vis = new bool[64,64];
         int x,y;
@@ -681,8 +674,12 @@ public class DynamicCulling : MonoBehaviour {
         for (float step = 0; step <= majorAxisSteps; step+=1f) {
             int xint = (int)x;
             int yint = (int)y;
-            if (visibleLast) visibleLast = MarkVisible(xint,yint);
-            else break;
+            if (visibleLast) {
+                if (worldCellOpen[x,y]) {
+                    worldCellVisible[x,y] = true;
+                    visibleLast = true;
+                }
+            } else break;
 
             x += xIncrement;
             if (x < 0f || x > 63f) break;
