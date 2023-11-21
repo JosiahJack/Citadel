@@ -62,6 +62,7 @@ public class LevelManager : MonoBehaviour {
 		}
 		if (currentLevel < 0 || currentLevel > 12) return; // 12 because I don't think I support starting in cyberspace, 13, for testing.
 
+		for (int i=0;i<levelScripts.Length;i++) levelScripts[i].Awake();
 		//PlayerReferenceManager.a.playerCurrentLevel = currentLevel;
 		if (sky == null) Debug.Log("BUG: LevelManager missing manually assigned reference for sky.");
 		else sky.SetActive(true);
@@ -230,6 +231,14 @@ public class LevelManager : MonoBehaviour {
 		}
 
         return levelScripts[currentLevel].geometryContainer;
+	}
+
+	public GameObject GetCurrentStaticImmutableContainer() { // Does not return null
+		if (currentLevel < 0 || currentLevel > 13) {
+			return levelScripts[1].dynamicObjectsContainer;
+		}
+
+		return levelScripts[currentLevel].staticObjectsImmutable;
 	}
 
 	public GameObject GetRequestedLevelDynamicContainer(int index) {

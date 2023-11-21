@@ -16,6 +16,8 @@ public class DynamicCulling : MonoBehaviour {
     public List<MeshRenderer>[,] cellListsMR = new List<MeshRenderer>[WORLDX,WORLDX];
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
     public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();
+    public List<MeshRenderer> staticMeshesImmutable = new List<MeshRenderer>();
+    public List<Vector2Int> staticMeshImmutableCoords = new List<Vector2Int>();
     public bool[,] worldCellLastVisible = new bool[WORLDX,WORLDX];
     public int playerCellX = 0;
     public int playerCellY = 0;
@@ -24,11 +26,9 @@ public class DynamicCulling : MonoBehaviour {
     public Vector3 worldMax;
     public Vector3 worldMin;
     public List<GameObject> orthogonalChunks;
-
     public List<Transform> npcTransforms;
     public List<AIController> npcAICs = new List<AIController>();
     public List<Vector2Int> npcCoords = new List<Vector2Int>();
-    public SkinnedMeshRenderer[] npcSMRs;
 
     public static DynamicCulling a;
 
@@ -54,6 +54,10 @@ public class DynamicCulling : MonoBehaviour {
         worldCellVisible = new bool [WORLDX,WORLDX];
         worldCellOpen = new bool [WORLDX,WORLDX];
         worldCellPositions = new Vector3 [WORLDX,WORLDX];
+        staticMeshesImmutable = new List<MeshRenderer>();
+        staticMeshesImmutable.Clear();
+        staticMeshImmutableCoords = new List<Vector2Int>();
+        staticMeshImmutableCoords.Clear();
         dynamicMeshes = new List<MeshRenderer>();
         dynamicMeshes.Clear();
         dynamicMeshCoords = new List<Vector2Int>();
@@ -206,12 +210,25 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
+    public void FindStaticMeshesImmutable() {
+        GameObject container = LevelManager.a.GetCurrentStaticImmutableContainer();
+        Component[] compArray = container.GetComponentsInChildren(typeof(MeshRenderer),true);
+        int count = container.transform.childCount;
+        MeshRenderer mr = null;
+        for (int i=0;i<count;i++) {
+            mr = container.transform.GetChild(i).GetComponent<MeshRenderer>();
+            if (mr == null) continue;
+
+            staticMeshesImmutable.Add(mr);
+            staticMeshImmutableCoords.Add(Vector2Int.zero);
+        }
+    }
+
     public void FindAllNPCsForLevel() {
         GameObject container = LevelManager.a.GetRequestedLevelNPCContainer(LevelManager.a.currentLevel);
         Component[] compArray = container.GetComponentsInChildren(typeof(AIController),true);
         int count = container.transform.childCount;
         AIController aic = null;
-        npcSMRs = new SkinnedMeshRenderer[count];
         for (int i=0;i<count;i++) {
             aic = container.transform.GetChild(i).GetComponent<AIController>();
             if (aic == null) continue;
@@ -219,8 +236,6 @@ public class DynamicCulling : MonoBehaviour {
             npcAICs.Add(aic);
             npcTransforms.Add(container.transform.GetChild(i));
             npcCoords.Add(Vector2Int.zero);
-            SkinnedMeshRenderer smr = GetComponentInChildren<SkinnedMeshRenderer>(true);
-            if (smr != null) npcSMRs[i] = smr;
         }
     }
 
@@ -263,59 +278,54 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
-    public void UpdateDynamicMeshes() {
-        int x,y,lastX,lastY;
-        Vector3 pos;
-        float deltaX,deltaY;
-
-        label_iterate_mesh_renderers:
-        int count = dynamicMeshes.Count;
-        for (int i=0;i < count; i++) {
-            if (dynamicMeshes[i] == null) {
-                dynamicMeshes.RemoveAt(i);
-                goto label_iterate_mesh_renderers; // Start over
+    public void PutStaticMeshImmutableInCell(int index) {
+        Vector3 pos = staticMeshesImmutable[index].transform.position;
+        for (int x=0;x<64;x++) {
+            for (int y=0;y<64;y++) {
+                if (Vector3.Distance(pos,worldCellPositions[x,y]) < 1.28f) {
+                    staticMeshImmutableCoords[index] = new Vector2Int(x,y);
+                    return;
+                }
             }
         }
+    }
 
-        for (int i=0;i < count; i++) {
-            x = dynamicMeshCoords[i].x;
-            y = dynamicMeshCoords[i].y;
-            pos = dynamicMeshes[i].transform.position;
-            deltaX = pos.x - worldCellPositions[x,y].x;
-            deltaY = pos.z - worldCellPositions[x,y].z;
-            lastX = x;
-            lastY = y;
-            if (deltaX > CELLXHALF) x++;
-            else if (deltaX < -CELLXHALF) x--;
-
-            if (x < 0) x = 0;
-            if (x > 63) x = 63;
-            if (deltaY > CELLXHALF) y++;
-            else if (deltaY < -CELLXHALF) y--;
-
-            if (y < 0) y = 0;
-            if (y > 63) y = 63;
-            dynamicMeshCoords[i] = new Vector2Int(x,y);
+    public void PutStaticMeshesImmutableInCells() {
+        int count = staticMeshesImmutable.Count;
+        for (int i=0;i<count;i++) {
+            PutStaticMeshImmutableInCell(i);
         }
     }
 
     public void Cull_Init() {
+        // Setup and find all cullables and associate them with x,y coords.
         ClearCellList();
         FindOrthogonalChunks(LevelManager.a.GetCurrentGeometryContainer());
         FindWorldExtents(orthogonalChunks);
         FindOpenCellsAndPositions(orthogonalChunks);
         PutChunksInCells();
+
         FindDynamicMeshes();
         PutDynamicMeshesInCells();
+
+        FindStaticMeshesImmutable();
+        PutStaticMeshesImmutableInCells();
+
         FindAllNPCsForLevel();
         PutNPCsInCells();
+
+        // Do first Cull pass
         FindPlayerCell();
         DetermineVisibleCells(); // Reevaluate visible cells from new pos.
+
+        // Force all cells dirty at start so the visibility is toggled for all.
         int x,y;
         for (x=0;x<64;x++) {
             for (y=0;y<64;y++) worldCellLastVisible[x,y] = !worldCellVisible[x,y];
         }
-        ToggleVisibility(); // Update all cells marked as dirty.
+
+        // Update all cells marked as dirty.
+        ToggleVisibility();
     }
 
     void FindPlayerCell() {
@@ -830,6 +840,42 @@ public class DynamicCulling : MonoBehaviour {
         // mr.material = Const.a.genericMaterials[12]; // Indigo forcefield
     }
 
+    public void UpdateDynamicMeshes() {
+        int x,y,lastX,lastY;
+        Vector3 pos;
+        float deltaX,deltaY;
+
+        label_iterate_mesh_renderers:
+        int count = dynamicMeshes.Count;
+        for (int i=0;i < count; i++) {
+            if (dynamicMeshes[i] == null) {
+                dynamicMeshes.RemoveAt(i);
+                goto label_iterate_mesh_renderers; // Start over
+            }
+        }
+
+        for (int i=0;i < count; i++) {
+            x = dynamicMeshCoords[i].x;
+            y = dynamicMeshCoords[i].y;
+            pos = dynamicMeshes[i].transform.position;
+            deltaX = pos.x - worldCellPositions[x,y].x;
+            deltaY = pos.z - worldCellPositions[x,y].z;
+            lastX = x;
+            lastY = y;
+            if (deltaX > CELLXHALF) x++;
+            else if (deltaX < -CELLXHALF) x--;
+
+            if (x < 0) x = 0;
+            if (x > 63) x = 63;
+            if (deltaY > CELLXHALF) y++;
+            else if (deltaY < -CELLXHALF) y--;
+
+            if (y < 0) y = 0;
+            if (y > 63) y = 63;
+            dynamicMeshCoords[i] = new Vector2Int(x,y);
+        }
+    }
+
     public void UpdateNPCPVS() {
         int x,y,lastX,lastY;
         Vector3 pos;
@@ -875,10 +921,10 @@ public class DynamicCulling : MonoBehaviour {
         for (int i=0;i<npcAICs.Count;i++) {
             if (worldCellVisible[npcCoords[i].x,npcCoords[i].y]) {
                 npcAICs[i].withinPVS = true;
-                if (npcSMRs[i] != null) npcSMRs[i].enabled = true;
+                Utils.Activate(npcAICs[i].visibleMeshEntity);
             } else {
                 npcAICs[i].withinPVS = false;
-                if (npcSMRs[i] != null) npcSMRs[i].enabled = false;
+                Utils.Deactivate(npcAICs[i].visibleMeshEntity);
             }
         }
     }
@@ -887,7 +933,21 @@ public class DynamicCulling : MonoBehaviour {
         for (int i=0;i<dynamicMeshes.Count;i++) {
             if (worldCellVisible[dynamicMeshCoords[i].x,dynamicMeshCoords[i].y]) {
                 dynamicMeshes[i].enabled = true;
-            } else dynamicMeshes[i].enabled = false;
+            } else {
+                dynamicMeshes[i].enabled = false;
+            }
+        }
+    }
+
+    public void ToggleStaticMeshesImmutableVisibility() {
+        for (int i=0;i<staticMeshesImmutable.Count;i++) {
+            if (worldCellVisible[staticMeshImmutableCoords[i].x,
+                                 staticMeshImmutableCoords[i].y]) {
+
+                staticMeshesImmutable[i].enabled = true;
+            } else {
+                staticMeshesImmutable[i].enabled = false;
+            }
         }
     }
 
@@ -910,6 +970,7 @@ public class DynamicCulling : MonoBehaviour {
         // Update dynamic meshes after PVS has been updated, if player moved.
         UpdateDynamicMeshes(); // Always check all of them because any can move.
         ToggleDynamicMeshesVisibility(); // Now turn them on or off.
+        ToggleStaticMeshesImmutableVisibility();
     }
 }
 

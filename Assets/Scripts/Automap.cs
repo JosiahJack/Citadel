@@ -179,7 +179,7 @@ public class Automap : MonoBehaviour {
 			Utils.Activate(poolContainerAutomapMutantOverlays);
 		}
 
-		//if (automapUpdateFinished < PauseScript.a.relativeTime) {
+// 		if (automapUpdateFinished < PauseScript.a.relativeTime) {
 			Utils.EnableImage(automapBaseImage);
 			if (LevelManager.a.currentLevel >= 0) {
 				Utils.AssignImageOverride(automapBaseImage,
@@ -245,31 +245,6 @@ public class Automap : MonoBehaviour {
 				automapFullPlayerIcon.localRotation = icoQ;
 			}
 
-			float radiusSquared = automapFoWRadius * automapFoWRadius;
-			Vector2 plyrPos = tempVec2b;
-			// Update explored tiles
-			for (int i=0;i<4096;i++) {
-				// if (automapExplored[i]) {
-				// 	Utils.DisableImage(automapFoWTiles[i]);
-				// 	Utils.Deactivate(automapFoWTiles[i].gameObject);
-				// } else {
-					tempVec2b.x = automapFoWTilesRectsPos[i].x * -1f
-								 - automapTileCorrectionX;
-
-					tempVec2b.y = automapFoWTilesRectsPos[i].y
-								 + automapTileCorrectionY;
-
-					tempVec2b.x -= plyrPos.x;
-					tempVec2b.y -= plyrPos.y;
-					if ((tempVec2b.x * tempVec2b.x + tempVec2b.y * tempVec2b.y) < radiusSquared) {
-						automapExplored[i] = true;
-						SetAutomapTileExplored(LevelManager.a.currentLevel,i);
-						Utils.DisableImage(automapFoWTiles[i]);
-						Utils.Deactivate(automapFoWTiles[i].gameObject);
-					}
-				//}
-			}
-
 			updateTime = 0.2f;
 			if (Inventory.a.NavUnitVersion() > 1) updateTime = 0.1f;
 			if (Inventory.a.NavUnitVersion() > 2) {
@@ -289,8 +264,40 @@ public class Automap : MonoBehaviour {
 				// Display cyborg and mutant overlays - Handled by AIController
 				// since it updates it anyways.
 			}
-			//automapUpdateFinished = PauseScript.a.relativeTime + updateTime;
-		//}
+
+			if (automapUpdateFinished < PauseScript.a.relativeTime) {
+				float radiusSquared = automapFoWRadius * automapFoWRadius;
+				Vector2 plyrPos = tempVec2b;
+				// Update explored tiles
+				for (int i=0;i<4096;i++) {
+					// if (automapExplored[i]) {
+					// 	Utils.DisableImage(automapFoWTiles[i]);
+					// 	Utils.Deactivate(automapFoWTiles[i].gameObject);
+					// } else {
+						tempVec2b.x = automapFoWTilesRectsPos[i].x * -1f
+									- automapTileCorrectionX;
+
+						tempVec2b.y = automapFoWTilesRectsPos[i].y
+									+ automapTileCorrectionY;
+
+						tempVec2b.x -= plyrPos.x;
+						tempVec2b.x *= tempVec2b.x;
+						tempVec2b.y -= plyrPos.y;
+						tempVec2b.y *= tempVec2b.y;
+						if (   tempVec2b.x < radiusSquared
+							&& tempVec2b.y < radiusSquared
+							&& (tempVec2b.x + tempVec2b.y) < radiusSquared) {
+							automapExplored[i] = true;
+							SetAutomapTileExplored(LevelManager.a.currentLevel,i);
+							Utils.DisableImage(automapFoWTiles[i]);
+							Utils.Deactivate(automapFoWTiles[i].gameObject);
+						}
+					//}
+				}
+				automapUpdateFinished = PauseScript.a.relativeTime + updateTime;
+			}
+// 			automapUpdateFinished = PauseScript.a.relativeTime + updateTime;
+// 		}
 
 		SetAutomapActiveState();
 	}
