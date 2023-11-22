@@ -381,6 +381,86 @@ public class DynamicCulling : MonoBehaviour {
         return worldCellOpen[x,y];
     }
 
+    bool SetVisible(int x, int y) {
+        if (!XYPairInBounds(x,y)) return false;
+        return (worldCellVisible[x,y] = IsOpen(x,y));
+    }
+
+    void CastAlongSlopeRay(int width,int height, int xofs, int yofs,
+                           int signx, int signy) {
+
+        int slope = Mathf.RoundToInt((float)(height + yofs - 1)
+                                     /
+                                     (float)(width + xofs - 1));
+
+        for (int dx = 0; dx < (width + xofs - 1); dx+=signx) { // Every delta x = 1 slope y travel
+            int start = Mathf.Min(2 * signy,slope * dx);
+
+            // <= for condition to include slope as it's the shift point.
+            for (int i = start;i <= (slope + (slope * dx)); i+=signy) {
+                if (!SetVisible(playerCellX + dx,playerCellY + i)) return;
+            }
+        }
+    }
+
+    // Tried a bunch of other things but they were all for integer cells and do
+    // not take into account the fact that I'm applying a 2d culling algorithm
+    // from the standpoint that the player's head can be positioned arbitrarily
+    // at any floating point position within the player's current cell thus
+    // needing to inflate the visible area by raycasting from the furthest
+    // extents of the cell, namely the four corners, meaning I'm rolling my own
+    // thing here.  Right.  Cool.  On to the math, but it's just plain slopes.
+    void CastOctantRays(int signx, int signy) {
+        // Recall that casts from one cell to another start at the midpoint
+        // and end at the midpoint, meaning that a cell 0,0 has its ray start
+        // at 0.5,0.5 with a minimum 0,0 and a maximum 1,1.
+        // The end point likewise.
+
+        // Now, maximum length line would be +/-0.5 x,y on both caddy-corner
+        // end squares' verts meaning four extent rays:
+        // +1x +1y = 3x32 cells = 32/3 slope = 10 2/3 = 11
+        // +1x -1y = 4x31 cells = 30/3 slope = 10
+        // -1x -1y = 2x31 cells = 30/1 slope = 30
+        // -1x +1y = 2x33 cells = 32/1 slope = 32
+        //   x   y = 3x32 cells = 31/2 slope = 15.5
+
+        // slope = (y - 1) / (x - 1) since it starts at half way on each cell,
+        // thus losing 0.5 + 0.5 in both x and y to give the minus 1's here.
+        // We don't technically care about the midpoint ray as it shouldn't hit
+        // any verts.  Should consider when a ray intersects with a vert or
+        // with an edge of a closed cell to terminate the cast.  Need to have
+        // all 4 rays terminate to end the cast for accounting for player
+        // having their camera (aka their head) positioned at any arbitrary
+        // point within the cell.  Here do logic on 1 by 1 cells, does not
+        // matter that the cells are 2.56f by 2.56f in the 3d actuality.
+
+        // Ray 1, +1x +1y
+        // +1x +1y = 4x33 cells = 32/3 slope = 10 2/3 = 11
+        // Starting from corner vert so move full slope prior to x shift since
+        // one x cell gives the slope in y (rise over run, typical slope stuff).
+
+        // Note: Starting with i=2 on these since we've already verified the
+        //       player cell x,y (assume as 0,0 here and add i to it), and the
+        //       first square ring of cells immediately adjacent to the player
+        //       which would be the x +/-1 and y +/-1 cells, so now move to 2.
+        //       Since we assume player is at 0,0 the math works out for any
+        //       other position by additive principle.
+
+        // I could calculate it here, but I'm caching this ray specifically
+        // for performance.  Intention is to have only the few known rays
+        // from 3x32 up to 32x32, then rotate by 90's and flip as necessary for
+        // remaining octants about the player's cell.
+        int y = 32 * signy;
+        for (int x = 3;x<=32;x++) {
+                                                      // Start cell vert     to End cell vert.
+                                                      // -------------------------------------
+            CastAlongSlopeRay(x,y, 1, 1,signx,signy); // Bottom left corner  to top right.
+            CastAlongSlopeRay(x,y, 1,-1,signx,signy); // Top left corner     to bottom right.
+            CastAlongSlopeRay(x,y,-1,-1,signx,signy); // Top right corner    to bottom left.
+            CastAlongSlopeRay(x,y,-1, 1,signx,signy); // Bottom right corner to bottom left.
+        }
+    }
+
     void DetermineVisibleCells() {
         bool[,] vis = new bool[64,64];
         int x,y,xofs,yofs;
@@ -394,42 +474,51 @@ public class DynamicCulling : MonoBehaviour {
 
         x = playerCellX + 1;
         y = playerCellY;
-        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+        if (SetVisible(x,y)) vis[x,y] = true;
 
         x = playerCellX + 1;
         y = playerCellY + 1;
-        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+        if (SetVisible(x,y)) vis[x,y] = true;
 
         x = playerCellX;
         y = playerCellY + 1;
-        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+        if (SetVisible(x,y)) vis[x,y] = true;
 
         x = playerCellX - 1;
         y = playerCellY + 1;
-        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+        if (SetVisible(x,y)) vis[x,y] = true;
 
         x = playerCellX - 1;
         y = playerCellY;
-        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+        if (SetVisible(x,y)) vis[x,y] = true;
 
         x = playerCellX - 1;
         y = playerCellY - 1;
-        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+        if (SetVisible(x,y)) vis[x,y] = true;
 
         x = playerCellX;
         y = playerCellY - 1;
-        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+        if (SetVisible(x,y)) vis[x,y] = true;
 
         x = playerCellX + 1;
         y = playerCellY - 1;
-        worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
+        if (SetVisible(x,y)) vis[x,y] = true;
+
+        CastOctantRays(1,1);
+        CastOctantRays(1,-1);
+        // CastOctantRays(1,1);
+        // CastOctantRays(1,1);
+        // CastOctantRays(1,1);
+        // CastOctantRays(1,1);
+        // CastOctantRays(1,1);
+        // CastOctantRays(1,1);
 
         // Skip 0 and 63 corners since 45deg rays below get them.
 //         for (x=1;x<63;x++) CastRay(x,0);
 //         for (x=1;x<63;x++) CastRay(x,63);
 //         for (y=1;y<63;y++) CastRay(0,y);
 //         for (y=1;y<63;y++) CastRay(63,y);
-
+        return;
         for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,0);
         for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY,x,0);
         for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY,x,0);
