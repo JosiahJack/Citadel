@@ -425,10 +425,50 @@ public class DynamicCulling : MonoBehaviour {
         worldCellVisible[x,y] = vis[x,y] = IsOpen(x,y);
 
         // Skip 0 and 63 corners since 45deg rays below get them.
-        for (x=1;x<63;x++) CastRay(x,0);
-        for (x=1;x<63;x++) CastRay(x,63);
-        for (y=1;y<63;y++) CastRay(0,y);
-        for (y=1;y<63;y++) CastRay(63,y);
+//         for (x=1;x<63;x++) CastRay(x,0);
+//         for (x=1;x<63;x++) CastRay(x,63);
+//         for (y=1;y<63;y++) CastRay(0,y);
+//         for (y=1;y<63;y++) CastRay(63,y);
+
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,0);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,0);
+
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
+        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
+
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
+
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
+        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
 
         // [ ] = cell, empty means not checked
         // [1] = starting point or last loop's current, assumed visible.
@@ -617,114 +657,89 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
 
-        bool diagonal = false;
+        bool north = false;
+        bool west = false;
+        bool south = false;
+        bool east = false;
 
         // [3][2]
         // [1][3]
         x = playerCellX + 1;
         y = playerCellY + 1;
         for (int iter=0;iter<64;iter++) { // Up to Right
-            currentVisible = false;
-            diagonal = vis[x - 1,y -1] && (vis[x - 1,y] || vis[x,y - 1]);
-            if (   vis[x - 1,y]   /* {current} */
-                || diagonal    || vis[x,y - 1]   ) {
+            xofs = x - 1;
+            yofs = y - 1;
+            west = IsOpen(xofs,y); // The two [3] cells.
+            south = IsOpen(x,yofs);
+            if (!west && !south) break; // Don't see through closed [3]s corner.
 
-                // [2]
-                vis[x,y] = IsOpen(x,y);
-                currentVisible = true; // Would be if twas open.
-            }
+            vis[x,y] = currentVisible = IsOpen(x,y);
+            vis[xofs,y] = west;  // [west][2    ]  Check the two [3] cells
+            vis[x,yofs] = south; // [1   ][south]
+            if (!currentVisible) break; // Hit wall!  Break after opening [3]s.
 
-            x++;
-            y++;
-            if (x > 63 || y > 63) break;
-            if (!currentVisible) break; // Hit wall!
-
-            // [3]
-            vis[x - 1,y] = IsOpen(x - 1,y); // [X][2] X marks the spot.
-                                            // [1][3]
-            vis[x,y - 1] = IsOpen(x,y - 1); // [3][2] X marks the spot.
-                                            // [1][X]
+            x++; y++;
+            if (!XYPairInBounds(x,y)) break;
         }
 
         // [2][3]
         // [3][1]
         x = playerCellX - 1;
         y = playerCellY + 1;
-        for (int iter=0;iter<64;iter++) { // Up to Left
-            currentVisible = false;
-            diagonal = vis[x + 1,y - 1] && (vis[x,y - 1] || vis[x + 1,y]);
-            if (/* {current} */    vis[x + 1,y]
-                || vis[x,y - 1] || diagonal    ) {
+        for (int iter=0;iter<64;iter++) { // Up to Right
+            xofs = x + 1;
+            yofs = y - 1;
+            east = IsOpen(xofs,y); // The two [3] cells.
+            south = IsOpen(x,yofs);
+            if (!east && !south) break; // Don't see through closed [3]s corner.
 
-                // [2]
-                vis[x,y] = IsOpen(x,y);
-                currentVisible = true; // Would be if twas open.
-            }
+            vis[x,y] = currentVisible = IsOpen(x,y);
+            vis[xofs,y] = east;  // [2    ][east]  Check the two [3] cells
+            vis[x,yofs] = south; // [south][1   ]
+            if (!currentVisible) break; // Hit wall!  Break after opening [3]s.
 
-            x--;
-            y++;
-            if (x < 0 || y > 63) break;
-            if (!currentVisible) break; // Hit wall!
-
-            // [3]
-            vis[x + 1,y] = IsOpen(x + 1,y); // [2][X] X marks the spot.
-                                            // [3][1]
-            vis[x,y - 1] = IsOpen(x,y - 1); // [2][3] X marks the spot.
-                                            // [X][1]
+            x--; y++;
+            if (!XYPairInBounds(x,y)) break;
         }
 
         // [3][1]
         // [2][3]
         x = playerCellX - 1;
         y = playerCellY - 1;
-        for (int iter=0;iter<64;iter++) { // Down to Left
-            currentVisible = false;
-            diagonal = vis[x + 1,y + 1] && (vis[x,y + 1] || vis[x + 1,y]);
-                if (    vis[x,y + 1] || diagonal
-                    /* {current} */  || vis[x + 1,y]) {
+        for (int iter=0;iter<64;iter++) { // Up to Right
+            xofs = x + 1;
+            yofs = y + 1;
+            north = IsOpen(x,yofs); // The two [3] cells.
+            east = IsOpen(xofs,y);
+            if (!east && !south) break; // Don't see through closed [3]s corner.
 
-                // [2]
-                vis[x,y] = IsOpen(x,y);
-                currentVisible = true; // Would be if twas open.
-            }
+            vis[x,y] = currentVisible = IsOpen(x,y);
+            vis[x,yofs] = north;// [north][1   ]  Check the two [3] cells
+            vis[xofs,y] = east; // [2    ][east]
+            if (!currentVisible) break; // Hit wall!  Break after opening [3]s.
 
-            x--;
-            y--;
-            if (x < 0 || y < 0) break;
-            if (!currentVisible) break; // Hit wall!
-
-            // [3]
-            vis[x,y + 1] = IsOpen(x,y + 1); // [X][1] X marks the spot.
-                                            // [2][3]
-            vis[x + 1,y] = IsOpen(x + 1,y); // [3][1] X marks the spot.
-                                            // [2][X]
+            x--; y--;
+            if (!XYPairInBounds(x,y)) break;
         }
 
         // [1][3]
         // [3][2]
         x = playerCellX + 1;
         y = playerCellY - 1;
-        for (int iter=0;iter<64;iter++) { // Down to Right
-            currentVisible = false;
-            diagonal = vis[x - 1,y + 1] && (vis[x - 1,y] || vis[x,y + 1]);
-            if (   diagonal     || vis[x,y + 1]
-                || vis[x - 1,y]   /* {current} */) {
+        for (int iter=0;iter<64;iter++) { // Up to Right
+            xofs = x - 1;
+            yofs = y + 1;
+            north = IsOpen(x,yofs); // The two [3] cells.
+            west = IsOpen(xofs,y);
+            if (!east && !south) break; // Don't see through closed [3]s corner.
 
-                // [2]
-                vis[x,y] = IsOpen(x,y);
-                currentVisible = true; // Would be if twas open.
-            }
+            vis[x,y] = currentVisible = IsOpen(x,y);
+            vis[x,yofs] = north;  // [1   ][north]  Check the two [3] cells
+            vis[xofs,y] = west;   // [west][2    ]
+            if (!currentVisible) break; // Hit wall!  Break after opening [3]s.
 
-            x++;
-            y--;
-            if (x > 63 || y < 0) break;
-            if (!currentVisible) break; // Hit wall!
-
-            // [3]
-            vis[x - 1,y] = IsOpen(x - 1,y); // [1][3] X marks the spot.
-                                            // [X][2]
-            vis[x,y + 1] = IsOpen(x,y + 1); // [1][X] X marks the spot.
-                                            // [3][2]
+            x++; y--;
+            if (!XYPairInBounds(x,y)) break;
         }
 
         for (x=0;x<64;x++) {
@@ -752,17 +767,20 @@ public class DynamicCulling : MonoBehaviour {
         // [8][ ][ ][ ][ ][ ][ ][5][ ][ ][ ][ ][ ][ ][9][ ]
     }
 
-    private void CastRay(int x2, int y2) {
-        int deltaX = x2 - playerCellX;
-        int deltaY = y2 - playerCellY;
+    /*
+    private void CastRay(int x1, int y1, int x2, int y2) {
+        if (!XYPairInBounds(x1,y1) || !XYPairInBounds(x2,y2)) return;
+
+        int deltaX = x2 - x1;//playerCellX;
+        int deltaY = y2 - y1;//playerCellY;
         float absdx = Mathf.Abs(deltaX);
         float absdy = Mathf.Abs(deltaY);
         float majorAxisSteps = absdx > absdy ? absdx : absdy;
         float xIncrement = (float)deltaX / majorAxisSteps;
         float yIncrement = (float)deltaY / majorAxisSteps;
-        float x = (float)playerCellX;
-        float y = (float)playerCellY;
-        bool visibleLast = true; // Assume starting point is player's cell.
+        float x = (float)x1;//playerCellX;
+        float y = (float)y1;//playerCellY;
+        bool visibleLast = worldCellOpen[x1,y1];
         for (float step = 0; step <= majorAxisSteps; step+=1f) {
             int xint = (int)x;
             int yint = (int)y;
@@ -802,6 +820,30 @@ public class DynamicCulling : MonoBehaviour {
             if (x < 0f || x > 63f) break;
             y += yIncrement;
             if (y < 0f || y > 63f) break;
+        }
+    }*/
+
+    private void CastRay(int x1, int y1, int x2, int y2) {
+        int deltaX = x2 - x1;
+        int deltaY = y2 - y1;
+        int majorAxisSteps = Mathf.Abs(deltaX) > Mathf.Abs(deltaY) ?
+        Mathf.Abs(deltaX) : Mathf.Abs(deltaY);
+
+        float xIncrement = (float)deltaX / majorAxisSteps;
+        float yIncrement = (float)deltaY / majorAxisSteps;
+        int x = x1;
+        int y = y1;
+        bool visibleLast = true; // Assume starting point is player's cell.
+        for (int step = 0; step <= majorAxisSteps; step++) {
+
+            if (x >= 0 && x < 64 && y >= 0 && y < 64) {
+                if (visibleLast) {
+                    worldCellVisible[x,y] = IsOpen(x,y);
+                    visibleLast = worldCellVisible[x,y];
+                } else break;
+            }
+            x += Mathf.RoundToInt(xIncrement);
+            y += Mathf.RoundToInt(yIncrement);
         }
     }
 
