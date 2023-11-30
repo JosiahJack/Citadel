@@ -386,290 +386,113 @@ public class DynamicCulling : MonoBehaviour {
         return (worldCellVisible[x,y] = IsOpen(x,y));
     }
 
-    void CastAlongSlopeRay(int width,int height, int xofs, int yofs,
-                           int signx, int signy) {
-
-        int slope = Mathf.RoundToInt((float)(height + yofs - 1)
-                                     /
-                                     (float)(width + xofs - 1));
-
-        for (int dx = 0; dx < (width + xofs - 1); dx+=signx) { // Every delta x = 1 slope y travel
-            int start = Mathf.Min(2 * signy,slope * dx);
-
-            // <= for condition to include slope as it's the shift point.
-            for (int i = start;i <= (slope + (slope * dx)); i+=signy) {
-                if (!SetVisible(playerCellX + dx,playerCellY + i)) return;
-            }
-        }
-    }
-
-    // Tried a bunch of other things but they were all for integer cells and do
-    // not take into account the fact that I'm applying a 2d culling algorithm
-    // from the standpoint that the player's head can be positioned arbitrarily
-    // at any floating point position within the player's current cell thus
-    // needing to inflate the visible area by raycasting from the furthest
-    // extents of the cell, namely the four corners, meaning I'm rolling my own
-    // thing here.  Right.  Cool.  On to the math, but it's just plain slopes.
-    void CastOctantRays(int signx, int signy) {
-        // Recall that casts from one cell to another start at the midpoint
-        // and end at the midpoint, meaning that a cell 0,0 has its ray start
-        // at 0.5,0.5 with a minimum 0,0 and a maximum 1,1.
-        // The end point likewise.
-
-        // Now, maximum length line would be +/-0.5 x,y on both caddy-corner
-        // end squares' verts meaning four extent rays:
-        // +1x +1y = 3x32 cells = 32/3 slope = 10 2/3 = 11
-        // +1x -1y = 4x31 cells = 30/3 slope = 10
-        // -1x -1y = 2x31 cells = 30/1 slope = 30
-        // -1x +1y = 2x33 cells = 32/1 slope = 32
-        //   x   y = 3x32 cells = 31/2 slope = 15.5
-
-        // slope = (y - 1) / (x - 1) since it starts at half way on each cell,
-        // thus losing 0.5 + 0.5 in both x and y to give the minus 1's here.
-        // We don't technically care about the midpoint ray as it shouldn't hit
-        // any verts.  Should consider when a ray intersects with a vert or
-        // with an edge of a closed cell to terminate the cast.  Need to have
-        // all 4 rays terminate to end the cast for accounting for player
-        // having their camera (aka their head) positioned at any arbitrary
-        // point within the cell.  Here do logic on 1 by 1 cells, does not
-        // matter that the cells are 2.56f by 2.56f in the 3d actuality.
-
-        // Ray 1, +1x +1y
-        // +1x +1y = 4x33 cells = 32/3 slope = 10 2/3 = 11
-        // Starting from corner vert so move full slope prior to x shift since
-        // one x cell gives the slope in y (rise over run, typical slope stuff).
-
-        // Note: Starting with i=2 on these since we've already verified the
-        //       player cell x,y (assume as 0,0 here and add i to it), and the
-        //       first square ring of cells immediately adjacent to the player
-        //       which would be the x +/-1 and y +/-1 cells, so now move to 2.
-        //       Since we assume player is at 0,0 the math works out for any
-        //       other position by additive principle.
-
-        // I could calculate it here, but I'm caching this ray specifically
-        // for performance.  Intention is to have only the few known rays
-        // from 3x32 up to 32x32, then rotate by 90's and flip as necessary for
-        // remaining octants about the player's cell.
-        int y = 32 * signy;
-        for (int x = 3;x<=32;x++) {
-                                                      // Start cell vert     to End cell vert.
-                                                      // -------------------------------------
-            CastAlongSlopeRay(x,y, 1, 1,signx,signy); // Bottom left corner  to top right.
-            CastAlongSlopeRay(x,y, 1,-1,signx,signy); // Top left corner     to bottom right.
-            CastAlongSlopeRay(x,y,-1,-1,signx,signy); // Top right corner    to bottom left.
-            CastAlongSlopeRay(x,y,-1, 1,signx,signy); // Bottom right corner to bottom left.
-        }
-    }
-
     void DetermineVisibleCells() {
-        bool[,] vis = new bool[64,64];
         int x,y,xofs,yofs;
         for (x=0;x<64;x++) {
-            for (y=0;y<64;y++) vis[x,y] = false;
+            for (y=0;y<64;y++) worldCellVisible[x,y] = false;
         }
-
         worldCellVisible[playerCellX,playerCellY] = true;
-        vis[playerCellX,playerCellY] = true;
+        worldCellVisible[playerCellX,playerCellY] = true;
         bool currentVisible = true; // Mark if twere open if visible.
 
         x = playerCellX + 1;
         y = playerCellY;
-        if (SetVisible(x,y)) vis[x,y] = true;
+        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
 
         x = playerCellX + 1;
         y = playerCellY + 1;
-        if (SetVisible(x,y)) vis[x,y] = true;
+        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
 
         x = playerCellX;
         y = playerCellY + 1;
-        if (SetVisible(x,y)) vis[x,y] = true;
+        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
 
         x = playerCellX - 1;
         y = playerCellY + 1;
-        if (SetVisible(x,y)) vis[x,y] = true;
+        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
 
         x = playerCellX - 1;
         y = playerCellY;
-        if (SetVisible(x,y)) vis[x,y] = true;
+        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
 
         x = playerCellX - 1;
         y = playerCellY - 1;
-        if (SetVisible(x,y)) vis[x,y] = true;
+        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
 
         x = playerCellX;
         y = playerCellY - 1;
-        if (SetVisible(x,y)) vis[x,y] = true;
+        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
 
         x = playerCellX + 1;
         y = playerCellY - 1;
-        if (SetVisible(x,y)) vis[x,y] = true;
+        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
 
-        CastOctantRays(1,1);
-        CastOctantRays(1,-1);
-        // CastOctantRays(1,1);
-        // CastOctantRays(1,1);
-        // CastOctantRays(1,1);
-        // CastOctantRays(1,1);
-        // CastOctantRays(1,1);
-        // CastOctantRays(1,1);
+        for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,0);
+        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,0);
 
-        // Skip 0 and 63 corners since 45deg rays below get them.
-//         for (x=1;x<63;x++) CastRay(x,0);
-//         for (x=1;x<63;x++) CastRay(x,63);
-//         for (y=1;y<63;y++) CastRay(0,y);
-//         for (y=1;y<63;y++) CastRay(63,y);
-        return;
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,0);
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,0);
+        for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
+        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
 
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
-        for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
+        for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
 
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
-
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
-        for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
+        for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
+        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
 
         // [ ] = cell, empty means not checked
         // [1] = starting point or last loop's current, assumed visible.
         // [2] = current
         // [3] = neighbors we should be able to see if [2] could be.
 
-        // [ ][3]
-        // [1][2]
-        // [ ][3]
-        if (playerCellX < 63) {
-            for (x=playerCellX + 1;x<64;x++) { // Right
-                currentVisible = false;
-                if (vis[x - 1,playerCellY]) {
-                    if (worldCellOpen[x,playerCellY]) vis[x,playerCellY] = true;
-                    currentVisible = true; // Would be if twas open.
-                }
-
-                if (!currentVisible) break; // Hit wall!
-
-                vis[x,playerCellY + 1] = IsOpen(x,playerCellY + 1);
-                vis[x,playerCellY - 1] = IsOpen(x,playerCellY - 1);
-            }
-
-            if (playerCellY > 0) {
-                for (x=playerCellX + 1;x<64;x++) { // Right, South neighbor
-                    currentVisible = false;
-                    xofs = x - 1;
-                    yofs = playerCellY - 1;
-                    if (XYPairInBounds(xofs,yofs)) {
-                        if (vis[xofs,yofs]) {
-                            vis[x,yofs] = IsOpen(x,yofs);
-                            currentVisible = true; // Would be if twas open.
-                        }
-                    }
-                }
-            }
-
-            if (playerCellY < 63) {
-                for (x=playerCellX + 1;x<64;x++) { // Right, North neighbor
-                    currentVisible = false;
-                    xofs = x - 1;
-                    yofs = playerCellY + 1;
-                    if (XYPairInBounds(xofs,yofs)) {
-                        if (vis[xofs,yofs]) {
-                            vis[x,yofs] = IsOpen(x,yofs);
-                            currentVisible = true; // Would be if twas open.
-                        }
-                    }
-                }
-            }
-        }
-
-        // [3][ ]
-        // [2][1]
-        // [3][ ]
-        if (playerCellX > 0) {
-            for (x=playerCellX - 1;x>=0;x--) { // Left
-                currentVisible = false;
-                if (vis[x + 1,playerCellY]) {
-                    if (worldCellOpen[x,playerCellY]) vis[x,playerCellY] = true;
-                    currentVisible = true; // Would be if twas open.
-                }
-
-                if (!currentVisible) break; // Hit wall!
-
-                vis[x,playerCellY + 1] = IsOpen(x,playerCellY + 1);
-                vis[x,playerCellY - 1] = IsOpen(x,playerCellY - 1);
-            }
-
-            if (playerCellY > 0) {
-                for (x=playerCellX - 1;x>=0;x--) { // Left, South neighbor
-                    currentVisible = false;
-                    xofs = x + 1;
-                    yofs = playerCellY - 1;
-                    if (XYPairInBounds(xofs,yofs)) {
-                        if (vis[xofs,yofs]) {
-                            vis[x,yofs] = IsOpen(x,yofs);
-                            currentVisible = true; // Would be if twas open.
-                        }
-                    }
-                }
-            }
-
-            if (playerCellY < 63) {
-                for (x=playerCellX - 1;x>=0;x--) { // Left, North neighbor
-                    currentVisible = false;
-                    xofs = x + 1;
-                    yofs = playerCellY + 1;
-                    if (XYPairInBounds(xofs,yofs)) {
-                        if (vis[xofs,yofs]) {
-                            vis[x,yofs] = IsOpen(x,yofs);
-                            currentVisible = true; // Would be if twas open.
-                        }
-                    }
-                }
-            }
-        }
+        CastStraightX(1);  // [ ][3]
+                           // [1][2]
+                           // [ ][3]
+        CastStraightX(-1); // [3][ ]
+                           // [2][1]
+                           // [3][ ]
 
         // [3][2][3]
         // [ ][1][ ]
         if (playerCellY < 63) {
             for (y=playerCellY + 1;y<64;y++) { // Up
                 currentVisible = false;
-                if (vis[playerCellX,y - 1]) {
-                    if (worldCellOpen[playerCellX,y]) vis[playerCellX,y] = true;
+                if (worldCellVisible[playerCellX,y - 1]) {
+                    if (worldCellOpen[playerCellX,y]) worldCellVisible[playerCellX,y] = true;
                     currentVisible = true; // Would be if twas open.
                 }
 
                 if (!currentVisible) break; // Hit wall!
 
-                vis[playerCellX + 1,y] = IsOpen(playerCellX + 1,y);
-                vis[playerCellX - 1,y] = IsOpen(playerCellX - 1,y);
+                worldCellVisible[playerCellX + 1,y] = IsOpen(playerCellX + 1,y);
+                worldCellVisible[playerCellX - 1,y] = IsOpen(playerCellX - 1,y);
             }
 
             if (playerCellX < 63) {
@@ -678,8 +501,8 @@ public class DynamicCulling : MonoBehaviour {
                     xofs = playerCellX + 1;
                     yofs = y - 1;
                     if (XYPairInBounds(xofs,yofs)) {
-                        if (vis[xofs,yofs]) {
-                            vis[xofs,y] = IsOpen(xofs,y);
+                        if (worldCellVisible[xofs,yofs]) {
+                            worldCellVisible[xofs,y] = IsOpen(xofs,y);
                             currentVisible = true; // Would be if twas open.
                         }
                     }
@@ -692,8 +515,8 @@ public class DynamicCulling : MonoBehaviour {
                     xofs = playerCellX - 1;
                     yofs = y - 1;
                     if (XYPairInBounds(xofs,yofs)) {
-                        if (vis[xofs,yofs]) {
-                            vis[xofs,y] = IsOpen(xofs,y);
+                        if (worldCellVisible[xofs,yofs]) {
+                            worldCellVisible[xofs,y] = IsOpen(xofs,y);
                             currentVisible = true; // Would be if twas open.
                         }
                     }
@@ -706,15 +529,15 @@ public class DynamicCulling : MonoBehaviour {
         if (playerCellY > 0) {
             for (y=playerCellY - 1;y>=0;y--) { // Down
                 currentVisible = false;
-                if (vis[playerCellX,y + 1]) {
-                    if (worldCellOpen[playerCellX,y]) vis[playerCellX,y] = true;
+                if (worldCellVisible[playerCellX,y + 1]) {
+                    if (worldCellOpen[playerCellX,y]) worldCellVisible[playerCellX,y] = true;
                     currentVisible = true; // Would be if twas open.
                 }
 
                 if (!currentVisible) break; // Hit wall!
 
-                vis[playerCellX + 1,y] = IsOpen(playerCellX + 1,y);
-                vis[playerCellX - 1,y] = IsOpen(playerCellX - 1,y);
+                worldCellVisible[playerCellX + 1,y] = IsOpen(playerCellX + 1,y);
+                worldCellVisible[playerCellX - 1,y] = IsOpen(playerCellX - 1,y);
             }
 
             if (playerCellX > 0) {
@@ -723,8 +546,8 @@ public class DynamicCulling : MonoBehaviour {
                     xofs = playerCellX - 1;
                     yofs = y + 1;
                     if (XYPairInBounds(xofs,yofs)) {
-                        if (vis[xofs,yofs]) {
-                            vis[xofs,y] = IsOpen(xofs,y);
+                        if (worldCellVisible[xofs,yofs]) {
+                            worldCellVisible[xofs,y] = IsOpen(xofs,y);
                             currentVisible = true; // Would be if twas open.
                         }
                     }
@@ -737,8 +560,8 @@ public class DynamicCulling : MonoBehaviour {
                     xofs = playerCellX + 1;
                     yofs = y + 1;
                     if (XYPairInBounds(xofs,yofs)) {
-                        if (vis[xofs,yofs]) {
-                            vis[xofs,y] = IsOpen(xofs,y);
+                        if (worldCellVisible[xofs,yofs]) {
+                            worldCellVisible[xofs,y] = IsOpen(xofs,y);
                             currentVisible = true; // Would be if twas open.
                         }
                     }
@@ -746,96 +569,14 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
 
-        bool north = false;
-        bool west = false;
-        bool south = false;
-        bool east = false;
-
-        // [3][2]
-        // [1][3]
-        x = playerCellX + 1;
-        y = playerCellY + 1;
-        for (int iter=0;iter<64;iter++) { // Up to Right
-            xofs = x - 1;
-            yofs = y - 1;
-            west = IsOpen(xofs,y); // The two [3] cells.
-            south = IsOpen(x,yofs);
-            if (!west && !south) break; // Don't see through closed [3]s corner.
-
-            vis[x,y] = currentVisible = IsOpen(x,y);
-            vis[xofs,y] = west;  // [west][2    ]  Check the two [3] cells
-            vis[x,yofs] = south; // [1   ][south]
-            if (!currentVisible) break; // Hit wall!  Break after opening [3]s.
-
-            x++; y++;
-            if (!XYPairInBounds(x,y)) break;
-        }
-
-        // [2][3]
-        // [3][1]
-        x = playerCellX - 1;
-        y = playerCellY + 1;
-        for (int iter=0;iter<64;iter++) { // Up to Right
-            xofs = x + 1;
-            yofs = y - 1;
-            east = IsOpen(xofs,y); // The two [3] cells.
-            south = IsOpen(x,yofs);
-            if (!east && !south) break; // Don't see through closed [3]s corner.
-
-            vis[x,y] = currentVisible = IsOpen(x,y);
-            vis[xofs,y] = east;  // [2    ][east]  Check the two [3] cells
-            vis[x,yofs] = south; // [south][1   ]
-            if (!currentVisible) break; // Hit wall!  Break after opening [3]s.
-
-            x--; y++;
-            if (!XYPairInBounds(x,y)) break;
-        }
-
-        // [3][1]
-        // [2][3]
-        x = playerCellX - 1;
-        y = playerCellY - 1;
-        for (int iter=0;iter<64;iter++) { // Up to Right
-            xofs = x + 1;
-            yofs = y + 1;
-            north = IsOpen(x,yofs); // The two [3] cells.
-            east = IsOpen(xofs,y);
-            if (!east && !south) break; // Don't see through closed [3]s corner.
-
-            vis[x,y] = currentVisible = IsOpen(x,y);
-            vis[x,yofs] = north;// [north][1   ]  Check the two [3] cells
-            vis[xofs,y] = east; // [2    ][east]
-            if (!currentVisible) break; // Hit wall!  Break after opening [3]s.
-
-            x--; y--;
-            if (!XYPairInBounds(x,y)) break;
-        }
-
-        // [1][3]
-        // [3][2]
-        x = playerCellX + 1;
-        y = playerCellY - 1;
-        for (int iter=0;iter<64;iter++) { // Up to Right
-            xofs = x - 1;
-            yofs = y + 1;
-            north = IsOpen(x,yofs); // The two [3] cells.
-            west = IsOpen(xofs,y);
-            if (!east && !south) break; // Don't see through closed [3]s corner.
-
-            vis[x,y] = currentVisible = IsOpen(x,y);
-            vis[x,yofs] = north;  // [1   ][north]  Check the two [3] cells
-            vis[xofs,y] = west;   // [west][2    ]
-            if (!currentVisible) break; // Hit wall!  Break after opening [3]s.
-
-            x++; y--;
-            if (!XYPairInBounds(x,y)) break;
-        }
-
-        for (x=0;x<64;x++) {
-            for (y=0;y<64;y++) {
-                worldCellVisible[x,y] = vis[x,y];
-            }
-        }
+        Cast45(1,1);   // [3][2]
+                       // [1][3]
+        Cast45(-1,1);  // [2][3]
+                       // [3][1]
+        Cast45(-1,-1); // [3][1]
+                       // [2][3]
+        Cast45(1,-1);  // [1][3]
+                       // [3][2]
 
         // Pattern of custom axial rays, 3 wide each (center only shown).
         // [ ][ ][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][ ][ ][6]
@@ -912,7 +653,60 @@ public class DynamicCulling : MonoBehaviour {
         }
     }*/
 
+    private void CastStraightX(int signx) {
+        if (signx > 0 && playerCellX >= 63) return;
+        if (signx < 0 && playerCellX <= 0) return;
+
+        int x,y;
+        bool currentVisible = true;
+        for (x=playerCellX + 1;x<64;x+=signx) { // Right
+            currentVisible = false;
+            if (XYPairInBounds(x - signx,playerCellY)
+                && XYPairInBounds(x,playerCellY)) {
+
+                if (worldCellVisible[x - signx,playerCellY]) {
+                    worldCellVisible[x,playerCellY] = worldCellOpen[x,playerCellY];
+                    currentVisible = true; // Would be if twas open.
+                }
+            }
+
+            if (!currentVisible) break; // Hit wall!
+
+            if (XYPairInBounds(x,playerCellY + 1)) {
+                worldCellVisible[x,playerCellY + 1] = IsOpen(x,playerCellY + 1);
+            }
+
+            if (XYPairInBounds(x,playerCellY - 1)) {
+                worldCellVisible[x,playerCellY - 1] = IsOpen(x,playerCellY - 1);
+            }
+        }
+    }
+
+    private void Cast45(int signx, int signy) {
+        int x = playerCellX + signx;
+        int y = playerCellY + signy;
+        bool neighbor1,neighbor2;
+        bool currentVisible = true;
+        int xofs,yofs;
+        for (int iter=0;iter<64;iter++) {
+            xofs = x - signx;
+            yofs = y - signy;
+            neighbor1 = IsOpen(xofs,y);
+            neighbor2 = IsOpen(x,yofs);
+            if (!neighbor1 && !neighbor2) break; // Don't see thru closed corner
+
+            worldCellVisible[x,y] = currentVisible = IsOpen(x,y);
+            worldCellVisible[xofs,y] = neighbor1;
+            worldCellVisible[x,yofs] = neighbor2;
+            if (!currentVisible) break; // Hit wall!  Break after neighbors.
+
+            x+=signx; y+=signy;
+            if (!XYPairInBounds(x,y)) break;
+        }
+    }
+
     private void CastRay(int x1, int y1, int x2, int y2) {
+        return;
         int deltaX = x2 - x1;
         int deltaY = y2 - y1;
         int majorAxisSteps = Mathf.Abs(deltaX) > Mathf.Abs(deltaY) ?
