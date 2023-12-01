@@ -387,13 +387,13 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     void DetermineVisibleCells() {
-        int x,y,xofs,yofs;
+        int x,y;
         for (x=0;x<64;x++) {
             for (y=0;y<64;y++) worldCellVisible[x,y] = false;
         }
+
         worldCellVisible[playerCellX,playerCellY] = true;
         worldCellVisible[playerCellX,playerCellY] = true;
-        bool currentVisible = true; // Mark if twere open if visible.
 
         x = playerCellX + 1;
         y = playerCellY;
@@ -428,44 +428,9 @@ public class DynamicCulling : MonoBehaviour {
         if (SetVisible(x,y)) worldCellVisible[x,y] = true;
 
         for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,0);
-        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,0);
-
         for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY + 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY + 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX - 1,playerCellY - 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX + 1,playerCellY - 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY + 1,x,63);
-        // for (x=0;x<64;x++) CastRay(playerCellX,playerCellY - 1,x,63);
-
         for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,0,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,0,y);
-
         for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY + 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY + 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX - 1,playerCellY - 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX + 1,playerCellY - 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY + 1,63,y);
-        // for (y=0;y<64;y++) CastRay(playerCellX,playerCellY - 1,63,y);
 
         // [ ] = cell, empty means not checked
         // [1] = starting point or last loop's current, assumed visible.
@@ -475,108 +440,28 @@ public class DynamicCulling : MonoBehaviour {
         CastStraightX(1);  // [ ][3]
                            // [1][2]
                            // [ ][3]
+
         CastStraightX(-1); // [3][ ]
                            // [2][1]
                            // [3][ ]
 
-        // [3][2][3]
-        // [ ][1][ ]
-        if (playerCellY < 63) {
-            for (y=playerCellY + 1;y<64;y++) { // Up
-                currentVisible = false;
-                if (worldCellVisible[playerCellX,y - 1]) {
-                    if (worldCellOpen[playerCellX,y]) worldCellVisible[playerCellX,y] = true;
-                    currentVisible = true; // Would be if twas open.
-                }
+        CastStraightY(1);  // [3][2][3]
+                           // [ ][1][ ]
 
-                if (!currentVisible) break; // Hit wall!
+        CastStraightY(-1); // [ ][1][ ]
+                           // [3][2][3]
 
-                worldCellVisible[playerCellX + 1,y] = IsOpen(playerCellX + 1,y);
-                worldCellVisible[playerCellX - 1,y] = IsOpen(playerCellX - 1,y);
-            }
+        Cast45(1,1);       // [3][2]
+                           // [1][3]
 
-            if (playerCellX < 63) {
-                for (y=playerCellY + 1;y<63;y++) { // Up, right neighbor
-                    currentVisible = false;
-                    xofs = playerCellX + 1;
-                    yofs = y - 1;
-                    if (XYPairInBounds(xofs,yofs)) {
-                        if (worldCellVisible[xofs,yofs]) {
-                            worldCellVisible[xofs,y] = IsOpen(xofs,y);
-                            currentVisible = true; // Would be if twas open.
-                        }
-                    }
-                }
-            }
+        Cast45(-1,1);      // [2][3]
+                           // [3][1]
 
-            if (playerCellX > 0) {
-                for (y=playerCellY + 1;y<63;y++) { // Up, left neighbor
-                    currentVisible = false;
-                    xofs = playerCellX - 1;
-                    yofs = y - 1;
-                    if (XYPairInBounds(xofs,yofs)) {
-                        if (worldCellVisible[xofs,yofs]) {
-                            worldCellVisible[xofs,y] = IsOpen(xofs,y);
-                            currentVisible = true; // Would be if twas open.
-                        }
-                    }
-                }
-            }
-        }
+        Cast45(-1,-1);     // [3][1]
+                           // [2][3]
 
-        // [ ][1][ ]
-        // [3][2][3]
-        if (playerCellY > 0) {
-            for (y=playerCellY - 1;y>=0;y--) { // Down
-                currentVisible = false;
-                if (worldCellVisible[playerCellX,y + 1]) {
-                    if (worldCellOpen[playerCellX,y]) worldCellVisible[playerCellX,y] = true;
-                    currentVisible = true; // Would be if twas open.
-                }
-
-                if (!currentVisible) break; // Hit wall!
-
-                worldCellVisible[playerCellX + 1,y] = IsOpen(playerCellX + 1,y);
-                worldCellVisible[playerCellX - 1,y] = IsOpen(playerCellX - 1,y);
-            }
-
-            if (playerCellX > 0) {
-                for (y=playerCellY - 1;y>=0;y--) { // Down, left neighbor
-                    currentVisible = false;
-                    xofs = playerCellX - 1;
-                    yofs = y + 1;
-                    if (XYPairInBounds(xofs,yofs)) {
-                        if (worldCellVisible[xofs,yofs]) {
-                            worldCellVisible[xofs,y] = IsOpen(xofs,y);
-                            currentVisible = true; // Would be if twas open.
-                        }
-                    }
-                }
-            }
-
-            if (playerCellX < 63) {
-                for (y=playerCellY - 1;y>=0;y--) { // Down, right neighbor
-                    currentVisible = false;
-                    xofs = playerCellX + 1;
-                    yofs = y + 1;
-                    if (XYPairInBounds(xofs,yofs)) {
-                        if (worldCellVisible[xofs,yofs]) {
-                            worldCellVisible[xofs,y] = IsOpen(xofs,y);
-                            currentVisible = true; // Would be if twas open.
-                        }
-                    }
-                }
-            }
-        }
-
-        Cast45(1,1);   // [3][2]
-                       // [1][3]
-        Cast45(-1,1);  // [2][3]
-                       // [3][1]
-        Cast45(-1,-1); // [3][1]
-                       // [2][3]
-        Cast45(1,-1);  // [1][3]
-                       // [3][2]
+        Cast45(1,-1);      // [1][3]
+                           // [3][2]
 
         // Pattern of custom axial rays, 3 wide each (center only shown).
         // [ ][ ][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][ ][ ][6]
@@ -597,69 +482,43 @@ public class DynamicCulling : MonoBehaviour {
         // [8][ ][ ][ ][ ][ ][ ][5][ ][ ][ ][ ][ ][ ][9][ ]
     }
 
-    /*
-    private void CastRay(int x1, int y1, int x2, int y2) {
-        if (!XYPairInBounds(x1,y1) || !XYPairInBounds(x2,y2)) return;
+    private void CastStraightY(int signy) {
+        if (signy > 0 && playerCellY >= 63) return;
+        if (signy < 0 && playerCellY <= 0) return;
 
-        int deltaX = x2 - x1;//playerCellX;
-        int deltaY = y2 - y1;//playerCellY;
-        float absdx = Mathf.Abs(deltaX);
-        float absdy = Mathf.Abs(deltaY);
-        float majorAxisSteps = absdx > absdy ? absdx : absdy;
-        float xIncrement = (float)deltaX / majorAxisSteps;
-        float yIncrement = (float)deltaY / majorAxisSteps;
-        float x = (float)x1;//playerCellX;
-        float y = (float)y1;//playerCellY;
-        bool visibleLast = worldCellOpen[x1,y1];
-        for (float step = 0; step <= majorAxisSteps; step+=1f) {
-            int xint = (int)x;
-            int yint = (int)y;
-            int xrint = (int)Mathf.Ceil(x);
-            int yrint = (int)Mathf.Ceil(y);
-            if (visibleLast) {
-                if (worldCellOpen[xint,yint]) {
-                    worldCellVisible[xint,yint] = true;
-                    visibleLast = true;
+        int x,y;
+        bool currentVisible = true;
+        for (y=playerCellY + signy;y<64;y+=signy) { // Up
+            currentVisible = false;
+            if (XYPairInBounds(playerCellX,y - signy)
+                && XYPairInBounds(playerCellX,y)) {
+
+                if (worldCellVisible[playerCellX,y - signy]) {
+                    worldCellVisible[playerCellX,y] = worldCellOpen[playerCellX,y];
+                    currentVisible = true; // Would be if twas open.
                 }
+            }
 
-                bool xroundThreshMet = (xrint != xint);
-                bool yroundThreshMet = (yrint != yint);
-                if (xroundThreshMet) {
-                    if (worldCellOpen[xrint,yint]) {
-                        worldCellVisible[xrint,yint] = true;
-                        visibleLast = true;
-                    }
-                }
+            if (!currentVisible) break; // Hit wall!
 
-                if (yroundThreshMet) {
-                    if (worldCellOpen[xint,yrint]) {
-                        worldCellVisible[xint,yrint] = true;
-                        visibleLast = true;
-                    }
-                }
+            if (XYPairInBounds(playerCellX + 1,y)) {
+                worldCellVisible[playerCellX + 1,y] = IsOpen(playerCellX + 1,y);
+            }
 
-                if (xroundThreshMet && yroundThreshMet) {
-                    if (worldCellOpen[xrint,yrint]) {
-                        worldCellVisible[xrint,yrint] = true;
-                        visibleLast = true;
-                    }
-                }
-            } else break;
-
-            x += xIncrement;
-            if (x < 0f || x > 63f) break;
-            y += yIncrement;
-            if (y < 0f || y > 63f) break;
+            if (XYPairInBounds(playerCellX - 1,y)) {
+                worldCellVisible[playerCellX - 1,y] = IsOpen(playerCellX - 1,y);
+            }
         }
-    }*/
+    }
 
     private void CastStraightX(int signx) {
         if (signx > 0 && playerCellX >= 63) return;
         if (signx < 0 && playerCellX <= 0) return;
 
-        int x,y;
+        int x = playerCellX + signx;
+        int y;
         bool currentVisible = true;
-        for (x=playerCellX + 1;x<64;x+=signx) { // Right
+        for (;x<64;x+=signx) { // Right
             currentVisible = false;
             if (XYPairInBounds(x - signx,playerCellY)
                 && XYPairInBounds(x,playerCellY)) {

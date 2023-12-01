@@ -264,9 +264,8 @@ public class AIController : MonoBehaviour {
 
 		faceVec = goalLocation - transform.position;
 		faceVec.y = 0f;
-		faceVec = faceVec.normalized;
-		if (faceVec.sqrMagnitude <= 0) return; // Avoid zero quat error.
-		if (faceVec == Vector3.up) return; // Up results in no Y rotation.
+		if (faceVec.x <= 0f && faceVec.z <= 0f) return; // Avoid zero quat error.
+		if (Vector3.Dot(faceVec,Vector3.up) > 0.99f) return; // Up results in no Y rotation.
 
 		// Rotate as fast as we can towards facing the goal location.
 		Vector3 up = Vector3.up;
