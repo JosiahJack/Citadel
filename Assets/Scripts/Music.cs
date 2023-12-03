@@ -239,8 +239,8 @@ public class Music : MonoBehaviour {
 			return levelMusic1[rand];
 		}
 
-		// 2  SCIENCE
-		if (levnum == 2) {
+		// 2  SCIENCE, 4 STORAGE
+		if (levnum == 2 || levnum == 4) {
 			if (levelEntry) return levelMusic2[0];
 			if (ttype == TrackType.Combat) {
 				rand = UnityEngine.Random.Range(8,10);
@@ -262,7 +262,7 @@ public class Music : MonoBehaviour {
 		}
 
 		// 8 SECURITY, 9 BRIDGE, 4 STORAGE
-		if (levnum == 8 || levnum == 9 || levnum == 4) {
+		if (levnum == 8 || levnum == 9) {
 			if (levelEntry) return levelMusic8[9];
 			if (ttype == TrackType.Combat) {
 				rand = UnityEngine.Random.Range(0,6);

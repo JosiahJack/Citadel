@@ -10,6 +10,7 @@ public class DynamicCulling : MonoBehaviour {
     const float CELLXHALF = 1.28f;
     public bool[,] worldCellOpen = new bool [WORLDX,WORLDX];
     public bool[,] worldCellVisible = new bool [WORLDX,WORLDX];
+    public bool[,] worldCellCheckedYet = new bool [WORLDX,WORLDX];
     public Vector3[,] worldCellPositions = new Vector3 [WORLDX,WORLDX];
     public List<GameObject>[,] cellLists = new List<GameObject>[WORLDX,WORLDX];
     public GameObject[,] debugCubes = new GameObject[WORLDX,WORLDX];
@@ -52,6 +53,7 @@ public class DynamicCulling : MonoBehaviour {
 
     void ClearCellList() {
         worldCellVisible = new bool [WORLDX,WORLDX];
+        worldCellCheckedYet = new bool [WORLDX,WORLDX];
         worldCellOpen = new bool [WORLDX,WORLDX];
         worldCellPositions = new Vector3 [WORLDX,WORLDX];
         staticMeshesImmutable = new List<MeshRenderer>();
@@ -318,6 +320,8 @@ public class DynamicCulling : MonoBehaviour {
         FindPlayerCell();
         DetermineVisibleCells(); // Reevaluate visible cells from new pos.
 
+        if (!cullEnabled) return;
+
         // Force all cells dirty at start so the visibility is toggled for all.
         int x,y;
         for (x=0;x<64;x++) {
@@ -381,9 +385,12 @@ public class DynamicCulling : MonoBehaviour {
         return worldCellOpen[x,y];
     }
 
-    bool SetVisible(int x, int y) {
-        if (!XYPairInBounds(x,y)) return false;
-        return (worldCellVisible[x,y] = IsOpen(x,y));
+    void SetVisible(int x, int y) {
+        if (!XYPairInBounds(x,y)) return;
+        if (worldCellCheckedYet[x,y]) return;
+
+        worldCellVisible[x,y] = IsOpen(x,y);
+        worldCellCheckedYet[x,y] = true;
     }
 
     void DetermineVisibleCells() {
@@ -394,43 +401,14 @@ public class DynamicCulling : MonoBehaviour {
 
         worldCellVisible[playerCellX,playerCellY] = true;
         worldCellVisible[playerCellX,playerCellY] = true;
+        x = playerCellX; y = playerCellY;
 
-        x = playerCellX + 1;
-        y = playerCellY;
-        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
+        // Set all neighboring cells visible if open in 3x3 square.
+        SetVisible(x - 1,y + 1); SetVisible(x,y + 1); SetVisible(x + 1,y + 1);
 
-        x = playerCellX + 1;
-        y = playerCellY + 1;
-        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
+        SetVisible(x - 1,y);     /* Player Position*/ SetVisible(x + 1,y);
 
-        x = playerCellX;
-        y = playerCellY + 1;
-        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
-
-        x = playerCellX - 1;
-        y = playerCellY + 1;
-        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
-
-        x = playerCellX - 1;
-        y = playerCellY;
-        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
-
-        x = playerCellX - 1;
-        y = playerCellY - 1;
-        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
-
-        x = playerCellX;
-        y = playerCellY - 1;
-        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
-
-        x = playerCellX + 1;
-        y = playerCellY - 1;
-        if (SetVisible(x,y)) worldCellVisible[x,y] = true;
-
-        for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
-        for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
-        for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
-        for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        SetVisible(x - 1,y - 1); SetVisible(x,y - 1); SetVisible(x + 1,y - 1);
 
         // [ ] = cell, empty means not checked
         // [1] = starting point or last loop's current, assumed visible.
@@ -463,6 +441,13 @@ public class DynamicCulling : MonoBehaviour {
         Cast45(1,-1);      // [1][3]
                            // [3][2]
 
+
+
+        for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
+        for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
+        for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
+        for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+
         // Pattern of custom axial rays, 3 wide each (center only shown).
         // [ ][ ][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][ ][ ][6]
         // [7][ ][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][ ][6][ ]
@@ -486,27 +471,33 @@ public class DynamicCulling : MonoBehaviour {
         if (signy > 0 && playerCellY >= 63) return;
         if (signy < 0 && playerCellY <= 0) return;
 
-        int x,y;
+        int x = playerCellX;
+        int y = playerCellY + signy;
         bool currentVisible = true;
-        for (y=playerCellY + signy;y<64;y+=signy) { // Up
+        for (;y<64;y+=signy) { // Up
             currentVisible = false;
-            if (XYPairInBounds(playerCellX,y - signy)
-                && XYPairInBounds(playerCellX,y)) {
+            if (XYPairInBounds(x,y - signy)
+                && XYPairInBounds(x,y)) {
 
-                if (worldCellVisible[playerCellX,y - signy]) {
-                    worldCellVisible[playerCellX,y] = worldCellOpen[playerCellX,y];
+                if (worldCellCheckedYet[x,y]) continue;
+
+                if (worldCellVisible[x,y - signy]) {
+                    worldCellVisible[x,y] = worldCellOpen[x,y];
+                    worldCellCheckedYet[x,y] = true;
                     currentVisible = true; // Would be if twas open.
                 }
             }
 
             if (!currentVisible) break; // Hit wall!
 
-            if (XYPairInBounds(playerCellX + 1,y)) {
-                worldCellVisible[playerCellX + 1,y] = IsOpen(playerCellX + 1,y);
+            if (XYPairInBounds(x + 1,y)) {
+                worldCellVisible[x + 1,y] = IsOpen(x + 1,y);
+                worldCellCheckedYet[x + 1,y] = true;
             }
 
-            if (XYPairInBounds(playerCellX - 1,y)) {
-                worldCellVisible[playerCellX - 1,y] = IsOpen(playerCellX - 1,y);
+            if (XYPairInBounds(x - 1,y)) {
+                worldCellVisible[x - 1,y] = IsOpen(x - 1,y);
+                worldCellCheckedYet[x - 1,y] = true;
             }
         }
     }
@@ -516,38 +507,47 @@ public class DynamicCulling : MonoBehaviour {
         if (signx < 0 && playerCellX <= 0) return;
 
         int x = playerCellX + signx;
-        int y;
+        int y = playerCellY;
         bool currentVisible = true;
         for (;x<64;x+=signx) { // Right
             currentVisible = false;
-            if (XYPairInBounds(x - signx,playerCellY)
-                && XYPairInBounds(x,playerCellY)) {
+            if (XYPairInBounds(x - signx,y)
+                && XYPairInBounds(x,y)) {
 
-                if (worldCellVisible[x - signx,playerCellY]) {
-                    worldCellVisible[x,playerCellY] = worldCellOpen[x,playerCellY];
+                if (worldCellCheckedYet[x,y]) continue;
+
+                if (worldCellVisible[x - signx,y]) {
+                    worldCellVisible[x,y] = worldCellOpen[x,y];
+                    worldCellCheckedYet[x,y] = true;
                     currentVisible = true; // Would be if twas open.
                 }
             }
 
             if (!currentVisible) break; // Hit wall!
 
-            if (XYPairInBounds(x,playerCellY + 1)) {
-                worldCellVisible[x,playerCellY + 1] = IsOpen(x,playerCellY + 1);
+            if (XYPairInBounds(x,y + 1)) {
+                worldCellVisible[x,y + 1] = IsOpen(x,y + 1);
+                worldCellCheckedYet[x,y + 1] = true;
             }
 
-            if (XYPairInBounds(x,playerCellY - 1)) {
-                worldCellVisible[x,playerCellY - 1] = IsOpen(x,playerCellY - 1);
+            if (XYPairInBounds(x,y - 1)) {
+                worldCellVisible[x,y - 1] = IsOpen(x,y - 1);
+                worldCellCheckedYet[x,y - 1] = true;
             }
         }
     }
 
     private void Cast45(int signx, int signy) {
-        int x = playerCellX + signx;
-        int y = playerCellY + signy;
+        int x = playerCellX;
+        int y = playerCellY;
         bool neighbor1,neighbor2;
         bool currentVisible = true;
         int xofs,yofs;
         for (int iter=0;iter<64;iter++) {
+            x+=signx; y+=signy; // Always increment else continue stops early.
+            if (!XYPairInBounds(x,y)) break;
+            if (worldCellCheckedYet[x,y]) continue; // Might be more further out
+
             xofs = x - signx;
             yofs = y - signy;
             neighbor1 = IsOpen(xofs,y);
@@ -555,37 +555,42 @@ public class DynamicCulling : MonoBehaviour {
             if (!neighbor1 && !neighbor2) break; // Don't see thru closed corner
 
             worldCellVisible[x,y] = currentVisible = IsOpen(x,y);
+            worldCellCheckedYet[x,y] = true;
             worldCellVisible[xofs,y] = neighbor1;
+            worldCellCheckedYet[xofs,y] = true;
             worldCellVisible[x,yofs] = neighbor2;
+            worldCellCheckedYet[x,yofs] = true;
             if (!currentVisible) break; // Hit wall!  Break after neighbors.
-
-            x+=signx; y+=signy;
-            if (!XYPairInBounds(x,y)) break;
         }
     }
 
     private void CastRay(int x1, int y1, int x2, int y2) {
-        return;
         int deltaX = x2 - x1;
         int deltaY = y2 - y1;
-        int majorAxisSteps = Mathf.Abs(deltaX) > Mathf.Abs(deltaY) ?
-        Mathf.Abs(deltaX) : Mathf.Abs(deltaY);
+        int majorAxisSteps = 0;
+        int absdx = Mathf.Abs(deltaX);
+        int absdy = Mathf.Abs(deltaY);
+        if (absdx > absdy) majorAxisSteps = absdx; // Pick largest.
+        else               majorAxisSteps = absdy;
 
-        float xIncrement = (float)deltaX / majorAxisSteps;
-        float yIncrement = (float)deltaY / majorAxisSteps;
+        float xIncrement = (float)deltaX / majorAxisSteps; // One of these...
+        float yIncrement = (float)deltaY / majorAxisSteps; // always equals 1f.
         int x = x1;
         int y = y1;
         bool visibleLast = true; // Assume starting point is player's cell.
         for (int step = 0; step <= majorAxisSteps; step++) {
+            x += Mathf.RoundToInt(xIncrement); // Always increment else
+            y += Mathf.RoundToInt(yIncrement); // continue stops early.
+            if (!XYPairInBounds(x,y)) break;
+            if (worldCellCheckedYet[x,y]) continue; // Might be more further out
 
             if (x >= 0 && x < 64 && y >= 0 && y < 64) {
                 if (visibleLast) {
                     worldCellVisible[x,y] = IsOpen(x,y);
+                    worldCellCheckedYet[x,y] = true;
                     visibleLast = worldCellVisible[x,y];
                 } else break;
             }
-            x += Mathf.RoundToInt(xIncrement);
-            y += Mathf.RoundToInt(yIncrement);
         }
     }
 
@@ -742,7 +747,10 @@ public class DynamicCulling : MonoBehaviour {
         if (UpdatedPlayerCell()) {
             int x,y;
             for (x=0;x<64;x++) {
-                for (y=0;y<64;y++) worldCellLastVisible[x,y] = worldCellVisible[x,y];
+                for (y=0;y<64;y++) {
+                    worldCellLastVisible[x,y] = worldCellVisible[x,y];
+                    worldCellCheckedYet[x,y] = false;
+                }
             }
 
             DetermineVisibleCells(); // Reevaluate visible cells from new pos.

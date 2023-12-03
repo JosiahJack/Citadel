@@ -543,6 +543,12 @@ public class AIController : MonoBehaviour {
 		CheckPain(); // Go into pain if just hurt, data sent by HealthManager.
 	}
 
+	Vector3 GetWanderPoint() {
+		float newX = transform.position.x + UnityEngine.Random.Range(-79f,79f);
+		float newZ = transform.position.z + UnityEngine.Random.Range(-79f,79f);
+		return new Vector3(newX,0f,newZ);
+	}
+
 	void Walk() {
         if (CheckPain()) return; // Go into pain if just hurt
 		if (asleep) return;
@@ -553,19 +559,12 @@ public class AIController : MonoBehaviour {
 
 		float dist = Vector3.Distance(sightPoint.transform.position,
 									  currentDestination);
-
 		if (wandering) {
 			if (wanderFinished < PauseScript.a.relativeTime || (dist < 0.64f)) {
 				wanderFinished = PauseScript.a.relativeTime
 								 + UnityEngine.Random.Range(3f,8f);
 
-				float newX = transform.position.x
-							 + UnityEngine.Random.Range(-79f,79f);
-
-				float newZ = transform.position.z
-							 + UnityEngine.Random.Range(-79f,79f);
-
-				currentDestination = new Vector3(newX,0f,newZ);
+				currentDestination = GetWanderPoint();
 			}
 		}
 
@@ -768,7 +767,7 @@ public class AIController : MonoBehaviour {
                 enemy = null;
 				enemyHM = null;
 				wandering = true; // Sometimes look like we are still searching
-				wanderFinished = PauseScript.a.relativeTime - 1f;
+				wanderFinished = PauseScript.a.relativeTime + 1f;
                 currentState = AIState.Walk;
             }
             return;
@@ -825,12 +824,16 @@ public class AIController : MonoBehaviour {
 		if (IsCyberNPC()) {
 			currentDestination = enemy.transform.position; // See through walls
 		} else {
-			if (NavMesh.CalculatePath(sightPoint.transform.position,
-									enemy.transform.position,0,searchPath)) {
-				currentDestination = searchPath.corners[0];
-			} else {
-				currentDestination = lastKnownEnemyPos;
-			}
+// 			if (NavMesh.CalculatePath(sightPoint.transform.position,
+// 									enemy.transform.position,NavMesh.AllAreas,
+// 									searchPath)) {
+//
+// 				currentDestination = searchPath.corners[0];
+// 				Debug.Log("gud Hunting");
+// 			} else {
+			// UPDATE: A* Pathfinding with world grid.
+				currentDestination = enemy.transform.position;//lastKnownEnemyPos;
+// 			}
 		}
 
 		// Destination is still far enough away and within angle, then move.
@@ -1439,7 +1442,7 @@ public class AIController : MonoBehaviour {
 		if (IsCyberNPC()) {
 			diff = Const.a.difficultyCyber;
 		} else {
-			if (!withinPVS) return false;
+			if (!withinPVS && DynamicCulling.a.cullEnabled) return false;
 		}
 
         if (diff == 0 && index != 28) return false;
@@ -1494,7 +1497,7 @@ public class AIController : MonoBehaviour {
 		if (IsCyberNPC()) {
 			diff = Const.a.difficultyCyber;
 		} else {
-			if (!withinPVS) return false;
+			if (!withinPVS && DynamicCulling.a.cullEnabled) return false;
 		}
 
         if (diff == 0 && index != 28) return false;

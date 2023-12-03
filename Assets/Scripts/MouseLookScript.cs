@@ -1230,6 +1230,8 @@ public class MouseLookScript : MonoBehaviour {
 		if (Const.a.NoShootMode) return; // We are being like the original now!
 
 		GUIState.a.ClearOverButton();
+		MFDManager.a.mouseClickHeldOverGUI = false;
+		Automap.a.CloseFullmap();
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
 		inventoryMode = false;
