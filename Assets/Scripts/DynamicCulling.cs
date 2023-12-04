@@ -347,31 +347,23 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
+    Vector2Int PosToCellCoords(Vector3 pos) {
+        Vector2Int retval = new Vector2Int(0,0);
+        retval.x = (int)((pos.x - worldMin.x + 1.28f) / 2.56f);
+        if (retval.x > 63) retval.x = 63;
+        if (retval.x < 0) retval.x = 0;
+        retval.y = (int)((pos.z - worldMin.z + 1.28f) / 2.56f);
+        if (retval.y > 63) retval.y = 63;
+        if (retval.y < 0) retval.y = 0;
+        return retval;
+    }
+
     bool UpdatedPlayerCell() {
-        Vector3 pos = PlayerMovement.a.transform.position;
-        deltaX = pos.x - worldCellPositions[playerCellX,playerCellY].x;
-        deltaY = pos.z - worldCellPositions[playerCellX,playerCellY].z;
         int lastX = playerCellX;
         int lastY = playerCellY;
-        if (deltaX > 2.56f || deltaY > 2.56f
-            || deltaX < -2.56f || deltaY < -2.56f) {
-            FindPlayerCell();
-            Debug.Log("Innaccuracy, correcting player location via brute "
-                      + "force.");
-
-            if (playerCellX == lastX && playerCellY == lastY) return false;
-            return true;
-        }
-
-
-        if (deltaX > CELLXHALF) playerCellX++;
-        else if (deltaX < -CELLXHALF) playerCellX--;
-        if (playerCellX < 0) playerCellX = 0;
-        if (playerCellX > 63) playerCellX = 63;
-        if (deltaY > CELLXHALF) playerCellY++;
-        else if (deltaY < -CELLXHALF) playerCellY--;
-        if (playerCellY < 0) playerCellY = 0;
-        if (playerCellY > 63) playerCellY = 63;
+        Vector2Int spot = PosToCellCoords(PlayerMovement.a.transform.position);
+        playerCellX = spot.x;
+        playerCellY = spot.y;
         if (playerCellX == lastX && playerCellY == lastY) return false;
         return true;
     }
@@ -630,10 +622,6 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void UpdateDynamicMeshes() {
-        int x,y,lastX,lastY;
-        Vector3 pos;
-        float deltaX,deltaY;
-
         label_iterate_mesh_renderers:
         int count = dynamicMeshes.Count;
         for (int i=0;i < count; i++) {
@@ -644,32 +632,11 @@ public class DynamicCulling : MonoBehaviour {
         }
 
         for (int i=0;i < count; i++) {
-            x = dynamicMeshCoords[i].x;
-            y = dynamicMeshCoords[i].y;
-            pos = dynamicMeshes[i].transform.position;
-            deltaX = pos.x - worldCellPositions[x,y].x;
-            deltaY = pos.z - worldCellPositions[x,y].z;
-            lastX = x;
-            lastY = y;
-            if (deltaX > CELLXHALF) x++;
-            else if (deltaX < -CELLXHALF) x--;
-
-            if (x < 0) x = 0;
-            if (x > 63) x = 63;
-            if (deltaY > CELLXHALF) y++;
-            else if (deltaY < -CELLXHALF) y--;
-
-            if (y < 0) y = 0;
-            if (y > 63) y = 63;
-            dynamicMeshCoords[i] = new Vector2Int(x,y);
+            dynamicMeshCoords[i] = PosToCellCoords(dynamicMeshes[i].transform.position);
         }
     }
 
     public void UpdateNPCPVS() {
-        int x,y,lastX,lastY;
-        Vector3 pos;
-        float deltaX,deltaY;
-
         label_iterate_aics:
         int count = npcAICs.Count;
         for (int i=0;i < count; i++) {
@@ -677,31 +644,10 @@ public class DynamicCulling : MonoBehaviour {
                 npcAICs.RemoveAt(i);
                 goto label_iterate_aics; // Start over
             }
+        }
 
-            x = npcCoords[i].x;
-            y = npcCoords[i].y;
-            pos = npcTransforms[i].position;
-            deltaX = pos.x - worldCellPositions[x,y].x;
-            deltaY = pos.z - worldCellPositions[x,y].z;
-            lastX = x;
-            lastY = y;
-            // if (deltaX > 2.56f || deltaY > 2.56f
-            //     || deltaX < -2.56f || deltaY < -2.56f) {
-            //     PutNPCInCell(i);
-            //     return;
-            // }
-
-            if (deltaX > CELLXHALF) x++;
-            else if (deltaX < -CELLXHALF) x--;
-
-            if (x < 0) x = 0;
-            if (x > 63) x = 63;
-            if (deltaY > CELLXHALF) y++;
-            else if (deltaY < -CELLXHALF) y--;
-
-            if (y < 0) y = 0;
-            if (y > 63) y = 63;
-            npcCoords[i] = new Vector2Int(x,y);
+        for (int i=0;i < count; i++) {
+            npcCoords[i] = PosToCellCoords(npcTransforms[i].position);
         }
     }
 
