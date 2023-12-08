@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -98,6 +99,8 @@ public class DynamicCulling : MonoBehaviour {
         Vector2 pos2dcurrent = new Vector2(0f,0f);
         GameObject childGO = null;
         Vector3 pos;
+        Texture2D texture = new Texture2D(64,64);
+        Color32[] pixels = new Color32[WORLDX * WORLDX];
         for (int x=0; x<64; x++) {
             breakx = false;
             pos2dcurrent.x = worldMin.x + (2.56f * (float)x);
@@ -112,6 +115,7 @@ public class DynamicCulling : MonoBehaviour {
                     if (Vector2.Distance(pos2d,pos2dcurrent) < 0.64f) {
                         worldCellOpen[x,y] = true;
                         worldCellPositions[x,y] = pos;
+                        pixels[x + (y * 64)] = worldCellOpen[x,y] ? Color.white : Color.black;
                         breakx = breaky = true; break;
                     }
                 }
@@ -131,6 +135,14 @@ public class DynamicCulling : MonoBehaviour {
                 );
             }
         }
+
+         // Output Debug image of the open
+        texture.SetPixels32(pixels);
+        texture.Apply();
+        byte[] bytes = texture.EncodeToPNG();
+        string imgp = Utils.SafePathCombine(Application.streamingAssetsPath,
+        								    "worldcellopen.png");
+        File.WriteAllBytes(imgp,bytes);
     }
 
     void FindOrthogonalChunks(GameObject chunkContainer) {
@@ -556,35 +568,164 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
-    private void CastRay(int x1, int y1, int x2, int y2) {
-        int deltaX = x2 - x1;
-        int deltaY = y2 - y1;
-        int majorAxisSteps = 0;
-        int absdx = Mathf.Abs(deltaX);
-        int absdy = Mathf.Abs(deltaY);
-        if (absdx > absdy) majorAxisSteps = absdx; // Pick largest.
-        else               majorAxisSteps = absdy;
+    // Initial post by Karussell:
+    // ------------------------------------------------------------------------
+    // I need an algorithm which can be (a bit) slower than the Bresenham
+    // line drawing algorithm but has to be a lot more exact. With 'exact' I
+    // mean: every touched pixel should be printed. No more, but also no less!
+    // Which means using a more thick line or similar is not an option as too
+    // many pixels will be involved. Also I don't need a graphic framework or
+    // similar like it was asked before, I need the algorithm! The application
+    // is not really in 'graphics' it is in the geography area where pixels are
+    // 'tiles'.
+    //
+    // The main problem for me is that I need subpixel precision which means
+    // that a line could start at 0.75/0.33 and not just at 0/0 like it is the
+    // case for integer values. I tried to create a working solution for the
+    // last several hours but cannot make it working - there are too many edge
+    // cases.
+    //
+    // First I thought an anti-aliased version like the algorithm from Wu
+    // should make it but it prints too many pixels (especially for start and
+    // end points) and in certain cases it still misses some pixels e.g. for
+    // very short lines.
+    //
+    // Then I tried to make Bresenham working where I replaced the second 'if'
+    // with 'else if' as pointed out here, and it is closer but still not
+    // there.  Then I tried to move the Bresenham from integer- to
+    // float-precision which resulted in an endless loop (as the x,y values
+    // jumped over the finish condition if (y1 == y2 && x1 == x2)).
+    //
+    // I could use the naive line drawing solution but which delta should I
+    // use? E.g. if I use 0.1 I will still miss some pixels and using smaller
+    // values it will probably take too long (and still miss pixels).
+    //
+    // A working solution in C/Java/... would be appreciated. At least it
+    // should work for octant 1 but a full blown solution would be even nicer.
+    //
+    // Update: I came up with the following idea: using the naive line
+    // rasterization and you can calculate 4 pixel-candidates for every point.
+    // Then check for those 4 pixels if the line really crosses them. But I'm
+    // not sure if line/box intersection can be fast enough.
+    // ------------------------------------------------------------------------
 
-        float xIncrement = (float)deltaX / majorAxisSteps; // One of these...
-        float yIncrement = (float)deltaY / majorAxisSteps; // always equals 1f.
-        int x = x1;
-        int y = y1;
-        bool visibleLast = true; // Assume starting point is player's cell.
-        for (int step = 0; step <= majorAxisSteps; step++) {
-            x += Mathf.RoundToInt(xIncrement); // Always increment else
-            y += Mathf.RoundToInt(yIncrement); // continue stops early.
-            if (!XYPairInBounds(x,y)) break;
-            if (worldCellCheckedYet[x,y]) continue; // Might be more further out
+    // Spektre's algorithm (DDA Pixel Crossing Line with subpixel precision):
+    // https://stackoverflow.com/a/24682318
+    // From Spektre:
+    // ------------------------------------------------------------------------
+    // ...
+    // Finally had some time for this so I tweaked DDA a little but id lead to
+    // many ifs so I change rasterization quite a bit. Now all pixel grid
+    // crossing (intersections) are computed and then for each the right
+    // sub-pixel is added. This is how it looks like (no wrong sub-pixels):
+    // ...
+    // ------------------------------------------------------------------------
 
-            if (x >= 0 && x < 64 && y >= 0 && y < 64) {
-                if (visibleLast) {
-                    worldCellVisible[x,y] = IsOpen(x,y);
-                    worldCellCheckedYet[x,y] = true;
-                    visibleLast = worldCellVisible[x,y];
-                } else break;
+    // From Qmaster - I modified this to suit my purposes here, original below
+    // in C++.
+    // DDA subpixel -> thick
+//     void DDAf_line_subpixel(float x0,float y0,float x1,float y1,int col) {
+//         int i,n; float a,a0,a1,aa,b,d;
+//         // end-points
+//         pnt(x0,y0,col);
+//         pnt(x1,y1,col);
+//         // x-axis pixel cross
+//         a0=1; a1=0; n=0;
+//         if (x0<x1) { a0=ceil(x0); a1=floor(x1); d=(y1-y0)/(x1-x0); a=a0; b=y0+(a0-x0)*d; n=fabs(a1-a0); } else
+//             if (x0>x1) { a0=ceil(x1); a1=floor(x0); d=(y1-y0)/(x1-x0); a=a0; b=y1+(a0-x1)*d; n=fabs(a1-a0); }
+//             if (a0<=a1) for (aa=a,i=0;i<=n;i++,aa=a,a++,b+=d) { pnt(aa,b,col); pnt( a,b,col); }
+//             // y-axis pixel cross
+//             a0=1; a1=0; n=0;
+//             if (y0<y1) { a0=ceil(y0); a1=floor(y1); d=(x1-x0)/(y1-y0); a=a0; b=x0+(a0-y0)*d; n=fabs(a1-a0); } else
+//                 if (y0>y1) { a0=ceil(y1); a1=floor(y0); d=(x1-x0)/(y1-y0); a=a0; b=x1+(a0-y1)*d; n=fabs(a1-a0); }
+//                 if (a0<=a1) for (aa=a,i=0;i<=n;i++,aa=a,a++,b+=d) { pnt(b,aa,col); pnt(b, a,col); }
+//     }
+
+    // My version of the above, C#-ified
+    void CastRay(int x0_int, int y0_int, int x1_int, int y1_int) {
+        float x0,y0,x1,y1,a,a0,a1,aa,b,d;
+        int i,n;
+        x0 = (float)x0_int;
+        y0 = (float)y0_int;
+        x1 = (float)x1_int;
+        y1 = (float)y1_int;
+
+        // x-axis pixel cross
+        a0=1; a1=0; n=0; a=0; b=0;d=0;
+        if (x0<x1) {
+            a0=Mathf.Ceil(x0); a1=Mathf.Floor(x1);
+            d=(y1-y0)/(x1-x0); a=a0; b=y0+(a0-x0)*d;
+            n=(int)Mathf.Abs(a1-a0);
+        } else if (x0>x1) {
+            a0=Mathf.Ceil(x1); a1=Mathf.Floor(x0);
+            d=(y1-y0)/(x1-x0); a=a0; b=y1+(a0-x1)*d;
+            n=(int)Mathf.Abs(a1-a0);
+        }
+
+        if (a0<=a1) {
+            for (aa=a,i=0;i<=n;i++,aa=a,a++,b+=d) {
+                if (!XYPairInBounds((int)aa,(int)b)) break;
+                if (!XYPairInBounds( (int)a,(int)b)) break;
+
+                worldCellVisible[(int)aa,(int)b] = IsOpen((int)aa,(int)b);
+                worldCellVisible[ (int)a,(int)b] = IsOpen( (int)a,(int)b);
+                if (!worldCellVisible[(int)aa,(int)b] || !worldCellVisible[ (int)a,(int)b]) break;
+            }
+        }
+
+        // y-axis pixel cross
+        a0=1; a1=0; n=0;
+        if (y0<y1) {
+            a0=Mathf.Ceil(y0); a1=Mathf.Floor(y1);
+            d=(x1-x0)/(y1-y0); a=a0; b=x0+(a0-y0)*d;
+            n=(int)Mathf.Abs(a1-a0);
+        } else if (y0>y1) {
+            a0=Mathf.Ceil(y1); a1=Mathf.Floor(y0);
+            d=(x1-x0)/(y1-y0); a=a0; b=x1+(a0-y1)*d;
+            n=(int)Mathf.Abs(a1-a0);
+        }
+
+        if (a0<=a1) {
+            for (aa=a,i=0;i<=n;i++,aa=a,a++,b+=d) {
+                if (!XYPairInBounds((int)b,(int)aa)) break;
+                if (!XYPairInBounds((int)b, (int)a)) break;
+
+                worldCellVisible[(int)b,(int)aa] = IsOpen((int)b,(int)aa);
+                worldCellVisible[(int)b, (int)a] = IsOpen((int)b, (int)a);
+                if (!worldCellVisible[(int)b,(int)aa] || !worldCellVisible[(int)b, (int)a]) break;
             }
         }
     }
+
+//     private void CastRay(int x1, int y1, int x2, int y2) {
+//         int deltaX = x2 - x1;
+//         int deltaY = y2 - y1;
+//         int majorAxisSteps = 0;
+//         int absdx = Mathf.Abs(deltaX);
+//         int absdy = Mathf.Abs(deltaY);
+//         if (absdx > absdy) majorAxisSteps = absdx; // Pick largest.
+//         else               majorAxisSteps = absdy;
+//
+//         float xIncrement = (float)deltaX / majorAxisSteps; // One of these...
+//         float yIncrement = (float)deltaY / majorAxisSteps; // always equals 1f.
+//         int x = x1;
+//         int y = y1;
+//         bool visibleLast = true; // Assume starting point is player's cell.
+//         for (int step = 0; step <= majorAxisSteps; step++) {
+//             x += Mathf.RoundToInt(xIncrement); // Always increment else
+//             y += Mathf.RoundToInt(yIncrement); // continue stops early.
+//             if (!XYPairInBounds(x,y)) break;
+//             if (worldCellCheckedYet[x,y]) continue; // Might be more further out
+//
+//             if (x >= 0 && x < 64 && y >= 0 && y < 64) {
+//                 if (visibleLast) {
+//                     worldCellVisible[x,y] = IsOpen(x,y);
+//                     worldCellCheckedYet[x,y] = true;
+//                     visibleLast = worldCellVisible[x,y];
+//                 } else break;
+//             }
+//         }
+//     }
 
     void ToggleVisibility() {
         worldCellLastVisible[playerCellX,playerCellY] = worldCellVisible[playerCellX,playerCellY] = true;
