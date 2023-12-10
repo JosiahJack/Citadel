@@ -432,9 +432,10 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
 
-        worldCellVisible[playerCellX,playerCellY] = true;
-        worldCellVisible[playerCellX,playerCellY] = true;
         x = playerCellX; y = playerCellY;
+        worldCellVisible[x,y] = true;
+        worldCellCheckedYet[x,y] = true;
+        SetVisPixel(x,y,Color.blue);
 
         // Set all neighboring cells visible if open in 3x3 square.
         Color c = Color.cyan;
@@ -761,11 +762,13 @@ public class DynamicCulling : MonoBehaviour {
 
                 x = (int)a;
                 if (XYPairInBounds(x,y)) {
-                    worldCellVisible[x,y] = IsOpen(x,y);
-                    if (!worldCellVisible[x,y]) break;
+                    if (!worldCellCheckedYet[x,y]) {
+                        worldCellVisible[x,y] = IsOpen(x,y);
+                        if (!worldCellVisible[x,y]) break;
 
-                    raycol.g = (float)i * 0.0125f + 0.2f;
-                    SetVisPixel(x,y,raycol);
+                        raycol.g = (float)i * 0.0125f + 0.2f;
+                        SetVisPixel(x,y,raycol);
+                    }
                 }
             }
         }
@@ -787,20 +790,24 @@ public class DynamicCulling : MonoBehaviour {
                 x = (int)b;
                 y = (int)aa;
                 if (XYPairInBounds(x,y)) {
-                    worldCellVisible[x,y] = IsOpen(y,x);
-                    if (!worldCellVisible[x,y]) break;
+                    if (!worldCellCheckedYet[x,y]) {
+                        worldCellVisible[x,y] = IsOpen(y,x);
+                        if (!worldCellVisible[x,y]) break;
 
-                    raycol.g = (float)i * 0.0035f + 0.6f;
-                    SetVisPixel(x,y,raycol);
+                        raycol.g = (float)i * 0.0035f + 0.6f;
+                        SetVisPixel(x,y,raycol);
+                    }
                 }
 
                 y = (int)a;
                 if (XYPairInBounds(x,y)) {
-                    worldCellVisible[x,y] = IsOpen(x,y);
-                    if (!worldCellVisible[x,y]) break;
+                    if (!worldCellCheckedYet[x,y]) {
+                        worldCellVisible[x,y] = IsOpen(x,y);
+                        if (!worldCellVisible[x,y]) break;
 
-                    raycol.g = (float)i * 0.002f + 0.8f;
-                    SetVisPixel(x,y,raycol);
+                        raycol.g = (float)i * 0.002f + 0.8f;
+                        SetVisPixel(x,y,raycol);
+                    }
                 }
             }
         }
