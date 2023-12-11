@@ -734,127 +734,110 @@ public class DynamicCulling : MonoBehaviour {
 
     // My version of the above, C#-ified
     void CastRay(int x0_int, int y0_int, int x1_int, int y1_int) {
-        float x0,y0,x1,y1,onestep,a0,a1,aa,b,d;
-        int i,n;
+        float x0,y0,x1,y1,start,aa,b,d;
+        int i,n,x,y;
         x0 = (float)x0_int;
         y0 = (float)y0_int;
         x1 = (float)x1_int;
         y1 = (float)y1_int;
-        Color raycol = new Color(0.2f + (Math.Abs(x1) * 0.0125f),
-                                 0f,
-                                 0.2f + (Math.Abs(y1) * 0.0125f),
-                                 1f);
+        Color raycol = new Color(0.2f + (Math.Abs(x1) * 0.0125f),0f,
+                                 0.2f + (Math.Abs(y1) * 0.0125f),1f);
 
         Color hitcol = new Color(1f,0f,0f,1f);
-
         float signx = Mathf.Sign(x1 - x0);
         float signy = Mathf.Sign(y1 - y0);
+
         // x-axis pixel cross
-        a0=1; a1=0; n=0; onestep=0; b=0;d=0;
+        n=0; start=0; b=0;d=0;
         if (x0<x1) {
-            a0=x0;
-            a1=x1;
             d=(y1-y0)/(x1-x0);
-            onestep=a0;
+            start=x0;
             b=y0;
-            n=(int)Mathf.Abs(a1-a0);
+            n=(int)Mathf.Abs(x1-x0);
         } else if (x0>x1) {
-            a0=x1;
-            a1=x0;
             d=(y1-y0)/(x1-x0);
-            onestep=x0;
+            start=x0;
             b=y0;
-            n=(int)Mathf.Abs(a1-a0);
+            n=(int)Mathf.Abs(x1-x0);
         }
 
         if (d > 1f) d = 1f;
         if (d < -1f) d = -1f;
-
-        int x,y;
-        if (a0<=a1) {
-            for (aa=onestep,i=0;i<=n;i++,aa=onestep,onestep+=signx,b+=d) {
-                x = (int)aa;
-                y = (int)b;
-                if (XYPairInBounds(x,y)) {
-                    if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
-                        worldCellVisible[x,y] = IsOpen(x,y);
-                        worldCellCheckedYet[x,y] = true;
-                        if (!worldCellVisible[x,y]) {
-                            pixels[x + (y * 64)] = hitcol;
-                            return;
-                        }
-
-                        raycol.g = (float)i * 0.0125f + 0.4f;
-                        SetVisPixel(x,y,raycol);
+        for (aa=start,i=0;i<=n;i++,aa=start,start+=signx,b+=d) {
+            x = (int)aa;
+            y = (int)b;
+            if (XYPairInBounds(x,y)) {
+                if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
+                    worldCellVisible[x,y] = IsOpen(x,y);
+                    worldCellCheckedYet[x,y] = true;
+                    if (!worldCellVisible[x,y]) {
+                        pixels[x + (y * 64)] = hitcol;
+                        return;
                     }
+
+                    raycol.g = (float)i * 0.0125f + 0.4f;
+                    SetVisPixel(x,y,raycol);
                 }
+            }
 
-                x = (int)onestep;
-                if (XYPairInBounds(x,y)) {
-                    if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
-                        worldCellVisible[x,y] = IsOpen(x,y);
-                        if (!worldCellVisible[x,y]) {
-                            pixels[x + (y * 64)] = hitcol;
-                            return;
-                        }
-
-                        raycol.g = (float)i * 0.0125f + 0.2f;
-                        SetVisPixel(x,y,raycol);
+            x = (int)start;
+            if (XYPairInBounds(x,y)) {
+                if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
+                    worldCellVisible[x,y] = IsOpen(x,y);
+                    if (!worldCellVisible[x,y]) {
+                        pixels[x + (y * 64)] = hitcol;
+                        return;
                     }
+
+                    raycol.g = (float)i * 0.0125f + 0.2f;
+                    SetVisPixel(x,y,raycol);
                 }
             }
         }
 
         // y-axis pixel cross
-        a0=1; a1=0; n=0;
+        n=0;
         if (y0<y1) {
-            a0=y0;
-            a1=Mathf.Floor(y1);
             d=(x1-x0)/(y1-y0);
-            onestep=a0;
+            start=y0;
             b=x0;
-            n=(int)Mathf.Abs(a1-a0);
+            n=(int)Mathf.Abs(y1-y0);
         } else if (y0>y1) {
-            a0=y1;
-            a1=y0;
             d=(x1-x0)/(y1-y0);
-            onestep=a1;
+            start=y1;
             b=x0;
-            n=(int)Mathf.Abs(a1-a0);
+            n=(int)Mathf.Abs(y1-y0);
         }
 
         if (d > 1f) d = 1f;
         if (d < -1f) d = -1f;
-
-        if (a0<=a1) {
-            for (aa=onestep,i=0;i<=n;i++,aa=onestep,onestep+=signy,b+=d) {
-                x = (int)b;
-                y = (int)aa;
-                if (XYPairInBounds(x,y)) {
-                    if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
-                        worldCellVisible[x,y] = IsOpen(y,x);
-                        if (!worldCellVisible[x,y]) {
-                            pixels[x + (y * 64)] = hitcol;
-                            return;
-                        }
-
-                        raycol.g = (float)i * 0.0035f + 0.6f;
-                        SetVisPixel(x,y,raycol);
+        for (aa=start,i=0;i<=n;i++,aa=start,start+=signy,b+=d) {
+            x = (int)b;
+            y = (int)aa;
+            if (XYPairInBounds(x,y)) {
+                if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
+                    worldCellVisible[x,y] = IsOpen(y,x);
+                    if (!worldCellVisible[x,y]) {
+                        pixels[x + (y * 64)] = hitcol;
+                        return;
                     }
+
+                    raycol.g = (float)i * 0.0035f + 0.6f;
+                    SetVisPixel(x,y,raycol);
                 }
+            }
 
-                y = (int)onestep;
-                if (XYPairInBounds(x,y)) {
-                    if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
-                        worldCellVisible[x,y] = IsOpen(x,y);
-                        if (!worldCellVisible[x,y]) {
-                            pixels[x + (y * 64)] = hitcol;
-                            return;
-                        }
-
-                        raycol.g = (float)i * 0.002f + 0.8f;
-                        SetVisPixel(x,y,raycol);
+            y = (int)start;
+            if (XYPairInBounds(x,y)) {
+                if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
+                    worldCellVisible[x,y] = IsOpen(x,y);
+                    if (!worldCellVisible[x,y]) {
+                        pixels[x + (y * 64)] = hitcol;
+                        return;
                     }
+
+                    raycol.g = (float)i * 0.002f + 0.8f;
+                    SetVisPixel(x,y,raycol);
                 }
             }
         }
