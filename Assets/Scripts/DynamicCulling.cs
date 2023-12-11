@@ -545,7 +545,10 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
 
-            if (!currentVisible) break; // Hit wall!
+            if (!currentVisible) {
+                pixels[x + (y * 64)] = new Color(0.5f,0f,0f,1f);
+                break; // Hit wall!
+            }
 
             if (XYPairInBounds(x + 1,y)) {
                 if (!worldCellCheckedYet[x + 1,y]) {
@@ -589,7 +592,10 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
 
-            if (!currentVisible) break; // Hit wall!
+            if (!currentVisible) {
+                pixels[x + (y * 64)] = new Color(0.5f,0f,0f,1f);
+                break; // Hit wall!
+            }
 
             if (XYPairInBounds(x,y + 1)) {
                 if (!worldCellCheckedYet[x,y + 1]) {
@@ -616,6 +622,7 @@ public class DynamicCulling : MonoBehaviour {
         bool currentVisible = true;
         int xofs,yofs;
         for (int iter=0;iter<64;iter++) {
+            currentVisible = false;
             x+=signx; y+=signy; // Always increment else continue stops early.
             if (!XYPairInBounds(x,y)) break;
 
@@ -633,8 +640,6 @@ public class DynamicCulling : MonoBehaviour {
                 currentVisible = worldCellOpen[x,y]; // Keep going.
             }
 
-            if (!currentVisible) break; // Hit wall!  Break after neighbors.
-
             if (!worldCellCheckedYet[xofs,y]) {
                 worldCellVisible[xofs,y] = neighbor1;
                 worldCellCheckedYet[xofs,y] = true;
@@ -645,6 +650,11 @@ public class DynamicCulling : MonoBehaviour {
                 worldCellVisible[x,yofs] = neighbor2;
                 worldCellCheckedYet[x,yofs] = true;
                 SetVisPixel(x,yofs,Color.magenta);
+            }
+
+            if (!currentVisible) {
+                pixels[x + (y * 64)] = new Color(0.5f,0f,0f,1f);
+                break; // Hit wall!  Break after neighbors.
             }
         }
     }
@@ -724,47 +734,67 @@ public class DynamicCulling : MonoBehaviour {
 
     // My version of the above, C#-ified
     void CastRay(int x0_int, int y0_int, int x1_int, int y1_int) {
-        float x0,y0,x1,y1,a,a0,a1,aa,b,d;
+        float x0,y0,x1,y1,onestep,a0,a1,aa,b,d;
         int i,n;
         x0 = (float)x0_int;
         y0 = (float)y0_int;
         x1 = (float)x1_int;
         y1 = (float)y1_int;
-        Color raycol = new Color(0.2f + (Math.Abs(x1) * 0.0125f),0f,0.2f + (Math.Abs(y1) * 0.0125f),1f);
+        Color raycol = new Color(0.2f + (Math.Abs(x1) * 0.0125f),
+                                 0f,
+                                 0.2f + (Math.Abs(y1) * 0.0125f),
+                                 1f);
+
+        Color hitcol = new Color(1f,0f,0f,1f);
 
         // x-axis pixel cross
-        a0=1; a1=0; n=0; a=0; b=0;d=0;
+        a0=1; a1=0; n=0; onestep=0; b=0;d=0;
         if (x0<x1) {
-            a0=Mathf.Ceil(x0); a1=Mathf.Floor(x1);
-            d=(y1-y0)/(x1-x0); a=a0; b=y0+(a0-x0)*d;
+            a0=x0;
+            a1=x1;
+            d=(y1-y0)/(x1-x0);
+            onestep=a0;
+            b=y0;
             n=(int)Mathf.Abs(a1-a0);
         } else if (x0>x1) {
-            a0=Mathf.Ceil(x1); a1=Mathf.Floor(x0);
-            d=(y1-y0)/(x1-x0); a=a0; b=y1+(a0-x1)*d;
+            a0=x1;
+            a1=x0;
+            d=(y1-y0)/(x1-x0);
+            onestep=a0;
+            b=y1;
             n=(int)Mathf.Abs(a1-a0);
         }
 
+        if (d > 1f) d = 1f;
+        if (d < -1f) d = -1f;
+
         int x,y;
         if (a0<=a1) {
-            for (aa=a,i=0;i<=n;i++,aa=a,a++,b+=d) {
+            for (aa=onestep,i=0;i<=n;i++,aa=onestep,onestep+=1f,b+=d) {
                 x = (int)aa;
                 y = (int)b;
                 if (XYPairInBounds(x,y)) {
-                    if (!worldCellCheckedYet[x,y]) {
+                    if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
                         worldCellVisible[x,y] = IsOpen(x,y);
                         worldCellCheckedYet[x,y] = true;
-                        if (!worldCellVisible[x,y]) break;
+                        if (!worldCellVisible[x,y]) {
+                            pixels[x + (y * 64)] = hitcol;
+                            return;
+                        }
 
                         raycol.g = (float)i * 0.0125f + 0.4f;
                         SetVisPixel(x,y,raycol);
                     }
                 }
 
-                x = (int)a;
+                x = (int)onestep;
                 if (XYPairInBounds(x,y)) {
-                    if (!worldCellCheckedYet[x,y]) {
+                    if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
                         worldCellVisible[x,y] = IsOpen(x,y);
-                        if (!worldCellVisible[x,y]) break;
+                        if (!worldCellVisible[x,y]) {
+                            pixels[x + (y * 64)] = hitcol;
+                            return;
+                        }
 
                         raycol.g = (float)i * 0.0125f + 0.2f;
                         SetVisPixel(x,y,raycol);
@@ -776,34 +806,49 @@ public class DynamicCulling : MonoBehaviour {
         // y-axis pixel cross
         a0=1; a1=0; n=0;
         if (y0<y1) {
-            a0=Mathf.Ceil(y0); a1=Mathf.Floor(y1);
-            d=(x1-x0)/(y1-y0); a=a0; b=x0+(a0-y0)*d;
+            a0=Mathf.Ceil(y0);
+            a1=Mathf.Floor(y1);
+            d=(x1-x0)/(y1-y0);
+            onestep=a0;
+            b=x0+(a0-y0)*d;
             n=(int)Mathf.Abs(a1-a0);
         } else if (y0>y1) {
-            a0=Mathf.Ceil(y1); a1=Mathf.Floor(y0);
-            d=(x1-x0)/(y1-y0); a=a0; b=x1+(a0-y1)*d;
+            a0=Mathf.Ceil(y1);
+            a1=Mathf.Floor(y0);
+            d=(x1-x0)/(y1-y0);
+            onestep=a0;
+            b=x1+(a0-y1)*d;
             n=(int)Mathf.Abs(a1-a0);
         }
 
+        if (d > 1f) d = 1f;
+        if (d < -1f) d = -1f;
+
         if (a0<=a1) {
-            for (aa=a,i=0;i<=n;i++,aa=a,a++,b+=d) {
+            for (aa=onestep,i=0;i<=n;i++,aa=onestep,onestep+=1f,b+=d) {
                 x = (int)b;
                 y = (int)aa;
                 if (XYPairInBounds(x,y)) {
-                    if (!worldCellCheckedYet[x,y]) {
+                    if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
                         worldCellVisible[x,y] = IsOpen(y,x);
-                        if (!worldCellVisible[x,y]) break;
+                        if (!worldCellVisible[x,y]) {
+                            pixels[x + (y * 64)] = hitcol;
+                            return;
+                        }
 
                         raycol.g = (float)i * 0.0035f + 0.6f;
                         SetVisPixel(x,y,raycol);
                     }
                 }
 
-                y = (int)a;
+                y = (int)onestep;
                 if (XYPairInBounds(x,y)) {
-                    if (!worldCellCheckedYet[x,y]) {
+                    if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
                         worldCellVisible[x,y] = IsOpen(x,y);
-                        if (!worldCellVisible[x,y]) break;
+                        if (!worldCellVisible[x,y]) {
+                            pixels[x + (y * 64)] = hitcol;
+                            return;
+                        }
 
                         raycol.g = (float)i * 0.002f + 0.8f;
                         SetVisPixel(x,y,raycol);
@@ -812,36 +857,6 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
     }
-
-//     private void CastRay(int x1, int y1, int x2, int y2) {
-//         int deltaX = x2 - x1;
-//         int deltaY = y2 - y1;
-//         int majorAxisSteps = 0;
-//         int absdx = Mathf.Abs(deltaX);
-//         int absdy = Mathf.Abs(deltaY);
-//         if (absdx > absdy) majorAxisSteps = absdx; // Pick largest.
-//         else               majorAxisSteps = absdy;
-//
-//         float xIncrement = (float)deltaX / majorAxisSteps; // One of these...
-//         float yIncrement = (float)deltaY / majorAxisSteps; // always equals 1f.
-//         int x = x1;
-//         int y = y1;
-//         bool visibleLast = true; // Assume starting point is player's cell.
-//         for (int step = 0; step <= majorAxisSteps; step++) {
-//             x += Mathf.RoundToInt(xIncrement); // Always increment else
-//             y += Mathf.RoundToInt(yIncrement); // continue stops early.
-//             if (!XYPairInBounds(x,y)) break;
-//             if (worldCellCheckedYet[x,y]) continue; // Might be more further out
-//
-//             if (x >= 0 && x < 64 && y >= 0 && y < 64) {
-//                 if (visibleLast) {
-//                     worldCellVisible[x,y] = IsOpen(x,y);
-//                     worldCellCheckedYet[x,y] = true;
-//                     visibleLast = worldCellVisible[x,y];
-//                 } else break;
-//             }
-//         }
-//     }
 
     void ToggleVisibility() {
         worldCellLastVisible[playerCellX,playerCellY] = worldCellVisible[playerCellX,playerCellY] = true;
