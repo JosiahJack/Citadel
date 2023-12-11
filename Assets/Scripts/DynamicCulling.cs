@@ -727,9 +727,9 @@ public class DynamicCulling : MonoBehaviour {
 //             if (a0<=a1) for (aa=a,i=0;i<=n;i++,aa=a,a++,b+=d) { pnt(aa,b,col); pnt( a,b,col); }
 //             // y-axis pixel cross
 //             a0=1; a1=0; n=0;
-//             if (y0<y1) { a0=ceil(y0); a1=floor(y1); d=(x1-x0)/(y1-y0); a=a0; b=x0+(a0-y0)*d; n=fabs(a1-a0); } else
-//                 if (y0>y1) { a0=ceil(y1); a1=floor(y0); d=(x1-x0)/(y1-y0); a=a0; b=x1+(a0-y1)*d; n=fabs(a1-a0); }
-//                 if (a0<=a1) for (aa=a,i=0;i<=n;i++,aa=a,a++,b+=d) { pnt(b,aa,col); pnt(b, a,col); }
+//         if (y0<y1) { a0=ceil(y0); a1=floor(y1); d=(x1-x0)/(y1-y0); a=a0; b=x0+(a0-y0)*d; n=fabs(a1-a0); } else
+//             if (y0>y1) { a0=ceil(y1); a1=floor(y0); d=(x1-x0)/(y1-y0); a=a0; b=x1+(a0-y1)*d; n=fabs(a1-a0); }
+//             if (a0<=a1) for (aa=a,i=0;i<=n;i++,aa=a,a++,b+=d) { pnt(b,aa,col); pnt(b, a,col); }
 //     }
 
     // My version of the above, C#-ified
@@ -747,6 +747,8 @@ public class DynamicCulling : MonoBehaviour {
 
         Color hitcol = new Color(1f,0f,0f,1f);
 
+        float signx = Mathf.Sign(x1 - x0);
+        float signy = Mathf.Sign(y1 - y0);
         // x-axis pixel cross
         a0=1; a1=0; n=0; onestep=0; b=0;d=0;
         if (x0<x1) {
@@ -760,8 +762,8 @@ public class DynamicCulling : MonoBehaviour {
             a0=x1;
             a1=x0;
             d=(y1-y0)/(x1-x0);
-            onestep=a0;
-            b=y1;
+            onestep=x0;
+            b=y0;
             n=(int)Mathf.Abs(a1-a0);
         }
 
@@ -770,7 +772,7 @@ public class DynamicCulling : MonoBehaviour {
 
         int x,y;
         if (a0<=a1) {
-            for (aa=onestep,i=0;i<=n;i++,aa=onestep,onestep+=1f,b+=d) {
+            for (aa=onestep,i=0;i<=n;i++,aa=onestep,onestep+=signx,b+=d) {
                 x = (int)aa;
                 y = (int)b;
                 if (XYPairInBounds(x,y)) {
@@ -806,18 +808,18 @@ public class DynamicCulling : MonoBehaviour {
         // y-axis pixel cross
         a0=1; a1=0; n=0;
         if (y0<y1) {
-            a0=Mathf.Ceil(y0);
+            a0=y0;
             a1=Mathf.Floor(y1);
             d=(x1-x0)/(y1-y0);
             onestep=a0;
-            b=x0+(a0-y0)*d;
+            b=x0;
             n=(int)Mathf.Abs(a1-a0);
         } else if (y0>y1) {
-            a0=Mathf.Ceil(y1);
-            a1=Mathf.Floor(y0);
+            a0=y1;
+            a1=y0;
             d=(x1-x0)/(y1-y0);
-            onestep=a0;
-            b=x1+(a0-y1)*d;
+            onestep=a1;
+            b=x0;
             n=(int)Mathf.Abs(a1-a0);
         }
 
@@ -825,7 +827,7 @@ public class DynamicCulling : MonoBehaviour {
         if (d < -1f) d = -1f;
 
         if (a0<=a1) {
-            for (aa=onestep,i=0;i<=n;i++,aa=onestep,onestep+=1f,b+=d) {
+            for (aa=onestep,i=0;i<=n;i++,aa=onestep,onestep+=signy,b+=d) {
                 x = (int)b;
                 y = (int)aa;
                 if (XYPairInBounds(x,y)) {
