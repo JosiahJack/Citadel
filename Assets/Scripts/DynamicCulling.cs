@@ -734,7 +734,7 @@ public class DynamicCulling : MonoBehaviour {
 
     // My version of the above, C#-ified
     void CastRay(int x0_int, int y0_int, int x1_int, int y1_int) {
-        float x0,y0,x1,y1,next,current,intercept,dx,dy;
+        float x0,y0,x1,y1,nextx,nexty,currentx,currenty,interceptX,interceptY,lastInterceptX,lastInterceptY,dx,dy;
         int i,nx,ny;
         x0 = (float)x0_int;
         y0 = (float)y0_int;
@@ -747,27 +747,31 @@ public class DynamicCulling : MonoBehaviour {
         dy=(x1-x0)/(y1-y0);
         ny=(int)Mathf.Abs(y1-y0);
         nx=(int)Mathf.Abs(x1-x0);
-        current = nextx = x0;
-        intercept=y0;
+        currentx = nextx = x0;
+        currenty = nexty = y0;
+        lastInterceptX = interceptX = y0;
+        lastInterceptY = interceptY = x0;
+        int interceptCount = nx + ny;
 
         // x-axis pixel cross
-        for (i=0;i<=nx;i++) {
-            if (CastRayCellCheck((int)current,(int)intercept) == -1) return;
-            if (CastRayCellCheck((int)nextx,(int)intercept) == -1) return;
-            current = nextx;
-            nextx += signx;
-            intercept+=dx;
-        }
-
-        // y-axis pixel cross
-        current = nexty=y0;
-        intercept=x0;
-        for (i=0;i<=ny;i++) {
-            if (CastRayCellCheck((int)intercept,(int)current) == -1) return;
-            if (CastRayCellCheck((int)intercept,(int)next) == -1) return;
-            current = nexty;
-            nexty += signy;
-            intercept+=dy;
+        for (i=0;i<=interceptCount;i++) {
+            if (interceptX - lastInterceptX < interceptY - lastInterceptY) {
+                // x intercepts
+                if (CastRayCellCheck((int)currentx,(int)interceptX) == -1) return;
+                if (CastRayCellCheck((int)nextx,(int)interceptX) == -1) return;
+                currentx = nextx;
+                nextx += signx;
+                lastInterceptX = interceptX;
+                interceptX+=dx;
+            } else {
+                // y intercepts
+                if (CastRayCellCheck((int)interceptY,(int)currenty) == -1) return;
+                if (CastRayCellCheck((int)interceptY,(int)nexty) == -1) return;
+                currenty = nexty;
+                nexty += signy;
+                lastInterceptY = interceptY;
+                interceptY+=dy;
+            }
         }
     }
 
