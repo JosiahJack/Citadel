@@ -747,26 +747,26 @@ public class DynamicCulling : MonoBehaviour {
         dy=(x1-x0)/(y1-y0);
         ny=(int)Mathf.Abs(y1-y0);
         nx=(int)Mathf.Abs(x1-x0);
-        next=x0;
+        current = nextx = x0;
         intercept=y0;
 
         // x-axis pixel cross
-        for (current=next,i=0;i<=nx;i++) {
+        for (i=0;i<=nx;i++) {
             if (CastRayCellCheck((int)current,(int)intercept) == -1) return;
-            if (CastRayCellCheck((int)next,(int)intercept) == -1) return;
-            current = next;
-            next += signx;
+            if (CastRayCellCheck((int)nextx,(int)intercept) == -1) return;
+            current = nextx;
+            nextx += signx;
             intercept+=dx;
         }
 
         // y-axis pixel cross
-        next=y0;
+        current = nexty=y0;
         intercept=x0;
         for (i=0;i<=ny;i++) {
             if (CastRayCellCheck((int)intercept,(int)current) == -1) return;
             if (CastRayCellCheck((int)intercept,(int)next) == -1) return;
-            current = next;
-            next += signy;
+            current = nexty;
+            nexty += signy;
             intercept+=dy;
         }
     }
