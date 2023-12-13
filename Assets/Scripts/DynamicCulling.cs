@@ -734,113 +734,59 @@ public class DynamicCulling : MonoBehaviour {
 
     // My version of the above, C#-ified
     void CastRay(int x0_int, int y0_int, int x1_int, int y1_int) {
-        float x0,y0,x1,y1,start,aa,b,d;
-        int i,n,x,y;
+        float x0,y0,x1,y1,next,current,intercept,dx,dy;
+        int i,nx,ny;
         x0 = (float)x0_int;
         y0 = (float)y0_int;
         x1 = (float)x1_int;
         y1 = (float)y1_int;
-        Color raycol = new Color(0.2f + (Math.Abs(x1) * 0.0125f),0f,
-                                 0.2f + (Math.Abs(y1) * 0.0125f),1f);
-
-        Color hitcol = new Color(1f,0f,0f,1f);
         float signx = Mathf.Sign(x1 - x0);
         float signy = Mathf.Sign(y1 - y0);
 
+        dx=(y1-y0)/(x1-x0);
+        dy=(x1-x0)/(y1-y0);
+        ny=(int)Mathf.Abs(y1-y0);
+        nx=(int)Mathf.Abs(x1-x0);
+        next=x0;
+        intercept=y0;
+
         // x-axis pixel cross
-        n=0; start=0; b=0;d=0;
-        if (x0<x1) {
-            d=(y1-y0)/(x1-x0);
-            start=x0;
-            b=y0;
-            n=(int)Mathf.Abs(x1-x0);
-        } else if (x0>x1) {
-            d=(y1-y0)/(x1-x0);
-            start=x0;
-            b=y0;
-            n=(int)Mathf.Abs(x1-x0);
-        }
-
-        if (d > 1f) d = 1f;
-        if (d < -1f) d = -1f;
-        for (aa=start,i=0;i<=n;i++,aa=start,start+=signx,b+=d) {
-            x = (int)aa;
-            y = (int)b;
-            if (XYPairInBounds(x,y)) {
-                if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
-                    worldCellVisible[x,y] = IsOpen(x,y);
-                    worldCellCheckedYet[x,y] = true;
-                    if (!worldCellVisible[x,y]) {
-                        pixels[x + (y * 64)] = hitcol;
-                        return;
-                    }
-
-                    raycol.g = (float)i * 0.0125f + 0.4f;
-                    SetVisPixel(x,y,raycol);
-                }
-            }
-
-            x = (int)start;
-            if (XYPairInBounds(x,y)) {
-                if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
-                    worldCellVisible[x,y] = IsOpen(x,y);
-                    if (!worldCellVisible[x,y]) {
-                        pixels[x + (y * 64)] = hitcol;
-                        return;
-                    }
-
-                    raycol.g = (float)i * 0.0125f + 0.2f;
-                    SetVisPixel(x,y,raycol);
-                }
-            }
+        for (current=next,i=0;i<=nx;i++) {
+            if (CastRayCellCheck((int)current,(int)intercept) == -1) return;
+            if (CastRayCellCheck((int)next,(int)intercept) == -1) return;
+            current = next;
+            next += signx;
+            intercept+=dx;
         }
 
         // y-axis pixel cross
-        n=0;
-        if (y0<y1) {
-            d=(x1-x0)/(y1-y0);
-            start=y0;
-            b=x0;
-            n=(int)Mathf.Abs(y1-y0);
-        } else if (y0>y1) {
-            d=(x1-x0)/(y1-y0);
-            start=y1;
-            b=x0;
-            n=(int)Mathf.Abs(y1-y0);
+        next=y0;
+        intercept=x0;
+        for (i=0;i<=ny;i++) {
+            if (CastRayCellCheck((int)intercept,(int)current) == -1) return;
+            if (CastRayCellCheck((int)intercept,(int)next) == -1) return;
+            current = next;
+            next += signy;
+            intercept+=dy;
         }
+    }
 
-        if (d > 1f) d = 1f;
-        if (d < -1f) d = -1f;
-        for (aa=start,i=0;i<=n;i++,aa=start,start+=signy,b+=d) {
-            x = (int)b;
-            y = (int)aa;
-            if (XYPairInBounds(x,y)) {
-                if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
-                    worldCellVisible[x,y] = IsOpen(y,x);
-                    if (!worldCellVisible[x,y]) {
-                        pixels[x + (y * 64)] = hitcol;
-                        return;
-                    }
-
-                    raycol.g = (float)i * 0.0035f + 0.6f;
-                    SetVisPixel(x,y,raycol);
+    int CastRayCellCheck(int x, int y) {
+        if (XYPairInBounds(x,y)) {
+            if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
+                worldCellVisible[x,y] = IsOpen(x,y);
+                worldCellCheckedYet[x,y] = true;
+                if (!worldCellVisible[x,y]) {
+                    pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
+                    return -1;
                 }
-            }
 
-            y = (int)start;
-            if (XYPairInBounds(x,y)) {
-                if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
-                    worldCellVisible[x,y] = IsOpen(x,y);
-                    if (!worldCellVisible[x,y]) {
-                        pixels[x + (y * 64)] = hitcol;
-                        return;
-                    }
-
-                    raycol.g = (float)i * 0.002f + 0.8f;
-                    SetVisPixel(x,y,raycol);
-                }
+                SetVisPixel(x,y,new Color(0.5f,0f,0.5f,1f));
+                return 1;
             }
         }
+
+        return 0;
     }
 
     void ToggleVisibility() {
