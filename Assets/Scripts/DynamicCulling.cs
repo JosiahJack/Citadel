@@ -450,36 +450,108 @@ public class DynamicCulling : MonoBehaviour {
         // [2] = current
         // [3] = neighbors we should be able to see if [2] could be.
 
-        //CastStraightX(1);  // [ ][3]
+        CastStraightX(1);  // [ ][3]
                            // [1][2]
                            // [ ][3]
 
-        //CastStraightX(-1); // [3][ ]
+        CastStraightX(-1); // [3][ ]
                            // [2][1]
                            // [3][ ]
 
-        //CastStraightY(1);  // [3][2][3]
+        CastStraightY(1);  // [3][2][3]
                            // [ ][1][ ]
 
-        //CastStraightY(-1); // [ ][1][ ]
+        CastStraightY(-1); // [ ][1][ ]
                            // [3][2][3]
 
-        //Cast45(1,1);       // [3][2]
+        Cast45(1,1);       // [3][2]
                            // [1][3]
 
-        //Cast45(-1,1);      // [2][3]
+        Cast45(-1,1);      // [2][3]
                            // [3][1]
 
-        //Cast45(-1,-1);     // [3][1]
+        Cast45(-1,-1);     // [3][1]
                            // [2][3]
 
-        //Cast45(1,-1);      // [1][3]
+        Cast45(1,-1);      // [1][3]
                            // [3][2]
 
         for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
         for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
         for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
         for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+
+        x = playerCellX + 1;
+        y = playerCellY;
+        if (XYPairInBounds(x,y)) {
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        }
+
+        x = playerCellX + 1;
+        y = playerCellY + 1;
+        if (XYPairInBounds(x,y)) {
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        }
+
+        x = playerCellX;
+        y = playerCellY + 1;
+        if (XYPairInBounds(x,y)) {
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        }
+
+        x = playerCellX - 1;
+        y = playerCellY + 1;
+        if (XYPairInBounds(x,y)) {
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        }
+
+        x = playerCellX - 1;
+        y = playerCellY;
+        if (XYPairInBounds(x,y)) {
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        }
+
+        x = playerCellX - 1;
+        y = playerCellY - 1;
+        if (XYPairInBounds(x,y)) {
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        }
+
+        x = playerCellX;
+        y = playerCellY - 1;
+        if (XYPairInBounds(x,y)) {
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        }
+
+        x = playerCellX + 1;
+        y = playerCellY - 1;
+        if (XYPairInBounds(x,y)) {
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        }
 
         // Pattern of custom axial rays, 3 wide each (center only shown).
         // [ ][ ][ ][ ][ ][ ][ ][4][ ][ ][ ][ ][ ][ ][ ][6]
@@ -527,13 +599,15 @@ public class DynamicCulling : MonoBehaviour {
 
         int x = playerCellX;
         int y = playerCellY + signy;
-        bool currentVisible = true;
+        bool currentVisible = false;
+        bool leftVisible = false;
+        bool rightVisible = false;
         for (;y<64;y+=signy) { // Up
             currentVisible = false;
             if (XYPairInBounds(x,y - signy)
                 && XYPairInBounds(x,y)) {
 
-                if (!worldCellCheckedYet[x,y]) {
+                if (!worldCellCheckedYet[x,y] || !worldCellOpen[x,y]) {
                     if (worldCellVisible[x,y - signy]) {
                         worldCellVisible[x,y] = worldCellOpen[x,y];
                         worldCellCheckedYet[x,y] = true;
@@ -545,25 +619,27 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
 
-            if (!currentVisible) {
-                pixels[x + (y * 64)] = new Color(0.5f,0f,0f,1f);
-                break; // Hit wall!
-            }
-
             if (XYPairInBounds(x + 1,y)) {
-                if (!worldCellCheckedYet[x + 1,y]) {
+                if (!worldCellCheckedYet[x + 1,y] || !worldCellOpen[x + 1,y]) {
                     worldCellVisible[x + 1,y] = IsOpen(x + 1,y);
                     worldCellCheckedYet[x + 1,y] = true;
+                    leftVisible = false; // Would be if twas open.
                     SetVisPixel(x + 1,y,Color.green);
                 }
             }
 
             if (XYPairInBounds(x - 1,y)) {
-                if (!worldCellCheckedYet[x - 1,y]) {
+                if (!worldCellCheckedYet[x - 1,y] || !worldCellOpen[x - 1,y]) {
                     worldCellVisible[x - 1,y] = IsOpen(x - 1,y);
                     worldCellCheckedYet[x - 1,y] = true;
+                    rightVisible = false; // Would be if twas open.
                     SetVisPixel(x - 1,y,Color.green);
                 }
+            }
+
+            if (!(currentVisible || leftVisible || rightVisible)) {
+                pixels[x + (y * 64)] = new Color(0.5f,0f,0f,1f);
+                break; // Hit wall!
             }
         }
     }
@@ -574,13 +650,15 @@ public class DynamicCulling : MonoBehaviour {
 
         int x = playerCellX + signx;
         int y = playerCellY;
-        bool currentVisible = true;
-        for (;x<64;x+=signx) { // Right
+        bool currentVisible = false;
+        bool leftVisible = false;
+        bool rightVisible = false;
+        for (;x<64;x+=signx) {
             currentVisible = false;
             if (XYPairInBounds(x - signx,y)
                 && XYPairInBounds(x,y)) {
 
-                if (!worldCellCheckedYet[x,y]) {
+                if (!worldCellCheckedYet[x,y] || !worldCellOpen[x,y]) {
                     if (worldCellVisible[x - signx,y]) {
                         worldCellVisible[x,y] = worldCellOpen[x,y];
                         worldCellCheckedYet[x,y] = true;
@@ -592,25 +670,27 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
 
-            if (!currentVisible) {
-                pixels[x + (y * 64)] = new Color(0.5f,0f,0f,1f);
-                break; // Hit wall!
-            }
-
             if (XYPairInBounds(x,y + 1)) {
-                if (!worldCellCheckedYet[x,y + 1]) {
+                if (!worldCellCheckedYet[x,y + 1] || !worldCellOpen[x,y + 1]) {
                     worldCellVisible[x,y + 1] = IsOpen(x,y + 1);
                     worldCellCheckedYet[x,y + 1] = true;
+                    leftVisible = false; // Would be if twas open.
                     SetVisPixel(x,y + 1,Color.green);
                 }
             }
 
             if (XYPairInBounds(x,y - 1)) {
-                if (!worldCellCheckedYet[x,y - 1]) {
+                if (!worldCellCheckedYet[x,y - 1] || !worldCellOpen[x,y - 1]) {
                     worldCellVisible[x,y - 1] = IsOpen(x,y - 1);
                     worldCellCheckedYet[x,y - 1] = true;
+                    rightVisible = false; // Would be if twas open.
                     SetVisPixel(x,y - 1,Color.green);
                 }
+            }
+
+            if (!(currentVisible || leftVisible || rightVisible)) {
+                pixels[x + (y * 64)] = new Color(0.5f,0f,0f,1f);
+                break; // Hit wall!
             }
         }
     }
@@ -632,7 +712,7 @@ public class DynamicCulling : MonoBehaviour {
             neighbor2 = IsOpen(x,yofs);
             if (!neighbor1 && !neighbor2) break; // Don't see thru closed corner
 
-            if (!worldCellCheckedYet[x,y]) {
+            if (!worldCellCheckedYet[x,y] || !worldCellOpen[x,y]) {
                 worldCellVisible[x,y] = currentVisible = IsOpen(x,y);
                 worldCellCheckedYet[x,y] = true;
                 SetVisPixel(x,y,Color.magenta);
@@ -640,13 +720,13 @@ public class DynamicCulling : MonoBehaviour {
                 currentVisible = worldCellOpen[x,y]; // Keep going.
             }
 
-            if (!worldCellCheckedYet[xofs,y]) {
+            if (!worldCellCheckedYet[xofs,y] || !worldCellOpen[xofs,y]) {
                 worldCellVisible[xofs,y] = neighbor1;
                 worldCellCheckedYet[xofs,y] = true;
                 SetVisPixel(xofs,y,Color.magenta);
             }
 
-            if (!worldCellCheckedYet[x,yofs]) {
+            if (!worldCellCheckedYet[x,yofs] || !worldCellOpen[x,yofs]) {
                 worldCellVisible[x,yofs] = neighbor2;
                 worldCellCheckedYet[x,yofs] = true;
                 SetVisPixel(x,yofs,Color.magenta);
@@ -655,192 +735,6 @@ public class DynamicCulling : MonoBehaviour {
             if (!currentVisible) {
                 pixels[x + (y * 64)] = new Color(0.5f,0f,0f,1f);
                 break; // Hit wall!  Break after neighbors.
-            }
-        }
-    }
-
-    // Initial post by Karussell:
-    // ------------------------------------------------------------------------
-    // I need an algorithm which can be (a bit) slower than the Bresenham
-    // line drawing algorithm but has to be a lot more exact. With 'exact' I
-    // mean: every touched pixel should be printed. No more, but also no less!
-    // Which means using a more thick line or similar is not an option as too
-    // many pixels will be involved. Also I don't need a graphic framework or
-    // similar like it was asked before, I need the algorithm! The application
-    // is not really in 'graphics' it is in the geography area where pixels are
-    // 'tiles'.
-    //
-    // The main problem for me is that I need subpixel precision which means
-    // that a line could start at 0.75/0.33 and not just at 0/0 like it is the
-    // case for integer values. I tried to create a working solution for the
-    // last several hours but cannot make it working - there are too many edge
-    // cases.
-    //
-    // First I thought an anti-aliased version like the algorithm from Wu
-    // should make it but it prints too many pixels (especially for start and
-    // end points) and in certain cases it still misses some pixels e.g. for
-    // very short lines.
-    //
-    // Then I tried to make Bresenham working where I replaced the second 'if'
-    // with 'else if' as pointed out here, and it is closer but still not
-    // there.  Then I tried to move the Bresenham from integer- to
-    // float-precision which resulted in an endless loop (as the x,y values
-    // jumped over the finish condition if (y1 == y2 && x1 == x2)).
-    //
-    // I could use the naive line drawing solution but which delta should I
-    // use? E.g. if I use 0.1 I will still miss some pixels and using smaller
-    // values it will probably take too long (and still miss pixels).
-    //
-    // A working solution in C/Java/... would be appreciated. At least it
-    // should work for octant 1 but a full blown solution would be even nicer.
-    //
-    // Update: I came up with the following idea: using the naive line
-    // rasterization and you can calculate 4 pixel-candidates for every point.
-    // Then check for those 4 pixels if the line really crosses them. But I'm
-    // not sure if line/box intersection can be fast enough.
-    // ------------------------------------------------------------------------
-
-    // Spektre's algorithm (DDA Pixel Crossing Line with subpixel precision):
-    // https://stackoverflow.com/a/24682318
-    // From Spektre:
-    // ------------------------------------------------------------------------
-    // ...
-    // Finally had some time for this so I tweaked DDA a little but id lead to
-    // many ifs so I change rasterization quite a bit. Now all pixel grid
-    // crossing (intersections) are computed and then for each the right
-    // sub-pixel is added. This is how it looks like (no wrong sub-pixels):
-    // ...
-    // ------------------------------------------------------------------------
-
-    // From Qmaster - I modified this to suit my purposes here, original below
-    // in C++.
-    // DDA subpixel -> thick
-//     void DDAf_line_subpixel(float x0,float y0,float x1,float y1,int col) {
-//         int i,n; float a,a0,a1,aa,b,d;
-//         // end-points
-//         pnt(x0,y0,col);
-//         pnt(x1,y1,col);
-//         // x-axis pixel cross
-//         a0=1; a1=0; n=0;
-//         if (x0<x1) { a0=ceil(x0); a1=floor(x1); d=(y1-y0)/(x1-x0); a=a0; b=y0+(a0-x0)*d; n=fabs(a1-a0); } else
-//             if (x0>x1) { a0=ceil(x1); a1=floor(x0); d=(y1-y0)/(x1-x0); a=a0; b=y1+(a0-x1)*d; n=fabs(a1-a0); }
-//             if (a0<=a1) for (aa=a,i=0;i<=n;i++,aa=a,a++,b+=d) { pnt(aa,b,col); pnt( a,b,col); }
-//             // y-axis pixel cross
-//             a0=1; a1=0; n=0;
-//         if (y0<y1) { a0=ceil(y0); a1=floor(y1); d=(x1-x0)/(y1-y0); a=a0; b=x0+(a0-y0)*d; n=fabs(a1-a0); } else
-//             if (y0>y1) { a0=ceil(y1); a1=floor(y0); d=(x1-x0)/(y1-y0); a=a0; b=x1+(a0-y1)*d; n=fabs(a1-a0); }
-//             if (a0<=a1) for (aa=a,i=0;i<=n;i++,aa=a,a++,b+=d) { pnt(b,aa,col); pnt(b, a,col); }
-//     }
-
-    // My version of the above, C#-ified
-    void CastRayOLD(int x0_int, int y0_int, int x1_int, int y1_int) {
-        float x0,y0,x1,y1,nextx,nexty,currentx,currenty,interceptX,interceptY,dx,dy;
-        int i,nx,ny;
-        x0 = (float)x0_int;
-        y0 = (float)y0_int;
-        x1 = (float)x1_int;
-        y1 = (float)y1_int;
-        float signx = Mathf.Sign(x1 - x0);
-        float signy = Mathf.Sign(y1 - y0);
-        dx = (y1-y0)/(x1-x0); // slope, rise over run
-        dy = (x1-x0)/(y1-y0);
-        ny = Mathf.Abs(y1_int - y0_int);
-        nx = Mathf.Abs(x1_int - x0_int);
-        interceptX = currentx = nextx = x0;
-        interceptY = currenty = nexty = y0;
-        int interceptCount = nx + ny;
-
-        // x-axis pixel cross
-        for (i=0;i<=interceptCount;i++) {
-            float nextInterceptX = interceptX + dx;
-            float nextInterceptY = interceptY + dy;
-            if (Mathf.Abs(nextInterceptX - currentx)
-                < Mathf.Abs(nextInterceptY - currenty)) {
-
-                // x intercepts [1][2] or [2][1] checking both cells on either
-                // side of the edge that is being crossed.
-                if (CastRayCellCheck((int)currentx,(int)interceptX) == -1) return;
-                if (CastRayCellCheck((int)nextx,   (int)interceptX) == -1) return;
-                currentx = nextx;
-                nextx += signx;
-                interceptX+=dy;
-            } else {
-                // y intercepts
-                if (CastRayCellCheck((int)interceptY,(int)currenty) == -1) return;
-                if (CastRayCellCheck((int)interceptY,   (int)nexty) == -1) return;
-                currenty = nexty;
-                nexty += signy;
-                interceptY+=dx;
-            }
-        }
-    }
-
-    public void CastRayOLD2(int x0_int, int y0_int, int x1_int, int y1_int) {
-        float startX = (float)x0_int;
-        float startY = (float)y0_int;
-        float endX = (float)x1_int;
-        float endY = (float)y1_int;
-        float directionX = endX - startX;
-        float directionY = endY - startY;
-
-        // Determine step direction and distance for x and y axes
-        int stepX = (int)Mathf.Sign(directionX);
-        int stepY = (int)Mathf.Sign(directionY);
-
-        float deltaX = Mathf.Abs(directionX);
-        float deltaY = Mathf.Abs(directionY);
-
-        // Determine initial cell position
-        int x = (int)startX;
-        int y = (int)startY;
-
-        // Calculate increments for x and y
-        float xIncrement = stepX / deltaX;
-        float yIncrement = stepY / deltaY;
-
-        // Determine the slope to choose the major axis of traversal
-        bool steep = deltaY > deltaX;
-
-        // Midpoint of start and end cells
-        float midpointStartX = startX + 0.5f;
-        float midpointStartY = startY + 0.5f;
-        float midpointEndX = endX + 0.5f;
-        float midpointEndY = endY + 0.5f;
-
-        // Start traversal
-        while ((int)midpointStartX != (int)midpointEndX || (int)midpointStartY != (int)midpointEndY) {
-            int xCell = (int)midpointStartX;
-            int yCell = (int)midpointStartY;
-
-            // Perform action or check for each cell
-            if (CastRayCellCheck(xCell,yCell) == -1) return;
-
-            if (steep) {
-                midpointStartY += yIncrement;
-                x = (int)midpointStartX;
-                y = (int)midpointStartY;
-                if (stepY > 0) {
-                    if (yCell < y) {
-                        if (CastRayCellCheck(xCell,yCell + 1) == -1) return;
-                    }
-                } else {
-                    if (yCell > y) {
-                        if (CastRayCellCheck(xCell,yCell - 1) == -1) return;
-                    }
-                }
-            } else {
-                midpointStartX += xIncrement;
-                x = (int)midpointStartX;
-                y = (int)midpointStartY;
-                if (stepX > 0) {
-                    if (xCell < x) {
-                        if (CastRayCellCheck(xCell + 1,yCell) == -1) return;
-                    }
-                } else {
-                    if (xCell > x) {
-                        if (CastRayCellCheck(xCell - 1,yCell) == -1) return;
-                    }
-                }
             }
         }
     }
@@ -872,7 +766,7 @@ public class DynamicCulling : MonoBehaviour {
 
     int CastRayCellCheck(int x, int y) {
         if (XYPairInBounds(x,y)) {
-           // if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
+           if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
                 worldCellVisible[x,y] = IsOpen(x,y);
                 worldCellCheckedYet[x,y] = true;
                 if (!worldCellVisible[x,y]) {
@@ -882,7 +776,7 @@ public class DynamicCulling : MonoBehaviour {
 
                 SetVisPixel(x,y,new Color(0.5f,0f,0.5f,1f));
                 return 1;
-            //}
+            }
         }
 
         return 0;
