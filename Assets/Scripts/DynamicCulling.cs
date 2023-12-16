@@ -450,30 +450,30 @@ public class DynamicCulling : MonoBehaviour {
         // [2] = current
         // [3] = neighbors we should be able to see if [2] could be.
 
-        CastStraightX(1);  // [ ][3]
+        //CastStraightX(1);  // [ ][3]
                            // [1][2]
                            // [ ][3]
 
-        CastStraightX(-1); // [3][ ]
+        //CastStraightX(-1); // [3][ ]
                            // [2][1]
                            // [3][ ]
 
-        CastStraightY(1);  // [3][2][3]
+        //CastStraightY(1);  // [3][2][3]
                            // [ ][1][ ]
 
-        CastStraightY(-1); // [ ][1][ ]
+        //CastStraightY(-1); // [ ][1][ ]
                            // [3][2][3]
 
-        Cast45(1,1);       // [3][2]
+        //Cast45(1,1);       // [3][2]
                            // [1][3]
 
-        Cast45(-1,1);      // [2][3]
+        //Cast45(-1,1);      // [2][3]
                            // [3][1]
 
-        Cast45(-1,-1);     // [3][1]
+        //Cast45(-1,-1);     // [3][1]
                            // [2][3]
 
-        Cast45(1,-1);      // [1][3]
+        //Cast45(1,-1);      // [1][3]
                            // [3][2]
 
         for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
@@ -481,76 +481,60 @@ public class DynamicCulling : MonoBehaviour {
         for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
         for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
 
-        x = playerCellX + 1;
-        y = playerCellY;
-        if (XYPairInBounds(x,y)) {
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        if (XYPairInBounds(playerCellX + 1,playerCellY)) {
+            for (x=1;x<63;x++) CastRay(playerCellX + 1,playerCellY,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX + 1,playerCellY,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX + 1,playerCellY,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX + 1,playerCellY,63,y);
         }
 
-        x = playerCellX + 1;
-        y = playerCellY + 1;
-        if (XYPairInBounds(x,y)) {
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        if (XYPairInBounds(playerCellX + 1,playerCellY + 1)) {
+            for (x=1;x<63;x++) CastRay(playerCellX + 1,playerCellY + 1,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX + 1,playerCellY + 1,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX + 1,playerCellY + 1,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX + 1,playerCellY + 1,63,y);
         }
 
-        x = playerCellX;
-        y = playerCellY + 1;
-        if (XYPairInBounds(x,y)) {
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        if (XYPairInBounds(playerCellX,playerCellY + 1)) {
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY + 1,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY + 1,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY + 1,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY + 1,63,y);
         }
 
-        x = playerCellX - 1;
-        y = playerCellY + 1;
-        if (XYPairInBounds(x,y)) {
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        if (XYPairInBounds(playerCellX - 1,playerCellY + 1)) {
+            for (x=1;x<63;x++) CastRay(playerCellX - 1,playerCellY + 1,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX - 1,playerCellY + 1,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX - 1,playerCellY + 1,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX - 1,playerCellY + 1,63,y);
         }
 
-        x = playerCellX - 1;
-        y = playerCellY;
-        if (XYPairInBounds(x,y)) {
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        if (XYPairInBounds(playerCellX - 1,playerCellY)) {
+            for (x=1;x<63;x++) CastRay(playerCellX - 1,playerCellY,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX - 1,playerCellY,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX - 1,playerCellY,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX - 1,playerCellY,63,y);
         }
 
-        x = playerCellX - 1;
-        y = playerCellY - 1;
-        if (XYPairInBounds(x,y)) {
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        if (XYPairInBounds(playerCellX - 1,playerCellY - 1)) {
+            for (x=1;x<63;x++) CastRay(playerCellX - 1,playerCellY - 1,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX - 1,playerCellY - 1,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX - 1,playerCellY - 1,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX - 1,playerCellY - 1,63,y);
         }
 
-        x = playerCellX;
-        y = playerCellY - 1;
-        if (XYPairInBounds(x,y)) {
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        if (XYPairInBounds(playerCellX,playerCellY - 1)) {
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY - 1,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY - 1,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY - 1,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY - 1,63,y);
         }
 
-        x = playerCellX + 1;
-        y = playerCellY - 1;
-        if (XYPairInBounds(x,y)) {
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
-            for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,0,y);
-            for (y=1;y<63;y++) CastRay(playerCellX,playerCellY,63,y);
+        if (XYPairInBounds(playerCellX + 1,playerCellY - 1)) {
+            for (x=1;x<63;x++) CastRay(playerCellX + 1,playerCellY - 1,x,0);
+            for (x=1;x<63;x++) CastRay(playerCellX + 1,playerCellY - 1,x,63);
+            for (y=1;y<63;y++) CastRay(playerCellX + 1,playerCellY - 1,0,y);
+            for (y=1;y<63;y++) CastRay(playerCellX + 1,playerCellY - 1,63,y);
         }
 
         // Pattern of custom axial rays, 3 wide each (center only shown).
@@ -720,16 +704,20 @@ public class DynamicCulling : MonoBehaviour {
                 currentVisible = worldCellOpen[x,y]; // Keep going.
             }
 
-            if (!worldCellCheckedYet[xofs,y] || !worldCellOpen[xofs,y]) {
-                worldCellVisible[xofs,y] = neighbor1;
-                worldCellCheckedYet[xofs,y] = true;
-                SetVisPixel(xofs,y,Color.magenta);
+            if (XYPairInBounds(xofs,y)) {
+                if (!worldCellCheckedYet[xofs,y] || !worldCellOpen[xofs,y]) {
+                    worldCellVisible[xofs,y] = neighbor1;
+                    worldCellCheckedYet[xofs,y] = true;
+                    SetVisPixel(xofs,y,Color.magenta);
+                }
             }
 
-            if (!worldCellCheckedYet[x,yofs] || !worldCellOpen[x,yofs]) {
-                worldCellVisible[x,yofs] = neighbor2;
-                worldCellCheckedYet[x,yofs] = true;
-                SetVisPixel(x,yofs,Color.magenta);
+            if (XYPairInBounds(x,yofs)) {
+                if (!worldCellCheckedYet[x,yofs] || !worldCellOpen[x,yofs]) {
+                    worldCellVisible[x,yofs] = neighbor2;
+                    worldCellCheckedYet[x,yofs] = true;
+                    SetVisPixel(x,yofs,Color.magenta);
+                }
             }
 
             if (!currentVisible) {
@@ -747,7 +735,8 @@ public class DynamicCulling : MonoBehaviour {
         int err = dx - dy;
         int x = x0;
         int y = y0;
-        while (true) {
+        int iter = Mathf.Max(dx,dy);
+        while (iter > 0) {
             if (CastRayCellCheck(x,y) == -1) return;
             if (x == x1 && y == y1) return;
 
@@ -761,20 +750,22 @@ public class DynamicCulling : MonoBehaviour {
                 err += dx;
                 y += sy;
             }
+
+            iter--;
         }
     }
 
     int CastRayCellCheck(int x, int y) {
         if (XYPairInBounds(x,y)) {
-           if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
-                worldCellVisible[x,y] = IsOpen(x,y);
+           if (!worldCellCheckedYet[x,y] || !worldCellOpen[x,y]) {
+                worldCellVisible[x,y] = worldCellOpen[x,y];
                 worldCellCheckedYet[x,y] = true;
                 if (!worldCellVisible[x,y]) {
                     pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
                     return -1;
                 }
 
-                SetVisPixel(x,y,new Color(0.5f,0f,0.5f,1f));
+                SetVisPixel(x,y,new Color(0f,0f,0.5f,1f));
                 return 1;
             }
         }
