@@ -450,30 +450,30 @@ public class DynamicCulling : MonoBehaviour {
         // [2] = current
         // [3] = neighbors we should be able to see if [2] could be.
 
-        CastStraightX(1);  // [ ][3]
+        //CastStraightX(1);  // [ ][3]
                            // [1][2]
                            // [ ][3]
 
-        CastStraightX(-1); // [3][ ]
+        //CastStraightX(-1); // [3][ ]
                            // [2][1]
                            // [3][ ]
 
-        CastStraightY(1);  // [3][2][3]
+        //CastStraightY(1);  // [3][2][3]
                            // [ ][1][ ]
 
-        CastStraightY(-1); // [ ][1][ ]
+        //CastStraightY(-1); // [ ][1][ ]
                            // [3][2][3]
 
-        Cast45(1,1);       // [3][2]
+        //Cast45(1,1);       // [3][2]
                            // [1][3]
 
-        Cast45(-1,1);      // [2][3]
+        //Cast45(-1,1);      // [2][3]
                            // [3][1]
 
-        Cast45(-1,-1);     // [3][1]
+        //Cast45(-1,-1);     // [3][1]
                            // [2][3]
 
-        Cast45(1,-1);      // [1][3]
+        //Cast45(1,-1);      // [1][3]
                            // [3][2]
 
         for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
@@ -733,8 +733,8 @@ public class DynamicCulling : MonoBehaviour {
 //     }
 
     // My version of the above, C#-ified
-    void CastRay(int x0_int, int y0_int, int x1_int, int y1_int) {
-        float x0,y0,x1,y1,nextx,nexty,currentx,currenty,interceptX,interceptY,lastInterceptX,lastInterceptY,dx,dy;
+    void CastRayOLD(int x0_int, int y0_int, int x1_int, int y1_int) {
+        float x0,y0,x1,y1,nextx,nexty,currentx,currenty,interceptX,interceptY,dx,dy;
         int i,nx,ny;
         x0 = (float)x0_int;
         y0 = (float)y0_int;
@@ -742,42 +742,137 @@ public class DynamicCulling : MonoBehaviour {
         y1 = (float)y1_int;
         float signx = Mathf.Sign(x1 - x0);
         float signy = Mathf.Sign(y1 - y0);
-
-        dx=(y1-y0)/(x1-x0);
-        dy=(x1-x0)/(y1-y0);
-        ny=(int)Mathf.Abs(y1-y0);
-        nx=(int)Mathf.Abs(x1-x0);
-        currentx = nextx = x0;
-        currenty = nexty = y0;
-        lastInterceptX = interceptX = y0;
-        lastInterceptY = interceptY = x0;
+        dx = (y1-y0)/(x1-x0); // slope, rise over run
+        dy = (x1-x0)/(y1-y0);
+        ny = Mathf.Abs(y1_int - y0_int);
+        nx = Mathf.Abs(x1_int - x0_int);
+        interceptX = currentx = nextx = x0;
+        interceptY = currenty = nexty = y0;
         int interceptCount = nx + ny;
 
         // x-axis pixel cross
         for (i=0;i<=interceptCount;i++) {
-            if (interceptX - lastInterceptX < interceptY - lastInterceptY) {
-                // x intercepts
+            float nextInterceptX = interceptX + dx;
+            float nextInterceptY = interceptY + dy;
+            if (Mathf.Abs(nextInterceptX - currentx)
+                < Mathf.Abs(nextInterceptY - currenty)) {
+
+                // x intercepts [1][2] or [2][1] checking both cells on either
+                // side of the edge that is being crossed.
                 if (CastRayCellCheck((int)currentx,(int)interceptX) == -1) return;
-                if (CastRayCellCheck((int)nextx,(int)interceptX) == -1) return;
+                if (CastRayCellCheck((int)nextx,   (int)interceptX) == -1) return;
                 currentx = nextx;
                 nextx += signx;
-                lastInterceptX = interceptX;
-                interceptX+=dx;
+                interceptX+=dy;
             } else {
                 // y intercepts
                 if (CastRayCellCheck((int)interceptY,(int)currenty) == -1) return;
-                if (CastRayCellCheck((int)interceptY,(int)nexty) == -1) return;
+                if (CastRayCellCheck((int)interceptY,   (int)nexty) == -1) return;
                 currenty = nexty;
                 nexty += signy;
-                lastInterceptY = interceptY;
-                interceptY+=dy;
+                interceptY+=dx;
+            }
+        }
+    }
+
+    public void CastRayOLD2(int x0_int, int y0_int, int x1_int, int y1_int) {
+        float startX = (float)x0_int;
+        float startY = (float)y0_int;
+        float endX = (float)x1_int;
+        float endY = (float)y1_int;
+        float directionX = endX - startX;
+        float directionY = endY - startY;
+
+        // Determine step direction and distance for x and y axes
+        int stepX = (int)Mathf.Sign(directionX);
+        int stepY = (int)Mathf.Sign(directionY);
+
+        float deltaX = Mathf.Abs(directionX);
+        float deltaY = Mathf.Abs(directionY);
+
+        // Determine initial cell position
+        int x = (int)startX;
+        int y = (int)startY;
+
+        // Calculate increments for x and y
+        float xIncrement = stepX / deltaX;
+        float yIncrement = stepY / deltaY;
+
+        // Determine the slope to choose the major axis of traversal
+        bool steep = deltaY > deltaX;
+
+        // Midpoint of start and end cells
+        float midpointStartX = startX + 0.5f;
+        float midpointStartY = startY + 0.5f;
+        float midpointEndX = endX + 0.5f;
+        float midpointEndY = endY + 0.5f;
+
+        // Start traversal
+        while ((int)midpointStartX != (int)midpointEndX || (int)midpointStartY != (int)midpointEndY) {
+            int xCell = (int)midpointStartX;
+            int yCell = (int)midpointStartY;
+
+            // Perform action or check for each cell
+            if (CastRayCellCheck(xCell,yCell) == -1) return;
+
+            if (steep) {
+                midpointStartY += yIncrement;
+                x = (int)midpointStartX;
+                y = (int)midpointStartY;
+                if (stepY > 0) {
+                    if (yCell < y) {
+                        if (CastRayCellCheck(xCell,yCell + 1) == -1) return;
+                    }
+                } else {
+                    if (yCell > y) {
+                        if (CastRayCellCheck(xCell,yCell - 1) == -1) return;
+                    }
+                }
+            } else {
+                midpointStartX += xIncrement;
+                x = (int)midpointStartX;
+                y = (int)midpointStartY;
+                if (stepX > 0) {
+                    if (xCell < x) {
+                        if (CastRayCellCheck(xCell + 1,yCell) == -1) return;
+                    }
+                } else {
+                    if (xCell > x) {
+                        if (CastRayCellCheck(xCell - 1,yCell) == -1) return;
+                    }
+                }
+            }
+        }
+    }
+
+    public void CastRay(int x0, int y0, int x1, int y1) {
+        int dx = Mathf.Abs(x1 - x0);
+        int dy = Mathf.Abs(y1 - y0);
+        int sx = (x0 < x1) ? 1 : -1;
+        int sy = (y0 < y1) ? 1 : -1;
+        int err = dx - dy;
+        int x = x0;
+        int y = y0;
+        while (true) {
+            if (CastRayCellCheck(x,y) == -1) return;
+            if (x == x1 && y == y1) return;
+
+            int e2 = 2 * err;
+            if (e2 > -dy) {
+                err -= dy;
+                x += sx;
+            }
+
+            if (e2 < dx) {
+                err += dx;
+                y += sy;
             }
         }
     }
 
     int CastRayCellCheck(int x, int y) {
         if (XYPairInBounds(x,y)) {
-            if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
+           // if (!worldCellCheckedYet[x,y] || !IsOpen(x,y)) {
                 worldCellVisible[x,y] = IsOpen(x,y);
                 worldCellCheckedYet[x,y] = true;
                 if (!worldCellVisible[x,y]) {
@@ -787,7 +882,7 @@ public class DynamicCulling : MonoBehaviour {
 
                 SetVisPixel(x,y,new Color(0.5f,0f,0.5f,1f));
                 return 1;
-            }
+            //}
         }
 
         return 0;
