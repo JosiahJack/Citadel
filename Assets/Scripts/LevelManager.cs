@@ -235,10 +235,26 @@ public class LevelManager : MonoBehaviour {
 
 	public GameObject GetCurrentStaticImmutableContainer() { // Does not return null
 		if (currentLevel < 0 || currentLevel > 13) {
-			return levelScripts[1].dynamicObjectsContainer;
+			return levelScripts[1].staticObjectsImmutable;
 		}
 
 		return levelScripts[currentLevel].staticObjectsImmutable;
+	}
+
+	public GameObject GetCurrentStaticSaveableContainer() { // Does not return null
+		if (currentLevel < 0 || currentLevel > 13) {
+			return levelScripts[1].staticObjectsSaveable;
+		}
+
+		return levelScripts[currentLevel].staticObjectsSaveable;
+	}
+
+	public GameObject GetCurrentDoorsContainer() { // Does not return null
+		if (currentLevel < 0 || currentLevel > 13) {
+			return levelScripts[1].doorsStaticSaveable;
+		}
+
+		return levelScripts[currentLevel].doorsStaticSaveable;
 	}
 
 	public GameObject GetRequestedLevelDynamicContainer(int index) {
