@@ -68,6 +68,7 @@ Shader "Custom/StandardTextureArray" {
             #pragma multi_compile_instancing
             #pragma vertex vertBase
             #pragma fragment fragBase
+            #include "UnityInstancing.cginc"
             #include "UnityStandardCoreForward_TexArray.cginc"
 
             ENDCG

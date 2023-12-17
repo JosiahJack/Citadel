@@ -1,9 +1,4 @@
 // Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
-// Upgrade NOTE: excluded shader from DX11, OpenGL ES 2.0 because it uses unsized arrays
-#pragma exclude_renderers d3d11 gles
-// Upgrade NOTE: excluded shader from DX11 because it uses wrong array syntax (type[size] name)
-#pragma exclude_renderers d3d11
-
 #ifndef UNITY_STANDARD_INPUT_INCLUDED
 #define UNITY_STANDARD_INPUT_INCLUDED
 
@@ -23,7 +18,10 @@
 #endif
 
 half4       _Color;
-float       _Slice;
+//float       _Slice;
+UNITY_INSTANCING_BUFFER_START(Props)
+    UNITY_DEFINE_INSTANCED_PROP(float,_Slice)
+UNITY_INSTANCING_BUFFER_END(Props)
 half        _Cutoff;
 
 UNITY_DECLARE_TEX2DARRAY(_MainTex);
@@ -77,7 +75,8 @@ float4 TexCoords(VertexInput v)
 {
     float4 texcoord;
     texcoord.xy = TRANSFORM_TEX(v.uv0, _MainTex); // Always source from uv0
-    texcoord.z = _Slice; //v.uv0.z;
+    UNITY_SETUP_INSTANCE_ID(v);
+    texcoord.z = UNITY_ACCESS_INSTANCED_PROP(Props, _Slice); //v.uv0.z;
 	// TODO need another way to deal with _DetailAlbedoMap since we can't use it for texcoord.
 	//texcoord.zw = TRANSFORM_TEX(((_UVSec == 0) ? v.uv0 : v.uv1), _DetailAlbedoMap);
     return texcoord;
