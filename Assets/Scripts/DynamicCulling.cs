@@ -293,29 +293,12 @@ public class DynamicCulling : MonoBehaviour {
         }
 
         for (int index=0;index<count;index++) {
-            Vector3 pos = Vector3.zero;
             switch(type) {
-                case 1: pos = dynamicMeshes[index].transform.position; break;
-                case 2: pos = doors[index].transform.position; break;
-                case 3: pos = npcTransforms[index].position; break;
-                case 4: pos = staticMeshesSaveable[index].transform.position; break;
-                default: pos = staticMeshesImmutable[index].transform.position; break;
-            }
-
-            for (int x=0;x<64;x++) {
-                for (int y=0;y<64;y++) {
-                    if (Vector3.Distance(pos,worldCellPositions[x,y]) < 1.28f) {
-                        doorsCoords[index] = new Vector2Int(x,y);
-                        switch(type) {
-                            case 1: dynamicMeshCoords[index] = new Vector2Int(x,y); break;
-                            case 2: doorsCoords[index] = new Vector2Int(x,y); break;
-                            case 3: npcCoords[index] = new Vector2Int(x,y); break;
-                            case 4: staticMeshSaveableCoords[index] = new Vector2Int(x,y); break;
-                            default: staticMeshImmutableCoords[index] = new Vector2Int(x,y); break;
-                        }
-                        return;
-                    }
-                }
+                case 1: dynamicMeshCoords[index] = PosToCellCoords(dynamicMeshes[index].transform.position); break;
+                case 2: doorsCoords[index] = PosToCellCoords(doors[index].transform.position); break;
+                case 3: npcCoords[index] = PosToCellCoords(npcTransforms[index].position); break;
+                case 4: staticMeshSaveableCoords[index] = PosToCellCoords(staticMeshesSaveable[index].transform.position); break;
+                default: staticMeshImmutableCoords[index] = PosToCellCoords(staticMeshesImmutable[index].transform.position); break;
             }
         }
     }
@@ -351,6 +334,11 @@ public class DynamicCulling : MonoBehaviour {
         }
 
         ToggleVisibility(); // Update all cells marked as dirty.
+        ToggleStaticMeshesImmutableVisibility();
+        ToggleStaticMeshesSaveableVisibility();
+        ToggleDoorsVisibility();
+        UpdateNPCPVS();
+        ToggleNPCPVS();
     }
 
     void FindPlayerCell() {
@@ -376,6 +364,7 @@ public class DynamicCulling : MonoBehaviour {
         y = (int)((pos.z - worldMin.z + 1.28f) / 2.56f);
         if (y > 63) y = 63;
         else if (y < 0) y = 0;
+
         return new Vector2Int(x,y);
     }
 
@@ -678,17 +667,18 @@ public class DynamicCulling : MonoBehaviour {
             }
 
             DetermineVisibleCells(); // Reevaluate visible cells from new pos.
+            worldCellVisible[0,0] = true; // Errors default here so draw them anyways.
             ToggleVisibility(); // Update all cells marked as dirty.
+            ToggleStaticMeshesImmutableVisibility();
+            ToggleStaticMeshesSaveableVisibility();
+            ToggleDoorsVisibility();
             UpdateNPCPVS();
             ToggleNPCPVS();
         }
 
         // Update dynamic meshes after PVS has been updated, if player moved.
-        UpdateDynamicMeshes(); // Always check all of them because any can move.
-        ToggleDynamicMeshesVisibility(); // Now turn them on or off.
-        ToggleStaticMeshesImmutableVisibility();
-        ToggleStaticMeshesSaveableVisibility();
-        //ToggleDoorsVisibility();
+        //UpdateDynamicMeshes(); // Always check all of them because any can move.
+        //ToggleDynamicMeshesVisibility(); // Now turn them on or off.
     }
 }
 
