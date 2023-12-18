@@ -22,8 +22,11 @@ public class DynamicCulling : MonoBehaviour {
     public List<Vector2Int> staticMeshImmutableCoords = new List<Vector2Int>();
     public List<MeshRenderer> staticMeshesSaveable = new List<MeshRenderer>();
     public List<Vector2Int> staticMeshSaveableCoords = new List<Vector2Int>();
+    public List<Light> lights = new List<Light>();
+    public List<Vector2Int> lightCoords = new List<Vector2Int>();
     public List<MeshRenderer> doors = new List<MeshRenderer>();
     public List<Vector2Int> doorsCoords = new List<Vector2Int>();
+
     public bool[,] worldCellLastVisible = new bool[WORLDX,WORLDX];
     public int playerCellX = 0;
     public int playerCellY = 0;
@@ -73,6 +76,10 @@ public class DynamicCulling : MonoBehaviour {
         doors.Clear();
         doorsCoords = new List<Vector2Int>();
         doorsCoords.Clear();
+        lights = new List<Light>();
+        lights.Clear();
+        lightCoords = new List<Vector2Int>();
+        lightCoords.Clear();
         dynamicMeshes = new List<MeshRenderer>();
         dynamicMeshes.Clear();
         dynamicMeshCoords = new List<Vector2Int>();
@@ -241,6 +248,7 @@ public class DynamicCulling : MonoBehaviour {
                 staticMeshesSaveable.Add(mr);
                 staticMeshSaveableCoords.Add(Vector2Int.zero);
                 break;
+            case 5: break; // Lights done differently due to Light (what, it makes sense).
             default:
                 staticMeshesImmutable.Add(mr);
                 staticMeshImmutableCoords.Add(Vector2Int.zero);
@@ -255,6 +263,7 @@ public class DynamicCulling : MonoBehaviour {
             case 2: container = LevelManager.a.GetCurrentDoorsContainer(); break;
             case 3: container = LevelManager.a.GetRequestedLevelNPCContainer(LevelManager.a.currentLevel); break;
             case 4: container = LevelManager.a.GetCurrentStaticSaveableContainer(); break;
+            case 5: container = LevelManager.a.GetCurrentLightsContainer(); break;
             default: container = LevelManager.a.GetCurrentStaticImmutableContainer(); break;
         }
 
@@ -263,6 +272,7 @@ public class DynamicCulling : MonoBehaviour {
         Transform parent = null;
         Transform child = null;
         AIController aic = null;
+        Light lit = null;
         for (int i=0;i<count;i++) {
             if (type == 3) { // NPC
                 aic = container.transform.GetChild(i).GetComponent<AIController>();
@@ -271,6 +281,12 @@ public class DynamicCulling : MonoBehaviour {
                 npcAICs.Add(aic);
                 npcTransforms.Add(container.transform.GetChild(i));
                 npcCoords.Add(Vector2Int.zero);
+            } else if (type == 5) { // Lights
+                lit = container.transform.GetChild(i).GetComponent<Light>();
+                if (lit == null) continue;
+
+                lights.Add(lit);
+                lightCoords.Add(Vector2Int.zero);
             } else {
                 parent = container.transform.GetChild(i);
                 AddMeshRenderer(type,parent.GetComponent<MeshRenderer>());
@@ -289,6 +305,7 @@ public class DynamicCulling : MonoBehaviour {
             case 2: count = doors.Count; break;
             case 3: count = npcTransforms.Count; break;
             case 4: count = staticMeshesSaveable.Count; break;
+            case 5: count = lights.Count; break;
             default: count = staticMeshesImmutable.Count; break;
         }
 
@@ -298,6 +315,7 @@ public class DynamicCulling : MonoBehaviour {
                 case 2: doorsCoords[index] = PosToCellCoords(doors[index].transform.position); break;
                 case 3: npcCoords[index] = PosToCellCoords(npcTransforms[index].position); break;
                 case 4: staticMeshSaveableCoords[index] = PosToCellCoords(staticMeshesSaveable[index].transform.position); break;
+                case 5: lightCoords[index] = PosToCellCoords(lights[index].transform.position); break;
                 default: staticMeshImmutableCoords[index] = PosToCellCoords(staticMeshesImmutable[index].transform.position); break;
             }
         }
@@ -315,11 +333,13 @@ public class DynamicCulling : MonoBehaviour {
         FindMeshRenderers(2); // Doors
         FindMeshRenderers(3); // NPCs
         FindMeshRenderers(4); // Static Saveable
+        FindMeshRenderers(5); // Lights
         PutMeshesInCells(0); // Static Immutable
         PutMeshesInCells(1); // Dynamic
         PutMeshesInCells(2); // Doors
         PutMeshesInCells(3); // NPCs
         PutMeshesInCells(4); // Static Saveable
+        PutMeshesInCells(5); // Lights
 
         // --------------------------------------------------------------------
         // Do first Cull pass
@@ -337,6 +357,7 @@ public class DynamicCulling : MonoBehaviour {
         ToggleStaticMeshesImmutableVisibility();
         ToggleStaticMeshesSaveableVisibility();
         ToggleDoorsVisibility();
+        ToggleLightsVisibility();
         UpdateNPCPVS();
         ToggleNPCPVS();
     }
@@ -653,6 +674,16 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
+    public void ToggleLightsVisibility() {
+        for (int i=0;i<lights.Count;i++) {
+            if (worldCellVisible[lightCoords[i].x,lightCoords[i].y]) {
+                lights[i].enabled = true;
+            } else {
+                lights[i].enabled = false;
+            }
+        }
+    }
+
     public void Cull() {
         if (!cullEnabled) return;
 
@@ -672,6 +703,7 @@ public class DynamicCulling : MonoBehaviour {
             ToggleStaticMeshesImmutableVisibility();
             ToggleStaticMeshesSaveableVisibility();
             ToggleDoorsVisibility();
+            ToggleLightsVisibility();
             UpdateNPCPVS();
             ToggleNPCPVS();
         }

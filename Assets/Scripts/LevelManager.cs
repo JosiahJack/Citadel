@@ -257,6 +257,14 @@ public class LevelManager : MonoBehaviour {
 		return levelScripts[currentLevel].doorsStaticSaveable;
 	}
 
+	public GameObject GetCurrentLightsContainer() { // Does not return null
+		if (currentLevel < 0 || currentLevel > 13) {
+			return levelScripts[1].lightsStaticImmutable;
+		}
+
+		return levelScripts[currentLevel].lightsStaticImmutable;
+	}
+
 	public GameObject GetRequestedLevelDynamicContainer(int index) {
 		if (index < 0 || index > 13) return levelScripts[1].dynamicObjectsContainer; // Default to Medical level
 
