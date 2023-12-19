@@ -77,19 +77,14 @@ public class AIAnimationController : MonoBehaviour {
 
 		if (checkVisWithSMR) {
 			if (smR != null) {
-				if (!smR.isVisible) return;
+				if (!smR.isVisible && aic.withinPVS) return;
 			}
 		}
 		
 		if (firstUpdateAfterLoad) { SetAnimAfterLoad(); return; }
 		
-		if (dying || aic.healthManager.health <= 0) {
-			aic.asleep = false;
-			anstinfo = anim.GetCurrentAnimatorStateInfo(0);
-			currentClipPercentage = anstinfo.normalizedTime % 1;
-			Dying();
-			return;
-		} else if (aic.asleep) {
+		if (aic.asleep && aic.currentState != AIState.Dying
+			&& aic.currentState != AIState.Dead) {
 			Idle();
 			return;
 		}
@@ -171,6 +166,10 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Dying () {
+		aic.asleep = false;
+		if (anim.speed != 1f) anim.speed = 1f;
+		anstinfo = anim.GetCurrentAnimatorStateInfo(0);
+		currentClipPercentage = anstinfo.normalizedTime % 1;
 		dying = true;
 		if (playDyingAnim) {
 		    anim.Play("Death");

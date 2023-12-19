@@ -204,7 +204,7 @@ public class LevelManager : MonoBehaviour {
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
-		DynamicCulling.a.Cull_Init();
+		if (currentLevel != 13) DynamicCulling.a.Cull_Init();
 		System.GC.Collect();
 	}
 

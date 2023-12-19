@@ -623,10 +623,28 @@ public class DynamicCulling : MonoBehaviour {
 
      // Avoid NPC doing raycasts when not in player's PVS.  Symmetrical vision.
     public void ToggleNPCPVS() {
+        HealthManager hm = null;
         for (int i=0;i<npcAICs.Count;i++) {
             if (worldCellVisible[npcCoords[i].x,npcCoords[i].y]) {
                 npcAICs[i].withinPVS = true;
-                Utils.Activate(npcAICs[i].visibleMeshEntity);
+                hm = npcAICs[i].healthManager;
+                if (npcAICs[i].currentState == AIState.Dead) {
+
+                    if (npcAICs[i].index == 0 || npcAICs[i].index == 14 // Autobomb, hopper
+                        || hm.teleportOnDeath || hm.gibOnDeath) {
+
+                        Utils.Deactivate(npcAICs[i].visibleMeshEntity);
+                    }
+                } else if (npcAICs[i].currentState == AIState.Dying) {
+                    if (npcAICs[i].index == 0 || npcAICs[i].index == 14 // Autobomb, hopper
+                        || hm.teleportOnDeath) {
+                            Utils.Deactivate(npcAICs[i].visibleMeshEntity);
+                        } else {
+                            Utils.Activate(npcAICs[i].visibleMeshEntity);
+                        }
+                } else {
+                    Utils.Activate(npcAICs[i].visibleMeshEntity);
+                }
             } else {
                 npcAICs[i].withinPVS = false;
                 Utils.Deactivate(npcAICs[i].visibleMeshEntity);
@@ -685,7 +703,7 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void Cull() {
-        if (!cullEnabled) return;
+        if (!cullEnabled || LevelManager.a.currentLevel == 13) return;
 
         // Now handle player position updating PVS
         if (UpdatedPlayerCell()) {

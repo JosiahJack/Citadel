@@ -342,7 +342,7 @@ public class Const : MonoBehaviour {
 	public static RaycastHit hitNull;	
 
 	// Private CONSTANTS
-	[HideInInspector] public int TARGET_FPS = 60;
+	[HideInInspector] public int TARGET_FPS = 144;
 	private StringBuilder s1;
 	private StringBuilder s2;
 
@@ -931,10 +931,6 @@ public class Const : MonoBehaviour {
 
 	// StatusBar Print
 	public static void sprint(string input, GameObject player) {
-		#if UNITY_EDITOR
-			UnityEngine.Debug.Log(input); // Print to Editor console.
-		#endif
-		System.Console.WriteLine(input);
 		a.statusBar.SendText(input);
 	}
 
@@ -1667,30 +1663,30 @@ public class Const : MonoBehaviour {
 
 			// Check if we missed a static non-instantiable object to load to.
 			int numberOfMissedObjects = 0;
-			SaveObject sobQuickCheck;
+			SaveObject sob;
 			for (i=0;i<saveableGameObjectsInScene.Count;i++) {
 				if (alreadyCheckedThisInstantiableGameObjectInScene[i]) {
 					continue;
 				}
 
-				string staticResult; // Immutable nonsense so no bother doing 
-									 // outside the loop, blech!
-				sobQuickCheck =
-					saveableGameObjectsInScene[i].GetComponent<SaveObject>();
-
- 				staticResult = "is not static";
-				if (sobQuickCheck != null) {
-					if (!sobQuickCheck.instantiated) staticResult = "is static";
-				}				
-
-				UnityEngine.Debug.Log(saveableGameObjectsInScene[i].name 
-									  + " not loaded during Static Pass and "
-									  + staticResult);
+				sob = saveableGameObjectsInScene[i].GetComponent<SaveObject>();
+				if (sob != null) {
+					if (!sob.instantiated) {
+						UnityEngine.Debug.Log(saveableGameObjectsInScene[i].name
+						+ " not loaded during Static Pass and is static");
+					} else {
+						UnityEngine.Debug.Log(saveableGameObjectsInScene[i].name
+						+ " not loaded during Static Pass and is not static");
+					}
+				} else {
+					UnityEngine.Debug.Log(saveableGameObjectsInScene[i].name
+						+ " not loaded during Static Pass and is not static");
+				}
 				numberOfMissedObjects++;
 			}
 			if (numberOfMissedObjects > 0) {
 				UnityEngine.Debug.Log("numberOfMissedObjects: "
-									+ numberOfMissedObjects.ToString());
+									  + numberOfMissedObjects.ToString());
 			}
 
 			// LOAD 7d. INSTANTIATE AND LOAD TO INSTANTIATED SAVEABLES
@@ -1888,19 +1884,19 @@ public class Const : MonoBehaviour {
 				numtargetsfound++;
 				tempUD.CopyBitsFromUseData(ud);
 
-				UnityEngine.Debug.Log("Running targets for " + targetname);
+				//UnityEngine.Debug.Log("Running targets for " + targetname);
 
 				// Added activeSelf bit to keep from spamming SetActive
 				// when running targets through a trigger_multiple
 				if (tempUD.GOSetActive && !TargetRegister[i].activeSelf) {
-					UnityEngine.Debug.Log("GOSetActive on " + targetname);
+					//UnityEngine.Debug.Log("GOSetActive on " + targetname);
 					TargetRegister[i].SetActive(true);
 					succeeded = true;
 				}
 
 				// Diddo for activeSelf to prevent spamming SetActive.
 				if (tempUD.GOSetDeactive && TargetRegister[i].activeSelf) {
-					UnityEngine.Debug.Log("GOSetDeactive on " + targetname);
+					//UnityEngine.Debug.Log("GOSetDeactive on " + targetname);
 					TargetRegister[i].SetActive(false);
 					succeeded = true;
 				}

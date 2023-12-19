@@ -243,7 +243,10 @@ public class AIController : MonoBehaviour {
             currentState = AIState.Idle; // No waypoints, stay put
         }
 
-		if (wandering) currentState = AIState.Walk;
+		if (wandering && (UnityEngine.Random.Range(0,1f) < 0.5f)) {
+			currentState = AIState.Walk;
+		} else wandering = false;
+
 		if (asleep) currentState = AIState.Idle;
 		tickFinished = PauseScript.a.relativeTime + Const.a.aiTickTime
 					   + Random.value;
