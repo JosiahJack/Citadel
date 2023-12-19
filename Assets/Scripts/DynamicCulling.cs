@@ -84,6 +84,10 @@ public class DynamicCulling : MonoBehaviour {
         dynamicMeshes.Clear();
         dynamicMeshCoords = new List<Vector2Int>();
         dynamicMeshCoords.Clear();
+        npcAICs = new List<AIController>();
+        npcAICs.Clear();
+        npcTransforms = new List<Transform>();
+        npcTransforms.Clear();
         for (int x=0;x<64;x++) {
             for (int y=0;y<64;y++) {
                 cellLists[x,y] = new List<GameObject>();

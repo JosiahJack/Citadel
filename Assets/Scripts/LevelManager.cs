@@ -181,6 +181,7 @@ public class LevelManager : MonoBehaviour {
 		PlayerReferenceManager.a.playerCurrentLevel = levnum;
 		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) AutoSplitterData.missionSplitID++; // 1 - Medical split - we are now on level 2
 		PostLoadLevelSetupSystems();
+		if (currentLevel != 13) DynamicCulling.a.Cull_Init();
 	}
 
 	public void LoadLevelFromSave (int levnum) {
@@ -204,7 +205,6 @@ public class LevelManager : MonoBehaviour {
 		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
 		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
 		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
-		if (currentLevel != 13) DynamicCulling.a.Cull_Init();
 		System.GC.Collect();
 	}
 

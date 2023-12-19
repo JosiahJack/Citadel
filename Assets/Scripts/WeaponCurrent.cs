@@ -147,7 +147,7 @@ public class WeaponCurrent : MonoBehaviour {
 		if (WeaponFire.a.reloadFinished > PauseScript.a.relativeTime) return;
 		if (useableItemIndex == -1 || buttonIndex > 6 || buttonIndex < 0) {
 			MFDManager.a.SetAmmoIcons(-1,false); // Clear the ammo icons.
-			Debug.Log("Early exit on WeaponChange() in WeaponCurrent.cs!");
+			//Debug.Log("Early exit on WeaponChange() in WeaponCurrent.cs!");
 			return;
 		}
 
