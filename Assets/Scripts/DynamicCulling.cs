@@ -14,7 +14,6 @@ public class DynamicCulling : MonoBehaviour {
     public bool[,] worldCellCheckedYet = new bool [WORLDX,WORLDX];
     public Vector3[,] worldCellPositions = new Vector3 [WORLDX,WORLDX];
     public List<GameObject>[,] cellLists = new List<GameObject>[WORLDX,WORLDX];
-    public GameObject[,] debugCubes = new GameObject[WORLDX,WORLDX];
     public List<MeshRenderer>[,] cellListsMR = new List<MeshRenderer>[WORLDX,WORLDX];
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
     public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();

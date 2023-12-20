@@ -116,6 +116,30 @@ public static class ConsoleEmulator {
 		ConsoleEntry(enteredText);
 	}
 
+	static void EnterNoclip() {
+		MouseLookScript.a.playerCamera.useOcclusionCulling = false;
+		PlayerMovement.a.CheatNoclip = true;
+		PlayerMovement.a.grounded = false;
+		PlayerMovement.a.rbody.useGravity = false;
+		Utils.DisableCapsuleCollider(PlayerMovement.a.capsuleCollider);
+		Utils.DisableCapsuleCollider(PlayerMovement.a.leanCapsuleCollider);
+		Utils.DisableSphereCollider(PlayerMovement.a.cyberCollider);
+		Const.sprint("noclip activated!");
+	}
+
+	static void ExitNoclip() {
+		MouseLookScript.a.playerCamera.useOcclusionCulling = true;
+		PlayerMovement.a.CheatNoclip = false;
+		PlayerMovement.a.grounded = false;
+		if (PlayerMovement.a.inCyberSpace) {
+			Utils.EnableSphereCollider(PlayerMovement.a.cyberCollider);
+		} else {
+			Utils.EnableCapsuleCollider(PlayerMovement.a.capsuleCollider);
+			Utils.EnableCapsuleCollider(PlayerMovement.a.leanCapsuleCollider);
+		}
+		Const.sprint("noclip disabled");
+	}
+
     private static void ConsoleEntry(string entry) {
         ShiftLastCommand(entry);
 		consoleMemdex = 0;
@@ -124,30 +148,24 @@ public static class ConsoleEmulator {
         if (ts.Contains("noclip") || ts.Contains("idclip")
             || ts.Contains("no clip")) {
 			if (PlayerMovement.a.CheatNoclip) {
-				MouseLookScript.a.playerCamera.useOcclusionCulling = true;
-				PlayerMovement.a.CheatNoclip = false;
-				PlayerMovement.a.grounded = false;
-				if (PlayerMovement.a.inCyberSpace) {
-				    Utils.EnableSphereCollider(PlayerMovement.a.cyberCollider);
-				} else {
-				    Utils.EnableCapsuleCollider(PlayerMovement.a.capsuleCollider);
-				    Utils.EnableCapsuleCollider(PlayerMovement.a.leanCapsuleCollider);
-				}
-				Const.sprint("noclip disabled");
+				ExitNoclip();
 			} else {
-				MouseLookScript.a.playerCamera.useOcclusionCulling = false;
-				PlayerMovement.a.CheatNoclip = true;
-				PlayerMovement.a.grounded = false;
-				PlayerMovement.a.rbody.useGravity = false;
-				Utils.DisableCapsuleCollider(PlayerMovement.a.capsuleCollider);
-				Utils.DisableCapsuleCollider(PlayerMovement.a.leanCapsuleCollider);
-				Utils.DisableSphereCollider(PlayerMovement.a.cyberCollider);
-				Const.sprint("noclip activated!");
+				EnterNoclip();
 			}
         } else if (ts.Contains("editmode") || ts.Contains("edit mode")) {
 			Const.a.editMode = !Const.a.editMode;
-			if (Const.a.editMode) Const.sprint("Edit Mode activated! The current level can be shaped to your heart's content!");
-			if (!Const.a.editMode) Const.sprint("Edit Mode deactivated, normal play");
+			if (Const.a.editMode) {
+				Const.sprint("Edit Mode activated! The current level can be shaped to your heart's content!");
+				EnterNoclip();
+				PlayerMovement.a.Notarget = true;
+			}
+
+			if (!Const.a.editMode) {
+				Const.sprint("Edit Mode deactivated, normal play");
+				LevelEditor.a.EditorExit();
+				ExitNoclip();
+				PlayerMovement.a.Notarget = false;
+			}
         } else if (ts.Contains("notarget") || ts.Contains("no target")) {
 			if (PlayerMovement.a.Notarget) {
 				PlayerMovement.a.Notarget = false;
