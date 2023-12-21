@@ -16,10 +16,13 @@ public class LevelEditor : MonoBehaviour {
 
     private void EditorEntry() {
         inEditMode = true;
+        PauseScript.a.PauseSystems();
+        PlayerMovement.a.ConsoleDisable();
     }
 
     public void EditorExit() {
         inEditMode = false;
+        PauseScript.a.UnpauseSystems();
     }
 
     void Update() {

@@ -158,7 +158,8 @@ public static class ConsoleEmulator {
 			} else {
 				EnterNoclip();
 			}
-        } else if (ts.Contains("editmode") || ts.Contains("edit mode")) {
+        } else if (ts.Contains("editmode") || ts.Contains("edit mode")
+			 || ts.Contains("editor")) {
 			Const.a.editMode = !Const.a.editMode;
 			if (Const.a.editMode) {
 				Const.sprint("Edit Mode activated! The current level can be shaped to your heart's content!");
