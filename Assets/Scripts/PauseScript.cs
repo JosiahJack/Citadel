@@ -14,7 +14,6 @@ public class PauseScript : MonoBehaviour {
 	public GameObject mainMenu;
 	public GameObject saveDialog;
 	public GameObject hardSaveDialog;
-	public PlayerMovement pm;
 
 	[HideInInspector] public bool paused = false;
 	private bool previousInvMode = false;
@@ -136,34 +135,38 @@ public class PauseScript : MonoBehaviour {
 		else			PauseEnable();
 	}
 
-	public void ToggleAudioPause() {
-		if (Paused())	AudioListener.pause = true;
-		else			AudioListener.pause = false;
-	}
-
 	public void PauseEnable() {
+		AudioListener.pause = true;
+		PauseSystems();
 		previousInvMode = MouseLookScript.a.inventoryMode;
 		if (MouseLookScript.a.inventoryMode == false) {
 			MouseLookScript.a.ToggleInventoryMode();
-			ToggleAudioPause();
 		}
-		paused = true;
+		EnablePauseUI();
 		pauseText.SetActive(true);
+	}
+
+	public void PauseDisable() {
+		AudioListener.pause = false;
+		UnpauseSystems();
+		if (previousInvMode != MouseLookScript.a.inventoryMode) {
+			MouseLookScript.a.ToggleInventoryMode();
+			MouseLookScript.a.SetCameraCullDistances();
+		}
+		DisablePauseUI();
+		pauseText.SetActive(false);
+	}
+
+	public void PauseSystems() {
+		paused = true;
 		previousCursorImage = MouseCursor.a.cursorImage;
 		MouseCursor.a.cursorImage = MouseLookScript.a.cursorDefaultTexture;
 		for (int i=0;i<disableUIOnPause.Length;i++) {
 			disableUIOnPause[i].SetActive(false);
 		}
 
-		EnablePauseUI();
-		for (int k=0;k<Const.a.prb.Count;k++) {
-			Const.a.prb[k].Pause();
-		}
-
-		for (int k=0;k<Const.a.psys.Count;k++) {
-			Const.a.psys[k].Pause();
-		}
-
+		for (int k=0;k<Const.a.prb.Count;k++) Const.a.prb[k].Pause();
+		for (int k=0;k<Const.a.psys.Count;k++) Const.a.psys[k].Pause();
 		for (int k=0;k<Const.a.panimsList.Count;k++) {
 			Const.a.panimsList[k].Pause();
 		}
@@ -173,27 +176,15 @@ public class PauseScript : MonoBehaviour {
 		}
 	}
 
-	public void PauseDisable() {
+	public void UnpauseSystems() {
 		paused = false;
-		pauseText.SetActive(false);
-		if (previousInvMode != MouseLookScript.a.inventoryMode) {
-			MouseLookScript.a.ToggleInventoryMode();
-			MouseLookScript.a.SetCameraCullDistances();
-		}
 		MouseCursor.a.cursorImage = previousCursorImage;
 		for (int i=0;i<disableUIOnPause.Length;i++) {
 			disableUIOnPause[i].SetActive(true);
 		}
 
-		DisablePauseUI();
-		for (int k=0;k<Const.a.prb.Count;k++) {
-			Const.a.prb[k].UnPause();
-		}
-
-		for (int k=0;k<Const.a.psys.Count;k++) {
-			Const.a.psys[k].UnPause();
-		}
-
+		for (int k=0;k<Const.a.prb.Count;k++) Const.a.prb[k].UnPause();
+		for (int k=0;k<Const.a.psys.Count;k++) Const.a.psys[k].UnPause();
 		for (int k=0;k<Const.a.panimsList.Count;k++) {
 			Const.a.panimsList[k].UnPause();
 		}
@@ -202,7 +193,7 @@ public class PauseScript : MonoBehaviour {
 			if (ambientRegistry[u].SFX != null) ambientRegistry[u].SFX.UnPause();
 		}
 
-		pm.ConsoleDisable();
+		PlayerMovement.a.ConsoleDisable();
 	}
 
 	public void OpenSaveDialog() {

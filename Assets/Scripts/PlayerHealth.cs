@@ -181,7 +181,7 @@ public class PlayerHealth : MonoBehaviour {
 		// Death to Main Menu
 		if (MouseLookScript.a.inventoryMode == false) {
 			MouseLookScript.a.ToggleInventoryMode();
-			PauseScript.a.ToggleAudioPause();
+			AudioListener.pause = false;
 		}
 
 		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");

@@ -73,6 +73,9 @@ public static class ConsoleEmulator {
         if (string.IsNullOrWhiteSpace(val)) return;
 
         PlayerMovement.a.consoleinpFd.text = val;
+		PlayerMovement.a.consoleinpFd.MoveTextEnd(false);
+		PlayerMovement.a.consoleinpFd.selectionAnchorPosition = PlayerMovement.a.consoleinpFd.caretPosition;
+		PlayerMovement.a.consoleinpFd.selectionFocusPosition = PlayerMovement.a.consoleinpFd.caretPosition;
         consoleMemdex++;
         if (consoleMemdex > 6) consoleMemdex = 6;
     }
@@ -93,6 +96,9 @@ public static class ConsoleEmulator {
         if (string.IsNullOrWhiteSpace(val)) { consoleMemdex = 0; return; }
 
         PlayerMovement.a.consoleinpFd.text = val;
+		PlayerMovement.a.consoleinpFd.MoveTextEnd(false);
+		PlayerMovement.a.consoleinpFd.selectionAnchorPosition = PlayerMovement.a.consoleinpFd.caretPosition;
+		PlayerMovement.a.consoleinpFd.selectionFocusPosition = PlayerMovement.a.consoleinpFd.caretPosition;
         consoleMemdex--;
         if (consoleMemdex < 0) consoleMemdex = 0;
     }
