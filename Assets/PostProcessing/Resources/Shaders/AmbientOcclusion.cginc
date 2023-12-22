@@ -266,6 +266,7 @@ half4 FragAO(VaryingsMultitex i) : SV_Target
     // (depth in the DepthNormals mode has only 16-bit precision)
     depth_o -= _ProjectionParams.z / 65536;
 #endif
+    depth_o = min(depth_o, 0.99);
 
     // Reconstruct the view-space position.
     float3 vpos_o = ReconstructViewPos(i.uv01, depth_o, p11_22, p13_31);

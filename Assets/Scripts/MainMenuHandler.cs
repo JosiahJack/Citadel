@@ -111,13 +111,13 @@ public class MainMenuHandler : MonoBehaviour {
 	public Sprite OptionsTabDehilited;
 	public Sprite OptionsTabHilited;
 	public Camera configCamera;
+	public AudioSource BackGroundMusic;
 
 	[HideInInspector] public bool returnToPause = false;
 	[HideInInspector] public bool dataFound = false;
 	private enum Pages : byte {fp,sp,mp,np,lp,op,sv,cd};
 	private Pages currentPage;
 	private AudioSource StartSFX;
-	private AudioSource BackGroundMusic;
 	private bool typingSaveGame = false;
 	private string tempSaveNameHolder;
 	private int presetQuestionValue = -1;
