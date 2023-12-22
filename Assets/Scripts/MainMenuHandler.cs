@@ -498,22 +498,18 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 
 		UpdateConfigTabTextColor();
-		Const.a.difficultyCombat = combat.difficultySetting;
-		Const.a.difficultyMission = mission.difficultySetting;
-		Const.a.difficultyPuzzle = puzzle.difficultySetting;
-		Const.a.difficultyCyber = cyber.difficultySetting;
 	}
 
 	public void StartGame (bool isNew) {
 		Utils.PlayOneShotSavable(StartSFX,StartGameSFX);
+		Const.a.difficultyCombat = combat.difficultySetting;
+		Const.a.difficultyMission = mission.difficultySetting;
+		Const.a.difficultyPuzzle = puzzle.difficultySetting;
+		Const.a.difficultyCyber = cyber.difficultySetting;
 		if (isNew) {
 			string pname = newgamePage.GetComponentInChildren<InputField>(true).text;
 			if (string.IsNullOrWhiteSpace(pname)) pname = "Hacker";
 			Const.a.playerName = pname;
-			Const.a.difficultyCombat = combat.difficultySetting;
-			Const.a.difficultyMission = mission.difficultySetting;
-			Const.a.difficultyPuzzle = puzzle.difficultySetting;
-			Const.a.difficultyCyber = cyber.difficultySetting;
 			Const.a.NewGame();
 		}
 
