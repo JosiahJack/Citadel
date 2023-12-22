@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class Music : MonoBehaviour {
 	public AudioClip[] levelMusic1;
@@ -36,6 +38,8 @@ public class Music : MonoBehaviour {
 	private bool elevator;
 	[HideInInspector] public bool inCombat;
 	private float combatImpulseFinished;
+	private AudioClip tempClip;
+	private string musicPath;
 
 	void Start() {
 		a = this;
@@ -50,45 +54,70 @@ public class Music : MonoBehaviour {
 	    a.LoadMusic();
 	}
 
-	//IEnumerator GetAudioClip(string fileName,List<AudioClip> audioClips) {
-    //    UnityWebRequest webRequest = UnityWebRequestMultimedia.GetAudioClip(
-    //        filePath+"/"+fileName,AudioType.MPEG);
-         
-    //    yield return webRequest.SendWebRequest();
- 
-    //    if(webRequest.isNetworkError)
-    //    {
-    //        Debug.Log(webRequest.error);
-    //    }
-    //    else
-    //    {
-    //        AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
-    //        clip.name = fileName;
-    //        audioClips.Add(clip);
- 
-    //    }
-    //}
-	
+	public void LoadAudio(string fName,int type, int index) {
+		string fPath = Utils.SafePathCombine(musicPath,fName);
+		string fPathFull = fPath + ".mp3";
+		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".wav";
+		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".ogg";
+		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".mid";
+		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".midi";
+		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".wave";
+		// if (!File.Exists(fPathFull)) { // No compatible music file found.
+		// 	Debug.LogWarning("No compatible music file found.");
+		// 	return;
+		// }
+
+		// StartCoroutine(LoadHelper(fPathFull,fName,type,index));
+		LoadHelper(fPathFull,fName,type,index);
+	}
+
+	#pragma warning disable 618
+	// IEnumerator LoadHelper(string uri, string clipname,int type, int index) {
+	private void LoadHelper(string uri, string clipname,int type, int index) {
+		WWW www = new WWW(uri);
+
+		// yield return www;
+		while (!www.isDone) { }
+		tempClip = www.GetAudioClip(false);
+		tempClip.name = clipname;
+		// if(www != null) {
+			// Or retrieve results as binary data
+			// byte[] results = www.bytes;
+			// var memStream = new System.IO.MemoryStream(results);
+			// var mpgFile = new NLayer.MpegFile(memStream);
+			// var samples = new float[mpgFile.Length];
+			// mpgFile.ReadSamples(samples, 0, (int)mpgFile.Length);
+			// tempClip = AudioClip.Create(clipname,samples.Length,
+			// 							mpgFile.Channels,mpgFile.SampleRate,
+			// 							false);
+   //
+			// tempClip.SetData(samples, 0);
+			Debug.LogWarning("Loaded main menu clip!");
+
+			switch (type) {
+				case 0:
+					if (index == 0) {
+						MainMenuHandler.a.BackGroundMusic.clip = tempClip;
+						MainMenuHandler.a.titleMusic = tempClip;
+						Debug.LogWarning("Set main menu clip!");
+
+						if (MainMenuHandler.a.gameObject.activeSelf
+							&& !MainMenuHandler.a.inCutscene
+							&& MainMenuHandler.a.dataFound) {
+
+
+							MainMenuHandler.a.BackGroundMusic.Play();
+						}
+					}
+					break;
+			}
+		// } else Debug.LogWarning("Failed to load audio clip " + clipname + " at " + uri);
+	}
+	#pragma warning restore 618
+
 	private void LoadMusic() {
-        //string fPath = SafePathCombine(Application.streamingAssetsPath,fName);
-
-        //UnityWebRequest webRequest = UnityWebRequestMultimedia.GetAudioClip(
-        //    filePath+"/"+fileName,AudioType.MPEG);
-         
-        //yield return webRequest.SendWebRequest();
- 
-        //if(webRequest.isNetworkError)
-        //{
-        //    Debug.Log(webRequest.error);
-        //}
-        //else
-        //{
-        //    AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
-        //    clip.name = fileName;
-        //    audioClips.Add(clip);
- 
-        //}
-
+		musicPath = Utils.SafePathCombine(Application.streamingAssetsPath,"music");
+		LoadAudio("INTROTHM-00_intro",0,0);// LoadAudio("TITLOOP-00_menu",0,0);
 
         //if (File.Exists(alogPath)) levelMusic1[0] = 
 
