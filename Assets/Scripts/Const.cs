@@ -1300,6 +1300,10 @@ public class Const : MonoBehaviour {
 			SceneTransitionHandler sth =
 			  newGameIndicator.AddComponent<SceneTransitionHandler>();
 			sth.saveGameIndex = -1;
+			sth.diffCombatCarryover = Const.a.difficultyCombat;
+			sth.diffCyberCarryover = Const.a.difficultyCyber;
+			sth.diffPuzzleCarryover = Const.a.difficultyPuzzle;
+			sth.diffMissionCarryover = Const.a.difficultyMission;
 			Cursor.lockState = CursorLockMode.None;
 			DontDestroyOnLoad(newGameIndicator); // 4b.2.
 			loadingScreen.SetActive(true);
@@ -1322,9 +1326,33 @@ public class Const : MonoBehaviour {
 		GameObject freshGame = GameObject.Find("GameNotYetStarted");
 		if (freshGame != null) Utils.SafeDestroy(freshGame);
 		GameObject saveIndicator = GameObject.Find("NewGameIndicator");
-		if (saveIndicator != null) Utils.SafeDestroy(saveIndicator);
+		if (saveIndicator != null) {
+			SceneTransitionHandler sth = saveIndicator.GetComponent<SceneTransitionHandler>();
+			UnityEngine.Debug.Log("Acquiring sth data");
+			if (sth != null) {
+				if (sth.setActiveAtNext) {
+					Const.a.difficultyCombat = sth.diffCombatCarryover;
+					Const.a.difficultyMission = sth.diffMissionCarryover;
+					Const.a.difficultyPuzzle = sth.diffPuzzleCarryover;
+					Const.a.difficultyCyber = sth.diffCyberCarryover;
+				}
+			}
+			Utils.SafeDestroy(saveIndicator);
+		}
 		GameObject loadIndicator = GameObject.Find("LoadGameIndicator");
-		if (loadIndicator != null) Utils.SafeDestroy(loadIndicator);
+		if (loadIndicator != null) {
+			SceneTransitionHandler sth = loadIndicator.GetComponent<SceneTransitionHandler>();
+			UnityEngine.Debug.Log("Acquiring sth data");
+			if (sth != null) {
+				if (sth.setActiveAtNext) {
+					Const.a.difficultyCombat = sth.diffCombatCarryover;
+					Const.a.difficultyMission = sth.diffMissionCarryover;
+					Const.a.difficultyPuzzle = sth.diffPuzzleCarryover;
+					Const.a.difficultyCyber = sth.diffCyberCarryover;
+				}
+			}
+			Utils.SafeDestroy(loadIndicator);
+		}
 		Cursor.visible = true;
 		Utils.Deactivate(loadingScreen);
 		Utils.Deactivate(MainMenuHandler.a.IntroVideo);

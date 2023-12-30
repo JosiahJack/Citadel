@@ -1643,6 +1643,8 @@ public class AIController : MonoBehaviour {
     }
 
 	public void Alert(UseData ud) {
+		if (Const.a.difficultyCombat == 0) return;
+
 		enemy = Const.a.player1Capsule;
 		if (enemy != null) enemyHM = Utils.GetMainHealthManager(enemy);
 	}

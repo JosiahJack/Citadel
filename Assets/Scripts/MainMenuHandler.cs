@@ -111,13 +111,13 @@ public class MainMenuHandler : MonoBehaviour {
 	public Sprite OptionsTabDehilited;
 	public Sprite OptionsTabHilited;
 	public Camera configCamera;
+	public AudioSource BackGroundMusic;
 
 	[HideInInspector] public bool returnToPause = false;
 	[HideInInspector] public bool dataFound = false;
 	private enum Pages : byte {fp,sp,mp,np,lp,op,sv,cd};
 	private Pages currentPage;
 	private AudioSource StartSFX;
-	private AudioSource BackGroundMusic;
 	private bool typingSaveGame = false;
 	private string tempSaveNameHolder;
 	private int presetQuestionValue = -1;
@@ -498,22 +498,18 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 
 		UpdateConfigTabTextColor();
-		Const.a.difficultyCombat = combat.difficultySetting;
-		Const.a.difficultyMission = mission.difficultySetting;
-		Const.a.difficultyPuzzle = puzzle.difficultySetting;
-		Const.a.difficultyCyber = cyber.difficultySetting;
 	}
 
 	public void StartGame (bool isNew) {
 		Utils.PlayOneShotSavable(StartSFX,StartGameSFX);
+		Const.a.difficultyCombat = combat.difficultySetting;
+		Const.a.difficultyMission = mission.difficultySetting;
+		Const.a.difficultyPuzzle = puzzle.difficultySetting;
+		Const.a.difficultyCyber = cyber.difficultySetting;
 		if (isNew) {
 			string pname = newgamePage.GetComponentInChildren<InputField>(true).text;
 			if (string.IsNullOrWhiteSpace(pname)) pname = "Hacker";
 			Const.a.playerName = pname;
-			Const.a.difficultyCombat = combat.difficultySetting;
-			Const.a.difficultyMission = mission.difficultySetting;
-			Const.a.difficultyPuzzle = puzzle.difficultySetting;
-			Const.a.difficultyCyber = cyber.difficultySetting;
 			Const.a.NewGame();
 		}
 

@@ -4,19 +4,29 @@ using UnityEngine.SceneManagement;
 
 public class SceneTransitionHandler : MonoBehaviour {
     private bool transitionActive;
-    private bool setActiveAtNext;
+    public bool setActiveAtNext;
     private bool loadActive;
     public int saveGameIndex;
     private AsyncOperation unloaderStatus;
     private int sceneIndexToLoad;
     private float loadDelayFinished;
+    public int diffCombatCarryover;
+    public int diffCyberCarryover;
+    public int diffPuzzleCarryover;
+    public int diffMissionCarryover;
 
     void Update() {
         if (setActiveAtNext) {
             setActiveAtNext = false;
-            Const.a.Awake();
             Scene mainScene = SceneManager.GetSceneByName("CitadelScene");
-            if (mainScene != null) SceneManager.SetActiveScene(mainScene); // Must delay by 1 frame.
+            if (mainScene != null) SceneManager.SetActiveScene(mainScene);
+            Const.a.Awake();
+            Const.a.difficultyCombat = diffCombatCarryover;
+            Const.a.difficultyMission = diffMissionCarryover;
+            Const.a.difficultyPuzzle = diffPuzzleCarryover;
+            Const.a.difficultyCyber = diffCyberCarryover;
+            Debug.Log("Const.a.difficultyCombat " + Const.a.difficultyCombat.ToString());
+            // Must delay by 1 frame.
             Scene loadScene = SceneManager.GetSceneByName("LoadScene");
             Debug.Log("Unloading LoadScene");
             //if (loadScene != null) SceneManager.UnloadSceneAsync(loadScene);

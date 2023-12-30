@@ -576,7 +576,7 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 		DropSearchables();
-		Utils.DisableCollision(gameObject);
+		if (!isScreen) Utils.DisableCollision(gameObject);
 		AIController aic = GetComponent<AIController>();
 		if (aic != null) {
 			if (aic.healthManager.gibOnDeath) { // We are a corpse here.
