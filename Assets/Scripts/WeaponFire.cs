@@ -832,8 +832,6 @@ public class WeaponFire : MonoBehaviour {
 			case 15: holetype = Const.a.miscellaneousPrefabs[28]; break;
 		}
 
-		if (holetype == null) return;
-
 		GameObject impactMark = (GameObject)Instantiate(holetype,
 			(tempHit.point + tempVec),
 			Quaternion.LookRotation(tempHit.normal*-1,Vector3.up),
@@ -1145,7 +1143,7 @@ public class WeaponFire : MonoBehaviour {
 		GameObject hitGO = tempHit.collider.transform.gameObject;
         if (tempHM != null && tempHM.health > 0 && !dartTranq) {
 			dmgFinal = tempHM.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
-			damageData.impactVelocity += (damageData.damage * 0.5f);
+			damageData.impactVelocity += (damageData.damage * 0.75f);
 			if (!damageData.isOtherNPC || wep16Index == 12) {
 				Utils.ApplyImpactForce(hitGO,damageData.impactVelocity,
 									   damageData.attacknormal,
@@ -1211,6 +1209,10 @@ public class WeaponFire : MonoBehaviour {
 		}
 
 		CreateStandardImpactEffects();
+		if (damageData.other.CompareTag("Geometry")) {
+			CreateStandardImpactMarks(index16);
+		}
+
 		if (tempHM == null) {
 			if (!silent) {
 				Utils.PlayOneShotSavable(SFX,hit);
@@ -1220,7 +1222,7 @@ public class WeaponFire : MonoBehaviour {
 			yield break;
 		}
 
-		damageData.impactVelocity = damageData.damage * 1.5f;
+		damageData.impactVelocity = 30 + damageData.damage * 1.5f;
 		if (!damageData.isOtherNPC || index16 == 12) {
 			if (!isRapier || (isRapier && PlayerEnergy.a.energy >= 4f)) {
 			Utils.ApplyImpactForce(targ, damageData.impactVelocity,
