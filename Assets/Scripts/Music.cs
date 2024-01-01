@@ -92,22 +92,23 @@ public class Music : MonoBehaviour {
 			// 							false);
    //
 			// tempClip.SetData(samples, 0);
-			Debug.LogWarning("Loaded main menu clip!");
+			//Debug.LogWarning("Loaded main menu clip!");
 
 			switch (type) {
 				case 0:
 					if (index == 0) {
-						MainMenuHandler.a.BackGroundMusic.clip = tempClip;
-						MainMenuHandler.a.titleMusic = tempClip;
-						Debug.LogWarning("Set main menu clip!");
-
-						if (MainMenuHandler.a.gameObject.activeSelf
-							&& !MainMenuHandler.a.inCutscene
-							&& MainMenuHandler.a.dataFound) {
-
-
-							MainMenuHandler.a.BackGroundMusic.Play();
-						}
+						return;
+// 						MainMenuHandler.a.BackGroundMusic.clip = tempClip;
+// 						MainMenuHandler.a.titleMusic = tempClip;
+// 						Debug.LogWarning("Set main menu clip!");
+//
+// 						if (MainMenuHandler.a.gameObject.activeSelf
+// 							&& !MainMenuHandler.a.inCutscene
+// 							&& MainMenuHandler.a.dataFound) {
+//
+//
+// 							MainMenuHandler.a.BackGroundMusic.Play();
+// 						}
 					}
 					break;
 			}

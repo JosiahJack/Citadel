@@ -11,6 +11,11 @@ public class EReaderSectionsButtons : MonoBehaviour {
 	void OnEnable() {
 		if (Const.a.difficultyMission == 0) ersbh3.gameObject.SetActive(false);
 		else ersbh3.gameObject.SetActive(true);
+
+		if (Inventory.a.hasNewEmail) ersbh0.HighlightButton();
+		if (Inventory.a.hasNewLogs) ersbh1.HighlightButton();
+		if (Inventory.a.hasNewData) ersbh2.HighlightButton();
+		if (Inventory.a.hasNewNotes) ersbh3.HighlightButton();
 	}
 
 	public void OnClick(int index) {

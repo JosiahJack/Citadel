@@ -123,7 +123,6 @@ public static class ConsoleEmulator {
 	}
 
 	static void EnterNoclip() {
-		MouseLookScript.a.playerCamera.useOcclusionCulling = false;
 		PlayerMovement.a.CheatNoclip = true;
 		PlayerMovement.a.grounded = false;
 		PlayerMovement.a.rbody.useGravity = false;
@@ -134,7 +133,6 @@ public static class ConsoleEmulator {
 	}
 
 	static void ExitNoclip() {
-		MouseLookScript.a.playerCamera.useOcclusionCulling = true;
 		PlayerMovement.a.CheatNoclip = false;
 		PlayerMovement.a.grounded = false;
 		if (PlayerMovement.a.inCyberSpace) {
@@ -158,7 +156,10 @@ public static class ConsoleEmulator {
 			} else {
 				EnterNoclip();
 			}
-        } else if (ts.Contains("editmode") || ts.Contains("edit mode")
+        } else if (ts.Contains("cull")) {
+			Const.sprint("Toggling culling system");
+			DynamicCulling.a.cullEnabled = !DynamicCulling.a.cullEnabled;
+		} else if (ts.Contains("editmode") || ts.Contains("edit mode")
 			 || ts.Contains("editor")) {
 			Const.a.editMode = !Const.a.editMode;
 			if (Const.a.editMode) {

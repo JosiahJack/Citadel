@@ -11,6 +11,7 @@ public class Email : MonoBehaviour {
 		if (Inventory.a.hasLog[emailIndex]) return; // Already have it.
 
 		Inventory.a.hasLog[emailIndex] = true;
+		Inventory.a.hasNewEmail = true;
 		Inventory.a.lastAddedIndex = emailIndex;
 		if (Const.a.audioLogType[emailIndex] == AudioLogType.Email) {
 			Inventory.a.beepDone = true;

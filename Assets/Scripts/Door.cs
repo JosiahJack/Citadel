@@ -240,6 +240,9 @@ public class Door : MonoBehaviour {
 
 	public void Unlock() {
 		locked = false;
+		if (QuestLogNotesManager.a != null) {
+			QuestLogNotesManager.a.NotifyDoorUnlock(this);
+		}
 	}
 
 	public void ToggleLocked(string arg) {

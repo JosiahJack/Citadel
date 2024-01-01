@@ -820,7 +820,7 @@ public class WeaponFire : MonoBehaviour {
 			case 3: holetype = Const.a.miscellaneousPrefabs[29]; break;
 			case 4: holetype = Const.a.miscellaneousPrefabs[27]; break;
 			case 5: holetype = Const.a.miscellaneousPrefabs[28]; break;
-			case 6: return; // UPDATE: No impact marks for lead pipe yet.
+			case 6: holetype = Const.a.miscellaneousPrefabs[30]; break;
 			case 7: holetype = Const.a.miscellaneousPrefabs[26]; break;
 			case 8: holetype = Const.a.miscellaneousPrefabs[27]; break;
 			case 9: holetype = Const.a.miscellaneousPrefabs[29]; break;

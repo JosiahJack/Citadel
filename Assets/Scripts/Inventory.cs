@@ -109,6 +109,12 @@ public class Inventory : MonoBehaviour {
 	[HideInInspector] public int[] wepAmmoSecondary; // save
 	[HideInInspector] public float[] currentEnergyWeaponHeat; // save
 	[HideInInspector] public bool[] wepLoadedWithAlternate; // save
+
+	public bool hasNewNotes = true; // save
+	public bool hasNewData = false; // save
+	public bool hasNewLogs = false; // save
+	public bool hasNewEmail = true; // save
+
 	private int globalLookupIndex;
 	private string retval;
 	private string scorpSmall = "sm, ";
@@ -244,6 +250,8 @@ public class Inventory : MonoBehaviour {
 		a.lastAddedIndex = a.tempRefIndex = -1;
 		a.logPaused = a.beepDone = false;
 		a.emailCurrent = a.emailIndex = 0;
+		a.hasNewEmail = true;
+		a.hasNewNotes = true;
 
 		// Patches
 		a.patchCounts = new int[7];
@@ -1103,6 +1111,12 @@ public class Inventory : MonoBehaviour {
 		numLogsFromLevel[Const.a.audioLogLevelFound[index]]++;
 		MouseLookScript.a.logContentsManager.InitializeLogsFromLevelIntoFolder();
 		MFDManager.a.SendInfoToItemTab(6,-1);
+		if (Const.a.audioLogType[index] == AudioLogType.Email) {
+			hasNewEmail = true;
+		} else if (Const.a.audioLogType[index] == AudioLogType.Normal) {
+			hasNewLogs = true;
+		}
+
 		if (hasHardware[2] == true) {
 			// Audio log ## picked up.  Press '##' to play back.
 			Const.sprint(Const.a.stringTable[36] + Const.a.audiologNames[index]
@@ -1121,6 +1135,7 @@ public class Inventory : MonoBehaviour {
 	public void PatchCycleDown(bool useSound) {
 		int nextIndex = patchCurrent - 1; // Add 1 to get slot above this.
 		if (nextIndex < 0) nextIndex = 6; // Wraparound to top.
+		patchCurrent = nextIndex;
 		int countCheck = 0;
 		bool noPatches = (patchCounts[nextIndex] <= 0);
 		while (noPatches) {
@@ -1137,6 +1152,7 @@ public class Inventory : MonoBehaviour {
 	public void PatchCycleUp(bool useSound) {
 		int nextIndex = patchCurrent + 1; // Add 1 to get slot above this.
 		if (nextIndex > 6) nextIndex = 0; // Wraparound to bottom.
+		patchCurrent = nextIndex;
 		int countCheck = 0;
 		bool noPatches = (patchCounts[nextIndex] <= 0);
 		while (noPatches) {
@@ -1156,6 +1172,7 @@ public class Inventory : MonoBehaviour {
 
 		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(0,true);
 		patchCounts[index]++;
+		if (patchCounts[patchCurrent] == 0) patchCurrent = index;
 
 		// Update UI text
 		for (int i = 0; i < 7; i++) {
@@ -1369,6 +1386,7 @@ public class Inventory : MonoBehaviour {
 				return true;
 			case SoftwareType.Game:		
 				softs[6].SetActive(true);
+				hasNewData = true;
 				switch(vers) {
 					case 0: // Ping
 							// UPDATE: Create minigame Ping
@@ -1402,7 +1420,8 @@ public class Inventory : MonoBehaviour {
 				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
 				
 				return true;
-			case SoftwareType.Data:		
+			case SoftwareType.Data:
+				hasNewData = true;
 				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberData);
 				Const.sprint(Const.a.stringTable[457],Const.a.player1);
 				hasLog[vers] = true;
@@ -1417,6 +1436,7 @@ public class Inventory : MonoBehaviour {
 				Const.sprint(Const.a.stringTable[459],Const.a.player1);
 				return true;
 			case SoftwareType.Keycard:
+				hasNewData = true;
 				if (vers < 0 || vers > 110) vers = 81; // At least give them STD.
 				AddAccessCardToInventory(vers);
 				return true;
@@ -1700,6 +1720,10 @@ public class Inventory : MonoBehaviour {
 		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hasSoft[j]); } // bool
 		line += Utils.splitChar + Utils.UintToString(inv.emailCurrent); // int
 		line += Utils.splitChar + Utils.UintToString(inv.emailIndex); // int
+		line += Utils.splitChar + Utils.BoolToString(inv.hasNewNotes,"hasNewNotes");
+		line += Utils.splitChar + Utils.BoolToString(inv.hasNewData,"hasNewData");
+		line += Utils.splitChar + Utils.BoolToString(inv.hasNewLogs,"hasNewLogs");
+		line += Utils.splitChar + Utils.BoolToString(inv.hasNewEmail,"hasNewEmail");
 		return line;
 	}
 
@@ -1845,7 +1869,10 @@ public class Inventory : MonoBehaviour {
 		for (j=0;j<7;j++) { inv.hasSoft[j] = Utils.GetBoolFromString(entries[index]); index++; }
 		inv.emailCurrent = Utils.GetIntFromString(entries[index]); index++;
 		inv.emailIndex = Utils.GetIntFromString(entries[index]); index++;
-
+		inv.hasNewNotes = Utils.GetBoolFromString(entries[index],"hasNewNotes"); index++;
+		inv.hasNewData = Utils.GetBoolFromString(entries[index],"hasNewData"); index++;
+		inv.hasNewLogs = Utils.GetBoolFromString(entries[index],"hasNewLogs"); index++;
+		inv.hasNewEmail = Utils.GetBoolFromString(entries[index],"hasNewEmail"); index++;
 		return index;
 	}
 }

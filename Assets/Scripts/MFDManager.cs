@@ -1656,6 +1656,7 @@ public class MFDManager : MonoBehaviour  {
 		ResetMultiMediaTabs();
 		startingSubTab.SetActive(true);
 		multiMediaHeaderLabel.text = "LOGS";
+		Inventory.a.hasNewLogs = false;
 		lastMultiMediaTabOpened = 1;
 		ersbLH.SetEReaderSectionsButtonsHighlights(1);
 		ersbRH.SetEReaderSectionsButtonsHighlights(1);
@@ -1680,6 +1681,7 @@ public class MFDManager : MonoBehaviour  {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		ResetMultiMediaTabs();
 		emailTab.SetActive(true);
+		Inventory.a.hasNewEmail = false;
 		multiMediaHeaderLabel.text = "EMAIL";
 		lastMultiMediaTabOpened = 0;
 		ersbLH.SetEReaderSectionsButtonsHighlights(0);
@@ -1690,6 +1692,7 @@ public class MFDManager : MonoBehaviour  {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		ResetMultiMediaTabs();
 		dataTab.SetActive(true);
+		Inventory.a.hasNewData = false;
 		multiMediaHeaderLabel.text = "DATA";
 		lastMultiMediaTabOpened = 2;
 		ersbLH.SetEReaderSectionsButtonsHighlights(2);
@@ -1700,6 +1703,7 @@ public class MFDManager : MonoBehaviour  {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		ResetMultiMediaTabs();
 		notesTab.SetActive(true);
+		Inventory.a.hasNewNotes = false;
 		multiMediaHeaderLabel.text = "NOTES";
 		lastMultiMediaTabOpened = 3;
 		ersbLH.SetEReaderSectionsButtonsHighlights(3);
