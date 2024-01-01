@@ -360,6 +360,21 @@ public class Inventory : MonoBehaviour {
 		}
 	}
 
+	public void CheckForUnreadLogs() {
+		int numUnreadEmails = 0;
+		int numUnreadLogs = 0;
+		for (int i=readLog.Length - 1;i>=0;i--) {
+			if (!readLog[i] && hasLog[i]) {
+				if (Const.a.audioLogType[i] == AudioLogType.Email) {
+					numUnreadEmails++;
+				} else numUnreadLogs++;
+			}
+		}
+
+		if (numUnreadEmails == 0) hasNewEmail = false;
+		if (numUnreadLogs == 0) hasNewLogs = false;
+	}
+
 	void Update() {
 		// Logs pause exceptions.
 		if ((PauseScript.a.Paused() || PauseScript.a.MenuActive())
@@ -490,6 +505,7 @@ public class Inventory : MonoBehaviour {
 				tempRefIndex = lastAddedIndex;
 				lastAddedIndex = FindNextUnreadLog();
 				if (lastAddedIndex == tempRefIndex) lastAddedIndex = -1;
+				CheckForUnreadLogs();
 			} else {
 				SFXSource.Stop();
 				Const.sprint("Log playback stopped");

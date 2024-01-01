@@ -12,6 +12,11 @@ public class EReaderSectionsButtons : MonoBehaviour {
 		if (Const.a.difficultyMission == 0) ersbh3.gameObject.SetActive(false);
 		else ersbh3.gameObject.SetActive(true);
 
+		HighlightOthers();
+	}
+
+	public void HighlightOthers() {
+		Inventory.a.CheckForUnreadLogs();
 		if (Inventory.a.hasNewEmail) ersbh0.HighlightButton();
 		if (Inventory.a.hasNewLogs) ersbh1.HighlightButton();
 		if (Inventory.a.hasNewData) ersbh2.HighlightButton();
@@ -37,5 +42,7 @@ public class EReaderSectionsButtons : MonoBehaviour {
 			case 2: ersbh0.DeHighlight(); ersbh1.DeHighlight(); ersbh2.Highlight();   ersbh3.DeHighlight(); break;
 			case 3: ersbh0.DeHighlight(); ersbh1.DeHighlight(); ersbh2.DeHighlight(); ersbh3.Highlight();   break;
 		}
+
+		HighlightOthers();
 	}
 }

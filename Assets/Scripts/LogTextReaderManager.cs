@@ -27,7 +27,11 @@ public class LogTextReaderManager : MonoBehaviour {
 	}
 
 	public void SendTextToReader(int referenceIndex) {
-		if (referenceIndex < 0) { Debug.Log("BUG: Audiolog index was less than 0. Report from LogTextReaderManager."); return; }
+		if (referenceIndex < 0) {
+			Debug.Log("BUG: Audiolog index was less than 0. Report from "
+					  + "LogTextReaderManager.");
+			return;
+		}
 
 		logTextOutput.GetComponent<Text>().text = Const.a.audioLogSpeech2Text[referenceIndex];
 		refIndex = referenceIndex;
