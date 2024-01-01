@@ -34,6 +34,7 @@ public class ChargeStation : MonoBehaviour {
 				return;
 			} else {
 				PlayerEnergy.a.GiveEnergy(amount, EnergyType.ChargeStation);
+				MFDManager.a.energySurge.SetActive(true);
 			}
 
 			if (damageOnUse > 0f) {

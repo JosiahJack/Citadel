@@ -139,6 +139,7 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject overallTextWarnings;
 	public GameObject overallMissionTimerT;
 	public GameObject overallMissionTimer;
+	public GameObject energySurge;
 
 	// Internal references
 	private bool isRH;
