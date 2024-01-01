@@ -7,6 +7,8 @@ public class MultiMediaLogTableButton : MonoBehaviour {
 	public int logTableButtonIndex;
 
 	void LogTableButtonClick() {
+		Inventory.a.hardwareIsActive[2] = true;
+		MFDManager.a.OpenEReaderInItemsTab();
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		MFDManager.a.OpenLogsLevelFolder(logTableButtonIndex);
 	}
