@@ -286,8 +286,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		// Avoid useless setting of the rbody.
 		if (rbody.useGravity != grav) rbody.useGravity = grav;
-		//if (rbody.useGravity != false) rbody.useGravity = false;
-		//if (grav) ApplyGravity();
+		if (grav) ApplyGravity();
 
 		if (inCyberSpace) {
 			if (rbody.velocity.magnitude > playerSpeed && !CheatNoclip) {
@@ -318,9 +317,6 @@ public class PlayerMovement : MonoBehaviour {
 		FallDamage();
 		FeetRayChecks();
 		oldVelocity = rbody.velocity;
-
-		// Automatically set grounded false, prevents ability to climb any wall
-		if (!CheatWallSticky || gravliftState) grounded = false;
 	}
 
 	// Parse surface below to allow for playing different footstep sets for
@@ -334,11 +330,18 @@ public class PlayerMovement : MonoBehaviour {
 		// Success here means hit a useable something.
 		// If a ray hits a wall or other unusable something, that's not success
 		// and print "Can't use <something>"
-		if (!successfulRay) return;
-		if (tempHit.collider == null) return;
+		if (!successfulRay || tempHit.collider == null) {
+			// Automatically set grounded false, prevents ability to climb any wall
+			if (!CheatWallSticky || gravliftState) grounded = false;
+			return;
+		}
 
 		GameObject hitGO = tempHit.collider.transform.gameObject;
-		if (hitGO == null) return;
+		if (hitGO == null) {
+			// Automatically set grounded false, prevents ability to climb any wall
+			if (!CheatWallSticky || gravliftState) grounded = false;
+			return;
+		}
 
 		PrefabIdentifier prefID = hitGO.GetComponent<PrefabIdentifier>();
 
@@ -491,12 +494,12 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	}
 
-	//void ApplyGravity() {
-	//	if (gravFinished < PauseScript.a.relativeTime) {
-	//		gravFinished = PauseScript.a.relativeTime + 0.05f;
-	//		rbody.AddRelativeForce(Vector3.down * 9.83f * 9.83f);
-	//	}
-	//}
+	void ApplyGravity() {
+// 		if (gravFinished < PauseScript.a.relativeTime) {
+// 			gravFinished = PauseScript.a.relativeTime + 0.01f;
+// 			rbody.AddRelativeForce(Vector3.down * 9.83f * 9.83f);
+// 		}
+	}
 
 	void ApplyGroundFriction() {
 		if (running) {
@@ -711,16 +714,21 @@ public class PlayerMovement : MonoBehaviour {
 		if (CheatNoclip) return;
 		if (!ladderState) return;
 
+		float sidForce = 0f;
+		float forForce = 0f;
+		float upForce = 0f;
 		if (grounded || Inventory.a.JumpJetsActive()) {
 			// Ladder climb, allow while grounded
 			float bonus = 1f;
 			if (Inventory.a.JumpJetsActive()) bonus = 2f;
 
+			sidForce = relSideways * walkAcceleration * Time.deltaTime;
+			forForce = relForward * walkAcceleration * Time.deltaTime;
+			upForce = ladderSpeed * relForward * walkAcceleration
+							* Time.deltaTime * bonus;
+
 			// Climbing when touching the ground
-			rbody.AddRelativeForce(relSideways * walkAcceleration
-								   * Time.deltaTime,ladderSpeed * relForward
-													* walkAcceleration
-													* Time.deltaTime * bonus,0);
+			rbody.AddRelativeForce(sidForce,upForce,forForce);
 		} else {
 			// Climbing off the ground
 			if (ladderSFXFinished < PauseScript.a.relativeTime
@@ -735,10 +743,12 @@ public class PlayerMovement : MonoBehaviour {
 			float ladderSpeedMod = ladderSpeed;
 			if (isSprinting && running) ladderSpeedMod = 1.2f; // Climb fast!
 
-			rbody.AddRelativeForce(relSideways * walkAcceleration
-								   * walkAccelAirRatio * Time.deltaTime * 0.2f,
-								   ladderSpeedMod * relForward
-								   * walkAcceleration * Time.deltaTime, 0);
+			sidForce = relSideways * walkAcceleration * Time.deltaTime * walkAccelAirRatio * 0.2f;
+			forForce = relForward * walkAcceleration * Time.deltaTime * walkAccelAirRatio * 0.2f;
+			upForce = ladderSpeedMod * relForward * walkAcceleration
+							* Time.deltaTime;
+
+			rbody.AddRelativeForce(sidForce,upForce,forForce);
 		}
 
 		if (Inventory.a.BoosterActive() && Inventory.a.BoosterSetToSkates()) {
@@ -762,9 +772,10 @@ public class PlayerMovement : MonoBehaviour {
 		float sidForce = relSideways * walkAcceleration * Time.deltaTime;
 		float forForce = relForward * walkAcceleration * Time.deltaTime;
 		float upForce = 0f;
-		if (rbody.velocity.magnitude < playerSpeed) {
-			upForce = (floorDot - 1.0f)/1.0f * playerSpeed;
-		}
+// 		if (rbody.velocity.magnitude < playerSpeed) {
+// 			upForce = (floorDot - 1.0f)/1.0f * playerSpeed;
+// 			if (upForce != 0) Debug.Log("upForce is " + upForce.ToString());
+// 		}
 
 		if (isSprinting) {
 			sidForce *= 1.75f;
@@ -784,9 +795,11 @@ public class PlayerMovement : MonoBehaviour {
 			// Normal walking
 			runTime += Time.deltaTime;
 			if (relForward == 0 && relSideways == 0) runTime = 0;
+
 			rbody.AddRelativeForce(sidForce,upForce,forForce);
 			movDir = rbody.velocity; // Updated after force add.
 			movDir.y = 0;
+			if (floorDot > 0.9f) rbody.velocity = movDir;
 			movDir = movDir.normalized;
 			if (fatigueFinished2 < PauseScript.a.relativeTime
 				&& movDir.sqrMagnitude > 0f && grounded
@@ -799,10 +812,9 @@ public class PlayerMovement : MonoBehaviour {
 					if (isSprinting) fatigue += fatiguePerSprintTick;
 					else fatigue += fatiguePerWalkTick;
 				}
-
-				if (staminupActive || FatigueCheat) fatigue = 0;
 			}
 		} else {
+
 			// Sprinting in the air
 			sidForce *= walkAccelAirRatio;
 			forForce *= walkAccelAirRatio;
@@ -812,6 +824,8 @@ public class PlayerMovement : MonoBehaviour {
 			// people far below are sleeping as we fly!
 			rbody.AddRelativeForce(sidForce,upForce,forForce);
 		}
+
+		if (staminupActive || FatigueCheat) fatigue = 0;
 	}
 
 	void FallDamage() {

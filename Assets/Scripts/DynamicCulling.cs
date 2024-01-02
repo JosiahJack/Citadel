@@ -825,7 +825,16 @@ public class DynamicCulling : MonoBehaviour {
         for (int i=0;i<staticMeshesSaveable.Count;i++) {
             if (worldCellVisible[staticMeshSaveableCoords[i].x,staticMeshSaveableCoords[i].y]
                 || !worldCellOpen[staticMeshSaveableCoords[i].x,staticMeshSaveableCoords[i].y]) {
-                staticMeshesSaveable[i].enabled = true;
+                HealthManager hm = staticMeshesSaveable[i].GetComponent<HealthManager>();
+                if (hm != null) {
+                    if (hm.health > 0 || !hm.gibOnDeath) {
+                        staticMeshesSaveable[i].enabled = true;
+                    } else {
+                        staticMeshesSaveable[i].enabled = false;
+                    }
+                } else {
+                    staticMeshesSaveable[i].enabled = true;
+                }
             } else {
                 staticMeshesSaveable[i].enabled = false;
             }

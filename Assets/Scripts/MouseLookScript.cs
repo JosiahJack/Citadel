@@ -843,8 +843,6 @@ public class MouseLookScript : MonoBehaviour {
 		if (GUIState.a.overButtonType == ButtonType.None) return;
 		if (currentButton == null) return;
 
-		Debug.Log("InventoryButtonUse entered successfully");
-
 		int indexPriorToRemoval = -1;
 		int customIndexPrior = -1;
 		switch(GUIState.a.overButtonType) {
@@ -1447,6 +1445,9 @@ public class MouseLookScript : MonoBehaviour {
         s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(ml.randomKlaxonFinished,
 													 "randomKlaxonFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(ml.shakeFinished,
+													 "shakeFinished"));
 		return s1.ToString();
 	}
 
@@ -1605,6 +1606,11 @@ public class MouseLookScript : MonoBehaviour {
 		ml.randomKlaxonFinished =
 			Utils.LoadRelativeTimeDifferential(entries[index],
 											   "randomKlaxonFinished");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+
+		ml.shakeFinished =
+			Utils.LoadRelativeTimeDifferential(entries[index],"shakeFinished");
+
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
 		// Prevent picking up first item immediately. Not currently possible to

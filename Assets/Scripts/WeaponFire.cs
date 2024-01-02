@@ -1129,7 +1129,7 @@ public class WeaponFire : MonoBehaviour {
 		damageData.attackType = Const.a.attackTypeForWeapon[wep16Index];
         damageData.damage = DamageData.GetDamageTakeAmount(damageData);
         damageData.owner = playerCapsule;
-		damageData.impactVelocity = 1f;
+		damageData.impactVelocity = 80f;
 		if (wep16Index == 12) {
 			damageData.impactVelocity = 300f;
 			if (tempHM != null) { // babamm boxes be like, u ded
@@ -1143,7 +1143,7 @@ public class WeaponFire : MonoBehaviour {
 		GameObject hitGO = tempHit.collider.transform.gameObject;
         if (tempHM != null && tempHM.health > 0 && !dartTranq) {
 			dmgFinal = tempHM.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
-			damageData.impactVelocity += (damageData.damage * 0.75f);
+			damageData.impactVelocity += damageData.damage;
 			if (!damageData.isOtherNPC || wep16Index == 12) {
 				Utils.ApplyImpactForce(hitGO,damageData.impactVelocity,
 									   damageData.attacknormal,
@@ -1222,12 +1222,11 @@ public class WeaponFire : MonoBehaviour {
 			yield break;
 		}
 
-		damageData.impactVelocity = 30 + damageData.damage * 1.5f;
+		damageData.impactVelocity = 80f + damageData.damage;
 		if (!damageData.isOtherNPC || index16 == 12) {
 			if (!isRapier || (isRapier && PlayerEnergy.a.energy >= 4f)) {
-			Utils.ApplyImpactForce(targ, damageData.impactVelocity,
-								   damageData.attacknormal,
-								   damageData.hit.point);
+				Utils.ApplyImpactForce(targ, damageData.impactVelocity,
+					damageData.attacknormal,damageData.hit.point);
 			}
 		}
 

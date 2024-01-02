@@ -62,7 +62,10 @@ public class UseableObjectUse : MonoBehaviour {
 
 	public void HitForce (DamageData dd) {
 		Rigidbody rbody = GetComponent<Rigidbody>();
-		if (rbody != null) rbody.AddForceAtPosition((dd.attacknormal*dd.damage),dd.hit.point); // knock me around will you
+		if (rbody != null) {
+			rbody.AddForceAtPosition((dd.attacknormal*(dd.damage + 80f)),
+									 dd.hit.point); // knock me around will you
+		}
 	}
 
 	public static string Save(GameObject go) {
