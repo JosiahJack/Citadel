@@ -77,7 +77,6 @@ namespace plyoung {
 					(opt == 1 && go.scene.IsValid())) continue;
 
 				// do not add again if prefab already added
-				// (TODO: can change this once nested prefabs are supported)
 				if (opt == 1)
 				{
 					GameObject top = PrefabUtility.GetOutermostPrefabInstanceRoot(go); //PrefabUtility.FindPrefabRoot(go);

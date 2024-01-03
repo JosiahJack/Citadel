@@ -87,6 +87,9 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 		awakeInitialized = true;
+		if (isNPC && !gibOnDeath ) { // Set searchable item to CorpseSearchable layer.
+			if (searchableItem != null) searchableItem.gameObject.layer = 29;
+		}
 	}
 
 	// Put into Start instead of Awake to give Const time to populate from enemy_tables.csv
@@ -485,7 +488,8 @@ public class HealthManager : MonoBehaviour {
 			else if (isGrenade) GrenadeDeath();
 
 			if (isNPC) NPCDeath(null);
-			if (isPlayer) PlayerHealth.a.deaths++;
+			else if (isPlayer) PlayerHealth.a.deaths++;
+
 			deathDone = true;
 		}
 	}
@@ -530,7 +534,7 @@ public class HealthManager : MonoBehaviour {
 		}
 	}
 
-	void NPCDeath (AudioClip deathSound) {
+	void NPCDeath(AudioClip deathSound) {
 		if (deathDone) return; // We died the death, no 2nd deaths here.
 
 		deathDone = true; // Mark it so we only die once.
@@ -546,12 +550,9 @@ public class HealthManager : MonoBehaviour {
 		if (Const.a.typeForNPC[aic.index] == NPCType.Cyber) {
 			Utils.SafeDestroy(aic.gameObject);
 		} else {
-			gameObject.layer = 13; // Corpse layer
-
 			// Ok.  We've been through this.  Must keep the parent collider on
 			// in order to prevent NPC's randomly falling through the floor
 			// when killed because Unity's physics are junk.
-			//Utils.DisableCollision(gameObject);
 		}
 	}
 

@@ -1353,7 +1353,7 @@ public class AIController : MonoBehaviour {
 		asleep = false;
 		rbody.constraints = RigidbodyConstraints.None;
 		if (!rbody.freezeRotation) rbody.freezeRotation = true;
-		//gameObject.layer = 13; // Change to Corpse layer
+		gameObject.layer = 13; // Change to Corpse layer
 
 		// Bump it up a hair to prevent corpse falling through the floor
 		//transform.position = new Vector3(transform.position.x,
@@ -1387,15 +1387,12 @@ public class AIController : MonoBehaviour {
 			currentState = AIState.Dead;
 		}
 
-		if (index == 0 || index == 14 // Autobomb, hopper
+		if (index == 0 || index == 14 || index == 20 // Autobomb, hopper, zero-g mut
 		    || healthManager.teleportOnDeath) {
 			Utils.Deactivate(visibleMeshEntity);
 		}
-	}
 
-	IEnumerator DisableCollisionOneFrameLater() {
-		yield return null;
-		Utils.DisableCollision(gameObject);
+		if (index == 20) searchColliderGO.SetActive(true);
 	}
 
 	void Dead() {
@@ -1427,7 +1424,6 @@ public class AIController : MonoBehaviour {
 				healthManager.TeleportAway();
 			}
 		} else {
-			StartCoroutine(DisableCollisionOneFrameLater());
 			if (index != 14) { // Hopper turns itself off.
 				rbody.useGravity = true;
 			}

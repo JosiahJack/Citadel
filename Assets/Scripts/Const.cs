@@ -428,11 +428,11 @@ public class Const : MonoBehaviour {
 
 	void Start() {
 		Config.LoadConfig();
-		layerMaskNPCSight = LayerMask.GetMask("Default","Geometry","Corpse",
+		layerMaskNPCSight = LayerMask.GetMask("Default","Geometry",
 											  "Door","InterDebris",
 											  "PhysObjects","Player","Player2",
 											  "Player3","Player4");
-		layerMaskNPCAttack = LayerMask.GetMask("Default","Geometry","Corpse",
+		layerMaskNPCAttack = LayerMask.GetMask("Default","Geometry",
 											   "Door","InterDebris",
 											   "PhysObjects","Player","Player2",
 											   "Player3","Player4");
@@ -448,27 +448,30 @@ public class Const : MonoBehaviour {
 		// Water is a hidden layer that prevents the player frobbing through
 		// gratings, X-doors, etc.  Oh and also water...if that were a thing.
 		layerMaskPlayerFrob = LayerMask.GetMask("Default","Geometry","Water",
-												"Corpse","Door","InterDebris",
+												"Door","InterDebris",
 												"PhysObjects","Player2",
-												"Player3","Player4");
+												"Player3","Player4",
+												"CorpseSearchable");
 
 		// Must have the geometry and default layers to prevent locking onto
 		// NPCs through walls.
 		layerMaskPlayerTargetIDFrob = LayerMask.GetMask("Default","Geometry",
-														"Corpse","Door",
+														"Door",
 														"Player2","Player3",
-														"Player4","NPC");
+														"Player4","NPC",
+														"CorpseSearchable");
 
 		layerMaskPlayerAttack = LayerMask.GetMask("Default","Geometry","NPC",
-												  "Bullets","Corpse","Door",
-												  "InterDebris","PhysObjects",
-												  "Player2","Player3","Player4");
-			
-		layerMaskExplosion = LayerMask.GetMask("Default","Geometry","NPC",
-												  "Bullets","Corpse","Door",
+												  "Bullets","Door",
 												  "InterDebris","PhysObjects",
 												  "Player2","Player3","Player4",
-											  	  "Player");
+												  "CorpseSearchable");
+			
+		layerMaskExplosion = LayerMask.GetMask("Default","Geometry","NPC",
+												  "Bullets","Door",
+												  "InterDebris","PhysObjects",
+												  "Player2","Player3","Player4",
+											  	  "Player","CorpseSearchable");
 			
 
 		layerMaskPlayerFeet = LayerMask.GetMask("Default","Geometry");
