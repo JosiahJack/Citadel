@@ -1819,15 +1819,13 @@ public class Inventory : MonoBehaviour {
 			MouseLookScript.a.compassLargeTicks.SetActive(false);
 		}
 
-		if (inv.BioMonitorActive()) {
+		if (!inv.BioMonitorActive()) {
 			Utils.Deactivate(inv.hardwareButtonManager.bioMonitorContainer);
 		} else {
 			Utils.Activate(inv.hardwareButtonManager.bioMonitorContainer);
 		}
 		
 	    for (j=0;j<12;j++) {
-	        if (!inv.hasHardware[j]) continue;
-	        
     		int button8Index = -1;
     		switch(j) {
     			// 0 System Analyzer
@@ -1844,17 +1842,31 @@ public class Inventory : MonoBehaviour {
     			case 11:button8Index = 4; break; // Infrared Night Vision Enhancement
     		}
     		
-    		if (button8Index >= 0 && button8Index < 8) {
-    			MouseLookScript.a.hardwareButtons[button8Index].SetActive(true);
-    			inv.hardwareButtonManager.SetVersionIconForButton(
-    			    inv.hardwareIsActive[j],
-    			    inv.hardwareVersionSetting[j],4
-    			);
+    		if (!inv.hasHardware[j]) {
+				if (button8Index >= 0 && button8Index < 8) {
+					MouseLookScript.a.hardwareButtons[button8Index].SetActive(false);
+					inv.hardwareButtonManager.SetVersionIconForButton(
+						inv.hardwareIsActive[j],
+						inv.hardwareVersionSetting[j],4
+					);
 
-    			inv.hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
-    		}
-    		
-    		inv.ActivateHardwareButton(j);
+					inv.hardwareButtonManager.buttons[button8Index].gameObject.SetActive(false);
+				}
+
+				inv.hwButtons[j].SetActive(false);
+			} else {
+				if (button8Index >= 0 && button8Index < 8) {
+					MouseLookScript.a.hardwareButtons[button8Index].SetActive(true);
+					inv.hardwareButtonManager.SetVersionIconForButton(
+						inv.hardwareIsActive[j],
+						inv.hardwareVersionSetting[j],4
+					);
+
+					inv.hardwareButtonManager.buttons[button8Index].gameObject.SetActive(true);
+				}
+
+				inv.ActivateHardwareButton(j);
+			}
 	    }
 
 		for (j=0;j<32;j++) { inv.accessCardsOwned[j] = Utils.IntToAccessCardType(Utils.GetIntFromString(entries[index])); index++; }

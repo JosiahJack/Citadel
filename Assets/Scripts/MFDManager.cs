@@ -96,7 +96,6 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject cyberTimer;
 	public GameObject cyberSprintContainer;
 	public Text cyberSprintText;
-	public GameObject biograph;
 
 	// Externally modifiable.
 	// Not intended to be set in inspector, some are not HideInInspector for
