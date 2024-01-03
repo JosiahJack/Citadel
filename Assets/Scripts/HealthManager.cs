@@ -99,7 +99,6 @@ public class HealthManager : MonoBehaviour {
 		if (isNPC) {
 			aic = GetComponent<AIController>();
 			index = aic.index;
-
 			if (Const.a != null) {
 				if (IsCyberEntity()) {
 					if (cyberHealth == -1) cyberHealth = Const.a.healthForCyberNPC[index];
@@ -507,6 +506,7 @@ public class HealthManager : MonoBehaviour {
 			if (!aic.healthManager.gibOnDeath) { // We are a corpse here.
 				// Turn off visible mesh entity from destroyed corpse.
 				Utils.Deactivate(aic.visibleMeshEntity);
+				Debug.Log("Disabling visibleMeshEntity from VaporizeCorpse in HealthManager");
 				Utils.Deactivate(aic.deathBurst); // For any extra effects.
 												  // We are totally gone now!
 			}
@@ -582,6 +582,9 @@ public class HealthManager : MonoBehaviour {
 		if (aic != null) {
 			if (aic.healthManager.gibOnDeath) { // We are a corpse here.
 				aic.visibleMeshEntity.SetActive(false); // Turn off visible mesh entity from destroyed corpse.
+
+				Debug.Log("Disabling visibleMeshEntity from HealthManager Gib");
+
 			}
 		}
 
@@ -738,6 +741,7 @@ public class HealthManager : MonoBehaviour {
 								if (aicP.visibleMeshEntity != null) {
 									// We are a corpse, re-enable parent
 									aicP.visibleMeshEntity.SetActive(true);
+									Debug.Log("Enabling visibleMeshEntity from HealthManager AwakeFromLoad");
 								}
 							}
 						}
@@ -760,6 +764,7 @@ public class HealthManager : MonoBehaviour {
 						if (aicP.healthManager != null) {
 							if (!aicP.healthManager.gibOnDeath) {
 								if (aicP.visibleMeshEntity != null) aicP.visibleMeshEntity.SetActive(false);
+								Debug.Log("Disabling visibleMeshEntity from HealthManager AwakeFromLoad");
 							}
 						}
 					}

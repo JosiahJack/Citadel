@@ -776,8 +776,8 @@ public class DynamicCulling : MonoBehaviour {
                 || npcAICs[i].enemy != null) {
                 npcAICs[i].withinPVS = true;
                 hm = npcAICs[i].healthManager;
-                if (npcAICs[i].currentState == AIState.Dead) {
-
+                if (npcAICs[i].currentState == AIState.Dead
+                    || (!npcAICs[i].HasHealth(hm) && hm.gibOnDeath)) {
                     if (npcAICs[i].index == 0 || npcAICs[i].index == 14 // Autobomb, hopper
                         || hm.teleportOnDeath || hm.gibOnDeath) {
 

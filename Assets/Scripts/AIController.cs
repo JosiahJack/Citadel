@@ -55,8 +55,8 @@ public class AIController : MonoBehaviour {
 	[HideInInspector] public GameObject attacker;
 	[HideInInspector] public bool firstSighting; // save
 	[HideInInspector] public bool dyingSetup; // save
-	[HideInInspector] public bool ai_dying; // save
-	[HideInInspector] public bool ai_dead; // save
+	public bool ai_dying; // save
+	public bool ai_dead; // save
 	[HideInInspector] public int currentWaypoint; // save
 	[HideInInspector] public Vector3 currentDestination; // save
 	[HideInInspector] public float idleTime; // save
@@ -98,7 +98,7 @@ public class AIController : MonoBehaviour {
 														 // starting line, save
 	[HideInInspector] public float deathBurstFinished; // save
 	[HideInInspector] public bool deathBurstDone; // save
-	private NavMeshPath searchPath;
+// 	private NavMeshPath searchPath;
 	[HideInInspector] public float tranquilizeFinished; // save
 	[HideInInspector] public bool hopDone; // save
 	[HideInInspector] public float wanderFinished; // save
@@ -180,27 +180,27 @@ public class AIController : MonoBehaviour {
 			hopAnimator = visibleMeshEntity.GetComponent<Animator>();
 		}
 
-		if ((!healthManager.gibOnDeath && !healthManager.vaporizeCorpse) 
-			|| index == 2) { // Avian Mutant
+		if (((!healthManager.gibOnDeath && !healthManager.vaporizeCorpse)
+			|| index == 2) && !ai_dead && !ai_dying) { // Avian Mutant
 			Utils.Deactivate(searchColliderGO);
 		}
 
 		if (sightPoint == null) sightPoint = gameObject;
-		DeactivateMeleeColliders();
-		currentDestination = sightPoint.transform.position;
-        currentState = AIState.Idle;
-		currentWaypoint = 0;
-		enemy = null;
-		enemyHM = null;
-		firstSighting = true;
-		inSight = false;
-		goIntoPain = false;
-		dyingSetup = false;
-		ai_dead = false;
-		ai_dying = false;
-		attacker = null;
-        shotFired = false;
-		hopDone = false;
+// 		DeactivateMeleeColliders();
+		if (currentDestination == null) currentDestination = sightPoint.transform.position;
+//      currentState = AIState.Idle;
+// 		currentWaypoint = 0;
+// 		enemy = null;
+// 		enemyHM = null;
+// 		firstSighting = true;
+// 		inSight = false;
+// 		goIntoPain = false;
+// 		dyingSetup = false;
+// 		ai_dead = false;
+// 		ai_dying = false;
+// 		attacker = null;
+//      shotFired = false;
+// 		hopDone = false;
 		idleTime = PauseScript.a.relativeTime
 				   + Random.Range(Const.a.timeIdleSFXMinForNPC[index],
 								  Const.a.timeIdleSFXMaxForNPC[index]);
@@ -254,8 +254,8 @@ public class AIController : MonoBehaviour {
 		raycastingTickFinished = tickFinished + Random.value; // Separate rand.
 		attackFinished = PauseScript.a.relativeTime + 1f;
 		idealTransformForward = sightPoint.transform.forward;
-		deathBurstDone = false;
-		searchPath = new NavMeshPath();
+// 		deathBurstDone = false;
+// 		searchPath = new NavMeshPath();
 		if (!IsCyberNPC()) targetID = Const.GetTargetID(index);
 		else             targetID = Const.GetCyberTargetID(index);
 		
@@ -286,7 +286,7 @@ public class AIController : MonoBehaviour {
 		Const.a.numberOfRaycastsThisFrame = 0;
 	}
 
-	bool HasHealth(HealthManager hm) {
+	public bool HasHealth(HealthManager hm) {
 		if (hm == null) return false;
 		if (IsCyberNPC()) return (hm.cyberHealth > 0);
 		return (hm.health > 0);
@@ -522,7 +522,10 @@ public class AIController : MonoBehaviour {
 	}
 
 	void Idle() {
-		if (enemy != null) { currentState = AIState.Run; return; }
+		if (enemy != null && HasHealth(healthManager)) {
+			currentState = AIState.Run;
+			return;
+		}
 
 		if (idleTime < PauseScript.a.relativeTime) {
 			if (UnityEngine.Random.Range(0,1f) < 0.5f) { // 50% Chance of idle.
@@ -1389,7 +1392,9 @@ public class AIController : MonoBehaviour {
 
 		if (index == 0 || index == 14 || index == 20 // Autobomb, hopper, zero-g mut
 		    || healthManager.teleportOnDeath) {
+
 			Utils.Deactivate(visibleMeshEntity);
+			Debug.Log("Disabling visibleMeshEntity from AIController Dying");
 		}
 
 		if (index == 20) searchColliderGO.SetActive(true);
@@ -1399,6 +1404,7 @@ public class AIController : MonoBehaviour {
 		asleep = false;
 		ai_dead = true;
 		ai_dying = false;
+		dyingSetup = false;
 		if (deadChecksDone) return;
 
 		currentState = AIState.Dead;
@@ -1430,7 +1436,7 @@ public class AIController : MonoBehaviour {
 		}
 
 		if (index == 0 || healthManager.teleportOnDeath) {
-		    Utils.Deactivate(visibleMeshEntity); // Autobomb
+		    Utils.Deactivate(visibleMeshEntity); //
 		}
 		
 		deadChecksDone = true;
@@ -1713,7 +1719,7 @@ public class AIController : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(aic.ai_dying)); // bool
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(aic.ai_dead)); // bool
+		s1.Append(Utils.BoolToString(aic.ai_dead,"ai_dead")); // bool
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(aic.currentWaypoint)); // int
 		s1.Append(Utils.splitChar);
@@ -1775,29 +1781,34 @@ public class AIController : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(aic.attack3Finished));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(aic.targettingPosition.x));
+		s1.Append(Utils.FloatToString(aic.targettingPosition.x,"targettingPosition.x"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(aic.targettingPosition.y));
+		s1.Append(Utils.FloatToString(aic.targettingPosition.y,"targettingPosition.y"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(aic.targettingPosition.z));
+		s1.Append(Utils.FloatToString(aic.targettingPosition.z,"targettingPosition.z"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(aic.deathBurstFinished));
+		s1.Append(Utils.SaveRelativeTimeDifferential(aic.deathBurstFinished,"deathBurstFinished"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(aic.deathBurstDone)); // bool
+		s1.Append(Utils.BoolToString(aic.deathBurstDone,"deathBurstDone")); // bool
 		if (aic.deathBurst != null) {
 			s1.Append(Utils.splitChar);
-			s1.Append(Utils.BoolToString(aic.deathBurst.activeSelf));
+			s1.Append(Utils.BoolToString(aic.deathBurst.activeSelf,"deathBurst.activeSelf"));
 			s1.Append(Utils.splitChar);
-			s1.Append(Utils.UintToString(aic.deathBurst.transform.childCount));
+			s1.Append(Utils.UintToString(aic.deathBurst.transform.childCount,"deathBurst.transform.childCount"));
 			for (int i=0;i<aic.deathBurst.transform.childCount;i++) {
 				Transform childTR = aic.deathBurst.transform.GetChild(i);
 				s1.Append(Utils.splitChar);
-				s1.Append(Utils.BoolToString(childTR.gameObject.activeSelf));
+				s1.Append(Utils.BoolToString(childTR.gameObject.activeSelf,"childTR.gameObject.activeSelf"));
 				for (int j=0;j<childTR.childCount;j++) {
 					s1.Append(Utils.splitChar);
-					s1.Append(Utils.BoolToString(childTR.transform.GetChild(j).gameObject.activeSelf));
+					s1.Append(Utils.BoolToString(childTR.transform.GetChild(j).gameObject.activeSelf,"childTR.transform.GetChild(" + j.ToString() + ").gameObject.activeSelf"));
 				}
 			}
+		} else {
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.BoolToString(false,"deathBurst.activeSelf"));
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.UintToString(0,"deathBurst.transform.childCount"));
 		}
 
 		s1.Append(Utils.splitChar);
@@ -1890,7 +1901,7 @@ public class AIController : MonoBehaviour {
 		aic.firstSighting = Utils.GetBoolFromString(entries[index]); index++; // bool - or are we dead?
 		aic.dyingSetup = Utils.GetBoolFromString(entries[index]); index++; // bool - or are we dead?
 		aic.ai_dying = Utils.GetBoolFromString(entries[index]); index++; // bool - are we dying the slow painful death
-		aic.ai_dead = Utils.GetBoolFromString(entries[index]); index++; // bool - or are we dead?
+		aic.ai_dead = Utils.GetBoolFromString(entries[index],"ai_dead"); index++; // bool - or are we dead?
 		aic.currentWaypoint = Utils.GetIntFromString(entries[index]); index++; // int
 		readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
 		readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
@@ -1923,24 +1934,32 @@ public class AIController : MonoBehaviour {
 		readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
 		readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
 		aic.idealPos = new Vector3(readFloatx,readFloaty,readFloatz);
-		aic.attackFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
-		aic.attack2Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
-		aic.attack3Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
-		readFloatx = Utils.GetFloatFromString(entries[index]); index++; // float
-		readFloaty = Utils.GetFloatFromString(entries[index]); index++; // float
-		readFloatz = Utils.GetFloatFromString(entries[index]); index++; // float
+		aic.attackFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		aic.attack2Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		aic.attack3Finished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index],"targettingPosition.x"); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index],"targettingPosition.y"); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index],"targettingPosition.z"); index++;
 		aic.targettingPosition = new Vector3(readFloatx,readFloaty,readFloatz);
-		aic.deathBurstFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
-		aic.deathBurstDone = Utils.GetBoolFromString(entries[index]); index++; // bool
+		aic.deathBurstFinished = Utils.LoadRelativeTimeDifferential(entries[index],"deathBurstFinished"); index++;
+		aic.deathBurstDone = Utils.GetBoolFromString(entries[index],"deathBurstDone"); index++;
+		bool dbActive = Utils.GetBoolFromString(entries[index],"deathBurst.activeSelf"); index++;
+		int numChildrenFromSave = Utils.GetIntFromString(entries[index],"deathBurst.transform.childCount"); index++;
 		if (aic.deathBurst != null) {
-			aic.deathBurst.SetActive(Utils.GetBoolFromString(entries[index])); index++;
-			int numChildrenFromSave = Utils.GetIntFromString(entries[index]); index++;
-			if (numChildrenFromSave != aic.deathBurst.transform.childCount) Debug.Log("BUG: Number of deathBurst children in save does not match prefab on " + aic.gameObject.name);
+			if (!aic.deathBurstDone && aic.ai_dying && !aic.ai_dead) {
+				aic.deathBurst.SetActive(dbActive);
+			}
+
+			if (numChildrenFromSave != aic.deathBurst.transform.childCount) {
+				Debug.Log("BUG: Number of deathBurst children in save does not"
+						  + " match prefab on " + aic.gameObject.name);
+			}
+
 			for (int i=0;i<aic.deathBurst.transform.childCount;i++) {
 				Transform childTR = aic.deathBurst.transform.GetChild(i);
-				childTR.gameObject.SetActive(Utils.GetBoolFromString(entries[index])); index++;
+				childTR.gameObject.SetActive(Utils.GetBoolFromString(entries[index],"childTR.gameObject.activeSelf")); index++;
 				for (int j=0;j<childTR.childCount;j++) {
-					childTR.GetChild(j).gameObject.SetActive(Utils.GetBoolFromString(entries[index])); index++;	
+					childTR.GetChild(j).gameObject.SetActive(Utils.GetBoolFromString(entries[index],"childTR.transform.GetChild(" + j.ToString() + ").gameObject.activeSelf")); index++;
 				}
 			}
 		}
@@ -1948,6 +1967,7 @@ public class AIController : MonoBehaviour {
 		if (aic.visibleMeshEntity != null) {
 			aic.visibleMeshEntity.SetActive(Utils.GetBoolFromString(entries[index],
 											"visibleMeshEntity.activeSelf"));
+
 		}
 		index++;
 
@@ -1958,10 +1978,7 @@ public class AIController : MonoBehaviour {
 		aic.wanderFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
 		aic.SFXIndex = Utils.GetIntFromString(entries[index]); index++;
 		if (aic.healthManager != null) {
-			if ((aic.healthManager.health > 0 && !aic.IsCyberNPC())
-				|| (aic.healthManager.cyberHealth > 0 && aic.IsCyberNPC())) {
-
-				Utils.Activate(aic.visibleMeshEntity);
+			if (aic.HasHealth(aic.healthManager)) {
 				Utils.EnableCollision(aic.gameObject);
 				aic.gameObject.layer = 10; // NPC Layer.
 				if (Const.a.moveTypeForNPC[aic.index] != AIMoveType.Fly
@@ -1987,13 +2004,21 @@ public class AIController : MonoBehaviour {
 						aic.rbody.useGravity = true;
 					}
 
-					Utils.Deactivate(aic.visibleMeshEntity);
 				} else aic.rbody.useGravity = true;
 			}
 
 			if (aic.IsCyberNPC()) {
 				aic.rbody.useGravity = false;
 				aic.rbody.isKinematic = false;
+			}
+
+			if (aic.healthManager.gibOnDeath) {
+				if (aic.ai_dead || aic.ai_dying
+					|| !aic.HasHealth(aic.healthManager)) {
+
+					// Turn off visible mesh entity from destroyed corpse.
+					aic.visibleMeshEntity.SetActive(false);
+				}
 			}
 		}
 
@@ -2004,13 +2029,17 @@ public class AIController : MonoBehaviour {
 			index = SearchableItem.Load(aic.searchColliderGO, ref entries,
 										index,prefID);
 
-			if (!aic.healthManager.gibOnDeath
-				|| prefID.constIndex == 421 /* avian mutant */) {
+			if (aic.healthManager != null) {
+				if (!aic.healthManager.gibOnDeath
+					|| prefID.constIndex == 421 /* avian mutant */) {
 
-				index = HealthManager.Load(aic.searchColliderGO, ref entries,
-										   index,prefID);
+					index = HealthManager.Load(aic.searchColliderGO, ref entries,
+											index,prefID);
+				}
 			}
 		}
+
+
 
 		if (aic.currentState == AIState.Attack1) {
 			if (Const.a.preactivateMeleeCollidersForNPC[aic.index]) {

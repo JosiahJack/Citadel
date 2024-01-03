@@ -188,6 +188,7 @@ public class AIAnimationController : MonoBehaviour {
 				clipName = "Death";
 			}
 		}
+
 		if (anim.speed > 0f) anim.speed = 0f;
 	}
 
@@ -316,10 +317,15 @@ public class AIAnimationController : MonoBehaviour {
 		index++;
 
         float setSpeed = 1f;
-		if (!aiac.aic.ai_dead) {
+		if ((aiac.aic.healthManager.health > 0 && !aiac.aic.IsCyberNPC())
+			|| (aiac.aic.healthManager.cyberHealth > 0 && aiac.aic.IsCyberNPC())) {
+
+			setSpeed = 0f;
+		} else {
 			setSpeed = Utils.GetFloatFromString(entries[index],"anim.speed");
 			if (setSpeed < 0f || setSpeed > 100f) setSpeed = 1f;
 		}
+
 		aiac.SetAnimFromLoad(aiac.clipName,0,aiac.currentClipPercentage,setSpeed);
 		index++;
 		return index;
