@@ -121,8 +121,6 @@ public class MainMenuHandler : MonoBehaviour {
 	private bool typingSaveGame = false;
 	private string tempSaveNameHolder;
 	private int presetQuestionValue = -1;
-	private LoadPageGetSaveNames lpgsn_load;
-	private LoadPageGetSaveNames lpgsn_save;
 	private float vidFinished;
 	private float vidLength = 117.5f;
 	private float deathvidLength = 16.8f;
@@ -136,8 +134,6 @@ public class MainMenuHandler : MonoBehaviour {
 		ResetPages();
 		dataFound = false;
 		inCutscene = false;
-		lpgsn_load = loadPage.GetComponent<LoadPageGetSaveNames>();
-		lpgsn_save = savePage.GetComponent<LoadPageGetSaveNames>();
 		Config.SetVolume();
 		if (Application.platform == RuntimePlatform.Android) {
 			dataFound = true;
@@ -682,8 +678,8 @@ public class MainMenuHandler : MonoBehaviour {
 		saveNameInput[index].SetActive(true);
 		saveNamePlaceholder[index].SetActive(true);
 		saveButtonText[index].text = System.String.Empty;
-		tempSaveNameHolder = lpgsn_save.loadButtonText[index].text;
-		lpgsn_save.loadButtonText[index].text = System.String.Empty;
+		tempSaveNameHolder = saveButtonText[index].text;
+		saveButtonText[index].text = System.String.Empty;
 		saveNameInputField[index].ActivateInputField();
 	}
 
@@ -700,8 +696,8 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	public void LoadGame(int index) {
-		if (lpgsn_load.loadButtonText[index].text == "- unused -"
-			|| lpgsn_load.loadButtonText[index].text == "- unused quicksave -") {
+		if (loadButtonText[index].text == "- unused -"
+			|| loadButtonText[index].text == "- unused quicksave -") {
 			Const.sprint("No data to load.");
 		} else Const.a.Load(index,false);
 	}
@@ -711,7 +707,7 @@ public class MainMenuHandler : MonoBehaviour {
 			saveNameInput[currentSaveSlot].SetActive(false);
 			saveNamePlaceholder[currentSaveSlot].SetActive(false);
 			typingSaveGame = false;
-			lpgsn_save.loadButtonText[currentSaveSlot].text = tempSaveNameHolder;
+			loadButtonText[currentSaveSlot].text = tempSaveNameHolder;
 			currentSaveSlot = -1;
 			return;
 		}
