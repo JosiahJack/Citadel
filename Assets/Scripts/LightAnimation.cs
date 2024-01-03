@@ -22,7 +22,7 @@ public class LightAnimation : MonoBehaviour {
 	[HideInInspector] public float lerpTime = 0.5f; //save
 	[HideInInspector] public float stepTime; //save
 	[HideInInspector] public float lerpStartTime; //save
-	private Light animLight;
+	[HideInInspector] public Light animLight;
 	private float differenceInIntensity;
 	[HideInInspector] public float lerpValue; //save
 
@@ -140,14 +140,17 @@ public class LightAnimation : MonoBehaviour {
 			return "1|0|0|0000.00000|0000.00000|0000.00000|0000.00000";
 		}
 
+		if (la.animLight == null) la.animLight = la.GetComponent<Light>();
+
 		string line = System.String.Empty;
-		line = Utils.BoolToString(la.lightOn); // bool
-		line += Utils.splitChar + Utils.BoolToString(la.lerpOn); // bool
-		line += Utils.splitChar + la.currentStep.ToString(); // int
-		line += Utils.splitChar + Utils.FloatToString(la.lerpValue); // %
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(la.lerpTime);
-		line += Utils.splitChar + Utils.FloatToString(la.stepTime); // Not a timer, current time amount
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(la.lerpStartTime);
+		line = Utils.BoolToString(la.lightOn,"lightOn"); // bool
+		line += Utils.splitChar + Utils.BoolToString(la.lerpOn,"lerpOn"); // bool
+		line += Utils.splitChar + Utils.IntToString(la.currentStep,"currentStep"); // int
+		line += Utils.splitChar + Utils.FloatToString(la.lerpValue,"lerpValue"); // %
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(la.lerpTime,"lerpTime");
+		line += Utils.splitChar + Utils.FloatToString(la.stepTime,"stepTime"); // Not a timer, current time amount
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(la.lerpStartTime,"lerpStartTime");
+		line += Utils.splitChar + Utils.BoolToString(la.animLight.enabled,"light.enabled");
 		return line;
 	}
 
@@ -157,6 +160,7 @@ public class LightAnimation : MonoBehaviour {
 			Debug.Log("LightAnimation.Load failure, la == null");
 			return index + 7;
 		}
+		if (la.animLight == null) la.animLight = la.GetComponent<Light>();
 
 		if (index < 0) {
 			Debug.Log("LightAnimation.Load failure, index < 0");
@@ -168,13 +172,14 @@ public class LightAnimation : MonoBehaviour {
 			return index + 7;
 		}
 
-		la.lightOn = Utils.GetBoolFromString(entries[index]); index++;
-		la.lerpOn = Utils.GetBoolFromString(entries[index]); index++;
-		la.currentStep = Utils.GetIntFromString(entries[index]); index++;
-		la.lerpValue = Utils.GetFloatFromString(entries[index]); index++; // %
-		la.lerpTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		la.stepTime = Utils.GetFloatFromString(entries[index]); index++; // Not a timer, current time amount
-		la.lerpStartTime = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		la.lightOn = Utils.GetBoolFromString(entries[index],"lightOn"); index++;
+		la.lerpOn = Utils.GetBoolFromString(entries[index],"lerpOn"); index++;
+		la.currentStep = Utils.GetIntFromString(entries[index],"currentStep"); index++;
+		la.lerpValue = Utils.GetFloatFromString(entries[index],"lerpValue"); index++; // %
+		la.lerpTime = Utils.LoadRelativeTimeDifferential(entries[index],"lerpTime"); index++;
+		la.stepTime = Utils.GetFloatFromString(entries[index],"stepTime"); index++; // Not a timer, current time amount
+		la.lerpStartTime = Utils.LoadRelativeTimeDifferential(entries[index],"lerpStartTime"); index++;
+		la.animLight.enabled = Utils.GetBoolFromString(entries[index],"light.enabled"); index++;
 		return index;
 	}
 }

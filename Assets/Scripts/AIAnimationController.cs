@@ -317,9 +317,7 @@ public class AIAnimationController : MonoBehaviour {
 		index++;
 
         float setSpeed = 1f;
-		if ((aiac.aic.healthManager.health > 0 && !aiac.aic.IsCyberNPC())
-			|| (aiac.aic.healthManager.cyberHealth > 0 && aiac.aic.IsCyberNPC())) {
-
+		if (!aiac.aic.HasHealth(aiac.aic.healthManager)) {
 			setSpeed = 0f;
 		} else {
 			setSpeed = Utils.GetFloatFromString(entries[index],"anim.speed");
