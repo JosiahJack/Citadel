@@ -1501,7 +1501,13 @@ public class Inventory : MonoBehaviour {
 		switch (globalLookupIndex) {
 		case 36:
 			//Mark3 Assault Rifle
-			retval = wepAmmo[0].ToString() + "mg, " + wepAmmoSecondary[0].ToString() + "pn";
+			if (wepLoadedWithAlternate[index]) {
+				retval = WeaponCurrent.a.currentMagazineAmount2[index].ToString() + "pn | ";
+			} else {
+				retval = WeaponCurrent.a.currentMagazineAmount[index].ToString() + "mg | ";
+			}
+
+			retval += wepAmmo[0].ToString() + "mg, " + wepAmmoSecondary[0].ToString() + "pn";
 			break;
 		case 37:
 			//ER-90 Blaster
@@ -1513,11 +1519,23 @@ public class Inventory : MonoBehaviour {
 			break;
 		case 38:
 			//SV-23 Dartgun
-			retval = wepAmmo[2].ToString() + "nd, " + wepAmmoSecondary[2].ToString() + "tq";
+			if (wepLoadedWithAlternate[index]) {
+				retval = WeaponCurrent.a.currentMagazineAmount2[index].ToString() + "tq | ";
+			} else {
+				retval = WeaponCurrent.a.currentMagazineAmount[index].ToString() + "nd | ";
+			}
+
+			retval += wepAmmo[2].ToString() + "nd, " + wepAmmoSecondary[2].ToString() + "tq";
 			break;
 		case 39:
 			//AM-27 Flechette
-			retval = wepAmmo[3].ToString() + "hn, " + wepAmmoSecondary[3].ToString() + "sp";
+			if (wepLoadedWithAlternate[index]) {
+				retval = WeaponCurrent.a.currentMagazineAmount2[index].ToString() + "sp | ";
+			} else {
+				retval = WeaponCurrent.a.currentMagazineAmount[index].ToString() + "hn | ";
+			}
+
+			retval += wepAmmo[3].ToString() + "hn, " + wepAmmoSecondary[3].ToString() + "sp";
 			break;
 		case 40:
 			//RW-45 Ion Beam
@@ -1537,15 +1555,33 @@ public class Inventory : MonoBehaviour {
 			break;
 		case 43:
 			//Magnum 2100
-			retval = wepAmmo[7].ToString() + "hw, " + wepAmmoSecondary[7].ToString() + "sg";
+			if (wepLoadedWithAlternate[index]) {
+				retval = WeaponCurrent.a.currentMagazineAmount2[index].ToString() + "sg | ";
+			} else {
+				retval = WeaponCurrent.a.currentMagazineAmount[index].ToString() + "hw | ";
+			}
+
+			retval += wepAmmo[7].ToString() + "hw, " + wepAmmoSecondary[7].ToString() + "sg";
 			break;
 		case 44:
 			//SB-20 Magpulse
-			retval = wepAmmo[8].ToString() + "cr, " + wepAmmoSecondary[8].ToString() + "su";
+			if (wepLoadedWithAlternate[index]) {
+				retval = WeaponCurrent.a.currentMagazineAmount2[index].ToString() + "su | ";
+			} else {
+				retval = WeaponCurrent.a.currentMagazineAmount[index].ToString() + "cr | ";
+			}
+
+			retval += wepAmmo[8].ToString() + "cr, " + wepAmmoSecondary[8].ToString() + "su";
 			break;
 		case 45:
 			//ML-41 Pistol
-			retval = wepAmmo[9].ToString() + "st, " + wepAmmoSecondary[9].ToString() + "tf";
+			if (wepLoadedWithAlternate[index]) {
+				retval = WeaponCurrent.a.currentMagazineAmount2[index].ToString() + "tf | ";
+			} else {
+				retval = WeaponCurrent.a.currentMagazineAmount[index].ToString() + "st | ";
+			}
+
+			retval += wepAmmo[9].ToString() + "st, " + wepAmmoSecondary[9].ToString() + "tf";
 			break;
 		case 46:
 			//LG-XX Plasma Rifle
@@ -1557,14 +1593,22 @@ public class Inventory : MonoBehaviour {
 			break;
 		case 47:
 			//MM-76 Railgun
-			retval = wepAmmo[11].ToString() + "rl";
+			retval = WeaponCurrent.a.currentMagazineAmount[index].ToString() + "rl | ";
+			retval += wepAmmo[11].ToString() + "rl";
 			break;
 		case 48:
 			//DC-05 Riotgun
-			retval = wepAmmo[12].ToString() + "rb";
+			retval = WeaponCurrent.a.currentMagazineAmount[index].ToString() + "rb | ";
+			retval += wepAmmo[12].ToString() + "rb";
 			break;
 		case 49:
 			//RF-07 Skorpion
+			if (wepLoadedWithAlternate[index]) {
+				retval = WeaponCurrent.a.currentMagazineAmount2[index].ToString() + scorpLg + " | ";
+			} else {
+				retval = WeaponCurrent.a.currentMagazineAmount[index].ToString() + scorpSmall + " | ";
+			}
+
 			retval = wepAmmo[13].ToString() + scorpSmall + wepAmmoSecondary[13].ToString() + scorpLg;
 			break;
 		case 50:
