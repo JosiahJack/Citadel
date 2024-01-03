@@ -986,6 +986,7 @@ public class WeaponFire : MonoBehaviour {
  			damageText = Const.a.stringTable[511]; // NO DAMAGE
 			noDamageIndicator = idFrame;
 			tid.lifetime = 1f;
+			tid.damageTimeFinished = PauseScript.a.relativeTime + tid.lifetime;
 			tid.lifetimeFinished = PauseScript.a.relativeTime + tid.lifetime;
 		} else {
 			tid.damageTime = 1f;

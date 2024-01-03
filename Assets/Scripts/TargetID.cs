@@ -85,7 +85,11 @@ public class TargetID : MonoBehaviour {
 
     void Update() {
 		if (linkedHM != null) {
-			if (linkedHM.health <= 0f) { Deactivate(); return; }
+			if (linkedHM.health <= 0f) {
+				Deactivate();
+				return;
+			}
+
 			if (linkedHM.isNPC && linkedHM.aic != null) {
 				if (linkedHM.aic.tranquilizeFinished > PauseScript.a.relativeTime) {
 					stunned = true;
@@ -94,8 +98,16 @@ public class TargetID : MonoBehaviour {
 				}
 			}
 		}
-		if (parent == null) { Deactivate(); return; }
-		if (playerCapsuleTransform == null) { Deactivate(); return; }
+		if (parent == null) {
+			Deactivate();
+			return;
+		}
+
+		if (playerCapsuleTransform == null) {
+			Deactivate();
+			return;
+		}
+
 		if ((Vector3.Distance(transform.position,
 							  playerCapsuleTransform.position)
 			> playerLinkDistance)) {
@@ -156,7 +168,9 @@ public class TargetID : MonoBehaviour {
 					} else {
 						if (damageTimeFinished < PauseScript.a.relativeTime) {
 							currentText = "";
-							if (!Inventory.a.hasHardware[4]) {
+							if (!Inventory.a.hasHardware[4]
+								&& (currentText != Const.a.stringTable[511])) {
+
 								Deactivate();
 								return;
 							}

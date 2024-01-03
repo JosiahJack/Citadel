@@ -109,9 +109,18 @@ public class MouseCursor : MonoBehaviour {
 
 		if (toolTipHasText && toolTip != nullStr && !PauseScript.a.Paused() && (MouseLookScript.a.inventoryMode || liveGrenade)) {
 			switch(toolTipType) {
-				case Handedness.LH: GUI.Label(drawTexture,toolTip,toolTipStyleLH); tempTexture = cursorLHTexture; break;
-				case Handedness.RH: GUI.Label(drawTexture,toolTip,toolTipStyleRH); tempTexture = cursorRHTexture; break;
-				default: GUI.Label(drawTexture,toolTip,toolTipStyle); tempTexture = cursorDNTexture; break; // Handedness.Center
+				case Handedness.LH:
+					GUI.Label(drawTexture,toolTip,toolTipStyleLH);
+					tempTexture = cursorLHTexture;
+					break;
+				case Handedness.RH:
+					GUI.Label(drawTexture,toolTip,toolTipStyleRH);
+					tempTexture = cursorRHTexture;
+					break;
+				default: // Handedness.Center
+					GUI.Label(drawTexture,toolTip,toolTipStyle);
+					tempTexture = cursorDNTexture;
+					break;
 			}
 			if (!MouseLookScript.a.holdingObject) cursorImage = tempTexture;
 		} else {

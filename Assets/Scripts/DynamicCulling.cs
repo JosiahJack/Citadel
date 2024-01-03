@@ -772,7 +772,8 @@ public class DynamicCulling : MonoBehaviour {
         HealthManager hm = null;
         for (int i=0;i<npcAICs.Count;i++) {
             if (worldCellVisible[npcCoords[i].x,npcCoords[i].y]
-                || !worldCellOpen[npcCoords[i].x,npcCoords[i].y]) {
+                || !worldCellOpen[npcCoords[i].x,npcCoords[i].y]
+                || npcAICs[i].enemy != null) {
                 npcAICs[i].withinPVS = true;
                 hm = npcAICs[i].healthManager;
                 if (npcAICs[i].currentState == AIState.Dead) {
