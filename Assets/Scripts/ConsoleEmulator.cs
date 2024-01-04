@@ -977,6 +977,9 @@ Master Index
 524 func_door_cyber           19
 525 prop_console01
 526 prop_console02
+527 prop_grate1_1                 32
+528 prop_grate1_2                 33
+529 prop_grate1_3                 34
 
 Generic Materials (Const.a.genericMaterials[])
 0  col1                 Dark Gray            In hindsight, maybe I should have named these descriptively.

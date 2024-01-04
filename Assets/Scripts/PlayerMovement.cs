@@ -324,6 +324,8 @@ public class PlayerMovement : MonoBehaviour {
 	// Parse surface below to allow for playing different footstep sets for
 	// different types of flooring.
 	void FeetRayChecks() {
+		if (inCyberSpace) return;
+
 		// Using value of 1.06 = (player capsule height / 2) + 0.06 = 1 + 0.06;
 		bool successfulRay = Physics.Raycast(transform.position, Vector3.down,
 											 out tempHit,1.06f,
@@ -353,12 +355,16 @@ public class PlayerMovement : MonoBehaviour {
 
 		// Footsteps
 		if (stepFinished < PauseScript.a.relativeTime) {
-			stepFinished = PauseScript.a.relativeTime
-							+ UnityEngine.Random.Range(0.4f,1f);
+			stepFinished = isSprinting
+						   ? PauseScript.a.relativeTime
+							 + UnityEngine.Random.Range(0.2f,0.3f)
+						   : PauseScript.a.relativeTime
+							 + UnityEngine.Random.Range(0.35f,0.65f);
 
 			FootStepType fstep = GetFootstepTypeForPrefab(prefID.constIndex);
 			AudioClip stcp = FootStepSound(fstep);
-			Utils.PlayOneShotSavable(SFX,stcp,UnityEngine.Random.Range(0.3f,0.5f));
+			Utils.PlayOneShotSavable(SFX,stcp,
+									 UnityEngine.Random.Range(0.6f,0.7f));
 		}
 	}
 
@@ -385,8 +391,8 @@ public class PlayerMovement : MonoBehaviour {
 			case 18: return FootStepType.Metal2;
 			case 19: return FootStepType.Glass;
 			case 20: return FootStepType.Wood2;
-
-
+			case 21: return FootStepType.None;
+			case 22: return FootStepType.None;
 			case 23: return FootStepType.Plastic2;
 			case 24: return FootStepType.Plastic2;
 			case 25: return FootStepType.Plastic2;
@@ -405,7 +411,6 @@ public class PlayerMovement : MonoBehaviour {
 			case 38: return FootStepType.Plastic2;
 			case 39: return FootStepType.Plastic2;
 			case 40: return FootStepType.Plastic2;
-
 			case 41: return FootStepType.Plastic;
 			case 42: return FootStepType.Plastic;
 			case 43: return FootStepType.Plastic;
@@ -428,7 +433,279 @@ public class PlayerMovement : MonoBehaviour {
 			case 60: return FootStepType.Plastic;
 			case 61: return FootStepType.Marble;
 			case 62: return FootStepType.Metal;
+			case 63: return FootStepType.Metal;
+			case 64: return FootStepType.Sand;
+			case 65: return FootStepType.Sand;
+			case 66: return FootStepType.Sand;
+			case 67: return FootStepType.Plastic;
+			case 68: return FootStepType.Plastic;
+			case 69: return FootStepType.Plastic;
+			case 70: return FootStepType.Carpet;
+			case 71: return FootStepType.Metpanel;
+			case 72: return FootStepType.Marble;
+			case 73: return FootStepType.Marble;
+			case 74: return FootStepType.Plaster;
+			case 75: return FootStepType.Carpet;
+			case 76: return FootStepType.Marble;
+			case 77: return FootStepType.Glass;
+			case 78: return FootStepType.Metal;
+			case 79: return FootStepType.Grate;
+			case 80: return FootStepType.Rubber;
+			case 81: return FootStepType.Rubber;
+			case 82: return FootStepType.Metal2;
+			case 83: return FootStepType.Metal2;
+			case 84: return FootStepType.Metal2;
+			case 85: return FootStepType.Metal2;
+			case 86: return FootStepType.Metal2;
+			case 87: return FootStepType.Metal2;
+			case 88: return FootStepType.Metal2;
+			case 89: return FootStepType.Metal;
+			case 90: return FootStepType.Plastic;
+			case 91: return FootStepType.Plastic;
+			case 92: return FootStepType.Plastic;
+			case 93: return FootStepType.Glass;
+			case 94: return FootStepType.Grass;
+			case 95: return FootStepType.Grass;
+			case 96: return FootStepType.Grass;
+			case 97: return FootStepType.Water;
+			case 98: return FootStepType.Squish;
+			case 99: return FootStepType.Squish;
+			case 100: return FootStepType.Squish;
+			case 101: return FootStepType.GrittyCrete;
+			case 102: return FootStepType.GrittyCrete;
+			case 103: return FootStepType.GrittyCrete;
+			case 104: return FootStepType.GrittyCrete;
+			case 105: return FootStepType.GrittyCrete;
+			case 106: return FootStepType.GrittyCrete;
+			case 107: return FootStepType.GrittyCrete;
+			case 108: return FootStepType.GrittyCrete;
+			case 109: return FootStepType.GrittyCrete;
+			case 110: return FootStepType.Squish;
+			case 111: return FootStepType.GrittyCrete;
+			case 112: return FootStepType.Metal;
+			case 113: return FootStepType.Panel;
+			case 114: return FootStepType.Panel;
+			case 115: return FootStepType.Panel;
+			case 116: return FootStepType.Metpanel;
+			case 117: return FootStepType.Metpanel;
+			case 118: return FootStepType.Panel;
+			case 119: return FootStepType.Panel;
+			case 120: return FootStepType.Metpanel;
+			case 121: return FootStepType.Metpanel;
+			case 122: return FootStepType.Glass;
+			case 123: return FootStepType.Panel;
+			case 124: return FootStepType.Rubber;
+			case 125: return FootStepType.Rubber;
+			case 126: return FootStepType.Glass;
+			case 127: return FootStepType.Metal;
+			case 128: return FootStepType.Glass;
+			case 129: return FootStepType.Metal;
+			case 130: return FootStepType.Grate;
+			case 131: return FootStepType.Metal;
+			case 132: return FootStepType.Metal;
+			case 133: return FootStepType.Metal;
+			case 134: return FootStepType.Metal;
+			case 135: return FootStepType.Metpanel;
+			case 136: return FootStepType.Metpanel;
+			case 137: return FootStepType.Metal;
+			case 138: return FootStepType.Metal;
+			case 139: return FootStepType.Metpanel;
+			case 140: return FootStepType.Metpanel;
+			case 141: return FootStepType.Metal;
+			case 142: return FootStepType.Metal;
+			case 143: return FootStepType.Metal;
+			case 144: return FootStepType.Vent;
+			case 145: return FootStepType.Vent;
+			case 146: return FootStepType.Vent;
+			case 147: return FootStepType.Vent;
+			case 148: return FootStepType.Vent;
+			case 149: return FootStepType.Plastic;
+			case 150: return FootStepType.Plastic;
+			case 151: return FootStepType.Plastic;
+			case 152: return FootStepType.Plastic;
+			case 153: return FootStepType.Plastic;
+			case 154: return FootStepType.Plastic;
+			case 155: return FootStepType.Plastic;
+			case 156: return FootStepType.Plastic;
+			case 157: return FootStepType.Plastic;
+			case 158: return FootStepType.Plastic;
+			case 159: return FootStepType.Plastic;
+			case 160: return FootStepType.Panel;
+			case 161: return FootStepType.Panel;
+			case 162: return FootStepType.Plastic2;
+			case 163: return FootStepType.Plastic2;
+			case 164: return FootStepType.Plastic2;
+			case 165: return FootStepType.Plastic2;
+			case 166: return FootStepType.Plastic2;
+			case 167: return FootStepType.Plastic2;
+			case 168: return FootStepType.Plastic2;
+			case 169: return FootStepType.Panel;
+			case 170: return FootStepType.Panel;
+			case 171: return FootStepType.Panel;
+			case 172: return FootStepType.Panel;
+			case 173: return FootStepType.Panel;
+			case 174: return FootStepType.Panel;
+			case 175: return FootStepType.Panel;
+			case 176: return FootStepType.Panel;
+			case 177: return FootStepType.Panel;
+			case 178: return FootStepType.Plastic;
+			case 179: return FootStepType.Plastic;
+			case 180: return FootStepType.Plastic;
+			case 181: return FootStepType.Plastic;
+			case 182: return FootStepType.Plastic;
+			case 183: return FootStepType.Plastic;
+			case 184: return FootStepType.Plastic;
+			case 185: return FootStepType.Plastic;
+			case 186: return FootStepType.Plastic;
+			case 187: return FootStepType.Glass;
+			case 188: return FootStepType.Plastic;
+			case 189: return FootStepType.Metal;
+			case 190: return FootStepType.Plastic;
+			case 191: return FootStepType.Plastic;
+			case 192: return FootStepType.Plastic;
+			case 193: return FootStepType.Plastic;
+			case 194: return FootStepType.Plastic;
+			case 195: return FootStepType.Plastic;
+			case 196: return FootStepType.Metal;
+			case 197: return FootStepType.Metal2;
+			case 198: return FootStepType.Metal2;
+			case 199: return FootStepType.Metal;
+			case 200: return FootStepType.Metal2;
+			case 201: return FootStepType.Metal2;
+			case 202: return FootStepType.Metal2;
+			case 203: return FootStepType.Metal;
+			case 204: return FootStepType.Metpanel;
+			case 205: return FootStepType.Metpanel;
+			case 206: return FootStepType.Metpanel;
+			case 207: return FootStepType.Metpanel;
+			case 208: return FootStepType.Metal;
+			case 209: return FootStepType.Metal;
+			case 210: return FootStepType.Metal;
+			case 211: return FootStepType.Metal;
+			case 212: return FootStepType.Metal;
+			case 213: return FootStepType.Metal;
+			case 214: return FootStepType.Metal;
+			case 215: return FootStepType.Metal;
+			case 216: return FootStepType.Metal;
+			case 217: return FootStepType.Metal;
+			case 218: return FootStepType.Metal;
+			case 219: return FootStepType.Metal;
+			case 220: return FootStepType.Metal;
+			case 221: return FootStepType.Glass;
+			case 222: return FootStepType.Metal;
+			case 223: return FootStepType.Metal;
+			case 224: return FootStepType.Metal;
+			case 225: return FootStepType.Metal;
+			case 226: return FootStepType.Metal;
+			case 227: return FootStepType.Metal;
+			case 228: return FootStepType.Metal;
+			case 229: return FootStepType.Metal;
+			case 230: return FootStepType.Metal;
+			case 231: return FootStepType.Grate;
+			case 232: return FootStepType.Plastic;
+			case 233: return FootStepType.Plastic;
+			case 234: return FootStepType.Metpanel;
+			case 235: return FootStepType.Glass;
+			case 236: return FootStepType.Glass;
+			case 237: return FootStepType.Glass;
+			case 238: return FootStepType.Metal;
+			case 239: return FootStepType.Metal;
+			case 240: return FootStepType.Metal;
+			case 241: return FootStepType.Plastic;
+			case 242: return FootStepType.Plastic;
+			case 243: return FootStepType.Plastic;
+			case 244: return FootStepType.Plastic;
+			case 245: return FootStepType.Plastic;
+			case 246: return FootStepType.Plastic;
+			case 247: return FootStepType.Plastic;
+			case 248: return FootStepType.Plastic;
+			case 249: return FootStepType.Plastic;
+			case 250: return FootStepType.Plastic;
+			case 251: return FootStepType.Plastic;
+			case 252: return FootStepType.Plastic;
+			case 253: return FootStepType.Panel;
+			case 254: return FootStepType.Panel;
+			case 255: return FootStepType.Panel;
+			case 256: return FootStepType.Plastic;
+			case 257: return FootStepType.Plastic;
+			case 258: return FootStepType.Plastic;
+			case 259: return FootStepType.Plastic;
+			case 260: return FootStepType.Glass;
+			case 261: return FootStepType.Glass;
+			case 262: return FootStepType.Grate;
+			case 263: return FootStepType.Grate;
+			case 264: return FootStepType.Grate;
+			case 265: return FootStepType.Grate;
+			case 266: return FootStepType.Plastic;
+			case 267: return FootStepType.Plastic;
+			case 268: return FootStepType.Plastic;
+			case 269: return FootStepType.Plastic;
+			case 270: return FootStepType.Glass;
+			case 271: return FootStepType.Glass;
+			case 272: return FootStepType.Plastic;
+			case 273: return FootStepType.Plastic;
+			case 274: return FootStepType.Plastic;
+			case 275: return FootStepType.Plastic;
+			case 276: return FootStepType.Plastic;
+			case 277: return FootStepType.Plastic;
+			case 278: return FootStepType.Plastic;
+			case 279: return FootStepType.Glass;
+			case 280: return FootStepType.Marble;
+			case 281: return FootStepType.Marble;
+			case 282: return FootStepType.Marble;
+			case 283: return FootStepType.Marble;
+			case 284: return FootStepType.Marble;
+			case 285: return FootStepType.Marble;
+			case 286: return FootStepType.Marble;
+			case 287: return FootStepType.Marble;
+			case 288: return FootStepType.Plastic;
+			case 289: return FootStepType.Plastic;
+			case 290: return FootStepType.Plastic;
+			case 291: return FootStepType.Plastic;
+			case 292: return FootStepType.Metal;
+			case 293: return FootStepType.Metal;
+			case 294: return FootStepType.Metal;
+			case 295: return FootStepType.Metal;
+			case 296: return FootStepType.Metal;
+			case 297: return FootStepType.Metal;
+			case 298: return FootStepType.Metal;
+			case 299: return FootStepType.Metal;
+			case 300: return FootStepType.Metal;
+			case 301: return FootStepType.Metal;
+			case 302: return FootStepType.Rubber;
+			case 303: return FootStepType.Rubber;
+			case 304: return FootStepType.Rubber;
+			case 305: return FootStepType.Metal;
+			case 306: return FootStepType.Plaster;
 
+			// Props
+			case 458: return FootStepType.Metpanel;
+			case 459: return FootStepType.Metpanel;
+			case 460: return FootStepType.Metpanel;
+			case 461: return FootStepType.Metal;
+
+			case 463: return FootStepType.Metal;
+			case 464: return FootStepType.Wood2;
+
+			case 472: return FootStepType.Wood2;
+			case 473: return FootStepType.Wood2;
+			case 474: return FootStepType.Wood2;
+			case 475: return FootStepType.Wood2;
+			case 476: return FootStepType.Wood2;
+			case 477: return FootStepType.Metpanel;
+			case 478: return FootStepType.Metpanel;
+			case 479: return FootStepType.Metpanel;
+
+			case 500: return FootStepType.Metal;
+
+			case 515: return FootStepType.Panel;
+			case 516: return FootStepType.Metal;
+
+			case 525: return FootStepType.Metal;
+			case 526: return FootStepType.Metal;
+			case 527: return FootStepType.Grate;
+			case 528: return FootStepType.Grate;
+			case 529: return FootStepType.Grate;
 			default: return FootStepType.Plastic;
 		}
 	}
