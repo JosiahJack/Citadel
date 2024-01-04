@@ -152,6 +152,7 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector] public float turboFinished = 0f; // save
 	[HideInInspector] public float turboCyberTime = 15f;
 	[HideInInspector] public bool inCyberTube = false;
+	[HideInInspector] public float stepFinished;
 	private int doubleJumpTicks = 0;
 	private Vector3 tempVecRbody;
 	private bool inputtingMovement;
@@ -202,6 +203,7 @@ public class PlayerMovement : MonoBehaviour {
 		if (Application.platform == RuntimePlatform.Android) {
 		    fpsCounter.SetActive(true);
 		}
+		stepFinished = PauseScript.a.relativeTime;
     }
 
 	void Update() {
@@ -343,11 +345,124 @@ public class PlayerMovement : MonoBehaviour {
 			return;
 		}
 
+		if (rbody.velocity.sqrMagnitude <= 0f || !grounded
+		    || (relForward == 0 && relSideways == 0)) return;
+
 		PrefabIdentifier prefID = hitGO.GetComponent<PrefabIdentifier>();
+		if (prefID == null) return;
 
-		// Footsteps...
+		// Footsteps
+		if (stepFinished < PauseScript.a.relativeTime) {
+			stepFinished = PauseScript.a.relativeTime
+							+ UnityEngine.Random.Range(0.4f,1f);
 
-		// someday?
+			FootStepType fstep = GetFootstepTypeForPrefab(prefID.constIndex);
+			AudioClip stcp = FootStepSound(fstep);
+			Utils.PlayOneShotSavable(SFX,stcp,UnityEngine.Random.Range(0.3f,0.5f));
+		}
+	}
+
+	FootStepType GetFootstepTypeForPrefab(int pid) {
+		switch(pid) {
+			case 0: return FootStepType.None;
+			case 1: return FootStepType.Glass;
+			case 2: return FootStepType.Squish;
+			case 3: return FootStepType.Squish;
+			case 4: return FootStepType.Squish;
+			case 5: return FootStepType.Squish;
+			case 6: return FootStepType.Squish;
+			case 7: return FootStepType.Squish;
+			case 8: return FootStepType.Squish;
+			case 9: return FootStepType.Squish;
+			case 10: return FootStepType.Squish;
+			case 11: return FootStepType.Metpanel;
+			case 12: return FootStepType.Marble;
+			case 13: return FootStepType.Metal2;
+			case 14: return FootStepType.Metal2;
+			case 15: return FootStepType.Metal2;
+			case 16: return FootStepType.Metal2;
+			case 17: return FootStepType.Metal2;
+			case 18: return FootStepType.Metal2;
+			case 19: return FootStepType.Glass;
+			case 20: return FootStepType.Wood2;
+
+
+			case 23: return FootStepType.Plastic2;
+			case 24: return FootStepType.Plastic2;
+			case 25: return FootStepType.Plastic2;
+			case 26: return FootStepType.Plastic2;
+			case 27: return FootStepType.Plastic2;
+			case 28: return FootStepType.Plastic2;
+			case 29: return FootStepType.Plastic2;
+			case 30: return FootStepType.Plastic2;
+			case 31: return FootStepType.Plastic2;
+			case 32: return FootStepType.Plastic2;
+			case 33: return FootStepType.Plastic2;
+			case 34: return FootStepType.Plastic2;
+			case 35: return FootStepType.Plastic2;
+			case 36: return FootStepType.Plastic2;
+			case 37: return FootStepType.Plastic2;
+			case 38: return FootStepType.Plastic2;
+			case 39: return FootStepType.Plastic2;
+			case 40: return FootStepType.Plastic2;
+
+			case 41: return FootStepType.Plastic;
+			case 42: return FootStepType.Plastic;
+			case 43: return FootStepType.Plastic;
+			case 44: return FootStepType.Plastic;
+			case 45: return FootStepType.Plastic;
+			case 46: return FootStepType.Plastic;
+			case 47: return FootStepType.Plastic;
+			case 48: return FootStepType.Plastic2;
+			case 49: return FootStepType.Plastic2;
+			case 50: return FootStepType.Carpet;
+			case 51: return FootStepType.Metpanel;
+			case 52: return FootStepType.Metpanel;
+			case 53: return FootStepType.Plastic2;
+			case 54: return FootStepType.Gravel;
+			case 55: return FootStepType.Gravel;
+			case 56: return FootStepType.Metpanel;
+			case 57: return FootStepType.Metpanel;
+			case 58: return FootStepType.Plastic;
+			case 59: return FootStepType.Plastic;
+			case 60: return FootStepType.Plastic;
+			case 61: return FootStepType.Marble;
+			case 62: return FootStepType.Metal;
+
+			default: return FootStepType.Plastic;
+		}
+	}
+
+	AudioClip FootStepSound(FootStepType fstep) {
+		switch(fstep) {
+			case FootStepType.None: return Const.a.sounds[0];
+			// + 1 because its exclusive, :eyeroll:
+			case FootStepType.Carpet:      return Const.a.sounds[UnityEngine.Random.Range(268,275 + 1)];
+			case FootStepType.Concrete:    return Const.a.sounds[UnityEngine.Random.Range(276,283 + 1)];
+			case FootStepType.GrittyCrete: return Const.a.sounds[UnityEngine.Random.Range(284,291 + 1)];
+			case FootStepType.Grass:       return Const.a.sounds[UnityEngine.Random.Range(292,299 + 1)];
+			case FootStepType.Gravel:      return Const.a.sounds[UnityEngine.Random.Range(300,307 + 1)];
+			case FootStepType.Rock:        return Const.a.sounds[UnityEngine.Random.Range(308,315 + 1)];
+			case FootStepType.Glass:       return Const.a.sounds[UnityEngine.Random.Range(316,323 + 1)];
+			case FootStepType.Marble:      return Const.a.sounds[UnityEngine.Random.Range(324,331 + 1)];
+			case FootStepType.Metal:       return Const.a.sounds[UnityEngine.Random.Range(332,339 + 1)];
+			case FootStepType.Grate:       return Const.a.sounds[UnityEngine.Random.Range(340,347 + 1)];
+			case FootStepType.Metal2:      return Const.a.sounds[UnityEngine.Random.Range(348,355 + 1)];
+			case FootStepType.Metpanel:    return Const.a.sounds[UnityEngine.Random.Range(356,363 + 1)];
+			case FootStepType.Panel:       return Const.a.sounds[UnityEngine.Random.Range(364,371 + 1)];
+			case FootStepType.Plaster:     return Const.a.sounds[UnityEngine.Random.Range(372,379 + 1)];
+			case FootStepType.Plastic:     return Const.a.sounds[UnityEngine.Random.Range(380,387 + 1)];
+			case FootStepType.Plastic2:    return Const.a.sounds[UnityEngine.Random.Range(388,395 + 1)];
+			case FootStepType.Rubber:      return Const.a.sounds[UnityEngine.Random.Range(396,403 + 1)];
+			case FootStepType.Sand:        return Const.a.sounds[UnityEngine.Random.Range(404,411 + 1)];
+			case FootStepType.Squish:      return Const.a.sounds[UnityEngine.Random.Range(412,427 + 1)];
+			case FootStepType.Vent:        return Const.a.sounds[UnityEngine.Random.Range(428,437 + 1)];
+			case FootStepType.Water:       return Const.a.sounds[UnityEngine.Random.Range(438,442 + 1)];
+			case FootStepType.Wood:        return Const.a.sounds[UnityEngine.Random.Range(443,450 + 1)];
+			case FootStepType.Wood2:       return Const.a.sounds[UnityEngine.Random.Range(451,458 + 1)];
+		}
+
+		return Const.a.sounds[0]; // null wav
 	}
 
 	float GetBasePlayerSpeed() {

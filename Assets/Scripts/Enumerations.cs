@@ -40,7 +40,10 @@ public enum BloodType : byte {None,Red,Yellow,Green,Robot,Leaf,Mutation,
 public enum SecurityType : byte {None,Camera,NodeSmall,NodeLarge};
 public enum AudioLogType : byte {TextOnly,Normal,Email,Papers,Vmail,Game};
 public enum EnergyType : byte {Battery,ChargeStation};
-
+public enum FootStepType : byte {None,Carpet,Concrete,GrittyCrete,Grass,Gravel,
+                                 Rock,Glass,Marble,Metal,Grate,Metal2,Metpanel,
+                                 Panel,Plaster,Plastic,Plastic2,Rubber,Sand,
+                                 Squish,Vent,Water,Wood,Wood2};
 // Pool references
 public enum PoolType {None,SparqImpacts,CameraExplosions,SparksSmall,
                       BloodSpurtSmall,BloodSpurtSmallYellow,
