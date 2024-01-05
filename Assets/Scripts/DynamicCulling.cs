@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class DynamicCulling : MonoBehaviour {
     public bool cullEnabled = false;
+    public bool outputDebugImages = false;
     const int WORLDX = 64;
     const int ARRSIZE = WORLDX * WORLDX;
     const float CELLXHALF = 1.28f;
@@ -38,24 +39,24 @@ public class DynamicCulling : MonoBehaviour {
     public List<AIController> npcAICs = new List<AIController>();
     public List<Vector2Int> npcCoords = new List<Vector2Int>();
 
-//     private byte[] bytes;
-//     private static string openDebugImagePath;
-//     private static string visDebugImagePath;
-//     private Color32[] pixels;
-//     private Texture2D debugTex;
+    private byte[] bytes;
+    private static string openDebugImagePath;
+    private static string visDebugImagePath;
+    private Color32[] pixels;
+    private Texture2D debugTex;
 
     public static DynamicCulling a;
 
     void Awake() {
         a = this;
         a.Cull_Init();
-//         openDebugImagePath = Utils.SafePathCombine(
-//                                  Application.streamingAssetsPath,
-//                                  "worldcellopen_" + LevelManager.a.currentLevel.ToString() + ".png");
-//         visDebugImagePath = Utils.SafePathCombine(
-//                                 Application.streamingAssetsPath,
-//                                 "worldcellvis_" + LevelManager.a.currentLevel.ToString() + ".png");
-//         a.pixels = new Color32[WORLDX * WORLDX];
+        openDebugImagePath = Utils.SafePathCombine(
+                                 Application.streamingAssetsPath,
+                                 "worldcellopen_" + LevelManager.a.currentLevel.ToString() + ".png");
+        visDebugImagePath = Utils.SafePathCombine(
+                                Application.streamingAssetsPath,
+                                "worldcellvis_" + LevelManager.a.currentLevel.ToString() + ".png");
+        a.pixels = new Color32[WORLDX * WORLDX];
     }
 
     void ClearCellList() {
@@ -109,7 +110,7 @@ public class DynamicCulling : MonoBehaviour {
                 worldMax = new Vector3( 56.32f,0f, 43.52f);
                 break;
             case 1:
-                worldMin = new Vector3(-51.2f,0f,-61.5f);
+                worldMin = new Vector3(-51.2f,0f,-53.76f);
                 worldMax = new Vector3( 71.6f,0f, 53.7f);
                 break;
             case 2:
@@ -163,15 +164,19 @@ public class DynamicCulling : MonoBehaviour {
         Vector2 pos2d = new Vector2(0f,0f);
         Vector2 pos2dcurrent = new Vector2(0f,0f);
         Vector3 pos;
-//         debugTex = new Texture2D(64,64);
-//         pixels = new Color32[WORLDX * WORLDX];
+        if (outputDebugImages) {
+            debugTex = new Texture2D(64,64);
+            pixels = new Color32[WORLDX * WORLDX];
+        }
         int x = 0;
         int y = 0;
-//         for (x=0;x<64;x++) {
-//             for (y=0;y<64;y++) {
-//                 pixels[x + (y * 64)] = Color.black;
-//             }
-//         }
+        if (outputDebugImages) {
+            for (x=0;x<64;x++) {
+                for (y=0;y<64;y++) {
+                    pixels[x + (y * 64)] = Color.black;
+                }
+            }
+        }
 
         for (int i=0; i < chunks.Count; i++) {
             pos = chunks[i].transform.position;
@@ -187,7 +192,7 @@ public class DynamicCulling : MonoBehaviour {
                 if (x > 63 || x < 0 || y > 63 || y < 0) continue;
                 worldCellOpen[x,y] = true;
                 worldCellPositions[x,y] = pos;
-//                 pixels[x + (y * 64)] = Color.white;
+                if (outputDebugImages) pixels[x + (y * 64)] = Color.white;
             } else continue;
         }
 
@@ -203,18 +208,20 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
 
-//         openDebugImagePath = Utils.SafePathCombine(
-//             Application.streamingAssetsPath,
-//         "worldcellopen_" + LevelManager.a.currentLevel.ToString() + ".png");
-//         visDebugImagePath = Utils.SafePathCombine(
-//             Application.streamingAssetsPath,
-//          "worldcellvis_" + LevelManager.a.currentLevel.ToString() + ".png");
+        if (outputDebugImages) {
+            openDebugImagePath = Utils.SafePathCombine(
+                Application.streamingAssetsPath,
+            "worldcellopen_" + LevelManager.a.currentLevel.ToString() + ".png");
+            visDebugImagePath = Utils.SafePathCombine(
+                Application.streamingAssetsPath,
+            "worldcellvis_" + LevelManager.a.currentLevel.ToString() + ".png");
 
-         // Output Debug image of the open
-//         debugTex.SetPixels32(pixels);
-//         debugTex.Apply();
-//         bytes = debugTex.EncodeToPNG();
-//         File.WriteAllBytes(openDebugImagePath,bytes);
+        // Output Debug image of the open
+            debugTex.SetPixels32(pixels);
+            debugTex.Apply();
+            bytes = debugTex.EncodeToPNG();
+            File.WriteAllBytes(openDebugImagePath,bytes);
+        }
     }
 
     void FindOrthogonalChunks(GameObject chunkContainer) {
@@ -408,18 +415,21 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     void FindPlayerCell() {
-        playerCellX = 0;
-        playerCellY = 0;
-        Vector3 pos = PlayerMovement.a.transform.position;
-        for (int x=0;x<64;x++) {
-            for (int y=0;y<64;y++) {
-                if (Vector3.Distance(pos,worldCellPositions[x,y]) < 1.28f) {
-                    playerCellX = x;
-                    playerCellY = y;
-                    return;
-                }
-            }
-        }
+        Vector2Int pxy = PosToCellCoords(PlayerMovement.a.transform.position);
+        playerCellX = pxy.x;
+        playerCellY = pxy.y;
+//         playerCellX = 0;
+//         playerCellY = 0;
+//         Vector3 pos = PlayerMovement.a.transform.position;
+//         for (int x=0;x<64;x++) {
+//             for (int y=0;y<64;y++) {
+//                 if (Vector3.Distance(pos,worldCellPositions[x,y]) < 1.28f) {
+//                     playerCellX = x;
+//                     playerCellY = y;
+//                     return;
+//                 }
+//             }
+//         }
     }
 
     Vector2Int PosToCellCoords(Vector3 pos) {
@@ -453,8 +463,11 @@ public class DynamicCulling : MonoBehaviour {
     bool UpdatedPlayerCell() {
         int lastX = playerCellX;
         int lastY = playerCellY;
-        playerCellX = WorldXToCellX(PlayerMovement.a.transform.position.x);
-        playerCellY = WorldZToCellY(PlayerMovement.a.transform.position.z);
+//         playerCellX = WorldXToCellX(PlayerMovement.a.transform.position.x);
+//         playerCellY = WorldZToCellY(PlayerMovement.a.transform.position.z);
+        Vector2Int pxy = PosToCellCoords(PlayerMovement.a.transform.position);
+        playerCellX = pxy.x;
+        playerCellY = pxy.y;
         if (playerCellX == lastX && playerCellY == lastY) return false;
         return true;
     }
@@ -469,24 +482,26 @@ public class DynamicCulling : MonoBehaviour {
 
         worldCellVisible[x,y] = worldCellOpen[x,y];
         worldCellCheckedYet[x,y] = true;
-//         SetVisPixel(x,y,Color.cyan);
+        SetVisPixel(x,y,Color.cyan);
     }
 
     void DetermineVisibleCells() {
-//         debugTex = new Texture2D(64,64);
+        if (outputDebugImages) debugTex = new Texture2D(64,64);
         int x,y;
         for (x=0;x<64;x++) {
             for (y=0;y<64;y++) {
                 worldCellVisible[x,y] = false;
-//                 pixels[x + (y * 64)] = worldCellOpen[x,y]
-//                                        ? Color.white : Color.black;
+                if (outputDebugImages) {
+                    pixels[x + (y * 64)] = worldCellOpen[x,y]
+                                           ? Color.white : Color.black;
+                }
             }
         }
 
         x = playerCellX; y = playerCellY;
         worldCellVisible[x,y] = true;
         worldCellCheckedYet[x,y] = true;
-//         SetVisPixel(x,y,Color.blue);
+        SetVisPixel(x,y,Color.blue);
 
         // Set all neighboring cells visible if open in 3x3 square.
         SetVisible(x - 1,y + 1); SetVisible(x,y + 1); SetVisible(x + 1,y + 1);
@@ -498,16 +513,44 @@ public class DynamicCulling : MonoBehaviour {
         CastStraightX(playerCellX,playerCellY,1);  // [ ][3]
                                                    // [1][2]
                                                    // [ ][3]
+        if (XYPairInBounds(playerCellX,playerCellY + 1)) {
+            CastStraightX(playerCellX,playerCellY + 1,1);
+        }
+
+        if (XYPairInBounds(playerCellX,playerCellY - 1)) {
+            CastStraightX(playerCellX,playerCellY - 1,1);
+        }
 
         CastStraightX(playerCellX,playerCellY,-1); // [3][ ]
                                                    // [2][1]
                                                    // [3][ ]
+        if (XYPairInBounds(playerCellX,playerCellY + 1)) {
+            CastStraightX(playerCellX,playerCellY + 1,-1);
+        }
+
+        if (XYPairInBounds(playerCellX,playerCellY - 1)) {
+            CastStraightX(playerCellX,playerCellY - 1,-1);
+        }
 
         CastStraightY(playerCellX,playerCellY,1);  // [3][2][3]
                                                    // [ ][1][ ]
+        if (XYPairInBounds(playerCellX + 1,playerCellY)) {
+            CastStraightX(playerCellX + 1,playerCellY,1);
+        }
+
+        if (XYPairInBounds(playerCellX - 1,playerCellY)) {
+            CastStraightX(playerCellX - 1,playerCellY,1);
+        }
 
         CastStraightY(playerCellX,playerCellY,-1); // [ ][1][ ]
                                                    // [3][2][3]
+        if (XYPairInBounds(playerCellX + 1,playerCellY)) {
+            CastStraightX(playerCellX + 1,playerCellY,-1);
+        }
+
+        if (XYPairInBounds(playerCellX - 1,playerCellY)) {
+            CastStraightX(playerCellX - 1,playerCellY,-1);
+        }
 
         for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,0);
         for (x=1;x<63;x++) CastRay(playerCellX,playerCellY,x,63);
@@ -571,18 +614,22 @@ public class DynamicCulling : MonoBehaviour {
         }
 
         // Output Debug image of the open
-//         debugTex.SetPixels32(pixels);
-//         debugTex.Apply();
-//         bytes = debugTex.EncodeToPNG();
-//         File.WriteAllBytes(visDebugImagePath,bytes);
+        if (outputDebugImages) {
+            debugTex.SetPixels32(pixels);
+            debugTex.Apply();
+            bytes = debugTex.EncodeToPNG();
+            File.WriteAllBytes(visDebugImagePath,bytes);
+        }
     }
 
-//     void SetVisPixel(int x, int y, Color col){
-//         pixels[x + (y * 64)] = worldCellVisible[x,y]
-//                                ? col
-//                                : (worldCellOpen[x,y] ? Color.white
-//                                                      : Color.black);
-//     }
+    void SetVisPixel(int x, int y, Color col){
+        if (!outputDebugImages) return;
+
+        pixels[x + (y * 64)] = worldCellVisible[x,y]
+                               ? col
+                               : (worldCellOpen[x,y] ? Color.white
+                                                     : Color.black);
+    }
 
     private void CastStraightY(int px, int py, int signy) {
         if (signy > 0 && py >= 63) return;
@@ -601,7 +648,7 @@ public class DynamicCulling : MonoBehaviour {
                         worldCellVisible[x,y] = worldCellOpen[x,y];
                         worldCellCheckedYet[x,y] = true;
                         currentVisible = true; // Would be if twas open.
-//                         SetVisPixel(x,y,Color.green);
+                        SetVisPixel(x,y,Color.green);
                     }
                 } else {
                     currentVisible = worldCellOpen[x,y]; // Keep going.
@@ -614,7 +661,7 @@ public class DynamicCulling : MonoBehaviour {
                 if (!worldCellCheckedYet[x + 1,y]) {
                     worldCellVisible[x + 1,y] = worldCellOpen[x + 1,y];
                     worldCellCheckedYet[x + 1,y] = true;
-//                     SetVisPixel(x + 1,y,Color.green);
+                    SetVisPixel(x + 1,y,Color.green);
                 }
             }
 
@@ -622,7 +669,7 @@ public class DynamicCulling : MonoBehaviour {
                 if (!worldCellCheckedYet[x - 1,y]) {
                     worldCellVisible[x - 1,y] = worldCellOpen[x - 1,y];
                     worldCellCheckedYet[x - 1,y] = true;
-//                     SetVisPixel(x - 1,y,Color.green);
+                    SetVisPixel(x - 1,y,Color.green);
                 }
             }
         }
@@ -645,7 +692,7 @@ public class DynamicCulling : MonoBehaviour {
                         worldCellVisible[x,y] = worldCellOpen[x,y];
                         worldCellCheckedYet[x,y] = true;
                         currentVisible = true; // Would be if twas open.
-//                         SetVisPixel(x,y,Color.green);
+                        SetVisPixel(x,y,Color.green);
                     }
                 } else {
                     currentVisible = worldCellOpen[x,y]; // Keep going.
@@ -658,7 +705,7 @@ public class DynamicCulling : MonoBehaviour {
                 if (!worldCellCheckedYet[x,y + 1]) {
                     worldCellVisible[x,y + 1] = worldCellOpen[x,y + 1];
                     worldCellCheckedYet[x,y + 1] = true;
-//                     SetVisPixel(x,y + 1,Color.green);
+                    SetVisPixel(x,y + 1,Color.green);
                 }
             }
 
@@ -666,7 +713,7 @@ public class DynamicCulling : MonoBehaviour {
                 if (!worldCellCheckedYet[x,y - 1]) {
                     worldCellVisible[x,y - 1] = worldCellOpen[x,y - 1];
                     worldCellCheckedYet[x,y - 1] = true;
-//                     SetVisPixel(x,y - 1,Color.green);
+                    SetVisPixel(x,y - 1,Color.green);
                 }
             }
         }
@@ -705,11 +752,14 @@ public class DynamicCulling : MonoBehaviour {
                 worldCellVisible[x,y] = worldCellOpen[x,y];
                 worldCellCheckedYet[x,y] = true;
                 if (!worldCellVisible[x,y]) {
-//                     pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
+                    if (outputDebugImages) {
+                        pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
+                    }
+
                     return -1;
                 }
 
-//                 SetVisPixel(x,y,new Color(0f,0f,0.5f,1f));
+                SetVisPixel(x,y,new Color(0f,0f,0.5f,1f));
                 return 1;
             }
         }
