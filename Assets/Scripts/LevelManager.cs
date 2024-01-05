@@ -480,6 +480,15 @@ public class LevelManager : MonoBehaviour {
 			lit.shadowNormalBias = Utils.GetFloatFromString(entries[index]); index++;
 			lit.shadowNearPlane = Utils.GetFloatFromString(entries[index]); index++;
 			lit.cullingMask = Utils.GetIntFromString(entries[index]); index++;
+			lit.cullingMask = LayerMask.GetMask("Default","TransparentFX",
+												"Water","GunViewModel",
+												"Geometry","NPC","Bullets",
+												"Player","Corpse",
+												"PhysObjects","Door",
+												"InterDebris","Player2",
+												"Player3","Player4",
+												"NPCBulllet",
+												"CorpseSearchable");
 
 			//GameObject rtxSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 			//rtxSphere.name = "Sphere" + i.ToString();

@@ -364,7 +364,7 @@ public class PlayerMovement : MonoBehaviour {
 			FootStepType fstep = GetFootstepTypeForPrefab(prefID.constIndex);
 			AudioClip stcp = FootStepSound(fstep);
 			Utils.PlayOneShotSavable(SFX,stcp,
-									 UnityEngine.Random.Range(0.6f,0.7f));
+									 UnityEngine.Random.Range(0.65f,0.75f));
 		}
 	}
 
@@ -1569,6 +1569,7 @@ public class PlayerMovement : MonoBehaviour {
 				maxSlope = 0.35f;
 				if (Inventory.a.BoosterActive()) maxSlope = 0.7f;
 				if (floorDot <= 1f && floorDot >= maxSlope) {
+					if (!grounded) stepFinished = PauseScript.a.relativeTime;
 					grounded = true;
 					return;
 				}
