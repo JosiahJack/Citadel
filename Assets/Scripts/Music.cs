@@ -67,52 +67,51 @@ public class Music : MonoBehaviour {
 		// 	return;
 		// }
 
-		// StartCoroutine(LoadHelper(fPathFull,fName,type,index));
-		LoadHelper(fPathFull,fName,type,index);
+		StartCoroutine(LoadHelper(fPathFull,fName,type,index));
+		//LoadHelper(fPathFull,fName,type,index);
 	}
 
 	#pragma warning disable 618
-	// IEnumerator LoadHelper(string uri, string clipname,int type, int index) {
-	private void LoadHelper(string uri, string clipname,int type, int index) {
-		WWW www = new WWW(uri);
+	IEnumerator LoadHelper(string uri, string clipname,int type, int index) {
+	//private void LoadHelper(string uri, string clipname,int type, int index) {
 
-		// yield return www;
-		while (!www.isDone) { }
-		tempClip = www.GetAudioClip(false);
-		tempClip.name = clipname;
-		// if(www != null) {
-			// Or retrieve results as binary data
-			// byte[] results = www.bytes;
-			// var memStream = new System.IO.MemoryStream(results);
-			// var mpgFile = new NLayer.MpegFile(memStream);
-			// var samples = new float[mpgFile.Length];
-			// mpgFile.ReadSamples(samples, 0, (int)mpgFile.Length);
-			// tempClip = AudioClip.Create(clipname,samples.Length,
-			// 							mpgFile.Channels,mpgFile.SampleRate,
-			// 							false);
-   //
-			// tempClip.SetData(samples, 0);
-			//Debug.LogWarning("Loaded main menu clip!");
+		if (Path.GetExtension(uri) == ".mp3") {
+// 			tempClip = NAudioPlayer.FromMp3Data(www.bytes);
+			var builder =
+				new NAudio.Wave.Mp3FileReader.FrameDecompressorBuilder(
+					wf => new NLayer.NAudioSupport.Mp3FrameDecompressor(wf)
+				);
 
-			switch (type) {
-				case 0:
-					if (index == 0) {
-						return;
-// 						MainMenuHandler.a.BackGroundMusic.clip = tempClip;
-// 						MainMenuHandler.a.titleMusic = tempClip;
-// 						Debug.LogWarning("Set main menu clip!");
-//
-// 						if (MainMenuHandler.a.gameObject.activeSelf
-// 							&& !MainMenuHandler.a.inCutscene
-// 							&& MainMenuHandler.a.dataFound) {
-//
-//
-// 							MainMenuHandler.a.BackGroundMusic.Play();
-// 						}
-					}
-					break;
+			using (var reader = new NAudio.Wave.Mp3FileReaderBase(uri,builder)) {
+				string fPath = Utils.SafePathCombine(musicPath,clipname);
+				string fPathFull = fPath + ".wav";
+				NAudio.Wave.WaveFileWriter.CreateWaveFile(fPathFull,reader);
 			}
-		// } else Debug.LogWarning("Failed to load audio clip " + clipname + " at " + uri);
+		}
+
+		string url = string.Format("file://{0}", uri);
+		WWW www = new WWW(url);
+		yield return www;
+
+		tempClip = www.GetAudioClip(false,false);
+		tempClip.name = clipname;
+		switch (type) {
+			case 0:
+				if (index == 0) {
+					MainMenuHandler.a.BackGroundMusic.clip = tempClip;
+					MainMenuHandler.a.titleMusic = tempClip;
+					Debug.LogWarning("Set main menu clip!");
+
+					if (MainMenuHandler.a.gameObject.activeSelf
+						&& !MainMenuHandler.a.inCutscene
+						&& MainMenuHandler.a.dataFound) {
+
+
+						MainMenuHandler.a.BackGroundMusic.Play();
+					}
+				}
+				break;
+		}
 	}
 	#pragma warning restore 618
 
