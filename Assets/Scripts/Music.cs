@@ -57,7 +57,7 @@ public class Music : MonoBehaviour {
 	public void LoadAudio(string fName,int type, int index) {
 		string fPath = Utils.SafePathCombine(musicPath,fName);
 		string fPathFull = fPath + ".mp3";
-		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".wav";
+		if (!File.Exists(fPathFull)) fPathFull = fPath + ".wav";
 		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".ogg";
 		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".mid";
 		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".midi";
