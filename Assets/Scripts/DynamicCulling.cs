@@ -32,7 +32,7 @@ public class DynamicCulling : MonoBehaviour {
     public int playerCellY = 0;
     public float deltaX = 0.0f;
     public float deltaY = 0.0f;
-    public Vector3 worldMax;
+//     public Vector3 worldMax;
     public Vector3 worldMin;
     public List<GameObject> orthogonalChunks;
     public List<Transform> npcTransforms;
@@ -102,63 +102,6 @@ public class DynamicCulling : MonoBehaviour {
 
     // ========================================================================
     // Handle Occluders (well, just determining visible cells and their chunks)
-
-    void FindWorldExtents(List<GameObject> chunks) {
-        switch(LevelManager.a.currentLevel) {
-            case 0:
-                worldMin = new Vector3(-38.40f,0f,-51.20f);
-                worldMax = new Vector3( 56.32f,0f, 43.52f);
-                break;
-            case 1:
-                worldMin = new Vector3(-76.80f,0f,-56.32f);
-                worldMax = new Vector3( 46.08f,0f, 58.88f);
-                break;
-            case 2:
-                worldMin = new Vector3(-43.6f,0f,-53.8f);
-                worldMax = new Vector3( 69.1f,0f, 48.6f);
-                break;
-            case 3:
-                worldMin = new Vector3(-48.7f,0f,-48.7f);
-                worldMax = new Vector3( 71.6f,0f, 40.9f);
-                break;
-            case 4:
-                worldMin = new Vector3(-26.9f,0f,-51.2f);
-                worldMax = new Vector3( 55.0f,0f, 51.2f);
-                break;
-            case 5:
-                worldMin = new Vector3(-44.8f,0f,-52.5f);
-                worldMax = new Vector3( 67.8f,0f, 44.8f);
-                break;
-            case 6:
-                worldMin = new Vector3(-63.5f,0f,-69.1f);
-                worldMax = new Vector3( 85.1f,0f, 61.4f);
-                break;
-            case 7:
-                worldMin = new Vector3(-64.3f,0f,-79.5f);
-                worldMax = new Vector3( 86.7f,0f, 71.6f);
-                break;
-            case 8:
-                worldMin = new Vector3(-41.2f,0f,-41.4f);
-                worldMax = new Vector3( 58.7f,0f, 35.4f);
-                break;
-            case 9:
-                worldMin = new Vector3(-48.9f,0f,-66.5f);
-                worldMax = new Vector3( 58.7f,0f, 61.5f);
-                break;
-            case 10:
-                worldMin = new Vector3(-21.5f,0f,-37.2f);
-                worldMax = new Vector3( 42.5f,0f, 29.3f);
-                break;
-            case 11:
-                worldMin = new Vector3(-24.6f,0f,-25.8f);
-                worldMax = new Vector3( 47.1f,0f, 17.7f);
-                break;
-            case 12:
-                worldMin = new Vector3(-15.5f,0f,-27.9f);
-                worldMax = new Vector3( 38.3f,0f, 18.1f);
-                break;
-        }
-    }
 
     void FindOpenCellsAndPositions(List<GameObject> chunks) {
         Vector2 pos2d = new Vector2(0f,0f);
@@ -247,52 +190,56 @@ public class DynamicCulling : MonoBehaviour {
         Vector3 pos = new Vector3(0f,0f,0f);
         Vector2 pos2d = new Vector2(0f,0f);
         Vector2 pos2dcurrent = new Vector2(0f,0f);
-//         for (int c=0;c<chunkCount;c++) {
-//             childGO = container.GetChild(c).gameObject;
-//             Vector2Int pos = PosToCellCoords(childGO.transform.position);
-//             cellLists[pos.x,pos.y].Add(childGO);
-//             MeshRenderer mr = childGO.GetComponent<MeshRenderer>();
-//             if (mr != null) cellListsMR[pos.x,pos.y].Add(mr);
-//
-//             Component[] compArray = childGO.GetComponentsInChildren(
-//                 typeof(MeshRenderer),true);
-//
-//             foreach (MeshRenderer mrc in compArray) {
-//                 if (mrc != null) cellListsMR[pos.x,pos.y].Add(mrc);
-//             }
-//         }
+        for (int c=0;c<chunkCount;c++) {
+            childGO = container.GetChild(c).gameObject;
+            Vector2Int posint = PosToCellCoordsChunks(childGO.transform.position);
+            if (childGO.name == "chunk_blocker (1)") Debug.Log("Put " + childGO.name + " into cell " + posint.x.ToString() + "," + posint.y.ToString() + " position " + childGO.transform.position.ToString());
+            cellLists[posint.x,posint.y].Add(childGO);
+            MeshRenderer mr = childGO.GetComponent<MeshRenderer>();
+            if (mr != null) cellListsMR[posint.x,posint.y].Add(mr);
 
-        for (int x=0;x<64;x++) {
-            for (int y=0;y<64;y++) {
-                if (worldCellOpen[x,y]) {
-                    for (int c=0;c<chunkCount;c++) {
-                        if (alreadyInAtLeastOneList[c]) continue;
+            Component[] compArray = childGO.GetComponentsInChildren(
+                typeof(MeshRenderer),true);
 
-                        childGO = container.GetChild(c).gameObject;
-                        pos = childGO.transform.position;
-                        pos2d.x = pos.x;
-                        pos2d.y = pos.z;
-                        pos2dcurrent.x = worldCellPositions[x,y].x;
-                        pos2dcurrent.y = worldCellPositions[x,y].z;
-                        if (Vector2.Distance(pos2d,pos2dcurrent) >= 1.28f) {
-                            continue;
-                        }
-
-                        cellLists[x,y].Add(childGO);
-                        alreadyInAtLeastOneList[c] = true;
-                        MeshRenderer mr = childGO.GetComponent<MeshRenderer>();
-                        if (mr != null) cellListsMR[x,y].Add(mr);
-
-                        Component[] compArray = childGO.GetComponentsInChildren(
-                                                typeof(MeshRenderer),true);
-
-                        foreach (MeshRenderer mrc in compArray) {
-                            if (mrc != null) cellListsMR[x,y].Add(mrc);
-                        }
-                    }
-                }
+            foreach (MeshRenderer mrc in compArray) {
+                if (mrc != null) cellListsMR[posint.x,posint.y].Add(mrc);
             }
         }
+        // Put chunk_blocker (1) into cell 49,30 posiition (71.6 -47.4 15.3)
+
+        // Put chunk_blocker (1) into cell 48,29 posiition (71.6 -47.4 15.3)
+//         for (int x=0;x<64;x++) {
+//             for (int y=0;y<64;y++) {
+//                 if (worldCellOpen[x,y]) {
+//                     for (int c=0;c<chunkCount;c++) {
+//                         if (alreadyInAtLeastOneList[c]) continue;
+//
+//                         childGO = container.GetChild(c).gameObject;
+//                         pos = childGO.transform.position;
+//                         pos2d.x = pos.x;
+//                         pos2d.y = pos.z;
+//                         pos2dcurrent.x = worldCellPositions[x,y].x;
+//                         pos2dcurrent.y = worldCellPositions[x,y].z;
+//                         if (Vector2.Distance(pos2d,pos2dcurrent) >= 1.28f) {
+//                             continue;
+//                         }
+//
+//                         if (childGO.name == "chunk_blocker (1)") Debug.Log("Put " + childGO.name + " into cell " + x.ToString() + "," + y.ToString() + " position " + pos.ToString());
+//                         cellLists[x,y].Add(childGO);
+//                         alreadyInAtLeastOneList[c] = true;
+//                         MeshRenderer mr = childGO.GetComponent<MeshRenderer>();
+//                         if (mr != null) cellListsMR[x,y].Add(mr);
+//
+//                         Component[] compArray = childGO.GetComponentsInChildren(
+//                                                 typeof(MeshRenderer),true);
+//
+//                         foreach (MeshRenderer mrc in compArray) {
+//                             if (mrc != null) cellListsMR[x,y].Add(mrc);
+//                         }
+//                     }
+//                 }
+//             }
+//         }
     }
 
     // ========================================================================
@@ -397,7 +344,21 @@ public class DynamicCulling : MonoBehaviour {
         // Setup and find all cullables and associate them with x,y coords.
         ClearCellList();
         FindOrthogonalChunks(LevelManager.a.GetCurrentGeometryContainer());
-        FindWorldExtents(orthogonalChunks);
+        switch(LevelManager.a.currentLevel) {
+            case 0: worldMin = new Vector3(-38.40f,0f,-51.20f); break;
+            case 1: worldMin = new Vector3(-53.76f,0f,-61.44f); break;
+            case 2: worldMin = new Vector3(-43.60f,0f,-53.80f); break;
+            case 3: worldMin = new Vector3(-48.70f,0f,-48.70f); break;
+            case 4: worldMin = new Vector3(-26.90f,0f,-51.20f); break;
+            case 5: worldMin = new Vector3(-44.80f,0f,-52.50f); break;
+            case 6: worldMin = new Vector3(-63.50f,0f,-69.10f); break;
+            case 7: worldMin = new Vector3(-64.30f,0f,-79.50f); break;
+            case 8: worldMin = new Vector3(-41.20f,0f,-41.40f); break;
+            case 9: worldMin = new Vector3(-48.90f,0f,-66.50f); break;
+            case 10:worldMin = new Vector3(-21.50f,0f,-37.20f); break;
+            case 11:worldMin = new Vector3(-24.60f,0f,-25.80f); break;
+            case 12:worldMin = new Vector3(-15.50f,0f,-27.90f); break;
+        }
         FindOpenCellsAndPositions(orthogonalChunks);
         PutChunksInCells();
         FindMeshRenderers(0); // Static Immutable
@@ -434,12 +395,24 @@ public class DynamicCulling : MonoBehaviour {
         ToggleNPCPVS();
     }
 
-    Vector2Int PosToCellCoords(Vector3 pos) {
+    Vector2Int PosToCellCoordsChunks(Vector3 pos) {
         int x,y;
-        x = (int)((pos.x - worldMin.x + 1.28f) / 2.56f);
+        x = (int)((pos.x - worldMin.x) / 2.56f);
         if (x > 63) x = 63;
         else if (x < 0) x = 0;
-        y = (int)((pos.z - worldMin.z + 1.28f) / 2.56f);
+        y = (int)((pos.z - worldMin.z) / 2.56f);
+        if (y > 63) y = 63;
+        else if (y < 0) y = 0;
+
+        return new Vector2Int(x,y);
+    }
+
+    Vector2Int PosToCellCoords(Vector3 pos) {
+        int x,y;
+        x = (int)((pos.x - worldMin.x + 1.28f) / 2.56f) - 1;
+        if (x > 63) x = 63;
+        else if (x < 0) x = 0;
+        y = (int)((pos.z - worldMin.z + 1.28f) / 2.56f) - 1;
         if (y > 63) y = 63;
         else if (y < 0) y = 0;
 
