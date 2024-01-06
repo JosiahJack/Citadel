@@ -110,8 +110,8 @@ public class DynamicCulling : MonoBehaviour {
                 worldMax = new Vector3( 56.32f,0f, 43.52f);
                 break;
             case 1:
-                worldMin = new Vector3(-51.2f,0f,-53.76f);
-                worldMax = new Vector3( 71.6f,0f, 53.7f);
+                worldMin = new Vector3(-76.80f,0f,-56.32f);
+                worldMax = new Vector3( 46.08f,0f, 58.88f);
                 break;
             case 2:
                 worldMin = new Vector3(-43.6f,0f,-53.8f);
@@ -244,9 +244,24 @@ public class DynamicCulling : MonoBehaviour {
         bool[] alreadyInAtLeastOneList = new bool[chunkCount];
         for (int c=0;c<chunkCount;c++) alreadyInAtLeastOneList[c] = false;
         GameObject childGO = null;
-        Vector3 pos;
+        Vector3 pos = new Vector3(0f,0f,0f);
         Vector2 pos2d = new Vector2(0f,0f);
         Vector2 pos2dcurrent = new Vector2(0f,0f);
+//         for (int c=0;c<chunkCount;c++) {
+//             childGO = container.GetChild(c).gameObject;
+//             Vector2Int pos = PosToCellCoords(childGO.transform.position);
+//             cellLists[pos.x,pos.y].Add(childGO);
+//             MeshRenderer mr = childGO.GetComponent<MeshRenderer>();
+//             if (mr != null) cellListsMR[pos.x,pos.y].Add(mr);
+//
+//             Component[] compArray = childGO.GetComponentsInChildren(
+//                 typeof(MeshRenderer),true);
+//
+//             foreach (MeshRenderer mrc in compArray) {
+//                 if (mrc != null) cellListsMR[pos.x,pos.y].Add(mrc);
+//             }
+//         }
+
         for (int x=0;x<64;x++) {
             for (int y=0;y<64;y++) {
                 if (worldCellOpen[x,y]) {
@@ -319,28 +334,33 @@ public class DynamicCulling : MonoBehaviour {
             default: container = LevelManager.a.GetCurrentStaticImmutableContainer(); break;
         }
 
+        Transform ctr = container.transform;
         Component[] compArray = container.GetComponentsInChildren(typeof(MeshRenderer),true);
-        int count = container.transform.childCount;
-        Transform parent = null;
-        Transform child = null;
-        AIController aic = null;
-        Light lit = null;
-        for (int i=0;i<count;i++) {
-            if (type == 3) { // NPC
-                aic = container.transform.GetChild(i).GetComponent<AIController>();
+        int count = ctr.childCount;
+        if (type == 3) {        // NPC
+            AIController aic = null;
+            for (int i=0;i<count;i++) {
+                aic = ctr.GetChild(i).GetComponent<AIController>();
                 if (aic == null) continue;
 
                 npcAICs.Add(aic);
-                npcTransforms.Add(container.transform.GetChild(i));
+                npcTransforms.Add(ctr.GetChild(i));
                 npcCoords.Add(Vector2Int.zero);
-            } else if (type == 5) { // Lights
-                lit = container.transform.GetChild(i).GetComponent<Light>();
+            }
+        } else if (type == 5) { // Lights
+            Light lit = null;
+            for (int i=0;i<count;i++) {
+                lit = ctr.GetChild(i).GetComponent<Light>();
                 if (lit == null) continue;
 
                 lights.Add(lit);
                 lightCoords.Add(Vector2Int.zero);
-            } else {
-                parent = container.transform.GetChild(i);
+            }
+        } else {
+            Transform parent = null;
+            Transform child = null;
+            for (int i=0;i<count;i++) {
+                parent = ctr.GetChild(i);
                 AddMeshRenderer(type,parent.GetComponent<MeshRenderer>());
                 for (int j=0;j<parent.childCount;j++) {
                     child = parent.GetChild(j);
@@ -363,11 +383,11 @@ public class DynamicCulling : MonoBehaviour {
 
         for (int index=0;index<count;index++) {
             switch(type) {
-                case 1: dynamicMeshCoords[index] = PosToCellCoords(dynamicMeshes[index].transform.position); break;
-                case 2: doorsCoords[index] = PosToCellCoords(doors[index].transform.position); break;
-                case 3: npcCoords[index] = PosToCellCoords(npcTransforms[index].position); break;
-                case 4: staticMeshSaveableCoords[index] = PosToCellCoords(staticMeshesSaveable[index].transform.position); break;
-                case 5: lightCoords[index] = PosToCellCoords(lights[index].transform.position); break;
+                case 1: dynamicMeshCoords[index]          = PosToCellCoords(dynamicMeshes[index].transform.position); break;
+                case 2: doorsCoords[index]                = PosToCellCoords(doors[index].transform.position); break;
+                case 3: npcCoords[index]                  = PosToCellCoords(npcTransforms[index].position); break;
+                case 4: staticMeshSaveableCoords[index]   = PosToCellCoords(staticMeshesSaveable[index].transform.position); break;
+                case 5: lightCoords[index]                = PosToCellCoords(lights[index].transform.position); break;
                 default: staticMeshImmutableCoords[index] = PosToCellCoords(staticMeshesImmutable[index].transform.position); break;
             }
         }
@@ -414,24 +434,6 @@ public class DynamicCulling : MonoBehaviour {
         ToggleNPCPVS();
     }
 
-    void FindPlayerCell() {
-        Vector2Int pxy = PosToCellCoords(PlayerMovement.a.transform.position);
-        playerCellX = pxy.x;
-        playerCellY = pxy.y;
-//         playerCellX = 0;
-//         playerCellY = 0;
-//         Vector3 pos = PlayerMovement.a.transform.position;
-//         for (int x=0;x<64;x++) {
-//             for (int y=0;y<64;y++) {
-//                 if (Vector3.Distance(pos,worldCellPositions[x,y]) < 1.28f) {
-//                     playerCellX = x;
-//                     playerCellY = y;
-//                     return;
-//                 }
-//             }
-//         }
-    }
-
     Vector2Int PosToCellCoords(Vector3 pos) {
         int x,y;
         x = (int)((pos.x - worldMin.x + 1.28f) / 2.56f);
@@ -444,30 +446,16 @@ public class DynamicCulling : MonoBehaviour {
         return new Vector2Int(x,y);
     }
 
-    int WorldXToCellX(float playerX) {
-        int x;
-        x = (int)((playerX - worldMin.x + 1.28f) / 2.56f);
-        if (x > 63) x = 63;
-        else if (x < 0) x = 0;
-        return x;
-    }
-
-    int WorldZToCellY(float playerZ) {
-        int y;
-        y = (int)((playerZ - worldMin.z + 1.28f) / 2.56f);
-        if (y > 63) y = 63;
-        else if (y < 0) y = 0;
-        return y;
+    void FindPlayerCell() {
+        Vector2Int pxy = PosToCellCoords(PlayerMovement.a.transform.position);
+        playerCellX = pxy.x;
+        playerCellY = pxy.y;
     }
 
     bool UpdatedPlayerCell() {
         int lastX = playerCellX;
         int lastY = playerCellY;
-//         playerCellX = WorldXToCellX(PlayerMovement.a.transform.position.x);
-//         playerCellY = WorldZToCellY(PlayerMovement.a.transform.position.z);
-        Vector2Int pxy = PosToCellCoords(PlayerMovement.a.transform.position);
-        playerCellX = pxy.x;
-        playerCellY = pxy.y;
+        FindPlayerCell();
         if (playerCellX == lastX && playerCellY == lastY) return false;
         return true;
     }
