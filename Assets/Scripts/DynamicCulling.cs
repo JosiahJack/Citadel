@@ -193,7 +193,7 @@ public class DynamicCulling : MonoBehaviour {
         for (int c=0;c<chunkCount;c++) {
             childGO = container.GetChild(c).gameObject;
             Vector2Int posint = PosToCellCoordsChunks(childGO.transform.position);
-            if (childGO.name == "chunk_blocker (1)") Debug.Log("Put " + childGO.name + " into cell " + posint.x.ToString() + "," + posint.y.ToString() + " position " + childGO.transform.position.ToString());
+            //if (childGO.name == "chunk_blocker (1)") Debug.Log("Put " + childGO.name + " into cell " + posint.x.ToString() + "," + posint.y.ToString() + " position " + childGO.transform.position.ToString());
             cellLists[posint.x,posint.y].Add(childGO);
             MeshRenderer mr = childGO.GetComponent<MeshRenderer>();
             if (mr != null) cellListsMR[posint.x,posint.y].Add(mr);

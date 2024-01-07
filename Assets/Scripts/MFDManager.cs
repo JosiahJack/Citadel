@@ -1122,6 +1122,7 @@ public class MFDManager : MonoBehaviour  {
 			blockedBySecurityLH.SetActive(true);
 		}
 		Const.sprint(Const.a.stringTable[25],ud.owner);
+		Utils.PlayOneShotSavable(TabSFX,Const.a.sounds[468],0.85f);
 		objectInUsePos = tetherPoint;
 		usingObject = true;
 	}

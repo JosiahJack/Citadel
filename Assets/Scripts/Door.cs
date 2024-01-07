@@ -195,8 +195,8 @@ public class Door : MonoBehaviour {
 
 					accessCardUsedByPlayer = true;
 				} else {
-					
 					Const.sprint(lockedMessage,ud.owner); 
+					Utils.PlayOneShotSavable(SFX,Const.a.sounds[467],0.55f);
 					if (QuestLogNotesManager.a != null) {
 						QuestLogNotesManager.a.NotifyLockedDoorAttempt(this);
 					}
@@ -206,6 +206,8 @@ public class Door : MonoBehaviour {
 			// Tell owner of the Use command that an access card is needed.
 			Const.sprint(requiredAccessCard.ToString()
 							+ cardMessage,ud.owner);
+
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[466],0.7f);
 		}
 	}
 
