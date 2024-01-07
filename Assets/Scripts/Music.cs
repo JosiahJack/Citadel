@@ -56,27 +56,20 @@ public class Music : MonoBehaviour {
 
 	public void LoadAudio(string fName,int type, int index) {
 		string fPath = Utils.SafePathCombine(musicPath,fName);
-		string fPathFull = fPath + ".mp3";
-		if (!File.Exists(fPathFull)) fPathFull = fPath + ".wav";
-		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".ogg";
+		string fPathFull = fPath + ".wav";
+		if (!File.Exists(fPathFull)) fPathFull = fPath + ".wave";
+		if (!File.Exists(fPathFull)) fPathFull = fPath + ".ogg";
+		if (!File.Exists(fPathFull)) fPathFull = fPath + ".mp3";
 		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".mid";
 		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".midi";
-		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".wave";
-		// if (!File.Exists(fPathFull)) { // No compatible music file found.
-		// 	Debug.LogWarning("No compatible music file found.");
-		// 	return;
-		// }
+		if (!File.Exists(fPathFull)) return; // No compatible overrride found.
 
 		StartCoroutine(LoadHelper(fPathFull,fName,type,index));
-		//LoadHelper(fPathFull,fName,type,index);
 	}
 
 	#pragma warning disable 618
 	IEnumerator LoadHelper(string uri, string clipname,int type, int index) {
-	//private void LoadHelper(string uri, string clipname,int type, int index) {
-
 		if (Path.GetExtension(uri) == ".mp3") {
-// 			tempClip = NAudioPlayer.FromMp3Data(www.bytes);
 			var builder =
 				new NAudio.Wave.Mp3FileReader.FrameDecompressorBuilder(
 					wf => new NLayer.NAudioSupport.Mp3FrameDecompressor(wf)
@@ -100,12 +93,9 @@ public class Music : MonoBehaviour {
 				if (index == 0) {
 					MainMenuHandler.a.BackGroundMusic.clip = tempClip;
 					MainMenuHandler.a.titleMusic = tempClip;
-					Debug.LogWarning("Set main menu clip!");
-
 					if (MainMenuHandler.a.gameObject.activeSelf
 						&& !MainMenuHandler.a.inCutscene
 						&& MainMenuHandler.a.dataFound) {
-
 
 						MainMenuHandler.a.BackGroundMusic.Play();
 					}
@@ -117,7 +107,8 @@ public class Music : MonoBehaviour {
 
 	private void LoadMusic() {
 		musicPath = Utils.SafePathCombine(Application.streamingAssetsPath,"music");
-		LoadAudio("INTROTHM-00_intro",0,0);// LoadAudio("TITLOOP-00_menu",0,0);
+// 		LoadAudio("INTROTHM-00_intro",0,0);// LoadAudio("TITLOOP-00_menu",0,0);
+		//LoadAudio("groves.fluid",0,0);// LoadAudio("TITLOOP-00_menu",0,0);
 
         //if (File.Exists(alogPath)) levelMusic1[0] = 
 

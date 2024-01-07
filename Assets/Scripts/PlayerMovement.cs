@@ -35,6 +35,8 @@ public class PlayerMovement : MonoBehaviour {
 	public Text consoleentryText;
 	public Transform leanTransform;
 	public AudioSource SFX;
+	public AudioSource SFXFootsteps;
+	public AudioSource SFXClothes;
 	[HideInInspector] public int SFXJump = 135;
 	[HideInInspector] public int SFXJumpLand = 136;
 	[HideInInspector] public int SFXLadder = 137;
@@ -153,6 +155,7 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector] public float turboCyberTime = 15f;
 	[HideInInspector] public bool inCyberTube = false;
 	[HideInInspector] public float stepFinished;
+	[HideInInspector] public float rustleFinished;
 	private int doubleJumpTicks = 0;
 	private Vector3 tempVecRbody;
 	private bool inputtingMovement;
@@ -203,7 +206,9 @@ public class PlayerMovement : MonoBehaviour {
 		if (Application.platform == RuntimePlatform.Android) {
 		    fpsCounter.SetActive(true);
 		}
+
 		stepFinished = PauseScript.a.relativeTime;
+		rustleFinished = PauseScript.a.relativeTime;
     }
 
 	void Update() {
@@ -347,8 +352,26 @@ public class PlayerMovement : MonoBehaviour {
 			return;
 		}
 
-		if (rbody.velocity.sqrMagnitude <= 0f || !grounded
-		    || (relForward == 0 && relSideways == 0)) return;
+		if (rbody.velocity.sqrMagnitude <= 0f) {
+			SFXClothes.Stop();
+			return;
+		}
+		if ((relForward + relSideways) == 0) return;
+
+		if (rustleFinished < PauseScript.a.relativeTime) {
+			rustleFinished = isSprinting
+							 ? PauseScript.a.relativeTime
+							   + UnityEngine.Random.Range(0.4f,0.6f)
+							 : PauseScript.a.relativeTime
+							   + UnityEngine.Random.Range(0.8f,1.2f);
+
+			AudioClip rustle =
+				Const.a.sounds[UnityEngine.Random.Range(459,465 + 1)];
+
+			Utils.PlayOneShotSavable(SFXClothes,rustle,
+									 UnityEngine.Random.Range(0.6f,0.85f));
+		}
+		if (!grounded) return;
 
 		PrefabIdentifier prefID = hitGO.GetComponent<PrefabIdentifier>();
 		if (prefID == null) return;
@@ -363,8 +386,8 @@ public class PlayerMovement : MonoBehaviour {
 
 			FootStepType fstep = GetFootstepTypeForPrefab(prefID.constIndex);
 			AudioClip stcp = FootStepSound(fstep);
-			Utils.PlayOneShotSavable(SFX,stcp,
-									 UnityEngine.Random.Range(0.65f,0.75f));
+			Utils.PlayOneShotSavable(SFXFootsteps,stcp,
+									 UnityEngine.Random.Range(0.5f,0.65f));
 		}
 	}
 
