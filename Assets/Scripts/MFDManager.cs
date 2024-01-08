@@ -516,6 +516,8 @@ public class MFDManager : MonoBehaviour  {
 		TabReset(false); // left
 		tabButtonsLHButtons.SetActive(false);
 		tabButtonsRHButtons.SetActive(false);
+		leftTC.TurnAllTabsOff();
+		rightTC.TurnAllTabsOff();
 	}
 
 	// Handles returning UI back to how it was before clearing the board.
@@ -1460,7 +1462,6 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void ReturnToLastTab(bool isRightHand) {
-		//Debug.Log("Returned to last tab from MFDManager.cs");
 		usingObject = false;
 		objectInUsePos = new Vector3(999f,999f,999f); // out of bounds
 		if (isRightHand) {

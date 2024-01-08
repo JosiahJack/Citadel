@@ -13,13 +13,24 @@ public class Automap : MonoBehaviour {
 	public GameObject automapFull;
 	public Image[] automapFoWTiles;
 	public Image automapBaseImage;
-	public Image automapInnerCircle;
-	public Image automapOuterCircle;
+	public Image automapInnerCircleLH;
+	public Image automapInnerCircleRH;
+	public Image automapOuterCircleLH;
+	public Image automapOuterCircleRH;
+	public GameObject automapTopLH;
+	public GameObject automapTopRH;
+	public GameObject automapSideLH;
+	public GameObject automapSideRH;
+	public Image automapSideLHImage;
+	public Image automapSideRHImage;
 	public Sprite[] automapsBaseImages;
+	public Sprite[] automapsSideImages;
 	public Image[] automapsHazardOverlays;
 	public Transform automapFullPlayerIcon;
 	public Transform automapNormalPlayerIconLH;
+	public GameObject automapNormalPlayerIconGOLH;
 	public Transform automapNormalPlayerIconRH;
+	public GameObject automapNormalPlayerIconGORH;
 	public GameObject[] levelOverlayContainer;
 	public GameObject levelOverlayContainerR;
 	public GameObject levelOverlayContainer1;
@@ -51,6 +62,9 @@ public class Automap : MonoBehaviour {
 	public bool[] automapExploredG1; // save
 	public bool[] automapExploredG2; // save
 	public bool[] automapExploredG4; // save
+	public Text automapSideButtonTextLH;
+	public Text automapSideButtonTextRH;
+	public bool inSideView; // save
 
 	[HideInInspector] public bool inFullMap;
 	[HideInInspector] public int currentAutomapZoomLevel = 0;
@@ -89,6 +103,7 @@ public class Automap : MonoBehaviour {
 	void Awake() {
 		a = this;
 		a.initialized = false;
+		a.inSideView = false;
 	}
 
 	void Start() {
@@ -445,9 +460,42 @@ public class Automap : MonoBehaviour {
 		automapContainerRH.transform.localScale = scaleVec;
 	}
 
+	public void ToggleSideTop() {
+		inSideView = !inSideView;
+		if (inSideView) AutomapGoSide();
+		else AutomapGoTop();
+	}
+
 	public void AutomapGoSide() {
-		Const.sprint("Unable to connect to side map, try updating to version "
-					 + " 1.10",Const.a.player1);
+		automapSideButtonTextLH.text = "TOP";
+		automapSideButtonTextRH.text = "TOP";
+		automapInnerCircleLH.gameObject.SetActive(false);
+		automapInnerCircleRH.gameObject.SetActive(false);
+		automapOuterCircleLH.gameObject.SetActive(false);
+		automapOuterCircleRH.gameObject.SetActive(false);
+		automapTopLH.SetActive(false);
+		automapTopRH.SetActive(false);
+		automapNormalPlayerIconGOLH.SetActive(false);
+		automapNormalPlayerIconGORH.SetActive(false);
+		automapSideLH.SetActive(true);
+		automapSideRH.SetActive(true);
+		Utils.AssignImageOverride(automapSideLHImage,automapsSideImages[LevelManager.a.currentLevel]);
+		Utils.AssignImageOverride(automapSideRHImage,automapsSideImages[LevelManager.a.currentLevel]);
+	}
+
+	public void AutomapGoTop() {
+		automapSideButtonTextLH.text = "SIDE";
+		automapSideButtonTextRH.text = "SIDE";
+		automapInnerCircleLH.gameObject.SetActive(true);
+		automapInnerCircleRH.gameObject.SetActive(true);
+		automapOuterCircleLH.gameObject.SetActive(true);
+		automapOuterCircleRH.gameObject.SetActive(true);
+		automapTopLH.SetActive(true);
+		automapTopRH.SetActive(true);
+		automapNormalPlayerIconGOLH.SetActive(true);
+		automapNormalPlayerIconGORH.SetActive(true);
+		automapSideLH.SetActive(false);
+		automapSideRH.SetActive(false);
 	}
 
 	public void AutomapGoFull() {
@@ -460,6 +508,8 @@ public class Automap : MonoBehaviour {
 		Utils.Deactivate(automapFull);
 		inFullMap = false;
 		MFDManager.a.CloseFullmap();
+		if (inSideView) AutomapGoSide();
+		else AutomapGoTop();
 	}
 
 	// Convert from Worldspace into Automapspace
@@ -546,6 +596,8 @@ public class Automap : MonoBehaviour {
 		s1.Append(Utils.UintToString(amp.currentAutomapZoomLevel));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(amp.automapUpdateFinished));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(amp.inSideView,"inSideView"));
 		return s1.ToString();
 	}
 
@@ -588,6 +640,7 @@ public class Automap : MonoBehaviour {
 		if (amp.currentAutomapZoomLevel > 2) amp.currentAutomapZoomLevel = 2;
 		amp.AutomapZoomAdjust();
 		amp.automapUpdateFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		amp.inSideView =  Utils.GetBoolFromString(entries[index],"inSideView");
 		return index;
 	}
 }
