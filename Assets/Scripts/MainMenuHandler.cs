@@ -241,7 +241,7 @@ public class MainMenuHandler : MonoBehaviour {
 		DeathVideo.SetActive(false);
 		DeathVideoContainer.SetActive(false);
 		BackGroundMusic.clip = Music.a.titleMusic;
-		if (gameObject.activeSelf) BackGroundMusic.Play();
+		if (gameObject.activeSelf && dataFound) BackGroundMusic.Play();
 	}
 
 	void LeaveIntroCutscene() {
@@ -249,7 +249,7 @@ public class MainMenuHandler : MonoBehaviour {
 		IntroVideo.SetActive(false);
 		IntroVideoContainer.SetActive(false);
 		Const.a.WriteDatForIntroPlayed(false);
-		if (gameObject.activeSelf) BackGroundMusic.Play();
+		if (gameObject.activeSelf && dataFound) BackGroundMusic.Play();
 	}
 
 	void Update() {
@@ -442,14 +442,14 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Deactivate(deathVideoTextGO1);
 				Utils.Deactivate(deathVideoTextGO2);
 				BackGroundMusic.clip = Music.a.titleMusic;
-				if (gameObject.activeSelf) BackGroundMusic.Play();
+				if (gameObject.activeSelf && dataFound) BackGroundMusic.Play();
 			}
 		} else {
 			if (!BackGroundMusic.isPlaying
 				&& !saltTheFries.activeInHierarchy
 				&& gameObject.activeSelf) {
 				BackGroundMusic.clip = Music.a.titleMusic;
-				if (gameObject.activeSelf) BackGroundMusic.Play();
+				if (gameObject.activeSelf && dataFound) BackGroundMusic.Play();
 			}
 		}
 
@@ -730,7 +730,7 @@ public class MainMenuHandler : MonoBehaviour {
 		if (currentPage == Pages.np || currentPage == Pages.lp || currentPage == Pages.cd) {
 			if (currentPage == Pages.cd) {
 				BackGroundMusic.clip = Music.a.titleMusic;
-				if (gameObject.activeSelf) BackGroundMusic.Play();
+				if (gameObject.activeSelf && dataFound) BackGroundMusic.Play();
 			}
 			GoToSingleplayerSubmenu();
 			return;
@@ -828,9 +828,14 @@ public class MainMenuHandler : MonoBehaviour {
 		deathVideoText2.text = Const.a.stringTable[629];
 		Utils.Activate(deathVideoTextGO1);
 		Utils.Deactivate(deathVideoTextGO2);
-		BackGroundMusic.clip = Music.a.levelMusicDeath[LevelManager.a.currentLevel];
+		if (Const.a.DynamicMusic) {
+			BackGroundMusic.clip = Music.a.levelMusicDeath[LevelManager.a.currentLevel];
+		} else {
+			BackGroundMusic.clip = Music.a.levelMusicLooped[16];
+		}
+
 		gameObject.SetActive(true);
-		BackGroundMusic.Play();
+		if (dataFound) BackGroundMusic.Play();
 		vidFinished = Time.time + deathvidLength;
 		vidStartTime = Time.time;
 	}
@@ -883,8 +888,13 @@ public class MainMenuHandler : MonoBehaviour {
 		ResetPages();
 		creditsPage.SetActive(true);
 		currentPage = Pages.cd;
-		BackGroundMusic.clip = Music.a.creditsMusic;
-		if (gameObject.activeSelf) BackGroundMusic.Play();
+		if (Const.a.DynamicMusic) {
+			BackGroundMusic.clip = Music.a.creditsMusic;
+		} else {
+			BackGroundMusic.clip = Music.a.levelMusicLooped[17];
+		}
+
+		if (gameObject.activeSelf && dataFound) BackGroundMusic.Play();
 	}
 
 	public void SetConfigPreset(int index) {

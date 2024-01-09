@@ -45,7 +45,8 @@ public enum FootStepType : byte {None,Carpet,Concrete,GrittyCrete,Grass,Gravel,
                                  Panel,Plaster,Plastic,Plastic2,Rubber,Sand,
                                  Squish,Vent,Water,Wood,Wood2};
 public enum MusicResourceType : byte {Menu,Medical,Science,Reactor,Executive,
-                                      Grove,Cyber,Security,Revive,Death,                                     Elevator,Distortion};
+                                      Grove,Cyber,Security,Revive,Death,
+                                      Elevator,Distortion,Looped};
 
 // Pool references
 public enum PoolType {None,SparqImpacts,CameraExplosions,SparksSmall,
@@ -70,7 +71,7 @@ public enum ConfigToggleType : byte {Fullscreen,SSAO,Bloom,Reverb,Subtitles,
                                      InvertLook,InvertCyber,
                                      InvertInventoryCycling,QuickPickup,
                                      QuickReload,Reflections,Vsync,
-                                     NoShootMode};
+                                     NoShootMode,DynamicMusic};
 public enum HUDColor : byte {White,Red,Orange,Yellow,Green,Blue,Purple,Gray};
 public enum ForceFieldColor : byte {Red,Green,Blue,Purple,RedFaint};
 public enum ButtonType : byte {Generic,GeneralInv,Patch,Grenade,Weapon,Search,

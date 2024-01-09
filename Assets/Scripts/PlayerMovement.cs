@@ -369,7 +369,7 @@ public class PlayerMovement : MonoBehaviour {
 				Const.a.sounds[UnityEngine.Random.Range(459,465 + 1)];
 
 			Utils.PlayOneShotSavable(SFXClothes,rustle,
-									 UnityEngine.Random.Range(0.6f,0.85f));
+									 UnityEngine.Random.Range(0.3f,0.5f));
 		}
 		if (!grounded) return;
 
@@ -387,7 +387,7 @@ public class PlayerMovement : MonoBehaviour {
 			FootStepType fstep = GetFootstepTypeForPrefab(prefID.constIndex);
 			AudioClip stcp = FootStepSound(fstep);
 			Utils.PlayOneShotSavable(SFXFootsteps,stcp,
-									 UnityEngine.Random.Range(0.5f,0.65f));
+									 UnityEngine.Random.Range(0.4f,0.55f));
 		}
 	}
 

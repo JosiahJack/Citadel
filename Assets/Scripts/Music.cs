@@ -18,6 +18,7 @@ public class Music : MonoBehaviour {
 	[HideInInspector] public AudioClip[] levelMusicCyber;
 	[HideInInspector] public AudioClip[] levelMusicElevator;
 	[HideInInspector] public AudioClip[] levelMusicDistortion;
+	[HideInInspector] public AudioClip[] levelMusicLooped;
 	public AudioSource SFXMain;
 	public AudioSource SFXOverlay;
 	private float clipFinished;
@@ -53,6 +54,7 @@ public class Music : MonoBehaviour {
 		a.rand = 0;
 		a.combatImpulseFinished = PauseScript.a.relativeTime + 5f;
 	    a.LoadMusic();
+		a.levelMusicLooped = new AudioClip[19];
 	}
 
 	public void LoadAudio(string fName, MusicResourceType type, int index) {
@@ -62,7 +64,13 @@ public class Music : MonoBehaviour {
 	#pragma warning disable 618
 	IEnumerator LoadHelper(string fName, MusicResourceType type, int index) {
 		tempClip = null;
-		string fPath = Utils.SafePathCombine(musicPath,fName);
+		string fPath;
+		if (type == MusicResourceType.Looped) {
+			fPath = Utils.SafePathCombine(musicPath,"looped");
+			fPath = Utils.SafePathCombine(fPath,fName);
+		} else {
+			fPath = Utils.SafePathCombine(musicPath,fName);
+		}
 		string fPathFull = fPath + ".wav";
 		string fPathWave = "";
 		bool madeNewWave = false;
@@ -70,8 +78,16 @@ public class Music : MonoBehaviour {
 		// 		if (!File.Exists(fPathFull)) fPathFull = fPath + ".ogg";
 		if (!File.Exists(fPathFull)) fPathFull = fPath + ".mp3";
 		if (!File.Exists(fPathFull)) { // No compatible overrride found.
-			string rsrc = Utils.ResourcesPathCombine(
-						  "StreamingAssetsRecovery/music",fName);
+			string rsrc;
+			if (type == MusicResourceType.Looped) {
+				rsrc = Utils.ResourcesPathCombine(
+						  "StreamingAssetsRecovery/music/looped",fName
+					   );
+			} else {
+				rsrc = Utils.ResourcesPathCombine(
+							"StreamingAssetsRecovery/music",fName
+					   );
+			}
 
 			Debug.Log("Unable to find override music for " + fName
 					  + ", restoring from Resources");
@@ -110,14 +126,7 @@ public class Music : MonoBehaviour {
 			case MusicResourceType.Menu:
 				if (index == 0) {
 					titleMusic = tempClip;
-					MainMenuHandler.a.BackGroundMusic.clip = titleMusic;
-					if (MainMenuHandler.a.gameObject.activeSelf
-						&& !MainMenuHandler.a.inCutscene
-						&& MainMenuHandler.a.dataFound) {
-
-						// Implict LoadAudioData() by playing it.
-						MainMenuHandler.a.BackGroundMusic.Play();
-					}
+					PlayMenuMusic();
 				} else if (index == 1) {
 					creditsMusic = tempClip;
 					creditsMusic.LoadAudioData();
@@ -168,6 +177,10 @@ public class Music : MonoBehaviour {
 				levelMusicDistortion[index] = tempClip;
 				levelMusicDistortion[index].LoadAudioData();
 				break;
+			case MusicResourceType.Looped:
+				levelMusicLooped[index] = tempClip;
+				levelMusicLooped[index].LoadAudioData();
+				break;
 		}
 
 		if (madeNewWave) {
@@ -176,7 +189,26 @@ public class Music : MonoBehaviour {
 			}
 		}
 	}
+
 	#pragma warning restore 618
+	private void PlayMenuMusic() {
+		if (Const.a != null) {
+			if (Const.a.DynamicMusic) {
+				MainMenuHandler.a.BackGroundMusic.clip = titleMusic;
+			} else {
+				MainMenuHandler.a.BackGroundMusic.clip = levelMusicLooped[14];
+			}
+		} else {
+			MainMenuHandler.a.BackGroundMusic.clip = titleMusic;
+		}
+
+		if (MainMenuHandler.a.gameObject.activeSelf
+			&& !MainMenuHandler.a.inCutscene
+			&& MainMenuHandler.a.dataFound) {
+
+			MainMenuHandler.a.BackGroundMusic.Play();
+		}
+	}
 
 	private void LoadMusic() {
 		// Load all the audio clips at the start to prevent stutter.
@@ -339,9 +371,71 @@ public class Music : MonoBehaviour {
 		levelMusicDistortion[11] = levelMusicDistortion[1];
 		levelMusicDistortion[12] = levelMusicDistortion[1];
 		LoadAudio("THM10-41_cyberdistorted",MusicResourceType.Distortion,13);
+
+		// Looped Music for when Dynamic Music is off
+		LoadAudio("track0",MusicResourceType.Looped,0);
+		LoadAudio("track1",MusicResourceType.Looped,1);
+		LoadAudio("track2",MusicResourceType.Looped,2);
+		LoadAudio("track3",MusicResourceType.Looped,3);
+		LoadAudio("track4",MusicResourceType.Looped,4);
+		LoadAudio("track5",MusicResourceType.Looped,5);
+		LoadAudio("track6",MusicResourceType.Looped,6);
+		LoadAudio("track7",MusicResourceType.Looped,7);
+		LoadAudio("track8",MusicResourceType.Looped,8);
+		LoadAudio("track9",MusicResourceType.Looped,9);
+		LoadAudio("track10",MusicResourceType.Looped,10);
+		LoadAudio("track11",MusicResourceType.Looped,11);
+		LoadAudio("track12",MusicResourceType.Looped,12);
+		LoadAudio("track13",MusicResourceType.Looped,13);
+		LoadAudio("titloop",MusicResourceType.Looped,14);
+		LoadAudio("elevator",MusicResourceType.Looped,15);
+		LoadAudio("death",MusicResourceType.Looped,16);
+		LoadAudio("credits",MusicResourceType.Looped,17);
+		LoadAudio("revive",MusicResourceType.Looped,18);
+
+		if (!Const.a.DynamicMusic) {
+
+		}
 	}
 
 	public void PlayTrack(int levnum, TrackType ttype, MusicType mtype) {
+		// Looped Music (Dynamic Music off)
+		// --------------------------------------------------------------------
+		if (!Const.a.DynamicMusic) {
+			if (mtype == MusicType.Overlay) return; // No overlays in looped.
+			if (mtype == MusicType.Override && (ttype == TrackType.MutantNear
+				|| ttype == TrackType.Cybertube || ttype == TrackType.RobotNear
+				|| ttype == TrackType.CyborgNear
+				|| ttype == TrackType.CyborgDroneNear
+				|| ttype == TrackType.Transition
+				|| ttype == TrackType.Distortion)) {
+
+				return; // Some dynamic music not used in looped.
+			}
+
+			float vol = 0.2f;
+			if (Const.a != null) vol = Const.a.AudioVolumeMusic;
+			if (mtype == MusicType.Walking || mtype == MusicType.Combat
+				|| mtype == MusicType.None) {
+
+				tempC = levelMusicLooped[LevelManager.a.currentLevel];
+			} else if (mtype == MusicType.Override) {
+				if (ttype == TrackType.Revive) {
+					tempC = levelMusicLooped[18];
+				} else if (ttype == TrackType.Death) {
+					tempC = levelMusicLooped[16];
+				} else if (ttype == TrackType.Elevator) {
+					tempC = levelMusicLooped[15];
+				}
+			}
+
+			Utils.PlayAudioSavable(SFXMain,tempC,vol,false);
+			SFXMain.loop = true;
+			return;
+		}
+
+		// Normal Dynamic Music System
+		// --------------------------------------------------------------------
 		tempC = GetCorrespondingLevelClip(levnum,ttype);
 		if (!elevator) levelEntry = false; // already used by GetCorresponding... just now
 		if (mtype == MusicType.Walking || mtype == MusicType.Combat) {
@@ -537,27 +631,35 @@ public class Music : MonoBehaviour {
 				if (SFXOverlay != null) SFXOverlay.UnPause();
 			}
 
-			if (inCombat && !inZone && combatImpulseFinished < PauseScript.a.relativeTime) {
+			if (SFXMain.isPlaying) return;
+
+			if (inCombat && !inZone && combatImpulseFinished
+				< PauseScript.a.relativeTime) {
+
 				inCombat = false;
-				PlayTrack(LevelManager.a.currentLevel, TrackType.Combat, MusicType.Override);
+				PlayTrack(LevelManager.a.currentLevel,TrackType.Combat,
+						  MusicType.Override);
+
 				combatImpulseFinished = PauseScript.a.relativeTime + 10f;
 				return;
 			}
 
-			if (!SFXMain.isPlaying) {
-				if (inZone) {
-					if (distortion) {
-						PlayTrack(LevelManager.a.currentLevel, TrackType.Distortion, MusicType.Override);
-						return;
-					}
-					if (elevator) {
-						PlayTrack(LevelManager.a.currentLevel, TrackType.Elevator, MusicType.Override);
-						return;
-					}
+			if (inZone) {
+				if (distortion) {
+					PlayTrack(LevelManager.a.currentLevel,TrackType.Distortion,
+							  MusicType.Override);
+					return;
 				}
-				if (LevelManager.a != null) PlayTrack(LevelManager.a.currentLevel, TrackType.Walking, MusicType.Walking);
-				else  PlayTrack(1, TrackType.Walking, MusicType.Walking);
+				if (elevator) {
+					PlayTrack(LevelManager.a.currentLevel,TrackType.Elevator,
+							  MusicType.Override);
+					return;
+				}
 			}
+			if (LevelManager.a != null) {
+				PlayTrack(LevelManager.a.currentLevel,TrackType.Walking,
+						  MusicType.Walking);
+			} else  PlayTrack(1, TrackType.Walking, MusicType.Walking);
 		}
     }
 }

@@ -219,6 +219,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int GraphicsFOV;
 	[HideInInspector] public int GraphicsGamma;
 	[HideInInspector] public bool NoShootMode;
+	[HideInInspector] public bool DynamicMusic;
 	public float HeadBobRate = 10.0f;
 	public float HeadBobAmount = 0.02f;
 	public int[] InputCodeSettings;	  // The integer index values

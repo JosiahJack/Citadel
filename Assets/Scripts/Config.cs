@@ -7,52 +7,49 @@ using UnityEngine.PostProcessing;
 // Handles configuration parsing for user settings.
 public class Config {
 	public static void LoadConfig() {
-	    if (Application.platform == RuntimePlatform.Android) {
+		if (Application.platform == RuntimePlatform.Android) {
+			// Android Config (no read/write permissions.  Stupid security.
+			// ----------------------------------------------------------------
+
 	        // Graphics Configurations
-    		Const.a.GraphicsResWidth = Screen.width; //AssignConfigInt("Graphics","ResolutionWidth");
-    		Const.a.GraphicsResHeight = Screen.height; //AssignConfigInt("Graphics","ResolutionHeight");
-    		Const.a.GraphicsFullscreen = true; //AssignConfigBool("Graphics","Fullscreen");
-    		Const.a.GraphicsSSAO = true; //AssignConfigBool("Graphics","SSAO");
-    		Const.a.GraphicsBloom = true; //AssignConfigBool("Graphics","Bloom");
-    		Const.a.GraphicsFOV = 65; //AssignConfigInt("Graphics","FOV");
-    		Const.a.GraphicsAAMode = 1; //AssignConfigInt("Graphics","AA");
-    		Const.a.GraphicsShadowMode = 0; //AssignConfigInt("Graphics", "Shadows");
-    		Const.a.GraphicsSSRMode = 1; //AssignConfigInt("Graphics", "SSR");
-    		Const.a.GraphicsGamma = 50; //AssignConfigInt("Graphics","Gamma");
-    		Const.a.GraphicsVSync = false; //AssignConfigBool("Graphics","VSync");
+    		Const.a.GraphicsResWidth = Screen.width;
+    		Const.a.GraphicsResHeight = Screen.height;
+    		Const.a.GraphicsFullscreen = true;
+    		Const.a.GraphicsSSAO = true;
+    		Const.a.GraphicsBloom = true;
+    		Const.a.GraphicsFOV = 65;
+    		Const.a.GraphicsAAMode = 1;
+    		Const.a.GraphicsShadowMode = 0;
+    		Const.a.GraphicsSSRMode = 1;
+    		Const.a.GraphicsGamma = 50;
+    		Const.a.GraphicsVSync = false;
     
     		// Audio Configurations
-    		Const.a.AudioSpeakerMode = 1; //AssignConfigInt("Audio","SpeakerMode");
-    		Const.a.AudioReverb = true; //AssignConfigBool("Audio","Reverb");
-    		Const.a.AudioVolumeMaster = 100; //AssignConfigInt("Audio","VolumeMaster");
-    		Const.a.AudioVolumeMusic = 20; //AssignConfigInt("Audio","VolumeMusic");
-    		Const.a.AudioVolumeMessage = 100; //AssignConfigInt("Audio","VolumeMessage");
-    		Const.a.AudioVolumeEffects = 100; //AssignConfigInt("Audio","VolumeEffects");
-    		Const.a.AudioLanguage = 0; //AssignConfigInt("Audio","Language");  // defaults to 0 = english
-    
-    		Const.a.MouseSensitivity = 20; // ((AssignConfigInt("Input","MouseSensitivity")/100f) * 2f) + 0.01f;
-    
-    //		string inputCapture;
-    		// Input Configurations
-    // 		for (int i=0;i<40;i++) {
-    // 			inputCapture = INIWorker.IniReadValue("Input",Const.a.InputCodes[i]);
-    // 			for (int j=0;j<159;j++) {
-    // 				if (Const.a.InputValues[j] == inputCapture) Const.a.InputCodeSettings[i] = j;
-    // 			}
-    // 		}
-     		Const.a.InputInvertLook = false; //AssignConfigBool("Input","InvertLook");
-    		Const.a.InputInvertCyberspaceLook = false; //AssignConfigBool("Input","InvertCyberspaceLook");
-    		Const.a.InputInvertInventoryCycling = false; //AssignConfigBool("Input","InvertInventoryCycling");
-    		Const.a.InputQuickItemPickup = true; //AssignConfigBool("Input","QuickItemPickup");
-    		Const.a.InputQuickReloadWeapons = true; //AssignConfigBool("Input","QuickReloadWeapons");
+    		Const.a.AudioSpeakerMode = 1;
+    		Const.a.AudioReverb = true;
+    		Const.a.AudioVolumeMaster = 100;
+    		Const.a.AudioVolumeMusic = 20;
+    		Const.a.AudioVolumeMessage = 100;
+    		Const.a.AudioVolumeEffects = 100;
+    		Const.a.AudioLanguage = 0;
+    		Const.a.DynamicMusic = true;
+
+			// Input
+    		Const.a.MouseSensitivity = 20;
+     		Const.a.InputInvertLook = false;
+    		Const.a.InputInvertCyberspaceLook = false;
+    		Const.a.InputInvertInventoryCycling = false;
+    		Const.a.InputQuickItemPickup = true;
+    		Const.a.InputQuickReloadWeapons = true;
+    		// NoShootMode is irrelevant on Android due to touch widgets.
+
+    		// Apply settings effects
     		SetVolume();
     		Const.sprint("Setting screen resolution to "
     				     + Const.a.GraphicsResWidth.ToString()
     				     + ", " + Const.a.GraphicsResHeight.ToString()
     				     + ", Fullscreen: "
     				     + Const.a.GraphicsFullscreen.ToString());
-    		//Screen.SetResolution(Const.a.GraphicsResWidth,Const.a.GraphicsResHeight,true);
-    		//Screen.fullScreen = Const.a.GraphicsFullscreen;
     		SetShadows();
     		SetBloom();
     		SetSSR();
@@ -63,6 +60,9 @@ public class Config {
     		SetVSync();
 	        return;
 	    }
+
+	    // Normal Windows/Linux/Mac Config
+	    // --------------------------------------------------------------------
 	    
 		// The currently used config is always Config.ini.
 		Utils.ConfirmExistsInStreamingAssetsMakeIfNot("Config.ini");
@@ -88,6 +88,7 @@ public class Config {
 		Const.a.AudioVolumeMessage = AssignConfigInt("Audio","VolumeMessage");
 		Const.a.AudioVolumeEffects = AssignConfigInt("Audio","VolumeEffects");
 		Const.a.AudioLanguage = AssignConfigInt("Audio","Language");  // defaults to 0 = english
+		Const.a.DynamicMusic = AssignConfigBool("Audio","DynamicMusic");
 
 		Const.a.MouseSensitivity = ((AssignConfigInt("Input","MouseSensitivity")/100f) * 2f) + 0.01f;
 
@@ -104,6 +105,7 @@ public class Config {
 		Const.a.InputInvertInventoryCycling = AssignConfigBool("Input","InvertInventoryCycling");
 		Const.a.InputQuickItemPickup = AssignConfigBool("Input","QuickItemPickup");
 		Const.a.InputQuickReloadWeapons = AssignConfigBool("Input","QuickReloadWeapons");
+		Const.a.NoShootMode = AssignConfigBool("Input","NoShootMode");
 		SetVolume();
 		Const.sprint("Setting screen resolution to "
 				     + Const.a.GraphicsResWidth.ToString()
@@ -141,6 +143,7 @@ public class Config {
 		INIWorker.IniWriteValue("Audio","VolumeMessage",Const.a.AudioVolumeMessage.ToString());
 		INIWorker.IniWriteValue("Audio","VolumeEffects",Const.a.AudioVolumeEffects.ToString());
 		INIWorker.IniWriteValue("Audio","Language",Const.a.AudioLanguage.ToString());
+		INIWorker.IniWriteValue("Audio","DynamicMusic",Utils.BoolToString(Const.a.DynamicMusic));
 		int ms = (int)(Const.a.MouseSensitivity/2f*100f);
 		INIWorker.IniWriteValue("Input","MouseSensitivity",ms.ToString());
 		for (int i=0;i<40;i++) {
@@ -151,6 +154,7 @@ public class Config {
 		INIWorker.IniWriteValue("Input","InvertInventoryCycling",Utils.BoolToString(Const.a.InputInvertInventoryCycling));
 		INIWorker.IniWriteValue("Input","QuickItemPickup",Utils.BoolToString(Const.a.InputQuickItemPickup));
 		INIWorker.IniWriteValue("Input","QuickReloadWeapons",Utils.BoolToString(Const.a.InputQuickReloadWeapons));
+		INIWorker.IniWriteValue("Input","NoShootMode",Utils.BoolToString(Const.a.NoShootMode));
 		SetBloom();
 		SetSSAO();
 		SetFOV();
