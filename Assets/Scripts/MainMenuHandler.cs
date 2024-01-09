@@ -40,9 +40,6 @@ public class MainMenuHandler : MonoBehaviour {
 	public Text[] saveButtonText;
 	public Text[] loadButtonText;
 	public int currentSaveSlot = -1;
-	public AudioClip titleMusic;
-	public AudioClip deathMusic;
-	public AudioClip creditsMusic;
 	public CreditsScroll credScrollManager;
 	public GameObject IntroVideo;
 	public GameObject IntroVideoContainer;
@@ -245,7 +242,7 @@ public class MainMenuHandler : MonoBehaviour {
 		inCutscene = false;
 		DeathVideo.SetActive(false);
 		DeathVideoContainer.SetActive(false);
-		BackGroundMusic.clip = titleMusic;
+		BackGroundMusic.clip = Music.a.titleMusic;
 		if (gameObject.activeSelf) BackGroundMusic.Play();
 	}
 
@@ -446,14 +443,14 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Deactivate(DeathVideoContainer);
 				Utils.Deactivate(deathVideoTextGO1);
 				Utils.Deactivate(deathVideoTextGO2);
-				BackGroundMusic.clip = titleMusic;
+				BackGroundMusic.clip = Music.a.titleMusic;
 				if (gameObject.activeSelf) BackGroundMusic.Play();
 			}
 		} else {
 			if (!BackGroundMusic.isPlaying
 				&& !saltTheFries.activeInHierarchy
 				&& gameObject.activeSelf) {
-				BackGroundMusic.clip = titleMusic;
+				BackGroundMusic.clip = Music.a.titleMusic;
 				if (gameObject.activeSelf) BackGroundMusic.Play();
 			}
 		}
@@ -735,7 +732,7 @@ public class MainMenuHandler : MonoBehaviour {
 		// Go Back to singlepayer page
 		if (currentPage == Pages.np || currentPage == Pages.lp || currentPage == Pages.cd) {
 			if (currentPage == Pages.cd) {
-				BackGroundMusic.clip = titleMusic;
+				BackGroundMusic.clip = Music.a.titleMusic;
 				if (gameObject.activeSelf) BackGroundMusic.Play();
 			}
 			GoToSingleplayerSubmenu();
@@ -834,7 +831,7 @@ public class MainMenuHandler : MonoBehaviour {
 		deathVideoText2.text = Const.a.stringTable[629];
 		Utils.Activate(deathVideoTextGO1);
 		Utils.Deactivate(deathVideoTextGO2);
-		BackGroundMusic.clip = deathMusic;
+		BackGroundMusic.clip = Music.a.levelMusicDeath[LevelManager.a.currentLevel];
 		gameObject.SetActive(true);
 		BackGroundMusic.Play();
 		vidFinished = Time.time + deathvidLength;
@@ -889,7 +886,7 @@ public class MainMenuHandler : MonoBehaviour {
 		ResetPages();
 		creditsPage.SetActive(true);
 		currentPage = Pages.cd;
-		BackGroundMusic.clip = creditsMusic;
+		BackGroundMusic.clip = Music.a.creditsMusic;
 		if (gameObject.activeSelf) BackGroundMusic.Play();
 	}
 

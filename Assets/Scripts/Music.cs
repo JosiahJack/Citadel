@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public class Music : MonoBehaviour {
+	public AudioClip titleMusic;
+	public AudioClip creditsMusic;
 	public AudioClip[] levelMusic1;
 	public AudioClip[] levelMusic2;
 	public AudioClip[] levelMusicReactor;
@@ -16,7 +18,6 @@ public class Music : MonoBehaviour {
 	public AudioClip[] levelMusicCyber;
 	public AudioClip[] levelMusicElevator;
 	public AudioClip[] levelMusicDistortion;
-
 	public AudioSource SFXMain;
 	public AudioSource SFXOverlay;
 	private float clipFinished;
@@ -55,44 +56,53 @@ public class Music : MonoBehaviour {
 	}
 
 	public void LoadAudio(string fName,int type, int index) {
-		string fPath = Utils.SafePathCombine(musicPath,fName);
-		string fPathFull = fPath + ".wav";
-		if (!File.Exists(fPathFull)) fPathFull = fPath + ".wave";
-		if (!File.Exists(fPathFull)) fPathFull = fPath + ".ogg";
-		if (!File.Exists(fPathFull)) fPathFull = fPath + ".mp3";
-		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".mid";
-		// if (!File.Exists(fPathFull)) fPathFull = fPath + ".midi";
-		if (!File.Exists(fPathFull)) return; // No compatible overrride found.
-
-		StartCoroutine(LoadHelper(fPathFull,fName,type,index));
+		StartCoroutine(LoadHelper(fName,type,index));
 	}
 
 	#pragma warning disable 618
-	IEnumerator LoadHelper(string uri, string clipname,int type, int index) {
-		if (Path.GetExtension(uri) == ".mp3") {
-			var builder =
-				new NAudio.Wave.Mp3FileReader.FrameDecompressorBuilder(
-					wf => new NLayer.NAudioSupport.Mp3FrameDecompressor(wf)
-				);
+	IEnumerator LoadHelper(string fName,int type, int index) {
+		string fPath = Utils.SafePathCombine(musicPath,fName);
+		string fPathFull = fPath + ".wav";
+		string fPathWave = "";
+		bool madeNewWave = false;
+		if (!File.Exists(fPathFull)) fPathFull = fPath + ".wave";
+		// 		if (!File.Exists(fPathFull)) fPathFull = fPath + ".ogg";
+		if (!File.Exists(fPathFull)) fPathFull = fPath + ".mp3";
+		if (!File.Exists(fPathFull)) { // No compatible overrride found.
+			string rsrc = Utils.ResourcesPathCombine(
+						  "StreamingAssetsRecovery/music",fName);
 
-			using (var reader = new NAudio.Wave.Mp3FileReaderBase(uri,builder)) {
-				string fPath = Utils.SafePathCombine(musicPath,clipname);
-				string fPathFull = fPath + ".wav";
-				NAudio.Wave.WaveFileWriter.CreateWaveFile(fPathFull,reader);
+			tempClip = (AudioClip)Resources.Load(rsrc);
+		} else {
+			if (Path.GetExtension(fPathFull) == ".mp3") {
+				var builder =
+					new NAudio.Wave.Mp3FileReader.FrameDecompressorBuilder(
+						wf => new NLayer.NAudioSupport.Mp3FrameDecompressor(wf)
+					);
+
+				using (var reader = new NAudio.Wave.Mp3FileReaderBase(fPathFull,
+																	  builder)) {
+
+					fPathWave = Utils.SafePathCombine(musicPath,fName);
+					fPathFull = fPathWave + ".wav";
+					NAudio.Wave.WaveFileWriter.CreateWaveFile(fPathFull,reader);
+					madeNewWave = true;
+				}
 			}
+
+			string url = string.Format("file://{0}", fPathFull);
+			WWW www = new WWW(url);
+			yield return www;
+
+			tempClip = www.GetAudioClip(false,false);
+			tempClip.name = fName;
 		}
 
-		string url = string.Format("file://{0}", uri);
-		WWW www = new WWW(url);
-		yield return www;
-
-		tempClip = www.GetAudioClip(false,false);
-		tempClip.name = clipname;
 		switch (type) {
 			case 0:
 				if (index == 0) {
 					MainMenuHandler.a.BackGroundMusic.clip = tempClip;
-					MainMenuHandler.a.titleMusic = tempClip;
+					titleMusic = tempClip;
 					if (MainMenuHandler.a.gameObject.activeSelf
 						&& !MainMenuHandler.a.inCutscene
 						&& MainMenuHandler.a.dataFound) {
@@ -102,15 +112,21 @@ public class Music : MonoBehaviour {
 				}
 				break;
 		}
+
+		if (madeNewWave) {
+			if (File.Exists(fPathFull)) {
+				Debug.Log("Removing " + fPathFull + " created as a part of "
+						  + "audio mp3 override import at runtime.");
+
+				File.Delete(fPathFull); // Clean up.
+			}
+		}
 	}
 	#pragma warning restore 618
 
 	private void LoadMusic() {
 		musicPath = Utils.SafePathCombine(Application.streamingAssetsPath,"music");
-// 		LoadAudio("INTROTHM-00_intro",0,0);// LoadAudio("TITLOOP-00_menu",0,0);
-		//LoadAudio("groves.fluid",0,0);// LoadAudio("TITLOOP-00_menu",0,0);
-
-        //if (File.Exists(alogPath)) levelMusic1[0] = 
+		LoadAudio("INTROTHM-00_intro",0,0);// LoadAudio("TITLOOP-00_menu",0,0);
 
 		// Load all the audio 1clips at the start to prevent stutter.
 		int i = 0;
