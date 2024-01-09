@@ -13,7 +13,6 @@ public class MainMenuHandler : MonoBehaviour {
 	public GameObject Button3;
 	public GameObject Button4;
 	public GameObject startFXObject;
-	public AudioClip StartGameSFX;
 	public GameObject saltTheFries;
 	public GameObject mainCamera;
 	public GameObject singleplayerPage;
@@ -126,7 +125,6 @@ public class MainMenuHandler : MonoBehaviour {
 	void Awake() {
 		a = this;
 		StartSFX = startFXObject.GetComponent<AudioSource>();
-		BackGroundMusic = GetComponent<AudioSource>();
 		BackGroundMusic.ignoreListenerPause = true; // Play when paused.
 		ResetPages();
 		dataFound = false;
@@ -494,7 +492,6 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	public void StartGame (bool isNew) {
-		Utils.PlayOneShotSavable(StartSFX,StartGameSFX);
 		Const.a.difficultyCombat = combat.difficultySetting;
 		Const.a.difficultyMission = mission.difficultySetting;
 		Const.a.difficultyPuzzle = puzzle.difficultySetting;

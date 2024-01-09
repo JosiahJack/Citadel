@@ -5,19 +5,19 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public class Music : MonoBehaviour {
-	public AudioClip titleMusic;
-	public AudioClip creditsMusic;
-	public AudioClip[] levelMusic1;
-	public AudioClip[] levelMusic2;
-	public AudioClip[] levelMusicReactor;
-	public AudioClip[] levelMusic6;
-	public AudioClip[] levelMusicGroves;
-	public AudioClip[] levelMusic8;
-	public AudioClip[] levelMusicRevive;
-	public AudioClip[] levelMusicDeath;
-	public AudioClip[] levelMusicCyber;
-	public AudioClip[] levelMusicElevator;
-	public AudioClip[] levelMusicDistortion;
+	[HideInInspector] public AudioClip titleMusic;
+	[HideInInspector] public AudioClip creditsMusic;
+	[HideInInspector] public AudioClip[] levelMusic1;
+	[HideInInspector] public AudioClip[] levelMusic2;
+	[HideInInspector] public AudioClip[] levelMusicReactor;
+	[HideInInspector] public AudioClip[] levelMusic6;
+	[HideInInspector] public AudioClip[] levelMusicGroves;
+	[HideInInspector] public AudioClip[] levelMusic8;
+	[HideInInspector] public AudioClip[] levelMusicRevive;
+	[HideInInspector] public AudioClip[] levelMusicDeath;
+	[HideInInspector] public AudioClip[] levelMusicCyber;
+	[HideInInspector] public AudioClip[] levelMusicElevator;
+	[HideInInspector] public AudioClip[] levelMusicDistortion;
 	public AudioSource SFXMain;
 	public AudioSource SFXOverlay;
 	private float clipFinished;
@@ -55,12 +55,13 @@ public class Music : MonoBehaviour {
 	    a.LoadMusic();
 	}
 
-	public void LoadAudio(string fName,int type, int index) {
+	public void LoadAudio(string fName, MusicResourceType type, int index) {
 		StartCoroutine(LoadHelper(fName,type,index));
 	}
 
 	#pragma warning disable 618
-	IEnumerator LoadHelper(string fName,int type, int index) {
+	IEnumerator LoadHelper(string fName, MusicResourceType type, int index) {
+		tempClip = null;
 		string fPath = Utils.SafePathCombine(musicPath,fName);
 		string fPathFull = fPath + ".wav";
 		string fPathWave = "";
@@ -72,6 +73,8 @@ public class Music : MonoBehaviour {
 			string rsrc = Utils.ResourcesPathCombine(
 						  "StreamingAssetsRecovery/music",fName);
 
+			Debug.Log("Unable to find override music for " + fName
+					  + ", restoring from Resources");
 			tempClip = (AudioClip)Resources.Load(rsrc);
 		} else {
 			if (Path.GetExtension(fPathFull) == ".mp3") {
@@ -98,26 +101,77 @@ public class Music : MonoBehaviour {
 			tempClip.name = fName;
 		}
 
+		if (tempClip == null) {
+			Debug.LogWarning("Unable to load " + fName);
+			yield break;
+		}
+
 		switch (type) {
-			case 0:
+			case MusicResourceType.Menu:
 				if (index == 0) {
-					MainMenuHandler.a.BackGroundMusic.clip = tempClip;
 					titleMusic = tempClip;
+					MainMenuHandler.a.BackGroundMusic.clip = titleMusic;
 					if (MainMenuHandler.a.gameObject.activeSelf
 						&& !MainMenuHandler.a.inCutscene
 						&& MainMenuHandler.a.dataFound) {
 
+						// Implict LoadAudioData() by playing it.
 						MainMenuHandler.a.BackGroundMusic.Play();
 					}
+				} else if (index == 1) {
+					creditsMusic = tempClip;
+					creditsMusic.LoadAudioData();
 				}
+
+				break;
+			case MusicResourceType.Medical:
+				levelMusic1[index] = tempClip;
+				levelMusic1[index].LoadAudioData();
+				break;
+			case MusicResourceType.Science:
+				levelMusic2[index] = tempClip;
+				levelMusic2[index].LoadAudioData();
+				break;
+			case MusicResourceType.Reactor:
+				levelMusicReactor[index] = tempClip;
+				levelMusicReactor[index].LoadAudioData();
+				break;
+			case MusicResourceType.Executive:
+				levelMusic6[index] = tempClip;
+				levelMusic6[index].LoadAudioData();
+				break;
+			case MusicResourceType.Grove:
+				levelMusicGroves[index] = tempClip;
+				levelMusicGroves[index].LoadAudioData();
+				break;
+			case MusicResourceType.Security:
+				levelMusic8[index] = tempClip;
+				levelMusic8[index].LoadAudioData();
+				break;
+			case MusicResourceType.Revive:
+				levelMusicRevive[index] = tempClip;
+				levelMusicRevive[index].LoadAudioData();
+				break;
+			case MusicResourceType.Death:
+				levelMusicDeath[index] = tempClip;
+				levelMusicDeath[index].LoadAudioData();
+				break;
+			case MusicResourceType.Cyber:
+				levelMusicCyber[index] = tempClip;
+				levelMusicCyber[index].LoadAudioData();
+				break;
+			case MusicResourceType.Elevator:
+				levelMusicElevator[index] = tempClip;
+				levelMusicElevator[index].LoadAudioData();
+				break;
+			case MusicResourceType.Distortion:
+				levelMusicDistortion[index] = tempClip;
+				levelMusicDistortion[index].LoadAudioData();
 				break;
 		}
 
 		if (madeNewWave) {
 			if (File.Exists(fPathFull)) {
-				Debug.Log("Removing " + fPathFull + " created as a part of "
-						  + "audio mp3 override import at runtime.");
-
 				File.Delete(fPathFull); // Clean up.
 			}
 		}
@@ -125,64 +179,166 @@ public class Music : MonoBehaviour {
 	#pragma warning restore 618
 
 	private void LoadMusic() {
+		// Load all the audio clips at the start to prevent stutter.
 		musicPath = Utils.SafePathCombine(Application.streamingAssetsPath,"music");
-		LoadAudio("INTROTHM-00_intro",0,0);// LoadAudio("TITLOOP-00_menu",0,0);
+		LoadAudio("TITLOOP-00_menu",MusicResourceType.Menu,0);
+		LoadAudio("END-00_end",MusicResourceType.Menu,1);
+		LoadAudio("THM1-19_medicalstart",MusicResourceType.Medical,0);
+		LoadAudio("THM1-01_medicalwalking1",MusicResourceType.Medical,1);
+		LoadAudio("THM1-02_medicalwalking2",MusicResourceType.Medical,2);
+		LoadAudio("THM1-03_medicalwalking3",MusicResourceType.Medical,3);
+		LoadAudio("THM1-04_medicalwalking4",MusicResourceType.Medical,4);
+		LoadAudio("THM1-05_medicalcombat1",MusicResourceType.Medical,5);
+		LoadAudio("THM1-06_medicalcombat2",MusicResourceType.Medical,6);
+		LoadAudio("THM1-07_medicalcombat3",MusicResourceType.Medical,7);
+		LoadAudio("THM1-08_medicalcombat4",MusicResourceType.Medical,8);
+		LoadAudio("THM1-09_medicalcombat5",MusicResourceType.Medical,9);
+		LoadAudio("THM1-10_medicalcombat6",MusicResourceType.Medical,10);
+		LoadAudio("THM3-17_sciencestart",MusicResourceType.Science,0);
+		LoadAudio("THM3-03_science1",MusicResourceType.Science,1);
+		LoadAudio("THM3-04_science2",MusicResourceType.Science,2);
+		LoadAudio("THM3-05_science3",MusicResourceType.Science,3);
+		LoadAudio("THM3-06_science4",MusicResourceType.Science,4);
+		LoadAudio("THM3-07_science5",MusicResourceType.Science,5);
+		LoadAudio("THM3-08_science6",MusicResourceType.Science,6);
+		LoadAudio("THM3-09_science7",MusicResourceType.Science,7);
+		LoadAudio("THM3-01_scienceaction1",MusicResourceType.Science,8);
+		LoadAudio("THM3-02_scienceaction2",MusicResourceType.Science,9);
+		LoadAudio("THM4-01_reactorcombat1",MusicResourceType.Reactor,0);
+		LoadAudio("THM4-02_reactorcombat2",MusicResourceType.Reactor,1);
+		LoadAudio("THM4-03_reactorcombat3",MusicResourceType.Reactor,2);
+		LoadAudio("THM4-04_reactorcombat4",MusicResourceType.Reactor,3);
+		LoadAudio("THM4-05_reactorwalkingatocombat",MusicResourceType.Reactor,4);
+		LoadAudio("THM4-06_reactorwalkingbtocombat",MusicResourceType.Reactor,5);
+		LoadAudio("THM4-09_reactorwalkinga1",MusicResourceType.Reactor,6);
+		LoadAudio("THM4-10_reactorwalkinga2",MusicResourceType.Reactor,7);
+		LoadAudio("THM4-11_reactorwalkingb1",MusicResourceType.Reactor,8);
+		LoadAudio("THM4-12_reactorwalkingb2",MusicResourceType.Reactor,9);
+		LoadAudio("THM4-13_reactorwalkingb3",MusicResourceType.Reactor,10);
+		LoadAudio("THM4-14_reactorwalkingc1",MusicResourceType.Reactor,11);
+		LoadAudio("THM4-15_reactorwalkingc2",MusicResourceType.Reactor,12);
+		LoadAudio("THM2-11_executive1",MusicResourceType.Executive,0);
+		LoadAudio("THM2-12_executive2",MusicResourceType.Executive,1);
+		LoadAudio("THM2-13_executive3",MusicResourceType.Executive,2);
+		LoadAudio("THM2-08_executive4",MusicResourceType.Executive,3);
+		LoadAudio("THM2-09_executive5",MusicResourceType.Executive,4);
+		LoadAudio("THM2-10_executive6",MusicResourceType.Executive,5);
+		LoadAudio("THM2-04_executive2",MusicResourceType.Executive,6);
+		LoadAudio("THM2-05_executive3",MusicResourceType.Executive,7);
+		LoadAudio("THM2-06_executivefluterlude",MusicResourceType.Executive,8);
+		LoadAudio("THM2-07_executivefluterludewithguitar",MusicResourceType.Executive,9);
+		LoadAudio("THM2-01_executiveaction3",MusicResourceType.Executive,10);
+		LoadAudio("THM2-02_executiveaction4",MusicResourceType.Executive,11);
+		LoadAudio("THM2-03_executiveaction5",MusicResourceType.Executive,12);
+		LoadAudio("THM5-07_groveaction1",MusicResourceType.Grove,0);
+		LoadAudio("THM5-08_groveaction1",MusicResourceType.Grove,1);
+		LoadAudio("THM5-09_groveaction2",MusicResourceType.Grove,2);
+		LoadAudio("THM5-10_groveaction3",MusicResourceType.Grove,3);
+		LoadAudio("THM5-11_groveaction4",MusicResourceType.Grove,4);
+		LoadAudio("THM5-12_groveaction5",MusicResourceType.Grove,5);
+		LoadAudio("THM5-13_groveaction6",MusicResourceType.Grove,6);
+		LoadAudio("THM5-14_groveaction7",MusicResourceType.Grove,7);
+		LoadAudio("THM5-15_groveaction8",MusicResourceType.Grove,8);
+		LoadAudio("THM5-33_grove1",MusicResourceType.Grove,9);
+		LoadAudio("THM5-34_grove2",MusicResourceType.Grove,10);
+		LoadAudio("THM5-38_grove3",MusicResourceType.Grove,11);
+		LoadAudio("THM5-39_grove4",MusicResourceType.Grove,12);
+		LoadAudio("THM5-40_grove5",MusicResourceType.Grove,13);
+		LoadAudio("THM5-35_grove99",MusicResourceType.Grove,14);
+		LoadAudio("THM5-36_grove100",MusicResourceType.Grove,15);
+		LoadAudio("THM5-37_grove101",MusicResourceType.Grove,16);
+		LoadAudio("THM5-41_grove102",MusicResourceType.Grove,17);
+		LoadAudio("THM5-42_grove103",MusicResourceType.Grove,18);
+		LoadAudio("THM5-01_grove105",MusicResourceType.Grove,19);
+		LoadAudio("THM5-02_grove106",MusicResourceType.Grove,20);
+		LoadAudio("THM5-03_grove107",MusicResourceType.Grove,21);
+		LoadAudio("THM5-04_grove108",MusicResourceType.Grove,22);
+		LoadAudio("THM5-05_grove109",MusicResourceType.Grove,23);
+		LoadAudio("THM6-05_securityaction1",MusicResourceType.Security,0);
+		LoadAudio("THM6-06_securityaction2",MusicResourceType.Security,1);
+		LoadAudio("THM6-07_securityaction3",MusicResourceType.Security,2);
+		LoadAudio("THM6-08_securityaction4",MusicResourceType.Security,3);
+		LoadAudio("THM6-09_securityaction5",MusicResourceType.Security,4);
+		LoadAudio("THM6-10_securityaction6",MusicResourceType.Security,5);
+		LoadAudio("THM6-01_security1",MusicResourceType.Security,6);
+		LoadAudio("THM6-02_security2",MusicResourceType.Security,7);
+		LoadAudio("THM6-03_security3",MusicResourceType.Security,8);
+		LoadAudio("THM6-04_security4",MusicResourceType.Security,9);
+		LoadAudio("THM6-11_security100",MusicResourceType.Security,10);
+		LoadAudio("THM6-12_security101",MusicResourceType.Security,11);
+		LoadAudio("THM6-13_security1",MusicResourceType.Security,12);
+		LoadAudio("THM6-14_security2",MusicResourceType.Security,13);
+		LoadAudio("THM6-15_security3",MusicResourceType.Security,14);
+		LoadAudio("THM6-17_security4",MusicResourceType.Security,15);
+		LoadAudio("THM6-18_security5",MusicResourceType.Security,16);
+		LoadAudio("THM6-19_security6",MusicResourceType.Security,17);
+		LoadAudio("THM6-20_security7",MusicResourceType.Security,18);
+		LoadAudio("THM4-18_reactorrevive",MusicResourceType.Revive,0);
+		LoadAudio("THM1-18_medicalrevive",MusicResourceType.Revive,1);
+		LoadAudio("THM3-19_sciencerevive",MusicResourceType.Revive,2);
+		LoadAudio("THM6-22_securityrevive",MusicResourceType.Revive,3);
+		levelMusicRevive[4] = levelMusicRevive[2];
+		levelMusicRevive[5] = levelMusicRevive[1];
+		LoadAudio("THM2-18_executiverevive",MusicResourceType.Revive,6);
+		levelMusicRevive[7] = levelMusicRevive[1];
+		levelMusicRevive[8] = levelMusicRevive[3];
+		levelMusicRevive[9] = levelMusicRevive[1];
+		levelMusicRevive[10] = levelMusicRevive[1];
+		levelMusicRevive[11] = levelMusicRevive[1];
+		levelMusicRevive[12] = levelMusicRevive[1];
+		levelMusicRevive[13] = levelMusicRevive[1];
+		LoadAudio("THM0-17_death",MusicResourceType.Death,0);
+		LoadAudio("THM1-17_death",MusicResourceType.Death,1);
+		LoadAudio("THM3-18_death",MusicResourceType.Death,2);
+		levelMusicDeath[3] = levelMusicDeath[0];
+		levelMusicDeath[4] = levelMusicDeath[2];
+		levelMusicDeath[5] = levelMusicDeath[0];
+		LoadAudio("THM2-17_death",MusicResourceType.Death,6);
+		levelMusicDeath[7] = levelMusicDeath[0];
+		LoadAudio("THM6-21_death",MusicResourceType.Death,8);
+		levelMusicDeath[9] = levelMusicDeath[0];
+		LoadAudio("THM5-17_death",MusicResourceType.Death,10);
+		LoadAudio("THM5-17_death",MusicResourceType.Death,11);
+		LoadAudio("THM5-17_death",MusicResourceType.Death,12);
+		LoadAudio("THM10-16_death",MusicResourceType.Death,13);
+		LoadAudio("THM10-02_cyberstart",MusicResourceType.Cyber,0);
+		LoadAudio("THM10-01_cyber1",MusicResourceType.Cyber,1);
+		LoadAudio("THM10-03_cyber2",MusicResourceType.Cyber,2);
+		LoadAudio("THM10-04_cyber3",MusicResourceType.Cyber,3);
+		LoadAudio("THM10-05_cyber4",MusicResourceType.Cyber,4);
+		LoadAudio("THM10-06_cyber5",MusicResourceType.Cyber,5);
+		LoadAudio("THM10-07_cyber6",MusicResourceType.Cyber,6);
+		LoadAudio("THM10-08_cyber7",MusicResourceType.Cyber,7);
+		LoadAudio("THM10-09_cyber8",MusicResourceType.Cyber,8);
+		LoadAudio("THM7-01_elevator1",MusicResourceType.Elevator,1);
+		levelMusicElevator[0] = levelMusicElevator[1];
+		LoadAudio("THM7-02_elevator2",MusicResourceType.Elevator,2);
+		LoadAudio("THM7-03_elevator3",MusicResourceType.Elevator,3);
+		LoadAudio("THM7-04_elevator4",MusicResourceType.Elevator,4);
+		LoadAudio("THM7-05_elevator5",MusicResourceType.Elevator,5);
+		LoadAudio("THM7-06_elevator6",MusicResourceType.Elevator,6);
+		LoadAudio("THM7-07_elevator7",MusicResourceType.Elevator,7);
+		LoadAudio("THM7-08_elevator8",MusicResourceType.Elevator,8);
+		levelMusicElevator[9] = levelMusicElevator[1];
+		levelMusicElevator[10] = levelMusicElevator[1];
+		levelMusicElevator[11] = levelMusicElevator[1];
+		levelMusicElevator[12] = levelMusicElevator[1];
+		levelMusicElevator[13] = levelMusicElevator[1];
+		LoadAudio("THM1-48_medicaldistorted",MusicResourceType.Distortion,1);
+		LoadAudio("THM3-49_sciencedistorted",MusicResourceType.Distortion,2);
+		levelMusicDistortion[3] = levelMusicDistortion[1];
+		levelMusicDistortion[4] = levelMusicDistortion[1];
+		levelMusicDistortion[5] = levelMusicDistortion[1];
+		LoadAudio("THM2-46_executivedistorted",MusicResourceType.Distortion,6);
+		levelMusicDistortion[7] = levelMusicDistortion[1];
+		LoadAudio("THM6-49_securitydistorted",MusicResourceType.Distortion,8);
+		levelMusicDistortion[0] = levelMusicDistortion[8];
 
-		// Load all the audio 1clips at the start to prevent stutter.
-		int i = 0;
-        for (i = 0; i < levelMusic1.Length; i++) {
-            if (levelMusic1[i] != null) levelMusic1[i].LoadAudioData();
-        }
-        
-        for (i = 0; i < levelMusic2.Length; i++) {
-            if (levelMusic2[i] != null) levelMusic2[i].LoadAudioData();
-        }
-        
-        for (i = 0; i < levelMusicReactor.Length; i++) {
-            if (levelMusicReactor[i] != null) {
-                levelMusicReactor[i].LoadAudioData();
-            }
-        }
-        
-        for (i = 0; i < levelMusic6.Length; i++) {
-            if (levelMusic6[i] != null) levelMusic6[i].LoadAudioData();
-        }
-        
-        for (i = 0; i < levelMusicGroves.Length; i++) {
-            if (levelMusicGroves[i] != null) {
-                levelMusicGroves[i].LoadAudioData();
-            }
-        }
-        
-        for (i = 0; i < levelMusic8.Length; i++) {
-            if (levelMusic8[i] != null) levelMusic8[i].LoadAudioData();
-        }
-        
-        for (i = 0; i < levelMusicRevive.Length; i++) {
-            if (levelMusicRevive[i] != null) {
-                levelMusicRevive[i].LoadAudioData();
-            }
-        }
-        
-        for (i = 0; i < levelMusicDeath.Length; i++) {
-            if (levelMusicDeath[i] != null) levelMusicDeath[i].LoadAudioData();
-        }
-        
-        for (i = 0; i < levelMusicCyber.Length; i++) {
-            if (levelMusicCyber[i] != null) levelMusicCyber[i].LoadAudioData();
-        }
-        
-        for (i = 0; i < levelMusicElevator.Length; i++) {
-            if (levelMusicElevator[i] != null) {
-                levelMusicElevator[i].LoadAudioData();
-            }
-        }
-        
-        for (i = 0; i < levelMusicDistortion.Length; i++) {
-            if (levelMusicDistortion[i] != null) {
-                levelMusicDistortion[i].LoadAudioData();
-            }
-        }
+		levelMusicDistortion[9] = levelMusicDistortion[1];
+		levelMusicDistortion[10] = levelMusicDistortion[1];
+		levelMusicDistortion[11] = levelMusicDistortion[1];
+		levelMusicDistortion[12] = levelMusicDistortion[1];
+		LoadAudio("THM10-41_cyberdistorted",MusicResourceType.Distortion,13);
 	}
 
 	public void PlayTrack(int levnum, TrackType ttype, MusicType mtype) {
@@ -297,8 +453,8 @@ public class Music : MonoBehaviour {
 			return levelMusicReactor[rand];
 		}
 
-		// 8 SECURITY, 9 BRIDGE, 4 STORAGE
-		if (levnum == 8 || levnum == 9) {
+		// 8 SECURITY
+		if (levnum == 8) {
 			if (levelEntry) return levelMusic8[9];
 			if (ttype == TrackType.Combat) {
 				rand = UnityEngine.Random.Range(0,6);
