@@ -352,6 +352,12 @@ public class PlayerMovement : MonoBehaviour {
 			return;
 		}
 
+		if (!Const.a.Footsteps) {
+			SFXClothes.Stop();
+			SFXFootsteps.Stop();
+			return;
+		}
+
 		if (rbody.velocity.sqrMagnitude <= 0f) {
 			SFXClothes.Stop();
 			return;

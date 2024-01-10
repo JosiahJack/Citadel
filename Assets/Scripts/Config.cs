@@ -33,6 +33,7 @@ public class Config {
     		Const.a.AudioVolumeEffects = 100;
     		Const.a.AudioLanguage = 0;
     		Const.a.DynamicMusic = true;
+			Const.a.Footsteps = true;
 
 			// Input
     		Const.a.MouseSensitivity = 20;
@@ -42,6 +43,7 @@ public class Config {
     		Const.a.InputQuickItemPickup = true;
     		Const.a.InputQuickReloadWeapons = true;
     		// NoShootMode is irrelevant on Android due to touch widgets.
+			Const.a.HeadBob = true;
 
     		// Apply settings effects
     		SetVolume();
@@ -89,6 +91,8 @@ public class Config {
 		Const.a.AudioVolumeEffects = AssignConfigInt("Audio","VolumeEffects");
 		Const.a.AudioLanguage = AssignConfigInt("Audio","Language");  // defaults to 0 = english
 		Const.a.DynamicMusic = AssignConfigBool("Audio","DynamicMusic");
+		Const.a.Footsteps = AssignConfigBool("Audio","Footsteps");
+		Const.a.HeadBob = AssignConfigBool("Input","HeadBob");
 
 		Const.a.MouseSensitivity = ((AssignConfigInt("Input","MouseSensitivity")/100f) * 2f) + 0.01f;
 
@@ -144,6 +148,8 @@ public class Config {
 		INIWorker.IniWriteValue("Audio","VolumeEffects",Const.a.AudioVolumeEffects.ToString());
 		INIWorker.IniWriteValue("Audio","Language",Const.a.AudioLanguage.ToString());
 		INIWorker.IniWriteValue("Audio","DynamicMusic",Utils.BoolToString(Const.a.DynamicMusic));
+		INIWorker.IniWriteValue("Audio","Footsteps",Utils.BoolToString(Const.a.Footsteps));
+
 		int ms = (int)(Const.a.MouseSensitivity/2f*100f);
 		INIWorker.IniWriteValue("Input","MouseSensitivity",ms.ToString());
 		for (int i=0;i<40;i++) {
@@ -155,6 +161,8 @@ public class Config {
 		INIWorker.IniWriteValue("Input","QuickItemPickup",Utils.BoolToString(Const.a.InputQuickItemPickup));
 		INIWorker.IniWriteValue("Input","QuickReloadWeapons",Utils.BoolToString(Const.a.InputQuickReloadWeapons));
 		INIWorker.IniWriteValue("Input","NoShootMode",Utils.BoolToString(Const.a.NoShootMode));
+		INIWorker.IniWriteValue("Input","HeadBob",Utils.BoolToString(Const.a.HeadBob));
+
 		SetBloom();
 		SetSSAO();
 		SetFOV();

@@ -268,6 +268,8 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public bool InputInvertInventoryCycling;
 	[HideInInspector] public bool InputQuickItemPickup;
 	[HideInInspector] public bool InputQuickReloadWeapons;
+	[HideInInspector] public bool Footsteps;
+	[HideInInspector] public bool HeadBob;
 	[HideInInspector] public int[] npcCount;
 	[HideInInspector] public int[] audioLogImagesRefIndicesLH;
 	[HideInInspector] public int[] audioLogImagesRefIndicesRH;

@@ -33,6 +33,8 @@ public class ConfigToggles : MonoBehaviour {
 			case ConfigToggleType.Vsync: self.isOn = Const.a.GraphicsVSync; break;
 			case ConfigToggleType.NoShootMode: self.isOn = Const.a.NoShootMode; break;
 			case ConfigToggleType.DynamicMusic: self.isOn = Const.a.DynamicMusic; break;
+			case ConfigToggleType.HeadBob: self.isOn = Const.a.HeadBob; break;
+			case ConfigToggleType.Footsteps: self.isOn = Const.a.Footsteps; break;
 		}
 	}
 
@@ -54,4 +56,6 @@ public class ConfigToggles : MonoBehaviour {
 	public void ToggleVSync () { Const.a.GraphicsVSync = self.isOn; Config.WriteConfig(); }
 	public void ToggleNoShootMode () { Const.a.NoShootMode = self.isOn; Config.WriteConfig(); }
 	public void ToggleDynamicMusic () { Const.a.DynamicMusic = self.isOn; Config.WriteConfig(); Music.a.Stop(); }
+	public void ToggleHeadBob () { Const.a.HeadBob = self.isOn; Config.WriteConfig(); }
+	public void ToggleFootsteps () { Const.a.Footsteps = self.isOn; Config.WriteConfig(); }
 }

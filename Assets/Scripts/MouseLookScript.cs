@@ -971,25 +971,32 @@ public class MouseLookScript : MonoBehaviour {
 									 camz);
 		transform.localPosition = camPos;
 		headBobX = headBobZ = 0.0f;
+// 		float targetY = 0.84f * PlayerMovement.a.currentCrouchRatio;
 		headBobY = 0.84f * PlayerMovement.a.currentCrouchRatio;
 		if (shakeFinished > PauseScript.a.relativeTime) {
 			headBobX = transform.localPosition.x + UnityEngine.Random.Range(shakeForce * -0.17f,shakeForce * 0.17f);
 			headBobY = transform.localPosition.y + UnityEngine.Random.Range(shakeForce * -0.08f,shakeForce * 0.08f);
 			headBobZ = transform.localPosition.z + UnityEngine.Random.Range(shakeForce * -0.17f,shakeForce * 0.17f);
 		} else {
-			if (PlayerMovement.a.rbody.velocity.magnitude > 0.1f) {
-				//headBobTimeShift += Time.deltaTime * Const.a.HeadBobRate;
-				//headBobX = Mathf.Sin(headBobTimeShift) * Const.a.HeadBobAmount;
-				//headBobY = 0.84f - Mathf.Sin(headBobTimeShift) * Const.a.HeadBobAmount;
+			Vector3 vel = PlayerMovement.a.rbody.velocity;
+			vel.y = 0f;
+			if (PlayerMovement.a.rbody.velocity.magnitude > 0.1f
+				&& ((PlayerMovement.a.relForward
+					 + PlayerMovement.a.relSideways) == 0)
+				&& Const.a.HeadBob) {
 
-				// This was going up to the left then down to the right making a diagonal pattern.
-				// Need to implement Lemniscate of Gerono: x^4 = a^2 * (x^2 - y^2)
-				//float oscillator = Mathf.Sin(headBobTimeShift);
-				//headBobY = (oscillator * headBobX * Mathf.Sqrt((Const.a.HeadBobAmount * Const.a.HeadBobAmount) - (headBobX * headBobX))) / Const.a.HeadBobAmount;
-				// Going to bed now
+// 				headBobTimeShift += Time.deltaTime * Const.a.HeadBobRate;
+// 				headBobX = Mathf.Sin(headBobTimeShift) * Const.a.HeadBobAmount;
+// 				headBobY = targetY - Mathf.Sin(headBobTimeShift) * Const.a.HeadBobAmount;
+//
+// 				// This was going up to the left then down to the right making a diagonal pattern.
+// 				// Need to implement Lemniscate of Gerono: x^4 = a^2 * (x^2 - y^2)
+// 				float oscillator = Mathf.Sin(headBobTimeShift);
+// 				headBobY = (oscillator * headBobX * Mathf.Sqrt((Const.a.HeadBobAmount * Const.a.HeadBobAmount) - (headBobX * headBobX))) / Const.a.HeadBobAmount;
 			} else {
-				//headBobX = Mathf.Lerp(transform.localPosition.x,0f,Time.deltaTime * Const.a.HeadBobRate);
-				//headBobY = Mathf.Lerp(transform.localPosition.y,0.84f,Time.deltaTime * Const.a.HeadBobRate);
+				headBobX = Mathf.Lerp(transform.localPosition.x,0f,Time.deltaTime * Const.a.HeadBobRate);
+// 				headBobY = Mathf.Lerp(transform.localPosition.y,targetY,Time.deltaTime * Const.a.HeadBobRate);
+				headBobY = Mathf.Lerp(transform.localPosition.y,headBobY,Time.deltaTime * Const.a.HeadBobRate);
 			}
 		}
 		transform.localPosition = new Vector3(headBobX,headBobY,headBobZ);
