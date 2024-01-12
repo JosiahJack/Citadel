@@ -102,6 +102,8 @@ public class MouseLookScript : MonoBehaviour {
 	public float joyYStartTime;
 	public float joyXSignLast;
 	public float joyYSignLast;
+	public float headBobShiftFinished;
+	private float bobTarget;
     
 	public static MouseLookScript a;
 
@@ -143,6 +145,8 @@ public class MouseLookScript : MonoBehaviour {
 
 		randomShakeFinished = PauseScript.a.relativeTime;
 		randomKlaxonFinished = PauseScript.a.relativeTime;
+		headBobShiftFinished = PauseScript.a.relativeTime;
+		bobTarget = 0.3f;
     }
 
 	void Update() {
@@ -965,38 +969,58 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	void RecoilAndRest() {
-		float camz = Mathf.Lerp(transform.localPosition.z,0f,0.1f);
-		Vector3 camPos = new Vector3(transform.localPosition.x,
-									 Const.a.playerCameraOffsetY * PlayerMovement.a.currentCrouchRatio,
-									 camz);
-		transform.localPosition = camPos;
-		headBobX = headBobZ = 0.0f;
-// 		float targetY = 0.84f * PlayerMovement.a.currentCrouchRatio;
-		headBobY = 0.84f * PlayerMovement.a.currentCrouchRatio;
+		float targetY = Const.a.playerCameraOffsetY
+						* PlayerMovement.a.currentCrouchRatio;
+		float targetX = 0f;
+		if (PlayerMovement.a.relSideways > 0) targetX += 0.12f;
+		if (PlayerMovement.a.relSideways < 0) targetX -= 0.12f;
+		if (PlayerMovement.a.relForward != 0) targetY -= 0.08f;
+
+		// If not shaking or bobbing, this will stay this to lerp to normal.
+		headBobY = Const.a.playerCameraOffsetY
+				   * PlayerMovement.a.currentCrouchRatio;
 		if (shakeFinished > PauseScript.a.relativeTime) {
-			headBobX = transform.localPosition.x + UnityEngine.Random.Range(shakeForce * -0.17f,shakeForce * 0.17f);
-			headBobY = transform.localPosition.y + UnityEngine.Random.Range(shakeForce * -0.08f,shakeForce * 0.08f);
-			headBobZ = transform.localPosition.z + UnityEngine.Random.Range(shakeForce * -0.17f,shakeForce * 0.17f);
+			headBobX = transform.localPosition.x
+					   + UnityEngine.Random.Range(shakeForce * -0.17f,
+												  shakeForce * 0.17f);
+
+			headBobY = transform.localPosition.y
+					   + UnityEngine.Random.Range(shakeForce * -0.08f,
+												  shakeForce * 0.08f);
+
+			headBobZ = transform.localPosition.z
+					   + UnityEngine.Random.Range(shakeForce * -0.17f,
+												  shakeForce * 0.17f);
 		} else {
 			Vector3 vel = PlayerMovement.a.rbody.velocity;
 			vel.y = 0f;
-			if (PlayerMovement.a.rbody.velocity.magnitude > 0.1f
-				&& ((PlayerMovement.a.relForward
-					 + PlayerMovement.a.relSideways) == 0)
+			if (PlayerMovement.a.relForward + PlayerMovement.a.relSideways != 0
 				&& Const.a.HeadBob) {
 
-// 				headBobTimeShift += Time.deltaTime * Const.a.HeadBobRate;
-// 				headBobX = Mathf.Sin(headBobTimeShift) * Const.a.HeadBobAmount;
-// 				headBobY = targetY - Mathf.Sin(headBobTimeShift) * Const.a.HeadBobAmount;
-//
-// 				// This was going up to the left then down to the right making a diagonal pattern.
-// 				// Need to implement Lemniscate of Gerono: x^4 = a^2 * (x^2 - y^2)
-// 				float oscillator = Mathf.Sin(headBobTimeShift);
-// 				headBobY = (oscillator * headBobX * Mathf.Sqrt((Const.a.HeadBobAmount * Const.a.HeadBobAmount) - (headBobX * headBobX))) / Const.a.HeadBobAmount;
+				if (headBobShiftFinished < PauseScript.a.relativeTime) {
+					headBobShiftFinished = PauseScript.a.relativeTime + 0.3f;
+					if (!PlayerMovement.a.isSprinting) {
+						headBobShiftFinished += 0.3f;
+					}
+
+					bobTarget = Const.a.HeadBobAmount * -1f
+								* Mathf.Sign(bobTarget);
+				}
+
+				if (PlayerMovement.a.rbody.velocity.magnitude > 0.1f){
+					headBobY = Mathf.Lerp(transform.localPosition.y,
+										  targetY + bobTarget,
+										  Time.deltaTime * Const.a.HeadBobRate);
+				}
+
+				headBobX = Mathf.Lerp(transform.localPosition.x,targetX,
+									  Time.deltaTime * Const.a.HeadBobRate);
 			} else {
-				headBobX = Mathf.Lerp(transform.localPosition.x,0f,Time.deltaTime * Const.a.HeadBobRate);
-// 				headBobY = Mathf.Lerp(transform.localPosition.y,targetY,Time.deltaTime * Const.a.HeadBobRate);
-				headBobY = Mathf.Lerp(transform.localPosition.y,headBobY,Time.deltaTime * Const.a.HeadBobRate);
+				headBobX = Mathf.Lerp(transform.localPosition.x,0f,
+									  Time.deltaTime * Const.a.HeadBobRate);
+
+				headBobY = Mathf.Lerp(transform.localPosition.y,headBobY,
+									  Time.deltaTime * Const.a.HeadBobRate);
 			}
 		}
 		transform.localPosition = new Vector3(headBobX,headBobY,headBobZ);

@@ -801,6 +801,7 @@ public class WeaponFire : MonoBehaviour {
 
 	void CreateStandardImpactMarks(int wep16index) {
 		// Don't create bullet holes on objects that move
+		if (tempHit.collider == null) return;
 		if (tempHit.collider.transform.gameObject == null) return;
 
 		GameObject hitGO = tempHit.collider.transform.gameObject;

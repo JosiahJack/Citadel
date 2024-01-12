@@ -1443,7 +1443,11 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	bool CantStand() {
-		return Physics.CheckCapsule(cameraObject.transform.position, cameraObject.transform.position + new Vector3(0f,(1.6f-0.84f),0f), capsuleRadius, layerMask);
+		float ofsY = (1.6f-(Const.a.playerCameraOffsetY * currentCrouchRatio));
+		Vector3 ofs = new Vector3(0f,ofsY,0f);
+		return Physics.CheckCapsule(cameraObject.transform.position,
+									cameraObject.transform.position + ofs,
+									capsuleRadius,layerMask);
 	}
 
 	bool CantCrouch() {

@@ -42,6 +42,8 @@ public class Music : MonoBehaviour {
 	private float combatImpulseFinished;
 	private AudioClip tempClip;
 	private string musicPath;
+	private string musicRPath;
+	private string musicRLoopedPath;
 
 	void Start() {
 		a = this;
@@ -77,21 +79,15 @@ public class Music : MonoBehaviour {
 		if (!File.Exists(fPathFull)) fPathFull = fPath + ".wave";
 		// 		if (!File.Exists(fPathFull)) fPathFull = fPath + ".ogg";
 		if (!File.Exists(fPathFull)) fPathFull = fPath + ".mp3";
-		if (!File.Exists(fPathFull)) { // No compatible overrride found.
-			string rsrc;
+		if (!File.Exists(fPathFull)) {
+			Debug.Log("Unable to find " + fName + " override, using internal");
 			if (type == MusicResourceType.Looped) {
-				rsrc = Utils.ResourcesPathCombine(
-						  "StreamingAssetsRecovery/music/looped",fName
-					   );
+				tempClip = (AudioClip)Resources.Load(
+					Utils.ResourcesPathCombine(musicRLoopedPath,fName));
 			} else {
-				rsrc = Utils.ResourcesPathCombine(
-							"StreamingAssetsRecovery/music",fName
-					   );
+				tempClip = (AudioClip)Resources.Load(
+					Utils.ResourcesPathCombine(musicRPath,fName));
 			}
-
-			Debug.Log("Unable to find override music for " + fName
-					  + ", restoring from Resources");
-			tempClip = (AudioClip)Resources.Load(rsrc);
 		} else {
 			if (Path.GetExtension(fPathFull) == ".mp3") {
 				var builder =
@@ -211,6 +207,9 @@ public class Music : MonoBehaviour {
 	}
 
 	private void LoadMusic() {
+		musicRPath = Utils.SafePathCombine("StreamingAssetsRecovery","music");
+		musicRLoopedPath = Utils.SafePathCombine(musicRPath,"looped");
+
 		// Load all the audio clips at the start to prevent stutter.
 		musicPath = Utils.SafePathCombine(Application.streamingAssetsPath,"music");
 		LoadAudio("TITLOOP-00_menu",MusicResourceType.Menu,0);
