@@ -860,6 +860,8 @@ public class AIController : MonoBehaviour {
 	// attack functions below.  Applies movement towards the enemy while
 	// attacking, assumes we were already facing enemy within attack angle.
 	void ApplyAttackMovement(float speedToApply) {
+		if (enemy == null) return;
+
 		if (actAsTurret) {
 			currentDestination = sightPoint.transform.position;
 			return;
