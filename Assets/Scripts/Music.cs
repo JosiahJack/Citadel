@@ -4,8 +4,6 @@ using System.IO;
 using System.Diagnostics;
 using System;
 using UnityEngine;
-using UnityEngine.Networking;
-using NAudio.Wave;
 
 public class Music : MonoBehaviour {
 	[HideInInspector] public AudioClip titleMusic;
@@ -46,7 +44,6 @@ public class Music : MonoBehaviour {
 	private AudioClip tempClip;
 	private string musicRPath;
 	private string musicRLoopedPath;
-	private Mp3FileReader.FrameDecompressorBuilder mp3Builder;
 
 	void Start() {
 		a = this;
@@ -273,11 +270,6 @@ public class Music : MonoBehaviour {
 	}
 
 	private void LoadMusic() {
-		mp3Builder = new Mp3FileReader.FrameDecompressorBuilder(
-			wf => new NLayer.NAudioSupport.Mp3FrameDecompressor(wf)
-		);
-
-
 		// Load all the audio clips at the start to prevent stutter.
 		levelMusicLooped = new AudioClip[19];
 		LoadAudio("TITLOOP-00_menu",MusicResourceType.Menu,0);
@@ -459,7 +451,6 @@ public class Music : MonoBehaviour {
 		LoadAudio("death",MusicResourceType.Looped,16);
 		LoadAudio("credits",MusicResourceType.Looped,17);
 		LoadAudio("revive",MusicResourceType.Looped,18);
-		mp3Builder = null;
 	}
 
 	public void PlayTrack(int levnum, TrackType ttype, MusicType mtype) {

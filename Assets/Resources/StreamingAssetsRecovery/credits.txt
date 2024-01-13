@@ -48,6 +48,7 @@ Gigaquad for higher res object textures
 -Sound and Music-
 Denhonator for remixed menu music
 Nameless Voice for fluid midis
+Mark Heath for NAudio
 
 -Misc Code-
 lerenwe, Benjamin Stanley, cxong, Eric Haines(Eric5h5)
