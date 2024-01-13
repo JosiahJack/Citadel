@@ -353,7 +353,7 @@ public class DynamicCulling : MonoBehaviour {
             case 5: worldMin = new Vector3(-44.80f,0f,-52.50f); break;
             case 6: worldMin = new Vector3(-63.50f,0f,-69.10f); break;
             case 7: worldMin = new Vector3(-64.30f,0f,-79.50f); break;
-            case 8: worldMin = new Vector3(-41.20f,0f,-41.40f); break;
+            case 8: worldMin = new Vector3(-40.96f - 1.08f - 1.3056f,0f,-43.52f - 0.8f - 1.2928f); break;
             case 9: worldMin = new Vector3(-48.90f,0f,-66.50f); break;
             case 10:worldMin = new Vector3(-21.50f,0f,-37.20f); break;
             case 11:worldMin = new Vector3(-24.60f,0f,-25.80f); break;
