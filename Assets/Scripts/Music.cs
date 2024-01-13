@@ -1,8 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Diagnostics;
+using System;
 using UnityEngine;
 using UnityEngine.Networking;
+using NAudio.Wave;
 
 public class Music : MonoBehaviour {
 	[HideInInspector] public AudioClip titleMusic;
@@ -41,9 +44,9 @@ public class Music : MonoBehaviour {
 	[HideInInspector] public bool inCombat;
 	private float combatImpulseFinished;
 	private AudioClip tempClip;
-	private string musicPath;
 	private string musicRPath;
 	private string musicRLoopedPath;
+	private Mp3FileReader.FrameDecompressorBuilder mp3Builder;
 
 	void Start() {
 		a = this;
@@ -56,7 +59,6 @@ public class Music : MonoBehaviour {
 		a.rand = 0;
 		a.combatImpulseFinished = PauseScript.a.relativeTime + 5f;
 	    a.LoadMusic();
-		a.levelMusicLooped = new AudioClip[19];
 	}
 
 	public void LoadAudio(string fName, MusicResourceType type, int index) {
@@ -68,53 +70,119 @@ public class Music : MonoBehaviour {
 		tempClip = null;
 		string fPath;
 		if (type == MusicResourceType.Looped) {
-			fPath = Utils.SafePathCombine(musicPath,"looped");
-			fPath = Utils.SafePathCombine(fPath,fName);
+			fPath = Application.streamingAssetsPath + "/music/looped/" + fName;
 		} else {
-			fPath = Utils.SafePathCombine(musicPath,fName);
+			fPath = Application.streamingAssetsPath + "/music/" + fName;
 		}
-		string fPathFull = fPath + ".wav";
-		string fPathWave = "";
+
+		string fPathMp3 = fPath + ".mp3";
+		string fPathWave = fPath + ".wav";
+		bool wavExists = File.Exists(fPathWave);
+		bool mp3Exists = File.Exists(fPathMp3);
 		bool madeNewWave = false;
-		if (!File.Exists(fPathFull)) fPathFull = fPath + ".wave";
-		// 		if (!File.Exists(fPathFull)) fPathFull = fPath + ".ogg";
-		if (!File.Exists(fPathFull)) fPathFull = fPath + ".mp3";
-		if (!File.Exists(fPathFull)) {
-			Debug.Log("Unable to find " + fName + " override, using internal");
+		if (!wavExists && !mp3Exists) {
 			if (type == MusicResourceType.Looped) {
 				tempClip = (AudioClip)Resources.Load(
-					Utils.ResourcesPathCombine(musicRLoopedPath,fName));
+					"StreamingAssetsRecovery/music/looped/" + fName
+				);
 			} else {
 				tempClip = (AudioClip)Resources.Load(
-					Utils.ResourcesPathCombine(musicRPath,fName));
+					"StreamingAssetsRecovery/music/" + fName
+				);
 			}
 		} else {
-			if (Path.GetExtension(fPathFull) == ".mp3") {
-				var builder =
-					new NAudio.Wave.Mp3FileReader.FrameDecompressorBuilder(
-						wf => new NLayer.NAudioSupport.Mp3FrameDecompressor(wf)
-					);
+			if (!wavExists && mp3Exists) {
+				if (Application.platform == RuntimePlatform.WindowsPlayer
+					|| Application.platform == RuntimePlatform.WindowsEditor) {
+					string url = string.Format("file://{0}", fPathMp3);
+					WWW www = new WWW(url);
+					using (www) {
+						yield return www;
 
-				using (var reader = new NAudio.Wave.Mp3FileReaderBase(fPathFull,
-																	  builder)) {
+						tempClip = NAudioPlayer.FromMp3Data(www.bytes);
+					}
 
-					fPathWave = Utils.SafePathCombine(musicPath,fName);
-					fPathFull = fPathWave + ".wav";
-					NAudio.Wave.WaveFileWriter.CreateWaveFile(fPathFull,reader);
-					madeNewWave = true;
+					tempClip.name = fName;
+				} else {
+					ProcessStartInfo psi = new ProcessStartInfo();
+					psi.FileName = "/bin/sh";
+					psi.UseShellExecute = false;
+					psi.CreateNoWindow = true;
+					psi.RedirectStandardInput = true;
+ 					psi.RedirectStandardOutput = true;
+					if (type == MusicResourceType.Looped) {
+						psi.WorkingDirectory = Application.streamingAssetsPath
+						+ "/music/looped";
+					} else {
+						psi.WorkingDirectory = Application.streamingAssetsPath
+											   + "/music";
+					}
+
+					Process proc = new Process();
+					using (proc) {
+						proc.StartInfo = psi;
+						proc.Start();
+						proc.StandardInput.WriteLine("ffmpeg -i " + fName + ".mp3 " + fName + ".wav");
+						proc.StandardInput.WriteLine("exit");
+						proc.StandardInput.Flush();
+						while (!proc.HasExited) {
+							yield return null;
+						}
+// 						proc.WaitForExit();
+					}
+
+					if (File.Exists(fPathWave)) {
+						madeNewWave = true;
+						// TODO: Need 3 /// on Windows?  Need to test.
+						string url;
+						url = string.Format("file://{0}", fPathWave);
+						WWW www = new WWW(url);
+						using (www) {
+							yield return www;
+
+							tempClip = www.GetAudioClip(false,false);
+						}
+
+						tempClip.name = fName;
+					} else {
+						UnityEngine.Debug.Log("Process failed.");
+						if (type == MusicResourceType.Looped) {
+							tempClip = (AudioClip)Resources.Load(
+								"StreamingAssetsRecovery/music/looped/" + fName
+							);
+						} else {
+							tempClip = (AudioClip)Resources.Load(
+								"StreamingAssetsRecovery/music/" + fName
+							);
+						}
+					}
 				}
+			} else {
+				// Load .wav file.
+				// TODO: Need 3 /// on Windows?  Need to test.
+				string url = string.Format("file://{0}", fPathWave);
+				WWW www = new WWW(url);
+				using (www) {
+					yield return www;
+
+					tempClip = www.GetAudioClip(false,false);
+				}
+
+				tempClip.name = fName;
 			}
-
-			string url = string.Format("file://{0}", fPathFull);
-			WWW www = new WWW(url);
-			yield return www;
-
-			tempClip = www.GetAudioClip(false,false);
-			tempClip.name = fName;
 		}
 
 		if (tempClip == null) {
-			Debug.LogWarning("Unable to load " + fName);
+			UnityEngine.Debug.LogWarning("Unable to load " + fName);
+			if (type == MusicResourceType.Looped) {
+				tempClip = (AudioClip)Resources.Load(
+					"StreamingAssetsRecovery/music/looped/" + fName
+				);
+			} else {
+				tempClip = (AudioClip)Resources.Load(
+					"StreamingAssetsRecovery/music/" + fName
+				);
+			}
 			yield break;
 		}
 
@@ -180,9 +248,7 @@ public class Music : MonoBehaviour {
 		}
 
 		if (madeNewWave) {
-			if (File.Exists(fPathFull)) {
-				File.Delete(fPathFull); // Clean up.
-			}
+			if (File.Exists(fPathWave)) File.Delete(fPathWave); // Clean up.
 		}
 	}
 
@@ -207,11 +273,13 @@ public class Music : MonoBehaviour {
 	}
 
 	private void LoadMusic() {
-		musicRPath = Utils.SafePathCombine("StreamingAssetsRecovery","music");
-		musicRLoopedPath = Utils.SafePathCombine(musicRPath,"looped");
+		mp3Builder = new Mp3FileReader.FrameDecompressorBuilder(
+			wf => new NLayer.NAudioSupport.Mp3FrameDecompressor(wf)
+		);
+
 
 		// Load all the audio clips at the start to prevent stutter.
-		musicPath = Utils.SafePathCombine(Application.streamingAssetsPath,"music");
+		levelMusicLooped = new AudioClip[19];
 		LoadAudio("TITLOOP-00_menu",MusicResourceType.Menu,0);
 		LoadAudio("END-00_end",MusicResourceType.Menu,1);
 		LoadAudio("THM1-19_medicalstart",MusicResourceType.Medical,0);
@@ -391,10 +459,7 @@ public class Music : MonoBehaviour {
 		LoadAudio("death",MusicResourceType.Looped,16);
 		LoadAudio("credits",MusicResourceType.Looped,17);
 		LoadAudio("revive",MusicResourceType.Looped,18);
-
-		if (!Const.a.DynamicMusic) {
-
-		}
+		mp3Builder = null;
 	}
 
 	public void PlayTrack(int levnum, TrackType ttype, MusicType mtype) {
