@@ -345,7 +345,7 @@ public class DynamicCulling : MonoBehaviour {
         ClearCellList();
         FindOrthogonalChunks(LevelManager.a.GetCurrentGeometryContainer());
         switch(LevelManager.a.currentLevel) {
-            case 0: worldMin = new Vector3(-38.40f,0f,-51.20f); break;
+            case 0: worldMin = new Vector3(-38.40f - 3.6f,0f,-51.20f - 1f); break;
             case 1: worldMin = new Vector3(-53.76f,0f,-61.44f); break;
             case 2: worldMin = new Vector3(-43.60f,0f,-53.80f); break;
             case 3: worldMin = new Vector3(-48.70f,0f,-48.70f); break;
