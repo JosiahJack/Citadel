@@ -6,6 +6,10 @@ using System;
 using UnityEngine;
 
 public class Music : MonoBehaviour {
+	public AudioSource SFXMain;
+	public AudioSource SFXOverlay;
+	public GameObject mainMenu;
+
 	[HideInInspector] public AudioClip titleMusic;
 	[HideInInspector] public AudioClip creditsMusic;
 	[HideInInspector] public AudioClip[] levelMusic1;
@@ -20,18 +24,14 @@ public class Music : MonoBehaviour {
 	[HideInInspector] public AudioClip[] levelMusicElevator;
 	[HideInInspector] public AudioClip[] levelMusicDistortion;
 	[HideInInspector] public AudioClip[] levelMusicLooped;
-	public AudioSource SFXMain;
-	public AudioSource SFXOverlay;
+
 	private float clipFinished;
 	private float clipLength;
 	private float clipOverlayLength;
 	private float clipOverlayFinished;
-	public GameObject mainMenu;
-
 	private AudioClip tempC;
 	private AudioClip curC;
 	private AudioClip curOverlayC;
-	public static Music a;
 	private bool paused;
 	private bool cyberTube;
 	[HideInInspector] public bool levelEntry;
@@ -44,6 +44,8 @@ public class Music : MonoBehaviour {
 	private AudioClip tempClip;
 	private string musicRPath;
 	private string musicRLoopedPath;
+
+	public static Music a;
 
 	void Start() {
 		a = this;
@@ -119,13 +121,15 @@ public class Music : MonoBehaviour {
 					using (proc) {
 						proc.StartInfo = psi;
 						proc.Start();
-						proc.StandardInput.WriteLine("ffmpeg -i " + fName + ".mp3 " + fName + ".wav");
+						proc.StandardInput.WriteLine("ffmpeg -i " + fName
+													 + ".mp3 " + fName
+													 + ".wav");
+
 						proc.StandardInput.WriteLine("exit");
 						proc.StandardInput.Flush();
 						while (!proc.HasExited) {
 							yield return null;
 						}
-// 						proc.WaitForExit();
 					}
 
 					if (File.Exists(fPathWave)) {
@@ -137,7 +141,7 @@ public class Music : MonoBehaviour {
 						using (www) {
 							yield return www;
 
-							tempClip = www.GetAudioClip(false,false);
+							tempClip = www.GetAudioClipCompressed(false);
 						}
 
 						tempClip.name = fName;
@@ -162,7 +166,7 @@ public class Music : MonoBehaviour {
 				using (www) {
 					yield return www;
 
-					tempClip = www.GetAudioClip(false,false);
+					tempClip = www.GetAudioClipCompressed(false);
 				}
 
 				tempClip.name = fName;
