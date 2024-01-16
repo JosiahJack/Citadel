@@ -1396,7 +1396,6 @@ public class AIController : MonoBehaviour {
 		    || healthManager.teleportOnDeath) {
 
 			Utils.Deactivate(visibleMeshEntity);
-			Debug.Log("Disabling visibleMeshEntity from AIController Dying");
 		}
 
 		if (index == 20) searchColliderGO.SetActive(true);

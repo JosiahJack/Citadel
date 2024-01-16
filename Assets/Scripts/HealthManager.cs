@@ -506,7 +506,6 @@ public class HealthManager : MonoBehaviour {
 			if (!aic.healthManager.gibOnDeath) { // We are a corpse here.
 				// Turn off visible mesh entity from destroyed corpse.
 				Utils.Deactivate(aic.visibleMeshEntity);
-				Debug.Log("Disabling visibleMeshEntity from VaporizeCorpse in HealthManager");
 				Utils.Deactivate(aic.deathBurst); // For any extra effects.
 												  // We are totally gone now!
 			}
@@ -581,10 +580,8 @@ public class HealthManager : MonoBehaviour {
 		AIController aic = GetComponent<AIController>();
 		if (aic != null) {
 			if (aic.healthManager.gibOnDeath) { // We are a corpse here.
-				aic.visibleMeshEntity.SetActive(false); // Turn off visible mesh entity from destroyed corpse.
-
-				Debug.Log("Disabling visibleMeshEntity from HealthManager Gib");
-
+				// Turn off visible mesh entity from destroyed corpse.
+				aic.visibleMeshEntity.SetActive(false);
 			}
 		}
 
@@ -763,8 +760,9 @@ public class HealthManager : MonoBehaviour {
 						if (!aicP.startInitialized) aicP.Start();
 						if (aicP.healthManager != null) {
 							if (!aicP.healthManager.gibOnDeath) {
-								if (aicP.visibleMeshEntity != null) aicP.visibleMeshEntity.SetActive(false);
-								Debug.Log("Disabling visibleMeshEntity from HealthManager AwakeFromLoad");
+								if (aicP.visibleMeshEntity != null) {
+									aicP.visibleMeshEntity.SetActive(false);
+								}
 							}
 						}
 					}

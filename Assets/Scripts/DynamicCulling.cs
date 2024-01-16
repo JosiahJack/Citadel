@@ -193,7 +193,8 @@ public class DynamicCulling : MonoBehaviour {
         for (int c=0;c<chunkCount;c++) {
             childGO = container.GetChild(c).gameObject;
             Vector2Int posint = PosToCellCoordsChunks(childGO.transform.position);
-            //if (childGO.name == "chunk_blocker (1)") Debug.Log("Put " + childGO.name + " into cell " + posint.x.ToString() + "," + posint.y.ToString() + " position " + childGO.transform.position.ToString());
+//             if (childGO.name == "chunk_flight2_2 (63)") Debug.Log("Put " + childGO.name + " into cell " + posint.x.ToString() + "," + posint.y.ToString() + " position " + childGO.transform.position.ToString()); // 9,33 (lev5)
+//             if (childGO.name == "chunk_exec4_3") Debug.Log("Put " + childGO.name + " into cell " + posint.x.ToString() + "," + posint.y.ToString() + " position " + childGO.transform.position.ToString()); // 21,10 lev 9
             cellLists[posint.x,posint.y].Add(childGO);
             MeshRenderer mr = childGO.GetComponent<MeshRenderer>();
             if (mr != null) cellListsMR[posint.x,posint.y].Add(mr);
@@ -344,26 +345,26 @@ public class DynamicCulling : MonoBehaviour {
         // Setup and find all cullables and associate them with x,y coords.
         ClearCellList();
         FindOrthogonalChunks(LevelManager.a.GetCurrentGeometryContainer());
-        switch(LevelManager.a.currentLevel) {
-                // chunk.x - (Geometry.x - Level.x),0,chunk.z - (Geometry.z - Level.z)
-                case 0: worldMin = new Vector3(-38.40f - 3.6f,0f,-51.20f - 1f); break;
-                case 1: worldMin = new Vector3(-53.76f,0f,-61.44f); break;
-                case 2: worldMin = new Vector3(-46.08f,0f,-56.32f); break;
-                case 3: worldMin = new Vector3(-53.76f - (50.174f + -45.12f),0f,-46.08f - (13.714f + -16.32f)); break;
-                case 4: worldMin = new Vector3(-26.90f,0f,-51.20f); break;
-            case 5: worldMin = new Vector3(-35.84f - (1.1778f + -10.14f) - 20.48f - 2.56f,0f,-51.2f - (-1.2417f + -0.0383f) - 5.12f); break;
-                case 6: worldMin = new Vector3(-64f - (1.2928f + -0.6728f) -1.28f,0f,-71.68f - (-1.2033f + 3.76f)); break;
-//             case 7: worldMin = new Vector3(-66.86f,0f,-79.50f); break;
-            case 7: worldMin = new Vector3(-58.88001f - (1.2411f + -6.7f) - 15.36f - 1.28f - 0.5983f,0f,-79.36f - (-1.2544f + 1.16f) - 2.56f); break;
-                case 8: worldMin = new Vector3(-40.96f - 1.08f - 1.3056f,0f,-43.52f - 0.8f - 1.2928f); break;
-            case 9: worldMin = new Vector3(-51.2f - (-1.3439f + 3.6f),0f,-64f - (-1.1906f + -1.28f) - 5.12f); break;
-//             case 10:worldMin = new Vector3(-21.50f,0f,-37.20f); break;
-            case 10: worldMin = new Vector3(-128f - (-0.90945f + 107.37f),0f,-71.68f + (-1.0372f + 35.48f)); break;
-//             case 11:worldMin = new Vector3(-24.60f,0f,-25.80f); break;
-            case 11: worldMin = new Vector3(-38.4f - (-1.2672f + 15.05f),0f,51.2f - (0.96056f + -77.94f)); break;
-//             case 12:worldMin = new Vector3(-15.50f,0f,-27.90f); break;
-            case 12: worldMin = new Vector3(-34.53f - (0f + 19.04f),0f,-123.74f - (0f + 95.8f)); break;
+        switch(LevelManager.a.currentLevel) { // PosToCellCoords -1 on just x
+            // chunk.x + (Geometry.x + Level.x),0,chunk.z + (Geometry.z + Level.z)
+                case 0: worldMin =  new Vector3( -38.40f + ( 0.0000f +   3.6000f),0f,-51.20f + (0f + 1f)); break;
+                case 1: worldMin =  new Vector3( -76.80f + ( 0.0000f +  25.5600f),0f,-56.32f + (0f + -5.2f)); break;
+                case 2: worldMin =  new Vector3( -40.96f + ( 0.0000f +  -2.6000f),0f,-46.08f + (0f + -7.7f)); break;
+                case 3: worldMin =  new Vector3( -53.76f + (50.1740f + -45.1200f),0f,-46.08f + (13.714f + -16.32f)); break;
+                case 4: worldMin =  new Vector3(  -7.68f + ( 1.1780f + -20.4000f),0f,-64.00f + (1.292799f + 11.48f)); break;
+                case 5: worldMin =  new Vector3( -35.84f + ( 1.1778f + -10.1400f),0f,-51.20f + (-1.2417f + -0.0383f)); break;
+                case 6: worldMin =  new Vector3( -64.00f + ( 1.2928f +  -0.6728f),0f,-71.68f + (-1.2033f + 3.76f)); break;
+                case 7: worldMin =  new Vector3( -58.88f + ( 1.2411f +  -6.7000f),0f,-79.36f + (-1.2544f + 1.16f)); break;
+                case 8: worldMin =  new Vector3( -40.96f + (-1.3056f + 1.08f),0f,-43.52f + (1.2928f + 0.8f)); break;
+            case 9: worldMin =  new Vector3( -51.20f + (-1.3439f + 3.6f),0f,-64f + (-1.1906f + -1.28f)); break; // Player y +1u, no gap on y
+            case 10: worldMin = new Vector3(-128.00f + (-0.90945f + 107.37f),0f,-71.68f + (-1.0372f + 35.48f)); break; // Player y off slightly, no gap on x
+            case 11: worldMin = new Vector3( -38.40f + (-1.2672f + 15.05f),0f,51.2f + (0.96056f + -77.94f)); break; // Player y +1u, no gap on y, no gap on x
+            case 12: worldMin = new Vector3( -34.53f + (0f + 19.04f),0f,-123.74f + (0f + 95.8f)); break; // Player x +1u?, Player y +1u, no gap on y, no gap on x
         }
+
+        worldMin.x -= 2.56f; // Add one cell gap around edges
+        worldMin.z -= 2.56f;
+
         FindOpenCellsAndPositions(orthogonalChunks);
         PutChunksInCells();
         FindMeshRenderers(0); // Static Immutable
@@ -414,10 +415,10 @@ public class DynamicCulling : MonoBehaviour {
 
     Vector2Int PosToCellCoords(Vector3 pos) {
         int x,y;
-        x = (int)((pos.x - worldMin.x + 1.28f) / 2.56f) - 1;
+        x = (int)((pos.x - worldMin.x + 1.28f) / 2.56f);
         if (x > 63) x = 63;
         else if (x < 0) x = 0;
-        y = (int)((pos.z - worldMin.z + 1.28f) / 2.56f) - 1;
+        y = (int)((pos.z - worldMin.z + 1.28f) / 2.56f);
         if (y > 63) y = 63;
         else if (y < 0) y = 0;
 
