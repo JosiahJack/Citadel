@@ -24,7 +24,7 @@ public class DynamicCulling : MonoBehaviour {
     public List<Light> lights = new List<Light>();
     public List<Vector2Int> lightCoords = new List<Vector2Int>();
     public List<MeshRenderer> doors = new List<MeshRenderer>();
-    public List<Vector2Int> doorsCoords = new List<Vector2Int>()
+    public List<Vector2Int> doorsCoords = new List<Vector2Int>();
     public bool[,] worldCellLastVisible = new bool[WORLDX,WORLDX];
     public int playerCellX = 0;
     public int playerCellY = 0;
