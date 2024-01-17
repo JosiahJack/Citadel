@@ -13,7 +13,6 @@ public class DynamicCulling : MonoBehaviour {
     public bool[,] worldCellOpen = new bool [WORLDX,WORLDX];
     public bool[,] worldCellVisible = new bool [WORLDX,WORLDX];
     public bool[,] worldCellCheckedYet = new bool [WORLDX,WORLDX];
-    public Vector3[,] worldCellPositions = new Vector3 [WORLDX,WORLDX];
     public List<GameObject>[,] cellLists = new List<GameObject>[WORLDX,WORLDX];
     public List<MeshRenderer>[,] cellListsMR = new List<MeshRenderer>[WORLDX,WORLDX];
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
@@ -25,16 +24,13 @@ public class DynamicCulling : MonoBehaviour {
     public List<Light> lights = new List<Light>();
     public List<Vector2Int> lightCoords = new List<Vector2Int>();
     public List<MeshRenderer> doors = new List<MeshRenderer>();
-    public List<Vector2Int> doorsCoords = new List<Vector2Int>();
-
+    public List<Vector2Int> doorsCoords = new List<Vector2Int>()
     public bool[,] worldCellLastVisible = new bool[WORLDX,WORLDX];
     public int playerCellX = 0;
     public int playerCellY = 0;
     public float deltaX = 0.0f;
     public float deltaY = 0.0f;
-//     public Vector3 worldMax;
     public Vector3 worldMin;
-    public List<GameObject> orthogonalChunks;
     public List<Transform> npcTransforms;
     public List<AIController> npcAICs = new List<AIController>();
     public List<Vector2Int> npcCoords = new List<Vector2Int>();
@@ -63,7 +59,6 @@ public class DynamicCulling : MonoBehaviour {
         worldCellVisible = new bool [WORLDX,WORLDX];
         worldCellCheckedYet = new bool [WORLDX,WORLDX];
         worldCellOpen = new bool [WORLDX,WORLDX];
-        worldCellPositions = new Vector3 [WORLDX,WORLDX];
         staticMeshesImmutable = new List<MeshRenderer>();
         staticMeshesImmutable.Clear();
         staticMeshImmutableCoords = new List<Vector2Int>();
@@ -103,82 +98,6 @@ public class DynamicCulling : MonoBehaviour {
     // ========================================================================
     // Handle Occluders (well, just determining visible cells and their chunks)
 
-    void FindOpenCellsAndPositions(List<GameObject> chunks) {
-        Vector2 pos2d = new Vector2(0f,0f);
-        Vector2 pos2dcurrent = new Vector2(0f,0f);
-        Vector3 pos;
-        if (outputDebugImages) {
-            debugTex = new Texture2D(64,64);
-            pixels = new Color32[WORLDX * WORLDX];
-        }
-        int x = 0;
-        int y = 0;
-        if (outputDebugImages) {
-            for (x=0;x<64;x++) {
-                for (y=0;y<64;y++) {
-                    pixels[x + (y * 64)] = Color.black;
-                }
-            }
-        }
-
-        for (int i=0; i < chunks.Count; i++) {
-            pos = chunks[i].transform.position;
-            pos2d.x = pos.x - worldMin.x;
-            pos2d.y = pos.z - worldMin.z;
-            float dx = (pos2d.x / 2.56f);
-            float dy = (pos2d.y / 2.56f);
-            if (((Mathf.Floor(dx) - dx) < 1.28f)
-                || ((Mathf.Floor(dy) - dy) < 1.28f)) {
-
-                x = (int)Mathf.Floor(dx);
-                y = (int)Mathf.Floor(dy);
-                if (x > 63 || x < 0 || y > 63 || y < 0) continue;
-                worldCellOpen[x,y] = true;
-                worldCellPositions[x,y] = pos;
-                if (outputDebugImages) pixels[x + (y * 64)] = Color.white;
-            } else continue;
-        }
-
-        for (x=0; x<64; x++) {
-            for (y=0; y<64; y++) {
-                if (worldCellOpen[x,y]) continue;
-
-                worldCellPositions[x,y] = new Vector3(
-                    worldMin.x + ((float)x * 2.56f),
-                    -43.52f,
-                    worldMin.z + ((float)y * 2.56f)
-                );
-            }
-        }
-
-        if (outputDebugImages) {
-            openDebugImagePath = Utils.SafePathCombine(
-                Application.streamingAssetsPath,
-            "worldcellopen_" + LevelManager.a.currentLevel.ToString() + ".png");
-            visDebugImagePath = Utils.SafePathCombine(
-                Application.streamingAssetsPath,
-            "worldcellvis_" + LevelManager.a.currentLevel.ToString() + ".png");
-
-        // Output Debug image of the open
-            debugTex.SetPixels32(pixels);
-            debugTex.Apply();
-            bytes = debugTex.EncodeToPNG();
-            File.WriteAllBytes(openDebugImagePath,bytes);
-        }
-    }
-
-    void FindOrthogonalChunks(GameObject chunkContainer) {
-        orthogonalChunks = new List<GameObject>();
-        orthogonalChunks.Clear();
-        GameObject childGO = null;
-        Transform container = chunkContainer.transform;
-        int chunkCount = container.childCount;
-        for (int i=0; i < chunkCount; i++) {
-			childGO = container.GetChild(i).gameObject;
-            orthogonalChunks.Add(childGO);
-        }
-    }
-
     void PutChunksInCells() {
         Transform container =
             LevelManager.a.GetCurrentGeometryContainer().transform;
@@ -193,9 +112,10 @@ public class DynamicCulling : MonoBehaviour {
         for (int c=0;c<chunkCount;c++) {
             childGO = container.GetChild(c).gameObject;
             Vector2Int posint = PosToCellCoordsChunks(childGO.transform.position);
-//             if (childGO.name == "chunk_flight2_2 (63)") Debug.Log("Put " + childGO.name + " into cell " + posint.x.ToString() + "," + posint.y.ToString() + " position " + childGO.transform.position.ToString()); // 9,33 (lev5)
-//             if (childGO.name == "chunk_exec4_3") Debug.Log("Put " + childGO.name + " into cell " + posint.x.ToString() + "," + posint.y.ToString() + " position " + childGO.transform.position.ToString()); // 21,10 lev 9
             cellLists[posint.x,posint.y].Add(childGO);
+            worldCellOpen[posint.x,posint.y] = true;
+            Note posN = childGO.AddComponent<Note>();
+            posN.note = "Cell coords: " + posint.x.ToString() + ", " + posint.y.ToString();
             MeshRenderer mr = childGO.GetComponent<MeshRenderer>();
             if (mr != null) cellListsMR[posint.x,posint.y].Add(mr);
 
@@ -206,41 +126,6 @@ public class DynamicCulling : MonoBehaviour {
                 if (mrc != null) cellListsMR[posint.x,posint.y].Add(mrc);
             }
         }
-        // Put chunk_blocker (1) into cell 49,30 posiition (71.6 -47.4 15.3)
-
-        // Put chunk_blocker (1) into cell 48,29 posiition (71.6 -47.4 15.3)
-//         for (int x=0;x<64;x++) {
-//             for (int y=0;y<64;y++) {
-//                 if (worldCellOpen[x,y]) {
-//                     for (int c=0;c<chunkCount;c++) {
-//                         if (alreadyInAtLeastOneList[c]) continue;
-//
-//                         childGO = container.GetChild(c).gameObject;
-//                         pos = childGO.transform.position;
-//                         pos2d.x = pos.x;
-//                         pos2d.y = pos.z;
-//                         pos2dcurrent.x = worldCellPositions[x,y].x;
-//                         pos2dcurrent.y = worldCellPositions[x,y].z;
-//                         if (Vector2.Distance(pos2d,pos2dcurrent) >= 1.28f) {
-//                             continue;
-//                         }
-//
-//                         if (childGO.name == "chunk_blocker (1)") Debug.Log("Put " + childGO.name + " into cell " + x.ToString() + "," + y.ToString() + " position " + pos.ToString());
-//                         cellLists[x,y].Add(childGO);
-//                         alreadyInAtLeastOneList[c] = true;
-//                         MeshRenderer mr = childGO.GetComponent<MeshRenderer>();
-//                         if (mr != null) cellListsMR[x,y].Add(mr);
-//
-//                         Component[] compArray = childGO.GetComponentsInChildren(
-//                                                 typeof(MeshRenderer),true);
-//
-//                         foreach (MeshRenderer mrc in compArray) {
-//                             if (mrc != null) cellListsMR[x,y].Add(mrc);
-//                         }
-//                     }
-//                 }
-//             }
-//         }
     }
 
     // ========================================================================
@@ -344,28 +229,40 @@ public class DynamicCulling : MonoBehaviour {
     public void Cull_Init() {
         // Setup and find all cullables and associate them with x,y coords.
         ClearCellList();
-        FindOrthogonalChunks(LevelManager.a.GetCurrentGeometryContainer());
         switch(LevelManager.a.currentLevel) { // PosToCellCoords -1 on just x
             // chunk.x + (Geometry.x + Level.x),0,chunk.z + (Geometry.z + Level.z)
-                case 0: worldMin =  new Vector3( -38.40f + ( 0.0000f +   3.6000f),0f,-51.20f + (0f + 1f)); break;
-                case 1: worldMin =  new Vector3( -76.80f + ( 0.0000f +  25.5600f),0f,-56.32f + (0f + -5.2f)); break;
-                case 2: worldMin =  new Vector3( -40.96f + ( 0.0000f +  -2.6000f),0f,-46.08f + (0f + -7.7f)); break;
-                case 3: worldMin =  new Vector3( -53.76f + (50.1740f + -45.1200f),0f,-46.08f + (13.714f + -16.32f)); break;
-                case 4: worldMin =  new Vector3(  -7.68f + ( 1.1780f + -20.4000f),0f,-64.00f + (1.292799f + 11.48f)); break;
-                case 5: worldMin =  new Vector3( -35.84f + ( 1.1778f + -10.1400f),0f,-51.20f + (-1.2417f + -0.0383f)); break;
-                case 6: worldMin =  new Vector3( -64.00f + ( 1.2928f +  -0.6728f),0f,-71.68f + (-1.2033f + 3.76f)); break;
-                case 7: worldMin =  new Vector3( -58.88f + ( 1.2411f +  -6.7000f),0f,-79.36f + (-1.2544f + 1.16f)); break;
-                case 8: worldMin =  new Vector3( -40.96f + (-1.3056f + 1.08f),0f,-43.52f + (1.2928f + 0.8f)); break;
-            case 9: worldMin =  new Vector3( -51.20f + (-1.3439f + 3.6f),0f,-64f + (-1.1906f + -1.28f)); break; // Player y +1u, no gap on y
-            case 10: worldMin = new Vector3(-128.00f + (-0.90945f + 107.37f),0f,-71.68f + (-1.0372f + 35.48f)); break; // Player y off slightly, no gap on x
-            case 11: worldMin = new Vector3( -38.40f + (-1.2672f + 15.05f),0f,51.2f + (0.96056f + -77.94f)); break; // Player y +1u, no gap on y, no gap on x
-            case 12: worldMin = new Vector3( -34.53f + (0f + 19.04f),0f,-123.74f + (0f + 95.8f)); break; // Player x +1u?, Player y +1u, no gap on y, no gap on x
+            case 0: worldMin =  new Vector3( -38.40f + ( 0.0000f +   3.6000f),0f,-51.20f + (0f + 1f)); break;
+            case 1: worldMin =  new Vector3( -76.80f + ( 0.0000f +  25.5600f),0f,-56.32f + (0f + -5.2f)); break;
+            case 2: worldMin =  new Vector3( -40.96f + ( 0.0000f +  -2.6000f),0f,-46.08f + (0f + -7.7f)); break;
+            case 3: worldMin =  new Vector3( -53.76f + (50.1740f + -45.1200f),0f,-46.08f + (13.714f + -16.32f)); break;
+            case 4: worldMin =  new Vector3(  -7.68f + ( 1.1780f + -20.4000f),0f,-64.00f + (1.292799f + 11.48f)); break;
+            case 5: worldMin =  new Vector3( -35.84f + ( 1.1778f + -10.1400f),0f,-51.20f + (-1.2417f + -0.0383f)); break;
+            case 6: worldMin =  new Vector3( -64.00f + ( 1.2928f +  -0.6728f),0f,-71.68f + (-1.2033f + 3.76f)); break;
+            case 7: worldMin =  new Vector3( -58.88f + ( 1.2411f +  -6.7000f),0f,-79.36f + (-1.2544f + 1.16f)); break;
+            case 8: worldMin =  new Vector3( -40.96f + (-1.3056f + 1.08f),0f,-43.52f + (1.2928f + 0.8f)); break;
+            case 9: worldMin =  new Vector3( -51.20f + (-1.3439f + 3.6f),0f,-64f + (-1.1906f + -1.28f)); break;
+            case 10: worldMin = new Vector3(-128.00f + (-0.90945f + 107.37f) - 2.56f,0f,-71.68f + (-1.0372f + 35.48f)); break;
+            case 11: worldMin = new Vector3( -38.40f + (-1.2672f + 15.05f) - 2.56f,0f,51.2f + (0.96056f + -77.94f)); break;
+            case 12: worldMin = new Vector3( -34.53f + (0f + 19.04f),0f,-123.74f + (0f + 95.8f)); break;
         }
 
         worldMin.x -= 2.56f; // Add one cell gap around edges
         worldMin.z -= 2.56f;
 
-        FindOpenCellsAndPositions(orthogonalChunks);
+        if (outputDebugImages) {
+            debugTex = new Texture2D(64,64);
+            pixels = new Color32[WORLDX * WORLDX];
+            openDebugImagePath = Utils.SafePathCombine(
+                Application.streamingAssetsPath,
+                "worldcellopen_" + LevelManager.a.currentLevel.ToString()
+                + ".png");
+
+            visDebugImagePath = Utils.SafePathCombine(
+                Application.streamingAssetsPath,
+                "worldcellvis_" + LevelManager.a.currentLevel.ToString()
+                + ".png");
+        }
+
         PutChunksInCells();
         FindMeshRenderers(0); // Static Immutable
         FindMeshRenderers(1); // Dynamic
@@ -403,10 +300,10 @@ public class DynamicCulling : MonoBehaviour {
 
     Vector2Int PosToCellCoordsChunks(Vector3 pos) {
         int x,y;
-        x = (int)((pos.x - worldMin.x) / 2.56f);
+        x = (int)((pos.x - worldMin.x + 1.28f) / 2.56f);
         if (x > 63) x = 63;
         else if (x < 0) x = 0;
-        y = (int)((pos.z - worldMin.z) / 2.56f);
+        y = (int)((pos.z - worldMin.z + 1.28f) / 2.56f);
         if (y > 63) y = 63;
         else if (y < 0) y = 0;
 
