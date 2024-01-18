@@ -114,8 +114,8 @@ public class DynamicCulling : MonoBehaviour {
             Vector2Int posint = PosToCellCoordsChunks(childGO.transform.position);
             cellLists[posint.x,posint.y].Add(childGO);
             worldCellOpen[posint.x,posint.y] = true;
-            Note posN = childGO.AddComponent<Note>();
-            posN.note = "Cell coords: " + posint.x.ToString() + ", " + posint.y.ToString();
+//             Note posN = childGO.AddComponent<Note>();
+//             posN.note = "Cell coords: " + posint.x.ToString() + ", " + posint.y.ToString();
             MeshRenderer mr = childGO.GetComponent<MeshRenderer>();
             if (mr != null) cellListsMR[posint.x,posint.y].Add(mr);
 
@@ -150,6 +150,13 @@ public class DynamicCulling : MonoBehaviour {
                 break;
             case 5: break; // Lights done differently due to Light (what, it makes sense).
             default:
+                if (mr.transform.parent != null) {
+                    if (mr.transform.parent.gameObject.name == "flightpods_exterior") break;
+                    if (mr.transform.parent.parent != null) {
+                        if (mr.transform.parent.parent.gameObject.name == "flightpods_exterior") break;
+                    }
+                }
+
                 staticMeshesImmutable.Add(mr);
                 staticMeshImmutableCoords.Add(Vector2Int.zero);
                 break;
