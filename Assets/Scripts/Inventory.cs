@@ -36,8 +36,7 @@ public class Inventory : MonoBehaviour {
 	public Text[] grenInventoryText;
 	public Text[] grenCountsText;
 	public CapsuleCollider playerCapCollider;
-	[HideInInspector] public int grenadeCurrent = new int(); // save
-	[HideInInspector] public int grenadeIndex = new int(); // save
+	public int grenadeCurrent = new int(); // save
 	[HideInInspector] public float nitroTimeSetting; // save
 	[HideInInspector] public float earthShakerTimeSetting; // save
 	private int[] grenCountsLastCount;
@@ -223,6 +222,7 @@ public class Inventory : MonoBehaviour {
             if (i != 0) a.generalInventoryIndexRef[i] = -1;
  			a.genButtons[i].SetActive(false);
         }
+
         a.generalInvCurrent = a.generalInvIndex = 0;
         a.generalInventoryIndexRef[0] = 81;
 		a.genButtonsText[0].text = Const.a.stringTable[597]; // ACCESS CARDS
@@ -233,7 +233,8 @@ public class Inventory : MonoBehaviour {
 		for (int i= 0; i<a.grenAmmo.Length; i++) {
 			a.grenAmmo[i] = a.grenCountsLastCount[i] = 0;
 		}
-		a.grenadeCurrent = a.grenadeIndex = 0;
+
+		a.grenadeCurrent = 0;
 		a.nitroTimeSetting = Const.a.nitroDefaultTime;
 		a.earthShakerTimeSetting = Const.a.earthShDefaultTime;
 
@@ -243,10 +244,12 @@ public class Inventory : MonoBehaviour {
         for (int i = 0; i < a.hasLog.Length; i++) {
             a.hasLog[i] = a.readLog[i] = false;
         }
+
 		a.numLogsFromLevel = new int[10];
         for (int i = 0; i < a.numLogsFromLevel.Length; i++) {
             a.numLogsFromLevel[i] = 0;
         }
+
 		a.lastAddedIndex = a.tempRefIndex = -1;
 		a.logPaused = a.beepDone = false;
 		a.emailCurrent = a.emailIndex = 0;
@@ -259,6 +262,7 @@ public class Inventory : MonoBehaviour {
 		for (int i = 0; i < a.patchCounts.Length; i++) {
 			a.patchCounts[i] = a.patchLastCount[i] = 0;
 		}
+
 		a.patchCurrent = a.patchIndex = 0;
 
 		// Software
@@ -299,6 +303,7 @@ public class Inventory : MonoBehaviour {
 		for (int i=0;i<16;i++) {
 			a.wepAmmo[i] = a.wepAmmoSecondary[i] = 0;
 		}
+
 		a.currentEnergyWeaponHeat = new float[7];
 		a.wepLoadedWithAlternate = new bool[7];
 		for (int i=0;i<7;i++) {
@@ -429,8 +434,14 @@ public class Inventory : MonoBehaviour {
 			if (MouseLookScript.a.inCyberSpace) {
 				UseCyberspaceItem();
 			} else {
-				if (grenAmmo[grenadeCurrent] > 0) {
-					MouseLookScript.a.UseGrenade(grenadeIndex);
+				if (grenadeCurrent >= 0 && grenadeCurrent < 7) {
+					if (grenAmmo[grenadeCurrent] > 0) {
+						MouseLookScript.a.UseGrenade(
+							grenButtons[grenadeCurrent].useableItemIndex
+						);
+					} else {
+						Const.sprint(Const.a.stringTable[322] ); // Out of grenades.
+					}
 				} else {
 					Const.sprint(Const.a.stringTable[322] ); // Out of grenades.
 				}
@@ -716,7 +727,7 @@ public class Inventory : MonoBehaviour {
 						+ AccessCardCodeForType(doorAccessTypeAcquired));
 				}
 
-				MFDManager.a.SendInfoToItemTab(index,-1);
+				MFDManager.a.SendInfoToItemTab(index);
 				MFDManager.a.NotifyToCenterTab(2);
 				if (MouseLookScript.a.firstTimePickup) {
 					MFDManager.a.CenterTabButtonClickSilent(2,true);
@@ -743,7 +754,7 @@ public class Inventory : MonoBehaviour {
 			hwversion = 1;
 		}
 
-		if (overt) MFDManager.a.SendInfoToItemTab(constIndex,-1);
+		if (overt) MFDManager.a.SendInfoToItemTab(constIndex);
 		if (hwversion <= hardwareVersion[index] && overt) {
 		    Const.sprint(Const.a.stringTable[46] );
 		    return;
@@ -1018,10 +1029,9 @@ public class Inventory : MonoBehaviour {
 
 		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(0,true);
 		grenAmmo[index]++;
-		grenadeIndex = useableIndex;
 		Const.sprint(Const.a.useableItemsNameText[useableIndex] + Const.a.stringTable[34] );
 		MFDManager.a.NotifyToCenterTab(0);
-		MFDManager.a.SendInfoToItemTab(useableIndex,-1);
+		MFDManager.a.SendInfoToItemTab(useableIndex);
     }
 
 	public void RemoveGrenade(int index) {
@@ -1126,7 +1136,7 @@ public class Inventory : MonoBehaviour {
 		lastAddedIndex = index;
 		numLogsFromLevel[Const.a.audioLogLevelFound[index]]++;
 		MouseLookScript.a.logContentsManager.InitializeLogsFromLevelIntoFolder();
-		MFDManager.a.SendInfoToItemTab(6,-1);
+		MFDManager.a.SendInfoToItemTab(6);
 		if (Const.a.audioLogType[index] == AudioLogType.Email) {
 			hasNewEmail = true;
 		} else if (Const.a.audioLogType[index] == AudioLogType.Normal) {
@@ -1196,7 +1206,7 @@ public class Inventory : MonoBehaviour {
 			if (i == index) patchCountTextObjects[i].color = Const.a.ssYellowText; // Yellow
 			else  patchCountTextObjects[i].color = Const.a.ssGreenText; // Green
 		}
-		MFDManager.a.SendInfoToItemTab(constIndex,-1);
+		MFDManager.a.SendInfoToItemTab(constIndex);
 		MFDManager.a.NotifyToCenterTab(0);
 		Const.sprint(Const.a.useableItemsNameText[constIndex] + Const.a.stringTable[35] );
     }
@@ -1650,7 +1660,7 @@ public class Inventory : MonoBehaviour {
 		else			 wepAmmo[index]          += amount;
 		Const.sprint(Const.a.useableItemsNameText[constIndex] + Const.a.stringTable[630]); // Item added to ammo
 		MFDManager.a.NotifyToCenterTab(0);
-		MFDManager.a.SendInfoToItemTab(constIndex,-1);
+		MFDManager.a.SendInfoToItemTab(constIndex);
 	}
 
     public bool AddWeaponToInventory(int index, int ammo1, int ammo2,
@@ -1679,8 +1689,8 @@ public class Inventory : MonoBehaviour {
 					WeaponFire.a.reloadContainerHome;
 
 				WeaponCurrent.a.justChangedWeap = true;
-				MFDManager.a.SendInfoToItemTab(index,-1); // notify item tab we clicked on a weapon
-				MFDManager.a.SendInfoToItemTab(index,-1);
+				MFDManager.a.SendInfoToItemTab(index); // Notify item tab we
+				MFDManager.a.SendInfoToItemTab(index); // clicked on a weapon.
 				MFDManager.a.UpdateHUDAmmoCountsEither();
 				WeaponFire.a.CompleteWeaponChange();
 			}
@@ -1752,7 +1762,6 @@ public class Inventory : MonoBehaviour {
 		for (j=0;j<7;j++) line += Utils.splitChar + Utils.FloatToString(inv.currentEnergyWeaponHeat[j]); // float
 		for (j=0;j<7;j++) line += Utils.splitChar + Utils.BoolToString(inv.wepLoadedWithAlternate[j]); // bool
 		line += Utils.splitChar + Utils.UintToString(inv.grenadeCurrent); // int
-		line += Utils.splitChar + Utils.UintToString(inv.grenadeIndex); // int
 		line += Utils.splitChar + Utils.FloatToString(inv.nitroTimeSetting); // float
 		line += Utils.splitChar + Utils.FloatToString(inv.earthShakerTimeSetting); // float
 		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.UintToString(inv.grenAmmo[j]); } // int
@@ -1825,7 +1834,6 @@ public class Inventory : MonoBehaviour {
 		}
 
 		inv.grenadeCurrent = Utils.GetIntFromString(entries[index]); index++;
-		inv.grenadeIndex = Utils.GetIntFromString(entries[index]); index++;
 		inv.nitroTimeSetting = Utils.GetFloatFromString(entries[index]); index++;
 		inv.earthShakerTimeSetting = Utils.GetFloatFromString(entries[index]); index++;
 		for (j=0;j<7;j++) { inv.grenAmmo[j] = Utils.GetIntFromString(entries[index] ); index++; }

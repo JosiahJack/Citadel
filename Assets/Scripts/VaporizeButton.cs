@@ -89,10 +89,10 @@ public class VaporizeButton : MonoBehaviour {
 		int indexRef = Inventory.a.generalInventoryIndexRef[cur];
 		if (Inventory.a.generalInvCurrent == 0) {
 			if (Inventory.a.HasAnyAccessCards()) {
-				MFDManager.a.SendInfoToItemTab(indexRef,-1);
+				MFDManager.a.SendInfoToItemTab(indexRef);
 			} else {
 				// If no access cards, reset item tab to show nothing.
-				MFDManager.a.SendInfoToItemTab(-1,-1);
+				MFDManager.a.SendInfoToItemTab(-1);
 				PtrExit();
 			}
 		} else {

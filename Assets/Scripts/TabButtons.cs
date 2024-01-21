@@ -71,14 +71,14 @@ public class TabButtons : MonoBehaviour {
 
 	public void TabButtonClick(int tabNum) { // For click events.
 		MFDManager.a.mouseClickHeldOverGUI = true;
-		SetMFDLasts(tabNum);
 		TabButtonAction(tabNum);
+		SetMFDLasts(tabNum);
 	}
 
 	public void TabButtonAction(int tabNum) { // For keyboard events.
 		Utils.PlayOneShotSavable(TabSFX,TabSFXClip);
-		SetMFDLasts(tabNum);
 		TabButtonClickSilent(tabNum,false);
+		SetMFDLasts(tabNum);
 	}
 
 	// For automatic internal events not directly from player input.

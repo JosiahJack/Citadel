@@ -24,7 +24,7 @@ public class PatchButton: MonoBehaviour {
 	}
 
 	public void PatchSelect(bool useSound) {
-		MFDManager.a.SendInfoToItemTab(useableItemIndex,-1);
+		MFDManager.a.SendInfoToItemTab(useableItemIndex);
 		Inventory.a.patchCurrent = PatchButtonIndex; // Set current.
 		for (int i = 0; i < 7; i++) {
 			Inventory.a.patchCountTextObjects [i].color = Const.a.ssGreenText;

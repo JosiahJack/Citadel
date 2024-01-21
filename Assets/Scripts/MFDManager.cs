@@ -868,6 +868,10 @@ public class MFDManager : MonoBehaviour  {
 		itemTabRH.SendItemDataToItemTab(index,customIndex);
 	}
 
+	public void SendInfoToItemTab(int index) {
+		SendInfoToItemTab(index,-1);
+	}
+
 	// Clicking [Apply] button on left or right MFD's Item Tab to apply current patch or general inventory item.
 	public void ApplyButtonClicked() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
@@ -892,14 +896,14 @@ public class MFDManager : MonoBehaviour  {
 			Inventory.a.generalInvIndex = nextIndex;
 
 			// Set item tab to next general inv current.
-			SendInfoToItemTab(Inventory.a.generalInvIndex,-1);
+			SendInfoToItemTab(Inventory.a.generalInvIndex);
 		} else {
 			// Patches
 			// ----------------------------------------------------------------
 			Inventory.a.patchButtonScripts[Inventory.a.patchCurrent].DoubleClick();
 
 			// Set item tab to next patch.
-			SendInfoToItemTab(Inventory.a.patchIndex,-1);
+			SendInfoToItemTab(Inventory.a.patchIndex);
 		}
 	}
 

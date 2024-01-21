@@ -28,7 +28,7 @@ public class EnergySlider : MonoBehaviour {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		if (val < 1.0f) val = val * 100f;
 		if (val < 0) val = 0f;
-		if (val > 100f) val = 100f;
+		if (val >= 98f) val = 100f;
 		slideS.value = val;
 		Debug.Log("Set energy slider value to " + slideS.value.ToString()
 				  + ", from " + val.ToString());

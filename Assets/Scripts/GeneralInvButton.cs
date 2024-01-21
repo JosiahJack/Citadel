@@ -28,7 +28,7 @@ public class GeneralInvButton : MonoBehaviour {
 
 		// Access Cards
 		if (GeneralInvButtonIndex == 0) {
-			MFDManager.a.SendInfoToItemTab(81,-1);
+			MFDManager.a.SendInfoToItemTab(81);
 		} else {
 			MFDManager.a.SendInfoToItemTab(useableItemIndex,customIndex);
 		}
@@ -76,7 +76,7 @@ public class GeneralInvButton : MonoBehaviour {
 	public void GeneralInvApply() {
 		// Access Cards button
 		if (GeneralInvButtonIndex == 0) {
-			MFDManager.a.SendInfoToItemTab(81,-1);
+			MFDManager.a.SendInfoToItemTab(81);
 			MFDManager.a.OpenTab(1,true,TabMSG.None, useableItemIndex,
 								 Handedness.LH);
 			return;

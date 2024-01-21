@@ -72,9 +72,8 @@ public class GrenadeButton : MonoBehaviour {
 	}
 
 	public void GrenadeInvSelect() {
-		MFDManager.a.SendInfoToItemTab(useableItemIndex,-1);
-		Inventory.a.grenadeCurrent = GrenButtonIndex;  //Set current
-		Inventory.a.grenadeIndex = useableItemIndex;  //Set current
+		MFDManager.a.SendInfoToItemTab(useableItemIndex);
+		Inventory.a.grenadeCurrent = GrenButtonIndex; // Set current
 		Utils.PlayOneShotSavable(SFX,SFXClick);
 	}
 

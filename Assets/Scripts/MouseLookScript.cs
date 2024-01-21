@@ -49,7 +49,7 @@ public class MouseLookScript : MonoBehaviour {
 	public bool heldObjectLoadedAlternate; // save
 	[HideInInspector] public bool firstTimePickup;
 	[HideInInspector] public bool firstTimeSearch;
-	[HideInInspector] public bool grenadeActive;
+	public bool grenadeActive;
 	public bool inCyberSpace;
     [HideInInspector] public float yRotation;
 	[HideInInspector] public Vector3 cyberspaceReturnPoint; // save
@@ -861,11 +861,18 @@ public class MouseLookScript : MonoBehaviour {
 					Inventory.a.grenAmmo[grenbut.GrenButtonIndex] = 0;
 					Inventory.a.grenadeCurrent = -1;
 					for (int i = 0; i < 7; i++) {
-						if (Inventory.a.grenAmmo[i] > 0) Inventory.a.grenadeCurrent = i;
+						if (Inventory.a.grenAmmo[i] > 0) {
+							Inventory.a.grenadeCurrent = i;
+						}
 					}
-					MFDManager.a.SendInfoToItemTab(Inventory.a.grenadeCurrent,-1);
-					if (Inventory.a.grenadeCurrent < 0) Inventory.a.grenadeCurrent = 0;
+
+					MFDManager.a.SendInfoToItemTab(Inventory.a.grenadeCurrent);
+					if (Inventory.a.grenadeCurrent < 0) {
+						Inventory.a.grenadeCurrent = 0;
+					}
 				}
+
+				grenadeActive = true;
 				PutObjectInHand(indexPriorToRemoval,-1,0,0,false,true);
 				break;
 			case ButtonType.Patch:
@@ -879,8 +886,10 @@ public class MouseLookScript : MonoBehaviour {
 					for (int i = 0; i < 7; i++) {
 						if (Inventory.a.patchCounts[i] > 0) Inventory.a.patchCurrent = i;
 					}
-					MFDManager.a.SendInfoToItemTab(Inventory.a.patchCurrent,-1);
-					if (Inventory.a.patchCurrent < 0) Inventory.a.patchCurrent = 0;
+					MFDManager.a.SendInfoToItemTab(Inventory.a.patchCurrent);
+					if (Inventory.a.patchCurrent < 0) {
+						Inventory.a.patchCurrent = 0;
+					}
 				}
 				PutObjectInHand(indexPriorToRemoval,-1,0,0,false,true);
 				break;
@@ -891,7 +900,7 @@ public class MouseLookScript : MonoBehaviour {
 				// Access Cards button
 				if (genbut.GeneralInvButtonIndex == 0) {
 					MFDManager.a.OpenLastItemSide();
-					MFDManager.a.SendInfoToItemTab(81,-1);
+					MFDManager.a.SendInfoToItemTab(81);
 					return;
 				}
 
@@ -1103,6 +1112,7 @@ public class MouseLookScript : MonoBehaviour {
 				case 80: Inventory.a.AddAmmoToInventory(8,index, Const.a.magazinePitchCountForWeapon2[8], false); break; // small magpulse cartridges
 			}
 		}
+
 		Utils.PlayOneShotSavable(SFXSource,pickclip);
 		int numberFoundContents = 0;
 		if (currentSearchItem != null) {
@@ -1237,6 +1247,7 @@ public class MouseLookScript : MonoBehaviour {
 		heldObjectAmmo2 = 0;
 		heldObjectLoadedAlternate = false;
 		holdingObject = false;
+		grenadeActive = false;
 		MouseCursor.a.justDroppedItemInHelper = true;
 	}
 

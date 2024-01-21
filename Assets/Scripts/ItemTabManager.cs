@@ -13,6 +13,7 @@ public class ItemTabManager : MonoBehaviour {
 	public GameObject eReaderSectionsContainer;
 	public GameObject accessCardList;
 	public Text accessCardListText;
+	public GameObject grenadeTimerSlider;
 
 	public void Reset() {
 		eReaderSectionsContainer.SetActive(false);
@@ -23,12 +24,14 @@ public class ItemTabManager : MonoBehaviour {
 		applyButton.SetActive(false);
 		vaporizeButton.SetActive(false);
 		useButton.SetActive(false);
+		grenadeTimerSlider.SetActive(false);
 	}
 
 	public void EReaderSectionSContainerOpen () {
 		applyButton.SetActive(false);
 		vaporizeButton.SetActive(false);
 		useButton.SetActive(false);
+		grenadeTimerSlider.SetActive(false);
 		eReaderSectionsContainer.SetActive(true);
 		iconManager.GetComponent<Image>().overrideSprite =
 			Const.a.useableItemsIcons[23]; //datareader
@@ -38,6 +41,8 @@ public class ItemTabManager : MonoBehaviour {
 	}
 
 	public void SendItemDataToItemTab(int constIndex, int customIndex) {
+		Debug.Log("Sending item data " + constIndex.ToString() + ", "
+				  + customIndex.ToString() + " to item tab " + gameObject.name);
 		Reset();
 		if (constIndex < 0) return;
 
@@ -108,6 +113,8 @@ public class ItemTabManager : MonoBehaviour {
 		if ((constIndex >= 14 && constIndex < 21) || constIndex == 52
 			|| constIndex == 53 || constIndex == 55) {
 			applyButton.SetActive(true);
+			vaporizeButton.SetActive(false);
+			grenadeTimerSlider.SetActive(false);
 			MFDManager.a.applyButtonReferenceIndex = constIndex;
 		} else {
 			applyButton.SetActive(false);
@@ -117,8 +124,17 @@ public class ItemTabManager : MonoBehaviour {
 		if (constIndex < 6 || constIndex == 33 || constIndex == 35
 			|| constIndex == 58 || constIndex == 62) {
 			vaporizeButton.SetActive(true);
+			grenadeTimerSlider.SetActive(false);
 		} else {
 			vaporizeButton.SetActive(false);
 		}
+
+		if (constIndex == 82 || constIndex == 96) { // Nitro and Earthshaker.
+			grenadeTimerSlider.SetActive(true);
+		}
+	}
+
+	public void SendItemDataToItemTab(int constIndex) {
+		SendItemDataToItemTab(constIndex,-1);
 	}
 }
