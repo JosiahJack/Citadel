@@ -1028,6 +1028,13 @@ public class Inventory : MonoBehaviour {
 		if (index < 0) return;
 
 		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(0,true);
+		if (grenAmmo[0] == 0 && grenAmmo[1] == 0 && grenAmmo[2] == 0
+			&& grenAmmo[3] == 0 && grenAmmo[4] == 0 && grenAmmo[5] == 0
+			&& grenAmmo[6] == 0) {
+
+			grenadeCurrent = index;
+		}
+
 		grenAmmo[index]++;
 		Const.sprint(Const.a.useableItemsNameText[useableIndex] + Const.a.stringTable[34] );
 		MFDManager.a.NotifyToCenterTab(0);

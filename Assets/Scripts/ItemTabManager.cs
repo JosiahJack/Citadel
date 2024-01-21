@@ -41,8 +41,6 @@ public class ItemTabManager : MonoBehaviour {
 	}
 
 	public void SendItemDataToItemTab(int constIndex, int customIndex) {
-		Debug.Log("Sending item data " + constIndex.ToString() + ", "
-				  + customIndex.ToString() + " to item tab " + gameObject.name);
 		Reset();
 		if (constIndex < 0) return;
 
@@ -129,7 +127,7 @@ public class ItemTabManager : MonoBehaviour {
 			vaporizeButton.SetActive(false);
 		}
 
-		if (constIndex == 82 || constIndex == 96) { // Nitro and Earthshaker.
+		if (constIndex == 12 || constIndex == 10) { // Nitro and Earthshaker.
 			grenadeTimerSlider.SetActive(true);
 		}
 	}
