@@ -14,6 +14,7 @@ public class ItemTabManager : MonoBehaviour {
 	public GameObject accessCardList;
 	public Text accessCardListText;
 	public GameObject grenadeTimerSlider;
+	public GameObject grenadeTimerSliderSlider;
 
 	public void Reset() {
 		eReaderSectionsContainer.SetActive(false);
@@ -25,6 +26,7 @@ public class ItemTabManager : MonoBehaviour {
 		vaporizeButton.SetActive(false);
 		useButton.SetActive(false);
 		grenadeTimerSlider.SetActive(false);
+		grenadeTimerSliderSlider.SetActive(false);
 	}
 
 	public void EReaderSectionSContainerOpen () {
@@ -32,6 +34,7 @@ public class ItemTabManager : MonoBehaviour {
 		vaporizeButton.SetActive(false);
 		useButton.SetActive(false);
 		grenadeTimerSlider.SetActive(false);
+		grenadeTimerSliderSlider.SetActive(false);
 		eReaderSectionsContainer.SetActive(true);
 		iconManager.GetComponent<Image>().overrideSprite =
 			Const.a.useableItemsIcons[23]; //datareader
@@ -113,6 +116,7 @@ public class ItemTabManager : MonoBehaviour {
 			applyButton.SetActive(true);
 			vaporizeButton.SetActive(false);
 			grenadeTimerSlider.SetActive(false);
+			grenadeTimerSliderSlider.SetActive(false);
 			MFDManager.a.applyButtonReferenceIndex = constIndex;
 		} else {
 			applyButton.SetActive(false);
@@ -123,12 +127,14 @@ public class ItemTabManager : MonoBehaviour {
 			|| constIndex == 58 || constIndex == 62) {
 			vaporizeButton.SetActive(true);
 			grenadeTimerSlider.SetActive(false);
-		} else {
+			grenadeTimerSliderSlider.SetActive(false);
+			} else {
 			vaporizeButton.SetActive(false);
 		}
 
 		if (constIndex == 12 || constIndex == 10) { // Nitro and Earthshaker.
 			grenadeTimerSlider.SetActive(true);
+			grenadeTimerSliderSlider.SetActive(true);
 		}
 	}
 

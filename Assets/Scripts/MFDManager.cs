@@ -257,6 +257,7 @@ public class MFDManager : MonoBehaviour  {
 			audioLogContainerLH.GetComponent<LogDataTabContainerManager>();
 		a.logDataTabInfoRH = 
 			audioLogContainerRH.GetComponent<LogDataTabContainerManager>();
+		a.ResetItemTab();
 	}
 
 	void WeaponCycleUp() {

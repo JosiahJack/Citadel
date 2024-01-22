@@ -9,7 +9,7 @@ public class EnergySlider : MonoBehaviour {
 	void Awake () {
         slideS = GetComponent<Slider>();
 	}
-
+/*
 	void Update () {
 		if (WeaponCurrent.a.weaponCurrent != -1) {
 			slideS.value =
@@ -17,7 +17,8 @@ public class EnergySlider : MonoBehaviour {
 		} else {
 			slideS.value = 0;
 		}
-	}
+	}*/
+
 
     public void SetValue(float val) {
 		if (WeaponCurrent.a.weaponCurrent < 0

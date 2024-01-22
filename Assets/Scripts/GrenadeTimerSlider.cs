@@ -11,6 +11,22 @@ public class GrenadeTimerSlider : MonoBehaviour {
         slideS = GetComponent<Slider>();
 	}
 
+	void OnEnable () {
+		if (Inventory.a.grenadeCurrent != -1) {
+			if (Inventory.a.grenadeCurrent == 5) {
+				slideS.value = Inventory.a.nitroTimeSetting;
+			} else if (Inventory.a.grenadeCurrent == 6) {
+				slideS.value = Inventory.a.earthShakerTimeSetting;
+			} else {
+				slideS.value = 0;
+			}
+		} else {
+			slideS.value = 0;
+		}
+
+// 		SetValue();
+	}
+
 	void Update () {
 		if (Inventory.a.grenadeCurrent != -1) {
 			if (Inventory.a.grenadeCurrent == 5) {
@@ -27,7 +43,7 @@ public class GrenadeTimerSlider : MonoBehaviour {
 		valueText.text = slideS.value.ToString("0.0");
 	}
 
-    public void SetValue(float val) {
+    public void SetValue() {
 		if (Inventory.a.grenadeCurrent != 5
 			|| Inventory.a.grenadeCurrent != 6) {
 
@@ -35,6 +51,7 @@ public class GrenadeTimerSlider : MonoBehaviour {
 		}
 
 		MFDManager.a.mouseClickHeldOverGUI = true;
+		float val = slideS.value;
 		if (val >= 60f) val = 60f;
 		if (Inventory.a.grenadeCurrent == 5) {
 			if (val < 2f) val = 2f;

@@ -974,6 +974,10 @@ public class MouseLookScript : MonoBehaviour {
 				ForceShootMode();
 				GUIState.a.ClearOverButton();
 				break;
+			case ButtonType.GrenadeTimerSlider:
+				Button btn = currentButton.GetComponent<Button>();
+				Debug.Log("GrenadeTimerSlider invoke");
+				break;
 		}
 	}
 

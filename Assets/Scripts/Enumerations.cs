@@ -74,7 +74,8 @@ public enum ConfigToggleType : byte {Fullscreen,SSAO,Bloom,Reverb,Subtitles,
 public enum HUDColor : byte {White,Red,Orange,Yellow,Green,Blue,Purple,Gray};
 public enum ForceFieldColor : byte {Red,Green,Blue,Purple,RedFaint};
 public enum ButtonType : byte {Generic,GeneralInv,Patch,Grenade,Weapon,Search,
-                               None,PGrid,PWire,Vaporize,ShootMode};
+                               None,PGrid,PWire,Vaporize,ShootMode,
+                               GrenadeTimerSlider};
 public enum TabMSG : byte {None,Search,AudioLog,Keypad,Elevator,GridPuzzle,
                            WirePuzzle,EReader,Weapon,SystemAnalyzer};
 public enum PuzzleCellType : byte {

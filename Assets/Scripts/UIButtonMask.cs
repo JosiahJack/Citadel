@@ -19,8 +19,7 @@ public class UIButtonMask : MonoBehaviour {
 	private RectTransform rect;
 	private EventTrigger evenT;
 	private bool pointerEntered;
-	public float tapFinished;
-	public float timeExposed;
+	private float tapFinished;
 
 	void Start() { // Start for the PauseScript.a and MouseScript.a references.
 		rect = GetComponent<RectTransform>(); // Create box collider for entry
@@ -98,7 +97,6 @@ public class UIButtonMask : MonoBehaviour {
 			pointerEntered = false;
 		}
 
-		timeExposed = Time.time;
 		if (tapFinished < Time.time) justHeld = false;
 
 		if (doubleClickEnabled) {
