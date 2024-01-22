@@ -29,6 +29,9 @@ public class CreditsScroll : MonoBehaviour {
 		Utils.Activate(endVideoTextGO1);
 		outroPlayer.url = Application.streamingAssetsPath + "/outro.webm";
 		outroPlayer.Play();
+		if (!MainMenuHandler.a.dataFound) outroPlayer.SetDirectAudioMute(0,true);
+		else outroPlayer.SetDirectAudioMute(0,false);
+
 		endVideoText1.text = Const.a.stringTable[610];
 		endVideoText2.text = Const.a.stringTable[611];
 		endVideoText3.text = Const.a.stringTable[612];

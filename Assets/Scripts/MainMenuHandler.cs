@@ -233,6 +233,7 @@ public class MainMenuHandler : MonoBehaviour {
 			// OK, now show that we didn't find them
 			InitialDisplay.SetActive(false);
 			CouldNotFindDialogue.SetActive(true);
+			dataFound = false;
 		}
 	}
 
@@ -823,7 +824,7 @@ public class MainMenuHandler : MonoBehaviour {
 		DeathVideo.SetActive(true);
 		deathPlayer.url = Application.streamingAssetsPath + "/death.webm";
 		deathPlayer.Play();
-		deathPlayer.SetDirectAudioVolume(0,0.05f);
+		deathPlayer.SetDirectAudioMute(0,true);
 		deathVideoText1.text = Const.a.stringTable[628];
 		deathVideoText2.text = Const.a.stringTable[629];
 		Utils.Activate(deathVideoTextGO1);
@@ -846,6 +847,9 @@ public class MainMenuHandler : MonoBehaviour {
 		IntroVideo.SetActive(true);
 		introPlayer.url = Application.streamingAssetsPath + "/intro.webm";
 		introPlayer.Play();
+		if (!dataFound) introPlayer.SetDirectAudioMute(0,true);
+		else introPlayer.SetDirectAudioMute(0,false);
+
 		inCutscene = true;
 		BackGroundMusic.Stop();
 		vidFinished = Time.time + vidLength;

@@ -1087,31 +1087,49 @@ public class Inventory : MonoBehaviour {
 					vmailbetajet.SetActive(true);
 					vmailbetajetVideo.url = Application.streamingAssetsPath + "/betajet.webm";
 					vmailbetajetVideo.Play();
+					if (!MainMenuHandler.a.dataFound) vmailbetajetVideo.SetDirectAudioMute(0,true);
+					else vmailbetajetVideo.SetDirectAudioMute(0,false);
+
 					break;
 				case 116:
 					vmailbridgesep.SetActive(true);
 					vmailbridgesepVideo.url = Application.streamingAssetsPath + "/bridgesep.webm";
 					vmailbridgesepVideo.Play();
+					if (!MainMenuHandler.a.dataFound) vmailbridgesepVideo.SetDirectAudioMute(0,true);
+					else vmailbridgesepVideo.SetDirectAudioMute(0,false);
+
 					break;
 				case 117:
 					vmailcitadestruct.SetActive(true);
 					vmailcitadestructVideo.url = Application.streamingAssetsPath + "/citadestruct.webm";
 					vmailcitadestructVideo.Play();
+					if (!MainMenuHandler.a.dataFound) vmailcitadestructVideo.SetDirectAudioMute(0,true);
+					else vmailcitadestructVideo.SetDirectAudioMute(0,false);
+
 					break;
 				case 110:
 					vmailgenstatus.SetActive(true);
 					vmailgenstatusVideo.url = Application.streamingAssetsPath + "/genstatus.webm";
 					vmailgenstatusVideo.Play();
+					if (!MainMenuHandler.a.dataFound) vmailgenstatusVideo.SetDirectAudioMute(0,true);
+					else vmailgenstatusVideo.SetDirectAudioMute(0,false);
+
 					break;
 				case 114:
 					vmaillaserdest.SetActive(true);
 					vmaillaserdestVideo.url = Application.streamingAssetsPath + "/laserdest.webm";
 					vmaillaserdestVideo.Play();
+					if (!MainMenuHandler.a.dataFound) vmaillaserdestVideo.SetDirectAudioMute(0,true);
+					else vmaillaserdestVideo.SetDirectAudioMute(0,false);
+
 					break;
 				case 120:
 					vmailshieldsup.SetActive(true);
 					vmailshieldsupVideo.url = Application.streamingAssetsPath + "/shieldsup.webm";
 					vmailshieldsupVideo.Play();
+					if (!MainMenuHandler.a.dataFound) vmailshieldsupVideo.SetDirectAudioMute(0,true);
+					else vmailshieldsupVideo.SetDirectAudioMute(0,false);
+
 					break;
 			}
 		}

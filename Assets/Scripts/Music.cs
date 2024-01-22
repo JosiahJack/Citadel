@@ -677,48 +677,53 @@ public class Music : MonoBehaviour {
 
     void Update() {
 		// Check if main menu is active and disable playing background music
-		if (mainMenu.activeSelf == true || Const.a.loadingScreen.activeSelf == true) {
-			if (!paused) {
+		if (mainMenu.activeSelf == true
+			|| Const.a.loadingScreen.activeSelf == true
+			|| !MainMenuHandler.a.dataFound) {
+
+			if (!paused || !MainMenuHandler.a.dataFound) {
 				paused = true;
 				if (SFXMain != null) SFXMain.Pause();
 				if (SFXOverlay != null) SFXOverlay.Pause();
 			}
-		} else {
-			if (paused) {
-				paused = false;
-				if (SFXMain != null) SFXMain.UnPause();
-				if (SFXOverlay != null) SFXOverlay.UnPause();
-			}
 
-			if (SFXMain.isPlaying) return;
+			return;
+		}
 
-			if (inCombat && !inZone && combatImpulseFinished
-				< PauseScript.a.relativeTime) {
+		if (paused) {
+			paused = false;
+			if (SFXMain != null) SFXMain.UnPause();
+			if (SFXOverlay != null) SFXOverlay.UnPause();
+		}
 
-				inCombat = false;
-				PlayTrack(LevelManager.a.currentLevel,TrackType.Combat,
-						  MusicType.Override);
+		if (SFXMain.isPlaying) return;
 
-				combatImpulseFinished = PauseScript.a.relativeTime + 10f;
+		if (inCombat && !inZone && combatImpulseFinished
+			< PauseScript.a.relativeTime) {
+
+			inCombat = false;
+			PlayTrack(LevelManager.a.currentLevel,TrackType.Combat,
+						MusicType.Override);
+
+			combatImpulseFinished = PauseScript.a.relativeTime + 10f;
+			return;
+		}
+
+		if (inZone) {
+			if (distortion) {
+				PlayTrack(LevelManager.a.currentLevel,TrackType.Distortion,
+							MusicType.Override);
 				return;
 			}
-
-			if (inZone) {
-				if (distortion) {
-					PlayTrack(LevelManager.a.currentLevel,TrackType.Distortion,
-							  MusicType.Override);
-					return;
-				}
-				if (elevator) {
-					PlayTrack(LevelManager.a.currentLevel,TrackType.Elevator,
-							  MusicType.Override);
-					return;
-				}
+			if (elevator) {
+				PlayTrack(LevelManager.a.currentLevel,TrackType.Elevator,
+							MusicType.Override);
+				return;
 			}
-			if (LevelManager.a != null) {
-				PlayTrack(LevelManager.a.currentLevel,TrackType.Walking,
-						  MusicType.Walking);
-			} else  PlayTrack(1, TrackType.Walking, MusicType.Walking);
 		}
+		if (LevelManager.a != null) {
+			PlayTrack(LevelManager.a.currentLevel,TrackType.Walking,
+						MusicType.Walking);
+		} else  PlayTrack(1, TrackType.Walking, MusicType.Walking);
     }
 }

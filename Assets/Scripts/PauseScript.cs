@@ -171,8 +171,18 @@ public class PauseScript : MonoBehaviour {
 			Const.a.panimsList[k].Pause();
 		}
 
+		PauseAmbients();
+	}
+
+	public void PauseAmbients() {
 		for (int u=0;u<ambientRegistry.Count;u++) {
 			if (ambientRegistry[u].SFX != null) ambientRegistry[u].SFX.Pause();
+		}
+	}
+
+	public void UnpauseAmbients() {
+		for (int u=0;u<ambientRegistry.Count;u++) {
+			if (ambientRegistry[u].SFX != null) ambientRegistry[u].SFX.UnPause();
 		}
 	}
 
@@ -189,10 +199,7 @@ public class PauseScript : MonoBehaviour {
 			Const.a.panimsList[k].UnPause();
 		}
 
-		for (int u=0;u<ambientRegistry.Count;u++) {
-			if (ambientRegistry[u].SFX != null) ambientRegistry[u].SFX.UnPause();
-		}
-
+		UnpauseAmbients();
 		PlayerMovement.a.ConsoleDisable();
 	}
 
