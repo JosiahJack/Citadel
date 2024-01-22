@@ -1382,6 +1382,13 @@ public class AIController : MonoBehaviour {
 		dyingSetup = true;
 	}
 
+	public bool DeactivatesVisibleMeshWhileDying() {
+		return (index == 0 // Autobomb
+				|| index == 14 // Hopper
+				|| index == 20 // Zero-g mutant
+				|| healthManager.teleportOnDeath);
+	}
+
 	void Dying() {
 		if (!dyingSetup) DyingSetup();
 
@@ -1392,9 +1399,7 @@ public class AIController : MonoBehaviour {
 			currentState = AIState.Dead;
 		}
 
-		if (index == 0 || index == 14 || index == 20 // Autobomb, hopper, zero-g mut
-		    || healthManager.teleportOnDeath) {
-
+		if (DeactivatesVisibleMeshWhileDying()) {
 			Utils.Deactivate(visibleMeshEntity);
 		}
 
@@ -1421,25 +1426,23 @@ public class AIController : MonoBehaviour {
 		if (!rbody.freezeRotation) rbody.freezeRotation = true;
 		if (healthManager.gibOnDeath || healthManager.teleportOnDeath
 			|| IsCyberNPC()) {
+
 			rbody.useGravity = false;
-			if (healthManager.teleportOnDeath) rbody.useGravity = true;
 
 			// Normally just turn off the main model, then turn on lovely gibs.
-			Utils.Deactivate(visibleMeshEntity);
 			if (healthManager.gibOnDeath) healthManager.Gib();
 			if (healthManager.teleportOnDeath && !healthManager.teleportDone) {
 				healthManager.TeleportAway();
+				rbody.useGravity = true;
 			}
+
+			Utils.Deactivate(visibleMeshEntity);
 		} else {
 			if (index != 14) { // Hopper turns itself off.
 				rbody.useGravity = true;
 			}
 		}
 
-		if (index == 0 || healthManager.teleportOnDeath) {
-		    Utils.Deactivate(visibleMeshEntity); //
-		}
-		
 		deadChecksDone = true;
 	}
 
@@ -1968,8 +1971,8 @@ public class AIController : MonoBehaviour {
 		if (aic.visibleMeshEntity != null) {
 			aic.visibleMeshEntity.SetActive(Utils.GetBoolFromString(entries[index],
 											"visibleMeshEntity.activeSelf"));
-
 		}
+
 		index++;
 
 		aic.asleep = Utils.GetBoolFromString(entries[index]); index++; // bool - are we sleepnir? vague reference alert
@@ -2014,9 +2017,7 @@ public class AIController : MonoBehaviour {
 			}
 
 			if (aic.healthManager.gibOnDeath) {
-				if (aic.ai_dead || aic.ai_dying
-					|| !aic.HasHealth(aic.healthManager)) {
-
+				if (aic.ai_dead	|| !aic.HasHealth(aic.healthManager)) {
 					// Turn off visible mesh entity from destroyed corpse.
 					aic.visibleMeshEntity.SetActive(false);
 				}

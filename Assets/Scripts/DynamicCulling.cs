@@ -694,19 +694,20 @@ public class DynamicCulling : MonoBehaviour {
         for (int i=0;i<npcAICs.Count;i++) {
             if (worldCellVisible[npcCoords[i].x,npcCoords[i].y]
                 || !worldCellOpen[npcCoords[i].x,npcCoords[i].y]
-                || npcAICs[i].enemy != null) {
+                || npcAICs[i].enemy != null || npcAICs[i].ai_dying
+                || npcAICs[i].ai_dead) {
                 npcAICs[i].withinPVS = true;
                 hm = npcAICs[i].healthManager;
                 if (npcAICs[i].currentState == AIState.Dead
                     || (!npcAICs[i].HasHealth(hm) && hm.gibOnDeath)) {
-                    if (npcAICs[i].index == 0 || npcAICs[i].index == 14 // Autobomb, hopper
-                        || hm.teleportOnDeath || hm.gibOnDeath) {
-
+                    if (npcAICs[i].DeactivatesVisibleMeshWhileDying()
+                        || (hm.gibOnDeath && npcAICs[i].ai_dead)) {
                         Utils.Deactivate(npcAICs[i].visibleMeshEntity);
+                    } else {
+                        Utils.Activate(npcAICs[i].visibleMeshEntity);
                     }
                 } else if (npcAICs[i].currentState == AIState.Dying) {
-                    if (npcAICs[i].index == 0 || npcAICs[i].index == 14 // Autobomb, hopper
-                        || hm.teleportOnDeath) {
+                    if (npcAICs[i].DeactivatesVisibleMeshWhileDying()) {
                             Utils.Deactivate(npcAICs[i].visibleMeshEntity);
                         } else {
                             Utils.Activate(npcAICs[i].visibleMeshEntity);

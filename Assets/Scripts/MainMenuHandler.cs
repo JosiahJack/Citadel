@@ -455,8 +455,9 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 
 		// Qmaster's cheat
-		if (   (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P))
-			|| (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P))) {
+		if ((   (Input.GetKey(KeyCode.LeftAlt) && Input.GetKeyDown(KeyCode.P))
+			 || (Input.GetKeyDown(KeyCode.LeftAlt) && Input.GetKey(KeyCode.P)))
+			&& !CouldNotFindDialogue.activeInHierarchy) {
 			if (string.IsNullOrWhiteSpace(Const.a.playerName)) {
 				Const.a.playerName = "Qmaster";
 			}

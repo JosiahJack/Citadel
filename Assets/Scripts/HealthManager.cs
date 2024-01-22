@@ -502,18 +502,8 @@ public class HealthManager : MonoBehaviour {
 		Utils.DisableMeshRenderer(mr);
 		GameObject par = transform.parent.gameObject;
 		AIController aic = par.GetComponent<AIController>();
-		if (aic != null) {
-			if (!aic.healthManager.gibOnDeath) { // We are a corpse here.
-				// Turn off visible mesh entity from destroyed corpse.
-				Utils.Deactivate(aic.visibleMeshEntity);
-				Utils.Deactivate(aic.deathBurst); // For any extra effects.
-												  // We are totally gone now!
-			}
-			Utils.Deactivate(aic.searchColliderGO);
-			Utils.Deactivate(aic.gameObject);
-		}
+		if (aic != null) Utils.SafeDestroy(aic.gameObject); // All gone!
 		CreateDeathEffects(deathFX);
-		Utils.DisableCollision(gameObject);
 	}
 
 	public void TeleportAway() {
@@ -559,29 +549,27 @@ public class HealthManager : MonoBehaviour {
 		CreateDeathEffects(deathFX);
 		if (gibObjects.Length > 0 ) {
 			for (int i = 0; i < gibObjects.Length; i++) {
-				if (gibObjects[i] != null) {
-					if (!gibObjects[i].activeSelf) {
-						gibObjects[i].SetActive(true); // turn on all the gibs to fall apart
-						if (gibsGetVelocity) {
-							gibrbody = gibObjects[i].GetComponent<Rigidbody>();
-							if (gibrbody != null) {
-								gibrbody.AddForce(gibVelocityBoost,ForceMode.Impulse);
-							}
-						}
+				Utils.Activate(gibObjects[i]);
+				if (gibsGetVelocity) {
+					gibrbody = gibObjects[i].GetComponent<Rigidbody>();
+					if (gibrbody != null) {
+						gibrbody.AddForce(gibVelocityBoost,ForceMode.Impulse);
 					}
 				}
 			}
+
 			for (int k=0;k<disableOnGib.Length;k++) {
-				if (disableOnGib[k] != null) disableOnGib[k].SetActive(false);
+				Utils.Deactivate(disableOnGib[k]);
 			}
 		}
+
 		DropSearchables();
 		if (!isScreen) Utils.DisableCollision(gameObject);
 		AIController aic = GetComponent<AIController>();
 		if (aic != null) {
 			if (aic.healthManager.gibOnDeath) { // We are a corpse here.
 				// Turn off visible mesh entity from destroyed corpse.
-				aic.visibleMeshEntity.SetActive(false);
+				Utils.Deactivate(aic.visibleMeshEntity);
 			}
 		}
 
@@ -745,6 +733,8 @@ public class HealthManager : MonoBehaviour {
 					}
 				}
 			} else {
+				// No health
+				// ------------------------------------------------------------
 				Utils.DisableCollision(gameObject);
 				if (linkedOverlay != null) {
 					Utils.DisableImage(linkedOverlay); // Disable on automap.
@@ -760,9 +750,7 @@ public class HealthManager : MonoBehaviour {
 						if (!aicP.startInitialized) aicP.Start();
 						if (aicP.healthManager != null) {
 							if (!aicP.healthManager.gibOnDeath) {
-								if (aicP.visibleMeshEntity != null) {
-									aicP.visibleMeshEntity.SetActive(false);
-								}
+								Utils.Deactivate(aicP.visibleMeshEntity);
 							}
 						}
 					}
