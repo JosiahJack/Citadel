@@ -110,7 +110,7 @@ public class MainMenuHandler : MonoBehaviour {
 	public AudioSource BackGroundMusic;
 
 	[HideInInspector] public bool returnToPause = false;
-	[HideInInspector] public bool dataFound = false;
+	public bool dataFound = false;
 	private enum Pages : byte {fp,sp,mp,np,lp,op,sv,cd};
 	private Pages currentPage;
 	private AudioSource StartSFX;

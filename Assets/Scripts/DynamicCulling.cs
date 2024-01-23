@@ -698,23 +698,28 @@ public class DynamicCulling : MonoBehaviour {
                 || npcAICs[i].ai_dead) {
                 npcAICs[i].withinPVS = true;
                 hm = npcAICs[i].healthManager;
-                if (npcAICs[i].currentState == AIState.Dead
-                    || (!npcAICs[i].HasHealth(hm) && hm.gibOnDeath)) {
-                    if (npcAICs[i].DeactivatesVisibleMeshWhileDying()
-                        || (hm.gibOnDeath && npcAICs[i].ai_dead)) {
-                        Utils.Deactivate(npcAICs[i].visibleMeshEntity);
-                    } else {
-                        Utils.Activate(npcAICs[i].visibleMeshEntity);
-                    }
-                } else if (npcAICs[i].currentState == AIState.Dying) {
-                    if (npcAICs[i].DeactivatesVisibleMeshWhileDying()) {
-                            Utils.Deactivate(npcAICs[i].visibleMeshEntity);
-                        } else {
-                            Utils.Activate(npcAICs[i].visibleMeshEntity);
-                        }
-                } else {
+                if (npcAICs[i].visibleMeshVisible) {
                     Utils.Activate(npcAICs[i].visibleMeshEntity);
+                } else {
+                    Utils.Deactivate(npcAICs[i].visibleMeshEntity);
                 }
+//                 if (npcAICs[i].currentState == AIState.Dead
+//                     || (!npcAICs[i].HasHealth(hm) && hm.gibOnDeath)) {
+//                     if (npcAICs[i].DeactivatesVisibleMeshWhileDying()
+//                         || (hm.gibOnDeath && npcAICs[i].ai_dead)) {
+//                         Utils.Deactivate(npcAICs[i].visibleMeshEntity);
+//                     } else {
+//                         Utils.Activate(npcAICs[i].visibleMeshEntity);
+//                     }
+//                 } else if (npcAICs[i].currentState == AIState.Dying) {
+//                     if (npcAICs[i].DeactivatesVisibleMeshWhileDying()) {
+//                             Utils.Deactivate(npcAICs[i].visibleMeshEntity);
+//                         } else {
+//                             Utils.Activate(npcAICs[i].visibleMeshEntity);
+//                         }
+//                 } else {
+//                     Utils.Activate(npcAICs[i].visibleMeshEntity);
+//                 }
             } else {
                 npcAICs[i].withinPVS = false;
                 Utils.Deactivate(npcAICs[i].visibleMeshEntity);

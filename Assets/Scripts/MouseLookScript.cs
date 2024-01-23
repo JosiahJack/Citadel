@@ -104,6 +104,8 @@ public class MouseLookScript : MonoBehaviour {
 	public float joyYSignLast;
 	public float headBobShiftFinished;
 	private float bobTarget;
+	private float headBobXVel;
+	private float headBobYVel;
     
 	public static MouseLookScript a;
 
@@ -990,8 +992,8 @@ public class MouseLookScript : MonoBehaviour {
 		if (PlayerMovement.a.relForward != 0) targetY -= 0.08f;
 
 		// If not shaking or bobbing, this will stay this to lerp to normal.
-		headBobY = Const.a.playerCameraOffsetY
-				   * PlayerMovement.a.currentCrouchRatio;
+// 		headBobY = Const.a.playerCameraOffsetY
+// 				   * PlayerMovement.a.currentCrouchRatio;
 		if (shakeFinished > PauseScript.a.relativeTime) {
 			headBobX = transform.localPosition.x
 					   + UnityEngine.Random.Range(shakeForce * -0.17f,
@@ -1011,9 +1013,9 @@ public class MouseLookScript : MonoBehaviour {
 				&& Const.a.HeadBob) {
 
 				if (headBobShiftFinished < PauseScript.a.relativeTime) {
-					headBobShiftFinished = PauseScript.a.relativeTime + 0.3f;
+					headBobShiftFinished = PauseScript.a.relativeTime + 0.2f;
 					if (!PlayerMovement.a.isSprinting) {
-						headBobShiftFinished += 0.3f;
+						headBobShiftFinished += 0.1f;
 					}
 
 					bobTarget = Const.a.HeadBobAmount * -1f
@@ -1021,19 +1023,17 @@ public class MouseLookScript : MonoBehaviour {
 				}
 
 				if (PlayerMovement.a.rbody.velocity.magnitude > 0.1f){
-					headBobY = Mathf.Lerp(transform.localPosition.y,
-										  targetY + bobTarget,
-										  Time.deltaTime * Const.a.HeadBobRate);
+// 					headBobY = Mathf.Lerp(transform.localPosition.y,targetY + bobTarget,Time.deltaTime * Const.a.HeadBobRate);
+					headBobY = Mathf.SmoothDamp(headBobY,targetY + bobTarget,ref headBobYVel,Const.a.HeadBobRate);
 				}
 
-				headBobX = Mathf.Lerp(transform.localPosition.x,targetX,
-									  Time.deltaTime * Const.a.HeadBobRate);
+// 				headBobX = Mathf.Lerp(transform.localPosition.x,targetX,Time.deltaTime * Const.a.HeadBobRate);
+				headBobX = Mathf.SmoothDamp(headBobX,targetX,ref headBobXVel,Const.a.HeadBobRate);
 			} else {
-				headBobX = Mathf.Lerp(transform.localPosition.x,0f,
-									  Time.deltaTime * Const.a.HeadBobRate);
-
-				headBobY = Mathf.Lerp(transform.localPosition.y,headBobY,
-									  Time.deltaTime * Const.a.HeadBobRate);
+// 				headBobX = Mathf.Lerp(transform.localPosition.x,0f,Time.deltaTime * Const.a.HeadBobRate);
+				headBobX = Mathf.SmoothDamp(headBobX,0f,ref headBobXVel,Const.a.HeadBobRate);
+// 				headBobY = Mathf.Lerp(transform.localPosition.y,headBobY,Time.deltaTime * Const.a.HeadBobRate);
+				headBobY = Mathf.SmoothDamp(headBobY,Const.a.playerCameraOffsetY * PlayerMovement.a.currentCrouchRatio,ref headBobYVel,Const.a.HeadBobRate);
 			}
 		}
 		transform.localPosition = new Vector3(headBobX,headBobY,headBobZ);

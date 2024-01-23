@@ -37,6 +37,7 @@ public class AIController : MonoBehaviour {
 	public bool wandering; // save
 	public bool actAsTurret = false; // save
 	public bool withinPVS = false; // True when the enemy is in visible cell.
+	public bool visibleMeshVisible; // save
 
 	// Internal, keeping exposed in inspector for troubleshooting.
 	public GameObject enemy; // save (referenced by int index enemIDRead)
@@ -178,6 +179,9 @@ public class AIController : MonoBehaviour {
 		healthManager = GetComponent<HealthManager>();
 		if (visibleMeshEntity != null) {
 			hopAnimator = visibleMeshEntity.GetComponent<Animator>();
+			visibleMeshVisible = true;
+		} else {
+			visibleMeshVisible = false;
 		}
 
 		if (((!healthManager.gibOnDeath && !healthManager.vaporizeCorpse)
@@ -1401,6 +1405,7 @@ public class AIController : MonoBehaviour {
 
 		if (DeactivatesVisibleMeshWhileDying()) {
 			Utils.Deactivate(visibleMeshEntity);
+			visibleMeshVisible = false;
 		}
 
 		if (index == 20) searchColliderGO.SetActive(true);
@@ -1437,6 +1442,7 @@ public class AIController : MonoBehaviour {
 			}
 
 			Utils.Deactivate(visibleMeshEntity);
+			visibleMeshVisible = false;
 		} else {
 			if (index != 14) { // Hopper turns itself off.
 				rbody.useGravity = true;
@@ -1825,17 +1831,19 @@ public class AIController : MonoBehaviour {
 		}
 
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(aic.asleep)); // bool
+		s1.Append(Utils.BoolToString(aic.asleep));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(aic.tranquilizeFinished));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(aic.hopDone)); // bool
+		s1.Append(Utils.BoolToString(aic.hopDone));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(aic.wandering)); // bool
+		s1.Append(Utils.BoolToString(aic.wandering));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(aic.wanderFinished));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(aic.SFXIndex));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(aic.visibleMeshVisible));
 		if (aic.searchColliderGO != null) {
 			s1.Append(Utils.splitChar);
 			s1.Append(Utils.BoolToString(aic.searchColliderGO.activeSelf,
@@ -1969,18 +1977,21 @@ public class AIController : MonoBehaviour {
 		}
 
 		if (aic.visibleMeshEntity != null) {
-			aic.visibleMeshEntity.SetActive(Utils.GetBoolFromString(entries[index],
-											"visibleMeshEntity.activeSelf"));
+			bool visb = Utils.GetBoolFromString(entries[index],
+												"visibleMeshEntity.activeSelf");
+			aic.visibleMeshEntity.SetActive(visb);
+			aic.visibleMeshVisible = visb;
 		}
 
 		index++;
 
 		aic.asleep = Utils.GetBoolFromString(entries[index]); index++; // bool - are we sleepnir? vague reference alert
-		aic.tranquilizeFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
-		aic.hopDone = Utils.GetBoolFromString(entries[index]); index++; // bool
-		aic.wandering = Utils.GetBoolFromString(entries[index]); index++; // bool
+		aic.tranquilizeFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		aic.hopDone = Utils.GetBoolFromString(entries[index]); index++;
+		aic.wandering = Utils.GetBoolFromString(entries[index]); index++;
 		aic.wanderFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
 		aic.SFXIndex = Utils.GetIntFromString(entries[index]); index++;
+		aic.visibleMeshVisible = Utils.GetBoolFromString(entries[index]); index++;
 		if (aic.healthManager != null) {
 			if (aic.HasHealth(aic.healthManager)) {
 				Utils.EnableCollision(aic.gameObject);
@@ -2020,6 +2031,7 @@ public class AIController : MonoBehaviour {
 				if (aic.ai_dead	|| !aic.HasHealth(aic.healthManager)) {
 					// Turn off visible mesh entity from destroyed corpse.
 					aic.visibleMeshEntity.SetActive(false);
+					aic.visibleMeshVisible = false;
 				}
 			}
 		}

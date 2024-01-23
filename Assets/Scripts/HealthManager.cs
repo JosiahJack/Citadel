@@ -570,6 +570,7 @@ public class HealthManager : MonoBehaviour {
 			if (aic.healthManager.gibOnDeath) { // We are a corpse here.
 				// Turn off visible mesh entity from destroyed corpse.
 				Utils.Deactivate(aic.visibleMeshEntity);
+				aic.visibleMeshVisible = false;
 			}
 		}
 
@@ -726,7 +727,10 @@ public class HealthManager : MonoBehaviour {
 								if (aicP.visibleMeshEntity != null) {
 									// We are a corpse, re-enable parent
 									aicP.visibleMeshEntity.SetActive(true);
-									Debug.Log("Enabling visibleMeshEntity from HealthManager AwakeFromLoad");
+									aicP.visibleMeshVisible = true;
+									Debug.Log("Enabling visibleMeshEntity "
+											  + "from HealthManager "
+											  + "AwakeFromLoad");
 								}
 							}
 						}
@@ -751,6 +755,7 @@ public class HealthManager : MonoBehaviour {
 						if (aicP.healthManager != null) {
 							if (!aicP.healthManager.gibOnDeath) {
 								Utils.Deactivate(aicP.visibleMeshEntity);
+								aicP.visibleMeshVisible = false;
 							}
 						}
 					}

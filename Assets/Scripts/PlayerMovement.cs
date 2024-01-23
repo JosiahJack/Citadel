@@ -60,7 +60,7 @@ public class PlayerMovement : MonoBehaviour {
 	[HideInInspector] public bool FatigueCheat;
 
 	// Internal references
-	[HideInInspector] public BodyState bodyState; // save
+	public BodyState bodyState; // save
 	[HideInInspector] public bool ladderState = false; // save
 	public bool gravliftState = false; // save
 	[HideInInspector] public bool inCyberSpace = false; // save
@@ -83,12 +83,12 @@ public class PlayerMovement : MonoBehaviour {
 	private float jumpVelocityBoots = 0.45f;
 	private float jumpVelocity = 1.1f;
 	private float jumpVelocityFatigued = 0.6f;
-	private float crouchRatio = 0.6f;
-	private float proneRatio = 0.2f;
-	private float transitionToCrouchSec = 0.2f;
-	private float transitionToProneAdd = 0.1f;
-	[HideInInspector] public float currentCrouchRatio = 1f; // save
-	private float capsuleHeight;
+	public float crouchRatio = 0.6f;
+	public float proneRatio = 0.2f;
+	public float transitionToCrouchSec = 0.2f;
+	public float transitionToProneAdd = 0.1f;
+	public float currentCrouchRatio = 1f; // save
+	public float capsuleHeight;
 	private float capsuleRadius;
 	private float ladderSpeed = 0.4f;
 	private float fallDamage = 75f;
@@ -1005,6 +1005,13 @@ public class PlayerMovement : MonoBehaviour {
 		if (inCyberSpace) return false;
 		if (CheatNoclip) return false;
 		if (ladderState) return false;
+		if (bodyState == BodyState.StandingUp
+			|| bodyState == BodyState.CrouchingDown
+			|| bodyState == BodyState.ProningDown
+			|| bodyState == BodyState.ProningUp) {
+			Debug.Log("Crouching gravity! " + rbody.useGravity.ToString());
+			return true;
+		}
 		if (isSprinting) return true;
 
 		// Disables gravity when touching steep ground to prevent player
@@ -1451,8 +1458,11 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	bool CantCrouch() {
-		return Physics.CheckCapsule(cameraObject.transform.position, cameraObject.transform.position + new Vector3(0f,0.4f,0f), capsuleRadius, layerMask);
-	} 
+		return Physics.CheckCapsule(cameraObject.transform.position,
+									cameraObject.transform.position
+									+ new Vector3(0f,0.2f,0f),
+									capsuleRadius,layerMask);
+	}
 
 	void Crouch() {
 		if (inCyberSpace) return;
