@@ -57,6 +57,7 @@ public class PlayerMovement : MonoBehaviour {
 	public string lastCommand5;
 	public string lastCommand6;
 	public int consoleMemdex;
+	private float feetRayLength = 0.9f;
 	[HideInInspector] public bool FatigueCheat;
 
 	// Internal references
@@ -333,7 +334,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		// Using value of 1.06 = (player capsule height / 2) + 0.06 = 1 + 0.06;
 		bool successfulRay = Physics.Raycast(transform.position, Vector3.down,
-											 out tempHit,1.06f,
+											 out tempHit,feetRayLength,
 											 Const.a.layerMaskPlayerFeet);
 
 		// Success here means hit a useable something.
