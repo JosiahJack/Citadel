@@ -97,6 +97,8 @@ public class Inventory : MonoBehaviour {
 	[HideInInspector] public bool isPulserNotDrill = true; // save
 	[HideInInspector] public int[] softVersions; // save
 	[HideInInspector] public bool[] hasSoft; // save
+	[HideInInspector] public bool[] hasMinigame; // save
+	public GameObject[] miniGameButton;
 
 	// Weapons
 	[HideInInspector] public string[] weaponInventoryText;
@@ -255,6 +257,8 @@ public class Inventory : MonoBehaviour {
 		a.emailCurrent = a.emailIndex = 0;
 		a.hasNewEmail = true;
 		a.hasNewNotes = true;
+		a.hasMinigame = new bool[7];
+		for (int i=0;i<7;i++) a.hasMinigame[i] = false;
 
 		// Patches
 		a.patchCounts = new int[7];
@@ -1151,8 +1155,7 @@ public class Inventory : MonoBehaviour {
 		}
 
 		if (index == 128) {
-			// Trioptimum Funpack Module discovered!
-			// UPDATE: Create minigames
+			// Trioptimum Funpack Module, don't play on company time!
 			Const.sprint(Const.a.stringTable[309]);
 			return;
 		}
@@ -1438,33 +1441,28 @@ public class Inventory : MonoBehaviour {
 			case SoftwareType.Game:		
 				softs[6].SetActive(true);
 				hasNewData = true;
+				hasMinigame[vers] = true;
+				miniGameButton[vers].SetActive(true);
 				switch(vers) {
 					case 0: // Ping
-							// UPDATE: Create minigame Ping
 							Const.sprint(Const.a.stringTable[450],Const.a.player1);
 							break;
 					case 1: // 15
-							// UPDATE: Create minigame 15
 							Const.sprint(Const.a.stringTable[451],Const.a.player1);
 							break;
 					case 2: // Wing 0
-							// UPDATE: Create minigame Wing 0
 							Const.sprint(Const.a.stringTable[452],Const.a.player1);
 							break;
 					case 3: // Botbounce
-							// UPDATE: Create minigame Botbounce
 							Const.sprint(Const.a.stringTable[453],Const.a.player1);
 							break;
 					case 4: // Eel Zapper
-							// UPDATE: Create minigame Eel Zapper
 							Const.sprint(Const.a.stringTable[454],Const.a.player1);
 							break;
 					case 5: // Road
-							// UPDATE: Create minigame Road
 							Const.sprint(Const.a.stringTable[455],Const.a.player1);
 							break;
 					case 6: // TriopToe
-							// UPDATE: Create minigame TriopToe
 							Const.sprint(Const.a.stringTable[456],Const.a.player1);
 							break;
 				}
@@ -1818,6 +1816,7 @@ public class Inventory : MonoBehaviour {
 		line += Utils.splitChar + Utils.BoolToString(inv.hasNewData,"hasNewData");
 		line += Utils.splitChar + Utils.BoolToString(inv.hasNewLogs,"hasNewLogs");
 		line += Utils.splitChar + Utils.BoolToString(inv.hasNewEmail,"hasNewEmail");
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hasMinigame[j],"hasMinigame[" + j.ToString() + "]"); }
 		return line;
 	}
 
@@ -1978,6 +1977,13 @@ public class Inventory : MonoBehaviour {
 		inv.hasNewData = Utils.GetBoolFromString(entries[index],"hasNewData"); index++;
 		inv.hasNewLogs = Utils.GetBoolFromString(entries[index],"hasNewLogs"); index++;
 		inv.hasNewEmail = Utils.GetBoolFromString(entries[index],"hasNewEmail"); index++;
+		for (j=0;j<7;j++) {
+			inv.hasMinigame[j] = Utils.GetBoolFromString(entries[index],
+														 "hasMinigame["
+														 + j.ToString() + "]");
+			index++;
+			inv.miniGameButton[j].SetActive(inv.hasMinigame[j]);
+		}
 		return index;
 	}
 }

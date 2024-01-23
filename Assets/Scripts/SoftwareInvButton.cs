@@ -67,7 +67,7 @@ public class SoftwareInvButton : MonoBehaviour {
 					if (MouseLookScript.a.inCyberSpace) {
 						Const.sprint(Const.a.stringTable[443],Const.a.player1);
 					} else {
-						// UPDATE: Add HUD minigames
+						MFDManager.a.OpenMinigames();
 						Const.sprint(Const.a.stringTable[309],Const.a.player1); // Trioptimum Funpack Module, don't play on company time!
 					}
 					break;

@@ -36,6 +36,20 @@ public class MFDManager : MonoBehaviour  {
 	public EReaderSectionsButtons ersbLH;
 	public EReaderSectionsButtons ersbRH;
 	[HideInInspector] public int lastMultiMediaTabOpened = 1; // save, 0 = email table, 1 = log table, 2 = data table
+	public GameObject miniGamesContainer;
+	public GameObject minigameButtonsContainer;
+	public GameObject minigameCamera;
+	public GameObject minigameViewContainer;
+
+	public GameObject minigamePingSpaceContainer;
+	public GameObject minigame15SpaceContainer;
+	public GameObject minigameWing0SpaceContainer;
+	public GameObject minigameBotbounceSpaceContainer;
+	public GameObject minigameEelZapperSpaceContainer;
+	public GameObject minigameRoadSpaceContainer;
+	public GameObject minigameTriopToeSpaceContainer;
+	public GameObject minigameCorpConqSpaceContainer;
+	public GameObject minigameChessSpaceContainer;
 
 	// Main MFD
 	public ItemTabManager itemTabLH;
@@ -258,6 +272,7 @@ public class MFDManager : MonoBehaviour  {
 		a.logDataTabInfoRH = 
 			audioLogContainerRH.GetComponent<LogDataTabContainerManager>();
 		a.ResetItemTab();
+		a.minigameCamera.SetActive(false);
 	}
 
 	void WeaponCycleUp() {
@@ -429,6 +444,10 @@ public class MFDManager : MonoBehaviour  {
 					Utils.EnableImage(iconRH);
 				}
 			}
+		}
+
+		if (!miniGamesContainer.activeInHierarchy) {
+			minigameCamera.SetActive(false);
 		}
 	}
 
@@ -618,6 +637,7 @@ public class MFDManager : MonoBehaviour  {
 			audioLogContainerLH.SetActive(false);
 			sysAnalyzerLH.SetActive(false);
 			searchCloseButtonLH.SetActive(false);
+			miniGamesContainer.SetActive(false);
 			for (int i=0; i<=3;i++) {
 				searchItemImagesLH[i].SetActive(false);
 			}
@@ -1715,6 +1735,93 @@ public class MFDManager : MonoBehaviour  {
 		ersbRH.SetEReaderSectionsButtonsHighlights(3);
 	}
 	//--- End Multi Media Tabs ---
+
+	// Minigames
+	public void OpenMinigames() {
+		TabReset(true);
+		TabReset(false);
+		OpenTab(4,true,TabMSG.None,0,Handedness.LH);
+		CenterTabButtonClickSilent(3,false);
+		miniGamesContainer.SetActive(true);
+		minigameButtonsContainer.SetActive(true);
+		minigameViewContainer.SetActive(false);
+
+		minigamePingSpaceContainer.SetActive(false);
+		minigame15SpaceContainer.SetActive(false);
+		minigameWing0SpaceContainer.SetActive(false);
+		minigameBotbounceSpaceContainer.SetActive(false);
+		minigameEelZapperSpaceContainer.SetActive(false);
+		minigameRoadSpaceContainer.SetActive(false);
+		minigameTriopToeSpaceContainer.SetActive(false);
+		minigameCorpConqSpaceContainer.SetActive(false);
+		minigameChessSpaceContainer.SetActive(false);
+		minigameCamera.SetActive(true);
+	}
+
+	public void MinigameStart_Ping() {
+		Const.sprint("Starting PING");
+		minigameButtonsContainer.SetActive(false);
+		minigameViewContainer.SetActive(true);
+		minigamePingSpaceContainer.SetActive(true);
+	}
+
+	public void MinigameStart_15() {
+		Const.sprint("Starting 15");
+		minigameButtonsContainer.SetActive(false);
+		minigameViewContainer.SetActive(true);
+		minigame15SpaceContainer.SetActive(true);
+	}
+
+	public void MinigameStart_Wing0() {
+		Const.sprint("Starting WING-0");
+		minigameButtonsContainer.SetActive(false);
+		minigameViewContainer.SetActive(true);
+		minigameWing0SpaceContainer.SetActive(true);
+	}
+
+	public void MinigameStart_Botbounce() {
+		Const.sprint("Starting BOTBOUNCE");
+		minigameButtonsContainer.SetActive(false);
+		minigameViewContainer.SetActive(true);
+		minigameBotbounceSpaceContainer.SetActive(true);
+	}
+
+	public void MinigameStart_EelZapper() {
+		Const.sprint("Starting EEL ZAPPER");
+		minigameButtonsContainer.SetActive(false);
+		minigameViewContainer.SetActive(true);
+		minigameEelZapperSpaceContainer.SetActive(true);
+	}
+
+	public void MinigameStart_Road() {
+		Const.sprint("Starting ROAD");
+		minigameButtonsContainer.SetActive(false);
+		minigameViewContainer.SetActive(true);
+		minigameRoadSpaceContainer.SetActive(true);
+	}
+
+	public void MinigameStart_TriopToe() {
+		Const.sprint("Starting TRIOPTOE");
+		minigameButtonsContainer.SetActive(false);
+		minigameViewContainer.SetActive(true);
+		minigameTriopToeSpaceContainer.SetActive(true);
+	}
+
+	// The original seemed to have planned for 9 minigames.  Maybe I'll make my
+	// own new ones someday.
+	public void MinigameStart_CorporateConquer() {
+		Const.sprint("Starting CORP CONQ");
+		minigameButtonsContainer.SetActive(false);
+		minigameViewContainer.SetActive(true);
+		minigameCorpConqSpaceContainer.SetActive(true);
+	}
+
+	public void MinigameStart_Chess() {
+		Const.sprint("Starting Chess");
+		minigameButtonsContainer.SetActive(false);
+		minigameViewContainer.SetActive(true);
+		minigameChessSpaceContainer.SetActive(true);
+	}
 
 	public static string Save(GameObject go) {
 		MFDManager mfd = go.GetComponent<MFDManager>();
