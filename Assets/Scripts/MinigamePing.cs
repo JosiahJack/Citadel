@@ -4,24 +4,20 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class MinigamePing : MonoBehaviour {
+    public MinigameCursor cursor;
     public RectTransform playerPaddle;
     public RectTransform computerPaddle;
     public RectTransform ball;
-    public RectTransform minigameCursor;
     public Text playerScoreText;
     public Text computerScoreText;
     public int playerScore;
     public int computerScore;
-    private int lives;
-    private float mouseX;
-    private float mouseY;
     private float computerVel;
     private float playerVel;
     private float ballVel;
     private Vector2 ballDir;
 
     void OnEnable() {
-        lives = 3;
         playerScore = 0;
         computerScore = 0;
         playerPaddle.localPosition = new Vector3(0f,-100f,0f);
@@ -41,9 +37,9 @@ public class MinigamePing : MonoBehaviour {
     }
 
     void Update() {
-        mouseX = MouseCursor.a.cursorPosition.x;
-        mouseY = MouseCursor.a.cursorPosition.y;
+        PlayerPaddleUpdate();
         ComputerPaddleUpdate();
+        BallUpdate();
     }
 
     private void BallUpdate() {
@@ -61,6 +57,15 @@ public class MinigamePing : MonoBehaviour {
             playerScoreText.text = playerScore.ToString();
             ResetBall();
         }
+    }
+
+    private void PlayerPaddleUpdate() {
+        playerPaddle.localPosition = new Vector3(
+            Mathf.SmoothDamp(cursor.minigameMouseX,
+                             playerPaddle.localPosition.x,ref playerVel,1f),
+            100f,
+            0f
+        );
     }
 
     private void ComputerPaddleUpdate() {
