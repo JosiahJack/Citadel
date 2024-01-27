@@ -41,6 +41,7 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject minigameCamera;
 	public GameObject minigameViewContainer;
 
+	public GameObject minigameSpace;
 	public GameObject minigamePingSpaceContainer;
 	public GameObject minigame15SpaceContainer;
 	public GameObject minigameWing0SpaceContainer;
@@ -637,7 +638,23 @@ public class MFDManager : MonoBehaviour  {
 			audioLogContainerLH.SetActive(false);
 			sysAnalyzerLH.SetActive(false);
 			searchCloseButtonLH.SetActive(false);
+
+			// Only on the left
 			miniGamesContainer.SetActive(false);
+			minigameSpace.SetActive(false);
+			minigameButtonsContainer.SetActive(false);
+			minigameViewContainer.SetActive(false);
+			minigamePingSpaceContainer.SetActive(false);
+			minigame15SpaceContainer.SetActive(false);
+			minigameWing0SpaceContainer.SetActive(false);
+			minigameBotbounceSpaceContainer.SetActive(false);
+			minigameEelZapperSpaceContainer.SetActive(false);
+			minigameRoadSpaceContainer.SetActive(false);
+			minigameTriopToeSpaceContainer.SetActive(false);
+			minigameCorpConqSpaceContainer.SetActive(false);
+			minigameChessSpaceContainer.SetActive(false);
+			minigameSpace.SetActive(false);
+			minigameCamera.SetActive(false);
 			for (int i=0; i<=3;i++) {
 				searchItemImagesLH[i].SetActive(false);
 			}
@@ -1755,7 +1772,8 @@ public class MFDManager : MonoBehaviour  {
 		minigameTriopToeSpaceContainer.SetActive(false);
 		minigameCorpConqSpaceContainer.SetActive(false);
 		minigameChessSpaceContainer.SetActive(false);
-		minigameCamera.SetActive(true);
+		minigameSpace.SetActive(false);
+		minigameCamera.SetActive(false);
 	}
 
 	public void MinigameStart_Ping() {
@@ -1763,6 +1781,8 @@ public class MFDManager : MonoBehaviour  {
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigamePingSpaceContainer.SetActive(true);
+		minigameSpace.SetActive(true);
+		minigameCamera.SetActive(true);
 	}
 
 	public void MinigameStart_15() {
@@ -1770,6 +1790,8 @@ public class MFDManager : MonoBehaviour  {
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigame15SpaceContainer.SetActive(true);
+		minigameSpace.SetActive(true);
+		minigameCamera.SetActive(true);
 	}
 
 	public void MinigameStart_Wing0() {
@@ -1777,6 +1799,8 @@ public class MFDManager : MonoBehaviour  {
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameWing0SpaceContainer.SetActive(true);
+		minigameSpace.SetActive(true);
+		minigameCamera.SetActive(true);
 	}
 
 	public void MinigameStart_Botbounce() {
@@ -1784,6 +1808,8 @@ public class MFDManager : MonoBehaviour  {
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameBotbounceSpaceContainer.SetActive(true);
+		minigameSpace.SetActive(true);
+		minigameCamera.SetActive(true);
 	}
 
 	public void MinigameStart_EelZapper() {
@@ -1791,6 +1817,8 @@ public class MFDManager : MonoBehaviour  {
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameEelZapperSpaceContainer.SetActive(true);
+		minigameSpace.SetActive(true);
+		minigameCamera.SetActive(true);
 	}
 
 	public void MinigameStart_Road() {
@@ -1798,6 +1826,8 @@ public class MFDManager : MonoBehaviour  {
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameRoadSpaceContainer.SetActive(true);
+		minigameSpace.SetActive(true);
+		minigameCamera.SetActive(true);
 	}
 
 	public void MinigameStart_TriopToe() {
@@ -1805,6 +1835,8 @@ public class MFDManager : MonoBehaviour  {
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameTriopToeSpaceContainer.SetActive(true);
+		minigameSpace.SetActive(true);
+		minigameCamera.SetActive(true);
 	}
 
 	// The original seemed to have planned for 9 minigames.  Maybe I'll make my
@@ -1814,6 +1846,8 @@ public class MFDManager : MonoBehaviour  {
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameCorpConqSpaceContainer.SetActive(true);
+		minigameSpace.SetActive(true);
+		minigameCamera.SetActive(true);
 	}
 
 	public void MinigameStart_Chess() {
@@ -1821,6 +1855,8 @@ public class MFDManager : MonoBehaviour  {
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameChessSpaceContainer.SetActive(true);
+		minigameSpace.SetActive(true);
+		minigameCamera.SetActive(true);
 	}
 
 	public static string Save(GameObject go) {

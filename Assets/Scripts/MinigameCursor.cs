@@ -14,7 +14,13 @@ public class MinigameCursor : MonoBehaviour {
     private float deltaX;
     private float deltaY;
 
+    public static MinigameCursor a;
+
     void Awake() {
+        a = this;
+    }
+
+    void Start() {
         deltaX = xmax - xmin;
         deltaY = ymax - ymin;
     }
