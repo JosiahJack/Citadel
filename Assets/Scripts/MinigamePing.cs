@@ -63,7 +63,7 @@ public class MinigamePing : MonoBehaviour {
         playerPaddle.localPosition = new Vector3(
             Mathf.SmoothDamp(cursor.minigameMouseX,
                              playerPaddle.localPosition.x,ref playerVel,1f),
-            100f,
+            -100f,
             0f
         );
     }
