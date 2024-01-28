@@ -15,7 +15,7 @@ public class MinigamePing : MonoBehaviour {
     public GameObject playerPizzaz;
     public GameObject computerPizzaz;
     private float computerRate = 12f;
-    private float playerRate = 12f;
+    private float playerRate = 15f;
     public float ballSpeed = 10f;
     public int playerScore;
     public int computerScore;
@@ -27,10 +27,14 @@ public class MinigamePing : MonoBehaviour {
     public float ballSideH = 0f;
     public GameObject gameOver;
     public Text winText;
+    public GameObject winPizzazz;
+    public int servecount;
+    public bool playerServing;
 
     private float x;
     private float y;
     private float frameFinished = 0f;
+    private float ballResetFinished = 0;
     private Color ballHitColor = new Color(0.93f,0.93f,0.39f);
     private Color ballColor = new Color(0.6886f,0.6886f,0.6886f);
     private Color paddleHitColor = new Color(0.8902f + 0.05f,0.8745f + 0.05f,0.0f);
@@ -42,10 +46,13 @@ public class MinigamePing : MonoBehaviour {
     private void Reset() {
         playerScore = 0;
         computerScore = 0;
+        servecount = 0;
+        playerServing = Random.Range(0f,1f) < 0.5f ? true : false;
         UpdateScoreText();
         playerPaddle.localPosition = new Vector3(0f,-100f,0f);
         computerPaddle.localPosition = new Vector3(0f,100f,0f);
         gameOver.SetActive(false);
+        winPizzazz.SetActive(false);
         ResetBall();
     }
 
@@ -56,8 +63,18 @@ public class MinigamePing : MonoBehaviour {
 
     private Vector2 GetNewBallDirection() {
         float dirX = Random.Range(-0.3f,0.3f);
-        float dirY = Random.Range(0f,1f) < 0.5f ? Random.Range( 0.8f, 1.0f)
-                                                : Random.Range(-1.0f,-0.8f);
+        float dirY = 1f;
+        if (playerScore == 0 && computerScore == 0) {
+            dirY = Random.Range(0f,1f) < 0.5f ? Random.Range( 0.8f, 1.0f)
+                                              : Random.Range(-1.0f,-0.8f);
+        } else {
+            if (playerServing) {
+                dirY = Random.Range(0.8f,1.0f);
+            } else {
+                dirY = Random.Range(-1.0f,-0.8f);
+            }
+        }
+
         return new Vector2(dirX,dirY);
     }
 
@@ -65,15 +82,22 @@ public class MinigamePing : MonoBehaviour {
         ball.localPosition = new Vector3(0f,0f,0f);
         computerPaddle.localPosition = new Vector3(0f,100f,0f);
         ballDir = GetNewBallDirection();
+        ballResetFinished = PauseScript.a.relativeTime + 2.5f;
     }
 
     void Update() {
-        if (frameFinished >= Time.time) return;
+        if (PauseScript.a.Paused()) return;
+		if (PauseScript.a.MenuActive()) return;
+        if (frameFinished >= PauseScript.a.relativeTime) return;
         if (gameOver.activeInHierarchy) return;
 
-        frameFinished = Time.time + (1f/30f); // 30fps, it's a potato.
+        frameFinished = PauseScript.a.relativeTime + (1f/30f); // 30fps, it's a potato.
         PlayerPaddleUpdate();
+        if (ballResetFinished >= PauseScript.a.relativeTime + 1f) return;
+
         ComputerPaddleUpdate();
+        if (ballResetFinished >= PauseScript.a.relativeTime) return;
+
         BallUpdate();
     }
 
@@ -86,8 +110,17 @@ public class MinigamePing : MonoBehaviour {
         ball.localPosition = new Vector3(x,y,0f);
         if (ball.localPosition.y < -160f) { // More than 133 gives delay.
             computerScore++;
+            servecount++;
+            if (servecount >= 2 || (computerScore >= 10 && playerScore >= 10)) {
+                servecount = 0;
+                playerServing = !playerServing; // No one will notice...
+            }
+
             UpdateScoreText();
-            if (computerScore == 11) { GameOver(); return; }
+            if (computerScore >= 11 && (computerScore - playerScore) >= 2) {
+                GameOver();
+                return;
+            }
 
             computerPaddleImg.color = Const.a.ssGreenText;
             playerPaddleImg.color = Const.a.ssRedText;
@@ -96,7 +129,16 @@ public class MinigamePing : MonoBehaviour {
             return;
         } else if (ball.localPosition.y > 160f) { // More than 133 gives delay.
             playerScore++;
-            if (playerScore == 11) { GameOver(); return; }
+            servecount++;
+            if (servecount >= 2 || (computerScore >= 10 && playerScore >= 10)) {
+                servecount = 0;
+                playerServing = !playerServing; // ... but it rules
+            }
+
+            if (playerScore >= 11 && (playerScore - computerScore) >= 2) {
+                GameOver();
+                return;
+            }
 
             UpdateScoreText();
             playerPaddleImg.color = Const.a.ssGreenText;
@@ -107,9 +149,14 @@ public class MinigamePing : MonoBehaviour {
         }
 
         // Hit sides
-        if (ball.localPosition.x >  122f || ball.localPosition.x < -122f) {
+        if (ball.localPosition.x < -122f) {
             ballDir.x *= -1f;
             ballImg.color = ballHitColor;
+            ball.localPosition = new Vector3(-121.9f,ball.localPosition.y,0f);
+        } else if (ball.localPosition.x > 122f) {
+            ballDir.x *= -1f;
+            ballImg.color = ballHitColor;
+            ball.localPosition = new Vector3(121.9f,ball.localPosition.y,0f);
         }
 
         // Hit paddles
@@ -176,6 +223,11 @@ public class MinigamePing : MonoBehaviour {
                     }
 
                     float add = computerVel * 0.75f;
+                    if (computerVel < 0.05f) {
+                        float neg = Random.Range(0f,1f) < 0.5f ? -1f : 1f;
+                        add = 0.2f * neg * 0.75f; // Don't get stuck with no x.
+                    }
+
                     ballDir.x += add;
                     if (ballDir.x > 1f) ballDir.x = 1f;
                     else if (ballDir.x < -1f) ballDir.x = -1f;
@@ -226,12 +278,13 @@ public class MinigamePing : MonoBehaviour {
 
     private void GameOver() {
         gameOver.SetActive(true);
+        if (playerScore > computerScore) {
+            winText.text = "YOU WON!";
+            winPizzazz.SetActive(true);
+        } else winText.text = "YOU LOSE";
     }
 
     public void ResetOnGameOver() {
-        if (playerScore > computerScore) winText.text = "YOU WON!";
-        else winText.text = "YOU LOSE";
-
         Reset();
     }
 }
