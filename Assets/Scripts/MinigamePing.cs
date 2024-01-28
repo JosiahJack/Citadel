@@ -12,6 +12,8 @@ public class MinigamePing : MonoBehaviour {
     public RectTransform ball;
     public Text playerScoreText;
     public Text computerScoreText;
+    public GameObject playerPizzaz;
+    public GameObject computerPizzaz;
     private float computerRate = 12f;
     private float playerRate = 12f;
     public float ballSpeed = 10f;
@@ -40,10 +42,16 @@ public class MinigamePing : MonoBehaviour {
     private void Reset() {
         playerScore = 0;
         computerScore = 0;
+        UpdateScoreText();
         playerPaddle.localPosition = new Vector3(0f,-100f,0f);
         computerPaddle.localPosition = new Vector3(0f,100f,0f);
         gameOver.SetActive(false);
         ResetBall();
+    }
+
+    private void UpdateScoreText() {
+        computerScoreText.text = computerScore.ToString();
+        playerScoreText.text = playerScore.ToString();
     }
 
     private Vector2 GetNewBallDirection() {
@@ -61,6 +69,7 @@ public class MinigamePing : MonoBehaviour {
 
     void Update() {
         if (frameFinished >= Time.time) return;
+        if (gameOver.activeInHierarchy) return;
 
         frameFinished = Time.time + (1f/30f); // 30fps, it's a potato.
         PlayerPaddleUpdate();
@@ -69,7 +78,7 @@ public class MinigamePing : MonoBehaviour {
     }
 
     private void BallUpdate() {
-        ballImg.color = Color.Lerp(ballImg.color,ballColor,1.2f);
+        ballImg.color = Color.Lerp(ballImg.color,ballColor,3f);
         x = ball.localPosition.x;
         y = ball.localPosition.y;
         x += ballDir.x * ballSpeed;
@@ -77,20 +86,22 @@ public class MinigamePing : MonoBehaviour {
         ball.localPosition = new Vector3(x,y,0f);
         if (ball.localPosition.y < -160f) { // More than 133 gives delay.
             computerScore++;
-            computerScoreText.text = computerScore.ToString();
+            UpdateScoreText();
             if (computerScore == 11) { GameOver(); return; }
 
             computerPaddleImg.color = Const.a.ssGreenText;
             playerPaddleImg.color = Const.a.ssRedText;
+            Utils.Activate(computerPizzaz);
             ResetBall();
             return;
         } else if (ball.localPosition.y > 160f) { // More than 133 gives delay.
             playerScore++;
             if (playerScore == 11) { GameOver(); return; }
 
-            playerScoreText.text = playerScore.ToString();
+            UpdateScoreText();
             playerPaddleImg.color = Const.a.ssGreenText;
             computerPaddleImg.color = Const.a.ssRedText;
+            Utils.Activate(playerPizzaz);
             ResetBall();
             return;
         }
@@ -182,7 +193,7 @@ public class MinigamePing : MonoBehaviour {
     }
 
     private void PlayerPaddleUpdate() {
-        playerPaddleImg.color = Color.Lerp(playerPaddleImg.color,Color.white,2f);
+        playerPaddleImg.color = Color.Lerp(playerPaddleImg.color,Color.white,3f);
         x = playerPaddle.localPosition.x;
         playerVel = (MinigameCursor.a.minigameMouseX - x) / 48f;
         playerVel = Mathf.Clamp(playerVel,-1f,1f);
@@ -198,7 +209,7 @@ public class MinigamePing : MonoBehaviour {
     }
 
     private void ComputerPaddleUpdate() {
-        computerPaddleImg.color = Color.Lerp(computerPaddleImg.color,Color.white,2f);
+        computerPaddleImg.color = Color.Lerp(computerPaddleImg.color,Color.white,3f);
         x = computerPaddle.localPosition.x;
         computerVel = (ball.localPosition.x - x) / 48f;
         computerVel = Mathf.Clamp(computerVel,-1f,1f);
