@@ -20,20 +20,29 @@ public class MinigamePing : MonoBehaviour {
     private float computerVel;
     private float playerVel;
     private Vector2 ballDir;
-    private float paddleWidthH = 18f;
+    private float paddleWidthH = 18f; // Half lengths
     private float paddleHeightH = 6f;
     public float ballSideH = 0f;
+    public GameObject gameOver;
+    public Text winText;
+
     private float x;
     private float y;
     private float frameFinished = 0f;
     private Color ballHitColor = new Color(0.93f,0.93f,0.39f);
     private Color ballColor = new Color(0.6886f,0.6886f,0.6886f);
+    private Color paddleHitColor = new Color(0.8902f + 0.05f,0.8745f + 0.05f,0.0f);
 
     void OnEnable() {
+        Reset();
+    }
+
+    private void Reset() {
         playerScore = 0;
         computerScore = 0;
         playerPaddle.localPosition = new Vector3(0f,-100f,0f);
         computerPaddle.localPosition = new Vector3(0f,100f,0f);
+        gameOver.SetActive(false);
         ResetBall();
     }
 
@@ -69,11 +78,19 @@ public class MinigamePing : MonoBehaviour {
         if (ball.localPosition.y < -160f) { // More than 133 gives delay.
             computerScore++;
             computerScoreText.text = computerScore.ToString();
+            if (computerScore == 11) { GameOver(); return; }
+
+            computerPaddleImg.color = Const.a.ssGreenText;
+            playerPaddleImg.color = Const.a.ssRedText;
             ResetBall();
             return;
         } else if (ball.localPosition.y > 160f) { // More than 133 gives delay.
             playerScore++;
+            if (playerScore == 11) { GameOver(); return; }
+
             playerScoreText.text = playerScore.ToString();
+            playerPaddleImg.color = Const.a.ssGreenText;
+            computerPaddleImg.color = Const.a.ssRedText;
             ResetBall();
             return;
         }
@@ -97,6 +114,18 @@ public class MinigamePing : MonoBehaviour {
                     > (playerPaddle.localPosition.x - paddleWidthH - ballSideH)) {
 
                     ballDir.y *= -1f;
+                    playerPaddleImg.color = paddleHitColor;
+
+                    // Hit edge of paddle
+                    if (   ball.localPosition.x >
+                             playerPaddle.localPosition.x + paddleWidthH
+                        || ball.localPosition.x <
+                             playerPaddle.localPosition.x - paddleWidthH) {
+
+                        ballDir.x *= -1f;
+                        playerPaddleImg.color = Const.a.ssYellowText;
+                    }
+
                     float add = playerVel * 0.75f;
                     ballDir.x += add;
                     if (ballDir.x > 1f) ballDir.x = 1f;
@@ -123,6 +152,18 @@ public class MinigamePing : MonoBehaviour {
                     > (computerPaddle.localPosition.x - paddleWidthH - ballSideH)) {
 
                     ballDir.y *= -1f;
+                    computerPaddleImg.color = paddleHitColor;
+
+                    // Hit edge of paddle
+                    if (   ball.localPosition.x >
+                             playerPaddle.localPosition.x + paddleWidthH
+                        || ball.localPosition.x <
+                             playerPaddle.localPosition.x - paddleWidthH) {
+
+                        ballDir.x *= -1f;
+                        computerPaddleImg.color = Const.a.ssYellowText;
+                    }
+
                     float add = computerVel * 0.75f;
                     ballDir.x += add;
                     if (ballDir.x > 1f) ballDir.x = 1f;
@@ -141,6 +182,7 @@ public class MinigamePing : MonoBehaviour {
     }
 
     private void PlayerPaddleUpdate() {
+        playerPaddleImg.color = Color.Lerp(playerPaddleImg.color,Color.white,2f);
         x = playerPaddle.localPosition.x;
         playerVel = (MinigameCursor.a.minigameMouseX - x) / 48f;
         playerVel = Mathf.Clamp(playerVel,-1f,1f);
@@ -156,6 +198,7 @@ public class MinigamePing : MonoBehaviour {
     }
 
     private void ComputerPaddleUpdate() {
+        computerPaddleImg.color = Color.Lerp(computerPaddleImg.color,Color.white,2f);
         x = computerPaddle.localPosition.x;
         computerVel = (ball.localPosition.x - x) / 48f;
         computerVel = Mathf.Clamp(computerVel,-1f,1f);
@@ -168,5 +211,16 @@ public class MinigamePing : MonoBehaviour {
             computerVel = 0f;
         }
         computerPaddle.localPosition = new Vector3(x,100f,0f);
+    }
+
+    private void GameOver() {
+        gameOver.SetActive(true);
+    }
+
+    public void ResetOnGameOver() {
+        if (playerScore > computerScore) winText.text = "YOU WON!";
+        else winText.text = "YOU LOSE";
+
+        Reset();
     }
 }

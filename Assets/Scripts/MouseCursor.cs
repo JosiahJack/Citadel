@@ -97,6 +97,7 @@ public class MouseCursor : MonoBehaviour {
 
 	void OnGUI () {
 		if (MouseLookScript.a == null) return;
+		if (MinigameCursor.a.mouseOverPanel) return;
 
 		if (MouseLookScript.a.inventoryMode || PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
             // Inventory Mode Cursor

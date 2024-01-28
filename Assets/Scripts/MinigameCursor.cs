@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class MinigameCursor : MonoBehaviour {
+    public bool mouseOverPanel;
     public float minigameMouseX;
     public float minigameMouseY;
     public RectTransform minigameCursor;
@@ -13,6 +14,8 @@ public class MinigameCursor : MonoBehaviour {
     private float ymax = 266f/768f;
     private float deltaX;
     private float deltaY;
+    private bool overX;
+    private bool overY;
 
     public static MinigameCursor a;
 
@@ -27,18 +30,25 @@ public class MinigameCursor : MonoBehaviour {
 
     void Update() {
         minigameMouseX = MouseCursor.a.cursorPosition.x / Screen.width;
+        overX = false;
         if (minigameMouseX < xmin) minigameMouseX = xmin;
-        if (minigameMouseX > xmax) minigameMouseX = xmax;
+        else if (minigameMouseX > xmax) minigameMouseX = xmax;
+        else overX = true;
+
         minigameMouseX = (minigameMouseX - xmin) / deltaX;
 
         minigameMouseY = MouseCursor.a.cursorPosition.y / Screen.height;
+        overY = false;
         if (minigameMouseY < ymin) minigameMouseY = ymin;
-        if (minigameMouseY > ymax) minigameMouseY = ymax;
+        else if (minigameMouseY > ymax) minigameMouseY = ymax;
+        else overY = true;
+
         minigameMouseY = (minigameMouseY - ymin) / deltaY;
 
         minigameMouseX = (minigameMouseX * panelWidth) - offset;
         minigameMouseY = (minigameMouseY * panelWidth) - offset;
         minigameCursor.localPosition = new Vector3(minigameMouseX,minigameMouseY,0f);
+        mouseOverPanel = (overX && overY);
     }
 
     void DoubleClick() {
