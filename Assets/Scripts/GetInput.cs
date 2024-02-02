@@ -30,7 +30,7 @@ public class GetInput : MonoBehaviour {
 		}
 	}
 
-	//void Update() {
+// 	void Update() {
 	//	// Used for testing with a DualShock PlayStation 4 remote aka the DS4 for the PS4.
 	//	if (Input.GetKeyDown(KeyCode.JoystickButton0 )) Debug.Log("JoystickButton0 pressed"); // X (A)
 	//	if (Input.GetKeyDown(KeyCode.JoystickButton1 )) Debug.Log("JoystickButton1 pressed"); // Circle (B)
@@ -59,7 +59,7 @@ public class GetInput : MonoBehaviour {
 	//	if (Input.GetAxisRaw("JoyAxis7") < 0) Debug.Log("JoyAxis7 negative"); // D-Pad Left
 	//	if (Input.GetAxisRaw("JoyAxis8") > 0) Debug.Log("JoyAxis8 positive"); // D-Pad Down
 	//	if (Input.GetAxisRaw("JoyAxis8") < 0) Debug.Log("JoyAxis8 negative"); // D-Pad Up
-	//}
+// 	}
 
 	// Generics
 	public bool MouseWheelBoundAndRolled(int setCode) {

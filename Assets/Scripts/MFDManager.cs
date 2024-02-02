@@ -44,7 +44,6 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject minigameSpace;
 	public GameObject minigamePingSpaceContainer;
 	public GameObject minigame15SpaceContainer;
-	public GameObject minigame15ButtonsContainer;
 	public GameObject minigameWing0SpaceContainer;
 	public GameObject minigameBotbounceSpaceContainer;
 	public GameObject minigameEelZapperSpaceContainer;
@@ -647,7 +646,6 @@ public class MFDManager : MonoBehaviour  {
 			minigameViewContainer.SetActive(false);
 			minigamePingSpaceContainer.SetActive(false);
 			minigame15SpaceContainer.SetActive(false);
-			minigame15ButtonsContainer.SetActive(false);
 			minigameWing0SpaceContainer.SetActive(false);
 			minigameBotbounceSpaceContainer.SetActive(false);
 			minigameEelZapperSpaceContainer.SetActive(false);
@@ -1767,7 +1765,6 @@ public class MFDManager : MonoBehaviour  {
 
 		minigamePingSpaceContainer.SetActive(false);
 		minigame15SpaceContainer.SetActive(false);
-		minigame15ButtonsContainer.SetActive(false);
 		minigameWing0SpaceContainer.SetActive(false);
 		minigameBotbounceSpaceContainer.SetActive(false);
 		minigameEelZapperSpaceContainer.SetActive(false);
@@ -1793,7 +1790,6 @@ public class MFDManager : MonoBehaviour  {
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigame15SpaceContainer.SetActive(true);
-		minigame15ButtonsContainer.SetActive(true);
 		minigameSpace.SetActive(true);
 		minigameCamera.SetActive(true);
 	}

@@ -13,6 +13,7 @@ public class MinigamePing : MonoBehaviour {
     public GameObject playerPizzaz;
     public GameObject computerPizzaz;
     public GameObject gameOver;
+    public Text winHeader;
     public Text winText;
     public GameObject winPizzazz;
     public int playerScore;
@@ -276,6 +277,7 @@ public class MinigamePing : MonoBehaviour {
 
     private void GameOver() {
         gameOver.SetActive(true);
+        winHeader.text = "GAME OVER";
         if (playerScore > computerScore) {
             winText.text = "YOU WON!";
             winPizzazz.SetActive(true);
