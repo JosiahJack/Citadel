@@ -6,11 +6,12 @@ public class DriftUp : MonoBehaviour {
     public float endY;
     public float rate = 0.5f;
     public float fadeRate = 0.1f;
-    public float tickFinished;
     public bool fadeImage;
     public Image img;
     public float startFade = 1f;
     public float endFade = 0f;
+
+    private float tickFinished;
 
     void OnEnable() {
         transform.position = new Vector3(transform.position.x,

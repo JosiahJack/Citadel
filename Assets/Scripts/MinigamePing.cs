@@ -1,7 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using System.Collections.Generic;
 
 public class MinigamePing : MonoBehaviour {
     public Image playerPaddleImg;
@@ -14,23 +12,23 @@ public class MinigamePing : MonoBehaviour {
     public Text computerScoreText;
     public GameObject playerPizzaz;
     public GameObject computerPizzaz;
-    private float computerRate = 12f;
-    private float playerRate = 15f;
-    public float ballSpeed = 10f;
+    public GameObject gameOver;
+    public Text winText;
+    public GameObject winPizzazz;
     public int playerScore;
     public int computerScore;
+
+    private float computerRate = 12f;
+    private float playerRate = 15f;
+    private float ballSpeed = 10f;
     private float computerVel;
     private float playerVel;
     private Vector2 ballDir;
     private float paddleWidthH = 18f; // Half lengths
     private float paddleHeightH = 6f;
-    public float ballSideH = 0f;
-    public GameObject gameOver;
-    public Text winText;
-    public GameObject winPizzazz;
-    public int servecount;
-    public bool playerServing;
-
+    private float ballSideH = 6f;
+    private int servecount;
+    private bool playerServing;
     private float x;
     private float y;
     private float frameFinished = 0f;
