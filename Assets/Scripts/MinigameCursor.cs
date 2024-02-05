@@ -50,8 +50,4 @@ public class MinigameCursor : MonoBehaviour {
         minigameCursor.localPosition = new Vector3(minigameMouseX,minigameMouseY,0f);
         mouseOverPanel = (overX && overY);
     }
-
-    void DoubleClick() {
-
-    }
 }

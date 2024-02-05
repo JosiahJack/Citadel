@@ -73,8 +73,9 @@ public class MouseCursor : MonoBehaviour {
 	#endif
 
 	public static void SetCursorPosInternal(int x, int y) {
-		// Still experiencing issues, best to live with this bug a while yet as
-		// it is better to have consistent behavior rather than what this does.
+		// TODO: Still experiencing issues, best to live with this bug a while
+		// yet as it is better to have consistent behavior rather than what
+		// this does.
 
 		//#if UNITY_STANDALONE_LINUX
 		//	IntPtr display = XOpenDisplay(null);
@@ -103,7 +104,6 @@ public class MouseCursor : MonoBehaviour {
 
 		if (MouseLookScript.a.inventoryMode || PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
             // Inventory Mode Cursor
-			//drawTexture.Set(cursorPosition.x - offsetX,Screen.height - cursorPosition.y - offsetY,cursorSize,cursorSize);
 			drawTexture.Set(Input.mousePosition.x - offsetX,Screen.height - Input.mousePosition.y - offsetY,cursorSize,cursorSize);
         } else {
             // Shoot Mode Cursor
