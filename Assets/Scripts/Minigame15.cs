@@ -155,13 +155,13 @@ public class Minigame15 : MonoBehaviour {
                 if (!sliding[i]) continue;
 
                 pos = tileImage[i].rectTransform.localPosition;
-                float x = 0f;
-                float y = 0f;
-                if (slideDir[i].x > 0) x = 2f;
-                else if (slideDir[i].x < 0) x = -2f;
+                float x = pos.x;
+                float y = pos.y;
+                if (slideDir[i].x > 0) x = pos.x + 2f;
+                else if (slideDir[i].x < 0) x = pos.x + -2f;
 
-                if (slideDir[i].y > 0) y = 2f;
-                else if (slideDir[i].y < 0) y = -2f;
+                if (slideDir[i].y > 0) y = pos.y + 2f;
+                else if (slideDir[i].y < 0) y = pos.y + -2f;
                 tileImage[i].rectTransform.localPosition = new Vector3(x,y,1f);
                 if ((tileImage[i].rectTransform.localPosition
                     - position[i]).magnitude < 1f) {
