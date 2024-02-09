@@ -33,7 +33,7 @@ public class Minigame15 : MonoBehaviour {
     public int row4Up;
     public int row4Dn;
     public bool[] sliding = new bool[17];
-    public Vector2Int[] slideDir = new Vector2Int[17];
+    public Vector2[] slideDir = new Vector2[17];
     private Vector3 pos;
     private Vector3[] position = new Vector3[17];
     private float slideTickFinished;
@@ -157,19 +157,29 @@ public class Minigame15 : MonoBehaviour {
                 pos = tileImage[i].rectTransform.localPosition;
                 float x = pos.x;
                 float y = pos.y;
-                if (slideDir[i].x > 0) x = pos.x + 2f;
-                else if (slideDir[i].x < 0) x = pos.x + -2f;
+                bool slidingLeft = slideDir[i].x < 0;
+                bool slidingRight = slideDir[i].x > 0;
+                if (slidingRight) x = pos.x + 2f;
+                else if (slidingLeft) x = pos.x + -2f;
 
-                if (slideDir[i].y > 0) y = pos.y + 2f;
-                else if (slideDir[i].y < 0) y = pos.y + -2f;
+                bool slidingDown = slideDir[i].y < 0;
+                bool slidingUp = slideDir[i].y > 0;
+                if (slidingUp) y = pos.y + 2f;
+                else if (slidingDown) y = pos.y + -2f;
+
                 tileImage[i].rectTransform.localPosition = new Vector3(x,y,1f);
-                if ((tileImage[i].rectTransform.localPosition
-                    - position[i]).magnitude < 1f) {
+                float curx = tileImage[i].rectTransform.localPosition.x;
+                float cury = tileImage[i].rectTransform.localPosition.y;
+                if (   (slidingLeft  && curx <= position[i].x)
+                    || (slidingRight && curx<= position[i].x)
+                    || (slidingUp    && cury >= position[i].y)
+                    || (slidingDown  && cury <= position[i].y)) {
 
                     tileImage[i].rectTransform.localPosition =
                         new Vector3(position[i].x,position[i].y,0f);
 
                     sliding[i] = false;
+                    slideDir[i] = Vector2.zero;
                 }
             }
         }
@@ -184,6 +194,10 @@ public class Minigame15 : MonoBehaviour {
         if (!resetting) {
             tileImage[to].rectTransform.localPosition = position[from];
             sliding[to] = true;
+            slideDir[to] =
+              new Vector2(Mathf.Sign(position[to].x - position[from].x),
+                          Mathf.Sign(position[to].y - position[from].y));
+
             slideTickFinished = PauseScript.a.relativeTime + 0.1f;
         }
 
@@ -209,10 +223,10 @@ public class Minigame15 : MonoBehaviour {
         if (rt > 0 && rt < 17) rti = curNum[rt];
         if (up > 0 && up < 17) upi = curNum[up];
         if (dn > 0 && dn < 17) dni = curNum[dn];
-        if (lti == 16) { slideDir[curdex] = new Vector2Int(-1, 0); return lt; }
-        if (rti == 16) { slideDir[curdex] = new Vector2Int( 1, 0); return rt; }
-        if (upi == 16) { slideDir[curdex] = new Vector2Int( 0, 1); return up; }
-        if (dni == 16) { slideDir[curdex] = new Vector2Int( 0,-1); return dn; }
+        if (lti == 16) return lt;
+        if (rti == 16) return rt;
+        if (upi == 16) return up;
+        if (dni == 16) return dn;
         return 0;
     }
 
