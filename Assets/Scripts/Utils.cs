@@ -53,6 +53,13 @@ public class Utils {
 		return array[index]; // Safe to pass the index value into the array space.
 	}
 
+	public static float Sign(float value) {
+		if (value < Mathf.Epsilon && value > -Mathf.Epsilon) return 0f;
+		if (value > 0f) return 1f;
+		return -1f;
+	}
+
+
 	public static void BlankBoolArray(ref bool[] array, bool value) {
 		for (int i=0;i<array.Length;i++) {
 			array[i] = value; // Reset the list

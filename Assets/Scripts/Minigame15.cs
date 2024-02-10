@@ -6,6 +6,8 @@ public class Minigame15 : MonoBehaviour {
     public Text[] numText;
     public int[] curNum;
     public GameObject gameOver;
+    public RectTransform sliderButton;
+    public Text sliderButtonText;
     public Text winHeader;
     public Text winText;
     public int btnWidth = 28;
@@ -35,7 +37,7 @@ public class Minigame15 : MonoBehaviour {
     public bool[] sliding = new bool[17];
     public Vector2[] slideDir = new Vector2[17];
     private Vector3 pos;
-    private Vector3[] position = new Vector3[17];
+    public Vector3[] position = new Vector3[17];
     private float slideTickFinished;
 
     void OnEnable() {
@@ -65,22 +67,22 @@ public class Minigame15 : MonoBehaviour {
             shuffleIter--;
         }
 
-        position[1]  = new Vector3(-48f, 48f,-0.1f);
-        position[2]  = new Vector3(-16f, 48f,-0.1f);
-        position[3]  = new Vector3( 16f, 48f,-0.1f);
-        position[4]  = new Vector3( 48f, 48f,-0.1f);
-        position[5]  = new Vector3(-48f, 16f,-0.1f);
-        position[6]  = new Vector3(-16f, 16f,-0.1f);
-        position[7]  = new Vector3( 16f, 16f,-0.1f);
-        position[8]  = new Vector3( 48f, 16f,-0.1f);
-        position[9]  = new Vector3(-48f,-16f,-0.1f);
-        position[10] = new Vector3(-16f,-16f,-0.1f);
-        position[11] = new Vector3( 16f,-16f,-0.1f);
-        position[12] = new Vector3( 48f,-16f,-0.1f);
-        position[13] = new Vector3(-48f,-48f,-0.1f);
-        position[14] = new Vector3(-16f,-48f,-0.1f);
-        position[15] = new Vector3( 16f,-48f,-0.1f);
-        position[16] = new Vector3( 48f,-48f,-0.1f);
+        position[1]  = new Vector3(-48f, 48f,-1f);
+        position[2]  = new Vector3(-16f, 48f,-1f);
+        position[3]  = new Vector3( 16f, 48f,-1f);
+        position[4]  = new Vector3( 48f, 48f,-1f);
+        position[5]  = new Vector3(-48f, 16f,-1f);
+        position[6]  = new Vector3(-16f, 16f,-1f);
+        position[7]  = new Vector3( 16f, 16f,-1f);
+        position[8]  = new Vector3( 48f, 16f,-1f);
+        position[9]  = new Vector3(-48f,-16f,-1f);
+        position[10] = new Vector3(-16f,-16f,-1f);
+        position[11] = new Vector3( 16f,-16f,-1f);
+        position[12] = new Vector3( 48f,-16f,-1f);
+        position[13] = new Vector3(-48f,-48f,-1f);
+        position[14] = new Vector3(-16f,-48f,-1f);
+        position[15] = new Vector3( 16f,-48f,-1f);
+        position[16] = new Vector3( 48f,-48f,-1f);
 
         for (int i=1;i<=16;i++) {
             numText[i].text = curNum[i].ToString();
@@ -157,6 +159,7 @@ public class Minigame15 : MonoBehaviour {
                 pos = tileImage[i].rectTransform.localPosition;
                 float x = pos.x;
                 float y = pos.y;
+                Debug.Log("slideDir: " + slideDir[i].ToString());
                 bool slidingLeft = slideDir[i].x < 0;
                 bool slidingRight = slideDir[i].x > 0;
                 if (slidingRight) x = pos.x + 2f;
@@ -167,20 +170,25 @@ public class Minigame15 : MonoBehaviour {
                 if (slidingUp) y = pos.y + 2f;
                 else if (slidingDown) y = pos.y + -2f;
 
-                tileImage[i].rectTransform.localPosition = new Vector3(x,y,1f);
-                float curx = tileImage[i].rectTransform.localPosition.x;
-                float cury = tileImage[i].rectTransform.localPosition.y;
+                Debug.Log("bef sliderButton.localPosition: " + sliderButton.localPosition.ToString());
+                sliderButton.localPosition = new Vector3(x,y,-1f);
+                Debug.Log("aft sliderButton.localPosition: " + sliderButton.localPosition.ToString());
+                float curx = sliderButton.localPosition.x;
+                float cury = sliderButton.localPosition.y;
                 if (   (slidingLeft  && curx <= position[i].x)
-                    || (slidingRight && curx<= position[i].x)
+                    || (slidingRight && curx >= position[i].x)
                     || (slidingUp    && cury >= position[i].y)
                     || (slidingDown  && cury <= position[i].y)) {
 
-                    tileImage[i].rectTransform.localPosition =
-                        new Vector3(position[i].x,position[i].y,0f);
-
+                    sliderButton.gameObject.SetActive(false);
+                    sliderButtonText.text = "";
+                    tileImage[i].color = plainColor;
+                    numText[i].text = curNum[i].ToString();
                     sliding[i] = false;
                     slideDir[i] = Vector2.zero;
                 }
+
+                break;
             }
         }
     }
@@ -192,21 +200,25 @@ public class Minigame15 : MonoBehaviour {
         int fromNum = curNum[from];
         int toNum = curNum[to];
         if (!resetting) {
-            tileImage[to].rectTransform.localPosition = position[from];
+            sliderButton.gameObject.SetActive(true);
+            sliderButton.localPosition = position[from];
             sliding[to] = true;
-            slideDir[to] =
-              new Vector2(Mathf.Sign(position[to].x - position[from].x),
-                          Mathf.Sign(position[to].y - position[from].y));
-
+            float xdiff = position[to].x - position[from].x;
+            xdiff = Mathf.Abs(xdiff) > 2f ? xdiff : 0f;
+            float ydiff = position[to].y - position[from].y;
+            ydiff = Mathf.Abs(ydiff) > 2f ? ydiff : 0f;
+            Vector2 sliddirBefore = new Vector2(xdiff,ydiff);
+            slideDir[to] = new Vector2(Utils.Sign(xdiff),Utils.Sign(ydiff));
             slideTickFinished = PauseScript.a.relativeTime + 0.1f;
         }
 
         curNum[to] = fromNum;
         curNum[from] = toNum;
-        numText[to].text = curNum[to].ToString();
+        numText[to].text = "";
         tileImage[to].color = plainColor;
         numText[from].text = "";
         tileImage[from].color = noTileColor;
+        if (!resetting) sliderButtonText.text = curNum[to].ToString();
         return true;
     }
 
