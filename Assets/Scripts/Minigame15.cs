@@ -48,10 +48,9 @@ public class Minigame15 : MonoBehaviour {
         SetAlignments();
 
         // TODO: Pick image, set size, hide numbers if using image.
-
         for (int i=1;i<=16;i++) { curNum[i] = i; sliding[i] = false; }
         int sixteenIndex = 16;
-        int shuffleIter = Const.a.difficultyPuzzle * 4;
+        int shuffleIter = Const.a.difficultyPuzzle * 5;
         while (shuffleIter > 0) {
             int randIter = 32;
             while (randIter > 0) { // Find cell next to empty slot
@@ -147,32 +146,35 @@ public class Minigame15 : MonoBehaviour {
         else {
             for (int i=1;i<=16;i++) {
                 if (curNum[i] == 16) tileImage[i].color = noTileColor;
-                else tileImage[i].color = plainColor;
+                else {
+                    if (sliding[i])  tileImage[i].color = noTileColor;
+                    else             tileImage[i].color = plainColor;
+                }
             }
         }
 
         if (slideTickFinished < PauseScript.a.relativeTime) {
-            slideTickFinished = PauseScript.a.relativeTime + 0.1f;
+            float tdiff = PauseScript.a.relativeTime - slideTickFinished;
+            float tickCount = tdiff / 0.04f;
+            float shift = tickCount * 12f;
+            slideTickFinished = PauseScript.a.relativeTime + 0.04f;
             for (int i=1;i<=16;i++) {
                 if (!sliding[i]) continue;
 
-                pos = tileImage[i].rectTransform.localPosition;
+                pos = sliderButton.localPosition;
                 float x = pos.x;
                 float y = pos.y;
-                Debug.Log("slideDir: " + slideDir[i].ToString());
                 bool slidingLeft = slideDir[i].x < 0;
                 bool slidingRight = slideDir[i].x > 0;
-                if (slidingRight) x = pos.x + 2f;
-                else if (slidingLeft) x = pos.x + -2f;
+                if (slidingRight) x = pos.x + shift;
+                else if (slidingLeft) x = pos.x - shift;
 
                 bool slidingDown = slideDir[i].y < 0;
                 bool slidingUp = slideDir[i].y > 0;
-                if (slidingUp) y = pos.y + 2f;
-                else if (slidingDown) y = pos.y + -2f;
+                if (slidingUp) y = pos.y + shift;
+                else if (slidingDown) y = pos.y - shift;
 
-                Debug.Log("bef sliderButton.localPosition: " + sliderButton.localPosition.ToString());
                 sliderButton.localPosition = new Vector3(x,y,-1f);
-                Debug.Log("aft sliderButton.localPosition: " + sliderButton.localPosition.ToString());
                 float curx = sliderButton.localPosition.x;
                 float cury = sliderButton.localPosition.y;
                 if (   (slidingLeft  && curx <= position[i].x)
@@ -215,7 +217,7 @@ public class Minigame15 : MonoBehaviour {
         curNum[to] = fromNum;
         curNum[from] = toNum;
         numText[to].text = "";
-        tileImage[to].color = plainColor;
+        tileImage[to].color = noTileColor;
         numText[from].text = "";
         tileImage[from].color = noTileColor;
         if (!resetting) sliderButtonText.text = curNum[to].ToString();
