@@ -31,6 +31,7 @@ public class AIAnimationController : MonoBehaviour {
 	private float loadedAnimatorPlaybackTime;
 	private float loadedSetSpeed;
 	private bool initialized = false;
+	private bool doneDidDead = false;
 
 	void Start () {
 	    if (initialized) return;
@@ -59,6 +60,10 @@ public class AIAnimationController : MonoBehaviour {
 		}
 		
 		initialized = true;
+	}
+
+	void OnEnable() {
+		doneDidDead = false; // Ensure death anim is set to proper frame on enable.
 	}
 
 	void Update() {
@@ -181,10 +186,12 @@ public class AIAnimationController : MonoBehaviour {
 	void Dead () {
 		if (playDeathAnim) {
 			if (useDeadAnimForDeath) {
-				anim.Play("Dead",0,1.0f);
+				if (!doneDidDead) anim.Play("Dead",0,1.0f);
+				doneDidDead = true;
 				clipName = "Dead";
 			} else {
-				anim.Play("Death",0,1.0f);
+				if (!doneDidDead) anim.Play("Death",0,1.0f);
+				doneDidDead = true;
 				clipName = "Death";
 			}
 		}

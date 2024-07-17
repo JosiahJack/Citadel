@@ -34,6 +34,7 @@ public class MouseLookScript : MonoBehaviour {
 	public HealthManager hm;
 	public GameObject playerRadiationTreatmentFlash;
 	public Vector2 lastMousePos;
+	public bool lightCulling = true;
 
     // Internal references
     [HideInInspector] public bool inventoryMode;
@@ -51,7 +52,7 @@ public class MouseLookScript : MonoBehaviour {
 	[HideInInspector] public bool firstTimeSearch;
 	public bool grenadeActive;
 	public bool inCyberSpace;
-    [HideInInspector] public float yRotation;
+    public float yRotation;
 	[HideInInspector] public Vector3 cyberspaceReturnPoint; // save
 	[HideInInspector] public Vector3 cyberspaceReturnCameraLocalRotation; // save
 	[HideInInspector] public Vector3 cyberspaceReturnPlayerCapsuleLocalRotation; // save

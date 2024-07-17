@@ -7,12 +7,15 @@ using UnityEditor.SceneManagement;
 #endif
 public class TextureArrayIndexAssignment : MonoBehaviour {
     public float index = 0;
-    private MaterialPropertyBlock propBlock;
+    public static int numberOfIndices = 225;
+    public static MaterialPropertyBlock[] propertyBlocks;
+    public static MaterialPropertyBlock propertyBlock;
     private MeshRenderer mr;
 
-    void OnEnable() {
-        SetIndex();
-    }
+//     void OnEnable() {
+//         if (propertyBlocks.Length != numberOfIndices) InitializePropBlocks();
+//         SetIndex();
+//     }
 
     void Awake() {
         #if UNITY_EDITOR
@@ -20,6 +23,14 @@ public class TextureArrayIndexAssignment : MonoBehaviour {
         #endif
         SetIndex();
     }
+
+//     void InitializePropBlocks() {
+//         propertyBlocks = new MaterialPropertyBlock[numberOfIndices];
+//         for (int i = 0; i < numberOfIndices; i++) {
+//             propertyBlocks[i] = new MaterialPropertyBlock();
+//             propertyBlocks[i].SetFloat("_Slice",(float)i);
+//         }
+//     }
 
     public static void RevertPrefabPropertyOverrideWithMatchingName(Object ob, string name) {
         #if UNITY_EDITOR
@@ -30,13 +41,16 @@ public class TextureArrayIndexAssignment : MonoBehaviour {
     }
 
     void SetIndex() {
-        if (propBlock == null) propBlock = new MaterialPropertyBlock();
+//         if (propertyBlocks == null) InitializePropBlocks();
+        //if (propertyBlocks.Length != numberOfIndices) InitializePropBlocks();
+        //if (propertyBlock == null) propertyBlock = new MaterialPropertyBlock();
+        if (index < 0) return;
+        if (index >= numberOfIndices) return;
+
         if (mr == null) mr = GetComponent<MeshRenderer>();
         if (mr == null) return;
 
-        mr.GetPropertyBlock(propBlock);
-        propBlock.SetFloat("_Slice",index);
-        mr.SetPropertyBlock(propBlock);
+        //mr.SetPropertyBlock(propertyBlocks[(int)index]);
         #if UNITY_EDITOR
         MeshFilter mf = GetComponent<MeshFilter>();
         if (mf != null) {

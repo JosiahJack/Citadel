@@ -696,7 +696,16 @@ public class AIController : MonoBehaviour {
 		return true;
 	}
 
+	void BrakingMovement() {
+		if (index == 1 || (index >= 3 && index <= 9)
+			|| (index >= 11 && index <= 13) || index == 17 || index == 23) {
+
+			rbody.velocity *= 0.15f; // Stop scoot to shoot.
+		}
+	}
+
 	void StartAttack1() {
+		BrakingMovement();
 		attackFinished = PauseScript.a.relativeTime
 						 + Const.a.timeBetweenAttack1ForNPC[index]
 						 + Const.a.timeToActualAttack1ForNPC[index];
@@ -711,6 +720,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	void StartAttack2() {
+		BrakingMovement();
 		attackFinished = PauseScript.a.relativeTime
 						 + Const.a.timeBetweenAttack2ForNPC[index]
 						 + Const.a.timeToActualAttack2ForNPC[index];
@@ -722,6 +732,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	void StartAttack3() {
+		BrakingMovement();
 		attackFinished = PauseScript.a.relativeTime
 						 + Const.a.timeBetweenAttack3ForNPC[index]
 						 + Const.a.timeToActualAttack3ForNPC[index];

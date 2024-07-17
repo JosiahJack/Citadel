@@ -60,6 +60,7 @@ struct VertexInput
 {
     float4 vertex   : POSITION;
     half3 normal    : NORMAL;
+    fixed4 color      : COLOR;  // Add vertex color input
     float3 uv0      : TEXCOORD0;
     float2 uv1      : TEXCOORD1;
 #if defined(DYNAMICLIGHTMAP_ON) || defined(UNITY_PASS_META)
@@ -76,7 +77,9 @@ float4 TexCoords(VertexInput v)
     float4 texcoord;
     texcoord.xy = TRANSFORM_TEX(v.uv0, _MainTex); // Always source from uv0
     UNITY_SETUP_INSTANCE_ID(v);
-    texcoord.z = UNITY_ACCESS_INSTANCED_PROP(Props, _Slice); //v.uv0.z;
+    if (v.color.r < 0.515 && v.color.r > 0.513) texcoord.z = 132;
+    else texcoord.z = floor(v.color.r * 255);
+    if (texcoord.z == 0) texcoord.z = UNITY_ACCESS_INSTANCED_PROP(Props, _Slice);
 	// TODO need another way to deal with _DetailAlbedoMap since we can't use it for texcoord.
 	//texcoord.zw = TRANSFORM_TEX(((_UVSec == 0) ? v.uv0 : v.uv1), _DetailAlbedoMap);
     return texcoord;

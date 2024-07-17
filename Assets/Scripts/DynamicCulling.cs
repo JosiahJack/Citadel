@@ -22,7 +22,9 @@ public class DynamicCulling : MonoBehaviour {
     public List<MeshRenderer> staticMeshesSaveable = new List<MeshRenderer>();
     public List<Vector2Int> staticMeshSaveableCoords = new List<Vector2Int>();
     public List<Light> lights = new List<Light>();
+    public List<Light> lightsInPVS = new List<Light>();
     public List<Vector2Int> lightCoords = new List<Vector2Int>();
+    public List<Vector2Int> lightsInPVSCoords = new List<Vector2Int>();
     public List<MeshRenderer> doors = new List<MeshRenderer>();
     public List<Vector2Int> doorsCoords = new List<Vector2Int>();
     public bool[,] worldCellLastVisible = new bool[WORLDX,WORLDX];
@@ -73,8 +75,12 @@ public class DynamicCulling : MonoBehaviour {
         doorsCoords.Clear();
         lights = new List<Light>();
         lights.Clear();
+        lightsInPVS = new List<Light>();
+        lightsInPVS.Clear();
         lightCoords = new List<Vector2Int>();
         lightCoords.Clear();
+        lightsInPVSCoords = new List<Vector2Int>();
+        lightsInPVSCoords.Clear();
         dynamicMeshes = new List<MeshRenderer>();
         dynamicMeshes.Clear();
         dynamicMeshCoords = new List<Vector2Int>();
@@ -781,12 +787,37 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void ToggleLightsVisibility() {
+        lightsInPVS.Clear();
         for (int i=0;i<lights.Count;i++) {
             if (worldCellVisible[lightCoords[i].x,lightCoords[i].y]
                 || !worldCellOpen[lightCoords[i].x,lightCoords[i].y]) {
                 lights[i].enabled = true;
+                lightsInPVS.Add(lights[i]);
+                lightsInPVSCoords.Add(lightCoords[i]);
             } else {
                 lights[i].enabled = false;
+            }
+        }
+    }
+
+    public void ToggleLightsFrustumVisibility() {
+        Vector3 lightPos;
+        Vector3 lightDir;
+        for (int i=0;i<lightsInPVS.Count;i++) {
+            lightPos = lightsInPVS[i].transform.position;
+            lightDir = PlayerMovement.a.transform.position - lightPos;
+            if (Vector3.Dot(lightDir,MouseLookScript.a.transform.forward) < 0.5f) {
+                lightsInPVS[i].enabled = true;
+                Debug.Log("Light at "
+                + lightsInPVS[i].transform.position.ToString()
+                + " VISIBLE, check was: "
+                + Vector3.Dot(lightDir,MouseLookScript.a.transform.forward).ToString());
+            } else {
+                lightsInPVS[i].enabled = false;
+                Debug.Log("Light at "
+                + lightsInPVS[i].transform.position.ToString()
+                + " NOT VISIBLE, check was: "
+                + Vector3.Dot(lightDir,MouseLookScript.a.transform.forward).ToString());
             }
         }
     }
@@ -814,6 +845,8 @@ public class DynamicCulling : MonoBehaviour {
             UpdateNPCPVS();
             ToggleNPCPVS();
         }
+
+        if (MouseLookScript.a.lightCulling) ToggleLightsFrustumVisibility();
 
         // Update dynamic meshes after PVS has been updated, if player moved.
         //UpdateDynamicMeshes(); // Always check all of them because any can move.

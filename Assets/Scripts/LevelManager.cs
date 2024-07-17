@@ -474,6 +474,7 @@ public class LevelManager : MonoBehaviour {
 			lit.color = new Color(readFloatx, readFloaty, readFloatz, readFloatw);
 			lit.spotAngle = Utils.GetFloatFromString(entries[index]); index++;
 			lit.shadows = Utils.GetLightShadowsFromString(entries[index]); index++;
+			if (lit.intensity < 0.3f || (lit.range > 7f && lit.intensity < 2f)) lit.shadows = LightShadows.None;
 			lit.shadowStrength = Utils.GetFloatFromString(entries[index]); index++;
 			lit.shadowResolution = Utils.GetShadowResFromString(entries[index]); index++;
 			lit.shadowBias = Utils.GetFloatFromString(entries[index]); index++;
