@@ -714,41 +714,12 @@ public class MouseLookScript : MonoBehaviour {
 		} else { // Frobbed into empty space, so whatever it is is too far.
 			if (tempHit.collider != null) {
 				// Can't use <something>
-				UseNameSprint(tempHit.collider.gameObject);
+				UseName.UseNameSprint(tempHit.collider.gameObject);
 			} else {
 				// You are too far away from that
 				Const.sprint(Const.a.stringTable[30],player);
 			}
 		}
-	}
-
-	bool UseNameSprint(GameObject go) {
-		UseName un = go.GetComponent<UseName>();
-		PrefabIdentifier pid = go.GetComponent<PrefabIdentifier>();
-		if (un == null) un = go.transform.parent.gameObject.GetComponent<UseName>(); // Ok, maybe the parent has it.
-		if (un == null) un = go.GetComponentInChildren<UseName>(true); // Ok...so maybe a child has UseName on it, find it in the children.
-		if (un != null) {
-			// Exceptions
-			if (pid != null) {
-				if (pid.constIndex == 71) { // ATM
-					Const.sprint(Const.a.stringTable[593],player); // "machine being serviced"
-					return true;
-				} else if (pid.constIndex == 234 || pid.constIndex == 202) { // halogen lamp
-					Const.sprint(Const.a.stringTable[594],player); // "bulb needs replacing"
-					return true;
-				} else if (pid.constIndex == 207 || pid.constIndex == 208) { // diagnostic module, comm panel
-					Const.sprint(un.targetname + " " + Const.a.stringTable[595],player); // "<blah blah blah> inactive"
-					return true;
-				}
-			}
-
-			Const.sprint(Const.a.stringTable[29] + un.targetname,player); // "Can't use <blah blah blah>"
-			return true;
-		}
-
-		// Fine we don't know what it is.
-		Const.sprint(Const.a.stringTable[29],player); // "Can't use "
-		return false; 
 	}
 
 	bool FrobWithHeldObject() {

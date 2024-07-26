@@ -1010,7 +1010,7 @@ public class PlayerMovement : MonoBehaviour {
 			|| bodyState == BodyState.CrouchingDown
 			|| bodyState == BodyState.ProningDown
 			|| bodyState == BodyState.ProningUp) {
-			Debug.Log("Crouching gravity! " + rbody.useGravity.ToString());
+// 			Debug.Log("Crouching gravity! " + rbody.useGravity.ToString());
 			return true;
 		}
 		if (isSprinting) return true;

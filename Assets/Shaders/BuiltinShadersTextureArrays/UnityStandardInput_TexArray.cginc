@@ -79,7 +79,6 @@ float4 TexCoords(VertexInput v)
     UNITY_SETUP_INSTANCE_ID(v);
     if (v.color.r < 0.515 && v.color.r > 0.513) texcoord.z = 132;
     else texcoord.z = floor(v.color.r * 255);
-    if (texcoord.z == 0) texcoord.z = UNITY_ACCESS_INSTANCED_PROP(Props, _Slice);
 	// TODO need another way to deal with _DetailAlbedoMap since we can't use it for texcoord.
 	//texcoord.zw = TRANSFORM_TEX(((_UVSec == 0) ? v.uv0 : v.uv1), _DetailAlbedoMap);
     return texcoord;

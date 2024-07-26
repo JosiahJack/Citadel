@@ -353,6 +353,12 @@ public class Const : MonoBehaviour {
 	public static Const a;
 
 	public void Awake() {
+		for (float i=0f; i< 225f; i = i + 1f) {
+			UnityEngine.Debug.Log("Texture Array index to red channel for i: "
+								  + i.ToString() + "  "
+								  + (i / 255f).ToString("0.0000000"));
+		}
+
 		Application.targetFrameRate = TARGET_FPS;
 		a = this; // Create a new instance so that it can be accessed globally.
 				  // MOST IMPORTANT PART!!
