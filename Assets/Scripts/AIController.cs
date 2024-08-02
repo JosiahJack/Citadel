@@ -69,6 +69,7 @@ public class AIController : MonoBehaviour {
 	[HideInInspector] public float timeTillDeadFinished; // save
 	[HideInInspector] public float timeTillPainFinished; // save
 	[HideInInspector] public AudioSource SFX;
+	[HideInInspector] public float normalVolume;
 	[HideInInspector] public Rigidbody rbody;
 	[HideInInspector] public float tickFinished; // save
 	[HideInInspector] public float raycastingTickFinished; // save
@@ -236,6 +237,8 @@ public class AIController : MonoBehaviour {
 					  + transform.position.ToString());
 		} else {
 			SFX.playOnAwake = false;
+			if (SFX.volume == 0f) SFX.volume = 1.0f;
+			normalVolume = SFX.volume;
 		}
 
 		if (walkWaypoints.Length > 0 && walkWaypoints[currentWaypoint] != null

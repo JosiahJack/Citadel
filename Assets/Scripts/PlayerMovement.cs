@@ -57,7 +57,7 @@ public class PlayerMovement : MonoBehaviour {
 	public string lastCommand5;
 	public string lastCommand6;
 	public int consoleMemdex;
-	private float feetRayLength = 1.92f;
+	private float feetRayLength = 5f;
 	[HideInInspector] public bool FatigueCheat;
 
 	// Internal references
@@ -364,10 +364,10 @@ public class PlayerMovement : MonoBehaviour {
 									    out tempHit,feetRayLength,
 									    Const.a.layerMaskPlayerFeet);
 
-		if (rbody.velocity.sqrMagnitude <= 0f) {
+		if (rbody.velocity.sqrMagnitude <= 0.05f) {
 			SFXClothes.Stop();
-			return;
 		}
+
 		if ((relForward + relSideways) == 0) return;
 
 		if (rustleFinished < PauseScript.a.relativeTime) {
@@ -386,6 +386,11 @@ public class PlayerMovement : MonoBehaviour {
 		if (!grounded) return;
 
 		PrefabIdentifier prefID = hitGO.GetComponent<PrefabIdentifier>();
+		if (prefID == null) {
+			if (hitGO.transform.parent != null) {
+				prefID = hitGO.transform.parent.gameObject.GetComponent<PrefabIdentifier>();
+			}
+		}
 		if (prefID == null) return;
 
 		// Footsteps

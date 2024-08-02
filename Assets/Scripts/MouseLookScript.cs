@@ -753,15 +753,17 @@ public class MouseLookScript : MonoBehaviour {
 		ud.mainIndex = heldObjectIndex;
 		ud.customIndex = heldObjectCustomIndex;
 		UseHandler uh = go.GetComponent<UseHandler>();
+		bool playedSound = false;
 		if (uh != null) {
 			Utils.PlayOneShotSavable(SFXSource,SearchSFX);
+			playedSound = true;
 			uh.Use(ud);
 			return true; // Item can get absorbed, not dropped.
 		}
 
 		UseHandlerRelay uhr = go.GetComponent<UseHandlerRelay>();
 		if (uhr != null) {
-			Utils.PlayOneShotSavable(SFXSource,SearchSFX);
+			if (!playedSound) Utils.PlayOneShotSavable(SFXSource,SearchSFX);
 			uhr.referenceUseHandler.Use(ud);
 			return true; // Item can get absorbed, not dropped.
 		}

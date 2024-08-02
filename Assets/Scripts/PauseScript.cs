@@ -57,6 +57,46 @@ public class PauseScript : MonoBehaviour {
 			    PauseEnable();
 			}
 			CheckForSuperWinCmdKey();
+
+			if (!Paused()) {
+				// Raytraced Audio Occlusion ;)
+				int hitCount = 0;
+				float newVolume = 1.0f;
+				RaycastHit[] results = new RaycastHit[6];
+				for (int i=0;i<ambientRegistry.Count;i++) {
+					if (ambientRegistry[i] == null) continue;
+
+					hitCount = Physics.RaycastNonAlloc(
+								MouseLookScript.a.transform.position,
+								ambientRegistry[i].transform.position
+								- MouseLookScript.a.transform.position,
+								results,32f,Const.a.layerMaskPlayerFrob,
+								QueryTriggerInteraction.UseGlobal);
+
+					ambientRegistry[i].SFX.volume =
+						ambientRegistry[i].normalVolume;
+
+					if (hitCount > 0) {
+						if (hitCount > 5) {
+							newVolume = ambientRegistry[i].normalVolume * 0.40f;
+						} else if (hitCount == 5) {
+							newVolume = ambientRegistry[i].normalVolume * 0.50f;
+						} else if (hitCount == 4) {
+							newVolume = ambientRegistry[i].normalVolume * 0.60f;
+						} else if (hitCount == 3) {
+							newVolume = ambientRegistry[i].normalVolume * 0.70f;
+						} else if (hitCount == 2) {
+							newVolume = ambientRegistry[i].normalVolume * 0.80f;
+						} else {
+							newVolume = ambientRegistry[i].normalVolume * 0.90f;
+						}
+
+						ambientRegistry[i].SFX.volume = newVolume;
+					}
+				}
+
+				Const.a.NPCAudioOcclusion();
+			}
 		}
 
 		if (!Paused()) relativeTime += Time.deltaTime;

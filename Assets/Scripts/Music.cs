@@ -503,7 +503,8 @@ public class Music : MonoBehaviour {
 			if (tempC != null) {
 				SFXMain.clip = tempC;
 				curC = tempC;
-				Utils.PlayOneShotSavable(SFXMain,tempC);
+// 				Utils.PlayOneShotSavable(SFXMain,tempC);
+				SFXMain.Play();
 				SFXMain.loop = false;
 			} else {
 				curC = null;
@@ -516,7 +517,8 @@ public class Music : MonoBehaviour {
 			if (tempC != null) {
 				SFXOverlay.clip = tempC;
 				curOverlayC = tempC;
-				Utils.PlayOneShotSavable(SFXOverlay,tempC);
+// 				Utils.PlayOneShotSavable(SFXOverlay,tempC);
+				SFXOverlay.Play();
 				SFXOverlay.loop = false;
 			} else {
 				curOverlayC = null;
@@ -696,7 +698,11 @@ public class Music : MonoBehaviour {
 			if (SFXOverlay != null) SFXOverlay.UnPause();
 		}
 
-		if (SFXMain.isPlaying) return;
+// 		if (SFXMain.isPlaying) return;
+		if (SFXMain.clip != null) {
+			float remaining = (SFXMain.clip.length - SFXMain.time);
+			if (remaining > Time.deltaTime && SFXMain.isPlaying) return;
+		}
 
 		if (inCombat && !inZone && combatImpulseFinished
 			< PauseScript.a.relativeTime) {

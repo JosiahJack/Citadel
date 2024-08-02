@@ -1818,6 +1818,55 @@ public class Const : MonoBehaviour {
 		GoIntoGame(loadTimer);
 	}
 
+	public void NPCAudioOcclusion() {
+		// Raytraced Audio Occlusion ;)
+		int hitCount = 0;
+		float newVolume = 1.0f;
+		RaycastHit[] results = new RaycastHit[6];
+		AIController aic = null;
+		for (int i=0;i<healthObjectsRegistration.Length;i++) {
+			if (healthObjectsRegistration[i] == null) continue;
+
+			aic = healthObjectsRegistration[i].GetComponent<AIController>();
+			if (aic == null) continue;
+			if (aic.SFX == null) continue;
+			if (aic.index < Const.a.sfxSightSoundForNPC.Length && aic.index >= 0) {
+				if (Const.a.sfxSightSoundForNPC[aic.index] < Const.a.sounds.Length && Const.a.sfxSightSoundForNPC[aic.index] >= 0) {
+					if (aic.SFX.clip == Const.a.sounds[Const.a.sfxSightSoundForNPC[aic.index]]) {
+						aic.SFX.volume = aic.normalVolume;
+						continue;
+					}
+				}
+			}
+
+			hitCount = Physics.RaycastNonAlloc(
+						MouseLookScript.a.transform.position,
+						aic.transform.position
+						  - MouseLookScript.a.transform.position,
+						results,32f,Const.a.layerMaskPlayerFrob,
+						QueryTriggerInteraction.UseGlobal);
+
+			aic.SFX.volume = aic.normalVolume;
+			if (hitCount > 0) {
+				if (hitCount > 5) {
+					newVolume = aic.normalVolume * 0.65f;
+				} else if (hitCount == 5) {
+					newVolume = aic.normalVolume * 0.70f;
+				} else if (hitCount == 4) {
+					newVolume = aic.normalVolume * 0.75f;
+				} else if (hitCount == 3) {
+					newVolume = aic.normalVolume * 0.85f;
+				} else if (hitCount == 2) {
+					newVolume = aic.normalVolume * 0.90f;
+				} else {
+					newVolume = aic.normalVolume * 0.95f;
+				}
+
+				aic.SFX.volume = newVolume;
+			}
+		}
+	}
+
 	public void RegisterObjectWithHealth(HealthManager hm) {
 		if (hm == null) return;
 
