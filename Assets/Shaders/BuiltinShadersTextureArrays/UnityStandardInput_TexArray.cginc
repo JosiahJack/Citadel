@@ -77,8 +77,8 @@ float4 TexCoords(VertexInput v)
     float4 texcoord;
     texcoord.xy = TRANSFORM_TEX(v.uv0, _MainTex); // Always source from uv0
     UNITY_SETUP_INSTANCE_ID(v);
-    if (v.color.r < 0.515 && v.color.r > 0.513) texcoord.z = 132;
-    else texcoord.z = floor(v.color.r * 255);
+    //if (v.color.r < 0.52 && v.color.r > 0.515) texcoord.z = 132;
+    texcoord.z = floor(v.color.r * 255);
 	// TODO need another way to deal with _DetailAlbedoMap since we can't use it for texcoord.
 	//texcoord.zw = TRANSFORM_TEX(((_UVSec == 0) ? v.uv0 : v.uv1), _DetailAlbedoMap);
     return texcoord;

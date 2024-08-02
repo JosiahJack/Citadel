@@ -126,6 +126,7 @@ public class Config {
 		SetFOV();
 		SetAA();
 		SetVSync();
+		SetLanguage();
 	}
 
 	public static void WriteConfig() {
@@ -328,6 +329,13 @@ public class Config {
 		ColorGradingModel.Settings cgms = ppf.colorGrading.settings;
 		cgms.basic.postExposure = tempf;
 		ppf.colorGrading.settings = cgms;
+	}
+
+	public static void SetLanguage() {
+		Const.a.LoadTextForLanguage(Const.a.AudioLanguage);
+		foreach(TextLocalization txtLoc in Const.a.TextLocalizationRegister) {
+			txtLoc.UpdateText();
+		}
 	}
 
 	private static int AssignConfigInt(string section, string keyname) {

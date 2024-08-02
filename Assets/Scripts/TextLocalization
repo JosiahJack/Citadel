@@ -1,0 +1,10 @@
+using UnityEngine;
+
+public class TextLocalization : MonoBehaviour {
+    public int lingdex;
+    public Text txt;
+
+    public void UpdateText() {
+        txt.text = Const.a.stringTable[lingdex]; // Update to match new string table contents.
+    }
+}

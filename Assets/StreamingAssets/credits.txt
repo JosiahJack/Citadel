@@ -54,7 +54,7 @@ Mark Heath for NAudio
 lerenwe, Benjamin Stanley, cxong, Eric Haines(Eric5h5)
 Keijiro Takahashi, Morgan McGuire, Michael Mara, NVIDIA,
 Williams College, Casual Effects, Unity Technologies,
-Jeff Johnson, WeaverDev
+Jeff Johnson, WeaverDev, Nishad Tardalkar
 #
 -Playtesters-
 sverXRazum, Xkilljoy98, Berethraben,

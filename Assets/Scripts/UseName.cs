@@ -161,26 +161,181 @@ public class UseName : MonoBehaviour {
 			case 128: s1.Append("damaged quartz light fixture"); break;
 			case 129: s1.Append("structural panelling with light"); break;
 			case 130: s1.Append("grating"); break;
-
-			case 202: // halogen lamp
-				s1.Clear();
-				s1.Append(Const.a.stringTable[594]); // "bulb needs replacing"
-				break;
-			case 207: // diagnostic module, comm panel
-				s1.Clear();
-				s1.Append(Const.a.stringTable[595]); // "inactive"
-				break;
-			case 208: // diagnostic module, comm panel
-				s1.Clear();
-				s1.Append(Const.a.stringTable[595]); // "inactive"
-				break;
-			case 234: // halogen lamp
-				s1.Clear();
-				s1.Append(Const.a.stringTable[594]); // "bulb needs replacing"
-				break;
-			default:
-				if (un != null) s1.Append(un.targetname);
-				break;
+			case 131: s1.Append("damaged access station"); break;
+			case 132: s1.Append("access station"); break;
+			case 133: s1.Append("damaged access station"); break;
+			case 134: s1.Append("access station"); break;
+			case 135: s1.Append("damaged fluid transport pipes"); break;
+			case 136: s1.Append("fluid transport pipes"); break;
+			case 137: s1.Append("damaged access station"); break;
+			case 138: s1.Append("access station"); break;
+			case 139: s1.Append("damaged fluid transport monitor"); break;
+			case 140: s1.Append("fluid transport monitor"); break;
+			case 141: s1.Append("power conduits"); break; // Fun fact, the vertex color.r for this is 0.451 (115/255)
+			case 142: s1.Append("power conduits"); break;
+			case 143: s1.Append("power conduits"); break;
+			case 144: s1.Append("duralloy panelling"); break;
+			case 145: s1.Append("duralloy panelling"); break;
+			case 146: s1.Append("duralloy panelling"); break;
+			case 147: s1.Append("duralloy panelling"); break;
+			case 148: s1.Append("damaged duralloy panelling"); break;
+			case 149: s1.Append("plastic panelling"); break;
+			case 150: s1.Append("plastic panelling"); break;
+			case 151: s1.Append("plastic panelling"); break;
+			case 152: s1.Append("plastic panelling"); break;
+			case 153: s1.Append("plastic panelling"); break;
+			case 154: s1.Append("damaged plastic panelling"); break;
+			case 155: s1.Append("comm port"); break;
+			case 156: s1.Append("damaged comm port"); break;
+			case 157: s1.Append("environmental regulators"); break;
+			case 158: s1.Append("damaged environmental regulators"); break;
+			case 159: s1.Append("plastic panelling"); break;
+			case 160: s1.Append("fluorescent light"); break;
+			case 161: s1.Append("fluorescent light"); break;
+			case 162: s1.Append("tile panelling"); break;
+			case 163: s1.Append("tile panelling"); break;
+			case 164: s1.Append("tile panelling"); break;
+			case 165: s1.Append("tile panelling"); break;
+			case 166: s1.Append("tile panelling"); break;
+			case 167: s1.Append("damaged tile panelling"); break;
+			case 168: s1.Append("damaged tile panelling"); break;
+			case 169: s1.Append("fluorescent light"); break;
+			case 170: s1.Append("damaged fluorescent light"); break;
+			case 171: s1.Append("fluorescent panelling"); break;
+			case 172: s1.Append("fluorescent panelling"); break;
+			case 173: s1.Append("fluorescent panelling"); break;
+			case 174: s1.Append("fluorescent panelling"); break;
+			case 175: s1.Append("fluorescent panelling"); break;
+			case 176: s1.Append("fluorescent panelling"); break;
+			case 177: s1.Append("fluorescent panelling"); break;
+			case 178: s1.Append("medical diagnostic tools"); break;
+			case 179: s1.Append("medical diagnostic tools"); break;
+			case 180: s1.Append("damaged medical diagnostic tools"); break;
+			case 181: s1.Append("medical diagnostic tools"); break;
+			case 182: s1.Append("clinical panelling"); break;
+			case 183: s1.Append("damaged medical diagnostic tools"); break;
+			case 184: s1.Append("clinical panelling"); break;
+			case 185: s1.Append("damaged clinical panelling"); break;
+			case 186: s1.Append("medical computer"); break;
+			case 187: s1.Append("cryo healing incubator"); break;
+			case 188: s1.Append("locked storage cabinets"); break;
+			case 189: s1.Append("restoration bay"); break;
+			case 190: s1.Append("clinical panelling"); break;
+			case 191: s1.Append("clinical panelling"); break;
+			case 192: s1.Append("clinical panelling"); break;
+			case 193: s1.Append("clinical panelling"); break;
+			case 194: s1.Append("medical monitoring systems"); break;
+			case 195: s1.Append("damaged medical monitoring systems"); break;
+			case 196: s1.Append("flood light"); break;
+			case 197: s1.Append("cracked radiation tile"); break;
+			case 198: s1.Append("cracked radiation tile"); break;
+			case 199: s1.Append("molybdenum panelling"); break;
+			case 200: s1.Append("molybdenum panelling"); break;
+			case 201: s1.Append("power coupling"); break; // The first file made for Citadel, ever.
+			case 202: s1.Append(Const.a.stringTable[594]); break; // "halogen lighting, bulb needs replacing"
+			case 203: s1.Append("circuit relay"); break;
+			case 204: s1.Append("relay access port"); break;
+			case 205: s1.Append("power monitor"); break;
+			case 206: s1.Append("data transfer array"); break;
+			case 207: s1.Append(Const.a.stringTable[595]); break;// "diagnostic module, inactive"
+			case 208: s1.Append(Const.a.stringTable[631]); break;// "diagnostic module, inactive"
+			case 209: s1.Append("energy conduits"); break;
+			case 210: s1.Append("energy conduits"); break;
+			case 211: s1.Append("energy conduits"); break;
+			case 212: s1.Append("energy conduits"); break;
+			case 213: s1.Append("energy conduits"); break;
+			case 214: s1.Append("energy conduits"); break;
+			case 215: s1.Append("energy conduits"); break;
+			case 216: s1.Append("energy conduits"); break;
+			case 217: s1.Append("energy conduits"); break;
+			case 218: s1.Append("energy conduits"); break;
+			case 219: s1.Append("energy conduits"); break;
+			case 220: s1.Append("equipment storage"); break;
+			case 221: s1.Append("gravitational monitoring system"); break;
+			case 222: s1.Append("energy monitoring system"); break;
+			case 223: s1.Append("radiation observation console"); break;
+			case 224: s1.Append("central power conduit"); break;
+			case 225: s1.Append("molybdenum panelling"); break;
+			case 226: s1.Append("molybdenum panelling"); break;
+			case 227: s1.Append("piping access port"); break;
+			case 228: s1.Append("duct"); break;
+			case 229: s1.Append("molybdenum panelling"); break;
+			case 230: s1.Append("molybdenum panelling"); break;
+			case 231: s1.Append("relay network"); break;
+			case 232: s1.Append("sensor grid"); break;
+			case 233: s1.Append("sensor grid"); break;
+			case 234: s1.Append(Const.a.stringTable[594]); break; // "halogen lighting, bulb needs replacing"
+			case 235: s1.Append("magnetic containment system"); break;
+			case 236: s1.Append("magnetic containment system"); break;
+			case 237: s1.Append("magnetic containment system"); break;
+			case 238: s1.Append("quartz hi-grip surface"); break;
+			case 239: s1.Append("quartz light fixture"); break;
+			case 240: s1.Append("quartz duct"); break;
+			case 241: s1.Append("aluminum panelling"); break;
+			case 242: s1.Append("aluminum panelling"); break;
+			case 243: s1.Append("aluminum panelling"); break;
+			case 244: s1.Append("aluminum panelling"); break;
+			case 245: s1.Append("aluminum panelling"); break;
+			case 246: s1.Append("aluminum panelling"); break;
+			case 247: s1.Append("aluminum panelling"); break;
+			case 248: s1.Append("aluminum panelling"); break;
+			case 249: s1.Append("aluminum panelling"); break;
+			case 250: s1.Append("damaged aluminum panelling"); break;
+			case 251: s1.Append("matter converter"); break;
+			case 252: s1.Append("matter converter"); break;
+			case 253: s1.Append("aluminum panelling"); break;
+			case 254: s1.Append("aluminum panelling"); break;
+			case 255: s1.Append("aluminum panelling"); break;
+			case 256: s1.Append("environmental regulator"); break;
+			case 257: s1.Append("damaged environmental regulator"); break;
+			case 258: s1.Append("molecular analyzer"); break;
+			case 259: s1.Append("damaged molecular analyzer"); break;
+			case 260: s1.Append("fluorescent lighting"); break;
+			case 261: s1.Append("damaged fluorescent lighting"); break;
+			case 262: s1.Append("vent"); break;
+			case 263: s1.Append("vent"); break;
+			case 264: s1.Append("vent"); break;
+			case 265: s1.Append("damaged vent"); break;
+			case 266: s1.Append("environmental regulator"); break;
+			case 267: s1.Append("damaged environmental regulator"); break;
+			case 268: s1.Append("aluminum panelling"); break;
+			case 269: s1.Append("aluminum panelling"); break;
+			case 270: s1.Append("high-power light"); break;
+			case 271: s1.Append("damaged high-power light"); break;
+			case 272: s1.Append("composite panelling"); break;
+			case 273: s1.Append("damaged composite panelling"); break;
+			case 274: s1.Append("composite panelling"); break;
+			case 275: s1.Append("diagnostic panel"); break;
+			case 276: s1.Append("specimen analyzer"); break;
+			case 277: s1.Append("atmospheric regulator"); break;
+			case 278: s1.Append("data conduit"); break;
+			// Screens
+			case 280: s1.Append("obsidian slab"); break;
+			case 281: s1.Append("obsidian slab"); break;
+			case 282: s1.Append("obsidian slab"); break;
+			case 283: s1.Append("obsidian slab"); break;
+			case 284: s1.Append("obsidian slab"); break;
+			case 285: s1.Append("obsidian slab"); break;
+			case 286: s1.Append("obsidian slab"); break;
+			case 287: s1.Append("obsidian slab"); break;
+			case 288: s1.Append("silver panelling"); break;
+			case 289: s1.Append("silver panelling"); break;
+			case 290: s1.Append("light fixture"); break;
+			case 291: s1.Append("light fixture"); break;
+			case 292: s1.Append("no-scrape storeroom wall"); break;
+			case 293: s1.Append("damaged no-scrape storeroom wall"); break;
+			case 294: s1.Append("no-scrape storeroom wall"); break;
+			case 295: s1.Append("no-scrape storeroom wall"); break;
+			case 296: s1.Append("no-scrape storeroom wall"); break;
+			case 297: s1.Append("structural pillar"); break;
+			case 298: s1.Append("structural pillar"); break;
+			case 299: s1.Append("structural pillar"); break;
+			case 300: s1.Append("structural pillar"); break;
+			case 301: s1.Append("structural pillar"); break;
+			case 302: s1.Append("industrial tiles"); break;
+			case 303: s1.Append("industrial tiles"); break;
+			case 304: s1.Append("damaged industrial tiles"); break;
+			default: if (un != null) { s1.Append(un.targetname); } break;
 		}
 
 		Const.sprint(s1.ToString(),MouseLookScript.a.player);

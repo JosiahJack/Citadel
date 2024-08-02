@@ -57,7 +57,7 @@ public class PlayerMovement : MonoBehaviour {
 	public string lastCommand5;
 	public string lastCommand6;
 	public int consoleMemdex;
-	private float feetRayLength = 0.9f;
+	private float feetRayLength = 1.92f;
 	[HideInInspector] public bool FatigueCheat;
 
 	// Internal references
@@ -334,13 +334,14 @@ public class PlayerMovement : MonoBehaviour {
 
 		// Using value of 1.06 = (player capsule height / 2) + 0.06 = 1 + 0.06;
 		bool successfulRay = Physics.Raycast(transform.position, Vector3.down,
-											 out tempHit,feetRayLength,
+											 out tempHit,0.9f,
 											 Const.a.layerMaskPlayerFeet);
 
 		// Success here means hit a useable something.
 		// If a ray hits a wall or other unusable something, that's not success
 		// and print "Can't use <something>"
 		if (!successfulRay || tempHit.collider == null) {
+// 			Debug.Log("bad ray for feet checks");
 			// Automatically set grounded false, prevents ability to climb any wall
 			if (!CheatWallSticky || gravliftState) grounded = false;
 			return;
@@ -358,6 +359,10 @@ public class PlayerMovement : MonoBehaviour {
 			SFXFootsteps.Stop();
 			return;
 		}
+
+		successfulRay = Physics.Raycast(transform.position, Vector3.down,
+									    out tempHit,feetRayLength,
+									    Const.a.layerMaskPlayerFeet);
 
 		if (rbody.velocity.sqrMagnitude <= 0f) {
 			SFXClothes.Stop();

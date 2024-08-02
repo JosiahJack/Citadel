@@ -236,6 +236,7 @@ public class Const : MonoBehaviour {
 	/*[DTValidator.Optional] */public List<GameObject> TargetRegister; // Doesn't need to be full, available space for maps and mods made by the community to use tons of objects
 	public List<string> TargetnameRegister;
     public string[] stringTable;
+	public HashSet<TextLocalization> TextLocalizationRegister;
 	public float[] reloadTime;
 
 	public Material[] screenCodes;
@@ -353,12 +354,6 @@ public class Const : MonoBehaviour {
 	public static Const a;
 
 	public void Awake() {
-		for (float i=0f; i< 225f; i = i + 1f) {
-			UnityEngine.Debug.Log("Texture Array index to red channel for i: "
-								  + i.ToString() + "  "
-								  + (i / 255f).ToString("0.0000000"));
-		}
-
 		Application.targetFrameRate = TARGET_FPS;
 		a = this; // Create a new instance so that it can be accessed globally.
 				  // MOST IMPORTANT PART!!
@@ -395,6 +390,7 @@ public class Const : MonoBehaviour {
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
 		a.TargetRegister = new List<GameObject>();
 		a.TargetnameRegister = new List<string>();
+		a.TextLocalizationRegister = new HashSet<TextLocalization>();
 		a.versionString = "v0.99.6"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
@@ -1988,6 +1984,10 @@ public class Const : MonoBehaviour {
 	    // GameObject isn't in registry, add fresh.
 	    TargetRegister.Add(go);
 		TargetnameRegister.Add(tn);
+	}
+
+	public void AddToTextLocalizationRegister(TextLocalization txtloc) {
+		TextLocalizationRegister.Add(txtloc);
 	}
 
 	public void ReverbOn() {
