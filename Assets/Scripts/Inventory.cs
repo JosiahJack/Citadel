@@ -1476,7 +1476,7 @@ public class Inventory : MonoBehaviour {
 				hasLog[vers] = true;
 				return true;
 			case SoftwareType.Integrity:
-				Debug.Log("Cyber integrity touched");
+				//Debug.Log("Cyber integrity touched");
 				if (hm.cyberHealth >=255) return false;
 				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
 				hm.cyberHealth += 77f;
@@ -1696,7 +1696,7 @@ public class Inventory : MonoBehaviour {
             if (weaponInventoryIndices[i] >= 0) continue;
 
 			weaponInventoryIndices[i] = index;
-			weaponInventoryText[i] = weaponInvTextSource[(index - 36)]; // Yech!
+			weaponInventoryText[i] = Const.a.stringTable[363 + index];
 			int index16 = WeaponFire.Get16WeaponIndexFromConstIndex(index);
 			WeaponButton wepBut = MFDManager.a.wepbutMan.wepButtonsScripts[i];
 			wepBut.useableItemIndex = index;

@@ -65,7 +65,7 @@ public class MissionTimer : MonoBehaviour {
 
 		if (t <= 0) {
 			if (lastTimer) {
-				text.text = "<shocked>";
+				text.text = Const.a.stringTable[869];
 				timerTypeText.text = Const.a.stringTable[509];
 				timesUP = true;
 				return;

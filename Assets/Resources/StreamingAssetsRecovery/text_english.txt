@@ -134,7 +134,7 @@ quartz light fixture
 incandescent light
 access station
 power conduits
-duralloy panelling
+durallow panelling
 soft panelling
 comm port
 sof-impac panelling
@@ -281,8 +281,8 @@ STUNGUN
 Envirosuit absorbed 
 , 
 improper item, isotope required.
-isotope installed!
-isotope already installed.
+Isotope installed!
+Isotope already installed.
 panel is now open.
 The laser is destroyed.
 Unable to fire.  Charging.  Override preventing fire until fully charged.
@@ -556,7 +556,7 @@ Escape neurosurgery suite.
   Keycode is 451.
 Destroy level 
  nodes.
-  Code is 
+  Code is
 Disengage laser safety override.
 Activate the station energy shield.
 Destroy the mining laser.
@@ -591,9 +591,9 @@ Envirosuit is always passively active.
 Last 
 Cyborg conversion cancelled.  Healing normal.
 Cyborg conversion reactivated.
-machine being serviced
-bulb needs replacing
-inactive
+ATM, cyber security lockout
+halogen lighting, bulb needs replacing
+diagnostic module, inactive
 DAMAGED
 ACCESS CARDS
 Blast door unlocked.
@@ -629,3 +629,91 @@ EDWARD DIEGO IS DELETING ALL FILES CONCERNING THESE EVEN&$%#@#_--
 THEY FIND YOUR BODY AND GIVE IT NEW LIFE.
 AS A CYBORG, YOU WILL SERVE SHODAN WELL.
  added to ammo
+comm panel, inactive
+VOLTAGE
+ELEVATOR
+DELTA
+ALPHA
+BETA
+GAMMA
+HEALING
+SUITE
+NEUROSURGERY
+STORAGE
+COMPUTER PROGRAM ENTRY
+NEUROGRAFT
+SURGERY
+SURVEILLANCE
+JETTISON ENABLE
+MASTER CONTROL
+SUBJECT: NONE
+SUBJECT: L9546
+STATUS:   INACTIVE
+STATUS:   DISCHARGED
+COMPUTER
+STORAGE
+GROVE
+CORE
+LIBRARY
+LASER
+CONTROL
+ROBOT
+MAINTENANCE
+ROOM
+QUADRANT
+AREA
+ADMINISTRATOR
+HIGH AMPERAGE
+EMERGENCY
+SYSTEM
+SHOCK
+CITADEL
+STATION
+EXPERIMENTAL
+FLIGHT BAY
+MAINT
+RELAY
+ANALYZER
+DIAGNOSTIC LOGS
+INTERROGATION
+SECURITY
+SAFETY
+OVERRIDE
+ACCESS
+LEVEL R
+REACTOR
+LEVEL
+RADIATION
+SHIELD
+GENERATOR
+REPAIR
+STATUS
+GENERAL
+OFFICE
+MEDICAL
+EXTRACTION
+LEVEL 2
+RESEARCH
+TREATMENT
+JETTISON
+ENABLE
+DOCTOR
+MONITORING
+BRIDGE
+>> SUDO OPEN MAINTDATA
+ACCESSING MAINTENANCE
+DATABASE...
+DONE
+>> SUDO GET OVERRIDE CODES
+ACCESSING CODES...
+>> LASER SAFETY
+<ERROR>
+NETWORK ROUTING ERROR
+NETWORK BYPASS DETECTED!
+REROUTING...
+SUCCESS!
+LASER SAFETY OVERRIDE
+CODE:
+INTERLOCK
+DISABLED
+GRANTED

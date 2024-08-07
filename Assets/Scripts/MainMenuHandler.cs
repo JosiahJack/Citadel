@@ -108,6 +108,10 @@ public class MainMenuHandler : MonoBehaviour {
 	public Sprite OptionsTabHilited;
 	public Camera configCamera;
 	public AudioSource BackGroundMusic;
+	public ConfigurationMenuAAApply aaaApply;
+	public ConfigurationMenuShadowsApply shadApply;
+	public ConfigurationMenuSSRApply ssrApply;
+	public ConfigurationMenuAudioModeApply audModeApply;
 
 	[HideInInspector] public bool returnToPause = false;
 	public bool dataFound = false;

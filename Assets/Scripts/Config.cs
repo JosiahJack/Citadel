@@ -127,6 +127,7 @@ public class Config {
 		SetAA();
 		SetVSync();
 		SetLanguage();
+		SetAudioMode();
 	}
 
 	public static void WriteConfig() {
@@ -333,9 +334,31 @@ public class Config {
 
 	public static void SetLanguage() {
 		Const.a.LoadTextForLanguage(Const.a.AudioLanguage);
+		Const.a.LoadAudioLogMetaData();
+		Const.a.LoadItemNamesData();
 		foreach(TextLocalization txtLoc in Const.a.TextLocalizationRegister) {
 			txtLoc.UpdateText();
 		}
+		
+		MainMenuHandler.a.aaaApply.SetOptionsText();
+		MainMenuHandler.a.shadApply.SetOptionsText();
+		MainMenuHandler.a.ssrApply.SetOptionsText();
+		MainMenuHandler.a.audModeApply.SetOptionsText();
+	}
+	
+	public static void SetAudioMode() {
+		AudioConfiguration audconf = AudioSettings.GetConfiguration();
+		switch(Const.a.AudioSpeakerMode) {
+			case 0: audconf.speakerMode = AudioSpeakerMode.Mono; break;
+			case 1: audconf.speakerMode = AudioSpeakerMode.Stereo; break;
+			case 2: audconf.speakerMode = AudioSpeakerMode.Quad; break;
+			case 3: audconf.speakerMode = AudioSpeakerMode.Surround; break;
+			case 4: audconf.speakerMode = AudioSpeakerMode.Mode5point1; break;
+			case 5: audconf.speakerMode = AudioSpeakerMode.Mode7point1; break;
+			case 6: audconf.speakerMode = AudioSpeakerMode.Prologic; break;
+		}
+		
+		AudioSettings.Reset(audconf);
 	}
 
 	private static int AssignConfigInt(string section, string keyname) {

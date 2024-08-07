@@ -1133,7 +1133,7 @@ public class WeaponFire : MonoBehaviour {
         damageData.owner = playerCapsule;
 		damageData.impactVelocity = 80f;
 		if (wep16Index == 12) {
-			damageData.impactVelocity = 300f;
+			damageData.impactVelocity = 120f;
 			if (tempHM != null) { // babamm boxes be like, u ded
 				if (tempHM.isObject) damageData.damage *= 10f;
 			}

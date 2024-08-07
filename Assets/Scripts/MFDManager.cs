@@ -987,11 +987,33 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
-	public void SendSearchToDataTab (string name, int contentCount, int[] resultContents, int[] resultsIndices, Vector3 searchPosition, SearchableItem si, bool useFX) {
+	public void SendSearchToDataTab(string name, int contentCount, int[] resultContents, int[] resultsIndices, Vector3 searchPosition, SearchableItem si, bool useFX) {
 		TabReset(true);
 		TabReset(false);
-		Search(true,name,contentCount,resultContents,resultsIndices);
-		Search(false,name,contentCount,resultContents,resultsIndices);
+		PrefabIdentifier pid = si.gameObject.GetComponent<PrefabIdentifier>();
+		string headerName = name;
+		if (pid != null) {
+			switch(pid.constIndex) {
+				case 464: headerName = Const.a.stringTable[895]; break;
+				case 465: headerName = Const.a.stringTable[897]; break;
+				case 530: headerName = Const.a.stringTable[898]; break;
+				case 466: headerName = Const.a.stringTable[897]; break;
+				case 467: headerName = Const.a.stringTable[897]; break;
+				case 468: headerName = Const.a.stringTable[897]; break;
+				case 469: headerName = Const.a.stringTable[897]; break;
+				case 470: headerName = Const.a.stringTable[897]; break;
+				case 471: headerName = Const.a.stringTable[897]; break;
+				case 472: headerName = Const.a.stringTable[899]; break;
+				case 473: headerName = Const.a.stringTable[899]; break;
+				case 474: headerName = Const.a.stringTable[899]; break;
+				case 475: headerName = Const.a.stringTable[899]; break;
+				case 476: headerName = Const.a.stringTable[899]; break;
+				case 531: headerName = Const.a.stringTable[896]; break;
+			}
+		}
+
+		Search(true,headerName,contentCount,resultContents,resultsIndices);
+		Search(false,headerName,contentCount,resultContents,resultsIndices);
 
 		// Enable search box scaling effect
 		if (lastSearchSideRH) {
@@ -1012,7 +1034,7 @@ public class MFDManager : MonoBehaviour  {
 		usingObject = true;
 	}
 
-	public void SendGridPuzzleToDataTab (bool[] states, PuzzleCellType[] types,
+	public void SendGridPuzzleToDataTab(bool[] states, PuzzleCellType[] types,
 										 PuzzleGridType gtype, int start,
 										 int end, int width, int height,
 										 HUDColor colors, string t1, 

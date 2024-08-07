@@ -46,14 +46,14 @@ public class EnergyOverloadButton : MonoBehaviour {
             buttonSprite.overrideSprite = normalButtonSprite;
             buttonText.color = textClickableColor;
             energySettingText.color = textEnergySetting;
-            energySettingText.text = "ENERGY SETTING";
+            energySettingText.text = Const.a.stringTable[16];
         } else { 
             Const.sprint(Const.a.stringTable[17]);
             WeaponFire.a.overloadEnabled = true;
             buttonSprite.overrideSprite = overloadButtonSprite;
             buttonText.color = textOverloadColor;
             energySettingText.color = textEnergyOverloaded;
-            energySettingText.text = "OVERLOAD ENABLED";
+            energySettingText.text = Const.a.stringTable[18];
         }
     }
 

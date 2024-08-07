@@ -467,8 +467,8 @@ public class Automap : MonoBehaviour {
 	}
 
 	public void AutomapGoSide() {
-		automapSideButtonTextLH.text = "TOP";
-		automapSideButtonTextRH.text = "TOP";
+		automapSideButtonTextLH.text = Const.a.stringTable[887];
+		automapSideButtonTextRH.text = Const.a.stringTable[887];
 		automapInnerCircleLH.gameObject.SetActive(false);
 		automapInnerCircleRH.gameObject.SetActive(false);
 		automapOuterCircleLH.gameObject.SetActive(false);
@@ -484,8 +484,8 @@ public class Automap : MonoBehaviour {
 	}
 
 	public void AutomapGoTop() {
-		automapSideButtonTextLH.text = "SIDE";
-		automapSideButtonTextRH.text = "SIDE";
+		automapSideButtonTextLH.text = Const.a.stringTable[888];
+		automapSideButtonTextRH.text = Const.a.stringTable[888];
 		automapInnerCircleLH.gameObject.SetActive(true);
 		automapInnerCircleRH.gameObject.SetActive(true);
 		automapOuterCircleLH.gameObject.SetActive(true);

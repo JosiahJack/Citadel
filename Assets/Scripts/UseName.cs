@@ -335,6 +335,7 @@ public class UseName : MonoBehaviour {
 			case 302: s1.Append("industrial tiles"); break;
 			case 303: s1.Append("industrial tiles"); break;
 			case 304: s1.Append("damaged industrial tiles"); break;
+			case 419: s1.Append("auto-bomb"); break;
 			default: if (un != null) { s1.Append(un.targetname); } break;
 		}
 

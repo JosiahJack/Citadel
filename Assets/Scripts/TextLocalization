@@ -2,7 +2,16 @@ using UnityEngine;
 
 public class TextLocalization : MonoBehaviour {
     public int lingdex;
-    public Text txt;
+    private Text txt;
+    private TextMesh txm;
+
+    void Awake() {
+        txt = GetComponent<Text>();
+        txm = GetComponent<TextMesh>();
+        if (Const.a != null) {
+            if (Const.a.stringTableLoaded) UpdateText();
+        }
+    }
 
     public void UpdateText() {
         txt.text = Const.a.stringTable[lingdex]; // Update to match new string table contents.

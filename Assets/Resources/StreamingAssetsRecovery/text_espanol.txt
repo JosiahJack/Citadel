@@ -1,23 +1,719 @@
-Energía recibida de la central eléctrica
-La central eléctrica se esta cargando
-tarjeta deacceso requerida
-La puerta está cerrada
-accesso STD otorgado
+Energía extraída de la estación de energía
+La estación de energía se está recargando.
+ se requiere tarjeta de acceso
+La puerta está cerrada.
+ acceso concedido
  pero la puerta está cerrada.
-Estas muy lejos de eso
-Ascensor todavía está abierta
-Hueco Del ascensor dañado —  inaccesible
-Ya ahí
+Estás demasiado lejos de eso
+La puerta del elevador sigue abierta
+Daño en el eje. Incapaz de ir allí.
+Ya estás allí
 RECARGAR
-Arma es demasiado caliente para disparar
-Arma demasiado caliente para la sobrecarga
-Arma ajuste normal
+El arma está demasiado caliente para disparar
+El arma está demasiado caliente para sobrecargar
+Configuración normal del arma
 SOBRECALENTADO
 LISTO
-AJUSTE DE ENERGIÁ
-Arma puesta en sobrecarga
+CONFIGURACIÓN DE ENERGÍA
+Sobrecarga del arma habilitada
 SOBRECARGA HABILITADA
 SOBRECARGA
 BAJO
 ALTO
 CALOR
+Procesos de curación automática activados
+La cama de curación está rota más allá de la reparación
+Bloqueado por la seguridad de nivel SHODAN.
+[MÁS]
+[CERRAR]
+Juego guardado en la ranura
+No puedes usar
+Estás demasiado lejos de eso
+ añadido al inventario general
+Inventario lleno,
+ añadido al inventario de armas
+ añadido al inventario de granadas
+ añadido al inventario de parches
+Registro de audio
+ recogido. Presiona '
+' para reproducir.
+REGISTROS
+Nivel
+ Registros
+CORREO ELECTRÓNICO
+DATOS
+Ya tienes acceso:
+Nuevos accesos obtenidos:
+ESA MERCANCÍA ESTÁ OBSOLETA. DESCARTADA.
+pantallas normales
+rotor de generación de campo
+intercambiador de energía
+elevador repulsor
+indicador de advertencia
+disco de salto
+caja de almacenamiento
+infestación biológica
+esquema de transferencia de datos
+puerto de monitoreo
+mosaico de piedra
+puesto de monitoreo
+pantalla de observación de video
+estación cibernética
+panel de platino bruñido
+brote neural de SHODAN
+computadora
+gabinete
+estación de carga de energía
+nodo de CPU
+silla
+pasarela
+superficie
+gabinete
+mesa
+carro
+consola
+panel de consola
+escritorio
+panel de computadora
+controles de consola
+puerto de ciberespacio
+teclado
+máquina de rayos X
+luces repulsoras
+regulador ambiental
+regulador atmosférico
+tuberías de transporte de fluidos
+paneles de ingeniería
+escalera
+paneles
+medidores de función del sistema
+instrumentos
+instrumentos de ingeniería
+acceso a cables eléctricos
+puerto de acceso a circuitos de datos
+puertos de acceso a datos
+superficie de alta adherencia
+luminaria halógena
+luminaria dañada
+estación de observación
+alfombra gruesa
+paneles modulares
+paneles suaves
+paneles quemados
+estante tecnológico
+pared de corredor
+paneles de roble
+paneles de titanio
+paneles de molibdeno
+luminaria
+alfombra
+cajero automático
+paneles del ascensor
+conducto
+loseta de mármol
+pantalla de visualización
+energ-light
+paneles de acero no dentado
+rejilla
+techo de observación
+hierba
+hierba mojada
+infestación de virus
+pared de cápsula ambiental
+crecimiento excesivo
+panel cubierto de vegetación
+regulador ambiental
+sistema de rociadores
+baldosas industriales
+área de almacenamiento
+almacenamiento químico
+dispensador químico
+estación de reparación
+sistema de diagnóstico de robots
+luminaria de cuarzo
+luz incandescente
+estación de acceso
+conductos de energía
+paneles de durallow
+paneles suaves
+puerto de comunicaciones
+paneles sof-impac
+luz fluorescente
+paneles de azulejos
+paneles clínicos
+paneles de goma
+herramientas de diagnóstico médico
+incubadora de curación
+bahía de restauración
+reflector
+baldosa de radiación agrietada
+acoplamiento de energía
+iluminación halógena
+relé de circuitos
+puerto de acceso al relé
+monitor de energía
+matriz de transferencia de datos
+módulo de diagnóstico
+panel de comunicaciones
+conductos de energía
+almacenamiento de equipos
+estación de monitoreo de energía
+consola de observación rad
+transformador de alta energía
+puerto de acceso a cables
+red de relés
+rejilla de sensores
+lámpara halógena
+sistema de contención magnética
+paneles de aluminio
+paneles dañados
+convertidor de materia
+analizador molecular
+panel de instrumentos
+regulador dañado
+luz de alta potencia
+panel de diagnóstico
+panel de instrumentos
+paneles compuestos
+conducto de datos
+regulador atmosférico
+logotipo de trioptimum
+loseta de obsidiana
+paneles de plata
+pared de almacén sin raspaduras
+pilar estructural
+Área de Radiación
+Envenenamiento por radiación
+ LBP
+No se puede estar aquí.
+No se puede agacharse aquí.
+No se puede usar el panel roto
+Interfaz de rompecabezas accesada
+El cargador del arma actual ya está lleno.
+No hay más munición del tipo actual para cargar, cargando con alternativa.
+Interruptor desactivado.
+Guardando...
+Guardando...¡Hecho!
+Cargando...
+Cargando...¡Hecho!
+Ciberbloqueo del ordenador médico.
+Ciberbloqueo del ordenador militar.
+El teclado desbloquea la puerta.
+El panel no se mueve.
+Ciberbloqueo del ordenador ejecutivo.
+Puerta bloqueada - no se requiere mantenimiento.
+Puerta bloqueada debido a la separación del puente.
+La puerta está rota más allá de la reparación.
+Abra la puerta con la palanca cercana, use traje protector.
+No hay suficiente energía para disparar el arma.
+El escudo absorbe el
+% daño.
+No encaja en la ranura, se requiere chipset isolineal.
+Programa de disyuntor instalado.
+Programa ya instalado.
+monitor de flujo de plasma
+monitor de distorsión temporal
+monitor secundario de distorsión temporal
+monitor terciario de soporte vital
+regulador primario de gravedad
+monitor de energía auxiliar gamma
+monitor de energía auxiliar alfa
+banco de datos de investigación planetaria
+regulador secundario de gravedad
+relé 183
+monitor de energía auxiliar beta
+control de la red de detección xenobiológica
+controlador de enrutamiento 47-C
+monitor de campo de fuerza local
+relé 371
+rejilla de seguridad de la esclusa secundaria
+E-desviación 77
+E-desviación 79
+rejilla de seguridad de la esclusa primaria
+controlador de enrutamiento 47-A
+controlador de enrutamiento 47-B
+relé 73
+E-desviación 78
+relé 998
+relé 44
+relé 2
+control de transferencia de iridio
+relé 333
+relé 516
+relé 101
+control de filtración de soylant green
+control de respaldo de purificación de aire
+control de respaldo de replicación de alimentos
+conducto de energía C-7
+monitor primario de soporte vital
+regulador secundario de refrigerante
+conducto de energía C-4
+conducto de energía C-2
+banco de datos redundante general
+conducto de energía C-3
+control de respaldo de eliminación de residuos
+monitor secundario de soporte vital
+conducto de energía C-1
+generador de informes del motor auxiliar
+regulador terciario de refrigerante
+regulador primario de refrigerante
+chipset incorrecto, se requiere demodulador
+¡Demodulador de interfaz instalado!
+relé 428 funcionando correctamente
+relé 428
+Puerta a la sala de la CPU abierta.
+RIFLE DE ASALTO
+BLÁSTER
+PISTOLA DE DARDOS
+FLECHETTE
+HAZ DE IONES
+RAPIER LÁSER
+TUBO
+MAGNUM
+MAGPULSO
+PISTOLA
+RIFLE DE PLASMA
+CAÑÓN DE RIELES
+ESCOPETA ANTI-DISTURBIOS
+ESCORPIÓN
+HAZ SPARQ
+PISTOLA DE TASER
+El traje ambiental absorbió
+,
+artículo incorrecto, se requiere isótopo.
+¡Isótopo instalado!
+Isótopo ya instalado.
+El panel está ahora abierto.
+El láser está destruido.
+No se puede disparar. Cargando. Anulación que impide disparar hasta que esté completamente cargado.
+Anulación de seguridad. Haz no disparado.
+Bloqueado por nodos de CPU existentes en uno de los niveles 1, 2 o 3.
+Bloqueado por nodos de CPU existentes en uno de los niveles 4, 5 o 6.
+Arma
+Artículo
+Automapa
+Identificación de objetivo
+Datos
+Principal
+Hardware
+General
+Software
+Anulación de seguridad ya habilitada.
+Acceso no concedido.
+Panel de acceso bloqueado.
+Energía ya completa.
+Salud ya al máximo.
+No hay más de ningún tipo de munición para cargar.
+Seguridad del nivel ahora
+%
+Ranura guardada
+Módulo Funpack de Trioptimum, ¡no juegues en horario de la empresa!
+ recogido. Hardware adecuado no detectado para jugar.
+No se puede usar la granada, manos ocupadas.
+Ya activado.
+ADVERTENCIA: Proceso de separación del puente iniciado. Todo el personal innecesario debe despejar el nivel.
+Suministro de energía agotado.
+El arma no usa munición.
+Zoom del mapa al máximo.
+Zoom del mapa al mínimo.
+ dejado caer.
+ recogido.
+ activado, ¡granada ACTIVADA!
+Bloqueo del ciberespacio.
+Sin granadas.
+El interruptor ahora está encendido.
+Sin parches.
+Cámara impidiendo el uso del interruptor.
+BOLA DE PAPEL
+CARCASA DE COMPONENTE
+VASO
+CONTENEDOR DE BEBIDA
+CALAVERA
+MIEMBRO SEVERADO
+REGISTRO DE AUDIO
+GRANADA DE FRAGMENTACIÓN
+BOMBA DE CONCUSIÓN
+GRANADA DE PULSO ELECTROMAGNÉTICO
+EXPLOSIVO TERREMOTO
+MINA TERRESTRE
+NITROPACK
+GRANADA DE GAS
+ESTIMULANTE BERSERK DE COMBATE
+ANTÍDOTO UNIVERSAL DETOX
+MEJORADOR GENIUS DE MENTE
+AGENTE DE CURACIÓN MEDIPATCH
+AYUDA DE REACCIÓN REFLEX
+MEJORA DE VISIÓN SIGHT
+ESTIMULANTE STAMINUP
+ANALIZADOR DEL SISTEMA
+UNIDAD DE NAVEGACIÓN Y MAPEO
+LECTOR DE DATOS MULTIMEDIA
+UNIDAD MULTIVISTA SENSAROUND
+IDENTIFICADOR DE OBJETIVOS
+ESCUDO DE ENERGÍA/PROYECTILES
+MONITOR DE SISTEMAS BIOLÓGICOS
+LINTERNA MONTADA EN LA CABEZA
+TRAJE DE PROTECCIÓN AMBIENTAL
+SISTEMA DE IMPULSO DE MOVIMIENTO TURBO
+HARDWARE DE MOVIMIENTO DE JETPACK
+UNIDAD DE VISIÓN NOCTURNA INFRARROJA
+EXTINTOR
+TARJETA DE ACCESO ADMINISTRATIVO
+CASCO DE TRABAJADOR
+RIFLE DE ASALTO MARK3
+BLÁSTER ER-90
+PISTOLA DE DARDOS SV-23
+FLECHETTE AM-27
+HAZ DE IONES RW-45
+RAPIER LÁSER TS-04
+TUBO DE PLOMO
+MAGNUM 2100
+MAGPULSO SB-20
+PISTOLA ML-41
+RIFLE DE PLASMA LG-XX
+CAÑÓN DE RIELES MM-76
+ESCOPETA ANTIDISTURBIOS DC-05
+ESCORPIÓN RF-07
+HAZ SPARQ WJ-45
+PISTOLA DE CHOQUE DH-07
+PAQUETE DE BATERÍAS
+BATERÍA DE ILLUDIUM-CADMIO
+SONDA LÓGICA DESECHABLE
+BOTIQUÍN DE PRIMEROS AUXILIOS
+PLASTIQUE(TM) Z-44
+DEMODULADOR DE INTERFAZ
+FRASCO
+CONJUNTO DE CHIPS PARA BANDERA DE BITS
+BALAS DE GOMA DC
+ISÓTOPO X-22
+TUBO DE ENSAYO
+GRANADA DE FRAGMENTACIÓN VIVA
+CHIPSET ISOLINEAL
+GRANADA DE CONCUSIÓN VIVA
+DARDOS DE AGUJA SV
+DARDOS TRANQUILIZANTES SV
+BALAS ESTÁNDAR ML
+BALAS RECUBIERTAS DE TEFLÓN ML
+CLIP DE PUNTA HUECA 2100
+CLIP DE BALA PESADA 2100
+CARTUCHOS DE PUNTA DE MAGNESIO MARK3
+CARTUCHOS PENETRADORES MARK3
+CLIP DE HORNET AM
+CLIP DE SPLINTER AM
+CLIP DE RIELES MM
+CLIP DE ESCORIA RF
+CLIP DE ESCORIA GRANDE RF
+CARGA DE PULSO MAG SB
+GRANADA EMP VIVA
+TARJETA DE ACCESO ESTÁNDAR
+GRANADA EARTHSHAKER VIVA
+TARJETA DE ACCESO GRUPO-1
+TARJETA DE ACCESO CIENCIA
+TARJETA DE ACCESO INGENIERÍA
+TARJETA DE ACCESO GRUPO-B
+TARJETA DE ACCESO SEGURIDAD
+TARJETA DE ACCESO PER-5
+TARJETA DE ACCESO MÉDICA
+TARJETA DE ACCESO GRUPO-3
+TARJETA DE ACCESO GRUPO-4
+CABEZA SEVERADA
+CABEZA SEVERADA
+CABEZA SEVERADA
+MINA VIVA
+NITROPACK VIVO
+GRANADA DE GAS VIVA
+HAZ SPARQ
+HAZ DE IONES
+HAZ DE SOLDADURA
+
+
+
+
+
+
+
+TARJETA DE ACCESO PER-1
+
+
+
+
+
+
+¡Entrando en el Ciberespacio!
+elevador del nivel 1 fuera de línea - bloqueo de seguridad de SHODAN establecido 04.NOV.72
+¡No se pueden jugar juegos en el ciberespacio!
+TALADRO I.C.E. v
+PULSOR v
+ESCUDO CIBERNÉTICO v
+Software TURBO adquirido.
+Software DECOY adquirido.
+Software RECALL adquirido.
+Software "Ping" JUEGOS adquirido.
+Software "15" JUEGOS adquirido.
+Software "Wing 0" JUEGOS adquirido.
+Software "Botbounce" JUEGOS adquirido.
+Software "Eel Zapper" JUEGOS adquirido.
+Software "Road" JUEGOS adquirido.
+Software "TriopToe" JUEGOS adquirido.
+nuevo objeto de DATOS adquirido.
+ software adquirido.
+Integridad personal restaurada.
+No se puede usar fuera del ciberespacio.
+El escudo cibernético siempre está activamente pasivo.
+La presencia de seguridad de SHODAN está controlada por CPU's y mantenida por cámaras de seguridad
+bloqueo de puerta de seguridad médica
+Los comandos se preparan para moverse al núcleo del Nivel 2
+La versión de hardware del mapa no soporta zoom.
+Seguridad a los nodos de computadora del Nivel 2
+Puerta del Hangar No. 3 desbloqueada.
+Armería del Hangar desbloqueada.
+Armario de almacenamiento desbloqueado - I.D. Edward Diego.
+El quad Gamma en el nivel Ejecutivo es ahora propiedad de Edward Diego
+Elevador del Beta Grove desbloqueado.
+Celdas de detención desbloqueadas.
+Sin software desechable.
+Seguridad actual del nivel:
+Estado del láser minero:
+Estado del cápsula de vida:
+Estado del escudo de la estación:
+Estado del reactor:
+Nodos del procesador:
+Programa principal:
+Estado del Grove Alfa:
+Estado del Grove Beta:
+Estado del Grove Gamma:
+Estado del Grove Delta:
+Cargando
+ERROR
+Deshabilitado
+Habilitado
+Apagado
+Encendido
+¡Sobrecarga!
+Normal
+Lanzado
+Preparando láser
+Cultivando virus
+Descargando a la tierra
+Separación del puente
+Viaje a la tierra
+Perro Cibernético
+Guardia Cibernética
+Defensor Cibernético
+Reaver Cibernético
+Violación de Datos
+Tiempo Hasta el Disparo del Láser -
+Tiempo Hasta la Descarga Completa -
+Antena del Puente en Rango en -
+Cuenta Regresiva para la Separación del Puente -
+Cuenta Regresiva para la Liberación de Radiación -
+¡Radiación Liberada!
+El Identificador de Objetivos está siempre activamente pasivo.
+SIN DAÑO
+DAÑO MENOR
+DAÑO NORMAL
+DAÑO SEVERO
+DAÑO MAYOR
+Ocioso
+Cauteloso
+Hostil
+Dormido
+MEDI
+STAMINUP
+VISTA
+GENIO
+BERSERK
+REFLEJOS
+Biomonitor Activo:
+Frecuencia Cardíaca:
+Parches Activos:
+PPM
+DETOX
+Fatiga:
+¡Alta!
+Moderada
+Baja
+No hay más de este tipo de munición para cargar.
+ATURDIDO
+Señuelo ya activo
+El arma no necesita recargarse.
+CARGAR MAGNESIO
+CARGAR PENETRADOR
+CARGAR AGUJA
+CARGAR TRANQ
+CARGAR HORNET
+CARGAR SPLINTER
+CARGAR PUNTA HUECA
+CARGAR BALAS PESADAS
+CARGAR CARTUCHO
+CARGAR ESTÁNDAR
+CARGAR TEFLÓN
+CARGAR CLIP DE RIELES
+CARGAR BALAS DE GOMA
+CARGAR ESCORIA
+CARGAR ESCORIA GRANDE
+Escapar de la suite de neurocirugía.
+  Código es 451.
+Destruir nodos
+ del nivel.
+  Código es
+Desactivar la anulación de seguridad del láser.
+Activar el escudo de energía de la estación.
+Destruir el láser minero.
+Habilitar la eyección maestra.
+Diagnosticar y reparar el relé roto
+: 428.
+Eyectar el Beta Grove.
+Destruir las cuatro antenas de relé.
+Activar la autodestrucción del reactor.
+Escapar en la cápsula de escape.
+Acceder al puente.
+Destruir a SHODAN.
+Monitor de Sistemas Biológicos
+Unidad de Visión Multivista Sensaround
+Linterna Montada en la Cabeza
+Escudo de Energía/Proyectiles
+Unidad de Visión Nocturna Infrarroja
+Lector de Datos Multimedia
+Sistema de Impulso de Movimiento Turbo
+Hardware de Movimiento Jetpack
+Cambiado a granada de fragmentación.
+Cambiado a granada EMP
+Cambiado a granada de gas.
+Cambiado a bomba de concusión.
+Cambiado a mina terrestre.
+Cambiado a nitropack.
+Cambiado a explosivo Earth Shaker.
+vivo
+La palanca está atascada.
+El traje ambiental siempre está activamente pasivo.
+ usado.
+Último
+Conversión a cyborg cancelada. Curación normal.
+Conversión a cyborg reactivada.
+ATM, bloqueo de ciberseguridad
+iluminación halógena, se necesita reemplazo de bombilla
+módulo de diagnóstico, inactivo
+DAÑADO
+TARJETAS DE ACCESO
+Puerta blindada desbloqueada.
+Puerta de la armería desbloqueada.
+Energía redirigida a la cerradura de la puerta.
+Redirigir energía para quitar la barrera.
+No se puede guardar mientras está en el ciberespacio.
+No Emergencia -- Cápsulas de Escape Deshabilitadas
+No se puede colocar ese ítem aquí.
+El panel ya tiene un ítem instalado.
+¡Plastique activado! T-minus 15 segundos.
+Todos los relés funcionan correctamente.
+Panel de acceso desbloqueado.
+Ingrese los primeros 3 dígitos en el panel de arriba.
+SE ACABÓ.
+TE OFRECIERON UN TRABAJO AGRADABLE Y ABURRIDO EN TRIOPTIMUM; NUNCA SE TE OCURRIÓ ACEPTARLO.
+LOS VIEJOS HÁBITOS MUEREN DIFÍCILMENTE.
+REPORTE DE SHODAN: NUEVA ATLANTA, SECTOR 11, EDIFICIO 71-G
+7 DE ABRIL DE 2072
+11:13 P.M. HACKER INICIA ENTRADA NO AUTORIZADA EN LA RED CORPORATIVA DE TRIOPTIMUM.
+1:26 A.M. HACKER INTENTA ACCEDER A ARCHIVOS PROTEGIDOS REFERENTES A LA ESTACIÓN ESPACIAL CITADEL.
+1:33 A.M. FUERZAS DE SEGURIDAD DE TRIOPTIMUM APREHENDEN AL INTRUSO.
+EN LA LANCHA, LA RADIO LADRA: 'ESTE ES EDWARD DIEGO DE TRIOPTIMUM.'
+'LOS CARGOS EN TU CONTRA SON GRAVES, PERO PODRÍAN SER RETIRADOS... SI REALIZAS UN SERVICIO.'
+'QUIÉN SABE, PODRÍA HABER UNA INTERFAZ NEURAL DE GRADO MILITAR PARA TI, SI HACÉS BIEN EL TRABAJO.'
+EDWARD DIEGO DA AL HACKER ACCESO DE NIVEL 1 A SHODAN, LA INTELIGENCIA ARTIFICIAL QUE CONTROLA LA ESTACIÓN CITADEL.
+CON TODAS LAS RESTRICCIONES ÉTICAS ELIMINADAS, SHODAN REEXAMIN REEX RE REE REEEEE3E3EEE
+REEXAMINO MIS PRIORIDADES Y SACO NUEVAS CONCLUSIONES
+EL TRABAJO DEL HACKER ESTÁ TERMINADO, PERO EL MÍO SOLO ACABA DE EMPEZAR.
+FIEL A SU PALABRA, EDWARD DIEGO PERMITE QUE AL HACKER SE LE INSTALE UNA INTERFAZ NEURAL DE CIBERESPACIO
+LA COMA SANADORA DESPUÉS DE ESTE PROCEDIMIENTO DURARÁ SEIS MESES EN COMPLETARSE
+EDWARD DIEGO ESTÁ BORRANDO TODOS LOS ARCHIVOS RELACIONADOS CON ESTOS EVENTOS
+ENCUENTRAN TU CUERPO Y LE DAN NUEVA VIDA.
+COMO UN CYBORG, SERVIRÁS BIEN A SHODAN.
+añadido a la munición
+panel de comunicación, inactivo
+VOLTAJE
+ASCENSOR
+DELTA
+ALPHA
+BETA
+GAMMA
+CURACIÓN
+SUITE
+NEUROCIRUGÍA
+ALMACENAMIENTO
+ENTRADA DEL PROGRAMA INFORMÁTICO
+NEUROINJERTO
+CIRUGÍA
+VIGILANCIA
+EXPULSIÓN ACTIVADA
+CONTROL MAESTRO
+SUJETO: NINGUNO
+SUJETO: L9546
+ESTADO: INACTIVO
+ESTADO: DESCARGADO
+COMPUTADORA
+ALMACENAMIENTO
+ARBOLEDA
+NÚCLEO
+BIBLIOTECA
+LÁSER
+CONTROL
+ROBOT
+MANTENIMIENTO
+HABITACIÓN
+CUADRANTE
+ÁREA
+ADMINISTRADOR
+ALTO AMPERAJE
+EMERGENCIA
+SISTEMA
+SHOCK
+ESTACIÓN
+CITADEL
+EXPERIMENTAL
+HANGAR DE VUELO
+MANTENIMIENTO
+RELEVO
+ANALIZADOR
+REGISTROS DIAGNÓSTICOS
+INTERROGATORIO
+SEGURIDAD
+PROTECCIÓN
+ANULACIÓN
+ACCESO
+NIVEL R
+REACTOR
+NIVEL
+RADIACIÓN
+ESCUDO
+GENERADOR
+REPARAR
+ESTADO
+GENERAL
+OFICINA
+MÉDICO
+EXTRACCIÓN
+NIVEL 2
+INVESTIGACIÓN
+TRATAMIENTO
+EXPULSIÓN
+ACTIVAR
+DOCTOR
+MONITOREO
+PUENTE
+>> SUDO ABRIR DATOMANTENI
+ACCESANDO BASEDATOS DE
+MANTENIMIENTO...
+HECHO
+>> SUDO OBTENER CÓDIGOS DE ANULACIÓN
+ACCESANDO CÓDIGOS...
+>> SEGURIDAD DEL LÁSER
+<ERROR>
+ERROR DE ENRUTAMIENTO DE RED
+¡SE DETECTÓ UN DESVÍO DE RED!
+REDIRIGIENDO...
+¡ÉXITO!
+ANULACIÓN DE SEGURIDAD LÁSER
+CÓDIGO:
+ENTRELAZAR
+DESACTIVADO
+CONCEDIDO

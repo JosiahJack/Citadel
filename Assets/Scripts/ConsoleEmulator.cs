@@ -980,6 +980,8 @@ Master Index
 527 prop_grate1_1                 32
 528 prop_grate1_2                 33
 529 prop_grate1_3                 34
+530 se_cabinet                    35
+531 se_thermos                    36
 
 Generic Materials (Const.a.genericMaterials[])
 0  col1                 Dark Gray            In hindsight, maybe I should have named these descriptively.
@@ -1067,6 +1069,7 @@ Generic Materials (Const.a.genericMaterials[])
 
 				go = MonoBehaviour.Instantiate(Const.a.chunkPrefabs[val],spawnPos,
 										Const.a.quaternionIdentity) as GameObject;
+
 			} else Const.sprint("Indices 0 through 306 not possible when not on edit mode!");
 		} else if (val >= 307 && val < 419) {	// [307, 418]
 			val -= 307;
@@ -1081,6 +1084,7 @@ Generic Materials (Const.a.genericMaterials[])
 
 			go = MonoBehaviour.Instantiate(Const.a.useableItems[val],spawnPos,
 									  Const.a.quaternionIdentity) as GameObject;
+
 		} else if (val >= 419 && val < 448) {	// [419, 447]
 			val -= 419;
 			if (val > (Const.a.npcPrefabs.Length - 1)) {
@@ -1115,9 +1119,13 @@ Generic Materials (Const.a.genericMaterials[])
 
 			go = MonoBehaviour.Instantiate(Const.a.cyberItemPrefabs[val],
 							spawnPos,Const.a.quaternionIdentity) as GameObject;
-		} else if ((val >= 458 && val < 481) 	// [458, 480], [515, 523]
-				   || (val >= 515 && val <= 523)) {
+
+		} else if ((val >= 458 && val < 481) 	// [458, 480], [515, 523], [527, 531]
+				   || (val >= 515 && val <= 523)
+				   || (val >= 527 && val <= 531)) {
+
 			if (val >= 515 && val <= 523) val -= 492; // order exceptions
+			else if (val >= 527 && val <= 523) val -= 495;
 			else val -= 458;
 
 			if (val > (Const.a.miscellaneousPrefabs.Length - 1)) {
@@ -1131,6 +1139,7 @@ Generic Materials (Const.a.genericMaterials[])
 
 			go = MonoBehaviour.Instantiate(Const.a.miscellaneousPrefabs[val],
 							 spawnPos,Const.a.quaternionIdentity) as GameObject;
+
 		} else if (val >= 481 && val < 496) {	// [481, 495]
 			val -= 481;
 			if (val > (Const.a.projectilesLaunched.Length - 1)) {
@@ -1144,6 +1153,7 @@ Generic Materials (Const.a.genericMaterials[])
 
 			go = MonoBehaviour.Instantiate(Const.a.projectilesLaunched[val],
 							 spawnPos,Const.a.quaternionIdentity) as GameObject;
+
 		} else if ((val >= 496 && val < 515) || val == 524) { // [496, 514],524
 			if (val == 524) val = 19; // func_door_cyber
 			else val -= 496;
@@ -1169,7 +1179,7 @@ Generic Materials (Const.a.genericMaterials[])
 					GameObject parGO = levS.dynamicObjectsContainer;
 					if (initialIndex >= 419 && initialIndex < 448) {
 						parGO = LevelManager.a.GetRequestedLevelNPCContainer(
-							LevelManager.a.currentLevel);
+									LevelManager.a.currentLevel);
 					}
 
 					go.transform.SetParent(parGO.transform);

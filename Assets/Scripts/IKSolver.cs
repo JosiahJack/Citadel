@@ -2,11 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using UnityEditor;
+#if UNITY_EDITOR
+    using UnityEditor;
+#endif
 using UnityEngine;
 
 // From https://github.com/nishadtardalkar/UnityGenericIKSystem
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(IKSolver)), CanEditMultipleObjects]
 public class E_IKSolver : Editor
 {
@@ -30,6 +33,7 @@ public class E_IKSolver : Editor
 }
 
 [ExecuteInEditMode]
+#endif
 public class IKSolver : MonoBehaviour
 {
     [Serializable]
@@ -75,42 +79,29 @@ public class IKSolver : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (Application.isEditor && enable && !editorInitialized)
-        {
-            if (enable)
-            {
-                if (bones.Length == 0)
-                {
+    void Update() {
+        #if UNITY_EDITOR
+        if (Application.isEditor && enable && !editorInitialized) {
+            if (enable) {
+                if (bones.Length == 0) {
                     enable = false;
                     return;
                 }
-                for (int i = 0; i < bones.Length; i++)
-                {
-                    if (bones[i].bone == null)
-                    {
-                        enable = false;
-                        return;
-                    }
+
+                for (int i = 0; i < bones.Length; i++) {
+                    if (bones[i].bone == null) { enable = false; return; }
                 }
-                if (endPointOfLastBone == null)
-                {
-                    enable = false;
-                    return;
-                }
-                if (poleTarget == null)
-                {
-                    enable = false;
-                    return;
-                }
+
+                if (endPointOfLastBone == null) { enable = false; return; }
+
+                if (poleTarget == null) { enable = false; return; }
             }
             Initialize();
         }
-        if (lastTargetPosition != transform.position)
-        {
-            if (Application.isPlaying || (Application.isEditor && enable))
-            {
+        #endif
+
+        if (lastTargetPosition != transform.position) {
+            if (Application.isPlaying || (Application.isEditor && enable)) {
                 Solve();
             }
         }

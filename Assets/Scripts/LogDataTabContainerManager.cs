@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,8 +14,12 @@ public class LogDataTabContainerManager : MonoBehaviour {
 		//Debug.Log("SendLogData received referenceIndex of " + referenceIndex.ToString());
 		logName.text = Const.a.audiologNames[referenceIndex];
 		if (!isRH) {
-			logSender.text = Const.a.audiologSenders[referenceIndex];
-			logSubject.text = Const.a.audiologSubjects[referenceIndex];
+			logSender.text = Const.a.stringTable[893]
+							 + Const.a.audiologSenders[referenceIndex];
+
+			logSubject.text = Const.a.stringTable[894] + Environment.NewLine
+							  + Const.a.audiologSubjects[referenceIndex];
+
 			logImage.overrideSprite = Const.a.logImages[Const.a.audioLogImagesRefIndicesLH[referenceIndex]];
 		} else {
 			logSender.text = System.String.Empty; // blank on RH side

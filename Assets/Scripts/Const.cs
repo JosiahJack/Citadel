@@ -21,16 +21,16 @@ public class Const : MonoBehaviour {
 	public Sprite[] searchItemIconSprites;
 
 	//Audiolog constants
-	[HideInInspector] public string[] audiologNames;
+	public string[] audiologNames;
 	[HideInInspector] public string[] audiologSenders;
-	[HideInInspector] public string[] audiologSubjects;
+	public string[] audiologSubjects;
 	public AudioClip[] audioLogs;
 	[HideInInspector] public AudioLogType[] audioLogType; // 0 = text only
 														  // 1 = normal
 														  // 2 = email
 														  // 3 = papers
 														  // 4 = vmail
-	[HideInInspector] public string[] audioLogSpeech2Text;
+	public string[] audioLogSpeech2Text;
 	[HideInInspector] public int[] audioLogLevelFound;
 	public AudioClip[] sounds;
 
@@ -236,6 +236,7 @@ public class Const : MonoBehaviour {
 	/*[DTValidator.Optional] */public List<GameObject> TargetRegister; // Doesn't need to be full, available space for maps and mods made by the community to use tons of objects
 	public List<string> TargetnameRegister;
     public string[] stringTable;
+	[HideInInspector] public bool stringTableLoaded = false;
 	public HashSet<TextLocalization> TextLocalizationRegister;
 	public float[] reloadTime;
 
@@ -374,6 +375,19 @@ public class Const : MonoBehaviour {
 
 		a.CheckIfNewGame();
 		a.LoadTextForLanguage(0); // Initialize with US English (index 0)
+		// Force Initialize all TextLocalization so language loaded from config
+		// is set properly.
+		a.TextLocalizationRegister = new HashSet<TextLocalization>();
+		TextLocalization texloc = null;
+		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+		for (int i=0;i<allParents.Count;i++) {
+			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(TextLocalization),true); // find all TextLocalization components, including inactive (hence the true here at the end)
+			for (int k=0;k<compArray.Length;k++) {
+				texloc = compArray[k].gameObject.GetComponent<TextLocalization>();
+				if (texloc != null) texloc.Awake();
+			}
+		}
+
 		a.s1 = new StringBuilder();
 		a.s2 = new StringBuilder();
 		if (a.mainMenuInit != null) {
@@ -390,7 +404,6 @@ public class Const : MonoBehaviour {
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
 		a.TargetRegister = new List<GameObject>();
 		a.TargetnameRegister = new List<string>();
-		a.TextLocalizationRegister = new HashSet<TextLocalization>();
 		a.versionString = "v0.99.6"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
@@ -402,12 +415,19 @@ public class Const : MonoBehaviour {
 	}
 
     public void LoadTextForLanguage(int lang) {
+		UnityEngine.Debug.Log("Loading language: " + lang.ToString());
         string readline; // variable to hold each string read in from the file
         int currentline = 0;
         string tF = "text_english.txt";
         switch (lang) {
             case 0: tF = "text_english.txt"; break;
-            case 1: tF = "text_espanol.txt"; break; // UPKEEP: Other languages
+			case 1: tF = "text_espanol.txt"; break; // UPKEEP: Other languages
+			case 2: tF = "text_deutsch.txt"; break; // German
+			case 3: tF = "text_francais.txt"; break; // French
+			case 4: tF = "text_nihongo.txt"; break; // Japanese
+			case 5: tF = "text_russkiy.txt"; break; // Russian
+			case 6: tF = "text_italiano.txt"; break; // Italian
+			case 7: tF = "text_portugues.txt"; break; // Portugese
         }
 
         StreamReader dataReader = Utils.ReadStreamingAsset(tF);
@@ -427,6 +447,7 @@ public class Const : MonoBehaviour {
                 currentline++;
             } while (!dataReader.EndOfStream);
             dataReader.Close();
+			stringTableLoaded = true;
             return;
         }
     }
@@ -537,13 +558,25 @@ public class Const : MonoBehaviour {
 		if (eventSystem != null) eventSystem.SetActive(true);
 	}
 
-	private void LoadAudioLogMetaData () {
+	public void LoadAudioLogMetaData() {
 		// The following to be assigned to the arrays in the Unity Const data structure
 		int readIndexOfLog, readLogImageLHIndex, readLogImageRHIndex; // look-up index for assigning the following data on the line in the file to the arrays
 		string readLogText; // loaded into string audioLogSpeech2Text[]
 		string readline; // variable to hold each string read in from the file
 		char logSplitChar = ',';
-		StreamReader dataReader = Utils.ReadStreamingAsset("logs_text.txt");
+		string tF = null;
+		switch(Const.a.AudioLanguage) {
+            case 0: tF = "logs_text_english.txt"; break;
+			case 1: tF = "logs_text_espanol.txt"; break; // UPKEEP: Other languages
+			case 2: tF = "logs_text_deutsch.txt"; break; // German
+			case 3: tF = "logs_text_francais.txt"; break; // French
+			case 4: tF = "logs_text_nihongo.txt"; break; // Japanese
+			case 5: tF = "logs_text_russkiy.txt"; break; // Russian
+			case 6: tF = "logs_text_italiano.txt"; break; // Italian
+			case 7: tF = "logs_text_portugues.txt"; break; // Portugese
+        }
+
+		StreamReader dataReader = Utils.ReadStreamingAsset(tF);
 		using (dataReader) {
 			do {
 				int i = 0;
@@ -575,7 +608,7 @@ public class Const : MonoBehaviour {
 		}
 	}
 
-	private void LoadItemNamesData () {
+	public void LoadItemNamesData () {
 		int offset = 326;
 		for (int i=0;i<102;i++) {
 			useableItemsNameText[i] = stringTable[i+offset];
@@ -2036,6 +2069,8 @@ public class Const : MonoBehaviour {
 	}
 
 	public void AddToTextLocalizationRegister(TextLocalization txtloc) {
+		if (txtloc == null) return;
+
 		TextLocalizationRegister.Add(txtloc);
 	}
 

@@ -166,6 +166,8 @@ public class PlayerMovement : MonoBehaviour {
 	public Vector3 floorAng;
 	private float slideAngle = 0.9f;
 	private float gravFinished;
+	private float bodyLerpGravityOffDelayFinished;
+
 
 	public static PlayerMovement a;
 
@@ -210,6 +212,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		stepFinished = PauseScript.a.relativeTime;
 		rustleFinished = PauseScript.a.relativeTime;
+		bodyLerpGravityOffDelayFinished = 0;
     }
 
 	void Update() {
@@ -226,7 +229,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		// Bug Hunter feedback (puts it into their screenshots for me)
 		if (locationIndicator.activeInHierarchy) {
-			locationText.text = "location: "
+			locationText.text = Const.a.stringTable[738] // "location: "
 								+ (transform.position.x.ToString("00.00")
 								+ " " + transform.position.y.ToString("00.00")
 								+ " " + transform.position.z.ToString("00.00"));
@@ -334,9 +337,10 @@ public class PlayerMovement : MonoBehaviour {
 
 		// Using value of 1.06 = (player capsule height / 2) + 0.06 = 1 + 0.06;
 		bool successfulRay = Physics.Raycast(transform.position, Vector3.down,
-											 out tempHit,0.9f,
+											 out tempHit,1.1f,
 											 Const.a.layerMaskPlayerFeet);
 
+		//Debug.Log("Feet ray 1 success: " + successfulRay.ToString());
 		// Success here means hit a useable something.
 		// If a ray hits a wall or other unusable something, that's not success
 		// and print "Can't use <something>"
@@ -360,15 +364,11 @@ public class PlayerMovement : MonoBehaviour {
 			return;
 		}
 
-		successfulRay = Physics.Raycast(transform.position, Vector3.down,
-									    out tempHit,feetRayLength,
-									    Const.a.layerMaskPlayerFeet);
-
 		if (rbody.velocity.sqrMagnitude <= 0.05f) {
 			SFXClothes.Stop();
 		}
 
-		if ((relForward + relSideways) == 0) return;
+		if ((Mathf.Abs(relForward) + Mathf.Abs(relSideways)) == 0) return;
 
 		if (rustleFinished < PauseScript.a.relativeTime) {
 			rustleFinished = isSprinting
@@ -385,6 +385,12 @@ public class PlayerMovement : MonoBehaviour {
 		}
 		if (!grounded) return;
 
+		successfulRay = Physics.Raycast(transform.position, Vector3.down,
+										out tempHit,feetRayLength,
+								  Const.a.layerMaskPlayerFeet);
+
+// 		Debug.DrawRay(transform.position,tempHit.point,Color.green,1f,true);
+		hitGO = tempHit.collider.transform.gameObject;
 		PrefabIdentifier prefID = hitGO.GetComponent<PrefabIdentifier>();
 		if (prefID == null) {
 			if (hitGO.transform.parent != null) {
@@ -1020,8 +1026,17 @@ public class PlayerMovement : MonoBehaviour {
 			|| bodyState == BodyState.CrouchingDown
 			|| bodyState == BodyState.ProningDown
 			|| bodyState == BodyState.ProningUp) {
+			bodyLerpGravityOffDelayFinished = 0;
 // 			Debug.Log("Crouching gravity! " + rbody.useGravity.ToString());
 			return true;
+		} else {
+			if (bodyLerpGravityOffDelayFinished == 0) {
+				bodyLerpGravityOffDelayFinished = PauseScript.a.relativeTime + 0.25f;
+			}
+
+			if (bodyLerpGravityOffDelayFinished > PauseScript.a.relativeTime) {
+				return true;
+			}
 		}
 		if (isSprinting) return true;
 
@@ -1382,7 +1397,7 @@ public class PlayerMovement : MonoBehaviour {
 		if (fatigue < 0) fatigue = 0; // Clamp at 0% minimum.
 
 		if (fatigue > 80f && !fatigueWarned && !inCyberSpace) {
-			twm.SendWarning(("Fatigue high"),0.1f,0,HUDColor.White,324);
+			twm.SendWarning(Const.a.stringTable[868],0.1f,0,HUDColor.White,324);
 			fatigueWarned = true;
 		} else {
 			fatigueWarned = false;
@@ -1461,7 +1476,16 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	bool CantStand() {
-		float ofsY = (1.6f-(Const.a.playerCameraOffsetY * currentCrouchRatio));
+		// Capsule default height is 2f.
+		// 0.02f cushion added to 0.16f dist to top of head from camera.
+		// 0.18f = 0.02f + (capsuleHeight * 0.5f) - Const.a.playerCameraOffsetY
+		// = 0.02f + (1 - 0.84f) = 0.02f + 0.16f
+		//
+		// Crouch/Prone add:
+		// 1.6f = capsule height (2f) - (capsule height (2f) * prone ratio (0.2f)) = 2f - 0.4f.
+		float ofsY = ((1f - Const.a.playerCameraOffsetY) + 0.02f
+					 + ((1f - currentCrouchRatio) * 1.6f)); // Crouch/Prone add
+
 		Vector3 ofs = new Vector3(0f,ofsY,0f);
 		return Physics.CheckCapsule(cameraObject.transform.position,
 									cameraObject.transform.position + ofs,
@@ -1606,7 +1630,7 @@ public class PlayerMovement : MonoBehaviour {
 	void OnCollisionExit (){
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			// Automatically set grounded to false to prevent ability to climb any wall (Cheat!)
-			if (CheatWallSticky == true) {
+			if (!CheatWallSticky) {
 				grounded = false;
 			}
 		}
@@ -1615,6 +1639,7 @@ public class PlayerMovement : MonoBehaviour {
 	// Sets grounded based on normal angle of the impact point (NOTE: This is not the surface normal!)
 	void OnCollisionStay(Collision collision) {
 		if (!PauseScript.a.Paused() && !inCyberSpace) {
+			//Debug.Log("Player touching " + collision.contacts[0].otherCollider.gameObject.name);
 			float maxSlope = 0.35f;
 			for(tempInt=0;tempInt<collision.contacts.Length;tempInt++) {
 				floorAng = collision.contacts[tempInt].normal;
