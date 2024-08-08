@@ -44,6 +44,36 @@ namespace Tests {
         }
 
         [UnityTest]
+        public IEnumerator CheckConstInitialization() {
+            RunBeforeAnyTests();
+            yield return new WaitUntil(() => sceneLoaded);
+
+            yield return new WaitForSeconds(2f);
+            
+            bool check = Const.a != null;
+            string msg = "Const.a was null";
+            Assert.That(check,msg);
+            
+            msg = "Const.a useableItems has unassigned slots!";
+            check = true;
+            for (int i=0;i<Const.a.useableItems.Length;i++) {
+                if (Const.a.useableItems[i] == null) check = false;
+            }
+            Assert.That(check,msg);
+
+
+            msg = "Const.a useableItemsFrobIcons has unassigned slots!";
+            check = true;
+            for (int i=0;i<Const.a.useableItemsFrobIcons.Length;i++) {
+                if (Const.a.useableItemsFrobIcons[i] == null) check = false;
+            }
+            Assert.That(check,msg);
+            //msg = "Placeholder";
+            //check = true;
+            //Assert.That(check,msg);
+        }
+
+        [UnityTest]
         public IEnumerator CheckLogsLoadedHaveAssignedAudio() {
             RunBeforeAnyTests();
             yield return new WaitUntil(() => sceneLoaded);

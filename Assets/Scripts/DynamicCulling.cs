@@ -13,6 +13,7 @@ public class DynamicCulling : MonoBehaviour {
     public bool[,] worldCellOpen = new bool [WORLDX,WORLDX];
     public bool[,] worldCellVisible = new bool [WORLDX,WORLDX];
     public bool[,] worldCellCheckedYet = new bool [WORLDX,WORLDX];
+    //public Texture2D[] precalculatedPVS = new Texture2D[ARRSIZE];
     public List<GameObject>[,] cellLists = new List<GameObject>[WORLDX,WORLDX];
     public List<MeshRenderer>[,] cellListsMR = new List<MeshRenderer>[WORLDX,WORLDX];
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
@@ -294,10 +295,33 @@ public class DynamicCulling : MonoBehaviour {
         // Do first Cull pass
         FindPlayerCell();
         DetermineVisibleCells(); // Reevaluate visible cells from new pos.
+        int x,y;
+        //Color col = new Color(0f,0f,0f,1f);
+        //for (int i=0;i<128;i++) {
+        //    precalculatedPVS[i] = new Texture2D(WORLDX,WORLDX);
+        //    for (x=0;x<WORLDX;x++) {
+        //        for (y=0;y<WORLDX;y++) {
+        //            playerCellX = x;
+        //            playerCellY = y;
+        //            for (int x2=0;x2<64;x2++) {
+        //                for (int y2=0;y2<64;y2++) {
+        //                    worldCellVisible[x2,y2] = false;
+        //                    worldCellCheckedYet[x2,y2] = false;
+        //                }
+        //            }
+
+        //            DetermineVisibleCells();
+        //            if (worldCellVisible[x,y]) col.r = 1.0f;
+        //            else col.r = 0.0f;
+
+        //            precalculatedPVS[i].SetPixel(x,y,col,0);
+        //        }
+        //    }
+        //}
+
         if (!cullEnabled) return;
 
         // Force all cells dirty at start so the visibility is toggled for all.
-        int x,y;
         for (x=0;x<64;x++) {
             for (y=0;y<64;y++) worldCellLastVisible[x,y] = !worldCellVisible[x,y];
         }
@@ -361,6 +385,16 @@ public class DynamicCulling : MonoBehaviour {
         worldCellCheckedYet[x,y] = true;
         SetVisPixel(x,y,Color.cyan);
     }
+
+    //void DetermineVisibleCellsPrecalculated() {
+    //    int playerCell4096 = playerCellX + (playerCellY * 64);
+    //    for (int x=0;x<64;x++) {
+    //        for (int y=0;y<64;y++) {
+    //            worldCellVisible[x,y] = 
+    //                (precalculatedPVS[playerCell4096].GetPixel(x,y,0).r > 0.99f);
+    //        }
+    //    }
+    //}
 
     void DetermineVisibleCells() {
         if (outputDebugImages) debugTex = new Texture2D(64,64);
@@ -836,6 +870,7 @@ public class DynamicCulling : MonoBehaviour {
             }
 
             DetermineVisibleCells(); // Reevaluate visible cells from new pos.
+            //DetermineVisibleCellsPrecalculated(); // Reevaluate visible cells from new pos.
             worldCellVisible[0,0] = true; // Errors default here so draw them anyways.
             ToggleVisibility(); // Update all cells marked as dirty.
             ToggleStaticMeshesImmutableVisibility();

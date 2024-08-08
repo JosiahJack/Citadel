@@ -1696,7 +1696,7 @@ public class Inventory : MonoBehaviour {
             if (weaponInventoryIndices[i] >= 0) continue;
 
 			weaponInventoryIndices[i] = index;
-			weaponInventoryText[i] = Const.a.stringTable[363 + index];
+			weaponInventoryText[i] = Const.a.stringTable[326 + index];
 			int index16 = WeaponFire.Get16WeaponIndexFromConstIndex(index);
 			WeaponButton wepBut = MFDManager.a.wepbutMan.wepButtonsScripts[i];
 			wepBut.useableItemIndex = index;

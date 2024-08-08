@@ -1353,10 +1353,8 @@ namespace Tests {
             string msg = "RunBeforeAnyTests failed to populate allGOs: ";
             Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
             string script = "PrefabIdentifier";
-            BoxCollider bcol;
-            MeshCollider mcol;
-            UseName un;
             MeshFilter mf;
+            Material mat;
 
             // Run through all GameObjects and perform all tests
             for (int i=0;i<allGOs.Count;i++) {
@@ -1364,11 +1362,11 @@ namespace Tests {
                     allGOs[i].GetComponent<PrefabIdentifier>();
 
                 if (pid == null) continue;
-                if (pid.constIndex < 2 || pid.constIndex > 304
-                    || pid.constIndex == 20 || pid.constIndex == 21
-                    || pid.constIndex == 22 || pid.constIndex == 279
-                    || pid.constIndex == 112 || pid.constIndex == 79
-                    || pid.constIndex == 78) {
+                if (pid.constIndex == 22) {//pid.constIndex < 2 || pid.constIndex > 304
+                //    || pid.constIndex == 20 || pid.constIndex == 21
+                //    || pid.constIndex == 22 || pid.constIndex == 279
+                //    || pid.constIndex == 112 || pid.constIndex == 79
+                //    || pid.constIndex == 78 || pid.constIndex == 93) {
                     continue;
                 }
 
@@ -1377,12 +1375,20 @@ namespace Tests {
                                             typeof(MeshFilter),true);
 
                 for (int k=0;k<mfArray.Length;k++) {
+                    mat = mfArray[k].gameObject.GetComponent<Material>();
+                    if (mat == null) continue;
+                    if (mat != Const.a.genericMaterials[48]) continue; // chunk
+
                     mf = mfArray[k].gameObject.GetComponent<MeshFilter>();
                     Color[] vertexColors = mf.sharedMesh.colors;
                     msg = "has no vertex colors";
                     check = vertexColors.Length > 0;
-                    //Assert.That(check,FailMessage(script,allGOs[i],msg));
-                    if (!check) UnityEngine.Debug.Log(FailMessage(script,allGOs[i],msg));
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    //if (!check) {
+                    //    UnityEngine.Debug.Log(FailMessage(script,allGOs[i],
+                    //                                      msg));
+                    //}
+
                     if (!check) continue;
 
                     msg = "has some vertices whose vertex color.r is 0";
@@ -1393,51 +1399,24 @@ namespace Tests {
                             break;
                         }
                     }
-                    if (!check) UnityEngine.Debug.Log(FailMessage(script,allGOs[i],msg));
-                    //Assert.That(check,FailMessage(script,allGOs[i],msg));
-                }
-
-                Component[] bcolArray = allGOs[i].GetComponentsInChildren(
-                    typeof(BoxCollider),true);
-
-                for (int k=0;k<bcolArray.Length;k++) {
-                    bcol = bcolArray[k].gameObject.GetComponent<BoxCollider>();
-                    msg = "has BoxCollider too thin";
-                    check = bcol.size.x >= 0.32f && bcol.size.y >= 0.32f
-                            && bcol.size.z >= 0.32f;
-                    //Assert.That(check,FailMessage(script,allGOs[i],msg));
-                    if (!check) UnityEngine.Debug.Log(FailMessage(script,allGOs[i],msg));
-
-
-                    if (bcolArray[k].gameObject.layer == 9
-                        || bcolArray[k].gameObject.layer == 19) {
-
-                        msg = "missing UseName for collider";
-                        un = bcolArray[k].gameObject.GetComponent<UseName>();
-                        check = (un != null);
-                        //Assert.That(check,FailMessage(script,allGOs[i],msg));
-                        if (!check) UnityEngine.Debug.Log(FailMessage(script,allGOs[i],msg));
-                    }
-                }
-
-                Component[] mcolArray = allGOs[i].GetComponentsInChildren(
-                    typeof(MeshCollider),true);
-
-                for (int k=0;k<mcolArray.Length;k++) {
-                    mcol =
-                        mcolArray[k].gameObject.GetComponent<MeshCollider>();
-
-                    if (mcolArray[k].gameObject.layer == 9
-                        || mcolArray[k].gameObject.layer == 19) {
-
-                        msg = "missing UseName for collider";
-                        un = mcolArray[k].gameObject.GetComponent<UseName>();
-                        check = (un != null);
-                        //Assert.That(check,FailMessage(script,allGOs[i],msg));
-                        if (!check) UnityEngine.Debug.Log(FailMessage(script,allGOs[i],msg));
-                    }
+                    //if (!check) {
+                    //    UnityEngine.Debug.Log(FailMessage(script,allGOs[i],
+                    //                          msg));
+                    //}
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
             }
+        }
+
+        [UnityTest]
+        public IEnumerator ConfirmLevelManagerInScene() {
+            RunBeforeAnyTests();
+            yield return new WaitWhile(() => SceneLoaded() == false);
+            SetupTests();
+
+            GameObject levMan = GameObject.Find("LevelManager");
+            string msg = "No LevelManager found in Scene!";
+            Assert.That(levMan != null,msg);
         }
 
         [UnityTest]
