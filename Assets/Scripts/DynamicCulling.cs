@@ -19,9 +19,13 @@ public class DynamicCulling : MonoBehaviour {
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
     public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();
     public List<MeshRenderer> staticMeshesImmutable = new List<MeshRenderer>();
-    public List<Vector2Int> staticMeshImmutableCoords = new List<Vector2Int>();
+    public List<MeshFilter>   staticMeshesImmutableMFs = new List<MeshFilter>();
+    public List<Mesh>         staticMeshesImmutableUsualMeshes = new List<Mesh>();
+    public List<Mesh>         staticMeshesImmutableLODMeshes = new List<Mesh>();
+    public List<Vector2Int>   staticMeshImmutableCoords = new List<Vector2Int>();
+    public List<int>          staticMeshConstIndex = new List<int>();
     public List<MeshRenderer> staticMeshesSaveable = new List<MeshRenderer>();
-    public List<Vector2Int> staticMeshSaveableCoords = new List<Vector2Int>();
+    public List<Vector2Int>   staticMeshSaveableCoords = new List<Vector2Int>();
     public List<Light> lights = new List<Light>();
     public List<Light> lightsInPVS = new List<Light>();
     public List<Vector2Int> lightCoords = new List<Vector2Int>();
@@ -37,6 +41,8 @@ public class DynamicCulling : MonoBehaviour {
     public List<Transform> npcTransforms;
     public List<AIController> npcAICs = new List<AIController>();
     public List<Vector2Int> npcCoords = new List<Vector2Int>();
+    public Mesh[] lodMeshes;
+    public Mesh lodMeshTemplate;
 
     private byte[] bytes;
     private static string openDebugImagePath;
@@ -58,12 +64,329 @@ public class DynamicCulling : MonoBehaviour {
         a.pixels = new Color32[WORLDX * WORLDX];
     }
 
+    float GetVertexColorForChunk(int constdex) {
+        switch(constdex) {
+            case 1:   return 0f;
+            case 2:   return 1f / 255f;
+            case 3:   return 1f / 255f;
+            case 4:   return 1f / 255f;
+            case 5:   return 2f / 255f;
+            case 6:   return 2f / 255f;
+            case 7:   return 2f / 255f;
+            case 8:   return 3f / 255f;
+            case 9:   return 3f / 255f;
+            case 10:  return 3f / 255f;
+            case 11:  return 4f / 255f;
+            case 12:  return 6f / 255f;
+            case 13:  return 7f / 255f;
+            case 14:  return 8f / 255f;
+            case 15:  return 9f / 255f;
+            case 16:  return 10f / 255f;
+            case 17:  return 11f / 255f;
+            case 18:  return 12f / 255f;
+            case 19:  return 13f / 255f;
+            case 23:  return 14f / 255f;
+            case 24:  return 15f / 255f;
+            case 25:  return 16f / 255f;
+            case 26:  return 17f / 255f;
+            case 27:  return 18f / 255f;
+            case 28:  return 19f / 255f;
+            case 29:  return 20f / 255f;
+            case 30:  return 21f / 255f;
+            case 31:  return 21f / 255f;
+            case 32:  return 21f / 255f;
+            case 33:  return 22f / 255f;
+            case 34:  return 23f / 255f;
+            case 35:  return 24f / 255f;
+            case 36:  return 25f / 255f;
+            case 37:  return 26f / 255f;
+            case 38:  return 26f / 255f;
+            case 39:  return 26f / 255f;
+            case 40:  return 26f / 255f;
+            case 41:  return 26f / 255f;
+            case 42:  return 26f / 255f;
+            case 43:  return 26f / 255f;
+            case 44:  return 26f / 255f;
+            case 45:  return 26f / 255f;
+            case 46:  return 26f / 255f;
+            case 47:  return 26f / 255f;
+            case 48:  return 26f / 255f;
+            case 49:  return 26f / 255f;
+            case 50:  return 26f / 255f;
+            case 51:  return 26f / 255f;
+            case 52:  return 26f / 255f;
+            case 53:  return 26f / 255f;
+            case 54:  return 26f / 255f;
+            case 55:  return 26f / 255f;
+            case 56:  return 26f / 255f;
+            case 57:  return 26f / 255f;
+            case 58:  return 26f / 255f;
+            case 59:  return 26f / 255f;
+            case 60:  return 26f / 255f;
+            case 61:  return 26f / 255f;
+            case 62:  return 26f / 255f;
+            case 63:  return 26f / 255f;
+            case 64:  return 26f / 255f;
+            case 65:  return 26f / 255f;
+            case 66:  return 26f / 255f;
+            case 67:  return 26f / 255f;
+            case 68:  return 26f / 255f;
+            case 69:  return 26f / 255f;
+            case 70:  return 26f / 255f;
+            case 71:  return 26f / 255f;
+            case 72:  return 26f / 255f;
+            case 73:  return 26f / 255f;
+            case 74:  return 26f / 255f;
+            case 75:  return 26f / 255f;
+            case 76:  return 26f / 255f;
+            case 77:  return 26f / 255f;
+            case 78:  return 26f / 255f;
+            case 79:  return 26f / 255f;
+            case 80:  return 26f / 255f;
+            case 81:  return 26f / 255f;
+            case 82:  return 26f / 255f;
+            case 83:  return 26f / 255f;
+            case 84:  return 26f / 255f;
+            case 85:  return 26f / 255f;
+            case 86:  return 26f / 255f;
+            case 87:  return 26f / 255f;
+            case 88:  return 26f / 255f;
+            case 89:  return 26f / 255f;
+            case 90:  return 26f / 255f;
+            case 91:  return 26f / 255f;
+            case 92:  return 26f / 255f;
+            case 93:  return 26f / 255f;
+            case 94:  return 26f / 255f;
+            case 95:  return 26f / 255f;
+            case 96:  return 26f / 255f;
+            case 97:  return 26f / 255f;
+            case 98:  return 26f / 255f;
+            case 99:  return 26f / 255f;
+            case 100: return 26f / 255f;
+            case 101: return 26f / 255f;
+            case 102: return 26f / 255f;
+            case 103: return 26f / 255f;
+            case 104: return 26f / 255f;
+            case 105: return 26f / 255f;
+            case 106: return 26f / 255f;
+            case 107: return 26f / 255f;
+            case 108: return 26f / 255f;
+            case 109: return 26f / 255f;
+            case 110: return 26f / 255f;
+            case 111: return 26f / 255f;
+            case 112: return 26f / 255f;
+            case 113: return 26f / 255f;
+            case 114: return 26f / 255f;
+            case 115: return 26f / 255f;
+            case 116: return 26f / 255f;
+            case 117: return 26f / 255f;
+            case 118: return 26f / 255f;
+            case 119: return 26f / 255f;
+            case 120: return 26f / 255f;
+            case 121: return 26f / 255f;
+            case 122: return 26f / 255f;
+            case 123: return 26f / 255f;
+            case 124: return 26f / 255f;
+            case 125: return 26f / 255f;
+            case 126: return 26f / 255f;
+            case 127: return 26f / 255f;
+            case 128: return 26f / 255f;
+            case 129: return 26f / 255f;
+            case 130: return 26f / 255f;
+            case 131: return 26f / 255f;
+            case 132: return 26f / 255f;
+            case 133: return 26f / 255f;
+            case 134: return 26f / 255f;
+            case 135: return 26f / 255f;
+            case 136: return 26f / 255f;
+            case 137: return 26f / 255f;
+            case 138: return 26f / 255f;
+            case 139: return 26f / 255f;
+            case 140: return 26f / 255f;
+            case 141: return 26f / 255f;
+            case 142: return 26f / 255f;
+            case 143: return 26f / 255f;
+            case 144: return 26f / 255f;
+            case 145: return 26f / 255f;
+            case 146: return 26f / 255f;
+            case 147: return 26f / 255f;
+            case 148: return 26f / 255f;
+            case 149: return 118f / 255f;
+            case 150: return 118f / 255f;
+            case 151: return 118f / 255f;
+            case 152: return 118f / 255f;
+            case 153: return 118f / 255f;
+            case 154: return 119f / 255f;
+            case 155: return 120f / 255f;
+            case 156: return 121f / 255f;
+            case 157: return 122f / 255f;
+            case 158: return 123f / 255f;
+            case 159: return 124f / 255f;
+            case 160: return 125f / 255f;
+            case 161: return 126f / 255f;
+            case 162: return 127f / 255f;
+            case 163: return 128f / 255f;
+            case 164: return 129f / 255f;
+            case 165: return 130f / 255f;
+            case 166: return 131f / 255f;
+            case 167: return 132f / 255f;
+            case 168: return 133f / 255f;
+            case 169: return 134f / 255f;
+            case 170: return 135f / 255f;
+            case 171: return 136f / 255f;
+            case 172: return 137f / 255f;
+            case 173: return 138f / 255f;
+            case 174: return 139f / 255f;
+            case 175: return 140f / 255f;
+            case 176: return 141f / 255f;
+            case 177: return 142f / 255f;
+            case 178: return 143f / 255f;
+            case 179: return 144f / 255f;
+            case 180: return 145f / 255f;
+            case 181: return 146f / 255f;
+            case 182: return 147f / 255f;
+            case 183: return 148f / 255f;
+            case 184: return 149f / 255f;
+            case 185: return 150f / 255f;
+            case 186: return 151f / 255f;
+            case 187: return 152f / 255f;
+            case 188: return 153f / 255f;
+            case 189: return 154f / 255f;
+            case 190: return 155f / 255f;
+            case 191: return 156f / 255f;
+            case 192: return 157f / 255f;
+            case 193: return 158f / 255f;
+            case 194: return 159f / 255f;
+            case 195: return 160f / 255f;
+            case 196: return 161f / 255f;
+            case 197: return 162f / 255f;
+            case 198: return 163f / 255f;
+            case 199: return 164f / 255f;
+            case 200: return 165f / 255f;
+            case 201: return 166f / 255f;
+            case 202: return 167f / 255f;
+            case 203: return 168f / 255f;
+            case 204: return 169f / 255f;
+            case 205: return 170f / 255f;
+            case 206: return 171f / 255f;
+            case 207: return 172f / 255f;
+            case 208: return 173f / 255f;
+            case 209: return 174f / 255f;
+            case 210: return 175f / 255f;
+            case 211: return 176f / 255f;
+            case 212: return 177f / 255f;
+            case 213: return 178f / 255f;
+            case 214: return 179f / 255f;
+            case 215: return 180f / 255f;
+            case 216: return 181f / 255f;
+            case 217: return 182f / 255f;
+            case 218: return 183f / 255f;
+            case 219: return 184f / 255f;
+            case 220: return 185f / 255f;
+            case 221: return 186f / 255f;
+            case 222: return 187f / 255f;
+            case 223: return 188f / 255f;
+            case 224: return 189f / 255f;
+            case 225: return 190f / 255f;
+            case 226: return 191f / 255f;
+            case 227: return 192f / 255f;
+            case 228: return 193f / 255f;
+            case 229: return 194f / 255f;
+            case 230: return 195f / 255f;
+            case 231: return 196f / 255f;
+            case 232: return 197f / 255f;
+            case 233: return 198f / 255f;
+            case 234: return 199f / 255f;
+            case 235: return 200f / 255f;
+            case 236: return 201f / 255f;
+            case 237: return 202f / 255f;
+            case 238: return 203f / 255f;
+            case 239: return 204f / 255f;
+            case 240: return 205f / 255f;
+            case 241: return 206f / 255f;
+            case 242: return 207f / 255f;
+            case 243: return 208f / 255f;
+            case 244: return 209f / 255f;
+            case 245: return 210f / 255f;
+            case 246: return 211f / 255f;
+            case 247: return 212f / 255f;
+            case 248: return 213f / 255f;
+            case 249: return 214f / 255f;
+            case 250: return 215f / 255f;
+            case 251: return 216f / 255f;
+            case 252: return 217f / 255f;
+            case 253: return 218f / 255f;
+            case 254: return 219f / 255f;
+            case 255: return 220f / 255f;
+            case 256: return 221f / 255f;
+            case 257: return 222f / 255f;
+            case 258: return 223f / 255f;
+            case 259: return 224f / 255f;
+            case 260: return 225f / 255f;
+            case 261: return 226f / 255f;
+            case 262: return 227f / 255f;
+            case 263: return 228f / 255f;
+            case 264: return 229f / 255f;
+            case 265: return 230f / 255f;
+            case 266: return 231f / 255f;
+            case 267: return 232f / 255f;
+            case 268: return 233f / 255f;
+            case 269: return 234f / 255f;
+            case 270: return 235f / 255f;
+            case 271: return 236f / 255f;
+            case 272: return 237f / 255f;
+            case 273: return 238f / 255f;
+            case 274: return 239f / 255f;
+            case 275: return 240f / 255f;
+            case 276: return 241f / 255f;
+            case 277: return 242f / 255f;
+            case 278: return 243f / 255f;
+            case 279: return 244f / 255f;
+            case 280: return 245f / 255f;
+            case 281: return 246f / 255f;
+            case 282: return 247f / 255f;
+            case 283: return 248f / 255f;
+            case 284: return 249f / 255f;
+            case 285: return 250f / 255f;
+            case 286: return 251f / 255f;
+            case 287: return 252f / 255f;
+            case 288: return 253f / 255f;
+            case 289: return 254f / 255f;
+            case 290: return 255f / 255f;
+            case 291: return 255f / 255f;
+            case 292: return 255f / 255f;
+            case 293: return 255f / 255f;
+            case 294: return 255f / 255f;
+            case 295: return 255f / 255f;
+            case 296: return 255f / 255f;
+            case 297: return 255f / 255f;
+            case 298: return 255f / 255f;
+            case 299: return 255f / 255f;
+            case 300: return 255f / 255f;
+            case 301: return 255f / 255f;
+            case 302: return 255f / 255f;
+            case 303: return 255f / 255f;
+            case 304: return 255f / 255f;
+            
+            // And so on
+            default: return 0f;
+        }
+    }
+    
     void ClearCellList() {
         worldCellVisible = new bool [WORLDX,WORLDX];
         worldCellCheckedYet = new bool [WORLDX,WORLDX];
         worldCellOpen = new bool [WORLDX,WORLDX];
         staticMeshesImmutable = new List<MeshRenderer>();
         staticMeshesImmutable.Clear();
+        staticMeshesImmutableMFs = new List<MeshFilter>();
+        staticMeshesImmutableMFs.Clear();
+        staticMeshesImmutableUsualMeshes = new List<Mesh>();
+        staticMeshesImmutableUsualMeshes.Clear();
+        staticMeshesImmutableLODMeshes = new List<Mesh>();
+        staticMeshesImmutableLODMeshes.Clear();
+        staticMeshConstIndex = new List<int>();
+        staticMeshConstIndex.Clear();
         staticMeshImmutableCoords = new List<Vector2Int>();
         staticMeshImmutableCoords.Clear();
         staticMeshesSaveable = new List<MeshRenderer>();
@@ -165,7 +488,24 @@ public class DynamicCulling : MonoBehaviour {
                 }
 
                 staticMeshesImmutable.Add(mr);
-                staticMeshImmutableCoords.Add(Vector2Int.zero);
+                MeshFilter mf = mr.gameObject.GetComponent<MeshFilter>();
+                if (mf != null) Debug.Log("no mesh filter on cullable object " + mr.gameObject.name);
+                staticMeshesImmutableMFs.Add(mf);
+                staticMeshesImmutableUsualMeshes.Add(mr.GetComponent<MeshFilter>().mesh);
+                PrefabIdentifier pid = mr.GetComponent<PrefabIdentifier>();
+                if (pid == null) pid = mr.transform.parent.GetComponent<PrefabIdentifier>();
+                if (pid == null) pid = mr.transform.parent.parent.GetComponent<PrefabIdentifier>();
+                if (pid == null) Debug.Log("no prefab identifier found for " + mr.gameObject.name);
+                staticMeshConstIndex.Add(pid.constIndex);
+                if (pid.constIndex > 304) {
+                    // Always add something so it's same length as all other
+                    // static mesh immutable lists.
+                    staticMeshesImmutableLODMeshes.Add(mr.GetComponent<MeshFilter>().mesh);
+                    staticMeshImmutableCoords.Add(Vector2Int.zero);
+                } else {
+                    staticMeshesImmutableLODMeshes.Add(lodMeshes[pid.constIndex]);
+                    staticMeshImmutableCoords.Add(Vector2Int.zero);
+                }
                 break;
         }
     }
@@ -241,6 +581,33 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void Cull_Init() {
+        // Populate LOD (Level of Detail) Meshes for farther chunks.
+        // This creates a prepopulated list of quads (2 tris each) with vertex
+        // color Red channel set to the index into the Texture2DArray for the
+        // chunk shader.  These get swapped out in place of the
+        // staticMeshes_ arrays above based on player's distance.  This list is
+        // just the representation for each chunk prefab, excepting slices.
+        a.lodMeshes = new Mesh[305]; // Constindexes 0 through 304.
+        Color[] vertColors = new Color[lodMeshTemplate.vertexCount];
+        for (int i=0;i<vertColors.Length;i++) {
+            vertColors[i] = new Color(0f,0f,0f,1f);
+        }
+        
+        float red = 0f;
+        for (int i=0;i<305;i++) {
+            a.lodMeshes[i] = new Mesh();
+            a.lodMeshes[i].name = "lodMesh" + i.ToString();
+            a.lodMeshes[i].vertices = lodMeshTemplate.vertices;
+            a.lodMeshes[i].triangles = lodMeshTemplate.triangles;
+            a.lodMeshes[i].normals = lodMeshTemplate.normals;
+            a.lodMeshes[i].uv = lodMeshTemplate.uv;
+            red = GetVertexColorForChunk(i);
+            for (int j=0;j<vertColors.Length;j++) {
+                vertColors[j].r = red; // All matching.
+            }
+            a.lodMeshes[i].colors = vertColors;
+        }
+        
         // Setup and find all cullables and associate them with x,y coords.
         ClearCellList();
         switch(LevelManager.a.currentLevel) { // PosToCellCoords -1 on just x
@@ -778,11 +1145,28 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
+    public float SqrDist(int x0, int y0, int x1, int y1) {
+        float deltaX = x1 - x0;
+        float deltaY = y1 - y0;
+        return (deltaX * deltaX) + (deltaY * deltaY);
+    }
+
     public void ToggleStaticMeshesImmutableVisibility() {
         for (int i=0;i<staticMeshesImmutable.Count;i++) {
-            if (worldCellVisible[staticMeshImmutableCoords[i].x,staticMeshImmutableCoords[i].y]
-                || !worldCellOpen[staticMeshImmutableCoords[i].x,staticMeshImmutableCoords[i].y]) {
+            int x = staticMeshImmutableCoords[i].x;
+            int y = staticMeshImmutableCoords[i].y;
+            if (worldCellVisible[x,y] || !worldCellOpen[x,y]) {
                 staticMeshesImmutable[i].enabled = true;
+
+                if (staticMeshConstIndex[i] > 304) return; // No LOD for non-chunks
+                
+                Mesh targetMesh = SqrDist(x,y,playerCellX,playerCellY) > 36f
+                    ? staticMeshesImmutableLODMeshes[i]
+                    : staticMeshesImmutableUsualMeshes[i];
+
+                if (staticMeshesImmutableMFs[i].sharedMesh != targetMesh) {
+                    staticMeshesImmutableMFs[i].sharedMesh = targetMesh;
+                }
             } else {
                 staticMeshesImmutable[i].enabled = false;
             }

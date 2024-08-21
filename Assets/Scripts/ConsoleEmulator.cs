@@ -982,6 +982,176 @@ Master Index
 529 prop_grate1_3                 34
 530 se_cabinet                    35
 531 se_thermos                    36
+532 prop_beaker_holder
+533 prop_bed
+534 prop_bed_hospital
+535 prop_bed_neurosurgery
+536 prop_bonepile1
+537 prop_bridgewall1
+538 prop_broken_clock
+539 prop_brokengun
+540 prop_chair01
+541 prop_chair02
+542 prop_chair03
+543 prop_chair04
+544 prop_chair05
+545 prop_chandelier
+546 prop_charge_station
+547 prop_clothes
+548 prop_computer
+549 prop_couch
+550 prop_couch2
+551 prop_cpuscreen
+552 prop_cyber_datafrag
+553 prop_cyber_decoy
+554 prop_cyber_exit
+555 prop_cyber_switch
+556 prop_cyberport
+557 prop_desk01
+558 prop_desk02
+559 prop_dexmissile
+560 prop_diegorapier
+561 prop_foliage_bush
+562 prop_foliage_fern
+563 prop_foliage_fernblueflower
+564 prop_foliage_pinetreem
+565 prop_foliage_poisonbush1
+566 prop_gear_large
+567 prop_gear_small
+568 prop_grass1
+569 prop_grass2
+570 prop_grass3
+571 prop_grass4
+572 prop_grass5
+573 prop_grate4
+574 prop_healingbed
+575 prop_lamp
+576 prop_light_emergsignal
+577 prop_microscope
+578 prop_pipe
+579 prop_puddle
+580 prop_puddle_grease
+581 prop_puddle_oil
+582 prop_shelves
+583 prop_skeleton
+584 prop_sleeping_cables
+585 prop_sparkingwire
+586 prop_table
+587 prop_tv_on_a_post
+588 prop_vendingmachines1
+589 prop_vendingmachines2
+590 prop_weapon_rack
+591 prop_xray
+592 text_decal
+593 text_decalStopDSS1
+594 trigger_counter
+595 trigger_cyberpush
+596 trigger_gravitylift
+597 trigger_ladder
+598 trigger_multiple
+599 trigger_music
+600 trigger_once
+601 trigger_radiation
+602 us_isotopepanel
+603 us_paperlog
+604 us_puz_elevatorkeypad
+605 us_puz_elevatorkeypad2
+606 us_puz_elevatorkeypad3
+607 us_puz_elevatorkeypad4
+608 us_puz_keypad
+609 us_puz_panel_blue
+610 us_puz_panel_blue_dead
+611 us_puz_panel_brown
+612 us_puz_panel_brown_dead
+613 us_puz_panel_gray
+614 us_puz_panel_gray_dead
+615 us_puz_panel_red
+616 us_puz_panel_red_dead // Redemption?
+617 us_puz_panel_teal
+618 us_puz_panel_teal_dead
+619 us_relaypanel
+620 us_retinalscanner
+621 ambient_airhiss
+622 ambient_clicker
+623 ambient_compressor
+624 ambient_dishwasher
+625 ambient_drip_amb
+626 ambient_fan
+627 ambient_generator_gas
+628 ambient_gurgle
+629 ambient_icemaker
+630 ambient_intake
+631 ambient_lathe
+632 ambient_lev3loop1
+633 ambient_lev3loop2
+634 ambient_lev3loop3
+635 ambient_lev3loop4
+636 ambient_liquid_bubble
+637 ambient_liquid_lava2
+638 ambient_looping
+639 ambient_machgear_loop
+640 ambient_machine_ambience
+641 ambient_machine_go
+642 ambient_machine_humamb7
+643 ambient_machine_humlonoise
+644 ambient_machine_loop1
+645 ambient_machine_loop2
+646 ambient_machinea1
+647 ambient_machinevat_loop
+648 ambient_mist
+649 ambient_pipewater_loop
+650 ambient_powerloom
+651 ambient_pump
+652 ambient_pump2
+653 ambient_rain
+654 ambient_steam_loop
+655 ambient_washing_machine
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699
+700
+
 
 Generic Materials (Const.a.genericMaterials[])
 0  col1                 Dark Gray            In hindsight, maybe I should have named these descriptively.
