@@ -415,7 +415,7 @@ public class Const : MonoBehaviour {
 	}
 
     public void LoadTextForLanguage(int lang) {
-		UnityEngine.Debug.Log("Loading language: " + lang.ToString());
+// 		UnityEngine.Debug.Log("Loading language: " + lang.ToString());
         string readline; // variable to hold each string read in from the file
         int currentline = 0;
         string tF = "text_english.txt";

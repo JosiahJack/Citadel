@@ -16,14 +16,14 @@ public class DynamicCulling : MonoBehaviour {
     //public Texture2D[] precalculatedPVS = new Texture2D[ARRSIZE];
     public List<GameObject>[,] cellLists = new List<GameObject>[WORLDX,WORLDX];
     public List<MeshRenderer>[,] cellListsMR = new List<MeshRenderer>[WORLDX,WORLDX];
+    public List<int>[,] cellConstIndices = new List<int>[WORLDX,WORLDX];
+    public List<Mesh>[,] cellUsualMeshes = new List<Mesh>[WORLDX,WORLDX];
+    public List<Mesh>[,] cellLODMeshes = new List<Mesh>[WORLDX,WORLDX];
+    public List<MeshFilter>[,] cellMFs= new List<MeshFilter>[WORLDX,WORLDX];
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
     public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();
     public List<MeshRenderer> staticMeshesImmutable = new List<MeshRenderer>();
-    public List<MeshFilter>   staticMeshesImmutableMFs = new List<MeshFilter>();
-    public List<Mesh>         staticMeshesImmutableUsualMeshes = new List<Mesh>();
-    public List<Mesh>         staticMeshesImmutableLODMeshes = new List<Mesh>();
     public List<Vector2Int>   staticMeshImmutableCoords = new List<Vector2Int>();
-    public List<int>          staticMeshConstIndex = new List<int>();
     public List<MeshRenderer> staticMeshesSaveable = new List<MeshRenderer>();
     public List<Vector2Int>   staticMeshSaveableCoords = new List<Vector2Int>();
     public List<Light> lights = new List<Light>();
@@ -379,14 +379,6 @@ public class DynamicCulling : MonoBehaviour {
         worldCellOpen = new bool [WORLDX,WORLDX];
         staticMeshesImmutable = new List<MeshRenderer>();
         staticMeshesImmutable.Clear();
-        staticMeshesImmutableMFs = new List<MeshFilter>();
-        staticMeshesImmutableMFs.Clear();
-        staticMeshesImmutableUsualMeshes = new List<Mesh>();
-        staticMeshesImmutableUsualMeshes.Clear();
-        staticMeshesImmutableLODMeshes = new List<Mesh>();
-        staticMeshesImmutableLODMeshes.Clear();
-        staticMeshConstIndex = new List<int>();
-        staticMeshConstIndex.Clear();
         staticMeshImmutableCoords = new List<Vector2Int>();
         staticMeshImmutableCoords.Clear();
         staticMeshesSaveable = new List<MeshRenderer>();
@@ -419,6 +411,14 @@ public class DynamicCulling : MonoBehaviour {
                 cellLists[x,y].Clear();
                 cellListsMR[x,y] = new List<MeshRenderer>();
                 cellListsMR[x,y].Clear();
+                cellMFs[x,y] = new List<MeshFilter>();
+                cellMFs[x,y].Clear();
+                cellUsualMeshes[x,y] = new List<Mesh>();
+                cellUsualMeshes[x,y].Clear();
+                cellLODMeshes[x,y] = new List<Mesh>();
+                cellLODMeshes[x,y].Clear();
+                cellConstIndices[x,y] = new List<int>();
+                cellConstIndices[x,y].Clear();
                 worldCellVisible[x,y] = false;
                 worldCellOpen[x,y] = false;
             }
@@ -443,6 +443,23 @@ public class DynamicCulling : MonoBehaviour {
             childGO = container.GetChild(c).gameObject;
             Vector2Int posint = PosToCellCoordsChunks(childGO.transform.position);
             cellLists[posint.x,posint.y].Add(childGO);
+            
+            // Handle lists for LOD system
+            PrefabIdentifier pid = childGO.GetComponent<PrefabIdentifier>();
+            if (pid == null) Debug.Log(childGO.name + " no PrefabIdentifier!");
+            
+            cellConstIndices[posint.x,posint.y].Add(pid.constIndex);
+            MeshFilter mf = childGO.GetComponent<MeshFilter>();
+            cellMFs[posint.x,posint.y].Add(mf);
+            cellUsualMeshes[posint.x,posint.y].Add(mf.sharedMesh);
+            if (pid.constIndex > 304) {
+                // Always add something so it's same length as all other lists.
+                cellLODMeshes[posint.x,posint.y].Add(lodMeshes[302]);
+            } else {
+                cellLODMeshes[posint.x,posint.y].Add(lodMeshes[pid.constIndex]);
+            }
+            // End LOD system stuff
+
             worldCellOpen[posint.x,posint.y] = true;
 //             Note posN = childGO.AddComponent<Note>();
 //             posN.note = "Cell coords: " + posint.x.ToString() + ", " + posint.y.ToString();
@@ -480,32 +497,22 @@ public class DynamicCulling : MonoBehaviour {
                 break;
             case 5: break; // Lights done differently due to Light (what, it makes sense).
             default:
-                if (mr.transform.parent != null) {
-                    if (mr.transform.parent.gameObject.name == "flightpods_exterior") break;
-                    if (mr.transform.parent.parent != null) {
-                        if (mr.transform.parent.parent.gameObject.name == "flightpods_exterior") break;
-                    }
-                }
+//                 if (mr.transform.parent != null) {
+//                     if (mr.transform.parent.gameObject.name == "flightpods_exterior") break;
+//                     if (mr.transform.parent.parent != null) {
+//                         if (mr.transform.parent.parent.gameObject.name == "flightpods_exterior") break;
+//                     }
+//                 }
 
-                staticMeshesImmutable.Add(mr);
-                MeshFilter mf = mr.gameObject.GetComponent<MeshFilter>();
-                if (mf != null) Debug.Log("no mesh filter on cullable object " + mr.gameObject.name);
-                staticMeshesImmutableMFs.Add(mf);
-                staticMeshesImmutableUsualMeshes.Add(mr.GetComponent<MeshFilter>().mesh);
                 PrefabIdentifier pid = mr.GetComponent<PrefabIdentifier>();
                 if (pid == null) pid = mr.transform.parent.GetComponent<PrefabIdentifier>();
                 if (pid == null) pid = mr.transform.parent.parent.GetComponent<PrefabIdentifier>();
-                if (pid == null) Debug.Log("no prefab identifier found for " + mr.gameObject.name);
-                staticMeshConstIndex.Add(pid.constIndex);
-                if (pid.constIndex > 304) {
-                    // Always add something so it's same length as all other
-                    // static mesh immutable lists.
-                    staticMeshesImmutableLODMeshes.Add(mr.GetComponent<MeshFilter>().mesh);
-                    staticMeshImmutableCoords.Add(Vector2Int.zero);
-                } else {
-                    staticMeshesImmutableLODMeshes.Add(lodMeshes[pid.constIndex]);
-                    staticMeshImmutableCoords.Add(Vector2Int.zero);
-                }
+                if (pid == null) return;
+
+                if (pid.constIndex == 592 || pid.constIndex == 593) return;
+
+                staticMeshesImmutable.Add(mr);
+                staticMeshImmutableCoords.Add(Vector2Int.zero);
                 break;
         }
     }
@@ -1053,10 +1060,25 @@ public class DynamicCulling : MonoBehaviour {
                 if (worldCellLastVisible[x,y] == worldCellVisible[x,y]) continue;
 
                 List<MeshRenderer> cellContents = cellListsMR[x,y];
+                List<MeshFilter> cellMf = cellMFs[x,y];
+                List<Mesh> cellUsuals = cellUsualMeshes[x,y];
+                List<int> cellIndices = cellConstIndices[x,y];
+                List<Mesh> cellLODs = cellLODMeshes[x,y];
                 int count = cellContents.Count;
                 for (int i=0;i<count;i++) {
                     if (worldCellVisible[x,y]) {
                         cellContents[i].enabled = true;
+                        
+                        // No LOD for non-chunks
+                        if (cellIndices[i] > 304 || cellIndices[i] < 0) return;
+                        
+                        Mesh targetMesh = //SqrDist(x,y,playerCellX,playerCellY) > 36f
+                        /*?*/ cellLODs[i];
+                        //: cellUsuals[i];
+                        
+                        if (cellMf[i].sharedMesh != targetMesh) {
+                            cellMf[i].sharedMesh = targetMesh;
+                        }
                     } else {
                         cellContents[i].enabled = false;
                     }
@@ -1157,16 +1179,6 @@ public class DynamicCulling : MonoBehaviour {
             int y = staticMeshImmutableCoords[i].y;
             if (worldCellVisible[x,y] || !worldCellOpen[x,y]) {
                 staticMeshesImmutable[i].enabled = true;
-
-                if (staticMeshConstIndex[i] > 304) return; // No LOD for non-chunks
-                
-                Mesh targetMesh = SqrDist(x,y,playerCellX,playerCellY) > 36f
-                    ? staticMeshesImmutableLODMeshes[i]
-                    : staticMeshesImmutableUsualMeshes[i];
-
-                if (staticMeshesImmutableMFs[i].sharedMesh != targetMesh) {
-                    staticMeshesImmutableMFs[i].sharedMesh = targetMesh;
-                }
             } else {
                 staticMeshesImmutable[i].enabled = false;
             }

@@ -1106,52 +1106,47 @@ Master Index
 653 ambient_rain
 654 ambient_steam_loop
 655 ambient_washing_machine
-656
-657
-658
-659
-660
-661
-662
-663
-664
-665
-666
-667
-668
-669
-670
-671
-672
-673
-674
-675
-676
-677
-678
-679
-680
-681
-682
-683
-684
-685
-686
-687
-688
-689
-690
-691
-692
-693
-694
-695
-696
-697
-698
-699
-700
-
+656 decal_blood_die
+657 decal_blood_resist
+658 decal_blood_stayaway
+659 decal_blood_words2
+660 decal_bloodfonta
+661 decal_bloodfonte
+662 decal_bloodfontg
+663 decal_bloodfonth
+664 decal_bloodfontr
+665 decal_bloodfonty
+666 decal_bloodsplat2
+667 decal_logo_antenna
+668 decal_logo_armory
+669 decal_logo_biohazard
+670 decal_logo_bridge
+671 decal_logo_cyborg
+672 decal_logo_gears
+673 decal_logo_medical
+674 decal_logo_radhazard
+675 decal_logo_research
+676 decal_logo_security
+677 decal_painting1
+678 decal_painting2
+679 decal_painting3
+680 decal_posterbetterfuture
+681 decal_postergenetics
+682 decal_scorch1
+683 decal_scorch2
+684 decal_scorch3
+685 decal_scorch4
+686 decal_scorchtiny
+687 decal_bloodsplat // missed typing it so alphabetically down here, oh well
+688 func_switch1
+689 func_switch2
+690 func_switch3
+691 func_switch4
+692 func_switch5
+693 func_switch5broken
+694 func_switch7
+695 func_switch8
+696 func_switchbroken
 
 Generic Materials (Const.a.genericMaterials[])
 0  col1                 Dark Gray            In hindsight, maybe I should have named these descriptively.
