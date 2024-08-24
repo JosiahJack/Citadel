@@ -491,267 +491,267 @@ Master Index
 38  chunk_eng1_8                 21,27
 39  chunk_eng1_9                 28
 40  chunk_eng1_9d                29
-41  chunk_eng2_1                 ... ok this is getting ridiculous, maybe fill out later
-42  chunk_eng2_1_slice45
-43  chunk_eng2_1_slice384high
-44  chunk_eng2_1_slice384highrh
-45  chunk_eng2_1d
-46  chunk_eng2_2
-47  chunk_eng2_2d
-48  chunk_eng2_3
-49  chunk_eng2_3d
-50  chunk_eng2_4
-51  chunk_eng2_5
-52  chunk_eng2_5_slice45
+41  chunk_eng2_1                 30
+42  chunk_eng2_1_slice45         30
+43  chunk_eng2_1_slice384high    30
+44  chunk_eng2_1_slice384highrh  30
+45  chunk_eng2_1d                31
+46  chunk_eng2_2                 32
+47  chunk_eng2_2d                33
+48  chunk_eng2_3                 34
+49  chunk_eng2_3d                35
+50  chunk_eng2_4                 36
+51  chunk_eng2_5                 37
+52  chunk_eng2_5_slice45         37
 53  chunk_eng2_6
-54  chunk_exec1_1
-55  chunk_exec1_1d
-56  chunk_exec1_2
-57  chunk_exec1_2d
-58  chunk_exec2_1
-59  chunk_exec2_2
-60  chunk_exec2_2d
-61  chunk_exec2_3
-62  chunk_exec2_4
-63  chunk_exec2_4_slice45
-64  chunk_exec2_5
-65  chunk_exec2_6
-66  chunk_exec2_7
-67  chunk_exec3_1
-68  chunk_exec3_1d
-69  chunk_exec3_2
-70  chunk_exec3_4
-71  chunk_exec4_1
-72  chunk_exec4_2
-73  chunk_exec4_3
-74  chunk_exec4_4
-75  chunk_exec4_5
-76  chunk_exec4_6
-77  chunk_exec6_1
+54  chunk_exec1_1                38
+55  chunk_exec1_1d               39
+56  chunk_exec1_2                40
+57  chunk_exec1_2d               41
+58  chunk_exec2_1                42
+59  chunk_exec2_2                43
+60  chunk_exec2_2d               44
+61  chunk_exec2_3                45
+62  chunk_exec2_4                46
+63  chunk_exec2_4_slice45        46
+64  chunk_exec2_5                47
+65  chunk_exec2_6                48
+66  chunk_exec2_7                49
+67  chunk_exec3_1                50
+68  chunk_exec3_1d               51
+69  chunk_exec3_2                52
+70  chunk_exec3_4                53
+71  chunk_exec4_1                54
+72  chunk_exec4_2                55
+73  chunk_exec4_3                56
+74  chunk_exec4_4                57
+75  chunk_exec4_5                58
+76  chunk_exec4_6                59
+77  chunk_exec6_1                60
 78  chunk_exteriorpanel1
 79  chunk_fan1
-80  chunk_flight1_1
-81  chunk_flight1_1b
-82  chunk_flight1_2
-83  chunk_flight1_2_slice45rh
-84  chunk_flight1_3
-85  chunk_flight1_4
-86  chunk_flight1_5
-87  chunk_flight1_5_slice45lh
-88  chunk_flight1_6
-89  chunk_flight2_1
-90  chunk_flight2_2
-91  chunk_flight2_2_slice45
-92  chunk_flight2_3
+80  chunk_flight1_1              61
+81  chunk_flight1_1b             62
+82  chunk_flight1_2              63
+83  chunk_flight1_2_slice45rh    63
+84  chunk_flight1_3              64
+85  chunk_flight1_4              65
+86  chunk_flight1_5              66
+87  chunk_flight1_5_slice45lh    66
+88  chunk_flight1_6              67
+89  chunk_flight2_1              68
+90  chunk_flight2_2              69
+91  chunk_flight2_2_slice45      69
+92  chunk_flight2_3              70
 93  chunk_grove1_1
-94  chunk_grove1_2
-95  chunk_grove1_2_slice45
-96  chunk_grove1_3
-97  chunk_grove1_4
-98  chunk_grove1_5
-99  chunk_grove1_6
-100 chunk_grove1_7
-101 chunk_grove2_1
-102 chunk_grove2_2
-103 chunk_grove2_3
-104 chunk_grove2_4
-105 chunk_grove2_5
-106 chunk_grove2_6
-107 chunk_grove2_7
-108 chunk_grove2_8
-109 chunk_grove2_9
-110 chunk_grove2_9b
-111 chunk_grove2_9c
+94  chunk_grove1_2               71
+95  chunk_grove1_2_slice45       71
+96  chunk_grove1_3               72
+97  chunk_grove1_4               73
+98  chunk_grove1_5               74
+99  chunk_grove1_6               75
+100 chunk_grove1_7               76
+101 chunk_grove2_1               77
+102 chunk_grove2_2               78
+103 chunk_grove2_3               79
+104 chunk_grove2_4               80
+105 chunk_grove2_5               81
+106 chunk_grove2_6               82
+107 chunk_grove2_7               83
+108 chunk_grove2_8               84
+109 chunk_grove2_9               85
+110 chunk_grove2_9b              86
+111 chunk_grove2_9c              87
 112 chunk_lift1
-113 chunk_maint1_1
-114 chunk_maint1_2
-115 chunk_maint1_2d
-116 chunk_maint1_3
-117 chunk_maint1_3b
-118 chunk_maint1_4
-119 chunk_maint1_4b
-120 chunk_maint1_5
-121 chunk_maint1_6
-122 chunk_maint1_7
+113 chunk_maint1_1               88
+114 chunk_maint1_2               89
+115 chunk_maint1_2d              90
+116 chunk_maint1_3               91
+117 chunk_maint1_3b              92
+118 chunk_maint1_4               93
+119 chunk_maint1_4b              94
+120 chunk_maint1_5               95
+121 chunk_maint1_6               96
+122 chunk_maint1_7               97
 123 chunk_maint1_8
-124 chunk_maint1_9
-125 chunk_maint1_9d
-126 chunk_maint2_1
-127 chunk_maint2_1b
-128 chunk_maint2_1d
-129 chunk_maint2_2
-130 chunk_maint2_3
-131 chunk_maint2_3d
-132 chunk_maint2_4
-133 chunk_maint2_4d
-134 chunk_maint2_5
-135 chunk_maint2_5d
-136 chunk_maint2_6
-137 chunk_maint2_6d
-138 chunk_maint2_7
-139 chunk_maint2_7d
-140 chunk_maint2_8
-141 chunk_maint2_9
-142 chunk_maint2_9_slice45RH
-143 chunk_maint2_9_slice128_top
-144 chunk_maint3_1
-145 chunk_maint3_1_slice32_lh
-146 chunk_maint3_1_slice32_rh
-147 chunk_maint3_1_slice45
-148 chunk_maint3_1d
-149 chunk_med1_1
-150 chunk_med1_1_half_top
-151 chunk_med1_1_slice128high
-152 chunk_med1_1_slice192RH
-153 chunk_med1_1_slice256
-154 chunk_med1_1d
-155 chunk_med1_2
-156 chunk_med1_2d
-157 chunk_med1_3
-158 chunk_med1_3d
-159 chunk_med1_4
-160 chunk_med1_5
-161 chunk_med1_6
-162 chunk_med1_7
-163 chunk_med1_7_slice14_64
-164 chunk_med1_7_slice45_320lh
-165 chunk_med1_7_slice45_320rh
-166 chunk_med1_7_slice96high
-167 chunk_med1_7d
-168 chunk_med1_7d_slice128
-169 chunk_med1_8
-170 chunk_med1_8d
-171 chunk_med1_9
-172 chunk_med1_9_ofs32_90
-173 chunk_med1_9_ofs64_90
-174 chunk_med1_9d
-175 chunk_med1_9d_ofs48_90
-176 chunk_med1_9d_ofs112_90
-177 chunk_med1_9d_ofs144_90
-178 chunk_med2_1
-179 chunk_med2_1_slice32RH
-180 chunk_med2_1d
-181 chunk_med2_2
-182 chunk_med2_2_half_bottom
-183 chunk_med2_2d
-184 chunk_med2_3
-185 chunk_med2_3d
-186 chunk_med2_4
-187 chunk_med2_5
-188 chunk_med2_6
-189 chunk_med2_7
-190 chunk_med2_8
-191 chunk_med2_8_half_top
-192 chunk_med2_8_slice32RH
-193 chunk_med2_8_slice45
-194 chunk_med2_9
-195 chunk_med2_9d
-196 chunk_med3_1
-197 chunk_rad1_1
-198 chunk_rad1_2
-199 chunk_reac1_1
-200 chunk_reac1_1_slice45
-201 chunk_reac1_2
-202 chunk_reac1_3
-203 chunk_reac1_4
-204 chunk_reac1_5
-205 chunk_reac1_6
-206 chunk_reac1_7
-207 chunk_reac1_8
-208 chunk_reac1_9
-209 chunk_reac2_1
-210 chunk_reac2_1_slice45LH
-211 chunk_reac2_1_slice45LH_up
-212 chunk_reac2_1_slice45RH
-213 chunk_reac2_1_slice45RH_up
-214 chunk_reac2_1b
-215 chunk_reac2_1bmirror
-216 chunk_reac2_1mirror
-217 chunk_reac2_2
-218 chunk_reac2_4
-219 chunk_reac2_4_slice128lower
-220 chunk_reac2_5
-221 chunk_reac2_6
-222 chunk_reac2_7
-223 chunk_reac2_8
-224 chunk_reac2_9
-225 chunk_reac3_1
-226 chunk_reac3_2
-227 chunk_reac3_3
-228 chunk_reac3_4
-229 chunk_reac3_5
-230 chunk_reac3_6
-231 chunk_reac3_7
-232 chunk_reac4_1
-233 chunk_reac4_1_slice45lh
-234 chunk_reac4_2
-235 chunk_reac5_1
-236 chunk_reac5_2
-237 chunk_reac5_3
-238 chunk_reac6_1
-239 chunk_reac6_2
-240 chunk_reac6_3
-241 chunk_sci1_1
-242 chunk_sci1_1_slice45_toplh
-243 chunk_sci1_1_slice45_toprh
-244 chunk_sci1_1d
-245 chunk_sci1_2
-246 chunk_sci1_2_slice45lh
-247 chunk_sci1_2_slice45lh_up
-248 chunk_sci1_2_slice45rh
-249 chunk_sci1_2_slice45rh_up
-250 chunk_sci1_2d
-251 chunk_sci1_3
-252 chunk_sci1_4
-253 chunk_sci1_5
-254 chunk_sci1_6
-255 chunk_sci1_6_slice45
-256 chunk_sci1_7
-257 chunk_sci1_7d
-258 chunk_sci1_8
-259 chunk_sci1_8d
-260 chunk_sci1_9
-261 chunk_sci1_9d
-262 chunk_sci2_1
-263 chunk_sci2_1_slice45lh
-264 chunk_sci2_1_slice45rh
-265 chunk_sci2_1d
-266 chunk_sci2_2
-267 chunk_sci2_2d
-268 chunk_sci2_3
-269 chunk_sci2_4
-270 chunk_sci2_5
-271 chunk_sci2_5d
-272 chunk_sci3_1
-273 chunk_sci3_1d
-274 chunk_sci3_2
-275 chunk_sci3_3
-276 chunk_sci3_4
-277 chunk_sci3_5
-278 chunk_sci3_6
+124 chunk_maint1_9               98
+125 chunk_maint1_9d              99
+126 chunk_maint2_1               100
+127 chunk_maint2_1b              101
+128 chunk_maint2_1d              102
+129 chunk_maint2_2               103
+130 chunk_maint2_3               104
+131 chunk_maint2_3d              105
+132 chunk_maint2_4               106
+133 chunk_maint2_4d              107
+134 chunk_maint2_5               108
+135 chunk_maint2_5d              109
+136 chunk_maint2_6               110
+137 chunk_maint2_6d              111
+138 chunk_maint2_7               112
+139 chunk_maint2_7d              113
+140 chunk_maint2_8               114
+141 chunk_maint2_9               115
+142 chunk_maint2_9_slice45RH     115
+143 chunk_maint2_9_slice128_top  115
+144 chunk_maint3_1               116
+145 chunk_maint3_1_slice32_lh    116
+146 chunk_maint3_1_slice32_rh    116
+147 chunk_maint3_1_slice45       116
+148 chunk_maint3_1d              117
+149 chunk_med1_1                 118
+150 chunk_med1_1_half_top        118
+151 chunk_med1_1_slice128high    118
+152 chunk_med1_1_slice192RH      118
+153 chunk_med1_1_slice256        118
+154 chunk_med1_1d                119
+155 chunk_med1_2                 120
+156 chunk_med1_2d                121
+157 chunk_med1_3                 122
+158 chunk_med1_3d                123
+159 chunk_med1_4                 124
+160 chunk_med1_5                 125
+161 chunk_med1_6                 126
+162 chunk_med1_7                 127
+163 chunk_med1_7_slice14_64      127
+164 chunk_med1_7_slice45_320lh   127
+165 chunk_med1_7_slice45_320rh   127
+166 chunk_med1_7_slice96high     127
+167 chunk_med1_7d                128
+168 chunk_med1_7d_slice128       128
+169 chunk_med1_8                 129
+170 chunk_med1_8d                130
+171 chunk_med1_9                 131
+172 chunk_med1_9_ofs32_90        131
+173 chunk_med1_9_ofs64_90        131
+174 chunk_med1_9d                132
+175 chunk_med1_9d_ofs48_90       132
+176 chunk_med1_9d_ofs112_90      132
+177 chunk_med1_9d_ofs144_90      132
+178 chunk_med2_1                 133
+179 chunk_med2_1_slice32RH       133
+180 chunk_med2_1d                134
+181 chunk_med2_2                 135
+182 chunk_med2_2_half_bottom     135
+183 chunk_med2_2d                136
+184 chunk_med2_3                 137
+185 chunk_med2_3d                138
+186 chunk_med2_4                 139
+187 chunk_med2_5                 140
+188 chunk_med2_6                 141
+189 chunk_med2_7                 142
+190 chunk_med2_8                 143
+191 chunk_med2_8_half_top        143
+192 chunk_med2_8_slice32RH       143
+193 chunk_med2_8_slice45         143
+194 chunk_med2_9                 144
+195 chunk_med2_9d                145
+196 chunk_med3_1                 146
+197 chunk_rad1_1                 147
+198 chunk_rad1_2                 148
+199 chunk_reac1_1                149
+200 chunk_reac1_1_slice45        149
+201 chunk_reac1_2                150
+202 chunk_reac1_3                151
+203 chunk_reac1_4                152
+204 chunk_reac1_5                153
+205 chunk_reac1_6                154
+206 chunk_reac1_7                155
+207 chunk_reac1_8                156
+208 chunk_reac1_9                157
+209 chunk_reac2_1                158
+210 chunk_reac2_1_slice45LH      158
+211 chunk_reac2_1_slice45LH_up   158
+212 chunk_reac2_1_slice45RH      158
+213 chunk_reac2_1_slice45RH_up   158
+214 chunk_reac2_1b               159
+215 chunk_reac2_1bmirror         159
+216 chunk_reac2_1mirror          158
+217 chunk_reac2_2                160
+218 chunk_reac2_4                161
+219 chunk_reac2_4_slice128lower  161
+220 chunk_reac2_5                162
+221 chunk_reac2_6                163
+222 chunk_reac2_7                164
+223 chunk_reac2_8                165
+224 chunk_reac2_9                166
+225 chunk_reac3_1                167
+226 chunk_reac3_2                168
+227 chunk_reac3_3                169
+228 chunk_reac3_4                170
+229 chunk_reac3_5                171
+230 chunk_reac3_6                172
+231 chunk_reac3_7                173
+232 chunk_reac4_1                174
+233 chunk_reac4_1_slice45lh      174
+234 chunk_reac4_2                175
+235 chunk_reac5_1                176
+236 chunk_reac5_2                177
+237 chunk_reac5_3                178
+238 chunk_reac6_1                179
+239 chunk_reac6_2                180
+240 chunk_reac6_3                181
+241 chunk_sci1_1                 182
+242 chunk_sci1_1_slice45_toplh   182
+243 chunk_sci1_1_slice45_toprh   182
+244 chunk_sci1_1d                183
+245 chunk_sci1_2                 184
+246 chunk_sci1_2_slice45lh       184
+247 chunk_sci1_2_slice45lh_up    184
+248 chunk_sci1_2_slice45rh       184
+249 chunk_sci1_2_slice45rh_up    184
+250 chunk_sci1_2d                185
+251 chunk_sci1_3                 186
+252 chunk_sci1_4                 187
+253 chunk_sci1_5                 188
+254 chunk_sci1_6                 189
+255 chunk_sci1_6_slice45         189
+256 chunk_sci1_7                 190
+257 chunk_sci1_7d                191
+258 chunk_sci1_8                 192
+259 chunk_sci1_8d                193
+260 chunk_sci1_9                 194
+261 chunk_sci1_9d                195
+262 chunk_sci2_1                 196
+263 chunk_sci2_1_slice45lh       196
+264 chunk_sci2_1_slice45rh       196
+265 chunk_sci2_1d                197
+266 chunk_sci2_2                 198
+267 chunk_sci2_2d                199
+268 chunk_sci2_3                 200
+269 chunk_sci2_4                 201
+270 chunk_sci2_5                 202
+271 chunk_sci2_5d                203
+272 chunk_sci3_1                 204
+273 chunk_sci3_1d                205
+274 chunk_sci3_2                 206
+275 chunk_sci3_3                 207
+276 chunk_sci3_4                 208
+277 chunk_sci3_5                 209
+278 chunk_sci3_6                 210
 279 chunk_screen
-280 chunk_sec1_1
-281 chunk_sec1_1b
-282 chunk_sec1_1c
-283 chunk_sec1_1c_slice45
-284 chunk_sec1_1c_slice64highlh
-285 chunk_sec1_1c_slice64highrh
-286 chunk_sec1_1c_slice320high
-287 chunk_sec1_1c_slice320highrh
-288 chunk_sec1_2
-289 chunk_sec1_2b
-290 chunk_sec1_3
-291 chunk_sec1_3_slice45
-292 chunk_stor1_1
-293 chunk_stor1_2
-294 chunk_stor1_3
-295 chunk_stor1_4
-296 chunk_stor1_5
-297 chunk_stor1_6
-298 chunk_stor1_6_slice128_up_lh
-299 chunk_stor1_6_slice128_uprh
-300 chunk_stor1_6_slice192lh
-301 chunk_stor1_6_slice192rh
+280 chunk_sec1_1                 211
+281 chunk_sec1_1b                212
+282 chunk_sec1_1c                213
+283 chunk_sec1_1c_slice45        213
+284 chunk_sec1_1c_slice64highlh  213
+285 chunk_sec1_1c_slice64highrh  213
+286 chunk_sec1_1c_slice320high   213
+287 chunk_sec1_1c_slice320highrh 213
+288 chunk_sec1_2                 214
+289 chunk_sec1_2b                215
+290 chunk_sec1_3                 216
+291 chunk_sec1_3_slice45         216
+292 chunk_stor1_1                217
+293 chunk_stor1_2                218
+294 chunk_stor1_3                219
+295 chunk_stor1_4                220
+296 chunk_stor1_5                221
+297 chunk_stor1_6                222
+298 chunk_stor1_6_slice128_up_lh 222
+299 chunk_stor1_6_slice128_uprh  222
+300 chunk_stor1_6_slice192lh     222
+301 chunk_stor1_6_slice192rh     222
 302 chunk_stor1_7                223
 303 chunk_stor1_7_slice45        223
 304 chunk_stor1_7d               224
@@ -1147,6 +1147,8 @@ Master Index
 694 func_switch7
 695 func_switch8
 696 func_switchbroken
+697 clip_npc
+698 clip_objects
 
 Generic Materials (Const.a.genericMaterials[])
 0  col1                 Dark Gray            In hindsight, maybe I should have named these descriptively.

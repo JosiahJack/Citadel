@@ -34,8 +34,7 @@ public class MouseLookScript : MonoBehaviour {
 	public HealthManager hm;
 	public GameObject playerRadiationTreatmentFlash;
 	public Vector2 lastMousePos;
-	public bool lightCulling = true;
-
+	
     // Internal references
     [HideInInspector] public bool inventoryMode;
 	public bool holdingObject;

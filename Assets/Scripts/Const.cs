@@ -210,7 +210,6 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int GraphicsResWidth;
 	[HideInInspector] public int GraphicsResHeight;
 	[HideInInspector] public bool GraphicsFullscreen;
-	[HideInInspector] public bool GraphicsVSync;
 	[HideInInspector] public bool GraphicsSSAO;
 	[HideInInspector] public bool GraphicsBloom;
 	[HideInInspector] public int GraphicsAAMode;
@@ -218,6 +217,8 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int GraphicsSSRMode;
 	[HideInInspector] public int GraphicsFOV;
 	[HideInInspector] public int GraphicsGamma;
+	[HideInInspector] public int GraphicsModelDetail;	
+	[HideInInspector] public bool GraphicsVSync;
 	[HideInInspector] public bool NoShootMode;
 	[HideInInspector] public bool DynamicMusic;
 	public float HeadBobRate = 10.0f;

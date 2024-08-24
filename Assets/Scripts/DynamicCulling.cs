@@ -5,21 +5,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DynamicCulling : MonoBehaviour {
+    [HideInInspector] public const int WORLDX = 64;
+    [HideInInspector] public const int ARRSIZE = WORLDX * WORLDX;
+    [HideInInspector] public const float CELLXHALF = 1.28f;
+    
     public bool cullEnabled = false;
+    public bool dynamicObjectCull = false;
+    public bool lightCulling = true;
     public bool outputDebugImages = false;
-    const int WORLDX = 64;
-    const int ARRSIZE = WORLDX * WORLDX;
-    const float CELLXHALF = 1.28f;
-    public bool[,] worldCellOpen = new bool [WORLDX,WORLDX];
-    public bool[,] worldCellVisible = new bool [WORLDX,WORLDX];
+    public bool forceRecull = false;
     public bool[,] worldCellCheckedYet = new bool [WORLDX,WORLDX];
     //public Texture2D[] precalculatedPVS = new Texture2D[ARRSIZE];
-    public List<GameObject>[,] cellLists = new List<GameObject>[WORLDX,WORLDX];
-    public List<MeshRenderer>[,] cellListsMR = new List<MeshRenderer>[WORLDX,WORLDX];
-    public List<int>[,] cellConstIndices = new List<int>[WORLDX,WORLDX];
-    public List<Mesh>[,] cellUsualMeshes = new List<Mesh>[WORLDX,WORLDX];
-    public List<Mesh>[,] cellLODMeshes = new List<Mesh>[WORLDX,WORLDX];
-    public List<MeshFilter>[,] cellMFs= new List<MeshFilter>[WORLDX,WORLDX];
+    public GridCell[,] gridCells = new GridCell[WORLDX,WORLDX];
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
     public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();
     public List<MeshRenderer> staticMeshesImmutable = new List<MeshRenderer>();
@@ -37,10 +34,12 @@ public class DynamicCulling : MonoBehaviour {
     public int playerCellY = 0;
     public float deltaX = 0.0f;
     public float deltaY = 0.0f;
+    public float lodSqrDist = 36f;
     public Vector3 worldMin;
     public List<Transform> npcTransforms;
     public List<AIController> npcAICs = new List<AIController>();
     public List<Vector2Int> npcCoords = new List<Vector2Int>();
+    public bool lodMeshesInitialized = false;
     public Mesh[] lodMeshes;
     public Mesh lodMeshTemplate;
 
@@ -51,171 +50,222 @@ public class DynamicCulling : MonoBehaviour {
     private Texture2D debugTex;
 
     public static DynamicCulling a;
+    
+    public class Meshenderer {
+        public MeshRenderer meshRenderer;
+        public MeshFilter meshFilter;
+        public Mesh meshUsual;
+        public Mesh meshLOD;
+        
+        public void SetMesh(bool useLOD) {
+            meshFilter.sharedMesh = useLOD ? meshLOD : meshUsual;
+        }
+    }
+    
+    public class ChunkPrefab {
+        public int x;
+        public int y;
+        public int constIndex;
+        public GameObject go;
+        public List<Meshenderer> meshenderers;
+    }
+    
+    public class DynamicObject {
+        public int x;
+        public int y;
+        public int constIndex;
+        public GameObject go;
+        public List<Meshenderer> meshenderers;
+    }
+    
+    public class GridCell {
+        public int x;
+        public int y;
+        public bool open;
+        public bool visible;
+        public bool closedNorth; // For when chunk configurations are such that
+        public bool closedEast;  // the immediately adjacent cell at this edge
+        public bool closedSouth; // is not visible, consider edge as closed to
+        public bool closedWest;  // be able to further reduce visible cells.
+        public bool[,] visibleCellsFromHere;
+        public List<ChunkPrefab> chunkPrefabs;
+        public List<DynamicObject> dynamicObjects;
+    }
 
     void Awake() {
         a = this;
         a.Cull_Init();
         openDebugImagePath = Utils.SafePathCombine(
                                  Application.streamingAssetsPath,
-                                 "worldcellopen_" + LevelManager.a.currentLevel.ToString() + ".png");
+                                 "gridcellsopen_"
+                                 + LevelManager.a.currentLevel.ToString()
+                                 + ".png");
+        
         visDebugImagePath = Utils.SafePathCombine(
                                 Application.streamingAssetsPath,
-                                "worldcellvis_" + LevelManager.a.currentLevel.ToString() + ".png");
+                                "worldcellvis_"
+                                + LevelManager.a.currentLevel.ToString()
+                                + ".png");
+        
         a.pixels = new Color32[WORLDX * WORLDX];
     }
 
     float GetVertexColorForChunk(int constdex) {
         switch(constdex) {
-            case 1:   return 0f;
-            case 2:   return 1f / 255f;
-            case 3:   return 1f / 255f;
-            case 4:   return 1f / 255f;
-            case 5:   return 2f / 255f;
-            case 6:   return 2f / 255f;
-            case 7:   return 2f / 255f;
-            case 8:   return 3f / 255f;
-            case 9:   return 3f / 255f;
-            case 10:  return 3f / 255f;
-            case 11:  return 4f / 255f;
-            case 12:  return 6f / 255f;
-            case 13:  return 7f / 255f;
-            case 14:  return 8f / 255f;
-            case 15:  return 9f / 255f;
-            case 16:  return 10f / 255f;
-            case 17:  return 11f / 255f;
-            case 18:  return 12f / 255f;
-            case 19:  return 13f / 255f;
-            case 23:  return 14f / 255f;
-            case 24:  return 15f / 255f;
-            case 25:  return 16f / 255f;
-            case 26:  return 17f / 255f;
-            case 27:  return 18f / 255f;
-            case 28:  return 19f / 255f;
-            case 29:  return 20f / 255f;
-            case 30:  return 21f / 255f;
-            case 31:  return 21f / 255f;
-            case 32:  return 21f / 255f;
-            case 33:  return 22f / 255f;
-            case 34:  return 23f / 255f;
-            case 35:  return 24f / 255f;
-            case 36:  return 25f / 255f;
-            case 37:  return 26f / 255f;
-            case 38:  return 26f / 255f;
-            case 39:  return 26f / 255f;
-            case 40:  return 26f / 255f;
-            case 41:  return 26f / 255f;
-            case 42:  return 26f / 255f;
-            case 43:  return 26f / 255f;
-            case 44:  return 26f / 255f;
-            case 45:  return 26f / 255f;
-            case 46:  return 26f / 255f;
-            case 47:  return 26f / 255f;
-            case 48:  return 26f / 255f;
-            case 49:  return 26f / 255f;
-            case 50:  return 26f / 255f;
-            case 51:  return 26f / 255f;
-            case 52:  return 26f / 255f;
-            case 53:  return 26f / 255f;
-            case 54:  return 26f / 255f;
-            case 55:  return 26f / 255f;
-            case 56:  return 26f / 255f;
-            case 57:  return 26f / 255f;
-            case 58:  return 26f / 255f;
-            case 59:  return 26f / 255f;
-            case 60:  return 26f / 255f;
-            case 61:  return 26f / 255f;
-            case 62:  return 26f / 255f;
-            case 63:  return 26f / 255f;
-            case 64:  return 26f / 255f;
-            case 65:  return 26f / 255f;
-            case 66:  return 26f / 255f;
-            case 67:  return 26f / 255f;
-            case 68:  return 26f / 255f;
-            case 69:  return 26f / 255f;
-            case 70:  return 26f / 255f;
-            case 71:  return 26f / 255f;
-            case 72:  return 26f / 255f;
-            case 73:  return 26f / 255f;
-            case 74:  return 26f / 255f;
-            case 75:  return 26f / 255f;
-            case 76:  return 26f / 255f;
-            case 77:  return 26f / 255f;
-            case 78:  return 26f / 255f;
-            case 79:  return 26f / 255f;
-            case 80:  return 26f / 255f;
-            case 81:  return 26f / 255f;
-            case 82:  return 26f / 255f;
-            case 83:  return 26f / 255f;
-            case 84:  return 26f / 255f;
-            case 85:  return 26f / 255f;
-            case 86:  return 26f / 255f;
-            case 87:  return 26f / 255f;
-            case 88:  return 26f / 255f;
-            case 89:  return 26f / 255f;
-            case 90:  return 26f / 255f;
-            case 91:  return 26f / 255f;
-            case 92:  return 26f / 255f;
-            case 93:  return 26f / 255f;
-            case 94:  return 26f / 255f;
-            case 95:  return 26f / 255f;
-            case 96:  return 26f / 255f;
-            case 97:  return 26f / 255f;
-            case 98:  return 26f / 255f;
-            case 99:  return 26f / 255f;
-            case 100: return 26f / 255f;
-            case 101: return 26f / 255f;
-            case 102: return 26f / 255f;
-            case 103: return 26f / 255f;
-            case 104: return 26f / 255f;
-            case 105: return 26f / 255f;
-            case 106: return 26f / 255f;
-            case 107: return 26f / 255f;
-            case 108: return 26f / 255f;
-            case 109: return 26f / 255f;
-            case 110: return 26f / 255f;
-            case 111: return 26f / 255f;
-            case 112: return 26f / 255f;
-            case 113: return 26f / 255f;
-            case 114: return 26f / 255f;
-            case 115: return 26f / 255f;
-            case 116: return 26f / 255f;
-            case 117: return 26f / 255f;
-            case 118: return 26f / 255f;
-            case 119: return 26f / 255f;
-            case 120: return 26f / 255f;
-            case 121: return 26f / 255f;
-            case 122: return 26f / 255f;
-            case 123: return 26f / 255f;
-            case 124: return 26f / 255f;
-            case 125: return 26f / 255f;
-            case 126: return 26f / 255f;
-            case 127: return 26f / 255f;
-            case 128: return 26f / 255f;
-            case 129: return 26f / 255f;
-            case 130: return 26f / 255f;
-            case 131: return 26f / 255f;
-            case 132: return 26f / 255f;
-            case 133: return 26f / 255f;
-            case 134: return 26f / 255f;
-            case 135: return 26f / 255f;
-            case 136: return 26f / 255f;
-            case 137: return 26f / 255f;
-            case 138: return 26f / 255f;
-            case 139: return 26f / 255f;
-            case 140: return 26f / 255f;
-            case 141: return 26f / 255f;
-            case 142: return 26f / 255f;
-            case 143: return 26f / 255f;
-            case 144: return 26f / 255f;
-            case 145: return 26f / 255f;
-            case 146: return 26f / 255f;
-            case 147: return 26f / 255f;
-            case 148: return 26f / 255f;
+
+
+
+            
+            case 4:   return   1f / 255f;
+            case 5:   return   2f / 255f;
+            case 6:   return 255f; // Slice, but would be 2f / 255f;.
+            case 7:   return   2f / 255f;
+            case 8:   return   3f / 255f;
+            case 9:   return 255f; // Slice, but would be 3f / 255f;
+            case 10:  return 255f; // Slice, but would be 3f / 255f;
+            case 11:  return   4f / 255f;
+            case 12:  return   6f / 255f;
+            case 13:  return   7f / 255f;
+            case 14:  return   8f / 255f;
+            case 15:  return   9f / 255f;
+            case 16:  return  10f / 255f;
+            case 17:  return  11f / 255f;
+            case 18:  return  12f / 255f;
+            case 19:  return  13f / 255f;
+
+
+
+            case 23:  return  14f / 255f;
+            case 24:  return  15f / 255f;
+            case 25:  return  16f / 255f;
+            case 26:  return  17f / 255f;
+            case 27:  return  18f / 255f;
+            case 28:  return  19f / 255f;
+            case 29:  return  20f / 255f;
+            case 30:  return  21f / 255f;
+            case 31:  return 255f; // Slice, but would be 21f / 255f;
+            case 32:  return 255f; // Slice, but would be 21f / 255f;
+            case 33:  return  22f / 255f;
+            case 34:  return  23f / 255f;
+            case 35:  return  24f / 255f;
+            case 36:  return  25f / 255f;
+            case 37:  return  26f / 255f;
+            case 38:  return  27f / 255f;
+            case 39:  return  28f / 255f;
+            case 40:  return  29f / 255f;
+            case 41:  return  30f / 255f;
+            case 42:  return 255f; // Slice, but would be 30f / 255f;
+            case 43:  return 255f; // Slice, but would be 30f / 255f;
+            case 44:  return 255f; // Slice, but would be 30f / 255f;
+            case 45:  return  31f / 255f;
+            case 46:  return  32f / 255f;
+            case 47:  return  33f / 255f;
+            case 48:  return  34f / 255f;
+            case 49:  return  35f / 255f;
+            case 50:  return  36f / 255f;
+            case 51:  return  37f / 255f;
+            case 52:  return 255f; // Slice, but would be 37f / 255f;
+
+            case 54:  return  38f / 255f;
+            case 55:  return  39f / 255f;
+            case 56:  return  40f / 255f;
+            case 57:  return  41f / 255f;
+            case 58:  return  42f / 255f;
+            case 59:  return  43f / 255f;
+            case 60:  return  44f / 255f;
+            case 61:  return  45f / 255f;
+            case 62:  return  46f / 255f;
+            case 63:  return 255f; // Slice, but would be 46f / 255f;
+            case 64:  return  47f / 255f;
+            case 65:  return  48f / 255f;
+            case 66:  return  49f / 255f;
+            case 67:  return  50f / 255f;
+            case 68:  return  51f / 255f;
+            case 69:  return  52f / 255f;
+            case 70:  return  53f / 255f;
+            case 71:  return  54f / 255f;
+            case 72:  return  55f / 255f;
+            case 73:  return  56f / 255f;
+            case 74:  return  57f / 255f;
+            case 75:  return  58f / 255f;
+            case 76:  return  59f / 255f;
+            case 77:  return  60f / 255f;
+
+
+            case 80:  return  61f / 255f;
+            case 81:  return  62f / 255f;
+            case 82:  return  63f / 255f;
+            case 83:  return 255f; // Slice, but would be 63f / 255f;
+            case 84:  return  64f / 255f;
+            case 85:  return  65f / 255f;
+            case 86:  return  66f / 255f;
+            case 87:  return 255f; // Slice, but would be 66f / 255f;
+            case 88:  return  67f / 255f;
+            case 89:  return  68f / 255f;
+            case 90:  return  69f / 255f;
+            case 91:  return 255f; // Slice, but would be 69f / 255f;
+            case 92:  return  70f / 255f;
+
+            case 94:  return  71f / 255f;
+            case 95:  return 255f; // Slice, but would be 71f / 255f;
+            case 96:  return  72f / 255f;
+            case 97:  return  73f / 255f;
+            case 98:  return  74f / 255f;
+            case 99:  return  75f / 255f;
+            case 100: return  76f / 255f;
+            case 101: return  77f / 255f;
+            case 102: return  78f / 255f;
+            case 103: return  79f / 255f;
+            case 104: return  80f / 255f;
+            case 105: return  81f / 255f;
+            case 106: return  82f / 255f;
+            case 107: return  83f / 255f;
+            case 108: return  84f / 255f;
+            case 109: return  85f / 255f;
+            case 110: return  86f / 255f;
+            case 111: return  87f / 255f;
+
+            case 113: return  88f / 255f;
+            case 114: return  89f / 255f;
+            case 115: return  90f / 255f;
+            case 116: return  91f / 255f;
+            case 117: return  92f / 255f;
+            case 118: return  93f / 255f;
+            case 119: return  94f / 255f;
+            case 120: return  95f / 255f;
+            case 121: return  96f / 255f;
+            case 122: return  97f / 255f;
+
+            case 124: return  98f / 255f;
+            case 125: return  99f / 255f;
+            case 126: return 100f / 255f;
+            case 127: return 101f / 255f;
+            case 128: return 102f / 255f;
+            case 129: return 103f / 255f;
+            case 130: return 104f / 255f;
+            case 131: return 105f / 255f;
+            case 132: return 106f / 255f;
+            case 133: return 107f / 255f;
+            case 134: return 108f / 255f;
+            case 135: return 109f / 255f;
+            case 136: return 110f / 255f;
+            case 137: return 111f / 255f;
+            case 138: return 112f / 255f;
+            case 139: return 113f / 255f;
+            case 140: return 114f / 255f;
+            case 141: return 115f / 255f;
+            case 142: return 255f; // Slice, but would be 115f / 255f;
+            case 143: return 255f; // Slice, but would be 115f / 255f;
+            case 144: return 116f / 255f;
+            case 145: return 255f; // Slice, but would be 116f / 255f;
+            case 146: return 255f; // Slice, but would be 116f / 255f;
+            case 147: return 255f; // Slice, but would be 116f / 255f;
+            case 148: return 117f / 255f;
             case 149: return 118f / 255f;
-            case 150: return 118f / 255f;
-            case 151: return 118f / 255f;
-            case 152: return 118f / 255f;
-            case 153: return 118f / 255f;
+            case 150: return 255f; // Slice, but would be 118f / 255f;
+            case 151: return 255f; // Slice, but would be 118f / 255f;
+            case 152: return 255f; // Slice, but would be 118f / 255f;
+            case 153: return 255f; // Slice, but would be 118f / 255f;
             case 154: return 119f / 255f;
             case 155: return 120f / 255f;
             case 156: return 121f / 255f;
@@ -225,253 +275,259 @@ public class DynamicCulling : MonoBehaviour {
             case 160: return 125f / 255f;
             case 161: return 126f / 255f;
             case 162: return 127f / 255f;
-            case 163: return 128f / 255f;
-            case 164: return 129f / 255f;
-            case 165: return 130f / 255f;
-            case 166: return 131f / 255f;
-            case 167: return 132f / 255f;
-            case 168: return 133f / 255f;
-            case 169: return 134f / 255f;
-            case 170: return 135f / 255f;
-            case 171: return 136f / 255f;
-            case 172: return 137f / 255f;
-            case 173: return 138f / 255f;
-            case 174: return 139f / 255f;
-            case 175: return 140f / 255f;
-            case 176: return 141f / 255f;
-            case 177: return 142f / 255f;
-            case 178: return 143f / 255f;
-            case 179: return 144f / 255f;
-            case 180: return 145f / 255f;
-            case 181: return 146f / 255f;
-            case 182: return 147f / 255f;
-            case 183: return 148f / 255f;
-            case 184: return 149f / 255f;
-            case 185: return 150f / 255f;
-            case 186: return 151f / 255f;
-            case 187: return 152f / 255f;
-            case 188: return 153f / 255f;
-            case 189: return 154f / 255f;
-            case 190: return 155f / 255f;
-            case 191: return 156f / 255f;
-            case 192: return 157f / 255f;
-            case 193: return 158f / 255f;
-            case 194: return 159f / 255f;
-            case 195: return 160f / 255f;
-            case 196: return 161f / 255f;
-            case 197: return 162f / 255f;
-            case 198: return 163f / 255f;
-            case 199: return 164f / 255f;
-            case 200: return 165f / 255f;
-            case 201: return 166f / 255f;
-            case 202: return 167f / 255f;
-            case 203: return 168f / 255f;
-            case 204: return 169f / 255f;
-            case 205: return 170f / 255f;
-            case 206: return 171f / 255f;
-            case 207: return 172f / 255f;
-            case 208: return 173f / 255f;
-            case 209: return 174f / 255f;
-            case 210: return 175f / 255f;
-            case 211: return 176f / 255f;
-            case 212: return 177f / 255f;
-            case 213: return 178f / 255f;
-            case 214: return 179f / 255f;
-            case 215: return 180f / 255f;
-            case 216: return 181f / 255f;
-            case 217: return 182f / 255f;
-            case 218: return 183f / 255f;
-            case 219: return 184f / 255f;
-            case 220: return 185f / 255f;
-            case 221: return 186f / 255f;
-            case 222: return 187f / 255f;
-            case 223: return 188f / 255f;
-            case 224: return 189f / 255f;
-            case 225: return 190f / 255f;
-            case 226: return 191f / 255f;
-            case 227: return 192f / 255f;
-            case 228: return 193f / 255f;
-            case 229: return 194f / 255f;
-            case 230: return 195f / 255f;
-            case 231: return 196f / 255f;
-            case 232: return 197f / 255f;
-            case 233: return 198f / 255f;
-            case 234: return 199f / 255f;
-            case 235: return 200f / 255f;
-            case 236: return 201f / 255f;
-            case 237: return 202f / 255f;
-            case 238: return 203f / 255f;
-            case 239: return 204f / 255f;
-            case 240: return 205f / 255f;
-            case 241: return 206f / 255f;
-            case 242: return 207f / 255f;
-            case 243: return 208f / 255f;
-            case 244: return 209f / 255f;
-            case 245: return 210f / 255f;
-            case 246: return 211f / 255f;
-            case 247: return 212f / 255f;
-            case 248: return 213f / 255f;
-            case 249: return 214f / 255f;
-            case 250: return 215f / 255f;
-            case 251: return 216f / 255f;
-            case 252: return 217f / 255f;
-            case 253: return 218f / 255f;
-            case 254: return 219f / 255f;
-            case 255: return 220f / 255f;
-            case 256: return 221f / 255f;
-            case 257: return 222f / 255f;
-            case 258: return 223f / 255f;
-            case 259: return 224f / 255f;
-            case 260: return 225f / 255f;
-            case 261: return 226f / 255f;
-            case 262: return 227f / 255f;
-            case 263: return 228f / 255f;
-            case 264: return 229f / 255f;
-            case 265: return 230f / 255f;
-            case 266: return 231f / 255f;
-            case 267: return 232f / 255f;
-            case 268: return 233f / 255f;
-            case 269: return 234f / 255f;
-            case 270: return 235f / 255f;
-            case 271: return 236f / 255f;
-            case 272: return 237f / 255f;
-            case 273: return 238f / 255f;
-            case 274: return 239f / 255f;
-            case 275: return 240f / 255f;
-            case 276: return 241f / 255f;
-            case 277: return 242f / 255f;
-            case 278: return 243f / 255f;
-            case 279: return 244f / 255f;
-            case 280: return 245f / 255f;
-            case 281: return 246f / 255f;
-            case 282: return 247f / 255f;
-            case 283: return 248f / 255f;
-            case 284: return 249f / 255f;
-            case 285: return 250f / 255f;
-            case 286: return 251f / 255f;
-            case 287: return 252f / 255f;
-            case 288: return 253f / 255f;
-            case 289: return 254f / 255f;
-            case 290: return 255f / 255f;
-            case 291: return 255f / 255f;
-            case 292: return 255f / 255f;
-            case 293: return 255f / 255f;
-            case 294: return 255f / 255f;
-            case 295: return 255f / 255f;
-            case 296: return 255f / 255f;
-            case 297: return 255f / 255f;
-            case 298: return 255f / 255f;
-            case 299: return 255f / 255f;
-            case 300: return 255f / 255f;
-            case 301: return 255f / 255f;
-            case 302: return 255f / 255f;
-            case 303: return 255f / 255f;
-            case 304: return 255f / 255f;
+            case 163: return 255f; // Slice, but would be 127f / 255f;
+            case 164: return 255f; // Slice, but would be 127f / 255f;
+            case 165: return 255f; // Slice, but would be 127f / 255f;
+            case 166: return 255f; // Slice, but would be 127f / 255f;
+            case 167: return 128f / 255f;
+            case 168: return 255f; // Slice, but would be 128f / 255f;
+            case 169: return 129f / 255f;
+            case 170: return 130f / 255f;
+            case 171: return 131f / 255f;
+            case 172: return 255f; // Slice, but would be 131f / 255f;
+            case 173: return 255f; // Slice, but would be 131f / 255f;
+            case 174: return 132f / 255f;
+            case 175: return 255f; // Slice, but would be 132f / 255f;
+            case 176: return 255f; // Slice, but would be 132f / 255f;
+            case 177: return 255f; // Slice, but would be 132f / 255f;
+            case 178: return 133f / 255f;
+            case 179: return 255f; // Slice, but would be 133f / 255f;
+            case 180: return 134f / 255f;
+            case 181: return 135f / 255f;
+            case 182: return 255f; // Slice, but would be 135f / 255f;
+            case 183: return 136f / 255f;
+            case 184: return 137f / 255f;
+            case 185: return 138f / 255f;
+            case 186: return 139f / 255f;
+            case 187: return 140f / 255f;
+            case 188: return 141f / 255f;
+            case 189: return 142f / 255f;
+            case 190: return 143f / 255f;
+            case 191: return 255f; // Slice, but would be 143f / 255f;
+            case 192: return 255f; // Slice, but would be 143f / 255f;
+            case 193: return 255f; // Slice, but would be 143f / 255f;
+            case 194: return 144f / 255f;
+            case 195: return 145f / 255f;
+            case 196: return 146f / 255f;
+            case 197: return 147f / 255f;
+            case 198: return 148f / 255f;
+            case 199: return 149f / 255f;
+            case 200: return 255f; // Slice, but would be 149f / 255f;
+            case 201: return 150f / 255f;
+            case 202: return 151f / 255f;
+            case 203: return 152f / 255f;
+            case 204: return 153f / 255f;
+            case 205: return 154f / 255f;
+            case 206: return 155f / 255f;
+            case 207: return 156f / 255f;
+            case 208: return 157f / 255f;
+            case 209: return 158f / 255f;
+            case 210: return 255f; // Slice, but would be 158f / 255f;
+            case 211: return 255f; // Slice, but would be 158f / 255f;
+            case 212: return 255f; // Slice, but would be 158f / 255f;
+            case 213: return 255f; // Slice, but would be 158f / 255f;
+            case 214: return 159f / 255f;
+            case 215: return 255f; // Mirror, but would be 159f / 255f;
+            case 216: return 255f; // Mirror, but would be 158f / 255f;
+            case 217: return 160f / 255f;
+            case 218: return 161f / 255f;
+            case 219: return 255f; // Slice, but would be 161f / 255f;
+            case 220: return 162f / 255f;
+            case 221: return 163f / 255f;
+            case 222: return 164f / 255f;
+            case 223: return 165f / 255f;
+            case 224: return 166f / 255f;
+            case 225: return 167f / 255f;
+            case 226: return 168f / 255f;
+            case 227: return 169f / 255f;
+            case 228: return 170f / 255f;
+            case 229: return 171f / 255f;
+            case 230: return 172f / 255f;
+            case 231: return 173f / 255f;
+            case 232: return 174f / 255f;
+            case 233: return 255f; // Slice, but would be 174f / 255f;
+            case 234: return 175f / 255f;
+            case 235: return 176f / 255f;
+            case 236: return 177f / 255f;
+            case 237: return 178f / 255f;
+            case 238: return 179f / 255f;
+            case 239: return 180f / 255f;
+            case 240: return 181f / 255f;
+            case 241: return 182f / 255f;
+            case 242: return 255f; // Slice, but would be 182f / 255f;
+            case 243: return 255f; // Slice, but would be 182f / 255f;
+            case 244: return 183f / 255f;
+            case 245: return 184f / 255f;
+            case 246: return 255f; // Slice, but would be 184f / 255f;
+            case 247: return 255f; // Slice, but would be 184f / 255f;
+            case 248: return 255f; // Slice, but would be 184f / 255f;
+            case 249: return 255f; // Slice, but would be 184f / 255f;
+            case 250: return 185f / 255f;
+            case 251: return 186f / 255f;
+            case 252: return 187f / 255f;
+            case 253: return 188f / 255f;
+            case 254: return 189f / 255f;
+            case 255: return 255f; // Slice, but would be 189f / 255f;
+            case 256: return 190f / 255f;
+            case 257: return 191f / 255f;
+            case 258: return 192f / 255f;
+            case 259: return 193f / 255f;
+            case 260: return 194f / 255f;
+            case 261: return 195f / 255f;
+            case 262: return 196f / 255f;
+            case 263: return 255f; // Slice, but would be 196f / 255f;
+            case 264: return 255f; // Slice, but would be 196f / 255f;
+            case 265: return 197f / 255f;
+            case 266: return 198f / 255f;
+            case 267: return 199f / 255f;
+            case 268: return 200f / 255f;
+            case 269: return 201f / 255f;
+            case 270: return 202f / 255f;
+            case 271: return 203f / 255f;
+            case 272: return 204f / 255f;
+            case 273: return 205f / 255f;
+            case 274: return 206f / 255f;
+            case 275: return 207f / 255f;
+            case 276: return 208f / 255f;
+            case 277: return 209f / 255f;
+            case 278: return 210f / 255f;
+
+            case 280: return 211f / 255f;
+            case 281: return 212f / 255f;
+            case 282: return 213f / 255f;
+            case 283: return 255f; // Slice, but would be 213f / 255f;
+            case 284: return 255f; // Slice, but would be 213f / 255f;
+            case 285: return 255f; // Slice, but would be 213f / 255f;
+            case 286: return 255f; // Slice, but would be 213f / 255f;
+            case 287: return 255f; // Slice, but would be 213f / 255f;
+            case 288: return 214f / 255f;
+            case 289: return 215f / 255f;
+            case 290: return 216f / 255f;
+            case 291: return 255f; // Slice, but would be 216f / 255f;
+            case 292: return 217f / 255f;
+            case 293: return 218f / 255f;
+            case 294: return 219f / 255f;
+            case 295: return 220f / 255f;
+            case 296: return 221f / 255f;
+            case 297: return 222f / 255f;
+            case 298: return 255f; // Slice, but would be 222f / 255f;
+            case 299: return 255f; // Slice, but would be 222f / 255f;
+            case 300: return 255f; // Slice, but would be 222f / 255f;
+            case 301: return 255f; // Slice, but would be 222f / 255f;
+            case 302: return 223f / 255f;
+            case 303: return 255f; // Slice, but would be 223f / 255f;
+            case 304: return 224f / 255f;
             
             // And so on
-            default: return 0f;
+            default: return 255f; // Null value
         }
     }
     
     void ClearCellList() {
-        worldCellVisible = new bool [WORLDX,WORLDX];
+        gridCells = new GridCell[WORLDX,WORLDX];
         worldCellCheckedYet = new bool [WORLDX,WORLDX];
-        worldCellOpen = new bool [WORLDX,WORLDX];
         staticMeshesImmutable = new List<MeshRenderer>();
-        staticMeshesImmutable.Clear();
         staticMeshImmutableCoords = new List<Vector2Int>();
-        staticMeshImmutableCoords.Clear();
         staticMeshesSaveable = new List<MeshRenderer>();
-        staticMeshesSaveable.Clear();
         staticMeshSaveableCoords = new List<Vector2Int>();
-        staticMeshSaveableCoords.Clear();
         doors = new List<MeshRenderer>();
-        doors.Clear();
         doorsCoords = new List<Vector2Int>();
-        doorsCoords.Clear();
         lights = new List<Light>();
-        lights.Clear();
         lightsInPVS = new List<Light>();
-        lightsInPVS.Clear();
         lightCoords = new List<Vector2Int>();
-        lightCoords.Clear();
         lightsInPVSCoords = new List<Vector2Int>();
-        lightsInPVSCoords.Clear();
         dynamicMeshes = new List<MeshRenderer>();
-        dynamicMeshes.Clear();
         dynamicMeshCoords = new List<Vector2Int>();
-        dynamicMeshCoords.Clear();
         npcAICs = new List<AIController>();
-        npcAICs.Clear();
         npcTransforms = new List<Transform>();
-        npcTransforms.Clear();
-        for (int x=0;x<64;x++) {
-            for (int y=0;y<64;y++) {
-                cellLists[x,y] = new List<GameObject>();
-                cellLists[x,y].Clear();
-                cellListsMR[x,y] = new List<MeshRenderer>();
-                cellListsMR[x,y].Clear();
-                cellMFs[x,y] = new List<MeshFilter>();
-                cellMFs[x,y].Clear();
-                cellUsualMeshes[x,y] = new List<Mesh>();
-                cellUsualMeshes[x,y].Clear();
-                cellLODMeshes[x,y] = new List<Mesh>();
-                cellLODMeshes[x,y].Clear();
-                cellConstIndices[x,y] = new List<int>();
-                cellConstIndices[x,y].Clear();
-                worldCellVisible[x,y] = false;
-                worldCellOpen[x,y] = false;
+        for (int x=0;x<WORLDX;x++) {
+            for (int y=0;y<WORLDX;y++) {
+                gridCells[x,y] = new GridCell();
+                gridCells[x,y].x = x;
+                gridCells[x,y].y = y;
+                gridCells[x,y].open = false;
+                gridCells[x,y].visible = false;
+                gridCells[x,y].closedNorth = false;
+                gridCells[x,y].closedEast = false;
+                gridCells[x,y].closedSouth = false;
+                gridCells[x,y].closedWest = false;
+                gridCells[x,y].chunkPrefabs = new List<ChunkPrefab>();
+                gridCells[x,y].dynamicObjects = new List<DynamicObject>();
+                gridCells[x,y].visibleCellsFromHere = new bool[WORLDX,WORLDX];
             }
         }
     }
 
     // ========================================================================
     // Handle Occluders (well, just determining visible cells and their chunks)
-
+    
+    Meshenderer GetMeshAndItsRenderer(GameObject go, PrefabIdentifier pid) {
+        // Add top level GameObject's mesh renderer and filter.
+        MeshRenderer mr = go.GetComponent<MeshRenderer>();
+        Mesh msh = null;
+        if (mr == null) return null;
+        
+        MeshFilter mf = go.GetComponent<MeshFilter>();
+        Meshenderer mrr = new Meshenderer();
+        mrr.meshRenderer = mr;
+        mrr.meshFilter = mf;
+        msh = mf.sharedMesh;
+        mrr.meshUsual = msh;
+        if (pid == null) {
+            mrr.meshLOD = msh;
+        } else {
+            if (pid.constIndex <= 304 && pid.constIndex > 0) {
+                if (lodMeshes[pid.constIndex] != null) {
+                    mrr.meshLOD = lodMeshes[pid.constIndex];
+                } else mrr.meshLOD = msh;
+            } else mrr.meshLOD = msh;
+        }
+        return mrr;
+    }
+    
     void PutChunksInCells() {
-        Transform container =
-            LevelManager.a.GetCurrentGeometryContainer().transform;
-
-        int chunkCount = container.childCount;
-        bool[] alreadyInAtLeastOneList = new bool[chunkCount];
-        for (int c=0;c<chunkCount;c++) alreadyInAtLeastOneList[c] = false;
+        Transform ctn = LevelManager.a.GetCurrentGeometryContainer().transform;
+        int chunkCount = ctn.childCount;
         GameObject childGO = null;
-        Vector3 pos = new Vector3(0f,0f,0f);
-        Vector2 pos2d = new Vector2(0f,0f);
-        Vector2 pos2dcurrent = new Vector2(0f,0f);
+        int x,y;
+        ChunkPrefab cr = null;
+        Vector2Int posint = new Vector2Int(0,0);
+        PrefabIdentifier pid = null;
         for (int c=0;c<chunkCount;c++) {
-            childGO = container.GetChild(c).gameObject;
-            Vector2Int posint = PosToCellCoordsChunks(childGO.transform.position);
-            cellLists[posint.x,posint.y].Add(childGO);
+            childGO = ctn.GetChild(c).gameObject;
+            posint = PosToCellCoordsChunks(childGO.transform.position);
+            x = posint.x;
+            y = posint.y;
+            pid = childGO.GetComponent<PrefabIdentifier>();
+            if (pid == null) {
+                Transform ctr = childGO.transform.GetChild(0);
+                if (ctr != null) {
+                    pid = ctr.gameObject.GetComponent<PrefabIdentifier>();
+                }
+            }
             
-            // Handle lists for LOD system
-            PrefabIdentifier pid = childGO.GetComponent<PrefabIdentifier>();
             if (pid == null) Debug.Log(childGO.name + " no PrefabIdentifier!");
+            cr = new ChunkPrefab();
+            cr.x = x;
+            cr.y = y;
+            cr.constIndex = pid.constIndex;
+            cr.go = childGO;
+            cr.meshenderers = new List<Meshenderer>();
+
+            // Add top level GameObject's mesh renderer and filter.
+            Meshenderer mrr = GetMeshAndItsRenderer(cr.go,pid);
+            if (mrr != null) cr.meshenderers.Add(mrr);
             
-            cellConstIndices[posint.x,posint.y].Add(pid.constIndex);
-            MeshFilter mf = childGO.GetComponent<MeshFilter>();
-            cellMFs[posint.x,posint.y].Add(mf);
-            cellUsualMeshes[posint.x,posint.y].Add(mf.sharedMesh);
-            if (pid.constIndex > 304) {
-                // Always add something so it's same length as all other lists.
-                cellLODMeshes[posint.x,posint.y].Add(lodMeshes[302]);
-            } else {
-                cellLODMeshes[posint.x,posint.y].Add(lodMeshes[pid.constIndex]);
+            // Add children GameObjects' mesh renderers and filters.
+            Component[] compArray = cr.go.GetComponentsInChildren(
+                                                    typeof(MeshFilter),true);
+            foreach (MeshFilter mfc in compArray) {
+                mrr = GetMeshAndItsRenderer(mfc.gameObject,pid);
+                if (mrr != null) cr.meshenderers.Add(mrr);
             }
-            // End LOD system stuff
 
-            worldCellOpen[posint.x,posint.y] = true;
-//             Note posN = childGO.AddComponent<Note>();
-//             posN.note = "Cell coords: " + posint.x.ToString() + ", " + posint.y.ToString();
-            MeshRenderer mr = childGO.GetComponent<MeshRenderer>();
-            if (mr != null) cellListsMR[posint.x,posint.y].Add(mr);
-
-            Component[] compArray = childGO.GetComponentsInChildren(
-                typeof(MeshRenderer),true);
-
-            foreach (MeshRenderer mrc in compArray) {
-                if (mrc != null) cellListsMR[posint.x,posint.y].Add(mrc);
-            }
+            gridCells[x,y].chunkPrefabs.Add(cr);
+            gridCells[x,y].open = true;
         }
     }
 
@@ -497,13 +553,6 @@ public class DynamicCulling : MonoBehaviour {
                 break;
             case 5: break; // Lights done differently due to Light (what, it makes sense).
             default:
-//                 if (mr.transform.parent != null) {
-//                     if (mr.transform.parent.gameObject.name == "flightpods_exterior") break;
-//                     if (mr.transform.parent.parent != null) {
-//                         if (mr.transform.parent.parent.gameObject.name == "flightpods_exterior") break;
-//                     }
-//                 }
-
                 PrefabIdentifier pid = mr.GetComponent<PrefabIdentifier>();
                 if (pid == null) pid = mr.transform.parent.GetComponent<PrefabIdentifier>();
                 if (pid == null) pid = mr.transform.parent.parent.GetComponent<PrefabIdentifier>();
@@ -594,25 +643,31 @@ public class DynamicCulling : MonoBehaviour {
         // chunk shader.  These get swapped out in place of the
         // staticMeshes_ arrays above based on player's distance.  This list is
         // just the representation for each chunk prefab, excepting slices.
-        a.lodMeshes = new Mesh[305]; // Constindexes 0 through 304.
-        Color[] vertColors = new Color[lodMeshTemplate.vertexCount];
-        for (int i=0;i<vertColors.Length;i++) {
-            vertColors[i] = new Color(0f,0f,0f,1f);
-        }
-        
-        float red = 0f;
-        for (int i=0;i<305;i++) {
-            a.lodMeshes[i] = new Mesh();
-            a.lodMeshes[i].name = "lodMesh" + i.ToString();
-            a.lodMeshes[i].vertices = lodMeshTemplate.vertices;
-            a.lodMeshes[i].triangles = lodMeshTemplate.triangles;
-            a.lodMeshes[i].normals = lodMeshTemplate.normals;
-            a.lodMeshes[i].uv = lodMeshTemplate.uv;
-            red = GetVertexColorForChunk(i);
-            for (int j=0;j<vertColors.Length;j++) {
-                vertColors[j].r = red; // All matching.
+        if (!lodMeshesInitialized) {
+            a.lodMeshes = new Mesh[305]; // Constindexes 0 through 304.
+            Color[] vertColors = new Color[lodMeshTemplate.vertexCount];
+            for (int i=0;i<vertColors.Length;i++) {
+                vertColors[i] = new Color(0f,0f,0f,1f);
             }
-            a.lodMeshes[i].colors = vertColors;
+            
+            float red = 0f;
+            for (int i=0;i<305;i++) {
+                red = GetVertexColorForChunk(i);
+                if (red == 255f) { a.lodMeshes[i] = null; continue; }
+                
+                a.lodMeshes[i] = new Mesh();
+                a.lodMeshes[i].name = "lodMesh" + i.ToString();
+                a.lodMeshes[i].vertices = lodMeshTemplate.vertices;
+                a.lodMeshes[i].triangles = lodMeshTemplate.triangles;
+                a.lodMeshes[i].normals = lodMeshTemplate.normals;
+                a.lodMeshes[i].uv = lodMeshTemplate.uv;
+                for (int j=0;j<vertColors.Length;j++) {
+                    vertColors[j].r = red; // All matching.
+                }
+                a.lodMeshes[i].colors = vertColors;
+            }
+            
+            lodMeshesInitialized = true;
         }
         
         // Setup and find all cullables and associate them with x,y coords.
@@ -642,7 +697,7 @@ public class DynamicCulling : MonoBehaviour {
             pixels = new Color32[WORLDX * WORLDX];
             openDebugImagePath = Utils.SafePathCombine(
                 Application.streamingAssetsPath,
-                "worldcellopen_" + LevelManager.a.currentLevel.ToString()
+                "gridcellsopen_" + LevelManager.a.currentLevel.ToString()
                 + ".png");
 
             visDebugImagePath = Utils.SafePathCombine(
@@ -670,34 +725,11 @@ public class DynamicCulling : MonoBehaviour {
         FindPlayerCell();
         DetermineVisibleCells(); // Reevaluate visible cells from new pos.
         int x,y;
-        //Color col = new Color(0f,0f,0f,1f);
-        //for (int i=0;i<128;i++) {
-        //    precalculatedPVS[i] = new Texture2D(WORLDX,WORLDX);
-        //    for (x=0;x<WORLDX;x++) {
-        //        for (y=0;y<WORLDX;y++) {
-        //            playerCellX = x;
-        //            playerCellY = y;
-        //            for (int x2=0;x2<64;x2++) {
-        //                for (int y2=0;y2<64;y2++) {
-        //                    worldCellVisible[x2,y2] = false;
-        //                    worldCellCheckedYet[x2,y2] = false;
-        //                }
-        //            }
-
-        //            DetermineVisibleCells();
-        //            if (worldCellVisible[x,y]) col.r = 1.0f;
-        //            else col.r = 0.0f;
-
-        //            precalculatedPVS[i].SetPixel(x,y,col,0);
-        //        }
-        //    }
-        //}
-
         if (!cullEnabled) return;
 
         // Force all cells dirty at start so the visibility is toggled for all.
         for (x=0;x<64;x++) {
-            for (y=0;y<64;y++) worldCellLastVisible[x,y] = !worldCellVisible[x,y];
+            for (y=0;y<64;y++) worldCellLastVisible[x,y] = !gridCells[x,y].visible;
         }
 
         ToggleVisibility(); // Update all cells marked as dirty.
@@ -740,6 +772,17 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     bool UpdatedPlayerCell() {
+        if (forceRecull) {
+            for (int x=0;x<64;x++) {
+                for (int y=0;y<64;y++) {
+                    worldCellLastVisible[x,y] = false;
+                    worldCellCheckedYet[x,y] = false;
+                }
+            }
+            forceRecull = false;
+            return true;
+        }
+        
         int lastX = playerCellX;
         int lastY = playerCellY;
         FindPlayerCell();
@@ -755,7 +798,7 @@ public class DynamicCulling : MonoBehaviour {
         if (!XYPairInBounds(x,y)) return;
         if (worldCellCheckedYet[x,y]) return;
 
-        worldCellVisible[x,y] = worldCellOpen[x,y];
+        gridCells[x,y].visible = gridCells[x,y].open;
         worldCellCheckedYet[x,y] = true;
         SetVisPixel(x,y,Color.cyan);
     }
@@ -764,7 +807,7 @@ public class DynamicCulling : MonoBehaviour {
     //    int playerCell4096 = playerCellX + (playerCellY * 64);
     //    for (int x=0;x<64;x++) {
     //        for (int y=0;y<64;y++) {
-    //            worldCellVisible[x,y] = 
+    //            gridCells[x,y].visible = 
     //                (precalculatedPVS[playerCell4096].GetPixel(x,y,0).r > 0.99f);
     //        }
     //    }
@@ -775,16 +818,16 @@ public class DynamicCulling : MonoBehaviour {
         int x,y;
         for (x=0;x<64;x++) {
             for (y=0;y<64;y++) {
-                worldCellVisible[x,y] = false;
+                gridCells[x,y].visible = false;
                 if (outputDebugImages) {
-                    pixels[x + (y * 64)] = worldCellOpen[x,y]
+                    pixels[x + (y * 64)] = gridCells[x,y].open
                                            ? Color.white : Color.black;
                 }
             }
         }
 
         x = playerCellX; y = playerCellY;
-        worldCellVisible[x,y] = true;
+        gridCells[x,y].visible = true;
         worldCellCheckedYet[x,y] = true;
         SetVisPixel(x,y,Color.blue);
 
@@ -910,9 +953,9 @@ public class DynamicCulling : MonoBehaviour {
     void SetVisPixel(int x, int y, Color col){
         if (!outputDebugImages) return;
 
-        pixels[x + (y * 64)] = worldCellVisible[x,y]
+        pixels[x + (y * 64)] = gridCells[x,y].visible
                                ? col
-                               : (worldCellOpen[x,y] ? Color.white
+                               : (gridCells[x,y].open ? Color.white
                                                      : Color.black);
     }
 
@@ -929,14 +972,14 @@ public class DynamicCulling : MonoBehaviour {
                 && XYPairInBounds(x,y)) {
 
                 if (!worldCellCheckedYet[x,y]) {
-                    if (worldCellVisible[x,y - signy]) {
-                        worldCellVisible[x,y] = worldCellOpen[x,y];
+                    if (gridCells[x,y - signy].visible) {
+                        gridCells[x,y].visible = gridCells[x,y].open;
                         worldCellCheckedYet[x,y] = true;
                         currentVisible = true; // Would be if twas open.
                         SetVisPixel(x,y,Color.green);
                     }
                 } else {
-                    currentVisible = worldCellOpen[x,y]; // Keep going.
+                    currentVisible = gridCells[x,y].open; // Keep going.
                 }
             }
 
@@ -944,7 +987,7 @@ public class DynamicCulling : MonoBehaviour {
 
             if (XYPairInBounds(x + 1,y)) {
                 if (!worldCellCheckedYet[x + 1,y]) {
-                    worldCellVisible[x + 1,y] = worldCellOpen[x + 1,y];
+                    gridCells[x + 1,y].visible = gridCells[x + 1,y].open;
                     worldCellCheckedYet[x + 1,y] = true;
                     SetVisPixel(x + 1,y,Color.green);
                 }
@@ -952,7 +995,7 @@ public class DynamicCulling : MonoBehaviour {
 
             if (XYPairInBounds(x - 1,y)) {
                 if (!worldCellCheckedYet[x - 1,y]) {
-                    worldCellVisible[x - 1,y] = worldCellOpen[x - 1,y];
+                    gridCells[x - 1,y].visible = gridCells[x - 1,y].open;
                     worldCellCheckedYet[x - 1,y] = true;
                     SetVisPixel(x - 1,y,Color.green);
                 }
@@ -973,14 +1016,14 @@ public class DynamicCulling : MonoBehaviour {
                 && XYPairInBounds(x,y)) {
 
                 if (!worldCellCheckedYet[x,y]) {
-                    if (worldCellVisible[x - signx,y]) {
-                        worldCellVisible[x,y] = worldCellOpen[x,y];
+                    if (gridCells[x - signx,y].visible) {
+                        gridCells[x,y].visible = gridCells[x,y].open;
                         worldCellCheckedYet[x,y] = true;
                         currentVisible = true; // Would be if twas open.
                         SetVisPixel(x,y,Color.green);
                     }
                 } else {
-                    currentVisible = worldCellOpen[x,y]; // Keep going.
+                    currentVisible = gridCells[x,y].open; // Keep going.
                 }
             }
 
@@ -988,7 +1031,7 @@ public class DynamicCulling : MonoBehaviour {
 
             if (XYPairInBounds(x,y + 1)) {
                 if (!worldCellCheckedYet[x,y + 1]) {
-                    worldCellVisible[x,y + 1] = worldCellOpen[x,y + 1];
+                    gridCells[x,y + 1].visible = gridCells[x,y + 1].open;
                     worldCellCheckedYet[x,y + 1] = true;
                     SetVisPixel(x,y + 1,Color.green);
                 }
@@ -996,7 +1039,7 @@ public class DynamicCulling : MonoBehaviour {
 
             if (XYPairInBounds(x,y - 1)) {
                 if (!worldCellCheckedYet[x,y - 1]) {
-                    worldCellVisible[x,y - 1] = worldCellOpen[x,y - 1];
+                    gridCells[x,y - 1].visible = gridCells[x,y - 1].open;
                     worldCellCheckedYet[x,y - 1] = true;
                     SetVisPixel(x,y - 1,Color.green);
                 }
@@ -1033,10 +1076,10 @@ public class DynamicCulling : MonoBehaviour {
 
     int CastRayCellCheck(int x, int y) {
         if (XYPairInBounds(x,y)) {
-           if (!worldCellCheckedYet[x,y] || !worldCellOpen[x,y]) {
-                worldCellVisible[x,y] = worldCellOpen[x,y];
+           if (!worldCellCheckedYet[x,y] || !gridCells[x,y].open) {
+                gridCells[x,y].visible = gridCells[x,y].open;
                 worldCellCheckedYet[x,y] = true;
-                if (!worldCellVisible[x,y]) {
+                if (!gridCells[x,y].visible) {
                     if (outputDebugImages) {
                         pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
                     }
@@ -1054,33 +1097,24 @@ public class DynamicCulling : MonoBehaviour {
 
     void ToggleVisibility() {
         worldCellLastVisible[playerCellX,playerCellY] = false;
-        worldCellVisible[playerCellX,playerCellY] = true; // Guarantee enable.
+        gridCells[playerCellX,playerCellY].visible = true; // Guarantee enable.
         for (int x=0;x<64;x++) {
-            for (int y=0;y<64;y++) {
-                if (worldCellLastVisible[x,y] == worldCellVisible[x,y]) continue;
+            for (int y=0;y<64;y++) {                
+                float sqrdist = 0f;
+                ChunkPrefab chp = null;
+                for (int i=0;i<gridCells[x,y].chunkPrefabs.Count;i++) {
+                    chp = gridCells[x,y].chunkPrefabs[i];
+                    if (chp == null) continue;
 
-                List<MeshRenderer> cellContents = cellListsMR[x,y];
-                List<MeshFilter> cellMf = cellMFs[x,y];
-                List<Mesh> cellUsuals = cellUsualMeshes[x,y];
-                List<int> cellIndices = cellConstIndices[x,y];
-                List<Mesh> cellLODs = cellLODMeshes[x,y];
-                int count = cellContents.Count;
-                for (int i=0;i<count;i++) {
-                    if (worldCellVisible[x,y]) {
-                        cellContents[i].enabled = true;
-                        
-                        // No LOD for non-chunks
-                        if (cellIndices[i] > 304 || cellIndices[i] < 0) return;
-                        
-                        Mesh targetMesh = //SqrDist(x,y,playerCellX,playerCellY) > 36f
-                        /*?*/ cellLODs[i];
-                        //: cellUsuals[i];
-                        
-                        if (cellMf[i].sharedMesh != targetMesh) {
-                            cellMf[i].sharedMesh = targetMesh;
-                        }
-                    } else {
-                        cellContents[i].enabled = false;
+                    for (int k=0;k<chp.meshenderers.Count;k++) {
+                        chp.meshenderers[k].meshRenderer.enabled =
+                                                        gridCells[x,y].visible;
+
+                        if (!gridCells[x,y].visible) continue;
+                        if (chp.constIndex > 304 || chp.constIndex < 0) continue;
+
+                        sqrdist = SqrDist(x,y,playerCellX,playerCellY);
+                        chp.meshenderers[k].SetMesh(sqrdist >= lodSqrDist);
                     }
                 }
             }
@@ -1120,9 +1154,11 @@ public class DynamicCulling : MonoBehaviour {
      // Avoid NPC doing raycasts when not in player's PVS.  Symmetrical vision.
     public void ToggleNPCPVS() {
         HealthManager hm = null;
+        int x,y;
         for (int i=0;i<npcAICs.Count;i++) {
-            if (worldCellVisible[npcCoords[i].x,npcCoords[i].y]
-                || !worldCellOpen[npcCoords[i].x,npcCoords[i].y]
+            x = npcCoords[i].x;
+            y = npcCoords[i].y;
+            if (gridCells[x,y].visible || !gridCells[x,y].open
                 || npcAICs[i].enemy != null || npcAICs[i].ai_dying
                 || npcAICs[i].ai_dead) {
                 npcAICs[i].withinPVS = true;
@@ -1132,23 +1168,6 @@ public class DynamicCulling : MonoBehaviour {
                 } else {
                     Utils.Deactivate(npcAICs[i].visibleMeshEntity);
                 }
-//                 if (npcAICs[i].currentState == AIState.Dead
-//                     || (!npcAICs[i].HasHealth(hm) && hm.gibOnDeath)) {
-//                     if (npcAICs[i].DeactivatesVisibleMeshWhileDying()
-//                         || (hm.gibOnDeath && npcAICs[i].ai_dead)) {
-//                         Utils.Deactivate(npcAICs[i].visibleMeshEntity);
-//                     } else {
-//                         Utils.Activate(npcAICs[i].visibleMeshEntity);
-//                     }
-//                 } else if (npcAICs[i].currentState == AIState.Dying) {
-//                     if (npcAICs[i].DeactivatesVisibleMeshWhileDying()) {
-//                             Utils.Deactivate(npcAICs[i].visibleMeshEntity);
-//                         } else {
-//                             Utils.Activate(npcAICs[i].visibleMeshEntity);
-//                         }
-//                 } else {
-//                     Utils.Activate(npcAICs[i].visibleMeshEntity);
-//                 }
             } else {
                 npcAICs[i].withinPVS = false;
                 Utils.Deactivate(npcAICs[i].visibleMeshEntity);
@@ -1157,9 +1176,11 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void ToggleDynamicMeshesVisibility() {
+        int x,y;
         for (int i=0;i<dynamicMeshes.Count;i++) {
-            if (worldCellVisible[dynamicMeshCoords[i].x,dynamicMeshCoords[i].y]
-                || !worldCellOpen[dynamicMeshCoords[i].x,dynamicMeshCoords[i].y]) {
+            x = dynamicMeshCoords[i].x;
+            y = dynamicMeshCoords[i].y;
+            if (gridCells[x,y].visible || !gridCells[x,y].open) {
                 dynamicMeshes[i].enabled = true;
             } else {
                 dynamicMeshes[i].enabled = false;
@@ -1177,7 +1198,7 @@ public class DynamicCulling : MonoBehaviour {
         for (int i=0;i<staticMeshesImmutable.Count;i++) {
             int x = staticMeshImmutableCoords[i].x;
             int y = staticMeshImmutableCoords[i].y;
-            if (worldCellVisible[x,y] || !worldCellOpen[x,y]) {
+            if (gridCells[x,y].visible || !gridCells[x,y].open) {
                 staticMeshesImmutable[i].enabled = true;
             } else {
                 staticMeshesImmutable[i].enabled = false;
@@ -1186,10 +1207,14 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void ToggleStaticMeshesSaveableVisibility() {
+        int x,y;
         for (int i=0;i<staticMeshesSaveable.Count;i++) {
-            if (worldCellVisible[staticMeshSaveableCoords[i].x,staticMeshSaveableCoords[i].y]
-                || !worldCellOpen[staticMeshSaveableCoords[i].x,staticMeshSaveableCoords[i].y]) {
-                HealthManager hm = staticMeshesSaveable[i].GetComponent<HealthManager>();
+            x = staticMeshSaveableCoords[i].x;
+            y = staticMeshSaveableCoords[i].y;
+            if (gridCells[x,y].visible || !gridCells[x,y].open) {
+                HealthManager hm =
+                    staticMeshesSaveable[i].GetComponent<HealthManager>();
+                    
                 if (hm != null) {
                     if (hm.health > 0 || !hm.gibOnDeath || hm.isScreen) {
                         staticMeshesSaveable[i].enabled = true;
@@ -1206,9 +1231,11 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void ToggleDoorsVisibility() {
+        int x,y;
         for (int i=0;i<doors.Count;i++) {
-            if (worldCellVisible[doorsCoords[i].x,doorsCoords[i].y]
-                || !worldCellOpen[doorsCoords[i].x,doorsCoords[i].y]) {
+            x = doorsCoords[i].x;
+            y = doorsCoords[i].y;
+            if (gridCells[x,y].visible || !gridCells[x,y].open) {
                 doors[i].enabled = true;
             } else {
                 doors[i].enabled = false;
@@ -1218,9 +1245,11 @@ public class DynamicCulling : MonoBehaviour {
 
     public void ToggleLightsVisibility() {
         lightsInPVS.Clear();
+        int x,y;
         for (int i=0;i<lights.Count;i++) {
-            if (worldCellVisible[lightCoords[i].x,lightCoords[i].y]
-                || !worldCellOpen[lightCoords[i].x,lightCoords[i].y]) {
+            x = lightCoords[i].x;
+            y = lightCoords[i].y;
+            if (gridCells[x,y].visible || !gridCells[x,y].open) {
                 lights[i].enabled = true;
                 lightsInPVS.Add(lights[i]);
                 lightsInPVSCoords.Add(lightCoords[i]);
@@ -1260,14 +1289,14 @@ public class DynamicCulling : MonoBehaviour {
             int x,y;
             for (x=0;x<64;x++) {
                 for (y=0;y<64;y++) {
-                    worldCellLastVisible[x,y] = worldCellVisible[x,y];
+                    worldCellLastVisible[x,y] = gridCells[x,y].visible;
                     worldCellCheckedYet[x,y] = false;
                 }
             }
 
             DetermineVisibleCells(); // Reevaluate visible cells from new pos.
             //DetermineVisibleCellsPrecalculated(); // Reevaluate visible cells from new pos.
-            worldCellVisible[0,0] = true; // Errors default here so draw them anyways.
+            gridCells[0,0].visible = true; // Errors default here so draw them anyways.
             ToggleVisibility(); // Update all cells marked as dirty.
             ToggleStaticMeshesImmutableVisibility();
             ToggleStaticMeshesSaveableVisibility();
@@ -1277,11 +1306,13 @@ public class DynamicCulling : MonoBehaviour {
             ToggleNPCPVS();
         }
 
-        if (MouseLookScript.a.lightCulling) ToggleLightsFrustumVisibility();
+        if (lightCulling) ToggleLightsFrustumVisibility();
 
         // Update dynamic meshes after PVS has been updated, if player moved.
-        //UpdateDynamicMeshes(); // Always check all of them because any can move.
-        //ToggleDynamicMeshesVisibility(); // Now turn them on or off.
+        if (dynamicObjectCull) {
+            UpdateDynamicMeshes(); // Always check all because any can move.
+            ToggleDynamicMeshesVisibility(); // Now turn them on or off.
+        }
     }
 }
 

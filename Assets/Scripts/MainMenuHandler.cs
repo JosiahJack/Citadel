@@ -112,6 +112,7 @@ public class MainMenuHandler : MonoBehaviour {
 	public ConfigurationMenuShadowsApply shadApply;
 	public ConfigurationMenuSSRApply ssrApply;
 	public ConfigurationMenuAudioModeApply audModeApply;
+	public ConfigurationMenuModelDetailApply mdlDetApply;
 
 	[HideInInspector] public bool returnToPause = false;
 	public bool dataFound = false;

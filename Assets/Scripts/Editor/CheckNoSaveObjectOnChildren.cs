@@ -17,7 +17,8 @@ namespace Trioptimum {
 				// the true as final argument.
 				GameObject go = allParents[i].gameObject;
 				Component[] compArray = go.GetComponentsInChildren(
-											 typeof(SaveObject),true); 
+											 typeof(SaveObject),true);
+				
 				for (int k=0;k<compArray.Length;k++) {
 					numFound++;
 					GameObject foundGo = compArray[k].gameObject;

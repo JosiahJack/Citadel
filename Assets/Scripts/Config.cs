@@ -22,6 +22,7 @@ public class Config {
     		Const.a.GraphicsShadowMode = 0;
     		Const.a.GraphicsSSRMode = 1;
     		Const.a.GraphicsGamma = 50;
+			Const.a.GraphicsModelDetail = 0; // No detail, mobile
     		Const.a.GraphicsVSync = false;
     
     		// Audio Configurations
@@ -53,6 +54,7 @@ public class Config {
     				     + ", Fullscreen: "
     				     + Const.a.GraphicsFullscreen.ToString());
     		SetShadows();
+			SetModelDetail();
     		SetBloom();
     		SetSSR();
     		SetBrightness();
@@ -80,6 +82,7 @@ public class Config {
 		Const.a.GraphicsShadowMode = AssignConfigInt("Graphics", "Shadows");
 		Const.a.GraphicsSSRMode = AssignConfigInt("Graphics", "SSR");
 		Const.a.GraphicsGamma = AssignConfigInt("Graphics","Gamma");
+		Const.a.GraphicsModelDetail = AssignConfigInt("Graphics","ModelDetail");
 		Const.a.GraphicsVSync = AssignConfigBool("Graphics","VSync");
 
 		// Audio Configurations
@@ -119,6 +122,7 @@ public class Config {
 		Screen.SetResolution(Const.a.GraphicsResWidth,Const.a.GraphicsResHeight,true);
 		Screen.fullScreen = Const.a.GraphicsFullscreen;
 		SetShadows();
+		SetModelDetail();
 		SetBloom();
 		SetSSR();
 		SetBrightness();
@@ -141,6 +145,7 @@ public class Config {
 		INIWorker.IniWriteValue("Graphics","Shadows",Const.a.GraphicsShadowMode.ToString());
 		INIWorker.IniWriteValue("Graphics","SSR",Const.a.GraphicsSSRMode.ToString());
 		INIWorker.IniWriteValue("Graphics","Gamma",Const.a.GraphicsGamma.ToString());
+		INIWorker.IniWriteValue("Graphics","ModelDetail",Const.a.GraphicsModelDetail.ToString());
 		INIWorker.IniWriteValue("Graphics","VSync",Utils.BoolToString(Const.a.GraphicsVSync));
 		INIWorker.IniWriteValue("Audio","SpeakerMode",Const.a.AudioSpeakerMode.ToString());
 		INIWorker.IniWriteValue("Audio","Reverb",Utils.BoolToString(Const.a.AudioReverb));
@@ -272,7 +277,19 @@ public class Config {
 				break;
 		}
 	}
-
+	
+	// No Detail (aka flat cards, ala original)
+	// High Detail (Citadel intended graphics)
+	public static void SetModelDetail() {
+		if (Const.a.GraphicsModelDetail == 0) {
+			DynamicCulling.a.lodSqrDist = 0f;
+		} else {
+			DynamicCulling.a.lodSqrDist = 100f;
+		}
+		
+		DynamicCulling.a.forceRecull = true; // Recull to reapply meshes.
+	}
+	
 	// No SSR
 	// Low SSR,
 	// High SSR
@@ -344,6 +361,7 @@ public class Config {
 		MainMenuHandler.a.shadApply.SetOptionsText();
 		MainMenuHandler.a.ssrApply.SetOptionsText();
 		MainMenuHandler.a.audModeApply.SetOptionsText();
+		MainMenuHandler.a.mdlDetApply.SetOptionsText();
 	}
 	
 	public static void SetAudioMode() {
