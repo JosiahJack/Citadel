@@ -3,16 +3,13 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class KeypadKeycodeButtons : MonoBehaviour {
-	[HideInInspector] public KeypadKeycode keypad; // set externally by KeypadKeycode.cs's Use()
 	public KeycodeDigitImage digit1s;
 	public KeycodeDigitImage digit10s;
 	public KeycodeDigitImage digit100s;
-	public int keycode; // set externally by KeypadKeycode.cs's Use()
-	public AudioClip SFX;
-	public AudioClip SFX_Incorrect;
-	public AudioClip SFX_Success;
-	[HideInInspector]
-	public int currentEntry;
+	public int keycode; // Set externally by KeypadKeycode.cs's Use()
+	
+	[HideInInspector] public KeypadKeycode keypad; // dido, also set externally
+	[HideInInspector] public int currentEntry;
 	private int entryOnes;
 	private int entryTens;
 	private int entryHuns;
@@ -39,7 +36,7 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 		if (keypad == null) return;
 		if (keypad.solved) return;
 		
-		Utils.PlayOneShotSavable(SFXSource,SFX);
+		Utils.PlayOneShotSavable(SFXSource,39);
 		// Digit key pressed 0 thru 9
 		if ((button >= 0) && (button <= 9))
 			SetDigit(button);
@@ -71,6 +68,18 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 			entryTens = -1;
 			entryHuns = -1;
 		}
+		
+		if (currentEntry == keycode) {
+			if ((entryHuns != -1)) {
+				Utils.PlayOneShotSavable(SFXSource,46);
+			}
+			keypad.UseTargets();
+			keypad.solved = true;
+		} else {
+			if ((entryHuns != -1)) {
+				Utils.PlayOneShotSavable(SFXSource,43);
+			}
+		}
 	}
 
 	void SetDigit(int value) {
@@ -83,19 +92,23 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 			entryOnes = value;
 			currentEntry = entryOnes;
 			return;
-		}
-		if (entryTens == -1) {
+		} else if (entryTens == -1) {
 			entryTens = entryOnes;
 			entryOnes = value;
 			currentEntry = (entryOnes + (entryTens * 10));
 			return;
-		}
-		if (entryHuns == -1) {
+		} else if (entryHuns == -1) {
 			entryHuns = entryTens;
 			entryTens = entryOnes;
 			entryOnes = value;
 			currentEntry = (entryOnes + (entryTens * 10) + (entryHuns * 100));
 			return;
+		} else {
+			// Slide it over
+			entryHuns = entryTens;
+			entryTens = entryOnes;
+			entryOnes = value;
+			currentEntry = (entryOnes + (entryTens * 10) + (entryHuns * 100));
 		}
 	}
 
@@ -122,17 +135,5 @@ public class KeypadKeycodeButtons : MonoBehaviour {
 		if (GetInput.a.NumpadMinus()) { KeypressAction(10); }
 		if (GetInput.a.NumpadPeriod()) { KeypressAction(11); }
 		if (GetInput.a.Backspace()) { KeypressAction(10); }
-
-		if (currentEntry == keycode) {
-			if ((entryHuns != -1)) {
-				Utils.PlayOneShotSavable(SFXSource,SFX_Success);
-			}
-			keypad.UseTargets();
-			keypad.solved = true;
-		} else {
-			if ((entryHuns != -1)) {
-				Utils.PlayOneShotSavable(SFXSource,SFX_Incorrect);
-			}
-		}
 	}
 }
