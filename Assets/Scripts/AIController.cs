@@ -274,7 +274,7 @@ public class AIController : MonoBehaviour {
 
 		faceVec = goalLocation - transform.position;
 		faceVec.y = 0f;
-		if (faceVec.x <= 0f && faceVec.z <= 0f) return; // Avoid zero quat error.
+		if (faceVec.x == 0f && faceVec.z == 0f) return; // Avoid zero quat error.
 		if (Vector3.Dot(faceVec,Vector3.up) > 0.99f) return; // Up results in no Y rotation.
 
 		// Rotate as fast as we can towards facing the goal location.
@@ -798,13 +798,16 @@ public class AIController : MonoBehaviour {
         }
         
 		if (enemy != null) {
-			targettingPosition = enemy.transform.position;
-			currentDestination = enemy.transform.position;
-			lastKnownEnemyPos = enemy.transform.position;
-			if (IsCyberNPC()) {
-			    Transform enemTr = PlayerMovement.a.cameraObject.transform;
-				targettingPosition = enemTr.position;
-			}
+			targettingPosition =
+				PlayerMovement.a.cameraObject.transform.position;
+				// = enemy.transform.position;
+				
+			currentDestination = targettingPosition;
+			lastKnownEnemyPos = targettingPosition;
+// 			if (IsCyberNPC()) {
+// 			    Transform enemTr = PlayerMovement.a.cameraObject.transform;
+// 				targettingPosition = enemTr.position;
+// 			}
 		}
 
 		shotFired = false;
@@ -839,6 +842,10 @@ public class AIController : MonoBehaviour {
 			if (WithinAngleToTarget()) {
 				if (Const.a.hopsOnMoveForNPC[index]) HopMove();
 				else                                 RunMove(); // <<<<<RUN
+			} else {
+				if (Const.a.difficultyCombat >= 2) {
+					if (Random.Range(0f,1f) < 0.5f) AI_Face(currentDestination);
+				}
 			}
 			
 		}
@@ -950,7 +957,11 @@ public class AIController : MonoBehaviour {
 
 		Quaternion lookRot = Quaternion.LookRotation(idealTransformForward);
 		float fovMov = Const.a.fovStartMovementForNPC[index];
-		if (Quaternion.Angle(transform.rotation,lookRot) < fovMov) return true;
+		float ang = Quaternion.Angle(transform.rotation,lookRot);
+		if (ang < fovMov) return true;
+		if (ang < (fovMov * 1.5f)) {
+			if (Random.Range(0f,1f) < 0.5f) return true;
+		}
         return false;
     }
 
@@ -1837,11 +1848,10 @@ public class AIController : MonoBehaviour {
 
 		s1.Append(Utils.splitChar);
 		if (aic.visibleMeshEntity != null) {
-			s1.Append(Utils.BoolToString(aic.visibleMeshEntity.activeSelf,
-										 "visibleMeshEntity.activeSelf"));
+			s1.Append(Utils.BoolToString(aic.visibleMeshVisible,
+										 "visibleMeshVisible"));
 		} else {
-			s1.Append(Utils.BoolToString(false,
-										 "visibleMeshEntity.activeSelf"));
+			s1.Append(Utils.BoolToString(false,"visibleMeshVisible"));
 		}
 
 		s1.Append(Utils.splitChar);
@@ -1856,8 +1866,6 @@ public class AIController : MonoBehaviour {
 		s1.Append(Utils.SaveRelativeTimeDifferential(aic.wanderFinished));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(aic.SFXIndex));
-		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(aic.visibleMeshVisible));
 		if (aic.searchColliderGO != null) {
 			s1.Append(Utils.splitChar);
 			s1.Append(Utils.BoolToString(aic.searchColliderGO.activeSelf,
@@ -1992,9 +2000,9 @@ public class AIController : MonoBehaviour {
 
 		if (aic.visibleMeshEntity != null) {
 			bool visb = Utils.GetBoolFromString(entries[index],
-												"visibleMeshEntity.activeSelf");
-			aic.visibleMeshEntity.SetActive(visb);
+												"visibleMeshVisible");
 			aic.visibleMeshVisible = visb;
+			aic.visibleMeshEntity.SetActive(visb);
 		}
 
 		index++;
@@ -2005,7 +2013,6 @@ public class AIController : MonoBehaviour {
 		aic.wandering = Utils.GetBoolFromString(entries[index]); index++;
 		aic.wanderFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float
 		aic.SFXIndex = Utils.GetIntFromString(entries[index]); index++;
-		aic.visibleMeshVisible = Utils.GetBoolFromString(entries[index]); index++;
 		if (aic.healthManager != null) {
 			if (aic.HasHealth(aic.healthManager)) {
 				Utils.EnableCollision(aic.gameObject);

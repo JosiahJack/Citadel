@@ -903,28 +903,7 @@ public class MouseLookScript : MonoBehaviour {
 			case ButtonType.Search:
 				SearchButton sebut = currentButton.GetComponentInParent<SearchButton>();
 				int tempButtonindex = currentButton.GetComponent<SearchContainerButton>().refIndex;
-				cursorTexture = Const.a.useableItemsFrobIcons[sebut.contents[tempButtonindex]];
-				holdingObject = true;
-				heldObjectIndex = sebut.contents[tempButtonindex];
-				heldObjectCustomIndex = sebut.customIndex[tempButtonindex];
-				if (currentSearchItem != null) {
-					currentSearchItem.GetComponent<SearchableItem>().contents[tempButtonindex] = -1;
-					currentSearchItem.GetComponent<SearchableItem>().customIndex[tempButtonindex] = -1;
-				}
-				sebut.contents[tempButtonindex] = -1;
-				sebut.customIndex[tempButtonindex] = -1;
-				MFDManager.a.DisableSearchItemImage(tempButtonindex);
-				sebut.CheckForEmpty();
-				GUIState.a.ClearOverButton();
-				if (Const.a.InputQuickItemPickup) {
-					AddItemToInventory(heldObjectIndex,heldObjectCustomIndex);
-					ResetHeldItem();
-					ResetCursor();
-				} else {
-					Const.sprint(Const.a.useableItemsNameText[heldObjectIndex] + Const.a.stringTable[319],player);
-					MouseCursor.a.cursorImage = cursorTexture;
-					ForceInventoryMode();
-				}
+				SearchButtonClick(tempButtonindex,sebut);
 				break;
 			case ButtonType.PGrid:
 				PuzzleUIButton puib = currentButton.GetComponent<PuzzleUIButton>();
@@ -954,6 +933,33 @@ public class MouseLookScript : MonoBehaviour {
 				Debug.Log("GrenadeTimerSlider invoke");
 				break;
 		}
+	}
+	
+	public void SearchButtonClick(int index, SearchButton sebut) {
+		cursorTexture = Const.a.useableItemsFrobIcons[sebut.contents[index]];
+		holdingObject = true;
+		heldObjectIndex = sebut.contents[index];
+		heldObjectCustomIndex = sebut.customIndex[index];
+		if (currentSearchItem != null) {
+			SearchableItem sitem = currentSearchItem.GetComponent<SearchableItem>();
+			sitem.contents[index] = -1;
+			sitem.customIndex[index] = -1;
+		}
+		
+		sebut.contents[index] = -1;
+		sebut.customIndex[index] = -1;
+		MFDManager.a.DisableSearchItemImage(index);
+		sebut.CheckForEmpty();
+		GUIState.a.ClearOverButton();
+		if (Const.a.InputQuickItemPickup) {
+			AddItemToInventory(heldObjectIndex,heldObjectCustomIndex);
+			ResetHeldItem();
+			ResetCursor();
+		} else {
+			Const.sprint(Const.a.useableItemsNameText[heldObjectIndex] + Const.a.stringTable[319],player);
+			MouseCursor.a.cursorImage = cursorTexture;
+			ForceInventoryMode();
+		}	
 	}
 
 	void RecoilAndRest() {

@@ -719,22 +719,22 @@ public class HealthManager : MonoBehaviour {
 				if (mr != null) {
 					mr.enabled = true;
 				} else {
-					AIController aicP = GetComponentInParent<AIController>();
-					if (aicP != null) {
-						if (!aicP.startInitialized) aicP.Start();
-						if (aicP.healthManager != null) {
-							if (!aicP.healthManager.gibOnDeath) {
-								if (aicP.visibleMeshEntity != null) {
-									// We are a corpse, re-enable parent
-									aicP.visibleMeshEntity.SetActive(true);
-									aicP.visibleMeshVisible = true;
-									Debug.Log("Enabling visibleMeshEntity "
-											  + "from HealthManager "
-											  + "AwakeFromLoad");
-								}
-							}
-						}
-					}
+// 					AIController aicP = GetComponentInParent<AIController>();
+// 					if (aicP != null) {
+// 						if (!aicP.startInitialized) aicP.Start();
+// 						if (aicP.healthManager != null) {
+// 							if (!aicP.healthManager.gibOnDeath) {
+// 								if (aicP.visibleMeshEntity != null) {
+// 									// We are a corpse, re-enable parent
+// 									aicP.visibleMeshEntity.SetActive(true);
+// 									aicP.visibleMeshVisible = true;
+// 									Debug.Log("Enabling visibleMeshEntity "
+// 											  + "from HealthManager "
+// 											  + "AwakeFromLoad");
+// 								}
+// 							}
+// 						}
+// 					}
 				}
 			} else {
 				// No health
@@ -749,16 +749,16 @@ public class HealthManager : MonoBehaviour {
 				if (mr != null) {
 					mr.enabled = false;
 				} else {
-					AIController aicP = GetComponentInParent<AIController>();
-					if (aicP != null) {
-						if (!aicP.startInitialized) aicP.Start();
-						if (aicP.healthManager != null) {
-							if (!aicP.healthManager.gibOnDeath) {
-								Utils.Deactivate(aicP.visibleMeshEntity);
-								aicP.visibleMeshVisible = false;
-							}
-						}
-					}
+// 					AIController aicP = GetComponentInParent<AIController>();
+// 					if (aicP != null) {
+// 						if (!aicP.startInitialized) aicP.Start();
+// 						if (aicP.healthManager != null) {
+// 							if (!aicP.healthManager.gibOnDeath) {
+// 								Utils.Deactivate(aicP.visibleMeshEntity);
+// 								aicP.visibleMeshVisible = false;
+// 							}
+// 						}
+// 					}
 				}
 			}
 		}

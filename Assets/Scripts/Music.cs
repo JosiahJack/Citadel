@@ -121,8 +121,9 @@ public class Music : MonoBehaviour {
 					using (proc) {
 						proc.StartInfo = psi;
 						proc.Start();
-						proc.StandardInput.WriteLine("ffmpeg -i " + fName
-													 + ".mp3 " + fName
+						proc.StandardInput.WriteLine("ffmpeg -hide_banner "
+													 + " -loglevel error -i "
+													 + fName + ".mp3 " + fName
 													 + ".wav");
 
 						proc.StandardInput.WriteLine("exit");
