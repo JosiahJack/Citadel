@@ -13,14 +13,14 @@ jobs:
         plans: [ {targetPlatform: StandaloneOSX, dockerImage: mac-mono}, {targetPlatform: StandaloneWindows64, dockerImage: windows-mono}, {targetPlatform: StandaloneLinux64, dockerImage: linux-il2cpp} ] 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Run custom image build
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           chmod +x ./build.sh
           ./build.sh
       - name: Build game
-        uses: game-ci/unity-builder@v2
+        uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -32,7 +32,7 @@ jobs:
           allowDirtyBuild: true
 
       - name: Upload built files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Citadel_DevBuild_${{ matrix.plans.targetPlatform }}
           path: build/${{ matrix.plans.targetPlatform }}

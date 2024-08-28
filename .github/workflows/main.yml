@@ -13,9 +13,9 @@ jobs:
         plans: [ {targetPlatform: StandaloneOSX, dockerImage: mac-mono, downloadName: Mac64}, {targetPlatform: StandaloneWindows64, dockerImage: windows-mono, downloadName: Win64}, {targetPlatform: StandaloneLinux64, dockerImage: linux-il2cpp, downloadName: Linux64} ] 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Mark Library folder to be preserved
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: Library
           key: Library-${{ matrix.plans.targetPlatform }}
@@ -35,7 +35,7 @@ jobs:
 
       - name: Build game
         id: build
-        uses: game-ci/unity-builder@v2
+        uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -47,7 +47,7 @@ jobs:
           allowDirtyBuild: true
 
       - name: Upload built files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Citadel_DevBuild_${{ matrix.plans.downloadName }}_${{ steps.build.outputs.buildVersion }}
           path: build/${{ matrix.plans.targetPlatform }}
