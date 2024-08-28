@@ -1244,19 +1244,21 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void ToggleLightsVisibility() {
-        lightsInPVS.Clear();
-        int x,y;
-        for (int i=0;i<lights.Count;i++) {
-            x = lightCoords[i].x;
-            y = lightCoords[i].y;
-            if (gridCells[x,y].visible || !gridCells[x,y].open) {
-                lights[i].enabled = true;
-                lightsInPVS.Add(lights[i]);
-                lightsInPVSCoords.Add(lightCoords[i]);
-            } else {
-                lights[i].enabled = false;
-            }
-        }
+        if (!lightCulling) return;
+        
+//         lightsInPVS.Clear();
+//         int x,y;
+//         for (int i=0;i<lights.Count;i++) {
+//             x = lightCoords[i].x;
+//             y = lightCoords[i].y;
+//             if (gridCells[x,y].visible || !gridCells[x,y].open) {
+//                 lights[i].enabled = true;
+//                 lightsInPVS.Add(lights[i]);
+//                 lightsInPVSCoords.Add(lightCoords[i]);
+//             } else {
+//                 lights[i].enabled = false;
+//             }
+//         }
     }
 
     public void ToggleLightsFrustumVisibility() {
@@ -1267,16 +1269,16 @@ public class DynamicCulling : MonoBehaviour {
             lightDir = PlayerMovement.a.transform.position - lightPos;
             if (Vector3.Dot(lightDir,MouseLookScript.a.transform.forward) < 0.5f) {
                 lightsInPVS[i].enabled = true;
-                Debug.Log("Light at "
-                + lightsInPVS[i].transform.position.ToString()
-                + " VISIBLE, check was: "
-                + Vector3.Dot(lightDir,MouseLookScript.a.transform.forward).ToString());
+//                 Debug.Log("Light at "
+//                 + lightsInPVS[i].transform.position.ToString()
+//                 + " VISIBLE, check was: "
+//                 + Vector3.Dot(lightDir,MouseLookScript.a.transform.forward).ToString());
             } else {
                 lightsInPVS[i].enabled = false;
-                Debug.Log("Light at "
-                + lightsInPVS[i].transform.position.ToString()
-                + " NOT VISIBLE, check was: "
-                + Vector3.Dot(lightDir,MouseLookScript.a.transform.forward).ToString());
+//                 Debug.Log("Light at "
+//                 + lightsInPVS[i].transform.position.ToString()
+//                 + " NOT VISIBLE, check was: "
+//                 + Vector3.Dot(lightDir,MouseLookScript.a.transform.forward).ToString());
             }
         }
     }

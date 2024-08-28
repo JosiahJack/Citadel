@@ -191,21 +191,7 @@ public class AIController : MonoBehaviour {
 		}
 
 		if (sightPoint == null) sightPoint = gameObject;
-// 		DeactivateMeleeColliders();
 		if (currentDestination == null) currentDestination = sightPoint.transform.position;
-//      currentState = AIState.Idle;
-// 		currentWaypoint = 0;
-// 		enemy = null;
-// 		enemyHM = null;
-// 		firstSighting = true;
-// 		inSight = false;
-// 		goIntoPain = false;
-// 		dyingSetup = false;
-// 		ai_dead = false;
-// 		ai_dying = false;
-// 		attacker = null;
-//      shotFired = false;
-// 		hopDone = false;
 		idleTime = PauseScript.a.relativeTime
 				   + Random.Range(Const.a.timeIdleSFXMinForNPC[index],
 								  Const.a.timeIdleSFXMaxForNPC[index]);
@@ -418,14 +404,22 @@ public class AIController : MonoBehaviour {
 			// Activate any death effects
 			if (deathBurst != null) deathBurst.SetActive(true);
 			deathBurstDone = true;
+			Debug.Log("NPC " + gameObject.name + " death burst activated");
 		}
 
 		if (!HasHealth(healthManager)) {
 			// If we haven't gone into dying and we aren't dead, do dying.
 			if (!ai_dying && !ai_dead) {
+				Debug.Log("NPC " + gameObject.name + " is now dying");
 				ai_dying = true; // No going back!
 				currentState = AIState.Dying; // Start to collapse in a heap,
 											  // melt, explode, etc.
+			} else if (ai_dead && currentState != AIState.Dead) {
+				Debug.Log("NPC " + gameObject.name + " is made dead");
+				currentState = AIState.Dead;
+			} else if (ai_dying && currentState != AIState.Dying) {
+				Debug.Log("NPC " + gameObject.name + " is made dying");
+				currentState = AIState.Dying;
 			}
 		}
 
@@ -1349,6 +1343,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	void DyingSetup() {
+		Debug.Log("NPC " + gameObject.name + " start of dying setup");
 		enemy = null; // Reset for loading from saves
 
 		if (Const.a.deathBurstTimerForNPC[index] > 0) {
@@ -1409,6 +1404,7 @@ public class AIController : MonoBehaviour {
 		}
 
 		dyingSetup = true;
+		Debug.Log("NPC " + gameObject.name + " finished dying setup");
 	}
 
 	public bool DeactivatesVisibleMeshWhileDying() {
@@ -1424,13 +1420,18 @@ public class AIController : MonoBehaviour {
 		// Check if timer for dying animation is finished letting it play.
 		if (timeTillDeadFinished < PauseScript.a.relativeTime) {
 			ai_dead = true;
+			Debug.Log("NPC " + gameObject.name + " has now died");
 			ai_dying = false;
 			currentState = AIState.Dead;
 		}
 
-		if (DeactivatesVisibleMeshWhileDying()) {
+		if (DeactivatesVisibleMeshWhileDying() && visibleMeshEntity.activeSelf) {
 			Utils.Deactivate(visibleMeshEntity);
-			visibleMeshVisible = false;
+			if (visibleMeshVisible) {
+				visibleMeshVisible = false;
+				Debug.Log("NPC " + gameObject.name + " visibleMeshVisible now "
+						  + "false due to dying");
+			}
 		}
 
 		if (index == 20) searchColliderGO.SetActive(true);
@@ -1442,6 +1443,13 @@ public class AIController : MonoBehaviour {
 		ai_dying = false;
 		dyingSetup = false;
 		if (deadChecksDone) return;
+		
+		if (DeactivatesVisibleMeshWhileDying() && visibleMeshEntity.activeSelf) {
+			Utils.Deactivate(visibleMeshEntity);
+			visibleMeshVisible = false;
+			Debug.Log("NPC " + gameObject.name + " visibleMeshVisible now "
+			+ "false due to dead");
+		}
 
 		currentState = AIState.Dead;
 		gameObject.layer = 13; // Corpse layer

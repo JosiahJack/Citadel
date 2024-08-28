@@ -1520,12 +1520,25 @@ public class Const : MonoBehaviour {
 
 		// Remove and clear out everything and reset any lists.
 		ClearActiveAutomapOverlays();
+		TargetRegister.Clear();
+		TargetnameRegister.Clear();
+		for (i=0;i<healthObjectsRegistration.Length;i++) {
+			healthObjectsRegistration[i] = null;
+		}
+		
 		for (i=0;i<14;i++) {
 			LevelManager.a.UnloadLevelDynamicObjects(i); // Delete them all!
 			LevelManager.a.UnloadLevelNPCs(i); // Delete them all!
+			LevelManager.a.levelCameraCount[i] = 0;
+			LevelManager.a.levelSmallNodeCount[i] = 0;
+			LevelManager.a.levelLargeNodeCount[i] = 0;
+			LevelManager.a.levelCameraDestroyedCount[i] = 0;
+			LevelManager.a.levelSmallNodeDestroyedCount[i] = 0;
+			LevelManager.a.levelLargeNodeDestroyedCount[i] = 100;
 			loadPercentText.text = "Preparing level " + i.ToString();
 			yield return new WaitForSeconds(0.1f); // Update progress text.
 		}
+		
 
 		loadPercentText.text = "Open Save File         ";
 		yield return null; // Update progress text.
@@ -2048,7 +2061,7 @@ public class Const : MonoBehaviour {
 	}
 
 	// Should ONLY come from a TargetIO
-	public void AddToTargetRegister (GameObject go, string tn) {
+	public void AddToTargetRegister(GameObject go, string tn) {
 		int i = 0;
 	    for (i=0;i<TargetRegister.Count; i++) {
 	        if (TargetRegister[i] == null) continue;
