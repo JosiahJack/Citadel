@@ -435,7 +435,7 @@ public static class ConsoleEmulator {
         PlayerMovement.a.ToggleConsole();
     }
 
-    private static void CheatLoadLevel(int lev) {
+    public static void CheatLoadLevel(int lev) {
 		if (PauseScript.a.MenuActive()) {
 			Const.sprint("Cannot load levels while on the menu!");
 			return;

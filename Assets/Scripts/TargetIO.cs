@@ -62,12 +62,17 @@ public class TargetIO : MonoBehaviour {
 	public bool unlockSwitch; // unlock a ButtonSwitch
 	public bool lockElevatorPad; // lock elevator keypad
 	public bool alreadyDisabledThisGOOnceEver = false;
+	public bool doorToggle;
 
 	private UseData tempUD;
 	private bool startInitialized = false;
 
 	public void Start() {
-		Const.a.AddToTargetRegister(this.gameObject, targetname); // Always
+		Const.a.AddToTargetRegister(this.gameObject, targetname); // Always, since on load we need to refill register.
+		Initialize();
+	}
+	
+	public void Initialize() {
 		if (startInitialized) return;
 
 		if (!string.IsNullOrWhiteSpace(targetname)) {
@@ -133,6 +138,14 @@ public class TargetIO : MonoBehaviour {
 			if (trigcnt != null) trigcnt.Targetted(tempUD);
 		}
 
+		if (tempUD.doorUnlock) {
+			Door dr = GetComponent<Door>();
+			if (dr != null) {
+				dr.Unlock();
+				dr.accessCardUsedByPlayer = true;
+			}
+		} // Unlock before open or toggle
+		
 		if (tempUD.doorOpen) {
 			Door dr = GetComponent<Door>();
 			if (dr != null) {
@@ -140,31 +153,33 @@ public class TargetIO : MonoBehaviour {
 			}
 			//Debug.Log("opening door!");
 		}
-
+		
 		if (tempUD.doorOpenIfUnlocked) {
 			Door dr = GetComponent<Door>();
 			if (dr != null) {
 				if (dr.locked == false && dr.accessCardUsedByPlayer) dr.ForceOpen();
 			}
 		}
-
+		
+		if (tempUD.doorToggle) {
+			Door dr = GetComponent<Door>();
+			if (dr != null) {
+				if (dr.locked == false && dr.accessCardUsedByPlayer) dr.DoorActuate();
+			}
+			//Debug.Log("opening door!");
+		}
+		
 		if (tempUD.doorClose) {
 			Door dr = GetComponent<Door>();
 			if (dr != null) dr.ForceClose();
 		}
-
-		if (tempUD.doorLock) {
+		
+		if (tempUD.doorLock) { // Lock after forcing door into a position.
 			Door dr = GetComponent<Door>();
 			if (dr != null) dr.Lock(tempUD.argvalue);
 		}
+		
 
-		if (tempUD.doorUnlock) {
-			Door dr = GetComponent<Door>();
-			if (dr != null) {
-				dr.Unlock();
-				dr.accessCardUsedByPlayer = true;
-			}
-		}
 
 		if (tempUD.doorAccessCardOverrideToggle) {
 			Door dr = GetComponent<Door>();
@@ -499,6 +514,8 @@ public class TargetIO : MonoBehaviour {
 			s1.Append(Utils.splitChar);
 			s1.Append("alreadyDisabledThisGOOnceEver:0");
 			s1.Append(Utils.splitChar);
+			s1.Append("doorToggle:0");
+			s1.Append(Utils.splitChar);
 			s1.Append("gameObject.activeInHierarchy:0");
 			return s1.ToString();
 		}
@@ -619,6 +636,8 @@ public class TargetIO : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(tio.alreadyDisabledThisGOOnceEver,
 									 "alreadyDisabledThisGOOnceEver"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(tio.doorToggle,"doorToggle"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(tio.gameObject.activeInHierarchy,
 									 "gameObject.activeInHierarchy"));
@@ -870,11 +889,14 @@ public class TargetIO : MonoBehaviour {
 			Utils.GetBoolFromString(entries[index],
 								    "alreadyDisabledThisGOOnceEver");
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		
+		tio.doorToggle = Utils.GetBoolFromString(entries[index],"doorToggle");
+		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 
 		bool wasActive = Utils.GetBoolFromString(entries[index],
 											   "gameObject.activeInHierarchy");
-
-		tio.Start();
+		
+		tio.Initialize();
 		if (wasActive) Utils.Activate(tio.gameObject);
 		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
 		return index;
@@ -943,6 +965,7 @@ public class UseData {
 	public bool doorAccessCardOverrideToggle; // set that access card has already been used
 	public bool unlockSwitch; // unlock a ButtonSwitch
 	public bool lockElevatorPad; // lock elevator pad
+	public bool doorToggle; // Actuate door, similar to use to open/close
 
 	// function for reseting all data if needed
 	public void Reset (UseData ud) {
@@ -1004,6 +1027,7 @@ public class UseData {
 		doorAccessCardOverrideToggle = tio.doorAccessCardOverrideToggle;
 		unlockSwitch = tio.unlockSwitch;
 		lockElevatorPad = tio.lockElevatorPad;
+		doorToggle = tio.doorToggle;
 		bitsSet = true;
 	}
 
@@ -1059,6 +1083,7 @@ public class UseData {
 		doorAccessCardOverrideToggle = tio.doorAccessCardOverrideToggle;
 		unlockSwitch = tio.unlockSwitch;
 		lockElevatorPad = tio.lockElevatorPad;
+		doorToggle = tio.doorToggle;
 		bitsSet = true;
 	}
 }

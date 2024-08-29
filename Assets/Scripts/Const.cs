@@ -381,11 +381,20 @@ public class Const : MonoBehaviour {
 		a.TextLocalizationRegister = new HashSet<TextLocalization>();
 		TextLocalization texloc = null;
 		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
-		for (int i=0;i<allParents.Count;i++) {
+		int i,k;
+		for (i=0;i<allParents.Count;i++) {
 			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(TextLocalization),true); // find all TextLocalization components, including inactive (hence the true here at the end)
-			for (int k=0;k<compArray.Length;k++) {
+			for (k=0;k<compArray.Length;k++) {
 				texloc = compArray[k].gameObject.GetComponent<TextLocalization>();
 				if (texloc != null) texloc.Awake();
+			}
+		}
+		
+		for (i=0;i<allParents.Count;i++) {
+			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(TargetIO),true); // find all SaveObject components, including inactive (hence the true here at the end)
+			for (k=0;k<compArray.Length;k++) {
+				TargetIO tio = compArray[k].gameObject.GetComponent<TargetIO>();
+				if (tio != null) tio.Start(); // Reregister
 			}
 		}
 
@@ -1558,6 +1567,9 @@ public class Const : MonoBehaviour {
 		    sr = Utils.ReadStreamingAsset(lName);
 		}
 		
+		List<GameObject> allParents = 
+			SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+			
 		if (sr != null) {
 			// Read the file into a list, line by line
 			using (sr) {
@@ -1823,8 +1835,6 @@ public class Const : MonoBehaviour {
 		        // Go through all HealthManagers in the game and initialize the
 				// linked overlays now for Automap.  Done after instantiation.
 				List<GameObject> hmGOs = new List<GameObject>();
-				List<GameObject> allParents =
-				  SceneManager.GetActiveScene().GetRootGameObjects().ToList();
 				
 				// Find all HealthManager components.
                 bool includeInactive = true;
@@ -1851,6 +1861,16 @@ public class Const : MonoBehaviour {
 						hm.Start(); // Setup overlay.
 					}
 				}
+			}
+		}
+		
+		loadPercentText.text = "Re-register targets...";
+		yield return new WaitForSeconds(0.05f);
+		for (i=0;i<allParents.Count;i++) {
+			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(TargetIO),true); // find all SaveObject components, including inactive (hence the true here at the end)
+			for (k=0;k<compArray.Length;k++) {
+				TargetIO tio = compArray[k].gameObject.GetComponent<TargetIO>();
+				if (tio != null) tio.Start(); // Reregister
 			}
 		}
 		loadPercentText.text = "Re-init cull systems...";

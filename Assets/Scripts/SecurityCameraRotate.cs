@@ -74,12 +74,15 @@ public class SecurityCameraRotate : MonoBehaviour {
 		SecurityCameraRotate scr = go.GetComponent<SecurityCameraRotate>();
 		if (scr == null) { // No selective catalytic reduction.  Consult your engine manual for further diagnosis.
 			UnityEngine.Debug.Log("SecurityCameraRotate missing on savetype of SecurityCamera!  GameObject.name: " + go.name);
-			return "0000.00000|0";
+			return Utils.DTypeWordToSaveString("fbfff");
 		}
 
 		string line = System.String.Empty;
 		line = Utils.SaveRelativeTimeDifferential(scr.waitingFinished);
-		line += Utils.splitChar + Utils.BoolToString(scr.enabled);
+		line += Utils.splitChar + Utils.BoolToString(scr.enabled,"enabled");
+		line += Utils.splitChar + Utils.FloatToString(scr.startYAngle,"startYAngle");
+		line += Utils.splitChar + Utils.FloatToString(scr.endYAngle,"endYAngle");
+		line += Utils.splitChar + Utils.FloatToString(scr.waitTime,"waitTime");
 		return line;
 	}
 
@@ -87,21 +90,24 @@ public class SecurityCameraRotate : MonoBehaviour {
 		SecurityCameraRotate scr = go.GetComponent<SecurityCameraRotate>();
 		if (scr == null) {
 			Debug.Log("SecurityCameraRotate.Load failure, scr == null");
-			return index + 2;
+			return index + 5;
 		}
 
 		if (index < 0) {
 			Debug.Log("SecurityCameraRotate.Load failure, index < 0");
-			return index + 2;
+			return index + 5;
 		}
 
 		if (entries == null) {
 			Debug.Log("SecurityCameraRotate.Load failure, entries == null");
-			return index + 2;
+			return index + 5;
 		}
 
-		scr.waitingFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		scr.enabled = Utils.GetBoolFromString(entries[index]); index++;
+		scr.waitingFinished = Utils.LoadRelativeTimeDifferential(entries[index],"waitingFinished"); index++;
+		scr.enabled = Utils.GetBoolFromString(entries[index],"enabled"); index++;
+		scr.startYAngle = Utils.GetFloatFromString(entries[index],"startYAngle"); index++;
+		scr.endYAngle = Utils.GetFloatFromString(entries[index],"endYAngle"); index++;
+		scr.waitTime = Utils.GetFloatFromString(entries[index],"waitTime"); index++;
 		return index;
 	}
 }

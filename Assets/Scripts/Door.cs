@@ -162,30 +162,7 @@ public class Door : MonoBehaviour {
 					animatorPlaybackTime = topTime * ajarPercentage;
 				}
 
-				if (doorOpen == DoorState.Open
-					&& animatorPlaybackTime > 0.95f) {
-
-					doorOpen = DoorState.Closing;
-					CloseDoor();
-				} else if (doorOpen == DoorState.Closed
-						   && animatorPlaybackTime > 0.95f){
-
-					doorOpen = DoorState.Opening;
-					OpenDoor();
-				} else if (doorOpen == DoorState.Opening) {
-					doorOpen = DoorState.Closing;
-					anim.Play(closeClipName,defIndex,
-								topTime - animatorPlaybackTime);
-
-					Utils.PlayOneShotSavable(SFX,SFXClip);
-				} else if (doorOpen == DoorState.Closing) {
-					doorOpen = DoorState.Opening;
-					waitBeforeClose = PauseScript.a.relativeTime + delay;
-					anim.Play(openClipName,defIndex,
-								topTime - animatorPlaybackTime);
-
-					Utils.PlayOneShotSavable(SFX,SFXClip);
-				}
+				DoorActuate();
 			} else {
 				// Use access card
 				if (requiredAccessCard != AccessCardType.None) {
@@ -208,6 +185,25 @@ public class Door : MonoBehaviour {
 							+ cardMessage,ud.owner);
 
 			Utils.PlayOneShotSavable(SFX,Const.a.sounds[466],0.7f);
+		}
+	}
+	
+	public void DoorActuate() {
+		if (doorOpen == DoorState.Open && animatorPlaybackTime > 0.95f) {
+			doorOpen = DoorState.Closing;
+			CloseDoor();
+		} else if (doorOpen == DoorState.Closed && animatorPlaybackTime > 0.95f){
+			doorOpen = DoorState.Opening;
+			OpenDoor();
+		} else if (doorOpen == DoorState.Opening) {
+			doorOpen = DoorState.Closing;
+			anim.Play(closeClipName,defIndex,topTime - animatorPlaybackTime);
+			Utils.PlayOneShotSavable(SFX,SFXClip);
+		} else if (doorOpen == DoorState.Closing) {
+			doorOpen = DoorState.Opening;
+			waitBeforeClose = PauseScript.a.relativeTime + delay;
+			anim.Play(openClipName,defIndex,topTime - animatorPlaybackTime);
+			Utils.PlayOneShotSavable(SFX,SFXClip);
 		}
 	}
 

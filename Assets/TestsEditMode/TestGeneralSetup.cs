@@ -443,6 +443,14 @@ namespace Tests {
                               || hm.isIce || hm.isObject || hm.isPlayer);
 
                     Assert.That(check,FailMessage(script,allGOs[i],msg));
+                    
+                    ImageSequenceTextureArray ista =
+                        allGOs[i].GetComponent<ImageSequenceTextureArray>();
+                    
+                    
+                    msg = "isScreen and is marked as destroyed but has health";
+                    check = ista.screenDestroyed ? hm.health <= 0f: true;
+                    Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
                 if (hm.gibOnDeath) {
                     msg = "no gibObjects when gibOnDeath is true";

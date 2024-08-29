@@ -174,5 +174,75 @@ namespace Tests {
                 if (iter > 10000) break;
             }
         }
+        
+        [UnityTest]
+        public IEnumerator CheckAllLevelsLoadFine() {
+            RunBeforeAnyTests();
+            yield return new WaitUntil(() => sceneLoaded);
+            
+            yield return new WaitForSeconds(2f);
+            
+            bool check = LevelManager.a != null;
+            string msg = "LevelManager.a was null";
+            Assert.That(check,msg);
+            
+            MainMenuHandler.a.StartGame(true);
+            yield return new WaitForSeconds(5f);
+            
+            PlayerMovement.a.hm.god = true;
+            yield return new WaitForSeconds(0.1f);
+            
+            ConsoleEmulator.CheatLoadLevel(0);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(1);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(2);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(3);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(4);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(5);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(6);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(7);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(8);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(9);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(10);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(11);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(12);
+            yield return new WaitForSeconds(3f);
+            
+            ConsoleEmulator.CheatLoadLevel(1);
+            yield return new WaitForSeconds(3f);
+            
+            // Test cyberspace loads
+            MouseLookScript.a.EnterCyberspace(
+                LevelManager.a.ressurectionLocation[1].gameObject);
+            
+            yield return new WaitForSeconds(3f);
+            
+            MouseLookScript.a.ExitCyberspace();
+            yield return new WaitForSeconds(1f);
+            
+        }
     }
 }
