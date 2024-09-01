@@ -16,7 +16,7 @@ public class CameraView : MonoBehaviour {
 	private Camera cam;
 	private float tick = 0.1f;
 	private float tickFinished; // Visual only, Time.time controlled
-	private MeshRenderer mR;
+	private MeshRenderer mR; // These are the screens showing the feed
 	private MeshRenderer mR2;
 	private MeshRenderer mR3;
 
@@ -51,12 +51,22 @@ public class CameraView : MonoBehaviour {
 	}
 
 	void OnEnable() {
+		DynamicCulling.a.AddCameraPosition(this);
 		if (cam != null) cam.Render();
+	}
+	
+	void OnDisable() {
+		DynamicCulling.a.RemoveCameraPosition(this);
+		
+	}
+	
+	public bool IsVisible() {
+		return mR.isVisible || mR2.isVisible || mR3.isVisible;
 	}
 
 	void Update() {
 		if (!PauseScript.a.paused && !PauseScript.a.MenuActive()) {
-			if (!mR.isVisible && !mR2.isVisible && !mR3.isVisible) return;
+			if (!IsVisible()) return;
 
 			if (tickFinished < Time.time) {
 				tickFinished = Time.time + tick;

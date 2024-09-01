@@ -67,8 +67,15 @@ public class TargetIO : MonoBehaviour {
 	private UseData tempUD;
 	private bool startInitialized = false;
 
-	public void Start() {
-		Const.a.AddToTargetRegister(this.gameObject, targetname); // Always, since on load we need to refill register.
+	private void Start() {
+		RemoteStart(this.gameObject,"self Start()");
+	}
+	
+	public void RemoteStart(GameObject sender,string sourcefunc) {
+// 		Debug.Log("TargetIO remote Start() by " + sender.name + "'s "
+// 				  + sourcefunc);
+		
+		Const.a.AddToTargetRegister(this); // Always, since on load we need to refill register.
 		Initialize();
 	}
 	

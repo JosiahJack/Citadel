@@ -11,6 +11,22 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+// GLOBAL SCRIPT EXECUTION ORDER (set in Unity Project Settings, here for ref)
+// UnityEngine.EventSystems.EventSystems.EventSystem -1000
+// Music           -950
+// Const           -900
+// PauseScript     -899
+// Level           -800
+// LevelManager    -700
+// UnityEngine.InputSystem.PlayerInput -100
+//                 --   Default Time   --
+// HealthManager    400
+// MFDManager       600
+// AIController     700
+// DynamicCulling   800
+// TargetIO         900
+// CameraView      1000
+
 public class Const : MonoBehaviour {
 	//Item constants
 	public QuestBits questData;
@@ -344,6 +360,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public float damageDealt = 0f;
 	[HideInInspector] public float damageReceived = 0f;
 	[HideInInspector] public int savesScummed = 0;
+	private int lastTargetRegistrySize = 0;
 
 	public static RaycastHit hitNull;	
 
@@ -381,21 +398,39 @@ public class Const : MonoBehaviour {
 		a.TextLocalizationRegister = new HashSet<TextLocalization>();
 		TextLocalization texloc = null;
 		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
-		int i,k;
+		int i,k, found;
 		for (i=0;i<allParents.Count;i++) {
+			found = 0;
 			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(TextLocalization),true); // find all TextLocalization components, including inactive (hence the true here at the end)
 			for (k=0;k<compArray.Length;k++) {
 				texloc = compArray[k].gameObject.GetComponent<TextLocalization>();
-				if (texloc != null) texloc.Awake();
+				if (texloc != null) {
+					texloc.Awake();
+					found++;
+				}
 			}
+			
+// 			UnityEngine.Debug.Log("Found " + found.ToString()
+// 								  + " TextLocalizations for "
+// 								  + allParents[i].name);
 		}
 		
+		a.lastTargetRegistrySize = 0;
+		a.TargetRegister = new List<GameObject>();
+		a.TargetnameRegister = new List<string>();
 		for (i=0;i<allParents.Count;i++) {
-			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(TargetIO),true); // find all SaveObject components, including inactive (hence the true here at the end)
+			found = 0;
+			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(TargetIO),true); // find all TargetIO components, including inactive (hence the true here at the end)
 			for (k=0;k<compArray.Length;k++) {
 				TargetIO tio = compArray[k].gameObject.GetComponent<TargetIO>();
-				if (tio != null) tio.Start(); // Reregister
+				if (tio != null) {
+					tio.RemoteStart(a.gameObject,"Awake()"); // Reregister
+					found++;
+				}
 			}
+			
+// 			UnityEngine.Debug.Log("Found " + found.ToString() + " TargetIO's "
+// 								  + "for " + allParents[i].name);
 		}
 
 		a.s1 = new StringBuilder();
@@ -412,8 +447,6 @@ public class Const : MonoBehaviour {
 		a.LoadItemNamesData();
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
-		a.TargetRegister = new List<GameObject>();
-		a.TargetnameRegister = new List<string>();
 		a.versionString = "v0.99.6"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
@@ -1529,6 +1562,7 @@ public class Const : MonoBehaviour {
 
 		// Remove and clear out everything and reset any lists.
 		ClearActiveAutomapOverlays();
+		UnityEngine.Debug.Log("CLEARING TARGET REGISTRIES FOR LOAD!");
 		TargetRegister.Clear();
 		TargetnameRegister.Clear();
 		for (i=0;i<healthObjectsRegistration.Length;i++) {
@@ -1870,7 +1904,9 @@ public class Const : MonoBehaviour {
 			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(TargetIO),true); // find all SaveObject components, including inactive (hence the true here at the end)
 			for (k=0;k<compArray.Length;k++) {
 				TargetIO tio = compArray[k].gameObject.GetComponent<TargetIO>();
-				if (tio != null) tio.Start(); // Reregister
+				if (tio != null) {
+					tio.RemoteStart(this.gameObject,"LoadRoutine()"); // Reregister
+				}
 			}
 		}
 		loadPercentText.text = "Re-init cull systems...";
@@ -2081,18 +2117,28 @@ public class Const : MonoBehaviour {
 	}
 
 	// Should ONLY come from a TargetIO
-	public void AddToTargetRegister(GameObject go, string tn) {
+	public void AddToTargetRegister(TargetIO tio) {
+		string tn = tio.targetname;
+		if (string.IsNullOrEmpty(tn)) return;
+
+		GameObject go = tio.gameObject;		
+// 		UnityEngine.Debug.Log("Target registering " + tn + " for " + go.name);
 		int i = 0;
 	    for (i=0;i<TargetRegister.Count; i++) {
 	        if (TargetRegister[i] == null) continue;
 	        if (TargetRegister[i] != go) continue; // Key check for whole loop.
-	        
+			
 	        // GameObject go is in registry already
-
             if (TargetnameRegister[i] == tn) {
+// 				UnityEngine.Debug.Log(tn + " for " + go.name + " already in "
+// 									  + "TargetRegister[], name and object");
+				
                 return; // Already in register, name and object.
             } else {
                 TargetnameRegister[i] = tn; // Fix up partial registry.
+//                 UnityEngine.Debug.Log(tn + " for " + go.name + " already in "
+// 									  + "TargetRegister[], fix up partial");
+				
                 return; // Ok it's good now.
             }
 	    }
@@ -2100,6 +2146,16 @@ public class Const : MonoBehaviour {
 	    // GameObject isn't in registry, add fresh.
 	    TargetRegister.Add(go);
 		TargetnameRegister.Add(tn);
+		if (TargetnameRegister.Count <= lastTargetRegistrySize) {
+			UnityEngine.Debug.Log("Target register reset!");
+		}
+		
+		lastTargetRegistrySize = TargetnameRegister.Count;
+		
+// 		UnityEngine.Debug.Log("Target registering " + tn + " for " + go.name
+// 							  + "... complete! Registry now size of names["
+// 							  + TargetnameRegister.Count.ToString() + "]/gos("
+// 							  + TargetRegister.Count.ToString() + ")");
 	}
 
 	public void AddToTextLocalizationRegister(TextLocalization txtloc) {

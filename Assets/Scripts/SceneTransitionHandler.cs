@@ -20,6 +20,7 @@ public class SceneTransitionHandler : MonoBehaviour {
             setActiveAtNext = false;
             Scene mainScene = SceneManager.GetSceneByName("CitadelScene");
             if (mainScene != null) SceneManager.SetActiveScene(mainScene);
+            Debug.Log("Reinit FULL const tables");
             Const.a.Awake();
             Const.a.difficultyCombat = diffCombatCarryover;
             Const.a.difficultyMission = diffMissionCarryover;
