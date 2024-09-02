@@ -45,6 +45,7 @@ public class DynamicCulling : MonoBehaviour {
 
     private byte[] bytes;
     private static string openDebugImagePath;
+    private static string closedDebugImagePath;
     private static string visDebugImagePath;
     private Color32[] pixels;
     private Texture2D debugTex;
@@ -105,6 +106,12 @@ public class DynamicCulling : MonoBehaviour {
         visDebugImagePath = Utils.SafePathCombine(
                                 Application.streamingAssetsPath,
                                 "worldcellvis_"
+                                + LevelManager.a.currentLevel.ToString()
+                                + ".png");
+        
+        closedDebugImagePath = Utils.SafePathCombine(
+                                Application.streamingAssetsPath,
+                                "worldedgesclosed_"
                                 + LevelManager.a.currentLevel.ToString()
                                 + ".png");
         
@@ -535,51 +542,81 @@ public class DynamicCulling : MonoBehaviour {
     }
     
     void DetermineClosedEdges() {
-//         int i,x,y,norths,easts,souths,wests;
-//         Vector3 angs;
-//         GameObject childGO;
-//         for (x=0;x<WORLDX;x++) {
-//             for (y=0;y<WORLDX;y++) {
-//                 norths = easts = souths = wests = 0;
-//                 for (i=0;i<gridCells[x,y].chunkPrefabs.Count;i++) {
-//                     if (GetVertexColorForChunk(gridCells[x,y].chunkPrefabs[i].constIndex) != 255f) {
-//                         childGO = gridCells[x,y].chunkPrefabs[i].go;
-//                         // Only mark edges closed for walls that can be cards for now.
-//                         angs = childGO.transform.localEulerAngles;
-//                         if (angs.z < -0.1f || angs.z > 0.1f) continue;
-//                         
-//                         if (angs.x < 90.1f && angs.x > 89.9f) {
-//                             if (angs.y > -0.1f && angs.y < 0.1f) norths++; // 90 0 0
-//                             else if (angs.y > 89.9f && angs.y < 90.1f) easts++; // 90 90 0
-//                             else if (angs.y > 179.9f && angs.y < 180.1f) souths++; // 90 180 0
-//                             else if (angs.y > 269.9f && angs.y < 270.1f) wests++; // 90 270 0
-//                         } else if (angs.x > -90.1f && angs.x < -89.9f) {
-//                             if (angs.y > -0.1f && angs.y < 0.1f) souths++; // -90 0 0
-//                             else if (angs.y > 89.9f && angs.y < 90.1f) wests++; // -90 90 0
-//                             else if (angs.y > 179.9f && angs.y < 180.1f) norths++; // -90 180 0
-//                             else if (angs.y > 269.9f && angs.y < 270.1f) easts++; // -90 270 0
-//                         }
-//                     }
-//                 }
-//                 
-//                 if (norths == 1) {
-//                     gridCells[x,y].closedNorth = true;
-//                     Debug.Log(x.ToString() + ",y" + y.ToString() + " North -");
-//                 }
-//                 if (easts == 1) {
-//                     gridCells[x,y].closedEast= true;
-//                     Debug.Log(x.ToString() + ",y" + y.ToString() + " East [");
-//                 }
-//                 if (souths == 1) {
-//                     gridCells[x,y].closedSouth = true;
-//                     Debug.Log(x.ToString() + ",y" + y.ToString() + " South _");
-//                 }
-//                 if (wests == 1) {
-//                     gridCells[x,y].closedWest = true;
-//                     Debug.Log(x.ToString() + ",y" + y.ToString() + " West ]");
-//                 }
-//             }
-//         }
+        int i,x,y,norths,easts,souths,wests;
+        if (outputDebugImages) debugTex = new Texture2D(64,64);
+
+        Vector3 angs;
+        GameObject childGO;
+        for (x=0;x<WORLDX;x++) {
+            for (y=0;y<WORLDX;y++) {
+                norths = easts = souths = wests = 0;
+                for (i=0;i<gridCells[x,y].chunkPrefabs.Count;i++) {
+                    if (GetVertexColorForChunk(gridCells[x,y].chunkPrefabs[i].constIndex) != 255f) {
+                        childGO = gridCells[x,y].chunkPrefabs[i].go;
+                        // Only mark edges closed for walls that can be cards for now.
+                        angs = childGO.transform.localEulerAngles;
+                        if (angs.z < -0.1f || angs.z > 0.1f) continue;
+
+                        if (angs.x < 90.1f && angs.x > 89.9f) {
+                            if (angs.y > -0.1f && angs.y < 0.1f) norths++; // 90 0 0
+                            else if (angs.y > 89.9f && angs.y < 90.1f) easts++; // 90 90 0
+                            else if (angs.y > 179.9f && angs.y < 180.1f) souths++; // 90 180 0
+                            else if (angs.y > 269.9f && angs.y < 270.1f) wests++; // 90 270 0
+                        } else if (angs.x > -90.1f && angs.x < -89.9f) {
+                            if (angs.y > -0.1f && angs.y < 0.1f) souths++; // -90 0 0
+                            else if (angs.y > 89.9f && angs.y < 90.1f) wests++; // -90 90 0
+                            else if (angs.y > 179.9f && angs.y < 180.1f) norths++; // -90 180 0
+                            else if (angs.y > 269.9f && angs.y < 270.1f) easts++; // -90 270 0
+                        }
+                    }
+                }
+
+                if (norths == 1) {
+                    gridCells[x,y].closedNorth = true;
+                    Debug.Log(x.ToString() + ",y" + y.ToString() + " North -");
+                }
+
+                if (easts == 1) {
+                    gridCells[x,y].closedEast= true;
+                    Debug.Log(x.ToString() + ",y" + y.ToString() + " East [");
+                }
+
+                if (souths == 1) {
+                    gridCells[x,y].closedSouth = true;
+                    Debug.Log(x.ToString() + ",y" + y.ToString() + " South _");
+                }
+
+                if (wests == 1) {
+                    gridCells[x,y].closedWest = true;
+                    Debug.Log(x.ToString() + ",y" + y.ToString() + " West ]");
+                }
+            }
+        }
+
+        Color col = new Color(0f,0f,0f,1f);
+        for (x=0;x<64;x++) {
+            for (y=0;y<64;y++) {
+                if (gridCells[x,y].open) {
+                    col = Color.white;
+                    if (gridCells[x,y].closedNorth) col.r = 0.5f;
+                    if (gridCells[x,y].closedEast) col.g = 0.5f;
+                    if (gridCells[x,y].closedWest) col.b = 0.5f;
+                    if (gridCells[x,y].closedSouth) col.b = (col.b * 0.25f) + 0.25f;
+                    col.a = 1.0f;
+                    pixels[x + (y * 64)] = col;
+                } else {
+                    pixels[x + (y * 64)] = Color.black;
+                }
+            }
+        }
+        
+        // Output Debug image of the open
+        if (outputDebugImages) {
+            debugTex.SetPixels32(pixels);
+            debugTex.Apply();
+            bytes = debugTex.EncodeToPNG();
+            File.WriteAllBytes(closedDebugImagePath,bytes);
+        }
     }
 
     // ========================================================================
@@ -769,6 +806,11 @@ public class DynamicCulling : MonoBehaviour {
             visDebugImagePath = Utils.SafePathCombine(
                 Application.streamingAssetsPath,
                 "worldcellvis_" + LevelManager.a.currentLevel.ToString()
+                + ".png");
+            
+            closedDebugImagePath = Utils.SafePathCombine(
+                Application.streamingAssetsPath,
+                "worldedgesclosed_" + LevelManager.a.currentLevel.ToString()
                 + ".png");
         }
 
