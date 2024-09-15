@@ -14,6 +14,8 @@ public class DynamicCulling : MonoBehaviour {
     public bool lightCulling = true;
     public bool outputDebugImages = false;
     public bool forceRecull = false;
+    public ComputeShader computeShader;
+    public RenderTexture renderTexture;
     public bool[,] worldCellCheckedYet = new bool [WORLDX,WORLDX];
     //public Texture2D[] precalculatedPVS = new Texture2D[ARRSIZE];
     public GridCell[,] gridCells = new GridCell[WORLDX,WORLDX];
@@ -42,6 +44,9 @@ public class DynamicCulling : MonoBehaviour {
     public bool lodMeshesInitialized = false;
     public Mesh[] lodMeshes;
     public Mesh lodMeshTemplate;
+    public Material debugMaterialRed;
+    public Material debugMaterialGreen;
+    public Material debugMaterialBlue;
 
     private byte[] bytes;
     private static string openDebugImagePath;
@@ -117,6 +122,11 @@ public class DynamicCulling : MonoBehaviour {
         
         a.pixels = new Color32[WORLDX * WORLDX];
         a.camPositions = new Dictionary<GameObject, Vector3>();
+        a.renderTexture = new RenderTexture(256,256,24);
+        a.renderTexture.enableRandomWrite = true;
+        a.renderTexture.Create();
+        computeShader.SetTexture(0,"Result",renderTexture);
+        computeShader.Dispatch(0,renderTexture.width / 8, renderTexture.height / 8, 1);
     }
 
     float GetVertexColorForChunk(int constdex) {
@@ -540,7 +550,15 @@ public class DynamicCulling : MonoBehaviour {
             gridCells[x,y].open = true;
         }
     }
-    
+
+    void MakeDebugCube(Transform tr, Material mat) {
+        GameObject debugCube = GameObject.CreatePrimitive(PrimitiveType.Cube); // Automatically adds MeshFilter and MeshRenderer
+        debugCube.transform.parent = tr;
+        debugCube.transform.localPosition = new Vector3(0f,0f,0f);
+        MeshRenderer mr = debugCube.GetComponent<MeshRenderer>();
+        mr.material = mat;
+    }
+
     void DetermineClosedEdges() {
         int i,x,y,norths,easts,souths,wests;
         if (outputDebugImages) debugTex = new Texture2D(64,64);
@@ -550,6 +568,8 @@ public class DynamicCulling : MonoBehaviour {
         for (x=0;x<WORLDX;x++) {
             for (y=0;y<WORLDX;y++) {
                 norths = easts = souths = wests = 0;
+                if (!gridCells[x,y].open) continue;
+
                 for (i=0;i<gridCells[x,y].chunkPrefabs.Count;i++) {
                     if (GetVertexColorForChunk(gridCells[x,y].chunkPrefabs[i].constIndex) != 255f) {
                         childGO = gridCells[x,y].chunkPrefabs[i].go;
@@ -571,22 +591,22 @@ public class DynamicCulling : MonoBehaviour {
                     }
                 }
 
-                if (norths == 1) {
+                if (norths >= 1) {
                     gridCells[x,y].closedNorth = true;
                     Debug.Log(x.ToString() + ",y" + y.ToString() + " North -");
                 }
 
-                if (easts == 1) {
+                if (easts >= 1) {
                     gridCells[x,y].closedEast= true;
                     Debug.Log(x.ToString() + ",y" + y.ToString() + " East [");
                 }
 
-                if (souths == 1) {
+                if (souths >= 1) {
                     gridCells[x,y].closedSouth = true;
                     Debug.Log(x.ToString() + ",y" + y.ToString() + " South _");
                 }
 
-                if (wests == 1) {
+                if (wests >= 1) {
                     gridCells[x,y].closedWest = true;
                     Debug.Log(x.ToString() + ",y" + y.ToString() + " West ]");
                 }
@@ -598,11 +618,105 @@ public class DynamicCulling : MonoBehaviour {
             for (y=0;y<64;y++) {
                 if (gridCells[x,y].open) {
                     col = Color.white;
-                    if (gridCells[x,y].closedNorth) col.r = 0.5f;
-                    if (gridCells[x,y].closedEast) col.g = 0.5f;
-                    if (gridCells[x,y].closedWest) col.b = 0.5f;
-                    if (gridCells[x,y].closedSouth) col.b = (col.b * 0.25f) + 0.25f;
-                    col.a = 1.0f;
+                    // Table of bit conditions
+                    // NESW
+                    // 0001 W       |
+                    // 0010 S      _
+                    // 0011 SW    |_
+                    // 0100 E     |
+                    // 0101 E,W   | |
+                    // 0110 SE     _|
+                    // 0111 SE,W  |_|
+                    // 1000 N      -
+                    // 1001 NW    |-
+                    // 1010 N,S  -,_
+                    // 1011 N,SW -,_|
+                    // 1100 NE     -|
+                    // 1101 NE,W |,-|
+                    // 1110 NE,S _,-|
+                    // 1111 Closed ▀
+                    if (           gridCells[x,y].closedNorth
+                               && !gridCells[x,y].closedEast
+                               && !gridCells[x,y].closedSouth
+                               && !gridCells[x,y].closedWest) {
+                        col = new Color(0.7f,0.0f,0.0f,1f); // Red N
+                    } else if (    gridCells[x,y].closedNorth
+                               &&  gridCells[x,y].closedEast
+                               && !gridCells[x,y].closedSouth
+                               && !gridCells[x,y].closedWest) {
+                        col = new Color(0.7f,0.4f,0.0f,1f); // Orange NE
+                    } else if (   !gridCells[x,y].closedNorth
+                               &&  gridCells[x,y].closedEast
+                               && !gridCells[x,y].closedSouth
+                               && !gridCells[x,y].closedWest) {
+                        col = new Color(0.8f,0.8f,0.0f,1f); // Yellow E
+                    } else if (   !gridCells[x,y].closedNorth
+                               &&  gridCells[x,y].closedEast
+                               &&  gridCells[x,y].closedSouth
+                               && !gridCells[x,y].closedWest) {
+                        col = new Color(0.6f,0.8f,0.0f,1f); // Chartruse SE
+                    } else if (   !gridCells[x,y].closedNorth
+                               &&  gridCells[x,y].closedEast
+                               && !gridCells[x,y].closedSouth
+                               && !gridCells[x,y].closedWest) {
+                        col = new Color(0.0f,0.7f,0.0f,1f); // Green S
+                    } else if (   !gridCells[x,y].closedNorth
+                               && !gridCells[x,y].closedEast
+                               &&  gridCells[x,y].closedSouth
+                               &&  gridCells[x,y].closedWest) {
+                        col = new Color(0.0f,0.7f,0.6f,1f); // Teal SW
+                    } else if (   !gridCells[x,y].closedNorth
+                               && !gridCells[x,y].closedEast
+                               && !gridCells[x,y].closedSouth
+                               &&  gridCells[x,y].closedWest) {
+                        col = new Color(0.0f,0.0f,0.7f,1f); // Blue W
+                    } else if (    gridCells[x,y].closedNorth
+                               && !gridCells[x,y].closedEast
+                               && !gridCells[x,y].closedSouth
+                               &&  gridCells[x,y].closedWest) {
+                        col = new Color(0.4f,0.0f,0.7f,1f); // Indigo NW
+                    } else if (    gridCells[x,y].closedNorth
+                               &&  gridCells[x,y].closedEast
+                               &&  gridCells[x,y].closedSouth
+                               &&  gridCells[x,y].closedWest) {
+                        col = new Color(1.0f,1.0f,1.0f,1f); // Black closed cell
+                    } else if (    gridCells[x,y].closedNorth
+                               && !gridCells[x,y].closedEast
+                               &&  gridCells[x,y].closedSouth
+                               && !gridCells[x,y].closedWest) {
+                        col = new Color(0.4f,0.3f,0.2f,1f); // Brown N,S
+                    } else if (   !gridCells[x,y].closedNorth
+                               &&  gridCells[x,y].closedEast
+                               && !gridCells[x,y].closedSouth
+                               &&  gridCells[x,y].closedWest) {
+                        col = new Color(0.8f,0.8f,0.0f,1f); // Grellow E,W
+                    } else if (   !gridCells[x,y].closedNorth
+                               &&  gridCells[x,y].closedEast
+                               &&  gridCells[x,y].closedSouth
+                               &&  gridCells[x,y].closedWest) {
+                        col = new Color(0.7f,0.7f,0.7f,1f); // Light Gray SE,W
+                    } else if (    gridCells[x,y].closedNorth
+                               && !gridCells[x,y].closedEast
+                               &&  gridCells[x,y].closedSouth
+                               &&  gridCells[x,y].closedWest) {
+                        col = new Color(0.4f,0.4f,0.4f,1f); // Dark Gray N,SW
+                    } else if (    gridCells[x,y].closedNorth
+                               &&  gridCells[x,y].closedEast
+                               && !gridCells[x,y].closedSouth
+                               &&  gridCells[x,y].closedWest) {
+                        col = new Color(0.4f,0.0f,0.4f,1f); // Dark Purple NE,W
+                    } else if (    gridCells[x,y].closedNorth
+                               &&  gridCells[x,y].closedEast
+                               &&  gridCells[x,y].closedSouth
+                               && !gridCells[x,y].closedWest) {
+                        col = new Color(0.7f,0.4f,0.7f,1f); // Light Purple NE,S
+                    } else if (   !gridCells[x,y].closedNorth
+                               && !gridCells[x,y].closedEast
+                               && !gridCells[x,y].closedSouth
+                               && !gridCells[x,y].closedWest) {
+                        col = new Color(1.0f,1.0f,1.0f,1f); // White All Open
+                    }
+                    
                     pixels[x + (y * 64)] = col;
                 } else {
                     pixels[x + (y * 64)] = Color.black;
