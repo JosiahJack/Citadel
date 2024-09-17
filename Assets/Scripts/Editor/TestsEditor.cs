@@ -20,7 +20,10 @@ public class TestsEditor : Editor {
         //EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
         //GUILayout.Space(8f);
 		//EditorGUILayout.EndVertical();
-
+		
+		if (GUILayout.Button("Output All Geometry to File")) {
+			testScript.GenerateGeometryDataFile();
+		}
 		if (GUILayout.Button("Output All Lights to File")) {
 			testScript.GenerateLightsDataFile();
 		}

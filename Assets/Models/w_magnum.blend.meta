@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 2c12b125cc872704f803b2c119f2b2a8
 ModelImporter:
-  serializedVersion: 19300
+  serializedVersion: 19301
   internalIDToNameTable:
   - first:
       1: 100000
@@ -56,7 +56,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: None__weapon_magnum_png
-    second: {fileID: 2100000, guid: 71fad3704ca0cd7418951b750e1df0db, type: 2}
+    second: {fileID: 2100000, guid: 6a0b9fa7fdf61534c88090f48f1a041b, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -101,6 +101,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1

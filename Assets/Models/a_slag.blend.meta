@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 8ab68262953916448a7d27f3d17d4a50
 ModelImporter:
-  serializedVersion: 19300
+  serializedVersion: 19301
   internalIDToNameTable:
   - first:
       1: 100000
@@ -29,7 +29,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: None__ammo_slaglarge_png
-    second: {fileID: 2100000, guid: 6349e51ac89f56f4785bad181df1c312, type: 2}
+    second: {fileID: 2100000, guid: c13d702294b51924886c80927cab4ca0, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -69,6 +69,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1

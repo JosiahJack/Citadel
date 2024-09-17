@@ -1,41 +1,11 @@
 Shader "Custom/StandardTextureArray" {
     Properties {
-        _Color("Color", Color) = (1,1,1,1)
         _MainTex("Albedo", 2DArray) = "" {}
-        _Slice("Array Index", Float) = 0.0
-        _Cutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
-
-        //_Glossiness("Smoothness", Range(0.0, 1.0)) = 0.5
-        _GlossMapScale("Smoothness Scale", Range(0.0, 1.0)) = 1.0
-        [Enum(Metallic Alpha,0,Albedo Alpha,1)] _SmoothnessTextureChannel ("Smoothness texture channel", Float) = 0
-
-        [Gamma] _Metallic("Metallic", Range(0.0, 1.0)) = 1.0
         _SpecGlossMap("Specular", 2DArray) = "" {}
-
-        [ToggleOff] _SpecularHighlights("Specular Highlights", Float) = 1.0
-        [ToggleOff] _GlossyReflections("Glossy Reflections", Float) = 1.0
-
         _BumpScale("Scale", Float) = 1.0
         _BumpMap("Normal Map", 2DArray) = "" {}
-
-        [HideInInspector] _Parallax ("Height Scale", Range (0.005, 0.08)) = 0.02
-        //_ParallaxMap ("Height Map", 2DArray) = "" {}
-
-        [HideInInspector] _OcclusionStrength("Strength", Range(0.0, 1.0)) = 1.0
-        //_OcclusionMap("Occlusion", 2DArray) = "white" {}
-
-        _EmissionColor("Color", Color) = (1,1,1)
         _EmissionMap("Emission", 2DArray) = "" {}
 
-        //_DetailMask("Detail Mask", 2D) = "" {}
-
-        //_DetailAlbedoMap("Detail Albedo x2", 2D) = "" {}
-        [HideInInspector] _DetailNormalMapScale("Scale", Float) = 1.0
-        //_DetailNormalMap("Normal Map", 2D) = "bump" {}
-
-        [Enum(UV0,0,UV1,1)] _UVSec ("UV Set for secondary textures", Float) = 0
-
-        // Blending state
         [HideInInspector] _Mode ("__mode", Float) = 0.0
         [HideInInspector] _SrcBlend ("__src", Float) = 1.0
         [HideInInspector] _DstBlend ("__dst", Float) = 0.0
@@ -43,212 +13,123 @@ Shader "Custom/StandardTextureArray" {
     }
 
     SubShader {
-        Tags { "RenderType"="Opaque" "PerformanceChecks"="False" }
-        LOD 300
-        // ------------------------------------------------------------------
-        //  Base forward pass (directional light, emission, lightmaps, ...)
-        Pass {
-            Name "FORWARD"
-            Tags { "LightMode" = "ForwardBase" }
-            Blend [_SrcBlend] [_DstBlend]
-            ZWrite [_ZWrite]
-            CGPROGRAM
-            #pragma target 3.0
-            #pragma shader_feature _NORMALMAP
-            #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-            #pragma shader_feature _EMISSION
-            #pragma shader_feature _SPECGLOSSMAP
-            #pragma shader_feature ___ _DETAIL_MULX2
-            #pragma shader_feature _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-            #pragma shader_feature _ _SPECULARHIGHLIGHTS_OFF
-            #pragma shader_feature _ _GLOSSYREFLECTIONS_OFF
-            #pragma shader_feature _PARALLAXMAP
-            #pragma multi_compile_fwdbase
-            #pragma multi_compile_fog
-            #pragma multi_compile_instancing
-            #pragma vertex vertBase
-            #pragma fragment fragBase
-            #include "UnityInstancing.cginc"
-            #include "UnityStandardCoreForward_TexArray.cginc"
-
-            ENDCG
-        }
-        // ------------------------------------------------------------------
-        //  Additive forward pass (one light per pass)
-        Pass {
-            Name "FORWARD_DELTA"
-            Tags { "LightMode" = "ForwardAdd" }
-            Blend [_SrcBlend] One
-            Fog { Color (0,0,0,0) } // in additive pass fog should be black
-            ZWrite Off
-            ZTest LEqual
-            CGPROGRAM
-            #pragma target 3.0
-            #pragma shader_feature _NORMALMAP
-            #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-            #pragma shader_feature _SPECGLOSSMAP
-            #pragma shader_feature _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-            #pragma shader_feature _ _SPECULARHIGHLIGHTS_OFF
-            #pragma shader_feature ___ _DETAIL_MULX2
-            #pragma shader_feature _PARALLAXMAP
-            #pragma multi_compile_fwdadd_fullshadows
-            #pragma multi_compile_fog
-            #pragma vertex vertAdd
-            #pragma fragment fragAdd
-            #include "UnityStandardCoreForward_TexArray.cginc"
-            ENDCG
-        }
-        // ------------------------------------------------------------------
-        //  Shadow rendering pass
-        Pass {
-            Name "ShadowCaster"
-            Tags { "LightMode" = "ShadowCaster" }
-            ZWrite On ZTest LEqual
-            CGPROGRAM
-            #pragma target 3.0
-            #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-            #pragma shader_feature _SPECGLOSSMAP
-            #pragma shader_feature _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-            #pragma shader_feature _PARALLAXMAP
-            #pragma multi_compile_shadowcaster
-            #pragma multi_compile_instancing
-            #pragma vertex vertShadowCaster
-            #pragma fragment fragShadowCaster
-            #include "UnityStandardShadow.cginc"
-            ENDCG
-        }
-        // ------------------------------------------------------------------
-        //  Deferred pass
+        Tags { "RenderType"="Opaque" }
         Pass {
             Name "DEFERRED"
             Tags { "LightMode" = "Deferred" }
             CGPROGRAM
             #pragma target 3.0
             #pragma exclude_renderers nomrt
-            #pragma shader_feature _NORMALMAP
-            #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-            #pragma shader_feature _EMISSION
-            #pragma shader_feature _SPECGLOSSMAP
-            #pragma shader_feature _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-            #pragma shader_feature _ _SPECULARHIGHLIGHTS_OFF
-            #pragma shader_feature ___ _DETAIL_MULX2
-            #pragma shader_feature _PARALLAXMAP
             #pragma multi_compile_prepassfinal
-            #pragma multi_compile_instancing
             #pragma vertex vertDeferred
             #pragma fragment fragDeferred
             #include "UnityStandardCore_TexArray.cginc"
             ENDCG
         }
 
-        // ------------------------------------------------------------------
-        // Extracts information for lightmapping, GI (emission, albedo, ...)
-        // This pass it not used during regular rendering.
+        /*
+        // Second pass: Custom lighting from compute buffer
         Pass {
-            Name "META"
-            Tags { "LightMode"="Meta" }
-            Cull Off
+            Name "CUSTOM_LIGHTING"
+            Tags { "LightMode" = "ForwardBase" } // You can use a custom tag here if needed
             CGPROGRAM
-            #pragma vertex vert_meta
-            #pragma fragment frag_meta
-            #pragma shader_feature _EMISSION
-            #pragma shader_feature _SPECGLOSSMAP
-            #pragma shader_feature _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-            #pragma shader_feature ___ _DETAIL_MULX2
-            #pragma shader_feature EDITOR_VISUALIZATION
-            #include "UnityStandardMeta_TexArray.cginc"
+            #pragma target 3.0
+            #pragma vertex vertDeferred
+            #pragma fragment fragDeferred
+
+            // G-buffer samplers
+            sampler2D _GBuffer0; // Albedo
+            sampler2D _GBuffer1; // Normal
+            sampler2D _GBuffer2; // Specular
+            sampler2D _GBuffer3; // Depth or Emission
+
+            float3 _CameraWorldPos; // Set this from C#
+
+            struct appdata {
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
+            };
+
+            struct v2f {
+                float2 uv : TEXCOORD0;
+                float4 vertex : SV_POSITION;
+                float3 worldPos : TEXCOORD1; // Pass world position
+            };
+
+			v2f vertDeferred(appdata v) {
+                v2f o;
+                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.uv = v.uv;
+                // Compute world position (transforming from object space to world space)
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                return o;
+            }
+
+            struct LightData {
+				float4 color;
+				float3 position;
+				float intensity;
+				float range;
+				float spotAngle;
+				float3 direction;
+			};
+
+            // Custom light buffer (set from C# script)
+            StructuredBuffer<LightData> Lights;
+            int lightsCount; // Number of lights
+
+            // Fragment shader for applying custom lighting
+            float4 fragDeferred(v2f i) : SV_Target {
+                float3 worldPos = i.worldPos; // Assume worldPos comes from vertex-to-fragment input
+                return float4(worldPos,1);
+
+                float3 viewDir = normalize(_CameraWorldPos - worldPos);
+
+                // Sample albedo and normal from the G-buffer
+                float4 albedoTex = tex2D(_GBuffer0, i.uv);
+                float3 albedo = albedoTex.rgb;
+
+                float4 normalTex = tex2D(_GBuffer1, i.uv);
+                float3 normal = normalize(normalTex.rgb * 2.0 - 1.0); // Decode normal
+
+                float3 result = 0;
+
+                // Apply lighting from custom light buffer
+                for (int i = 0; i < lightsCount; i++) {
+                    LightData lit = Lights[i];
+					float3 lightdir = lit.position - worldPos;
+					float distance = length(lightdir);
+
+					if (distance > lit.range) continue;
+
+					float invRange = 1 / lit.range;
+					float attenuation = saturate(1.0 - (distance * invRange));
+					attenuation = pow(attenuation, 3.2);
+
+					lightdir = normalize(lightdir);
+					if (lit.spotAngle > 0) { // Spot light
+						float3 spotdir = normalize(lit.direction);
+						float dotSpot = dot(lightdir,-spotdir);
+						float cosAng = cos(lit.spotAngle * 0.017453293); // pi/180, half angle
+						if (dotSpot < cosAng) continue;
+
+						attenuation *= pow(saturate((dotSpot - cosAng) / (1.0 - cosAng)), 4.0);
+					}
+
+					float lambertian = max(dot(normal, lightdir), 0.0);
+					//float lambertian = max(dot(viewDir, lightdir), 0.0);
+					result += lit.color * lit.intensity * attenuation * lambertian;
+                }
+
+                result += albedo;
+                return float4(result, 1.0);
+            }
+
             ENDCG
         }
+        */
     }
 
-    SubShader {
-        Tags { "RenderType"="Opaque" "PerformanceChecks"="False" }
-        LOD 150
-        // ------------------------------------------------------------------
-        //  Base forward pass (directional light, emission, lightmaps, ...)
-        Pass {
-            Name "FORWARD"
-            Tags { "LightMode" = "ForwardBase" }
-            Blend [_SrcBlend] [_DstBlend]
-            ZWrite [_ZWrite]
-            CGPROGRAM
-            #pragma target 2.0
-            #pragma shader_feature _NORMALMAP
-            #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-            #pragma shader_feature _EMISSION
-            #pragma shader_feature _SPECGLOSSMAP
-            #pragma shader_feature _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-            #pragma shader_feature _ _SPECULARHIGHLIGHTS_OFF
-            #pragma shader_feature _ _GLOSSYREFLECTIONS_OFF
-            #pragma skip_variants SHADOWS_SOFT DIRLIGHTMAP_COMBINED
-            #pragma multi_compile_fwdbase
-            #pragma multi_compile_fog
-            #pragma vertex vertBase
-            #pragma fragment fragBase
-            #include "UnityStandardCoreForward_TexArray.cginc"
-            ENDCG
-        }
-        // ------------------------------------------------------------------
-        //  Additive forward pass (one light per pass)
-        Pass {
-            Name "FORWARD_DELTA"
-            Tags { "LightMode" = "ForwardAdd" }
-            Blend [_SrcBlend] One
-            Fog { Color (0,0,0,0) } // in additive pass fog should be black
-            ZWrite Off
-            ZTest LEqual
-            CGPROGRAM
-            #pragma target 2.0
-            #pragma shader_feature _NORMALMAP
-            #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-            #pragma shader_feature _SPECGLOSSMAP
-            #pragma shader_feature _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-            #pragma shader_feature _ _SPECULARHIGHLIGHTS_OFF
-            #pragma shader_feature ___ _DETAIL_MULX2
-            #pragma skip_variants SHADOWS_SOFT
-            #pragma multi_compile_fwdadd_fullshadows
-            #pragma multi_compile_fog
-            #pragma vertex vertAdd
-            #pragma fragment fragAdd
-            #include "UnityStandardCoreForward_TexArray.cginc"
-            ENDCG
-        }
-        // ------------------------------------------------------------------
-        //  Shadow rendering pass
-        Pass {
-            Name "ShadowCaster"
-            Tags { "LightMode" = "ShadowCaster" }
-            ZWrite On ZTest LEqual
-            CGPROGRAM
-            #pragma target 2.0
-            #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-            #pragma shader_feature _SPECGLOSSMAP
-            #pragma shader_feature _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-            #pragma skip_variants SHADOWS_SOFT
-            #pragma multi_compile_shadowcaster
-            #pragma vertex vertShadowCaster
-            #pragma fragment fragShadowCaster
-            #include "UnityStandardShadow.cginc"
-            ENDCG
-        }
-        // ------------------------------------------------------------------
-        // Extracts information for lightmapping, GI (emission, albedo, ...)
-        // This pass it not used during regular rendering.
-        Pass {
-            Name "META"
-            Tags { "LightMode"="Meta" }
-            Cull Off
-            CGPROGRAM
-            #pragma vertex vert_meta
-            #pragma fragment frag_meta
-            #pragma shader_feature _EMISSION
-            #pragma shader_feature _SPECGLOSSMAP
-            #pragma shader_feature _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-            #pragma shader_feature ___ _DETAIL_MULX2
-            #pragma shader_feature EDITOR_VISUALIZATION
-            #include "UnityStandardMeta_TexArray.cginc"
-            ENDCG
-        }
-    }
+
     FallBack "VertexLit"
 }

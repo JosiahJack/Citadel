@@ -114,10 +114,11 @@ half4 CalculateLight (unity_v2f_deferred i)
 
     half3 eyeVec = normalize(wpos-_WorldSpaceCameraPos);
     //half oneMinusReflectivity = 1;// - SpecularStrength(data.specularColor.rgb);
+    half oneMinusReflectivity = 1 - SpecularStrength(data.specularColor.rgb);
 
 
-    //half4 res = BRDF (data.diffuseColor, data.specularColor, oneMinusReflectivity, data.smoothness, data.normalWorld, -eyeVec, light);
-	half4 res = BRDF (data.diffuseColor, data.specularColor, 1, 0, data.normalWorld, -eyeVec, light);
+    half4 res = BRDF (data.diffuseColor, data.specularColor, oneMinusReflectivity, data.smoothness, data.normalWorld, -eyeVec, light);
+	//half4 res = BRDF (data.diffuseColor, data.specularColor, 1, 0, data.normalWorld, -eyeVec, light);
     return res;
 }
 

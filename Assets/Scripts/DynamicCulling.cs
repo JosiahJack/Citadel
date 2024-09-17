@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class DynamicCulling : MonoBehaviour {
     [HideInInspector] public const int WORLDX = 64;
     [HideInInspector] public const int ARRSIZE = WORLDX * WORLDX;
@@ -47,6 +48,7 @@ public class DynamicCulling : MonoBehaviour {
     public Material debugMaterialRed;
     public Material debugMaterialGreen;
     public Material debugMaterialBlue;
+    public Material debugMaterialYellow;
 
     private byte[] bytes;
     private static string openDebugImagePath;
@@ -55,7 +57,10 @@ public class DynamicCulling : MonoBehaviour {
     private Color32[] pixels;
     private Texture2D debugTex;
     private Dictionary<GameObject, Vector3> camPositions = new Dictionary<GameObject, Vector3>();
-
+    
+    [HideInInspector] public ComputeBuffer triangleBuffer;
+    [HideInInspector] public ComputeBuffer modelBuffer;
+    
     public static DynamicCulling a;
     
     public class Meshenderer {
@@ -551,12 +556,12 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
-    void MakeDebugCube(Transform tr, Material mat) {
-        GameObject debugCube = GameObject.CreatePrimitive(PrimitiveType.Cube); // Automatically adds MeshFilter and MeshRenderer
-        debugCube.transform.parent = tr;
-        debugCube.transform.localPosition = new Vector3(0f,0f,0f);
-        MeshRenderer mr = debugCube.GetComponent<MeshRenderer>();
-        mr.material = mat;
+    void MakeDebugCube(Transform tr, Vector3 ofs, Material mat) {
+//         GameObject debugCube = GameObject.CreatePrimitive(PrimitiveType.Cube); // Automatically adds MeshFilter and MeshRenderer
+//         debugCube.transform.parent = tr;
+//         debugCube.transform.localPosition = ofs;
+//         MeshRenderer mr = debugCube.GetComponent<MeshRenderer>();
+//         mr.material = mat;
     }
 
     void DetermineClosedEdges() {
@@ -578,38 +583,38 @@ public class DynamicCulling : MonoBehaviour {
                         if (angs.z < -0.1f || angs.z > 0.1f) continue;
 
                         if (angs.x < 90.1f && angs.x > 89.9f) {
-                            if (angs.y > -0.1f && angs.y < 0.1f) norths++; // 90 0 0
-                            else if (angs.y > 89.9f && angs.y < 90.1f) easts++; // 90 90 0
-                            else if (angs.y > 179.9f && angs.y < 180.1f) souths++; // 90 180 0
-                            else if (angs.y > 269.9f && angs.y < 270.1f) wests++; // 90 270 0
+                            if (angs.y > -0.1f && angs.y < 0.1f) {norths++;MakeDebugCube(childGO.transform,new Vector3(0f,0f,1.28f),debugMaterialRed);} // 90 0 0
+                            else if (angs.y > 89.9f && angs.y < 90.1f) {easts++;MakeDebugCube(childGO.transform,new Vector3(1.28f,0f,0f),debugMaterialYellow);} // 90 90 0
+                            else if (angs.y > 179.9f && angs.y < 180.1f) {souths++;MakeDebugCube(childGO.transform,new Vector3(0f,0f,-1.28f),debugMaterialGreen);} // 90 180 0
+                            else if (angs.y > 269.9f && angs.y < 270.1f) {wests++;MakeDebugCube(childGO.transform,new Vector3(-1.28f,0f,0f),debugMaterialBlue);} // 90 270 0
                         } else if (angs.x > -90.1f && angs.x < -89.9f) {
-                            if (angs.y > -0.1f && angs.y < 0.1f) souths++; // -90 0 0
-                            else if (angs.y > 89.9f && angs.y < 90.1f) wests++; // -90 90 0
-                            else if (angs.y > 179.9f && angs.y < 180.1f) norths++; // -90 180 0
-                            else if (angs.y > 269.9f && angs.y < 270.1f) easts++; // -90 270 0
+                            if (angs.y > -0.1f && angs.y < 0.1f) {souths++;MakeDebugCube(childGO.transform,new Vector3(0f,0f,-1.28f),debugMaterialGreen);} // -90 0 0
+                            else if (angs.y > 89.9f && angs.y < 90.1f) {wests++;MakeDebugCube(childGO.transform,new Vector3(-1.28f,0f,0f),debugMaterialBlue);} // -90 90 0
+                            else if (angs.y > 179.9f && angs.y < 180.1f) {norths++;MakeDebugCube(childGO.transform,new Vector3(0f,0f,1.28f),debugMaterialRed);} // -90 180 0
+                            else if (angs.y > 269.9f && angs.y < 270.1f) {easts++;MakeDebugCube(childGO.transform,new Vector3(1.28f,0f,0f),debugMaterialYellow);} // -90 270 0
                         }
                     }
                 }
 
-                if (norths >= 1) {
-                    gridCells[x,y].closedNorth = true;
-                    Debug.Log(x.ToString() + ",y" + y.ToString() + " North -");
-                }
-
-                if (easts >= 1) {
-                    gridCells[x,y].closedEast= true;
-                    Debug.Log(x.ToString() + ",y" + y.ToString() + " East [");
-                }
-
-                if (souths >= 1) {
-                    gridCells[x,y].closedSouth = true;
-                    Debug.Log(x.ToString() + ",y" + y.ToString() + " South _");
-                }
-
-                if (wests >= 1) {
-                    gridCells[x,y].closedWest = true;
-                    Debug.Log(x.ToString() + ",y" + y.ToString() + " West ]");
-                }
+//                 if (norths >= 1) {
+//                     gridCells[x,y].closedNorth = true;
+//                     Debug.Log(x.ToString() + ",y" + y.ToString() + " North -");
+//                 }
+// 
+//                 if (easts >= 1) {
+//                     gridCells[x,y].closedEast= true;
+//                     Debug.Log(x.ToString() + ",y" + y.ToString() + " East [");
+//                 }
+// 
+//                 if (souths >= 1) {
+//                     gridCells[x,y].closedSouth = true;
+//                     Debug.Log(x.ToString() + ",y" + y.ToString() + " South _");
+//                 }
+// 
+//                 if (wests >= 1) {
+//                     gridCells[x,y].closedWest = true;
+//                     Debug.Log(x.ToString() + ",y" + y.ToString() + " West ]");
+//                 }
             }
         }
 
@@ -1363,12 +1368,14 @@ public class DynamicCulling : MonoBehaviour {
     void ToggleVisibility() {
         worldCellLastVisible[playerCellX,playerCellY] = false;
         gridCells[playerCellX,playerCellY].visible = true; // Guarantee enable.
+        bool skyVisible = false;
         for (int x=0;x<64;x++) {
             for (int y=0;y<64;y++) {                
                 float sqrdist = 0f;
                 ChunkPrefab chp = null;
                 for (int i=0;i<gridCells[x,y].chunkPrefabs.Count;i++) {
                     chp = gridCells[x,y].chunkPrefabs[i];
+                    if (chp.constIndex == 1) skyVisible = true;
                     if (chp == null) continue;
 
                     for (int k=0;k<chp.meshenderers.Count;k++) {
@@ -1384,7 +1391,24 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
         }
-    }
+        
+        if (LevelManager.a != null) {
+            if (skyVisible) LevelManager.a.SetSkyVisible(true);
+            else LevelManager.a.SetSkyVisible(false);
+        }
+        
+//         models = FindObjectsOfType<Model>();
+//         MeshDataLists data = CreateAllMeshData(models);
+//         hasBVH = true;
+//         meshInfo = new MeshInfo[data.meshInfo.Count]; // Assuming meshInfo is a list
+//         data.meshInfo.CopyTo(meshInfo);
+//         ShaderHelper.CreateStructuredBuffer(ref modelBuffer, meshInfo);
+// 
+//         // Triangles buffer
+//         ShaderHelper.CreateStructuredBuffer(ref triangleBuffer, data.triangles);
+//         rayTracingMaterial.SetBuffer("Triangles", triangleBuffer);
+//         rayTracingMaterial.SetInt("triangleCount", triangleBuffer.count);
+     }
 
     public void UpdateDynamicMeshes() {
         label_iterate_mesh_renderers:
@@ -1511,19 +1535,19 @@ public class DynamicCulling : MonoBehaviour {
     public void ToggleLightsVisibility() {
         if (!lightCulling) return;
         
-//         lightsInPVS.Clear();
-//         int x,y;
-//         for (int i=0;i<lights.Count;i++) {
-//             x = lightCoords[i].x;
-//             y = lightCoords[i].y;
-//             if (gridCells[x,y].visible || !gridCells[x,y].open) {
-//                 lights[i].enabled = true;
-//                 lightsInPVS.Add(lights[i]);
-//                 lightsInPVSCoords.Add(lightCoords[i]);
-//             } else {
-//                 lights[i].enabled = false;
-//             }
-//         }
+        lightsInPVS.Clear();
+        int x,y;
+        for (int i=0;i<lights.Count;i++) {
+            x = lightCoords[i].x;
+            y = lightCoords[i].y;
+            if (gridCells[x,y].visible || !gridCells[x,y].open) {
+                lights[i].enabled = true;
+                lightsInPVS.Add(lights[i]);
+                lightsInPVSCoords.Add(lightCoords[i]);
+            } else {
+                lights[i].enabled = false;
+            }
+        }
     }
 
     public void ToggleLightsFrustumVisibility() {

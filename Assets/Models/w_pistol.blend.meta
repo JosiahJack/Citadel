@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: f427a4408a42cf5498ebe0775b857b64
 ModelImporter:
-  serializedVersion: 19300
+  serializedVersion: 19301
   internalIDToNameTable:
   - first:
       1: 100000
@@ -56,7 +56,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: None__weapon_pistol_png
-    second: {fileID: 2100000, guid: 98631a0bb36e3ec43929a0c4447834c6, type: 2}
+    second: {fileID: 2100000, guid: 20daaf27b73bad245b6ba9d7b74ee032, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -101,6 +101,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1

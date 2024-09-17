@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: e771959d04716204f96e0f248f6c2c67
 ModelImporter:
-  serializedVersion: 19300
+  serializedVersion: 19301
   internalIDToNameTable:
   - first:
       1: 100000
@@ -284,7 +284,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: npc_repairbot_material
-    second: {fileID: 2100000, guid: 74f3266cb4139d74a894298464884b96, type: 2}
+    second: {fileID: 2100000, guid: e0ac61a55fcd49e4183eabf82e7ab1fc, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -440,6 +440,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1

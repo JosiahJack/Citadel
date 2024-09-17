@@ -15,6 +15,7 @@ using UnityEditor.SceneManagement;
 #endif
 
 public class CitadelTests : MonoBehaviour {
+	public GameObject[] geometryContainters;
 	public GameObject[] lightContainers; // Can't use LevelManager's since
 										 // there is no instance unless in Play
 										 // mode.
@@ -84,6 +85,56 @@ public class CitadelTests : MonoBehaviour {
 
 	public void UnloadLevelLights() {
 		lm.UnloadLevelLights(levelToOutputFrom);
+	}
+	
+	public void GenerateGeometryDataFile() {
+		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_geometry_level" + levelToOutputFrom.ToString() + ".dat");
+		List<GameObject> allGeometry = new List<GameObject>();
+		Component[] compArray = geometryContainters[levelToOutputFrom].GetComponentsInChildren(typeof(Light),true);
+		for (int i=0;i<compArray.Length;i++) {
+			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) {
+				UnityEngine.Debug.Log("Skipping light with LightAnimation");
+				continue;
+			}
+			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) {
+				UnityEngine.Debug.Log("Skipping light with TargetIO");
+				continue;
+			}
+			allGeometry.Add(compArray[i].gameObject);
+		}
+
+		UnityEngine.Debug.Log("Found " + allGeometry.Count + " geometry chunks in level " + levelToOutputFrom.ToString());
+
+		string lName = "CitadelScene_geometry_level"
+					   + levelToOutputFrom.ToString() + ".dat";
+
+		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  lName);
+
+		StreamWriter sw = new StreamWriter(lP,false,Encoding.ASCII);
+		if (sw == null) {
+			UnityEngine.Debug.Log("Geometry output file path invalid");
+			return;
+		}
+		
+		StringBuilder s1 = new StringBuilder();
+		using (sw) {
+			PrefabIdentifier pid = null;
+			Transform tr = null;
+			for (int i=0;i<allGeometry.Count;i++) {
+				pid = allGeometry[i].GetComponent<PrefabIdentifier>();
+				if (pid == null) continue;
+				
+				s1.Clear();
+				tr = allGeometry[i].transform;
+				s1.Append(Utils.SaveTransform(allGeometry[i].transform));
+				s1.Append(Utils.splitChar);
+				s1.Append(pid.constIndex.ToString());
+				sw.Write(s1.ToString());
+				sw.Write(Environment.NewLine);
+			}
+			sw.Close();
+		}
 	}
 
 	public void GenerateLightsDataFile() {

@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 1ede8529713397242b714614cb054cc9
 ModelImporter:
-  serializedVersion: 19300
+  serializedVersion: 19301
   internalIDToNameTable:
   - first:
       1: 100000
@@ -164,7 +164,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: npc_hopper_material__hopper_png
-    second: {fileID: 2100000, guid: fbe7830ca773d574ba1ef454023dbd23, type: 2}
+    second: {fileID: 2100000, guid: 8b9369079f86ba446b0ebb196cfeb175, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -209,6 +209,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 0
     importLights: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1

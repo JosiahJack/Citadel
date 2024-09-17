@@ -61,6 +61,7 @@ public class CameraView : MonoBehaviour {
 	}
 	
 	public bool IsVisible() {
+		if (mR == null) return false;
 		return mR.isVisible || mR2.isVisible || mR3.isVisible;
 	}
 

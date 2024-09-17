@@ -66,14 +66,25 @@ public class LevelManager : MonoBehaviour {
 		//PlayerReferenceManager.a.playerCurrentLevel = currentLevel;
 		if (sky == null) Debug.Log("BUG: LevelManager missing manually assigned reference for sky.");
 		else sky.SetActive(true);
-		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
-		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
-		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
+
+		SetSkyVisible(true);
 		if (ressurectionBayDoor.Length != 8) Debug.Log("BUG: LevelManager ressurectionBayDoor array length not equal to 8.");
 		Time.timeScale = Const.a.defaultTimeScale;
 		levelDataLoaded = new bool[14];
 		for (int i=0;i<14;i++) levelDataLoaded[i] = false;
 		LoadLevelData(currentLevel);
+	}
+	
+	public void SetSkyVisible(bool on) {
+		Debug.Log("Setting sky visibility to " + on.ToString());
+		skyMR.enabled = (on && showSkyForLevel[currentLevel]);
+		saturn.SetActive(on && showSaturnForLevel[currentLevel]);
+		exterior.SetActive(on && showExteriorForLevel[currentLevel]);
+		if (Const.a == null) return;
+		if (Const.a.questData == null) return;
+		
+		exterior_shield.SetActive(on && showExteriorForLevel[currentLevel]
+								  && Const.a.questData.ShieldActivated);
 	}
 
 	public void CyborgConversionToggleForCurrentLevel() {
@@ -202,9 +213,7 @@ public class LevelManager : MonoBehaviour {
 		Automap.a.automapBaseImage.overrideSprite = Automap.a.automapsBaseImages[currentLevel];
 		Const.a.ClearActiveAutomapOverlays(); // After other levels turned off.
 		ObjectContainmentSystem.UpdateActiveFlooring(); // Update list to only include active.
-		if (showSkyForLevel[currentLevel]) skyMR.enabled = true; else skyMR.enabled = false;
-		if (showSaturnForLevel[currentLevel]) saturn.SetActive(true); else saturn.SetActive(false);
-		if (showExteriorForLevel[currentLevel]) exterior.SetActive(true); else exterior.SetActive(false);
+		SetSkyVisible(true);
 		System.GC.Collect();
 	}
 
