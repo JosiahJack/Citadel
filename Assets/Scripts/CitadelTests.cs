@@ -90,17 +90,13 @@ public class CitadelTests : MonoBehaviour {
 	public void GenerateGeometryDataFile() {
 		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_geometry_level" + levelToOutputFrom.ToString() + ".dat");
 		List<GameObject> allGeometry = new List<GameObject>();
-		Component[] compArray = geometryContainters[levelToOutputFrom].GetComponentsInChildren(typeof(Light),true);
-		for (int i=0;i<compArray.Length;i++) {
-			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) {
-				UnityEngine.Debug.Log("Skipping light with LightAnimation");
-				continue;
-			}
-			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) {
-				UnityEngine.Debug.Log("Skipping light with TargetIO");
-				continue;
-			}
-			allGeometry.Add(compArray[i].gameObject);
+		Transform tr = geometryContainters[levelToOutputFrom].transform;
+		Transform child = null;
+		for (int i=0;i<tr.childCount;i++) {
+			child = tr.GetChild(i);
+			if (child == null) continue;
+			
+			allGeometry.Add(child.gameObject);
 		}
 
 		UnityEngine.Debug.Log("Found " + allGeometry.Count + " geometry chunks in level " + levelToOutputFrom.ToString());
@@ -120,22 +116,150 @@ public class CitadelTests : MonoBehaviour {
 		StringBuilder s1 = new StringBuilder();
 		using (sw) {
 			PrefabIdentifier pid = null;
-			Transform tr = null;
+			tr = null;
 			for (int i=0;i<allGeometry.Count;i++) {
 				pid = allGeometry[i].GetComponent<PrefabIdentifier>();
 				if (pid == null) continue;
 				
+				bool hasBoxColliderOverride = false;
+				bool hasPipeMaint2_3CoolantMaterialOverride = false;
+				bool hasTextOverride = false;
+				List<ObjectOverride> ovides = PrefabUtility.GetObjectOverrides(allGeometry[i],false);
+				for (int j=0; j < ovides.Count; j++) {
+					UnityEngine.Object ob = ovides[j].instanceObject;
+					SerializedObject sob = new UnityEditor.SerializedObject(ob);
+
+					hasBoxColliderOverride = false;
+					// List overridden properties
+					SerializedProperty prop = sob.GetIterator();
+					while (prop.NextVisible(true)) {
+						if (prop.propertyPath == "m_Name" ||
+							prop.propertyPath == "m_LocalPosition" ||
+							prop.propertyPath == "m_LocalPosition.x" ||
+							prop.propertyPath == "m_LocalPosition.y" ||
+							prop.propertyPath == "m_LocalPosition.z" ||
+							prop.propertyPath == "m_LocalRotation" ||
+							prop.propertyPath == "m_LocalRotation.x" ||
+							prop.propertyPath == "m_LocalRotation.y" ||
+							prop.propertyPath == "m_LocalRotation.z" ||
+							prop.propertyPath == "m_LocalRotation.w" ||
+							prop.propertyPath == "m_LocalScale" ||
+							prop.propertyPath == "m_LocalScale.x" ||
+							prop.propertyPath == "m_LocalScale.y" ||
+							prop.propertyPath == "m_LocalScale.z")  {
+							
+							continue; // Skip transform overrides
+						}
+
+						if (prop.prefabOverride) {
+							if (prop.propertyPath == "m_Size" ||
+								prop.propertyPath == "m_Size.x" ||
+								prop.propertyPath == "m_Size.y" ||
+								prop.propertyPath == "m_Size.z" ||
+								prop.propertyPath == "m_Center" ||
+								prop.propertyPath == "m_Center.x" ||
+								prop.propertyPath == "m_Center.y" ||
+								prop.propertyPath == "m_Center.z") {
+							
+								hasBoxColliderOverride = true;
+							}
+							
+							if (prop.propertyPath == "lingdex") {
+								hasTextOverride = true;
+							}
+							
+							string value = GetPropertyValue(prop);
+							if (value == "pipe_maint2_3_coolant") {
+								hasPipeMaint2_3CoolantMaterialOverride = true;
+							}
+							
+							UnityEngine.Debug.Log(allGeometry[i].name
+												  + ":: Found Override: "
+												  + prop.propertyPath
+												  + ", Value: " + value);
+						}
+					}
+				}
+				
 				s1.Clear();
 				tr = allGeometry[i].transform;
-				s1.Append(Utils.SaveTransform(allGeometry[i].transform));
+				s1.Append(Utils.UintToString(pid.constIndex,"constIndex"));
 				s1.Append(Utils.splitChar);
-				s1.Append(pid.constIndex.ToString());
+				s1.Append(allGeometry[i].name);
+				s1.Append(Utils.splitChar);
+				s1.Append(Utils.SaveTransform(allGeometry[i].transform));
+				if (hasBoxColliderOverride) {
+					BoxCollider bcol = allGeometry[i].GetComponent<BoxCollider>();
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.BoolToString(bcol.enabled,"BoxCollider.enabled"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(bcol.size.x,"size.x"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(bcol.size.y,"size.y"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(bcol.size.z,"size.z"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(bcol.center.x,"center.x"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(bcol.center.y,"center.y"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(bcol.center.z,"center.z"));
+					if (allGeometry[i].transform.childCount >= 1) {
+						// Get collision aid.
+						Transform subtr = allGeometry[i].transform.GetChild(0);
+						if (subtr != null) {
+							s1.Append(Utils.splitChar);
+							s1.Append(Utils.BoolToString(
+								subtr.gameObject.activeSelf,
+								"collisionAid.activeSelf"));
+						}
+					}
+				}
+				
+				if (hasPipeMaint2_3CoolantMaterialOverride) {
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.SaveString("pipe_maint2_3_coolant","material"));
+				}
+				
+				if (pid.constIndex == 218) { // chunk_reac2_4 has text on it.
+					if (hasTextOverride) {
+						s1.Append(Utils.splitChar);
+						Transform textr1 = allGeometry[i].transform.GetChild(1); // text_decalStopDSS1
+						Transform textr2 = allGeometry[i].transform.GetChild(2); // text_decalStopDSS1 (1)
+						TextLocalization tex1 = textr1.gameObject.GetComponent<TextLocalization>();
+						TextLocalization tex2 = textr2.gameObject.GetComponent<TextLocalization>();
+						s1.Append(Utils.UintToString(tex1.lingdex,"lingdex"));
+						s1.Append(Utils.splitChar);
+						s1.Append(Utils.UintToString(tex2.lingdex,"lingdex"));
+					}
+				}
 				sw.Write(s1.ToString());
 				sw.Write(Environment.NewLine);
 			}
 			sw.Close();
 		}
 	}
+	
+	// Helper method to get the correct value from a SerializedProperty
+    private static string GetPropertyValue(SerializedProperty prop) {
+        switch (prop.propertyType) {
+            case SerializedPropertyType.Integer:         return prop.intValue.ToString();
+            case SerializedPropertyType.Boolean:         return prop.boolValue.ToString();
+            case SerializedPropertyType.Float:           return prop.floatValue.ToString();
+            case SerializedPropertyType.String:          return prop.stringValue;
+            case SerializedPropertyType.Color:           return prop.colorValue.ToString();
+            case SerializedPropertyType.ObjectReference: return prop.objectReferenceValue ? prop.objectReferenceValue.name : "null";
+            case SerializedPropertyType.LayerMask:       return prop.intValue.ToString();
+            case SerializedPropertyType.Enum:            return prop.enumDisplayNames[prop.enumValueIndex];
+			case SerializedPropertyType.Vector2:         return prop.vector2Value.ToString();
+            case SerializedPropertyType.Vector3:         return prop.vector3Value.ToString();
+            case SerializedPropertyType.Vector4:         return prop.vector4Value.ToString();
+            case SerializedPropertyType.Rect:            return prop.rectValue.ToString();
+            case SerializedPropertyType.Bounds:          return prop.boundsValue.ToString();
+            case SerializedPropertyType.Quaternion:      return prop.quaternionValue.ToString();
+            default:                                     return "Unsupported property type";
+        }
+    }
 
 	public void GenerateLightsDataFile() {
 		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat");

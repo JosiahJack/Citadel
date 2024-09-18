@@ -39,6 +39,7 @@ public class LevelManager : MonoBehaviour {
 	public GameObject[] elevatorTargetDestinations;
 	public Material rtxEmissive;
 	public Mesh sphereMesh;
+	public Material pipe_maint2_3_coolant;
 
 	private bool getValparsed;
 	private bool[] levelDataLoaded;
