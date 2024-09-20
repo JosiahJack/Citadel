@@ -19,8 +19,9 @@ public class StatusBarTextDecay : MonoBehaviour {
 	}
 
 	public void SendText(string inputString) {
-		if (tempString == "") return; // no text sent
-
+		if (inputString == "") return; // no text sent
+		if (statusText == null) Awake();
+		
 		shouldFlash = false;
 		decayFinished = Time.time + defaultDecayTime; // text stays on screen for next n seconds
 		tempString = inputString;

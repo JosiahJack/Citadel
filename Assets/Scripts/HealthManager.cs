@@ -123,7 +123,8 @@ public class HealthManager : MonoBehaviour {
 	void LinkToAutomapOverlay() {
 		if (!isSecCamera && !isNPC) return;
 		if (linkedOverlay != null) return; // Already have an overlay.
-
+		if (Const.a == null) return; // Editor script save attempt (dynamic object export).
+		
 		PoolType pt = PoolType.AutomapCameraOverlays;
 		if (isNPC && aic.index > 0 && aic.index < Const.a.typeForNPC.Length) {
 			switch (Const.a.typeForNPC[aic.index]) {
@@ -156,7 +157,8 @@ public class HealthManager : MonoBehaviour {
 		if (!isSecCamera && !isNPC) return;
 		if (IsCyberEntity()) return;
 		if (isNPC && Inventory.a.NavUnitVersion() <= 1) return;
-
+		if (Automap.a == null) return; // Attempting to link from editor save (dynamic objects export).
+		
 		Automap.a.TurnOnLinkedOverlay(linkedOverlay,health,gameObject,isNPC);
 		Automap.a.SetLinkedOverlayPos(linkedOverlay,health,gameObject);
 	}

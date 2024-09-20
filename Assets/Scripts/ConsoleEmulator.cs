@@ -1206,6 +1206,15 @@ Generic Materials (Const.a.genericMaterials[])
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat,
 												GameObject forcedContainer,
 												int saveID) {
+		
+		if (cheat) {
+			Debug.Log("SpawnDynamicObject: " + val.ToString() + ", level: "
+					  + lev.ToString() + ", from cheat: " + cheat.ToString()
+					  + ", name: "
+					  + (forcedContainer == null ? "null" : forcedContainer.name)
+					  + ", saveID: " + saveID.ToString());
+		}
+
 		int initialIndex = val;
 		if (LevelManager.a == null) {
 			Debug.Log("Missing LevelManager");
@@ -1225,7 +1234,7 @@ Generic Materials (Const.a.genericMaterials[])
 
 		GameObject go = null;
 		if (val >= 0 && val < 307) { // [0, 306]
-			if (Const.a.editMode) {
+			if (Const.a.editMode || !cheat) {
 				if (val > (Const.a.chunkPrefabs.Length - 1)) {
 					Debug.Log("SpawnDynamicObject failure: val > (Const.a.chunkPrefabs.Length - 1), val: " + val.ToString());
 					return null;
@@ -1344,10 +1353,12 @@ Generic Materials (Const.a.genericMaterials[])
 			} else {
 				if (lev >= 0) {
 					Level levS = LevelManager.a.levelScripts[lev];
+					
 					GameObject parGO = levS.dynamicObjectsContainer;
 					if (initialIndex >= 419 && initialIndex < 448) {
-						parGO = LevelManager.a.GetRequestedLevelNPCContainer(
-									LevelManager.a.currentLevel);
+						parGO = levS.NPCsSaveableInstantiated;
+					} else if (initialIndex >= 0 && initialIndex < 307) {
+						parGO = levS.geometryContainer;
 					}
 
 					go.transform.SetParent(parGO.transform);

@@ -842,18 +842,13 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
     }
-    
+
     public void AddCameraPosition(CameraView cam) {
         if (!camPositions.ContainsKey(cam.gameObject)) {
-            Debug.Log("camera " + cam.gameObject.name
-                      + " added to camPositions");
-            
             camPositions[cam.gameObject] = cam.transform.position;
         }
-        
-        Debug.Log("camPositions length: " + camPositions.Count.ToString());
     }
-    
+
     public void RemoveCameraPosition(CameraView cam) {
         camPositions.Remove(cam.gameObject);
     }
@@ -871,7 +866,7 @@ public class DynamicCulling : MonoBehaviour {
             for (int i=0;i<vertColors.Length;i++) {
                 vertColors[i] = new Color(0f,0f,0f,1f);
             }
-            
+
             float red = 0f;
             for (int i=0;i<305;i++) {
                 red = GetVertexColorForChunk(i);
@@ -1163,14 +1158,10 @@ public class DynamicCulling : MonoBehaviour {
         // Use a for loop to iterate over the positions
         foreach (KeyValuePair<GameObject, Vector3> entry in camPositions) {
             GameObject camGO = entry.Key; // The GameObject key
-            Debug.Log("camGO: " + camGO.name);
             CameraView camV = camGO.GetComponent<CameraView>();
             if (camV == null) continue;
-            
-            Debug.Log("camGO: " + camGO.name + " wasn't visible");
             if (!camV.IsVisible()) continue;
 
-            Debug.Log("camGO: " + camGO.name + " was visible!");
             Vector3 position = entry.Value; // The position value
             pnt = PosToCellCoords(position);
             gridCells[pnt.x,pnt.y].visible = true;

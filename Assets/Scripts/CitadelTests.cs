@@ -16,14 +16,17 @@ using UnityEditor.SceneManagement;
 
 public class CitadelTests : MonoBehaviour {
 	public GameObject[] geometryContainters;
+	public GameObject[] staticObjectContainters;
 	public GameObject[] lightContainers; // Can't use LevelManager's since
 										 // there is no instance unless in Play
 										 // mode.
 	public GameObject[] dynamicObjectContainers;
 	public GameObject gameObjectToSave;
 	public int levelToOutputFrom = 0;
+	public Const ct;
 	public LevelManager lm;
-
+	public PauseScript ps;
+	
 	private bool getValparsed;
 	private bool[] levelDataLoaded;
 	private int getValreadInt;
@@ -87,7 +90,94 @@ public class CitadelTests : MonoBehaviour {
 		lm.UnloadLevelLights(levelToOutputFrom);
 	}
 	
+	public void GenerateStaticObjectsDataFile() {
+		#if UNITY_EDITOR
+		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_staticobjects_level" + levelToOutputFrom.ToString() + ".dat");
+		List<GameObject> allStaticObjects = new List<GameObject>();
+		Transform tr = staticObjectContainters[levelToOutputFrom].transform;
+		Transform child = null;
+		for (int i=0;i<tr.childCount;i++) {
+			child = tr.GetChild(i);
+			if (child == null) continue;
+			
+			allStaticObjects.Add(child.gameObject);
+		}
+
+		UnityEngine.Debug.Log("Found " + allStaticObjects.Count
+							  + " geometry chunks in level "
+							  + levelToOutputFrom.ToString());
+
+		string lName = "CitadelScene_staticobjects_level"
+					   + levelToOutputFrom.ToString() + ".dat";
+
+		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
+										  lName);
+
+		StreamWriter sw = new StreamWriter(lP,false,Encoding.ASCII);
+		if (sw == null) {
+			UnityEngine.Debug.Log("Static objects output file path invalid");
+			return;
+		}
+		
+		StringBuilder s1 = new StringBuilder();
+		using (sw) {
+			PrefabIdentifier pid = null;
+			for (int i=0;i<allStaticObjects.Count;i++) {
+				pid = allStaticObjects[i].GetComponent<PrefabIdentifier>();
+				if (pid == null) continue;
+
+				List<ObjectOverride> ovides = PrefabUtility.GetObjectOverrides(allStaticObjects[i],false);
+				for (int j=0; j < ovides.Count; j++) {
+					UnityEngine.Object ob = ovides[j].instanceObject;
+					SerializedObject sob = new UnityEditor.SerializedObject(ob);
+
+					// List overridden properties
+					SerializedProperty prop = sob.GetIterator();
+					while (prop.NextVisible(true)) {
+						if (prop.propertyPath == "m_Name" ||
+							prop.propertyPath == "m_LocalPosition" ||
+							prop.propertyPath == "m_LocalPosition.x" ||
+							prop.propertyPath == "m_LocalPosition.y" ||
+							prop.propertyPath == "m_LocalPosition.z" ||
+							prop.propertyPath == "m_LocalRotation" ||
+							prop.propertyPath == "m_LocalRotation.x" ||
+							prop.propertyPath == "m_LocalRotation.y" ||
+							prop.propertyPath == "m_LocalRotation.z" ||
+							prop.propertyPath == "m_LocalRotation.w" ||
+							prop.propertyPath == "m_LocalScale" ||
+							prop.propertyPath == "m_LocalScale.x" ||
+							prop.propertyPath == "m_LocalScale.y" ||
+							prop.propertyPath == "m_LocalScale.z")  {
+							
+							continue; // Skip transform overrides
+						}
+
+						if (prop.prefabOverride) {
+							string value = GetPropertyValue(prop);
+							UnityEngine.Debug.Log(allStaticObjects[i].name
+												  + ":: Found Override: "
+												  + prop.propertyPath
+												  + ", Value: " + value);
+						}
+					}
+				}
+				
+				s1.Clear();
+				s1.Append(Utils.UintToString(pid.constIndex,"constIndex"));
+				s1.Append(Utils.splitChar);
+				s1.Append(allStaticObjects[i].name);
+				s1.Append(Utils.splitChar);
+				s1.Append(Utils.SaveTransform(allStaticObjects[i].transform));
+				sw.Write(s1.ToString());
+				sw.Write(Environment.NewLine);
+			}
+			sw.Close();
+		}
+		#endif
+	}
+	
 	public void GenerateGeometryDataFile() {
+		#if UNITY_EDITOR
 		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_geometry_level" + levelToOutputFrom.ToString() + ".dat");
 		List<GameObject> allGeometry = new List<GameObject>();
 		Transform tr = geometryContainters[levelToOutputFrom].transform;
@@ -116,14 +206,13 @@ public class CitadelTests : MonoBehaviour {
 		StringBuilder s1 = new StringBuilder();
 		using (sw) {
 			PrefabIdentifier pid = null;
-			tr = null;
 			for (int i=0;i<allGeometry.Count;i++) {
 				pid = allGeometry[i].GetComponent<PrefabIdentifier>();
 				if (pid == null) continue;
 				
 				bool hasBoxColliderOverride = false;
-				bool hasPipeMaint2_3CoolantMaterialOverride = false;
 				bool hasTextOverride = false;
+				string materialOverride = "";
 				List<ObjectOverride> ovides = PrefabUtility.GetObjectOverrides(allGeometry[i],false);
 				for (int j=0; j < ovides.Count; j++) {
 					UnityEngine.Object ob = ovides[j].instanceObject;
@@ -169,8 +258,8 @@ public class CitadelTests : MonoBehaviour {
 							}
 							
 							string value = GetPropertyValue(prop);
-							if (value == "pipe_maint2_3_coolant") {
-								hasPipeMaint2_3CoolantMaterialOverride = true;
+							if (prop.propertyPath == "m_Materials.Array.data[0]") {
+								materialOverride = value;
 							}
 							
 							UnityEngine.Debug.Log(allGeometry[i].name
@@ -182,7 +271,6 @@ public class CitadelTests : MonoBehaviour {
 				}
 				
 				s1.Clear();
-				tr = allGeometry[i].transform;
 				s1.Append(Utils.UintToString(pid.constIndex,"constIndex"));
 				s1.Append(Utils.splitChar);
 				s1.Append(allGeometry[i].name);
@@ -216,9 +304,9 @@ public class CitadelTests : MonoBehaviour {
 					}
 				}
 				
-				if (hasPipeMaint2_3CoolantMaterialOverride) {
+				if (!string.IsNullOrWhiteSpace(materialOverride)) {
 					s1.Append(Utils.splitChar);
-					s1.Append(Utils.SaveString("pipe_maint2_3_coolant","material"));
+					s1.Append(Utils.SaveString(materialOverride,"material"));
 				}
 				
 				if (pid.constIndex == 218) { // chunk_reac2_4 has text on it.
@@ -238,8 +326,10 @@ public class CitadelTests : MonoBehaviour {
 			}
 			sw.Close();
 		}
+		#endif
 	}
 	
+	#if UNITY_EDITOR
 	// Helper method to get the correct value from a SerializedProperty
     private static string GetPropertyValue(SerializedProperty prop) {
         switch (prop.propertyType) {
@@ -260,6 +350,7 @@ public class CitadelTests : MonoBehaviour {
             default:                                     return "Unsupported property type";
         }
     }
+    #endif
 
 	public void GenerateLightsDataFile() {
 		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat");
@@ -368,7 +459,10 @@ public class CitadelTests : MonoBehaviour {
 			UnityEngine.Debug.Log("Lights output file path invalid");
 			return;
 		}
-
+		
+		//ct.SetA();
+		//lm.SetA();
+		//ps.SetA();
 		using (sw) {
 			for (int i=0;i<allDynamicObjects.Count;i++) {
 				sw.Write(SaveObject.Save(allDynamicObjects[i]));

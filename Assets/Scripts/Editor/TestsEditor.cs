@@ -24,15 +24,18 @@ public class TestsEditor : Editor {
 		if (GUILayout.Button("Output All Geometry to File")) {
 			testScript.GenerateGeometryDataFile();
 		}
+		if (GUILayout.Button("Output All Static Objects to File")) {
+			testScript.GenerateStaticObjectsDataFile();
+		}
 		if (GUILayout.Button("Output All Lights to File")) {
 			testScript.GenerateLightsDataFile();
 		}
-		if (GUILayout.Button("Load Lights for\nSelected Level")) {
-			testScript.LoadLevelLights();
-		}
-		if (GUILayout.Button("Unload Lights for\nSelected Level")) {
-			testScript.UnloadLevelLights();
-		}
+// 		if (GUILayout.Button("Load Lights for\nSelected Level")) {
+// 			testScript.LoadLevelLights();
+// 		}
+// 		if (GUILayout.Button("Unload Lights for\nSelected Level")) {
+// 			testScript.UnloadLevelLights();
+// 		}
 
 		EditorGUILayout.BeginVertical();
         GUILayout.Space(8f);
@@ -58,13 +61,13 @@ public class TestsEditor : Editor {
 			testScript.GenerateDynamicObjectsDataFile();
 		}
 
-		if (GUILayout.Button("Load Dynamic Objects for\nSelected Level")) {
-			testScript.LoadLevelLights();
-		}
-
-		if (GUILayout.Button("Unload Dynamic Objects for\nSelected Level")) {
-			testScript.UnloadLevelLights();
-		}
+// 		if (GUILayout.Button("Load Dynamic Objects for\nSelected Level")) {
+// 			testScript.LoadLevelLights();
+// 		}
+// 
+// 		if (GUILayout.Button("Unload Dynamic Objects for\nSelected Level")) {
+// 			testScript.UnloadLevelLights();
+// 		}
 
 		EditorGUILayout.BeginVertical();
         GUILayout.Space(8f);

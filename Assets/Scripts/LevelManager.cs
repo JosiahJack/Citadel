@@ -34,6 +34,7 @@ public class LevelManager : MonoBehaviour {
 	public bool[] showSaturnForLevel;
 	public NPCSubManager[] npcsm;
 	public Level[] levelScripts;
+	public GameObject[] geometryContainers;
 	public GameObject[] lightContainers;
 	public GameObject[] npcContainers;
 	public GameObject[] elevatorTargetDestinations;
@@ -49,8 +50,12 @@ public class LevelManager : MonoBehaviour {
 	// Singleton instance
 	public static LevelManager a;
 
+	public void SetA() {
+		if (a == null) a = this;		
+	}
+	
 	void Awake () {
-		a = this;
+		SetA();
 		if (currentLevel < 0) {
 			if (Const.a == null) return;
 			if (Const.a.player1CapsuleMainCameragGO == null) return;
@@ -77,7 +82,6 @@ public class LevelManager : MonoBehaviour {
 	}
 	
 	public void SetSkyVisible(bool on) {
-		Debug.Log("Setting sky visibility to " + on.ToString());
 		skyMR.enabled = (on && showSkyForLevel[currentLevel]);
 		saturn.SetActive(on && showSaturnForLevel[currentLevel]);
 		exterior.SetActive(on && showExteriorForLevel[currentLevel]);
@@ -143,6 +147,7 @@ public class LevelManager : MonoBehaviour {
 		if (!levelDataLoaded[levnum]) return; // Already cleared.
 
 		UnloadLevelLights(levnum);
+		UnloadLevelGeometry(levnum);
 		levelDataLoaded[levnum] = false;
 	}
 
@@ -157,6 +162,7 @@ public class LevelManager : MonoBehaviour {
 		if (levelDataLoaded[levnum]) return; // Already loaded.
 
 		LoadLevelLights(levnum);
+		LoadLevelGeometry(levnum);
 		levelDataLoaded[levnum] = true;
 	}
 
@@ -392,6 +398,126 @@ public class LevelManager : MonoBehaviour {
 
 		return false;
 	}
+	
+	public void UnloadLevelGeometry(int curlevel) {
+		if (curlevel == 13) return; // Not cyberspace
+		if (curlevel > (geometryContainers.Length - 1)) return;
+		if (curlevel < 0) return;
+
+		List<GameObject> deleteMes = new List<GameObject>();
+		Transform parent = geometryContainers[curlevel].transform;
+		int children = parent.childCount;
+		for (int i=0;i<children;i++) deleteMes.Add(parent.GetChild(i).gameObject);
+		for (int i=0;i<deleteMes.Count;i++) {
+			if (deleteMes[i] != null) DestroyImmediate(deleteMes[i]);
+		}
+	}
+	
+	public void LoadLevelGeometry(int curlevel) {
+		if (curlevel == 13) return; // Not cyberspace
+		if (curlevel > (geometryContainers.Length - 1)) return;
+		if (curlevel < 0) return;
+		
+		string gName = "CitadelScene_geometry_level"+curlevel.ToString()+".dat";
+		StreamReader sf = Utils.ReadStreamingAsset(gName);
+		if (sf == null) {
+			UnityEngine.Debug.Log("Geometry input file path invalid");
+			return;
+		}
+
+		string readline;
+		List<string> readFileList = new List<string>();
+		using (sf) {
+			do {
+				readline = sf.ReadLine();
+				if (readline != null) {
+					readFileList.Add(readline);
+				}
+			} while (!sf.EndOfStream);
+			sf.Close();
+		}
+
+		string[] entries = new string[27];
+		int index = 0;
+		Vector3 vec;
+		for (int i=0;i<readFileList.Count;i++) {
+			entries = readFileList[i].Split(Convert.ToChar(Utils.splitChar));
+			if (entries.Length <= 1) continue;
+
+			index = 0;
+			int constdex = Utils.GetIntFromString(entries[index],"constIndex"); index++;
+			GameObject chunk = ConsoleEmulator.SpawnDynamicObject(constdex,
+																  curlevel,
+																  false,null,0);
+			if (chunk == null) continue;
+			
+			chunk.name = entries[index]; index++;
+			index = Utils.LoadTransform(chunk.transform,ref entries,index);
+			if ((entries.Length - 1) >= index) {
+				string[] splits = entries[index].Split(':');
+				string variableName = splits[0];
+				string variableValue = splits[1];
+				if (variableName == "BoxCollider.enabled") {
+					BoxCollider bcol = chunk.GetComponent<BoxCollider>();
+					bcol.enabled = Utils.GetBoolFromString(entries[index],"BoxCollider.enabled"); index++;
+					vec = new Vector3(1f,1f,1f);
+					vec.x = Utils.GetFloatFromString(entries[index],"size.x"); index++;
+					vec.y = Utils.GetFloatFromString(entries[index],"size.y"); index++;
+					vec.z = Utils.GetFloatFromString(entries[index],"size.z"); index++;
+					bcol.size = vec;
+					vec.x = Utils.GetFloatFromString(entries[index],"center.x"); index++;
+					vec.y = Utils.GetFloatFromString(entries[index],"center.y"); index++;
+					vec.z = Utils.GetFloatFromString(entries[index],"center.z"); index++;
+					bcol.center = vec;
+					if (chunk.transform.childCount >= 1) {
+						// Get collisionAid
+						Transform subtr = chunk.transform.GetChild(0);
+						if (subtr != null) {
+							subtr.gameObject.SetActive(Utils.GetBoolFromString(entries[index],"collisionAid.activeSelf")); index++;
+						}
+					}
+					
+					if (index < entries.Length) {
+						splits = entries[index].Split(':');
+						variableName = splits[0];
+					}
+				} else if (variableName == "material") {
+					MeshRenderer mr = chunk.GetComponent<MeshRenderer>();
+					int matVal = GetMaterialByName(variableValue);
+					Debug.Log("found geometry with material override of "
+							  + variableValue + " giving index "
+							  + matVal.ToString());
+					
+					if (mr != null) {
+						mr.sharedMaterial = Const.a.genericMaterials[matVal];
+					}
+				}
+				
+				if (constdex == 218) { // chunk_reac2_4 has text on it.
+					if (entries.Length - 1 >= index) {
+						Transform textr1 = chunk.transform.GetChild(1); // text_decalStopDSS1
+						Transform textr2 = chunk.transform.GetChild(2); // text_decalStopDSS1 (1)
+						TextLocalization tex1 = textr1.gameObject.GetComponent<TextLocalization>();
+						TextLocalization tex2 = textr2.gameObject.GetComponent<TextLocalization>();
+						tex1.lingdex = Utils.GetIntFromString(entries[index],"lingdex"); index++;
+						tex2.lingdex = Utils.GetIntFromString(entries[index],"lingdex"); index++;
+					}
+				}
+			}
+		}
+	}
+	
+	int GetMaterialByName(string name) {
+		switch (name) {
+			case "pipe_maint2_3_coolant": return 86;
+			case "cyberpanel_black":      return 49;
+// 			case "cyberpanel_blue":       return 50;
+// 			case "cyberpanel_blue":       return 50;
+// 			case "cyberpanel_blue":       return 50;
+		}
+		
+		return 0;
+	}
 
 	public void UnloadLevelLights(int curlevel) {
 		if (curlevel > (lightContainers.Length - 1)) return;
@@ -401,7 +527,8 @@ public class LevelManager : MonoBehaviour {
 		  lightContainers[curlevel].GetComponentsInChildren(typeof(Light),true);
 
 		GameObject go = null;
-		for (int i=0;i<compArray.Length;i++) {
+		int litCount = compArray.Length;
+		for (int i=0;i<litCount;i++) {
 			go = compArray[i].gameObject;
 			if (go.GetComponent<LightAnimation>() != null) continue;
 			if (go.GetComponent<TargetIO>() != null) continue;

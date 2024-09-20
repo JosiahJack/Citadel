@@ -30,8 +30,12 @@ public class PauseScript : MonoBehaviour {
 
 	public static PauseScript a;
 
+	public void SetA() {
+		if (a == null) a = this;		
+	}
+	
 	void Awake() {
-		a = this;
+		SetA();
 		a.ambientRegistry = new List<AmbientRegistration>();
 	}
 

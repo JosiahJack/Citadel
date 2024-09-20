@@ -37,7 +37,9 @@ public class FuncWall : MonoBehaviour {
 	public void Initialize() {
 		if (initialized) return;
 
-		startTime = PauseScript.a.relativeTime;
+		if (PauseScript.a == null) startTime = 0f; // Editor initiated.
+		else startTime = PauseScript.a.relativeTime;
+		
 		currentState = startState; // set door position to picked state
 		startPosition = transform.position;
 		stopSoundPlayed = false;

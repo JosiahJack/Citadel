@@ -371,12 +371,15 @@ public class Const : MonoBehaviour {
 
 	//Instance container variable
 	public static Const a;
+	
+	public void SetA() {
+		if (a == null) a = this;
+	}
 
 	public void Awake() {
 		Application.targetFrameRate = TARGET_FPS;
-		a = this; // Create a new instance so that it can be accessed globally.
-				  // MOST IMPORTANT PART!!
-
+		SetA(); // Create a new instance so that it can be accessed globally.
+				// MOST IMPORTANT PART!!
 
 		// Cache values needed by awake prior to the .a instances of others.
 		PlayerReferenceManager prm =
