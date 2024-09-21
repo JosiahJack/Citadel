@@ -569,6 +569,40 @@ public class LevelManager : MonoBehaviour {
 		float readFloatw;
 		Vector3 tempvec;
 		Quaternion tempquat;
+		float[] shadCullArray = new float[32];
+		// Shadow distance is 35.0f so anything non-zero less than that helps.
+		shadCullArray[0] = 15f; // Default
+		shadCullArray[1] = 0.0f; // TransparentFX
+		shadCullArray[2] = 0.0f; // Ignore Raycast
+		shadCullArray[3] = 0.0f; // 
+		shadCullArray[4] = 0.0f; // Water
+		shadCullArray[5] = 0.0f; // UI
+		shadCullArray[6] = 0.0f; // 
+		shadCullArray[7] = 0.0f; // 
+		shadCullArray[8] = 0.0f; // GunViewModel
+		shadCullArray[9] = 35.0f; // Geometry
+		shadCullArray[10] = 15f; // NPC
+		shadCullArray[11] = 5f; // Bullets
+		shadCullArray[12] = 7f; // Player
+		shadCullArray[13] = 15f; // Corpse
+		shadCullArray[14] = 20f; // PhysObjects
+		shadCullArray[15] = 0.0f; // Sky
+		shadCullArray[16] = 0.0f; // PlayerTriggerOnly
+		shadCullArray[17] = 0.0f; // Trigger
+		shadCullArray[18] = 25f; // Door
+		shadCullArray[19] = 15f; // InterDebris
+		shadCullArray[20] = 0.0f; // Player2
+		shadCullArray[21] = 0.0f; // Player3
+		shadCullArray[22] = 0.0f; // Player4
+		shadCullArray[23] = 0.0f; // NPCTrigger
+		shadCullArray[24] = 5f; // NPCBullet
+		shadCullArray[25] = 0.0f; // NPCClip
+		shadCullArray[26] = 0.0f; // Clip
+		shadCullArray[27] = 0.0f; // Automap
+		shadCullArray[28] = 0.0f; // Culling
+		shadCullArray[29] = 15f; // CorpseSearchable
+		shadCullArray[30] = 0.0f; // 
+		shadCullArray[31] = 0.0f; // 
 		for (int i=0;i<readFileList.Count;i++) {
 			entries = readFileList[i].Split(Convert.ToChar(Utils.splitChar));
 			if (entries.Length <= 1) continue;
@@ -617,6 +651,7 @@ public class LevelManager : MonoBehaviour {
 			lit.shadowBias = Utils.GetFloatFromString(entries[index]); index++;
 			lit.shadowNormalBias = Utils.GetFloatFromString(entries[index]); index++;
 			lit.shadowNearPlane = Utils.GetFloatFromString(entries[index]); index++;
+			lit.layerShadowCullDistances = shadCullArray;
 			lit.cullingMask = Utils.GetIntFromString(entries[index]); index++;
 			lit.cullingMask = LayerMask.GetMask("Default","TransparentFX",
 												"Water","GunViewModel",
