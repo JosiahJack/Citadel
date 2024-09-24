@@ -155,7 +155,7 @@ public class LevelManager : MonoBehaviour {
 	public void LoadLevelData(int levnum) {
 		if (QuestLogNotesManager.a != null) QuestLogNotesManager.a.NotifyLevelChange(currentLevel);
 
-		if (levnum < 0 || levnum > 12) { // Not in a level, in a test or editor space.
+		if (levnum < 0 || levnum > 13) { // Not in a level, in a test or editor space.
 			levelDataLoaded[levnum] = true;
 			return;
 		}
@@ -400,7 +400,6 @@ public class LevelManager : MonoBehaviour {
 	}
 	
 	public void UnloadLevelGeometry(int curlevel) {
-		if (curlevel == 13) return; // Not cyberspace
 		if (curlevel > (geometryContainers.Length - 1)) return;
 		if (curlevel < 0) return;
 
@@ -414,10 +413,10 @@ public class LevelManager : MonoBehaviour {
 	}
 	
 	public void LoadLevelGeometry(int curlevel) {
-		if (curlevel == 13) return; // Not cyberspace
 		if (curlevel > (geometryContainers.Length - 1)) return;
 		if (curlevel < 0) return;
 		
+		Debug.Log("Loading geometry for " + curlevel.ToString());
 		string gName = "CitadelScene_geometry_level"+curlevel.ToString()+".dat";
 		StreamReader sf = Utils.ReadStreamingAsset(gName);
 		if (sf == null) {
@@ -440,6 +439,7 @@ public class LevelManager : MonoBehaviour {
 		string[] entries = new string[27];
 		int index = 0;
 		Vector3 vec;
+		Transform childChunk;
 		for (int i=0;i<readFileList.Count;i++) {
 			entries = readFileList[i].Split(Convert.ToChar(Utils.splitChar));
 			if (entries.Length <= 1) continue;
@@ -484,12 +484,30 @@ public class LevelManager : MonoBehaviour {
 				} else if (variableName == "material") {
 					MeshRenderer mr = chunk.GetComponent<MeshRenderer>();
 					int matVal = GetMaterialByName(variableValue);
-					Debug.Log("found geometry with material override of "
-							  + variableValue + " giving index "
-							  + matVal.ToString());
+					//Debug.Log("found geometry with material override of "
+					//		  + variableValue + " giving index "
+					//		  + matVal.ToString());
+
+					if (matVal == 86 && constdex == 130) {
+						childChunk = chunk.transform.GetChild(0);
+						if (childChunk != null) {
+							mr = childChunk.gameObject.GetComponent<MeshRenderer>();
+							if (mr != null) {
+								mr.sharedMaterial = Const.a.genericMaterials[matVal];
+							}
+						}
+					}
 					
 					if (mr != null) {
 						mr.sharedMaterial = Const.a.genericMaterials[matVal];
+					} else if (chunk.transform.childCount > 0) {
+						childChunk = chunk.transform.GetChild(0);
+						if (childChunk != null) {
+							mr = childChunk.gameObject.GetComponent<MeshRenderer>();
+							if (mr != null) {
+								mr.sharedMaterial = Const.a.genericMaterials[matVal];
+							}
+						}
 					}
 				}
 				
@@ -509,17 +527,51 @@ public class LevelManager : MonoBehaviour {
 	
 	int GetMaterialByName(string name) {
 		switch (name) {
-			case "pipe_maint2_3_coolant": return 86;
-			case "cyberpanel_black":      return 49;
-// 			case "cyberpanel_blue":       return 50;
-// 			case "cyberpanel_blue":       return 50;
-// 			case "cyberpanel_blue":       return 50;
+			case "cyberpanel_black":              return 49;
+ 			case "cyberpanel_blue":               return 50;
+			case "cyberpanel_bluegray":           return 51;
+			case "cyberpanel_cyan":               return 52;
+			case "cyberpanel_cyandark":           return 53;
+			case "cyberpanel_gray":               return 54;
+			case "cyberpanel_green":              return 55;
+			case "cyberpanel_greendark":          return 56;
+			case "cyberpanel_orange":             return 57;
+			case "cyberpanel_orangedark":         return 58;
+			case "cyberpanel_paleorange":         return 59;
+			case "cyberpanel_palepurple":         return 60;
+			case "cyberpanel_palered":            return 61;
+			case "cyberpanel_paleyellow":         return 62;
+			case "cyberpanel_purple":             return 63;
+			case "cyberpanel_red":                return 64;
+			case "cyberpanel_slice45":            return 65;
+			case "cyberpanel_slice45_blue":       return 66;
+			case "cyberpanel_slice45_bluegray":   return 67;
+			case "cyberpanel_slice45_cyan":       return 68;
+			case "cyberpanel_slice45_cyandark":   return 69;
+			case "cyberpanel_slice45_gray":       return 70;
+			case "cyberpanel_slice45_green":      return 71;
+			case "cyberpanel_slice45_greendark":  return 72;
+			case "cyberpanel_slice45_orange":     return 73;
+			case "cyberpanel_slice45_orangedark": return 74;
+			case "cyberpanel_slice45_paleorange": return 75;
+			case "cyberpanel_slice45_palepurple": return 76;
+			case "cyberpanel_slice45_palered":    return 77;
+			case "cyberpanel_slice45_paleyellow": return 78;
+			case "cyberpanel_slice45_purple":     return 79;
+			case "cyberpanel_slice45_red":        return 80;
+			case "cyberpanel_slice45_yellow":     return 81;
+			case "cyberpanel_touching":           return 82;
+			case "cyberpanel_white":              return 83;
+			case "cyberpanel_yellow":             return 84;
+			case "cyberpanel_yellowdark":         return 85;
+			case "pipe_maint2_3_coolant":         return 86;
 		}
 		
 		return 0;
 	}
 
 	public void UnloadLevelLights(int curlevel) {
+		if (curlevel > 12) return;
 		if (curlevel > (lightContainers.Length - 1)) return;
 		if (curlevel < 0) return;
 
@@ -539,6 +591,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void LoadLevelLights(int curlevel) {
+		if (curlevel > 12) return;
 		if (curlevel > (lightContainers.Length - 1)) return;
 		if (curlevel < 0) return;
 

@@ -641,9 +641,18 @@ public class HealthManager : MonoBehaviour {
 	void HideSelf() {
 		if (isScreen) return;
 
+		if (isSecCamera) {
+			PrefabIdentifier pid = transform.parent.gameObject.GetComponent<PrefabIdentifier>();
+			if (pid != null) {
+				if (pid.constIndex == 477) {
+					Destroy(transform.parent.gameObject);
+					return;
+				}
+			}
+		}
 		MeshRenderer mr = GetComponent<MeshRenderer>();
 		Utils.DisableMeshRenderer(mr);
-		if (rbody != null) rbody.useGravity = false;		
+		if (rbody != null) rbody.useGravity = false;
 	}
 
 	public void ObjectDeath(AudioClip deathSound) {

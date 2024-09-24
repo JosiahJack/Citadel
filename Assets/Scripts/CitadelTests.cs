@@ -92,7 +92,10 @@ public class CitadelTests : MonoBehaviour {
 	
 	public void GenerateStaticObjectsDataFile() {
 		#if UNITY_EDITOR
-		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_staticobjects_level" + levelToOutputFrom.ToString() + ".dat");
+		UnityEngine.Debug.Log("Outputting all static objects to "
+							  + "StreamingAssets/CitadelScene_staticobjects_level"
+							  + levelToOutputFrom.ToString() + ".dat");
+
 		List<GameObject> allStaticObjects = new List<GameObject>();
 		Transform tr = staticObjectContainters[levelToOutputFrom].transform;
 		Transform child = null;
@@ -104,7 +107,7 @@ public class CitadelTests : MonoBehaviour {
 		}
 
 		UnityEngine.Debug.Log("Found " + allStaticObjects.Count
-							  + " geometry chunks in level "
+							  + " static objects chunks in level "
 							  + levelToOutputFrom.ToString());
 
 		string lName = "CitadelScene_staticobjects_level"

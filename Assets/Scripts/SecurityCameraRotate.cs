@@ -32,7 +32,7 @@ public class SecurityCameraRotate : MonoBehaviour {
 	void Update() {
 		if (!PauseScript.a.Paused() && !PauseScript.a.MenuActive()) {
 			if (mR != null) {
-				if (!mR.isVisible) return;
+				if (!mR.isVisible || !mR.enabled) return;
 			} else {
 				mR = gameObject.GetComponentInChildren<MeshRenderer>(true);
 				return;

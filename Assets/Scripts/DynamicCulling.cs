@@ -1461,9 +1461,9 @@ public class DynamicCulling : MonoBehaviour {
             x = dynamicMeshCoords[i].x;
             y = dynamicMeshCoords[i].y;
             if (gridCells[x,y].visible || !gridCells[x,y].open) {
-                dynamicMeshes[i].enabled = true;
+                Utils.EnableMeshRenderer(dynamicMeshes[i]);
             } else {
-                dynamicMeshes[i].enabled = false;
+                Utils.DisableMeshRenderer(dynamicMeshes[i]);
             }
         }
     }

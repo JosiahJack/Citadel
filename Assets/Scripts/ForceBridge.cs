@@ -17,8 +17,8 @@ public class ForceBridge : MonoBehaviour {
 	public float activatedScaleX; // save
 	public float activatedScaleY; // save
 	public float activatedScaleZ; // save
-	private MeshRenderer mr;
-	private BoxCollider bCol;
+	[HideInInspector] public MeshRenderer mr;
+	[HideInInspector] public BoxCollider bCol;
 	private AudioSource SFX;
 	private static float tickTime = 0.05f;
 	private bool initialized = false;
@@ -63,8 +63,6 @@ public class ForceBridge : MonoBehaviour {
 
 		tickFinished = PauseScript.a.relativeTime + tickTime;
 		if (activated) {
-			Utils.EnableMeshRenderer(mr);
-			Utils.EnableBoxCollider(bCol);
 			if (lerping) {
 				float sx = transform.localScale.x;
 				float sy = transform.localScale.y;
@@ -73,7 +71,10 @@ public class ForceBridge : MonoBehaviour {
 				if (y) sy = Mathf.Lerp(transform.localScale.y,activatedScaleY,tickTime*2);
 				if (z) sz = Mathf.Lerp(transform.localScale.z,activatedScaleZ,tickTime*2);
 				transform.localScale = new Vector3(sx,sy,sz);
-				if ((activatedScaleX-transform.localScale.x) < 0.08f && (activatedScaleY-transform.localScale.y) < 0.08f && (activatedScaleZ-transform.localScale.z) < 0.08f) {
+				if ((activatedScaleX-transform.localScale.x) < 0.08f
+					&& (activatedScaleY-transform.localScale.y) < 0.08f
+					&& (activatedScaleZ-transform.localScale.z) < 0.08f) {
+
 					transform.localScale = new Vector3(activatedScaleX,activatedScaleY,activatedScaleZ);
 					lerping = false;
 				}
@@ -88,7 +89,11 @@ public class ForceBridge : MonoBehaviour {
 				if (y) sy = Mathf.Lerp(transform.localScale.y,0f,tickTime*2);
 				if (z) sz = Mathf.Lerp(transform.localScale.z,0f,tickTime*2);
 				transform.localScale = new Vector3(sx,sy,sz);
-				if (transform.localScale.x < 0.08f || transform.localScale.y < 0.08f || transform.localScale.z < 0.08f) {
+				if ((transform.localScale.x < 0.08f
+					 || transform.localScale.y < 0.08f
+					 || transform.localScale.z < 0.08f)
+				    && mr.enabled) {
+
 					Utils.DisableMeshRenderer(mr);
 					Utils.DisableBoxCollider(bCol);
 					lerping = false;
@@ -101,6 +106,8 @@ public class ForceBridge : MonoBehaviour {
 		if (activated) return; // already there
 
 		if (!isSilent) Utils.PlayOneShotSavable(SFX,SFXBridgeChange);
+		Utils.EnableMeshRenderer(mr);
+		Utils.EnableBoxCollider(bCol);
 		activated = true;
 		lerping = true;
 		float sx = activatedScaleX;
@@ -181,6 +188,18 @@ public class ForceBridge : MonoBehaviour {
 		}
 
 		fb.activated = Utils.GetBoolFromString(entries[index],"ForceBridge.activated");
+		if (fb.activated) {
+			Utils.EnableMeshRenderer(fb.mr);
+			Utils.EnableBoxCollider(fb.bCol);
+		} else {
+			if (fb.transform.localScale.x < 0.08f
+				|| fb.transform.localScale.y < 0.08f
+				|| fb.transform.localScale.z < 0.08f) {
+
+				Utils.DisableMeshRenderer(fb.mr);
+				Utils.DisableBoxCollider(fb.bCol);
+			}
+		}
 		index++;
 
 		fb.lerping = Utils.GetBoolFromString(entries[index],"lerping");
