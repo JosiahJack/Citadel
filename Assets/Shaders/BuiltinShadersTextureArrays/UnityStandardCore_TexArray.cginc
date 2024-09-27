@@ -16,8 +16,7 @@
 //-------------------------------------------------------------------------------------
 // counterpart for NormalizePerPixelNormal
 // skips normalization per-vertex and expects normalization to happen per-pixel
-half3 NormalizePerVertexNormal (float3 n) // takes float to avoid overflow
-{
+half3 NormalizePerVertexNormal (float3 n) { // takes float to avoid overflow
     #if (SHADER_TARGET < 30) || UNITY_STANDARD_SIMPLE
         return normalize(n);
     #else
@@ -25,8 +24,7 @@ half3 NormalizePerVertexNormal (float3 n) // takes float to avoid overflow
     #endif
 }
 
-float3 NormalizePerPixelNormal (float3 n)
-{
+float3 NormalizePerPixelNormal (float3 n) {
     #if (SHADER_TARGET < 30) || UNITY_STANDARD_SIMPLE
         return n;
     #else
@@ -34,9 +32,7 @@ float3 NormalizePerPixelNormal (float3 n)
     #endif
 }
 
-//-------------------------------------------------------------------------------------
-UnityLight MainLight ()
-{
+UnityLight MainLight () {
     UnityLight l;
 
     l.color = _LightColor0.rgb;
@@ -44,8 +40,7 @@ UnityLight MainLight ()
     return l;
 }
 
-UnityLight AdditiveLight (half3 lightDir, half atten)
-{
+UnityLight AdditiveLight (half3 lightDir, half atten) {
     UnityLight l;
 
     l.color = _LightColor0.rgb;
@@ -59,16 +54,14 @@ UnityLight AdditiveLight (half3 lightDir, half atten)
     return l;
 }
 
-UnityLight DummyLight ()
-{
+UnityLight DummyLight () {
     UnityLight l;
     l.color = 0;
     l.dir = half3 (0,1,0);
     return l;
 }
 
-UnityIndirect ZeroIndirect ()
-{
+UnityIndirect ZeroIndirect () {
     UnityIndirect ind;
     ind.diffuse = 0;
     ind.specular = 0;
@@ -79,8 +72,7 @@ UnityIndirect ZeroIndirect ()
 // Common fragment setup
 
 // deprecated
-half3 WorldNormal(half4 tan2world[3])
-{
+half3 WorldNormal(half4 tan2world[3]) {
     return normalize(tan2world[2].xyz);
 }
 
@@ -215,8 +207,7 @@ inline UnityGI FragmentGI (FragmentCommonData s, half occlusion, half4 i_ambient
       d.probePosition[1] = unity_SpecCube1_ProbePosition;
     #endif
 
-    if(reflections)
-    {
+    if(reflections) {
         Unity_GlossyEnvironmentData g = UnityGlossyEnvironmentSetup(s.smoothness, -s.eyeVec, s.normalWorld, s.specColor);
         // Replace the reflUVW if it has been compute in Vertex shader. Note: the compiler will optimize the calcul in UnityGlossyEnvironmentSetup itself
         #if UNITY_STANDARD_SIMPLE
@@ -231,8 +222,7 @@ inline UnityGI FragmentGI (FragmentCommonData s, half occlusion, half4 i_ambient
     }
 }
 
-inline UnityGI FragmentGI (FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten, UnityLight light)
-{
+inline UnityGI FragmentGI (FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten, UnityLight light) {
     return FragmentGI(s, occlusion, i_ambientOrLightmapUV, atten, light, true);
 }
 
@@ -511,26 +501,14 @@ void fragDeferred (
 #if defined(SHADOWS_SHADOWMASK) && (UNITY_ALLOWED_MRT_COUNT > 4)
     ,out half4 outShadowMask : SV_Target4       // RT4: shadowmask (rgba)
 #endif
-)
-{
-    #if (SHADER_TARGET < 30)
-        outGBuffer0 = 1;
-        outGBuffer1 = 1;
-        outGBuffer2 = 0;
-        outEmission = 0;
-        #if defined(SHADOWS_SHADOWMASK) && (UNITY_ALLOWED_MRT_COUNT > 4)
-            outShadowMask = 1;
-        #endif
-        return;
-    #endif
+    ) {
 
     UNITY_APPLY_DITHER_CROSSFADE(i.pos.xy);
-
     FRAGMENT_SETUP(s)
     UNITY_SETUP_INSTANCE_ID(i);
 
     // no analytic lights in this pass
-    UnityLight dummyLight = DummyLight ();
+    UnityLight dummyLight = DummyLight();
     half atten = 1;
 
     // only GI

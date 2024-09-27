@@ -447,6 +447,10 @@ public class MouseLookScript : MonoBehaviour {
 			for (int i=0;i<32;i++) { cameraDistances[i] = 3350f; } // Increased from 2400 to fit the Saturn's rings without overlapping with star sphere.
 		} else {
 			for (int i=0;i<32;i++) { cameraDistances[i] = 79f; } // Can't see further than this.  31 * 2.56 - player radius 0.48 = 78.88f rounded up to be careful..longest line of sight is the crawlway on level 6
+			cameraDistances[0]  = 45.1f;   // Default, most static objects and some dynamic.
+			cameraDistances[4]  = 30f;   // Water, used for effects like steam
+										 // and well, spraying water.
+			cameraDistances[14] = 30f;   // PhysObjects, patches, carts, barrels
 			cameraDistances[15] = 3350f; // Sky is visible, only exception.
 		}
 		playerCamera.layerCullDistances = cameraDistances; // Cull anything beyond 79f except for sky layer.

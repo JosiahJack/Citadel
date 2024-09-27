@@ -123,6 +123,10 @@ public class CitadelTests : MonoBehaviour {
 		}
 		
 		StringBuilder s1 = new StringBuilder();
+// 		bool hasTextLingdexOverride = false;
+// 		bool hasTextAnchorOverride = false;
+		bool hasBoxColliderOverride = false;
+// 		bool hasTextOverride = false;
 		using (sw) {
 			PrefabIdentifier pid = null;
 			for (int i=0;i<allStaticObjects.Count;i++) {
@@ -156,6 +160,22 @@ public class CitadelTests : MonoBehaviour {
 						}
 
 						if (prop.prefabOverride) {
+							if (prop.propertyPath == "m_Size" ||
+								prop.propertyPath == "m_Size.x" ||
+								prop.propertyPath == "m_Size.y" ||
+								prop.propertyPath == "m_Size.z" ||
+								prop.propertyPath == "m_Center" ||
+								prop.propertyPath == "m_Center.x" ||
+								prop.propertyPath == "m_Center.y" ||
+								prop.propertyPath == "m_Center.z") {
+
+								hasBoxColliderOverride = true;
+							}
+
+// 							if (prop.propertyPath == "lingdex") {
+// 								hasTextOverride = true;
+// 							}
+
 							string value = GetPropertyValue(prop);
 							UnityEngine.Debug.Log(allStaticObjects[i].name
 												  + ":: Found Override: "
@@ -171,6 +191,33 @@ public class CitadelTests : MonoBehaviour {
 				s1.Append(allStaticObjects[i].name);
 				s1.Append(Utils.splitChar);
 				s1.Append(Utils.SaveTransform(allStaticObjects[i].transform));
+				if (hasBoxColliderOverride) {
+					BoxCollider bcol = allStaticObjects[i].GetComponent<BoxCollider>();
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.BoolToString(bcol.enabled,"BoxCollider.enabled"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(bcol.size.x,"size.x"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(bcol.size.y,"size.y"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(bcol.size.z,"size.z"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(bcol.center.x,"center.x"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(bcol.center.y,"center.y"));
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(bcol.center.z,"center.z"));
+					if (allStaticObjects[i].transform.childCount >= 1) {
+						// Get collision aid.
+						Transform subtr = allStaticObjects[i].transform.GetChild(0);
+						if (subtr != null) {
+							s1.Append(Utils.splitChar);
+							s1.Append(Utils.BoolToString(
+								subtr.gameObject.activeSelf,
+								"collisionAid.activeSelf"));
+						}
+					}
+				}
 				sw.Write(s1.ToString());
 				sw.Write(Environment.NewLine);
 			}
