@@ -263,17 +263,17 @@ public class Config {
 		switch (Const.a.GraphicsShadowMode) {
 			case 0: // No Shadows
 				QualitySettings.shadows = ShadowQuality.Disable;
-				QualitySettings.shadowDistance = 30.0f;
+				QualitySettings.shadowDistance = 1.0f;
 				break;
 			case 1: // Hard Shadows
 				QualitySettings.shadows = ShadowQuality.HardOnly;
 				QualitySettings.shadowResolution = ShadowResolution.Low;
-				QualitySettings.shadowDistance = 30.0f;
+				QualitySettings.shadowDistance = 20.0f; // Check layers in LevelManager shadCullArray
 				break;
 			case 2: // Soft Shadows
 				QualitySettings.shadows = ShadowQuality.All;
 				QualitySettings.shadowResolution = ShadowResolution.Low;
-				QualitySettings.shadowDistance = 35.0f;
+				QualitySettings.shadowDistance = 20.0f; // Check layers in LevelManager shadCullArray
 				break;
 		}
 	}

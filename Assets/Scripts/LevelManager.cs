@@ -633,7 +633,7 @@ public class LevelManager : MonoBehaviour {
 		shadCullArray[6] = 0.0f; // 
 		shadCullArray[7] = 0.0f; // 
 		shadCullArray[8] = 0.0f; // GunViewModel
-		shadCullArray[9] = 35.0f; // Geometry
+		shadCullArray[9] = 20.0f; // Geometry
 		shadCullArray[10] = 15f; // NPC
 		shadCullArray[11] = 5f; // Bullets
 		shadCullArray[12] = 7f; // Player
@@ -642,7 +642,7 @@ public class LevelManager : MonoBehaviour {
 		shadCullArray[15] = 0.0f; // Sky
 		shadCullArray[16] = 0.0f; // PlayerTriggerOnly
 		shadCullArray[17] = 0.0f; // Trigger
-		shadCullArray[18] = 25f; // Door
+		shadCullArray[18] = 20f; // Door
 		shadCullArray[19] = 15f; // InterDebris
 		shadCullArray[20] = 0.0f; // Player2
 		shadCullArray[21] = 0.0f; // Player3
