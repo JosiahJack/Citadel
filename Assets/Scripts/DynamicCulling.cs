@@ -576,23 +576,29 @@ public class DynamicCulling : MonoBehaviour {
                 gridCells[x,y].closedSouth = false;
                 gridCells[x,y].closedWest = false;
                 Color32 closedData = edgePixels[x + y * 64];
-                if (closedData.r > 0) gridCells[x,y].closedNorth = true;
-                if (closedData.g > 0) gridCells[x,y].closedEast = true;
-                if (closedData.b > 0) gridCells[x,y].closedSouth = true;
-                if ((closedData.r < 255 && closedData.r > 0) || (closedData.g < 255 && closedData.g > 0) || (closedData.b < 255 && closedData.b > 0)) gridCells[x,y].closedWest = true;
+                if (closedData.r > 127) gridCells[x,y].closedNorth = true;
+                if (closedData.g > 127) gridCells[x,y].closedEast = true;
+                if (closedData.b > 127) gridCells[x,y].closedSouth = true;
+                if (   (closedData.r < 255 && closedData.r > 0)
+                    || (closedData.g < 255 && closedData.g > 0)
+                    || (closedData.b < 255 && closedData.b > 0)) {
+                    
+                    gridCells[x,y].closedWest = true;
+                }
+                
                 if (closedData.a > 0 && closedData.a < 255) {
                     gridCells[x,y].closedNorth = gridCells[x,y].closedEast
                     = gridCells[x,y].closedSouth = gridCells[x,y].closedWest
                     = true;
                 }
-/*
-                Debug.Log("gridCells[" + x.ToString() + "," + y.ToString()
-                          + "] has NESW:"
-                          + (gridCells[x,y].closedNorth ? "1" : "0")
-                          + (gridCells[x,y].closedEast ? "1" : "0")
-                          + (gridCells[x,y].closedSouth ? "1" : "0")
-                          + (gridCells[x,y].closedWest ? "1" : "0")
-                          + " from color: " + closedData.ToString());*/
+
+//                 Debug.Log("gridCells[" + x.ToString() + "," + y.ToString()
+//                           + "] has NESW:"
+//                           + (gridCells[x,y].closedNorth ? "1" : "0")
+//                           + (gridCells[x,y].closedEast ? "1" : "0")
+//                           + (gridCells[x,y].closedSouth ? "1" : "0")
+//                           + (gridCells[x,y].closedWest ? "1" : "0")
+//                           + " from color: " + closedData.ToString());
             }
         }
     }
@@ -848,7 +854,7 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     void FindPlayerCell() {
-        Vector2Int pxy = PosToCellCoords(PlayerMovement.a.transform.position);
+        Vector2Int pxy = PosToCellCoords(MouseLookScript.a.transform.position);
         playerCellX = pxy.x;
         playerCellY = pxy.y;
     }
@@ -876,23 +882,16 @@ public class DynamicCulling : MonoBehaviour {
         return (x < 64 && y < 64 && x >= 0 && y >= 0);
     }
 
-    void SetVisible(int x, int y) {
+    // Accessible meaning that there aren't closed edges blocking the view to
+    // that cell at x,y (checked in the calls below).
+    void SetVisible(bool isAccessible, int x, int y) {
         if (!XYPairInBounds(x,y)) return;
-        if (worldCellCheckedYet[x,y]) return;
 
+        if (!isAccessible) worldCellsOpen[x,y] = false;
         gridCells[x,y].visible = worldCellsOpen[x,y];
         worldCellCheckedYet[x,y] = true;
-        SetVisPixel(x,y,Color.cyan);
-    }
-    
-    void SetNotVisible(int x, int y) {
-        if (!XYPairInBounds(x,y)) return;
-        if (worldCellCheckedYet[x,y]) return;
-
-        worldCellsOpen[x,y] = false;
-        gridCells[x,y].visible = false;
-        worldCellCheckedYet[x,y] = true;
-//         Debug.Log("Setting NOT visible " + x.ToString() + ", " + y.ToString());
+        if (gridCells[x,y].visible) SetVisPixel(x,y,Color.cyan);
+        else SetVisPixel(x,y,Color.red);
     }
 
     //void DetermineVisibleCellsPrecalculated() {
@@ -926,96 +925,79 @@ public class DynamicCulling : MonoBehaviour {
         worldCellCheckedYet[x,y] = true;
         SetVisPixel(x,y,Color.blue);
 
-
         // Set all neighboring cells visible if open in 3x3 square.
-        // Ordinals
-        if (gridCells[playerCellX,playerCellY].closedNorth) SetNotVisible(x,y + 1); // North
-        else SetVisible(x,y + 1);
-        
-        if (gridCells[playerCellX,playerCellY].closedEast)  SetNotVisible(x + 1,y); // East
-        else SetVisible(x + 1,y);
-        
-        if (gridCells[playerCellX,playerCellY].closedSouth) SetNotVisible(x,y - 1); // South
-        else SetVisible(x,y - 1);
-        
-        if (gridCells[playerCellX,playerCellY].closedWest)  SetNotVisible(x - 1,y); // Weast
-        else SetVisible(x - 1,y);
-        
+        SetVisible(!gridCells[x,y].closedNorth,x,y + 1); // North Ordinals
+        SetVisible(!gridCells[x,y].closedEast,x + 1,y);  // East
+        SetVisible(!gridCells[x,y].closedSouth,x,y - 1); // South
+        SetVisible(!gridCells[x,y].closedWest,x - 1,y);  // Weast
+
         // Diagonals
-        if (gridCells[playerCellX,playerCellY].closedNorth && gridCells[playerCellX,playerCellY].closedWest) SetNotVisible(x - 1,y + 1); // NW
-        else SetVisible(x - 1,y + 1);
-        
-        if (gridCells[playerCellX,playerCellY].closedNorth && gridCells[playerCellX,playerCellY].closedEast) SetNotVisible(x + 1,y + 1); // NE
-        else SetVisible(x + 1,y + 1);
-        
-        if (gridCells[playerCellX,playerCellY].closedNorth && gridCells[playerCellX,playerCellY].closedEast) SetNotVisible(x - 1,y - 1); // SW
-        else SetVisible(x - 1,y - 1);
+        bool accessibleCC; // Caddy Corner, if cell closed on adjacent edges.
+        bool accessibleAA; // Axis Aligned X, check if neighbor and cell closed.
+        bool accessibleBB; // Axis Aligned Y, check if neighbor and cell closed.
+        // The way neighbor checks work is that, if both current cell and the
+        // neighbor share a connected closed edge, e.g. North and North, then
+        // the caddy corner cell just to the North of the neighbor is also
+        // inaccessible and not visible.
 
-        if (gridCells[playerCellX,playerCellY].closedNorth && gridCells[playerCellX,playerCellY].closedEast) SetNotVisible(x + 1,y - 1); // SE
-        else SetVisible(x + 1,y - 1);
+        // NW
+        // [ 2][BB][  ] // CC is at playerCellX,playerCellY.
+        // [AA][CC][  ]
 
-        if (XYPairInBounds(playerCellX + 1,playerCellY)) {
-            CastStraightX(playerCellX + 1,playerCellY,1);  // [ ][3]
-                                                           // [1][2]
-                                                           // [ ][3]
-        }
+        // [ 2][ W][  ]
+        // [ N][NW][  ]
+        accessibleCC = !(gridCells[x,y].closedNorth && gridCells[x,y].closedWest);
+        accessibleAA = !(gridCells[x,y].closedNorth && (XYPairInBounds(x - 1,y) ? gridCells[x - 1,y].closedNorth : false));
+        accessibleBB = !(gridCells[x,y].closedWest && (XYPairInBounds(x,y + 1) ? gridCells[x,y + 1].closedWest : false));
+        SetVisible(accessibleCC && accessibleAA && accessibleBB,x - 1,y + 1);
 
-        if (XYPairInBounds(playerCellX,playerCellY + 1)) {
-            if (gridCells[playerCellX,playerCellY + 1].visible) CastStraightX(playerCellX,playerCellY + 1,1);
-        }
+        // NE
+        // [  ][BB][ 2] // CC is at playerCellX,playerCellY.
+        // [  ][CC][AA]
 
-        if (XYPairInBounds(playerCellX,playerCellY - 1)) {
-            if (gridCells[playerCellX,playerCellY - 1].visible) CastStraightX(playerCellX,playerCellY - 1,1);
-        }
+        // [  ][ E][ 2]
+        // [  ][NE][ N]
+        accessibleCC = !(gridCells[x,y].closedNorth && gridCells[x,y].closedEast);
+        accessibleAA = !(gridCells[x,y].closedNorth && (XYPairInBounds(x + 1,y) ? gridCells[x + 1,y].closedNorth : false));
+        accessibleBB = !(gridCells[x,y].closedEast && (XYPairInBounds(x,y + 1) ? gridCells[x,y + 1].closedEast : false));
+        SetVisible(accessibleCC && accessibleAA && accessibleBB,x + 1,y + 1);
 
-        if (XYPairInBounds(playerCellX - 1,playerCellY)) {
-            CastStraightX(playerCellX - 1,playerCellY,-1); // [3][ ]
-                                                           // [2][1]
-                                                           // [3][ ]
-        }
-        if (XYPairInBounds(playerCellX,playerCellY + 1)) {
-            if (gridCells[playerCellX,playerCellY + 1].visible) CastStraightX(playerCellX,playerCellY + 1,-1);
-        }
+        // SW
+        // [AA][CC][  ] // CC is at playerCellX,playerCellY.
+        // [ 2][BB][  ]
 
-        if (XYPairInBounds(playerCellX,playerCellY - 1)) {
-            if (gridCells[playerCellX,playerCellY - 1].visible) CastStraightX(playerCellX,playerCellY - 1,-1);
-        }
+        // [ S][SW][  ]
+        // [ 2][ W][  ]
+        accessibleCC = !(gridCells[x,y].closedSouth && gridCells[x,y].closedWest);
+        accessibleAA = !(gridCells[x,y].closedSouth && (XYPairInBounds(x - 1,y) ? gridCells[x - 1,y].closedSouth : false));
+        accessibleBB = !(gridCells[x,y].closedWest && (XYPairInBounds(x,y - 1) ? gridCells[x,y - 1].closedWest : false));
+        SetVisible(accessibleCC && accessibleAA && accessibleBB,x - 1,y - 1);
 
-        if (XYPairInBounds(playerCellX,playerCellY + 1)) {
-            CastStraightY(playerCellX,playerCellY + 1,1); // [3][2][3]
-                                                          // [ ][1][ ]
-        }
+        // SE
+        // [  ][CC][AA] // CC is at playerCellX,playerCellY.
+        // [  ][BB][ 2]
 
-        if (XYPairInBounds(playerCellX + 1,playerCellY)) {
-            if (gridCells[playerCellX + 1,playerCellY].visible) CastStraightX(playerCellX + 1,playerCellY,1);
-        }
+        // [  ][SE][ S]
+        // [  ][ E][ 2]
+        accessibleCC = !(gridCells[x,y].closedSouth && gridCells[x,y].closedEast);
+        accessibleAA = !(gridCells[x,y].closedSouth && (XYPairInBounds(x + 1,y) ? gridCells[x + 1,y].closedSouth : false));
+        accessibleBB = !(gridCells[x,y].closedEast && (XYPairInBounds(x,y - 1) ? gridCells[x,y + 1].closedEast : false));
+        SetVisible(accessibleCC && accessibleAA && accessibleBB,x + 1,y - 1);
 
-        if (XYPairInBounds(playerCellX - 1,playerCellY)) {
-            if (gridCells[playerCellX - 1,playerCellY].visible) CastStraightX(playerCellX - 1,playerCellY,1);
-        }
+        CastStraightX(playerCellX,playerCellY,1);  // [ ][3]
+                                                   // [1][2]
+                                                   // [ ][3]
 
-        if (XYPairInBounds(playerCellX,playerCellY - 1)) {
-            CastStraightY(playerCellX,playerCellY,-1); // [ ][1][ ]
-                                                       // [3][2][3]
-        }
+        CastStraightX(playerCellX,playerCellY,-1); // [3][ ]
+                                                   // [2][1]
+                                                   // [3][ ]
 
-        if (XYPairInBounds(playerCellX + 1,playerCellY)) {
-            if (gridCells[playerCellX + 1,playerCellY].visible) CastStraightX(playerCellX + 1,playerCellY,-1);
-        }
+        CastStraightY(playerCellX,playerCellY,1);  // [3][2][3]
+                                                   // [ ][1][ ]
 
-        if (XYPairInBounds(playerCellX - 1,playerCellY)) {
-            if (gridCells[playerCellX - 1,playerCellY].visible) CastStraightX(playerCellX - 1,playerCellY,-1);
-        }
-
+        CastStraightY(playerCellX,playerCellY,-1); // [ ][1][ ]
+                                                   // [3][2][3]
         CircleFanRays(playerCellX,playerCellY);
-        CircleFanRays(playerCellX + 1,playerCellY);     // For leaning, do all
-        CircleFanRays(playerCellX + 1,playerCellY + 1); // neighboring open
-        CircleFanRays(playerCellX,playerCellY + 1);     // cells as though in
-        CircleFanRays(playerCellX - 1,playerCellY + 1); // all of them.
-        CircleFanRays(playerCellX - 1,playerCellY);
-        CircleFanRays(playerCellX - 1,playerCellY - 1);
-        CircleFanRays(playerCellX,playerCellY - 1);
-        CircleFanRays(playerCellX + 1,playerCellY - 1);
 
         Vector2Int pnt = new Vector2Int();
         // Use a for loop to iterate over the positions
@@ -1030,6 +1012,23 @@ public class DynamicCulling : MonoBehaviour {
             gridCells[pnt.x,pnt.y].visible = true;
             worldCellCheckedYet[pnt.x,pnt.y] = true;
             SetVisPixel(pnt.x,pnt.y,Color.blue);
+            
+//             CastStraightX(pnt.x,pnt.y,1);      // [ ][3]
+//             CastStraightX(pnt.x,pnt.y + 1,1);  // [1][2]
+//             CastStraightX(pnt.x,pnt.y - 1,1);  // [ ][3]
+// 
+//             CastStraightX(pnt.x,pnt.y,-1);     // [3][ ]
+//             CastStraightX(pnt.x,pnt.y + 1,-1); // [2][1]
+//             CastStraightX(pnt.x,pnt.y - 1,-1); // [3][ ]
+// 
+//             CastStraightY(pnt.x,pnt.y,1);      // [3][2][3]
+//             CastStraightX(pnt.x + 1,pnt.y,1);  // [ ][1][ ]
+//             CastStraightX(pnt.x - 1,pnt.y,1);
+// 
+//             CastStraightY(pnt.x,pnt.y,-1);     // [ ][1][ ]
+//             CastStraightX(pnt.x + 1,pnt.y,-1); // [3][2][3]
+//             CastStraightX(pnt.x - 1,pnt.y,-1);
+            
             CircleFanRays(pnt.x,pnt.y);
         }
 
@@ -1054,6 +1053,8 @@ public class DynamicCulling : MonoBehaviour {
     private void CastStraightY(int px, int py, int signy) {
         if (signy > 0 && py >= 63) return;
         if (signy < 0 && py <= 0) return;
+        if (!XYPairInBounds(px,py)) return;
+        if (!gridCells[px,py].visible) return;
 
         int x = px;
         int y = py + signy;
@@ -1101,7 +1102,9 @@ public class DynamicCulling : MonoBehaviour {
     private void CastStraightX(int px, int py, int signx) {
         if (signx > 0 && px >= 63) return;
         if (signx < 0 && px <= 0) return;
-
+        if (!XYPairInBounds(px,py)) return;
+        if (!gridCells[px,py].visible) return;
+        
         int x = px + signx;
         int y = py;
         bool currentVisible = true;
@@ -1207,10 +1210,10 @@ public class DynamicCulling : MonoBehaviour {
                                 pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
                             }
                             return -1;
-                        }
-//                         } else {
-//                             Debug.Log("closedWest was false for lastX,lastY: " + lastX.ToString() + ", " + lastY.ToString() + ", continuing ray...");
 //                         }
+                        } else {
+//                             Debug.Log("closedWest was false for lastX,lastY: " + lastX.ToString() + ", " + lastY.ToString() + ", continuing ray...");
+                        }
                     } else { // Less than x since == x was already checked.
                         if (gridCells[lastX,lastY].closedEast) {
 //                             Debug.Log("Closed east blocking ray at " + lastX.ToString() + ", " + lastY.ToString());
@@ -1218,10 +1221,9 @@ public class DynamicCulling : MonoBehaviour {
                                 pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
                             }
                             return -1;
-                        }
-//                         } else {
+                        } else {
 //                             Debug.Log("closedEast was false for lastX,lastY: " + lastX.ToString() + ", " + lastY.ToString() + ", continuing ray...");
-//                         }
+                        }
                     }
                 }
 
@@ -1234,10 +1236,10 @@ public class DynamicCulling : MonoBehaviour {
                                 pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
                             }
                             return -1;
-                        }
-//                         } else {
-//                             Debug.Log("closedSouth was false for lastX,lastY: " + lastX.ToString() + ", " + lastY.ToString() + ", continuing ray...");
 //                         }
+                        } else {
+//                             Debug.Log("closedSouth was false for lastX,lastY: " + lastX.ToString() + ", " + lastY.ToString() + ", continuing ray...");
+                        }
                     } else { // Less than y since == y was already checked.
                         if (gridCells[lastX,lastY].closedNorth) {
 //                             Debug.Log("Closed north blocking ray at " + lastX.ToString() + ", " + lastY.ToString());
@@ -1245,10 +1247,9 @@ public class DynamicCulling : MonoBehaviour {
                                 pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
                             }
                             return -1;
-                        }
-//                         } else {
+                        } else {
 //                             Debug.Log("closedNorth was false for lastX,lastY: " + lastX.ToString() + ", " + lastY.ToString() + ", continuing ray...");
-//                         }
+                        }
                     }
                 }
 
@@ -1266,10 +1267,9 @@ public class DynamicCulling : MonoBehaviour {
                                 pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
                             }
                             return -1;
-                        }
-//                         } else {
+                        } else {
 //                             Debug.Log("closedSouth && closedWest was false for lastX,lastY: " + lastX.ToString() + ", " + lastY.ToString() + ", continuing ray...");
-//                         }
+                        }
                     } else if (lastY < y && lastX < x) { // [ ][2]
                                                          // [1][ ]
                         bool neighborClosedEast = false;
@@ -1282,10 +1282,9 @@ public class DynamicCulling : MonoBehaviour {
                                 pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
                             }
                             return -1;
-                        }
-//                         } else {
+                        } else {
 //                             Debug.Log("closedNorth && closedEast was false for lastX,lastY: " + lastX.ToString() + ", " + lastY.ToString() + ", continuing ray...");
-//                         }
+                        }
                     } else if (lastY > y && lastX < x) { // [1][ ]
                                                          // [ ][2]
                         bool neighborClosedEast = false;
@@ -1298,10 +1297,9 @@ public class DynamicCulling : MonoBehaviour {
                                 pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
                             }
                             return -1;
-                        }
-//                         } else {
+                        } else {
 //                             Debug.Log("closedSouth && closedEast was false for lastX,lastY: " + lastX.ToString() + ", " + lastY.ToString() + ", continuing ray...");
-//                         }
+                        }
                     } else if (lastY < y && lastX > x) { // [2][ ]
                                                          // [ ][1]
                         bool neighborClosedWest = false;
@@ -1314,10 +1312,9 @@ public class DynamicCulling : MonoBehaviour {
                                 pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
                             }
                             return -1;
-                        }
-//                         } else {
+                        } else {
 //                             Debug.Log("closedNorth && closedWest was false for lastX,lastY: " + lastX.ToString() + ", " + lastY.ToString() + ", continuing ray...");
-//                         }
+                        }
                     }
                 }
             }
