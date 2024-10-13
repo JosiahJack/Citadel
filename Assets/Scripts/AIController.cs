@@ -400,25 +400,22 @@ public class AIController : MonoBehaviour {
 	void Think() {
 		if (!DynamicCulling.a.cullEnabled) withinPVS = true;
 		if (dyingSetup && deathBurstFinished < PauseScript.a.relativeTime
-			&& !deathBurstDone) {
-			// Activate any death effects
+			&& !deathBurstDone) { // Activate any death effects
+			
 			if (deathBurst != null) deathBurst.SetActive(true);
 			deathBurstDone = true;
-			Debug.Log("NPC " + gameObject.name + " death burst activated");
 		}
 
 		if (!HasHealth(healthManager)) {
 			// If we haven't gone into dying and we aren't dead, do dying.
 			if (!ai_dying && !ai_dead) {
-				Debug.Log("NPC " + gameObject.name + " is now dying");
 				ai_dying = true; // No going back!
 				currentState = AIState.Dying; // Start to collapse in a heap,
 											  // melt, explode, etc.
+				
 			} else if (ai_dead && currentState != AIState.Dead) {
-				Debug.Log("NPC " + gameObject.name + " is made dead");
 				currentState = AIState.Dead;
 			} else if (ai_dying && currentState != AIState.Dying) {
-				Debug.Log("NPC " + gameObject.name + " is made dying");
 				currentState = AIState.Dying;
 			}
 		}

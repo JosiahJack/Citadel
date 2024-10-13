@@ -975,180 +975,180 @@ Master Index
 522 BulletHoleTiny                30
 523 BulletHoleTinySpread          31
 524 func_door_cyber           19
-525 prop_console01
-526 prop_console02
+525 prop_console01                54
+526 prop_console02                55
 527 prop_grate1_1                 32
 528 prop_grate1_2                 33
 529 prop_grate1_3                 34
 530 se_cabinet                    35
 531 se_thermos                    36
-532 prop_beaker_holder
-533 prop_bed
-534 prop_bed_hospital
-535 prop_bed_neurosurgery
-536 prop_bonepile1
-537 prop_bridgewall1
-538 prop_broken_clock
-539 prop_brokengun
-540 prop_chair01
-541 prop_chair02
-542 prop_chair03
-543 prop_chair04
-544 prop_chair05
-545 prop_chandelier
-546 prop_charge_station
-547 prop_clothes
-548 prop_computer
-549 prop_couch
-550 prop_couch2
-551 prop_cpuscreen
-552 prop_cyber_datafrag
-553 prop_cyber_decoy
-554 prop_cyber_exit
-555 prop_cyber_switch
-556 prop_cyberport
-557 prop_desk01
-558 prop_desk02
-559 prop_dexmissile
-560 prop_diegorapier
-561 prop_foliage_bush
-562 prop_foliage_fern
-563 prop_foliage_fernblueflower
-564 prop_foliage_pinetreem
-565 prop_foliage_poisonbush1
-566 prop_gear_large
-567 prop_gear_small
-568 prop_grass1
-569 prop_grass2
-570 prop_grass3
-571 prop_grass4
-572 prop_grass5
-573 prop_grate4
-574 prop_healingbed
-575 prop_lamp
-576 prop_light_emergsignal
-577 prop_microscope
-578 prop_pipe
-579 prop_puddle
-580 prop_puddle_grease
-581 prop_puddle_oil
-582 prop_shelves
-583 prop_skeleton
-584 prop_sleeping_cables
-585 prop_sparkingwire
-586 prop_table
-587 prop_tv_on_a_post
-588 prop_vendingmachines1
-589 prop_vendingmachines2
-590 prop_weapon_rack
-591 prop_xray
-592 text_decal
-593 text_decalStopDSS1
-594 trigger_counter
-595 trigger_cyberpush
-596 trigger_gravitylift
-597 trigger_ladder
-598 trigger_multiple
-599 trigger_music
-600 trigger_once
-601 trigger_radiation
-602 us_isotopepanel
-603 us_paperlog
-604 us_puz_elevatorkeypad
-605 us_puz_elevatorkeypad2
-606 us_puz_elevatorkeypad3
-607 us_puz_elevatorkeypad4
-608 us_puz_keypad
-609 us_puz_panel_blue
-610 us_puz_panel_blue_dead
-611 us_puz_panel_brown
-612 us_puz_panel_brown_dead
-613 us_puz_panel_gray
-614 us_puz_panel_gray_dead
-615 us_puz_panel_red
-616 us_puz_panel_red_dead // Redemption?
-617 us_puz_panel_teal
-618 us_puz_panel_teal_dead
-619 us_relaypanel
-620 us_retinalscanner
-621 ambient_airhiss
-622 ambient_clicker
-623 ambient_compressor
-624 ambient_dishwasher
-625 ambient_drip_amb
-626 ambient_fan
-627 ambient_generator_gas
-628 ambient_gurgle
-629 ambient_icemaker
-630 ambient_intake
-631 ambient_lathe
-632 ambient_lev3loop1
-633 ambient_lev3loop2
-634 ambient_lev3loop3
-635 ambient_lev3loop4
-636 ambient_liquid_bubble
-637 ambient_liquid_lava2
-638 ambient_looping
-639 ambient_machgear_loop
-640 ambient_machine_ambience
-641 ambient_machine_go
-642 ambient_machine_humamb7
-643 ambient_machine_humlonoise
-644 ambient_machine_loop1
-645 ambient_machine_loop2
-646 ambient_machinea1
-647 ambient_machinevat_loop
-648 ambient_mist
-649 ambient_pipewater_loop
-650 ambient_powerloom
-651 ambient_pump
-652 ambient_pump2
-653 ambient_rain
-654 ambient_steam_loop
-655 ambient_washing_machine
-656 decal_blood_die
-657 decal_blood_resist
-658 decal_blood_stayaway
-659 decal_blood_words2
-660 decal_bloodfonta
-661 decal_bloodfonte
-662 decal_bloodfontg
-663 decal_bloodfonth
-664 decal_bloodfontr
-665 decal_bloodfonty
-666 decal_bloodsplat2
-667 decal_logo_antenna
-668 decal_logo_armory
-669 decal_logo_biohazard
-670 decal_logo_bridge
-671 decal_logo_cyborg
-672 decal_logo_gears
-673 decal_logo_medical
-674 decal_logo_radhazard
-675 decal_logo_research
-676 decal_logo_security
-677 decal_painting1
-678 decal_painting2
-679 decal_painting3
-680 decal_posterbetterfuture
-681 decal_postergenetics
-682 decal_scorch1
-683 decal_scorch2
-684 decal_scorch3
-685 decal_scorch4
-686 decal_scorchtiny
-687 decal_bloodsplat // missed typing it so alphabetically down here, oh well
-688 func_switch1
-689 func_switch2
-690 func_switch3
-691 func_switch4
-692 func_switch5
-693 func_switch5broken
-694 func_switch7
-695 func_switch8
-696 func_switchbroken
-697 clip_npc
-698 clip_objects
+532 prop_beaker_holder            37
+533 prop_bed                      38
+534 prop_bed_hospital             39
+535 prop_bed_neurosurgery         40
+536 prop_bonepile1                41
+537 prop_bridgewall1              42
+538 prop_broken_clock             43
+539 prop_brokengun                44
+540 prop_chair01                  45
+541 prop_chair02                  46
+542 prop_chair03                  47
+543 prop_chair04                  48
+544 prop_chair05                  49
+545 prop_chandelier               50
+546 prop_charge_station           51
+547 prop_clothes                  52
+548 prop_computer                 53
+549 prop_couch                    56
+550 prop_couch2                   57
+551 prop_cpuscreen                58
+552 prop_cyber_datafrag           59
+553 prop_cyber_decoy              60
+554 prop_cyber_exit               61
+555 prop_cyber_switch             62
+556 prop_cyberport                63
+557 prop_desk01                   64
+558 prop_desk02                   65
+559 prop_dexmissile               66
+560 prop_diegorapier              67
+561 prop_foliage_bush             68
+562 prop_foliage_fern             69
+563 prop_foliage_fernblueflower   70
+564 prop_foliage_pinetreem        71
+565 prop_foliage_poisonbush1      72
+566 prop_gear_large               74
+567 prop_gear_small               73
+568 prop_grass1                   75
+569 prop_grass2                   76
+570 prop_grass3                   77
+571 prop_grass4                   78
+572 prop_grass5                   79
+573 prop_grate4                   80
+574 prop_healingbed               81
+575 prop_lamp                     82
+576 prop_light_emergsignal        83
+577 prop_microscope               84
+578 prop_pipe                     85
+579 prop_puddle                   86
+580 prop_puddle_grease            87
+581 prop_puddle_oil               88
+582 prop_shelves                  89
+583 prop_skeleton                 90
+584 prop_sleeping_cables          91
+585 prop_sparkingwire             92
+586 prop_table                    93
+587 prop_tv_on_a_post             94
+588 prop_vendingmachines1         95
+589 prop_vendingmachines2         96
+590 prop_weapon_rack              97
+591 prop_xray                     98
+592 text_decal                    99
+593 text_decalStopDSS1           100
+594 trigger_counter              101
+595 trigger_cyberpush            102
+596 trigger_gravitylift          103
+597 trigger_ladder               104
+598 trigger_multiple             105
+599 trigger_music                106
+600 trigger_once                 107
+601 trigger_radiation            108
+602 us_isotopepanel              109
+603 us_paperlog                  110
+604 us_puz_elevatorkeypad        111
+605 us_puz_elevatorkeypad2       112
+606 us_puz_elevatorkeypad3       113
+607 us_puz_elevatorkeypad4       114
+608 us_puz_keypad                115
+609 us_puz_panel_blue            116
+610 us_puz_panel_blue_dead       117
+611 us_puz_panel_brown           118
+612 us_puz_panel_brown_dead      119
+613 us_puz_panel_gray            120
+614 us_puz_panel_gray_dead       121
+615 us_puz_panel_red             122
+616 us_puz_panel_red_dead        123 // Redemption?
+617 us_puz_panel_teal            124
+618 us_puz_panel_teal_dead       125
+619 us_relaypanel                126
+620 us_retinalscanner            127
+621 ambient_airhiss              128
+622 ambient_clicker              129
+623 ambient_compressor           130
+624 ambient_dishwasher           131
+625 ambient_drip_amb             132
+626 ambient_fan                  133
+627 ambient_generator_gas        134
+628 ambient_gurgle               135
+629 ambient_icemaker             136
+630 ambient_intake               137
+631 ambient_lathe                138
+632 ambient_lev3loop1            139
+633 ambient_lev3loop2            140
+634 ambient_lev3loop3            141
+635 ambient_lev3loop4            142
+636 ambient_liquid_bubble        143
+637 ambient_liquid_lava2         144
+638 ambient_looping              145
+639 ambient_machgear_loop        146
+640 ambient_machine_ambience     147
+641 ambient_machine_go           148
+642 ambient_machine_humamb7      149
+643 ambient_machine_humlonoise   150
+644 ambient_machine_loop1        151
+645 ambient_machine_loop2        152
+646 ambient_machinea1            153
+647 ambient_machinevat_loop      154
+648 ambient_mist                 155
+649 ambient_pipewater_loop       156
+650 ambient_powerloom            157
+651 ambient_pump                 158
+652 ambient_pump2                159
+653 ambient_rain                 160
+654 ambient_steam_loop           161
+655 ambient_washing_machine      162
+656 decal_blood_die              163
+657 decal_blood_resist           164
+658 decal_blood_stayaway         165
+659 decal_blood_words2           166
+660 decal_bloodfonta             167
+661 decal_bloodfonte             168
+662 decal_bloodfontg             169
+663 decal_bloodfonth             170
+664 decal_bloodfontr             171
+665 decal_bloodfonty             172
+666 decal_bloodsplat2            173
+667 decal_logo_antenna           174
+668 decal_logo_armory            175
+669 decal_logo_biohazard         176
+670 decal_logo_bridge            177
+671 decal_logo_cyborg            178
+672 decal_logo_gears             179
+673 decal_logo_medical           180
+674 decal_logo_radhazard         181
+675 decal_logo_research          182
+676 decal_logo_security          183
+677 decal_painting1              184
+678 decal_painting2              185
+679 decal_painting3              186
+680 decal_posterbetterfuture     187
+681 decal_postergenetics         188
+682 decal_scorch1                189
+683 decal_scorch2                190
+684 decal_scorch3                191
+685 decal_scorch4                192
+686 decal_scorchtiny             193
+687 decal_blood_splat            194 // missed typing it so alphabetically down here, oh well
+688 func_switch1                 195
+689 func_switch2                 196
+690 func_switch3                 197
+691 func_switch4                 198
+692 func_switch5                 199
+693 func_switch5broken           200
+694 func_switch7                 201
+695 func_switch8                 202
+696 func_switchbroken1           203
+697 clip_npc                     204
+698 clip_objects                 205
 
 Generic Materials (Const.a.genericMaterials[])
 0  col1                 Dark Gray            In hindsight, maybe I should have named these descriptively.
@@ -1371,7 +1371,13 @@ Generic Materials (Const.a.genericMaterials[])
 					uo.customIndex = (Inventory.a.hardwareVersion[dex14] + 1);
 				}
 			}
-		} else Debug.Log("SpawnDynamicObject failure: go == null at the end");
+		} else {
+			Debug.Log("SpawnDynamicObject failure: go == null at the end when "
+					  + "trying to spawn constdex " + initialIndex.ToString()
+					  + ", for level " + lev.ToString() + ", given container "
+					  + (forcedContainer == null ? "-" : forcedContainer.name)
+					  + ", and saveID of " + saveID.ToString());
+		}
 
 		if (go != null) {
 			lastSpawnedGO = go;

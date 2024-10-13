@@ -416,7 +416,6 @@ public class LevelManager : MonoBehaviour {
 		if (curlevel > (geometryContainers.Length - 1)) return;
 		if (curlevel < 0) return;
 		
-		Debug.Log("Loading geometry for " + curlevel.ToString());
 		string gName = "CitadelScene_geometry_level"+curlevel.ToString()+".dat";
 		StreamReader sf = Utils.ReadStreamingAsset(gName);
 		if (sf == null) {

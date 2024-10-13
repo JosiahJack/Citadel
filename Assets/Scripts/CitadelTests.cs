@@ -135,6 +135,8 @@ public class CitadelTests : MonoBehaviour {
 
 				List<ObjectOverride> ovides = PrefabUtility.GetObjectOverrides(allStaticObjects[i],false);
 				for (int j=0; j < ovides.Count; j++) {
+					hasBoxColliderOverride = false;
+					
 					UnityEngine.Object ob = ovides[j].instanceObject;
 					SerializedObject sob = new UnityEditor.SerializedObject(ob);
 
@@ -217,6 +219,12 @@ public class CitadelTests : MonoBehaviour {
 								"collisionAid.activeSelf"));
 						}
 					}
+				}
+				
+				if (pid.constIndex == 601) { // trigger_radiation
+					Radiation rad = allStaticObjects[i].GetComponent<Radiation>();
+					s1.Append(Utils.splitChar);
+					s1.Append(Utils.FloatToString(rad.radiationAmount,"radiationAmount"));
 				}
 				sw.Write(s1.ToString());
 				sw.Write(Environment.NewLine);
