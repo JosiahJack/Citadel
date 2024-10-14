@@ -335,12 +335,14 @@ public class FuncWall : MonoBehaviour {
 															 + i.ToString()
 															 + "]");
 			index++;
+			if (chunkdex < 0 || chunkdex > 306) continue;
+			
 			fw.chunkIDs[i] = chunkdex;
 
 			// Assumption here is that we are loading to a freshly instantiated
 			// func_wall prefab and that there are no children chunks on the
 			// mover_target GameObject yet.
-			GameObject childGO = Instantiate(Const.a.chunkPrefabs[chunkdex],
+			GameObject childGO = Instantiate(Const.a.prefabs[chunkdex],
 						go.transform.localPosition, // 0's, transform is below
 						Const.a.quaternionIdentity) as GameObject;
 			childGO.transform.SetParent(go.transform); // Set parent prior

@@ -573,7 +573,7 @@ Master Index
 120 chunk_maint1_5               95
 121 chunk_maint1_6               96
 122 chunk_maint1_7               97
-123 chunk_maint1_8
+123 // None, filled with chunk_black as fallback. maint1_8 was duplicate.
 124 chunk_maint1_9               98
 125 chunk_maint1_9d              99
 126 chunk_maint2_1               100
@@ -622,10 +622,10 @@ Master Index
 169 chunk_med1_8                 129
 170 chunk_med1_8d                130
 171 chunk_med1_9                 131
-172 chunk_med1_9_ofs32_90        131
-173 chunk_med1_9_ofs64_90        131
+172 Replaced with chunk_black, unused variant chunk_med1_9_ofs32_90 removed
+173 Replaced with chunk_black, unused variant chunk_med1_9_ofs64_90 removed
 174 chunk_med1_9d                132
-175 chunk_med1_9d_ofs48_90       132
+175 Replaced with chunk_black, unused variant chunk_med1_9d_ofs48_90 removed
 176 chunk_med1_9d_ofs112_90      132
 177 chunk_med1_9d_ofs144_90      132
 178 chunk_med2_1                 133
@@ -736,8 +736,8 @@ Master Index
 283 chunk_sec1_1c_slice45        213
 284 chunk_sec1_1c_slice64highlh  213
 285 chunk_sec1_1c_slice64highrh  213
-286 chunk_sec1_1c_slice320high   213
-287 chunk_sec1_1c_slice320highrh 213
+286 Replaced with chunk_black, unused chunk_sec1_1c_slice320high removed
+287 Replaced with chunk_black, unused chunk_sec1_1c_slice320highrh removed
 288 chunk_sec1_2                 214
 289 chunk_sec1_2b                215
 290 chunk_sec1_3                 216
@@ -749,7 +749,7 @@ Master Index
 296 chunk_stor1_5                221
 297 chunk_stor1_6                222
 298 chunk_stor1_6_slice128_up_lh 222
-299 chunk_stor1_6_slice128_uprh  222
+299 chunk_stor1_6_slice128_up_rh 222
 300 chunk_stor1_6_slice192lh     222
 301 chunk_stor1_6_slice192rh     222
 302 chunk_stor1_7                223
@@ -758,7 +758,7 @@ Master Index
 305 chunk_teleporter
 306 chunk_white                 Const.a.useableItems
 307 item_paper_wad              0
-308 prop_phys_warecasing        1
+308 item_warecasing             1
 309 item_beaker                 2
 310 item_beverage               3
 311 item_skull                  4
@@ -1200,151 +1200,37 @@ Generic Materials (Const.a.genericMaterials[])
 46 citmat2_1
 47 citmat2_4
 48 chunk             THE BIG ONE
-
 */
-
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat,
 												GameObject forcedContainer,
 												int saveID) {
-		
 		if (cheat) {
-			Debug.Log("SpawnDynamicObject: " + val.ToString() + ", level: "
+			Debug.Log("Cheat spawn: " + val.ToString() + ", level: "
 					  + lev.ToString() + ", from cheat: " + cheat.ToString()
 					  + ", name: "
 					  + (forcedContainer == null ? "null" : forcedContainer.name)
 					  + ", saveID: " + saveID.ToString());
 		}
 
-		int initialIndex = val;
-		if (LevelManager.a == null) {
-			Debug.Log("Missing LevelManager");
-			return null;
-		}
-		if (cheat && Inventory.a == null) {
-			Debug.Log("Missing Inventory");
-			return null;
-		}
-		if (cheat && Const.a == null) {
-			Debug.Log("Missing Const");
-			return null;
-		}
+		if (LevelManager.a == null) { Debug.Log("No LevelManager"); return null; }
+		if (cheat && Inventory.a == null) { Debug.Log("No Inventory"); return null; }
+		if (cheat && Const.a == null) { Debug.Log("No Const"); return null; }
 
 		Vector3 spawnPos = Vector3.zero;
 		if (cheat) spawnPos = PlayerMovement.a.transform.position;
-
 		GameObject go = null;
 		if (val >= 0 && val < 307) { // [0, 306]
 			if (Const.a.editMode || !cheat) {
-				if (val > (Const.a.chunkPrefabs.Length - 1)) {
-					Debug.Log("SpawnDynamicObject failure: val > (Const.a.chunkPrefabs.Length - 1), val: " + val.ToString());
-					return null;
-				}
-				if (Const.a.chunkPrefabs[val] == null) {
-					Debug.Log("SpawnDynamicObject failure: Const.a.chunkPrefabs[val] == null, val: " + val.ToString());
-					return null;
-				}
+				go = MonoBehaviour.Instantiate(Const.a.prefabs[val],spawnPos,
+									Const.a.quaternionIdentity) as GameObject;
 
-				go = MonoBehaviour.Instantiate(Const.a.chunkPrefabs[val],spawnPos,
-										Const.a.quaternionIdentity) as GameObject;
-
-			} else Const.sprint("Indices 0 through 306 not possible when not on edit mode!");
-		} else if (val >= 307 && val < 419) {	// [307, 418]
-			val -= 307;
-			if (val > (Const.a.useableItems.Length - 1)) {
-				Debug.Log("SpawnDynamicObject failure: val > (Const.a.useableItems.Length - 1), val: " + val.ToString());
-				return null;
+			} else {
+				Const.sprint("Indices 0 through 306 (level geometry chunks) "
+							 + "not possible when not on edit mode!");
 			}
-			if (Const.a.useableItems[val] == null) {
-				Debug.Log("SpawnDynamicObject failure: val > Const.a.useableItems[val] == null, val: " + val.ToString());
-				return null;
-			}
-
-			go = MonoBehaviour.Instantiate(Const.a.useableItems[val],spawnPos,
-									  Const.a.quaternionIdentity) as GameObject;
-
-		} else if (val >= 419 && val < 448) {	// [419, 447]
-			val -= 419;
-			if (val > (Const.a.npcPrefabs.Length - 1)) {
-				Debug.Log("SpawnDynamicObject failure: val > (Const.a.npcPrefabs.Length - 1), val: " + val.ToString());
-				return null;
-			}
-			if (Const.a.npcPrefabs[val] == null) {
-				Debug.Log("SpawnDynamicObject failure: Const.a.npcPrefabs[val] == null, val: " + val.ToString());
-				return null;
-			}
-
-			go = MonoBehaviour.Instantiate(Const.a.npcPrefabs[val],spawnPos,
-									  Const.a.quaternionIdentity) as GameObject;
-
-			LevelManager.a.npcsm[LevelManager.a.currentLevel].RepopulateChildList();
-		} else if (val >= 448 && val < 458) {	// [448, 457]
-			val -= 448;
-			if (val > (Const.a.cyberItemPrefabs.Length - 1)) {
-				Debug.Log("SpawnDynamicObject failure: val > "
-						  + "(Const.a.cyberItemPrefabs.Length - 1), val: "
-						  + val.ToString());
-
-				return null;
-			}
-			if (Const.a.cyberItemPrefabs[val] == null) {
-				Debug.Log("SpawnDynamicObject failure: "
-						  + "Const.a.cyberItemPrefabs[val] == null, val: "
-						  + val.ToString());
-
-				return null;
-			}
-
-			go = MonoBehaviour.Instantiate(Const.a.cyberItemPrefabs[val],
-							spawnPos,Const.a.quaternionIdentity) as GameObject;
-
-		} else if ((val >= 458 && val < 481) 	// [458, 480], [515, 523], [527, 531]
-				   || (val >= 515 && val <= 523)
-				   || (val >= 527 && val <= 531)) {
-
-			if (val >= 515 && val <= 523) val -= 492; // order exceptions
-			else if (val >= 527 && val <= 523) val -= 495;
-			else val -= 458;
-
-			if (val > (Const.a.miscellaneousPrefabs.Length - 1)) {
-				Debug.Log("SpawnDynamicObject failure: val > (Const.a.miscellaneousPrefabs.Length - 1), val: " + val.ToString());
-				return null;
-			}
-			if (Const.a.miscellaneousPrefabs[val] == null) {
-				Debug.Log("SpawnDynamicObject failure: Const.a.miscellaneousPrefabs[val] == null, val: " + val.ToString());
-				return null;
-			}
-
-			go = MonoBehaviour.Instantiate(Const.a.miscellaneousPrefabs[val],
-							 spawnPos,Const.a.quaternionIdentity) as GameObject;
-
-		} else if (val >= 481 && val < 496) {	// [481, 495]
-			val -= 481;
-			if (val > (Const.a.projectilesLaunched.Length - 1)) {
-				Debug.Log("SpawnDynamicObject failure: val > (Const.a.projectilesLaunched.Length - 1), val: " + val.ToString());
-				return null;
-			}
-			if (Const.a.projectilesLaunched[val] == null) {
-				Debug.Log("SpawnDynamicObject failure: Const.a.projectilesLaunched[val] == null, val: " + val.ToString());
-				return null;
-			}
-
-			go = MonoBehaviour.Instantiate(Const.a.projectilesLaunched[val],
-							 spawnPos,Const.a.quaternionIdentity) as GameObject;
-
-		} else if ((val >= 496 && val < 515) || val == 524) { // [496, 514],524
-			if (val == 524) val = 19; // func_door_cyber
-			else val -= 496;
-			if (val > (Const.a.doorPrefabs.Length - 1)) {
-				Debug.Log("SpawnDynamicObject failure: val > (Const.a.doorPrefabs.Length - 1), val: " + val.ToString());
-				return null;
-			}
-			if (Const.a.doorPrefabs[val] == null) {
-				Debug.Log("SpawnDynamicObject failure: Const.a.doorPrefabs[val] == null, val: " + val.ToString());
-				return null;
-			}
-
-			go = MonoBehaviour.Instantiate(Const.a.doorPrefabs[val],spawnPos,
-									  Const.a.quaternionIdentity) as GameObject;
+		} else if (val >= 307 && val < 699) {	// [307, 698]
+			go = MonoBehaviour.Instantiate(Const.a.prefabs[val],spawnPos,
+									Const.a.quaternionIdentity) as GameObject;
 		}
 
 		if (go != null) {
@@ -1355,16 +1241,16 @@ Generic Materials (Const.a.genericMaterials[])
 					Level levS = LevelManager.a.levelScripts[lev];
 					
 					GameObject parGO = levS.dynamicObjectsContainer;
-					if (initialIndex >= 419 && initialIndex < 448) {
+					if (val >= 419 && val < 448) {
 						parGO = levS.NPCsSaveableInstantiated;
-					} else if (initialIndex >= 0 && initialIndex < 307) {
+					} else if (val >= 0 && val < 307) {
 						parGO = levS.geometryContainer;
 					}
 
 					go.transform.SetParent(parGO.transform);
 				}
 			}
-			if (cheat && (val < 33) && (val > 20)) {
+			if (cheat && (val >= 328) && (val <= 339)) { // Hardware
 				UseableObjectUse uo = go.GetComponent<UseableObjectUse>();
 				int dex14 = Inventory.a.hardware14fromConstdex(uo.useableItemIndex);
 				if (Inventory.a.hasHardware[dex14]) {
@@ -1373,7 +1259,7 @@ Generic Materials (Const.a.genericMaterials[])
 			}
 		} else {
 			Debug.Log("SpawnDynamicObject failure: go == null at the end when "
-					  + "trying to spawn constdex " + initialIndex.ToString()
+					  + "trying to spawn constdex " + val.ToString()
 					  + ", for level " + lev.ToString() + ", given container "
 					  + (forcedContainer == null ? "-" : forcedContainer.name)
 					  + ", and saveID of " + saveID.ToString());

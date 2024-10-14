@@ -15,11 +15,8 @@ public class DynamicCulling : MonoBehaviour {
     public bool lightCulling = true;
     public bool outputDebugImages = false;
     public bool forceRecull = false;
-    public ComputeShader computeShader;
-    public RenderTexture renderTexture;
     public Texture2D[] worldClosedEdges;
     public bool[,] worldCellCheckedYet = new bool [WORLDX,WORLDX];
-    //public Texture2D[] precalculatedPVS = new Texture2D[ARRSIZE];
     public GridCell[,] gridCells = new GridCell[WORLDX,WORLDX];
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
     public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();
@@ -33,7 +30,6 @@ public class DynamicCulling : MonoBehaviour {
     public List<Vector2Int> lightsInPVSCoords = new List<Vector2Int>();
     public List<MeshRenderer> doors = new List<MeshRenderer>();
     public List<Vector2Int> doorsCoords = new List<Vector2Int>();
-    public bool[,] worldCellLastVisible = new bool[WORLDX,WORLDX];
     public int playerCellX = 0;
     public int playerCellY = 0;
     public float deltaX = 0.0f;
@@ -54,9 +50,6 @@ public class DynamicCulling : MonoBehaviour {
     private Texture2D debugTex;
     private Dictionary<GameObject, Vector3> camPositions = new Dictionary<GameObject, Vector3>();
     private bool[,] worldCellsOpen = new bool[64,64];
-    
-    [HideInInspector] public ComputeBuffer triangleBuffer;
-    [HideInInspector] public ComputeBuffer modelBuffer;
     
     public static DynamicCulling a;
     
@@ -118,11 +111,6 @@ public class DynamicCulling : MonoBehaviour {
         
         a.pixels = new Color32[WORLDX * WORLDX];
         a.camPositions = new Dictionary<GameObject, Vector3>();
-        a.renderTexture = new RenderTexture(256,256,24);
-        a.renderTexture.enableRandomWrite = true;
-        a.renderTexture.Create();
-        computeShader.SetTexture(0,"Result",renderTexture);
-        computeShader.Dispatch(0,renderTexture.width / 8, renderTexture.height / 8, 1);
         a.worldCellsOpen = new bool[64,64];
     }
 
@@ -742,6 +730,7 @@ public class DynamicCulling : MonoBehaviour {
         }
         
         // Setup and find all cullables and associate them with x,y coords.
+        Debug.Log("Cull init clear");
         ClearCellList();
         switch(LevelManager.a.currentLevel) { // PosToCellCoords -1 on just x
             // chunk.x + (Geometry.x + Level.x),0,chunk.z + (Geometry.z + Level.z)
@@ -792,25 +781,7 @@ public class DynamicCulling : MonoBehaviour {
         PutMeshesInCells(4); // Static Saveable
         PutMeshesInCells(5); // Lights
 
-        // --------------------------------------------------------------------
-        // Do first Cull pass
-        FindPlayerCell();
-        DetermineVisibleCells(); // Reevaluate visible cells from new pos.
-        int x,y;
-        if (!cullEnabled) return;
-
-        // Force all cells dirty at start so the visibility is toggled for all.
-        for (x=0;x<64;x++) {
-            for (y=0;y<64;y++) worldCellLastVisible[x,y] = !gridCells[x,y].visible;
-        }
-
-        ToggleVisibility(); // Update all cells marked as dirty.
-        ToggleStaticMeshesImmutableVisibility();
-        ToggleStaticMeshesSaveableVisibility();
-        ToggleDoorsVisibility();
-        ToggleLightsVisibility();
-        UpdateNPCPVS();
-        ToggleNPCPVS();
+        Cull(true); // Do first Cull pass, forcing as player moved to new cell.
     }
 
     Vector2Int PosToCellCoordsChunks(Vector3 pos) {
@@ -847,14 +818,13 @@ public class DynamicCulling : MonoBehaviour {
         if (forceRecull) {
             for (int x=0;x<64;x++) {
                 for (int y=0;y<64;y++) {
-                    worldCellLastVisible[x,y] = false;
                     worldCellCheckedYet[x,y] = false;
                 }
             }
             forceRecull = false;
             return true;
         }
-        
+
         int lastX = playerCellX;
         int lastY = playerCellY;
         FindPlayerCell();
@@ -868,28 +838,20 @@ public class DynamicCulling : MonoBehaviour {
 
     // Accessible meaning that there aren't closed edges blocking the view to
     // that cell at x,y (checked in the calls below).
-    void SetVisible(bool isAccessible, int x, int y) {
-        if (!isAccessible) {
-            gridCells[x,y].visible = false;
-        } else {
+    void SetVisible(int startX, int startY, int x, int y) {
+        if (!XYPairInBounds(x,y) || !XYPairInBounds(startX,startY)) return;
+
+        if (IsAccessible(gridCells[startX,startY],gridCells[x,y])) {
             gridCells[x,y].visible = worldCellsOpen[x,y];
+        } else {
+            gridCells[x,y].visible = false;
         }
-        
+
         worldCellCheckedYet[x,y] = true;
         if (gridCells[x,y].visible) SetVisPixel(x,y,Color.cyan);
         else SetVisPixel(x,y,Color.black);
     }
 
-    //void DetermineVisibleCellsPrecalculated() {
-    //    int playerCell4096 = playerCellX + (playerCellY * 64);
-    //    for (int x=0;x<64;x++) {
-    //        for (int y=0;y<64;y++) {
-    //            gridCells[x,y].visible = 
-    //                (precalculatedPVS[playerCell4096].GetPixel(x,y,0).r > 0.99f);
-    //        }
-    //    }
-    //}
-    
     bool IsAccessible(GridCell start, GridCell end) {
         bool accessibleCC; // Caddy Corner, if cell closed on adjacent edges.
         bool accessibleAA; // Axis Aligned X, check if neighbor and cell closed.
@@ -988,16 +950,16 @@ public class DynamicCulling : MonoBehaviour {
 
         // Set all neighboring cells visible if open in 3x3 square.
         // Ordinals
-        if (XYPairInBounds(x,y+1)) SetVisible(IsAccessible(gridCells[x,y],gridCells[x,y + 1]),x,y + 1); // North
-        if (XYPairInBounds(x+1,y)) SetVisible(IsAccessible(gridCells[x,y],gridCells[x + 1,y]),x + 1,y); // East
-        if (XYPairInBounds(x,y-1)) SetVisible(IsAccessible(gridCells[x,y],gridCells[x,y - 1]),x,y - 1); // South
-        if (XYPairInBounds(x-1,y)) SetVisible(IsAccessible(gridCells[x,y],gridCells[x - 1,y]),x - 1,y); // Weast
+        SetVisible(x,y,x,y+1); // North
+        SetVisible(x,y,x+1,y); // East
+        SetVisible(x,y,x,y-1); // South
+        SetVisible(x,y,x-1,y); // Weast
 
         // Diagonals
-        if (XYPairInBounds(x-1,y+1)) SetVisible(IsAccessible(gridCells[x,y],gridCells[x-1,y+1]),x - 1,y + 1); // NW
-        if (XYPairInBounds(x+1,y+1)) SetVisible(IsAccessible(gridCells[x,y],gridCells[x+1,y+1]),x + 1,y + 1); // NE
-        if (XYPairInBounds(x-1,y-1)) SetVisible(IsAccessible(gridCells[x,y],gridCells[x-1,y-1]),x - 1,y - 1); // SW
-        if (XYPairInBounds(x+1,y-1)) SetVisible(IsAccessible(gridCells[x,y],gridCells[x+1,y-1]),x + 1,y - 1); // SE
+        SetVisible(x,y,x-1,y+1); // NW
+        SetVisible(x,y,x+1,y+1); // NE
+        SetVisible(x,y,x-1,y-1); // SW
+        SetVisible(x,y,x+1,y-1); // SE
 
 //         CastStraightX(playerCellX,playerCellY,1);  // [ ][3]
 //                                                    // [1][2]
@@ -1012,6 +974,7 @@ public class DynamicCulling : MonoBehaviour {
 // 
 //         CastStraightY(playerCellX,playerCellY,-1); // [ ][1][ ]
 //                                                    // [3][2][3]
+        
         CircleFanRays(playerCellX,playerCellY);
 
         Vector2Int pnt = new Vector2Int();
@@ -1027,22 +990,20 @@ public class DynamicCulling : MonoBehaviour {
             gridCells[pnt.x,pnt.y].visible = true;
             worldCellCheckedYet[pnt.x,pnt.y] = true;
             SetVisPixel(pnt.x,pnt.y,Color.blue);
-            
-//             CastStraightX(pnt.x,pnt.y,1);      // [ ][3]
-//             CastStraightX(pnt.x,pnt.y + 1,1);  // [1][2]
-//             CastStraightX(pnt.x,pnt.y - 1,1);  // [ ][3]
+
+//             CastStraightX(pnt.x,pnt.y,1);  // [ ][3]
+//                                            // [1][2]
+//                                            // [ ][3]
 // 
-//             CastStraightX(pnt.x,pnt.y,-1);     // [3][ ]
-//             CastStraightX(pnt.x,pnt.y + 1,-1); // [2][1]
-//             CastStraightX(pnt.x,pnt.y - 1,-1); // [3][ ]
+//             CastStraightX(pnt.x,pnt.y,-1); // [3][ ]
+//                                            // [2][1]
+//                                            // [3][ ]
 // 
-//             CastStraightY(pnt.x,pnt.y,1);      // [3][2][3]
-//             CastStraightY(pnt.x + 1,pnt.y,1);  // [ ][1][ ]
-//             CastStraightY(pnt.x - 1,pnt.y,1);
+//             CastStraightY(pnt.x,pnt.y,1);  // [3][2][3]
+//                                            // [ ][1][ ]
 // 
-//             CastStraightY(pnt.x,pnt.y,-1);     // [ ][1][ ]
-//             CastStraightY(pnt.x + 1,pnt.y,-1); // [3][2][3]
-//             CastStraightY(pnt.x - 1,pnt.y,-1);
+//             CastStraightY(pnt.x,pnt.y,-1); // [ ][1][ ]
+//                                            // [3][2][3]
             
             CircleFanRays(pnt.x,pnt.y);
         }
@@ -1085,7 +1046,7 @@ public class DynamicCulling : MonoBehaviour {
                         } else if (signy < 0) {
                             if (gridCells[x,y + 1].closedSouth) return;
                         }
-                        
+
                         gridCells[x,y].visible = worldCellsOpen[x,y];
                         worldCellCheckedYet[x,y] = true;
                         currentVisible = true; // Would be if twas open.
@@ -1353,7 +1314,7 @@ public class DynamicCulling : MonoBehaviour {
                     SetVisPixel(x,y,new Color(0f,0f,0.5f,1f));
                     worldCellCheckedYet[x,y] = true;
                 }
-                
+
                 if (!gridCells[x,y].visible) {
                     if (outputDebugImages) {
                         pixels[x + (y * 64)] = new Color(1f,0f,0f,1f);
@@ -1362,15 +1323,14 @@ public class DynamicCulling : MonoBehaviour {
                     return -1;
                 }
 
-
                 return 1;
+//             }
         }
 
         return 0;
     }
  
     void ToggleVisibility() {
-        worldCellLastVisible[playerCellX,playerCellY] = false;
         gridCells[playerCellX,playerCellY].visible = true; // Guarantee enable.
         bool skyVisible = false;
         for (int x=0;x<64;x++) {
@@ -1390,6 +1350,11 @@ public class DynamicCulling : MonoBehaviour {
                     if (chp == null) continue;
 
                     for (int k=0;k<chp.meshenderers.Count;k++) {
+                        if (chp.meshenderers[k].meshRenderer == null) {
+                            Debug.Log("meshRenderer missing for chp.constIndex:" + chp.constIndex.ToString());
+                            continue;
+                        }
+                        
                         chp.meshenderers[k].meshRenderer.enabled =
                                                         gridCells[x,y].visible;
 
@@ -1537,6 +1502,7 @@ public class DynamicCulling : MonoBehaviour {
         lightsInPVS.Clear();
         int x,y;
         for (int i=0;i<lights.Count;i++) {
+            if (lights[i] == null) continue;
             x = lightCoords[i].x;
             y = lightCoords[i].y;
             if (gridCells[x,y].visible || !worldCellsOpen[x,y]) {
@@ -1564,6 +1530,11 @@ public class DynamicCulling : MonoBehaviour {
 //                 + " VISIBLE, check was: "
 //                 + Vector3.Dot(lightDir,MouseLookScript.a.transform.forward).ToString());
             } else {
+                if (lightsInPVS[i] == null) {
+                    Debug.Log("ToggleLightsFrustumVisibility light was null at index " + i.ToString());
+                    continue;
+                }
+                
                 if (lightDir.magnitude > 10.24f) lightsInPVS[i].enabled = true;
                 else lightsInPVS[i].enabled = false;
 //                 Debug.Log("Light at "
@@ -1574,21 +1545,21 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
-    public void Cull() {
+    public void Cull(bool force) {
         if (!cullEnabled || LevelManager.a.currentLevel == 13) return;
 
-        // Now handle player position updating PVS
-        if (UpdatedPlayerCell()) {
+        // Now handle player position updating PVS. Always do UpdatedPlayerCell
+        // to set playerCellX and playerCellY.
+        bool playerHasMoved = UpdatedPlayerCell();
+        if (playerHasMoved || force) {
             int x,y;
             for (x=0;x<64;x++) {
                 for (y=0;y<64;y++) {
-                    worldCellLastVisible[x,y] = gridCells[x,y].visible;
                     worldCellCheckedYet[x,y] = false;
                 }
             }
 
             DetermineVisibleCells(); // Reevaluate visible cells from new pos.
-            //DetermineVisibleCellsPrecalculated(); // Reevaluate visible cells from new pos.
             gridCells[0,0].visible = true; // Errors default here so draw them anyways.
             ToggleVisibility(); // Update all cells marked as dirty.
             ToggleStaticMeshesImmutableVisibility();

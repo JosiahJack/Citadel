@@ -261,12 +261,9 @@ public class Const : MonoBehaviour {
 	public Sprite[] logImages;
 
 	public GameObject eventSystem;
+	public GameObject[] prefabs;
 	public Texture[] sequenceTextures;
-	public GameObject[] chunkPrefabs;
 	public Text loadPercentText;
-	public GameObject[] cyberItemPrefabs;
-	public GameObject[] miscellaneousPrefabs;
-	public GameObject[] doorPrefabs;
 	public Material[] genericMaterials;
 	public GameObject[] ReverbRegister;
 	public int nextFreeSaveID = 2000000;

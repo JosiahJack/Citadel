@@ -813,24 +813,24 @@ public class WeaponFire : MonoBehaviour {
 
 		// Add bullethole
 		tempVec = tempHit.normal * 0.16f;
-		GameObject holetype = Const.a.miscellaneousPrefabs[30];
+		GameObject holetype = Const.a.prefabs[522];
 		switch(wep16index) {
-			case 0: holetype = Const.a.miscellaneousPrefabs[26]; break;
-			case 1: holetype = Const.a.miscellaneousPrefabs[28]; break;
-			case 2: holetype = Const.a.miscellaneousPrefabs[30]; break;
-			case 3: holetype = Const.a.miscellaneousPrefabs[29]; break;
-			case 4: holetype = Const.a.miscellaneousPrefabs[27]; break;
-			case 5: holetype = Const.a.miscellaneousPrefabs[28]; break;
-			case 6: holetype = Const.a.miscellaneousPrefabs[30]; break;
-			case 7: holetype = Const.a.miscellaneousPrefabs[26]; break;
-			case 8: holetype = Const.a.miscellaneousPrefabs[27]; break;
-			case 9: holetype = Const.a.miscellaneousPrefabs[29]; break;
-			case 10: holetype = Const.a.miscellaneousPrefabs[27]; break;
-			case 11: holetype = Const.a.miscellaneousPrefabs[27]; break;
-			case 12: holetype = Const.a.miscellaneousPrefabs[31]; break;
-			case 13: holetype = Const.a.miscellaneousPrefabs[26]; break;
-			case 14: holetype = Const.a.miscellaneousPrefabs[28]; break;
-			case 15: holetype = Const.a.miscellaneousPrefabs[28]; break;
+			case 0:  holetype = Const.a.prefabs[518]; break;
+			case 1:  holetype = Const.a.prefabs[520]; break;
+			case 2:  holetype = Const.a.prefabs[522]; break;
+			case 3:  holetype = Const.a.prefabs[521]; break;
+			case 4:  holetype = Const.a.prefabs[519]; break;
+			case 5:  holetype = Const.a.prefabs[520]; break;
+			case 6:  holetype = Const.a.prefabs[522]; break;
+			case 7:  holetype = Const.a.prefabs[518]; break;
+			case 8:  holetype = Const.a.prefabs[519]; break;
+			case 9:  holetype = Const.a.prefabs[521]; break;
+			case 10: holetype = Const.a.prefabs[519]; break;
+			case 11: holetype = Const.a.prefabs[519]; break;
+			case 12: holetype = Const.a.prefabs[523]; break;
+			case 13: holetype = Const.a.prefabs[518]; break;
+			case 14: holetype = Const.a.prefabs[520]; break;
+			case 15: holetype = Const.a.prefabs[520]; break;
 		}
 
 		GameObject impactMark = (GameObject)Instantiate(holetype,

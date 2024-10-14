@@ -1340,7 +1340,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	void DyingSetup() {
-		Debug.Log("NPC " + gameObject.name + " start of dying setup");
+// 		Debug.Log("NPC " + gameObject.name + " start of dying setup");
 		enemy = null; // Reset for loading from saves
 
 		if (Const.a.deathBurstTimerForNPC[index] > 0) {
@@ -1401,7 +1401,7 @@ public class AIController : MonoBehaviour {
 		}
 
 		dyingSetup = true;
-		Debug.Log("NPC " + gameObject.name + " finished dying setup");
+// 		Debug.Log("NPC " + gameObject.name + " finished dying setup");
 	}
 
 	public bool DeactivatesVisibleMeshWhileDying() {
@@ -1417,7 +1417,7 @@ public class AIController : MonoBehaviour {
 		// Check if timer for dying animation is finished letting it play.
 		if (timeTillDeadFinished < PauseScript.a.relativeTime) {
 			ai_dead = true;
-			Debug.Log("NPC " + gameObject.name + " has now died");
+// 			Debug.Log("NPC " + gameObject.name + " has now died");
 			ai_dying = false;
 			currentState = AIState.Dead;
 		}
@@ -1426,8 +1426,8 @@ public class AIController : MonoBehaviour {
 			Utils.Deactivate(visibleMeshEntity);
 			if (visibleMeshVisible) {
 				visibleMeshVisible = false;
-				Debug.Log("NPC " + gameObject.name + " visibleMeshVisible now "
-						  + "false due to dying");
+// 				Debug.Log("NPC " + gameObject.name + " visibleMeshVisible now "
+// 						  + "false due to dying");
 			}
 		}
 
@@ -1444,8 +1444,8 @@ public class AIController : MonoBehaviour {
 		if (DeactivatesVisibleMeshWhileDying() && visibleMeshEntity.activeSelf) {
 			Utils.Deactivate(visibleMeshEntity);
 			visibleMeshVisible = false;
-			Debug.Log("NPC " + gameObject.name + " visibleMeshVisible now "
-			+ "false due to dead");
+// 			Debug.Log("NPC " + gameObject.name + " visibleMeshVisible now "
+// 			+ "false due to dead");
 		}
 
 		currentState = AIState.Dead;
