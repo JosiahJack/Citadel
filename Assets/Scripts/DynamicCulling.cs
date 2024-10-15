@@ -961,21 +961,31 @@ public class DynamicCulling : MonoBehaviour {
         SetVisible(x,y,x-1,y-1); // SW
         SetVisible(x,y,x+1,y-1); // SE
 
-//         CastStraightX(playerCellX,playerCellY,1);  // [ ][3]
-//                                                    // [1][2]
-//                                                    // [ ][3]
-// 
-//         CastStraightX(playerCellX,playerCellY,-1); // [3][ ]
-//                                                    // [2][1]
-//                                                    // [3][ ]
-// 
-//         CastStraightY(playerCellX,playerCellY,1);  // [3][2][3]
-//                                                    // [ ][1][ ]
-// 
-//         CastStraightY(playerCellX,playerCellY,-1); // [ ][1][ ]
-//                                                    // [3][2][3]
-        
+        CastStraightX(playerCellX,playerCellY + 1,1);  // [ ][3]
+        CastStraightX(playerCellX,playerCellY,1);      // [1][2]
+        CastStraightX(playerCellX,playerCellY - 1,1);  // [ ][3]
+
+        CastStraightX(playerCellX,playerCellY + 1,-1); // [3][ ]
+        CastStraightX(playerCellX,playerCellY,-1);     // [2][1]
+        CastStraightX(playerCellX,playerCellY - 1,-1); // [3][ ]
+
+        CastStraightY(playerCellX,playerCellY,1);      // [3][2][3]
+        CastStraightY(playerCellX + 1,playerCellY,1);  // [ ][1][ ]
+        CastStraightY(playerCellX - 1,playerCellY,1); 
+
+        CastStraightY(playerCellX,playerCellY,-1);     // [ ][1][ ]
+        CastStraightY(playerCellX + 1,playerCellY,-1); // [3][2][3]
+        CastStraightY(playerCellX - 1,playerCellY,-1);
+
         CircleFanRays(playerCellX,playerCellY);
+        CircleFanRays(playerCellX + 1,playerCellY);
+        CircleFanRays(playerCellX + 1,playerCellY + 1);
+        CircleFanRays(playerCellX,playerCellY + 1);
+        CircleFanRays(playerCellX - 1,playerCellY + 1);
+        CircleFanRays(playerCellX - 1,playerCellY);
+        CircleFanRays(playerCellX - 1,playerCellY - 1);
+        CircleFanRays(playerCellX,playerCellY - 1);
+        CircleFanRays(playerCellX + 1,playerCellY - 1);
 
         Vector2Int pnt = new Vector2Int();
         // Use a for loop to iterate over the positions
@@ -991,19 +1001,21 @@ public class DynamicCulling : MonoBehaviour {
             worldCellCheckedYet[pnt.x,pnt.y] = true;
             SetVisPixel(pnt.x,pnt.y,Color.blue);
 
-//             CastStraightX(pnt.x,pnt.y,1);  // [ ][3]
-//                                            // [1][2]
-//                                            // [ ][3]
-// 
-//             CastStraightX(pnt.x,pnt.y,-1); // [3][ ]
-//                                            // [2][1]
-//                                            // [3][ ]
-// 
-//             CastStraightY(pnt.x,pnt.y,1);  // [3][2][3]
-//                                            // [ ][1][ ]
-// 
-//             CastStraightY(pnt.x,pnt.y,-1); // [ ][1][ ]
-//                                            // [3][2][3]
+            CastStraightX(playerCellX,playerCellY + 1,1);  // [ ][3]
+            CastStraightX(playerCellX,playerCellY,1);      // [1][2]
+            CastStraightX(playerCellX,playerCellY - 1,1);  // [ ][3]
+
+            CastStraightX(playerCellX,playerCellY + 1,-1); // [3][ ]
+            CastStraightX(playerCellX,playerCellY,-1);     // [2][1]
+            CastStraightX(playerCellX,playerCellY - 1,-1); // [3][ ]
+
+            CastStraightY(playerCellX,playerCellY,1);      // [3][2][3]
+            CastStraightY(playerCellX + 1,playerCellY,1);  // [ ][1][ ]
+            CastStraightY(playerCellX - 1,playerCellY,1); 
+
+            CastStraightY(playerCellX,playerCellY,-1);     // [ ][1][ ]
+            CastStraightY(playerCellX + 1,playerCellY,-1); // [3][2][3]
+            CastStraightY(playerCellX - 1,playerCellY,-1);
             
             CircleFanRays(pnt.x,pnt.y);
         }
