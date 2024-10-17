@@ -1528,33 +1528,25 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void ToggleLightsFrustumVisibility() {
-        if (!lightCulling) return;
-
-        Vector3 lightPos;
-        Vector3 lightDir;
-        for (int i=0;i<lightsInPVS.Count;i++) {
-            lightPos = lightsInPVS[i].transform.position;
-            lightDir = PlayerMovement.a.transform.position - lightPos;
-            if (Vector3.Dot(lightDir,MouseLookScript.a.transform.forward) < 0.5f) {
-                lightsInPVS[i].enabled = true;
-//                 Debug.Log("Light at "
-//                 + lightsInPVS[i].transform.position.ToString()
-//                 + " VISIBLE, check was: "
-//                 + Vector3.Dot(lightDir,MouseLookScript.a.transform.forward).ToString());
-            } else {
-                if (lightsInPVS[i] == null) {
-                    Debug.Log("ToggleLightsFrustumVisibility light was null at index " + i.ToString());
-                    continue;
-                }
-                
-                if (lightDir.magnitude > 10.24f) lightsInPVS[i].enabled = true;
-                else lightsInPVS[i].enabled = false;
-//                 Debug.Log("Light at "
-//                 + lightsInPVS[i].transform.position.ToString()
-//                 + " NOT VISIBLE, check was: "
-//                 + Vector3.Dot(lightDir,MouseLookScript.a.transform.forward).ToString());
-            }
-        }
+//         if (!lightCulling) return;
+// 
+//         Vector3 lightPos;
+//         Vector3 lightDir;
+//         for (int i=0;i<lightsInPVS.Count;i++) {
+//             lightPos = lightsInPVS[i].transform.position;
+//             lightDir = PlayerMovement.a.transform.position - lightPos;
+//             if (Vector3.Dot(lightDir,MouseLookScript.a.transform.forward) < 0.5f) {
+//                 lightsInPVS[i].enabled = true;
+//             } else {
+//                 if (lightsInPVS[i] == null) {
+//                     Debug.Log("ToggleLightsFrustumVisibility light was null at index " + i.ToString());
+//                     continue;
+//                 }
+//                 
+//                 if (lightDir.magnitude > 10.24f) lightsInPVS[i].enabled = true;
+//                 else lightsInPVS[i].enabled = false;
+//             }
+//         }
     }
 
     public void Cull(bool force) {
