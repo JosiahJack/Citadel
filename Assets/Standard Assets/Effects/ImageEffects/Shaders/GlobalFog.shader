@@ -25,7 +25,7 @@ CGINCLUDE
 	float4 _SceneFogParams;
 	#ifndef UNITY_APPLY_FOG
 	half4 unity_FogColor;
-	half4 unity_FogDensity;
+	half4 unity_FogDensity = 0.25;
 	#endif	
 
 	uniform float4 _MainTex_TexelSize;

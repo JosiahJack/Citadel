@@ -730,7 +730,6 @@ public class DynamicCulling : MonoBehaviour {
         }
         
         // Setup and find all cullables and associate them with x,y coords.
-        Debug.Log("Cull init clear");
         ClearCellList();
         switch(LevelManager.a.currentLevel) { // PosToCellCoords -1 on just x
             // chunk.x + (Geometry.x + Level.x),0,chunk.z + (Geometry.z + Level.z)
@@ -1018,13 +1017,17 @@ public class DynamicCulling : MonoBehaviour {
 
         // Output Debug image of the open
         if (outputDebugImages) {
+            Vector2 ply = new Vector2(playerCellX,playerCellY);
             for (x=0;x<64;x++) {
                 for (y=0;y<64;y++) {
                     if (!gridCells[x,y].open) {
                         pixels[x + (y * 64)] = Color.black;
                     } else {
                         if (gridCells[x,y].visible) {
-                            pixels[x + (y * 64)] = Color.green;
+                            Vector2 pos = new Vector2(x,y);
+                            float distToPlayer = Vector2.Distance(pos,ply);
+                            float green = Mathf.Max((20f - distToPlayer)/20f,0.2f);
+                            pixels[x + (y * 64)] = new Color(0f,green,0f,1f);
                         } else {
                             pixels[x + (y * 64)] = Color.white;
                         }
@@ -1240,48 +1243,40 @@ public class DynamicCulling : MonoBehaviour {
                         bool neighborClosedSouth = false;
                         if (XYPairInBounds(lastX,lastY - 1)) neighborClosedWest = gridCells[lastX,lastY - 1].closedWest && gridCells[lastX,lastY - 1].open;
                         if (XYPairInBounds(lastX - 1,lastY)) neighborClosedSouth = gridCells[lastX - 1,lastY].closedSouth && gridCells[lastX - 1,lastY].open;
-                        if ((gridCells[lastX,lastY].closedSouth && gridCells[lastX,lastY].closedWest) // Check cell 1 only
-                            || (gridCells[lastX,lastY].closedWest && neighborClosedWest)      // Check cell 1 and Neighbor a (Na)
-                            || (gridCells[lastX,lastY].closedSouth && neighborClosedSouth)) { // Check cell 1 and Neighbor b (Nb)
-
-                            return -1;
-                        }
+                        if (gridCells[lastX,lastY].closedSouth && gridCells[lastX,lastY].closedWest) return -1;// Check cell 1 only
+                        if (gridCells[lastX,lastY].closedWest && neighborClosedWest) return -1; // Check cell 1 and Neighbor a (Na)
+                        if (gridCells[lastX,lastY].closedSouth && neighborClosedSouth) return -1; // Check cell 1 and Neighbor b (Nb)
+                        if (neighborClosedWest && neighborClosedSouth) return -1; // Check Neighbor a (Na) and Neighbor b (Nb)
                     } else if (lastY < y && lastX < x) { // [ ][2]
                                                          // [1][ ]
                         bool neighborClosedEast = false;
                         bool neighborClosedNorth = false;
                         if (XYPairInBounds(lastX,lastY + 1)) neighborClosedEast = gridCells[lastX,lastY + 1].closedEast && gridCells[lastX,lastY + 1].open;
                         if (XYPairInBounds(lastX + 1,lastY)) neighborClosedNorth = gridCells[lastX + 1,lastY].closedNorth && gridCells[lastX + 1,lastY].open;
-                        if ((gridCells[lastX,lastY].closedNorth && gridCells[lastX,lastY].closedEast)
-                            || (gridCells[lastX,lastY].closedEast && neighborClosedNorth)
-                            || (gridCells[lastX,lastY].closedNorth && neighborClosedNorth)) {
-
-                            return -1;
-                        }
+                        if (gridCells[lastX,lastY].closedNorth && gridCells[lastX,lastY].closedEast) return -1;
+                        if (gridCells[lastX,lastY].closedEast && neighborClosedEast) return -1;
+                        if (gridCells[lastX,lastY].closedNorth && neighborClosedNorth) return -1;
+                        if (neighborClosedEast && neighborClosedNorth) return -1;
                     } else if (lastY > y && lastX < x) { // [1][ ]
                                                          // [ ][2]
                         bool neighborClosedEast = false;
                         bool neighborClosedSouth = false;
                         if (XYPairInBounds(lastX,lastY - 1)) neighborClosedEast = gridCells[lastX,lastY - 1].closedEast && gridCells[lastX,lastY - 1].open;
                         if (XYPairInBounds(lastX + 1,lastY)) neighborClosedSouth = gridCells[lastX + 1,lastY].closedSouth && gridCells[lastX + 1,lastY].open;
-                        if ((gridCells[lastX,lastY].closedSouth && gridCells[lastX,lastY].closedEast)
-                            || (gridCells[lastX,lastY].closedEast && neighborClosedEast)
-                            || (gridCells[lastX,lastY].closedSouth && neighborClosedSouth)) {
-
-                            return -1;
-                        }
+                        if (gridCells[lastX,lastY].closedSouth && gridCells[lastX,lastY].closedEast) return -1;
+                        if (gridCells[lastX,lastY].closedEast && neighborClosedEast) return -1;
+                        if (gridCells[lastX,lastY].closedSouth && neighborClosedSouth) return -1;
+                        if (neighborClosedEast && neighborClosedSouth) return -1;
                     } else if (lastY < y && lastX > x) { // [2][ ]
                                                          // [ ][1]
                         bool neighborClosedWest = false;
                         bool neighborClosedNorth = false;
                         if (XYPairInBounds(lastX,lastY + 1)) neighborClosedWest = gridCells[lastX,lastY + 1].closedWest && gridCells[lastX,lastY + 1].open;
                         if (XYPairInBounds(lastX - 1,lastY)) neighborClosedNorth = gridCells[lastX - 1,lastY].closedNorth && gridCells[lastX - 1,lastY].open;
-                        if ((gridCells[lastX,lastY].closedNorth && gridCells[lastX,lastY].closedWest)
-                            || (gridCells[lastX,lastY].closedWest && neighborClosedWest)
-                            || (gridCells[lastX,lastY].closedNorth && neighborClosedNorth)) {
-
-                            return -1;
-                        }
+                        if (gridCells[lastX,lastY].closedNorth && gridCells[lastX,lastY].closedWest) return -1;
+                        if (gridCells[lastX,lastY].closedWest && neighborClosedWest) return -1;
+                        if (gridCells[lastX,lastY].closedNorth && neighborClosedNorth) return -1;
+                        if (neighborClosedWest && neighborClosedNorth) return -1;
                     }
                 }
             }
