@@ -352,7 +352,6 @@ public class Config {
 	public static void SetLanguage() {
 		Const.a.LoadTextForLanguage(Const.a.AudioLanguage);
 		Const.a.LoadAudioLogMetaData();
-		Const.a.LoadItemNamesData();
 		foreach(TextLocalization txtLoc in Const.a.TextLocalizationRegister) {
 			txtLoc.UpdateText();
 		}

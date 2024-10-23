@@ -11,13 +11,13 @@ public class ForceBridge : MonoBehaviour {
 	public AudioClip SFXBridgeChange;
 	public ForceFieldColor fieldColor;
 
-	[HideInInspector] public bool lerping; // save
+	public bool lerping; // save
 	[HideInInspector] public float tickFinished; // save
 
 	public float activatedScaleX; // save
 	public float activatedScaleY; // save
 	public float activatedScaleZ; // save
-	[HideInInspector] public MeshRenderer mr;
+	public MeshRenderer mr;
 	[HideInInspector] public BoxCollider bCol;
 	private AudioSource SFX;
 	private static float tickTime = 0.05f;
@@ -32,10 +32,7 @@ public class ForceBridge : MonoBehaviour {
 		if (activatedScaleX <= 0.02f) activatedScaleX = 2.56f;
 		if (activatedScaleY <= 0.02f) activatedScaleY = 0.08f;
 		if (activatedScaleZ <= 0.02f) activatedScaleZ = 2.56f;
-		mr = GetComponent<MeshRenderer>();
-		bCol = GetComponent<BoxCollider>();
-		SFX = GetComponent<AudioSource>();
-		SetColorMaterial();
+		InitializeFromLoad();
 	}
 
 	public void InitializeFromLoad() {
@@ -71,9 +68,9 @@ public class ForceBridge : MonoBehaviour {
 				if (y) sy = Mathf.Lerp(transform.localScale.y,activatedScaleY,tickTime*2);
 				if (z) sz = Mathf.Lerp(transform.localScale.z,activatedScaleZ,tickTime*2);
 				transform.localScale = new Vector3(sx,sy,sz);
-				if ((activatedScaleX-transform.localScale.x) < 0.08f
-					&& (activatedScaleY-transform.localScale.y) < 0.08f
-					&& (activatedScaleZ-transform.localScale.z) < 0.08f) {
+				if (   (activatedScaleX - sx) < 0.08f
+					&& (activatedScaleY - sy) < 0.08f
+					&& (activatedScaleZ - sz) < 0.08f) {
 
 					transform.localScale = new Vector3(activatedScaleX,activatedScaleY,activatedScaleZ);
 					lerping = false;
@@ -89,11 +86,7 @@ public class ForceBridge : MonoBehaviour {
 				if (y) sy = Mathf.Lerp(transform.localScale.y,0f,tickTime*2);
 				if (z) sz = Mathf.Lerp(transform.localScale.z,0f,tickTime*2);
 				transform.localScale = new Vector3(sx,sy,sz);
-				if ((transform.localScale.x < 0.08f
-					 || transform.localScale.y < 0.08f
-					 || transform.localScale.z < 0.08f)
-				    && mr.enabled) {
-
+				if ((sx < 0.08f || sy < 0.08f || sz < 0.08f) && mr.enabled) {
 					Utils.DisableMeshRenderer(mr);
 					Utils.DisableBoxCollider(bCol);
 					lerping = false;

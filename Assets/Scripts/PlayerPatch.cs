@@ -60,7 +60,7 @@ public class PlayerPatch : MonoBehaviour {
 		a.BerserkDisable();
 	}
 
-	public void ActivatePatch(int index) {
+	public void ActivatePatch(int index) { // Expects the usableItems index
 		bool depleted = false;
 		switch (index) {
 		case 14:
@@ -140,7 +140,7 @@ public class PlayerPatch : MonoBehaviour {
 		case 20:
 			// Staminup Patch
 			Inventory.a.patchCounts[0]--;
-			if (Inventory.a.patchCounts[0] <= 0) { depleted = true; }
+			if (Inventory.a.patchCounts[0] <= 0) depleted = true;
 			PlayerMovement.a.staminupActive = true;
 			if (!(Utils.CheckFlags(patchActive, PATCH_STAMINUP))) patchActive += PATCH_STAMINUP;
 			if (staminupFinishedTime > PauseScript.a.relativeTime) {
@@ -148,15 +148,20 @@ public class PlayerPatch : MonoBehaviour {
 			} else {
 				staminupFinishedTime = PauseScript.a.relativeTime + Const.a.staminupTime;
 			}
+
 			break;
 		}
 
 		if (depleted) {
 			Inventory.a.PatchCycleDown(false);
-			Const.sprint((Const.a.stringTable[590] + Const.a.useableItemsNameText[index] + Const.a.stringTable[589]),MouseLookScript.a.player);
+			Const.sprint((Const.a.stringTable[590]
+						 + Const.a.stringTable[index + 326]
+						 + Const.a.stringTable[589]),MouseLookScript.a.player);
 		} else {
-			Const.sprint((Const.a.useableItemsNameText[index] + Const.a.stringTable[589]),MouseLookScript.a.player);
+			Const.sprint((Const.a.stringTable[index + 326]
+						 + Const.a.stringTable[589]),MouseLookScript.a.player);
 		}
+
 		Utils.PlayOneShotSavable(SFX,patchUseSFX);
 		GUIState.a.ClearOverButton();
 	}

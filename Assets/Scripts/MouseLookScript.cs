@@ -961,7 +961,9 @@ public class MouseLookScript : MonoBehaviour {
 			ResetHeldItem();
 			ResetCursor();
 		} else {
-			Const.sprint(Const.a.useableItemsNameText[heldObjectIndex] + Const.a.stringTable[319],player);
+			Const.sprint(Const.a.stringTable[heldObjectIndex + 326]
+						 + Const.a.stringTable[319],player);
+
 			MouseCursor.a.cursorImage = cursorTexture;
 			ForceInventoryMode();
 		}	
@@ -1023,9 +1025,10 @@ public class MouseLookScript : MonoBehaviour {
 		transform.localPosition = new Vector3(headBobX,headBobY,headBobZ);
 	}
 
-	void AddItemFail(int index) {
+	void AddItemFail(int index) { // Expects usableItem index
 		DropHeldItem();
-		Const.sprint(Const.a.stringTable[32] + Const.a.useableItemsNameText[index] + Const.a.stringTable[318],player); // Inventory full.
+		Const.sprint(Const.a.stringTable[32] + Const.a.stringTable[index + 326]
+					 + Const.a.stringTable[318],player); // Inventory full.
 	}
 
 	public void AddItemToInventory(int index, int customIndex) {
@@ -1312,7 +1315,9 @@ public class MouseLookScript : MonoBehaviour {
 					curSearchScript.contents[i] = -1;
 					curSearchScript.customIndex[i] = -1;
 					if (heldObjectIndex != -1) holdingObject = true;
-					Const.sprint(Const.a.useableItemsNameText[heldObjectIndex] + Const.a.stringTable[319],player);
+					Const.sprint(Const.a.stringTable[heldObjectIndex + 326]
+								 + Const.a.stringTable[319],player); // picked up
+
 					MFDManager.a.DisableSearchItemImage(i);
 					useFX = false;
 					break;
@@ -1356,7 +1361,9 @@ public class MouseLookScript : MonoBehaviour {
 		MouseCursor.a.liveGrenade = true;
 		PlayerHealth.a.makingNoise = true;
 		grenadeActive = true;
-		Const.sprint(Const.a.useableItemsNameText[index] + Const.a.stringTable[320],player);
+		Const.sprint(Const.a.stringTable[index + 326]
+					 + Const.a.stringTable[320],player); // activated, grenade is LIVE!
+
 		switch(index) { // Subtract one from the correct grenade inventory
 			case 7: heldObject = Const.a.useableItems[63];  Inventory.a.RemoveGrenade(0); break; // Frag
 			case 8: heldObject = Const.a.useableItems[65];  Inventory.a.RemoveGrenade(3); break; // Concussion

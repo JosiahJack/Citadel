@@ -40,7 +40,7 @@ public class ItemTabManager : MonoBehaviour {
 			Const.a.useableItemsIcons[23]; //datareader
 
 		textManager.GetComponent<Text>().text =
-			Const.a.useableItemsNameText[23];
+			Const.a.stringTable[349]; // MULTIMEDIA DATA READER
 	}
 
 	public void SendItemDataToItemTab(int constIndex, int customIndex) {
@@ -85,8 +85,8 @@ public class ItemTabManager : MonoBehaviour {
 			}
 		}
 
-		textManager.GetComponent<Text>().text = 
-			Const.a.useableItemsNameText[constIndex];
+		textManager.GetComponent<Text>().text =
+			Const.a.stringTable[constIndex + 326];
 
 		// Access Cards need special list enabled.
 		if (constIndex == 34 || constIndex == 81 || constIndex == 110

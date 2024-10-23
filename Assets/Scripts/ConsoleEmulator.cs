@@ -416,10 +416,7 @@ public static class ConsoleEmulator {
 			int numGot = Int32.Parse(numGet);
 			if (numGot >= 0) {
 				// Debug value parsing within build
-				if (ts.Contains("useableItemsNameText")) {
-					if (numGot < Const.a.useableItemsNameText.Length) Const.sprint(Const.a.useableItemsNameText[numGot]);
-					else Const.sprint("Value of " + numGot.ToString() + " was outside of bounds, needs to be 0 - " + Const.a.useableItemsNameText.Length.ToString());
-				} else if (ts.Contains("isFullAutoForWeapon")) {
+				if (ts.Contains("isFullAutoForWeapon")) {
 					if (numGot < Const.a.isFullAutoForWeapon.Length) Const.sprint(Const.a.isFullAutoForWeapon[numGot].ToString());
 					else Const.sprint("Value of " + numGot.ToString() + " was outside of bounds, needs to be 0 - " + Const.a.isFullAutoForWeapon.Length.ToString());
 				} else if (ts.Contains("moveTypeForNPC")) {

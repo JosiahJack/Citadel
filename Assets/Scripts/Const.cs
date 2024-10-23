@@ -33,7 +33,6 @@ public class Const : MonoBehaviour {
 	public GameObject[] useableItems;
 	public Texture2D[] useableItemsFrobIcons;
     public Sprite[] useableItemsIcons;
-    public string[] useableItemsNameText;
 	public Sprite[] searchItemIconSprites;
 
 	//Audiolog constants
@@ -444,7 +443,6 @@ public class Const : MonoBehaviour {
 		a.vectorZero = Vector3.zero;
 		a.vectorOne = Vector3.one;
 		a.LoadAudioLogMetaData();
-		a.LoadItemNamesData();
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
 		a.versionString = "v0.99.6"; // Global CITADEL PROJECT VERSION
@@ -648,13 +646,6 @@ public class Const : MonoBehaviour {
 			} while (!dataReader.EndOfStream);
 			dataReader.Close();
 			return;
-		}
-	}
-
-	public void LoadItemNamesData () {
-		int offset = 326;
-		for (int i=0;i<102;i++) {
-			useableItemsNameText[i] = stringTable[i+offset];
 		}
 	}
 

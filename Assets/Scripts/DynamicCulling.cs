@@ -16,7 +16,7 @@ public class DynamicCulling : MonoBehaviour {
     public bool outputDebugImages = false;
     public bool forceRecull = false;
     public Texture2D[] worldClosedEdges;
-    public bool[,] worldCellCheckedYet = new bool [WORLDX,WORLDX];
+//     public bool[,] worldCellCheckedYet = new bool [WORLDX,WORLDX];
     public GridCell[,] gridCells = new GridCell[WORLDX,WORLDX];
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
     public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();
@@ -429,7 +429,7 @@ public class DynamicCulling : MonoBehaviour {
     
     void ClearCellList() {
         gridCells = new GridCell[WORLDX,WORLDX];
-        worldCellCheckedYet = new bool [WORLDX,WORLDX];
+//         worldCellCheckedYet = new bool [WORLDX,WORLDX];
         staticMeshesImmutable = new List<MeshRenderer>();
         staticMeshImmutableCoords = new List<Vector2Int>();
         staticMeshesSaveable = new List<MeshRenderer>();
@@ -815,11 +815,11 @@ public class DynamicCulling : MonoBehaviour {
 
     bool UpdatedPlayerCell() {
         if (forceRecull) {
-            for (int x=0;x<64;x++) {
-                for (int y=0;y<64;y++) {
-                    worldCellCheckedYet[x,y] = false;
-                }
-            }
+//             for (int x=0;x<64;x++) {
+//                 for (int y=0;y<64;y++) {
+//                     worldCellCheckedYet[x,y] = false;
+//                 }
+//             }
             forceRecull = false;
             return true;
         }
@@ -835,104 +835,13 @@ public class DynamicCulling : MonoBehaviour {
         return (x < 64 && y < 64 && x >= 0 && y >= 0);
     }
 
-    // Accessible meaning that there aren't closed edges blocking the view to
-    // that cell at x,y (checked in the calls below).
-    void SetVisible(int startX, int startY, int x, int y) {
-        if (!XYPairInBounds(x,y) || !XYPairInBounds(startX,startY)) return;
-
-        if (IsAccessible(gridCells[startX,startY],gridCells[x,y])) {
-            gridCells[x,y].visible = worldCellsOpen[x,y];
-        } else {
-            gridCells[x,y].visible = false;
-        }
-
-        worldCellCheckedYet[x,y] = true;
-    }
-
-    bool IsAccessible(GridCell start, GridCell end) {
-        bool accessibleCC; // Caddy Corner, if cell closed on adjacent edges.
-        bool accessibleAA; // Axis Aligned X, check if neighbor and cell closed.
-        bool accessibleBB; // Axis Aligned Y, check if neighbor and cell closed.
-        // The way neighbor checks work is that, if both current cell and the
-        // neighbor share a connected closed edge, e.g. North and North, then
-        // the caddy corner cell just to the North of the neighbor is also
-        // inaccessible and not visible.
-
-        if (start.x > end.x && start.y < end.y) {
-            // NW
-            // [ 2][BB][  ] // CC is at playerCellX,playerCellY.
-            // [AA][CC][  ]
-
-            // [ 2][ W][  ] Have to check both cells facing north aren't closed
-            // [ N][NW][  ] and both cells facing west aren't closed as well as
-            //              the current cell.  Same idea for all of them.
-            accessibleCC = !(start.closedNorth && start.closedWest);
-            accessibleAA = !(start.closedNorth && end.closedNorth);
-            accessibleBB = !(start.closedWest && end.closedWest);
-            return accessibleCC && accessibleAA && accessibleBB;
-        } else if (start.x < end.x && start.y < end.y) {
-            // NE
-            // [  ][BB][ 2] // CC is at playerCellX,playerCellY.
-            // [  ][CC][AA]
-
-            // [  ][ E][ 2]
-            // [  ][NE][ N]
-            accessibleCC = !(start.closedNorth && start.closedEast);
-            accessibleAA = !(start.closedNorth && end.closedNorth);
-            accessibleBB = !(start.closedEast && end.closedEast);
-            return accessibleCC && accessibleAA && accessibleBB;
-        } else if (start.x > end.x && start.y > end.y) {
-            // SW
-            // [AA][CC][  ] // CC is at playerCellX,playerCellY.
-            // [ 2][BB][  ]
-
-            // [ S][SW][  ]
-            // [ 2][ W][  ]
-            accessibleCC = !(start.closedSouth && start.closedWest);
-            accessibleAA = !(start.closedSouth && end.closedSouth);
-            accessibleBB = !(start.closedWest && end.closedWest);
-            return accessibleCC && accessibleAA && accessibleBB;
-        } else if (start.x < end.x && start.y > end.y) {
-            // SE
-            // [  ][CC][AA] // CC is at playerCellX,playerCellY.
-            // [  ][BB][ 2]
-
-            // [  ][SE][ S]
-            // [  ][ E][ 2]
-            accessibleCC = !(start.closedSouth && start.closedEast);
-            accessibleAA = !(start.closedSouth && end.closedSouth);
-            accessibleBB = !(start.closedEast && end.closedEast);   
-            return accessibleCC && accessibleAA && accessibleBB;
-        } else if (start.x > end.x && start.y == end.y) {
-            // W
-            // [ 2][ 1]
-            return !start.closedWest;
-        } else if (start.x < end.x && start.y == end.y) {
-            // E
-            // [ 1][ 2]
-            return !start.closedEast;
-        } else if (start.x == end.x && start.y < end.y) {
-            // N
-            // [ 2]
-            // [ 1]
-            return !start.closedNorth;
-        } else if (start.x == end.x && start.y > end.y) {
-            // S
-            // [ 1]
-            // [ 2]
-            return !start.closedSouth;
-        }
-
-        return false;
-    }
-
     void DetermineVisibleCells() {
         int x,y;
         for (x=0;x<64;x++) {
             for (y=0;y<64;y++) {
                 gridCells[x,y].visible = false;
                 worldCellsOpen[x,y] = gridCells[x,y].open;
-                worldCellCheckedYet[x,y] = false;
+//                 worldCellCheckedYet[x,y] = false;
                 if (outputDebugImages) {
                     pixels[x + (y * 64)] = gridCells[x,y].open
                                            ? Color.white : Color.black;
@@ -942,20 +851,7 @@ public class DynamicCulling : MonoBehaviour {
 
         x = playerCellX; y = playerCellY;
         gridCells[x,y].visible = true;
-        worldCellCheckedYet[x,y] = true;
-
-        // Set all neighboring cells visible if open in 3x3 square.
-        // Ordinals
-        SetVisible(x,y,x,y+1); // North
-        SetVisible(x,y,x+1,y); // East
-        SetVisible(x,y,x,y-1); // South
-        SetVisible(x,y,x-1,y); // Weast
-
-        // Diagonals
-        SetVisible(x,y,x-1,y+1); // NW
-        SetVisible(x,y,x+1,y+1); // NE
-        SetVisible(x,y,x-1,y-1); // SW
-        SetVisible(x,y,x+1,y-1); // SE
+//         worldCellCheckedYet[x,y] = true;
 
         CastStraightX(playerCellX,playerCellY + 1,1);  // [ ][3]
         CastStraightX(playerCellX,playerCellY,1);      // [1][2]
@@ -967,7 +863,7 @@ public class DynamicCulling : MonoBehaviour {
 
         CastStraightY(playerCellX,playerCellY,1);      // [3][2][3]
         CastStraightY(playerCellX + 1,playerCellY,1);  // [ ][1][ ]
-        CastStraightY(playerCellX - 1,playerCellY,1); 
+        CastStraightY(playerCellX - 1,playerCellY,1);
 
         CastStraightY(playerCellX,playerCellY,-1);     // [ ][1][ ]
         CastStraightY(playerCellX + 1,playerCellY,-1); // [3][2][3]
@@ -994,7 +890,7 @@ public class DynamicCulling : MonoBehaviour {
             Vector3 position = entry.Value; // The position value
             pnt = PosToCellCoords(position);
             gridCells[pnt.x,pnt.y].visible = true;
-            worldCellCheckedYet[pnt.x,pnt.y] = true;
+//             worldCellCheckedYet[pnt.x,pnt.y] = true;
 
             CastStraightX(playerCellX,playerCellY + 1,1);  // [ ][3]
             CastStraightX(playerCellX,playerCellY,1);      // [1][2]
@@ -1055,7 +951,7 @@ public class DynamicCulling : MonoBehaviour {
         for (;y<64;y+=signy) { // Up
             currentVisible = false;
             if (XYPairInBounds(x,y - signy) && XYPairInBounds(x,y)) {
-                if (!worldCellCheckedYet[x,y]) {
+//                 if (!worldCellCheckedYet[x,y]) {
                     if (gridCells[x,y - signy].visible) {
                         if (signy > 0) {
                             if (gridCells[x,y - 1].closedNorth && gridCells[x,y - 1].open) return;
@@ -1064,38 +960,38 @@ public class DynamicCulling : MonoBehaviour {
                         }
 
                         gridCells[x,y].visible = worldCellsOpen[x,y];
-                        worldCellCheckedYet[x,y] = true;
+//                         worldCellCheckedYet[x,y] = true;
                         currentVisible = true; // Would be if twas open.
                     }
-                } else {
-                    currentVisible = worldCellsOpen[x,y]; // Keep going.
-                }
+//                 } else {
+//                     currentVisible = worldCellsOpen[x,y]; // Keep going.
+//                 }
             }
 
             if (!currentVisible) break; // Hit wall!
 
             if (XYPairInBounds(x + 1,y)) {
-                if (!worldCellCheckedYet[x + 1,y]) {
-                    if (IsAccessible(gridCells[x,y],gridCells[x + 1,y])) {
+//                 if (!worldCellCheckedYet[x + 1,y]) {
+                    if (CastRayCellCheck(x,y,x + 1,y) > 0) {
                         gridCells[x + 1,y].visible = gridCells[x + 1,y].open;
                     } else {
                         gridCells[x + 1,y].visible = false;
                     }
 
-                    worldCellCheckedYet[x + 1,y] = true;
-                }
+//                     worldCellCheckedYet[x + 1,y] = true;
+//                 }
             }
 
             if (XYPairInBounds(x - 1,y)) {
-                if (!worldCellCheckedYet[x - 1,y]) {
-                    if (IsAccessible(gridCells[x,y],gridCells[x - 1,y])) {
+//                 if (!worldCellCheckedYet[x - 1,y]) {
+                    if (CastRayCellCheck(x,y,x - 1,y) > 0) {
                         gridCells[x - 1,y].visible = gridCells[x - 1,y].open;
                     } else {
                         gridCells[x - 1,y].visible = false;
                     }
 
-                    worldCellCheckedYet[x - 1,y] = true;
-                }
+//                     worldCellCheckedYet[x - 1,y] = true;
+//                 }
             }
         }
     }
@@ -1112,7 +1008,7 @@ public class DynamicCulling : MonoBehaviour {
         for (;x<64;x+=signx) { // Right
             currentVisible = false;
             if (XYPairInBounds(x - signx,y) && XYPairInBounds(x,y)) {
-                if (!worldCellCheckedYet[x,y]) {
+//                 if (!worldCellCheckedYet[x,y]) {
                     if (gridCells[x - signx,y].visible) {
                         if (signx > 0) {
                             if (gridCells[x - 1,y].closedEast && gridCells[x - 1,y].open) return;
@@ -1121,38 +1017,38 @@ public class DynamicCulling : MonoBehaviour {
                         }
 
                         gridCells[x,y].visible = worldCellsOpen[x,y];
-                        worldCellCheckedYet[x,y] = true;
+//                         worldCellCheckedYet[x,y] = true;
                         currentVisible = true; // Would be if twas open.
                     }
-                } else {
-                    currentVisible = worldCellsOpen[x,y]; // Keep going.
-                }
+//                 } else {
+//                     currentVisible = worldCellsOpen[x,y]; // Keep going.
+//                 }
             }
 
             if (!currentVisible) break; // Hit wall!
 
             if (XYPairInBounds(x,y + 1)) {
-                if (!worldCellCheckedYet[x,y + 1]) {
-                    if (IsAccessible(gridCells[x,y],gridCells[x,y + 1])) {
+//                 if (!worldCellCheckedYet[x,y + 1]) {
+                    if (CastRayCellCheck(x,y,x,y + 1) > 0) {
                         gridCells[x,y + 1].visible = gridCells[x,y + 1].open;
                     } else {
                         gridCells[x,y + 1].visible = false;
                     }
 
-                    worldCellCheckedYet[x,y + 1] = true;
-                }
+//                     worldCellCheckedYet[x,y + 1] = true;
+//                 }
             }
 
             if (XYPairInBounds(x,y - 1)) {
-                if (!worldCellCheckedYet[x,y - 1]) {
-                    if (IsAccessible(gridCells[x,y],gridCells[x,y - 1])) {
+//                 if (!worldCellCheckedYet[x,y - 1]) {
+                    if (CastRayCellCheck(x,y,x,y - 1) > 0) {
                         gridCells[x,y - 1].visible = gridCells[x,y - 1].open;
                     } else {
                         gridCells[x,y - 1].visible = false;
                     }
 
-                    worldCellCheckedYet[x,y - 1] = true;
-                }
+//                     worldCellCheckedYet[x,y - 1] = true;
+//                 }
             }
         }
     }
@@ -1202,17 +1098,6 @@ public class DynamicCulling : MonoBehaviour {
             iter--;
         }
     }
-
-//     int CastRayCellCheck(GridCell start, GridCell end) {
-//         if (!IsAccessible(start,end)) return -1; // End ray for closed edge.
-// 
-//         end.visible = worldCellsOpen[end.x,end.y];
-//         if (!end.visible) 
-//             return -1; // End ray for solid space.
-//         }
-// 
-//         return 1;
-//     }
 
     int CastRayCellCheck(int x, int y, int lastX, int lastY) {
         bool edgesOpen = true;
@@ -1284,7 +1169,7 @@ public class DynamicCulling : MonoBehaviour {
         
         if (XYPairInBounds(x,y)) {
             gridCells[x,y].visible = (edgesOpen && worldCellsOpen[x,y]);
-            if (!worldCellCheckedYet[x,y]) worldCellCheckedYet[x,y] = true;
+//             if (!worldCellCheckedYet[x,y]) worldCellCheckedYet[x,y] = true;
             if (!gridCells[x,y].visible) return -1;
             return 1;
         }
@@ -1391,7 +1276,16 @@ public class DynamicCulling : MonoBehaviour {
             x = dynamicMeshCoords[i].x;
             y = dynamicMeshCoords[i].y;
             if (gridCells[x,y].visible || !worldCellsOpen[x,y]) {
-                Utils.EnableMeshRenderer(dynamicMeshes[i]);
+                ForceBridge fb = dynamicMeshes[i].GetComponent<ForceBridge>();
+                if (fb != null) {
+                    if (fb.activated) {
+                        Utils.EnableMeshRenderer(dynamicMeshes[i]);
+                    } else {
+                        Utils.DisableMeshRenderer(dynamicMeshes[i]);
+                    }
+                } else {
+                    Utils.EnableMeshRenderer(dynamicMeshes[i]);
+                }
             } else {
                 Utils.DisableMeshRenderer(dynamicMeshes[i]);
             }
@@ -1501,12 +1395,12 @@ public class DynamicCulling : MonoBehaviour {
         // to set playerCellX and playerCellY.
         bool playerHasMoved = UpdatedPlayerCell();
         if (playerHasMoved || force) {
-            int x,y;
-            for (x=0;x<64;x++) {
-                for (y=0;y<64;y++) {
-                    worldCellCheckedYet[x,y] = false;
-                }
-            }
+//             int x,y;
+//             for (x=0;x<64;x++) {
+//                 for (y=0;y<64;y++) {
+//                     worldCellCheckedYet[x,y] = false;
+//                 }
+//             }
 
             DetermineVisibleCells(); // Reevaluate visible cells from new pos.
             gridCells[0,0].visible = true; // Errors default here so draw them anyways.

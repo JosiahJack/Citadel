@@ -101,10 +101,8 @@ public class Inventory : MonoBehaviour {
 	public GameObject[] miniGameButton;
 
 	// Weapons
-	[HideInInspector] public string[] weaponInventoryText;
 	[HideInInspector] public int[] weaponInventoryIndices; // save
     [HideInInspector] public int[] weaponInventoryAmmoIndices; // save
-	[HideInInspector] public string[] weaponInvTextSource;
 	[HideInInspector] public int numweapons = 0; // save
 	[HideInInspector] public int[] wepAmmo; // save
 	[HideInInspector] public int[] wepAmmoSecondary; // save
@@ -280,28 +278,10 @@ public class Inventory : MonoBehaviour {
         }
 
 		// Weapons
-        a.weaponInventoryText = new string[]{"","","","","","",""};;
         a.weaponInventoryIndices = new int[]{-1,-1,-1,-1,-1,-1,-1};
         a.weaponInventoryAmmoIndices = new int[]{-1,-1,-1,-1,-1,-1,-1};	
 		a.globalLookupIndex = -1;
 		a.retval = "0";
-		a.weaponInvTextSource = new string[16]; // Used only by MouseLookScript.AddWeaponToInventory();
-		a.weaponInvTextSource[0] = Const.a.stringTable[264];  // ASSLT RIFLE
-		a.weaponInvTextSource[1] = Const.a.stringTable[265];  // BLASTER
-		a.weaponInvTextSource[2] = Const.a.stringTable[266];  // DARTGUN
-		a.weaponInvTextSource[3] = Const.a.stringTable[267];  // FLECHETTE
-		a.weaponInvTextSource[4] = Const.a.stringTable[268];  // ION BEAM
-		a.weaponInvTextSource[5] = Const.a.stringTable[269];  // LASER RAPIER
-		a.weaponInvTextSource[6] = Const.a.stringTable[270];  // PIPE
-		a.weaponInvTextSource[7] = Const.a.stringTable[271];  // MAGNUM
-		a.weaponInvTextSource[8] = Const.a.stringTable[272];  // MAGPULSE
-		a.weaponInvTextSource[9] = Const.a.stringTable[273];  // PISTOL
-		a.weaponInvTextSource[10] = Const.a.stringTable[274]; // PLASMA RIFLE
-		a.weaponInvTextSource[11] = Const.a.stringTable[275]; // RAIL GUN
-		a.weaponInvTextSource[12] = Const.a.stringTable[276]; // RIOT GUN
-		a.weaponInvTextSource[13] = Const.a.stringTable[277]; // SKORPION
-		a.weaponInvTextSource[14] = Const.a.stringTable[278]; // SPARQ BEAM
-		a.weaponInvTextSource[15] = Const.a.stringTable[279]; // STUNGUN
 		a.wepAmmo = new int[16];
 		a.wepAmmoSecondary = new int[16];
 		for (int i=0;i<16;i++) {
@@ -332,7 +312,7 @@ public class Inventory : MonoBehaviour {
 				if (referenceIndex > -1) {
 					if (i != 0) { // Access Cards text set in Awake the once.
 						genButtonsText[i].text =
-							Const.a.useableItemsNameText[referenceIndex];
+							Const.a.stringTable[referenceIndex + 326];
 					}
 				} else {
 					genButtonsText[i].text = string.Empty;
@@ -493,7 +473,7 @@ public class Inventory : MonoBehaviour {
 			for (int i=0;i<hardwareInvText.Length;i++) {
 				if (hardwareInvText[i].gameObject.activeInHierarchy) {
 					hardwareInvText[i].text = 
-					  Const.a.useableItemsNameText[hardwareInvReferenceIndex[i]]
+					  Const.a.stringTable[hardwareInvReferenceIndex[i] + 326]
 					  + " v" + hardwareVersion[i].ToString();
 					if (i == hardwareInvCurrent) {
 						hardwareInvText[i].color = Const.a.ssYellowText; // Yellow
@@ -583,7 +563,9 @@ public class Inventory : MonoBehaviour {
 
 			for (int i=0;i<weaponShotsInventory.Length;i++) {
 				if (weaponButtonText[i].gameObject.activeInHierarchy) {
-					weaponButtonText[i].text = weaponInventoryText[i];
+					weaponButtonText[i].text =
+						Const.a.stringTable[326 + weaponInventoryIndices[i]];
+
 					weaponShotsInventory[i].text = weaponShotsInventoryText[i];
 					if (i == yellowWep) {
 						weaponButtonText[i].color = Const.a.ssYellowText; // Yellow
@@ -838,7 +820,7 @@ public class Inventory : MonoBehaviour {
 		}
 
 		if (overt) {
-		    Const.sprint(Const.a.useableItemsNameText[textIndex] + " v"
+		    Const.sprint(Const.a.stringTable[textIndex + 326] + " v"
 					     + hwversion.ToString() );
 		}
 
@@ -931,7 +913,7 @@ public class Inventory : MonoBehaviour {
 			generalInventoryIndexRef[i] = index;
 
 			// Item added to general inventory
-			Const.sprint(Const.a.useableItemsNameText[index]
+			Const.sprint(Const.a.stringTable[index + 326]
 						 + Const.a.stringTable[31]);
 
 			GeneralInvButton gv = genButtons[i].GetComponent<GeneralInvButton>();
@@ -1031,7 +1013,10 @@ public class Inventory : MonoBehaviour {
     public void AddGrenadeToInventory(int index, int useableIndex) {
 		if (index < 0) return;
 
-		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent(0,true);
+		if (MouseLookScript.a.firstTimePickup) {
+			MFDManager.a.CenterTabButtonClickSilent(0,true);
+		}
+
 		if (grenAmmo[0] == 0 && grenAmmo[1] == 0 && grenAmmo[2] == 0
 			&& grenAmmo[3] == 0 && grenAmmo[4] == 0 && grenAmmo[5] == 0
 			&& grenAmmo[6] == 0) {
@@ -1040,7 +1025,9 @@ public class Inventory : MonoBehaviour {
 		}
 
 		grenAmmo[index]++;
-		Const.sprint(Const.a.useableItemsNameText[useableIndex] + Const.a.stringTable[34] );
+		Const.sprint(Const.a.stringTable[useableIndex + 326]
+					 + Const.a.stringTable[34] );
+
 		MFDManager.a.NotifyToCenterTab(0);
 		MFDManager.a.SendInfoToItemTab(useableIndex);
     }
@@ -1236,7 +1223,8 @@ public class Inventory : MonoBehaviour {
 		}
 		MFDManager.a.SendInfoToItemTab(constIndex);
 		MFDManager.a.NotifyToCenterTab(0);
-		Const.sprint(Const.a.useableItemsNameText[constIndex] + Const.a.stringTable[35] );
+		Const.sprint(Const.a.stringTable[constIndex + 326]
+					 + Const.a.stringTable[35]); //  added to patch inventory
     }
 	//--- End Patches ---
 
@@ -1496,9 +1484,9 @@ public class Inventory : MonoBehaviour {
 
 	// Weapons
 	public void RemoveWeapon(int wepButIndex) {
-		weaponInventoryIndices[wepButIndex] = -1; // Remove the weapon by setting it to -1.
-		weaponInventoryAmmoIndices[wepButIndex] = -1;
-		weaponInventoryText[wepButIndex] = "-";
+		weaponInventoryIndices[wepButIndex] = -1;     // Remove the weapon by
+		weaponInventoryAmmoIndices[wepButIndex] = -1; // setting it to -1.
+		weaponButtonText[wepButIndex].text = string.Empty;
 	}
 
 	public void UpdateAmmoText() {
@@ -1681,13 +1669,16 @@ public class Inventory : MonoBehaviour {
 		if (MouseLookScript.a.firstTimePickup) MFDManager.a.CenterTabButtonClickSilent (0,true);
 		if (isSecondary) wepAmmoSecondary[index] += amount;
 		else			 wepAmmo[index]          += amount;
-		Const.sprint(Const.a.useableItemsNameText[constIndex] + Const.a.stringTable[630]); // Item added to ammo
+
+		Const.sprint(Const.a.stringTable[constIndex + 326]
+					 + Const.a.stringTable[630]); // Item added to ammo
+
 		MFDManager.a.NotifyToCenterTab(0);
 		MFDManager.a.SendInfoToItemTab(constIndex);
 	}
 
     public bool AddWeaponToInventory(int index, int ammo1, int ammo2,
-									 bool loadedAlt) {
+									 bool loadedAlt) { // index = usableItem index
 		if (index < 0) return false;
 
 		MFDManager.a.OpenTab(0, true, TabMSG.Weapon, 0,Handedness.LH);
@@ -1696,7 +1687,7 @@ public class Inventory : MonoBehaviour {
             if (weaponInventoryIndices[i] >= 0) continue;
 
 			weaponInventoryIndices[i] = index;
-			weaponInventoryText[i] = Const.a.stringTable[326 + index];
+			weaponButtonText[i].text = Const.a.stringTable[326 + index];
 			int index16 = WeaponFire.Get16WeaponIndexFromConstIndex(index);
 			WeaponButton wepBut = MFDManager.a.wepbutMan.wepButtonsScripts[i];
 			wepBut.useableItemIndex = index;
@@ -1729,7 +1720,7 @@ public class Inventory : MonoBehaviour {
 
 			}
 
-			Const.sprint(Const.a.useableItemsNameText[index]
+			Const.sprint(Const.a.stringTable[index + 326]
 						 + Const.a.stringTable[33]);
 
 			MFDManager.a.NotifyToCenterTab(0);
@@ -1849,12 +1840,7 @@ public class Inventory : MonoBehaviour {
 			int dex = inv.weaponInventoryIndices[i];
 			if (dex < 0) continue;
 
-			int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(dex);
-			if (wep16index < 0 || wep16index > inv.weaponInvTextSource.Length) {
-				continue;
-			}
-
-			inv.weaponInventoryText[i] = inv.weaponInvTextSource[wep16index];
+			inv.weaponButtonText[i].text = Const.a.stringTable[dex + 326];
 		}
 
 		inv.grenadeCurrent = Utils.GetIntFromString(entries[index]); index++;
@@ -1956,7 +1942,7 @@ public class Inventory : MonoBehaviour {
 			int referenceIndex = genbut.useableItemIndex;
 			if (inv.generalInventoryIndexRef[i] > -1) {
 				inv.genButtonsText[i].text =
-				  Const.a.useableItemsNameText[inv.generalInventoryIndexRef[i]];
+					Const.a.stringTable[inv.generalInventoryIndexRef[i] + 326];
 			} else {
 				inv.genButtonsText[i].text = string.Empty;
 			}

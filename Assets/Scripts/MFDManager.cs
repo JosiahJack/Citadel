@@ -1514,9 +1514,9 @@ public class MFDManager : MonoBehaviour  {
 		ChangeAmmoButtons(loadNormalAmmoButtonRH,loadAlternateAmmoButtonRH);
 	}
 
-	public void SetWepInfo(int index) {
+	public void SetWepInfo(int index) { // Expects usableItem index.
 		if (index >= 0) {
-			weptextRH.text = weptextLH.text = Const.a.useableItemsNameText[index];
+			weptextRH.text = weptextLH.text = Const.a.stringTable[index + 326];
 			iconRH.overrideSprite = iconLH.overrideSprite = Const.a.useableItemsIcons[index];
 		} else {
 			weptextRH.text = weptextLH.text = "";
