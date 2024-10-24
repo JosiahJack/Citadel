@@ -62,7 +62,7 @@ public class GrenadeActivate : MonoBehaviour {
 		}
 	}
 
-	// Index = Const.a.useableItems index.
+	// Index = Const.a.useableItemsFrobIcon index.
 	public void Activate() {
 		switch(constIndex) {
 			case 7: explodeOnContact = true; break; // Fragmentation Grenade

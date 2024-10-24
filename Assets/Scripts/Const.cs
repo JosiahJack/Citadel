@@ -30,10 +30,8 @@ using UnityEngine.SceneManagement;
 public class Const : MonoBehaviour {
 	//Item constants
 	public QuestBits questData;
-	public GameObject[] useableItems;
 	public Texture2D[] useableItemsFrobIcons;
     public Sprite[] useableItemsIcons;
-	public Sprite[] searchItemIconSprites;
 
 	//Audiolog constants
 	public string[] audiologNames;
@@ -70,7 +68,6 @@ public class Const : MonoBehaviour {
 	public AttackType[] attackTypeForWeapon;
 
 	//NPC constants
-	public GameObject[] npcPrefabs;
 	[HideInInspector] public string[] nameForNPC;
 	[HideInInspector] public AttackType[] attackTypeForNPC;
 	[HideInInspector] public AttackType[] attackTypeForNPC2;
@@ -152,8 +149,6 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int[] projectile1PrefabForNPC;
 	[HideInInspector] public int[] projectile2PrefabForNPC;
 	[HideInInspector] public int[] projectile3PrefabForNPC;
-
-	public GameObject[] projectilesLaunched;
 
 	// System constants
 	[HideInInspector] public string[] creditsText;
@@ -260,7 +255,8 @@ public class Const : MonoBehaviour {
 	public Sprite[] logImages;
 
 	public GameObject eventSystem;
-	public GameObject[] prefabs;
+	public GameObject[] prefabs; // Everything
+	public Texture2D[] textures;
 	public Texture[] sequenceTextures;
 	public Text loadPercentText;
 	public Material[] genericMaterials;
@@ -445,6 +441,7 @@ public class Const : MonoBehaviour {
 		a.LoadAudioLogMetaData();
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
+		a.LoadTextures();
 		a.versionString = "v0.99.6"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
@@ -976,10 +973,41 @@ public class Const : MonoBehaviour {
 		}
 	}
 
+	Texture2D LoadTextureFromFile(string imgPath) {
+		string path = Utils.SafePathCombine(Application.streamingAssetsPath,
+											"textures/" + imgPath);
+
+        byte[] raw = File.ReadAllBytes(path);
+        Texture2D tex = new Texture2D(2, 2); // Create a new Texture2D
+        tex.LoadImage(raw); // This will auto-resize the texture dimensions
+		return tex;
+	}
+
+	private void LoadTextures() {
+        textures[0] =  LoadTextureFromFile("worldedgesclosed_0.png");
+        textures[1] =  LoadTextureFromFile("worldedgesclosed_1.png");
+        textures[2] =  LoadTextureFromFile("worldedgesclosed_2.png");
+        textures[3] =  LoadTextureFromFile("worldedgesclosed_3.png");
+        textures[4] =  LoadTextureFromFile("worldedgesclosed_4.png");
+        textures[5] =  LoadTextureFromFile("worldedgesclosed_5.png");
+        textures[6] =  LoadTextureFromFile("worldedgesclosed_6.png");
+        textures[7] =  LoadTextureFromFile("worldedgesclosed_7.png");
+        textures[8] =  LoadTextureFromFile("worldedgesclosed_8.png");
+        textures[9] =  LoadTextureFromFile("worldedgesclosed_9.png");
+        textures[10] = LoadTextureFromFile("worldedgesclosed_10.png");
+        textures[11] = LoadTextureFromFile("worldedgesclosed_11.png");
+        textures[12] = LoadTextureFromFile("worldedgesclosed_12.png");
+	}
+
+	public Sprite GetSpriteFromTexture(int useableItemIndex) {
+		//Texture2D tex = textures[usableItemIndex + 13];
+		Texture2D tex = useableItemsFrobIcons[useableItemIndex];
+		return Sprite.Create(tex, new Rect(0,0,tex.width,tex.height),
+							 new Vector2(0.5f,0.5f));
+	}
+
 	public static string GetTargetID(int npcIndex) {
-		if (npcIndex > Const.a.npcPrefabs.Length) {
-			return "BUG: npcIndex passed to GetTargetID too large!";
-		}
+		if (npcIndex > 29) return "BUG: npcIndex too large for GetTargetID!";
 
 		Const.a.npcCount[npcIndex]++;
 		return Const.a.nameForNPC[npcIndex] + Const.a.npcCount[npcIndex].ToString();

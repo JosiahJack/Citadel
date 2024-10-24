@@ -587,11 +587,16 @@ public class HealthManager : MonoBehaviour {
 		for (int i=0;i<4;i++) {
 			if (searchableItem.contents[i] < 0) continue;
 
-			GameObject tossObject = Instantiate(Const.a.useableItems[searchableItem.contents[i]],transform.position,Const.a.quaternionIdentity) as GameObject;
+			GameObject tossObject =
+				Instantiate(Const.a.prefabs[searchableItem.contents[i] + 307],
+							transform.position,Const.a.quaternionIdentity)
+								as GameObject;
+
 			if (tossObject != null) {
 				if (tossObject.activeSelf != true) tossObject.SetActive(true);
 				tossObject.transform.SetParent(levelDynamicContainer.transform,true);
-				tossObject.GetComponent<UseableObjectUse>().customIndex = searchableItem.customIndex[i];
+				tossObject.GetComponent<UseableObjectUse>().customIndex =
+					searchableItem.customIndex[i];
 			} else {
 				Const.sprint("BUG: Failed to instantiate object being dropped on gib.");
 			}

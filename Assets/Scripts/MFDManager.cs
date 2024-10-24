@@ -959,7 +959,8 @@ public class MFDManager : MonoBehaviour  {
 				if (contents[i] > -1) {
 					searchCloseButtonRH.SetActive(true);
 					searchItemImagesRH[i].SetActive(true);
-					searchItemImagesRH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[contents[i]];
+					searchItemImagesRH[i].GetComponent<Image>().overrideSprite = null;
+					searchItemImagesRH[i].GetComponent<Image>().overrideSprite = Const.a.GetSpriteFromTexture(contents[i]);
 					searchContainerRH.contents[i] = contents[i];
 					searchContainerRH.customIndex[i] = customIndex[i];
 				}
@@ -978,7 +979,8 @@ public class MFDManager : MonoBehaviour  {
 				if (contents[i] > -1) {
 					searchCloseButtonLH.SetActive(true);
 					searchItemImagesLH[i].SetActive(true);
-					searchItemImagesLH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[contents[i]];
+					searchItemImagesLH[i].GetComponent<Image>().overrideSprite = null;
+					searchItemImagesLH[i].GetComponent<Image>().overrideSprite = Const.a.GetSpriteFromTexture(contents[i]);
 					searchContainerLH.contents[i] = contents[i];
 					searchContainerLH.customIndex[i] = customIndex[i];
 				}
@@ -1322,7 +1324,8 @@ public class MFDManager : MonoBehaviour  {
 				searchCloseButtonRH.SetActive(false);
 				for (int i=0;i<4;i++) {
 					searchItemImagesRH[i].SetActive(false);
-					searchItemImagesRH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[101];
+					searchItemImagesRH[i].GetComponent<Image>().overrideSprite = null;
+					searchItemImagesRH[i].GetComponent<Image>().overrideSprite = Const.a.GetSpriteFromTexture(101);
 					searchContainerRH.contents[i] = -1;
 					searchContainerRH.customIndex[i] = -1;
 				}
@@ -1337,7 +1340,8 @@ public class MFDManager : MonoBehaviour  {
 				searchCloseButtonLH.SetActive(false);
 				for (int i=0;i<4;i++) {
 					searchItemImagesLH[i].SetActive(false);
-					searchItemImagesLH[i].GetComponent<Image>().overrideSprite = Const.a.searchItemIconSprites[101];
+					searchItemImagesLH[i].GetComponent<Image>().overrideSprite = null;
+					searchItemImagesLH[i].GetComponent<Image>().overrideSprite = Const.a.GetSpriteFromTexture(101);
 					searchContainerLH.contents[i] = -1;
 					searchContainerLH.customIndex[i] = -1;
 				}

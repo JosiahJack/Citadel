@@ -66,7 +66,6 @@ public class Door : MonoBehaviour {
 	private string closeClipName = "DoorClose";
 	private GameObject dynamicObjectsContainer;
 	private int i = 0;
-	private UnityEngine.AI.NavMeshObstacle nmo;
 	private bool firstUpdateAfterLoad = false;
 	private string loadedClipName;
 	private int loadedClipIndex;
@@ -87,12 +86,6 @@ public class Door : MonoBehaviour {
 		if (SFXClip == null) Debug.Log("BUG: No audio clip SFXClip on Door!");
 		
 		useFinished = PauseScript.a.relativeTime;
-		nmo = GetComponent<UnityEngine.AI.NavMeshObstacle>();
-		if (nmo == null) {
-			Const.sprint("BUG: Missing NavMeshObstacle on Door at "
-						 + transform.position.ToString());
-		} else nmo.carving = true; // Creates a "hole" in the NavMesh forcing 
-								   // enemies to find an alternate route.
 		if (startOpen) {
 			stayOpen = true;
 			OpenDoor();
@@ -356,9 +349,6 @@ public class Door : MonoBehaviour {
 			ActivateLasers();
 			lasersFinished = 0;
 		}
-
-		if (doorOpen == DoorState.Open) Utils.DisableNavMeshObstacle(nmo); 
-		else Utils.EnableNavMeshObstacle(nmo); // Only open if fully open.
 	}
 
 	void SetCollisionLayer(int layerNum) {

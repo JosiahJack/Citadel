@@ -894,7 +894,7 @@ public class WeaponFire : MonoBehaviour {
         }
 
 		GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
-		GameObject lasertracer = Instantiate(Const.a.useableItems[laserIndex],transform.position,Const.a.quaternionIdentity) as GameObject;
+		GameObject lasertracer = Instantiate(Const.a.prefabs[laserIndex + 307],transform.position,Const.a.quaternionIdentity) as GameObject;
 		// Temporary object only, no need to save or mark as instantiated.
 		if (lasertracer != null) {
 			lasertracer.transform.SetParent(dynamicObjectsContainer.transform,true);

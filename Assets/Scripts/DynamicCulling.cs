@@ -15,8 +15,6 @@ public class DynamicCulling : MonoBehaviour {
     public bool lightCulling = true;
     public bool outputDebugImages = false;
     public bool forceRecull = false;
-    public Texture2D[] worldClosedEdges;
-//     public bool[,] worldCellCheckedYet = new bool [WORLDX,WORLDX];
     public GridCell[,] gridCells = new GridCell[WORLDX,WORLDX];
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
     public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();
@@ -429,7 +427,6 @@ public class DynamicCulling : MonoBehaviour {
     
     void ClearCellList() {
         gridCells = new GridCell[WORLDX,WORLDX];
-//         worldCellCheckedYet = new bool [WORLDX,WORLDX];
         staticMeshesImmutable = new List<MeshRenderer>();
         staticMeshImmutableCoords = new List<Vector2Int>();
         staticMeshesSaveable = new List<MeshRenderer>();
@@ -464,7 +461,7 @@ public class DynamicCulling : MonoBehaviour {
 
     // ========================================================================
     // Handle Occluders (well, just determining visible cells and their chunks)
-    
+
     Meshenderer GetMeshAndItsRenderer(GameObject go, PrefabIdentifier pid) {
         // Add top level GameObject's mesh renderer and filter.
         MeshRenderer mr = go.GetComponent<MeshRenderer>();
@@ -536,16 +533,12 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
-    void MakeDebugCube(Transform tr, Vector3 ofs, Material mat) {
-//         GameObject debugCube = GameObject.CreatePrimitive(PrimitiveType.Cube); // Automatically adds MeshFilter and MeshRenderer
-//         debugCube.transform.parent = tr;
-//         debugCube.transform.localPosition = ofs;
-//         MeshRenderer mr = debugCube.GetComponent<MeshRenderer>();
-//         mr.material = mat;
-    }
-
     void DetermineClosedEdges() {
-        Color32[] edgePixels = worldClosedEdges[LevelManager.a.currentLevel].GetPixels32();
+        // The first indices in Const.a.textures are the world closed edges.
+        // Priorities priorities after all.  Gotta figure out if we should draw
+        // anything else first before it matters what texture it has.
+        Color32[] edgePixels = Const.a.textures[LevelManager.a.currentLevel].GetPixels32();
+
         for (int x=0;x<WORLDX;x++) {
             for (int y=0;y<WORLDX;y++) {
                 gridCells[x,y].closedNorth = false;
@@ -568,14 +561,6 @@ public class DynamicCulling : MonoBehaviour {
                     = gridCells[x,y].closedSouth = gridCells[x,y].closedWest
                     = true;
                 }
-
-//                 Debug.Log("gridCells[" + x.ToString() + "," + y.ToString()
-//                           + "] has NESW:"
-//                           + (gridCells[x,y].closedNorth ? "1" : "0")
-//                           + (gridCells[x,y].closedEast ? "1" : "0")
-//                           + (gridCells[x,y].closedSouth ? "1" : "0")
-//                           + (gridCells[x,y].closedWest ? "1" : "0")
-//                           + " from color: " + closedData.ToString());
             }
         }
     }
@@ -788,6 +773,7 @@ public class DynamicCulling : MonoBehaviour {
         x = (int)((pos.x - worldMin.x + 1.28f) / 2.56f);
         if (x > 63) x = 63;
         else if (x < 0) x = 0;
+
         y = (int)((pos.z - worldMin.z + 1.28f) / 2.56f);
         if (y > 63) y = 63;
         else if (y < 0) y = 0;
@@ -800,6 +786,7 @@ public class DynamicCulling : MonoBehaviour {
         x = (int)((pos.x - worldMin.x + 1.28f) / 2.56f);
         if (x > 63) x = 63;
         else if (x < 0) x = 0;
+
         y = (int)((pos.z - worldMin.z + 1.28f) / 2.56f);
         if (y > 63) y = 63;
         else if (y < 0) y = 0;
@@ -814,15 +801,7 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     bool UpdatedPlayerCell() {
-        if (forceRecull) {
-//             for (int x=0;x<64;x++) {
-//                 for (int y=0;y<64;y++) {
-//                     worldCellCheckedYet[x,y] = false;
-//                 }
-//             }
-            forceRecull = false;
-            return true;
-        }
+        if (forceRecull) { forceRecull = false; return true; }
 
         int lastX = playerCellX;
         int lastY = playerCellY;
@@ -841,7 +820,6 @@ public class DynamicCulling : MonoBehaviour {
             for (y=0;y<64;y++) {
                 gridCells[x,y].visible = false;
                 worldCellsOpen[x,y] = gridCells[x,y].open;
-//                 worldCellCheckedYet[x,y] = false;
                 if (outputDebugImages) {
                     pixels[x + (y * 64)] = gridCells[x,y].open
                                            ? Color.white : Color.black;
@@ -851,7 +829,6 @@ public class DynamicCulling : MonoBehaviour {
 
         x = playerCellX; y = playerCellY;
         gridCells[x,y].visible = true;
-//         worldCellCheckedYet[x,y] = true;
 
         CastStraightX(playerCellX,playerCellY + 1,1);  // [ ][3]
         CastStraightX(playerCellX,playerCellY,1);      // [1][2]
@@ -890,7 +867,6 @@ public class DynamicCulling : MonoBehaviour {
             Vector3 position = entry.Value; // The position value
             pnt = PosToCellCoords(position);
             gridCells[pnt.x,pnt.y].visible = true;
-//             worldCellCheckedYet[pnt.x,pnt.y] = true;
 
             CastStraightX(playerCellX,playerCellY + 1,1);  // [ ][3]
             CastStraightX(playerCellX,playerCellY,1);      // [1][2]
@@ -951,47 +927,34 @@ public class DynamicCulling : MonoBehaviour {
         for (;y<64;y+=signy) { // Up
             currentVisible = false;
             if (XYPairInBounds(x,y - signy) && XYPairInBounds(x,y)) {
-//                 if (!worldCellCheckedYet[x,y]) {
-                    if (gridCells[x,y - signy].visible) {
-                        if (signy > 0) {
-                            if (gridCells[x,y - 1].closedNorth && gridCells[x,y - 1].open) return;
-                        } else if (signy < 0) {
-                            if (gridCells[x,y + 1].closedSouth && gridCells[x,y + 1].open) return;
-                        }
-
-                        gridCells[x,y].visible = worldCellsOpen[x,y];
-//                         worldCellCheckedYet[x,y] = true;
-                        currentVisible = true; // Would be if twas open.
+                if (gridCells[x,y - signy].visible) {
+                    if (signy > 0) {
+                        if (gridCells[x,y - 1].closedNorth && gridCells[x,y - 1].open) return;
+                    } else if (signy < 0) {
+                        if (gridCells[x,y + 1].closedSouth && gridCells[x,y + 1].open) return;
                     }
-//                 } else {
-//                     currentVisible = worldCellsOpen[x,y]; // Keep going.
-//                 }
+
+                    gridCells[x,y].visible = worldCellsOpen[x,y];
+                    currentVisible = true; // Would be if twas open.
+                }
             }
 
             if (!currentVisible) break; // Hit wall!
 
             if (XYPairInBounds(x + 1,y)) {
-//                 if (!worldCellCheckedYet[x + 1,y]) {
-                    if (CastRayCellCheck(x,y,x + 1,y) > 0) {
-                        gridCells[x + 1,y].visible = gridCells[x + 1,y].open;
-                    } else {
-                        gridCells[x + 1,y].visible = false;
-                    }
-
-//                     worldCellCheckedYet[x + 1,y] = true;
-//                 }
+                if (CastRayCellCheck(x,y,x + 1,y) > 0) {
+                    gridCells[x + 1,y].visible = gridCells[x + 1,y].open;
+                } else {
+                    gridCells[x + 1,y].visible = false;
+                }
             }
 
             if (XYPairInBounds(x - 1,y)) {
-//                 if (!worldCellCheckedYet[x - 1,y]) {
-                    if (CastRayCellCheck(x,y,x - 1,y) > 0) {
-                        gridCells[x - 1,y].visible = gridCells[x - 1,y].open;
-                    } else {
-                        gridCells[x - 1,y].visible = false;
-                    }
-
-//                     worldCellCheckedYet[x - 1,y] = true;
-//                 }
+                if (CastRayCellCheck(x,y,x - 1,y) > 0) {
+                    gridCells[x - 1,y].visible = gridCells[x - 1,y].open;
+                } else {
+                    gridCells[x - 1,y].visible = false;
+                }
             }
         }
     }
@@ -1008,47 +971,34 @@ public class DynamicCulling : MonoBehaviour {
         for (;x<64;x+=signx) { // Right
             currentVisible = false;
             if (XYPairInBounds(x - signx,y) && XYPairInBounds(x,y)) {
-//                 if (!worldCellCheckedYet[x,y]) {
-                    if (gridCells[x - signx,y].visible) {
-                        if (signx > 0) {
-                            if (gridCells[x - 1,y].closedEast && gridCells[x - 1,y].open) return;
-                        } else if (signx < 0) {
-                            if (gridCells[x + 1,y].closedWest && gridCells[x + 1,y].open) return;
-                        }
-
-                        gridCells[x,y].visible = worldCellsOpen[x,y];
-//                         worldCellCheckedYet[x,y] = true;
-                        currentVisible = true; // Would be if twas open.
+                if (gridCells[x - signx,y].visible) {
+                    if (signx > 0) {
+                        if (gridCells[x - 1,y].closedEast && gridCells[x - 1,y].open) return;
+                    } else if (signx < 0) {
+                        if (gridCells[x + 1,y].closedWest && gridCells[x + 1,y].open) return;
                     }
-//                 } else {
-//                     currentVisible = worldCellsOpen[x,y]; // Keep going.
-//                 }
+
+                    gridCells[x,y].visible = worldCellsOpen[x,y];
+                    currentVisible = true; // Would be if twas open.
+                }
             }
 
             if (!currentVisible) break; // Hit wall!
 
             if (XYPairInBounds(x,y + 1)) {
-//                 if (!worldCellCheckedYet[x,y + 1]) {
-                    if (CastRayCellCheck(x,y,x,y + 1) > 0) {
-                        gridCells[x,y + 1].visible = gridCells[x,y + 1].open;
-                    } else {
-                        gridCells[x,y + 1].visible = false;
-                    }
-
-//                     worldCellCheckedYet[x,y + 1] = true;
-//                 }
+                if (CastRayCellCheck(x,y,x,y + 1) > 0) {
+                    gridCells[x,y + 1].visible = gridCells[x,y + 1].open;
+                } else {
+                    gridCells[x,y + 1].visible = false;
+                }
             }
 
             if (XYPairInBounds(x,y - 1)) {
-//                 if (!worldCellCheckedYet[x,y - 1]) {
-                    if (CastRayCellCheck(x,y,x,y - 1) > 0) {
-                        gridCells[x,y - 1].visible = gridCells[x,y - 1].open;
-                    } else {
-                        gridCells[x,y - 1].visible = false;
-                    }
-
-//                     worldCellCheckedYet[x,y - 1] = true;
-//                 }
+                if (CastRayCellCheck(x,y,x,y - 1) > 0) {
+                    gridCells[x,y - 1].visible = gridCells[x,y - 1].open;
+                } else {
+                    gridCells[x,y - 1].visible = false;
+                }
             }
         }
     }
@@ -1169,7 +1119,6 @@ public class DynamicCulling : MonoBehaviour {
         
         if (XYPairInBounds(x,y)) {
             gridCells[x,y].visible = (edgesOpen && worldCellsOpen[x,y]);
-//             if (!worldCellCheckedYet[x,y]) worldCellCheckedYet[x,y] = true;
             if (!gridCells[x,y].visible) return -1;
             return 1;
         }
@@ -1366,28 +1315,6 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
-    public void ToggleLightsFrustumVisibility() {
-//         if (!lightCulling) return;
-// 
-//         Vector3 lightPos;
-//         Vector3 lightDir;
-//         for (int i=0;i<lightsInPVS.Count;i++) {
-//             lightPos = lightsInPVS[i].transform.position;
-//             lightDir = PlayerMovement.a.transform.position - lightPos;
-//             if (Vector3.Dot(lightDir,MouseLookScript.a.transform.forward) < 0.5f) {
-//                 lightsInPVS[i].enabled = true;
-//             } else {
-//                 if (lightsInPVS[i] == null) {
-//                     Debug.Log("ToggleLightsFrustumVisibility light was null at index " + i.ToString());
-//                     continue;
-//                 }
-//                 
-//                 if (lightDir.magnitude > 10.24f) lightsInPVS[i].enabled = true;
-//                 else lightsInPVS[i].enabled = false;
-//             }
-//         }
-    }
-
     public void Cull(bool force) {
         if (!cullEnabled || LevelManager.a.currentLevel == 13) return;
 
@@ -1395,13 +1322,6 @@ public class DynamicCulling : MonoBehaviour {
         // to set playerCellX and playerCellY.
         bool playerHasMoved = UpdatedPlayerCell();
         if (playerHasMoved || force) {
-//             int x,y;
-//             for (x=0;x<64;x++) {
-//                 for (y=0;y<64;y++) {
-//                     worldCellCheckedYet[x,y] = false;
-//                 }
-//             }
-
             DetermineVisibleCells(); // Reevaluate visible cells from new pos.
             gridCells[0,0].visible = true; // Errors default here so draw them anyways.
             ToggleVisibility(); // Update all cells marked as dirty.
@@ -1412,8 +1332,6 @@ public class DynamicCulling : MonoBehaviour {
             UpdateNPCPVS();
             ToggleNPCPVS();
         }
-
-        ToggleLightsFrustumVisibility();
 
         // Update dynamic meshes after PVS has been updated, if player moved.
         if (dynamicObjectCull) {

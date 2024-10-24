@@ -753,7 +753,7 @@ Master Index
 303 chunk_stor1_7_slice45        223
 304 chunk_stor1_7d               224
 305 chunk_teleporter
-306 chunk_white                 Const.a.useableItems
+306 chunk_white                 Const.a.useableItemsFrobIcons
 307 item_paper_wad              0
 308 item_warecasing             1
 309 item_beaker                 2

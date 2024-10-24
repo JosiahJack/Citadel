@@ -54,10 +54,10 @@ namespace Tests {
             string msg = "Const.a was null";
             Assert.That(check,msg);
             
-            msg = "Const.a useableItems has unassigned slots!";
+            msg = "Const.a prefabs has unassigned slots!";
             check = true;
-            for (int i=0;i<Const.a.useableItems.Length;i++) {
-                if (Const.a.useableItems[i] == null) check = false;
+            for (int i=0;i<Const.a.prefabs.Length;i++) {
+                if (Const.a.prefabs[i] == null) check = false;
             }
             Assert.That(check,msg);
 

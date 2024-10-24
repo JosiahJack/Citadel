@@ -172,18 +172,6 @@ public class Utils {
 		DisableMeshCollider(mcol);
 	}
 
-	public static void EnableNavMeshObstacle(NavMeshObstacle nmo) {
-		if (nmo == null) return;
-
-		if (!nmo.enabled) nmo.enabled = true;
-	}
-
-	public static void DisableNavMeshObstacle(NavMeshObstacle nmo) {
-		if (nmo == null) return;
-
-		if (nmo.enabled) nmo.enabled = false;
-	}
-
 	public static void EnableCamera(Camera cam) {
 		if (cam == null) return;
 

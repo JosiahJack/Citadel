@@ -100,7 +100,6 @@ public class AIController : MonoBehaviour {
 														 // starting line, save
 	[HideInInspector] public float deathBurstFinished; // save
 	[HideInInspector] public bool deathBurstDone; // save
-// 	private NavMeshPath searchPath;
 	[HideInInspector] public float tranquilizeFinished; // save
 	[HideInInspector] public bool hopDone; // save
 	[HideInInspector] public float wanderFinished; // save
@@ -141,6 +140,7 @@ public class AIController : MonoBehaviour {
 			if (!mdc.activeSelf) mdc.SetActive(true);
 			AIMeleeDamageCollider mcs =
 				mdc.GetComponent<AIMeleeDamageCollider>();
+
 			if (mcs == null) continue;
 
 			mcs.MeleeColliderSetup(index,meleeDamageColliders.Length,10f,
@@ -149,13 +149,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	public bool IsCyberNPC() {
-		//if (healthManager != null) {
-		//	if (healthManager.inCyberSpace) return true;
-		//}
-
-		//if (Const.a.moveTypeForNPC[index] == AIMoveType.Cyber) return true;
 		return (Const.a.typeForNPC[index] == NPCType.Cyber);
-		//return false;
 	}
 
 	// Initialization and find components
@@ -195,6 +189,7 @@ public class AIController : MonoBehaviour {
 		idleTime = PauseScript.a.relativeTime
 				   + Random.Range(Const.a.timeIdleSFXMinForNPC[index],
 								  Const.a.timeIdleSFXMaxForNPC[index]);
+
 		attack1SoundTime = PauseScript.a.relativeTime;
 		attack2SoundTime = PauseScript.a.relativeTime;
 		attack3SoundTime = PauseScript.a.relativeTime;
@@ -247,8 +242,6 @@ public class AIController : MonoBehaviour {
 		raycastingTickFinished = tickFinished + Random.value; // Separate rand.
 		attackFinished = PauseScript.a.relativeTime + 1f;
 		idealTransformForward = sightPoint.transform.forward;
-// 		deathBurstDone = false;
-// 		searchPath = new NavMeshPath();
 		if (!IsCyberNPC()) targetID = Const.GetTargetID(index);
 		else             targetID = Const.GetCyberTargetID(index);
 		
@@ -846,16 +839,8 @@ public class AIController : MonoBehaviour {
 		if (IsCyberNPC()) {
 			currentDestination = enemy.transform.position; // See through walls
 		} else {
-// 			if (NavMesh.CalculatePath(sightPoint.transform.position,
-// 									enemy.transform.position,NavMesh.AllAreas,
-// 									searchPath)) {
-//
-// 				currentDestination = searchPath.corners[0];
-// 				Debug.Log("gud Hunting");
-// 			} else {
 			// UPDATE: A* Pathfinding with world grid.
-				currentDestination = enemy.transform.position;//lastKnownEnemyPos;
-// 			}
+			currentDestination = enemy.transform.position;//lastKnownEnemyPos;
 		}
 
 		// Destination is still far enough away and within angle, then move.
@@ -1074,8 +1059,7 @@ public class AIController : MonoBehaviour {
 
 		if (!hasLaser) return;
 
-		GameObject laz = Instantiate(Const.a.useableItems[101],
-									 transform.position,
+		GameObject laz = Instantiate(Const.a.prefabs[408],transform.position,
 									 Const.a.quaternionIdentity) as GameObject;
 
 		if (laz == null) return; // No laser!
@@ -1196,7 +1180,7 @@ public class AIController : MonoBehaviour {
 		}
 
 		beachball = ConsoleEmulator.SpawnDynamicObject(masterIndex,-1);
-		if (beachball == null) beachball = Const.a.useableItems[63]; // Frag
+		if (beachball == null) beachball = Const.a.prefabs[370]; // Frag
 		beachball.tag = "NPC";
 		beachball.layer = 24; // NPCBullet
 		ProjectileEffectImpact pei = 
