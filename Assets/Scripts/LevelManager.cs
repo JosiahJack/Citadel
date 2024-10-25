@@ -205,7 +205,7 @@ public class LevelManager : MonoBehaviour {
 	public void LoadLevelFromSave (int levnum) {
 		LoadLevelData(levnum); // Let this function check and load data if it isn't yet.
 		currentLevel = levnum; // Set current level to be the new level
-		DisableAllNonOccupiedLevelsExcept(currentLevel);
+		DisableAllNonOccupiedLevelsExcept(currentLevel); // Unload last level.
 		levels[currentLevel].SetActive(true); // Load new level
 		PostLoadLevelSetupSystems();
 	}

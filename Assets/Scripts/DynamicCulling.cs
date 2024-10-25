@@ -1303,15 +1303,37 @@ public class DynamicCulling : MonoBehaviour {
         int x,y;
         for (int i=0;i<lights.Count;i++) {
             if (lights[i] == null) continue;
+            
             x = lightCoords[i].x;
             y = lightCoords[i].y;
-            if (gridCells[x,y].visible || !worldCellsOpen[x,y]) {
+            int range = (int)Mathf.Floor(lights[i].range / 2.56f);
+            int xMin = x - range;
+            int xMax = x + range;
+            int yMin = y - range;
+            int yMax = y + range;
+            for (int ix = xMin;ix <= xMax; ix++) {
+                for (int iy = yMin;iy <= yMax; iy++) {
+                    if (!XYPairInBounds(ix,iy)) continue;
+
+                    if (gridCells[ix,iy].visible) {
+                        lights[i].enabled = true;
+                        lightsInPVS.Add(lights[i]);
+                        lightsInPVSCoords.Add(lightCoords[i]);
+                        goto LightContinue;
+                    }
+                }
+            }
+
+            if (gridCells[x,y].visible || !gridCells[x,y].open) {
                 lights[i].enabled = true;
                 lightsInPVS.Add(lights[i]);
                 lightsInPVSCoords.Add(lightCoords[i]);
             } else {
                 lights[i].enabled = false;
             }
+            
+            LightContinue:
+            continue;
         }
     }
 
