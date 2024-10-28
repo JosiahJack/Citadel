@@ -154,8 +154,7 @@ void UnityGGXDeferredCalculateLightParams (
     // read depth and reconstruct world position
     float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv);
     depth = Linear01Depth (depth);
-    //float4 vpos = float4(i.ray * depth,1);
-    half4 vpos = float4(i.ray * depth,1);
+    float4 vpos = float4(i.ray * depth,1);
     float3 wpos = mul (unity_CameraToWorld, vpos).xyz;
 
     float fadeDist = UnityComputeShadowFadeDistance(wpos, vpos.z);
@@ -187,17 +186,17 @@ void UnityGGXDeferredCalculateLightParams (
 
     // point light case
     #elif defined (POINT) || defined (POINT_COOKIE)
-        half3 tolight = wpos - _LightPos.xyz;
+        float3 tolight = wpos - _LightPos.xyz;
         half3 lightDir = -normalize (tolight);
 
-        half att = dot(tolight, tolight) * _LightPos.w;
-        half atten = tex2D (_LightTextureB0, att.rr).r;
+        float att = dot(tolight, tolight) * _LightPos.w;
+        float atten = tex2D (_LightTextureB0, att.rr).r;
 
-        //atten *= UnityDeferredComputeShadow (tolight, fadeDist, uv);
+        atten *= UnityDeferredComputeShadow (tolight, fadeDist, uv);
 
-        //#if defined (POINT_COOKIE)
-        //atten *= texCUBEbias(_LightTexture0, float4(mul(unity_WorldToLight, half4(wpos,1)).xyz, -8)).w;
-        //#endif //POINT_COOKIE
+        #if defined (POINT_COOKIE)
+        atten *= texCUBEbias(_LightTexture0, float4(mul(unity_WorldToLight, half4(wpos,1)).xyz, -8)).w;
+        #endif //POINT_COOKIE
     #else
         half3 lightDir = 0;
         float atten = 0;
