@@ -41,7 +41,8 @@ public class LevelManager : MonoBehaviour {
 	public Material rtxEmissive;
 	public Mesh sphereMesh;
 	public Material pipe_maint2_3_coolant;
-
+	[HideInInspector] public List<string>[] DynamicObjectsSavestrings = new List<string>[13];
+	
 	private bool getValparsed;
 	private bool[] levelDataLoaded;
 	private int getValreadInt;
@@ -77,7 +78,10 @@ public class LevelManager : MonoBehaviour {
 		if (ressurectionBayDoor.Length != 8) Debug.Log("BUG: LevelManager ressurectionBayDoor array length not equal to 8.");
 		Time.timeScale = Const.a.defaultTimeScale;
 		levelDataLoaded = new bool[14];
-		for (int i=0;i<14;i++) levelDataLoaded[i] = false;
+		for (int i=0;i<14;i++) {
+			levelDataLoaded[i] = false;
+			DynamicObjectsSavestrings[i] = new List<string>();
+		}
 		LoadLevelData(currentLevel);
 	}
 	
@@ -148,6 +152,7 @@ public class LevelManager : MonoBehaviour {
 
 		UnloadLevelLights(levnum);
 		UnloadLevelGeometry(levnum);
+ 		UnloadLevelDynamicObjects(levnum,true);
 		levelDataLoaded[levnum] = false;
 	}
 
@@ -714,63 +719,30 @@ public class LevelManager : MonoBehaviour {
 												"Player3","Player4",
 												"NPCBulllet",
 												"CorpseSearchable");
-
-			//GameObject rtxSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-			//rtxSphere.name = "Sphere" + i.ToString();
-			//Transform sprTr = rtxSphere.transform;
-			//sprTr.SetParent(tr);
-			//sprTr.localPosition = Vector3.zero;
-			//sprTr.localRotation = Const.a.quaternionIdentity;
-			//float sprScale = 0.1f * (lit.intensity / 5.5f);
-			//sprTr.localScale = new Vector3(readFloatx,readFloaty,readFloatz);
-			//rtxSphere.layer = 1; // TransparentFX
-			//MeshRenderer mr = rtxSphere.GetComponent<MeshRenderer>();
-			//if (mr == null) mr = rtxSphere.AddComponent<MeshRenderer>();
-			//mr.sharedMaterial = rtxEmissive;
-			//MeshFilter mf = rtxSphere.GetComponent<MeshFilter>();
-			//if (mf == null) mf = rtxSphere.AddComponent<MeshFilter>();
-			//mf.mesh = sphereMesh;
-			//SphereCollider sprCol = rtxSphere.GetComponent<SphereCollider>();
-			//if (sprCol != null) sprCol.enabled = false;
 		}
 	}
 
-	public void UnloadLevelDynamicObjects(int curlevel) {
-		GameObject go = GetRequestedLevelDynamicContainer(curlevel);
-		Component[] compArray = go.GetComponentsInChildren(typeof(SaveObject),true);
-		for (int i=0;i<compArray.Length;i++) {
-			PrefabIdentifier pid = compArray[i].gameObject.GetComponent<PrefabIdentifier>();
-			if (pid == null) {
-				if (gameObject != LevelManager.a.gameObject) {
-					Debug.Log("SaveObject on a GameObject " + gameObject.name
-							  + " missing companion PrefabIdentifier component");
-				}
-			} else {
-				if (pid.constIndex == 517) { // func_wall has SaveObject on first child mover_target so destroy the parent instead
-					DestroyImmediate(compArray[i].gameObject.transform.parent.gameObject);
-				} else {
-					if (pid.constIndex == 477) {
-						GameObject cgo =
-							compArray[i].transform.GetChild(0).gameObject;
+	public void UnloadLevelDynamicObjects(int curlevel, bool saveExisting) {
+		
+		
+		Transform tr = GetRequestedLevelDynamicContainer(curlevel).transform;
+		if (saveExisting) {
+			List<GameObject> allDynamicObjects = new List<GameObject>();
+			Component[] compArray = tr.gameObject.GetComponentsInChildren(typeof(SaveObject),true);
+			for (int i=0;i<compArray.Length;i++) {
+				allDynamicObjects.Add(compArray[i].gameObject);
+			}
 
-						HealthManager hm = Utils.GetMainHealthManager(cgo);
-						if (hm == null) {
-							Debug.Log("Missing HealthManager on security "
-									  + "camera "
-									  + compArray[i].gameObject.name);
-						} else {
-							UnityEngine.UI.Image overlay = hm.linkedOverlay;
-							if (overlay != null) {
-								GameObject hmGO = overlay.gameObject;
-								hmGO.SetActive(false);
-							}
-						}
-					}
-					DestroyImmediate(compArray[i].gameObject);
-				}
+			DynamicObjectsSavestrings[curlevel].Clear(); // Empty list.
+			for (int i=0;i<allDynamicObjects.Count;i++) {
+				DynamicObjectsSavestrings[curlevel].Add(SaveObject.Save(allDynamicObjects[i]));
 			}
 		}
-		compArray = null;
+		
+		// Iterate over all gameobjects at first level within.
+		for (int i=(tr.childCount-1);i>=0;i--) {
+			DestroyImmediate(tr.GetChild(i).gameObject); // Go going, gone!
+		}
 	}
 
 	public void UnloadLevelNPCs(int curlevel) {
@@ -833,7 +805,9 @@ public class LevelManager : MonoBehaviour {
 					   // Don't want to spawn 0 as a fallback which is a wall.
 
 		string[] entries;
+		DynamicObjectsSavestrings[curlevel].Clear(); // Empty list.
 		for (int i=0;i<readFileList.Count;i++) {
+			DynamicObjectsSavestrings[curlevel].Add(readFileList[i]);
 			entries = readFileList[i].Split(Convert.ToChar(Utils.splitChar));
 			if (entries.Length <= 1) continue;
 
@@ -842,6 +816,7 @@ public class LevelManager : MonoBehaviour {
 																  false,
 																  container,
 																  -1);
+
 			if (newGO != null) SaveObject.Load(newGO,ref entries,-2);
 		}
 	}

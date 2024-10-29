@@ -1287,11 +1287,8 @@ public class Const : MonoBehaviour {
 
 		Stopwatch saveTimer = new Stopwatch();
 		saveTimer.Start();
-		string[] saveData = new string[16000]; // Found 4256 saveable objects - 
-											   // so this should be enough for
-											   // instantiated items...maybe.
+		List<string> saveData = new List<string>();
 		int i,j;
-		int index = 0;
 
 		// All saveable classes
 		List<GameObject> saveableGameObjects = new List<GameObject>();
@@ -1304,8 +1301,7 @@ public class Const : MonoBehaviour {
 			savename = "Unnamed " + Utils.UintToString(saveFileIndex); // int
 		}
 
-		saveData[index] = savename;
-		index++;
+		saveData.Add(savename);
 		
 		// Credit Stats and Times
 		s1.Clear();
@@ -1327,8 +1323,7 @@ public class Const : MonoBehaviour {
 		s1.Append(Utils.FloatToString(damageReceived,"damageReceived"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(savesScummed,"savesScummed"));
-		saveData[index] = s1.ToString();
-		index++; // float - pausable game time
+		saveData.Add(s1.ToString());
 
 		s1.Clear();
 		s1.Append(LevelManager.Save(LevelManager.a.gameObject));
@@ -1342,15 +1337,21 @@ public class Const : MonoBehaviour {
 		s1.Append(Utils.UintToString(difficultyPuzzle,"difficultyPuzzle"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(difficultyCyber,"difficultyCyber"));
-		saveData[index] = s1.ToString(); index++;
+		saveData.Add(s1.ToString());
 		
 		s1.Clear();
 
 		// Save all the objects data
 		for (i=0;i<saveableGameObjects.Count;i++) {
 			// Take this object's data and add it to the array.
-			saveData[index] = SaveObject.Save(saveableGameObjects[i]); // <<< THIS IS IT <<<
-			index++; // Each item saved on a separate line.
+			saveData.Add(SaveObject.Save(saveableGameObjects[i])); // <<< THIS IS IT <<<
+		}
+		
+		for (i=0;i<14;i++) {
+			int dyncount = LevelManager.a.DynamicObjectsSavestrings[i].Count;
+			for (j=0;j<dyncount;j++) {
+				saveData.Add(LevelManager.a.DynamicObjectsSavestrings[i][j]);
+			}
 		}
 
 		// Write to file
@@ -1360,7 +1361,7 @@ public class Const : MonoBehaviour {
 		StreamWriter sw = new StreamWriter(sPath,false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
-				for (j=0;j<saveData.Length;j++) {
+				for (j=0;j<saveData.Count;j++) {
 					if (!string.IsNullOrWhiteSpace(saveData[j])) {
 						sw.WriteLine(saveData[j]);
 					}
@@ -1589,7 +1590,7 @@ public class Const : MonoBehaviour {
 		}
 		
 		for (i=0;i<14;i++) {
-			LevelManager.a.UnloadLevelDynamicObjects(i); // Delete them all!
+			LevelManager.a.UnloadLevelDynamicObjects(i,false); // Delete them all!
 			LevelManager.a.UnloadLevelNPCs(i); // Delete them all!
 			LevelManager.a.levelCameraCount[i] = 0;
 			LevelManager.a.levelSmallNodeCount[i] = 0;

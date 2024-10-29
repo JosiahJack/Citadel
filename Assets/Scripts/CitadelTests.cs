@@ -490,7 +490,7 @@ public class CitadelTests : MonoBehaviour {
 	}
 
 	public void UnloadLevelDynamicObjects() {
-		lm.UnloadLevelDynamicObjects(levelToOutputFrom);
+		lm.UnloadLevelDynamicObjects(levelToOutputFrom,false);
 	}
 
 	public void GenerateDynamicObjectsDataFile() {
@@ -507,20 +507,17 @@ public class CitadelTests : MonoBehaviour {
 							  + levelToOutputFrom.ToString());
 
 		string dynName = "CitadelScene_dynamics_level"
-					   + levelToOutputFrom.ToString() + ".dat";
+					     + levelToOutputFrom.ToString() + ".dat";
 
 		string dynP = Utils.SafePathCombine(Application.streamingAssetsPath,
 										    dynName);
 
 		StreamWriter sw = new StreamWriter(dynP,false,Encoding.ASCII);
 		if (sw == null) {
-			UnityEngine.Debug.Log("Lights output file path invalid");
+			UnityEngine.Debug.Log("Dynamic objects output file path invalid");
 			return;
 		}
-		
-		//ct.SetA();
-		//lm.SetA();
-		//ps.SetA();
+
 		using (sw) {
 			for (int i=0;i<allDynamicObjects.Count;i++) {
 				sw.Write(SaveObject.Save(allDynamicObjects[i]));
