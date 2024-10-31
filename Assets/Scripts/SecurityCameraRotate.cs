@@ -39,11 +39,8 @@ public class SecurityCameraRotate : MonoBehaviour {
 			}
 
 			if (waitingFinished < PauseScript.a.relativeTime) {
-				if (rotatePositive) {
-					RotatePositive();
-				} else {
-					RotateNegative();
-				}
+				if (rotatePositive) RotatePositive();
+				else                RotateNegative();
 			}
 		}
 	}
@@ -55,6 +52,7 @@ public class SecurityCameraRotate : MonoBehaviour {
 			waitingFinished = PauseScript.a.relativeTime + waitTime;
 			return;
 		}
+		
 		transform.Rotate(new Vector3(0,degreesYPerSecond * tickTime,0),
 						 Space.World);
 	}
@@ -66,19 +64,15 @@ public class SecurityCameraRotate : MonoBehaviour {
 			waitingFinished = PauseScript.a.relativeTime + waitTime;
 			return;
 		}
+		
 		transform.Rotate(new Vector3(0,degreesYPerSecond * tickTime * -1,0),
 						 Space.World);
 	}
 
 	public static string Save(GameObject go) {
 		SecurityCameraRotate scr = go.GetComponent<SecurityCameraRotate>();
-		if (scr == null) { // No selective catalytic reduction.  Consult your engine manual for further diagnosis.
-			UnityEngine.Debug.Log("SecurityCameraRotate missing on savetype of SecurityCamera!  GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("fbfff");
-		}
-
 		string line = System.String.Empty;
-		line = Utils.SaveRelativeTimeDifferential(scr.waitingFinished);
+		line = Utils.SaveRelativeTimeDifferential(scr.waitingFinished,"waitingFinished");
 		line += Utils.splitChar + Utils.BoolToString(scr.enabled,"enabled");
 		line += Utils.splitChar + Utils.FloatToString(scr.startYAngle,"startYAngle");
 		line += Utils.splitChar + Utils.FloatToString(scr.endYAngle,"endYAngle");
@@ -88,21 +82,6 @@ public class SecurityCameraRotate : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		SecurityCameraRotate scr = go.GetComponent<SecurityCameraRotate>();
-		if (scr == null) {
-			Debug.Log("SecurityCameraRotate.Load failure, scr == null");
-			return index + 5;
-		}
-
-		if (index < 0) {
-			Debug.Log("SecurityCameraRotate.Load failure, index < 0");
-			return index + 5;
-		}
-
-		if (entries == null) {
-			Debug.Log("SecurityCameraRotate.Load failure, entries == null");
-			return index + 5;
-		}
-
 		scr.waitingFinished = Utils.LoadRelativeTimeDifferential(entries[index],"waitingFinished"); index++;
 		scr.enabled = Utils.GetBoolFromString(entries[index],"enabled"); index++;
 		scr.startYAngle = Utils.GetFloatFromString(entries[index],"startYAngle"); index++;

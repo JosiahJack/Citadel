@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using UnityEngine;
 
 // Applies the color distortion effect to the GunCamera as it is layered after
@@ -59,55 +60,21 @@ public class BerserkEffect : UnityStandardAssets.ImageEffects.ImageEffectBase {
 
 	public static string Save(GameObject go) {
 		BerserkEffect bzk = go.GetComponent<BerserkEffect>();
-		 // No warn, only placed on GunCamera to avoid duplicate application.
-		if (bzk == null) {
-			Debug.Log("BerserkEffect missing on savetype of Player!  "
-					  + "GameObject.name: " + go.name + ", "
-					  + SaveObject.currentObjectInfo);
-
-			return Utils.DTypeWordToSaveString("bf");
-		}
-
-		string line = System.String.Empty;
-		line = Utils.BoolToString(bzk.enabled,"BerserkEffect.enabled");
-		line += Utils.splitChar;
-		line += Utils.FloatToString(bzk.hithreshold,
-									"BerserkEffect.hithreshold");
-		line += Utils.splitChar;
-		line += Utils.FloatToString(bzk.effectStrength,
-									"BerserkEffect.effectStrength");
-		return line;
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(Utils.BoolToString(bzk.enabled,"BerserkEffect.enabled"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(bzk.hithreshold,"BerserkEffect.hithreshold"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(bzk.effectStrength,"BerserkEffect.effectStrength"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		BerserkEffect bzk = go.GetComponent<BerserkEffect>();
-		if (bzk == null) {
-			Debug.Log("BerserkEffect.Load failure, bzk == null");
-			return index + 3;
-		}
-
-		if (index < 0) {
-			Debug.Log("BerserkEffect.Load failure, index < 0");
-			return index + 3;
-		}
-
-		if (entries == null) {
-			Debug.Log("BerserkEffect.Load failure, entries == null");
-			return index + 3;
-		}
-
-		bzk.enabled = Utils.GetBoolFromString(entries[index],
-											  "BerserkEffect.enabled");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		bzk.hithreshold = Utils.GetFloatFromString(entries[index],
-												  "BerserkEffect.hithreshold");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		bzk.effectStrength = Utils.GetFloatFromString(entries[index],
-											   "BerserkEffect.effectStrength");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
+		bzk.enabled = Utils.GetBoolFromString(entries[index],"BerserkEffect.enabled"); index++;
+		bzk.hithreshold = Utils.GetFloatFromString(entries[index],"BerserkEffect.hithreshold"); index++;
+		bzk.effectStrength = Utils.GetFloatFromString(entries[index],"BerserkEffect.effectStrength"); index++;
 		return index;
 	}
 }

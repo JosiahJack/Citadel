@@ -480,16 +480,16 @@ public class WeaponCurrent : MonoBehaviour {
 
 		int j =0;
 		string line = System.String.Empty;
-		line = Utils.UintToString(wc.weaponCurrent);
-		line += Utils.splitChar + Utils.UintToString(wc.weaponIndex);
-		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.FloatToString(wc.weaponEnergySetting[j]); }
-		for (j=0;j<7;j++) { line += Utils.splitChar + wc.currentMagazineAmount[j].ToString(); }
-		for (j=0;j<7;j++) { line += Utils.splitChar + wc.currentMagazineAmount2[j].ToString(); }
-		line += Utils.splitChar + Utils.UintToString(wc.lastIndex);
-		line += Utils.splitChar + Utils.BoolToString(wc.bottomless);
-		line += Utils.splitChar + Utils.BoolToString(wc.redbull);
-		line += Utils.splitChar + Utils.UintToString(wc.weaponCurrentPending);
-		line += Utils.splitChar + Utils.UintToString(wc.weaponIndexPending);
+		line = Utils.UintToString(wc.weaponCurrent,"weaponCurrent");
+		line += Utils.splitChar + Utils.UintToString(wc.weaponIndex,"weaponIndex");
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.FloatToString(wc.weaponEnergySetting[j],"weaponEnergySetting[" + j.ToString() + "]"); }
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.UintToString(wc.currentMagazineAmount[j],"currentMagazineAmount[" + j.ToString() + "]"); }
+		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.UintToString(wc.currentMagazineAmount2[j],"currentMagazineAmount2[" + j.ToString() + "]"); }
+		line += Utils.splitChar + Utils.UintToString(wc.lastIndex,"lastIndex");
+		line += Utils.splitChar + Utils.BoolToString(wc.bottomless,"bottomless");
+		line += Utils.splitChar + Utils.BoolToString(wc.redbull,"redbull");
+		line += Utils.splitChar + Utils.UintToString(wc.weaponCurrentPending,"weaponCurrentPending");
+		line += Utils.splitChar + Utils.UintToString(wc.weaponIndexPending,"weaponIndexPending");
 		return line;
 	}
 
@@ -511,17 +511,17 @@ public class WeaponCurrent : MonoBehaviour {
 		}
 
 		int j =0;
-		wc.weaponCurrent = Utils.GetIntFromString(entries[index] ); index++;
-		wc.weaponIndex = Utils.GetIntFromString(entries[index] ); index++;
-		for (j=0;j<7;j++) { wc.weaponEnergySetting[j] = Utils.GetFloatFromString(entries[index]); index++; }
-		for (j=0;j<7;j++) { wc.currentMagazineAmount[j] = Utils.GetIntFromString(entries[index] ); index++; }
-		for (j=0;j<7;j++) { wc.currentMagazineAmount2[j] = Utils.GetIntFromString(entries[index] ); index++; }
+		wc.weaponCurrent = Utils.GetIntFromString(entries[index],"weaponCurrent"); index++;
+		wc.weaponIndex = Utils.GetIntFromString(entries[index],"weaponIndex"); index++;
+		for (j=0;j<7;j++) { wc.weaponEnergySetting[j] = Utils.GetFloatFromString(entries[index],"weaponEnergySetting[" + j.ToString() + "]"); index++; }
+		for (j=0;j<7;j++) { wc.currentMagazineAmount[j] = Utils.GetIntFromString(entries[index],"currentMagazineAmount[" + j.ToString() + "]"); index++; }
+		for (j=0;j<7;j++) { wc.currentMagazineAmount2[j] = Utils.GetIntFromString(entries[index],"currentMagazineAmount2[" + j.ToString() + "]"); index++; }
 		wc.SetAllViewModelsDeactive();
-		wc.lastIndex = Utils.GetIntFromString(entries[index] ); index++;
-		wc.bottomless = Utils.GetBoolFromString(entries[index]); index++;
-		wc.redbull = Utils.GetBoolFromString(entries[index]); index++;
-		wc.weaponCurrentPending = Utils.GetIntFromString(entries[index] ); index++;
-		wc.weaponIndexPending = Utils.GetIntFromString(entries[index] ); index++;
+		wc.lastIndex = Utils.GetIntFromString(entries[index],"lastIndex"); index++;
+		wc.bottomless = Utils.GetBoolFromString(entries[index],"bottomless"); index++;
+		wc.redbull = Utils.GetBoolFromString(entries[index],"redbull"); index++;
+		wc.weaponCurrentPending = Utils.GetIntFromString(entries[index],"weaponCurrentPending"); index++;
+		wc.weaponIndexPending = Utils.GetIntFromString(entries[index],"weaponIndexPending"); index++;
 		wc.justChangedWeap = true;
 		return index;
 	}

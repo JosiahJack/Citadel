@@ -9,7 +9,6 @@ public class DamageData {
 	public bool ownerIsNPC;
 	public GameObject ownersCamera;
 	public AttackType attackType;
-	public bool isFullAuto;
 	public float damage;
 	public float delayBetweenShots;
 	public float penetration;
@@ -18,7 +17,6 @@ public class DamageData {
 	public float energyDrainLow;
 	public float energyDrainHi;
 	public float energyDrainOver;
-	public float range;
 	public bool berserkActive;
 
 	// Attacked (other [o]) data
@@ -38,7 +36,6 @@ public class DamageData {
 		damageData.attackType = AttackType.None;
 		damageData.ownerIsNPC = false;
 		damageData.isOtherNPC = false;
-		damageData.isFullAuto = false;
 		damageData.damage = 0f;
 		damageData.delayBetweenShots = 0.8f;
 		damageData.penetration = 0f;
@@ -47,7 +44,6 @@ public class DamageData {
 		damageData.energyDrainLow = 0f;
 		damageData.energyDrainHi = 0f;
 		damageData.energyDrainOver = 0f;
-		damageData.range = 200f;
 		damageData.berserkActive = false;
 		damageData.armorvalue = 0f;
 		damageData.defense = 0f;

@@ -36,35 +36,14 @@ public class TriggerCounter : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		TriggerCounter tc = go.GetComponent<TriggerCounter>();
-		if (tc == null) {
-			Debug.LogError("TriggerCounter missing on savetype of "
-					       + "TriggerCounter!  GameObject.name: " + go.name);
-			return "0";
-		}
-
 		string line = System.String.Empty;
-		line = tc.counter.ToString(); // int - how many counts we have
+		line = Utils.IntToString(tc.counter,"counter");
 		return line;	
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		TriggerCounter tc = go.GetComponent<TriggerCounter>();
-		if (tc == null) {
-			Debug.LogError("TriggerCounter.Load failure, tc == null");
-			return index + 1;
-		}
-
-		if (index < 0) {
-			Debug.LogError("TriggerCounter.Load failure, index < 0");
-			return index + 1;
-		}
-
-		if (entries == null) {
-			Debug.LogError("TriggerCounter.Load failure, entries == null");
-			return index + 1;
-		}
-
-		tc.counter = Utils.GetIntFromString(entries[index]); index++;
+		tc.counter = Utils.GetIntFromString(entries[index],"counter"); index++;
 		return index;
 	}
 }

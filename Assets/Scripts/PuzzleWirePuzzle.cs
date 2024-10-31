@@ -107,46 +107,24 @@ public class PuzzleWirePuzzle : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		PuzzleWirePuzzle pwp = go.GetComponent<PuzzleWirePuzzle>();
-		if (pwp == null) {
-			Debug.Log("PuzzleWirePuzzle missing on savetype of PuzzleWire!  "
-					  + "GameObject.name: " + go.name);
-
-			return "0|0|1|2|3|4|5|6|0|1|2|3|4|5|6|0";
-		}
-
 		string line = System.String.Empty;
-		line = Utils.BoolToString(pwp.puzzleSolved); // bool - is this puzzle already solved?
-		for (int i=0;i<7;i++) { line += Utils.splitChar + pwp.currentPositionsLeft[i].ToString(); } // int - get the current wire positions
-		for (int i=0;i<7;i++) { line += Utils.splitChar + pwp.currentPositionsRight[i].ToString(); } // int - get the current wire positions
-		line += Utils.splitChar + Utils.BoolToString(pwp.locked); // bool - is this locked?
+		line = Utils.BoolToString(pwp.puzzleSolved,"puzzleSolved");
+		for (int i=0;i<7;i++) { line += Utils.splitChar + Utils.UintToString(pwp.currentPositionsLeft[i],"currentPositionsLeft[" + i.ToString() + "]"); }
+		for (int i=0;i<7;i++) { line += Utils.splitChar + Utils.UintToString(pwp.currentPositionsRight[i],"currentPositionsRight[" + i.ToString() + "]"); }
+		line += Utils.splitChar + Utils.BoolToString(pwp.locked,"locked");
 		return line;
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PuzzleWirePuzzle pwp = go.GetComponent<PuzzleWirePuzzle>();
-		if (pwp == null) {
-			Debug.Log("PuzzleWirePuzzle.Load failure, pwp == null");
-			return index + 16;
-		}
-
-		if (index < 0) {
-			Debug.Log("PuzzleWirePuzzle.Load failure, index < 0");
-			return index + 16;
-		}
-
-		if (entries == null) {
-			Debug.Log("PuzzleWirePuzzle.Load failure, entries == null");
-			return index + 16;
-		}
-
-		pwp.puzzleSolved = Utils.GetBoolFromString(entries[index]); index++; // bool - is this puzzle already solved?
+		pwp.puzzleSolved = Utils.GetBoolFromString(entries[index],"puzzleSolved"); index++;
 		for (int i=0;i<pwp.currentPositionsLeft.Length;i++) {
-			pwp.currentPositionsLeft[i] = Utils.GetIntFromString(entries[index]); index++; // int - get the current wire positions
+			pwp.currentPositionsLeft[i] = Utils.GetIntFromString(entries[index],"currentPositionsLeft[" + i.ToString() + "]"); index++;
 		}
 		for (int i=0;i<pwp.currentPositionsRight.Length;i++) {
-			pwp.currentPositionsRight[i] = Utils.GetIntFromString(entries[index]); index++;  // int - get the current wire positions
+			pwp.currentPositionsRight[i] = Utils.GetIntFromString(entries[index],"currentPositionsRight[" + i.ToString() + "]"); index++;
 		}
-		pwp.locked = Utils.GetBoolFromString(entries[index]); index++; // bool - is this locked?
+		pwp.locked = Utils.GetBoolFromString(entries[index],"locked"); index++;
 		return index;
 	}
 }

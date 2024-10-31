@@ -85,19 +85,11 @@ public class InteractablePanel : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		InteractablePanel ip = go.GetComponent<InteractablePanel>();
-		if (ip == null) {
-			Debug.Log("InteractablePanel missing on savetype of InteractablePanel!  GameObject.name: " + go.name);
-			return "0|0";
-		}
-
 		string line = System.String.Empty;
-		line = Utils.BoolToString(ip.open); // bool - is the panel opened
-		line += Utils.splitChar + Utils.BoolToString(ip.installed); // bool - is the item installed
+		line = Utils.BoolToString(ip.open,"open");
+		line += Utils.splitChar + Utils.BoolToString(ip.installed,"installed");
 		line += Utils.splitChar + Utils.SaveSubActivatedGOState(ip.installationItem);
-		for (int i=0;i<ip.effects.Length;i++) {
-			line += Utils.splitChar + Utils.SaveSubActivatedGOState(ip.effects[i]);
-		}
-
+		for (int i=0;i<ip.effects.Length;i++) { line += Utils.splitChar + Utils.SaveSubActivatedGOState(ip.effects[i]); }
 		if (ip.installationItem != null) {
 			DelayedSpawn despawner = ip.installationItem.GetComponent<DelayedSpawn>();
 			if (despawner != null) { // plastique
@@ -117,28 +109,10 @@ public class InteractablePanel : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		InteractablePanel ip = go.GetComponent<InteractablePanel>(); // ip man!
-		if (ip == null) {
-			Debug.Log("InteractablePanel.Load failure, ip == null");
-			return index + 17;
-		}
-
-		if (index < 0) {
-			Debug.Log("InteractablePanel.Load failure, index < 0");
-			return index + 17;
-		}
-
-		if (entries == null) {
-			Debug.Log("InteractablePanel.Load failure, entries == null");
-			return index + 17;
-		}
-
-		ip.open = Utils.GetBoolFromString(entries[index]); index++; // bool - is the panel opened
-		ip.installed = Utils.GetBoolFromString(entries[index]); index++; // bool - is the item installed
+		ip.open = Utils.GetBoolFromString(entries[index],"open"); index++;
+		ip.installed = Utils.GetBoolFromString(entries[index],"installed"); index++;
 		index = Utils.LoadSubActivatedGOState(ip.installationItem,ref entries,index);
-		for (int i=0; i<ip.effects.Length; i++) {
-			index = Utils.LoadSubActivatedGOState(ip.effects[i],ref entries,index);
-		}
-
+		for (int i=0; i<ip.effects.Length; i++) { index = Utils.LoadSubActivatedGOState(ip.effects[i],ref entries,index); }
 		if (ip.installationItem != null) {
 			DelayedSpawn despawner = ip.installationItem.GetComponent<DelayedSpawn>();
 			if (despawner != null) { // plastique

@@ -148,19 +148,12 @@ public class SpawnManager : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		SpawnManager sm = go.GetComponent<SpawnManager>();
-		if (sm == null) {
-			Debug.Log("SpawnManager missing on savetype of SpawnManager!  "
-					  + "GameObject.name: " + go.name);
-
-			return "0|0|0000.00000";
-		}
-
 		string line = System.String.Empty;
 		line = Utils.BoolToString(sm.active,"SpawnManager.active");
 		line += Utils.splitChar;
-		line += sm.numberActive.ToString();
+		line += Utils.IntToString(sm.numberActive,"numberActive");
 		line += Utils.splitChar;
-		line += Utils.SaveRelativeTimeDifferential(sm.delayFinished);
+		line += Utils.SaveRelativeTimeDifferential(sm.delayFinished,"delayFinished");
 		return line;
 	}
 
@@ -172,30 +165,9 @@ public class SpawnManager : MonoBehaviour {
 		// though that's what your friend's name is, requires decompiling to
 		// see that it's called spawnmartin() as it isn't available separately,
 		// goodness gracious!)
-		if (sm == null) {
-			Debug.Log("SpawnManager.Load failure, sm == null");
-			return index + 3;
-		}
-
-		if (index < 0) {
-			Debug.Log("SpawnManager.Load failure, index < 0");
-			return index + 3;
-		}
-
-		if (entries == null) {
-			Debug.Log("SpawnManager.Load failure, entries == null");
-			return index + 3;
-		}
-
-		sm.active = Utils.GetBoolFromString(entries[index],
-											"SpawnManager.active");
-		index++;
-
-		sm.numberActive = Utils.GetIntFromString(entries[index]);
-		index++;
-
-		sm.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index]);
-		index++;
+		sm.active = Utils.GetBoolFromString(entries[index],"SpawnManager.active"); index++;
+		sm.numberActive = Utils.GetIntFromString(entries[index],"numberActive"); index++;
+		sm.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index],"delayFinished"); index++;
 		return index;
 	}
 }

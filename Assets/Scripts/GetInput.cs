@@ -294,30 +294,18 @@ public class GetInput : MonoBehaviour {
 		return false;
 	}
 
-	public bool Attack(bool isFullAuto) {
+	public bool Attack() {
 	    if (lmbButton.held) return true;
 	    
 		if (Const.a.InputCodeSettings[24] == 153) return MouseWheelUp();
 		if (Const.a.InputCodeSettings[24] == 154) return MouseWheelDn();
-		if (isFullAuto) {
-			if (Input.GetKey(KeyCode.JoystickButton5)) return true;
-			if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[24]])) {
-				return true;
-			} else {
-				if (lmbButton.held) return true;
-				return false;
-			}
+		if (Input.GetKey(KeyCode.JoystickButton5)) return true;
+		if (Input.GetKey(Const.a.InputValues[Const.a.InputCodeSettings[24]])) {
+			return true;
 		} else {
-			if (Input.GetKeyDown(KeyCode.JoystickButton5)) return true;
-			if (Input.GetKeyDown(Const.a.InputValues[Const.a.InputCodeSettings[24]])) {
-				return true;
-			} else {
-				if (lmbButton.justHeld) return true;
-				return false;
-			}
+			if (lmbButton.held) return true;
+			return false;
 		}
-
-
 	}
 
 	public bool Use() {

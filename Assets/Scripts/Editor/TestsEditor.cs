@@ -21,15 +21,19 @@ public class TestsEditor : Editor {
         //GUILayout.Space(8f);
 		//EditorGUILayout.EndVertical();
 		
-		if (GUILayout.Button("Output All Geometry to File")) {
-			testScript.GenerateGeometryDataFile();
-		}
+		// Already output, hiding to not accidentally overwrite!!
+// 		if (GUILayout.Button("Output All Geometry to File")) {
+// 			testScript.GenerateGeometryDataFile();
+// 		}
 		if (GUILayout.Button("Output All Static Objects to File")) {
 			testScript.GenerateStaticObjectsDataFile();
 		}
-		if (GUILayout.Button("Output All Lights to File")) {
-			testScript.GenerateLightsDataFile();
-		}
+		
+		// Already output, hiding to not accidentally overwrite!!	
+// 		if (GUILayout.Button("Output All Lights to File")) {
+// 			testScript.GenerateLightsDataFile();
+// 		}
+
 // 		if (GUILayout.Button("Load Lights for\nSelected Level")) {
 // 			testScript.LoadLevelLights();
 // 		}
@@ -37,19 +41,19 @@ public class TestsEditor : Editor {
 // 			testScript.UnloadLevelLights();
 // 		}
 
-		EditorGUILayout.BeginVertical();
-        GUILayout.Space(8f);
-        EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
-        GUILayout.Space(8f);
-		EditorGUILayout.EndVertical();
-
-		if (GUILayout.Button("Save Object")) {
-			testScript.SaveSelectedObject();
-		}
-
-		if (GUILayout.Button("Load Object")) {
-			testScript.LoadSelectedObject();
-		}
+// 		EditorGUILayout.BeginVertical();
+//         GUILayout.Space(8f);
+//         EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
+//         GUILayout.Space(8f);
+// 		EditorGUILayout.EndVertical();
+// 
+// 		if (GUILayout.Button("Save Object")) {
+// 			testScript.SaveSelectedObject();
+// 		}
+// 
+// 		if (GUILayout.Button("Load Object")) {
+// 			testScript.LoadSelectedObject();
+// 		}
 
 		EditorGUILayout.BeginVertical();
         GUILayout.Space(8f);
@@ -69,29 +73,29 @@ public class TestsEditor : Editor {
 // 			testScript.UnloadLevelLights();
 // 		}
 
-		EditorGUILayout.BeginVertical();
-        GUILayout.Space(8f);
-        EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
-        GUILayout.Space(8f);
-		EditorGUILayout.EndVertical();
+// 		EditorGUILayout.BeginVertical();
+//         GUILayout.Space(8f);
+//         EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
+//         GUILayout.Space(8f);
+// 		EditorGUILayout.EndVertical();
 
-		if (GUILayout.Button("Set ChunkIDs array for all func_wall's")) {
-			testScript.TEMP_SetFunc_WallChunkIDs();
-		}
+// 		if (GUILayout.Button("Set ChunkIDs array for all func_wall's")) {
+// 			testScript.TEMP_SetFunc_WallChunkIDs();
+// 		}
 
-		EditorGUILayout.BeginVertical();
-        GUILayout.Space(8f);
-        EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
-        GUILayout.Space(8f);
-		EditorGUILayout.EndVertical();
-
-		if (GUILayout.Button("Reset SaveIDs on Static Saveables")) {
-			testScript.SetStaticSaveableIDs();
-		}
-
-		if (GUILayout.Button("Report Max SaveIDs on Static Saveables")) {
-			testScript.ReportMaxSaveableID();
-		}
+// 		EditorGUILayout.BeginVertical();
+//         GUILayout.Space(8f);
+//         EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
+//         GUILayout.Space(8f);
+// 		EditorGUILayout.EndVertical();
+// 
+// 		if (GUILayout.Button("Reset SaveIDs on Static Saveables")) {
+// 			testScript.SetStaticSaveableIDs();
+// 		}
+// 
+// 		if (GUILayout.Button("Report Max SaveIDs on Static Saveables")) {
+// 			testScript.ReportMaxSaveableID();
+// 		}
 
 		//EditorGUILayout.BeginVertical();
         //GUILayout.Space(8f);

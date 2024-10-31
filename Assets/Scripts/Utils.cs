@@ -456,31 +456,31 @@ public class Utils {
 		return BodyState.Standing;
 	}
 
-	public static string IntToString(int val) {
-		return val.ToString();
-	}
+// 	public static string IntToString(int val) {
+// 		return val.ToString();
+// 	}
 
 	public static string IntToString(int val, string name) {
 		return name + ":" + val.ToString();
 	}
 
-	public static string UintToString(int val) {
-		if (val < 0) return "-1";
-		return val.ToString();
-	}
+// 	public static string UintToString(int val) {
+// 		if (val < 0) return "-1";
+// 		return val.ToString();
+// 	}
 
 	public static string UintToString(int val, string name) {
 		if (val < 0) return name + ":-1";
 		return name + ":" + val.ToString();
 	}
-
-	public static bool GetBoolFromString(string val) {
+	
+	public static bool GetBoolFromStringInTables(string val) {
 		return val.Equals("1");
 	}
 
 	public static bool GetBoolFromString(string val, string name) {
 		string[] splits = val.Split(':');
-		if (splits.Length < 2) return GetBoolFromString(val);
+		if (splits.Length < 2) return GetBoolFromStringInTables(val);
 
 		string nameReceived = splits[0];
 		string valueReceived = splits[1];
@@ -488,8 +488,7 @@ public class Utils {
 			UnityEngine.Debug.LogError("BUG: Attempting to parse " + val
 								  + " when wanting bool named " + name
 								  + ", returning false as fallback on "
-								  + SaveObject.currentObjectInfo + " ["
-								  + SaveObject.currentSaveEntriesIndex + "]");
+								  + SaveObject.currentObjectInfo);
 
 			return false;
 		}
@@ -497,7 +496,8 @@ public class Utils {
 		return valueReceived.Equals("1");
 	}
 
-	public static string BoolToString(bool inputValue) {
+	// Variant used for Config.ini without colon and string name
+	public static string BoolToStringConfig(bool inputValue) {
 		if (inputValue) return "1";
 		return "0";
 	}
@@ -507,7 +507,8 @@ public class Utils {
 		return name + ":0";
 	}
 
-	public static int GetIntFromString(string val) {
+	// Used by Const to load text for audio logs.
+	public static int GetIntFromStringAudLogText(string val) {
 		if (val == "0") return 0;
 
 		getValparsed = Int32.TryParse(val, NumberStyles.Integer, en_US_Culture,
@@ -515,8 +516,7 @@ public class Utils {
 		if (!getValparsed) {
 			UnityEngine.Debug.LogError("BUG: Could not parse int from: " + val
                                    + ", returning 0 as a fallback on "
-								   + SaveObject.currentObjectInfo + " ["
-								   + SaveObject.currentSaveEntriesIndex + "]");
+								   + SaveObject.currentObjectInfo);
 			return 0;
 		}
 
@@ -525,16 +525,21 @@ public class Utils {
 
 	public static int GetIntFromString(string val, string name) {
 		string[] splits = val.Split(':');
-		if (splits.Length < 2) return GetIntFromString(val);
-
+		if (splits.Length < 2) {
+			UnityEngine.Debug.LogError("BUG: Not enough splits for " + val
+						+ " when wanting int named " + name
+						+ ", returning 0 as fallback on "
+						+ SaveObject.currentObjectInfo);
+			return 0;
+		}
+		
 		string nameReceived = splits[0];
 		string valueReceived = splits[1];
 		if (nameReceived != name) {
 			UnityEngine.Debug.LogError("BUG: Attempting to parse " + val
 								   + " when wanting int named " + name
 								   + ", returning 0 as fallback on "
-								   + SaveObject.currentObjectInfo + " ["
-								   + SaveObject.currentSaveEntriesIndex + "]");
+								   + SaveObject.currentObjectInfo);
 
 			return 0;
 		}
@@ -545,22 +550,20 @@ public class Utils {
 			UnityEngine.Debug.LogError("BUG: Could not parse int from: "
 								   + val + " for variable named "
 							 	   + name + ", returning 0 as a fallback on "
-							 	   + SaveObject.currentObjectInfo + " ["
-								   + SaveObject.currentSaveEntriesIndex + "]");
+							 	   + SaveObject.currentObjectInfo);
 			return 0;
 		}
 
 		return getValreadInt;
 	}
 
-	public static float GetFloatFromString(string val) {
+	public static float GetFloatFromStringDataTables(string val) {
 		getValparsed = Single.TryParse(val, NumberStyles.Float, en_US_Culture,
                                        out getValreadFloat);
 		if (!getValparsed) {
 			UnityEngine.Debug.LogError("BUG: Could not parse float from: "
                                    + val + ", returning 0.0 as fallback on "
-							   	   + SaveObject.currentObjectInfo + " ["
-								   + SaveObject.currentSaveEntriesIndex + "]");
+							   	   + SaveObject.currentObjectInfo);
 			return 0.0f;
 		}
 		return getValreadFloat;
@@ -568,17 +571,20 @@ public class Utils {
 
 	public static float GetFloatFromString(string val, string name) {
 		string[] splits = val.Split(':');
-		if (splits.Length < 2) return GetFloatFromString(val);
-
+		if (splits.Length < 2) {
+				UnityEngine.Debug.LogError("BUG: Not enough splits in " + val
+							+ " when wanting float named " + name
+							+ ", returning 0.0 as fallback on "
+							+ SaveObject.currentObjectInfo);
+			return 0.0f;
+		}
 		string nameReceived = splits[0];
 		string valueReceived = splits[1];
 		if (nameReceived != name) {
 			UnityEngine.Debug.LogError("BUG: Attempting to parse " + val
 								  + " when wanting float named " + name
 								  + ", returning 0.0 as fallback on "
-								  + SaveObject.currentObjectInfo + " ["
-								  + SaveObject.currentSaveEntriesIndex + "]");
-
+								  + SaveObject.currentObjectInfo);
 			return 0.0f;
 		}
 
@@ -589,8 +595,7 @@ public class Utils {
 			UnityEngine.Debug.LogError("BUG: Could not parse float from: "
 								  + val + " for variable named "
 								  + name + ", returning 0.0 as fallback on "
-								  + SaveObject.currentObjectInfo + " ["
-								  + SaveObject.currentSaveEntriesIndex + "]");
+								  + SaveObject.currentObjectInfo);
 			return 0.0f;
 		}
 		return getValreadFloat;
@@ -598,13 +603,8 @@ public class Utils {
 
     // Output with 4 integer places and 5 mantissa, culture invariant to
     // guarantee . is used as a separator rather than , for all regions.
-	public static string FloatToString(float val) {
-		return val.ToString("0000.00000", CultureInfo.InvariantCulture); 
-	}
-
 	public static string FloatToString(float val, string name) {
-		return name + ":" + val.ToString("0000.00000",
-										 CultureInfo.InvariantCulture); 
+		return name+":"+val.ToString("0000.00000",CultureInfo.InvariantCulture); 
 	}
 
 	public static string SaveString(string val, string name) {
@@ -625,47 +625,14 @@ public class Utils {
 
 		if (nameReceived != name) {
 			UnityEngine.Debug.LogError("BUG: Attempting to parse " + val
-								  + " when wanting string named " + name
-								  + ", returning 'unknown' as fallback on "
-								  + SaveObject.currentObjectInfo + " ["
-								  + SaveObject.currentSaveEntriesIndex + "]");
+								       + " when wanting string named " + name
+								       + ", returning 'unknown' as fallback on "
+								       + SaveObject.currentObjectInfo);
 
 			return "unknown";
 		}
 
 		return valueReceived;
-	}
-
-	public static string Vector3ToString(Vector3 vec) {
-		if (vec == null) return DTypeWordToSaveString("fff");
-
-		string line = System.String.Empty;
-        line =              FloatToString(vec.x);
-		line += splitChar + FloatToString(vec.y);
-		line += splitChar + FloatToString(vec.z);
-		return line;
-	}
-
-	// This is mostly just here for me to make the save strings commonized when
-	// dummying them out in the case of an error.  Robustness above all else.
-	// If I have some preference on how to handle a particular variable, shove
-	// it here to make sure all types are consistently saved same as the other
-	// to strings here.
-	public static string DTypeWordToSaveString(string word) {
-		char[] characters = word.ToLower().ToCharArray(); // In case I forget when making my debug words.
-		StringBuilder s1 = new StringBuilder();
-		s1.Clear();
-		for (int i=0;i<characters.Length;i++) {
-			if (characters[i] == 'b') s1.Append(BoolToString(false));
-			else if (characters[i] == 'u') s1.Append(UintToString(-99999));
-			else if (characters[i] == 'i') s1.Append(IntToString(0));
-			else if (characters[i] == 'f') s1.Append(FloatToString(0.0f));
-			else if (characters[i] == 't') s1.Append(FloatToString(0.0f));
-			else if (characters[i] == '1') s1.Append("1"); // Force it true
-			else s1.Append("-");
-			if (i != (characters.Length - 1)) s1.Append(splitChar);
-		}
-		return s1.ToString();
 	}
 
 	public static int NPCTypeToInt(NPCType typ) {
@@ -900,13 +867,6 @@ public class Utils {
     }
 
     public static string SaveTransform(Transform tr) {
-		if (tr == null) {
-			Debug.Log("Transform null while trying to save! "
-					  + SaveObject.currentObjectInfo);
-
-			return DTypeWordToSaveString("ffffffffff");
-		}
-
         StringBuilder s1 = new StringBuilder();
         s1.Clear();
         s1.Append(FloatToString(tr.localPosition.x,"localPosition.x"));
@@ -940,31 +900,17 @@ public class Utils {
 		}
 
 		// Get position
-		readFloatx = GetFloatFromString(entries[index],"localPosition.x");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		readFloaty = GetFloatFromString(entries[index],"localPosition.y");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		readFloatz = GetFloatFromString(entries[index],"localPosition.z");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
+		readFloatx = GetFloatFromString(entries[index],"localPosition.x"); index++;
+		readFloaty = GetFloatFromString(entries[index],"localPosition.y"); index++;
+		readFloatz = GetFloatFromString(entries[index],"localPosition.z"); index++;
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		if (tr.localPosition != tempvec) tr.localPosition = tempvec;
 
 		// Get rotation
-		readFloatx = GetFloatFromString(entries[index],"localRotation.x");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		readFloaty = GetFloatFromString(entries[index],"localRotation.y");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		readFloatz = GetFloatFromString(entries[index],"localRotation.z");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		readFloatw = GetFloatFromString(entries[index],"localRotation.w");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
+		readFloatx = GetFloatFromString(entries[index],"localRotation.x"); index++;
+		readFloaty = GetFloatFromString(entries[index],"localRotation.y"); index++;
+		readFloatz = GetFloatFromString(entries[index],"localRotation.z"); index++;
+		readFloatw = GetFloatFromString(entries[index],"localRotation.w"); index++;
 		tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
 		tr.localRotation = tempquat;
 
@@ -972,15 +918,9 @@ public class Utils {
 		// position and the local is what is saved and loaded here.
 
 		// Get scale
-		readFloatx = GetFloatFromString(entries[index],"localScale.x");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		readFloaty = GetFloatFromString(entries[index],"localScale.y");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		readFloatz = GetFloatFromString(entries[index],"localScale.z");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
+		readFloatx = GetFloatFromString(entries[index],"localScale.x"); index++;
+		readFloaty = GetFloatFromString(entries[index],"localScale.y"); index++;
+		readFloatz = GetFloatFromString(entries[index],"localScale.z"); index++;
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		tr.localScale = tempvec;
 		return index; // Carry on with current index read.
@@ -988,11 +928,9 @@ public class Utils {
 
     public static string SaveRigidbody(GameObject go) {
 		Rigidbody rbody = go.GetComponent<Rigidbody>();
-		if (rbody == null) {
-		    return "velocity.x:0|velocity.y:0|velocity.z:0|isKinematic:1";
-		}
+		if (rbody == null) return ("velocity.x:0000.00000" + splitChar + "velocity.y:0000.00000" + splitChar + "velocity.z:0000.00000" + splitChar + "isKinematic:0");
 
-        StringBuilder s1 = new StringBuilder();
+		StringBuilder s1 = new StringBuilder();
         s1.Clear();
         s1.Append(FloatToString(rbody.velocity.x,"velocity.x"));
         s1.Append(splitChar);
@@ -1004,33 +942,19 @@ public class Utils {
         return s1.ToString();
     }
 
-	public static int LoadRigidbody(GameObject go, ref string[] entries,
-									 int index) {
+	public static int LoadRigidbody(GameObject go, ref string[] entries, int index) {
 		Rigidbody rbody = go.GetComponent<Rigidbody>();
-		if (rbody == null) {
-			return index + 4; // No warn, normal scenario.
-		}
+		if (rbody == null) return index + 4;
 
 		// Get rigidbody velocity
-		readFloatx = GetFloatFromString(entries[index],"velocity.x");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		readFloaty = GetFloatFromString(entries[index],"velocity.y");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		readFloatz = GetFloatFromString(entries[index],"velocity.z");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
+		readFloatx = GetFloatFromString(entries[index],"velocity.x"); index++;
+		readFloaty = GetFloatFromString(entries[index],"velocity.y"); index++;
+		readFloatz = GetFloatFromString(entries[index],"velocity.z"); index++;
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		rbody.velocity = tempvec;
 		CollisionDetectionMode oldCollision = rbody.collisionDetectionMode;
-		rbody.collisionDetectionMode =
-			CollisionDetectionMode.ContinuousSpeculative;
-
-		rbody.isKinematic = GetBoolFromString(entries[index],"isKinematic");
-		index++;
-		
-		SaveObject.currentSaveEntriesIndex = index.ToString();
+		rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+		rbody.isKinematic = GetBoolFromString(entries[index],"isKinematic"); index++;
 		if (!rbody.isKinematic) rbody.collisionDetectionMode = oldCollision;
 		if (rbody.collisionDetectionMode != oldCollision) {
 			Debug.Log("Collision mode changed on " + go.name + " from "
@@ -1057,12 +981,9 @@ public class Utils {
 
 		index = LoadTransform(subGO.transform,ref entries,index); // 10
 		index = LoadRigidbody(subGO,ref entries,index); // 4
-
 		subGO.SetActive(GetBoolFromString(entries[index],"subGO.activeSelf"));
-
-		// 10+4+1=15
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		return index;
+		index++;
+		return index; // 10+4+1=15
 	}
 
 	public static string SaveChildGOState(GameObject mainParent, int childex) {
@@ -1093,12 +1014,11 @@ public class Utils {
 		Grayscale gsc = go.GetComponent<Grayscale>();
 		if (cm == null || index < 0 || entries == null) return index + 2;
 
-		cm.enabled = GetBoolFromString(entries[index],"Camera.enabled");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		cm.enabled = GetBoolFromString(entries[index],"Camera.enabled"); index++;
 		if (gsc != null) {
 			gsc.enabled = GetBoolFromString(entries[index],"Grayscale.enabled");
 		}
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		index++;
 		return index;
 	}
 
@@ -1154,11 +1074,6 @@ public class Utils {
 
 	public static string SaveAudioSource(GameObject go) {
 		AudioSource aus = go.GetComponent<AudioSource>();
-		if (aus == null) {
-			Debug.Log("AudioSource missing!  GameObject.name: " + go.name);
-			return DTypeWordToSaveString("bfs");
-		}
-
 		string line = System.String.Empty;
         line = BoolToString(aus.enabled,"AudioSource.enabled");
 		line += splitChar + FloatToString(aus.time,"time");
@@ -1207,54 +1122,37 @@ public class Utils {
     // in case there is a whackado one-off instance of comparing (time - 
     // finished) somewhere instead of (finished < time) which is my usual Quake
     // derived timer pattern.
-    public static string SaveRelativeTimeDifferential(float timerValue) {
-        if (PauseScript.a == null) return "0000.00000";
-
-        float val = timerValue - PauseScript.a.relativeTime; // Remove current
-                                                             // instance's
-                                                             // relative time.
-        return FloatToString(val);
-    }
-
     public static string SaveRelativeTimeDifferential(float timerValue,
 													  string name) {
 
-        if (PauseScript.a == null) return "0000.00000";
-
-
+        if (PauseScript.a == null) return name + ":0000.00000";
         float val = timerValue - PauseScript.a.relativeTime; // Remove current
                                                              // instance's
                                                              // relative time.
         return FloatToString(val,name);
     }
 
-    public static float LoadRelativeTimeDifferential(string savedTimer) {
-        float val = GetFloatFromString(savedTimer);
-        if (PauseScript.a == null) return val;
-        return PauseScript.a.relativeTime + val; // Add current instance's
-                                                 // relative time to get same
-                                                 // timer in context of current
-                                                 // time.  See above notes.
-    }
-
     public static float LoadRelativeTimeDifferential(string savedTimer,
 													 string name) {
 		string[] splits = savedTimer.Split(':');
-		if (splits.Length < 2) return LoadRelativeTimeDifferential(savedTimer);
-
+		if (splits.Length < 2) {
+			UnityEngine.Debug.LogError("BUG: Not enough splits in " + savedTimer
+								       + " when wanting timer named " + name
+								       + ", returning 0.0 as fallback on "
+								       + SaveObject.currentObjectInfo);
+		}
 		string nameReceived = splits[0];
 		string valueReceived = splits[1];
 		if (nameReceived != name) {
 			UnityEngine.Debug.LogError("BUG: Attempting to parse " + savedTimer
-								  + " when wanting timer named " + name
-								  + ", returning 0.0 as fallback on "
-								  + SaveObject.currentObjectInfo + " ["
-								  + SaveObject.currentSaveEntriesIndex + "]");
+								       + " when wanting timer named " + name
+								       + ", returning 0.0 as fallback on "
+								       + SaveObject.currentObjectInfo);
 
 			return 0.0f;
 		}
 
-        float val = GetFloatFromString(valueReceived);
+        float val = GetFloatFromString(valueReceived,name);
         if (PauseScript.a == null) return val;
         return PauseScript.a.relativeTime + val; // Add current instance's
                                                  // relative time to get same
@@ -1399,25 +1297,6 @@ public class Utils {
 			AudioSource aS = tempAud.GetComponent<AudioSource>();
 			PlayOneShotSavable(aS,clip);
 		}
-	}
-
-	public static bool IndexEntriesOk(int index, ref string[] entries, GameObject go) {
-		if (index < 0) {
-			Debug.Log("Index less than zero when loading " + go.name
-					  + SaveObject.currentObjectInfo + " ["
-					  + SaveObject.currentSaveEntriesIndex + "]");
-			return false;
-		}
-
-		if (index >= entries.Length) {
-			Debug.Log("Index too large at " + index.ToString()
-					  + " when loading " + go.name + ", entries size: "
-					  + entries.Length.ToString() + ", "
-					  + SaveObject.currentObjectInfo + " ["
-					  + SaveObject.currentSaveEntriesIndex + "]");
-			return false;
-		}
-		return true;
 	}
 
 	public static HealthManager GetMainHealthManager(GameObject go) {

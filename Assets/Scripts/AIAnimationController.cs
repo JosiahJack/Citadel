@@ -227,30 +227,23 @@ public class AIAnimationController : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>(true);
-		// No debug warn, cyber enemies don't have one.
-		if (aiac == null) return Utils.DTypeWordToSaveString("fbf");
-
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.SaveString(aiac.clipName,"clipName"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(aiac.currentClipPercentage,
-									  "currentClipPercentage"));
+		s1.Append(Utils.FloatToString(aiac.currentClipPercentage,"currentClipPercentage"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(aiac.dying,"dying"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(aiac.animSwapFinished,
-													 "animSwapFinished"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(aiac.animSwapFinished,"animSwapFinished"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(aiac.useDeadAnimForDeath,
-									 "useDeadAnimForDeath"));
+		s1.Append(Utils.BoolToString(aiac.useDeadAnimForDeath,"useDeadAnimForDeath"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(aiac.playDeathAnim,"playDeathAnim"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(aiac.playDyingAnim,"playDyingAnim"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(aiac.minWalkSpeedToAnimate,
-									  "minWalkSpeedToAnimate"));
+		s1.Append(Utils.FloatToString(aiac.minWalkSpeedToAnimate,"minWalkSpeedToAnimate"));
 		s1.Append(Utils.splitChar);
 		if (aiac.anim != null) {
 			s1.Append(Utils.FloatToString(aiac.anim.speed,"anim.speed"));
@@ -262,8 +255,7 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
-		AIAnimationController aiac =
-						go.GetComponentInChildren<AIAnimationController>(true);
+		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>(true);
 
 		if (aiac == null) {
 			AIController aic = go.GetComponentInChildren<AIController>(true);

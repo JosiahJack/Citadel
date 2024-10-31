@@ -46,19 +46,13 @@ public class DelayedSpawn : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		DelayedSpawn ds = go.GetComponent<DelayedSpawn>();
-		if (ds == null) {
-			Debug.Log("DelayedSpawn missing on savetype of DelayedSpawn!  GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("ffbbbbu");
-
-		}
-
 		string line = System.String.Empty;
-		line = Utils.FloatToString(ds.delay);
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ds.timerFinished);
-		line += Utils.splitChar + Utils.BoolToString(ds.active);
-		line += Utils.splitChar + Utils.BoolToString(ds.despawnInstead);
-		line += Utils.splitChar + Utils.BoolToString(ds.doSelfAfterList);
-		line += Utils.splitChar + Utils.BoolToString(ds.destroyAfterListInsteadOfDeactivate);
+		line = Utils.FloatToString(ds.delay,"delay");
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ds.timerFinished,"timerFinished");
+		line += Utils.splitChar + Utils.BoolToString(ds.active,"active");
+		line += Utils.splitChar + Utils.BoolToString(ds.despawnInstead,"despawnInstead");
+		line += Utils.splitChar + Utils.BoolToString(ds.doSelfAfterList,"doSelfAfterList");
+		line += Utils.splitChar + Utils.BoolToString(ds.destroyAfterListInsteadOfDeactivate,"destroyAfterListInsteadOfDeactivate");
 		for (int i=0;i<ds.objectsToSpawn.Length;i++) {
 			line += Utils.splitChar + Utils.SaveSubActivatedGOState(ds.objectsToSpawn[i]);
 		}
@@ -83,12 +77,12 @@ public class DelayedSpawn : MonoBehaviour {
 			return index + 6;
 		}
 
-		ds.delay = Utils.GetFloatFromString(entries[index]); index++;
-		ds.timerFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		ds.active = Utils.GetBoolFromString(entries[index]); index++;
-		ds.despawnInstead = Utils.GetBoolFromString(entries[index]); index++;
-		ds.doSelfAfterList = Utils.GetBoolFromString(entries[index]); index++;
-		ds.destroyAfterListInsteadOfDeactivate = Utils.GetBoolFromString(entries[index]); index++;
+		ds.delay = Utils.GetFloatFromString(entries[index],"delay"); index++;
+		ds.timerFinished = Utils.LoadRelativeTimeDifferential(entries[index],"timerFinished"); index++;
+		ds.active = Utils.GetBoolFromString(entries[index],"active"); index++;
+		ds.despawnInstead = Utils.GetBoolFromString(entries[index],"despawnInstead"); index++;
+		ds.doSelfAfterList = Utils.GetBoolFromString(entries[index],"doSelfAfterList"); index++;
+		ds.destroyAfterListInsteadOfDeactivate = Utils.GetBoolFromString(entries[index],"destroyAfterListInsteadOfDeactivate"); index++;
 		for (int i=0; i<ds.objectsToSpawn.Length; i++) {
 			index = Utils.LoadSubActivatedGOState(ds.objectsToSpawn[i],ref entries,index);
 		}

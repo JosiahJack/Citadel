@@ -48,7 +48,6 @@ public class Const : MonoBehaviour {
 	public AudioClip[] sounds;
 
 	//Weapon constants
-	public bool[] isFullAutoForWeapon;
 	public float[] delayBetweenShotsForWeapon;
 	public float[] delayBetweenShotsForWeapon2;
 	public float[] damagePerHitForWeapon;
@@ -61,7 +60,6 @@ public class Const : MonoBehaviour {
 	public float[] penetrationForWeapon2;
 	public float[] offenseForWeapon;
 	public float[] offenseForWeapon2;
-	public float[] rangeForWeapon;
 	public int[] magazinePitchCountForWeapon;
 	public int[] magazinePitchCountForWeapon2;
 	public float[] recoilForWeapon;
@@ -622,16 +620,16 @@ public class Const : MonoBehaviour {
 				readline = dataReader.ReadLine();
 				if (readline == null) continue; // just in case
 				string[] entries = readline.Split(logSplitChar);
-				readIndexOfLog = Utils.GetIntFromString(entries[i]); i++;
-				readLogImageLHIndex = Utils.GetIntFromString(entries[i]); i++;
-				readLogImageRHIndex = Utils.GetIntFromString(entries[i]); i++;
+				readIndexOfLog = Utils.GetIntFromStringAudLogText(entries[i]); i++;
+				readLogImageLHIndex = Utils.GetIntFromStringAudLogText(entries[i]); i++;
+				readLogImageRHIndex = Utils.GetIntFromStringAudLogText(entries[i]); i++;
 				audioLogImagesRefIndicesLH[readIndexOfLog] = readLogImageLHIndex;
 				audioLogImagesRefIndicesRH[readIndexOfLog] = readLogImageRHIndex;
 				audiologNames[readIndexOfLog] = entries[i]; i++;
 				audiologSenders[readIndexOfLog] = entries[i]; i++;
 				audiologSubjects[readIndexOfLog] = entries[i]; i++;
-				audioLogType[readIndexOfLog] = Utils.GetAudioLogTypeFromInt(Utils.GetIntFromString(entries[i])); i++;
-				audioLogLevelFound[readIndexOfLog] = Utils.GetIntFromString(entries[i]); i++;
+				audioLogType[readIndexOfLog] = Utils.GetAudioLogTypeFromInt(Utils.GetIntFromStringAudLogText(entries[i])); i++;
+				audioLogLevelFound[readIndexOfLog] = Utils.GetIntFromStringAudLogText(entries[i]); i++;
 				readLogText = entries[i]; i++;
 				// handle extra commas within the body text and append remaining portions of the line
 				if (entries.Length > 8) {
@@ -657,21 +655,19 @@ public class Const : MonoBehaviour {
 				// Read the next line
 				readline = dataReader.ReadLine();
 				string[] entries = readline.Split(',');
-                isFullAutoForWeapon[currentline] = true; i++; // better this way
-				delayBetweenShotsForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				delayBetweenShotsForWeapon2[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				damagePerHitForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				damagePerHitForWeapon2[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				damageOverloadForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				energyDrainLowForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				energyDrainHiForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				energyDrainOverloadForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				penetrationForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				penetrationForWeapon2[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				offenseForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				offenseForWeapon2[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				rangeForWeapon[currentline] = Utils.GetFloatFromString(entries[i]); i++;
-				readInt = Utils.GetIntFromString(entries[i]); i++;
+				delayBetweenShotsForWeapon[currentline] = Utils.GetFloatFromString(entries[i],"delayBetweenShotsForWeapon"); i++;
+				delayBetweenShotsForWeapon2[currentline] = Utils.GetFloatFromString(entries[i],"delayBetweenShotsForWeapon2"); i++;
+				damagePerHitForWeapon[currentline] = Utils.GetFloatFromString(entries[i],"damagePerHitForWeapon"); i++;
+				damagePerHitForWeapon2[currentline] = Utils.GetFloatFromString(entries[i],"damagePerHitForWeapon2"); i++;
+				damageOverloadForWeapon[currentline] = Utils.GetFloatFromString(entries[i],"damageOverloadForWeapon"); i++;
+				energyDrainLowForWeapon[currentline] = Utils.GetFloatFromString(entries[i],"energyDrainLowForWeapon"); i++;
+				energyDrainHiForWeapon[currentline] = Utils.GetFloatFromString(entries[i],"energyDrainHiForWeapon"); i++;
+				energyDrainOverloadForWeapon[currentline] = Utils.GetFloatFromString(entries[i],"energyDrainOverloadForWeapon"); i++;
+				penetrationForWeapon[currentline] = Utils.GetFloatFromString(entries[i],"penetrationForWeapon"); i++;
+				penetrationForWeapon2[currentline] = Utils.GetFloatFromString(entries[i],"penetrationForWeapon2"); i++;
+				offenseForWeapon[currentline] = Utils.GetFloatFromString(entries[i],"offenseForWeapon"); i++;
+				offenseForWeapon2[currentline] = Utils.GetFloatFromString(entries[i],"offenseForWeapon2"); i++;
+				readInt = Utils.GetIntFromString(entries[i],"attackTypeForWeapon"); i++;
 				attackTypeForWeapon[currentline] = Utils.GetAttackTypeFromInt(readInt);
 				currentline++;
 			} while (!dataReader.EndOfStream);
@@ -740,10 +736,7 @@ public class Const : MonoBehaviour {
 		using (dataReader) {
 			do {
 				readline = dataReader.ReadLine(); // Read the next line
-				if (currentline == 1) {
-					a.introNotPlayed = Utils.GetBoolFromString(readline);
-				}
-
+				if (currentline == 1) a.introNotPlayed = readline.Equals("1");
 				currentline++;
 			} while (!dataReader.EndOfStream);
 
@@ -762,7 +755,7 @@ public class Const : MonoBehaviour {
 		StreamWriter sw = new StreamWriter(dr,false,Encoding.ASCII);
 		if (sw != null) {
 			using (sw) {
-				sw.WriteLine(Utils.BoolToString(setIntroNotPlayed));
+				sw.WriteLine(Utils.BoolToStringConfig(setIntroNotPlayed));
 				sw.Close();
 			}
 		}
@@ -887,83 +880,83 @@ public class Const : MonoBehaviour {
 					continue; // Skip lines that start with '//'
 				}
 
-				refIndex = Utils.GetIntFromString(entries[i+1]); // Index is stored at 2nd spot
+				refIndex = Utils.GetIntFromStringAudLogText(entries[i+1]); // Index is stored at 2nd spot
 				if (refIndex < 0 || refIndex > 28) continue; // Invalid value, skip
 
 				nameForNPC[refIndex] = entries[i].Trim(); i++;
 				i++; // No need to read the index again so we skip over it.
-				readInt = Utils.GetIntFromString(entries[i].Trim()); attackTypeForNPC[refIndex] = Utils.GetAttackTypeFromInt(readInt); i++; 
-				readInt = Utils.GetIntFromString(entries[i].Trim()); attackTypeForNPC2[refIndex] = Utils.GetAttackTypeFromInt(readInt); i++; 
-				readInt = Utils.GetIntFromString(entries[i].Trim()); attackTypeForNPC3[refIndex] = Utils.GetAttackTypeFromInt(readInt); i++; 
-				damageForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				damageForNPC2[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				damageForNPC3[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				rangeForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				rangeForNPC2[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				rangeForNPC3[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				healthForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				healthForCyberNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				readInt = Utils.GetIntFromString(entries[i].Trim()); perceptionForNPC[refIndex] = Utils.GetPerceptionLevelFromInt(readInt); i++;
-				disruptabilityForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				armorvalueForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				defenseForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				moveTypeForNPC[refIndex] = Utils.GetMoveTypeFromInt(Utils.GetIntFromString(entries[i].Trim())); i++;
-				yawSpeedForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				fovForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				fovAttackForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				fovStartMovementForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				distToSeeBehindForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				sightRangeForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				walkSpeedForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				runSpeedForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				attack1SpeedForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				attack2SpeedForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				attack3SpeedForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				attack3ForceForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				attack3RadiusForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeToPainForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeBetweenPainForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeTillDeadForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeToActualAttack1ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeToActualAttack2ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeToActualAttack3ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeBetweenAttack1ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeBetweenAttack2ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeBetweenAttack3ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeToChangeEnemyForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeIdleSFXMinForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeIdleSFXMaxForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeAttack1WaitMinForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeAttack1WaitMaxForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeAttack1WaitChanceForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeAttack2WaitMinForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeAttack2WaitMaxForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeAttack2WaitChanceForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeAttack3WaitMinForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeAttack3WaitMaxForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeAttack3WaitChanceForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				readInt = Utils.GetIntFromString(entries[i].Trim()); i++; //attack1ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt);
-				readInt = Utils.GetIntFromString(entries[i].Trim()); i++; //attack2ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt);
-				readInt = Utils.GetIntFromString(entries[i].Trim()); i++; //attack3ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt); // Not worrying about projectile type for now, would require indexing all of the pools.
-				projectileSpeedAttack1ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				projectileSpeedAttack2ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				projectileSpeedAttack3ForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				hasLaserOnAttack1ForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
-				hasLaserOnAttack2ForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
-				hasLaserOnAttack3ForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
-				explodeOnAttack3ForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
-				preactivateMeleeCollidersForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
-				huntTimeForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				flightHeightForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				flightHeightIsPercentageForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
-				switchMaterialOnDeathForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
-				hearingRangeForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				timeForTranquilizationForNPC[refIndex] = Utils.GetFloatFromString(entries[i].Trim()); i++;
-				hopsOnMoveForNPC[refIndex] = Utils.GetBoolFromString(entries[i].Trim()); i++;
-				readInt = Utils.GetIntFromString(entries[i].Trim()); typeForNPC[refIndex] = Utils.GetNPCTypeFromInt(readInt); i++;
-				projectile1PrefabForNPC[refIndex] = Utils.GetIntFromString(entries[i].Trim()); i++;
-				projectile2PrefabForNPC[refIndex] = Utils.GetIntFromString(entries[i].Trim()); i++;
-				projectile3PrefabForNPC[refIndex] = Utils.GetIntFromString(entries[i].Trim()); i++;
+				readInt = Utils.GetIntFromStringAudLogText(entries[i].Trim()); attackTypeForNPC[refIndex] = Utils.GetAttackTypeFromInt(readInt); i++; 
+				readInt = Utils.GetIntFromStringAudLogText(entries[i].Trim()); attackTypeForNPC2[refIndex] = Utils.GetAttackTypeFromInt(readInt); i++; 
+				readInt = Utils.GetIntFromStringAudLogText(entries[i].Trim()); attackTypeForNPC3[refIndex] = Utils.GetAttackTypeFromInt(readInt); i++; 
+				damageForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				damageForNPC2[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				damageForNPC3[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				rangeForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				rangeForNPC2[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				rangeForNPC3[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				healthForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				healthForCyberNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				readInt = Utils.GetIntFromStringAudLogText(entries[i].Trim()); perceptionForNPC[refIndex] = Utils.GetPerceptionLevelFromInt(readInt); i++;
+				disruptabilityForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				armorvalueForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				defenseForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				moveTypeForNPC[refIndex] = Utils.GetMoveTypeFromInt(Utils.GetIntFromStringAudLogText(entries[i].Trim())); i++;
+				yawSpeedForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				fovForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				fovAttackForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				fovStartMovementForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				distToSeeBehindForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				sightRangeForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				walkSpeedForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				runSpeedForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				attack1SpeedForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				attack2SpeedForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				attack3SpeedForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				attack3ForceForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				attack3RadiusForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeToPainForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeBetweenPainForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeTillDeadForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeToActualAttack1ForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeToActualAttack2ForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeToActualAttack3ForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeBetweenAttack1ForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeBetweenAttack2ForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeBetweenAttack3ForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeToChangeEnemyForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeIdleSFXMinForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeIdleSFXMaxForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeAttack1WaitMinForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeAttack1WaitMaxForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeAttack1WaitChanceForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeAttack2WaitMinForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeAttack2WaitMaxForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeAttack2WaitChanceForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeAttack3WaitMinForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeAttack3WaitMaxForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeAttack3WaitChanceForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				readInt = Utils.GetIntFromStringAudLogText(entries[i].Trim()); i++; //attack1ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt);
+				readInt = Utils.GetIntFromStringAudLogText(entries[i].Trim()); i++; //attack2ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt);
+				readInt = Utils.GetIntFromStringAudLogText(entries[i].Trim()); i++; //attack3ProjectileLaunchedTypeForNPC[refIndex] = GetPoolType(readInt); // Not worrying about projectile type for now, would require indexing all of the pools.
+				projectileSpeedAttack1ForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				projectileSpeedAttack2ForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				projectileSpeedAttack3ForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				hasLaserOnAttack1ForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;
+				hasLaserOnAttack2ForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;
+				hasLaserOnAttack3ForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;
+				explodeOnAttack3ForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;
+				preactivateMeleeCollidersForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;
+				huntTimeForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				flightHeightForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				flightHeightIsPercentageForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;
+				switchMaterialOnDeathForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;
+				hearingRangeForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				timeForTranquilizationForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				hopsOnMoveForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;
+				readInt = Utils.GetIntFromStringAudLogText(entries[i].Trim()); typeForNPC[refIndex] = Utils.GetNPCTypeFromInt(readInt); i++;
+				projectile1PrefabForNPC[refIndex] = Utils.GetIntFromStringAudLogText(entries[i].Trim()); i++;
+				projectile2PrefabForNPC[refIndex] = Utils.GetIntFromStringAudLogText(entries[i].Trim()); i++;
+				projectile3PrefabForNPC[refIndex] = Utils.GetIntFromStringAudLogText(entries[i].Trim()); i++;
 
 				currentline++;
 				if (currentline > 29) break;
@@ -1298,7 +1291,7 @@ public class Const : MonoBehaviour {
 		//					  + " total saveables for save.");
 
 		if (string.IsNullOrWhiteSpace(savename)) {
-			savename = "Unnamed " + Utils.UintToString(saveFileIndex); // int
+			savename = "Unnamed " + saveFileIndex.ToString();
 		}
 
 		saveData.Add(savename);
@@ -1307,8 +1300,7 @@ public class Const : MonoBehaviour {
 		s1.Clear();
 		s1.Append(Utils.FloatToString(PauseScript.a.relativeTime,"GameTime"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(PauseScript.a.absoluteTime,
-		                              "TotalPlayTime"));
+		s1.Append(Utils.FloatToString(PauseScript.a.absoluteTime,"TotalPlayTime"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(kills,"kills"));
 		s1.Append(Utils.splitChar);
@@ -1577,7 +1569,6 @@ public class Const : MonoBehaviour {
 		loadPercentText.text = "Preparing...";
 		yield return null; // Update progress text.
 
-		SaveObject.currentSaveEntriesIndex = "_";
 		SaveObject.currentObjectInfo = "Start of Load...";
 
 		// Remove and clear out everything and reset any lists.
@@ -1591,6 +1582,7 @@ public class Const : MonoBehaviour {
 		
 		for (i=0;i<14;i++) {
 			LevelManager.a.UnloadLevelDynamicObjects(i,false); // Delete them all!
+			LevelManager.a.ResetSaveStrings();
 			LevelManager.a.UnloadLevelNPCs(i); // Delete them all!
 			LevelManager.a.levelCameraCount[i] = 0;
 			LevelManager.a.levelSmallNodeCount[i] = 0;
@@ -1842,26 +1834,39 @@ public class Const : MonoBehaviour {
 			// Now time to instantiate anything left that's supposed to be here
 			loadUpdateTimer.Start(); // For loading update
 			int constdex = -1; // To store the index of Master Index table.
-			int levID = -1; // To store the level this was in.
+			int levID = 1; // To store the level this was in.
 			int savID = -1; // To store the SaveObject.SaveID.
 			float percLoaded = 0f;
 			GameObject instGO = null;
+			GameObject contnr = null;
 			for (i = 3 ; i < numSaveFileLines; i++) {
 				if (alreadyLoadedLineFromSaveFile[i]) continue;
 
 				entries = readFileList[i].Split(Utils.splitCharChar);
 				if (entries.Length > 1) {
-					levID = Utils.GetIntFromString(entries[18],"levelID"); 
-					if (levID < 0 || levID > 13) levID = 1; // Default to med.
+					levID = Utils.GetIntFromString(entries[18],"levelID");
 					constdex = Utils.GetIntFromString(entries[19],"constIndex");
-					if (constdex < 0 || constdex > 517) continue;
+					if (!ConsoleEmulator.ConstIndexInBounds(constdex)) continue;
 
 					savID = Utils.GetIntFromString(entries[1],"SaveID");
-					instGO = ConsoleEmulator.SpawnDynamicObject(constdex,levID,
-																false,null,
+					if (ConsoleEmulator.ConstIndexIsDynamicObject(constdex)) {
+						contnr = LevelManager.a.GetRequestedLevelDynamicContainer(levID);
+					} else {
+						contnr = null;
+					}
+					
+					// Already did LevelManager.a.LoadLevel above, and since its
+					// savestrings lists were empty, safet to spawn dynamics
+					// now.
+					if (levID == LevelManager.a.currentLevel) {
+						instGO = ConsoleEmulator.SpawnDynamicObject(constdex,levID,
+																false,contnr,
 																savID);
+						SaveObject.Load(instGO,ref entries,i); // Load it.
+					} else {
+						LevelManager.a.DynamicObjectsSavestrings[levID].Add(readFileList[i]);
+					} 
 
-					SaveObject.Load(instGO,ref entries,i); // Load it.
 				}
 
 				percLoaded = ((float)i / (float)numSaveablesFromSavefile*100f);

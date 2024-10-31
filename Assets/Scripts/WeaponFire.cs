@@ -140,7 +140,6 @@ public class WeaponFire : MonoBehaviour {
         if (index < 0) return;
 		if (WeaponCurrent.a.weaponCurrent < 0) return;
 
-        damageData.isFullAuto = Const.a.isFullAutoForWeapon[index];
         if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
 			// Alternate (2)
             damageData.damage = Const.a.damagePerHitForWeapon2[index];
@@ -163,7 +162,6 @@ public class WeaponFire : MonoBehaviour {
         damageData.energyDrainLow = Const.a.energyDrainLowForWeapon[index];
         damageData.energyDrainHi = Const.a.energyDrainHiForWeapon[index];
         damageData.energyDrainOver = Const.a.energyDrainOverloadForWeapon[index];
-        damageData.range = Const.a.rangeForWeapon[index];
         damageData.attackType = Const.a.attackTypeForWeapon[index];
         damageData.berserkActive = (Utils.CheckFlags(PlayerPatch.a.patchActive,
 												 PlayerPatch.a.PATCH_BERSERK));
@@ -361,7 +359,7 @@ public class WeaponFire : MonoBehaviour {
 
 	void CheckAttackInput() {
 		// Check for other things that must capture and override clicks
-		if (GetInput.a.Attack(true)) {
+		if (GetInput.a.Attack()) {
 			if (MouseLookScript.a.vmailActive) {
 				Inventory.a.DeactivateVMail();
 				MouseLookScript.a.vmailActive = false;
@@ -402,10 +400,11 @@ public class WeaponFire : MonoBehaviour {
 		if (wep16Index < 0 || wep16Index > 15) return;
 
 		GetWeaponData(wep16Index);
-		if (GetInput.a.Attack(Const.a.isFullAutoForWeapon[wep16Index])
+		if (GetInput.a.Attack()
 			&& waitTilNextFire < PauseScript.a.relativeTime
 			&& (PauseScript.a.relativeTime - energySliderClickedTime) > 0.1f
 			&& reloadFinished < PauseScript.a.relativeTime) {
+
 			StartCoroutine(CheckUIStateAndAttack(wep16Index));
 		}
 	}
@@ -1390,11 +1389,6 @@ public class WeaponFire : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		WeaponFire wf = go.GetComponent<WeaponFire>();
-		if (wf == null) {
-			Debug.Log("WeaponFire missing on Player!  GameObject.name: " + go.name);
-			return "0000.00000|0|0000.00000|0000.00000|0000.00000|0000.00000|0000.00000|0|0000.00000|0000.00000|0000.00000";
-		}
-
 		string line = System.String.Empty;
 		line = Utils.SaveRelativeTimeDifferential(wf.waitTilNextFire,"waitTilNextFire");
 		line += Utils.splitChar + Utils.BoolToString(wf.overloadEnabled,"overloadEnabled");
@@ -1420,21 +1414,6 @@ public class WeaponFire : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		WeaponFire wf = go.GetComponent<WeaponFire>();
-		if (wf == null) {
-			Debug.Log("WeaponFire.Load failure, wf == null");
-			return index + 11;
-		}
-
-		if (index < 0) {
-			Debug.Log("WeaponFire.Load failure, index < 0");
-			return index + 11;
-		}
-
-		if (entries == null) {
-			Debug.Log("WeaponFire.Load failure, entries == null");
-			return index + 11;
-		}
-
 		wf.waitTilNextFire = Utils.LoadRelativeTimeDifferential(entries[index],"waitTilNextFire"); index++;
 		wf.overloadEnabled = Utils.GetBoolFromString(entries[index],"overloadEnabled"); index++;
 		wf.sparqSetting = Utils.GetFloatFromString(entries[index],"sparqSetting"); index++;

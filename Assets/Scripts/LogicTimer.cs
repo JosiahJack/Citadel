@@ -41,48 +41,28 @@ public class LogicTimer : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		LogicTimer lt = go.GetComponent<LogicTimer>();
-		if (lt == null) {
-			Debug.Log("LogicTimer missing on savetype of LTimer!  GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("ffffbbss");
-		}
-
 		string line = System.String.Empty;
-		line = Utils.SaveRelativeTimeDifferential(lt.intervalFinished);
-		line += Utils.splitChar + Utils.FloatToString(lt.timeInterval);
-		line += Utils.splitChar + Utils.FloatToString(lt.randomMin);
-		line += Utils.splitChar + Utils.FloatToString(lt.randomMax);
-		line += Utils.splitChar + Utils.BoolToString(lt.useRandomTimes);
-		line += Utils.splitChar + Utils.BoolToString(lt.active);
-		line += Utils.splitChar + lt.target;
-		line += Utils.splitChar + lt.argvalue;
+		line = Utils.SaveRelativeTimeDifferential(lt.intervalFinished,"intervalFinished");
+		line += Utils.splitChar + Utils.FloatToString(lt.timeInterval,"timeInterval");
+		line += Utils.splitChar + Utils.FloatToString(lt.randomMin,"randomMin");
+		line += Utils.splitChar + Utils.FloatToString(lt.randomMax,"randomMax");
+		line += Utils.splitChar + Utils.BoolToString(lt.useRandomTimes,"useRandomTimes");
+		line += Utils.splitChar + Utils.BoolToString(lt.active,"active");
+		line += Utils.splitChar + Utils.SaveString(lt.target,"target");
+		line += Utils.splitChar + Utils.SaveString(lt.argvalue,"argvalue");
 		return line;
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		LogicTimer lt = go.GetComponent<LogicTimer>();
-		if (lt == null) {
-			Debug.Log("LogicTimer.Load failure, lt == null");
-			return index + 8;
-		}
-
-		if (index < 0) {
-			Debug.Log("LogicTimer.Load failure, index < 0");
-			return index + 8;
-		}
-
-		if (entries == null) {
-			Debug.Log("LogicTimer.Load failure, entries == null");
-			return index + 8;
-		}
-
-		lt.intervalFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		lt.timeInterval = Utils.GetFloatFromString(entries[index]); index++;
-		lt.randomMin = Utils.GetFloatFromString(entries[index]); index++;
-		lt.randomMax = Utils.GetFloatFromString(entries[index]); index++;
-		lt.useRandomTimes = Utils.GetBoolFromString(entries[index]); index++;
-		lt.active = Utils.GetBoolFromString(entries[index]); index++;
-		lt.target = entries[index]; index++;
-		lt.argvalue = entries[index]; index++;
+		lt.intervalFinished = Utils.LoadRelativeTimeDifferential(entries[index],"intervalFinished"); index++;
+		lt.timeInterval = Utils.GetFloatFromString(entries[index],"timeInterval"); index++;
+		lt.randomMin = Utils.GetFloatFromString(entries[index],"randomMin"); index++;
+		lt.randomMax = Utils.GetFloatFromString(entries[index],"randomMax"); index++;
+		lt.useRandomTimes = Utils.GetBoolFromString(entries[index],"useRandomTimes"); index++;
+		lt.active = Utils.GetBoolFromString(entries[index],"active"); index++;
+		lt.target = Utils.LoadString(entries[index],"target"); index++;
+		lt.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
 		return index;
 	}
 }

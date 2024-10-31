@@ -1233,7 +1233,16 @@ public class DynamicCulling : MonoBehaviour {
                         Utils.DisableMeshRenderer(dynamicMeshes[i]);
                     }
                 } else {
-                    Utils.EnableMeshRenderer(dynamicMeshes[i]);
+                    HealthManager hm = dynamicMeshes[i].GetComponent<HealthManager>();
+                    if (hm != null) {
+                        if (hm.health > 0 || !hm.gibOnDeath || hm.isScreen) {
+                            Utils.EnableMeshRenderer(dynamicMeshes[i]);
+                        } else {
+                            Utils.DisableMeshRenderer(dynamicMeshes[i]);
+                        }
+                    } else {
+                        Utils.EnableMeshRenderer(dynamicMeshes[i]);
+                    }
                 }
             } else {
                 Utils.DisableMeshRenderer(dynamicMeshes[i]);

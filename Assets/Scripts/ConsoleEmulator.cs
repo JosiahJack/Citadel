@@ -357,7 +357,7 @@ public static class ConsoleEmulator {
 				else if (ts.Contains("merge")) Const.sprint("Failed, could not connect with origin/triop");
 				else if (ts.Contains("push")) Const.sprint("Could not find Username for 'triopttp://192.168.1.451'");
 				else if (ts.Contains("clone")) Const.sprint("Failed, connection blocked by SHODAN. Employee ID invalid.");
-				else if (ts.Contains("branch") || ts.Contains("-b")) Const.sprint("Created new branch " + Utils.GetIntFromString(ts.Split(' ').Last()));
+				else if (ts.Contains("branch") || ts.Contains("-b")) Const.sprint("Created new branch " + ts.Split(' ').Last());
 				else if (ts.Contains("checkout")) Const.sprint("Branch name not recognized.  Contact your TriopBucket representative.");
 				else Const.sprint("Branch name not recognized.  Contact your TriopBucket representative.");
 		} else if (ts.Contains("restart")) {
@@ -389,14 +389,14 @@ public static class ConsoleEmulator {
 		} else if ((ts.Contains("impulse") && tn.Contains("9")) || ts.Contains("idkfa")) {
 				Const.sprint("I can only hold 7 weapons!! Nice try dearies!");
 		} else if (ts.Contains("summon_obj")) {
-			int val = Utils.GetIntFromString(ts.Split(' ').Last()); // That's a slow line to compute!
+			int val = Utils.GetIntFromStringAudLogText(ts.Split(' ').Last()); // That's a slow line to compute!
 			if (val < 438 && val >= 0) {
 				SpawnDynamicObject(val,LevelManager.a.currentLevel,true,-1);
 			}
         } else if (ts.Contains("undo")) {
 			if (lastSpawnedGO != null) Utils.SafeDestroy(lastSpawnedGO);
         } else if (ts.Contains("settargetfps")) {
-			int val = Utils.GetIntFromString(ts.Split(' ').Last()); // That's a slow line to compute!
+			int val = Utils.GetIntFromStringAudLogText(ts.Split(' ').Last()); // That's a slow line to compute!
 			if (val <= 200 && val > 10) {
 				Const.a.TARGET_FPS = val;
 				Config.SetVSync();
@@ -411,20 +411,7 @@ public static class ConsoleEmulator {
                 Const.sprint("Stamin-Up! Fatigue no longer affects you!");
                 PlayerMovement.a.FatigueCheat = true;
             }
-        } else if (ts.Contains("const.")) {
-			string numGet = Regex.Match(ts, @"\d+").Value;
-			int numGot = Int32.Parse(numGet);
-			if (numGot >= 0) {
-				// Debug value parsing within build
-				if (ts.Contains("isFullAutoForWeapon")) {
-					if (numGot < Const.a.isFullAutoForWeapon.Length) Const.sprint(Const.a.isFullAutoForWeapon[numGot].ToString());
-					else Const.sprint("Value of " + numGot.ToString() + " was outside of bounds, needs to be 0 - " + Const.a.isFullAutoForWeapon.Length.ToString());
-				} else if (ts.Contains("moveTypeForNPC")) {
-					if (numGot < Const.a.moveTypeForNPC.Length) Const.sprint(Const.a.moveTypeForNPC[numGot].ToString());
-					else Const.sprint("Value of " + numGot.ToString() + " was outside of bounds, needs to be 0 - " + Const.a.moveTypeForNPC.Length.ToString());
-				}
-			}
-		} else {
+        } else {
             Const.sprint("Uknown command or function: " + entry);
         }
 
@@ -1146,7 +1133,31 @@ Master Index
 696 func_switchbroken1           203
 697 clip_npc                     204
 698 clip_objects                 205
+*/
 
+public static bool ConstIndexInBounds(int constdex) {
+	return (constdex >= 0 && constdex <= 698);
+}
+
+// TODO: Once we have static objects immutable saved intheir own file,
+// change constdex>696 to not be here!
+public static bool ConstIndexIsGeometry(int constdex) {
+	return (constdex >= 0 && constdex <= 306) || constdex > 696;
+}
+
+public static bool ConstIndexIsDynamicObject(int constdex) {
+	return (constdex >= 307 && constdex < 419);
+}
+
+public static bool ConstIndexIsNPC(int constdex) {
+	return (constdex >= 419 && constdex < 448);
+}
+
+public static bool ConstIndexIsHardware(int constdex) {
+	return (constdex >= 328) && (constdex <= 339);
+}
+
+/*
 Generic Materials (Const.a.genericMaterials[])
 0  col1                 Dark Gray            In hindsight, maybe I should have named these descriptively.
 1  col1_unlit           Dark Gray unlit
@@ -1201,6 +1212,11 @@ Generic Materials (Const.a.genericMaterials[])
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat,
 												GameObject forcedContainer,
 												int saveID) {
+		if (!ConstIndexInBounds(val)) {
+			Debug.Log("Const index out of bounds: " + val.ToString());
+			return null;
+		}
+		
 		if (cheat) {
 			Debug.Log("Cheat spawn: " + val.ToString() + ", level: "
 					  + lev.ToString() + ", from cheat: " + cheat.ToString()
@@ -1213,19 +1229,19 @@ Generic Materials (Const.a.genericMaterials[])
 		if (cheat && Inventory.a == null) { Debug.Log("No Inventory"); return null; }
 		if (cheat && Const.a == null) { Debug.Log("No Const"); return null; }
 
+		if (lev < 0 || lev > 13) lev = 1; // Fallback to Medical.
 		Vector3 spawnPos = Vector3.zero;
 		if (cheat) spawnPos = PlayerMovement.a.transform.position;
 		GameObject go = null;
-		if (val >= 0 && val < 307) { // [0, 306]
+		if (ConstIndexIsGeometry(val)) {
 			if (Const.a.editMode || !cheat) {
 				go = MonoBehaviour.Instantiate(Const.a.prefabs[val],spawnPos,
 									Const.a.quaternionIdentity) as GameObject;
-
 			} else {
 				Const.sprint("Indices 0 through 306 (level geometry chunks) "
 							 + "not possible when not on edit mode!");
 			}
-		} else if (val >= 307 && val < 699) {	// [307, 698]
+		} else {
 			go = MonoBehaviour.Instantiate(Const.a.prefabs[val],spawnPos,
 									Const.a.quaternionIdentity) as GameObject;
 		}
@@ -1234,20 +1250,21 @@ Generic Materials (Const.a.genericMaterials[])
 			if (forcedContainer != null) {
 				go.transform.SetParent(forcedContainer.transform);
 			} else {
-				if (lev >= 0) {
-					Level levS = LevelManager.a.levelScripts[lev];
-					
-					GameObject parGO = levS.dynamicObjectsContainer;
-					if (val >= 419 && val < 448) {
-						parGO = levS.NPCsSaveableInstantiated;
-					} else if (val >= 0 && val < 307) {
-						parGO = levS.geometryContainer;
-					}
-
-					go.transform.SetParent(parGO.transform);
+				Level levS = LevelManager.a.levelScripts[lev];
+				
+				GameObject parGO = levS.dynamicObjectsContainer;
+				if (ConstIndexIsNPC(val)) {
+					parGO = levS.NPCsSaveableInstantiated;
+				} else if (ConstIndexIsGeometry(val)) {
+					parGO = levS.geometryContainer;
+				} else if (ConstIndexIsDynamicObject(val)) {
+					parGO = levS.dynamicObjectsContainer;
 				}
+
+				go.transform.SetParent(parGO.transform);
 			}
-			if (cheat && (val >= 328) && (val <= 339)) { // Hardware
+			
+			if (cheat && ConstIndexIsHardware(val)) { // Hardware
 				UseableObjectUse uo = go.GetComponent<UseableObjectUse>();
 				int dex14 = Inventory.a.hardware14fromConstdex(uo.useableItemIndex);
 				if (Inventory.a.hasHardware[dex14]) {

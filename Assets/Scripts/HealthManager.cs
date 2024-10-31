@@ -156,9 +156,12 @@ public class HealthManager : MonoBehaviour {
 	public void UpdateLinkedOverlay() {
 		if (!isSecCamera && !isNPC) return;
 		if (IsCyberEntity()) return;
-		if (isNPC && Inventory.a.NavUnitVersion() <= 1) return;
+		if (isNPC) {
+			if (Inventory.a != null) {
+				if (Inventory.a.NavUnitVersion() <= 1) return;
+			}
+		}
 		if (Automap.a == null) return; // Attempting to link from editor save (dynamic objects export).
-		
 		Automap.a.TurnOnLinkedOverlay(linkedOverlay,health,gameObject,isNPC);
 		Automap.a.SetLinkedOverlayPos(linkedOverlay,health,gameObject);
 	}
@@ -182,6 +185,10 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	void UseDeathTargets() {
+		#if UNITY_EDITOR
+			if (!Application.isPlaying) return;
+		#endif
+
 		if (isPlayer) return; // Player death does nothing.
 
 		UseData ud = new UseData();
@@ -526,6 +533,10 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	void NPCDeath(AudioClip deathSound) {
+		#if UNITY_EDITOR
+			if (!Application.isPlaying) return;
+		#endif
+
 		if (deathDone) return; // We died the death, no 2nd deaths here.
 
 		deathDone = true; // Mark it so we only die once.
@@ -804,20 +815,10 @@ public class HealthManager : MonoBehaviour {
 
 	// Generic health info string
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
-		HealthManager hm = go.GetComponent<HealthManager>(); // Savetype = hm.
-		if (hm == null) {
-			Transform childTr = go.transform.GetChild(0);
-			if (childTr != null) {
-				hm = Utils.GetMainHealthManager(childTr.gameObject);
-			}
-		}
-
-		if (hm == null) {
-			Debug.Log("HealthManager missing on savetype of HealthManager!"
-						+ "  GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("ffbbbu");
-		}
-
+		HealthManager hm;
+		if (prefID.constIndex == 467) hm = go.transform.GetChild(0).GetComponent<HealthManager>(); // se_corpse_eaten
+		else hm = go.GetComponent<HealthManager>();
+		
 		if (!hm.awakeInitialized) hm.Awake();
 		if (!hm.startInitialized) hm.Start();
 		StringBuilder s1 = new StringBuilder();
@@ -828,56 +829,32 @@ public class HealthManager : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(hm.cyberHealth,"cyberHealth"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(hm.deathDone,"deathDone")); // Dead yet?
+		s1.Append(Utils.BoolToString(hm.deathDone,"deathDone"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(hm.god,"godmode")); // Are we invincible? 
-														 // We can save cheats?
-														 // OH WOW!
+		s1.Append(Utils.BoolToString(hm.god,"godmode"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(hm.teleportDone,"teleportDone"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveString(hm.targetOnDeath,"targetOnDeath"));
-		if (!string.IsNullOrWhiteSpace(hm.targetOnDeath)) {
-		    s1.Append(Utils.splitChar);
-		    s1.Append(TargetIO.Save(go));
-		}
-		
+		s1.Append(Utils.splitChar);
+		s1.Append(TargetIO.Save(go,prefID));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(hm.gibObjects.Length,"gibObjects.Length"));
-
 		for (int i=0;i<hm.gibObjects.Length; i++) {
 			s1.Append(Utils.splitChar);
 			s1.Append(Utils.SaveSubActivatedGOState(hm.gibObjects[i]));
 		}
 
-		if (prefID != null) {
-			if (prefID.constIndex == 526) { // prop_console02
-				if (go.transform.childCount > 0) { // Screen is first child.
-					GameObject child = go.transform.GetChild(0).gameObject; 
-					s1.Append(Utils.splitChar);
-					s1.Append(Utils.BoolToString(child.activeSelf,
-												 "child.activeSelf"));
-
-					ImageSequenceTextureArray ista
-						= child.GetComponent<ImageSequenceTextureArray>();
-
-					if (ista != null) {
-						s1.Append(Utils.splitChar);
-						s1.Append(Utils.SaveString(ista.resourceFolder,
-												   "resourceFolder"));
-					}
-				} else {
-					s1.Append(Utils.splitChar);
-					s1.Append(Utils.BoolToString(true,"child.activeSelf"));
-					s1.Append(Utils.splitChar);
-					s1.Append(Utils.SaveString("MedScreen27","resourceFolder"));
-				}
-			}
+		if (prefID.constIndex == 526) { // prop_console02
+			GameObject child = go.transform.GetChild(0).gameObject; 
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.BoolToString(child.activeSelf,"child.activeSelf"));
+			ImageSequenceTextureArray ista = child.GetComponent<ImageSequenceTextureArray>();
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.SaveString(ista.resourceFolder,"resourceFolder"));
 		}
 
 		s1.Append(Utils.splitChar);
-
-		// Did we already teleport?
 		s1.Append(Utils.BoolToString(hm.teleportOnDeath,"teleportOnDeath"));
 		return s1.ToString();
 	}
@@ -886,70 +863,19 @@ public class HealthManager : MonoBehaviour {
 						   PrefabIdentifier prefID) {
 
 		HealthManager hm = go.GetComponent<HealthManager>(); // SaveType = hm.
-		if (hm == null) {
-			Transform childTr = go.transform.GetChild(0);
-			if (childTr != null) {
-				hm = Utils.GetMainHealthManager(childTr.gameObject);
-			}
-		}
-
-		if (hm == null) {
-			Debug.Log("HealthManager.Load failure, hm == null");
-			return index + 7;
-		}
-
-		if (index < 0) {
-			Debug.Log("HealthManager.Load failure, index < 0");
-			return index + 7;
-		}
-
-		if (entries == null) {
-			Debug.Log("HealthManager.Load failure, entries == null");
-			return index + 7;
-		}
-
-        hm.levelIndex = Utils.GetIntFromString(entries[index],"levelIndex");
-        index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-        
+        hm.levelIndex = Utils.GetIntFromString(entries[index],"levelIndex"); index++;
 		if (!hm.awakeInitialized) hm.Awake();
 		if (!hm.startInitialized) hm.Start();
-		hm.health = Utils.GetFloatFromString(entries[index],"health");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		hm.cyberHealth = Utils.GetFloatFromString(entries[index],"cyberHealth");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		hm.deathDone = Utils.GetBoolFromString(entries[index],"deathDone");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		hm.god = Utils.GetBoolFromString(entries[index],"godmode");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		hm.teleportDone = Utils.GetBoolFromString(entries[index],
-												  "teleportDone");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-		
-        hm.targetOnDeath = Utils.LoadString(entries[index],"targetOnDeath");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-		if (!string.IsNullOrWhiteSpace(hm.targetOnDeath)) {
-		    index = TargetIO.Load(go,ref entries,index,true);
-		    SaveObject.currentSaveEntriesIndex = index.ToString();
-	    	if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-		}
-		
+		hm.health = Utils.GetFloatFromString(entries[index],"health"); index++;
+		hm.cyberHealth = Utils.GetFloatFromString(entries[index],"cyberHealth"); index++;
+		hm.deathDone = Utils.GetBoolFromString(entries[index],"deathDone"); index++;
+		hm.god = Utils.GetBoolFromString(entries[index],"godmode"); index++;
+		hm.teleportDone = Utils.GetBoolFromString(entries[index],"teleportDone"); index++;
+        hm.targetOnDeath = Utils.LoadString(entries[index],"targetOnDeath"); index++;
+		index = TargetIO.Load(go,ref entries,index,true);
 		hm.AwakeFromLoad();
-
 		int numChildren = hm.gibObjects.Length;
-		int numChildrenFromSave = Utils.GetIntFromString(entries[index],
-														  "gibObjects.Length");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
+		int numChildrenFromSave = Utils.GetIntFromString(entries[index],"gibObjects.Length"); index++;
 
 		if (numChildren != numChildrenFromSave) {
 			Debug.Log("BUG: HealthManager gibObjects.Length("
@@ -961,43 +887,20 @@ public class HealthManager : MonoBehaviour {
 
 		if (numChildren > 0) {
 			for (int i=0; i<numChildren; i++) {
-				index = Utils.LoadSubActivatedGOState(hm.gibObjects[i],
-													  ref entries,index);
-
-				if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
+				index = Utils.LoadSubActivatedGOState(hm.gibObjects[i],ref entries,index);
 			}
 		}
 
-		if (prefID != null) {
-			if (prefID.constIndex == 526) { // prop_console02
-				if (go.transform.childCount > 0) { // Screen is first child.
-					GameObject child = go.transform.GetChild(0).gameObject;
-					child.SetActive(Utils.GetBoolFromString(entries[index],
-														"child.activeSelf"));
-					index++;
-					if (!Utils.IndexEntriesOk(index,ref entries,go)) {
-						return index;
-					}
-
-					ImageSequenceTextureArray ista
-						= child.GetComponent<ImageSequenceTextureArray>();
-
-					if (ista != null) {
-						ista.resourceFolder =
-							Utils.LoadString(entries[index],
-												"resourceFolder");
-						index++;
-						if (!Utils.IndexEntriesOk(index,ref entries,go)) {
-							return index;
-						}
-					}
-				}
-			}	
+		if (prefID.constIndex == 526) { // prop_console02
+			if (go.transform.childCount > 0) { // Screen is first child.
+				GameObject child = go.transform.GetChild(0).gameObject;
+				child.SetActive(Utils.GetBoolFromString(entries[index],"child.activeSelf")); index++;
+				ImageSequenceTextureArray ista = child.GetComponent<ImageSequenceTextureArray>();
+				ista.resourceFolder = Utils.LoadString(entries[index],"resourceFolder"); index++;
+			}
 		}
 
-		hm.teleportOnDeath = Utils.GetBoolFromString(entries[index],
-													 "teleportOnDeath");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		hm.teleportOnDeath = Utils.GetBoolFromString(entries[index],"teleportOnDeath"); index++;
 		return index;
 	}
 }

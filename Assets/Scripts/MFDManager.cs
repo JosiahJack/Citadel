@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Text;
 using System.Collections.Generic;
 
 // Handles the HUD UI.
@@ -1887,210 +1888,137 @@ public class MFDManager : MonoBehaviour  {
 
 	public static string Save(GameObject go) {
 		MFDManager mfd = go.GetComponent<MFDManager>();
-		if (mfd == null) {
-			Debug.Log("MFDManager missing on Player!  GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("bbbbbbbbbufffbbbbbbtbutuu");
-		}
-
-		string line = System.String.Empty;
-		line = Utils.BoolToString(mfd.lastWeaponSideRH); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.lastItemSideRH); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.lastAutomapSideRH); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.lastTargetSideRH); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.lastDataSideRH); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.lastSearchSideRH); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.lastLogSideRH); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.lastLogSecondarySideRH); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.lastMinigameSideRH); // bool
-		line += Utils.splitChar + Utils.UintToString(mfd.lastMultiMediaTabOpened); // int
-		line += Utils.splitChar + Utils.FloatToString(mfd.objectInUsePos.x)
-			  + Utils.splitChar + Utils.FloatToString(mfd.objectInUsePos.y)
-			  + Utils.splitChar + Utils.FloatToString(mfd.objectInUsePos.z);
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(Utils.BoolToString(mfd.lastWeaponSideRH,"lastWeaponSideRH"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.lastItemSideRH,"lastItemSideRH"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.lastAutomapSideRH,"lastAutomapSideRH"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.lastTargetSideRH,"lastTargetSide"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.lastDataSideRH,"lastDataSideRH"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.lastSearchSideRH,"lastSearchSideRH"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.lastLogSideRH,"lastLogSideRH"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.lastLogSecondarySideRH,"lastLogSecondarySideRH"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.lastMinigameSideRH,"lastMinigameSideRH"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(mfd.lastMultiMediaTabOpened,"lastMultiMediaTabOpened"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(mfd.objectInUsePos.x,"objectInUsePos.x"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(mfd.objectInUsePos.y,"objectInUsePos.y"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(mfd.objectInUsePos.z,"objectInUsePos.z"));
+		s1.Append(Utils.splitChar);
 		// tetheredPGP
 		// tetheredPWP
 		// tetheredSearchable
 		// tetheredKeypadElevator
 		// tetheredKeypadKeycode
-		line += Utils.splitChar + Utils.BoolToString(mfd.paperLogInUse); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.usingObject); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.logReaderContainer.activeSelf); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.DataReaderContentTab.activeSelf); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.logTable.activeSelf); // bool
-		line += Utils.splitChar + Utils.BoolToString(mfd.logLevelsFolder.activeSelf); // bool
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(mfd.logFinished);
-		line += Utils.splitChar + Utils.BoolToString(mfd.logActive); // bool
-		line += Utils.splitChar + Utils.IntToString(Utils.GetIntFromAudioLogType(mfd.logType)); // int
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished);
-
-		if (mfd.leftTC != null) {
-			line += Utils.splitChar + Utils.UintToString(mfd.leftTC.curTab);
-		} else line += Utils.splitChar + "0";
-
-		if (mfd.rightTC != null) {
-			line += Utils.splitChar + Utils.UintToString(mfd.rightTC.curTab);
-		} else line += Utils.splitChar + "0";
-
-		line += Utils.splitChar;
-		line += Utils.BoolToString(mfd.leftTC.TabManager.WeaponTab.activeSelf,
-								   "leftTC.TabManager.WeaponTab.activeSelf");
-
-		line += Utils.splitChar;
-		line += Utils.BoolToString(mfd.leftTC.TabManager.ItemTab.activeSelf,
-								   "leftTC.TabManager.ItemTab.activeSelf");
-
-		line += Utils.splitChar;
-		line += Utils.BoolToString(mfd.leftTC.TabManager.AutomapTab.activeSelf,
-								   "leftTC.TabManager.AutomapTab.activeSelf");
-
-		line += Utils.splitChar;
-		line += Utils.BoolToString(mfd.leftTC.TabManager.TargetTab.activeSelf,
-								   "leftTC.TabManager.TargetTab.activeSelf");
-
-		line += Utils.splitChar;
-		line += Utils.BoolToString(mfd.leftTC.TabManager.DataTab.activeSelf,
-								   "leftTC.TabManager.DataTab.activeSelf");
-
-		line += Utils.splitChar;
-		line += Utils.BoolToString(mfd.rightTC.TabManager.WeaponTab.activeSelf,
-								   "rightTC.TabManager.WeaponTab.activeSelf");
-
-		line += Utils.splitChar;
-		line += Utils.BoolToString(mfd.rightTC.TabManager.ItemTab.activeSelf,
-								   "rightTC.TabManager.ItemTab.activeSelf");
-
-		line += Utils.splitChar;
-		line += Utils.BoolToString(mfd.rightTC.TabManager.AutomapTab.activeSelf,
-								   "rightTC.TabManager.AutomapTab.activeSelf");
-
-		line += Utils.splitChar;
-		line += Utils.BoolToString(mfd.rightTC.TabManager.TargetTab.activeSelf,
-								   "rightTC.TabManager.TargetTab.activeSelf");
-
-		line += Utils.splitChar;
-		line += Utils.BoolToString(mfd.rightTC.TabManager.DataTab.activeSelf,
-								   "rightTC.TabManager.DataTab.activeSelf");
-
-		line += Utils.splitChar;
-		line += Utils.UintToString(mfd.curCenterTab,"curCenterTab");
-		return line;
+		s1.Append(Utils.BoolToString(mfd.paperLogInUse,"paperLogInUse"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.usingObject,"usingObject"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.logReaderContainer.activeSelf,"logReaderContainer.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.DataReaderContentTab.activeSelf,"DataReaderContentTab.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.logTable.activeSelf,"logTable.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.logLevelsFolder.activeSelf,"logLevelsFolder.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(mfd.logFinished,"logFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.logActive,"logActive"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(Utils.GetIntFromAudioLogType(mfd.logType),"logType"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished,"mfd.cyberTimer.timerFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(mfd.leftTC.curTab,"leftTC.curTab"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(mfd.rightTC.curTab,"rightTC.curTab"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.leftTC.TabManager.WeaponTab.activeSelf,"leftTC.TabManager.WeaponTab.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.leftTC.TabManager.ItemTab.activeSelf,"leftTC.TabManager.ItemTab.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.leftTC.TabManager.AutomapTab.activeSelf,"leftTC.TabManager.AutomapTab.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.leftTC.TabManager.TargetTab.activeSelf,"leftTC.TabManager.TargetTab.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.leftTC.TabManager.DataTab.activeSelf,"leftTC.TabManager.DataTab.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.rightTC.TabManager.WeaponTab.activeSelf,"rightTC.TabManager.WeaponTab.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.rightTC.TabManager.ItemTab.activeSelf,"rightTC.TabManager.ItemTab.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.rightTC.TabManager.AutomapTab.activeSelf,"rightTC.TabManager.AutomapTab.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.rightTC.TabManager.TargetTab.activeSelf,"rightTC.TabManager.TargetTab.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(mfd.rightTC.TabManager.DataTab.activeSelf,"rightTC.TabManager.DataTab.activeSelf"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(mfd.curCenterTab,"curCenterTab"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		MFDManager mfd = go.GetComponent<MFDManager>();
-		if (mfd == null) {
-			Debug.Log("MFDManager.Load failure, mfd == null");
-			return index + 25;
-		}
-
-		if (index < 0) {
-			Debug.Log("MFDManager.Load failure, index < 0");
-			return index + 25;
-		}
-
-		if (entries == null) {
-			Debug.Log("MFDManager.Load failure, entries == null");
-			return index + 25;
-		}
-
 		float readFloatx, readFloaty, readFloatz;
-		mfd.lastWeaponSideRH = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.lastItemSideRH = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.lastAutomapSideRH = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.lastTargetSideRH = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.lastDataSideRH = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.lastSearchSideRH = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.lastLogSideRH = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.lastLogSecondarySideRH = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.lastMinigameSideRH = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.lastMultiMediaTabOpened = Utils.GetIntFromString(entries[index]); index++;
-		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		mfd.lastWeaponSideRH = Utils.GetBoolFromString(entries[index],"lastWeaponSideRH"); index++;
+		mfd.lastItemSideRH = Utils.GetBoolFromString(entries[index],"lastItemSideRH"); index++;
+		mfd.lastAutomapSideRH = Utils.GetBoolFromString(entries[index],"lastAutomapSideRH"); index++;
+		mfd.lastTargetSideRH = Utils.GetBoolFromString(entries[index],"lastTargetSideRH"); index++;
+		mfd.lastDataSideRH = Utils.GetBoolFromString(entries[index],"lastDataSideRH"); index++;
+		mfd.lastSearchSideRH = Utils.GetBoolFromString(entries[index],"lastSearchSideRH"); index++;
+		mfd.lastLogSideRH = Utils.GetBoolFromString(entries[index],"lastLogSideRH"); index++;
+		mfd.lastLogSecondarySideRH = Utils.GetBoolFromString(entries[index],"lastLogSecondarySideRH"); index++;
+		mfd.lastMinigameSideRH = Utils.GetBoolFromString(entries[index],"lastMinigameSideRH"); index++;
+		mfd.lastMultiMediaTabOpened = Utils.GetIntFromString(entries[index],"lastMultiMediaTabOpened"); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index],"objectInUsePos.x"); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index],"objectInUsePos.y"); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index],"objectInUsePos.z"); index++;
 		mfd.objectInUsePos = new Vector3(readFloatx,readFloaty,readFloatz);
 		// tetheredPGP
 		// tetheredPWP
 		// tetheredSearchable
 		// tetheredKeypadElevator
 		// tetheredKeypadKeycode
-		mfd.paperLogInUse = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.usingObject = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.logReaderContainer.SetActive(Utils.GetBoolFromString(entries[index])); index++;
-		mfd.DataReaderContentTab.SetActive(Utils.GetBoolFromString(entries[index])); index++;
-		mfd.logTable.SetActive(Utils.GetBoolFromString(entries[index])); index++;
-		mfd.logLevelsFolder.SetActive(Utils.GetBoolFromString(entries[index])); index++;
-		mfd.logFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		mfd.logActive = Utils.GetBoolFromString(entries[index]); index++;
-		mfd.logType = Utils.GetAudioLogTypeFromInt(Utils.GetIntFromString(entries[index])); index++;
-		mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
-		if (mfd.leftTC != null) {
-			mfd.leftTC.curTab = Utils.GetIntFromString(entries[index]); index++;
-			mfd.leftTC.SetCurrentAsLast();
-			mfd.leftTC.ReturnToLastTab();
-		} else index++;
-
-		if (mfd.rightTC != null) {
-			mfd.rightTC.curTab = Utils.GetIntFromString(entries[index]); index++;
-			mfd.rightTC.SetCurrentAsLast();
-			mfd.rightTC.ReturnToLastTab();
-		} else index++;
-
-		bool wepTabActiveLH = Utils.GetBoolFromString(entries[index],
-									"leftTC.TabManager.WeaponTab.activeSelf");
-		index++;
-
-		bool itemTabActiveLH = Utils.GetBoolFromString(entries[index],
-									"leftTC.TabManager.ItemTab.activeSelf");
-		index++;
-
-		bool amapTabActiveLH = Utils.GetBoolFromString(entries[index],
-									"leftTC.TabManager.AutomapTab.activeSelf");
-		index++;
-
-		bool targTabActiveLH = Utils.GetBoolFromString(entries[index],
-									"leftTC.TabManager.TargetTab.activeSelf");
-		index++;
-
-		bool dataTabActiveLH = Utils.GetBoolFromString(entries[index],
-									"leftTC.TabManager.DataTab.activeSelf");
-		index++;
-		mfd.leftTC.TabManager.WeaponTab.SetActive(wepTabActiveLH);
-		mfd.leftTC.TabManager.ItemTab.SetActive(itemTabActiveLH);
-		mfd.leftTC.TabManager.AutomapTab.SetActive(amapTabActiveLH);
-		mfd.leftTC.TabManager.TargetTab.SetActive(targTabActiveLH);
-		mfd.leftTC.TabManager.DataTab.SetActive(dataTabActiveLH);
-
-
-
-		bool wepTabActiveRH = Utils.GetBoolFromString(entries[index],
-									"rightTC.TabManager.WeaponTab.activeSelf");
-		index++;
-
-		bool itemTabActiveRH = Utils.GetBoolFromString(entries[index],
-									"rightTC.TabManager.ItemTab.activeSelf");
-		index++;
-
-		bool amapTabActiveRH = Utils.GetBoolFromString(entries[index],
-									"rightTC.TabManager.AutomapTab.activeSelf");
-		index++;
-
-		bool targTabActiveRH = Utils.GetBoolFromString(entries[index],
-									"rightTC.TabManager.TargetTab.activeSelf");
-		index++;
-
-		bool dataTabActiveRH = Utils.GetBoolFromString(entries[index],
-										"rightTC.TabManager.DataTab.activeSelf");
-		index++;
-		mfd.rightTC.TabManager.WeaponTab.SetActive(wepTabActiveRH);
-		mfd.rightTC.TabManager.ItemTab.SetActive(itemTabActiveRH);
-		mfd.rightTC.TabManager.AutomapTab.SetActive(amapTabActiveRH);
-		mfd.rightTC.TabManager.TargetTab.SetActive(targTabActiveRH);
-		mfd.rightTC.TabManager.DataTab.SetActive(dataTabActiveRH);
-
-		mfd.curCenterTab = Utils.GetIntFromString(entries[index],
-												  "curCenterTab");
+		mfd.paperLogInUse = Utils.GetBoolFromString(entries[index],"paperLogInUse"); index++;
+		mfd.usingObject = Utils.GetBoolFromString(entries[index],"usingObject"); index++;
+		mfd.logReaderContainer.SetActive(Utils.GetBoolFromString(entries[index],"logReaderContainer.activeSelf")); index++;
+		mfd.DataReaderContentTab.SetActive(Utils.GetBoolFromString(entries[index],"DataReaderContentTab.activeSelf")); index++;
+		mfd.logTable.SetActive(Utils.GetBoolFromString(entries[index],"logTable.activeSelf")); index++;
+		mfd.logLevelsFolder.SetActive(Utils.GetBoolFromString(entries[index],"logLevelsFolder.activeSelf")); index++;
+		mfd.logFinished = Utils.LoadRelativeTimeDifferential(entries[index],"logFinished"); index++;
+		mfd.logActive = Utils.GetBoolFromString(entries[index],"logActive"); index++;
+		mfd.logType = Utils.GetAudioLogTypeFromInt(Utils.GetIntFromString(entries[index],"logType")); index++;
+		mfd.cyberTimer.GetComponent<CyberTimer>().timerFinished = Utils.LoadRelativeTimeDifferential(entries[index],"mfd.cyberTimer.timerFinished"); index++;
+		mfd.leftTC.curTab = Utils.GetIntFromString(entries[index],"leftTC.curTab"); index++;
+		mfd.leftTC.SetCurrentAsLast();
+		mfd.leftTC.ReturnToLastTab();
+		mfd.rightTC.curTab = Utils.GetIntFromString(entries[index],"rightTC.curTab"); index++;
+		mfd.rightTC.SetCurrentAsLast();
+		mfd.rightTC.ReturnToLastTab();
+		mfd.leftTC.TabManager.WeaponTab.SetActive(Utils.GetBoolFromString(entries[index],"leftTC.TabManager.WeaponTab.activeSelf")); index++;
+		mfd.leftTC.TabManager.ItemTab.SetActive(Utils.GetBoolFromString(entries[index],"leftTC.TabManager.ItemTab.activeSelf")); index++;
+		mfd.leftTC.TabManager.AutomapTab.SetActive(Utils.GetBoolFromString(entries[index],"leftTC.TabManager.AutomapTab.activeSelf")); index++;
+		mfd.leftTC.TabManager.TargetTab.SetActive(Utils.GetBoolFromString(entries[index],"leftTC.TabManager.TargetTab.activeSelf")); index++;
+		mfd.leftTC.TabManager.DataTab.SetActive(Utils.GetBoolFromString(entries[index],"leftTC.TabManager.DataTab.activeSelf")); index++;
+		mfd.rightTC.TabManager.WeaponTab.SetActive(Utils.GetBoolFromString(entries[index],"rightTC.TabManager.WeaponTab.activeSelf")); index++;
+		mfd.rightTC.TabManager.ItemTab.SetActive(Utils.GetBoolFromString(entries[index],"rightTC.TabManager.ItemTab.activeSelf")); index++;
+		mfd.rightTC.TabManager.AutomapTab.SetActive(Utils.GetBoolFromString(entries[index],"rightTC.TabManager.AutomapTab.activeSelf")); index++;
+		mfd.rightTC.TabManager.TargetTab.SetActive(Utils.GetBoolFromString(entries[index],"rightTC.TabManager.TargetTab.activeSelf")); index++;
+		mfd.rightTC.TabManager.DataTab.SetActive(Utils.GetBoolFromString(entries[index],"rightTC.TabManager.DataTab.activeSelf"));index++;
+		mfd.curCenterTab = Utils.GetIntFromString(entries[index],"curCenterTab"); index++;
 		mfd.CenterTabButtonClickSilent(mfd.curCenterTab,true);
-		index++;
-
 		mfd.SetWepInfo(WeaponCurrent.a.weaponIndex);
 		return index;
 	}

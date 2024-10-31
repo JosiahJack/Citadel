@@ -116,45 +116,30 @@ public class GrenadeActivate : MonoBehaviour {
 	public static string Save(GameObject go) {
 		string line = System.String.Empty;
 		GrenadeActivate ga = go.GetComponent<GrenadeActivate>();
-		if (ga != null) {
-			line = Utils.UintToString(ga.constIndex); // int - lookup index to the const items table for instantiating
-			line += Utils.splitChar + Utils.BoolToString(ga.active); // bool - is this thing about to go?
-			line += Utils.splitChar + Utils.BoolToString(ga.useTimer); // bool - do we have a timer going?
-			line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ga.timeFinished); // float - how much time left before the fun part?
-			line += Utils.splitChar + Utils.BoolToString(ga.explodeOnContact); // bool - or not a landmine
-			line += Utils.splitChar + Utils.BoolToString(ga.useProx); // bool - is this a landmine?
-			line += Utils.splitChar + Utils.BoolToString(ga.IsNPCMine()); // bool - is this a landmine?
-		} else {
-			Debug.Log("GrenadeActivate missing on savetype of GrenadeActivate!  GameObject.name: " + go.name);
-			line = "-1|0|0000.00000|0|0|0";
-		}
+		line = Utils.UintToString(ga.constIndex,"constIndex");
+		line += Utils.splitChar + Utils.BoolToString(ga.active,"active");
+		line += Utils.splitChar + Utils.BoolToString(ga.useTimer,"useTimer");
+		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ga.timeFinished,"timeFinished");
+		line += Utils.splitChar + Utils.BoolToString(ga.explodeOnContact,"explodeOnContact");
+		line += Utils.splitChar + Utils.BoolToString(ga.useProx,"useProx");
+		line += Utils.splitChar + Utils.BoolToString(ga.IsNPCMine(),"IsNPCMine");
 		return line;
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		GrenadeActivate ga = go.GetComponent<GrenadeActivate>();
-		if (ga == null) {
-			Debug.Log("GrenadeActivate.Load failure, ga == null");
-			return index + 7;
-		}
-
-		if (index < 0) {
-			Debug.Log("GrenadeActivate.Load failure, index < 0");
-			return index + 7;
-		}
-
 		if (entries == null) {
 			Debug.Log("GrenadeActivate.Load failure, entries == null");
 			return index + 7;
 		}
 
-		ga.constIndex = Utils.GetIntFromString(entries[index]); index++; // const lookup table index
-		ga.active = Utils.GetBoolFromString(entries[index]); index++; // what's cooking?
-		ga.useTimer = Utils.GetBoolFromString(entries[index]); index++; // do we have a timer going?
-		ga.timeFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - how much time left before the fun part?
-		ga.explodeOnContact = Utils.GetBoolFromString(entries[index]); index++; // bool - or not a landmine
-		ga.useProx = Utils.GetBoolFromString(entries[index]); index++; // bool - is this a landmine?
-		bool isNPC = Utils.GetBoolFromString(entries[index]); index++; // bool - is this a NPC's mine?
+		ga.constIndex = Utils.GetIntFromString(entries[index],"constIndex"); index++;
+		ga.active = Utils.GetBoolFromString(entries[index],"active"); index++;
+		ga.useTimer = Utils.GetBoolFromString(entries[index],"useTimer"); index++;
+		ga.timeFinished = Utils.LoadRelativeTimeDifferential(entries[index],"timeFinished"); index++;
+		ga.explodeOnContact = Utils.GetBoolFromString(entries[index],"explodeOnContact"); index++;
+		ga.useProx = Utils.GetBoolFromString(entries[index],"useProx"); index++;
+		bool isNPC = Utils.GetBoolFromString(entries[index],"IsNPCMine"); index++;
 		if (isNPC) {
 			go.layer = 24; // NPCBullet
 		} else {

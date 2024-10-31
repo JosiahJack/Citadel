@@ -76,11 +76,11 @@ public class UseableObjectUse : MonoBehaviour {
 		}
 
 		string line = System.String.Empty;
-		line = Utils.UintToString(uou.useableItemIndex); // int - the main lookup index, needed for intanciating on load if doesn't match original SaveID
-		line += Utils.splitChar + Utils.UintToString(uou.customIndex); // int - special reference like audiolog message
-		line += Utils.splitChar + Utils.UintToString(uou.ammo); // int - how much normal ammo is on the weapon
-		line += Utils.splitChar + Utils.UintToString(uou.ammo2); //int - alternate ammo type, e.g. Penetrator or Teflon
-		line += Utils.splitChar + Utils.BoolToString(uou.heldObjectLoadedAlternate); //int - alternate ammo type, e.g. Penetrator or Teflon
+		line = Utils.UintToString(uou.useableItemIndex,"useableItemIndex"); // int - the main lookup index, needed for intanciating on load if doesn't match original SaveID
+		line += Utils.splitChar + Utils.UintToString(uou.customIndex,"customIndex"); // int - special reference like audiolog message
+		line += Utils.splitChar + Utils.UintToString(uou.ammo,"ammo"); // int - how much normal ammo is on the weapon
+		line += Utils.splitChar + Utils.UintToString(uou.ammo2,"ammo2"); //int - alternate ammo type, e.g. Penetrator or Teflon
+		line += Utils.splitChar + Utils.BoolToString(uou.heldObjectLoadedAlternate,"heldObjectLoadedAlternate"); //int - alternate ammo type, e.g. Penetrator or Teflon
 		if (uou.useableItemIndex == 35) { // Worker Helmet with its two flaps.
 			line += Utils.splitChar + Utils.SaveTransform(go.transform.GetChild(0));
 			line += Utils.splitChar + Utils.SaveTransform(go.transform.GetChild(1));
@@ -105,11 +105,11 @@ public class UseableObjectUse : MonoBehaviour {
 			return index + 4;
 		}
 
-		uou.useableItemIndex = Utils.GetIntFromString(entries[index]); index++;
-		uou.customIndex = Utils.GetIntFromString(entries[index]); index++;
-		uou.ammo = Utils.GetIntFromString(entries[index]); index++;
-		uou.ammo2 = Utils.GetIntFromString(entries[index]); index++;
-		uou.heldObjectLoadedAlternate = Utils.GetBoolFromString(entries[index]); index++;
+		uou.useableItemIndex = Utils.GetIntFromString(entries[index],"useableItemIndex"); index++;
+		uou.customIndex = Utils.GetIntFromString(entries[index],"customIndex"); index++;
+		uou.ammo = Utils.GetIntFromString(entries[index],"ammo"); index++;
+		uou.ammo2 = Utils.GetIntFromString(entries[index],"ammo2"); index++;
+		uou.heldObjectLoadedAlternate = Utils.GetBoolFromString(entries[index],"heldObjectLoadedAlternate"); index++;
 		if (uou.useableItemIndex == 35) { // Worker Helmet with its two flaps.
 			Transform tr_child1 = go.transform.GetChild(0);
 			Transform tr_child2 = go.transform.GetChild(1);

@@ -101,9 +101,9 @@ public class GravityLift : MonoBehaviour {
 		}
 
 		string line = System.String.Empty;
-		line = Utils.BoolToString(gl.active); // bool - is this gravlift on?
+		line = Utils.BoolToString(gl.active,"active"); // bool - is this gravlift on?
 		line += Utils.splitChar;
-		line += Utils.SaveRelativeTimeDifferential(gl.initialBurstFinished);
+		line += Utils.SaveRelativeTimeDifferential(gl.initialBurstFinished,"initialBurstFinished");
 		return line;
 	}
 
@@ -124,8 +124,8 @@ public class GravityLift : MonoBehaviour {
 			return index + 1;
 		}
 
-		gl.active = Utils.GetBoolFromString(entries[index]); index++; // bool - is this gravlift on?
-		gl.initialBurstFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		gl.active = Utils.GetBoolFromString(entries[index],"active"); index++; // bool - is this gravlift on?
+		gl.initialBurstFinished = Utils.LoadRelativeTimeDifferential(entries[index],"initialBurstFinished"); index++;
 		return index;
 	}
 }

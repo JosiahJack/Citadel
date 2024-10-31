@@ -65,24 +65,19 @@ public class ChargeStation : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		ChargeStation chg = go.GetComponent<ChargeStation>();
-		if (chg == null) {
-			UnityEngine.Debug.Log("ChargeStation missing on savetype of ChargeStation!  GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("fffbffsssusu");
-		}
-
 		string line = System.String.Empty;
-		line = Utils.SaveRelativeTimeDifferential(chg.nextthink); // float - time before recharged
-		line += Utils.splitChar + Utils.FloatToString(chg.amount);
-		line += Utils.splitChar + Utils.FloatToString(chg.resetTime);
-		line += Utils.splitChar + Utils.BoolToString(chg.requireReset);
-		line += Utils.splitChar + Utils.FloatToString(chg.minSecurityLevel);
-		line += Utils.splitChar + Utils.FloatToString(chg.damageOnUse);
-		line += Utils.splitChar + chg.target;
-		line += Utils.splitChar + chg.argvalue;
-		line += Utils.splitChar + chg.rechargeMsg;
-		line += Utils.splitChar + Utils.UintToString(chg.rechargeMsgLingdex);
-		line += Utils.splitChar + chg.usedMsg;
-		line += Utils.splitChar + Utils.UintToString(chg.usedMsgLingdex);
+		line = Utils.SaveRelativeTimeDifferential(chg.nextthink,"nextthink"); // float - time before recharged
+		line += Utils.splitChar + Utils.FloatToString(chg.amount,"amount");
+		line += Utils.splitChar + Utils.FloatToString(chg.resetTime,"resetTime");
+		line += Utils.splitChar + Utils.BoolToString(chg.requireReset,"requireReset");
+		line += Utils.splitChar + Utils.FloatToString(chg.minSecurityLevel,"minSecurityLevel");
+		line += Utils.splitChar + Utils.FloatToString(chg.damageOnUse,"damageOnUse");
+		line += Utils.splitChar + Utils.SaveString(chg.target,"target");
+		line += Utils.splitChar + Utils.SaveString(chg.argvalue,"argvalue");
+		line += Utils.splitChar + Utils.SaveString(chg.rechargeMsg,"rechargeMsg");
+		line += Utils.splitChar + Utils.UintToString(chg.rechargeMsgLingdex,"rechargeMsgLingdex");
+		line += Utils.splitChar + Utils.SaveString(chg.usedMsg,"usedMsg");
+		line += Utils.splitChar + Utils.UintToString(chg.usedMsgLingdex,"usedMsgLingdex");
 		return line;
 	}
 
@@ -103,18 +98,18 @@ public class ChargeStation : MonoBehaviour {
 			return index + 12;
 		}
 
-		chg.nextthink = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - time before recharged
-		chg.amount  = Utils.GetFloatFromString(entries[index]); index++;
-		chg.resetTime  = Utils.GetFloatFromString(entries[index]); index++;
-		chg.requireReset  = Utils.GetBoolFromString(entries[index]); index++;
-		chg.minSecurityLevel  = Utils.GetFloatFromString(entries[index]); index++;
-		chg.damageOnUse  = Utils.GetFloatFromString(entries[index]); index++;
-		chg.target = entries[index]; index++;
-		chg.argvalue = entries[index]; index++;
-		chg.rechargeMsg = entries[index]; index++;
-		chg.rechargeMsgLingdex = Utils.GetIntFromString(entries[index]); index++;
-		chg.usedMsg = entries[index]; index++;
-		chg.usedMsgLingdex = Utils.GetIntFromString(entries[index]); index++;
+		chg.nextthink = Utils.LoadRelativeTimeDifferential(entries[index],"nextthink"); index++; // float - time before recharged
+		chg.amount  = Utils.GetFloatFromString(entries[index],"amount"); index++;
+		chg.resetTime  = Utils.GetFloatFromString(entries[index],"resetTime"); index++;
+		chg.requireReset  = Utils.GetBoolFromString(entries[index],"requireReset"); index++;
+		chg.minSecurityLevel  = Utils.GetFloatFromString(entries[index],"minSecurityLevel"); index++;
+		chg.damageOnUse  = Utils.GetFloatFromString(entries[index],"damageOnUse"); index++;
+		chg.target = Utils.LoadString(entries[index],"target"); index++;
+		chg.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
+		chg.rechargeMsg = Utils.LoadString(entries[index],"rechargeMsg"); index++;
+		chg.rechargeMsgLingdex = Utils.GetIntFromString(entries[index],"rechargeMsgLingdex"); index++;
+		chg.usedMsg = Utils.LoadString(entries[index],"usedMsg"); index++;
+		chg.usedMsgLingdex = Utils.GetIntFromString(entries[index],"usedMsgLingdex"); index++;
 		return index;
 	}
 }

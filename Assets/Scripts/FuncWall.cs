@@ -203,25 +203,20 @@ public class FuncWall : MonoBehaviour {
 	// the saving hierarchy and that is the only other thing needed for these.
 	public static string Save(GameObject go) {
 		FuncWall fw = go.GetComponent<FuncWall>();
-		if (fw == null) {
-			Debug.Log("FuncWall missing on savetype of FuncWall!  "
-					  + "GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("uubfffffffffffffff");
-		}
-
 		fw.Awake();
-
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
-		s1.Append(Utils.IntToString(Utils.FuncStatesToInt(fw.currentState),
-													 "FuncWall.currentState"));
+		s1.Append(Utils.IntToString(Utils.FuncStatesToInt(fw.currentState),"FuncWall.currentState"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.IntToString(Utils.FuncStatesToInt(fw.startState),
-														  "startState"));
+		s1.Append(Utils.IntToString(Utils.FuncStatesToInt(fw.startState),"startState"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(fw.stopSoundPlayed,"stopSoundPlayed"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.Vector3ToString(fw.startPosition));
+        s1.Append(Utils.FloatToString(fw.startPosition.x,"startPosition.x"));
+		s1.Append(Utils.splitChar);
+        s1.Append(Utils.FloatToString(fw.startPosition.y,"startPosition.y"));
+		s1.Append(Utils.splitChar);
+        s1.Append(Utils.FloatToString(fw.startPosition.z,"startPosition.z"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(fw.speed,"speed"));
 		s1.Append(Utils.splitChar );
@@ -243,11 +238,9 @@ public class FuncWall : MonoBehaviour {
 		s1.Append(Utils.SaveAudioSource(go));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(fw.chunkIDs.Length,"chunkIDs.Length"));
-
 		for (int i=0;i<go.transform.childCount; i++) {
 			s1.Append(Utils.splitChar);
-			s1.Append(Utils.UintToString(fw.chunkIDs[i],"chunkIDs["
-														+ i.ToString() + "]"));
+			s1.Append(Utils.UintToString(fw.chunkIDs[i],"chunkIDs["+ i.ToString() + "]"));
 			s1.Append(Utils.splitChar);
 			s1.Append(Utils.SaveChildGOState(go,i));
 		}
@@ -268,73 +261,30 @@ public class FuncWall : MonoBehaviour {
 		FuncWall fw = go.GetComponent<FuncWall>(); // Fairweather we are
 												   // having. Vague Quake
 												   // mapper reference.
-		if (fw == null) {
-			Debug.Log("FuncWall.Load failure, fw == null on " + go.name);
-			return index + 17;
-		}
-
-		if (index < 0) {
-			Debug.Log("FuncWall.Load failure, index < 0");
-			return index + 17;
-		}
-
-		if (entries == null) {
-			Debug.Log("FuncWall.Load failure, entries == null");
-			return index + 17;
-		}
-
-		int state = Utils.GetIntFromString(entries[index],
-										   "FuncWall.currentState");
-		index++;
-
-		fw.currentState = Utils.GetFuncStatesFromInt(state);
-		state = Utils.GetIntFromString(entries[index],"startState");
-		index++;
-
-		fw.stopSoundPlayed = Utils.GetBoolFromString(entries[index],
-													 "stopSoundPlayed");
-		index++;
-
-		fw.startState = Utils.GetFuncStatesFromInt(state);
-		readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-		readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-		readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+		
+		fw.currentState = Utils.GetFuncStatesFromInt(Utils.GetIntFromString(entries[index],"FuncWall.currentState")); index++;
+		fw.startState = Utils.GetFuncStatesFromInt(Utils.GetIntFromString(entries[index],"startState")); index++;
+		fw.stopSoundPlayed = Utils.GetBoolFromString(entries[index],"stopSoundPlayed"); index++;
+		readFloatx = Utils.GetFloatFromString(entries[index],"startPosition.x"); index++;
+		readFloaty = Utils.GetFloatFromString(entries[index],"startPosition.y"); index++;
+		readFloatz = Utils.GetFloatFromString(entries[index],"startPosition.z"); index++;
 		fw.startPosition = new Vector3(readFloatx,readFloaty,readFloatz);
-
-		fw.speed = Utils.GetFloatFromString(entries[index],"speed");
-		index++;
-
-		fw.percentAjar = Utils.GetFloatFromString(entries[index],"percentAjar");
-		index++;
-
-		fw.percentMoved = Utils.GetFloatFromString(entries[index],"percentMoved");
-		index++;
-
-		fw.startTime = Utils.LoadRelativeTimeDifferential(entries[index],
-														  "startTime");
-		index++;
-
+		fw.speed = Utils.GetFloatFromString(entries[index],"speed"); index++;
+		fw.percentAjar = Utils.GetFloatFromString(entries[index],"percentAjar"); index++;
+		fw.percentMoved = Utils.GetFloatFromString(entries[index],"percentMoved"); index++;
+		fw.startTime = Utils.LoadRelativeTimeDifferential(entries[index],"startTime"); index++;
 		Transform parentTR = go.transform.parent.transform;
 		index = Utils.LoadTransform(parentTR,ref entries,index);
-
 		Transform info_target = go.transform.parent.transform.GetChild(1);
 		index = Utils.LoadTransform(info_target,ref entries,index);
-
 		index = Utils.LoadAudioSource(go,ref entries,index);
-
 		fw.transform.localPosition = new Vector3(0f,0f,0f);
-		int numChildren = Utils.GetIntFromString(entries[index],
-												 "chunkIDs.Length");
-		index++;
+		int numChildren = Utils.GetIntFromString(entries[index],"chunkIDs.Length"); index++;
 		fw.chunkIDs = new int[numChildren];
-
 		int chunkdex = 0;
 		for (int i=0; i<numChildren; i++) {
 			// Get the index of the chunk prefab
-			chunkdex = Utils.GetIntFromString(entries[index],"chunkIDs["
-															 + i.ToString()
-															 + "]");
-			index++;
+			chunkdex = Utils.GetIntFromString(entries[index],"chunkIDs[" + i.ToString() + "]"); index++;
 			if (chunkdex < 0 || chunkdex > 306) continue;
 			
 			fw.chunkIDs[i] = chunkdex;

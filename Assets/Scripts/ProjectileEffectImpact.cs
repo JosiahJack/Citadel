@@ -107,46 +107,18 @@ public class ProjectileEffectImpact : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		ProjectileEffectImpact pei = go.GetComponent<ProjectileEffectImpact>();
-		if (pei == null) {
-			Debug.Log("ProjectileEffectImpact missing on savetype of "
-					  + "Projectile!  GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("uu");
-
-		}
-
 		string line = System.String.Empty;
-		line = Utils.UintToString(pei.hitCountBeforeRemoval);
-		line += Utils.splitChar + Utils.UintToString(pei.numHits);
-		line += Utils.splitChar + Utils.BoolToString(pei.destroyInsteadOfDeactivate);
+		line = Utils.UintToString(pei.hitCountBeforeRemoval,"hitCountBeforeRemoval");
+		line += Utils.splitChar + Utils.UintToString(pei.numHits,"numHits");
+		line += Utils.splitChar + Utils.BoolToString(pei.destroyInsteadOfDeactivate,"destroyInsteadOfDeactivate");
 		return line;
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		ProjectileEffectImpact pei = go.GetComponent<ProjectileEffectImpact>();
-		if (pei == null) {
-			Debug.Log("ProjectileEffectImpact.Load failure, pei == null");
-			return index + 3;
-		}
-
-		if (index < 0) {
-			Debug.Log("ProjectileEffectImpact.Load failure, index < 0");
-			return index + 3;
-		}
-
-		if (entries == null) {
-			Debug.Log("ProjectileEffectImpact.Load failure, entries == null");
-			return index + 3;
-		}
-
-		pei.hitCountBeforeRemoval = Utils.GetIntFromString(entries[index]); index++;
-		if (pei.hitCountBeforeRemoval > 1) {
-			Rigidbody rbody = go.GetComponent<Rigidbody>();
-			if (rbody != null) {
-				Debug.Log("plasma shot velocity after load: " + rbody.velocity.ToString());
-			}
-		}
-		pei.numHits = Utils.GetIntFromString(entries[index]); index++;
-		pei.destroyInsteadOfDeactivate = Utils.GetBoolFromString(entries[index]); index++;
+		pei.hitCountBeforeRemoval = Utils.GetIntFromString(entries[index],"hitCountBeforeRemoval"); index++;
+		pei.numHits = Utils.GetIntFromString(entries[index],"numHits"); index++;
+		pei.destroyInsteadOfDeactivate = Utils.GetBoolFromString(entries[index],"destroyInsteadOfDeactivate"); index++;
 		return index;
 	}
 }

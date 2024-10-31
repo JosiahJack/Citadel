@@ -34,34 +34,12 @@ public class TeleportTouch : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		TeleportTouch tt = go.GetComponent<TeleportTouch>();
-		if (tt == null) {
-			Debug.Log("TeleportTouch missing on savetype of TeleportTouch!  GameObject.name: " + go.name);
-			return "0000.00000";
-		}
-
-		string line = System.String.Empty;
-		line = Utils.SaveRelativeTimeDifferential(tt.justUsed); // float - is the player still touching it?
-		return line;
+		return Utils.SaveRelativeTimeDifferential(tt.justUsed,"justUsed");
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		TeleportTouch tt = go.GetComponent<TeleportTouch>();
-		if (tt == null) {
-			Debug.Log("TeleportTouch.Load failure, tt == null");
-			return index + 1;
-		}
-
-		if (index < 0) {
-			Debug.Log("TeleportTouch.Load failure, index < 0");
-			return index + 1;
-		}
-
-		if (entries == null) {
-			Debug.Log("TeleportTouch.Load failure, entries == null");
-			return index + 1;
-		}
-
-		tt.justUsed = Utils.LoadRelativeTimeDifferential(entries[index]); index++; // float - is the player still touching it?
+		tt.justUsed = Utils.LoadRelativeTimeDifferential(entries[index],"justUsed"); index++;
 		return index;
 	}
 }

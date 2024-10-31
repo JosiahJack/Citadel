@@ -41,7 +41,7 @@ public class LevelManager : MonoBehaviour {
 	public Material rtxEmissive;
 	public Mesh sphereMesh;
 	public Material pipe_maint2_3_coolant;
-	[HideInInspector] public List<string>[] DynamicObjectsSavestrings = new List<string>[13];
+	[HideInInspector] public List<string>[] DynamicObjectsSavestrings = new List<string>[14];
 	
 	private bool getValparsed;
 	private bool[] levelDataLoaded;
@@ -80,9 +80,62 @@ public class LevelManager : MonoBehaviour {
 		levelDataLoaded = new bool[14];
 		for (int i=0;i<14;i++) {
 			levelDataLoaded[i] = false;
-			DynamicObjectsSavestrings[i] = new List<string>();
 		}
+		
+		ResetSaveStrings();
+		LoadDynamicObjectsSavestrings(true);
 		LoadLevelData(currentLevel);
+	}
+	
+	public static bool LevNumInBounds(int levnum) {
+		return (levnum >=0 && levnum < 14); // 14 levels
+	}
+
+	public static bool LevNumIsNonCyber(int levnum) {
+		return (levnum >=0 && levnum < 13); // 13 non-cyber levels
+	}
+
+	public void ResetSaveStrings() {
+		DynamicObjectsSavestrings = new List<string>[14];
+		for (int i=0;i<14;i++) {
+			DynamicObjectsSavestrings[i] = new List<string>();
+			DynamicObjectsSavestrings[i].Clear();
+		}		
+	}
+	
+	// Used in a couple places, bit slow to return list but it's only part of
+	// loads and transitions between levels.
+	public List<string> ReadDynamicObjectFileList(int lev) {
+		List<string> readFileList = new List<string>();
+		if (lev > (levelScripts.Length - 1)) return readFileList;
+		if (!LevNumInBounds(lev)) return readFileList;
+
+		string dynName = "CitadelScene_dynamics_level"+lev.ToString()+".dat";
+		StreamReader sf = Utils.ReadStreamingAsset(dynName);
+		if (sf == null) { UnityEngine.Debug.Log("Dynamic objects filepath invalid"); return readFileList; }
+
+		string readline;
+		using (sf) {
+			do {
+				readline = sf.ReadLine();
+				if (readline != null) {
+					readFileList.Add(readline);
+				}
+			} while (!sf.EndOfStream);
+			sf.Close();
+		}
+		
+		return readFileList;
+	}
+	
+	public void LoadDynamicObjectsSavestrings(bool skipCurrent) {
+		for (int i=0;i<14;i++) {			
+			DynamicObjectsSavestrings[i].Clear();
+			List<string> readFileList = ReadDynamicObjectFileList(i);
+			for (int j=0;j<readFileList.Count;j++) {
+				DynamicObjectsSavestrings[i].Add(readFileList[j]);
+			}
+		}
 	}
 	
 	public void SetSkyVisible(bool on) {
@@ -97,7 +150,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void CyborgConversionToggleForCurrentLevel() {
-	    if (currentLevel < 0 || currentLevel >= 13) return;
+		if (!LevNumInBounds(currentLevel)) return;
 	    
 		if (currentLevel == 6) {
 			if (ressurectionActive[currentLevel]) {
@@ -147,7 +200,7 @@ public class LevelManager : MonoBehaviour {
 
 	// Make sure that unneeded objects are unloaded
 	public void UnloadLevelData(int levnum) {
-		if (levnum < 0 || levnum > 12) return; // Not in a level, in a test or editor space.
+		if (!LevNumIsNonCyber(levnum)) return; // In a test or editor space.
 		if (!levelDataLoaded[levnum]) return; // Already cleared.
 
 		UnloadLevelLights(levnum);
@@ -160,7 +213,7 @@ public class LevelManager : MonoBehaviour {
 	public void LoadLevelData(int levnum) {
 		if (QuestLogNotesManager.a != null) QuestLogNotesManager.a.NotifyLevelChange(currentLevel);
 
-		if (levnum < 0 || levnum > 13) { // Not in a level, in a test or editor space.
+		if (!LevNumInBounds(currentLevel)) { // In a test or editor space.
 			levelDataLoaded[levnum] = true;
 			return;
 		}
@@ -168,10 +221,13 @@ public class LevelManager : MonoBehaviour {
 
 		LoadLevelLights(levnum);
 		LoadLevelGeometry(levnum);
+		LoadLevelDynamicObjects(levnum,GetRequestedLevelDynamicContainer(levnum));
 		levelDataLoaded[levnum] = true;
 	}
 
 	public void LoadLevel(int levnum, GameObject targetDestination, Vector3 targetPosition) {
+		if (!LevNumInBounds(levnum)) return;
+
 		// NOTE: Check this first since the button for the current level has a null destination.  This is fine and expected.
 		if (currentLevel == levnum) { Const.sprint(Const.a.stringTable[9]); return; } //Already there
 
@@ -207,7 +263,9 @@ public class LevelManager : MonoBehaviour {
 		if (currentLevel != 13) DynamicCulling.a.Cull_Init();
 	}
 
-	public void LoadLevelFromSave (int levnum) {
+	public void LoadLevelFromSave(int levnum) {
+		if (!LevNumInBounds(levnum)) return;
+
 		LoadLevelData(levnum); // Let this function check and load data if it isn't yet.
 		currentLevel = levnum; // Set current level to be the new level
 		DisableAllNonOccupiedLevelsExcept(currentLevel); // Unload last level.
@@ -239,7 +297,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public GameObject GetCurrentDynamicContainer() { // Does not return null
-		if (currentLevel < 0 || currentLevel > 13) {
+		if (!LevNumInBounds(currentLevel)) {
 			return levelScripts[1].dynamicObjectsContainer;
 		}
 
@@ -247,7 +305,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public GameObject GetCurrentGeometryContainer() { // Does not return null
-		if (currentLevel < 0 || currentLevel > 13) {
+		if (!LevNumInBounds(currentLevel)) {
 			return levelScripts[1].geometryContainer;
 		}
 
@@ -255,7 +313,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public GameObject GetCurrentStaticImmutableContainer() { // Does not return null
-		if (currentLevel < 0 || currentLevel > 13) {
+		if (!LevNumInBounds(currentLevel)) {
 			return levelScripts[1].staticObjectsImmutable;
 		}
 
@@ -263,7 +321,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public GameObject GetCurrentStaticSaveableContainer() { // Does not return null
-		if (currentLevel < 0 || currentLevel > 13) {
+		if (!LevNumInBounds(currentLevel)) {
 			return levelScripts[1].staticObjectsSaveable;
 		}
 
@@ -271,7 +329,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public GameObject GetCurrentDoorsContainer() { // Does not return null
-		if (currentLevel < 0 || currentLevel > 13) {
+		if (!LevNumInBounds(currentLevel)) {
 			return levelScripts[1].doorsStaticSaveable;
 		}
 
@@ -279,7 +337,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public GameObject GetCurrentLightsContainer() { // Does not return null
-		if (currentLevel < 0 || currentLevel > 13) {
+		if (!LevNumInBounds(currentLevel)) {
 			return levelScripts[1].lightsStaticImmutable;
 		}
 
@@ -287,13 +345,17 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public GameObject GetRequestedLevelDynamicContainer(int index) {
-		if (index < 0 || index > 13) return levelScripts[1].dynamicObjectsContainer; // Default to Medical level
-
+		if (!LevNumInBounds(currentLevel)) {
+			return levelScripts[1].dynamicObjectsContainer; // Default to Medical level
+		}
+		
         return levelScripts[index].dynamicObjectsContainer;
 	}
 
 	public GameObject GetRequestedLevelNPCContainer(int index) {
-		if (index < 0 || index > 13) return npcContainers[1]; // Default to Medical level
+		if (!LevNumInBounds(currentLevel)) {
+			return npcContainers[1]; // Default to Medical level
+		}
 
         return npcContainers[index];
 	}
@@ -322,8 +384,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void SetInstantiateParent(int lev, GameObject go, bool isNPC) {
-		if (lev < 0) return;
-		if (lev > 13) return;
+		if (!LevNumInBounds(lev)) return;
 
 		Transform par = null;
 		if (isNPC) {
@@ -341,14 +402,15 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public int GetCurrentLevelSecurity() {
-		if (currentLevel == -1) return 0;
+		if (!LevNumInBounds(currentLevel)) return 0;
 		if (superoverride) return 0; // tee hee we are SHODAN, no security blocks in place
-		return levelSecurity [currentLevel];
+		return levelSecurity[currentLevel];
 	}
 
 	public void RegisterSecurityObject(int lev,SecurityType stype) {
-		if (lev > 14 || lev < 0) return;
-		if (currentLevel > 14 || currentLevel < 0) return;
+		if (!LevNumInBounds(lev)) return;
+		if (!LevNumInBounds(currentLevel)) return;
+		
 		switch (stype) {
 			case SecurityType.None: return;
 			case SecurityType.Camera: levelCameraCount[lev]++; break;
@@ -363,7 +425,7 @@ public class LevelManager : MonoBehaviour {
 	// 100% = 4x + 20y
 	// Assuming that a good camera percentage is 2-3%, CPU % would be about 10-15 each
 	public void ReduceCurrentLevelSecurity(SecurityType stype) {
-		if (currentLevel < 0 || currentLevel > 12) return;
+		if (!LevNumIsNonCyber(currentLevel)) return;
 
 		float camScore = 4;
 		float nodeSmallScore = 10;
@@ -671,45 +733,44 @@ public class LevelManager : MonoBehaviour {
 			tr.SetParent(lightContainers[curlevel].transform);
 
 			// Get transform
-			readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-			readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-			readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+			readFloatx = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			readFloaty = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			readFloatz = Utils.GetFloatFromStringDataTables(entries[index]); index++;
 			tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 			tr.localPosition = tempvec;
 
 			// Get rotation
-			readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-			readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-			readFloatz = Utils.GetFloatFromString(entries[index]); index++;
-			readFloatw = Utils.GetFloatFromString(entries[index]); index++;
+			readFloatx = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			readFloaty = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			readFloatz = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			readFloatw = Utils.GetFloatFromStringDataTables(entries[index]); index++;
 			tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
 			tr.localRotation = tempquat;
 
 			// Get scale
-			readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-			readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-			readFloatz = Utils.GetFloatFromString(entries[index]); index++;
+			readFloatx = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			readFloaty = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			readFloatz = Utils.GetFloatFromStringDataTables(entries[index]); index++;
 			tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 			tr.localScale = tempvec;
 
-			lit.intensity = Utils.GetFloatFromString(entries[index]); index++;
-			lit.range = Utils.GetFloatFromString(entries[index]); index++;
+			lit.intensity = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			lit.range = Utils.GetFloatFromStringDataTables(entries[index]); index++;
 			lit.type = Utils.GetLightTypeFromString(entries[index]); index++;
-			readFloatx = Utils.GetFloatFromString(entries[index]); index++;
-			readFloaty = Utils.GetFloatFromString(entries[index]); index++;
-			readFloatz = Utils.GetFloatFromString(entries[index]); index++;
-			readFloatw = Utils.GetFloatFromString(entries[index]); index++;
+			readFloatx = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			readFloaty = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			readFloatz = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			readFloatw = Utils.GetFloatFromStringDataTables(entries[index]); index++;
 			lit.color = new Color(readFloatx, readFloaty, readFloatz, readFloatw);
-			lit.spotAngle = Utils.GetFloatFromString(entries[index]); index++;
+			lit.spotAngle = Utils.GetFloatFromStringDataTables(entries[index]); index++;
 			lit.shadows = Utils.GetLightShadowsFromString(entries[index]); index++;
 			if (lit.intensity < 0.3f || (lit.range > 7f && lit.intensity < 2f)) lit.shadows = LightShadows.None;
-			lit.shadowStrength = Utils.GetFloatFromString(entries[index]); index++;
+			lit.shadowStrength = Utils.GetFloatFromStringDataTables(entries[index]); index++;
 			lit.shadowResolution = Utils.GetShadowResFromString(entries[index]); index++;
-			lit.shadowBias = Utils.GetFloatFromString(entries[index]); index++;
-			lit.shadowNormalBias = Utils.GetFloatFromString(entries[index]); index++;
-			lit.shadowNearPlane = Utils.GetFloatFromString(entries[index]); index++;
+			lit.shadowBias = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			lit.shadowNormalBias = Utils.GetFloatFromStringDataTables(entries[index]); index++;
+			lit.shadowNearPlane = Utils.GetFloatFromStringDataTables(entries[index]); index++;
 			lit.layerShadowCullDistances = shadCullArray;
-			lit.cullingMask = Utils.GetIntFromString(entries[index]); index++;
 			lit.cullingMask = LayerMask.GetMask("Default","TransparentFX",
 												"Water","GunViewModel",
 												"Geometry","NPC","Bullets",
@@ -774,44 +835,23 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void LoadLevelDynamicObjects(int curlevel, GameObject container) {
+		Debug.Log("Loading dynamic objects from savestrings for "
+				  + curlevel.ToString() + ", and has "
+				  + DynamicObjectsSavestrings[curlevel].Count.ToString()
+				  + " objects");
+		
 		if (curlevel > (levelScripts.Length - 1)) return;
 		if (curlevel < 0) return;
-
-		string dynName = "CitadelScene_dynamics_level" + curlevel.ToString()
-						 + ".dat";
-
-		//string dynPath = Utils.SafePathCombine(Application.streamingAssetsPath,
-		//									   dynName);
-
-		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot(dynName);
-		//StreamReader sf = new StreamReader(dynPath);
-		StreamReader sf = Utils.ReadStreamingAsset(dynName);
-		if (sf == null) {
-			UnityEngine.Debug.Log("Dynamic objects input file path invalid");
-			return;
-		}
-
-		string readline;
-		List<string> readFileList = new List<string>();
-		using (sf) {
-			do {
-				readline = sf.ReadLine();
-				if (readline != null) readFileList.Add(readline);
-			} while (!sf.EndOfStream);
-			sf.Close();
-		}
 
 		int val = 307; // First useable object (paper wad) just in case.
 					   // Don't want to spawn 0 as a fallback which is a wall.
 
 		string[] entries;
-		DynamicObjectsSavestrings[curlevel].Clear(); // Empty list.
-		for (int i=0;i<readFileList.Count;i++) {
-			DynamicObjectsSavestrings[curlevel].Add(readFileList[i]);
-			entries = readFileList[i].Split(Convert.ToChar(Utils.splitChar));
+		for (int i=0;i<DynamicObjectsSavestrings[curlevel].Count;i++) {
+			entries = DynamicObjectsSavestrings[curlevel][i].Split(Convert.ToChar(Utils.splitChar));
 			if (entries.Length <= 1) continue;
-
-			val = Utils.GetIntFromString(entries[21]); // Master Index
+			
+			val = Utils.GetIntFromString(entries[19],"constIndex");
 			GameObject newGO = ConsoleEmulator.SpawnDynamicObject(val,curlevel,
 																  false,
 																  container,
@@ -821,142 +861,44 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 
-	public void LoadLevelDynamicObjects(int curlevel) {
-		LoadLevelDynamicObjects(curlevel,null);
-	}
-
 	public void CheatLoadLevel(int ind) {
 		if (ind == 10) {
-			LoadLevel(10,PlayerMovement.a.cheatG1Spawn.gameObject,
-					  ressurectionLocation[10].position);
-			return;
+			LoadLevel(10,PlayerMovement.a.cheatG1Spawn.gameObject,ressurectionLocation[10].position);
 		} else if (ind == 11) {
-			LoadLevel(11,PlayerMovement.a.cheatG2Spawn.gameObject,
-					  ressurectionLocation[11].position);
-			return;
+			LoadLevel(11,PlayerMovement.a.cheatG2Spawn.gameObject,ressurectionLocation[11].position);
 		} else if (ind == 12) {
-			LoadLevel(12,PlayerMovement.a.cheatG4Spawn.gameObject,
-					  ressurectionLocation[12].position);
-			return;
+			LoadLevel(12,PlayerMovement.a.cheatG4Spawn.gameObject,ressurectionLocation[12].position);
+		} else {
+			LoadLevel(ind,ressurectionLocation[ind].gameObject,ressurectionLocation[ind].position);
 		}
-
-		LoadLevel(ind,ressurectionLocation[ind].gameObject,
-				  ressurectionLocation[ind].position);
 	}
 
 	public static string Save(GameObject go) {
 		int i=0;
 		LevelManager lvm = go.GetComponent<LevelManager>();
-		if (lvm == null) {
-			Debug.Log("LevelManager missing!  GameObject.name: " + go.name);
-			string line = "i";
-			for (i=0;i<(14 * 4);i++) line += "i";
-			for (i=0;i<14;i++) line += "b";
-			return Utils.DTypeWordToSaveString(line);
-		}
-
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear(); // keep reusing s1
-		// Global states and Difficulties
-		s1.Append(Utils.UintToString(LevelManager.a.currentLevel,
-								     "currentLevel"));
+		s1.Append(Utils.UintToString(LevelManager.a.currentLevel,"currentLevel"));
 		s1.Append(Utils.splitChar);
-		for (i=0;i<14;i++) {
-			s1.Append(Utils.UintToString(LevelManager.a.levelSecurity[i],
-										 "levelSecurity["+i.ToString()+"]"));
-			s1.Append(Utils.splitChar);
-		}
-
-		for (i=0;i<14;i++) {
-			s1.Append(Utils.UintToString(
-				LevelManager.a.levelCameraDestroyedCount[i],
-				"levelCameraDestroyedCount["+i.ToString()+"]"
-			));
-			s1.Append(Utils.splitChar);
-		}
-
-		for (i=0;i<14;i++) {
-			s1.Append(Utils.UintToString(
-				LevelManager.a.levelSmallNodeDestroyedCount[i],
-				"levelSmallNodeDestroyedCount["+i.ToString()+"]"
-			));
-			s1.Append(Utils.splitChar);
-		}
-
-		for (i=0;i<14;i++) {
-			s1.Append(Utils.UintToString(
-				LevelManager.a.levelLargeNodeDestroyedCount[i],
-				"levelLargeNodeDestroyedCount["+i.ToString()+"]"
-			));
-			s1.Append(Utils.splitChar);
-		}
-
-		for (i=0;i<13;i++) {
-			s1.Append(Utils.BoolToString(LevelManager.a.ressurectionActive[i],
-									  "ressurectionActive["+i.ToString()+"]"));
-
-			s1.Append(Utils.splitChar);
-		}
-		s1.Append(Utils.BoolToString(LevelManager.a.ressurectionActive[13]));
+		for (i=0;i<14;i++) { s1.Append(Utils.UintToString(LevelManager.a.levelSecurity[i],"levelSecurity["+i.ToString()+"]")); s1.Append(Utils.splitChar); }
+		for (i=0;i<14;i++) { s1.Append(Utils.UintToString(LevelManager.a.levelCameraDestroyedCount[i],"levelCameraDestroyedCount["+i.ToString()+"]")); s1.Append(Utils.splitChar); }
+		for (i=0;i<14;i++) { s1.Append(Utils.UintToString(LevelManager.a.levelSmallNodeDestroyedCount[i],"levelSmallNodeDestroyedCount["+i.ToString()+"]")); s1.Append(Utils.splitChar); }
+		for (i=0;i<14;i++) { s1.Append(Utils.UintToString(LevelManager.a.levelLargeNodeDestroyedCount[i],"levelLargeNodeDestroyedCount["+i.ToString()+"]")); s1.Append(Utils.splitChar); }
+		for (i=0;i<13;i++) { s1.Append(Utils.BoolToString(LevelManager.a.ressurectionActive[i],"ressurectionActive["+i.ToString()+"]")); s1.Append(Utils.splitChar); }
+		s1.Append(Utils.BoolToString(LevelManager.a.ressurectionActive[13],"ressurectionActive[13]"));
 		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		LevelManager lvm = go.GetComponent<LevelManager>();
-		if (lvm == null) {
-			Debug.Log("LevelManager.Load failure, lvm == null");
-			return index + (14 * 5) + 1;
-		}
-
-		if (index < 0) {
-			Debug.Log("LevelManager.Load failure, index < 0");
-			return index + (14 * 5) + 1;
-		}
-
-		if (entries == null) {
-			Debug.Log("LevelManager.Load failure, entries == null");
-			return index + (14 * 5) + 1;
-		}
-
 		int i = 0;
-		int levelNum = Utils.GetIntFromString(entries[index],"currentLevel");
-		index++;
-
+		int levelNum = Utils.GetIntFromString(entries[index],"currentLevel"); index++;
 		LevelManager.a.LoadLevelFromSave(levelNum);
-		for (i=0;i<14;i++) {
-			LevelManager.a.levelSecurity[i] = 
-				Utils.GetIntFromString(entries[index],
-									   "levelSecurity[" + i.ToString() + "]");
-
-			index++;
-		}
-		for (i=0;i<14;i++) {
-			LevelManager.a.levelCameraDestroyedCount[i] =
-				Utils.GetIntFromString(entries[index],
-									   "levelCameraDestroyedCount["
-									   + i.ToString() + "]");
-			index++;
-		}
-		for (i=0;i<14;i++) {
-			LevelManager.a.levelSmallNodeDestroyedCount[i] =
-				Utils.GetIntFromString(entries[index],
-									   "levelSmallNodeDestroyedCount["
-									   + i.ToString() + "]");
-			index++;
-		}
-		for (i=0;i<14;i++) {
-			LevelManager.a.levelLargeNodeDestroyedCount[i] =
-				Utils.GetIntFromString(entries[index],
-									   "levelLargeNodeDestroyedCount["
-									   + i.ToString() + "]");
-			index++;
-		}
-		for (i=0;i<14;i++) {
-			LevelManager.a.ressurectionActive[i] =
-				Utils.GetBoolFromString(entries[index],"ressurectionActive["
-													   + i.ToString() + "]");
-			index++;
-		}
+		for (i=0;i<14;i++) { LevelManager.a.levelSecurity[i] = Utils.GetIntFromString(entries[index],"levelSecurity[" + i.ToString() + "]"); index++; }
+		for (i=0;i<14;i++) { LevelManager.a.levelCameraDestroyedCount[i] = Utils.GetIntFromString(entries[index],"levelCameraDestroyedCount[" + i.ToString() + "]"); index++; }
+		for (i=0;i<14;i++) { LevelManager.a.levelSmallNodeDestroyedCount[i] = Utils.GetIntFromString(entries[index],"levelSmallNodeDestroyedCount[" + i.ToString() + "]"); index++; }
+		for (i=0;i<14;i++) { LevelManager.a.levelLargeNodeDestroyedCount[i] = Utils.GetIntFromString(entries[index],"levelLargeNodeDestroyedCount[" + i.ToString() + "]"); index++; }
+		for (i=0;i<14;i++) { LevelManager.a.ressurectionActive[i] = Utils.GetBoolFromString(entries[index],"ressurectionActive[" + i.ToString() + "]"); index++; }
 		return index;
 	}
 }

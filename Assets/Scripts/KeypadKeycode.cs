@@ -105,15 +105,8 @@ public class KeypadKeycode : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		KeypadKeycode kk = go.GetComponent<KeypadKeycode>();
-		if (kk == null) {
-			Debug.Log("KeypadKeycode missing on savetype of KeypadKeycode!  "
-			          + "GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("iibsssisisbbbb");
-		}
-
 		StringBuilder s1 = new StringBuilder();
-		s1.Append(Utils.IntToString(kk.securityThreshhold,
-		                            "securityThreshhold"));
+		s1.Append(Utils.IntToString(kk.securityThreshhold,"securityThreshhold"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(kk.keycode,"keycode"));
 		s1.Append(Utils.splitChar);
@@ -125,13 +118,11 @@ public class KeypadKeycode : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveString(kk.lockedTarget,"lockedTarget"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.IntToString(kk.successMessageLingdex,
-		                            "successMessageLingdex"));
+		s1.Append(Utils.IntToString(kk.successMessageLingdex,"successMessageLingdex"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveString(kk.successMessage,"successMessage"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.IntToString(kk.lockedMessageLingdex,
-		                            "lockedMessageLingdex"));
+		s1.Append(Utils.IntToString(kk.lockedMessageLingdex,"lockedMessageLingdex"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveString(kk.lockedMessage,"lockedMessage"));
 		s1.Append(Utils.splitChar);
@@ -147,71 +138,22 @@ public class KeypadKeycode : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		KeypadKeycode kk = go.GetComponent<KeypadKeycode>();
-		if (kk == null) {
-			Debug.Log("KeypadKeycode.Load failure, kk == null");
-			return index + 14;
-		}
-
-		if (index < 0) {
-			Debug.Log("KeypadKeycode.Load failure, index < 0");
-			return index + 14;
-		}
-
-		if (entries == null) {
-			Debug.Log("KeypadKeycode.Load failure, entries == null");
-			return index + 14;
-		}
-        kk.securityThreshhold = Utils.GetIntFromString(entries[index],
-                                                       "securityThreshhold");
-        index++;
-        
-        kk.keycode = Utils.GetIntFromString(entries[index],"keycode");
-        index++;
-        
-		kk.locked = Utils.GetBoolFromString(entries[index],"locked");
-		index++;
-		
-		kk.target = Utils.LoadString(entries[index],"target");
-		index++;
-		
-		kk.argvalue = Utils.LoadString(entries[index],"argvalue");
-		index++;
-		
-		kk.lockedTarget = Utils.LoadString(entries[index],"lockedTarget");
-		index++;
-		
-		kk.successMessageLingdex = Utils.GetIntFromString(entries[index],
-		                                              "successMessageLingdex");
-        index++;
-        
-        kk.successMessage = Utils.LoadString(entries[index],"successMessage");
-		index++;
-		
-        kk.lockedMessageLingdex = Utils.GetIntFromString(entries[index],
-		                                               "lockedMessageLingdex");
-        index++;
-        
-        kk.lockedMessage = Utils.LoadString(entries[index],"lockedMessage");
-		index++;
-		
-		kk.padInUse = Utils.GetBoolFromString(entries[index],"padInUse");
-		index++;
-	
-		kk.solved = Utils.GetBoolFromString(entries[index],"solved");
-		index++;
-		
-		kk.useQuestKeycode1 = Utils.GetBoolFromString(entries[index],
-		                                              "useQuestKeycode1");
-		index++;
-		
-		kk.useQuestKeycode2 = Utils.GetBoolFromString(entries[index],
-		                                              "useQuestKeycode2");
-		index++;
-		
+        kk.securityThreshhold = Utils.GetIntFromString(entries[index],"securityThreshhold"); index++;
+        kk.keycode = Utils.GetIntFromString(entries[index],"keycode"); index++;
+		kk.locked = Utils.GetBoolFromString(entries[index],"locked"); index++;
+		kk.target = Utils.LoadString(entries[index],"target"); index++;
+		kk.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
+		kk.lockedTarget = Utils.LoadString(entries[index],"lockedTarget"); index++;
+		kk.successMessageLingdex = Utils.GetIntFromString(entries[index],"successMessageLingdex"); index++;
+        kk.successMessage = Utils.LoadString(entries[index],"successMessage"); index++;
+        kk.lockedMessageLingdex = Utils.GetIntFromString(entries[index],"lockedMessageLingdex"); index++;
+        kk.lockedMessage = Utils.LoadString(entries[index],"lockedMessage"); index++;
+		kk.padInUse = Utils.GetBoolFromString(entries[index],"padInUse"); index++;
+		kk.solved = Utils.GetBoolFromString(entries[index],"solved"); index++;
+		kk.useQuestKeycode1 = Utils.GetBoolFromString(entries[index],"useQuestKeycode1"); index++;
+		kk.useQuestKeycode2 = Utils.GetBoolFromString(entries[index],"useQuestKeycode2"); index++;
 		if (kk.padInUse) {
-		    MFDManager.a.SendKeypadKeycodeToDataTab(kk.keycode,
-		                                            kk.transform.position,kk,
-		                                            kk.solved);
+		    MFDManager.a.SendKeypadKeycodeToDataTab(kk.keycode,kk.transform.position,kk,kk.solved);
 		} else {
 		    MFDManager.a.SendKeypadKeycodeToDataTab(-1,Vector3.zero,null,false);
 		}

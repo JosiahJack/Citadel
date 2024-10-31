@@ -115,48 +115,25 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		PuzzleGridPuzzle pgp = go.GetComponent<PuzzleGridPuzzle>();
-		if (pgp == null) {
-			Debug.Log("PuzzleGridData missing on savetype of PuzzleGrid!  "
-					  + "GameObject.name: " + go.name);
-
-			return "0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|"
-				   + "0|0|0|0|0|0|0|0|0";
-		}
-
 		string line = System.String.Empty;
-		line = Utils.BoolToString(pgp.puzzleSolved);
+		line = Utils.BoolToString(pgp.puzzleSolved,"puzzleSolved");
 		for (int i=0;i<35;i++) {
-			line += Utils.splitChar + Utils.BoolToString(pgp.grid[i]);
+			line += Utils.splitChar + Utils.BoolToString(pgp.grid[i],"grid[" + i.ToString() + "]");
 		}
-		line += Utils.splitChar + Utils.BoolToString(pgp.fired);
-		line += Utils.splitChar + Utils.BoolToString(pgp.locked);
+		line += Utils.splitChar + Utils.BoolToString(pgp.fired,"fired");
+		line += Utils.splitChar + Utils.BoolToString(pgp.locked,"locked");
 		return line;
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PuzzleGridPuzzle pgp = go.GetComponent<PuzzleGridPuzzle>();
-		if (pgp == null) {
-			Debug.Log("PuzzleGridPuzzle.Load failure, pgp == null");
-			return index + 38;
-		}
-
-		if (index < 0) {
-			Debug.Log("PuzzleGridPuzzle.Load failure, index < 0");
-			return index + 38;
-		}
-
-		if (entries == null) {
-			Debug.Log("PuzzleGridPuzzle.Load failure, entries == null");
-			return index + 38;
-		}
-
-		pgp.puzzleSolved = Utils.GetBoolFromString(entries[index]); index++;
+		pgp.puzzleSolved = Utils.GetBoolFromString(entries[index],"puzzleSolved"); index++;
 		for (int i=0;i<pgp.grid.Length;i++) {
-			pgp.grid[i] = Utils.GetBoolFromString(entries[index]); index++;
+			pgp.grid[i] = Utils.GetBoolFromString(entries[index],"grid[" + i.ToString() + "]"); index++;
 		}
 
-		pgp.fired = Utils.GetBoolFromString(entries[index]); index++;
-		pgp.locked = Utils.GetBoolFromString(entries[index]); index++;
+		pgp.fired = Utils.GetBoolFromString(entries[index],"fired"); index++;
+		pgp.locked = Utils.GetBoolFromString(entries[index],"locked"); index++;
 		return index;
 	}
 }

@@ -41,8 +41,8 @@ public class GUIState : MonoBehaviour {
 		}
 
 		string line = System.String.Empty;
-		line = Utils.UintToString(Utils.ButtonTypeToInt(guis.overButtonType));
-		line += Utils.splitChar + Utils.BoolToString(guis.overButton);
+		line = Utils.UintToString(Utils.ButtonTypeToInt(guis.overButtonType),"overButtonType");
+		line += Utils.splitChar + Utils.BoolToString(guis.overButton,"overButton");
 		return line;
 	}
 
@@ -63,9 +63,9 @@ public class GUIState : MonoBehaviour {
 			return index + 2;
 		}
 
-		int type = Utils.GetIntFromString(entries[index]); index++;
+		int type = Utils.GetIntFromString(entries[index],"overButtonType"); index++;
 		guis.overButtonType = Utils.IntToButtonType(type);
-		guis.overButton = Utils.GetBoolFromString(entries[index]); index++;
+		guis.overButton = Utils.GetBoolFromString(entries[index],"overButton"); index++;
 		if (guis.overButton) guis.isBlocking = true;
 		return index;
 	}

@@ -137,38 +137,38 @@ public class Config {
 	public static void WriteConfig() {
 		INIWorker.IniWriteValue("Graphics","ResolutionWidth",Const.a.GraphicsResWidth.ToString());
 		INIWorker.IniWriteValue("Graphics","ResolutionHeight",Const.a.GraphicsResHeight.ToString());
-		INIWorker.IniWriteValue("Graphics","Fullscreen",Utils.BoolToString(Const.a.GraphicsFullscreen));
-		INIWorker.IniWriteValue("Graphics","SSAO",Utils.BoolToString(Const.a.GraphicsSSAO));
-		INIWorker.IniWriteValue("Graphics","Bloom",Utils.BoolToString(Const.a.GraphicsBloom));
+		INIWorker.IniWriteValue("Graphics","Fullscreen",Utils.BoolToStringConfig(Const.a.GraphicsFullscreen));
+		INIWorker.IniWriteValue("Graphics","SSAO",Utils.BoolToStringConfig(Const.a.GraphicsSSAO));
+		INIWorker.IniWriteValue("Graphics","Bloom",Utils.BoolToStringConfig(Const.a.GraphicsBloom));
 		INIWorker.IniWriteValue("Graphics","FOV",Const.a.GraphicsFOV.ToString());
 		INIWorker.IniWriteValue("Graphics","AA",Const.a.GraphicsAAMode.ToString());
 		INIWorker.IniWriteValue("Graphics","Shadows",Const.a.GraphicsShadowMode.ToString());
 		INIWorker.IniWriteValue("Graphics","SSR",Const.a.GraphicsSSRMode.ToString());
 		INIWorker.IniWriteValue("Graphics","Gamma",Const.a.GraphicsGamma.ToString());
 		INIWorker.IniWriteValue("Graphics","ModelDetail",Const.a.GraphicsModelDetail.ToString());
-		INIWorker.IniWriteValue("Graphics","VSync",Utils.BoolToString(Const.a.GraphicsVSync));
+		INIWorker.IniWriteValue("Graphics","VSync",Utils.BoolToStringConfig(Const.a.GraphicsVSync));
 		INIWorker.IniWriteValue("Audio","SpeakerMode",Const.a.AudioSpeakerMode.ToString());
-		INIWorker.IniWriteValue("Audio","Reverb",Utils.BoolToString(Const.a.AudioReverb));
+		INIWorker.IniWriteValue("Audio","Reverb",Utils.BoolToStringConfig(Const.a.AudioReverb));
 		INIWorker.IniWriteValue("Audio","VolumeMaster",Const.a.AudioVolumeMaster.ToString());
 		INIWorker.IniWriteValue("Audio","VolumeMusic",Const.a.AudioVolumeMusic.ToString());
 		INIWorker.IniWriteValue("Audio","VolumeMessage",Const.a.AudioVolumeMessage.ToString());
 		INIWorker.IniWriteValue("Audio","VolumeEffects",Const.a.AudioVolumeEffects.ToString());
 		INIWorker.IniWriteValue("Audio","Language",Const.a.AudioLanguage.ToString());
-		INIWorker.IniWriteValue("Audio","DynamicMusic",Utils.BoolToString(Const.a.DynamicMusic));
-		INIWorker.IniWriteValue("Audio","Footsteps",Utils.BoolToString(Const.a.Footsteps));
+		INIWorker.IniWriteValue("Audio","DynamicMusic",Utils.BoolToStringConfig(Const.a.DynamicMusic));
+		INIWorker.IniWriteValue("Audio","Footsteps",Utils.BoolToStringConfig(Const.a.Footsteps));
 
 		int ms = (int)(Const.a.MouseSensitivity/2f*100f);
 		INIWorker.IniWriteValue("Input","MouseSensitivity",ms.ToString());
 		for (int i=0;i<40;i++) {
 			INIWorker.IniWriteValue("Input",Const.a.InputCodes[i],Const.a.InputValues[Const.a.InputCodeSettings[i]]);
 		}
-		INIWorker.IniWriteValue("Input","InvertLook",Utils.BoolToString(Const.a.InputInvertLook));
-		INIWorker.IniWriteValue("Input","InvertCyberspaceLook",Utils.BoolToString(Const.a.InputInvertCyberspaceLook));
-		INIWorker.IniWriteValue("Input","InvertInventoryCycling",Utils.BoolToString(Const.a.InputInvertInventoryCycling));
-		INIWorker.IniWriteValue("Input","QuickItemPickup",Utils.BoolToString(Const.a.InputQuickItemPickup));
-		INIWorker.IniWriteValue("Input","QuickReloadWeapons",Utils.BoolToString(Const.a.InputQuickReloadWeapons));
-		INIWorker.IniWriteValue("Input","NoShootMode",Utils.BoolToString(Const.a.NoShootMode));
-		INIWorker.IniWriteValue("Input","HeadBob",Utils.BoolToString(Const.a.HeadBob));
+		INIWorker.IniWriteValue("Input","InvertLook",Utils.BoolToStringConfig(Const.a.InputInvertLook));
+		INIWorker.IniWriteValue("Input","InvertCyberspaceLook",Utils.BoolToStringConfig(Const.a.InputInvertCyberspaceLook));
+		INIWorker.IniWriteValue("Input","InvertInventoryCycling",Utils.BoolToStringConfig(Const.a.InputInvertInventoryCycling));
+		INIWorker.IniWriteValue("Input","QuickItemPickup",Utils.BoolToStringConfig(Const.a.InputQuickItemPickup));
+		INIWorker.IniWriteValue("Input","QuickReloadWeapons",Utils.BoolToStringConfig(Const.a.InputQuickReloadWeapons));
+		INIWorker.IniWriteValue("Input","NoShootMode",Utils.BoolToStringConfig(Const.a.NoShootMode));
+		INIWorker.IniWriteValue("Input","HeadBob",Utils.BoolToStringConfig(Const.a.HeadBob));
 
 		SetBloom();
 		SetSSAO();

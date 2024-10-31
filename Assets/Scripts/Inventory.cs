@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -1734,108 +1735,82 @@ public class Inventory : MonoBehaviour {
 	public static string Save(GameObject go) {
 		int j;
 		Inventory inv = go.GetComponent<Inventory>();
-		string line = System.String.Empty;
-		if (inv == null) {
-			Debug.Log("Inventory missing on Player!  GameObject.name: " + go.name);
-			line = "u";
-			for (j=1;j<7;j++) line += "u";
-			for (j=1;j<7;j++) line += "u";
-			line += "u";
-			for (j=0;j<16;j++) line += "u";
-			for (j=0;j<16;j++) line += "u";
-			for (j=0;j<7;j++) line += "f";
-			for (j=0;j<7;j++) line += "b";
-			line += "uuff";
-			for (j=0;j<7;j++) line += "u";
-			line += "uu";
-			for (j=0;j<7;j++) line += "u";
-			for (j=0;j<134;j++) line += "b";
-			for (j=0;j<134;j++) line += "b";
-			for (j=0;j<10;j++) line += "u";
-			line += "ub";
-			for (j=0;j<13;j++) line += "b";
-			for (j=0;j<13;j++) line += "u";
-			for (j=0;j<13;j++) line += "u";
-			line += "uu";
-			for (j=0;j<13;j++) line += "b";
-			for (j=0;j<32;j++) line += "i"; // u will be -1, i will be 0 for enums
-			for (j=0;j<14;j++) line += "u";
-			line += "uuub";
-			for (j=0;j<7;j++) line += "u";
-			for (j=0;j<7;j++) line += "b";
-			line += "uu";
-			return Utils.DTypeWordToSaveString(line);
-		}
-
-		line = Utils.UintToString(inv.weaponInventoryIndices[0]);
-		for (j=1;j<7;j++) line += Utils.splitChar + Utils.UintToString(inv.weaponInventoryIndices[j]); // int
-		for (j=0;j<7;j++) line += Utils.splitChar + Utils.UintToString(inv.weaponInventoryAmmoIndices[j]); // int
-		line += Utils.splitChar + Utils.UintToString(inv.numweapons); // int
-		for (j=0;j<16;j++) line += Utils.splitChar + Utils.UintToString(inv.wepAmmo[j]); // int
-		for (j=0;j<16;j++) line += Utils.splitChar + Utils.UintToString(inv.wepAmmoSecondary[j]); // int
-		for (j=0;j<7;j++) line += Utils.splitChar + Utils.FloatToString(inv.currentEnergyWeaponHeat[j]); // float
-		for (j=0;j<7;j++) line += Utils.splitChar + Utils.BoolToString(inv.wepLoadedWithAlternate[j]); // bool
-		line += Utils.splitChar + Utils.UintToString(inv.grenadeCurrent); // int
-		line += Utils.splitChar + Utils.FloatToString(inv.nitroTimeSetting); // float
-		line += Utils.splitChar + Utils.FloatToString(inv.earthShakerTimeSetting); // float
-		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.UintToString(inv.grenAmmo[j]); } // int
-		line += Utils.splitChar + Utils.UintToString(inv.patchCurrent); // int
-		line += Utils.splitChar + Utils.UintToString(inv.patchIndex); // int
-		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.UintToString(inv.patchCounts[j]); } // int
-		for (j=0;j<134;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hasLog[j]); } // bool
-		for (j=0;j<134;j++) { line += Utils.splitChar + Utils.BoolToString(inv.readLog[j]); } // bool
-		for (j=0;j<10;j++) { line += Utils.splitChar + Utils.UintToString(inv.numLogsFromLevel[j]); } // int
-		line += Utils.splitChar + Utils.UintToString(inv.lastAddedIndex); // int
-		line += Utils.splitChar + Utils.BoolToString(inv.beepDone); // bool
-		for (j=0;j<13;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hasHardware[j]); } // bool
-		for (j=0;j<13;j++) { line += Utils.splitChar + Utils.UintToString(inv.hardwareVersion[j]); } // int
-		for (j=0;j<13;j++) { line += Utils.splitChar + Utils.UintToString(inv.hardwareVersionSetting[j]); } // int
-		line += Utils.splitChar + Utils.UintToString(inv.hardwareInvCurrent); // int
-		line += Utils.splitChar + Utils.UintToString(inv.hardwareInvIndex); // int
-		for (j=0;j<13;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hardwareIsActive[j]); } // bool
-		for (j=0;j<32;j++) { line += Utils.splitChar + Utils.IntToString(Utils.AccessCardTypeToInt(inv.accessCardsOwned[j])); } // int
-		for (j=0;j<14;j++) { line += Utils.splitChar + Utils.UintToString(inv.generalInventoryIndexRef[j],"generalInventoryIndexRef[" + j.ToString() + "]"); } // int
-		line += Utils.splitChar + Utils.UintToString(inv.generalInvCurrent,"generalInvCurrent"); // int
-		line += Utils.splitChar + Utils.UintToString(inv.generalInvIndex,"generalInvIndex"); // int
-		line += Utils.splitChar + Utils.UintToString(inv.currentCyberItem); // int
-		line += Utils.splitChar + Utils.BoolToString(inv.isPulserNotDrill); // bool
-		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.UintToString(inv.softVersions[j]); } // int 
-		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hasSoft[j]); } // bool
-		line += Utils.splitChar + Utils.UintToString(inv.emailCurrent); // int
-		line += Utils.splitChar + Utils.UintToString(inv.emailIndex); // int
-		line += Utils.splitChar + Utils.BoolToString(inv.hasNewNotes,"hasNewNotes");
-		line += Utils.splitChar + Utils.BoolToString(inv.hasNewData,"hasNewData");
-		line += Utils.splitChar + Utils.BoolToString(inv.hasNewLogs,"hasNewLogs");
-		line += Utils.splitChar + Utils.BoolToString(inv.hasNewEmail,"hasNewEmail");
-		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.BoolToString(inv.hasMinigame[j],"hasMinigame[" + j.ToString() + "]"); }
-		return line;
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(Utils.UintToString(inv.weaponInventoryIndices[0],"weaponInventoryIndices[0]"));
+		for (j=1;j<7;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(inv.weaponInventoryIndices[j],"weaponInventoryIndices[" + j.ToString() + "]")); }
+		for (j=0;j<7;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(inv.weaponInventoryAmmoIndices[j],"weaponInventoryAmmoIndices[" + j.ToString() + "]")); }
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(inv.numweapons,"numweapons"));
+		for (j=0;j<16;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(inv.wepAmmo[j],"wepAmmo[" + j.ToString() + "]")); }
+		for (j=0;j<16;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(inv.wepAmmoSecondary[j],"wepAmmoSecondary[" + j.ToString() + "]")); }
+		for (j=0;j<7;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.FloatToString(inv.currentEnergyWeaponHeat[j],"currentEnergyWeaponHeat[" + j.ToString() + "]")); }
+		for (j=0;j<7;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(inv.wepLoadedWithAlternate[j],"wepLoadedWithAlternate[" + j.ToString() + "]")); }
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(inv.grenadeCurrent,"grenadeCurrent"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(inv.nitroTimeSetting,"nitroTimeSetting"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(inv.earthShakerTimeSetting,"earthShakerTimeSetting"));
+		for (j=0;j<7;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(inv.grenAmmo[j],"grenAmmo[" + j.ToString() + "]")); }
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(inv.patchCurrent,"patchCurrent"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(inv.patchIndex,"patchIndex"));
+		for (j=0;j<7;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(inv.patchCounts[j],"patchCounts[" + j.ToString() + "]")); }
+		for (j=0;j<134;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(inv.hasLog[j],"hasLog[" + j.ToString() + "]")); }
+		for (j=0;j<134;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(inv.readLog[j],"readLog[" + j.ToString() + "]")); }
+		for (j=0;j<10;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(inv.numLogsFromLevel[j],"numLogsFromLevel[" + j.ToString() + "]")); }
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(inv.lastAddedIndex,"lastAddedIndex"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(inv.beepDone,"beepDone"));
+		for (j=0;j<13;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(inv.hasHardware[j],"hasHardware[" + j.ToString() + "]")); }
+		for (j=0;j<13;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(inv.hardwareVersion[j],"hardwareVersion[" + j.ToString() + "]")); }
+		for (j=0;j<13;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(inv.hardwareVersionSetting[j],"hardwareVersionSetting[" + j.ToString() + "]")); }
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(inv.hardwareInvCurrent,"hardwareInvCurrent"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(inv.hardwareInvIndex,"hardwareInvIndex"));
+		for (j=0;j<13;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(inv.hardwareIsActive[j],"hardwareIsActive[" + j.ToString() + "]")); }
+		for (j=0;j<32;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.IntToString(Utils.AccessCardTypeToInt(inv.accessCardsOwned[j]),"accessCardsOwned[" + j.ToString() + "]")); } 
+		for (j=0;j<14;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(inv.generalInventoryIndexRef[j],"generalInventoryIndexRef[" + j.ToString() + "]")); }
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(inv.generalInvCurrent,"generalInvCurrent"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(inv.generalInvIndex,"generalInvIndex"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(inv.currentCyberItem,"currentCyberItem"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(inv.isPulserNotDrill,"isPulserNotDrill"));
+		for (j=0;j<7;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(inv.softVersions[j],"softVersions[" + j.ToString() + "]")); } 
+		for (j=0;j<7;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(inv.hasSoft[j],"hasSoft[" + j.ToString() + "]")); }
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(inv.emailCurrent,"emailCurrent"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(inv.emailIndex,"emailIndex"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(inv.hasNewNotes,"hasNewNotes"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(inv.hasNewData,"hasNewData"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(inv.hasNewLogs,"hasNewLogs"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(inv.hasNewEmail,"hasNewEmail"));
+		for (j=0;j<7;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.BoolToString(inv.hasMinigame[j],"hasMinigame[" + j.ToString() + "]")); }
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		Inventory inv = go.GetComponent<Inventory>();
-		if (inv == null) {
-			Debug.Log("Inventory.Load failure, inv == null");
-			return index + 481;
-		}
-
-		if (index < 0) {
-			Debug.Log("Inventory.Load failure, index < 0");
-			return index + 481;
-		}
-
-		if (entries == null) {
-			Debug.Log("Inventory.Load failure, entries == null");
-			return index + 481;
-		}
-
 		int j;
-		for (j=0;j<7;j++) { inv.weaponInventoryIndices[j] = Utils.GetIntFromString(entries[index] ); index++; }
-		for (j=0;j<7;j++) { inv.weaponInventoryAmmoIndices[j] = Utils.GetIntFromString(entries[index] ); index++; }
-		inv.numweapons = Utils.GetIntFromString(entries[index] ); index++;
-		for (j=0;j<16;j++) { inv.wepAmmo[j] = Utils.GetIntFromString(entries[index] ); index++; }
-		for (j=0;j<16;j++) { inv.wepAmmoSecondary[j] = Utils.GetIntFromString(entries[index] ); index++; }
-		for (j=0;j<7;j++) { inv.currentEnergyWeaponHeat[j] = Utils.GetFloatFromString(entries[index]); index++; }
-		for (j=0;j<7;j++) { inv.wepLoadedWithAlternate[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		for (j=0;j<7;j++) { inv.weaponInventoryIndices[j] = Utils.GetIntFromString(entries[index],"weaponInventoryIndices[" + j.ToString() + "]"); index++; }
+		for (j=0;j<7;j++) { inv.weaponInventoryAmmoIndices[j] = Utils.GetIntFromString(entries[index],"weaponInventoryAmmoIndices[" + j.ToString() + "]"); index++; }
+		inv.numweapons = Utils.GetIntFromString(entries[index],"numweapons"); index++;
+		for (j=0;j<16;j++) { inv.wepAmmo[j] = Utils.GetIntFromString(entries[index],"wepAmmo[" + j.ToString() + "]"); index++; }
+		for (j=0;j<16;j++) { inv.wepAmmoSecondary[j] = Utils.GetIntFromString(entries[index],"wepAmmoSecondary[" + j.ToString() + "]"); index++; }
+		for (j=0;j<7;j++) { inv.currentEnergyWeaponHeat[j] = Utils.GetFloatFromString(entries[index],"currentEnergyWeaponHeat[" + j.ToString() + "]"); index++; }
+		for (j=0;j<7;j++) { inv.wepLoadedWithAlternate[j] = Utils.GetBoolFromString(entries[index],"wepLoadedWithAlternate[" + j.ToString() + "]"); index++; }
         for (int i=0;i<7;i++) {
 			int dex = inv.weaponInventoryIndices[i];
 			if (dex < 0) continue;
@@ -1843,24 +1818,24 @@ public class Inventory : MonoBehaviour {
 			inv.weaponButtonText[i].text = Const.a.stringTable[dex + 326];
 		}
 
-		inv.grenadeCurrent = Utils.GetIntFromString(entries[index]); index++;
-		inv.nitroTimeSetting = Utils.GetFloatFromString(entries[index]); index++;
-		inv.earthShakerTimeSetting = Utils.GetFloatFromString(entries[index]); index++;
-		for (j=0;j<7;j++) { inv.grenAmmo[j] = Utils.GetIntFromString(entries[index] ); index++; }
-		inv.patchCurrent = Utils.GetIntFromString(entries[index]); index++;
-		inv.patchIndex = Utils.GetIntFromString(entries[index]); index++;
-		for (j=0;j<7;j++) { inv.patchCounts[j] = Utils.GetIntFromString(entries[index]); index++; }
-		for (j=0;j<134;j++) { inv.hasLog[j] = Utils.GetBoolFromString(entries[index]); index++; }
-		for (j=0;j<134;j++) { inv.readLog[j] = Utils.GetBoolFromString(entries[index]); index++; }
-		for (j=0;j<10;j++) { inv.numLogsFromLevel[j] = Utils.GetIntFromString(entries[index]); index++; }
-		inv.lastAddedIndex = Utils.GetIntFromString(entries[index]); index++;
-		inv.beepDone = Utils.GetBoolFromString(entries[index]); index++;
-		for (j=0;j<13;j++) { inv.hasHardware[j] = Utils.GetBoolFromString(entries[index]); index++; }
-		for (j=0;j<13;j++) { inv.hardwareVersion[j] = Utils.GetIntFromString(entries[index]); index++; }
-		for (j=0;j<13;j++) { inv.hardwareVersionSetting[j] = Utils.GetIntFromString(entries[index]); index++; }
-		inv.hardwareInvCurrent = Utils.GetIntFromString(entries[index]); index++;
-		inv.hardwareInvIndex = Utils.GetIntFromString(entries[index]); index++;
-		for (j=0;j<13;j++) { inv.hardwareIsActive[j] = Utils.GetBoolFromString(entries[index]); index++; }
+		inv.grenadeCurrent = Utils.GetIntFromString(entries[index],"grenadeCurrent"); index++;
+		inv.nitroTimeSetting = Utils.GetFloatFromString(entries[index],"nitroTimeSetting"); index++;
+		inv.earthShakerTimeSetting = Utils.GetFloatFromString(entries[index],"earthShakerTimeSetting"); index++;
+		for (j=0;j<7;j++) { inv.grenAmmo[j] = Utils.GetIntFromString(entries[index],"grenAmmo[" + j.ToString() + "]"); index++; }
+		inv.patchCurrent = Utils.GetIntFromString(entries[index],"patchCurrent"); index++;
+		inv.patchIndex = Utils.GetIntFromString(entries[index],"patchIndex"); index++;
+		for (j=0;j<7;j++) { inv.patchCounts[j] = Utils.GetIntFromString(entries[index],"patchCounts[" + j.ToString() + "]"); index++; }
+		for (j=0;j<134;j++) { inv.hasLog[j] = Utils.GetBoolFromString(entries[index],"hasLog[" + j.ToString() + "]"); index++; }
+		for (j=0;j<134;j++) { inv.readLog[j] = Utils.GetBoolFromString(entries[index],"readLog[" + j.ToString() + "]"); index++; }
+		for (j=0;j<10;j++) { inv.numLogsFromLevel[j] = Utils.GetIntFromString(entries[index],"numLogsFromLevel[" + j.ToString() + "]"); index++; }
+		inv.lastAddedIndex = Utils.GetIntFromString(entries[index],"lastAddedIndex"); index++;
+		inv.beepDone = Utils.GetBoolFromString(entries[index],"beepDone"); index++;
+		for (j=0;j<13;j++) { inv.hasHardware[j] = Utils.GetBoolFromString(entries[index],"hasHardware[" + j.ToString() + "]"); index++; }
+		for (j=0;j<13;j++) { inv.hardwareVersion[j] = Utils.GetIntFromString(entries[index],"hardwareVersion[" + j.ToString() + "]"); index++; }
+		for (j=0;j<13;j++) { inv.hardwareVersionSetting[j] = Utils.GetIntFromString(entries[index],"hardwareVersionSetting[" + j.ToString() + "]"); index++; }
+		inv.hardwareInvCurrent = Utils.GetIntFromString(entries[index],"hardwareInvCurrent"); index++;
+		inv.hardwareInvIndex = Utils.GetIntFromString(entries[index],"hardwareInvIndex"); index++;
+		for (j=0;j<13;j++) { inv.hardwareIsActive[j] = Utils.GetBoolFromString(entries[index],"hardwareIsActive[" + j.ToString() + "]"); index++; }
         if (Inventory.a.hasHardware[1]) { // Explicitly check primary instance.
 			MouseLookScript.a.compassContainer.SetActive(true);
 			MouseLookScript.a.automapContainerLH.SetActive(true);
@@ -1931,7 +1906,7 @@ public class Inventory : MonoBehaviour {
 			}
 	    }
 
-		for (j=0;j<32;j++) { inv.accessCardsOwned[j] = Utils.IntToAccessCardType(Utils.GetIntFromString(entries[index])); index++; }
+		for (j=0;j<32;j++) { inv.accessCardsOwned[j] = Utils.IntToAccessCardType(Utils.GetIntFromString(entries[index],"accessCardsOwned[" + j.ToString() + "]")); index++; }
 		for (j=0;j<14;j++) { inv.generalInventoryIndexRef[j] = Utils.GetIntFromString(entries[index],"generalInventoryIndexRef[" + j.ToString() + "]"); index++; }
 		inv.generalInvCurrent = Utils.GetIntFromString(entries[index],"generalInvCurrent"); index++;
 		inv.generalInvIndex = Utils.GetIntFromString(entries[index],"generalInvIndex"); index++;
@@ -1953,21 +1928,18 @@ public class Inventory : MonoBehaviour {
 				inv.genButtonsText[i].color = Const.a.ssGreenText; // Green
 			}
 		}
-		inv.currentCyberItem = Utils.GetIntFromString(entries[index]); index++;
-		inv.isPulserNotDrill = Utils.GetBoolFromString(entries[index]); index++;
-		for (j=0;j<7;j++) { inv.softVersions[j] = Utils.GetIntFromString(entries[index]); index++; }
-		for (j=0;j<7;j++) { inv.hasSoft[j] = Utils.GetBoolFromString(entries[index]); index++; }
-		inv.emailCurrent = Utils.GetIntFromString(entries[index]); index++;
-		inv.emailIndex = Utils.GetIntFromString(entries[index]); index++;
+		inv.currentCyberItem = Utils.GetIntFromString(entries[index],"currentCyberItem"); index++;
+		inv.isPulserNotDrill = Utils.GetBoolFromString(entries[index],"isPulserNotDrill"); index++;
+		for (j=0;j<7;j++) { inv.softVersions[j] = Utils.GetIntFromString(entries[index],"softVersions[" + j.ToString() + "]"); index++; }
+		for (j=0;j<7;j++) { inv.hasSoft[j] = Utils.GetBoolFromString(entries[index],"hasSoft[" + j.ToString() + "]"); index++; }
+		inv.emailCurrent = Utils.GetIntFromString(entries[index],"emailCurrent"); index++;
+		inv.emailIndex = Utils.GetIntFromString(entries[index],"emailIndex"); index++;
 		inv.hasNewNotes = Utils.GetBoolFromString(entries[index],"hasNewNotes"); index++;
 		inv.hasNewData = Utils.GetBoolFromString(entries[index],"hasNewData"); index++;
 		inv.hasNewLogs = Utils.GetBoolFromString(entries[index],"hasNewLogs"); index++;
 		inv.hasNewEmail = Utils.GetBoolFromString(entries[index],"hasNewEmail"); index++;
 		for (j=0;j<7;j++) {
-			inv.hasMinigame[j] = Utils.GetBoolFromString(entries[index],
-														 "hasMinigame["
-														 + j.ToString() + "]");
-			index++;
+			inv.hasMinigame[j] = Utils.GetBoolFromString(entries[index],"hasMinigame[" + j.ToString() + "]"); index++;
 			inv.miniGameButton[j].SetActive(inv.hasMinigame[j]);
 		}
 		return index;

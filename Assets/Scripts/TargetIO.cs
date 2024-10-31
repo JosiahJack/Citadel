@@ -407,135 +407,21 @@ public class TargetIO : MonoBehaviour {
 	}
 
 	// Save searchable data
-	public static string Save(GameObject go) {
-		TargetIO tio = go.GetComponent<TargetIO>();
+	public static string Save(GameObject go, PrefabIdentifier prefID) {
+		TargetIO tio;
+		if (prefID.constIndex == 467) tio = go.transform.GetChild(0).GetComponent<TargetIO>(); // se_corpse_eaten
+		else tio = go.GetComponent<TargetIO>(); 
+		
+		if (tio == null) Debug.LogError("BUG: Missing TargetIO on " + go.name);
 		StringBuilder s1 = new StringBuilder();
-		if (tio == null) {
-			Debug.Log("TargetIO missing!  GameObject.name: " + go.name);
-			s1.Clear();
-			s1.Append("targetname:unknown_name_and_number");
-			s1.Append(Utils.splitChar);
-			s1.Append("tripTrigger:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("doorOpen:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("doorOpenIfUnlocked:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("doorClose:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("doorLock:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("doorUnlock:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("switchTrigger:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("chargeStationRecharge:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("enemyAlert:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("forceBridgeActivate:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("forceBridgeDeactivate:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("forceBridgeToggle:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("gravityLiftToggle:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("textureChangeToggle:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("lightOn:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("lightOff:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("lightToggle:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("funcwallMove:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("missionBitOn:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("missionBitOff:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("missionBitToggle:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("sendEmail:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("switchLockToggle:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("lockCodeToScreenMaterialChanger:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("spawnerActivate:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("spawnerActivateAlerted:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("cyborgConversionToggle:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("GOSetActive:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("GOSetDeactive:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("GOToggleActive:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("toggleRadiationTrigger:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("disableThisGOOnAwake:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("toggleRelayEnabled:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("togglePuzzlePanelLocked:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("testQuestBitIsOn:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("testQuestBitIsOff:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("playSoundOnce:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("stopSound:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("sendSprintMessage:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("radiationTreatment:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("startFlashingMaterials:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("stopFlashingMaterials:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("unlockElevatorPad:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("unlockKeycodePad:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("unlockPuzzlePad:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("screenShake:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("awakeSleepingEnemy:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("branchFlip:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("branchFlipOnly:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("doorAccessCardOverrideToggle:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("unlockSwitch:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("lockElevatorPad:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("alreadyDisabledThisGOOnceEver:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("doorToggle:0");
-			s1.Append(Utils.splitChar);
-			s1.Append("gameObject.activeInHierarchy:0");
-			return s1.ToString();
-		}
-
 		s1.Clear();
-		s1.Append(Utils.SaveString(tio.targetname,"targetname")); // This object's name.
+		s1.Append(Utils.SaveString(tio.targetname,"targetname"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(tio.tripTrigger,"tripTrigger"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(tio.doorOpen,"doorOpen"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(tio.doorOpenIfUnlocked,
-									 "doorOpenIfUnlocked"));
+		s1.Append(Utils.BoolToString(tio.doorOpenIfUnlocked,"doorOpenIfUnlocked"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(tio.doorClose,"doorClose"));
 		s1.Append(Utils.splitChar);
@@ -545,25 +431,19 @@ public class TargetIO : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(tio.switchTrigger,"switchTrigger"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(tio.chargeStationRecharge,
-									 "chargeStationRecharge"));
+		s1.Append(Utils.BoolToString(tio.chargeStationRecharge,"chargeStationRecharge"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(tio.enemyAlert,"enemyAlert"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(tio.forceBridgeActivate,
-									 "forceBridgeActivate"));
+		s1.Append(Utils.BoolToString(tio.forceBridgeActivate,"forceBridgeActivate"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(tio.forceBridgeDeactivate,
-									 "forceBridgeDeactivate"));
+		s1.Append(Utils.BoolToString(tio.forceBridgeDeactivate,"forceBridgeDeactivate"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(tio.forceBridgeToggle,
-									 "forceBridgeToggle"));
+		s1.Append(Utils.BoolToString(tio.forceBridgeToggle,"forceBridgeToggle"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(tio.gravityLiftToggle,
-									 "gravityLiftToggle"));
+		s1.Append(Utils.BoolToString(tio.gravityLiftToggle,"gravityLiftToggle"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(tio.textureChangeToggle,
-									 "textureChangeToggle"));
+		s1.Append(Utils.BoolToString(tio.textureChangeToggle,"textureChangeToggle"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(tio.lightOn,"lightOn"));
 		s1.Append(Utils.splitChar);
@@ -641,271 +521,76 @@ public class TargetIO : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(tio.lockElevatorPad,"lockElevatorPad"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(tio.alreadyDisabledThisGOOnceEver,
-									 "alreadyDisabledThisGOOnceEver"));
+		s1.Append(Utils.BoolToString(tio.alreadyDisabledThisGOOnceEver,"alreadyDisabledThisGOOnceEver"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(tio.doorToggle,"doorToggle"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(tio.gameObject.activeInHierarchy,
-									 "gameObject.activeInHierarchy"));
+		s1.Append(Utils.BoolToString(tio.gameObject.activeInHierarchy,"gameObject.activeInHierarchy"));
 		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   bool instantiated) {
+		
 		TargetIO tio = go.GetComponent<TargetIO>();
-		if (tio == null) {
-			Debug.Log("TargetIO.Load failure, tio == null on " + go.name);
-			return index + 53;
-		}
-
-		if (index < 0) {
-			Debug.Log("TargetIO.Load failure, index < 0");
-			return index + 53;
-		}
-
-		if (entries == null) {
-			Debug.Log("TargetIO.Load failure, entries == null");
-			return index + 53;
-		}
-
-		tio.targetname = Utils.LoadString(entries[index],"targetname");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-		
-		tio.tripTrigger = Utils.GetBoolFromString(entries[index],"tripTrigger");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.doorOpen = Utils.GetBoolFromString(entries[index],"doorOpen");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.doorOpenIfUnlocked = Utils.GetBoolFromString(entries[index],
-														 "doorOpenIfUnlocked");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.doorClose = Utils.GetBoolFromString(entries[index],"doorClose");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.doorLock = Utils.GetBoolFromString(entries[index],"doorLock");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.doorUnlock = Utils.GetBoolFromString(entries[index],"doorUnlock");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.switchTrigger = Utils.GetBoolFromString(entries[index],
-													"switchTrigger");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.chargeStationRecharge = Utils.GetBoolFromString(entries[index],
-													  "chargeStationRecharge");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.enemyAlert = Utils.GetBoolFromString(entries[index],"enemyAlert");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.forceBridgeActivate = Utils.GetBoolFromString(entries[index],
-														"forceBridgeActivate");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.forceBridgeDeactivate = Utils.GetBoolFromString(entries[index],
-													  "forceBridgeDeactivate");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.forceBridgeToggle = Utils.GetBoolFromString(entries[index],
-													    "forceBridgeToggle");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.gravityLiftToggle = Utils.GetBoolFromString(entries[index],
-													    "gravityLiftToggle");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.textureChangeToggle = Utils.GetBoolFromString(entries[index],
-														"textureChangeToggle");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.lightOn = Utils.GetBoolFromString(entries[index],"lightOn"); // << HERE, index out of bounds exception
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.lightOff = Utils.GetBoolFromString(entries[index],"lightOff");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.lightToggle = Utils.GetBoolFromString(entries[index],"lightToggle");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.funcwallMove = Utils.GetBoolFromString(entries[index],
-												   "funcwallMove");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.missionBitOn = Utils.GetBoolFromString(entries[index],
-												   "missionBitOn");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.missionBitOff = Utils.GetBoolFromString(entries[index],
-													"missionBitOff");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.missionBitToggle = Utils.GetBoolFromString(entries[index],
-													   "missionBitToggle");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.sendEmail = Utils.GetBoolFromString(entries[index],"sendEmail");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.switchLockToggle = Utils.GetBoolFromString(entries[index],"switchLockToggle");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.lockCodeToScreenMaterialChanger = Utils.GetBoolFromString(entries[index],"lockCodeToScreenMaterialChanger");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.spawnerActivate = Utils.GetBoolFromString(entries[index],"spawnerActivate");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.spawnerActivateAlerted = Utils.GetBoolFromString(entries[index],"spawnerActivateAlerted");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.cyborgConversionToggle = Utils.GetBoolFromString(entries[index],"cyborgConversionToggle");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.GOSetActive = Utils.GetBoolFromString(entries[index],"GOSetActive");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.GOSetDeactive = Utils.GetBoolFromString(entries[index],"GOSetDeactive");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.GOToggleActive = Utils.GetBoolFromString(entries[index],"GOToggleActive");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.toggleRadiationTrigger = Utils.GetBoolFromString(entries[index],"toggleRadiationTrigger");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.disableThisGOOnAwake = Utils.GetBoolFromString(entries[index],"disableThisGOOnAwake");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.toggleRelayEnabled = Utils.GetBoolFromString(entries[index],"toggleRelayEnabled");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.togglePuzzlePanelLocked = Utils.GetBoolFromString(entries[index],"togglePuzzlePanelLocked");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.testQuestBitIsOn = Utils.GetBoolFromString(entries[index],"testQuestBitIsOn");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.testQuestBitIsOff = Utils.GetBoolFromString(entries[index],"testQuestBitIsOff");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.playSoundOnce = Utils.GetBoolFromString(entries[index],"playSoundOnce");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.stopSound = Utils.GetBoolFromString(entries[index],"stopSound");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.sendSprintMessage = Utils.GetBoolFromString(entries[index],"sendSprintMessage");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.radiationTreatment = Utils.GetBoolFromString(entries[index],"radiationTreatment");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.startFlashingMaterials = Utils.GetBoolFromString(entries[index],"startFlashingMaterials");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.stopFlashingMaterials = Utils.GetBoolFromString(entries[index],"stopFlashingMaterials");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.unlockElevatorPad = Utils.GetBoolFromString(entries[index],"unlockElevatorPad");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.unlockKeycodePad = Utils.GetBoolFromString(entries[index],"unlockKeycodePad");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.unlockPuzzlePad = Utils.GetBoolFromString(entries[index],"unlockPuzzlePad");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.screenShake = Utils.GetBoolFromString(entries[index],"screenShake");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.awakeSleepingEnemy = Utils.GetBoolFromString(entries[index],"awakeSleepingEnemy");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.branchFlip = Utils.GetBoolFromString(entries[index],"branchFlip");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.branchFlipOnly = Utils.GetBoolFromString(entries[index],"branchFlipOnly");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.doorAccessCardOverrideToggle = Utils.GetBoolFromString(entries[index],"doorAccessCardOverrideToggle");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.unlockSwitch = Utils.GetBoolFromString(entries[index],"unlockSwitch");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		if (!Utils.IndexEntriesOk(index,ref entries,go)) return index;
-
-		tio.lockElevatorPad = Utils.GetBoolFromString(entries[index],"lockElevatorPad");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		tio.alreadyDisabledThisGOOnceEver =
-			Utils.GetBoolFromString(entries[index],
-								    "alreadyDisabledThisGOOnceEver");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		
-		tio.doorToggle = Utils.GetBoolFromString(entries[index],"doorToggle");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		bool wasActive = Utils.GetBoolFromString(entries[index],
-											   "gameObject.activeInHierarchy");
-		
+		tio.targetname = Utils.LoadString(entries[index],"targetname"); index++;
+		tio.tripTrigger = Utils.GetBoolFromString(entries[index],"tripTrigger"); index++;
+		tio.doorOpen = Utils.GetBoolFromString(entries[index],"doorOpen"); index++;
+		tio.doorOpenIfUnlocked = Utils.GetBoolFromString(entries[index],"doorOpenIfUnlocked"); index++;
+		tio.doorClose = Utils.GetBoolFromString(entries[index],"doorClose"); index++;
+		tio.doorLock = Utils.GetBoolFromString(entries[index],"doorLock"); index++;
+		tio.doorUnlock = Utils.GetBoolFromString(entries[index],"doorUnlock"); index++;
+		tio.switchTrigger = Utils.GetBoolFromString(entries[index],"switchTrigger"); index++;
+		tio.chargeStationRecharge = Utils.GetBoolFromString(entries[index],"chargeStationRecharge"); index++;
+		tio.enemyAlert = Utils.GetBoolFromString(entries[index],"enemyAlert"); index++;
+		tio.forceBridgeActivate = Utils.GetBoolFromString(entries[index],"forceBridgeActivate"); index++;
+		tio.forceBridgeDeactivate = Utils.GetBoolFromString(entries[index],"forceBridgeDeactivate"); index++;
+		tio.forceBridgeToggle = Utils.GetBoolFromString(entries[index],"forceBridgeToggle"); index++;
+		tio.gravityLiftToggle = Utils.GetBoolFromString(entries[index],"gravityLiftToggle"); index++;
+		tio.textureChangeToggle = Utils.GetBoolFromString(entries[index],"textureChangeToggle"); index++;
+		tio.lightOn = Utils.GetBoolFromString(entries[index],"lightOn"); index++;
+		tio.lightOff = Utils.GetBoolFromString(entries[index],"lightOff"); index++;
+		tio.lightToggle = Utils.GetBoolFromString(entries[index],"lightToggle"); index++;
+		tio.funcwallMove = Utils.GetBoolFromString(entries[index],"funcwallMove"); index++;
+		tio.missionBitOn = Utils.GetBoolFromString(entries[index],"missionBitOn"); index++;
+		tio.missionBitOff = Utils.GetBoolFromString(entries[index],"missionBitOff"); index++;
+		tio.missionBitToggle = Utils.GetBoolFromString(entries[index],"missionBitToggle"); index++;
+		tio.sendEmail = Utils.GetBoolFromString(entries[index],"sendEmail"); index++;
+		tio.switchLockToggle = Utils.GetBoolFromString(entries[index],"switchLockToggle"); index++;
+		tio.lockCodeToScreenMaterialChanger = Utils.GetBoolFromString(entries[index],"lockCodeToScreenMaterialChanger"); index++;
+		tio.spawnerActivate = Utils.GetBoolFromString(entries[index],"spawnerActivate"); index++;
+		tio.spawnerActivateAlerted = Utils.GetBoolFromString(entries[index],"spawnerActivateAlerted"); index++;
+		tio.cyborgConversionToggle = Utils.GetBoolFromString(entries[index],"cyborgConversionToggle"); index++;
+		tio.GOSetActive = Utils.GetBoolFromString(entries[index],"GOSetActive"); index++;
+		tio.GOSetDeactive = Utils.GetBoolFromString(entries[index],"GOSetDeactive"); index++;
+		tio.GOToggleActive = Utils.GetBoolFromString(entries[index],"GOToggleActive"); index++;
+		tio.toggleRadiationTrigger = Utils.GetBoolFromString(entries[index],"toggleRadiationTrigger"); index++;
+		tio.disableThisGOOnAwake = Utils.GetBoolFromString(entries[index],"disableThisGOOnAwake"); index++;
+		tio.toggleRelayEnabled = Utils.GetBoolFromString(entries[index],"toggleRelayEnabled"); index++;
+		tio.togglePuzzlePanelLocked = Utils.GetBoolFromString(entries[index],"togglePuzzlePanelLocked"); index++;
+		tio.testQuestBitIsOn = Utils.GetBoolFromString(entries[index],"testQuestBitIsOn"); index++;
+		tio.testQuestBitIsOff = Utils.GetBoolFromString(entries[index],"testQuestBitIsOff"); index++;
+		tio.playSoundOnce = Utils.GetBoolFromString(entries[index],"playSoundOnce"); index++;
+		tio.stopSound = Utils.GetBoolFromString(entries[index],"stopSound"); index++;
+		tio.sendSprintMessage = Utils.GetBoolFromString(entries[index],"sendSprintMessage"); index++;
+		tio.radiationTreatment = Utils.GetBoolFromString(entries[index],"radiationTreatment"); index++;
+		tio.startFlashingMaterials = Utils.GetBoolFromString(entries[index],"startFlashingMaterials"); index++;
+		tio.stopFlashingMaterials = Utils.GetBoolFromString(entries[index],"stopFlashingMaterials"); index++;
+		tio.unlockElevatorPad = Utils.GetBoolFromString(entries[index],"unlockElevatorPad"); index++;
+		tio.unlockKeycodePad = Utils.GetBoolFromString(entries[index],"unlockKeycodePad"); index++;
+		tio.unlockPuzzlePad = Utils.GetBoolFromString(entries[index],"unlockPuzzlePad"); index++;
+		tio.screenShake = Utils.GetBoolFromString(entries[index],"screenShake"); index++;
+		tio.awakeSleepingEnemy = Utils.GetBoolFromString(entries[index],"awakeSleepingEnemy"); index++;
+		tio.branchFlip = Utils.GetBoolFromString(entries[index],"branchFlip"); index++;
+		tio.branchFlipOnly = Utils.GetBoolFromString(entries[index],"branchFlipOnly"); index++;
+		tio.doorAccessCardOverrideToggle = Utils.GetBoolFromString(entries[index],"doorAccessCardOverrideToggle"); index++;
+		tio.unlockSwitch = Utils.GetBoolFromString(entries[index],"unlockSwitch"); index++;
+		tio.lockElevatorPad = Utils.GetBoolFromString(entries[index],"lockElevatorPad"); index++;
+		tio.alreadyDisabledThisGOOnceEver = Utils.GetBoolFromString(entries[index],"alreadyDisabledThisGOOnceEver"); index++;
+		tio.doorToggle = Utils.GetBoolFromString(entries[index],"doorToggle"); index++;
+		bool wasActive = Utils.GetBoolFromString(entries[index],"gameObject.activeInHierarchy");
 		tio.Initialize();
-		if (wasActive) Utils.Activate(tio.gameObject);
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		if (wasActive) Utils.Activate(tio.gameObject); index++;
 		return index;
 	}
 }

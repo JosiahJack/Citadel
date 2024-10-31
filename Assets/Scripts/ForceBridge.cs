@@ -24,8 +24,14 @@ public class ForceBridge : MonoBehaviour {
 	private bool initialized = false;
 
 	public void Start() {
+		#if UNITY_EDITOR
+			if (!Application.isPlaying) return;
+		#endif
+		
 		if (!initialized) {
-			tickFinished = PauseScript.a.relativeTime + tickTime + Random.value;
+			if (PauseScript.a == null) tickFinished = tickTime + Random.value;
+			else tickFinished = PauseScript.a.relativeTime + tickTime + Random.value;
+			
 			lerping = true;
 		}
 
@@ -143,8 +149,7 @@ public class ForceBridge : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(fb.lerping,"lerping"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(fb.tickFinished,
-													 "tickFinished"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(fb.tickFinished,"tickFinished"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(fb.x,"x"));
 		s1.Append(Utils.splitChar);
@@ -152,14 +157,13 @@ public class ForceBridge : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(fb.z,"z"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(fb.activatedScaleX));
+		s1.Append(Utils.FloatToString(fb.activatedScaleX,"activatedScaleX"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(fb.activatedScaleY));
+		s1.Append(Utils.FloatToString(fb.activatedScaleY,"activatedScaleY"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(fb.activatedScaleZ));
+		s1.Append(Utils.FloatToString(fb.activatedScaleZ,"activatedScaleZ"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.IntToString(Utils.ForceFieldColorToInt(fb.fieldColor),
-															   "fieldColor"));
+		s1.Append(Utils.IntToString(Utils.ForceFieldColorToInt(fb.fieldColor),"fieldColor"));
 		return s1.ToString();
 	}
 
@@ -194,26 +198,18 @@ public class ForceBridge : MonoBehaviour {
 			}
 		}
 		index++;
-
-		fb.lerping = Utils.GetBoolFromString(entries[index],"lerping");
-		index++;
-
-		fb.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],
-															 "tickFinished");
-		index++;
-
+		fb.lerping = Utils.GetBoolFromString(entries[index],"lerping"); index++;
+		fb.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],"tickFinished"); index++;
 		fb.x = Utils.GetBoolFromString(entries[index],"x"); index++;
 		fb.y = Utils.GetBoolFromString(entries[index],"y"); index++;
 		fb.z = Utils.GetBoolFromString(entries[index],"z"); index++;
-
-		fb.activatedScaleX = Utils.GetFloatFromString(entries[index]); index++;
-		fb.activatedScaleY = Utils.GetFloatFromString(entries[index]); index++;
-		fb.activatedScaleZ = Utils.GetFloatFromString(entries[index]); index++;
-
+		fb.activatedScaleX = Utils.GetFloatFromString(entries[index],"activatedScaleX"); index++;
+		fb.activatedScaleY = Utils.GetFloatFromString(entries[index],"activatedScaleY"); index++;
+		fb.activatedScaleZ = Utils.GetFloatFromString(entries[index],"activatedScaleZ"); index++;
 		if (fb.activated) {
 			fb.transform.localScale = new Vector3(fb.activatedScaleX,
-												fb.activatedScaleY,
-												fb.activatedScaleZ);
+												  fb.activatedScaleY,
+												  fb.activatedScaleZ);
 		}
 
 		fb.fieldColor = Utils.GetForceFieldColorFromInt(

@@ -52,11 +52,6 @@ public class CyberSwitch : MonoBehaviour {
 
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
 		CyberSwitch cs = go.GetComponent<CyberSwitch>();
-		if (cs == null) {
-			Debug.Log("CyberSwitch missing on savetype of CyberSwitch!  GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("bussbbffbbbu");
-		}
-
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.BoolToString(cs.active,"CyberSwitch.active"));

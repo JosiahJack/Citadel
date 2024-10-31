@@ -172,136 +172,60 @@ public class ButtonSwitch : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		ButtonSwitch bs = go.GetComponent<ButtonSwitch>();
-		if (bs == null) { // bs?  null??  that's bs
-			Debug.Log("ButtonSwitch missing on savetype of ButtonSwitch!  "
-			          + "GameObject.name: " + go.name);
-			return Utils.DTypeWordToSaveString("usssufbbbbsubbff");
-		}
-
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
-		s1.Append(Utils.UintToString(bs.securityThreshhold,
-		                             "securityThreshhold"));
+		s1.Append(Utils.UintToString(bs.securityThreshhold,"securityThreshhold"));
 		s1.Append(Utils.splitChar);
-		
 		s1.Append(Utils.SaveString(bs.target,"target"));
 		s1.Append(Utils.splitChar);
-		
 		s1.Append(Utils.SaveString(bs.argvalue,"argvalue"));
 		s1.Append(Utils.splitChar);
-		
 		s1.Append(Utils.SaveString(bs.message,"message"));
 		s1.Append(Utils.splitChar);
-		
 		s1.Append(Utils.UintToString(bs.messageIndex,"messageIndex"));
 		s1.Append(Utils.splitChar);
-		
 		s1.Append(Utils.FloatToString(bs.delay,"delay"));
 		s1.Append(Utils.splitChar);
-		
 		s1.Append(Utils.BoolToString(bs.blinkWhenActive,"blinkWhenActive"));
 		s1.Append(Utils.splitChar);
-		
 		s1.Append(Utils.BoolToString(bs.changeMatOnActive,"changeMatOnActive"));
 		s1.Append(Utils.splitChar);
-		
 		s1.Append(Utils.BoolToString(bs.animateModel,"animateModel"));
 		s1.Append(Utils.splitChar);
-		
 		s1.Append(Utils.BoolToString(bs.locked,"locked"));
 		s1.Append(Utils.splitChar);
-		
 		s1.Append(Utils.SaveString(bs.lockedMessage,"lockedMessage"));
 		s1.Append(Utils.splitChar);
-		
-		s1.Append(Utils.UintToString(bs.lockedMessageLingdex,
-		                             "lockedMessageLingdex"));
+		s1.Append(Utils.UintToString(bs.lockedMessageLingdex,"lockedMessageLingdex"));
 		s1.Append(Utils.splitChar);
-		
 		s1.Append(Utils.BoolToString(bs.active,"active"));
 		s1.Append(Utils.splitChar);
-		
 		s1.Append(Utils.BoolToString(bs.alternateOn,"alternateOn"));
 		s1.Append(Utils.splitChar);
-		
-		s1.Append(Utils.SaveRelativeTimeDifferential(bs.delayFinished,
-		                                             "delayFinished"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(bs.delayFinished,"delayFinished"));
 	    s1.Append(Utils.splitChar);
-	    
-		s1.Append(Utils.SaveRelativeTimeDifferential(bs.tickFinished,
-		                                             "tickFinished"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(bs.tickFinished,"tickFinished"));
 		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		ButtonSwitch bs = go.GetComponent<ButtonSwitch>(); // what a load of bs
-		if (bs == null) {
-			Debug.Log("ButtonSwitch.Load failure, bs == null");
-			return index + 16;
-		}
-
-		if (index < 0) {
-			Debug.Log("ButtonSwitch.Load failure, index < 0");
-			return index + 16;
-		}
-
-		if (entries == null) {
-			Debug.Log("ButtonSwitch.Load failure, entries == null");
-			return index + 16;
-		}
-
-		bs.securityThreshhold = Utils.GetIntFromString(entries[index],
-		                                               "securityThreshhold");
-		index++;
-		
-		bs.target = Utils.LoadString(entries[index],"target");
-		index++;
-		
-		bs.argvalue = Utils.LoadString(entries[index],"argvalue");
-		index++;
-		
-		bs.message = Utils.LoadString(entries[index],"message");
-		index++;
-		
-		bs.messageIndex = Utils.GetIntFromString(entries[index],"messageIndex");
-		index++;
-		
-		bs.delay = Utils.GetFloatFromString(entries[index],"delay");
-		index++;
-		
-		bs.blinkWhenActive = Utils.GetBoolFromString(entries[index],"blinkWhenActive");
-		index++;
-		
-		bs.changeMatOnActive = Utils.GetBoolFromString(entries[index],"changeMatOnActive");
-		index++;
-		
-		bs.animateModel = Utils.GetBoolFromString(entries[index],"animateModel");
-		index++;
-		
-		bs.locked = Utils.GetBoolFromString(entries[index],"locked");
-		index++;
-		
-		bs.lockedMessage = Utils.LoadString(entries[index],"lockedMessage");
-		index++;
-		
-		bs.lockedMessageLingdex = Utils.GetIntFromString(entries[index],
-		                                               "lockedMessageLingdex");
-		index++;
-		
-		bs.active = Utils.GetBoolFromString(entries[index],"active");
-		index++;
-		
-		bs.alternateOn = Utils.GetBoolFromString(entries[index],"alternateOn");
-		index++;
-		
-		bs.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index],
-		                                                      "delayFinished");
-		index++;
-		
-		bs.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],
-		                                                     "tickFinished");
-		index++;
-
+		bs.securityThreshhold = Utils.GetIntFromString(entries[index],"securityThreshhold"); index++;
+		bs.target = Utils.LoadString(entries[index],"target"); index++;
+		bs.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
+		bs.message = Utils.LoadString(entries[index],"message"); index++;
+		bs.messageIndex = Utils.GetIntFromString(entries[index],"messageIndex"); index++;
+		bs.delay = Utils.GetFloatFromString(entries[index],"delay"); index++;
+		bs.blinkWhenActive = Utils.GetBoolFromString(entries[index],"blinkWhenActive"); index++;
+		bs.changeMatOnActive = Utils.GetBoolFromString(entries[index],"changeMatOnActive"); index++;
+		bs.animateModel = Utils.GetBoolFromString(entries[index],"animateModel"); index++;
+		bs.locked = Utils.GetBoolFromString(entries[index],"locked"); index++;
+		bs.lockedMessage = Utils.LoadString(entries[index],"lockedMessage"); index++;
+		bs.lockedMessageLingdex = Utils.GetIntFromString(entries[index],"lockedMessageLingdex"); index++;
+		bs.active = Utils.GetBoolFromString(entries[index],"active"); index++;
+		bs.alternateOn = Utils.GetBoolFromString(entries[index],"alternateOn"); index++;
+		bs.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index],"delayFinished"); index++;
+		bs.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],"tickFinished"); index++;
 		if ((bs.tickFinished - PauseScript.a.relativeTime) > bs.tickTime) {
 			bs.tickFinished = PauseScript.a.relativeTime + bs.tickTime;
 		}

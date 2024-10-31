@@ -30,14 +30,9 @@ public class PlayerReferenceManager : MonoBehaviour {
 		a.playerCurrentLevel = LevelManager.a.currentLevel;
 	}
 
-	public static string SavePlayerData(GameObject plyr,
-										PrefabIdentifier prefID) {
-		if (plyr == null) return "!";
-
-		// Get all references to relevant components.
+	public static string SavePlayerData(GameObject plyr, PrefabIdentifier prefID) {
 		PlayerReferenceManager PRman = plyr.GetComponent<PlayerReferenceManager>();
         StringBuilder s1 = new StringBuilder();
-
         s1.Clear();
 		s1.Append("Hacker");//s1.Append(Const.a.playerName);
         s1.Append(Utils.splitChar); s1.Append(PlayerHealth.Save(PRman.playerCapsule));
@@ -58,47 +53,23 @@ public class PlayerReferenceManager : MonoBehaviour {
 	public static int LoadPlayerDataToPlayer(GameObject currentPlayer,
 											 ref string[] entries,int index,
 						   					 PrefabIdentifier prefID) {
+		
 		PlayerReferenceManager PRman = currentPlayer.GetComponent<PlayerReferenceManager>();
 		Const.a.playerName = entries[index]; index++;
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
 		index = PlayerHealth.Load(PRman.playerCapsule,ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
 		index = PlayerEnergy.Load(PRman.playerCapsule,ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
 		index = PlayerMovement.Load(PRman.playerCapsule,ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
 		index = PlayerPatch.Load(PRman.playerCapsule,ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
 		index = MouseLookScript.Load(PRman.playerCapsuleMainCamera,ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
 		index = HealthManager.Load(PRman.playerCapsule,ref entries,index,prefID);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
 		index = GUIState.Load(PRman.playerCanvas,ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
 		index = Inventory.Load(PRman.playerInventory,ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
 		index = WeaponCurrent.Load(PRman.playerInventory,ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
 		index = WeaponFire.Load(PRman.playerCapsuleMainCameraGunCamera,ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
 		index = MFDManager.Load(PRman.playerMFDManager,ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
 		index = Automap.Load(PRman.playerMFDManager,ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		if (BiomonitorGraphSystem.a != null) {
+		if (BiomonitorGraphSystem.a == null) { // Might not have ran Awake() if
+											   // player has not acquired yet.
 			BiomonitorGraphSystem.a.ClearGraphs();
 		}
 

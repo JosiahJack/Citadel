@@ -327,45 +327,25 @@ public class PlayerPatch : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		PlayerPatch pp = go.GetComponent<PlayerPatch>();
-		if (pp == null) {
-			Debug.Log("PlayerEnergy missing on savetype of Player!  "
-					  + "GameObject.name: " + go.name + ", "
-					  + SaveObject.currentObjectInfo);
-
-			return Utils.DTypeWordToSaveString("fffffffffuubffbbbffbbbffbb");
-		}
-
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
-		s1.Append(Utils.SaveRelativeTimeDifferential(pp.berserkFinishedTime,
-													 "berserkFinishedTime"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pp.berserkFinishedTime,"berserkFinishedTime"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(
-											pp.berserkIncrementFinishedTime,
-											"berserkIncrementFinishedTime"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pp.berserkIncrementFinishedTime,"berserkIncrementFinishedTime"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pp.detoxFinishedTime,
-													 "detoxFinishedTime"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pp.detoxFinishedTime,"detoxFinishedTime"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pp.geniusFinishedTime,
-													 "geniusFinishedTime"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pp.geniusFinishedTime,"geniusFinishedTime"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pp.mediFinishedTime,
-													 "mediFinishedTime"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pp.mediFinishedTime,"mediFinishedTime"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.FloatToString(pp.reflexFinishedTime
-		                              - Time.realtimeSinceStartup,
-									  "reflexFinishedTime"));
+		s1.Append(Utils.FloatToString(pp.reflexFinishedTime - Time.realtimeSinceStartup,"reflexFinishedTime"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pp.sightFinishedTime,
-													 "sightFinishedTime"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pp.sightFinishedTime,"sightFinishedTime"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(
-											   pp.sightSideEffectFinishedTime,
-											   "sightSideEffectFinishedTime"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pp.sightSideEffectFinishedTime,"sightSideEffectFinishedTime"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pp.staminupFinishedTime,
-													 "staminupFinishedTime"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pp.staminupFinishedTime,"staminupFinishedTime"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(pp.berserkIncrement,"berserkIncrement"));
 		s1.Append(Utils.splitChar);
@@ -386,104 +366,29 @@ public class PlayerPatch : MonoBehaviour {
 		s1.Append(BerserkEffect.Save(pp.sensaroundCamRightBerserk.gameObject));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveCamera(pp.sensaroundCamRightBerserk.gameObject));
-		// 15 items saved for the BerserkEffects and Cameras above.
-
 		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PlayerPatch pp = go.GetComponent<PlayerPatch>();
-		if (pp == null) {
-			Debug.Log("PlayerPatch.Load failure, pp == null");
-			return index + 11;
-		}
-
-		if (index < 0) {
-			Debug.Log("PlayerPatch.Load failure, index < 0");
-			return index + 11;
-		}
-
-		if (entries == null) {
-			Debug.Log("PlayerPatch.Load failure, entries == null");
-			return index + 11;
-		}
-
-		pp.berserkFinishedTime =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "berserkFinishedTime");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		pp.berserkIncrementFinishedTime =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "berserkIncrementFinishedTime");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		pp.detoxFinishedTime =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "detoxFinishedTime");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		pp.geniusFinishedTime =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "geniusFinishedTime");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		pp.mediFinishedTime =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "mediFinishedTime");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		pp.reflexFinishedTime = Utils.GetFloatFromString(entries[index],
-		                                                 "reflexFinishedTime");
-		pp.reflexFinishedTime += Time.realtimeSinceStartup;
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		pp.sightFinishedTime =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "sightFinishedTime");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		pp.sightSideEffectFinishedTime =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "sightSideEffectFinishedTime");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		pp.staminupFinishedTime =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "staminupFinishedTime");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		pp.berserkIncrement = Utils.GetIntFromString(entries[index],
-													 "berserkIncrement");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		pp.patchActive = Utils.GetIntFromString(entries[index],"patchActive");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		index = BerserkEffect.Load(pp.sensaroundCamCenterBerserk.gameObject,
-								   ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		index = Utils.LoadCamera(pp.sensaroundCamCenterBerserk.gameObject,
-								 ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		index = BerserkEffect.Load(pp.sensaroundCamLeftBerserk.gameObject,
-								   ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		index = Utils.LoadCamera(pp.sensaroundCamLeftBerserk.gameObject,
-								 ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		index = BerserkEffect.Load(pp.sensaroundCamRightBerserk.gameObject,
-								   ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		index = Utils.LoadCamera(pp.sensaroundCamRightBerserk.gameObject,
-								 ref entries,index);
-		SaveObject.currentSaveEntriesIndex = index.ToString();
-
+		pp.berserkFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index],"berserkFinishedTime"); index++;
+		pp.berserkIncrementFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index],"berserkIncrementFinishedTime"); index++;
+		pp.detoxFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index],"detoxFinishedTime"); index++;
+		pp.geniusFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index],"geniusFinishedTime"); index++;
+		pp.mediFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index],"mediFinishedTime"); index++;
+		pp.reflexFinishedTime = Utils.GetFloatFromString(entries[index],"reflexFinishedTime");
+		pp.reflexFinishedTime += Time.realtimeSinceStartup; index++;
+		pp.sightFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index],"sightFinishedTime"); index++;
+		pp.sightSideEffectFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index],"sightSideEffectFinishedTime"); index++;
+		pp.staminupFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index],"staminupFinishedTime"); index++;
+		pp.berserkIncrement = Utils.GetIntFromString(entries[index],"berserkIncrement"); index++;
+		pp.patchActive = Utils.GetIntFromString(entries[index],"patchActive"); index++;
+		index = BerserkEffect.Load(pp.sensaroundCamCenterBerserk.gameObject,ref entries,index);
+		index = Utils.LoadCamera(pp.sensaroundCamCenterBerserk.gameObject,ref entries,index);
+		index = BerserkEffect.Load(pp.sensaroundCamLeftBerserk.gameObject,ref entries,index);
+		index = Utils.LoadCamera(pp.sensaroundCamLeftBerserk.gameObject,ref entries,index);
+		index = BerserkEffect.Load(pp.sensaroundCamRightBerserk.gameObject,ref entries,index);
+		index = Utils.LoadCamera(pp.sensaroundCamRightBerserk.gameObject,ref entries,index);
 		return index;
 	}
 }

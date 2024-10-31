@@ -196,51 +196,18 @@ public class PlayerEnergy : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		PlayerEnergy pe = go.GetComponent<PlayerEnergy>();
-		if (pe == null) {
-			Debug.Log("PlayerEnergy missing on savetype of Player!  "
-					  + "GameObject.name: " + go.name);
-
-			return "0000.00000|0000.00000";
-		}
-
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.FloatToString(pe.energy,"energy"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(pe.tickFinished,
-													 "tickFinished"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(pe.tickFinished,"tickFinished"));
 		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PlayerEnergy pe = go.GetComponent<PlayerEnergy>();
-		if (pe == null) {
-			Debug.Log("PlayerEnergy.Load failure, pe == null, "
-					  + SaveObject.currentObjectInfo);
-
-			return index + 2;
-		}
-
-		if (index < 0) {
-			Debug.Log("PlayerEnergy.Load failure, index < 0, "
-					  + SaveObject.currentObjectInfo);
-
-			return index + 2;
-		}
-
-		if (entries == null) {
-			Debug.Log("PlayerEnergy.Load failure, entries == null, "
-					  + SaveObject.currentObjectInfo);
-
-			return index + 2;
-		}
-
-		pe.energy = Utils.GetFloatFromString(entries[index],"energy");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		pe.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],
-															 "tickFinished");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
+		pe.energy = Utils.GetFloatFromString(entries[index],"energy"); index++;
+		pe.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],"tickFinished"); index++;
 		return index;
 	}
 }

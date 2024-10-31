@@ -21,8 +21,8 @@ public class CitadelTests : MonoBehaviour {
 										 // there is no instance unless in Play
 										 // mode.
 	public GameObject[] dynamicObjectContainers;
-	public GameObject gameObjectToSave;
-	public int levelToOutputFrom = 0;
+// 	public GameObject gameObjectToSave;
+	public static int levelToOutputFrom = 13;
 	public Const ct;
 	public LevelManager lm;
 	public PauseScript ps;
@@ -63,14 +63,6 @@ public class CitadelTests : MonoBehaviour {
 		}
 	}
 
-	public struct LightGOData {
-		public Vector3 position;
-		public Vector3 rotation;
-		public Color color;
-		public float intensity;
-		public bool isSpotlight;
-	}
-
     //private List<GameObject> GetAllObjectsOnlyInScene() {
     //    List<GameObject> objectsInScene = new List<GameObject>();
     //    foreach (GameObject go in Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[]) {
@@ -82,13 +74,13 @@ public class CitadelTests : MonoBehaviour {
     //    return objectsInScene;
     //}
 
-	public void LoadLevelLights() {
-		lm.LoadLevelLights(levelToOutputFrom);
-	}
-
-	public void UnloadLevelLights() {
-		lm.UnloadLevelLights(levelToOutputFrom);
-	}
+// 	public void LoadLevelLights() {
+// 		lm.LoadLevelLights(levelToOutputFrom);
+// 	}
+// 
+// 	public void UnloadLevelLights() {
+// 		lm.UnloadLevelLights(levelToOutputFrom);
+// 	}
 	
 	public void GenerateStaticObjectsDataFile() {
 		#if UNITY_EDITOR
@@ -410,79 +402,80 @@ public class CitadelTests : MonoBehaviour {
     }
     #endif
 
+    // Commented out, all lights already generated.
 	public void GenerateLightsDataFile() {
-		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat");
-		StringBuilder s1 = new StringBuilder();
-		List<GameObject> allLights = new List<GameObject>();
-		Component[] compArray = lightContainers[levelToOutputFrom].GetComponentsInChildren(typeof(Light),true);
-		for (int i=0;i<compArray.Length;i++) {
-			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) {
-				UnityEngine.Debug.Log("Skipping light with LightAnimation");
-				continue;
-			}
-			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) {
-				UnityEngine.Debug.Log("Skipping light with TargetIO");
-				continue;
-			}
-			allLights.Add(compArray[i].gameObject);
-		}
-
-		UnityEngine.Debug.Log("Found " + allLights.Count + " lights in level " + levelToOutputFrom.ToString());
-
-		string lName = "CitadelScene_lights_level"
-					   + levelToOutputFrom.ToString() + ".dat";
-
-		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
-										  lName);
-
-		StreamWriter sw = new StreamWriter(lP,false,Encoding.ASCII);
-		if (sw == null) {
-			UnityEngine.Debug.Log("Lights output file path invalid");
-			return;
-		}
-
-		using (sw) {
-			for (int i=0;i<allLights.Count;i++) {
-				s1.Clear();
-				Transform tr = allLights[i].transform;
-				s1.Append(Utils.SaveTransform(allLights[i].transform));
-				s1.Append(Utils.splitChar);
-				Light lit = allLights[i].GetComponent<Light>();
-				s1.Append(Utils.FloatToString(lit.intensity));
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.FloatToString(lit.range));
-				s1.Append(Utils.splitChar);
-				s1.Append(lit.type.ToString());
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.FloatToString(lit.color.r));
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.FloatToString(lit.color.g));
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.FloatToString(lit.color.b));
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.FloatToString(lit.color.a));
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.FloatToString(lit.spotAngle));
-				s1.Append(Utils.splitChar);
-				s1.Append(lit.shadows.ToString());
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.FloatToString(lit.shadowStrength));
-				s1.Append(Utils.splitChar);
-				s1.Append(lit.shadowResolution);
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.FloatToString(lit.shadowBias));
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.FloatToString(lit.shadowNormalBias));
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.FloatToString(lit.shadowNearPlane));
-				s1.Append(Utils.splitChar);
-				s1.Append(lit.cullingMask.ToString());
-				//UnityEngine.Debug.Log(s1.ToString());
-				sw.Write(s1.ToString());
-				sw.Write(Environment.NewLine);
-			}
-			sw.Close();
-		}
+// 		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat");
+// 		StringBuilder s1 = new StringBuilder();
+// 		List<GameObject> allLights = new List<GameObject>();
+// 		Component[] compArray = lightContainers[levelToOutputFrom].GetComponentsInChildren(typeof(Light),true);
+// 		for (int i=0;i<compArray.Length;i++) {
+// 			if (compArray[i].gameObject.GetComponent<LightAnimation>() != null) {
+// 				UnityEngine.Debug.Log("Skipping light with LightAnimation");
+// 				continue;
+// 			}
+// 			if (compArray[i].gameObject.GetComponent<TargetIO>() != null) {
+// 				UnityEngine.Debug.Log("Skipping light with TargetIO");
+// 				continue;
+// 			}
+// 			allLights.Add(compArray[i].gameObject);
+// 		}
+// 
+// 		UnityEngine.Debug.Log("Found " + allLights.Count + " lights in level " + levelToOutputFrom.ToString());
+// 
+// 		string lName = "CitadelScene_lights_level"
+// 					   + levelToOutputFrom.ToString() + ".dat";
+// 
+// 		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
+// 										  lName);
+// 
+// 		StreamWriter sw = new StreamWriter(lP,false,Encoding.ASCII);
+// 		if (sw == null) {
+// 			UnityEngine.Debug.Log("Lights output file path invalid");
+// 			return;
+// 		}
+// 
+// 		using (sw) {
+// 			for (int i=0;i<allLights.Count;i++) {
+// 				s1.Clear();
+// 				Transform tr = allLights[i].transform;
+// 				s1.Append(Utils.SaveTransform(allLights[i].transform));
+// 				s1.Append(Utils.splitChar);
+// 				Light lit = allLights[i].GetComponent<Light>();
+// 				s1.Append(Utils.FloatToString(lit.intensity));
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(Utils.FloatToString(lit.range));
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(lit.type.ToString());
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(Utils.FloatToString(lit.color.r));
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(Utils.FloatToString(lit.color.g));
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(Utils.FloatToString(lit.color.b));
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(Utils.FloatToString(lit.color.a));
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(Utils.FloatToString(lit.spotAngle));
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(lit.shadows.ToString());
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(Utils.FloatToString(lit.shadowStrength));
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(lit.shadowResolution);
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(Utils.FloatToString(lit.shadowBias));
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(Utils.FloatToString(lit.shadowNormalBias));
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(Utils.FloatToString(lit.shadowNearPlane));
+// 				s1.Append(Utils.splitChar);
+// 				s1.Append(lit.cullingMask.ToString());
+// 				//UnityEngine.Debug.Log(s1.ToString());
+// 				sw.Write(s1.ToString());
+// 				sw.Write(Environment.NewLine);
+// 			}
+// 			sw.Close();
+// 		}
 	}
 
 	public void LoadLevelDynamicObjects() {
@@ -526,7 +519,7 @@ public class CitadelTests : MonoBehaviour {
 			sw.Close();
 		}
 	}
-
+/*
 	public void SaveSelectedObject() {
 		string line = SaveObject.Save(gameObjectToSave);
 		string sName = "saving_unit_test.dat";
@@ -571,10 +564,9 @@ public class CitadelTests : MonoBehaviour {
 		}
 
 		string[] entries = readFileList[0].Split('|');
-		int index = 5;
-		index = SaveObject.Load(gameObjectToSave,ref entries,-1);
-		UnityEngine.Debug.Log("Loaded data for " + gameObjectToSave.name + ", contained " + index.ToString() + " entries on the line.");
-	}
+		SaveObject.Load(gameObjectToSave,ref entries,-1);
+		UnityEngine.Debug.Log("Loaded data for " + gameObjectToSave.name);
+	}*/
 
 	public void TEMP_SetFunc_WallChunkIDs() {
 		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();

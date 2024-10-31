@@ -100,7 +100,7 @@ public class Automap : MonoBehaviour {
 
 	public static Automap a;
 
-	void Awake() {
+	public void Awake() {
 		a = this;
 		a.initialized = false;
 		a.inSideView = false;
@@ -573,29 +573,22 @@ public class Automap : MonoBehaviour {
 		int j = 0;
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
-		if (amp == null) {
-			Debug.Log("Automap missing!  GameObject.name: " + go.name);
-			for (j=0;j<(4096 * 13);j++) s1.Append("b");
-			s1.Append("ut");
-			return Utils.DTypeWordToSaveString(s1.ToString());
-		}
-
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExploredR[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored1[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored2[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored3[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored4[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored5[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored6[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored7[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored8[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored9[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExploredG1[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExploredG2[j])); s1.Append(Utils.splitChar); } // bool
-		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExploredG4[j])); s1.Append(Utils.splitChar); } // bool
-		s1.Append(Utils.UintToString(amp.currentAutomapZoomLevel));
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExploredR[j],"automapExploredR[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored1[j],"automapExplored1[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored2[j],"automapExplored2[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored3[j],"automapExplored3[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored4[j],"automapExplored4[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored5[j],"automapExplored5[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored6[j],"automapExplored6[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored7[j],"automapExplored7[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored8[j],"automapExplored8[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored9[j],"automapExplored9[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExploredG1[j],"automapExploredG1[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExploredG2[j],"automapExploredG2[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExploredG4[j],"automapExploredG4[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
+		s1.Append(Utils.UintToString(amp.currentAutomapZoomLevel,"currentAutomapZoomLevel"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(amp.automapUpdateFinished));
+		s1.Append(Utils.SaveRelativeTimeDifferential(amp.automapUpdateFinished,"automapUpdateFinished"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(amp.inSideView,"inSideView"));
 		return s1.ToString();
@@ -604,42 +597,27 @@ public class Automap : MonoBehaviour {
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		Automap amp = go.GetComponent<Automap>();
 		int j = 0;
-		if (amp == null) {
-			Debug.Log("Automap.Load failure, amp == null");
-			return index + 2 + (4096 * 13);
-		}
-
-		if (index < 0) {
-			Debug.Log("Automap.Load failure, index < 0");
-			return index + 2 + (4096 * 13);
-		}
-
-		if (entries == null) {
-			Debug.Log("Automap.Load failure, entries == null");
-			return index + 2 + (4096 * 13);
-		}
-
-		for (j=0;j<4096;j++) { amp.automapExploredR[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { amp.automapExplored1[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { amp.automapExplored2[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { amp.automapExplored3[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { amp.automapExplored4[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { amp.automapExplored5[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { amp.automapExplored6[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { amp.automapExplored7[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { amp.automapExplored8[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { amp.automapExplored9[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { amp.automapExploredG1[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { amp.automapExploredG2[j] = entries[index].Equals("1"); index++; }
-		for (j=0;j<4096;j++) { amp.automapExploredG4[j] = entries[index].Equals("1"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExploredR[j] = Utils.GetBoolFromString(entries[index],"automapExploredR[" + j.ToString() + "]"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExplored1[j] = Utils.GetBoolFromString(entries[index],"automapExplored1[" + j.ToString() + "]"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExplored2[j] = Utils.GetBoolFromString(entries[index],"automapExplored2[" + j.ToString() + "]"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExplored3[j] = Utils.GetBoolFromString(entries[index],"automapExplored3[" + j.ToString() + "]"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExplored4[j] = Utils.GetBoolFromString(entries[index],"automapExplored4[" + j.ToString() + "]"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExplored5[j] = Utils.GetBoolFromString(entries[index],"automapExplored5[" + j.ToString() + "]"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExplored6[j] = Utils.GetBoolFromString(entries[index],"automapExplored6[" + j.ToString() + "]"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExplored7[j] = Utils.GetBoolFromString(entries[index],"automapExplored7[" + j.ToString() + "]"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExplored8[j] = Utils.GetBoolFromString(entries[index],"automapExplored8[" + j.ToString() + "]"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExplored9[j] = Utils.GetBoolFromString(entries[index],"automapExplored9[" + j.ToString() + "]"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExploredG1[j] = Utils.GetBoolFromString(entries[index],"automapExploredG1[" + j.ToString() + "]"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExploredG2[j] = Utils.GetBoolFromString(entries[index],"automapExploredG2[" + j.ToString() + "]"); index++; }
+		for (j=0;j<4096;j++) { amp.automapExploredG4[j] = Utils.GetBoolFromString(entries[index],"automapExploredG4[" + j.ToString() + "]"); index++; }
 		if (LevelManager.a != null) amp.SetAutomapExploredReference(LevelManager.a.currentLevel);
 		else amp.SetAutomapExploredReference(1);
 
-		amp.currentAutomapZoomLevel = Utils.GetIntFromString(entries[index]); index++;
+		amp.currentAutomapZoomLevel = Utils.GetIntFromString(entries[index],"currentAutomapZoomLevel"); index++;
 		if (amp.currentAutomapZoomLevel < 0) amp.currentAutomapZoomLevel = 0;
 		if (amp.currentAutomapZoomLevel > 2) amp.currentAutomapZoomLevel = 2;
 		amp.AutomapZoomAdjust();
-		amp.automapUpdateFinished = Utils.LoadRelativeTimeDifferential(entries[index]); index++;
+		amp.automapUpdateFinished = Utils.LoadRelativeTimeDifferential(entries[index],"automapUpdateFinished"); index++;
 		amp.inSideView =  Utils.GetBoolFromString(entries[index],"inSideView");
 		return index;
 	}

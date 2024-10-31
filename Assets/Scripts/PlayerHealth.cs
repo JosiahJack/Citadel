@@ -259,11 +259,6 @@ public class PlayerHealth : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		PlayerHealth ph = go.GetComponent<PlayerHealth>();
-		if (ph == null) {
-			Debug.Log("PlayerHealth missing on savetype of Player!  GameObject.name: " + go.name);
-			return "0000.00000|0000.00000|0|0|0000.00000|-1|0|211.00000|0000.00000|0000.00000|0000.00000|0|0";
-		}
-
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.FloatToString(ph.radiated,"radiated"));
@@ -274,109 +269,41 @@ public class PlayerHealth : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(ph.radiationArea,"radiationArea"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(ph.mediPatchPulseFinished,
-				 									"mediPatchPulseFinished"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(ph.mediPatchPulseFinished,"mediPatchPulseFinished"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.IntToString(ph.mediPatchPulseCount,
-									"mediPatchPulseCount"));
+		s1.Append(Utils.IntToString(ph.mediPatchPulseCount,"mediPatchPulseCount"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(ph.makingNoise,"makingNoise"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(ph.lastHealth,"lastHealth"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(ph.painSoundFinished,
-													 "painSoundFinished"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(ph.painSoundFinished,"painSoundFinished"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(ph.radSoundFinished,
-													 "radSoundFinished"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(ph.radSoundFinished,"radSoundFinished"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRelativeTimeDifferential(ph.radFXFinished,
-													 "radFXFinished"));
+		s1.Append(Utils.SaveRelativeTimeDifferential(ph.radFXFinished,"radFXFinished"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(ph.deaths,"deaths"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(ph.ressurections,"ressurections"));
-		
 		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		PlayerHealth ph = go.GetComponent<PlayerHealth>();
-		if (ph == null) {
-			Debug.Log("PlayerHealth.Load failure, ph == null, "
-					  + SaveObject.currentObjectInfo);
-
-			return index + 13;
-		}
-
-		if (index < 0) {
-			Debug.Log("PlayerHealth.Load failure, index < 0, "
-					  + SaveObject.currentObjectInfo);
-
-			return index + 13;
-		}
-
-		if (entries == null) {
-			Debug.Log("PlayerHealth.Load failure, entries == null, "
-					  + SaveObject.currentObjectInfo);
-
-			return index + 13;
-		}
-
-		ph.radiated = Utils.GetFloatFromString(entries[index],"radiated");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		// Not relative time
-		ph.timer = Utils.GetFloatFromString(entries[index],"timer");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		ph.playerDead = Utils.GetBoolFromString(entries[index],"playerDead");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		ph.radiationArea = Utils.GetBoolFromString(entries[index],
-												   "radiationArea");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-
-		ph.mediPatchPulseFinished =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "mediPatchPulseFinished");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-
-		ph.mediPatchPulseCount = Utils.GetIntFromString(entries[index],
-														"mediPatchPulseCount");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-
-		ph.makingNoise = Utils.GetBoolFromString(entries[index],"makingNoise");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		ph.lastHealth = Utils.GetFloatFromString(entries[index],"lastHealth");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-		ph.painSoundFinished =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "painSoundFinished");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-
-		ph.radSoundFinished =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "radSoundFinished");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-
-
-		ph.radFXFinished = Utils.LoadRelativeTimeDifferential(entries[index],
-															  "radFXFinished");
-	    index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-	    
-		ph.deaths = Utils.GetIntFromString(entries[index],"deaths");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		
-		ph.ressurections = Utils.GetIntFromString(entries[index],
-		                                          "ressurections");
-		index++; SaveObject.currentSaveEntriesIndex = index.ToString();
-		
+		ph.radiated = Utils.GetFloatFromString(entries[index],"radiated"); index++;
+		ph.timer = Utils.GetFloatFromString(entries[index],"timer"); index++; // Not relative time
+		ph.playerDead = Utils.GetBoolFromString(entries[index],"playerDead"); index++;
+		ph.radiationArea = Utils.GetBoolFromString(entries[index],"radiationArea"); index++;
+		ph.mediPatchPulseFinished = Utils.LoadRelativeTimeDifferential(entries[index],"mediPatchPulseFinished"); index++;
+		ph.mediPatchPulseCount = Utils.GetIntFromString(entries[index],"mediPatchPulseCount"); index++;
+		ph.makingNoise = Utils.GetBoolFromString(entries[index],"makingNoise"); index++;
+		ph.lastHealth = Utils.GetFloatFromString(entries[index],"lastHealth"); index++;
+		ph.painSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index],"painSoundFinished"); index++;
+		ph.radSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index],"radSoundFinished"); index++;
+		ph.radFXFinished = Utils.LoadRelativeTimeDifferential(entries[index],"radFXFinished"); index++;
+		ph.deaths = Utils.GetIntFromString(entries[index],"deaths"); index++;
+		ph.ressurections = Utils.GetIntFromString(entries[index],"ressurections"); index++;
 		return index;
 	}
 }

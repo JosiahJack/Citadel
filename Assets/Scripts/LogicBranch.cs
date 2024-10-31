@@ -77,36 +77,16 @@ public class LogicBranch : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		LogicBranch lb = go.GetComponent<LogicBranch>();
-		if (lb == null) {
-			Debug.Log("LogicBranch missing on savetype of LogicBranch!  GameObject.name: " + go.name);
-			return "1|0";
-		}
-
 		string line = System.String.Empty;
-		line = Utils.BoolToString(lb.relayEnabled); // bool - is this enabled
-		line += Utils.splitChar + Utils.BoolToString(lb.onSecond); // bool - He is. But who's on third? What's on first? Wait what??
+		line = Utils.BoolToString(lb.relayEnabled,"relayEnabled");
+		line += Utils.splitChar + Utils.BoolToString(lb.onSecond,"onSecond"); // He is. But who's on third? What's on first? Wait what??
 		return line;
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
-		LogicBranch lb = go.GetComponent<LogicBranch>(); // A handy L shaped junction box complete with a lid for easy wire pulling.  Who knew LB's could be so cool!
-		if (lb == null) {
-			Debug.Log("LogicBranch.Load failure, lb == null");
-			return index + 2;
-		}
-
-		if (index < 0) {
-			Debug.Log("LogicBranch.Load failure, index < 0");
-			return index + 2;
-		}
-
-		if (entries == null) {
-			Debug.Log("LogicBranch.Load failure, entries == null");
-			return index + 2;
-		}
-
-		lb.relayEnabled = Utils.GetBoolFromString(entries[index]); index++; // bool - is this enabled
-		lb.onSecond = Utils.GetBoolFromString(entries[index]); index++; // bool - which one are we on?  Tap tap...this thing on?  I'll second that.
+		LogicBranch lb = go.GetComponent<LogicBranch>(); // A handy L shaped junction Box complete with a lid for easy wire pulling.  Who knew LB's could be so cool!
+		lb.relayEnabled = Utils.GetBoolFromString(entries[index],"relayEnabled"); index++;
+		lb.onSecond = Utils.GetBoolFromString(entries[index],"onSecond"); index++;
 		return index;
 	}
 }
