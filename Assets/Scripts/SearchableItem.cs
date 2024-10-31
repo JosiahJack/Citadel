@@ -51,7 +51,7 @@ public class SearchableItem : MonoBehaviour {
 	// Save searchable data
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
 		SearchableItem se;
-		if (prefID.constIndex == 467) se = go.transform.GetChild(0).GetComponent<SearchableItem>(); // se_corpse_eaten
+		if (go.name.Contains("se_corpse_eaten")) se = go.transform.GetChild(0).GetComponent<SearchableItem>(); // se_corpse_eaten
 		else se = go.GetComponent<SearchableItem>();
 		
 		StringBuilder s1 = new StringBuilder();
@@ -129,7 +129,11 @@ public class SearchableItem : MonoBehaviour {
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   PrefabIdentifier prefID) {
 		
-		SearchableItem se = go.GetComponent<SearchableItem>();
+		SearchableItem se;
+		if (go.name.Contains("se_corpse_eaten")) se = go.transform.GetChild(0).GetComponent<SearchableItem>(); // se_corpse_eaten
+		else se = go.GetComponent<SearchableItem>();
+		
+		if (se == null) Debug.LogError("SearchableItem missing on " + go.name);
 		se.lookUpIndex = Utils.GetIntFromString(entries[index],"lookUpIndex"); index++;
 		se.maxRandomItems = Utils.GetIntFromString(entries[index],"maxRandomItems"); index++;
 		se.generateContents = Utils.GetBoolFromString(entries[index],"generateContents"); index++;

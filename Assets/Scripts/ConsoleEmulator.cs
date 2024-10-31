@@ -1133,6 +1133,46 @@ Master Index
 696 func_switchbroken1           203
 697 clip_npc                     204
 698 clip_objects                 205
+699 logic_relay
+700 logic_branch
+701 logic_timer
+702 logic_spawner
+703 info_teleport_destination
+704 info_cyberstart
+705 info_cyborgconversion
+706 info_elev_destination
+707 info_email
+708 info_gameend
+709 info_message
+710 info_mission
+711 info_note
+712 info_playsound
+713 info_ressurection_point
+714 info_screenshake
+715 info_spawnpoint
+716 fx_reverbzone
+717 ef_cyber_ice
+718 ef_fragexplosion
+719 ef_line_sparqbeam
+720 ef_mist
+721 ef_particle_bloodspurtsmall
+722 ef_particle_bloodspurtsmallgreen
+723 ef_particle_bloodspurtsmallyellow
+724 ef_particle_bloodspurttiny
+725 ef_particle_camerahit
+726 ef_particle_darthit
+727 ef_particle_sec2muzburst
+728 ef_particle_sec2rotmuzburst
+729 ef_particle_sparksmall
+730 ef_particle_sparksmallblue
+731 ef_particle_sparqhit
+732 ef_sparkspits
+733 ef_spraydrips
+734 ef_steam
+735 env_sparksmall
+736 TargetIDInstance
+
+999 PlayerCapsule
 */
 
 public static bool ConstIndexInBounds(int constdex) {

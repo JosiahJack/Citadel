@@ -229,6 +229,10 @@ public class AIAnimationController : MonoBehaviour {
 		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>(true);
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
+		if (aiac == null) { // Keep!  Cyber enemies don't have an AIAC!
+			return "clipName:|currentClipPercentage:0000.00000|dying:0|animSwapFinished:0000.00000|useDeadAnimForDeath:0|playDeathAnim:0|playDyingAnim:0|minWalkSpeedToAnimate:0000.00000|anim.speed:0000.00000";
+		}
+		
 		s1.Append(Utils.SaveString(aiac.clipName,"clipName"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(aiac.currentClipPercentage,"currentClipPercentage"));
@@ -259,62 +263,27 @@ public class AIAnimationController : MonoBehaviour {
 
 		if (aiac == null) {
 			AIController aic = go.GetComponentInChildren<AIController>(true);
-			if (aic != null) {
+			if (aic == null) {
 				if (Const.a.moveTypeForNPC[aic.index] != AIMoveType.Cyber
 					&& aic.index != 20 && aic.index != 0) {
-					Debug.Log("AIAnimationController.Load failure, aiac == "
+					
+					Debug.LogError("AIAnimationController.Load failure, aiac == "
 							  + "null on " + go.name + " at location "
 							  + go.transform.localPosition.ToString());
+				} else {
+					return index + 9; // Keep!  Cyber enemies don't have an AIAC!
 				}
-			} else {
-				Debug.Log("AIAnimationController.Load failure, aic == null "
-						  + "on " + go.name + " with parent of "
-						  + go.transform.parent.gameObject.name);
 			}
-			return index + 3;
-		}
-
-		if (index < 0) {
-			Debug.Log("AIAnimationController.Load failure, index < 0");
-			return index + 3;
-		}
-
-		if (entries == null) {
-			Debug.Log("AIAnimationController.Load failure, entries == null");
-			return index + 3;
 		}
 		
-        aiac.clipName = Utils.LoadString(entries[index],"clipName");
-		index++;
-		
-		aiac.currentClipPercentage = Utils.GetFloatFromString(entries[index],
-													  "currentClipPercentage");
-		index++;
-
-		aiac.dying = Utils.GetBoolFromString(entries[index],"dying");
-		index++;
-
-		aiac.animSwapFinished =
-			Utils.LoadRelativeTimeDifferential(entries[index],
-											   "animSwapFinished");
-		index++;
-
-		aiac.useDeadAnimForDeath = Utils.GetBoolFromString(entries[index],
-														"useDeadAnimForDeath");
-		index++;
-
-		aiac.playDeathAnim = Utils.GetBoolFromString(entries[index],
-													 "playDeathAnim");
-		index++;
-
-		aiac.playDyingAnim = Utils.GetBoolFromString(entries[index],
-													 "playDyingAnim");
-		index++;
-
-		aiac.minWalkSpeedToAnimate = Utils.GetFloatFromString(entries[index],
-													  "minWalkSpeedToAnimate");
-		index++;
-
+        aiac.clipName = Utils.LoadString(entries[index],"clipName"); index++;
+		aiac.currentClipPercentage = Utils.GetFloatFromString(entries[index],"currentClipPercentage"); index++;
+		aiac.dying = Utils.GetBoolFromString(entries[index],"dying"); index++;
+		aiac.animSwapFinished = Utils.LoadRelativeTimeDifferential(entries[index],"animSwapFinished"); index++;
+		aiac.useDeadAnimForDeath = Utils.GetBoolFromString(entries[index],"useDeadAnimForDeath"); index++;
+		aiac.playDeathAnim = Utils.GetBoolFromString(entries[index],"playDeathAnim"); index++;
+		aiac.playDyingAnim = Utils.GetBoolFromString(entries[index],"playDyingAnim"); index++;
+		aiac.minWalkSpeedToAnimate = Utils.GetFloatFromString(entries[index],"minWalkSpeedToAnimate"); index++;
         float setSpeed = 1f;
 		if (!aiac.aic.HasHealth(aiac.aic.healthManager)) {
 			setSpeed = 0f;
@@ -323,8 +292,7 @@ public class AIAnimationController : MonoBehaviour {
 			if (setSpeed < 0f || setSpeed > 100f) setSpeed = 1f;
 		}
 
-		aiac.SetAnimFromLoad(aiac.clipName,0,aiac.currentClipPercentage,setSpeed);
-		index++;
+		aiac.SetAnimFromLoad(aiac.clipName,0,aiac.currentClipPercentage,setSpeed); index++;
 		return index;
 	}
 }

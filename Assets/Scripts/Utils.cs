@@ -1134,25 +1134,8 @@ public class Utils {
 
     public static float LoadRelativeTimeDifferential(string savedTimer,
 													 string name) {
-		string[] splits = savedTimer.Split(':');
-		if (splits.Length < 2) {
-			UnityEngine.Debug.LogError("BUG: Not enough splits in " + savedTimer
-								       + " when wanting timer named " + name
-								       + ", returning 0.0 as fallback on "
-								       + SaveObject.currentObjectInfo);
-		}
-		string nameReceived = splits[0];
-		string valueReceived = splits[1];
-		if (nameReceived != name) {
-			UnityEngine.Debug.LogError("BUG: Attempting to parse " + savedTimer
-								       + " when wanting timer named " + name
-								       + ", returning 0.0 as fallback on "
-								       + SaveObject.currentObjectInfo);
 
-			return 0.0f;
-		}
-
-        float val = GetFloatFromString(valueReceived,name);
+        float val = GetFloatFromString(savedTimer,name);
         if (PauseScript.a == null) return val;
         return PauseScript.a.relativeTime + val; // Add current instance's
                                                  // relative time to get same

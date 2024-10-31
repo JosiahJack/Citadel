@@ -816,7 +816,7 @@ public class HealthManager : MonoBehaviour {
 	// Generic health info string
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
 		HealthManager hm;
-		if (prefID.constIndex == 467) hm = go.transform.GetChild(0).GetComponent<HealthManager>(); // se_corpse_eaten
+		if (go.name.Contains("se_corpse_eaten")) hm = go.transform.GetChild(0).GetComponent<HealthManager>(); // se_corpse_eaten
 		else hm = go.GetComponent<HealthManager>();
 		
 		if (!hm.awakeInitialized) hm.Awake();
@@ -845,6 +845,7 @@ public class HealthManager : MonoBehaviour {
 			s1.Append(Utils.SaveSubActivatedGOState(hm.gibObjects[i]));
 		}
 
+		if (prefID == null) Debug.LogError("Missing PrefabIdentifier on " + go.name + ".");
 		if (prefID.constIndex == 526) { // prop_console02
 			GameObject child = go.transform.GetChild(0).gameObject; 
 			s1.Append(Utils.splitChar);
@@ -861,8 +862,10 @@ public class HealthManager : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   PrefabIdentifier prefID) {
+		HealthManager hm;
+		if (go.name.Contains("se_corpse_eaten")) hm = go.transform.GetChild(0).GetComponent<HealthManager>(); // se_corpse_eaten
+		else hm = go.GetComponent<HealthManager>();
 
-		HealthManager hm = go.GetComponent<HealthManager>(); // SaveType = hm.
         hm.levelIndex = Utils.GetIntFromString(entries[index],"levelIndex"); index++;
 		if (!hm.awakeInitialized) hm.Awake();
 		if (!hm.startInitialized) hm.Start();
@@ -872,7 +875,7 @@ public class HealthManager : MonoBehaviour {
 		hm.god = Utils.GetBoolFromString(entries[index],"godmode"); index++;
 		hm.teleportDone = Utils.GetBoolFromString(entries[index],"teleportDone"); index++;
         hm.targetOnDeath = Utils.LoadString(entries[index],"targetOnDeath"); index++;
-		index = TargetIO.Load(go,ref entries,index,true);
+		index = TargetIO.Load(go,ref entries,index,true,prefID);
 		hm.AwakeFromLoad();
 		int numChildren = hm.gibObjects.Length;
 		int numChildrenFromSave = Utils.GetIntFromString(entries[index],"gibObjects.Length"); index++;

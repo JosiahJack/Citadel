@@ -409,10 +409,17 @@ public class TargetIO : MonoBehaviour {
 	// Save searchable data
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
 		TargetIO tio;
-		if (prefID.constIndex == 467) tio = go.transform.GetChild(0).GetComponent<TargetIO>(); // se_corpse_eaten
+		if (go.name.Contains("se_corpse_eaten")) tio = go.transform.GetChild(0).GetComponent<TargetIO>(); // se_corpse_eaten
 		else tio = go.GetComponent<TargetIO>(); 
 		
-		if (tio == null) Debug.LogError("BUG: Missing TargetIO on " + go.name);
+		if (tio == null) {
+			Transform par = go.transform.parent;
+			string parname;
+			if (par == null) parname = "-";
+			else parname = par.gameObject.name;
+			
+			Debug.LogError("BUG: Missing TargetIO on " + go.name + " with parent of " + parname);
+		}
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.SaveString(tio.targetname,"targetname"));
@@ -530,9 +537,11 @@ public class TargetIO : MonoBehaviour {
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index,
-						   bool instantiated) {
-		
-		TargetIO tio = go.GetComponent<TargetIO>();
+						   bool instantiated, PrefabIdentifier prefID) {
+		TargetIO tio;
+		if (go.name.Contains("se_corpse_eaten")) tio = go.transform.GetChild(0).GetComponent<TargetIO>(); // se_corpse_eaten
+		else tio = go.GetComponent<TargetIO>(); 
+
 		tio.targetname = Utils.LoadString(entries[index],"targetname"); index++;
 		tio.tripTrigger = Utils.GetBoolFromString(entries[index],"tripTrigger"); index++;
 		tio.doorOpen = Utils.GetBoolFromString(entries[index],"doorOpen"); index++;

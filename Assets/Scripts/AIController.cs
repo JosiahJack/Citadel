@@ -228,8 +228,8 @@ public class AIController : MonoBehaviour {
 		normalVolume = SFX.volume;
 		if (walkWaypoints.Length > 0 && walkWaypoints[currentWaypoint] != null
 			&& walkPathOnStart && !asleep) {
-            currentDestination = 
-				walkWaypoints[currentWaypoint].transform.position;
+			
+            currentDestination = walkWaypoints[currentWaypoint].transform.position;
             currentState = AIState.Walk; // If waypoints are set, start walking
 		} else {
             currentState = AIState.Idle; // No waypoints, stay put
