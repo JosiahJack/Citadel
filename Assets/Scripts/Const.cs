@@ -1435,6 +1435,7 @@ public class Const : MonoBehaviour {
 			}
 			Utils.SafeDestroy(saveIndicator);
 		}
+		
 		GameObject loadIndicator = GameObject.Find("LoadGameIndicator");
 		if (loadIndicator != null) {
 			SceneTransitionHandler sth = loadIndicator.GetComponent<SceneTransitionHandler>();
@@ -1449,6 +1450,7 @@ public class Const : MonoBehaviour {
 			}
 			Utils.SafeDestroy(loadIndicator);
 		}
+		
 		Cursor.visible = true;
 		Utils.Deactivate(loadingScreen);
 		Utils.Deactivate(MainMenuHandler.a.IntroVideo);
@@ -1468,9 +1470,7 @@ public class Const : MonoBehaviour {
 		if (loadTimer == null) {
 			sprint(stringTable[197]);
 		} else {
-			sprint(stringTable[197] + " ("
-				   + loadTimer.Elapsed.ToString()
-				   + ")"); // Loading...Done!
+			sprint(stringTable[197] + " (" + loadTimer.Elapsed.ToString() + ")"); // Loading...Done!
 		}
 	}
 
@@ -1527,23 +1527,6 @@ public class Const : MonoBehaviour {
 	public void Load(int saveFileIndex, bool actual) {
 	    if (Application.platform == RuntimePlatform.Android) return;
 		ShowLoading();
-		//if (!actual) {
-		//	UnityEngine.Debug.Log("Initial Load() with saveFileIndex of " 
-		//						  + saveFileIndex.ToString());
-		//	GameObject loadGameIndicator = new GameObject();
-		//	loadGameIndicator.name = "LoadGameIndicator";
-		//	SceneTransitionHandler sth =
-		//	  loadGameIndicator.AddComponent<SceneTransitionHandler>();
-		//	sth.saveGameIndex = saveFileIndex;
-		//	DontDestroyOnLoad(loadGameIndicator);
-		//	ReloadScene(sth);
-		//	return;
-		//} else {
-		//	UnityEngine.Debug.Log("Second pass Actual Load() with "
-		//						  + "saveFileIndex of "
-		//						  + saveFileIndex.ToString());
-		//}
-
 		GameObject freshGame = GameObject.Find("GameNotYetStarted");
 		if (freshGame != null) Utils.SafeDestroy(freshGame);
 		startingNewGame = false;
@@ -1573,16 +1556,16 @@ public class Const : MonoBehaviour {
 
 		// Remove and clear out everything and reset any lists.
 		ClearActiveAutomapOverlays();
-		UnityEngine.Debug.Log("CLEARING TARGET REGISTRIES FOR LOAD!");
+// 		UnityEngine.Debug.Log("CLEARING TARGET REGISTRIES FOR LOAD!");
 		TargetRegister.Clear();
 		TargetnameRegister.Clear();
 		for (i=0;i<healthObjectsRegistration.Length;i++) {
 			healthObjectsRegistration[i] = null;
 		}
 		
+		LevelManager.a.ResetSaveStrings();
 		for (i=0;i<14;i++) {
 			LevelManager.a.UnloadLevelDynamicObjects(i,false); // Delete them all!
-			LevelManager.a.ResetSaveStrings();
 			LevelManager.a.UnloadLevelNPCs(i); // Delete them all!
 			LevelManager.a.levelCameraCount[i] = 0;
 			LevelManager.a.levelSmallNodeCount[i] = 0;
@@ -1593,7 +1576,6 @@ public class Const : MonoBehaviour {
 			loadPercentText.text = "Preparing level " + i.ToString();
 			yield return new WaitForSeconds(0.1f); // Update progress text.
 		}
-		
 
 		loadPercentText.text = "Open Save File         ";
 		yield return null; // Update progress text.
@@ -1621,9 +1603,7 @@ public class Const : MonoBehaviour {
 			using (sr) {
 				do {
 					readline = sr.ReadLine();
-					if (readline != null) {
-						readFileList.Add(readline);
-					}
+					if (readline != null) readFileList.Add(readline);
 				} while (!sr.EndOfStream);
 				sr.Close();
 			}
@@ -1641,59 +1621,25 @@ public class Const : MonoBehaviour {
 			
 			// The global time from which everything checks it's
 			// somethingerotherFinished timer states.
-			PauseScript.a.relativeTime =
-			    Utils.GetFloatFromString(entries[index],"GameTime");
-			index++;
-			
-			PauseScript.a.absoluteTime =
-			    Utils.GetFloatFromString(entries[index],"TotalPlayTime");
-			index++;
-			
-			kills = Utils.GetIntFromString(entries[index],"kills");
-			index++;
-			
-			cyberkills = Utils.GetIntFromString(entries[index],"cyberkills");
-			index++;
-			
-			shotsFired = Utils.GetIntFromString(entries[index],"shotsFired");
-			index++;
-			
-			grenadesThrown = Utils.GetIntFromString(entries[index],"grenadesThrown");
-			index++;
-			
-			damageDealt = Utils.GetFloatFromString(entries[index],"damageDealt");
-			index++;
-			
-			damageReceived = Utils.GetFloatFromString(entries[index],
-			                                          "damageReceived");
-			index++;
-			
-			// 1+, you're doin' it now!
-			savesScummed = 1 + Utils.GetIntFromString(entries[index],
-			                                          "savesScummed");
-			index++; // In case of more.
+			PauseScript.a.relativeTime = Utils.GetFloatFromString(entries[index],"GameTime"); index++;
+			PauseScript.a.absoluteTime = Utils.GetFloatFromString(entries[index],"TotalPlayTime"); index++;
+			kills = Utils.GetIntFromString(entries[index],"kills"); index++;
+			cyberkills = Utils.GetIntFromString(entries[index],"cyberkills"); index++;
+			shotsFired = Utils.GetIntFromString(entries[index],"shotsFired"); index++;
+			grenadesThrown = Utils.GetIntFromString(entries[index],"grenadesThrown"); index++;
+			damageDealt = Utils.GetFloatFromString(entries[index],"damageDealt"); index++;
+			damageReceived = Utils.GetFloatFromString(entries[index],"damageReceived"); index++;
+			savesScummed = 1 + Utils.GetIntFromString(entries[index],"savesScummed"); // 1+, you're doin' it now!
 			index = 0; // reset before starting next line
 
 			// Read in global states, difficulties, and quest mission bits.
 			entries = readFileList[2].Split(Utils.splitCharChar);
 			index = LevelManager.Load(LevelManager.a.gameObject,ref entries,index);
 			index = questData.Load(ref entries,index);
-			difficultyCombat = Utils.GetIntFromString(entries[index],
-			                                          "difficultyCombat");
-			index++;
-			
-			difficultyMission = Utils.GetIntFromString(entries[index],
-			                                           "difficultyMission");
-			index++;
-			
-			difficultyPuzzle = Utils.GetIntFromString(entries[index],
-			                                          "difficultyPuzzle");
-			index++;
-			
-			difficultyCyber = Utils.GetIntFromString(entries[index],
-			                                         "difficultyCyber");
-			index++;
-
+			difficultyCombat = Utils.GetIntFromString(entries[index],"difficultyCombat"); index++;
+			difficultyMission = Utils.GetIntFromString(entries[index],"difficultyMission"); index++;
+			difficultyPuzzle = Utils.GetIntFromString(entries[index],"difficultyPuzzle"); index++;
+			difficultyCyber = Utils.GetIntFromString(entries[index],"difficultyCyber"); index++;
 			loadPercentText.text = "Preprocess Save File...";
 			yield return null;
 
@@ -1703,19 +1649,13 @@ public class Const : MonoBehaviour {
 			int[] saveFile_Line_SaveID = new int[numSaveFileLines];
 			bool[] saveFile_Line_IsInstantiated = new bool[numSaveFileLines];
 			bool[] alreadyLoadedLineFromSaveFile = new bool[numSaveFileLines];
-
-			// Fill with false.
-			Utils.BlankBoolArray(ref alreadyLoadedLineFromSaveFile,false);
-
+			Utils.BlankBoolArray(ref alreadyLoadedLineFromSaveFile,false); // Fill with false.
 			for (i = 3; i < numSaveFileLines; i++) {
 				entries = readFileList[i].Split(Utils.splitCharChar);
 				if (entries.Length < 1)  continue;
 
-				saveFile_Line_SaveID[i] = Utils.GetIntFromString(entries[1],
-																 "SaveID");
-
-				saveFile_Line_IsInstantiated[i] = Utils.GetBoolFromString(
-													entries[2],"instantiated");
+				saveFile_Line_SaveID[i] = Utils.GetIntFromString(entries[1],"SaveID");
+				saveFile_Line_IsInstantiated[i] = Utils.GetBoolFromString(entries[2],"instantiated");
 			}
 
 			loadPercentText.text = "Preprocess Arrays...   ";
@@ -1755,9 +1695,11 @@ public class Const : MonoBehaviour {
 			//   level since we removed the instantiables.
 			// When we come across an instantiated object in the saveable file,
 			//   we need to skip it for later and instantiate them all.
-			loadPercentText.text = "Loading Static Objects: 0.0% (    0 / " + numSaveablesFromSavefile.ToString() + ")";
+			loadPercentText.text = "Loading Static Objects: 0.0% (    0 / "
+								   + numSaveablesFromSavefile.ToString() + ")";
 			yield return null;
 			loadUpdateTimer.Start(); // For loading update
+			float perc = 0f;
 			for (i = 3; i < numSaveFileLines; i++) {
 				if (saveFile_Line_IsInstantiated[i]) continue; // Skip instantiables.
 
@@ -1771,10 +1713,11 @@ public class Const : MonoBehaviour {
 					if (!currentSaveObjectInScene.instantiated) alreadyCheckedThisInstantiableGameObjectInScene[j] = true; // Huge time saver right here!
 
 					// Static Objects all have unique ID.
-					if (currentSaveObjectInScene.SaveID == 999999) UnityEngine.Debug.Log("Checking player during load");
+// 					if (currentSaveObjectInScene.SaveID == 999999) UnityEngine.Debug.Log("Checking player during load");
 					if (currentSaveObjectInScene.SaveID == saveFile_Line_SaveID[i]
 						&& currentSaveObjectInScene.SaveID != 0) {
-						if (currentSaveObjectInScene.SaveID == 999999) UnityEngine.Debug.Log("Found player in savefile on line " + i.ToString() + " during load");
+						
+// 						if (currentSaveObjectInScene.SaveID == 999999) UnityEngine.Debug.Log("Found player in savefile on line " + i.ToString() + " during load");
 
 						//if (!saveableGameObjectsInScene[j].isStatic // EDITOR ONLY!!!
 						if (currentSaveObjectInScene.instantiated
@@ -1791,7 +1734,13 @@ public class Const : MonoBehaviour {
 					}
 				}
 
-				loadPercentText.text = "Loading Static Objects: " + ((float)i/(float)numSaveablesFromSavefile*100f).ToString("0.0") + "% (" + i.ToString() + " / " + numSaveablesFromSavefile.ToString() + ")";
+				perc = (float)i/(float)numSaveablesFromSavefile*100f;
+				loadPercentText.text = "Loading Static Objects: "
+									   + perc.ToString("0.0") + "% ("
+									   + i.ToString() + " / "
+									   + numSaveablesFromSavefile.ToString()
+									   + ")";
+									   
 				if (loadUpdateTimer.ElapsedMilliseconds > 500) {
 					loadUpdateTimer.Reset();
 					loadUpdateTimer.Start();
@@ -1839,6 +1788,7 @@ public class Const : MonoBehaviour {
 			float percLoaded = 0f;
 			GameObject instGO = null;
 			GameObject contnr = null;
+// 			UnityEngine.Debug.Log("numSaveFileLines: " + numSaveFileLines.ToString());
 			for (i = 3 ; i < numSaveFileLines; i++) {
 				if (alreadyLoadedLineFromSaveFile[i]) continue;
 
@@ -1848,21 +1798,24 @@ public class Const : MonoBehaviour {
 					constdex = Utils.GetIntFromString(entries[19],"constIndex");
 					if (!ConsoleEmulator.ConstIndexInBounds(constdex)) continue;
 
-					savID = Utils.GetIntFromString(entries[1],"SaveID");
-					if (ConsoleEmulator.ConstIndexIsDynamicObject(constdex)) {
-						contnr = LevelManager.a.GetRequestedLevelDynamicContainer(levID);
-					} else {
-						contnr = null;
-					}
-					
 					// Already did LevelManager.a.LoadLevel above, and since its
-					// savestrings lists were empty, safet to spawn dynamics
-					// now.
-					if (levID == LevelManager.a.currentLevel) {
-						instGO = ConsoleEmulator.SpawnDynamicObject(constdex,levID,
-																false,contnr,
-																savID);
-						SaveObject.Load(instGO,ref entries,i); // Load it.
+					// savestrings lists were empty, safe to spawn dynamics now.
+					if (ConsoleEmulator.ConstIndexIsNPC(constdex)
+						&& levID == LevelManager.a.currentLevel) {
+						
+						savID = Utils.GetIntFromString(entries[1],"SaveID");
+						if (ConsoleEmulator.ConstIndexIsDynamicObject(constdex)) {
+							contnr = LevelManager.a.GetRequestedLevelDynamicContainer(levID);
+						} else {
+							contnr = null;
+						}
+						
+						instGO = ConsoleEmulator.SpawnDynamicObject(constdex,
+																	levID,false,
+																	contnr,
+																	savID);
+						
+						SaveObject.Load(instGO,ref entries,i); // Load NPC.
 					} else {
 						LevelManager.a.DynamicObjectsSavestrings[levID].Add(readFileList[i]);
 					} 
@@ -1883,6 +1836,10 @@ public class Const : MonoBehaviour {
 					yield return null;
 				}
 			}
+			
+			// OK we read in all the dynamic objects above into the savestrings
+			// list, now actaully instantiate them.
+			LevelManager.a.LoadLevelDynamicObjectsForCurrent();
 			loadUpdateTimer.Stop();
 
 			// LOAD 8.  Repopulate registries as needed that were on Awake.
@@ -1891,22 +1848,19 @@ public class Const : MonoBehaviour {
 			}
 			
 			if (Inventory.a.hasHardware[1]) {
-		        // Go through all HealthManagers in the game and initialize the
+				// Go through all HealthManagers in the game and initialize the
 				// linked overlays now for Automap.  Done after instantiation.
 				List<GameObject> hmGOs = new List<GameObject>();
 				
 				// Find all HealthManager components.
-                bool includeInactive = true;
+				bool includeInactive = true;
 				for (i=0;i<allParents.Count;i++) {
 					Component[] compArray =
-					    allParents[i].GetComponentsInChildren(
-					        typeof(HealthManager),includeInactive);
-	
-					for (k=0;k<compArray.Length;k++) {
-					    // Add the gameObject associated with all HealthManager
-					    // components in the scene.
-						hmGOs.Add(compArray[k].gameObject);
-					}
+						allParents[i].GetComponentsInChildren(
+							typeof(HealthManager),includeInactive);
+
+					// Add all gameObject with a HealthManager components.
+					for (k=0;k<compArray.Length;k++) hmGOs.Add(compArray[k].gameObject);
 				}
 
 				for (i=0;i<hmGOs.Count;i++) {
@@ -2171,10 +2125,10 @@ public class Const : MonoBehaviour {
 	    // GameObject isn't in registry, add fresh.
 	    TargetRegister.Add(go);
 		TargetnameRegister.Add(tn);
-		if (TargetnameRegister.Count <= lastTargetRegistrySize) {
-			UnityEngine.Debug.Log("Target register reset!");
-		}
-		
+// 		if (TargetnameRegister.Count <= lastTargetRegistrySize) {
+// 			UnityEngine.Debug.Log("Target register reset!");
+// 		}
+// 		
 		lastTargetRegistrySize = TargetnameRegister.Count;
 		
 // 		UnityEngine.Debug.Log("Target registering " + tn + " for " + go.name

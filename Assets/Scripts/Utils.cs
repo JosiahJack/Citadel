@@ -862,6 +862,7 @@ public class Utils {
             case 32: return SaveableType.Projectile;
             case 33: return SaveableType.NormalScreen;
             case 34: return SaveableType.CyberSwitch;
+			case 35: return SaveableType.CyberItem;
         }
         return SaveableType.Transform;
     }

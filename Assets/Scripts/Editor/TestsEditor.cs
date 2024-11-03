@@ -25,8 +25,8 @@ public class TestsEditor : Editor {
 // 		if (GUILayout.Button("Output All Geometry to File")) {
 // 			testScript.GenerateGeometryDataFile();
 // 		}
-		if (GUILayout.Button("Output All Static Objects to File")) {
-			testScript.GenerateStaticObjectsDataFile();
+		if (GUILayout.Button("Output All Static Objects Immutable to File")) {
+			testScript.GenerateStaticObjectsImmutableDataFile();
 		}
 		
 		// Already output, hiding to not accidentally overwrite!!	
@@ -55,15 +55,15 @@ public class TestsEditor : Editor {
 // 			testScript.LoadSelectedObject();
 // 		}
 
-		EditorGUILayout.BeginVertical();
-        GUILayout.Space(8f);
-        EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
-        GUILayout.Space(8f);
-		EditorGUILayout.EndVertical();
-
-		if (GUILayout.Button("Output All Dynamic Objects to File")) {
-			testScript.GenerateDynamicObjectsDataFile();
-		}
+// 		EditorGUILayout.BeginVertical();
+//         GUILayout.Space(8f);
+//         EditorGUI.DrawRect(EditorGUILayout.GetControlRect(false,1f), new Color(0f, 0f, 0f, 0.8f));
+//         GUILayout.Space(8f);
+// 		EditorGUILayout.EndVertical();
+// 
+// 		if (GUILayout.Button("Output All Dynamic Objects to File")) {
+// 			testScript.GenerateDynamicObjectsDataFile();
+// 		}
 
 // 		if (GUILayout.Button("Load Dynamic Objects for\nSelected Level")) {
 // 			testScript.LoadLevelLights();

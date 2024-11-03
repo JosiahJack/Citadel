@@ -891,30 +891,30 @@ Master Index
 454 item_cyber_pulser                     6
 455 item_cyber_recall                     7
 456 item_cyber_shield                     8
-457 item_cyber_turbo              Misc    9 
-458 prop_phys_barrel_chemical     0
-459 prop_phys_barrel_radiation    1
-460 prop_phys_barrel_toxic        2
-461 prop_phys_cart                3
-462 prop_phys_pot                 4
-463 prop_phys_toolcart            5 
-464 se_briefcase                  6
-465 se_corpse_blueshirt           7
-466 se_corpse_brownshirt          8
-467 se_corpse_eaten               9
-468 se_corpse_labcoat             10
-469 se_corpse_security            11
-470 se_corpse_tan                 12
-471 se_corpse_torso               13
-472 se_crate1                     14
-473 se_crate2                     15
-474 se_crate3                     16
-475 se_crate4                     17
-476 se_crate5                     18
-477 sec_camera                    19
-478 sec_cpunode                   20
-479 sec_cpunode_small             21
-480 weapon_cyber_mine      Proj   22
+457 item_cyber_turbo                      9 
+458 prop_phys_barrel_chemical     
+459 prop_phys_barrel_radiation    
+460 prop_phys_barrel_toxic        
+461 prop_phys_cart                
+462 prop_phys_pot                 
+463 prop_phys_toolcart             
+464 se_briefcase                  
+465 se_corpse_blueshirt           
+466 se_corpse_brownshirt          
+467 se_corpse_eaten               
+468 se_corpse_labcoat             
+469 se_corpse_security            
+470 se_corpse_tan                 
+471 se_corpse_torso               
+472 se_crate1                     
+473 se_crate2                     
+474 se_crate3                     
+475 se_crate4                     
+476 se_crate5                     
+477 sec_camera                    
+478 sec_cpunode                   
+479 sec_cpunode_small             
+480 weapon_cyber_mine      Proj
 481 proj_enemshot2         0
 482 proj_magpulse_shot     1
 483 proj_stungun_shot      2
@@ -948,191 +948,191 @@ Master Index
 511 door_elevator4            15
 512 door_secret1              16
 513 door_secret2              17
-514 door_secret3              18  Misc
-515 func_forcebridge              23
-516 prop_lift2                    24
-517 func_wall                     25
-518 BulletHoleLarge               26
-519 BulletHoleScorchLarge         27
-520 BulletHoleScorchSmall         28
-521 BulletHoleSmall               29
-522 BulletHoleTiny                30
-523 BulletHoleTinySpread          31
+514 door_secret3              18
+515 func_forcebridge
+516 prop_lift2
+517 func_wall                     
+518 BulletHoleLarge
+519 BulletHoleScorchLarge         
+520 BulletHoleScorchSmall         
+521 BulletHoleSmall               
+522 BulletHoleTiny                
+523 BulletHoleTinySpread          
 524 func_door_cyber           19
-525 prop_console01                54
-526 prop_console02                55
-527 prop_grate1_1                 32
-528 prop_grate1_2                 33
-529 prop_grate1_3                 34
-530 se_cabinet                    35
-531 se_thermos                    36
-532 prop_beaker_holder            37
-533 prop_bed                      38
-534 prop_bed_hospital             39
-535 prop_bed_neurosurgery         40
-536 prop_bonepile1                41
-537 prop_bridgewall1              42
-538 prop_broken_clock             43
-539 prop_brokengun                44
-540 prop_chair01                  45
-541 prop_chair02                  46
-542 prop_chair03                  47
-543 prop_chair04                  48
-544 prop_chair05                  49
-545 prop_chandelier               50
-546 prop_charge_station           51
-547 prop_clothes                  52
-548 prop_computer                 53
-549 prop_couch                    56
-550 prop_couch2                   57
-551 prop_cpuscreen                58
-552 prop_cyber_datafrag           59
-553 prop_cyber_decoy              60
-554 prop_cyber_exit               61
-555 prop_cyber_switch             62
-556 prop_cyberport                63
-557 prop_desk01                   64
-558 prop_desk02                   65
-559 prop_dexmissile               66
-560 prop_diegorapier              67
-561 prop_foliage_bush             68
-562 prop_foliage_fern             69
-563 prop_foliage_fernblueflower   70
-564 prop_foliage_pinetreem        71
-565 prop_foliage_poisonbush1      72
-566 prop_gear_large               74
-567 prop_gear_small               73
-568 prop_grass1                   75
-569 prop_grass2                   76
-570 prop_grass3                   77
-571 prop_grass4                   78
-572 prop_grass5                   79
-573 prop_grate4                   80
-574 prop_healingbed               81
-575 prop_lamp                     82
-576 prop_light_emergsignal        83
-577 prop_microscope               84
-578 prop_pipe                     85
-579 prop_puddle                   86
-580 prop_puddle_grease            87
-581 prop_puddle_oil               88
-582 prop_shelves                  89
-583 prop_skeleton                 90
-584 prop_sleeping_cables          91
-585 prop_sparkingwire             92
-586 prop_table                    93
-587 prop_tv_on_a_post             94
-588 prop_vendingmachines1         95
-589 prop_vendingmachines2         96
-590 prop_weapon_rack              97
-591 prop_xray                     98
-592 text_decal                    99
-593 text_decalStopDSS1           100
-594 trigger_counter              101
-595 trigger_cyberpush            102
-596 trigger_gravitylift          103
-597 trigger_ladder               104
-598 trigger_multiple             105
-599 trigger_music                106
-600 trigger_once                 107
-601 trigger_radiation            108
-602 us_isotopepanel              109
-603 us_paperlog                  110
-604 us_puz_elevatorkeypad        111
-605 us_puz_elevatorkeypad2       112
-606 us_puz_elevatorkeypad3       113
-607 us_puz_elevatorkeypad4       114
-608 us_puz_keypad                115
-609 us_puz_panel_blue            116
-610 us_puz_panel_blue_dead       117
-611 us_puz_panel_brown           118
-612 us_puz_panel_brown_dead      119
-613 us_puz_panel_gray            120
-614 us_puz_panel_gray_dead       121
-615 us_puz_panel_red             122
-616 us_puz_panel_red_dead        123 // Redemption?
-617 us_puz_panel_teal            124
-618 us_puz_panel_teal_dead       125
-619 us_relaypanel                126
-620 us_retinalscanner            127
-621 ambient_airhiss              128
-622 ambient_clicker              129
-623 ambient_compressor           130
-624 ambient_dishwasher           131
-625 ambient_drip_amb             132
-626 ambient_fan                  133
-627 ambient_generator_gas        134
-628 ambient_gurgle               135
-629 ambient_icemaker             136
-630 ambient_intake               137
-631 ambient_lathe                138
-632 ambient_lev3loop1            139
-633 ambient_lev3loop2            140
-634 ambient_lev3loop3            141
-635 ambient_lev3loop4            142
-636 ambient_liquid_bubble        143
-637 ambient_liquid_lava2         144
-638 ambient_looping              145
-639 ambient_machgear_loop        146
-640 ambient_machine_ambience     147
-641 ambient_machine_go           148
-642 ambient_machine_humamb7      149
-643 ambient_machine_humlonoise   150
-644 ambient_machine_loop1        151
-645 ambient_machine_loop2        152
-646 ambient_machinea1            153
-647 ambient_machinevat_loop      154
-648 ambient_mist                 155
-649 ambient_pipewater_loop       156
-650 ambient_powerloom            157
-651 ambient_pump                 158
-652 ambient_pump2                159
-653 ambient_rain                 160
-654 ambient_steam_loop           161
-655 ambient_washing_machine      162
-656 decal_blood_die              163
-657 decal_blood_resist           164
-658 decal_blood_stayaway         165
-659 decal_blood_words2           166
-660 decal_bloodfonta             167
-661 decal_bloodfonte             168
-662 decal_bloodfontg             169
-663 decal_bloodfonth             170
-664 decal_bloodfontr             171
-665 decal_bloodfonty             172
-666 decal_bloodsplat2            173
-667 decal_logo_antenna           174
-668 decal_logo_armory            175
-669 decal_logo_biohazard         176
-670 decal_logo_bridge            177
-671 decal_logo_cyborg            178
-672 decal_logo_gears             179
-673 decal_logo_medical           180
-674 decal_logo_radhazard         181
-675 decal_logo_research          182
-676 decal_logo_security          183
-677 decal_painting1              184
-678 decal_painting2              185
-679 decal_painting3              186
-680 decal_posterbetterfuture     187
-681 decal_postergenetics         188
-682 decal_scorch1                189
-683 decal_scorch2                190
-684 decal_scorch3                191
-685 decal_scorch4                192
-686 decal_scorchtiny             193
-687 decal_blood_splat            194 // missed typing it so alphabetically down here, oh well
-688 func_switch1                 195
-689 func_switch2                 196
-690 func_switch3                 197
-691 func_switch4                 198
-692 func_switch5                 199
-693 func_switch5broken           200
-694 func_switch7                 201
-695 func_switch8                 202
-696 func_switchbroken1           203
-697 clip_npc                     204
-698 clip_objects                 205
+525 prop_console01                
+526 prop_console02                
+527 prop_grate1_1                 
+528 prop_grate1_2                 
+529 prop_grate1_3                 
+530 se_cabinet                    
+531 se_thermos                    
+532 prop_beaker_holder            
+533 prop_bed                      
+534 prop_bed_hospital             
+535 prop_bed_neurosurgery         
+536 prop_bonepile1                
+537 prop_bridgewall1              
+538 prop_broken_clock             
+539 prop_brokengun                
+540 prop_chair01                  
+541 prop_chair02                  
+542 prop_chair03                  
+543 prop_chair04                  
+544 prop_chair05                  
+545 prop_chandelier               
+546 prop_charge_station           
+547 prop_clothes                  
+548 prop_computer                 
+549 prop_couch                    
+550 prop_couch2                   
+551 prop_cpuscreen                
+552 prop_cyber_datafrag           
+553 prop_cyber_decoy              
+554 prop_cyber_exit               
+555 prop_cyber_switch             
+556 prop_cyberport                
+557 prop_desk01                   
+558 prop_desk02                   
+559 prop_dexmissile               
+560 prop_diegorapier              
+561 prop_foliage_bush             
+562 prop_foliage_fern             
+563 prop_foliage_fernblueflower   
+564 prop_foliage_pinetreem        
+565 prop_foliage_poisonbush1      
+566 prop_gear_large               
+567 prop_gear_small               
+568 prop_grass1                   
+569 prop_grass2                   
+570 prop_grass3                   
+571 prop_grass4                   
+572 prop_grass5                   
+573 prop_grate4                   
+574 prop_healingbed               
+575 prop_lamp                     
+576 prop_light_emergsignal        
+577 prop_microscope               
+578 prop_pipe                     
+579 prop_puddle                   
+580 prop_puddle_grease            
+581 prop_puddle_oil               
+582 prop_shelves                  
+583 prop_skeleton                 
+584 prop_sleeping_cables          
+585 prop_sparkingwire             
+586 prop_table                    
+587 prop_tv_on_a_post             
+588 prop_vendingmachines1         
+589 prop_vendingmachines2         
+590 prop_weapon_rack              
+591 prop_xray                     
+592 text_decal                    
+593 text_decalStopDSS1           
+594 trigger_counter              
+595 trigger_cyberpush            
+596 trigger_gravitylift          
+597 trigger_ladder               
+598 trigger_multiple             
+599 trigger_music                
+600 trigger_once                 
+601 trigger_radiation            
+602 us_isotopepanel              
+603 us_paperlog                  
+604 us_puz_elevatorkeypad        
+605 us_puz_elevatorkeypad2       
+606 us_puz_elevatorkeypad3       
+607 us_puz_elevatorkeypad4       
+608 us_puz_keypad                
+609 us_puz_panel_blue            
+610 us_puz_panel_blue_dead       
+611 us_puz_panel_brown           
+612 us_puz_panel_brown_dead      
+613 us_puz_panel_gray            
+614 us_puz_panel_gray_dead       
+615 us_puz_panel_red             
+616 us_puz_panel_red_dead // Redemption?
+617 us_puz_panel_teal            
+618 us_puz_panel_teal_dead       
+619 us_relaypanel                
+620 us_retinalscanner            
+621 ambient_airhiss              
+622 ambient_clicker              
+623 ambient_compressor           
+624 ambient_dishwasher           
+625 ambient_drip_amb             
+626 ambient_fan                  
+627 ambient_generator_gas        
+628 ambient_gurgle               
+629 ambient_icemaker             
+630 ambient_intake               
+631 ambient_lathe                
+632 ambient_lev3loop1            
+633 ambient_lev3loop2            
+634 ambient_lev3loop3            
+635 ambient_lev3loop4            
+636 ambient_liquid_bubble        
+637 ambient_liquid_lava2         
+638 ambient_looping              
+639 ambient_machgear_loop        
+640 ambient_machine_ambience     
+641 ambient_machine_go           
+642 ambient_machine_humamb7      
+643 ambient_machine_humlonoise   
+644 ambient_machine_loop1        
+645 ambient_machine_loop2        
+646 ambient_machinea1            
+647 ambient_machinevat_loop      
+648 ambient_mist                 
+649 ambient_pipewater_loop       
+650 ambient_powerloom            
+651 ambient_pump                 
+652 ambient_pump2                
+653 ambient_rain                 
+654 ambient_steam_loop           
+655 ambient_washing_machine      
+656 decal_blood_die              
+657 decal_blood_resist           
+658 decal_blood_stayaway         
+659 decal_blood_words2           
+660 decal_bloodfonta             
+661 decal_bloodfonte             
+662 decal_bloodfontg             
+663 decal_bloodfonth             
+664 decal_bloodfontr             
+665 decal_bloodfonty             
+666 decal_bloodsplat2            
+667 decal_logo_antenna           
+668 decal_logo_armory            
+669 decal_logo_biohazard         
+670 decal_logo_bridge            
+671 decal_logo_cyborg            
+672 decal_logo_gears             
+673 decal_logo_medical           
+674 decal_logo_radhazard         
+675 decal_logo_research          
+676 decal_logo_security          
+677 decal_painting1              
+678 decal_painting2              
+679 decal_painting3              
+680 decal_posterbetterfuture     
+681 decal_postergenetics         
+682 decal_scorch1                
+683 decal_scorch2                
+684 decal_scorch3                
+685 decal_scorch4                
+686 decal_scorchtiny             
+687 decal_blood_splat // missed typing it so alphabetically down here, oh well
+688 func_switch1                 
+689 func_switch2                 
+690 func_switch3                 
+691 func_switch4                 
+692 func_switch5                 
+693 func_switch5broken           
+694 func_switch7                 
+695 func_switch8                 
+696 func_switchbroken1           
+697 clip_npc                     
+698 clip_objects                 
 699 logic_relay
 700 logic_branch
 701 logic_timer
@@ -1151,26 +1151,26 @@ Master Index
 714 info_screenshake
 715 info_spawnpoint
 716 fx_reverbzone
-717 ef_cyber_ice
+717 ef_cyber_ice                      // Child component, not a spawnable prefab.
 718 ef_fragexplosion
 719 ef_line_sparqbeam
 720 ef_mist
-721 ef_particle_bloodspurtsmall
-722 ef_particle_bloodspurtsmallgreen
-723 ef_particle_bloodspurtsmallyellow
-724 ef_particle_bloodspurttiny
-725 ef_particle_camerahit
-726 ef_particle_darthit
-727 ef_particle_sec2muzburst
-728 ef_particle_sec2rotmuzburst
-729 ef_particle_sparksmall
-730 ef_particle_sparksmallblue
-731 ef_particle_sparqhit
-732 ef_sparkspits
+721 ef_particle_bloodspurtsmall       // Child component, not a spawnable prefab.  Unsaved temporary entity.
+722 ef_particle_bloodspurtsmallgreen  // Child component, not a spawnable prefab.  Unsaved temporary entity.
+723 ef_particle_bloodspurtsmallyellow // Child component, not a spawnable prefab.  Unsaved temporary entity.
+724 ef_particle_bloodspurttiny        // Child component, not a spawnable prefab.  Unsaved temporary entity.
+725 ef_particle_camerahit             // Child component, not a spawnable prefab.  Unsaved temporary entity.
+726 ef_particle_darthit               // Child component, not a spawnable prefab.  Unsaved temporary entity.
+727 ef_particle_sec2muzburst          // Child component, not a spawnable prefab.  Unsaved temporary entity.
+728 ef_particle_sec2rotmuzburst       // Child component, not a spawnable prefab.  Unsaved temporary entity.
+729 ef_particle_sparksmall            // Child component, not a spawnable prefab.  Unsaved temporary entity.
+730 ef_particle_sparksmallblue        // Child component, not a spawnable prefab.  Unsaved temporary entity.
+731 ef_particle_sparqhit              // Child component, not a spawnable prefab.  Unsaved temporary entity.
+732 ef_sparkspits                     // Unsaved temporary entity.
 733 ef_spraydrips
 734 ef_steam
 735 env_sparksmall
-736 TargetIDInstance
+736 TargetIDInstance                  // Unsaved temporary entity.
 
 999 PlayerCapsule
 */
@@ -1186,7 +1186,45 @@ public static bool ConstIndexIsGeometry(int constdex) {
 }
 
 public static bool ConstIndexIsDynamicObject(int constdex) {
-	return (constdex >= 307 && constdex < 419);
+	return ((constdex >= 307 && constdex < 419)
+			|| (constdex >= 458 && constdex < 464)
+			|| (constdex >= 477 && constdex < 480) // 480 is static saveable
+			|| (constdex >= 481 && constdex < 496)
+			|| constdex == 524);
+}
+
+public static bool ConstIndexIsDoor(int constdex) {
+	return (constdex >= 496 && constdex < 515);
+}
+
+public static bool ConstIndexIsStaticObjectSaveable(int constdex) {
+	return ((constdex >= 448 && constdex < 457)
+			|| constdex == 480
+			|| (constdex >= 516 && constdex < 524)
+			|| constdex == 525 || constdex == 526 || constdex == 555
+			|| constdex == 594 || constdex == 596 || constdex == 598
+			|| (constdex >= 600 && constdex < 603)
+			|| (constdex >= 604 && constdex < 610)
+			|| constdex == 611 || constdex == 613 || constdex == 615
+			|| constdex == 617 || constdex == 619 || constdex == 620
+			|| (constdex >= 688 && constdex < 693)
+			|| constdex == 694 || constdex == 695
+			|| (constdex >= 699 && constdex < 704));
+}
+
+public static bool ConstIndexIsStaticObjectImmutable(int constdex) {
+	return ((constdex >= 527 && constdex < 530)
+			|| (constdex >= 532 && constdex < 553)
+			|| constdex == 554
+			|| (constdex >= 556 && constdex < 594)
+			|| constdex == 595 || constdex == 597 || constdex == 599
+			|| constdex == 601 || constdex == 603 || constdex == 610
+			|| constdex == 612 || constdex == 614 || constdex == 616
+			|| constdex == 618
+			|| (constdex >= 621 && constdex < 688)
+			|| constdex == 697 || constdex == 698
+			|| (constdex >= 704 && constdex < 717)
+			|| (constdex >= 733 && constdex < 736));
 }
 
 public static bool ConstIndexIsNPC(int constdex) {

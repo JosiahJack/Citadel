@@ -70,7 +70,6 @@ public class LevelManager : MonoBehaviour {
 		if (currentLevel < 0 || currentLevel > 12) return; // 12 because I don't think I support starting in cyberspace, 13, for testing.
 
 		for (int i=0;i<levelScripts.Length;i++) levelScripts[i].Awake();
-		//PlayerReferenceManager.a.playerCurrentLevel = currentLevel;
 		if (sky == null) Debug.Log("BUG: LevelManager missing manually assigned reference for sky.");
 		else sky.SetActive(true);
 
@@ -78,10 +77,7 @@ public class LevelManager : MonoBehaviour {
 		if (ressurectionBayDoor.Length != 8) Debug.Log("BUG: LevelManager ressurectionBayDoor array length not equal to 8.");
 		Time.timeScale = Const.a.defaultTimeScale;
 		levelDataLoaded = new bool[14];
-		for (int i=0;i<14;i++) {
-			levelDataLoaded[i] = false;
-		}
-		
+		for (int i=0;i<14;i++) levelDataLoaded[i] = false;
 		ResetSaveStrings();
 		LoadDynamicObjectsSavestrings(true);
 		LoadLevelData(currentLevel);
@@ -96,6 +92,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void ResetSaveStrings() {
+// 		Debug.Log("Clearing DynamicObjectsSavestrings list on LevelManager");
 		DynamicObjectsSavestrings = new List<string>[14];
 		for (int i=0;i<14;i++) {
 			DynamicObjectsSavestrings[i] = new List<string>();
@@ -111,6 +108,7 @@ public class LevelManager : MonoBehaviour {
 		if (!LevNumInBounds(lev)) return readFileList;
 
 		string dynName = "CitadelScene_dynamics_level"+lev.ToString()+".dat";
+// 		Debug.Log("Loading dynamic objects from " + dynName);
 		StreamReader sf = Utils.ReadStreamingAsset(dynName);
 		if (sf == null) { UnityEngine.Debug.Log("Dynamic objects filepath invalid"); return readFileList; }
 
@@ -129,8 +127,11 @@ public class LevelManager : MonoBehaviour {
 	}
 	
 	public void LoadDynamicObjectsSavestrings(bool skipCurrent) {
+		ResetSaveStrings();
+// 		Debug.Log("Loading dynamic objects save strings into LevelManager "
+// 				  + "array from the .dat files in StreamingAssets");
+		
 		for (int i=0;i<14;i++) {			
-			DynamicObjectsSavestrings[i].Clear();
 			List<string> readFileList = ReadDynamicObjectFileList(i);
 			for (int j=0;j<readFileList.Count;j++) {
 				DynamicObjectsSavestrings[i].Add(readFileList[j]);
@@ -219,6 +220,7 @@ public class LevelManager : MonoBehaviour {
 		}
 		if (levelDataLoaded[levnum]) return; // Already loaded.
 
+// 		Debug.Log("Loading level data for " + levnum.ToString());
 		LoadLevelLights(levnum);
 		LoadLevelGeometry(levnum);
 		LoadLevelDynamicObjects(levnum,GetRequestedLevelDynamicContainer(levnum));
@@ -266,6 +268,7 @@ public class LevelManager : MonoBehaviour {
 	public void LoadLevelFromSave(int levnum) {
 		if (!LevNumInBounds(levnum)) return;
 
+// 		Debug.Log("LevelManager LoadLevelFromSave()");
 		LoadLevelData(levnum); // Let this function check and load data if it isn't yet.
 		currentLevel = levnum; // Set current level to be the new level
 		DisableAllNonOccupiedLevelsExcept(currentLevel); // Unload last level.
@@ -794,6 +797,7 @@ public class LevelManager : MonoBehaviour {
 				allDynamicObjects.Add(compArray[i].gameObject);
 			}
 
+// 			Debug.Log("Clearing LevelManager.a.DynamicObjectsSavestrings list for current level to unload it prior to level switch");
 			DynamicObjectsSavestrings[curlevel].Clear(); // Empty list.
 			for (int i=0;i<allDynamicObjects.Count;i++) {
 				DynamicObjectsSavestrings[curlevel].Add(SaveObject.Save(allDynamicObjects[i]));
@@ -835,11 +839,11 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void LoadLevelDynamicObjects(int curlevel, GameObject container) {
-		Debug.Log("Loading dynamic objects from savestrings for "
-				  + curlevel.ToString() + ", and has "
-				  + DynamicObjectsSavestrings[curlevel].Count.ToString()
-				  + " objects");
-		
+// 		Debug.Log("Loading dynamic objects from savestrings for "
+// 				  + curlevel.ToString() + ", and has "
+// 				  + DynamicObjectsSavestrings[curlevel].Count.ToString()
+// 				  + " objects");
+// 		
 		if (curlevel > (levelScripts.Length - 1)) return;
 		if (curlevel < 0) return;
 
@@ -859,6 +863,15 @@ public class LevelManager : MonoBehaviour {
 
 			if (newGO != null) SaveObject.Load(newGO,ref entries,-2);
 		}
+		
+// 		Debug.Log("Loading of " + curlevel.ToString() + " dynamic objects done"
+// 				  + ", clearing savestrings");
+		
+		DynamicObjectsSavestrings[curlevel].Clear();
+	}
+	
+	public void LoadLevelDynamicObjectsForCurrent() {
+		LoadLevelDynamicObjects(currentLevel,GetRequestedLevelDynamicContainer(currentLevel));
 	}
 
 	public void CheatLoadLevel(int ind) {

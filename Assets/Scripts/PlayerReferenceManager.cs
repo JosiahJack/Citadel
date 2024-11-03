@@ -68,7 +68,7 @@ public class PlayerReferenceManager : MonoBehaviour {
 		index = WeaponFire.Load(PRman.playerCapsuleMainCameraGunCamera,ref entries,index);
 		index = MFDManager.Load(PRman.playerMFDManager,ref entries,index);
 		index = Automap.Load(PRman.playerMFDManager,ref entries,index);
-		if (BiomonitorGraphSystem.a == null) { // Might not have ran Awake() if
+		if (BiomonitorGraphSystem.a != null) { // Might not have ran Awake() if
 											   // player has not acquired yet.
 			BiomonitorGraphSystem.a.ClearGraphs();
 		}

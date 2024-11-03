@@ -54,6 +54,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.Projectile: saveableType = "Projectile"; break;
 			case SaveableType.NormalScreen: saveableType = "NormalScreen"; break;
 			case SaveableType.CyberSwitch: saveableType = "CyberSwitch"; break;
+			case SaveableType.CyberItem: saveableType = "CyberItem"; break;
 			default: saveableType = "Transform"; break;
 		}
 
@@ -94,7 +95,15 @@ public class SaveObject : MonoBehaviour {
 		PrefabIdentifier prefID;
 		if (go.name == "Player") prefID = go.transform.GetChild(0).GetComponent<PrefabIdentifier>();
 		else prefID = go.GetComponent<PrefabIdentifier>();
-		if (prefID == null) Debug.Log("No PrefabIdentifier on " + go.name);
+		
+		if (prefID == null && so.saveType != SaveableType.Light) {
+			if (go.transform.childCount > 1) {
+				prefID = go.transform.GetChild(0).GetComponent<PrefabIdentifier>();
+				if (prefID == null && so.saveType != SaveableType.Transform) {
+					Debug.Log("No PrefabIdentifier on " + go.name);
+				}
+			}
+		}
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		// Start Saving
@@ -116,7 +125,7 @@ public class SaveObject : MonoBehaviour {
 		int levelID = 1;
 		bool isNPC = (so.saveType == SaveableType.NPC);
 		if (so.instantiated) {
-			if (LevelManager.a == null) levelID = CitadelTests.levelToOutputFrom;
+			if (LevelManager.a == null) levelID = 1;//CitadelTests.levelToOutputFrom;
 			else levelID = LevelManager.a.GetInstantiateParent(go,isNPC,prefID);
 		}
 
@@ -126,7 +135,10 @@ public class SaveObject : MonoBehaviour {
 		if (prefID != null) {
 			s1.Append(Utils.UintToString(prefID.constIndex,"constIndex")); // 19
 			s1.Append(Utils.splitChar);
-		} else s1.Append("307" + Utils.splitChar);
+		} else {
+			s1.Append("307");
+			s1.Append(Utils.splitChar);
+		}
 
 		switch (so.saveType) {
 			case SaveableType.Player:         s1.Append(PlayerReferenceManager.SavePlayerData(go,prefID)); break;
@@ -187,6 +199,7 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.NormalScreen:            s1.Append(HealthManager.Save(go,prefID)); break; // Saves TargetIO
 			case SaveableType.CyberSwitch:               s1.Append(CyberSwitch.Save(go,prefID)); s1.Append(Utils.splitChar);
 													        s1.Append(TargetIO.Save(go,prefID)); break;
+			case SaveableType.CyberItem:               s1.Append(HealthManager.Save(go.transform.GetChild(0).GetChild(0).gameObject,prefID)); break; // Saves TargetIO
 		}
 		return s1.ToString();
 	}
@@ -252,12 +265,12 @@ public class SaveObject : MonoBehaviour {
 		}
 
 		PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
-		if (prefID == null && so.instantiated) {
-			prefID = go.transform.GetChild(0).GetComponent<PrefabIdentifier>();
-
-			if (prefID == null) {
-				Debug.Log("No PrefabIdentifier on " + go.name);
-				return;
+		if (prefID == null && so.saveType != SaveableType.Light) {
+			if (go.transform.childCount > 1) {
+				prefID = go.transform.GetChild(0).GetComponent<PrefabIdentifier>();
+				if (prefID == null && so.saveType != SaveableType.Transform) {
+					Debug.Log("No PrefabIdentifier on " + go.name);
+				}
 			}
 		}
 
@@ -317,9 +330,10 @@ public class SaveObject : MonoBehaviour {
 													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
 			case SaveableType.Projectile:             index =           DelayedSpawn.Load(go,ref entries,index);
 													  index = ProjectileEffectImpact.Load(go,ref entries,index); break;
-			case SaveableType.NormalScreen:			  index =          HealthManager.Load(go,ref entries,index,prefID); break;
+			case SaveableType.NormalScreen:			  index =          HealthManager.Load(go,ref entries,index,prefID); break; // Loads TargetIO
 			case SaveableType.CyberSwitch:			  index =            CyberSwitch.Load(go,ref entries,index,prefID);
 													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
+			case SaveableType.CyberItem:			  index =          HealthManager.Load(go.transform.GetChild(0).GetChild(0).gameObject,ref entries,index,prefID); break; // Loads TargetIO
 		}
 	}
 

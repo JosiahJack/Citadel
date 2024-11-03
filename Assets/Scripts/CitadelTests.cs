@@ -22,7 +22,7 @@ public class CitadelTests : MonoBehaviour {
 										 // mode.
 	public GameObject[] dynamicObjectContainers;
 // 	public GameObject gameObjectToSave;
-	public static int levelToOutputFrom = 13;
+	public int levelToOutputFrom = 0;
 	public Const ct;
 	public LevelManager lm;
 	public PauseScript ps;
@@ -82,11 +82,11 @@ public class CitadelTests : MonoBehaviour {
 // 		lm.UnloadLevelLights(levelToOutputFrom);
 // 	}
 	
-	public void GenerateStaticObjectsDataFile() {
+	public void GenerateStaticObjectsImmutableDataFile() {
 		#if UNITY_EDITOR
 		UnityEngine.Debug.Log("Outputting all static objects to "
-							  + "StreamingAssets/CitadelScene_staticobjects_level"
-							  + levelToOutputFrom.ToString() + ".dat");
+				  + "StreamingAssets/CitadelScene_staticobjectsimmutable_level"
+				  + levelToOutputFrom.ToString() + ".dat");
 
 		List<GameObject> allStaticObjects = new List<GameObject>();
 		Transform tr = staticObjectContainters[levelToOutputFrom].transform;
@@ -121,103 +121,192 @@ public class CitadelTests : MonoBehaviour {
 // 		bool hasTextOverride = false;
 		using (sw) {
 			PrefabIdentifier pid = null;
+			GameObject go = null;
 			for (int i=0;i<allStaticObjects.Count;i++) {
-				pid = allStaticObjects[i].GetComponent<PrefabIdentifier>();
-				if (pid == null) continue;
-
-				List<ObjectOverride> ovides = PrefabUtility.GetObjectOverrides(allStaticObjects[i],false);
-				for (int j=0; j < ovides.Count; j++) {
-					hasBoxColliderOverride = false;
-					
-					UnityEngine.Object ob = ovides[j].instanceObject;
-					SerializedObject sob = new UnityEditor.SerializedObject(ob);
-
-					// List overridden properties
-					SerializedProperty prop = sob.GetIterator();
-					while (prop.NextVisible(true)) {
-						if (prop.propertyPath == "m_Name" ||
-							prop.propertyPath == "m_LocalPosition" ||
-							prop.propertyPath == "m_LocalPosition.x" ||
-							prop.propertyPath == "m_LocalPosition.y" ||
-							prop.propertyPath == "m_LocalPosition.z" ||
-							prop.propertyPath == "m_LocalRotation" ||
-							prop.propertyPath == "m_LocalRotation.x" ||
-							prop.propertyPath == "m_LocalRotation.y" ||
-							prop.propertyPath == "m_LocalRotation.z" ||
-							prop.propertyPath == "m_LocalRotation.w" ||
-							prop.propertyPath == "m_LocalScale" ||
-							prop.propertyPath == "m_LocalScale.x" ||
-							prop.propertyPath == "m_LocalScale.y" ||
-							prop.propertyPath == "m_LocalScale.z")  {
-							
-							continue; // Skip transform overrides
-						}
-
-						if (prop.prefabOverride) {
-							if (prop.propertyPath == "m_Size" ||
-								prop.propertyPath == "m_Size.x" ||
-								prop.propertyPath == "m_Size.y" ||
-								prop.propertyPath == "m_Size.z" ||
-								prop.propertyPath == "m_Center" ||
-								prop.propertyPath == "m_Center.x" ||
-								prop.propertyPath == "m_Center.y" ||
-								prop.propertyPath == "m_Center.z") {
-
-								hasBoxColliderOverride = true;
-							}
-
-// 							if (prop.propertyPath == "lingdex") {
-// 								hasTextOverride = true;
-// 							}
-
-							string value = GetPropertyValue(prop);
-							UnityEngine.Debug.Log(allStaticObjects[i].name
-												  + ":: Found Override: "
-												  + prop.propertyPath
-												  + ", Value: " + value);
-						}
+				go = allStaticObjects[i];
+				pid = go.GetComponent<PrefabIdentifier>();
+				if (pid == null) {
+					if (go.transform.childCount > 1) {
+						pid = go.transform.GetChild(0).GetComponent<PrefabIdentifier>();
 					}
 				}
 				
+				if (pid == null) { UnityEngine.Debug.Log("No PrefabIdentifier on " + go.name); continue; }
+				if (!ConsoleEmulator.ConstIndexInBounds(pid.constIndex)) { UnityEngine.Debug.Log("ConstIndex " + pid.constIndex.ToString() + " not in bounds!"); continue; }
+				if (!ConsoleEmulator.ConstIndexIsStaticObjectImmutable(pid.constIndex)) continue;
+
 				s1.Clear();
+				// Start Saving
+				// --------------------------------------------------------------------
 				s1.Append(Utils.UintToString(pid.constIndex,"constIndex"));
 				s1.Append(Utils.splitChar);
-				s1.Append(allStaticObjects[i].name);
+				s1.Append(Utils.BoolToString(go.activeSelf,"go.activeSelf"));
 				s1.Append(Utils.splitChar);
-				s1.Append(Utils.SaveTransform(allStaticObjects[i].transform));
-				if (hasBoxColliderOverride) {
-					BoxCollider bcol = allStaticObjects[i].GetComponent<BoxCollider>();
-					s1.Append(Utils.splitChar);
-					s1.Append(Utils.BoolToString(bcol.enabled,"BoxCollider.enabled"));
-					s1.Append(Utils.splitChar);
-					s1.Append(Utils.FloatToString(bcol.size.x,"size.x"));
-					s1.Append(Utils.splitChar);
-					s1.Append(Utils.FloatToString(bcol.size.y,"size.y"));
-					s1.Append(Utils.splitChar);
-					s1.Append(Utils.FloatToString(bcol.size.z,"size.z"));
-					s1.Append(Utils.splitChar);
-					s1.Append(Utils.FloatToString(bcol.center.x,"center.x"));
-					s1.Append(Utils.splitChar);
-					s1.Append(Utils.FloatToString(bcol.center.y,"center.y"));
-					s1.Append(Utils.splitChar);
-					s1.Append(Utils.FloatToString(bcol.center.z,"center.z"));
-					if (allStaticObjects[i].transform.childCount >= 1) {
-						// Get collision aid.
-						Transform subtr = allStaticObjects[i].transform.GetChild(0);
-						if (subtr != null) {
-							s1.Append(Utils.splitChar);
-							s1.Append(Utils.BoolToString(
-								subtr.gameObject.activeSelf,
-								"collisionAid.activeSelf"));
-						}
-					}
+				s1.Append(Utils.SaveTransform(go.transform));
+				s1.Append(Utils.splitChar);
+				s1.Append(Utils.SaveRigidbody(go));
+				s1.Append(Utils.splitChar);
+				s1.Append(Utils.UintToString(levelToOutputFrom,"levelID"));
+				s1.Append(Utils.splitChar);
+
+				switch(pid.constIndex) {
+					case 532: break;
+					case 533: break;
+					case 534: break;
+					case 535: break;
+					case 536: break;
+					case 537: break;
+					case 538: break;
+					case 539: break;
+					case 540: break;
+					case 541: break;
+					case 542: break;
+					case 543: break;
+					case 544: break;
+					case 545: break;
+					case 546: break;
+					case 547: break;
+					case 548: break;
+					case 549: break;
+					case 550: break;
+					case 551: break;
+					case 552: break;
+					case 554: break;
+					case 556: break;
+					case 557: break;
+					case 558: break;
+					case 559: break;
+					case 560: break;
+					case 561: break;
+					case 562: break;
+					case 563: break;
+					case 564: break;
+					case 565: break;
+					case 566: break;
+					case 567: break;
+					case 568: break;
+					case 569: break;
+					case 570: break;
+					case 571: break;
+					case 572: break;
+					case 573: break;
+					case 574: break;
+					case 575: break;
+					case 576: break;
+					case 577: break;
+					case 578: break;
+					case 579: break;
+					case 580: break;
+					case 581: break;
+					case 582: break;
+					case 583: break;
+					case 584: break;
+					case 585: break;
+					case 586: break;
+					case 587: break;
+					case 588: break;
+					case 589: break;
+					case 590: break;
+					case 591: break;
+					case 592: break;
+					case 593: break;
+					case 595: break;
+					case 597: break;
+					case 599: break;
+					case 601: break;
+					case 603: break;
+					case 610: break;
+					case 612: break;
+					case 614: break;
+					case 616: break;
+					case 618: break;
+					case 621: break;
+					case 622: break;
+					case 623: break;
+					case 624: break;
+					case 625: break;
+					case 626: break;
+					case 627: break;
+					case 628: break;
+					case 629: break;
+					case 630: break;
+					case 631: break;
+					case 632: break;
+					case 633: break;
+					case 634: break;
+					case 635: break;
+					case 636: break;
+					case 637: break;
+					case 638: break;
+					case 639: break;
+					case 640: break;
+					case 641: break;
+					case 642: break;
+					case 643: break;
+					case 644: break;
+					case 645: break;
+					case 646: break;
+					case 647: break;
+					case 648: break;
+					case 649: break;
+					case 650: break;
+					case 651: break;
+					case 652: break;
+					case 653: break;
+					case 654: break;
+					case 655: break;
+					case 656: break;
+					case 657: break;
+					case 658: break;
+					case 659: break;
+					case 660: break;
+					case 661: break;
+					case 662: break;
+					case 663: break;
+					case 664: break;
+					case 665: break;
+					case 666: break;
+					case 667: break;
+					case 668: break;
+					case 669: break;
+					case 670: break;
+					case 671: break;
+					case 672: break;
+					case 673: break;
+					case 674: break;
+					case 675: break;
+					case 676: break;
+					case 677: break;
+					case 678: break;
+					case 679: break;
+					case 680: break;
+					case 681: break;
+					case 682: break;
+					case 683: break;
+					case 684: break;
+					case 685: break;
+					case 686: break;
+					case 687: break;
+					case 697: break;
+					case 698: break;
+					case 704: break;
+					case 705: break;
+					case 706: break;
+					case 707: break;
+					case 708: break;
+					case 709: break;
+					case 710: break;
+					case 711: break;
+					case 712: break;
+					case 713: break;
+					case 714: break;
+					case 715: break;
+					case 716: break;
+					case 733: break;
+					case 734: break;
+					case 735: break;
 				}
 				
-				if (pid.constIndex == 601) { // trigger_radiation
-					Radiation rad = allStaticObjects[i].GetComponent<Radiation>();
-					s1.Append(Utils.splitChar);
-					s1.Append(Utils.FloatToString(rad.radiationAmount,"radiationAmount"));
-				}
 				sw.Write(s1.ToString());
 				sw.Write(Environment.NewLine);
 			}
@@ -225,7 +314,7 @@ public class CitadelTests : MonoBehaviour {
 		}
 		#endif
 	}
-	
+/*	
 	public void GenerateGeometryDataFile() {
 		#if UNITY_EDITOR
 		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_geometry_level" + levelToOutputFrom.ToString() + ".dat");
@@ -377,7 +466,7 @@ public class CitadelTests : MonoBehaviour {
 			sw.Close();
 		}
 		#endif
-	}
+	}*/
 	
 	#if UNITY_EDITOR
 	// Helper method to get the correct value from a SerializedProperty
@@ -477,7 +566,7 @@ public class CitadelTests : MonoBehaviour {
 // 			sw.Close();
 // 		}
 	}
-
+/*
 	public void LoadLevelDynamicObjects() {
 		lm.LoadLevelDynamicObjects(levelToOutputFrom,dynamicObjectContainers[levelToOutputFrom]);
 	}
@@ -518,7 +607,7 @@ public class CitadelTests : MonoBehaviour {
 			}
 			sw.Close();
 		}
-	}
+	}*/
 /*
 	public void SaveSelectedObject() {
 		string line = SaveObject.Save(gameObjectToSave);
@@ -567,7 +656,7 @@ public class CitadelTests : MonoBehaviour {
 		SaveObject.Load(gameObjectToSave,ref entries,-1);
 		UnityEngine.Debug.Log("Loaded data for " + gameObjectToSave.name);
 	}*/
-
+/*
 	public void TEMP_SetFunc_WallChunkIDs() {
 		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
 		for (int i=0;i<allParents.Count;i++) {
@@ -613,7 +702,7 @@ public class CitadelTests : MonoBehaviour {
 			}
 			UnityEngine.Debug.Log("Largest SaveID: " + idInc.ToString());
 		#endif
-	}
+	}*/
 
 	// Before: 15006, After 8000, for some reason it didn't work for all of them.
 	public void RevertAll_m_CastShadows() {
@@ -645,62 +734,20 @@ public class CitadelTests : MonoBehaviour {
 	// m_MotionVectors Before 19057
 	// m_LightProbeUsage
 
-	void TEMP_Func_Wall_SetChunkIDs(GameObject go) {
-		UnityEngine.Debug.Log("go.name: " + go.name);
-		FuncWall fw = go.GetComponent<FuncWall>();
-		fw.chunkIDs = new int[go.transform.childCount];
-		GameObject childGO;
-		for (int i = 0; i < go.transform.childCount; i++) {
-			childGO = go.transform.GetChild(i).gameObject;
-			UnityEngine.Debug.Log("childGO.name: " + childGO.name);
-			PrefabIdentifier pid = childGO.GetComponent<PrefabIdentifier>();
-			if (pid == null) {
-				UnityEngine.Debug.Log("ERROR: FuncWall child missing PrefabIdentifier");
-				continue;
-			}
-			fw.chunkIDs[i] = pid.constIndex;
-		}
-	}
-
-	private void PrintTally(string className, int issueCount, int objCount) {
-		UnityEngine.Debug.Log(issueCount.ToString() + " " + className + " issues found on " + objCount.ToString() + " gameobjects");
-	}
-
-	private bool MissingReference(string className, GameObject go, Component comp, string variableName) {
-		string self = (go != null) ? go.name : "errname";
-		string parent = (go.transform.parent != null) ? go.transform.parent.name : "none";
-		if (comp == null) {
-			UnityEngine.Debug.Log("BUG: " + className + " is missing reference " + comp.ToString() + "(" + variableName + ") on GameObject " + self + " with parent of " + parent);
-			return true;
-		} else return false;
-	}
-
-	private bool MissingComponent(string className, GameObject go, System.Type type) {
-		string self = (go != null) ? go.name : "errname";
-		string parent = (go.transform.parent != null) ? go.transform.parent.name : "none";
-		if (go.GetComponent(type) == null) {
-			UnityEngine.Debug.Log("BUG: " + className + " is missing component " + type.ToString() + " on GameObject " + self + " with parent of " + parent);
-			return true;
-		} else return false;
-	}
-
-	private bool BoundsError(string className, GameObject go, int expectedMin, int expectedMax, int foundVal, string valueName) {
-		string self = (go != null) ? go.name : "errname";
-		string parent = (go.transform.parent != null) ? go.transform.parent.name : "none";
-		if (foundVal > expectedMax || foundVal < expectedMin) {
-			UnityEngine.Debug.Log("BUG: " + className + " has invalid value for "+ valueName +" on GameObject " + self + " with parent of " + parent + ". Expected value in range: "
-			+ expectedMin.ToString() + " to " + expectedMax.ToString() + "; Found value: " + foundVal.ToString());
-			return true;
-		} else return false;
-	}
-
-	private bool BoundsError(string className, GameObject go, float expectedMin, float expectedMax, float foundVal, string valueName) {
-		string self = (go != null) ? go.name : "errname";
-		string parent = (go.transform.parent != null) ? go.transform.parent.name : "none";
-		if (foundVal > expectedMax || foundVal < expectedMin) {
-			UnityEngine.Debug.Log("BUG: " + className + " has invalid value for " + valueName + " on GameObject " + self + " with parent of " + parent + ". Expected value in range: "
-			+ expectedMin.ToString() + " to " + expectedMax.ToString() + "; Found value: " + foundVal.ToString());
-			return true;
-		} else return false;
-	}
+// 	void TEMP_Func_Wall_SetChunkIDs(GameObject go) {
+// 		UnityEngine.Debug.Log("go.name: " + go.name);
+// 		FuncWall fw = go.GetComponent<FuncWall>();
+// 		fw.chunkIDs = new int[go.transform.childCount];
+// 		GameObject childGO;
+// 		for (int i = 0; i < go.transform.childCount; i++) {
+// 			childGO = go.transform.GetChild(i).gameObject;
+// 			UnityEngine.Debug.Log("childGO.name: " + childGO.name);
+// 			PrefabIdentifier pid = childGO.GetComponent<PrefabIdentifier>();
+// 			if (pid == null) {
+// 				UnityEngine.Debug.Log("ERROR: FuncWall child missing PrefabIdentifier");
+// 				continue;
+// 			}
+// 			fw.chunkIDs[i] = pid.constIndex;
+// 		}
+// 	}
 }

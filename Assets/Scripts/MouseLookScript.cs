@@ -1312,6 +1312,7 @@ public class MouseLookScript : MonoBehaviour {
 				if (curSearchScript.contents[i] >= 0) {
 					MouseCursor.a.GetComponent<MouseCursor>().cursorImage = Const.a.useableItemsFrobIcons[curSearchScript.contents[i]];
 					heldObjectIndex = curSearchScript.contents[i];
+					heldObjectCustomIndex = curSearchScript.customIndex[i];
 					curSearchScript.contents[i] = -1;
 					curSearchScript.customIndex[i] = -1;
 					if (heldObjectIndex != -1) holdingObject = true;

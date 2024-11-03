@@ -1896,7 +1896,7 @@ public class MFDManager : MonoBehaviour  {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(mfd.lastAutomapSideRH,"lastAutomapSideRH"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(mfd.lastTargetSideRH,"lastTargetSide"));
+		s1.Append(Utils.BoolToString(mfd.lastTargetSideRH,"lastTargetSideRH"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(mfd.lastDataSideRH,"lastDataSideRH"));
 		s1.Append(Utils.splitChar);
