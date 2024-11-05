@@ -84,23 +84,13 @@ public class TargetIO : MonoBehaviour {
 
 		if (!string.IsNullOrWhiteSpace(targetname)) {
 			if (disableThisGOOnAwake && !alreadyDisabledThisGOOnceEver) {
-				SaveObject so = GetComponent<SaveObject>();
-				if (so == null) {
-					Debug.Log("Adding SaveObject to a "
-							  + "disabled on awake gameobject "
-							  + gameObject.name + " with TargetIO.cs");
-
-					gameObject.AddComponent(typeof(SaveObject));
-					so = GetComponent<SaveObject>();
-					if (so != null) {
-						if (!so.initialized) so.Start();
-						//so.saveType = SaveableType.Transform;
-						//so.saveableType = "Transform";
-					} else {
-						Debug.Log("BUG: failed to add SaveObject to a "
-								  + "disabled on awake gameobject "
-								  + gameObject.name + " with TargetIO.cs");
-					}
+				SaveObject so = SaveLoad.GetPrefabSaveObject(gameObject);
+				if (so != null) {
+					if (!so.initialized) so.Start();
+				} else {
+					Debug.Log("BUG: failed to get SaveObject on a "
+								+ "disabled on awake gameobject "
+								+ gameObject.name + " with TargetIO.cs");
 				}
 				this.gameObject.SetActive(false);
 			}

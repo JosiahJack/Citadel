@@ -57,69 +57,38 @@ public class SaveObject : MonoBehaviour {
 			case SaveableType.CyberItem: saveableType = "CyberItem"; break;
 			default: saveableType = "Transform"; break;
 		}
-
-		if (instantiated) {
-			SaveObject[] sos = GetComponentsInChildren<SaveObject>(true);
-			if (sos.Length > 0) {
-				if (!(sos.Length == 1 && sos[0] == this)) {
-					PrefabIdentifier prefID = GetComponent<PrefabIdentifier>();
-					if (prefID != null) {
-						if (prefID.constIndex != 467) { // se_corpse_eaten
-							Debug.Log("BUG: SaveObject found on child of instantiated "
-									+ "Saveable Object: "
-									+ gameObject.name + ", child name: "
-									+ sos[0].gameObject.name);
-						}
-					} else {
-						Debug.Log("BUG: SaveObject found on child of instantiated "
-								+ "Saveable Object: "
-								+ gameObject.name + ", child name: "
-								+ sos[0].gameObject.name);
-					}
-				}
-			}
-		}
+		
 		initialized = true;
 	}
 
 	// Generates a string of object data with the specific object type's info.
 	public static string Save(GameObject go) {
-		SaveObject so = go.GetComponent<SaveObject>();
-		if (so == null) {
-			Debug.Log("BUG: SaveObject missing on saveable!  GameObject.name: "
-					  + go.name);
-			return "";
-		}
+		SaveObject so = SaveLoad.GetPrefabSaveObject(go);
+		if (so == null) return "";
 
 		if (!so.initialized) so.Start();
-		PrefabIdentifier prefID;
-		if (go.name == "Player") prefID = go.transform.GetChild(0).GetComponent<PrefabIdentifier>();
-		else prefID = go.GetComponent<PrefabIdentifier>();
-		
-		if (prefID == null && so.saveType != SaveableType.Light) {
-			if (go.transform.childCount > 1) {
-				prefID = go.transform.GetChild(0).GetComponent<PrefabIdentifier>();
-				if (prefID == null && so.saveType != SaveableType.Transform) {
-					Debug.Log("No PrefabIdentifier on " + go.name);
-				}
-			}
-		}
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		// Start Saving
 		// --------------------------------------------------------------------
-		s1.Append(Utils.SaveString(so.saveableType,"saveableType"));   // 0
+		PrefabIdentifier prefID = SaveLoad.GetPrefabIdentifier(go,true);
+		if (prefID != null) {
+			s1.Append(Utils.UintToString(prefID.constIndex,"constIndex")); // 0
+			s1.Append(Utils.splitChar);
+		} else return "";
+
+		s1.Append(Utils.SaveString(so.saveableType,"saveableType"));   // 1
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.IntToString(so.SaveID,"SaveID"));              // 1
+		s1.Append(Utils.IntToString(so.SaveID,"SaveID"));              // 2
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(so.instantiated,"instantiated")); // 2
+		s1.Append(Utils.BoolToString(so.instantiated,"instantiated")); // 3
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.BoolToString(go.activeSelf,"go.activeSelf"));  // 3
+		s1.Append(Utils.BoolToString(go.activeSelf,"go.activeSelf"));  // 4
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveTransform(go.transform)); // 4,5,6,7,8,9,10,11,12,
-													  // 13
+		s1.Append(Utils.SaveTransform(go.transform)); // 5,6,7,8,9,10,11,12,
+													  // 13,14
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveRigidbody(go));           // 14,15,16,17
+		s1.Append(Utils.SaveRigidbody(go));           // 15,16,17,18
 		s1.Append(Utils.splitChar);
 
 		int levelID = 1;
@@ -129,16 +98,8 @@ public class SaveObject : MonoBehaviour {
 			else levelID = LevelManager.a.GetInstantiateParent(go,isNPC,prefID);
 		}
 
-		s1.Append(Utils.UintToString(levelID,"levelID"));     // 18
+		s1.Append(Utils.UintToString(levelID,"levelID"));     // 19
 		s1.Append(Utils.splitChar);
-
-		if (prefID != null) {
-			s1.Append(Utils.UintToString(prefID.constIndex,"constIndex")); // 19
-			s1.Append(Utils.splitChar);
-		} else {
-			s1.Append("307");
-			s1.Append(Utils.splitChar);
-		}
 
 		switch (so.saveType) {
 			case SaveableType.Player:         s1.Append(PlayerReferenceManager.SavePlayerData(go,prefID)); break;
@@ -204,21 +165,16 @@ public class SaveObject : MonoBehaviour {
 		return s1.ToString();
 	}
 
-	public static void Load(GameObject go, ref string[] entries, int lineNum) {
-		SaveObject so = go.GetComponent<SaveObject>();
-		if (so == null) {
-			if (go.transform.childCount > 0) {
-				so = go.transform.GetChild(0).GetComponent<SaveObject>();
-			}
+	// Called after prefab has been instantiated.
+	public static void Load(GameObject go, ref string[] entries, int lineNum,
+							PrefabIdentifier prefID) {
 
-			if (so == null) {
-				Debug.Log("SaveableObject on go.name: " + go.name + " was not "
-						  + "found even though it was passed to Load as "
-						  + "though twere a saveable object. Skipping!");
-				return;
-			}
+		if (prefID == null) { 
+			prefID = go.GetComponent<PrefabIdentifier>();
+			if (prefID == null) { Debug.Log("BUG: Missing PrefabIdentifier on load object " + go.name); return; }
 		}
 
+		SaveObject so = SaveLoad.GetPrefabSaveObject(go);
 		if (!so.initialized) so.Start();
 		currentObjectInfo = go.name + " " + ParentChain(go) + " ("
 							+ so.saveType.ToString() + ") Line:"
@@ -226,8 +182,10 @@ public class SaveObject : MonoBehaviour {
 		// Start Loading
 		// --------------------------------------------------------------------
 		int index = 0;
+		int constIndex = Utils.GetIntFromString(entries[0],"constIndex"); // 0
+		index++;
 		string savTypeFromLoad = Utils.LoadString(entries[index],
-												  "saveableType"); // 0
+												  "saveableType"); // 1
 		if (savTypeFromLoad != so.saveableType) {
 			Debug.Log("Saveable type mismatch.  Save data has type "
 					  + savTypeFromLoad + " but object named " + go.name
@@ -235,43 +193,27 @@ public class SaveObject : MonoBehaviour {
 			return;
 		}
 		index++; // Incrementing from saveableType.
-		index++; // SaveID;       1
-		index++; // instantiated; 2
-		bool setToActive = Utils.GetBoolFromString(entries[index], // 3
+		index++; // SaveID;       2
+		index++; // instantiated; 3
+		bool setToActive = Utils.GetBoolFromString(entries[index], // 4
 												   "go.activeSelf");
 		go.SetActive(setToActive); // Set active state in Hierarchy
 		index++;
 
 		// Set parent prior to setting localPosition, localRotation, localScale
 		// so that the relative positioning is correct.
-		int levelID = Utils.GetIntFromString(entries[18],"levelID"); // 18
+		int levelID = Utils.GetIntFromString(entries[19],"levelID"); // 19
 		if (so.instantiated) {
 			bool isNPC = (so.saveType == SaveableType.NPC);
 			LevelManager.a.SetInstantiateParent(levelID,go,isNPC);
 		}
 
-		index = Utils.LoadTransform(go.transform,ref entries,index); // 4,5,6,
-																	 // 7,8,9,
-																	 // 10,11,
-																	 // 12,13
-		index = Utils.LoadRigidbody(go,ref entries,index);           // 14,15,
-																	 // 16,17
-		index++; // Already loaded index 18 for levelID.
-		index++; // ALready loaded index 19 for prefab master index as that is
-				 // how this object was instantiated prior to calling Load.
+		index = Utils.LoadTransform(go.transform,ref entries,index); // 5,6,7,8,9,10,11,12,13
+		index = Utils.LoadRigidbody(go,ref entries,index);           // 14,15,16,17,18
+		index++; // Already loaded index 19 for levelID.
 		if (index != 20) {
 			Debug.Log("SaveObject.Load:: index was not 20 prior to type load");
 			index = 20;
-		}
-
-		PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
-		if (prefID == null && so.saveType != SaveableType.Light) {
-			if (go.transform.childCount > 1) {
-				prefID = go.transform.GetChild(0).GetComponent<PrefabIdentifier>();
-				if (prefID == null && so.saveType != SaveableType.Transform) {
-					Debug.Log("No PrefabIdentifier on " + go.name);
-				}
-			}
 		}
 
 		switch (so.saveType) {

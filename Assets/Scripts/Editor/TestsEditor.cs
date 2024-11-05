@@ -25,6 +25,12 @@ public class TestsEditor : Editor {
 // 		if (GUILayout.Button("Output All Geometry to File")) {
 // 			testScript.GenerateGeometryDataFile();
 // 		}
+// 		if (GUILayout.Button("TEMP: Correct light data files")) {
+// 			testScript.CorrectLightDataFiles();
+// 		}
+// 		if (GUILayout.Button("TEMP: Correct dynamics data files")) {
+// 			testScript.CorrectDynamicDataFiles();
+// 		}
 		if (GUILayout.Button("Output All Static Objects Immutable to File")) {
 			testScript.GenerateStaticObjectsImmutableDataFile();
 		}

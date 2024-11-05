@@ -38,6 +38,7 @@ public class Utils {
             Debug.Log("SafeIndex: Unexpected situation, array " + nameof(array)
                       + " was empty!  Using fallback value of "
                       + failValue.ToString());
+
             return failValue;
         }
 
@@ -47,6 +48,7 @@ public class Utils {
                       + array.Length.ToString() + "] or context max of "
                       + max.ToString() + ".  Set to fallback value of "
                       + failValue.ToString());
+
             return failValue;
         }
 
@@ -755,28 +757,6 @@ public class Utils {
 		return 1;
 	}
 
-	public static LightType GetLightTypeFromString(string type) {
-		if (type == "Spot") return LightType.Spot;
-		else if (type == "Directional") return LightType.Directional;
-		else if (type == "Rectangle") return LightType.Rectangle;
-		else if (type == "Disc") return LightType.Disc;
-		return LightType.Point;	
-	}
-
-	public static LightShadows GetLightShadowsFromString(string shadows) {
-		if (shadows == "None") return LightShadows.None;
-		else if (shadows == "Hard") return LightShadows.Hard;
-		return LightShadows.Soft;	
-	}
-
-	public static LightShadowResolution GetShadowResFromString(string res) {
-		if (res == "Low") return LightShadowResolution.Low;
-		else if (res == "Medium") return LightShadowResolution.Medium;
-		else if (res == "High") return LightShadowResolution.High;
-		else if (res == "VeryHigh") return LightShadowResolution.VeryHigh;
-		return LightShadowResolution.FromQualitySettings;	
-	}
-
     public static int FuncStatesToInt(FuncStates funcStates) {
 		switch (funcStates) {
 			case FuncStates.Start:            return 1;
@@ -928,6 +908,8 @@ public class Utils {
 	}
 
     public static string SaveRigidbody(GameObject go) {
+		if (go == null) return ("velocity.x:0000.00000" + splitChar + "velocity.y:0000.00000" + splitChar + "velocity.z:0000.00000" + splitChar + "isKinematic:0");
+		
 		Rigidbody rbody = go.GetComponent<Rigidbody>();
 		if (rbody == null) return ("velocity.x:0000.00000" + splitChar + "velocity.y:0000.00000" + splitChar + "velocity.z:0000.00000" + splitChar + "isKinematic:0");
 
@@ -967,6 +949,15 @@ public class Utils {
 	}
 
 	public static string SaveSubActivatedGOState(GameObject subGO) {
+		if (subGO == null) {
+			return "localPosition.x:0000.00000|localPosition.y:0000.00000|"
+				   + "localPosition.z:0000.00000|localRotation.x:0000.00000|"
+				   + "localRotation.y:0000.00000|localRotation.z:0000.00000|"
+				   + "localRotation.w:0000.00000|localScale.x:0000.00000|"
+				   + "localScale.y:0000.00000|localScale.z:0000.00000|"
+				   + SaveRigidbody(null) + "subGO.activeSelf:0";
+		}
+
 		StringBuilder s1 = new StringBuilder();
         s1.Clear();
         s1.Append(SaveTransform(subGO.transform));

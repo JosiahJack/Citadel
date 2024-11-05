@@ -1654,8 +1654,8 @@ public class Const : MonoBehaviour {
 				entries = readFileList[i].Split(Utils.splitCharChar);
 				if (entries.Length < 1)  continue;
 
-				saveFile_Line_SaveID[i] = Utils.GetIntFromString(entries[1],"SaveID");
-				saveFile_Line_IsInstantiated[i] = Utils.GetBoolFromString(entries[2],"instantiated");
+				saveFile_Line_SaveID[i] = Utils.GetIntFromString(entries[2],"SaveID");
+				saveFile_Line_IsInstantiated[i] = Utils.GetBoolFromString(entries[3],"instantiated");
 			}
 
 			loadPercentText.text = "Preprocess Arrays...   ";
@@ -1709,7 +1709,7 @@ public class Const : MonoBehaviour {
 					if (saveableGameObjectsInScene[j] == null) continue;
 
 					currentGameObjectInScene = saveableGameObjectsInScene[j];
-					currentSaveObjectInScene = currentGameObjectInScene.GetComponent<SaveObject>();
+					currentSaveObjectInScene = SaveLoad.GetPrefabSaveObject(currentGameObjectInScene);
 					if (!currentSaveObjectInScene.instantiated) alreadyCheckedThisInstantiableGameObjectInScene[j] = true; // Huge time saver right here!
 
 					// Static Objects all have unique ID.
@@ -1728,7 +1728,8 @@ public class Const : MonoBehaviour {
 						}
 
 						entries = readFileList[i].Split(Utils.splitCharChar);
-						SaveObject.Load(currentGameObjectInScene,ref entries,i);
+						PrefabIdentifier prefID = SaveLoad.GetPrefabIdentifier(currentGameObjectInScene,true);
+						SaveObject.Load(currentGameObjectInScene,ref entries,i,prefID);
 						alreadyCheckedThisSaveableGameObjectInScene[j] = true; // Huge time saver right here!
 						break;
 					}
@@ -1759,7 +1760,7 @@ public class Const : MonoBehaviour {
 					continue;
 				}
 
-				sob = saveableGameObjectsInScene[i].GetComponent<SaveObject>();
+				sob = SaveLoad.GetPrefabSaveObject(saveableGameObjectsInScene[i]);
 				if (sob != null) {
 					if (!sob.instantiated) {
 						UnityEngine.Debug.Log(saveableGameObjectsInScene[i].name
@@ -1794,8 +1795,8 @@ public class Const : MonoBehaviour {
 
 				entries = readFileList[i].Split(Utils.splitCharChar);
 				if (entries.Length > 1) {
-					levID = Utils.GetIntFromString(entries[18],"levelID");
-					constdex = Utils.GetIntFromString(entries[19],"constIndex");
+					constdex = Utils.GetIntFromString(entries[0],"constIndex");
+					levID = Utils.GetIntFromString(entries[19],"levelID");
 					if (!ConsoleEmulator.ConstIndexInBounds(constdex)) continue;
 
 					// Already did LevelManager.a.LoadLevel above, and since its
@@ -1803,7 +1804,7 @@ public class Const : MonoBehaviour {
 					if (ConsoleEmulator.ConstIndexIsNPC(constdex)
 						&& levID == LevelManager.a.currentLevel) {
 						
-						savID = Utils.GetIntFromString(entries[1],"SaveID");
+						savID = Utils.GetIntFromString(entries[2],"SaveID");
 						if (ConsoleEmulator.ConstIndexIsDynamicObject(constdex)) {
 							contnr = LevelManager.a.GetRequestedLevelDynamicContainer(levID);
 						} else {
@@ -1814,8 +1815,9 @@ public class Const : MonoBehaviour {
 																	levID,false,
 																	contnr,
 																	savID);
-						
-						SaveObject.Load(instGO,ref entries,i); // Load NPC.
+
+						PrefabIdentifier prefID = SaveLoad.GetPrefabIdentifier(instGO,true);
+						SaveObject.Load(instGO,ref entries,i,prefID); // Load NPC.
 					} else {
 						LevelManager.a.DynamicObjectsSavestrings[levID].Add(readFileList[i]);
 					} 
@@ -1839,7 +1841,7 @@ public class Const : MonoBehaviour {
 			
 			// OK we read in all the dynamic objects above into the savestrings
 			// list, now actaully instantiate them.
-			LevelManager.a.LoadLevelDynamicObjectsForCurrent();
+			LevelManager.a.LoadLevelDynamicObjects(LevelManager.a.currentLevel);
 			loadUpdateTimer.Stop();
 
 			// LOAD 8.  Repopulate registries as needed that were on Awake.

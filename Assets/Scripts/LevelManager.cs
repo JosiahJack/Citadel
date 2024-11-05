@@ -107,7 +107,7 @@ public class LevelManager : MonoBehaviour {
 		if (lev > (levelScripts.Length - 1)) return readFileList;
 		if (!LevNumInBounds(lev)) return readFileList;
 
-		string dynName = "CitadelScene_dynamics_level"+lev.ToString()+".dat";
+		string dynName = "CitadelScene_dynamics_level"+lev.ToString()+".txt";
 // 		Debug.Log("Loading dynamic objects from " + dynName);
 		StreamReader sf = Utils.ReadStreamingAsset(dynName);
 		if (sf == null) { UnityEngine.Debug.Log("Dynamic objects filepath invalid"); return readFileList; }
@@ -223,7 +223,7 @@ public class LevelManager : MonoBehaviour {
 // 		Debug.Log("Loading level data for " + levnum.ToString());
 		LoadLevelLights(levnum);
 		LoadLevelGeometry(levnum);
-		LoadLevelDynamicObjects(levnum,GetRequestedLevelDynamicContainer(levnum));
+		LoadLevelDynamicObjects(levnum);
 		levelDataLoaded[levnum] = true;
 	}
 
@@ -315,6 +315,14 @@ public class LevelManager : MonoBehaviour {
         return levelScripts[currentLevel].geometryContainer;
 	}
 
+	public GameObject GetCurrentLightsStaticImmutableContainer() {
+		if (!LevNumInBounds(currentLevel)) {
+			return levelScripts[1].lightsStaticImmutable;
+		}
+		
+		return levelScripts[currentLevel].lightsStaticImmutable;
+	}
+	
 	public GameObject GetCurrentStaticImmutableContainer() { // Does not return null
 		if (!LevNumInBounds(currentLevel)) {
 			return levelScripts[1].staticObjectsImmutable;
@@ -345,6 +353,14 @@ public class LevelManager : MonoBehaviour {
 		}
 
 		return levelScripts[currentLevel].lightsStaticImmutable;
+	}
+	
+	public GameObject GetRequestedLightsStaticImmutableContainer(int index) {
+		if (!LevNumInBounds(index)) {
+			return levelScripts[1].lightsStaticImmutable;
+		}
+		
+		return levelScripts[index].lightsStaticImmutable;
 	}
 
 	public GameObject GetRequestedLevelDynamicContainer(int index) {
@@ -486,7 +502,7 @@ public class LevelManager : MonoBehaviour {
 		if (curlevel > (geometryContainers.Length - 1)) return;
 		if (curlevel < 0) return;
 		
-		string gName = "CitadelScene_geometry_level"+curlevel.ToString()+".dat";
+		string gName = "CitadelScene_geometry_level"+curlevel.ToString()+".txt";
 		StreamReader sf = Utils.ReadStreamingAsset(gName);
 		if (sf == null) {
 			UnityEngine.Debug.Log("Geometry input file path invalid");
@@ -495,148 +511,20 @@ public class LevelManager : MonoBehaviour {
 
 		string readline;
 		List<string> readFileList = new List<string>();
+		int lineNum = 0;
 		using (sf) {
 			do {
 				readline = sf.ReadLine();
-				if (readline != null) {
-					readFileList.Add(readline);
-				}
+				if (readline == null) break;
+
+				SaveLoad.LoadGeometry(
+					readline.Split(Convert.ToChar(SaveLoad.splitChar)),
+					lineNum,curlevel);
+				
+				lineNum++;
 			} while (!sf.EndOfStream);
 			sf.Close();
 		}
-
-		string[] entries = new string[27];
-		int index = 0;
-		Vector3 vec;
-		Transform childChunk;
-		for (int i=0;i<readFileList.Count;i++) {
-			entries = readFileList[i].Split(Convert.ToChar(Utils.splitChar));
-			if (entries.Length <= 1) continue;
-
-			index = 0;
-			int constdex = Utils.GetIntFromString(entries[index],"constIndex"); index++;
-			GameObject chunk = ConsoleEmulator.SpawnDynamicObject(constdex,
-																  curlevel,
-																  false,null,0);
-			if (chunk == null) continue;
-			
-			chunk.name = entries[index]; index++;
-			index = Utils.LoadTransform(chunk.transform,ref entries,index);
-			if ((entries.Length - 1) >= index) {
-				string[] splits = entries[index].Split(':');
-				string variableName = splits[0];
-				string variableValue = splits[1];
-				if (variableName == "BoxCollider.enabled") {
-					BoxCollider bcol = chunk.GetComponent<BoxCollider>();
-					bcol.enabled = Utils.GetBoolFromString(entries[index],"BoxCollider.enabled"); index++;
-					vec = new Vector3(1f,1f,1f);
-					vec.x = Utils.GetFloatFromString(entries[index],"size.x"); index++;
-					vec.y = Utils.GetFloatFromString(entries[index],"size.y"); index++;
-					vec.z = Utils.GetFloatFromString(entries[index],"size.z"); index++;
-					bcol.size = vec;
-					vec.x = Utils.GetFloatFromString(entries[index],"center.x"); index++;
-					vec.y = Utils.GetFloatFromString(entries[index],"center.y"); index++;
-					vec.z = Utils.GetFloatFromString(entries[index],"center.z"); index++;
-					bcol.center = vec;
-					if (chunk.transform.childCount >= 1) {
-						// Get collisionAid
-						Transform subtr = chunk.transform.GetChild(0);
-						if (subtr != null) {
-							subtr.gameObject.SetActive(Utils.GetBoolFromString(entries[index],"collisionAid.activeSelf")); index++;
-						}
-					}
-					
-					if (index < entries.Length) {
-						splits = entries[index].Split(':');
-						variableName = splits[0];
-					}
-				} else if (variableName == "material") {
-					MeshRenderer mr = chunk.GetComponent<MeshRenderer>();
-					int matVal = GetMaterialByName(variableValue);
-					//Debug.Log("found geometry with material override of "
-					//		  + variableValue + " giving index "
-					//		  + matVal.ToString());
-
-					if (matVal == 86 && constdex == 130) {
-						childChunk = chunk.transform.GetChild(0);
-						if (childChunk != null) {
-							mr = childChunk.gameObject.GetComponent<MeshRenderer>();
-							if (mr != null) {
-								mr.sharedMaterial = Const.a.genericMaterials[matVal];
-							}
-						}
-					}
-					
-					if (mr != null) {
-						mr.sharedMaterial = Const.a.genericMaterials[matVal];
-					} else if (chunk.transform.childCount > 0) {
-						childChunk = chunk.transform.GetChild(0);
-						if (childChunk != null) {
-							mr = childChunk.gameObject.GetComponent<MeshRenderer>();
-							if (mr != null) {
-								mr.sharedMaterial = Const.a.genericMaterials[matVal];
-							}
-						}
-					}
-				}
-				
-				if (constdex == 218) { // chunk_reac2_4 has text on it.
-					if (entries.Length - 1 >= index) {
-						Transform textr1 = chunk.transform.GetChild(1); // text_decalStopDSS1
-						Transform textr2 = chunk.transform.GetChild(2); // text_decalStopDSS1 (1)
-						TextLocalization tex1 = textr1.gameObject.GetComponent<TextLocalization>();
-						TextLocalization tex2 = textr2.gameObject.GetComponent<TextLocalization>();
-						tex1.lingdex = Utils.GetIntFromString(entries[index],"lingdex"); index++;
-						tex2.lingdex = Utils.GetIntFromString(entries[index],"lingdex"); index++;
-					}
-				}
-			}
-		}
-	}
-	
-	int GetMaterialByName(string name) {
-		switch (name) {
-			case "cyberpanel_black":              return 49;
- 			case "cyberpanel_blue":               return 50;
-			case "cyberpanel_bluegray":           return 51;
-			case "cyberpanel_cyan":               return 52;
-			case "cyberpanel_cyandark":           return 53;
-			case "cyberpanel_gray":               return 54;
-			case "cyberpanel_green":              return 55;
-			case "cyberpanel_greendark":          return 56;
-			case "cyberpanel_orange":             return 57;
-			case "cyberpanel_orangedark":         return 58;
-			case "cyberpanel_paleorange":         return 59;
-			case "cyberpanel_palepurple":         return 60;
-			case "cyberpanel_palered":            return 61;
-			case "cyberpanel_paleyellow":         return 62;
-			case "cyberpanel_purple":             return 63;
-			case "cyberpanel_red":                return 64;
-			case "cyberpanel_slice45":            return 65;
-			case "cyberpanel_slice45_blue":       return 66;
-			case "cyberpanel_slice45_bluegray":   return 67;
-			case "cyberpanel_slice45_cyan":       return 68;
-			case "cyberpanel_slice45_cyandark":   return 69;
-			case "cyberpanel_slice45_gray":       return 70;
-			case "cyberpanel_slice45_green":      return 71;
-			case "cyberpanel_slice45_greendark":  return 72;
-			case "cyberpanel_slice45_orange":     return 73;
-			case "cyberpanel_slice45_orangedark": return 74;
-			case "cyberpanel_slice45_paleorange": return 75;
-			case "cyberpanel_slice45_palepurple": return 76;
-			case "cyberpanel_slice45_palered":    return 77;
-			case "cyberpanel_slice45_paleyellow": return 78;
-			case "cyberpanel_slice45_purple":     return 79;
-			case "cyberpanel_slice45_red":        return 80;
-			case "cyberpanel_slice45_yellow":     return 81;
-			case "cyberpanel_touching":           return 82;
-			case "cyberpanel_white":              return 83;
-			case "cyberpanel_yellow":             return 84;
-			case "cyberpanel_yellowdark":         return 85;
-			case "pipe_maint2_3_coolant":         return 86;
-		}
-		
-		return 0;
 	}
 
 	public void UnloadLevelLights(int curlevel) {
@@ -664,7 +552,7 @@ public class LevelManager : MonoBehaviour {
 		if (curlevel > (lightContainers.Length - 1)) return;
 		if (curlevel < 0) return;
 
-		string lName = "CitadelScene_lights_level"+curlevel.ToString()+".dat";
+		string lName = "CitadelScene_lights_level"+curlevel.ToString()+".txt";
 		StreamReader sf = Utils.ReadStreamingAsset(lName);
 		if (sf == null) {
 			UnityEngine.Debug.Log("Lights input file path invalid");
@@ -673,116 +561,22 @@ public class LevelManager : MonoBehaviour {
 
 		string readline;
 		List<string> readFileList = new List<string>();
+		int lineNum = 0;
+		char splitter = Convert.ToChar(SaveLoad.splitChar);
 		using (sf) {
 			do {
 				readline = sf.ReadLine();
-				if (readline != null) {
-					readFileList.Add(readline);
-				}
+				if (readline == null) break;
+				
+				SaveLoad.LoadLight(readline.Split(splitter),lineNum,curlevel);
+				lineNum++;
 			} while (!sf.EndOfStream);
 			sf.Close();
 		}
 
 		string[] entries = new string[27];
-		int index = 0;
-		float readFloatx;
-		float readFloaty;
-		float readFloatz;
-		float readFloatw;
-		Vector3 tempvec;
-		Quaternion tempquat;
-		float[] shadCullArray = new float[32];
-		// Shadow distance is 35.0f so anything non-zero less than that helps.
-		shadCullArray[0] = 15f; // Default
-		shadCullArray[1] = 0.0f; // TransparentFX
-		shadCullArray[2] = 0.0f; // Ignore Raycast
-		shadCullArray[3] = 0.0f; // 
-		shadCullArray[4] = 0.0f; // Water
-		shadCullArray[5] = 0.0f; // UI
-		shadCullArray[6] = 0.0f; // 
-		shadCullArray[7] = 0.0f; // 
-		shadCullArray[8] = 0.0f; // GunViewModel
-		shadCullArray[9] = 20.0f; // Geometry
-		shadCullArray[10] = 15f; // NPC
-		shadCullArray[11] = 5f; // Bullets
-		shadCullArray[12] = 7f; // Player
-		shadCullArray[13] = 15f; // Corpse
-		shadCullArray[14] = 20f; // PhysObjects
-		shadCullArray[15] = 0.0f; // Sky
-		shadCullArray[16] = 0.0f; // PlayerTriggerOnly
-		shadCullArray[17] = 0.0f; // Trigger
-		shadCullArray[18] = 20f; // Door
-		shadCullArray[19] = 15f; // InterDebris
-		shadCullArray[20] = 0.0f; // Player2
-		shadCullArray[21] = 0.0f; // Player3
-		shadCullArray[22] = 0.0f; // Player4
-		shadCullArray[23] = 0.0f; // NPCTrigger
-		shadCullArray[24] = 5f; // NPCBullet
-		shadCullArray[25] = 0.0f; // NPCClip
-		shadCullArray[26] = 0.0f; // Clip
-		shadCullArray[27] = 0.0f; // Automap
-		shadCullArray[28] = 0.0f; // Culling
-		shadCullArray[29] = 15f; // CorpseSearchable
-		shadCullArray[30] = 0.0f; // 
-		shadCullArray[31] = 0.0f; // 
+
 		for (int i=0;i<readFileList.Count;i++) {
-			entries = readFileList[i].Split(Convert.ToChar(Utils.splitChar));
-			if (entries.Length <= 1) continue;
-
-			index = 0;
-			GameObject newLight = new GameObject("PointLight" + i.ToString());
-			Light lit = newLight.AddComponent<Light>();
-			Transform tr = newLight.transform;
-			tr.SetParent(lightContainers[curlevel].transform);
-
-			// Get transform
-			readFloatx = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			readFloaty = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			readFloatz = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
-			tr.localPosition = tempvec;
-
-			// Get rotation
-			readFloatx = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			readFloaty = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			readFloatz = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			readFloatw = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
-			tr.localRotation = tempquat;
-
-			// Get scale
-			readFloatx = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			readFloaty = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			readFloatz = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
-			tr.localScale = tempvec;
-
-			lit.intensity = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			lit.range = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			lit.type = Utils.GetLightTypeFromString(entries[index]); index++;
-			readFloatx = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			readFloaty = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			readFloatz = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			readFloatw = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			lit.color = new Color(readFloatx, readFloaty, readFloatz, readFloatw);
-			lit.spotAngle = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			lit.shadows = Utils.GetLightShadowsFromString(entries[index]); index++;
-			if (lit.intensity < 0.3f || (lit.range > 7f && lit.intensity < 2f)) lit.shadows = LightShadows.None;
-			lit.shadowStrength = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			lit.shadowResolution = Utils.GetShadowResFromString(entries[index]); index++;
-			lit.shadowBias = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			lit.shadowNormalBias = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			lit.shadowNearPlane = Utils.GetFloatFromStringDataTables(entries[index]); index++;
-			lit.layerShadowCullDistances = shadCullArray;
-			lit.cullingMask = LayerMask.GetMask("Default","TransparentFX",
-												"Water","GunViewModel",
-												"Geometry","NPC","Bullets",
-												"Player","Corpse",
-												"PhysObjects","Door",
-												"InterDebris","Player2",
-												"Player3","Player4",
-												"NPCBulllet",
-												"CorpseSearchable");
 		}
 	}
 
@@ -838,40 +632,20 @@ public class LevelManager : MonoBehaviour {
 		compArray = null;
 	}
 
-	public void LoadLevelDynamicObjects(int curlevel, GameObject container) {
-// 		Debug.Log("Loading dynamic objects from savestrings for "
-// 				  + curlevel.ToString() + ", and has "
-// 				  + DynamicObjectsSavestrings[curlevel].Count.ToString()
-// 				  + " objects");
-// 		
+	public void LoadLevelDynamicObjects(int curlevel) {
 		if (curlevel > (levelScripts.Length - 1)) return;
 		if (curlevel < 0) return;
 
-		int val = 307; // First useable object (paper wad) just in case.
-					   // Don't want to spawn 0 as a fallback which is a wall.
-
 		string[] entries;
+		char splitter = Convert.ToChar(SaveLoad.splitChar);
 		for (int i=0;i<DynamicObjectsSavestrings[curlevel].Count;i++) {
-			entries = DynamicObjectsSavestrings[curlevel][i].Split(Convert.ToChar(Utils.splitChar));
+			entries = DynamicObjectsSavestrings[curlevel][i].Split(splitter);
 			if (entries.Length <= 1) continue;
 			
-			val = Utils.GetIntFromString(entries[19],"constIndex");
-			GameObject newGO = ConsoleEmulator.SpawnDynamicObject(val,curlevel,
-																  false,
-																  container,
-																  -1);
-
-			if (newGO != null) SaveObject.Load(newGO,ref entries,-2);
+			SaveLoad.LoadPrefab(ref entries,0,curlevel);
 		}
-		
-// 		Debug.Log("Loading of " + curlevel.ToString() + " dynamic objects done"
-// 				  + ", clearing savestrings");
-		
+
 		DynamicObjectsSavestrings[curlevel].Clear();
-	}
-	
-	public void LoadLevelDynamicObjectsForCurrent() {
-		LoadLevelDynamicObjects(currentLevel,GetRequestedLevelDynamicContainer(currentLevel));
 	}
 
 	public void CheatLoadLevel(int ind) {

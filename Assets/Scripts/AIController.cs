@@ -1891,6 +1891,7 @@ public class AIController : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index,
 						   PrefabIdentifier prefID) {
+
 		AIController aic = go.GetComponent<AIController>();
 		if (aic == null) {
 			Debug.Log("AIController.Load failure, aic == null");

@@ -1333,7 +1333,7 @@ namespace Tests {
                                                         true);
 
                 for (int k=0;k<compArray.Length;k++) {
-                    so = compArray[k].gameObject.GetComponent<SaveObject>();
+                    so = SaveLoad.GetPrefabSaveObject(compArray[k].gameObject);
                     saveIDsFound.Add(so.SaveID);
                 }
             }

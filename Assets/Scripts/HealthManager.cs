@@ -80,12 +80,6 @@ public class HealthManager : MonoBehaviour {
 		if (isPlayer) justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
 		if (securityAffected != SecurityType.None && LevelManager.a != null) LevelManager.a.RegisterSecurityObject(levelIndex, securityAffected);
 		if (Const.a != null) Const.a.RegisterObjectWithHealth(this);
-		if (gibOnDeath) {
-			for (int i=0;i<gibObjects.Length;i++) {
-				SaveObject so = gibObjects[i].GetComponent<SaveObject>();
-				if (so != null) so.Start();
-			}
-		}
 		awakeInitialized = true;
 		if (isNPC && !gibOnDeath ) { // Set searchable item to CorpseSearchable layer.
 			if (searchableItem != null) searchableItem.gameObject.layer = 29;
@@ -894,13 +888,17 @@ public class HealthManager : MonoBehaviour {
 			}
 		}
 
-		if (prefID.constIndex == 526) { // prop_console02
-			if (go.transform.childCount > 0) { // Screen is first child.
-				GameObject child = go.transform.GetChild(0).gameObject;
-				child.SetActive(Utils.GetBoolFromString(entries[index],"child.activeSelf")); index++;
-				ImageSequenceTextureArray ista = child.GetComponent<ImageSequenceTextureArray>();
-				ista.resourceFolder = Utils.LoadString(entries[index],"resourceFolder"); index++;
+		if (prefID != null) {
+			if (prefID.constIndex == 526) { // prop_console02
+				if (go.transform.childCount > 0) { // Screen is first child.
+					GameObject child = go.transform.GetChild(0).gameObject;
+					child.SetActive(Utils.GetBoolFromString(entries[index],"child.activeSelf")); index++;
+					ImageSequenceTextureArray ista = child.GetComponent<ImageSequenceTextureArray>();
+					ista.resourceFolder = Utils.LoadString(entries[index],"resourceFolder"); index++;
+				}
 			}
+		} else {
+			if (prefID == null) Debug.LogError("Missing PrefabIdentifier on " + go.name + ".");	
 		}
 
 		hm.teleportOnDeath = Utils.GetBoolFromString(entries[index],"teleportOnDeath"); index++;

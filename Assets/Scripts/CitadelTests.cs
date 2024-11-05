@@ -86,7 +86,7 @@ public class CitadelTests : MonoBehaviour {
 		#if UNITY_EDITOR
 		UnityEngine.Debug.Log("Outputting all static objects to "
 				  + "StreamingAssets/CitadelScene_staticobjectsimmutable_level"
-				  + levelToOutputFrom.ToString() + ".dat");
+				  + levelToOutputFrom.ToString() + ".txt");
 
 		List<GameObject> allStaticObjects = new List<GameObject>();
 		Transform tr = staticObjectContainters[levelToOutputFrom].transform;
@@ -103,7 +103,7 @@ public class CitadelTests : MonoBehaviour {
 							  + levelToOutputFrom.ToString());
 
 		string lName = "CitadelScene_staticobjects_level"
-					   + levelToOutputFrom.ToString() + ".dat";
+					   + levelToOutputFrom.ToString() + ".txt";
 
 		string lP = Utils.SafePathCombine(Application.streamingAssetsPath,
 										  lName);
@@ -113,207 +113,17 @@ public class CitadelTests : MonoBehaviour {
 			UnityEngine.Debug.Log("Static objects output file path invalid");
 			return;
 		}
-		
-		StringBuilder s1 = new StringBuilder();
-// 		bool hasTextLingdexOverride = false;
-// 		bool hasTextAnchorOverride = false;
-		bool hasBoxColliderOverride = false;
-// 		bool hasTextOverride = false;
+
 		using (sw) {
-			PrefabIdentifier pid = null;
-			GameObject go = null;
-			for (int i=0;i<allStaticObjects.Count;i++) {
-				go = allStaticObjects[i];
-				pid = go.GetComponent<PrefabIdentifier>();
-				if (pid == null) {
-					if (go.transform.childCount > 1) {
-						pid = go.transform.GetChild(0).GetComponent<PrefabIdentifier>();
-					}
-				}
-				
-				if (pid == null) { UnityEngine.Debug.Log("No PrefabIdentifier on " + go.name); continue; }
-				if (!ConsoleEmulator.ConstIndexInBounds(pid.constIndex)) { UnityEngine.Debug.Log("ConstIndex " + pid.constIndex.ToString() + " not in bounds!"); continue; }
-				if (!ConsoleEmulator.ConstIndexIsStaticObjectImmutable(pid.constIndex)) continue;
-
-				s1.Clear();
-				// Start Saving
-				// --------------------------------------------------------------------
-				s1.Append(Utils.UintToString(pid.constIndex,"constIndex"));
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.BoolToString(go.activeSelf,"go.activeSelf"));
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.SaveTransform(go.transform));
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.SaveRigidbody(go));
-				s1.Append(Utils.splitChar);
-				s1.Append(Utils.UintToString(levelToOutputFrom,"levelID"));
-				s1.Append(Utils.splitChar);
-
-				switch(pid.constIndex) {
-					case 532: break;
-					case 533: break;
-					case 534: break;
-					case 535: break;
-					case 536: break;
-					case 537: break;
-					case 538: break;
-					case 539: break;
-					case 540: break;
-					case 541: break;
-					case 542: break;
-					case 543: break;
-					case 544: break;
-					case 545: break;
-					case 546: break;
-					case 547: break;
-					case 548: break;
-					case 549: break;
-					case 550: break;
-					case 551: break;
-					case 552: break;
-					case 554: break;
-					case 556: break;
-					case 557: break;
-					case 558: break;
-					case 559: break;
-					case 560: break;
-					case 561: break;
-					case 562: break;
-					case 563: break;
-					case 564: break;
-					case 565: break;
-					case 566: break;
-					case 567: break;
-					case 568: break;
-					case 569: break;
-					case 570: break;
-					case 571: break;
-					case 572: break;
-					case 573: break;
-					case 574: break;
-					case 575: break;
-					case 576: break;
-					case 577: break;
-					case 578: break;
-					case 579: break;
-					case 580: break;
-					case 581: break;
-					case 582: break;
-					case 583: break;
-					case 584: break;
-					case 585: break;
-					case 586: break;
-					case 587: break;
-					case 588: break;
-					case 589: break;
-					case 590: break;
-					case 591: break;
-					case 592: break;
-					case 593: break;
-					case 595: break;
-					case 597: break;
-					case 599: break;
-					case 601: break;
-					case 603: break;
-					case 610: break;
-					case 612: break;
-					case 614: break;
-					case 616: break;
-					case 618: break;
-					case 621: break;
-					case 622: break;
-					case 623: break;
-					case 624: break;
-					case 625: break;
-					case 626: break;
-					case 627: break;
-					case 628: break;
-					case 629: break;
-					case 630: break;
-					case 631: break;
-					case 632: break;
-					case 633: break;
-					case 634: break;
-					case 635: break;
-					case 636: break;
-					case 637: break;
-					case 638: break;
-					case 639: break;
-					case 640: break;
-					case 641: break;
-					case 642: break;
-					case 643: break;
-					case 644: break;
-					case 645: break;
-					case 646: break;
-					case 647: break;
-					case 648: break;
-					case 649: break;
-					case 650: break;
-					case 651: break;
-					case 652: break;
-					case 653: break;
-					case 654: break;
-					case 655: break;
-					case 656: break;
-					case 657: break;
-					case 658: break;
-					case 659: break;
-					case 660: break;
-					case 661: break;
-					case 662: break;
-					case 663: break;
-					case 664: break;
-					case 665: break;
-					case 666: break;
-					case 667: break;
-					case 668: break;
-					case 669: break;
-					case 670: break;
-					case 671: break;
-					case 672: break;
-					case 673: break;
-					case 674: break;
-					case 675: break;
-					case 676: break;
-					case 677: break;
-					case 678: break;
-					case 679: break;
-					case 680: break;
-					case 681: break;
-					case 682: break;
-					case 683: break;
-					case 684: break;
-					case 685: break;
-					case 686: break;
-					case 687: break;
-					case 697: break;
-					case 698: break;
-					case 704: break;
-					case 705: break;
-					case 706: break;
-					case 707: break;
-					case 708: break;
-					case 709: break;
-					case 710: break;
-					case 711: break;
-					case 712: break;
-					case 713: break;
-					case 714: break;
-					case 715: break;
-					case 716: break;
-					case 733: break;
-					case 734: break;
-					case 735: break;
-				}
-				
-				sw.Write(s1.ToString());
+			for (int i=0;i<allStaticObjects.Count;i++) {				
+				sw.Write(SaveLoad.SavePrefab(allStaticObjects[i]));
 				sw.Write(Environment.NewLine);
 			}
 			sw.Close();
 		}
 		#endif
 	}
+
 /*	
 	public void GenerateGeometryDataFile() {
 		#if UNITY_EDITOR
@@ -491,6 +301,170 @@ public class CitadelTests : MonoBehaviour {
     }
     #endif
 
+//     public void CorrectDynamicDataFiles() {
+// 		// Iterate over all levels, load their dynamic objects, fix each keyvalue pair to reorder constIndex from slot 19 to 0
+// 		for (int i=0;i<14;i++) {
+// 			string lName = "CitadelScene_dynamics_level" + i.ToString() + ".dat";
+// 			string lP = Utils.SafePathCombine(Application.streamingAssetsPath,lName);
+// 			StreamReader sf = Utils.ReadStreamingAsset(lName);
+// 			if (sf == null) {
+// 				UnityEngine.Debug.Log("Dynamics input file path invalid");
+// 				return;
+// 			}
+// 
+// 			string readline;
+// 			List<string> readFileList = new List<string>();
+// 			using (sf) {
+// 				do {
+// 					readline = sf.ReadLine();
+// 					if (readline == null) break;
+// 					
+// 					readFileList.Add(readline);
+// 				} while (!sf.EndOfStream);
+// 				sf.Close();
+// 			}
+// 
+// 			char splitter = Convert.ToChar(SaveLoad.splitChar);
+// 			List<string> writeFileList = new List<string>();
+// 			for (int j=0;j<readFileList.Count;j++) {
+// 				string[] initialEntries = readFileList[j].Split(splitter);
+// 				int max = initialEntries.Length;
+// 				string[] rewritten = new string[max];
+// 				rewritten[0] = initialEntries[19];
+// 				// 0|....|17|18|constdex|20|21
+// 				// constdex|0|1|2|3|4|...|17|18|20|21
+// 				// 0       |1|2|3|4|5|...|18|19|20|21
+// 				for (int k=1;k<20;k++) rewritten[k] = initialEntries[k-1];
+// 				for (int k=20;k<max;k++) rewritten[k] = initialEntries[k];
+// 				StringBuilder rewrite = new StringBuilder();
+// 				rewrite.Clear();
+// 				for (int k=0;k<(rewritten.Length - 1);k++) {
+// 					rewrite.Append(rewritten[k]);
+// 					rewrite.Append(SaveLoad.splitChar);
+// 				}
+// 
+// 				rewrite.Append(rewritten[rewritten.Length - 1]);
+// 				writeFileList.Add(rewrite.ToString());
+// 			}
+// 			
+// 			string lName2 = "CitadelScene_dynamics_level" + i.ToString() + ".txt";
+// 			string lP2 = Utils.SafePathCombine(Application.streamingAssetsPath,lName2);
+// 			StreamWriter sw = new StreamWriter(lP2,false,Encoding.ASCII);
+// 			if (sw == null) {
+// 				UnityEngine.Debug.Log("Dynamics output file path invalid");
+// 				return;
+// 			}
+// 
+// 			using (sw) {
+// 				for (int j=0;j<writeFileList.Count;j++) {
+// 					sw.Write(writeFileList[j]);
+// 					sw.Write(Environment.NewLine);
+// 				}
+// 				sw.Close();
+// 			}
+// 		}
+// 	}
+
+//     public void CorrectLightDataFiles() {
+// 		// Iterate over all levels, load their lights, fix each keyvalue pair to add the key plus :
+// 		for (int i=0;i<14;i++) {
+// 			string lName = "CitadelScene_lights_level" + i.ToString() + ".dat";
+// 			string lP = Utils.SafePathCombine(Application.streamingAssetsPath,lName);
+// 			StreamReader sf = Utils.ReadStreamingAsset(lName);
+// 			if (sf == null) {
+// 				UnityEngine.Debug.Log("Lights input file path invalid");
+// 				return;
+// 			}
+// 
+// 			string readline;
+// 			List<string> readFileList = new List<string>();
+// 			using (sf) {
+// 				do {
+// 					readline = sf.ReadLine();
+// 					if (readline == null) break;
+// 					
+// 					readFileList.Add(readline);
+// 				} while (!sf.EndOfStream);
+// 				sf.Close();
+// 			}
+// 
+// 			char splitter = Convert.ToChar(SaveLoad.splitChar);
+// 			string[] entries = new string[24];
+// 			List<string> writeFileList = new List<string>();
+// 			for (int j=0;j<readFileList.Count;j++) {
+// 				entries = readFileList[j].Split(splitter);
+// 				string[] rewritten = new string[24];
+// 				rewritten[0] = "localPosition.x:" + entries[0];
+// 				rewritten[1] = "localPosition.y:" + entries[1];
+// 				rewritten[2] = "localPosition.z:" + entries[2];
+// 				rewritten[3] = "localRotation.x:" + entries[3];
+// 				rewritten[4] = "localRotation.y:" + entries[4];
+// 				rewritten[5] = "localRotation.z:" + entries[5];
+// 				rewritten[6] = "localRotation.w:" + entries[6];
+// 				rewritten[7] = "localScale.x:" + entries[7];
+// 				rewritten[8] = "localScale.y:" + entries[8];
+// 				rewritten[9] = "localScale.z:" + entries[9];
+// 				rewritten[10] = "intensity:" + entries[10];
+// 				rewritten[11] = "range:" + entries[11];
+// 				rewritten[12] = "type:" + entries[12];
+// 				rewritten[13] = "color.r:" + entries[13];
+// 				rewritten[14] = "color.g:" + entries[14];
+// 				rewritten[15] = "color.b:" + entries[15];
+// 				rewritten[16] = "color.a:" + entries[16];
+// 				rewritten[17] = "spotAngle:" + entries[17];
+// 				rewritten[18] = "shadows:" + entries[18];
+// 				rewritten[19] = "shadowStrength:" + entries[19];
+// 				rewritten[20] = "shadowResolution:" + entries[20];
+// 				rewritten[21] = "shadowBias:" + entries[21];
+// 				rewritten[22] = "shadowNormalBias:" + entries[22];
+// 				rewritten[23] = "shadowNearPlane:" + entries[23];
+// 
+// 				string rewrite = rewritten[0] + SaveLoad.splitChar
+// 								 + rewritten[1] + SaveLoad.splitChar
+// 								 + rewritten[2] + SaveLoad.splitChar
+// 								 + rewritten[3] + SaveLoad.splitChar
+// 								 + rewritten[4] + SaveLoad.splitChar
+// 								 + rewritten[5] + SaveLoad.splitChar
+// 								 + rewritten[6] + SaveLoad.splitChar
+// 								 + rewritten[7] + SaveLoad.splitChar
+// 								 + rewritten[8] + SaveLoad.splitChar
+// 								 + rewritten[9] + SaveLoad.splitChar
+// 								 + rewritten[10] + SaveLoad.splitChar
+// 								 + rewritten[11] + SaveLoad.splitChar
+// 								 + rewritten[12] + SaveLoad.splitChar
+// 								 + rewritten[13] + SaveLoad.splitChar
+// 								 + rewritten[14] + SaveLoad.splitChar
+// 								 + rewritten[15] + SaveLoad.splitChar
+// 								 + rewritten[16] + SaveLoad.splitChar
+// 								 + rewritten[17] + SaveLoad.splitChar
+// 								 + rewritten[18] + SaveLoad.splitChar
+// 								 + rewritten[19] + SaveLoad.splitChar
+// 								 + rewritten[20] + SaveLoad.splitChar
+// 								 + rewritten[21] + SaveLoad.splitChar
+// 								 + rewritten[22] + SaveLoad.splitChar
+// 								 + rewritten[23] + SaveLoad.splitChar;
+// 
+// 				writeFileList.Add(rewrite);
+// 			}
+// 			
+// 			string lName2 = "CitadelScene_lights_level" + i.ToString() + ".txt";
+// 			string lP2 = Utils.SafePathCombine(Application.streamingAssetsPath,lName2);
+// 			StreamWriter sw = new StreamWriter(lP2,false,Encoding.ASCII);
+// 			if (sw == null) {
+// 				UnityEngine.Debug.Log("Lights output file path invalid");
+// 				return;
+// 			}
+// 
+// 			using (sw) {
+// 				for (int j=0;j<writeFileList.Count;j++) {
+// 					sw.Write(writeFileList[j]);
+// 					sw.Write(Environment.NewLine);
+// 				}
+// 				sw.Close();
+// 			}
+// 		}
+// 	}
+    
     // Commented out, all lights already generated.
 	public void GenerateLightsDataFile() {
 // 		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_lights_level" + levelToOutputFrom.ToString() + ".dat");
@@ -568,7 +542,7 @@ public class CitadelTests : MonoBehaviour {
 	}
 /*
 	public void LoadLevelDynamicObjects() {
-		lm.LoadLevelDynamicObjects(levelToOutputFrom,dynamicObjectContainers[levelToOutputFrom]);
+		lm.LoadLevelDynamicObjects(levelToOutputFrom);
 	}
 
 	public void UnloadLevelDynamicObjects() {
