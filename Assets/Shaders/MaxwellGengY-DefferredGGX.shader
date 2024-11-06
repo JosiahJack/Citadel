@@ -23,7 +23,7 @@ CGPROGRAM
 #pragma fragment frag
 #pragma multi_compile_lightpass
 #pragma multi_compile ___ UNITY_HDR_ON
-
+#define _SPECULARHIGHLIGHTS_OFF
 #pragma exclude_renderers nomrt
 
 #include "UnityCG.cginc"

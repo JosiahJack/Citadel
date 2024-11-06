@@ -59,10 +59,9 @@ public class ElevatorButton : MonoBehaviour {
 
 		if (floorAccessible) {
 			if (targetDestination == null) {
-				LevelManager.a.LoadLevel(levelIndex,null,Vector3.zero);
+				LevelManager.a.LoadLevel(levelIndex,Vector3.zero);
 			} else {
-				LevelManager.a.LoadLevel(levelIndex,targetDestination,
-										 targetDestination.transform.position);
+				LevelManager.a.LoadLevel(levelIndex,targetDestination.transform.position);
 			}
 		} else {
 			Const.sprint(Const.a.stringTable[8]);

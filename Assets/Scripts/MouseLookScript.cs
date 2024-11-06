@@ -376,19 +376,15 @@ public class MouseLookScript : MonoBehaviour {
 		}
 	}
 
-	public void EnterCyberspace(GameObject entryPoint) {
-		cyberspaceRecallPoint = entryPoint.transform.position;
+	public void EnterCyberspace(Vector3 entryPoint) {
+		cyberspaceRecallPoint = entryPoint;
 		playerRadiationTreatmentFlash.SetActive(true);
 		cyberspaceReturnPoint = PlayerMovement.a.transform.position;
-		cyberspaceReturnCameraLocalRotation =
-			transform.localRotation.eulerAngles;
-
-		cyberspaceReturnPlayerCapsuleLocalRotation =
-			playerCapsuleTransform.localRotation.eulerAngles;
-
+		cyberspaceReturnCameraLocalRotation = transform.localRotation.eulerAngles;
+		cyberspaceReturnPlayerCapsuleLocalRotation = playerCapsuleTransform.localRotation.eulerAngles;
 		cyberspaceReturnLevel = LevelManager.a.currentLevel;
 		MFDManager.a.EnterCyberspace();
-		LevelManager.a.LoadLevel(13,entryPoint,cyberspaceRecallPoint);
+		LevelManager.a.LoadLevel(13,cyberspaceRecallPoint);
 		PlayerMovement.a.inCyberSpace = true;
 		PlayerMovement.a.leanCapsuleCollider.enabled = false;
 		hm.inCyberSpace = true;
@@ -402,8 +398,7 @@ public class MouseLookScript : MonoBehaviour {
 	public void ExitCyberspace() {
 		playerRadiationTreatmentFlash.SetActive(true);
 		MFDManager.a.ExitCyberspace();
-		LevelManager.a.LoadLevel(cyberspaceReturnLevel,null,
-								 cyberspaceReturnPoint);
+		LevelManager.a.LoadLevel(cyberspaceReturnLevel,cyberspaceReturnPoint);
 
 		// Left/right component applied to capsule.
 		playerCapsuleTransform.localRotation = Quaternion.Euler(0f,

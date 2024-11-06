@@ -401,6 +401,92 @@ public class Utils {
 		}
 		return AccessCardType.None;
 	}
+	
+	public static string TrackTypeToString(TrackType typ, string name) {
+		switch (typ) {
+			case TrackType.None:            return  IntToString(0,name);
+			case TrackType.Walking:         return  IntToString(1,name);;
+			case TrackType.Combat:          return  IntToString(2,name);;
+			case TrackType.MutantNear:      return  IntToString(3,name);;
+			case TrackType.CyborgNear:      return  IntToString(4,name);;
+			case TrackType.CyborgDroneNear: return  IntToString(5,name);;
+			case TrackType.RobotNear:       return  IntToString(6,name);;
+			case TrackType.Transition:      return  IntToString(7,name);;
+			case TrackType.Revive:          return  IntToString(8,name);;
+			case TrackType.Death:           return  IntToString(9,name);;
+			case TrackType.Cybertube:       return IntToString(10,name);;
+			case TrackType.Elevator:        return IntToString(11,name);;
+			case TrackType.Distortion:      return IntToString(12,name);;
+		}
+		
+		return name + SaveLoad.keyValueSplitChar;
+	}
+
+	public static TrackType IntToTrackType(string typ, string name) {
+		string[] splits = typ.Split(':');
+		if (splits.Length < 2) return TrackType.None;
+
+		string nameReceived = splits[0];
+		int valueReceived = GetIntFromString(splits[1],name);
+		if (nameReceived != name) {
+			UnityEngine.Debug.LogError("BUG: Attempting to parse " + typ
+								       + " when wanting bool named " + name);
+			return TrackType.None;
+		}
+		
+		switch (valueReceived) {
+			case 0:  return TrackType.None;
+			case 1:  return TrackType.Walking;
+			case 2:  return TrackType.Combat;
+			case 3:  return TrackType.MutantNear;
+			case 4:  return TrackType.CyborgNear;
+			case 5:  return TrackType.CyborgDroneNear;
+			case 6:  return TrackType.RobotNear;
+			case 7:  return TrackType.Transition;
+			case 8:  return TrackType.Revive;
+			case 9:  return TrackType.Death;
+			case 10: return TrackType.Cybertube;
+			case 11: return TrackType.Elevator;
+			case 12: return TrackType.Distortion;
+		}
+		
+		return TrackType.None;
+	}
+	
+	public static string MusicTypeToString(MusicType typ, string name) {
+		switch (typ) {
+			case MusicType.None:     return IntToString(0,name);
+			case MusicType.Walking:  return IntToString(1,name);
+			case MusicType.Combat:   return IntToString(2,name);
+			case MusicType.Overlay:  return IntToString(3,name);
+			case MusicType.Override: return IntToString(4,name);
+		}
+		
+		return name + SaveLoad.keyValueSplitChar;
+	}
+
+	public static MusicType IntToMusicType(string typ, string name) {
+		string[] splits = typ.Split(':');
+		if (splits.Length < 2) return MusicType.None;
+
+		string nameReceived = splits[0];
+		int valueReceived = GetIntFromString(splits[1],name);
+		if (nameReceived != name) {
+			UnityEngine.Debug.LogError("BUG: Attempting to parse " + typ
+								       + " when wanting bool named " + name);
+			return MusicType.None;
+		}
+		
+		switch (valueReceived) {
+			case 0:  return MusicType.None;
+			case 1:  return MusicType.Walking;
+			case 2:  return MusicType.Combat;
+			case 3:  return MusicType.Overlay;
+			case 4:  return MusicType.Override;
+		}
+		
+		return MusicType.None;
+	}
 
 	public static int ButtonTypeToInt(ButtonType bt) {
 		switch (bt) { // Man what a load of
@@ -850,25 +936,72 @@ public class Utils {
     public static string SaveTransform(Transform tr) {
         StringBuilder s1 = new StringBuilder();
         s1.Clear();
-        s1.Append(FloatToString(tr.localPosition.x,"localPosition.x"));
-        s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localPosition.y,"localPosition.y"));
-        s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localPosition.z,"localPosition.z"));
-        s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localRotation.x,"localRotation.x"));
-        s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localRotation.y,"localRotation.y"));
-        s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localRotation.z,"localRotation.z"));
-        s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localRotation.w,"localRotation.w"));
-        s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localScale.x,"localScale.x"));
-        s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localScale.y,"localScale.y"));
-        s1.Append(splitChar);
-        s1.Append(FloatToString(tr.localScale.z,"localScale.z"));
+		
+		if (tr is RectTransform rectTr) {
+			s1.Append(FloatToString(rectTr.anchoredPosition.x,"anchoredPosition.x"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.anchoredPosition.y,"anchoredPosition.y"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.anchoredPosition3D.x,"anchoredPosition3D.x"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.anchoredPosition3D.y,"anchoredPosition3D.y"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.anchoredPosition3D.z,"anchoredPosition3D.z"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.anchorMax.x,"anchorMax.x"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.anchorMax.y,"anchorMax.y"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.anchorMin.x,"anchorMin.x"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.anchorMin.y,"anchorMin.y"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.offsetMax.x,"offsetMax.x"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.offsetMax.y,"offsetMax.y"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.offsetMin.x,"offsetMin.x"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.offsetMin.y,"offsetMin.y"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.pivot.x,"pivot.x"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.pivot.y,"pivot.y"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.localRotation.x,"localRotation.x"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.localRotation.y,"localRotation.y"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.localRotation.z,"localRotation.z"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.localRotation.w,"localRotation.w"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.localScale.x,"localScale.x"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.localScale.y,"localScale.y"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(rectTr.localScale.z,"localScale.z"));
+		} else {
+			s1.Append(FloatToString(tr.localPosition.x,"localPosition.x"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(tr.localPosition.y,"localPosition.y"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(tr.localPosition.z,"localPosition.z"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(tr.localRotation.x,"localRotation.x"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(tr.localRotation.y,"localRotation.y"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(tr.localRotation.z,"localRotation.z"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(tr.localRotation.w,"localRotation.w"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(tr.localScale.x,"localScale.x"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(tr.localScale.y,"localScale.y"));
+			s1.Append(splitChar);
+			s1.Append(FloatToString(tr.localScale.z,"localScale.z"));
+		}
         return s1.ToString();
     }
 
@@ -877,34 +1010,111 @@ public class Utils {
 		if (tr == null) {
 			Debug.Log("Transform null while trying to load! "
 					  + SaveObject.currentObjectInfo);
-			return index + 10;
+			
+			if (entries[index].Contains("anchoredPosition")) return index + 22;
+			else return index + 10;
 		}
+		
+		if (tr is RectTransform rectTr) {
+			readFloatx = GetFloatFromString(entries[index],"anchoredPosition.x"); index++;
+			readFloaty = GetFloatFromString(entries[index],"anchoredPosition.y"); index++;
+			rectTr.anchoredPosition = new Vector2(readFloatx,readFloaty);
+			
+			readFloatx = GetFloatFromString(entries[index],"anchoredPosition3D.x"); index++;
+			readFloaty = GetFloatFromString(entries[index],"anchoredPosition3D.y"); index++;
+			readFloatz = GetFloatFromString(entries[index],"anchoredPosition3D.z"); index++;
+			rectTr.anchoredPosition3D = new Vector3(readFloatx,readFloaty,readFloatz);
+			
+			readFloatx = GetFloatFromString(entries[index],"anchorMax.x"); index++;
+			readFloaty = GetFloatFromString(entries[index],"anchorMax.y"); index++;
+			rectTr.anchorMax = new Vector2(readFloatx,readFloaty);
+			
+			readFloatx = GetFloatFromString(entries[index],"anchorMin.x"); index++;
+			readFloaty = GetFloatFromString(entries[index],"anchorMin.y"); index++;
+			rectTr.anchorMin = new Vector2(readFloatx,readFloaty);
+			
+			readFloatx = GetFloatFromString(entries[index],"offsetMax.x"); index++;
+			readFloaty = GetFloatFromString(entries[index],"offsetMax.y"); index++;
+			rectTr.offsetMax = new Vector2(readFloatx,readFloaty);
+			
+			readFloatx = GetFloatFromString(entries[index],"offsetMin.x"); index++;
+			readFloaty = GetFloatFromString(entries[index],"offsetMin.y"); index++;
+			rectTr.offsetMin = new Vector2(readFloatx,readFloaty);
+			
+			readFloatx = GetFloatFromString(entries[index],"pivot.x"); index++;
+			readFloaty = GetFloatFromString(entries[index],"pivot.y"); index++;
+			rectTr.pivot = new Vector2(readFloatx,readFloaty);
+			
+			// Get rotation
+			readFloatx = GetFloatFromString(entries[index],"localRotation.x"); index++;
+			readFloaty = GetFloatFromString(entries[index],"localRotation.y"); index++;
+			readFloatz = GetFloatFromString(entries[index],"localRotation.z"); index++;
+			readFloatw = GetFloatFromString(entries[index],"localRotation.w"); index++;
+			rectTr.localRotation = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
 
-		// Get position
-		readFloatx = GetFloatFromString(entries[index],"localPosition.x"); index++;
-		readFloaty = GetFloatFromString(entries[index],"localPosition.y"); index++;
-		readFloatz = GetFloatFromString(entries[index],"localPosition.z"); index++;
-		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
-		if (tr.localPosition != tempvec) tr.localPosition = tempvec;
+			// Don't use Transform.SetPositionAndRotation since that sets global
+			// position and the local is what is saved and loaded here.
 
-		// Get rotation
-		readFloatx = GetFloatFromString(entries[index],"localRotation.x"); index++;
-		readFloaty = GetFloatFromString(entries[index],"localRotation.y"); index++;
-		readFloatz = GetFloatFromString(entries[index],"localRotation.z"); index++;
-		readFloatw = GetFloatFromString(entries[index],"localRotation.w"); index++;
-		tempquat = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
-		tr.localRotation = tempquat;
+			// Get scale
+			readFloatx = GetFloatFromString(entries[index],"localScale.x"); index++;
+			readFloaty = GetFloatFromString(entries[index],"localScale.y"); index++;
+			readFloatz = GetFloatFromString(entries[index],"localScale.z"); index++;
+			rectTr.localScale = new Vector3(readFloatx,readFloaty,readFloatz);
+		} else {
+			// Get position
+			readFloatx = GetFloatFromString(entries[index],"localPosition.x"); index++;
+			readFloaty = GetFloatFromString(entries[index],"localPosition.y"); index++;
+			readFloatz = GetFloatFromString(entries[index],"localPosition.z"); index++;
+			tr.localPosition = new Vector3(readFloatx,readFloaty,readFloatz);
 
-		// Don't use Transform.SetPositionAndRotation since that sets global
-		// position and the local is what is saved and loaded here.
+			// Get rotation
+			readFloatx = GetFloatFromString(entries[index],"localRotation.x"); index++;
+			readFloaty = GetFloatFromString(entries[index],"localRotation.y"); index++;
+			readFloatz = GetFloatFromString(entries[index],"localRotation.z"); index++;
+			readFloatw = GetFloatFromString(entries[index],"localRotation.w"); index++;
+			tr.localRotation = new Quaternion(readFloatx,readFloaty,readFloatz,readFloatw);
 
-		// Get scale
-		readFloatx = GetFloatFromString(entries[index],"localScale.x"); index++;
-		readFloaty = GetFloatFromString(entries[index],"localScale.y"); index++;
-		readFloatz = GetFloatFromString(entries[index],"localScale.z"); index++;
-		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
-		tr.localScale = tempvec;
+			// Don't use Transform.SetPositionAndRotation since that sets global
+			// position and the local is what is saved and loaded here.
+
+			// Get scale
+			readFloatx = GetFloatFromString(entries[index],"localScale.x"); index++;
+			readFloaty = GetFloatFromString(entries[index],"localScale.y"); index++;
+			readFloatz = GetFloatFromString(entries[index],"localScale.z"); index++;
+			tr.localScale = new Vector3(readFloatx,readFloaty,readFloatz);
+		}
 		return index; // Carry on with current index read.
+	}
+	
+	public static string SaveBoxCollider(GameObject go) {
+		BoxCollider bcol = go.GetComponent<BoxCollider>();
+		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
+		s1.Append(FloatToString(bcol.center.x,"center.x"));
+		s1.Append(splitChar);
+		s1.Append(FloatToString(bcol.center.y,"center.y"));
+		s1.Append(splitChar);
+		s1.Append(FloatToString(bcol.center.z,"center.z"));
+		s1.Append(splitChar);
+		s1.Append(FloatToString(bcol.size.x,"size.x"));
+		s1.Append(splitChar);
+		s1.Append(FloatToString(bcol.size.y,"size.y"));
+		s1.Append(splitChar);
+		s1.Append(FloatToString(bcol.size.z,"size.z"));
+		return s1.ToString();
+	}
+	
+	public static int LoadBoxCollider(GameObject go, ref string[] entries, int index) {
+		BoxCollider bcol = go.GetComponent<BoxCollider>();
+		float readX = Utils.GetFloatFromString(entries[index],"center.x"); index++;
+		float readY = Utils.GetFloatFromString(entries[index],"center.y"); index++;
+		float readZ = Utils.GetFloatFromString(entries[index],"center.z"); index++;
+		bcol.center = new Vector3(readX,readY,readZ);
+		readX = Utils.GetFloatFromString(entries[index],"size.x"); index++;
+		readY = Utils.GetFloatFromString(entries[index],"size.y"); index++;
+		readZ = Utils.GetFloatFromString(entries[index],"size.z"); index++;
+		bcol.size = new Vector3(readX,readY,readZ);
+		return index;
 	}
 
     public static string SaveRigidbody(GameObject go) {

@@ -174,9 +174,7 @@ public class LevelManager : MonoBehaviour {
 		if (!ressurectionActive[currentLevel]) return false;
 
 		if (currentLevel == 10 ||currentLevel == 11 ||currentLevel == 12) {
-			LoadLevel(6,ressurectionLocation[currentLevel].gameObject,
-						ressurectionLocation[currentLevel].position);
-
+			LoadLevel(6,ressurectionLocation[currentLevel].position);
 			ressurectionBayDoor[6].ForceClose();
 		} else {
 			if (currentLevel <= 7 && currentLevel >= 0) {
@@ -227,7 +225,7 @@ public class LevelManager : MonoBehaviour {
 		levelDataLoaded[levnum] = true;
 	}
 
-	public void LoadLevel(int levnum, GameObject targetDestination, Vector3 targetPosition) {
+	public void LoadLevel(int levnum, Vector3 targetPosition) {
 		if (!LevNumInBounds(levnum)) return;
 
 		// NOTE: Check this first since the button for the current level has a null destination.  This is fine and expected.
@@ -235,7 +233,7 @@ public class LevelManager : MonoBehaviour {
 
 		MFDManager.a.TurnOffElevatorPad();
 		GUIState.a.ClearOverButton();
-		if (targetDestination == null && targetPosition.x == 0 && targetPosition.y == 0 && targetPosition.z == 0) {
+		if (targetPosition.x == 0 && targetPosition.y == 0 && targetPosition.z == 0) {
 			switch(levnum) {
 				case 0:  targetPosition = elevatorTargetDestinations[25].transform.position; break;
 				case 1:  targetPosition =  elevatorTargetDestinations[0].transform.position; break;
@@ -253,9 +251,8 @@ public class LevelManager : MonoBehaviour {
 			}
 		}
 
-		if (targetDestination != null) PlayerReferenceManager.a.playerCapsule.transform.position = targetDestination.transform.position; // Put player in the new level
-		else if (targetPosition != null) PlayerReferenceManager.a.playerCapsule.transform.position = targetPosition; // Return to level from cyberspace.
-
+		// Return to level from cyberspace.
+		PlayerReferenceManager.a.playerCapsule.transform.position = targetPosition;
 		currentLevel = levnum; // Set current level to be the new level
 		DisableAllNonOccupiedLevelsExcept(currentLevel);
 		levels[levnum].SetActive(true); // enable new level
@@ -650,13 +647,13 @@ public class LevelManager : MonoBehaviour {
 
 	public void CheatLoadLevel(int ind) {
 		if (ind == 10) {
-			LoadLevel(10,PlayerMovement.a.cheatG1Spawn.gameObject,ressurectionLocation[10].position);
+			LoadLevel(10,PlayerMovement.a.cheatG1Spawn.position);
 		} else if (ind == 11) {
-			LoadLevel(11,PlayerMovement.a.cheatG2Spawn.gameObject,ressurectionLocation[11].position);
+			LoadLevel(11,PlayerMovement.a.cheatG2Spawn.position);
 		} else if (ind == 12) {
-			LoadLevel(12,PlayerMovement.a.cheatG4Spawn.gameObject,ressurectionLocation[12].position);
+			LoadLevel(12,PlayerMovement.a.cheatG4Spawn.position);
 		} else {
-			LoadLevel(ind,ressurectionLocation[ind].gameObject,ressurectionLocation[ind].position);
+			LoadLevel(ind,ressurectionLocation[ind].position);
 		}
 	}
 

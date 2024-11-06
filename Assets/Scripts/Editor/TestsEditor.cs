@@ -31,6 +31,9 @@ public class TestsEditor : Editor {
 // 		if (GUILayout.Button("TEMP: Correct dynamics data files")) {
 // 			testScript.CorrectDynamicDataFiles();
 // 		}
+// 		if (GUILayout.Button("Check all UseHandler's to see if they use their bools at all")) {
+// 			testScript.CheckUseHandlers();
+// 		}
 		if (GUILayout.Button("Output All Static Objects Immutable to File")) {
 			testScript.GenerateStaticObjectsImmutableDataFile();
 		}

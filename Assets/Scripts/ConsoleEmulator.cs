@@ -994,7 +994,7 @@ Master Index
 557 prop_desk01                   
 558 prop_desk02                   
 559 prop_dexmissile               
-560 prop_diegorapier              
+560 prop_foliage_fernpoison              
 561 prop_foliage_bush             
 562 prop_foliage_fern             
 563 prop_foliage_fernblueflower   
@@ -1171,6 +1171,13 @@ Master Index
 734 ef_steam
 735 env_sparksmall
 736 TargetIDInstance                  // Unsaved temporary entity.
+737 prop_vending1_1
+738 prop_vending1_2
+739 prop_vending1_3
+740 prop_vending2_1
+741 prop_vending2_2
+742 prop_papers01
+743 prop_papers02
 
 999 PlayerCapsule
 */
@@ -1217,14 +1224,16 @@ public static bool ConstIndexIsStaticObjectImmutable(int constdex) {
 			|| constdex == 554
 			|| (constdex >= 556 && constdex < 594)
 			|| constdex == 595 || constdex == 597 || constdex == 599
-			|| constdex == 603 || constdex == 610 || constdex == 612
-			|| constdex == 614 || constdex == 616 || constdex == 618
+			|| constdex == 601 || constdex == 603 || constdex == 610
+			|| constdex == 612 || constdex == 614 || constdex == 616
+			|| constdex == 618
 			|| (constdex >= 621 && constdex < 688)
 			|| constdex == 693 || constdex == 696 || constdex == 697
 			|| constdex == 698
 			|| (constdex >= 704 && constdex < 717)
 			|| constdex == 720
-			|| (constdex >= 733 && constdex < 736));
+			|| (constdex >= 733 && constdex < 736)
+			|| (constdex >= 737 && constdex < 744));
 }
 
 public static bool ConstIndexIsNPC(int constdex) {
@@ -1286,6 +1295,19 @@ Generic Materials (Const.a.genericMaterials[])
 46 citmat2_1
 47 citmat2_4
 48 chunk             THE BIG ONE
+49 text_3dwhite
+50 text_3dred
+51 text_3dgold
+52 text_3dgreen
+53 text_3dblack
+54 text_3dredStopD
+55 text_3dwhiteStopD
+56 text_3dblackStopD
+57 text_3dgoldStopD
+58 text_3dblueStopD
+59 text_3dblackStopD
+60 text_3dgoldunlit
+61 text_3dgoldunlitoverlay
 */
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat,
 												GameObject forcedContainer,

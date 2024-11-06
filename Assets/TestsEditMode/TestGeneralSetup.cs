@@ -729,8 +729,6 @@ namespace Tests {
                 if (cyba == null) continue;
 
                 MissingComponent(script,allGOs[i],typeof(TargetIO));
-                MissingReference(script,allGOs[i],cyba.entryPosition,
-                                 "entryPosition");
             }
         }
 

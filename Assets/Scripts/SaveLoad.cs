@@ -129,11 +129,80 @@ public static class SaveLoad {
         s1.Append(Utils.IntToString(pid.constIndex,"constIndex"));
         s1.Append(splitChar);
         s1.Append(Utils.SaveTransform(go.transform));
-        if (pid.constIndex == 552) {
+        if (pid.constIndex == 552) { // prop_cyber_datafrag
             s1.Append(splitChar);
             CyberDataFragment cybfrag = go.GetComponent<CyberDataFragment>();
-            if (cybfrag != null) s1.Append(Utils.IntToString(cybfrag.textIndex,"textIndex"));
-            else s1.Append("textIndex:442");
+            s1.Append(Utils.IntToString(cybfrag.textIndex,"textIndex"));
+        } else if (pid.constIndex == 556) { // prop_cyberport
+            CyberAccess cybacc = go.GetComponent<CyberAccess>();
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveString(cybacc.target,"target"));
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveString(cybacc.argvalue,"argvalue"));
+            s1.Append(splitChar);
+            s1.Append(TargetIO.Save(go,pid));
+        } else if (pid.constIndex == 574) { // prop_healingbed
+            HealingBed heb = go.GetComponent<HealingBed>();
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(heb.broken,"broken"));
+        } else if (pid.constIndex == 592 || pid.constIndex == 593) { // text_decal, text_decalStopDSS1
+            TextMesh tm = go.GetComponent<TextMesh>();
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveString(tm.text,"text"));
+            s1.Append(splitChar);
+            TextLocalization tz = go.GetComponent<TextLocalization>();
+            s1.Append(Utils.UintToString(tz.lingdex,"lingdex"));
+            s1.Append(splitChar);
+            MeshRenderer mr = go.GetComponent<MeshRenderer>();
+            Material mat = mr.material;
+            if (mat.name == "text_3dwhite") s1.Append(Utils.UintToString(49,"matIndex"));
+            else if (mat.name == "text_3dgold") s1.Append(Utils.UintToString(51,"matIndex"));
+            else if (mat.name == "text_3dgreen") s1.Append(Utils.UintToString(52,"matIndex"));
+            else if (mat.name == "text_3dblack") s1.Append(Utils.UintToString(53,"matIndex"));
+            else if (mat.name == "text_3dredStopD") s1.Append(Utils.UintToString(54,"matIndex"));
+            else if (mat.name == "text_3dwhiteStopD") s1.Append(Utils.UintToString(55,"matIndex"));
+            else if (mat.name == "text_3dblackStopD") s1.Append(Utils.UintToString(56,"matIndex"));
+            else if (mat.name == "text_3dgoldStopD") s1.Append(Utils.UintToString(57,"matIndex"));
+            else if (mat.name == "text_3dblueStopD") s1.Append(Utils.UintToString(58,"matIndex"));
+            else if (mat.name == "text_3dblackStopD") s1.Append(Utils.UintToString(59,"matIndex"));
+            else if (mat.name == "text_3dgoldunlit") s1.Append(Utils.UintToString(60,"matIndex"));
+            else if (mat.name == "text_3dgoldunlitoverlay") s1.Append(Utils.UintToString(61,"matIndex"));
+            else s1.Append(Utils.UintToString(50,"matIndex")); // text_3dred
+        } else if (pid.constIndex == 595) { // trigger_cyberpush
+            CyberPush cybp = go.GetComponent<CyberPush>();
+            s1.Append(splitChar);
+            s1.Append(Utils.FloatToString(cybp.force,"force"));
+            s1.Append(splitChar);
+            s1.Append(Utils.FloatToString(cybp.direction.x,"direction.x"));
+            s1.Append(splitChar);
+            s1.Append(Utils.FloatToString(cybp.direction.y,"direction.y"));
+            s1.Append(splitChar);
+            s1.Append(Utils.FloatToString(cybp.direction.z,"direction.z"));
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveBoxCollider(go));
+        } else if (pid.constIndex == 597) { // trigger_ladder
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveBoxCollider(go));
+        } else if (pid.constIndex == 599) { // trigger_music
+            MusicTrigger must = go.GetComponent<MusicTrigger>();
+            s1.Append(splitChar);
+            s1.Append(Utils.FloatToString(must.tick,"tick"));
+            s1.Append(splitChar);
+            s1.Append(Utils.TrackTypeToString(must.trackType,"trackType"));
+            s1.Append(splitChar);
+            s1.Append(Utils.MusicTypeToString(must.musicType,"musicType"));
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveBoxCollider(go));
+        } else if (pid.constIndex == 599) { // trigger_radiation
+            Radiation rad = go.GetComponent<Radiation>();
+            s1.Append(splitChar);
+            s1.Append(Utils.FloatToString(rad.radiationAmount,"radiationAmount"));
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveBoxCollider(go));
+        } else if (pid.constIndex == 603) { // us_paperlog
+            PaperLog plog = go.GetComponent<PaperLog>();
+            s1.Append(splitChar);
+            s1.Append(Utils.UintToString(plog.logIndex,"logIndex"));
         }
 
         return s1.ToString();
@@ -148,26 +217,71 @@ public static class SaveLoad {
         }
 
         int index = 0;
-        int constdex = Utils.GetIntFromString(entries[index],"constIndex"); index++;
-        if (!ConsoleEmulator.ConstIndexIsGeometry(constdex)) {
-            Debug.Log("Load stat imm invalid constdex: " + constdex.ToString());
+        int constIndex = Utils.GetIntFromString(entries[index],"constIndex"); index++;
+        if (!ConsoleEmulator.ConstIndexIsGeometry(constIndex)) {
+            Debug.Log("Load stat imm invalid constIndex: " + constIndex.ToString());
             return;
         }
 
-        GameObject go = ConsoleEmulator.SpawnDynamicObject(constdex,curlevel,
+        GameObject go = ConsoleEmulator.SpawnDynamicObject(constIndex,curlevel,
                                                            false,null,0);
 
         index = Utils.LoadTransform(go.transform,ref entries,index);
-        if (constdex == 552) {
+        if (constIndex == 552) { // prop_cyber_datafrag
             CyberDataFragment cybfrag = go.GetComponent<CyberDataFragment>();
-            if (cybfrag != null) {
-                cybfrag.textIndex = Utils.GetIntFromString(entries[index],
-                                                           "textIndex");
-            } else {
-                cybfrag.textIndex = 442;
-            }
+            if (cybfrag != null) cybfrag.textIndex = Utils.GetIntFromString(entries[index],"textIndex");
+            else cybfrag.textIndex = 442;
 
             index++;
+        } else if (constIndex == 556) { // prop_cyberport
+            CyberAccess cybacc = go.GetComponent<CyberAccess>();
+            if (cybacc != null) {
+                cybacc.target = Utils.LoadString(entries[index],"target"); index++;
+                cybacc.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
+            }
+            
+            PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
+            index = TargetIO.Load(go,ref entries,index,true,prefID);
+        } else if (constIndex == 574) { // prop_healingbed
+            HealingBed heb = go.GetComponent<HealingBed>();
+            heb.broken = Utils.GetBoolFromString(entries[index],"broken"); index++;
+        } else if (constIndex == 592 || constIndex == 593) { // text_decal, text_decalStopDSS1
+            string textRead = Utils.LoadString(entries[index],"text"); index++;
+            TextLocalization tz = go.GetComponent<TextLocalization>();
+            tz.lingdex = Utils.GetIntFromString(entries[index],"lingdex"); index++;
+            if (tz.lingdex < 0) {
+                // Only set text if index is -1 to not override the
+                // TextLocalization which takes precedence.
+                TextMesh tm = go.GetComponent<TextMesh>();
+                tm.text = textRead; // Override.
+            }
+            
+            int matIndex = Utils.GetIntFromString(entries[index],"matIndex"); index++;
+            MeshRenderer mr = go.GetComponent<MeshRenderer>();
+            mr.sharedMaterial = Const.a.genericMaterials[matIndex]; // sharedMaterial doesn't create new instance.
+        } else if (constIndex == 595) { // trigger_cyberpush
+            CyberPush cybp = go.GetComponent<CyberPush>();
+            cybp.force = Utils.GetFloatFromString(entries[index],"force"); index++;
+            float readX = Utils.GetFloatFromString(entries[index],"direction.x"); index++;
+            float readY = Utils.GetFloatFromString(entries[index],"direction.y"); index++;
+            float readZ = Utils.GetFloatFromString(entries[index],"direction.z"); index++;
+            cybp.direction = new Vector3(readX,readY,readZ);
+            index = Utils.LoadBoxCollider(go, ref entries,index);
+        } else if (constIndex == 597) { // trigger_ladder
+            index = Utils.LoadBoxCollider(go, ref entries,index);
+        } else if (constIndex == 599) { // trigger_music
+            MusicTrigger must = go.GetComponent<MusicTrigger>();
+            must.tick = Utils.GetFloatFromString(entries[index],"tick"); index ++;
+            must.trackType = Utils.IntToTrackType(entries[index],"trackType"); index++;
+            must.musicType = Utils.IntToMusicType(entries[index],"musicType"); index++;
+            index = Utils.LoadBoxCollider(go, ref entries,index);
+        } else if (constIndex == 599) { // trigger_radiation
+            Radiation rad = go.GetComponent<Radiation>();
+            rad.radiationAmount = Utils.GetFloatFromString(entries[index],"radiationAmount"); index++;
+            index = Utils.LoadBoxCollider(go, ref entries,index);
+        } else if (constIndex == 603) { // us_paperlog
+            PaperLog plog = go.GetComponent<PaperLog>();
+            plog.logIndex = Utils.GetIntFromString(entries[index],"logIndex"); index++;
         }
     }
 

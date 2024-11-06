@@ -235,8 +235,7 @@ namespace Tests {
             yield return new WaitForSeconds(3f);
             
             // Test cyberspace loads
-            MouseLookScript.a.EnterCyberspace(
-                LevelManager.a.ressurectionLocation[1].gameObject);
+            MouseLookScript.a.EnterCyberspace(LevelManager.a.ressurectionLocation[1].position);
             
             yield return new WaitForSeconds(3f);
             

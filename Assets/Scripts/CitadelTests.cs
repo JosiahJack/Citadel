@@ -81,6 +81,48 @@ public class CitadelTests : MonoBehaviour {
 // 	public void UnloadLevelLights() {
 // 		lm.UnloadLevelLights(levelToOutputFrom);
 // 	}
+
+// 	public void CheckUseHandlers() {
+// 		List<GameObject> useHandlerHolders = new List<GameObject>();
+// 		FindAllGOWithComponent(ref useHandlerHolders);
+// 		int num = 0;
+// 		for (int i=0;i<useHandlerHolders.Count;i++) {
+// 			UseHandler uh = useHandlerHolders[i].GetComponent<UseHandler>();
+// 			if (uh == null) continue;
+// 			
+// 			num++;
+// 			GameObject parent = useHandlerHolders[i].transform.parent.gameObject;
+// 			string parentString = "-";
+// 			if (parent == null) parentString = "self";
+// 			else parentString = parent.name;
+// 			if (!uh.useButtonSwitch) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with useButtonSwitch set to false! Parent: " + parentString);
+// 			if (!uh.useChargeStation) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with useChargeStation set to false! Parent: " + parentString);
+// 			if (!uh.useDoor) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with useDoor set to false! Parent: " + parentString);
+// 			if (!uh.useHealingBed) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with useHealingBed set to false! Parent: " + parentString);
+// 			if (!uh.useKeypadElevator) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with useKeypadElevator set to false! Parent: " + parentString);
+// 			if (!uh.useKeypadKeycode) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with useKeypadKeycode set to false! Parent: " + parentString);
+// 			if (!uh.usePaperLog) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with usePaperLog set to false! Parent: " + parentString);
+// 			if (!uh.usePuzzleGridPuzzle) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with usePuzzleGridPuzzle set to false! Parent: " + parentString);
+// 			if (!uh.usePuzzleWirePuzzle) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with usePuzzleWirePuzzle set to false! Parent: " + parentString);
+// 			if (!uh.useUseableObjectUse) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with useUseableObjectUse set to false! Parent: " + parentString);
+// 			if (!uh.useUseableAttachment) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with useUseableAttachment set to false! Parent: " + parentString);
+// 			if (!uh.useCyberAccess) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with useCyberAccess set to false! Parent: " + parentString);
+// 			if (!uh.useInteractablePanel) UnityEngine.Debug.Log(useHandlerHolders[i].name + " has UseHandler with useInteractablePanel set to false! Parent: " + parentString);
+// 		}
+// 		
+// 		UnityEngine.Debug.Log(num.ToString() + " UseHandlers checked!");
+// 	}
+	
+	// Change to get the needed component.
+	void FindAllGOWithComponent(ref List<GameObject> gos) {
+		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
+		for (int i=0;i<allParents.Count;i++) {
+			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(UseHandler),true); // find all SaveObject components, including inactive (hence the true here at the end)
+			for (int k=0;k<compArray.Length;k++) {
+				gos.Add(compArray[k].gameObject); //add the gameObject associated with all SaveObject components in the scene
+			}
+		}
+	}
 	
 	public void GenerateStaticObjectsImmutableDataFile() {
 		#if UNITY_EDITOR
