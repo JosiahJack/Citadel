@@ -103,7 +103,13 @@ public static class SaveLoad {
     }
     
     public static void LoadPrefab(ref string[] entries, int lineNum, int curlevel) {
+        if (!(entries[0].Contains("constIndex"))) { // [sic], need to fix light file to start with constIndex:7777
+            LoadLight(entries,lineNum,curlevel);
+            return;
+        }
+
         int constIndex = Utils.GetIntFromString(entries[0],"constIndex");
+        Debug.Log("Issue with entries[2]: " + entries[2] + ", lineNum: " + lineNum.ToString() + ", curlevel: " + curlevel.ToString() + "| the constIndex: " + constIndex.ToString());
         int saveID = Utils.GetIntFromString(entries[2],"SaveID");
         if (ConsoleEmulator.ConstIndexIsGeometry(constIndex)) {
             LoadGeometry(entries,lineNum,curlevel);
@@ -117,7 +123,16 @@ public static class SaveLoad {
 			PrefabIdentifier prefID = SaveLoad.GetPrefabIdentifier(newGO,true);
 			if (newGO != null) SaveObject.Load(newGO,ref entries,lineNum,prefID);
         } else if (ConsoleEmulator.ConstIndexIsStaticObjectImmutable(constIndex)) {
-           LoadStaticImmutable(entries,lineNum,curlevel);
+            LoadStaticImmutable(entries,lineNum,curlevel);
+        } else {
+            StringBuilder s1 = new StringBuilder();
+            s1.Clear();
+            for (int i=0;i<entries.Length;i++) {
+                s1.Append(entries[i]);
+                s1.Append(splitChar);
+            }
+
+            Debug.Log("Unknown line within save: " + s1.ToString());
         }
     }
     
@@ -155,19 +170,19 @@ public static class SaveLoad {
             s1.Append(splitChar);
             MeshRenderer mr = go.GetComponent<MeshRenderer>();
             Material mat = mr.material;
-            if (mat.name == "text_3dwhite") s1.Append(Utils.UintToString(49,"matIndex"));
-            else if (mat.name == "text_3dgold") s1.Append(Utils.UintToString(51,"matIndex"));
-            else if (mat.name == "text_3dgreen") s1.Append(Utils.UintToString(52,"matIndex"));
-            else if (mat.name == "text_3dblack") s1.Append(Utils.UintToString(53,"matIndex"));
-            else if (mat.name == "text_3dredStopD") s1.Append(Utils.UintToString(54,"matIndex"));
-            else if (mat.name == "text_3dwhiteStopD") s1.Append(Utils.UintToString(55,"matIndex"));
-            else if (mat.name == "text_3dblackStopD") s1.Append(Utils.UintToString(56,"matIndex"));
-            else if (mat.name == "text_3dgoldStopD") s1.Append(Utils.UintToString(57,"matIndex"));
-            else if (mat.name == "text_3dblueStopD") s1.Append(Utils.UintToString(58,"matIndex"));
-            else if (mat.name == "text_3dblackStopD") s1.Append(Utils.UintToString(59,"matIndex"));
-            else if (mat.name == "text_3dgoldunlit") s1.Append(Utils.UintToString(60,"matIndex"));
-            else if (mat.name == "text_3dgoldunlitoverlay") s1.Append(Utils.UintToString(61,"matIndex"));
-            else s1.Append(Utils.UintToString(50,"matIndex")); // text_3dred
+            if (mat.name == "text_3dwhite") s1.Append(Utils.UintToString(87,"matIndex"));
+            else if (mat.name == "text_3dgold") s1.Append(Utils.UintToString(89,"matIndex"));
+            else if (mat.name == "text_3dgreen") s1.Append(Utils.UintToString(90,"matIndex"));
+            else if (mat.name == "text_3dblack") s1.Append(Utils.UintToString(91,"matIndex"));
+            else if (mat.name == "text_3dredStopD") s1.Append(Utils.UintToString(92,"matIndex"));
+            else if (mat.name == "text_3dwhiteStopD") s1.Append(Utils.UintToString(93,"matIndex"));
+            else if (mat.name == "text_3dblackStopD") s1.Append(Utils.UintToString(94,"matIndex"));
+            else if (mat.name == "text_3dgoldStopD") s1.Append(Utils.UintToString(95,"matIndex"));
+            else if (mat.name == "text_3dblueStopD") s1.Append(Utils.UintToString(96,"matIndex"));
+            else if (mat.name == "text_3dblackStopD") s1.Append(Utils.UintToString(97,"matIndex"));
+            else if (mat.name == "text_3dgoldunlit") s1.Append(Utils.UintToString(98,"matIndex"));
+            else if (mat.name == "text_3dgoldunlitoverlay") s1.Append(Utils.UintToString(99,"matIndex"));
+            else s1.Append(Utils.UintToString(88,"matIndex")); // text_3dred
         } else if (pid.constIndex == 595) { // trigger_cyberpush
             CyberPush cybp = go.GetComponent<CyberPush>();
             s1.Append(splitChar);
@@ -203,6 +218,109 @@ public static class SaveLoad {
             PaperLog plog = go.GetComponent<PaperLog>();
             s1.Append(splitChar);
             s1.Append(Utils.UintToString(plog.logIndex,"logIndex"));
+        } else if (pid.constIndex == 697 || pid.constIndex == 698) { // clip_npc, clip_objects
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveBoxCollider(go));
+        } else if (pid.constIndex == 707) { // info_email
+            Email em = go.GetComponent<Email>();
+            s1.Append(splitChar);
+            s1.Append(Utils.UintToString(em.emailIndex,"emailIndex"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(em.autoPlayEmail,"autoPlayEmail"));
+            s1.Append(splitChar);
+            s1.Append(TargetIO.Save(go,pid));
+        } else if (pid.constIndex == 709) { // info_message
+            TriggeredSprintMessage msg = go.GetComponent<TriggeredSprintMessage>();
+            s1.Append(splitChar);
+            s1.Append(Utils.UintToString(msg.messageLingdex,"messageLingdex"));
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveString(msg.messageToDisplay,"messageToDisplay"));
+            s1.Append(splitChar);
+            s1.Append(TargetIO.Save(go,pid));
+        } else if (pid.constIndex == 710) { // info_mission
+            QuestBitRelay qbr = go.GetComponent<QuestBitRelay>();
+            s1.Append(splitChar);
+            s1.Append(Utils.UintToString(qbr.lev1SecCode,"lev1SecCode"));
+            s1.Append(splitChar);
+            s1.Append(Utils.UintToString(qbr.lev2SecCode,"lev2SecCode"));
+            s1.Append(splitChar);
+            s1.Append(Utils.UintToString(qbr.lev3SecCode,"lev3SecCode"));
+            s1.Append(splitChar);
+            s1.Append(Utils.UintToString(qbr.lev4SecCode,"lev4SecCode"));
+            s1.Append(splitChar);
+            s1.Append(Utils.UintToString(qbr.lev5SecCode,"lev5SecCode"));
+            s1.Append(splitChar);
+            s1.Append(Utils.UintToString(qbr.lev6SecCode,"lev6SecCode"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.RobotSpawnDeactivated,"RobotSpawnDeactivated"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.IsotopeInstalled,"IsotopeInstalled"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.ShieldActivated,"ShieldActivated"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.LaserSafetyOverriden,"LaserSafetyOverriden"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.LaserDestroyed,"LaserDestroyed"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.BetaGroveCyberUnlocked,"BetaGroveCyberUnlocked"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.GroveAlphaJettisonEnabled,"GroveAlphaJettisonEnabled"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.GroveBetaJettisonEnabled,"GroveBetaJettisonEnabled"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.GroveDeltaJettisonEnabled,"GroveDeltaJettisonEnabled"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.MasterJettisonBroken,"MasterJettisonBroken"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.Relay428Fixed,"Relay428Fixed"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.MasterJettisonEnabled,"MasterJettisonEnabled"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.BetaGroveJettisoned,"BetaGroveJettisoned"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.AntennaNorthDestroyed,"AntennaNorthDestroyed"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.AntennaSouthDestroyed,"AntennaSouthDestroyed"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.AntennaEastDestroyed,"AntennaEastDestroyed"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.AntennaWestDestroyed,"AntennaWestDestroyed"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.SelfDestructActivated,"SelfDestructActivated"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.BridgeSeparated,"BridgeSeparated"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(qbr.IsolinearChipsetInstalled,"IsolinearChipsetInstalled"));
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveString(qbr.target,"target"));
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveString(qbr.targetIfFalse,"targetIfFalse"));
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveString(qbr.argvalue,"argvalue"));
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveString(qbr.argvalueIfFalse,"argvalueIfFalse"));
+            s1.Append(splitChar);
+            s1.Append(TargetIO.Save(go,pid));
+        } else if (pid.constIndex == 712) { // info_playsound
+            PlaySoundTriggered snd = go.GetComponent<PlaySoundTriggered>();
+            s1.Append(splitChar);
+            s1.Append(Utils.IntToString(snd.SFXClip,"SFXClip"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(snd.loopingAmbient,"loopingAmbient"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(snd.playEverywhere,"playEverywhere"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(snd.currentlyPlaying,"currentlyPlaying"));
+            s1.Append(splitChar);
+            s1.Append(Utils.BoolToString(snd.playSoundOnParticleEmit,"playSoundOnParticleEmit"));
+            s1.Append(splitChar);
+            s1.Append(Utils.IntToString(snd.numparticles,"numparticles"));
+            s1.Append(splitChar);
+            s1.Append(Utils.IntToString(snd.burstemittcnt1,"burstemittcnt1"));
+            s1.Append(splitChar);
+            s1.Append(Utils.IntToString(snd.burstemittcnt2,"burstemittcnt2"));
+            s1.Append(splitChar);
+            s1.Append(TargetIO.Save(go,pid));
         }
 
         return s1.ToString();
@@ -282,6 +400,57 @@ public static class SaveLoad {
         } else if (constIndex == 603) { // us_paperlog
             PaperLog plog = go.GetComponent<PaperLog>();
             plog.logIndex = Utils.GetIntFromString(entries[index],"logIndex"); index++;
+        } else if (constIndex == 697 || constIndex == 698) { // clip_npc, clip_objects
+            index = Utils.LoadBoxCollider(go, ref entries,index);
+        } else if (constIndex == 707) { // info_email
+            Email em = go.GetComponent<Email>();
+            em.emailIndex = Utils.GetIntFromString(entries[index],"emailIndex"); index++;
+            em.autoPlayEmail = Utils.GetBoolFromString(entries[index],"autoPlayEmail"); index++;
+            PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
+            index = TargetIO.Load(go,ref entries,index,true,prefID);
+        } else if (constIndex == 709) { // info_message
+            TriggeredSprintMessage msg = go.GetComponent<TriggeredSprintMessage>();
+            msg.messageLingdex = Utils.GetIntFromString(entries[index],"messageLingdex"); index++;
+            msg.messageToDisplay = Utils.LoadString(entries[index],"messageToDisplay"); index++;
+            PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
+            index = TargetIO.Load(go,ref entries,index,true,prefID);
+        } else if (constIndex == 710) { // info_mission
+            QuestBitRelay qbr = go.GetComponent<QuestBitRelay>();
+            qbr.lev1SecCode = Utils.GetIntFromString(entries[index],"lev1SecCode"); index++;
+            qbr.lev2SecCode = Utils.GetIntFromString(entries[index],"lev2SecCode"); index++;
+            qbr.lev3SecCode = Utils.GetIntFromString(entries[index],"lev3SecCode"); index++;
+            qbr.lev4SecCode = Utils.GetIntFromString(entries[index],"lev4SecCode"); index++;
+            qbr.lev5SecCode = Utils.GetIntFromString(entries[index],"lev5SecCode"); index++;
+            qbr.lev6SecCode = Utils.GetIntFromString(entries[index],"lev6SecCode"); index++;
+            qbr.RobotSpawnDeactivated = Utils.GetBoolFromString(entries[index],"RobotSpawnDeactivated"); index++;
+            qbr.IsotopeInstalled = Utils.GetBoolFromString(entries[index],"IsotopeInstalled"); index++;
+            qbr.ShieldActivated = Utils.GetBoolFromString(entries[index],"ShieldActivated"); index++;
+            qbr.LaserSafetyOverriden = Utils.GetBoolFromString(entries[index],"LaserSafetyOverriden"); index++;
+            qbr.LaserDestroyed = Utils.GetBoolFromString(entries[index],"LaserDestroyed"); index++;
+            qbr.BetaGroveCyberUnlocked = Utils.GetBoolFromString(entries[index],"BetaGroveCyberUnlocked"); index++;
+            qbr.GroveAlphaJettisonEnabled = Utils.GetBoolFromString(entries[index],"GroveAlphaJettisonEnabled"); index++;
+            qbr.GroveBetaJettisonEnabled = Utils.GetBoolFromString(entries[index],"GroveBetaJettisonEnabled"); index++;
+            qbr.GroveDeltaJettisonEnabled = Utils.GetBoolFromString(entries[index],"GroveDeltaJettisonEnabled"); index++;
+            qbr.MasterJettisonBroken = Utils.GetBoolFromString(entries[index],"MasterJettisonBroken"); index++;
+            qbr.Relay428Fixed = Utils.GetBoolFromString(entries[index],"Relay428Fixed"); index++;
+            qbr.MasterJettisonEnabled = Utils.GetBoolFromString(entries[index],"MasterJettisonEnabled"); index++;
+            qbr.BetaGroveJettisoned = Utils.GetBoolFromString(entries[index],"BetaGroveJettisoned"); index++;
+            qbr.AntennaNorthDestroyed = Utils.GetBoolFromString(entries[index],"AntennaNorthDestroyed"); index++;
+            qbr.AntennaSouthDestroyed = Utils.GetBoolFromString(entries[index],"AntennaSouthDestroyed"); index++;
+            qbr.AntennaEastDestroyed = Utils.GetBoolFromString(entries[index],"AntennaEastDestroyed"); index++;
+            qbr.AntennaWestDestroyed = Utils.GetBoolFromString(entries[index],"AntennaWestDestroyed"); index++;
+            qbr.SelfDestructActivated = Utils.GetBoolFromString(entries[index],"SelfDestructActivated"); index++;
+            qbr.BridgeSeparated = Utils.GetBoolFromString(entries[index],"BridgeSeparated"); index++;
+            qbr.IsolinearChipsetInstalled = Utils.GetBoolFromString(entries[index],"IsolinearChipsetInstalled"); index++;
+            qbr.target = Utils.LoadString(entries[index],"target"); index++;
+            qbr.targetIfFalse = Utils.LoadString(entries[index],"targetIfFalse"); index++;
+            qbr.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
+            qbr.argvalueIfFalse = Utils.LoadString(entries[index],"argvalueIfFalse"); index++;
+            PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
+            index = TargetIO.Load(go,ref entries,index,true,prefID);
+        } else if (constIndex == 711) { // info_note Actually unused but leaving for people making levels
+            Note nt = go.GetComponent<Note>();
+            nt.note = Utils.LoadString(entries[index],"note"); index++;
         }
     }
 
@@ -400,7 +569,7 @@ public static class SaveLoad {
         return s1.ToString();
     }
 
-    public static void LoadGeometry(string[] entries, int lineNum, int curlevel) {
+    private static void LoadGeometry(string[] entries, int lineNum, int curlevel) {
         if (entries.Length <= 1) { 
             Debug.Log("Can't load geometry from line " + lineNum.ToString()
                       + ", line had only one or no entries[]");
@@ -488,7 +657,7 @@ public static class SaveLoad {
         }
     }
 
-    public static string SaveLight(GameObject go) {
+    private static string SaveLight(GameObject go) {
         Light lit = go.GetComponent<Light>();
         if (lit == null) return "";
 
@@ -526,8 +695,8 @@ public static class SaveLoad {
         s1.Append(Utils.FloatToString(lit.shadowNearPlane,"shadowNearPlane"));
         return s1.ToString();
     }
-    
-    public static void LoadLight(string[] entries, int lineNum, int curlevel) {
+
+    private static void LoadLight(string[] entries, int lineNum, int curlevel) {
         if (entries.Length <= 1) { Debug.Log("Couldn't load light on line number: " + lineNum.ToString()); return; }
 
         int index = 0;

@@ -509,15 +509,14 @@ public class LevelManager : MonoBehaviour {
 		string readline;
 		List<string> readFileList = new List<string>();
 		int lineNum = 0;
+		char splitter = Convert.ToChar(SaveLoad.splitChar);
 		using (sf) {
 			do {
 				readline = sf.ReadLine();
 				if (readline == null) break;
 
-				SaveLoad.LoadGeometry(
-					readline.Split(Convert.ToChar(SaveLoad.splitChar)),
-					lineNum,curlevel);
-				
+				string[] entries = readline.Split(splitter);
+				SaveLoad.LoadPrefab(ref entries,lineNum,curlevel);
 				lineNum++;
 			} while (!sf.EndOfStream);
 			sf.Close();
@@ -565,21 +564,15 @@ public class LevelManager : MonoBehaviour {
 				readline = sf.ReadLine();
 				if (readline == null) break;
 				
-				SaveLoad.LoadLight(readline.Split(splitter),lineNum,curlevel);
+				string[] entries = readline.Split(splitter);
+				SaveLoad.LoadPrefab(ref entries,lineNum,curlevel);
 				lineNum++;
 			} while (!sf.EndOfStream);
 			sf.Close();
 		}
-
-		string[] entries = new string[27];
-
-		for (int i=0;i<readFileList.Count;i++) {
-		}
 	}
 
 	public void UnloadLevelDynamicObjects(int curlevel, bool saveExisting) {
-		
-		
 		Transform tr = GetRequestedLevelDynamicContainer(curlevel).transform;
 		if (saveExisting) {
 			List<GameObject> allDynamicObjects = new List<GameObject>();

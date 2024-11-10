@@ -1043,18 +1043,18 @@ Master Index
 606 us_puz_elevatorkeypad3       
 607 us_puz_elevatorkeypad4       
 608 us_puz_keypad                
-609 us_puz_panel_blue            
-610 us_puz_panel_blue_dead       
-611 us_puz_panel_brown           
-612 us_puz_panel_brown_dead      
-613 us_puz_panel_gray            
-614 us_puz_panel_gray_dead       
-615 us_puz_panel_red             
-616 us_puz_panel_red_dead // Redemption?
-617 us_puz_panel_teal            
-618 us_puz_panel_teal_dead       
-619 us_relaypanel                
-620 us_retinalscanner            
+609 us_puz_panel_blue
+610 us_puz_panel_brown
+611 us_puz_panel_gray
+612 us_puz_panel_red
+613 us_puz_panel_teal
+614 us_relaypanel 
+615 us_retinalscanner
+616 prop_vending1_1
+617 prop_vending1_2
+618 prop_vending1_3
+619 prop_vending2_1
+620 prop_vending2_2
 621 ambient_airhiss              
 622 ambient_clicker              
 623 ambient_compressor           
@@ -1131,14 +1131,14 @@ Master Index
 694 func_switch7                 
 695 func_switch8                 
 696 func_switchbroken1           
-697 clip_npc                     
-698 clip_objects                 
+697 clip_npc
+698 clip_objects
 699 logic_relay
 700 logic_branch
 701 logic_timer
 702 logic_spawner
 703 info_teleport_destination
-704 info_cyberstart
+704 prop_debris_panel
 705 info_cyborgconversion
 706 info_elev_destination
 707 info_email
@@ -1171,13 +1171,8 @@ Master Index
 734 ef_steam
 735 env_sparksmall
 736 TargetIDInstance                  // Unsaved temporary entity.
-737 prop_vending1_1
-738 prop_vending1_2
-739 prop_vending1_3
-740 prop_vending2_1
-741 prop_vending2_2
-742 prop_papers01
-743 prop_papers02
+737 prop_papers01
+738 prop_papers02
 
 999 PlayerCapsule
 */
@@ -1209,9 +1204,7 @@ public static bool ConstIndexIsStaticObjectSaveable(int constdex) {
 			|| constdex == 531 || constdex == 546 || constdex == 555
 			|| constdex == 594 || constdex == 596 || constdex == 598
 			|| (constdex >= 600 && constdex < 603)
-			|| (constdex >= 604 && constdex < 610)
-			|| constdex == 611 || constdex == 613 || constdex == 615
-			|| constdex == 617 || constdex == 619 || constdex == 620
+			|| (constdex >= 604 && constdex < 616)
 			|| (constdex >= 688 && constdex < 693)
 			|| constdex == 694 || constdex == 695
 			|| (constdex >= 699 && constdex < 704));
@@ -1224,16 +1217,14 @@ public static bool ConstIndexIsStaticObjectImmutable(int constdex) {
 			|| constdex == 554
 			|| (constdex >= 556 && constdex < 594)
 			|| constdex == 595 || constdex == 597 || constdex == 599
-			|| constdex == 601 || constdex == 603 || constdex == 610
-			|| constdex == 612 || constdex == 614 || constdex == 616
-			|| constdex == 618
-			|| (constdex >= 621 && constdex < 688)
+			|| constdex == 601 || constdex == 603
+			|| (constdex >= 616 && constdex < 688)
 			|| constdex == 693 || constdex == 696 || constdex == 697
 			|| constdex == 698
 			|| (constdex >= 704 && constdex < 717)
 			|| constdex == 720
 			|| (constdex >= 733 && constdex < 736)
-			|| (constdex >= 737 && constdex < 744));
+			|| (constdex >= 737 && constdex < 739));
 }
 
 public static bool ConstIndexIsNPC(int constdex) {
@@ -1295,19 +1286,57 @@ Generic Materials (Const.a.genericMaterials[])
 46 citmat2_1
 47 citmat2_4
 48 chunk             THE BIG ONE
-49 text_3dwhite
-50 text_3dred
-51 text_3dgold
-52 text_3dgreen
-53 text_3dblack
-54 text_3dredStopD
-55 text_3dwhiteStopD
-56 text_3dblackStopD
-57 text_3dgoldStopD
-58 text_3dblueStopD
-59 text_3dblackStopD
-60 text_3dgoldunlit
-61 text_3dgoldunlitoverlay
+49 cyberpanel_black
+50 cyberpanel_blue
+51 cyberpanel_bluegray
+52 cyberpanel_cyan
+53 cyberpanel_cyandark
+54 cyberpanel_gray
+55 cyberpanel_green
+56 cyberpanel_greendark
+57 cyberpanel_orange
+58 cyberpanel_orangedark
+59 cyberpanel_paleorange
+60 cyberpanel_palepurple
+61 cyberpanel_palered
+62 cyberpanel_paleyellow
+63 cyberpanel_purple
+64 cyberpanel_red
+65 cyberpanel_slice45
+66 cyberpanel_slice45_blue
+67 cyberpanel_slice45_bluegray
+68 cyberpanel_slice45_cyan
+69 cyberpanel_slice45_cyandark
+70 cyberpanel_slice45_gray
+71 cyberpanel_slice45_green
+72 cyberpanel_slice45_greendark
+73 cyberpanel_slice45_orange
+74 cyberpanel_slice45_orangedark
+75 cyberpanel_slice45_paleorange
+76 cyberpanel_slice45_palepurple
+77 cyberpanel_slice45_palered
+78 cyberpanel_slice45_paleyellow
+79 cyberpanel_slice45_purple
+80 cyberpanel_slice45_red
+81 cyberpanel_slice45_yellow
+82 cyberpanel_touching
+83 cyberpanel_white
+84 cyberpanel_yellow
+85 cyberpanel_yellowdark
+86 pipe_maint2_3_coolant
+87 text_3dwhite
+88 text_3dred
+89 text_3dgold
+90 text_3dgreen
+91 text_3dblack
+92 text_3dredStopD
+93 text_3dwhiteStopD
+94 text_3dblackStopD
+95 text_3dgoldStopD
+96 text_3dblueStopD
+97 text_3dblackStopD
+98 text_3dgoldunlit
+99 text_3dgoldunlitoverlay
 */
 	public static GameObject SpawnDynamicObject(int val, int lev, bool cheat,
 												GameObject forcedContainer,

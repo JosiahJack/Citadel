@@ -258,6 +258,7 @@ public class Utils {
             MemoryStream memStr = new MemoryStream(Encoding.ASCII.GetBytes(reader.text));
             dataReader = new StreamReader(memStr,Encoding.ASCII);
         } else {
+// 			Debug.Log("Reading " + fName + " from StreamingAssets/");
             Utils.ConfirmExistsInStreamingAssetsMakeIfNot(fName);
 		    dataReader = new StreamReader(fPath, Encoding.ASCII);
         }

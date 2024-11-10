@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlaySoundTriggered : MonoBehaviour {
+	public int SFXClip = -1;
 	public AudioClip SFXClipToPlay;
 	public bool loopingAmbient = false;
 	public bool playEverywhere = false;
