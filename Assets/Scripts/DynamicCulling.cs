@@ -50,47 +50,6 @@ public class DynamicCulling : MonoBehaviour {
     private bool[,] worldCellsOpen = new bool[64,64];
     
     public static DynamicCulling a;
-    
-    public class Meshenderer {
-        public MeshRenderer meshRenderer;
-        public MeshFilter meshFilter;
-        public Mesh meshUsual;
-        public Mesh meshLOD;
-        
-        public void SetMesh(bool useLOD) {
-            meshFilter.sharedMesh = useLOD ? meshLOD : meshUsual;
-        }
-    }
-    
-    public class ChunkPrefab {
-        public int x;
-        public int y;
-        public int constIndex;
-        public GameObject go;
-        public List<Meshenderer> meshenderers;
-    }
-    
-    public class DynamicObject {
-        public int x;
-        public int y;
-        public int constIndex;
-        public GameObject go;
-        public List<Meshenderer> meshenderers;
-    }
-    
-    public class GridCell {
-        public int x;
-        public int y;
-        public bool open;
-        public bool visible;
-        public bool closedNorth; // For when chunk configurations are such that
-        public bool closedEast;  // the immediately adjacent cell at this edge
-        public bool closedSouth; // is not visible, consider edge as closed to
-        public bool closedWest;  // be able to further reduce visible cells.
-        public bool[,] visibleCellsFromHere;
-        public List<ChunkPrefab> chunkPrefabs;
-        public List<DynamicObject> dynamicObjects;
-    }
 
     void Awake() {
         a = this;
@@ -1372,3 +1331,43 @@ public class DynamicCulling : MonoBehaviour {
     }
 }
 
+public class Meshenderer {
+    public MeshRenderer meshRenderer;
+    public MeshFilter meshFilter;
+    public Mesh meshUsual;
+    public Mesh meshLOD;
+
+    public void SetMesh(bool useLOD) {
+        meshFilter.sharedMesh = useLOD ? meshLOD : meshUsual;
+    }
+}
+
+public class ChunkPrefab {
+    public int x;
+    public int y;
+    public int constIndex;
+    public GameObject go;
+    public List<Meshenderer> meshenderers;
+}
+
+public class DynamicObject {
+    public int x;
+    public int y;
+    public int constIndex;
+    public GameObject go;
+    public List<Meshenderer> meshenderers;
+}
+
+public class GridCell {
+    public int x;
+    public int y;
+    public bool open;
+    public bool visible;
+    public bool closedNorth; // For when chunk configurations are such that
+    public bool closedEast;  // the immediately adjacent cell at this edge
+    public bool closedSouth; // is not visible, consider edge as closed to
+    public bool closedWest;  // be able to further reduce visible cells.
+    public bool[,] visibleCellsFromHere;
+    public List<ChunkPrefab> chunkPrefabs;
+    public List<DynamicObject> dynamicObjects;
+}
