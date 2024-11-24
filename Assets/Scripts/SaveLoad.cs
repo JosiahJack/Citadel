@@ -109,8 +109,6 @@ public static class SaveLoad {
         }
 
         int constIndex = Utils.GetIntFromString(entries[0],"constIndex");
-        Debug.Log("Issue with entries[2]: " + entries[2] + ", lineNum: " + lineNum.ToString() + ", curlevel: " + curlevel.ToString() + "| the constIndex: " + constIndex.ToString());
-        int saveID = Utils.GetIntFromString(entries[2],"SaveID");
         if (ConsoleEmulator.ConstIndexIsGeometry(constIndex)) {
             LoadGeometry(entries,lineNum,curlevel);
         } else if (ConsoleEmulator.ConstIndexIsDynamicObject(constIndex)
@@ -118,6 +116,7 @@ public static class SaveLoad {
                    || ConsoleEmulator.ConstIndexIsStaticObjectSaveable(constIndex)
                    || ConsoleEmulator.ConstIndexIsNPC(constIndex)) {
 
+            int saveID = Utils.GetIntFromString(entries[2],"SaveID");
             GameObject container = LevelManager.a.GetRequestedLevelDynamicContainer(LevelManager.a.currentLevel);
 			GameObject newGO = ConsoleEmulator.SpawnDynamicObject(constIndex,curlevel,false,container,saveID);
 			PrefabIdentifier prefID = SaveLoad.GetPrefabIdentifier(newGO,true);
