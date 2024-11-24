@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CyborgConversionToggle : MonoBehaviour {
-	public AudioClip SFXEnabled;
-	public AudioClip SFXDisabled;
 	private AudioSource SFX;
 
     void Awake() {
@@ -12,13 +10,13 @@ public class CyborgConversionToggle : MonoBehaviour {
 	}
 
 	public void PlayVoxMessage() {
-		if (SFX != null) SFX.Stop();
+		SFX.Stop();
 		int lindex = LevelManager.a.currentLevel != -1 ? LevelManager.a.currentLevel : 0;
 		if (LevelManager.a.ressurectionActive[lindex]) {
-			Utils.PlayOneShotSavable(SFX,SFXEnabled);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[183]); // "vox_cybconvcancelled"
 			Const.sprint(Const.a.stringTable[591]); // "Cyborg conversion cancelled.  Healing normal."
 		} else {
-			Utils.PlayOneShotSavable(SFX,SFXDisabled);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[184]); // "vox_cybconvenabled"
 			Const.sprint(Const.a.stringTable[592]); // "Cyborg conversion reactivated."
 		}
 	}

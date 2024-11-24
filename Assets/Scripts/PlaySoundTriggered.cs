@@ -4,23 +4,24 @@ using UnityEngine;
 
 public class PlaySoundTriggered : MonoBehaviour {
 	public int SFXClip = -1;
-	public AudioClip SFXClipToPlay;
 	public bool loopingAmbient = false;
 	public bool playEverywhere = false;
-	[HideInInspector] public AudioSource SFX;
-	private bool justPaused;
-	[HideInInspector] public bool currentlyPlaying = false;
 	public bool playSoundOnParticleEmit = false;
+	
+	private AudioSource SFX;
+	[HideInInspector] public bool currentlyPlaying = false;
+	[HideInInspector] public int numparticles = 0;
+	[HideInInspector] public int burstemittcnt1 = 15;
+	[HideInInspector] public int burstemittcnt2 = 30;
+	private bool justPaused;
 	private ParticleSystem psys;
-	public int numparticles;
-	public int burstemittcnt1 = 15;
-	public int burstemittcnt2 = 30;
+
 
     void Start() {
 		if (SFX == null) SFX = GetComponent<AudioSource>();
 		SFX.playOnAwake = false;
 		SFX.loop = false;
-		SFX.clip = SFXClipToPlay;
+		SFX.clip = Const.a.sounds[SFXClip];
 		if (playEverywhere) {
 			SFX.spatialBlend = 0.0f;
 		} else {
@@ -33,6 +34,7 @@ public class PlaySoundTriggered : MonoBehaviour {
 		}
 
 		if (playSoundOnParticleEmit) {
+			Debug.Log("PlaySoundOnParticleEmit true on " + gameObject.name);
 			psys = GetComponent<ParticleSystem>();
 			if (psys == null) Debug.Log("ERROR: missing ParticleSystem for PlaySoundTriggered");
 			loopingAmbient = false; //only play when triggered by the psys emission
@@ -45,7 +47,7 @@ public class PlaySoundTriggered : MonoBehaviour {
 		if (SFX == null) SFX = GetComponent<AudioSource>();
 		if (loopingAmbient) {
 			if (SFX != null) SFX.loop = true;
-			if (SFX != null) SFX.clip = SFXClipToPlay;
+			if (SFX != null) SFX.clip = Const.a.sounds[SFXClip];
 			if (SFX != null) SFX.Play();
 		}
 	}
@@ -67,7 +69,7 @@ public class PlaySoundTriggered : MonoBehaviour {
 			if (playSoundOnParticleEmit){
 				int count = psys.particleCount;
 				if (count > numparticles && (count == burstemittcnt1 || count == burstemittcnt2)) {
-					Utils.PlayOneShotSavable(SFX,SFXClipToPlay);
+					Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXClip]);
 				}
 				numparticles = count;
 			}
@@ -76,6 +78,11 @@ public class PlaySoundTriggered : MonoBehaviour {
 
     public void PlaySoundEffect() {
 		if (SFX != null) SFX.loop = false;
-		Utils.PlayOneShotSavable(SFX,SFXClipToPlay);
+		Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXClip]);
+	}
+	
+	public void StopSoundEffect() {
+		if (SFX != null) SFX.Stop();
+		currentlyPlaying = false;
 	}
 }

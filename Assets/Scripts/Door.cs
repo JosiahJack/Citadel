@@ -41,6 +41,7 @@ public class Door : MonoBehaviour {
 	private AudioSource SFX = null;
 	[Tooltip("Door sound when opening or closing")]
 	public AudioClip SFXClip; // assign in the editor
+	public int SFXIndex = 75;
 
 	public AccessCardType requiredAccessCard = AccessCardType.None;
 	public bool accessCardUsedByPlayer = false; // save
@@ -81,10 +82,7 @@ public class Door : MonoBehaviour {
 			accessCardUsedByPlayer = true;
 		}
 		
-		SFX = GetComponent<AudioSource>();
-		if (SFX == null) Debug.Log("BUG: No AudioSource on Door!");
-		if (SFXClip == null) Debug.Log("BUG: No audio clip SFXClip on Door!");
-		
+		SFX = GetComponent<AudioSource>();		
 		useFinished = PauseScript.a.relativeTime;
 		if (startOpen) {
 			stayOpen = true;
@@ -191,12 +189,12 @@ public class Door : MonoBehaviour {
 		} else if (doorOpen == DoorState.Opening) {
 			doorOpen = DoorState.Closing;
 			anim.Play(closeClipName,defIndex,topTime - animatorPlaybackTime);
-			Utils.PlayOneShotSavable(SFX,SFXClip);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
 		} else if (doorOpen == DoorState.Closing) {
 			doorOpen = DoorState.Opening;
 			waitBeforeClose = PauseScript.a.relativeTime + delay;
 			anim.Play(openClipName,defIndex,topTime - animatorPlaybackTime);
-			Utils.PlayOneShotSavable(SFX,SFXClip);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
 		}
 	}
 
@@ -255,7 +253,7 @@ public class Door : MonoBehaviour {
 		doorOpen = DoorState.Opening;
 		waitBeforeClose = PauseScript.a.relativeTime + delay;
 		anim.Play(openClipName);
-		Utils.PlayOneShotSavable(SFX,SFXClip);
+		Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
 		if (toggleLasers) {
 			DeactivateLasers();
 			lasersFinished = 0; // Checked explicitly for non-zero elsewhere.
@@ -268,7 +266,7 @@ public class Door : MonoBehaviour {
 		anim.speed = defaultSpeed;
 		doorOpen = DoorState.Closing;
 		anim.Play(closeClipName);
-		Utils.PlayOneShotSavable(SFX,SFXClip);
+		Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
 		if (toggleLasers) {
 			lasersFinished = PauseScript.a.relativeTime + timeBeforeLasersOn;
 		}
@@ -452,11 +450,6 @@ public class Door : MonoBehaviour {
 		s1.Append(Utils.IntToString(DoorStateToInt(dr.doorOpen),"doorOpenState"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(dr.animatorPlaybackTime,"animatorPlaybackTime"));
-		if (prefID.constIndex == 500) { // doorE
-			s1.Append(Utils.splitChar);
-			s1.Append(Utils.SaveTransform(go.transform.parent.transform));
-		}
-
 		return s1.ToString();
 	}
 
@@ -504,10 +497,6 @@ public class Door : MonoBehaviour {
 		dr.doorOpen = IntToDoorState(Utils.GetIntFromString(entries[index],"doorOpenState")); index++;
 		dr.animatorPlaybackTime = Utils.GetFloatFromString(entries[index],"animatorPlaybackTime"); index++;
 		dr.SetAnimFromLoad(dr.GetClipName(),0,dr.animatorPlaybackTime);
-		if (prefID.constIndex == 500) { // doorE
-			Transform parentTR = go.transform.parent.transform;
-			index = Utils.LoadTransform(parentTR,ref entries,index);
-		}
 		return index;
 	}
 

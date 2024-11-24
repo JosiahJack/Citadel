@@ -12,8 +12,8 @@ public class ButtonSwitch : MonoBehaviour {
 	public string message; // save
 	public int messageIndex = -1; // save
 	public float delay = 0f; // save
-	public AudioClip SFX;
-	/*[DTValidator.Optional] */public AudioClip SFXLocked;
+	public int SFXIndex = 44;
+	public int SFXLockedIndex = -1;
 	public bool blinkWhenActive; // save
 	public bool changeMatOnActive = true; // save
 	public bool animateModel = false; // save
@@ -73,13 +73,13 @@ public class ButtonSwitch : MonoBehaviour {
 			Const.sprintByIndexOrOverride(lockedMessageLingdex,
 			                              lockedMessage,ud.owner);
 			                              
-			Utils.PlayOneShotSavable(SFXSource,SFXLocked);
+			Utils.PlayOneShotSavable(SFXSource,Const.a.sounds[SFXLockedIndex]);
 			return;
 		}
 
         // Set playerCamera to owner of the input (always should be the camera)
 		player = ud.owner;
-		Utils.PlayOneShotSavable(SFXSource,SFX);
+		Utils.PlayOneShotSavable(SFXSource,Const.a.sounds[SFXIndex]);
 		Const.sprintByIndexOrOverride (messageIndex, message,ud.owner);
 		if (delay > 0f) {
 			delayFinished = PauseScript.a.relativeTime + delay;

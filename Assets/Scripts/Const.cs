@@ -1670,7 +1670,6 @@ public class Const : MonoBehaviour {
 			// SaveObject script attached at top parent for that object.
 			// Exceptions:
 			// - func_wall has its SaveObject on first child
-			// - doorE has its SaveObject on first child
 			// - se_corpse_eaten has its SearchableItem on first child
 			saveableGameObjectsInScene.Clear();
 			FindAllSaveObjectsGOs(ref saveableGameObjectsInScene); // ref to avoid boxing.

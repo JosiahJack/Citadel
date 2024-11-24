@@ -334,10 +334,7 @@ public class TargetIO : MonoBehaviour {
 
 		if (tempUD.stopSound) {
 			PlaySoundTriggered pst = GetComponent<PlaySoundTriggered>();
-			if (pst != null) {
-				pst.SFX.Stop();
-				pst.currentlyPlaying = false;
-			}
+			if (pst != null) pst.StopSoundEffect();
 		}
 
 		if (tempUD.sendSprintMessage) {

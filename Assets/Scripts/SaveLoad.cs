@@ -208,7 +208,7 @@ public static class SaveLoad {
             s1.Append(Utils.MusicTypeToString(must.musicType,"musicType"));
             s1.Append(splitChar);
             s1.Append(Utils.SaveBoxCollider(go));
-        } else if (pid.constIndex == 599) { // trigger_radiation
+        } else if (pid.constIndex == 601) { // trigger_radiation
             Radiation rad = go.GetComponent<Radiation>();
             s1.Append(splitChar);
             s1.Append(Utils.FloatToString(rad.radiationAmount,"radiationAmount"));
@@ -301,6 +301,10 @@ public static class SaveLoad {
             s1.Append(Utils.SaveString(qbr.argvalueIfFalse,"argvalueIfFalse"));
             s1.Append(splitChar);
             s1.Append(TargetIO.Save(go,pid));
+        } else if (pid.constIndex == 711) { // info_note
+            Note nt = go.GetComponent<Note>();
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveString(nt.note,"note"));
         } else if (pid.constIndex == 712) { // info_playsound
             PlaySoundTriggered snd = go.GetComponent<PlaySoundTriggered>();
             s1.Append(splitChar);
@@ -321,6 +325,8 @@ public static class SaveLoad {
             s1.Append(Utils.IntToString(snd.burstemittcnt2,"burstemittcnt2"));
             s1.Append(splitChar);
             s1.Append(TargetIO.Save(go,pid));
+            s1.Append(splitChar);
+            s1.Append(Utils.SaveAudioSource(go));
         }
 
         return s1.ToString();
@@ -393,7 +399,7 @@ public static class SaveLoad {
             must.trackType = Utils.IntToTrackType(entries[index],"trackType"); index++;
             must.musicType = Utils.IntToMusicType(entries[index],"musicType"); index++;
             index = Utils.LoadBoxCollider(go, ref entries,index);
-        } else if (constIndex == 599) { // trigger_radiation
+        } else if (constIndex == 601) { // trigger_radiation
             Radiation rad = go.GetComponent<Radiation>();
             rad.radiationAmount = Utils.GetFloatFromString(entries[index],"radiationAmount"); index++;
             index = Utils.LoadBoxCollider(go, ref entries,index);
@@ -451,6 +457,19 @@ public static class SaveLoad {
         } else if (constIndex == 711) { // info_note Actually unused but leaving for people making levels
             Note nt = go.GetComponent<Note>();
             nt.note = Utils.LoadString(entries[index],"note"); index++;
+        } else if (constIndex == 712) { // info_playsound
+            PlaySoundTriggered snd = go.GetComponent<PlaySoundTriggered>();
+            snd.SFXClip = Utils.GetIntFromString(entries[index],"SFXClip"); index++;
+            snd.loopingAmbient = Utils.GetBoolFromString(entries[index],"loopingAmbient"); index++;
+            snd.playEverywhere = Utils.GetBoolFromString(entries[index],"playEverywhere"); index++;
+            snd.currentlyPlaying = Utils.GetBoolFromString(entries[index],"currentlyPlaying"); index++;
+            snd.playSoundOnParticleEmit = Utils.GetBoolFromString(entries[index],"playSoundOnParticleEmit"); index++;
+            snd.numparticles = Utils.GetIntFromString(entries[index],"numparticles"); index++;
+            snd.burstemittcnt1 = Utils.GetIntFromString(entries[index],"burstemittcnt1"); index++;
+            snd.burstemittcnt2 = Utils.GetIntFromString(entries[index],"burstemittcnt2"); index++;
+            PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
+            index = TargetIO.Load(go,ref entries,index,true,prefID);
+            index = Utils.LoadAudioSource(go,ref entries,index);
         }
     }
 
