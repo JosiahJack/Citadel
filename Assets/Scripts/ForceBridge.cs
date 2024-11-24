@@ -8,7 +8,6 @@ public class ForceBridge : MonoBehaviour {
 	public bool y; // save
 	public bool z; // save
 	public bool activated; // save
-	public AudioClip SFXBridgeChange;
 	public ForceFieldColor fieldColor;
 
 	public bool lerping; // save
@@ -104,7 +103,7 @@ public class ForceBridge : MonoBehaviour {
 	public void Activate(bool isSilent) {
 		if (activated) return; // already there
 
-		if (!isSilent) Utils.PlayOneShotSavable(SFX,SFXBridgeChange);
+		if (!isSilent) Utils.PlayOneShotSavable(SFX,Const.a.sounds[102]);
 		Utils.EnableMeshRenderer(mr);
 		Utils.EnableBoxCollider(bCol);
 		activated = true;
@@ -121,7 +120,7 @@ public class ForceBridge : MonoBehaviour {
 	public void Deactivate(bool isSilent) {
 		if (!activated) return; // already there
 
-		if (!isSilent) Utils.PlayOneShotSavable(SFX,SFXBridgeChange);
+		if (!isSilent) Utils.PlayOneShotSavable(SFX,Const.a.sounds[102]);
 		activated = false;
 		lerping = true;
 	}

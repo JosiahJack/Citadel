@@ -163,7 +163,6 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int layerMaskPlayerFeet;
 	[HideInInspector] public int layerMaskExplosion;
 
-	public GameObject Pool_SparqImpacts;
 	public GameObject Pool_CameraExplosions;
 	public GameObject Pool_BloodSpurtSmall;
 	public GameObject Pool_SparksSmall;
@@ -173,8 +172,6 @@ public class Const : MonoBehaviour {
 	public GameObject Pool_HopperImpact;
 	public GameObject Pool_GrenadeFragExplosions;
     public GameObject Pool_Vaporize;
-    public GameObject Pool_BlasterImpacts;
-    public GameObject Pool_IonImpacts;
     public GameObject Pool_MagpulseImpacts;
     public GameObject Pool_StungunImpacts;
     public GameObject Pool_RailgunImpacts;
@@ -1043,10 +1040,6 @@ public class Const : MonoBehaviour {
 			poolContainer = Pool_SparksSmall;
 			poolName = "SparksSmall ";
 			break;
-		case PoolType.SparqImpacts:
-			poolContainer = Pool_SparqImpacts;
-			poolName = "SparqImpacts ";
-			break;
 		case PoolType.CameraExplosions:
 			poolContainer = Pool_CameraExplosions;
 			poolName = "CameraExplosions ";
@@ -1078,14 +1071,6 @@ public class Const : MonoBehaviour {
         case PoolType.Vaporize:
             poolContainer = Pool_Vaporize;
             poolName = "Vaporize ";
-            break;
-        case PoolType.BlasterImpacts:
-            poolContainer = Pool_BlasterImpacts;
-            poolName = "BlasterImpacts ";
-            break;
-        case PoolType.IonImpacts:
-            poolContainer = Pool_IonImpacts;
-            poolName = "IonImpacts ";
             break;
         case PoolType.MagpulseImpacts:
             poolContainer = Pool_MagpulseImpacts;

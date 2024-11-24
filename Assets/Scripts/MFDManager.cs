@@ -490,7 +490,7 @@ public class MFDManager : MonoBehaviour  {
 					beepFinished = beepTick + PauseScript.a.relativeTime;
 					beepCount++;
 					if (beepCount >= 3) { Inventory.a.beepDone = false; beepCount = 0; } // Reset beeping, notification done.
-					Utils.PlayOneShotSavable(hwb.SFX,hwb.beepSFX); // GO active handled by guard clause.
+					Utils.PlayOneShotSavable(hwb.SFX,Const.a.sounds[83]); // emailalert, GO active handled by guard clause.
 				}
 			} else {
 				hwb.buttons[5].image.overrideSprite = hwb.buttonDeactive[5];
@@ -1602,7 +1602,7 @@ public class MFDManager : MonoBehaviour  {
 		CenterTabButtonClickSilent(tabNum,false);
 		if (Inventory.a.hardwareIsActive[3]) {
 			hwb.SensaroundOff();
-			Utils.PlayOneShotSavable(hwb.SFX,hwb.SFXClipDeactivate[1]);
+			Utils.PlayOneShotSavable(hwb.SFX,Const.a.sounds[82]); // deactivate
 		}
 	}
 

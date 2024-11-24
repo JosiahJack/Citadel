@@ -865,21 +865,16 @@ public class WeaponFire : MonoBehaviour {
     }
 
     void CreateBeamImpactEffects(int wep16index) {
-        GameObject impact = Const.a.GetObjectFromPool(PoolType.SparqImpacts);
-        if (wep16index == 1) {
-            impact = Const.a.GetObjectFromPool(PoolType.BlasterImpacts);  //Red laser for blaster
-        } else {
-            if (wep16index == 4) {
-                impact = Const.a.GetObjectFromPool(PoolType.IonImpacts); // Yellow laser for ion
-            }
+		int impactConstdex = 731; // Cyan for sparqbeam
+		if (wep16index == 1) {
+			impactConstdex = 739;  //Red laser for blaster
+        } else if (wep16index == 4) {
+			impactConstdex = 740; // Yellow laser for ion
         }
 
-        if (impact != null) {
-            // impact.transform.position = tempHit.point;
-            // impact.transform.rotation = Quaternion.FromToRotation(Vector3.up, tempHit.normal);
-			impact.transform.SetPositionAndRotation(tempHit.point,Quaternion.FromToRotation(Vector3.up, tempHit.normal));
-            impact.SetActive(true);
-        }
+        GameObject impact = ConsoleEmulator.SpawnDynamicObject(impactConstdex);
+		impact.transform.SetPositionAndRotation(tempHit.point,Quaternion.FromToRotation(Vector3.up, tempHit.normal));
+		impact.SetActive(true);
     }
 
     void CreateBeamEffects(int wep16index) {

@@ -1173,6 +1173,8 @@ Master Index
 736 TargetIDInstance                  // Unsaved temporary entity.
 737 prop_papers01
 738 prop_papers02
+739 ef_particle_blasterhit
+740 ef_particle_ionhit
 
 999 PlayerCapsule
 */
@@ -1433,5 +1435,9 @@ Generic Materials (Const.a.genericMaterials[])
 	public static GameObject SpawnDynamicObject(int val, int saveID) {
 		return SpawnDynamicObject(val,LevelManager.a.currentLevel,false,null,
 								  saveID);
+	}
+	
+	public static GameObject SpawnDynamicObject(int val) {
+		return SpawnDynamicObject(val,LevelManager.a.currentLevel,false,null,-1);
 	}
 }

@@ -13,14 +13,13 @@ public class GrenadeActivate : MonoBehaviour {
 	public bool proxSensed = false;
 	public float tickTime = 0.8f;
 	public bool useProx = false; // save
-
+	public PoolType explosionType = PoolType.GrenadeFragExplosions;
+	public bool active = false;
+	
 	[HideInInspector] public float timeFinished; // save
 	[HideInInspector] public bool explodeOnContact = false; // save
 	[HideInInspector] public bool useTimer = false; // save
 	private GameObject explosionEffect;
-	public AudioClip deathSound;
-	public PoolType explosionType = PoolType.GrenadeFragExplosions;
-	public bool active = false;
 	private Rigidbody rbody;
 
 	void Awake () {
@@ -103,9 +102,18 @@ public class GrenadeActivate : MonoBehaviour {
 		if (explosionEffect != null) {
 			explosionEffect.SetActive(true);
 			explosionEffect.transform.position = transform.position;
-			if (deathSound != null) {
-				Utils.PlayTempAudio(transform.position,deathSound);
+			int soundIndex = 60; // attack1_explode
+			switch(constIndex) {
+				case 7:  soundIndex = 64; break; // explosion1
+				case 8:  soundIndex = 60; break; // attack1_explode
+				case 9:  soundIndex = 67; break; // hit2
+				case 10: soundIndex = 60; break; // attack1_explode
+				case 11: soundIndex = 64; break; // explosion1
+				case 12: soundIndex = 60; break; // attack1_explode
+				case 13: soundIndex = 63; break; // explode_minor
 			}
+			
+			Utils.PlayTempAudio(transform.position,Const.a.sounds[soundIndex]);
 		}
 
 		Const.a.Shake(true,-1,-1);

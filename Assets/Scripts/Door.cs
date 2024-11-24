@@ -6,50 +6,30 @@ public class Door : MonoBehaviour {
 	public string target;
 	public string argvalue;
 	public bool onlyTargetOnce;
-	[HideInInspector]
-	public bool targetAlreadyDone = false; // save
-	[Tooltip("Delay after full open before door closes")]
-	public float delay;
-	[Tooltip("Whether door is locked, unuseable until unlocked")]
-	public bool locked; // saved
-	public int securityThreshhold = 100; // If security level is not below this
-										 // level, this is unusable.
-
-	[Tooltip("If yes, door never closes automatically")]
-	public bool stayOpen;
-	[Tooltip("Should door start open (you should set stayOpen too!)")]
-	public bool startOpen;
-	[Tooltip("Should door start partially open")]
-	public bool ajar = false; // save
-	[Tooltip("If partially open, by what percentage")]
-	public float ajarPercentage = 0.5f;
-	[Tooltip("Delay after use before door can be re-used")]
-	public float useTimeDelay = 0.15f;
-	[Tooltip("Message to display when door is locked, e.g.'door is broken beyond repair'")]
-	public string lockedMessage;
+	[HideInInspector] public bool targetAlreadyDone = false; // save
+	[Tooltip("Delay after full open before door closes")] public float delay;
+	[Tooltip("Whether door is locked, unuseable until unlocked")] public bool locked; // saved
+	public int securityThreshhold = 100; // If security level is not below this level, this is unusable.
+	[Tooltip("If yes, door never closes automatically")] public bool stayOpen;
+	[Tooltip("Should door start open (you should set stayOpen too!)")] public bool startOpen;
+	[Tooltip("Should door start partially open")] public bool ajar = false; // save
+	[Tooltip("If partially open, by what percentage")] public float ajarPercentage = 0.5f;
+	[Tooltip("Delay after use before door can be re-used")] public float useTimeDelay = 0.15f;
+	[Tooltip("Message to display when door is locked, e.g.'door is broken beyond repair'")] public string lockedMessage;
 	public int lockedMessageLingdex = 3;
 	private string cardMessage; // set in start to hardcoded lingdex 2
 	private string cardUsedMessage; // diddo with lingdex 4
 	private string butdoorStillLockedMessage;  // lingdex 5
 	public bool blocked = false; // save
-	[HideInInspector]
-	public float useFinished; // save
-	[HideInInspector]
-	public float waitBeforeClose; // save
-	[HideInInspector]
-	public Animator anim;
-	private AudioSource SFX = null;
-	[Tooltip("Door sound when opening or closing")]
-	public AudioClip SFXClip; // assign in the editor
-	public int SFXIndex = 75;
-
+	[HideInInspector] public float useFinished; // save
+	[HideInInspector] public float waitBeforeClose; // save
+	[HideInInspector] public Animator anim;
+	[Tooltip("Door sound when opening or closing")] public int SFXIndex = 75;
 	public AccessCardType requiredAccessCard = AccessCardType.None;
 	public bool accessCardUsedByPlayer = false; // save
 	public DoorState doorOpen; // save
-
 	public float timeBeforeLasersOn;
-	[HideInInspector]
-	public float lasersFinished; // save
+	[HideInInspector] public float lasersFinished; // save
 	public GameObject[] laserLines;
 	public GameObject[] collidersList;
 	public bool toggleLasers = false;
@@ -57,15 +37,16 @@ public class Door : MonoBehaviour {
 	public float animatorPlaybackTime; // save
 	public bool changeLayerOnOpenClose = false;
 
+	private AudioSource SFX = null;
+	private GameObject dynamicObjectsContainer;
 	private int defIndex = 0;
 	private float topTime = 1.00f;
 	private float defaultSpeed = 1.00f;
 	private float speedZero = 0.00f;
-	//private string idleOpenClipName = "IdleOpen";
-	private string idleClosedClipName = "IdleClosed";
-	private string openClipName = "DoorOpen";
-	private string closeClipName = "DoorClose";
-	private GameObject dynamicObjectsContainer;
+	private const string idleOpenClipName = "IdleOpen";
+	private const string idleClosedClipName = "IdleClosed";
+	private const string openClipName = "DoorOpen";
+	private const string closeClipName = "DoorClose";
 	private int i = 0;
 	private bool firstUpdateAfterLoad = false;
 	private string loadedClipName;
@@ -293,10 +274,10 @@ public class Door : MonoBehaviour {
 		firstUpdateAfterLoad = false;
 		anim.Play(loadedClipName,loadedClipIndex,loadedAnimatorPlaybackTime);
 		switch(loadedClipName) {
-			case "IdleOpen": doorOpen = DoorState.Open; break;
-			case "IdleClosed": doorOpen = DoorState.Closed; break;
-			case "DoorOpen": doorOpen = DoorState.Opening; break;
-			case "DoorClose": doorOpen = DoorState.Closing; break;
+			case idleOpenClipName: doorOpen = DoorState.Open; break;
+			case idleClosedClipName: doorOpen = DoorState.Closed; break;
+			case openClipName: doorOpen = DoorState.Opening; break;
+			case closeClipName: doorOpen = DoorState.Closing; break;
 		}
 	}
 
@@ -373,12 +354,12 @@ public class Door : MonoBehaviour {
 	}
 
 	public string GetClipName() {
-		string clipName = "IdleClosed";
+		string clipName = idleClosedClipName;
 		switch (doorOpen) {
-			case DoorState.Closed: clipName = "IdleClosed"; break;
-			case DoorState.Open: clipName = "IdleOpen"; break;
-			case DoorState.Closing: clipName = "DoorClose"; break;
-			case DoorState.Opening: clipName = "DoorOpen"; break;
+			case DoorState.Closed: clipName = idleClosedClipName; break;
+			case DoorState.Open: clipName = idleOpenClipName; break;
+			case DoorState.Closing: clipName = closeClipName; break;
+			case DoorState.Opening: clipName = openClipName; break;
 		}
 		return clipName;
 	}

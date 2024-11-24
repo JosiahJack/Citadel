@@ -22,11 +22,8 @@ public class HardwareButton : MonoBehaviour {
 	public GameObject gunCamera;
 	public Light headlight;
 	public EmailContentsButtonsManager ecbm;
-	public AudioClip beepSFX;
 	public GameObject ShieldActivateFX;
 	public GameObject ShieldDeactivateFX;
-	public AudioClip[] SFXClip;
-	public AudioClip[] SFXClipDeactivate;
 
 	// Hw referenceIndex, ref14Index, button index
 	// Bio 27,6, 0
@@ -101,19 +98,14 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void BioAction() {
-		if (Inventory.a.BioMonitorVersion() == 0
-			&& PlayerEnergy.a.energy <= 0) {
+		if (Inventory.a.BioMonitorVersion() == 0 && PlayerEnergy.a.energy <= 0) {
 			Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner);
 			return;
 		}
 
-		if (Inventory.a.BioMonitorActive()) {
-			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[0]);
-			Utils.Deactivate(bioMonitorContainer);
-		} else {
-			Utils.PlayOneShotSavable(SFX,SFXClip[0]);
-			Utils.Activate(bioMonitorContainer);
-		}
+		Utils.PlayOneShotSavable(SFX,Const.a.sounds[78]);
+		if (Inventory.a.BioMonitorActive()) Utils.Deactivate(bioMonitorContainer);
+		else Utils.Activate(bioMonitorContainer);
 
 		Inventory.a.hardwareIsActive[6] = !Inventory.a.hardwareIsActive[6];
 		SetVersionIconForButton(Inventory.a.BioMonitorActive(),
@@ -182,10 +174,10 @@ public class HardwareButton : MonoBehaviour {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 
 		if (Inventory.a.hardwareIsActive[3]) {
-			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[1]);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[82]);
 			SensaroundOff();
 		} else {
-			Utils.PlayOneShotSavable(SFX,SFXClip[1]);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[93]);
 			SensaroundActivate();
 		}
 	}
@@ -205,11 +197,11 @@ public class HardwareButton : MonoBehaviour {
 	public void ShieldAction() {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 		if (Inventory.a.hardwareIsActive[5]) {
-			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[3]);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[95]);
 			ShieldDeactivateFX.SetActive(true);
 			ShieldActivateFX.SetActive(false);
 		} else {
-			Utils.PlayOneShotSavable(SFX,SFXClip[3]);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[96]);
 			ShieldDeactivateFX.SetActive(false);
 			ShieldActivateFX.SetActive(true);
 		}
@@ -233,9 +225,9 @@ public class HardwareButton : MonoBehaviour {
 	public void LanternAction() {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 		if (Inventory.a.hardwareIsActive[7]) {
-			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[2]);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[78]);
 		} else {
-			Utils.PlayOneShotSavable(SFX,SFXClip[2]);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[78]);
 		}
 		Inventory.a.hardwareIsActive[7] = !Inventory.a.hardwareIsActive[7];
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[7], Inventory.a.hardwareVersionSetting[7],2);
@@ -273,9 +265,9 @@ public class HardwareButton : MonoBehaviour {
 	public void InfraredAction() {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 		if (Inventory.a.hardwareIsActive[11]) {
-			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[4]);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[82]);
 		} else {
-			Utils.PlayOneShotSavable(SFX,SFXClip[4]);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[98]);
 		}
 		Inventory.a.hardwareIsActive[11] = !Inventory.a.hardwareIsActive[11];
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[11], Inventory.a.hardwareVersionSetting[11],4);
@@ -317,7 +309,7 @@ public class HardwareButton : MonoBehaviour {
 	}
 
 	public void EReaderAction() {
-		Utils.PlayOneShotSavable(SFX,SFXClip[5]);
+		Utils.PlayOneShotSavable(SFX,Const.a.sounds[97]);
 		Inventory.a.hardwareIsActive[2] = true;
 		MFDManager.a.OpenEReaderInItemsTab();
 	}
@@ -334,12 +326,7 @@ public class HardwareButton : MonoBehaviour {
 			return;
 		}
 
-		if (Inventory.a.BoosterActive()) {
-			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[6]);
-		} else {
-			Utils.PlayOneShotSavable(SFX,SFXClip[6]);
-		}
-
+		Utils.PlayOneShotSavable(SFX,Const.a.sounds[78]);
 		Inventory.a.hardwareIsActive[9] = !Inventory.a.hardwareIsActive[9];
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[9],
 								Inventory.a.hardwareVersionSetting[9],6);
@@ -363,12 +350,7 @@ public class HardwareButton : MonoBehaviour {
 			return;
 		}
 
-		if (Inventory.a.hardwareIsActive[10]) {
-			Utils.PlayOneShotSavable(SFX,SFXClipDeactivate[0]);
-		} else {
-			Utils.PlayOneShotSavable(SFX,SFXClip[7]);
-		}
-
+		Utils.PlayOneShotSavable(SFX,Const.a.sounds[78]);
 		Inventory.a.JumpJetsToggle();
 		SetVersionIconForButton(Inventory.a.JumpJetsActive(),
 								Inventory.a.JumpJetsVersion(),7);

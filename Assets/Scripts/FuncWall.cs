@@ -12,8 +12,6 @@ public class FuncWall : MonoBehaviour {
 	public FuncStates startState; // save
 	public float percentAjar = 0; // save
 	public float percentMoved = 0; // save
-	public AudioClip SFXMoving;
-	public AudioClip SFXStop;
 	private AudioSource SFXSource;
 	public FuncStates currentState; // save
 	public int[] chunkIDs; // save
@@ -129,7 +127,7 @@ public class FuncWall : MonoBehaviour {
 		}
 
 		if (SFXSource != null) {
-			SFXSource.clip = SFXMoving;
+			SFXSource.clip = Const.a.sounds[76]; // doorwall_move
 			SFXSource.loop = true;
 			SFXSource.Play();
 		}
@@ -165,7 +163,7 @@ public class FuncWall : MonoBehaviour {
 				SFXSource.Stop ();
 				SFXSource.loop = false;
 				if (!stopSoundPlayed) {
-					Utils.PlayOneShotSavable(SFXSource,SFXStop);
+					Utils.PlayOneShotSavable(SFXSource,Const.a.sounds[77]);
 					stopSoundPlayed = true;
 				}
 			}

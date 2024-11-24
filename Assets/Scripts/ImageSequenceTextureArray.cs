@@ -14,7 +14,6 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	public int[] constArrayLookup;
 	public int[] constArrayLookupGlow;
 	public int[] constArrayDestroyed;
-	/*[DTValidator.Optional] */public AudioClip SFXClip;
 	/*[DTValidator.Optional] */public GameObject lightContainer;
 
 	private AudioSource SFX;
@@ -48,7 +47,7 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 
 	// called by HealthManager.cs's ScreenDeath
 	public void Destroy() {
-		Utils.PlayOneShotSavable(SFX,SFXClip);
+		Utils.PlayOneShotSavable(SFX,Const.a.sounds[69]); // screen_destroy
 		if (lightContainer != null) lightContainer.SetActive(false);
 		screenDestroyed = true; // if not already dead, say so
 	}

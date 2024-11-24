@@ -48,7 +48,7 @@ public enum MusicResourceType : byte {Menu,Medical,Science,Reactor,Executive,
                                       Grove,Cyber,Security,Revive,Death,
                                       Elevator,Distortion,Looped};
 // Pool references
-public enum PoolType {None,SparqImpacts,CameraExplosions,SparksSmall,
+public enum PoolType {None,CameraExplosions,SparksSmall,
                       BloodSpurtSmall,BloodSpurtSmallYellow,
                       BloodSpurtSmallGreen,SparksSmallBlue,HopperImpact,
 					  GrenadeFragExplosions,Vaporize,BlasterImpacts,IonImpacts,
