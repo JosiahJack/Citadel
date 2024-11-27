@@ -23,7 +23,7 @@ public class HealingBed : MonoBehaviour {
 				Const.sprint(Const.a.stringTable[24],ud.owner);
 			}
 		} else {
-			MFDManager.a.BlockedBySecurity(transform.position,ud);
+			MFDManager.a.BlockedBySecurity(transform.position);
 		}
 	}
 }

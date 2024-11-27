@@ -6,7 +6,7 @@ public class ObjectImpact : MonoBehaviour {
 	// External values set per prefab instance, optional.
 	public float minVolumeSpeed = 2f;
 	public float maxVolumeSpeed = 10f;
-	public AudioClip ImpactSFX;
+	public int impactSFXIndex = 523;
 
 	// Internal references, required
 	[HideInInspector] public AudioSource SFXSource;
@@ -26,7 +26,7 @@ public class ObjectImpact : MonoBehaviour {
 			if (SFXSource != null) {
 				SFXSource.pitch = (UnityEngine.Random.Range(0.8f,1.2f));
 				float vol = (collision.relativeVelocity.magnitude/maxVolumeSpeed) * 0.3f;
-				Utils.PlayOneShotSavable(SFXSource,ImpactSFX,vol); // Play sound when object changes velocity significantly enough that it must have hit something
+				Utils.PlayOneShotSavable(SFXSource,Const.a.sounds[impactSFXIndex],vol); // Play sound when object changes velocity significantly enough that it must have hit something
 			}
 		}
 	}

@@ -1180,12 +1180,16 @@ public class DynamicCulling : MonoBehaviour {
 
     public void ToggleDynamicMeshesVisibility() {
         int x,y;
+        PrefabIdentifier pid;
         for (int i=0;i<dynamicMeshes.Count;i++) {
+            pid = dynamicMeshes[i].GetComponent<PrefabIdentifier>();
+            if (pid == null) continue;
+            
             x = dynamicMeshCoords[i].x;
             y = dynamicMeshCoords[i].y;
             if (gridCells[x,y].visible || !worldCellsOpen[x,y]) {
-                ForceBridge fb = dynamicMeshes[i].GetComponent<ForceBridge>();
-                if (fb != null) {
+                if (pid.constIndex == 515) { // func_forcebridge
+                    ForceBridge fb = dynamicMeshes[i].GetComponent<ForceBridge>();
                     if (fb.activated) {
                         Utils.EnableMeshRenderer(dynamicMeshes[i]);
                     } else {
@@ -1194,7 +1198,7 @@ public class DynamicCulling : MonoBehaviour {
                 } else {
                     HealthManager hm = dynamicMeshes[i].GetComponent<HealthManager>();
                     if (hm != null) {
-                        if (hm.health > 0 || !hm.gibOnDeath || hm.isScreen) {
+                        if (hm.health > 0 || !hm.gibOnDeath || pid.constIndex == 279) { // chunk_screen stays on when destroyed
                             Utils.EnableMeshRenderer(dynamicMeshes[i]);
                         } else {
                             Utils.DisableMeshRenderer(dynamicMeshes[i]);
@@ -1229,7 +1233,11 @@ public class DynamicCulling : MonoBehaviour {
 
     public void ToggleStaticMeshesSaveableVisibility() {
         int x,y;
+        PrefabIdentifier pid;
         for (int i=0;i<staticMeshesSaveable.Count;i++) {
+            pid = dynamicMeshes[i].GetComponent<PrefabIdentifier>();
+            if (pid == null) continue;
+            
             x = staticMeshSaveableCoords[i].x;
             y = staticMeshSaveableCoords[i].y;
             if (gridCells[x,y].visible || !worldCellsOpen[x,y]) {
@@ -1237,7 +1245,7 @@ public class DynamicCulling : MonoBehaviour {
                     staticMeshesSaveable[i].GetComponent<HealthManager>();
                     
                 if (hm != null) {
-                    if (hm.health > 0 || !hm.gibOnDeath || hm.isScreen) {
+                    if (hm.health > 0 || !hm.gibOnDeath || pid.constIndex == 279) {
                         staticMeshesSaveable[i].enabled = true;
                     } else {
                         staticMeshesSaveable[i].enabled = false;

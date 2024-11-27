@@ -65,8 +65,6 @@ public class PuzzleWire : MonoBehaviour {
 	private float blinkTimeFinished;
 	public float actualValue;
 	private int numberOfWires;
-	private AudioSource SFXSource;
-	public AudioClip SFX;
 	public string target;
 	public string argvalue;
 	private UseData udSender;
@@ -91,8 +89,6 @@ public class PuzzleWire : MonoBehaviour {
 		ChangeAppearance();
 		DisableAllSelectedIndicators();
 		DisableGeniusHints();
-		SFXSource = GetComponent<AudioSource>();
-		//EvaluatePuzzle();
 	}
 
 	public void Reset() {
@@ -664,7 +660,7 @@ public class PuzzleWire : MonoBehaviour {
 		actualValue = 1f;
 		slider.value = actualValue;
 		Solved = true;
-		Utils.PlayOneShotSavable(SFXSource,SFX,1.0f);
+		Utils.PlayUIOneShotSavable(46);
 		puzzleWP.puzzleSolved = true;
 		puzzleWP.UseTargets(udSender.owner);
 		if (usedLogicProbe) {

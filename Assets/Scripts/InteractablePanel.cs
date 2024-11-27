@@ -8,40 +8,28 @@ public class InteractablePanel : MonoBehaviour {
 	public GameObject[] effects; // any effect items to turn on
 	public bool open = false;
 	public bool installed = false;
-	private AudioSource SFX;
-	public AudioClip SFXInstallation;
-	public AudioClip SFXOpen;
-	public AudioClip SFXFail;
-	private Animator anim;
-	[HideInInspector] public string wrongItemMessage;
 	public int wrongItemMessageLingdex;
-	[HideInInspector] public string installedMessage;
+	public int SFXInstallationIndex;
+	public int SFXOpenIndex;
 	public int installedMessageLingdex;
-	[HideInInspector] public string alreadyInstalledMessage;
 	public int alreadyInstalledMessageLingdex;
-	public AudioClip SFXAlreadyInstalled;
-	[HideInInspector] public string openMessage;
+	public int SFXAlreadyInstalledIndex;
 	public int openMessageLingdex;
 	public string target;
 	public string argvalue;
+	
+	private AudioSource SFX;
+	private Animator anim;
 
 	void Start() {
 		anim = GetComponent<Animator>();
 		SFX = GetComponent<AudioSource>();
-		if (SFX == null) Debug.Log("BUG: Missing AudioSource on Interactable Panel");
-		if (string.IsNullOrWhiteSpace(openMessage)) {
-			if (openMessageLingdex >= 0) {
-				if (openMessageLingdex < Const.a.stringTable.Length && openMessageLingdex != -1)
-					openMessage = Const.a.stringTable[openMessageLingdex];
-			}
-		}
 	}
 
 	public void Use(UseData ud) {
-		//Debug.Log("Used InteractablePanel");
 		if (open) {
 			if (installed && ud.mainIndex == -1) {
-				Const.sprintByIndexOrOverride (alreadyInstalledMessageLingdex, alreadyInstalledMessage,ud.owner);
+				Const.sprint(alreadyInstalledMessageLingdex);
 				return; // do nothing already done here
 			}
 
@@ -51,13 +39,13 @@ public class InteractablePanel : MonoBehaviour {
 												  && ud.customIndex == 1))) {
 												     // Abe Ghiran's head.
 				if (installed) { 					 // ... is big
-					Utils.PlayOneShotSavable(SFX,SFXAlreadyInstalled);
+					Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXAlreadyInstalledIndex]);
 					return; // do nothing already done here
 				}
 				installed = true;
 				if (installationItem != null) installationItem.SetActive(true);
-				Utils.PlayOneShotSavable(SFX,SFXInstallation);
-				Const.sprintByIndexOrOverride (installedMessageLingdex, installedMessage,ud.owner);
+				Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXInstallationIndex]);
+				Const.sprint(installedMessageLingdex);
 				// any extra effect objects?  activate them here...good for sparks or turning on any extra bits and bobs
 				if (effects.Length > 0) {
 					for(int i=0;i<effects.Length;i++) {
@@ -72,14 +60,14 @@ public class InteractablePanel : MonoBehaviour {
 				ud.argvalue = argvalue;
 				Const.a.UseTargets(gameObject,ud,target);
 			} else {
-				Utils.PlayOneShotSavable(SFX,SFXFail); // aaaahhh!! Try again
-				Const.sprintByIndexOrOverride(wrongItemMessageLingdex, wrongItemMessage,ud.owner);
+				Utils.PlayOneShotSavable(SFX,Const.a.sounds[43]); // button_deny, aaaahhh!! Try again
+				Const.sprint(wrongItemMessageLingdex);
 			}
 		} else {
 			open = true;
 			anim.Play("Open");
-			Utils.PlayOneShotSavable(SFX,SFXOpen);
-			Const.sprintByIndexOrOverride (openMessageLingdex, openMessage,ud.owner);
+			Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXOpenIndex]);
+			Const.sprint(openMessageLingdex);
 		}
 	}
 

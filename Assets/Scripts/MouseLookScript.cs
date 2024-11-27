@@ -12,10 +12,6 @@ public class MouseLookScript : MonoBehaviour {
 	[Tooltip("The current cursor texture (For Reference or Testing)")] public Texture2D cursorTexture;
     [Tooltip("The default cursor texture (Developer sets default)")] public Texture2D cursorDefaultTexture;
     [Tooltip("The cyberspace cursor")] public Texture2D cyberspaceCursor;
-    [Tooltip("Sound effect to play when searching an object")] public AudioClip SearchSFX;
-    [Tooltip("Sound effect to play when picking-up/frobbing an object")] public AudioClip PickupSFX;
-    [Tooltip("Sound effect to play when picking-up/frobbing a hardware item")] public AudioClip hwPickupSFX;
-    [Tooltip("Sound effect to play when entering/exiting cyberspace")] public AudioClip CyberSFX;
 	public GameObject canvasContainer;
 	public GameObject compassContainer;
 	public GameObject automapContainerLH;
@@ -26,7 +22,6 @@ public class MouseLookScript : MonoBehaviour {
     [Tooltip("Game object that houses the MFD tabs")] public GameObject tabControl;
 	[Tooltip("Text in the data tab in the MFD that displays when searching an object containing no items")] public Text dataTabNoItemsText;
 	public LogContentsButtonsManager logContentsManager;
-	public AudioSource SFXSource;
 	public GameObject[] hardwareButtons;
 	public PuzzleWire puzzleWire;
 	public PuzzleGrid puzzleGrid;
@@ -205,7 +200,7 @@ public class MouseLookScript : MonoBehaviour {
 				randomKlaxonFinished = PauseScript.a.relativeTime
 				                       + UnityEngine.Random.Range(10f,20f);
 
-				Utils.PlayOneShotSavable(SFXSource,104); // klaxon
+				Utils.PlayUIOneShotSavable(104); // klaxon
 			}
 		}
 
@@ -392,7 +387,7 @@ public class MouseLookScript : MonoBehaviour {
 		playerCamera.useOcclusionCulling = false;
 		MFDManager.a.DrawTicks(true);
 		SetCameraCullDistances();
-		Utils.PlayOneShotSavable(SFXSource,CyberSFX);
+		Utils.PlayUIOneShotSavable(81); // cyber
 	}
 
 	public void ExitCyberspace() {
@@ -422,7 +417,7 @@ public class MouseLookScript : MonoBehaviour {
 		playerCamera.useOcclusionCulling = true;
 		Const.a.decoyActive = false;
 		MFDManager.a.DrawTicks(true);
-		Utils.PlayOneShotSavable(SFXSource,CyberSFX);
+		Utils.PlayUIOneShotSavable(81); // cyber
 		SetCameraCullDistances();
 	}
 
@@ -708,7 +703,7 @@ public class MouseLookScript : MonoBehaviour {
 				currentSearchItem = tempHit.collider.gameObject;
 				SearchObject(currentSearchItem.GetComponent<SearchableItem>().lookUpIndex);
 			} else {
-				Const.sprint(Const.a.stringTable[29],player); // "Can't use "
+				Const.sprint(29); // "Can't use "
 			}
 		} else { // Frobbed into empty space, so whatever it is is too far.
 			if (tempHit.collider != null) {
@@ -754,7 +749,7 @@ public class MouseLookScript : MonoBehaviour {
 		UseHandler uh = go.GetComponent<UseHandler>();
 		bool playedSound = false;
 		if (uh != null) {
-			Utils.PlayOneShotSavable(SFXSource,SearchSFX);
+			Utils.PlayUIOneShotSavable(91); // searchsound
 			playedSound = true;
 			uh.Use(ud);
 			return true; // Item can get absorbed, not dropped.
@@ -762,7 +757,8 @@ public class MouseLookScript : MonoBehaviour {
 
 		UseHandlerRelay uhr = go.GetComponent<UseHandlerRelay>();
 		if (uhr != null) {
-			if (!playedSound) Utils.PlayOneShotSavable(SFXSource,SearchSFX);
+			
+			if (!playedSound) Utils.PlayUIOneShotSavable(91); // searchsound
 			uhr.referenceUseHandler.Use(ud);
 			return true; // Item can get absorbed, not dropped.
 		}
@@ -1030,8 +1026,6 @@ public class MouseLookScript : MonoBehaviour {
 		MFDManager.a.mouseClickHeldOverGUI = true; // Prevent gun shooting.
 		if (index < 0) index = 0; // Good check on paper.
 		if (index > 110) index = 94; // Way to get a head.
-
-		AudioClip pickclip = PickupSFX;
 		if ((index >= 0 && index <= 5)
              || index == 33
              || index == 35
@@ -1099,7 +1093,7 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		}
 
-		Utils.PlayOneShotSavable(SFXSource,pickclip);
+		Utils.PlayUIOneShotSavable(87); // frob_item
 		int numberFoundContents = 0;
 		if (currentSearchItem != null) {
 			SearchableItem curSearchScript = currentSearchItem.GetComponent<SearchableItem>();
@@ -1320,7 +1314,7 @@ public class MouseLookScript : MonoBehaviour {
 				}
 			}
 		} else {
-			Utils.PlayOneShotSavable(SFXSource,SearchSFX); // Play search sound
+			Utils.PlayUIOneShotSavable(91); // searchsound
 		}
 
 		curSearchScript.searchableInUse = true;

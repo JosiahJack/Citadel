@@ -36,7 +36,7 @@ public class CyberMine : MonoBehaviour {
 				damageData.damage = dmg;
 				// No impact force in cyberspace.
 				PlayerHealth.a.hm.TakeDamage(damageData);
-				Utils.PlayOneShotSavable(PlayerHealth.a.SFX,PlayerHealth.a.CyberMineSFXClip);
+				Utils.PlayUIOneShotSavable(67);
 				gameObject.SetActive(false);
 			}
 		}

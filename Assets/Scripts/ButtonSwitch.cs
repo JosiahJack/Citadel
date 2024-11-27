@@ -9,7 +9,6 @@ public class ButtonSwitch : MonoBehaviour {
 	                                      // unusable until security falls.
 	public string target; // save
 	public string argvalue; // save
-	public string message; // save
 	public int messageIndex = -1; // save
 	public float delay = 0f; // save
 	public int SFXIndex = 44;
@@ -18,7 +17,6 @@ public class ButtonSwitch : MonoBehaviour {
 	public bool changeMatOnActive = true; // save
 	public bool animateModel = false; // save
 	public bool locked = false; // save
-	public string lockedMessage; // save
 	public int lockedMessageLingdex = 193; // save
 	public bool active; // save
 
@@ -65,14 +63,12 @@ public class ButtonSwitch : MonoBehaviour {
 	    } else if (LevelManager.a.GetCurrentLevelSecurity()
 	               > securityThreshhold) {
 	                   
-			MFDManager.a.BlockedBySecurity(transform.position,ud);
+			MFDManager.a.BlockedBySecurity(transform.position);
 			return;
 		}
 
 		if (locked) {
-			Const.sprintByIndexOrOverride(lockedMessageLingdex,
-			                              lockedMessage,ud.owner);
-			                              
+			Const.sprint(lockedMessageLingdex);
 			Utils.PlayOneShotSavable(SFXSource,Const.a.sounds[SFXLockedIndex]);
 			return;
 		}
@@ -80,12 +76,9 @@ public class ButtonSwitch : MonoBehaviour {
         // Set playerCamera to owner of the input (always should be the camera)
 		player = ud.owner;
 		Utils.PlayOneShotSavable(SFXSource,Const.a.sounds[SFXIndex]);
-		Const.sprintByIndexOrOverride (messageIndex, message,ud.owner);
-		if (delay > 0f) {
-			delayFinished = PauseScript.a.relativeTime + delay;
-		} else {
-			UseTargets();
-		}
+		Const.sprint(messageIndex);
+		if (delay > 0f) delayFinished = PauseScript.a.relativeTime + delay;
+		else UseTargets();
 	}
 
 	public void Targetted (UseData ud) {
@@ -180,8 +173,6 @@ public class ButtonSwitch : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveString(bs.argvalue,"argvalue"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveString(bs.message,"message"));
-		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(bs.messageIndex,"messageIndex"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(bs.delay,"delay"));
@@ -193,8 +184,6 @@ public class ButtonSwitch : MonoBehaviour {
 		s1.Append(Utils.BoolToString(bs.animateModel,"animateModel"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(bs.locked,"locked"));
-		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveString(bs.lockedMessage,"lockedMessage"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.UintToString(bs.lockedMessageLingdex,"lockedMessageLingdex"));
 		s1.Append(Utils.splitChar);
@@ -213,14 +202,12 @@ public class ButtonSwitch : MonoBehaviour {
 		bs.securityThreshhold = Utils.GetIntFromString(entries[index],"securityThreshhold"); index++;
 		bs.target = Utils.LoadString(entries[index],"target"); index++;
 		bs.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
-		bs.message = Utils.LoadString(entries[index],"message"); index++;
 		bs.messageIndex = Utils.GetIntFromString(entries[index],"messageIndex"); index++;
 		bs.delay = Utils.GetFloatFromString(entries[index],"delay"); index++;
 		bs.blinkWhenActive = Utils.GetBoolFromString(entries[index],"blinkWhenActive"); index++;
 		bs.changeMatOnActive = Utils.GetBoolFromString(entries[index],"changeMatOnActive"); index++;
 		bs.animateModel = Utils.GetBoolFromString(entries[index],"animateModel"); index++;
 		bs.locked = Utils.GetBoolFromString(entries[index],"locked"); index++;
-		bs.lockedMessage = Utils.LoadString(entries[index],"lockedMessage"); index++;
 		bs.lockedMessageLingdex = Utils.GetIntFromString(entries[index],"lockedMessageLingdex"); index++;
 		bs.active = Utils.GetBoolFromString(entries[index],"active"); index++;
 		bs.alternateOn = Utils.GetBoolFromString(entries[index],"alternateOn"); index++;

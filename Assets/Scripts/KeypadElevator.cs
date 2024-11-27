@@ -4,7 +4,6 @@ using System.Collections;
 
 public class KeypadElevator : MonoBehaviour {
 	public Door linkedDoor;
-	public AudioClip SFX;
 	public GameObject[] targetDestination; // Set by ElevatorKeypad.cs in Use()
 										   // which actually gets it from
 										   // ElevatorButton.cs.
@@ -19,13 +18,10 @@ public class KeypadElevator : MonoBehaviour {
 	public bool locked = false; // save
 	public string lockedTarget;
 	public string argvalue;
-	public string lockedMessage;
-
-	private AudioSource SFXSource;
+	public int lockedMessageIndex = -1;
 
 	void Start () {
 		padInUse = false;
-		SFXSource = GetComponent<AudioSource>();
 		if (linkedDoor == null) {
 			Debug.Log("BUG: no linked Door for KeypadElevator at location: "
 					  + transform.position.ToString());
@@ -34,7 +30,7 @@ public class KeypadElevator : MonoBehaviour {
 
 	public void Use (UseData ud) {
 		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
-			MFDManager.a.BlockedBySecurity(transform.position,ud);
+			MFDManager.a.BlockedBySecurity(transform.position);
 			return;
 		}
 
@@ -44,16 +40,16 @@ public class KeypadElevator : MonoBehaviour {
 		}
 
 		if (locked) {
-			// Target something because we are locked like a Vox message to say
-			// hey we are locked, e.g. "Non emergency life pods disabled."
-			Const.sprint(lockedMessage,ud.owner);
+			// Target something because we are locked like an info_message to say
+			// hey we are locked, e.g. vox: "Non emergency life pods disabled."
+			Const.sprint(lockedMessageIndex);
 			ud.argvalue = argvalue;
 			Const.a.UseTargets(gameObject,ud,lockedTarget);
 			return;
 		}
 
 		padInUse = true;
-		Utils.PlayOneShotSavable(SFXSource,SFX);
+		Utils.PlayUIOneShotSavable(91);
 		MFDManager.a.SendElevatorKeypadToDataTab(this,buttonsEnabled,
 												 buttonsDarkened,buttonText,
 												 targetDestination,

@@ -6,7 +6,6 @@ public class Door : MonoBehaviour {
 	public string target;
 	public string argvalue;
 	public bool onlyTargetOnce;
-	[HideInInspector] public bool targetAlreadyDone = false; // save
 	[Tooltip("Delay after full open before door closes")] public float delay;
 	[Tooltip("Whether door is locked, unuseable until unlocked")] public bool locked; // saved
 	public int securityThreshhold = 100; // If security level is not below this level, this is unusable.
@@ -15,21 +14,13 @@ public class Door : MonoBehaviour {
 	[Tooltip("Should door start partially open")] public bool ajar = false; // save
 	[Tooltip("If partially open, by what percentage")] public float ajarPercentage = 0.5f;
 	[Tooltip("Delay after use before door can be re-used")] public float useTimeDelay = 0.15f;
-	[Tooltip("Message to display when door is locked, e.g.'door is broken beyond repair'")] public string lockedMessage;
 	public int lockedMessageLingdex = 3;
-	private string cardMessage; // set in start to hardcoded lingdex 2
-	private string cardUsedMessage; // diddo with lingdex 4
-	private string butdoorStillLockedMessage;  // lingdex 5
 	public bool blocked = false; // save
-	[HideInInspector] public float useFinished; // save
-	[HideInInspector] public float waitBeforeClose; // save
-	[HideInInspector] public Animator anim;
 	[Tooltip("Door sound when opening or closing")] public int SFXIndex = 75;
 	public AccessCardType requiredAccessCard = AccessCardType.None;
 	public bool accessCardUsedByPlayer = false; // save
 	public DoorState doorOpen; // save
 	public float timeBeforeLasersOn;
-	[HideInInspector] public float lasersFinished; // save
 	public GameObject[] laserLines;
 	public GameObject[] collidersList;
 	public bool toggleLasers = false;
@@ -37,6 +28,11 @@ public class Door : MonoBehaviour {
 	public float animatorPlaybackTime; // save
 	public bool changeLayerOnOpenClose = false;
 
+	[HideInInspector] public bool targetAlreadyDone = false; // save
+	[HideInInspector] public float lasersFinished; // save
+	[HideInInspector] public float useFinished; // save
+	[HideInInspector] public float waitBeforeClose; // save
+	[HideInInspector] public Animator anim;
 	private AudioSource SFX = null;
 	private GameObject dynamicObjectsContainer;
 	private int defIndex = 0;
@@ -74,23 +70,15 @@ public class Door : MonoBehaviour {
 			anim.Play(idleClosedClipName);
 		}
 
-		cardMessage = Const.a.stringTable[2];
-		if (string.IsNullOrEmpty(lockedMessage)) {
-			if (lockedMessageLingdex >= 0) {
-				if (lockedMessageLingdex < Const.a.stringTable.Length)
-				lockedMessage = Const.a.stringTable[lockedMessageLingdex];
-			}
-		}
-		cardUsedMessage = Const.a.stringTable[4];
-		butdoorStillLockedMessage = Const.a.stringTable[5];
 		initialized = true;
 	}
 
 	public void Use (UseData ud) {
 		if (ud == null) return;
 		if (ud.owner == null) return;
+		
 		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
-			MFDManager.a.BlockedBySecurity(transform.position,ud);
+			MFDManager.a.BlockedBySecurity(transform.position);
 			return;
 		}
 
@@ -118,8 +106,7 @@ public class Door : MonoBehaviour {
 			if (!locked) {
 				if (requiredAccessCard != AccessCardType.None) {
 					// State that we just used a keycard and access was granted
-					Const.sprint(Inventory.AccessCardCodeForType(requiredAccessCard)
-									+ cardUsedMessage,ud.owner);
+					Const.sprint(Inventory.AccessCardCodeForType(requiredAccessCard) + Const.a.stringTable[4]);
 					accessCardUsedByPlayer = true;
 				}
 
@@ -138,13 +125,10 @@ public class Door : MonoBehaviour {
 			} else {
 				// Use access card
 				if (requiredAccessCard != AccessCardType.None) {
-					Const.sprint(requiredAccessCard.ToString()
-									+ cardUsedMessage
-									+ butdoorStillLockedMessage,ud.owner);
-
+					Const.sprint(requiredAccessCard.ToString() + Const.a.stringTable[4] + Const.a.stringTable[5]);
 					accessCardUsedByPlayer = true;
 				} else {
-					Const.sprint(lockedMessage,ud.owner); 
+					Const.sprint(lockedMessageLingdex); 
 					Utils.PlayOneShotSavable(SFX,Const.a.sounds[467],0.55f);
 					if (QuestLogNotesManager.a != null) {
 						QuestLogNotesManager.a.NotifyLockedDoorAttempt(this);
@@ -153,9 +137,7 @@ public class Door : MonoBehaviour {
 			}
 		} else {
 			// Tell owner of the Use command that an access card is needed.
-			Const.sprint(requiredAccessCard.ToString()
-							+ cardMessage,ud.owner);
-
+			Const.sprint(requiredAccessCard.ToString() + Const.a.stringTable[2]);
 			Utils.PlayOneShotSavable(SFX,Const.a.sounds[466],0.7f);
 		}
 	}
@@ -202,10 +184,8 @@ public class Door : MonoBehaviour {
 		CloseDoor();
 	}
 
-	public void Lock(string arg) {
+	public void Lock() {
 		locked = true;
-		if (string.IsNullOrWhiteSpace(arg)) arg = "Door is locked"; // default
-		lockedMessage = arg;
 	}
 
 	public void Unlock() {
@@ -215,11 +195,11 @@ public class Door : MonoBehaviour {
 		}
 	}
 
-	public void ToggleLocked(string arg) {
+	public void ToggleLocked() {
 		if (locked) {
 			Unlock();
 		} else {
-			Lock(arg);
+			Lock();
 		}
 	}
 

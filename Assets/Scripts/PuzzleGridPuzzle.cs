@@ -17,13 +17,9 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 	public string target;
 	public string argvalue;
 	public bool locked = false; // save
-	public string messageOnLocked;
 	public int successMessageLingdex = 4;
-	public string successMessage;
 	public int messageOnLockedLingdex = 302;
-	public string messageOnBroken;
 	public int messageOnBrokenLingdex = 189;
-	public string alreadyFiredMessage;
 	public int alreadyFiredMessageLingdex = 312;
 	public bool puzzleSolved; // save
 	public bool onlyFireOnce = true;
@@ -53,13 +49,12 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 
 	public void Use (UseData ud) {
 		if (dead) {
-			Const.sprintByIndexOrOverride(messageOnBrokenLingdex,
-										  messageOnBroken,ud.owner);
+			Const.sprint(messageOnBrokenLingdex);
 			return;
 		}
 
 		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
-			MFDManager.a.BlockedBySecurity(transform.position,ud);
+			MFDManager.a.BlockedBySecurity(transform.position);
 			return;
 		}
 
@@ -69,8 +64,7 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 		}
 
 		if (locked) {
-			Const.sprintByIndexOrOverride(messageOnLockedLingdex,
-										  messageOnLocked,ud.owner);
+			Const.sprint(messageOnLockedLingdex);
 			return;
 		}
 
@@ -99,8 +93,7 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 
 	public void UseTargets (GameObject owner) {
 		if (onlyFireOnce && fired) {
-			Const.sprintByIndexOrOverride(alreadyFiredMessageLingdex,
-										  alreadyFiredMessage,owner);
+			Const.sprint(alreadyFiredMessageLingdex);
 			return;
 		}
 
@@ -109,8 +102,7 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 		ud.owner = owner;
 		ud.argvalue = argvalue;
 		Const.a.UseTargets(gameObject,ud,target);
-		Const.sprintByIndexOrOverride (successMessageLingdex,
-									   successMessage,ud.owner);
+		Const.sprint(successMessageLingdex);
 	}
 
 	public static string Save(GameObject go) {

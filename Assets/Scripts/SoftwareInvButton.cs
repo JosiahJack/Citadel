@@ -18,14 +18,14 @@ public class SoftwareInvButton : MonoBehaviour {
 					Inventory.a.pulserButtonText.Select(false);
 					Inventory.a.drillButtonText.Select(true);
 					Inventory.a.isPulserNotDrill = false;
-					Utils.PlayOneShotSavable(Inventory.a.SFX,Inventory.a.SFXChangeWeapon);
+					Utils.PlayUIOneShotSavable(80); // changeweapon
 					break;
 			case 1:
 					// Pulser
 					Inventory.a.pulserButtonText.Select(true);
 					Inventory.a.drillButtonText.Select(false);
 					Inventory.a.isPulserNotDrill = true;
-					Utils.PlayOneShotSavable(Inventory.a.SFX,Inventory.a.SFXChangeWeapon);
+					Utils.PlayUIOneShotSavable(80); // changeweapon
 					break;
 			case 2:
 					// CyberShield

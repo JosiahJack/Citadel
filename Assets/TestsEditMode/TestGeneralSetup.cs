@@ -362,15 +362,19 @@ namespace Tests {
             bool check = true;
 
             // Run through all GameObjects and perform all tests
+            PrefabIdentifier pid;
             for (int i=0;i<allGOs.Count;i++) {
                 HealthManager hm = allGOs[i].GetComponent<HealthManager>();
                 if (hm == null) continue;
 
+                pid = allGOs[i].GetComponent<PrefabIdentifier>();
+                if (pid == null) continue;
+                
                 if (hm.isNPC) {
                     MissingComponent(script,allGOs[i],typeof(AIController));
                     msg = "not marked only as an NPC";
                     check = !(hm.isSecCamera || hm.isPlayer || hm.isObject
-                              || hm.isIce || hm.isScreen || hm.isGrenade);
+                              || hm.isIce || pid.constIndex == 279 || hm.isGrenade);
 
                     Assert.That(check,FailMessage(script,allGOs[i],msg));
 
@@ -394,7 +398,7 @@ namespace Tests {
 
                     msg = "marked security camera and another object as well";
                     check = !(hm.isNPC || hm.isPlayer || hm.isIce
-                              || hm.isScreen || hm.isGrenade);
+                              || pid.constIndex == 279 || hm.isGrenade);
 
                     Assert.That(check,FailMessage(script,allGOs[i],msg));
 
@@ -406,7 +410,7 @@ namespace Tests {
                 if (hm.isPlayer) {
                     msg = "marked as isPlayer and another object as well";
                     check = !(hm.isNPC || hm.isSecCamera || hm.isObject
-                              || hm.isIce || hm.isScreen || hm.isGrenade);
+                              || hm.isIce || pid.constIndex == 279 || hm.isGrenade);
 
                     Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
@@ -415,7 +419,7 @@ namespace Tests {
                     MissingComponent(script,allGOs[i],typeof(GrenadeActivate));
                     msg = "marked as grenade and another object as well";
                     check = !(hm.isNPC || hm.isSecCamera || hm.isObject
-                              || hm.isIce || hm.isScreen || hm.isPlayer);
+                              || hm.isIce || pid.constIndex == 279 || hm.isPlayer);
 
                     Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
@@ -425,16 +429,12 @@ namespace Tests {
 
                     // Exception: security camera (isSecCamera) + isObject
                     check = !(hm.isNPC || hm.isGrenade || hm.isIce
-                              || hm.isScreen || hm.isPlayer);
+                              || pid.constIndex == 279 || hm.isPlayer);
 
                     Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
 
-                if (hm.isScreen) {
-                    msg = "missing backupDeathSound when isScreen";
-                    check = !(hm.backupDeathSound == null);
-                    Assert.That(check,FailMessage(script,allGOs[i],msg));
-
+                if (pid.constIndex == 279) {
                     MissingComponent(script,allGOs[i],
                                      typeof(ImageSequenceTextureArray));
 
@@ -448,7 +448,7 @@ namespace Tests {
                         allGOs[i].GetComponent<ImageSequenceTextureArray>();
                     
                     
-                    msg = "isScreen and is marked as destroyed but has health";
+                    msg = "chunk_screen and is marked as destroyed but has health";
                     check = ista.screenDestroyed ? hm.health <= 0f: true;
                     Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
@@ -556,7 +556,6 @@ namespace Tests {
                 MissingReference(script,allGOs[i],mls.logContentsManager,
                                  "logContentsManager");
 
-                MissingReference(script,allGOs[i],mls.SFXSource,"SFXSource");
                 MissingReference(script,allGOs[i],mls.hardwareButtons,
                                  "hardwareButtons");
 
@@ -697,14 +696,6 @@ namespace Tests {
                     Assert.That(check,FailMessage(script,allGOs[i],msg));
                 }
 
-                msg = "unstranslated string rechargeMsg";
-                check = string.IsNullOrWhiteSpace(chst.rechargeMsg);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "unstranslated string usedMsg";
-                check = string.IsNullOrWhiteSpace(chst.usedMsg);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
                 msg = "charge station amount " + chst.amount.ToString()
                       + "too low to detect, less than 11.0";
 
@@ -781,10 +772,6 @@ namespace Tests {
 
                 msg = "marked as keycard already used before game starts!";
                 check = !dor.accessCardUsedByPlayer;
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "untranslated string lockedMessage";
-                check = string.IsNullOrWhiteSpace(dor.lockedMessage);
                 Assert.That(check,FailMessage(script,allGOs[i],msg));
 
                 if (dor.toggleLasers) {
@@ -922,14 +909,6 @@ namespace Tests {
                 Assert.That(check,FailMessage(script,allGOs[i],msg));
                 MissingComponent(script,allGOs[i],typeof(TargetIO));
                 MissingComponent(script,allGOs[i],typeof(AudioSource));
-
-                msg = "untranslated string successMessage";
-                check = string.IsNullOrWhiteSpace(keyco.successMessage);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
-
-                msg = "untranslated string lockedMessage";
-                check = string.IsNullOrWhiteSpace(keyco.lockedMessage);
-                Assert.That(check,FailMessage(script,allGOs[i],msg));
             }
         }
 

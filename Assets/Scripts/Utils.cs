@@ -1266,6 +1266,39 @@ public class Utils {
 
 		PlayOneShotSavable(SFX,Const.a.sounds[fx],vol);
 	}
+	
+	public static void PlayUIOneShotSavable(int fx, float vol) {
+		if (fx < 0) return;
+		if (fx >= Const.a.sounds.Length) return;
+
+		AudioSource aud = null;
+		for (int i=0;i<MFDManager.a.UIAudSource.Length;i++) { 
+			if (MFDManager.a.UIAudSource[i].isPlaying) continue;
+			
+			aud = MFDManager.a.UIAudSource[i]; // Free channel.
+		}
+		
+		if (aud == null) return; // Couldn't find a free channel.
+		
+		PlayOneShotSavable(aud,Const.a.sounds[fx],vol);
+	}
+	
+	public static void PlayUIOneShotSavable(int fx) {
+		PlayUIOneShotSavable(fx,1.0f);
+	}
+	
+	public static void PlayUIOneShotSavable(AudioClip fxclip) {
+		AudioSource aud = null;
+		for (int i=0;i<MFDManager.a.UIAudSource.Length;i++) { 
+			if (MFDManager.a.UIAudSource[i].isPlaying) continue;
+			
+			aud = MFDManager.a.UIAudSource[i]; // Free channel.
+		}
+		
+		if (aud == null) return; // Couldn't find a free channel.
+		
+		PlayOneShotSavable(aud,fxclip,0f);
+	}
 
 	public static void PlaySavable(AudioSource SFX, AudioClip fxclip) {
 		PlayAudioSavable(SFX,fxclip,0,false);

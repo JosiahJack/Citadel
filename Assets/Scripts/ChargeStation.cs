@@ -10,9 +10,7 @@ public class ChargeStation : MonoBehaviour {
 	public float damageOnUse = 0f; 
 	public string target;
 	public string argvalue;
-	public string rechargeMsg;
 	public int rechargeMsgLingdex = 1;
-	public string usedMsg;
 	public int usedMsgLingdex = 0;
 
 	// Internal references
@@ -24,13 +22,13 @@ public class ChargeStation : MonoBehaviour {
 
 	public void Use (UseData ud) {
 		if (LevelManager.a.GetCurrentLevelSecurity() > minSecurityLevel) { 
-			MFDManager.a.BlockedBySecurity (transform.position,ud);
+			MFDManager.a.BlockedBySecurity (transform.position);
 			return;
 		}
 		
 		if (nextthink < PauseScript.a.relativeTime) {
 			if (PlayerEnergy.a.energy >= PlayerEnergy.a.maxenergy) {
-				Const.sprint(Const.a.stringTable[303],PlayerReferenceManager.a.playerCapsule);
+				Const.sprint(303);
 				return;
 			} else {
 				PlayerEnergy.a.GiveEnergy(amount, EnergyType.ChargeStation);
@@ -50,12 +48,12 @@ public class ChargeStation : MonoBehaviour {
 				if (dd.damage > 0) PlayerHealth.a.hm.TakeDamage(dd);
 			}
 
-			Const.sprintByIndexOrOverride (usedMsgLingdex, usedMsg,ud.owner);
+			Const.sprint(usedMsgLingdex);
 			if (requireReset) nextthink = PauseScript.a.relativeTime + resetTime;
 			ud.argvalue = argvalue;
 			Const.a.UseTargets(gameObject,ud,target);
 		} else {
-			Const.sprintByIndexOrOverride (rechargeMsgLingdex, rechargeMsg,ud.owner);
+			Const.sprint(rechargeMsgLingdex);
 		}
 	}
 
@@ -74,9 +72,7 @@ public class ChargeStation : MonoBehaviour {
 		line += Utils.splitChar + Utils.FloatToString(chg.damageOnUse,"damageOnUse");
 		line += Utils.splitChar + Utils.SaveString(chg.target,"target");
 		line += Utils.splitChar + Utils.SaveString(chg.argvalue,"argvalue");
-		line += Utils.splitChar + Utils.SaveString(chg.rechargeMsg,"rechargeMsg");
 		line += Utils.splitChar + Utils.UintToString(chg.rechargeMsgLingdex,"rechargeMsgLingdex");
-		line += Utils.splitChar + Utils.SaveString(chg.usedMsg,"usedMsg");
 		line += Utils.splitChar + Utils.UintToString(chg.usedMsgLingdex,"usedMsgLingdex");
 		return line;
 	}
@@ -106,9 +102,7 @@ public class ChargeStation : MonoBehaviour {
 		chg.damageOnUse  = Utils.GetFloatFromString(entries[index],"damageOnUse"); index++;
 		chg.target = Utils.LoadString(entries[index],"target"); index++;
 		chg.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
-		chg.rechargeMsg = Utils.LoadString(entries[index],"rechargeMsg"); index++;
 		chg.rechargeMsgLingdex = Utils.GetIntFromString(entries[index],"rechargeMsgLingdex"); index++;
-		chg.usedMsg = Utils.LoadString(entries[index],"usedMsg"); index++;
 		chg.usedMsgLingdex = Utils.GetIntFromString(entries[index],"usedMsgLingdex"); index++;
 		return index;
 	}

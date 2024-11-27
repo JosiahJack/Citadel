@@ -7,6 +7,7 @@ using System.Collections.Generic;
 // Handles the HUD UI.
 public class MFDManager : MonoBehaviour  {
 	// External references, required
+	public AudioSource[] UIAudSource;
 	public TabButtons leftTC;
 	public TabButtons rightTC;
 
@@ -18,8 +19,6 @@ public class MFDManager : MonoBehaviour  {
 	public Sprite MFDSprite;
 	public Sprite MFDSpriteSelected;
 	public Sprite MFDSpriteNotification;
-	public AudioSource TabSFX;
-	public AudioClip TabSFXClip;
 	public GameObject MainTab;
 	public GameObject HardwareTab;
 	public GameObject GeneralTab;
@@ -112,6 +111,8 @@ public class MFDManager : MonoBehaviour  {
 	public GameObject cyberTimer;
 	public GameObject cyberSprintContainer;
 	public Text cyberSprintText;
+	public GameObject teleportFX;
+
 
 	// Externally modifiable.
 	// Not intended to be set in inspector, some are not HideInInspector for
@@ -235,6 +236,7 @@ public class MFDManager : MonoBehaviour  {
 	private float beepFinished;
 	private float beepTick = 3f;
 	private int beepCount = 0;
+	private bool audPaused = false;
 
 	// Singleton instance
 	public static MFDManager a;
@@ -281,10 +283,7 @@ public class MFDManager : MonoBehaviour  {
 		if (MouseLookScript.a.inCyberSpace) {
 			// There's only two cyberspace weapons, up is down.
 			Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill;
-
-			Utils.PlayOneShotSavable(Inventory.a.SFX,
-									 Inventory.a.SFXChangeWeapon);
-
+			Utils.PlayUIOneShotSavable(80); // changeweapon
 			if (Inventory.a.isPulserNotDrill) {
 				Inventory.a.pulserButtonText.Select(true);
 				Inventory.a.drillButtonText.Select(false);
@@ -302,9 +301,7 @@ public class MFDManager : MonoBehaviour  {
 		if (MouseLookScript.a.inCyberSpace) {
 			// There's only two cyberspace weapons, up is down.
 			Inventory.a.isPulserNotDrill = !Inventory.a.isPulserNotDrill;
-			Utils.PlayOneShotSavable(Inventory.a.SFX,
-									 Inventory.a.SFXChangeWeapon);
-
+			Utils.PlayUIOneShotSavable(80); // changeweapon
 			if (Inventory.a.isPulserNotDrill) {
 				Inventory.a.pulserButtonText.Select(true);
 				Inventory.a.drillButtonText.Select(false);
@@ -335,6 +332,15 @@ public class MFDManager : MonoBehaviour  {
 		}
 
 		// Unpaused Actions
+		// Check and toggle pause state on UI Audio Sources
+		if (!audPaused && (PauseScript.a.Paused() || PauseScript.a.MenuActive())) {
+			for (int i=0;i<UIAudSource.Length;i++) UIAudSource[i].Pause(); 
+			audPaused = true;
+		} else if (audPaused && !(PauseScript.a.Paused() || PauseScript.a.MenuActive())) {
+			for (int i=0;i<UIAudSource.Length;i++) UIAudSource[i].UnPause();
+			audPaused = false;			
+		}
+		
 		if (PauseScript.a.Paused()) return;
 		if (PauseScript.a.MenuActive()) return;
 
@@ -1181,7 +1187,7 @@ public class MFDManager : MonoBehaviour  {
 		}
 	}
 
-	public void BlockedBySecurity(Vector3 tetherPoint, UseData ud) {
+	public void BlockedBySecurity(Vector3 tetherPoint) {
 		TabReset(lastDataSideRH);
 		if (lastDataSideRH) {
 			OpenTab(4,true,TabMSG.None,0,Handedness.RH);
@@ -1190,8 +1196,9 @@ public class MFDManager : MonoBehaviour  {
 			OpenTab(4,true,TabMSG.None,0,Handedness.LH);
 			blockedBySecurityLH.SetActive(true);
 		}
-		Const.sprint(Const.a.stringTable[25],ud.owner);
-		Utils.PlayOneShotSavable(TabSFX,Const.a.sounds[468],0.85f);
+
+		Const.sprint(25);
+		Utils.PlayUIOneShotSavable(468,0.85f);
 		objectInUsePos = tetherPoint;
 		usingObject = true;
 	}
@@ -1598,11 +1605,11 @@ public class MFDManager : MonoBehaviour  {
 
 	public void CenterTabButtonAction(int tabNum) {
 		if (PauseScript.a.mainMenu.activeInHierarchy) return;
-		Utils.PlayOneShotSavable(TabSFX,TabSFXClip);
+		Utils.PlayUIOneShotSavable(97);
 		CenterTabButtonClickSilent(tabNum,false);
 		if (Inventory.a.hardwareIsActive[3]) {
 			hwb.SensaroundOff();
-			Utils.PlayOneShotSavable(hwb.SFX,Const.a.sounds[82]); // deactivate
+			Utils.PlayUIOneShotSavable(82); // deactivate
 		}
 	}
 

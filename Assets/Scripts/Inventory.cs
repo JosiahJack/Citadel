@@ -55,13 +55,13 @@ public class Inventory : MonoBehaviour {
 	public VideoPlayer vmailgenstatusVideo;
 	public VideoPlayer vmaillaserdestVideo;
 	public VideoPlayer vmailshieldsupVideo;
-	public AudioSource SFXSource;
+	
+	private AudioSource SFXSource;
 	[HideInInspector] public bool[] hasLog; // save
 	[HideInInspector] public bool[] readLog; // save
 	[HideInInspector] public int[] numLogsFromLevel; // save
 	[HideInInspector] public int lastAddedIndex = -1; // save
 	[HideInInspector] public bool beepDone = false; // save
-	private AudioClip SFXClip;
 	private int tempRefIndex = -1;
 	private bool logPaused;
 	[HideInInspector] public int emailCurrent; // save
@@ -79,10 +79,6 @@ public class Inventory : MonoBehaviour {
 
 	// Software
 	public GameObject[] softs;
-	public AudioSource SFX;
-	public AudioClip SFXChangeWeapon;
-	public AudioClip SFXAcquireCyberItem;
-	public AudioClip SFXAcquireCyberData;
 	public HealthManager hm;
 	public SoftwareInvText pulserButtonText;
 	public SoftwareInvText drillButtonText;
@@ -295,6 +291,8 @@ public class Inventory : MonoBehaviour {
 			a.wepLoadedWithAlternate[i] = false;
 			a.currentEnergyWeaponHeat[i] = 0f;
 		}
+		
+		a.SFXSource = GetComponent<AudioSource>();
 	}
 
 	void UpdateGeneralInventory() {
@@ -328,13 +326,9 @@ public class Inventory : MonoBehaviour {
 				// Enable Apply button for consumables.
 				if ((referenceIndex >= 14 && referenceIndex < 21) || referenceIndex == 52
 					|| referenceIndex == 53 || referenceIndex == 55) {
-					if (genbut.activateButton != null) {
-						genbut.activateButton.SetActive(true);
-					}
+					if (genbut.activateButton != null) genbut.activateButton.SetActive(true); // null check because AccessCardsButton has none
 				} else {
-					if (genbut.activateButton != null) {
-						genbut.activateButton.SetActive(false);
-					}
+					if (genbut.activateButton != null) genbut.activateButton.SetActive(false); // null check because AccessCardsButton has none
 				}
 			}
 		}
@@ -1063,12 +1057,10 @@ public class Inventory : MonoBehaviour {
 	public void PlayLog(int logIndex) {
 		if (logIndex < 0) return;
 
-		SFXClip = null;
 		SFXSource.Stop();
 		if (!Inventory.a.hasHardware[2]) return;
 
-		if (Const.a.audioLogs != null) SFXClip = Const.a.audioLogs[logIndex];
-		Utils.PlayOneShotSavable(SFXSource,SFXClip); // Play the log audio
+		Utils.PlayUIOneShotSavable(Const.a.audioLogs[logIndex]); // Play the log audio
 		if (!readLog[logIndex]) QuestLogNotesManager.a.LogAdded(logIndex);
 		readLog[logIndex] = true;
 		if (Const.a.audioLogType[logIndex] == AudioLogType.Vmail) {
@@ -1374,7 +1366,7 @@ public class Inventory : MonoBehaviour {
 				else Const.sprint(Const.a.stringTable[46],Const.a.player1);
 				drillVersionText.text = softVersions[0].ToString();
 				hasSoft[0] = true;
-				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
+				Utils.PlayUIOneShotSavable(86); // frob_hardware
 				Const.sprint(Const.a.stringTable[444] + softVersions[0].ToString() + Const.a.stringTable[458],Const.a.player1);
 				return true;
 			case SoftwareType.Pulser:	
@@ -1388,7 +1380,7 @@ public class Inventory : MonoBehaviour {
 				else Const.sprint(Const.a.stringTable[46],Const.a.player1);
 				pulserVersionText.text = softVersions[1].ToString();
 				hasSoft[1] = true;
-				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
+				Utils.PlayUIOneShotSavable(86); // frob_hardware
 				Const.sprint(Const.a.stringTable[445] + softVersions[1].ToString() + Const.a.stringTable[458],Const.a.player1);
 				return true;
 			case SoftwareType.CShield:	
@@ -1397,7 +1389,7 @@ public class Inventory : MonoBehaviour {
 				else Const.sprint(Const.a.stringTable[46],Const.a.player1);
 				cshieldVersionText.text = softVersions[2].ToString();
 				hasSoft[2] = true;
-				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
+				Utils.PlayUIOneShotSavable(86); // frob_hardware
 				Const.sprint(Const.a.stringTable[446] + softVersions[2].ToString() + Const.a.stringTable[458],Const.a.player1);
 				return true;
 			case SoftwareType.Turbo:
@@ -1406,7 +1398,7 @@ public class Inventory : MonoBehaviour {
 				softVersions[3]++;
 				turboCountText.text = softVersions[3].ToString();
 				hasSoft[3] = true;
-				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
+				Utils.PlayUIOneShotSavable(86); // frob_hardware
 				Const.sprint(Const.a.stringTable[447],Const.a.player1);
 				return true;
 			case SoftwareType.Decoy:	
@@ -1415,7 +1407,7 @@ public class Inventory : MonoBehaviour {
 				softVersions[4]++;
 				decoyCountText.text = softVersions[4].ToString();
 				hasSoft[4] = true;
-				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
+				Utils.PlayUIOneShotSavable(86); // frob_hardware
 				Const.sprint(Const.a.stringTable[448],Const.a.player1);
 				return true;
 			case SoftwareType.Recall:	
@@ -1424,7 +1416,7 @@ public class Inventory : MonoBehaviour {
 				softVersions[5]++;
 				recallCountText.text = softVersions[5].ToString();
 				hasSoft[5] = true;
-				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
+				Utils.PlayUIOneShotSavable(86); // frob_hardware
 				Const.sprint(Const.a.stringTable[449],Const.a.player1);
 				return true;
 			case SoftwareType.Game:		
@@ -1455,19 +1447,19 @@ public class Inventory : MonoBehaviour {
 							Const.sprint(Const.a.stringTable[456],Const.a.player1);
 							break;
 				}
-				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
+				Utils.PlayUIOneShotSavable(86); // frob_hardware
 				
 				return true;
 			case SoftwareType.Data:
 				hasNewData = true;
-				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberData);
+				Utils.PlayUIOneShotSavable(87); // frob_item
 				Const.sprint(Const.a.stringTable[457],Const.a.player1);
 				hasLog[vers] = true;
 				return true;
 			case SoftwareType.Integrity:
 				//Debug.Log("Cyber integrity touched");
 				if (hm.cyberHealth >=255) return false;
-				Utils.PlayOneShotSavable(SFX,SFXAcquireCyberItem);
+				Utils.PlayUIOneShotSavable(86); // frob_hardware
 				hm.cyberHealth += 77f;
 				if (hm.cyberHealth > 255f) hm.cyberHealth = 255f;
 				MFDManager.a.DrawTicks(true);

@@ -21,9 +21,6 @@ public class WeaponCurrent : MonoBehaviour {
 	public GameObject ViewModelStungun;
 	public GameObject owner;
 
-	public AudioClip ReloadSFX;
-	public AudioClip ReloadInStyleSFX;
-	public AudioClip WeaponChangeSFX;
 	public int weaponCurrent = new int(); // save
 	public int weaponIndex = new int(); // save
 
@@ -36,7 +33,6 @@ public class WeaponCurrent : MonoBehaviour {
 													  // energy weapons no
 													  // energy, save
 	[HideInInspector] public bool redbull = false; // No energy usage, save
-	private AudioSource SFX;
 	public int weaponCurrentPending; // save
 	public int weaponIndexPending; // save
 
@@ -46,7 +42,6 @@ public class WeaponCurrent : MonoBehaviour {
 		a = this;
 		a.weaponCurrent = 0; // Current slot in the weapon inventory (7 slots)
 		a.weaponIndex = -1; // Current index to the weapon look-up tables
-		a.SFX = GetComponent<AudioSource> ();
 
 		// Put energy settings to lowest energy level as default
 		for (int j=0;j<7;j++) {
@@ -151,7 +146,7 @@ public class WeaponCurrent : MonoBehaviour {
 			return;
 		}
 
-		Utils.PlayOneShotSavable(SFX,WeaponChangeSFX);
+		Utils.PlayUIOneShotSavable(80); // changeweapon
 		if (buttonIndex == weaponCurrent) return; // Already there!
 
 		int wep16index =  // Get index into the list of 16 weapons
@@ -264,7 +259,7 @@ public class WeaponCurrent : MonoBehaviour {
 		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndex);
 		if (wep16index < 0) return;
 		if (wep16index == 5 || wep16index == 6) {
-			Const.sprint(Const.a.stringTable[315],owner);
+			Const.sprint(315);
 			return; // Do nothing for pipe or rapier.
 		}
 
@@ -285,7 +280,7 @@ public class WeaponCurrent : MonoBehaviour {
 				currentMagazineAmount2[weaponCurrent] = 0;
 				LoadPrimaryAmmoType(false);
 				} else {
-					Const.sprint(Const.a.stringTable[535],owner); //No more of ammo type to load.
+					Const.sprint(535); //No more of ammo type to load.
 				}
 			} else {
 				if (Inventory.a.wepAmmoSecondary[wep16index] > 0) {
@@ -294,7 +289,7 @@ public class WeaponCurrent : MonoBehaviour {
 					currentMagazineAmount[weaponCurrent] = 0;
 					LoadSecondaryAmmoType(false);
 				} else {
-					Const.sprint(Const.a.stringTable[535],owner); //No more of ammo type to load.
+					Const.sprint(535); //No more of ammo type to load.
 				}
 			}
 		}
@@ -304,12 +299,12 @@ public class WeaponCurrent : MonoBehaviour {
 		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndex);
 		if (!Inventory.a.wepLoadedWithAlternate[weaponCurrent]) { // Already loaded with normal.
 			if (currentMagazineAmount[weaponCurrent] == Const.a.magazinePitchCountForWeapon[wep16index]) {
-				Const.sprint(Const.a.stringTable[191],owner); //Current weapon magazine already full.
+				Const.sprint(191); //Current weapon magazine already full.
 				return;
 			}
 			
 			if (currentMagazineAmount[weaponCurrent] == Inventory.a.wepAmmo[wep16index]) {
-				Const.sprint("No more of ammo type to load");
+				Const.sprint(535); // No more of ammo type to load
 				return;
 			}
 		}
@@ -329,9 +324,9 @@ public class WeaponCurrent : MonoBehaviour {
 
 		if (!isSilent) {
 			if (wep16index == 0 || wep16index == 3) {
-				Utils.PlayOneShotSavable(SFX,ReloadInStyleSFX);
+				Utils.PlayUIOneShotSavable(248); // wlocknload
 			} else {
-				Utils.PlayOneShotSavable(SFX,ReloadSFX);
+				Utils.PlayUIOneShotSavable(260); // wreload
 			}
 		}
 
@@ -348,12 +343,12 @@ public class WeaponCurrent : MonoBehaviour {
 		int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(weaponIndex);
 		if (Inventory.a.wepLoadedWithAlternate[weaponCurrent]) { // Already loaded with alternate
 			if (currentMagazineAmount2[weaponCurrent] == Const.a.magazinePitchCountForWeapon2[wep16index]) {
-				Const.sprint(Const.a.stringTable[191],owner); //Current weapon magazine already full.
+				Const.sprint(191); //Current weapon magazine already full.
 				return;
 			}
 			
 			if (currentMagazineAmount2[weaponCurrent] == Inventory.a.wepAmmoSecondary[wep16index]) {
-				Const.sprint("No more of ammo type to load");
+				Const.sprint(535); // No more of ammo type to load
 				return;
 			}
 		}
@@ -373,9 +368,9 @@ public class WeaponCurrent : MonoBehaviour {
 
 		if (!isSilent) {
 			if (wep16index == 0 || wep16index == 3) {
-				Utils.PlayOneShotSavable(SFX,ReloadInStyleSFX);
+				Utils.PlayUIOneShotSavable(248); // wlocknload
 			} else {
-				Utils.PlayOneShotSavable(SFX,ReloadSFX);
+				Utils.PlayUIOneShotSavable(260); // wreload
 			}
 		}
 
@@ -411,7 +406,7 @@ public class WeaponCurrent : MonoBehaviour {
 			// Update the counter on the HUD
 			MFDManager.a.UpdateHUDAmmoCounts(currentMagazineAmount[weaponCurrent]);
 		}
-		if (!isSilent) Utils.PlayOneShotSavable(SFX,ReloadSFX);
+		if (!isSilent) Utils.PlayUIOneShotSavable(260); // wreload
 	}
 
 	public void ReloadSecret(bool isSilent) {
@@ -419,12 +414,12 @@ public class WeaponCurrent : MonoBehaviour {
 		if (wep16index < 0) return;
 
 		if (wep16index == 5 || wep16index == 6) {
-			Const.sprint(Const.a.stringTable[315],owner); // Weapon does not need reloaded.
+			Const.sprint(315); // Weapon does not use ammo.
 			return; // do nothing for pipe or rapier
 		}
 
 		if (wep16index == 1 || wep16index == 4 || wep16index == 10 || wep16index == 14 || wep16index == 15) {
-			Const.sprint(Const.a.stringTable[538],owner); // We
+			Const.sprint(538); // Weapon does not need reloaded.
 			return; // do nothing for energy weapons
 		}
 
@@ -432,16 +427,16 @@ public class WeaponCurrent : MonoBehaviour {
 
 		if (Inventory.a.wepLoadedWithAlternate[weaponCurrent]) {
 			if (currentMagazineAmount2[weaponCurrent] == Const.a.magazinePitchCountForWeapon2[wep16index]) {
-				Const.sprint(Const.a.stringTable[191],owner); //Current weapon magazine already full.
+				Const.sprint(191); //Current weapon magazine already full.
 				return;
 			}
 
 			if (Inventory.a.wepAmmoSecondary[wep16index] <= 0) {
 				if (Inventory.a.wepAmmo[wep16index] <= 0) {
-					Const.sprint(Const.a.stringTable[305],owner); //No more of any ammo type to load.
+					Const.sprint(305); //No more of any ammo type to load.
 					return;
 				} else {
-					Const.sprint(Const.a.stringTable[192],owner); //No more of current ammo type to load, loading with alternate.
+					Const.sprint(192); //No more of current ammo type to load, loading with alternate.
 					LoadPrimaryAmmoType(isSilent);
 					return;
 				}
@@ -449,16 +444,16 @@ public class WeaponCurrent : MonoBehaviour {
 			LoadSecondaryAmmoType(isSilent);
 		} else {
 			if (currentMagazineAmount[weaponCurrent] == Const.a.magazinePitchCountForWeapon[wep16index]) {
-				Const.sprint(Const.a.stringTable[191],owner); //Current weapon magazine already full.
+				Const.sprint(191); //Current weapon magazine already full.
 				return;
 			}
 
 			if (Inventory.a.wepAmmo[wep16index] <= 0) {
 				if (Inventory.a.wepAmmoSecondary[wep16index] <= 0) {
-					Const.sprint(Const.a.stringTable[305],owner); //No more of any ammo type to load.
+					Const.sprint(305); //No more of any ammo type to load.
 					return;
 				} else {
-					Const.sprint(Const.a.stringTable[192],owner); //No more of current ammo type to load, loading with alternate.
+					Const.sprint(192); //No more of current ammo type to load, loading with alternate.
 					LoadSecondaryAmmoType(isSilent);
 					return;
 				}

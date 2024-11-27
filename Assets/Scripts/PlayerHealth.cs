@@ -4,15 +4,8 @@ using System.Text;
 
 public class PlayerHealth : MonoBehaviour {
 	// External references, required
-	public AudioSource SFX;
-	public AudioClip PainSFXClip;
-	public AudioClip RadiationClip;
-	public AudioClip ShieldClip;
-	public AudioClip CyberMineSFXClip;
-	public GameObject cameraObject;
 	public GameObject radiationEffect;
 	public GameObject shieldEffect;
-	public GameObject mainPlayerParent;
 
 	// Internal references
 	[HideInInspector] public float radiated = 0f; // save
@@ -126,14 +119,14 @@ public class PlayerHealth : MonoBehaviour {
 				}
 				if (radSoundFinished < PauseScript.a.relativeTime) {
 					radSoundFinished = PauseScript.a.relativeTime + Random.Range(1f,3f);
-					Utils.PlayOneShotSavable(SFX,RadiationClip);
+					Utils.PlayUIOneShotSavable(90);
 				}
 			}
 		}
 		if (lastHealth > hm.health) { // Did we lose health?
 			if (painSoundFinished < PauseScript.a.relativeTime && !(radSoundFinished < PauseScript.a.relativeTime)) {
 				painSoundFinished = PauseScript.a.relativeTime + Random.Range(0.25f,3f); // Don't spam pain sounds
-				Utils.PlayOneShotSavable(SFX,PainSFXClip);
+				Utils.PlayUIOneShotSavable(140);
 			}
 		}
 		lastHealth = hm.health;

@@ -58,10 +58,8 @@ public enum PoolType {None,CameraExplosions,SparksSmall,
                       GrenadeEMPExplosions,ProjEnemShot4Impacts,CrateExplosions,
                       GrenadeFragLive,ConcussionLive,EMPLive,GasLive,
                       GasExplosions,CorpseHit,LeafBurst,MutationBurst,
-                      GraytationBurst,BarrelExplosions,BulletHoleLarge,
-                      BulletHoleScorchLarge,BulletHoleScorchSmall,
-                      BulletHoleSmall,BulletHoleTiny,BulletHoleTinySpread,
-                      CyberDissolve,TargetIDInstances,AutomapBotOverlays,
+                      GraytationBurst,BarrelExplosions,
+                      CyberDissolve,AutomapBotOverlays,
                       AutomapCyborgOverlays,AutomapMutantOverlays,
                       AutomapCameraOverlays};
 // UI

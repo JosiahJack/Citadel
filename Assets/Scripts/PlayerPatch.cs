@@ -13,7 +13,6 @@ public class PlayerPatch : MonoBehaviour {
 	public Texture2D b5;
 	public Texture2D b6;
 	public Texture2D b7;
-	public AudioClip patchUseSFX;
 	public Light sightLight;
 	public Image sightDimming;
 	public PuzzleWire wirePuzzle;
@@ -39,7 +38,6 @@ public class PlayerPatch : MonoBehaviour {
 	[HideInInspector] public int PATCH_REFLEX = 16;
 	[HideInInspector] public int PATCH_SIGHT = 32;
 	[HideInInspector] public int PATCH_STAMINUP = 64;
-	private AudioSource SFX;
 	[HideInInspector] public int patchActive;  // bitflag carrier for active patches // save
 
 	public static PlayerPatch a;
@@ -52,7 +50,6 @@ public class PlayerPatch : MonoBehaviour {
 
 	void Awake () {
 		a = this;
-		a.SFX = GetComponent<AudioSource>();
 		a.mediFinishedTime = -1f;
 		a.reflexFinishedTime = -1f;
 		a.sightFinishedTime = -1f;
@@ -162,7 +159,7 @@ public class PlayerPatch : MonoBehaviour {
 						 + Const.a.stringTable[589]),MouseLookScript.a.player);
 		}
 
-		Utils.PlayOneShotSavable(SFX,patchUseSFX);
+		Utils.PlayUIOneShotSavable(89);
 		GUIState.a.ClearOverButton();
 	}
 

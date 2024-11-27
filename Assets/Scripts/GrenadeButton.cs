@@ -6,7 +6,6 @@ using System.Collections;
 public class GrenadeButton : MonoBehaviour {
 	public int GrenButtonIndex;
 	public int useableItemIndex;
-	public AudioSource SFX;
 
 	private int itemLookup;
 	private Texture2D cursorTexture;
@@ -73,7 +72,7 @@ public class GrenadeButton : MonoBehaviour {
 	public void GrenadeInvSelect() {
 		MFDManager.a.SendInfoToItemTab(useableItemIndex);
 		Inventory.a.grenadeCurrent = GrenButtonIndex; // Set current
-		Utils.PlayOneShotSavable(SFX,Const.a.sounds[80]); //changeweapon
+		Utils.PlayUIOneShotSavable(80); //changeweapon
 	}
 
 	void Start() {

@@ -194,7 +194,6 @@ public class Const : MonoBehaviour {
 	public GameObject Pool_GraytationBurst;
 	public GameObject Pool_BarrelExplosions;
 	public GameObject Pool_CyberDissolve;
-	public GameObject Pool_TargetIDInstances;
 	public GameObject Pool_AutomapBotOverlays;
 	public GameObject Pool_AutomapCyborgOverlays;
 	public GameObject Pool_AutomapMutantOverlays;
@@ -1013,18 +1012,17 @@ public class Const : MonoBehaviour {
 		return Const.a.stringTable[503];
 	}
 
-	public static void sprintByIndexOrOverride(int index, string overrideString,
-											   GameObject playerPassed) {
-		if (string.IsNullOrWhiteSpace(overrideString)) {
-			if (index >= 0) {
-				sprint(Const.a.stringTable[index],playerPassed);
-			}
-		} else sprint(overrideString,playerPassed);
-	}
-
 	// StatusBar Print
 	public static void sprint(string input, GameObject player) {
+		//UnityEngine.Debug.Log(input);
 		a.statusBar.SendText(input);
+	}
+	
+	public static void sprint(int lingdex) {
+		if (lingdex < 0) return;
+		if (lingdex > Const.a.stringTable.Length) return;
+		
+		sprint(Const.a.stringTable[lingdex],null);
 	}
 
 	public static void sprint(string input) { Const.sprint(input,null); }
@@ -1159,10 +1157,6 @@ public class Const : MonoBehaviour {
 		case PoolType.CyberDissolve:
 			poolContainer = Pool_CyberDissolve;
 			poolName = "CyberDissolve ";
-			break;
-		case PoolType.TargetIDInstances:
-			poolContainer = Pool_TargetIDInstances;
-			poolName = "TargetIDInstances ";
 			break;
 		case PoolType.AutomapBotOverlays:
 			poolContainer = Pool_AutomapBotOverlays;

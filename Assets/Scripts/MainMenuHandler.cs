@@ -118,7 +118,6 @@ public class MainMenuHandler : MonoBehaviour {
 	public bool dataFound = false;
 	private enum Pages : byte {fp,sp,mp,np,lp,op,sv,cd};
 	private Pages currentPage;
-	private AudioSource StartSFX;
 	private bool typingSaveGame = false;
 	private string tempSaveNameHolder;
 	private int presetQuestionValue = -1;
@@ -129,7 +128,6 @@ public class MainMenuHandler : MonoBehaviour {
 
 	void Awake() {
 		a = this;
-		StartSFX = startFXObject.GetComponent<AudioSource>();
 		BackGroundMusic.ignoreListenerPause = true; // Play when paused.
 		ResetPages();
 		dataFound = false;

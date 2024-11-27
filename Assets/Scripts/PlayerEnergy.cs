@@ -7,13 +7,9 @@ public class PlayerEnergy : MonoBehaviour {
 	// External references
 	public Text drainText;
 	public Text jpmText;
-    public AudioClip SFXBatteryUse;
-    public AudioClip SFXChargeStationUse;
-    public AudioClip SFXPowerExhausted;
 	public float energy = 54f; // save
 
 	// Internal references
-    private AudioSource SFX;
 	private float tick = 0.1f;
 	[HideInInspector] public float tickFinished; // save
 	private float tempF;
@@ -28,7 +24,6 @@ public class PlayerEnergy : MonoBehaviour {
 	}
 
     public void Start() {
-        SFX = GetComponent<AudioSource>();
 		tempF = 0;
 		drainJPM = 0;
 		energy = 54f; //max is 255 
@@ -177,8 +172,8 @@ public class PlayerEnergy : MonoBehaviour {
 		energy -= take;
 		if (energy <= 0f) {
 			energy = 0f;
-			Utils.PlayOneShotSavable(SFX,SFXPowerExhausted); // battery sound
-			Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); //Power supply exhausted.
+			Utils.PlayUIOneShotSavable(84); // energy_gone
+			Const.sprint(314); //Power supply exhausted.
 			DeactivateHardwareOnEnergyDepleted();
 		}
 	}
@@ -187,10 +182,10 @@ public class PlayerEnergy : MonoBehaviour {
 		energy += give;
 		if (energy > maxenergy) energy = maxenergy;
         if (type == EnergyType.Battery) {
-            Utils.PlayOneShotSavable(SFX,SFXBatteryUse); // battery sound
+            Utils.PlayUIOneShotSavable(79); // batteryuse
         }
         if (type == EnergyType.ChargeStation) {
-            Utils.PlayOneShotSavable(SFX,SFXChargeStationUse); // charging station sound
+            Utils.PlayUIOneShotSavable(100); // chargingstation
         }
     }
 

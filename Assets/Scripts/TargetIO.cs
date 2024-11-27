@@ -173,7 +173,7 @@ public class TargetIO : MonoBehaviour {
 		
 		if (tempUD.doorLock) { // Lock after forcing door into a position.
 			Door dr = GetComponent<Door>();
-			if (dr != null) dr.Lock(tempUD.argvalue);
+			if (dr != null) dr.Lock();
 		}
 		
 
@@ -339,7 +339,7 @@ public class TargetIO : MonoBehaviour {
 
 		if (tempUD.sendSprintMessage) {
 			TriggeredSprintMessage tsm = GetComponent<TriggeredSprintMessage>();
-			if (tsm != null) Const.sprint(tsm.messageToDisplay,tempUD.owner);
+			if (tsm != null) Const.sprint(tsm.messageToDisplay);
 		}
 
 		if (tempUD.radiationTreatment) {

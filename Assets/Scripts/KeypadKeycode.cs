@@ -3,44 +3,36 @@ using System.Collections;
 using System.Text;
 
 public class KeypadKeycode : MonoBehaviour {
-	public int securityThreshhold = 100; // If security level is not below this
-	                                     // level, this is unusable.
+	public int securityThreshhold = 100; // If security level is not below this level, this is unusable.
 	public int keycode; // the access code
 	public bool locked = false; // save
 	public string target;
 	public string argvalue;
 	public string lockedTarget;
 	public int successMessageLingdex = -1;
-	public string successMessage = "";
 	public int lockedMessageLingdex = -1;
-	public string lockedMessage = "";
-	public AudioClip SFX;
-	private AudioSource SFXSource;
-	[HideInInspector] public bool padInUse = false; // save
-	private GameObject playerCamera;
 	public bool solved = false; // save
 	public bool useQuestKeycode1 = false;
 	public bool useQuestKeycode2 = false;
+	
+	[HideInInspector] public bool padInUse = false; // save
+	private GameObject playerCamera;
 
 	void Start () {
 		padInUse = false;
-		SFXSource = GetComponent<AudioSource>();
 		playerCamera = PlayerReferenceManager.a.playerCapsuleMainCamera;
 	}
 
 	public void Use (UseData ud) {
 	    if (LevelManager.a.superoverride || Const.a.difficultyMission == 0) {
 	        locked = false; // SHODAN can go anywhere!  Full security override!
-		} else if (LevelManager.a.GetCurrentLevelSecurity()
-		           > securityThreshhold) {
-		               
-		    MFDManager.a.BlockedBySecurity(transform.position,ud);
+		} else if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
+		    MFDManager.a.BlockedBySecurity(transform.position);
 		    return;
 		}
 
 		if (locked) {
-			Const.sprintByIndexOrOverride(lockedMessageLingdex,
-			                              lockedMessage,ud.owner);
+			Const.sprint(lockedMessageLingdex);
 
 			// Target something because we are locked like a Vox message to
 			// say we're locked, e.g. "Non emergency life pods disabled."
@@ -63,7 +55,7 @@ public class KeypadKeycode : MonoBehaviour {
 					}
 				}
 			} else {
-				Const.sprint(Const.a.stringTable[289],ud.owner);
+				Const.sprint(289);
 				return;
 			}
 		}
@@ -82,13 +74,13 @@ public class KeypadKeycode : MonoBehaviour {
 					}
 				}
 			} else {
-				Const.sprint(Const.a.stringTable[290],ud.owner);
+				Const.sprint(290);
 				return;
 			}
 		}
 
 		padInUse = true;
-		Utils.PlayOneShotSavable(SFXSource,SFX);
+		Utils.PlayUIOneShotSavable(91);
 		MouseLookScript.a.ForceInventoryMode();
 		MFDManager.a.SendKeypadKeycodeToDataTab(keycode,transform.position,
 		                                        this,solved);
@@ -99,8 +91,7 @@ public class KeypadKeycode : MonoBehaviour {
 		ud.owner = playerCamera;
 		ud.argvalue = argvalue;
 		Const.a.UseTargets(gameObject,ud,target);
-		Const.sprintByIndexOrOverride(successMessageLingdex,successMessage,
-		                              ud.owner);
+		Const.sprint(successMessageLingdex);
 	}
 
 	public static string Save(GameObject go) {
@@ -120,11 +111,7 @@ public class KeypadKeycode : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(kk.successMessageLingdex,"successMessageLingdex"));
 		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveString(kk.successMessage,"successMessage"));
-		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(kk.lockedMessageLingdex,"lockedMessageLingdex"));
-		s1.Append(Utils.splitChar);
-		s1.Append(Utils.SaveString(kk.lockedMessage,"lockedMessage"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(kk.padInUse,"padInUse"));
 		s1.Append(Utils.splitChar);
@@ -145,9 +132,7 @@ public class KeypadKeycode : MonoBehaviour {
 		kk.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
 		kk.lockedTarget = Utils.LoadString(entries[index],"lockedTarget"); index++;
 		kk.successMessageLingdex = Utils.GetIntFromString(entries[index],"successMessageLingdex"); index++;
-        kk.successMessage = Utils.LoadString(entries[index],"successMessage"); index++;
         kk.lockedMessageLingdex = Utils.GetIntFromString(entries[index],"lockedMessageLingdex"); index++;
-        kk.lockedMessage = Utils.LoadString(entries[index],"lockedMessage"); index++;
 		kk.padInUse = Utils.GetBoolFromString(entries[index],"padInUse"); index++;
 		kk.solved = Utils.GetBoolFromString(entries[index],"solved"); index++;
 		kk.useQuestKeycode1 = Utils.GetBoolFromString(entries[index],"useQuestKeycode1"); index++;

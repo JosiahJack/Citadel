@@ -1043,11 +1043,11 @@ Master Index
 606 us_puz_elevatorkeypad3       
 607 us_puz_elevatorkeypad4       
 608 us_puz_keypad                
-609 us_puz_panel_blue
-610 us_puz_panel_brown
-611 us_puz_panel_gray
-612 us_puz_panel_red
-613 us_puz_panel_teal
+609 us_puz_panel_blue_grid
+610 us_puz_panel_brown_grid
+611 us_puz_panel_gray_grid
+612 us_puz_panel_red_grid
+613 us_puz_panel_teal_grid
 614 us_relaypanel 
 615 us_retinalscanner
 616 prop_vending1_1
@@ -1175,6 +1175,11 @@ Master Index
 738 prop_papers02
 739 ef_particle_blasterhit
 740 ef_particle_ionhit
+741 us_puz_panel_blue_wire
+742 us_puz_panel_brown_wire
+743 us_puz_panel_gray_wire
+744 us_puz_panel_red_wire
+745 us_puz_panel_teal_wire
 
 999 PlayerCapsule
 */
@@ -1209,7 +1214,8 @@ public static bool ConstIndexIsStaticObjectSaveable(int constdex) {
 			|| (constdex >= 604 && constdex < 616)
 			|| (constdex >= 688 && constdex < 693)
 			|| constdex == 694 || constdex == 695
-			|| (constdex >= 699 && constdex < 704));
+			|| (constdex >= 699 && constdex < 704)
+			|| (constdex >= 741 && constdex < 746));
 }
 
 public static bool ConstIndexIsStaticObjectImmutable(int constdex) {

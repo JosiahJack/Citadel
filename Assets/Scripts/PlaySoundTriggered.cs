@@ -27,6 +27,7 @@ public class PlaySoundTriggered : MonoBehaviour {
 		} else {
 			SFX.spatialBlend = 1.0f;
 		}
+		
 		if (loopingAmbient) {
 			if (SFX != null) SFX.loop = true;
 			currentlyPlaying = true;

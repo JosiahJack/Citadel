@@ -10,36 +10,6 @@ public class WeaponFire : MonoBehaviour {
     public GameObject playerCapsule;
     public EnergyOverloadButton energoverButton;
     public EnergyHeatTickManager energheatMgr;
-	public GameObject bulletHoleTiny;
-	public GameObject bulletHoleSmall;
-	public GameObject bulletHoleSpread;
-	public GameObject bulletHoleLarge;
-	public GameObject bulletHoleScorchSmall;
-	public GameObject bulletHoleScorchLarge;
-    public AudioSource SFX = null; // assign in the editor
-    public AudioClip SFXMark3Fire; // assign in the editor
-    public AudioClip SFXBlasterFire; // assign in the editor
-    public AudioClip SFXDartFire; // assign in the editor
-    public AudioClip SFXFlechetteFire; // assign in the editor
-    public AudioClip SFXIonFire; // assign in the editor
-    public AudioClip SFXRapierMiss; // assign in the editor
-    public AudioClip SFXRapierHit; // assign in the editor
-    public AudioClip SFXPipeMiss; // assign in the editor
-    public AudioClip SFXPipeHit; // assign in the editor
-    public AudioClip SFXPipeHitFlesh; // assign in the editor
-    public AudioClip SFXMagnumFire; // assign in the editor
-    public AudioClip SFXMagpulseFire; // assign in the editor
-    public AudioClip SFXPistolFire; // assign in the editor
-    public AudioClip SFXPlasmaFire; // assign in the editor
-    public AudioClip SFXRailgunFire; // assign in the editor
-    public AudioClip SFXRiotgunFire; // assign in the editor
-    public AudioClip SFXSkorpionFire; // assign in the editor
-    public AudioClip SFXSparqBeamFire; // assign in the editor
-    public AudioClip SFXStungunFire; // assign in the editor
-    public AudioClip SFXEmpty; // assign in the editor
-    public AudioClip SFXRicochet; // assign in the editor
-    public AudioClip SFXPulserFire; // assign in the editor
-    public AudioClip SFXDrillFire; // assign in the editor
     public Animator anim; // assign in the editor
 	public Animator rapieranim; // assign in the editor
 	public GameObject muzFlashMK3;
@@ -442,14 +412,14 @@ public class WeaponFire : MonoBehaviour {
 					if (Inventory.a.currentEnergyWeaponHeat[WeaponCurrent.a.weaponCurrent] > overheatedPercent
 						&& !WeaponCurrent.a.bottomless
 						&& !WeaponCurrent.a.redbull) {
-						Utils.PlayOneShotSavable(SFX,SFXEmpty);
+						Utils.PlayUIOneShotSavable(238); // noammo
 						waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
-						Const.sprint(Const.a.stringTable[11]);
+						Const.sprint(11);
 					} else {
 						FireWeapon(wepdex, false); // weapon index, isSilent == false so play normal SFX
 					}
 				} else {
-					Const.sprint(Const.a.stringTable[207]); // Not enough energy to fire weapon.
+					Const.sprint(207); // Not enough energy to fire weapon.
 				}
 				break;
 			default:
@@ -459,7 +429,7 @@ public class WeaponFire : MonoBehaviour {
 						|| WeaponCurrent.a.bottomless) {
 						FireWeapon(wepdex, false); // weapon index, isSilent == false so play normal SFX
 					} else {
-						Utils.PlayOneShotSavable(SFX,SFXEmpty);
+						Utils.PlayUIOneShotSavable(238); // noammo
 						waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
 					}
 				} else {
@@ -467,7 +437,7 @@ public class WeaponFire : MonoBehaviour {
 						|| WeaponCurrent.a.bottomless) {
 						FireWeapon(wepdex, false); // weapon index, isSilent == false so play normal SFX
 					} else {
-						Utils.PlayOneShotSavable(SFX,SFXEmpty);
+						Utils.PlayUIOneShotSavable(238); // noammo
 						waitTilNextFire = PauseScript.a.relativeTime + 0.8f;
 					}
 				}
@@ -543,7 +513,7 @@ public class WeaponFire : MonoBehaviour {
 					// Fire pulser
 					Const.a.shotsFired++;
 					if (Inventory.a.hasSoft[1]) FireCyberBeachball(true,railgunShotForce,492);
-					if (SFXPulserFire != null) { SFX.clip = SFXPulserFire; SFX.Play(); }
+					Utils.PlayUIOneShotSavable(258); // wpulser
 					cyberWeaponAttackFinished = PauseScript.a.relativeTime + 0.08f;
 				}
 			} else {
@@ -551,7 +521,7 @@ public class WeaponFire : MonoBehaviour {
 					// Fire I.C.E. drill
 					Const.a.shotsFired++;
 					if (Inventory.a.hasSoft[0]) FireCyberBeachball(false,plasmaShotForce,495);
-					if (SFXDrillFire != null) { SFX.clip = SFXDrillFire; SFX.Play(); }
+					Utils.PlayUIOneShotSavable(241); // wdrill baby drill
 					cyberWeaponAttackFinished = PauseScript.a.relativeTime + 0.5f;
 				}
 			}
@@ -595,7 +565,7 @@ public class WeaponFire : MonoBehaviour {
         switch (WeaponCurrent.a.weaponIndex) {
             case 36:
                 //Mark3 Assault Rifle
-                if (!isSilent) { SFX.clip = SFXMark3Fire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(251); // wmarksman
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashMK3.SetActive(true);
                 break;
@@ -603,7 +573,7 @@ public class WeaponFire : MonoBehaviour {
                 //ER-90 Blaster
 				blasterSetting = WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent];
 				//Debug.Log("Blaster fired with energy setting of " + blasterSetting.ToString());
-				if (!isSilent) { SFX.clip = SFXBlasterFire; SFX.Play(); }
+				if (!isSilent) Utils.PlayUIOneShotSavable(239); // wblaster
 				if (DidRayHit(index)) HitScanFire(index);
 				muzFlashBlaster.SetActive(true);
                 if (overloadEnabled) {
@@ -615,13 +585,13 @@ public class WeaponFire : MonoBehaviour {
                 break;
             case 38:
                 //SV-23 Dartgun
-                if (!isSilent) { SFX.clip = SFXDartFire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(240); // wdartgun
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashDartgun.SetActive(true);
                 break;
             case 39:
                 //AM-27 Flechette
-                if (!isSilent) { SFX.clip = SFXFlechetteFire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(243); // wflechette
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashFlechette.SetActive(true);
                 break;
@@ -629,7 +599,7 @@ public class WeaponFire : MonoBehaviour {
                 //RW-45 Ion Beam
 				ionSetting = WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent];
 				//Debug.Log("Ion rifle fired with energy setting of " + ionSetting.ToString());
-                if (!isSilent) { SFX.clip = SFXIonFire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(245); // wion
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashIonBeam.SetActive(true);
                 if (overloadEnabled) {
@@ -649,19 +619,19 @@ public class WeaponFire : MonoBehaviour {
                 break;
             case 43:
                 //Magnum 2100
-                if (!isSilent) { SFX.clip = SFXMagnumFire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(249); // wmagnum
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashMagnum.SetActive(true);
                 break;
             case 44:
                 //SB-20 Magpulse
-                if (!isSilent) { SFX.clip = SFXMagpulseFire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(250); // wmagpulse
                 FireMagpulse(index);
 				muzFlashMagpulse.SetActive(true);
                 break;
             case 45:
                 //ML-41 Pistol
-                if (!isSilent) { SFX.clip = SFXPistolFire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(255); // wpistol
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashPistol.SetActive(true);
                 break;
@@ -669,7 +639,7 @@ public class WeaponFire : MonoBehaviour {
                 //LG-XX Plasma Rifle
 				plasmaSetting = WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent];
 				//Debug.Log("Plasma rifle fired with energy setting of " + plasmaSetting.ToString());
-                if (!isSilent) { SFX.clip = SFXPlasmaFire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(257); // wplasma
                 FirePlasma(index);
 				muzFlashPlasma.SetActive(true);
                 if (overloadEnabled) {
@@ -681,26 +651,26 @@ public class WeaponFire : MonoBehaviour {
                 break;
             case 47:
                 //MM-76 Railgun
-                if (!isSilent) { SFX.clip = SFXRailgunFire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(259); // wrailgun
                 FireRailgun(index);
 				muzFlashRailgun.SetActive(true);
                 break;
             case 48:
                 //DC-05 Riotgun
-                if (!isSilent) { SFX.clip = SFXRiotgunFire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(262); // wriotgun
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashRiotgun.SetActive(true);
                 break;
             case 49:
                 //RF-07 Skorpion
-                if (!isSilent) { SFX.clip = SFXSkorpionFire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(263); // wskorpion
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashSkorpion.SetActive(true);
                 break;
             case 50:
                 //Sparq Beam
 				sparqSetting = WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent];
-                if (!isSilent) { SFX.clip = SFXSparqBeamFire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(264); // wsparq
                 if (DidRayHit(index)) HitScanFire(index);
 				muzFlashSparq.SetActive(true);
                 if (overloadEnabled) {
@@ -713,7 +683,7 @@ public class WeaponFire : MonoBehaviour {
             case 51:
                 //DH-07 Stungun
 				stungunSetting = WeaponCurrent.a.weaponEnergySetting[WeaponCurrent.a.weaponCurrent];
-                if (!isSilent) { SFX.clip = SFXStungunFire; SFX.Play(); }
+                if (!isSilent) Utils.PlayUIOneShotSavable(265); // wstungun
                 FireStungun(index);
 				muzFlashStungun.SetActive(true);
                 if (overloadEnabled) {
@@ -878,17 +848,13 @@ public class WeaponFire : MonoBehaviour {
     }
 
     void CreateBeamEffects(int wep16index) {
-        int laserIndex = 98; // Turquoise/Pale-Teal for sparq
-        if (wep16index == 1) {
-            laserIndex = 99;  //Red laser for blaster
-        } else {
-           if (wep16index == 4) {
-               laserIndex = 100; // Yellow laser for ion
-           }
-        }
+        int laserIndex = 405; // Turquoise/Pale-Teal for sparq
+        if (wep16index == 1) laserIndex = 406;  //Red laser for blaster
+        else  if (wep16index == 4) laserIndex = 407; // Yellow laser for ion
 
 		GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
-		GameObject lasertracer = Instantiate(Const.a.prefabs[laserIndex + 307],transform.position,Const.a.quaternionIdentity) as GameObject;
+		GameObject lasertracer = Instantiate(Const.a.prefabs[laserIndex],transform.position,Const.a.quaternionIdentity) as GameObject;
+
 		// Temporary object only, no need to save or mark as instantiated.
 		if (lasertracer != null) {
 			lasertracer.transform.SetParent(dynamicObjectsContainer.transform,true);
@@ -966,8 +932,7 @@ public class WeaponFire : MonoBehaviour {
 			}
 		}
 
-
-        GameObject idFrame = Const.a.GetObjectFromPool(PoolType.TargetIDInstances);
+		GameObject idFrame = Instantiate(Const.a.prefabs[736],hm.transform.position,Const.a.quaternionIdentity) as GameObject;
         if (idFrame == null) return;
 
 		TargetID tid = idFrame.GetComponent<TargetID>();
@@ -1211,7 +1176,7 @@ public class WeaponFire : MonoBehaviour {
 
 		if (tempHM == null) {
 			if (!silent) {
-				Utils.PlayOneShotSavable(SFX,hit);
+				Utils.PlayUIOneShotSavable(hit);
 				PlayerHealth.a.makingNoise = true;
 				PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime+0.5f;
 			}
@@ -1236,11 +1201,11 @@ public class WeaponFire : MonoBehaviour {
 			if ((tempHM.bloodType == BloodType.Red)
 				|| (tempHM.bloodType == BloodType.Yellow)
 				|| (tempHM.bloodType == BloodType.Green)) {
-				Utils.PlayOneShotSavable(SFX,hitflesh);
+				Utils.PlayUIOneShotSavable(hitflesh);
 			} else if (isRapier && PlayerEnergy.a.energy < 4f) {
-				Utils.PlayOneShotSavable(SFX,Const.a.sounds[67]);
+				Utils.PlayUIOneShotSavable(67);
 			} else {
-				Utils.PlayOneShotSavable(SFX,hit);
+				Utils.PlayUIOneShotSavable(hit);
 			}
 		}
 
@@ -1254,11 +1219,11 @@ public class WeaponFire : MonoBehaviour {
 
 	// These are a bit silly.
     void FireRapier(int i16, bool sil) {
-		FireMelee(i16,true,sil,SFXRapierHit,SFXRapierMiss,SFXRapierHit,true);
+		FireMelee(i16,true,sil,Const.a.sounds[246],Const.a.sounds[247],Const.a.sounds[246],true); // wlaserrapier_hit, wlaserrapier_swing, wlaserrapier_hit
 	}
 
     void FirePipe(int i16, bool sil) {
-		FireMelee(i16,false,sil,SFXPipeHit,SFXPipeMiss,SFXPipeHitFlesh,false);
+		FireMelee(i16,false,sil,Const.a.sounds[253],Const.a.sounds[254],Const.a.sounds[252],false); // wpipe_hit, wpipe_swing, wpipe_dmg
 	}
 
 	void FireMelee(int index16, bool isRapier, bool silent, AudioClip hit,
@@ -1330,7 +1295,7 @@ public class WeaponFire : MonoBehaviour {
 		}
 
 		// Swing and a miss, steeeerike!!
-		if (!silent) Utils.PlayOneShotSavable(SFX,miss);
+		if (!silent) Utils.PlayUIOneShotSavable(miss);
 		if (rapier) {
 			if (rapieranim != null) rapieranim.Play("Attack2");
 		} else {

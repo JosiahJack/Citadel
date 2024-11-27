@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PuzzleGrid : MonoBehaviour {
-	[HideInInspector]
-	public PuzzleGridPuzzle puzzleGP;
+	[HideInInspector] public PuzzleGridPuzzle puzzleGP;
 	public bool[] powered;
 	public PuzzleCellType[] cellType;
 	public PuzzleGridType gridType;
@@ -45,12 +44,10 @@ public class PuzzleGrid : MonoBehaviour {
 	public Sprite gridAlwaysOn1;
 	public Image outputNode;
 	public HUDColor theme;
-	public AudioClip solvedSFX;
 	public bool puzzleSolved;
 	public Slider progressBar;
 
 	public bool[] grid;
-	private AudioSource audsource;
 	private UseData udSender;
 	private string target;
 	private string argvalue;
@@ -58,7 +55,6 @@ public class PuzzleGrid : MonoBehaviour {
 
 	void Awake () {
 		puzzleSolved = false;
-		audsource = GetComponent<AudioSource>();
 		EvaluatePuzzle();
 		UpdateCellImages();
 		GeniusHighlightClear();
@@ -429,7 +425,7 @@ public class PuzzleGrid : MonoBehaviour {
 
 		puzzleSolved = true;
 		outputNode.overrideSprite = nodeOn;
-		Utils.PlayOneShotSavable(audsource,solvedSFX);
+		Utils.PlayUIOneShotSavable(46);
 		puzzleGP.puzzleSolved = true;
 		puzzleGP.UseTargets(udSender.owner);
 		progressBar.value = 100f;

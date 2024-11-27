@@ -12,8 +12,6 @@ public class TabButtons : MonoBehaviour {
 	public Button DataTabButton;
 	public Sprite MFDSprite;
 	public Sprite MFDSpriteSelected;
-	public AudioSource TabSFX;
-	public AudioClip TabSFXClip;
 	public bool isRH; // Assign in the editors
 
 	public int curTab = 0;
@@ -76,7 +74,7 @@ public class TabButtons : MonoBehaviour {
 	}
 
 	public void TabButtonAction(int tabNum) { // For keyboard events.
-		Utils.PlayOneShotSavable(TabSFX,TabSFXClip);
+		Utils.PlayUIOneShotSavable(97);
 		TabButtonClickSilent(tabNum,false);
 		SetMFDLasts(tabNum);
 	}

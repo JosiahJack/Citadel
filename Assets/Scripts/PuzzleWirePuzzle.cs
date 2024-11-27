@@ -18,9 +18,7 @@ public class PuzzleWirePuzzle : MonoBehaviour {
 	public bool locked = false; // save
 	public int successMessageLingdex = 4;
 	public string successMessage = "";
-	public string messageOnLocked;
 	public int messageOnLockedLingdex = 302;
-	public string messageOnBroken;
 	public int messageOnBrokenLingdex = 189;
 	public bool puzzleSolved; // save
 
@@ -56,12 +54,12 @@ public class PuzzleWirePuzzle : MonoBehaviour {
 
 	public void Use (UseData ud) {
 		if (dead) {
-			Const.sprintByIndexOrOverride (messageOnBrokenLingdex, messageOnBroken,ud.owner);
+			Const.sprint(messageOnBrokenLingdex);
 			return;
 		}
 
 		if (LevelManager.a.GetCurrentLevelSecurity() > securityThreshhold) {
-			MFDManager.a.BlockedBySecurity(transform.position,ud);
+			MFDManager.a.BlockedBySecurity(transform.position);
 			return;
 		}
 
@@ -71,7 +69,7 @@ public class PuzzleWirePuzzle : MonoBehaviour {
 		}
 
 		if (locked) {
-			Const.sprintByIndexOrOverride (messageOnLockedLingdex, messageOnLocked,ud.owner);
+			Const.sprint(messageOnLockedLingdex);
 			return;
 		}
 
@@ -85,7 +83,7 @@ public class PuzzleWirePuzzle : MonoBehaviour {
 					  + "without parameters!");
 		}
 
-		Const.sprint(Const.a.stringTable[190],ud.owner); //Puzzle accessed
+		Const.sprint(190); //Puzzle accessed
 		inUse = true;
 		MFDManager.a.SendWirePuzzleToDataTab(wiresOn,rowsActive,
 											 currentPositionsLeft,
@@ -101,8 +99,7 @@ public class PuzzleWirePuzzle : MonoBehaviour {
 		ud.owner = owner;
 		ud.argvalue = argvalue;
 		Const.a.UseTargets(gameObject,ud,target);
-		Const.sprintByIndexOrOverride(successMessageLingdex,
-									  successMessage,ud.owner);
+		Const.sprint(successMessageLingdex);
 	}
 
 	public static string Save(GameObject go) {
