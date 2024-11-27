@@ -21,7 +21,8 @@ public class PlaySoundTriggered : MonoBehaviour {
 		if (SFX == null) SFX = GetComponent<AudioSource>();
 		SFX.playOnAwake = false;
 		SFX.loop = false;
-		SFX.clip = Const.a.sounds[SFXClip];
+		if (SFXClip > 0) SFX.clip = Const.a.sounds[SFXClip];
+		else Debug.Log("Unassigned clip index on PlaySoundTriggered at " + transform.position.ToString() + " for " + gameObject.name);
 		if (playEverywhere) {
 			SFX.spatialBlend = 0.0f;
 		} else {
@@ -35,7 +36,6 @@ public class PlaySoundTriggered : MonoBehaviour {
 		}
 
 		if (playSoundOnParticleEmit) {
-			Debug.Log("PlaySoundOnParticleEmit true on " + gameObject.name);
 			psys = GetComponent<ParticleSystem>();
 			if (psys == null) Debug.Log("ERROR: missing ParticleSystem for PlaySoundTriggered");
 			loopingAmbient = false; //only play when triggered by the psys emission
