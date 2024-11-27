@@ -326,7 +326,23 @@ public static class SaveLoad {
             s1.Append(TargetIO.Save(go,pid));
             s1.Append(splitChar);
             s1.Append(Utils.SaveAudioSource(go));
-        }
+        } else if (pid.constIndex == 714) { // info_screenshake
+            EffectScreenShake eft = go.GetComponent<EffectScreenShake>();
+            s1.Append(splitChar);
+            s1.Append(Utils.FloatToString(eft.distance,"distance"));
+            s1.Append(splitChar);
+            s1.Append(Utils.FloatToString(eft.force,"force"));
+        } else if (pid.constIndex == 715) { // info_spawnpoint
+            s1.Append(TargetIO.Save(go,pid));
+        } else if (pid.constIndex == 716) { // fx_reverbzone
+            AudioReverbZone arz = go.GetComponent<AudioReverbZone>();
+            s1.Append(splitChar);
+            s1.Append(Utils.FloatToString(arz.minDistance,"minDistance"));
+            s1.Append(splitChar);
+            s1.Append(Utils.FloatToString(arz.maxDistance,"maxDistance"));
+            s1.Append(splitChar);
+            s1.Append(Utils.UintToString(GetIntFromAudioReverbPreset(arz.reverbPreset),"reverbPreset"));
+       }
 
         return s1.ToString();
     }
@@ -469,6 +485,17 @@ public static class SaveLoad {
             PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
             index = TargetIO.Load(go,ref entries,index,true,prefID);
             index = Utils.LoadAudioSource(go,ref entries,index);
+        } else if (constIndex == 714) { // info_screenshake
+            EffectScreenShake eft = go.GetComponent<EffectScreenShake>();
+            eft.distance = Utils.GetFloatFromString(entries[index],"distance"); index++;
+            eft.force = Utils.GetFloatFromString(entries[index],"force"); index++;
+        } else if (constIndex == 715) { // info_spawnpoint
+            index = TargetIO.Load(go,ref entries,index,true,prefID);
+        } else if (constIndex == 716) { // fx_reverbzone
+            AudioReverbZone arz = go.GetComponent<AudioReverbZone>();
+            arz.minDistance = Utils.FloatToString(entries[index],"minDistance"); index++;
+            arz.maxDistance = Utils.FloatToString(entries[index],"maxDistance"); index++; 
+            arz.reverbPreset = GetAudioReverbPresetFromInt(Utils.GetIntFromString(entries[index],"reverbPreset")); index++;
         }
     }
 
@@ -899,5 +926,20 @@ public static class SaveLoad {
         }
 
 		return prefID;
+    }
+    
+        
+    private static AudioReverbPreset GetAudioReverbPresetFromInt(int val) {
+        if (Enum.IsDefined(typeof(AudioReverbPreset), val)) {
+            return (AudioReverbPreset)val; // Cast the int to AudioReverbPreset
+        } else {
+            Debug.LogWarning($"Invalid AudioReverbPreset value: {val}. Defaulting to 'Off'.");
+            return AudioReverbPreset.Off; // Default or fallback preset
+        }
+    }
+
+    // Get the integer value from an AudioReverbPreset
+    private static int GetIntFromAudioReverbPreset(AudioReverbPreset preset) {
+        return (int)preset;
     }
 }
