@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
@@ -490,11 +491,12 @@ public static class SaveLoad {
             eft.distance = Utils.GetFloatFromString(entries[index],"distance"); index++;
             eft.force = Utils.GetFloatFromString(entries[index],"force"); index++;
         } else if (constIndex == 715) { // info_spawnpoint
+            PrefabIdentifier prefID = go.GetComponent<PrefabIdentifier>();
             index = TargetIO.Load(go,ref entries,index,true,prefID);
         } else if (constIndex == 716) { // fx_reverbzone
             AudioReverbZone arz = go.GetComponent<AudioReverbZone>();
-            arz.minDistance = Utils.FloatToString(entries[index],"minDistance"); index++;
-            arz.maxDistance = Utils.FloatToString(entries[index],"maxDistance"); index++; 
+            arz.minDistance = Utils.GetFloatFromString(entries[index],"minDistance"); index++;
+            arz.maxDistance = Utils.GetFloatFromString(entries[index],"maxDistance"); index++; 
             arz.reverbPreset = GetAudioReverbPresetFromInt(Utils.GetIntFromString(entries[index],"reverbPreset")); index++;
         }
     }
