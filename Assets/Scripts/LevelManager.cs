@@ -45,6 +45,8 @@ public class LevelManager : MonoBehaviour {
 	public Texture2D dynamicObjectsAlbedo;
 	public Texture2D dynamicObjectsGlow;
 	public Texture2D dynamicObjectsSpecular;
+	public Rect[] dynamicObjectsUvs;
+	public bool changeDynamicMaterial = true;
 	[HideInInspector] public List<string>[] DynamicObjectsSavestrings = new List<string>[14];
 	
 	private bool getValparsed;
@@ -90,11 +92,13 @@ public class LevelManager : MonoBehaviour {
 	
 	private void InitializeDynamicObjectsMaterial() {
 		dynamicObjectsAlbedo = new Texture2D(4096,4096);
-		Texture2D[] texArray = new Texture2D[152]; // Keep in sync!!
-		texArray[0] = Const.a.textures[0];
-		texArray[1] = Const.a.textures[1];
-		texArray[2] = Const.a.textures[2];
-		dynamicObjectsAlbedo.PackTextures(texArray,0,4096,false);
+		int numDynamicObjectTypes = 152;
+		Texture2D[] texArray = new Texture2D[numDynamicObjectTypes]; // Keep in sync!!
+		dynamicObjectsUvs = new Rect[numDynamicObjectTypes];
+		texArray[0] = Const.a.textures[13]; // paper_wad.png
+		texArray[1] = Const.a.textures[14]; // beaker.png
+		dynamicObjectsUvs = dynamicObjectsAlbedo.PackTextures(texArray,0,4096,false);
+		dynamicObjectsMaterial.SetTexture("_MainTex",dynamicObjectsAlbedo);
 	}
 	
 	public static bool LevNumInBounds(int levnum) {
@@ -676,15 +680,36 @@ public class LevelManager : MonoBehaviour {
 			if (entries.Length <= 1) continue;
 			
 			dynGO = SaveLoad.LoadPrefab(ref entries,0,curlevel);
-// 			if (dynGO == null) continue;
-// 			
-// 			mr = dynGO.GetComponent<MeshRenderer>();
-// 			if (mr == null) continue;
-// 			
-// 			mr.sharedMaterial = dynamicObjectsMaterial;
+			if (dynGO == null) continue;
+
+			int constIndex = Utils.GetIntFromString(entries[0],"constIndex");
+			
+			if (changeDynamicMaterial) {
+				mr = dynGO.GetComponent<MeshRenderer>();
+				if (mr == null) continue;
+				
+				mr.sharedMaterial = dynamicObjectsMaterial;
+				MeshFilter mf = dynGO.GetComponent<MeshFilter>();
+				switch(constIndex) {
+					case 307: mf.sharedMesh.uv = GetUVMappedToSubspace(mf.sharedMesh,dynamicObjectsUvs[0]); break;
+					case 309: mf.sharedMesh.uv = GetUVMappedToSubspace(mf.sharedMesh,dynamicObjectsUvs[1]); break;
+				}
+			}
 		}
 
 		DynamicObjectsSavestrings[curlevel].Clear();
+	}
+	
+	private Vector2[] GetUVMappedToSubspace(Mesh mesh, Rect uvSpace) {
+		UnityEngine.Debug.Log("uvSpace: " + uvSpace.ToString());
+		Vector2[] uvsIn = mesh.uv;
+		Vector2[] newUVs = new Vector2[uvsIn.Length];			
+		for (int u=0;u<uvsIn.Length;u++) {
+			uvsIn[u].x = (newUVs[u].x * uvSpace.width) + uvSpace.xMin;
+			uvsIn[u].y = (newUVs[u].y * uvSpace.height) + uvSpace.yMin;
+		}
+		
+		return newUVs;
 	}
 
 	public void CheatLoadLevel(int ind) {
