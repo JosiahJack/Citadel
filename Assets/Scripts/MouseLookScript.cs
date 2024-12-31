@@ -145,6 +145,10 @@ public class MouseLookScript : MonoBehaviour {
 		headBobShiftFinished = PauseScript.a.relativeTime;
 		bobTarget = 0.3f;
     }
+    
+    void OnPreCull() {
+		DynamicCulling.a.Cull(false); // Update dynamic culling system.
+	}
 
 	void Update() {
 		// Allow quick load straight from the menu or pause.
@@ -164,11 +168,7 @@ public class MouseLookScript : MonoBehaviour {
 		}
 
 		if (PauseScript.a.Paused()) return;
-		if (PlayerMovement.a.ressurectingFinished
-			> PauseScript.a.relativeTime) {
-
-			return;
-		}
+		if (PlayerMovement.a.ressurectingFinished > PauseScript.a.relativeTime) return;
 
 		Utils.EnableCamera(playerCamera);
 
@@ -204,7 +204,7 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		}
 
-		DynamicCulling.a.Cull(false); // Update dynamic culling system.
+// 		DynamicCulling.a.Cull(false); // Update dynamic culling system.
 		RecoilAndRest(); // Spring Back to Rest from Recoil
 		keyboardTurnSpeed = 15f * Const.a.MouseSensitivity;
 		if (Application.platform == RuntimePlatform.Android) {

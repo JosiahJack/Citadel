@@ -28,4 +28,14 @@ public class PauseParticleSystem : MonoBehaviour {
 	public void UnPause () {
 		if (psys != null && this.enabled && gameObject.activeInHierarchy) psys.Play(true); // Resume the particles.
 	}
+	
+	public void Hide() {
+		Pause();
+		gameObject.layer = 26; // Clip
+	}
+	
+	public void Unhide() {
+		UnPause();
+		gameObject.layer = 1; // TransparentFX		
+	}
 }

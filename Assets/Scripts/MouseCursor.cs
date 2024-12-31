@@ -43,7 +43,9 @@ public class MouseCursor : MonoBehaviour {
 	public Vector2 lastMousePos;
 	private string nullStr = "-1";
 	public GraphicRaycaster raycaster;
-
+	private List<RaycastResult> graphicCastResults;
+	private PointerEventData pev;
+	
 	public static MouseCursor a;
 
 	void Awake() {
@@ -53,6 +55,8 @@ public class MouseCursor : MonoBehaviour {
 		a.drawTexture = new Rect((Screen.width*halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize, cursorSize, cursorSize);
 		deltaX = deltaY = 0;
 		lastMousePos = cursorPosition = Input.mousePosition;
+		pev = new PointerEventData(EventSystem.current);
+		graphicCastResults = new List<RaycastResult>();
 	}
 
 	#if UNITY_STANDALONE_LINUX
@@ -215,26 +219,26 @@ public class MouseCursor : MonoBehaviour {
 		if (PauseScript.a.Paused()) return;
 		if (PauseScript.a.MenuActive()) return;
 
-		PointerEventData pointerData = new PointerEventData(EventSystem.current);
-		pointerData.position = cursorPosition;
-		List<RaycastResult> results = new List<RaycastResult>();
-		raycaster.Raycast(pointerData, results);
-		if (results.Count > 0) {
+// 		PointerEventData pointerData = new PointerEventData(EventSystem.current);
+		pev.position = cursorPosition;
+		graphicCastResults.Clear();
+		raycaster.Raycast(pev, graphicCastResults);
+		if (graphicCastResults.Count > 0) {
 			GUIState.a.isBlocking = true;
-			EventSystem.current.SetSelectedGameObject(results[0].gameObject);
-			EventTrigger evt = results[0].gameObject.GetComponent<EventTrigger>();
+			EventSystem.current.SetSelectedGameObject(graphicCastResults[0].gameObject);
+			EventTrigger evt = graphicCastResults[0].gameObject.GetComponent<EventTrigger>();
 			if (evt != null) {
-				RectTransform recTr = results[0].gameObject.GetComponent<RectTransform>();
+				RectTransform recTr = graphicCastResults[0].gameObject.GetComponent<RectTransform>();
 				if (recTr != null) {
 					if (RectTransformUtility.RectangleContainsScreenPoint(recTr,cursorPosition,uiCameraCam)) {
-						evt.OnPointerEnter(pointerData);
+						evt.OnPointerEnter(pev);
 					} else {
-						evt.OnPointerExit(pointerData);
+						evt.OnPointerExit(pev);
 					}
 				}
 			}
 			if (Input.GetMouseButtonDown(0)) {
-				ExecuteEvents.Execute(results[0].gameObject, pointerData, ExecuteEvents.submitHandler);
+				ExecuteEvents.Execute(graphicCastResults[0].gameObject, pev, ExecuteEvents.submitHandler);
 			}
 		} else {
 			GUIState.a.isBlocking = false;

@@ -103,15 +103,14 @@ public static class SaveLoad {
         }
     }
     
-    public static void LoadPrefab(ref string[] entries, int lineNum, int curlevel) {
+    public static GameObject LoadPrefab(ref string[] entries, int lineNum, int curlevel) {
         if (!(entries[0].Contains("constIndex"))) { // [sic], need to fix light file to start with constIndex:7777
-            LoadLight(entries,lineNum,curlevel);
-            return;
+            return LoadLight(entries,lineNum,curlevel);
         }
 
         int constIndex = Utils.GetIntFromString(entries[0],"constIndex");
         if (ConsoleEmulator.ConstIndexIsGeometry(constIndex)) {
-            LoadGeometry(entries,lineNum,curlevel);
+            return LoadGeometry(entries,lineNum,curlevel);
         } else if (ConsoleEmulator.ConstIndexIsDynamicObject(constIndex)
                    || ConsoleEmulator.ConstIndexIsDoor(constIndex)
                    || ConsoleEmulator.ConstIndexIsStaticObjectSaveable(constIndex)
@@ -122,9 +121,11 @@ public static class SaveLoad {
 			GameObject newGO = ConsoleEmulator.SpawnDynamicObject(constIndex,curlevel,false,container,saveID);
 			PrefabIdentifier prefID = SaveLoad.GetPrefabIdentifier(newGO,true);
 			if (newGO != null) SaveObject.Load(newGO,ref entries,lineNum,prefID);
+			return newGO;
         } else if (ConsoleEmulator.ConstIndexIsStaticObjectImmutable(constIndex)) {
-            LoadStaticImmutable(entries,lineNum,curlevel);
+            return LoadStaticImmutable(entries,lineNum,curlevel);
         } else {
+            // Something went wrong, rebuild the line and print it.
             StringBuilder s1 = new StringBuilder();
             s1.Clear();
             for (int i=0;i<entries.Length;i++) {
@@ -134,6 +135,8 @@ public static class SaveLoad {
 
             Debug.Log("Unknown line within save: " + s1.ToString());
         }
+        
+        return null;
     }
     
     // GameObect already null checked by originator.
@@ -348,24 +351,22 @@ public static class SaveLoad {
         return s1.ToString();
     }
 
-    private static void LoadStaticImmutable(string[] entries, int lineNum, int curlevel) {
+    private static GameObject LoadStaticImmutable(string[] entries, int lineNum, int curlevel) {
         if (entries.Length <= 1) { 
             Debug.Log("Can't load static immutable from line "
                       + lineNum.ToString() + ", line had only one or no "
                       + "entries[]");
-            return;
+            return null;
         }
 
         int index = 0;
         int constIndex = Utils.GetIntFromString(entries[index],"constIndex"); index++;
         if (!ConsoleEmulator.ConstIndexIsGeometry(constIndex)) {
             Debug.Log("Load stat imm invalid constIndex: " + constIndex.ToString());
-            return;
+            return null;
         }
 
-        GameObject go = ConsoleEmulator.SpawnDynamicObject(constIndex,curlevel,
-                                                           false,null,0);
-
+        GameObject go = ConsoleEmulator.SpawnDynamicObject(constIndex,curlevel,false,null,0);
         index = Utils.LoadTransform(go.transform,ref entries,index);
         if (constIndex == 552) { // prop_cyber_datafrag
             CyberDataFragment cybfrag = go.GetComponent<CyberDataFragment>();
@@ -499,6 +500,8 @@ public static class SaveLoad {
             arz.maxDistance = Utils.GetFloatFromString(entries[index],"maxDistance"); index++; 
             arz.reverbPreset = GetAudioReverbPresetFromInt(Utils.GetIntFromString(entries[index],"reverbPreset")); index++;
         }
+        
+        return go;
     }
 
     // GameObect already null checked by originator.
@@ -616,27 +619,26 @@ public static class SaveLoad {
         return s1.ToString();
     }
 
-    private static void LoadGeometry(string[] entries, int lineNum, int curlevel) {
+    private static GameObject LoadGeometry(string[] entries, int lineNum, int curlevel) {
         if (entries.Length <= 1) { 
             Debug.Log("Can't load geometry from line " + lineNum.ToString()
                       + ", line had only one or no entries[]");
-            return;
+            return null;
         }
 
         int index = 0;
         int constdex = Utils.GetIntFromString(entries[index],"constIndex"); index++;
         if (!ConsoleEmulator.ConstIndexIsGeometry(constdex)) {
             Debug.Log("Invalid constdex loading geometry: " + constdex.ToString());
-            return;
+            return null;
         }
 
-        GameObject chunk = ConsoleEmulator.SpawnDynamicObject(constdex,curlevel,
-                                                              false,null,0);
-        if (chunk == null) return;
+        GameObject chunk = ConsoleEmulator.SpawnDynamicObject(constdex,curlevel,false,null,0);
+        if (chunk == null) return null;
 
         chunk.name = entries[index]; index++;
         index = Utils.LoadTransform(chunk.transform,ref entries,index);
-        if (!((entries.Length - 1) >= index)) return; // Nothing else to load.
+        if (!((entries.Length - 1) >= index)) return chunk; // Nothing else to load.
 
         string[] splits = entries[index].Split(':');
         string variableName = splits[0];
@@ -702,6 +704,8 @@ public static class SaveLoad {
                 tex2.lingdex = Utils.GetIntFromString(entries[index],"lingdex"); index++;
             }
         }
+        
+        return chunk;
     }
 
     private static string SaveLight(GameObject go) {
@@ -743,8 +747,8 @@ public static class SaveLoad {
         return s1.ToString();
     }
 
-    private static void LoadLight(string[] entries, int lineNum, int curlevel) {
-        if (entries.Length <= 1) { Debug.Log("Couldn't load light on line number: " + lineNum.ToString()); return; }
+    private static GameObject LoadLight(string[] entries, int lineNum, int curlevel) {
+        if (entries.Length <= 1) { Debug.Log("Couldn't load light on line number: " + lineNum.ToString()); return null; }
 
         int index = 0;
 		float readFloatx, readFloaty, readFloatz, readFloatw;
@@ -770,6 +774,9 @@ public static class SaveLoad {
         lit.shadowNearPlane = Utils.GetFloatFromString(entries[index],"shadowNearPlane"); index++;
         lit.layerShadowCullDistances = shadCullArray;
         lit.cullingMask = litCullingMask;
+        //lit.shadowCustomResolution = 128;
+//         lit.shadowRadius = 0.2f; // Editor only, looks like just for baking.
+        return go;
     }
 
     public static LightType GetLightTypeFromString(string val, string name) {

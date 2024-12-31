@@ -41,6 +41,10 @@ public class LevelManager : MonoBehaviour {
 	public Material rtxEmissive;
 	public Mesh sphereMesh;
 	public Material pipe_maint2_3_coolant;
+	public Material dynamicObjectsMaterial;
+	public Texture2D dynamicObjectsAlbedo;
+	public Texture2D dynamicObjectsGlow;
+	public Texture2D dynamicObjectsSpecular;
 	[HideInInspector] public List<string>[] DynamicObjectsSavestrings = new List<string>[14];
 	
 	private bool getValparsed;
@@ -78,9 +82,19 @@ public class LevelManager : MonoBehaviour {
 		Time.timeScale = Const.a.defaultTimeScale;
 		levelDataLoaded = new bool[14];
 		for (int i=0;i<14;i++) levelDataLoaded[i] = false;
+		InitializeDynamicObjectsMaterial();
 		ResetSaveStrings();
 		LoadDynamicObjectsSavestrings(true);
 		LoadLevelData(currentLevel);
+	}
+	
+	private void InitializeDynamicObjectsMaterial() {
+		dynamicObjectsAlbedo = new Texture2D(4096,4096);
+		Texture2D[] texArray = new Texture2D[152]; // Keep in sync!!
+		texArray[0] = Const.a.textures[0];
+		texArray[1] = Const.a.textures[1];
+		texArray[2] = Const.a.textures[2];
+		dynamicObjectsAlbedo.PackTextures(texArray,0,4096,false);
 	}
 	
 	public static bool LevNumInBounds(int levnum) {
@@ -510,15 +524,42 @@ public class LevelManager : MonoBehaviour {
 		List<string> readFileList = new List<string>();
 		int lineNum = 0;
 		char splitter = Convert.ToChar(SaveLoad.splitChar);
+		Transform parent,child;
+		int count = 0;
+		Light lit;
+		List<Light> chunkLights = new List<Light>();
+		GameObject go;
 		using (sf) {
 			do {
 				readline = sf.ReadLine();
 				if (readline == null) break;
 
 				string[] entries = readline.Split(splitter);
-				SaveLoad.LoadPrefab(ref entries,lineNum,curlevel);
+				
+				go = SaveLoad.LoadPrefab(ref entries,lineNum,curlevel);
+				if (go != null) parent = go.transform;
+				else parent = null;
+				
+				if (parent != null) {
+					// Move all lights off of the prefab and into the cullable lights container.
+					child = null;
+					count = parent.childCount;
+					for (int i=0;i<count;i++) {
+						child = parent.GetChild(i);
+						lit = child.GetComponent<Light>();
+						if (lit != null) chunkLights.Add(lit);
+					}
+				}
 				lineNum++;
 			} while (!sf.EndOfStream);
+			
+			for (int i=0;i<chunkLights.Count;i++) {
+				lit = chunkLights[i];
+				lit.gameObject.name = "ChunkLight_" + lit.gameObject.name;
+				lit.transform.parent = lightContainers[curlevel].transform;
+// 				UnityEngine.Debug.Log("Moved light off of " + lit.gameObject.name);
+			}
+			
 			sf.Close();
 		}
 	}
@@ -627,12 +668,20 @@ public class LevelManager : MonoBehaviour {
 		if (curlevel < 0) return;
 
 		string[] entries;
+		MeshRenderer mr;
+		GameObject dynGO;
 		char splitter = Convert.ToChar(SaveLoad.splitChar);
 		for (int i=0;i<DynamicObjectsSavestrings[curlevel].Count;i++) {
 			entries = DynamicObjectsSavestrings[curlevel][i].Split(splitter);
 			if (entries.Length <= 1) continue;
 			
-			SaveLoad.LoadPrefab(ref entries,0,curlevel);
+			dynGO = SaveLoad.LoadPrefab(ref entries,0,curlevel);
+// 			if (dynGO == null) continue;
+// 			
+// 			mr = dynGO.GetComponent<MeshRenderer>();
+// 			if (mr == null) continue;
+// 			
+// 			mr.sharedMaterial = dynamicObjectsMaterial;
 		}
 
 		DynamicObjectsSavestrings[curlevel].Clear();

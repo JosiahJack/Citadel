@@ -1180,6 +1180,7 @@ Master Index
 743 us_puz_panel_gray_wire
 744 us_puz_panel_red_wire
 745 us_puz_panel_teal_wire
+746 weapon_grenadeenergmine_live
 
 999 PlayerCapsule
 */
@@ -1197,6 +1198,7 @@ public static bool ConstIndexIsDynamicObject(int constdex) {
 			|| (constdex >= 458 && constdex < 480) // 480 is static saveable
 			|| (constdex >= 481 && constdex < 496)
 			|| constdex == 515 || constdex == 524 || constdex == 553);
+	// Syncronize with InitializeDynamicObjectsMaterial() for num dynamics!
 }
 
 public static bool ConstIndexIsDoor(int constdex) {
@@ -1232,7 +1234,8 @@ public static bool ConstIndexIsStaticObjectImmutable(int constdex) {
 			|| (constdex >= 704 && constdex < 717)
 			|| constdex == 720
 			|| (constdex >= 733 && constdex < 736)
-			|| (constdex >= 737 && constdex < 739));
+			|| (constdex >= 737 && constdex < 739)
+			|| constdex == 746);
 }
 
 public static bool ConstIndexIsNPC(int constdex) {

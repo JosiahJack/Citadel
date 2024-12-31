@@ -15,7 +15,7 @@ public class Config {
     		Const.a.GraphicsResWidth = Screen.width;
     		Const.a.GraphicsResHeight = Screen.height;
     		Const.a.GraphicsFullscreen = true;
-    		Const.a.GraphicsSSAO = true;
+    		Const.a.GraphicsSSAO = false;
     		Const.a.GraphicsBloom = true;
     		Const.a.GraphicsFOV = 65;
     		Const.a.GraphicsAAMode = 1;
@@ -335,7 +335,7 @@ public class Config {
 	}
 
 	public static void SetSSAO() {
-		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = Const.a.GraphicsSSAO;
+		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = false;//Const.a.GraphicsSSAO; Minimal effect
 	}
 
 	public static void SetBrightness() {

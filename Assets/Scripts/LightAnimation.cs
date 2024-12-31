@@ -27,7 +27,7 @@ public class LightAnimation : MonoBehaviour {
 	[HideInInspector] public float lerpValue; //save
 
 	void Start () {
-		if (minIntensity < 0) minIntensity = 0;
+		if (minIntensity < 0.01f) minIntensity = 0.01f;
 		animLight = GetComponent<Light>();
 		animLight.intensity = minIntensity;
 		currentStep = 0;

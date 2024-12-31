@@ -49,6 +49,7 @@ public class Door : MonoBehaviour {
 	private int loadedClipIndex;
 	private float loadedAnimatorPlaybackTime;
 	private bool initialized = false;
+	private AnimatorStateInfo asi;
 
 	void Start () {
 		if (initialized) return;
@@ -71,6 +72,7 @@ public class Door : MonoBehaviour {
 		}
 
 		initialized = true;
+		asi = anim.GetCurrentAnimatorStateInfo(defIndex);
 	}
 
 	public void Use (UseData ud) {
@@ -94,7 +96,7 @@ public class Door : MonoBehaviour {
 			accessCardUsedByPlayer = true;
 		}
 
-		AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
+		asi = anim.GetCurrentAnimatorStateInfo(defIndex);
 		animatorPlaybackTime = asi.normalizedTime;
 		if (useFinished >= PauseScript.a.relativeTime) return;
 

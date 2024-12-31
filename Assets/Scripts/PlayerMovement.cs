@@ -167,7 +167,7 @@ public class PlayerMovement : MonoBehaviour {
 	private float slideAngle = 0.9f;
 	private float gravFinished;
 	private float bodyLerpGravityOffDelayFinished;
-
+	private ContactPoint[] contactsCache;
 
 	public static PlayerMovement a;
 
@@ -213,6 +213,7 @@ public class PlayerMovement : MonoBehaviour {
 		stepFinished = PauseScript.a.relativeTime;
 		rustleFinished = PauseScript.a.relativeTime;
 		bodyLerpGravityOffDelayFinished = 0;
+		contactsCache = new ContactPoint[4];
     }
 
 	void Update() {
@@ -1640,11 +1641,12 @@ public class PlayerMovement : MonoBehaviour {
 	void OnCollisionStay(Collision collision) {
 		if (!PauseScript.a.Paused() && !inCyberSpace) {
 			//Debug.Log("Player touching " + collision.contacts[0].otherCollider.gameObject.name);
+			if (collision.contactCount > contactsCache.Length) contactsCache = new ContactPoint[collision.contactCount];
+			collision.GetContacts(contactsCache);
 			float maxSlope = 0.35f;
-			for(tempInt=0;tempInt<collision.contacts.Length;tempInt++) {
-				floorAng = collision.contacts[tempInt].normal;
-				floorDot = Vector3.Dot(collision.contacts[tempInt].normal,
-									   Vector3.up);
+			for(tempInt=0;tempInt<collision.contactCount;tempInt++) {
+				floorAng = contactsCache[tempInt].normal;
+				floorDot = Vector3.Dot(floorAng,Vector3.up);
 				maxSlope = 0.35f;
 				if (Inventory.a.BoosterActive()) maxSlope = 0.7f;
 				if (floorDot <= 1f && floorDot >= maxSlope) {

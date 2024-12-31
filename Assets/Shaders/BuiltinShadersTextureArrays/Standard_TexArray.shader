@@ -17,6 +17,7 @@ Shader "Custom/StandardTextureArray" {
         Pass {
             Name "DEFERRED"
             Tags { "LightMode" = "Deferred" }
+            ZWrite On
             CGPROGRAM
             #pragma target 3.0
             #pragma exclude_renderers nomrt
