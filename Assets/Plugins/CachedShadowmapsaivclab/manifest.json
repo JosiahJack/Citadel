@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "com.unity.textmeshpro": "1.2.1"
+  },
+  "registry": "https://github.com/aivclab/CachedShadowMaps"
+}

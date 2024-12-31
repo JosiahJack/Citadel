@@ -1,0 +1,16 @@
+dist:     xenial
+language: generic
+
+sudo: required
+
+script:
+  - cd .
+
+#language: csharp
+#solution: {{project}}.sln
+#mono:
+#  - latest
+#install:
+#  - ./build.sh
+#script:
+#  - ./build.sh --target Run-UnitTests

@@ -41,7 +41,6 @@ public class Music : MonoBehaviour {
 	private bool elevator;
 	[HideInInspector] public bool inCombat;
 	private float combatImpulseFinished;
-	private AudioClip tempClip;
 	private string musicRPath;
 	private string musicRLoopedPath;
 
@@ -66,7 +65,7 @@ public class Music : MonoBehaviour {
 
 	#pragma warning disable 618
 	IEnumerator LoadHelper(string fName, MusicResourceType type, int index) {
-		tempClip = null;
+		AudioClip tempClip = null;
 		string fPath;
 		if (type == MusicResourceType.Looped) {
 			fPath = Application.streamingAssetsPath + "/music/looped/" + fName;

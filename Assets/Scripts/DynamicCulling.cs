@@ -1340,7 +1340,6 @@ public class DynamicCulling : MonoBehaviour {
         Vector3 dir;
         Camera cam = MouseLookScript.a.playerCamera;
         int dx,dy;
-        Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(cam);
         for (int i = 0; i < lightsInPVS.Count; i++) {
             dir = lightsInPVS[i].transform.position - cam.transform.position;
             if (Vector3.Dot(dir.normalized,cam.transform.forward) > lightDot) {

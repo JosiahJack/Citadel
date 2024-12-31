@@ -1,0 +1,19 @@
+{
+  "name": "com.aivclab.cachedshadowmaps",
+  "displayName": "CachedShadowMaps",
+  "version": "0.0.1",
+  "unity": "2018.1",
+  "description": "Caches and draws the shadows maps of your light sources",
+  "keywords": [
+    "rl",
+    "unity",
+    "Physics",
+    "RigidBody",
+    "Component"
+  ],
+  "author": "cnheider <mrnaah@gmail.com> (https://github.com/cnheider)",
+  "category": "Unity",
+  "dependencies": {
+    "com.unity.textmeshpro": "1.2.1"
+  }
+}
