@@ -443,7 +443,7 @@ public class DynamicCulling : MonoBehaviour {
     // ========================================================================
     // Handle Occluders (well, just determining visible cells and their chunks)
 
-    Meshenderer GetMeshAndItsRenderer(GameObject go,int constIndex) {
+    public static Meshenderer GetMeshAndItsRenderer(GameObject go,int constIndex) {
         // Add top level GameObject's mesh renderer and filter.
         MeshRenderer mr = go.GetComponent<MeshRenderer>();
         Mesh msh = null;
@@ -455,9 +455,9 @@ public class DynamicCulling : MonoBehaviour {
         mrr.meshFilter = mf;
         msh = mf.sharedMesh;
         mrr.meshUsual = msh;
-        if (constIndex <= 304 && constIndex > 0) {
-            if (lodMeshes[constIndex] != null) {
-                mrr.meshLOD = lodMeshes[constIndex];
+        if (ConsoleEmulator.ConstIndexIsGeometry(constIndex)) {
+            if (DynamicCulling.a.lodMeshes[constIndex] != null) {
+                mrr.meshLOD = DynamicCulling.a.lodMeshes[constIndex];
             } else mrr.meshLOD = msh;
         } else mrr.meshLOD = msh;
         return mrr;
@@ -1398,9 +1398,10 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void Cull(bool force) {
+        int lev = LevelManager.a.currentLevel;
         if (PauseScript.a.MenuActive()) return;
         if (PauseScript.a.Paused()) return;
-        if (!cullEnabled || LevelManager.a.currentLevel == 13) return;
+        if (!cullEnabled || lev == 13) return;
 		if (PlayerMovement.a.ressurectingFinished > PauseScript.a.relativeTime) return;
 
         // Now handle player position updating PVS. Always do UpdatedPlayerCell
@@ -1411,6 +1412,8 @@ public class DynamicCulling : MonoBehaviour {
 //                 
 //             }
             
+            MeshCombiner mcGeometry = LevelManager.a.GetCurrentGeometryContainer().GetComponent<MeshCombiner>();
+            if (mcGeometry != null) mcGeometry.UncombineMeshes();
             DetermineVisibleCells(); // Reevaluate visible cells from new pos.
             gridCells[0,0].visible = true; // Errors default here so draw them anyways.
             ToggleVisibility(); // Update all cells marked as dirty.
@@ -1421,6 +1424,7 @@ public class DynamicCulling : MonoBehaviour {
             ToggleLightsVisibility();
             UpdateNPCPVS();
             ToggleNPCPVS();
+            if (mcGeometry != null) mcGeometry.CombineMeshes();
         }
         
         if (lightsFrustumCull) LightsFrustumCull();

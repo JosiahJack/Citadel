@@ -699,14 +699,26 @@ public class LevelManager : MonoBehaviour {
 
 		DynamicObjectsSavestrings[curlevel].Clear();
 	}
+
+// 	private Vector2[] GetUVMappedToSubspace(Mesh mesh, Rect uvRect) {
+// 		Vector2[] uvs = new Vector2[mesh.vertexCount];
+// 		for (int i = 0; i < mesh.vertexCount; i++)
+// 		{
+// 			uvs[i] = new Vector2(
+// 				Mathf.Lerp(uvRect.x, uvRect.x + uvRect.width, mesh.uv[i].x),
+// 				Mathf.Lerp(uvRect.y, uvRect.y + uvRect.height, mesh.uv[i].y)
+// 			);
+// 		}
+// 		return uvs;
+// 	}
 	
 	private Vector2[] GetUVMappedToSubspace(Mesh mesh, Rect uvSpace) {
 		UnityEngine.Debug.Log("uvSpace: " + uvSpace.ToString());
 		Vector2[] uvsIn = mesh.uv;
 		Vector2[] newUVs = new Vector2[uvsIn.Length];			
 		for (int u=0;u<uvsIn.Length;u++) {
-			uvsIn[u].x = (newUVs[u].x * uvSpace.width) + uvSpace.xMin;
-			uvsIn[u].y = (newUVs[u].y * uvSpace.height) + uvSpace.yMin;
+			newUVs[u].x = (uvsIn[u].x * uvSpace.width) + uvSpace.xMin;
+			newUVs[u].y = (uvsIn[u].y * uvSpace.height) + uvSpace.yMin;
 		}
 		
 		return newUVs;

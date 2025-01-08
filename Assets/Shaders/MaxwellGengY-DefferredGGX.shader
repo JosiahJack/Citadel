@@ -97,12 +97,15 @@ half4 CalculateLight (unity_v2f_deferred i)
 {
     half3 wpos;
     half2 uv;
-    half atten, fadeDist;
+    half fadeDist;
+    float3 atten;
     UnityLight light;
     UNITY_INITIALIZE_OUTPUT(UnityLight, light);
     UnityGGXDeferredCalculateLightParams (i, wpos, uv, light.dir, atten, fadeDist);
 
-    light.color = _LightColor.rgb * atten;
+    light.color.r = _LightColor.r * atten.r;
+    light.color.g = _LightColor.r * atten.g;
+    light.color.b = _LightColor.r * atten.b;
 	//float precision = 0.02f;
     //light.color = floor((_LightColor.rgb * atten)/precision) * precision;
 

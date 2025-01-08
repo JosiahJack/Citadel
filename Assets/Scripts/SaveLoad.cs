@@ -770,6 +770,7 @@ public static class SaveLoad {
         lit.shadowStrength = Utils.GetFloatFromString(entries[index],"shadowStrength"); index++;
         lit.shadowResolution = GetShadowResFromString(entries[index],"shadowResolution"); index++;
         lit.shadowBias = Utils.GetFloatFromString(entries[index],"shadowBias"); index++;
+        lit.shadowBias = 0.004f;
         lit.shadowNormalBias = Utils.GetFloatFromString(entries[index],"shadowNormalBias"); index++;
         lit.shadowNearPlane = Utils.GetFloatFromString(entries[index],"shadowNearPlane"); index++;
         lit.layerShadowCullDistances = shadCullArray;

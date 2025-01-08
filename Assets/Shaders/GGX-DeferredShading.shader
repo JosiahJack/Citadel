@@ -96,12 +96,13 @@ float4 CalculateLight (unity_v2f_deferred i)
 {
     float3 wpos;
     float2 uv;
-    float atten, fadeDist;
+    float fadeDist;
+    float3 atten;
     UnityLight light;
     UNITY_INITIALIZE_OUTPUT(UnityLight, light);
     UnityGGXDeferredCalculateLightParams(i, wpos, uv, light.dir, atten, fadeDist);
 
-    light.color = _LightColor.rgb * atten;
+    light.color = _LightColor.rgb * atten.rgb;
 
     // unpack Gbuffer
     float4 gbuffer0 = tex2D (_CameraGBufferTexture0, uv);
