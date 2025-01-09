@@ -11,6 +11,7 @@ public class TestsEditor : Editor {
 	public override void OnInspectorGUI() {
 		base.OnInspectorGUI();
 		CitadelTests testScript = (CitadelTests)target;
+		if (GUILayout.Button("Save Reflection Probe Image")) testScript.SaveReflectionProbeImage();
 		//if (GUILayout.Button(testScript.buttonLabel)) {
 		//	testScript.Run();
 		//}

@@ -145,7 +145,7 @@ void UnityGGXDeferredCalculateLightParams (
     out float3 outWorldPos,
     out float2 outUV,
     out half3 outLightDir,
-    out float outAtten,
+    out float3 outAtten,
     out float outFadeDist)
 {
     i.ray = i.ray * (_ProjectionParams.z / i.ray.z);
@@ -164,21 +164,22 @@ void UnityGGXDeferredCalculateLightParams (
         float3 tolight = _LightPos.xyz - wpos;
         half3 lightDir = normalize (tolight);
 
-        float4 uvCookie = mul (unity_WorldToLight, float4(wpos,1));
+        float4 uvCookie = mul(unity_WorldToLight, float4(wpos,1));
         // negative bias because http://aras-p.info/blog/2010/01/07/screenspace-vs-mip-mapping/
-        float atten = tex2Dbias (_LightTexture0, float4(uvCookie.xy / uvCookie.w, 0, -8)).w;
+//         float3 atten = tex2Dbias(_LightTexture0, float4(uvCookie.xy / uvCookie.w, 0, -8)).w;
+        float3 atten = tex2Dbias(_LightTexture0, float4(uvCookie.xy / uvCookie.w, 0, -8)).rgb;
+        if (atten.r + atten.g + atten.b < 0.000001 && !(atten.r == 0 && atten.g == 0 && atten.b == 0)) atten = 1;
         atten *= uvCookie.w < 0;
         float att = dot(tolight, tolight) * _LightPos.w;
-        atten *= tex2D (_LightTextureB0, att.rr).r;
-
+        atten *= tex2D(_LightTextureB0, att.rr).r;
         atten *= UnityDeferredComputeShadow (wpos, fadeDist, uv);
 
     // directional light case
     #elif defined (DIRECTIONAL) || defined (DIRECTIONAL_COOKIE)
         half3 lightDir = -_LightDir.xyz;
-        float atten = 1.0;
+        float3 atten = 1.0;
 
-        atten *= UnityDeferredComputeShadow (wpos, fadeDist, uv);
+        atten *= UnityDeferredComputeShadow(wpos, fadeDist, uv);
 
         #if defined (DIRECTIONAL_COOKIE)
         atten *= tex2Dbias (_LightTexture0, float4(mul(unity_WorldToLight, half4(wpos,1)).xy, 0, -8)).w;
@@ -188,18 +189,16 @@ void UnityGGXDeferredCalculateLightParams (
     #elif defined (POINT) || defined (POINT_COOKIE)
         float3 tolight = wpos - _LightPos.xyz;
         half3 lightDir = -normalize (tolight);
-
         float att = dot(tolight, tolight) * _LightPos.w;
-        float atten = tex2D (_LightTextureB0, att.rr).r;
-
+        float3 atten = tex2D (_LightTextureB0, att.rr).r;
         atten *= UnityDeferredComputeShadow (tolight, fadeDist, uv);
 
         #if defined (POINT_COOKIE)
-        atten *= texCUBEbias(_LightTexture0, float4(mul(unity_WorldToLight, half4(wpos,1)).xyz, -8)).w;
+        atten *= texCUBEbias(_LightTexture0, float4(mul(unity_WorldToLight, half4(wpos,1)).xyz, -8)).rgb;
         #endif //POINT_COOKIE
     #else
         half3 lightDir = 0;
-        float atten = 0;
+        float3 atten = 0;
     #endif
 
     outWorldPos = wpos;

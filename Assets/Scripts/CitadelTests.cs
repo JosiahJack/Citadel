@@ -15,6 +15,8 @@ using UnityEditor.SceneManagement;
 #endif
 
 public class CitadelTests : MonoBehaviour {
+	public Camera probeCam;
+	public Light cookieLight;
 	public GameObject[] geometryContainters;
 	public GameObject[] staticObjectContainters;
 	public GameObject[] lightContainers; // Can't use LevelManager's since
@@ -35,8 +37,42 @@ public class CitadelTests : MonoBehaviour {
 	public List<GameObject> allGOs;
 	public List<GameObject> allParents;
 
-
 	[HideInInspector] public string buttonLabel = "Run Tests";
+
+	public void SaveReflectionProbeImage() {
+        // Check if the probe has a baked texture
+        if (probeCam != null) {
+            // Define the path where we want to save the image
+            string path = Path.Combine(Application.dataPath, "StreamingAssets", "testprobe.png");
+            string directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+
+            // Read the pixels from the realtimeTexture
+            Cubemap cube = new Cubemap(512,TextureFormat.ARGB32,false);
+            probeCam.RenderToCubemap(cube);
+            cookieLight.cookie = cube;
+//             CubemapFace[] faces = (CubemapFace[])System.Enum.GetValues(typeof(CubemapFace));
+//             foreach (CubemapFace face in faces) {
+// 				if (face == CubemapFace.Unknown) continue;
+//
+//                 // Create a new Texture2D for each face
+//                 Texture2D tex = new Texture2D(cube.width, cube.height, TextureFormat.RGB24, false);
+//                 tex.SetPixels(cube.GetPixels(face,0)); // Get pixels for specific face
+//                 tex.Apply();
+//
+//                 // Convert texture to PNG format and save it
+//                 byte[] pngBytes = tex.EncodeToPNG();
+//                 string pathfinal = Path.Combine(directory, $"cubemap_{face}.png");
+//                 File.WriteAllBytes(pathfinal, pngBytes);
+//                 UnityEngine.Debug.Log("Cubemap face " + face + " saved to: " + pathfinal);
+//
+//                 // Cleanup
+//                 UnityEngine.Object.DestroyImmediate(tex);
+//             }
+        } else {
+            UnityEngine.Debug.LogWarning("No cubemap camera for rendering light's view");
+        }
+    }
 
 	public void RunUnits() {
 		Stopwatch testTimer = new Stopwatch();
