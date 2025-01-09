@@ -1411,8 +1411,8 @@ public class DynamicCulling : MonoBehaviour {
 //                 
 //             }
             
-            MeshCombiner mcGeometry = LevelManager.a.GetCurrentGeometryContainer().GetComponent<MeshCombiner>();
-            if (mcGeometry != null) mcGeometry.UncombineMeshes();
+//             MeshCombiner mcGeometry = LevelManager.a.GetCurrentGeometryContainer().GetComponent<MeshCombiner>();
+//             if (mcGeometry != null) mcGeometry.UncombineMeshes();
             DetermineVisibleCells(); // Reevaluate visible cells from new pos.
             gridCells[0,0].visible = true; // Errors default here so draw them anyways.
             ToggleVisibility(); // Update all cells marked as dirty.
@@ -1423,7 +1423,7 @@ public class DynamicCulling : MonoBehaviour {
             ToggleLightsVisibility();
             UpdateNPCPVS();
             ToggleNPCPVS();
-            if (mcGeometry != null) mcGeometry.CombineMeshes();
+//             if (mcGeometry != null) mcGeometry.CombineMeshes();
         }
         
         if (lightsFrustumCull) LightsFrustumCull();

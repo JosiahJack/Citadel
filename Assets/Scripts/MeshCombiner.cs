@@ -7,8 +7,6 @@ using UnityEngine;
 // Heavily modified for Citadel by JosiahJack, find at https://github.com/JosiahJack/Citadel
 // I removed any handling of colliders as I want them preserved.  This is purely visual combination
 // for rendering performance benefit. -Josiah
-
-[DisallowMultipleComponent]
 public class MeshCombiner : MonoBehaviour {
     private GameObject lastCombineResult;
     private Meshenderer[] sourceMeshenderers;
@@ -49,7 +47,7 @@ public class MeshCombiner : MonoBehaviour {
         CombineInstance[] combineInstances = new CombineInstance[meshFilters.Length];
         PrefabIdentifier[] pids = new PrefabIdentifier[meshFilters.Length];
         bool isChunk = false;
-        for(int i=0;i<meshFilters.Length;i++) {
+        for(int i=0;i<meshFilters.Length;i++) {            
             pids[i] = meshFilters[i].gameObject.GetComponent<PrefabIdentifier>();
             if (pids[i] != null) {
                 if (ConsoleEmulator.ConstIndexIsGeometry(pids[i].constIndex)) isChunk = true;
@@ -61,6 +59,7 @@ public class MeshCombiner : MonoBehaviour {
             combineInstances[i].subMeshIndex = 0;
             combineInstances[i].mesh = meshFilters[i].sharedMesh;
             combineInstances[i].transform = meshFilters[i].transform.localToWorldMatrix;
+            Debug.Log("Combine instance created for " + meshFilters[i].gameObject.name + " and had " + combineInstances[i].mesh.vertices.Length.ToString() + " vertices in combine instance vs " + meshFilters[i].sharedMesh.vertices.Length.ToString() + " in the meshFilter's sharedMesh");
         }
 
         Mesh combinedMesh = new Mesh {
