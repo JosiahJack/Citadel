@@ -1423,7 +1423,7 @@ public class DynamicCulling : MonoBehaviour {
             ToggleLightsVisibility();
             UpdateNPCPVS();
             ToggleNPCPVS();
-//             if (mcGeometry != null) mcGeometry.CombineMeshes();
+//             if (mcGeometry != null) mcGeometry.1();
         }
         
         if (lightsFrustumCull) LightsFrustumCull();
