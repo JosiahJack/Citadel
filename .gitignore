@@ -23,6 +23,9 @@
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
 
+# Office lock files
+.~lock*
+
 Assets/StreamingAssets/introdone.dat
 Assets/StreamingAssets/introdone.dat.meta
 Assets/StreamingAssets/CITALOG.RES
