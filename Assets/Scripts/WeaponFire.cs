@@ -5,7 +5,6 @@ public class WeaponFire : MonoBehaviour {
 	// External references, required
     public GameObject impactEffect;
 	public GameObject noDamageIndicator;
-	public Camera gunCamera;
     public Camera playerCamera; // assign in the editor
     public GameObject playerCapsule;
     public EnergyOverloadButton energoverButton;
@@ -1364,9 +1363,6 @@ public class WeaponFire : MonoBehaviour {
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.justFired,"justFired");
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.energySliderClickedTime,"energySliderClickedTime");
 		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.cyberWeaponAttackFinished,"cyberWeaponAttackFinished");
-		line += Utils.splitChar + Utils.BoolToString(wf.gunCamera.enabled,"gunCamera");
-		line += Utils.splitChar + BerserkEffect.Save(go);
-		line += Utils.splitChar + Utils.SaveCamera(go); // Grayscale saved here
 		line += Utils.splitChar + Utils.SaveTransform(wf.reloadContainer.transform);
 		line += Utils.splitChar + Utils.FloatToString(wf.targetY,"targetY");
 		return line;
@@ -1388,9 +1384,6 @@ public class WeaponFire : MonoBehaviour {
 		wf.justFired = Utils.LoadRelativeTimeDifferential(entries[index],"justFired"); index++;
 		wf.energySliderClickedTime = Utils.LoadRelativeTimeDifferential(entries[index],"energySliderClickedTime"); index++;
 		wf.cyberWeaponAttackFinished = Utils.LoadRelativeTimeDifferential(entries[index],"cyberWeaponAttackFinished"); index++;
-		wf.gunCamera.enabled = Utils.GetBoolFromString(entries[index],"gunCamera"); index++;
-		index = BerserkEffect.Load(go,ref entries,index);
-		index = Utils.LoadCamera(go,ref entries,index); // Grayscale loaded here
 		index = Utils.LoadTransform(wf.reloadContainer.transform,ref entries,index);
 		wf.targetY = Utils.GetFloatFromString(entries[index],"targetY"); index++;
 		return index;

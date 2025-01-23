@@ -250,10 +250,7 @@ MonoBehaviour:
   healthManager: {fileID: 114098879509604686}
   searchColliderGO: {fileID: 5478809103672141090}
   laserLightning: {fileID: 0}
-  walkWaypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  walkWaypoints: []
   meleeDamageColliders: []
   muzzleBurst: {fileID: 579299366671238853}
   muzzleBurst2: {fileID: 0}

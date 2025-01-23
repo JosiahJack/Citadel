@@ -9,7 +9,6 @@ public class PlayerReferenceManager : MonoBehaviour {
 	public GameObject playerCapsuleHardwareLantern;
 	public GameObject playerCapsuleHardwareEReader;
 	public GameObject playerCapsuleMainCamera;
-	public GameObject playerCapsuleMainCameraGunCamera;
 	public GameObject playerInventory;
 	public GameObject playerCanvas;
 	public GameObject playerCursor;
@@ -44,7 +43,7 @@ public class PlayerReferenceManager : MonoBehaviour {
         s1.Append(Utils.splitChar); s1.Append(GUIState.Save(PRman.playerCanvas));
         s1.Append(Utils.splitChar); s1.Append(Inventory.Save(PRman.playerInventory));
         s1.Append(Utils.splitChar); s1.Append(WeaponCurrent.Save(PRman.playerInventory));
-        s1.Append(Utils.splitChar); s1.Append(WeaponFire.Save(PRman.playerCapsuleMainCameraGunCamera));
+        s1.Append(Utils.splitChar); s1.Append(WeaponFire.Save(PRman.playerCapsuleMainCamera));
         s1.Append(Utils.splitChar); s1.Append(MFDManager.Save(PRman.playerMFDManager));
         s1.Append(Utils.splitChar); s1.Append(Automap.Save(PRman.playerMFDManager));
 		return s1.ToString();
@@ -65,7 +64,7 @@ public class PlayerReferenceManager : MonoBehaviour {
 		index = GUIState.Load(PRman.playerCanvas,ref entries,index);
 		index = Inventory.Load(PRman.playerInventory,ref entries,index);
 		index = WeaponCurrent.Load(PRman.playerInventory,ref entries,index);
-		index = WeaponFire.Load(PRman.playerCapsuleMainCameraGunCamera,ref entries,index);
+		index = WeaponFire.Load(PRman.playerCapsuleMainCamera,ref entries,index);
 		index = MFDManager.Load(PRman.playerMFDManager,ref entries,index);
 		index = Automap.Load(PRman.playerMFDManager,ref entries,index);
 		if (BiomonitorGraphSystem.a != null) { // Might not have ran Awake() if

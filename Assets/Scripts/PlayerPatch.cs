@@ -352,6 +352,8 @@ public class PlayerPatch : MonoBehaviour {
 		// Grayscale saved within each SaveCamera
 		// SaveCamera 2
 		// BerserkEffect 3
+		s1.Append(BerserkEffect.Save(pp.berserk.gameObject));
+		s1.Append(Utils.splitChar);
 		s1.Append(BerserkEffect.Save(pp.sensaroundCamCenterBerserk.gameObject));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveCamera(pp.sensaroundCamCenterBerserk.gameObject));
@@ -380,6 +382,7 @@ public class PlayerPatch : MonoBehaviour {
 		pp.staminupFinishedTime = Utils.LoadRelativeTimeDifferential(entries[index],"staminupFinishedTime"); index++;
 		pp.berserkIncrement = Utils.GetIntFromString(entries[index],"berserkIncrement"); index++;
 		pp.patchActive = Utils.GetIntFromString(entries[index],"patchActive"); index++;
+		index = BerserkEffect.Load(pp.berserk.gameObject,ref entries,index);
 		index = BerserkEffect.Load(pp.sensaroundCamCenterBerserk.gameObject,ref entries,index);
 		index = Utils.LoadCamera(pp.sensaroundCamCenterBerserk.gameObject,ref entries,index);
 		index = BerserkEffect.Load(pp.sensaroundCamLeftBerserk.gameObject,ref entries,index);

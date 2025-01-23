@@ -19,7 +19,6 @@ public class HardwareButton : MonoBehaviour {
 	public GameObject bioMonitorContainer;
 	public Light infraredLight;
 	public GameObject playerCamera;
-	public GameObject gunCamera;
 	public Light headlight;
 	public EmailContentsButtonsManager ecbm;
 	public GameObject ShieldActivateFX;
@@ -41,14 +40,14 @@ public class HardwareButton : MonoBehaviour {
 	private float lanternVersion1Brightness = 2.5f;
 	private float lanternVersion2Brightness = 4;
 	private float lanternVersion3Brightness = 5;
-	private Grayscale gscGun;
+	private Grayscale gsc;
 	private Grayscale gscSensaCenter;
 	private Grayscale gscSensaLH;
 	private Grayscale gscSensaRH;
 
 	void Awake () {
 		SFX = GetComponent<AudioSource>();
-		gscGun = gunCamera.GetComponent<Grayscale>();
+		gsc = playerCamera.GetComponent<Grayscale>();
 		gscSensaCenter = sensaroundCenterCamera.GetComponent<Grayscale>();
 		gscSensaLH = sensaroundLHCamera.GetComponent<Grayscale>();
 		gscSensaRH = sensaroundRHCamera.GetComponent<Grayscale>();
@@ -278,11 +277,9 @@ public class HardwareButton : MonoBehaviour {
 		}
 	}
 
-	// playerCamera does not get Grayscale as that would be redundant since the
-	// gunCamera gets this and is rendered after playerCamera.
 	void EnableInfrared() {
 		Utils.EnableLight(infraredLight);
-		Utils.EnableGrayscale(gscGun);
+		Utils.EnableGrayscale(gsc);
 		Utils.EnableGrayscale(gscSensaCenter);
 		Utils.EnableGrayscale(gscSensaLH);
 		Utils.EnableGrayscale(gscSensaRH);
@@ -290,7 +287,7 @@ public class HardwareButton : MonoBehaviour {
 
 	void DisableInfrared() {
 		Utils.DisableLight(infraredLight);
-		Utils.DisableGrayscale(gscGun);
+		Utils.DisableGrayscale(gsc);
 		Utils.DisableGrayscale(gscSensaCenter);
 		Utils.DisableGrayscale(gscSensaLH);
 		Utils.DisableGrayscale(gscSensaRH);

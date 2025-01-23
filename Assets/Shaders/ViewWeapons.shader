@@ -1,16 +1,14 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 Shader "Custom/ViewWeapons" {
-
 	Properties {
 		_Tint ("Tint", Color) = (1, 1, 1, 1)
 		_MainTex ("Texture", 2D) = "white" {}
 	}
 
 	SubShader {
-
-		Tags {"Queue"="Overlay" "RenderType"="Opaque"}
-
+		Tags {"RenderType"="Opaque"}
+		Cull Off ZWrite Off ZTest Off
 		Lighting On
         Cull Back
 

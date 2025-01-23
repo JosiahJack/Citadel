@@ -2,14 +2,13 @@ using System;
 using System.Text;
 using UnityEngine;
 
-// Applies the color distortion effect to the GunCamera as it is layered after
-// the main camera thus only requiring a single instance of this effect.
+// Applies the color distortion effect from berserk patch.
 //
 // This picks various textures to use for a color replacement effect.  The look
 // appears random but is series of fixed lookup tables that switch in sequence.
 //
 // This is an image effect that modifies a rendered image as rendered by the
-// GunCamera which is a child object of the MainCamera.
+// MainCamera.
 //
 // This is required to be paired with the BerserkEffect.shader and its shader
 // properties must match:

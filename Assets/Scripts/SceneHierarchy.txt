@@ -12,7 +12,6 @@ Player
 	PlayerCapsule
 		LeanTransform
 			MainCamera
-				GunCamera
 				ReloadDipContainer
 					...
 					various weapon view models

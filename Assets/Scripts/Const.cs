@@ -986,8 +986,6 @@ public class Const : MonoBehaviour {
         textures[10] = LoadTextureFromFile("worldedgesclosed_10.png");
         textures[11] = LoadTextureFromFile("worldedgesclosed_11.png");
         textures[12] = LoadTextureFromFile("worldedgesclosed_12.png");
-        textures[13] = LoadTextureFromFile("paper_wad.png");
-        textures[14] = LoadTextureFromFile("beaker.png");
 	}
 
 	public Sprite GetSpriteFromTexture(int useableItemIndex) {

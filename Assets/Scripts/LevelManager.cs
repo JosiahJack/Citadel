@@ -84,12 +84,13 @@ public class LevelManager : MonoBehaviour {
 		Time.timeScale = Const.a.defaultTimeScale;
 		levelDataLoaded = new bool[14];
 		for (int i=0;i<14;i++) levelDataLoaded[i] = false;
-		InitializeDynamicObjectsMaterial();
 		ResetSaveStrings();
 		LoadDynamicObjectsSavestrings(true);
 		LoadLevelData(currentLevel);
 	}
 	
+	// As the UV's weren't aligning, I elected to do this by hand for max control.
+/*	
 	private void InitializeDynamicObjectsMaterial() {
 		dynamicObjectsAlbedo = new Texture2D(4096,4096);
 		int numDynamicObjectTypes = 152;
@@ -99,7 +100,7 @@ public class LevelManager : MonoBehaviour {
 		texArray[1] = Const.a.textures[14]; // beaker.png
 		dynamicObjectsUvs = dynamicObjectsAlbedo.PackTextures(texArray,0,4096,false);
 		dynamicObjectsMaterial.SetTexture("_MainTex",dynamicObjectsAlbedo);
-	}
+	}*/
 	
 	public static bool LevNumInBounds(int levnum) {
 		return (levnum >=0 && levnum < 14); // 14 levels
@@ -155,6 +156,10 @@ public class LevelManager : MonoBehaviour {
 				DynamicObjectsSavestrings[i].Add(readFileList[j]);
 			}
 		}
+	}
+	
+	public bool GetSkyVisible() {
+		return skyMR.enabled;
 	}
 	
 	public void SetSkyVisible(bool on) {

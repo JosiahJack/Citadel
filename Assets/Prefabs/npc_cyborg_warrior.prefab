@@ -9729,10 +9729,7 @@ MonoBehaviour:
   healthManager: {fileID: 7818005446179274226}
   searchColliderGO: {fileID: 8066320936918599203}
   laserLightning: {fileID: 0}
-  walkWaypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  walkWaypoints: []
   meleeDamageColliders: []
   muzzleBurst: {fileID: 7420946127841407950}
   muzzleBurst2: {fileID: 0}

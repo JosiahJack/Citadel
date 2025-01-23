@@ -571,7 +571,8 @@ public class AIController : MonoBehaviour {
         if (actAsTurret) { currentState = AIState.Idle; return; }
         if (Const.a.moveTypeForNPC[index] == AIMoveType.None) return;
 		if (tranquilizeFinished >= PauseScript.a.relativeTime) return;
-
+		if (!withinPVS && DynamicCulling.a.cullEnabled) return;
+		
 		float dist = Vector3.Distance(sightPoint.transform.position,
 									  currentDestination);
 		if (wandering) {

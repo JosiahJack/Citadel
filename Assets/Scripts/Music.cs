@@ -127,7 +127,14 @@ public class Music : MonoBehaviour {
 
 						proc.StandardInput.WriteLine("exit");
 						proc.StandardInput.Flush();
+						float startTime = Time.realtimeSinceStartup;
+						float timeout = 5f;
 						while (!proc.HasExited) {
+							if ((Time.realtimeSinceStartup - startTime) > timeout) {
+								UnityEngine.Debug.LogWarning("Music load timed out for " + fName);
+								proc.Kill();
+								yield break;
+							}
 							yield return null;
 						}
 					}
@@ -393,8 +400,8 @@ public class Music : MonoBehaviour {
 		LoadAudio("THM6-21_death",MusicResourceType.Death,8);
 		levelMusicDeath[9] = levelMusicDeath[0];
 		LoadAudio("THM5-17_death",MusicResourceType.Death,10);
-		LoadAudio("THM5-17_death",MusicResourceType.Death,11);
-		LoadAudio("THM5-17_death",MusicResourceType.Death,12);
+		levelMusicDeath[11] = levelMusicDeath[10];
+		levelMusicDeath[12] = levelMusicDeath[10];
 		LoadAudio("THM10-16_death",MusicResourceType.Death,13);
 		LoadAudio("THM10-02_cyberstart",MusicResourceType.Cyber,0);
 		LoadAudio("THM10-01_cyber1",MusicResourceType.Cyber,1);

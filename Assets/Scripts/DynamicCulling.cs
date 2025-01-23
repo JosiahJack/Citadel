@@ -19,7 +19,10 @@ public class DynamicCulling : MonoBehaviour {
     public bool lightsFrustumCull = true;
     public bool outputDebugImages = false;
     public bool forceRecull = false;
+    public bool mergeVisibleMeshes = false;
+    public bool useLODMeshes = false;
     public Material chunkMaterial;
+    public Material genericMaterial;
     public Texture2DArray chunkAlbedo;
     public GridCell[,] gridCells = new GridCell[WORLDX,WORLDX];
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
@@ -45,7 +48,7 @@ public class DynamicCulling : MonoBehaviour {
     public int playerCellY = 0;
     public float deltaX = 0.0f;
     public float deltaY = 0.0f;
-    public float lodSqrDist = 36f;
+    public float lodSqrDist = 100f;
     public Vector3 worldMin;
     public List<Transform> npcTransforms;
     public List<AIController> npcAICs = new List<AIController>();
@@ -62,7 +65,51 @@ public class DynamicCulling : MonoBehaviour {
     private Color32[] pixels;
     private Texture2D debugTex;
     private Dictionary<GameObject, Vector3> camPositions = new Dictionary<GameObject, Vector3>();
-    private bool[,] worldCellsOpen = new bool[64,64];
+    private bool[,] worldCellsOpen = new bool[WORLDX,WORLDX];
+    
+    // Mesh combining
+    private GameObject lastCombineResult;
+    private List<Meshenderer> sourceMeshenderers;
+
+    // Called before Culling so we don't screw up resultant cull enable states.
+    public void UncombineMeshes() {
+        if (lastCombineResult != null) {
+            DestroyImmediate(lastCombineResult); // No longer display combined result
+            for (int i=0;i<sourceMeshenderers.Count;i++) {
+                sourceMeshenderers[i].meshRenderer.enabled = true; // Reset sources
+            }
+            
+            sourceMeshenderers.Clear();
+        }
+    }
+
+    // Called after Culling so we only combine the visible meshes for this frame.
+    // Combines all child meshes and stores the result into NEW SUB GAMEOBJECT.
+    // There will be a new child gameObjects created with MeshFilter and .
+    public void CombineMeshes(bool isChunk) {
+        CombineInstance[] combineInstances = new CombineInstance[sourceMeshenderers.Count];
+        for(int i=0;i<sourceMeshenderers.Count;i++) {
+            if (sourceMeshenderers[i].meshRenderer == null) continue;
+            if (sourceMeshenderers[i].meshFilter == null) continue;
+            
+            sourceMeshenderers[i].meshRenderer.enabled = false; // Hide it; it's been subsumed into the collective.
+            combineInstances[i].subMeshIndex = 0;
+            combineInstances[i].mesh = sourceMeshenderers[i].meshFilter.sharedMesh;
+            combineInstances[i].transform = sourceMeshenderers[i].meshFilter.transform.localToWorldMatrix;
+        }
+
+        Mesh combinedMesh = new Mesh {
+            name = ("combined_mesh_" + gameObject.name),
+            indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 // SUPER IMPORTANT!  Allows for greater tha 65535 verts!
+        };
+
+        combinedMesh.CombineMeshes(combineInstances,true,true,false); // Combine all meshes.
+        lastCombineResult = new GameObject("CombinedMeshObject_" + gameObject.name);
+        MeshFilter filter = lastCombineResult.AddComponent<MeshFilter>();
+        filter.sharedMesh = combinedMesh;
+        MeshRenderer renderer = lastCombineResult.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = genericMaterial;//isChunk ? chunkMaterial : genericMaterial;
+    }
     
     public static DynamicCulling a;
 
@@ -83,7 +130,7 @@ public class DynamicCulling : MonoBehaviour {
         
         a.pixels = new Color32[WORLDX * WORLDX];
         a.camPositions = new Dictionary<GameObject, Vector3>();
-        a.worldCellsOpen = new bool[64,64];
+        a.worldCellsOpen = new bool[WORLDX,WORLDX];
     }
 
     float GetVertexColorForChunk(int constdex) {
@@ -422,6 +469,7 @@ public class DynamicCulling : MonoBehaviour {
         dynamicMeshCoords = new List<Vector2Int>();
         npcAICs = new List<AIController>();
         npcTransforms = new List<Transform>();
+        sourceMeshenderers = new List<Meshenderer>();
         for (int x=0;x<WORLDX;x++) {
             for (int y=0;y<WORLDX;y++) {
                 gridCells[x,y] = new GridCell();
@@ -455,7 +503,7 @@ public class DynamicCulling : MonoBehaviour {
         mrr.meshFilter = mf;
         msh = mf.sharedMesh;
         mrr.meshUsual = msh;
-        if (ConsoleEmulator.ConstIndexIsGeometry(constIndex)) {
+        if (ConsoleEmulator.ConstIndexIsGeometry(constIndex) && constIndex >= 0) {
             if (DynamicCulling.a.lodMeshes[constIndex] != null) {
                 mrr.meshLOD = DynamicCulling.a.lodMeshes[constIndex];
             } else mrr.meshLOD = msh;
@@ -521,7 +569,7 @@ public class DynamicCulling : MonoBehaviour {
                 gridCells[x,y].closedEast = false;
                 gridCells[x,y].closedSouth = false;
                 gridCells[x,y].closedWest = false;
-                Color32 closedData = edgePixels[x + y * 64];
+                Color32 closedData = edgePixels[x + y * WORLDX];
                 if (closedData.r > 127) gridCells[x,y].closedNorth = true;
                 if (closedData.g > 127) gridCells[x,y].closedEast = true;
                 if (closedData.b > 127) gridCells[x,y].closedSouth = true;
@@ -616,28 +664,35 @@ public class DynamicCulling : MonoBehaviour {
                 lightCoords.Add(Vector2Int.zero);
             }
         } else if (type == 0) { // Static Immutable
+            for (int k=0;k<compArray.Length;k++) {
+                AddMeshRenderer(type,compArray[k].gameObject.GetComponent<MeshRenderer>());
+            }
+            
             Transform parent = null;
-            Transform child = null;
+//             Transform child = null;
             for (int i=0;i<count;i++) {
                 parent = ctr.GetChild(i);
-                AddMeshRenderer(type,parent.GetComponent<MeshRenderer>());
+//                 AddMeshRenderer(type,parent.GetComponent<MeshRenderer>());
                 AddStaticImmutableParticleSystem(parent);
-                for (int j=0;j<parent.childCount;j++) {
-                    child = parent.GetChild(j);
-                    AddMeshRenderer(type,child.GetComponent<MeshRenderer>());
-                }
+//                 for (int j=0;j<parent.childCount;j++) {
+//                     child = parent.GetChild(j);
+//                     AddMeshRenderer(type,child.GetComponent<MeshRenderer>());
+//                 }
             }
         } else { // Dynamic, Doors, Static Saveable
-            Transform parent = null;
-            Transform child = null;
-            for (int i=0;i<count;i++) {
-                parent = ctr.GetChild(i);
-                AddMeshRenderer(type,parent.GetComponent<MeshRenderer>());
-                for (int j=0;j<parent.childCount;j++) {
-                    child = parent.GetChild(j);
-                    AddMeshRenderer(type,child.GetComponent<MeshRenderer>());
-                }
+            for (int k=0;k<compArray.Length;k++) {
+                AddMeshRenderer(type,compArray[k].gameObject.GetComponent<MeshRenderer>());
             }
+//             Transform parent = null;
+//             Transform child = null;
+//             for (int i=0;i<count;i++) {
+//                 parent = ctr.GetChild(i);
+//                 AddMeshRenderer(type,parent.GetComponent<MeshRenderer>());
+//                 for (int j=0;j<parent.childCount;j++) {
+//                     child = parent.GetChild(j);
+//                     AddMeshRenderer(type,child.GetComponent<MeshRenderer>());
+//                 }
+//             }
         }
     }
     
@@ -660,14 +715,59 @@ public class DynamicCulling : MonoBehaviour {
             default: count = staticMeshesImmutable.Count; break;
         }
 
+        Vector3[] nudges = new Vector3[]{
+            new Vector3(0.32f, 0f, 0f), new Vector3(-0.32f, 0f, 0f),
+            new Vector3(0f, 0f, 0.32f), new Vector3(0f, 0f, -0.32f),          
+            new Vector3(0.64f, 0f, 0f), new Vector3(-0.64f, 0f, 0f),
+            new Vector3(0f, 0f, 0.64f), new Vector3(0f, 0f, -0.64f),          
+        };
+        int iter;
         for (int index=0;index<count;index++) {
             switch(type) {
-                case 1: dynamicMeshCoords[index]          = PosToCellCoords(dynamicMeshes[index].transform.position); break;
-                case 2: doorsCoords[index]                = PosToCellCoords(doors[index].transform.position); break;
-                case 3: npcCoords[index]                  = PosToCellCoords(npcTransforms[index].position); break;
-                case 4: staticMeshSaveableCoords[index]   = PosToCellCoords(staticMeshesSaveable[index].transform.position); break;
-                case 5: lightCoords[index]                = PosToCellCoords(lights[index].transform.position); break;
-                default: staticMeshImmutableCoords[index] = PosToCellCoords(staticMeshesImmutable[index].transform.position); break;
+                case 1: dynamicMeshCoords[index]          = PosToCellCoords(dynamicMeshes[index].transform.position);
+                        if (dynamicMeshCoords[index].x == 0 || dynamicMeshCoords[index].y == 0) {
+                            UnityEngine.Debug.Log("dynamic mesh misplaced for " + dynamicMeshes[index].gameObject.name);
+                        }
+                        break;
+                case 2: doorsCoords[index]                = PosToCellCoords(doors[index].transform.position);
+                        if (doorsCoords[index].x == 0 || doorsCoords[index].y == 0) {
+                            UnityEngine.Debug.Log("door misplaced for " + doors[index].gameObject.name);
+                        }
+                        break;
+                case 3: npcCoords[index]                  = PosToCellCoords(npcTransforms[index].position);
+                        if (npcCoords[index].x == 0 || npcCoords[index].y == 0) {
+                            UnityEngine.Debug.Log("npc misplaced for " + npcTransforms[index].gameObject.name);
+                        }
+                        break;
+                case 4: staticMeshSaveableCoords[index]   = PosToCellCoords(staticMeshesSaveable[index].transform.position);
+                        iter = 0;
+                        while(!gridCells[staticMeshSaveableCoords[index].x,staticMeshSaveableCoords[index].y].visible) {
+                            UnityEngine.Debug.Log("Nudging staticMeshesSaveable " + staticMeshesSaveable[index].gameObject.name);
+                            staticMeshSaveableCoords[index] = PosToCellCoords(staticMeshesSaveable[index].transform.position + nudges[iter]);
+                            iter++;
+                            if (iter > (nudges.Length - 1)) break;
+                        }
+                        if (staticMeshSaveableCoords[index].x == 0 || staticMeshSaveableCoords[index].y == 0) {
+                            UnityEngine.Debug.Log("static mesh savable misplaced for " + staticMeshesSaveable[index].gameObject.name);
+                        }
+                        break;
+                case 5: lightCoords[index]                = PosToCellCoords(lights[index].transform.position);
+                        if (lightCoords[index].x == 0 || lightCoords[index].y == 0) {
+                            lights[index].shadows = LightShadows.None;
+                        }
+                        break;
+                default: staticMeshImmutableCoords[index] = PosToCellCoords(staticMeshesImmutable[index].transform.position);
+                        iter = 0;
+                        while(!gridCells[staticMeshImmutableCoords[index].x,staticMeshImmutableCoords[index].y].visible) {
+                            UnityEngine.Debug.Log("Nudging staticMeshImmutableCoords " + staticMeshesImmutable[index].gameObject.name);
+                            staticMeshImmutableCoords[index] = PosToCellCoords(staticMeshesImmutable[index].transform.position + nudges[iter]);
+                            iter++;
+                            if (iter > (nudges.Length - 1)) break;
+                        }
+                        if (staticMeshImmutableCoords[index].x == 0 || staticMeshImmutableCoords[index].y == 0) {
+                            UnityEngine.Debug.Log("static mesh immutable misplaced for " + staticMeshesImmutable[index].gameObject.name);
+                        }
+                        break;
             }
         }
     }
@@ -739,7 +839,7 @@ public class DynamicCulling : MonoBehaviour {
         worldMin.z -= 2.56f;
 
         if (outputDebugImages) {
-            debugTex = new Texture2D(64,64);
+            debugTex = new Texture2D(WORLDX,WORLDX);
             pixels = new Color32[WORLDX * WORLDX];
             openDebugImagePath = Utils.SafePathCombine(
                 Application.streamingAssetsPath,
@@ -754,46 +854,88 @@ public class DynamicCulling : MonoBehaviour {
 
         PutChunksInCells();
         DetermineClosedEdges();
+        System.Diagnostics.Stopwatch cullTimer = new System.Diagnostics.Stopwatch();
+        cullTimer.Start();
+        bool[,] tempVis = new bool[64,64];
+        for (int y=0;y<WORLDX;y++) {
+            for (int x=0;x<WORLDX;x++) {
+                playerCellX = x;
+                playerCellY = y;
+                DetermineVisibleCells(x,y);
+                for (int y2=0;y2<WORLDX;y2++) {
+                    for (int x2=0;x2<WORLDX;x2++) {
+                        tempVis[x2,y2] = gridCells[x2,y2].visible;
+                    }
+                }
+                
+                if (x > 30 && x < 34 && y > 30 && y < 34) {
+                    pixels = new Color32[WORLDX * WORLDX];
+                    for (int y2=0;y2<WORLDX;y2++) {
+                        for (int x2=0;x2<WORLDX;x2++) {
+                            pixels[x2 + (y2 * WORLDX)] = tempVis[x2,y2] ? Color.white : Color.black;
+                        }
+                    }
+                    
+                    debugTex = new Texture2D(WORLDX,WORLDX);
+                    debugTex.SetPixels32(pixels);
+                    debugTex.Apply();
+                    bytes = debugTex.EncodeToPNG();
+                    File.WriteAllBytes(Utils.SafePathCombine(
+                        Application.streamingAssetsPath,"gridcellsFromHere_"
+                        + LevelManager.a.currentLevel.ToString() + "__"
+                        + x.ToString() + "_" + y.ToString() + ".png"),bytes
+                    );
+                }
+                
+                gridCells[x,y].visibleCellsFromHere = tempVis;
+            }
+        }
+        
+        cullTimer.Stop();
+        UnityEngine.Debug.Log("Culling completed in " + cullTimer.Elapsed.ToString());
         FindMeshRenderers(0); // Static Immutable
         FindMeshRenderers(1); // Dynamic
         FindMeshRenderers(2); // Doors
         FindMeshRenderers(3); // NPCs
         FindMeshRenderers(4); // Static Saveable
         FindMeshRenderers(5); // Lights
+        UpdatedPlayerCell();
+        DetermineVisibleCells(playerCellX,playerCellY); // Get visible before putting meshes into their cells so we can nudge them a little.
+        gridCells[0,0].visible = true;
         PutMeshesInCells(0); // Static Immutable
         PutMeshesInCells(1); // Dynamic
         PutMeshesInCells(2); // Doors
         PutMeshesInCells(3); // NPCs
         PutMeshesInCells(4); // Static Saveable
         PutMeshesInCells(5); // Lights
-
-//         geometryCommandBuffer = new CommandBuffer();
-//         geometryCommandBuffer.name = "DeferredGeometryRendering";
-//         MouseLookScript.a.playerCamera.AddCommandBuffer(CameraEvent.BeforeGBuffer, geometryCommandBuffer);
         Cull(true); // Do first Cull pass, forcing as player moved to new cell.
     }
 
-    Vector2Int PosToCellCoordsChunks(Vector3 pos) {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Vector2Int PosToCellCoordsChunks(Vector3 pos) {
         int x,y;
+        int max = WORLDX - 1; // 63
         x = (int)((pos.x - worldMin.x + 1.28f) / 2.56f);
-        if (x > 63) x = 63;
+        if (x > max) x = max;
         else if (x < 0) x = 0;
 
         y = (int)((pos.z - worldMin.z + 1.28f) / 2.56f);
-        if (y > 63) y = 63;
+        if (y > max) y = max;
         else if (y < 0) y = 0;
 
         return new Vector2Int(x,y);
     }
 
-    Vector2Int PosToCellCoords(Vector3 pos) {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Vector2Int PosToCellCoords(Vector3 pos) {
         int x,y;
+        int max = WORLDX - 1; // 63
         x = (int)((pos.x - worldMin.x + 1.28f) / 2.56f);
-        if (x > 63) x = 63;
+        if (x > max) x = max;
         else if (x < 0) x = 0;
 
         y = (int)((pos.z - worldMin.z + 1.28f) / 2.56f);
-        if (y > 63) y = 63;
+        if (y > max) y = max;
         else if (y < 0) y = 0;
 
         return new Vector2Int(x,y);
@@ -816,51 +958,50 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    bool XYPairInBounds(int x, int y) {
-        return (x < 64 && y < 64 && x >= 0 && y >= 0);
+    public bool XYPairInBounds(int x, int y) {
+        return (x < WORLDX && y < WORLDX && x >= 0 && y >= 0);
     }
 
-    void DetermineVisibleCells() {
-        int x,y;
-        for (x=0;x<64;x++) {
-            for (y=0;y<64;y++) {
+    private void DetermineVisibleCells(int startX, int startY) {
+        if (!XYPairInBounds(startX,startY)) return;
+
+        for (int x=0;x<WORLDX;x++) {
+            for (int y=0;y<WORLDX;y++) {
                 gridCells[x,y].visible = false;
                 worldCellsOpen[x,y] = gridCells[x,y].open;
                 if (outputDebugImages) {
-                    pixels[x + (y * 64)] = gridCells[x,y].open
+                    pixels[x + (y * WORLDX)] = gridCells[x,y].open
                                            ? Color.white : Color.black;
                 }
             }
         }
 
-        x = playerCellX; y = playerCellY;
-        gridCells[x,y].visible = true;
+        gridCells[startX,startY].visible = true;
+        CastStraightX(startX,startY + 1,1);  // [ ][3]
+        CastStraightX(startX,startY,1);      // [1][2]
+        CastStraightX(startX,startY - 1,1);  // [ ][3]
 
-        CastStraightX(playerCellX,playerCellY + 1,1);  // [ ][3]
-        CastStraightX(playerCellX,playerCellY,1);      // [1][2]
-        CastStraightX(playerCellX,playerCellY - 1,1);  // [ ][3]
+        CastStraightX(startX,startY + 1,-1); // [3][ ]
+        CastStraightX(startX,startY,-1);     // [2][1]
+        CastStraightX(startX,startY - 1,-1); // [3][ ]
 
-        CastStraightX(playerCellX,playerCellY + 1,-1); // [3][ ]
-        CastStraightX(playerCellX,playerCellY,-1);     // [2][1]
-        CastStraightX(playerCellX,playerCellY - 1,-1); // [3][ ]
+        CastStraightY(startX,startY,1);      // [3][2][3]
+        CastStraightY(startX + 1,startY,1);  // [ ][1][ ]
+        CastStraightY(startX - 1,startY,1);
 
-        CastStraightY(playerCellX,playerCellY,1);      // [3][2][3]
-        CastStraightY(playerCellX + 1,playerCellY,1);  // [ ][1][ ]
-        CastStraightY(playerCellX - 1,playerCellY,1);
+        CastStraightY(startX,startY,-1);     // [ ][1][ ]
+        CastStraightY(startX + 1,startY,-1); // [3][2][3]
+        CastStraightY(startX - 1,startY,-1);
 
-        CastStraightY(playerCellX,playerCellY,-1);     // [ ][1][ ]
-        CastStraightY(playerCellX + 1,playerCellY,-1); // [3][2][3]
-        CastStraightY(playerCellX - 1,playerCellY,-1);
-
-        CircleFanRays(playerCellX,playerCellY);
-        CircleFanRays(playerCellX + 1,playerCellY);
-        CircleFanRays(playerCellX + 1,playerCellY + 1);
-        CircleFanRays(playerCellX,playerCellY + 1);
-        CircleFanRays(playerCellX - 1,playerCellY + 1);
-        CircleFanRays(playerCellX - 1,playerCellY);
-        CircleFanRays(playerCellX - 1,playerCellY - 1);
-        CircleFanRays(playerCellX,playerCellY - 1);
-        CircleFanRays(playerCellX + 1,playerCellY - 1);
+        CircleFanRays(startX,startY);
+        CircleFanRays(startX + 1,startY);
+        CircleFanRays(startX + 1,startY + 1);
+        CircleFanRays(startX,startY + 1);
+        CircleFanRays(startX - 1,startY + 1);
+        CircleFanRays(startX - 1,startY);
+        CircleFanRays(startX - 1,startY - 1);
+        CircleFanRays(startX,startY - 1);
+        CircleFanRays(startX + 1,startY - 1);
 
         Vector2Int pnt = new Vector2Int();
         // Use a for loop to iterate over the positions
@@ -874,46 +1015,46 @@ public class DynamicCulling : MonoBehaviour {
             pnt = PosToCellCoords(position);
             gridCells[pnt.x,pnt.y].visible = true;
 
-            CastStraightX(playerCellX,playerCellY + 1,1);  // [ ][3]
-            CastStraightX(playerCellX,playerCellY,1);      // [1][2]
-            CastStraightX(playerCellX,playerCellY - 1,1);  // [ ][3]
+            CastStraightX(startX,startY + 1,1);  // [ ][3]
+            CastStraightX(startX,startY,1);      // [1][2]
+            CastStraightX(startX,startY - 1,1);  // [ ][3]
 
-            CastStraightX(playerCellX,playerCellY + 1,-1); // [3][ ]
-            CastStraightX(playerCellX,playerCellY,-1);     // [2][1]
-            CastStraightX(playerCellX,playerCellY - 1,-1); // [3][ ]
+            CastStraightX(startX,startY + 1,-1); // [3][ ]
+            CastStraightX(startX,startY,-1);     // [2][1]
+            CastStraightX(startX,startY - 1,-1); // [3][ ]
 
-            CastStraightY(playerCellX,playerCellY,1);      // [3][2][3]
-            CastStraightY(playerCellX + 1,playerCellY,1);  // [ ][1][ ]
-            CastStraightY(playerCellX - 1,playerCellY,1); 
+            CastStraightY(startX,startY,1);      // [3][2][3]
+            CastStraightY(startX + 1,startY,1);  // [ ][1][ ]
+            CastStraightY(startX - 1,startY,1); 
 
-            CastStraightY(playerCellX,playerCellY,-1);     // [ ][1][ ]
-            CastStraightY(playerCellX + 1,playerCellY,-1); // [3][2][3]
-            CastStraightY(playerCellX - 1,playerCellY,-1);
+            CastStraightY(startX,startY,-1);     // [ ][1][ ]
+            CastStraightY(startX + 1,startY,-1); // [3][2][3]
+            CastStraightY(startX - 1,startY,-1);
 
             CircleFanRays(pnt.x,pnt.y);
         }
 
         // Output Debug image of the open
         if (outputDebugImages) {
-            Vector2 ply = new Vector2(playerCellX,playerCellY);
-            for (x=0;x<64;x++) {
-                for (y=0;y<64;y++) {
+            Vector2 ply = new Vector2((float)startX,(float)startY);
+            for (int x=0;x<WORLDX;x++) {
+                for (int y=0;y<WORLDX;y++) {
                     if (!gridCells[x,y].open) {
-                        pixels[x + (y * 64)] = Color.black;
+                        pixels[x + (y * WORLDX)] = Color.black;
                     } else {
                         if (gridCells[x,y].visible) {
-                            Vector2 pos = new Vector2(x,y);
+                            Vector2 pos = new Vector2((float)x,(float)y);
                             float distToPlayer = Vector2.Distance(pos,ply);
                             float green = Mathf.Max((20f - distToPlayer)/20f,0.2f);
-                            pixels[x + (y * 64)] = new Color(0f,green,0f,1f);
+                            pixels[x + (y * WORLDX)] = new Color(0f,green,0f,1f);
                         } else {
-                            pixels[x + (y * 64)] = Color.white;
+                            pixels[x + (y * WORLDX)] = Color.white;
                         }
                     }
                 }
             }
 
-            debugTex = new Texture2D(64,64);
+            debugTex = new Texture2D(WORLDX,WORLDX);
             debugTex.SetPixels32(pixels);
             debugTex.Apply();
             bytes = debugTex.EncodeToPNG();
@@ -922,7 +1063,7 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     private void CastStraightY(int px, int py, int signy) {
-        if (signy > 0 && py >= 63) return;
+        if (signy > 0 && py >= (WORLDX - 1)) return; // Nowwhere to step to if right by edge, hence WORLDX - 1 here.
         if (signy < 0 && py <= 0) return;
         if (!XYPairInBounds(px,py)) return;
         if (!gridCells[px,py].visible) return;
@@ -930,7 +1071,7 @@ public class DynamicCulling : MonoBehaviour {
         int x = px;
         int y = py + signy;
         bool currentVisible = true;
-        for (;y<64;y+=signy) { // Up
+        for (;y<WORLDX;y+=signy) { // Up
             currentVisible = false;
             if (XYPairInBounds(x,y - signy) && XYPairInBounds(x,y)) {
                 if (gridCells[x,y - signy].visible) {
@@ -966,7 +1107,7 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     private void CastStraightX(int px, int py, int signx) {
-        if (signx > 0 && px >= 63) return;
+        if (signx > 0 && px >= (WORLDX - 1)) return; // Nowwhere to step to if right by edge, hence WORLDX - 1 here.
         if (signx < 0 && px <= 0) return;
         if (!XYPairInBounds(px,py)) return;
         if (!gridCells[px,py].visible) return;
@@ -974,7 +1115,7 @@ public class DynamicCulling : MonoBehaviour {
         int x = px + signx;
         int y = py;
         bool currentVisible = true;
-        for (;x<64;x+=signx) { // Right
+        for (;x<WORLDX;x+=signx) { // Right
             currentVisible = false;
             if (XYPairInBounds(x - signx,y) && XYPairInBounds(x,y)) {
                 if (gridCells[x - signx,y].visible) {
@@ -1011,15 +1152,16 @@ public class DynamicCulling : MonoBehaviour {
 
     // CastRay()'s in fan from x0,y0 out to every cell around map perimeter.
     private void CircleFanRays(int x0, int y0) {
-        int x,y;
-        if (XYPairInBounds(x0,y0)) {
-            if (gridCells[x0,y0].visible) {
-                for (x=1;x<63;x++) CastRay(x0,y0,x,0);
-                for (x=1;x<63;x++) CastRay(x0,y0,x,63);
-                for (y=1;y<63;y++) CastRay(x0,y0,0,y);
-                for (y=1;y<63;y++) CastRay(x0,y0,63,y);
-            }
-        }
+        if (!XYPairInBounds(x0,y0)) return;
+        if (!gridCells[x0,y0].visible) return;
+
+        int x,y;     
+        int max = WORLDX - 1; // Reduce work slightly by not casting towards 
+        int min = 1;          // edges but 1 less = [1,63].
+        for (x=min;x<max;x++) CastRay(x0,y0,x,0);
+        for (x=min;x<max;x++) CastRay(x0,y0,x,max);
+        for (y=min;y<max;y++) CastRay(x0,y0,0,y);
+        for (y=min;y<max;y++) CastRay(x0,y0,max,y);
     }
 
     public void CastRay(int x0, int y0, int x1, int y1) {
@@ -1133,12 +1275,10 @@ public class DynamicCulling : MonoBehaviour {
     }
  
     void ToggleVisibility() {
-//         return;
-        
         gridCells[playerCellX,playerCellY].visible = true; // Guarantee enable.
         bool skyVisible = false;
-        for (int x=0;x<64;x++) {
-            for (int y=0;y<64;y++) {
+        for (int x=0;x<WORLDX;x++) {
+            for (int y=0;y<WORLDX;y++) {
                 float sqrdist = 0f;
                 ChunkPrefab chp = null;
                 for (int i=0;i<gridCells[x,y].chunkPrefabs.Count;i++) {
@@ -1150,18 +1290,23 @@ public class DynamicCulling : MonoBehaviour {
 
                     for (int k=0;k<chp.meshenderers.Count;k++) {
                         if (chp.meshenderers[k].meshRenderer == null) {
-                            Debug.Log("meshRenderer missing for chp.constIndex:" + chp.constIndex.ToString());
+                            Debug.Log("meshRenderer missing for chp.constIndex:"
+                                      + chp.constIndex.ToString());
                             continue;
                         }
 
-                        chp.meshenderers[k].meshRenderer.enabled =
-                                                        gridCells[x,y].visible;
-
+                        chp.meshenderers[k].meshRenderer.enabled = gridCells[x,y].visible;
                         if (!gridCells[x,y].visible) continue;
                         if (chp.constIndex > 304 || chp.constIndex < 0) continue;
 
-                        sqrdist = SqrDist(x,y,playerCellX,playerCellY);
-                        chp.meshenderers[k].SetMesh(sqrdist >= lodSqrDist);
+                        if (useLODMeshes) {
+                            sqrdist = (MouseLookScript.a.transform.position - chp.meshenderers[k].meshRenderer.transform.position).sqrMagnitude; //SqrDist(x,y,playerCellX,playerCellY);
+                            chp.meshenderers[k].SetMesh(sqrdist >= lodSqrDist);
+                        }
+                        
+                        if (mergeVisibleMeshes) {
+                            sourceMeshenderers.Add(chp.meshenderers[k]);
+                        }
                     }
                 }
             }
@@ -1240,6 +1385,10 @@ public class DynamicCulling : MonoBehaviour {
                 if (dynamicMeshesPIDs[i].constIndex == 515) { // func_forcebridge
                     if (dynamicMeshesFBs[i].activated) {
                         dynamicMeshes[i].enabled = true;
+                        // if (mergeVisibleMeshes) {
+//                         Meshenderer mrsh = GetMeshAndItsRenderer(dynamicMeshes[i].gameObject,dynamicMeshesPIDs[i].constIndex);
+//                         if (mrsh != null) sourceMeshenderers.Add(mrsh);
+                        // }
                     } else {
                         dynamicMeshes[i].enabled = false;
                     }
@@ -1250,6 +1399,10 @@ public class DynamicCulling : MonoBehaviour {
                             || dynamicMeshesPIDs[i].constIndex == 279) { // chunk_screen stays on when destroyed
                                 
                             dynamicMeshes[i].enabled = true;
+                            // if (mergeVisibleMeshes) {
+//                             Meshenderer mrsh = GetMeshAndItsRenderer(dynamicMeshes[i].gameObject,dynamicMeshesPIDs[i].constIndex);
+//                             if (mrsh != null) sourceMeshenderers.Add(mrsh);
+                            // }
                         } else {
                             dynamicMeshes[i].enabled = false;
                         }
@@ -1270,11 +1423,16 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void ToggleStaticMeshesImmutableVisibility() {
+        bool skyVisible = LevelManager.a.GetSkyVisible();
         for (int i=0;i<staticMeshesImmutable.Count;i++) {
             int x = staticMeshImmutableCoords[i].x;
             int y = staticMeshImmutableCoords[i].y;
-            if (gridCells[x,y].visible || !worldCellsOpen[x,y]) {
+            if (gridCells[x,y].visible || (!worldCellsOpen[x,y] && skyVisible)) {
                 staticMeshesImmutable[i].enabled = true;
+                if (mergeVisibleMeshes) {
+                    Meshenderer mrsh = GetMeshAndItsRenderer(staticMeshesImmutable[i].gameObject,-1);
+                    if (mrsh != null) sourceMeshenderers.Add(mrsh);
+                }
             } else {
                 staticMeshesImmutable[i].enabled = false;
             }
@@ -1307,11 +1465,19 @@ public class DynamicCulling : MonoBehaviour {
                 if (hm != null) {
                     if (hm.health > 0 || !hm.gibOnDeath || staticMeshesSaveablePIDs[i].constIndex == 279) {
                         staticMeshesSaveable[i].enabled = true;
+                        if (mergeVisibleMeshes) {
+                            Meshenderer mrsh = GetMeshAndItsRenderer(staticMeshesSaveablePIDs[i].gameObject,staticMeshesSaveablePIDs[i].constIndex);
+                            if (mrsh != null) sourceMeshenderers.Add(mrsh);
+                        }
                     } else {
                         staticMeshesSaveable[i].enabled = false;
                     }
                 } else {
                     staticMeshesSaveable[i].enabled = true;
+                    if (mergeVisibleMeshes) {
+                        Meshenderer mrsh = GetMeshAndItsRenderer(staticMeshesSaveablePIDs[i].gameObject,staticMeshesSaveablePIDs[i].constIndex);
+                        if (mrsh != null) sourceMeshenderers.Add(mrsh);
+                    }
                 }
             } else {
                 staticMeshesSaveable[i].enabled = false;
@@ -1334,7 +1500,7 @@ public class DynamicCulling : MonoBehaviour {
 
     public float lightDot = 0f; // Extra padding to account for near objects
     public int lightNearCellCount = 5;
-    public void LightsFrustumCull() {
+    public void LightsFrustumCull(int startX, int startY) {
         if (!lightCulling || !lightsFrustumCull) return;
 
         Vector3 dir;
@@ -1345,8 +1511,8 @@ public class DynamicCulling : MonoBehaviour {
             if (Vector3.Dot(dir.normalized,cam.transform.forward) > lightDot) {
                 lightsInPVS[i].enabled = true;
             } else {
-                dx = Mathf.Abs(playerCellX - lightsInPVSCoords[i].x);
-                dy = Mathf.Abs(playerCellY - lightsInPVSCoords[i].y);
+                dx = Mathf.Abs(startX - lightsInPVSCoords[i].x);
+                dy = Mathf.Abs(startY - lightsInPVSCoords[i].y);
                 if (dx < lightNearCellCount && dy < lightNearCellCount) lightsInPVS[i].enabled = true;
                 else lightsInPVS[i].enabled = false;
             }
@@ -1365,32 +1531,37 @@ public class DynamicCulling : MonoBehaviour {
             
             x = lightCoords[i].x;
             y = lightCoords[i].y;
+            if (!XYPairInBounds(x,y)) {
+                lights[i].enabled = true;
+                continue;
+            }
+            
             int range = (int)Mathf.Floor(lights[i].range / 2.56f);
             int xMin = x - range;
             int xMax = x + range;
             int yMin = y - range;
             int yMax = y + range;
-            for (int ix = xMin;ix <= xMax; ix++) {
-                for (int iy = yMin;iy <= yMax; iy++) {
-                    if (!XYPairInBounds(ix,iy)) continue;
-
-                    if (gridCells[ix,iy].visible) {
-                        lights[i].enabled = true;
-                        lightsInPVS.Add(lights[i]);
-                        lightsInPVSCoords.Add(lightCoords[i]);
-                        goto LightContinue;
-                    }
-                }
-            }
-
             if (gridCells[x,y].visible || !gridCells[x,y].open) {
                 lights[i].enabled = true;
                 lightsInPVS.Add(lights[i]);
                 lightsInPVSCoords.Add(lightCoords[i]);
             } else {
-                lights[i].enabled = false;
+                for (int ix = xMin;ix <= xMax; ix++) {
+                    for (int iy = yMin;iy <= yMax; iy++) {
+                        if (!XYPairInBounds(ix,iy)) continue;
+
+                        if (gridCells[ix,iy].visible && gridCells[x,y].visibleCellsFromHere[ix,iy]) {
+                            lights[i].enabled = true;
+                            lightsInPVS.Add(lights[i]);
+                            lightsInPVSCoords.Add(lightCoords[i]);
+                            goto LightContinue;
+                        } else {
+                            lights[i].enabled = false;
+                        }
+                    }
+                }
             }
-            
+
             LightContinue:
             continue;
         }
@@ -1411,9 +1582,13 @@ public class DynamicCulling : MonoBehaviour {
 //                 
 //             }
             
-//             MeshCombiner mcGeometry = LevelManager.a.GetCurrentGeometryContainer().GetComponent<MeshCombiner>();
-//             if (mcGeometry != null) mcGeometry.UncombineMeshes();
-            DetermineVisibleCells(); // Reevaluate visible cells from new pos.
+            if (mergeVisibleMeshes) UncombineMeshes();
+            DetermineVisibleCells(playerCellX,playerCellY); // Reevaluate visible cells from new pos.
+//             for (int y=0;y<WORLDX;y++) {
+//                 for (int x=0;x<WORLDX;x++) {
+//                     gridCells[x,y].visible = gridCells[playerCellX,playerCellY].visibleCellsFromHere[x,y];
+//                 }
+//             }
             gridCells[0,0].visible = true; // Errors default here so draw them anyways.
             ToggleVisibility(); // Update all cells marked as dirty.
             ToggleStaticMeshesImmutableVisibility();
@@ -1423,16 +1598,20 @@ public class DynamicCulling : MonoBehaviour {
             ToggleLightsVisibility();
             UpdateNPCPVS();
             ToggleNPCPVS();
-//             if (mcGeometry != null) mcGeometry.1();
+            if (mergeVisibleMeshes) CombineMeshes(true);
         }
         
-        if (lightsFrustumCull) LightsFrustumCull();
+        if (lightsFrustumCull) LightsFrustumCull(playerCellX,playerCellY);
 
         // Update dynamic meshes after PVS has been updated, if player moved.
         if (dynamicObjectCull) {
             UpdateDynamicMeshes(); // Always check all because any can move.
             ToggleDynamicMeshesVisibility(); // Now turn them on or off.
         }
+    }
+    
+    public GridCell GetPlayerCell() {
+        return gridCells[playerCellX,playerCellY];
     }
     
 //     public struct CullingJob : IJobParallelFor {
@@ -1504,8 +1683,10 @@ public class Meshenderer {
     public Mesh meshUsual;
     public Mesh meshLOD;
 
-    public void SetMesh(bool useLOD) {
-        meshFilter.sharedMesh = useLOD ? meshLOD : meshUsual;
+    public Mesh SetMesh(bool useLOD) {
+        Mesh msh = useLOD ? meshLOD : meshUsual;
+        meshFilter.sharedMesh = msh;
+        return msh;
     }
 }
 
@@ -1534,7 +1715,7 @@ public class GridCell {
     public bool closedEast;  // the immediately adjacent cell at this edge
     public bool closedSouth; // is not visible, consider edge as closed to
     public bool closedWest;  // be able to further reduce visible cells.
-    public bool[,] visibleCellsFromHere;
+    public bool[,] visibleCellsFromHere = new bool[64,64];
     public List<ChunkPrefab> chunkPrefabs;
     public List<DynamicObject> dynamicObjects;
 }

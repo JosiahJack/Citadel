@@ -1198,7 +1198,6 @@ public static bool ConstIndexIsDynamicObject(int constdex) {
 			|| (constdex >= 458 && constdex < 480) // 480 is static saveable
 			|| (constdex >= 481 && constdex < 496)
 			|| constdex == 515 || constdex == 524 || constdex == 553);
-	// Syncronize with InitializeDynamicObjectsMaterial() for num dynamics!
 }
 
 public static bool ConstIndexIsDoor(int constdex) {
