@@ -471,7 +471,7 @@ public class HealthManager : MonoBehaviour {
 		if (IsCyberEntity()) {
 			if (cyberHealth <= 0f) {
 			    Const.a.cyberkills++;
-				Death(dd.attackType == AttackType.EnergyBeam);
+				Death(false); // False since you can't vaporize cyberspace corpses.
 			}
 		} else {
 			if (health <= 0f) {
@@ -506,9 +506,27 @@ public class HealthManager : MonoBehaviour {
 		if (energyVaporized) deathFX = PoolType.Vaporize;
 		MeshRenderer mr = GetComponent<MeshRenderer>();
 		Utils.DisableMeshRenderer(mr);
-		GameObject par = transform.parent.gameObject;
-		AIController aic = par.GetComponent<AIController>();
-		if (aic != null) Utils.SafeDestroy(aic.gameObject); // All gone!
+		PrefabIdentifier pid = GetComponent<PrefabIdentifier>();
+		if (pid == null) {
+			GameObject par = transform.parent.gameObject;
+			pid = par.GetComponent<PrefabIdentifier>();
+			if (pid != null) {
+				if ((pid.constIndex >= 465 && pid.constIndex < 472)
+					|| ConsoleEmulator.ConstIndexIsNPC(pid.constIndex)) {
+					
+					Utils.SafeDestroy(par.gameObject); // All gone!
+				}
+			}
+		}
+		
+		if (pid != null) {
+			if ((pid.constIndex >= 465 && pid.constIndex < 472)
+				|| ConsoleEmulator.ConstIndexIsNPC(pid.constIndex)) {
+				
+				Utils.SafeDestroy(gameObject); // All gone!
+			}
+		}
+
 		CreateDeathEffects(deathFX);
 	}
 

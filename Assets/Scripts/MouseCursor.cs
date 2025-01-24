@@ -18,6 +18,10 @@ public class MouseCursor : MonoBehaviour {
 	public GameObject inventoryAddHelper;
     public float cursorSize = 24f;
     public Texture2D cursorImage;
+	public RawImage cursorUIImage;
+	public Canvas canvas;
+	private RectTransform canvasRectTransform;
+	public CanvasScaler canvasScaler;
     private float offsetX;
     private float offsetY;
 	public bool justDroppedItemInHelper = false;
@@ -57,6 +61,8 @@ public class MouseCursor : MonoBehaviour {
 		lastMousePos = cursorPosition = Input.mousePosition;
 		pev = new PointerEventData(EventSystem.current);
 		graphicCastResults = new List<RaycastResult>();
+		canvasRectTransform = canvas.gameObject.GetComponent<RectTransform>();
+		if (canvasRectTransform == null) Debug.LogError("Can't access RectTransform on Canvas!");
 	}
 
 	#if UNITY_STANDALONE_LINUX
@@ -100,7 +106,7 @@ public class MouseCursor : MonoBehaviour {
 		uiRaycastRectGOs.Add(go);
 	}
 
-	void OnGUI () {
+	void LateUpdate() {
 		if (MouseLookScript.a == null) return;
 		if (MinigameCursor.a != null) {
 			if (MinigameCursor.a.mouseOverPanel) return;
@@ -108,24 +114,30 @@ public class MouseCursor : MonoBehaviour {
 
 		if (MouseLookScript.a.inventoryMode || PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
             // Inventory Mode Cursor
-			drawTexture.Set(Input.mousePosition.x - offsetX,Screen.height - Input.mousePosition.y - offsetY,cursorSize,cursorSize);
+ 			drawTexture.Set(Input.mousePosition.x - offsetX,Screen.height - Input.mousePosition.y - offsetY,cursorSize,cursorSize);
+			cursorUIImage.rectTransform.anchoredPosition = new Vector2((Input.mousePosition.x / Screen.width) * canvasRectTransform.sizeDelta.x,(((-1f * (Screen.height - (Input.mousePosition.y))) / Screen.height) * canvasRectTransform.sizeDelta.y) + canvasRectTransform.sizeDelta.y);
+			cursorUIImage.rectTransform.sizeDelta = new Vector2(cursorSize * halfFactor,cursorSize * halfFactor); // Pivot is 0.5,0.5
         } else {
             // Shoot Mode Cursor
-			drawTexture.Set((Screen.width * halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize - offsetY, cursorSize, cursorSize);
+ 			drawTexture.Set((Screen.width * halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize - offsetY, cursorSize, cursorSize);
+			cursorUIImage.rectTransform.anchoredPosition = new Vector2(halfFactor * canvasRectTransform.sizeDelta.x, halfFactor * canvasRectTransform.sizeDelta.y);
+			cursorUIImage.rectTransform.sizeDelta = new Vector2(cursorSize * halfFactor,cursorSize * halfFactor); // Pivot is 0.5,0.5
         }
+        
+        if (cursorUIImage.texture != cursorImage) cursorUIImage.texture = cursorImage;
 
 		if (toolTipHasText && toolTip != nullStr && !PauseScript.a.Paused() && (MouseLookScript.a.inventoryMode || liveGrenade)) {
 			switch(toolTipType) {
 				case Handedness.LH:
-					GUI.Label(drawTexture,toolTip,toolTipStyleLH);
+// 					GUI.Label(drawTexture,toolTip,toolTipStyleLH);
 					tempTexture = cursorLHTexture;
 					break;
 				case Handedness.RH:
-					GUI.Label(drawTexture,toolTip,toolTipStyleRH);
+// 					GUI.Label(drawTexture,toolTip,toolTipStyleRH);
 					tempTexture = cursorRHTexture;
 					break;
 				default: // Handedness.Center
-					GUI.Label(drawTexture,toolTip,toolTipStyle);
+// 					GUI.Label(drawTexture,toolTip,toolTipStyle);
 					tempTexture = cursorDNTexture;
 					break;
 			}
@@ -162,8 +174,8 @@ public class MouseCursor : MonoBehaviour {
 			}
 		}
 
-		GUI.DrawTexture(drawTexture, cursorImage);
-		if (liveGrenade && !PauseScript.a.Paused()) GUI.Label(drawTexture,Const.a.stringTable[586],liveGrenadeStyle); // Display "live" next to cursor
+// 		GUI.DrawTexture(drawTexture, cursorImage);
+// 		if (liveGrenade && !PauseScript.a.Paused()) GUI.Label(drawTexture,Const.a.stringTable[586],liveGrenadeStyle); // Display "live" next to cursor
 	}
 
 	void Update() {

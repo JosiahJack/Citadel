@@ -210,7 +210,7 @@ MonoBehaviour:
   actAsCorpseOnly: 0
   gibsGetVelocity: 0
   gibVelocityBoost: {x: 0, y: 0, z: 0}
-  deathFX: 23
+  deathFX: 22
   bloodType: 0
   targetOnDeath: 
   argvalue: 

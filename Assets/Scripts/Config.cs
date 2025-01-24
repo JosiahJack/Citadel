@@ -16,7 +16,7 @@ public class Config {
     		Const.a.GraphicsResHeight = Screen.height;
     		Const.a.GraphicsFullscreen = true;
     		Const.a.GraphicsSSAO = false;
-    		Const.a.GraphicsBloom = true;
+    		Const.a.GraphicsBloom = false;
     		Const.a.GraphicsFOV = 65;
     		Const.a.GraphicsAAMode = 1;
     		Const.a.GraphicsShadowMode = 0;
@@ -196,7 +196,7 @@ public class Config {
 	}
 
 	public static void SetBloom() {
-		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = Const.a.GraphicsBloom;
+		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = false;//Const.a.GraphicsBloom; Disabled for performance and in lieu of adding into glow textures.
 	}
 
 	public static void SetVSync() {

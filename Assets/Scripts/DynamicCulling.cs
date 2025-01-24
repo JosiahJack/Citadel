@@ -28,6 +28,7 @@ public class DynamicCulling : MonoBehaviour {
     public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
     public List<PrefabIdentifier> dynamicMeshesPIDs = new List<PrefabIdentifier>();
     public List<HealthManager> dynamicMeshesHMs = new List<HealthManager>();
+    public List<Transform> dynamicMeshesTransforms = new List<Transform>();
     public List<ForceBridge> dynamicMeshesFBs = new List<ForceBridge>();
     public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();
     public List<MeshRenderer> staticMeshesImmutable = new List<MeshRenderer>();
@@ -36,6 +37,7 @@ public class DynamicCulling : MonoBehaviour {
     public List<Vector2Int>   staticImmutableParticleCoords = new List<Vector2Int>();
     public List<PauseParticleSystem> staticImmutableParticleSystems = new List<PauseParticleSystem>();
     public List<MeshRenderer> staticMeshesSaveable = new List<MeshRenderer>();
+    public List<HealthManager> staticMeshesSaveableHMs = new List<HealthManager>();
     public List<PrefabIdentifier> staticMeshesSaveablePIDs = new List<PrefabIdentifier>();
     public List<Vector2Int>   staticMeshSaveableCoords = new List<Vector2Int>();
     public List<Light> lights = new List<Light>();
@@ -116,18 +118,6 @@ public class DynamicCulling : MonoBehaviour {
     void Awake() {
         a = this;
         a.Cull_Init();
-        openDebugImagePath = Utils.SafePathCombine(
-                                 Application.streamingAssetsPath,
-                                 "gridcellsopen_"
-                                 + LevelManager.a.currentLevel.ToString()
-                                 + ".png");
-        
-        visDebugImagePath = Utils.SafePathCombine(
-                                Application.streamingAssetsPath,
-                                "worldcellvis_"
-                                + LevelManager.a.currentLevel.ToString()
-                                + ".png");
-        
         a.pixels = new Color32[WORLDX * WORLDX];
         a.camPositions = new Dictionary<GameObject, Vector3>();
         a.worldCellsOpen = new bool[WORLDX,WORLDX];
@@ -454,6 +444,7 @@ public class DynamicCulling : MonoBehaviour {
         staticImmutableParticleCoords = new List<Vector2Int>();
         staticImmutableParticleSystems = new List<PauseParticleSystem>();
         staticMeshesSaveable = new List<MeshRenderer>();
+        staticMeshesSaveableHMs = new List<HealthManager>();
         staticMeshesSaveablePIDs = new List<PrefabIdentifier>();
         staticMeshSaveableCoords = new List<Vector2Int>();
         doors = new List<MeshRenderer>();
@@ -465,6 +456,7 @@ public class DynamicCulling : MonoBehaviour {
         dynamicMeshes = new List<MeshRenderer>();
         dynamicMeshesPIDs = new List<PrefabIdentifier>();
         dynamicMeshesHMs = new List<HealthManager>();
+        dynamicMeshesTransforms = new List<Transform>();
         dynamicMeshesFBs = new List<ForceBridge>();
         dynamicMeshCoords = new List<Vector2Int>();
         npcAICs = new List<AIController>();
@@ -606,6 +598,7 @@ public class DynamicCulling : MonoBehaviour {
                 dynamicMeshesPIDs.Add(pid);
                 dynamicMeshesHMs.Add(mr.GetComponent<HealthManager>());
                 dynamicMeshesFBs.Add(mr.GetComponent<ForceBridge>());
+                dynamicMeshesTransforms.Add(mr.transform);
                 break;
             case 2:
                 doors.Add(mr);
@@ -616,6 +609,7 @@ public class DynamicCulling : MonoBehaviour {
                 staticMeshesSaveable.Add(mr);
                 staticMeshSaveableCoords.Add(Vector2Int.zero);
                 staticMeshesSaveablePIDs.Add(pid);
+                staticMeshesSaveableHMs.Add(mr.gameObject.GetComponent<HealthManager>());
                 break;
             case 5: break; // Lights done differently due to Light (what, it makes sense).
             default:
@@ -741,8 +735,8 @@ public class DynamicCulling : MonoBehaviour {
                         break;
                 case 4: staticMeshSaveableCoords[index]   = PosToCellCoords(staticMeshesSaveable[index].transform.position);
                         iter = 0;
-                        while(!gridCells[staticMeshSaveableCoords[index].x,staticMeshSaveableCoords[index].y].visible) {
-                            UnityEngine.Debug.Log("Nudging staticMeshesSaveable " + staticMeshesSaveable[index].gameObject.name);
+                        while(!gridCells[staticMeshSaveableCoords[index].x,staticMeshSaveableCoords[index].y].open) {
+//                             UnityEngine.Debug.Log("Nudging staticMeshesSaveable " + staticMeshesSaveable[index].gameObject.name);
                             staticMeshSaveableCoords[index] = PosToCellCoords(staticMeshesSaveable[index].transform.position + nudges[iter]);
                             iter++;
                             if (iter > (nudges.Length - 1)) break;
@@ -758,8 +752,8 @@ public class DynamicCulling : MonoBehaviour {
                         break;
                 default: staticMeshImmutableCoords[index] = PosToCellCoords(staticMeshesImmutable[index].transform.position);
                         iter = 0;
-                        while(!gridCells[staticMeshImmutableCoords[index].x,staticMeshImmutableCoords[index].y].visible) {
-                            UnityEngine.Debug.Log("Nudging staticMeshImmutableCoords " + staticMeshesImmutable[index].gameObject.name);
+                        while(!gridCells[staticMeshImmutableCoords[index].x,staticMeshImmutableCoords[index].y].open) {
+//                             UnityEngine.Debug.Log("Nudging staticMeshImmutableCoords " + staticMeshesImmutable[index].gameObject.name);
                             staticMeshImmutableCoords[index] = PosToCellCoords(staticMeshesImmutable[index].transform.position + nudges[iter]);
                             iter++;
                             if (iter > (nudges.Length - 1)) break;
@@ -854,9 +848,6 @@ public class DynamicCulling : MonoBehaviour {
 
         PutChunksInCells();
         DetermineClosedEdges();
-        System.Diagnostics.Stopwatch cullTimer = new System.Diagnostics.Stopwatch();
-        cullTimer.Start();
-        bool[,] tempVis = new bool[64,64];
         for (int y=0;y<WORLDX;y++) {
             for (int x=0;x<WORLDX;x++) {
                 playerCellX = x;
@@ -864,35 +855,12 @@ public class DynamicCulling : MonoBehaviour {
                 DetermineVisibleCells(x,y);
                 for (int y2=0;y2<WORLDX;y2++) {
                     for (int x2=0;x2<WORLDX;x2++) {
-                        tempVis[x2,y2] = gridCells[x2,y2].visible;
+                        gridCells[x,y].visibleCellsFromHere[x2,y2] = gridCells[x2,y2].visible;
                     }
                 }
-                
-                if (x > 30 && x < 34 && y > 30 && y < 34) {
-                    pixels = new Color32[WORLDX * WORLDX];
-                    for (int y2=0;y2<WORLDX;y2++) {
-                        for (int x2=0;x2<WORLDX;x2++) {
-                            pixels[x2 + (y2 * WORLDX)] = tempVis[x2,y2] ? Color.white : Color.black;
-                        }
-                    }
-                    
-                    debugTex = new Texture2D(WORLDX,WORLDX);
-                    debugTex.SetPixels32(pixels);
-                    debugTex.Apply();
-                    bytes = debugTex.EncodeToPNG();
-                    File.WriteAllBytes(Utils.SafePathCombine(
-                        Application.streamingAssetsPath,"gridcellsFromHere_"
-                        + LevelManager.a.currentLevel.ToString() + "__"
-                        + x.ToString() + "_" + y.ToString() + ".png"),bytes
-                    );
-                }
-                
-                gridCells[x,y].visibleCellsFromHere = tempVis;
             }
         }
         
-        cullTimer.Stop();
-        UnityEngine.Debug.Log("Culling completed in " + cullTimer.Elapsed.ToString());
         FindMeshRenderers(0); // Static Immutable
         FindMeshRenderers(1); // Dynamic
         FindMeshRenderers(2); // Doors
@@ -1277,24 +1245,16 @@ public class DynamicCulling : MonoBehaviour {
     void ToggleVisibility() {
         gridCells[playerCellX,playerCellY].visible = true; // Guarantee enable.
         bool skyVisible = false;
+        ChunkPrefab chp = null;
         for (int x=0;x<WORLDX;x++) {
             for (int y=0;y<WORLDX;y++) {
                 float sqrdist = 0f;
-                ChunkPrefab chp = null;
                 for (int i=0;i<gridCells[x,y].chunkPrefabs.Count;i++) {
                     chp = gridCells[x,y].chunkPrefabs[i];
-                    if (chp == null) continue;
-                    if (chp.constIndex == 1) {
-                        if (gridCells[x,y].visible) skyVisible = true;
-                    }
-
+//                     if (chp == null) continue;
+                    
+                    skyVisible = (chp.constIndex == 1 && gridCells[x,y].visible);
                     for (int k=0;k<chp.meshenderers.Count;k++) {
-                        if (chp.meshenderers[k].meshRenderer == null) {
-                            Debug.Log("meshRenderer missing for chp.constIndex:"
-                                      + chp.constIndex.ToString());
-                            continue;
-                        }
-
                         chp.meshenderers[k].meshRenderer.enabled = gridCells[x,y].visible;
                         if (!gridCells[x,y].visible) continue;
                         if (chp.constIndex > 304 || chp.constIndex < 0) continue;
@@ -1328,12 +1288,13 @@ public class DynamicCulling : MonoBehaviour {
                 dynamicMeshCoords.RemoveAt(i);
                 dynamicMeshesHMs.RemoveAt(i);
                 dynamicMeshesFBs.RemoveAt(i);
+                dynamicMeshesTransforms.RemoveAt(i);
                 goto label_iterate_mesh_renderers; // Start over
             }
         }
 
         for (int i=0;i < count; i++) {
-            dynamicMeshCoords[i] = PosToCellCoords(dynamicMeshes[i].transform.position);
+            dynamicMeshCoords[i] = PosToCellCoords(dynamicMeshesTransforms[i].position);
         }
     }
 
@@ -1381,38 +1342,32 @@ public class DynamicCulling : MonoBehaviour {
         for (int i=0;i<dynamicMeshes.Count;i++) {            
             x = dynamicMeshCoords[i].x;
             y = dynamicMeshCoords[i].y;
+            bool inPVS = false;
             if (gridCells[x,y].visible || !worldCellsOpen[x,y]) {
                 if (dynamicMeshesPIDs[i].constIndex == 515) { // func_forcebridge
                     if (dynamicMeshesFBs[i].activated) {
-                        dynamicMeshes[i].enabled = true;
+                        inPVS = true;
                         // if (mergeVisibleMeshes) {
-//                         Meshenderer mrsh = GetMeshAndItsRenderer(dynamicMeshes[i].gameObject,dynamicMeshesPIDs[i].constIndex);
-//                         if (mrsh != null) sourceMeshenderers.Add(mrsh);
+                        //    Meshenderer mrsh = GetMeshAndItsRenderer(dynamicMeshes[i].gameObject,dynamicMeshesPIDs[i].constIndex);
+                        //    if (mrsh != null) sourceMeshenderers.Add(mrsh);
                         // }
-                    } else {
-                        dynamicMeshes[i].enabled = false;
+                    }
+                } else if (dynamicMeshesHMs[i] != null) {
+                    if (dynamicMeshesHMs[i].health > 0 || !dynamicMeshesHMs[i].gibOnDeath
+                        || dynamicMeshesPIDs[i].constIndex == 279) { // chunk_screen stays on when destroyed
+                        
+                        inPVS = true;
+                        // if (mergeVisibleMeshes) {
+                        //    Meshenderer mrsh = GetMeshAndItsRenderer(dynamicMeshes[i].gameObject,dynamicMeshesPIDs[i].constIndex);
+                        //    if (mrsh != null) sourceMeshenderers.Add(mrsh);
+                        // }
                     }
                 } else {
-                    if (dynamicMeshesHMs[i] != null) {
-                        if (dynamicMeshesHMs[i].health > 0
-                            || !dynamicMeshesHMs[i].gibOnDeath
-                            || dynamicMeshesPIDs[i].constIndex == 279) { // chunk_screen stays on when destroyed
-                                
-                            dynamicMeshes[i].enabled = true;
-                            // if (mergeVisibleMeshes) {
-//                             Meshenderer mrsh = GetMeshAndItsRenderer(dynamicMeshes[i].gameObject,dynamicMeshesPIDs[i].constIndex);
-//                             if (mrsh != null) sourceMeshenderers.Add(mrsh);
-                            // }
-                        } else {
-                            dynamicMeshes[i].enabled = false;
-                        }
-                    } else {
-                        dynamicMeshes[i].enabled = true;
-                    }
+                    inPVS = true;
                 }
-            } else {
-                dynamicMeshes[i].enabled = false;
             }
+            
+            dynamicMeshes[i].enabled = inPVS;
         }
     }
 
@@ -1446,9 +1401,9 @@ public class DynamicCulling : MonoBehaviour {
             int x = staticImmutableParticleCoords[i].x;
             int y = staticImmutableParticleCoords[i].y;
             if (gridCells[x,y].visible || !worldCellsOpen[x,y]) {
-                staticImmutableParticleSystems[i].Unhide();
+                staticImmutableParticleSystems[i].gameObject.SetActive(true);//Unhide();
             } else {
-                staticImmutableParticleSystems[i].Hide();
+                staticImmutableParticleSystems[i].gameObject.SetActive(false);//Hide();
             }
         }
     }
@@ -1459,11 +1414,11 @@ public class DynamicCulling : MonoBehaviour {
             x = staticMeshSaveableCoords[i].x;
             y = staticMeshSaveableCoords[i].y;
             if (gridCells[x,y].visible || !worldCellsOpen[x,y]) {
-                HealthManager hm =
-                    staticMeshesSaveable[i].GetComponent<HealthManager>();
-                    
-                if (hm != null) {
-                    if (hm.health > 0 || !hm.gibOnDeath || staticMeshesSaveablePIDs[i].constIndex == 279) {
+                if (staticMeshesSaveableHMs[i] != null) {
+                    if (staticMeshesSaveableHMs[i].health > 0
+                        || !staticMeshesSaveableHMs[i].gibOnDeath
+                        || staticMeshesSaveablePIDs[i].constIndex == 279) {
+                        
                         staticMeshesSaveable[i].enabled = true;
                         if (mergeVisibleMeshes) {
                             Meshenderer mrsh = GetMeshAndItsRenderer(staticMeshesSaveablePIDs[i].gameObject,staticMeshesSaveablePIDs[i].constIndex);
@@ -1525,6 +1480,7 @@ public class DynamicCulling : MonoBehaviour {
         lightsInPVS.Clear();
         lightsInPVSCoords.Clear();
         int x,y;
+        bool inPVS = false;
         Camera cam = MouseLookScript.a.playerCamera;
         for (int i=0;i<lights.Count;i++) {
             if (lights[i] == null) continue;
@@ -1541,7 +1497,9 @@ public class DynamicCulling : MonoBehaviour {
             int xMax = x + range;
             int yMin = y - range;
             int yMax = y + range;
+            inPVS = false;
             if (gridCells[x,y].visible || !gridCells[x,y].open) {
+                inPVS = true;
                 lights[i].enabled = true;
                 lightsInPVS.Add(lights[i]);
                 lightsInPVSCoords.Add(lightCoords[i]);
@@ -1550,19 +1508,24 @@ public class DynamicCulling : MonoBehaviour {
                     for (int iy = yMin;iy <= yMax; iy++) {
                         if (!XYPairInBounds(ix,iy)) continue;
 
-                        if (gridCells[ix,iy].visible && gridCells[x,y].visibleCellsFromHere[ix,iy]) {
-                            lights[i].enabled = true;
-                            lightsInPVS.Add(lights[i]);
-                            lightsInPVSCoords.Add(lightCoords[i]);
-                            goto LightContinue;
-                        } else {
-                            lights[i].enabled = false;
+                        if (gridCells[ix,iy].visible // Player can see it cell in light's range.
+                            && gridCells[x,y].visibleCellsFromHere[ix,iy]) { // Light's cell can see the cell in light's range.
+                            
+                            inPVS = true;
+                            goto LightContinue; // Cheap hack to avoid checking any more.  One is enough to justify turning on light.
                         }
                     }
                 }
             }
 
             LightContinue:
+            if (inPVS) {
+                lights[i].enabled = true;
+                lightsInPVS.Add(lights[i]);
+                lightsInPVSCoords.Add(lightCoords[i]);
+            } else {
+                lights[i].enabled = false;
+            }
             continue;
         }
     }
@@ -1582,14 +1545,15 @@ public class DynamicCulling : MonoBehaviour {
 //                 
 //             }
             
-            if (mergeVisibleMeshes) UncombineMeshes();
-            DetermineVisibleCells(playerCellX,playerCellY); // Reevaluate visible cells from new pos.
-//             for (int y=0;y<WORLDX;y++) {
-//                 for (int x=0;x<WORLDX;x++) {
-//                     gridCells[x,y].visible = gridCells[playerCellX,playerCellY].visibleCellsFromHere[x,y];
-//                 }
-//             }
+//             if (mergeVisibleMeshes) UncombineMeshes();
+            for (int y=0;y<WORLDX;y++) {
+                for (int x=0;x<WORLDX;x++) {
+                    gridCells[x,y].visible = gridCells[playerCellX,playerCellY].visibleCellsFromHere[x,y];
+                }
+            }
             gridCells[0,0].visible = true; // Errors default here so draw them anyways.
+            gridCells[playerCellX,playerCellY].visible = true;
+            
             ToggleVisibility(); // Update all cells marked as dirty.
             ToggleStaticMeshesImmutableVisibility();
             ToggleStaticImmutableParticlesVisibility();
@@ -1598,7 +1562,7 @@ public class DynamicCulling : MonoBehaviour {
             ToggleLightsVisibility();
             UpdateNPCPVS();
             ToggleNPCPVS();
-            if (mergeVisibleMeshes) CombineMeshes(true);
+//             if (mergeVisibleMeshes) CombineMeshes(true);
         }
         
         if (lightsFrustumCull) LightsFrustumCull(playerCellX,playerCellY);
@@ -1715,7 +1679,7 @@ public class GridCell {
     public bool closedEast;  // the immediately adjacent cell at this edge
     public bool closedSouth; // is not visible, consider edge as closed to
     public bool closedWest;  // be able to further reduce visible cells.
-    public bool[,] visibleCellsFromHere = new bool[64,64];
+    public bool[,] visibleCellsFromHere;
     public List<ChunkPrefab> chunkPrefabs;
     public List<DynamicObject> dynamicObjects;
 }

@@ -154,7 +154,7 @@ MonoBehaviour:
   proxSensed: 0
   tickTime: 0.8
   useProx: 0
-  explosionType: 21
+  explosionType: 20
   active: 1
   timeFinished: 0
   explodeOnContact: 0

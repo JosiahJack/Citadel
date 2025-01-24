@@ -436,7 +436,7 @@ public class Const : MonoBehaviour {
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
 		a.LoadTextures();
-		a.versionString = "v0.99.6"; // Global CITADEL PROJECT VERSION
+		a.versionString = "v0.99.7"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
 							  + "Start of C# Game Code, Welcome back Hacker!");
@@ -1870,7 +1870,7 @@ public class Const : MonoBehaviour {
 		}
 		loadPercentText.text = "Re-init cull systems...";
 		yield return new WaitForSeconds(0.05f);
-		if (LevelManager.a.currentLevel != 13) DynamicCulling.a.Cull_Init();
+// 		if (LevelManager.a.currentLevel != 13) DynamicCulling.a.Cull_Init();
 		loadPercentText.text = "Cleaning Up...";
 		yield return new WaitForSeconds(0.1f);
 

@@ -510,58 +510,60 @@ public static class SaveLoad {
         bool hasBoxColliderOverride = false;
         bool hasTextOverride = false;
         string materialOverride = "";
-        List<ObjectOverride> ovides = PrefabUtility.GetObjectOverrides(go,false);
-        for (int j=0; j < ovides.Count; j++) {
-//             UnityEngine.Object ob = ovides[j].instanceObject;
-//             SerializedObject sob = new UnityEditor.SerializedObject(ob);
-// 
-//             hasBoxColliderOverride = false;
-//             // List overridden properties
-//             SerializedProperty prop = sob.GetIterator();
-//             while (prop.NextVisible(true)) {
-//                 if (prop.propertyPath == "m_Name" ||
-//                     prop.propertyPath == "m_LocalPosition" ||
-//                     prop.propertyPath == "m_LocalPosition.x" ||
-//                     prop.propertyPath == "m_LocalPosition.y" ||
-//                     prop.propertyPath == "m_LocalPosition.z" ||
-//                     prop.propertyPath == "m_LocalRotation" ||
-//                     prop.propertyPath == "m_LocalRotation.x" ||
-//                     prop.propertyPath == "m_LocalRotation.y" ||
-//                     prop.propertyPath == "m_LocalRotation.z" ||
-//                     prop.propertyPath == "m_LocalRotation.w" ||
-//                     prop.propertyPath == "m_LocalScale" ||
-//                     prop.propertyPath == "m_LocalScale.x" ||
-//                     prop.propertyPath == "m_LocalScale.y" ||
-//                     prop.propertyPath == "m_LocalScale.z")  {
-//                     
-//                     continue; // Skip transform overrides
-//                 }
-// 
-//                 if (prop.prefabOverride) {
-//                     if (prop.propertyPath == "m_Size" ||
-//                         prop.propertyPath == "m_Size.x" ||
-//                         prop.propertyPath == "m_Size.y" ||
-//                         prop.propertyPath == "m_Size.z" ||
-//                         prop.propertyPath == "m_Center" ||
-//                         prop.propertyPath == "m_Center.x" ||
-//                         prop.propertyPath == "m_Center.y" ||
-//                         prop.propertyPath == "m_Center.z") {
-// 
-//                         hasBoxColliderOverride = true;
-//                     }
-// 
-//                     if (prop.propertyPath == "lingdex") hasTextOverride = true;
-//                     string value = GetPropertyValue(prop);
-//                     if (prop.propertyPath == "m_Materials.Array.data[0]") {
-//                         materialOverride = value;
-//                     }
-// 
-//                     UnityEngine.Debug.Log(go.name + ":: Found Override: "
-//                                           + prop.propertyPath + ", Value: "
-//                                           + value);
-//                 }
-//             }
-        }
+        #if UNITY_EDITOR        
+            List<ObjectOverride> ovides = PrefabUtility.GetObjectOverrides(go,false);
+            for (int j=0; j < ovides.Count; j++) {
+    //             UnityEngine.Object ob = ovides[j].instanceObject;
+    //             SerializedObject sob = new UnityEditor.SerializedObject(ob);
+    // 
+    //             hasBoxColliderOverride = false;
+    //             // List overridden properties
+    //             SerializedProperty prop = sob.GetIterator();
+    //             while (prop.NextVisible(true)) {
+    //                 if (prop.propertyPath == "m_Name" ||
+    //                     prop.propertyPath == "m_LocalPosition" ||
+    //                     prop.propertyPath == "m_LocalPosition.x" ||
+    //                     prop.propertyPath == "m_LocalPosition.y" ||
+    //                     prop.propertyPath == "m_LocalPosition.z" ||
+    //                     prop.propertyPath == "m_LocalRotation" ||
+    //                     prop.propertyPath == "m_LocalRotation.x" ||
+    //                     prop.propertyPath == "m_LocalRotation.y" ||
+    //                     prop.propertyPath == "m_LocalRotation.z" ||
+    //                     prop.propertyPath == "m_LocalRotation.w" ||
+    //                     prop.propertyPath == "m_LocalScale" ||
+    //                     prop.propertyPath == "m_LocalScale.x" ||
+    //                     prop.propertyPath == "m_LocalScale.y" ||
+    //                     prop.propertyPath == "m_LocalScale.z")  {
+    //                     
+    //                     continue; // Skip transform overrides
+    //                 }
+    // 
+    //                 if (prop.prefabOverride) {
+    //                     if (prop.propertyPath == "m_Size" ||
+    //                         prop.propertyPath == "m_Size.x" ||
+    //                         prop.propertyPath == "m_Size.y" ||
+    //                         prop.propertyPath == "m_Size.z" ||
+    //                         prop.propertyPath == "m_Center" ||
+    //                         prop.propertyPath == "m_Center.x" ||
+    //                         prop.propertyPath == "m_Center.y" ||
+    //                         prop.propertyPath == "m_Center.z") {
+    // 
+    //                         hasBoxColliderOverride = true;
+    //                     }
+    // 
+    //                     if (prop.propertyPath == "lingdex") hasTextOverride = true;
+    //                     string value = GetPropertyValue(prop);
+    //                     if (prop.propertyPath == "m_Materials.Array.data[0]") {
+    //                         materialOverride = value;
+    //                     }
+    // 
+    //                     UnityEngine.Debug.Log(go.name + ":: Found Override: "
+    //                                           + prop.propertyPath + ", Value: "
+    //                                           + value);
+    //                 }
+    //             }
+            }
+        #endif
         
         StringBuilder s1 = new StringBuilder();
         s1.Clear();
