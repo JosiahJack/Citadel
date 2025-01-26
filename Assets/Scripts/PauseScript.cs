@@ -17,7 +17,6 @@ public class PauseScript : MonoBehaviour {
 
 	[HideInInspector] public bool paused = false;
 	private bool previousInvMode = false;
-	private Texture2D previousCursorImage;
 	[HideInInspector] public bool onSaveDialog = false;
 	public float relativeTime;
 	public float absoluteTime;
@@ -206,8 +205,6 @@ public class PauseScript : MonoBehaviour {
 
 	public void PauseSystems() {
 		paused = true;
-		previousCursorImage = MouseCursor.a.cursorImage;
-		MouseCursor.a.cursorImage = MouseLookScript.a.cursorDefaultTexture;
 		for (int i=0;i<disableUIOnPause.Length;i++) {
 			disableUIOnPause[i].SetActive(false);
 		}
@@ -235,7 +232,6 @@ public class PauseScript : MonoBehaviour {
 
 	public void UnpauseSystems() {
 		paused = false;
-		MouseCursor.a.cursorImage = previousCursorImage;
 		for (int i=0;i<disableUIOnPause.Length;i++) {
 			disableUIOnPause[i].SetActive(true);
 		}

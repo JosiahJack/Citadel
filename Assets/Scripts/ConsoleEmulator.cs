@@ -843,14 +843,14 @@ Master Index
 406 line_blaster                99
 407 line_ion                    100
 408 line_hopperbeam             101
-409 null                        102
-410 null                        103
-411 null                        104
-412 null                        105
-413 null                        106
-414 null                        107
-415 null                        108
-416 null                        109    Access Card Type
+409 red crosshair               102
+410 orange crosshair            103
+411 yellow crosshair            104
+412 green crosshair small       105
+413 teal crosshair              106
+414 blue crosshair              107
+415 cursor vmail                108
+416 cursor cyberspace           109    Access Card Type
 417 item_access_card_perdarcy   110    Personnel 1 (Darcy) (Purple Rim, Red Inner) (card_per5)
 418 null  (whoops!, oh well)          NPC
 419 npc_autobomb                      0

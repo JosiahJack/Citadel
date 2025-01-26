@@ -158,7 +158,7 @@ public class PlayerEnergy : MonoBehaviour {
 		Inventory.a.hardwareIsActive[3] = false;
 		Inventory.a.hardwareButtonManager.SensaroundOff(); //sensaround
 		if (Inventory.a.hardwareIsActive [6] && Inventory.a.hardwareVersionSetting[6] == 0) Inventory.a.hardwareButtonManager.BioOff(); // biomonitor, but only on v1, v2 doesn't use power
-		if (Inventory.a.hardwareIsActive [5]) Inventory.a.hardwareButtonManager.ShieldOff(); // shield
+		if (Inventory.a.hardwareIsActive [5]) Inventory.a.hardwareButtonManager.ShieldOffWithEffects(); // shield
 		if (Inventory.a.hardwareIsActive [7]) Inventory.a.hardwareButtonManager.LanternOff(); // lantern
 		if (Inventory.a.hardwareIsActive [9]) Inventory.a.hardwareButtonManager.BoosterOff(); // turbo motion booster
 		if (Inventory.a.hardwareIsActive [11]) Inventory.a.hardwareButtonManager.InfraredOff(); // infrared

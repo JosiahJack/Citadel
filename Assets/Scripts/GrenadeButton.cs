@@ -8,8 +8,6 @@ public class GrenadeButton : MonoBehaviour {
 	public int useableItemIndex;
 
 	private int itemLookup;
-	private Texture2D cursorTexture;
-	private Vector2 cursorHotspot;
 	private EventTrigger evenT;
 	private bool pointerEntered;
 

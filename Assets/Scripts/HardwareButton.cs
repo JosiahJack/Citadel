@@ -51,18 +51,17 @@ public class HardwareButton : MonoBehaviour {
 		gscSensaCenter = sensaroundCenterCamera.GetComponent<Grayscale>();
 		gscSensaLH = sensaroundLHCamera.GetComponent<Grayscale>();
 		gscSensaRH = sensaroundRHCamera.GetComponent<Grayscale>();
-		DisableInfrared();
 	}
 
 	public void ListenForHardwareHotkeys () {
-		if (Inventory.a.hasHardware[6] && GetInput.a.Biomonitor()) BioAction();
+		if (Inventory.a.hasHardware[2] && GetInput.a.Email())      EReaderAction();
 		if (Inventory.a.hasHardware[3] && GetInput.a.Sensaround()) SensaroundAction();
 		if (Inventory.a.hasHardware[5] && GetInput.a.Shield())     ShieldAction();
+		if (Inventory.a.hasHardware[6] && GetInput.a.Biomonitor()) BioAction();
 		if (Inventory.a.hasHardware[7] && GetInput.a.Lantern())    LanternAction();
-		if (Inventory.a.hasHardware[11]&& GetInput.a.Infrared())   InfraredAction();
-		if (Inventory.a.hasHardware[2] && GetInput.a.Email())      EReaderAction();
 		if (Inventory.a.hasHardware[9] && GetInput.a.Booster())    BoosterAction();
 		if (Inventory.a.hasHardware[10]&& GetInput.a.Jumpjets())   JumpJetsAction();
+		if (Inventory.a.hasHardware[11]&& GetInput.a.Infrared())   InfraredAction();
 	}
 
 	// 0 = bio, 1 = sen, 2 = lan, 3 = shi, 4 = nig, 5 = ere, 6 = boo, 7 = jum
@@ -103,25 +102,28 @@ public class HardwareButton : MonoBehaviour {
 		}
 
 		Utils.PlayUIOneShotSavable(78);
-		if (Inventory.a.BioMonitorActive()) Utils.Deactivate(bioMonitorContainer);
-		else Utils.Activate(bioMonitorContainer);
-
-		Inventory.a.hardwareIsActive[6] = !Inventory.a.hardwareIsActive[6];
-		SetVersionIconForButton(Inventory.a.BioMonitorActive(),
-								Inventory.a.BioMonitorVersion(),0);
+		if (Inventory.a.BioMonitorActive()) {
+			BioOff();
+		} else {
+			BioOn();
+		}
 	}
 
 	// Called by PlayerEnergy when exhausted energy to 0 so mustn't play sound.
 	public void BioOff() {
 		Inventory.a.hardwareIsActive[6] = false;
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[6],
-								Inventory.a.BioMonitorVersion(),0);
-
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[6],Inventory.a.BioMonitorVersion(),0);
 		if (BiomonitorGraphSystem.a != null) {
 			BiomonitorGraphSystem.a.ClearGraphs();
 		}
 
 		Utils.Deactivate(bioMonitorContainer);
+	}
+
+	public void BioOn() {
+		Inventory.a.hardwareIsActive[6] = true;
+		SetVersionIconForButton(Inventory.a.BioMonitorActive(),Inventory.a.BioMonitorVersion(),0);
+		Utils.Activate(bioMonitorContainer);
 	}
 
 	public void ActivateSensaroundCenter() {
@@ -153,7 +155,7 @@ public class HardwareButton : MonoBehaviour {
 		MFDManager.a.ReturnToLastTab(false);
 	}
 
-	public void SensaroundActivate() {
+	public void SensaroundOn() {
 		Inventory.a.hardwareIsActive[3] = true;
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[3], Inventory.a.hardwareVersionSetting[3],1);
 		if (Inventory.a.hardwareVersion[3] == 1) {
@@ -177,14 +179,14 @@ public class HardwareButton : MonoBehaviour {
 			SensaroundOff();
 		} else {
 			Utils.PlayUIOneShotSavable(93);
-			SensaroundActivate();
+			SensaroundOn();
 		}
 	}
 
 	// called by PlayerEnergy when exhausted energy to 0
 	public void SensaroundOff() {
 		Inventory.a.hardwareIsActive[3] = false;
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[3], Inventory.a.hardwareVersionSetting[3],1);
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[3],Inventory.a.hardwareVersionSetting[3],1);
 		DeactivateSensaroundCameras();
 	}
 
@@ -192,26 +194,34 @@ public class HardwareButton : MonoBehaviour {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		ShieldAction();
 	}
+	
+	public void ShieldOff() {
+		Inventory.a.hardwareIsActive[5] = false;
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[5],Inventory.a.hardwareVersionSetting[5],3);
+	}
+	
+	public void ShieldOn() {
+		Inventory.a.hardwareIsActive[5] = true;
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[5],Inventory.a.hardwareVersionSetting[5],3);
+	}
 
 	public void ShieldAction() {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
 		if (Inventory.a.hardwareIsActive[5]) {
 			Utils.PlayUIOneShotSavable(95);
-			ShieldDeactivateFX.SetActive(true);
-			ShieldActivateFX.SetActive(false);
+			ShieldOffWithEffects();
 		} else {
 			Utils.PlayUIOneShotSavable(96);
 			ShieldDeactivateFX.SetActive(false);
 			ShieldActivateFX.SetActive(true);
+			ShieldOn();
+			
 		}
-		Inventory.a.hardwareIsActive[5] = !Inventory.a.hardwareIsActive[5];
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[5], Inventory.a.hardwareVersionSetting[5],3);
 	}
 
 	// Called by PlayerEnergy when exhausted energy to 0.
-	public void ShieldOff() {
-		Inventory.a.hardwareIsActive[5] = false;
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[5], Inventory.a.hardwareVersionSetting[5],3);
+	public void ShieldOffWithEffects() {
+		ShieldOff();
 		ShieldDeactivateFX.SetActive(true);
 		ShieldActivateFX.SetActive(false);
 	}
@@ -223,35 +233,34 @@ public class HardwareButton : MonoBehaviour {
 
 	public void LanternAction() {
 		if (PlayerEnergy.a.energy <=0) { Const.sprint(Const.a.stringTable[314],WeaponCurrent.a.owner); return; }
+		Utils.PlayUIOneShotSavable(78);
 		if (Inventory.a.hardwareIsActive[7]) {
-			Utils.PlayUIOneShotSavable(78);
+			LanternOff();
 		} else {
-			Utils.PlayUIOneShotSavable(78);
+			LanternOn();
 		}
-		Inventory.a.hardwareIsActive[7] = !Inventory.a.hardwareIsActive[7];
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[7], Inventory.a.hardwareVersionSetting[7],2);
+	}
+
+	public void LanternOn() {
+		Inventory.a.hardwareIsActive[7] = true;
+		SetVersionIconForButton(Inventory.a.LanternActive(), Inventory.a.LanternVersion(),2);
 
 		// Figure out which brightness setting to use depending on version.
-		switch(Inventory.a.hardwareVersionSetting[7]) {
+		switch(Inventory.a.LanternVersion()) {
 			case 0: brightness = lanternVersion1Brightness; break;
 			case 1: brightness = lanternVersion2Brightness; break;
 			case 2: brightness = lanternVersion3Brightness; break;
 			default: brightness = defaultZero; break;
 		}
 
-		if (Inventory.a.hardwareIsActive[7]) {
-			Utils.EnableLight(headlight);
-			headlight.intensity = brightness; // Set the light intensity per version.
-		} else {
-			Utils.DisableLight(headlight);
-			headlight.intensity = defaultZero; // Turn the light off.
-		}
+		Utils.EnableLight(headlight);
+		headlight.intensity = brightness; // Set the light intensity per version.
 	}
-
+	
 	// Called by PlayerEnergy when exhausted energy to 0.
 	public void LanternOff() {
 		Inventory.a.hardwareIsActive[7] = false;
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[7], Inventory.a.hardwareVersionSetting[7],2);
+		SetVersionIconForButton(Inventory.a.LanternActive(), Inventory.a.hardwareVersionSetting[7],2);
 		Utils.DisableLight(headlight);
 		headlight.intensity = defaultZero; // Turn the light off.
 	}
@@ -271,13 +280,13 @@ public class HardwareButton : MonoBehaviour {
 		Inventory.a.hardwareIsActive[11] = !Inventory.a.hardwareIsActive[11];
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[11], Inventory.a.hardwareVersionSetting[11],4);
 		if (Inventory.a.hardwareIsActive[11]) {
-			EnableInfrared();
+			InfraredOn();
 		} else {
-			DisableInfrared();
+			InfraredOff();
 		}
 	}
 
-	void EnableInfrared() {
+	public void InfraredOn() {
 		Utils.EnableLight(infraredLight);
 		Utils.EnableGrayscale(gsc);
 		Utils.EnableGrayscale(gscSensaCenter);
@@ -285,30 +294,30 @@ public class HardwareButton : MonoBehaviour {
 		Utils.EnableGrayscale(gscSensaRH);
 	}
 
-	void DisableInfrared() {
+	// called by PlayerMovement when exhausted energy to < 11f
+	public void InfraredOff() {
+		Inventory.a.hardwareIsActive[11] = false;
 		Utils.DisableLight(infraredLight);
 		Utils.DisableGrayscale(gsc);
 		Utils.DisableGrayscale(gscSensaCenter);
 		Utils.DisableGrayscale(gscSensaLH);
 		Utils.DisableGrayscale(gscSensaRH);
-	}
-
-	// called by PlayerMovement when exhausted energy to < 11f
-	public void InfraredOff() {
-		Inventory.a.hardwareIsActive[11] = false;
 		SetVersionIconForButton(false,Inventory.a.hardwareVersionSetting[11],4);
-		DisableInfrared();
 	}
 
 	public void EReaderClick () {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		EReaderAction();
 	}
+	
+	public void EReaderOn() {
+		Inventory.a.hardwareIsActive[2] = true;
+		MFDManager.a.OpenEReaderInItemsTab();
+	}
 
 	public void EReaderAction() {
 		Utils.PlayUIOneShotSavable(97);
-		Inventory.a.hardwareIsActive[2] = true;
-		MFDManager.a.OpenEReaderInItemsTab();
+		EReaderOn();
 	}
 
 
@@ -324,16 +333,22 @@ public class HardwareButton : MonoBehaviour {
 		}
 
 		Utils.PlayUIOneShotSavable(78);
-		Inventory.a.hardwareIsActive[9] = !Inventory.a.hardwareIsActive[9];
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[9],
-								Inventory.a.hardwareVersionSetting[9],6);
+		if (Inventory.a.hardwareIsActive[9]) {
+			BoosterOff();
+		} else {
+			BoosterOn();
+		}
+	}
+	
+	public void BoosterOn() {
+		Inventory.a.hardwareIsActive[9] = true;
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[9],Inventory.a.hardwareVersionSetting[9],6);
 	}
 
 	// called by PlayerMovement when exhausted energy to < 11f
 	public void BoosterOff() {
 		Inventory.a.hardwareIsActive[9] = false;
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[9],
-								Inventory.a.hardwareVersionSetting[9],6);
+		SetVersionIconForButton(Inventory.a.hardwareIsActive[9],Inventory.a.hardwareVersionSetting[9],6);
 	}
 
 	public void JumpJetsClick() {
@@ -349,13 +364,21 @@ public class HardwareButton : MonoBehaviour {
 
 		Utils.PlayUIOneShotSavable(78);
 		Inventory.a.JumpJetsToggle();
-		SetVersionIconForButton(Inventory.a.JumpJetsActive(),
-								Inventory.a.JumpJetsVersion(),7);
+		if (Inventory.a.JumpJetsActive()) {
+			JumpJetsOn();
+		} else {
+			JumpJetsOff();
+		}
+	}
+	
+	public void JumpJetsOn() {
+		Inventory.a.hardwareIsActive[10] = true;
+		SetVersionIconForButton(Inventory.a.JumpJetsActive(), Inventory.a.JumpJetsVersion(),7);
 	}
 
 	// called by PlayerMovement when exhausted energy to < 11f
 	public void JumpJetsOff() {
 		Inventory.a.hardwareIsActive[10] = false;
-		SetVersionIconForButton(Inventory.a.hardwareIsActive[10], Inventory.a.hardwareVersionSetting[10],7);
+		SetVersionIconForButton(Inventory.a.JumpJetsActive(), Inventory.a.JumpJetsVersion(),7);
 	}
 }

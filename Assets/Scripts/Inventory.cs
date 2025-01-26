@@ -23,6 +23,25 @@ public class Inventory : MonoBehaviour {
 	[HideInInspector] public bool[] hardwareIsActive; // save
 	public Text[] hardwareInvText;
 	private int[] hardwareInvReferenceIndex;
+	public Button[] hardwareButtons;
+	public Sprite[] hardwareButtonDeactive;
+	public Sprite[] hardwareButtonActive1;
+	public Sprite[] hardwareButtonActive2;
+	public Sprite[] hardwareButtonActive3;
+	public Sprite[] hardwareButtonActive4;
+	public GameObject sensaroundCenter;
+	public GameObject sensaroundLH;
+	public GameObject sensaroundRH;
+	public GameObject sensaroundCenterCamera;
+	public GameObject sensaroundLHCamera;
+	public GameObject sensaroundRHCamera;
+	public GameObject bioMonitorContainer;
+	public Light infraredLight;
+	public GameObject playerCamera;
+	public Light headlight;
+	public EmailContentsButtonsManager ecbm;
+	public GameObject ShieldActivateFX;
+	public GameObject ShieldDeactivateFX;
 
 	// General
 	public GameObject[] genButtons;
@@ -842,6 +861,15 @@ public class Inventory : MonoBehaviour {
 
 	public bool BioMonitorActive() {
 		return hasHardware[6] && hardwareIsActive[6];
+	}
+
+	// Lantern utility functions. [7]
+	public int LanternVersion() {
+		return hardwareVersion[7];
+	}
+	
+	public bool LanternActive() {
+		return hasHardware[7] && hardwareIsActive[7];
 	}
 
 	// Envirosuit utility functions. [8]
@@ -1848,11 +1876,7 @@ public class Inventory : MonoBehaviour {
 			MouseLookScript.a.compassLargeTicks.SetActive(false);
 		}
 
-		if (!inv.BioMonitorActive()) {
-			Utils.Deactivate(inv.hardwareButtonManager.bioMonitorContainer);
-		} else {
-			Utils.Activate(inv.hardwareButtonManager.bioMonitorContainer);
-		}
+		
 		
 	    for (j=0;j<12;j++) {
     		int button8Index = -1;
@@ -1897,6 +1921,39 @@ public class Inventory : MonoBehaviour {
 				inv.ActivateHardwareButton(j);
 			}
 	    }
+		
+		// 0
+		
+		// 1
+		
+	    // 2 UI states saved elsewhere for EReader
+		
+	    if (inv.hardwareIsActive[3]) inv.hardwareButtonManager.SensaroundOn(); // 3
+		else inv.hardwareButtonManager.SensaroundOff(); 
+		
+		// 4
+		
+	    if (inv.hardwareIsActive[5]) inv.hardwareButtonManager.ShieldOn(); // 5
+		else inv.hardwareButtonManager.ShieldOff();
+		
+	    if (inv.BioMonitorActive()) inv.hardwareButtonManager.BioOn(); // 6
+		else inv.hardwareButtonManager.BioOff();
+		
+	    if (inv.LanternActive()) inv.hardwareButtonManager.LanternOn(); // 7
+		else inv.hardwareButtonManager.LanternOff();
+		
+		// 8
+		
+	    if (inv.BoosterActive()) inv.hardwareButtonManager.BoosterOn(); // 9
+		else inv.hardwareButtonManager.BoosterOff();
+		
+	    if (inv.JumpJetsActive()) inv.hardwareButtonManager.JumpJetsOn(); // 10
+		else inv.hardwareButtonManager.JumpJetsOff();
+
+	    if (inv.hardwareIsActive[11]) inv.hardwareButtonManager.InfraredOn(); // 11
+		else inv.hardwareButtonManager.InfraredOff();
+			
+		// 12
 
 		for (j=0;j<32;j++) { inv.accessCardsOwned[j] = Utils.IntToAccessCardType(Utils.GetIntFromString(entries[index],"accessCardsOwned[" + j.ToString() + "]")); index++; }
 		for (j=0;j<14;j++) { inv.generalInventoryIndexRef[j] = Utils.GetIntFromString(entries[index],"generalInventoryIndexRef[" + j.ToString() + "]"); index++; }

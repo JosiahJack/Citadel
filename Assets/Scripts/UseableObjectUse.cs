@@ -7,7 +7,6 @@ public class UseableObjectUse : MonoBehaviour {
 	public int ammo = 0;
 	public int ammo2 = 0;
 	public bool heldObjectLoadedAlternate = false;
-	private Texture2D tex;
 
 	void Awake() {
 		// 33% chance of not spawning logic probes on Puzzle difficulty of 3
@@ -40,8 +39,6 @@ public class UseableObjectUse : MonoBehaviour {
 	    }
 	    
 		if (useableItemIndex < 0) Debug.Log("BUG: Useable index less than 0!");
-		tex = Const.a.useableItemsFrobIcons[useableItemIndex];
-		if (tex != null) MouseCursor.a.cursorImage = tex; // Set cursor to this object
 		MouseLookScript.a.holdingObject = true;
 		MouseLookScript.a.heldObjectIndex = useableItemIndex;
 		MouseLookScript.a.heldObjectCustomIndex = customIndex;
@@ -51,7 +48,6 @@ public class UseableObjectUse : MonoBehaviour {
 		if (Const.a.InputQuickItemPickup) {
 			MouseLookScript.a.AddItemToInventory(useableItemIndex,customIndex);
 			MouseLookScript.a.ResetHeldItem();
-			MouseLookScript.a.ResetCursor();
 		} else {
 			MouseLookScript.a.ForceInventoryMode();  // Inventory mode is turned on when picking something up
 			Const.sprint(Const.a.stringTable[useableItemIndex + 326] // <item>

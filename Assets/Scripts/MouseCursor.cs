@@ -33,11 +33,21 @@ public class MouseCursor : MonoBehaviour {
 	public GUIStyle toolTipStyle;
 	public GUIStyle toolTipStyleLH;
 	public GUIStyle toolTipStyleRH;
+	public GameObject tooltipCenter;
+	public GameObject tooltipLeft;
+	public GameObject tooltipRight;
+	public GameObject tooltipLiveGrenade;
+	public Text tooltipCenterText;
+	public Text tooltipLeftText;
+	public Text tooltipRightText;
+	public Text tooltipLiveGrenadeText;
 	public Handedness toolTipType;
+	public Texture2D cursorDefaultTexture;
+	public Texture2D cyberspaceCursor;
 	public Texture2D cursorLHTexture;
 	public Texture2D cursorRHTexture;
 	public Texture2D cursorDNTexture;
-	private Texture2D tempTexture;
+	private Texture2D tooltipTexture;
 	public Texture2D cursorGUI;
 	public RectTransform energySliderRect;
 	public float cursorScreenPercentage = 0.02f;
@@ -45,7 +55,6 @@ public class MouseCursor : MonoBehaviour {
 	public float deltaX;
 	public float deltaY;
 	public Vector2 lastMousePos;
-	private string nullStr = "-1";
 	public GraphicRaycaster raycaster;
 	private List<RaycastResult> graphicCastResults;
 	private PointerEventData pev;
@@ -105,77 +114,56 @@ public class MouseCursor : MonoBehaviour {
 		uiRaycastRects.Add(rectToAdd);
 		uiRaycastRectGOs.Add(go);
 	}
-
-	void LateUpdate() {
-		if (MouseLookScript.a == null) return;
-		if (MinigameCursor.a != null) {
-			if (MinigameCursor.a.mouseOverPanel) return;
-		}
-
-		if (MouseLookScript.a.inventoryMode || PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
-            // Inventory Mode Cursor
- 			drawTexture.Set(Input.mousePosition.x - offsetX,Screen.height - Input.mousePosition.y - offsetY,cursorSize,cursorSize);
-			cursorUIImage.rectTransform.anchoredPosition = new Vector2((Input.mousePosition.x / Screen.width) * canvasRectTransform.sizeDelta.x,(((-1f * (Screen.height - (Input.mousePosition.y))) / Screen.height) * canvasRectTransform.sizeDelta.y) + canvasRectTransform.sizeDelta.y);
-			cursorUIImage.rectTransform.sizeDelta = new Vector2(cursorSize * halfFactor,cursorSize * halfFactor); // Pivot is 0.5,0.5
-        } else {
-            // Shoot Mode Cursor
- 			drawTexture.Set((Screen.width * halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize - offsetY, cursorSize, cursorSize);
-			cursorUIImage.rectTransform.anchoredPosition = new Vector2(halfFactor * canvasRectTransform.sizeDelta.x, halfFactor * canvasRectTransform.sizeDelta.y);
-			cursorUIImage.rectTransform.sizeDelta = new Vector2(cursorSize * halfFactor,cursorSize * halfFactor); // Pivot is 0.5,0.5
-        }
-        
-        if (cursorUIImage.texture != cursorImage) cursorUIImage.texture = cursorImage;
-
-		if (toolTipHasText && toolTip != nullStr && !PauseScript.a.Paused() && (MouseLookScript.a.inventoryMode || liveGrenade)) {
+	
+	private void SetCursorPositionMovable() {
+		drawTexture.Set(Input.mousePosition.x - offsetX,Screen.height - Input.mousePosition.y - offsetY,cursorSize,cursorSize);
+		cursorUIImage.rectTransform.anchoredPosition = new Vector2((Input.mousePosition.x / Screen.width) * canvasRectTransform.sizeDelta.x,(((-1f * (Screen.height - (Input.mousePosition.y))) / Screen.height) * canvasRectTransform.sizeDelta.y) + canvasRectTransform.sizeDelta.y);
+		cursorUIImage.rectTransform.sizeDelta = new Vector2(cursorSize * halfFactor,cursorSize * halfFactor); // Pivot is 0.5,0.5
+	}
+	
+	private void SetCursorPositionAtCenter() {
+		drawTexture.Set((Screen.width * halfFactor) - offsetX, (Screen.height * halfFactor) - cursorSize - offsetY, cursorSize, cursorSize);
+		cursorUIImage.rectTransform.anchoredPosition = new Vector2((halfFactor * canvasRectTransform.sizeDelta.x),(halfFactor * canvasRectTransform.sizeDelta.y));
+		cursorUIImage.rectTransform.sizeDelta = new Vector2(cursorSize * halfFactor,cursorSize * halfFactor); // Pivot is 0.5,0.5
+	}
+	
+	private void EnableTooltips() {
+		if (toolTipHasText && !PauseScript.a.Paused() && !PauseScript.a.MenuActive() && (MouseLookScript.a.inventoryMode || liveGrenade)) {
 			switch(toolTipType) {
 				case Handedness.LH:
-// 					GUI.Label(drawTexture,toolTip,toolTipStyleLH);
-					tempTexture = cursorLHTexture;
+					tooltipLeft.SetActive(true);
+					tooltipLeftText.text = toolTip;
+					tooltipTexture = cursorLHTexture;
 					break;
 				case Handedness.RH:
-// 					GUI.Label(drawTexture,toolTip,toolTipStyleRH);
-					tempTexture = cursorRHTexture;
+					tooltipRight.SetActive(true);
+					tooltipRightText.text = toolTip;
+					tooltipTexture = cursorRHTexture;
 					break;
 				default: // Handedness.Center
-// 					GUI.Label(drawTexture,toolTip,toolTipStyle);
-					tempTexture = cursorDNTexture;
+					tooltipCenter.SetActive(true);
+					tooltipCenterText.text = toolTip;
+					tooltipTexture = cursorDNTexture;
 					break;
 			}
-			if (!MouseLookScript.a.holdingObject) cursorImage = tempTexture;
 		} else {
-			if ((PauseScript.a.Paused() || PauseScript.a.MenuActive()) || GUIState.a.isBlocking && !MouseLookScript.a.holdingObject) {
-				cursorImage = cursorGUI;
-			} else if (MouseLookScript.a.vmailActive) {
-				cursorImage = Const.a.useableItemsFrobIcons[108];	// vmail
-			} else if (MouseLookScript.a.inCyberSpace) {
-				cursorImage = MouseLookScript.a.cyberspaceCursor;
-			} else if (MouseLookScript.a.holdingObject && MouseLookScript.a.heldObjectIndex >= 0) {
-				cursorImage = Const.a.useableItemsFrobIcons[MouseLookScript.a.heldObjectIndex];
-			} else {
-				switch(WeaponCurrent.a.weaponIndex) {
-					case 36: cursorImage = Const.a.useableItemsFrobIcons[102]; break; // red
-					case 37: cursorImage = Const.a.useableItemsFrobIcons[107]; break; // blue
-					case 38: cursorImage = Const.a.useableItemsFrobIcons[102]; break; // red
-					case 39: cursorImage = Const.a.useableItemsFrobIcons[105]; break; // green
-					case 40: cursorImage = Const.a.useableItemsFrobIcons[107]; break; // blue
-					case 41: cursorImage = Const.a.useableItemsFrobIcons[103]; break; // orange
-					case 42: cursorImage = Const.a.useableItemsFrobIcons[103]; break; // orange
-					case 43: cursorImage = Const.a.useableItemsFrobIcons[102]; break; // red
-					case 44: cursorImage = Const.a.useableItemsFrobIcons[104]; break; // yellow
-					case 45: cursorImage = Const.a.useableItemsFrobIcons[102]; break; // red
-					case 46: cursorImage = Const.a.useableItemsFrobIcons[106]; break; // teal
-					case 47: cursorImage = Const.a.useableItemsFrobIcons[104]; break; // yellow
-					case 48: cursorImage = Const.a.useableItemsFrobIcons[102]; break; // red
-					case 49: cursorImage = Const.a.useableItemsFrobIcons[105]; break; // green
-					case 50: cursorImage = Const.a.useableItemsFrobIcons[107]; break; // blue
-					case 51: cursorImage = Const.a.useableItemsFrobIcons[106]; break; // teal
-					default: cursorImage = Const.a.useableItemsFrobIcons[105]; break; // green
-				}
-			}
+			DisableTooltips();
 		}
-
-// 		GUI.DrawTexture(drawTexture, cursorImage);
-// 		if (liveGrenade && !PauseScript.a.Paused()) GUI.Label(drawTexture,Const.a.stringTable[586],liveGrenadeStyle); // Display "live" next to cursor
+	}
+	
+	private void DisableTooltips() {
+		tooltipCenter.SetActive(false);
+		tooltipLeft.SetActive(false);
+		tooltipRight.SetActive(false);
+	}
+	
+	private void DisableLiveGrenadeTooltip() {
+		tooltipLiveGrenade.SetActive(false);
+	}
+	
+	private void EnableLiveGrenadeTooltip() {
+		tooltipLiveGrenade.SetActive(true); // Display "live" next to cursor
+		tooltipLiveGrenadeText.text = Const.a.stringTable[586];
 	}
 
 	void Update() {
@@ -198,10 +186,7 @@ public class MouseCursor : MonoBehaviour {
 		// Maintain cursor mode.
 		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
 			Cursor.lockState = CursorLockMode.None;
-			return;
-		}
-
-		if (MouseLookScript.a.inventoryMode) {
+		} else if (MouseLookScript.a.inventoryMode) {
 			#if UNITY_EDITOR
 				Cursor.lockState = CursorLockMode.None;
 			#else	
@@ -215,6 +200,108 @@ public class MouseCursor : MonoBehaviour {
 			Cursor.lockState = CursorLockMode.Locked;
 			GUIState.a.isBlocking = false;
 		}
+		
+		bool hideCursorForMinigame = false;
+		if (MinigameCursor.a != null) {
+			if (MinigameCursor.a.mouseOverPanel) hideCursorForMinigame = true;
+		}
+
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
+            // Pause / Menu Cursor
+ 			SetCursorPositionMovable();
+			DisableTooltips();
+			DisableLiveGrenadeTooltip();
+			cursorImage = cursorGUI;
+			if (!cursorUIImage.gameObject.activeSelf) cursorUIImage.gameObject.SetActive(true);
+			if (cursorUIImage.texture != cursorImage) cursorUIImage.texture = cursorImage;
+			return;
+		}
+
+		if (hideCursorForMinigame) {
+			if (cursorUIImage.gameObject.activeSelf) cursorUIImage.gameObject.SetActive(false);
+        } else {
+			if (!cursorUIImage.gameObject.activeSelf) cursorUIImage.gameObject.SetActive(true);
+		}
+		
+		if (MouseLookScript.a.inventoryMode) {
+            // Inventory Mode Cursor
+ 			SetCursorPositionMovable();
+			if (toolTipHasText && GUIState.a.isBlocking) EnableTooltips();
+			else                                         DisableTooltips();
+			
+			if (liveGrenade) EnableLiveGrenadeTooltip();
+			else             DisableLiveGrenadeTooltip();
+			
+			if (MouseLookScript.a.inCyberSpace) {
+				if (GUIState.a.isBlocking) {
+					if (toolTipHasText) {
+						cursorImage = tooltipTexture;
+					} else {						
+						cursorImage = cursorGUI;
+					}
+				} else {
+					cursorImage = cyberspaceCursor;
+				}
+				
+				DisableLiveGrenadeTooltip();
+			} else {
+				if (MouseLookScript.a.vmailActive) {
+					cursorImage = Const.a.useableItemsFrobIcons[108]; // vmail
+				} else if (GUIState.a.isBlocking && !MouseLookScript.a.holdingObject) {
+					if (toolTipHasText) {
+						cursorImage = tooltipTexture;
+					} else {						
+						cursorImage = cursorGUI;
+					}
+				} else if (MouseLookScript.a.holdingObject && MouseLookScript.a.heldObjectIndex >= 0) {
+					cursorImage = Const.a.useableItemsFrobIcons[MouseLookScript.a.heldObjectIndex];
+				} else {
+					cursorImage = GetWeaponCursor();
+				}
+			}
+        } else {
+			// Shoot Mode Cursor
+			SetCursorPositionAtCenter();
+			DisableTooltips();
+			if (liveGrenade) EnableLiveGrenadeTooltip();
+			else             DisableLiveGrenadeTooltip();
+			
+			if (MouseLookScript.a.inCyberSpace) {				
+				cursorImage = cyberspaceCursor;
+				DisableLiveGrenadeTooltip();
+			} else {
+				if (MouseLookScript.a.holdingObject && MouseLookScript.a.heldObjectIndex >= 0) {
+					cursorImage = Const.a.useableItemsFrobIcons[MouseLookScript.a.heldObjectIndex];
+				} else {
+					cursorImage = GetWeaponCursor();
+				}
+			}
+        }
+		
+		// Actually set the cursor texure now:
+		if (cursorUIImage.texture != cursorImage) cursorUIImage.texture = cursorImage;
+	}
+	
+	private Texture2D GetWeaponCursor() {
+		switch(WeaponCurrent.a.weaponIndex) {
+			case 36: return Const.a.useableItemsFrobIcons[102]; // red
+			case 37: return Const.a.useableItemsFrobIcons[107]; // blue
+			case 38: return Const.a.useableItemsFrobIcons[102]; // red
+			case 39: return Const.a.useableItemsFrobIcons[105]; // green
+			case 40: return Const.a.useableItemsFrobIcons[107]; // blue
+			case 41: return Const.a.useableItemsFrobIcons[103]; // orange
+			case 42: return Const.a.useableItemsFrobIcons[103]; // orange
+			case 43: return Const.a.useableItemsFrobIcons[102]; // red
+			case 44: return Const.a.useableItemsFrobIcons[104]; // yellow
+			case 45: return Const.a.useableItemsFrobIcons[102]; // red
+			case 46: return Const.a.useableItemsFrobIcons[106]; // teal
+			case 47: return Const.a.useableItemsFrobIcons[104]; // yellow
+			case 48: return Const.a.useableItemsFrobIcons[102]; // red
+			case 49: return Const.a.useableItemsFrobIcons[105]; // green
+			case 50: return Const.a.useableItemsFrobIcons[107]; // blue
+			case 51: return Const.a.useableItemsFrobIcons[106]; // teal
+			default: return Const.a.useableItemsFrobIcons[105]; // green
+		}	
 	}
 
 	void UpdateSafeZone() {
@@ -231,7 +318,6 @@ public class MouseCursor : MonoBehaviour {
 		if (PauseScript.a.Paused()) return;
 		if (PauseScript.a.MenuActive()) return;
 
-// 		PointerEventData pointerData = new PointerEventData(EventSystem.current);
 		pev.position = cursorPosition;
 		graphicCastResults.Clear();
 		raycaster.Raycast(pev, graphicCastResults);
@@ -304,11 +390,9 @@ public class MouseCursor : MonoBehaviour {
 	public Vector3 GetCursorScreenPointForRay() {
 		Vector3 retval;
 
-		//retval.x = drawTexture.x+(drawTexture.width/2f);
 		retval.x = drawTexture.center.x;
 
 		// Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
-		//retval.y = Screen.height - drawTexture.y+(drawTexture.height/2f);
 		retval.y = Screen.height - drawTexture.center.y;
 		retval.z = 0f;
 		return retval;

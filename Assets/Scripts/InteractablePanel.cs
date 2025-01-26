@@ -54,7 +54,6 @@ public class InteractablePanel : MonoBehaviour {
 				}
 
 				MouseLookScript.a.ResetHeldItem();
-				MouseLookScript.a.ResetCursor();
 
 				// use the target now that we are active
 				ud.argvalue = argvalue;

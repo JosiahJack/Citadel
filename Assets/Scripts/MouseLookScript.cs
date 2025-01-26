@@ -9,9 +9,6 @@ using System.Text;
 public class MouseLookScript : MonoBehaviour {
     // External references
 	public GameObject player;
-	[Tooltip("The current cursor texture (For Reference or Testing)")] public Texture2D cursorTexture;
-    [Tooltip("The default cursor texture (Developer sets default)")] public Texture2D cursorDefaultTexture;
-    [Tooltip("The cyberspace cursor")] public Texture2D cyberspaceCursor;
 	public GameObject canvasContainer;
 	public GameObject compassContainer;
 	public GameObject automapContainerLH;
@@ -110,7 +107,6 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
     void Start (){
-        ResetCursor();
 		ResetHeldItem();
 		Cursor.lockState = CursorLockMode.None;
 		inventoryMode = false; // Start with inventory mode turned off.
@@ -259,7 +255,6 @@ public class MouseLookScript : MonoBehaviour {
 			if (holdingObject && !inCyberSpace) {
 				AddItemToInventory(heldObjectIndex,heldObjectCustomIndex);
 				ResetHeldItem();
-				ResetCursor();
 			} else InventoryButtonUse();
 		}
 	}
@@ -779,11 +774,6 @@ public class MouseLookScript : MonoBehaviour {
 		heldObjectAmmo = ammo1;
 		heldObjectAmmo2 = ammo2;
 		heldObjectLoadedAlternate = loadedAlt;
-		if (useableConstdex >= 0 && useableConstdex < Const.a.useableItemsFrobIcons.Length) {
-			cursorTexture = Const.a.useableItemsFrobIcons[useableConstdex];
-		}
-
-		MouseCursor.a.cursorImage = cursorTexture;
 		if (fromButton) GUIState.a.ClearOverButton();
 		ForceInventoryMode();
 	}
@@ -932,7 +922,6 @@ public class MouseLookScript : MonoBehaviour {
 	}
 	
 	public void SearchButtonClick(int index, SearchButton sebut) {
-		cursorTexture = Const.a.useableItemsFrobIcons[sebut.contents[index]];
 		holdingObject = true;
 		heldObjectIndex = sebut.contents[index];
 		heldObjectCustomIndex = sebut.customIndex[index];
@@ -950,12 +939,8 @@ public class MouseLookScript : MonoBehaviour {
 		if (Const.a.InputQuickItemPickup) {
 			AddItemToInventory(heldObjectIndex,heldObjectCustomIndex);
 			ResetHeldItem();
-			ResetCursor();
 		} else {
-			Const.sprint(Const.a.stringTable[heldObjectIndex + 326]
-						 + Const.a.stringTable[319],player);
-
-			MouseCursor.a.cursorImage = cursorTexture;
+			Const.sprint(Const.a.stringTable[heldObjectIndex + 326] + Const.a.stringTable[319],player);
 			ForceInventoryMode();
 		}	
 	}
@@ -1117,7 +1102,6 @@ public class MouseLookScript : MonoBehaviour {
 		if (heldObjectIndex < 0 || heldObjectIndex > 110) { 
 			Debug.Log("BUG: Attempted to DropHeldItem with index out of bounds (<0 or >110) and heldObjectIndex = " + heldObjectIndex.ToString(),player);
 			ResetHeldItem();
-			ResetCursor();
 			return;
 		}
 
@@ -1125,7 +1109,6 @@ public class MouseLookScript : MonoBehaviour {
 		if (heldObject == null) {
 			Const.sprint("BUG: Object "+heldObjectIndex.ToString()+" not assigned, vaporized.",player);
 			ResetHeldItem();
-			ResetCursor();
 			return;
 		}
 
@@ -1153,7 +1136,6 @@ public class MouseLookScript : MonoBehaviour {
 				if (tossObject == null) {
 					Const.sprint("BUG: Failed to get freeObjectInPool for object being dropped!",player);
 					ResetHeldItem();
-					ResetCursor();
 					return;
 				} else {
 					tossObject.transform.position = (transform.position + (transform.forward * tossOffset));
@@ -1164,7 +1146,6 @@ public class MouseLookScript : MonoBehaviour {
 				if (tossObject == null) {
 					Const.sprint("BUG: Failed to instantiate object being dropped!",player);
 					ResetHeldItem();
-					ResetCursor();
 					return;
 				}
 			}
@@ -1195,7 +1176,6 @@ public class MouseLookScript : MonoBehaviour {
 			if (tossObject == null) {
 				Const.sprint("BUG: Failed to instantiate object being dropped!",player);
 				ResetHeldItem();
-				ResetCursor();
 				return;
 			}
 
@@ -1217,7 +1197,6 @@ public class MouseLookScript : MonoBehaviour {
 			MouseCursor.a.liveGrenade = false;
 		}
 		ResetHeldItem();
-		ResetCursor();
 	}
 
 	public void ResetHeldItem() {
@@ -1229,16 +1208,6 @@ public class MouseLookScript : MonoBehaviour {
 		holdingObject = false;
 		grenadeActive = false;
 		MouseCursor.a.justDroppedItemInHelper = true;
-	}
-
-	public void ResetCursor () {
-        if (MouseCursor.a != null) {
-            cursorTexture = cursorDefaultTexture;
-            MouseCursor.a.cursorImage = cursorTexture;
-			MouseCursor.a.liveGrenade = false;
-        } else {
-			Const.sprint("BUG: Could Not Find object 'MouseCursorHandler' in scene\n");
-        }
 	}
 
 	public void ToggleInventoryMode (){

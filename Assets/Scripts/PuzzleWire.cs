@@ -665,7 +665,6 @@ public class PuzzleWire : MonoBehaviour {
 		puzzleWP.UseTargets(udSender.owner);
 		if (usedLogicProbe) {
 			MouseLookScript.a.ResetHeldItem();
-			MouseLookScript.a.ResetCursor();
 		}
 	}
 }

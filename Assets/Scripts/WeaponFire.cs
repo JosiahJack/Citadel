@@ -350,7 +350,6 @@ public class WeaponFire : MonoBehaviour {
 				} else {
 					MouseLookScript.a.AddItemToInventory(MouseLookScript.a.heldObjectIndex,MouseLookScript.a.heldObjectCustomIndex);
 					MouseLookScript.a.ResetHeldItem();
-					MouseLookScript.a.ResetCursor();
 					return;
 				}
 			}
