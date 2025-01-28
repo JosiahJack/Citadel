@@ -21,6 +21,7 @@ public class MouseCursor : MonoBehaviour {
 	public RawImage cursorUIImage;
 	public Canvas canvas;
 	private RectTransform canvasRectTransform;
+	private RectTransform cursorRectTransform;
 	public CanvasScaler canvasScaler;
     private float offsetX;
     private float offsetY;
@@ -72,6 +73,9 @@ public class MouseCursor : MonoBehaviour {
 		graphicCastResults = new List<RaycastResult>();
 		canvasRectTransform = canvas.gameObject.GetComponent<RectTransform>();
 		if (canvasRectTransform == null) Debug.LogError("Can't access RectTransform on Canvas!");
+
+		cursorRectTransform = cursorUIImage.GetComponent<RectTransform>();
+		if (cursorRectTransform == null) Debug.LogError("Can't access RectTransform on Cursor!");
 	}
 
 	#if UNITY_STANDALONE_LINUX
@@ -388,13 +392,13 @@ public class MouseCursor : MonoBehaviour {
 	}
 
 	public Vector3 GetCursorScreenPointForRay() {
-		Vector3 retval;
-
-		retval.x = drawTexture.center.x;
-
-		// Flip it. Rect uses y=0 UL corner, ScreenPointToRay uses y=0 LL corner
-		retval.y = Screen.height - drawTexture.center.y;
-		retval.z = 0f;
+		Vector3 retval = cursorRectTransform.anchoredPosition3D;
+		retval.x = (retval.x / canvasRectTransform.sizeDelta.x) * Screen.width;
+		retval.y = (retval.y / canvasRectTransform.sizeDelta.y) * Screen.width;
+		Debug.Log("cursorRectTransform.anchoredPosition3D: " + retval.ToString());
 		return retval;
+// 		return cursorRectTransform.TransformPoint(cursorRectTransform.rect.center);
+		 // Flip y since Rect uses y=0 UL corner but ScreenPointToRay uses y=0 LL corner which is what uses this function.
+// 		return new Vector3(cursorRectTransform.rect.center.x,Screen.height - cursorRectTransform.rect.center.y,0f);
 	}
 }
