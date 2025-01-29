@@ -55,10 +55,10 @@ MonoBehaviour:
     m_Settings:
       reflection:
         blendType: 1
-        reflectionQuality: 0
+        reflectionQuality: 2
         maxDistance: 100
-        iterationCount: 1024
-        stepSize: 1
+        iterationCount: 512
+        stepSize: 6
         widthModifier: 0.5
         reflectionBlur: 1
         reflectBackfaces: 0
@@ -98,17 +98,17 @@ MonoBehaviour:
       logMin: -4
       logMax: 6
   bloom:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
       bloom:
-        intensity: 0.03
-        threshold: 0.98
-        softKnee: 0.208
-        radius: 1.34
+        intensity: 0.07
+        threshold: 0.15
+        softKnee: 0.328
+        radius: 2
         antiFlicker: 0
       lensDirt:
         texture: {fileID: 2800000, guid: ffa9c02760c2b4e8eb9814ec06c4b05b, type: 3}
-        intensity: 18.92
+        intensity: 1.36
   colorGrading:
     m_Enabled: 1
     m_Settings:

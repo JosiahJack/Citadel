@@ -351,7 +351,7 @@ public class Const : MonoBehaviour {
 	public static RaycastHit hitNull;	
 
 	// Private CONSTANTS
-	[HideInInspector] public int TARGET_FPS = 144;
+	[HideInInspector] public int TARGET_FPS = 240;
 	private StringBuilder s1;
 	private StringBuilder s2;
 

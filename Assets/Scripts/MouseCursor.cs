@@ -191,11 +191,11 @@ public class MouseCursor : MonoBehaviour {
 		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
 			Cursor.lockState = CursorLockMode.None;
 		} else if (MouseLookScript.a.inventoryMode) {
-			#if UNITY_EDITOR
+// 			#if UNITY_EDITOR
 				Cursor.lockState = CursorLockMode.None;
-			#else	
-				Cursor.lockState = CursorLockMode.Confined;
-			#endif
+// 			#else	
+// 				Cursor.lockState = CursorLockMode.Confined;
+// 			#endif
 
 			if (GUIState.a.overButton || GUIState.a.overButtonType != ButtonType.None) {
 				GUIState.a.isBlocking = true;
@@ -392,9 +392,17 @@ public class MouseCursor : MonoBehaviour {
 	}
 
 	public Vector3 GetCursorScreenPointForRay() {
-		Vector3 retval = cursorRectTransform.anchoredPosition3D;
-		retval.x = (retval.x / canvasRectTransform.sizeDelta.x) * Screen.width;
-		retval.y = (retval.y / canvasRectTransform.sizeDelta.y) * Screen.width;
+		Vector3 retval = cursorRectTransform.anchoredPosition3D; // retval = new Vector2(426.6665,240);
+		retval.x = (retval.x / canvasRectTransform.sizeDelta.x) * Screen.width; // retval.x = (426.6665 / 853.7501) * 1366
+		retval.y = (retval.y / canvasRectTransform.sizeDelta.y) * Screen.height; // retval.y = ((240 - (1366 * 0.05)) / 480) * 1
+		if (retval.x > Screen.width) retval.x = Screen.width;
+		if (retval.x < 0) retval.x = 0;
+		if (retval.y > Screen.height) retval.y = Screen.height;
+		if (retval.y < 0) retval.y = 0;
+		
+		// 313 is the cursorRectTransform.anchoredPosition3D.y value that corresponds to where the ray is shooting even though cursorRectTransform.anchoredPosition3D is actually 240.
+		// Offset of incorrectness is 73
+		
 		Debug.Log("cursorRectTransform.anchoredPosition3D: " + retval.ToString());
 		return retval;
 // 		return cursorRectTransform.TransformPoint(cursorRectTransform.rect.center);

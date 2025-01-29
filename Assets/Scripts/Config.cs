@@ -196,7 +196,7 @@ public class Config {
 	}
 
 	public static void SetBloom() {
-		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = false;//Const.a.GraphicsBloom; Disabled for performance and in lieu of adding into glow textures.
+		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = Const.a.GraphicsBloom;
 	}
 
 	public static void SetVSync() {
@@ -304,15 +304,15 @@ public class Config {
 				SetSSRPreset(ScreenSpaceReflectionModel.SSRResolution.Low);
 				break;
 			case 2: // High SSR
-				SetSSRPreset(ScreenSpaceReflectionModel.SSRResolution.High);
+				SetSSRPreset(ScreenSpaceReflectionModel.SSRResolution.Low); // Also low as it still looks good and prevents spikes every 0.25secs
 				break;
 		}
 	}
 
 	public static void SetSSRPreset(ScreenSpaceReflectionModel.SSRResolution preset) {
 		ScreenSpaceReflectionModel.Settings ssr = ScreenSpaceReflectionModel.Settings.defaultSettings;
-		ssr.reflection.blendType = ScreenSpaceReflectionModel.SSRReflectionBlendType.Additive;
 		ssr.reflection.reflectionQuality = preset;
+		ssr.reflection.blendType = ScreenSpaceReflectionModel.SSRReflectionBlendType.Additive;
 		ssr.reflection.maxDistance = 100f;
 		if (preset == ScreenSpaceReflectionModel.SSRResolution.High) {
 			ssr.reflection.iterationCount = 1024;
