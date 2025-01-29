@@ -1,3 +1,0 @@
-# * `lfs.url` / `remote.<remote>.lfsurl`
-#   url = "http://ADMIN:PASSWORD@HOST:9999/"
-#   The url used to call the Git LFS remote API. Default blank (derive from clone URL).
