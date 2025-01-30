@@ -7,10 +7,13 @@
 [![Tests](https://github.com/JosiahJack/Citadel/actions/workflows/runtests.yml/badge.svg?branch=master)](https://github.com/JosiahJack/Citadel/actions/workflows/runtests.yml)
 
 ### News
-We are in Beta now!  Bugs are very likely for the next several patch releases.
-Get the latest here: https://github.com/JosiahJack/Citadel/tags
+Significant performance refactor underway.  Made tremendous improvements.  Overhauled saving system.
+Still working through many bugs and issues.
 
-- Sincerely, Josiah 3/14/2022
+Expect new ones in the next month or so, no promises but as you can see from git history, I'm busy busy.
+Older builds here: https://github.com/JosiahJack/Citadel/tags
+
+- Sincerely, Josiah 1/29/2025
 
 ### Information
 [![tag](https://img.shields.io/github/v/tag/JosiahJack/Citadel?label=Latest%20Release)](https://github.com/JosiahJack/Citadel/releases)
@@ -31,8 +34,8 @@ Special thanks to Night Dive Studios for allowing this project to live on (unhin
 ### System Requirements:
 - Vulkan, Direct3D11 or higher, or OpenGL 3.0 support or higher.  On systems that do not support Vulkan, it may be necessary to force the game to launch in OpenGL with argument `-force-glcore`.
 - Windows 7 or higher, MacOS 10.12 or newer, Linux Ubuntu 16.04 and newer or CentOS 7 and newer.
-- At least 1GB video RAM
-- At least 3GB RAM
+- At least 1.5GB video RAM
+- At least 4GB RAM
 - At least 1.4GB hard drive space
 - At least 3 CPU threads
 - X11 on Linux systems (might work on Wayland but untested)
@@ -50,12 +53,12 @@ Everything needed to play should be in the zip, though at first launch the path 
 - Must have [Blender 2.79b](https://download.blender.org/release/Blender2.79/) or later installed and on your system path (happens as a part of the install msi on Windows systems, symlink in /usr/bin/ on Linux can be manually created).  This is for Unity to be able to import .blend files as .FBX by running blender in the background when first loading the project.
 - Must have [Texture2DArray Importer v1.5.0](https://github.com/pschraut/UnityTexture2DArrayImportPipeline) in order for level geometry to display properly as they use a single material with array texture lookup for a substantial performance gain.
 - Texture arrays require Vulkan, Direct3D11+, or OpenGL 3.0 support or higher.  To support building all api's, the dev packages for each will need installed.
-- To support launching editor as OpenGL only on older systems that do not have Vulkan by default, add `-force-glcore` comand argument when launching the editor.
+- To support launching editor as OpenGL only on older systems that do not have Vulkan by default, add `-force-glcore` comand argument when launching the editor or game.
 
 ### Dev Play Instructions (In Editor):
 
 1. Download the Github repository (or clone it via git).
-2. Install UnityVersion2019.4.35f1 Personal: https://unity3d.com/get-unity/download/archive
+2. Install UnityVersion2020.3.48f1 Personal: https://unity3d.com/get-unity/download/archive
 3. Extract all into a folder and name of your liking.
 4. Open Unity.
 5. Click on Open Other or Open Project (the name if the button changes depending on whether it is a fresh install or already installed.)
