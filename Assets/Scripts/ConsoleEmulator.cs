@@ -1181,12 +1181,13 @@ Master Index
 744 us_puz_panel_red_wire
 745 us_puz_panel_teal_wire
 746 weapon_grenadeenergmine_live
+747 decal_logo_storage
 
 999 PlayerCapsule
 */
 
 public static bool ConstIndexInBounds(int constdex) {
-	return (constdex >= 0 && constdex <= 698);
+	return (constdex >= 0 && constdex <= 748);
 }
 
 public static bool ConstIndexIsGeometry(int constdex) {
@@ -1234,7 +1235,8 @@ public static bool ConstIndexIsStaticObjectImmutable(int constdex) {
 			|| constdex == 720
 			|| (constdex >= 733 && constdex < 736)
 			|| (constdex >= 737 && constdex < 739)
-			|| constdex == 746);
+			|| constdex == 746
+			|| constdex == 747);
 }
 
 public static bool ConstIndexIsNPC(int constdex) {

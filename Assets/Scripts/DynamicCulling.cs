@@ -620,7 +620,7 @@ public class DynamicCulling : MonoBehaviour {
                 break;
             case 5: break; // Lights done differently due to Light (what, it makes sense).
             default:
-                if (pid.constIndex == 592 || pid.constIndex == 593) return false; // TODO: handle text_decal and text_decalStopDSS1
+//                 if (pid.constIndex == 592 || pid.constIndex == 593) return false; // TODO: handle text_decal and text_decalStopDSS1
 
                 staticMeshesImmutable.Add(mr);
                 staticMeshImmutableCoords.Add(Vector2Int.zero);
@@ -903,7 +903,7 @@ public class DynamicCulling : MonoBehaviour {
         PutMeshesInCells(4); // Static Saveable
         PutMeshesInCells(5); // Lights
         Cull(true); // Do first Cull pass, forcing as player moved to new cell.
-        Debug.Log("Cull Init complete");
+//         Debug.Log("Cull Init complete");
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1492,13 +1492,34 @@ public class DynamicCulling : MonoBehaviour {
             dir = lightsInPVS[i].transform.position - cam.transform.position;
             if (Vector3.Dot(dir.normalized,cam.transform.forward) > lightDot) {
                 lightsInPVS[i].enabled = true;
+                EnableSEGIEmitter(lightsInPVS[i]);
             } else {
                 dx = Mathf.Abs(startX - lightsInPVSCoords[i].x);
                 dy = Mathf.Abs(startY - lightsInPVSCoords[i].y);
-                if (dx < lightNearCellCount && dy < lightNearCellCount) lightsInPVS[i].enabled = true;
-                else lightsInPVS[i].enabled = false;
+                if (dx < lightNearCellCount && dy < lightNearCellCount) {
+                    lightsInPVS[i].enabled = true;
+                    EnableSEGIEmitter(lightsInPVS[i]);
+                } else {
+                    lightsInPVS[i].enabled = false;
+                    DisableSEGIEmitter(lightsInPVS[i]);
+                }
             }
         }
+    }
+    
+    private void EnableSEGIEmitter(Light lit) {
+        if (lit == null) return;
+        if (lit.transform.childCount < 1) return;
+        
+        Transform child = lit.transform.GetChild(0);        
+        if (child.gameObject.layer == 2) child.gameObject.SetActive(true);
+    }
+    private void DisableSEGIEmitter(Light lit) {
+        if (lit == null) return;
+        if (lit.transform.childCount < 1) return;
+        
+        Transform child = lit.transform.GetChild(0);
+        if (child.gameObject.layer == 2) child.gameObject.SetActive(false);
     }
     
     public void ToggleLightsVisibility() {
@@ -1528,6 +1549,7 @@ public class DynamicCulling : MonoBehaviour {
             if (gridCells[x,y].visible || !gridCells[x,y].open) {
                 inPVS = true;
                 lights[i].enabled = true;
+                EnableSEGIEmitter(lights[i]);
                 lightsInPVS.Add(lights[i]);
                 lightsInPVSCoords.Add(lightCoords[i]);
             } else {
@@ -1552,6 +1574,7 @@ public class DynamicCulling : MonoBehaviour {
                 lightsInPVSCoords.Add(lightCoords[i]);
             } else {
                 lights[i].enabled = false;
+                DisableSEGIEmitter(lights[i]);
             }
             continue;
         }

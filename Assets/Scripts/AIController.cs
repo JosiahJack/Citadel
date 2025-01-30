@@ -103,6 +103,7 @@ public class AIController : MonoBehaviour {
 	[HideInInspector] public float tranquilizeFinished; // save
 	[HideInInspector] public bool hopDone; // save
 	[HideInInspector] public float wanderFinished; // save
+	[HideInInspector] public float timeSinceMovedEnough;
 	private float dotResult = -1f; // Only ever used right away, nosave
 	private Vector3 infrontVec; // Only ever used right away, nosave
 	[HideInInspector] public bool startInitialized = false; // nosave
@@ -195,8 +196,8 @@ public class AIController : MonoBehaviour {
 		
 		#else
 			idleTime = PauseScript.a.relativeTime
-					+ Random.Range(Const.a.timeIdleSFXMinForNPC[index],
-									Const.a.timeIdleSFXMaxForNPC[index]);
+					   + Random.Range(Const.a.timeIdleSFXMinForNPC[index],
+									  Const.a.timeIdleSFXMaxForNPC[index]);
 
 			attack1SoundTime = PauseScript.a.relativeTime;
 			attack2SoundTime = PauseScript.a.relativeTime;
@@ -216,6 +217,7 @@ public class AIController : MonoBehaviour {
 			tranquilizeFinished = PauseScript.a.relativeTime;
 			deathBurstFinished = PauseScript.a.relativeTime;
 			wanderFinished = PauseScript.a.relativeTime;
+			timeSinceMovedEnough = 0f;
 			damageData = new DamageData();
 			damageData.ownerIsNPC = true;
 			tempHit = new RaycastHit();

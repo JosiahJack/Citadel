@@ -1,0 +1,14 @@
+#pragma kernel CSMain
+
+RWTexture3D<uint> RG0;
+
+int Res;
+
+[numthreads(16,16,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    for (int i = 0; i < Res; i++)
+    {
+        RG0[uint3(id.xy, i)] = 0;
+    }
+}

@@ -689,7 +689,9 @@ public class MouseLookScript : MonoBehaviour {
 				} else {
 					UseHandlerRelay uhr = tempHit.collider.gameObject.GetComponent<UseHandlerRelay>();
 					if (uhr != null) {
-						uhr.referenceUseHandler.Use(ud);
+						if (uhr.referenceUseHandler != null) {
+							uhr.referenceUseHandler.Use(ud);
+						}
 					} else {
 						Debug.Log("BUG: Attempting to use a useable without a UseHandler or UseHandlerRelay!");
 					}

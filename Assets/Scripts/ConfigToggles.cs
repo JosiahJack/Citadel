@@ -24,6 +24,7 @@ public class ConfigToggles : MonoBehaviour {
 			case ConfigToggleType.Fullscreen: self.isOn = Const.a.GraphicsFullscreen; break;
 			case ConfigToggleType.SSAO: self.isOn = Const.a.GraphicsSSAO; break;
 			case ConfigToggleType.Bloom: self.isOn = Const.a.GraphicsBloom; break;
+			case ConfigToggleType.SEGI: self.isOn = Const.a.GraphicsSEGI; break;
 			case ConfigToggleType.Reverb: self.isOn = Const.a.AudioReverb; break;
 			case ConfigToggleType.InvertLook: self.isOn = Const.a.InputInvertLook; break;
 			case ConfigToggleType.InvertCyber: self.isOn = Const.a.InputInvertCyberspaceLook; break;
@@ -41,6 +42,7 @@ public class ConfigToggles : MonoBehaviour {
 	public void ToggleFullscreen () { Const.a.GraphicsFullscreen = self.isOn; Config.WriteConfig(); }
 	public void ToggleSSAO () { Const.a.GraphicsSSAO = self.isOn; Config.WriteConfig(); }
 	public void ToggleBloom () { Const.a.GraphicsBloom = self.isOn; Config.WriteConfig(); }
+	public void ToggleSEGI () { Const.a.GraphicsSEGI = self.isOn; Config.WriteConfig(); }
 	public void ToggleReverb () {
 		Const.a.AudioReverb = self.isOn;
 		if (Const.a.AudioReverb) Const.a.ReverbOn();

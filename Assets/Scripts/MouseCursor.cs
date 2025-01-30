@@ -399,14 +399,6 @@ public class MouseCursor : MonoBehaviour {
 		if (retval.x < 0) retval.x = 0;
 		if (retval.y > Screen.height) retval.y = Screen.height;
 		if (retval.y < 0) retval.y = 0;
-		
-		// 313 is the cursorRectTransform.anchoredPosition3D.y value that corresponds to where the ray is shooting even though cursorRectTransform.anchoredPosition3D is actually 240.
-		// Offset of incorrectness is 73
-		
-		Debug.Log("cursorRectTransform.anchoredPosition3D: " + retval.ToString());
 		return retval;
-// 		return cursorRectTransform.TransformPoint(cursorRectTransform.rect.center);
-		 // Flip y since Rect uses y=0 UL corner but ScreenPointToRay uses y=0 LL corner which is what uses this function.
-// 		return new Vector3(cursorRectTransform.rect.center.x,Screen.height - cursorRectTransform.rect.center.y,0f);
 	}
 }

@@ -45,6 +45,9 @@ Anders Jull Nannestad, aka Number47 for pistol ammo model
 Kaucukovnik for HUD icons
 Gigaquad for higher res object textures
 #
+-Artists (cont.)-
+Cody Darr aka Sonic Ether for SEGI v0.9.0
+
 -Sound and Music-
 Denhonator for remixed menu music
 Nameless Voice for fluid midis

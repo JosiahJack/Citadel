@@ -17,6 +17,7 @@ public class Config {
     		Const.a.GraphicsFullscreen = true;
     		Const.a.GraphicsSSAO = false;
     		Const.a.GraphicsBloom = false;
+			Const.a.GraphicsSEGI = false;
     		Const.a.GraphicsFOV = 65;
     		Const.a.GraphicsAAMode = 1;
     		Const.a.GraphicsShadowMode = 0;
@@ -56,6 +57,7 @@ public class Config {
     		SetShadows();
 			SetModelDetail();
     		SetBloom();
+			SetSEGI();
     		SetSSR();
     		SetBrightness();
     		SetSSAO();
@@ -77,6 +79,7 @@ public class Config {
 		Const.a.GraphicsFullscreen = AssignConfigBool("Graphics","Fullscreen");
 		Const.a.GraphicsSSAO = AssignConfigBool("Graphics","SSAO");
 		Const.a.GraphicsBloom = AssignConfigBool("Graphics","Bloom");
+		Const.a.GraphicsSEGI = AssignConfigBool("Graphics","SEGI");
 		Const.a.GraphicsFOV = AssignConfigInt("Graphics","FOV");
 		Const.a.GraphicsAAMode = AssignConfigInt("Graphics","AA");
 		Const.a.GraphicsShadowMode = AssignConfigInt("Graphics", "Shadows");
@@ -124,6 +127,7 @@ public class Config {
 		SetShadows();
 		SetModelDetail();
 		SetBloom();
+		SetSEGI();
 		SetSSR();
 		SetBrightness();
 		SetSSAO();
@@ -140,6 +144,7 @@ public class Config {
 		INIWorker.IniWriteValue("Graphics","Fullscreen",Utils.BoolToStringConfig(Const.a.GraphicsFullscreen));
 		INIWorker.IniWriteValue("Graphics","SSAO",Utils.BoolToStringConfig(Const.a.GraphicsSSAO));
 		INIWorker.IniWriteValue("Graphics","Bloom",Utils.BoolToStringConfig(Const.a.GraphicsBloom));
+		INIWorker.IniWriteValue("Graphics","SEGI",Utils.BoolToStringConfig(Const.a.GraphicsSEGI));
 		INIWorker.IniWriteValue("Graphics","FOV",Const.a.GraphicsFOV.ToString());
 		INIWorker.IniWriteValue("Graphics","AA",Const.a.GraphicsAAMode.ToString());
 		INIWorker.IniWriteValue("Graphics","Shadows",Const.a.GraphicsShadowMode.ToString());
@@ -171,6 +176,7 @@ public class Config {
 		INIWorker.IniWriteValue("Input","HeadBob",Utils.BoolToStringConfig(Const.a.HeadBob));
 
 		SetBloom();
+		SetSEGI();
 		SetSSAO();
 		SetFOV();
 		SetAA();
@@ -197,6 +203,11 @@ public class Config {
 
 	public static void SetBloom() {
 		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = Const.a.GraphicsBloom;
+	}
+	
+	public static void SetSEGI() {
+		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<SEGICascaded>().enabled = Const.a.GraphicsSEGI;
+		SetBrightness();
 	}
 
 	public static void SetVSync() {
@@ -343,6 +354,7 @@ public class Config {
 		if (tempf < 1) tempf = 0;
 		else tempf = tempf/100;
 		tempf = (tempf * 8f) - 4f;
+// 		if (Const.a.GraphicsSEGI) tempf -= 0.25f;
 		PostProcessingProfile ppf = Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile;
 		ColorGradingModel.Settings cgms = ppf.colorGrading.settings;
 		cgms.basic.postExposure = tempf;

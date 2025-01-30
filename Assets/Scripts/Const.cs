@@ -216,6 +216,7 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public bool GraphicsFullscreen;
 	[HideInInspector] public bool GraphicsSSAO;
 	[HideInInspector] public bool GraphicsBloom;
+	[HideInInspector] public bool GraphicsSEGI;
 	[HideInInspector] public int GraphicsAAMode;
 	[HideInInspector] public int GraphicsShadowMode;
 	[HideInInspector] public int GraphicsSSRMode;
@@ -258,6 +259,10 @@ public class Const : MonoBehaviour {
 	public int nextFreeSaveID = 2000000;
 	public bool editMode = false;
 	public bool noHUD = false;
+	
+	public Mesh sphereMesh;
+	public Material segiEmitterMaterial1;
+	public float segiVoxelSize = 0.32f;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
 	[HideInInspector] public int AudioSpeakerMode;

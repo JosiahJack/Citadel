@@ -63,8 +63,8 @@ public enum PoolType {None,CameraExplosions,SparksSmall,
                       AutomapCyborgOverlays,AutomapMutantOverlays,
                       AutomapCameraOverlays};
 // UI
-public enum ConfigToggleType : byte {Fullscreen,SSAO,Bloom,Reverb,Subtitles,
-                                     InvertLook,InvertCyber,
+public enum ConfigToggleType : byte {Fullscreen,SSAO,Bloom,SEGI,Reverb,
+                                     Subtitles,InvertLook,InvertCyber,
                                      InvertInventoryCycling,QuickPickup,
                                      QuickReload,Reflections,Vsync,
                                      NoShootMode,DynamicMusic,HeadBob,
