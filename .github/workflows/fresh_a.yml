@@ -12,11 +12,11 @@ jobs:
         run: rm -rf /opt/hostedtoolcache
       - name: Checkout repository
         uses: actions/checkout@v4
-      #- name: Run custom image build
-      #  run: |
-      #    echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-      #    chmod +x ./build_a.sh
-      #    ./build.sh
+      - name: Run custom image build
+        run: |
+          echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          chmod +x ./build_a.sh
+          ./build.sh push_docker
       - name: Download custom Docker image
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin

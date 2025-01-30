@@ -18,7 +18,7 @@ jobs:
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           chmod +x ./build.sh
-          ./build.sh
+          ./build.sh push_docker
       - name: Build game
         uses: game-ci/unity-builder@v4
         env:
