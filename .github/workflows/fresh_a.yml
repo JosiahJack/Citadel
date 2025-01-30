@@ -1,4 +1,4 @@
-name: A Build
+name: Fresh A - Experimental
 on:
   workflow_dispatch:
 jobs:

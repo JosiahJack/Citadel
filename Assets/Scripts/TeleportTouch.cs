@@ -52,7 +52,7 @@ public class TeleportTouch : MonoBehaviour {
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		TeleportTouch tt = go.GetComponent<TeleportTouch>();
 		tt.justUsed = Utils.LoadRelativeTimeDifferential(entries[index],"justUsed"); index++;
-		tt.enabled = Utils.GetBoolFromString(entries[index],"enabled"); index++;
+		tt.touchEnabled = Utils.GetBoolFromString(entries[index],"touchEnabled"); index++;
 		tt.teleportID = Utils.GetIntFromString(entries[index],"teleportID"); index++;
 		tt.targetDestinationID = Utils.GetIntFromString(entries[index],"targetDestinationID"); index++;
 		return index;

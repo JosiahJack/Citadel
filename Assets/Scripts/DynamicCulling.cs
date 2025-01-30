@@ -496,9 +496,13 @@ public class DynamicCulling : MonoBehaviour {
         msh = mf.sharedMesh;
         mrr.meshUsual = msh;
         if (ConsoleEmulator.ConstIndexIsGeometry(constIndex) && constIndex >= 0) {
-            if (DynamicCulling.a.lodMeshes[constIndex] != null) {
-                mrr.meshLOD = DynamicCulling.a.lodMeshes[constIndex];
-            } else mrr.meshLOD = msh;
+            if (DynamicCulling.a != null) {
+                if (DynamicCulling.a.lodMeshes.Length > 0 && constIndex < DynamicCulling.a.lodMeshes.Length) {
+                    if (DynamicCulling.a.lodMeshes[constIndex] != null) {
+                        mrr.meshLOD = DynamicCulling.a.lodMeshes[constIndex];
+                    } else mrr.meshLOD = msh;
+                }
+            } 
         } else mrr.meshLOD = msh;
         return mrr;
     }

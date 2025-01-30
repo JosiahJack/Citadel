@@ -86,7 +86,7 @@ public class SaveObject : MonoBehaviour {
 		s1.Append(Utils.BoolToString(go.activeSelf,"go.activeSelf"));  // 4
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveTransform(go.transform)); // 5,6,7,8,9,10,11,12,
-													  // 13,14
+													  // 13,14 or if rectTransform 5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRigidbody(go));           // 15,16,17,18
 		s1.Append(Utils.splitChar);
@@ -198,20 +198,19 @@ public class SaveObject : MonoBehaviour {
 		bool setToActive = Utils.GetBoolFromString(entries[index], // 4
 												   "go.activeSelf");
 		go.SetActive(setToActive); // Set active state in Hierarchy
-		index++;
-
+		index++; // Incrementing from go.activeSelf 4
+		index = Utils.LoadTransform(go.transform,ref entries,index); // 5,6,7,8,9,10,11,12,13,14 or if rectTransform 5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26
+		index = Utils.LoadRigidbody(go,ref entries,index);           // 15,16,17,18
+		
 		// Set parent prior to setting localPosition, localRotation, localScale
 		// so that the relative positioning is correct.
-		int levelID = Utils.GetIntFromString(entries[19],"levelID"); // 19
+		int levelID = Utils.GetIntFromString(entries[index],"levelID"); index++; // 19
 		if (so.instantiated) {
 			bool isNPC = (so.saveType == SaveableType.NPC);
 			LevelManager.a.SetInstantiateParent(levelID,go,isNPC);
 		}
-
-		index = Utils.LoadTransform(go.transform,ref entries,index); // 5,6,7,8,9,10,11,12,13
-		index = Utils.LoadRigidbody(go,ref entries,index);           // 14,15,16,17,18
-		index++; // Already loaded index 19 for levelID.
-		if (index != 20) {
+				
+		if (index != 20 && ! (go.transform is RectTransform rectTr)) {
 			Debug.Log("SaveObject.Load:: index was not 20 prior to type load");
 			index = 20;
 		}
