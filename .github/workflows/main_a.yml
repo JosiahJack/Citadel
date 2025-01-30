@@ -29,7 +29,7 @@ jobs:
       - name: Download custom Docker image
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker pull josiahjack/citadel-ci:ubuntu-2019.4.35f1-android-2.0.0
+          docker pull josiahjack/citadel-ci:ubuntu-2020.3.48f1-android-3
 
       - name: Build game
         id: build
@@ -41,7 +41,7 @@ jobs:
         with:
           targetPlatform: Android
           versioning: Semantic
-          customImage: josiahjack/citadel-ci:ubuntu-2019.4.35f1-android-2.0.0
+          customImage: josiahjack/citadel-ci:ubuntu-2020.3.48f1-android-3
           allowDirtyBuild: true
           androidTargetSdkVersion: 30
           androidSymbolType: 'debugging'

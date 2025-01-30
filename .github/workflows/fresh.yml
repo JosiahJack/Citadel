@@ -28,7 +28,7 @@ jobs:
         with:
           targetPlatform: ${{ matrix.plans.targetPlatform }}
           versioning: Semantic
-          customImage: josiahjack/citadel-ci:ubuntu-2019.4.35f1-${{ matrix.plans.dockerImage }}-1
+          customImage: josiahjack/citadel-ci:ubuntu-2020.3.48f1-${{ matrix.plans.dockerImage }}-1
           allowDirtyBuild: true
 
       - name: Upload built files
