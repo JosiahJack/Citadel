@@ -24,6 +24,9 @@
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
 
+# Office lock file
+.~lock*
+
 Assets/StreamingAssets/introdone.dat
 Assets/StreamingAssets/introdone.dat.meta
 Assets/StreamingAssets/CITALOG.RES
@@ -36,7 +39,6 @@ Assets/StreamingAssets/worldcellvis*.png
 Assets/StreamingAssets/worldcellvis*.png.meta
 Assets/StreamingAssets/worldcellopen*.png
 Assets/StreamingAssets/worldcellopen*.png.meta
-
 
 ![Ll]ibrary/PackageCache/com.oddworm.texture2darrayimportpipeline@4befff7b72/*
 ![Ll]ibrary/BuildSettings.asset
