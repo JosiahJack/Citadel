@@ -361,7 +361,7 @@ public static class SaveLoad {
 
         int index = 0;
         int constIndex = Utils.GetIntFromString(entries[index],"constIndex"); index++;
-        if (!ConsoleEmulator.ConstIndexIsGeometry(constIndex)) {
+        if (!ConsoleEmulator.ConstIndexIsStaticObjectImmutable(constIndex)) {
             Debug.Log("Load stat imm invalid constIndex: " + constIndex.ToString());
             return null;
         }

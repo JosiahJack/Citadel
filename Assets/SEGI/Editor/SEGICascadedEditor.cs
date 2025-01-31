@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
 
 [CustomEditor(typeof(SEGICascaded))]
-public class SEGICascadedEditor : Editor
-{
+public class SEGICascadedEditor : Editor {
 	SerializedObject serObj;
-
 	SerializedProperty voxelResolution;
 	SerializedProperty visualizeSunDepthTexture;
 	SerializedProperty visualizeGI;
@@ -344,4 +343,8 @@ public class SEGICascadedEditor : Editor
 	{
 
 	}
+	
+
 }
+#endif
+	

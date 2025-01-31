@@ -557,7 +557,7 @@ Master Index
 120 chunk_maint1_5               95
 121 chunk_maint1_6               96
 122 chunk_maint1_7               97
-123 // None, filled with chunk_black as fallback. maint1_8 was duplicate.
+123 chunk_blockerflightbay
 124 chunk_maint1_9               98
 125 chunk_maint1_9d              99
 126 chunk_maint2_1               100

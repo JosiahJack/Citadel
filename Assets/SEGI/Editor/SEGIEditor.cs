@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+
+#if UNITY_EDITOR
 using UnityEditor;
 
 [CustomEditor(typeof(SEGI))]
-public class SEGIEditor : Editor
-{
+public class SEGIEditor : Editor {
 	SerializedObject serObj;
-
 	SerializedProperty voxelResolution;
 	SerializedProperty visualizeSunDepthTexture;
 	SerializedProperty visualizeGI;
@@ -335,8 +335,7 @@ public class SEGIEditor : Editor
 		AssetDatabase.SaveAssets();
 	}
 
-	void LoadPreset()
-	{
-
-	}
+	void LoadPreset() {}
 }
+#endif
+	
