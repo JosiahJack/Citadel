@@ -1002,36 +1002,7 @@ public class DynamicCulling : MonoBehaviour {
         CircleFanRays(startX,startY - 1);
         CircleFanRays(startX + 1,startY - 1);
 
-        Vector2Int pnt = new Vector2Int();
-        // Use a for loop to iterate over the positions
-        foreach (KeyValuePair<GameObject, Vector3> entry in camPositions) {
-            GameObject camGO = entry.Key; // The GameObject key
-            CameraView camV = camGO.GetComponent<CameraView>();
-            if (camV == null) continue;
-            if (!camV.IsVisible()) continue;
-
-            Vector3 position = entry.Value; // The position value
-            pnt = PosToCellCoords(position);
-            gridCells[pnt.x,pnt.y].visible = true;
-
-            CastStraightX(startX,startY + 1,1);  // [ ][3]
-            CastStraightX(startX,startY,1);      // [1][2]
-            CastStraightX(startX,startY - 1,1);  // [ ][3]
-
-            CastStraightX(startX,startY + 1,-1); // [3][ ]
-            CastStraightX(startX,startY,-1);     // [2][1]
-            CastStraightX(startX,startY - 1,-1); // [3][ ]
-
-            CastStraightY(startX,startY,1);      // [3][2][3]
-            CastStraightY(startX + 1,startY,1);  // [ ][1][ ]
-            CastStraightY(startX - 1,startY,1); 
-
-            CastStraightY(startX,startY,-1);     // [ ][1][ ]
-            CastStraightY(startX + 1,startY,-1); // [3][2][3]
-            CastStraightY(startX - 1,startY,-1);
-
-            CircleFanRays(pnt.x,pnt.y);
-        }
+        CameraViewUnculling();
 
         // Output Debug image of the open
         if (outputDebugImages) {
@@ -1271,6 +1242,41 @@ public class DynamicCulling : MonoBehaviour {
         }
 
         return 0;
+    }
+    
+    void CameraViewUnculling() {
+        Vector2Int pnt = new Vector2Int();
+        int startX = playerCellX;
+        int startY = playerCellY;
+        // Use a for loop to iterate over the positions
+        foreach (KeyValuePair<GameObject, Vector3> entry in camPositions) {
+            GameObject camGO = entry.Key; // The GameObject key
+            CameraView camV = camGO.GetComponent<CameraView>();
+            if (camV == null) continue;
+            if (!camV.IsVisible()) continue;
+
+            Vector3 position = entry.Value; // The position value
+            pnt = PosToCellCoords(position);
+            gridCells[pnt.x,pnt.y].visible = true;
+
+            CastStraightX(startX,startY + 1,1);  // [ ][3]
+            CastStraightX(startX,startY,1);      // [1][2]
+            CastStraightX(startX,startY - 1,1);  // [ ][3]
+
+            CastStraightX(startX,startY + 1,-1); // [3][ ]
+            CastStraightX(startX,startY,-1);     // [2][1]
+            CastStraightX(startX,startY - 1,-1); // [3][ ]
+
+            CastStraightY(startX,startY,1);      // [3][2][3]
+            CastStraightY(startX + 1,startY,1);  // [ ][1][ ]
+            CastStraightY(startX - 1,startY,1); 
+
+            CastStraightY(startX,startY,-1);     // [ ][1][ ]
+            CastStraightY(startX + 1,startY,-1); // [3][2][3]
+            CastStraightY(startX - 1,startY,-1);
+
+            CircleFanRays(pnt.x,pnt.y);
+        }
     }
  
     void ToggleVisibility() {
@@ -1608,7 +1614,7 @@ public class DynamicCulling : MonoBehaviour {
             }
             gridCells[0,0].visible = true; // Errors default here so draw them anyways.
             gridCells[playerCellX,playerCellY].visible = true;
-            
+            CameraViewUnculling();
             ToggleVisibility(); // Update all cells marked as dirty.
             ToggleStaticMeshesImmutableVisibility();
             ToggleStaticImmutableParticlesVisibility();
