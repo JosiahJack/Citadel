@@ -12,11 +12,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Run custom image build for docker setup
-        run: |
-          echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          chmod +x ./build_unittest_docker.sh
-          ./build_unittest_docker.sh push_docker
+      #- name: Run custom image build for docker setup
+      #  run: |
+      #    echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      #    chmod +x ./build_unittest_docker.sh
+      #    ./build_unittest_docker.sh push_docker
           
       - name: Download custom Docker image
         run: |
