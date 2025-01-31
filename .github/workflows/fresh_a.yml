@@ -16,7 +16,7 @@ jobs:
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           chmod +x ./build_a.sh
-          ./build.sh push_docker
+          ./build_a.sh push_docker
       - name: Download custom Docker image
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
