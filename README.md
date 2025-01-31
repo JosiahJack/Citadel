@@ -73,3 +73,5 @@ Everything needed to play should be in the zip, though at first launch the path 
 - Dev Log: https://www.systemshock.org/index.php?topic=6977.0
 - InsieDB page: https://www.indiedb.com/games/citadel
 - Discord: https://discord.gg/mrmkMCD
+- Docker Hub CI containers: https://hub.docker.com/repository/docker/josiahjack/citadel-ci
+- Credits: [credits.txt](https://github.com/JosiahJack/Citadel/blob/master/Assets/StreamingAssets/credits.txt)
