@@ -158,10 +158,6 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 	
-	public bool GetSkyVisible() {
-		return skyMR.enabled;
-	}
-	
 	public void SetSkyVisible(bool on) {
 		skyMR.enabled = (on && showSkyForLevel[currentLevel]);
 		saturn.SetActive(on && showSaturnForLevel[currentLevel]);

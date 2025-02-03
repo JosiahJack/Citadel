@@ -1147,9 +1147,8 @@ public class Utils {
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		rbody.velocity = tempvec;
 		CollisionDetectionMode oldCollision = rbody.collisionDetectionMode;
-		rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 		rbody.isKinematic = GetBoolFromString(entries[index],"isKinematic"); index++;
-		if (!rbody.isKinematic) rbody.collisionDetectionMode = oldCollision;
+		if (rbody.isKinematic) rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 		if (rbody.collisionDetectionMode != oldCollision) {
 			Debug.Log("Collision mode changed on " + go.name + " from "
 					  + oldCollision.ToString() + " to "

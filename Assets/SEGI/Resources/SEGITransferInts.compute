@@ -55,7 +55,6 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     	float4 result = float4(0,0,0,0);
 
 		result.rgba = DecodeRGBAuint(RG0[uint3(id.x, id.y, i)]);
-
 		result /= 1 + VoxelAA * 3;
 
 		result.rgb /= max(result.a, 2.0);
@@ -86,6 +85,6 @@ void CSMain2 (uint3 id : SV_DispatchThreadID)
 
 		result.rgb /= max(2.0, result.a);
 
-        Result[uint3(id.xy, i)] = result;
+        Result[uint3(id.xy, i)] = float4(result.a,result.a,result.a,1.0);
     }
 }

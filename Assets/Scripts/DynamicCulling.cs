@@ -58,6 +58,7 @@ public class DynamicCulling : MonoBehaviour {
     public bool lodMeshesInitialized = false;
     public Mesh[] lodMeshes;
     public Mesh lodMeshTemplate;
+    public bool skyVisible;
 
 //     private JobHandle currentJobHandle;
     private CommandBuffer geometryCommandBuffer;
@@ -907,7 +908,7 @@ public class DynamicCulling : MonoBehaviour {
         PutMeshesInCells(4); // Static Saveable
         PutMeshesInCells(5); // Lights
         Cull(true); // Do first Cull pass, forcing as player moved to new cell.
-//         Debug.Log("Cull Init complete");
+        Debug.Log("Cull Init complete");
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1281,16 +1282,14 @@ public class DynamicCulling : MonoBehaviour {
  
     void ToggleVisibility() {
         gridCells[playerCellX,playerCellY].visible = true; // Guarantee enable.
-        bool skyVisible = false;
+        skyVisible = false;
         ChunkPrefab chp = null;
         for (int x=0;x<WORLDX;x++) {
             for (int y=0;y<WORLDX;y++) {
                 float sqrdist = 0f;
                 for (int i=0;i<gridCells[x,y].chunkPrefabs.Count;i++) {
                     chp = gridCells[x,y].chunkPrefabs[i];
-//                     if (chp == null) continue;
-                    
-                    skyVisible = (chp.constIndex == 1 && gridCells[x,y].visible);
+                    if (chp.constIndex == 1 && gridCells[x,y].visible) skyVisible = true; // Don't move if to assignment, need to preserve true.
                     for (int k=0;k<chp.meshenderers.Count;k++) {
                         chp.meshenderers[k].meshRenderer.enabled = gridCells[x,y].visible;
                         if (!gridCells[x,y].visible) continue;
@@ -1307,11 +1306,6 @@ public class DynamicCulling : MonoBehaviour {
                     }
                 }
             }
-        }
-
-        if (LevelManager.a != null) {
-            if (skyVisible) LevelManager.a.SetSkyVisible(true);
-            else LevelManager.a.SetSkyVisible(false);
         }
      }
 
@@ -1415,7 +1409,6 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void ToggleStaticMeshesImmutableVisibility() {
-        bool skyVisible = LevelManager.a.GetSkyVisible();
         for (int i=0;i<staticMeshesImmutable.Count;i++) {
             int x = staticMeshImmutableCoords[i].x;
             int y = staticMeshImmutableCoords[i].y;
@@ -1605,7 +1598,7 @@ public class DynamicCulling : MonoBehaviour {
 //                 
 //             }
             
-//             if (mergeVisibleMeshes) UncombineMeshes();
+//             if (mergeVisibleMeshes) UncombineMeshes(); // In lieu of the fact that this skyrockets the lighting calculations, not doing!
             for (int y=0;y<WORLDX;y++) {
                 for (int x=0;x<WORLDX;x++) {
                     gridCells[x,y].visible = gridCells[playerCellX,playerCellY].visibleCellsFromHere[x,y];
@@ -1623,6 +1616,10 @@ public class DynamicCulling : MonoBehaviour {
             ToggleLightsVisibility();
             UpdateNPCPVS();
             ToggleNPCPVS();
+            if (LevelManager.a != null) {
+                if (skyVisible) LevelManager.a.SetSkyVisible(true);
+                else LevelManager.a.SetSkyVisible(false);
+            }
 //             if (mergeVisibleMeshes) CombineMeshes(true);
         }
         

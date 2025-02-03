@@ -602,32 +602,22 @@ public class MainMenuHandler : MonoBehaviour {
 		if (!optionsPage.activeInHierarchy) yield break;
 		if (!GraphicsTab.activeInHierarchy) yield break;
 
-		//RenderTexture rtnew = new RenderTexture(Screen.width,Screen.height,24,
-												//RenderTextureFormat.ARGB32);
-		//rtnew.Create();
 		configCamera.targetTexture.Release();
 		configCamera.targetTexture.width = Screen.width;
 		configCamera.targetTexture.height = Screen.height;
-// 		SEGICascaded sega = configCamera.gameObject.GetComponent<SEGICascaded>();
 		SEGI sega = configCamera.gameObject.GetComponent<SEGI>();
 		if (sega != null) sega.enabled = Const.a.GraphicsSEGI;
-		//configCamera.targetTexture = rtnew;
 		configCamera.Render();
 		if (Const.a.GraphicsSEGI) {
+			yield return null;
 			configCamera.Render();
+			yield return null;
 			configCamera.Render();
+			yield return null;
 			configCamera.Render();
-			configCamera.Render();
-			configCamera.Render();
-			configCamera.Render();
-			configCamera.Render();
-			configCamera.Render();
-			configCamera.Render();
-			configCamera.Render();
-			configCamera.Render();
+			yield return null;
 			configCamera.Render();
 		}
-		//rtnew.Release();
 	}
 
 	public void RenderConfigView() {

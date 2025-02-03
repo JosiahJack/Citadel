@@ -98,7 +98,7 @@ MonoBehaviour:
       logMin: -4
       logMax: 6
   bloom:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
       bloom:
         intensity: 0.07
@@ -121,7 +121,7 @@ MonoBehaviour:
         neutralWhiteLevel: 5.3
         neutralWhiteClip: 2.94
       basic:
-        postExposure: -2
+        postExposure: -0.5
         temperature: 0
         tint: 0
         hueShift: 0

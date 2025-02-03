@@ -206,7 +206,6 @@ public class Config {
 	}
 	
 	public static void SetSEGI() {
-// 		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<SEGICascaded>().enabled = Const.a.GraphicsSEGI;
 		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<SEGI>().enabled = Const.a.GraphicsSEGI;
 		SetBrightness();
 	}

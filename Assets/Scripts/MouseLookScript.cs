@@ -200,7 +200,6 @@ public class MouseLookScript : MonoBehaviour {
 			}
 		}
 
-// 		DynamicCulling.a.Cull(false); // Update dynamic culling system.
 		RecoilAndRest(); // Spring Back to Rest from Recoil
 		keyboardTurnSpeed = 15f * Const.a.MouseSensitivity;
 		if (Application.platform == RuntimePlatform.Android) {
