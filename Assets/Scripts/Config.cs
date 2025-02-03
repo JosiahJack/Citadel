@@ -206,7 +206,8 @@ public class Config {
 	}
 	
 	public static void SetSEGI() {
-		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<SEGICascaded>().enabled = Const.a.GraphicsSEGI;
+// 		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<SEGICascaded>().enabled = Const.a.GraphicsSEGI;
+		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<SEGI>().enabled = Const.a.GraphicsSEGI;
 		SetBrightness();
 	}
 
@@ -354,7 +355,7 @@ public class Config {
 		if (tempf < 1) tempf = 0;
 		else tempf = tempf/100;
 		tempf = (tempf * 8f) - 4f;
-// 		if (Const.a.GraphicsSEGI) tempf -= 0.25f;
+		if (Const.a.GraphicsSEGI) tempf -= Const.a.segiReducedExposure;
 		PostProcessingProfile ppf = Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile;
 		ColorGradingModel.Settings cgms = ppf.colorGrading.settings;
 		cgms.basic.postExposure = tempf;

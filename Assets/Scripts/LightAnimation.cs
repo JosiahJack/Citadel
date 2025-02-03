@@ -25,6 +25,7 @@ public class LightAnimation : MonoBehaviour {
 	[HideInInspector] public Light animLight;
 	private float differenceInIntensity;
 	[HideInInspector] public float lerpValue; //save
+	private GameObject segiEmitter;
 
 	void Start () {
 		if (minIntensity < 0.01f) minIntensity = 0.01f;
@@ -41,16 +42,41 @@ public class LightAnimation : MonoBehaviour {
 			noSteps = true;
 			animLight.intensity = maxIntensity;
 		}
+		
+		if (segiEmitter == null) segiEmitter = Utils.CreateSEGIEmitter(gameObject,LevelManager.a.currentLevel,0,animLight);
 	}
+	
+	private void EnableSEGIEmitter() {
+        if (segiEmitter == null) return;
+        
+        segiEmitter.SetActive(true);
+    }
+    
+    private void DisableSEGIEmitter() {
+        if (segiEmitter == null) return;
+        
+        segiEmitter.SetActive(false);
+    }
+    
+    public void ScaleSEGIEmitter() {
+        if (segiEmitter == null) return;
+		
+		float fac = (animLight.intensity - minIntensity) / maxIntensity;
+		segiEmitter.transform.localScale = new Vector3(animLight.range * Const.a.segiVoxelSize * fac,
+													   animLight.range * Const.a.segiVoxelSize * fac,
+													   animLight.range * Const.a.segiVoxelSize * fac);
+    }
 
 	public void TurnOn() {
 		lightOn = true;
+		EnableSEGIEmitter();
 		animLight.intensity = maxIntensity;
 		animLight.enabled = true;
 	}
 
 	public void TurnOff() {
 		lightOn = false;
+		DisableSEGIEmitter();
 		animLight.intensity = minIntensity;
 		animLight.enabled = false;
 	}
@@ -70,7 +96,11 @@ public class LightAnimation : MonoBehaviour {
 					if (lerpUp) {
 						// Going from minIntensity to maxIntensity
 						if (lerpTime < PauseScript.a.relativeTime) {
-							if (animLight.intensity != maxIntensity) animLight.intensity = maxIntensity;
+							if (animLight.intensity != maxIntensity) {
+								animLight.intensity = maxIntensity;
+								ScaleSEGIEmitter();
+							}
+							
 							lerpUp = false;
 							currentStep++;
 							if (currentStep == intervalSteps.Length)
@@ -87,7 +117,10 @@ public class LightAnimation : MonoBehaviour {
 									if (intervalStepisLerping[currentStep]) {
 										lerpValue = (PauseScript.a.relativeTime - lerpStartTime)/(lerpTime - lerpStartTime); // percent towards goal time
 										lerpValue = minIntensity + (differenceInIntensity * (lerpValue));
-										if (animLight.intensity != lerpValue) animLight.intensity = lerpValue;
+										if (animLight.intensity != lerpValue) {
+											animLight.intensity = lerpValue;
+											ScaleSEGIEmitter();
+										}
 									}
 								}
 							}
@@ -95,7 +128,11 @@ public class LightAnimation : MonoBehaviour {
 					} else {
 						// Going from maxIntensity to minIntensity
 						if (lerpTime < PauseScript.a.relativeTime) {
-							if (animLight.intensity != minIntensity) animLight.intensity = minIntensity;
+							if (animLight.intensity != minIntensity) {
+								animLight.intensity = minIntensity;
+								ScaleSEGIEmitter();
+							}
+							
 							lerpUp = true;
 							currentStep++;
 							if (currentStep == intervalSteps.Length)
@@ -115,7 +152,10 @@ public class LightAnimation : MonoBehaviour {
 									if (intervalStepisLerping[currentStep]) {
 										lerpValue = (PauseScript.a.relativeTime - lerpStartTime)/(lerpTime - lerpStartTime); // percent towards goal time
 										lerpValue = minIntensity + (differenceInIntensity * (1-lerpValue));
-										if (animLight.intensity != lerpValue) animLight.intensity = lerpValue;
+										if (animLight.intensity != lerpValue) {
+											animLight.intensity = lerpValue;
+											ScaleSEGIEmitter();
+										}
 									}
 								}
 							}
@@ -124,11 +164,17 @@ public class LightAnimation : MonoBehaviour {
 
 				} else {
 					// Light is on but no steps so set to editor setting
-					if (animLight.intensity != maxIntensity) animLight.intensity = maxIntensity;
+					if (animLight.intensity != maxIntensity) {
+						animLight.intensity = maxIntensity;
+						ScaleSEGIEmitter();
+					}
 				}
 			} else {
 				// Light is turned off.
-				if (animLight.intensity != minIntensity) animLight.intensity = minIntensity;
+				if (animLight.intensity != minIntensity) {
+					animLight.intensity = minIntensity;
+					ScaleSEGIEmitter();
+				}
 			}
 		}
 	}
@@ -180,6 +226,7 @@ public class LightAnimation : MonoBehaviour {
 		la.stepTime = Utils.GetFloatFromString(entries[index],"stepTime"); index++; // Not a timer, current time amount
 		la.lerpStartTime = Utils.LoadRelativeTimeDifferential(entries[index],"lerpStartTime"); index++;
 		la.animLight.enabled = Utils.GetBoolFromString(entries[index],"light.enabled"); index++;
+		la.ScaleSEGIEmitter();
 		return index;
 	}
 }

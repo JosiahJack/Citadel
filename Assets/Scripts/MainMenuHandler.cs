@@ -608,7 +608,8 @@ public class MainMenuHandler : MonoBehaviour {
 		configCamera.targetTexture.Release();
 		configCamera.targetTexture.width = Screen.width;
 		configCamera.targetTexture.height = Screen.height;
-		SEGICascaded sega = configCamera.gameObject.GetComponent<SEGICascaded>();
+// 		SEGICascaded sega = configCamera.gameObject.GetComponent<SEGICascaded>();
+		SEGI sega = configCamera.gameObject.GetComponent<SEGI>();
 		if (sega != null) sega.enabled = Const.a.GraphicsSEGI;
 		//configCamera.targetTexture = rtnew;
 		configCamera.Render();
@@ -618,13 +619,13 @@ public class MainMenuHandler : MonoBehaviour {
 			configCamera.Render();
 			configCamera.Render();
 			configCamera.Render();
-// 			configCamera.Render();
-// 			configCamera.Render();
-// 			configCamera.Render();
-// 			configCamera.Render();
-// 			configCamera.Render();
-// 			configCamera.Render();
-// 			configCamera.Render();
+			configCamera.Render();
+			configCamera.Render();
+			configCamera.Render();
+			configCamera.Render();
+			configCamera.Render();
+			configCamera.Render();
+			configCamera.Render();
 		}
 		//rtnew.Release();
 	}

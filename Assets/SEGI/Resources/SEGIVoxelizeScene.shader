@@ -304,7 +304,7 @@
 					
 					float4 tex = tex2D(_MainTex, input.uv.xy);
 					float4 emissionTex = tex2D(_EmissionMap, input.uv.xy);
-					
+// 					emissionTex += (tex * 0.25);
 					float4 color = _Color;
 
 					if (length(_Color.rgb) < 0.0001)

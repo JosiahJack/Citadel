@@ -778,19 +778,7 @@ public static class SaveLoad {
         lit.shadowNearPlane = 0.02f; // Force all to match the player camera value of 1 chunk texel.
         lit.layerShadowCullDistances = shadCullArray;
         lit.cullingMask = litCullingMask;
-        GameObject segiEmitter = new GameObject("SEGIEmitter" + curlevel.ToString() + "." + lineNum.ToString());
-        segiEmitter.transform.parent = go.transform;
-        segiEmitter.transform.localPosition = new Vector3(0f,0f,0f);
-        MeshFilter mf = segiEmitter.AddComponent<MeshFilter>();
-        mf.sharedMesh = Const.a.sphereMesh;
-        MeshRenderer mR = segiEmitter.AddComponent<MeshRenderer>();
-        mR.material = Const.a.segiEmitterMaterial1;
-        mR.material.SetColor("_EmissionColor",new Color(lit.color.r * lit.intensity,lit.color.g * lit.intensity,lit.color.b * lit.intensity,1f));
-        segiEmitter.transform.localScale = new Vector3(lit.range * Const.a.segiVoxelSize,lit.range * Const.a.segiVoxelSize,lit.range * Const.a.segiVoxelSize);
-        segiEmitter.layer = 2; // IgnoreRaycast
-        
-        //lit.shadowCustomResolution = 128;
-//         lit.shadowRadius = 0.2f; // Editor only, looks like just for baking.
+        Utils.CreateSEGIEmitter(go,curlevel,lineNum,lit);
         return go;
     }
 

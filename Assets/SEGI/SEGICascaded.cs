@@ -22,7 +22,9 @@ public class SEGICascaded : MonoBehaviour
 	public enum VoxelResolution
 	{
 		low = 64,
-		high = 128
+		high = 128,
+		veryhigh = 256,
+		extreme = 512
 	}
 
 	public VoxelResolution voxelResolution = VoxelResolution.high;
@@ -60,23 +62,23 @@ public class SEGICascaded : MonoBehaviour
 	public int cones = 4;
 	[Range(1, 32)]
 	public int coneTraceSteps = 10;
-	[Range(0.1f, 2.0f)]
+	[Range(0.02f, 12.0f)]
 	public float coneLength = 1.0f;
-	[Range(0.5f, 6.0f)]
+	[Range(0.02f, 12.0f)]
 	public float coneWidth = 3.9f;
-	[Range(0.0f, 2.0f)]
+	[Range(0.0f, 10.0f)]
 	public float occlusionStrength = 0.15f;
-	[Range(0.0f, 4.0f)]
+	[Range(0.0f, 10.0f)]
 	public float nearOcclusionStrength = 0.5f;
-	[Range(0.001f, 4.0f)]
+	[Range(0.001f, 10.0f)]
 	public float occlusionPower = 0.65f;
 	[Range(0.0f, 4.0f)]
 	public float coneTraceBias = 2.8f;
-	[Range(0.0f, 4.0f)]
+	[Range(0.0f, 12.0f)]
 	public float nearLightGain = 0.36f;
-	[Range(0.0f, 4.0f)]
+	[Range(0.0f, 12.0f)]
 	public float giGain = 1.0f;
-	[Range(0.0f, 4.0f)]
+	[Range(0.0f, 100.0f)]
 	public float secondaryBounceGain = 0.9f;
 	[Range(0.0f, 16.0f)]
 	public float softSunlight = 0.0f;
@@ -106,14 +108,14 @@ public class SEGICascaded : MonoBehaviour
 
 
 
-	[Range(0.1f, 4.0f)]
+	[Range(0.1f, 10.0f)]
 	public float farOcclusionStrength = 1.0f;
-	[Range(0.1f, 4.0f)]
+	[Range(0.1f, 10.0f)]
 	public float farthestOcclusionStrength = 1.0f;
 
-	[Range(3, 16)]
+	[Range(3, 64)]
 	public int secondaryCones = 6;
-	[Range(0.1f, 2.0f)]
+	[Range(0.001f, 2.0f)]
 	public float secondaryOcclusionStrength = 0.27f;
 
 	public bool sphericalSkylight = false;

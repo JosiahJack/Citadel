@@ -135,7 +135,6 @@ SubShader
 
 				gi *= 0.75 + (float)HalfResolution * 0.25;
 
-				 
 				return float4(gi, 1.0);
 			}
 			

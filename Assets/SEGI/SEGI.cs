@@ -23,6 +23,7 @@ public class SEGI : MonoBehaviour
 		verylow = 64,
 		low = 128,
 		high = 256,
+		veryhigh = 512,
 	}
 
 	public bool updateGI = true;
@@ -58,9 +59,9 @@ public class SEGI : MonoBehaviour
 	public int cones = 6;
 	[Range(1, 32)]
 	public int coneTraceSteps = 14;
-	[Range(0.1f, 2.0f)]
+	[Range(0.02f, 4.0f)]
 	public float coneLength = 1.0f;
-	[Range(0.5f, 6.0f)]
+	[Range(0.16f, 12.0f)]
 	public float coneWidth = 5.5f;
 	[Range(0.0f, 4.0f)]
 	public float occlusionStrength = 1.0f;
@@ -1020,7 +1021,7 @@ public class SEGI : MonoBehaviour
 				mipFilterCompute.SetInt("destinationRes", destinationRes);
 				mipFilterCompute.SetTexture(mipFilterKernel, "Source", source);
 				mipFilterCompute.SetTexture(mipFilterKernel, "Destination", volumeTextures[i + 1]);
-				mipFilterCompute.Dispatch(mipFilterKernel, destinationRes / 8, destinationRes / 8, 1);
+				mipFilterCompute.Dispatch(mipFilterKernel, Mathf.Max(destinationRes / 8,1), Mathf.Max(destinationRes / 8,1), 1);
 				Shader.SetGlobalTexture("SEGIVolumeLevel" + (i + 1).ToString(), volumeTextures[i + 1]);
 			}
 

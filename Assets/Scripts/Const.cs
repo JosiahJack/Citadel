@@ -263,6 +263,7 @@ public class Const : MonoBehaviour {
 	public Mesh sphereMesh;
 	public Material segiEmitterMaterial1;
 	public float segiVoxelSize = 0.32f;
+	public float segiReducedExposure = 5f;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
 	[HideInInspector] public int AudioSpeakerMode;

@@ -1609,4 +1609,18 @@ public class Utils {
 
         return logFilePath;
     }
+    
+    public static GameObject CreateSEGIEmitter(GameObject go, int curlevel, int lineNum, Light lit) {
+		GameObject segiEmitter = new GameObject("SEGIEmitter" + curlevel.ToString() + "." + lineNum.ToString());
+        segiEmitter.transform.parent = go.transform;
+        segiEmitter.transform.localPosition = new Vector3(0f,0f,0f);
+        MeshFilter mf = segiEmitter.AddComponent<MeshFilter>();
+        mf.sharedMesh = Const.a.sphereMesh;
+        MeshRenderer mR = segiEmitter.AddComponent<MeshRenderer>();
+        mR.material = Const.a.segiEmitterMaterial1;
+        mR.material.SetColor("_EmissionColor",new Color(lit.color.r * lit.intensity,lit.color.g * lit.intensity,lit.color.b * lit.intensity,1f));
+        segiEmitter.transform.localScale = new Vector3(lit.range * Const.a.segiVoxelSize,lit.range * Const.a.segiVoxelSize,lit.range * Const.a.segiVoxelSize);
+        segiEmitter.layer = 2; // IgnoreRaycast
+        return segiEmitter;
+	}
 }

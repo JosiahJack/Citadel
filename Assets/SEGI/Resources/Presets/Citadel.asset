@@ -12,31 +12,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7780f824b3fbed498c366c0f53ccef9, type: 3}
   m_Name: Citadel
   m_EditorClassIdentifier: 
-  voxelResolution: 256
-  voxelAA: 0
-  innerOcclusionLayers: 0
+  voxelResolution: 128
+  voxelAA: 1
+  innerOcclusionLayers: 1
   infiniteBounces: 1
-  temporalBlendWeight: 1
-  useBilateralFiltering: 0
-  halfResolution: 1
+  temporalBlendWeight: 0.13
+  useBilateralFiltering: 1
+  halfResolution: 0
   stochasticSampling: 1
   doReflections: 0
-  cones: 44
-  coneTraceSteps: 32
-  coneLength: 0.24
-  coneWidth: 3.46
-  coneTraceBias: 1.52
-  occlusionStrength: 0.48
-  nearOcclusionStrength: 1.59
-  occlusionPower: 1.06
+  cones: 16
+  coneTraceSteps: 16
+  coneLength: 0.379
+  coneWidth: 1.28
+  coneTraceBias: 1.06
+  occlusionStrength: 1.06
+  nearOcclusionStrength: 0.08
+  occlusionPower: 1.3
   nearLightGain: 0
-  giGain: 0.81
-  secondaryBounceGain: 4
-  reflectionSteps: 128
-  reflectionOcclusionPower: 4
-  skyReflectionIntensity: 0
+  giGain: 2
+  secondaryBounceGain: 2
+  reflectionSteps: 70
+  reflectionOcclusionPower: 1
+  skyReflectionIntensity: 1
   gaussianMipFilter: 0
-  farOcclusionStrength: 2.83
-  farthestOcclusionStrength: 0.1
-  secondaryCones: 16
-  secondaryOcclusionStrength: 0.69
+  farOcclusionStrength: 4
+  farthestOcclusionStrength: 4
+  secondaryCones: 8
+  secondaryOcclusionStrength: 1.02

@@ -46,6 +46,7 @@ float4 DecodeRGBAuint(uint value)
 	return float4(color.rgb, a);
 }
 
+// Direct GI add
 [numthreads(16,16,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -73,6 +74,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     }
 }
 
+// Infinite Bounces, add result from RGO
 [numthreads(16,16,1)]
 void CSMain2 (uint3 id : SV_DispatchThreadID)
 {
