@@ -116,7 +116,6 @@ public class FuncWall : MonoBehaviour {
 	}
 
 	public void Targetted (UseData ud) {
-		UnityEngine.Debug.Log("FuncWall was targetted");
 		switch (currentState) {
 			case FuncStates.Start:            MoveTarget(); break;
 			case FuncStates.Target:           MoveStart();  break;

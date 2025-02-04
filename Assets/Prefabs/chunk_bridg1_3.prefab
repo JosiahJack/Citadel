@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4167261881264024}
-  - component: {fileID: 23292685114911268}
   - component: {fileID: 7357327822277406263}
+  - component: {fileID: 23292685114911268}
   - component: {fileID: 7901227220792964455}
   - component: {fileID: -4966334816220339510}
   - component: {fileID: 8425088721488958626}
@@ -36,6 +36,14 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &7357327822277406263
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511846719180862}
+  m_Mesh: {fileID: 2011144302815347345, guid: faac4bc8fed2ac94595b8348e4643e72, type: 3}
 --- !u!23 &23292685114911268
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -51,10 +59,11 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5e1109bf73052b141a2cda4a2007a74b, type: 2}
+  - {fileID: 2100000, guid: 86aa298a567baa8f2996e82c28bd19ae, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -75,14 +84,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!33 &7357327822277406263
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1511846719180862}
-  m_Mesh: {fileID: 2011144302815347345, guid: faac4bc8fed2ac94595b8348e4643e72, type: 3}
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &7901227220792964455
 MonoBehaviour:
   m_ObjectHideFlags: 0

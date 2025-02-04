@@ -1376,12 +1376,14 @@ public class DynamicCulling : MonoBehaviour {
             bool inPVS = false;
             if (gridCells[x,y].visible || !worldCellsOpen[x,y]) {
                 if (dynamicMeshesPIDs[i].constIndex == 515) { // func_forcebridge
-                    if (dynamicMeshesFBs[i].activated) {
-                        inPVS = true;
-                        // if (mergeVisibleMeshes) {
-                        //    Meshenderer mrsh = GetMeshAndItsRenderer(dynamicMeshes[i].gameObject,dynamicMeshesPIDs[i].constIndex);
-                        //    if (mrsh != null) sourceMeshenderers.Add(mrsh);
-                        // }
+                    if (dynamicMeshesFBs[i] != null) { // The SEGI Emitters are null because the PID GetComponent gets its parent but it has no ForceBridge on it itself.
+                        if (dynamicMeshesFBs[i].activated) {
+                            inPVS = true;
+                            // if (mergeVisibleMeshes) {
+                            //    Meshenderer mrsh = GetMeshAndItsRenderer(dynamicMeshes[i].gameObject,dynamicMeshesPIDs[i].constIndex);
+                            //    if (mrsh != null) sourceMeshenderers.Add(mrsh);
+                            // }
+                        }
                     }
                 } else if (dynamicMeshesHMs[i] != null) {
                     if (dynamicMeshesHMs[i].health > 0 || !dynamicMeshesHMs[i].gibOnDeath
@@ -1399,6 +1401,22 @@ public class DynamicCulling : MonoBehaviour {
             }
             
             dynamicMeshes[i].enabled = inPVS;
+            if (dynamicMeshes[i].gameObject.layer == 2) { // SEGIEmitter
+                GameObject parent = dynamicMeshes[i].transform.parent.gameObject;
+                if (parent != null) {
+                    PrefabIdentifier pidPar = parent.GetComponent<PrefabIdentifier>();
+                    if (pidPar != null) {
+                        if (pidPar.constIndex == 515) {
+                            ForceBridge fb = parent.GetComponent<ForceBridge>();
+                            if (fb != null) { // The SEGI Emitters are null because the PID GetComponent gets its parent but it has no ForceBridge on it itself.
+                                if (fb.activated) {
+                                    dynamicMeshes[i].enabled = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

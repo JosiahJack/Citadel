@@ -10,7 +10,7 @@ public class TeleportTouch : MonoBehaviour {
 	
     private static TeleportTouch[] allTeleportTouches = new TeleportTouch[8];
 
-	private void Awake() {
+	public void Awake() {
 		if (teleportID > allTeleportTouches.Length || teleportID < 0) { Destroy(this.gameObject); return; }
 		
         allTeleportTouches[teleportID] = this;
@@ -27,8 +27,11 @@ public class TeleportTouch : MonoBehaviour {
 				if (hm.health > 0f && justUsed < PauseScript.a.relativeTime) {
 					MFDManager.a.teleportFX.SetActive(true);
 					TeleportTouch tt = allTeleportTouches[targetDestinationID];
-					col.transform.position = tt.transform.position; // Do it!
-					if (tt != null) tt.justUsed = PauseScript.a.relativeTime + 1.0f;
+					if (tt != null) {
+						col.transform.position = tt.transform.position; // Do it!
+						tt.justUsed = PauseScript.a.relativeTime + 1.0f;
+					}
+					
 					Utils.PlayUIOneShotSavable(106);
 				}
 			}
@@ -55,6 +58,7 @@ public class TeleportTouch : MonoBehaviour {
 		tt.touchEnabled = Utils.GetBoolFromString(entries[index],"touchEnabled"); index++;
 		tt.teleportID = Utils.GetIntFromString(entries[index],"teleportID"); index++;
 		tt.targetDestinationID = Utils.GetIntFromString(entries[index],"targetDestinationID"); index++;
+		tt.Awake();
 		return index;
 	}
 }

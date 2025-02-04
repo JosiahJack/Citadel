@@ -261,7 +261,13 @@ public class Const : MonoBehaviour {
 	public bool noHUD = false;
 	
 	public Mesh sphereMesh;
+	public Mesh cubeMesh;
 	public Material segiEmitterMaterial1;
+	public Material segiEmitterMaterialRed;
+	public Material segiEmitterMaterialGreen;
+	public Material segiEmitterMaterialBlue;
+	public Material segiEmitterMaterialPurple;
+	public Material segiEmitterMaterialRedFaint;
 	public float segiVoxelSize = 0.32f;
 	public float segiReducedExposure = 5f;
 

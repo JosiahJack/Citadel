@@ -21,6 +21,7 @@ public class ForceBridge : MonoBehaviour {
 	private AudioSource SFX;
 	private static float tickTime = 0.05f;
 	private bool initialized = false;
+	[HideInInspector] public GameObject segiEmitter;
 
 	public void Start() {
 		#if UNITY_EDITOR
@@ -46,6 +47,7 @@ public class ForceBridge : MonoBehaviour {
 		SFX = GetComponent<AudioSource>();
 		SetColorMaterial();
 		initialized = true;
+		if (segiEmitter == null) segiEmitter = CreateSEGIEmitterCube();
 	}
 
 	public void SetColorMaterial() {
@@ -65,6 +67,7 @@ public class ForceBridge : MonoBehaviour {
 
 		tickFinished = PauseScript.a.relativeTime + tickTime;
 		if (activated) {
+			Utils.Activate(segiEmitter);
 			if (lerping) {
 				float sx = transform.localScale.x;
 				float sy = transform.localScale.y;
@@ -80,6 +83,10 @@ public class ForceBridge : MonoBehaviour {
 					transform.localScale = new Vector3(activatedScaleX,activatedScaleY,activatedScaleZ);
 					lerping = false;
 				}
+			} else {
+				if (transform.localScale.x != activatedScaleX) transform.localScale = new Vector3(activatedScaleX,activatedScaleY,activatedScaleZ);
+				if (transform.localScale.y != activatedScaleY) transform.localScale = new Vector3(activatedScaleX,activatedScaleY,activatedScaleZ);
+				if (transform.localScale.z != activatedScaleZ) transform.localScale = new Vector3(activatedScaleX,activatedScaleY,activatedScaleZ);
 			}
 		} else {
 			if (lerping) {
@@ -91,9 +98,10 @@ public class ForceBridge : MonoBehaviour {
 				if (y) sy = Mathf.Lerp(transform.localScale.y,0f,tickTime*2);
 				if (z) sz = Mathf.Lerp(transform.localScale.z,0f,tickTime*2);
 				transform.localScale = new Vector3(sx,sy,sz);
-				if ((sx < 0.08f || sy < 0.08f || sz < 0.08f) && mr.enabled) {
+				if ((sx < 0.08f || sy < 0.08f || sz < 0.08f)) {
 					Utils.DisableMeshRenderer(mr);
 					Utils.DisableBoxCollider(bCol);
+					Utils.Deactivate(segiEmitter);
 					lerping = false;
 				}
 			}
@@ -106,6 +114,7 @@ public class ForceBridge : MonoBehaviour {
 		if (!isSilent) Utils.PlayOneShotSavable(SFX,Const.a.sounds[102]);
 		Utils.EnableMeshRenderer(mr);
 		Utils.EnableBoxCollider(bCol);
+		Utils.Activate(segiEmitter);
 		activated = true;
 		lerping = true;
 		float sx = activatedScaleX;
@@ -121,6 +130,7 @@ public class ForceBridge : MonoBehaviour {
 		if (!activated) return; // already there
 
 		if (!isSilent) Utils.PlayOneShotSavable(SFX,Const.a.sounds[102]);
+		if (segiEmitter != null) segiEmitter.SetActive(false);
 		activated = false;
 		lerping = true;
 	}
@@ -131,6 +141,27 @@ public class ForceBridge : MonoBehaviour {
 		} else {
 			Activate(false);
 		}
+	}
+	
+	private GameObject CreateSEGIEmitterCube() {
+		GameObject segiEmitter = new GameObject("ForceBridgeSEGIEmitter_"  + LevelManager.a.currentLevel.ToString() + "." + gameObject.name);
+        segiEmitter.transform.parent = transform;
+        segiEmitter.transform.localPosition = new Vector3(0f,0f,0f);
+		segiEmitter.transform.localScale = new Vector3(1f,1f,1f); // Parent scales it
+        MeshFilter mf = segiEmitter.AddComponent<MeshFilter>();
+        mf.sharedMesh = Const.a.cubeMesh;
+        MeshRenderer mR = segiEmitter.AddComponent<MeshRenderer>();
+        mR.material = Const.a.segiEmitterMaterial1;
+		switch (fieldColor) {
+			case ForceFieldColor.Red:      mR.sharedMaterial = Const.a.segiEmitterMaterialRed;  break;
+			case ForceFieldColor.Green:    mR.sharedMaterial = Const.a.segiEmitterMaterialGreen;  break;
+			case ForceFieldColor.Blue:     mR.sharedMaterial = Const.a.segiEmitterMaterialBlue;  break;
+			case ForceFieldColor.Purple:   mR.sharedMaterial = Const.a.segiEmitterMaterialPurple; break;
+			case ForceFieldColor.RedFaint: mR.sharedMaterial = Const.a.segiEmitterMaterialRedFaint;  break;
+		}
+
+        segiEmitter.layer = 2; // IgnoreRaycast
+        return segiEmitter;
 	}
 
 	public static string Save(GameObject go) {
@@ -187,6 +218,7 @@ public class ForceBridge : MonoBehaviour {
 		if (fb.activated) {
 			Utils.EnableMeshRenderer(fb.mr);
 			Utils.EnableBoxCollider(fb.bCol);
+			fb.transform.localScale = new Vector3(fb.activatedScaleX,fb.activatedScaleY,fb.activatedScaleZ);
 		} else {
 			if (fb.transform.localScale.x < 0.08f
 				|| fb.transform.localScale.y < 0.08f
@@ -196,6 +228,7 @@ public class ForceBridge : MonoBehaviour {
 				Utils.DisableBoxCollider(fb.bCol);
 			}
 		}
+		
 		index++;
 		fb.lerping = Utils.GetBoolFromString(entries[index],"lerping"); index++;
 		fb.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],"tickFinished"); index++;
@@ -209,12 +242,11 @@ public class ForceBridge : MonoBehaviour {
 			fb.transform.localScale = new Vector3(fb.activatedScaleX,
 												  fb.activatedScaleY,
 												  fb.activatedScaleZ);
+			fb.Activate(true);
 		}
 
-		fb.fieldColor = Utils.GetForceFieldColorFromInt(
-						  Utils.GetIntFromString(entries[index],"fieldColor"));
+		fb.fieldColor = Utils.GetForceFieldColorFromInt(Utils.GetIntFromString(entries[index],"fieldColor"));
 		index++;
-
 		fb.InitializeFromLoad();
 		return index;
 	}

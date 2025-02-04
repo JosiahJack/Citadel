@@ -92,6 +92,9 @@ public class TargetIO : MonoBehaviour {
 								+ "disabled on awake gameobject "
 								+ gameObject.name + " with TargetIO.cs");
 				}
+				
+				TeleportTouch tt = GetComponent<TeleportTouch>();
+				if (tt != null) tt.Awake();
 				this.gameObject.SetActive(false);
 			}
 		} else {
