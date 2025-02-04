@@ -312,6 +312,7 @@ public class AIController : MonoBehaviour {
 		if (!startInitialized) return;
 
 		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
+			rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 			rbody.isKinematic = true; // Prevent movement when paused.
 			return;
 		}
@@ -1375,6 +1376,7 @@ public class AIController : MonoBehaviour {
 					rbody.useGravity = false;
 				} else {
 					rbody.useGravity = true;
+					rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 					rbody.isKinematic = true;
 				}
 			}

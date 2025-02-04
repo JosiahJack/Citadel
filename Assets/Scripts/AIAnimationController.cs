@@ -273,6 +273,8 @@ public class AIAnimationController : MonoBehaviour {
 				} else {
 					return index + 9; // Keep!  Cyber enemies don't have an AIAC!
 				}
+			} else {
+				return index + 9;
 			}
 		}
 		

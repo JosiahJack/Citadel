@@ -605,6 +605,12 @@ public class MainMenuHandler : MonoBehaviour {
 		configCamera.targetTexture.Release();
 		configCamera.targetTexture.width = Screen.width;
 		configCamera.targetTexture.height = Screen.height;
+		Grayscale gsc = configCamera.gameObject.GetComponent<Grayscale>();
+		Grayscale gscMain = Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<Grayscale>();
+		if (gsc != null && gscMain != null) gsc.enabled = gscMain.enabled;
+		
+		UnityStandardAssets.ImageEffects.ScreenSpaceAmbientOcclusion sao = configCamera.gameObject.GetComponent<UnityStandardAssets.ImageEffects.ScreenSpaceAmbientOcclusion>();
+		if (sao != null) sao.enabled = Const.a.GraphicsSSAO;
 		SEGI sega = configCamera.gameObject.GetComponent<SEGI>();
 		if (sega != null) sega.enabled = Const.a.GraphicsSEGI;
 		configCamera.Render();

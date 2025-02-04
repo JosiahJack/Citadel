@@ -58,10 +58,9 @@ public class FuncWall : MonoBehaviour {
 			transform.position = tempVec;
 		}
 
+		rbody.collisionDetectionMode =CollisionDetectionMode.ContinuousSpeculative;
 		rbody.isKinematic = true;
 		rbody.useGravity = false;
-		rbody.collisionDetectionMode =
-		  CollisionDetectionMode.ContinuousSpeculative;
 
 		// Ensure children are non-static.  Necessary to move them with parent!
 		GameObject childGO;
@@ -80,11 +79,9 @@ public class FuncWall : MonoBehaviour {
 	public void InitializeFromLoad() {
 		rbody = GetComponent<Rigidbody>();
 		SFXSource = GetComponent<AudioSource>();
+		rbody.collisionDetectionMode =CollisionDetectionMode.ContinuousSpeculative;
 		rbody.isKinematic = true;
 		rbody.useGravity = false;
-		rbody.collisionDetectionMode =
-		  CollisionDetectionMode.ContinuousSpeculative;
-
 		targetPositionY = targetPosition.transform.localPosition.y;
 		tempVec = (transform.position - targetPosition.transform.position);
 		float distTotal = Vector3.Distance(startPosition,

@@ -346,7 +346,8 @@ public class Config {
 	}
 
 	public static void SetSSAO() {
-		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = false;//Const.a.GraphicsSSAO; Minimal effect
+// 		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = Const.a.GraphicsSSAO;
+		Const.a.player1CapsuleMainCameragGO.GetComponent<UnityStandardAssets.ImageEffects.ScreenSpaceAmbientOcclusion>().enabled = Const.a.GraphicsSSAO;
 	}
 
 	public static void SetBrightness() {

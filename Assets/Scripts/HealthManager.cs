@@ -834,6 +834,8 @@ public class HealthManager : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(hm.god,"godmode"));
 		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(hm.actAsCorpseOnly,"actAsCorpseOnly"));
+		s1.Append(Utils.splitChar);
 		s1.Append(Utils.BoolToString(hm.teleportDone,"teleportDone"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveString(hm.targetOnDeath,"targetOnDeath"));
@@ -874,6 +876,7 @@ public class HealthManager : MonoBehaviour {
 		hm.cyberHealth = Utils.GetFloatFromString(entries[index],"cyberHealth"); index++;
 		hm.deathDone = Utils.GetBoolFromString(entries[index],"deathDone"); index++;
 		hm.god = Utils.GetBoolFromString(entries[index],"godmode"); index++;
+		hm.actAsCorpseOnly = Utils.GetBoolFromString(entries[index],"actAsCorpseOnly"); index++;
 		hm.teleportDone = Utils.GetBoolFromString(entries[index],"teleportDone"); index++;
         hm.targetOnDeath = Utils.LoadString(entries[index],"targetOnDeath"); index++;
 		index = TargetIO.Load(go,ref entries,index,true,prefID);

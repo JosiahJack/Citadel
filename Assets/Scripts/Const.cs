@@ -1882,7 +1882,6 @@ public class Const : MonoBehaviour {
 		}
 		loadPercentText.text = "Re-init cull systems...";
 		yield return new WaitForSeconds(0.05f);
-// 		if (LevelManager.a.currentLevel != 13) DynamicCulling.a.Cull_Init();
 		loadPercentText.text = "Cleaning Up...";
 		yield return new WaitForSeconds(0.1f);
 

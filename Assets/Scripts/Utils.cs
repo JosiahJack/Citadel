@@ -1149,10 +1149,10 @@ public class Utils {
 		CollisionDetectionMode oldCollision = rbody.collisionDetectionMode;
 		rbody.isKinematic = GetBoolFromString(entries[index],"isKinematic"); index++;
 		if (rbody.isKinematic) rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-		if (rbody.collisionDetectionMode != oldCollision) {
-			Debug.Log("Collision mode changed on " + go.name + " from "
-					  + oldCollision.ToString() + " to "
-					  + rbody.collisionDetectionMode.ToString());
+		else rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+		
+		if (rbody.collisionDetectionMode != oldCollision && !rbody.isKinematic) {
+			if (oldCollision == CollisionDetectionMode.Discrete) rbody.collisionDetectionMode = oldCollision;
 		}
 
 		return index; // Carry on with current index read.

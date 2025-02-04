@@ -279,6 +279,7 @@ public class LevelManager : MonoBehaviour {
 		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) AutoSplitterData.missionSplitID++; // 1 - Medical split - we are now on level 2
 		PostLoadLevelSetupSystems();
 		if (currentLevel != 13) DynamicCulling.a.Cull_Init();
+		DynamicCulling.a.forceRecull = true;
 	}
 
 	public void LoadLevelFromSave(int levnum) {
