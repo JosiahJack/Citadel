@@ -205,7 +205,7 @@ public class CitadelTests : MonoBehaviour {
 /*	
 	public void GenerateGeometryDataFile() {
 		#if UNITY_EDITOR
-		UnityEngine.Debug.Log("Outputting all lights to StreamingAssets/CitadelScene_geometry_level" + levelToOutputFrom.ToString() + ".dat");
+		UnityEngine.Debug.Log("Outputting all chunks to StreamingAssets/CitadelScene_geometry_level" + levelToOutputFrom.ToString() + ".dat");
 		List<GameObject> allGeometry = new List<GameObject>();
 		Transform tr = geometryContainters[levelToOutputFrom].transform;
 		Transform child = null;

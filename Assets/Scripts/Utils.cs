@@ -1146,14 +1146,14 @@ public class Utils {
 		readFloatz = GetFloatFromString(entries[index],"velocity.z"); index++;
 		tempvec = new Vector3(readFloatx,readFloaty,readFloatz);
 		rbody.velocity = tempvec;
-		CollisionDetectionMode oldCollision = rbody.collisionDetectionMode;
+// 		CollisionDetectionMode oldCollision = rbody.collisionDetectionMode;
 		rbody.isKinematic = GetBoolFromString(entries[index],"isKinematic"); index++;
-		if (rbody.isKinematic) rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-		else rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-		
-		if (rbody.collisionDetectionMode != oldCollision && !rbody.isKinematic) {
-			if (oldCollision == CollisionDetectionMode.Discrete) rbody.collisionDetectionMode = oldCollision;
-		}
+// 		if (rbody.isKinematic) rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+// 		else rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+// 		
+// 		if (rbody.collisionDetectionMode != oldCollision && !rbody.isKinematic) {
+// 			if (oldCollision == CollisionDetectionMode.Discrete) rbody.collisionDetectionMode = oldCollision;
+// 		}
 
 		return index; // Carry on with current index read.
 	}

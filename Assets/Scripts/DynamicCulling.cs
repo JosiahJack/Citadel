@@ -63,7 +63,7 @@ public class DynamicCulling : MonoBehaviour {
 //     private JobHandle currentJobHandle;
     private CommandBuffer geometryCommandBuffer;
     private byte[] bytes;
-    private static string openDebugImagePath;
+//     private static string openDebugImagePath;
     private static string visDebugImagePath;
     private Color32[] pixels;
     private Texture2D debugTex;
@@ -550,7 +550,12 @@ public class DynamicCulling : MonoBehaviour {
             }
 
             gridCells[x,y].chunkPrefabs.Add(cr);
-            gridCells[x,y].open = true;
+            
+            #if UNITY_EDITOR
+                Note nt = childGO.gameObject.AddComponent<Note>();
+                nt.note = "Cullable Geometry Chunk, grid cell: " + x.ToString() + "," + y.ToString();
+            #endif
+//             gridCells[x,y].open = true;
         }
     }
 
@@ -559,14 +564,14 @@ public class DynamicCulling : MonoBehaviour {
         // Priorities priorities after all.  Gotta figure out if we should draw
         // anything else first before it matters what texture it has.
         Color32[] edgePixels = Const.a.textures[LevelManager.a.currentLevel].GetPixels32();
-
+        Color32 closedData;
         for (int x=0;x<WORLDX;x++) {
             for (int y=0;y<WORLDX;y++) {
                 gridCells[x,y].closedNorth = false;
                 gridCells[x,y].closedEast = false;
                 gridCells[x,y].closedSouth = false;
                 gridCells[x,y].closedWest = false;
-                Color32 closedData = edgePixels[x + y * WORLDX];
+                 closedData = edgePixels[x + y * WORLDX];
                 if (closedData.r > 127) gridCells[x,y].closedNorth = true;
                 if (closedData.g > 127) gridCells[x,y].closedEast = true;
                 if (closedData.b > 127) gridCells[x,y].closedSouth = true;
@@ -579,9 +584,18 @@ public class DynamicCulling : MonoBehaviour {
                 
                 if (closedData.a > 0 && closedData.a < 255) {
                     gridCells[x,y].closedNorth = gridCells[x,y].closedEast
-                    = gridCells[x,y].closedSouth = gridCells[x,y].closedWest
-                    = true;
+                    = gridCells[x,y].closedSouth = gridCells[x,y].closedWest = true;
                 }
+            }
+        }
+        
+        Color32[] openPixels = Const.a.textures[LevelManager.a.currentLevel + 13].GetPixels32();
+        Color32 openData;
+        for (int x=0;x<WORLDX;x++) {
+            for (int y=0;y<WORLDX;y++) {
+                gridCells[x,y].open = false;
+                openData = openPixels[x + y * WORLDX];
+                if (openData.r > 0 || openData.g > 0 || openData.b > 0) gridCells[x,y].open = true;
             }
         }
     }
@@ -596,7 +610,11 @@ public class DynamicCulling : MonoBehaviour {
         if (pid == null) pid = mr.transform.parent.GetComponent<PrefabIdentifier>();
         if (pid == null) pid = mr.transform.parent.parent.GetComponent<PrefabIdentifier>();
         if (pid == null) Debug.LogError("No PrefabIdentifier on mesh for culling gameObject named " + mr.gameObject.name);
-        Note nt = null;
+
+        #if UNITY_EDITOR     
+            Note nt = null;
+        #endif
+        
         switch(type) {
             case 1:
                 dynamicMeshes.Add(mr);
@@ -605,14 +623,18 @@ public class DynamicCulling : MonoBehaviour {
                 dynamicMeshesHMs.Add(mr.GetComponent<HealthManager>());
                 dynamicMeshesFBs.Add(mr.GetComponent<ForceBridge>());
                 dynamicMeshesTransforms.Add(mr.transform);
-                nt = mr.gameObject.AddComponent<Note>();
-                nt.note = "Cullable Dynamic Object";
+                #if UNITY_EDITOR     
+                    nt = mr.gameObject.AddComponent<Note>();
+                    nt.note = "Cullable Dynamic Object";
+                #endif
                 break;
             case 2:
                 doors.Add(mr);
                 doorsCoords.Add(Vector2Int.zero);
-                nt = mr.gameObject.AddComponent<Note>();
-                nt.note = "Cullable Door Object";
+                #if UNITY_EDITOR     
+                    nt = mr.gameObject.AddComponent<Note>();
+                    nt.note = "Cullable Door Object";
+                #endif
                 break;
             case 3: break; // NPCs done different due to SkinnedMeshRenderer's.
             case 4:
@@ -620,8 +642,10 @@ public class DynamicCulling : MonoBehaviour {
                 staticMeshSaveableCoords.Add(Vector2Int.zero);
                 staticMeshesSaveablePIDs.Add(pid);
                 staticMeshesSaveableHMs.Add(mr.gameObject.GetComponent<HealthManager>());
-                nt = mr.gameObject.AddComponent<Note>();
-                nt.note = "Cullable Static Saveable Object";
+                #if UNITY_EDITOR     
+                    nt = mr.gameObject.AddComponent<Note>();
+                    nt.note = "Cullable Static Saveable Object";
+                #endif
                 break;
             case 5: break; // Lights done differently due to Light (what, it makes sense).
             default:
@@ -630,8 +654,10 @@ public class DynamicCulling : MonoBehaviour {
                 staticMeshesImmutable.Add(mr);
                 staticMeshImmutableCoords.Add(Vector2Int.zero);
                 staticMeshesImmutablePIDs.Add(pid);
-                nt = mr.gameObject.AddComponent<Note>();
-                nt.note = "Cullable Static Immutable Object";
+                #if UNITY_EDITOR     
+                    nt = mr.gameObject.AddComponent<Note>();
+                    nt.note = "Cullable Static Immutable Object";
+                #endif
                 break;
         }
         
@@ -661,8 +687,10 @@ public class DynamicCulling : MonoBehaviour {
                 npcAICs.Add(aic);
                 npcTransforms.Add(ctr.GetChild(i));
                 npcCoords.Add(Vector2Int.zero);
-                Note nt = aic.gameObject.AddComponent<Note>();
-                nt.note = "Cullable NPC";
+                #if UNITY_EDITOR     
+                    Note nt = aic.gameObject.AddComponent<Note>();
+                    nt.note = "Cullable NPC";
+                #endif
             }
         } else if (type == 5) { // Lights
             Light lit = null;
@@ -672,8 +700,10 @@ public class DynamicCulling : MonoBehaviour {
 
                 lights.Add(lit);
                 lightCoords.Add(Vector2Int.zero);
-                Note nt = lit.gameObject.AddComponent<Note>();
-                nt.note = "Cullable Light";
+                #if UNITY_EDITOR     
+                    Note nt = lit.gameObject.AddComponent<Note>();
+                    nt.note = "Cullable Light";
+                #endif
             }
         } else if (type == 0) { // Static Immutable
             for (int k=0;k<compArray.Length;k++) {
@@ -734,28 +764,39 @@ public class DynamicCulling : MonoBehaviour {
             new Vector3(0f, 0f, 0.64f), new Vector3(0f, 0f, -0.64f),          
         };
         int iter;
-        Note nt = null;
+        
+        #if UNITY_EDITOR     
+            Note nt = null;
+        #endif
+            
         for (int index=0;index<count;index++) {
             switch(type) {
                 case 1: dynamicMeshCoords[index]          = PosToCellCoords(dynamicMeshes[index].transform.position);
-                        nt = dynamicMeshes[index].gameObject.GetComponent<Note>();
-                        nt.note = "Cullable Dynamic Object, grid cell: " + dynamicMeshCoords[index].x.ToString() + "," + dynamicMeshCoords[index].y.ToString();
-                        if (dynamicMeshCoords[index].x == 0 || dynamicMeshCoords[index].y == 0) {
-                            UnityEngine.Debug.Log("dynamic mesh misplaced for " + dynamicMeshes[index].gameObject.name);
+                        #if UNITY_EDITOR
+                            nt = dynamicMeshes[index].gameObject.GetComponent<Note>();
+                            nt.note = "Cullable Dynamic Object, grid cell: " + dynamicMeshCoords[index].x.ToString() + "," + dynamicMeshCoords[index].y.ToString();
+                        #endif
+                            
+                        if (dynamicMeshCoords[index].x == 0 && dynamicMeshCoords[index].y == 0) {
+                            UnityEngine.Debug.Log("dynamic mesh misplaced for " + dynamicMeshes[index].gameObject.name + " at " + dynamicMeshes[index].transform.position.ToString());
                         }
                         break;
                 case 2: doorsCoords[index]                = PosToCellCoords(doors[index].transform.position);
-                        nt = doors[index].gameObject.GetComponent<Note>();
-                        nt.note = "Cullable Door Object, grid cell: " + doorsCoords[index].x.ToString() + "," + doorsCoords[index].y.ToString();
-                        if (doorsCoords[index].x == 0 || doorsCoords[index].y == 0) {
-                            UnityEngine.Debug.Log("door misplaced for " + doors[index].gameObject.name);
+                        #if UNITY_EDITOR
+                            nt = doors[index].gameObject.GetComponent<Note>();
+                            nt.note = "Cullable Door Object, grid cell: " + doorsCoords[index].x.ToString() + "," + doorsCoords[index].y.ToString();
+                        #endif
+                        if (doorsCoords[index].x == 0 && doorsCoords[index].y == 0) {
+                            UnityEngine.Debug.Log("door misplaced for " + doors[index].gameObject.name + " at " + doors[index].transform.position.ToString());
                         }
                         break;
                 case 3: npcCoords[index]                  = PosToCellCoords(npcTransforms[index].position);
-                        nt = npcTransforms[index].gameObject.GetComponent<Note>();
-                        nt.note = "Cullable NPC, grid cell: " + npcCoords[index].x.ToString() + "," + npcCoords[index].y.ToString();
-                        if (npcCoords[index].x == 0 || npcCoords[index].y == 0) {
-                            UnityEngine.Debug.Log("npc misplaced for " + npcTransforms[index].gameObject.name);
+                        #if UNITY_EDITOR
+                            nt = npcTransforms[index].gameObject.GetComponent<Note>();
+                            nt.note = "Cullable NPC, grid cell: " + npcCoords[index].x.ToString() + "," + npcCoords[index].y.ToString();
+                        #endif
+                        if (npcCoords[index].x == 0 && npcCoords[index].y == 0) {
+                            UnityEngine.Debug.Log("npc misplaced for " + npcTransforms[index].gameObject.name + " at " + npcTransforms[index].position.ToString());
                         }
                         break;
                 case 4: staticMeshSaveableCoords[index]   = PosToCellCoords(staticMeshesSaveable[index].transform.position);
@@ -766,16 +807,20 @@ public class DynamicCulling : MonoBehaviour {
                             iter++;
                             if (iter > (nudges.Length - 1)) break;
                         }
-                        nt = staticMeshesSaveable[index].gameObject.GetComponent<Note>();
-                        nt.note = "Cullable Static Saveable Object, grid cell: " + staticMeshSaveableCoords[index].x.ToString() + "," + staticMeshSaveableCoords[index].y.ToString();
-                        if (staticMeshSaveableCoords[index].x == 0 || staticMeshSaveableCoords[index].y == 0) {
-                            UnityEngine.Debug.Log("static mesh savable misplaced for " + staticMeshesSaveable[index].gameObject.name);
+                        #if UNITY_EDITOR
+                            nt = staticMeshesSaveable[index].gameObject.GetComponent<Note>();
+                            nt.note = "Cullable Static Saveable Object, grid cell: " + staticMeshSaveableCoords[index].x.ToString() + "," + staticMeshSaveableCoords[index].y.ToString();
+                        #endif
+                        if (staticMeshSaveableCoords[index].x == 0 && staticMeshSaveableCoords[index].y == 0) {
+                            UnityEngine.Debug.Log("static mesh savable misplaced for " + staticMeshesSaveable[index].gameObject.name + " at " + staticMeshesSaveable[index].transform.position.ToString());
                         }
                         break;
                 case 5: lightCoords[index]                = PosToCellCoords(lights[index].transform.position);
-                        nt = lights[index].gameObject.GetComponent<Note>();
-                        nt.note = "Cullable Light, grid cell: " + lightCoords[index].x.ToString() + "," + lightCoords[index].y.ToString();
-                        if (lightCoords[index].x == 0 || lightCoords[index].y == 0) {
+                        #if UNITY_EDITOR
+                            nt = lights[index].gameObject.GetComponent<Note>();
+                            nt.note = "Cullable Light, grid cell: " + lightCoords[index].x.ToString() + "," + lightCoords[index].y.ToString();
+                        #endif
+                        if (lightCoords[index].x == 0 && lightCoords[index].y == 0) {
                             lights[index].shadows = LightShadows.None;
                         }
                         break;
@@ -787,10 +832,12 @@ public class DynamicCulling : MonoBehaviour {
                             iter++;
                             if (iter > (nudges.Length - 1)) break;
                         }
-                        nt = staticMeshesImmutable[index].gameObject.GetComponent<Note>();
-                        nt.note = "Cullable Static Immutable Object, grid cell: " + staticMeshImmutableCoords[index].x.ToString() + "," + staticMeshImmutableCoords[index].y.ToString();
-                        if (staticMeshImmutableCoords[index].x == 0 || staticMeshImmutableCoords[index].y == 0) {
-                            UnityEngine.Debug.Log("static mesh immutable misplaced for " + staticMeshesImmutable[index].gameObject.name);
+                        #if UNITY_EDITOR
+                            nt = staticMeshesImmutable[index].gameObject.GetComponent<Note>();
+                            nt.note = "Cullable Static Immutable Object, grid cell: " + staticMeshImmutableCoords[index].x.ToString() + "," + staticMeshImmutableCoords[index].y.ToString();
+                        #endif
+                        if (staticMeshImmutableCoords[index].x == 0 && staticMeshImmutableCoords[index].y == 0) {
+                            UnityEngine.Debug.Log("static mesh immutable misplaced for " + staticMeshesImmutable[index].gameObject.name + " at " + staticMeshesImmutable[index].transform.position.ToString());
                         }
                         break;
             }
@@ -866,10 +913,10 @@ public class DynamicCulling : MonoBehaviour {
         if (outputDebugImages) {
             debugTex = new Texture2D(WORLDX,WORLDX);
             pixels = new Color32[WORLDX * WORLDX];
-            openDebugImagePath = Utils.SafePathCombine(
-                Application.streamingAssetsPath,
-                "gridcellsopen_" + LevelManager.a.currentLevel.ToString()
-                + ".png");
+//             openDebugImagePath = Utils.SafePathCombine(
+//                 Application.streamingAssetsPath,
+//                 "gridcellsopen_" + LevelManager.a.currentLevel.ToString()
+//                 + ".png");
 
             visDebugImagePath = Utils.SafePathCombine(
                 Application.streamingAssetsPath,
@@ -1291,6 +1338,8 @@ public class DynamicCulling : MonoBehaviour {
                     chp = gridCells[x,y].chunkPrefabs[i];
                     if (chp.constIndex == 1 && gridCells[x,y].visible) skyVisible = true; // Don't move if to assignment, need to preserve true.
                     for (int k=0;k<chp.meshenderers.Count;k++) {
+                        if (chp.meshenderers[k].meshRenderer == null) continue;
+                        
                         chp.meshenderers[k].meshRenderer.enabled = gridCells[x,y].visible;
                         if (!gridCells[x,y].visible) continue;
                         if (chp.constIndex > 304 || chp.constIndex < 0) continue;

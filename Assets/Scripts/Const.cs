@@ -998,6 +998,19 @@ public class Const : MonoBehaviour {
         textures[10] = LoadTextureFromFile("worldedgesclosed_10.png");
         textures[11] = LoadTextureFromFile("worldedgesclosed_11.png");
         textures[12] = LoadTextureFromFile("worldedgesclosed_12.png");
+        textures[13] = LoadTextureFromFile("worldcellopen_0.png");
+        textures[14] = LoadTextureFromFile("worldcellopen_1.png");
+        textures[15] = LoadTextureFromFile("worldcellopen_2.png");
+        textures[16] = LoadTextureFromFile("worldcellopen_3.png");
+        textures[17] = LoadTextureFromFile("worldcellopen_4.png");
+        textures[18] = LoadTextureFromFile("worldcellopen_5.png");
+        textures[19] = LoadTextureFromFile("worldcellopen_6.png");
+        textures[20] = LoadTextureFromFile("worldcellopen_7.png");
+        textures[21] = LoadTextureFromFile("worldcellopen_8.png");
+        textures[22] = LoadTextureFromFile("worldcellopen_9.png");
+        textures[23] = LoadTextureFromFile("worldcellopen_10.png");
+        textures[24] = LoadTextureFromFile("worldcellopen_11.png");
+        textures[25] = LoadTextureFromFile("worldcellopen_12.png");
 	}
 
 	public Sprite GetSpriteFromTexture(int useableItemIndex) {
@@ -1463,6 +1476,8 @@ public class Const : MonoBehaviour {
 		} else {
 			sprint(stringTable[197] + " (" + loadTimer.Elapsed.ToString() + ")"); // Loading...Done!
 		}
+		
+		DynamicCulling.a.Cull(false);
 	}
 
 	public void GoIntoGame() {
@@ -1809,8 +1824,12 @@ public class Const : MonoBehaviour {
 						PrefabIdentifier prefID = SaveLoad.GetPrefabIdentifier(instGO,true);
 						SaveObject.Load(instGO,ref entries,i,prefID); // Load NPC.
 					} else {
-						LevelManager.a.DynamicObjectsSavestrings[levID].Add(readFileList[i]);
-					} 
+						if (levID < LevelManager.a.DynamicObjectsSavestrings.Length) {
+							if (i < readFileList.Count && readFileList.Count > 0) {
+								LevelManager.a.DynamicObjectsSavestrings[levID].Add(readFileList[i]);
+							}
+						}
+					}
 
 				}
 

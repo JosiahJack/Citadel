@@ -1198,7 +1198,7 @@ public static bool ConstIndexIsDynamicObject(int constdex) {
 	return ((constdex >= 307 && constdex < 419)
 			|| (constdex >= 458 && constdex < 480) // 480 is static saveable
 			|| (constdex >= 481 && constdex < 496)
-			|| constdex == 515 || constdex == 524 || constdex == 553);
+			|| constdex == 515 || constdex == 553);
 }
 
 public static bool ConstIndexIsDoor(int constdex) {
@@ -1208,10 +1208,10 @@ public static bool ConstIndexIsDoor(int constdex) {
 public static bool ConstIndexIsStaticObjectSaveable(int constdex) {
 	return ((constdex >= 448 && constdex < 458)
 			|| constdex == 480
-			|| (constdex >= 516 && constdex < 524)
-			|| constdex == 525 || constdex == 526 || constdex == 530
-			|| constdex == 531 || constdex == 546 || constdex == 555
-			|| constdex == 594 || constdex == 596 || constdex == 598
+			|| (constdex >= 516 && constdex <= 526)
+			|| constdex == 530 || constdex == 531 || constdex == 546
+			|| constdex == 555 || constdex == 594 || constdex == 596
+			|| constdex == 598
 			|| (constdex >= 600 && constdex < 603)
 			|| (constdex >= 604 && constdex < 616)
 			|| (constdex >= 688 && constdex < 693)

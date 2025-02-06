@@ -172,7 +172,7 @@ public class MouseLookScript : MonoBehaviour {
 		// ====================================================================
 		if (Input.GetKeyUp(f6)) {
 			if (inCyberSpace) {
-				Const.sprint("Cannot save in cyberspace");
+				Const.sprint(Const.a.stringTable[602]); // Cannot save in cyberspace
 				return;
 			}
 

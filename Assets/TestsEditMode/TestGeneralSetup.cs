@@ -87,14 +87,16 @@ namespace Tests {
 
         [UnityTest]
         public IEnumerator TargetnamesTargetted() {
-            UnityEngine.Debug.LogWarning("Skipping TargetnamesTargetted until new system works with unloaded levels");
-            Assert.That(true,"");
-            yield return null;
-            /*
+//             UnityEngine.Debug.LogWarning("Skipping TargetnamesTargetted until new system works with unloaded levels");
+//             Assert.That(true,"");
+//             yield return null;
+
             RunBeforeAnyTests();
             yield return new WaitWhile(() => SceneLoaded() == false);
-
+            SetupTests();
+            
             string msg = "RunBeforeAnyTests failed to populate allGOs: ";
+            if (allGOs == null) { Assert.That(false,"allGOs was null"); yield return null; }
             Assert.That(allGOs.Count > 1,msg + allGOs.Count.ToString());
 
             int i;
@@ -283,7 +285,7 @@ namespace Tests {
             msg = "No matching target found for targetName: ";
             while (notrg.MoveNext()) {
                 Assert.That(false,msg + notrg.Current.ToString());
-            }*/
+            }
         }
 
         [UnityTest]

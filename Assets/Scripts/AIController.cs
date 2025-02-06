@@ -311,18 +311,12 @@ public class AIController : MonoBehaviour {
 	void Update() {
 		if (!startInitialized) return;
 
-		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) {
-			rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-			rbody.isKinematic = true; // Prevent movement when paused.
-			return;
-		}
+		if (PauseScript.a.Paused() || PauseScript.a.MenuActive()) return;
 
 		rbody.isKinematic = false;
 		if (raycastingTickFinished >= PauseScript.a.relativeTime) return;
 
-		raycastingTickFinished = PauseScript.a.relativeTime
-								 + Const.a.raycastTick;
-
+		raycastingTickFinished = PauseScript.a.relativeTime + Const.a.raycastTick;
 		EnableAutomapOverlay();
 		inSight = CheckIfPlayerInSight();
 		if (enemy != null && HasHealth(healthManager)) {
@@ -337,6 +331,7 @@ public class AIController : MonoBehaviour {
 						wandering = true;
 						currentState = AIState.Walk;
 					}
+					
 					enemy = null; // Forget the enemy.
 					enemyHM = null;
 				}

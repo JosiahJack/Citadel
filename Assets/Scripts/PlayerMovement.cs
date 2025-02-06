@@ -250,9 +250,8 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		// Normal play when not paused...
-
-		rbody.WakeUp(); // Force player physics to never sleep.		
 		if (rbody.isKinematic) rbody.isKinematic = false; // Allow physics.
+		rbody.WakeUp(); // Force player physics to never sleep.
 		CyberSetup();
 		if (!inCyberSpace) {
 			CyberDestupOrNoclipMaintain();

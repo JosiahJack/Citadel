@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4492560911809264}
   - component: {fileID: -2670260548783929113}
   - component: {fileID: -625705697186823049}
-  - component: {fileID: 3092166111543763773}
+  - component: {fileID: 8351462347545489850}
   m_Layer: 9
   m_Name: chunk_cyberpanel_slice45
   m_TagString: Geometry
@@ -61,8 +61,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   constIndex: 22
---- !u!64 &3092166111543763773
-MeshCollider:
+--- !u!65 &8351462347545489850
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -71,10 +71,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
+  serializedVersion: 2
+  m_Size: {x: 2.56, y: 0.32, z: 2.56}
+  m_Center: {x: 0, y: 1.44, z: 0}
 --- !u!1 &7847323935389296599
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,6 +129,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -154,3 +154,4 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
