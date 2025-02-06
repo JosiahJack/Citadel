@@ -137,21 +137,13 @@ public class MainMenuHandler : MonoBehaviour {
 			dataFound = true;
 			Config.SetVolume();
 			GoToFrontPage();
-			IntroVideo.SetActive(false);
+			CheckAndPlayIntro();
 			return;
 		}
 		FileBrowser.SetFilters(false,new FileBrowser.Filter("SHOCK RES Files",
 															".RES",".res"));
 		FileBrowser.SetDefaultFilter( ".RES" );
 		StartCoroutine(CheckDataFiles());
-		string indn = Utils.SafePathCombine(Application.streamingAssetsPath,
-										    "introdone.dat");
-		if (System.IO.File.Exists(indn)) {
-			IntroVideo.SetActive(false);	
-			IntroVideoContainer.SetActive(false);
-		} else {
-			System.IO.File.Create(indn);
-		}
 	}
 
 	// Improve menu performance.
@@ -212,6 +204,17 @@ public class MainMenuHandler : MonoBehaviour {
 		if (Inventory.a != null) Inventory.a.UnHideBioMonitor();
 		ReEnableCamera();
 	}
+	
+	void CheckAndPlayIntro() {
+		string indn = Utils.SafePathCombine(Application.streamingAssetsPath,"introdone.dat");
+		if (System.IO.File.Exists(indn)) {
+			IntroVideo.SetActive(false);	
+			IntroVideoContainer.SetActive(false);
+		} else {
+			System.IO.File.Create(indn);
+			PlayIntro();
+		}
+	}
 
 	IEnumerator CheckDataFiles () {
 		BackGroundMusic.Stop();
@@ -225,12 +228,14 @@ public class MainMenuHandler : MonoBehaviour {
 			dataFound = true;
 			Config.SetVolume();
 			GoToFrontPage();
-			IntroVideo.SetActive(true);	
+			CheckAndPlayIntro();
 		} else {
 			// Fake like we are checking for the files to be there.
 			// It's fake because we already did it and it is instant.
 			// This is just to show the user that we did in fact look.
 			InitialDisplay.SetActive(true);
+			IntroVideo.SetActive(false);	
+			IntroVideoContainer.SetActive(false);
 			yield return new WaitForSeconds(0.3f);
 
 			// OK, now show that we didn't find them
@@ -812,17 +817,20 @@ public class MainMenuHandler : MonoBehaviour {
 		StartCoroutine(CopyPathCheck());
 	}
 
-	IEnumerator CopyPathCheck () {
+	IEnumerator CopyPathCheck() {
 		if (dataFound) {
 			SuccessBanner.SetActive(true);
 			CouldNotFindDialogue.SetActive(false);
 			Config.SetVolume();
 			yield return new WaitForSeconds(0.5f);
+
 			GoToFrontPage();
+			CheckAndPlayIntro();
 		} else {
 			CouldNotFindDialogue.SetActive(false);
 			FailureBanner.SetActive(true);
 			yield return new WaitForSeconds(2f);
+			
 			FailureBanner.SetActive(false);
 			CouldNotFindDialogue.SetActive(true);
 		}
@@ -833,7 +841,7 @@ public class MainMenuHandler : MonoBehaviour {
 		CouldNotFindDialogue.SetActive(false);
 		Config.SetVolume(); // probably not needed here, but just in case
 		GoToFrontPage();
-		PlayIntro();
+		CheckAndPlayIntro();
 	}
 
 	public void PlayDeathVideo() {
