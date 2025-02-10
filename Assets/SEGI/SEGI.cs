@@ -7,113 +7,58 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 
-[ExecuteInEditMode]
-#if UNITY_5_4_OR_NEWER
-[ImageEffectAllowedInSceneView]
-#endif
+// [ExecuteInEditMode]
+// #if UNITY_5_4_OR_NEWER
+// [ImageEffectAllowedInSceneView]
+// #endif
 [RequireComponent(typeof(Camera))]
 [AddComponentMenu("Image Effects/Sonic Ether/SEGI")]
-public class SEGI : MonoBehaviour
-{
-
+public class SEGI : MonoBehaviour {
 #region Parameters
-	[Serializable]
-	public enum VoxelResolution
-	{
-		verylow = 64,
-		low = 128,
-		high = 256,
-		veryhigh = 512,
-	}
-
-	public bool updateGI = true;
-	public LayerMask giCullingMask = 2147483647;
-	public float shadowSpaceSize = 50.0f;
-	public Light sun;
-
-	public Color skyColor;
-
-	public float voxelSpaceSize = 25.0f;
-
-	public bool useBilateralFiltering = false;
-
-	[Range(0, 2)]
-	public int innerOcclusionLayers = 1;
-
-
-	[Range(0.01f, 1.0f)]
-	public float temporalBlendWeight = 0.1f;
-
-
-	public VoxelResolution voxelResolution = VoxelResolution.high;
-
-	public bool visualizeSunDepthTexture = false;
+	[Serializable] public enum VoxelResolution {verylow = 64, low = 128, high = 256, veryhigh = 512, }
+	[HideInInspector] public bool updateGI = true;
+	[HideInInspector] public LayerMask giCullingMask = 2147483647;
+	[HideInInspector] public float shadowSpaceSize = 50.0f;
+	[HideInInspector] public Light sun = null;
+	[HideInInspector] public Color skyColor = new Color(0f,0f,0f,1f);
+	[HideInInspector] public float voxelSpaceSize = 40.0f;
+	[HideInInspector] public bool useBilateralFiltering = true;
+	[HideInInspector] public int innerOcclusionLayers = 0;
+	[HideInInspector] public float temporalBlendWeight = 0.13f;
+	[HideInInspector] public VoxelResolution voxelResolution = VoxelResolution.low;
+	[HideInInspector] public bool visualizeSunDepthTexture = false;
 	public bool visualizeGI = false;
-	public bool visualizeVoxels = false;
-
-	public bool halfResolution = true;
-	public bool stochasticSampling = true;
-	public bool infiniteBounces = false;
+	[HideInInspector] public bool visualizeVoxels = false;
+	[HideInInspector] public bool halfResolution = true;
+	[HideInInspector] public bool stochasticSampling = true;
+	[HideInInspector] public bool infiniteBounces = true;
 	public Transform followTransform;
-	[Range(1, 128)]
-	public int cones = 6;
-	[Range(1, 32)]
-	public int coneTraceSteps = 14;
-	[Range(0.02f, 4.0f)]
-	public float coneLength = 1.0f;
-	[Range(0.16f, 12.0f)]
-	public float coneWidth = 5.5f;
-	[Range(0.0f, 4.0f)]
-	public float occlusionStrength = 1.0f;
-	[Range(0.0f, 4.0f)]
-	public float nearOcclusionStrength = 0.5f;
-	[Range(0.001f, 4.0f)]
-	public float occlusionPower = 1.5f;
-	[Range(0.0f, 4.0f)]
-	public float coneTraceBias = 1.0f;
-	[Range(0.0f, 4.0f)]
-	public float nearLightGain = 1.0f;
-	[Range(0.0f, 4.0f)]
-	public float giGain = 1.0f;
-	[Range(0.0f, 4.0f)]
-	public float secondaryBounceGain = 1.0f;
-	[Range(0.0f, 16.0f)]
-	public float softSunlight = 0.0f;
-
-	[Range(0.0f, 8.0f)]
-	public float skyIntensity = 1.0f;
-
-	public bool doReflections = true;
-	[Range(12, 128)]
-	public int reflectionSteps = 64;
-	[Range(0.001f, 4.0f)]
-	public float reflectionOcclusionPower = 1.0f;
-	[Range(0.0f, 1.0f)]
-	public float skyReflectionIntensity = 1.0f;
-
-	public bool voxelAA = false;
-
-	public bool gaussianMipFilter = false;
-
-
-	[Range(0.1f, 4.0f)]
-	public float farOcclusionStrength = 1.0f;
-	[Range(0.1f, 4.0f)]
-	public float farthestOcclusionStrength = 1.0f;
-
-	[Range(3, 16)]
-	public int secondaryCones = 6;
-	[Range(0.1f, 4.0f)]
-	public float secondaryOcclusionStrength = 1.0f;
-
-	public bool sphericalSkylight = false;
+	[HideInInspector] public int cones = 32;
+	[HideInInspector] public int coneTraceSteps = 16;
+	[HideInInspector] public float coneLength = 2.09f;
+	[HideInInspector] public float coneWidth = 5f;
+	[HideInInspector] public float occlusionStrength = 4.0f;
+	[HideInInspector] public float nearOcclusionStrength = 0.11f;
+	[HideInInspector] public float occlusionPower = 1.3f;
+	[HideInInspector] public float coneTraceBias = 1.63f;
+	[HideInInspector] public float nearLightGain = 0.84f;
+	[HideInInspector] public float giGain = 0.1f;
+	[HideInInspector] public float secondaryBounceGain = 0.5f;
+	[HideInInspector] public float softSunlight = 0.0f;
+	[HideInInspector] public float skyIntensity = 0.0f;
+	[HideInInspector] public bool doReflections = false;
+	[HideInInspector] public int reflectionSteps = 70;
+	[HideInInspector] public float reflectionOcclusionPower = 1.0f;
+	[HideInInspector] public float skyReflectionIntensity = 1.0f;
+	[HideInInspector] public bool voxelAA = false;
+	[HideInInspector] public bool gaussianMipFilter = true;
+	[HideInInspector] public float farOcclusionStrength = 4.0f;
+	[HideInInspector] public float farthestOcclusionStrength = 4.0f;
+	[HideInInspector] public int secondaryCones = 16;
+	[HideInInspector] public float secondaryOcclusionStrength = 0.1f;
+	[HideInInspector] public bool sphericalSkylight = false;
 
 #endregion
-
-
-
-
-
 
 #region InternalVariables
 	object initChecker;

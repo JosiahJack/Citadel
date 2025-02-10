@@ -617,6 +617,7 @@ public class MainMenuHandler : MonoBehaviour {
 		UnityStandardAssets.ImageEffects.ScreenSpaceAmbientOcclusion sao = configCamera.gameObject.GetComponent<UnityStandardAssets.ImageEffects.ScreenSpaceAmbientOcclusion>();
 		if (sao != null) sao.enabled = Const.a.GraphicsSSAO;
 		SEGI sega = configCamera.gameObject.GetComponent<SEGI>();
+		DynamicCulling.a.CullCore();
 		if (sega != null) sega.enabled = Const.a.GraphicsSEGI;
 		configCamera.Render();
 		if (Const.a.GraphicsSEGI) {
@@ -803,7 +804,7 @@ public class MainMenuHandler : MonoBehaviour {
 			} else {
 				alogStrmPath =
 					Utils.SafePathCombine(Application.streamingAssetsPath,
-									     "CITBARK.RES");
+									     "CITALOG.RES");
 				barkStrmPath =
 					Utils.SafePathCombine(Application.streamingAssetsPath,
 									      "CITBARK.RES");

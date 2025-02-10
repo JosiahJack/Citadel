@@ -8,7 +8,6 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: My Font
   fontNames:
   - My Font
   fallbackFontReferences:
@@ -18,7 +17,7 @@ TrueTypeFontImporter:
   fontRenderingMode: 2
   ascentCalculationMode: 1
   useLegacyBoundsCalculation: 0
-  shouldRoundAdvanceValue: 1
+  shouldRoundAdvanceValue: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
