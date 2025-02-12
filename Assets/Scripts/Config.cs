@@ -295,7 +295,7 @@ public class Config {
 		if (Const.a.GraphicsModelDetail == 0) {
 			DynamicCulling.a.lodSqrDist = 0f;
 		} else {
-			DynamicCulling.a.lodSqrDist = 100f;
+			DynamicCulling.a.lodSqrDist = 2621.44f;
 		}
 		
 		DynamicCulling.a.forceRecull = true; // Recull to reapply meshes.

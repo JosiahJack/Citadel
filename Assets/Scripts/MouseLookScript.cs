@@ -159,6 +159,8 @@ public class MouseLookScript : MonoBehaviour {
 
         if (PauseScript.a.MenuActive()) {
 			// Ignore mouselook and turn off camera when main menu is up.
+					Cursor.visible = false;
+
 			if (playerCamera.enabled) playerCamera.enabled = false;
 			return;
 		}

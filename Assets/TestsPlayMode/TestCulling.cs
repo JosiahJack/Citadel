@@ -67,7 +67,6 @@ namespace Tests {
             PlayerReferenceManager.a.playerCanvas.SetActive(false);
             MouseLookScript.a.enabled = false;
             DynamicCulling.a.useLODMeshes = true;
-            DynamicCulling.a.lodSqrDist = 0.1f;
             DynamicCulling.a.overrideWindowsToBlack = true;
             DynamicCulling.a.Cull(true);
             MouseLookScript.a.playerCamera.enabled = false;
@@ -76,46 +75,94 @@ namespace Tests {
             Texture2D captureTex = new Texture2D(1024,1024,TextureFormat.RGB24,false);
             RenderTexture.active = capture;
             MouseLookScript.a.playerCamera.targetTexture = capture;
-            float xSum, ySum, zSum;
+            MouseLookScript.a.playerCamera.nearClipPlane = 0.02f;
+//             float hitYDn, hitYUp;
+            float minY, maxY;
             ChunkPrefab chp;
             Vector3 avgPos;
             bool foundPink = false;
-            bool didHit = false;
+//             bool didHitDn = false;
+//             bool didHitUp = false;
             float pinkMin = 217f/256f; // Give cushion around the pink value of 219 0 219
             float pinkMax = 221f/256f;
             float pinkGThreshold = 1f/256f;
             float timeTillNext = 0.001f;
-            int pinkCountThreshold = 256;
+            int pinkCountThreshold = 512;
             Color[] pixels;
-            RaycastHit hit;
+//             RaycastHit hit;
+            bool minMaxNotSet = true;
             int layerMask = LayerMask.GetMask("Default","Geometry");
             for (x=0;x<DynamicCulling.WORLDX;x++) {
                 for (y=0;y<DynamicCulling.WORLDX;y++) {
+//                     if (LevelManager.a.currentLevel == 1 && x == 15 && y == 30) continue; // Tiny cell, camera can't fit, open cells adjacent can check it.
                     if (!DynamicCulling.a.gridCells[x,y].open) continue;
                     if (DynamicCulling.a.gridCells[x,y].chunkPrefabs.Count < 1) continue;
                  
-                    xSum = ySum = zSum = 0f;
                     avgPos = Vector3.zero;
+                    minY = 0f;
+                    maxY = 0f;
                     chunkCount = DynamicCulling.a.gridCells[x,y].chunkPrefabs.Count;
+                    minMaxNotSet = true;
                     for (i=0;i<chunkCount;i++) {
                         chp = DynamicCulling.a.gridCells[x,y].chunkPrefabs[i];
-                        xSum += chp.go.transform.position.x;
-                        ySum += chp.go.transform.position.y;
-                        zSum += chp.go.transform.position.z;
+                        
+                        avgPos += chp.go.transform.position;
+//                         UnityEngine.Debug.Log("x,y: " + x.ToString() + "," + y.ToString() + " | chp.go.transform.position.y: " + chp.go.transform.position.y.ToString());
+//                         UnityEngine.Debug.Log("x,y: " + x.ToString() + "," + y.ToString() + " | iter initial minY: " + minY.ToString() + ", maxY: " + maxY.ToString());
+                        if (minMaxNotSet) {
+                            minY = maxY = chp.go.transform.position.y;
+                            minMaxNotSet = false;
+//                             UnityEngine.Debug.Log("First set min and max for x,y: " + x.ToString() + "," + y.ToString() + " | minY: " + minY.ToString() + ", maxY: " + maxY.ToString());
+                        } else {
+                            if (chp.go.transform.position.y < minY) minY = chp.go.transform.position.y;
+                            if (chp.go.transform.position.y > maxY) maxY = chp.go.transform.position.y;
+//                             UnityEngine.Debug.Log("x,y: " + x.ToString() + "," + y.ToString() + " | minY: " + minY.ToString() + ", maxY: " + maxY.ToString());
+                        }                        
                     }
                     
-                    avgPos = new Vector3(xSum / chunkCount, ySum / chunkCount, zSum / chunkCount);
-                    didHit = false;
-                    if (Physics.Raycast(avgPos, Vector3.down, out hit, 51.2f,layerMask)) {
-                        avgPos.y = hit.point.y + 0.24f;
-                        didHit = true;
-                    }
+                    avgPos = new Vector3(avgPos.x / chunkCount, avgPos.y / chunkCount, avgPos.z / chunkCount);
+//                     UnityEngine.Debug.Log("bef avgPos.y: " + avgPos.y.ToString("F8"));
+                    avgPos.y = (((maxY - minY) / 2f) + minY) - 0.6171862f; // 0.6171862 is how far offset camera is from playerCapsule center ;)
+//                     UnityEngine.Debug.Log("aft avgPos.y: " + avgPos.y.ToString("F8"));
+
+                    GameObject cullCamMarker = new GameObject("CullCamMarker_" + x.ToString() + "." + y.ToString());
+//                     cullCamMarker.transform.parent = LevelManager.a.GetCurrentGeometryContainer().transform;
+                    cullCamMarker.transform.position = avgPos;
+                    MeshFilter mf = cullCamMarker.AddComponent<MeshFilter>();
+                    mf.sharedMesh = Const.a.sphereMesh;
+                    MeshRenderer mR = cullCamMarker.AddComponent<MeshRenderer>();
+                    mR.material = Const.a.segiEmitterMaterial1;
+                    mR.material.SetColor("_EmissionColor",new Color(0.9f,0.2f,0.1f,1f));
+                    cullCamMarker.transform.localScale = new Vector3(0.1f,0.1f,0.1f);
+                    cullCamMarker.layer = 2; // IgnoreRaycast
                     
-                    if (!didHit) {
-                        if (Physics.Raycast(avgPos, Vector3.up, out hit, 51.2f,layerMask)) {
-                            avgPos.y = hit.point.y + 0.24f;
-                        }
-                    }
+//                     didHitDn = false;
+//                     didHitUp = false;
+//                     hitYUp = avgPos.y;
+//                     hitYDn = avgPos.y;
+//                     if (Physics.Raycast(avgPos, Vector3.down, out hit, 51.2f,layerMask)) {
+//                         hitYDn = hit.point.y;
+//                         didHitDn = true;
+//                     }
+//                     
+//                     if (Physics.Raycast(avgPos, Vector3.up, out hit, 51.2f,layerMask)) {
+//                         hitYUp = hit.point.y;
+//                         didHitUp = true;
+//                     }
+
+//                     if (x == 15 && y == 40) UnityEngine.Debug.Log("Avg pos prior to raycast adjustment on " + x.ToString() + "," + y.ToString() + " was " + avgPos.ToString());
+//                     if (didHitUp && didHitDn) {
+//                     
+// //                         avgPos.y = ((avgPos.y - hitYDn) < (avgPos.y - hitYUp) ? hitYDn : hitYUp) + 0.24f;
+//                     } else if (didHitUp) {
+// //                         avgPos.y = hitYUp + 0.24f;
+//                         UnityEngine.Debug.Log("Only hit up for " + x.ToString() + "," + y.ToString());
+//                     } else if (didHitDn) {
+// //                         avgPos.y = hitYDn + 0.24f;
+//                         UnityEngine.Debug.Log("Only hit down for " + x.ToString() + "," + y.ToString());
+//                     }
+
+//                     if (x == 15 && y == 40) UnityEngine.Debug.Log("Avg pos after to raycast adjustment on " + x.ToString() + "," + y.ToString() + " was " + avgPos.ToString());
                     
                     PlayerMovement.a.transform.position = avgPos;
                     yield return new WaitForSeconds(timeTillNext);
@@ -151,7 +198,7 @@ namespace Tests {
                     
                     if (foundPink) {
                         SaveDebugScreenshot(captureTex,"gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
-                        yield return new WaitForSeconds(0.5f);
+                        yield return new WaitForSeconds(timeTillNext);
 
                         UnityEngine.Debug.LogWarning("Culling error 1 on cell " + x.ToString() + "," + y.ToString());
                         continue;
@@ -184,7 +231,7 @@ namespace Tests {
                     
                     if (foundPink) {
                         SaveDebugScreenshot(captureTex,"gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
-                        yield return new WaitForSeconds(0.5f);
+                        yield return new WaitForSeconds(timeTillNext);
 
                         UnityEngine.Debug.LogWarning("Culling error 2 on cell " + x.ToString() + "," + y.ToString());
                         continue;
@@ -217,7 +264,7 @@ namespace Tests {
                     
                     if (foundPink) {
                         SaveDebugScreenshot(captureTex,"gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
-                        yield return new WaitForSeconds(0.5f);
+                        yield return new WaitForSeconds(timeTillNext);
 
                         UnityEngine.Debug.LogWarning("Culling error 3 on cell " + x.ToString() + "," + y.ToString());
                         continue;
@@ -250,7 +297,7 @@ namespace Tests {
                     
                     if (foundPink) {
                         SaveDebugScreenshot(captureTex,"gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
-                        yield return new WaitForSeconds(0.5f);
+                        yield return new WaitForSeconds(timeTillNext);
 
                         UnityEngine.Debug.LogWarning("Culling error 4 on cell " + x.ToString() + "," + y.ToString());
                         continue;
@@ -283,7 +330,7 @@ namespace Tests {
                     
                     if (foundPink) {
                         SaveDebugScreenshot(captureTex,"gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
-                        yield return new WaitForSeconds(0.5f);
+                        yield return new WaitForSeconds(timeTillNext);
 
                         UnityEngine.Debug.LogWarning("Culling error 5 on cell " + x.ToString() + "," + y.ToString());
                         continue;
@@ -316,7 +363,7 @@ namespace Tests {
                     
                     if (foundPink) {
                         SaveDebugScreenshot(captureTex,"gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
-                        yield return new WaitForSeconds(0.5f);
+                        yield return new WaitForSeconds(timeTillNext);
 
                         UnityEngine.Debug.LogWarning("Culling error 6 on cell " + x.ToString() + "," + y.ToString());
                     }

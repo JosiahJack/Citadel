@@ -51,7 +51,7 @@ public class DynamicCulling : MonoBehaviour {
     public int playerCellY = 0;
     public float deltaX = 0.0f;
     public float deltaY = 0.0f;
-    public float lodSqrDist = 100f;
+    [HideInInspector] public float lodSqrDist = 2621.44f; // (20 * 2.56f)^2
     public Vector3 worldMin;
     public List<Transform> npcTransforms;
     public List<AIController> npcAICs = new List<AIController>();
