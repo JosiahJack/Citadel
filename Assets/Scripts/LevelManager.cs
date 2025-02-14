@@ -302,6 +302,7 @@ public class LevelManager : MonoBehaviour {
 		Automap.a.SetAutomapExploredReference(currentLevel);
 		Automap.a.automapBaseImage.overrideSprite = Automap.a.automapsBaseImages[currentLevel];
 		Const.a.ClearActiveAutomapOverlays(); // After other levels turned off.
+		ObjectContainmentSystem.FindAllFloorGOs();
 		ObjectContainmentSystem.UpdateActiveFlooring(); // Update list to only include active.
 		SetSkyVisible(true);
 		System.GC.Collect();

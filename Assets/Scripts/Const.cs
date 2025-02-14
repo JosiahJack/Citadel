@@ -2054,7 +2054,7 @@ public class Const : MonoBehaviour {
 		bool succeeded = false;
 		for (int i=0;i<TargetRegister.Count;i++) {
 			if (TargetnameRegister.Count < 1) {
-				UnityEngine.Debug.LogError("NO TARGETNAMES IN "
+				UnityEngine.Debug.LogWarning("NO TARGETNAMES IN "
 										   + "TargetnameRegister!!!");
 				return;
 			}
@@ -2093,7 +2093,7 @@ public class Const : MonoBehaviour {
 				tio.Targetted(tempUD);
 				succeeded = true;
 			} else {
-				UnityEngine.Debug.LogError("null TargetRegister "
+				UnityEngine.Debug.LogWarning("null TargetRegister "
 									  + "GameObject[] linked to targetname of "
 									  + targetname + ". Could not run "
 									  + "Targetted.");

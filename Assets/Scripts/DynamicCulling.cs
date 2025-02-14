@@ -26,38 +26,38 @@ public class DynamicCulling : MonoBehaviour {
     public Material genericMaterial;
     public Texture2DArray chunkAlbedo;
     public GridCell[,] gridCells = new GridCell[WORLDX,WORLDX];
-    public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
-    public List<PrefabIdentifier> dynamicMeshesPIDs = new List<PrefabIdentifier>();
-    public List<HealthManager> dynamicMeshesHMs = new List<HealthManager>();
-    public List<Transform> dynamicMeshesTransforms = new List<Transform>();
-    public List<ForceBridge> dynamicMeshesFBs = new List<ForceBridge>();
-    public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();
-    public List<MeshRenderer> staticMeshesImmutable = new List<MeshRenderer>();
-    public List<PrefabIdentifier> staticMeshesImmutablePIDs = new List<PrefabIdentifier>();
-    public List<Vector2Int>   staticMeshImmutableCoords = new List<Vector2Int>();
-    public List<Vector2Int>   staticImmutableParticleCoords = new List<Vector2Int>();
-    public List<PauseParticleSystem> staticImmutableParticleSystems = new List<PauseParticleSystem>();
-    public List<MeshRenderer> staticMeshesSaveable = new List<MeshRenderer>();
-    public List<HealthManager> staticMeshesSaveableHMs = new List<HealthManager>();
-    public List<PrefabIdentifier> staticMeshesSaveablePIDs = new List<PrefabIdentifier>();
-    public List<Vector2Int>   staticMeshSaveableCoords = new List<Vector2Int>();
-    public List<Light> lights = new List<Light>();
-    public List<Light> lightsInPVS = new List<Light>();
-    public List<Vector2Int> lightCoords = new List<Vector2Int>();
-    public List<Vector2Int> lightsInPVSCoords = new List<Vector2Int>();
-    public List<MeshRenderer> doors = new List<MeshRenderer>();
-    public List<Vector2Int> doorsCoords = new List<Vector2Int>();
+    [HideInInspector] public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
+    [HideInInspector] public List<PrefabIdentifier> dynamicMeshesPIDs = new List<PrefabIdentifier>();
+    [HideInInspector] public List<HealthManager> dynamicMeshesHMs = new List<HealthManager>();
+    [HideInInspector] public List<Transform> dynamicMeshesTransforms = new List<Transform>();
+    [HideInInspector] public List<ForceBridge> dynamicMeshesFBs = new List<ForceBridge>();
+    [HideInInspector] public List<Vector2Int> dynamicMeshCoords = new List<Vector2Int>();
+    [HideInInspector] public List<MeshRenderer> staticMeshesImmutable = new List<MeshRenderer>();
+    [HideInInspector] public List<PrefabIdentifier> staticMeshesImmutablePIDs = new List<PrefabIdentifier>();
+    [HideInInspector] public List<Vector2Int>   staticMeshImmutableCoords = new List<Vector2Int>();
+    [HideInInspector] public List<Vector2Int>   staticImmutableParticleCoords = new List<Vector2Int>();
+    [HideInInspector] public List<PauseParticleSystem> staticImmutableParticleSystems = new List<PauseParticleSystem>();
+    [HideInInspector] public List<MeshRenderer> staticMeshesSaveable = new List<MeshRenderer>();
+    [HideInInspector] public List<HealthManager> staticMeshesSaveableHMs = new List<HealthManager>();
+    [HideInInspector] public List<PrefabIdentifier> staticMeshesSaveablePIDs = new List<PrefabIdentifier>();
+    [HideInInspector] public List<Vector2Int>   staticMeshSaveableCoords = new List<Vector2Int>();
+    [HideInInspector] public List<Light> lights = new List<Light>();
+    [HideInInspector] public List<Light> lightsInPVS = new List<Light>();
+    [HideInInspector] public List<Vector2Int> lightCoords = new List<Vector2Int>();
+    [HideInInspector] public List<Vector2Int> lightsInPVSCoords = new List<Vector2Int>();
+    [HideInInspector] public List<MeshRenderer> doors = new List<MeshRenderer>();
+    [HideInInspector] public List<Vector2Int> doorsCoords = new List<Vector2Int>();
     public int playerCellX = 0;
     public int playerCellY = 0;
     public float deltaX = 0.0f;
     public float deltaY = 0.0f;
     [HideInInspector] public float lodSqrDist = 2621.44f; // (20 * 2.56f)^2
     public Vector3 worldMin;
-    public List<Transform> npcTransforms;
-    public List<AIController> npcAICs = new List<AIController>();
-    public List<Vector2Int> npcCoords = new List<Vector2Int>();
-    public bool lodMeshesInitialized = false;
-    public Mesh[] lodMeshes;
+    [HideInInspector] public List<Transform> npcTransforms;
+    [HideInInspector] public List<AIController> npcAICs = new List<AIController>();
+    [HideInInspector] public List<Vector2Int> npcCoords = new List<Vector2Int>();
+    [HideInInspector] public bool lodMeshesInitialized = false;
+    [HideInInspector] public Mesh[] lodMeshes;
     public Mesh lodMeshTemplate;
     public bool skyVisible;
 
@@ -567,6 +567,8 @@ public class DynamicCulling : MonoBehaviour {
             }
 
             gridCells[x,y].chunkPrefabs.Add(cr);
+            MarkAsFloor maf = cr.go.GetComponent<MarkAsFloor>();
+            if (maf != null) gridCells[x,y].floorHeight = maf.floorHeight; // Height of the chunk origin, so 1.28f above the actual floor collider.
             
             #if UNITY_EDITOR
                 Note nt = childGO.gameObject.AddComponent<Note>();
@@ -1660,7 +1662,6 @@ public class DynamicCulling : MonoBehaviour {
 
         gridCells[0,0].visible = true; // Errors default here so draw them anyways.
         gridCells[playerCellX,playerCellY].visible = true;
-        CameraViewUnculling();
         ToggleVisibility(); // Update all cells marked as dirty.
         ToggleStaticMeshesImmutableVisibility();
         ToggleStaticImmutableParticlesVisibility();
@@ -1834,6 +1835,7 @@ public class GridCell {
     public bool closedEast;  // the immediately adjacent cell at this edge
     public bool closedSouth; // is not visible, consider edge as closed to
     public bool closedWest;  // be able to further reduce visible cells.
+    public float floorHeight;
     public bool[,] visibleCellsFromHere;
     public List<ChunkPrefab> chunkPrefabs;
     public List<DynamicObject> dynamicObjects;

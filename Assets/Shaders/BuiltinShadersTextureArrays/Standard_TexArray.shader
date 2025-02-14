@@ -4,6 +4,7 @@ Shader "Custom/StandardTextureArray" {
         _SpecGlossMap("Specular", 2DArray) = "" {}
         _BumpScale("Scale", Float) = 1.0
         _BumpMap("Normal Map", 2DArray) = "" {}
+        _EmissionColor("Color", Color) = (1,1,1)
         _EmissionMap("Emission", 2DArray) = "" {}
 
         [HideInInspector] _Mode ("__mode", Float) = 0.0
@@ -21,12 +22,32 @@ Shader "Custom/StandardTextureArray" {
             CGPROGRAM
             #pragma target 3.0
             #pragma exclude_renderers nomrt
+            #pragma shader_feature _EMISSION
             #pragma multi_compile_prepassfinal
             #pragma vertex vertDeferred
             #pragma fragment fragDeferred
             #include "UnityStandardCore_TexArray.cginc"
             ENDCG
         }
+
+        // ------------------------------------------------------------------
+        // Extracts information for lightmapping, GI (emission, albedo, ...)
+        // This pass it not used during regular rendering.
+//         Pass {
+//             Name "META"
+//             Tags { "LightMode"="Meta" }
+//             Cull Off
+//             CGPROGRAM
+//             #pragma vertex vert_meta
+//             #pragma fragment frag_meta
+//             #pragma shader_feature _EMISSION
+//             #pragma shader_feature _SPECGLOSSMAP
+//             #pragma shader_feature _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+//             #pragma shader_feature ___ _DETAIL_MULX2
+//             #pragma shader_feature EDITOR_VISUALIZATION
+//             #include "UnityStandardMeta_TexArray.cginc"
+//             ENDCG
+//         }
 
         /*
         // Second pass: Custom lighting from compute buffer

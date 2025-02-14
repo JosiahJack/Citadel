@@ -1622,4 +1622,64 @@ public class Utils {
         segiEmitter.layer = 2; // IgnoreRaycast
         return segiEmitter;
 	}
+	
+	// Allows for checking if a value given is within the tolerance of a comparison value.
+    public static bool InTol(float inVal, float compareVal, float epsilon) {
+        return ((inVal > (compareVal - epsilon)) && (inVal < (compareVal + epsilon)));
+    }
+    
+    // Calculate the nearest center for x and z based on the grid size of 2.56
+    // Keeping y as is since it's not grid-bound (could be fractional grid in increments of 0.16f or similar).
+    public static Vector3 GetCellCenter(Vector3 pos) {
+        return new Vector3(Mathf.Round(pos.x / 2.56f) * 2.56f,
+                           pos.y,
+                           Mathf.Round(pos.z / 2.56f) * 2.56f);
+    }
+    
+    public static bool IsAxisAligned(Quaternion quat) {
+        Vector3 euangs = quat.eulerAngles;
+        euangs = new Vector3(Mathf.Abs(euangs.x) % 360f, Mathf.Abs(euangs.y) % 360f, Mathf.Abs(euangs.z) % 360f);
+        bool xIs90, yIs90, zIs90;
+        xIs90 = yIs90 = zIs90 = false;
+        float tol = 0.5f; // Must be positive tolerance!  This is degrees.
+        if (Utils.InTol(euangs.x,0f,tol) || Utils.InTol(euangs.x,90f,tol) || Utils.InTol(euangs.x,180f,tol) || Utils.InTol(euangs.x,270f,tol) || Utils.InTol(euangs.x,360f,tol)) xIs90 = true;
+        if (Utils.InTol(euangs.y,0f,tol) || Utils.InTol(euangs.y,90f,tol) || Utils.InTol(euangs.y,180f,tol) || Utils.InTol(euangs.y,270f,tol) || Utils.InTol(euangs.y,360f,tol)) yIs90 = true;
+        if (Utils.InTol(euangs.z,0f,tol) || Utils.InTol(euangs.z,90f,tol) || Utils.InTol(euangs.z,180f,tol) || Utils.InTol(euangs.z,270f,tol) || Utils.InTol(euangs.z,360f,tol)) zIs90 = true;
+        return (xIs90 && yIs90 && zIs90);
+    }
+    
+    public static float GetFloorHeight(Quaternion quat, float yHeight) {
+        Vector3 euangs = quat.eulerAngles;
+        euangs = new Vector3(Mathf.Abs(euangs.x) % 360f, Mathf.Abs(euangs.y) % 360f, Mathf.Abs(euangs.z) % 360f);
+        if (QuaternionApproximatelyEquals(quat,Quaternion.Euler(180f,0f,0f),30f)) return yHeight;
+        else return -1300f;
+	}
+    
+    public static bool QuaternionApproximatelyEquals(Quaternion quat, Quaternion other, float toleranceDeg) {
+        float angle = Quaternion.Angle(quat, other); // Quaternion.Angle is in degrees.
+        
+        // Check if the angle between the quaternions is less than or equal to the tolerance
+        return angle <= toleranceDeg;
+    }
+    
+    // Magic numbers corresponding to 45deg somehow from the sin/cos of
+	// radians of pi/4 best I can tell.  These are just what are saved
+	// from ToString() on quaternion transform.rotation channels.
+	static float twentySevenths = 0.27060f;
+	static float sixtyFifths    = 0.65328f;
+    
+    public static bool ChunkIs45NW_NE_SW_SE_Laterally(Quaternion quat) {
+		int count27 = 0;
+		int count65 = 0;
+		foreach (var component in new float[] { quat.x, quat.y, quat.z, quat.w }) {
+			if (Mathf.Abs(Mathf.Abs(component) - twentySevenths) < 0.01f) count27++;
+			else if (Mathf.Abs(Mathf.Abs(component) - sixtyFifths) < 0.01f) count65++;
+		}
+		
+		// Check if we have exactly 2 of each value type for a 45-degree rotation
+		// Seems this is the magic incantation to get any 45deg as long as
+		// any two of the quaternion channels are one magic number and the
+		// other two are tother.
+		return (count27 == 2 && count65 == 2);
+	}
 }

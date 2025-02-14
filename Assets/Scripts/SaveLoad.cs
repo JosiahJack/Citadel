@@ -620,38 +620,6 @@ public static class SaveLoad {
 
         return s1.ToString();
     }
-    
-    // Calculate the nearest center for x and z based on the grid size of 2.56
-    // Keeping y as is since it's not grid-bound (could be fractional grid in increments of 0.16f or similar).
-    private static Vector3 GetCellCenter(Vector3 pos) {
-        return new Vector3(Mathf.Round(pos.x / 2.56f) * 2.56f,
-                           pos.y,
-                           Mathf.Round(pos.z / 2.56f) * 2.56f);
-    }
-     
-    // Allows for checking if a value given is within the tolerance of a comparison value.
-    private static bool InTol(float inVal, float compareVal, float epsilon) {
-        return ((inVal > (compareVal - epsilon)) && (inVal < (compareVal + epsilon)));
-    }
-    
-    private static bool IsAxisAligned(Quaternion quat) {
-        Vector3 euangs = quat.eulerAngles;
-        euangs = new Vector3(Mathf.Abs(euangs.x) % 360f, Mathf.Abs(euangs.y) % 360f, Mathf.Abs(euangs.z) % 360f);
-        bool xIs90, yIs90, zIs90;
-        xIs90 = yIs90 = zIs90 = false;
-        float tol = 5f; // Must be positive tolerance!  This is degrees.
-        if (InTol(euangs.x,0f,tol) || InTol(euangs.x,90f,tol) || InTol(euangs.x,180f,tol) || InTol(euangs.x,270f,tol) || InTol(euangs.x,360f,tol)) xIs90 = true;
-        if (InTol(euangs.y,0f,tol) || InTol(euangs.y,90f,tol) || InTol(euangs.y,180f,tol) || InTol(euangs.y,270f,tol) || InTol(euangs.y,360f,tol)) yIs90 = true;
-        if (InTol(euangs.z,0f,tol) || InTol(euangs.z,90f,tol) || InTol(euangs.z,180f,tol) || InTol(euangs.z,270f,tol) || InTol(euangs.z,360f,tol)) zIs90 = true;
-        return (xIs90 && yIs90 && zIs90);
-    }
-    
-    public static bool QuaternionApproximatelyEquals(Quaternion quat, Quaternion other, float toleranceDeg) {
-        float angle = Quaternion.Angle(quat, other); // Quaternion.Angle is in degrees.
-        
-        // Check if the angle between the quaternions is less than or equal to the tolerance
-        return angle <= toleranceDeg;
-    }
 
     private static GameObject LoadGeometry(string[] entries, int lineNum, int curlevel) {
         if (entries.Length <= 1) { 
@@ -673,9 +641,20 @@ public static class SaveLoad {
         chunk.name = entries[index]; index++;
         index = Utils.LoadTransform(chunk.transform,ref entries,index);
         Quaternion quat = chunk.transform.localRotation;
+        bool scaleGood =    Utils.InTol(chunk.transform.localScale.x,1.0f,0.01f)
+                         && Utils.InTol(chunk.transform.localScale.y,1.0f,0.01f)
+                         && Utils.InTol(chunk.transform.localScale.z,1.0f,0.01f);
+        
+        float floorHeight = Utils.GetFloorHeight(quat,chunk.transform.localPosition.y);
+        if (floorHeight > -1000f) {
+            MarkAsFloor maf = chunk.GetComponent<MarkAsFloor>();
+            if (maf == null) maf = chunk.AddComponent<MarkAsFloor>();
+            
+            maf.floorHeight = floorHeight;
+        }
         
         // Align to grid if not rotated
-        if (IsAxisAligned(quat)) {
+        if (Utils.IsAxisAligned(quat) && scaleGood) {
             chunk.transform.localPosition = new Vector3(Mathf.Round(chunk.transform.localPosition.x / 2.56f) * 2.56f,
                                                         Mathf.Round(chunk.transform.localPosition.y / 0.16f) * 0.16f, // Actual Z, stupid Unity
                                                         Mathf.Round(chunk.transform.localPosition.z / 2.56f) * 2.56f);
@@ -686,14 +665,9 @@ public static class SaveLoad {
             // doing sqrt2 over 2 in https://www.mathsisfun.com/calculator-precision.html
             float xzOffsetFor45s = 0.90509665012359619140625f; // = 1.28f * sin(45deg) = 1.28f * (Mathf.Sqrt(2) / 2f)
             
-            // Magic numbers corresponding to 45deg somehow from the sin/cos of
-            // radians of pi/4 best I can tell.  These are just what are saved
-            // from ToString() on quaternion transform.rotation channels.
-            float twentySevenths = 0.27060f;
-            float sixtyFifths    = 0.65328f;
             float sqrtOf2 = 1.41421353816986083984375f;
             
-            bool is45 = false;
+            bool is45 = Utils.ChunkIs45NW_NE_SW_SE_Laterally(quat);
             bool nw45 = false;
             bool ne45 = false;
             bool sw45 = false;
@@ -703,35 +677,22 @@ public static class SaveLoad {
             bool ceilSlopeZ = false;
             bool ceilSlopeNegZ = false;
             
-            int count27 = 0;
-            int count65 = 0;
-            foreach (var component in new float[] { quat.x, quat.y, quat.z, quat.w }) {
-                if (Mathf.Abs(Mathf.Abs(component) - twentySevenths) < 0.01f) count27++;
-                else if (Mathf.Abs(Mathf.Abs(component) - sixtyFifths) < 0.01f) count65++;
-            }
-            
-            // Check if we have exactly 2 of each value type for a 45-degree rotation
-            // Seems this is the magic incantation to get any 45deg as long as
-            // any two of the quaternion channels are one magic number and the
-            // other two are tother.
-            is45 = (count27 == 2 && count65 == 2);
-            
             // This is already shifted close to 0.905.... away from x and z
             // axis in direction needed, so can get nearest value that is
             // 2.56f aligned in x,z (oh gosh I hope all the levels are aligned
             // to 2.56f increments, think I did that at some point heh.
-            Vector3 cellCenter = GetCellCenter(chunk.transform.localPosition);
+            Vector3 cellCenter = Utils.GetCellCenter(chunk.transform.localPosition);
             
             Vector3 eulerAngs = quat.eulerAngles;
             float angTol = 0.5f; // Must be positive.  This is in degrees.
-            if (QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f, -45f),angTol)) nw45 = true; // Chunk normal points NW
-            if (QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f,  45f),angTol)) ne45 = true; // Chunk normal points NE
-            if (QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f, 135f),angTol)) se45 = true; // Chunk normal points SE
-            if (QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f,-135f),angTol)) sw45 = true; // Chunk normal points SW
-            if (QuaternionApproximatelyEquals(quat,Quaternion.Euler(0f,0f,-45f),angTol)) ceilSlopeX = true; // Chunk normal points SW
-            if (QuaternionApproximatelyEquals(quat,Quaternion.Euler(0f,0f,45f),angTol)) ceilSlopeNegX = true; // Chunk normal points SW
-            if (QuaternionApproximatelyEquals(quat,Quaternion.Euler(-45f,0f,0f),angTol)) ceilSlopeZ = true; // Chunk normal points SW
-            if (QuaternionApproximatelyEquals(quat,Quaternion.Euler(45f,0f,0f),angTol)) ceilSlopeNegZ = true; // Chunk normal points SW
+            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f, -45f),angTol)) nw45 = true; // Chunk normal points NW
+            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f,  45f),angTol)) ne45 = true; // Chunk normal points NE
+            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f, 135f),angTol)) se45 = true; // Chunk normal points SE
+            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f,-135f),angTol)) sw45 = true; // Chunk normal points SW
+            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(0f,0f,-45f),angTol)) ceilSlopeX = true; // Chunk normal points SW
+            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(0f,0f,45f),angTol)) ceilSlopeNegX = true; // Chunk normal points SW
+            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-45f,0f,0f),angTol)) ceilSlopeZ = true; // Chunk normal points SW
+            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(45f,0f,0f),angTol)) ceilSlopeNegZ = true; // Chunk normal points SW
             if (is45) {
                 Vector3 ofs = chunk.transform.localPosition;
                 if      (nw45) { ofs.x = cellCenter.x - xzOffsetFor45s; ofs.z = cellCenter.z + xzOffsetFor45s; }
@@ -746,11 +707,11 @@ public static class SaveLoad {
                 chunk.transform.localPosition = ofs; // Fix minor alignment issues by putting at exact coords such that card center is at cell center and origin which is 1.28 away along card normal is at correct position.
                 
                 Vector3 scala = chunk.transform.localScale;
-                float scaleTolFine = 0.001f; // Used to see that it's set wrong for a 45deg card, not precise enough.
+                float scaleTolFine = 0.0005f; // Used to see that it's set wrong for a 45deg card, not precise enough.
                 float scaleTolLoose = 0.05f; // Used to see that it is a 45deg card.
-                if (!InTol(scala.x,sqrtOf2,scaleTolFine) && InTol(scala.x,sqrtOf2,scaleTolLoose)) scala.x = sqrtOf2;
-                if (!InTol(scala.y,sqrtOf2,scaleTolFine) && InTol(scala.y,sqrtOf2,scaleTolLoose)) scala.y = sqrtOf2;
-                if (!InTol(scala.z,sqrtOf2,scaleTolFine) && InTol(scala.z,sqrtOf2,scaleTolLoose)) scala.z = sqrtOf2;
+                if (!Utils.InTol(scala.x,sqrtOf2,scaleTolFine) && Utils.InTol(scala.x,sqrtOf2,scaleTolLoose)) scala.x = sqrtOf2 + 0.001f;
+                if (!Utils.InTol(scala.y,sqrtOf2,scaleTolFine) && Utils.InTol(scala.y,sqrtOf2,scaleTolLoose)) scala.y = sqrtOf2 + 0.001f;
+                if (!Utils.InTol(scala.z,sqrtOf2,scaleTolFine) && Utils.InTol(scala.z,sqrtOf2,scaleTolLoose)) scala.z = sqrtOf2 + 0.001f;
            }
         }
             

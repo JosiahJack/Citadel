@@ -7,10 +7,11 @@ using UnityEngine.SceneManagement;
 public static class ObjectContainmentSystem {
     public static List<GameObject> FloorChunks;
     public static List<GameObject> ActiveFloorChunks;
-    //public static bool[] OpenCell = new bool[4096];
 
     public static void FindAllFloorGOs() {
         if (FloorChunks == null) FloorChunks = new List<GameObject>();
+        else FloorChunks.Clear();
+        
 		List<GameObject> allParents = SceneManager.GetActiveScene().GetRootGameObjects().ToList();
 		for (int i=0;i<allParents.Count;i++) {
 			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(MarkAsFloor),true);
@@ -26,35 +27,13 @@ public static class ObjectContainmentSystem {
             FloorChunks = new List<GameObject>();
             FindAllFloorGOs();
         }
+        
         ActiveFloorChunks.Clear();
-        //for (int i=0; i<4096; i++) {
-        //    OpenCell[i] = false;
-        //}
-
         for (int i=0; i<FloorChunks.Count;i++) {
             if (FloorChunks[i] == null) continue;
 
             if (FloorChunks[i].activeInHierarchy) ActiveFloorChunks.Add(FloorChunks[i]);
         }
-
-        //float xMin = 0f;
-        //float xMax = 0f;
-        //float yMin = 0f;
-        //float yMax = 0f;
-        //Vector2 gridPos;
-        //for (int i=0; i<ActiveFloorChunks.Count;i++) {
-        //    gridPos = new Vector2(ActiveFloorChunks[i].transform.localPosition.x,
-        //                          ActiveFloorChunks[i].transform.localPosition.y);
-        //    if (gridPos.x < xMin) xMin = gridPos.x;
-        //    if (gridPos.x > xMax) xMax = gridPos.x;
-        //    if (gridPos.y < yMin) yMin = gridPos.y;
-        //    if (gridPos.y > yMax) yMax = gridPos.y;
-        //}
-
-        //Debug.Log("Found extents of active flooring: "
-        //          + xMin.ToString() + ", " + yMin.ToString()
-        //          + " | "
-        //          + xMax.ToString() + ", " + yMax.ToString());
     }
 
     public static Vector3 FindNearestFloor(float x, float y, float heightFallback) {

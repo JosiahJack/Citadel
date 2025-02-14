@@ -12,6 +12,8 @@ float4      _MainTex_ST;
 
 UNITY_DECLARE_TEX2DARRAY(_BumpMap);
 UNITY_DECLARE_TEX2DARRAY(_SpecGlossMap);
+
+half4       _EmissionColor;
 UNITY_DECLARE_TEX2DARRAY(_EmissionMap);
 
 struct VertexInput {
@@ -47,7 +49,7 @@ half4 SpecularGloss(float3 uv) {
 }
 
 half3 Emission(float3 uv) {
-    return UNITY_SAMPLE_TEX2DARRAY(_EmissionMap, uv).rgb;
+    return UNITY_SAMPLE_TEX2DARRAY(_EmissionMap, uv).rgb * _EmissionColor.rgb;
 }
 
 half3 NormalInTangentSpace(float4 texcoords) {

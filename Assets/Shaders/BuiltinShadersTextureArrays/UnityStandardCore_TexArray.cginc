@@ -522,10 +522,7 @@ void fragDeferred (
     UnityGI gi = FragmentGI (s, occlusion, i.ambientOrLightmapUV, atten, dummyLight, sampleReflectionsInDeferred);
 
     half3 emissiveColor = UNITY_BRDF_PBS (s.diffColor, s.specColor, s.oneMinusReflectivity, s.smoothness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect).rgb;
-
-    #ifdef _EMISSION
-        emissiveColor += Emission (i.tex.xyz);
-    #endif
+    emissiveColor += Emission(i.tex.xyz);
 
     #ifndef UNITY_HDR_ON
         emissiveColor.rgb = exp2(-emissiveColor.rgb);

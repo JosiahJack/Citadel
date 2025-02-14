@@ -56,7 +56,7 @@ namespace Tests {
             yield return new WaitForSeconds(1.5f);
             
             MainMenuHandler.a.StartGame(true);
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(0.1f);
 
             int chunkCount,x,y,i,pinkCount;
             PlayerMovement.a.hm.god = true;
@@ -87,285 +87,328 @@ namespace Tests {
             float pinkMax = 221f/256f;
             float pinkGThreshold = 1f/256f;
             float timeTillNext = 0.001f;
-            int pinkCountThreshold = 512;
+            int pinkCountThreshold = 1024;
+            float floorHeight;
+            MarkAsFloor maf = null;
             Color[] pixels;
 //             RaycastHit hit;
             bool minMaxNotSet = true;
             int layerMask = LayerMask.GetMask("Default","Geometry");
-            for (x=0;x<DynamicCulling.WORLDX;x++) {
-                for (y=0;y<DynamicCulling.WORLDX;y++) {
-//                     if (LevelManager.a.currentLevel == 1 && x == 15 && y == 30) continue; // Tiny cell, camera can't fit, open cells adjacent can check it.
-                    if (!DynamicCulling.a.gridCells[x,y].open) continue;
-                    if (DynamicCulling.a.gridCells[x,y].chunkPrefabs.Count < 1) continue;
-                 
-                    avgPos = Vector3.zero;
-                    minY = 0f;
-                    maxY = 0f;
-                    chunkCount = DynamicCulling.a.gridCells[x,y].chunkPrefabs.Count;
-                    minMaxNotSet = true;
-                    for (i=0;i<chunkCount;i++) {
-                        chp = DynamicCulling.a.gridCells[x,y].chunkPrefabs[i];
+            for (int lev=0;lev<13;lev++) {
+                ConsoleEmulator.CheatLoadLevel(lev);
+                yield return new WaitForSeconds(0.1f);
+                DynamicCulling.a.Cull(true);
+                yield return new WaitForSeconds(timeTillNext);
+                for (x=0;x<DynamicCulling.WORLDX;x++) {
+                    for (y=0;y<DynamicCulling.WORLDX;y++) {
+                        if (!DynamicCulling.a.gridCells[x,y].open) continue;
+                        if (DynamicCulling.a.gridCells[x,y].chunkPrefabs.Count < 1) continue;
+                    
+                        avgPos = Vector3.zero;
+                        minY = 0f;
+                        maxY = 0f;
+                        chunkCount = DynamicCulling.a.gridCells[x,y].chunkPrefabs.Count;
+                        minMaxNotSet = true;
+                        int[] numAtHeightsForIndex = new int[chunkCount];
+                        float[] heights = new float[chunkCount];
+                        floorHeight = -1300f;
+                        for (i=0;i<chunkCount;i++) {
+                            chp = DynamicCulling.a.gridCells[x,y].chunkPrefabs[i];
+                            maf = chp.go.GetComponent<MarkAsFloor>();
+                            if (maf != null) {
+                                floorHeight = maf.floorHeight - 1.28f + LevelManager.a.levels[lev].transform.position.y;
+//                                 UnityEngine.Debug.Log("Floor height actual (" + x.ToString() + "," + y.ToString() + "): " + floorHeight.ToString());
+                            }
+                            
+                            heights[i] = chp.go.transform.position.y;
+                            avgPos += chp.go.transform.position;
+    //                         UnityEngine.Debug.Log("x,y: " + x.ToString() + "," + y.ToString() + " | chp.go.transform.position.y: " + chp.go.transform.position.y.ToString());
+    //                         UnityEngine.Debug.Log("x,y: " + x.ToString() + "," + y.ToString() + " | iter initial minY: " + minY.ToString() + ", maxY: " + maxY.ToString());
+                            if (minMaxNotSet) {
+                                minY = maxY = chp.go.transform.position.y;
+                                minMaxNotSet = false;
+    //                             UnityEngine.Debug.Log("First set min and max for x,y: " + x.ToString() + "," + y.ToString() + " | minY: " + minY.ToString() + ", maxY: " + maxY.ToString());
+                            } else {
+                                if (chp.go.transform.position.y < minY) minY = chp.go.transform.position.y;
+                                if (chp.go.transform.position.y > maxY) maxY = chp.go.transform.position.y;
+    //                             UnityEngine.Debug.Log("x,y: " + x.ToString() + "," + y.ToString() + " | minY: " + minY.ToString() + ", maxY: " + maxY.ToString());
+                            }                        
+                        }
                         
-                        avgPos += chp.go.transform.position;
-//                         UnityEngine.Debug.Log("x,y: " + x.ToString() + "," + y.ToString() + " | chp.go.transform.position.y: " + chp.go.transform.position.y.ToString());
-//                         UnityEngine.Debug.Log("x,y: " + x.ToString() + "," + y.ToString() + " | iter initial minY: " + minY.ToString() + ", maxY: " + maxY.ToString());
-                        if (minMaxNotSet) {
-                            minY = maxY = chp.go.transform.position.y;
-                            minMaxNotSet = false;
-//                             UnityEngine.Debug.Log("First set min and max for x,y: " + x.ToString() + "," + y.ToString() + " | minY: " + minY.ToString() + ", maxY: " + maxY.ToString());
-                        } else {
-                            if (chp.go.transform.position.y < minY) minY = chp.go.transform.position.y;
-                            if (chp.go.transform.position.y > maxY) maxY = chp.go.transform.position.y;
-//                             UnityEngine.Debug.Log("x,y: " + x.ToString() + "," + y.ToString() + " | minY: " + minY.ToString() + ", maxY: " + maxY.ToString());
-                        }                        
-                    }
-                    
-                    avgPos = new Vector3(avgPos.x / chunkCount, avgPos.y / chunkCount, avgPos.z / chunkCount);
-//                     UnityEngine.Debug.Log("bef avgPos.y: " + avgPos.y.ToString("F8"));
-                    avgPos.y = (((maxY - minY) / 2f) + minY) - 0.6171862f; // 0.6171862 is how far offset camera is from playerCapsule center ;)
-//                     UnityEngine.Debug.Log("aft avgPos.y: " + avgPos.y.ToString("F8"));
+                        if (floorHeight < -1000f) {
+                            floorHeight = (((maxY - minY) / 2f) + minY) - 0.6171862f;
+//                        UnityEngine.Debug.Log("Floor height min/max'ed (" + x.ToString() + "," + y.ToString() + "): " + floorHeight.ToString());
+                        }
+                        
+                        // Clear it
+//                         for (i=0;i<chunkCount;i++) {
+//                             numAtHeightsForIndex[i] = 0;
+//                         }
+                        
+                        // Count how many match the current height from list of heights
+//                         for (i=0;i<chunkCount;i++) {
+//                             for (int j=0;j<chunkCount;j++) {
+//                                 if (i == j) continue;
+//                                 
+//                                 if (Utils.InTol(heights[j],heights[i],0.1f)) numAtHeightsForIndex[i]++;
+//                             }                            
+//                         }
+//                         
+//                         int modeHeight = 0;
+//                         for (i=0;i<chunkCount;i++) {
+//                             if (numAtHeightsForIndex[i] > modeHeight) modeHeight = i;
+//                         }
+                        
+                        avgPos = new Vector3(avgPos.x / chunkCount, floorHeight + 0.16f, avgPos.z / chunkCount);
+//                         float newY = (((maxY - minY) / 2f) + minY) - 0.6171862f; // 0.6171862 is how far offset camera is from playerCapsule center ;)
+//                         if (chunkCount % 2 != 0) { // Can't get a majority vote for mode y (mode as in most common)
+// //                             UnityEngine.Debug.Log("min max average: " + newY.ToString("F8"));                        
+//                             if (((heights[modeHeight] - 0.6171862f) - newY) > 0.16f) newY = heights[modeHeight] - 0.6171862f;
+// //                             UnityEngine.Debug.Log("Average avgPos.y: " + avgPos.y.ToString("F8") + ", heights[modeHeight]: " + heights[modeHeight].ToString() + ", newY: " + newY.ToString());
+//                         }
+                        
+//                         avgPos.y = newY;
+                        GameObject cullCamMarker = new GameObject("CullCamMarker_" + x.ToString() + "." + y.ToString());
+                        cullCamMarker.transform.position = avgPos;
+                        MeshFilter mf = cullCamMarker.AddComponent<MeshFilter>();
+                        mf.sharedMesh = Const.a.sphereMesh;
+                        MeshRenderer mR = cullCamMarker.AddComponent<MeshRenderer>();
+                        mR.material = Const.a.segiEmitterMaterial1;
+                        mR.material.SetColor("_EmissionColor",new Color(0.9f,0.2f,0.1f,1f));
+                        cullCamMarker.transform.localScale = new Vector3(0.1f,0.1f,0.1f);
+                        cullCamMarker.layer = 2; // IgnoreRaycast
+                        
+    //                     didHitDn = false;
+    //                     didHitUp = false;
+    //                     hitYUp = avgPos.y;
+    //                     hitYDn = avgPos.y;
+    //                     if (Physics.Raycast(avgPos, Vector3.down, out hit, 51.2f,layerMask)) {
+    //                         hitYDn = hit.point.y;
+    //                         didHitDn = true;
+    //                     }
+    //                     
+    //                     if (Physics.Raycast(avgPos, Vector3.up, out hit, 51.2f,layerMask)) {
+    //                         hitYUp = hit.point.y;
+    //                         didHitUp = true;
+    //                     }
 
-                    GameObject cullCamMarker = new GameObject("CullCamMarker_" + x.ToString() + "." + y.ToString());
-//                     cullCamMarker.transform.parent = LevelManager.a.GetCurrentGeometryContainer().transform;
-                    cullCamMarker.transform.position = avgPos;
-                    MeshFilter mf = cullCamMarker.AddComponent<MeshFilter>();
-                    mf.sharedMesh = Const.a.sphereMesh;
-                    MeshRenderer mR = cullCamMarker.AddComponent<MeshRenderer>();
-                    mR.material = Const.a.segiEmitterMaterial1;
-                    mR.material.SetColor("_EmissionColor",new Color(0.9f,0.2f,0.1f,1f));
-                    cullCamMarker.transform.localScale = new Vector3(0.1f,0.1f,0.1f);
-                    cullCamMarker.layer = 2; // IgnoreRaycast
-                    
-//                     didHitDn = false;
-//                     didHitUp = false;
-//                     hitYUp = avgPos.y;
-//                     hitYDn = avgPos.y;
-//                     if (Physics.Raycast(avgPos, Vector3.down, out hit, 51.2f,layerMask)) {
-//                         hitYDn = hit.point.y;
-//                         didHitDn = true;
-//                     }
-//                     
-//                     if (Physics.Raycast(avgPos, Vector3.up, out hit, 51.2f,layerMask)) {
-//                         hitYUp = hit.point.y;
-//                         didHitUp = true;
-//                     }
+    //                     if (x == 15 && y == 40) UnityEngine.Debug.Log("Avg pos prior to raycast adjustment on " + x.ToString() + "," + y.ToString() + " was " + avgPos.ToString());
+    //                     if (didHitUp && didHitDn) {
+    //                     
+    // //                         avgPos.y = ((avgPos.y - hitYDn) < (avgPos.y - hitYUp) ? hitYDn : hitYUp) + 0.24f;
+    //                     } else if (didHitUp) {
+    // //                         avgPos.y = hitYUp + 0.24f;
+    //                         UnityEngine.Debug.Log("Only hit up for " + x.ToString() + "," + y.ToString());
+    //                     } else if (didHitDn) {
+    // //                         avgPos.y = hitYDn + 0.24f;
+    //                         UnityEngine.Debug.Log("Only hit down for " + x.ToString() + "," + y.ToString());
+    //                     }
 
-//                     if (x == 15 && y == 40) UnityEngine.Debug.Log("Avg pos prior to raycast adjustment on " + x.ToString() + "," + y.ToString() + " was " + avgPos.ToString());
-//                     if (didHitUp && didHitDn) {
-//                     
-// //                         avgPos.y = ((avgPos.y - hitYDn) < (avgPos.y - hitYUp) ? hitYDn : hitYUp) + 0.24f;
-//                     } else if (didHitUp) {
-// //                         avgPos.y = hitYUp + 0.24f;
-//                         UnityEngine.Debug.Log("Only hit up for " + x.ToString() + "," + y.ToString());
-//                     } else if (didHitDn) {
-// //                         avgPos.y = hitYDn + 0.24f;
-//                         UnityEngine.Debug.Log("Only hit down for " + x.ToString() + "," + y.ToString());
-//                     }
-
-//                     if (x == 15 && y == 40) UnityEngine.Debug.Log("Avg pos after to raycast adjustment on " + x.ToString() + "," + y.ToString() + " was " + avgPos.ToString());
-                    
-                    PlayerMovement.a.transform.position = avgPos;
-                    yield return new WaitForSeconds(timeTillNext);
-                    MouseLookScript.a.playerCamera.enabled = false;
-                    DynamicCulling.a.Cull(true);
-                    LevelManager.a.SetSkyVisible(false);
-                    yield return new WaitForSeconds(timeTillNext);
-                    
-                    MouseLookScript.a.playerCamera.enabled = true;
-                    PlayerMovement.a.transform.localRotation = Quaternion.Euler(0f,0f,0f); // Yaw 0, East
-                    MouseLookScript.a.transform.localRotation = Quaternion.Euler(0f,0f,0f); // Pitch 0
-                    RenderTexture.active = capture;
-                    MouseLookScript.a.playerCamera.targetTexture = capture;
-                    MouseLookScript.a.playerCamera.Render();
-                    captureTex.ReadPixels(new Rect(0, 0, capture.width, capture.height), 0, 0);
-                    MouseLookScript.a.playerCamera.targetTexture = null;
-                    captureTex.Apply();
-                    pixels = captureTex.GetPixels(0);
-                    foundPink = false;
-                    pinkCount = 0;
-                    for (i=0;i<pixels.Length;i++) {
-                        if ((pixels[i].r > pinkMin && pixels[i].r < pinkMax)
-                            && (pixels[i].b > pinkMin && pixels[i].b < pinkMax)
-                            && pixels[i].g < pinkGThreshold) {
-                            
-                            pinkCount++;
-                            if (pinkCount > pinkCountThreshold) {
-                                foundPink = true;
-                                break;
+    //                     if (x == 15 && y == 40) UnityEngine.Debug.Log("Avg pos after to raycast adjustment on " + x.ToString() + "," + y.ToString() + " was " + avgPos.ToString());
+                        
+                        PlayerMovement.a.transform.position = avgPos;
+                        yield return new WaitForSeconds(timeTillNext);
+                        MouseLookScript.a.playerCamera.enabled = false;
+                        DynamicCulling.a.Cull(true);
+                        LevelManager.a.SetSkyVisible(false);
+                        yield return new WaitForSeconds(timeTillNext);
+                        
+                        MouseLookScript.a.playerCamera.enabled = true;
+                        PlayerMovement.a.transform.localRotation = Quaternion.Euler(0f,0f,0f); // Yaw 0, East
+                        MouseLookScript.a.transform.localRotation = Quaternion.Euler(0f,0f,0f); // Pitch 0
+                        RenderTexture.active = capture;
+                        MouseLookScript.a.playerCamera.targetTexture = capture;
+                        MouseLookScript.a.playerCamera.Render();
+                        captureTex.ReadPixels(new Rect(0, 0, capture.width, capture.height), 0, 0);
+                        MouseLookScript.a.playerCamera.targetTexture = null;
+                        captureTex.Apply();
+                        pixels = captureTex.GetPixels(0);
+                        foundPink = false;
+                        pinkCount = 0;
+                        for (i=0;i<pixels.Length;i++) {
+                            if ((pixels[i].r > pinkMin && pixels[i].r < pinkMax)
+                                && (pixels[i].b > pinkMin && pixels[i].b < pinkMax)
+                                && pixels[i].g < pinkGThreshold) {
+                                
+                                pinkCount++;
+                                if (pinkCount > pinkCountThreshold) {
+                                    foundPink = true;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    
-                    if (foundPink) {
-                        SaveDebugScreenshot(captureTex,"gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
-                        yield return new WaitForSeconds(timeTillNext);
+                        
+                        if (foundPink) {
+                            SaveDebugScreenshot(captureTex,lev.ToString() + "_gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
+                            yield return new WaitForSeconds(timeTillNext);
 
-                        UnityEngine.Debug.LogWarning("Culling error 1 on cell " + x.ToString() + "," + y.ToString());
-                        continue;
-                    }
-                 
-                    PlayerMovement.a.transform.localRotation = Quaternion.Euler(0f,90f,0f); // Yaw 90, North
-                    MouseLookScript.a.transform.localRotation = Quaternion.Euler(0f,0f,0f); // Pitch 0
-                    yield return new WaitForSeconds(timeTillNext);
-                    RenderTexture.active = capture;
-                    MouseLookScript.a.playerCamera.targetTexture = capture;
-                    MouseLookScript.a.playerCamera.Render();
-                    captureTex.ReadPixels(new Rect(0, 0, capture.width, capture.height), 0, 0);
-                    MouseLookScript.a.playerCamera.targetTexture = null;
-                    captureTex.Apply();
-                    pixels = captureTex.GetPixels(0);
-                    foundPink = false;
-                    pinkCount = 0;
-                    for (i=0;i<pixels.Length;i++) {
-                        if ((pixels[i].r > pinkMin && pixels[i].r < pinkMax)
-                            && (pixels[i].b > pinkMin && pixels[i].b < pinkMax)
-                            && pixels[i].g < pinkGThreshold) {
-                            
-                            pinkCount++;
-                            if (pinkCount > pinkCountThreshold) {
-                                foundPink = true;
-                                break;
+                            UnityEngine.Debug.LogWarning(lev.ToString() + " Culling error 1 on cell " + x.ToString() + "," + y.ToString());
+                            continue;
+                        }
+                    
+                        PlayerMovement.a.transform.localRotation = Quaternion.Euler(0f,90f,0f); // Yaw 90, North
+                        MouseLookScript.a.transform.localRotation = Quaternion.Euler(0f,0f,0f); // Pitch 0
+                        yield return new WaitForSeconds(timeTillNext);
+                        RenderTexture.active = capture;
+                        MouseLookScript.a.playerCamera.targetTexture = capture;
+                        MouseLookScript.a.playerCamera.Render();
+                        captureTex.ReadPixels(new Rect(0, 0, capture.width, capture.height), 0, 0);
+                        MouseLookScript.a.playerCamera.targetTexture = null;
+                        captureTex.Apply();
+                        pixels = captureTex.GetPixels(0);
+                        foundPink = false;
+                        pinkCount = 0;
+                        for (i=0;i<pixels.Length;i++) {
+                            if ((pixels[i].r > pinkMin && pixels[i].r < pinkMax)
+                                && (pixels[i].b > pinkMin && pixels[i].b < pinkMax)
+                                && pixels[i].g < pinkGThreshold) {
+                                
+                                pinkCount++;
+                                if (pinkCount > pinkCountThreshold) {
+                                    foundPink = true;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    
-                    if (foundPink) {
-                        SaveDebugScreenshot(captureTex,"gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
-                        yield return new WaitForSeconds(timeTillNext);
+                        
+                        if (foundPink) {
+                            SaveDebugScreenshot(captureTex,lev.ToString() + "_gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
+                            yield return new WaitForSeconds(timeTillNext);
 
-                        UnityEngine.Debug.LogWarning("Culling error 2 on cell " + x.ToString() + "," + y.ToString());
-                        continue;
-                    }
-                                  
-                    PlayerMovement.a.transform.localRotation = Quaternion.Euler(0f,180f,0f); // Yaw 180, West
-                    MouseLookScript.a.transform.localRotation = Quaternion.Euler(0f,0f,0f);
-                    yield return new WaitForSeconds(timeTillNext);
-                    RenderTexture.active = capture;
-                    MouseLookScript.a.playerCamera.targetTexture = capture;
-                    MouseLookScript.a.playerCamera.Render();
-                    captureTex.ReadPixels(new Rect(0, 0, capture.width, capture.height), 0, 0);
-                    MouseLookScript.a.playerCamera.targetTexture = null;
-                    captureTex.Apply();
-                    pixels = captureTex.GetPixels(0);
-                    foundPink = false;
-                    pinkCount = 0;
-                    for (i=0;i<pixels.Length;i++) {
-                        if ((pixels[i].r > pinkMin && pixels[i].r < pinkMax)
-                            && (pixels[i].b > pinkMin && pixels[i].b < pinkMax)
-                            && pixels[i].g < pinkGThreshold) {
-                            
-                            pinkCount++;
-                            if (pinkCount > pinkCountThreshold) {
-                                foundPink = true;
-                                break;
+                            UnityEngine.Debug.LogWarning(lev.ToString() + " Leak detected facing North on cell " + x.ToString() + "," + y.ToString());
+                            continue;
+                        }
+                                    
+                        PlayerMovement.a.transform.localRotation = Quaternion.Euler(0f,180f,0f); // Yaw 180, West
+                        MouseLookScript.a.transform.localRotation = Quaternion.Euler(0f,0f,0f);
+                        yield return new WaitForSeconds(timeTillNext);
+                        RenderTexture.active = capture;
+                        MouseLookScript.a.playerCamera.targetTexture = capture;
+                        MouseLookScript.a.playerCamera.Render();
+                        captureTex.ReadPixels(new Rect(0, 0, capture.width, capture.height), 0, 0);
+                        MouseLookScript.a.playerCamera.targetTexture = null;
+                        captureTex.Apply();
+                        pixels = captureTex.GetPixels(0);
+                        foundPink = false;
+                        pinkCount = 0;
+                        for (i=0;i<pixels.Length;i++) {
+                            if ((pixels[i].r > pinkMin && pixels[i].r < pinkMax)
+                                && (pixels[i].b > pinkMin && pixels[i].b < pinkMax)
+                                && pixels[i].g < pinkGThreshold) {
+                                
+                                pinkCount++;
+                                if (pinkCount > pinkCountThreshold) {
+                                    foundPink = true;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    
-                    if (foundPink) {
-                        SaveDebugScreenshot(captureTex,"gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
-                        yield return new WaitForSeconds(timeTillNext);
+                        
+                        if (foundPink) {
+                            SaveDebugScreenshot(captureTex,lev.ToString() + "_gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
+                            yield return new WaitForSeconds(timeTillNext);
 
-                        UnityEngine.Debug.LogWarning("Culling error 3 on cell " + x.ToString() + "," + y.ToString());
-                        continue;
-                    }
-                 
-                    PlayerMovement.a.transform.localRotation = Quaternion.Euler(0f,270f,0f); // Yaw 270, South
-                    MouseLookScript.a.transform.localRotation = Quaternion.Euler(0f,0f,0f);
-                    yield return new WaitForSeconds(timeTillNext);
-                    RenderTexture.active = capture;
-                    MouseLookScript.a.playerCamera.targetTexture = capture;
-                    MouseLookScript.a.playerCamera.Render();
-                    captureTex.ReadPixels(new Rect(0, 0, capture.width, capture.height), 0, 0);
-                    MouseLookScript.a.playerCamera.targetTexture = null;
-                    captureTex.Apply();
-                    pixels = captureTex.GetPixels(0);
-                    foundPink = false;
-                    pinkCount = 0;
-                    for (i=0;i<pixels.Length;i++) {
-                        if ((pixels[i].r > pinkMin && pixels[i].r < pinkMax)
-                            && (pixels[i].b > pinkMin && pixels[i].b < pinkMax)
-                            && pixels[i].g < pinkGThreshold) {
-                            
-                            pinkCount++;
-                            if (pinkCount > pinkCountThreshold) {
-                                foundPink = true;
-                                break;
+                            UnityEngine.Debug.LogWarning(lev.ToString() + " Leak detected facing West on cell " + x.ToString() + "," + y.ToString());
+                            continue;
+                        }
+                    
+                        PlayerMovement.a.transform.localRotation = Quaternion.Euler(0f,270f,0f); // Yaw 270, South
+                        MouseLookScript.a.transform.localRotation = Quaternion.Euler(0f,0f,0f);
+                        yield return new WaitForSeconds(timeTillNext);
+                        RenderTexture.active = capture;
+                        MouseLookScript.a.playerCamera.targetTexture = capture;
+                        MouseLookScript.a.playerCamera.Render();
+                        captureTex.ReadPixels(new Rect(0, 0, capture.width, capture.height), 0, 0);
+                        MouseLookScript.a.playerCamera.targetTexture = null;
+                        captureTex.Apply();
+                        pixels = captureTex.GetPixels(0);
+                        foundPink = false;
+                        pinkCount = 0;
+                        for (i=0;i<pixels.Length;i++) {
+                            if ((pixels[i].r > pinkMin && pixels[i].r < pinkMax)
+                                && (pixels[i].b > pinkMin && pixels[i].b < pinkMax)
+                                && pixels[i].g < pinkGThreshold) {
+                                
+                                pinkCount++;
+                                if (pinkCount > pinkCountThreshold) {
+                                    foundPink = true;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    
-                    if (foundPink) {
-                        SaveDebugScreenshot(captureTex,"gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
-                        yield return new WaitForSeconds(timeTillNext);
+                        
+                        if (foundPink) {
+                            SaveDebugScreenshot(captureTex,lev.ToString() + "_gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
+                            yield return new WaitForSeconds(timeTillNext);
 
-                        UnityEngine.Debug.LogWarning("Culling error 4 on cell " + x.ToString() + "," + y.ToString());
-                        continue;
-                    }
-                 
-                    PlayerMovement.a.transform.localRotation = Quaternion.Euler(0f,0f,0f);
-                    MouseLookScript.a.transform.localRotation = Quaternion.Euler(90f,0f,0f); // Down
-                    yield return new WaitForSeconds(timeTillNext);
-                    RenderTexture.active = capture;
-                    MouseLookScript.a.playerCamera.targetTexture = capture;
-                    MouseLookScript.a.playerCamera.Render();
-                    captureTex.ReadPixels(new Rect(0, 0, capture.width, capture.height), 0, 0);
-                    MouseLookScript.a.playerCamera.targetTexture = null;
-                    captureTex.Apply();
-                    pixels = captureTex.GetPixels(0);
-                    foundPink = false;
-                    pinkCount = 0;
-                    for (i=0;i<pixels.Length;i++) {
-                        if ((pixels[i].r > pinkMin && pixels[i].r < pinkMax)
-                            && (pixels[i].b > pinkMin && pixels[i].b < pinkMax)
-                            && pixels[i].g < pinkGThreshold) {
-                            
-                            pinkCount++;
-                            if (pinkCount > pinkCountThreshold) {
-                                foundPink = true;
-                                break;
+                            UnityEngine.Debug.LogWarning(lev.ToString() + " Leak detected facing South on cell " + x.ToString() + "," + y.ToString());
+                            continue;
+                        }
+                    
+                        PlayerMovement.a.transform.localRotation = Quaternion.Euler(0f,0f,0f);
+                        MouseLookScript.a.transform.localRotation = Quaternion.Euler(90f,0f,0f); // Down
+                        yield return new WaitForSeconds(timeTillNext);
+                        RenderTexture.active = capture;
+                        MouseLookScript.a.playerCamera.targetTexture = capture;
+                        MouseLookScript.a.playerCamera.Render();
+                        captureTex.ReadPixels(new Rect(0, 0, capture.width, capture.height), 0, 0);
+                        MouseLookScript.a.playerCamera.targetTexture = null;
+                        captureTex.Apply();
+                        pixels = captureTex.GetPixels(0);
+                        foundPink = false;
+                        pinkCount = 0;
+                        for (i=0;i<pixels.Length;i++) {
+                            if ((pixels[i].r > pinkMin && pixels[i].r < pinkMax)
+                                && (pixels[i].b > pinkMin && pixels[i].b < pinkMax)
+                                && pixels[i].g < pinkGThreshold) {
+                                
+                                pinkCount++;
+                                if (pinkCount > pinkCountThreshold) {
+                                    foundPink = true;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    
-                    if (foundPink) {
-                        SaveDebugScreenshot(captureTex,"gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
-                        yield return new WaitForSeconds(timeTillNext);
+                        
+                        if (foundPink) {
+                            SaveDebugScreenshot(captureTex,lev.ToString() + "_gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
+                            yield return new WaitForSeconds(timeTillNext);
 
-                        UnityEngine.Debug.LogWarning("Culling error 5 on cell " + x.ToString() + "," + y.ToString());
-                        continue;
-                    }
-                 
-                    PlayerMovement.a.transform.localRotation = Quaternion.Euler(0f,0f,0f);
-                    MouseLookScript.a.transform.localRotation = Quaternion.Euler(-90f,0f,0f); // Up
-                    yield return new WaitForSeconds(timeTillNext);
-                    RenderTexture.active = capture;
-                    MouseLookScript.a.playerCamera.targetTexture = capture;
-                    MouseLookScript.a.playerCamera.Render();
-                    captureTex.ReadPixels(new Rect(0, 0, capture.width, capture.height), 0, 0);
-                    MouseLookScript.a.playerCamera.targetTexture = null;
-                    captureTex.Apply();
-                    pixels = captureTex.GetPixels(0);
-                    foundPink = false;
-                    pinkCount = 0;
-                    for (i=0;i<pixels.Length;i++) {
-                        if ((pixels[i].r > pinkMin && pixels[i].r < pinkMax)
-                            && (pixels[i].b > pinkMin && pixels[i].b < pinkMax)
-                            && pixels[i].g < pinkGThreshold) {
-                            
-                            pinkCount++;
-                            if (pinkCount > pinkCountThreshold) {
-                                foundPink = true;
-                                break;
+                            UnityEngine.Debug.LogWarning(lev.ToString() + " Leak detected facing down on cell " + x.ToString() + "," + y.ToString());
+                            continue;
+                        }
+                    
+                        PlayerMovement.a.transform.localRotation = Quaternion.Euler(0f,0f,0f);
+                        MouseLookScript.a.transform.localRotation = Quaternion.Euler(-90f,0f,0f); // Up
+                        yield return new WaitForSeconds(timeTillNext);
+                        RenderTexture.active = capture;
+                        MouseLookScript.a.playerCamera.targetTexture = capture;
+                        MouseLookScript.a.playerCamera.Render();
+                        captureTex.ReadPixels(new Rect(0, 0, capture.width, capture.height), 0, 0);
+                        MouseLookScript.a.playerCamera.targetTexture = null;
+                        captureTex.Apply();
+                        pixels = captureTex.GetPixels(0);
+                        foundPink = false;
+                        pinkCount = 0;
+                        for (i=0;i<pixels.Length;i++) {
+                            if ((pixels[i].r > pinkMin && pixels[i].r < pinkMax)
+                                && (pixels[i].b > pinkMin && pixels[i].b < pinkMax)
+                                && pixels[i].g < pinkGThreshold) {
+                                
+                                pinkCount++;
+                                if (pinkCount > pinkCountThreshold) {
+                                    foundPink = true;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    
-                    if (foundPink) {
-                        SaveDebugScreenshot(captureTex,"gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
-                        yield return new WaitForSeconds(timeTillNext);
+                        
+                        if (foundPink) {
+                            SaveDebugScreenshot(captureTex,lev.ToString() + "_gridCellxy" + x.ToString() + "." + y.ToString() + "_pixelI" + i.ToString());
+                            yield return new WaitForSeconds(timeTillNext);
 
-                        UnityEngine.Debug.LogWarning("Culling error 6 on cell " + x.ToString() + "," + y.ToString());
+                            UnityEngine.Debug.LogWarning(lev.ToString() + " Leak detected facing up on cell " + x.ToString() + "," + y.ToString());
+                        }
                     }
                 }
             }
