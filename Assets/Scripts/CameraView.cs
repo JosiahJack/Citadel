@@ -51,12 +51,12 @@ public class CameraView : MonoBehaviour {
 	}
 
 	void OnEnable() {
-		DynamicCulling.a.AddCameraPosition(this);
+		DynamicCulling.AddCameraPosition(this);
 		if (cam != null) cam.Render();
 	}
 	
 	void OnDisable() {
-		DynamicCulling.a.RemoveCameraPosition(this);
+		DynamicCulling.RemoveCameraPosition(this);
 		
 	}
 	

@@ -245,12 +245,13 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void LoadLevel(int levnum, Vector3 targetPosition) {
-		if (!LevNumInBounds(levnum)) return;
+		if (!LevNumInBounds(levnum)) { Debug.LogWarning("levnum out of bounds"); return; }
 
 		// NOTE: Check this first since the button for the current level has a null destination.  This is fine and expected.
 		if (currentLevel == levnum) { Const.sprint(Const.a.stringTable[9]); return; } //Already there
 
 		MFDManager.a.TurnOffElevatorPad();
+// 		Debug.Log("Cleared GUI Over Button state from clicking on elevator button in MFD side pane");
 		GUIState.a.ClearOverButton();
 		if (targetPosition.x == 0 && targetPosition.y == 0 && targetPosition.z == 0) {
 			switch(levnum) {
@@ -270,16 +271,23 @@ public class LevelManager : MonoBehaviour {
 			}
 		}
 
+				 
 		// Return to level from cyberspace.
 		PlayerReferenceManager.a.playerCapsule.transform.position = targetPosition;
 		currentLevel = levnum; // Set current level to be the new level
 		DisableAllNonOccupiedLevelsExcept(currentLevel);
 		levels[levnum].SetActive(true); // enable new level
 		PlayerReferenceManager.a.playerCurrentLevel = levnum;
-		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) AutoSplitterData.missionSplitID++; // 1 - Medical split - we are now on level 2
+		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) {
+			AutoSplitterData.missionSplitID++; // 1 - Medical split - we are now on level 2
+			Debug.Log("AutoSplitterData missionSplitID incremented: " + AutoSplitterData.missionSplitID.ToString());
+		}
+		
 		PostLoadLevelSetupSystems();
+		Debug.Log("PostLoadLevelSetupSystems() complete!");
 		if (currentLevel != 13) DynamicCulling.a.Cull_Init();
 		DynamicCulling.a.forceRecull = true;
+// 		Debug.Log("Marked DynamicCulling as forceRecull so next frame it runs culling again to be sure player's culling is correct.");		
 	}
 
 	public void LoadLevelFromSave(int levnum) {

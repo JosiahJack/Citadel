@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 7899c72200f9aec4eaebae1317af3498
 ModelImporter:
-  serializedVersion: 19301
+  serializedVersion: 20300
   internalIDToNameTable:
   - first:
       1: 100000
@@ -270,6 +270,8 @@ ModelImporter:
       transformMask:
       - path: 
         weight: 1
+      - path: door5_iristrim_mesh
+        weight: 1
       - path: door_iris_007_heightcheat_lower
         weight: 1
       - path: door_iris_cheatblockupper
@@ -277,8 +279,6 @@ ModelImporter:
       - path: door_iris_cheatblockupper_001
         weight: 1
       - path: door_iris_frame
-        weight: 1
-      - path: door_iris_heightcheat_upper
         weight: 1
       - path: Empty
         weight: 1
@@ -504,6 +504,7 @@ ModelImporter:
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
     skinWeightsMode: 0
     maxBonesPerVertex: 4
@@ -513,6 +514,9 @@ ModelImporter:
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
   tangentSpace:
@@ -546,6 +550,8 @@ ModelImporter:
   animationType: 2
   humanoidOversampling: 1
   avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

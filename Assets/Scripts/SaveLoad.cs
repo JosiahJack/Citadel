@@ -645,7 +645,7 @@ public static class SaveLoad {
                          && Utils.InTol(chunk.transform.localScale.y,1.0f,0.01f)
                          && Utils.InTol(chunk.transform.localScale.z,1.0f,0.01f);
         
-        float floorHeight = Utils.GetFloorHeight(quat,chunk.transform.localPosition.y);
+        float floorHeight = Utils.GetFloorHeight(quat,chunk.transform.position.y);
         if (floorHeight > -1000f) {
             MarkAsFloor maf = chunk.GetComponent<MarkAsFloor>();
             if (maf == null) maf = chunk.AddComponent<MarkAsFloor>();

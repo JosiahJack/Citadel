@@ -1548,7 +1548,7 @@ public class Const : MonoBehaviour {
 		Stopwatch loadTimer = new Stopwatch();
 		Stopwatch loadUpdateTimer = new Stopwatch(); // For loading % indicator.
 		loadTimer.Start();
-		//UnityEngine.Debug.Log("Start of Load with player at " + PlayerMovement.a.transform.localPosition.ToString());
+		UnityEngine.Debug.Log("Start of Load for index " + saveFileIndex.ToString());
 		yield return null; // Update the view to show ShowLoading changes.
 
 		string readline; 					// Initialize temporary variables.
