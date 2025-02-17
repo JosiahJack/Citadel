@@ -17,7 +17,7 @@ public class SEGI : MonoBehaviour {
 #region Parameters
 	[Serializable] public enum VoxelResolution {verylow = 64, low = 128, high = 256, veryhigh = 512, }
 	[HideInInspector] public bool updateGI = true;
-	[HideInInspector] public LayerMask giCullingMask = 2147483647;
+	public LayerMask giCullingMask = 2147483647;
 	[HideInInspector] public float shadowSpaceSize = 50.0f;
 	[HideInInspector] public Light sun = null;
 	[HideInInspector] public Color skyColor = new Color(0f,0f,0f,1f);

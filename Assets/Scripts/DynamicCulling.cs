@@ -1738,6 +1738,47 @@ public class DynamicCulling : MonoBehaviour {
 
         gridCells[0,0].visible = true; // Errors default here so draw them anyways.
         gridCells[playerCellX,playerCellY].visible = true;
+        if (LevelManager.a.currentLevel == 5) {
+            if (playerCellX < 5) {
+                skyVisible = true;
+            } else if (gridCells[5,24].visible
+                || gridCells[5,25].visible
+                || gridCells[5,26].visible
+                || gridCells[5,27].visible
+                || gridCells[5,28].visible
+                || gridCells[5,29].visible
+                || gridCells[5,30].visible
+                || gridCells[5,31].visible
+                || gridCells[5,12].visible
+                || gridCells[5,13].visible
+                || gridCells[5,14].visible
+                || gridCells[5,15].visible
+                || gridCells[5,16].visible
+                || gridCells[5,17].visible
+                || gridCells[5,18].visible
+                || gridCells[5,19].visible
+                || gridCells[29,1].visible
+                || gridCells[28,1].visible
+                || gridCells[27,1].visible
+                || gridCells[26,1].visible
+                || gridCells[25,1].visible
+                || gridCells[24,1].visible
+                || gridCells[23,1].visible
+                || gridCells[22,1].visible
+                || gridCells[21,1].visible
+                || gridCells[20,1].visible
+                || gridCells[19,1].visible
+                || gridCells[18,1].visible
+                || gridCells[45,30].visible
+                || gridCells[45,29].visible
+                || gridCells[45,28].visible
+                || gridCells[45,27].visible
+                || gridCells[45,26].visible
+                || gridCells[45,25].visible
+                || gridCells[45,24].visible) {
+                skyVisible = true;
+            }
+        }
         ToggleVisibility(); // Update all cells marked as dirty.
         ToggleStaticMeshesImmutableVisibility();
         ToggleStaticImmutableParticlesVisibility();

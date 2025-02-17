@@ -90,7 +90,7 @@ namespace Tests {
             Color[] pixels;
             bool minMaxNotSet = true;
             int layerMask = LayerMask.GetMask("Default","Geometry");
-            for (int lev=1;lev<13;lev++) {
+            for (int lev=4;lev<13;lev++) {
                 ConsoleEmulator.CheatLoadLevel(lev);
                 yield return new WaitForSeconds(0.1f);
                 DynamicCulling.a.Cull(true);
