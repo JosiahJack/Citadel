@@ -20,7 +20,9 @@ public class MouseCursor : MonoBehaviour {
     public Texture2D cursorImage;
 	public RawImage cursorUIImage;
 	public Canvas canvas;
+	public Canvas cursorCanvas;
 	private RectTransform canvasRectTransform;
+	private RectTransform cursorCanvasRectTransform;
 	private RectTransform cursorRectTransform;
 	public CanvasScaler canvasScaler;
     private float offsetX;
@@ -72,8 +74,11 @@ public class MouseCursor : MonoBehaviour {
 		pev = new PointerEventData(EventSystem.current);
 		graphicCastResults = new List<RaycastResult>();
 		canvasRectTransform = canvas.gameObject.GetComponent<RectTransform>();
-		if (canvasRectTransform == null) Debug.LogError("Can't access RectTransform on Canvas!");
-
+		if (canvasRectTransform == null) Debug.LogError("Can't access RectTransform on canvas!");
+		
+		cursorCanvasRectTransform = cursorCanvas.gameObject.GetComponent<RectTransform>();
+		if (cursorCanvasRectTransform == null) Debug.LogError("Can't access RectTransform on cursorCanvas!");
+		
 		cursorRectTransform = cursorUIImage.GetComponent<RectTransform>();
 		if (cursorRectTransform == null) Debug.LogError("Can't access RectTransform on Cursor!");
 	}
@@ -176,6 +181,8 @@ public class MouseCursor : MonoBehaviour {
 		} else {
 			cursorSize = Screen.width * cursorScreenPercentage;
 		}
+		
+		cursorCanvasRectTransform.sizeDelta = canvasRectTransform.sizeDelta;
 		offsetX = cursorSize * halfFactor;
 		offsetY = offsetX;
 		cursorPosition = new Vector2(Input.mousePosition.x,Input.mousePosition.y);

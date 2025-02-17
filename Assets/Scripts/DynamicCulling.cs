@@ -1739,7 +1739,7 @@ public class DynamicCulling : MonoBehaviour {
         gridCells[0,0].visible = true; // Errors default here so draw them anyways.
         gridCells[playerCellX,playerCellY].visible = true;
         if (LevelManager.a.currentLevel == 5) {
-            if (playerCellX < 5) {
+            if (playerCellX <= 12 || playerCellY <= 9 || playerCellX >= 32 || (playerCellY == 31 && playerCellX >= 27) || (playerCellX == 27 && playerCellY == 32)) {
                 skyVisible = true;
             } else if (gridCells[5,24].visible
                 || gridCells[5,25].visible

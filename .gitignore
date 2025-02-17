@@ -27,6 +27,8 @@ sysinfo.txt
 # Office lock file
 .~lock*
 
+Assets/InitTestScene*.unity
+Assets/InitTestScene*.unity.meta
 Assets/StreamingAssets/introdone.dat
 Assets/StreamingAssets/introdone.dat.meta
 Assets/StreamingAssets/CITALOG.RES

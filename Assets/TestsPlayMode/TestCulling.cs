@@ -68,6 +68,7 @@ namespace Tests {
             MouseLookScript.a.enabled = false;
             DynamicCulling.a.useLODMeshes = true;
             DynamicCulling.a.overrideWindowsToBlack = true;
+            DynamicCulling.a.outputDebugImages = false;
             DynamicCulling.a.Cull(true);
             MouseLookScript.a.playerCamera.enabled = false;
             Const.a.testSphere.SetActive(true);
@@ -98,6 +99,7 @@ namespace Tests {
                 for (x=0;x<DynamicCulling.WORLDX;x++) {
                     for (y=0;y<DynamicCulling.WORLDX;y++) {
                         if (!DynamicCulling.a.gridCells[x,y].open) continue;
+                        if (DynamicCulling.a.gridCells[x,y].open && DynamicCulling.a.gridCells[x,y].closedNorth && DynamicCulling.a.gridCells[x,y].closedSouth && DynamicCulling.a.gridCells[x,y].closedWest && DynamicCulling.a.gridCells[x,y].closedEast) continue;
                         if (DynamicCulling.a.gridCells[x,y].chunkPrefabs.Count < 1) continue;
                     
                         avgPos = Vector3.zero;
