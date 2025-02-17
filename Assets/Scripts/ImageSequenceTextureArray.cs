@@ -26,6 +26,7 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 	private Light lit;
 	private int frameCounter = 0; //An integer to advance frames
 	private int frameCounterGlow = 0;
+	private PrefabIdentifier pid;
 
 	void Awake() {
 		//Get a reference to the Material of the game object this script is attached to.
@@ -33,6 +34,7 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		if (mR == null) { this.gameObject.SetActive(false); return; }
 		this.goMaterial = this.GetComponent<Renderer>().material;
 		SFX = GetComponent<AudioSource>();
+		pid = GetComponent<PrefabIdentifier>();
 		if (lightContainer != null) {
 			lit = lightContainer.GetComponent<Light>();
 			if (lit != null) {
@@ -63,8 +65,8 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		} else {
 			if (lightContainer != null) lightContainer.SetActive(false);
 			screenDestroyed = true;
-			goMaterial.SetTexture("_EmissionMap", Const.a.sequenceTextures[5]);
 			goMaterial.mainTexture = Const.a.sequenceTextures[5]; // End frame of destroyed texture
+			goMaterial.SetTexture("_EmissionMap", Const.a.sequenceTextures[5]);
 		}
 	}
 
@@ -866,8 +868,10 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 			}
 
 			//Set the material's texture to the current value of the frameCounter variable
-			if (frameCounter >= 0 && frameCounter <= 5) goMaterial.mainTexture = Const.a.sequenceTextures[frameCounter]; // 0 thru 5
-			if (frameCounter >= 0 && frameCounter <= 5) goMaterial.SetTexture("_EmissionMap", Const.a.sequenceTextures[frameCounter]);
+			if (frameCounter >= 0 && frameCounter <= 5) {
+				goMaterial.mainTexture = Const.a.sequenceTextures[frameCounter]; // 0 thru 5
+				goMaterial.SetTexture("_EmissionMap", Const.a.sequenceTextures[frameCounter]);
+			}
 			return;
 		}
 
@@ -913,6 +917,11 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 			if (constArrayLookup.Length > 0 && frameCounter < constArrayLookup.Length) {
 				if (constArrayLookup[frameCounter] < Const.a.sequenceTextures.Length && constArrayLookup[frameCounter] >= 0) {
 					if (goMaterial.mainTexture != Const.a.sequenceTextures[constArrayLookup[frameCounter]]) goMaterial.mainTexture = Const.a.sequenceTextures[constArrayLookup[frameCounter]];
+					if (pid != null) {
+						if (pid.constIndex == 279) {
+							goMaterial.SetTexture("_EmissionMap", Const.a.sequenceTextures[constArrayLookup[frameCounter]]);
+						}
+					}
 				}
 			}
 		}

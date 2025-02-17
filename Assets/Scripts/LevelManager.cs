@@ -24,6 +24,7 @@ public class LevelManager : MonoBehaviour {
 	public bool[] ressurectionActive;
 	public Door[] ressurectionBayDoor;
 	public GameObject sky;
+	public GameObject sun;
 	public bool superoverride = false;
 	public GameObject saturn;
 	public GameObject exterior;
@@ -162,6 +163,7 @@ public class LevelManager : MonoBehaviour {
 		skyMR.enabled = (on && showSkyForLevel[currentLevel]);
 		saturn.SetActive(on && showSaturnForLevel[currentLevel]);
 		exterior.SetActive(on && showExteriorForLevel[currentLevel]);
+		sun.SetActive(Const.a.GraphicsShadowMode >= 1);
 		if (Const.a == null) return;
 		if (Const.a.questData == null) return;
 		

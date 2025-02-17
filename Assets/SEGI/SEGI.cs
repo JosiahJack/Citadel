@@ -18,8 +18,8 @@ public class SEGI : MonoBehaviour {
 	[Serializable] public enum VoxelResolution {verylow = 64, low = 128, high = 256, veryhigh = 512, }
 	[HideInInspector] public bool updateGI = true;
 	public LayerMask giCullingMask = 2147483647;
-	[HideInInspector] public float shadowSpaceSize = 50.0f;
-	[HideInInspector] public Light sun = null;
+	[HideInInspector] public float shadowSpaceSize = 40.0f;
+	public Light sun = null;
 	[HideInInspector] public Color skyColor = new Color(0f,0f,0f,1f);
 	[HideInInspector] public float voxelSpaceSize = 40.0f;
 	[HideInInspector] public bool useBilateralFiltering = true;
