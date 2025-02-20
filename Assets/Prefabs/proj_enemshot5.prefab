@@ -4837,7 +4837,6 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 40b064033825c4f49afcb18abed1f556, type: 2}
-  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4908,7 +4907,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7c2a44741a281740a7c9c26567c1892, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  impactType: 19
+  impactType: 18
   destroyInsteadOfDeactivate: 1
   host: {fileID: 0}
   hitCountBeforeRemoval: 1

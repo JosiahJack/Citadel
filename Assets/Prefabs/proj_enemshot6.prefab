@@ -4971,7 +4971,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7c2a44741a281740a7c9c26567c1892, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  impactType: 17
+  impactType: 16
   destroyInsteadOfDeactivate: 1
   host: {fileID: 0}
   hitCountBeforeRemoval: 1

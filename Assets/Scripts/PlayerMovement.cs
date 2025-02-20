@@ -1649,6 +1649,19 @@ public class PlayerMovement : MonoBehaviour {
 				maxSlope = 0.35f;
 				if (Inventory.a.BoosterActive()) maxSlope = 0.7f;
 				if (floorDot <= 1f && floorDot >= maxSlope) {
+// 					if (stepFinished < PauseScript.a.relativeTime) {
+// 						stepFinished = isSprinting
+// 									? PauseScript.a.relativeTime
+// 										+ UnityEngine.Random.Range(0.2f,0.3f)
+// 									: PauseScript.a.relativeTime
+// 										+ UnityEngine.Random.Range(0.35f,0.65f);
+// 
+// 						FootStepType fstep = GetFootstepTypeForPrefab(prefID.constIndex);
+// 						AudioClip stcp = FootStepSound(fstep);
+// 						Utils.PlayOneShotSavable(SFXFootsteps,stcp,
+// 												UnityEngine.Random.Range(0.4f,0.55f));
+// 					}
+					
 					if (!grounded) stepFinished = PauseScript.a.relativeTime;
 					grounded = true;
 					return;

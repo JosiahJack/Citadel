@@ -654,7 +654,7 @@ public static class SaveLoad {
         }
         
         // Align to grid if not rotated
-        if (Utils.IsAxisAligned(quat) && scaleGood) {
+        if (Utils.IsAxisAligned(quat) && scaleGood && curlevel != 12) {
             chunk.transform.localPosition = new Vector3(Mathf.Round(chunk.transform.localPosition.x / 2.56f) * 2.56f,
                                                         Mathf.Round(chunk.transform.localPosition.y / 0.16f) * 0.16f, // Actual Z, stupid Unity
                                                         Mathf.Round(chunk.transform.localPosition.z / 2.56f) * 2.56f);
@@ -693,7 +693,7 @@ public static class SaveLoad {
             if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(0f,0f,45f),angTol)) ceilSlopeNegX = true; // Chunk normal points SW
             if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-45f,0f,0f),angTol)) ceilSlopeZ = true; // Chunk normal points SW
             if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(45f,0f,0f),angTol)) ceilSlopeNegZ = true; // Chunk normal points SW
-            if (is45) {
+            if (is45 && curlevel != 12) {
                 Vector3 ofs = chunk.transform.localPosition;
                 if      (nw45) { ofs.x = cellCenter.x - xzOffsetFor45s; ofs.z = cellCenter.z + xzOffsetFor45s; }
                 else if (ne45) { ofs.x = cellCenter.x + xzOffsetFor45s; ofs.z = cellCenter.z + xzOffsetFor45s; }

@@ -577,6 +577,10 @@ public class MFDManager : MonoBehaviour  {
 		energyTickPanel.SetActive(false);
 		energyIndicator.SetActive(false);
 		healthIndicator.SetActive(false);
+		bool segiLast = Const.a.GraphicsSEGI;
+		Const.a.GraphicsSEGI = false;
+		Config.SetSEGI();
+		Const.a.GraphicsSEGI = segiLast; // Preserve setting for return from Cyberspace.
 		if (!Const.a.noHUD) cyberHealthIndicator.SetActive(true);
 		if (!Const.a.noHUD) cyberTimerT.SetActive(true);
 		if (!Const.a.noHUD) cyberTimer.SetActive(true);
@@ -598,6 +602,7 @@ public class MFDManager : MonoBehaviour  {
 		ctbButtonGeneral.SetActive(true);
 		tabButtonsLHButtons.SetActive(true);
 		tabButtonsRHButtons.SetActive(true);
+		Config.SetSEGI(); // Turn it back on if setting is on.
 		if (!Const.a.noHUD) {
 			energyTickPanel.SetActive(true);
 			energyIndicator.SetActive(true);

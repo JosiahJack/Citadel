@@ -1647,7 +1647,7 @@ public class Utils {
         if (Utils.InTol(euangs.z,0f,tol) || Utils.InTol(euangs.z,90f,tol) || Utils.InTol(euangs.z,180f,tol) || Utils.InTol(euangs.z,270f,tol) || Utils.InTol(euangs.z,360f,tol)) zIs90 = true;
         return (xIs90 && yIs90 && zIs90);
     }
-    
+
     public static float GetFloorHeight(Quaternion quat, float yHeight) {
         Vector3 euangs = quat.eulerAngles;
         euangs = new Vector3(Mathf.Abs(euangs.x) % 360f, Mathf.Abs(euangs.y) % 360f, Mathf.Abs(euangs.z) % 360f);

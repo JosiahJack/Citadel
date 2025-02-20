@@ -21,16 +21,17 @@ namespace Tests {
         private bool sceneLoaded = false;
 
         private void SaveDebugScreenshot(Texture2D shot, string debugText) {
-            string sname = debugText + "_" + System.DateTime.UtcNow.ToString("ddMMMyyyy_HH_mm_ss")
-                        + "_" + Const.a.versionString + ".png";
-            string spath = Utils.SafePathCombine(Application.streamingAssetsPath,
-                                                "Screenshots");
-
-            // Check and recreate Screenshots folder if it was deleted.
-            if (!Directory.Exists(spath)) Directory.CreateDirectory(spath);
-            spath = Utils.SafePathCombine(spath,sname);
-            byte[] bytes = shot.EncodeToPNG();
-            File.WriteAllBytes(spath, bytes);
+            // Only for testing locally, not on CI
+//             string sname = debugText + "_" + System.DateTime.UtcNow.ToString("ddMMMyyyy_HH_mm_ss")
+//                         + "_" + Const.a.versionString + ".png";
+//             string spath = Utils.SafePathCombine(Application.streamingAssetsPath,
+//                                                 "Screenshots");
+// 
+//             // Check and recreate Screenshots folder if it was deleted.
+//             if (!Directory.Exists(spath)) Directory.CreateDirectory(spath);
+//             spath = Utils.SafePathCombine(spath,sname);
+//             byte[] bytes = shot.EncodeToPNG();
+//             File.WriteAllBytes(spath, bytes);
         }
         
         public void RunBeforeAnyTests() {
@@ -91,13 +92,24 @@ namespace Tests {
             Color[] pixels;
             bool minMaxNotSet = true;
             int layerMask = LayerMask.GetMask("Default","Geometry");
-            for (int lev=4;lev<13;lev++) {
+            
+            int numLeaks = 0;
+            
+            for (int lev=0;lev<13;lev++) {
                 ConsoleEmulator.CheatLoadLevel(lev);
                 yield return new WaitForSeconds(0.1f);
                 DynamicCulling.a.Cull(true);
                 yield return new WaitForSeconds(timeTillNext);
                 for (x=0;x<DynamicCulling.WORLDX;x++) {
                     for (y=0;y<DynamicCulling.WORLDX;y++) {
+                        if (lev == 6) {
+                            if (x == 38 && y == 21) continue; // These are too small to fit camera in, not needed to check.
+                            if (x == 38 && y == 26) continue;
+                            if (x == 40 && y == 21) continue;
+                            if (x == 44 && y == 26) continue;
+                            if (x == 40 && y == 26) continue;
+                            if (x == 42 && y == 26) continue;
+                        }
                         if (!DynamicCulling.a.gridCells[x,y].open) continue;
                         if (DynamicCulling.a.gridCells[x,y].open && DynamicCulling.a.gridCells[x,y].closedNorth && DynamicCulling.a.gridCells[x,y].closedSouth && DynamicCulling.a.gridCells[x,y].closedWest && DynamicCulling.a.gridCells[x,y].closedEast) continue;
                         if (DynamicCulling.a.gridCells[x,y].chunkPrefabs.Count < 1) continue;
@@ -180,6 +192,7 @@ namespace Tests {
                             yield return new WaitForSeconds(timeTillNext);
 
                             UnityEngine.Debug.LogWarning(lev.ToString() + " Culling error 1 on cell " + x.ToString() + "," + y.ToString());
+                            numLeaks++;
                             continue;
                         }
                     
@@ -213,6 +226,7 @@ namespace Tests {
                             yield return new WaitForSeconds(timeTillNext);
 
                             UnityEngine.Debug.LogWarning(lev.ToString() + " Leak detected facing North on cell " + x.ToString() + "," + y.ToString());
+                            numLeaks++;
                             continue;
                         }
                                     
@@ -246,6 +260,7 @@ namespace Tests {
                             yield return new WaitForSeconds(timeTillNext);
 
                             UnityEngine.Debug.LogWarning(lev.ToString() + " Leak detected facing West on cell " + x.ToString() + "," + y.ToString());
+                            numLeaks++;
                             continue;
                         }
                     
@@ -279,6 +294,7 @@ namespace Tests {
                             yield return new WaitForSeconds(timeTillNext);
 
                             UnityEngine.Debug.LogWarning(lev.ToString() + " Leak detected facing South on cell " + x.ToString() + "," + y.ToString());
+                            numLeaks++;
                             continue;
                         }
                     
@@ -312,6 +328,7 @@ namespace Tests {
                             yield return new WaitForSeconds(timeTillNext);
 
                             UnityEngine.Debug.LogWarning(lev.ToString() + " Leak detected facing down on cell " + x.ToString() + "," + y.ToString());
+                            numLeaks++;
                             continue;
                         }
                     
@@ -345,11 +362,12 @@ namespace Tests {
                             yield return new WaitForSeconds(timeTillNext);
 
                             UnityEngine.Debug.LogWarning(lev.ToString() + " Leak detected facing up on cell " + x.ToString() + "," + y.ToString());
+                            numLeaks++;
                         }
                     }
                 }
             }
-            Assert.That(true,"all good");
+            Assert.That(numLeaks == 0,"Found " + numLeaks.ToString() + " leaks.  See warnings for details.");
 
             // Revert to normal
             Const.a.testSphere.SetActive(false);

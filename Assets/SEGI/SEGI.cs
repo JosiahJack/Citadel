@@ -28,7 +28,7 @@ public class SEGI : MonoBehaviour {
 	[HideInInspector] public VoxelResolution voxelResolution = VoxelResolution.low;
 	[HideInInspector] public bool visualizeSunDepthTexture = false;
 	public bool visualizeGI = false;
-	[HideInInspector] public bool visualizeVoxels = false;
+	public bool visualizeVoxels = false;
 	[HideInInspector] public bool halfResolution = true;
 	[HideInInspector] public bool stochasticSampling = true;
 	[HideInInspector] public bool infiniteBounces = true;

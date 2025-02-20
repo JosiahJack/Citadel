@@ -871,12 +871,14 @@ public class DynamicCulling : MonoBehaviour {
         
         if (!camPositions.ContainsKey(cam.gameObject)) {
             camPositions[cam.gameObject] = cam.transform.position;
+            UnityEngine.Debug.Log("Added screen cam " + cam.gameObject.name);
         }
     }
 
     public static void RemoveCameraPosition(CameraView cam) {
         if (camPositions == null) return;
-
+        
+        UnityEngine.Debug.Log("Removed screen cam " + cam.gameObject.name);
         camPositions.Remove(cam.gameObject);
     }
     
@@ -1151,6 +1153,23 @@ public class DynamicCulling : MonoBehaviour {
         CircleFanRays(startX + 1,startY - 1);
 
         CameraViewUnculling(startX,startY);
+        
+        for (int x=0;x<WORLDX;x++) {
+            for (int y=0;y<WORLDX;y++) {
+                if (LevelManager.a.currentLevel == 5) {
+                    if ((x <= 15 && startX <= 15) || (y <= 9 && startY <= 9)
+                        || (x >= 32 && startX >=32)
+                        || (y == 31 && startY == 31 && x >= 27 && startX >= 27)
+                        || x >= 34) {
+                        gridCells[x,y].visible = true;
+                    }
+                    
+                    if (startX <=12 && x == 14 && y == 31 && startY >= 24) gridCells[x,y].visible = true;
+                    if (startX <=12 && x == 14 && y == 30 && startY >= 24) gridCells[x,y].visible = true;
+                    if (startX <=12 && x == 13 && y == 30 && startY >= 24) gridCells[x,y].visible = true;
+                }
+            }
+        }
     }
 
     private void CastStraightY(int px, int py, int signy) {
@@ -1399,13 +1418,14 @@ public class DynamicCulling : MonoBehaviour {
  
     void ToggleVisibility() {
         gridCells[playerCellX,playerCellY].visible = true; // Guarantee enable.
-        skyVisible = false;
         ChunkPrefab chp = null;
         for (int x=0;x<WORLDX;x++) {
             for (int y=0;y<WORLDX;y++) {
                 float sqrdist = 0f;
                 for (int i=0;i<gridCells[x,y].chunkPrefabs.Count;i++) {
                     chp = gridCells[x,y].chunkPrefabs[i];
+                    if (chp == null) continue;
+                    
                     if (chp.constIndex == 1 && gridCells[x,y].visible || chp.constIndex == 123 || chp.constIndex == 93) skyVisible = true; // Don't move if to assignment, need to preserve true.
                     for (int k=0;k<chp.meshenderers.Count;k++) {
                         if (chp.meshenderers[k].meshRenderer == null) continue;
@@ -1429,8 +1449,9 @@ public class DynamicCulling : MonoBehaviour {
      }
 
     public void UpdateDynamicMeshes() {
+        int count = 0;
         label_iterate_mesh_renderers:
-        int count = dynamicMeshes.Count;
+        count = dynamicMeshes.Count;
         for (int i=0;i < count; i++) {
             if (dynamicMeshes[i] == null) {
                 dynamicMeshes.RemoveAt(i);
@@ -1442,22 +1463,25 @@ public class DynamicCulling : MonoBehaviour {
                 goto label_iterate_mesh_renderers; // Start over
             }
         }
-
+        
+        count = dynamicMeshes.Count;
         for (int i=0;i < count; i++) {
             dynamicMeshCoords[i] = PosToCellCoords(dynamicMeshesTransforms[i].position);
         }
     }
 
     public void UpdateNPCPVS() {
+        int count = 0;
         label_iterate_aics:
-        int count = npcAICs.Count;
+        count = npcAICs.Count;
         for (int i=0;i < count; i++) {
             if (npcAICs[i] == null) {
                 npcAICs.RemoveAt(i);
                 goto label_iterate_aics; // Start over
             }
         }
-
+        
+        count = npcAICs.Count;
         for (int i=0;i < count; i++) {
             npcCoords[i] = PosToCellCoords(npcTransforms[i].position);
         }
@@ -1468,6 +1492,8 @@ public class DynamicCulling : MonoBehaviour {
         HealthManager hm = null;
         int x,y;
         for (int i=0;i<npcAICs.Count;i++) {
+            if (npcAICs[i] == null) continue;
+            
             x = npcCoords[i].x;
             y = npcCoords[i].y;
             if (gridCells[x,y].visible || !worldCellsOpen[x,y]
@@ -1489,7 +1515,9 @@ public class DynamicCulling : MonoBehaviour {
 
     public void ToggleDynamicMeshesVisibility() {
         int x,y;
-        for (int i=0;i<dynamicMeshes.Count;i++) {            
+        for (int i=0;i<dynamicMeshes.Count;i++) {
+            if (dynamicMeshes[i] == null) continue;
+            
             x = dynamicMeshCoords[i].x;
             y = dynamicMeshCoords[i].y;
             bool inPVS = false;
@@ -1547,6 +1575,8 @@ public class DynamicCulling : MonoBehaviour {
 
     public void ToggleStaticMeshesImmutableVisibility() {
         for (int i=0;i<staticMeshesImmutable.Count;i++) {
+            if (staticMeshesImmutable[i] == null) continue;
+            
             int x = staticMeshImmutableCoords[i].x;
             int y = staticMeshImmutableCoords[i].y;
             if (gridCells[x,y].visible || (!worldCellsOpen[x,y] && skyVisible)) {
@@ -1577,7 +1607,9 @@ public class DynamicCulling : MonoBehaviour {
 
     public void ToggleStaticMeshesSaveableVisibility() {
         int x,y;
-        for (int i=0;i<staticMeshesSaveable.Count;i++) {            
+        for (int i=0;i<staticMeshesSaveable.Count;i++) {
+            if (staticMeshesSaveable[i] == null) continue;
+            
             x = staticMeshSaveableCoords[i].x;
             y = staticMeshSaveableCoords[i].y;
             if (gridCells[x,y].visible || !worldCellsOpen[x,y]) {
@@ -1610,6 +1642,8 @@ public class DynamicCulling : MonoBehaviour {
     public void ToggleDoorsVisibility() {
         int x,y;
         for (int i=0;i<doors.Count;i++) {
+            if (doors[i] == null) continue;
+            
             x = doorsCoords[i].x;
             y = doorsCoords[i].y;
             if (gridCells[x,y].visible || !worldCellsOpen[x,y]) {
@@ -1629,6 +1663,8 @@ public class DynamicCulling : MonoBehaviour {
         Camera cam = MouseLookScript.a.playerCamera;
         int dx,dy;
         for (int i = 0; i < lightsInPVS.Count; i++) {
+            if (lightsInPVS[i] == null) continue;
+            
             dir = lightsInPVS[i].transform.position - cam.transform.position;
             if (Vector3.Dot(dir.normalized,cam.transform.forward) > lightDot) {
                 lightsInPVS[i].enabled = true;
@@ -1720,27 +1756,10 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
     
-    public void CullCore() {
-//             CullingJob cullJob = new CullingJob {
-//                 
-//             }
-        
-//             if (mergeVisibleMeshes) UncombineMeshes(); // In lieu of the fact that this skyrockets the lighting calculations, not doing!
-        for (int y=0;y<WORLDX;y++) {
-            for (int x=0;x<WORLDX;x++) {
-                gridCells[x,y].visible = gridCells[playerCellX,playerCellY].visibleCellsFromHere[x,y];
-                worldCellsOpen[x,y] = gridCells[x,y].open || gridCells[x,y].visible;
-                if (outputDebugImages) {
-                    pixels[x + (y * WORLDX)] = gridCells[x,y].open ? Color.white : Color.black;
-                }
-            }
-        }
-
-        gridCells[0,0].visible = true; // Errors default here so draw them anyways.
-        gridCells[playerCellX,playerCellY].visible = true;
+    private bool SkyOverridenToVisible(int x, int y) {
         if (LevelManager.a.currentLevel == 5) {
-            if (playerCellX <= 12 || playerCellY <= 9 || playerCellX >= 32 || (playerCellY == 31 && playerCellX >= 27) || (playerCellX == 27 && playerCellY == 32)) {
-                skyVisible = true;
+            if (x <= 12 || y <= 9 || x >= 32 || (y == 31 && x >= 27) || (x == 27 && y == 32) || (x <= 26 && y == 30)) {
+                return true;
             } else if (gridCells[5,24].visible
                 || gridCells[5,25].visible
                 || gridCells[5,26].visible
@@ -1776,9 +1795,33 @@ public class DynamicCulling : MonoBehaviour {
                 || gridCells[45,26].visible
                 || gridCells[45,25].visible
                 || gridCells[45,24].visible) {
-                skyVisible = true;
+                return true;
             }
         }
+        
+        return false;
+    }
+    
+    public void CullCore() {
+//             CullingJob cullJob = new CullingJob {
+//                 
+//             }
+        
+//             if (mergeVisibleMeshes) UncombineMeshes(); // In lieu of the fact that this skyrockets the lighting calculations, not doing!
+        skyVisible = false;
+        for (int y=0;y<WORLDX;y++) {
+            for (int x=0;x<WORLDX;x++) {
+                gridCells[x,y].visible = gridCells[playerCellX,playerCellY].visibleCellsFromHere[x,y];
+                worldCellsOpen[x,y] = gridCells[x,y].open || gridCells[x,y].visible;
+                if (outputDebugImages) {
+                    pixels[x + (y * WORLDX)] = gridCells[x,y].open ? Color.white : Color.black;
+                }
+            }
+        }
+
+        gridCells[0,0].visible = true; // Errors default here so draw them anyways.
+        gridCells[playerCellX,playerCellY].visible = true;
+        skyVisible = SkyOverridenToVisible(playerCellX,playerCellY);
         ToggleVisibility(); // Update all cells marked as dirty.
         ToggleStaticMeshesImmutableVisibility();
         ToggleStaticImmutableParticlesVisibility();

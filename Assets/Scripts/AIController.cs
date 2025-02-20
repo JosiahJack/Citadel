@@ -165,16 +165,16 @@ public class AIController : MonoBehaviour {
 					  + ", set to index 0.");
 		}
 
-		#if UNITY_EDITOR
-		
-		#else
+// 		#if UNITY_EDITOR
+// 		
+// 		#else
 			if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly || IsCyberNPC()) {
 				rbody.useGravity = false;
 				rbody.isKinematic = false;
 			} else {
 				rbody.useGravity = true;
 			}
-		#endif
+// 		#endif
 
 		healthManager = GetComponent<HealthManager>();
 		if (visibleMeshEntity != null) {
