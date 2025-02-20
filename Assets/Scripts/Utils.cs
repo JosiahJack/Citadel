@@ -1,12 +1,18 @@
 using System;
 using System.IO;
 using System.Globalization;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+
+#if UNITY_EDITOR
+	using UnityEditor;
+	using UnityEditor.SceneManagement;
+#endif
 
 // Globally accessible utility functions for parsing values, generating save
 // strings, converting enumerated and integer values, and other helpful things.
@@ -1682,4 +1688,17 @@ public class Utils {
 		// other two are tother.
 		return (count27 == 2 && count65 == 2);
 	}
+	
+	#if UNITY_EDITOR
+		public static List<GameObject> GetAllObjectsOnlyInScene() {
+			List<GameObject> objectsInScene = new List<GameObject>();
+			foreach (GameObject go in Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[]) {
+				if (!EditorUtility.IsPersistent(go.transform.root.gameObject)
+					&& !(go.hideFlags == HideFlags.NotEditable
+						|| go.hideFlags == HideFlags.HideAndDontSave)) objectsInScene.Add(go);
+			}
+
+			return objectsInScene;
+		}
+	#endif
 }

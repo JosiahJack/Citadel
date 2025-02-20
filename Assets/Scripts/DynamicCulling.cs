@@ -4,6 +4,7 @@ using Unity.Jobs;
 using Unity.Burst;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.Rendering;
 using UnityEngine;
 using System.Runtime.CompilerServices;
@@ -69,6 +70,7 @@ public class DynamicCulling : MonoBehaviour {
     private Color32[] pixels;
     private Texture2D debugTex;
     private static Dictionary<GameObject, Vector3> camPositions = new Dictionary<GameObject, Vector3>();
+    public CameraView[] cameraViews;
     private bool[,] worldCellsOpen = new bool[WORLDX,WORLDX];
     
     // Mesh combining
@@ -865,6 +867,20 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
     }
+    
+    private static void UpdatePubliclyVisibleCameraViewsList() {
+        if (camPositions == null) return;
+        if (DynamicCulling.a == null) return; // Not awakened yet.
+        
+        DynamicCulling.a.cameraViews = new CameraView[camPositions.Count];
+        for (int i=0;i<camPositions.Count;i++) {
+            KeyValuePair<GameObject, Vector3> entry = camPositions.ElementAt(i);
+            if (entry.Key == null) continue; // GameObject is null, skip
+            CameraView camV = entry.Key.GetComponent<CameraView>();
+            DynamicCulling.a.cameraViews[i] = camV;
+            if (camV == null) UnityEngine.Debug.LogWarning("Missing CameraView on " + entry.Key.name);
+        }
+    }
 
     public static void AddCameraPosition(CameraView cam) {
         if (camPositions == null) camPositions = new Dictionary<GameObject, Vector3>();
@@ -872,14 +888,17 @@ public class DynamicCulling : MonoBehaviour {
         if (!camPositions.ContainsKey(cam.gameObject)) {
             camPositions[cam.gameObject] = cam.transform.position;
             UnityEngine.Debug.Log("Added screen cam " + cam.gameObject.name);
+            UpdatePubliclyVisibleCameraViewsList();
         }
     }
 
     public static void RemoveCameraPosition(CameraView cam) {
         if (camPositions == null) return;
+        if (cam == null) { UnityEngine.Debug.LogWarning("Null CameraView passed to RemoveCameraPosition!"); return; }
         
         UnityEngine.Debug.Log("Removed screen cam " + cam.gameObject.name);
         camPositions.Remove(cam.gameObject);
+        UpdatePubliclyVisibleCameraViewsList();
     }
     
     private void SetupDebugImageWorkingVariables() {
