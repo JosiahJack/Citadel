@@ -1890,7 +1890,7 @@ public class AIController : MonoBehaviour {
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index,
-						   PrefabIdentifier prefID) {
+						   PrefabIdentifier prefID, int levID) {
 
 		AIController aic = go.GetComponent<AIController>();
 		if (aic == null) {
@@ -2065,7 +2065,7 @@ public class AIController : MonoBehaviour {
 				if (!aic.healthManager.gibOnDeath
 					|| prefID.constIndex == 421 /* avian mutant */) {
 
-					index = HealthManager.Load(aic.searchColliderGO, ref entries,index,prefID);
+					index = HealthManager.Load(aic.searchColliderGO, ref entries,index,prefID,levID);
 				}
 			}
 		}

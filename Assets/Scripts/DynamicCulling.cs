@@ -887,7 +887,7 @@ public class DynamicCulling : MonoBehaviour {
         
         if (!camPositions.ContainsKey(cam.gameObject)) {
             camPositions[cam.gameObject] = cam.transform.position;
-            UnityEngine.Debug.Log("Added screen cam " + cam.gameObject.name);
+//             UnityEngine.Debug.Log("Added screen cam " + cam.gameObject.name);
             UpdatePubliclyVisibleCameraViewsList();
         }
     }
@@ -896,7 +896,7 @@ public class DynamicCulling : MonoBehaviour {
         if (camPositions == null) return;
         if (cam == null) { UnityEngine.Debug.LogWarning("Null CameraView passed to RemoveCameraPosition!"); return; }
         
-        UnityEngine.Debug.Log("Removed screen cam " + cam.gameObject.name);
+//         UnityEngine.Debug.Log("Removed screen cam " + cam.gameObject.name);
         camPositions.Remove(cam.gameObject);
         UpdatePubliclyVisibleCameraViewsList();
     }

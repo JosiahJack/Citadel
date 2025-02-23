@@ -22,16 +22,16 @@ namespace Tests {
 
         private void SaveDebugScreenshot(Texture2D shot, string debugText) {
             // Only for testing locally, not on CI
-//             string sname = debugText + "_" + System.DateTime.UtcNow.ToString("ddMMMyyyy_HH_mm_ss")
-//                         + "_" + Const.a.versionString + ".png";
-//             string spath = Utils.SafePathCombine(Application.streamingAssetsPath,
-//                                                 "Screenshots");
-// 
-//             // Check and recreate Screenshots folder if it was deleted.
-//             if (!Directory.Exists(spath)) Directory.CreateDirectory(spath);
-//             spath = Utils.SafePathCombine(spath,sname);
-//             byte[] bytes = shot.EncodeToPNG();
-//             File.WriteAllBytes(spath, bytes);
+            string sname = debugText + "_" + System.DateTime.UtcNow.ToString("ddMMMyyyy_HH_mm_ss")
+                        + "_" + Const.a.versionString + ".png";
+            string spath = Utils.SafePathCombine(Application.streamingAssetsPath,
+                                                "Screenshots");
+
+            // Check and recreate Screenshots folder if it was deleted.
+            if (!Directory.Exists(spath)) Directory.CreateDirectory(spath);
+            spath = Utils.SafePathCombine(spath,sname);
+            byte[] bytes = shot.EncodeToPNG();
+            File.WriteAllBytes(spath, bytes);
         }
         
         public void RunBeforeAnyTests() {

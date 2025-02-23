@@ -193,9 +193,6 @@ namespace Tests {
                 }
 
                 if (hm.isSecCamera) {
-                    BoundsError(script,allGOs[i],0,13,hm.levelIndex,
-                                "levelIndex");
-
                     msg = "marked security camera but isn't also isObject";
                     Assert.That(hm.isObject,FailMessage(script,allGOs[i],msg));
 

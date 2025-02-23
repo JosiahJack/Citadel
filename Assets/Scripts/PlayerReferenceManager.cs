@@ -51,7 +51,7 @@ public class PlayerReferenceManager : MonoBehaviour {
 
 	public static int LoadPlayerDataToPlayer(GameObject currentPlayer,
 											 ref string[] entries,int index,
-						   					 PrefabIdentifier prefID) {
+						   					 PrefabIdentifier prefID, int levID) {
 		
 		PlayerReferenceManager PRman = currentPlayer.GetComponent<PlayerReferenceManager>();
 		Const.a.playerName = entries[index]; index++;
@@ -60,7 +60,7 @@ public class PlayerReferenceManager : MonoBehaviour {
 		index = PlayerMovement.Load(PRman.playerCapsule,ref entries,index);
 		index = PlayerPatch.Load(PRman.playerCapsule,ref entries,index);
 		index = MouseLookScript.Load(PRman.playerCapsuleMainCamera,ref entries,index);
-		index = HealthManager.Load(PRman.playerCapsule,ref entries,index,prefID);
+		index = HealthManager.Load(PRman.playerCapsule,ref entries,index,prefID,levID);
 		index = GUIState.Load(PRman.playerCanvas,ref entries,index);
 		index = Inventory.Load(PRman.playerInventory,ref entries,index);
 		index = WeaponCurrent.Load(PRman.playerInventory,ref entries,index);

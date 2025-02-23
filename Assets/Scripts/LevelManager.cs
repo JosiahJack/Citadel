@@ -76,7 +76,6 @@ public class LevelManager : MonoBehaviour {
 		}
 		if (currentLevel < 0 || currentLevel > 12) return; // 12 because I don't think I support starting in cyberspace, 13, for testing.
 
-		for (int i=0;i<levelScripts.Length;i++) levelScripts[i].Awake();
 		if (sky == null) Debug.Log("BUG: LevelManager missing manually assigned reference for sky.");
 		else sky.SetActive(true);
 

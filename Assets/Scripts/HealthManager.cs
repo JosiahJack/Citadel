@@ -25,7 +25,6 @@ public class HealthManager : MonoBehaviour {
 	public float cyberHealth = -1f; //save
 	public float maxhealth; // maximum health
 	private int index; // NPC Index
-	public int levelIndex; // Only for if a security camera.
 	public bool isPlayer = false;
 	public bool isGrenade = false;
 	public bool gibOnDeath = false; // used for things like crates to "gib" and shatter
@@ -81,7 +80,7 @@ public class HealthManager : MonoBehaviour {
 			maxhealth = 255;
 		}
 		if (isPlayer) justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
-		if (securityAffected != SecurityType.None && LevelManager.a != null) LevelManager.a.RegisterSecurityObject(levelIndex, securityAffected);
+		if (securityAffected != SecurityType.None && LevelManager.a != null) LevelManager.a.RegisterSecurityObject(LevelManager.a.currentLevel, securityAffected);
 		if (Const.a != null) Const.a.RegisterObjectWithHealth(this);
 		awakeInitialized = true;
 		if (isNPC && !gibOnDeath ) { // Set searchable item to CorpseSearchable layer.
@@ -732,13 +731,12 @@ public class HealthManager : MonoBehaviour {
 		if (flashBed && healingFXFlash != null) healingFXFlash.SetActive(true);
 	}
 
-	public void AwakeFromLoad() {
+	public void AwakeFromLoad(int levID) {
 		if (awakeInitialized) {
 			if (securityAffected != SecurityType.None
 				&& LevelManager.a != null) {
 
-				LevelManager.a.RegisterSecurityObject(levelIndex,
-													  securityAffected);
+				LevelManager.a.RegisterSecurityObject(levID,securityAffected);
 			}
 		}
 
@@ -824,8 +822,6 @@ public class HealthManager : MonoBehaviour {
 		if (!hm.startInitialized) hm.Start();
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
-		s1.Append(Utils.UintToString(hm.levelIndex,"levelIndex"));
-		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(hm.health,"health"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.FloatToString(hm.cyberHealth,"cyberHealth"));
@@ -864,12 +860,11 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index,
-						   PrefabIdentifier prefID) {
+						   PrefabIdentifier prefID, int levID) {
 		HealthManager hm;
 		if (go.name.Contains("se_corpse_eaten")) hm = go.transform.GetChild(0).GetComponent<HealthManager>(); // se_corpse_eaten
 		else hm = go.GetComponent<HealthManager>();
 
-        hm.levelIndex = Utils.GetIntFromString(entries[index],"levelIndex"); index++;
 		if (!hm.awakeInitialized) hm.Awake();
 		if (!hm.startInitialized) hm.Start();
 		hm.health = Utils.GetFloatFromString(entries[index],"health"); index++;
@@ -880,7 +875,7 @@ public class HealthManager : MonoBehaviour {
 		hm.teleportDone = Utils.GetBoolFromString(entries[index],"teleportDone"); index++;
         hm.targetOnDeath = Utils.LoadString(entries[index],"targetOnDeath"); index++;
 		index = TargetIO.Load(go,ref entries,index,true,prefID);
-		hm.AwakeFromLoad();
+		hm.AwakeFromLoad(levID);
 		int numChildren = hm.gibObjects.Length;
 		int numChildrenFromSave = Utils.GetIntFromString(entries[index],"gibObjects.Length"); index++;
 

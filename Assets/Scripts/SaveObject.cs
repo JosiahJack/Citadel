@@ -216,16 +216,16 @@ public class SaveObject : MonoBehaviour {
 		}
 
 		switch (so.saveType) {
-			case SaveableType.Player:				  index = PlayerReferenceManager.LoadPlayerDataToPlayer(go,ref entries,index,prefID); break;
+			case SaveableType.Player:				  index = PlayerReferenceManager.LoadPlayerDataToPlayer(go,ref entries,index,prefID,levelID); break;
 			case SaveableType.Useable:				  index =       UseableObjectUse.Load(go,ref entries,index); break;
 			case SaveableType.Grenade:				  index =        GrenadeActivate.Load(go,ref entries,index); break;
-			case SaveableType.NPC:					  index =          HealthManager.Load(go,ref entries,index,prefID); // Loads TargetIO
-													  index =           AIController.Load(go,ref entries,index,prefID); // Handles SearchableDestructable for corpse child
+			case SaveableType.NPC:					  index =          HealthManager.Load(go,ref entries,index,prefID,levelID); // Loads TargetIO
+													  index =           AIController.Load(go,ref entries,index,prefID,levelID); // Handles SearchableDestructable for corpse child
 													  index =  AIAnimationController.Load(go,ref entries,index); break;
-			case SaveableType.Destructable:			  index =          HealthManager.Load(go,ref entries,index,prefID); break; // Loads TargetIO
+			case SaveableType.Destructable:			  index =          HealthManager.Load(go,ref entries,index,prefID,levelID); break; // Loads TargetIO
 			case SaveableType.SearchableStatic:		  index =         SearchableItem.Load(go,ref entries,index,prefID); break;
 			case SaveableType.SearchableDestructable: index =         SearchableItem.Load(go,ref entries,index,prefID);
-													  index =          HealthManager.Load(go,ref entries,index,prefID); break; // Loads TargetIO
+													  index =          HealthManager.Load(go,ref entries,index,prefID,levelID); break; // Loads TargetIO
 			case SaveableType.Door:                   index =                   Door.Load(go,ref entries,index,prefID);
 													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
 			case SaveableType.ForceBridge:            index =            ForceBridge.Load(go,ref entries,index);
@@ -265,16 +265,16 @@ public class SaveObject : MonoBehaviour {
 													  index =                  Utils.LoadCamera(go,ref entries,index); break;
 			case SaveableType.DelayedSpawn:           index =           DelayedSpawn.Load(go,ref entries,index); break;
 			case SaveableType.SecurityCamera:         index =   SecurityCameraRotate.Load(go,ref entries,index); 
-													  index =          HealthManager.Load(go.transform.GetChild(0).gameObject,ref entries,index,prefID); // Loads TargetIO
+													  index =          HealthManager.Load(go.transform.GetChild(0).gameObject,ref entries,index,prefID,levelID); // Loads TargetIO
 													  index =                  Utils.LoadTransform(go.transform.GetChild(0),ref entries,index); break;
 			case SaveableType.Trigger:                index =                Trigger.Load(go,ref entries,index);
 													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
 			case SaveableType.Projectile:             index =           DelayedSpawn.Load(go,ref entries,index);
 													  index = ProjectileEffectImpact.Load(go,ref entries,index); break;
-			case SaveableType.NormalScreen:			  index =          HealthManager.Load(go,ref entries,index,prefID); break; // Loads TargetIO
-			case SaveableType.CyberSwitch:			  index =            CyberSwitch.Load(go,ref entries,index,prefID);
+			case SaveableType.NormalScreen:			  index =          HealthManager.Load(go,ref entries,index,prefID,levelID); break; // Loads TargetIO
+			case SaveableType.CyberSwitch:			  index =            CyberSwitch.Load(go,ref entries,index,prefID,levelID);
 													  index =               TargetIO.Load(go,ref entries,index,true,prefID); break;
-			case SaveableType.CyberItem:			  index =          HealthManager.Load(go.transform.GetChild(0).GetChild(0).gameObject,ref entries,index,prefID); break; // Loads TargetIO
+			case SaveableType.CyberItem:			  index =          HealthManager.Load(go.transform.GetChild(0).GetChild(0).gameObject,ref entries,index,prefID,levelID); break; // Loads TargetIO
 		}
 	}
 

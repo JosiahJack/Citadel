@@ -1807,27 +1807,24 @@ public class Const : MonoBehaviour {
 
 					// Already did LevelManager.a.LoadLevel above, and since its
 					// savestrings lists were empty, safe to spawn dynamics now.
-					if (ConsoleEmulator.ConstIndexIsNPC(constdex)
-						&& levID == LevelManager.a.currentLevel) {
-						
-						savID = Utils.GetIntFromString(entries[2],"SaveID");
-						if (ConsoleEmulator.ConstIndexIsDynamicObject(constdex)) {
-							contnr = LevelManager.a.GetRequestedLevelDynamicContainer(levID);
-						} else {
-							contnr = null;
-						}
-						
-						instGO = ConsoleEmulator.SpawnDynamicObject(constdex,
-																	levID,false,
-																	contnr,
-																	savID);
-
+					savID = Utils.GetIntFromString(entries[2],"SaveID");
+					if (ConsoleEmulator.ConstIndexIsNPC(constdex)) {
+						contnr = LevelManager.a.GetRequestedLevelNPCContainer(levID);
+						instGO = ConsoleEmulator.SpawnDynamicObject(constdex,levID,false,contnr,savID);
 						PrefabIdentifier prefID = SaveLoad.GetPrefabIdentifier(instGO,true);
 						SaveObject.Load(instGO,ref entries,i,prefID); // Load NPC.
-					} else {
-						if (levID < LevelManager.a.DynamicObjectsSavestrings.Length) {
-							if (i < readFileList.Count && readFileList.Count > 0) {
-								LevelManager.a.DynamicObjectsSavestrings[levID].Add(readFileList[i]);
+					} else if (ConsoleEmulator.ConstIndexIsDynamicObject(constdex)) {
+						// For DynamicObjects, if current level, go ahead and Instantiate new Prefabs, else add string to LevelManager's list for other levels.
+						if (levID == LevelManager.a.currentLevel) {
+							contnr = LevelManager.a.GetRequestedLevelDynamicContainer(levID);
+							instGO = ConsoleEmulator.SpawnDynamicObject(constdex,levID,false,contnr,savID);
+							PrefabIdentifier prefID = SaveLoad.GetPrefabIdentifier(instGO,true);
+							SaveObject.Load(instGO,ref entries,i,prefID); // Load NPC.
+						} else {
+							if (levID < LevelManager.a.DynamicObjectsSavestrings.Length) { // levID < 14
+								if (i < readFileList.Count && readFileList.Count > 0) {
+									LevelManager.a.DynamicObjectsSavestrings[levID].Add(readFileList[i]);
+								}
 							}
 						}
 					}

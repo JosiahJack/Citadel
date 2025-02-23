@@ -1,0 +1,774 @@
+-- Counts Prior to Save --
+GameObject Hierarchy Counts::
+GlobalConsts:2
+GlobalConsts:PoolOfTemporaryUnsaved:728
+GlobalConsts:AllPlayers:0
+LevelManager:0
+CullingTestSphere:0
+Sky:4
+Sky:SaturnTransformHolder:2
+Sky:Sun:0
+Sky:Sunlight:0
+Sky:Skysphere:0
+Player:9
+Player:PlayerCapsule:65
+Player:UICamera:36
+Player:AutomapCanvas:5709
+Player:MinigameSpace:81
+Player:Canvas:2131
+Player:AutomapCamera:0
+Player:Inventory:0
+Player:MouseCursorHandler:0
+Player:EventSystem:0
+C.Cyberspace:8
+C.Cyberspace:C.Geometry:0
+C.Cyberspace:C.DynamicObjectsSaveableInstantiated:0
+C.Cyberspace:C.LightsStaticSaveable:0
+C.Cyberspace:C.LightsStaticImmutable:2
+C.Cyberspace:C.DoorsStaticSaveable:0
+C.Cyberspace:C.StaticObjectsSaveable:618
+C.Cyberspace:C.StaticObjectsImmutable:120
+C.Cyberspace:C.NPCsSaveableInstantiated:433
+9.Bridge:26
+9.Bridge:9.Geometry:0
+9.Bridge:9.DynamicObjectsSaveableInstantiated:0
+9.Bridge:9.LightsStaticSaveable:0
+9.Bridge:9.LightsStaticImmutable:422
+9.Bridge:9.DoorsStaticSaveable:53
+9.Bridge:9.StaticObjectsSaveable:111
+9.Bridge:9.StaticObjectsImmutable:88
+9.Bridge:9.NPCsSaveableInstantiated:2845
+9.Bridge:BridgeScreen1_Camera:0
+9.Bridge:TestWarnSuppression_lev9atriumwall1:0
+9.Bridge:TestWarnSuppression_lev9atriumwall2:0
+9.Bridge:TestWarnSuppression_lev9atriumwall3:0
+9.Bridge:TestWarnSuppression_lev9atriumwall4:0
+9.Bridge:TestWarnSuppression_lev9atriumwallfinal:0
+9.Bridge:TestWarnSuppression_lev9farbridgesovertrench1:0
+9.Bridge:TestWarnSuppression_lev9autobombtrenchbridges:0
+9.Bridge:TestWarnSuppression_lev9farbridgesovertrench2:0
+9.Bridge:TestWarnSuppression_lev9autobombtrenchbridges2:0
+9.Bridge:TestWarnSuppression_lev9forcebridgepuzzleentry:0
+9.Bridge:TestWarnSuppression_lev9forcedoor1:0
+9.Bridge:TestWarnSuppression_lev9forcedoor2:0
+9.Bridge:TestWarnSuppression_lev9forcedoor3:0
+9.Bridge:TestWarnSuppression_lev9secretwall1:0
+9.Bridge:chunk_black:0
+9.Bridge:chunk_sec1_1c:1
+9.Bridge:chunk_sec1_1c (1):1
+8.SecurityLevel:15
+8.SecurityLevel:8.Geometry:0
+8.SecurityLevel:8.DynamicObjectsSaveableInstantiated:0
+8.SecurityLevel:8.LightsStaticSaveable:36
+8.SecurityLevel:8.LightsStaticImmutable:0
+8.SecurityLevel:8.DoorsStaticSaveable:767
+8.SecurityLevel:8.StaticObjectsSaveable:278
+8.SecurityLevel:8.StaticObjectsImmutable:491
+8.SecurityLevel:8.NPCsSaveableInstantiated:3903
+8.SecurityLevel:SecScreen1_Camera (3):0
+8.SecurityLevel:SecScreen1_Camera (5):0
+8.SecurityLevel:SecScreen1_Camera (1):0
+8.SecurityLevel:SecScreen1_Camera (6):0
+8.SecurityLevel:SecScreen1_Camera (4):0
+8.SecurityLevel:SecScreen1_Camera (2):0
+8.SecurityLevel:SecScreen1_Camera:0
+7.EngineeringLevel:11
+7.EngineeringLevel:7.Geometry:0
+7.EngineeringLevel:7.DynamicObjectsSaveableInstantiated:0
+7.EngineeringLevel:7.LightsStaticSaveable:50
+7.EngineeringLevel:7.LightsStaticImmutable:0
+7.EngineeringLevel:7.DoorsStaticSaveable:303
+7.EngineeringLevel:7.StaticObjectsSaveable:294
+7.EngineeringLevel:7.StaticObjectsImmutable:396
+7.EngineeringLevel:7.NPCsSaveableInstantiated:3713
+7.EngineeringLevel:EngScreen5_Camera:0
+7.EngineeringLevel:EngScreen4_Camera:0
+7.EngineeringLevel:EngScreen3_Camera:0
+G1.AlphaGrove:11
+G1.AlphaGrove:G1.Geometry:0
+G1.AlphaGrove:G1.DynamicObjectsSaveableInstantiated:0
+G1.AlphaGrove:G1.LightsStaticSaveable:0
+G1.AlphaGrove:G1.LightsStaticImmutable:0
+G1.AlphaGrove:G1.DoorsStaticSaveable:18
+G1.AlphaGrove:G1.StaticObjectsSaveable:29
+G1.AlphaGrove:G1.StaticObjectsImmutable:160
+G1.AlphaGrove:G1.NPCsSaveableInstantiated:509
+G1.AlphaGrove:GroveScreen1_Camera:0
+G1.AlphaGrove:GroveScreen2_Camera:0
+G1.AlphaGrove:grovedome:0
+G2.BetaGrove:9
+G2.BetaGrove:G2.Geometry:0
+G2.BetaGrove:G2.DynamicObjectsSaveableInstantiated:0
+G2.BetaGrove:G2.LightsStaticSaveable:0
+G2.BetaGrove:G2.LightsStaticImmutable:0
+G2.BetaGrove:G2.DoorsStaticSaveable:21
+G2.BetaGrove:G2.StaticObjectsSaveable:15
+G2.BetaGrove:G2.StaticObjectsImmutable:232
+G2.BetaGrove:G2.NPCsSaveableInstantiated:798
+G2.BetaGrove:grovedome (1):0
+G4.DeltaGrove:12
+G4.DeltaGrove:G4.Geometry:0
+G4.DeltaGrove:G4.DynamicObjectsSaveableInstantiated:0
+G4.DeltaGrove:G4.LightsStaticSaveable:0
+G4.DeltaGrove:G4.LightsStaticImmutable:0
+G4.DeltaGrove:G4.DoorsStaticSaveable:18
+G4.DeltaGrove:G4.StaticObjectsSaveable:31
+G4.DeltaGrove:G4.StaticObjectsImmutable:173
+G4.DeltaGrove:G4.NPCsSaveableInstantiated:377
+G4.DeltaGrove:GroveScreen3_Camera:0
+G4.DeltaGrove:GroveScreen4_Camera:0
+G4.DeltaGrove:door_elevator3 (1):2
+G4.DeltaGrove:grovedome (1):0
+6.ExecutiveLevel:43
+6.ExecutiveLevel:6.Geometry:0
+6.ExecutiveLevel:6.DynamicObjectsSaveableInstantiated:0
+6.ExecutiveLevel:6.LightsStaticSaveable:112
+6.ExecutiveLevel:6.LightsStaticImmutable:0
+6.ExecutiveLevel:6.DoorsStaticSaveable:283
+6.ExecutiveLevel:6.StaticObjectsSaveable:413
+6.ExecutiveLevel:6.StaticObjectsImmutable:848
+6.ExecutiveLevel:6.NPCsSaveableInstantiated:2705
+6.ExecutiveLevel:ExecScreen5_Camera:0
+6.ExecutiveLevel:ExecScreen6_Camera:0
+6.ExecutiveLevel:prop_chair02 (21):1
+6.ExecutiveLevel:chunk_eng2_1 (722):1
+6.ExecutiveLevel:chunk_eng2_1 (723):1
+6.ExecutiveLevel:chunk_exec1_1 (504):1
+6.ExecutiveLevel:chunk_exec1_1 (505):1
+6.ExecutiveLevel:chunk_exec1_1 (506):1
+6.ExecutiveLevel:chunk_exec1_1 (507):1
+6.ExecutiveLevel:chunk_exec1_1 (508):1
+6.ExecutiveLevel:chunk_exec1_1 (509):1
+6.ExecutiveLevel:chunk_exec1_1 (510):1
+6.ExecutiveLevel:chunk_exec3_2 (114):1
+6.ExecutiveLevel:chunk_exec3_2 (115):1
+6.ExecutiveLevel:chunk_exec3_2 (116):1
+6.ExecutiveLevel:chunk_exec3_2 (117):1
+6.ExecutiveLevel:chunk_flight2_2 (158):1
+6.ExecutiveLevel:chunk_exec3_2 (118):1
+6.ExecutiveLevel:chunk_exec3_2 (119):1
+6.ExecutiveLevel:chunk_exec3_2 (120):1
+6.ExecutiveLevel:chunk_exec3_2 (121):1
+6.ExecutiveLevel:chunk_flight2_2 (159):1
+6.ExecutiveLevel:chunk_flight2_2 (160):1
+6.ExecutiveLevel:chunk_exec1_1 (511):1
+6.ExecutiveLevel:chunk_flight2_2 (161):1
+6.ExecutiveLevel:chunk_black:0
+6.ExecutiveLevel:chunk_blocker:0
+6.ExecutiveLevel:chunk_maint2_5d_slice45:1
+6.ExecutiveLevel:chunk_maint2_5d_slice45 (2):1
+6.ExecutiveLevel:chunk_maint2_5d_slice45 (1):1
+6.ExecutiveLevel:chunk_maint2_5d_slice45 (3):1
+6.ExecutiveLevel:chunk_exec2_6 (355):1
+6.ExecutiveLevel:chunk_exec2_6 (356):1
+6.ExecutiveLevel:chunk_exec2_6 (357):1
+6.ExecutiveLevel:chunk_exec2_6 (358):1
+5.FlightDeck:15
+5.FlightDeck:5.Geometry:0
+5.FlightDeck:5.DynamicObjectsSaveableInstantiated:0
+5.FlightDeck:5.LightsStaticSaveable:182
+5.FlightDeck:5.LightsStaticImmutable:0
+5.FlightDeck:5.DoorsStaticSaveable:277
+5.FlightDeck:5.StaticObjectsSaveable:236
+5.FlightDeck:5.StaticObjectsImmutable:477
+5.FlightDeck:5.NPCsSaveableInstantiated:2679
+5.FlightDeck:FlightScreen1_Camera:0
+5.FlightDeck:flightpods_exterior:51
+5.FlightDeck:chunk_blockerflightbay (3):0
+5.FlightDeck:chunk_blockerflightbay (2):0
+5.FlightDeck:chunk_blockerflightbay:0
+5.FlightDeck:chunk_blockerflightbay (1):0
+5.FlightDeck:chunk_reac6_3:2
+4.StorageLevel:67
+4.StorageLevel:4.Geometry:0
+4.StorageLevel:4.DynamicObjectsSaveableInstantiated:0
+4.StorageLevel:4.LightsStaticSaveable:44
+4.StorageLevel:4.LightsStaticImmutable:0
+4.StorageLevel:4.DoorsStaticSaveable:361
+4.StorageLevel:4.StaticObjectsSaveable:237
+4.StorageLevel:4.StaticObjectsImmutable:158
+4.StorageLevel:4.NPCsSaveableInstantiated:3232
+4.StorageLevel:StorageScreen_Camera:0
+4.StorageLevel:chunk_crate_impenetrable (27):0
+4.StorageLevel:chunk_crate_impenetrable (26):0
+4.StorageLevel:chunk_crate_impenetrable (25):0
+4.StorageLevel:chunk_crate_impenetrable (10):0
+4.StorageLevel:chunk_crate_impenetrable (24):0
+4.StorageLevel:chunk_crate_impenetrable (23):0
+4.StorageLevel:chunk_crate_impenetrable (22):0
+4.StorageLevel:chunk_crate_impenetrable (21):0
+4.StorageLevel:chunk_crate_impenetrable (20):0
+4.StorageLevel:chunk_crate_impenetrable (19):0
+4.StorageLevel:chunk_crate_impenetrable (18):0
+4.StorageLevel:chunk_crate_impenetrable (17):0
+4.StorageLevel:chunk_crate_impenetrable (16):0
+4.StorageLevel:chunk_crate_impenetrable (15):0
+4.StorageLevel:chunk_crate_impenetrable (14):0
+4.StorageLevel:chunk_crate_impenetrable (13):0
+4.StorageLevel:chunk_crate_impenetrable (12):0
+4.StorageLevel:chunk_crate_impenetrable (11):0
+4.StorageLevel:chunk_crate_impenetrable (9):0
+4.StorageLevel:chunk_crate_impenetrable (8):0
+4.StorageLevel:chunk_crate_impenetrable (7):0
+4.StorageLevel:chunk_crate_impenetrable (28):0
+4.StorageLevel:chunk_crate_impenetrable (29):0
+4.StorageLevel:chunk_crate_impenetrable (30):0
+4.StorageLevel:chunk_crate_impenetrable (31):0
+4.StorageLevel:chunk_crate_impenetrable (32):0
+4.StorageLevel:chunk_crate_impenetrable (33):0
+4.StorageLevel:chunk_crate_impenetrable (34):0
+4.StorageLevel:chunk_crate_impenetrable (35):0
+4.StorageLevel:chunk_crate_impenetrable (36):0
+4.StorageLevel:chunk_crate_impenetrable (37):0
+4.StorageLevel:chunk_crate_impenetrable (38):0
+4.StorageLevel:chunk_crate_impenetrable (39):0
+4.StorageLevel:chunk_crate_impenetrable (40):0
+4.StorageLevel:chunk_crate_impenetrable (41):0
+4.StorageLevel:chunk_crate_impenetrable (42):0
+4.StorageLevel:chunk_crate_impenetrable (43):0
+4.StorageLevel:chunk_crate_impenetrable (44):0
+4.StorageLevel:chunk_crate_impenetrable (45):0
+4.StorageLevel:chunk_crate_impenetrable (46):0
+4.StorageLevel:chunk_crate_impenetrable (47):0
+4.StorageLevel:chunk_crate_impenetrable (48):0
+4.StorageLevel:chunk_crate_impenetrable (49):0
+4.StorageLevel:chunk_crate_impenetrable (50):0
+4.StorageLevel:chunk_crate_impenetrable (51):0
+4.StorageLevel:chunk_crate_impenetrable (52):0
+4.StorageLevel:chunk_crate_impenetrable (53):0
+4.StorageLevel:chunk_crate_impenetrable:0
+4.StorageLevel:chunk_crate_impenetrable (1):0
+4.StorageLevel:chunk_crate_impenetrable (2):0
+4.StorageLevel:chunk_crate_impenetrable (3):0
+4.StorageLevel:chunk_crate_impenetrable (4):0
+4.StorageLevel:chunk_crate_impenetrable (5):0
+4.StorageLevel:chunk_crate_impenetrable (6):0
+4.StorageLevel:chunk_crate_impenetrable (54):0
+4.StorageLevel:chunk_crate_impenetrable (55):0
+4.StorageLevel:chunk_crate_impenetrable (57):0
+4.StorageLevel:chunk_crate_impenetrable (56):0
+3.MaintenanceLevel:9
+3.MaintenanceLevel:3.Geometry:0
+3.MaintenanceLevel:3.DynamicObjectsSaveableInstantiated:0
+3.MaintenanceLevel:3.LightsStaticSaveable:14
+3.MaintenanceLevel:3.LightsStaticImmutable:0
+3.MaintenanceLevel:3.DoorsStaticSaveable:127
+3.MaintenanceLevel:3.StaticObjectsSaveable:534
+3.MaintenanceLevel:3.StaticObjectsImmutable:542
+3.MaintenanceLevel:3.NPCsSaveableInstantiated:1834
+3.MaintenanceLevel:MaintScreen_Camera:0
+2.ScienceLevel:64
+2.ScienceLevel:2.Geometry:0
+2.ScienceLevel:2.DynamicObjectsSaveableInstantiated:0
+2.ScienceLevel:2.LightsStaticSaveable:158
+2.ScienceLevel:2.LightsStaticImmutable:0
+2.ScienceLevel:2.DoorsStaticSaveable:306
+2.ScienceLevel:2.StaticObjectsSaveable:346
+2.ScienceLevel:2.StaticObjectsImmutable:701
+2.ScienceLevel:2.NPCsSaveableInstantiated:3465
+2.ScienceLevel:SciScreen6_Camera:0
+2.ScienceLevel:chunk_maint2_2 (113):1
+2.ScienceLevel:chunk_maint2_2 (116):1
+2.ScienceLevel:chunk_exteriorpanel1:0
+2.ScienceLevel:chunk_exteriorpanel1 (1):0
+2.ScienceLevel:chunk_exteriorpanel1 (2):0
+2.ScienceLevel:chunk_exteriorpanel1 (3):0
+2.ScienceLevel:chunk_exteriorpanel1 (4):0
+2.ScienceLevel:chunk_exteriorpanel1 (5):0
+2.ScienceLevel:chunk_exteriorpanel1 (6):0
+2.ScienceLevel:chunk_exteriorpanel1 (7):0
+2.ScienceLevel:chunk_exteriorpanel1 (8):0
+2.ScienceLevel:chunk_exteriorpanel1 (9):0
+2.ScienceLevel:chunk_exteriorpanel1 (10):0
+2.ScienceLevel:chunk_exteriorpanel1 (11):0
+2.ScienceLevel:chunk_exteriorpanel1 (12):0
+2.ScienceLevel:chunk_exteriorpanel1 (13):0
+2.ScienceLevel:chunk_exteriorpanel1 (14):0
+2.ScienceLevel:chunk_exteriorpanel1 (15):0
+2.ScienceLevel:chunk_exteriorpanel1 (17):0
+2.ScienceLevel:chunk_exteriorpanel1 (18):0
+2.ScienceLevel:chunk_exteriorpanel1 (19):0
+2.ScienceLevel:chunk_exteriorpanel1 (20):0
+2.ScienceLevel:chunk_exteriorpanel1 (21):0
+2.ScienceLevel:chunk_exteriorpanel1 (22):0
+2.ScienceLevel:chunk_exteriorpanel1 (23):0
+2.ScienceLevel:chunk_exteriorpanel1 (24):0
+2.ScienceLevel:chunk_exteriorpanel1 (25):0
+2.ScienceLevel:chunk_exteriorpanel1 (26):0
+2.ScienceLevel:chunk_exteriorpanel1 (27):0
+2.ScienceLevel:chunk_exteriorpanel1 (28):0
+2.ScienceLevel:chunk_exteriorpanel1 (29):0
+2.ScienceLevel:chunk_exteriorpanel1 (30):0
+2.ScienceLevel:chunk_exteriorpanel1 (31):0
+2.ScienceLevel:chunk_exteriorpanel1 (32):0
+2.ScienceLevel:chunk_exteriorpanel1 (33):0
+2.ScienceLevel:chunk_exteriorpanel1 (34):0
+2.ScienceLevel:chunk_exteriorpanel1 (35):0
+2.ScienceLevel:chunk_exteriorpanel1 (36):0
+2.ScienceLevel:chunk_exteriorpanel1 (37):0
+2.ScienceLevel:chunk_exteriorpanel1 (38):0
+2.ScienceLevel:chunk_exteriorpanel1 (39):0
+2.ScienceLevel:chunk_exteriorpanel1 (40):0
+2.ScienceLevel:chunk_exteriorpanel1 (41):0
+2.ScienceLevel:chunk_exteriorpanel1 (16):0
+2.ScienceLevel:chunk_exteriorpanel1 (42):0
+2.ScienceLevel:chunk_exteriorpanel1 (43):0
+2.ScienceLevel:chunk_exteriorpanel1 (44):0
+2.ScienceLevel:chunk_exteriorpanel1 (45):0
+2.ScienceLevel:chunk_exteriorpanel1 (46):0
+2.ScienceLevel:chunk_exteriorpanel1 (47):0
+2.ScienceLevel:chunk_exteriorpanel1 (48):0
+2.ScienceLevel:chunk_exteriorpanel1 (49):0
+2.ScienceLevel:chunk_exteriorpanel1 (50):0
+2.ScienceLevel:chunk_exteriorpanel1 (51):0
+2.ScienceLevel:chunk_exteriorpanel1 (52):0
+1.MedicalLevel:16
+1.MedicalLevel:1.Geometry:0
+1.MedicalLevel:1.DynamicObjectsSaveableInstantiated:0
+1.MedicalLevel:1.LightsStaticSaveable:96
+1.MedicalLevel:1.LightsStaticImmutable:0
+1.MedicalLevel:1.DoorsStaticSaveable:333
+1.MedicalLevel:1.StaticObjectsSaveable:302
+1.MedicalLevel:1.StaticObjectsImmutable:916
+1.MedicalLevel:1.NPCsSaveableInstantiated:1465
+1.MedicalLevel:MedScreen14_Camera:0
+1.MedicalLevel:MedScreen15_Camera:0
+1.MedicalLevel:pumpkin:0
+1.MedicalLevel:pumpkin (1):0
+1.MedicalLevel:pumpkin (2):4
+1.MedicalLevel:text_decal:0
+1.MedicalLevel:hide_blocker:0
+1.MedicalLevel:hide_blocker (1):0
+R.ReactorLevel:11
+R.ReactorLevel:R.Geometry:7390
+R.ReactorLevel:R.DynamicObjectsSaveableInstantiated:76
+R.ReactorLevel:R.LightsStaticSaveable:112
+R.ReactorLevel:R.LightsStaticImmutable:2261
+R.ReactorLevel:R.DoorsStaticSaveable:277
+R.ReactorLevel:R.StaticObjectsSaveable:218
+R.ReactorLevel:R.StaticObjectsImmutable:625
+R.ReactorLevel:R.NPCsSaveableInstantiated:3754
+R.ReactorLevel:ReacScreen1_Camera:0
+R.ReactorLevel:ReacScreen1_Camera (1):0
+R.ReactorLevel:ReacScreen1_Camera (2):0
+CatchTrayClip:0
+Exterior:5
+Exterior:exterior_shieldgenerator (3):0
+Exterior:exterior_shieldgenerator (2):0
+Exterior:exterior_shieldgenerator (1):0
+Exterior:exterior_shieldgenerator:0
+Exterior:exterior_shield:1
+CatchTrayDefault:0
+CatchTrayInterDebris:0
+CatchTrayNPCClip:0
+item_cyber_data:2
+item_cyber_data:iceholder:1
+item_cyber_data:visualAspect:0
+item_cyber_data (1):2
+item_cyber_data (1):iceholder:1
+item_cyber_data (1):visualAspect:0
+item_cyber_data (2):2
+item_cyber_data (2):iceholder:1
+item_cyber_data (2):visualAspect:0
+item_cyber_data (3):2
+item_cyber_data (3):iceholder:1
+item_cyber_data (3):visualAspect:0
+info_ressurection_point:0
+info_ressurection_point (1):0
+info_ressurection_point:0
+info_ressurection_point:0
+info_ressurection_point:0
+info_ressurection_point:0
+info_ressurection_point (1):0
+info_ressurection_point (1):0
+info_playsound_resdest (1):0
+info_elev_destination.9.1_resdest:1
+info_elev_destination.9.1_resdest:elev_volume:0
+
+-- Counts After Load --
+GameObject Hierarchy Counts::
+GlobalConsts:2
+GlobalConsts:PoolOfTemporaryUnsaved:728
+GlobalConsts:AllPlayers:0
+LevelManager:0
+CullingTestSphere:0
+Sky:4
+Sky:SaturnTransformHolder:2
+Sky:Sun:0
+Sky:Sunlight:0
+Sky:Skysphere:0
+Player:9
+Player:PlayerCapsule:65
+Player:UICamera:36
+Player:AutomapCanvas:5709
+Player:MinigameSpace:81
+Player:Canvas:2131
+Player:AutomapCamera:0
+Player:Inventory:0
+Player:MouseCursorHandler:0
+Player:EventSystem:0
+C.Cyberspace:8
+C.Cyberspace:C.Geometry:0
+C.Cyberspace:C.DynamicObjectsSaveableInstantiated:0
+C.Cyberspace:C.LightsStaticSaveable:0
+C.Cyberspace:C.LightsStaticImmutable:2
+C.Cyberspace:C.DoorsStaticSaveable:0
+C.Cyberspace:C.StaticObjectsSaveable:618
+C.Cyberspace:C.StaticObjectsImmutable:120
+C.Cyberspace:C.NPCsSaveableInstantiated:433
+9.Bridge:26
+9.Bridge:9.Geometry:0
+9.Bridge:9.DynamicObjectsSaveableInstantiated:0
+9.Bridge:9.LightsStaticSaveable:0
+9.Bridge:9.LightsStaticImmutable:422
+9.Bridge:9.DoorsStaticSaveable:53
+9.Bridge:9.StaticObjectsSaveable:111
+9.Bridge:9.StaticObjectsImmutable:88
+9.Bridge:9.NPCsSaveableInstantiated:2845
+9.Bridge:BridgeScreen1_Camera:0
+9.Bridge:TestWarnSuppression_lev9atriumwall1:0
+9.Bridge:TestWarnSuppression_lev9atriumwall2:0
+9.Bridge:TestWarnSuppression_lev9atriumwall3:0
+9.Bridge:TestWarnSuppression_lev9atriumwall4:0
+9.Bridge:TestWarnSuppression_lev9atriumwallfinal:0
+9.Bridge:TestWarnSuppression_lev9farbridgesovertrench1:0
+9.Bridge:TestWarnSuppression_lev9autobombtrenchbridges:0
+9.Bridge:TestWarnSuppression_lev9farbridgesovertrench2:0
+9.Bridge:TestWarnSuppression_lev9autobombtrenchbridges2:0
+9.Bridge:TestWarnSuppression_lev9forcebridgepuzzleentry:0
+9.Bridge:TestWarnSuppression_lev9forcedoor1:0
+9.Bridge:TestWarnSuppression_lev9forcedoor2:0
+9.Bridge:TestWarnSuppression_lev9forcedoor3:0
+9.Bridge:TestWarnSuppression_lev9secretwall1:0
+9.Bridge:chunk_black:0
+9.Bridge:chunk_sec1_1c:1
+9.Bridge:chunk_sec1_1c (1):1
+8.SecurityLevel:15
+8.SecurityLevel:8.Geometry:0
+8.SecurityLevel:8.DynamicObjectsSaveableInstantiated:0
+8.SecurityLevel:8.LightsStaticSaveable:36
+8.SecurityLevel:8.LightsStaticImmutable:0
+8.SecurityLevel:8.DoorsStaticSaveable:767
+8.SecurityLevel:8.StaticObjectsSaveable:278
+8.SecurityLevel:8.StaticObjectsImmutable:491
+8.SecurityLevel:8.NPCsSaveableInstantiated:3903
+8.SecurityLevel:SecScreen1_Camera (3):0
+8.SecurityLevel:SecScreen1_Camera (5):0
+8.SecurityLevel:SecScreen1_Camera (1):0
+8.SecurityLevel:SecScreen1_Camera (6):0
+8.SecurityLevel:SecScreen1_Camera (4):0
+8.SecurityLevel:SecScreen1_Camera (2):0
+8.SecurityLevel:SecScreen1_Camera:0
+7.EngineeringLevel:11
+7.EngineeringLevel:7.Geometry:0
+7.EngineeringLevel:7.DynamicObjectsSaveableInstantiated:0
+7.EngineeringLevel:7.LightsStaticSaveable:50
+7.EngineeringLevel:7.LightsStaticImmutable:0
+7.EngineeringLevel:7.DoorsStaticSaveable:303
+7.EngineeringLevel:7.StaticObjectsSaveable:294
+7.EngineeringLevel:7.StaticObjectsImmutable:396
+7.EngineeringLevel:7.NPCsSaveableInstantiated:3713
+7.EngineeringLevel:EngScreen5_Camera:0
+7.EngineeringLevel:EngScreen4_Camera:0
+7.EngineeringLevel:EngScreen3_Camera:0
+G1.AlphaGrove:11
+G1.AlphaGrove:G1.Geometry:0
+G1.AlphaGrove:G1.DynamicObjectsSaveableInstantiated:0
+G1.AlphaGrove:G1.LightsStaticSaveable:0
+G1.AlphaGrove:G1.LightsStaticImmutable:0
+G1.AlphaGrove:G1.DoorsStaticSaveable:18
+G1.AlphaGrove:G1.StaticObjectsSaveable:29
+G1.AlphaGrove:G1.StaticObjectsImmutable:160
+G1.AlphaGrove:G1.NPCsSaveableInstantiated:509
+G1.AlphaGrove:GroveScreen1_Camera:0
+G1.AlphaGrove:GroveScreen2_Camera:0
+G1.AlphaGrove:grovedome:0
+G2.BetaGrove:9
+G2.BetaGrove:G2.Geometry:0
+G2.BetaGrove:G2.DynamicObjectsSaveableInstantiated:0
+G2.BetaGrove:G2.LightsStaticSaveable:0
+G2.BetaGrove:G2.LightsStaticImmutable:0
+G2.BetaGrove:G2.DoorsStaticSaveable:21
+G2.BetaGrove:G2.StaticObjectsSaveable:15
+G2.BetaGrove:G2.StaticObjectsImmutable:232
+G2.BetaGrove:G2.NPCsSaveableInstantiated:798
+G2.BetaGrove:grovedome (1):0
+G4.DeltaGrove:12
+G4.DeltaGrove:G4.Geometry:0
+G4.DeltaGrove:G4.DynamicObjectsSaveableInstantiated:0
+G4.DeltaGrove:G4.LightsStaticSaveable:0
+G4.DeltaGrove:G4.LightsStaticImmutable:0
+G4.DeltaGrove:G4.DoorsStaticSaveable:18
+G4.DeltaGrove:G4.StaticObjectsSaveable:31
+G4.DeltaGrove:G4.StaticObjectsImmutable:173
+G4.DeltaGrove:G4.NPCsSaveableInstantiated:377
+G4.DeltaGrove:GroveScreen3_Camera:0
+G4.DeltaGrove:GroveScreen4_Camera:0
+G4.DeltaGrove:door_elevator3 (1):2
+G4.DeltaGrove:grovedome (1):0
+6.ExecutiveLevel:43
+6.ExecutiveLevel:6.Geometry:0
+6.ExecutiveLevel:6.DynamicObjectsSaveableInstantiated:0
+6.ExecutiveLevel:6.LightsStaticSaveable:112
+6.ExecutiveLevel:6.LightsStaticImmutable:0
+6.ExecutiveLevel:6.DoorsStaticSaveable:283
+6.ExecutiveLevel:6.StaticObjectsSaveable:413
+6.ExecutiveLevel:6.StaticObjectsImmutable:848
+6.ExecutiveLevel:6.NPCsSaveableInstantiated:2705
+6.ExecutiveLevel:ExecScreen5_Camera:0
+6.ExecutiveLevel:ExecScreen6_Camera:0
+6.ExecutiveLevel:prop_chair02 (21):1
+6.ExecutiveLevel:chunk_eng2_1 (722):1
+6.ExecutiveLevel:chunk_eng2_1 (723):1
+6.ExecutiveLevel:chunk_exec1_1 (504):1
+6.ExecutiveLevel:chunk_exec1_1 (505):1
+6.ExecutiveLevel:chunk_exec1_1 (506):1
+6.ExecutiveLevel:chunk_exec1_1 (507):1
+6.ExecutiveLevel:chunk_exec1_1 (508):1
+6.ExecutiveLevel:chunk_exec1_1 (509):1
+6.ExecutiveLevel:chunk_exec1_1 (510):1
+6.ExecutiveLevel:chunk_exec3_2 (114):1
+6.ExecutiveLevel:chunk_exec3_2 (115):1
+6.ExecutiveLevel:chunk_exec3_2 (116):1
+6.ExecutiveLevel:chunk_exec3_2 (117):1
+6.ExecutiveLevel:chunk_flight2_2 (158):1
+6.ExecutiveLevel:chunk_exec3_2 (118):1
+6.ExecutiveLevel:chunk_exec3_2 (119):1
+6.ExecutiveLevel:chunk_exec3_2 (120):1
+6.ExecutiveLevel:chunk_exec3_2 (121):1
+6.ExecutiveLevel:chunk_flight2_2 (159):1
+6.ExecutiveLevel:chunk_flight2_2 (160):1
+6.ExecutiveLevel:chunk_exec1_1 (511):1
+6.ExecutiveLevel:chunk_flight2_2 (161):1
+6.ExecutiveLevel:chunk_black:0
+6.ExecutiveLevel:chunk_blocker:0
+6.ExecutiveLevel:chunk_maint2_5d_slice45:1
+6.ExecutiveLevel:chunk_maint2_5d_slice45 (2):1
+6.ExecutiveLevel:chunk_maint2_5d_slice45 (1):1
+6.ExecutiveLevel:chunk_maint2_5d_slice45 (3):1
+6.ExecutiveLevel:chunk_exec2_6 (355):1
+6.ExecutiveLevel:chunk_exec2_6 (356):1
+6.ExecutiveLevel:chunk_exec2_6 (357):1
+6.ExecutiveLevel:chunk_exec2_6 (358):1
+5.FlightDeck:15
+5.FlightDeck:5.Geometry:0
+5.FlightDeck:5.DynamicObjectsSaveableInstantiated:0
+5.FlightDeck:5.LightsStaticSaveable:182
+5.FlightDeck:5.LightsStaticImmutable:0
+5.FlightDeck:5.DoorsStaticSaveable:277
+5.FlightDeck:5.StaticObjectsSaveable:236
+5.FlightDeck:5.StaticObjectsImmutable:477
+5.FlightDeck:5.NPCsSaveableInstantiated:2679
+5.FlightDeck:FlightScreen1_Camera:0
+5.FlightDeck:flightpods_exterior:51
+5.FlightDeck:chunk_blockerflightbay (3):0
+5.FlightDeck:chunk_blockerflightbay (2):0
+5.FlightDeck:chunk_blockerflightbay:0
+5.FlightDeck:chunk_blockerflightbay (1):0
+5.FlightDeck:chunk_reac6_3:2
+4.StorageLevel:67
+4.StorageLevel:4.Geometry:0
+4.StorageLevel:4.DynamicObjectsSaveableInstantiated:0
+4.StorageLevel:4.LightsStaticSaveable:44
+4.StorageLevel:4.LightsStaticImmutable:0
+4.StorageLevel:4.DoorsStaticSaveable:361
+4.StorageLevel:4.StaticObjectsSaveable:237
+4.StorageLevel:4.StaticObjectsImmutable:158
+4.StorageLevel:4.NPCsSaveableInstantiated:3232
+4.StorageLevel:StorageScreen_Camera:0
+4.StorageLevel:chunk_crate_impenetrable (27):0
+4.StorageLevel:chunk_crate_impenetrable (26):0
+4.StorageLevel:chunk_crate_impenetrable (25):0
+4.StorageLevel:chunk_crate_impenetrable (10):0
+4.StorageLevel:chunk_crate_impenetrable (24):0
+4.StorageLevel:chunk_crate_impenetrable (23):0
+4.StorageLevel:chunk_crate_impenetrable (22):0
+4.StorageLevel:chunk_crate_impenetrable (21):0
+4.StorageLevel:chunk_crate_impenetrable (20):0
+4.StorageLevel:chunk_crate_impenetrable (19):0
+4.StorageLevel:chunk_crate_impenetrable (18):0
+4.StorageLevel:chunk_crate_impenetrable (17):0
+4.StorageLevel:chunk_crate_impenetrable (16):0
+4.StorageLevel:chunk_crate_impenetrable (15):0
+4.StorageLevel:chunk_crate_impenetrable (14):0
+4.StorageLevel:chunk_crate_impenetrable (13):0
+4.StorageLevel:chunk_crate_impenetrable (12):0
+4.StorageLevel:chunk_crate_impenetrable (11):0
+4.StorageLevel:chunk_crate_impenetrable (9):0
+4.StorageLevel:chunk_crate_impenetrable (8):0
+4.StorageLevel:chunk_crate_impenetrable (7):0
+4.StorageLevel:chunk_crate_impenetrable (28):0
+4.StorageLevel:chunk_crate_impenetrable (29):0
+4.StorageLevel:chunk_crate_impenetrable (30):0
+4.StorageLevel:chunk_crate_impenetrable (31):0
+4.StorageLevel:chunk_crate_impenetrable (32):0
+4.StorageLevel:chunk_crate_impenetrable (33):0
+4.StorageLevel:chunk_crate_impenetrable (34):0
+4.StorageLevel:chunk_crate_impenetrable (35):0
+4.StorageLevel:chunk_crate_impenetrable (36):0
+4.StorageLevel:chunk_crate_impenetrable (37):0
+4.StorageLevel:chunk_crate_impenetrable (38):0
+4.StorageLevel:chunk_crate_impenetrable (39):0
+4.StorageLevel:chunk_crate_impenetrable (40):0
+4.StorageLevel:chunk_crate_impenetrable (41):0
+4.StorageLevel:chunk_crate_impenetrable (42):0
+4.StorageLevel:chunk_crate_impenetrable (43):0
+4.StorageLevel:chunk_crate_impenetrable (44):0
+4.StorageLevel:chunk_crate_impenetrable (45):0
+4.StorageLevel:chunk_crate_impenetrable (46):0
+4.StorageLevel:chunk_crate_impenetrable (47):0
+4.StorageLevel:chunk_crate_impenetrable (48):0
+4.StorageLevel:chunk_crate_impenetrable (49):0
+4.StorageLevel:chunk_crate_impenetrable (50):0
+4.StorageLevel:chunk_crate_impenetrable (51):0
+4.StorageLevel:chunk_crate_impenetrable (52):0
+4.StorageLevel:chunk_crate_impenetrable (53):0
+4.StorageLevel:chunk_crate_impenetrable:0
+4.StorageLevel:chunk_crate_impenetrable (1):0
+4.StorageLevel:chunk_crate_impenetrable (2):0
+4.StorageLevel:chunk_crate_impenetrable (3):0
+4.StorageLevel:chunk_crate_impenetrable (4):0
+4.StorageLevel:chunk_crate_impenetrable (5):0
+4.StorageLevel:chunk_crate_impenetrable (6):0
+4.StorageLevel:chunk_crate_impenetrable (54):0
+4.StorageLevel:chunk_crate_impenetrable (55):0
+4.StorageLevel:chunk_crate_impenetrable (57):0
+4.StorageLevel:chunk_crate_impenetrable (56):0
+3.MaintenanceLevel:9
+3.MaintenanceLevel:3.Geometry:0
+3.MaintenanceLevel:3.DynamicObjectsSaveableInstantiated:0
+3.MaintenanceLevel:3.LightsStaticSaveable:14
+3.MaintenanceLevel:3.LightsStaticImmutable:0
+3.MaintenanceLevel:3.DoorsStaticSaveable:127
+3.MaintenanceLevel:3.StaticObjectsSaveable:534
+3.MaintenanceLevel:3.StaticObjectsImmutable:542
+3.MaintenanceLevel:3.NPCsSaveableInstantiated:1834
+3.MaintenanceLevel:MaintScreen_Camera:0
+2.ScienceLevel:64
+2.ScienceLevel:2.Geometry:0
+2.ScienceLevel:2.DynamicObjectsSaveableInstantiated:0
+2.ScienceLevel:2.LightsStaticSaveable:158
+2.ScienceLevel:2.LightsStaticImmutable:0
+2.ScienceLevel:2.DoorsStaticSaveable:306
+2.ScienceLevel:2.StaticObjectsSaveable:346
+2.ScienceLevel:2.StaticObjectsImmutable:701
+2.ScienceLevel:2.NPCsSaveableInstantiated:3465
+2.ScienceLevel:SciScreen6_Camera:0
+2.ScienceLevel:chunk_maint2_2 (113):1
+2.ScienceLevel:chunk_maint2_2 (116):1
+2.ScienceLevel:chunk_exteriorpanel1:0
+2.ScienceLevel:chunk_exteriorpanel1 (1):0
+2.ScienceLevel:chunk_exteriorpanel1 (2):0
+2.ScienceLevel:chunk_exteriorpanel1 (3):0
+2.ScienceLevel:chunk_exteriorpanel1 (4):0
+2.ScienceLevel:chunk_exteriorpanel1 (5):0
+2.ScienceLevel:chunk_exteriorpanel1 (6):0
+2.ScienceLevel:chunk_exteriorpanel1 (7):0
+2.ScienceLevel:chunk_exteriorpanel1 (8):0
+2.ScienceLevel:chunk_exteriorpanel1 (9):0
+2.ScienceLevel:chunk_exteriorpanel1 (10):0
+2.ScienceLevel:chunk_exteriorpanel1 (11):0
+2.ScienceLevel:chunk_exteriorpanel1 (12):0
+2.ScienceLevel:chunk_exteriorpanel1 (13):0
+2.ScienceLevel:chunk_exteriorpanel1 (14):0
+2.ScienceLevel:chunk_exteriorpanel1 (15):0
+2.ScienceLevel:chunk_exteriorpanel1 (17):0
+2.ScienceLevel:chunk_exteriorpanel1 (18):0
+2.ScienceLevel:chunk_exteriorpanel1 (19):0
+2.ScienceLevel:chunk_exteriorpanel1 (20):0
+2.ScienceLevel:chunk_exteriorpanel1 (21):0
+2.ScienceLevel:chunk_exteriorpanel1 (22):0
+2.ScienceLevel:chunk_exteriorpanel1 (23):0
+2.ScienceLevel:chunk_exteriorpanel1 (24):0
+2.ScienceLevel:chunk_exteriorpanel1 (25):0
+2.ScienceLevel:chunk_exteriorpanel1 (26):0
+2.ScienceLevel:chunk_exteriorpanel1 (27):0
+2.ScienceLevel:chunk_exteriorpanel1 (28):0
+2.ScienceLevel:chunk_exteriorpanel1 (29):0
+2.ScienceLevel:chunk_exteriorpanel1 (30):0
+2.ScienceLevel:chunk_exteriorpanel1 (31):0
+2.ScienceLevel:chunk_exteriorpanel1 (32):0
+2.ScienceLevel:chunk_exteriorpanel1 (33):0
+2.ScienceLevel:chunk_exteriorpanel1 (34):0
+2.ScienceLevel:chunk_exteriorpanel1 (35):0
+2.ScienceLevel:chunk_exteriorpanel1 (36):0
+2.ScienceLevel:chunk_exteriorpanel1 (37):0
+2.ScienceLevel:chunk_exteriorpanel1 (38):0
+2.ScienceLevel:chunk_exteriorpanel1 (39):0
+2.ScienceLevel:chunk_exteriorpanel1 (40):0
+2.ScienceLevel:chunk_exteriorpanel1 (41):0
+2.ScienceLevel:chunk_exteriorpanel1 (16):0
+2.ScienceLevel:chunk_exteriorpanel1 (42):0
+2.ScienceLevel:chunk_exteriorpanel1 (43):0
+2.ScienceLevel:chunk_exteriorpanel1 (44):0
+2.ScienceLevel:chunk_exteriorpanel1 (45):0
+2.ScienceLevel:chunk_exteriorpanel1 (46):0
+2.ScienceLevel:chunk_exteriorpanel1 (47):0
+2.ScienceLevel:chunk_exteriorpanel1 (48):0
+2.ScienceLevel:chunk_exteriorpanel1 (49):0
+2.ScienceLevel:chunk_exteriorpanel1 (50):0
+2.ScienceLevel:chunk_exteriorpanel1 (51):0
+2.ScienceLevel:chunk_exteriorpanel1 (52):0
+1.MedicalLevel:16
+1.MedicalLevel:1.Geometry:0
+1.MedicalLevel:1.DynamicObjectsSaveableInstantiated:0
+1.MedicalLevel:1.LightsStaticSaveable:96
+1.MedicalLevel:1.LightsStaticImmutable:0
+1.MedicalLevel:1.DoorsStaticSaveable:333
+1.MedicalLevel:1.StaticObjectsSaveable:302
+1.MedicalLevel:1.StaticObjectsImmutable:916
+1.MedicalLevel:1.NPCsSaveableInstantiated:1465
+1.MedicalLevel:MedScreen14_Camera:0
+1.MedicalLevel:MedScreen15_Camera:0
+1.MedicalLevel:pumpkin:0
+1.MedicalLevel:pumpkin (1):0
+1.MedicalLevel:pumpkin (2):4
+1.MedicalLevel:text_decal:0
+1.MedicalLevel:hide_blocker:0
+1.MedicalLevel:hide_blocker (1):0
+R.ReactorLevel:11
+R.ReactorLevel:R.Geometry:7390
+R.ReactorLevel:R.DynamicObjectsSaveableInstantiated:76
+R.ReactorLevel:R.LightsStaticSaveable:112
+R.ReactorLevel:R.LightsStaticImmutable:2261
+R.ReactorLevel:R.DoorsStaticSaveable:277
+R.ReactorLevel:R.StaticObjectsSaveable:218
+R.ReactorLevel:R.StaticObjectsImmutable:625
+R.ReactorLevel:R.NPCsSaveableInstantiated:3766
+R.ReactorLevel:ReacScreen1_Camera:0
+R.ReactorLevel:ReacScreen1_Camera (1):0
+R.ReactorLevel:ReacScreen1_Camera (2):0
+CatchTrayClip:0
+Exterior:5
+Exterior:exterior_shieldgenerator (3):0
+Exterior:exterior_shieldgenerator (2):0
+Exterior:exterior_shieldgenerator (1):0
+Exterior:exterior_shieldgenerator:0
+Exterior:exterior_shield:1
+CatchTrayDefault:0
+CatchTrayInterDebris:0
+CatchTrayNPCClip:0
+item_cyber_data:2
+item_cyber_data:iceholder:1
+item_cyber_data:visualAspect:0
+item_cyber_data (1):2
+item_cyber_data (1):iceholder:1
+item_cyber_data (1):visualAspect:0
+item_cyber_data (2):2
+item_cyber_data (2):iceholder:1
+item_cyber_data (2):visualAspect:0
+item_cyber_data (3):2
+item_cyber_data (3):iceholder:1
+item_cyber_data (3):visualAspect:0
+info_ressurection_point:0
+info_ressurection_point (1):0
+info_ressurection_point:0
+info_ressurection_point:0
+info_ressurection_point:0
+info_ressurection_point:0
+info_ressurection_point (1):0
+info_ressurection_point (1):0
+info_playsound_resdest (1):0
+info_elev_destination.9.1_resdest:1
+info_elev_destination.9.1_resdest:elev_volume:0
+

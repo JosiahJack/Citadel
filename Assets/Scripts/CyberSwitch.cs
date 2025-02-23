@@ -71,7 +71,7 @@ public class CyberSwitch : MonoBehaviour {
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index,
-						   PrefabIdentifier prefID) {
+						   PrefabIdentifier prefID, int levID) {
 		CyberSwitch cs = go.GetComponent<CyberSwitch>();
 		if (cs == null) {
 			Debug.Log("CyberSwitch.Load failure, cs == null");
@@ -94,7 +94,7 @@ public class CyberSwitch : MonoBehaviour {
 		cs.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
 		cs.iceActive = Utils.GetBoolFromString(entries[index],"iceActive"); index++;
 		cs.iceNode.SetActive(Utils.GetBoolFromString(entries[index],"iceNode.activeSelf")); index++;
-		index = HealthManager.Load(cs.iceNode,ref entries,index,prefID);
+		index = HealthManager.Load(cs.iceNode,ref entries,index,prefID,levID);
 		cs.Initialize(cs.active,cs.iceActive);
 		return index;
 	}
