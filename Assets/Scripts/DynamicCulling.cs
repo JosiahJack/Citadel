@@ -221,25 +221,25 @@ public class DynamicCulling : MonoBehaviour {
             case 90:  return  69f / 255f;
             case 91:  return 255f; // Slice, but would be 69f / 255f;
             case 92:  return  70f / 255f;
-// Need to prevent swapping out all the grass and leaves with cards!
-//             case 94:  return  71f / 255f;
+
+            case 94:  return  71f / 255f;
 //             case 95:  return 255f; // Slice, but would be 71f / 255f;
-//             case 96:  return  72f / 255f;
-//             case 97:  return  73f / 255f;
-//             case 98:  return  74f / 255f;
-//             case 99:  return  75f / 255f;
-//             case 100: return  76f / 255f;
-//             case 101: return  77f / 255f;
-//             case 102: return  78f / 255f;
-//             case 103: return  79f / 255f;
-//             case 104: return  80f / 255f;
-//             case 105: return  81f / 255f;
-//             case 106: return  82f / 255f;
-//             case 107: return  83f / 255f;
-//             case 108: return  84f / 255f;
-//             case 109: return  85f / 255f;
-//             case 110: return  86f / 255f;
-//             case 111: return  87f / 255f;
+            case 96:  return  72f / 255f;
+            case 97:  return  73f / 255f;
+            case 98:  return  74f / 255f;
+            case 99:  return  75f / 255f;
+            case 100: return  76f / 255f;
+            case 101: return  77f / 255f;
+            case 102: return  78f / 255f;
+            case 103: return  79f / 255f;
+            case 104: return  80f / 255f;
+            case 105: return  81f / 255f;
+            case 106: return  82f / 255f;
+            case 107: return  83f / 255f;
+            case 108: return  84f / 255f;
+            case 109: return  85f / 255f;
+            case 110: return  86f / 255f;
+            case 111: return  87f / 255f;
 
             case 113: return  88f / 255f;
             case 114: return  89f / 255f;
@@ -1085,8 +1085,7 @@ public class DynamicCulling : MonoBehaviour {
         for (int march=startX;march<(WORLDX - 1);march++) {
             if (XYPairInBounds(march,startY + 1)) {
                 if (gridCells[march,startY + 1].visible) {
-                    CastStraightX(march,startY + 1,1);  // Above [1]
-                    break;
+                    march = CastStraightX(march,startY + 1,1);  // Above [1]
                 }
             }
         }
@@ -1094,8 +1093,7 @@ public class DynamicCulling : MonoBehaviour {
         for (int march=startX;march<(WORLDX - 1);march++) {
             if (XYPairInBounds(march,startY - 1)) {
                 if (gridCells[march,startY - 1].visible) {
-                    CastStraightX(march,startY - 1,1);  // Below [1]
-                    break;
+                    march = CastStraightX(march,startY - 1,1);  // Below [1]
                 }
             }
         }
@@ -1106,8 +1104,7 @@ public class DynamicCulling : MonoBehaviour {
         for (int march=startX;march>=1;march--) {
             if (XYPairInBounds(march,startY + 1)) {
                 if (gridCells[march,startY + 1].visible) {
-                    CastStraightX(march,startY + 1,-1); // Above [1]
-                    break;
+                    march = CastStraightX(march,startY + 1,-1); // Above [1]
                 }
             }
         }
@@ -1115,19 +1112,17 @@ public class DynamicCulling : MonoBehaviour {
         for (int march=startX;march>=1;march--) {
             if (XYPairInBounds(march,startY - 1)) {
                 if (gridCells[march,startY - 1].visible) {
-                    CastStraightX(march,startY - 1,-1); // Below [1]
-                    break;
+                    march = CastStraightX(march,startY - 1,-1); // Below [1]
                 }
             }
         }
 
-        // Cast down (South)                    [ ][1][ ]
+        // Cast down (South)                     [ ][1][ ]
         CastStraightY(startX,startY,-1);      // [3][2][3]
         for (int march=startY;march>=1;march--) {
             if (XYPairInBounds(startX + 1,march)) {
                 if (gridCells[startX + 1,march].visible) {
-                    CastStraightY(startX + 1,march,-1);
-                    break;
+                    march = CastStraightY(startX + 1,march,-1);
                 }
             }
         }
@@ -1135,19 +1130,17 @@ public class DynamicCulling : MonoBehaviour {
         for (int march=startY;march>=1;march--) {
             if (XYPairInBounds(startX - 1,march)) {
                 if (gridCells[startX - 1,march].visible) {
-                    CastStraightY(startX - 1,march,-1);
-                    break;
+                    march = CastStraightY(startX - 1,march,-1);
                 }
             }
         }
 
-        // Cast up (North)
+        // Cast up (North)                     [3][2][3]
         CastStraightY(startX,startY,1);     // [ ][1][ ]
         for (int march=startY;march<(WORLDX - 1);march++) {
             if (XYPairInBounds(startX + 1,march)) {
                 if (gridCells[startX + 1,march].visible) {
-                    CastStraightY(startX + 1,march,1);
-                    break;
+                    march = CastStraightY(startX + 1,march,1);
                 }
             }
         }
@@ -1155,8 +1148,7 @@ public class DynamicCulling : MonoBehaviour {
         for (int march=startY;march<(WORLDX - 1);march++) {
             if (XYPairInBounds(startX - 1,march)) {
                 if (gridCells[startX - 1,march].visible) {
-                    CastStraightY(startX - 1,march,1);
-                    break;
+                    march = CastStraightY(startX - 1,march,1);
                 }
             }
         }
@@ -1191,11 +1183,11 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
 
-    private void CastStraightY(int px, int py, int signy) {
-        if (signy > 0 && py >= (WORLDX - 1)) return; // Nowwhere to step to if right by edge, hence WORLDX - 1 here.
-        if (signy < 0 && py <= 0) return;
-        if (!XYPairInBounds(px,py)) return;
-        if (!gridCells[px,py].visible) return;
+    private int CastStraightY(int px, int py, int signy) {
+        if (signy > 0 && py >= (WORLDX - 1)) return py; // Nowwhere to step to if right by edge, hence WORLDX - 1 here.
+        if (signy < 0 && py <= 0) return py;
+        if (!XYPairInBounds(px,py)) return py;
+        if (!gridCells[px,py].visible) return py;
 
         int x = px;
         int y = py + signy;
@@ -1205,9 +1197,9 @@ public class DynamicCulling : MonoBehaviour {
             if (XYPairInBounds(x,y - signy) && XYPairInBounds(x,y)) {
                 if (gridCells[x,y - signy].visible) {
                     if (signy > 0) {
-                        if (gridCells[x,y - 1].closedNorth && gridCells[x,y - 1].open) return;
+                        if (gridCells[x,y - 1].closedNorth && gridCells[x,y - 1].open) return y;
                     } else if (signy < 0) {
-                        if (gridCells[x,y + 1].closedSouth && gridCells[x,y + 1].open) return;
+                        if (gridCells[x,y + 1].closedSouth && gridCells[x,y + 1].open) return y;
                     }
 
                     gridCells[x,y].visible = worldCellsOpen[x,y];
@@ -1233,13 +1225,15 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
         }
+        
+        return WORLDX * signy;
     }
 
-    private void CastStraightX(int px, int py, int signx) {
-        if (signx > 0 && px >= (WORLDX - 1)) return; // Nowwhere to step to if right by edge, hence WORLDX - 1 here.
-        if (signx < 0 && px <= 0) return;
-        if (!XYPairInBounds(px,py)) return;
-        if (!gridCells[px,py].visible) return;
+    private int CastStraightX(int px, int py, int signx) {
+        if (signx > 0 && px >= (WORLDX - 1)) return px; // Nowwhere to step to if right by edge, hence WORLDX - 1 here.
+        if (signx < 0 && px <= 0) return px;
+        if (!XYPairInBounds(px,py)) return px;
+        if (!gridCells[px,py].visible) return px;
 
         int x = px + signx;
         int y = py;
@@ -1249,9 +1243,9 @@ public class DynamicCulling : MonoBehaviour {
             if (XYPairInBounds(x - signx,y) && XYPairInBounds(x,y)) {
                 if (gridCells[x - signx,y].visible) {
                     if (signx > 0) {
-                        if (gridCells[x - 1,y].closedEast && gridCells[x - 1,y].open) return;
+                        if (gridCells[x - 1,y].closedEast && gridCells[x - 1,y].open) return x;
                     } else if (signx < 0) {
-                        if (gridCells[x + 1,y].closedWest && gridCells[x + 1,y].open) return;
+                        if (gridCells[x + 1,y].closedWest && gridCells[x + 1,y].open) return x;
                     }
 
                     gridCells[x,y].visible = worldCellsOpen[x,y];
@@ -1277,6 +1271,8 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
         }
+        
+        return WORLDX * signx;
     }
 
     // CastRay()'s in fan from x0,y0 out to every cell around map perimeter.
@@ -1438,6 +1434,11 @@ public class DynamicCulling : MonoBehaviour {
     void ToggleVisibility() {
         gridCells[playerCellX,playerCellY].visible = true; // Guarantee enable.
         ChunkPrefab chp = null;
+        float distSqrCheck = lodSqrDist;
+        PrefabIdentifier pidMR;
+        bool pidGood = false;
+        if (LevelManager.a.currentLevel > 9) distSqrCheck = 419.4304f; // (8 * 2.56f)^2, lower than normal due to foliage tanking performance
+        else if (LevelManager.a.currentLevel == 0 || LevelManager.a.currentLevel == 9) distSqrCheck = 1474.56f; // (15*2.56)^2, lower than normal due to high poly angled ceilings and pipe walls
         for (int x=0;x<WORLDX;x++) {
             for (int y=0;y<WORLDX;y++) {
                 float sqrdist = 0f;
@@ -1445,7 +1446,7 @@ public class DynamicCulling : MonoBehaviour {
                     chp = gridCells[x,y].chunkPrefabs[i];
                     if (chp == null) continue;
                     
-                    if (chp.constIndex == 1 && gridCells[x,y].visible || chp.constIndex == 123 || chp.constIndex == 93) skyVisible = true; // Don't move if to assignment, need to preserve true.
+                    if (chp.constIndex == 1 && gridCells[x,y].visible || chp.constIndex == 123 || chp.constIndex == 93) skyVisible = true; // Don't move if to assignment, need to preserve true.  e.g. skyVisible = (chp.constIndex == 1....); is bad bad!
                     for (int k=0;k<chp.meshenderers.Count;k++) {
                         if (chp.meshenderers[k].meshRenderer == null) continue;
                         
@@ -1453,9 +1454,13 @@ public class DynamicCulling : MonoBehaviour {
                         if (!gridCells[x,y].visible) continue;
                         if (chp.constIndex > 304 || chp.constIndex < 0) continue;
 
-                        if (useLODMeshes) {
-                            sqrdist = (MouseLookScript.a.transform.position - chp.meshenderers[k].meshRenderer.transform.position).sqrMagnitude; //SqrDist(x,y,playerCellX,playerCellY);
-                            chp.meshenderers[k].SetMesh(sqrdist >= lodSqrDist);
+                        pidGood = false;
+                        pidMR = chp.meshenderers[k].meshRenderer.gameObject.GetComponent<PrefabIdentifier>();
+                        pidGood = pidMR != null;
+                        if (pidGood) pidGood = ConsoleEmulator.ConstIndexIsGeometry(pidMR.constIndex);
+                        if (useLODMeshes && pidGood) {
+                            sqrdist = (MouseLookScript.a.transform.position - chp.meshenderers[k].meshRenderer.transform.position).sqrMagnitude;
+                            chp.meshenderers[k].SetMesh(sqrdist >= distSqrCheck);
                         }
                         
                         if (mergeVisibleMeshes) {
@@ -1584,12 +1589,6 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
         }
-    }
-
-    public float SqrDist(int x0, int y0, int x1, int y1) {
-        float deltaX = x1 - x0;
-        float deltaY = y1 - y0;
-        return (deltaX * deltaX) + (deltaY * deltaY);
     }
 
     public void ToggleStaticMeshesImmutableVisibility() {

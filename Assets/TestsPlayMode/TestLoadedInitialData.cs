@@ -20,13 +20,6 @@ namespace Tests {
     public class TestLoadedInitialData {
         private bool sceneLoaded = false;
 
-        //private IEnumerator LoadSceneAsync(string sceneName) {
-        //    var asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-        //    while (!asyncLoad.isDone) {
-        //        yield return null;
-        //    }
-        //}
-
         public void RunBeforeAnyTests() {
             if (sceneLoaded) return;
 
@@ -36,8 +29,7 @@ namespace Tests {
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
             if (scene.name == "CitadelScene") {
-                // Unsubscribe from the event to avoid handling it multiple
-                // times
+                // Unsubscribe from the event to avoid handling it multiple times
                 SceneManager.sceneLoaded -= OnSceneLoaded;
                 sceneLoaded = true; // Indicate that the scene is loaded.
             }
@@ -231,8 +223,44 @@ namespace Tests {
                     targetNames.Add(tio.targetname);
                 }
             }
-
+            
             HashSet<string> targets = new HashSet<string>();
+
+            char splitter = Convert.ToChar(SaveLoad.splitChar);
+            string[] entries;
+            string dynaname;
+            for (int lev=0;lev<14;lev++) {
+                for (i=0;i<LevelManager.a.DynamicObjectsSavestrings[lev].Count;i++) {
+                    entries = LevelManager.a.DynamicObjectsSavestrings[lev][i].Split(splitter);
+                    if (entries.Length <= 1) continue;
+                    
+                    for (k=0;k<entries.Length;k++) {
+                        if (entries[k].Contains("targetname:")) {
+                            dynaname = Utils.LoadString(entries[k],"targetname");
+                            if (!string.IsNullOrWhiteSpace(dynaname)) {
+                                targetNames.Add(dynaname);
+//                                 UnityEngine.Debug.Log("Added targetname " + dynaname + " from dynamics on level " + lev.ToString());
+                                break;
+                            }
+                        } else if (entries[k].Contains("targetOnDeath:")) {
+                            dynaname = Utils.LoadString(entries[k],"targetOnDeath");
+                            if (!string.IsNullOrWhiteSpace(dynaname)) {
+                                targets.Add(dynaname);
+//                                 UnityEngine.Debug.Log("Added targetOnDeath target: " + dynaname + " from dynamics on level " + lev.ToString());
+                                break;
+                            }
+                        } else if (entries[k].Contains("target:")) {
+                            dynaname = Utils.LoadString(entries[k],"target");
+                            if (!string.IsNullOrWhiteSpace(dynaname)) {
+                                targets.Add(dynaname);
+//                                 UnityEngine.Debug.Log("Added target: " + dynaname + " from dynamics on level " + lev.ToString());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             for (int m=0;m<allGOs.Count;m++) {
                 bsTemp = allGOs[m].GetComponent<ButtonSwitch>();
                 if (bsTemp != null) {

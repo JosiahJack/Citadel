@@ -45,6 +45,12 @@ public class PauseRigidbody : MonoBehaviour {
 		if (rbody != null) {
 			rbody.isKinematic = previousKinematic;
 			rbody.useGravity = previousUseGravity;
+			if (previouscolDetMode == CollisionDetectionMode.ContinuousSpeculative
+				&& !rbody.isKinematic && GetComponent<AIController>() == null) {
+				
+				previouscolDetMode = CollisionDetectionMode.ContinuousDynamic;
+			}
+			
 			if (rbody.isKinematic && previouscolDetMode != CollisionDetectionMode.ContinuousSpeculative) {
 				rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 			} else {

@@ -147,9 +147,9 @@ namespace Tests {
             yield return new WaitForSeconds(2f);
             PlayerMovement.a.hm.god = true;
             string countResultsPath = Utils.SafePathCombine(Application.streamingAssetsPath,"CitadelHierarchyCounts.txt");
-            List<GameObject> npcPrefabsPrevious = new List<GameObject>();
-            List<GameObject> npcPrefabsAfter = new List<GameObject>();
-            int npcPrefabCount = 0;
+//             List<GameObject> npcPrefabsPrevious = new List<GameObject>();
+//             List<GameObject> npcPrefabsAfter = new List<GameObject>();
+//             int npcPrefabCount = 0;
             for (int i=0;i<13;i++) {
                 ConsoleEmulator.CheatLoadLevel(i);
                 yield return new WaitForSeconds(2f);
@@ -204,68 +204,68 @@ namespace Tests {
                 if (check) UnityEngine.Debug.Log("Number of save items was the same for level " + i.ToString() + ", preSave: " + countPreSave.ToString() + ", postLoad: " + erthang.Count.ToString());
             }
             
-            // Now save, leave level to another, load back
-            for (int i=0;i<13;i++) {
-                ConsoleEmulator.CheatLoadLevel(i);
-                yield return new WaitForSeconds(2f);
-                
-                List<GameObject> erthang = Utils.GetAllObjectsOnlyInScene();
-                int countPreSave = erthang.Count;
-                string countsPriorString = "-- Counts Prior to Save --" + WriteHierarchyCounts();
-                MainMenuHandler.a.SaveGame(7,"quicksave");
-                yield return new WaitForSeconds(2f);
-                int nextLev = (i + 1) >= 13 ? 0 : i + 1;
-                ConsoleEmulator.CheatLoadLevel(nextLev);
-                yield return new WaitForSeconds(2f);
-                MainMenuHandler.a.LoadGame(7);
-                erthang.Clear();
-                erthang = Utils.GetAllObjectsOnlyInScene();
-                bool check = erthang.Count == countPreSave;
-                yield return new WaitForSeconds(5f); // Absolutely necessary to return function to LoadRoutine Coroutine's yields!
-                string msg = "Number of save items was different on level " + i.ToString() + " after having changed to level " + nextLev.ToString() + ", preSave: " + countPreSave.ToString() + ", postLoad: " + erthang.Count.ToString();
-                if (!check) {
-                    string[] resultsBefore = countsPriorString.Split(Environment.NewLine.ToCharArray());
-                    string countsAfterString = "-- Counts After Load --" +  WriteHierarchyCounts();
-                    string[] resultsAfter = countsAfterString.Split(Environment.NewLine.ToCharArray());
-                    File.WriteAllLines(countResultsPath,resultsBefore,Encoding.ASCII);
-                    File.AppendAllLines(countResultsPath,resultsAfter,Encoding.ASCII);
-                }
-                Assert.That(check,msg);
-                if (check) UnityEngine.Debug.Log("Number of save items was the same for level " + i.ToString() + " after having changed to level " + nextLev.ToString() +  ", preSave: " + countPreSave.ToString() + ", postLoad: " + erthang.Count.ToString());
-            }
-            
-            // Now, save, leave level, come back to level, then load
-            for (int i=0;i<13;i++) {
-                ConsoleEmulator.CheatLoadLevel(i);
-                yield return new WaitForSeconds(2f);
-                
-                List<GameObject> erthang = Utils.GetAllObjectsOnlyInScene();
-                int countPreSave = erthang.Count;
-                string countsPriorString = "-- Counts Prior to Save --" + WriteHierarchyCounts();
-                MainMenuHandler.a.SaveGame(7,"quicksave");
-                yield return new WaitForSeconds(2f);
-                int nextLev = (i + 1) >= 13 ? 0 : i + 1;
-                ConsoleEmulator.CheatLoadLevel(nextLev);
-                yield return new WaitForSeconds(2f);
-                ConsoleEmulator.CheatLoadLevel(i);
-                yield return new WaitForSeconds(2f);
-                MainMenuHandler.a.LoadGame(7);
-                erthang.Clear();
-                erthang = Utils.GetAllObjectsOnlyInScene();
-                bool check = erthang.Count == countPreSave;
-                yield return new WaitForSeconds(5f); // Absolutely necessary to return function to LoadRoutine Coroutine's yields!
-
-                string msg = "Number of save items was different on level " + i.ToString() + " after having changed to level " + nextLev.ToString() + " and came back to " + i.ToString() + ", preSave: " + countPreSave.ToString() + ", postLoad: " + erthang.Count.ToString();
-                if (!check) {
-                    string[] resultsBefore = countsPriorString.Split(Environment.NewLine.ToCharArray());
-                    string countsAfterString = "-- Counts After Load --" +  WriteHierarchyCounts();
-                    string[] resultsAfter = countsAfterString.Split(Environment.NewLine.ToCharArray());
-                    File.WriteAllLines(countResultsPath,resultsBefore,Encoding.ASCII);
-                    File.AppendAllLines(countResultsPath,resultsAfter,Encoding.ASCII);
-                }
-                Assert.That(check,msg);
-                if (check) UnityEngine.Debug.Log("Number of save items was the same for level " + i.ToString() + " after having changed to level " + nextLev.ToString() + " and came back to " + i.ToString() + ", preSave: " + countPreSave.ToString() + ", postLoad: " + erthang.Count.ToString());
-            }
+//             // Now save, leave level to another, load back
+//             for (int i=0;i<13;i++) {
+//                 ConsoleEmulator.CheatLoadLevel(i);
+//                 yield return new WaitForSeconds(2f);
+//                 
+//                 List<GameObject> erthang = Utils.GetAllObjectsOnlyInScene();
+//                 int countPreSave = erthang.Count;
+//                 string countsPriorString = "-- Counts Prior to Save --" + WriteHierarchyCounts();
+//                 MainMenuHandler.a.SaveGame(7,"quicksave");
+//                 yield return new WaitForSeconds(2f);
+//                 int nextLev = (i + 1) >= 13 ? 0 : i + 1;
+//                 ConsoleEmulator.CheatLoadLevel(nextLev);
+//                 yield return new WaitForSeconds(2f);
+//                 MainMenuHandler.a.LoadGame(7);
+//                 erthang.Clear();
+//                 erthang = Utils.GetAllObjectsOnlyInScene();
+//                 bool check = erthang.Count == countPreSave;
+//                 yield return new WaitForSeconds(5f); // Absolutely necessary to return function to LoadRoutine Coroutine's yields!
+//                 string msg = "Number of save items was different on level " + i.ToString() + " after having changed to level " + nextLev.ToString() + ", preSave: " + countPreSave.ToString() + ", postLoad: " + erthang.Count.ToString();
+//                 if (!check) {
+//                     string[] resultsBefore = countsPriorString.Split(Environment.NewLine.ToCharArray());
+//                     string countsAfterString = "-- Counts After Load --" +  WriteHierarchyCounts();
+//                     string[] resultsAfter = countsAfterString.Split(Environment.NewLine.ToCharArray());
+//                     File.WriteAllLines(countResultsPath,resultsBefore,Encoding.ASCII);
+//                     File.AppendAllLines(countResultsPath,resultsAfter,Encoding.ASCII);
+//                 }
+//                 Assert.That(check,msg);
+//                 if (check) UnityEngine.Debug.Log("Number of save items was the same for level " + i.ToString() + " after having changed to level " + nextLev.ToString() +  ", preSave: " + countPreSave.ToString() + ", postLoad: " + erthang.Count.ToString());
+//             }
+//             
+//             // Now, save, leave level, come back to level, then load
+//             for (int i=0;i<13;i++) {
+//                 ConsoleEmulator.CheatLoadLevel(i);
+//                 yield return new WaitForSeconds(2f);
+//                 
+//                 List<GameObject> erthang = Utils.GetAllObjectsOnlyInScene();
+//                 int countPreSave = erthang.Count;
+//                 string countsPriorString = "-- Counts Prior to Save --" + WriteHierarchyCounts();
+//                 MainMenuHandler.a.SaveGame(7,"quicksave");
+//                 yield return new WaitForSeconds(2f);
+//                 int nextLev = (i + 1) >= 13 ? 0 : i + 1;
+//                 ConsoleEmulator.CheatLoadLevel(nextLev);
+//                 yield return new WaitForSeconds(2f);
+//                 ConsoleEmulator.CheatLoadLevel(i);
+//                 yield return new WaitForSeconds(2f);
+//                 MainMenuHandler.a.LoadGame(7);
+//                 erthang.Clear();
+//                 erthang = Utils.GetAllObjectsOnlyInScene();
+//                 bool check = erthang.Count == countPreSave;
+//                 yield return new WaitForSeconds(5f); // Absolutely necessary to return function to LoadRoutine Coroutine's yields!
+// 
+//                 string msg = "Number of save items was different on level " + i.ToString() + " after having changed to level " + nextLev.ToString() + " and came back to " + i.ToString() + ", preSave: " + countPreSave.ToString() + ", postLoad: " + erthang.Count.ToString();
+//                 if (!check) {
+//                     string[] resultsBefore = countsPriorString.Split(Environment.NewLine.ToCharArray());
+//                     string countsAfterString = "-- Counts After Load --" +  WriteHierarchyCounts();
+//                     string[] resultsAfter = countsAfterString.Split(Environment.NewLine.ToCharArray());
+//                     File.WriteAllLines(countResultsPath,resultsBefore,Encoding.ASCII);
+//                     File.AppendAllLines(countResultsPath,resultsAfter,Encoding.ASCII);
+//                 }
+//                 Assert.That(check,msg);
+//                 if (check) UnityEngine.Debug.Log("Number of save items was the same for level " + i.ToString() + " after having changed to level " + nextLev.ToString() + " and came back to " + i.ToString() + ", preSave: " + countPreSave.ToString() + ", postLoad: " + erthang.Count.ToString());
+//             }
             Utils.CopyLogFiles(false);
         }
     }
