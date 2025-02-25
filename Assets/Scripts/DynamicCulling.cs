@@ -69,7 +69,7 @@ public class DynamicCulling : MonoBehaviour {
     private static string visDebugImagePath;
     private Color32[] pixels;
     private Texture2D debugTex;
-    private static Dictionary<GameObject, Vector3> camPositions = new Dictionary<GameObject, Vector3>();
+    [HideInInspector] public static Dictionary<GameObject, Vector3> camPositions = new Dictionary<GameObject, Vector3>();
     public CameraView[] cameraViews;
     private bool[,] worldCellsOpen = new bool[WORLDX,WORLDX];
     
@@ -1070,19 +1070,18 @@ public class DynamicCulling : MonoBehaviour {
             for (int y=0;y<WORLDX;y++) {
                 gridCells[x,y].visible = false;
                 worldCellsOpen[x,y] = gridCells[x,y].open;
-//                 if (outputDebugImages) {
-//                     pixels[x + (y * WORLDX)] = gridCells[x,y].open
-//                                            ? Color.white : Color.black;
-//                 }
             }
         }
 
         gridCells[startX,startY].visible = true;
-        
         // Cast to the right (East)             [ ][3]
         CastStraightX(startX,startY,1);      // [1][2]
                                              // [ ][3]
+        int iter = 0;
         for (int march=startX;march<(WORLDX - 1);march++) {
+            iter++;
+            if (iter > WORLDX) break;
+            
             if (XYPairInBounds(march,startY + 1)) {
                 if (gridCells[march,startY + 1].visible) {
                     march = CastStraightX(march,startY + 1,1);  // Above [1]
@@ -1090,7 +1089,11 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
         
+        iter = 0;
         for (int march=startX;march<(WORLDX - 1);march++) {
+            iter++;
+            if (iter > WORLDX) break;
+
             if (XYPairInBounds(march,startY - 1)) {
                 if (gridCells[march,startY - 1].visible) {
                     march = CastStraightX(march,startY - 1,1);  // Below [1]
@@ -1101,15 +1104,23 @@ public class DynamicCulling : MonoBehaviour {
         // Cast to the left (West)              [3][ ]
         CastStraightX(startX,startY,-1);     // [2][1]
                                              // [3][ ]
+        iter = 0;
         for (int march=startX;march>=1;march--) {
+            iter++;
+            if (iter > WORLDX) break;
+            
             if (XYPairInBounds(march,startY + 1)) {
                 if (gridCells[march,startY + 1].visible) {
                     march = CastStraightX(march,startY + 1,-1); // Above [1]
                 }
             }
         }
-        
+
+        iter = 0;
         for (int march=startX;march>=1;march--) {
+            iter++;
+            if (iter > WORLDX) break;
+
             if (XYPairInBounds(march,startY - 1)) {
                 if (gridCells[march,startY - 1].visible) {
                     march = CastStraightX(march,startY - 1,-1); // Below [1]
@@ -1119,7 +1130,11 @@ public class DynamicCulling : MonoBehaviour {
 
         // Cast down (South)                     [ ][1][ ]
         CastStraightY(startX,startY,-1);      // [3][2][3]
+        iter = 0;
         for (int march=startY;march>=1;march--) {
+            iter++;
+            if (iter > WORLDX) break;
+
             if (XYPairInBounds(startX + 1,march)) {
                 if (gridCells[startX + 1,march].visible) {
                     march = CastStraightY(startX + 1,march,-1);
@@ -1127,7 +1142,11 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
         
+        iter = 0;
         for (int march=startY;march>=1;march--) {
+            iter++;
+            if (iter > WORLDX) break;
+
             if (XYPairInBounds(startX - 1,march)) {
                 if (gridCells[startX - 1,march].visible) {
                     march = CastStraightY(startX - 1,march,-1);
@@ -1137,7 +1156,11 @@ public class DynamicCulling : MonoBehaviour {
 
         // Cast up (North)                     [3][2][3]
         CastStraightY(startX,startY,1);     // [ ][1][ ]
+        iter = 0;
         for (int march=startY;march<(WORLDX - 1);march++) {
+            iter++;
+            if (iter > WORLDX) break;
+
             if (XYPairInBounds(startX + 1,march)) {
                 if (gridCells[startX + 1,march].visible) {
                     march = CastStraightY(startX + 1,march,1);
@@ -1145,7 +1168,11 @@ public class DynamicCulling : MonoBehaviour {
             }
         }
         
+        iter = 0;
         for (int march=startY;march<(WORLDX - 1);march++) {
+            iter++;
+            if (iter > WORLDX) break;
+
             if (XYPairInBounds(startX - 1,march)) {
                 if (gridCells[startX - 1,march].visible) {
                     march = CastStraightY(startX - 1,march,1);
@@ -1162,8 +1189,6 @@ public class DynamicCulling : MonoBehaviour {
         CircleFanRays(startX - 1,startY - 1);
         CircleFanRays(startX,startY - 1);
         CircleFanRays(startX + 1,startY - 1);
-
-        CameraViewUnculling(startX,startY);
         
         for (int x=0;x<WORLDX;x++) {
             for (int y=0;y<WORLDX;y++) {
@@ -1192,7 +1217,7 @@ public class DynamicCulling : MonoBehaviour {
         int x = px;
         int y = py + signy;
         bool currentVisible = true;
-        for (;y<WORLDX;y+=signy) { // Up
+        for (;Mathf.Abs(y)<WORLDX;y+=signy) { // Up/Down
             currentVisible = false;
             if (XYPairInBounds(x,y - signy) && XYPairInBounds(x,y)) {
                 if (gridCells[x,y - signy].visible) {
@@ -1211,6 +1236,7 @@ public class DynamicCulling : MonoBehaviour {
 
             if (XYPairInBounds(x + 1,y)) {
                 if (CastRayCellCheck(x,y,x + 1,y) > 0) {
+//                     if (gridCells[x + 1,y].open) gridCells[x + 1,y].visible = true;
                     gridCells[x + 1,y].visible = gridCells[x + 1,y].open;
                 } else {
                     gridCells[x + 1,y].visible = false;
@@ -1219,6 +1245,7 @@ public class DynamicCulling : MonoBehaviour {
 
             if (XYPairInBounds(x - 1,y)) {
                 if (CastRayCellCheck(x,y,x - 1,y) > 0) {
+//                     if (gridCells[x - 1,y].open) gridCells[x - 1,y].visible = true;
                     gridCells[x - 1,y].visible = gridCells[x - 1,y].open;
                 } else {
                     gridCells[x - 1,y].visible = false;
@@ -1238,7 +1265,7 @@ public class DynamicCulling : MonoBehaviour {
         int x = px + signx;
         int y = py;
         bool currentVisible = true;
-        for (;x<WORLDX;x+=signx) { // Right
+        for (;Mathf.Abs(x)<WORLDX;x+=signx) { // Right/Left
             currentVisible = false;
             if (XYPairInBounds(x - signx,y) && XYPairInBounds(x,y)) {
                 if (gridCells[x - signx,y].visible) {
@@ -1257,6 +1284,7 @@ public class DynamicCulling : MonoBehaviour {
 
             if (XYPairInBounds(x,y + 1)) {
                 if (CastRayCellCheck(x,y,x,y + 1) > 0) {
+//                     if (gridCells[x,y + 1].open) gridCells[x,y + 1].visible = true;
                     gridCells[x,y + 1].visible = gridCells[x,y + 1].open;
                 } else {
                     gridCells[x,y + 1].visible = false;
@@ -1265,6 +1293,7 @@ public class DynamicCulling : MonoBehaviour {
 
             if (XYPairInBounds(x,y - 1)) {
                 if (CastRayCellCheck(x,y,x,y - 1) > 0) {
+//                     if (gridCells[x,y - 1].open) gridCells[x,y - 1].visible = true;
                     gridCells[x,y - 1].visible = gridCells[x,y - 1].open;
                 } else {
                     gridCells[x,y - 1].visible = false;
@@ -1390,7 +1419,8 @@ public class DynamicCulling : MonoBehaviour {
         }
         
         if (XYPairInBounds(x,y)) {
-            gridCells[x,y].visible = (worldCellsOpen[x,y]);
+//             if (worldCellsOpen[x,y]) gridCells[x,y].visible = true; // Switched from using assignment in order to preserve existing true vis state.
+            gridCells[x,y].visible = worldCellsOpen[x,y];
             if (!gridCells[x,y].visible) return -1;
             return 1;
         }
@@ -1404,30 +1434,20 @@ public class DynamicCulling : MonoBehaviour {
         foreach (KeyValuePair<GameObject, Vector3> entry in camPositions) {
             GameObject camGO = entry.Key; // The GameObject key
             CameraView camV = camGO.GetComponent<CameraView>();
+            UnityEngine.Debug.Log("Unculling camera view");
             if (camV == null) continue;
             if (!camV.IsVisible()) continue;
 
             Vector3 position = entry.Value; // The position value
             pnt = PosToCellCoords(position);
             gridCells[pnt.x,pnt.y].visible = true;
+            for (int x=0;x<WORLDX;x++) {
+                for (int y=0;y<WORLDX;y++) {
+                    if (gridCells[pnt.x,pnt.y].visibleCellsFromHere[x,y]) gridCells[x,y].visible = true;
+                }
+            }
 
-            CastStraightX(startX,startY + 1,1);  // [ ][3]
-            CastStraightX(startX,startY,1);      // [1][2]
-            CastStraightX(startX,startY - 1,1);  // [ ][3]
-
-            CastStraightX(startX,startY + 1,-1); // [3][ ]
-            CastStraightX(startX,startY,-1);     // [2][1]
-            CastStraightX(startX,startY - 1,-1); // [3][ ]
-
-            CastStraightY(startX,startY,1);      // [3][2][3]
-            CastStraightY(startX + 1,startY,1);  // [ ][1][ ]
-            CastStraightY(startX - 1,startY,1); 
-
-            CastStraightY(startX,startY,-1);     // [ ][1][ ]
-            CastStraightY(startX + 1,startY,-1); // [3][2][3]
-            CastStraightY(startX - 1,startY,-1);
-
-            CircleFanRays(pnt.x,pnt.y);
+            UnityEngine.Debug.Log("Unculling camera view done!");
         }
     }
  
@@ -1839,6 +1859,7 @@ public class DynamicCulling : MonoBehaviour {
 
         gridCells[0,0].visible = true; // Errors default here so draw them anyways.
         gridCells[playerCellX,playerCellY].visible = true;
+        CameraViewUnculling(playerCellX,playerCellY);        
         skyVisible = SkyOverridenToVisible(playerCellX,playerCellY);
         ToggleVisibility(); // Update all cells marked as dirty.
         ToggleStaticMeshesImmutableVisibility();
@@ -1899,6 +1920,7 @@ public class DynamicCulling : MonoBehaviour {
         // to set playerCellX and playerCellY.
         if (UpdatedPlayerCell() || force) CullCore();
         if (lightsFrustumCull) LightsFrustumCull(playerCellX,playerCellY);
+        
 
         // Update dynamic meshes after PVS has been updated, if player moved.
         if (dynamicObjectCull) {

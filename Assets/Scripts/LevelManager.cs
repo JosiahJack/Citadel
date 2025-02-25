@@ -277,6 +277,7 @@ public class LevelManager : MonoBehaviour {
 		PlayerReferenceManager.a.playerCapsule.transform.position = targetPosition;
 		currentLevel = levnum; // Set current level to be the new level
 		DisableAllNonOccupiedLevelsExcept(currentLevel);
+		DynamicCulling.camPositions = new Dictionary<GameObject, Vector3>();
 		levels[levnum].SetActive(true); // enable new level
 		PlayerReferenceManager.a.playerCurrentLevel = levnum;
 		if (currentLevel == 2 && AutoSplitterData.missionSplitID == 0) {
