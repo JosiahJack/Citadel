@@ -59,7 +59,7 @@ public class AIController : MonoBehaviour {
 	public bool ai_dying; // save
 	public bool ai_dead; // save
 	[HideInInspector] public int currentWaypoint; // save
-	[HideInInspector] public Vector3 currentDestination; // save
+	public Vector3 currentDestination; // save
 	[HideInInspector] public float idleTime; // save
 	[HideInInspector] public float attack1SoundTime; // save
 	[HideInInspector] public float attack2SoundTime; // save
@@ -73,7 +73,7 @@ public class AIController : MonoBehaviour {
 	[HideInInspector] public Rigidbody rbody;
 	[HideInInspector] public float tickFinished; // save
 	[HideInInspector] public float raycastingTickFinished; // save
-	[HideInInspector] public float huntFinished; // save
+	public float huntFinished; // save
 	[HideInInspector] public bool hadEnemy; // save
 	[HideInInspector] public Vector3 lastKnownEnemyPos; // save
 	[HideInInspector] public Vector3 tempVec; // save
@@ -102,13 +102,13 @@ public class AIController : MonoBehaviour {
 	[HideInInspector] public bool deathBurstDone; // save
 	[HideInInspector] public float tranquilizeFinished; // save
 	[HideInInspector] public bool hopDone; // save
-	[HideInInspector] public float wanderFinished; // save
+	public float wanderFinished; // save
 	[HideInInspector] public float timeSinceMovedEnough;
 	private float dotResult = -1f; // Only ever used right away, nosave
 	private Vector3 infrontVec; // Only ever used right away, nosave
 	[HideInInspector] public bool startInitialized = false; // nosave
 	private HealthManager enemyHM;
-	private float stopDistance = 1.28f; // Constant
+	private static float stopDistance = 1.28f; // Constant
 	private Vector3 faceVec; // Only ever used right away, nosave
 	private Quaternion lookRot; // Only ever used right away, nosave
 	private Animator hopAnimator;
@@ -116,6 +116,11 @@ public class AIController : MonoBehaviour {
 	private float near;
 	private float mid;
 	private float far;
+	public Vector3 lastPosition;
+	public float distToLastPos;
+	public float posCheckFinished;
+	private static float positionCheckDelay = 2f;
+	private static float searchTime = 5f;
 
 	public void Tranquilize() {
 		tranquilizeFinished = PauseScript.a.relativeTime
@@ -217,6 +222,8 @@ public class AIController : MonoBehaviour {
 			tranquilizeFinished = PauseScript.a.relativeTime;
 			deathBurstFinished = PauseScript.a.relativeTime;
 			wanderFinished = PauseScript.a.relativeTime;
+			posCheckFinished = PauseScript.a.relativeTime;
+			lastPosition = transform.position;
 			timeSinceMovedEnough = 0f;
 			damageData = new DamageData();
 			damageData.ownerIsNPC = true;
@@ -259,12 +266,9 @@ public class AIController : MonoBehaviour {
 			
 		idealTransformForward = sightPoint.transform.forward;
 		
-		#if UNITY_EDITOR
-		
-		#else
-			if (!IsCyberNPC()) targetID = Const.GetTargetID(index);
-			else             targetID = Const.GetCyberTargetID(index);
-		#endif
+		if (!IsCyberNPC()) targetID = Const.GetTargetID(index);
+		else             targetID = Const.GetCyberTargetID(index);
+
 		startInitialized = true;
 	}
 
@@ -329,11 +333,14 @@ public class AIController : MonoBehaviour {
 					} else {
 						// Enemy is dead, let's wander around aimlessly now
 						wandering = true;
+						wanderFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(3f,8f);
 						currentState = AIState.Walk;
 					}
 					
 					enemy = null; // Forget the enemy.
 					enemyHM = null;
+					posCheckFinished = PauseScript.a.relativeTime;
+					lastPosition = transform.position;
 				}
 			}
 
@@ -513,6 +520,10 @@ public class AIController : MonoBehaviour {
 					timeTillEnemyChangeFinished = PauseScript.a.relativeTime
 						+ Const.a.timeToChangeEnemyForNPC[index];
 					enemy = attacker; // Switch to whoever just attacked us
+					posCheckFinished = PauseScript.a.relativeTime + positionCheckDelay;
+					wandering = false;
+					wanderFinished = PauseScript.a.relativeTime;
+					lastPosition = transform.position;
 					if (enemy != null) {
 						enemyHM = Utils.GetMainHealthManager(enemy);
 						lastKnownEnemyPos = enemy.transform.position;
@@ -571,13 +582,10 @@ public class AIController : MonoBehaviour {
 		if (tranquilizeFinished >= PauseScript.a.relativeTime) return;
 		if (!withinPVS && DynamicCulling.a.cullEnabled) return;
 		
-		float dist = Vector3.Distance(sightPoint.transform.position,
-									  currentDestination);
+		float dist = Vector3.Distance(sightPoint.transform.position,currentDestination);
 		if (wandering) {
-			if (wanderFinished < PauseScript.a.relativeTime || (dist < 0.64f)) {
-				wanderFinished = PauseScript.a.relativeTime
-								 + UnityEngine.Random.Range(3f,8f);
-
+			if (wanderFinished < PauseScript.a.relativeTime || (dist < (stopDistance * 0.5f))) {
+				wanderFinished = PauseScript.a.relativeTime + UnityEngine.Random.Range(3f,8f);
 				currentDestination = GetWanderPoint();
 			}
 		}
@@ -657,6 +665,7 @@ public class AIController : MonoBehaviour {
 			}
 		}
 
+		if (walkWaypoints.Length < 1) return;
 		if (walkWaypoints[currentWaypoint] == null) return; // No gaps allowed.
 
 		currentDestination = walkWaypoints[currentWaypoint].transform.position;
@@ -774,6 +783,65 @@ public class AIController : MonoBehaviour {
 		if (rbody.useGravity) tempVec.y = rbody.velocity.y; // Keep gravity.
 		rbody.velocity = tempVec;
 	}
+	
+	Vector3 GetAStarPoint() {
+		if (DynamicCulling.a == null) return GetWanderPoint();
+		
+		Vector2Int currentCell = DynamicCulling.a.PosToCellCoords(transform.position);
+		if (!DynamicCulling.a.XYPairInBounds(currentCell.x,currentCell.y)) return GetWanderPoint();
+			
+		bool clearNorth = false;
+		bool clearSouth = false;
+		bool clearEast = false;
+		bool clearWest = false;
+		Vector3 northPoint = transform.position + new Vector3(0f,0f,2.56f);
+		Vector3 southPoint = transform.position + new Vector3(0f,0f,-2.56f);
+		Vector3 eastPoint = transform.position + new Vector3(2.56f,0f,0f);
+		Vector3 westPoint = transform.position + new Vector3(-2.56f,0f,0f);
+		List<Vector3> availablePositions = new List<Vector3>();
+		if (DynamicCulling.a.XYPairInBounds(currentCell.x,currentCell.y + 1)) {
+			clearNorth = (DynamicCulling.a.gridCells[currentCell.x,currentCell.y + 1].open && !DynamicCulling.a.gridCells[currentCell.x,currentCell.y].closedNorth);
+			if (clearNorth) availablePositions.Add(northPoint);
+		}
+		
+		if (DynamicCulling.a.XYPairInBounds(currentCell.x,currentCell.y - 1)) {		
+			clearSouth = (DynamicCulling.a.gridCells[currentCell.x,currentCell.y - 1].open && !DynamicCulling.a.gridCells[currentCell.x,currentCell.y].closedSouth);
+			if (clearSouth) availablePositions.Add(southPoint);
+		}
+		
+		if (DynamicCulling.a.XYPairInBounds(currentCell.x + 1,currentCell.y)) {		
+			clearEast = (DynamicCulling.a.gridCells[currentCell.x + 1,currentCell.y].open && !DynamicCulling.a.gridCells[currentCell.x,currentCell.y].closedEast);
+			if (clearEast) availablePositions.Add(eastPoint);
+		}
+		
+		if (DynamicCulling.a.XYPairInBounds(currentCell.x - 1,currentCell.y)) {		
+			clearWest = (DynamicCulling.a.gridCells[currentCell.x - 1,currentCell.y].open && !DynamicCulling.a.gridCells[currentCell.x,currentCell.y].closedWest);
+			if (clearWest) availablePositions.Add(westPoint);
+		}
+
+		// Randomly select point but only from available choices
+		int nearest = 0;		
+		for (int i=0;i<availablePositions.Count;i++) {
+			if (Vector3.Distance(enemy.transform.position,availablePositions[i]) < Vector3.Distance(enemy.transform.position,availablePositions[nearest])) nearest = i;
+		}
+		
+		return availablePositions[nearest];
+	}
+	
+	Vector3 GetSearchPoint(bool hunting) {
+		if (hunting) return lastKnownEnemyPos; // When we can't see the enemy, go to the last spot we saw them.
+		
+		switch(Const.a.typeForNPC[index]) {
+			case NPCType.Mutant: return GetWanderPoint();
+			case NPCType.Supermutant: return GetWanderPoint();
+			case NPCType.Robot: return GetAStarPoint();
+			case NPCType.Cyborg: return GetAStarPoint();
+			case NPCType.Supercyborg: return GetAStarPoint();
+			case NPCType.MutantCyborg: return GetAStarPoint();
+		}
+		
+		return GetWanderPoint();
+	}
 
 	void Run() {
 		if (CheckPain()) return; // Go into pain just hurt
@@ -785,8 +853,22 @@ public class AIController : MonoBehaviour {
 			return;
 		}
 
+		if (posCheckFinished <= PauseScript.a.relativeTime && !IsCyberNPC()) {
+			posCheckFinished = PauseScript.a.relativeTime + positionCheckDelay;
+			float distToEnem = Vector3.Distance(sightPoint.transform.position,enemy.transform.position);
+			distToLastPos = Vector3.Distance(transform.position,lastPosition);
+			lastPosition = transform.position;
+			if (distToLastPos < 0.48f && distToEnem > stopDistance && !wandering) {
+				wanderFinished = PauseScript.a.relativeTime + searchTime;
+				wandering = true;
+				currentDestination = GetSearchPoint(false);
+			} else {
+				wandering = false;
+			}
+		}
+
         if (!inSight) {
-            if (huntFinished > PauseScript.a.relativeTime) {
+            if (huntFinished > PauseScript.a.relativeTime && !wandering) {
                 Hunt();
             } else {
                 enemy = null;
@@ -798,17 +880,10 @@ public class AIController : MonoBehaviour {
             return;
         }
         
-		if (enemy != null) {
-			targettingPosition =
-				PlayerMovement.a.cameraObject.transform.position;
-				// = enemy.transform.position;
-				
+		if (enemy != null && !wandering) {
+			targettingPosition = PlayerMovement.a.cameraObject.transform.position;
 			currentDestination = targettingPosition;
 			lastKnownEnemyPos = targettingPosition;
-// 			if (IsCyberNPC()) {
-// 			    Transform enemTr = PlayerMovement.a.cameraObject.transform;
-// 				targettingPosition = enemTr.position;
-// 			}
 		}
 
 		shotFired = false;
@@ -857,7 +932,7 @@ public class AIController : MonoBehaviour {
 			currentDestination = enemy.transform.position; // See through walls
 		} else {
 			// UPDATE: A* Pathfinding with world grid.
-			currentDestination = enemy.transform.position;//lastKnownEnemyPos;
+			currentDestination = GetSearchPoint(true); //enemy.transform.position;//lastKnownEnemyPos;
 		}
 
 		// Destination is still far enough away and within angle, then move.
@@ -1496,6 +1571,8 @@ public class AIController : MonoBehaviour {
 
 		if (PlayerMovement.a.Notarget) {
 			enemy = null; // Force forget when using Notarget cheat.
+			posCheckFinished = PauseScript.a.relativeTime + positionCheckDelay;
+			lastPosition = transform.position;
 			LOSpossible = false;
 			return false;
 		}
@@ -1643,6 +1720,10 @@ public class AIController : MonoBehaviour {
 		if (enemSent == null) return;
 
 		enemy = enemSent;
+		posCheckFinished = PauseScript.a.relativeTime + positionCheckDelay;
+		wandering = false;
+		wanderFinished = PauseScript.a.relativeTime;
+		lastPosition = transform.position;
 		enemyHM = Utils.GetMainHealthManager(enemSent);
 		lastKnownEnemyPos = enemy.transform.position;
 		targettingPosition = targettingPosSent.position;
@@ -1690,6 +1771,10 @@ public class AIController : MonoBehaviour {
 		if (Const.a.difficultyCombat == 0) return;
 
 		enemy = Const.a.player1Capsule;
+		posCheckFinished = PauseScript.a.relativeTime + positionCheckDelay;
+		lastPosition = transform.position;
+		wandering = false;
+		wanderFinished = PauseScript.a.relativeTime;
 		if (enemy != null) enemyHM = Utils.GetMainHealthManager(enemy);
 	}
 
@@ -1916,6 +2001,9 @@ public class AIController : MonoBehaviour {
 		int enemIDRead = Utils.GetIntFromString(entries[index],"enemID"); index++;
 		if (enemIDRead >= 0) aic.enemy = Const.a.player1Capsule;
 		else aic.enemy = null;
+		
+		aic.posCheckFinished = PauseScript.a.relativeTime + positionCheckDelay;
+		aic.lastPosition = aic.transform.position;
 
 		aic.walkPathOnStart = Utils.GetBoolFromString(entries[index],"walkPathOnStart"); index++;
 		aic.dontLoopWaypoints = Utils.GetBoolFromString(entries[index],"dontLoopWaypoints"); index++;

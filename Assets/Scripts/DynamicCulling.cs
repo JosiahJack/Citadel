@@ -1434,7 +1434,6 @@ public class DynamicCulling : MonoBehaviour {
         foreach (KeyValuePair<GameObject, Vector3> entry in camPositions) {
             GameObject camGO = entry.Key; // The GameObject key
             CameraView camV = camGO.GetComponent<CameraView>();
-            UnityEngine.Debug.Log("Unculling camera view");
             if (camV == null) continue;
             if (!camV.IsVisible()) continue;
 
@@ -1446,8 +1445,6 @@ public class DynamicCulling : MonoBehaviour {
                     if (gridCells[pnt.x,pnt.y].visibleCellsFromHere[x,y]) gridCells[x,y].visible = true;
                 }
             }
-
-            UnityEngine.Debug.Log("Unculling camera view done!");
         }
     }
  
