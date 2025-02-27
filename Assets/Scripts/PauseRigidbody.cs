@@ -43,8 +43,17 @@ public class PauseRigidbody : MonoBehaviour {
 
 	public void UnPause() {
 		if (rbody != null) {
-			rbody.isKinematic = previousKinematic;
-			rbody.useGravity = previousUseGravity;
+			PrefabIdentifier pid = GetComponent<PrefabIdentifier>();
+			if (pid != null && GetComponent<AIController>() == null) {
+				if (ConsoleEmulator.ConstIndexIsDynamicObject(pid.constIndex)) {
+					rbody.isKinematic = false;
+					rbody.useGravity = true;
+				}
+			} else {
+				rbody.isKinematic = previousKinematic;
+				rbody.useGravity = previousUseGravity;
+			}
+			
 			if (previouscolDetMode == CollisionDetectionMode.ContinuousSpeculative
 				&& !rbody.isKinematic && GetComponent<AIController>() == null) {
 				

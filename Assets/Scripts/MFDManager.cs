@@ -565,6 +565,7 @@ public class MFDManager : MonoBehaviour  {
 
 	// Called by MouseLookScript.cs
 	public void EnterCyberspace() {
+		MFDManager.a.hwb.HideSensaround();
 		TabReset(true); // right
 		TabReset(false); // left
 		rightTC.TurnAllTabsOff();
@@ -600,6 +601,7 @@ public class MFDManager : MonoBehaviour  {
 		ctbButtonMain.SetActive(true);
 		ctbButtonHardware.SetActive(true);
 		ctbButtonGeneral.SetActive(true);
+		if (Inventory.a.hardwareIsActive[3]) MFDManager.a.hwb.UnhideSensaround();
 		tabButtonsLHButtons.SetActive(true);
 		tabButtonsRHButtons.SetActive(true);
 		Config.SetSEGI(); // Turn it back on if setting is on.
@@ -1372,7 +1374,12 @@ public class MFDManager : MonoBehaviour  {
 		Utils.Activate(ammoIndicatorOnesLH);
 		Utils.Activate(unloadButtonLH);
 		Utils.Activate(loadNormalAmmoButtonLH);
-		Utils.Activate(loadAlternateAmmoButtonLH);
+		if (altdex >= 0) {
+			Utils.Activate(loadAlternateAmmoButtonLH);
+		} else {
+			Utils.Deactivate(loadAlternateAmmoButtonLH);
+		}
+		
 		Utils.Deactivate(energySliderLH);
 		Utils.Deactivate(energyHeatTicksLH);
 		Utils.Deactivate(overloadButtonLH);

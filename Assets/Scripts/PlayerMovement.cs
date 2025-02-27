@@ -944,7 +944,7 @@ public class PlayerMovement : MonoBehaviour {
 			if (!CheatNoclip) {
 				if (isSprinting) return;
 			} else {
-				if (isSprinting) {
+				if (isSprinting && running) {
 					if (GetInput.a.SwimUp()) return;
 					if (GetInput.a.SwimDn()) return;
 				}

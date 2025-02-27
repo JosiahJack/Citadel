@@ -972,6 +972,7 @@ public class MouseLookScript : MonoBehaviour {
 					   + UnityEngine.Random.Range(shakeForce * -0.17f,
 												  shakeForce * 0.17f);
 		} else {
+			headBobZ = 0f;
 			Vector3 vel = PlayerMovement.a.rbody.velocity;
 			vel.y = 0f;
 			if (PlayerMovement.a.relForward + PlayerMovement.a.relSideways != 0

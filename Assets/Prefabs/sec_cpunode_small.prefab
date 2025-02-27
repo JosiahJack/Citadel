@@ -61,6 +61,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -85,6 +86,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &64464275525225122
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -123,7 +125,6 @@ MonoBehaviour:
   health: 35
   cyberHealth: -1
   maxhealth: 35
-  levelIndex: 0
   isPlayer: 0
   isGrenade: 0
   gibOnDeath: 0
@@ -132,7 +133,7 @@ MonoBehaviour:
   isNPC: 0
   isObject: 1
   isIce: 0
-  isSecCamera: 0
+  isSecCamera: 1
   teleportOnDeath: 0
   actAsCorpseOnly: 0
   gibsGetVelocity: 0

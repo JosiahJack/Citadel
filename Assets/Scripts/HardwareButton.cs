@@ -140,14 +140,29 @@ public class HardwareButton : MonoBehaviour {
 		if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (true);
 		if (sensaroundRH != null) sensaroundRH.SetActive (true);
 	}
+	
+	public void HideSensaround() {
+		if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive(false);
+		if (sensaroundCenter != null) sensaroundCenter.SetActive(false);
+		if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive(false);
+		if (sensaroundLH != null) sensaroundLH.SetActive(false);
+		if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive(false);
+		if (sensaroundRH != null) sensaroundRH.SetActive(false);
+	}
+	
+	public void UnhideSensaround() {
+		if (!Inventory.a.hardwareIsActive[3]) return;
+		
+		if (Inventory.a.hardwareVersion[3] == 1) {
+			ActivateSensaroundCenter(); // Only center on version 1.
+		} else {
+			ActivateSensaroundCenter();
+			ActivateSensaroundSides();
+		}
+	}
 
 	public void DeactivateSensaroundCameras() {
-		if (sensaroundCenterCamera != null) sensaroundCenterCamera.SetActive (false);
-		if (sensaroundCenter != null) sensaroundCenter.SetActive (false);
-		if (sensaroundLHCamera != null) sensaroundLHCamera.SetActive (false);
-		if (sensaroundLH != null) sensaroundLH.SetActive (false);
-		if (sensaroundRHCamera != null) sensaroundRHCamera.SetActive (false);
-		if (sensaroundRH != null) sensaroundRH.SetActive (false);
+		HideSensaround();
 		MFDManager.a.CenterTabButtonClickSilent(MFDManager.a.curCenterTab,true);
 		MFDManager.a.TabReset(true); // right
 		MFDManager.a.TabReset(false); // left
@@ -158,12 +173,7 @@ public class HardwareButton : MonoBehaviour {
 	public void SensaroundOn() {
 		Inventory.a.hardwareIsActive[3] = true;
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[3], Inventory.a.hardwareVersionSetting[3],1);
-		if (Inventory.a.hardwareVersion[3] == 1) {
-			ActivateSensaroundCenter(); // Only center on version 1.
-		} else {
-			ActivateSensaroundCenter();
-			ActivateSensaroundSides();
-		}
+		UnhideSensaround();
 	}
 
 	public void SensaroundClick() {

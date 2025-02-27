@@ -79,8 +79,8 @@ public class HealthManager : MonoBehaviour {
 			cyberHealth = 255;
 			maxhealth = 255;
 		}
-		if (isPlayer) justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
 		if (securityAffected != SecurityType.None && LevelManager.a != null) LevelManager.a.RegisterSecurityObject(LevelManager.a.currentLevel, securityAffected);
+		if (isPlayer) justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
 		if (Const.a != null) Const.a.RegisterObjectWithHealth(this);
 		awakeInitialized = true;
 		if (isNPC && !gibOnDeath ) { // Set searchable item to CorpseSearchable layer.
@@ -545,7 +545,7 @@ public class HealthManager : MonoBehaviour {
 
 		deathDone = true; // Mark it so we only die once.
 		CreateDeathEffects(deathFX);
-		if (aic.index == 0) Utils.PlayTempAudio(transform.position,Const.a.sounds[64]); // npc_autobomb: explosion1
+		if (aic.index == 0 && !actAsCorpseOnly) Utils.PlayTempAudio(transform.position,Const.a.sounds[64]); // npc_autobomb: explosion1
 		GameObject par = transform.parent.gameObject;
 		if (aic == null) aic = par.GetComponent<AIController>();
 		if (aic == null) return;
@@ -732,7 +732,7 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	public void AwakeFromLoad(int levID) {
-		if (awakeInitialized) {
+		if (!awakeInitialized) {
 			if (securityAffected != SecurityType.None
 				&& LevelManager.a != null) {
 

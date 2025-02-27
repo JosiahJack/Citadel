@@ -1101,6 +1101,7 @@ public class WeaponFire : MonoBehaviour {
 		  && Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]);
 		GameObject hitGO = tempHit.collider.transform.gameObject;
         if (tempHM != null && tempHM.health > 0 && !dartTranq) {
+			damageData.damage *= 0.8f; // Bit of heavy handed rebalancing lol.
 			dmgFinal = tempHM.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
 			damageData.impactVelocity += damageData.damage;
 			if (!damageData.isOtherNPC || wep16Index == 12) {

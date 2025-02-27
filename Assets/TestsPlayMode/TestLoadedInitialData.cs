@@ -94,6 +94,66 @@ namespace Tests {
             }
         }
         
+        [UnityTest]
+        public IEnumerator CheckThatDestroyingAllSecurityObjectsGoesToZero() {
+            RunBeforeAnyTests();
+            yield return new WaitUntil(() => sceneLoaded);
+
+            yield return new WaitForSeconds(2f);
+            
+            MainMenuHandler.a.StartGame(true);
+            yield return new WaitForSeconds(2f);
+            PlayerMovement.a.hm.god = true;
+            PrefabIdentifier pid = null;
+            int childCount = 0;
+            Transform childTr = null;
+            DamageData dd = new DamageData();
+            dd.damage = 10000f;
+            dd.attackType = AttackType.Projectile;
+            HealthManager hm = null;
+            int numProblems = 0;
+            for (int i=0;i<13;i++) {
+                ConsoleEmulator.CheatLoadLevel(i);
+                yield return new WaitForSeconds(2f);
+                GameObject container = LevelManager.a.levelScripts[i].dynamicObjectsContainer;
+                childCount = container.transform.childCount;
+                for (int j=0;j<childCount;j++) {
+                    childTr = container.transform.GetChild(j);
+                    if (childTr == null) continue;
+                    if (childTr.gameObject == null) continue;
+                    
+                    pid = childTr.gameObject.GetComponent<PrefabIdentifier>();
+                    if (pid == null) continue;
+                    
+                    if (pid.constIndex == 477) {
+                        if (childTr.childCount < 1) { UnityEngine.Debug.LogWarning("Missing child on Security Camera named " + childTr.gameObject.name); continue; }
+                        
+                        hm = childTr.GetChild(0).gameObject.GetComponent<HealthManager>();
+                        if (hm == null) { UnityEngine.Debug.LogWarning("Missing child on Security Camera named " + childTr.gameObject.name); continue; }
+                        
+                        hm.TakeDamage(dd);
+//                         yield return new WaitForSeconds(0.1f);
+                    } else if (pid.constIndex == 478 || pid.constIndex == 479) {
+                        hm = childTr.gameObject.GetComponent<HealthManager>();
+                        if (hm == null) continue;
+                        
+                        hm.TakeDamage(dd);
+//                         yield return new WaitForSeconds(0.1f);
+                   }
+                }
+                
+                yield return new WaitForSeconds(1f);
+                UnityEngine.Debug.Log("Level security on level " + i.ToString() + " reduced to " + LevelManager.a.levelSecurity[i].ToString());
+                if (LevelManager.a.levelSecurity[i] != 0) {
+                    numProblems++;
+                }
+            }
+            
+            bool check = (numProblems == 0);
+            string msg = "Level security on level not reduced to 0 on " + numProblems.ToString() + " levels, see log for warnings";
+            Assert.That(check,msg);
+        }
+
         // Find all info_e ails and confirm all emails are present in scene.
         [UnityTest]
         public IEnumerator EmailsSetupProperly() {

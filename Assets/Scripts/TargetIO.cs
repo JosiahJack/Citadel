@@ -151,22 +151,26 @@ public class TargetIO : MonoBehaviour {
 			if (dr != null) {
 				dr.ForceOpen();
 			}
-			//Debug.Log("opening door!");
 		}
 		
 		if (tempUD.doorOpenIfUnlocked) {
 			Door dr = GetComponent<Door>();
 			if (dr != null) {
-				if (dr.locked == false && dr.accessCardUsedByPlayer) dr.ForceOpen();
+				if (!dr.locked
+					&& (dr.requiredAccessCard == AccessCardType.None
+					    || dr.accessCardUsedByPlayer
+					    || Inventory.a.HasAccessCard(dr.requiredAccessCard))) {
+					
+					dr.ForceOpen();
+				}
 			}
 		}
 		
 		if (tempUD.doorToggle) {
 			Door dr = GetComponent<Door>();
 			if (dr != null) {
-				if (dr.locked == false && dr.accessCardUsedByPlayer) dr.DoorActuate();
+				dr.DoorActuate();
 			}
-			//Debug.Log("opening door!");
 		}
 		
 		if (tempUD.doorClose) {

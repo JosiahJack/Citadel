@@ -172,6 +172,7 @@ public class AIAnimationController : MonoBehaviour {
 
 	void Dying () {
 		aic.asleep = false;
+		Utils.Deactivate(aic.sleepingCables);
 		if (anim.speed != 1f) anim.speed = 1f;
 		anstinfo = anim.GetCurrentAnimatorStateInfo(0);
 		currentClipPercentage = anstinfo.normalizedTime % 1;

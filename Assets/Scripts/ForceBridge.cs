@@ -45,6 +45,12 @@ public class ForceBridge : MonoBehaviour {
 		mr = GetComponent<MeshRenderer>();
 		bCol = GetComponent<BoxCollider>();
 		SFX = GetComponent<AudioSource>();
+		if (!activated) {
+			Utils.DisableMeshRenderer(mr);
+			Utils.DisableBoxCollider(bCol);
+			Utils.Deactivate(segiEmitter);
+		}
+		
 		SetColorMaterial();
 		initialized = true;
 		if (segiEmitter == null) segiEmitter = CreateSEGIEmitterCube();

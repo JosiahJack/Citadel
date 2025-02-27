@@ -1472,8 +1472,6 @@ public class Utils {
 			//if (go.isStatic) { i++; continue; } EDITOR ONLY!!!!!!
 
 			Rigidbody rbody = go.GetComponent<Rigidbody>();
-			if (rbody == null) { i++; continue; }
-
 			dd.impactVelocity = dd.damage * impactScale;
 			Vector3 dir = go.transform.position - centerPoint;
 			RaycastHit hit;
@@ -1486,7 +1484,7 @@ public class Utils {
 										  Const.a.layerMaskExplosion);
 				dist = hit.distance;
 				applyImpact = (hit.collider == colliders[i]
-							   || hit.rigidbody == rbody);
+							   || (hit.rigidbody == rbody && rbody != null));
 			} else applyImpact = true;
 
 			if (success) {
@@ -1505,7 +1503,7 @@ public class Utils {
 					hm.TakeDamage(dd);
 				}
 
-				if (applyImpact) {
+				if (applyImpact && rbody != null) {
 					rbody.AddExplosionForce(dd.impactVelocity,centerPoint,radius,1f);
 				}
 			}

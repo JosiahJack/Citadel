@@ -162,7 +162,7 @@ public class LevelManager : MonoBehaviour {
 		skyMR.enabled = (on && showSkyForLevel[currentLevel]);
 		saturn.SetActive(on && showSaturnForLevel[currentLevel]);
 		exterior.SetActive(on && showExteriorForLevel[currentLevel]);
-		sun.SetActive(Const.a.GraphicsShadowMode >= 1);
+		sun.SetActive(Const.a.GraphicsShadowMode >= 1 && on);
 		if (Const.a == null) return;
 		if (Const.a.questData == null) return;
 		
@@ -454,15 +454,15 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void RegisterSecurityObject(int lev,SecurityType stype) {
-		if (!LevNumInBounds(lev)) return;
-		if (!LevNumInBounds(currentLevel)) return;
-		
-		switch (stype) {
-			case SecurityType.None: return;
-			case SecurityType.Camera: levelCameraCount[lev]++; break;
-			case SecurityType.NodeSmall: levelSmallNodeCount[lev]++; break;
-			case SecurityType.NodeLarge: levelLargeNodeCount[lev]++; break;
-		}
+// 		if (!LevNumInBounds(lev)) return;
+// 		if (!LevNumInBounds(currentLevel)) return;
+// 		
+// 		switch (stype) {
+// 			case SecurityType.None: return;
+// 			case SecurityType.Camera: levelCameraCount[lev]++; break;
+// 			case SecurityType.NodeSmall: levelSmallNodeCount[lev]++; break;
+// 			case SecurityType.NodeLarge: levelLargeNodeCount[lev]++; break;
+// 		}
 	}
 
 	// Typical level

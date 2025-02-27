@@ -279,12 +279,12 @@ public class Config {
 			case 1: // Hard Shadows
 				QualitySettings.shadows = ShadowQuality.HardOnly;
 				QualitySettings.shadowResolution = ShadowResolution.Low;
-				QualitySettings.shadowDistance = 20.0f; // Check layers in LevelManager shadCullArray
+				QualitySettings.shadowDistance = 50.0f; // Check layers in LevelManager shadCullArray
 				break;
 			case 2: // Soft Shadows
 				QualitySettings.shadows = ShadowQuality.All;
 				QualitySettings.shadowResolution = ShadowResolution.Low;
-				QualitySettings.shadowDistance = 20.0f; // Check layers in LevelManager shadCullArray
+				QualitySettings.shadowDistance = 50.0f; // Check layers in LevelManager shadCullArray
 				break;
 		}
 	}

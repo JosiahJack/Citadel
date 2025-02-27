@@ -38,7 +38,8 @@ public class AIController : MonoBehaviour {
 	public bool actAsTurret = false; // save
 	public bool withinPVS = false; // True when the enemy is in visible cell.
 	public bool visibleMeshVisible; // save
-
+	public GameObject sleepingCables;
+	
 	// Internal, keeping exposed in inspector for troubleshooting.
 	public GameObject enemy; // save (referenced by int index enemIDRead)
 
@@ -248,7 +249,10 @@ public class AIController : MonoBehaviour {
 			currentState = AIState.Walk;
 		} else wandering = false;
 
-		if (asleep) currentState = AIState.Idle;
+		if (asleep) {
+			currentState = AIState.Idle;
+			Utils.Activate(sleepingCables);
+		}
 		
 		#if UNITY_EDITOR
 			tickFinished = Random.value;
@@ -269,6 +273,7 @@ public class AIController : MonoBehaviour {
 		if (!IsCyberNPC()) targetID = Const.GetTargetID(index);
 		else             targetID = Const.GetCyberTargetID(index);
 
+		if (asleep) Utils.Activate(sleepingCables);
 		startInitialized = true;
 	}
 
@@ -453,7 +458,10 @@ public class AIController : MonoBehaviour {
 			return; // Don't do any checks, we're dead.
 		}
 
-		if (asleep) return; // Don't check for an enemy, we are sleeping! shh!!
+		if (asleep) {
+			Utils.Activate(sleepingCables);
+			return; // Don't check for an enemy, we are sleeping! shh!!
+		}
 
 		if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly
 			&& tranquilizeFinished < PauseScript.a.relativeTime) {
@@ -1434,7 +1442,7 @@ public class AIController : MonoBehaviour {
 			if (!healthManager.actAsCorpseOnly) {
 				Utils.Deactivate(healthManager.linkedOverlay.gameObject);
 				SFXIndex = Const.a.sfxDeathForNPC[index];
-				Utils.PlayOneShotSavable(SFX,SFXIndex);
+				Utils.PlayTempAudio(sightPoint.transform.position,Const.a.sounds[SFXIndex]);
 			}
 
 			if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly
@@ -1604,9 +1612,33 @@ public class AIController : MonoBehaviour {
 							out tempHit, Const.a.sightRangeForNPC[index],
 							Const.a.layerMaskNPCSight)) {
 			Const.a.numberOfRaycastsThisFrame++;
-            if (tempHit.collider.gameObject == enemy) {
+			GameObject hitObj = tempHit.collider.gameObject;
+            if (hitObj == enemy) {
 				LOSpossible = true;
                 return true;
+			} else {
+				if (hitObj != null && (Vector3.Distance(tempHit.point,sightPoint.transform.position) < 2f)
+					&& Const.a.typeForNPC[index] != NPCType.Mutant && Const.a.typeForNPC[index] != NPCType.Supermutant && Const.a.typeForNPC[index] != NPCType.Cyber) {
+
+					Door dr = hitObj.GetComponent<Door>();
+					if (dr == null) {
+						UseHandlerRelay uhr = hitObj.GetComponent<UseHandlerRelay>();
+						if (uhr != null) {
+							if (uhr.referenceUseHandler != null) {
+								dr = uhr.referenceUseHandler.GetComponent<Door>();
+							}
+						}
+					}
+
+					if (dr != null) {
+						if ((dr.doorOpen == DoorState.Closed || (dr.doorOpen == DoorState.Closing && Const.a.difficultyCombat > 2))
+							&& !dr.locked && (LevelManager.a.GetCurrentLevelSecurity() <= dr.securityThreshhold)
+							&& (dr.requiredAccessCard == AccessCardType.None || dr.accessCardUsedByPlayer || Inventory.a.HasAccessCard(dr.requiredAccessCard))) {
+						
+							dr.DoorActuate();
+						}
+					}
+				}
 			}
         }
 
@@ -1780,7 +1812,8 @@ public class AIController : MonoBehaviour {
 
 	public void AwakeFromSleep(UseData ud) {
 		asleep = false;
-		if (ud != null) Alert(ud);
+		Utils.Deactivate(sleepingCables);
+		Alert(ud);
 	}
 
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
@@ -2096,6 +2129,8 @@ public class AIController : MonoBehaviour {
 		}
 
 		aic.asleep = Utils.GetBoolFromString(entries[index],"asleep"); index++;
+		if (aic.asleep) Utils.Activate(aic.sleepingCables);
+		else Utils.Deactivate(aic.sleepingCables);
 		aic.tranquilizeFinished = Utils.LoadRelativeTimeDifferential(entries[index],"tranquilizeFinished"); index++;
 		aic.hopDone = Utils.GetBoolFromString(entries[index],"hopDone"); index++;
 		aic.wandering = Utils.GetBoolFromString(entries[index],"wandering"); index++;
