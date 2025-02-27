@@ -7,13 +7,10 @@
 [![Tests](https://github.com/JosiahJack/Citadel/actions/workflows/runtests.yml/badge.svg?branch=master)](https://github.com/JosiahJack/Citadel/actions/workflows/runtests.yml)
 
 ### News
-Significant performance refactor underway.  Made tremendous improvements.  Overhauled saving system.
-Still working through many bugs and issues.
-
-Expect new ones in the next month or so, no promises but as you can see from git history, I'm busy busy.
+Fast approaching my most polished beta release yet.  Hoping to have the last known bugs addressed this week.
 Older builds here: https://github.com/JosiahJack/Citadel/tags
 
-- Sincerely, Josiah 1/29/2025
+- Sincerely, Josiah 2/26/2025
 
 ### Information
 [![tag](https://img.shields.io/github/v/tag/JosiahJack/Citadel?label=Latest%20Release)](https://github.com/JosiahJack/Citadel/releases)
@@ -71,7 +68,7 @@ Everything needed to play should be in the zip, though at first launch the path 
 ### Cyberspace Jump Points
 
 - Dev Log: https://www.systemshock.org/index.php?topic=6977.0
-- InsieDB page: https://www.indiedb.com/games/citadel
+- IndieDB page: https://www.indiedb.com/games/citadel
 - Discord: https://discord.gg/mrmkMCD
 - Docker Hub CI containers: https://hub.docker.com/repository/docker/josiahjack/citadel-ci
 - Credits: [credits.txt](https://github.com/JosiahJack/Citadel/blob/master/Assets/StreamingAssets/credits.txt)
