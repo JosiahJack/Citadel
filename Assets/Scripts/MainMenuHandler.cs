@@ -226,6 +226,7 @@ public class MainMenuHandler : MonoBehaviour {
 												"CITBARK.RES");
 		if (File.Exists(alogPath) && File.Exists(barkPath)) {
 			// Go right on into the game, all good here.
+			InitialDisplay.SetActive(false);
 			dataFound = true;
 			Config.SetVolume();
 			GoToFrontPage();
@@ -263,8 +264,8 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	void Update() {
-		if (Input.GetMouseButtonDown(0)
-			|| Input.GetMouseButtonDown(1)
+		if (Input.GetMouseButtonUp(0)
+			|| Input.GetMouseButtonUp(1)
 			|| Input.GetKeyDown(KeyCode.Escape)
 			|| Input.GetKeyDown(KeyCode.JoystickButton0)
 			|| Input.GetKeyDown(KeyCode.JoystickButton1)
@@ -272,9 +273,10 @@ public class MainMenuHandler : MonoBehaviour {
 			if ((inCutscene || IntroVideoContainer.activeSelf
 				|| DeathVideoContainer.activeSelf)
 				&& !CouldNotFindDialogue.activeSelf) {
-				if (IntroVideoContainer.activeSelf) {
+				
+				if (IntroVideoContainer.activeSelf && (Time.time - vidStartTime) > 1.5f) {
 					LeaveIntroCutscene();
-				} else if (DeathVideoContainer.activeSelf) {
+				} else if (DeathVideoContainer.activeSelf && (Time.time - vidStartTime) > 1.5f) {
 					LeaveDeathCutscene();
 				}
 

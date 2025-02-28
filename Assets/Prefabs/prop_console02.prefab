@@ -62,6 +62,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -90,6 +91,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &6447010
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -210,12 +212,11 @@ MonoBehaviour:
   health: 200
   cyberHealth: -1
   maxhealth: 0
-  levelIndex: 0
   isPlayer: 0
   isGrenade: 0
   gibOnDeath: 0
   dropItemsOnGib: 0
-  vaporizeCorpse: 1
+  vaporizeCorpse: 0
   isNPC: 0
   isObject: 1
   isIce: 0
@@ -224,8 +225,8 @@ MonoBehaviour:
   actAsCorpseOnly: 0
   gibsGetVelocity: 0
   gibVelocityBoost: {x: 0, y: 0, z: 0}
-  deathFX: 9
-  bloodType: 0
+  deathFX: 22
+  bloodType: 4
   targetOnDeath: 
   argvalue: 
   inCyberSpace: 0
@@ -340,6 +341,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -364,6 +366,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114689895886553844
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -479,5 +482,6 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0

@@ -449,7 +449,7 @@ public class Const : MonoBehaviour {
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
 		a.LoadTextures();
-		a.versionString = "v0.99.8"; // Global CITADEL PROJECT VERSION
+		a.versionString = "v0.99.9"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
 							  + "Start of C# Game Code, Welcome back Hacker!");
@@ -2031,9 +2031,6 @@ public class Const : MonoBehaviour {
 			TargetIO tio = go.GetComponent<TargetIO>();
 			if (tio != null) {
 				ud.SetBits(tio);
-			} else {
-				UnityEngine.Debug.Log("BUG: no TargetIO.cs found on " + go.name
-						+ ".  Trying to call UseTargets without parameters!");
 			}
 		}
 
@@ -2089,11 +2086,6 @@ public class Const : MonoBehaviour {
 				TargetIO tio = TargetRegister[i].GetComponent<TargetIO>();
 				tio.Targetted(tempUD);
 				succeeded = true;
-			} else {
-				UnityEngine.Debug.LogWarning("null TargetRegister "
-									  + "GameObject[] linked to targetname of "
-									  + targetname + ". Could not run "
-									  + "Targetted.");
 			}
 		}
 

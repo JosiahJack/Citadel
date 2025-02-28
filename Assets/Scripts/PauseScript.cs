@@ -305,6 +305,7 @@ public class PauseScript : MonoBehaviour {
 		DisablePauseUI();
 		saveDialog.SetActive(false); // turn off dialog
 		mainMenu.SetActive(true);
+		MainMenuHandler.a.InitialDisplay.SetActive(false);
 		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
 		GameObject loadGameIndicator = GameObject.Find("LoadGameIndicator");
 		GameObject freshGame = GameObject.Find("GameNotYetStarted");

@@ -1518,6 +1518,8 @@ public class DynamicCulling : MonoBehaviour {
         for (int i=0;i < count; i++) {
             if (npcAICs[i] == null) {
                 npcAICs.RemoveAt(i);
+                npcTransforms.RemoveAt(i);
+                npcCoords.RemoveAt(i);
                 goto label_iterate_aics; // Start over
             }
         }
@@ -1583,6 +1585,8 @@ public class DynamicCulling : MonoBehaviour {
                         //    if (mrsh != null) sourceMeshenderers.Add(mrsh);
                         // }
                     }
+                    
+                    if (dynamicMeshesHMs[i].health <= 0 && dynamicMeshesHMs[i].deathFX != PoolType.None) inPVS = false;
                 } else {
                     inPVS = true;
                 }

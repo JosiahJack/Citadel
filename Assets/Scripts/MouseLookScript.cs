@@ -1323,7 +1323,6 @@ public class MouseLookScript : MonoBehaviour {
 		ForceInventoryMode();  // Inventory mode is turned on when picking something up.
 		ResetHeldItem();
 		MouseCursor.a.liveGrenade = true;
-		PlayerHealth.a.makingNoise = true;
 		grenadeActive = true;
 		Const.sprint(Const.a.stringTable[index + 326]
 					 + Const.a.stringTable[320],player); // activated, grenade is LIVE!

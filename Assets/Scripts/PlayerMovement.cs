@@ -257,6 +257,7 @@ public class PlayerMovement : MonoBehaviour {
 			CyberDestupOrNoclipMaintain();
 		} else {
 			PlayerHealth.a.makingNoise = true; // Cyber enemies more aware.
+			PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime + 0.5f;
 		}
 
 		isSprinting = GetSprintInputState();
@@ -1086,6 +1087,9 @@ public class PlayerMovement : MonoBehaviour {
 											   transform.forward.y * burstForce,
 											   transform.forward.z * burstForce),
 											   ForceMode.Impulse);
+					
+					PlayerHealth.a.makingNoise = true;
+					PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime + 0.5f;
 					PlayerEnergy.a.TakeEnergy(22f);
 					if (BiomonitorGraphSystem.a != null) {
 						BiomonitorGraphSystem.a.EnergyPulse(22f);
@@ -1159,6 +1163,8 @@ public class PlayerMovement : MonoBehaviour {
 				float jumpSFXVolume = 1.0f;
 				if (fatigue > 80) jumpSFXVolume = 0.5f; // Quietly, we tired.
 				Utils.PlayOneShotSavable(SFX,SFXJump,jumpSFXVolume);
+				PlayerHealth.a.makingNoise = true;
+				PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime + 0.5f;
 			}
 			justJumped = false;
 		}

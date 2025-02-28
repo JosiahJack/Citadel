@@ -184,6 +184,7 @@ public class PlayerHealth : MonoBehaviour {
 		if (loadGameIndicator != null) Utils.SafeDestroy(loadGameIndicator);
 		if (freshGame != null) Utils.SafeDestroy(freshGame);
 		PauseScript.a.mainMenu.SetActive(true);
+		MainMenuHandler.a.InitialDisplay.SetActive(false);
 		MainMenuHandler.a.returnToPause = false;
 		MainMenuHandler.a.GoToFrontPage();
 		MainMenuHandler.a.PlayDeathVideo();

@@ -438,6 +438,15 @@ public class HealthManager : MonoBehaviour {
 			// things in case GetDamageTakeAmount wasn't called on dd.damage
 			// beforehand (e.g. player fall damage, internal to player only,
 			// need to protect against shield, etc, JJ 9/5/19).
+			Transform par = transform.parent;
+			if (par != null) {
+				UnityEngine.Debug.Log("Getting parent on damageable: " + par.gameObject.name);
+				PrefabIdentifier camPid = par.gameObject.GetComponent<PrefabIdentifier>();
+				if (camPid != null) {
+				    UnityEngine.Debug.Log("camPid.constIndex: " + camPid.constIndex.ToString());
+					if (camPid.constIndex == 477 && dd.attackType == AttackType.Tranq) take = health + 1; // Tranq darts kill cameras
+				}
+			}
 			health -= take;
 			if (isPlayer) {
 			    Const.a.damageReceived += take;

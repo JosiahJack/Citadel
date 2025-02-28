@@ -212,7 +212,7 @@ MonoBehaviour:
   gibsGetVelocity: 0
   gibVelocityBoost: {x: 0, y: 0, z: 0}
   deathFX: 22
-  bloodType: 0
+  bloodType: 7
   targetOnDeath: 
   argvalue: 
   inCyberSpace: 0

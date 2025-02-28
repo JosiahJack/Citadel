@@ -55,15 +55,11 @@ public class SpawnManager : MonoBehaviour {
 		int count = 0;
 		for (int i=0;i<numNPCs;i++) {
 			AIController aic = subM.childrenNPCsAICs[i];
-			if (aic == null) {
-				Debug.Log("subM.childrenNPCsAICs null!");
-				continue;
-			}
-
+			if (aic == null) continue; // Expected condition from them being blown up.
             if (!aic.gameObject.activeInHierarchy) continue;
             if (aic.healthManager.health <= 0) continue;
             if (aic.index != (index - 419) && countOnlySameIndex) continue;
-            
+
 			count++;
 		}
 		if (numberActive != count) numberActive = count;

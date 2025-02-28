@@ -654,9 +654,14 @@ public static class SaveLoad {
         }
         
         // Align to grid if not rotated
-        if (Utils.IsAxisAligned(quat) && scaleGood && curlevel != 12) {
+        float yShifted = chunk.transform.localPosition.y;
+        if (!(chunk.name == "chunk_stor1_5 (99)" || chunk.name == "chunk_stor1_5 (101)" || chunk.name == "chunk_stor1_5 (105)" || chunk.name == "chunk_stor1_5 (110)")) {
+            yShifted = Mathf.Round(chunk.transform.localPosition.y / 0.16f) * 0.16f;
+        }
+        
+        if (Utils.IsAxisAligned(quat) && scaleGood && curlevel != 12 && chunk.name != "chunk_stor1_5 (98)") {
             chunk.transform.localPosition = new Vector3(Mathf.Round(chunk.transform.localPosition.x / 2.56f) * 2.56f,
-                                                        Mathf.Round(chunk.transform.localPosition.y / 0.16f) * 0.16f, // Actual Z, stupid Unity
+                                                        yShifted, // Actual Z, stupid Unity
                                                         Mathf.Round(chunk.transform.localPosition.z / 2.56f) * 2.56f);
         } else {
             // Used https://www.h-schmidt.net/FloatConverter/IEEE754.html to

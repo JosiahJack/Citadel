@@ -517,9 +517,11 @@ public class Inventory : MonoBehaviour {
 				CheckForUnreadLogs();
 			} else {
 				SFXSource.Stop();
+				tempRefIndex = lastAddedIndex;
+				lastAddedIndex = FindNextUnreadLog();
+				if (lastAddedIndex == tempRefIndex) lastAddedIndex = -1;
+				CheckForUnreadLogs();
 				Const.sprint("Log playback stopped");
-				if (tempRefIndex != -1) lastAddedIndex = tempRefIndex;
-				tempRefIndex = -1;
 			}
 		}
 		//--- End Logs ---
@@ -1088,7 +1090,7 @@ public class Inventory : MonoBehaviour {
 		SFXSource.Stop();
 		if (!Inventory.a.hasHardware[2]) return;
 
-		Utils.PlayUIOneShotSavable(Const.a.audioLogs[logIndex]); // Play the log audio
+		Utils.PlayOneShotSavable(SFXSource,Const.a.audioLogs[logIndex],((float)Const.a.AudioVolumeMessage)/100f); // Play the log audio
 		if (!readLog[logIndex]) QuestLogNotesManager.a.LogAdded(logIndex);
 		readLog[logIndex] = true;
 		if (Const.a.audioLogType[logIndex] == AudioLogType.Vmail) {
