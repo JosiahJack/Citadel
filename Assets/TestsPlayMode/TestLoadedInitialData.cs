@@ -280,6 +280,7 @@ namespace Tests {
                 if (tio == null) continue;
 
                 if (!string.IsNullOrWhiteSpace(tio.targetname)) {
+                    if (allGOs[i].name.Contains("SecScreen")) UnityEngine.Debug.Log("Added targetname: " + tio.targetname + ", for sec screen camera: " + allGOs[i].name);
                     targetNames.Add(tio.targetname);
                 }
             }

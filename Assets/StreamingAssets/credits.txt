@@ -54,10 +54,10 @@ Nameless Voice for fluid midis
 Mark Heath for NAudio
 
 -Misc Code-
-lerenwe, Benjamin Stanley, cxong, Eric Haines(Eric5h5)
-Keijiro Takahashi, Morgan McGuire, Michael Mara, NVIDIA,
-Williams College, Casual Effects, Unity Technologies,
-Jeff Johnson, WeaverDev, Nishad Tardalkar
+lerenwe, Benjamin Stanley(HeadClot), cxong, Eric Haines(Eric5h5)
+Keijiro Takahashi, Morgan McGuire, Michael Mara, NVIDIA, yasirkula,
+Williams College, Casual Effects, Unity Technologies, Quix0r,
+Jeff Johnson, WeaverDev, Nishad Tardalkar, Pacmikey, Fredrik Ludvigsen
 #
 -Playtesters-
 sverXRazum, Xkilljoy98, Berethraben,
@@ -301,6 +301,12 @@ by Leslie Young aka plyoung
 
 Texture2DArray Import Pipeline
 by Peter Schraut
+
+LightningBolt
+by Jeff Johnson
+
+Simple File Browser
+by yasirkula
 #
 ----------------------------------------------------------------------
 Protoype Tools for when this project
@@ -326,7 +332,7 @@ Robert (Tr3B) Beckebans, and CoDEmanX
 Prototype Model Converter (.md3 to .mdl): md3tomdl
 by Preach for converting 3d model files to Quake 1 format
 
-Prototype Particle Font: Particle Font		
+Prototype Particle Font: Particle Font
 by talisa
 
 Prototype Colormap PCX: FULL.PCX
