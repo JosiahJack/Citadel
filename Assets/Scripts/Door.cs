@@ -145,6 +145,8 @@ public class Door : MonoBehaviour {
 	}
 	
 	public void DoorActuate() {
+		asi = anim.GetCurrentAnimatorStateInfo(defIndex);
+		animatorPlaybackTime = asi.normalizedTime;
 		if (doorOpen == DoorState.Open && animatorPlaybackTime > 0.95f) {
 			doorOpen = DoorState.Closing;
 			CloseDoor();

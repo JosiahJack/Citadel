@@ -139,9 +139,11 @@ public class TargetIO : MonoBehaviour {
 		}
 
 		if (tempUD.doorUnlock) {
+// 			UnityEngine.Debug.Log("Attempting to unlock door on " + gameObject.name);
 			Door dr = GetComponent<Door>();
 			if (dr != null) {
 				dr.Unlock();
+// 				if (!dr.locked) UnityEngine.Debug.Log("Unlock successful on " + gameObject.name);
 				dr.accessCardUsedByPlayer = true;
 			}
 		} // Unlock before open or toggle
@@ -167,9 +169,12 @@ public class TargetIO : MonoBehaviour {
 		}
 		
 		if (tempUD.doorToggle) {
+// 			UnityEngine.Debug.Log("Attempting to toggle door's open/closed state on " + gameObject.name);
 			Door dr = GetComponent<Door>();
 			if (dr != null) {
+				DoorState drprev = dr.doorOpen;
 				dr.DoorActuate();
+// 				if (dr.doorOpen != drprev) UnityEngine.Debug.Log("Successfully to toggled door's open/closed state on " + gameObject.name);
 			}
 		}
 		
