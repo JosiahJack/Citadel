@@ -1442,7 +1442,7 @@ public class AIController : MonoBehaviour {
 			if (!healthManager.actAsCorpseOnly) {
 				Utils.Deactivate(healthManager.linkedOverlay.gameObject);
 				SFXIndex = Const.a.sfxDeathForNPC[index];
-				Utils.PlayTempAudio(sightPoint.transform.position,Const.a.sounds[SFXIndex]);
+				Utils.PlayOneShotSavable(SFX,SFXIndex);
 			}
 
 			if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly

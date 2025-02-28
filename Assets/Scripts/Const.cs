@@ -449,7 +449,7 @@ public class Const : MonoBehaviour {
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
 		a.LoadTextures();
-		a.versionString = "v0.99.7"; // Global CITADEL PROJECT VERSION
+		a.versionString = "v0.99.8"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
 							  + "Start of C# Game Code, Welcome back Hacker!");

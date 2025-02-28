@@ -115,6 +115,7 @@ public class MainMenuHandler : MonoBehaviour {
 	public ConfigurationMenuModelDetailApply mdlDetApply;
 
 	[HideInInspector] public bool returnToPause = false;
+	[HideInInspector] public bool fileBrowserOpen = false;
 	public bool dataFound = false;
 	private enum Pages : byte {fp,sp,mp,np,lp,op,sv,cd};
 	private Pages currentPage;
@@ -771,9 +772,12 @@ public class MainMenuHandler : MonoBehaviour {
 		// Path folder: folder, Allow multiple selection: false
 		// Initial path: default (Documents), Title: "Load File", submit button
 		// text: "Load"
+		fileBrowserOpen = true;
 		yield return FileBrowser.WaitForLoadDialog(true,false,
 												   System.String.Empty,
 												   "Select Path","Select");
+		
+		fileBrowserOpen = false;
 		// Dialog is closed
 		// Print whether the user has selected a folder path or cancelled the
 		// operation (FileBrowser.Success).

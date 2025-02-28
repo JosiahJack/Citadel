@@ -916,7 +916,7 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void Cull_Init() {
-        UnityEngine.Debug.Log("Cull_Init: Start");
+//         UnityEngine.Debug.Log("Cull_Init: Start");
         // Populate LOD (Level of Detail) Meshes for farther chunks.
         // This creates a prepopulated list of quads (2 tris each) with vertex
         // color Red channel set to the index into the Texture2DArray for the
