@@ -555,11 +555,8 @@ public class WeaponFire : MonoBehaviour {
 
     // index is used to get recoil down at the bottom and pass along ref for damageData, otherwise the cases use WeaponCurrent.a.weaponIndex
     void FireWeapon(int index, bool isSilent) {
-		if (WeaponCurrent.a.weaponIndex != 41 && WeaponCurrent.a.weaponIndex != 42) {
-			PlayerHealth.a.makingNoise = true;
-			PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime + 0.5f;
-		}
-
+		PlayerHealth.a.makingNoise = true;
+		PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime + 0.5f;
         switch (WeaponCurrent.a.weaponIndex) {
             case 36:
                 //Mark3 Assault Rifle
