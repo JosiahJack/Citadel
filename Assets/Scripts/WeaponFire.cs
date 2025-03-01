@@ -484,24 +484,36 @@ public class WeaponFire : MonoBehaviour {
 		if (reloadFinished >= PauseScript.a.relativeTime) return;
 		if (!GetInput.a.ChangeAmmoType()) return;
 
-		if (Const.a.InputQuickReloadWeapons) {
-			// Press change ammo type button once, to both unload then reload.
-			WeaponCurrent.a.ChangeAmmoType();
-		} else {
-			// First press ammo type button to unload, then again to load.
-			int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
-			if (wep16index < 0) return;
-
-			int ammoAvailable = 0;
-			if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
-				ammoAvailable = Inventory.a.wepAmmoSecondary[wep16index];
-			} else {
-				ammoAvailable = Inventory.a.wepAmmo[wep16index];
-			}
-
-			if (ammoAvailable <= 0) WeaponCurrent.a.ChangeAmmoType();
-			else WeaponCurrent.a.Unload(false);
-		}
+		WeaponCurrent.a.ChangeAmmoType();
+// 		if (Const.a.InputQuickReloadWeapons) {
+// 			// Press change ammo type button once, to both unload then reload.
+// 			WeaponCurrent.a.ChangeAmmoType();
+// 		} else {
+// 			// First press ammo type button to unload, then again to load.
+// 			int wep16index = WeaponFire.Get16WeaponIndexFromConstIndex(WeaponCurrent.a.weaponIndex);
+// 			if (wep16index < 0) return;
+// 
+// 			int ammoAvailable = 0;
+// 			if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
+// 				ammoAvailable = Inventory.a.wepAmmoSecondary[wep16index];
+// 			} else {
+// 				ammoAvailable = Inventory.a.wepAmmo[wep16index];
+// 			}
+// 
+// 			if (ammoAvailable <= 0) WeaponCurrent.a.ChangeAmmoType();
+// 			else {
+// 				if (Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]) {
+// 									WeaponCurrent.a.Unload(false);
+// 
+// 				} else if () {
+// 					
+// 						WeaponCurrent.a.Unload(false);
+// 				}
+// 				} else {
+// 					WeaponCurrent.a.ChangeAmmoType();
+// 				}
+// 			}
+// 		}
 	}
 
 	public void FireCyberWeapon() {
