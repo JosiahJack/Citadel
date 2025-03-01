@@ -124,8 +124,10 @@ public class AIController : MonoBehaviour {
 	private static float searchTime = 5f;
 
 	public void Tranquilize() {
-		tranquilizeFinished = PauseScript.a.relativeTime
-							  + Const.a.timeForTranquilizationForNPC[index];
+		if (Const.a.typeForNPC[index] != NPCType.Robot) {
+			tranquilizeFinished = PauseScript.a.relativeTime
+								  + Const.a.timeForTranquilizationForNPC[index];
+		}
 	}
 
 	private void DeactivateMeleeColliders() {

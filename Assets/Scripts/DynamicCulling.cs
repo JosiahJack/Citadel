@@ -1915,7 +1915,6 @@ public class DynamicCulling : MonoBehaviour {
         if (PauseScript.a.MenuActive()) return;
         if (PauseScript.a.Paused()) return;
         if (!cullEnabled || lev == 13) return;
-		if (PlayerMovement.a.ressurectingFinished > PauseScript.a.relativeTime) return;
 
         // Now handle player position updating PVS. Always do UpdatedPlayerCell
         // to set playerCellX and playerCellY.

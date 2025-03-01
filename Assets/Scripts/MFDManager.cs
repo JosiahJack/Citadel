@@ -551,16 +551,18 @@ public class MFDManager : MonoBehaviour  {
 	// Handles returning UI back to how it was before clearing the board.
 	public void CloseFullmap() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
-		ctbButtonMain.SetActive(true);
-		ctbButtonHardware.SetActive(true);
-		ctbButtonGeneral.SetActive(true);
-		CenterTabButtonClickSilent(curCenterTab,true);
-		tabButtonsLHButtons.SetActive(true);
-		tabButtonsRHButtons.SetActive(true);
-		TabReset(true); // right
-		TabReset(false); // left
-		ReturnToLastTab(true);
-		ReturnToLastTab(false);
+		if (!Const.a.noHUD) {
+			ctbButtonMain.SetActive(true);
+			ctbButtonHardware.SetActive(true);
+			ctbButtonGeneral.SetActive(true);
+			CenterTabButtonClickSilent(curCenterTab,true);
+			tabButtonsLHButtons.SetActive(true);
+			tabButtonsRHButtons.SetActive(true);
+			TabReset(true); // right
+			TabReset(false); // left
+			ReturnToLastTab(true);
+			ReturnToLastTab(false);
+		}
 	}
 
 	// Called by MouseLookScript.cs

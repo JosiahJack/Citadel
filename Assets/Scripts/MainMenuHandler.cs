@@ -613,6 +613,7 @@ public class MainMenuHandler : MonoBehaviour {
 		configCamera.targetTexture.Release();
 		configCamera.targetTexture.width = Screen.width;
 		configCamera.targetTexture.height = Screen.height;
+		configCamera.fieldOfView = Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().fieldOfView;
 		Grayscale gsc = configCamera.gameObject.GetComponent<Grayscale>();
 		Grayscale gscMain = Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<Grayscale>();
 		if (gsc != null && gscMain != null) gsc.enabled = gscMain.enabled;

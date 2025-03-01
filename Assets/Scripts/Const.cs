@@ -1899,6 +1899,8 @@ public class Const : MonoBehaviour {
 		}
 		loadPercentText.text = "Re-init cull systems...";
 		yield return new WaitForSeconds(0.05f);
+		DynamicCulling.a.Cull_Init();
+		DynamicCulling.a.CullCore();
 		loadPercentText.text = "Cleaning Up...";
 		yield return new WaitForSeconds(0.1f);
 

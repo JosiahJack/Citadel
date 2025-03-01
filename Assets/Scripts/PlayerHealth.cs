@@ -15,7 +15,7 @@ public class PlayerHealth : MonoBehaviour {
 	private float mediPatchPulseTime = 0.5f;
 	private float mediPatchHealAmount = 8f;
 	[HideInInspector] public bool radiationArea = false; // save
-	private float radiationBleedOffFinished = 0f;
+	[HideInInspector] public  float radiationBleedOffFinished = 0f;
 	private float radiationBleedOffTime = 1.8f;
 	private float radiationReductionAmount = 1f;
 	private float radiationHealthDamageRatio = 0.1f;
@@ -134,6 +134,8 @@ public class PlayerHealth : MonoBehaviour {
 	
 	void PlayerDying() {
 		timer += Time.deltaTime;
+		radiationArea = false;
+		radiated = 0;
 		makingNoise = false;
 		MFDManager.a.DrawTicks(true);
 		if (timer >= resetAfterDeathTime) {
@@ -275,6 +277,8 @@ public class PlayerHealth : MonoBehaviour {
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(ph.radSoundFinished,"radSoundFinished"));
 		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(ph.radiationBleedOffFinished,"radiationBleedOffFinished"));
+		s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(ph.radFXFinished,"radFXFinished"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(ph.deaths,"deaths"));
@@ -295,6 +299,7 @@ public class PlayerHealth : MonoBehaviour {
 		ph.lastHealth = Utils.GetFloatFromString(entries[index],"lastHealth"); index++;
 		ph.painSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index],"painSoundFinished"); index++;
 		ph.radSoundFinished = Utils.LoadRelativeTimeDifferential(entries[index],"radSoundFinished"); index++;
+		ph.radiationBleedOffFinished = Utils.LoadRelativeTimeDifferential(entries[index],"radiationBleedOffFinished"); index++;
 		ph.radFXFinished = Utils.LoadRelativeTimeDifferential(entries[index],"radFXFinished"); index++;
 		ph.deaths = Utils.GetIntFromString(entries[index],"deaths"); index++;
 		ph.ressurections = Utils.GetIntFromString(entries[index],"ressurections"); index++;

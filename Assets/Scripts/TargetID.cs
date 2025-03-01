@@ -81,6 +81,7 @@ public class TargetID : MonoBehaviour {
 		}
 
 		gameObject.SetActive(false); // put back into pool
+		Destroy(this.gameObject);
 	}
 
     void Update() {

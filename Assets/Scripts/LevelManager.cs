@@ -286,9 +286,10 @@ public class LevelManager : MonoBehaviour {
 		}
 		
 		PostLoadLevelSetupSystems();
-		if (currentLevel != 13) DynamicCulling.a.Cull_Init();
-		DynamicCulling.a.forceRecull = true;
-// 		Debug.Log("Marked DynamicCulling as forceRecull so next frame it runs culling again to be sure player's culling is correct.");		
+		if (currentLevel != 13) {
+			DynamicCulling.a.Cull_Init();
+			DynamicCulling.a.CullCore();
+		}
 	}
 
 	public void LoadLevelFromSave(int levnum) {

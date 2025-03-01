@@ -8,7 +8,7 @@ Shader "Custom/ViewWeapons" {
 
 	SubShader {
 		Tags {"RenderType"="Opaque"}
-		Cull Off ZWrite Off ZTest Off
+		ZWrite On ZTest Off
 		Lighting On
         Cull Back
 

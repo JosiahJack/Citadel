@@ -440,10 +440,8 @@ public class HealthManager : MonoBehaviour {
 			// need to protect against shield, etc, JJ 9/5/19).
 			Transform par = transform.parent;
 			if (par != null) {
-				UnityEngine.Debug.Log("Getting parent on damageable: " + par.gameObject.name);
 				PrefabIdentifier camPid = par.gameObject.GetComponent<PrefabIdentifier>();
 				if (camPid != null) {
-				    UnityEngine.Debug.Log("camPid.constIndex: " + camPid.constIndex.ToString());
 					if (camPid.constIndex == 477 && dd.attackType == AttackType.Tranq) take = health + 1; // Tranq darts kill cameras
 				}
 			}
@@ -494,7 +492,7 @@ public class HealthManager : MonoBehaviour {
 	void Death(bool energyVaporized) {
 		if (!deathDone) {
 			UseDeathTargets();
-			if (vaporizeCorpse && !isSecCamera) VaporizeCorpse(energyVaporized);
+			if (vaporizeCorpse && !isSecCamera && !isGrenade) VaporizeCorpse(energyVaporized);
 			else if (isObject) ObjectDeath();
 			else if (isScreen) ScreenDeath();
 			else if (teleportOnDeath) TeleportAway();
@@ -609,8 +607,8 @@ public class HealthManager : MonoBehaviour {
 			case 475: soundex = 62; break; // se_crate4: crate_break
 			case 476: soundex = 62; break; // se_crate5: crate_break
 			case 477: soundex = 61; break; // sec_camera: camera_destroy
-			case 478: soundex = 69; break; // sec_cpunode: screen_destroy
-			case 479: soundex = 61; break; // sec_cpunode_small: camera_destroy
+			case 478: soundex = 65; break; // sec_cpunode: explosion2
+			case 479: soundex = 69; break; // sec_cpunode_small: screen_destroy
 			
 			case 525: soundex = 68; break; // prop_console01: hit3
 			case 526: soundex = 68; break; // prop_console02: hit3

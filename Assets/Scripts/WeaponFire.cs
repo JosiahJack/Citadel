@@ -944,7 +944,7 @@ public class WeaponFire : MonoBehaviour {
 			tid.damageTimeFinished = PauseScript.a.relativeTime + tid.lifetime;
 			tid.lifetimeFinished = PauseScript.a.relativeTime + tid.lifetime;
 		} else {
-			tid.damageTime = 1f;
+			tid.damageTime = 2.5f;
 			tid.lifetime = 9999999f;
 			tid.lifetimeFinished = PauseScript.a.relativeTime + tid.lifetime;
 		}
@@ -1094,10 +1094,8 @@ public class WeaponFire : MonoBehaviour {
 		}
 
 		float dmgFinal = 0f;
-		bool dartTranq = (wep16Index == 2
-		  && Inventory.a.wepLoadedWithAlternate[WeaponCurrent.a.weaponCurrent]);
 		GameObject hitGO = tempHit.collider.transform.gameObject;
-        if (tempHM != null && tempHM.health > 0 && !dartTranq) {
+        if (tempHM != null && tempHM.health > 0) {
 			damageData.damage *= 0.8f; // Bit of heavy handed rebalancing lol.
 			dmgFinal = tempHM.TakeDamage(damageData); // send the damageData container to HealthManager of hit object and apply damage
 			damageData.impactVelocity += damageData.damage;
@@ -1110,7 +1108,6 @@ public class WeaponFire : MonoBehaviour {
 		}
 
 		if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
-		if (dartTranq) dmgFinal = -2f;
 		if (damageData.attackType == AttackType.Tranq) dmgFinal = -2f;
 		CreateTargetIDInstance(dmgFinal,tempHM);
 

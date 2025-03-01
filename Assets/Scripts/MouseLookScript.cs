@@ -1215,7 +1215,7 @@ public class MouseLookScript : MonoBehaviour {
 		MouseCursor.a.justDroppedItemInHelper = true;
 	}
 
-	public void ToggleInventoryMode (){
+	public void ToggleInventoryMode() {
 		if (inventoryMode)	ForceShootMode();
 		else				ForceInventoryMode();
 	}
