@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 23974811842324288}
   - component: {fileID: 135300872100818276}
   - component: {fileID: 2067304493681413656}
+  - component: {fileID: 2498168929553084660}
   m_Layer: 0
   m_Name: prop_foliage_fernblueflower
   m_TagString: Untagged
@@ -30,7 +31,9 @@ Transform:
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 26.903, y: -43.271, z: 18.613}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 7484284476418255544}
+  - {fileID: 5535327971859744710}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -109,3 +112,222 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   constIndex: 563
+--- !u!205 &2498168929553084660
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1948870817968062}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0.0019379854, y: -0.0029414892, z: 0.14399806}
+  m_Size: 1.20285
+  m_FadeMode: 1
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.3129863
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 23974811842324288}
+  - screenRelativeHeight: 0.175014
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 8617261644667326935}
+  - screenRelativeHeight: 0.07509988
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6672720196029136041}
+  m_Enabled: 1
+--- !u!1001 &5430169122673958957
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 4072144252232400}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0a1a9d5df9970e585975ddc2a63b599e, type: 2}
+    - target: {fileID: 919132149155446097, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_Name
+      value: foliage_fern_lod2
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: e63fe53f726100a40bc82acef0f36c26,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e63fe53f726100a40bc82acef0f36c26, type: 3}
+--- !u!4 &5535327971859744710 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e63fe53f726100a40bc82acef0f36c26,
+    type: 3}
+  m_PrefabInstance: {fileID: 5430169122673958957}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6672720196029136041 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: e63fe53f726100a40bc82acef0f36c26,
+    type: 3}
+  m_PrefabInstance: {fileID: 5430169122673958957}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6942083796180929875
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 4072144252232400}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0a1a9d5df9970e585975ddc2a63b599e, type: 2}
+    - target: {fileID: 919132149155446097, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_Name
+      value: foliage_fern_lod1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4a4a0718e3ce68e808798b26fac3f07f, type: 3}
+--- !u!4 &7484284476418255544 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+    type: 3}
+  m_PrefabInstance: {fileID: 6942083796180929875}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8617261644667326935 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 4a4a0718e3ce68e808798b26fac3f07f,
+    type: 3}
+  m_PrefabInstance: {fileID: 6942083796180929875}
+  m_PrefabAsset: {fileID: 0}

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 33250516588050406}
   - component: {fileID: 23876875057265928}
   - component: {fileID: -274804983824679688}
+  - component: {fileID: 3556864499288048465}
   m_Layer: 0
   m_Name: prop_grass1
   m_TagString: Untagged
@@ -95,3 +96,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   constIndex: 568
+--- !u!205 &3556864499288048465
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228454927489728}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 13.471166, y: -21.551395, z: 9.776666}
+  m_Size: 43.502792
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.049237814
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 23876875057265928}
+  - screenRelativeHeight: 0.049237814
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 0}
+  - screenRelativeHeight: 0.049237814
+    fadeTransitionWidth: 0
+    renderers: []
+  m_Enabled: 1

@@ -201,7 +201,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 3
 --- !u!114 &114574425329509362
 MonoBehaviour:
@@ -233,6 +233,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rbody: {fileID: 0}
+  previousUseGravity: 0
+  previousKinematic: 0
+  previouscolDetMode: 0
+  previousSet: 0
 --- !u!114 &996086194309180737
 MonoBehaviour:
   m_ObjectHideFlags: 0

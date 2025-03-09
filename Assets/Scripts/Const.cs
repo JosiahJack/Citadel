@@ -558,19 +558,7 @@ public class Const : MonoBehaviour {
 			mainFont2.material.mainTexture.filterMode = FilterMode.Point;
 		}
 
-		PauseRigidbody[] prbTemp = FindObjectsOfType<PauseRigidbody>();
-		for (int i=0;i<prbTemp.Length;i++) prb.Add(prbTemp[i]);
-
-		 // P.P.S. PP. That's funny right there.  ...What?  I have kids.
-		PauseParticleSystem[] ppses = FindObjectsOfType<PauseParticleSystem>();
-		for (int i=0;i<ppses.Length;i++) psys.Add(ppses[i]);
-
-		PauseAnimation[] panims = FindObjectsOfType<PauseAnimation>();
-		for (int i=0;i<panims.Length;i++) panimsList.Add(panims[i]);
-
-		ObjectContainmentSystem.FindAllFloorGOs();
-		ObjectContainmentSystem.UpdateActiveFlooring();
-
+		ResetPauseLists();
 		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");
 		GameObject loadGameIndicator = GameObject.Find("LoadGameIndicator");
 		if (loadGameIndicator != null) {
@@ -596,6 +584,24 @@ public class Const : MonoBehaviour {
 			Utils.SafeDestroy(newGameIndicator);
 			GoIntoGame();				  // Start of the game!!
 		}
+	}
+	
+	public void ResetPauseLists() {
+		prb.Clear();
+		psys.Clear();
+		panimsList.Clear();
+		PauseRigidbody[] prbTemp = FindObjectsOfType<PauseRigidbody>();
+		for (int i=0;i<prbTemp.Length;i++) prb.Add(prbTemp[i]);
+
+		 // P.P.S. PP. That's funny right there.  ...What?  I have kids.
+		PauseParticleSystem[] ppses = FindObjectsOfType<PauseParticleSystem>();
+		for (int i=0;i<ppses.Length;i++) psys.Add(ppses[i]);
+
+		PauseAnimation[] panims = FindObjectsOfType<PauseAnimation>();
+		for (int i=0;i<panims.Length;i++) panimsList.Add(panims[i]);
+
+		ObjectContainmentSystem.FindAllFloorGOs();
+		ObjectContainmentSystem.UpdateActiveFlooring();	
 	}
 
 	IEnumerator InitializeEventSystem () {
@@ -1563,7 +1569,6 @@ public class Const : MonoBehaviour {
 
 		// Remove and clear out everything and reset any lists.
 		ClearActiveAutomapOverlays();
-// 		UnityEngine.Debug.Log("CLEARING TARGET REGISTRIES FOR LOAD!");
 		TargetRegister.Clear();
 		TargetnameRegister.Clear();
 		for (i=0;i<healthObjectsRegistration.Length;i++) {
@@ -1574,12 +1579,6 @@ public class Const : MonoBehaviour {
 		for (i=0;i<14;i++) {
 			LevelManager.a.UnloadLevelDynamicObjects(i,false); // Delete them all!
 			LevelManager.a.UnloadLevelNPCs(i); // Delete them all!
-			LevelManager.a.levelCameraCount[i] = 0;
-			LevelManager.a.levelSmallNodeCount[i] = 0;
-			LevelManager.a.levelLargeNodeCount[i] = 0;
-			LevelManager.a.levelCameraDestroyedCount[i] = 0;
-			LevelManager.a.levelSmallNodeDestroyedCount[i] = 0;
-			LevelManager.a.levelLargeNodeDestroyedCount[i] = 100;
 			loadPercentText.text = "Preparing level " + i.ToString();
 			yield return new WaitForSeconds(0.1f); // Update progress text.
 		}
@@ -1897,6 +1896,7 @@ public class Const : MonoBehaviour {
 				}
 			}
 		}
+		ResetPauseLists();
 		loadPercentText.text = "Re-init cull systems...";
 		yield return new WaitForSeconds(0.05f);
 		DynamicCulling.a.Cull_Init();

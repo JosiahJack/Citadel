@@ -9,7 +9,7 @@ public class HealthManager : MonoBehaviour {
 
 	// External references, optional
 	/*[DTValidator.Optional] */public SearchableItem searchableItem; // Not used universally.  Some objects can be destroyed but not searched, such as barrels.
-	[HideInInspector] public Image linkedOverlay;
+	public Image linkedOverlay;
 	public SecurityType securityAffected; // Not a reference, needs no optional flag, if using DTValidator that is.
 	/*[DTValidator.Optional] */public GameObject teleportEffect;
 	/*[DTValidator.Optional] */public GameObject[] gibObjects;
@@ -142,6 +142,8 @@ public class HealthManager : MonoBehaviour {
 		GameObject overlay = Const.a.GetObjectFromPool(pt);
 		if (overlay != null) {
 			linkedOverlay = overlay.GetComponent<Image>();
+			Utils.EnableImage(linkedOverlay); // Enable on automap.
+			Utils.Activate(overlay); // Mark as used.
 		} else {
 			Debug.Log("BUG: No automap icon type " + pt.ToString());
 		}
@@ -157,9 +159,9 @@ public class HealthManager : MonoBehaviour {
 				if (Inventory.a.NavUnitVersion() <= 1) return;
 			}
 		}
-		if (Automap.a == null) return; // Attempting to link from editor save (dynamic objects export).
-		Automap.a.TurnOnLinkedOverlay(linkedOverlay,health,gameObject,isNPC);
-		Automap.a.SetLinkedOverlayPos(linkedOverlay,health,gameObject);
+
+		Automap.TurnOnLinkedOverlay(linkedOverlay,health,gameObject,isNPC);
+		Automap.SetLinkedOverlayPos(linkedOverlay,health,gameObject);
 	}
 
 	void OnDisable() {

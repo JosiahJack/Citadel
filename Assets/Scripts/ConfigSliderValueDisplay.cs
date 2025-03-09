@@ -8,7 +8,7 @@ public class ConfigSliderValueDisplay : MonoBehaviour {
 	// Internal references
 	private Text self;
 
-	void Awake () {
+	void Awake() {
 		self = GetComponent<Text>();
 		if (self == null) Debug.Log("BUG: No Slider component for self on ConfigSliderValueDisplay.");
 		if (slideControl == null) Debug.Log("BUG: ConfigSliderValueDisplay missing manually assigned reference for slideControl.");

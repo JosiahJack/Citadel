@@ -29,7 +29,7 @@ public class ButtonSwitch : MonoBehaviour {
 	private AudioSource SFXSource;
 	private MeshRenderer mRenderer; // Optional depending on (changeMatOnActive
 	                                // || blinkWhenActive)
-	private Animator anim;
+	[HideInInspector] public Animator anim;
 	private GameObject player; // Set on use, no need for initialization check.
 	private float tickTime = 1.5f;
 	private bool awakeInitialized = false;
@@ -38,8 +38,9 @@ public class ButtonSwitch : MonoBehaviour {
 	[HideInInspector] public float delayFinished; // save
 	[HideInInspector] public float tickFinished; // save
 	[HideInInspector] public bool alternateOn; // save
+	[HideInInspector] public string currentClipName; // save
 
-	public void Awake () {
+	public void Awake() {
 		if (awakeInitialized) return;
 
 		SFXSource = GetComponent<AudioSource>();
@@ -49,7 +50,10 @@ public class ButtonSwitch : MonoBehaviour {
 		
 		mRenderer = GetComponent<MeshRenderer>();
 		delayFinished = 0; // prevent using targets on awake
-		if (animateModel) anim = GetComponent<Animator>();
+		if (animateModel) {
+			anim = GetComponent<Animator>();
+			anim.keepAnimatorStateOnDisable = true;
+		}
 		if (active) {
 		    tickFinished = PauseScript.a.relativeTime + 1.5f + Random.value;
 		}
@@ -109,8 +113,10 @@ public class ButtonSwitch : MonoBehaviour {
 		if (animateModel) {
 			if (active) {
 				anim.Play("Activating");
+				currentClipName = "Activating";
 			} else {
 				anim.Play("Deactivating");
+				currentClipName = "Deactivating";
 			}
 		}
 	}
@@ -194,6 +200,21 @@ public class ButtonSwitch : MonoBehaviour {
 		s1.Append(Utils.SaveRelativeTimeDifferential(bs.delayFinished,"delayFinished"));
 	    s1.Append(Utils.splitChar);
 		s1.Append(Utils.SaveRelativeTimeDifferential(bs.tickFinished,"tickFinished"));
+		s1.Append(Utils.splitChar);
+		if (bs.animateModel) {
+			if (bs.anim == null) bs.anim = bs.gameObject.GetComponent<Animator>();
+			if (bs.gameObject.activeInHierarchy) {
+				AnimatorStateInfo asi = bs.anim.GetCurrentAnimatorStateInfo(0);
+				s1.Append(Utils.FloatToString(asi.normalizedTime,"asi.normalizedTime"));
+			} else {
+				if (bs.active && bs.currentClipName == "Activating") s1.Append(Utils.FloatToString(1f,"asi.normalizedTime"));
+				else s1.Append(Utils.FloatToString(0f,"asi.normalizedTime"));
+			}
+		} else {
+			s1.Append(Utils.FloatToString(0f,"asi.normalizedTime"));
+		}
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(bs.currentClipName,"currentClipName"));
 		return s1.ToString();
 	}
 
@@ -212,15 +233,32 @@ public class ButtonSwitch : MonoBehaviour {
 		bs.active = Utils.GetBoolFromString(entries[index],"active"); index++;
 		bs.alternateOn = Utils.GetBoolFromString(entries[index],"alternateOn"); index++;
 		bs.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index],"delayFinished"); index++;
+		if ((bs.delayFinished - PauseScript.a.relativeTime) > bs.delay) {
+			bs.delayFinished = PauseScript.a.relativeTime + bs.delay;
+		}
+		
 		bs.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],"tickFinished"); index++;
 		if ((bs.tickFinished - PauseScript.a.relativeTime) > bs.tickTime) {
 			bs.tickFinished = PauseScript.a.relativeTime + bs.tickTime;
 		}
 
-		if ((bs.delayFinished - PauseScript.a.relativeTime) > bs.delay) {
-			bs.delayFinished = PauseScript.a.relativeTime + bs.delay;
+		float animTime = Utils.GetFloatFromString(entries[index],"asi.normalizedTime"); index++;
+		string loadedClipName = Utils.LoadString(entries[index],"currentClipName"); index++;
+		if (bs.animateModel) {
+			bs.anim = bs.gameObject.GetComponent<Animator>();
+			bs.anim.keepAnimatorStateOnDisable = true;
+			Transform originalParent = bs.transform.parent;
+			if (originalParent != null) {
+				bs.transform.parent = null;
+				bool wasActive = bs.gameObject.activeSelf;
+				bs.gameObject.SetActive(true);
+				bs.anim.Play(loadedClipName,0,animTime);
+				bs.gameObject.SetActive(wasActive);
+				bs.transform.parent = originalParent;
+			} else {
+				if (bs.gameObject.activeInHierarchy) bs.anim.Play(loadedClipName,0,animTime);
+			}
 		}
-
 		return index;
 	}
 }

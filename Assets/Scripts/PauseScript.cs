@@ -236,9 +236,21 @@ public class PauseScript : MonoBehaviour {
 			disableUIOnPause[i].SetActive(true);
 		}
 
-		for (int k=0;k<Const.a.prb.Count;k++) Const.a.prb[k].UnPause();
-		for (int k=0;k<Const.a.psys.Count;k++) Const.a.psys[k].UnPause();
+		for (int k=0;k<Const.a.prb.Count;k++) {
+			if (Const.a.prb[k] == null) continue;
+			
+			Const.a.prb[k].UnPause();
+		}
+		
+		for (int k=0;k<Const.a.psys.Count;k++) {
+			if (Const.a.psys[k] == null) continue;
+			
+			Const.a.psys[k].UnPause();
+		}
+		
 		for (int k=0;k<Const.a.panimsList.Count;k++) {
+			if (Const.a.panimsList[k] == null) continue;
+			
 			Const.a.panimsList[k].UnPause();
 		}
 

@@ -513,7 +513,7 @@ public class Automap : MonoBehaviour {
 	}
 
 	// Convert from Worldspace into Automapspace
-	public Vector3 GetMapPos(Vector3 worldPos) {
+	public static Vector3 GetMapPos(Vector3 worldPos) {
 		float mapWidth = (Const.a.mapWorldMaxW - Const.a.mapWorldMaxE);
 		float mapHeight = (Const.a.mapWorldMaxN - Const.a.mapWorldMaxS);
 		float ewOffset = (worldPos.z - Const.a.mapWorldMaxE);
@@ -527,20 +527,19 @@ public class Automap : MonoBehaviour {
 		// 34.16488, -45.08, 0.4855735
 		// x = ((0.6384575295) * 1008f) + 8;
 		// x = 651
-		tempVec = new Vector3(0f,0f);
-		tempVec.y = ((ewOffset/mapWidth) * 1008f) + Const.a.mapTileMinX;
-		tempVec.x = ((nsOffset/mapHeight) * 1008f) + Const.a.mapTileMinY;
-		tempVec.z = -0.03f; // Always moved to be behind the fog of war tiles.
-		return tempVec;
+		Vector3 retval = new Vector3(0f,0f,0f);
+		retval.y = ((ewOffset/mapWidth) * 1008f) + Const.a.mapTileMinX;
+		retval.x = ((nsOffset/mapHeight) * 1008f) + Const.a.mapTileMinY;
+		retval.z = -0.03f; // Always moved to be behind the fog of war tiles.
+		return retval;
 	}
 
-	public void TurnOnLinkedOverlay(Image over, float health, GameObject go,
+	public static void TurnOnLinkedOverlay(Image over, float health, GameObject go,
 									bool isNPC) {
 		if (over == null) return;
 
-		if (health > 0 && ((isNPC && Inventory.a.NavUnitVersion() > 1)
-						   || !isNPC)) {
-
+		bool navVersionFine = Inventory.a != null ? Inventory.a.NavUnitVersion() > 1 : false;
+		if (health > 0 && ((isNPC && navVersionFine) || !isNPC)) {
 			Utils.EnableImage(over); // Enable on automap.
 			Utils.Activate(over.gameObject);
 		} else {
@@ -549,7 +548,7 @@ public class Automap : MonoBehaviour {
 		}
 	}
 
-	public void SetLinkedOverlayPos(Image over, float health, GameObject go) {
+	public static void SetLinkedOverlayPos(Image over, float health, GameObject go) {
 		if (over == null) return;
 		if (go == null) return;
 		if (!go.activeInHierarchy) return;

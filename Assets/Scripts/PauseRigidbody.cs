@@ -3,10 +3,11 @@ using System.Collections;
 
 public class PauseRigidbody : MonoBehaviour {
 	[HideInInspector] public Rigidbody rbody;
-	private Vector3 previousVelocity;
-	private bool previousUseGravity;
-	private bool previousKinematic;
-	private CollisionDetectionMode previouscolDetMode;
+	public Vector3 previousVelocity;
+	public bool previousUseGravity;
+	public bool previousKinematic;
+	public CollisionDetectionMode previouscolDetMode;
+	public bool previousSet = false;
 
 	void Awake() {
 		Initialize();
@@ -21,10 +22,13 @@ public class PauseRigidbody : MonoBehaviour {
 	}
 
 	void SetPreviousValues() {
+		if (previousSet) return;
+		
 		previousVelocity = rbody.velocity;
 		previousUseGravity = rbody.useGravity;
 		previousKinematic = rbody.isKinematic;
 		previouscolDetMode = rbody.collisionDetectionMode;
+		previousSet = true;
 	}
 
 	void OnEnable() {
@@ -42,31 +46,23 @@ public class PauseRigidbody : MonoBehaviour {
 	}
 
 	public void UnPause() {
-		if (rbody != null) {
-			PrefabIdentifier pid = GetComponent<PrefabIdentifier>();
-			if (pid != null && GetComponent<AIController>() == null) {
-				if (ConsoleEmulator.ConstIndexIsDynamicObject(pid.constIndex)) {
-					rbody.isKinematic = false;
-					rbody.useGravity = true;
-				}
-			} else {
-				rbody.isKinematic = previousKinematic;
-				rbody.useGravity = previousUseGravity;
-			}
+		if (rbody == null) rbody = GetComponent<Rigidbody>();
+		
+		rbody.isKinematic = previousKinematic;
+		rbody.useGravity = previousUseGravity;
+		
+		if (previouscolDetMode == CollisionDetectionMode.ContinuousSpeculative
+			&& !rbody.isKinematic && GetComponent<AIController>() == null) {
 			
-			if (previouscolDetMode == CollisionDetectionMode.ContinuousSpeculative
-				&& !rbody.isKinematic && GetComponent<AIController>() == null) {
-				
-				previouscolDetMode = CollisionDetectionMode.ContinuousDynamic;
-			}
-			
-			if (rbody.isKinematic && previouscolDetMode != CollisionDetectionMode.ContinuousSpeculative) {
-				rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-			} else {
-				rbody.collisionDetectionMode = previouscolDetMode;
-			}
-			
-			rbody.velocity = previousVelocity;
+			previouscolDetMode = CollisionDetectionMode.ContinuousDynamic;
 		}
+		
+		if (rbody.isKinematic && previouscolDetMode != CollisionDetectionMode.ContinuousSpeculative) {
+			rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+		} else {
+			rbody.collisionDetectionMode = previouscolDetMode;
+		}
+		
+		rbody.velocity = previousVelocity;
 	}
 }

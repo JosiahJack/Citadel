@@ -7,7 +7,7 @@ public class EnergyHeatTickManager : MonoBehaviour {
     public Image[] ticks;
     private float tempFloat;
 
-	void Awake () {
+	void Awake() {
         // Only ever affect last 9 ticks.  Tick 1 of 10 stays on so ignore it.
 		for (int i=0;i<9;i++) {
             Utils.DisableImage(ticks[i]);

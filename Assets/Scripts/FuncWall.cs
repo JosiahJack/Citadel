@@ -23,65 +23,19 @@ public class FuncWall : MonoBehaviour {
 	private Vector3 tempVec;
 	private float dist;         // Only ever used right away, not saved.
 	private float distanceLeft; // Only ever used right away, not saved.
-	private bool initialized = false;
-
-	public void Awake() {
-		targetPositionY = targetPosition.transform.localPosition.y;
-		rbody = GetComponent<Rigidbody>();
-		SFXSource = GetComponent<AudioSource>();
-		Initialize();
-	}
-
-	public void Initialize() {
-		if (initialized) return;
-
-		if (PauseScript.a == null) startTime = 0f; // Editor initiated.
-		else startTime = PauseScript.a.relativeTime;
-		
-		currentState = startState; // set door position to picked state
-		startPosition = transform.position;
-		stopSoundPlayed = false;
-		if (currentState == FuncStates.AjarMovingStart
-			|| currentState == FuncStates.AjarMovingTarget) {
-			tempVec = (transform.position - targetPosition.transform.position);
-			distanceLeft = Vector3.Distance(transform.position,
-											targetPosition.transform.position);
-
-			tempVec = -tempVec.normalized;
-			if (currentState == FuncStates.AjarMovingStart) {
-				tempVec *= (distanceLeft * (1f - percentAjar));
-			} else {
-				tempVec *= (distanceLeft * percentAjar);
-			}
-
-			tempVec += transform.position;
-			transform.position = tempVec;
-		}
-
-		rbody.collisionDetectionMode =CollisionDetectionMode.ContinuousSpeculative;
-		rbody.isKinematic = true;
-		rbody.useGravity = false;
-
-		// Ensure children are non-static.  Necessary to move them with parent!
-		GameObject childGO;
-		for (int i = 0; i < transform.childCount; i++) {
-			childGO = transform.GetChild(i).gameObject;
-			#if UNITY_EDITOR
-				childGO.isStatic = false; // EDITOR ONLY!!!!!!!!!!!!
-			#endif
-			childGO.layer = 18; // Door
-		}
-
-		dist = distanceLeft = 0;
-		initialized = true;
-	}
 
 	public void InitializeFromLoad() {
 		rbody = GetComponent<Rigidbody>();
 		SFXSource = GetComponent<AudioSource>();
-		rbody.collisionDetectionMode =CollisionDetectionMode.ContinuousSpeculative;
+		rbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 		rbody.isKinematic = true;
 		rbody.useGravity = false;
+		PauseRigidbody pr = GetComponent<PauseRigidbody>();
+		pr.previousVelocity = Vector3.zero;
+		pr.previousUseGravity = false;
+		pr.previousKinematic = true;
+		pr.previouscolDetMode = CollisionDetectionMode.ContinuousSpeculative;
+		pr.previousSet = true;
 		targetPositionY = targetPosition.transform.localPosition.y;
 		tempVec = (transform.position - targetPosition.transform.position);
 		float distTotal = Vector3.Distance(startPosition,
@@ -109,7 +63,6 @@ public class FuncWall : MonoBehaviour {
 		if (float.IsNaN(tempVec.z)) tempVec.z = 0f;
 		tempVec += transform.position;
 		transform.position = tempVec;
-		initialized = true;
 	}
 
 	public void Targetted (UseData ud) {
@@ -197,7 +150,7 @@ public class FuncWall : MonoBehaviour {
 	// the saving hierarchy and that is the only other thing needed for these.
 	public static string Save(GameObject go) {
 		FuncWall fw = go.GetComponent<FuncWall>();
-		fw.Awake();
+// 		fw.Awake();
 		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.IntToString(Utils.FuncStatesToInt(fw.currentState),"FuncWall.currentState"));
@@ -295,6 +248,15 @@ public class FuncWall : MonoBehaviour {
 				childGO.isStatic = false; // EDITOR ONLY!!!!!!!!!!!!
 			#endif
 			childGO.layer = 18; // Door
+			for (int j=0;j<childGO.transform.childCount;j++) {
+				Transform subtr = childGO.transform.GetChild(j);
+				if (subtr == null) continue;
+				
+				MeshCollider mcol = subtr.GetComponent<MeshCollider>();
+				if (mcol == null) continue;
+				
+				if (!mcol.convex) mcol.enabled = false;
+			}
 			index = Utils.LoadSubActivatedGOState(childGO,ref entries,index);
 		}
 		fw.InitializeFromLoad();

@@ -28,7 +28,7 @@ public class BerserkEffect : UnityStandardAssets.ImageEffects.ImageEffectBase {
 	[HideInInspector] public float effectStrength = 3f; // save
 	[HideInInspector] public float hithreshold = 0.25f; // save
 
-	void Awake () {
+	void Awake() {
 		effectStrength = 3.0f;
 		hithreshold = 0.25f;
 	}

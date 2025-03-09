@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class EnergySlider : MonoBehaviour {
     Slider slideS;
 
-	void Awake () {
+	void Awake() {
         slideS = GetComponent<Slider>();
 	}
 /*
