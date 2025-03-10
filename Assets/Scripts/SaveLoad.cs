@@ -848,7 +848,7 @@ public static class SaveLoad {
         lit.color = new Color(readFloatx, readFloaty, readFloatz, readFloatw);
         lit.spotAngle = Utils.GetFloatFromString(entries[index],"spotAngle"); index++;
         lit.shadows = GetLightShadowsFromString(entries[index],"shadows"); index++;
-        if (lit.intensity < 0.3f || (lit.range > 7f && lit.intensity < 2f)) lit.shadows = LightShadows.None;
+        if (lit.intensity < 0.3f || (lit.range > 7f && lit.intensity < 2f) || (curlevel >= 10 && lit.intensity < 1.4f)) lit.shadows = LightShadows.None;
         lit.shadowStrength = Utils.GetFloatFromString(entries[index],"shadowStrength"); index++;
         lit.shadowResolution = GetShadowResFromString(entries[index],"shadowResolution"); index++;
         lit.shadowBias = Utils.GetFloatFromString(entries[index],"shadowBias"); index++;

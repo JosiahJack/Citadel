@@ -138,7 +138,7 @@ LODGroup:
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 8428279370698129463}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1001 &7149137643389164723
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -219,7 +219,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: e63fe53f726100a40bc82acef0f36c26,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e63fe53f726100a40bc82acef0f36c26, type: 3}
@@ -315,7 +315,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 4a4a0718e3ce68e808798b26fac3f07f,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a4a0718e3ce68e808798b26fac3f07f, type: 3}

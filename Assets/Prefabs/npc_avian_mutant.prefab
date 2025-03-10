@@ -110,6 +110,7 @@ MonoBehaviour:
   actAsTurret: 0
   withinPVS: 0
   visibleMeshVisible: 0
+  sleepingCables: {fileID: 0}
   enemy: {fileID: 0}
   targetID: 
   hasTargetIDAttached: 0
@@ -160,7 +161,11 @@ MonoBehaviour:
   tranquilizeFinished: 0
   hopDone: 0
   wanderFinished: 0
+  timeSinceMovedEnough: 0
   startInitialized: 0
+  lastPosition: {x: 0, y: 0, z: 0}
+  distToLastPos: 0
+  posCheckFinished: 0
 --- !u!114 &4437644003339086494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,6 +196,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rbody: {fileID: 0}
+  previousVelocity: {x: 0, y: 0, z: 0}
+  previousUseGravity: 0
+  previousKinematic: 0
+  previouscolDetMode: 0
+  previousSet: 0
 --- !u!82 &8798379570119587311
 AudioSource:
   m_ObjectHideFlags: 0
@@ -311,7 +321,6 @@ MonoBehaviour:
   health: -1
   cyberHealth: -1
   maxhealth: -1
-  levelIndex: 0
   isPlayer: 0
   isGrenade: 0
   gibOnDeath: 0
@@ -350,7 +359,7 @@ Rigidbody:
   m_Mass: 2
   m_Drag: 0
   m_AngularDrag: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 80
@@ -577,7 +586,6 @@ MonoBehaviour:
   health: 50
   cyberHealth: -1
   maxhealth: 50
-  levelIndex: 0
   isPlayer: 0
   isGrenade: 0
   gibOnDeath: 0
@@ -956,6 +964,7 @@ SkinnedMeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1363,7 +1372,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &7481997691251827431
 Animator:
-  serializedVersion: 3
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1376,10 +1385,12 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &103854284135883671
 MonoBehaviour:
   m_ObjectHideFlags: 0

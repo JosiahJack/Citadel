@@ -87,7 +87,7 @@ public class AIController : MonoBehaviour {
 	[HideInInspector] public float randomWaitForNextAttack2Finished; // save
 	[HideInInspector] public float randomWaitForNextAttack3Finished; // save
 	[HideInInspector] public Vector3 idealTransformForward; // save
-	[HideInInspector] public Vector3 idealPos; // used by flyers to establish
+	public Vector3 idealPos; // used by flyers to establish
 											   // correct height // save
 	[HideInInspector] public float attackFinished; // save
 	[HideInInspector] public float attack2Finished; // save
@@ -173,16 +173,12 @@ public class AIController : MonoBehaviour {
 					  + ", set to index 0.");
 		}
 
-// 		#if UNITY_EDITOR
-// 		
-// 		#else
-			if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly || IsCyberNPC()) {
-				rbody.useGravity = false;
-				rbody.isKinematic = false;
-			} else {
-				rbody.useGravity = true;
-			}
-// 		#endif
+		if (Const.a.moveTypeForNPC[index] == AIMoveType.Fly || IsCyberNPC()) {
+			rbody.useGravity = false;
+			rbody.isKinematic = false;
+		} else {
+			rbody.useGravity = true;
+		}
 
 		healthManager = GetComponent<HealthManager>();
 		if (visibleMeshEntity != null) {
@@ -199,41 +195,33 @@ public class AIController : MonoBehaviour {
 
 		if (sightPoint == null) sightPoint = gameObject;
 		if (currentDestination == null) currentDestination = sightPoint.transform.position;
-		
-		#if UNITY_EDITOR
-		
-		#else
-			idleTime = PauseScript.a.relativeTime
-					   + Random.Range(Const.a.timeIdleSFXMinForNPC[index],
-									  Const.a.timeIdleSFXMaxForNPC[index]);
-
-			attack1SoundTime = PauseScript.a.relativeTime;
-			attack2SoundTime = PauseScript.a.relativeTime;
-			attack3SoundTime = PauseScript.a.relativeTime;
-			timeTillEnemyChangeFinished = PauseScript.a.relativeTime;
-			huntFinished = PauseScript.a.relativeTime;
-			attackFinished = PauseScript.a.relativeTime;
-			attack2Finished = PauseScript.a.relativeTime;
-			attack3Finished = PauseScript.a.relativeTime;
-			timeTillPainFinished = PauseScript.a.relativeTime;
-			timeTillDeadFinished = PauseScript.a.relativeTime;
-			meleeDamageFinished = PauseScript.a.relativeTime;
-			gracePeriodFinished = PauseScript.a.relativeTime;
-			randomWaitForNextAttack1Finished = PauseScript.a.relativeTime;
-			randomWaitForNextAttack2Finished = PauseScript.a.relativeTime;
-			randomWaitForNextAttack3Finished = PauseScript.a.relativeTime;
-			tranquilizeFinished = PauseScript.a.relativeTime;
-			deathBurstFinished = PauseScript.a.relativeTime;
-			wanderFinished = PauseScript.a.relativeTime;
-			posCheckFinished = PauseScript.a.relativeTime;
-			lastPosition = transform.position;
-			timeSinceMovedEnough = 0f;
-			damageData = new DamageData();
-			damageData.ownerIsNPC = true;
-			tempHit = new RaycastHit();
-			tempVec = new Vector3(0f, 0f, 0f);
-		#endif
-		
+		idleTime = PauseScript.a.relativeTime + Random.Range(Const.a.timeIdleSFXMinForNPC[index],
+									                         Const.a.timeIdleSFXMaxForNPC[index]);
+		attack1SoundTime = PauseScript.a.relativeTime;
+		attack2SoundTime = PauseScript.a.relativeTime;
+		attack3SoundTime = PauseScript.a.relativeTime;
+		timeTillEnemyChangeFinished = PauseScript.a.relativeTime;
+		huntFinished = PauseScript.a.relativeTime;
+		attackFinished = PauseScript.a.relativeTime;
+		attack2Finished = PauseScript.a.relativeTime;
+		attack3Finished = PauseScript.a.relativeTime;
+		timeTillPainFinished = PauseScript.a.relativeTime;
+		timeTillDeadFinished = PauseScript.a.relativeTime;
+		meleeDamageFinished = PauseScript.a.relativeTime;
+		gracePeriodFinished = PauseScript.a.relativeTime;
+		randomWaitForNextAttack1Finished = PauseScript.a.relativeTime;
+		randomWaitForNextAttack2Finished = PauseScript.a.relativeTime;
+		randomWaitForNextAttack3Finished = PauseScript.a.relativeTime;
+		tranquilizeFinished = PauseScript.a.relativeTime;
+		deathBurstFinished = PauseScript.a.relativeTime;
+		wanderFinished = PauseScript.a.relativeTime;
+		posCheckFinished = PauseScript.a.relativeTime;
+		lastPosition = transform.position;
+		timeSinceMovedEnough = 0f;
+		damageData = new DamageData();
+		damageData.ownerIsNPC = true;
+		tempHit = new RaycastHit();
+		tempVec = new Vector3(0f, 0f, 0f);
         SFX = GetComponent<AudioSource>();
 		SFX.playOnAwake = false;
 		if (SFX.volume == 0f) SFX.volume = 1.0f;
@@ -256,22 +244,10 @@ public class AIController : MonoBehaviour {
 			Utils.Activate(sleepingCables);
 		}
 		
-		#if UNITY_EDITOR
-			tickFinished = Random.value;
-		#else
-			tickFinished = PauseScript.a.relativeTime + Const.a.aiTickTime + Random.value;
-		#endif
-
+		tickFinished = PauseScript.a.relativeTime + Const.a.aiTickTime + Random.value;
 		raycastingTickFinished = tickFinished + Random.value; // Separate rand.
-		
-		#if UNITY_EDITOR
-			attackFinished = 1f;
-		#else
-			attackFinished = PauseScript.a.relativeTime + 1f;
-		#endif
-			
+		attackFinished = PauseScript.a.relativeTime + 1f;
 		idealTransformForward = sightPoint.transform.forward;
-		
 		if (!IsCyberNPC()) targetID = Const.GetTargetID(index);
 		else             targetID = Const.GetCyberTargetID(index);
 
@@ -514,8 +490,7 @@ public class AIController : MonoBehaviour {
 		if (dist < 0.16f) return; // Close enuff
 
 		float spd = Const.a.runSpeedForNPC[index] * Time.deltaTime;
-		transform.position = Vector3.MoveTowards(transform.position,idealPos,
-												 spd);
+		transform.position = Vector3.MoveTowards(transform.position,idealPos,spd);
 	}
 
 	public bool CheckPain() {
@@ -2165,7 +2140,10 @@ public class AIController : MonoBehaviour {
 						aic.rbody.useGravity = true;
 					}
 
-				} else aic.rbody.useGravity = true;
+				} else {
+					aic.rbody.useGravity = true;
+					if (aic.index == 2) aic.rbody.useGravity = false;
+				}
 			}
 
 			if (aic.IsCyberNPC()) {
@@ -2205,6 +2183,14 @@ public class AIController : MonoBehaviour {
 			}
 		} else {
 			aic.DeactivateMeleeColliders();
+		}
+		
+		PauseRigidbody pr = aic.gameObject.GetComponent<PauseRigidbody>();
+		if (pr != null) {
+			pr.previousUseGravity = aic.rbody.useGravity;
+			pr.previousKinematic = aic.rbody.isKinematic;
+			pr.previouscolDetMode = aic.rbody.collisionDetectionMode;
+			pr.previousSet = true;
 		}
 		return index;
 	}

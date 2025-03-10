@@ -22,9 +22,9 @@ public class PauseRigidbody : MonoBehaviour {
 	}
 
 	void SetPreviousValues() {
+		previousVelocity = rbody.velocity;
 		if (previousSet) return;
 		
-		previousVelocity = rbody.velocity;
 		previousUseGravity = rbody.useGravity;
 		previousKinematic = rbody.isKinematic;
 		previouscolDetMode = rbody.collisionDetectionMode;
