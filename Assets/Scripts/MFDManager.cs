@@ -1006,8 +1006,6 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void SendSearchToDataTab(string name, int contentCount, int[] resultContents, int[] resultsIndices, Vector3 searchPosition, SearchableItem si, bool useFX) {
-		TabReset(true);
-		TabReset(false);
 		PrefabIdentifier pid = si.gameObject.GetComponent<PrefabIdentifier>();
 		string headerName = name;
 		if (pid != null) {
@@ -1030,17 +1028,17 @@ public class MFDManager : MonoBehaviour  {
 			}
 		}
 
-		Search(true,headerName,contentCount,resultContents,resultsIndices);
-		Search(false,headerName,contentCount,resultContents,resultsIndices);
-
-		// Enable search box scaling effect
+		TabReset(lastSearchSideRH);
 		if (lastSearchSideRH) {
 			OpenTab(4,true,TabMSG.Search,0,Handedness.RH);
-			if (useFX) SearchFXRH.SetActive(true);
+			if (useFX) SearchFXRH.SetActive(true); // Enable search box scaling effect
 		} else {
 			OpenTab(4,true,TabMSG.Search,0,Handedness.LH);
-			if (useFX) SearchFXLH.SetActive(true);
+			if (useFX) SearchFXLH.SetActive(true); // Enable search box scaling effect
 		}
+		
+		Search(true,headerName,contentCount,resultContents,resultsIndices);
+		Search(false,headerName,contentCount,resultContents,resultsIndices);
 		if (tetheredSearchable != si) {
 			if (tetheredSearchable != null) {
 				tetheredSearchable.ResetSearchable(false);
@@ -1556,8 +1554,18 @@ public class MFDManager : MonoBehaviour  {
 		objectInUsePos = new Vector3(999f,999f,999f); // out of bounds
 		if (isRightHand) {
 			rightTC.ReturnToLastTab();
+			if (rightTC.lastTab == 4) {
+				if (tetheredPGP == null && tetheredPWP == null && tetheredKeypadElevator == null && tetheredKeypadKeycode == null && tetheredSearchable == null) {
+					if (Inventory.a.hasHardware[0]) sysAnalyzerRH.SetActive(true);
+				}
+			}
 		} else {
 			leftTC.ReturnToLastTab();
+			if (leftTC.lastTab == 4) {
+				if (tetheredPGP == null && tetheredPWP == null && tetheredKeypadElevator == null && tetheredKeypadKeycode == null && tetheredSearchable == null) {
+					if (Inventory.a.hasHardware[0]) sysAnalyzerLH.SetActive(true);
+				}
+			}
 		}
 	}
 
@@ -1744,6 +1752,8 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void OpenLogTableContents() {
+		DisableAllCenterTabs();
+		DataReaderContentTab.SetActive(true);
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		ResetMultiMediaTabs();
 		startingSubTab.SetActive(true);
@@ -1754,6 +1764,8 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void OpenLogsLevelFolder(int curlevel) {
+		DisableAllCenterTabs();
+		DataReaderContentTab.SetActive(true);
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		ResetMultiMediaTabs();
 		secondaryTab1.SetActive(true);
@@ -1763,12 +1775,16 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void OpenLogTextReader() {
+		DisableAllCenterTabs();
+		DataReaderContentTab.SetActive(true);
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		ResetMultiMediaTabs();
 		secondaryTab2.SetActive(true);
 	}
 
 	public void OpenEmailTableContents() {
+		DisableAllCenterTabs();
+		DataReaderContentTab.SetActive(true);
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		ResetMultiMediaTabs();
 		emailTab.SetActive(true);
@@ -1779,6 +1795,8 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void OpenDataTableContents() {
+		DisableAllCenterTabs();
+		DataReaderContentTab.SetActive(true);
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		ResetMultiMediaTabs();
 		dataTab.SetActive(true);
@@ -1790,6 +1808,8 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void OpenNotesTableContents() {
+		DisableAllCenterTabs();
+		DataReaderContentTab.SetActive(true);
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		ResetMultiMediaTabs();
 		notesTab.SetActive(true);

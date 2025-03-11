@@ -505,9 +505,9 @@ public class Automap : MonoBehaviour {
 	}
 
 	public void CloseFullmap() {
+		if (automapFull.activeInHierarchy) MFDManager.a.CloseFullmap();
 		Utils.Deactivate(automapFull);
 		inFullMap = false;
-		MFDManager.a.CloseFullmap();
 		if (inSideView) AutomapGoSide();
 		else AutomapGoTop();
 	}

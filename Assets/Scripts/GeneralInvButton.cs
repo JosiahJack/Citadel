@@ -29,8 +29,18 @@ public class GeneralInvButton : MonoBehaviour {
 		// Access Cards
 		if (GeneralInvButtonIndex == 0) {
 			MFDManager.a.SendInfoToItemTab(81);
+			if (MFDManager.a.lastItemSideRH) {
+				MFDManager.a.rightTC.SetCurrentAsLast();
+			} else {
+				MFDManager.a.leftTC.SetCurrentAsLast();
+			}
 		} else {
 			MFDManager.a.SendInfoToItemTab(useableItemIndex,customIndex);
+			if (MFDManager.a.lastItemSideRH) {
+				MFDManager.a.rightTC.SetCurrentAsLast();
+			} else {
+				MFDManager.a.leftTC.SetCurrentAsLast();
+			}
 		}
     }
 

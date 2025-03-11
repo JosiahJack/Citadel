@@ -31,7 +31,7 @@ public class SystemAnalyzer : MonoBehaviour {
 		gameObject.SetActive(false);
 	}
     // Start is called before the first frame update
-    void OnEnable() {
+    void Update() {
 		descSecurity.text = Const.a.stringTable[474];
 		security.text = LevelManager.a.levelSecurity[LevelManager.a.currentLevel] + Const.a.stringTable[307];
 		descLaser.text = Const.a.stringTable[475];

@@ -782,7 +782,7 @@ public class Inventory : MonoBehaviour {
 				}
 				
 				if (overt) {
-				    MFDManager.a.OpenTab(2,true,TabMSG.None,0,Handedness.RH);
+				    MFDManager.a.OpenTab(2,true,TabMSG.None,0,MFDManager.a.lastAutomapSideRH ? Handedness.RH : Handedness.LH);
 				}
 
 				// Go through all HealthManagers in the game and initialize the

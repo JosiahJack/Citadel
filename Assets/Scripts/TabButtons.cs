@@ -42,7 +42,7 @@ public class TabButtons : MonoBehaviour {
 	}
 
 	// Only setting these from manual user actions.
-	void SetMFDLasts(int tabNum) {
+	private void SetMFDLasts(int tabNum) {
 		SetCurrentAsLast();
 		switch (tabNum) {
 			case 0: // Weapon
