@@ -708,15 +708,20 @@ public class Utils {
 		}
 
 		int value = 0;
-		for (; i < start + length; i++) {
+		bool hasDigits = false;
+		for (; i < source.Length; i++) {
 			char c = source[i];
-			if (c < '0' || c > '9') return false;
+			if (c < '0' || c > '9') break;
 			value = value * 10 + (c - '0');
-			// Basic overflow check
+			hasDigits = true;
 			if (value < 0 && !isNegative) return false;
 		}
 
-		result = isNegative ? -value : value;
+		if (!hasDigits) return false;
+		
+		if (value != 0) {
+			result = isNegative ? -value : value;
+		} else result = value;
 		return true;
 	}
 

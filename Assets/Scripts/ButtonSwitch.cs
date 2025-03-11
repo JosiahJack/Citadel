@@ -122,6 +122,7 @@ public class ButtonSwitch : MonoBehaviour {
 	}
 
 	void ToggleMaterial() {
+		if (mRenderer == null) mRenderer = GetComponent<MeshRenderer>();
 		if (alternateOn)
 			mRenderer.material = alternateSwitchMaterial;
 		else
@@ -131,6 +132,7 @@ public class ButtonSwitch : MonoBehaviour {
 	public void SetMaterialToAlternate() {
 		if (!blinkWhenActive) return;
 
+		if (mRenderer == null) mRenderer = GetComponent<MeshRenderer>();
 		if (mRenderer.material != alternateSwitchMaterial) {
 		    mRenderer.material = alternateSwitchMaterial;
 		}
@@ -139,6 +141,7 @@ public class ButtonSwitch : MonoBehaviour {
 	public void SetMaterialToNormal() {
 		if (!blinkWhenActive) return;
 
+		if (mRenderer == null) mRenderer = GetComponent<MeshRenderer>();
 		if (mRenderer.material != mainSwitchMaterial) {
 		    mRenderer.material = mainSwitchMaterial;
 		}
@@ -244,6 +247,7 @@ public class ButtonSwitch : MonoBehaviour {
 
 		float animTime = Utils.GetFloatFromString(entries[index],"asi.normalizedTime"); index++;
 		string loadedClipName = Utils.LoadString(entries[index],"currentClipName"); index++;
+		if (bs.changeMatOnActive) bs.ToggleMaterial();
 		if (bs.animateModel) {
 			bs.anim = bs.gameObject.GetComponent<Animator>();
 			bs.anim.keepAnimatorStateOnDisable = true;
