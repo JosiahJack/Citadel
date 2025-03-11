@@ -33,7 +33,7 @@ public class AIAnimationController : MonoBehaviour {
 	private bool initialized = false;
 	private bool doneDidDead = false;
 
-	void Start () {
+	public void Start () {
 	    if (initialized) return;
 	    
 	    animSwapFinished = PauseScript.a.relativeTime;
@@ -86,7 +86,7 @@ public class AIAnimationController : MonoBehaviour {
 			}
 		}
 		
-		if (firstUpdateAfterLoad) { SetAnimAfterLoad(); return; }
+		if (firstUpdateAfterLoad) { SetAnimAfterLoad(); firstUpdateAfterLoad = false; return; }
 		
 		if (aic.asleep && aic.currentState != AIState.Dying
 			&& aic.currentState != AIState.Dead) {
@@ -213,6 +213,7 @@ public class AIAnimationController : MonoBehaviour {
 	void SetAnimAfterLoad() {
 		firstUpdateAfterLoad = false;
 		anim.speed = loadedSetSpeed;
+		if (anim.speed == 0) anim.speed = 1f;
 		if (string.IsNullOrWhiteSpace(loadedClipName)) loadedClipName = "Idle";
 		if (loadedClipIndex < 0) loadedClipIndex = 0;
 		anim.Play(loadedClipName,loadedClipIndex,loadedAnimatorPlaybackTime);
@@ -224,6 +225,7 @@ public class AIAnimationController : MonoBehaviour {
 		loadedClipIndex = i;
 		loadedAnimatorPlaybackTime = t;
 		loadedSetSpeed = sp;
+		anim.speed = loadedSetSpeed;
 	}
 
 	public static string Save(GameObject go) {
@@ -279,6 +281,8 @@ public class AIAnimationController : MonoBehaviour {
 			}
 		}
 		
+		aiac.initialized = false;
+		aiac.Start();
         aiac.clipName = Utils.LoadString(entries[index],"clipName"); index++;
 		aiac.currentClipPercentage = Utils.GetFloatFromString(entries[index],"currentClipPercentage"); index++;
 		aiac.dying = Utils.GetBoolFromString(entries[index],"dying"); index++;

@@ -1823,6 +1823,9 @@ public class PlayerMovement : MonoBehaviour {
 		pm.playerSpeed = Utils.GetFloatFromString(entries[index],"playerSpeed"); index++;
 		pm.grounded = Utils.GetBoolFromString(entries[index],"grounded"); index++;
 		pm.currentCrouchRatio = Utils.GetFloatFromString(entries[index],"currentCrouchRatio"); index++;
+		if (pm.capsuleCollider == null) pm.capsuleCollider = pm.gameObject.GetComponent<CapsuleCollider>();
+		pm.capsuleCollider.height = pm.currentCrouchRatio * 2f;
+		pm.leanCapsuleCollider.height = pm.capsuleCollider.height;
 		pm.bodyState = Utils.IntToBodyState(Utils.GetIntFromString(entries[index],"bodyState")); index++;
 		pm.ladderState = Utils.GetBoolFromString(entries[index],"ladderState"); index++;
 		pm.gravliftState = Utils.GetBoolFromString(entries[index],"gravliftState"); index++;

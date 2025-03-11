@@ -73,7 +73,10 @@ public class ButtonSwitch : MonoBehaviour {
 
 		if (locked) {
 			Const.sprint(lockedMessageLingdex);
-			Utils.PlayOneShotSavable(SFXSource,Const.a.sounds[SFXLockedIndex]);
+			if (SFXLockedIndex >= 0 && SFXLockedIndex < Const.a.sounds.Length) {
+				Utils.PlayOneShotSavable(SFXSource,Const.a.sounds[SFXLockedIndex]);
+			}
+			
 			return;
 		}
 

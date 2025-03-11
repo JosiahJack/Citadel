@@ -163,6 +163,8 @@ public class AIController : MonoBehaviour {
 
 	// Initialization and find components
 	public void Start() {
+		if (startInitialized) return;
+		
 		gameObject.layer = 10; // NPC Layer.
         rbody = GetComponent<Rigidbody>();
 		rbody.isKinematic = false;
@@ -268,6 +270,11 @@ public class AIController : MonoBehaviour {
 		if (IsCyberNPC() && enemy != null) {
 			up = enemy.transform.up;
 			transform.rotation = enemy.transform.rotation;
+		}
+		
+		if (goalLocation == transform.position) {
+			if (enemy != null) faceVec = enemy.transform.position - transform.position;
+			else faceVec.x += 0.001f;
 		}
 		lookRot = Quaternion.LookRotation(faceVec,up);
 		transform.rotation =
@@ -2192,6 +2199,8 @@ public class AIController : MonoBehaviour {
 			pr.previouscolDetMode = aic.rbody.collisionDetectionMode;
 			pr.previousSet = true;
 		}
+		
+		aic.currentState = Utils.GetAIStateFromInt(state);
 		return index;
 	}
 } // 1892
