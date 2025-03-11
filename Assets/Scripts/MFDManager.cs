@@ -552,12 +552,12 @@ public class MFDManager : MonoBehaviour  {
 	public void CloseFullmap() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		if (!Const.a.noHUD) {
-			ctbButtonMain.SetActive(true);
-			ctbButtonHardware.SetActive(true);
-			ctbButtonGeneral.SetActive(true);
-			CenterTabButtonClickSilent(curCenterTab,true);
-			tabButtonsLHButtons.SetActive(true);
-			tabButtonsRHButtons.SetActive(true);
+			Utils.Activate(ctbButtonMain);
+			Utils.Activate(ctbButtonHardware);
+			Utils.Activate(ctbButtonGeneral);
+			//CenterTabButtonClickSilent(curCenterTab,true);
+			Utils.Activate(tabButtonsLHButtons);
+			Utils.Activate(tabButtonsRHButtons);
 			TabReset(true); // right
 			TabReset(false); // left
 			ReturnToLastTab(true);

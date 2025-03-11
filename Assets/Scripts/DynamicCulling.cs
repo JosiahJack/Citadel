@@ -15,6 +15,7 @@ public class DynamicCulling : MonoBehaviour {
     [HideInInspector] public const float CELLXHALF = 1.28f;
     
     public bool cullEnabled = false;
+    public bool debugHelpers = false;
     public bool dynamicObjectCull = false;
     public bool lightCulling = true;
     public bool lightsFrustumCull = true;
@@ -26,7 +27,7 @@ public class DynamicCulling : MonoBehaviour {
     public Material chunkMaterial;
     public Material genericMaterial;
     public Texture2DArray chunkAlbedo;
-    public GridCell[,] gridCells = new GridCell[WORLDX,WORLDX];
+    [HideInInspector] public GridCell[,] gridCells;
     [HideInInspector] public List<MeshRenderer> dynamicMeshes = new List<MeshRenderer>();
     [HideInInspector] public List<PrefabIdentifier> dynamicMeshesPIDs = new List<PrefabIdentifier>();
     [HideInInspector] public List<HealthManager> dynamicMeshesHMs = new List<HealthManager>();
@@ -50,8 +51,8 @@ public class DynamicCulling : MonoBehaviour {
     [HideInInspector] public List<Vector2Int> doorsCoords = new List<Vector2Int>();
     public int playerCellX = 0;
     public int playerCellY = 0;
-    public float deltaX = 0.0f;
-    public float deltaY = 0.0f;
+    [HideInInspector] public float deltaX = 0.0f;
+    [HideInInspector] public float deltaY = 0.0f;
     [HideInInspector] public float lodSqrDist = 2621.44f; // (20 * 2.56f)^2
     public Vector3 worldMin;
     [HideInInspector] public List<Transform> npcTransforms;
@@ -70,7 +71,7 @@ public class DynamicCulling : MonoBehaviour {
     private Color32[] pixels;
     private Texture2D debugTex;
     [HideInInspector] public static Dictionary<GameObject, Vector3> camPositions = new Dictionary<GameObject, Vector3>();
-    public CameraView[] cameraViews;
+    [HideInInspector] public CameraView[] cameraViews;
     private bool[,] worldCellsOpen = new bool[WORLDX,WORLDX];
     
     // Mesh combining
@@ -439,46 +440,128 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
     
+//     void ClearCellList() {
+//         gridCells = new GridCell[WORLDX,WORLDX];
+//         staticMeshesImmutable = new List<MeshRenderer>();
+//         staticMeshesImmutablePIDs = new List<PrefabIdentifier>();
+//         staticMeshImmutableCoords = new List<Vector2Int>();
+//         staticImmutableParticleCoords = new List<Vector2Int>();
+//         staticImmutableParticleSystems = new List<PauseParticleSystem>();
+//         staticMeshesSaveable = new List<MeshRenderer>();
+//         staticMeshesSaveableHMs = new List<HealthManager>();
+//         staticMeshesSaveablePIDs = new List<PrefabIdentifier>();
+//         staticMeshSaveableCoords = new List<Vector2Int>();
+//         doors = new List<MeshRenderer>();
+//         doorsCoords = new List<Vector2Int>();
+//         lights = new List<Light>();
+//         lightsInPVS = new List<Light>();
+//         lightCoords = new List<Vector2Int>();
+//         lightsInPVSCoords = new List<Vector2Int>();
+//         dynamicMeshes = new List<MeshRenderer>();
+//         dynamicMeshesPIDs = new List<PrefabIdentifier>();
+//         dynamicMeshesHMs = new List<HealthManager>();
+//         dynamicMeshesTransforms = new List<Transform>();
+//         dynamicMeshesFBs = new List<ForceBridge>();
+//         dynamicMeshCoords = new List<Vector2Int>();
+//         npcAICs = new List<AIController>();
+//         npcTransforms = new List<Transform>();
+//         sourceMeshenderers = new List<Meshenderer>();
+//         for (int x=0;x<WORLDX;x++) {
+//             for (int y=0;y<WORLDX;y++) {
+//                 gridCells[x,y] = new GridCell();
+//                 gridCells[x,y].x = x;
+//                 gridCells[x,y].y = y;
+//                 gridCells[x,y].open = false;
+//                 gridCells[x,y].visible = false;
+//                 gridCells[x,y].closedNorth = false;
+//                 gridCells[x,y].closedEast = false;
+//                 gridCells[x,y].closedSouth = false;
+//                 gridCells[x,y].closedWest = false;
+//                 gridCells[x,y].chunkPrefabs = new List<ChunkPrefab>();
+//                 gridCells[x,y].dynamicObjects = new List<DynamicObject>();
+//                 gridCells[x,y].visibleCellsFromHere = new bool[WORLDX,WORLDX];
+//             }
+//         }
+//     }
+
     void ClearCellList() {
-        gridCells = new GridCell[WORLDX,WORLDX];
-        staticMeshesImmutable = new List<MeshRenderer>();
-        staticMeshesImmutablePIDs = new List<PrefabIdentifier>();
-        staticMeshImmutableCoords = new List<Vector2Int>();
-        staticImmutableParticleCoords = new List<Vector2Int>();
-        staticImmutableParticleSystems = new List<PauseParticleSystem>();
-        staticMeshesSaveable = new List<MeshRenderer>();
-        staticMeshesSaveableHMs = new List<HealthManager>();
-        staticMeshesSaveablePIDs = new List<PrefabIdentifier>();
-        staticMeshSaveableCoords = new List<Vector2Int>();
-        doors = new List<MeshRenderer>();
-        doorsCoords = new List<Vector2Int>();
-        lights = new List<Light>();
-        lightsInPVS = new List<Light>();
-        lightCoords = new List<Vector2Int>();
-        lightsInPVSCoords = new List<Vector2Int>();
-        dynamicMeshes = new List<MeshRenderer>();
-        dynamicMeshesPIDs = new List<PrefabIdentifier>();
-        dynamicMeshesHMs = new List<HealthManager>();
-        dynamicMeshesTransforms = new List<Transform>();
-        dynamicMeshesFBs = new List<ForceBridge>();
-        dynamicMeshCoords = new List<Vector2Int>();
-        npcAICs = new List<AIController>();
-        npcTransforms = new List<Transform>();
-        sourceMeshenderers = new List<Meshenderer>();
-        for (int x=0;x<WORLDX;x++) {
-            for (int y=0;y<WORLDX;y++) {
-                gridCells[x,y] = new GridCell();
-                gridCells[x,y].x = x;
-                gridCells[x,y].y = y;
-                gridCells[x,y].open = false;
-                gridCells[x,y].visible = false;
-                gridCells[x,y].closedNorth = false;
-                gridCells[x,y].closedEast = false;
-                gridCells[x,y].closedSouth = false;
-                gridCells[x,y].closedWest = false;
-                gridCells[x,y].chunkPrefabs = new List<ChunkPrefab>();
-                gridCells[x,y].dynamicObjects = new List<DynamicObject>();
-                gridCells[x,y].visibleCellsFromHere = new bool[WORLDX,WORLDX];
+        // Initialize on first call, reuse thereafter
+        if (gridCells == null) {
+            gridCells = new GridCell[WORLDX, WORLDX];
+            for (int x = 0; x < WORLDX; x++) {
+                for (int y = 0; y < WORLDX; y++) {
+                    gridCells[x, y] = new GridCell();
+                    gridCells[x, y].chunkPrefabs = new List<ChunkPrefab>();
+                    gridCells[x, y].dynamicObjects = new List<DynamicObject>();
+                    gridCells[x, y].visibleCellsFromHere = new bool[WORLDX, WORLDX];
+                }
+            }
+        }
+        if (staticMeshesImmutable == null) staticMeshesImmutable = new List<MeshRenderer>();
+        if (staticMeshesImmutablePIDs == null) staticMeshesImmutablePIDs = new List<PrefabIdentifier>();
+        if (staticMeshImmutableCoords == null) staticMeshImmutableCoords = new List<Vector2Int>();
+        if (staticImmutableParticleCoords == null) staticImmutableParticleCoords = new List<Vector2Int>();
+        if (staticImmutableParticleSystems == null) staticImmutableParticleSystems = new List<PauseParticleSystem>();
+        if (staticMeshesSaveable == null) staticMeshesSaveable = new List<MeshRenderer>();
+        if (staticMeshesSaveableHMs == null) staticMeshesSaveableHMs = new List<HealthManager>();
+        if (staticMeshesSaveablePIDs == null) staticMeshesSaveablePIDs = new List<PrefabIdentifier>();
+        if (staticMeshSaveableCoords == null) staticMeshSaveableCoords = new List<Vector2Int>();
+        if (doors == null) doors = new List<MeshRenderer>();
+        if (doorsCoords == null) doorsCoords = new List<Vector2Int>();
+        if (lights == null) lights = new List<Light>();
+        if (lightsInPVS == null) lightsInPVS = new List<Light>();
+        if (lightCoords == null) lightCoords = new List<Vector2Int>();
+        if (lightsInPVSCoords == null) lightsInPVSCoords = new List<Vector2Int>();
+        if (dynamicMeshes == null) dynamicMeshes = new List<MeshRenderer>();
+        if (dynamicMeshesPIDs == null) dynamicMeshesPIDs = new List<PrefabIdentifier>();
+        if (dynamicMeshesHMs == null) dynamicMeshesHMs = new List<HealthManager>();
+        if (dynamicMeshesTransforms == null) dynamicMeshesTransforms = new List<Transform>();
+        if (dynamicMeshesFBs == null) dynamicMeshesFBs = new List<ForceBridge>();
+        if (dynamicMeshCoords == null) dynamicMeshCoords = new List<Vector2Int>();
+        if (npcAICs == null) npcAICs = new List<AIController>();
+        if (npcTransforms == null) npcTransforms = new List<Transform>();
+        if (sourceMeshenderers == null) sourceMeshenderers = new List<Meshenderer>();
+
+        // Clear existing lists
+        staticMeshesImmutable.Clear();
+        staticMeshesImmutablePIDs.Clear();
+        staticMeshImmutableCoords.Clear();
+        staticImmutableParticleCoords.Clear();
+        staticImmutableParticleSystems.Clear();
+        staticMeshesSaveable.Clear();
+        staticMeshesSaveableHMs.Clear();
+        staticMeshesSaveablePIDs.Clear();
+        staticMeshSaveableCoords.Clear();
+        doors.Clear();
+        doorsCoords.Clear();
+        lights.Clear();
+        lightsInPVS.Clear();
+        lightCoords.Clear();
+        lightsInPVSCoords.Clear();
+        dynamicMeshes.Clear();
+        dynamicMeshesPIDs.Clear();
+        dynamicMeshesHMs.Clear();
+        dynamicMeshesTransforms.Clear();
+        dynamicMeshesFBs.Clear();
+        dynamicMeshCoords.Clear();
+        npcAICs.Clear();
+        npcTransforms.Clear();
+        sourceMeshenderers.Clear();
+
+        // Reset gridCells
+        for (int x = 0; x < WORLDX; x++) {
+            for (int y = 0; y < WORLDX; y++) {
+                gridCells[x, y].x = x;
+                gridCells[x, y].y = y;
+                gridCells[x, y].open = false;
+                gridCells[x, y].visible = false;
+                gridCells[x, y].closedNorth = false;
+                gridCells[x, y].closedEast = false;
+                gridCells[x, y].closedSouth = false;
+                gridCells[x, y].closedWest = false;
+                gridCells[x, y].chunkPrefabs.Clear();
+                gridCells[x, y].dynamicObjects.Clear();
+                Array.Clear(gridCells[x, y].visibleCellsFromHere, 0, WORLDX * WORLDX);
             }
         }
     }
@@ -504,6 +587,10 @@ public class DynamicCulling : MonoBehaviour {
                 mrr.materialUsual = Const.a.genericMaterials[100]; // Set windows to black so sky is blocked, no pink unless there's a legit leak.
             }
         }
+        
+        PrefabIdentifier pid = go.GetComponent<PrefabIdentifier>();
+        if (pid != null) mrr.constIndex = pid.constIndex;
+        else mrr.constIndex = -1; // Child meshes preserved for LOD swap out of level chunks with flat cards.
         
         if (ConsoleEmulator.ConstIndexIsGeometry(constIndex) && constIndex >= 0) {
             if (DynamicCulling.a != null) {
@@ -572,8 +659,10 @@ public class DynamicCulling : MonoBehaviour {
             if (maf != null) gridCells[x,y].floorHeight = maf.floorHeight; // Height of the chunk origin, so 1.28f above the actual floor collider.
             
             #if UNITY_EDITOR
+            if (debugHelpers) {
                 Note nt = childGO.gameObject.AddComponent<Note>();
                 nt.note = "Cullable Geometry Chunk, grid cell: " + x.ToString() + "," + y.ToString();
+            }
             #endif
 //             gridCells[x,y].open = true;
         }
@@ -635,7 +724,7 @@ public class DynamicCulling : MonoBehaviour {
         if (pid == null) pid = mr.transform.parent.parent.GetComponent<PrefabIdentifier>();
         if (pid == null) Debug.LogError("No PrefabIdentifier on mesh for culling gameObject named " + mr.gameObject.name);
 
-        #if UNITY_EDITOR     
+        #if UNITY_EDITOR
             Note nt = null;
         #endif
         
@@ -648,16 +737,20 @@ public class DynamicCulling : MonoBehaviour {
                 dynamicMeshesFBs.Add(mr.GetComponent<ForceBridge>());
                 dynamicMeshesTransforms.Add(mr.transform);
                 #if UNITY_EDITOR     
+                if (debugHelpers) {
                     nt = mr.gameObject.AddComponent<Note>();
                     nt.note = "Cullable Dynamic Object";
+                }
                 #endif
                 break;
             case 2:
                 doors.Add(mr);
                 doorsCoords.Add(Vector2Int.zero);
-                #if UNITY_EDITOR     
+                #if UNITY_EDITOR
+                if (debugHelpers) {
                     nt = mr.gameObject.AddComponent<Note>();
                     nt.note = "Cullable Door Object";
+                }
                 #endif
                 break;
             case 3: break; // NPCs done different due to SkinnedMeshRenderer's.
@@ -667,8 +760,10 @@ public class DynamicCulling : MonoBehaviour {
                 staticMeshesSaveablePIDs.Add(pid);
                 staticMeshesSaveableHMs.Add(mr.gameObject.GetComponent<HealthManager>());
                 #if UNITY_EDITOR     
+                if (debugHelpers) {
                     nt = mr.gameObject.AddComponent<Note>();
                     nt.note = "Cullable Static Saveable Object";
+                }
                 #endif
                 break;
             case 5: break; // Lights done differently due to Light (what, it makes sense).
@@ -679,8 +774,10 @@ public class DynamicCulling : MonoBehaviour {
                 staticMeshImmutableCoords.Add(Vector2Int.zero);
                 staticMeshesImmutablePIDs.Add(pid);
                 #if UNITY_EDITOR     
+                if (debugHelpers) {
                     nt = mr.gameObject.AddComponent<Note>();
                     nt.note = "Cullable Static Immutable Object";
+                }
                 #endif
                 break;
         }
@@ -712,8 +809,10 @@ public class DynamicCulling : MonoBehaviour {
                 npcTransforms.Add(ctr.GetChild(i));
                 npcCoords.Add(Vector2Int.zero);
                 #if UNITY_EDITOR     
+                if (debugHelpers) {
                     Note nt = aic.gameObject.AddComponent<Note>();
                     nt.note = "Cullable NPC";
+                }
                 #endif
             }
         } else if (type == 5) { // Lights
@@ -725,8 +824,10 @@ public class DynamicCulling : MonoBehaviour {
                 lights.Add(lit);
                 lightCoords.Add(Vector2Int.zero);
                 #if UNITY_EDITOR     
+                if (debugHelpers) {
                     Note nt = lit.gameObject.AddComponent<Note>();
                     nt.note = "Cullable Light";
+                }
                 #endif
             }
         } else if (type == 0) { // Static Immutable
@@ -797,8 +898,10 @@ public class DynamicCulling : MonoBehaviour {
             switch(type) {
                 case 1: dynamicMeshCoords[index]          = PosToCellCoords(dynamicMeshes[index].transform.position);
                         #if UNITY_EDITOR
+                        if (debugHelpers) {
                             nt = dynamicMeshes[index].gameObject.GetComponent<Note>();
                             nt.note = "Cullable Dynamic Object, grid cell: " + dynamicMeshCoords[index].x.ToString() + "," + dynamicMeshCoords[index].y.ToString();
+                        }
                         #endif
                             
                         if (dynamicMeshCoords[index].x == 0 && dynamicMeshCoords[index].y == 0) {
@@ -807,8 +910,10 @@ public class DynamicCulling : MonoBehaviour {
                         break;
                 case 2: doorsCoords[index]                = PosToCellCoords(doors[index].transform.position);
                         #if UNITY_EDITOR
+                        if (debugHelpers) {
                             nt = doors[index].gameObject.GetComponent<Note>();
                             nt.note = "Cullable Door Object, grid cell: " + doorsCoords[index].x.ToString() + "," + doorsCoords[index].y.ToString();
+                        }
                         #endif
                         if (doorsCoords[index].x == 0 && doorsCoords[index].y == 0) {
                             UnityEngine.Debug.Log("door misplaced for " + doors[index].gameObject.name + " at " + doors[index].transform.position.ToString());
@@ -816,8 +921,10 @@ public class DynamicCulling : MonoBehaviour {
                         break;
                 case 3: npcCoords[index]                  = PosToCellCoords(npcTransforms[index].position);
                         #if UNITY_EDITOR
+                        if (debugHelpers) {
                             nt = npcTransforms[index].gameObject.GetComponent<Note>();
                             nt.note = "Cullable NPC, grid cell: " + npcCoords[index].x.ToString() + "," + npcCoords[index].y.ToString();
+                        }
                         #endif
                         if (npcCoords[index].x == 0 && npcCoords[index].y == 0) {
                             UnityEngine.Debug.Log("npc misplaced for " + npcTransforms[index].gameObject.name + " at " + npcTransforms[index].position.ToString());
@@ -832,8 +939,10 @@ public class DynamicCulling : MonoBehaviour {
                             if (iter > (nudges.Length - 1)) break;
                         }
                         #if UNITY_EDITOR
+                        if (debugHelpers) {
                             nt = staticMeshesSaveable[index].gameObject.GetComponent<Note>();
                             nt.note = "Cullable Static Saveable Object, grid cell: " + staticMeshSaveableCoords[index].x.ToString() + "," + staticMeshSaveableCoords[index].y.ToString();
+                        }
                         #endif
                         if (staticMeshSaveableCoords[index].x == 0 && staticMeshSaveableCoords[index].y == 0) {
                             UnityEngine.Debug.Log("static mesh savable misplaced for " + staticMeshesSaveable[index].gameObject.name + " at " + staticMeshesSaveable[index].transform.position.ToString());
@@ -841,8 +950,10 @@ public class DynamicCulling : MonoBehaviour {
                         break;
                 case 5: lightCoords[index]                = PosToCellCoords(lights[index].transform.position);
                         #if UNITY_EDITOR
+                        if (debugHelpers) {
                             nt = lights[index].gameObject.GetComponent<Note>();
                             nt.note = "Cullable Light, grid cell: " + lightCoords[index].x.ToString() + "," + lightCoords[index].y.ToString();
+                        }
                         #endif
                         if (lightCoords[index].x == 0 && lightCoords[index].y == 0) {
                             lights[index].shadows = LightShadows.None;
@@ -857,8 +968,10 @@ public class DynamicCulling : MonoBehaviour {
                             if (iter > (nudges.Length - 1)) break;
                         }
                         #if UNITY_EDITOR
+                        if (debugHelpers) {
                             nt = staticMeshesImmutable[index].gameObject.GetComponent<Note>();
                             nt.note = "Cullable Static Immutable Object, grid cell: " + staticMeshImmutableCoords[index].x.ToString() + "," + staticMeshImmutableCoords[index].y.ToString();
+                        }
                         #endif
                         if (staticMeshImmutableCoords[index].x == 0 && staticMeshImmutableCoords[index].y == 0) {
                             UnityEngine.Debug.Log("static mesh immutable misplaced for " + staticMeshesImmutable[index].gameObject.name + " at " + staticMeshesImmutable[index].transform.position.ToString());
@@ -1452,7 +1565,7 @@ public class DynamicCulling : MonoBehaviour {
         gridCells[playerCellX,playerCellY].visible = true; // Guarantee enable.
         ChunkPrefab chp = null;
         float distSqrCheck = lodSqrDist;
-        PrefabIdentifier pidMR;
+//         PrefabIdentifier pidMR;
         bool pidGood = false;
         if (LevelManager.a.currentLevel > 9) distSqrCheck = 419.4304f; // (8 * 2.56f)^2, lower than normal due to foliage tanking performance
         else if (LevelManager.a.currentLevel == 0 || LevelManager.a.currentLevel == 9) distSqrCheck = 1474.56f; // (15*2.56)^2, lower than normal due to high poly angled ceilings and pipe walls
@@ -1472,9 +1585,12 @@ public class DynamicCulling : MonoBehaviour {
                         if (chp.constIndex > 304 || chp.constIndex < 0) continue;
 
                         pidGood = false;
-                        pidMR = chp.meshenderers[k].meshRenderer.gameObject.GetComponent<PrefabIdentifier>();
-                        pidGood = pidMR != null;
-                        if (pidGood) pidGood = ConsoleEmulator.ConstIndexIsGeometry(pidMR.constIndex);
+//                         pidMR = chp.meshenderers[k].meshRenderer.gameObject.GetComponent<PrefabIdentifier>();
+//                         pidGood = pidMR != null;
+//                         if (pidGood) {
+//                             pidGood = ConsoleEmulator.ConstIndexIsGeometry(pidMR.constIndex);
+                            pidGood = ConsoleEmulator.ConstIndexIsGeometry(chp.meshenderers[k].constIndex);
+//                         }
                         if (useLODMeshes && pidGood) {
                             sqrdist = (MouseLookScript.a.transform.position - chp.meshenderers[k].meshRenderer.transform.position).sqrMagnitude;
                             chp.meshenderers[k].SetMesh(sqrdist >= distSqrCheck);
@@ -1487,7 +1603,7 @@ public class DynamicCulling : MonoBehaviour {
                 }
             }
         }
-     }
+    }
 
     public void UpdateDynamicMeshes() {
         int count = 0;
@@ -2003,7 +2119,7 @@ public class Meshenderer {
     public Mesh meshLOD;
     public Material materialUsual;
     public Material materialLOD;
-
+    public int constIndex;
     public void SetMesh(bool useLOD) {
         meshFilter.sharedMesh = useLOD ? meshLOD : meshUsual;
         meshRenderer.sharedMaterial = useLOD ? materialLOD : materialUsual;

@@ -298,4 +298,11 @@ public class AIAnimationController : MonoBehaviour {
 		aiac.SetAnimFromLoad(aiac.clipName,0,aiac.currentClipPercentage,setSpeed); index++;
 		return index;
 	}
+	
+	void OnDestroy() {
+		aic = null;
+		clipName = null;
+		anim = null;
+		smR = null;
+	}
 }

@@ -32,6 +32,7 @@ namespace UnityStandardAssets.ImageEffects
             else
 			{
                 m2Create = new Material (s);
+//                 UnityEngine.Debug.Log("Created new material from Shader " + s.ToString() + " under material m2Create " + m2Create.ToString());
                 m2Create.hideFlags = HideFlags.DontSave;
                 if (m2Create)
                     return m2Create;

@@ -29,6 +29,7 @@ public class Utils {
 										  // for all savefile text.
 	public static char splitCharChar = '|';
 
+	public static StringBuilder s1;
 	public static CultureInfo en_US_Culture = new CultureInfo("en-US");
 
 	private static bool getValparsed;
@@ -568,18 +569,62 @@ public class Utils {
 		if (val < 0) return name + ":-1";
 		return name + ":" + val.ToString();
 	}
-	
+
 	public static bool GetBoolFromStringInTables(string val) {
 		return val.Equals("1");
 	}
+	
+	private static int GetColonIndex(string val) {
+		int colonIndex = -1;
+		for (int i = 0; i < val.Length; i++) { // Update below in StringEquals if changing here as I've inlined it there for performance.
+			if (val[i] == ':') {
+				colonIndex = i;
+				break;
+			}
+		}
+
+		return colonIndex;
+	}
+	
+	// Iterate over individual characters to avoid the garbage allocation from
+	// builtin string methods (e.g. String.Split).  Especially critical as this
+	// is used by _every_ parser of game data files and savegames.
+	private static bool StringEquals(string val, string name) {
+		int colonIndex = -1;
+		for (int i = 0; i < val.Length; i++) { // Inlined of GetColonIndex() above for performance.
+			if (val[i] == ':') {
+				colonIndex = i;
+				break;
+			}
+		}
+
+		if (colonIndex < 0) return false; // Change logic below in overload if changing here, inlined there for performance.
+		if (name.Length > colonIndex) return false;
+
+		for (int i = 0; i < colonIndex; i++) {
+			if (val[i] != name[i]) return false;
+		}
+
+		return true;
+	}
+	
+	private static bool StringEquals(string val, string name, int colonIndex) {
+		if (colonIndex < 0) return false; // Inlined from above
+		if (name.Length > colonIndex) return false;
+
+		for (int i = 0; i < colonIndex; i++) {
+			if (val[i] != name[i]) return false;
+		}
+
+		return true;
+	}
 
 	public static bool GetBoolFromString(string val, string name) {
-		string[] splits = val.Split(':');
-		if (splits.Length < 2) return GetBoolFromStringInTables(val);
+		if (val.Length < 3 || val[val.Length - 2] != ':') {
+			return GetBoolFromStringInTables(val); // Fallback if no colon or empty value
+		}
 
-		string nameReceived = splits[0];
-		string valueReceived = splits[1];
-		if (nameReceived != name) {
+		if (!StringEquals(val,name)) {
 			UnityEngine.Debug.LogError("BUG: Attempting to parse " + val
 								  + " when wanting bool named " + name
 								  + ", returning false as fallback on "
@@ -587,8 +632,16 @@ public class Utils {
 
 			return false;
 		}
-
-		return valueReceived.Equals("1");
+		
+		if (val.Length - name.Length != 2 || (val[val.Length - 1] != '0' && val[val.Length - 1] != '1')) {
+			UnityEngine.Debug.LogError("BUG: Attempting to parse " + val
+								       + " when wanting bool named " + name
+								       + ", returning false as fallback on "
+								       + SaveObject.currentObjectInfo);
+			return false;
+		}
+		
+		return val[val.Length - 1] == '1';
 	}
 
 	// Variant used for Config.ini without colon and string name
@@ -619,37 +672,52 @@ public class Utils {
 	}
 
 	public static int GetIntFromString(string val, string name) {
-		string[] splits = val.Split(':');
-		if (splits.Length < 2) {
-			UnityEngine.Debug.LogError("BUG: Not enough splits for " + val
-						+ " when wanting int named " + name
-						+ ", returning 0 as fallback on "
-						+ SaveObject.currentObjectInfo);
-			return 0;
-		}
-		
-		string nameReceived = splits[0];
-		string valueReceived = splits[1];
-		if (nameReceived != name) {
+		int colonIndex = GetColonIndex(val);
+		if (!StringEquals(val,name,colonIndex)) {
 			UnityEngine.Debug.LogError("BUG: Attempting to parse " + val
-								   + " when wanting int named " + name
-								   + ", returning 0 as fallback on "
-								   + SaveObject.currentObjectInfo);
-
+						               + " when wanting int named " + name
+						               + ", returning 0 as fallback on "
+						               + SaveObject.currentObjectInfo);
 			return 0;
 		}
 
-		getValparsed = Int32.TryParse(valueReceived,NumberStyles.Integer,
-									  en_US_Culture,out getValreadInt);
-		if (!getValparsed) {
-			UnityEngine.Debug.LogError("BUG: Could not parse int from: "
-								   + val + " for variable named "
-							 	   + name + ", returning 0 as a fallback on "
-							 	   + SaveObject.currentObjectInfo);
+		int valueStart = colonIndex + 1;								             //    34           Length:15
+		int valueLength = val.Length - valueStart;							         // 0123456789ABCDE   15 - 4 = 11 for valueLength
+		if (!TryParseIntManual(val,valueStart,valueLength, out int getValreadInt)) { // key:-0000.00000
+			UnityEngine.Debug.LogError("BUG: Could not parse int from: " + val
+									   + " for variable named " + name 
+									   + ", returning 0 as a fallback on "
+									   + SaveObject.currentObjectInfo);
 			return 0;
 		}
 
 		return getValreadInt;
+	}
+	
+	private static bool TryParseIntManual(string source, int start, int length, out int result) {
+		result = 0;
+		if (length <= 0 || start + length > source.Length) return false;
+
+		bool isNegative = false;
+		int i = start;
+		if (source[i] == '-') {
+			isNegative = true;
+			i++;
+			length--;
+			if (length <= 0) return false;
+		}
+
+		int value = 0;
+		for (; i < start + length; i++) {
+			char c = source[i];
+			if (c < '0' || c > '9') return false;
+			value = value * 10 + (c - '0');
+			// Basic overflow check
+			if (value < 0 && !isNegative) return false;
+		}
+
+		result = isNegative ? -value : value;
+		return true;
 	}
 
 	public static float GetFloatFromStringDataTables(string val) {
@@ -665,35 +733,70 @@ public class Utils {
 	}
 
 	public static float GetFloatFromString(string val, string name) {
-		string[] splits = val.Split(':');
-		if (splits.Length < 2) {
-				UnityEngine.Debug.LogError("BUG: Not enough splits in " + val
-							+ " when wanting float named " + name
-							+ ", returning 0.0 as fallback on "
-							+ SaveObject.currentObjectInfo);
-			return 0.0f;
-		}
-		string nameReceived = splits[0];
-		string valueReceived = splits[1];
-		if (nameReceived != name) {
+		int colonIndex = GetColonIndex(val);
+		if (!StringEquals(val,name,colonIndex)) {
 			UnityEngine.Debug.LogError("BUG: Attempting to parse " + val
-								  + " when wanting float named " + name
-								  + ", returning 0.0 as fallback on "
-								  + SaveObject.currentObjectInfo);
-			return 0.0f;
+						               + " when wanting float named " + name
+						               + ", returning 0 as fallback on "
+						               + SaveObject.currentObjectInfo);
+			return 0;
+		}
+		
+		int valueStart = colonIndex + 1;
+		int valueLength = val.Length - valueStart;
+		if (!TryParseFloatManual(val, valueStart, valueLength, out float getValparsed)) {
+			UnityEngine.Debug.LogError("BUG: Could not parse float from: " +
+									   val + " for variable named " + name
+									   + ", returning 0 as a fallback on "
+									   + SaveObject.currentObjectInfo);
+			return 0f;
 		}
 
-		getValparsed = Single.TryParse(valueReceived, NumberStyles.Float,
-									   en_US_Culture, out getValreadFloat);
+		return getValparsed;
+	}
 
-		if (!getValparsed) {
-			UnityEngine.Debug.LogError("BUG: Could not parse float from: "
-								  + val + " for variable named "
-								  + name + ", returning 0.0 as fallback on "
-								  + SaveObject.currentObjectInfo);
-			return 0.0f;
+	private static bool TryParseFloatManual(string source, int start, int length, out float result) {
+		result = 0f;
+		if (length <= 0 || start + length > source.Length) return false;
+
+		bool isNegative = false;
+		int i = start;
+		if (source[i] == '-') {
+			isNegative = true;
+			i++;
+			length--;
+			if (length <= 0) return false;
+		} else if (source[i] == '+') { // Handle your +0001.00000 format
+			i++;
+			length--;
+			if (length <= 0) return false;
 		}
-		return getValreadFloat;
+
+		float whole = 0f;
+		float fraction = 0f;
+		float divisor = 1f;
+		bool inFraction = false;
+
+		for (; i < start + length; i++) {
+			char c = source[i];
+			if (c == '.') {
+				if (inFraction) return false; // Multiple decimals invalid
+				inFraction = true;
+				continue;
+			}
+			if (c < '0' || c > '9') return false; // Only digits allowed
+			int digit = c - '0';
+			if (inFraction) {
+				divisor *= 10f;
+				fraction += digit / divisor;
+			} else {
+				whole = whole * 10f + digit;
+			}
+		}
+
+		result = whole + fraction;
+		if (isNegative) result = -result;
+		return true;
 	}
 
     // Output with 4 integer places and 5 mantissa, culture invariant to

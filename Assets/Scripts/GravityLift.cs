@@ -25,8 +25,10 @@ public class GravityLift : MonoBehaviour {
 	}
 
 	void OnForce(Collider other, bool initial) {
-		if (other.gameObject.GetComponent<PlayerMovement>() != null) {
-			PlayerMovement.a.gravliftState = true;
+		if (other.gameObject.layer == 12) { // Player
+			if (other.gameObject.GetComponent<PlayerMovement>() != null) {
+				PlayerMovement.a.gravliftState = true;
+			}
 		}
 
 		float topY = transform.position.y + (boxcol.size.y/2f);

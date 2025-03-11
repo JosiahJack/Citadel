@@ -277,6 +277,7 @@ public class LevelManager : MonoBehaviour {
 		PlayerReferenceManager.a.playerCapsule.transform.position = targetPosition;
 		currentLevel = levnum; // Set current level to be the new level
 		DisableAllNonOccupiedLevelsExcept(currentLevel);
+		System.GC.Collect();
 		DynamicCulling.camPositions = new Dictionary<GameObject, Vector3>();
 		levels[levnum].SetActive(true); // enable new level
 		PlayerReferenceManager.a.playerCurrentLevel = levnum;
@@ -594,6 +595,17 @@ public class LevelManager : MonoBehaviour {
 			go = compArray[i].gameObject;
 			if (go.GetComponent<LightAnimation>() != null) continue;
 			if (go.GetComponent<TargetIO>() != null) continue;
+
+			int childCount = go.transform.childCount;
+			for (int j = 0; j < childCount; j++) {
+				Transform child = go.transform.GetChild(j);
+				MeshRenderer mr = child.GetComponent<MeshRenderer>();
+				if (mr != null && mr.material != null) {
+					Material mat = mr.material;
+					mr.material = null; // Clear reference
+					DestroyImmediate(mat); // Destroy the material instance
+				}
+			}
 
 			DestroyImmediate(go); // Dangerous isn't it :D
 		}

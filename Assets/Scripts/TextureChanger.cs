@@ -51,4 +51,28 @@ public class TextureChanger : MonoBehaviour {
 		tex.Toggle(); // set it again since this does other stuff than just change the bool
 		return index;
 	}
+	
+	void OnDestroy() {
+		if (mainTexture != null) mainTexture = null;
+		if (mainTexture2 != null) mainTexture2 = null;
+		if (mainTextureGlow != null) mainTextureGlow = null;
+		if (mainTextureGlow2 != null) mainTextureGlow2 = null;
+		if (rMainLod0 != null) {
+			Material mat = rMainLod0.material;
+			rMainLod0.material = null;
+			DestroyImmediate(mat);
+		}
+		
+		if (rMainLod1 != null) {
+			Material mat = rMainLod1.material;
+			rMainLod1.material = null;
+			DestroyImmediate(mat);
+		}
+		
+		if (rMainLod2 != null) {
+			Material mat = rMainLod2.material;
+			rMainLod2.material = null;
+			DestroyImmediate(mat);
+		}
+	}
 }

@@ -967,7 +967,15 @@ public class SEGI : MonoBehaviour {
 				mipFilterCompute.SetTexture(mipFilterKernel, "Source", source);
 				mipFilterCompute.SetTexture(mipFilterKernel, "Destination", volumeTextures[i + 1]);
 				mipFilterCompute.Dispatch(mipFilterKernel, Mathf.Max(destinationRes / 8,1), Mathf.Max(destinationRes / 8,1), 1);
-				Shader.SetGlobalTexture("SEGIVolumeLevel" + (i + 1).ToString(), volumeTextures[i + 1]);
+				switch(i) {
+					case 0: Shader.SetGlobalTexture("SEGIVolumeLevel0", volumeTextures[1]); break;
+					case 1: Shader.SetGlobalTexture("SEGIVolumeLevel1", volumeTextures[2]); break;
+					case 2: Shader.SetGlobalTexture("SEGIVolumeLevel2", volumeTextures[3]); break;
+					case 3: Shader.SetGlobalTexture("SEGIVolumeLevel3", volumeTextures[4]); break;
+					case 4: Shader.SetGlobalTexture("SEGIVolumeLevel4", volumeTextures[5]); break;
+					case 5: Shader.SetGlobalTexture("SEGIVolumeLevel5", volumeTextures[6]); break;
+				}
+				//Shader.SetGlobalTexture("SEGIVolumeLevel" + i.ToString(), volumeTextures[i + 1]); break;
 			}
 
 			//Advance the voxel flip flop counter
@@ -1014,10 +1022,8 @@ public class SEGI : MonoBehaviour {
 	}
 
 	[ImageEffectOpaque]
-	void OnRenderImage(RenderTexture source, RenderTexture destination)
-	{
-		if (notReadyToRender)
-		{
+	void OnRenderImage(RenderTexture source, RenderTexture destination) {
+		if (notReadyToRender) {
 			Graphics.Blit(source, destination);
 			return;
 		}
@@ -1056,8 +1062,7 @@ public class SEGI : MonoBehaviour {
 		material.SetFloat("BlendWeight", temporalBlendWeight);
 
 		//If Visualize Voxels is enabled, just render the voxel visualization shader pass and return
-		if (visualizeVoxels)
-		{
+		if (visualizeVoxels) {
 			Graphics.Blit(source, destination, material, Pass.VisualizeVoxels);
 			return;
 		}
@@ -1068,8 +1073,7 @@ public class SEGI : MonoBehaviour {
 		RenderTexture reflections = null;
 
 		//If reflections are enabled, create a temporary render buffer to hold them
-		if (doReflections)
-		{
+		if (doReflections) {
 			reflections = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.ARGBHalf);
 		}
 
@@ -1093,8 +1097,7 @@ public class SEGI : MonoBehaviour {
 
 		//Render diffuse GI tracing result
 		Graphics.Blit(source, gi2, material, Pass.DiffuseTrace);
-		if (doReflections)
-		{
+		if (doReflections) {
 			//Render GI reflections result
 			Graphics.Blit(source, reflections, material, Pass.SpecularTrace);
 			material.SetTexture("Reflections", reflections);
@@ -1102,8 +1105,7 @@ public class SEGI : MonoBehaviour {
 
 
 		//Perform bilateral filtering
-		if (useBilateralFiltering)
-		{
+		if (useBilateralFiltering) {
 			material.SetVector("Kernel", new Vector2(0.0f, 1.0f));
 			Graphics.Blit(gi2, gi1, material, Pass.BilateralBlur);
 
@@ -1118,8 +1120,7 @@ public class SEGI : MonoBehaviour {
 		}
 
 		//If Half Resolution tracing is enabled
-		if (giRenderRes == 2)
-		{
+		if (giRenderRes == 2) {
 			RenderTexture.ReleaseTemporary(gi1);
 
 			//Setup temporary textures
@@ -1160,12 +1161,9 @@ public class SEGI : MonoBehaviour {
 			//Release temporary textures
 			RenderTexture.ReleaseTemporary(gi3);
 			RenderTexture.ReleaseTemporary(gi4);
-		}
-		else 	//If Half Resolution tracing is disabled
-		{	
-			//Perform temporal reprojection and blending
-			if (temporalBlendWeight < 1.0f)
-			{
+		} else { // If Half Resolution tracing is disabled
+			// Perform temporal reprojection and blending
+			if (temporalBlendWeight < 1.0f) {
 				Graphics.Blit(gi2, gi1, material, Pass.TemporalBlend);
 				Graphics.Blit(gi1, previousGIResult);
 				Graphics.Blit(source, previousCameraDepth, material, Pass.GetCameraDepthTexture);
@@ -1185,15 +1183,10 @@ public class SEGI : MonoBehaviour {
 		RenderTexture.ReleaseTemporary(currentNormal);
 
 		//Visualize the sun depth texture
-		if (visualizeSunDepthTexture)
-			Graphics.Blit(sunDepthTexture, destination);
-
+		if (visualizeSunDepthTexture) Graphics.Blit(sunDepthTexture, destination);
 
 		//Release the temporary reflections result texture
-		if (doReflections)
-		{
-			RenderTexture.ReleaseTemporary(reflections);
-		}
+		if (doReflections) RenderTexture.ReleaseTemporary(reflections);
 
 		//Set matrices/vectors for use during temporal reprojection
 		material.SetMatrix("ProjectionPrev", attachedCamera.projectionMatrix);

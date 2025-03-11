@@ -91,7 +91,9 @@ public class Music : MonoBehaviour {
 		} else {
 			if (!wavExists && mp3Exists) {
 				if (Application.platform == RuntimePlatform.WindowsPlayer
-					|| Application.platform == RuntimePlatform.WindowsEditor) {
+					|| Application.platform == RuntimePlatform.WindowsEditor
+					|| Application.platform == RuntimePlatform.LinuxPlayer
+					|| Application.platform == RuntimePlatform.LinuxEditor) {
 					string url = string.Format("file://{0}", fPathMp3);
 					WWW www = new WWW(url);
 					using (www) {
