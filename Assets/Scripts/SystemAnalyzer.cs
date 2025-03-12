@@ -28,7 +28,10 @@ public class SystemAnalyzer : MonoBehaviour {
 	public Text delta;
 
 	public void Close() {
-		gameObject.SetActive(false);
+		MFDManager.a.sysAnalyzerLH.SetActive(false);
+		MFDManager.a.sysAnalyzerRH.SetActive(false);
+		MFDManager.a.mouseClickHeldOverGUI = true;
+		GUIState.a.ClearOverButton();
 	}
     // Start is called before the first frame update
     void Update() {

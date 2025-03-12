@@ -46,7 +46,7 @@ Kaucukovnik for HUD icons
 Gigaquad for higher res object textures
 #
 -Artists (cont.)-
-Cody Darr aka Sonic Ether for SEGI v0.9.0
+Cody Darr aka Sonic Ether for SEGI v0.9.0 (modified by Josiah Jack)
 
 -Sound and Music-
 Denhonator for remixed menu music

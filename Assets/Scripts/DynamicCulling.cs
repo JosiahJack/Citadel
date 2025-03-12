@@ -71,7 +71,7 @@ public class DynamicCulling : MonoBehaviour {
     private Color32[] pixels;
     private Texture2D debugTex;
     [HideInInspector] public static Dictionary<GameObject, Vector3> camPositions = new Dictionary<GameObject, Vector3>();
-    [HideInInspector] public CameraView[] cameraViews;
+    public CameraView[] cameraViews;
     private bool[,] worldCellsOpen = new bool[WORLDX,WORLDX];
     
     // Mesh combining
@@ -981,7 +981,7 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
     
-    private static void UpdatePubliclyVisibleCameraViewsList() {
+    public static void UpdatePubliclyVisibleCameraViewsList() {
         if (camPositions == null) return;
         if (DynamicCulling.a == null) return; // Not awakened yet.
         

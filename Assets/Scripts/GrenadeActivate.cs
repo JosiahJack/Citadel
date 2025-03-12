@@ -11,7 +11,6 @@ public class GrenadeActivate : MonoBehaviour {
 	public float offense = 3f;
 	public AttackType attackType = AttackType.Projectile;
 	public bool proxSensed = false;
-	public float tickTime = 0.8f;
 	public bool useProx = false; // save
 	public PoolType explosionType = PoolType.GrenadeFragExplosions;
 	public bool active = false;

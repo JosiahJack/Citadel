@@ -19,7 +19,7 @@ public class ForceBridge : MonoBehaviour {
 	public MeshRenderer mr;
 	[HideInInspector] public BoxCollider bCol;
 	private AudioSource SFX;
-	private static float tickTime = 0.05f;
+	private const float tickTime = 0.05f;
 	private bool initialized = false;
 	[HideInInspector] public GameObject segiEmitter;
 

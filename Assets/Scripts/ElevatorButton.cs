@@ -47,7 +47,7 @@ public class ElevatorButton : MonoBehaviour {
 		bool dC = MFDManager.a.linkedElevatorDoor.doorOpen == DoorState.Closed;
 		Vector3 plyPos = MFDManager.a.playerCapsuleTransform.position;
 		float dist = Vector3.Distance(MFDManager.a.objectInUsePos,plyPos);
-		if (dist > Const.a.elevatorPadUseDistance && !dC) {
+		if (dist > Const.elevatorPadUseDistance && !dC) {
 			Const.sprint(Const.a.stringTable[6]); // Too far away from that.
 			return;
 		}

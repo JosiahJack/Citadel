@@ -226,8 +226,8 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public bool GraphicsVSync;
 	[HideInInspector] public bool NoShootMode;
 	[HideInInspector] public bool DynamicMusic;
-	public float HeadBobRate = 10.0f;
-	public float HeadBobAmount = 0.02f;
+	[HideInInspector] public const float HeadBobRate = 0.2f;
+	[HideInInspector] public const float HeadBobAmount = 0.08f;
 	public int[] InputCodeSettings;	  // The integer index values
 	public string[] InputCodes;		  // The readable mapping names used as
 									  //   labels on the configuration page
@@ -243,6 +243,7 @@ public class Const : MonoBehaviour {
 	public List<string> TargetnameRegister;
     public string[] stringTable;
 	[HideInInspector] public bool stringTableLoaded = false;
+	[HideInInspector] public bool loading = false;
 	public HashSet<TextLocalization> TextLocalizationRegister;
 	public float[] reloadTime;
 
@@ -268,8 +269,8 @@ public class Const : MonoBehaviour {
 	public Material segiEmitterMaterialBlue;
 	public Material segiEmitterMaterialPurple;
 	public Material segiEmitterMaterialRedFaint;
-	public float segiVoxelSize = 0.32f;
-	public float segiReducedExposure = 5f;
+	public const float segiVoxelSize = 0.4f;
+	public const float segiReducedExposure = 0.52f;
 	public GameObject testSphere;
 
 	// Irrelevant to inspector constants; automatically assigned during initialization or play.
@@ -297,9 +298,9 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public float savedReminderTime = 7f; // human short-term memory length
 	[HideInInspector] public bool startingNewGame = false;
 	[HideInInspector] public bool introNotPlayed = false;
-	[HideInInspector] public float doubleClickTime = 0.500f;
-	[HideInInspector] public float frobDistance = 5f;
-	[HideInInspector] public float elevatorPadUseDistance = 2f;
+	[HideInInspector] public const float doubleClickTime = 0.500f;
+	[HideInInspector] public const float frobDistance = 4.9f;
+	[HideInInspector] public const float elevatorPadUseDistance = 2f;
 	[HideInInspector] public int creditsLength;
 	[HideInInspector] public Transform player1TargettingPos;
 	[HideInInspector] public GameObject player1Capsule;
@@ -316,40 +317,40 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public Color ssRedText = new Color(0.9176f, 0.1373f, 0.1686f); // Red, e.g. for inventory text
 	[HideInInspector] public Color ssWhiteText = new Color(1f, 1f, 1f); // White, e.g. for warnings text
 	[HideInInspector] public Color ssOrangeText = new Color(1f, 0.498f, 0f); // Orange, e.g. for map buttons text
-	[HideInInspector] public float camMaxAmount = 0.2548032f;
-	[HideInInspector] public float mapWorldMaxN = 85.83999f;
-	[HideInInspector] public float mapWorldMaxS = -78.00001f;
-	[HideInInspector] public float mapWorldMaxE = -70.44f;
-	[HideInInspector] public float mapWorldMaxW = 93.4f;
-	[HideInInspector] public float mapTileMinX = 8; // top left corner
-	[HideInInspector] public float mapTileMinY = -1016; // bottom right corner
+	[HideInInspector] public const float camMaxAmount = 0.2548032f;
+	[HideInInspector] public const float mapWorldMaxN = 85.83999f;
+	[HideInInspector] public const float mapWorldMaxS = -78.00001f;
+	[HideInInspector] public const float mapWorldMaxE = -70.44f;
+	[HideInInspector] public const float mapWorldMaxW = 93.4f;
+	[HideInInspector] public const float mapTileMinX = 8; // top left corner
+	[HideInInspector] public const float mapTileMinY = -1016; // bottom right corner
 	public bool decoyActive = false;
-	[HideInInspector] public float berserkTime = 20f; //Patch constants
-	[HideInInspector] public float detoxTime = 60f;
-	[HideInInspector] public float geniusTime = 180f;
-	[HideInInspector] public float mediTime = 35f;
-	[HideInInspector] public float reflexTime = 155f;
-	[HideInInspector] public float sightTime= 40f;
-	[HideInInspector] public float sightSideEffectTime = 17f;
-	[HideInInspector] public float staminupTime = 60f;
-	[HideInInspector] public float reflexTimeScale = 0.25f;
-	[HideInInspector] public float defaultTimeScale = 1.0f;
-	[HideInInspector] public float berserkDamageMultiplier = 4.0f;
-	[HideInInspector] public float nitroMinTime = 1.0f; //Grenade constants
-	[HideInInspector] public float nitroMaxTime = 60.0f;
-	[HideInInspector] public float nitroDefaultTime = 7.0f;
-	[HideInInspector] public float earthShMinTime = 4.0f;
-	[HideInInspector] public float earthShMaxTime = 60.0f;
-	[HideInInspector] public float earthShDefaultTime = 10.0f;
-	[HideInInspector] public float globalShakeDistance = 0.3f;
-	[HideInInspector] public float globalShakeForce = 1f;
+	[HideInInspector] public const float berserkTime = 20f; //Patch constants
+	[HideInInspector] public const float detoxTime = 60f;
+	[HideInInspector] public const float geniusTime = 180f;
+	[HideInInspector] public const float mediTime = 35f;
+	[HideInInspector] public const float reflexTime = 155f;
+	[HideInInspector] public const float sightTime = 40f;
+	[HideInInspector] public const float sightSideEffectTime = 17f;
+	[HideInInspector] public const float staminupTime = 60f;
+	[HideInInspector] public const float reflexTimeScale = 0.25f;
+	[HideInInspector] public const float defaultTimeScale = 1.0f;
+	[HideInInspector] public const float berserkDamageMultiplier = 4.0f;
+	[HideInInspector] public const float nitroMinTime = 1.0f; //Grenade constants
+	[HideInInspector] public const float nitroMaxTime = 60.0f;
+	[HideInInspector] public const float nitroDefaultTime = 7.0f;
+	[HideInInspector] public const float earthShMinTime = 4.0f;
+	[HideInInspector] public const float earthShMaxTime = 60.0f;
+	[HideInInspector] public const float earthShDefaultTime = 10.0f;
+	[HideInInspector] public const float globalShakeDistance = 0.3f;
+	[HideInInspector] public const float globalShakeForce = 1f;
 	[HideInInspector] public Quaternion quaternionIdentity;
 	[HideInInspector] public Vector3 vectorZero;
 	[HideInInspector] public Vector3 vectorOne;
 	[HideInInspector] public int numberOfRaycastsThisFrame = 0;
-	[HideInInspector] public int maxRaycastsPerFrame = 20;
-	[HideInInspector] public float raycastTick = 0.2f;
-	[HideInInspector] public float aiTickTime = 0.1f;
+	[HideInInspector] public const int maxRaycastsPerFrame = 20;
+	[HideInInspector] public const float raycastTick = 0.2f;
+	[HideInInspector] public const float aiTickTime = 0.1f;
 	
 	// Credit stats
 	[HideInInspector] public int kills = 0;
@@ -476,6 +477,7 @@ public class Const : MonoBehaviour {
         }
 
         StreamReader dataReader = Utils.ReadStreamingAsset(tF);
+		if (stringTable.Length < 925) stringTable = new string[1024];
         using (dataReader) {
             do {
                 // Read the next line
@@ -1046,7 +1048,7 @@ public class Const : MonoBehaviour {
 
 	// StatusBar Print
 	public static void sprint(string input, GameObject player) {
-		//UnityEngine.Debug.Log(input);
+		UnityEngine.Debug.Log(input);
 		a.statusBar.SendText(input);
 	}
 	
@@ -1554,6 +1556,7 @@ public class Const : MonoBehaviour {
 		Stopwatch loadTimer = new Stopwatch();
 		Stopwatch loadUpdateTimer = new Stopwatch(); // For loading % indicator.
 		loadTimer.Start();
+		loading = true;
 		UnityEngine.Debug.Log("Start of Load for index " + saveFileIndex.ToString());
 		yield return null; // Update the view to show ShowLoading changes.
 
@@ -1886,7 +1889,7 @@ public class Const : MonoBehaviour {
 		}
 		
 		loadPercentText.text = "Re-register targets...";
-		yield return new WaitForSeconds(0.05f);
+		yield return new WaitForSeconds(0.01f);
 		for (i=0;i<allParents.Count;i++) {
 			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(TargetIO),true); // find all SaveObject components, including inactive (hence the true here at the end)
 			for (k=0;k<compArray.Length;k++) {
@@ -1898,15 +1901,16 @@ public class Const : MonoBehaviour {
 		}
 		ResetPauseLists();
 		loadPercentText.text = "Re-init cull systems...";
-		yield return new WaitForSeconds(0.05f);
+		yield return new WaitForSeconds(0.01f);
 		DynamicCulling.a.Cull_Init();
 		DynamicCulling.a.CullCore();
 		loadPercentText.text = "Cleaning Up...";
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.01f);
 
  		System.GC.Collect(); // Collect it all!
 		AutoSplitterData.isLoading = false;
 		loadTimer.Stop();
+		loading = false;
 		GoIntoGame(loadTimer);
 	}
 
@@ -2029,6 +2033,8 @@ public class Const : MonoBehaviour {
 
 	// Called by something's Use()
 	public void UseTargets(GameObject go, UseData ud, string targetname) {
+		if (loading) { UnityEngine.Debug.LogError("Attempted to UseTargets during loading!"); return; }
+		
 		if (go != null) {
 			TargetIO tio = go.GetComponent<TargetIO>();
 			if (tio != null) {
@@ -2061,7 +2067,7 @@ public class Const : MonoBehaviour {
 				numtargetsfound++;
 				tempUD.CopyBitsFromUseData(ud);
 
-				//UnityEngine.Debug.Log("Running targets for " + targetname);
+				UnityEngine.Debug.Log("Running targets for " + targetname);
 
 				// Added activeSelf bit to keep from spamming SetActive
 				// when running targets through a trigger_multiple

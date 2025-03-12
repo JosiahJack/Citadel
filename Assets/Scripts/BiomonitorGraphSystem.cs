@@ -34,18 +34,18 @@ public class BiomonitorGraphSystem : MonoBehaviour {
 	private float ergValue = 0f;
 	private float chiValue = 0f;
 	private float beatShift;
-	private float beatThresh = 0.1f;
-	private float beatVariation = 0.05f;
+	private const float beatThresh = 0.1f;
+	private const float beatVariation = 0.05f;
 	private float beatFinished;
-	private float freq = 35f;
+	private const float freq = 35f;
     private float tick0Finished;
     private float tick1Finished;
     private float tick2Finished;
     private float tickFinished; // Overall marching.
-    private float tick0 = 0.0211f;
-    private float tick1 = 0.050f;
-    private float tick2 = 0.0104f;
-    private float tick = 0.02f;
+    private const float tick0 = 0.0211f;
+    private const float tick1 = 0.050f;
+    private const float tick2 = 0.0104f;
+    private const float tick = 0.02f;
     public int currentIndex0 = 0;
     public int currentIndex1 = 0;
     public int currentIndex2 = 0;
@@ -54,7 +54,7 @@ public class BiomonitorGraphSystem : MonoBehaviour {
     private Color col0;
     private Color col1;
     private Color col2;
-	private float graphAdd = 20f;
+	private const float graphAdd = 20f;
 	private float fatigueFactor = 0f;
 
 	// Singleton instance

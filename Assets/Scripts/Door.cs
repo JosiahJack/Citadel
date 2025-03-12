@@ -36,9 +36,9 @@ public class Door : MonoBehaviour {
 	private AudioSource SFX = null;
 	private GameObject dynamicObjectsContainer;
 	private int defIndex = 0;
-	private float topTime = 1.00f;
-	private float defaultSpeed = 1.00f;
-	private float speedZero = 0.00f;
+	private const float topTime = 1.00f;
+	private const float defaultSpeed = 1.00f;
+	private const float speedZero = 0.00f;
 	private const string idleOpenClipName = "IdleOpen";
 	private const string idleClosedClipName = "IdleClosed";
 	private const string openClipName = "DoorOpen";

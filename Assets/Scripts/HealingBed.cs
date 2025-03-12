@@ -17,6 +17,8 @@ public class HealingBed : MonoBehaviour {
 		if (LevelManager.a.GetCurrentLevelSecurity() <= minSecurityLevel) {
 			if (!broken) {
 				PlayerReferenceManager.a.playerCapsule.GetComponent<HealthManager>().HealingBed(amount,true);
+				PlayerHealth.a.radiationArea = false;
+				PlayerHealth.a.radiated = 0f;
 				Const.sprint(Const.a.stringTable[23],ud.owner);
 				Utils.PlayOneShotSavable(SFXSource,Const.a.sounds[103]);
 			} else {

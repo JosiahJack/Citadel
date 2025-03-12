@@ -18,7 +18,7 @@ public class CreditsScroll : MonoBehaviour {
 	public Text endVideoText3;
 	public VideoPlayer outroPlayer;
 
-	private float vidLength = 37.2f;
+	private const float vidLength = 37.2f;
 	private float vidStartTime;
 
     void OnEnable() {

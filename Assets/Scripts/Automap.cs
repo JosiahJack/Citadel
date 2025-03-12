@@ -26,7 +26,7 @@ public class Automap : MonoBehaviour {
 	public Sprite[] automapsBaseImages;
 	public Sprite[] automapsSideImages;
 	public Image[] automapsHazardOverlays;
-	public Transform automapFullPlayerIcon;
+	public Image automapFullPlayerIcon;
 	public Transform automapNormalPlayerIconLH;
 	public GameObject automapNormalPlayerIconGOLH;
 	public Transform automapNormalPlayerIconRH;
@@ -45,7 +45,6 @@ public class Automap : MonoBehaviour {
 	public GameObject levelOverlayContainerG1;
 	public GameObject levelOverlayContainerG2;
 	public GameObject levelOverlayContainerG4;
-	//public Vector2[] automapLevelHomePositions;
 	public GameObject poolContainerAutomapBotOverlays;
 	public GameObject poolContainerAutomapMutantOverlays;
 	public GameObject poolContainerAutomapCyborgOverlays;
@@ -68,11 +67,11 @@ public class Automap : MonoBehaviour {
 
 	[HideInInspector] public bool inFullMap;
 	[HideInInspector] public int currentAutomapZoomLevel = 0;
-	public float automapUpdateFinished; // save
+	[HideInInspector] public float automapUpdateFinished; // save
 	private bool[] automapExplored;
-	private float automapZoom0 = 1.2f;
-	private float automapZoom1 = 0.75f;
-	private float automapZoom2 = 0.55f;
+	private const float automapZoom0 = 1.2f;
+	private const float automapZoom1 = 0.75f;
+	private const float automapZoom2 = 0.55f;
 	// private float circleInnerRangev1 = 7.679999f; //(2.5f * 2.56f) + 1.28f;
 	// private float circleOuterRangev1 = 11.52f; //(4f * 2.56f) + 1.28f;
 	// private float circleInnerRangev2 = 8.96f; //(3f * 2.56f) + 1.28f;
@@ -81,13 +80,13 @@ public class Automap : MonoBehaviour {
 	// private float circleOuterRangev3 = 20.48f; //(7.5f * 2.56f) + 1.28f;
 	// private float automapFactorx = 1.25f;
 	// private float automapFactory = 1.135f;
-	private float automapCorrectionX = -0.008f;
-	private float automapCorrectionY = 0.099f;
-	private float automapTileCorrectionX = -516f;
-	private float automapTileCorrectionY = -516f;
-	private float automapFoWRadius = 30f;
-	private float automapTileBCorrectionX = 0f;
-	private float automapTileBCorrectionY = 0f;
+	private const float automapCorrectionX = -0.008f;
+	private const float automapCorrectionY = 0.099f;
+	private const float automapTileCorrectionX = -516f;
+	private const float automapTileCorrectionY = -516f;
+	private const float automapFoWRadius = 30f;
+	public float automapTileBCorrectionX = 0f;
+	public float automapTileBCorrectionY = 0f;
 	private float icoZAdj;
 	private float updateTime;
 	private Vector3 tempVec;
@@ -172,6 +171,12 @@ public class Automap : MonoBehaviour {
 		if (PlayerMovement.a.inCyberSpace) return;
 		if (!initialized) Start();
 
+		if (inSideView) {
+			Utils.AssignImageOverride(automapSideLHImage,automapsSideImages[LevelManager.a.currentLevel]);
+			Utils.AssignImageOverride(automapSideRHImage,automapsSideImages[LevelManager.a.currentLevel]);
+			return;
+		} 
+		
 		if (AutoMapDisplayActive()) {
 			Utils.Activate(automapCamera.gameObject);
 			Utils.EnableCamera(automapCamera);
@@ -201,16 +206,16 @@ public class Automap : MonoBehaviour {
 					automapsBaseImages[LevelManager.a.currentLevel]);
 			}
 
-			float mapWidth = (Const.a.mapWorldMaxW - Const.a.mapWorldMaxE);
-			float mapHeight = (Const.a.mapWorldMaxN - Const.a.mapWorldMaxS);
-			float ewOffset = (playerPosition.z - Const.a.mapWorldMaxE);
-			float nsOffset = (playerPosition.x - Const.a.mapWorldMaxS);
+			float mapWidth = (Const.mapWorldMaxW - Const.mapWorldMaxE);
+			float mapHeight = (Const.mapWorldMaxN - Const.mapWorldMaxS);
+			float ewOffset = (playerPosition.z - Const.mapWorldMaxE);
+			float nsOffset = (playerPosition.x - Const.mapWorldMaxS);
 
-			tempVec.x = ((ewOffset / mapWidth) * (Const.a.camMaxAmount * 2f))
-						+ (Const.a.camMaxAmount * -1f);
+			tempVec.x = ((ewOffset / mapWidth) * (Const.camMaxAmount * 2f))
+						+ (Const.camMaxAmount * -1f);
 
-			tempVec.y = ((nsOffset / mapHeight) * (Const.a.camMaxAmount * 2f))
-						+ (Const.a.camMaxAmount * -1f);
+			tempVec.y = ((nsOffset / mapHeight) * (Const.camMaxAmount * 2f))
+						+ (Const.camMaxAmount * -1f);
 
 			tempVec.z = automapCameraTransform.localPosition.z;
 			tempVec.x = (tempVec.x * -1f) + automapCorrectionX;
@@ -221,21 +226,23 @@ public class Automap : MonoBehaviour {
 			// private float mapTileMinY = -1016; // bottom right corner
 			// private float mapTileMaxX = 1016; // bottom right corner
 			tempVec2b.x = ((ewOffset/mapWidth) * 1008f)
-						  + Const.a.mapTileMinX + automapTileBCorrectionX;
+						  + Const.mapTileMinX + automapTileBCorrectionX;
 
 			tempVec2b.y = (((nsOffset/mapHeight) * 1008f)
-						  + Const.a.mapTileMinY + automapTileBCorrectionY);
+						  + Const.mapTileMinY + automapTileBCorrectionY);
 
 			if (inFullMap) {
-				tempVec2b.x -= automapTileBCorrectionX;
-				tempVec2b.y -= automapTileBCorrectionY;
-				automapFullPlayerIcon.localPosition = tempVec2b;
-
+				Utils.EnableImage(automapFullPlayerIcon);
+				SetLinkedOverlayPos(automapFullPlayerIcon,1f,PlayerMovement.a.gameObject);
+				automapFullPlayerIcon.rectTransform.anchoredPosition = new Vector3(1024f - automapFullPlayerIcon.rectTransform.anchoredPosition.x + 512f - 2048f + 57f - 10.0839f,
+																				   1024f - automapFullPlayerIcon.rectTransform.anchoredPosition.y - 512f - 168.8f + 68.404f,
+																				   -0.03544822f);
 				// Move the map to center.
 				tempVec.x = 0;
 				tempVec.y = 0;
 				automapCameraTransform.localPosition = tempVec; 
 			} else {
+				Utils.DisableImage(automapFullPlayerIcon);
 				// Move the map to reflect player movement.
 				automapCameraTransform.localPosition = tempVec;
 			}
@@ -246,7 +253,7 @@ public class Automap : MonoBehaviour {
 
 			float zLH = automapNormalPlayerIconLH.localRotation.z;
 			float zRH = automapNormalPlayerIconRH.localRotation.z;
-			float zFull = automapFullPlayerIcon.localRotation.z;
+			float zFull = automapFullPlayerIcon.rectTransform.localRotation.z;
 			Quaternion icoQ = Quaternion.Euler(0,0,icoZAdj);
 			if (Mathf.Abs(zLH - icoZAdj) > 0.5f) {
 				automapNormalPlayerIconLH.localRotation = icoQ;
@@ -257,7 +264,7 @@ public class Automap : MonoBehaviour {
 			}
 
 			if (Mathf.Abs(zFull - icoZAdj) > 0.5f) {
-				automapFullPlayerIcon.localRotation = icoQ;
+				automapFullPlayerIcon.rectTransform.localRotation = icoQ;
 			}
 
 			updateTime = 0.2f;
@@ -499,6 +506,10 @@ public class Automap : MonoBehaviour {
 	}
 
 	public void AutomapGoFull() {
+		if (inSideView) {
+			AutomapGoTop();
+			UpdateAutomap(PlayerMovement.a.transform.localPosition);
+		}
 		Utils.Activate(automapFull);
 		inFullMap = true;
 		MFDManager.a.AutomapGoFull();
@@ -514,10 +525,10 @@ public class Automap : MonoBehaviour {
 
 	// Convert from Worldspace into Automapspace
 	public static Vector3 GetMapPos(Vector3 worldPos) {
-		float mapWidth = (Const.a.mapWorldMaxW - Const.a.mapWorldMaxE);
-		float mapHeight = (Const.a.mapWorldMaxN - Const.a.mapWorldMaxS);
-		float ewOffset = (worldPos.z - Const.a.mapWorldMaxE);
-		float nsOffset = (worldPos.x - Const.a.mapWorldMaxS);
+		float mapWidth = (Const.mapWorldMaxW - Const.mapWorldMaxE);
+		float mapHeight = (Const.mapWorldMaxN - Const.mapWorldMaxS);
+		float ewOffset = (worldPos.z - Const.mapWorldMaxE);
+		float nsOffset = (worldPos.x - Const.mapWorldMaxS);
 		// private float camMaxAmount = 0.2548032f;
 		// private float mapWorldMaxN = 85.83999f;
 		// private float mapWorldMaxS = -78.00001f;
@@ -528,8 +539,8 @@ public class Automap : MonoBehaviour {
 		// x = ((0.6384575295) * 1008f) + 8;
 		// x = 651
 		Vector3 retval = new Vector3(0f,0f,0f);
-		retval.y = ((ewOffset/mapWidth) * 1008f) + Const.a.mapTileMinX;
-		retval.x = ((nsOffset/mapHeight) * 1008f) + Const.a.mapTileMinY;
+		retval.y = ((ewOffset/mapWidth) * 1008f) + Const.mapTileMinX;
+		retval.x = ((nsOffset/mapHeight) * 1008f) + Const.mapTileMinY;
 		retval.z = -0.03f; // Always moved to be behind the fog of war tiles.
 		return retval;
 	}

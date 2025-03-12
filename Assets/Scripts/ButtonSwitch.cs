@@ -31,7 +31,7 @@ public class ButtonSwitch : MonoBehaviour {
 	                                // || blinkWhenActive)
 	[HideInInspector] public Animator anim;
 	private GameObject player; // Set on use, no need for initialization check.
-	private float tickTime = 1.5f;
+	private const float tickTime = 1.5f;
 	private bool awakeInitialized = false;
 
 	// Externally modified
@@ -226,6 +226,8 @@ public class ButtonSwitch : MonoBehaviour {
 
 	public static int Load(GameObject go, ref string[] entries, int index) {
 		ButtonSwitch bs = go.GetComponent<ButtonSwitch>(); // what a load of bs
+		bs.awakeInitialized = false;
+		bs.Awake();
 		bs.securityThreshhold = Utils.GetIntFromString(entries[index],"securityThreshhold"); index++;
 		bs.target = Utils.LoadString(entries[index],"target"); index++;
 		bs.argvalue = Utils.LoadString(entries[index],"argvalue"); index++;
@@ -239,13 +241,14 @@ public class ButtonSwitch : MonoBehaviour {
 		bs.active = Utils.GetBoolFromString(entries[index],"active"); index++;
 		bs.alternateOn = Utils.GetBoolFromString(entries[index],"alternateOn"); index++;
 		bs.delayFinished = Utils.LoadRelativeTimeDifferential(entries[index],"delayFinished"); index++;
-		if ((bs.delayFinished - PauseScript.a.relativeTime) > bs.delay) {
-			bs.delayFinished = PauseScript.a.relativeTime + bs.delay;
-		}
+		bs.delayFinished = 0;
+// 		if (bs.delayFinished >= 0.1f) {
+// 			bs.delayFinished = Mathf.Max(Mathf.Max(bs.delayFinished,PauseScript.a.relativeTime + bs.delay),Time.time + bs.delay);
+// 		}
 		
 		bs.tickFinished = Utils.LoadRelativeTimeDifferential(entries[index],"tickFinished"); index++;
-		if ((bs.tickFinished - PauseScript.a.relativeTime) > bs.tickTime) {
-			bs.tickFinished = PauseScript.a.relativeTime + bs.tickTime;
+		if ((bs.tickFinished - PauseScript.a.relativeTime) > tickTime) {
+			bs.tickFinished = PauseScript.a.relativeTime + tickTime;
 		}
 
 		float animTime = Utils.GetFloatFromString(entries[index],"asi.normalizedTime"); index++;

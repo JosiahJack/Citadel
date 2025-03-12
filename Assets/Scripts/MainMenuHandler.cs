@@ -45,8 +45,6 @@ public class MainMenuHandler : MonoBehaviour {
 	public bool inCutscene = false;
 	public GameObject PresetConfirmDialog;
 	public Text presetQuestionText;
-	public string presetQuestionDefault = "RESET ALL KEYS TO DEFAULT?";
-	public string presetQuestionLegacy = "CHANGE ALL KEYS TO LEGACY PRESET?";
 	public static MainMenuHandler a;
 	public ConfigKeybindButton[] keybindButtons;
 	public ConfigToggles ctInvertUpDnLook;
@@ -123,8 +121,8 @@ public class MainMenuHandler : MonoBehaviour {
 	private string tempSaveNameHolder;
 	private int presetQuestionValue = -1;
 	private float vidFinished;
-	private float vidLength = 117.5f;
-	private float deathvidLength = 16.8f;
+	private const float vidLength = 117.5f;
+	private const float deathvidLength = 16.8f;
 	private float vidStartTime;
 
 	void Awake() {
@@ -937,8 +935,8 @@ public class MainMenuHandler : MonoBehaviour {
 	public void SetConfigPreset(int index) {
 		presetQuestionValue = index;
 
-		if (presetQuestionValue == 1)  presetQuestionText.text = presetQuestionLegacy;
-		else presetQuestionText.text = presetQuestionDefault;
+		if (presetQuestionValue == 1)  presetQuestionText.text = Const.a.stringTable[924]; // CHANGE ALL KEYS TO LEGACY PRESET?
+		else presetQuestionText.text = Const.a.stringTable[923]; // RESET ALL KEYS TO DEFAULT?
 
 		PresetConfirmDialog.SetActive(true);
 	}

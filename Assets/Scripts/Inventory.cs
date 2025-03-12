@@ -251,8 +251,8 @@ public class Inventory : MonoBehaviour {
 		}
 
 		a.grenadeCurrent = 0;
-		a.nitroTimeSetting = Const.a.nitroDefaultTime;
-		a.earthShakerTimeSetting = Const.a.earthShDefaultTime;
+		a.nitroTimeSetting = Const.nitroDefaultTime;
+		a.earthShakerTimeSetting = Const.earthShDefaultTime;
 
 		// Logs
 		a.hasLog = new bool[134];

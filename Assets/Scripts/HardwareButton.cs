@@ -35,11 +35,11 @@ public class HardwareButton : MonoBehaviour {
 	// Jum 31,10,7
 
 	[HideInInspector] public AudioSource SFX;
-	private float defaultZero = 0f;
+	private const float defaultZero = 0f;
 	private float brightness = 0f;
-	private float lanternVersion1Brightness = 2.5f;
-	private float lanternVersion2Brightness = 4;
-	private float lanternVersion3Brightness = 5;
+	private const float lanternVersion1Brightness = 2.5f;
+	private const float lanternVersion2Brightness = 4;
+	private const float lanternVersion3Brightness = 5;
 	private Grayscale gsc;
 	private Grayscale gscSensaCenter;
 	private Grayscale gscSensaLH;

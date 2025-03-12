@@ -65,6 +65,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -89,6 +90,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &6493066
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -132,6 +134,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rbody: {fileID: 0}
+  previousVelocity: {x: 0, y: 0, z: 0}
+  previousUseGravity: 0
+  previousKinematic: 0
+  previouscolDetMode: 0
+  previousSet: 0
 --- !u!114 &114642994747303336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -173,7 +180,6 @@ MonoBehaviour:
   health: 50
   cyberHealth: -1
   maxhealth: 0
-  levelIndex: 0
   isPlayer: 0
   isGrenade: 0
   gibOnDeath: 0
@@ -187,8 +193,8 @@ MonoBehaviour:
   actAsCorpseOnly: 0
   gibsGetVelocity: 0
   gibVelocityBoost: {x: 0, y: 0, z: 0}
-  deathFX: 33
-  bloodType: 0
+  deathFX: 32
+  bloodType: 4
   targetOnDeath: 
   argvalue: 
   inCyberSpace: 0

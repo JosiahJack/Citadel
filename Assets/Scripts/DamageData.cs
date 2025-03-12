@@ -149,7 +149,7 @@ public class DamageData {
 
 		// 6. Berserk Damage Increase.
 		if (a_berserk) {
-			take *= Const.a.berserkDamageMultiplier;
+			take *= Const.berserkDamageMultiplier;
 		}
 
 		// 7. Return the Damage.

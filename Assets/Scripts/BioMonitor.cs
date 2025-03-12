@@ -16,7 +16,7 @@ public class BioMonitor : MonoBehaviour {
 	public Text fatigue;
 
 	// Internal references
-	private float beatTick = 0.5f;
+	private const float beatTick = 0.5f;
 	private StringBuilder tempStr;
 	private float beatFinished; // Visual only, Time.time controlled
 
@@ -56,41 +56,41 @@ public class BioMonitor : MonoBehaviour {
 			&& Utils.CheckFlags(PlayerPatch.a.patchActive, 127)) {
 			patchesActiveText.text = Const.a.stringTable[528];
 			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
-								 PlayerPatch.a.PATCH_MEDI)) {
+								 PlayerPatch.PATCH_MEDI)) {
 
 				tempStr.Append(Const.a.stringTable[520]); tempStr.Append(" ");
 			}
 			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
-								 PlayerPatch.a.PATCH_STAMINUP)) {
+								 PlayerPatch.PATCH_STAMINUP)) {
 
 				tempStr.Append(Const.a.stringTable[521]); tempStr.Append(" ");
 			}
 			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
-								 PlayerPatch.a.PATCH_SIGHT)) {
+								 PlayerPatch.PATCH_SIGHT)) {
 
 				tempStr.Append(Const.a.stringTable[522]); tempStr.Append(" ");
 			}
 
 			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
-								 PlayerPatch.a.PATCH_GENIUS)) {
+								 PlayerPatch.PATCH_GENIUS)) {
 
 				tempStr.Append(Const.a.stringTable[523]); tempStr.Append(" ");
 			}
 
 			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
-								 PlayerPatch.a.PATCH_BERSERK)) {
+								 PlayerPatch.PATCH_BERSERK)) {
 
 				tempStr.Append(Const.a.stringTable[524]); tempStr.Append(" ");
 			}
 
 			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
-								 PlayerPatch.a.PATCH_REFLEX)) {
+								 PlayerPatch.PATCH_REFLEX)) {
 
 				tempStr.Append(Const.a.stringTable[525]); tempStr.Append(" ");
 			}
 
 			if (Utils.CheckFlags(PlayerPatch.a.patchActive,
-								 PlayerPatch.a.PATCH_DETOX)) {
+								 PlayerPatch.PATCH_DETOX)) {
 
 				tempStr.Append(Const.a.stringTable[530]);
 			}

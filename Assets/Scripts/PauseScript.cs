@@ -39,7 +39,7 @@ public class PauseScript : MonoBehaviour {
 	}
 
 	// The whole point right here:
-	public bool Paused() { return paused; }
+	public bool Paused() { return paused || Const.a.loading; }
 	public bool MenuActive() { return menuActive; }
 
 	void Update() {

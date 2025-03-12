@@ -355,7 +355,7 @@ public class Config {
 		if (tempf < 1) tempf = 0;
 		else tempf = tempf/100;
 		tempf = (tempf * 8f) - 4f;
-		if (Const.a.GraphicsSEGI) tempf -= Const.a.segiReducedExposure;
+		if (Const.a.GraphicsSEGI) tempf -= Const.segiReducedExposure;
 		PostProcessingProfile ppf = Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile;
 		ColorGradingModel.Settings cgms = ppf.colorGrading.settings;
 		cgms.basic.postExposure = tempf;

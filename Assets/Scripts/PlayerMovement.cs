@@ -1063,7 +1063,7 @@ public class PlayerMovement : MonoBehaviour {
 			if (!justJumped) {
 				if (grounded || gravliftState || Inventory.a.JumpJetsActive()) {
 					jumpTime = jumpImpulseTime;
-					doubleJumpFinished = PauseScript.a.relativeTime + Const.a.doubleClickTime;
+					doubleJumpFinished = PauseScript.a.relativeTime + Const.doubleClickTime;
 					doubleJumpTicks++;
 					justJumped = true;
 					if (!Inventory.a.JumpJetsActive() && !Inventory.a.BoosterActive()) {

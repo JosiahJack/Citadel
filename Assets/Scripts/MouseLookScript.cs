@@ -512,8 +512,8 @@ public class MouseLookScript : MonoBehaviour {
 
 	bool RayOffset() {
 		bool successfulRay = false;
-		successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.a.frobDistance,Const.a.layerMaskPlayerFrob);
-		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,playerCamera.ScreenPointToRay(cursorPoint).direction * Const.a.frobDistance, Color.green,1f,true);
+		successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.frobDistance,Const.a.layerMaskPlayerFrob);
+		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,playerCamera.ScreenPointToRay(cursorPoint).direction * Const.frobDistance, Color.green,1f,true);
 		if (successfulRay) {
 			successfulRay = (tempHit.collider != null);
 			if (successfulRay) {
@@ -596,12 +596,12 @@ public class MouseLookScript : MonoBehaviour {
 
 		Ray castDir = playerCamera.ScreenPointToRay(cursorPoint);
 		bool successfulRay = Physics.Raycast(castDir, out tempHit,
-											 Const.a.frobDistance,
+											 Const.frobDistance,
 											 Const.a.layerMaskPlayerFrob);
 
 		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,
 					  playerCamera.ScreenPointToRay(cursorPoint).direction
-					    * Const.a.frobDistance, Color.green,1f,true);
+					    * Const.frobDistance, Color.green,1f,true);
 
 		firstHit = tempHit;
 		// Success here means hit a useable something.
@@ -731,7 +731,7 @@ public class MouseLookScript : MonoBehaviour {
 
 		cursorPoint = MouseCursor.a.GetCursorScreenPointForRay();
 		if (!Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint),
-							 out tempHit, Const.a.frobDistance)) {
+							 out tempHit, Const.frobDistance)) {
 			return false; // Can't use it on something, go ahead and drop it.
 		}
 
@@ -985,22 +985,18 @@ public class MouseLookScript : MonoBehaviour {
 						headBobShiftFinished += 0.1f;
 					}
 
-					bobTarget = Const.a.HeadBobAmount * -1f
+					bobTarget = Const.HeadBobAmount * -1f
 								* Mathf.Sign(bobTarget);
 				}
 
 				if (PlayerMovement.a.rbody.velocity.magnitude > 0.1f){
-// 					headBobY = Mathf.Lerp(transform.localPosition.y,targetY + bobTarget,Time.deltaTime * Const.a.HeadBobRate);
-					headBobY = Mathf.SmoothDamp(headBobY,targetY + bobTarget,ref headBobYVel,Const.a.HeadBobRate);
+					headBobY = Mathf.SmoothDamp(headBobY,targetY + bobTarget,ref headBobYVel,Const.HeadBobRate);
 				}
 
-// 				headBobX = Mathf.Lerp(transform.localPosition.x,targetX,Time.deltaTime * Const.a.HeadBobRate);
-				headBobX = Mathf.SmoothDamp(headBobX,targetX,ref headBobXVel,Const.a.HeadBobRate);
+				headBobX = Mathf.SmoothDamp(headBobX,targetX,ref headBobXVel,Const.HeadBobRate);
 			} else {
-// 				headBobX = Mathf.Lerp(transform.localPosition.x,0f,Time.deltaTime * Const.a.HeadBobRate);
-				headBobX = Mathf.SmoothDamp(headBobX,0f,ref headBobXVel,Const.a.HeadBobRate);
-// 				headBobY = Mathf.Lerp(transform.localPosition.y,headBobY,Time.deltaTime * Const.a.HeadBobRate);
-				headBobY = Mathf.SmoothDamp(headBobY,Const.a.playerCameraOffsetY * PlayerMovement.a.currentCrouchRatio,ref headBobYVel,Const.a.HeadBobRate);
+				headBobX = Mathf.SmoothDamp(headBobX,0f,ref headBobXVel,Const.HeadBobRate);
+				headBobY = Mathf.SmoothDamp(headBobY,Const.a.playerCameraOffsetY * PlayerMovement.a.currentCrouchRatio,ref headBobYVel,Const.HeadBobRate);
 			}
 		}
 		transform.localPosition = new Vector3(headBobX,headBobY,headBobZ);

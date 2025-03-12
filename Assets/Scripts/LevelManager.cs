@@ -81,7 +81,7 @@ public class LevelManager : MonoBehaviour {
 
 		SetSkyVisible(true);
 		if (ressurectionBayDoor.Length != 8) Debug.Log("BUG: LevelManager ressurectionBayDoor array length not equal to 8.");
-		Time.timeScale = Const.a.defaultTimeScale;
+		Time.timeScale = Const.defaultTimeScale;
 		levelDataLoaded = new bool[14];
 		for (int i=0;i<14;i++) levelDataLoaded[i] = false;
 		ResetSaveStrings();
@@ -289,8 +289,13 @@ public class LevelManager : MonoBehaviour {
 		PostLoadLevelSetupSystems();
 		if (currentLevel != 13) {
 			DynamicCulling.a.Cull_Init();
-			DynamicCulling.a.CullCore();
+			StartCoroutine(DelayedCull());
 		}
+	}
+	
+	public IEnumerator DelayedCull() {
+		yield return new WaitForSeconds(0.5f);
+		DynamicCulling.a.CullCore(); // For Level 10, visible screen with camera view can't update until cams awake.
 	}
 
 	public void LoadLevelFromSave(int levnum) {
@@ -309,6 +314,7 @@ public class LevelManager : MonoBehaviour {
 		Music.a.SFXMain.Stop();
 		Music.a.SFXOverlay.Stop();
 		Music.a.levelEntry = true;
+		PlayerHealth.a.radiationArea = false;
 		LoadLevelData(currentLevel);
 		Automap.a.SetAutomapExploredReference(currentLevel);
 		Automap.a.automapBaseImage.overrideSprite = Automap.a.automapsBaseImages[currentLevel];

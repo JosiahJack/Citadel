@@ -184,11 +184,11 @@ public class MFDManager : MonoBehaviour  {
 	private string textString;
 	private Text text;
 	private float tickFinished; // Visual only, Time.time controlled
-	public float tickSecs = 0.1f;
+	private const float tickSecs = 0.1f;
 	private int count;
-	private float thousand = 1000f;
-	private int zero = 0;
-	private int one = 1;
+	private const float thousand = 1000f;
+	private const int zero = 0;
+	private const int one = 1;
 	private string formatToDisplayMS;
 	private string formatToDisplayFPS;
 	public Text msText;
@@ -225,16 +225,16 @@ public class MFDManager : MonoBehaviour  {
 	public Sprite ammoButtonDeHighlighted;
 
 	// Center Tabs
-	private float centerTabsTickTime = 0.5f;
-	private int numTicks = 15;
+	private const float centerTabsTickTime = 0.5f;
+	private const int numTicks = 15;
 	private bool[] tabNotified;
 	private float centerTabsTickFinished; // Visual only, Time.time controlled
 	private bool[] highlightStatus;
 	private int[] highlightTickCount;
 	private float blinkFinished;
-	private float blinkTick = 1f;
+	private const float blinkTick = 1f;
 	private float beepFinished;
-	private float beepTick = 3f;
+	private const float beepTick = 3f;
 	private int beepCount = 0;
 	private bool audPaused = false;
 
@@ -252,7 +252,7 @@ public class MFDManager : MonoBehaviour  {
 		a.text = GetComponent<Text> ();
 		a.deltaTime = Time.time;
 		a.count = 0;
-		a.tickFinished = a.centerTabsTickFinished = Time.time + a.tickSecs
+		a.tickFinished = a.centerTabsTickFinished = Time.time + tickSecs
 						 + UnityEngine.Random.value;
 		a.formatToDisplayMS = "{0:0.0}";
 		a.formatToDisplayFPS = "{0:0.0}";
@@ -397,7 +397,7 @@ public class MFDManager : MonoBehaviour  {
 
 		// Handle severing connection with in use keypads, puzzles, etc. when player drifts too far away
 		if (usingObject) {
-			if (Vector3.Distance(playerCapsuleTransform.position, objectInUsePos) > (Const.a.frobDistance + 0.16f)) {
+			if (Vector3.Distance(playerCapsuleTransform.position, objectInUsePos) > (Const.frobDistance + 0.16f)) {
 				if (tetheredPGP != null) {
 					ClosePuzzleGrid();
 					tetheredPGP = null;
@@ -536,6 +536,7 @@ public class MFDManager : MonoBehaviour  {
 	// Called by Automap.cs.  This handles the UI changes to make room.
 	public void AutomapGoFull() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
+		
 		ctbButtonMain.SetActive(false);
 		ctbButtonHardware.SetActive(false);
 		ctbButtonGeneral.SetActive(false);
@@ -546,6 +547,7 @@ public class MFDManager : MonoBehaviour  {
 		tabButtonsRHButtons.SetActive(false);
 		leftTC.TurnAllTabsOff();
 		rightTC.TurnAllTabsOff();
+		GUIState.a.ClearOverButton();
 	}
 
 	// Handles returning UI back to how it was before clearing the board.
@@ -563,6 +565,8 @@ public class MFDManager : MonoBehaviour  {
 			ReturnToLastTab(true);
 			ReturnToLastTab(false);
 		}
+		
+		GUIState.a.ClearOverButton();
 	}
 
 	// Called by MouseLookScript.cs
@@ -592,6 +596,7 @@ public class MFDManager : MonoBehaviour  {
 		CyberTimer ct = cyberTimer.GetComponent<CyberTimer>();
 		if (ct != null) ct.Reset(Const.a.difficultyCyber);
 		CenterTabButtonClickSilent(3,true);
+		GUIState.a.ClearOverButton();
 	}
 
 	// Called by MouseLookScript
@@ -619,6 +624,7 @@ public class MFDManager : MonoBehaviour  {
 		cyberTimer.SetActive(false);
 		viewWeaponsContainer.SetActive(true);
 		CenterTabButtonClickSilent(0,true);
+		GUIState.a.ClearOverButton();
 	}
 
 	public void CyberSprint (string message) {
@@ -693,6 +699,7 @@ public class MFDManager : MonoBehaviour  {
 		PuzzleGrid pg = puzzleGridLH.GetComponent<PuzzleGrid>();
 		PuzzleGrid pgr = puzzleGridRH.GetComponent<PuzzleGrid>();
 		tetheredPGP.SendDataBackToPanel(pg);
+		GUIState.a.ClearOverButton();
 		pg.Reset();
 		pgr.Reset();
 		tetheredPGP = null;
@@ -704,6 +711,7 @@ public class MFDManager : MonoBehaviour  {
 		PuzzleWire pw = puzzleWireLH.GetComponent<PuzzleWire>();
 		PuzzleWire pwr = puzzleWireRH.GetComponent<PuzzleWire>();
 		tetheredPWP.SendDataBackToPanel(pw,false);
+		GUIState.a.ClearOverButton();
 		pw.Reset();
 		pwr.Reset();
 		tetheredPWP = null;
@@ -713,6 +721,7 @@ public class MFDManager : MonoBehaviour  {
 	public void CloseElevatorPad() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		tetheredKeypadElevator.SendDataBackToPanel();
+		GUIState.a.ClearOverButton();
 		TurnOffElevatorPad();
 		tetheredKeypadElevator = null;
 		linkedElevatorDoor = null;
@@ -722,6 +731,7 @@ public class MFDManager : MonoBehaviour  {
 	public void CloseKeycodePad() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
 		TurnOffKeypad();
+		GUIState.a.ClearOverButton();
 		tetheredKeypadKeycode = null;
 		RevertDataTabState();
 	}
@@ -733,6 +743,7 @@ public class MFDManager : MonoBehaviour  {
 		tetheredSearchable = null;
 		searchCloseButtonLH.SetActive(false);
 		searchCloseButtonRH.SetActive(false);
+		GUIState.a.ClearOverButton();
 		if (leftTC.TabManager.DataTab.activeSelf
 			&& searchContainerLH.gameObject.activeSelf) {
 			TabReset(false);
@@ -752,6 +763,7 @@ public class MFDManager : MonoBehaviour  {
 
 	public void ClosePaperLog() {
 		MFDManager.a.mouseClickHeldOverGUI = true;
+		GUIState.a.ClearOverButton();
 		CenterTabButtonClickSilent(curCenterTab,false);
 	}
 
@@ -1029,6 +1041,45 @@ public class MFDManager : MonoBehaviour  {
 		}
 
 		TabReset(lastSearchSideRH);
+		
+		// Still turn off opposite side Data Tab contents so they don't get multiple on at once.
+		if (lastSearchSideRH) {
+			noItemsTextLH.SetActive(false);
+			blockedBySecurityLH.SetActive(false);
+			elevatorUIControlLH.SetActive(false);
+			keycodeUIControlLH.SetActive(false);
+			puzzleGridLH.SetActive(false);
+			puzzleWireLH.SetActive(false);
+			audioLogContainerLH.SetActive(false);
+			sysAnalyzerLH.SetActive(false);
+			
+			// Only on the left
+			miniGamesContainer.SetActive(false);
+			minigameSpace.SetActive(false);
+			minigameButtonsContainer.SetActive(false);
+			minigameViewContainer.SetActive(false);
+			minigamePingSpaceContainer.SetActive(false);
+			minigame15SpaceContainer.SetActive(false);
+			minigameWing0SpaceContainer.SetActive(false);
+			minigameBotbounceSpaceContainer.SetActive(false);
+			minigameEelZapperSpaceContainer.SetActive(false);
+			minigameRoadSpaceContainer.SetActive(false);
+			minigameTriopToeSpaceContainer.SetActive(false);
+			minigameCorpConqSpaceContainer.SetActive(false);
+			minigameChessSpaceContainer.SetActive(false);
+			minigameSpace.SetActive(false);
+			minigameCamera.SetActive(false);
+		} else {
+			noItemsTextRH.SetActive(false);
+			blockedBySecurityRH.SetActive(false);
+			elevatorUIControlRH.SetActive(false);
+			keycodeUIControlRH.SetActive(false);
+			puzzleGridRH.SetActive(false);
+			puzzleWireRH.SetActive(false);
+			audioLogContainerRH.SetActive(false);
+			sysAnalyzerRH.SetActive(false);
+		}
+
 		if (lastSearchSideRH) {
 			OpenTab(4,true,TabMSG.Search,0,Handedness.RH);
 			if (useFX) SearchFXRH.SetActive(true); // Enable search box scaling effect

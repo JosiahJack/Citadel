@@ -14,7 +14,7 @@ public class CameraView : MonoBehaviour {
 
 	// Internal references
 	private Camera cam;
-	private float tick = 0.1f;
+	private const float tick = 0.1f;
 	private float tickFinished; // Visual only, Time.time controlled
 	private MeshRenderer mR; // These are the screens showing the feed
 	private MeshRenderer mR2;

@@ -109,7 +109,7 @@ public class AIController : MonoBehaviour {
 	private Vector3 infrontVec; // Only ever used right away, nosave
 	[HideInInspector] public bool startInitialized = false; // nosave
 	private HealthManager enemyHM;
-	private static float stopDistance = 1.28f; // Constant
+	private const float stopDistance = 1.28f; // Constant
 	private Vector3 faceVec; // Only ever used right away, nosave
 	private Quaternion lookRot; // Only ever used right away, nosave
 	private Animator hopAnimator;
@@ -120,8 +120,8 @@ public class AIController : MonoBehaviour {
 	public Vector3 lastPosition;
 	public float distToLastPos;
 	public float posCheckFinished;
-	private static float positionCheckDelay = 2f;
-	private static float searchTime = 5f;
+	private const float positionCheckDelay = 2f;
+	private const float searchTime = 5f;
 
 	public void Tranquilize() {
 		if (Const.a.typeForNPC[index] != NPCType.Robot) {
@@ -246,7 +246,7 @@ public class AIController : MonoBehaviour {
 			Utils.Activate(sleepingCables);
 		}
 		
-		tickFinished = PauseScript.a.relativeTime + Const.a.aiTickTime + Random.value;
+		tickFinished = PauseScript.a.relativeTime + Const.aiTickTime + Random.value;
 		raycastingTickFinished = tickFinished + Random.value; // Separate rand.
 		attackFinished = PauseScript.a.relativeTime + 1f;
 		idealTransformForward = sightPoint.transform.forward;
@@ -278,7 +278,7 @@ public class AIController : MonoBehaviour {
 		}
 		lookRot = Quaternion.LookRotation(faceVec,up);
 		transform.rotation =
-			Quaternion.Slerp(transform.rotation,lookRot,Const.a.aiTickTime
+			Quaternion.Slerp(transform.rotation,lookRot,Const.aiTickTime
 							 * Const.a.yawSpeedForNPC[index] * Time.deltaTime); 
 	}
 
@@ -310,7 +310,7 @@ public class AIController : MonoBehaviour {
 		rbody.isKinematic = false;
 		if (raycastingTickFinished >= PauseScript.a.relativeTime) return;
 
-		raycastingTickFinished = PauseScript.a.relativeTime + Const.a.raycastTick;
+		raycastingTickFinished = PauseScript.a.relativeTime + Const.raycastTick;
 		EnableAutomapOverlay();
 		inSight = CheckIfPlayerInSight();
 		if (enemy != null && HasHealth(healthManager)) {
@@ -362,7 +362,7 @@ public class AIController : MonoBehaviour {
 
         // Think every tick seconds to save on CPU and prevent race conditions.
         if (tickFinished < PauseScript.a.relativeTime) {
-			tickFinished = PauseScript.a.relativeTime + Const.a.aiTickTime;
+			tickFinished = PauseScript.a.relativeTime + Const.aiTickTime;
 			Think();
 			if (healthManager.linkedOverlay != null) {
 				if (!IsCyberNPC()
@@ -608,8 +608,7 @@ public class AIController : MonoBehaviour {
 					tempVec = (sightPoint.transform.forward
 							   * Const.a.walkSpeedForNPC[index]);
 
-					if (Const.a.numberOfRaycastsThisFrame
-						  <= Const.a.maxRaycastsPerFrame
+					if (Const.a.numberOfRaycastsThisFrame <= Const.maxRaycastsPerFrame
 						&& Const.a.moveTypeForNPC[index] != AIMoveType.Fly) {
 
 						Vector3 checkPos = sightPoint.transform.position
@@ -1552,6 +1551,8 @@ public class AIController : MonoBehaviour {
 	}
 
 	bool CheckIfEnemyInSight() {
+		if (!HasHealth(healthManager)) return false;
+		
 	    int diff = Const.a.difficultyCombat;
 		if (IsCyberNPC()) {
 			diff = Const.a.difficultyCyber;
@@ -1586,7 +1587,7 @@ public class AIController : MonoBehaviour {
 
 		if (IsCyberNPC()) return true;
 
-		if (Const.a.numberOfRaycastsThisFrame > Const.a.maxRaycastsPerFrame) {
+		if (Const.a.numberOfRaycastsThisFrame > Const.maxRaycastsPerFrame) {
 			return inSight; // Zero order hold last until next actual update.
 		}
 
@@ -1703,8 +1704,7 @@ public class AIController : MonoBehaviour {
 				// using sight range to dist to minimize checkdistance; added
 				// slight amount to it though to avoid quantization inaccuracies.
 
-				if (Const.a.numberOfRaycastsThisFrame >
-					Const.a.maxRaycastsPerFrame) {
+				if (Const.a.numberOfRaycastsThisFrame > Const.maxRaycastsPerFrame) {
 					return inSight; // Don't change it, zero order hold.
 				}
 

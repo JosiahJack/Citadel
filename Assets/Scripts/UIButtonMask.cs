@@ -63,7 +63,7 @@ public class UIButtonMask : MonoBehaviour {
 		} else Debug.Log("Failed to add EventTrigger to " + gameObject.name);
 
 		if (doubleClickEnabled) {
-			doubleClickTime = Const.a.doubleClickTime;
+			doubleClickTime = Const.doubleClickTime;
 			dbclickFinished = PauseScript.a.relativeTime;
 			doubleClickTicks = 0;
 			GetComponent<Button>().onClick.AddListener(() => { UiButtonMaskClick(); });

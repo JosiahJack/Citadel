@@ -94,7 +94,7 @@ public class SaveObject : MonoBehaviour {
 		int levelID = 1;
 		bool isNPC = (so.saveType == SaveableType.NPC);
 		if (so.instantiated) {
-			if (LevelManager.a == null) levelID = 1;//CitadelTests.levelToOutputFrom;
+			if (LevelManager.a == null) levelID = 1;
 			else levelID = LevelManager.a.GetInstantiateParent(go,isNPC,prefID);
 		}
 

@@ -67,7 +67,7 @@ public class PlayerHealth : MonoBehaviour {
 			return;
 		}
 
-		if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_MEDI)) {
+		if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.PATCH_MEDI)) {
 			if (mediPatchPulseFinished == 0) mediPatchPulseCount = 0;
 			if (mediPatchPulseFinished < PauseScript.a.relativeTime) {
 				hm.HealingBed(mediPatchHealAmount,false);
@@ -79,7 +79,7 @@ public class PlayerHealth : MonoBehaviour {
 			mediPatchPulseFinished = 0;
 			mediPatchPulseCount = 0;
 		}
-		if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.a.PATCH_DETOX)) radiated = 0f;
+		if (Utils.CheckFlags(PlayerPatch.a.patchActive, PlayerPatch.PATCH_DETOX)) radiated = 0f;
 		if (radiated > 1f) {
 			if (radiationArea) {
 				// Radiation area

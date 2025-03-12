@@ -132,8 +132,7 @@ public class WeaponFire : MonoBehaviour {
         damageData.energyDrainHi = Const.a.energyDrainHiForWeapon[index];
         damageData.energyDrainOver = Const.a.energyDrainOverloadForWeapon[index];
         damageData.attackType = Const.a.attackTypeForWeapon[index];
-        damageData.berserkActive = (Utils.CheckFlags(PlayerPatch.a.patchActive,
-												 PlayerPatch.a.PATCH_BERSERK));
+        damageData.berserkActive = (Utils.CheckFlags(PlayerPatch.a.patchActive,PlayerPatch.PATCH_BERSERK));
     }
 
     public static int Get16WeaponIndexFromConstIndex(int index) {
