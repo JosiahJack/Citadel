@@ -1963,6 +1963,10 @@ public class DynamicCulling : MonoBehaviour {
 //             }
         
 //             if (mergeVisibleMeshes) UncombineMeshes(); // In lieu of the fact that this skyrockets the lighting calculations, not doing!
+        if (LevelManager.a != null) {
+            if (LevelManager.a.currentLevel >= 13) return;
+        }
+        
         skyVisible = false;
         for (int y=0;y<WORLDX;y++) {
             for (int x=0;x<WORLDX;x++) {

@@ -659,7 +659,7 @@ public static class SaveLoad {
             yShifted = Mathf.Round(chunk.transform.localPosition.y / 0.16f) * 0.16f;
         }
         
-        if (Utils.IsAxisAligned(quat) && scaleGood && curlevel != 12 && chunk.name != "chunk_stor1_5 (98)") {
+        if (Utils.IsAxisAligned(quat) && scaleGood && curlevel < 12 && chunk.name != "chunk_stor1_5 (98)") {
             chunk.transform.localPosition = new Vector3(Mathf.Round(chunk.transform.localPosition.x / 2.56f) * 2.56f,
                                                         yShifted, // Actual Z, stupid Unity
                                                         Mathf.Round(chunk.transform.localPosition.z / 2.56f) * 2.56f);

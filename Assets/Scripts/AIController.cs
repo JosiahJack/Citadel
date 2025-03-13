@@ -261,15 +261,16 @@ public class AIController : MonoBehaviour {
 		if (asleep) return;
 
 		faceVec = goalLocation - transform.position;
-		faceVec.y = 0f;
-		if (faceVec.x == 0f && faceVec.z == 0f) return; // Avoid zero quat error.
-		if (Vector3.Dot(faceVec,Vector3.up) > 0.99f) return; // Up results in no Y rotation.
+		if (!IsCyberNPC()) faceVec.y = 0f;
+		if (faceVec.x == 0f && faceVec.z == 0f && faceVec.y == 0f) return; // Avoid zero quat error.
+		if (Vector3.Dot(faceVec,Vector3.up) > 0.99f && !IsCyberNPC()) return; // Up results in no Y rotation.
 
 		// Rotate as fast as we can towards facing the goal location.
 		Vector3 up = Vector3.up;
 		if (IsCyberNPC() && enemy != null) {
 			up = enemy.transform.up;
 			transform.rotation = enemy.transform.rotation;
+			return;
 		}
 		
 		if (goalLocation == transform.position) {
@@ -562,7 +563,9 @@ public class AIController : MonoBehaviour {
 	Vector3 GetWanderPoint() {
 		float newX = transform.position.x + UnityEngine.Random.Range(-79f,79f);
 		float newZ = transform.position.z + UnityEngine.Random.Range(-79f,79f);
-		return new Vector3(newX,0f,newZ);
+		float newY = 0f;
+		if (IsCyberNPC()) newY = transform.position.y + UnityEngine.Random.Range(-79f,79f);
+		return new Vector3(newX,newY,newZ);
 	}
 
 	void Walk() {
@@ -1602,6 +1605,7 @@ public class AIController : MonoBehaviour {
 				LOSpossible = true;
                 return true;
 			} else {
+				// If we are a smart cookie, open doors if we see a door while trying to look at player.
 				if (hitObj != null && (Vector3.Distance(tempHit.point,sightPoint.transform.position) < 2f)
 					&& Const.a.typeForNPC[index] != NPCType.Mutant && Const.a.typeForNPC[index] != NPCType.Supermutant && Const.a.typeForNPC[index] != NPCType.Cyber) {
 
