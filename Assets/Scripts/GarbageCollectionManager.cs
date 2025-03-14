@@ -39,6 +39,7 @@ public class GarbageCollectionManager : MonoBehaviour {
     //        || finished < Time.time) {
     //        finished = Time.time + maxCleanTimerSeconds;
     //        System.GC.Collect(); // Collect it all!
+    //        System.GC.WaitForPendingFinalizers();
     //    }
     //}
 }

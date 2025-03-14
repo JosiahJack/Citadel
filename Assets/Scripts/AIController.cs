@@ -2207,4 +2207,26 @@ public class AIController : MonoBehaviour {
 		aic.currentState = Utils.GetAIStateFromInt(state);
 		return index;
 	}
-} // 1892
+	
+	void OnDestroy() {
+		damageData = null;
+		enemyHM = null;
+		healthManager = null;
+		enemy = null;
+		hopAnimator = null;
+		visibleMeshEntity = null;
+		searchColliderGO = null;
+		laserLightning = null;
+		walkWaypoints = null;
+		meleeDamageColliders = null;
+		muzzleBurst = null;
+		muzzleBurst2 = null;
+		gunPoint = null;
+		gunPoint2 = null;
+		deathMaterial = null;
+		actualSMR = null;
+		deathBurst = null;
+		sightPoint = null;
+		tempHM = null;
+	}
+}

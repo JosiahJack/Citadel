@@ -14,16 +14,16 @@ public class DynamicCulling : MonoBehaviour {
     [HideInInspector] public const int ARRSIZE = WORLDX * WORLDX;
     [HideInInspector] public const float CELLXHALF = 1.28f;
     
-    public bool cullEnabled = false;
+    public bool cullEnabled = true;
     public bool debugHelpers = false;
-    public bool dynamicObjectCull = false;
+    public bool dynamicObjectCull = true;
     public bool lightCulling = true;
-    public bool lightsFrustumCull = true;
+    public bool lightsFrustumCull = false;
     public bool outputDebugImages = false;
     public bool forceRecull = false;
     public bool mergeVisibleMeshes = false;
-    public bool useLODMeshes = false;
-    public bool overrideWindowsToBlack = false;
+    public bool useLODMeshes = true;
+    public bool overrideWindowsToBlack = false; // Used by unit tests.
     public Material chunkMaterial;
     public Material genericMaterial;
     public Texture2DArray chunkAlbedo;
@@ -62,11 +62,7 @@ public class DynamicCulling : MonoBehaviour {
     [HideInInspector] public Mesh[] lodMeshes;
     public Mesh lodMeshTemplate;
     public bool skyVisible;
-
-//     private JobHandle currentJobHandle;
-    private CommandBuffer geometryCommandBuffer;
     private byte[] bytes;
-//     private static string openDebugImagePath;
     private static string visDebugImagePath;
     private Color32[] pixels;
     private Texture2D debugTex;
@@ -439,50 +435,6 @@ public class DynamicCulling : MonoBehaviour {
             default: return 255f; // Null value
         }
     }
-    
-//     void ClearCellList() {
-//         gridCells = new GridCell[WORLDX,WORLDX];
-//         staticMeshesImmutable = new List<MeshRenderer>();
-//         staticMeshesImmutablePIDs = new List<PrefabIdentifier>();
-//         staticMeshImmutableCoords = new List<Vector2Int>();
-//         staticImmutableParticleCoords = new List<Vector2Int>();
-//         staticImmutableParticleSystems = new List<PauseParticleSystem>();
-//         staticMeshesSaveable = new List<MeshRenderer>();
-//         staticMeshesSaveableHMs = new List<HealthManager>();
-//         staticMeshesSaveablePIDs = new List<PrefabIdentifier>();
-//         staticMeshSaveableCoords = new List<Vector2Int>();
-//         doors = new List<MeshRenderer>();
-//         doorsCoords = new List<Vector2Int>();
-//         lights = new List<Light>();
-//         lightsInPVS = new List<Light>();
-//         lightCoords = new List<Vector2Int>();
-//         lightsInPVSCoords = new List<Vector2Int>();
-//         dynamicMeshes = new List<MeshRenderer>();
-//         dynamicMeshesPIDs = new List<PrefabIdentifier>();
-//         dynamicMeshesHMs = new List<HealthManager>();
-//         dynamicMeshesTransforms = new List<Transform>();
-//         dynamicMeshesFBs = new List<ForceBridge>();
-//         dynamicMeshCoords = new List<Vector2Int>();
-//         npcAICs = new List<AIController>();
-//         npcTransforms = new List<Transform>();
-//         sourceMeshenderers = new List<Meshenderer>();
-//         for (int x=0;x<WORLDX;x++) {
-//             for (int y=0;y<WORLDX;y++) {
-//                 gridCells[x,y] = new GridCell();
-//                 gridCells[x,y].x = x;
-//                 gridCells[x,y].y = y;
-//                 gridCells[x,y].open = false;
-//                 gridCells[x,y].visible = false;
-//                 gridCells[x,y].closedNorth = false;
-//                 gridCells[x,y].closedEast = false;
-//                 gridCells[x,y].closedSouth = false;
-//                 gridCells[x,y].closedWest = false;
-//                 gridCells[x,y].chunkPrefabs = new List<ChunkPrefab>();
-//                 gridCells[x,y].dynamicObjects = new List<DynamicObject>();
-//                 gridCells[x,y].visibleCellsFromHere = new bool[WORLDX,WORLDX];
-//             }
-//         }
-//     }
 
     void ClearCellList() {
         // Initialize on first call, reuse thereafter
@@ -1685,10 +1637,6 @@ public class DynamicCulling : MonoBehaviour {
                     if (dynamicMeshesFBs[i] != null) { // The SEGI Emitters are null because the PID GetComponent gets its parent but it has no ForceBridge on it itself.
                         if (dynamicMeshesFBs[i].activated) {
                             inPVS = true;
-                            // if (mergeVisibleMeshes) {
-                            //    Meshenderer mrsh = GetMeshAndItsRenderer(dynamicMeshes[i].gameObject,dynamicMeshesPIDs[i].constIndex);
-                            //    if (mrsh != null) sourceMeshenderers.Add(mrsh);
-                            // }
                         }
                     }
                 } else if (dynamicMeshesHMs[i] != null) {
@@ -1696,10 +1644,6 @@ public class DynamicCulling : MonoBehaviour {
                         || dynamicMeshesPIDs[i].constIndex == 279) { // chunk_screen stays on when destroyed
                         
                         inPVS = true;
-                        // if (mergeVisibleMeshes) {
-                        //    Meshenderer mrsh = GetMeshAndItsRenderer(dynamicMeshes[i].gameObject,dynamicMeshesPIDs[i].constIndex);
-                        //    if (mrsh != null) sourceMeshenderers.Add(mrsh);
-                        // }
                     }
                     
                     if (dynamicMeshesHMs[i].health <= 0 && dynamicMeshesHMs[i].deathFX != PoolType.None) inPVS = false;
@@ -1958,11 +1902,7 @@ public class DynamicCulling : MonoBehaviour {
     }
     
     public void CullCore() {
-//             CullingJob cullJob = new CullingJob {
-//                 
-//             }
-        
-//             if (mergeVisibleMeshes) UncombineMeshes(); // In lieu of the fact that this skyrockets the lighting calculations, not doing!
+        if (mergeVisibleMeshes) UncombineMeshes(); // In lieu of the fact that this skyrockets the lighting calculations, not doing!
         if (LevelManager.a != null) {
             if (LevelManager.a.currentLevel >= 13) return;
         }
@@ -1994,7 +1934,8 @@ public class DynamicCulling : MonoBehaviour {
             if (skyVisible) LevelManager.a.SetSkyVisible(true);
             else LevelManager.a.SetSkyVisible(false);
         }
-//             if (mergeVisibleMeshes) CombineMeshes(true);
+        
+        if (mergeVisibleMeshes) CombineMeshes(true);
 
         // Output Debug image of the open
         if (outputDebugImages) {
@@ -2053,67 +1994,49 @@ public class DynamicCulling : MonoBehaviour {
         return gridCells[playerCellX,playerCellY];
     }
     
-//     public struct CullingJob : IJobParallelFor {
-//         
-//         public void Execute(int index) {
-//             
-//         }
-//     }
-    
-//     private void Update() {
-//         Camera cam = MouseLookScript.a.playerCamera;
-//         geometryCommandBuffer.Clear(); // Clear previous commands
-//         RenderTargetIdentifier[] colorBuffers = new RenderTargetIdentifier[] {
-//             BuiltinRenderTextureType.GBuffer0,
-//             BuiltinRenderTextureType.GBuffer1,
-//             BuiltinRenderTextureType.GBuffer2//,
-// //             BuiltinRenderTextureType.GBuffer3  GBuffer3 not used when HDR is on.
-//         };
-//         
-//         geometryCommandBuffer.SetRenderTarget(colorBuffers, BuiltinRenderTextureType.CameraTarget);
-//         geometryCommandBuffer.SetViewMatrix(cam.worldToCameraMatrix);
-//         geometryCommandBuffer.SetProjectionMatrix(cam.projectionMatrix);
-//         geometryCommandBuffer.SetGlobalTexture("_MainTex", chunkAlbedo); // Assuming your texture array is in _MainTex
-// 
-//         Meshenderer msh;
-//         MeshRenderer mr;
-//         ChunkPrefab chp = null;
-//         float sqrdist = 0f;
-//         bool skyVisible = false;
-//         int calls = 0;
-//         for (int x=0;x<64;x++) {
-//             for (int y=0;y<64;y++) {
-//                 for (int i=0;i<gridCells[x,y].chunkPrefabs.Count;i++) {
-//                     chp = gridCells[x,y].chunkPrefabs[i];
-//                     if (chp == null) continue;
-//                     if (chp.constIndex == 1) {
-//                         if (gridCells[x,y].visible) skyVisible = true;
-//                     }
-// 
-//                     for (int k=0;k<chp.meshenderers.Count;k++) {
-//                         msh = chp.meshenderers[k];
-//                         mr = msh.meshRenderer;
-//                         if (mr == null) { Debug.Log("meshRenderer missing for chp.constIndex:" + chp.constIndex.ToString()); continue; }
-//                         if (!gridCells[x,y].visible) continue;
-//                         if (chp.constIndex > 304 || chp.constIndex < 0) continue;
-// 
-//                         sqrdist = SqrDist(x,y,playerCellX,playerCellY);
-//                         msh.SetMesh(sqrdist >= lodSqrDist);
-//                         
-//                         // Do the DrawCall
-//                         geometryCommandBuffer.DrawMesh(msh.meshFilter.sharedMesh, mr.transform.localToWorldMatrix,chunkMaterial);
-//                         calls++;
-//                     }
-//                 }
-//             }
-//         }
-//         
-//         Debug.Log("calls: " + calls.ToString());
-//         if (LevelManager.a != null) {
-//             if (skyVisible) LevelManager.a.SetSkyVisible(true);
-//             else LevelManager.a.SetSkyVisible(false);
-//         }
-//     }
+    void OnDestroy() {
+        chunkMaterial = null;
+        genericMaterial = null;
+        chunkAlbedo = null;
+        gridCells = null;
+        dynamicMeshes = null;
+        dynamicMeshesPIDs = null;
+        dynamicMeshesHMs = null;
+        dynamicMeshesTransforms = null;
+        dynamicMeshesFBs = null;
+        dynamicMeshCoords = null;
+        staticMeshesImmutable = null;
+        staticMeshesImmutablePIDs = null;
+        staticMeshImmutableCoords = null;
+        staticImmutableParticleCoords = null;
+        staticImmutableParticleSystems = null;
+        staticMeshesSaveable = null;
+        staticMeshesSaveableHMs = null;
+        staticMeshesSaveablePIDs = null;
+        staticMeshSaveableCoords = null;
+        lights = null;
+        lightsInPVS = null;
+        lightCoords = null;
+        lightsInPVSCoords = null;
+        doors = null;
+        doorsCoords = null;
+        npcTransforms = null;
+        npcAICs = null;
+        npcCoords = null;
+        lodMeshes = null;
+        lodMeshTemplate = null;
+        bytes = null;
+        pixels = null;
+        debugTex = null;
+        cameraViews = null;
+        worldCellsOpen = null;
+        lastCombineResult = null;
+        sourceMeshenderers = null;
+        if (a == this) {
+            camPositions.Clear();
+            a = null;
+        }
+    }
 }
 
 public class Meshenderer {

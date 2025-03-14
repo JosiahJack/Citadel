@@ -3,7 +3,7 @@ guid: 2ed7fe9414be57c459a76674fce9107a
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -23,6 +23,7 @@ TextureImporter:
   isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
+  vTOnly: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -54,10 +55,14 @@ TextureImporter:
   textureType: 0
   textureShape: 1
   singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
   applyGammaDecoding: 1
+  cookieLightType: 0
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -65,7 +70,7 @@ TextureImporter:
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
-    compressionQuality: 88
+    compressionQuality: 100
     crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0
@@ -77,7 +82,7 @@ TextureImporter:
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
-    compressionQuality: 88
+    compressionQuality: 100
     crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0
@@ -89,7 +94,7 @@ TextureImporter:
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
-    compressionQuality: 88
+    compressionQuality: 100
     crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0

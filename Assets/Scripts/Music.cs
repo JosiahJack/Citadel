@@ -4,6 +4,7 @@ using System.IO;
 using System.Diagnostics;
 using System;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class Music : MonoBehaviour {
 	public AudioSource SFXMain;
@@ -95,14 +96,20 @@ public class Music : MonoBehaviour {
 					|| Application.platform == RuntimePlatform.LinuxPlayer
 					|| Application.platform == RuntimePlatform.LinuxEditor) {
 					string url = string.Format("file://{0}", fPathMp3);
-					WWW www = new WWW(url);
-					using (www) {
-						yield return www;
-
-						tempClip = NAudioPlayer.FromMp3Data(www.bytes);
+// 					WWW www = new WWW(url);
+// 					using (www) {
+// 						yield return www;
+// 
+// 						tempClip = NAudioPlayer.FromMp3Data(www.bytes);
+// 					}
+					
+					using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG)) {
+						yield return uwr.SendWebRequest();
+						if (uwr.result == UnityWebRequest.Result.Success) {
+							tempClip = DownloadHandlerAudioClip.GetContent(uwr);
+							tempClip.name = fName;
+						}
 					}
-
-					tempClip.name = fName;
 				} else {
 					ProcessStartInfo psi = new ProcessStartInfo();
 					psi.FileName = "/bin/sh";
@@ -146,14 +153,20 @@ public class Music : MonoBehaviour {
 						// TODO: Need 3 /// on Windows?  Need to test.
 						string url;
 						url = string.Format("file://{0}", fPathWave);
-						WWW www = new WWW(url);
-						using (www) {
-							yield return www;
-
-							tempClip = www.GetAudioClipCompressed(false);
+// 						WWW www = new WWW(url);
+// 						using (www) {
+// 							yield return www;
+// 
+// 							tempClip = www.GetAudioClipCompressed(false);
+// 						}
+						
+						using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.WAV)) {
+							yield return uwr.SendWebRequest();
+							if (uwr.result == UnityWebRequest.Result.Success) {
+								tempClip = DownloadHandlerAudioClip.GetContent(uwr);
+								tempClip.name = fName;
+							}
 						}
-
-						tempClip.name = fName;
 					} else {
 						UnityEngine.Debug.Log("Process failed.");
 						if (type == MusicResourceType.Looped) {
@@ -171,14 +184,20 @@ public class Music : MonoBehaviour {
 				// Load .wav file.
 				// TODO: Need 3 /// on Windows?  Need to test.
 				string url = string.Format("file://{0}", fPathWave);
-				WWW www = new WWW(url);
-				using (www) {
-					yield return www;
-
-					tempClip = www.GetAudioClipCompressed(false);
+// 				WWW www = new WWW(url);
+// 				using (www) {
+// 					yield return www;
+// 
+// 					tempClip = www.GetAudioClipCompressed(false);
+// 				}
+// 				
+				using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.WAV)) {
+					yield return uwr.SendWebRequest();
+					if (uwr.result == UnityWebRequest.Result.Success) {
+						tempClip = DownloadHandlerAudioClip.GetContent(uwr);
+						tempClip.name = fName;
+					}
 				}
-
-				tempClip.name = fName;
 			}
 		}
 
@@ -741,4 +760,24 @@ public class Music : MonoBehaviour {
 						MusicType.Walking);
 		} else  PlayTrack(1, TrackType.Walking, MusicType.Walking);
     }
+    
+    void OnDestroy() { // This reduces total RAM usage from 4.0GB to 2.6GB 8)
+		titleMusic = null;
+		creditsMusic = null;
+		levelMusic1 = null;
+		levelMusic2 = null;
+		levelMusicReactor = null;
+		levelMusic6 = null;
+		levelMusicGroves = null;
+		levelMusic8 = null;
+		levelMusicRevive = null;
+		levelMusicDeath = null;
+		levelMusicCyber = null;
+		levelMusicElevator = null;
+		levelMusicDistortion = null;
+		levelMusicLooped = null;
+		tempC = null;
+		curC = null;
+		curOverlayC = null;
+	}
 }

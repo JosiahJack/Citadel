@@ -43,12 +43,12 @@ public class LevelManager : MonoBehaviour {
 	public Material rtxEmissive;
 	public Mesh sphereMesh;
 	public Material pipe_maint2_3_coolant;
-	public Material dynamicObjectsMaterial;
-	public Texture2D dynamicObjectsAlbedo;
-	public Texture2D dynamicObjectsGlow;
-	public Texture2D dynamicObjectsSpecular;
-	public Rect[] dynamicObjectsUvs;
-	public bool changeDynamicMaterial = true;
+// 	public Material dynamicObjectsMaterial;
+// 	public Texture2D dynamicObjectsAlbedo;
+// 	public Texture2D dynamicObjectsGlow;
+// 	public Texture2D dynamicObjectsSpecular;
+// 	public Rect[] dynamicObjectsUvs;
+// 	public bool changeDynamicMaterial = true;
 	[HideInInspector] public List<string>[] DynamicObjectsSavestrings = new List<string>[14];
 	
 	private bool getValparsed;
@@ -112,7 +112,6 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void ResetSaveStrings() {
-// 		Debug.Log("Clearing DynamicObjectsSavestrings list on LevelManager");
 		DynamicObjectsSavestrings = new List<string>[14];
 		for (int i=0;i<14;i++) {
 			DynamicObjectsSavestrings[i] = new List<string>();
@@ -280,6 +279,7 @@ public class LevelManager : MonoBehaviour {
 		currentLevel = levnum; // Set current level to be the new level
 		DisableAllNonOccupiedLevelsExcept(currentLevel);
 		System.GC.Collect();
+		System.GC.WaitForPendingFinalizers();
 		DynamicCulling.camPositions = new Dictionary<GameObject, Vector3>();
 		levels[levnum].SetActive(true); // enable new level
 		PlayerReferenceManager.a.playerCurrentLevel = levnum;
@@ -324,6 +324,7 @@ public class LevelManager : MonoBehaviour {
 		Const.a.ResetPauseLists();
 		SetSkyVisible(true);
 		System.GC.Collect();
+		System.GC.WaitForPendingFinalizers();
 	}
 
 	public void DisableAllNonOccupiedLevelsExcept(int occupiedLevel) {
@@ -457,21 +458,10 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public int GetCurrentLevelSecurity() {
+		if (Const.a.difficultyMission < 1) return 0;
 		if (!LevNumInBounds(currentLevel)) return 0;
 		if (superoverride) return 0; // tee hee we are SHODAN, no security blocks in place
 		return levelSecurity[currentLevel];
-	}
-
-	public void RegisterSecurityObject(int lev,SecurityType stype) {
-// 		if (!LevNumInBounds(lev)) return;
-// 		if (!LevNumInBounds(currentLevel)) return;
-// 		
-// 		switch (stype) {
-// 			case SecurityType.None: return;
-// 			case SecurityType.Camera: levelCameraCount[lev]++; break;
-// 			case SecurityType.NodeSmall: levelSmallNodeCount[lev]++; break;
-// 			case SecurityType.NodeLarge: levelLargeNodeCount[lev]++; break;
-// 		}
 	}
 
 	// Typical level
@@ -658,7 +648,6 @@ public class LevelManager : MonoBehaviour {
 				allDynamicObjects.Add(compArray[i].gameObject);
 			}
 
-// 			Debug.Log("Clearing LevelManager.a.DynamicObjectsSavestrings list for current level to unload it prior to level switch");
 			DynamicObjectsSavestrings[curlevel].Clear(); // Empty list.
 			for (int i=0;i<allDynamicObjects.Count;i++) {
 				DynamicObjectsSavestrings[curlevel].Add(SaveObject.Save(allDynamicObjects[i]));
@@ -704,7 +693,7 @@ public class LevelManager : MonoBehaviour {
 		if (curlevel < 0) return;
 
 		string[] entries;
-		MeshRenderer mr;
+// 		MeshRenderer mr;
 		GameObject dynGO;
 		char splitter = Convert.ToChar(SaveLoad.splitChar);
 		for (int i=0;i<DynamicObjectsSavestrings[curlevel].Count;i++) {
@@ -716,45 +705,33 @@ public class LevelManager : MonoBehaviour {
 
 			int constIndex = Utils.GetIntFromString(entries[0],"constIndex");
 			
-			if (changeDynamicMaterial) {
-				mr = dynGO.GetComponent<MeshRenderer>();
-				if (mr == null) continue;
-				
-				mr.sharedMaterial = dynamicObjectsMaterial;
-				MeshFilter mf = dynGO.GetComponent<MeshFilter>();
-				switch(constIndex) {
-					case 307: mf.sharedMesh.uv = GetUVMappedToSubspace(mf.sharedMesh,dynamicObjectsUvs[0]); break;
-					case 309: mf.sharedMesh.uv = GetUVMappedToSubspace(mf.sharedMesh,dynamicObjectsUvs[1]); break;
-				}
-			}
+// 			if (changeDynamicMaterial) {
+// 				mr = dynGO.GetComponent<MeshRenderer>();
+// 				if (mr == null) continue;
+// 				
+// 				mr.sharedMaterial = dynamicObjectsMaterial;
+// 				MeshFilter mf = dynGO.GetComponent<MeshFilter>();
+// 				switch(constIndex) {
+// 					case 307: mf.sharedMesh.uv = GetUVMappedToSubspace(mf.sharedMesh,dynamicObjectsUvs[0]); break;
+// 					case 309: mf.sharedMesh.uv = GetUVMappedToSubspace(mf.sharedMesh,dynamicObjectsUvs[1]); break;
+// 				}
+// 			}
 		}
 
 		DynamicObjectsSavestrings[curlevel].Clear();
 	}
-
-// 	private Vector2[] GetUVMappedToSubspace(Mesh mesh, Rect uvRect) {
-// 		Vector2[] uvs = new Vector2[mesh.vertexCount];
-// 		for (int i = 0; i < mesh.vertexCount; i++)
-// 		{
-// 			uvs[i] = new Vector2(
-// 				Mathf.Lerp(uvRect.x, uvRect.x + uvRect.width, mesh.uv[i].x),
-// 				Mathf.Lerp(uvRect.y, uvRect.y + uvRect.height, mesh.uv[i].y)
-// 			);
-// 		}
-// 		return uvs;
-// 	}
 	
-	private Vector2[] GetUVMappedToSubspace(Mesh mesh, Rect uvSpace) {
-		UnityEngine.Debug.Log("uvSpace: " + uvSpace.ToString());
-		Vector2[] uvsIn = mesh.uv;
-		Vector2[] newUVs = new Vector2[uvsIn.Length];			
-		for (int u=0;u<uvsIn.Length;u++) {
-			newUVs[u].x = (uvsIn[u].x * uvSpace.width) + uvSpace.xMin;
-			newUVs[u].y = (uvsIn[u].y * uvSpace.height) + uvSpace.yMin;
-		}
-		
-		return newUVs;
-	}
+// 	private Vector2[] GetUVMappedToSubspace(Mesh mesh, Rect uvSpace) {
+// 		UnityEngine.Debug.Log("uvSpace: " + uvSpace.ToString());
+// 		Vector2[] uvsIn = mesh.uv;
+// 		Vector2[] newUVs = new Vector2[uvsIn.Length];			
+// 		for (int u=0;u<uvsIn.Length;u++) {
+// 			newUVs[u].x = (uvsIn[u].x * uvSpace.width) + uvSpace.xMin;
+// 			newUVs[u].y = (uvsIn[u].y * uvSpace.height) + uvSpace.yMin;
+// 		}
+// 		
+// 		return newUVs;
+// 	}
 
 	public void CheatLoadLevel(int ind) {
 		if (ind == 10) {
@@ -795,5 +772,34 @@ public class LevelManager : MonoBehaviour {
 		for (i=0;i<14;i++) { LevelManager.a.levelLargeNodeDestroyedCount[i] = Utils.GetIntFromString(entries[index],"levelLargeNodeDestroyedCount[" + i.ToString() + "]"); index++; }
 		for (i=0;i<14;i++) { LevelManager.a.ressurectionActive[i] = Utils.GetBoolFromString(entries[index],"ressurectionActive[" + i.ToString() + "]"); index++; }
 		return index;
+	}
+	
+	void OnDestroy() {
+		levels = null;
+		ressurectionLocation = null;
+		ressurectionBayDoor = null;
+		sky = null;
+		sun = null;
+		sunSprite = null;
+		saturn = null;
+		exterior = null;
+		exterior_shield = null;
+		skyMR = null;
+		npcsm = null;
+		levelScripts = null;
+		geometryContainers = null;
+		lightContainers = null;
+		npcContainers = null;
+		elevatorTargetDestinations = null;
+		rtxEmissive = null;
+		sphereMesh = null;
+		pipe_maint2_3_coolant = null;
+// 		dynamicObjectsMaterial = null;
+// 		dynamicObjectsAlbedo = null;
+// 		dynamicObjectsGlow = null;
+// 		dynamicObjectsSpecular = null;
+// 		dynamicObjectsUvs = null;
+		DynamicObjectsSavestrings = null;
+		if (a == this) a = null;
 	}
 }

@@ -400,4 +400,15 @@ public class BiomonitorGraphSystem : MonoBehaviour {
                 break;
         }
      }
+     
+     void OnDestroy() {
+        OutputTexture = null;
+        max = null;
+        min = null;
+        currentColors = null;
+        colorsERG = null;
+        colorsCHI = null;
+        colorsECG = null;
+        tex = null;
+    }
 }

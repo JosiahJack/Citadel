@@ -38,6 +38,8 @@ public class SceneTransitionHandler : MonoBehaviour {
             if (!unloaderStatus.isDone) return;
 
             Scene loadScene = SceneManager.GetSceneByName("LoadScene");
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
             SceneManager.LoadScene(sceneIndexToLoad); // Reload. it. all.
             setActiveAtNext = true;
             transitionActive = false;

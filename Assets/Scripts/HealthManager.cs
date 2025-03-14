@@ -79,7 +79,7 @@ public class HealthManager : MonoBehaviour {
 			cyberHealth = 255;
 			maxhealth = 255;
 		}
-		if (securityAffected != SecurityType.None && LevelManager.a != null) LevelManager.a.RegisterSecurityObject(LevelManager.a.currentLevel, securityAffected);
+		
 		if (isPlayer) justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
 		if (Const.a != null) Const.a.RegisterObjectWithHealth(this);
 		awakeInitialized = true;
@@ -741,14 +741,6 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	public void AwakeFromLoad(int levID) {
-		if (!awakeInitialized) {
-			if (securityAffected != SecurityType.None
-				&& LevelManager.a != null) {
-
-				LevelManager.a.RegisterSecurityObject(levID,securityAffected);
-			}
-		}
-
 		if (!awakeInitialized) { Awake(); }
 		if (!startInitialized) { Start(); }
 

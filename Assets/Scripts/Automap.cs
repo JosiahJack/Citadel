@@ -631,4 +631,53 @@ public class Automap : MonoBehaviour {
 		amp.inSideView =  Utils.GetBoolFromString(entries[index],"inSideView");
 		return index;
 	}
+	
+	void OnDestroy() {
+		automapCamera = null;
+		automapCanvasGO = null;
+		automapContainerLH = null;
+		automapContainerRH = null;
+		automapTabLH = null;
+		automapTabRH = null;
+		automapFull = null;
+		automapTopLH = null;
+		automapTopRH = null;
+		automapSideLH = null;
+		automapSideRH = null;
+		automapNormalPlayerIconGOLH = null;
+		automapNormalPlayerIconGORH = null;
+		levelOverlayContainerR = null;
+		levelOverlayContainer1 = null;
+		levelOverlayContainer2 = null;
+		levelOverlayContainer3 = null;
+		levelOverlayContainer4 = null;
+		levelOverlayContainer5 = null;
+		levelOverlayContainer6 = null;
+		levelOverlayContainer7 = null;
+		levelOverlayContainer8 = null;
+		levelOverlayContainer9 = null;
+		levelOverlayContainerG1 = null;
+		levelOverlayContainerG2 = null;
+		levelOverlayContainerG4 = null;
+		poolContainerAutomapBotOverlays = null;
+		poolContainerAutomapMutantOverlays = null;
+		poolContainerAutomapCyborgOverlays = null;
+		automapBaseImage = null;
+		automapInnerCircleLH = null;
+		automapInnerCircleRH = null;
+		automapOuterCircleLH = null;
+		automapOuterCircleRH = null;
+		automapSideLHImage = null;
+		automapSideRHImage = null;
+		automapFullPlayerIcon = null;
+		automapNormalPlayerIconLH = null;
+		automapNormalPlayerIconRH = null;
+		automapSideButtonTextLH = null;
+		automapSideButtonTextRH = null;
+		automapFoWTiles = null;
+		automapsBaseImages = null;
+		automapsSideImages = null;
+		automapsHazardOverlays = null;
+		levelOverlayContainer = null;
+	}
 }
