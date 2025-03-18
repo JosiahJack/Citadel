@@ -639,89 +639,106 @@ public static class SaveLoad {
         if (chunk == null) return null;
 
         chunk.name = entries[index]; index++;
+        if (chunk.name == "chunk_cyberpanel (3918)") UnityEngine.Debug.Log("Loading chunk_cyberpanel (3918)");
         index = Utils.LoadTransform(chunk.transform,ref entries,index);
-        Quaternion quat = chunk.transform.localRotation;
-        bool scaleGood =    Utils.InTol(chunk.transform.localScale.x,1.0f,0.01f)
-                         && Utils.InTol(chunk.transform.localScale.y,1.0f,0.01f)
-                         && Utils.InTol(chunk.transform.localScale.z,1.0f,0.01f);
-        
-        float floorHeight = Utils.GetFloorHeight(quat,chunk.transform.position.y);
-        if (floorHeight > -1000f) {
-            MarkAsFloor maf = chunk.GetComponent<MarkAsFloor>();
-            if (maf == null) maf = chunk.AddComponent<MarkAsFloor>();
+        if (curlevel <= 12) {
+            Quaternion quat = chunk.transform.localRotation;
+            bool scaleGood =    Utils.InTol(chunk.transform.localScale.x,1.0f,0.01f)
+                            && Utils.InTol(chunk.transform.localScale.y,1.0f,0.01f)
+                            && Utils.InTol(chunk.transform.localScale.z,1.0f,0.01f);
             
-            maf.floorHeight = floorHeight;
-        }
-        
-        // Align to grid if not rotated
-        float yShifted = chunk.transform.localPosition.y;
-        if (!(chunk.name == "chunk_stor1_5 (99)" || chunk.name == "chunk_stor1_5 (101)" || chunk.name == "chunk_stor1_5 (105)" || chunk.name == "chunk_stor1_5 (110)")) {
-            yShifted = Mathf.Round(chunk.transform.localPosition.y / 0.16f) * 0.16f;
-        }
-        
-        if (Utils.IsAxisAligned(quat) && scaleGood && curlevel < 12 && chunk.name != "chunk_stor1_5 (98)") {
-            chunk.transform.localPosition = new Vector3(Mathf.Round(chunk.transform.localPosition.x / 2.56f) * 2.56f,
-                                                        yShifted, // Actual Z, stupid Unity
-                                                        Mathf.Round(chunk.transform.localPosition.z / 2.56f) * 2.56f);
-        } else {
-            // Used https://www.h-schmidt.net/FloatConverter/IEEE754.html to
-            // determine quantized version that fits exactly in 32bit float with
-            // only error of -0.00000002979518463982683078349420677028 after
-            // doing sqrt2 over 2 in https://www.mathsisfun.com/calculator-precision.html
-            float xzOffsetFor45s = 0.90509665012359619140625f; // = 1.28f * sin(45deg) = 1.28f * (Mathf.Sqrt(2) / 2f)
-            
-            float sqrtOf2 = 1.41421353816986083984375f;
-            
-            bool is45 = Utils.ChunkIs45NW_NE_SW_SE_Laterally(quat);
-            bool nw45 = false;
-            bool ne45 = false;
-            bool sw45 = false;
-            bool se45 = false;
-            bool ceilSlopeX = false;
-            bool ceilSlopeNegX = false;
-            bool ceilSlopeZ = false;
-            bool ceilSlopeNegZ = false;
-            
-            // This is already shifted close to 0.905.... away from x and z
-            // axis in direction needed, so can get nearest value that is
-            // 2.56f aligned in x,z (oh gosh I hope all the levels are aligned
-            // to 2.56f increments, think I did that at some point heh.
-            Vector3 cellCenter = Utils.GetCellCenter(chunk.transform.localPosition);
-            
-            Vector3 eulerAngs = quat.eulerAngles;
-            float angTol = 0.5f; // Must be positive.  This is in degrees.
-            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f, -45f),angTol)) nw45 = true; // Chunk normal points NW
-            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f,  45f),angTol)) ne45 = true; // Chunk normal points NE
-            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f, 135f),angTol)) se45 = true; // Chunk normal points SE
-            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f,-135f),angTol)) sw45 = true; // Chunk normal points SW
-            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(0f,0f,-45f),angTol)) ceilSlopeX = true; // Chunk normal points SW
-            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(0f,0f,45f),angTol)) ceilSlopeNegX = true; // Chunk normal points SW
-            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-45f,0f,0f),angTol)) ceilSlopeZ = true; // Chunk normal points SW
-            if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(45f,0f,0f),angTol)) ceilSlopeNegZ = true; // Chunk normal points SW
-            if (is45 && curlevel != 12) {
-                Vector3 ofs = chunk.transform.localPosition;
-                if      (nw45) { ofs.x = cellCenter.x - xzOffsetFor45s; ofs.z = cellCenter.z + xzOffsetFor45s; }
-                else if (ne45) { ofs.x = cellCenter.x + xzOffsetFor45s; ofs.z = cellCenter.z + xzOffsetFor45s; }
-                else if (sw45) { ofs.x = cellCenter.x - xzOffsetFor45s; ofs.z = cellCenter.z - xzOffsetFor45s; }
-                else if (se45) { ofs.x = cellCenter.x + xzOffsetFor45s; ofs.z = cellCenter.z - xzOffsetFor45s; }
-                else if (ceilSlopeX) ofs.x = cellCenter.x - xzOffsetFor45s;
-                else if (ceilSlopeNegX) ofs.x = cellCenter.x + xzOffsetFor45s;
-                else if (ceilSlopeZ) ofs.z = cellCenter.z + xzOffsetFor45s;
-                else if (ceilSlopeNegZ) ofs.z = cellCenter.z - xzOffsetFor45s;
-
-                chunk.transform.localPosition = ofs; // Fix minor alignment issues by putting at exact coords such that card center is at cell center and origin which is 1.28 away along card normal is at correct position.
+            float floorHeight = Utils.GetFloorHeight(quat,chunk.transform.position.y);
+            if (floorHeight > -1000f) {
+                MarkAsFloor maf = chunk.GetComponent<MarkAsFloor>();
+                if (maf == null) maf = chunk.AddComponent<MarkAsFloor>();
                 
-                Vector3 scala = chunk.transform.localScale;
-                float scaleTolFine = 0.0005f; // Used to see that it's set wrong for a 45deg card, not precise enough.
-                float scaleTolLoose = 0.05f; // Used to see that it is a 45deg card.
-                if (!Utils.InTol(scala.x,sqrtOf2,scaleTolFine) && Utils.InTol(scala.x,sqrtOf2,scaleTolLoose)) scala.x = sqrtOf2 + 0.001f;
-                if (!Utils.InTol(scala.y,sqrtOf2,scaleTolFine) && Utils.InTol(scala.y,sqrtOf2,scaleTolLoose)) scala.y = sqrtOf2 + 0.001f;
-                if (!Utils.InTol(scala.z,sqrtOf2,scaleTolFine) && Utils.InTol(scala.z,sqrtOf2,scaleTolLoose)) scala.z = sqrtOf2 + 0.001f;
-           }
-        }
+                maf.floorHeight = floorHeight;
+            }
             
-        if (!((entries.Length - 1) >= index)) return chunk; // Nothing else to load.
+            // Align to grid if not rotated
+            float yShifted = chunk.transform.localPosition.y;
+            if (!(chunk.name == "chunk_stor1_5 (99)" || chunk.name == "chunk_stor1_5 (101)" || chunk.name == "chunk_stor1_5 (105)" || chunk.name == "chunk_stor1_5 (110)")) {
+                yShifted = Mathf.Round(chunk.transform.localPosition.y / 0.16f) * 0.16f;
+            }
+            
+            if (Utils.IsAxisAligned(quat) && scaleGood && curlevel < 12 && chunk.name != "chunk_stor1_5 (98)") {
+                chunk.transform.localPosition = new Vector3(Mathf.Round(chunk.transform.localPosition.x / 2.56f) * 2.56f,
+                                                            yShifted, // Actual Z, stupid Unity
+                                                            Mathf.Round(chunk.transform.localPosition.z / 2.56f) * 2.56f);
+            } else {
+                // Used https://www.h-schmidt.net/FloatConverter/IEEE754.html to
+                // determine quantized version that fits exactly in 32bit float with
+                // only error of -0.00000002979518463982683078349420677028 after
+                // doing sqrt2 over 2 in https://www.mathsisfun.com/calculator-precision.html
+                float xzOffsetFor45s = 0.90509665012359619140625f; // = 1.28f * sin(45deg) = 1.28f * (Mathf.Sqrt(2) / 2f)
+                
+                float sqrtOf2 = 1.41421353816986083984375f;
+                
+                bool is45 = Utils.ChunkIs45NW_NE_SW_SE_Laterally(quat);
+                bool nw45 = false;
+                bool ne45 = false;
+                bool sw45 = false;
+                bool se45 = false;
+                bool ceilSlopeX = false;
+                bool ceilSlopeNegX = false;
+                bool ceilSlopeZ = false;
+                bool ceilSlopeNegZ = false;
+                
+                // This is already shifted close to 0.905.... away from x and z
+                // axis in direction needed, so can get nearest value that is
+                // 2.56f aligned in x,z (oh gosh I hope all the levels are aligned
+                // to 2.56f increments, think I did that at some point heh.
+                Vector3 cellCenter = Utils.GetCellCenter(chunk.transform.localPosition);
+                
+                Vector3 eulerAngs = quat.eulerAngles;
+                float angTol = 0.5f; // Must be positive.  This is in degrees.
+                if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f, -45f),angTol)) nw45 = true; // Chunk normal points NW
+                if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f,  45f),angTol)) ne45 = true; // Chunk normal points NE
+                if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f, 135f),angTol)) se45 = true; // Chunk normal points SE
+                if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-90f,0f,-135f),angTol)) sw45 = true; // Chunk normal points SW
+                if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(0f,0f,-45f),angTol)) ceilSlopeX = true; // Chunk normal points SW
+                if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(0f,0f,45f),angTol)) ceilSlopeNegX = true; // Chunk normal points SW
+                if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(-45f,0f,0f),angTol)) ceilSlopeZ = true; // Chunk normal points SW
+                if (Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(45f,0f,0f),angTol)) ceilSlopeNegZ = true; // Chunk normal points SW
+                if (is45 && curlevel != 12) {
+                    Vector3 ofs = chunk.transform.localPosition;
+                    if      (nw45) { ofs.x = cellCenter.x - xzOffsetFor45s; ofs.z = cellCenter.z + xzOffsetFor45s; }
+                    else if (ne45) { ofs.x = cellCenter.x + xzOffsetFor45s; ofs.z = cellCenter.z + xzOffsetFor45s; }
+                    else if (sw45) { ofs.x = cellCenter.x - xzOffsetFor45s; ofs.z = cellCenter.z - xzOffsetFor45s; }
+                    else if (se45) { ofs.x = cellCenter.x + xzOffsetFor45s; ofs.z = cellCenter.z - xzOffsetFor45s; }
+                    else if (ceilSlopeX) ofs.x = cellCenter.x - xzOffsetFor45s;
+                    else if (ceilSlopeNegX) ofs.x = cellCenter.x + xzOffsetFor45s;
+                    else if (ceilSlopeZ) ofs.z = cellCenter.z + xzOffsetFor45s;
+                    else if (ceilSlopeNegZ) ofs.z = cellCenter.z - xzOffsetFor45s;
 
+                    chunk.transform.localPosition = ofs; // Fix minor alignment issues by putting at exact coords such that card center is at cell center and origin which is 1.28 away along card normal is at correct position.
+                    
+                    Vector3 scala = chunk.transform.localScale;
+                    float scaleTolFine = 0.0005f; // Used to see that it's set wrong for a 45deg card, not precise enough.
+                    float scaleTolLoose = 0.05f; // Used to see that it is a 45deg card.
+                    if (!Utils.InTol(scala.x,sqrtOf2,scaleTolFine) && Utils.InTol(scala.x,sqrtOf2,scaleTolLoose)) scala.x = sqrtOf2 + 0.001f;
+                    if (!Utils.InTol(scala.y,sqrtOf2,scaleTolFine) && Utils.InTol(scala.y,sqrtOf2,scaleTolLoose)) scala.y = sqrtOf2 + 0.001f;
+                    if (!Utils.InTol(scala.z,sqrtOf2,scaleTolFine) && Utils.InTol(scala.z,sqrtOf2,scaleTolLoose)) scala.z = sqrtOf2 + 0.001f;
+                }
+            }
+        } else {
+            if (chunk.name == "chunk_cyberpanel (3918)") UnityEngine.Debug.Log("Checking chunk_cyberpanel (3918) pid");
+
+            // Cyberspace chunk
+            PrefabIdentifier pid = GetPrefabIdentifier(chunk,false);
+            if (pid.constIndex == 1 || chunk.name.Contains("chunk_cyberpanelcollisiononly")) { // blockers need to be invisible, not glass.
+                MeshRenderer mr = chunk.GetComponent<MeshRenderer>();
+                if (mr != null) mr.enabled = false;
+                else {
+                    if (chunk.transform.childCount > 0) {
+                        mr = chunk.transform.GetChild(0).GetComponent<MeshRenderer>();
+                        if (mr != null) mr.enabled = false;
+                    }
+                }
+            }
+        }
+        
+        if (!((entries.Length - 1) >= index)) return chunk; // Nothing else to load.
         string[] splits = entries[index].Split(':');
         string variableName = splits[0];
         string variableValue = splits[1];
@@ -750,6 +767,7 @@ public static class SaveLoad {
                 variableName = splits[0];
             }
         } else if (variableName == "material") {
+            index++;
             Transform childChunk;
             MeshRenderer mr = chunk.GetComponent<MeshRenderer>();
             int matVal = GetMaterialByName(variableValue);
@@ -774,17 +792,80 @@ public static class SaveLoad {
                     }
                 }
             }
+        } else if (constdex == 218) { // chunk_reac2_4 has text on it.
+            Transform textr1 = chunk.transform.GetChild(1); // text_decalStopDSS1
+            Transform textr2 = chunk.transform.GetChild(2); // text_decalStopDSS1 (1)
+            TextLocalization tex1 = textr1.gameObject.GetComponent<TextLocalization>();
+            TextLocalization tex2 = textr2.gameObject.GetComponent<TextLocalization>();
+            tex1.lingdex = Utils.GetIntFromString(entries[index],"lingdex"); index++;
+            tex2.lingdex = Utils.GetIntFromString(entries[index],"lingdex"); index++;
         }
 
-        if (constdex == 218) { // chunk_reac2_4 has text on it.
-            if (entries.Length - 1 >= index) {
-                Transform textr1 = chunk.transform.GetChild(1); // text_decalStopDSS1
-                Transform textr2 = chunk.transform.GetChild(2); // text_decalStopDSS1 (1)
-                TextLocalization tex1 = textr1.gameObject.GetComponent<TextLocalization>();
-                TextLocalization tex2 = textr2.gameObject.GetComponent<TextLocalization>();
-                tex1.lingdex = Utils.GetIntFromString(entries[index],"lingdex"); index++;
-                tex2.lingdex = Utils.GetIntFromString(entries[index],"lingdex"); index++;
+        if (!((entries.Length - 1) >= index)) return chunk; // Nothing else to load.
+        splits = entries[index].Split(':');
+        variableName = splits[0];
+        variableValue = splits[1];
+        if (variableName == "BoxCollider.enabled") {
+            BoxCollider bcol = chunk.GetComponent<BoxCollider>();
+            bcol.enabled = Utils.GetBoolFromString(entries[index],"BoxCollider.enabled"); index++;
+            Vector3 vec = new Vector3(1f,1f,1f);
+            vec.x = Utils.GetFloatFromString(entries[index],"size.x"); index++;
+            vec.y = Utils.GetFloatFromString(entries[index],"size.y"); index++;
+            vec.z = Utils.GetFloatFromString(entries[index],"size.z"); index++;
+            bcol.size = vec;
+            vec.x = Utils.GetFloatFromString(entries[index],"center.x"); index++;
+            vec.y = Utils.GetFloatFromString(entries[index],"center.y"); index++;
+            vec.z = Utils.GetFloatFromString(entries[index],"center.z"); index++;
+            bcol.center = vec;
+            if (chunk.transform.childCount >= 1) {
+                // Get collisionAid
+                Transform subtr = chunk.transform.GetChild(0);
+                if (subtr != null) {
+                    subtr.gameObject.SetActive(Utils.GetBoolFromString(entries[index],"collisionAid.activeSelf")); index++;
+                }
             }
+
+            if (index < entries.Length) {
+                splits = entries[index].Split(':');
+                variableName = splits[0];
+            }
+        } else if (variableName == "material") {
+            index++;
+            Transform childChunk;
+            MeshRenderer mr = chunk.GetComponent<MeshRenderer>();
+            int matVal = GetMaterialByName(variableValue);
+            if (matVal == 86 && constdex == 130) {
+                childChunk = chunk.transform.GetChild(0);
+                if (childChunk != null) {
+                    mr = childChunk.gameObject.GetComponent<MeshRenderer>();
+                    if (mr != null) {
+                        mr.sharedMaterial = Const.a.genericMaterials[matVal];
+                    }
+                }
+            }
+            
+            if (mr != null) {
+                mr.sharedMaterial = Const.a.genericMaterials[matVal];
+            } else if (chunk.transform.childCount > 0) {
+                childChunk = chunk.transform.GetChild(0);
+                if (childChunk != null) {
+                    mr = childChunk.gameObject.GetComponent<MeshRenderer>();
+                    if (mr != null) {
+                        mr.sharedMaterial = Const.a.genericMaterials[matVal];
+                    }
+                }
+            }
+        } else if (constdex == 218) { // chunk_reac2_4 has text on it.
+            Transform textr1 = chunk.transform.GetChild(1); // text_decalStopDSS1
+            Transform textr2 = chunk.transform.GetChild(2); // text_decalStopDSS1 (1)
+            TextLocalization tex1 = textr1.gameObject.GetComponent<TextLocalization>();
+            TextLocalization tex2 = textr2.gameObject.GetComponent<TextLocalization>();
+            tex1.Awake();
+            tex1.lingdex = Utils.GetIntFromString(entries[index],"lingdex"); index++;
+            tex1.UpdateText();
+            tex2.Awake();
+            tex2.lingdex = Utils.GetIntFromString(entries[index],"lingdex"); index++;
+            tex2.UpdateText();
         }
         
         return chunk;

@@ -323,6 +323,7 @@ public class LevelManager : MonoBehaviour {
 		Const.a.ClearActiveAutomapOverlays(); // After other levels turned off.
 		Const.a.ResetPauseLists();
 		SetSkyVisible(true);
+		Config.SetLanguage(); // Update all translatable text.
 		System.GC.Collect();
 		System.GC.WaitForPendingFinalizers();
 	}

@@ -478,12 +478,12 @@ public class HealthManager : MonoBehaviour {
 
 		if (IsCyberEntity()) {
 			if (cyberHealth <= 0f) {
-			    Const.a.cyberkills++;
+			    if (!isIce && isNPC) Const.a.cyberkills++;
 				Death(false); // False since you can't vaporize cyberspace corpses.
 			}
 		} else {
 			if (health <= 0f) {
-			    Const.a.kills++;
+			    if (isNPC) Const.a.kills++;
 				Death(dd.attackType == AttackType.EnergyBeam);
 			}
 		}
@@ -494,6 +494,7 @@ public class HealthManager : MonoBehaviour {
 	void Death(bool energyVaporized) {
 		if (!deathDone) {
 			UseDeathTargets();
+			if (isIce) Utils.DisableCollision(gameObject);
 			if (vaporizeCorpse && !isSecCamera && !isGrenade) VaporizeCorpse(energyVaporized);
 			else if (isObject) ObjectDeath();
 			else if (isScreen) ScreenDeath();

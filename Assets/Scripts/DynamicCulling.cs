@@ -1050,6 +1050,12 @@ public class DynamicCulling : MonoBehaviour {
                         gridCells[x,y].visibleCellsFromHere[x2,y2] = gridCells[x2,y2].visible;
                     }
                 }
+                
+                if (LevelManager.a.currentLevel == 10) {
+                    if ((x == 15 || x == 16) && y == 23) { // Fix up problem cells at odd angle where ddx doesn't work.
+                        gridCells[x,y].visibleCellsFromHere[12,11] = true;
+                    }
+                }
             }
         }
 

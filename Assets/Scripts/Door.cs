@@ -214,10 +214,11 @@ public class Door : MonoBehaviour {
 	}
 
 	void OpenDoor() {
-		anim.speed = defaultSpeed;
+		if (anim == null) anim = GetComponent<Animator>();
+		if (anim != null) anim.speed = defaultSpeed;
 		doorOpen = DoorState.Opening;
 		waitBeforeClose = PauseScript.a.relativeTime + delay;
-		anim.Play(openClipName);
+		if (anim != null) anim.Play(openClipName);
 		Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
 		if (toggleLasers) {
 			DeactivateLasers();
@@ -228,9 +229,10 @@ public class Door : MonoBehaviour {
 	}
 
 	void CloseDoor() {
-		anim.speed = defaultSpeed;
+		if (anim == null) anim = GetComponent<Animator>();
+		if (anim != null) anim.speed = defaultSpeed;
 		doorOpen = DoorState.Closing;
-		anim.Play(closeClipName);
+		if (anim != null) anim.Play(closeClipName);
 		Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
 		if (toggleLasers) {
 			lasersFinished = PauseScript.a.relativeTime + timeBeforeLasersOn;
@@ -256,7 +258,8 @@ public class Door : MonoBehaviour {
 
 	void SetAnimAfterLoad() {
 		firstUpdateAfterLoad = false;
-		anim.Play(loadedClipName,loadedClipIndex,loadedAnimatorPlaybackTime);
+		if (anim == null) anim = GetComponent<Animator>();
+		if (anim != null) anim.Play(loadedClipName,loadedClipIndex,loadedAnimatorPlaybackTime);
 		switch(loadedClipName) {
 			case idleOpenClipName: doorOpen = DoorState.Open; break;
 			case idleClosedClipName: doorOpen = DoorState.Closed; break;
@@ -267,8 +270,9 @@ public class Door : MonoBehaviour {
 
 	void SetAjar() {
 		doorOpen = DoorState.Opening;
-		anim.Play(openClipName,defIndex, ajarPercentage);
-		anim.speed = speedZero;
+		if (anim == null) anim = GetComponent<Animator>();
+		if (anim != null) anim.Play(openClipName,defIndex, ajarPercentage);
+		if (anim != null) anim.speed = speedZero;
 	}
 
 	void ActivateLasers() {

@@ -52,6 +52,7 @@ Cody Darr aka Sonic Ether for SEGI v0.9.0 (modified by Josiah Jack)
 Denhonator for remixed menu music
 Nameless Voice for fluid midis
 Mark Heath for NAudio
+bobf5 for finding and editing original audio sources
 
 -Misc Code-
 lerenwe, Benjamin Stanley(HeadClot), cxong, Eric Haines(Eric5h5)

@@ -20,12 +20,17 @@ using UnityEngine.SceneManagement;
 // LevelManager    -700
 // UnityEngine.InputSystem.PlayerInput -100
 //                 --   Default Time   --
+// UnityEngine.UI.ToggleGroup 10
+// PlayerReferenceManager 100
 // HealthManager    400
 // MFDManager       600
 // AIController     700
+// CameraView       750
 // DynamicCulling   800
-// TargetIO         900
-// CameraView      1000
+// TargetIO         950
+// SEGI            1100
+// UnityStandardAssets.ImageEffects.ScreenSpaceAmbientOcclusion 1200
+// TextLocalization 1300
 
 public class Const : MonoBehaviour {
 	//Item constants
@@ -450,7 +455,7 @@ public class Const : MonoBehaviour {
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
 		a.LoadTextures();
-		a.versionString = "v0.99.9"; // Global CITADEL PROJECT VERSION
+		a.versionString = "v0.99.92"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
 							  + "Start of C# Game Code, Welcome back Hacker!");
@@ -552,13 +557,13 @@ public class Const : MonoBehaviour {
 		LoadCreditsData();
 		StartCoroutine(InitializeEventSystem());
 		questData = new QuestBits ();
-		if (mainFont1 != null) { // Ensure text is crisp and readable.
+// 		if (mainFont1 != null) { // Ensure text is crisp and readable.
 			mainFont1.material.mainTexture.filterMode = FilterMode.Point;
-		}
+// 		}
 
-		if (mainFont2 != null) { // Ensure text is crisp and readable.
+// 		if (mainFont2 != null) { // Ensure text is crisp and readable.
 			mainFont2.material.mainTexture.filterMode = FilterMode.Point;
-		}
+// 		}
 
 		ResetPauseLists();
 		GameObject newGameIndicator = GameObject.Find("NewGameIndicator");

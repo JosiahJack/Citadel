@@ -1730,7 +1730,7 @@ public class Utils {
         MeshRenderer mR = segiEmitter.AddComponent<MeshRenderer>();
         mR.material = Const.a.segiEmitterMaterial1;
         mR.material.SetColor("_EmissionColor",new Color(lit.color.r * lit.intensity,lit.color.g * lit.intensity,lit.color.b * lit.intensity,1f));
-        segiEmitter.transform.localScale = new Vector3(lit.range * Const.segiVoxelSize,lit.range * Const.segiVoxelSize,lit.range * Const.segiVoxelSize);
+        segiEmitter.transform.localScale = new Vector3(Mathf.Max(lit.range * Const.segiVoxelSize,8f),Mathf.Max(lit.range * Const.segiVoxelSize,8f),Mathf.Max(lit.range * Const.segiVoxelSize,8f));
         segiEmitter.layer = 2; // IgnoreRaycast
         return segiEmitter;
 	}

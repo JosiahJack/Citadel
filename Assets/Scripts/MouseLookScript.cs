@@ -68,7 +68,7 @@ public class MouseLookScript : MonoBehaviour {
 	private Vector3 tempVec;
     private RaycastHit tempHit;
 	private Vector3 cameraRecoilLerpPos;
-	private float cyberSpinSensitivity = 0.5f;
+	private float cyberSpinSensitivity = 0.6f;
 	private float shakeFinished;
 	private float shakeForce;
 	private string f9 = "f9";
@@ -476,37 +476,83 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	void KeyboardTurn() {
-		if (GetInput.a.TurnLeft()) {
-			yRotation -= keyboardTurnSpeed;
-			playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
-		} else if (GetInput.a.TurnRight()) {
-			yRotation += keyboardTurnSpeed;
-			playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+		if (inCyberSpace) {
+			float angX = 0f;
+			if (GetInput.a.TurnLeft()) {
+				// Modulate input to deg per screen half / screen.
+				angX = -keyboardTurnSpeed * 18f * ((Const.a.GraphicsFOV / 2f) / Screen.width / 2f);
+				yRotation = angX;
+				playerCapsuleTransform.RotateAround(
+					playerCapsuleTransform.transform.position,
+					playerCapsuleTransform.transform.up,yRotation
+				);
+			} else if (GetInput.a.TurnRight()) {
+				angX = keyboardTurnSpeed * 18f * ((Const.a.GraphicsFOV / 2f) / Screen.width / 2f);
+				yRotation = angX;
+				playerCapsuleTransform.RotateAround(
+					playerCapsuleTransform.transform.position,
+					playerCapsuleTransform.transform.up,yRotation
+				);
+			}
+		} else {
+			if (GetInput.a.TurnLeft()) {
+				yRotation -= keyboardTurnSpeed;
+				playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+			} else if (GetInput.a.TurnRight()) {
+				yRotation += keyboardTurnSpeed;
+				playerCapsuleTransform.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+			}
 		}
 		
 		Vector2 rightTouchstick = GetInput.a.rightTS.Coordinate();
 	}
 
 	void KeyboardLookUpDn() {
-		// Cyberspace...more like a plane so giving the option to invert it separately.
-		if (GetInput.a.LookDown()) {
-			if ((inCyberSpace && Const.a.InputInvertCyberspaceLook) || (!inCyberSpace && Const.a.InputInvertLook))
-				xRotation -= keyboardTurnSpeed;
-			else
-				xRotation += keyboardTurnSpeed;
+		if (inCyberSpace) {
+			float angY = 0f;
+			if (GetInput.a.LookDown()) {
+				// Modulate input to deg per screen half / screen.
+				angY = -keyboardTurnSpeed * 18f * ((Const.a.GraphicsFOV / 2f) / Screen.height / 2f);
+				if (Const.a.InputInvertCyberspaceLook) xRotation = -angY;
+				else xRotation = angY;
+			
+				xRotation = Clamp0360(xRotation); // Limit up/down to within 360°.
+				playerCapsuleTransform.RotateAround(
+					playerCapsuleTransform.transform.position,
+					playerCapsuleTransform.transform.right,-xRotation
+				);
+			} else if (GetInput.a.LookUp()) {
+				angY = keyboardTurnSpeed * 18f * ((Const.a.GraphicsFOV / 2f) / Screen.height / 2f);
+				if (Const.a.InputInvertCyberspaceLook) xRotation = -angY;
+				else xRotation = angY;
+			
+				xRotation = Clamp0360(xRotation); // Limit up/down to within 360°.
+					playerCapsuleTransform.RotateAround(
+					playerCapsuleTransform.transform.position,
+					playerCapsuleTransform.transform.right,-xRotation
+				);
+			}
+		} else {
+			// Cyberspace...more like a plane so giving the option to invert it separately.
+			if (GetInput.a.LookDown()) {
+				if ((inCyberSpace && Const.a.InputInvertCyberspaceLook) || (!inCyberSpace && Const.a.InputInvertLook))
+					xRotation -= keyboardTurnSpeed;
+				else
+					xRotation += keyboardTurnSpeed;
 
-			if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle.
-			transform.localRotation = Quaternion.Euler(xRotation,0f,
-													   transform.localRotation.z);
-		} else if (GetInput.a.LookUp()) {
-			if ((inCyberSpace && Const.a.InputInvertCyberspaceLook) || (!inCyberSpace && Const.a.InputInvertLook))
-				xRotation += keyboardTurnSpeed;
-			else
-				xRotation -= keyboardTurnSpeed;
+				if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle.
+				transform.localRotation = Quaternion.Euler(xRotation,0f,
+														transform.localRotation.z);
+			} else if (GetInput.a.LookUp()) {
+				if ((inCyberSpace && Const.a.InputInvertCyberspaceLook) || (!inCyberSpace && Const.a.InputInvertLook))
+					xRotation += keyboardTurnSpeed;
+				else
+					xRotation -= keyboardTurnSpeed;
 
-			if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle.
-			transform.localRotation = Quaternion.Euler(xRotation, 0f,
-													   transform.localRotation.z);
+				if (!inCyberSpace) xRotation = Mathf.Clamp(xRotation, -90f, 90f);  // Limit up and down angle.
+				transform.localRotation = Quaternion.Euler(xRotation, 0f,
+														transform.localRotation.z);
+			}
 		}
 	}
 
@@ -999,6 +1045,13 @@ public class MouseLookScript : MonoBehaviour {
 				headBobY = Mathf.SmoothDamp(headBobY,Const.a.playerCameraOffsetY * PlayerMovement.a.currentCrouchRatio,ref headBobYVel,Const.HeadBobRate);
 			}
 		}
+		
+		if (inCyberSpace) {
+			headBobX = 0f;
+			headBobY = 0f;
+			headBobZ = 0f;
+		}
+		
 		transform.localPosition = new Vector3(headBobX,headBobY,headBobZ);
 	}
 

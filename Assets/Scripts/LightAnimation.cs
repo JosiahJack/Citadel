@@ -62,9 +62,9 @@ public class LightAnimation : MonoBehaviour {
         if (segiEmitter == null) return;
 		
 		float fac = (animLight.intensity - minIntensity) / maxIntensity;
-		segiEmitter.transform.localScale = new Vector3(animLight.range * Const.segiVoxelSize * fac,
-													   animLight.range * Const.segiVoxelSize * fac,
-													   animLight.range * Const.segiVoxelSize * fac);
+		segiEmitter.transform.localScale = new Vector3(Mathf.Max(animLight.range * Const.segiVoxelSize * fac,8f),
+													   Mathf.Max(animLight.range * Const.segiVoxelSize * fac,8f),
+													   Mathf.Max(animLight.range * Const.segiVoxelSize * fac,8f));
     }
 
 	public void TurnOn() {

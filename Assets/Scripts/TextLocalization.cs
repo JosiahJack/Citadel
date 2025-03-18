@@ -16,6 +16,7 @@ public class TextLocalization : MonoBehaviour {
         if (txt == null) txt = GetComponent<Text>();
         Const.a.AddToTextLocalizationRegister(this);
         initialized = true;
+        UpdateText();
     }
 
     // Update to match new string table contents.
