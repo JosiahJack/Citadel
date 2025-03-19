@@ -40,4 +40,8 @@ public class Radiation : MonoBehaviour {
 			}
 		}
 	}
+	
+	void OnDisable() {
+		PlayerHealth.a.radiationArea = false;
+	}
 }

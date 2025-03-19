@@ -209,6 +209,8 @@ public class MainMenuHandler : MonoBehaviour {
 		if (System.IO.File.Exists(indn)) {
 			IntroVideo.SetActive(false);	
 			IntroVideoContainer.SetActive(false);
+			BackGroundMusic.clip = Music.a.titleMusic;
+			if (gameObject.activeSelf && dataFound) BackGroundMusic.Play();
 		} else {
 			System.IO.File.Create(indn);
 			PlayIntro();
@@ -258,6 +260,7 @@ public class MainMenuHandler : MonoBehaviour {
 		IntroVideo.SetActive(false);
 		IntroVideoContainer.SetActive(false);
 		Const.a.WriteDatForIntroPlayed(false);
+		BackGroundMusic.clip = Music.a.titleMusic;
 		if (gameObject.activeSelf && dataFound) BackGroundMusic.Play();
 	}
 
@@ -625,12 +628,6 @@ public class MainMenuHandler : MonoBehaviour {
 		if (Const.a.GraphicsSEGI) {
 			yield return null;
 			configCamera.Render();
-			yield return null;
-			configCamera.Render();
-			yield return null;
-			configCamera.Render();
-			yield return null;
-			configCamera.Render();
 		}
 	}
 
@@ -860,13 +857,8 @@ public class MainMenuHandler : MonoBehaviour {
 		deathVideoText2.text = Const.a.stringTable[629];
 		Utils.Activate(deathVideoTextGO1);
 		Utils.Deactivate(deathVideoTextGO2);
-		if (Const.a.DynamicMusic) {
-			BackGroundMusic.clip = Music.a.levelMusicDeath[LevelManager.a.currentLevel];
-		} else {
-			BackGroundMusic.clip = Music.a.levelMusicLooped[16];
-		}
-
 		gameObject.SetActive(true);
+		BackGroundMusic.clip = Music.a.levelMusicDeath;
 		if (dataFound) BackGroundMusic.Play();
 		vidFinished = Time.time + deathvidLength;
 		vidStartTime = Time.time;
@@ -926,7 +918,7 @@ public class MainMenuHandler : MonoBehaviour {
 		if (Const.a.DynamicMusic) {
 			BackGroundMusic.clip = Music.a.creditsMusic;
 		} else {
-			BackGroundMusic.clip = Music.a.levelMusicLooped[17];
+			BackGroundMusic.clip = Music.a.levelMusicLooped;
 		}
 
 		if (gameObject.activeSelf && dataFound) BackGroundMusic.Play();

@@ -16,7 +16,7 @@ public class PauseScript : MonoBehaviour {
 	public GameObject hardSaveDialog;
 
 	[HideInInspector] public bool paused = false;
-	private bool previousInvMode = false;
+	[HideInInspector] public bool previousInvMode = false;
 	[HideInInspector] public bool onSaveDialog = false;
 	public float relativeTime;
 	public float absoluteTime;
@@ -36,6 +36,7 @@ public class PauseScript : MonoBehaviour {
 	void Awake() {
 		SetA();
 		a.ambientRegistry = new List<AmbientRegistration>();
+		a.previousInvMode = true;
 	}
 
 	// The whole point right here:

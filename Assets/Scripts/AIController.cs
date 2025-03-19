@@ -692,6 +692,10 @@ public class AIController : MonoBehaviour {
 
 	bool CanAttack3(float dist) {
     	if (rangeToEnemy >= dist) return false;
+		if (rangeToEnemy < 7f && Const.a.attackTypeForNPC3[index] == AttackType.ProjectileLaunched
+			&& (Const.a.projectile3PrefabForNPC[index] == 370 || Const.a.projectile3PrefabForNPC[index] == 372
+			    || Const.a.projectile3PrefabForNPC[index] == 387 || Const.a.projectile3PrefabForNPC[index] == 404)) return false;
+			
 		if (Const.a.attackTypeForNPC3[index] == AttackType.None) return false;
 		if (IsCyberNPC()) return true;
 		if (!infront) return false;

@@ -18,6 +18,7 @@ using UnityEngine.SceneManagement;
 // PauseScript     -899
 // Level           -800
 // LevelManager    -700
+// MainMenuHandler -500
 // UnityEngine.InputSystem.PlayerInput -100
 //                 --   Default Time   --
 // UnityEngine.UI.ToggleGroup 10
@@ -859,29 +860,6 @@ public class Const : MonoBehaviour {
 		projectile1PrefabForNPC = new int[numberOfNPCs];
 		projectile2PrefabForNPC = new int[numberOfNPCs];
 		projectile3PrefabForNPC = new int[numberOfNPCs];
-
-		//case 1: return AttackType.Melee;
-		//case 2: return AttackType.EnergyBeam;
-		//case 3: return AttackType.Magnetic;
-		//case 4: return AttackType.Projectile;
-		//case 5: return AttackType.ProjectileEnergyBeam;
-
-		//case 1: return PerceptionLevel.Medium;
-		//case 2: return PerceptionLevel.High;
-		//case 3: return PerceptionLevel.Omniscient;
-
-		//case 0: return AIMoveType.None;
-		//case 1: return AIMoveType.Walk;
-		//case 2: return AIMoveType.Fly;
-		//case 3: return AIMoveType.Swim;
-		//case 4: return AIMoveType.Cyber;
-
-		//case 0: return PoolType.None;
-		//case 1: return PoolType.;
-		//case 2: return PoolType.;
-		//case 3: return PoolType.;
-		//case 4: return PoolType.;
-
 		string readline; // variable to hold each string read in from the file
 		bool skippedFirstLine = false;
 		int currentline = 1;

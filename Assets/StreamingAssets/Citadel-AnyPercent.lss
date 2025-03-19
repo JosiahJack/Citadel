@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Run version="1.7.0">
+  <GameIcon />
+  <GameName>Citadel</GameName>
+  <CategoryName>Any%</CategoryName>
+  <LayoutPath>
+  </LayoutPath>
+  <Metadata>
+    <Run id="" />
+    <Platform usesEmulator="False">
+    </Platform>
+    <Region>
+    </Region>
+    <Variables />
+    <CustomVariables />
+  </Metadata>
+  <Offset>00:00:00</Offset>
+  <AttemptCount>0</AttemptCount>
+  <AttemptHistory />
+  <Segments>
+    <Segment>
+      <Name>GameStart</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Medical</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Laser Destroyed</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Master Grove Jettison Failure</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Master Grove Jettison Complete</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Beta Grove Jettisoned</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Executive</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Antennas Destroyed</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Self-destruct Activated</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Side Mission Split (optional)</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>You are Now in Leaving Citadel Station</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Bridge</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Isolinear Installed</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Bridge Cyberspace Entered</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>SHODAN</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+        <SplitTime name="Compare1" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+  </Segments>
+  <AutoSplitterSettings />
+</Run>

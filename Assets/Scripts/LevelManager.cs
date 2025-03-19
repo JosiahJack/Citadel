@@ -60,7 +60,7 @@ public class LevelManager : MonoBehaviour {
 	public static LevelManager a;
 
 	public void SetA() {
-		if (a == null) a = this;		
+		if (a == null) a = this;
 	}
 	
 	void Awake () {
@@ -243,6 +243,7 @@ public class LevelManager : MonoBehaviour {
 		LoadLevelLights(levnum);
 		LoadLevelGeometry(levnum);
 		LoadLevelDynamicObjects(levnum);
+		Music.a.LoadLevelMusic(levnum);
 		levelDataLoaded[levnum] = true;
 	}
 
@@ -326,6 +327,7 @@ public class LevelManager : MonoBehaviour {
 		Config.SetLanguage(); // Update all translatable text.
 		System.GC.Collect();
 		System.GC.WaitForPendingFinalizers();
+		Resources.UnloadUnusedAssets();
 	}
 
 	public void DisableAllNonOccupiedLevelsExcept(int occupiedLevel) {

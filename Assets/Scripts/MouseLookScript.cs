@@ -1476,6 +1476,7 @@ public class MouseLookScript : MonoBehaviour {
 		ml.playerCamera.enabled = Utils.GetBoolFromString(entries[index],"playerCamera.enabled"); index++;
 		ml.inventoryMode = !Utils.GetBoolFromString(entries[index],"inventoryMode"); index++; // Take opposite because we are about to opposite again...
 		ml.ToggleInventoryMode(); // ...correctly set cursor lock state, and opposite again, now it is what was saved
+		PauseScript.a.previousInvMode = ml.inventoryMode; // Prevent it changing it inadvertently after load unpauses.
 		ml.holdingObject = Utils.GetBoolFromString(entries[index],"holdingObject"); index++;
 		ml.heldObjectIndex = Utils.GetIntFromString(entries[index],"heldObjectIndex"); index++;
 		ml.heldObjectCustomIndex = Utils.GetIntFromString(entries[index],"heldObjectCustomIndex"); index++;

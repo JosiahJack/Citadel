@@ -8,65 +8,56 @@ using UnityEngine.Networking;
 
 public class Music : MonoBehaviour {
 	public AudioSource SFXMain;
+	public AudioSource SFXMain2;
+	public bool twoPlaying;
 	public AudioSource SFXOverlay;
 	public GameObject mainMenu;
+	public float audBuffer = 0.05f;
 
-	[HideInInspector] public AudioClip titleMusic;
-	[HideInInspector] public AudioClip creditsMusic;
-	[HideInInspector] public AudioClip[] levelMusic1;
-	[HideInInspector] public AudioClip[] levelMusic2;
-	[HideInInspector] public AudioClip[] levelMusicReactor;
-	[HideInInspector] public AudioClip[] levelMusic6;
-	[HideInInspector] public AudioClip[] levelMusicGroves;
-	[HideInInspector] public AudioClip[] levelMusic8;
-	[HideInInspector] public AudioClip[] levelMusicRevive;
-	[HideInInspector] public AudioClip[] levelMusicDeath;
-	[HideInInspector] public AudioClip[] levelMusicCyber;
-	[HideInInspector] public AudioClip[] levelMusicElevator;
-	[HideInInspector] public AudioClip[] levelMusicDistortion;
-	[HideInInspector] public AudioClip[] levelMusicLooped;
+	public AudioClip titleMusic;
+	public AudioClip creditsMusic;
+	public AudioClip[] levelMusic; // Array due to many dynamically interchanged clips.
+	public AudioClip levelMusicRevive; // Singular revive, death, etc. but unique and loaded per level.
+	public AudioClip levelMusicDeath;
+	public AudioClip levelMusicElevator;
+	public AudioClip levelMusicDistortion;
+	public AudioClip levelMusicLooped;
 
 	private float clipFinished;
 	private float clipLength;
 	private float clipOverlayLength;
 	private float clipOverlayFinished;
-	private AudioClip tempC;
+	private AudioClip tempClip;
 	private AudioClip curC;
 	private AudioClip curOverlayC;
 	private bool paused;
 	private bool cyberTube;
-	[HideInInspector] public bool levelEntry;
+	public bool levelEntry;
 	private int rand;
 	private bool inZone;
 	private bool distortion;
 	private bool elevator;
-	[HideInInspector] public bool inCombat;
+	public bool inCombat;
 	private float combatImpulseFinished;
 	private string musicRPath;
 	private string musicRLoopedPath;
 
 	public static Music a;
 
-	void Start() {
+	void Awake() {
 		a = this;
-		a.clipFinished = Time.time;
-		a.clipOverlayFinished = Time.time;
-		a.tempC = null;
-		a.cyberTube = false;
-		a.levelEntry = true;
-		a.inZone = false;
-		a.rand = 0;
-		a.combatImpulseFinished = PauseScript.a.relativeTime + 5f;
-	    a.LoadMusic();
+		
+		clipFinished = Time.time;
+		clipOverlayFinished = Time.time;
+		tempClip = null;
+		levelEntry = true;
+		inZone = twoPlaying = cyberTube = false;
+		rand = 0;
+		combatImpulseFinished = Time.time + 5f;
 	}
 
-	public void LoadAudio(string fName, MusicResourceType type, int index) {
-		StartCoroutine(LoadHelper(fName,type,index));
-	}
-
-	#pragma warning disable 618
 	IEnumerator LoadHelper(string fName, MusicResourceType type, int index) {
-		AudioClip tempClip = null;
+		tempClip = null;
 		string fPath;
 		if (type == MusicResourceType.Looped) {
 			fPath = Application.streamingAssetsPath + "/music/looped/" + fName;
@@ -78,119 +69,29 @@ public class Music : MonoBehaviour {
 		string fPathWave = fPath + ".wav";
 		bool wavExists = File.Exists(fPathWave);
 		bool mp3Exists = File.Exists(fPathMp3);
-		bool madeNewWave = false;
-		if (!wavExists && !mp3Exists) {
+		if ((!wavExists && !mp3Exists)
+			|| Application.platform == RuntimePlatform.Android
+			|| Application.platform == RuntimePlatform.OSXEditor
+			|| Application.platform == RuntimePlatform.OSXPlayer) {
+			
 			if (type == MusicResourceType.Looped) {
-				tempClip = (AudioClip)Resources.Load(
-					"StreamingAssetsRecovery/music/looped/" + fName
-				);
+				tempClip = (AudioClip)Resources.Load("StreamingAssetsRecovery/music/looped/" + fName);
 			} else {
-				tempClip = (AudioClip)Resources.Load(
-					"StreamingAssetsRecovery/music/" + fName
-				);
+				tempClip = (AudioClip)Resources.Load("StreamingAssetsRecovery/music/" + fName);
 			}
 		} else {
 			if (!wavExists && mp3Exists) {
-				if (Application.platform == RuntimePlatform.WindowsPlayer
-					|| Application.platform == RuntimePlatform.WindowsEditor
-					|| Application.platform == RuntimePlatform.LinuxPlayer
-					|| Application.platform == RuntimePlatform.LinuxEditor) {
-					string url = string.Format("file://{0}", fPathMp3);
-// 					WWW www = new WWW(url);
-// 					using (www) {
-// 						yield return www;
-// 
-// 						tempClip = NAudioPlayer.FromMp3Data(www.bytes);
-// 					}
-					
-					using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG)) {
-						yield return uwr.SendWebRequest();
-						if (uwr.result == UnityWebRequest.Result.Success) {
-							tempClip = DownloadHandlerAudioClip.GetContent(uwr);
-							tempClip.name = fName;
-						}
-					}
-				} else {
-					ProcessStartInfo psi = new ProcessStartInfo();
-					psi.FileName = "/bin/sh";
-					psi.UseShellExecute = false;
-					psi.CreateNoWindow = true;
-					psi.RedirectStandardInput = true;
- 					psi.RedirectStandardOutput = true;
-					if (type == MusicResourceType.Looped) {
-						psi.WorkingDirectory = Application.streamingAssetsPath
-						+ "/music/looped";
-					} else {
-						psi.WorkingDirectory = Application.streamingAssetsPath
-											   + "/music";
-					}
-
-					Process proc = new Process();
-					using (proc) {
-						proc.StartInfo = psi;
-						proc.Start();
-						proc.StandardInput.WriteLine("ffmpeg -hide_banner "
-													 + " -loglevel error -i "
-													 + fName + ".mp3 " + fName
-													 + ".wav");
-
-						proc.StandardInput.WriteLine("exit");
-						proc.StandardInput.Flush();
-						float startTime = Time.realtimeSinceStartup;
-						float timeout = 5f;
-						while (!proc.HasExited) {
-							if ((Time.realtimeSinceStartup - startTime) > timeout) {
-								UnityEngine.Debug.LogWarning("Music load timed out for " + fName);
-								proc.Kill();
-								yield break;
-							}
-							yield return null;
-						}
-					}
-
-					if (File.Exists(fPathWave)) {
-						madeNewWave = true;
-						// TODO: Need 3 /// on Windows?  Need to test.
-						string url;
-						url = string.Format("file://{0}", fPathWave);
-// 						WWW www = new WWW(url);
-// 						using (www) {
-// 							yield return www;
-// 
-// 							tempClip = www.GetAudioClipCompressed(false);
-// 						}
-						
-						using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.WAV)) {
-							yield return uwr.SendWebRequest();
-							if (uwr.result == UnityWebRequest.Result.Success) {
-								tempClip = DownloadHandlerAudioClip.GetContent(uwr);
-								tempClip.name = fName;
-							}
-						}
-					} else {
-						UnityEngine.Debug.Log("Process failed.");
-						if (type == MusicResourceType.Looped) {
-							tempClip = (AudioClip)Resources.Load(
-								"StreamingAssetsRecovery/music/looped/" + fName
-							);
-						} else {
-							tempClip = (AudioClip)Resources.Load(
-								"StreamingAssetsRecovery/music/" + fName
-							);
-						}
+				string url = string.Format("file://{0}", fPathMp3);
+				using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG)) {
+					yield return uwr.SendWebRequest();
+					if (uwr.result == UnityWebRequest.Result.Success) {
+						tempClip = DownloadHandlerAudioClip.GetContent(uwr);
+						tempClip.name = fName;
 					}
 				}
 			} else {
 				// Load .wav file.
-				// TODO: Need 3 /// on Windows?  Need to test.
 				string url = string.Format("file://{0}", fPathWave);
-// 				WWW www = new WWW(url);
-// 				using (www) {
-// 					yield return www;
-// 
-// 					tempClip = www.GetAudioClipCompressed(false);
-// 				}
-// 				
 				using (UnityWebRequest uwr = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.WAV)) {
 					yield return uwr.SendWebRequest();
 					if (uwr.result == UnityWebRequest.Result.Success) {
@@ -212,6 +113,7 @@ public class Music : MonoBehaviour {
 					"StreamingAssetsRecovery/music/" + fName
 				);
 			}
+			
 			yield break;
 		}
 
@@ -219,270 +121,287 @@ public class Music : MonoBehaviour {
 			case MusicResourceType.Menu:
 				if (index == 0) {
 					titleMusic = tempClip;
+					titleMusic.LoadAudioData();
+					while (titleMusic.loadState != AudioDataLoadState.Loaded) {
+						yield return null;
+					}
 					PlayMenuMusic();
 				} else if (index == 1) {
 					creditsMusic = tempClip;
 					creditsMusic.LoadAudioData();
+					while (creditsMusic.loadState != AudioDataLoadState.Loaded) {
+						yield return null;
+					}
 				}
 
 				break;
-			case MusicResourceType.Medical:
-				levelMusic1[index] = tempClip;
-				levelMusic1[index].LoadAudioData();
-				break;
-			case MusicResourceType.Science:
-				levelMusic2[index] = tempClip;
-				levelMusic2[index].LoadAudioData();
-				break;
-			case MusicResourceType.Reactor:
-				levelMusicReactor[index] = tempClip;
-				levelMusicReactor[index].LoadAudioData();
-				break;
-			case MusicResourceType.Executive:
-				levelMusic6[index] = tempClip;
-				levelMusic6[index].LoadAudioData();
-				break;
-			case MusicResourceType.Grove:
-				levelMusicGroves[index] = tempClip;
-				levelMusicGroves[index].LoadAudioData();
-				break;
-			case MusicResourceType.Security:
-				levelMusic8[index] = tempClip;
-				levelMusic8[index].LoadAudioData();
+			case MusicResourceType.Level:
+				levelMusic[index] = tempClip;
+				levelMusic[index].LoadAudioData();
+				while (levelMusic[index].loadState != AudioDataLoadState.Loaded) {
+					yield return null;
+				}
 				break;
 			case MusicResourceType.Revive:
-				levelMusicRevive[index] = tempClip;
-				levelMusicRevive[index].LoadAudioData();
+				levelMusicRevive = tempClip;
+				levelMusicRevive.LoadAudioData();
+				while (levelMusicRevive.loadState != AudioDataLoadState.Loaded) {
+					yield return null;
+				}
 				break;
 			case MusicResourceType.Death:
-				levelMusicDeath[index] = tempClip;
-				levelMusicDeath[index].LoadAudioData();
-				break;
-			case MusicResourceType.Cyber:
-				levelMusicCyber[index] = tempClip;
-				levelMusicCyber[index].LoadAudioData();
+				levelMusicDeath = tempClip;
+				levelMusicDeath.LoadAudioData();
+				while (levelMusicDeath.loadState != AudioDataLoadState.Loaded) {
+					yield return null;
+				}
 				break;
 			case MusicResourceType.Elevator:
-				levelMusicElevator[index] = tempClip;
-				levelMusicElevator[index].LoadAudioData();
+				levelMusicElevator = tempClip;
+				levelMusicElevator.LoadAudioData();
+				while (levelMusicElevator.loadState != AudioDataLoadState.Loaded) {
+					yield return null;
+				}
 				break;
 			case MusicResourceType.Distortion:
-				levelMusicDistortion[index] = tempClip;
-				levelMusicDistortion[index].LoadAudioData();
+				levelMusicDistortion = tempClip;
+				levelMusicDistortion.LoadAudioData();
+				while (levelMusicDistortion.loadState != AudioDataLoadState.Loaded) {
+					yield return null;
+				}
 				break;
 			case MusicResourceType.Looped:
-				levelMusicLooped[index] = tempClip;
-				levelMusicLooped[index].LoadAudioData();
+				levelMusicLooped = tempClip;
+				levelMusicLooped.LoadAudioData();
+				while (levelMusicLooped.loadState != AudioDataLoadState.Loaded) {
+					yield return null;
+				}
 				break;
-		}
-
-		if (madeNewWave) {
-			if (File.Exists(fPathWave)) File.Delete(fPathWave); // Clean up.
 		}
 	}
 
-	#pragma warning restore 618
 	private void PlayMenuMusic() {
-		if (Const.a != null) {
-			if (Const.a.DynamicMusic) {
-				MainMenuHandler.a.BackGroundMusic.clip = titleMusic;
-			} else {
-				MainMenuHandler.a.BackGroundMusic.clip = levelMusicLooped[14];
-			}
-		} else {
-			MainMenuHandler.a.BackGroundMusic.clip = titleMusic;
-		}
-
+		MainMenuHandler.a.BackGroundMusic.clip = titleMusic;
 		if (MainMenuHandler.a.gameObject.activeSelf
 			&& !MainMenuHandler.a.inCutscene
 			&& MainMenuHandler.a.dataFound) {
 
 			MainMenuHandler.a.BackGroundMusic.Play();
+			if (MainMenuHandler.a.BackGroundMusic.clip == titleMusic
+				&& MainMenuHandler.a.BackGroundMusic.isPlaying) {
+				
+				UnityEngine.Debug.Log("Back ground music started");
+			}
 		}
 	}
 
-	private void LoadMusic() {
-		// Load all the audio clips at the start to prevent stutter.
-		levelMusicLooped = new AudioClip[19];
-		LoadAudio("TITLOOP-00_menu",MusicResourceType.Menu,0);
-		LoadAudio("END-00_end",MusicResourceType.Menu,1);
-		LoadAudio("THM1-19_medicalstart",MusicResourceType.Medical,0);
-		LoadAudio("THM1-01_medicalwalking1",MusicResourceType.Medical,1);
-		LoadAudio("THM1-02_medicalwalking2",MusicResourceType.Medical,2);
-		LoadAudio("THM1-03_medicalwalking3",MusicResourceType.Medical,3);
-		LoadAudio("THM1-04_medicalwalking4",MusicResourceType.Medical,4);
-		LoadAudio("THM1-05_medicalcombat1",MusicResourceType.Medical,5);
-		LoadAudio("THM1-06_medicalcombat2",MusicResourceType.Medical,6);
-		LoadAudio("THM1-07_medicalcombat3",MusicResourceType.Medical,7);
-		LoadAudio("THM1-08_medicalcombat4",MusicResourceType.Medical,8);
-		LoadAudio("THM1-09_medicalcombat5",MusicResourceType.Medical,9);
-		LoadAudio("THM1-10_medicalcombat6",MusicResourceType.Medical,10);
-		LoadAudio("THM3-17_sciencestart",MusicResourceType.Science,0);
-		LoadAudio("THM3-03_science1",MusicResourceType.Science,1);
-		LoadAudio("THM3-04_science2",MusicResourceType.Science,2);
-		LoadAudio("THM3-05_science3",MusicResourceType.Science,3);
-		LoadAudio("THM3-06_science4",MusicResourceType.Science,4);
-		LoadAudio("THM3-07_science5",MusicResourceType.Science,5);
-		LoadAudio("THM3-08_science6",MusicResourceType.Science,6);
-		LoadAudio("THM3-09_science7",MusicResourceType.Science,7);
-		LoadAudio("THM3-01_scienceaction1",MusicResourceType.Science,8);
-		LoadAudio("THM3-02_scienceaction2",MusicResourceType.Science,9);
-		LoadAudio("THM4-01_reactorcombat1",MusicResourceType.Reactor,0);
-		LoadAudio("THM4-02_reactorcombat2",MusicResourceType.Reactor,1);
-		LoadAudio("THM4-03_reactorcombat3",MusicResourceType.Reactor,2);
-		LoadAudio("THM4-04_reactorcombat4",MusicResourceType.Reactor,3);
-		LoadAudio("THM4-05_reactorwalkingatocombat",MusicResourceType.Reactor,4);
-		LoadAudio("THM4-06_reactorwalkingbtocombat",MusicResourceType.Reactor,5);
-		LoadAudio("THM4-09_reactorwalkinga1",MusicResourceType.Reactor,6);
-		LoadAudio("THM4-10_reactorwalkinga2",MusicResourceType.Reactor,7);
-		LoadAudio("THM4-11_reactorwalkingb1",MusicResourceType.Reactor,8);
-		LoadAudio("THM4-12_reactorwalkingb2",MusicResourceType.Reactor,9);
-		LoadAudio("THM4-13_reactorwalkingb3",MusicResourceType.Reactor,10);
-		LoadAudio("THM4-14_reactorwalkingc1",MusicResourceType.Reactor,11);
-		LoadAudio("THM4-15_reactorwalkingc2",MusicResourceType.Reactor,12);
-		LoadAudio("THM2-11_executive1",MusicResourceType.Executive,0);
-		LoadAudio("THM2-12_executive2",MusicResourceType.Executive,1);
-		LoadAudio("THM2-13_executive3",MusicResourceType.Executive,2);
-		LoadAudio("THM2-08_executive4",MusicResourceType.Executive,3);
-		LoadAudio("THM2-09_executive5",MusicResourceType.Executive,4);
-		LoadAudio("THM2-10_executive6",MusicResourceType.Executive,5);
-		LoadAudio("THM2-04_executive2",MusicResourceType.Executive,6);
-		LoadAudio("THM2-05_executive3",MusicResourceType.Executive,7);
-		LoadAudio("THM2-06_executivefluterlude",MusicResourceType.Executive,8);
-		LoadAudio("THM2-07_executivefluterludewithguitar",MusicResourceType.Executive,9);
-		LoadAudio("THM2-01_executiveaction3",MusicResourceType.Executive,10);
-		LoadAudio("THM2-02_executiveaction4",MusicResourceType.Executive,11);
-		LoadAudio("THM2-03_executiveaction5",MusicResourceType.Executive,12);
-		LoadAudio("THM5-07_groveaction1",MusicResourceType.Grove,0);
-		LoadAudio("THM5-08_groveaction1",MusicResourceType.Grove,1);
-		LoadAudio("THM5-09_groveaction2",MusicResourceType.Grove,2);
-		LoadAudio("THM5-10_groveaction3",MusicResourceType.Grove,3);
-		LoadAudio("THM5-11_groveaction4",MusicResourceType.Grove,4);
-		LoadAudio("THM5-12_groveaction5",MusicResourceType.Grove,5);
-		LoadAudio("THM5-13_groveaction6",MusicResourceType.Grove,6);
-		LoadAudio("THM5-14_groveaction7",MusicResourceType.Grove,7);
-		LoadAudio("THM5-15_groveaction8",MusicResourceType.Grove,8);
-		LoadAudio("THM5-33_grove1",MusicResourceType.Grove,9);
-		LoadAudio("THM5-34_grove2",MusicResourceType.Grove,10);
-		LoadAudio("THM5-38_grove3",MusicResourceType.Grove,11);
-		LoadAudio("THM5-39_grove4",MusicResourceType.Grove,12);
-		LoadAudio("THM5-40_grove5",MusicResourceType.Grove,13);
-		LoadAudio("THM5-35_grove99",MusicResourceType.Grove,14);
-		LoadAudio("THM5-36_grove100",MusicResourceType.Grove,15);
-		LoadAudio("THM5-37_grove101",MusicResourceType.Grove,16);
-		LoadAudio("THM5-41_grove102",MusicResourceType.Grove,17);
-		LoadAudio("THM5-42_grove103",MusicResourceType.Grove,18);
-		LoadAudio("THM5-01_grove105",MusicResourceType.Grove,19);
-		LoadAudio("THM5-02_grove106",MusicResourceType.Grove,20);
-		LoadAudio("THM5-03_grove107",MusicResourceType.Grove,21);
-		LoadAudio("THM5-04_grove108",MusicResourceType.Grove,22);
-		LoadAudio("THM5-05_grove109",MusicResourceType.Grove,23);
-		LoadAudio("THM6-05_securityaction1",MusicResourceType.Security,0);
-		LoadAudio("THM6-06_securityaction2",MusicResourceType.Security,1);
-		LoadAudio("THM6-07_securityaction3",MusicResourceType.Security,2);
-		LoadAudio("THM6-08_securityaction4",MusicResourceType.Security,3);
-		LoadAudio("THM6-09_securityaction5",MusicResourceType.Security,4);
-		LoadAudio("THM6-10_securityaction6",MusicResourceType.Security,5);
-		LoadAudio("THM6-01_security1",MusicResourceType.Security,6);
-		LoadAudio("THM6-02_security2",MusicResourceType.Security,7);
-		LoadAudio("THM6-03_security3",MusicResourceType.Security,8);
-		LoadAudio("THM6-04_security4",MusicResourceType.Security,9);
-		LoadAudio("THM6-11_security100",MusicResourceType.Security,10);
-		LoadAudio("THM6-12_security101",MusicResourceType.Security,11);
-		LoadAudio("THM6-13_security1",MusicResourceType.Security,12);
-		LoadAudio("THM6-14_security2",MusicResourceType.Security,13);
-		LoadAudio("THM6-15_security3",MusicResourceType.Security,14);
-		LoadAudio("THM6-17_security4",MusicResourceType.Security,15);
-		LoadAudio("THM6-18_security5",MusicResourceType.Security,16);
-		LoadAudio("THM6-19_security6",MusicResourceType.Security,17);
-		LoadAudio("THM6-20_security7",MusicResourceType.Security,18);
-		LoadAudio("THM4-18_reactorrevive",MusicResourceType.Revive,0);
-		LoadAudio("THM1-18_medicalrevive",MusicResourceType.Revive,1);
-		LoadAudio("THM3-19_sciencerevive",MusicResourceType.Revive,2);
-		LoadAudio("THM6-22_securityrevive",MusicResourceType.Revive,3);
-		levelMusicRevive[4] = levelMusicRevive[2];
-		levelMusicRevive[5] = levelMusicRevive[1];
-		LoadAudio("THM2-18_executiverevive",MusicResourceType.Revive,6);
-		levelMusicRevive[7] = levelMusicRevive[1];
-		levelMusicRevive[8] = levelMusicRevive[3];
-		levelMusicRevive[9] = levelMusicRevive[1];
-		levelMusicRevive[10] = levelMusicRevive[1];
-		levelMusicRevive[11] = levelMusicRevive[1];
-		levelMusicRevive[12] = levelMusicRevive[1];
-		levelMusicRevive[13] = levelMusicRevive[1];
-		LoadAudio("THM0-17_death",MusicResourceType.Death,0);
-		LoadAudio("THM1-17_death",MusicResourceType.Death,1);
-		LoadAudio("THM3-18_death",MusicResourceType.Death,2);
-		levelMusicDeath[3] = levelMusicDeath[0];
-		levelMusicDeath[4] = levelMusicDeath[2];
-		levelMusicDeath[5] = levelMusicDeath[0];
-		LoadAudio("THM2-17_death",MusicResourceType.Death,6);
-		levelMusicDeath[7] = levelMusicDeath[0];
-		LoadAudio("THM6-21_death",MusicResourceType.Death,8);
-		levelMusicDeath[9] = levelMusicDeath[0];
-		LoadAudio("THM5-17_death",MusicResourceType.Death,10);
-		levelMusicDeath[11] = levelMusicDeath[10];
-		levelMusicDeath[12] = levelMusicDeath[10];
-		LoadAudio("THM10-16_death",MusicResourceType.Death,13);
-		LoadAudio("THM10-02_cyberstart",MusicResourceType.Cyber,0);
-		LoadAudio("THM10-01_cyber1",MusicResourceType.Cyber,1);
-		LoadAudio("THM10-03_cyber2",MusicResourceType.Cyber,2);
-		LoadAudio("THM10-04_cyber3",MusicResourceType.Cyber,3);
-		LoadAudio("THM10-05_cyber4",MusicResourceType.Cyber,4);
-		LoadAudio("THM10-06_cyber5",MusicResourceType.Cyber,5);
-		LoadAudio("THM10-07_cyber6",MusicResourceType.Cyber,6);
-		LoadAudio("THM10-08_cyber7",MusicResourceType.Cyber,7);
-		LoadAudio("THM10-09_cyber8",MusicResourceType.Cyber,8);
-		LoadAudio("THM7-01_elevator1",MusicResourceType.Elevator,1);
-		levelMusicElevator[0] = levelMusicElevator[1];
-		LoadAudio("THM7-02_elevator2",MusicResourceType.Elevator,2);
-		LoadAudio("THM7-03_elevator3",MusicResourceType.Elevator,3);
-		LoadAudio("THM7-04_elevator4",MusicResourceType.Elevator,4);
-		LoadAudio("THM7-05_elevator5",MusicResourceType.Elevator,5);
-		LoadAudio("THM7-06_elevator6",MusicResourceType.Elevator,6);
-		LoadAudio("THM7-07_elevator7",MusicResourceType.Elevator,7);
-		LoadAudio("THM7-08_elevator8",MusicResourceType.Elevator,8);
-		levelMusicElevator[9] = levelMusicElevator[1];
-		levelMusicElevator[10] = levelMusicElevator[1];
-		levelMusicElevator[11] = levelMusicElevator[1];
-		levelMusicElevator[12] = levelMusicElevator[1];
-		levelMusicElevator[13] = levelMusicElevator[1];
-		LoadAudio("THM1-48_medicaldistorted",MusicResourceType.Distortion,1);
-		LoadAudio("THM3-49_sciencedistorted",MusicResourceType.Distortion,2);
-		levelMusicDistortion[3] = levelMusicDistortion[1];
-		levelMusicDistortion[4] = levelMusicDistortion[1];
-		levelMusicDistortion[5] = levelMusicDistortion[1];
-		LoadAudio("THM2-46_executivedistorted",MusicResourceType.Distortion,6);
-		levelMusicDistortion[7] = levelMusicDistortion[1];
-		LoadAudio("THM6-49_securitydistorted",MusicResourceType.Distortion,8);
-		levelMusicDistortion[0] = levelMusicDistortion[8];
+	public void LoadLevelMusic(int levnum) {
+		StartCoroutine(LoadLevelMusicActual(levnum));
+	}
+	
+	IEnumerator LoadLevelMusicActual(int levnum) {
+		levelMusic = null;
+		levelMusicRevive = null;
+		levelMusicDeath = null;
+		levelMusicElevator = null;
+		levelMusicDistortion = null;
+		levelMusicLooped = null;
+		tempClip = null;
+		curC = null;
+		curOverlayC = null;
+		
+		// Load all the audio clips at the start of level to prevent stutter during dynamic transitions.
+		if (levnum == 1) {
+			levelMusic = new AudioClip[11];
+			yield return StartCoroutine(LoadHelper("THM1-19_medicalstart",MusicResourceType.Level,0)); 
+			yield return StartCoroutine(LoadHelper("THM1-01_medicalwalking1",MusicResourceType.Level,1));
+			yield return StartCoroutine(LoadHelper("THM1-02_medicalwalking2",MusicResourceType.Level,2));
+			yield return StartCoroutine(LoadHelper("THM1-03_medicalwalking3",MusicResourceType.Level,3));
+			yield return StartCoroutine(LoadHelper("THM1-04_medicalwalking4",MusicResourceType.Level,4));
+			yield return StartCoroutine(LoadHelper("THM1-05_medicalcombat1",MusicResourceType.Level,5));
+			yield return StartCoroutine(LoadHelper("THM1-06_medicalcombat2",MusicResourceType.Level,6));
+			yield return StartCoroutine(LoadHelper("THM1-07_medicalcombat3",MusicResourceType.Level,7));
+			yield return StartCoroutine(LoadHelper("THM1-08_medicalcombat4",MusicResourceType.Level,8));
+			yield return StartCoroutine(LoadHelper("THM1-09_medicalcombat5",MusicResourceType.Level,9));
+			yield return StartCoroutine(LoadHelper("THM1-10_medicalcombat6",MusicResourceType.Level,10));
+			yield return StartCoroutine(LoadHelper("THM1-18_medicalrevive",MusicResourceType.Revive,1));
+			yield return StartCoroutine(LoadHelper("track1",MusicResourceType.Looped,1));
+			yield return StartCoroutine(LoadHelper("THM7-01_elevator1",MusicResourceType.Elevator,1));
+			yield return StartCoroutine(LoadHelper("THM1-48_medicaldistorted",MusicResourceType.Distortion,1));
+			yield return StartCoroutine(LoadHelper("THM1-17_death",MusicResourceType.Death,1));
+		} else if (levnum == 3) {
+			yield return StartCoroutine(LoadHelper("track3",MusicResourceType.Looped,3));
+			yield return StartCoroutine(LoadHelper("THM7-03_elevator3",MusicResourceType.Elevator,3));
+			yield return StartCoroutine(LoadHelper("THM6-22_securityrevive",MusicResourceType.Revive,8));
+			yield return StartCoroutine(LoadHelper("THM0-17_death",MusicResourceType.Death,0));
+			yield return StartCoroutine(LoadHelper("THM1-48_medicaldistorted",MusicResourceType.Distortion,1));
+		} else if (levnum == 6) {
+			levelMusic = new AudioClip[13];
+			yield return StartCoroutine(LoadHelper("THM2-11_executive1",MusicResourceType.Level,0));
+			yield return StartCoroutine(LoadHelper("THM2-12_executive2",MusicResourceType.Level,1));
+			yield return StartCoroutine(LoadHelper("THM2-13_executive3",MusicResourceType.Level,2));
+			yield return StartCoroutine(LoadHelper("THM2-08_executive4",MusicResourceType.Level,3));
+			yield return StartCoroutine(LoadHelper("THM2-09_executive5",MusicResourceType.Level,4));
+			yield return StartCoroutine(LoadHelper("THM2-10_executive6",MusicResourceType.Level,5));
+			yield return StartCoroutine(LoadHelper("THM2-04_executive2",MusicResourceType.Level,6));
+			yield return StartCoroutine(LoadHelper("THM2-05_executive3",MusicResourceType.Level,7));
+			yield return StartCoroutine(LoadHelper("THM2-06_executivefluterlude",MusicResourceType.Level,8));
+			yield return StartCoroutine(LoadHelper("THM2-07_executivefluterludewithguitar",MusicResourceType.Level,9));
+			yield return StartCoroutine(LoadHelper("THM2-01_executiveaction3",MusicResourceType.Level,10));
+			yield return StartCoroutine(LoadHelper("THM2-02_executiveaction4",MusicResourceType.Level,11));
+			yield return StartCoroutine(LoadHelper("THM2-03_executiveaction5",MusicResourceType.Level,12));
+			yield return StartCoroutine(LoadHelper("THM2-18_executiverevive",MusicResourceType.Revive,6));
+			yield return StartCoroutine(LoadHelper("track6",MusicResourceType.Looped,6));
+			yield return StartCoroutine(LoadHelper("THM2-17_death",MusicResourceType.Death,6));
+			yield return StartCoroutine(LoadHelper("THM7-06_elevator6",MusicResourceType.Elevator,6));
+			yield return StartCoroutine(LoadHelper("THM2-46_executivedistorted",MusicResourceType.Distortion,6));
+		} else if (levnum == 8) {
+			levelMusic = new AudioClip[19];
+			yield return StartCoroutine(LoadHelper("THM6-05_securityaction1",MusicResourceType.Level,0));
+			yield return StartCoroutine(LoadHelper("THM6-06_securityaction2",MusicResourceType.Level,1));
+			yield return StartCoroutine(LoadHelper("THM6-07_securityaction3",MusicResourceType.Level,2));
+			yield return StartCoroutine(LoadHelper("THM6-08_securityaction4",MusicResourceType.Level,3));
+			yield return StartCoroutine(LoadHelper("THM6-09_securityaction5",MusicResourceType.Level,4));
+			yield return StartCoroutine(LoadHelper("THM6-10_securityaction6",MusicResourceType.Level,5));
+			yield return StartCoroutine(LoadHelper("THM6-01_security1",MusicResourceType.Level,6));
+			yield return StartCoroutine(LoadHelper("THM6-02_security2",MusicResourceType.Level,7));
+			yield return StartCoroutine(LoadHelper("THM6-03_security3",MusicResourceType.Level,8));
+			yield return StartCoroutine(LoadHelper("THM6-04_security4",MusicResourceType.Level,9));
+			yield return StartCoroutine(LoadHelper("THM6-11_security100",MusicResourceType.Level,10));
+			yield return StartCoroutine(LoadHelper("THM6-12_security101",MusicResourceType.Level,11));
+			yield return StartCoroutine(LoadHelper("THM6-13_security1",MusicResourceType.Level,12));
+			yield return StartCoroutine(LoadHelper("THM6-14_security2",MusicResourceType.Level,13));
+			yield return StartCoroutine(LoadHelper("THM6-15_security3",MusicResourceType.Level,14));
+			yield return StartCoroutine(LoadHelper("THM6-17_security4",MusicResourceType.Level,15));
+			yield return StartCoroutine(LoadHelper("THM6-18_security5",MusicResourceType.Level,16));
+			yield return StartCoroutine(LoadHelper("THM6-19_security6",MusicResourceType.Level,17));
+			yield return StartCoroutine(LoadHelper("THM6-20_security7",MusicResourceType.Level,18));
+			yield return StartCoroutine(LoadHelper("THM6-22_securityrevive",MusicResourceType.Revive,8));
+			yield return StartCoroutine(LoadHelper("THM6-21_death",MusicResourceType.Death,8));
+			yield return StartCoroutine(LoadHelper("THM7-08_elevator8",MusicResourceType.Elevator,8));
+			yield return StartCoroutine(LoadHelper("THM6-49_securitydistorted",MusicResourceType.Distortion,8));
+			yield return StartCoroutine(LoadHelper("track8",MusicResourceType.Looped,8));
+		} else if (levnum == 9) {
+			yield return StartCoroutine(LoadHelper("THM1-18_medicalrevive",MusicResourceType.Revive,1));
+			yield return StartCoroutine(LoadHelper("THM0-17_death",MusicResourceType.Death,0));
+			yield return StartCoroutine(LoadHelper("THM7-01_elevator1",MusicResourceType.Elevator,1));
+			yield return StartCoroutine(LoadHelper("THM1-48_medicaldistorted",MusicResourceType.Distortion,1));
+			yield return StartCoroutine(LoadHelper("track9",MusicResourceType.Looped,9));
+		} else if (levnum == 13) {
+			levelMusic = new AudioClip[9];
+			yield return StartCoroutine(LoadHelper("THM10-02_cyberstart",MusicResourceType.Level,0));
+			yield return StartCoroutine(LoadHelper("THM10-01_cyber1",MusicResourceType.Level,1));
+			yield return StartCoroutine(LoadHelper("THM10-03_cyber2",MusicResourceType.Level,2));
+			yield return StartCoroutine(LoadHelper("THM10-04_cyber3",MusicResourceType.Level,3));
+			yield return StartCoroutine(LoadHelper("THM10-05_cyber4",MusicResourceType.Level,4));
+			yield return StartCoroutine(LoadHelper("THM10-06_cyber5",MusicResourceType.Level,5));
+			yield return StartCoroutine(LoadHelper("THM10-07_cyber6",MusicResourceType.Level,6));
+			yield return StartCoroutine(LoadHelper("THM10-08_cyber7",MusicResourceType.Level,7));
+			yield return StartCoroutine(LoadHelper("THM10-09_cyber8",MusicResourceType.Level,8));
+			yield return StartCoroutine(LoadHelper("THM10-16_death",MusicResourceType.Death,13));
+			yield return StartCoroutine(LoadHelper("THM10-41_cyberdistorted",MusicResourceType.Distortion,13));
+			yield return StartCoroutine(LoadHelper("THM1-18_medicalrevive",MusicResourceType.Revive,1));
+			yield return StartCoroutine(LoadHelper("THM7-01_elevator1",MusicResourceType.Elevator,1));
+			yield return StartCoroutine(LoadHelper("track13",MusicResourceType.Looped,13));
+		} else if (levnum == 2 || levnum == 4) {
+			levelMusic = new AudioClip[10];
+			yield return StartCoroutine(LoadHelper("THM3-17_sciencestart",MusicResourceType.Level,0));
+			yield return StartCoroutine(LoadHelper("THM3-03_science1",MusicResourceType.Level,1));
+			yield return StartCoroutine(LoadHelper("THM3-04_science2",MusicResourceType.Level,2));
+			yield return StartCoroutine(LoadHelper("THM3-05_science3",MusicResourceType.Level,3));
+			yield return StartCoroutine(LoadHelper("THM3-06_science4",MusicResourceType.Level,4));
+			yield return StartCoroutine(LoadHelper("THM3-07_science5",MusicResourceType.Level,5));
+			yield return StartCoroutine(LoadHelper("THM3-08_science6",MusicResourceType.Level,6));
+			yield return StartCoroutine(LoadHelper("THM3-09_science7",MusicResourceType.Level,7));
+			yield return StartCoroutine(LoadHelper("THM3-01_scienceaction1",MusicResourceType.Level,8));
+			yield return StartCoroutine(LoadHelper("THM3-02_scienceaction2",MusicResourceType.Level,9));
+			yield return StartCoroutine(LoadHelper("THM3-19_sciencerevive",MusicResourceType.Revive,2));
+			yield return StartCoroutine(LoadHelper("THM3-18_death",MusicResourceType.Death,2));
 
-		levelMusicDistortion[9] = levelMusicDistortion[1];
-		levelMusicDistortion[10] = levelMusicDistortion[1];
-		levelMusicDistortion[11] = levelMusicDistortion[1];
-		levelMusicDistortion[12] = levelMusicDistortion[1];
-		LoadAudio("THM10-41_cyberdistorted",MusicResourceType.Distortion,13);
-
-		// Looped Music for when Dynamic Music is off
-		LoadAudio("track0",MusicResourceType.Looped,0);
-		LoadAudio("track1",MusicResourceType.Looped,1);
-		LoadAudio("track2",MusicResourceType.Looped,2);
-		LoadAudio("track3",MusicResourceType.Looped,3);
-		LoadAudio("track4",MusicResourceType.Looped,4);
-		LoadAudio("track5",MusicResourceType.Looped,5);
-		LoadAudio("track6",MusicResourceType.Looped,6);
-		LoadAudio("track7",MusicResourceType.Looped,7);
-		LoadAudio("track8",MusicResourceType.Looped,8);
-		LoadAudio("track9",MusicResourceType.Looped,9);
-		LoadAudio("track10",MusicResourceType.Looped,10);
-		LoadAudio("track11",MusicResourceType.Looped,11);
-		LoadAudio("track12",MusicResourceType.Looped,12);
-		LoadAudio("track13",MusicResourceType.Looped,13);
-		LoadAudio("titloop",MusicResourceType.Looped,14);
-		LoadAudio("elevator",MusicResourceType.Looped,15);
-		LoadAudio("death",MusicResourceType.Looped,16);
-		LoadAudio("credits",MusicResourceType.Looped,17);
-		LoadAudio("revive",MusicResourceType.Looped,18);
+			// Still allow for unique per level tracks and unique per level looped tracks when Dynamic Music is off.
+			if (levnum == 2) {
+				yield return StartCoroutine(LoadHelper("track2",MusicResourceType.Looped,2));
+				yield return StartCoroutine(LoadHelper("THM7-02_elevator2",MusicResourceType.Elevator,2));
+				yield return StartCoroutine(LoadHelper("THM3-49_sciencedistorted",MusicResourceType.Distortion,2));
+			} else if (levnum == 4) {
+				yield return StartCoroutine(LoadHelper("track4",MusicResourceType.Looped,4));
+				yield return StartCoroutine(LoadHelper("THM7-04_elevator4",MusicResourceType.Elevator,4));
+				yield return StartCoroutine(LoadHelper("THM1-48_medicaldistorted",MusicResourceType.Distortion,1));
+			}
+		} else if (levnum == 0 || levnum == 5 || levnum == 7) {
+			levelMusic = new AudioClip[13];
+			yield return StartCoroutine(LoadHelper("THM4-01_reactorcombat1",MusicResourceType.Level,0));
+			yield return StartCoroutine(LoadHelper("THM4-02_reactorcombat2",MusicResourceType.Level,1));
+			yield return StartCoroutine(LoadHelper("THM4-03_reactorcombat3",MusicResourceType.Level,2));
+			yield return StartCoroutine(LoadHelper("THM4-04_reactorcombat4",MusicResourceType.Level,3));
+			yield return StartCoroutine(LoadHelper("THM4-05_reactorwalkingatocombat",MusicResourceType.Level,4));
+			yield return StartCoroutine(LoadHelper("THM4-06_reactorwalkingbtocombat",MusicResourceType.Level,5));
+			yield return StartCoroutine(LoadHelper("THM4-09_reactorwalkinga1",MusicResourceType.Level,6));
+			yield return StartCoroutine(LoadHelper("THM4-10_reactorwalkinga2",MusicResourceType.Level,7));
+			yield return StartCoroutine(LoadHelper("THM4-11_reactorwalkingb1",MusicResourceType.Level,8));
+			yield return StartCoroutine(LoadHelper("THM4-12_reactorwalkingb2",MusicResourceType.Level,9));
+			yield return StartCoroutine(LoadHelper("THM4-13_reactorwalkingb3",MusicResourceType.Level,10));
+			yield return StartCoroutine(LoadHelper("THM4-14_reactorwalkingc1",MusicResourceType.Level,11));
+			yield return StartCoroutine(LoadHelper("THM4-15_reactorwalkingc2",MusicResourceType.Level,12));
+			yield return StartCoroutine(LoadHelper("THM0-17_death",MusicResourceType.Death,0));
+			
+			// Still allow for unique per level tracks and unique per level looped tracks when Dynamic Music is off.
+			if (levnum == 0) {
+				yield return StartCoroutine(LoadHelper("track0",MusicResourceType.Looped,0));
+				yield return StartCoroutine(LoadHelper("THM4-18_reactorrevive",MusicResourceType.Revive,0));
+				yield return StartCoroutine(LoadHelper("THM7-01_elevator1",MusicResourceType.Elevator,1));
+				yield return StartCoroutine(LoadHelper("THM6-49_securitydistorted",MusicResourceType.Distortion,8));
+			} else if (levnum == 5) {
+				yield return StartCoroutine(LoadHelper("track5",MusicResourceType.Looped,5));
+				yield return StartCoroutine(LoadHelper("THM7-05_elevator5",MusicResourceType.Elevator,5));
+				yield return StartCoroutine(LoadHelper("THM1-18_medicalrevive",MusicResourceType.Revive,1));
+				yield return StartCoroutine(LoadHelper("THM1-48_medicaldistorted",MusicResourceType.Distortion,1));
+			} else if (levnum == 7) {
+				yield return StartCoroutine(LoadHelper("track7",MusicResourceType.Looped,7));
+				yield return StartCoroutine(LoadHelper("THM7-07_elevator7",MusicResourceType.Elevator,7));
+				yield return StartCoroutine(LoadHelper("THM1-18_medicalrevive",MusicResourceType.Revive,1));
+				yield return StartCoroutine(LoadHelper("THM1-48_medicaldistorted",MusicResourceType.Distortion,1));
+			}
+		} else if (levnum == 10 || levnum == 11 || levnum == 12) {
+			levelMusic = new AudioClip[24];
+			yield return StartCoroutine(LoadHelper("THM5-07_groveaction1",MusicResourceType.Level,0));
+			yield return StartCoroutine(LoadHelper("THM5-08_groveaction1",MusicResourceType.Level,1));
+			yield return StartCoroutine(LoadHelper("THM5-09_groveaction2",MusicResourceType.Level,2));
+			yield return StartCoroutine(LoadHelper("THM5-10_groveaction3",MusicResourceType.Level,3));
+			yield return StartCoroutine(LoadHelper("THM5-11_groveaction4",MusicResourceType.Level,4));
+			yield return StartCoroutine(LoadHelper("THM5-12_groveaction5",MusicResourceType.Level,5));
+			yield return StartCoroutine(LoadHelper("THM5-13_groveaction6",MusicResourceType.Level,6));
+			yield return StartCoroutine(LoadHelper("THM5-14_groveaction7",MusicResourceType.Level,7));
+			yield return StartCoroutine(LoadHelper("THM5-15_groveaction8",MusicResourceType.Level,8));
+			yield return StartCoroutine(LoadHelper("THM5-33_grove1",MusicResourceType.Level,9));
+			yield return StartCoroutine(LoadHelper("THM5-34_grove2",MusicResourceType.Level,10));
+			yield return StartCoroutine(LoadHelper("THM5-38_grove3",MusicResourceType.Level,11));
+			yield return StartCoroutine(LoadHelper("THM5-39_grove4",MusicResourceType.Level,12));
+			yield return StartCoroutine(LoadHelper("THM5-40_grove5",MusicResourceType.Level,13));
+			yield return StartCoroutine(LoadHelper("THM5-35_grove99",MusicResourceType.Level,14));
+			yield return StartCoroutine(LoadHelper("THM5-36_grove100",MusicResourceType.Level,15));
+			yield return StartCoroutine(LoadHelper("THM5-37_grove101",MusicResourceType.Level,16));
+			yield return StartCoroutine(LoadHelper("THM5-41_grove102",MusicResourceType.Level,17));
+			yield return StartCoroutine(LoadHelper("THM5-42_grove103",MusicResourceType.Level,18));
+			yield return StartCoroutine(LoadHelper("THM5-01_grove105",MusicResourceType.Level,19));
+			yield return StartCoroutine(LoadHelper("THM5-02_grove106",MusicResourceType.Level,20));
+			yield return StartCoroutine(LoadHelper("THM5-03_grove107",MusicResourceType.Level,21));
+			yield return StartCoroutine(LoadHelper("THM5-04_grove108",MusicResourceType.Level,22));
+			yield return StartCoroutine(LoadHelper("THM5-05_grove109",MusicResourceType.Level,23));
+			yield return StartCoroutine(LoadHelper("THM5-17_death",MusicResourceType.Death,10));
+			yield return StartCoroutine(LoadHelper("THM1-18_medicalrevive",MusicResourceType.Revive,1));
+			yield return StartCoroutine(LoadHelper("THM7-01_elevator1",MusicResourceType.Elevator,1));
+			yield return StartCoroutine(LoadHelper("THM1-48_medicaldistorted",MusicResourceType.Distortion,1));
+			
+			// Still allow for unique per level tracks and unique per level looped tracks when Dynamic Music is off.
+			if (levnum == 10) {
+				yield return StartCoroutine(LoadHelper("track10",MusicResourceType.Looped,10));
+			} else if (levnum == 11) {
+				yield return StartCoroutine(LoadHelper("track11",MusicResourceType.Looped,11));
+			} else if (levnum == 12) {
+				yield return StartCoroutine(LoadHelper("track12",MusicResourceType.Looped,12));
+			}
+		}
 	}
 
 	public void PlayTrack(int levnum, TrackType ttype, MusicType mtype) {
@@ -494,58 +413,58 @@ public class Music : MonoBehaviour {
 				|| ttype == TrackType.Cybertube || ttype == TrackType.RobotNear
 				|| ttype == TrackType.CyborgNear
 				|| ttype == TrackType.CyborgDroneNear
-				|| ttype == TrackType.Transition
-				|| ttype == TrackType.Distortion)) {
+				|| ttype == TrackType.Transition)) {
 
 				return; // Some dynamic music not used in looped.
 			}
 
 			float vol = 0.2f;
 			if (Const.a != null) vol = Const.a.AudioVolumeMusic;
-			if (mtype == MusicType.Walking || mtype == MusicType.Combat
-				|| mtype == MusicType.None) {
-
-				tempC = levelMusicLooped[LevelManager.a.currentLevel];
+			if (mtype == MusicType.Walking || mtype == MusicType.Combat || mtype == MusicType.None) {
+				tempClip = levelMusicLooped;
 			} else if (mtype == MusicType.Override) {
 				if (ttype == TrackType.Revive) {
-					tempC = levelMusicLooped[18];
+					tempClip = levelMusicRevive;
 				} else if (ttype == TrackType.Death) {
-					tempC = levelMusicLooped[16];
+					tempClip = levelMusicDeath;
 				} else if (ttype == TrackType.Elevator) {
-					tempC = levelMusicLooped[15];
+					tempClip = levelMusicElevator;
+				} else if (ttype == TrackType.Distortion) {
+					tempClip = levelMusicDistortion;
 				}
 			}
 
-			Utils.PlayAudioSavable(SFXMain,tempC,vol,false);
+			SFXMain.Play();
 			SFXMain.loop = true;
+			SFXMain2.Stop();
 			return;
 		}
 
 		// Normal Dynamic Music System
 		// --------------------------------------------------------------------
-		tempC = GetCorrespondingLevelClip(levnum,ttype);
+		tempClip = GetCorrespondingLevelClip(levnum,ttype);
 		if (!elevator) levelEntry = false; // already used by GetCorresponding... just now
 		if (mtype == MusicType.Walking || mtype == MusicType.Combat) {
-			if (tempC == curC && SFXMain.isPlaying) return; // no need, already playing
-			if (SFXMain != null) SFXMain.Stop(); // stop playing normal
-			if (tempC != null) {
-				SFXMain.clip = tempC;
-				curC = tempC;
-// 				Utils.PlayOneShotSavable(SFXMain,tempC);
-				SFXMain.Play();
-				SFXMain.loop = false;
+			AudioSource curr = twoPlaying ? SFXMain2 : SFXMain;
+			if (tempClip == curC && curr.isPlaying) return; // no need, already playing
+
+			if (tempClip != null) {
+				curr.clip = tempClip;
+				curC = tempClip;
+				curr.Play();
+				curr.loop = false;
 			} else {
 				curC = null;
 			}
 		}
 
 		if (mtype == MusicType.Overlay) {
-			if (tempC == curOverlayC && SFXOverlay.isPlaying) return; // no need, already playing
+			if (tempClip == curOverlayC && SFXOverlay.isPlaying) return; // no need, already playing
+			
 			if (SFXOverlay != null) SFXOverlay.Stop(); // stop any overlays
-			if (tempC != null) {
-				SFXOverlay.clip = tempC;
-				curOverlayC = tempC;
-// 				Utils.PlayOneShotSavable(SFXOverlay,tempC);
+			if (tempClip != null) {
+				SFXOverlay.clip = tempClip;
+				curOverlayC = tempClip;
 				SFXOverlay.Play();
 				SFXOverlay.loop = false;
 			} else {
@@ -554,14 +473,14 @@ public class Music : MonoBehaviour {
 		}
 
 		if (mtype == MusicType.Override) {
-			if (tempC == curC && SFXMain.isPlaying) return; // no need, already playing
+			if (tempClip == curC && SFXMain.isPlaying) return; // no need, already playing
 
 			// stop both
 			if (SFXMain != null) SFXMain.Stop();
 			if (SFXOverlay != null) SFXOverlay.Stop();
-			if (tempC != null) {
-				SFXMain.clip = tempC;
-				curC = tempC;
+			if (tempClip != null) {
+				SFXMain.clip = tempClip;
+				curC = tempClip;
 				SFXMain.Play();
 				SFXMain.loop = false;
 				//if (ttype == TrackType.Elevator) SFXMain.loop = true;
@@ -576,16 +495,16 @@ public class Music : MonoBehaviour {
 
 		// 13 CYBERSPACE
 		if (levnum == 13) {
-			if (levelEntry) return levelMusicCyber[0];
+			if (levelEntry) return levelMusic[0];
 			if (cyberTube) {
 				rand = UnityEngine.Random.Range(4,8);
-				return levelMusicCyber[rand];
+				return levelMusic[rand];
 			}
 			if (UnityEngine.Random.Range(0,1f) < 0.5f) {
 				rand = UnityEngine.Random.Range(1,5);
-				return levelMusicCyber[rand];
+				return levelMusic[rand];
 			} else {
-				return levelMusicCyber[8];
+				return levelMusic[8];
 			}
 		}
 
@@ -596,77 +515,76 @@ public class Music : MonoBehaviour {
 			//case TrackType.CyborgDroneNear: return levelMusicCyborgDroneNear[levnum];
 			//case TrackType.RobotNear: return levelMusicRobotNear[levnum];
 			//case TrackType.Transition: return levelMusicTransition[levnum];
-			case TrackType.Revive: return levelMusicRevive[levnum];
-			case TrackType.Death: return levelMusicDeath[levnum];
-			//case TrackType.Cybertube: return levelMusicCybertube[levnum];
-			case TrackType.Elevator: return levelMusicElevator[levnum];
-			case TrackType.Distortion: return levelMusicDistortion[levnum];
+			case TrackType.Revive: return levelMusicRevive;
+			case TrackType.Death: return levelMusicDeath;
+			case TrackType.Elevator: return levelMusicElevator;
+			case TrackType.Distortion: return levelMusicDistortion;
 		}
 
 		// 1  MEDICAL
 		if (levnum == 1) {
-			if (levelEntry) return levelMusic1[0];
+			if (levelEntry) return levelMusic[0];
 			if (ttype == TrackType.Combat) {
 				rand = UnityEngine.Random.Range(5,11);
-				return levelMusic1[rand];
+				return levelMusic[rand];
 			}
 			rand = UnityEngine.Random.Range(1,5);
-			return levelMusic1[rand];
+			return levelMusic[rand];
 		}
 
 		// 2  SCIENCE, 4 STORAGE
 		if (levnum == 2 || levnum == 4) {
-			if (levelEntry) return levelMusic2[0];
+			if (levelEntry) return levelMusic[0];
 			if (ttype == TrackType.Combat) {
 				rand = UnityEngine.Random.Range(8,10);
-				return levelMusic2[rand];
+				return levelMusic[rand];
 			}
 			rand = UnityEngine.Random.Range(1,8);
-			return levelMusic2[rand];
+			return levelMusic[rand];
 		}
 
 		// 0  REACTOR, 5 FLIGHT, 7 ENGINEERING
 		if (levnum == 0 || levnum == 5 || levnum == 7) {
-			if (levelEntry) return levelMusicReactor[6];
+			if (levelEntry) return levelMusic[6];
 			if (ttype == TrackType.Combat) {
 				rand = UnityEngine.Random.Range(0,6);
-				return levelMusicReactor[rand];
+				return levelMusic[rand];
 			}
 			rand = UnityEngine.Random.Range(6,13);
-			return levelMusicReactor[rand];
+			return levelMusic[rand];
 		}
 
 		// 8 SECURITY
 		if (levnum == 8) {
-			if (levelEntry) return levelMusic8[9];
+			if (levelEntry) return levelMusic[9];
 			if (ttype == TrackType.Combat) {
 				rand = UnityEngine.Random.Range(0,6);
-				return levelMusic8[rand];
+				return levelMusic[rand];
 			}
 			rand = UnityEngine.Random.Range(6,19);
-			return levelMusic8[rand];
+			return levelMusic[rand];
 		}
 
 		// 6 EXECUTIVE
 		if (levnum == 6) {
-			if (levelEntry) return levelMusic6[0];
+			if (levelEntry) return levelMusic[0];
 			if (ttype == TrackType.Combat) {
 				rand = UnityEngine.Random.Range(9,13);
-				return levelMusic6[rand];
+				return levelMusic[rand];
 			}
 			rand = UnityEngine.Random.Range(0,10);
-			return levelMusic6[rand];
+			return levelMusic[rand];
 		}
 
 		// 10, 12 GROVES
 		if (levnum == 10 || levnum == 11 || levnum == 12) {
-			if (levelEntry) return levelMusicGroves[19];
+			if (levelEntry) return levelMusic[19];
 			if (ttype == TrackType.Combat) {
 				rand = UnityEngine.Random.Range(0,9);
-				return levelMusicGroves[rand];
+				return levelMusic[rand];
 			}
 			rand = UnityEngine.Random.Range(9,24);
-			return levelMusicGroves[rand];
+			return levelMusic[rand];
 		}
 
 		return null; // Tracktype none when nothing was found
@@ -714,6 +632,7 @@ public class Music : MonoBehaviour {
 			if (!paused || !MainMenuHandler.a.dataFound) {
 				paused = true;
 				if (SFXMain != null) SFXMain.Pause();
+				if (SFXMain2 != null) SFXMain2.Pause();
 				if (SFXOverlay != null) SFXOverlay.Pause();
 			}
 
@@ -722,62 +641,66 @@ public class Music : MonoBehaviour {
 
 		if (paused) {
 			paused = false;
-			if (SFXMain != null) SFXMain.UnPause();
+			if (SFXMain != null && (!twoPlaying || !Const.a.DynamicMusic)) SFXMain.UnPause();
+			if (SFXMain2 != null && twoPlaying && Const.a.DynamicMusic) SFXMain2.UnPause();
 			if (SFXOverlay != null) SFXOverlay.UnPause();
 		}
 
-// 		if (SFXMain.isPlaying) return;
-		if (SFXMain.clip != null) {
-			float remaining = (SFXMain.clip.length - SFXMain.time);
-			if (remaining > Time.deltaTime && SFXMain.isPlaying) return;
-		}
+		AudioSource curr = twoPlaying ? SFXMain2 : SFXMain;
+		AudioSource next = twoPlaying ? SFXMain : SFXMain2;
+		SFXMain2.volume = SFXMain.volume;
+		if (curr.clip != null && curr.isPlaying) {
+            float remaining = (curr.clip.length - curr.time);
+            if (remaining > audBuffer) return;
+        }
 
-		if (inCombat && !inZone && combatImpulseFinished
-			< PauseScript.a.relativeTime) {
-
+		if (inCombat && !inZone && combatImpulseFinished < PauseScript.a.relativeTime) {
 			inCombat = false;
-			PlayTrack(LevelManager.a.currentLevel,TrackType.Combat,
-						MusicType.Override);
-
-			combatImpulseFinished = PauseScript.a.relativeTime + 10f;
+			PlayTrack(LevelManager.a.currentLevel,TrackType.Combat, MusicType.Override);
+			combatImpulseFinished = PauseScript.a.relativeTime + 20f;
 			return;
 		}
 
 		if (inZone) {
 			if (distortion) {
-				PlayTrack(LevelManager.a.currentLevel,TrackType.Distortion,
-							MusicType.Override);
+				PlayTrack(LevelManager.a.currentLevel,TrackType.Distortion, MusicType.Override);
 				return;
 			}
+			
 			if (elevator) {
-				PlayTrack(LevelManager.a.currentLevel,TrackType.Elevator,
-							MusicType.Override);
+				PlayTrack(LevelManager.a.currentLevel,TrackType.Elevator, MusicType.Override);
 				return;
 			}
 		}
-		if (LevelManager.a != null) {
-			PlayTrack(LevelManager.a.currentLevel,TrackType.Walking,
-						MusicType.Walking);
-		} else  PlayTrack(1, TrackType.Walking, MusicType.Walking);
+		
+		if (Const.a.DynamicMusic) {
+			if (curr.clip != null && curr.isPlaying) {
+				float remaining = curr.clip.length - curr.time;
+				if (remaining <= audBuffer) { // 50ms buffer before end
+					twoPlaying = !twoPlaying;
+					PlayTrack(LevelManager.a.currentLevel,TrackType.Walking, MusicType.Walking);
+				}
+			} else {
+				PlayTrack(LevelManager.a.currentLevel,TrackType.Walking, MusicType.Walking);
+			}
+		} else {
+			twoPlaying = false;
+			PlayTrack(LevelManager.a.currentLevel,TrackType.Walking, MusicType.Walking);
+		}
     }
     
     void OnDestroy() { // This reduces total RAM usage from 4.0GB to 2.6GB 8)
 		titleMusic = null;
 		creditsMusic = null;
-		levelMusic1 = null;
-		levelMusic2 = null;
-		levelMusicReactor = null;
-		levelMusic6 = null;
-		levelMusicGroves = null;
-		levelMusic8 = null;
+		levelMusic = null;
 		levelMusicRevive = null;
 		levelMusicDeath = null;
-		levelMusicCyber = null;
 		levelMusicElevator = null;
 		levelMusicDistortion = null;
 		levelMusicLooped = null;
-		tempC = null;
+		tempClip = null;
 		curC = null;
 		curOverlayC = null;
+		if (a == this) a = null;
 	}
 }

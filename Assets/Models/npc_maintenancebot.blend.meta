@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: fa955b4c86cbb4e42841709f4c46598b
 ModelImporter:
-  serializedVersion: 19301
+  serializedVersion: 20300
   internalIDToNameTable:
   - first:
       1: 100000
@@ -243,7 +243,7 @@ ModelImporter:
       name: Attack2
       takeName: Default Take
       internalID: 0
-      firstFrame: 71
+      firstFrame: 1
       lastFrame: 71
       wrapMode: 0
       orientationOffsetY: 0
@@ -273,7 +273,7 @@ ModelImporter:
       takeName: Default Take
       internalID: 0
       firstFrame: 0
-      lastFrame: 72
+      lastFrame: 1
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -373,6 +373,7 @@ ModelImporter:
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
     skinWeightsMode: 0
     maxBonesPerVertex: 4
@@ -382,6 +383,9 @@ ModelImporter:
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
   tangentSpace:
@@ -415,6 +419,8 @@ ModelImporter:
   animationType: 2
   humanoidOversampling: 1
   avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

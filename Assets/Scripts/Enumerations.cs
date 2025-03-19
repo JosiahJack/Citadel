@@ -46,7 +46,7 @@ public enum FootStepType : byte {None,Carpet,Concrete,GrittyCrete,Grass,Gravel,
                                  Squish,Vent,Water,Wood,Wood2};
 public enum MusicResourceType : byte {Menu,Medical,Science,Reactor,Executive,
                                       Grove,Cyber,Security,Revive,Death,
-                                      Elevator,Distortion,Looped};
+                                      Elevator,Distortion,Looped,Level};
 // Pool references
 public enum PoolType {None,CameraExplosions,SparksSmall,
                       BloodSpurtSmall,BloodSpurtSmallYellow,
