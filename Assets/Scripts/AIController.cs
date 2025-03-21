@@ -1149,7 +1149,7 @@ public class AIController : MonoBehaviour {
 
 		if (!hasLaser) return;
 
-		GameObject laz = Instantiate(Const.a.prefabs[408],transform.position,
+		GameObject laz = Instantiate(Const.a.GetPrefab(408),transform.position,
 									 Const.a.quaternionIdentity) as GameObject;
 
 		if (laz == null) return; // No laser!
@@ -1270,7 +1270,7 @@ public class AIController : MonoBehaviour {
 		}
 
 		beachball = ConsoleEmulator.SpawnDynamicObject(masterIndex,-1);
-		if (beachball == null) beachball = Const.a.prefabs[370]; // Frag
+		if (beachball == null) beachball = Const.a.GetPrefab(370); // Frag
 		beachball.tag = "NPC";
 		beachball.layer = 24; // NPCBullet
 		ProjectileEffectImpact pei = 

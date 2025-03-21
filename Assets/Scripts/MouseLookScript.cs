@@ -1162,7 +1162,7 @@ public class MouseLookScript : MonoBehaviour {
 			return;
 		}
 
-		if (!grenadeActive) heldObject = Const.a.prefabs[heldObjectIndex + 307]; // heldObject is set by UseGrenade() so don't override here.
+		if (!grenadeActive) heldObject = Const.a.GetPrefab(heldObjectIndex + 307); // heldObject is set by UseGrenade() so don't override here.
 		if (heldObject == null) {
 			Const.sprint("BUG: Object "+heldObjectIndex.ToString()+" not assigned, vaporized.",player);
 			ResetHeldItem();
@@ -1380,13 +1380,13 @@ public class MouseLookScript : MonoBehaviour {
 					 + Const.a.stringTable[320],player); // activated, grenade is LIVE!
 
 		switch(index) { // Subtract one from the correct grenade inventory
-			case 7:  heldObject = Const.a.prefabs[370]; Inventory.a.RemoveGrenade(0); break; // Frag
-			case 8:  heldObject = Const.a.prefabs[372]; Inventory.a.RemoveGrenade(3); break; // Concussion
-			case 9:  heldObject = Const.a.prefabs[387]; Inventory.a.RemoveGrenade(1); break; // EMP
-			case 10: heldObject = Const.a.prefabs[389]; Inventory.a.RemoveGrenade(6); break; // Earth Shaker
-			case 11: heldObject = Const.a.prefabs[402]; Inventory.a.RemoveGrenade(4); break; // Land Mine
-			case 12: heldObject = Const.a.prefabs[403]; Inventory.a.RemoveGrenade(5); break; // Nitropak
-			case 13: heldObject = Const.a.prefabs[404]; Inventory.a.RemoveGrenade(2); break; // Gas
+			case 7:  heldObject = Const.a.GetPrefab(370); Inventory.a.RemoveGrenade(0); break; // Frag
+			case 8:  heldObject = Const.a.GetPrefab(372); Inventory.a.RemoveGrenade(3); break; // Concussion
+			case 9:  heldObject = Const.a.GetPrefab(387); Inventory.a.RemoveGrenade(1); break; // EMP
+			case 10: heldObject = Const.a.GetPrefab(389); Inventory.a.RemoveGrenade(6); break; // Earth Shaker
+			case 11: heldObject = Const.a.GetPrefab(402); Inventory.a.RemoveGrenade(4); break; // Land Mine
+			case 12: heldObject = Const.a.GetPrefab(403); Inventory.a.RemoveGrenade(5); break; // Nitropak
+			case 13: heldObject = Const.a.GetPrefab(404); Inventory.a.RemoveGrenade(2); break; // Gas
 		}
 		MFDManager.a.ResetItemTab();
 		PutObjectInHand(index,-1,0,0,false,true);

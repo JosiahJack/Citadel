@@ -326,7 +326,7 @@ public class LevelManager : MonoBehaviour {
 		Const.a.ResetPauseLists();
 		SetSkyVisible(true);
 		Config.SetLanguage(); // Update all translatable text.
-// 		Const.a.ClearPrefabs();
+		Const.a.ClearPrefabs();
 		System.GC.Collect();
 		System.GC.WaitForPendingFinalizers();
 		Resources.UnloadUnusedAssets();

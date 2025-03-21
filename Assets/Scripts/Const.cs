@@ -257,7 +257,7 @@ public class Const : MonoBehaviour {
 	public Sprite[] logImages;
 
 	public GameObject eventSystem;
-	public GameObject[] prefabs; // Everything
+	private GameObject[] prefabs; // Everything
 	public GameObject prefabFallback;
 	public Texture2D[] textures;
 	public Texture[] sequenceTextures;

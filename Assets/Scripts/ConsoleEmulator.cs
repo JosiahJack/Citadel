@@ -1384,14 +1384,14 @@ Generic Materials (Const.a.genericMaterials[])
 		GameObject go = null;
 		if (ConstIndexIsGeometry(val)) {
 			if (Const.a.editMode || !cheat) {
-				go = MonoBehaviour.Instantiate(Const.a.prefabs[val],spawnPos,
+				go = MonoBehaviour.Instantiate(Const.a.GetPrefab(val),spawnPos,
 									Const.a.quaternionIdentity) as GameObject;
 			} else {
 				Const.sprint("Indices 0 through 306 (level geometry chunks) "
 							 + "not possible when not on edit mode!");
 			}
 		} else {
-			go = MonoBehaviour.Instantiate(Const.a.prefabs[val],spawnPos,
+			go = MonoBehaviour.Instantiate(Const.a.GetPrefab(val),spawnPos,
 									Const.a.quaternionIdentity) as GameObject;
 		}
 

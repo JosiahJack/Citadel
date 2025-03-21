@@ -662,7 +662,7 @@ public class HealthManager : MonoBehaviour {
 			if (searchableItem.contents[i] < 0) continue;
 
 			GameObject tossObject =
-				Instantiate(Const.a.prefabs[searchableItem.contents[i] + 307],
+				Instantiate(Const.a.GetPrefab(searchableItem.contents[i] + 307),
 							transform.position,Const.a.quaternionIdentity)
 								as GameObject;
 

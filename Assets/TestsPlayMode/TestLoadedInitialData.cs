@@ -45,14 +45,6 @@ namespace Tests {
             bool check = Const.a != null;
             string msg = "Const.a was null";
             Assert.That(check,msg);
-            
-            msg = "Const.a prefabs has unassigned slots!";
-            check = true;
-            for (int i=0;i<Const.a.prefabs.Length;i++) {
-                if (Const.a.prefabs[i] == null) check = false;
-            }
-            Assert.That(check,msg);
-
 
             msg = "Const.a useableItemsFrobIcons has unassigned slots!";
             check = true;

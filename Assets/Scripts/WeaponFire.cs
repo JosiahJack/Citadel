@@ -788,24 +788,24 @@ public class WeaponFire : MonoBehaviour {
 
 		// Add bullethole
 		tempVec = tempHit.normal * 0.16f;
-		GameObject holetype = Const.a.prefabs[522];
+		GameObject holetype = Const.a.GetPrefab(522);
 		switch(wep16index) {
-			case 0:  holetype = Const.a.prefabs[518]; break;
-			case 1:  holetype = Const.a.prefabs[520]; break;
-			case 2:  holetype = Const.a.prefabs[522]; break;
-			case 3:  holetype = Const.a.prefabs[521]; break;
-			case 4:  holetype = Const.a.prefabs[519]; break;
-			case 5:  holetype = Const.a.prefabs[520]; break;
-			case 6:  holetype = Const.a.prefabs[522]; break;
-			case 7:  holetype = Const.a.prefabs[518]; break;
-			case 8:  holetype = Const.a.prefabs[519]; break;
-			case 9:  holetype = Const.a.prefabs[521]; break;
-			case 10: holetype = Const.a.prefabs[519]; break;
-			case 11: holetype = Const.a.prefabs[519]; break;
-			case 12: holetype = Const.a.prefabs[523]; break;
-			case 13: holetype = Const.a.prefabs[518]; break;
-			case 14: holetype = Const.a.prefabs[520]; break;
-			case 15: holetype = Const.a.prefabs[520]; break;
+			case 0:  holetype = Const.a.GetPrefab(518); break;
+			case 1:  holetype = Const.a.GetPrefab(520); break;
+			case 2:  holetype = Const.a.GetPrefab(522); break;
+			case 3:  holetype = Const.a.GetPrefab(521); break;
+			case 4:  holetype = Const.a.GetPrefab(519); break;
+			case 5:  holetype = Const.a.GetPrefab(520); break;
+			case 6:  holetype = Const.a.GetPrefab(522); break;
+			case 7:  holetype = Const.a.GetPrefab(518); break;
+			case 8:  holetype = Const.a.GetPrefab(519); break;
+			case 9:  holetype = Const.a.GetPrefab(521); break;
+			case 10: holetype = Const.a.GetPrefab(519); break;
+			case 11: holetype = Const.a.GetPrefab(519); break;
+			case 12: holetype = Const.a.GetPrefab(523); break;
+			case 13: holetype = Const.a.GetPrefab(518); break;
+			case 14: holetype = Const.a.GetPrefab(520); break;
+			case 15: holetype = Const.a.GetPrefab(520); break;
 		}
 
 		GameObject impactMark = (GameObject)Instantiate(holetype,
@@ -859,7 +859,7 @@ public class WeaponFire : MonoBehaviour {
         else  if (wep16index == 4) laserIndex = 407; // Yellow laser for ion
 
 		GameObject dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
-		GameObject lasertracer = Instantiate(Const.a.prefabs[laserIndex],transform.position,Const.a.quaternionIdentity) as GameObject;
+		GameObject lasertracer = Instantiate(Const.a.GetPrefab(laserIndex),transform.position,Const.a.quaternionIdentity) as GameObject;
 
 		// Temporary object only, no need to save or mark as instantiated.
 		if (lasertracer != null) {
@@ -938,7 +938,7 @@ public class WeaponFire : MonoBehaviour {
 			}
 		}
 
-		GameObject idFrame = Instantiate(Const.a.prefabs[736],hm.transform.position,Const.a.quaternionIdentity) as GameObject;
+		GameObject idFrame = Instantiate(Const.a.GetPrefab(736),hm.transform.position,Const.a.quaternionIdentity) as GameObject;
         if (idFrame == null) return;
 
 		TargetID tid = idFrame.GetComponent<TargetID>();
