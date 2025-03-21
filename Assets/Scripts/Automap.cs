@@ -324,13 +324,13 @@ public class Automap : MonoBehaviour {
 		SetAutomapActiveState();
 	}
 
-	void ActivateAutomapUI() {
+	public void ActivateAutomapUI() {
 		Utils.EnableCamera(automapCamera);
 		Utils.Activate(automapCanvasGO);
 		ActivateLevelOverlayContainer(LevelManager.a.currentLevel);
 	}
 
-	void DeactivateAutomapUI() {
+	public void DeactivateAutomapUI() {
 		Utils.DisableCamera(automapCamera);
 		Utils.Deactivate(automapCanvasGO);
 		ActivateLevelOverlayContainer(-1);

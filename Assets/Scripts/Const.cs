@@ -1482,6 +1482,8 @@ CreateBlackTexture:
 		Utils.Deactivate(loadingScreen);
 		Utils.Deactivate(MainMenuHandler.a.IntroVideo);
 		Utils.Deactivate(MainMenuHandler.a.IntroVideoContainer);
+		Automap.a.ActivateAutomapUI();
+		Automap.a.DeactivateAutomapUI();
 		Utils.Deactivate(PauseScript.a.mainMenu);
 		PauseScript.a.PauseDisable();
 		if (PlayerHealth.a != null) {
