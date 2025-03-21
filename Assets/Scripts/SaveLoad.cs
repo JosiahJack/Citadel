@@ -1055,6 +1055,21 @@ public static class SaveLoad {
 			case "cyberpanel_yellow":             return 84;
 			case "cyberpanel_yellowdark":         return 85;
 			case "pipe_maint2_3_coolant":         return 86;
+			case "text_3dwhite":                  return 87;
+			case "text_3dred":                    return 88;
+			case "text_3dgold":                   return 89;
+			case "text_3dgreen":                  return 90;
+			case "text_3dblack":                  return 91;
+			case "text_3dredStopD":               return 92;
+			case "text_3dwhiteStopD":             return 93;
+			case "text_3dblackStopD":             return 94;
+			case "text_3dgoldStopD":              return 95;
+			case "text_3dblueStopD":              return 96;
+          //case "text_3dblackStopD":             return 97;  Whoops
+			case "text_3dgoldunlit":              return 98;
+			case "text_3dgoldunlitoverlay":       return 99;
+			case "black_libraryscreen":          return 100;
+            case "grass_mutatedorange":          return 101;
 		}
 		
 		return 0;

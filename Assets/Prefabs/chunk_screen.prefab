@@ -156,7 +156,6 @@ MonoBehaviour:
   health: 5
   cyberHealth: -1
   maxhealth: 0
-  levelIndex: 0
   isPlayer: 0
   isGrenade: 0
   gibOnDeath: 1

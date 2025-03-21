@@ -121,17 +121,17 @@ float3 PerPixelWorldNormal(float4 i_tex, float4 tangentToWorld[3]) {
 #define IN_VIEWDIR4PARALLAX(i) half3(0,0,0)
 #define IN_VIEWDIR4PARALLAX_FWDADD(i) half3(0,0,0)
 
-#if UNITY_REQUIRE_FRAG_WORLDPOS
-    #if UNITY_PACK_WORLDPOS_WITH_TANGENT
-        #define IN_WORLDPOS(i) half3(i.tangentToWorldAndPackedData[0].w,i.tangentToWorldAndPackedData[1].w,i.tangentToWorldAndPackedData[2].w)
-    #else
-        #define IN_WORLDPOS(i) i.posWorld
-    #endif
-    #define IN_WORLDPOS_FWDADD(i) i.posWorld
-#else
+// #if UNITY_REQUIRE_FRAG_WORLDPOS
+//     #if UNITY_PACK_WORLDPOS_WITH_TANGENT
+//         #define IN_WORLDPOS(i) half3(i.tangentToWorldAndPackedData[0].w,i.tangentToWorldAndPackedData[1].w,i.tangentToWorldAndPackedData[2].w)
+//     #else
+//         #define IN_WORLDPOS(i) i.posWorld
+//     #endif
+//     #define IN_WORLDPOS_FWDADD(i) i.posWorld
+// #else
     #define IN_WORLDPOS(i) half3(0,0,0)
     #define IN_WORLDPOS_FWDADD(i) half3(0,0,0)
-#endif
+// #endif
 
 #define IN_LIGHTDIR_FWDADD(i) half3(i.tangentToWorldAndLightDir[0].w, i.tangentToWorldAndLightDir[1].w, i.tangentToWorldAndLightDir[2].w)
 
@@ -259,9 +259,9 @@ struct VertexOutputForwardBase
     UNITY_LIGHTING_COORDS(6,7)
 
     // next ones would not fit into SM2.0 limits, but they are always for SM3.0+
-#if UNITY_REQUIRE_FRAG_WORLDPOS && !UNITY_PACK_WORLDPOS_WITH_TANGENT
-    float3 posWorld                     : TEXCOORD8;
-#endif
+// #if UNITY_REQUIRE_FRAG_WORLDPOS && !UNITY_PACK_WORLDPOS_WITH_TANGENT
+//     float3 posWorld                     : TEXCOORD8;
+// #endif
 
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
@@ -276,15 +276,15 @@ VertexOutputForwardBase vertForwardBase (VertexInput v)
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
     float4 posWorld = mul(unity_ObjectToWorld, v.vertex);
-    #if UNITY_REQUIRE_FRAG_WORLDPOS
-        #if UNITY_PACK_WORLDPOS_WITH_TANGENT
-            o.tangentToWorldAndPackedData[0].w = posWorld.x;
-            o.tangentToWorldAndPackedData[1].w = posWorld.y;
-            o.tangentToWorldAndPackedData[2].w = posWorld.z;
-        #else
-            o.posWorld = posWorld.xyz;
-        #endif
-    #endif
+//     #if UNITY_REQUIRE_FRAG_WORLDPOS
+//         #if UNITY_PACK_WORLDPOS_WITH_TANGENT
+//             o.tangentToWorldAndPackedData[0].w = posWorld.x;
+//             o.tangentToWorldAndPackedData[1].w = posWorld.y;
+//             o.tangentToWorldAndPackedData[2].w = posWorld.z;
+//         #else
+//             o.posWorld = posWorld.xyz;
+//         #endif
+//     #endif
     o.pos = UnityObjectToClipPos(v.vertex);
 
     o.tex = TexCoords(v);
@@ -443,9 +443,9 @@ struct VertexOutputDeferred
     float4 tangentToWorldAndPackedData[3] : TEXCOORD2;    // [3x3:tangentToWorld | 1x3:viewDirForParallax or worldPos]
     half4 ambientOrLightmapUV             : TEXCOORD5;    // SH or Lightmap UVs
 
-    #if UNITY_REQUIRE_FRAG_WORLDPOS && !UNITY_PACK_WORLDPOS_WITH_TANGENT
-        float3 posWorld                     : TEXCOORD6;
-    #endif
+//     #if UNITY_REQUIRE_FRAG_WORLDPOS && !UNITY_PACK_WORLDPOS_WITH_TANGENT
+//         float3 posWorld                     : TEXCOORD6;
+//     #endif
 
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
@@ -461,15 +461,15 @@ VertexOutputDeferred vertDeferred (VertexInput v)
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
     float4 posWorld = mul(unity_ObjectToWorld, v.vertex);
-    #if UNITY_REQUIRE_FRAG_WORLDPOS
-        #if UNITY_PACK_WORLDPOS_WITH_TANGENT
-            o.tangentToWorldAndPackedData[0].w = posWorld.x;
-            o.tangentToWorldAndPackedData[1].w = posWorld.y;
-            o.tangentToWorldAndPackedData[2].w = posWorld.z;
-        #else
-            o.posWorld = posWorld.xyz;
-        #endif
-    #endif
+//     #if UNITY_REQUIRE_FRAG_WORLDPOS
+//         #if UNITY_PACK_WORLDPOS_WITH_TANGENT
+//             o.tangentToWorldAndPackedData[0].w = posWorld.x;
+//             o.tangentToWorldAndPackedData[1].w = posWorld.y;
+//             o.tangentToWorldAndPackedData[2].w = posWorld.z;
+//         #else
+//             o.posWorld = posWorld.xyz;
+//         #endif
+//     #endif
     o.pos = UnityObjectToClipPos(v.vertex);
 
     o.tex = TexCoords(v);

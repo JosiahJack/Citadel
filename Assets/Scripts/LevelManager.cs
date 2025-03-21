@@ -42,6 +42,7 @@ public class LevelManager : MonoBehaviour {
 	public GameObject[] elevatorTargetDestinations;
 	public Material rtxEmissive;
 	public Mesh sphereMesh;
+	public SkyRotate skyRotate;
 	public Material pipe_maint2_3_coolant;
 // 	public Material dynamicObjectsMaterial;
 // 	public Texture2D dynamicObjectsAlbedo;
@@ -325,6 +326,7 @@ public class LevelManager : MonoBehaviour {
 		Const.a.ResetPauseLists();
 		SetSkyVisible(true);
 		Config.SetLanguage(); // Update all translatable text.
+// 		Const.a.ClearPrefabs();
 		System.GC.Collect();
 		System.GC.WaitForPendingFinalizers();
 		Resources.UnloadUnusedAssets();

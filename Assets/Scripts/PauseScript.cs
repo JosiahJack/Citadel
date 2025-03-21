@@ -58,7 +58,7 @@ public class PauseScript : MonoBehaviour {
 
 			if (Input.GetKeyDown(KeyCode.Home)
 			    || Input.GetKeyDown(KeyCode.Menu)) {
-			        
+
 			    PauseEnable();
 			}
 

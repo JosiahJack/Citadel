@@ -430,6 +430,9 @@ public class MouseLookScript : MonoBehaviour {
 	}
 
 	public void SetCameraCullDistances() {
+		if (cameraDistances == null) cameraDistances = new float[32];
+		else if (cameraDistances.Length < 32) cameraDistances = new float[32];
+		
 		if (inCyberSpace) {
 			for (int i=0;i<32;i++) { cameraDistances[i] = 3350f; } // Increased from 2400 to fit the Saturn's rings without overlapping with star sphere.
 		} else {

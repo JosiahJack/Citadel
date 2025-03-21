@@ -325,18 +325,24 @@ public static class ConsoleEmulator {
 				Const.sprint("Full security override enabled!");
 				LevelManager.a.superoverride = true;
 			}
+		} else if (entry == "dizzy") {
+			if (LevelManager.a.skyRotate.rotateSpeed < 0.9f) LevelManager.a.skyRotate.rotateSpeed = 1f;
+			else if (LevelManager.a.skyRotate.rotateSpeed < 1.9f) LevelManager.a.skyRotate.rotateSpeed = 2f;
+			else if (LevelManager.a.skyRotate.rotateSpeed < 4.9f) LevelManager.a.skyRotate.rotateSpeed = 5f;
+			else if (LevelManager.a.skyRotate.rotateSpeed < 9.9f) LevelManager.a.skyRotate.rotateSpeed = 10f;
+			else LevelManager.a.skyRotate.rotateSpeed = LevelManager.a.skyRotate.defaultSpeed;
 		} else if (entry == "Mr. Bean") {
-				Const.sprint("Nice try, there are no go carts to slow down here");
+			Const.sprint("Nice try, there are no go carts to slow down here");
 		} else if (entry == "Simon Foster") {
-				Const.sprint("Nice try, nothing to paint here");
+			Const.sprint("Nice try, nothing to paint here");
 		} else if (entry == "Motherlode" || entry == "Rosebud" || entry == "Kaching" || entry == "money") {
-				Const.sprint("Nice try, there's no money here.");
+			Const.sprint("Nice try, there's no money here.");
 		} else if (entry == "Richard Branson") {
-				Const.sprint("Nice try, there's no money here.  You do realize this isn't Rollercoaster Tycoon right?");
+			Const.sprint("Nice try, there's no money here.  You do realize this isn't Rollercoaster Tycoon right?");
 		} else if (entry == "John Wardley") {
-				Const.sprint("WOW!");
+			Const.sprint("WOW!");
 		} else if (entry == "John Mace") {
-				Const.sprint("Nice try, there's nothing to pay double for here");
+			Const.sprint("Nice try, there's nothing to pay double for here");
 		} else if (entry == "Melanie Warn") {
 				Const.sprint("I feel happy!!!");
 		} else if (entry == "Damon Hill") {

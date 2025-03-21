@@ -30,7 +30,11 @@ public class LightAnimation : MonoBehaviour {
 	void Start () {
 		if (minIntensity < 0.01f) minIntensity = 0.01f;
 		animLight = GetComponent<Light>();
+		animLight.intensity = maxIntensity;
+		if (segiEmitter == null) segiEmitter = Utils.CreateSEGIEmitter(gameObject,LevelManager.a.currentLevel,0,animLight);
+		EnableSEGIEmitter();
 		animLight.intensity = minIntensity;
+		ScaleSEGIEmitter();
 		currentStep = 0;
 		lerpUp = true;
 		differenceInIntensity = (maxIntensity - minIntensity);
@@ -41,9 +45,9 @@ public class LightAnimation : MonoBehaviour {
 		} else {
 			noSteps = true;
 			animLight.intensity = maxIntensity;
+			ScaleSEGIEmitter();
 		}
 		
-		if (segiEmitter == null) segiEmitter = Utils.CreateSEGIEmitter(gameObject,LevelManager.a.currentLevel,0,animLight);
 	}
 	
 	private void EnableSEGIEmitter() {
@@ -62,23 +66,22 @@ public class LightAnimation : MonoBehaviour {
         if (segiEmitter == null) return;
 		
 		float fac = (animLight.intensity - minIntensity) / maxIntensity;
-		segiEmitter.transform.localScale = new Vector3(Mathf.Max(animLight.range * Const.segiVoxelSize * fac,8f),
-													   Mathf.Max(animLight.range * Const.segiVoxelSize * fac,8f),
-													   Mathf.Max(animLight.range * Const.segiVoxelSize * fac,8f));
+		segiEmitter.transform.localScale = new Vector3(Mathf.Min(animLight.range * Const.segiVoxelSize * fac,8f),
+													   Mathf.Min(animLight.range * Const.segiVoxelSize * fac,8f),
+													   Mathf.Min(animLight.range * Const.segiVoxelSize * fac,8f));
     }
 
 	public void TurnOn() {
 		lightOn = true;
 		EnableSEGIEmitter();
 		animLight.intensity = maxIntensity;
-		animLight.enabled = true;
+		ScaleSEGIEmitter();
 	}
 
 	public void TurnOff() {
 		lightOn = false;
-		DisableSEGIEmitter();
 		animLight.intensity = minIntensity;
-		animLight.enabled = false;
+		ScaleSEGIEmitter();
 	}
 
 	public void Toggle() {
@@ -226,6 +229,7 @@ public class LightAnimation : MonoBehaviour {
 		la.stepTime = Utils.GetFloatFromString(entries[index],"stepTime"); index++; // Not a timer, current time amount
 		la.lerpStartTime = Utils.LoadRelativeTimeDifferential(entries[index],"lerpStartTime"); index++;
 		la.animLight.enabled = Utils.GetBoolFromString(entries[index],"light.enabled"); index++;
+		la.EnableSEGIEmitter();
 		la.ScaleSEGIEmitter();
 		return index;
 	}

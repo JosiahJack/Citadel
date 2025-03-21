@@ -61,7 +61,7 @@ public class DynamicCulling : MonoBehaviour {
     [HideInInspector] public bool lodMeshesInitialized = false;
     [HideInInspector] public Mesh[] lodMeshes;
     public Mesh lodMeshTemplate;
-    public bool skyVisible;
+    public bool skyVisibleToPlayer;
     private byte[] bytes;
     private static string visDebugImagePath;
     private Color32[] pixels;
@@ -661,6 +661,16 @@ public class DynamicCulling : MonoBehaviour {
                 } else {
                     gridCells[x,y].closedNorth = gridCells[x,y].closedSouth = gridCells[x,y].closedEast = gridCells[x,y].closedWest = true;
                 }
+            }
+        }
+        
+        Color32[] skyPixels = Const.a.textures[LevelManager.a.currentLevel + 26].GetPixels32();
+        Color32 skyData;
+        for (int x=0;x<WORLDX;x++) {
+            for (int y=0;y<WORLDX;y++) {
+                gridCells[x,y].skyVisible = false;
+                skyData = skyPixels[x + y * WORLDX];
+                if (skyData.r <= 0.5f && skyData.g <= 0.5f && skyData.b > 0.5f) gridCells[x,y].skyVisible = true;
             }
         }
     }
@@ -1514,6 +1524,8 @@ public class DynamicCulling : MonoBehaviour {
             for (int x=0;x<WORLDX;x++) {
                 for (int y=0;y<WORLDX;y++) {
                     if (gridCells[pnt.x,pnt.y].visibleCellsFromHere[x,y]) gridCells[x,y].visible = true;
+                        if (gridCells[x,y].visible && gridCells[x,y].skyVisible) skyVisibleToPlayer = true;
+
                 }
             }
         }
@@ -1523,7 +1535,6 @@ public class DynamicCulling : MonoBehaviour {
         gridCells[playerCellX,playerCellY].visible = true; // Guarantee enable.
         ChunkPrefab chp = null;
         float distSqrCheck = lodSqrDist;
-//         PrefabIdentifier pidMR;
         bool pidGood = false;
         if (LevelManager.a.currentLevel > 9) distSqrCheck = 419.4304f; // (8 * 2.56f)^2, lower than normal due to foliage tanking performance
         else if (LevelManager.a.currentLevel == 0 || LevelManager.a.currentLevel == 9) distSqrCheck = 1474.56f; // (15*2.56)^2, lower than normal due to high poly angled ceilings and pipe walls
@@ -1534,7 +1545,6 @@ public class DynamicCulling : MonoBehaviour {
                     chp = gridCells[x,y].chunkPrefabs[i];
                     if (chp == null) continue;
                     
-                    if (chp.constIndex == 1 && gridCells[x,y].visible || chp.constIndex == 123 || chp.constIndex == 93) skyVisible = true; // Don't move if to assignment, need to preserve true.  e.g. skyVisible = (chp.constIndex == 1....); is bad bad!
                     for (int k=0;k<chp.meshenderers.Count;k++) {
                         if (chp.meshenderers[k].meshRenderer == null) continue;
                         
@@ -1542,13 +1552,7 @@ public class DynamicCulling : MonoBehaviour {
                         if (!gridCells[x,y].visible) continue;
                         if (chp.constIndex > 304 || chp.constIndex < 0) continue;
 
-                        pidGood = false;
-//                         pidMR = chp.meshenderers[k].meshRenderer.gameObject.GetComponent<PrefabIdentifier>();
-//                         pidGood = pidMR != null;
-//                         if (pidGood) {
-//                             pidGood = ConsoleEmulator.ConstIndexIsGeometry(pidMR.constIndex);
-                            pidGood = ConsoleEmulator.ConstIndexIsGeometry(chp.meshenderers[k].constIndex);
-//                         }
+                        pidGood = ConsoleEmulator.ConstIndexIsGeometry(chp.meshenderers[k].constIndex);
                         if (useLODMeshes && pidGood) {
                             sqrdist = (MouseLookScript.a.transform.position - chp.meshenderers[k].meshRenderer.transform.position).sqrMagnitude;
                             chp.meshenderers[k].SetMesh(sqrdist >= distSqrCheck);
@@ -1684,7 +1688,7 @@ public class DynamicCulling : MonoBehaviour {
             
             int x = staticMeshImmutableCoords[i].x;
             int y = staticMeshImmutableCoords[i].y;
-            if (gridCells[x,y].visible || (!worldCellsOpen[x,y] && skyVisible)) {
+            if (gridCells[x,y].visible || (!worldCellsOpen[x,y] && skyVisibleToPlayer)) {
                 staticMeshesImmutable[i].enabled = true;
                 if (mergeVisibleMeshes) {
                     Meshenderer mrsh = GetMeshAndItsRenderer(staticMeshesImmutable[i].gameObject,-1);
@@ -1861,62 +1865,18 @@ public class DynamicCulling : MonoBehaviour {
         }
     }
     
-    private bool SkyOverridenToVisible(int x, int y) {
-        if (LevelManager.a.currentLevel == 5) {
-            if (x <= 12 || y <= 9 || x >= 32 || (y == 31 && x >= 27) || (x == 27 && y == 32) || (x <= 26 && y == 30)) {
-                return true;
-            } else if (gridCells[5,24].visible
-                || gridCells[5,25].visible
-                || gridCells[5,26].visible
-                || gridCells[5,27].visible
-                || gridCells[5,28].visible
-                || gridCells[5,29].visible
-                || gridCells[5,30].visible
-                || gridCells[5,31].visible
-                || gridCells[5,12].visible
-                || gridCells[5,13].visible
-                || gridCells[5,14].visible
-                || gridCells[5,15].visible
-                || gridCells[5,16].visible
-                || gridCells[5,17].visible
-                || gridCells[5,18].visible
-                || gridCells[5,19].visible
-                || gridCells[29,1].visible
-                || gridCells[28,1].visible
-                || gridCells[27,1].visible
-                || gridCells[26,1].visible
-                || gridCells[25,1].visible
-                || gridCells[24,1].visible
-                || gridCells[23,1].visible
-                || gridCells[22,1].visible
-                || gridCells[21,1].visible
-                || gridCells[20,1].visible
-                || gridCells[19,1].visible
-                || gridCells[18,1].visible
-                || gridCells[45,30].visible
-                || gridCells[45,29].visible
-                || gridCells[45,28].visible
-                || gridCells[45,27].visible
-                || gridCells[45,26].visible
-                || gridCells[45,25].visible
-                || gridCells[45,24].visible) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
     public void CullCore() {
         if (mergeVisibleMeshes) UncombineMeshes(); // In lieu of the fact that this skyrockets the lighting calculations, not doing!
         if (LevelManager.a != null) {
             if (LevelManager.a.currentLevel >= 13) return;
         }
-        
-        skyVisible = false;
+
+        skyVisibleToPlayer = false;
         for (int y=0;y<WORLDX;y++) {
             for (int x=0;x<WORLDX;x++) {
                 gridCells[x,y].visible = gridCells[playerCellX,playerCellY].visibleCellsFromHere[x,y];
+                if (gridCells[x,y].visible && gridCells[x,y].skyVisible) skyVisibleToPlayer = true;
+
                 worldCellsOpen[x,y] = gridCells[x,y].open || gridCells[x,y].visible;
                 if (outputDebugImages) {
                     pixels[x + (y * WORLDX)] = gridCells[x,y].open ? Color.white : Color.black;
@@ -1926,8 +1886,7 @@ public class DynamicCulling : MonoBehaviour {
 
         gridCells[0,0].visible = true; // Errors default here so draw them anyways.
         gridCells[playerCellX,playerCellY].visible = true;
-        CameraViewUnculling(playerCellX,playerCellY);        
-        skyVisible = SkyOverridenToVisible(playerCellX,playerCellY);
+        CameraViewUnculling(playerCellX,playerCellY);
         ToggleVisibility(); // Update all cells marked as dirty.
         ToggleStaticMeshesImmutableVisibility();
         ToggleStaticImmutableParticlesVisibility();
@@ -1936,11 +1895,7 @@ public class DynamicCulling : MonoBehaviour {
         ToggleLightsVisibility();
         UpdateNPCPVS();
         ToggleNPCPVS();
-        if (LevelManager.a != null) {
-            if (skyVisible) LevelManager.a.SetSkyVisible(true);
-            else LevelManager.a.SetSkyVisible(false);
-        }
-        
+        if (LevelManager.a != null) LevelManager.a.SetSkyVisible(skyVisibleToPlayer);
         if (mergeVisibleMeshes) CombineMeshes(true);
 
         // Output Debug image of the open
@@ -2082,6 +2037,7 @@ public class GridCell {
     public int y;
     public bool open;
     public bool visible;
+    public bool skyVisible;
     public bool closedNorth; // For when chunk configurations are such that
     public bool closedEast;  // the immediately adjacent cell at this edge
     public bool closedSouth; // is not visible, consider edge as closed to

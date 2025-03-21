@@ -248,6 +248,21 @@ public class PlayerMovement : MonoBehaviour {
 			|| (ressurectingFinished >= PauseScript.a.relativeTime)) {
 			return;
 		}
+		
+// 		if (UnityEngine.Profiling.Profiler.enabled) {
+// 			Light[] lights = FindObjectsOfType<Light>();
+// 			int shadowCount = 0;
+// 			foreach (Light l in lights) {
+// 				if (l.shadows != LightShadows.None) shadowCount++;
+// 			}
+// 			var renderTextures = Resources.FindObjectsOfTypeAll<RenderTexture>();
+// 			int shadowMapCount = 0;
+// 			foreach (var rt in renderTextures) {
+// 				if (rt.name.Contains("Shadow") || rt.depth > 0) shadowMapCount++;
+// 			}
+// 			Debug.Log($"Lights: {shadowCount}, Shadow Maps: {shadowMapCount}, " +
+// 					$"Used RAM: {UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong() / 1024 / 1024} MB");
+// 		}
 
 		// Normal play when not paused...
 		if (rbody.isKinematic) rbody.isKinematic = false; // Allow physics.

@@ -29,8 +29,38 @@ Shader "Custom/StandardTextureArray" {
             #include "UnityStandardCore_TexArray.cginc"
             ENDCG
         }
+
+        // Shadow Caster Pass
+        Pass {
+            Name "ShadowCaster"
+            Tags { "LightMode" = "ShadowCaster" }
+            ZWrite On
+            ZTest LEqual
+            Cull Off // Enable two-sided shadow casting
+
+            CGPROGRAM
+            #pragma target 3.0
+            #pragma vertex vertShadow
+            #pragma fragment fragShadow
+            #pragma multi_compile_shadowcaster
+            #include "UnityCG.cginc"
+
+            struct v2f {
+                V2F_SHADOW_CASTER;
+                float4 uv : TEXCOORD0; // Pass UVs if needed for texture array
+            };
+
+            v2f vertShadow(appdata_base v) {
+                v2f o;
+                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+                o.uv = float4(v.texcoord.xy, 0, 0); // Assuming index 0 for simplicity
+                return o;
+            }
+
+            float4 fragShadow(v2f i) : SV_Target {
+                SHADOW_CASTER_FRAGMENT(i)
+            }
+            ENDCG
+        }
     }
-
-
-    //FallBack "VertexLit"
 }
