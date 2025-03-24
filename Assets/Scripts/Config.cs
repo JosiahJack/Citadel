@@ -49,10 +49,10 @@ public class Config {
 
     		// Apply settings effects
     		SetVolume();
-    		Const.sprint("Setting screen resolution to "
+    		Const.sprint(Const.a.stringTable[1016] // "Setting screen resolution to "
     				     + Const.a.GraphicsResWidth.ToString()
     				     + ", " + Const.a.GraphicsResHeight.ToString()
-    				     + ", Fullscreen: "
+    				     + ", " + Const.a.stringTable[1017] + ": "
     				     + Const.a.GraphicsFullscreen.ToString());
     		SetShadows();
 			SetModelDetail();

@@ -150,15 +150,27 @@ public class Door : MonoBehaviour {
 		if (doorOpen == DoorState.Open && animatorPlaybackTime > 0.95f) {
 			doorOpen = DoorState.Closing;
 			CloseDoor();
+			if (toggleLasers) {
+				lasersFinished = 0; // Checked explicitly for non-zero elsewhere.
+			}
 		} else if (doorOpen == DoorState.Closed && animatorPlaybackTime > 0.95f){
 			doorOpen = DoorState.Opening;
 			OpenDoor();
+			if (toggleLasers) {
+				lasersFinished = 0; // Checked explicitly for non-zero elsewhere.
+			}
 		} else if (doorOpen == DoorState.Opening) {
 			doorOpen = DoorState.Closing;
+			if (toggleLasers) {
+				lasersFinished = 0; // Checked explicitly for non-zero elsewhere.
+			}
 			anim.Play(closeClipName,defIndex,topTime - animatorPlaybackTime);
 			Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
 		} else if (doorOpen == DoorState.Closing) {
 			doorOpen = DoorState.Opening;
+			if (toggleLasers) {
+				lasersFinished = 0; // Checked explicitly for non-zero elsewhere.
+			}
 			waitBeforeClose = PauseScript.a.relativeTime + delay;
 			anim.Play(openClipName,defIndex,topTime - animatorPlaybackTime);
 			Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
@@ -220,11 +232,6 @@ public class Door : MonoBehaviour {
 		waitBeforeClose = PauseScript.a.relativeTime + delay;
 		if (anim != null) anim.Play(openClipName);
 		Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
-		if (toggleLasers) {
-			DeactivateLasers();
-			lasersFinished = 0; // Checked explicitly for non-zero elsewhere.
-		}
-
 		SetCollisionLayer(19); // InterDebris
 	}
 
@@ -295,26 +302,23 @@ public class Door : MonoBehaviour {
 			animatorPlaybackTime = asi.normalizedTime;
 			if (doorOpen == DoorState.Closing && animatorPlaybackTime > 0.95f) {
 				doorOpen = DoorState.Closed; // Door is closed
-				ActivateLasers();
+				if (toggleLasers) ActivateLasers();
 			}
 
 			if (doorOpen == DoorState.Opening && animatorPlaybackTime > 0.95f) {
 				doorOpen = DoorState.Open; // Door is open
-				DeactivateLasers();
+				if (toggleLasers) DeactivateLasers();
 			}
+		} else if (doorOpen == DoorState.Closed) {
+			if (toggleLasers) ActivateLasers();
+		} else {
+			if (toggleLasers) DeactivateLasers();
 		}
 
 		if (PauseScript.a.relativeTime > waitBeforeClose) {
 			if ((doorOpen == DoorState.Open) && (!stayOpen) && (!startOpen)) {
 				CloseDoor();
 			}
-		}
-
-		if (toggleLasers && lasersFinished > 0 
-			&& lasersFinished < PauseScript.a.relativeTime) {
-
-			ActivateLasers();
-			lasersFinished = 0;
 		}
 	}
 

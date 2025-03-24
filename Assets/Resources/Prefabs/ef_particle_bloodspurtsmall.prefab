@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 4373432073708574}
   - component: {fileID: 198794252283396384}
   - component: {fileID: 199335556110722790}
-  - component: {fileID: 114884869354535762}
   - component: {fileID: -8215588593130117498}
   - component: {fileID: -5014571007238887887}
+  - component: {fileID: 3248070084037126299}
   m_Layer: 11
   m_Name: ef_particle_bloodspurtsmall
   m_TagString: Untagged
@@ -43,7 +43,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1912867451315286}
   serializedVersion: 7
-  lengthInSec: 1
+  lengthInSec: 0.9
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 3
@@ -118,8 +118,8 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.6
-      minScalar: 0.6
+      scalar: 0.8
+      minScalar: 0.75
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -666,7 +666,7 @@ ParticleSystem:
     angle: 10
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
-    radiusThickness: 0.01
+    radiusThickness: 1
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: -90, y: 0, z: 0}
@@ -978,7 +978,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 24
+        scalar: 35
         minScalar: 0
         maxCurve:
           serializedVersion: 2
@@ -3967,8 +3967,8 @@ ParticleSystem:
     ratio: 1
     lifetime:
       serializedVersion: 2
-      minMaxState: 3
-      scalar: 0.6
+      minMaxState: 0
+      scalar: 0.75
       minScalar: 0.6
       maxCurve:
         serializedVersion: 2
@@ -4842,20 +4842,6 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
---- !u!114 &114884869354535762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1912867451315286}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15ed7545d32852f45bf937a378edf2f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemLifeTime: 1
-  onlyOnce: 0
 --- !u!114 &-8215588593130117498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4881,3 +4867,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   constIndex: 721
+--- !u!114 &3248070084037126299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1912867451315286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 081b8f6beee488341816e82b5c94007b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  delay: 0.9
+  objectsToSpawn: []
+  despawnInstead: 1
+  doSelfAfterList: 1
+  destroyAfterListInsteadOfDeactivate: 1
+  timerFinished: 0
+  active: 0

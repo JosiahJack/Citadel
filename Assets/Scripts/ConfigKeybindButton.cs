@@ -54,7 +54,7 @@ public class ConfigKeybindButton : MonoBehaviour {
 
 			if (Const.a.InputCodeSettings[i] == checkVal) {
 				Const.a.InputCodeSettings[i] = 109;
-				Const.sprint("Found and unbound conflict with "
+				Const.sprint(Const.a.stringTable[1018] // "Found and unbound conflict with "
 							 + Const.a.InputCodes[i],Const.a.player1);
 				break;
 			}

@@ -38,4 +38,12 @@ public class PauseParticleSystem : MonoBehaviour {
 		UnPause();
 		gameObject.layer = 1; // TransparentFX		
 	}
+	
+	void OnDestroy() {
+		if (Const.a == null) return;
+		if (Const.a.psys == null) return;
+		if (this == null) return;
+		
+		if (Const.a.psys.Contains(this)) Const.a.psys.Remove(this);
+	}
 }

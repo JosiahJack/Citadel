@@ -1896,7 +1896,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void MinigameStart_Ping() {
-		Const.sprint("Starting PING");
+		Const.sprint(Const.a.stringTable[1021] + " PING");
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigamePingSpaceContainer.SetActive(true);
@@ -1905,7 +1905,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void MinigameStart_15() {
-		Const.sprint("Starting 15");
+		Const.sprint(Const.a.stringTable[1021] + " 15");
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigame15SpaceContainer.SetActive(true);
@@ -1914,7 +1914,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void MinigameStart_Wing0() {
-		Const.sprint("Starting WING-0");
+		Const.sprint(Const.a.stringTable[1021] + " WING-0");
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameWing0SpaceContainer.SetActive(true);
@@ -1923,7 +1923,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void MinigameStart_Botbounce() {
-		Const.sprint("Starting BOTBOUNCE");
+		Const.sprint(Const.a.stringTable[1021] + " BOTBOUNCE");
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameBotbounceSpaceContainer.SetActive(true);
@@ -1932,7 +1932,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void MinigameStart_EelZapper() {
-		Const.sprint("Starting EEL ZAPPER");
+		Const.sprint(Const.a.stringTable[1021] + " EEL ZAPPER");
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameEelZapperSpaceContainer.SetActive(true);
@@ -1941,7 +1941,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void MinigameStart_Road() {
-		Const.sprint("Starting ROAD");
+		Const.sprint(Const.a.stringTable[1021] + " ROAD");
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameRoadSpaceContainer.SetActive(true);
@@ -1950,7 +1950,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void MinigameStart_TriopToe() {
-		Const.sprint("Starting TRIOPTOE");
+		Const.sprint(Const.a.stringTable[1021] + " TRIOPTOE");
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameTriopToeSpaceContainer.SetActive(true);
@@ -1961,7 +1961,7 @@ public class MFDManager : MonoBehaviour  {
 	// The original seemed to have planned for 9 minigames.  Maybe I'll make my
 	// own new ones someday.
 	public void MinigameStart_CorporateConquer() {
-		Const.sprint("Starting CORP CONQ");
+		Const.sprint(Const.a.stringTable[1021] + " CORP CONQ");
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameCorpConqSpaceContainer.SetActive(true);
@@ -1970,7 +1970,7 @@ public class MFDManager : MonoBehaviour  {
 	}
 
 	public void MinigameStart_Chess() {
-		Const.sprint("Starting Chess");
+		Const.sprint(Const.a.stringTable[1021] + " Chess");
 		minigameButtonsContainer.SetActive(false);
 		minigameViewContainer.SetActive(true);
 		minigameChessSpaceContainer.SetActive(true);

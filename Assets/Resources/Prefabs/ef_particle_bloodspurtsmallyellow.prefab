@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 4249788015511576}
   - component: {fileID: 198628509457863252}
   - component: {fileID: 199034793489167892}
-  - component: {fileID: 114840169099063450}
   - component: {fileID: -47090889670673479}
   - component: {fileID: -1650618781256627275}
+  - component: {fileID: -2216516120842166514}
   m_Layer: 11
   m_Name: ef_particle_bloodspurtsmallyellow
   m_TagString: Untagged
@@ -666,7 +666,7 @@ ParticleSystem:
     angle: 10
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
-    radiusThickness: 0.01
+    radiusThickness: 1
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: -90, y: 0, z: 0}
@@ -4842,20 +4842,6 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
---- !u!114 &114840169099063450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1414224965417864}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15ed7545d32852f45bf937a378edf2f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemLifeTime: 1
-  onlyOnce: 0
 --- !u!114 &-47090889670673479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4881,3 +4867,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   constIndex: 723
+--- !u!114 &-2216516120842166514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414224965417864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 081b8f6beee488341816e82b5c94007b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  delay: 0.7
+  objectsToSpawn: []
+  despawnInstead: 1
+  doSelfAfterList: 1
+  destroyAfterListInsteadOfDeactivate: 1
+  timerFinished: 0
+  active: 0

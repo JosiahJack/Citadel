@@ -129,7 +129,7 @@ public static class ConsoleEmulator {
 		Utils.DisableCapsuleCollider(PlayerMovement.a.capsuleCollider);
 		Utils.DisableCapsuleCollider(PlayerMovement.a.leanCapsuleCollider);
 		Utils.DisableSphereCollider(PlayerMovement.a.cyberCollider);
-		Const.sprint("noclip activated!");
+		Const.sprint("noclip " + Const.a.stringTable[1000]); // "ACTIVATED"
 	}
 
 	static void ExitNoclip() {
@@ -141,7 +141,7 @@ public static class ConsoleEmulator {
 			Utils.EnableCapsuleCollider(PlayerMovement.a.capsuleCollider);
 			Utils.EnableCapsuleCollider(PlayerMovement.a.leanCapsuleCollider);
 		}
-		Const.sprint("noclip disabled");
+		Const.sprint("noclip " + Const.a.stringTable[717]); // "DISABLED"
 	}
 
     private static void ConsoleEntry(string entry) {
@@ -156,20 +156,17 @@ public static class ConsoleEmulator {
 			} else {
 				EnterNoclip();
 			}
-        } else if (ts.Contains("cull")) {
-			Const.sprint("Toggling culling system");
-			DynamicCulling.a.cullEnabled = !DynamicCulling.a.cullEnabled;
-		} else if (ts.Contains("editmode") || ts.Contains("edit mode")
+        } else if (ts.Contains("editmode") || ts.Contains("edit mode")
 			 || ts.Contains("editor")) {
 			Const.a.editMode = !Const.a.editMode;
 			if (Const.a.editMode) {
-				Const.sprint("Edit Mode activated! The current level can be shaped to your heart's content!");
+				Const.sprint(Const.a.stringTable[998]); // "Edit Mode activated! The current level can be shaped to your heart's content!"
 				EnterNoclip();
 				PlayerMovement.a.Notarget = true;
 			}
 
 			if (!Const.a.editMode) {
-				Const.sprint("Edit Mode deactivated, normal play");
+				Const.sprint(Const.a.stringTable[999]); // "Edit Mode deactivated, normal play"
 				LevelEditor.a.EditorExit();
 				ExitNoclip();
 				PlayerMovement.a.Notarget = false;
@@ -177,20 +174,20 @@ public static class ConsoleEmulator {
         } else if (ts.Contains("notarget") || ts.Contains("no target")) {
 			if (PlayerMovement.a.Notarget) {
 				PlayerMovement.a.Notarget = false;
-				Const.sprint("notarget disabled");
+				Const.sprint("notarget " + Const.a.stringTable[717]); // "DISABLED"
 			} else {
 				PlayerMovement.a.Notarget = true;
-				Const.sprint("notarget activated!");
+				Const.sprint("notarget " + Const.a.stringTable[1000]); // "ACTIVATED"
 			}
         } else if (ts.Contains("god")
                    || (ts.Contains("power") && ts.Contains("overwhelming"))
                    || ts.Contains("whosyourdaddy")
                    || ts.Contains("iddqd")) {
 			if (PlayerMovement.a.hm.god) {
-				Const.sprint("god mode disabled");
+				Const.sprint("god mode " + Const.a.stringTable[717]); // "DISABLED"
 				PlayerMovement.a.hm.god = false;
 			} else {
-				Const.sprint("god mode activated!");
+				Const.sprint("god mode " + Const.a.stringTable[1000]); // "ACTIVATED"
 				PlayerMovement.a.hm.god = true;
 			}
         } else if (ts.Contains("load") && (tn.Contains("0") || ts.Contains("loadr") || ts.Contains("load r")) && !ts.Contains("10") && !ts.Contains("arsenal")) CheatLoadLevel(0);
@@ -210,8 +207,7 @@ public static class ConsoleEmulator {
         else if (ts.Contains("load") && ts.Contains("11") && !ts.Contains("arsenal")) CheatLoadLevel(11);
         else if (ts.Contains("load") && ts.Contains("12") && !ts.Contains("arsenal")) CheatLoadLevel(12);
 		else if (ts.Contains("load") && ts.Contains("g3") && !ts.Contains("arsenal")) {
-			Const.sprint("Gamma grove already jettisoned!  Those poor "
-                         + "arrogant people.");
+			Const.sprint(Const.a.stringTable[1001]); // "Gamma grove already jettisoned!  Those poor arrogant people."
 		} else if (ts.Contains("load") && ts.Contains("arsenal")) {
             if (ts.Contains("arsenalr") || ts.Contains("arsenal r") || ts.Contains("0"))
                                         PlayerMovement.a.EnableCheatArsenal(0);
@@ -228,23 +224,21 @@ public static class ConsoleEmulator {
             else if (ts.Contains("g2")) PlayerMovement.a.EnableCheatArsenal(11);
             else if (ts.Contains("g4")) PlayerMovement.a.EnableCheatArsenal(12);
             else if (ts.Contains("g3")) {
-                Const.sprint("Gamma grove already jettisoned!  Those poor "
-                            + "arrogant people.");
+                Const.sprint(Const.a.stringTable[1001]); // "Gamma grove already jettisoned!  Those poor arrogant people."
             }
         } else if (ts.Contains("bottomless") && ts.Contains("clip")) { // bottomlessclip
 			if (WeaponCurrent.a.bottomless) {
-				Const.sprint("Hose disconnected from interdimensional " + 
-                             "wormhole. Normal ammo operation restored.");
+				Const.sprint(Const.a.stringTable[1003]); // "Hose disconnected from interdimensional wormhole. Normal ammo operation restored."
 				WeaponCurrent.a.bottomless = false;
 			} else {
-				Const.sprint("bottomlessclip!  Bring it!");
+				Const.sprint("bottomlessclip!  " + Const.a.stringTable[1002]); // "Bring it!"
 				WeaponCurrent.a.bottomless = true;
 			}
         }  else if (ts.Contains("nohud")) { // No HUD
 			if (Const.a.noHUD) {
 				// Normal
 				Const.a.noHUD = false;
-				Const.sprint("HUD reactivated");
+				Const.sprint("HUD " + Const.a.stringTable[1000]); // "ACTIVATED"
 				if (MouseLookScript.a.inventoryMode) {
 					MouseLookScript.a.shootModeButton.SetActive(true);
 				}
@@ -280,8 +274,7 @@ public static class ConsoleEmulator {
 			} else {
 				// HUDless Screenshot mode!
 				Const.a.noHUD = true;
-				Const.sprint("No HUD! Enjoy the cinematic screenshot "
-							 + "experience!");
+				Const.sprint(Const.a.stringTable[1004]); // "No HUD! Enjoy the cinematic screenshot experience!"
 				MouseLookScript.a.shootModeButton.SetActive(false);
 				MFDManager.a.overallLeftMFD.SetActive(false);
 				MFDManager.a.overallRightMFD.SetActive(false);
@@ -305,24 +298,24 @@ public static class ConsoleEmulator {
                    || (ts.Contains("i") && ts.Contains("feel")
                        && ts.Contains("the") && ts.Contains("power"))) {
 			if (WeaponCurrent.a.redbull) {
-				Const.sprint("Energy usage normal");
+				Const.sprint(Const.a.stringTable[1005]); // Energy usage normal
 				WeaponCurrent.a.redbull = false;
 			} else {
-				Const.sprint("I feel the power! 0 energy consumption!");
+				Const.sprint(Const.a.stringTable[1006]); // "I feel the power! 0 energy consumption!"
 				WeaponCurrent.a.redbull = true; // Might not be wings, but hey.
 			}
         } else if (ts.Contains("show") && ts.Contains("fps")) { // showfps
-			Const.sprint("Toggling FPS counter for framerate (bottom right corner)...");
+			Const.sprint(Const.a.stringTable[1007]); // "Toggling FPS counter for framerate (bottom right corner)..."
 			PlayerMovement.a.fpsCounter.SetActive(!PlayerMovement.a.fpsCounter.activeInHierarchy);
         } else if (ts.Contains("show") && ts.Contains("location")) { // showlocation
-			Const.sprint("Toggling locationIndicator (bottom left corner)...");
+			Const.sprint(Const.a.stringTable[1008]); // "Toggling locationIndicator (bottom left corner)..."
 			PlayerMovement.a.locationIndicator.SetActive(!PlayerMovement.a.locationIndicator.activeInHierarchy);
 		} else if (ts.Contains("i") && ts.Contains("am") && ts.Contains("shodan")) { // iamshodan
 			if (LevelManager.a.superoverride) {
-				Const.sprint("SHODAN has regained control of security from you");
+				Const.sprint(Const.a.stringTable[1009]); // "SHODAN has regained control of security from you"
 				LevelManager.a.superoverride = false;
 			} else {
-				Const.sprint("Full security override enabled!");
+				Const.sprint(Const.a.stringTable[1010]); // "Full security override enabled!"
 				LevelManager.a.superoverride = true;
 			}
 		} else if (entry == "dizzy") {
@@ -369,11 +362,11 @@ public static class ConsoleEmulator {
 		} else if (ts.Contains("restart")) {
 				Const.sprint("Yeah...better not");
 		} else if (ts.Contains("quit") || ts.Contains("exit")) {
-				Const.sprint("Use the Pause Menu by hitting Escape and clicking QUIT");
+				Const.sprint("Use the Pause Menu by hitting Escape and using the QUIT option via mouse or arrow keys + ENTER");
 		} else if (ts.Contains("cd") || ts.Contains("./")) {
 				Const.sprint("Attempting to access directory... already at root");
 		} else if (ts.Contains("kill") || ts.Contains("kick") || ts.Contains("ban") || ts.Contains("destroy") || ts.Contains("attack") || ts.Contains("suicide") || ts.Contains("die")) {
-				Const.sprint("Player decides to become a cyborg.");
+				Const.sprint(Const.a.stringTable[1011]); // "Player decides to become a cyborg."
 				DamageData dd = new DamageData();
 				dd.damage = PlayerMovement.a.hm.health + 1.0f;
 				dd.other = PlayerMovement.a.gameObject; // Player capsule
@@ -400,25 +393,28 @@ public static class ConsoleEmulator {
 				SpawnDynamicObject(val,LevelManager.a.currentLevel,true,-1);
 			}
         } else if (ts.Contains("undo")) {
-			if (lastSpawnedGO != null) Utils.SafeDestroy(lastSpawnedGO);
-        } else if (ts.Contains("settargetfps")) {
+			if (lastSpawnedGO != null && Const.a.editMode) Utils.SafeDestroy(lastSpawnedGO);
+			if (!Const.a.editMode) Const.sprint("Cannot undo when not in Edit Mode");
+        } else if (ts.Contains("settargetfps") || ts.Contains("setfps")) {
 			int val = Utils.GetIntFromStringAudLogText(ts.Split(' ').Last()); // That's a slow line to compute!
 			if (val <= 200 && val > 10) {
 				Const.a.TARGET_FPS = val;
 				Config.SetVSync();
 			}
+			
+			Const.sprint("FPS] -> " + val.ToString());
         } else if (ts.Contains("shake")) {
 			Const.a.Shake(true,-1,-1);
         } else if (ts.Contains("tired") || ts.Contains("staminup")) {
             if (PlayerMovement.a.FatigueCheat) {
-                Const.sprint("Fatigue returned to normal");
+                Const.sprint(Const.a.stringTable[1012]); // "Fatigue returned to normal"
                 PlayerMovement.a.FatigueCheat = false;
             } else {
-                Const.sprint("Stamin-Up! Fatigue no longer affects you!");
+                Const.sprint("Stamin-Up! " + Const.a.stringTable[1013]); // "Fatigue no longer affects you!"
                 PlayerMovement.a.FatigueCheat = true;
             }
         } else {
-            Const.sprint("Uknown command or function: " + entry);
+            Const.sprint(Const.a.stringTable[1014] + entry); // "Uknown command or function: "
         }
 
         PlayerMovement.a.consoleinpFd.text = ""; // Reset console and hide it, command was entered.
@@ -427,7 +423,7 @@ public static class ConsoleEmulator {
 
     public static void CheatLoadLevel(int lev) {
 		if (PauseScript.a.MenuActive()) {
-			Const.sprint("Cannot load levels while on the menu!");
+			Const.sprint(Const.a.stringTable[1015]); // "Cannot load levels via cheat while on the menu!"
 			return;
 		}
 

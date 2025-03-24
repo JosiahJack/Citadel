@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 // Prevents shooting through the UI when using the UI on the HUD.
 // Handles data about what is under the cursor for different button
@@ -24,6 +25,7 @@ public class GUIState : MonoBehaviour {
 		overButton = overState;
 		overButtonType = overType;
 		currentButton = button;
+		EventSystem.current.SetSelectedGameObject(null); // ENTER SHOULD NOT INTERACT WITH THE HUD!!!
 	}
 
 	public void ClearOverButton() {
@@ -31,6 +33,7 @@ public class GUIState : MonoBehaviour {
 		overButton = false;
 		overButtonType = ButtonType.None;
 		isBlocking = false;
+		EventSystem.current.SetSelectedGameObject(null);
 	}
 
 	public static string Save(GameObject go) {

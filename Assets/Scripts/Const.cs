@@ -169,12 +169,12 @@ public class Const : MonoBehaviour {
 	[HideInInspector] public int layerMaskPlayerFeet;
 	[HideInInspector] public int layerMaskExplosion;
 
-	public GameObject Pool_CameraExplosions;
-	public GameObject Pool_BloodSpurtSmall;
-	public GameObject Pool_SparksSmall;
-	public GameObject Pool_SparksSmallBlue;
-	public GameObject Pool_BloodSpurtSmallYellow;
-	public GameObject Pool_BloodSpurtSmallGreen;
+	public GameObject cameraExplosion;
+	public GameObject bloodSpurtSmall;
+	public GameObject sparksSmall;
+	public GameObject sparksSmallBlue;
+	public GameObject bloodSpurtSmallYellow;
+	public GameObject bloodSpurtSmallGreen;
 	public GameObject Pool_HopperImpact;
 	public GameObject Pool_GrenadeFragExplosions;
     public GameObject Pool_Vaporize;
@@ -457,7 +457,7 @@ public class Const : MonoBehaviour {
 		a.LoadDamageTablesData();
 		a.LoadEnemyTablesData(); // Doing earlier, needed by AIController Start
 		a.LoadTextures();
-		a.versionString = "v0.99.92"; // Global CITADEL PROJECT VERSION
+		a.versionString = "v0.99.93"; // Global CITADEL PROJECT VERSION
 		UnityEngine.Debug.Log("Citadel " + versionString
 							  + ": " + System.Environment.NewLine
 							  + "Start of C# Game Code, Welcome back Hacker!");
@@ -484,7 +484,7 @@ public class Const : MonoBehaviour {
         }
 
         StreamReader dataReader = Utils.ReadStreamingAsset(tF);
-		if (stringTable.Length < 925) stringTable = new string[1024];
+		if (stringTable.Length < 1025) stringTable = new string[1025];
         using (dataReader) {
             do {
                 // Read the next line
@@ -705,11 +705,6 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int pagenum = 0;
 		creditsLength = 1;
-		//Utils.ConfirmExistsInStreamingAssetsMakeIfNot("credits.txt");
-		//string dr = Utils.SafePathCombine(Application.streamingAssetsPath,
-		//								  "credits.txt");
-
-		//StreamReader dataReader = new StreamReader(dr,Encoding.ASCII);
 		StreamReader dataReader = Utils.ReadStreamingAsset("credits.txt");
 		using (dataReader) {
 			do {
@@ -725,7 +720,7 @@ public class Const : MonoBehaviour {
 				}
 
 				if (pagenum >= creditsText.Length) {
-					UnityEngine.Debug.Log("Credits pagenum was too large at "
+					UnityEngine.Debug.Log("BUG: Credits pagenum was too large at "
 										  + pagenum.ToString());
 					return;
 				}
@@ -1078,34 +1073,16 @@ CreateBlackTexture:
 	public GameObject GetObjectFromPool(PoolType pool) {
 		if (pool == PoolType.None) return null; // Do nothing, no pool requested.
 
-		GameObject poolContainer = Pool_SparksSmall;
+		GameObject poolContainer = null;
 		string poolName = " ";
 
 		switch (pool) {
-		case PoolType.SparksSmall: 
-			poolContainer = Pool_SparksSmall;
-			poolName = "SparksSmall ";
-			break;
-		case PoolType.CameraExplosions:
-			poolContainer = Pool_CameraExplosions;
-			poolName = "CameraExplosions ";
-			break;
-		case PoolType.BloodSpurtSmall: 
-			poolContainer = Pool_BloodSpurtSmall;
-			poolName = "BloodSpurtSmall ";
-			break;
-		case PoolType.BloodSpurtSmallYellow: 
-			poolContainer = Pool_BloodSpurtSmallYellow;
-			poolName = "BloodSpurtSmallYellow ";
-			break;
-		case PoolType.BloodSpurtSmallGreen: 
-			poolContainer = Pool_BloodSpurtSmallGreen;
-			poolName = "BloodSpurtSmallGreen ";
-			break;
-		case PoolType.SparksSmallBlue: 
-			poolContainer = Pool_SparksSmallBlue;
-			poolName = "BloodSpurtSmall ";
-			break;
+		case PoolType.SparksSmall:           return (MonoBehaviour.Instantiate(sparksSmall,Vector3.zero,Const.a.quaternionIdentity) as GameObject);
+		case PoolType.CameraExplosions:      return (MonoBehaviour.Instantiate(cameraExplosion,Vector3.zero,Const.a.quaternionIdentity) as GameObject);
+		case PoolType.BloodSpurtSmall:       return (MonoBehaviour.Instantiate(bloodSpurtSmall,Vector3.zero,Const.a.quaternionIdentity) as GameObject);
+		case PoolType.BloodSpurtSmallYellow: return (MonoBehaviour.Instantiate(bloodSpurtSmallYellow,Vector3.zero,Const.a.quaternionIdentity) as GameObject);
+		case PoolType.BloodSpurtSmallGreen:  return (MonoBehaviour.Instantiate(bloodSpurtSmallGreen,Vector3.zero,Const.a.quaternionIdentity) as GameObject);
+		case PoolType.SparksSmallBlue:       return (MonoBehaviour.Instantiate(sparksSmallBlue,Vector3.zero,Const.a.quaternionIdentity) as GameObject);
 		case PoolType.HopperImpact: 
 			poolContainer = Pool_HopperImpact;
 			poolName = "HopperImpact ";
@@ -1307,6 +1284,8 @@ CreateBlackTexture:
 
 		Stopwatch saveTimer = new Stopwatch();
 		saveTimer.Start();
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
 		List<string> saveData = new List<string>();
 		int i,j;
 
@@ -2342,41 +2321,6 @@ CreateBlackTexture:
 		creditsText = null;
 		healthObjectsRegistration = null;
 		player1 = null;
-		Pool_CameraExplosions = null;
-		Pool_BloodSpurtSmall = null;
-		Pool_SparksSmall = null;
-		Pool_SparksSmallBlue = null;
-		Pool_BloodSpurtSmallYellow = null;
-		Pool_BloodSpurtSmallGreen = null;
-		Pool_HopperImpact = null;
-		Pool_GrenadeFragExplosions = null;
-		Pool_Vaporize = null;
-		Pool_MagpulseImpacts = null;
-		Pool_StungunImpacts = null;
-		Pool_RailgunImpacts = null;
-		Pool_PlasmaImpacts = null;
-		Pool_ProjEnemShot6Impacts = null;
-		Pool_ProjEnemShot2Impacts = null;
-		Pool_ProjSeedPodsImpacts = null;
-		Pool_TempAudioSources = null;
-		Pool_GrenadeEMPExplosions = null;
-		Pool_ProjEnemShot4Impacts = null;
-		Pool_CrateExplosions = null;
-		Pool_GrenadeFragLive = null;
-		Pool_ConcussionLive = null;
-		Pool_EMPLive = null;
-		Pool_GasLive = null;
-		Pool_GasExplosions = null;
-		Pool_CorpseHit = null;
-		Pool_LeafBurst = null;
-		Pool_MutationBurst = null;
-		Pool_GraytationBurst = null;
-		Pool_BarrelExplosions = null;
-		Pool_CyberDissolve = null;
-		Pool_AutomapBotOverlays = null;
-		Pool_AutomapCyborgOverlays = null;
-		Pool_AutomapMutantOverlays = null;
-		Pool_AutomapCameraOverlays = null;
 		loadingScreen = null;
 		mainMenuInit = null;
 		statusBar = null;

@@ -394,7 +394,7 @@ public class PauseScript : MonoBehaviour {
 	// Let screenshot save without putting text in it.
 	public IEnumerator ScreenshotSprint(string sname) {
 		yield return new WaitForSeconds(0.1f);
-		Const.sprint("Wrote screenshot " + sname);
+		Const.sprint(Const.a.stringTable[1024] + sname); // "Wrote screenshot "
 
 	}
 

@@ -521,7 +521,7 @@ public class Inventory : MonoBehaviour {
 				lastAddedIndex = FindNextUnreadLog();
 				if (lastAddedIndex == tempRefIndex) lastAddedIndex = -1;
 				CheckForUnreadLogs();
-				Const.sprint("Log playback stopped");
+				Const.sprint(Const.a.stringTable[1019]); // "Log playback stopped"
 			}
 		}
 		//--- End Logs ---
@@ -675,7 +675,7 @@ public class Inventory : MonoBehaviour {
 			case 91: doorAccessTypeAcquired = AccessCardType.Group4; break; // Cyberspace only
 			case 110: doorAccessTypeAcquired = AccessCardType.Per1; break; // Darcy, Purple Rim, Red Inner (card_per5)
 			default: 
-				Const.sprint("Attempted to add an unmarked access card, we'll treat it as a STANDARD.");
+				Const.sprint("BUG: Attempted to add an unmarked access card, we'll treat it as a STANDARD.");
 				doorAccessTypeAcquired = AccessCardType.Standard;
 				break;
 		}
@@ -1147,7 +1147,7 @@ public class Inventory : MonoBehaviour {
 					break;
 			}
 		}
-		Const.sprint("Playing " + Const.a.audiologNames[logIndex]);
+		Const.sprint(Const.a.stringTable[1020] + Const.a.audiologNames[logIndex]); // "Playing "
 		MFDManager.a.SendAudioLogToDataTab(logIndex);
 	}
 

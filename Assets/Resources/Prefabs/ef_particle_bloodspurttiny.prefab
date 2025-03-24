@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 4373432073708574}
   - component: {fileID: 198794252283396384}
   - component: {fileID: 199335556110722790}
-  - component: {fileID: 114884869354535762}
   - component: {fileID: -8321724014585190394}
   - component: {fileID: -7648520204441878269}
+  - component: {fileID: 4059199146287514273}
   m_Layer: 11
   m_Name: ef_particle_bloodspurttiny
   m_TagString: Untagged
@@ -43,7 +43,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1912867451315286}
   serializedVersion: 7
-  lengthInSec: 1
+  lengthInSec: 0.7
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 3
@@ -4842,20 +4842,6 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
---- !u!114 &114884869354535762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1912867451315286}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15ed7545d32852f45bf937a378edf2f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemLifeTime: 1
-  onlyOnce: 0
 --- !u!114 &-8321724014585190394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4881,3 +4867,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   constIndex: 724
+--- !u!114 &4059199146287514273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1912867451315286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 081b8f6beee488341816e82b5c94007b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  delay: 0.7
+  objectsToSpawn: []
+  despawnInstead: 1
+  doSelfAfterList: 1
+  destroyAfterListInsteadOfDeactivate: 1
+  timerFinished: 0
+  active: 0

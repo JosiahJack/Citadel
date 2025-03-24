@@ -11,7 +11,7 @@ public class MainMenuHandler : MonoBehaviour {
 	public GameObject Button1;
 	public GameObject Button2;
 	public GameObject Button3;
-	public GameObject Button4;
+	public GameObject Button4;	
 	public GameObject startFXObject;
 	public GameObject saltTheFries;
 	public GameObject mainCamera;
@@ -530,24 +530,29 @@ public class MainMenuHandler : MonoBehaviour {
 		savePage.SetActive(false);
 		optionsPage.SetActive(false);
 		creditsPage.SetActive(false);
+		EventSystem.current.SetSelectedGameObject(null);
 	}
 
 	public void GoToFrontPage() {
 		ResetPages();
 		frontPage.SetActive(true);
 		currentPage = Pages.fp;
+		EventSystem.current.SetSelectedGameObject(null);
 	}
 
 	public void GoToSingleplayerSubmenu() {
 		ResetPages();
 		singleplayerPage.SetActive(true);
 		currentPage = Pages.sp;
+		Input.ResetInputAxes();
+		EventSystem.current.SetSelectedGameObject(null);
 	}
 
 	public void GoToMultiplayerSubmenu() {
 		ResetPages();
 		multiplayerPage.SetActive(true);
 		currentPage = Pages.mp;
+		EventSystem.current.SetSelectedGameObject(null);
 	}
 
 	public void GoToOptionsSubmenu(bool accessedFromPause) {
@@ -558,6 +563,7 @@ public class MainMenuHandler : MonoBehaviour {
 		currentPage = Pages.op;
 		returnToPause = accessedFromPause;
 		RenderConfigView();
+		EventSystem.current.SetSelectedGameObject(null);
 	}
 
 	public void SetOptionsTabGraphics() {
@@ -677,6 +683,7 @@ public class MainMenuHandler : MonoBehaviour {
 		for (int i=0;i<8;i++) {
 			loadButtonText[i].text = GetSaveName(i);
 		}	
+		EventSystem.current.SetSelectedGameObject(null);
 	}
 
 	public void GoToSaveGameSubmenu (bool accessedFromPause) {
@@ -687,6 +694,7 @@ public class MainMenuHandler : MonoBehaviour {
 		for (int i=0;i<8;i++) {
 			saveButtonText[i].text = GetSaveName(i);
 		}	
+		EventSystem.current.SetSelectedGameObject(null);
 	}
 
 	public void SaveGameEntry (int index) {
@@ -715,11 +723,12 @@ public class MainMenuHandler : MonoBehaviour {
 	public void LoadGame(int index) {
 		if (loadButtonText[index].text == "- unused -"
 			|| loadButtonText[index].text == "- unused quicksave -") {
-			Const.sprint("No data to load.");
+			Const.sprint(Const.a.stringTable[1022]); // "No data to load."
 		} else Const.a.Load(index,false);
 	}
 
 	public void GoBack () {
+		EventSystem.current.SetSelectedGameObject(null);
 		if (typingSaveGame) {
 			saveNameInput[currentSaveSlot].SetActive(false);
 			saveNamePlaceholder[currentSaveSlot].SetActive(false);
@@ -762,7 +771,7 @@ public class MainMenuHandler : MonoBehaviour {
 
 	public void PathSearch() {
 		// Open dialogue to search for path to C:\SHOCK\RES\DATA
-			StartCoroutine(ShowSelectPathCoroutine());
+		StartCoroutine(ShowSelectPathCoroutine());
 	}
 
 	IEnumerator ShowSelectPathCoroutine () {
@@ -1046,6 +1055,7 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	public void Quit () {
+		EventSystem.current.SetSelectedGameObject(null);
 		StartCoroutine(quitFunction());
 	}
 

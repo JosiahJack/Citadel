@@ -150,7 +150,7 @@ public class MouseLookScript : MonoBehaviour {
 		// Allow quick load straight from the menu or pause.
 		if (Input.GetKeyUp(f9)) {
 			if (inCyberSpace) {
-				Const.sprint("Cannot load in cyberspace");
+				Const.sprint(Const.a.stringTable[1023]); // "Cannot load in cyberspace"
 				return;
 			}
 

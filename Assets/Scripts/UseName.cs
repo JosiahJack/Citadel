@@ -30,312 +30,311 @@ public class UseName : MonoBehaviour {
 		int id = -1;
 		if (pid != null) id = pid.constIndex;
 		switch(id) {
-			case 0:   s1.Append("inky blackness"); break;
-			case 1:   s1.Append("window"); break;
-			case 2:   s1.Append("biological infestation"); break;
-			case 3:   s1.Append("biological infestation"); break;
-			case 4:   s1.Append("biological infestation"); break;
-			case 5:   s1.Append("biological infestation"); break;
-			case 6:   s1.Append("biological infestation"); break;
-			case 7:   s1.Append("biological infestation"); break;
-			case 8:   s1.Append("biological infestation"); break;
-			case 9:   s1.Append("biological infestation"); break;
-			case 10:  s1.Append("biological infestation"); break;
-			case 11:  s1.Append("data transfer schematic"); break;
-			case 12:  s1.Append("stone mosiac tiling"); break;
-			case 13:  s1.Append("monitoring post"); break;
-			case 14:  s1.Append("video observation screen"); break;
-			case 15:  s1.Append("cyber monitoring station"); break;
-			case 16:  s1.Append("burnished platinum panelling"); break;
-			case 17:  s1.Append("monitoring ports"); break;
-			case 18:  s1.Append("SHODAN neural bud"); break;
-			case 19:  s1.Append("computer"); break;
-			case 20:  s1.Append("secure crate"); break;
+			case 0:   s1.Append(Const.a.stringTable[925]); break; // "inky blackness"
+			case 1:   s1.Append(Const.a.stringTable[926]); break; // "window"
+			case 2:   s1.Append(Const.a.stringTable[54]); break; // "biological infestation"
+			case 3:   s1.Append(Const.a.stringTable[54]); break; // "biological infestation"
+			case 4:   s1.Append(Const.a.stringTable[54]); break; // "biological infestation"
+			case 5:   s1.Append(Const.a.stringTable[54]); break; // "biological infestation"
+			case 6:   s1.Append(Const.a.stringTable[54]); break; // "biological infestation"
+			case 7:   s1.Append(Const.a.stringTable[54]); break; // "biological infestation"
+			case 8:   s1.Append(Const.a.stringTable[54]); break; // "biological infestation"
+			case 9:   s1.Append(Const.a.stringTable[54]); break; // "biological infestation"
+			case 10:  s1.Append(Const.a.stringTable[54]); break; // "biological infestation"
+			case 11:  s1.Append(Const.a.stringTable[55]); break; // "data transfer schematic"
+			case 12:  s1.Append(Const.a.stringTable[57]); break; // "stone mosaic tiling"
+			case 13:  s1.Append(Const.a.stringTable[58]); break; // "monitoring post"
+			case 14:  s1.Append(Const.a.stringTable[59]); break; // "video observation screen"
+			case 15:  s1.Append(Const.a.stringTable[928]); break; // "cyber monitoring station"
+			case 16:  s1.Append(Const.a.stringTable[61]); break; // "burnished platinum panelling"
+			case 17:  s1.Append(Const.a.stringTable[929]); break; // "monitoring ports"
+			case 18:  s1.Append(Const.a.stringTable[62]); break; // "SHODAN neural bud"
+			case 19:  s1.Append(Const.a.stringTable[63]); break; // "computer"
+			case 20:  s1.Append(Const.a.stringTable[927]); break; // "secure crate"
 			// Cyber panel
 			// Cyber panel 45
-			case 23:  s1.Append("environmental regulator"); break;
-			case 24:  s1.Append("damaged environmental regulator"); break;
-			case 25:  s1.Append("fluid transport pipes"); break;
-			case 26:  s1.Append("damaged fluid transport pipes"); break;
-			case 27:  s1.Append("engineering panelling"); break;
-			case 28:  s1.Append("damaged engineering panelling"); break;
-			case 29:  s1.Append("ladder, but it can be climbed"); break;
-			case 30:  s1.Append("engineering panelling"); break;
-			case 31:  s1.Append("engineering panelling"); break;
-			case 32:  s1.Append("engineering panelling"); break;
-			case 33:  s1.Append("damaged engineering panelling"); break;
-			case 34:  s1.Append("system function gauges"); break;
-			case 35:  s1.Append("damaged system function gauges"); break;
-			case 36:  s1.Append("engineering instruments"); break;
-			case 37:  s1.Append("damaged engineering instruments"); break;
-			case 38:  s1.Append("electric cable access"); break;
-			case 39:  s1.Append("data circuit access port"); break;
-			case 40:  s1.Append("damaged data circuit access port"); break;
-			case 41:  s1.Append("hi-grip surface"); break;
-			case 42:  s1.Append("hi-grip surface"); break;
-			case 43:  s1.Append("hi-grip surface"); break;
-			case 44:  s1.Append("hi-grip surface"); break;
-			case 45:  s1.Append("damaged hi-grip surface"); break;
-			case 46:  s1.Append("halogen light fixture"); break;
-			case 47:  s1.Append("damaged halogen light fixture"); break;
-			case 48:  s1.Append("observation station"); break;
-			case 49:  s1.Append("damaged observation station"); break;
-			case 50:  s1.Append("thick rug"); break;
-			case 51:  s1.Append("modular panelling"); break;
-			case 52:  s1.Append("modular panelling"); break;
-			case 53:  s1.Append("He-3 extraction pumping system"); break;
-			case 54:  s1.Append("soft panelling"); break;
-			case 55:  s1.Append("damaged soft panelling"); break;
-			case 56:  s1.Append("tech-rack"); break;
-			case 57:  s1.Append("damaged tech-rack"); break;
-			case 58:  s1.Append("corridor wall"); break;
-			case 59:  s1.Append("corridor wall"); break;
-			case 60:  s1.Append("damaged corridor wall"); break;
-			case 61:  s1.Append("oak panelling"); break;
-			case 62:  s1.Append("titanium panelling"); break;
-			case 63:  s1.Append("titanium panelling"); break;
-			case 64:  s1.Append("copper coated insulation"); break;
-			case 65:  s1.Append("copper coated insulation with light"); break;
-			case 66:  s1.Append("copper coated insulation"); break;
-			case 67:  s1.Append("corridor wall"); break;
-			case 68:  s1.Append("damaged corridor wall"); break;
-			case 69:  s1.Append("corridor wall"); break;
-			case 70:  s1.Append("carpet"); break;
-			case 71:  s1.Append(Const.a.stringTable[593]); break; // ATM, cyber security lockout
-			case 72:  s1.Append("elevator panelling"); break;
-			case 73:  s1.Append("elevator panelling"); break;
-			case 74:  s1.Append("transaction machine, market closed due to active incident"); break;
-			case 75:  s1.Append("carpet"); break;
-			case 76:  s1.Append("marble slab"); break;
-			case 77:  s1.Append("display screen"); break;
-			case 78:  s1.Append("Citadel Space Station"); break;
-			case 79:  s1.Append("ventilation system"); break;
-			case 80:  s1.Append("energ-light"); break;
-			case 81:  s1.Append("energ-light"); break;
-			case 82:  s1.Append("non-dent steel panelling"); break;
-			case 83:  s1.Append("non-dent steel panelling"); break;
-			case 84:  s1.Append("non-dent steel panelling with logo"); break;
-			case 85:  s1.Append("non-dent steel panelling"); break;
-			case 86:  s1.Append("non-dent steel panelling"); break;
-			case 87:  s1.Append("non-dent steel panelling"); break;
-			case 88:  s1.Append("environmental regulator"); break;
-			case 89:  s1.Append("structural panelling"); break;
-			case 90:  s1.Append("energ-light"); break;
-			case 91:  s1.Append("energ-light"); break;
-			case 92:  s1.Append("energ-light"); break;
-			case 93:  s1.Append("observation ceiling"); break;
-			case 94:  s1.Append("grass"); break;
-			case 95:  s1.Append("grass"); break;
-			case 96:  s1.Append("grass"); break;
-			case 97:  s1.Append("wet grass"); break;
-			case 98:  s1.Append("virus infestation"); break;
-			case 99:  s1.Append("virus infestation"); break;
-			case 100: s1.Append("virus infestation"); break;
-			case 101: s1.Append("pod wall"); break;
-			case 102: s1.Append("overgrown pod wall"); break;
-			case 103: s1.Append("pod wall"); break;
-			case 104: s1.Append("pod wall with environmental regulator"); break;
-			case 105: s1.Append("pod wall with sprinkler system"); break;
-			case 106: s1.Append("pod wall with overgrowth"); break;
-			case 107: s1.Append("pod wall with sprinkler system"); break;
-			case 108: s1.Append("pod wall with overgrowth"); break;
-			case 109: s1.Append("virus infestation"); break;
-			case 110: s1.Append("virus infestation"); break;
-			case 111: s1.Append("virus infestation"); break;
-			case 112: s1.Append("gravity lift"); break;
-			case 113: s1.Append("locked extinguisher storage cabinets"); break;
-			case 114: s1.Append("locked storage cabinets"); break;
-			case 115: s1.Append("damaged storage cabinets"); break;
-			case 116: s1.Append("chemical storage tanks"); break;
-			case 117: s1.Append("damaged chemical storage tanks"); break;
-			case 118: s1.Append("repair station"); break;
-			case 119: s1.Append("damaged repair station"); break;
-			case 120: s1.Append("repair station"); break;
-			case 121: s1.Append("robot diagnostic system"); break;
-			case 122: s1.Append("repair station"); break;
+			case 23:  s1.Append(Const.a.stringTable[82]); break; // "environmental regulator"
+			case 24:  s1.Append(Const.a.stringTable[930]); break; // "damaged environmental regulator"
+			case 25:  s1.Append(Const.a.stringTable[84]); break; // "fluid transport pipes"
+			case 26:  s1.Append(Const.a.stringTable[931]); break; // "damaged fluid transport pipes"
+			case 27:  s1.Append(Const.a.stringTable[85]); break; // "engineering panelling"
+			case 28:  s1.Append(Const.a.stringTable[932]); break; // "damaged engineering panelling"
+			case 29:  s1.Append(Const.a.stringTable[86]); break; // "ladder"
+			case 30:  s1.Append(Const.a.stringTable[85]); break; // "engineering panelling"
+			case 31:  s1.Append(Const.a.stringTable[85]); break; // "engineering panelling"
+			case 32:  s1.Append(Const.a.stringTable[85]); break; // "engineering panelling"
+			case 33:  s1.Append(Const.a.stringTable[932]); break; // "damaged engineering panelling"
+			case 34:  s1.Append(Const.a.stringTable[88]); break; // "system function gauges"
+			case 35:  s1.Append(Const.a.stringTable[933]); break; // "damaged system function gauges"
+			case 36:  s1.Append(Const.a.stringTable[90]); break; // "engineering instruments"
+			case 37:  s1.Append(Const.a.stringTable[934]); break; // "damaged engineering instruments"
+			case 38:  s1.Append(Const.a.stringTable[91]); break; // "electric cable access"
+			case 39:  s1.Append(Const.a.stringTable[92]); break; // "data circuit access port"
+			case 40:  s1.Append(Const.a.stringTable[935]); break; // "damaged data circuit access port"
+			case 41:  s1.Append(Const.a.stringTable[94]); break; // "hi-grip surface"
+			case 42:  s1.Append(Const.a.stringTable[94]); break; // "hi-grip surface"
+			case 43:  s1.Append(Const.a.stringTable[94]); break; // "hi-grip surface"
+			case 44:  s1.Append(Const.a.stringTable[94]); break; // "hi-grip surface"
+			case 45:  s1.Append(Const.a.stringTable[936]); break; // "damaged hi-grip surface"
+			case 46:  s1.Append(Const.a.stringTable[95]); break; // "halogen light fixture"
+			case 47:  s1.Append(Const.a.stringTable[937]); break; // "damaged halogen light fixture"
+			case 48:  s1.Append(Const.a.stringTable[97]); break; // "observation station"
+			case 49:  s1.Append(Const.a.stringTable[938]); break; // "damaged observation station"
+			case 50:  s1.Append(Const.a.stringTable[98]); break; // "thick rug"
+			case 51:  s1.Append(Const.a.stringTable[99]); break; // "modular panelling"
+			case 52:  s1.Append(Const.a.stringTable[99]); break; // "modular panelling"
+			case 53:  s1.Append(Const.a.stringTable[939]); break; // "He-3 extraction pumping system"
+			case 54:  s1.Append(Const.a.stringTable[100]); break; // "soft panelling"
+			case 55:  s1.Append(Const.a.stringTable[940]); break; // "damaged soft panelling"
+			case 56:  s1.Append(Const.a.stringTable[102]); break; // "tech-rack"
+			case 57:  s1.Append(Const.a.stringTable[941]); break; // "damaged tech-rack"
+			case 58:  s1.Append(Const.a.stringTable[103]); break; // "corridor wall"
+			case 59:  s1.Append(Const.a.stringTable[103]); break; // "corridor wall"
+			case 60:  s1.Append(Const.a.stringTable[942]); break; // "damaged corridor wall"
+			case 61:  s1.Append(Const.a.stringTable[104]); break; // "oak panelling"
+			case 62:  s1.Append(Const.a.stringTable[105]); break; // "titanium panelling"
+			case 63:  s1.Append(Const.a.stringTable[105]); break; // "titanium panelling"
+			case 64:  s1.Append(Const.a.stringTable[943]); break; // "copper coated insulation"
+			case 65:  s1.Append(Const.a.stringTable[944]); break; // "copper coated insulation with light"
+			case 66:  s1.Append(Const.a.stringTable[943]); break; // "copper coated insulation"
+			case 67:  s1.Append(Const.a.stringTable[103]); break; // "corridor wall"
+			case 68:  s1.Append(Const.a.stringTable[942]); break; // "damaged corridor wall"
+			case 69:  s1.Append(Const.a.stringTable[103]); break; // "corridor wall"
+			case 70:  s1.Append(Const.a.stringTable[108]); break; // "carpet"
+			case 71:  s1.Append(Const.a.stringTable[593]); break; // "ATM, cyber security lockout"
+			case 72:  s1.Append(Const.a.stringTable[110]); break; // "elevator panelling"
+			case 73:  s1.Append(Const.a.stringTable[110]); break; // "elevator panelling"
+			case 74:  s1.Append(Const.a.stringTable[945]); break; // "transaction machine, markets closed due to active incident"
+			case 75:  s1.Append(Const.a.stringTable[108]); break; // "carpet"
+			case 76:  s1.Append(Const.a.stringTable[112]); break; // "marble slab"
+			case 77:  s1.Append(Const.a.stringTable[113]); break; // "display screen"
+			case 78:  s1.Append(Const.a.stringTable[946]); break; // "Citadel Space Station"
+			case 79:  s1.Append(Const.a.stringTable[947]); break; // "ventilation system"
+			case 80:  s1.Append(Const.a.stringTable[114]); break; // "energ-light"
+			case 81:  s1.Append(Const.a.stringTable[114]); break; // "energ-light"
+			case 82:  s1.Append(Const.a.stringTable[115]); break; // "non-dent steel panelling"
+			case 83:  s1.Append(Const.a.stringTable[115]); break; // "non-dent steel panelling"
+			case 84:  s1.Append(Const.a.stringTable[948]); break; // "non-dent steel panelling with logo"
+			case 85:  s1.Append(Const.a.stringTable[115]); break; // "non-dent steel panelling"
+			case 86:  s1.Append(Const.a.stringTable[115]); break; // "non-dent steel panelling"
+			case 87:  s1.Append(Const.a.stringTable[115]); break; // "non-dent steel panelling"
+			case 88:  s1.Append(Const.a.stringTable[82]); break; // "environmental regulator"
+			case 89:  s1.Append(Const.a.stringTable[949]); break; // "structural panelling"
+			case 90:  s1.Append(Const.a.stringTable[114]); break; // "energ-light"
+			case 91:  s1.Append(Const.a.stringTable[114]); break; // "energ-light"
+			case 92:  s1.Append(Const.a.stringTable[114]); break; // "energ-light"
+			case 93:  s1.Append(Const.a.stringTable[117]); break; // "observation ceiling"
+			case 94:  s1.Append(Const.a.stringTable[118]); break; // "grass"
+			case 95:  s1.Append(Const.a.stringTable[118]); break; // "grass"
+			case 96:  s1.Append(Const.a.stringTable[118]); break; // "grass"
+			case 97:  s1.Append(Const.a.stringTable[119]); break; // "wet grass"
+			case 98:  s1.Append(Const.a.stringTable[120]); break; // "virus infestation"
+			case 99:  s1.Append(Const.a.stringTable[120]); break; // "virus infestation"
+			case 100: s1.Append(Const.a.stringTable[120]); break; // "virus infestation"
+			case 101: s1.Append(Const.a.stringTable[950]); break; // "pod wall"
+			case 102: s1.Append(Const.a.stringTable[951]); break; // "pod wall overgrowth"
+			case 103: s1.Append(Const.a.stringTable[950]); break; // "pod wall"
+			case 104: s1.Append(Const.a.stringTable[952]); break; // "pod wall with environmental regulator"
+			case 105: s1.Append(Const.a.stringTable[953]); break; // "pod wall with sprinkler system"
+			case 106: s1.Append(Const.a.stringTable[952]); break; // "pod wall with overgrowth"
+			case 107: s1.Append(Const.a.stringTable[953]); break; // "pod wall with sprinkler system"
+			case 108: s1.Append(Const.a.stringTable[951]); break; // "pod wall with overgrowth"
+			case 109: s1.Append(Const.a.stringTable[120]); break; // "virus infestation"
+			case 110: s1.Append(Const.a.stringTable[120]); break; // "virus infestation"
+			case 111: s1.Append(Const.a.stringTable[120]); break; // "virus infestation"
+			case 112: s1.Append(Const.a.stringTable[954]); break; // "gravity lift"
+			case 113: s1.Append(Const.a.stringTable[955]); break; // "locked extinguisher storage cabinets"
+			case 114: s1.Append(Const.a.stringTable[956]); break; // "locked storage cabinets"
+			case 115: s1.Append(Const.a.stringTable[957]); break; // "damaged storage cabinets"
+			case 116: s1.Append(Const.a.stringTable[958]); break; // "chemical storage tanks"
+			case 117: s1.Append(Const.a.stringTable[959]); break; // "damaged chemical storage tanks"
+			case 118: s1.Append(Const.a.stringTable[130]); break; // "repair station"
+			case 119: s1.Append(Const.a.stringTable[960]); break; // "damaged repair station"
+			case 120: s1.Append(Const.a.stringTable[130]); break; // "repair station"
+			case 121: s1.Append(Const.a.stringTable[131]); break; // "robot diagnostic system"
+			case 122: s1.Append(Const.a.stringTable[130]); break; // "repair station"
 			// chunk_maint1_8 deleted, duplicate of chunk_maint1_1    case 123:
-			case 124: s1.Append("industrial tiles"); break;
-			case 125: s1.Append("damaged industrial tiles"); break;
-			case 126: s1.Append("quartz light fixture"); break;
-			case 127: s1.Append("ladder"); break;
-			case 128: s1.Append("damaged quartz light fixture"); break;
-			case 129: s1.Append("structural panelling with light"); break;
-			case 130: s1.Append("grating"); break;
-			case 131: s1.Append("damaged access station"); break;
-			case 132: s1.Append("access station"); break;
-			case 133: s1.Append("damaged access station"); break;
-			case 134: s1.Append("access station"); break;
-			case 135: s1.Append("damaged fluid transport pipes"); break;
-			case 136: s1.Append("fluid transport pipes"); break;
-			case 137: s1.Append("damaged access station"); break;
-			case 138: s1.Append("access station"); break;
-			case 139: s1.Append("damaged fluid transport monitor"); break;
-			case 140: s1.Append("fluid transport monitor"); break;
-			case 141: s1.Append("power conduits"); break; // Fun fact, the vertex color.r for this is 0.451 (115/255)
-			case 142: s1.Append("power conduits"); break;
-			case 143: s1.Append("power conduits"); break;
-			case 144: s1.Append("duralloy panelling"); break;
-			case 145: s1.Append("duralloy panelling"); break;
-			case 146: s1.Append("duralloy panelling"); break;
-			case 147: s1.Append("duralloy panelling"); break;
-			case 148: s1.Append("damaged duralloy panelling"); break;
-			case 149: s1.Append("plastic panelling"); break;
-			case 150: s1.Append("plastic panelling"); break;
-			case 151: s1.Append("plastic panelling"); break;
-			case 152: s1.Append("plastic panelling"); break;
-			case 153: s1.Append("plastic panelling"); break;
-			case 154: s1.Append("damaged plastic panelling"); break;
-			case 155: s1.Append("comm port"); break;
-			case 156: s1.Append("damaged comm port"); break;
-			case 157: s1.Append("environmental regulators"); break;
-			case 158: s1.Append("damaged environmental regulators"); break;
-			case 159: s1.Append("plastic panelling"); break;
-			case 160: s1.Append("fluorescent light"); break;
-			case 161: s1.Append("fluorescent light"); break;
-			case 162: s1.Append("tile panelling"); break;
-			case 163: s1.Append("tile panelling"); break;
-			case 164: s1.Append("tile panelling"); break;
-			case 165: s1.Append("tile panelling"); break;
-			case 166: s1.Append("tile panelling"); break;
-			case 167: s1.Append("damaged tile panelling"); break;
-			case 168: s1.Append("damaged tile panelling"); break;
-			case 169: s1.Append("fluorescent light"); break;
-			case 170: s1.Append("damaged fluorescent light"); break;
-			case 171: s1.Append("fluorescent panelling"); break;
-			case 172: s1.Append("fluorescent panelling"); break;
-			case 173: s1.Append("fluorescent panelling"); break;
-			case 174: s1.Append("fluorescent panelling"); break;
-			case 175: s1.Append("fluorescent panelling"); break;
-			case 176: s1.Append("fluorescent panelling"); break;
-			case 177: s1.Append("fluorescent panelling"); break;
-			case 178: s1.Append("medical diagnostic tools"); break;
-			case 179: s1.Append("medical diagnostic tools"); break;
-			case 180: s1.Append("damaged medical diagnostic tools"); break;
-			case 181: s1.Append("medical diagnostic tools"); break;
-			case 182: s1.Append("clinical panelling"); break;
-			case 183: s1.Append("damaged medical diagnostic tools"); break;
-			case 184: s1.Append("clinical panelling"); break;
-			case 185: s1.Append("damaged clinical panelling"); break;
-			case 186: s1.Append("medical computer"); break;
-			case 187: s1.Append("cryo healing incubator"); break;
-			case 188: s1.Append("locked storage cabinets"); break;
-			case 189: s1.Append("restoration bay"); break;
-			case 190: s1.Append("clinical panelling"); break;
-			case 191: s1.Append("clinical panelling"); break;
-			case 192: s1.Append("clinical panelling"); break;
-			case 193: s1.Append("clinical panelling"); break;
-			case 194: s1.Append("medical monitoring systems"); break;
-			case 195: s1.Append("damaged medical monitoring systems"); break;
-			case 196: s1.Append("flood light"); break;
-			case 197: s1.Append("cracked radiation tile"); break;
-			case 198: s1.Append("cracked radiation tile"); break;
-			case 199: s1.Append("molybdenum panelling"); break;
-			case 200: s1.Append("molybdenum panelling"); break;
-			case 201: s1.Append("power coupling"); break; // The first file made for Citadel, ever.
+			case 124: s1.Append(Const.a.stringTable[126]); break; // "industrial tiles"
+			case 125: s1.Append(Const.a.stringTable[961]); break; // "damaged industrial tiles"
+			case 126: s1.Append(Const.a.stringTable[132]); break; // "quartz light fixture"
+			case 127: s1.Append(Const.a.stringTable[86]); break; // "ladder"
+			case 128: s1.Append(Const.a.stringTable[962]); break; // "damaged quartz light fixture"
+			case 129: s1.Append(Const.a.stringTable[963]); break; // "structural panelling with light"
+			case 130: s1.Append(Const.a.stringTable[116]); break; // "grating"
+			case 131: s1.Append(Const.a.stringTable[964]); break; // "damaged access station"
+			case 132: s1.Append(Const.a.stringTable[134]); break; // "access station"
+			case 133: s1.Append(Const.a.stringTable[964]); break; // "damaged access station"
+			case 134: s1.Append(Const.a.stringTable[134]); break; // "access station"
+			case 135: s1.Append(Const.a.stringTable[965]); break; // "damaged fluid transport pipes"
+			case 136: s1.Append(Const.a.stringTable[931]); break; // "fluid transport pipes"
+			case 137: s1.Append(Const.a.stringTable[964]); break; // "damaged access station"
+			case 138: s1.Append(Const.a.stringTable[134]); break; // "access station"
+			case 139: s1.Append(Const.a.stringTable[967]); break; // "damaged fluid transport monitor"
+			case 140: s1.Append(Const.a.stringTable[966]); break; // "fluid transport monitor"
+			case 141: s1.Append(Const.a.stringTable[135]); break; // "power conduits" // Fun fact, the vertex color.r for this is 0.451 (115/255)
+			case 142: s1.Append(Const.a.stringTable[135]); break; // "power conduits"
+			case 143: s1.Append(Const.a.stringTable[135]); break; // "power conduits"
+			case 144: s1.Append(Const.a.stringTable[136]); break; // "duralloy panelling"
+			case 145: s1.Append(Const.a.stringTable[136]); break; // "duralloy panelling"
+			case 146: s1.Append(Const.a.stringTable[136]); break; // "duralloy panelling"
+			case 147: s1.Append(Const.a.stringTable[136]); break; // "duralloy panelling"
+			case 148: s1.Append(Const.a.stringTable[968]); break; // "damaged duralloy panelling"
+			case 149: s1.Append(Const.a.stringTable[969]); break; // "plastic panelling"
+			case 150: s1.Append(Const.a.stringTable[969]); break; // "plastic panelling"
+			case 151: s1.Append(Const.a.stringTable[969]); break; // "plastic panelling"
+			case 152: s1.Append(Const.a.stringTable[969]); break; // "plastic panelling"
+			case 153: s1.Append(Const.a.stringTable[969]); break; // "plastic panelling"
+			case 154: s1.Append(Const.a.stringTable[970]); break; // "damaged plastic panelling"
+			case 155: s1.Append(Const.a.stringTable[138]); break; // "comm port"
+			case 156: s1.Append(Const.a.stringTable[971]); break; // "damaged comm port"
+			case 157: s1.Append(Const.a.stringTable[972]); break; // "environmental regulators"
+			case 158: s1.Append(Const.a.stringTable[973]); break; // "damaged environmental regulators"
+			case 159: s1.Append(Const.a.stringTable[969]); break; // "plastic panelling"
+			case 160: s1.Append(Const.a.stringTable[140]); break; // "fluorescent light"
+			case 161: s1.Append(Const.a.stringTable[140]); break; // "fluorescent light"
+			case 162: s1.Append(Const.a.stringTable[141]); break; // "tile panelling"
+			case 163: s1.Append(Const.a.stringTable[141]); break; // "tile panelling"
+			case 164: s1.Append(Const.a.stringTable[141]); break; // "tile panelling"
+			case 165: s1.Append(Const.a.stringTable[141]); break; // "tile panelling"
+			case 166: s1.Append(Const.a.stringTable[141]); break; // "tile panelling"
+			case 167: s1.Append(Const.a.stringTable[974]); break; // "damaged tile panelling"
+			case 168: s1.Append(Const.a.stringTable[974]); break; // "damaged tile panelling"
+			case 169: s1.Append(Const.a.stringTable[140]); break; // "fluorescent light"
+			case 170: s1.Append(Const.a.stringTable[975]); break; // "damaged fluorescent light"
+			case 171: s1.Append(Const.a.stringTable[976]); break; // "fluorescent panelling"
+			case 172: s1.Append(Const.a.stringTable[976]); break; // "fluorescent panelling"
+			case 173: s1.Append(Const.a.stringTable[976]); break; // "fluorescent panelling"
+			case 174: s1.Append(Const.a.stringTable[976]); break; // "fluorescent panelling"
+			case 175: s1.Append(Const.a.stringTable[976]); break; // "fluorescent panelling"
+			case 176: s1.Append(Const.a.stringTable[976]); break; // "fluorescent panelling"
+			case 177: s1.Append(Const.a.stringTable[976]); break; // "fluorescent panelling"
+			case 178: s1.Append(Const.a.stringTable[144]); break; // "medical diagnostic tools"
+			case 179: s1.Append(Const.a.stringTable[144]); break; // "medical diagnostic tools"
+			case 180: s1.Append(Const.a.stringTable[977]); break; // "damaged medical diagnostic tools"
+			case 181: s1.Append(Const.a.stringTable[144]); break; // "medical diagnostic tools"
+			case 182: s1.Append(Const.a.stringTable[142]); break; // "clinical panelling"
+			case 183: s1.Append(Const.a.stringTable[977]); break; // "damaged medical diagnostic tools"
+			case 184: s1.Append(Const.a.stringTable[142]); break; // "clinical panelling"
+			case 185: s1.Append(Const.a.stringTable[978]); break; // "damaged clinical panelling"
+			case 186: s1.Append(Const.a.stringTable[979]); break; // "medical computer"
+			case 187: s1.Append(Const.a.stringTable[980]); break; // "cryo healing incubator"
+			case 188: s1.Append(Const.a.stringTable[956]); break; // "locked storage cabinets"
+			case 189: s1.Append(Const.a.stringTable[146]); break; // "restoration bay"
+			case 190: s1.Append(Const.a.stringTable[142]); break; // "clinical panelling"
+			case 191: s1.Append(Const.a.stringTable[142]); break; // "clinical panelling"
+			case 192: s1.Append(Const.a.stringTable[142]); break; // "clinical panelling"
+			case 193: s1.Append(Const.a.stringTable[142]); break; // "clinical panelling"
+			case 194: s1.Append(Const.a.stringTable[981]); break; // "medical monitoring systems"
+			case 195: s1.Append(Const.a.stringTable[982]); break; // "damaged medical monitoring systems"
+			case 196: s1.Append(Const.a.stringTable[147]); break; // "flood light"
+			case 197: s1.Append(Const.a.stringTable[148]); break; // "cracked radiation tile"
+			case 198: s1.Append(Const.a.stringTable[148]); break; // "cracked radiation tile"
+			case 199: s1.Append(Const.a.stringTable[106]); break; // "molybdenum panelling"
+			case 200: s1.Append(Const.a.stringTable[106]); break; // "molybdenum panelling"
+			case 201: s1.Append(Const.a.stringTable[149]); break; // "power coupling" // This model, the first file made for Citadel, ever.
 			case 202: s1.Append(Const.a.stringTable[594]); break; // "halogen lighting, bulb needs replacing"
-			case 203: s1.Append("circuit relay"); break;
-			case 204: s1.Append("relay access port"); break;
-			case 205: s1.Append("power monitor"); break;
-			case 206: s1.Append("data transfer array"); break;
-			case 207: s1.Append(Const.a.stringTable[595]); break;// "diagnostic module, inactive"
-			case 208: s1.Append(Const.a.stringTable[631]); break;// "diagnostic module, inactive"
-			case 209: s1.Append("energy conduits"); break;
-			case 210: s1.Append("energy conduits"); break;
-			case 211: s1.Append("energy conduits"); break;
-			case 212: s1.Append("energy conduits"); break;
-			case 213: s1.Append("energy conduits"); break;
-			case 214: s1.Append("energy conduits"); break;
-			case 215: s1.Append("energy conduits"); break;
-			case 216: s1.Append("energy conduits"); break;
-			case 217: s1.Append("energy conduits"); break;
-			case 218: s1.Append("energy conduits"); break;
-			case 219: s1.Append("energy conduits"); break;
-			case 220: s1.Append("equipment storage"); break;
-			case 221: s1.Append("gravitational monitoring system"); break;
-			case 222: s1.Append("energy monitoring system"); break;
-			case 223: s1.Append("radiation observation console"); break;
-			case 224: s1.Append("central power conduit"); break;
-			case 225: s1.Append("molybdenum panelling"); break;
-			case 226: s1.Append("molybdenum panelling"); break;
-			case 227: s1.Append("piping access port"); break;
-			case 228: s1.Append("duct"); break;
-			case 229: s1.Append("molybdenum panelling"); break;
-			case 230: s1.Append("molybdenum panelling"); break;
-			case 231: s1.Append("relay network"); break;
-			case 232: s1.Append("sensor grid"); break;
-			case 233: s1.Append("sensor grid"); break;
+			case 203: s1.Append(Const.a.stringTable[151]); break; // "circuit relay"
+			case 204: s1.Append(Const.a.stringTable[152]); break; // "relay access port"
+			case 205: s1.Append(Const.a.stringTable[153]); break; // "power monitor"
+			case 206: s1.Append(Const.a.stringTable[154]); break; // "data transfer array"
+			case 207: s1.Append(Const.a.stringTable[595]); break; // "diagnostic module, inactive"
+			case 208: s1.Append(Const.a.stringTable[631]); break; // "comm panel, inactive"
+			case 209: s1.Append(Const.a.stringTable[157]); break; // "energy conduits"
+			case 210: s1.Append(Const.a.stringTable[157]); break; // "energy conduits"
+			case 211: s1.Append(Const.a.stringTable[157]); break; // "energy conduits"
+			case 212: s1.Append(Const.a.stringTable[157]); break; // "energy conduits"
+			case 213: s1.Append(Const.a.stringTable[157]); break; // "energy conduits"
+			case 214: s1.Append(Const.a.stringTable[157]); break; // "energy conduits"
+			case 215: s1.Append(Const.a.stringTable[157]); break; // "energy conduits"
+			case 216: s1.Append(Const.a.stringTable[157]); break; // "energy conduits"
+			case 217: s1.Append(Const.a.stringTable[157]); break; // "energy conduits"
+			case 218: s1.Append(Const.a.stringTable[157]); break; // "energy conduits"
+			case 219: s1.Append(Const.a.stringTable[157]); break; // "energy conduits"
+			case 220: s1.Append(Const.a.stringTable[158]); break; // "equipment storage"
+			case 221: s1.Append(Const.a.stringTable[983]); break; // "gravitational monitoring system"
+			case 222: s1.Append(Const.a.stringTable[159]); break; // "energy monitoring system"
+			case 223: s1.Append(Const.a.stringTable[160]); break; // "radiation observation console"
+			case 224: s1.Append(Const.a.stringTable[984]); break; // "central power conduit"
+			case 225: s1.Append(Const.a.stringTable[106]); break; // "molybdenum panelling"
+			case 226: s1.Append(Const.a.stringTable[106]); break; // "molybdenum panelling"
+			case 227: s1.Append(Const.a.stringTable[985]); break; // "piping access port"
+			case 228: s1.Append(Const.a.stringTable[111]); break; // "duct"
+			case 229: s1.Append(Const.a.stringTable[106]); break; // "molybdenum panelling"
+			case 230: s1.Append(Const.a.stringTable[106]); break; // "molybdenum panelling"
+			case 231: s1.Append(Const.a.stringTable[165]); break; // "relay network"
+			case 232: s1.Append(Const.a.stringTable[164]); break; // "sensor grid"
+			case 233: s1.Append(Const.a.stringTable[164]); break; // "sensor grid"
 			case 234: s1.Append(Const.a.stringTable[594]); break; // "halogen lighting, bulb needs replacing"
-			case 235: s1.Append("magnetic containment system"); break;
-			case 236: s1.Append("magnetic containment system"); break;
-			case 237: s1.Append("magnetic containment system"); break;
-			case 238: s1.Append("quartz hi-grip surface"); break;
-			case 239: s1.Append("quartz light fixture"); break;
-			case 240: s1.Append("quartz duct"); break;
-			case 241: s1.Append("aluminum panelling"); break;
-			case 242: s1.Append("aluminum panelling"); break;
-			case 243: s1.Append("aluminum panelling"); break;
-			case 244: s1.Append("aluminum panelling"); break;
-			case 245: s1.Append("aluminum panelling"); break;
-			case 246: s1.Append("aluminum panelling"); break;
-			case 247: s1.Append("aluminum panelling"); break;
-			case 248: s1.Append("aluminum panelling"); break;
-			case 249: s1.Append("aluminum panelling"); break;
-			case 250: s1.Append("damaged aluminum panelling"); break;
-			case 251: s1.Append("matter converter"); break;
-			case 252: s1.Append("matter converter"); break;
-			case 253: s1.Append("aluminum panelling"); break;
-			case 254: s1.Append("aluminum panelling"); break;
-			case 255: s1.Append("aluminum panelling"); break;
-			case 256: s1.Append("environmental regulator"); break;
-			case 257: s1.Append("damaged environmental regulator"); break;
-			case 258: s1.Append("molecular analyzer"); break;
-			case 259: s1.Append("damaged molecular analyzer"); break;
-			case 260: s1.Append("fluorescent lighting"); break;
-			case 261: s1.Append("damaged fluorescent lighting"); break;
-			case 262: s1.Append("vent"); break;
-			case 263: s1.Append("vent"); break;
-			case 264: s1.Append("vent"); break;
-			case 265: s1.Append("damaged vent"); break;
-			case 266: s1.Append("environmental regulator"); break;
-			case 267: s1.Append("damaged environmental regulator"); break;
-			case 268: s1.Append("aluminum panelling"); break;
-			case 269: s1.Append("aluminum panelling"); break;
-			case 270: s1.Append("high-power light"); break;
-			case 271: s1.Append("damaged high-power light"); break;
-			case 272: s1.Append("composite panelling"); break;
-			case 273: s1.Append("damaged composite panelling"); break;
-			case 274: s1.Append("composite panelling"); break;
-			case 275: s1.Append("diagnostic panel"); break;
-			case 276: s1.Append("specimen analyzer"); break;
-			case 277: s1.Append("atmospheric regulator"); break;
-			case 278: s1.Append("data conduit"); break;
+			case 235: s1.Append(Const.a.stringTable[166]); break; // "magnetic containment system"
+			case 236: s1.Append(Const.a.stringTable[166]); break; // "magnetic containment system"
+			case 237: s1.Append(Const.a.stringTable[166]); break; // "magnetic containment system"
+			case 238: s1.Append(Const.a.stringTable[986]); break; // "quartz hi-grip surface"
+			case 239: s1.Append(Const.a.stringTable[132]); break; // "quartz light fixture"
+			case 240: s1.Append(Const.a.stringTable[987]); break; // "quartz duct"
+			case 241: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 242: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 243: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 244: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 245: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 246: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 247: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 248: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 249: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 250: s1.Append(Const.a.stringTable[988]); break; // "damaged aluminum panelling"
+			case 251: s1.Append(Const.a.stringTable[169]); break; // "matter converter"
+			case 252: s1.Append(Const.a.stringTable[169]); break; // "matter converter"
+			case 253: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 254: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 255: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 256: s1.Append(Const.a.stringTable[82]); break; // "environmental regulator"
+			case 257: s1.Append(Const.a.stringTable[930]); break; // "damaged environmental regulator"
+			case 258: s1.Append(Const.a.stringTable[170]); break; // "molecular analyzer"
+			case 259: s1.Append(Const.a.stringTable[989]); break; // "damaged molecular analyzer"
+			case 260: s1.Append(Const.a.stringTable[990]); break; // "fluorescent lighting"
+			case 261: s1.Append(Const.a.stringTable[991]); break; // "damaged fluorescent lighting"
+			case 262: s1.Append(Const.a.stringTable[992]); break; // "vent"
+			case 263: s1.Append(Const.a.stringTable[992]); break; // "vent"
+			case 264: s1.Append(Const.a.stringTable[992]); break; // "vent"
+			case 265: s1.Append(Const.a.stringTable[993]); break; // "damaged vent"
+			case 266: s1.Append(Const.a.stringTable[82]); break; // "environmental regulator"
+			case 267: s1.Append(Const.a.stringTable[930]); break; // "damaged environmental regulator"
+			case 268: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 269: s1.Append(Const.a.stringTable[167]); break; // "aluminum panelling"
+			case 270: s1.Append(Const.a.stringTable[173]); break; // "high-power light"
+			case 271: s1.Append(Const.a.stringTable[994]); break; // "damaged high-power light"
+			case 272: s1.Append(Const.a.stringTable[176]); break; // "composite panelling"
+			case 273: s1.Append(Const.a.stringTable[995]); break; // "damaged composite panelling"
+			case 274: s1.Append(Const.a.stringTable[176]); break; // "composite panelling"
+			case 275: s1.Append(Const.a.stringTable[174]); break; // "diagnostic panel"
+			case 276: s1.Append(Const.a.stringTable[996]); break; // "specimen analyzer"
+			case 277: s1.Append(Const.a.stringTable[178]); break; // "atmospheric regulator"
+			case 278: s1.Append(Const.a.stringTable[177]); break; // "data conduit"
 			// Screens
-			case 280: s1.Append("obsidian slab"); break;
-			case 281: s1.Append("obsidian slab"); break;
-			case 282: s1.Append("obsidian slab"); break;
-			case 283: s1.Append("obsidian slab"); break;
-			case 284: s1.Append("obsidian slab"); break;
-			case 285: s1.Append("obsidian slab"); break;
-			case 286: s1.Append("obsidian slab"); break;
-			case 287: s1.Append("obsidian slab"); break;
-			case 288: s1.Append("silver panelling"); break;
-			case 289: s1.Append("silver panelling"); break;
-			case 290: s1.Append("light fixture"); break;
-			case 291: s1.Append("light fixture"); break;
-			case 292: s1.Append("no-scrape storeroom wall"); break;
-			case 293: s1.Append("damaged no-scrape storeroom wall"); break;
-			case 294: s1.Append("no-scrape storeroom wall"); break;
-			case 295: s1.Append("no-scrape storeroom wall"); break;
-			case 296: s1.Append("no-scrape storeroom wall"); break;
-			case 297: s1.Append("structural pillar"); break;
-			case 298: s1.Append("structural pillar"); break;
-			case 299: s1.Append("structural pillar"); break;
-			case 300: s1.Append("structural pillar"); break;
-			case 301: s1.Append("structural pillar"); break;
-			case 302: s1.Append("industrial tiles"); break;
-			case 303: s1.Append("industrial tiles"); break;
-			case 304: s1.Append("damaged industrial tiles"); break;
-			case 419: s1.Append("auto-bomb"); break;
+			case 280: s1.Append(Const.a.stringTable[180]); break; // "obsidian slab"
+			case 281: s1.Append(Const.a.stringTable[180]); break; // "obsidian slab"
+			case 282: s1.Append(Const.a.stringTable[180]); break; // "obsidian slab"
+			case 283: s1.Append(Const.a.stringTable[180]); break; // "obsidian slab"
+			case 284: s1.Append(Const.a.stringTable[180]); break; // "obsidian slab"
+			case 285: s1.Append(Const.a.stringTable[180]); break; // "obsidian slab"
+			case 286: s1.Append(Const.a.stringTable[180]); break; // "obsidian slab"
+			case 287: s1.Append(Const.a.stringTable[180]); break; // "obsidian slab"
+			case 288: s1.Append(Const.a.stringTable[181]); break; // "silver panelling"
+			case 289: s1.Append(Const.a.stringTable[181]); break; // "silver panelling"
+			case 290: s1.Append(Const.a.stringTable[107]); break; // "light fixture"
+			case 291: s1.Append(Const.a.stringTable[107]); break; // "light fixture"
+			case 292: s1.Append(Const.a.stringTable[182]); break; // "no-scrape storeroom wall"
+			case 293: s1.Append(Const.a.stringTable[997]); break; // "damaged no-scrape storeroom wall"
+			case 294: s1.Append(Const.a.stringTable[182]); break; // "no-scrape storeroom wall"
+			case 295: s1.Append(Const.a.stringTable[182]); break; // "no-scrape storeroom wall"
+			case 296: s1.Append(Const.a.stringTable[182]); break; // "no-scrape storeroom wall"
+			case 297: s1.Append(Const.a.stringTable[183]); break; // "structural pillar"
+			case 298: s1.Append(Const.a.stringTable[183]); break; // "structural pillar"
+			case 299: s1.Append(Const.a.stringTable[183]); break; // "structural pillar"
+			case 300: s1.Append(Const.a.stringTable[183]); break; // "structural pillar"
+			case 301: s1.Append(Const.a.stringTable[183]); break; // "structural pillar"
+			case 302: s1.Append(Const.a.stringTable[126]); break; // "industrial tiles"
+			case 303: s1.Append(Const.a.stringTable[126]); break; // "industrial tiles"
+			case 304: s1.Append(Const.a.stringTable[961]); break; // "damaged industrial tiles"
 			default: if (un != null) { s1.Append(un.targetname); } break;
 		}
 
