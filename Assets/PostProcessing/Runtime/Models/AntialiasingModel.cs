@@ -1,16 +1,8 @@
 using System;
 
-namespace UnityEngine.PostProcessing
-{
+namespace UnityEngine.PostProcessing {
     [Serializable]
-    public class AntialiasingModel : PostProcessingModel
-    {
-        public enum Method
-        {
-            Fxaa,
-            Taa
-        }
-
+    public class AntialiasingModel : PostProcessingModel {
         // Most settings aren't exposed to the user anymore, presets are enough. Still, I'm leaving
         // the tooltip attributes in case an user wants to customize each preset.
 
@@ -25,8 +17,7 @@ namespace UnityEngine.PostProcessing
         }
 
         [Serializable]
-        public struct FxaaQualitySettings
-        {
+        public struct FxaaQualitySettings {
             [Tooltip("The amount of desired sub-pixel aliasing removal. Effects the sharpeness of the output.")]
             [Range(0f, 1f)]
             public float subpixelAliasingRemovalAmount;
@@ -169,58 +160,13 @@ namespace UnityEngine.PostProcessing
         }
         #endregion
 
-        #region TAA Settings
         [Serializable]
-        public struct TaaSettings
-        {
-            [Tooltip("The diameter (in texels) inside which jitter samples are spread. Smaller values result in crisper but more aliased output, while larger values result in more stable but blurrier output.")]
-            [Range(0.1f, 1f)]
-            public float jitterSpread;
-
-            [Tooltip("Controls the amount of sharpening applied to the color buffer.")]
-            [Range(0f, 3f)]
-            public float sharpen;
-
-            [Tooltip("The blend coefficient for a stationary fragment. Controls the percentage of history sample blended into the final color.")]
-            [Range(0f, 0.99f)]
-            public float stationaryBlending;
-
-            [Tooltip("The blend coefficient for a fragment with significant motion. Controls the percentage of history sample blended into the final color.")]
-            [Range(0f, 0.99f)]
-            public float motionBlending;
-
-            public static TaaSettings defaultSettings
-            {
-                get
-                {
-                    return new TaaSettings
-                    {
-                        jitterSpread = 0.75f,
-                        sharpen = 0.3f,
-                        stationaryBlending = 0.95f,
-                        motionBlending = 0.85f
-                    };
-                }
-            }
-        }
-        #endregion
-
-        [Serializable]
-        public struct Settings
-        {
-            public Method method;
+        public struct Settings {
             public FxaaSettings fxaaSettings;
-            public TaaSettings taaSettings;
-
-            public static Settings defaultSettings
-            {
-                get
-                {
-                    return new Settings
-                    {
-                        method = Method.Fxaa,
-                        fxaaSettings = FxaaSettings.defaultSettings,
-                        taaSettings = TaaSettings.defaultSettings
+            public static Settings defaultSettings {
+                get {
+                    return new Settings {
+                        fxaaSettings = FxaaSettings.defaultSettings
                     };
                 }
             }
@@ -228,8 +174,7 @@ namespace UnityEngine.PostProcessing
 
         [SerializeField]
         Settings m_Settings = Settings.defaultSettings;
-        public Settings settings
-        {
+        public Settings settings {
             get { return m_Settings; }
             set { m_Settings = value; }
         }

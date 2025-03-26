@@ -1551,8 +1551,14 @@ public class Utils {
 	public static void SafeDestroyImmediate(GameObject go) {
 		SafeDestroy(go,true);
 	}
+	
+	public static void SafeDestroyAllChildren(Transform parent) {
+		for (int i=0;i<parent.childCount;i++) {
+			SafeDestroy(parent.GetChild(i).gameObject);
+		}
+	}
 
-	public static void DestroyImmediateAllChildren(Transform parent) {
+	public static void SafeDestroyImmediateAllChildren(Transform parent) {
 		for (int i=0;i<parent.childCount;i++) {
 			SafeDestroyImmediate(parent.GetChild(i).gameObject);
 		}

@@ -50,12 +50,9 @@ public class HealthManager : MonoBehaviour {
 	[HideInInspector] public bool deathDone = false;
 	[HideInInspector] public AIController aic;
 	private PrefabIdentifier prefID;
-	private Rigidbody rbody;
     private float tempFloat;
 	private float take;
 	[HideInInspector] public bool god = false; // is this entity invincible? used for player cheat
-	private DamageData tempdd;
-	private Rigidbody gibrbody;
 	[HideInInspector] public bool teleportDone;
 	[HideInInspector] public TargetID linkedTargetID;
 	[HideInInspector] public bool awakeInitialized = false;
@@ -70,9 +67,7 @@ public class HealthManager : MonoBehaviour {
 		isScreen = (prefID.constIndex == 279);
 		deathDone = false;
 		teleportDone = false;
-		rbody = GetComponent<Rigidbody>();
         attacker = null;
-		tempdd = new DamageData();
 		take = 0;
 		if (isPlayer) {
 			health = 211;
@@ -624,6 +619,7 @@ public class HealthManager : MonoBehaviour {
     public void Gib() {
 		CreateDeathEffects(deathFX);
 		if (gibObjects.Length > 0 ) {
+			Rigidbody gibrbody = null;
 			for (int i = 0; i < gibObjects.Length; i++) {
 				Utils.Activate(gibObjects[i]);
 				if (gibsGetVelocity) {
@@ -633,6 +629,8 @@ public class HealthManager : MonoBehaviour {
 					}
 				}
 			}
+			
+			gibrbody = null;
 
 			for (int k=0;k<disableOnGib.Length;k++) {
 				Utils.Deactivate(disableOnGib[k]);
@@ -731,7 +729,9 @@ public class HealthManager : MonoBehaviour {
 		}
 		MeshRenderer mr = GetComponent<MeshRenderer>();
 		Utils.DisableMeshRenderer(mr);
+		Rigidbody rbody = GetComponent<Rigidbody>();
 		if (rbody != null) rbody.useGravity = false;
+		rbody = null;
 	}
 
 	public void HealingBed(float amount,bool flashBed) {

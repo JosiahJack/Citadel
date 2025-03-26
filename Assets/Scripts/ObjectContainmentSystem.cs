@@ -19,6 +19,9 @@ public static class ObjectContainmentSystem {
 				FloorChunks.Add(compArray[k].gameObject);
 			}
 		}
+		
+		allParents.Clear();
+        allParents = null; // Done with it.
 	}
 
     public static void UpdateActiveFlooring() {
@@ -58,5 +61,12 @@ public static class ObjectContainmentSystem {
         }
 
         return new Vector3(x,heightFallback,y);
+    }
+    
+    public static void ClearLists() {
+        FloorChunks.Clear();
+        FloorChunks = null;
+        ActiveFloorChunks.Clear();
+        ActiveFloorChunks = null;
     }
 }

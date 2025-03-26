@@ -331,6 +331,8 @@ public class MouseCursor : MonoBehaviour {
 
 		pev.position = cursorPosition;
 		graphicCastResults.Clear();
+		if (!MouseLookScript.a.inventoryMode) return;
+		
 		raycaster.Raycast(pev, graphicCastResults);
 		if (graphicCastResults.Count > 0) {
 			GUIState.a.isBlocking = true;

@@ -11,7 +11,7 @@ ScriptedImporter:
   wrapMode: 0
   filterMode: 1
   anisoLevel: 0
-  isReadable: 1
+  isReadable: 0
   textures:
   - {fileID: 2800000, guid: bb85675461b923b4882d68c813402dbf, type: 3}
   - {fileID: 2800000, guid: bb85675461b923b4882d68c813402dbf, type: 3}

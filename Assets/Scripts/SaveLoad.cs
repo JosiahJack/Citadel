@@ -910,6 +910,7 @@ public static class SaveLoad {
         return s1.ToString();
     }
 
+    public static int numLightsWithShadows = 0;
     private static GameObject LoadLight(string[] entries, int lineNum, int curlevel) {
         if (entries.Length <= 1) { Debug.Log("Couldn't load light on line number: " + lineNum.ToString()); return null; }
 
@@ -929,7 +930,8 @@ public static class SaveLoad {
         lit.color = new Color(readFloatx, readFloaty, readFloatz, readFloatw);
         lit.spotAngle = Utils.GetFloatFromString(entries[index],"spotAngle"); index++;
         lit.shadows = GetLightShadowsFromString(entries[index],"shadows"); index++;
-        if (lit.intensity < 0.3f || (lit.range > 7f && lit.intensity < 2f) || (curlevel >= 10 && lit.intensity < 1.4f)) lit.shadows = LightShadows.None;
+        if ((lit.intensity / (lit.range * lit.range)) < Const.a.shadowThreshold) lit.shadows = LightShadows.None;
+        else numLightsWithShadows++;
         lit.shadowStrength = Utils.GetFloatFromString(entries[index],"shadowStrength"); index++;
         lit.shadowResolution = GetShadowResFromString(entries[index],"shadowResolution"); index++;
         lit.shadowBias = Utils.GetFloatFromString(entries[index],"shadowBias"); index++;

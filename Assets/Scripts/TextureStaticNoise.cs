@@ -40,4 +40,8 @@ public class TextureStaticNoise : MonoBehaviour {
 			}
 		}
 	}
+	
+	void OnDestroy() {
+		Destroy(texture);
+	}
 }

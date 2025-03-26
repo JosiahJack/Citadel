@@ -20,7 +20,6 @@ namespace UnityEditor.PostProcessing
         {
             var profile = ScriptableObject.CreateInstance<PostProcessingProfile>();
             profile.name = Path.GetFileName(path);
-            profile.fog.enabled = true;
             AssetDatabase.CreateAsset(profile, path);
             return profile;
         }

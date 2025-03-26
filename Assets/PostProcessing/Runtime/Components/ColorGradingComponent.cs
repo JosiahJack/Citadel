@@ -1,11 +1,6 @@
-namespace UnityEngine.PostProcessing
-{
-    using DebugMode = BuiltinDebugViewsModel.Mode;
-
-    public sealed class ColorGradingComponent : PostProcessingComponentRenderTexture<ColorGradingModel>
-    {
-        static class Uniforms
-        {
+namespace UnityEngine.PostProcessing {
+    public sealed class ColorGradingComponent : PostProcessingComponentRenderTexture<ColorGradingModel> {
+        static class Uniforms {
             internal static readonly int _LutParams                = Shader.PropertyToID("_LutParams");
             internal static readonly int _NeutralTonemapperParams1 = Shader.PropertyToID("_NeutralTonemapperParams1");
             internal static readonly int _NeutralTonemapperParams2 = Shader.PropertyToID("_NeutralTonemapperParams2");
@@ -404,12 +399,7 @@ namespace UnityEngine.PostProcessing
                 model.isDirty = false;
             }
 
-            uberMaterial.EnableKeyword(
-                context.profile.debugViews.IsModeActive(DebugMode.PreGradingLog)
-                ? "COLOR_GRADING_LOG_VIEW"
-                : "COLOR_GRADING"
-                );
-
+            uberMaterial.EnableKeyword("COLOR_GRADING");
             var bakedLut = model.bakedLut;
             uberMaterial.SetTexture(Uniforms._LogLut, bakedLut);
             uberMaterial.SetVector(Uniforms._LogLut_Params, new Vector3(1f / bakedLut.width, 1f / bakedLut.height, bakedLut.height - 1f));

@@ -53,7 +53,8 @@ public class UseableObjectUse : MonoBehaviour {
 			Const.sprint(Const.a.stringTable[useableItemIndex + 326] // <item>
 						 + Const.a.stringTable[319]); // picked up.
 		}
-		Utils.SafeDestroy(gameObject);
+		
+		Destroy(gameObject);
 	}
 
 	public void HitForce (DamageData dd) {

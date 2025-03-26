@@ -149,41 +149,29 @@ namespace UnityEditor.PostProcessing
             IsInteractivePreviewOpened = false;
         }
 
-        public override void OnInspectorGUI()
-        {
+        public override void OnInspectorGUI() {
             serializedObject.Update();
 
             // Handles undo/redo events first (before they get used by the editors' widgets)
             var e = Event.current;
-            if (e.type == EventType.ValidateCommand && e.commandName == "UndoRedoPerformed")
-            {
-                foreach (var editor in m_CustomEditors)
-                    editor.Value.OnValidate();
+            if (e.type == EventType.ValidateCommand && e.commandName == "UndoRedoPerformed") {
+                foreach (var editor in m_CustomEditors) editor.Value.OnValidate();
             }
 
-            if (!m_ConcreteTarget.debugViews.IsModeActive(BuiltinDebugViewsModel.Mode.None))
-                EditorGUILayout.HelpBox("A debug view is currently enabled. Changes done to an effect might not be visible.", MessageType.Info);
-
-            foreach (var editor in m_CustomEditors)
-            {
+            foreach (var editor in m_CustomEditors) {
                 EditorGUI.BeginChangeCheck();
-
                 editor.Key.OnGUI();
-
-                if (EditorGUI.EndChangeCheck())
-                    editor.Value.OnValidate();
+                if (EditorGUI.EndChangeCheck()) editor.Value.OnValidate();
             }
 
             serializedObject.ApplyModifiedProperties();
         }
 
-        public override GUIContent GetPreviewTitle()
-        {
+        public override GUIContent GetPreviewTitle() {
             return s_PreviewTitle;
         }
 
-        public override bool HasPreviewGUI()
-        {
+        public override bool HasPreviewGUI() {
             return GraphicsUtils.supportsDX11 && m_Monitors.Count > 0;
         }
 

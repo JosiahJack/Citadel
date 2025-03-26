@@ -16,12 +16,12 @@ public class DynamicCulling : MonoBehaviour {
     
     public bool cullEnabled = true;
     public bool debugHelpers = false;
-    public bool dynamicObjectCull = true;
+//     public bool dynamicObjectCull = true;
     public bool lightCulling = true;
-    public bool lightsFrustumCull = false;
+//     public bool lightsFrustumCull = false;
     public bool outputDebugImages = false;
     public bool forceRecull = false;
-    public bool mergeVisibleMeshes = false;
+//     public bool mergeVisibleMeshes = false;
     public bool useLODMeshes = true;
     public bool overrideWindowsToBlack = false; // Used by unit tests.
     public Material chunkMaterial;
@@ -44,9 +44,9 @@ public class DynamicCulling : MonoBehaviour {
     [HideInInspector] public List<PrefabIdentifier> staticMeshesSaveablePIDs = new List<PrefabIdentifier>();
     [HideInInspector] public List<Vector2Int>   staticMeshSaveableCoords = new List<Vector2Int>();
     [HideInInspector] public List<Light> lights = new List<Light>();
-    [HideInInspector] public List<Light> lightsInPVS = new List<Light>();
+//     [HideInInspector] public List<Light> lightsInPVS = new List<Light>();
     [HideInInspector] public List<Vector2Int> lightCoords = new List<Vector2Int>();
-    [HideInInspector] public List<Vector2Int> lightsInPVSCoords = new List<Vector2Int>();
+//     [HideInInspector] public List<Vector2Int> lightsInPVSCoords = new List<Vector2Int>();
     [HideInInspector] public List<MeshRenderer> doors = new List<MeshRenderer>();
     [HideInInspector] public List<Vector2Int> doorsCoords = new List<Vector2Int>();
     public int playerCellX = 0;
@@ -77,7 +77,7 @@ public class DynamicCulling : MonoBehaviour {
     // Called before Culling so we don't screw up resultant cull enable states.
     public void UncombineMeshes() {
         if (lastCombineResult != null) {
-            DestroyImmediate(lastCombineResult); // No longer display combined result
+            Destroy(lastCombineResult); // No longer display combined result
             for (int i=0;i<sourceMeshenderers.Count;i++) {
                 sourceMeshenderers[i].meshRenderer.enabled = true; // Reset sources
             }
@@ -461,9 +461,9 @@ public class DynamicCulling : MonoBehaviour {
         if (doors == null) doors = new List<MeshRenderer>();
         if (doorsCoords == null) doorsCoords = new List<Vector2Int>();
         if (lights == null) lights = new List<Light>();
-        if (lightsInPVS == null) lightsInPVS = new List<Light>();
+//         if (lightsInPVS == null) lightsInPVS = new List<Light>();
         if (lightCoords == null) lightCoords = new List<Vector2Int>();
-        if (lightsInPVSCoords == null) lightsInPVSCoords = new List<Vector2Int>();
+//         if (lightsInPVSCoords == null) lightsInPVSCoords = new List<Vector2Int>();
         if (dynamicMeshes == null) dynamicMeshes = new List<MeshRenderer>();
         if (dynamicMeshesPIDs == null) dynamicMeshesPIDs = new List<PrefabIdentifier>();
         if (dynamicMeshesHMs == null) dynamicMeshesHMs = new List<HealthManager>();
@@ -487,9 +487,9 @@ public class DynamicCulling : MonoBehaviour {
         doors.Clear();
         doorsCoords.Clear();
         lights.Clear();
-        lightsInPVS.Clear();
+//         lightsInPVS.Clear();
         lightCoords.Clear();
-        lightsInPVSCoords.Clear();
+//         lightsInPVSCoords.Clear();
         dynamicMeshes.Clear();
         dynamicMeshesPIDs.Clear();
         dynamicMeshesHMs.Clear();
@@ -979,11 +979,6 @@ public class DynamicCulling : MonoBehaviour {
     private void SetupDebugImageWorkingVariables() {
         debugTex = new Texture2D(WORLDX,WORLDX);
         pixels = new Color32[WORLDX * WORLDX];
-//             openDebugImagePath = Utils.SafePathCombine(
-//                 Application.streamingAssetsPath,
-//                 "gridcellsopen_" + LevelManager.a.currentLevel.ToString()
-//                 + ".png");
-
         visDebugImagePath = Utils.SafePathCombine(
             Application.streamingAssetsPath,
             "worldcellvis_" + LevelManager.a.currentLevel.ToString()
@@ -991,6 +986,8 @@ public class DynamicCulling : MonoBehaviour {
     }
 
     public void Cull_Init() {
+        if (!cullEnabled) return;
+        
 //         UnityEngine.Debug.Log("Cull_Init: Start");
         // Populate LOD (Level of Detail) Meshes for farther chunks.
         // This creates a prepopulated list of quads (2 tris each) with vertex
@@ -1534,6 +1531,7 @@ public class DynamicCulling : MonoBehaviour {
     void ToggleVisibility() {
         gridCells[playerCellX,playerCellY].visible = true; // Guarantee enable.
         ChunkPrefab chp = null;
+        Vector3 playerPos = MouseLookScript.a.transform.position;
         float distSqrCheck = lodSqrDist;
         bool pidGood = false;
         if (LevelManager.a.currentLevel > 9) distSqrCheck = 419.4304f; // (8 * 2.56f)^2, lower than normal due to foliage tanking performance
@@ -1541,12 +1539,14 @@ public class DynamicCulling : MonoBehaviour {
         for (int x=0;x<WORLDX;x++) {
             for (int y=0;y<WORLDX;y++) {
                 float sqrdist = 0f;
-                for (int i=0;i<gridCells[x,y].chunkPrefabs.Count;i++) {
+                int prefCount = gridCells[x,y].chunkPrefabs.Count;
+                for (int i=0;i<prefCount;i++) {
                     chp = gridCells[x,y].chunkPrefabs[i];
-                    if (chp == null) continue;
+                    //if (chp == null) continue;
                     
-                    for (int k=0;k<chp.meshenderers.Count;k++) {
-                        if (chp.meshenderers[k].meshRenderer == null) continue;
+                    int meshendCount = chp.meshenderers.Count;
+                    for (int k=0;k<meshendCount;k++) {
+                        //if (chp.meshenderers[k].meshRenderer == null) continue;
                         
                         chp.meshenderers[k].meshRenderer.enabled = gridCells[x,y].visible;
                         if (!gridCells[x,y].visible) continue;
@@ -1554,13 +1554,11 @@ public class DynamicCulling : MonoBehaviour {
 
                         pidGood = ConsoleEmulator.ConstIndexIsGeometry(chp.meshenderers[k].constIndex);
                         if (useLODMeshes && pidGood) {
-                            sqrdist = (MouseLookScript.a.transform.position - chp.meshenderers[k].meshRenderer.transform.position).sqrMagnitude;
+                            sqrdist = (playerPos - chp.meshenderers[k].meshRenderer.transform.position).sqrMagnitude;
                             chp.meshenderers[k].SetMesh(sqrdist >= distSqrCheck);
                         }
                         
-                        if (mergeVisibleMeshes) {
-                            sourceMeshenderers.Add(chp.meshenderers[k]);
-                        }
+//                         if (mergeVisibleMeshes) sourceMeshenderers.Add(chp.meshenderers[k]);
                     }
                 }
             }
@@ -1690,10 +1688,10 @@ public class DynamicCulling : MonoBehaviour {
             int y = staticMeshImmutableCoords[i].y;
             if (gridCells[x,y].visible || (!worldCellsOpen[x,y] && skyVisibleToPlayer)) {
                 staticMeshesImmutable[i].enabled = true;
-                if (mergeVisibleMeshes) {
-                    Meshenderer mrsh = GetMeshAndItsRenderer(staticMeshesImmutable[i].gameObject,-1);
-                    if (mrsh != null) sourceMeshenderers.Add(mrsh);
-                }
+//                 if (mergeVisibleMeshes) {
+//                     Meshenderer mrsh = GetMeshAndItsRenderer(staticMeshesImmutable[i].gameObject,-1);
+//                     if (mrsh != null) sourceMeshenderers.Add(mrsh);
+//                 }
             } else {
                 staticMeshesImmutable[i].enabled = false;
             }
@@ -1728,19 +1726,19 @@ public class DynamicCulling : MonoBehaviour {
                         || staticMeshesSaveablePIDs[i].constIndex == 279) {
                         
                         staticMeshesSaveable[i].enabled = true;
-                        if (mergeVisibleMeshes) {
-                            Meshenderer mrsh = GetMeshAndItsRenderer(staticMeshesSaveablePIDs[i].gameObject,staticMeshesSaveablePIDs[i].constIndex);
-                            if (mrsh != null) sourceMeshenderers.Add(mrsh);
-                        }
+//                         if (mergeVisibleMeshes) {
+//                             Meshenderer mrsh = GetMeshAndItsRenderer(staticMeshesSaveablePIDs[i].gameObject,staticMeshesSaveablePIDs[i].constIndex);
+//                             if (mrsh != null) sourceMeshenderers.Add(mrsh);
+//                         }
                     } else {
                         staticMeshesSaveable[i].enabled = false;
                     }
                 } else {
                     staticMeshesSaveable[i].enabled = true;
-                    if (mergeVisibleMeshes) {
-                        Meshenderer mrsh = GetMeshAndItsRenderer(staticMeshesSaveablePIDs[i].gameObject,staticMeshesSaveablePIDs[i].constIndex);
-                        if (mrsh != null) sourceMeshenderers.Add(mrsh);
-                    }
+//                     if (mergeVisibleMeshes) {
+//                         Meshenderer mrsh = GetMeshAndItsRenderer(staticMeshesSaveablePIDs[i].gameObject,staticMeshesSaveablePIDs[i].constIndex);
+//                         if (mrsh != null) sourceMeshenderers.Add(mrsh);
+//                     }
                 }
             } else {
                 staticMeshesSaveable[i].enabled = false;
@@ -1765,32 +1763,32 @@ public class DynamicCulling : MonoBehaviour {
 
     public float lightDot = 0f; // Extra padding to account for near objects
     public int lightNearCellCount = 5;
-    public void LightsFrustumCull(int startX, int startY) {
-        if (!lightCulling || !lightsFrustumCull) return;
-
-        Vector3 dir;
-        Camera cam = MouseLookScript.a.playerCamera;
-        int dx,dy;
-        for (int i = 0; i < lightsInPVS.Count; i++) {
-            if (lightsInPVS[i] == null) continue;
-            
-            dir = lightsInPVS[i].transform.position - cam.transform.position;
-            if (Vector3.Dot(dir.normalized,cam.transform.forward) > lightDot) {
-                lightsInPVS[i].enabled = true;
-                EnableSEGIEmitter(lightsInPVS[i]);
-            } else {
-                dx = Mathf.Abs(startX - lightsInPVSCoords[i].x);
-                dy = Mathf.Abs(startY - lightsInPVSCoords[i].y);
-                if (dx < lightNearCellCount && dy < lightNearCellCount) {
-                    lightsInPVS[i].enabled = true;
-                    EnableSEGIEmitter(lightsInPVS[i]);
-                } else {
-                    lightsInPVS[i].enabled = false;
-                    DisableSEGIEmitter(lightsInPVS[i]);
-                }
-            }
-        }
-    }
+//     public void LightsFrustumCull(int startX, int startY) {
+//         if (!lightCulling || !lightsFrustumCull) return;
+// 
+//         Vector3 dir;
+//         Camera cam = MouseLookScript.a.playerCamera;
+//         int dx,dy;
+//         for (int i = 0; i < lightsInPVS.Count; i++) {
+//             if (lightsInPVS[i] == null) continue;
+//             
+//             dir = lightsInPVS[i].transform.position - cam.transform.position;
+//             if (Vector3.Dot(dir.normalized,cam.transform.forward) > lightDot) {
+//                 lightsInPVS[i].enabled = true;
+//                 EnableSEGIEmitter(lightsInPVS[i]);
+//             } else {
+//                 dx = Mathf.Abs(startX - lightsInPVSCoords[i].x);
+//                 dy = Mathf.Abs(startY - lightsInPVSCoords[i].y);
+//                 if (dx < lightNearCellCount && dy < lightNearCellCount) {
+//                     lightsInPVS[i].enabled = true;
+//                     EnableSEGIEmitter(lightsInPVS[i]);
+//                 } else {
+//                     lightsInPVS[i].enabled = false;
+//                     DisableSEGIEmitter(lightsInPVS[i]);
+//                 }
+//             }
+//         }
+//     }
     
     private void EnableSEGIEmitter(Light lit) {
         if (lit == null) return;
@@ -1810,8 +1808,8 @@ public class DynamicCulling : MonoBehaviour {
     public void ToggleLightsVisibility() {
         if (!lightCulling) return;
         
-        lightsInPVS.Clear();
-        lightsInPVSCoords.Clear();
+//         lightsInPVS.Clear();
+//         lightsInPVSCoords.Clear();
         int x,y;
         bool inPVS = false;
         Camera cam = MouseLookScript.a.playerCamera;
@@ -1835,8 +1833,8 @@ public class DynamicCulling : MonoBehaviour {
                 inPVS = true;
                 lights[i].enabled = true;
                 EnableSEGIEmitter(lights[i]);
-                lightsInPVS.Add(lights[i]);
-                lightsInPVSCoords.Add(lightCoords[i]);
+//                 lightsInPVS.Add(lights[i]);
+//                 lightsInPVSCoords.Add(lightCoords[i]);
             } else {
                 for (int ix = xMin;ix <= xMax; ix++) {
                     for (int iy = yMin;iy <= yMax; iy++) {
@@ -1855,8 +1853,8 @@ public class DynamicCulling : MonoBehaviour {
             LightContinue:
             if (inPVS) {
                 lights[i].enabled = true;
-                lightsInPVS.Add(lights[i]);
-                lightsInPVSCoords.Add(lightCoords[i]);
+//                 lightsInPVS.Add(lights[i]);
+//                 lightsInPVSCoords.Add(lightCoords[i]);
             } else {
                 lights[i].enabled = false;
                 DisableSEGIEmitter(lights[i]);
@@ -1866,7 +1864,9 @@ public class DynamicCulling : MonoBehaviour {
     }
     
     public void CullCore() {
-        if (mergeVisibleMeshes) UncombineMeshes(); // In lieu of the fact that this skyrockets the lighting calculations, not doing!
+        if (!cullEnabled) return;
+        
+//         if (mergeVisibleMeshes) UncombineMeshes(); // In lieu of the fact that this skyrockets the lighting calculations, not doing!
         if (LevelManager.a != null) {
             if (LevelManager.a.currentLevel >= 13) return;
         }
@@ -1896,7 +1896,7 @@ public class DynamicCulling : MonoBehaviour {
         UpdateNPCPVS();
         ToggleNPCPVS();
         if (LevelManager.a != null) LevelManager.a.SetSkyVisible(skyVisibleToPlayer);
-        if (mergeVisibleMeshes) CombineMeshes(true);
+//         if (mergeVisibleMeshes) CombineMeshes(true);
 
         // Output Debug image of the open
         if (outputDebugImages) {
@@ -1941,14 +1941,14 @@ public class DynamicCulling : MonoBehaviour {
         // Now handle player position updating PVS. Always do UpdatedPlayerCell
         // to set playerCellX and playerCellY.
         if (UpdatedPlayerCell() || force) CullCore();
-        if (lightsFrustumCull) LightsFrustumCull(playerCellX,playerCellY);
+//         if (lightsFrustumCull) LightsFrustumCull(playerCellX,playerCellY);
         
 
         // Update dynamic meshes after PVS has been updated, if player moved.
-        if (dynamicObjectCull) {
-            UpdateDynamicMeshes(); // Always check all because any can move.
-            ToggleDynamicMeshesVisibility(); // Now turn them on or off.
-        }
+//         if (dynamicObjectCull) {
+//             UpdateDynamicMeshes(); // Always check all because any can move.
+//             ToggleDynamicMeshesVisibility(); // Now turn them on or off.
+//         }
     }
     
     public GridCell GetPlayerCell() {
@@ -1976,14 +1976,15 @@ public class DynamicCulling : MonoBehaviour {
         staticMeshesSaveablePIDs = null;
         staticMeshSaveableCoords = null;
         lights = null;
-        lightsInPVS = null;
         lightCoords = null;
-        lightsInPVSCoords = null;
         doors = null;
         doorsCoords = null;
         npcTransforms = null;
         npcAICs = null;
         npcCoords = null;
+        if (lodMeshes != null) {
+            foreach (Mesh mesh in lodMeshes) Destroy(mesh);
+        }
         lodMeshes = null;
         lodMeshTemplate = null;
         bytes = null;

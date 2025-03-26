@@ -44,12 +44,6 @@ public class LevelManager : MonoBehaviour {
 	public Mesh sphereMesh;
 	public SkyRotate skyRotate;
 	public Material pipe_maint2_3_coolant;
-// 	public Material dynamicObjectsMaterial;
-// 	public Texture2D dynamicObjectsAlbedo;
-// 	public Texture2D dynamicObjectsGlow;
-// 	public Texture2D dynamicObjectsSpecular;
-// 	public Rect[] dynamicObjectsUvs;
-// 	public bool changeDynamicMaterial = true;
 	[HideInInspector] public List<string>[] DynamicObjectsSavestrings = new List<string>[14];
 	
 	private bool getValparsed;
@@ -90,20 +84,7 @@ public class LevelManager : MonoBehaviour {
 		LoadDynamicObjectsSavestrings(true);
 		LoadLevelData(currentLevel);
 	}
-	
-	// As the UV's weren't aligning, I elected to do this by hand for max control.
-/*	
-	private void InitializeDynamicObjectsMaterial() {
-		dynamicObjectsAlbedo = new Texture2D(4096,4096);
-		int numDynamicObjectTypes = 152;
-		Texture2D[] texArray = new Texture2D[numDynamicObjectTypes]; // Keep in sync!!
-		dynamicObjectsUvs = new Rect[numDynamicObjectTypes];
-		texArray[0] = Const.a.textures[13]; // paper_wad.png
-		texArray[1] = Const.a.textures[14]; // beaker.png
-		dynamicObjectsUvs = dynamicObjectsAlbedo.PackTextures(texArray,0,4096,false);
-		dynamicObjectsMaterial.SetTexture("_MainTex",dynamicObjectsAlbedo);
-	}*/
-	
+
 	public static bool LevNumInBounds(int levnum) {
 		return (levnum >=0 && levnum < 14); // 14 levels
 	}
@@ -113,6 +94,18 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	public void ResetSaveStrings() {
+		if (DynamicObjectsSavestrings != null) {
+			int strcount = DynamicObjectsSavestrings.Length;
+			if (strcount > 0) {
+				for (int i=strcount - 1;i>=0;i--) {
+					if (DynamicObjectsSavestrings[i] != null) {
+						DynamicObjectsSavestrings[i].Clear();
+					}
+				}
+				
+				DynamicObjectsSavestrings = null;
+			}
+		}
 		DynamicObjectsSavestrings = new List<string>[14];
 		for (int i=0;i<14;i++) {
 			DynamicObjectsSavestrings[i] = new List<string>();
@@ -128,7 +121,6 @@ public class LevelManager : MonoBehaviour {
 		if (!LevNumInBounds(lev)) return readFileList;
 
 		string dynName = "CitadelScene_dynamics_level"+lev.ToString()+".txt";
-// 		Debug.Log("Loading dynamic objects from " + dynName);
 		StreamReader sf = Utils.ReadStreamingAsset(dynName);
 		if (sf == null) { UnityEngine.Debug.Log("Dynamic objects filepath invalid"); return readFileList; }
 
@@ -147,10 +139,7 @@ public class LevelManager : MonoBehaviour {
 	}
 	
 	public void LoadDynamicObjectsSavestrings(bool skipCurrent) {
-		ResetSaveStrings();
-// 		Debug.Log("Loading dynamic objects save strings into LevelManager "
-// 				  + "array from the .dat files in StreamingAssets");
-		
+		ResetSaveStrings();		
 		for (int i=0;i<14;i++) {			
 			List<string> readFileList = ReadDynamicObjectFileList(i);
 			for (int j=0;j<readFileList.Count;j++) {
@@ -228,6 +217,7 @@ public class LevelManager : MonoBehaviour {
 		UnloadLevelGeometry(levnum);
  		UnloadLevelDynamicObjects(levnum,true);
 		levelDataLoaded[levnum] = false;
+		SaveLoad.numLightsWithShadows = 0;
 	}
 
 	// Make sure relevant data and objects are loaded in and present for the level.
@@ -246,6 +236,7 @@ public class LevelManager : MonoBehaviour {
 		LoadLevelDynamicObjects(levnum);
 		Music.a.LoadLevelMusic(levnum);
 		levelDataLoaded[levnum] = true;
+		UnityEngine.Debug.Log("Number of lights for level " + levnum.ToString() + " with shadows: " + SaveLoad.numLightsWithShadows.ToString());
 	}
 
 	public void LoadLevel(int levnum, Vector3 targetPosition) {
@@ -527,7 +518,7 @@ public class LevelManager : MonoBehaviour {
 		int children = parent.childCount;
 		for (int i=0;i<children;i++) deleteMes.Add(parent.GetChild(i).gameObject);
 		for (int i=0;i<deleteMes.Count;i++) {
-			if (deleteMes[i] != null) DestroyImmediate(deleteMes[i]);
+			if (deleteMes[i] != null) Destroy(deleteMes[i]);
 		}
 	}
 	
@@ -608,11 +599,11 @@ public class LevelManager : MonoBehaviour {
 				if (mr != null && mr.material != null) {
 					Material mat = mr.material;
 					mr.material = null; // Clear reference
-					DestroyImmediate(mat); // Destroy the material instance
+					Destroy(mat); // Destroy the material instance
 				}
 			}
 
-			DestroyImmediate(go); // Dangerous isn't it :D
+			Destroy(go);
 		}
 		compArray = null;
 	}
@@ -659,11 +650,14 @@ public class LevelManager : MonoBehaviour {
 			for (int i=0;i<allDynamicObjects.Count;i++) {
 				DynamicObjectsSavestrings[curlevel].Add(SaveObject.Save(allDynamicObjects[i]));
 			}
+			
+			allDynamicObjects.Clear();
+			allDynamicObjects = null;
 		}
 		
 		// Iterate over all gameobjects at first level within.
 		for (int i=(tr.childCount-1);i>=0;i--) {
-			DestroyImmediate(tr.GetChild(i).gameObject); // Go going, gone!
+			Destroy(tr.GetChild(i).gameObject); // Go going, gone!
 		}
 	}
 
@@ -690,7 +684,7 @@ public class LevelManager : MonoBehaviour {
 				}
 			}
 
-			DestroyImmediate(compArray[i].gameObject);
+			Destroy(compArray[i].gameObject);
 		}
 		compArray = null;
 	}
@@ -801,11 +795,6 @@ public class LevelManager : MonoBehaviour {
 		rtxEmissive = null;
 		sphereMesh = null;
 		pipe_maint2_3_coolant = null;
-// 		dynamicObjectsMaterial = null;
-// 		dynamicObjectsAlbedo = null;
-// 		dynamicObjectsGlow = null;
-// 		dynamicObjectsSpecular = null;
-// 		dynamicObjectsUvs = null;
 		DynamicObjectsSavestrings = null;
 		if (a == this) a = null;
 	}

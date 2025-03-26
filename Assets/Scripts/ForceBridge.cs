@@ -179,7 +179,7 @@ public class ForceBridge : MonoBehaviour {
 			if (mr != null && mr.material != null && child.gameObject.layer == 2) {
 				Material mat = mr.material;
 				mr.material = null; // Clear reference
-				DestroyImmediate(mat); // Destroy the material instance
+				Destroy(mat); // Destroy the material instance
 			}
 		}
 	}

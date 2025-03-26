@@ -41,6 +41,8 @@ public class PlayerEnergy : MonoBehaviour {
 		
 		for (int i=0;i<numNPCs;i++) {
 			AIController aic = LevelManager.a.npcsm[lev].childrenNPCsAICs[i];
+			if (aic == null) continue;
+			if (aic.healthManager == null) continue;
             if (!aic.gameObject.activeInHierarchy) continue;
             if (aic.healthManager.health <= 0) continue;
             if (aic.hasTargetIDAttached) continue;

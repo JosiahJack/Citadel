@@ -34,6 +34,7 @@ using UnityEngine.SceneManagement;
 // TextLocalization 1300
 
 public class Const : MonoBehaviour {
+	public float shadowThreshold = 0.03f;
 	//Item constants
 	public QuestBits questData;
 	public Texture2D[] useableItemsFrobIcons;
@@ -419,10 +420,6 @@ public class Const : MonoBehaviour {
 					found++;
 				}
 			}
-			
-// 			UnityEngine.Debug.Log("Found " + found.ToString()
-// 								  + " TextLocalizations for "
-// 								  + allParents[i].name);
 		}
 		
 		a.lastTargetRegistrySize = 0;
@@ -438,10 +435,10 @@ public class Const : MonoBehaviour {
 					found++;
 				}
 			}
-			
-// 			UnityEngine.Debug.Log("Found " + found.ToString() + " TargetIO's "
-// 								  + "for " + allParents[i].name);
 		}
+		
+		allParents.Clear();
+		allParents = null;
 
 		a.s1 = new StringBuilder();
 		a.s2 = new StringBuilder();
@@ -990,6 +987,7 @@ CreateBlackTexture:
 	}
 
 	private void LoadTextures() {
+		textures = new Texture2D[39];
         textures[0] =  LoadTextureFromFile("worldedgesclosed_0.png");
         textures[1] =  LoadTextureFromFile("worldedgesclosed_1.png");
         textures[2] =  LoadTextureFromFile("worldedgesclosed_2.png");
@@ -1263,6 +1261,9 @@ CreateBlackTexture:
 				gos.Add(compArray[k].gameObject); //add the gameObject associated with all SaveObject components in the scene
 			}
 		}
+		
+		allParents.Clear();
+		allParents = null;
 	}
 
 	// Wrapper function to enable Save to be a coroutine so we can display
@@ -1512,6 +1513,7 @@ CreateBlackTexture:
 
 	public void ReloadScene(SceneTransitionHandler sth) {
 		int index = SceneManager.GetActiveScene().buildIndex; // CitadelScene
+		ObjectContainmentSystem.ClearLists();
         SceneManager.CreateScene("LoadScene");
 		Scene loadScene = SceneManager.GetSceneByName("LoadScene");
         SceneManager.SetActiveScene(loadScene);
@@ -1894,6 +1896,9 @@ CreateBlackTexture:
 				}
 			}
 		}
+		
+		allParents.Clear();
+		allParents = null; // Done with it.
 		ResetPauseLists();
 		loadPercentText.text = "Re-init cull systems...";
 		yield return new WaitForSeconds(0.01f);
@@ -1907,6 +1912,7 @@ CreateBlackTexture:
 		AutoSplitterData.isLoading = false;
 		loadTimer.Stop();
 		loading = false;
+		loadPercentText.text = "";
 		GoIntoGame(loadTimer);
 	}
 
@@ -2340,6 +2346,7 @@ CreateBlackTexture:
 		logImages = null;
 		eventSystem = null;
 		prefabs = null;
+		for (int i=0;i<textures.Length;i++) Destroy(textures[i]);
 		textures = null;
 		sequenceTextures = null;
 		loadPercentText = null;

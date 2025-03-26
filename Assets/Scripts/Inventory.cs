@@ -796,6 +796,9 @@ public class Inventory : MonoBehaviour {
 						hmGOs.Add(compArray[k].gameObject); //add the gameObject associated with all HealthManager components in the scene
 					}
 				}
+				
+				allParents.Clear();
+				allParents = null; // Done with it.
 
 				for (i=0;i<hmGOs.Count;i++) {
 					if (hmGOs[i] == null) continue;
@@ -808,6 +811,9 @@ public class Inventory : MonoBehaviour {
 						hmT.Start(); // Setup overlay.
 					}
 				}
+				
+				hmGOs.Clear();
+				hmGOs = null; // Done with it.
 				break;
 			case 2: textIndex = 23; button8Index = 5; break; // Datareader
 			case 3: textIndex = 24; button8Index = 1; break; // Sensaround

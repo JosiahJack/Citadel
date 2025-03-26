@@ -562,7 +562,7 @@ public class MouseLookScript : MonoBehaviour {
 	bool RayOffset() {
 		bool successfulRay = false;
 		successfulRay = Physics.Raycast(playerCamera.ScreenPointToRay(cursorPoint), out tempHit,Const.frobDistance,Const.a.layerMaskPlayerFrob);
-		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,playerCamera.ScreenPointToRay(cursorPoint).direction * Const.frobDistance, Color.green,1f,true);
+// 		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,playerCamera.ScreenPointToRay(cursorPoint).direction * Const.frobDistance, Color.green,1f,true);
 		if (successfulRay) {
 			successfulRay = (tempHit.collider != null);
 			if (successfulRay) {
@@ -648,9 +648,9 @@ public class MouseLookScript : MonoBehaviour {
 											 Const.frobDistance,
 											 Const.a.layerMaskPlayerFrob);
 
-		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,
-					  playerCamera.ScreenPointToRay(cursorPoint).direction
-					    * Const.frobDistance, Color.green,1f,true);
+// 		Debug.DrawRay(playerCamera.ScreenPointToRay(cursorPoint).origin,
+// 					  playerCamera.ScreenPointToRay(cursorPoint).direction
+// 					    * Const.frobDistance, Color.green,1f,true);
 
 		firstHit = tempHit;
 		// Success here means hit a useable something.

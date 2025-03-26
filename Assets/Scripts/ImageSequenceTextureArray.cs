@@ -931,6 +931,6 @@ public class ImageSequenceTextureArray : MonoBehaviour {
 		goMaterial = null;
 		pid = null;
 		SFX = null;
-		DestroyImmediate(goMaterial);
+		Destroy(goMaterial);
 	}
 }

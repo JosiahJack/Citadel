@@ -12,44 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a3bdb2cd68f901469e7cc149151eb49, type: 3}
   m_Name: CitadelPPStack
   m_EditorClassIdentifier: 
-  debugViews:
-    m_Enabled: 1
-    m_Settings:
-      mode: 0
-      depth:
-        scale: 0.032
-      motionVectors:
-        sourceOpacity: 1
-        motionImageOpacity: 0
-        motionImageAmplitude: 16
-        motionVectorsOpacity: 1
-        motionVectorsResolution: 24
-        motionVectorsAmplitude: 64
-  fog:
-    m_Enabled: 0
-    m_Settings:
-      excludeSkybox: 0
   antialiasing:
     m_Enabled: 1
     m_Settings:
-      method: 0
       fxaaSettings:
         preset: 0
-      taaSettings:
-        jitterSpread: 0.75
-        sharpen: 0.3
-        stationaryBlending: 0.95
-        motionBlending: 0.85
-  ambientOcclusion:
-    m_Enabled: 0
-    m_Settings:
-      intensity: 4
-      radius: 1.26
-      sampleCount: 3
-      downsampling: 0
-      forceForwardCompatibility: 0
-      ambientOnly: 1
-      highPrecision: 1
   screenSpaceReflection:
     m_Enabled: 1
     m_Settings:
@@ -69,34 +36,6 @@ MonoBehaviour:
         fresnelFadePower: 1
       screenEdgeMask:
         intensity: 0.03
-  depthOfField:
-    m_Enabled: 0
-    m_Settings:
-      focusDistance: 5
-      aperture: 10.4
-      focalLength: 68
-      useCameraFov: 0
-      kernelSize: 1
-  motionBlur:
-    m_Enabled: 0
-    m_Settings:
-      shutterAngle: 30
-      sampleCount: 10
-      frameBlending: 0
-  eyeAdaptation:
-    m_Enabled: 0
-    m_Settings:
-      lowPercent: 1
-      highPercent: 3.189948
-      minLuminance: -10
-      maxLuminance: 3
-      keyValue: 0.25
-      dynamicKeyValue: 1
-      adaptationType: 0
-      speedUp: 2
-      speedDown: 1
-      logMin: -4
-      logMax: 6
   bloom:
     m_Enabled: 0
     m_Settings:
@@ -121,7 +60,7 @@ MonoBehaviour:
         neutralWhiteLevel: 5.3
         neutralWhiteClip: 2.94
       basic:
-        postExposure: -0.5
+        postExposure: 0
         temperature: 0
         tint: 0
         hueShift: 0
@@ -139,9 +78,9 @@ MonoBehaviour:
           power: {r: 1, g: 1, b: 1, a: 0}
           offset: {r: 1, g: 1, b: 1, a: 0}
         linear:
-          lift: {r: 0, g: 0, b: 0, a: 0}
-          gamma: {r: 0, g: 0, b: 0, a: 0}
-          gain: {r: 0, g: 0, b: 0, a: 0}
+          lift: {r: 1, g: 1, b: 1, a: 0}
+          gamma: {r: 1, g: 1, b: 1, a: 0}
+          gain: {r: 1, g: 1, b: 1, a: 0}
       curves:
         master:
           curve:
@@ -300,37 +239,11 @@ MonoBehaviour:
         e_CurveR: 0
         e_CurveG: 0
         e_CurveB: 0
-  userLut:
-    m_Enabled: 0
-    m_Settings:
-      lut: {fileID: 0}
-      contribution: 1
   chromaticAberration:
     m_Enabled: 0
     m_Settings:
       spectralTexture: {fileID: 2800000, guid: 54ebb58441ea3365e821cad386d2df5f, type: 3}
       intensity: 0.022
-  grain:
-    m_Enabled: 0
-    m_Settings:
-      colored: 1
-      intensity: 0.106
-      size: 1.416
-      luminanceContribution: 1
-  vignette:
-    m_Enabled: 0
-    m_Settings:
-      mode: 0
-      color: {r: 0.076495215, g: 0.079298705, b: 0.084905684, a: 1}
-      center: {x: 0.5, y: 0.5}
-      intensity: 0.513
-      smoothness: 0.686
-      roundness: 0.285
-      mask: {fileID: 0}
-      opacity: 1
-      rounded: 0
-  dithering:
-    m_Enabled: 0
   monitors:
     currentMonitorID: 0
     refreshOnPlay: 0

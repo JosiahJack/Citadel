@@ -223,7 +223,6 @@ public class Config {
 	public static void SetFXAA(AntialiasingModel.FxaaPreset preset) {
 		AntialiasingModel.Settings amS = AntialiasingModel.Settings.defaultSettings;
 		amS.fxaaSettings.preset = preset;
-		amS.method = AntialiasingModel.Method.Fxaa;
 		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = true;
 		Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile.antialiasing.settings = amS;
 	}
@@ -356,6 +355,7 @@ public class Config {
 		else tempf = tempf/100;
 		tempf = (tempf * 8f) - 4f;
 		if (Const.a.GraphicsSEGI) tempf -= Const.segiReducedExposure;
+		tempf += 2.2f;
 		PostProcessingProfile ppf = Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<PostProcessingBehaviour>().profile;
 		ColorGradingModel.Settings cgms = ppf.colorGrading.settings;
 		cgms.basic.postExposure = tempf;

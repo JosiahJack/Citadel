@@ -617,9 +617,9 @@ public class MainMenuHandler : MonoBehaviour {
 		if (!optionsPage.activeInHierarchy) yield break;
 		if (!GraphicsTab.activeInHierarchy) yield break;
 
-		configCamera.targetTexture.Release();
-		configCamera.targetTexture.width = Screen.width;
-		configCamera.targetTexture.height = Screen.height;
+// 		configCamera.targetTexture.Release();
+// 		configCamera.targetTexture.width = Screen.width;
+// 		configCamera.targetTexture.height = Screen.height;
 		configCamera.fieldOfView = Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().fieldOfView;
 		Grayscale gsc = configCamera.gameObject.GetComponent<Grayscale>();
 		Grayscale gscMain = Const.a.player1CapsuleMainCameragGO.GetComponent<Camera>().GetComponent<Grayscale>();
@@ -631,10 +631,10 @@ public class MainMenuHandler : MonoBehaviour {
 		DynamicCulling.a.CullCore();
 		if (sega != null) sega.enabled = Const.a.GraphicsSEGI;
 		configCamera.Render();
-		if (Const.a.GraphicsSEGI) {
-			yield return null;
-			configCamera.Render();
-		}
+// 		if (Const.a.GraphicsSEGI) {
+// 			yield return null;
+// 			configCamera.Render();
+// 		}
 	}
 
 	public void RenderConfigView() {

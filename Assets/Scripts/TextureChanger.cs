@@ -60,19 +60,19 @@ public class TextureChanger : MonoBehaviour {
 		if (rMainLod0 != null) {
 			Material mat = rMainLod0.material;
 			rMainLod0.material = null;
-			DestroyImmediate(mat);
+			Destroy(mat);
 		}
 		
 		if (rMainLod1 != null) {
 			Material mat = rMainLod1.material;
 			rMainLod1.material = null;
-			DestroyImmediate(mat);
+			Destroy(mat);
 		}
 		
 		if (rMainLod2 != null) {
 			Material mat = rMainLod2.material;
 			rMainLod2.material = null;
-			DestroyImmediate(mat);
+			Destroy(mat);
 		}
 	}
 }

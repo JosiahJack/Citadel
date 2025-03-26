@@ -212,6 +212,7 @@ public class Music : MonoBehaviour {
 		
 		// Load all the audio clips at the start of level to prevent stutter during dynamic transitions.
 		if (levnum == 1) {
+			
 			levelMusic = new AudioClip[11];
 			yield return StartCoroutine(LoadHelper("THM1-19_medicalstart",MusicResourceType.Level,0)); 
 			yield return StartCoroutine(LoadHelper("THM1-01_medicalwalking1",MusicResourceType.Level,1));

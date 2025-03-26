@@ -5,7 +5,7 @@ using UnityEngine;
 public class SkyRotate : MonoBehaviour {
 	public float rotateSpeed = 0.015f;
 	public float defaultSpeed = 0.015f;
-	private float timeIncrement = 0.05f;
+	private float timeIncrement = 0.016f;
 	private float nextThink;
 	private Vector3 rot;
 
