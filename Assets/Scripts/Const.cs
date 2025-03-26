@@ -939,7 +939,7 @@ public class Const : MonoBehaviour {
 				hasLaserOnAttack3ForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;
 				explodeOnAttack3ForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;
 				preactivateMeleeCollidersForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;
-				huntTimeForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
+				huntTimeForNPC[refIndex] = 5f + Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
 				flightHeightForNPC[refIndex] = Utils.GetFloatFromStringDataTables(entries[i].Trim()); i++;
 				flightHeightIsPercentageForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;
 				switchMaterialOnDeathForNPC[refIndex] = Utils.GetBoolFromStringInTables(entries[i].Trim()); i++;

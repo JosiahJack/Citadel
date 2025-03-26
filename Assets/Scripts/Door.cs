@@ -35,7 +35,6 @@ public class Door : MonoBehaviour {
 	[HideInInspector] public Animator anim;
 	private AudioSource SFX = null;
 	private GameObject dynamicObjectsContainer;
-	private int defIndex = 0;
 	private const float topTime = 1.00f;
 	private const float defaultSpeed = 1.00f;
 	private const float speedZero = 0.00f;
@@ -50,6 +49,7 @@ public class Door : MonoBehaviour {
 	private float loadedAnimatorPlaybackTime;
 	private bool initialized = false;
 	private AnimatorStateInfo asi;
+	private bool delayFrame = false;
 
 	void Start () {
 		if (initialized) return;
@@ -68,11 +68,12 @@ public class Door : MonoBehaviour {
 		} else {
 			if (!ajar) SetCollisionLayer(18); // Door
 			doorOpen = DoorState.Closed;
-			anim.Play(idleClosedClipName);
+			anim.Play(idleClosedClipName,0,0f);
 		}
 
 		initialized = true;
-		asi = anim.GetCurrentAnimatorStateInfo(defIndex);
+		asi = anim.GetCurrentAnimatorStateInfo(0);
+		delayFrame = false;
 	}
 
 	public void Use (UseData ud) {
@@ -96,7 +97,7 @@ public class Door : MonoBehaviour {
 			accessCardUsedByPlayer = true;
 		}
 
-		asi = anim.GetCurrentAnimatorStateInfo(defIndex);
+		asi = anim.GetCurrentAnimatorStateInfo(0);
 		animatorPlaybackTime = asi.normalizedTime;
 		if (useFinished >= PauseScript.a.relativeTime) return;
 
@@ -145,35 +146,29 @@ public class Door : MonoBehaviour {
 	}
 	
 	public void DoorActuate() {
-		asi = anim.GetCurrentAnimatorStateInfo(defIndex);
+		asi = anim.GetCurrentAnimatorStateInfo(0);
 		animatorPlaybackTime = asi.normalizedTime;
 		if (doorOpen == DoorState.Open && animatorPlaybackTime > 0.95f) {
 			doorOpen = DoorState.Closing;
 			CloseDoor();
-			if (toggleLasers) {
-				lasersFinished = 0; // Checked explicitly for non-zero elsewhere.
-			}
+			delayFrame = true;
 		} else if (doorOpen == DoorState.Closed && animatorPlaybackTime > 0.95f){
 			doorOpen = DoorState.Opening;
 			OpenDoor();
-			if (toggleLasers) {
-				lasersFinished = 0; // Checked explicitly for non-zero elsewhere.
-			}
+			delayFrame = true;
 		} else if (doorOpen == DoorState.Opening) {
+			Debug.Log("Door closing");
 			doorOpen = DoorState.Closing;
-			if (toggleLasers) {
-				lasersFinished = 0; // Checked explicitly for non-zero elsewhere.
-			}
-			anim.Play(closeClipName,defIndex,topTime - animatorPlaybackTime);
+			anim.Play(closeClipName,0,topTime - animatorPlaybackTime);
 			Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
+			delayFrame = true;
 		} else if (doorOpen == DoorState.Closing) {
+			Debug.Log("Door opening");
 			doorOpen = DoorState.Opening;
-			if (toggleLasers) {
-				lasersFinished = 0; // Checked explicitly for non-zero elsewhere.
-			}
 			waitBeforeClose = PauseScript.a.relativeTime + delay;
-			anim.Play(openClipName,defIndex,topTime - animatorPlaybackTime);
+			anim.Play(openClipName,0,topTime - animatorPlaybackTime);
 			Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
+			delayFrame = true;
 		}
 	}
 
@@ -192,12 +187,14 @@ public class Door : MonoBehaviour {
 		if (doorOpen == DoorState.Open) return;
 
 		OpenDoor();
+		delayFrame = true;
 	}
 
 	public void ForceClose() {
 		if (doorOpen == DoorState.Closed) return;
 
 		CloseDoor();
+		delayFrame = true;
 	}
 
 	public void Lock() {
@@ -220,7 +217,7 @@ public class Door : MonoBehaviour {
 	}
 
 	void DeactivateLasers() {
-		for (int i=defIndex;i<laserLines.Length;i++) {
+		for (int i=0;i<laserLines.Length;i++) {
 			if (laserLines[i].activeSelf) laserLines[i].SetActive(false);
 		}
 	}
@@ -228,9 +225,10 @@ public class Door : MonoBehaviour {
 	void OpenDoor() {
 		if (anim == null) anim = GetComponent<Animator>();
 		if (anim != null) anim.speed = defaultSpeed;
+		Debug.Log("Door opening");
 		doorOpen = DoorState.Opening;
 		waitBeforeClose = PauseScript.a.relativeTime + delay;
-		if (anim != null) anim.Play(openClipName);
+		if (anim != null) anim.Play(openClipName,0,0f);
 		Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
 		SetCollisionLayer(19); // InterDebris
 	}
@@ -238,20 +236,17 @@ public class Door : MonoBehaviour {
 	void CloseDoor() {
 		if (anim == null) anim = GetComponent<Animator>();
 		if (anim != null) anim.speed = defaultSpeed;
+		Debug.Log("Door closing");
 		doorOpen = DoorState.Closing;
-		if (anim != null) anim.Play(closeClipName);
+		if (anim != null) anim.Play(closeClipName,0,0f);
 		Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
-		if (toggleLasers) {
-			lasersFinished = PauseScript.a.relativeTime + timeBeforeLasersOn;
-		}
-
 		dynamicObjectsContainer = LevelManager.a.GetCurrentDynamicContainer();
 
 		// Horrible hack to keep objects that have their physics sleeping from
 		// ghosting through the door as it closes.  Unity physics sucks.
 		Vector3 objPos;
 		GameObject childGO;
-		for (i=defIndex;i<dynamicObjectsContainer.transform.childCount;i++) {
+		for (i=0;i<dynamicObjectsContainer.transform.childCount;i++) {
 			childGO = dynamicObjectsContainer.transform.GetChild(i).gameObject;
 			objPos = childGO.transform.position;
 			if (Vector3.Distance(transform.position,objPos) < 5) {
@@ -267,6 +262,7 @@ public class Door : MonoBehaviour {
 		firstUpdateAfterLoad = false;
 		if (anim == null) anim = GetComponent<Animator>();
 		if (anim != null) anim.Play(loadedClipName,loadedClipIndex,loadedAnimatorPlaybackTime);
+		delayFrame = true;
 		switch(loadedClipName) {
 			case idleOpenClipName: doorOpen = DoorState.Open; break;
 			case idleClosedClipName: doorOpen = DoorState.Closed; break;
@@ -277,13 +273,14 @@ public class Door : MonoBehaviour {
 
 	void SetAjar() {
 		doorOpen = DoorState.Opening;
+		if (toggleLasers) DeactivateLasers();
 		if (anim == null) anim = GetComponent<Animator>();
-		if (anim != null) anim.Play(openClipName,defIndex, ajarPercentage);
+		if (anim != null) anim.Play(openClipName,0,ajarPercentage);
 		if (anim != null) anim.speed = speedZero;
 	}
 
 	void ActivateLasers() {
-		for (int i=defIndex;i<laserLines.Length;i++) {
+		for (int i=0;i<laserLines.Length;i++) {
 			if (!laserLines[i].activeSelf) laserLines[i].SetActive(true);
 		}
 	}
@@ -298,28 +295,34 @@ public class Door : MonoBehaviour {
 		else Unblocked();
 
 		if (doorOpen == DoorState.Closing || doorOpen == DoorState.Opening) {
-			AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
+			AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(0);
 			animatorPlaybackTime = asi.normalizedTime;
-			if (doorOpen == DoorState.Closing && animatorPlaybackTime > 0.95f) {
+			if (doorOpen == DoorState.Closing && animatorPlaybackTime > 0.95f && !delayFrame) {
+				Debug.Log("Door closed");
 				doorOpen = DoorState.Closed; // Door is closed
-				if (toggleLasers) ActivateLasers();
 			}
-
-			if (doorOpen == DoorState.Opening && animatorPlaybackTime > 0.95f) {
+			
+			if (doorOpen == DoorState.Opening && animatorPlaybackTime > 0.95f && !delayFrame) {
+				Debug.Log("Door open");
 				doorOpen = DoorState.Open; // Door is open
-				if (toggleLasers) DeactivateLasers();
 			}
-		} else if (doorOpen == DoorState.Closed) {
-			if (toggleLasers) ActivateLasers();
-		} else {
-			if (toggleLasers) DeactivateLasers();
 		}
 
 		if (PauseScript.a.relativeTime > waitBeforeClose) {
-			if ((doorOpen == DoorState.Open) && (!stayOpen) && (!startOpen)) {
+			if ((doorOpen == DoorState.Open) && (!stayOpen) && (!startOpen) && !delayFrame) {
 				CloseDoor();
 			}
 		}
+		
+		if (toggleLasers) {
+			if (doorOpen == DoorState.Closed) {
+				ActivateLasers();
+			} else {
+				DeactivateLasers();
+			} 
+		}
+		
+		delayFrame = false; // Handle race condition when setting anim prior to Update() running.
 	}
 
 	void SetCollisionLayer(int layerNum) {
@@ -357,7 +360,7 @@ public class Door : MonoBehaviour {
 	}
 
 	void OnDisable() {
-		AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(defIndex);
+		AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(0);
 		loadedClipName = GetClipName();
 		loadedClipIndex = 0;
 		loadedAnimatorPlaybackTime = asi.normalizedTime;

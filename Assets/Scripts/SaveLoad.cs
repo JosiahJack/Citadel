@@ -641,7 +641,7 @@ public static class SaveLoad {
         chunk.name = entries[index]; index++;
         if (chunk.name == "chunk_cyberpanel (3918)") UnityEngine.Debug.Log("Loading chunk_cyberpanel (3918)");
         index = Utils.LoadTransform(chunk.transform,ref entries,index);
-        if (curlevel <= 12) {
+        if (curlevel <= 9) {
             Quaternion quat = chunk.transform.localRotation;
             bool scaleGood =    Utils.InTol(chunk.transform.localScale.x,1.0f,0.01f)
                             && Utils.InTol(chunk.transform.localScale.y,1.0f,0.01f)

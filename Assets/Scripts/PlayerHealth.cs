@@ -127,8 +127,10 @@ public class PlayerHealth : MonoBehaviour {
 			if (painSoundFinished < PauseScript.a.relativeTime && !(radSoundFinished < PauseScript.a.relativeTime)) {
 				painSoundFinished = PauseScript.a.relativeTime + Random.Range(0.25f,3f); // Don't spam pain sounds
 				Utils.PlayUIOneShotSavable(140);
+				PlayerHealth.a.makingNoise = true;
 			}
 		}
+		
 		lastHealth = hm.health;
 	}
 	

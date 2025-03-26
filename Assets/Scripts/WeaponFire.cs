@@ -1180,7 +1180,21 @@ public class WeaponFire : MonoBehaviour {
 
 		if (tempHM == null) {
 			if (!silent) {
-				Utils.PlayUIOneShotSavable(hit);
+				PrefabIdentifier prefID = targ.GetComponent<PrefabIdentifier>();
+				if (prefID == null) {
+					if (targ.transform.parent != null) {
+						prefID = targ.transform.parent.gameObject.GetComponent<PrefabIdentifier>();
+					}
+				}
+				
+				if (prefID != null && !isRapier) {
+					FootStepType fstep = PlayerMovement.a.GetFootstepTypeForPrefab(prefID.constIndex);
+					AudioClip stcp = PlayerMovement.a.JumpLandSound(fstep);
+					Utils.PlayTempAudio(transform.position,stcp,1f);
+				} else {
+					Utils.PlayUIOneShotSavable(hit);
+				}
+				
 				PlayerHealth.a.makingNoise = true;
 				PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime+0.5f;
 			}

@@ -895,7 +895,7 @@ public class AIController : MonoBehaviour {
 		} else {
 		    huntFinished += Const.a.huntTimeForNPC[index];
 		}
-
+		
 		near = Const.a.rangeForNPC[index]  * Const.a.rangeForNPC[index];
 		mid  = Const.a.rangeForNPC2[index] * Const.a.rangeForNPC2[index];
 		far  = Const.a.rangeForNPC3[index] * Const.a.rangeForNPC3[index];

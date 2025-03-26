@@ -1624,15 +1624,21 @@ public class Utils {
 			i++;
 		}
 	}
-
-	public static void PlayTempAudio(Vector3 spot,AudioClip clip) {
+	
+	public static void PlayTempAudio(Vector3 spot,AudioClip clip,float volume) {
 		GameObject tempAud = Const.a.GetObjectFromPool(PoolType.TempAudioSources);
 		if (tempAud != null) {
 			tempAud.transform.position = spot; // set temporary audiosource to right here
+			PooledItemDestroy poolDet = tempAud.GetComponent<PooledItemDestroy>();
+			if (poolDet != null) poolDet.itemLifeTime = clip.length;
 			tempAud.SetActive(true);
 			AudioSource aS = tempAud.GetComponent<AudioSource>();
 			PlayOneShotSavable(aS,clip);
 		}
+	}
+
+	public static void PlayTempAudio(Vector3 spot,AudioClip clip) {
+		PlayTempAudio(spot,clip,1f);
 	}
 
 	public static HealthManager GetMainHealthManager(GameObject go) {

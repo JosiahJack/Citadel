@@ -107,13 +107,13 @@ public class PlayerMovement : MonoBehaviour {
 	private float fallDamageSpeed = 11.72f;
 	[HideInInspector] public Vector3 oldVelocity; // save
 	public float fatigue; // save
-	private float jumpFatigue = 7.0f;
+	private float jumpFatigue = 6.5f;
 	private float fatigueWanePerTick = 1f;
 	private float fatigueWanePerTickCrouched = 2f;
 	private float fatigueWanePerTickProne = 3.5f;
 	private float fatigueWaneTickSecs = 0.3f;
-	private float fatiguePerWalkTick = 0.9f;
-	private float fatiguePerSprintTick = 3.0f;
+	private float fatiguePerWalkTick = 0.88f;
+	private float fatiguePerSprintTick = 2.85f;
 	[HideInInspector] public bool justJumped = false; // save
 	[HideInInspector] public float fatigueFinished; // save
 	[HideInInspector] public float fatigueFinished2; // save
@@ -168,7 +168,8 @@ public class PlayerMovement : MonoBehaviour {
 	private float gravFinished;
 	private float bodyLerpGravityOffDelayFinished;
 	private ContactPoint[] contactsCache;
-
+	private static Vector3 feetOffset = new Vector3(0f,-0.48f,0f);
+	
 	public static PlayerMovement a;
 
 	void Awake() {
@@ -399,12 +400,14 @@ public class PlayerMovement : MonoBehaviour {
 			Utils.PlayOneShotSavable(SFXClothes,rustle,
 									 UnityEngine.Random.Range(0.3f,0.5f));
 		}
+
 		if (!grounded) return;
 
 		successfulRay = Physics.Raycast(transform.position, Vector3.down,
 										out tempHit,feetRayLength,
-								  Const.a.layerMaskPlayerFeet);
-
+										Const.a.layerMaskPlayerFeet);
+		
+		if (tempHit.collider == null) return;
 // 		Debug.DrawRay(transform.position,tempHit.point,Color.green,1f,true);
 		hitGO = tempHit.collider.transform.gameObject;
 		PrefabIdentifier prefID = hitGO.GetComponent<PrefabIdentifier>();
@@ -430,7 +433,7 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	}
 
-	FootStepType GetFootstepTypeForPrefab(int pid) {
+	public FootStepType GetFootstepTypeForPrefab(int pid) {
 		switch(pid) {
 			case 0: return FootStepType.None;
 			case 1: return FootStepType.Glass;
@@ -771,8 +774,72 @@ public class PlayerMovement : MonoBehaviour {
 			default: return FootStepType.Plastic;
 		}
 	}
+	
+	public AudioClip JumpSound(FootStepType fstep) {
+		switch(fstep) {
+			case FootStepType.None: return Const.a.sounds[0];
+			// + 1 because its exclusive, :eyeroll:
+			case FootStepType.Carpet:      return Const.a.sounds[UnityEngine.Random.Range(540,542 + 1)];
+			case FootStepType.Concrete:    return Const.a.sounds[UnityEngine.Random.Range(546,548 + 1)];
+			case FootStepType.GrittyCrete: return Const.a.sounds[UnityEngine.Random.Range(552,554 + 1)];
+			case FootStepType.Grass:       return Const.a.sounds[UnityEngine.Random.Range(558,560 + 1)];
+			case FootStepType.Gravel:      return Const.a.sounds[UnityEngine.Random.Range(564,566 + 1)];
+			case FootStepType.Rock:        return Const.a.sounds[UnityEngine.Random.Range(570,572 + 1)];
+			case FootStepType.Glass:       return Const.a.sounds[UnityEngine.Random.Range(576,578 + 1)];
+			case FootStepType.Marble:      return Const.a.sounds[UnityEngine.Random.Range(582,584 + 1)];
+			case FootStepType.Metal:       return Const.a.sounds[UnityEngine.Random.Range(588,590 + 1)];
+			case FootStepType.Grate:       return Const.a.sounds[UnityEngine.Random.Range(594,596 + 1)];
+			case FootStepType.Metal2:      return Const.a.sounds[UnityEngine.Random.Range(600,602 + 1)];
+			case FootStepType.Metpanel:    return Const.a.sounds[UnityEngine.Random.Range(606,608 + 1)];
+			case FootStepType.Panel:       return Const.a.sounds[UnityEngine.Random.Range(612,614 + 1)];
+			case FootStepType.Plaster:     return Const.a.sounds[UnityEngine.Random.Range(618,620 + 1)];
+			case FootStepType.Plastic:     return Const.a.sounds[UnityEngine.Random.Range(624,626 + 1)];
+			case FootStepType.Plastic2:    return Const.a.sounds[UnityEngine.Random.Range(630,632 + 1)];
+			case FootStepType.Rubber:      return Const.a.sounds[UnityEngine.Random.Range(636,638 + 1)];
+			case FootStepType.Sand:        return Const.a.sounds[UnityEngine.Random.Range(642,644 + 1)];
+			case FootStepType.Squish:      return Const.a.sounds[UnityEngine.Random.Range(648,650 + 1)];
+			case FootStepType.Vent:        return Const.a.sounds[UnityEngine.Random.Range(429,430 + 1)];
+			case FootStepType.Water:       return Const.a.sounds[UnityEngine.Random.Range(651,654 + 1)];
+			case FootStepType.Wood:        return Const.a.sounds[UnityEngine.Random.Range(661,663 + 1)];
+			case FootStepType.Wood2:       return Const.a.sounds[UnityEngine.Random.Range(667,669 + 1)];
+		}
+		
+		return Const.a.sounds[0]; // null wav fallback
+	}
+	
+	public AudioClip JumpLandSound(FootStepType fstep) {
+		switch(fstep) {
+			case FootStepType.None: return Const.a.sounds[0];
+			// + 1 because its exclusive, :eyeroll:
+			case FootStepType.Carpet:      return Const.a.sounds[UnityEngine.Random.Range(537,539 + 1)];
+			case FootStepType.Concrete:    return Const.a.sounds[UnityEngine.Random.Range(543,545 + 1)];
+			case FootStepType.GrittyCrete: return Const.a.sounds[UnityEngine.Random.Range(549,551 + 1)];
+			case FootStepType.Grass:       return Const.a.sounds[UnityEngine.Random.Range(555,557 + 1)];
+			case FootStepType.Gravel:      return Const.a.sounds[UnityEngine.Random.Range(561,563 + 1)];
+			case FootStepType.Rock:        return Const.a.sounds[UnityEngine.Random.Range(567,569 + 1)];
+			case FootStepType.Glass:       return Const.a.sounds[UnityEngine.Random.Range(573,575 + 1)];
+			case FootStepType.Marble:      return Const.a.sounds[UnityEngine.Random.Range(579,581 + 1)];
+			case FootStepType.Metal:       return Const.a.sounds[UnityEngine.Random.Range(585,587 + 1)];
+			case FootStepType.Grate:       return Const.a.sounds[UnityEngine.Random.Range(591,593 + 1)];
+			case FootStepType.Metal2:      return Const.a.sounds[UnityEngine.Random.Range(597,599 + 1)];
+			case FootStepType.Metpanel:    return Const.a.sounds[UnityEngine.Random.Range(603,605 + 1)];
+			case FootStepType.Panel:       return Const.a.sounds[UnityEngine.Random.Range(609,611 + 1)];
+			case FootStepType.Plaster:     return Const.a.sounds[UnityEngine.Random.Range(615,617 + 1)];
+			case FootStepType.Plastic:     return Const.a.sounds[UnityEngine.Random.Range(621,623 + 1)];
+			case FootStepType.Plastic2:    return Const.a.sounds[UnityEngine.Random.Range(627,629 + 1)];
+			case FootStepType.Rubber:      return Const.a.sounds[UnityEngine.Random.Range(633,635 + 1)];
+			case FootStepType.Sand:        return Const.a.sounds[UnityEngine.Random.Range(639,641 + 1)];
+			case FootStepType.Squish:      return Const.a.sounds[UnityEngine.Random.Range(645,647 + 1)];
+			case FootStepType.Vent:        return Const.a.sounds[UnityEngine.Random.Range(428,437 + 1)];
+			case FootStepType.Water:       return Const.a.sounds[UnityEngine.Random.Range(655,657 + 1)];
+			case FootStepType.Wood:        return Const.a.sounds[UnityEngine.Random.Range(658,660 + 1)];
+			case FootStepType.Wood2:       return Const.a.sounds[UnityEngine.Random.Range(664,666 + 1)];
+		}
+		
+		return Const.a.sounds[0]; // null wav fallback
+	}
 
-	AudioClip FootStepSound(FootStepType fstep) {
+	public AudioClip FootStepSound(FootStepType fstep) {
 		switch(fstep) {
 			case FootStepType.None: return Const.a.sounds[0];
 			// + 1 because its exclusive, :eyeroll:
@@ -1167,9 +1234,6 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 
-		if (jumpTimeMod <= 0) justJumped = false; // for jump jets to work 
-		jumpTime = jumpTimeMod;
-
 		if (justJumped && !Inventory.a.JumpJetsActive()) {
 			// Play jump sound
 			if (jumpSFXFinished < PauseScript.a.relativeTime) {
@@ -1177,12 +1241,32 @@ public class PlayerMovement : MonoBehaviour {
 				SFX.pitch = 1f;
 				float jumpSFXVolume = 1.0f;
 				if (fatigue > 80) jumpSFXVolume = 0.5f; // Quietly, we tired.
-				Utils.PlayOneShotSavable(SFX,SFXJump,jumpSFXVolume);
+				
 				PlayerHealth.a.makingNoise = true;
 				PlayerHealth.a.noiseFinished = PauseScript.a.relativeTime + 0.5f;
+				Physics.Raycast(transform.position, Vector3.down,
+								out tempHit,feetRayLength,
+								Const.a.layerMaskPlayerFeet);
+				
+				if (tempHit.collider == null) { Utils.PlayOneShotSavable(SFX,SFXJump,jumpSFXVolume); return; }
+				GameObject hitGO = tempHit.collider.transform.gameObject;
+				PrefabIdentifier prefID = hitGO.GetComponent<PrefabIdentifier>();
+				if (prefID == null) {
+					if (hitGO.transform.parent != null) {
+						prefID = hitGO.transform.parent.gameObject.GetComponent<PrefabIdentifier>();
+					}
+				}
+				if (prefID == null) { Utils.PlayOneShotSavable(SFX,SFXJump,jumpSFXVolume); return; }
+				
+				FootStepType fstep = GetFootstepTypeForPrefab(prefID.constIndex);
+				AudioClip stcp = JumpSound(fstep);
+				Utils.PlayTempAudio(transform.position - feetOffset,stcp,jumpSFXVolume);
 			}
 			justJumped = false;
 		}
+		
+		if (jumpTimeMod <= 0) justJumped = false; // for jump jets to work 
+		jumpTime = jumpTimeMod;
 	}
 
 	void LadderStates() {
@@ -1308,7 +1392,8 @@ public class PlayerMovement : MonoBehaviour {
 		if (ladderState) return;
 
 		// Handle fall damage (no impact damage in cyber space 5/5/18, JJ)
-		if (Mathf.Abs((oldVelocity.y - rbody.velocity.y)) > fallDamageSpeed) {
+		float velChange = Mathf.Abs((oldVelocity.y - rbody.velocity.y));
+		if (velChange >= fallDamageSpeed) {
 			DamageData dd = new DamageData ();
 			float falltake = fallDamage - UnityEngine.Random.Range(0,68f);
 			if (falltake > hm.health && falltake - hm.health < 5f) falltake = hm.health - 1f; // some small saving grace
@@ -1318,6 +1403,26 @@ public class PlayerMovement : MonoBehaviour {
 			dd.isOtherNPC = false;
 			// No impact force from fall damage.
 			hm.TakeDamage (dd);
+			PlayerHealth.a.makingNoise = true;
+		}
+		
+		if (velChange >= 3f) {
+			Physics.Raycast(transform.position, Vector3.down,out tempHit,feetRayLength,Const.a.layerMaskPlayerFeet);
+			if (tempHit.collider == null) return;
+			
+			GameObject hitGO = tempHit.collider.transform.gameObject;
+			PrefabIdentifier prefID = hitGO.GetComponent<PrefabIdentifier>();
+			if (prefID == null) {
+				if (hitGO.transform.parent != null) {
+					prefID = hitGO.transform.parent.gameObject.GetComponent<PrefabIdentifier>();
+				}
+			}
+			if (prefID == null) return;
+			
+			FootStepType fstep = GetFootstepTypeForPrefab(prefID.constIndex);
+			AudioClip stcp = JumpLandSound(fstep);
+			float vol = Mathf.Max(Mathf.Min(1f - ((fallDamageSpeed - velChange) / fallDamageSpeed),1f),0.5f);
+			Utils.PlayTempAudio(transform.position - feetOffset,stcp,vol);
 		}
 	}
 
