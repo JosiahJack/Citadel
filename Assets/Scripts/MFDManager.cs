@@ -237,6 +237,8 @@ public class MFDManager : MonoBehaviour  {
 	private const float beepTick = 3f;
 	private int beepCount = 0;
 	private bool audPaused = false;
+	
+	private static StringBuilder s1 = new StringBuilder();
 
 	// Singleton instance
 	public static MFDManager a;
@@ -379,19 +381,40 @@ public class MFDManager : MonoBehaviour  {
 		if (Input.GetKeyDown(KeyCode.F10)) rightTC.TabButtonAction(4); // Data
 
 		if (Input.GetKeyDown(KeyCode.PageUp)) {
-			switch(curCenterTab) {
-				case 0: CenterTabButtonAction(3); break;
-				case 1: CenterTabButtonAction(0); break;
-				case 2: CenterTabButtonAction(1); break;
-				case 3: CenterTabButtonAction(2); break;
+			if (DataReaderContentTab.activeInHierarchy) {
+				ResetMultiMediaTabs();
+				Utils.PlayUIOneShotSavable(97);
+				CenterTabButtonClickSilent(0,true);
+				if (Inventory.a.hardwareIsActive[3]) {
+					hwb.SensaroundOff();
+					Utils.PlayUIOneShotSavable(82); // deactivate
+				}
+			} else {
+				switch(curCenterTab) {
+					case 0: CenterTabButtonAction(3); break;
+					case 1: CenterTabButtonAction(0); break;
+					case 2: CenterTabButtonAction(1); break;
+					case 3: CenterTabButtonAction(2); break;
+				}
 			}
 		}
+		
 		if (Input.GetKeyDown(KeyCode.PageDown)) {
-			switch(curCenterTab) {
-				case 0: CenterTabButtonAction(1); break;
-				case 1: CenterTabButtonAction(2); break;
-				case 2: CenterTabButtonAction(3); break;
-				case 3: CenterTabButtonAction(0); break;
+			if (DataReaderContentTab.activeInHierarchy) {
+				ResetMultiMediaTabs();
+				Utils.PlayUIOneShotSavable(97);
+				CenterTabButtonClickSilent(0,true);
+				if (Inventory.a.hardwareIsActive[3]) {
+					hwb.SensaroundOff();
+					Utils.PlayUIOneShotSavable(82); // deactivate
+				}
+			} else {
+				switch(curCenterTab) {
+					case 0: CenterTabButtonAction(1); break;
+					case 1: CenterTabButtonAction(2); break;
+					case 2: CenterTabButtonAction(3); break;
+					case 3: CenterTabButtonAction(0); break;
+				}
 			}
 		}
 
@@ -1678,6 +1701,7 @@ public class MFDManager : MonoBehaviour  {
 
 	public void CenterTabButtonAction(int tabNum) {
 		if (PauseScript.a.mainMenu.activeInHierarchy) return;
+
 		Utils.PlayUIOneShotSavable(97);
 		CenterTabButtonClickSilent(tabNum,false);
 		if (Inventory.a.hardwareIsActive[3]) {
@@ -1980,7 +2004,6 @@ public class MFDManager : MonoBehaviour  {
 
 	public static string Save(GameObject go) {
 		MFDManager mfd = go.GetComponent<MFDManager>();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.BoolToString(mfd.lastWeaponSideRH,"lastWeaponSideRH"));
 		s1.Append(Utils.splitChar);

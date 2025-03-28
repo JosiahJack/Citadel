@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class LogicRelay : MonoBehaviour {
 	public string target;
@@ -10,6 +11,7 @@ public class LogicRelay : MonoBehaviour {
 	public bool onceEver = false; // save
 	[HideInInspector] public bool alreadyDone = false; // save
 	private UseData tempUd;
+	private static StringBuilder s1 = new StringBuilder();
 
 	public void Targetted (UseData ud) {
 		if (!relayEnabled) return;
@@ -60,16 +62,17 @@ public class LogicRelay : MonoBehaviour {
 			return "1";
 		}
 
-		string line = System.String.Empty;
-		line = Utils.SaveString(lr.target,"target");
-		line += Utils.splitChar + Utils.SaveString(lr.argvalue,"argvalue");
-		line += Utils.splitChar + Utils.BoolToString(lr.relayEnabled,
-													 "relayEnabled");
-
-		line += Utils.splitChar + Utils.BoolToString(lr.onceEver,"onceEver");
-		line += Utils.splitChar + Utils.BoolToString(lr.alreadyDone,
-													 "alreadyDone");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.SaveString(lr.target,"target"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(lr.argvalue,"argvalue"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(lr.relayEnabled,"relayEnabled"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(lr.onceEver,"onceEver"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(lr.alreadyDone,"alreadyDone"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

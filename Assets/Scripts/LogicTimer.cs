@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Text;
 
 public class LogicTimer : MonoBehaviour {
 	public float timeInterval = 0.35f; //save
@@ -9,6 +10,7 @@ public class LogicTimer : MonoBehaviour {
 	[HideInInspector] public float intervalFinished; //save
 	public string target; //save
 	public string argvalue; //save
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Start() {
 		intervalFinished = PauseScript.a.relativeTime + (useRandomTimes ? Random.Range(randomMin,randomMax) : timeInterval);
@@ -41,16 +43,23 @@ public class LogicTimer : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		LogicTimer lt = go.GetComponent<LogicTimer>();
-		string line = System.String.Empty;
-		line = Utils.SaveRelativeTimeDifferential(lt.intervalFinished,"intervalFinished");
-		line += Utils.splitChar + Utils.FloatToString(lt.timeInterval,"timeInterval");
-		line += Utils.splitChar + Utils.FloatToString(lt.randomMin,"randomMin");
-		line += Utils.splitChar + Utils.FloatToString(lt.randomMax,"randomMax");
-		line += Utils.splitChar + Utils.BoolToString(lt.useRandomTimes,"useRandomTimes");
-		line += Utils.splitChar + Utils.BoolToString(lt.active,"active");
-		line += Utils.splitChar + Utils.SaveString(lt.target,"target");
-		line += Utils.splitChar + Utils.SaveString(lt.argvalue,"argvalue");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.SaveRelativeTimeDifferential(lt.intervalFinished,"intervalFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(lt.timeInterval,"timeInterval"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(lt.randomMin,"randomMin"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(lt.randomMax,"randomMax"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(lt.useRandomTimes,"useRandomTimes"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(lt.active,"active"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(lt.target,"target"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(lt.argvalue,"argvalue"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

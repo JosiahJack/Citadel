@@ -50,6 +50,7 @@ public class LevelManager : MonoBehaviour {
 	private bool[] levelDataLoaded;
 	private int getValreadInt;
 	private float getValreadFloat;
+	private static StringBuilder s1 = new StringBuilder();
 
 	// Singleton instance
 	public static LevelManager a;
@@ -749,8 +750,7 @@ public class LevelManager : MonoBehaviour {
 	public static string Save(GameObject go) {
 		int i=0;
 		LevelManager lvm = go.GetComponent<LevelManager>();
-		StringBuilder s1 = new StringBuilder();
-		s1.Clear(); // keep reusing s1
+		s1.Clear();
 		s1.Append(Utils.UintToString(LevelManager.a.currentLevel,"currentLevel"));
 		s1.Append(Utils.splitChar);
 		for (i=0;i<14;i++) { s1.Append(Utils.UintToString(LevelManager.a.levelSecurity[i],"levelSecurity["+i.ToString()+"]")); s1.Append(Utils.splitChar); }

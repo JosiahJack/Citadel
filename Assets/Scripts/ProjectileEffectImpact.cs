@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class ProjectileEffectImpact : MonoBehaviour {
     public PoolType impactType;
@@ -9,6 +10,7 @@ public class ProjectileEffectImpact : MonoBehaviour {
     [SerializeField] public int hitCountBeforeRemoval = 1;
     private Vector3 tempVec;
     [HideInInspector] public int numHits;
+	private static StringBuilder s1 = new StringBuilder();
 
     private void OnEnable() {
         numHits = 0; // Reset when pulled from pool.
@@ -107,11 +109,13 @@ public class ProjectileEffectImpact : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		ProjectileEffectImpact pei = go.GetComponent<ProjectileEffectImpact>();
-		string line = System.String.Empty;
-		line = Utils.UintToString(pei.hitCountBeforeRemoval,"hitCountBeforeRemoval");
-		line += Utils.splitChar + Utils.UintToString(pei.numHits,"numHits");
-		line += Utils.splitChar + Utils.BoolToString(pei.destroyInsteadOfDeactivate,"destroyInsteadOfDeactivate");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.UintToString(pei.hitCountBeforeRemoval,"hitCountBeforeRemoval"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(pei.numHits,"numHits"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pei.destroyInsteadOfDeactivate,"destroyInsteadOfDeactivate"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

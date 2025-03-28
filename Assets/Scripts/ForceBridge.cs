@@ -22,6 +22,7 @@ public class ForceBridge : MonoBehaviour {
 	private const float tickTime = 0.05f;
 	private bool initialized = false;
 	[HideInInspector] public GameObject segiEmitter;
+	private static StringBuilder s1 = new StringBuilder();
 
 	public void Start() {
 		#if UNITY_EDITOR
@@ -193,28 +194,27 @@ public class ForceBridge : MonoBehaviour {
 		}
 
 		fb.Start();
-		if (Utils.s1 == null)  Utils.s1 = new StringBuilder();
-		Utils.s1.Clear();
-		Utils.s1.Append(Utils.BoolToString(fb.activated,"ForceBridge.activated"));
-		Utils.s1.Append(Utils.splitChar);
-		Utils.s1.Append(Utils.BoolToString(fb.lerping,"lerping"));
-		Utils.s1.Append(Utils.splitChar);
-		Utils.s1.Append(Utils.SaveRelativeTimeDifferential(fb.tickFinished,"tickFinished"));
-		Utils.s1.Append(Utils.splitChar);
-		Utils.s1.Append(Utils.BoolToString(fb.x,"x"));
-		Utils.s1.Append(Utils.splitChar);
-		Utils.s1.Append(Utils.BoolToString(fb.y,"y"));
-		Utils.s1.Append(Utils.splitChar);
-		Utils.s1.Append(Utils.BoolToString(fb.z,"z"));
-		Utils.s1.Append(Utils.splitChar);
-		Utils.s1.Append(Utils.FloatToString(fb.activatedScaleX,"activatedScaleX"));
-		Utils.s1.Append(Utils.splitChar);
-		Utils.s1.Append(Utils.FloatToString(fb.activatedScaleY,"activatedScaleY"));
-		Utils.s1.Append(Utils.splitChar);
-		Utils.s1.Append(Utils.FloatToString(fb.activatedScaleZ,"activatedScaleZ"));
-		Utils.s1.Append(Utils.splitChar);
-		Utils.s1.Append(Utils.IntToString(Utils.ForceFieldColorToInt(fb.fieldColor),"fieldColor"));
-		return Utils.s1.ToString();
+		s1.Clear();
+		s1.Append(Utils.BoolToString(fb.activated,"ForceBridge.activated"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(fb.lerping,"lerping"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(fb.tickFinished,"tickFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(fb.x,"x"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(fb.y,"y"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(fb.z,"z"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(fb.activatedScaleX,"activatedScaleX"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(fb.activatedScaleY,"activatedScaleY"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(fb.activatedScaleZ,"activatedScaleZ"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(Utils.ForceFieldColorToInt(fb.fieldColor),"fieldColor"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

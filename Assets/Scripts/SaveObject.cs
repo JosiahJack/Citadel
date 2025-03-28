@@ -11,7 +11,8 @@ public class SaveObject : MonoBehaviour {
 	public SaveableType saveType = SaveableType.Transform;
 	public bool instantiated = false; // Should oject be instantiated on load?
 	public static string currentObjectInfo;
-
+	
+	private static StringBuilder s1 = new StringBuilder();
 	[HideInInspector] public string saveableType;
 	[HideInInspector] public bool initialized = false;
 
@@ -67,7 +68,6 @@ public class SaveObject : MonoBehaviour {
 		if (so == null) return "";
 
 		if (!so.initialized) so.Start();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		// Start Saving
 		// --------------------------------------------------------------------

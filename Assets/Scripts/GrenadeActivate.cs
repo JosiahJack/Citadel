@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 // Used on the physical grenade iteslf.
 public class GrenadeActivate : MonoBehaviour {
@@ -20,6 +21,7 @@ public class GrenadeActivate : MonoBehaviour {
 	[HideInInspector] public bool useTimer = false; // save
 	private GameObject explosionEffect;
 	private Rigidbody rbody;
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Awake () {
 		rbody = GetComponent<Rigidbody>();
@@ -126,16 +128,22 @@ public class GrenadeActivate : MonoBehaviour {
 
 	// Live grenades - These should only be up in the air or active running timer, but still...or it's a landmine
 	public static string Save(GameObject go) {
-		string line = System.String.Empty;
+		s1.Clear();
 		GrenadeActivate ga = go.GetComponent<GrenadeActivate>();
-		line = Utils.UintToString(ga.constIndex,"constIndex");
-		line += Utils.splitChar + Utils.BoolToString(ga.active,"active");
-		line += Utils.splitChar + Utils.BoolToString(ga.useTimer,"useTimer");
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ga.timeFinished,"timeFinished");
-		line += Utils.splitChar + Utils.BoolToString(ga.explodeOnContact,"explodeOnContact");
-		line += Utils.splitChar + Utils.BoolToString(ga.useProx,"useProx");
-		line += Utils.splitChar + Utils.BoolToString(ga.IsNPCMine(),"IsNPCMine");
-		return line;
+		s1.Append(Utils.UintToString(ga.constIndex,"constIndex"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ga.active,"active"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ga.useTimer,"useTimer"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(ga.timeFinished,"timeFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ga.explodeOnContact,"explodeOnContact"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ga.useProx,"useProx"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ga.IsNPCMine(),"IsNPCMine"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

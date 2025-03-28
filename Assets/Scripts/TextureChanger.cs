@@ -39,9 +39,7 @@ public class TextureChanger : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		TextureChanger tex = go.GetComponent<TextureChanger>();
-		string line = System.String.Empty;
-		line = Utils.BoolToString(tex.currentTexture,"currentTexture");
-		return line;
+		return Utils.BoolToString(tex.currentTexture,"currentTexture");
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Text;
 
 // Prevents shooting through the UI when using the UI on the HUD.
 // Handles data about what is under the cursor for different button
@@ -13,6 +14,7 @@ public class GUIState : MonoBehaviour {
 	public ButtonType overButtonType = ButtonType.None;
 	public bool overButton;
 	[HideInInspector] public GameObject currentButton;
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Awake() {
 		a = this;
@@ -43,10 +45,11 @@ public class GUIState : MonoBehaviour {
 			return "0|0";
 		}
 
-		string line = System.String.Empty;
-		line = Utils.UintToString(Utils.ButtonTypeToInt(guis.overButtonType),"overButtonType");
-		line += Utils.splitChar + Utils.BoolToString(guis.overButton,"overButton");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.UintToString(Utils.ButtonTypeToInt(guis.overButtonType),"overButtonType"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(guis.overButton,"overButton"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

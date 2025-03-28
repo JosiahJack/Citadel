@@ -140,6 +140,8 @@ public class Inventory : MonoBehaviour {
 	public Text[] weaponShotsInventory;
 	public Text[] weaponButtonText;
 
+	private static StringBuilder s1 = new StringBuilder();
+
 	// Singleton instance
 	public static Inventory a;
 
@@ -1080,6 +1082,9 @@ public class Inventory : MonoBehaviour {
 		vmailgenstatus.SetActive(false);
 		vmaillaserdest.SetActive(false);
 		vmailshieldsup.SetActive(false);
+		RenderTexture.active = vmailbetajetVideo.targetTexture;
+		GL.Clear(true, true, Color.black);
+		RenderTexture.active = null;
 		if(SFXSource != null) SFXSource.Stop();
 	}
 
@@ -1763,7 +1768,6 @@ public class Inventory : MonoBehaviour {
 	public static string Save(GameObject go) {
 		int j;
 		Inventory inv = go.GetComponent<Inventory>();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.UintToString(inv.weaponInventoryIndices[0],"weaponInventoryIndices[0]"));
 		for (j=1;j<7;j++) { s1.Append(Utils.splitChar); s1.Append(Utils.UintToString(inv.weaponInventoryIndices[j],"weaponInventoryIndices[" + j.ToString() + "]")); }

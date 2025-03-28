@@ -50,6 +50,7 @@ public class Door : MonoBehaviour {
 	private bool initialized = false;
 	private AnimatorStateInfo asi;
 	private bool delayFrame = false;
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Start () {
 		if (initialized) return;
@@ -157,13 +158,11 @@ public class Door : MonoBehaviour {
 			OpenDoor();
 			delayFrame = true;
 		} else if (doorOpen == DoorState.Opening) {
-			Debug.Log("Door closing");
 			doorOpen = DoorState.Closing;
 			anim.Play(closeClipName,0,topTime - animatorPlaybackTime);
 			Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
 			delayFrame = true;
 		} else if (doorOpen == DoorState.Closing) {
-			Debug.Log("Door opening");
 			doorOpen = DoorState.Opening;
 			waitBeforeClose = PauseScript.a.relativeTime + delay;
 			anim.Play(openClipName,0,topTime - animatorPlaybackTime);
@@ -225,7 +224,6 @@ public class Door : MonoBehaviour {
 	void OpenDoor() {
 		if (anim == null) anim = GetComponent<Animator>();
 		if (anim != null) anim.speed = defaultSpeed;
-		Debug.Log("Door opening");
 		doorOpen = DoorState.Opening;
 		waitBeforeClose = PauseScript.a.relativeTime + delay;
 		if (anim != null) anim.Play(openClipName,0,0f);
@@ -236,7 +234,6 @@ public class Door : MonoBehaviour {
 	void CloseDoor() {
 		if (anim == null) anim = GetComponent<Animator>();
 		if (anim != null) anim.speed = defaultSpeed;
-		Debug.Log("Door closing");
 		doorOpen = DoorState.Closing;
 		if (anim != null) anim.Play(closeClipName,0,0f);
 		Utils.PlayOneShotSavable(SFX,Const.a.sounds[SFXIndex]);
@@ -298,12 +295,10 @@ public class Door : MonoBehaviour {
 			AnimatorStateInfo asi = anim.GetCurrentAnimatorStateInfo(0);
 			animatorPlaybackTime = asi.normalizedTime;
 			if (doorOpen == DoorState.Closing && animatorPlaybackTime > 0.95f && !delayFrame) {
-				Debug.Log("Door closed");
 				doorOpen = DoorState.Closed; // Door is closed
 			}
 			
 			if (doorOpen == DoorState.Opening && animatorPlaybackTime > 0.95f && !delayFrame) {
-				Debug.Log("Door open");
 				doorOpen = DoorState.Open; // Door is open
 			}
 		}
@@ -369,13 +364,6 @@ public class Door : MonoBehaviour {
 
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
 		Door dr = go.GetComponent<Door>();
-		if (dr == null) {
-			Debug.Log("SearchableItem missing on savetype of SearchableItem!  "
-					  + "GameObject.name: " + go.name);
-			return "0|0|0|0000.00000|0000.00000|0000.00000|0|0|2|0000.00000";
-		}
-
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.SaveString(dr.target,"target"));
 		s1.Append(Utils.splitChar);

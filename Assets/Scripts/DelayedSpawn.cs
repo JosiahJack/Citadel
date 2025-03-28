@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class DelayedSpawn : MonoBehaviour {
@@ -10,6 +11,7 @@ public class DelayedSpawn : MonoBehaviour {
 	public bool destroyAfterListInsteadOfDeactivate = false; // save
 	[HideInInspector] public float timerFinished; // save
 	[HideInInspector] public bool active; // save
+	private static StringBuilder s1 = new StringBuilder();
 
 	void OnEnable() {
 		if (PauseScript.a != null) timerFinished = PauseScript.a.relativeTime + delay;
@@ -46,18 +48,24 @@ public class DelayedSpawn : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		DelayedSpawn ds = go.GetComponent<DelayedSpawn>();
-		string line = System.String.Empty;
-		line = Utils.FloatToString(ds.delay,"delay");
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(ds.timerFinished,"timerFinished");
-		line += Utils.splitChar + Utils.BoolToString(ds.active,"active");
-		line += Utils.splitChar + Utils.BoolToString(ds.despawnInstead,"despawnInstead");
-		line += Utils.splitChar + Utils.BoolToString(ds.doSelfAfterList,"doSelfAfterList");
-		line += Utils.splitChar + Utils.BoolToString(ds.destroyAfterListInsteadOfDeactivate,"destroyAfterListInsteadOfDeactivate");
+		s1.Clear();
+		s1.Append(Utils.FloatToString(ds.delay,"delay"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(ds.timerFinished,"timerFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ds.active,"active"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ds.despawnInstead,"despawnInstead"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ds.doSelfAfterList,"doSelfAfterList"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ds.destroyAfterListInsteadOfDeactivate,"destroyAfterListInsteadOfDeactivate"));
 		for (int i=0;i<ds.objectsToSpawn.Length;i++) {
-			line += Utils.splitChar + Utils.SaveSubActivatedGOState(ds.objectsToSpawn[i]);
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.SaveSubActivatedGOState(ds.objectsToSpawn[i]));
 		}
 
-		return line;
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

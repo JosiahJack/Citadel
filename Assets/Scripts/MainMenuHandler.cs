@@ -204,10 +204,17 @@ public class MainMenuHandler : MonoBehaviour {
 		ReEnableCamera();
 	}
 	
+	void ClearVideoRT() {
+		RenderTexture.active = introPlayer.targetTexture;
+		GL.Clear(true, true, Color.black);
+		RenderTexture.active = null;
+	}
+	
 	void CheckAndPlayIntro() {
 		string indn = Utils.SafePathCombine(Application.streamingAssetsPath,"introdone.dat");
 		if (System.IO.File.Exists(indn)) {
-			IntroVideo.SetActive(false);	
+			IntroVideo.SetActive(false);
+			ClearVideoRT();
 			IntroVideoContainer.SetActive(false);
 			BackGroundMusic.clip = Music.a.titleMusic;
 			if (gameObject.activeSelf && dataFound) BackGroundMusic.Play();
@@ -236,7 +243,8 @@ public class MainMenuHandler : MonoBehaviour {
 			// It's fake because we already did it and it is instant.
 			// This is just to show the user that we did in fact look.
 			InitialDisplay.SetActive(true);
-			IntroVideo.SetActive(false);	
+			IntroVideo.SetActive(false);
+			ClearVideoRT();
 			IntroVideoContainer.SetActive(false);
 			yield return new WaitForSeconds(0.3f);
 
@@ -251,6 +259,7 @@ public class MainMenuHandler : MonoBehaviour {
 		inCutscene = false;
 		DeathVideo.SetActive(false);
 		DeathVideoContainer.SetActive(false);
+		ClearVideoRT();
 		BackGroundMusic.clip = Music.a.titleMusic;
 		if (gameObject.activeSelf && dataFound) BackGroundMusic.Play();
 	}
@@ -258,6 +267,7 @@ public class MainMenuHandler : MonoBehaviour {
 	void LeaveIntroCutscene() {
 		inCutscene = false;
 		IntroVideo.SetActive(false);
+		ClearVideoRT();
 		IntroVideoContainer.SetActive(false);
 		Const.a.WriteDatForIntroPlayed(false);
 		BackGroundMusic.clip = Music.a.titleMusic;
@@ -437,6 +447,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Deactivate(introVideoTextGO13);
 				Utils.Deactivate(introVideoTextGO14);
 				Utils.Deactivate(introVideoTextGO15);
+				ClearVideoRT();
 			}
 		} else if (DeathVideoContainer.activeSelf) {
 			if (vidFinished > 0 && (Time.time - vidStartTime) > 5.53f
@@ -445,6 +456,7 @@ public class MainMenuHandler : MonoBehaviour {
 
 				Utils.Deactivate(deathVideoTextGO1);
 				Utils.Activate(deathVideoTextGO2);
+				ClearVideoRT();
 			}
 
 			if (vidFinished < Time.time && DeathVideoContainer.activeSelf
@@ -454,6 +466,7 @@ public class MainMenuHandler : MonoBehaviour {
 				Utils.Deactivate(DeathVideoContainer);
 				Utils.Deactivate(deathVideoTextGO1);
 				Utils.Deactivate(deathVideoTextGO2);
+				ClearVideoRT();
 				BackGroundMusic.clip = Music.a.titleMusic;
 				if (gameObject.activeSelf && dataFound) BackGroundMusic.Play();
 			}
@@ -1059,16 +1072,24 @@ public class MainMenuHandler : MonoBehaviour {
 		StartCoroutine(quitFunction());
 	}
 
-	IEnumerator quitFunction () {
+	IEnumerator quitFunction () { // Handle exiting from menu option
 		BackGroundMusic.Stop();
 		Const.a.WriteDatForIntroPlayed(false);
 		saltTheFries.SetActive(true);
-		yield return new WaitForSeconds(0.8f);
+		yield return new WaitForSeconds(0.75f);
 		#if UNITY_EDITOR
 			UnityEditor.EditorApplication.isPlaying = false;
 		#endif
-
+			
+		Config.SaveConfigToPlayerPrefs();
 		Application.Quit();
+	}
+	
+	void OnApplicationQuit() { // Handle X button close
+		#if UNITY_EDITOR
+			UnityEditor.EditorApplication.isPlaying = false;
+		#endif
+		Config.SaveConfigToPlayerPrefs();
 	}
 	
 	void OnDestroy() {

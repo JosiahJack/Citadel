@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Text;
 
 public class KeypadElevator : MonoBehaviour {
 	public Door linkedDoor;
@@ -19,6 +20,8 @@ public class KeypadElevator : MonoBehaviour {
 	public string lockedTarget;
 	public string argvalue;
 	public int lockedMessageIndex = -1;
+	
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Start () {
 		padInUse = false;
@@ -70,11 +73,11 @@ public class KeypadElevator : MonoBehaviour {
 			return "0|0";
 		}
 
-		string line = System.String.Empty;
-		line = Utils.BoolToString(ke.padInUse,"KeypadElevator.padInUse");
-		line += Utils.splitChar;
-		line += Utils.BoolToString(ke.locked,"locked");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.BoolToString(ke.padInUse,"KeypadElevator.padInUse"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ke.locked,"locked"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

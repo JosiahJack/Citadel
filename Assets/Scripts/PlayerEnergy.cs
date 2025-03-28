@@ -16,6 +16,7 @@ public class PlayerEnergy : MonoBehaviour {
 	[HideInInspector] public float maxenergy = 255f;
 	[HideInInspector] public int drainJPM = 0;
 	private string jpm = " J/min";
+	private static StringBuilder s1 = new StringBuilder();
 
 	public static PlayerEnergy a;
 
@@ -193,7 +194,6 @@ public class PlayerEnergy : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		PlayerEnergy pe = go.GetComponent<PlayerEnergy>();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.FloatToString(pe.energy,"energy"));
 		s1.Append(Utils.splitChar);

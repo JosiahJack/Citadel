@@ -23,6 +23,7 @@ public class FuncWall : MonoBehaviour {
 	private Vector3 tempVec;
 	private float dist;         // Only ever used right away, not saved.
 	private float distanceLeft; // Only ever used right away, not saved.
+	private static StringBuilder s1 = new StringBuilder();
 
 	public void InitializeFromLoad() {
 		rbody = GetComponent<Rigidbody>();
@@ -150,8 +151,6 @@ public class FuncWall : MonoBehaviour {
 	// the saving hierarchy and that is the only other thing needed for these.
 	public static string Save(GameObject go) {
 		FuncWall fw = go.GetComponent<FuncWall>();
-// 		fw.Awake();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.IntToString(Utils.FuncStatesToInt(fw.currentState),"FuncWall.currentState"));
 		s1.Append(Utils.splitChar);

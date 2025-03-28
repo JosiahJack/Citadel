@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 // Rotates a security camera back and forth between two angle values, pausing
 // at each angle value for an instance-set amount of time.  This assumes that
@@ -17,6 +18,7 @@ public class SecurityCameraRotate : MonoBehaviour {
 	private float degreesYPerSecond = 4f;
 	private float waitingFinished = 0f;
 	private float tickTime = 0.1f;
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Start () {
 		waitingFinished = PauseScript.a.relativeTime;
@@ -71,13 +73,17 @@ public class SecurityCameraRotate : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		SecurityCameraRotate scr = go.GetComponent<SecurityCameraRotate>();
-		string line = System.String.Empty;
-		line = Utils.SaveRelativeTimeDifferential(scr.waitingFinished,"waitingFinished");
-		line += Utils.splitChar + Utils.BoolToString(scr.enabled,"enabled");
-		line += Utils.splitChar + Utils.FloatToString(scr.startYAngle,"startYAngle");
-		line += Utils.splitChar + Utils.FloatToString(scr.endYAngle,"endYAngle");
-		line += Utils.splitChar + Utils.FloatToString(scr.waitTime,"waitTime");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.SaveRelativeTimeDifferential(scr.waitingFinished,"waitingFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(scr.enabled,"enabled"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(scr.startYAngle,"startYAngle"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(scr.endYAngle,"endYAngle"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(scr.waitTime,"waitTime"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

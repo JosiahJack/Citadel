@@ -17,6 +17,7 @@ public class KeypadKeycode : MonoBehaviour {
 	
 	[HideInInspector] public bool padInUse = false; // save
 	private GameObject playerCamera;
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Start () {
 		padInUse = false;
@@ -96,7 +97,7 @@ public class KeypadKeycode : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		KeypadKeycode kk = go.GetComponent<KeypadKeycode>();
-		StringBuilder s1 = new StringBuilder();
+		s1.Clear();
 		s1.Append(Utils.IntToString(kk.securityThreshhold,"securityThreshhold"));
 		s1.Append(Utils.splitChar);
 		s1.Append(Utils.IntToString(kk.keycode,"keycode"));

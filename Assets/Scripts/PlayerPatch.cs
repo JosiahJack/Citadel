@@ -39,6 +39,7 @@ public class PlayerPatch : MonoBehaviour {
 	[HideInInspector] public const int PATCH_SIGHT = 32;
 	[HideInInspector] public const int PATCH_STAMINUP = 64;
 	[HideInInspector] public int patchActive;  // bitflag carrier for active patches // save
+	private static StringBuilder s1 = new StringBuilder();
 
 	public static PlayerPatch a;
 
@@ -324,7 +325,6 @@ public class PlayerPatch : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		PlayerPatch pp = go.GetComponent<PlayerPatch>();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.SaveRelativeTimeDifferential(pp.berserkFinishedTime,"berserkFinishedTime"));
 		s1.Append(Utils.splitChar);

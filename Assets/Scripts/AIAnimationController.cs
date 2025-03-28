@@ -32,6 +32,7 @@ public class AIAnimationController : MonoBehaviour {
 	private float loadedSetSpeed;
 	private bool initialized = false;
 	private bool doneDidDead = false;
+	private static StringBuilder s1 = new StringBuilder();
 
 	public void Start () {
 	    if (initialized) return;
@@ -230,7 +231,6 @@ public class AIAnimationController : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		AIAnimationController aiac = go.GetComponentInChildren<AIAnimationController>(true);
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		if (aiac == null) { // Keep!  Cyber enemies don't have an AIAC!
 			return "clipName:|currentClipPercentage:0000.00000|dying:0|animSwapFinished:0000.00000|useDeadAnimForDeath:0|playDeathAnim:0|playDyingAnim:0|minWalkSpeedToAnimate:0000.00000|anim.speed:0000.00000";

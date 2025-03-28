@@ -15,6 +15,13 @@ using System.Runtime.Serialization.Formatters.Binary;
 [AddComponentMenu("Image Effects/Sonic Ether/SEGI")]
 public class SEGI : MonoBehaviour {
 #region Parameters
+	public Shader segiShader;
+	public Shader voxelizeScene;
+	public Shader traceScene;	
+	public ComputeShader clearCompute;
+	public ComputeShader transferIntsCompute;
+	public ComputeShader mipFilterCompute;
+	public Texture2D[] blueNoise;
 	[Serializable] public enum VoxelResolution {verylow = 64, low = 128, high = 256, veryhigh = 512, }
 	[HideInInspector] public bool updateGI = true;
 	public LayerMask giCullingMask = 2147483647;
@@ -67,12 +74,11 @@ public class SEGI : MonoBehaviour {
 	Transform shadowCamTransform;
 	Camera shadowCam;
 	GameObject shadowCamGameObject;
-    Texture2D[] blueNoise;
 	
 	int sunShadowResolution = 256;
 	int prevSunShadowResolution;
 
-	Shader sunDepthShader;
+// 	Shader sunDepthShader;
 
 	float shadowSpaceDepthRatio = 10.0f;
 
@@ -111,10 +117,6 @@ public class SEGI : MonoBehaviour {
 
 	Shader voxelizationShader;
 	Shader voxelTracingShader;
-
-	ComputeShader clearCompute;
-	ComputeShader transferIntsCompute;
-	ComputeShader mipFilterCompute;
 
 	const int numMipLevels = 6;
 
@@ -179,7 +181,7 @@ public class SEGI : MonoBehaviour {
 		public bool dx11;
 		public bool volumeTextures;
 		public bool postShader;
-		public bool sunDepthShader;
+// 		public bool sunDepthShader;
 		public bool voxelizationShader;
 		public bool tracingShader;
 
@@ -187,7 +189,7 @@ public class SEGI : MonoBehaviour {
 		{
 			get
 			{
-				return hdrTextures && rIntTextures && dx11 && volumeTextures && postShader && sunDepthShader && voxelizationShader && tracingShader;
+				return hdrTextures && rIntTextures && dx11 && volumeTextures && postShader /*&& sunDepthShader*/ && voxelizationShader && tracingShader;
 			}
 		}
 	}
@@ -456,20 +458,15 @@ public class SEGI : MonoBehaviour {
 		dummyVoxelTextureFixed.hideFlags = HideFlags.HideAndDontSave;
 	}
 
-	void Init()
-	{
+	void Init() {
 		//Setup shaders and materials
-		sunDepthShader = Shader.Find("Hidden/SEGIRenderSunDepth");
+		//sunDepthShader = Shader.Find("Hidden/SEGIRenderSunDepth");
 
-		clearCompute = Resources.Load("SEGIClear") as ComputeShader;
-		transferIntsCompute = Resources.Load("SEGITransferInts") as ComputeShader;
-		mipFilterCompute = Resources.Load("SEGIMipFilter") as ComputeShader;
-
-		voxelizationShader = Shader.Find("Hidden/SEGIVoxelizeScene");
-		voxelTracingShader = Shader.Find("Hidden/SEGITraceScene");
+		voxelizationShader = voxelizeScene;
+		voxelTracingShader = traceScene;
 		
 		if (!material) {
-			material = new Material(Shader.Find("Hidden/SEGI"));
+			material = new Material(segiShader);
 			material.hideFlags = HideFlags.HideAndDontSave;
 		}
 		
@@ -485,13 +482,10 @@ public class SEGI : MonoBehaviour {
 		GameObject scgo = GameObject.Find("SEGI_SHADOWCAM");
 
 		//If not, create it
-		if (!scgo)
-		{
+		if (!scgo) {
 			shadowCamGameObject = new GameObject("SEGI_SHADOWCAM");
 			shadowCam = shadowCamGameObject.AddComponent<Camera>();
 			shadowCamGameObject.hideFlags = HideFlags.HideAndDontSave;
-
-
 			shadowCam.enabled = false;
 			shadowCam.depth = attachedCamera.depth - 1;
 			shadowCam.orthographic = true;
@@ -501,11 +495,8 @@ public class SEGI : MonoBehaviour {
 			shadowCam.farClipPlane = shadowSpaceSize * 2.0f * shadowSpaceDepthRatio;
 			shadowCam.cullingMask = giCullingMask;
 			shadowCam.useOcclusionCulling = false;
-
 			shadowCamTransform = shadowCamGameObject.transform;
-		}
-		else	//Otherwise, it already exists, just get it
-		{
+		} else { //Otherwise, it already exists, just get it
 			shadowCamGameObject = scgo;
 			shadowCam = scgo.GetComponent<Camera>();
 			shadowCamTransform = shadowCamGameObject.transform;
@@ -514,9 +505,9 @@ public class SEGI : MonoBehaviour {
 
 		
 		//Create the proxy camera objects responsible for rendering the scene to voxelize the scene. If they already exist, destroy them
-		GameObject vcgo = GameObject.Find("SEGI_VOXEL_CAMERA");
-		
-		if (!vcgo) {
+// 		GameObject vcgo = GameObject.Find("SEGI_VOXEL_CAMERA");
+// 		
+// 		if (!vcgo) {
 			voxelCameraGO = new GameObject("SEGI_VOXEL_CAMERA");
 			voxelCameraGO.hideFlags = HideFlags.HideAndDontSave;
 
@@ -531,64 +522,64 @@ public class SEGI : MonoBehaviour {
 			voxelCamera.clearFlags = CameraClearFlags.Color;
 			voxelCamera.backgroundColor = Color.black;
 			voxelCamera.useOcclusionCulling = false;
-		}
-		else
-		{
-			voxelCameraGO = vcgo;
-			voxelCamera = vcgo.GetComponent<Camera>();
-		}
+// 		}
+// 		else
+// 		{
+// 			voxelCameraGO = vcgo;
+// 			voxelCamera = vcgo.GetComponent<Camera>();
+// 		}
 
-		GameObject lvp = GameObject.Find("SEGI_LEFT_VOXEL_VIEW");
-		
-		if (!lvp) {
+// 		GameObject lvp = GameObject.Find("SEGI_LEFT_VOXEL_VIEW");
+// 		
+// 		if (!lvp) {
 			leftViewPoint = new GameObject("SEGI_LEFT_VOXEL_VIEW");
 			leftViewPoint.hideFlags = HideFlags.HideAndDontSave;
-		}
-		else
-		{
-			leftViewPoint = lvp;
-		}
+// 		}
+// 		else
+// 		{
+// 			leftViewPoint = lvp;
+// 		}
 
-		GameObject tvp = GameObject.Find("SEGI_TOP_VOXEL_VIEW");
-		
-		if (!tvp) {
+// 		GameObject tvp = GameObject.Find("SEGI_TOP_VOXEL_VIEW");
+// 		
+// 		if (!tvp) {
 			topViewPoint = new GameObject("SEGI_TOP_VOXEL_VIEW");
 			topViewPoint.hideFlags = HideFlags.HideAndDontSave;
-		}
-		else
-		{
-			topViewPoint = tvp;
-		}
+// 		}
+// 		else
+// 		{
+// 			topViewPoint = tvp;
+// 		}
 
 		//Get blue noise textures
-		blueNoise = null;
-		blueNoise = new Texture2D[64];
-		for (int i = 0; i < 64; i++)
-		{
-		    string fileName = "LDR_RGBA_" + i.ToString();
-		    Texture2D blueNoiseTexture = Resources.Load("Noise Textures/" + fileName) as Texture2D;
-
-		    if (blueNoiseTexture == null)
-		    {
-			Debug.LogWarning("Unable to find noise texture \"Assets/SEGI/Resources/Noise Textures/" + fileName + "\" for SEGI!");
-		    } 
-
-		    blueNoise[i] = blueNoiseTexture;
-
-		}
+// 		blueNoise = null;
+// 		blueNoise = new Texture2D[64];
+// 		for (int i = 0; i < 64; i++)
+// 		{
+// 		    string fileName = "LDR_RGBA_" + i.ToString();
+// 		    Texture2D blueNoiseTexture = Resources.Load("Noise Textures/" + fileName) as Texture2D;
+// 
+// 		    if (blueNoiseTexture == null)
+// 		    {
+// 			Debug.LogWarning("Unable to find noise texture \"Assets/SEGI/Resources/Noise Textures/" + fileName + "\" for SEGI!");
+// 		    } 
+// 
+// 		    blueNoise[i] = blueNoiseTexture;
+// 
+// 		}
 
 		//Setup sun depth texture
-		if (sunDepthTexture)
-		{
-			sunDepthTexture.DiscardContents();
-			sunDepthTexture.Release();
-			DestroyImmediate(sunDepthTexture);
-		}
-		sunDepthTexture = new RenderTexture(sunShadowResolution, sunShadowResolution, 16, RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear);
-		sunDepthTexture.wrapMode = TextureWrapMode.Clamp;
-		sunDepthTexture.filterMode = FilterMode.Point;
-		sunDepthTexture.Create();
-		sunDepthTexture.hideFlags = HideFlags.HideAndDontSave;
+// 		if (sunDepthTexture)
+// 		{
+// 			sunDepthTexture.DiscardContents();
+// 			sunDepthTexture.Release();
+// 			DestroyImmediate(sunDepthTexture);
+// 		}
+// 		sunDepthTexture = new RenderTexture(sunShadowResolution, sunShadowResolution, 16, RenderTextureFormat.RHalf, RenderTextureReadWrite.Linear);
+// 		sunDepthTexture.wrapMode = TextureWrapMode.Clamp;
+// 		sunDepthTexture.filterMode = FilterMode.Point;
+// 		sunDepthTexture.Create();
+// 		sunDepthTexture.hideFlags = HideFlags.HideAndDontSave;
 
 
 		//Create the volume textures
@@ -606,7 +597,7 @@ public class SEGI : MonoBehaviour {
 		systemSupported.volumeTextures = SystemInfo.supports3DTextures;
 
 		systemSupported.postShader = material.shader.isSupported;
-		systemSupported.sunDepthShader = sunDepthShader.isSupported;
+		//systemSupported.sunDepthShader = sunDepthShader.isSupported;
 		systemSupported.voxelizationShader = voxelizationShader.isSupported;
 		systemSupported.tracingShader = voxelTracingShader.isSupported;
 
@@ -890,29 +881,29 @@ public class SEGI : MonoBehaviour {
 
 
 			//Render the depth texture from the sun's perspective in order to inject sunlight with shadows during voxelization
-			if (sun != null)
-			{
-				shadowCam.cullingMask = giCullingMask;
-
-				Vector3 shadowCamPosition = voxelSpaceOrigin + Vector3.Normalize(-sun.transform.forward) * shadowSpaceSize * 0.5f * shadowSpaceDepthRatio;
-
-				shadowCamTransform.position = shadowCamPosition;
-				shadowCamTransform.LookAt(voxelSpaceOrigin, Vector3.up);
-
-				shadowCam.renderingPath = RenderingPath.Forward;
-				shadowCam.depthTextureMode |= DepthTextureMode.None;
-
-				shadowCam.orthographicSize = shadowSpaceSize;
-				shadowCam.farClipPlane = shadowSpaceSize * 2.0f * shadowSpaceDepthRatio;
-
-
-				Graphics.SetRenderTarget(sunDepthTexture);
-				shadowCam.SetTargetBuffers(sunDepthTexture.colorBuffer, sunDepthTexture.depthBuffer);
-
-				shadowCam.RenderWithShader(sunDepthShader, "");
-
-				Shader.SetGlobalTexture("SEGISunDepth", sunDepthTexture);
-			}
+// 			if (sun != null)
+// 			{
+// 				shadowCam.cullingMask = giCullingMask;
+// 
+// 				Vector3 shadowCamPosition = voxelSpaceOrigin + Vector3.Normalize(-sun.transform.forward) * shadowSpaceSize * 0.5f * shadowSpaceDepthRatio;
+// 
+// 				shadowCamTransform.position = shadowCamPosition;
+// 				shadowCamTransform.LookAt(voxelSpaceOrigin, Vector3.up);
+// 
+// 				shadowCam.renderingPath = RenderingPath.Forward;
+// 				shadowCam.depthTextureMode |= DepthTextureMode.None;
+// 
+// 				shadowCam.orthographicSize = shadowSpaceSize;
+// 				shadowCam.farClipPlane = shadowSpaceSize * 2.0f * shadowSpaceDepthRatio;
+// 
+// 
+// 				Graphics.SetRenderTarget(sunDepthTexture);
+// 				shadowCam.SetTargetBuffers(sunDepthTexture.colorBuffer, sunDepthTexture.depthBuffer);
+// 
+// 				shadowCam.RenderWithShader(sunDepthShader, "");
+// 
+// 				Shader.SetGlobalTexture("SEGISunDepth", sunDepthTexture);
+// 			}
 
 
 

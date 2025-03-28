@@ -12,6 +12,7 @@ public class CyberSwitch : MonoBehaviour {
 	public GameObject deactiveCenter;
 	public GameObject iceNode;
 	[HideInInspector] public bool iceActive;
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Awake() {
 		if (iceNode != null && iceNode.activeSelf) iceActive = true;
@@ -52,7 +53,6 @@ public class CyberSwitch : MonoBehaviour {
 
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
 		CyberSwitch cs = go.GetComponent<CyberSwitch>();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.BoolToString(cs.active,"CyberSwitch.active"));
 		s1.Append(Utils.splitChar);

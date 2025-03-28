@@ -66,16 +66,17 @@ public class TargetIO : MonoBehaviour {
 
 	private UseData tempUD;
 	private bool startInitialized = false;
+	private static StringBuilder s1 = new StringBuilder();
 
 	private void Start() {
 		RemoteStart(this.gameObject,"self Start()");
 	}
 	
 	public void RemoteStart(GameObject sender,string sourcefunc) {
-// 		Debug.Log("TargetIO remote Start() by " + sender.name + "'s "
-// 				  + sourcefunc);
+		if (!string.IsNullOrEmpty(targetname)) {
+			Const.a.AddToTargetRegister(this,gameObject); // Always, since on load we need to refill register.
+		}
 		
-		Const.a.AddToTargetRegister(this); // Always, since on load we need to refill register.
 		Initialize();
 	}
 	
@@ -419,7 +420,7 @@ public class TargetIO : MonoBehaviour {
 			
 			Debug.LogError("BUG: Missing TargetIO on " + go.name + " with parent of " + parname);
 		}
-		StringBuilder s1 = new StringBuilder();
+
 		s1.Clear();
 		s1.Append(Utils.SaveString(tio.targetname,"targetname"));
 		s1.Append(Utils.splitChar);

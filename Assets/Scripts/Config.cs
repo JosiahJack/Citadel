@@ -182,8 +182,21 @@ public class Config {
 		SetAA();
 		SetVSync();
 		if (MainMenuHandler.a != null) MainMenuHandler.a.RenderConfigView();
+		SaveConfigToPlayerPrefs();
 	}
 
+	public static void SaveConfigToPlayerPrefs() {
+		#if UNITY_EDITOR
+			// Don't bother with PlayerPrefs from Editor.
+		#else
+			// Force to potato PlayerPref settings for faster startup, and to prevent users with potato systems from being able to run initially.
+			PlayerPrefs.SetInt("Screenmanager Resolution Width", Const.a.GraphicsResWidth);
+			PlayerPrefs.SetInt("Screenmanager Resolution Height", Const.a.GraphicsResHeight);
+			PlayerPrefs.SetInt("Screenmanager Is Fullscreen", Const.a.GraphicsFullscreen ? 1 : 0); // 0 = windowed
+			PlayerPrefs.Save();
+		#endif
+	}
+	
 	public static void SetVolume() {
 		if (MainMenuHandler.a.dataFound) {
 			AudioListener.volume = (Const.a.AudioVolumeMaster/100f);
@@ -376,19 +389,33 @@ public class Config {
 		MainMenuHandler.a.mdlDetApply.SetOptionsText();
 	}
 	
+	private static readonly string AUDIO_MODE_KEY = "AudioSpeakerMode";
+	private static int lastAudioMode = -1;
+	
 	public static void SetAudioMode() {
+		if (lastAudioMode == -1) lastAudioMode = PlayerPrefs.GetInt(AUDIO_MODE_KEY, 1); // Stereo as default
+
 		AudioConfiguration audconf = AudioSettings.GetConfiguration();
+		AudioSpeakerMode targetMode = AudioSpeakerMode.Stereo;
 		switch(Const.a.AudioSpeakerMode) {
-			case 0: audconf.speakerMode = AudioSpeakerMode.Mono; break;
-			case 1: audconf.speakerMode = AudioSpeakerMode.Stereo; break;
-			case 2: audconf.speakerMode = AudioSpeakerMode.Quad; break;
-			case 3: audconf.speakerMode = AudioSpeakerMode.Surround; break;
-			case 4: audconf.speakerMode = AudioSpeakerMode.Mode5point1; break;
-			case 5: audconf.speakerMode = AudioSpeakerMode.Mode7point1; break;
-			case 6: audconf.speakerMode = AudioSpeakerMode.Prologic; break;
+			case 0: targetMode = AudioSpeakerMode.Mono; break;
+			case 1: targetMode = AudioSpeakerMode.Stereo; break;
+			case 2: targetMode = AudioSpeakerMode.Quad; break;
+			case 3: targetMode = AudioSpeakerMode.Surround; break;
+			case 4: targetMode = AudioSpeakerMode.Mode5point1; break;
+			case 5: targetMode = AudioSpeakerMode.Mode7point1; break;
+			case 6: targetMode = AudioSpeakerMode.Prologic; break;
 		}
 		
-		AudioSettings.Reset(audconf);
+		if (audconf.speakerMode != targetMode) {
+			audconf.speakerMode = targetMode;
+			AudioSettings.Reset(audconf);
+		}
+
+		if (lastAudioMode != Const.a.AudioSpeakerMode) {
+			PlayerPrefs.SetInt(AUDIO_MODE_KEY, Const.a.AudioSpeakerMode);
+			PlayerPrefs.Save(); // Ensure it’s written to disk
+		}
 	}
 
 	private static int AssignConfigInt(string section, string keyname) {

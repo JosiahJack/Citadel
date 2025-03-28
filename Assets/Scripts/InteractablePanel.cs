@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class InteractablePanel : MonoBehaviour {
@@ -20,6 +21,7 @@ public class InteractablePanel : MonoBehaviour {
 	
 	private AudioSource SFX;
 	private Animator anim;
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Start() {
 		anim = GetComponent<Animator>();
@@ -72,26 +74,34 @@ public class InteractablePanel : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		InteractablePanel ip = go.GetComponent<InteractablePanel>();
-		string line = System.String.Empty;
-		line = Utils.BoolToString(ip.open,"open");
-		line += Utils.splitChar + Utils.BoolToString(ip.installed,"installed");
-		line += Utils.splitChar + Utils.SaveSubActivatedGOState(ip.installationItem);
-		for (int i=0;i<ip.effects.Length;i++) { line += Utils.splitChar + Utils.SaveSubActivatedGOState(ip.effects[i]); }
+		s1.Clear();
+		s1.Append(Utils.BoolToString(ip.open,"open"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(ip.installed,"installed"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveSubActivatedGOState(ip.installationItem));
+		for (int i=0;i<ip.effects.Length;i++) { 
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.SaveSubActivatedGOState(ip.effects[i]));
+		}
+
 		if (ip.installationItem != null) {
 			DelayedSpawn despawner = ip.installationItem.GetComponent<DelayedSpawn>();
 			if (despawner != null) { // plastique
-				line += Utils.splitChar + DelayedSpawn.Save(ip.installationItem);
+				s1.Append(Utils.splitChar);
+				s1.Append(DelayedSpawn.Save(ip.installationItem));
 				Transform childTr = ip.installationItem.transform.GetChild(0);
 				if (childTr != null) {
 					DelayedSpawn despawner2 = childTr.gameObject.GetComponent<DelayedSpawn>();
 					if (despawner2 != null) { // plastique
-						line += Utils.splitChar + DelayedSpawn.Save(childTr.gameObject);
+						s1.Append(Utils.splitChar);
+						s1.Append(DelayedSpawn.Save(childTr.gameObject));
 					}
 				}
 			}
 		}
 
-		return line;
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

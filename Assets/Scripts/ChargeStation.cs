@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class ChargeStation : MonoBehaviour {
 	// Externally modified per prefab instance
@@ -15,6 +16,7 @@ public class ChargeStation : MonoBehaviour {
 
 	// Internal references
 	[HideInInspector] public float nextthink; // save, stores the time after which this will be usable again.  Soem charge stations must recharge.
+	private static StringBuilder s1 = new StringBuilder();
 	
 	void Awake() {
 		nextthink = PauseScript.a.relativeTime;
@@ -63,18 +65,27 @@ public class ChargeStation : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		ChargeStation chg = go.GetComponent<ChargeStation>();
-		string line = System.String.Empty;
-		line = Utils.SaveRelativeTimeDifferential(chg.nextthink,"nextthink"); // float - time before recharged
-		line += Utils.splitChar + Utils.FloatToString(chg.amount,"amount");
-		line += Utils.splitChar + Utils.FloatToString(chg.resetTime,"resetTime");
-		line += Utils.splitChar + Utils.BoolToString(chg.requireReset,"requireReset");
-		line += Utils.splitChar + Utils.FloatToString(chg.minSecurityLevel,"minSecurityLevel");
-		line += Utils.splitChar + Utils.FloatToString(chg.damageOnUse,"damageOnUse");
-		line += Utils.splitChar + Utils.SaveString(chg.target,"target");
-		line += Utils.splitChar + Utils.SaveString(chg.argvalue,"argvalue");
-		line += Utils.splitChar + Utils.UintToString(chg.rechargeMsgLingdex,"rechargeMsgLingdex");
-		line += Utils.splitChar + Utils.UintToString(chg.usedMsgLingdex,"usedMsgLingdex");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.SaveRelativeTimeDifferential(chg.nextthink,"nextthink")); // float - time before recharged
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(chg.amount,"amount"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(chg.resetTime,"resetTime"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(chg.requireReset,"requireReset"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(chg.minSecurityLevel,"minSecurityLevel"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(chg.damageOnUse,"damageOnUse"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(chg.target,"target"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveString(chg.argvalue,"argvalue"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(chg.rechargeMsgLingdex,"rechargeMsgLingdex"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(chg.usedMsgLingdex,"usedMsgLingdex"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour {
@@ -17,6 +18,8 @@ public class SpawnManager : MonoBehaviour {
 	public float delayFinished; // save
 	public bool alertEnemiesOnAwake;
 	public bool countOnlySameIndex = false; // Not one of us.
+	
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Start() {
 		delayFinished = PauseScript.a.relativeTime;
@@ -144,13 +147,13 @@ public class SpawnManager : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		SpawnManager sm = go.GetComponent<SpawnManager>();
-		string line = System.String.Empty;
-		line = Utils.BoolToString(sm.active,"SpawnManager.active");
-		line += Utils.splitChar;
-		line += Utils.IntToString(sm.numberActive,"numberActive");
-		line += Utils.splitChar;
-		line += Utils.SaveRelativeTimeDifferential(sm.delayFinished,"delayFinished");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.BoolToString(sm.active,"SpawnManager.active"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(sm.numberActive,"numberActive"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(sm.delayFinished,"delayFinished"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

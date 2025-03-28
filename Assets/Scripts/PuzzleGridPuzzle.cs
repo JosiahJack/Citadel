@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class PuzzleGridPuzzle : MonoBehaviour {
@@ -29,6 +30,7 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 	[HideInInspector] public bool fired = false; // save
 	private Animator anim;
 	private bool alreadyOpen = false;
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Awake() {
 		puzzleSolved = false;
@@ -107,14 +109,18 @@ public class PuzzleGridPuzzle : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		PuzzleGridPuzzle pgp = go.GetComponent<PuzzleGridPuzzle>();
-		string line = System.String.Empty;
-		line = Utils.BoolToString(pgp.puzzleSolved,"puzzleSolved");
+		s1.Clear();
+		s1.Append(Utils.BoolToString(pgp.puzzleSolved,"puzzleSolved"));
 		for (int i=0;i<35;i++) {
-			line += Utils.splitChar + Utils.BoolToString(pgp.grid[i],"grid[" + i.ToString() + "]");
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.BoolToString(pgp.grid[i],"grid[" + i.ToString() + "]"));
 		}
-		line += Utils.splitChar + Utils.BoolToString(pgp.fired,"fired");
-		line += Utils.splitChar + Utils.BoolToString(pgp.locked,"locked");
-		return line;
+		
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pgp.fired,"fired"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pgp.locked,"locked"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

@@ -39,6 +39,7 @@ public class ButtonSwitch : MonoBehaviour {
 	[HideInInspector] public float tickFinished; // save
 	[HideInInspector] public bool alternateOn; // save
 	[HideInInspector] public string currentClipName; // save
+	private static StringBuilder s1 = new StringBuilder();
 
 	public void Awake() {
 		if (awakeInitialized) return;
@@ -177,7 +178,6 @@ public class ButtonSwitch : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		ButtonSwitch bs = go.GetComponent<ButtonSwitch>();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.UintToString(bs.securityThreshhold,"securityThreshhold"));
 		s1.Append(Utils.splitChar);

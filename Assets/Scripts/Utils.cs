@@ -28,8 +28,6 @@ public class Utils {
 										  // text could contain commas.  Used
 										  // for all savefile text.
 	public static char splitCharChar = '|';
-
-	public static StringBuilder s1;
 	public static CultureInfo en_US_Culture = new CultureInfo("en-US");
 
 	private static bool getValparsed;
@@ -1307,6 +1305,7 @@ public class Utils {
 			return SaveSubActivatedGOState(childTR.gameObject);
 	}
 
+	private static StringBuilder cams1 = new StringBuilder();
 	public static string SaveCamera(GameObject go) {
 		Camera cm = go.GetComponent<Camera>();
         Grayscale gsc = go.GetComponent<Grayscale>();
@@ -1317,12 +1316,12 @@ public class Utils {
 			return "Camera.enabled:0|Grayscale.enabled:0";
 		}
 
-		string line = System.String.Empty;
-        line = BoolToString(cm.enabled,"Camera.enabled"); // bool
-		line += splitChar;
-        if (gsc != null) line += BoolToString(gsc.enabled,"Grayscale.enabled");
-        else line += "Grayscale.enabled:0";
-		return line;
+		cams1.Clear();
+        cams1.Append(BoolToString(cm.enabled,"Camera.enabled"));
+		cams1.Append(splitChar);
+        if (gsc != null) cams1.Append(BoolToString(gsc.enabled,"Grayscale.enabled"));
+        else cams1.Append("Grayscale.enabled:0");
+		return cams1.ToString();
 	}
 
 	public static int LoadCamera(GameObject go,ref string[] entries,int index) {
@@ -1421,16 +1420,22 @@ public class Utils {
 		PlayAudioSavable(SFX,Const.a.sounds[fxclip],0,false);
 	}
 
+	private static StringBuilder auds1 = new StringBuilder();
 	public static string SaveAudioSource(GameObject go) {
 		AudioSource aus = go.GetComponent<AudioSource>();
-		string line = System.String.Empty;
-        line = BoolToString(aus.enabled,"AudioSource.enabled");
-		line += splitChar + FloatToString(aus.time,"time");
+		auds1.Clear();
+        auds1.Append(BoolToString(aus.enabled,"AudioSource.enabled"));
+		auds1.Append(splitChar);
+		auds1.Append(FloatToString(aus.time,"time"));
 		if (aus.clip == null) {
-		    line += splitChar + SaveString("none","clip.name");
-		} else line += splitChar + SaveString(aus.clip.name,"clip.name");
+		    auds1.Append(splitChar);
+			auds1.Append(SaveString("none","clip.name"));
+		} else {
+			auds1.Append(splitChar);
+			auds1.Append(SaveString(aus.clip.name,"clip.name"));
+		}
 
-		return line;
+		return auds1.ToString();
 	}
 
 	public static int LoadAudioSource(GameObject go, ref string[] entries,
@@ -1568,57 +1573,68 @@ public class Utils {
 										Vector3 attackNormal, Vector3 spot) {
 		Rigidbody rbody = go.GetComponent<Rigidbody>();
 		if (rbody == null) return;
-
-		rbody.WakeUp();
+		if (!rbody.useGravity) return;
 		if (impactVelocity <= 0) return;
 
+		rbody.WakeUp();
 		rbody.AddForceAtPosition((attackNormal*impactVelocity*30f),spot);
 	}
 
-	public static void ApplyImpactForceSphere(DamageData dd,Vector3 centerPoint,
-											  float radius,float impactScale) {
+	public static void ApplyImpactForceSphere(DamageData dd, Vector3 centerPoint, float radius, float impactScale) {
 		HealthManager hm = null;
-		Collider[] colliders = Physics.OverlapSphere(centerPoint,radius);
+		Collider[] colliders = Physics.OverlapSphere(centerPoint, radius);
 		int i = 0;
+		float baseSpeed = 0.5f;        // Base velocity change (m/s)
+		float k = 5f;                // Speed increase per unit mass
+		float refDamage = 100f;      // Reference damage for scaling
+		float maxScale = 2f;         // Maximum scale factor for explosion strength
 		while (i < colliders.Length) {
 			GameObject go = colliders[i].gameObject;
 			if (go == null) { i++; continue; }
-			//if (go.isStatic) { i++; continue; } EDITOR ONLY!!!!!!
 
 			Rigidbody rbody = go.GetComponent<Rigidbody>();
-			dd.impactVelocity = dd.damage * impactScale;
+			dd.impactVelocity = dd.damage * impactScale * 0.1f;
 			Vector3 dir = go.transform.position - centerPoint;
 			RaycastHit hit;
-			float dist = Vector3.Distance(centerPoint, go.transform.position);
-			bool success = (dist < 1.5f); // So close we should just shove it.
-			bool applyImpact = false;
-			if (!success) {
-				success = Physics.Raycast(centerPoint,dir,out hit,
-										  radius + 0.02f,
-										  Const.a.layerMaskExplosion);
-				dist = hit.distance;
-				applyImpact = (hit.collider == colliders[i]
-							   || (hit.rigidbody == rbody && rbody != null));
-			} else applyImpact = true;
+			float dist = Vector3.Distance(centerPoint, go.transform.position); // Original distance
+			bool applyImpact = (dist < 4f); // Close enough, no raycast needed
 
-			if (success) {
+			if (!applyImpact) {
+				// Only raycast if not close
+				bool raycastHit = Physics.Raycast(centerPoint, dir, out hit, radius + 0.02f, Const.a.layerMaskExplosion);
+				applyImpact = raycastHit && (hit.collider == colliders[i] || (hit.rigidbody == rbody && rbody != null));
+			}
+
+			if (applyImpact) {
+				// Apply damage and force only if we should impact this object
 				hm = Utils.GetMainHealthManager(go);
 				if (hm != null) {
+					float originalDamage = dd.damage; // Store original for reset
 					if (hm.isPlayer) {
-						dd.damage = dd.damage * 0.5f; // give em a chance mate
+						dd.damage *= 0.5f; // Halve for player
 					}
 
-					float distPenalty = (radius - dist) / radius;
-					float saturation = dd.damage * 0.33f; // minimum damage in
-														  // range to feel more
-														  // powerful/useful
-					dd.damage *= distPenalty; // Linear falloff
+					float distPenalty = (radius - dist) / radius; // Use original dist
+					if (distPenalty < 0) distPenalty = 0; // Clamp to avoid negative
+					float saturation = originalDamage * 0.33f; // Min damage based on original
+					dd.damage *= distPenalty; // Apply falloff
 					if (dd.damage < saturation) dd.damage = saturation;
 					hm.TakeDamage(dd);
+					dd.damage = originalDamage; // Reset for next object
 				}
 
-				if (applyImpact && rbody != null) {
-					rbody.AddExplosionForce(dd.impactVelocity,centerPoint,radius,1f);
+				if (rbody != null && rbody.useGravity) {
+					rbody.WakeUp();
+					Vector3 originalVelocity = rbody.velocity;
+					if (go.layer == 10) dd.impactVelocity *= 0.5f;
+					rbody.AddExplosionForce(dd.impactVelocity, centerPoint, radius, 1f, ForceMode.Impulse);
+					Vector3 deltaV = rbody.velocity - originalVelocity;
+					float damageScale = Mathf.Min(dd.damage / refDamage, maxScale);
+					float maxDeltaV = (baseSpeed + k * rbody.mass) * damageScale;
+					if (deltaV.magnitude > maxDeltaV) {
+						deltaV = deltaV.normalized * maxDeltaV;
+						rbody.velocity = originalVelocity + deltaV;
+					}
 				}
 			}
 			i++;

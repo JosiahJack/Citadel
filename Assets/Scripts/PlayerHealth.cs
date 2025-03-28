@@ -34,6 +34,7 @@ public class PlayerHealth : MonoBehaviour {
 	[HideInInspector] public float noiseFinished;
 	[HideInInspector] public int deaths = 0;
 	[HideInInspector] public int ressurections = 0;
+	private static StringBuilder s1 = new StringBuilder();
 	
 	public static PlayerHealth a;
 
@@ -257,7 +258,6 @@ public class PlayerHealth : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		PlayerHealth ph = go.GetComponent<PlayerHealth>();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.FloatToString(ph.radiated,"radiated"));
 		s1.Append(Utils.splitChar);

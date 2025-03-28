@@ -9,7 +9,8 @@ public class TeleportTouch : MonoBehaviour {
 	public bool touchEnabled = true;
 	
     private static TeleportTouch[] allTeleportTouches = new TeleportTouch[8];
-
+	private static StringBuilder s1 = new StringBuilder();
+	
 	public void Awake() {
 		if (teleportID > allTeleportTouches.Length || teleportID < 0) { Destroy(this.gameObject); return; }
 		
@@ -40,7 +41,6 @@ public class TeleportTouch : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		TeleportTouch tt = go.GetComponent<TeleportTouch>();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.SaveRelativeTimeDifferential(tt.justUsed,"justUsed"));
 		s1.Append(Utils.splitChar);

@@ -14,6 +14,7 @@ public class SearchableItem : MonoBehaviour {
 
 	[HideInInspector] public bool searchableInUse;
 	[HideInInspector] public bool generationDone = false;
+	private static StringBuilder s1 = new StringBuilder();
 	public int maxRandomItems = 2;
 
 	void Start () {
@@ -53,8 +54,7 @@ public class SearchableItem : MonoBehaviour {
 		SearchableItem se;
 		if (go.name.Contains("se_corpse_eaten")) se = go.transform.GetChild(0).GetComponent<SearchableItem>(); // se_corpse_eaten
 		else se = go.GetComponent<SearchableItem>();
-		
-		StringBuilder s1 = new StringBuilder();
+
 		s1.Clear();
 		s1.Append(Utils.UintToString(se.lookUpIndex,"lookUpIndex"));
 		s1.Append(Utils.splitChar);

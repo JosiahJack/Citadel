@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class WeaponFire : MonoBehaviour {
 	// External references, required
@@ -68,6 +69,7 @@ public class WeaponFire : MonoBehaviour {
     private float heatTickTime = 0.50f;
 	private Rigidbody playercapRbody;
 	private float wepYRot;
+	private static StringBuilder s1 = new StringBuilder();
 
 	// Not needed on Const as this only exists in one unique place on player.
 	private float[] driftForWeapon = new float[16]{5f,0f,15f,50f,0f,0f,0f,8f,
@@ -1367,24 +1369,39 @@ public class WeaponFire : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		WeaponFire wf = go.GetComponent<WeaponFire>();
-		string line = System.String.Empty;
-		line = Utils.SaveRelativeTimeDifferential(wf.waitTilNextFire,"waitTilNextFire");
-		line += Utils.splitChar + Utils.BoolToString(wf.overloadEnabled,"overloadEnabled");
-		line += Utils.splitChar + Utils.FloatToString(wf.sparqSetting,"sparqSetting");
-		line += Utils.splitChar + Utils.FloatToString(wf.ionSetting,"ionSetting");
-		line += Utils.splitChar + Utils.FloatToString(wf.blasterSetting,"blasterSetting");
-		line += Utils.splitChar + Utils.FloatToString(wf.plasmaSetting,"plasmaSetting");
-		line += Utils.splitChar + Utils.FloatToString(wf.stungunSetting,"stungunSetting");
-		line += Utils.splitChar + Utils.BoolToString(wf.recoiling,"recoiling");
-		line += Utils.splitChar + Utils.FloatToString(wf.reloadLerpValue,"reloadLerpValue");
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.reloadFinished,"reloadFinished");
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.lerpStartTime,"lerpStartTime");
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.justFired,"justFired");
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.energySliderClickedTime,"energySliderClickedTime");
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(wf.cyberWeaponAttackFinished,"cyberWeaponAttackFinished");
-		line += Utils.splitChar + Utils.SaveTransform(wf.reloadContainer.transform);
-		line += Utils.splitChar + Utils.FloatToString(wf.targetY,"targetY");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.SaveRelativeTimeDifferential(wf.waitTilNextFire,"waitTilNextFire"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(wf.overloadEnabled,"overloadEnabled"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(wf.sparqSetting,"sparqSetting"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(wf.ionSetting,"ionSetting"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(wf.blasterSetting,"blasterSetting"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(wf.plasmaSetting,"plasmaSetting"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(wf.stungunSetting,"stungunSetting"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(wf.recoiling,"recoiling"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(wf.reloadLerpValue,"reloadLerpValue"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(wf.reloadFinished,"reloadFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(wf.lerpStartTime,"lerpStartTime"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(wf.justFired,"justFired"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(wf.energySliderClickedTime,"energySliderClickedTime"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(wf.cyberWeaponAttackFinished,"cyberWeaponAttackFinished"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveTransform(wf.reloadContainer.transform));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(wf.targetY,"targetY"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

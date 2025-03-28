@@ -509,7 +509,7 @@ public class Const : MonoBehaviour {
 											  "Door","InterDebris",
 											  "PhysObjects","Player","Player2",
 											  "Player3","Player4");
-		layerMaskNPCAttack = LayerMask.GetMask("Default","Geometry",
+		layerMaskNPCAttack = LayerMask.GetMask("Default","Geometry","NPC",
 											   "Door","InterDebris",
 											   "PhysObjects","Player","Player2",
 											   "Player3","Player4");
@@ -618,7 +618,7 @@ public class Const : MonoBehaviour {
 	public void LoadAudioLogMetaData() {
 		// The following to be assigned to the arrays in the Unity Const data structure
 		int readIndexOfLog, readLogImageLHIndex, readLogImageRHIndex; // look-up index for assigning the following data on the line in the file to the arrays
-		string readLogText; // loaded into string audioLogSpeech2Text[]
+		StringBuilder readLogText = new StringBuilder(); // loaded into string audioLogSpeech2Text[]
 		string readline; // variable to hold each string read in from the file
 		char logSplitChar = ',';
 		string tF = null;
@@ -639,7 +639,6 @@ public class Const : MonoBehaviour {
 				int i = 0;
 				// Read the next line
 				readline = dataReader.ReadLine();
-				if (readline == null) continue; // just in case
 				string[] entries = readline.Split(logSplitChar);
 				readIndexOfLog = Utils.GetIntFromStringAudLogText(entries[i]); i++;
 				readLogImageLHIndex = Utils.GetIntFromStringAudLogText(entries[i]); i++;
@@ -651,16 +650,20 @@ public class Const : MonoBehaviour {
 				audiologSubjects[readIndexOfLog] = entries[i]; i++;
 				audioLogType[readIndexOfLog] = Utils.GetAudioLogTypeFromInt(Utils.GetIntFromStringAudLogText(entries[i])); i++;
 				audioLogLevelFound[readIndexOfLog] = Utils.GetIntFromStringAudLogText(entries[i]); i++;
-				readLogText = entries[i]; i++;
+				readLogText.Clear();
+				readLogText.Append(entries[i]); i++;
 				// handle extra commas within the body text and append remaining portions of the line
 				if (entries.Length > 8) {
 					for (int j=9;j<entries.Length;j++) {
-						readLogText = (readLogText +"," + entries[j]);  // combine remaining portions of text after other commas and add comma back
+						readLogText.Append(",");
+						readLogText.Append(entries[j]);  // combine remaining portions of text after other commas and add comma back
 					}
 				}
-				audioLogSpeech2Text[readIndexOfLog] = readLogText;
+				audioLogSpeech2Text[readIndexOfLog] = readLogText.ToString();
 			} while (!dataReader.EndOfStream);
+			
 			dataReader.Close();
+			readLogText = null;
 			return;
 		}
 	}
@@ -702,6 +705,7 @@ public class Const : MonoBehaviour {
 		string readline; // variable to hold each string read in from the file
 		int pagenum = 0;
 		creditsLength = 1;
+		StringBuilder page = new StringBuilder();
 		StreamReader dataReader = Utils.ReadStreamingAsset("credits.txt");
 		using (dataReader) {
 			do {
@@ -710,7 +714,9 @@ public class Const : MonoBehaviour {
 				char[] checkCharacter = readline.ToCharArray();
 				if (checkCharacter.Length > 0) {
 					if (checkCharacter[0] == '#') {
+						creditsText[pagenum] = page.ToString();
 						pagenum++;
+						page.Clear();
 						creditsLength++;
 						continue;
 					}
@@ -722,7 +728,8 @@ public class Const : MonoBehaviour {
 					return;
 				}
 
-                creditsText[pagenum] += readline + System.Environment.NewLine;
+				page.Append(readline);
+				page.Append(System.Environment.NewLine);
 			} while (!dataReader.EndOfStream);
 
 			dataReader.Close();
@@ -1055,7 +1062,11 @@ CreateBlackTexture:
 
 	// StatusBar Print
 	public static void sprint(string input, GameObject player) {
-		UnityEngine.Debug.Log(input);
+		#if UNITY_EDITOR
+			// Don't spam unneeded info here.
+		#else
+			UnityEngine.Debug.Log(input);
+		#endif
 		a.statusBar.SendText(input);
 	}
 	
@@ -1820,8 +1831,8 @@ CreateBlackTexture:
 							PrefabIdentifier prefID = SaveLoad.GetPrefabIdentifier(instGO,true);
 							SaveObject.Load(instGO,ref entries,i,prefID); // Load NPC.
 						} else {
-							if (levID < LevelManager.a.DynamicObjectsSavestrings.Length) { // levID < 14
-								if (i < readFileList.Count && readFileList.Count > 0) {
+							if (levID < LevelManager.a.DynamicObjectsSavestrings.Length && levID >= 0) { // levID < 14
+								if (i < (readFileList.Count - 1) && readFileList.Count > 0 && i >= 0) {
 									LevelManager.a.DynamicObjectsSavestrings[levID].Add(readFileList[i]);
 								}
 							}
@@ -1836,7 +1847,7 @@ CreateBlackTexture:
 									   + "% (" + i.ToString() + " / "
 									   + numSaveablesFromSavefile.ToString()
 									   + ")";
-				if (loadUpdateTimer.ElapsedMilliseconds > 500) {
+				if (loadUpdateTimer.ElapsedMilliseconds > 50) {
 					loadUpdateTimer.Reset();
 					loadUpdateTimer.Start();
 					Cursor.lockState = CursorLockMode.None;
@@ -1886,7 +1897,7 @@ CreateBlackTexture:
 		}
 		
 		loadPercentText.text = "Re-register targets...";
-		yield return new WaitForSeconds(0.01f);
+		yield return null;
 		for (i=0;i<allParents.Count;i++) {
 			Component[] compArray = allParents[i].GetComponentsInChildren(typeof(TargetIO),true); // find all SaveObject components, including inactive (hence the true here at the end)
 			for (k=0;k<compArray.Length;k++) {
@@ -1901,11 +1912,11 @@ CreateBlackTexture:
 		allParents = null; // Done with it.
 		ResetPauseLists();
 		loadPercentText.text = "Re-init cull systems...";
-		yield return new WaitForSeconds(0.01f);
+		yield return null;
 		DynamicCulling.a.Cull_Init();
 		DynamicCulling.a.CullCore();
 		loadPercentText.text = "Cleaning Up...";
-		yield return new WaitForSeconds(0.01f);
+		yield return null;
 
  		System.GC.Collect(); // Collect it all!
 		System.GC.WaitForPendingFinalizers();
@@ -2106,28 +2117,17 @@ CreateBlackTexture:
 	}
 
 	// Should ONLY come from a TargetIO
-	public void AddToTargetRegister(TargetIO tio) {
+	public void AddToTargetRegister(TargetIO tio, GameObject go) {
 		string tn = tio.targetname;
-		if (string.IsNullOrEmpty(tn)) return;
-
-		GameObject go = tio.gameObject;		
-// 		UnityEngine.Debug.Log("Target registering " + tn + " for " + go.name);
-		int i = 0;
-	    for (i=0;i<TargetRegister.Count; i++) {
+	    for (int i=0;i<TargetRegister.Count; i++) {
 	        if (TargetRegister[i] == null) continue;
 	        if (TargetRegister[i] != go) continue; // Key check for whole loop.
 			
 	        // GameObject go is in registry already
             if (TargetnameRegister[i] == tn) {
-// 				UnityEngine.Debug.Log(tn + " for " + go.name + " already in "
-// 									  + "TargetRegister[], name and object");
-				
                 return; // Already in register, name and object.
             } else {
                 TargetnameRegister[i] = tn; // Fix up partial registry.
-//                 UnityEngine.Debug.Log(tn + " for " + go.name + " already in "
-// 									  + "TargetRegister[], fix up partial");
-				
                 return; // Ok it's good now.
             }
 	    }
@@ -2135,16 +2135,7 @@ CreateBlackTexture:
 	    // GameObject isn't in registry, add fresh.
 	    TargetRegister.Add(go);
 		TargetnameRegister.Add(tn);
-// 		if (TargetnameRegister.Count <= lastTargetRegistrySize) {
-// 			UnityEngine.Debug.Log("Target register reset!");
-// 		}
-// 		
 		lastTargetRegistrySize = TargetnameRegister.Count;
-		
-// 		UnityEngine.Debug.Log("Target registering " + tn + " for " + go.name
-// 							  + "... complete! Registry now size of names["
-// 							  + TargetnameRegister.Count.ToString() + "]/gos("
-// 							  + TargetRegister.Count.ToString() + ")");
 	}
 
 	public void AddToTextLocalizationRegister(TextLocalization txtloc) {

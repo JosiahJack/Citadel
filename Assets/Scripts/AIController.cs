@@ -122,6 +122,8 @@ public class AIController : MonoBehaviour {
 	public float posCheckFinished;
 	private const float positionCheckDelay = 2f;
 	private const float searchTime = 5f;
+	private static StringBuilder s1 = new StringBuilder();
+	private static Vector3 targetOffset = new Vector3(0f,0.24f,0f);
 
 	public void Tranquilize() {
 		if (Const.a.typeForNPC[index] != NPCType.Robot) {
@@ -512,7 +514,13 @@ public class AIController : MonoBehaviour {
 				if (timeTillEnemyChangeFinished < PauseScript.a.relativeTime) {
 					timeTillEnemyChangeFinished = PauseScript.a.relativeTime
 						+ Const.a.timeToChangeEnemyForNPC[index];
-					enemy = attacker; // Switch to whoever just attacked us
+						
+					AIController enemAIC = attacker.GetComponent<AIController>();
+					if (enemAIC != null) {
+						if (enemAIC.index != index) enemy = attacker; // unless it's same enemy type as us (infighting!)
+					} else {
+						enemy = attacker; // Switch to whoever just attacked us
+					}
 					posCheckFinished = PauseScript.a.relativeTime + positionCheckDelay;
 					wandering = false;
 					wanderFinished = PauseScript.a.relativeTime;
@@ -602,7 +610,9 @@ public class AIController : MonoBehaviour {
 						if (!hopDone) {
 							hopDone = true;
 							Vector3 force = sightPoint.transform.forward * 500f;
+							rbody.WakeUp();
 							rbody.AddForce(force);
+							rbody.AddForce(Vector3.up * 5f);
 						}
 					} else {
 						hopDone = false;
@@ -879,7 +889,7 @@ public class AIController : MonoBehaviour {
         }
         
 		if (enemy != null && !wandering) {
-			targettingPosition = PlayerMovement.a.cameraObject.transform.position;
+			targettingPosition = enemy.transform.position + targetOffset;
 			currentDestination = targettingPosition;
 			lastKnownEnemyPos = targettingPosition;
 		}
@@ -1429,7 +1439,7 @@ public class AIController : MonoBehaviour {
 
 		DeactivateMeleeColliders();
 		if (healthManager != null) {
-			if (!healthManager.actAsCorpseOnly) {
+			if (!healthManager.actAsCorpseOnly && !healthManager.teleportOnDeath) {
 				Utils.Deactivate(healthManager.linkedOverlay.gameObject);
 				SFXIndex = Const.a.sfxDeathForNPC[index];
 				Utils.PlayOneShotSavable(SFX,SFXIndex);
@@ -1451,6 +1461,10 @@ public class AIController : MonoBehaviour {
 		}
 
 		if (IsCyberNPC()) rbody.useGravity = false;
+		if (index == 14) {
+			CapsuleCollider capcol = GetComponent<CapsuleCollider>();
+			capcol.enabled = true;
+		}
 		asleep = false;
 		rbody.constraints = RigidbodyConstraints.None;
 		if (!rbody.freezeRotation) rbody.freezeRotation = true;
@@ -1499,6 +1513,7 @@ public class AIController : MonoBehaviour {
 
 		if (DeactivatesVisibleMeshWhileDying() && visibleMeshEntity.activeSelf) {
 			Utils.Deactivate(visibleMeshEntity);
+			UnityEngine.Debug.Log("DeactivatesVisibleMeshWhileDying while dying deactivate visibleMeshEntity");
 			if (visibleMeshVisible) {
 				visibleMeshVisible = false;
 // 				Debug.Log("NPC " + gameObject.name + " visibleMeshVisible now "
@@ -1517,6 +1532,7 @@ public class AIController : MonoBehaviour {
 		if (deadChecksDone) return;
 		
 		if (DeactivatesVisibleMeshWhileDying() && visibleMeshEntity.activeSelf) {
+			UnityEngine.Debug.Log("DeactivatesVisibleMeshWhileDying while dead deactivate visibleMeshEntity");
 			Utils.Deactivate(visibleMeshEntity);
 			visibleMeshVisible = false;
 // 			Debug.Log("NPC " + gameObject.name + " visibleMeshVisible now "
@@ -1560,16 +1576,17 @@ public class AIController : MonoBehaviour {
 	bool CheckIfEnemyInSight() {
 		if (!HasHealth(healthManager)) return false;
 		
+		bool enemyIsNPC = enemy.layer == 10;
 	    int diff = Const.a.difficultyCombat;
 		if (IsCyberNPC()) {
 			diff = Const.a.difficultyCyber;
 		} else {
-			if (!withinPVS && DynamicCulling.a.cullEnabled) return false;
+			if ((!withinPVS && !enemyIsNPC) && DynamicCulling.a.cullEnabled) return false;
 		}
 
         if (diff == 0 && index != 28) return false;
 
-		if (PlayerMovement.a.Notarget) {
+		if (PlayerMovement.a.Notarget && !enemyIsNPC) {
 			enemy = null; // Force forget when using Notarget cheat.
 			posCheckFinished = PauseScript.a.relativeTime + positionCheckDelay;
 			lastPosition = transform.position;
@@ -1592,7 +1609,7 @@ public class AIController : MonoBehaviour {
 			return false;
 		}
 
-		if (IsCyberNPC()) return true;
+		if (IsCyberNPC() || enemyIsNPC) return true;
 
 		if (Const.a.numberOfRaycastsThisFrame > Const.maxRaycastsPerFrame) {
 			return inSight; // Zero order hold last until next actual update.
@@ -1810,12 +1827,6 @@ public class AIController : MonoBehaviour {
 
 	public static string Save(GameObject go, PrefabIdentifier prefID) {
 		AIController aic = go.GetComponent<AIController>();
-		if (aic == null) {
-			Debug.Log("AIController missing on savetype of NPC!  GameObject.name: " + go.name);
-			return "";
-		}
-
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		if (!aic.startInitialized) aic.Start();
 		s1.Append(Utils.UintToString(aic.index,"AIController.index"));
@@ -2166,8 +2177,8 @@ public class AIController : MonoBehaviour {
 				aic.rbody.isKinematic = false;
 			}
 
-			if (aic.healthManager.gibOnDeath) {
-				if (aic.ai_dead	|| !aic.HasHealth(aic.healthManager)) {
+			if (aic.ai_dead	|| !aic.HasHealth(aic.healthManager)) {
+				if (aic.healthManager.gibOnDeath || aic.healthManager.teleportOnDeath) {
 					// Turn off visible mesh entity from destroyed corpse.
 					aic.visibleMeshEntity.SetActive(false);
 					aic.visibleMeshVisible = false;

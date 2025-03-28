@@ -30,9 +30,7 @@ public class MaterialChanger : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		MaterialChanger mch = go.GetComponent<MaterialChanger>();
-		string line = System.String.Empty;
-		line = Utils.BoolToString(mch.alreadyDone,"alreadyDone");
-		return line;
+		return Utils.BoolToString(mch.alreadyDone,"alreadyDone"); // and much already yet remaining
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

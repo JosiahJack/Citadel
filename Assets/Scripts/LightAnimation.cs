@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class LightAnimation : MonoBehaviour {
 	[Tooltip("Set minimum intensity of light animations")]
@@ -26,6 +27,7 @@ public class LightAnimation : MonoBehaviour {
 	private float differenceInIntensity;
 	[HideInInspector] public float lerpValue; //save
 	private GameObject segiEmitter;
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Start () {
 		if (minIntensity < 0.01f) minIntensity = 0.01f;
@@ -191,16 +193,23 @@ public class LightAnimation : MonoBehaviour {
 
 		if (la.animLight == null) la.animLight = la.GetComponent<Light>();
 
-		string line = System.String.Empty;
-		line = Utils.BoolToString(la.lightOn,"lightOn"); // bool
-		line += Utils.splitChar + Utils.BoolToString(la.lerpOn,"lerpOn"); // bool
-		line += Utils.splitChar + Utils.IntToString(la.currentStep,"currentStep"); // int
-		line += Utils.splitChar + Utils.FloatToString(la.lerpValue,"lerpValue"); // %
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(la.lerpTime,"lerpTime");
-		line += Utils.splitChar + Utils.FloatToString(la.stepTime,"stepTime"); // Not a timer, current time amount
-		line += Utils.splitChar + Utils.SaveRelativeTimeDifferential(la.lerpStartTime,"lerpStartTime");
-		line += Utils.splitChar + Utils.BoolToString(la.animLight.enabled,"light.enabled");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.BoolToString(la.lightOn,"lightOn")); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(la.lerpOn,"lerpOn")); // bool
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.IntToString(la.currentStep,"currentStep")); // int
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(la.lerpValue,"lerpValue")); // %
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(la.lerpTime,"lerpTime"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.FloatToString(la.stepTime,"stepTime")); // Not a timer, current time amount
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(la.lerpStartTime,"lerpStartTime"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(la.animLight.enabled,"light.enabled"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

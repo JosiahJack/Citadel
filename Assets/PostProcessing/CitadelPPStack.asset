@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: CitadelPPStack
   m_EditorClassIdentifier: 
   antialiasing:
-    m_Enabled: 1
+    m_Enabled: 0
     m_Settings:
       fxaaSettings:
         preset: 0
   screenSpaceReflection:
-    m_Enabled: 1
+    m_Enabled: 0
     m_Settings:
       reflection:
         blendType: 1

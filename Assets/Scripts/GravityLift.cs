@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class GravityLift : MonoBehaviour {
 	public float strength = 12f;
@@ -11,6 +12,7 @@ public class GravityLift : MonoBehaviour {
 	public Vector3 topPoint;
 	public float initialBurstFinished;
 	private BoxCollider boxcol;
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Awake() {
 		boxcol = GetComponent<BoxCollider>();
@@ -102,11 +104,11 @@ public class GravityLift : MonoBehaviour {
 			return "1";
 		}
 
-		string line = System.String.Empty;
-		line = Utils.BoolToString(gl.active,"active"); // bool - is this gravlift on?
-		line += Utils.splitChar;
-		line += Utils.SaveRelativeTimeDifferential(gl.initialBurstFinished,"initialBurstFinished");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.BoolToString(gl.active,"active")); // bool - is this gravlift on?
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.SaveRelativeTimeDifferential(gl.initialBurstFinished,"initialBurstFinished"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

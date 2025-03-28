@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Text;
 
 public class UseableObjectUse : MonoBehaviour {
 	public int useableItemIndex;
@@ -7,6 +8,7 @@ public class UseableObjectUse : MonoBehaviour {
 	public int ammo = 0;
 	public int ammo2 = 0;
 	public bool heldObjectLoadedAlternate = false;
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Awake() {
 		// 33% chance of not spawning logic probes on Puzzle difficulty of 3
@@ -72,17 +74,24 @@ public class UseableObjectUse : MonoBehaviour {
 			return "-1|-1|0|0|BUG: Missing UseableObjectUse";
 		}
 
-		string line = System.String.Empty;
-		line = Utils.UintToString(uou.useableItemIndex,"useableItemIndex"); // int - the main lookup index, needed for intanciating on load if doesn't match original SaveID
-		line += Utils.splitChar + Utils.UintToString(uou.customIndex,"customIndex"); // int - special reference like audiolog message
-		line += Utils.splitChar + Utils.UintToString(uou.ammo,"ammo"); // int - how much normal ammo is on the weapon
-		line += Utils.splitChar + Utils.UintToString(uou.ammo2,"ammo2"); //int - alternate ammo type, e.g. Penetrator or Teflon
-		line += Utils.splitChar + Utils.BoolToString(uou.heldObjectLoadedAlternate,"heldObjectLoadedAlternate"); //int - alternate ammo type, e.g. Penetrator or Teflon
+		s1.Clear();
+		s1.Append(Utils.UintToString(uou.useableItemIndex,"useableItemIndex")); // int - the main lookup index, needed for intanciating on load if doesn't match original SaveID
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(uou.customIndex,"customIndex")); // int - special reference like audiolog message
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(uou.ammo,"ammo")); // int - how much normal ammo is on the weapon
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(uou.ammo2,"ammo2")); //int - alternate ammo type, e.g. Penetrator or Teflon
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(uou.heldObjectLoadedAlternate,"heldObjectLoadedAlternate")); //int - alternate ammo type, e.g. Penetrator or Teflon
 		if (uou.useableItemIndex == 35) { // Worker Helmet with its two flaps.
-			line += Utils.splitChar + Utils.SaveTransform(go.transform.GetChild(0));
-			line += Utils.splitChar + Utils.SaveTransform(go.transform.GetChild(1));
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.SaveTransform(go.transform.GetChild(0)));
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.SaveTransform(go.transform.GetChild(1)));
 		}
-		return line;
+		
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

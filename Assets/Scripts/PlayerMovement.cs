@@ -169,6 +169,7 @@ public class PlayerMovement : MonoBehaviour {
 	private float bodyLerpGravityOffDelayFinished;
 	private ContactPoint[] contactsCache;
 	private static Vector3 feetOffset = new Vector3(0f,-0.48f,0f);
+	private static StringBuilder s1 = new StringBuilder();
 	
 	public static PlayerMovement a;
 
@@ -1803,10 +1804,15 @@ public class PlayerMovement : MonoBehaviour {
 		}
 		GameObject cheatArsenal = Instantiate(arsenal,transform.position,
 								    Const.a.quaternionIdentity) as GameObject;
+									
 		if (cheatArsenal == null) return; // Failed!
 
 		Transform prt = LevelManager.a.GetCurrentDynamicContainer().transform;
 		cheatArsenal.transform.SetParent(prt);
+		int childCount = cheatArsenal.transform.childCount;
+		for (int i=childCount - 1;i>= 0; i--) {
+			cheatArsenal.transform.GetChild(i).SetParent(prt);
+		}
 	}
 
 	public void ConsoleDisable() { // Note this is called during Load from a save.
@@ -1848,7 +1854,6 @@ public class PlayerMovement : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		PlayerMovement pm = go.GetComponent<PlayerMovement>();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.SaveTransform(go.transform));
 		s1.Append(Utils.splitChar);

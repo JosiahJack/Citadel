@@ -58,6 +58,7 @@ public class HealthManager : MonoBehaviour {
 	[HideInInspector] public bool awakeInitialized = false;
 	[HideInInspector] public bool startInitialized = false;
 	private bool isScreen = false;
+	private static StringBuilder s1 = new StringBuilder();
 
 	public void Awake () {
 		if (awakeInitialized) return;
@@ -65,18 +66,16 @@ public class HealthManager : MonoBehaviour {
 		prefID = GetComponent<PrefabIdentifier>();
 		if (prefID == null) prefID = transform.parent.gameObject.GetComponent<PrefabIdentifier>();
 		isScreen = (prefID.constIndex == 279);
-		deathDone = false;
-		teleportDone = false;
         attacker = null;
 		take = 0;
 		if (isPlayer) {
 			health = 211;
 			cyberHealth = 255;
 			maxhealth = 255;
+			justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
 		}
 		
-		if (isPlayer) justHurtByEnemy = (Time.time - 31f); // set less than 30s below Time to guarantee we don't start playing action music right away, used by Music.cs
-		if (Const.a != null) Const.a.RegisterObjectWithHealth(this);
+		Const.a.RegisterObjectWithHealth(this);
 		awakeInitialized = true;
 		if (isNPC && !gibOnDeath ) { // Set searchable item to CorpseSearchable layer.
 			if (searchableItem != null) searchableItem.gameObject.layer = 29;
@@ -196,7 +195,7 @@ public class HealthManager : MonoBehaviour {
 		if (!deathDone) {
 			UseDeathTargets();
 			if (teleportOnDeath) TeleportAway();
-			NPCDeath();
+			else NPCDeath();
 		}
 	}
 
@@ -496,7 +495,7 @@ public class HealthManager : MonoBehaviour {
 			else if (teleportOnDeath) TeleportAway();
 			else if (isGrenade) GrenadeDeath();
 
-			if (isNPC) NPCDeath();
+			if (isNPC && !teleportOnDeath) NPCDeath();
 			else if (isPlayer) PlayerHealth.a.deaths++;
 
 			deathDone = true;
@@ -538,6 +537,29 @@ public class HealthManager : MonoBehaviour {
 		if (!teleportDone) {
 			teleportDone = true;
 			Utils.Activate(teleportEffect);
+			Utils.DisableCollision(gameObject);
+
+			if (aic == null) {
+				if (transform.parent != null) {
+					aic = transform.parent.gameObject.GetComponent<AIController>();
+				}
+			}
+			
+			if (aic == null) return;
+			
+			aic.enabled = false;
+			AIAnimationController aiac = aic.visibleMeshEntity.GetComponent<AIAnimationController>();
+			if (aiac != null) aiac.enabled = false;
+			
+			Rigidbody rbod = GetComponent<Rigidbody>();
+			if (rbod == null) rbod = aic.GetComponent<Rigidbody>();
+			if (rbod != null) {
+				rbod.useGravity = false;
+				rbod.velocity = Vector3.zero;
+			}
+			Utils.Deactivate(aic.visibleMeshEntity);
+			aic.visibleMeshVisible = false;
+			UnityEngine.Debug.Log("Teleport away deactivate visibleMeshEntity");
 		}
 	}
 
@@ -551,8 +573,13 @@ public class HealthManager : MonoBehaviour {
 		deathDone = true; // Mark it so we only die once.
 		CreateDeathEffects(deathFX);
 		if (aic.index == 0 && !actAsCorpseOnly) Utils.PlayTempAudio(transform.position,Const.a.sounds[64]); // npc_autobomb: explosion1
-		GameObject par = transform.parent.gameObject;
-		if (aic == null) aic = par.GetComponent<AIController>();
+
+		if (aic == null) {
+			if (transform.parent != null) {
+				aic = transform.parent.gameObject.GetComponent<AIController>();
+			}
+		}
+
 		if (aic == null) return;
 
 		if (Const.a.typeForNPC[aic.index] == NPCType.Cyber) {
@@ -742,6 +769,8 @@ public class HealthManager : MonoBehaviour {
 	}
 
 	public void AwakeFromLoad(int levID) {
+		if (isNPC) return;
+		
 		if (!awakeInitialized) { Awake(); }
 		if (!startInitialized) { Start(); }
 
@@ -822,7 +851,6 @@ public class HealthManager : MonoBehaviour {
 		
 		if (!hm.awakeInitialized) hm.Awake();
 		if (!hm.startInitialized) hm.Start();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.FloatToString(hm.health,"health"));
 		s1.Append(Utils.splitChar);
@@ -909,6 +937,11 @@ public class HealthManager : MonoBehaviour {
 		}
 
 		hm.teleportOnDeath = Utils.GetBoolFromString(entries[index],"teleportOnDeath"); index++;
+		if (hm.health <= 0 && hm.isNPC && !hm.aic.IsCyberNPC() && hm.teleportOnDeath) {
+			hm.aic.enabled = false;
+			AIAnimationController aiac = hm.aic.visibleMeshEntity.GetComponent<AIAnimationController>();
+			if (aiac != null) aiac.enabled = false;
+		}
 		return index;
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Text;
 
 public class WeaponCurrent : MonoBehaviour {
 	public GameObject ViewModelAssault;
@@ -33,6 +34,8 @@ public class WeaponCurrent : MonoBehaviour {
 													  // energy weapons no
 													  // energy, save
 	[HideInInspector] public bool redbull = false; // No energy usage, save
+	private static StringBuilder s1 = new StringBuilder();
+	
 	public int weaponCurrentPending; // save
 	public int weaponIndexPending; // save
 
@@ -474,18 +477,36 @@ public class WeaponCurrent : MonoBehaviour {
 		}
 
 		int j =0;
-		string line = System.String.Empty;
-		line = Utils.UintToString(wc.weaponCurrent,"weaponCurrent");
-		line += Utils.splitChar + Utils.UintToString(wc.weaponIndex,"weaponIndex");
-		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.FloatToString(wc.weaponEnergySetting[j],"weaponEnergySetting[" + j.ToString() + "]"); }
-		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.UintToString(wc.currentMagazineAmount[j],"currentMagazineAmount[" + j.ToString() + "]"); }
-		for (j=0;j<7;j++) { line += Utils.splitChar + Utils.UintToString(wc.currentMagazineAmount2[j],"currentMagazineAmount2[" + j.ToString() + "]"); }
-		line += Utils.splitChar + Utils.UintToString(wc.lastIndex,"lastIndex");
-		line += Utils.splitChar + Utils.BoolToString(wc.bottomless,"bottomless");
-		line += Utils.splitChar + Utils.BoolToString(wc.redbull,"redbull");
-		line += Utils.splitChar + Utils.UintToString(wc.weaponCurrentPending,"weaponCurrentPending");
-		line += Utils.splitChar + Utils.UintToString(wc.weaponIndexPending,"weaponIndexPending");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.UintToString(wc.weaponCurrent,"weaponCurrent"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(wc.weaponIndex,"weaponIndex"));
+		for (j=0;j<7;j++) {
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.FloatToString(wc.weaponEnergySetting[j],"weaponEnergySetting[" + j.ToString() + "]"));
+		}
+		
+		for (j=0;j<7;j++) {
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.UintToString(wc.currentMagazineAmount[j],"currentMagazineAmount[" + j.ToString() + "]"));
+		}
+		
+		for (j=0;j<7;j++) {
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.UintToString(wc.currentMagazineAmount2[j],"currentMagazineAmount2[" + j.ToString() + "]"));
+		}
+		
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(wc.lastIndex,"lastIndex"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(wc.bottomless,"bottomless"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(wc.redbull,"redbull"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(wc.weaponCurrentPending,"weaponCurrentPending"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.UintToString(wc.weaponIndexPending,"weaponIndexPending"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

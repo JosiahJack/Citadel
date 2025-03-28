@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Text;
 
 // Allows for consistently switching back and forth between two targets
 public class LogicBranch : MonoBehaviour {
@@ -14,9 +15,10 @@ public class LogicBranch : MonoBehaviour {
 	private UseData tempUd;
 	private string currenttarget;
 	private string currentargvalue;
-	[HideInInspector]
-	public bool onSecond = false; // save
+	[HideInInspector] public bool onSecond = false; // save
 	public bool autoFlipOnTarget = true;
+	
+	private static StringBuilder s1 = new StringBuilder();
 
 	void Awake() {
 		if (startOnSecond) {
@@ -77,10 +79,11 @@ public class LogicBranch : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		LogicBranch lb = go.GetComponent<LogicBranch>();
-		string line = System.String.Empty;
-		line = Utils.BoolToString(lb.relayEnabled,"relayEnabled");
-		line += Utils.splitChar + Utils.BoolToString(lb.onSecond,"onSecond"); // He is. But who's on third? What's on first? Wait what??
-		return line;
+		s1.Clear();
+		s1.Append(Utils.BoolToString(lb.relayEnabled,"relayEnabled"));
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(lb.onSecond,"onSecond")); // He is. But who's on third? What's on first? Wait what??
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

@@ -36,9 +36,7 @@ public class TriggerCounter : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		TriggerCounter tc = go.GetComponent<TriggerCounter>();
-		string line = System.String.Empty;
-		line = Utils.IntToString(tc.counter,"counter");
-		return line;	
+		return Utils.IntToString(tc.counter,"counter");	
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

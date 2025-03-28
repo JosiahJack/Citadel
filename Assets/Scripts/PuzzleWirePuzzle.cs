@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class PuzzleWirePuzzle : MonoBehaviour {
@@ -21,8 +22,9 @@ public class PuzzleWirePuzzle : MonoBehaviour {
 	public int messageOnLockedLingdex = 302;
 	public int messageOnBrokenLingdex = 189;
 	public bool puzzleSolved; // save
-
+	private static StringBuilder s1 = new StringBuilder();
 	private Animator anim;
+	
 	public bool animate = true;
 	public bool inUse = false;
 
@@ -104,12 +106,20 @@ public class PuzzleWirePuzzle : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		PuzzleWirePuzzle pwp = go.GetComponent<PuzzleWirePuzzle>();
-		string line = System.String.Empty;
-		line = Utils.BoolToString(pwp.puzzleSolved,"puzzleSolved");
-		for (int i=0;i<7;i++) { line += Utils.splitChar + Utils.UintToString(pwp.currentPositionsLeft[i],"currentPositionsLeft[" + i.ToString() + "]"); }
-		for (int i=0;i<7;i++) { line += Utils.splitChar + Utils.UintToString(pwp.currentPositionsRight[i],"currentPositionsRight[" + i.ToString() + "]"); }
-		line += Utils.splitChar + Utils.BoolToString(pwp.locked,"locked");
-		return line;
+		s1.Clear();
+		s1.Append(Utils.BoolToString(pwp.puzzleSolved,"puzzleSolved"));
+		for (int i=0;i<7;i++) {
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.UintToString(pwp.currentPositionsLeft[i],"currentPositionsLeft[" + i.ToString() + "]"));
+		}
+		for (int i=0;i<7;i++) {
+			s1.Append(Utils.splitChar);
+			s1.Append(Utils.UintToString(pwp.currentPositionsRight[i],"currentPositionsRight[" + i.ToString() + "]"));
+		}
+		
+		s1.Append(Utils.splitChar);
+		s1.Append(Utils.BoolToString(pwp.locked,"locked"));
+		return s1.ToString();
 	}
 
 	public static int Load(GameObject go, ref string[] entries, int index) {

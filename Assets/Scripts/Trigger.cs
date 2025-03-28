@@ -14,6 +14,7 @@ public class Trigger : MonoBehaviour {
 	[HideInInspector] public float delayFireFinished;
 	[HideInInspector] public float delayResetFinished;
 	[HideInInspector] public bool allDone = false;
+	private static StringBuilder s1 = new StringBuilder();
 
     IEnumerator DelayedTarget(GameObject activator) {
         yield return new WaitForSeconds(delay);
@@ -80,7 +81,6 @@ public class Trigger : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		Trigger trig = go.GetComponent<Trigger>();
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		s1.Append(Utils.BoolToString(trig.allDone,"allDone"));
 		s1.Append(Utils.splitChar);

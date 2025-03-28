@@ -96,6 +96,7 @@ public class Automap : MonoBehaviour {
 	private RectTransform[] automapFoWTilesRects;
 	private Vector2[] automapFoWTilesRectsPos;
 	private bool initialized = false;
+	private static StringBuilder s1 = new StringBuilder();
 
 	public static Automap a;
 
@@ -581,7 +582,6 @@ public class Automap : MonoBehaviour {
 	public static string Save(GameObject go) {
 		Automap amp = go.GetComponent<Automap>();
 		int j = 0;
-		StringBuilder s1 = new StringBuilder();
 		s1.Clear();
 		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExploredR[j],"automapExploredR[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool
 		for (j=0;j<4096;j++) { s1.Append(Utils.BoolToString(amp.automapExplored1[j],"automapExplored1[" + j.ToString() + "]")); s1.Append(Utils.splitChar); } // bool

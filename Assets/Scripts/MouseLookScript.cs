@@ -98,6 +98,7 @@ public class MouseLookScript : MonoBehaviour {
 	private float bobTarget;
 	private float headBobXVel;
 	private float headBobYVel;
+	private static StringBuilder s1 = new StringBuilder();
     
 	public static MouseLookScript a;
 
@@ -256,6 +257,7 @@ public class MouseLookScript : MonoBehaviour {
 			//We are holding cursor over the GUI
 			if (holdingObject && !inCyberSpace) {
 				AddItemToInventory(heldObjectIndex,heldObjectCustomIndex);
+				MouseCursor.a.liveGrenade = false;
 				ResetHeldItem();
 			} else InventoryButtonUse();
 		}
@@ -1400,7 +1402,6 @@ public class MouseLookScript : MonoBehaviour {
 
 	public static string Save(GameObject go) {
 		MouseLookScript ml = go.GetComponent<MouseLookScript>();
-        StringBuilder s1 = new StringBuilder();
         s1.Clear();
 		s1.Append(Utils.BoolToString(ml.gameObject.activeSelf,"MouseLookScript.gameObject.activeSelf"));
 		s1.Append(Utils.splitChar);
