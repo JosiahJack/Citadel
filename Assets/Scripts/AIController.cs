@@ -125,11 +125,18 @@ public class AIController : MonoBehaviour {
 	private static StringBuilder s1 = new StringBuilder();
 	private static Vector3 targetOffset = new Vector3(0f,0.24f,0f);
 
-	public void Tranquilize() {
-		if (Const.a.typeForNPC[index] != NPCType.Robot) {
-			tranquilizeFinished = PauseScript.a.relativeTime
-								  + Const.a.timeForTranquilizationForNPC[index];
+	public float Tranquilize(float amount, bool energy) {
+		float tranqSecs = amount;
+		if (tranqSecs < 3f) tranqSecs = Const.a.timeForTranquilizationForNPC[index];
+		
+		if (Const.a.typeForNPC[index] != NPCType.Robot || energy) {
+			float was = tranquilizeFinished;
+			tranquilizeFinished = Mathf.Max(PauseScript.a.relativeTime + tranqSecs,tranquilizeFinished + tranqSecs);
+// 			Debug.Log("Tranquilize fed " + amount.ToString() + ", was: " + was.ToString() + ", is now: " + tranquilizeFinished.ToString());
+			return tranqSecs;
 		}
+		
+		return 0f;
 	}
 
 	private void DeactivateMeleeColliders() {
@@ -515,11 +522,29 @@ public class AIController : MonoBehaviour {
 					timeTillEnemyChangeFinished = PauseScript.a.relativeTime
 						+ Const.a.timeToChangeEnemyForNPC[index];
 						
-					AIController enemAIC = attacker.GetComponent<AIController>();
-					if (enemAIC != null) {
-						if (enemAIC.index != index) enemy = attacker; // unless it's same enemy type as us (infighting!)
+					AIController attackerAIC = attacker.GetComponent<AIController>();
+					if (attackerAIC != null && attacker.layer != 12) { // Attacker is an NPC and not the player.
+						NPCType myType = Const.a.typeForNPC[index];
+						NPCType attackerType = Const.a.typeForNPC[attackerAIC.index];
+						bool canInfight = false;
+						
+						// Check infighting rules
+						if (myType == NPCType.Robot && enemy != null) {
+							// Robots only change to player, keep existing enemy otherwise
+							canInfight = false;
+						} else if (      (myType == NPCType.Cyborg ||       myType == NPCType.Supercyborg ||       myType == NPCType.Robot) && 
+								   (attackerType == NPCType.Cyborg || attackerType == NPCType.Supercyborg || attackerType == NPCType.Robot)) {
+							canInfight = false; // Cyborgs don't fight Cyborgs or Robots
+						} else if (   (      myType == NPCType.Mutant ||       myType == NPCType.Supermutant)
+								   && (attackerType == NPCType.Mutant || attackerType == NPCType.Supermutant)) {
+							canInfight = (attackerAIC.index != index); // Mutants can infight if different index
+						} else {
+							canInfight = (attackerAIC.index != index); // All other combinations can infight
+						}
+
+						if (canInfight) enemy = attacker;
 					} else {
-						enemy = attacker; // Switch to whoever just attacked us
+						enemy = attacker; // Attacker is the player, set enemy to player.
 					}
 					posCheckFinished = PauseScript.a.relativeTime + positionCheckDelay;
 					wandering = false;

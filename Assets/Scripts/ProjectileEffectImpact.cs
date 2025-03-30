@@ -21,6 +21,8 @@ public class ProjectileEffectImpact : MonoBehaviour {
         if (other.gameObject == host) return;
 
 		numHits++;
+		float stunAmount = 3f + ((WeaponFire.a.stungunSetting / 100f) * 7f); // Const.a.damagePerHitForWeapon[wep16Index] vs Const.a.damagePerHitForWeapon2[wep16Index] for Stungun.
+		stunAmount = Mathf.Clamp(stunAmount, 3f, 10f);
 		dd.other = other.gameObject;
 		dd.isOtherNPC = false;
 		// GetDamageTakeAmount expects damageData to already have the
@@ -50,7 +52,7 @@ public class ProjectileEffectImpact : MonoBehaviour {
 				impact.SetActive(true); // Enable the impact effect
 			}
 
-			if (hm != null && (hm.health > 0 || hm.cyberHealth > 0)) {
+			if (hm.health > 0 || hm.cyberHealth > 0) {
 				if (other.gameObject.CompareTag("NPC")) dd.isOtherNPC = true;
 
 
@@ -72,24 +74,18 @@ public class ProjectileEffectImpact : MonoBehaviour {
 													// container to
 													// HealthManager of hit
 													// object and damage it.
-
-				if ((hm.isNPC && !hm.aic.asleep) || dd.isOtherNPC) {
-					Music.a.inCombat = true;
+				float tranq = -1f;
+				if (dd.isOtherNPC || hm.isNPC) {
+					if (hm.aic != null) {
+						if (!hm.aic.asleep) Music.a.inCombat = true;
+						if (dd.attackType == AttackType.Tranq) {
+							tranq = hm.aic.Tranquilize(stunAmount,true);
+						}
+					}
 				}
 
 				if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
-				if (dd.attackType == AttackType.Tranq) dmgFinal = -2f;
-				WeaponFire.a.CreateTargetIDInstance(dmgFinal,hm);
-			}
-
-			if (dd.attackType == AttackType.Tranq) {
-				AIController aic = hitGO.GetComponent<AIController>();
-				if (aic != null) {
-					aic.Tranquilize();
-				} else {
-					aic = other.gameObject.GetComponent<AIController>();
-					if (aic !=null) aic.Tranquilize();
-				}
+				WeaponFire.a.CreateTargetIDInstance(dmgFinal,hm,tranq);
 			}
 		}
 

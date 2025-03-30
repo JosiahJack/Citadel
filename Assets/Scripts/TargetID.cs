@@ -35,40 +35,29 @@ public class TargetID : MonoBehaviour {
 	void FixedUpdate() {
 		if (parent != null) transform.position = parent.position;
 	}
-
+	
 	public void SendDamageReceive(float damage, DamageData dd) {
-		if (linkedHM == null || (Inventory.a.hardwareVersion[4] < 3 && (damage > 0f))) return;
+		if (linkedHM == null) return;
 
-		if (damage > linkedHM.maxhealth * 0.75f) {
-			// Severe Damage
-			currentText = Const.a.stringTable[514];
-		}
-		if (damage > linkedHM.maxhealth * 0.50f) {
-			// Major Damage
-			currentText = Const.a.stringTable[515];
-		}
-		if (damage > linkedHM.maxhealth * 0.25f) {
-			// Normal Damage
-			currentText = Const.a.stringTable[513];
-		}
-
-		if (damage > 0f) {
-			// Minor Damage
-			currentText = Const.a.stringTable[512];
-			return;
-		}
-
-		currentText = Const.a.stringTable[511]; // NO DAMAGE
-		lifetime = 1f;
-		damageTime = 1f;
-		lifetimeFinished = PauseScript.a.relativeTime + lifetime;
-		damageTimeFinished = PauseScript.a.relativeTime + damageTime;
 		if (dd.attackType == AttackType.Tranq) {
-			damageTimeFinished = PauseScript.a.relativeTime - 1f; // Don't show
-																  // damage for
-																  // tranqs
+			currentText = Const.a.stringTable[536]; // STUNNED
+			damageTimeFinished = PauseScript.a.relativeTime - 1f; // Expire damage text, Update handles "STUNNED"
+		} else {
+			if (damage > linkedHM.maxhealth * 0.75f) {
+				currentText = Const.a.stringTable[514]; // SEVERE DAMAGE
+			} else if (damage > linkedHM.maxhealth * 0.50f) {
+				currentText = Const.a.stringTable[515]; // MAJOR DAMAGE
+			} else if (damage > linkedHM.maxhealth * 0.25f) {
+				currentText = Const.a.stringTable[513]; // NORMAL DAMAGE
+			} else if (damage > 0f) {
+				currentText = Const.a.stringTable[512]; // MINOR DAMAGE
+			} else {
+				currentText = Const.a.stringTable[511]; // NO DAMAGE
+			}
+			damageTime = (damage == 0f) ? 1f : 2.5f;
+			damageTimeFinished = PauseScript.a.relativeTime + damageTime;
+			text.text = currentText;
 		}
-		text.text = currentText;
 	}
 
 	void Deactivate() {

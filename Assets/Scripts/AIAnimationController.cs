@@ -94,6 +94,11 @@ public class AIAnimationController : MonoBehaviour {
 			Idle();
 			return;
 		}
+		
+		if (aic.currentState == AIState.Run && aic.tranquilizeFinished >= PauseScript.a.relativeTime) {
+			Idle();
+			return;
+		}
 
 		switch (aic.currentState) {
 			case AIState.Idle: 		Idle(); 	break;
@@ -110,7 +115,7 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Idle () {
-		if (aic.asleep) {
+		if (aic.asleep || aic.tranquilizeFinished >= PauseScript.a.relativeTime) {
 			if (anim.speed > 0) anim.speed = 0;
 		} else {
 			if (anim.speed != 1f) anim.speed = 1f;
@@ -122,6 +127,7 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Run () {
+		if (anim.speed != 1f) anim.speed = 1f;
 		if (aic.actAsTurret) {
 			anim.Play("Idle");
 			clipName = "Idle";
@@ -132,6 +138,7 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Walk () {
+		if (anim.speed != 1f) anim.speed = 1f;
 		if (aic.rbody.velocity.sqrMagnitude >
 			(minWalkSpeedToAnimate * minWalkSpeedToAnimate)) {
 			if (aic.actAsTurret) {
@@ -152,26 +159,31 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Attack1 () {
+		if (anim.speed != 1f) anim.speed = 1f;
 		anim.Play("Attack1");
 		clipName = "Attack1";
 	}
 
 	void Attack2 () {
+		if (anim.speed != 1f) anim.speed = 1f;
 		anim.Play("Attack2");
 		clipName = "Attack2";
 	}
 
 	void Attack3 () {
+		if (anim.speed != 1f) anim.speed = 1f;
 		anim.Play("Attack3");
 		clipName = "Attack3";
 	}
 
 	void Pain () {
+		if (anim.speed != 1f) anim.speed = 1f;
 		anim.Play("Pain");
 		clipName = "Pain";
 	}
 
 	void Dying () {
+		if (anim.speed != 1f) anim.speed = 1f;
 		aic.asleep = false;
 		Utils.Deactivate(aic.sleepingCables);
 		if (anim.speed != 1f) anim.speed = 1f;
@@ -202,11 +214,13 @@ public class AIAnimationController : MonoBehaviour {
 	}
 
 	void Inspect () {
+		if (anim.speed != 1f) anim.speed = 1f;
 		anim.Play("Inspect");
 		clipName = "Inspect";
 	}
 
 	void Interacting () {
+		if (anim.speed != 1f) anim.speed = 1f;
 		anim.Play("Interact");
 		clipName = "Interact";
 	}

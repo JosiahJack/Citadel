@@ -615,7 +615,7 @@ public class MouseLookScript : MonoBehaviour {
 
 		if (Inventory.a.hasHardware[4] && Inventory.a.hardwareVersion[4] > 1) {
 			if (!aic.hasTargetIDAttached) {
-				WeaponFire.a.CreateTargetIDInstance(-1f,aic.healthManager);
+				WeaponFire.a.CreateTargetIDInstance(-1f,aic.healthManager,-1f);
 				if (Application.platform != RuntimePlatform.Android) {
 					return true;
 				}

@@ -897,73 +897,40 @@ public class WeaponFire : MonoBehaviour {
 	}
 
 	// TargetID Instance
-	public void CreateTargetIDInstance(float dmgFinal, HealthManager hm) {
-		if (hm == null) return;
-		if (!hm.isNPC) return;
-		if (hm.health <= 0f) return;
-		if (dmgFinal > 0 && !Inventory.a.hasHardware[4] && dmgFinal != -2f) {
-			return;
-		}
-		if (hm.linkedTargetID != null) return; // Already has a TargetID on it.
+	public void CreateTargetIDInstance(float dmgFinal, HealthManager hm, float tranq) {
+		 if (hm == null || !hm.isNPC || hm.health <= 0f) return;
+		if (!Inventory.a.hasHardware[4] && tranq <= 0f && dmgFinal > 0f) return;
+		if (hm.linkedTargetID != null) return; // Let SendDamageReceive handle updates
 
 		float linkDistForTargID = TargetID.GetTargetIDTetherRange();
-		bool showHealth = false;
-		bool showRange = false;
-		bool showAttitude = false;
-		bool showName = false;
-		if (Inventory.a.hasHardware[4]) {
-			showRange = true;
-			if (Inventory.a.hardwareVersion[4] > 1) {
-				showAttitude = true;
-				showName = true;
-			}
+		bool showHealth = Inventory.a.hasHardware[4] && Inventory.a.hardwareVersion[4] > 2;
+		bool showRange = Inventory.a.hasHardware[4];
+		bool showAttitude = Inventory.a.hasHardware[4] && Inventory.a.hardwareVersion[4] > 1;
+		bool showName = Inventory.a.hasHardware[4] && Inventory.a.hardwareVersion[4] > 1;
 
-			if (Inventory.a.hardwareVersion[4] > 2) showHealth = true;
-		}
-
-		string damageText = "";
-		if (Inventory.a.hasHardware[4]) {
-			if (Inventory.a.hardwareVersion[4] > 1) {
-				if (dmgFinal > (hm.maxhealth * 0.75f)) {
-					damageText = Const.a.stringTable[514]; // SEVERE DAMAGE
-				} else if (dmgFinal > (hm.maxhealth * 0.50f)) {
-					damageText = Const.a.stringTable[515]; // MAJOR DAMAGE
-				} else if (dmgFinal > (hm.maxhealth * 0.25f)) {
-					damageText = Const.a.stringTable[513]; // NORMAL DAMAGE
-				} else if (dmgFinal > 0f) {
-					damageText = Const.a.stringTable[512]; // MINOR DAMAGE
-				}
-			} else {
-				if (dmgFinal > 0f) {
-					damageText = Const.a.stringTable[596]; // DAMAGED				
-				}
-			}
-		}
-
-		GameObject idFrame = Instantiate(Const.a.GetPrefab(736),hm.transform.position,Const.a.quaternionIdentity) as GameObject;
-        if (idFrame == null) return;
+		GameObject idFrame = Instantiate(Const.a.GetPrefab(736), hm.transform.position, Const.a.quaternionIdentity) as GameObject;
+		if (idFrame == null) return;
 
 		TargetID tid = idFrame.GetComponent<TargetID>();
 		if (tid == null) return;
 
-		if (dmgFinal == -2f) damageText = Const.a.stringTable[536]; // STUNNED
+		tid.parent = hm.transform;
+		tid.linkedHM = hm;
+		hm.linkedTargetID = tid;
 
-		// Even when TargetID hardware not acquired, still show no damage/tranq
-		// to show player that hey, it no workie.  No hasHardware[4] check.
-		if (dmgFinal == 0f) {
- 			damageText = Const.a.stringTable[511]; // NO DAMAGE
-			noDamageIndicator = idFrame;
-			tid.lifetime = 1f;
-			tid.damageTimeFinished = PauseScript.a.relativeTime + tid.lifetime;
+		if (!Inventory.a.hasHardware[4] || tranq > 0f || dmgFinal == 0f) {
+			tid.currentText = tranq > 0f ? Const.a.stringTable[536] : (dmgFinal == 0f ? Const.a.stringTable[511] : "");
+			tid.lifetime += tranq;
+			tid.damageTimeFinished = Mathf.Max(PauseScript.a.relativeTime + tranq,tid.damageTimeFinished + tranq);
 			tid.lifetimeFinished = PauseScript.a.relativeTime + tid.lifetime;
 		} else {
-			tid.damageTime = 2.5f;
+			tid.currentText = ""; // Set by SendDamageReceive
 			tid.lifetime = 9999999f;
 			tid.lifetimeFinished = PauseScript.a.relativeTime + tid.lifetime;
+			tid.damageTime = 2.5f;
+			if (tranq > 2.5f) tid.damageTime = tranq;
+			tid.damageTimeFinished = PauseScript.a.relativeTime + tid.damageTime;
 		}
-
-		tid.currentText = damageText;
-		tid.parent = hm.transform;
 
 		// Center on what we just shot
 		float yOfs = 0f;
@@ -1066,12 +1033,15 @@ public class WeaponFire : MonoBehaviour {
         // Fill the damageData container
 		// -------------------------------
 		// Using tempHit.transform instead of tempHit.collider.transform to ensure we get overall NPC parent instead of its children.
+		float tranq = -1f;
         if (damageData.other.CompareTag("NPC")) {
             damageData.isOtherNPC = true;
 			if (damageData.attackType == AttackType.Tranq) {
 				// Using tempHit.transform instead of tempHit.collider.transform to ensure we get overall NPC parent instead of its children.
 				AIController taic = damageData.other.GetComponent<AIController>();
-				if (taic !=null) taic.Tranquilize();
+				if (taic !=null) {
+					tranq = taic.Tranquilize(3f + Random.Range(0f,4f),false);
+				}
 			}
         } else {
             damageData.isOtherNPC = false;
@@ -1095,7 +1065,8 @@ public class WeaponFire : MonoBehaviour {
 			damageData.offense = Const.a.offenseForWeapon[wep16Index];
 			damageData.penetration = Const.a.penetrationForWeapon[wep16Index];
         }
-		damageData.attackType = Const.a.attackTypeForWeapon[wep16Index];
+        
+		if (damageData.attackType != AttackType.Tranq) damageData.attackType = Const.a.attackTypeForWeapon[wep16Index]; // If check to handle exception setting it above
         damageData.damage = DamageData.GetDamageTakeAmount(damageData);
         damageData.owner = playerCapsule;
 		damageData.impactVelocity = 80f;
@@ -1121,8 +1092,7 @@ public class WeaponFire : MonoBehaviour {
 		}
 
 		if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
-		if (damageData.attackType == AttackType.Tranq) dmgFinal = -2f;
-		CreateTargetIDInstance(dmgFinal,tempHM);
+		CreateTargetIDInstance(dmgFinal,tempHM,tranq);
 
 		UseableObjectUse uou = hitGO.GetComponent<UseableObjectUse>();
 		if (uou != null) uou.HitForce(damageData); // knock objects around
@@ -1213,7 +1183,7 @@ public class WeaponFire : MonoBehaviour {
 
 		float dmgFinal = tempHM.TakeDamage(damageData);
 		if (dmgFinal < 0f) dmgFinal = 0f; // Less would = blank.
-		CreateTargetIDInstance(dmgFinal,tempHM);
+		CreateTargetIDInstance(dmgFinal,tempHM,-1f);
 		if (tempHM.isNPC && !tempHM.aic.asleep) Music.a.inCombat = true;
 		if (!silent) {
 			PlayerHealth.a.makingNoise = true;

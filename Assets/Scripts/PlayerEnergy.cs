@@ -53,7 +53,7 @@ public class PlayerEnergy : MonoBehaviour {
 			                             transform.position);
 			if (far > TargetID.GetTargetIDSensingRange(false)) continue;
 			
-			WeaponFire.a.CreateTargetIDInstance(-1f,aic.healthManager);
+			WeaponFire.a.CreateTargetIDInstance(-1f,aic.healthManager,-1f);
 		}
     }
 

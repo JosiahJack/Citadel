@@ -7,8 +7,8 @@ PhysicMaterial:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: phys_npc_hopper
-  dynamicFriction: 0.6
-  staticFriction: 0.6
-  bounciness: 0
+  dynamicFriction: 0.005
+  staticFriction: 0.1
+  bounciness: 0.1
   frictionCombine: 0
   bounceCombine: 0
