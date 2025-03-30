@@ -2013,7 +2013,7 @@ public class Meshenderer {
         meshFilter.sharedMesh = useLOD ? meshLOD : meshUsual;
         meshRenderer.sharedMaterial = useLOD ? materialLOD : materialUsual;
         meshRenderer.receiveShadows = true;
-        meshRenderer.shadowCastingMode = ShadowCastingMode.TwoSided;
+//         meshRenderer.shadowCastingMode = ShadowCastingMode.TwoSided;
     }
 }
 

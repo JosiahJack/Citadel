@@ -641,14 +641,24 @@ public static class SaveLoad {
         chunk.name = entries[index]; index++;
         if (chunk.name == "chunk_cyberpanel (3918)") UnityEngine.Debug.Log("Loading chunk_cyberpanel (3918)");
         index = Utils.LoadTransform(chunk.transform,ref entries,index);
+        Quaternion quat = chunk.transform.localRotation;
+        bool pointsUp = Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(180f,0f,0f),30f);
+        bool pointsDn = Utils.QuaternionApproximatelyEquals(quat,Quaternion.Euler(0,0f,0f),30f);
+        MeshRenderer mr = chunk.GetComponent<MeshRenderer>();
+        MeshRenderer childMR = null;
+        if (mr != null) {
+            if (pointsUp || pointsDn) {
+                mr.shadowCastingMode = ShadowCastingMode.Off;
+            }
+        }
+        
         if (curlevel <= 9) {
-            Quaternion quat = chunk.transform.localRotation;
             bool scaleGood =    Utils.InTol(chunk.transform.localScale.x,1.0f,0.01f)
                             && Utils.InTol(chunk.transform.localScale.y,1.0f,0.01f)
                             && Utils.InTol(chunk.transform.localScale.z,1.0f,0.01f);
             
             float floorHeight = Utils.GetFloorHeight(quat,chunk.transform.position.y);
-            if (floorHeight > -1000f) {
+            if (pointsUp) {
                 MarkAsFloor maf = chunk.GetComponent<MarkAsFloor>();
                 if (maf == null) maf = chunk.AddComponent<MarkAsFloor>();
                 
@@ -727,7 +737,6 @@ public static class SaveLoad {
             // Cyberspace chunk
             PrefabIdentifier pid = GetPrefabIdentifier(chunk,false);
             if (pid.constIndex == 1 || chunk.name.Contains("chunk_cyberpanelcollisiononly")) { // blockers need to be invisible, not glass.
-                MeshRenderer mr = chunk.GetComponent<MeshRenderer>();
                 if (mr != null) mr.enabled = false;
                 else {
                     if (chunk.transform.childCount > 0) {
@@ -769,14 +778,13 @@ public static class SaveLoad {
         } else if (variableName == "material") {
             index++;
             Transform childChunk;
-            MeshRenderer mr = chunk.GetComponent<MeshRenderer>();
             int matVal = GetMaterialByName(variableValue);
             if (matVal == 86 && constdex == 130) {
                 childChunk = chunk.transform.GetChild(0);
                 if (childChunk != null) {
-                    mr = childChunk.gameObject.GetComponent<MeshRenderer>();
-                    if (mr != null) {
-                        mr.sharedMaterial = Const.a.genericMaterials[matVal];
+                    childMR = childChunk.gameObject.GetComponent<MeshRenderer>();
+                    if (childMR != null) {
+                        childMR.sharedMaterial = Const.a.genericMaterials[matVal];
                     }
                 }
             }
@@ -786,9 +794,9 @@ public static class SaveLoad {
             } else if (chunk.transform.childCount > 0) {
                 childChunk = chunk.transform.GetChild(0);
                 if (childChunk != null) {
-                    mr = childChunk.gameObject.GetComponent<MeshRenderer>();
-                    if (mr != null) {
-                        mr.sharedMaterial = Const.a.genericMaterials[matVal];
+                    childMR = childChunk.gameObject.GetComponent<MeshRenderer>();
+                    if (childMR != null) {
+                        childMR.sharedMaterial = Const.a.genericMaterials[matVal];
                     }
                 }
             }
@@ -832,14 +840,13 @@ public static class SaveLoad {
         } else if (variableName == "material") {
             index++;
             Transform childChunk;
-            MeshRenderer mr = chunk.GetComponent<MeshRenderer>();
             int matVal = GetMaterialByName(variableValue);
             if (matVal == 86 && constdex == 130) {
                 childChunk = chunk.transform.GetChild(0);
                 if (childChunk != null) {
-                    mr = childChunk.gameObject.GetComponent<MeshRenderer>();
-                    if (mr != null) {
-                        mr.sharedMaterial = Const.a.genericMaterials[matVal];
+                    childMR = childChunk.gameObject.GetComponent<MeshRenderer>();
+                    if (childMR != null) {
+                        childMR.sharedMaterial = Const.a.genericMaterials[matVal];
                     }
                 }
             }
@@ -849,9 +856,9 @@ public static class SaveLoad {
             } else if (chunk.transform.childCount > 0) {
                 childChunk = chunk.transform.GetChild(0);
                 if (childChunk != null) {
-                    mr = childChunk.gameObject.GetComponent<MeshRenderer>();
-                    if (mr != null) {
-                        mr.sharedMaterial = Const.a.genericMaterials[matVal];
+                    childMR = childChunk.gameObject.GetComponent<MeshRenderer>();
+                    if (childMR != null) {
+                        childMR.sharedMaterial = Const.a.genericMaterials[matVal];
                     }
                 }
             }
