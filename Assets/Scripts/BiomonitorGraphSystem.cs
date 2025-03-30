@@ -146,7 +146,11 @@ public class BiomonitorGraphSystem : MonoBehaviour {
             brainFactor = 0.35f + UnityEngine.Random.Range(-0.3f,0.3f);
         }
 
-		chiValue = Mathf.Sin(PauseScript.a.relativeTime * 10f * brainFactor);
+        if (MFDManager.a.FPS.activeInHierarchy) {
+            chiValue = ((MFDManager.a.msecs/16f) * 0.5f) - 2f;
+        } else {
+            chiValue = Mathf.Sin(PauseScript.a.relativeTime * 10f * brainFactor);
+        }
 
 		// ECG: Create shifted sine wave for heart beat.
 		// Apply percent fatigued to 200bpm max heart rate with baseline 50bpm.
@@ -176,7 +180,11 @@ public class BiomonitorGraphSystem : MonoBehaviour {
         }
 
         if (tick1Finished < PauseScript.a.relativeTime) {
-            tick1Finished = PauseScript.a.relativeTime + tick1;
+            if (MFDManager.a.FPS.activeInHierarchy) {
+                tick1Finished = PauseScript.a.relativeTime + tick2;
+            } else {
+                tick1Finished = PauseScript.a.relativeTime + tick1;
+            }
             Push(1,chiValue);
             IncrementCHI();
             Push(1,chiValue);

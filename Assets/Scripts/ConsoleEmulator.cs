@@ -307,6 +307,7 @@ public static class ConsoleEmulator {
         } else if (ts.Contains("show") && ts.Contains("fps")) { // showfps
 			Const.sprint(Const.a.stringTable[1007]); // "Toggling FPS counter for framerate (bottom right corner)..."
 			PlayerMovement.a.fpsCounter.SetActive(!PlayerMovement.a.fpsCounter.activeInHierarchy);
+			Inventory.a.hardwareButtonManager.bioMonitorContainer.SetActive(true);
         } else if (ts.Contains("show") && ts.Contains("location")) { // showlocation
 			Const.sprint(Const.a.stringTable[1008]); // "Toggling locationIndicator (bottom left corner)..."
 			PlayerMovement.a.locationIndicator.SetActive(!PlayerMovement.a.locationIndicator.activeInHierarchy);

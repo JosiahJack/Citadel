@@ -179,16 +179,14 @@ public class MFDManager : MonoBehaviour  {
 	// For FPS counter
 	public GameObject FPS;
 	private float deltaTime = 0.0f;
-	private float msecs;
-	private float fps;
+	public float msecs;
+	private float fpsMeasurement;
 	private string textString;
 	private Text text;
 	private float tickFinished; // Visual only, Time.time controlled
 	private const float tickSecs = 0.1f;
 	private int count;
 	private const float thousand = 1000f;
-	private const int zero = 0;
-	private const int one = 1;
 	private string formatToDisplayMS;
 	private string formatToDisplayFPS;
 	public Text msText;
@@ -324,11 +322,11 @@ public class MFDManager : MonoBehaviour  {
 			deltaTime += Time.unscaledDeltaTime;
 			if (tickFinished < Time.time) {
 				msecs = deltaTime/count*thousand;
-				deltaTime = zero;
-				fps = count * (one / tickSecs);
-				count = zero;
-				msText.text = string.Format (formatToDisplayMS, msecs);
-				fpsText.text = string.Format (formatToDisplayFPS, fps);
+				fpsMeasurement = (int)((float)count / deltaTime);
+				deltaTime = 0;
+				count = 0;
+				msText.text = string.Format(formatToDisplayMS, msecs);
+				fpsText.text = string.Format(formatToDisplayFPS, fpsMeasurement);
 				tickFinished = Time.time + tickSecs;
 			}
 		}

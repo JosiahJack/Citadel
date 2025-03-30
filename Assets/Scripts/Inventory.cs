@@ -917,7 +917,8 @@ public class Inventory : MonoBehaviour {
 	public void HideBioMonitor() {
 		if (hardwareButtonManager == null) return;
 		if (hardwareButtonManager.bioMonitorContainer == null) return;
-
+		if (MFDManager.a.FPS.activeInHierarchy) return;
+		
 		hardwareButtonManager.bioMonitorContainer.SetActive(false);
 	}
 

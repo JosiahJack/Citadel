@@ -113,6 +113,8 @@ public class HardwareButton : MonoBehaviour {
 	public void BioOff() {
 		Inventory.a.hardwareIsActive[6] = false;
 		SetVersionIconForButton(Inventory.a.hardwareIsActive[6],Inventory.a.BioMonitorVersion(),0);
+		
+		if (MFDManager.a.FPS.activeInHierarchy) return;
 		if (BiomonitorGraphSystem.a != null) {
 			BiomonitorGraphSystem.a.ClearGraphs();
 		}
