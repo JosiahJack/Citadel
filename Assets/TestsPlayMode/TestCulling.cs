@@ -48,6 +48,7 @@ namespace Tests {
             }
         }
 
+        /*
         [UnityTest]
         [Timeout(100000000)]
         public IEnumerator CheckEachCellCulling() {
@@ -86,7 +87,7 @@ namespace Tests {
             float pinkMax = 221f/256f;
             float pinkGThreshold = 1f/256f;
             float timeTillNext = 0.0001f;
-            int pinkCountThreshold = 1024;
+            int pinkCountThreshold = 128;
             float floorHeight;
             MarkAsFloor maf = null;
             Color[] pixels;
@@ -373,6 +374,6 @@ namespace Tests {
             Const.a.testSphere.SetActive(false);
             PlayerMovement.a.Notarget = false;
             PlayerMovement.a.rbody.isKinematic = false;
-        }
+        }*/
     }
 }

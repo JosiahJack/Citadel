@@ -167,7 +167,7 @@ namespace Tests {
                 MainMenuHandler.a.LoadGame(7);
                 erthang.Clear();
                 erthang = Utils.GetAllObjectsOnlyInScene();
-                bool check = erthang.Count == countPreSave;
+                bool check = (Mathf.Abs(erthang.Count - countPreSave) < 3); // Since we need time to finish the load, spawn manager or sparks might spawn.
                 
 //                 npcPrefabsAfter.Clear();
 //                 npcPrefabCount = LevelManager.a.npcContainers[0].transform.childCount; // Reactor level

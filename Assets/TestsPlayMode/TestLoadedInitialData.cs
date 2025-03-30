@@ -299,7 +299,7 @@ namespace Tests {
                             dynaname = Utils.LoadString(entries[k],"targetOnDeath");
                             if (!string.IsNullOrWhiteSpace(dynaname)) {
                                 targets.Add(dynaname);
-//                                 UnityEngine.Debug.Log("Added targetOnDeath target: " + dynaname + " from dynamics on level " + lev.ToString());
+                                UnityEngine.Debug.Log("Added targetOnDeath target: " + dynaname + " from dynamics on level " + lev.ToString());
                                 break;
                             }
                         } else if (entries[k].Contains("target:")) {
